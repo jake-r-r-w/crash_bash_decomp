@@ -26,10 +26,18 @@ Newest first. Each session appends: what changed, what was learned, what's next.
   (ovl5f) adds 4 bytes of data/rodata (ovl5f offset 0x4C). It needs its literal
   or constant placed as in the original (likely rodata belongs to another file).
 
+- Then switched to **hand matching only** (`010aed4`): `decomp.py done NAME`
+  is a validation gate (scope: one function; lint: no m2c leftovers, hacks need
+  `--hack`; function; full build), the pre-commit hook refuses matches made
+  outside it, and `auto` is retired (`--legacy`). See `docs/MATCHING.md` and
+  the `/match-function` skill. First match through it: `func_800C6828` (ovl5f,
+  `d3386d9`; m2c dropped the pass-through `a0`).
+
 **Next**
-1. `auto --retry --permute` on the 628 `diff` near-misses (smallest first).
-2. The 814 `types` + 716 `compile` failures need headers: start with the leaked
-   Pogo/Arkenoid/Polar headers (`disc/leaked_source.txt`) as `include/` files.
+1. `/match-function`, one function per commit. `next` still shows the old
+   auto drafts for the 628 near-misses, which are good starting points.
+2. Many failures need types: turn the leaked Pogo/Arkenoid/Polar headers
+   (`disc/leaked_source.txt`) into `include/bash/` headers.
 3. Fix `func_800C8BA0` by hand (see above).
 
 ## 2026-10-10 - overlays and leaked-source scan
