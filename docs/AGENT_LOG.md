@@ -2,6 +2,46 @@
 
 Newest first. Each session appends: what changed, what was learned, what's next.
 
+## 2026-10-10 - Phase 1 exit check
+
+**State at end of session:** `make verify` -> 16 targets OK; 397/2550 game
+functions matched (main.exe 151/574).
+
+**Done**
+- Tested Phase 1's exit condition ("matching `main.exe` no longer stalls on
+  missing names or types") two ways:
+  - m2c-drafted all 427 unmatched `main.exe` functions with the headers as
+    context. 4 failed: 3 because callbacks were declared as data
+    (`extern u8 func_X[]`, now `void func_X();`, also in `ovl60.h`), 1
+    because m2c can't follow a tail branch to its own label
+    (`func_80011BC0`, a loop). 29 more contain GTE instructions m2c doesn't
+    know (`ctc2`/`mtc2`/`lwc2`); that's a GTE-macro matching task, not a
+    missing type.
+  - Hand-matched four through `done`, each on the first diff: `AddMotion`,
+    `func_8001D3B0` (chains an array of subengines), `AddEngine`, and
+    `func_80025BBC` (a median-sized one, chosen by size, not by type). All
+    used the Phase 1 types unchanged. The only header work was declaring the
+    globals and callees each one uses, as CONVENTIONS.md expects.
+- `func_8001D390` retyped from `void(void)` to `s32 (EXTengine *, s32)`:
+  `AddEngine` calls it with arguments and tests the result.
+
+**Learned / gotchas**
+- 185 `D_` globals that unmatched `main.exe` code uses are still undeclared.
+  They get declared (and typed) by the match that first uses them; it isn't a
+  blocker.
+- `decomp.py next` picks the smallest function first, so it's not a fair
+  sample; pick by size percentile for checks like this one.
+- `func_80032F3C` is libc `abs`/`labs` (identical objects, so it's unnamed);
+  `func_80025BBC` calls it three times and drops the result.
+- Matched-but-mistyped functions (`void f(void)` pass-throughs written by the
+  old `auto`) are the likeliest remaining type stalls: retype them when a
+  caller needs it.
+
+**Next**
+1. Phase 2: keep matching `main.exe` (`/match-function`).
+2. The GTE functions: check `include/gte_macros.inc` covers what the 29
+   need before starting them.
+
 ## 2026-10-10 - engine types, hero struct and bool (Phase 1 done)
 
 **State at end of session:** `make verify` -> 16 targets OK; 144 game
