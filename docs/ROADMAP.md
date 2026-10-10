@@ -19,9 +19,19 @@ Build the headers and names that every later match depends on.
   `include/bash/`.
 - [x] Recover the core engine layouts: `NAS`, `EXTnode`, `EXTengine` and
   `SLONG_XYZ` (sizes and proven fields).
-- [ ] Recover the remaining engine types (`EXTobject`, `EXTmotion`, `EXTbotai`,
-  `EXTheromove`, `NASTrigger`, `subengine`, `hero_seq`, `TA_player`, `bool`)
-  and name the `unkXX` fields.
+- [ ] Recover the layouts of the remaining engine types the code uses
+  (`EXTobject`, `EXTmotion`, `EXTbotai`, `EXTheromove`, `NASTrigger`,
+  `subengine`, `hero_seq`, `TA_player`) and of the player/hero struct indexed
+  from `D_8009D52C`, and settle the size of `bool`. Naming `unkXX` fields is
+  ongoing work in every phase, not part of this item.
+- [ ] Name the core engine functions every match calls (spawn by AST id,
+  extension and engine allocation, extension lookup, random, sound, angle, and
+  the most-called exe and engine functions), each with code evidence.
+- [ ] Name the core globals: the AST table, the NAS lists, the player/hero
+  array, and the globals the leaked headers declare (`BombMaster`, `Walrus`,
+  `HeadPolarObject`, `PogoPlay`, ...).
+- [ ] Include Sony's PsyQ headers in the game sources, so library calls get
+  real prototypes.
 - [x] Retire `include/externs.h` and `include/prototypes.h` into owned headers.
 - [ ] Finish the overlay section splits (data vs rodata) so that functions using
   strings and jump tables can match.
