@@ -17,7 +17,11 @@ Build the headers and names that every later match depends on.
   Arkenoid, Polar).
 - [ ] Name the functions the named AST pairs reach, using the prototypes in
   `include/bash/`.
-- [ ] Recover the engine's core types, which the leak uses but doesn't define.
+- [x] Recover the core engine layouts: `NAS`, `EXTnode`, `EXTengine` and
+  `SLONG_XYZ` (sizes and proven fields).
+- [ ] Recover the remaining engine types (`EXTobject`, `EXTmotion`, `EXTbotai`,
+  `EXTheromove`, `NASTrigger`, `subengine`, `hero_seq`, `TA_player`, `bool`)
+  and name the `unkXX` fields.
 - [ ] Retire `include/externs.h` and `include/prototypes.h` into owned headers.
 - [ ] Finish the overlay section splits (data vs rodata) so that functions using
   strings and jump tables can match.

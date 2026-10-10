@@ -23,6 +23,7 @@ typedef struct {
     s32 ampdec;
     s32 angle;
 } EXTsmoketrail;
+BASH_SIZE_CHECK(EXTsmoketrail, 0x30); /* InitSmokeTrail allocates 0x30 */
 
 typedef struct {
     s32 EXTid;
@@ -32,6 +33,7 @@ typedef struct {
     s32 owner_id;
     s32 count;
 } EXTbombmaker;
+BASH_SIZE_CHECK(EXTbombmaker, 0x1C); /* InitBombMaker allocates 0x1C */
 #endif /* BASH_HAVE_EXTNODE */
 
 extern NAS *BombMaster;
@@ -82,6 +84,7 @@ typedef struct {
     SLONG_XYZ target_pos;
     s32 chasetimer;
 } EXTtransmuter;
+BASH_SIZE_CHECK(EXTtransmuter, 0x1E0); /* InitTransmuterBeam allocates 0x1E0 */
 #endif /* BASH_HAVE_EXTNODE */
 
 enum POLAR_AST_types {

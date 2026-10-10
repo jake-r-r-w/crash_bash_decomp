@@ -2,6 +2,33 @@
 
 Newest first. Each session appends: what changed, what was learned, what's next.
 
+## 2026-10-10 - core engine types
+
+**State at end of session:** `make verify` -> 16 targets OK.
+
+**Done**
+- `include/bash/engine.h` defines `SLONG_XYZ`, `EXTnode`, `NAS` (0x70) and
+  `EXTengine` (0x9C), with `BASH_SIZE_CHECK` compile-time sizes. Unknown members
+  are `unkXX` with explicit padding. `BASH_HAVE_EXTNODE` is defined, so the
+  leak's `EXT*` structs in pogo.h/polar.h are live. polar.h checks
+  `EXTsmoketrail`, `EXTbombmaker` and `EXTtransmuter` against their allocation
+  sizes. Evidence is in `docs/ARCHITECTURE.md` (Engine types).
+- The roadmap item is split: core layouts ticked, the remaining types open.
+
+**Learned / gotchas**
+- `func_8002689C(nas, size, id)` allocates an extension and
+  `func_8002672C(nas, id)` an engine. Their call sites give extension sizes
+  directly, which is the fastest check on a struct layout.
+- Pogo doesn't call `func_8002689C` directly, so `EXTPogoShockwaveInfo` is
+  unchecked.
+- Survey script: `disc/scratch/nas_fields.py ARGREG FUNC...` lists field
+  offsets and widths accessed through a pointer argument.
+
+**Next**
+1. Name the functions the AST pairs reach (phase 1).
+2. Remaining engine types: start with `EXTengine+0x6C`'s target (`EXTobject`?).
+
+
 ## 2026-10-10 - leaked headers into include/bash/
 
 **State at end of session:** `make verify` -> 16 targets OK.

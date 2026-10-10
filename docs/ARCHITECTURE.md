@@ -122,6 +122,47 @@ own header (`ovl5f`, `ovl60`, `ovl61`, `ovl62`). Differences from the leak:
   `EXTnode`) and the hero animation tables (`hero_seq`, `TA_player`).
 - `bool` is provisionally `s32`. Its size is not confirmed from code yet.
 
+## Engine types
+
+The engine's object model, as far as code proves it. The definitions are in
+`include/bash/engine.h`, and each size has a compile-time check.
+
+- **Extension allocator.** `func_8002689C(owner, size, id)` calls
+  `func_800232B0`. That allocates `size` bytes after a 0x18-byte heap header,
+  then writes `id` at `+0` (`EXTid`), the previous link at `+4` and a null at
+  `+8`. It appends the new extension to the owner's chain, which starts at
+  `NAS+0x08` and continues through each extension's `+8`. On failure it sets bit
+  0 of `NAS+0x6A`. So every extension starts with `s32 EXTid; EXTnode Extend;`,
+  and `EXTnode` is two pointers (8 bytes).
+- **Checked against the leak.** The leak's extension structs have exactly the
+  allocated size if `EXTnode` is 8 bytes and `SLONG_XYZ` is 12: `InitSmokeTrail`
+  allocates 0x30 (`EXTsmoketrail`), `InitBombMaker` 0x1C (`EXTbombmaker`) and
+  `InitTransmuterBeam` 0x1E0 (`EXTtransmuter`). The stores land on the leak's
+  fields: `fadeuprate` at `+0xC`, `angle` at `+0x2C`, and `EXTbombmaker.timer`
+  is set to 180.
+- **NAS (0x70 bytes).**
+  - `func_80022DDC(spawn)` takes one from the free list (linked through
+    `+0x10`), copies a 0x70-byte template over it, and appends it to the active
+    list (`+0x0C` prev, `+0x10` next).
+  - It sets `flags` (`+0`) to 1, the AST index (`s16` at `+0x6C`) and the spawn
+    record (`+0x50`).
+  - It stores the AST entry's Init and Plot at `+0x48`/`+0x4C`, calls
+    `func_8002672C(nas, 1)` to make the engine extension, and then calls Init.
+  - Field widths elsewhere come from a survey of every named Init/Plot (`a0` is
+    the `NAS`).
+- **EXTengine (0x9C bytes).** `func_8002672C(nas, id)` allocates 0x9C bytes
+  with `EXTid = id | 0x100` from a template, and sets `0x100` in `NAS.flags`.
+  - The first engine extension goes to `NAS+0x54` (`eng`); later ones are
+    linked through `+0x7C`.
+  - The spawn record's first 12 bytes are copied to `+0x10`.
+  - `EXTtransmuter.it_eng` and `light_eng[]` (both `EXTengine *` in the leak)
+    are filled from this same constructor, which confirms the type.
+- **Still unknown.** The names of most fields, which stay `unkXX`. The size of
+  `bool`, provisionally `s32`. And the layouts of `EXTobject`, `EXTmotion`,
+  `EXTbotai`, `EXTheromove`, `NASTrigger`, `subengine`, `hero_seq`, `TA_player`
+  and the shell types. `EXTengine+0x6C` points to a sub-object that may be
+  `EXTobject`: not yet proven.
+
 ## PsyQ
 
 Version 4.7 (signature scan: 262 objects, best of all versions; `$Id` strings
