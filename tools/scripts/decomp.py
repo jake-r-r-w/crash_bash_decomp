@@ -1908,7 +1908,7 @@ def ref_files(ovl):
     hdrs = sorted(glob.glob("include/*.h"))
     if ovl in ("", "engine"):
         return srcs, hdrs
-    return [p for p in srcs if p == f"src/{ovl}.c" or p.startswith(f"src/{ovl}/")], []
+    return [p for p in srcs if p == f"src/{ovl}.c" or p.startswith((f"src/{ovl}/", f"src/overlays/{ovl}/"))], []
 
 
 def apply_renames(pairs, proj, write_syms=True):
