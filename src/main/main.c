@@ -881,7 +881,33 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8001AF2C);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001B6D4);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001C008);
+void func_8001C008(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc) {
+    SVECTOR *dst = D_80056AC8;
+    u8 *run = (u8 *)&model->runs + model->runs;
+    s32 r, g, b;
+    s32 i;
+
+    gte_lddp(p);
+    r = fc->vx;
+    g = fc->vy;
+    b = fc->vz;
+    for (; run[1] != 0xFF; run += 2) {
+        i = run[1] + 2;
+        while (i-- > 0) {
+            gte_ldsv(src);
+            gte_ldfcdir(r, g, b);
+            fc++;
+            dst->pad = src->pad;
+            src++;
+            gte_intpl();
+            r = fc->vx;
+            g = fc->vy;
+            b = fc->vz;
+            gte_stsv(dst);
+            dst++;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001C0F0);
 

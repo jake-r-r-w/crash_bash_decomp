@@ -24,6 +24,14 @@ typedef struct {
     VECTOR out;       /* 0x40: rotated and translated position */
 } GteScratch;
 
+/* A model whose vertices are interpolated between two sets (func_8001C008,
+ * func_8001C0F0). Only the run list is known. */
+typedef struct {
+    u8 unk0[0x14];
+    s32 runs; /* 0x14: byte offset from this field to a list of (u8, u8 count)
+               * pairs ending in a count of 0xFF */
+} MorphModel;
+
 void func_80011474(void);
 s32 func_8001151C(u8 *arg0);
 void func_80011530(u8 *arg0);
@@ -177,6 +185,7 @@ void func_8002D274(void);
 void func_8002D33C(u8 *arg0);
 
 extern GteScratch D_800569CC;
+extern SVECTOR D_80056AC8[];
 extern s32 D_80064478[];
 extern u8 D_800527C4[];
 extern s32 D_80064414;
@@ -277,5 +286,7 @@ EXTengine *AddEngine(NAS *nas, s32 id);
 s32 func_80025BBC(EXTengine *eng);
 
 void func_80015758(SVECTOR *v, VECTOR *out);
+
+void func_8001C008(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc);
 
 #endif /* BASH_MAIN_H */
