@@ -108,17 +108,17 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BA3E0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BA51C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BA994);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoTazer);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BABA8);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoPickup);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BAD74);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Init_PogoPowerup);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BAEF0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoPowerup);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BB12C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoBanker);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BB31C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoMushroom);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BB724);
 
@@ -140,7 +140,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BC314);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BC490);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BC5BC);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoProjectile);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BCB4C);
 
@@ -172,9 +172,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BEA34);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BEB6C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BED3C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Init_PogoRipperRoo);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BEEA4);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoRipperRoo);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BF8E4);
 
@@ -190,9 +190,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C0164);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C02AC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C0444);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Init_PogoPadlock);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C0584);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoPadlock);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C0AFC);
 
@@ -224,7 +224,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1068);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C10F8);
 
-void func_800C1174(u8 *arg0) {
+void Init_PogoProjectile(u8 *arg0) {
     if ((*(s32*)((u8*)(arg0) + 84)) != 0) {
         (*(s16*)((u8*)(arg0) + 92)) = 0;
         (*(s16*)((u8*)(arg0) + 94)) = 0;
@@ -268,13 +268,13 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C19A8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1A18);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1AE8);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Init_PogoMushroom);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1B7C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Init_PogoBanker);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1C08);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Init_PogoPickup);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1C90);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Init_PogoTazer);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1CF0);
 

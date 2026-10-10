@@ -1,0 +1,17 @@
+
+InitBall = 0x800B9B6C; // type:func
+PlotBall = 0x800B9E54; // type:func
+PlotAR_PU = 0x800BDAB8; // type:func
+Init_RepulseRing = 0x800BFC04; // type:func
+Plot_RepulseRing = 0x800BDD94; // type:func
+Init_ArkCameraFlash = 0x800BFF0C; // type:func
+Plot_ArkCameraFlash = 0x800BFE70; // type:func
+Init_ArkDeadWall = 0x800BD00C; // type:func
+Plot_ArkDeadWall = 0x800BFDB0; // type:func
+Init_NGArkDeadWall = 0x800BD228; // type:func
+Init_N_Gin = 0x800C00B0; // type:func
+Plot_N_Gin = 0x800BBC3C; // type:func
+Init_seaweed = 0x800BFFA8; // type:func
+Plot_seaweed = 0x800BFF78; // type:func
+Init_ArkLaserWall = 0x800BDFA4; // type:func
+Plot_ArkLaserWall = 0x800BFB14; // type:func

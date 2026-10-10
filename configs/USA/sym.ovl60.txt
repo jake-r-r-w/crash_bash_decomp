@@ -1,0 +1,17 @@
+
+Init_PogoPickup = 0x800C1C08; // type:func
+Plot_PogoPickup = 0x800BABA8; // type:func
+Init_PogoPowerup = 0x800BAD74; // type:func
+Plot_PogoPowerup = 0x800BAEF0; // type:func
+Init_PogoBanker = 0x800C1B7C; // type:func
+Plot_PogoBanker = 0x800BB12C; // type:func
+Init_PogoProjectile = 0x800C1174; // type:func
+Plot_PogoProjectile = 0x800BC5BC; // type:func
+Init_PogoTazer = 0x800C1C90; // type:func
+Plot_PogoTazer = 0x800BA994; // type:func
+Init_PogoRipperRoo = 0x800BED3C; // type:func
+Plot_PogoRipperRoo = 0x800BEEA4; // type:func
+Init_PogoMushroom = 0x800C1AE8; // type:func
+Plot_PogoMushroom = 0x800BB31C; // type:func
+Init_PogoPadlock = 0x800C0444; // type:func
+Plot_PogoPadlock = 0x800C0584; // type:func

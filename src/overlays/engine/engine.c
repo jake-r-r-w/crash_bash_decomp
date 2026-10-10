@@ -467,11 +467,11 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008B29C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008B418);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008B510);
+INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", InitScriptFX);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008BB48);
+INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", PlotScriptFX);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008C368);
+INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", PlotSmokePoof);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008C4C8);
 
@@ -481,9 +481,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008C824);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008CA90);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008CD40);
+INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", PlotWeatherNas);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008CDB4);
+INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", InitWeatherNas);
 
 void func_8008CE10(void) {
 }
@@ -502,13 +502,13 @@ s32 func_8008CEB0(u8 *arg0, u8 *arg1) {
     return (temp_v0 * temp_v0) + (temp_v0_2 * temp_v0_2);
 }
 
-void func_8008CEE8(void) {
+void PlotParticleEffect(void) {
 }
 
-void func_8008CEF0(void) {
+void InitParticleEffect(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008CEF8);
+INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", InitSmokePoof);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008CFBC);
 
@@ -518,11 +518,11 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008D24C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008D284);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008D2BC);
+INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", PlotFloatyScore);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008D488);
 
-void func_8008D570(u8 *arg0) {
+void InitFloatyScore(u8 *arg0) {
     u8 *temp_v1;
 
     temp_v1 = (*(s32*)((u8*)(arg0) + 84));

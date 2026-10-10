@@ -18,11 +18,11 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B44B4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B4A1C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B4B04);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitPolarBomb);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B4C74);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotPolarBomb);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B5074);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBombGFX);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B5570);
 
@@ -50,7 +50,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B6D74);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B6EB4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B6FD4);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotPathEffect);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B6FEC);
 
@@ -60,13 +60,13 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B7520);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B767C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B77B0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitPathEffect);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B782C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B7874);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotCrystalFlash);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B787C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitCrystalFlash);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B7A58);
 
@@ -94,11 +94,11 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B9994);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B9B6C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B9D1C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitSparkGFX);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B9D48);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BA7BC);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotSparkGFX);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BAFA0);
 
@@ -112,19 +112,19 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BCF08);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BD058);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BD198);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitTransmuterBeam);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BD67C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotTransmuterBeam);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BFA98);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotWeightDeath);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BFD38);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BFEE0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C01C8);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotScratchMaster);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C06D0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitIceBerg);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C0888);
 
@@ -134,41 +134,41 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C0E94);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C0FE8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C121C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitUkaPolarMask);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C1584);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotUkaPolarMask);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C2ECC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C32A4);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitPolarWalrus);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C358C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotPolarWalrus);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C3E6C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitWalrusFish);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C40B8);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotWalrusFish);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C42A0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotSmokeTrail);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C4498);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitSimpleExplosion);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C45BC);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotDingoTail);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C4748);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBrioPack);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C4810);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotInnerRipple);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C48E8);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitInnerRipple);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C4918);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitPackEffect);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C49DC);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotRippled);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C4A3C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitPolarBoss);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C4ABC);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitRippled);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C4CB8);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotPolarBoss);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C5CD0);
 
@@ -176,37 +176,37 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C5DCC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C5EEC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C5FF8);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBearminator);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C63D0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBearminator);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C7870);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotPolarMissile);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C7C74);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBigMissile);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C7ED4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C7FE0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitSniper);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C82CC);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotSniper);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C8CC4);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotSniperMissile);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9230);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C996C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitSniperMissile);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9A2C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBigMissile);
 
-void func_800C9B4C(void) {
+void PlotBossTransmuter(void) {
 }
 
-void func_800C9B54(void) {
+void InitBossTransmuter(void) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9B5C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9B88);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitPolarMissile);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9C98);
 
@@ -214,59 +214,59 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9D74);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9EC4);
 
-void func_800C9F50(void) {
+void PlotBearCam(void) {
 }
 
-void func_800C9F58(void) {
+void InitBearCam(void) {
 }
 
-void func_800C9F60(void) {
+void PlotRockProjectile(void) {
 }
 
-void func_800C9F68(void) {
+void InitRockProjectile(void) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9F70);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9FC0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBearBoss);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA000);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBearBoss);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA0BC);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotPackEffect);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA19C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotCortexPack);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA1AC);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitCortexPack);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA220);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBrioPack);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA2B8);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitDingoTail);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA344);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotSimpleExplosion);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA424);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitSmokeTrail);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA514);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBearDeath);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA628);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBearDeath);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA6E8);
 
-void func_800CA750(void) {
+void PlotBreathMaster(void) {
 }
 
-void func_800CA758(void) {
+void InitBreathMaster(void) {
 }
 
-void func_800CA760(void) {
+void PlotSnowMaster(void) {
 }
 
-void func_800CA768(void) {
+void InitSnowMaster(void) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA770);
 
-void func_800CA850(u8 *arg0) {
+void PlotIceBerg(u8 *arg0) {
     u8 *temp_a1;
     u8 *temp_v1;
 
@@ -278,15 +278,15 @@ void func_800CA850(u8 *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA890);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitScratchMaster);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA930);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAA60);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotGravityObject);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAA90);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitGravityObject);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAB8C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitWeightDeath);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAC20);
 
@@ -415,11 +415,11 @@ s32 func_800CB744(u8 *arg0, u8 *arg1) {
     return var_v1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB798);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBombGFX);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB8A4);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBombMaker);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB9DC);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBombMaker);
 
 u32 func_800CBA28(u8 *arg0) {
     return (u32) ((func_8001463C((*(s32*)((u8*)(arg0) + 0)), (*(s32*)((u8*)(arg0) + 8))) - 0x7D) & 0xFFF) >> 8;

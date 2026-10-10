@@ -1,8 +1,8 @@
 {
  "blocked": [],
- "commit": "010aed4",
+ "commit": "04f9d93",
  "game": "SCUS_945.70",
- "generated": "2026-10-10T10:46:20Z",
+ "generated": "2026-10-10T11:47:07Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -129,6 +129,20 @@
    "lib_f": 535,
    "lib_tb": 122112,
    "ts": "2026-10-10T10:46:20Z"
+  },
+  {
+   "commit": "04f9d93",
+   "data_b": 128,
+   "data_tb": 616791,
+   "game_all_f": 2550,
+   "game_b": 19312,
+   "game_f": 393,
+   "game_named_f": 112,
+   "game_tb": 1019036,
+   "lib_b": 121280,
+   "lib_f": 535,
+   "lib_tb": 122112,
+   "ts": "2026-10-10T11:47:07Z"
   }
  ],
  "recent": [
@@ -268,7 +282,7 @@
    "blocked": 0,
    "done_b": 19312,
    "done_f": 393,
-   "named_f": 0,
+   "named_f": 112,
    "pct": 1.8951244116988997,
    "sony_b": 0,
    "total_b": 1019036,
@@ -298,7 +312,7 @@
     "file": "engine.bin",
     "files": 1,
     "lib": false,
-    "named_f": 0,
+    "named_f": 10,
     "pct": 2.0237653174897883,
     "sony_b": 0,
     "total_b": 129264,
@@ -383,7 +397,7 @@
     "file": "ovl60.bin",
     "files": 1,
     "lib": false,
-    "named_f": 0,
+    "named_f": 16,
     "pct": 1.0758570386579138,
     "sony_b": 0,
     "total_b": 65808,
@@ -400,7 +414,7 @@
     "file": "ovl61.bin",
     "files": 1,
     "lib": false,
-    "named_f": 0,
+    "named_f": 16,
     "pct": 0.5309090909090909,
     "sony_b": 0,
     "total_b": 55000,
@@ -417,7 +431,7 @@
     "file": "ovl62.bin",
     "files": 1,
     "lib": false,
-    "named_f": 0,
+    "named_f": 70,
     "pct": 0.47505210248866003,
     "sony_b": 0,
     "total_b": 130512,

@@ -2,6 +2,31 @@
 
 Newest first. Each session appends: what changed, what was learned, what's next.
 
+## 2026-10-10 - AST Init/Plot names
+
+**State at end of session:** full build matches; 112 game functions named.
+
+**Done**
+- Named the AST Init/Plot pairs for Pogo (`ovl60`), Arkenoid (`ovl61`), Polar
+  (`ovl62`) and the engine-side objects they use: 112 functions (renames in
+  this commit; method and evidence in `docs/ARCHITECTURE.md`, Overlays). The
+  roadmap item is ticked. Tank is split out as its own unticked item.
+- Fixed `decomp.py rename` for slot overlays: since the restructure it looked
+  for sources under `src/<ovl>/`, not `src/overlays/<ovl>/`.
+- The pre-commit hook counts `INCLUDE_ASM` lines, so renames pass.
+
+**Learned / gotchas**
+- AST entry: `{id, Init, Plot}`, with `0x80026D00` as the empty stub.
+  Pointers below `0x800B32B4` are engine functions.
+- `decomp.py done`'s scope check compares names: commit renames *before*
+  matching, or it reports the renamed functions as extra matches.
+
+**Next**
+1. Turn the leaked headers into `include/bash/` (roadmap phase 1).
+2. Tank: look for another way to get its ids (strings, the overlay's own
+   tables) before naming anything.
+
+
 ## 2026-10-10 - auto-matching pass, compiler settled
 
 **State at end of session:** `tools/dk make verify` -> 16 targets OK. Game code

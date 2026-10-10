@@ -75,6 +75,21 @@ code finds 15 code files; nothing else on the disc holds code.
   enums (`POGO_AST_zero = 0x1400`, ...); `ovl5f` is probably Tank (its enum is
   cut off in the leak). Leaf functions reached only through this table are
   declared in `configs/USA/sym.<ovl>.txt` so splat splits them.
+- **AST names**: the field order is fixed by the engine's spawn code
+  (`func_80022DDC`): it stores `+4` at `nas+0x48` and calls it at once
+  (Init), and it stores `+8` at `nas+0x4C` (Plot). Each Pogo, Arkenoid and
+  Polar id is named from its leaked enum entry (id = `*_AST_zero` + position).
+  The functions take the leak's own `Init`/`Plot` prototype spelling where one
+  exists (`Init_PogoPickup`, `InitBall`), and `Init`/`Plot` + the enum name
+  otherwise (`InitGravityObject`). Arkenoid spells four objects differently
+  in its enum and its prototypes: `ArkFlash`/`_ArkCameraFlash`,
+  `NGDeadWall`/`_NGArkDeadWall`, `LaserWall`/`_ArkLaserWall`,
+  `ArkRepulse`/`_RepulseRing`. `AST_ArkDeadWall` and `AST_NGDeadWall` share
+  one Plot (`Plot_ArkDeadWall`). Some of these objects live in the engine
+  rather than the slot (`FloatyScore`, `ParticleEffect`, `ScriptFX`,
+  `SmokePoof`, `WeatherNas`). Tank's pairs are not named: its enum is cut
+  off, and the prototype order does not follow the table order (Pogo shows
+  this), so its ids cannot be matched to names.
 
 ### Leaked source
 

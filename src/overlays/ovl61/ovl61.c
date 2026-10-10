@@ -90,9 +90,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B97D8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B99E0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B9B6C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", InitBall);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B9E54);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", PlotBall);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BB41C);
 
@@ -100,7 +100,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BB674);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BB924);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BBC3C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Plot_N_Gin);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BC0D8);
 
@@ -108,9 +108,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BC564);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BCA30);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BD00C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Init_ArkDeadWall);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BD228);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Init_NGArkDeadWall);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BD43C);
 
@@ -118,13 +118,13 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BD510);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BD770);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BDAB8);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", PlotAR_PU);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BDD30);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BDD94);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Plot_RepulseRing);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BDFA4);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Init_ArkLaserWall);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BE1C4);
 
@@ -140,9 +140,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BF640);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BFA24);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BFB14);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Plot_ArkLaserWall);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BFC04);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Init_RepulseRing);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BFD14);
 
@@ -150,21 +150,21 @@ s32 func_800BFD9C(u8 *arg0) {
     return (*(s32*)((u8*)(arg0) + 20)) - D_8005A5D8;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BFDB0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Plot_ArkDeadWall);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BFE70);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Plot_ArkCameraFlash);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BFF0C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Init_ArkCameraFlash);
 
-void func_800BFF78(u8 *arg0) {
+void Plot_seaweed(u8 *arg0) {
     if ((*(s32*)((u8*)(arg0) + 84)) != 0) {
         func_800250B0();
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BFFA8);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Init_seaweed);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C00B0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Init_N_Gin);
 
 u8 *func_800C01B8(void) {
     s32 var_v0;

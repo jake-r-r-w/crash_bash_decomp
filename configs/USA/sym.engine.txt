@@ -1,0 +1,11 @@
+
+InitFloatyScore = 0x8008D570; // type:func
+PlotFloatyScore = 0x8008D2BC; // type:func
+InitParticleEffect = 0x8008CEF0; // type:func
+PlotParticleEffect = 0x8008CEE8; // type:func
+InitScriptFX = 0x8008B510; // type:func
+PlotScriptFX = 0x8008BB48; // type:func
+InitSmokePoof = 0x8008CEF8; // type:func
+PlotSmokePoof = 0x8008C368; // type:func
+InitWeatherNas = 0x8008CDB4; // type:func
+PlotWeatherNas = 0x8008CD40; // type:func

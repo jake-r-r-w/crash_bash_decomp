@@ -20452,7 +20452,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8008B510": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8008B510.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/InitScriptFX.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800115D8",
@@ -20466,7 +20466,7 @@
   "fp": "cdb6f2c67304a2f0",
   "fpn": "015fa3e4ca29843c",
   "leaf": false,
-  "name": "func_8008B510",
+  "name": "InitScriptFX",
   "orig": "func_8008B510",
   "rom": 75904,
   "seg": "overlays/engine/engine",
@@ -20474,7 +20474,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8008BB48": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8008BB48.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/PlotScriptFX.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800110A8",
@@ -20487,7 +20487,7 @@
   "fp": "3c68c2a055637902",
   "fpn": "8482b49aeb61caeb",
   "leaf": false,
-  "name": "func_8008BB48",
+  "name": "PlotScriptFX",
   "orig": "func_8008BB48",
   "rom": 77496,
   "seg": "overlays/engine/engine",
@@ -20495,7 +20495,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8008C368": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8008C368.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/PlotSmokePoof.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800250B0"
@@ -20503,7 +20503,7 @@
   "fp": "39e1dabd7e6526f4",
   "fpn": "cf0b2117522d07a9",
   "leaf": false,
-  "name": "func_8008C368",
+  "name": "PlotSmokePoof",
   "orig": "func_8008C368",
   "rom": 79576,
   "seg": "overlays/engine/engine",
@@ -20576,7 +20576,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8008CD40": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8008CD40.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/PlotWeatherNas.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015D70"
@@ -20584,7 +20584,7 @@
   "fp": "16253bfed63c8187",
   "fpn": "4876766fef4384c7",
   "leaf": false,
-  "name": "func_8008CD40",
+  "name": "PlotWeatherNas",
   "orig": "func_8008CD40",
   "rom": 82096,
   "seg": "overlays/engine/engine",
@@ -20592,7 +20592,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8008CDB4": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8008CDB4.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/InitWeatherNas.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015D70"
@@ -20600,7 +20600,7 @@
   "fp": "dae198102b6a1a46",
   "fpn": "5f407921129c6749",
   "leaf": false,
-  "name": "func_8008CDB4",
+  "name": "InitWeatherNas",
   "orig": "func_8008CDB4",
   "rom": 82212,
   "seg": "overlays/engine/engine",
@@ -20694,7 +20694,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8008CEF8": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8008CEF8.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/InitSmokePoof.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80024E30"
@@ -20702,7 +20702,7 @@
   "fp": "915aeb90402d4917",
   "fpn": "d4b00f6506d3581c",
   "leaf": false,
-  "name": "func_8008CEF8",
+  "name": "InitSmokePoof",
   "orig": "func_8008CEF8",
   "rom": 82536,
   "seg": "overlays/engine/engine",
@@ -20777,7 +20777,7 @@
   "src": "src/overlays/engine/engine.c"
  },
  "engine:8008D2BC": {
-  "asm": "asm/nonmatchings/overlays/engine/engine/func_8008D2BC.s",
+  "asm": "asm/nonmatchings/overlays/engine/engine/PlotFloatyScore.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022FD4"
@@ -20785,7 +20785,7 @@
   "fp": "b30b73d103354267",
   "fpn": "ef232398ecb99696",
   "leaf": false,
-  "name": "func_8008D2BC",
+  "name": "PlotFloatyScore",
   "orig": "func_8008D2BC",
   "rom": 83500,
   "seg": "overlays/engine/engine",
@@ -30824,7 +30824,7 @@
   "src": "src/overlays/ovl60/ovl60.c"
  },
  "ovl60:800BA994": {
-  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/func_800BA994.s",
+  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/Plot_PogoTazer.s",
   "bin": "disc/ovl60.bin",
   "calls": [
    "800868B4",
@@ -30834,7 +30834,7 @@
   "fp": "f8b348d2199b1ba5",
   "fpn": "814afcfd111e0ab5",
   "leaf": false,
-  "name": "func_800BA994",
+  "name": "Plot_PogoTazer",
   "orig": "func_800BA994",
   "rom": 30432,
   "seg": "overlays/ovl60/ovl60",
@@ -30842,7 +30842,7 @@
   "src": "src/overlays/ovl60/ovl60.c"
  },
  "ovl60:800BABA8": {
-  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/func_800BABA8.s",
+  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/Plot_PogoPickup.s",
   "bin": "disc/ovl60.bin",
   "calls": [
    "80015480",
@@ -30852,7 +30852,7 @@
   "fp": "8063df6d23a58b1e",
   "fpn": "84e5b058e1eb89ae",
   "leaf": false,
-  "name": "func_800BABA8",
+  "name": "Plot_PogoPickup",
   "orig": "func_800BABA8",
   "rom": 30964,
   "seg": "overlays/ovl60/ovl60",
@@ -30860,7 +30860,7 @@
   "src": "src/overlays/ovl60/ovl60.c"
  },
  "ovl60:800BAD74": {
-  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/func_800BAD74.s",
+  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/Init_PogoPowerup.s",
   "bin": "disc/ovl60.bin",
   "calls": [
    "80022660",
@@ -30871,7 +30871,7 @@
   "fp": "8c4f0b36d0bbfbdc",
   "fpn": "336c71f96eacc3de",
   "leaf": false,
-  "name": "func_800BAD74",
+  "name": "Init_PogoPowerup",
   "orig": "func_800BAD74",
   "rom": 31424,
   "seg": "overlays/ovl60/ovl60",
@@ -30879,7 +30879,7 @@
   "src": "src/overlays/ovl60/ovl60.c"
  },
  "ovl60:800BAEF0": {
-  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/func_800BAEF0.s",
+  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/Plot_PogoPowerup.s",
   "bin": "disc/ovl60.bin",
   "calls": [
    "80022660",
@@ -30891,7 +30891,7 @@
   "fp": "f75f60c51d018bc6",
   "fpn": "25097145c7370020",
   "leaf": false,
-  "name": "func_800BAEF0",
+  "name": "Plot_PogoPowerup",
   "orig": "func_800BAEF0",
   "rom": 31804,
   "seg": "overlays/ovl60/ovl60",
@@ -30899,7 +30899,7 @@
   "src": "src/overlays/ovl60/ovl60.c"
  },
  "ovl60:800BB12C": {
-  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/func_800BB12C.s",
+  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/Plot_PogoBanker.s",
   "bin": "disc/ovl60.bin",
   "calls": [
    "80015590",
@@ -30909,7 +30909,7 @@
   "fp": "f33f178684037486",
   "fpn": "d696c5b37db6f37d",
   "leaf": false,
-  "name": "func_800BB12C",
+  "name": "Plot_PogoBanker",
   "orig": "func_800BB12C",
   "rom": 32376,
   "seg": "overlays/ovl60/ovl60",
@@ -30917,7 +30917,7 @@
   "src": "src/overlays/ovl60/ovl60.c"
  },
  "ovl60:800BB31C": {
-  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/func_800BB31C.s",
+  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/Plot_PogoMushroom.s",
   "bin": "disc/ovl60.bin",
   "calls": [
    "80015590",
@@ -30930,7 +30930,7 @@
   "fp": "a930c18b9cad472f",
   "fpn": "a131f2acda328122",
   "leaf": false,
-  "name": "func_800BB31C",
+  "name": "Plot_PogoMushroom",
   "orig": "func_800BB31C",
   "rom": 32872,
   "seg": "overlays/ovl60/ovl60",
@@ -31104,7 +31104,7 @@
   "src": "src/overlays/ovl60/ovl60.c"
  },
  "ovl60:800BC5BC": {
-  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/func_800BC5BC.s",
+  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/Plot_PogoProjectile.s",
   "bin": "disc/ovl60.bin",
   "calls": [
    "80022660",
@@ -31119,7 +31119,7 @@
   "fp": "0750e85862943eda",
   "fpn": "f091932a470203c1",
   "leaf": false,
-  "name": "func_800BC5BC",
+  "name": "Plot_PogoProjectile",
   "orig": "func_800BC5BC",
   "rom": 37640,
   "seg": "overlays/ovl60/ovl60",
@@ -31382,7 +31382,7 @@
   "src": "src/overlays/ovl60/ovl60.c"
  },
  "ovl60:800BED3C": {
-  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/func_800BED3C.s",
+  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/Init_PogoRipperRoo.s",
   "bin": "disc/ovl60.bin",
   "calls": [
    "8001682C",
@@ -31394,7 +31394,7 @@
   "fp": "9e98067d25c7164f",
   "fpn": "d082d46c0f2c2198",
   "leaf": false,
-  "name": "func_800BED3C",
+  "name": "Init_PogoRipperRoo",
   "orig": "func_800BED3C",
   "rom": 47752,
   "seg": "overlays/ovl60/ovl60",
@@ -31402,7 +31402,7 @@
   "src": "src/overlays/ovl60/ovl60.c"
  },
  "ovl60:800BEEA4": {
-  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/func_800BEEA4.s",
+  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/Plot_PogoRipperRoo.s",
   "bin": "disc/ovl60.bin",
   "calls": [
    "80015590",
@@ -31423,7 +31423,7 @@
   "fp": "fcf3f75435226bad",
   "fpn": "302173847146e5df",
   "leaf": false,
-  "name": "func_800BEEA4",
+  "name": "Plot_PogoRipperRoo",
   "orig": "func_800BEEA4",
   "rom": 48112,
   "seg": "overlays/ovl60/ovl60",
@@ -31546,7 +31546,7 @@
   "src": "src/overlays/ovl60/ovl60.c"
  },
  "ovl60:800C0444": {
-  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/func_800C0444.s",
+  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/Init_PogoPadlock.s",
   "bin": "disc/ovl60.bin",
   "calls": [
    "80022FD4",
@@ -31555,7 +31555,7 @@
   "fp": "4e77896e9e1cf1fb",
   "fpn": "e2d3786b1e4fb998",
   "leaf": false,
-  "name": "func_800C0444",
+  "name": "Init_PogoPadlock",
   "orig": "func_800C0444",
   "rom": 53648,
   "seg": "overlays/ovl60/ovl60",
@@ -31563,7 +31563,7 @@
   "src": "src/overlays/ovl60/ovl60.c"
  },
  "ovl60:800C0584": {
-  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/func_800C0584.s",
+  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/Plot_PogoPadlock.s",
   "bin": "disc/ovl60.bin",
   "calls": [
    "80015590",
@@ -31575,7 +31575,7 @@
   "fp": "584d4a226ee494e3",
   "fpn": "82c3ce9f4e4c40a6",
   "leaf": false,
-  "name": "func_800C0584",
+  "name": "Plot_PogoPadlock",
   "orig": "func_800C0584",
   "rom": 53968,
   "seg": "overlays/ovl60/ovl60",
@@ -32041,7 +32041,7 @@
   "src": "src/overlays/ovl60/ovl60.c"
  },
  "ovl60:800C1AE8": {
-  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/func_800C1AE8.s",
+  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/Init_PogoMushroom.s",
   "bin": "disc/ovl60.bin",
   "calls": [
    "80022FD4"
@@ -32049,7 +32049,7 @@
   "fp": "4c401c2155ad3549",
   "fpn": "c75ccda2dc237459",
   "leaf": false,
-  "name": "func_800C1AE8",
+  "name": "Init_PogoMushroom",
   "orig": "func_800C1AE8",
   "rom": 59444,
   "seg": "overlays/ovl60/ovl60",
@@ -32057,7 +32057,7 @@
   "src": "src/overlays/ovl60/ovl60.c"
  },
  "ovl60:800C1B7C": {
-  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/func_800C1B7C.s",
+  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/Init_PogoBanker.s",
   "bin": "disc/ovl60.bin",
   "calls": [
    "80015590",
@@ -32066,7 +32066,7 @@
   "fp": "8778bea3ed2d37ed",
   "fpn": "0184feaa40d3ac66",
   "leaf": false,
-  "name": "func_800C1B7C",
+  "name": "Init_PogoBanker",
   "orig": "func_800C1B7C",
   "rom": 59592,
   "seg": "overlays/ovl60/ovl60",
@@ -32074,7 +32074,7 @@
   "src": "src/overlays/ovl60/ovl60.c"
  },
  "ovl60:800C1C08": {
-  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/func_800C1C08.s",
+  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/Init_PogoPickup.s",
   "bin": "disc/ovl60.bin",
   "calls": [
    "80022FD4"
@@ -32082,7 +32082,7 @@
   "fp": "fa629ef6d6ff7548",
   "fpn": "25120846948eafd4",
   "leaf": false,
-  "name": "func_800C1C08",
+  "name": "Init_PogoPickup",
   "orig": "func_800C1C08",
   "rom": 59732,
   "seg": "overlays/ovl60/ovl60",
@@ -32090,7 +32090,7 @@
   "src": "src/overlays/ovl60/ovl60.c"
  },
  "ovl60:800C1C90": {
-  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/func_800C1C90.s",
+  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/Init_PogoTazer.s",
   "bin": "disc/ovl60.bin",
   "calls": [
    "80022FD4"
@@ -32098,7 +32098,7 @@
   "fp": "aa03344080faf1f2",
   "fpn": "aa2a5010c6a549c6",
   "leaf": false,
-  "name": "func_800C1C90",
+  "name": "Init_PogoTazer",
   "orig": "func_800C1C90",
   "rom": 59868,
   "seg": "overlays/ovl60/ovl60",
@@ -33663,7 +33663,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800B9B6C": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800B9B6C.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/InitBall.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "8001D390",
@@ -33678,7 +33678,7 @@
   "fp": "39148dc45ad3969d",
   "fpn": "a64b5e103345fff1",
   "leaf": false,
-  "name": "func_800B9B6C",
+  "name": "InitBall",
   "orig": "func_800B9B6C",
   "rom": 26808,
   "seg": "overlays/ovl61/ovl61",
@@ -33686,7 +33686,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800B9E54": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800B9E54.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/PlotBall.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "8001463C",
@@ -33706,7 +33706,7 @@
   "fp": "f9ad5554945387cb",
   "fpn": "cf939c877a8c3719",
   "leaf": false,
-  "name": "func_800B9E54",
+  "name": "PlotBall",
   "orig": "func_800B9E54",
   "rom": 27552,
   "seg": "overlays/ovl61/ovl61",
@@ -33773,7 +33773,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800BBC3C": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800BBC3C.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/Plot_N_Gin.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "80015480",
@@ -33788,7 +33788,7 @@
   "fp": "0746c68f3cc53da2",
   "fpn": "255603a405cebf61",
   "leaf": false,
-  "name": "func_800BBC3C",
+  "name": "Plot_N_Gin",
   "orig": "func_800BBC3C",
   "rom": 35208,
   "seg": "overlays/ovl61/ovl61",
@@ -33847,7 +33847,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800BD00C": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800BD00C.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/Init_ArkDeadWall.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "80018F3C",
@@ -33857,7 +33857,7 @@
   "fp": "56d727b866c2f5fb",
   "fpn": "9a55c6fe441e3e77",
   "leaf": false,
-  "name": "func_800BD00C",
+  "name": "Init_ArkDeadWall",
   "orig": "func_800BD00C",
   "rom": 40280,
   "seg": "overlays/ovl61/ovl61",
@@ -33865,7 +33865,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800BD228": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800BD228.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/Init_NGArkDeadWall.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "80018F3C",
@@ -33875,7 +33875,7 @@
   "fp": "6ee2b52cc0e84c8d",
   "fpn": "4edbe0f951bb1ed6",
   "leaf": false,
-  "name": "func_800BD228",
+  "name": "Init_NGArkDeadWall",
   "orig": "func_800BD228",
   "rom": 40820,
   "seg": "overlays/ovl61/ovl61",
@@ -33935,7 +33935,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800BDAB8": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800BDAB8.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/PlotAR_PU.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "80022660",
@@ -33946,7 +33946,7 @@
   "fp": "75fc99be37a045aa",
   "fpn": "55838d1fbc9c8d05",
   "leaf": false,
-  "name": "func_800BDAB8",
+  "name": "PlotAR_PU",
   "orig": "func_800BDAB8",
   "rom": 43012,
   "seg": "overlays/ovl61/ovl61",
@@ -33968,7 +33968,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800BDD94": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800BDD94.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/Plot_RepulseRing.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "80022660",
@@ -33978,7 +33978,7 @@
   "fp": "75a300150741a030",
   "fpn": "fa19aaffbc2ba755",
   "leaf": false,
-  "name": "func_800BDD94",
+  "name": "Plot_RepulseRing",
   "orig": "func_800BDD94",
   "rom": 43744,
   "seg": "overlays/ovl61/ovl61",
@@ -33986,7 +33986,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800BDFA4": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800BDFA4.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/Init_ArkLaserWall.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "80018F3C",
@@ -33996,7 +33996,7 @@
   "fp": "1cc889ccb5df3fc6",
   "fpn": "6e7131098d0c9db3",
   "leaf": false,
-  "name": "func_800BDFA4",
+  "name": "Init_ArkLaserWall",
   "orig": "func_800BDFA4",
   "rom": 44272,
   "seg": "overlays/ovl61/ovl61",
@@ -34153,7 +34153,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800BFB14": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800BFB14.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/Plot_ArkLaserWall.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "800225C4",
@@ -34163,7 +34163,7 @@
   "fp": "f4aaa7cd1ac538dd",
   "fpn": "12bfffec61224d7b",
   "leaf": false,
-  "name": "func_800BFB14",
+  "name": "Plot_ArkLaserWall",
   "orig": "func_800BFB14",
   "rom": 51296,
   "seg": "overlays/ovl61/ovl61",
@@ -34171,7 +34171,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800BFC04": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800BFC04.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/Init_RepulseRing.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "80022660",
@@ -34180,7 +34180,7 @@
   "fp": "874249059c1f0649",
   "fpn": "856198affc06cfb7",
   "leaf": false,
-  "name": "func_800BFC04",
+  "name": "Init_RepulseRing",
   "orig": "func_800BFC04",
   "rom": 51536,
   "seg": "overlays/ovl61/ovl61",
@@ -34216,7 +34216,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800BFDB0": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800BFDB0.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/Plot_ArkDeadWall.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "80022FD4"
@@ -34224,7 +34224,7 @@
   "fp": "d3e5f76fb7c1fd0f",
   "fpn": "0ee4e1a1972e5b5e",
   "leaf": false,
-  "name": "func_800BFDB0",
+  "name": "Plot_ArkDeadWall",
   "orig": "func_800BFDB0",
   "rom": 51964,
   "seg": "overlays/ovl61/ovl61",
@@ -34232,7 +34232,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800BFE70": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800BFE70.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/Plot_ArkCameraFlash.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "80022FD4"
@@ -34240,7 +34240,7 @@
   "fp": "9a6a07b0d4c61592",
   "fpn": "7b1310af31641c6d",
   "leaf": false,
-  "name": "func_800BFE70",
+  "name": "Plot_ArkCameraFlash",
   "orig": "func_800BFE70",
   "rom": 52156,
   "seg": "overlays/ovl61/ovl61",
@@ -34248,7 +34248,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800BFF0C": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800BFF0C.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/Init_ArkCameraFlash.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "80022FD4"
@@ -34256,7 +34256,7 @@
   "fp": "e9ad758173af308a",
   "fpn": "fa3e2dc3e9c03716",
   "leaf": false,
-  "name": "func_800BFF0C",
+  "name": "Init_ArkCameraFlash",
   "orig": "func_800BFF0C",
   "rom": 52312,
   "seg": "overlays/ovl61/ovl61",
@@ -34280,7 +34280,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800BFFA8": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800BFFA8.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/Init_seaweed.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "80015590",
@@ -34292,7 +34292,7 @@
   "fp": "78a281adb57f877a",
   "fpn": "6ad0273109dc47ab",
   "leaf": false,
-  "name": "func_800BFFA8",
+  "name": "Init_seaweed",
   "orig": "func_800BFFA8",
   "rom": 52468,
   "seg": "overlays/ovl61/ovl61",
@@ -34300,7 +34300,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800C00B0": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800C00B0.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/Init_N_Gin.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "80022FD4",
@@ -34313,7 +34313,7 @@
   "fp": "b515e5d67d011b75",
   "fpn": "cca91550d8635185",
   "leaf": false,
-  "name": "func_800C00B0",
+  "name": "Init_N_Gin",
   "orig": "func_800C00B0",
   "rom": 52732,
   "seg": "overlays/ovl61/ovl61",
@@ -34754,7 +34754,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B4B04": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B4B04.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitPolarBomb.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8002672C",
@@ -34763,7 +34763,7 @@
   "fp": "cbaa5b14deaef36e",
   "fpn": "e702732946678b9b",
   "leaf": false,
-  "name": "func_800B4B04",
+  "name": "InitPolarBomb",
   "orig": "func_800B4B04",
   "rom": 6224,
   "seg": "overlays/ovl62/ovl62",
@@ -34771,7 +34771,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B4C74": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B4C74.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotPolarBomb.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590",
@@ -34787,7 +34787,7 @@
   "fp": "b9101e418cd8776c",
   "fpn": "5affe07458d8fd25",
   "leaf": false,
-  "name": "func_800B4C74",
+  "name": "PlotPolarBomb",
   "orig": "func_800B4C74",
   "rom": 6592,
   "seg": "overlays/ovl62/ovl62",
@@ -34795,7 +34795,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B5074": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B5074.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotBombGFX.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80022660",
@@ -34806,7 +34806,7 @@
   "fp": "f4c3b05083d415f6",
   "fpn": "faa691f01ea7a211",
   "leaf": false,
-  "name": "func_800B5074",
+  "name": "PlotBombGFX",
   "orig": "func_800B5074",
   "rom": 7616,
   "seg": "overlays/ovl62/ovl62",
@@ -35029,13 +35029,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B6FD4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B6FD4.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotPathEffect.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "bd93b833a2a951df",
   "fpn": "47bc82e116445e51",
   "leaf": true,
-  "name": "func_800B6FD4",
+  "name": "PlotPathEffect",
   "orig": "func_800B6FD4",
   "rom": 15648,
   "seg": "overlays/ovl62/ovl62",
@@ -35120,7 +35120,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B77B0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B77B0.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitPathEffect.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800B5EBC"
@@ -35128,7 +35128,7 @@
   "fp": "6dc21365b8090fc6",
   "fpn": "4286da358a2871e8",
   "leaf": false,
-  "name": "func_800B77B0",
+  "name": "InitPathEffect",
   "orig": "func_800B77B0",
   "rom": 17660,
   "seg": "overlays/ovl62/ovl62",
@@ -35152,13 +35152,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B7874": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B7874.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotCrystalFlash.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "5204debbeb4778fa",
   "fpn": "5204debbeb4778fa",
   "leaf": true,
-  "name": "func_800B7874",
+  "name": "PlotCrystalFlash",
   "orig": "func_800B7874",
   "rom": 17856,
   "seg": "overlays/ovl62/ovl62",
@@ -35166,7 +35166,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B787C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B787C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitCrystalFlash.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800264E8",
@@ -35177,7 +35177,7 @@
   "fp": "18731240f65c118f",
   "fpn": "847022cca3ff564b",
   "leaf": false,
-  "name": "func_800B787C",
+  "name": "InitCrystalFlash",
   "orig": "func_800B787C",
   "rom": 17864,
   "seg": "overlays/ovl62/ovl62",
@@ -35422,13 +35422,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B9D1C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B9D1C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitSparkGFX.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "9f826c91e5c42790",
   "fpn": "5682ab79205a1d70",
   "leaf": true,
-  "name": "func_800B9D1C",
+  "name": "InitSparkGFX",
   "orig": "func_800B9D1C",
   "rom": 27240,
   "seg": "overlays/ovl62/ovl62",
@@ -35460,7 +35460,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800BA7BC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800BA7BC.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotSparkGFX.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800B3740",
@@ -35470,7 +35470,7 @@
   "fp": "f000392ed1036618",
   "fpn": "41788d83df917aab",
   "leaf": false,
-  "name": "func_800BA7BC",
+  "name": "PlotSparkGFX",
   "orig": "func_800BA7BC",
   "rom": 29960,
   "seg": "overlays/ovl62/ovl62",
@@ -35605,7 +35605,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800BD198": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800BD198.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitTransmuterBeam.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590",
@@ -35617,7 +35617,7 @@
   "fp": "7e56637044221413",
   "fpn": "888498f0f4adfef3",
   "leaf": false,
-  "name": "func_800BD198",
+  "name": "InitTransmuterBeam",
   "orig": "func_800BD198",
   "rom": 40676,
   "seg": "overlays/ovl62/ovl62",
@@ -35625,7 +35625,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800BD67C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800BD67C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotTransmuterBeam.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8001463C",
@@ -35646,7 +35646,7 @@
   "fp": "55a43597c5c1311b",
   "fpn": "ce3473eca1f1a6f3",
   "leaf": false,
-  "name": "func_800BD67C",
+  "name": "PlotTransmuterBeam",
   "orig": "func_800BD67C",
   "rom": 41928,
   "seg": "overlays/ovl62/ovl62",
@@ -35654,7 +35654,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800BFA98": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800BFA98.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotWeightDeath.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80022660",
@@ -35664,7 +35664,7 @@
   "fp": "0623fb44de51c793",
   "fpn": "09b365bf2e3ed879",
   "leaf": false,
-  "name": "func_800BFA98",
+  "name": "PlotWeightDeath",
   "orig": "func_800BFA98",
   "rom": 51172,
   "seg": "overlays/ovl62/ovl62",
@@ -35705,13 +35705,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C01C8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C01C8.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotScratchMaster.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "664ed6c11f93d85b",
   "fpn": "d70b5174630480b4",
   "leaf": true,
-  "name": "func_800C01C8",
+  "name": "PlotScratchMaster",
   "orig": "func_800C01C8",
   "rom": 53012,
   "seg": "overlays/ovl62/ovl62",
@@ -35719,13 +35719,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C06D0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C06D0.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitIceBerg.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "6562adb0f4799c78",
   "fpn": "a18d78a2e1b0148f",
   "leaf": true,
-  "name": "func_800C06D0",
+  "name": "InitIceBerg",
   "orig": "func_800C06D0",
   "rom": 54300,
   "seg": "overlays/ovl62/ovl62",
@@ -35786,7 +35786,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C121C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C121C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitUkaPolarMask.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590",
@@ -35800,7 +35800,7 @@
   "fp": "387eca53a15b9fa2",
   "fpn": "0f3f59b1e377f3f2",
   "leaf": false,
-  "name": "func_800C121C",
+  "name": "InitUkaPolarMask",
   "orig": "func_800C121C",
   "rom": 57192,
   "seg": "overlays/ovl62/ovl62",
@@ -35808,7 +35808,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C1584": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C1584.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotUkaPolarMask.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8001463C",
@@ -35829,7 +35829,7 @@
   "fp": "e161e38de82eb3aa",
   "fpn": "af7251a76e95af9b",
   "leaf": false,
-  "name": "func_800C1584",
+  "name": "PlotUkaPolarMask",
   "orig": "func_800C1584",
   "rom": 58064,
   "seg": "overlays/ovl62/ovl62",
@@ -35857,7 +35857,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C32A4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C32A4.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitPolarWalrus.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8001463C",
@@ -35869,7 +35869,7 @@
   "fp": "8afbcb255daf4462",
   "fpn": "9bd5488f90336525",
   "leaf": false,
-  "name": "func_800C32A4",
+  "name": "InitPolarWalrus",
   "orig": "func_800C32A4",
   "rom": 65520,
   "seg": "overlays/ovl62/ovl62",
@@ -35877,7 +35877,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C358C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C358C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotPolarWalrus.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8001463C",
@@ -35895,7 +35895,7 @@
   "fp": "670495f41b75430d",
   "fpn": "61d9cba0b9042c99",
   "leaf": false,
-  "name": "func_800C358C",
+  "name": "PlotPolarWalrus",
   "orig": "func_800C358C",
   "rom": 66264,
   "seg": "overlays/ovl62/ovl62",
@@ -35903,7 +35903,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C3E6C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C3E6C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitWalrusFish.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80022660",
@@ -35913,7 +35913,7 @@
   "fp": "7c86605eac531e33",
   "fpn": "e2bf7bed3ed6dfc6",
   "leaf": false,
-  "name": "func_800C3E6C",
+  "name": "InitWalrusFish",
   "orig": "func_800C3E6C",
   "rom": 68536,
   "seg": "overlays/ovl62/ovl62",
@@ -35921,7 +35921,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C40B8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C40B8.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotWalrusFish.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80022660",
@@ -35932,7 +35932,7 @@
   "fp": "ab9be0b7e1b3961b",
   "fpn": "a474ad417f11f67b",
   "leaf": false,
-  "name": "func_800C40B8",
+  "name": "PlotWalrusFish",
   "orig": "func_800C40B8",
   "rom": 69124,
   "seg": "overlays/ovl62/ovl62",
@@ -35940,7 +35940,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C42A0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C42A0.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotSmokeTrail.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80022FD4",
@@ -35949,7 +35949,7 @@
   "fp": "296f96d8434ed173",
   "fpn": "6ddb0f4e42c6e237",
   "leaf": false,
-  "name": "func_800C42A0",
+  "name": "PlotSmokeTrail",
   "orig": "func_800C42A0",
   "rom": 69612,
   "seg": "overlays/ovl62/ovl62",
@@ -35957,7 +35957,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C4498": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C4498.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitSimpleExplosion.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590",
@@ -35967,7 +35967,7 @@
   "fp": "5ce9368249f3c7d5",
   "fpn": "cb628fe6bd9f1d2f",
   "leaf": false,
-  "name": "func_800C4498",
+  "name": "InitSimpleExplosion",
   "orig": "func_800C4498",
   "rom": 70116,
   "seg": "overlays/ovl62/ovl62",
@@ -35975,7 +35975,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C45BC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C45BC.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotDingoTail.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80022FD4"
@@ -35983,7 +35983,7 @@
   "fp": "f323e715cea1c3fc",
   "fpn": "4b68768aa831178f",
   "leaf": false,
-  "name": "func_800C45BC",
+  "name": "PlotDingoTail",
   "orig": "func_800C45BC",
   "rom": 70408,
   "seg": "overlays/ovl62/ovl62",
@@ -35991,7 +35991,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C4748": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C4748.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotBrioPack.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80022A3C",
@@ -36000,7 +36000,7 @@
   "fp": "f1cf08ebb0db58d3",
   "fpn": "47b88c7fd04b9083",
   "leaf": false,
-  "name": "func_800C4748",
+  "name": "PlotBrioPack",
   "orig": "func_800C4748",
   "rom": 70804,
   "seg": "overlays/ovl62/ovl62",
@@ -36008,13 +36008,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C4810": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C4810.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotInnerRipple.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "7ffd184d61becef7",
   "fpn": "6bb37a6c3331c63c",
   "leaf": true,
-  "name": "func_800C4810",
+  "name": "PlotInnerRipple",
   "orig": "func_800C4810",
   "rom": 71004,
   "seg": "overlays/ovl62/ovl62",
@@ -36022,13 +36022,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C48E8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C48E8.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitInnerRipple.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "83c71afd4d3bdf85",
   "fpn": "210a87132b341c5a",
   "leaf": true,
-  "name": "func_800C48E8",
+  "name": "InitInnerRipple",
   "orig": "func_800C48E8",
   "rom": 71220,
   "seg": "overlays/ovl62/ovl62",
@@ -36036,7 +36036,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C4918": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C4918.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitPackEffect.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590",
@@ -36046,7 +36046,7 @@
   "fp": "6c9e308a5aa0f204",
   "fpn": "7ef8c18973e1445f",
   "leaf": false,
-  "name": "func_800C4918",
+  "name": "InitPackEffect",
   "orig": "func_800C4918",
   "rom": 71268,
   "seg": "overlays/ovl62/ovl62",
@@ -36054,13 +36054,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C49DC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C49DC.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotRippled.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "c1e4a6b721df749d",
   "fpn": "5bf1b1cad61fe2ac",
   "leaf": true,
-  "name": "func_800C49DC",
+  "name": "PlotRippled",
   "orig": "func_800C49DC",
   "rom": 71464,
   "seg": "overlays/ovl62/ovl62",
@@ -36068,7 +36068,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C4A3C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C4A3C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitPolarBoss.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80024E30",
@@ -36081,7 +36081,7 @@
   "fp": "812bc9443648e3e8",
   "fpn": "631e14923ccfdbd9",
   "leaf": false,
-  "name": "func_800C4A3C",
+  "name": "InitPolarBoss",
   "orig": "func_800C4A3C",
   "rom": 71560,
   "seg": "overlays/ovl62/ovl62",
@@ -36089,7 +36089,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C4ABC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C4ABC.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitRippled.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8001463C",
@@ -36101,7 +36101,7 @@
   "fp": "5eb8df80ad859553",
   "fpn": "847ae8b1457391cb",
   "leaf": false,
-  "name": "func_800C4ABC",
+  "name": "InitRippled",
   "orig": "func_800C4ABC",
   "rom": 71688,
   "seg": "overlays/ovl62/ovl62",
@@ -36109,7 +36109,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C4CB8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C4CB8.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotPolarBoss.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8001463C",
@@ -36125,7 +36125,7 @@
   "fp": "80221fb12e701b23",
   "fpn": "3d9a7b1179820ee9",
   "leaf": false,
-  "name": "func_800C4CB8",
+  "name": "PlotPolarBoss",
   "orig": "func_800C4CB8",
   "rom": 72196,
   "seg": "overlays/ovl62/ovl62",
@@ -36177,7 +36177,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C5FF8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C5FF8.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitBearminator.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590",
@@ -36192,7 +36192,7 @@
   "fp": "c2330daf14d28211",
   "fpn": "57b85c77f737ff11",
   "leaf": false,
-  "name": "func_800C5FF8",
+  "name": "InitBearminator",
   "orig": "func_800C5FF8",
   "rom": 77124,
   "seg": "overlays/ovl62/ovl62",
@@ -36200,7 +36200,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C63D0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C63D0.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotBearminator.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8001463C",
@@ -36220,7 +36220,7 @@
   "fp": "ec357801689028db",
   "fpn": "f23d07a22da14f52",
   "leaf": false,
-  "name": "func_800C63D0",
+  "name": "PlotBearminator",
   "orig": "func_800C63D0",
   "rom": 78108,
   "seg": "overlays/ovl62/ovl62",
@@ -36228,7 +36228,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C7870": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C7870.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotPolarMissile.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80022660",
@@ -36242,7 +36242,7 @@
   "fp": "bd0c7a6778e75a99",
   "fpn": "cb45c315a8de3fd4",
   "leaf": false,
-  "name": "func_800C7870",
+  "name": "PlotPolarMissile",
   "orig": "func_800C7870",
   "rom": 83388,
   "seg": "overlays/ovl62/ovl62",
@@ -36250,7 +36250,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C7C74": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C7C74.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotBigMissile.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80022660",
@@ -36263,7 +36263,7 @@
   "fp": "e95dd39915ec0aae",
   "fpn": "b93ada55d027d23b",
   "leaf": false,
-  "name": "func_800C7C74",
+  "name": "PlotBigMissile",
   "orig": "func_800C7C74",
   "rom": 84416,
   "seg": "overlays/ovl62/ovl62",
@@ -36285,7 +36285,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C7FE0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C7FE0.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitSniper.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8002672C",
@@ -36294,7 +36294,7 @@
   "fp": "ebdb873afd19fb92",
   "fpn": "9c43f2457dc316e6",
   "leaf": false,
-  "name": "func_800C7FE0",
+  "name": "InitSniper",
   "orig": "func_800C7FE0",
   "rom": 85292,
   "seg": "overlays/ovl62/ovl62",
@@ -36302,7 +36302,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C82CC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C82CC.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotSniper.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800225C4",
@@ -36317,7 +36317,7 @@
   "fp": "4bd10083fec61274",
   "fpn": "7938a31da71a767a",
   "leaf": false,
-  "name": "func_800C82CC",
+  "name": "PlotSniper",
   "orig": "func_800C82CC",
   "rom": 86040,
   "seg": "overlays/ovl62/ovl62",
@@ -36325,7 +36325,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C8CC4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C8CC4.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotSniperMissile.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8001463C",
@@ -36340,7 +36340,7 @@
   "fp": "f0569a22199910fa",
   "fpn": "8308f9ff16312d3d",
   "leaf": false,
-  "name": "func_800C8CC4",
+  "name": "PlotSniperMissile",
   "orig": "func_800C8CC4",
   "rom": 88592,
   "seg": "overlays/ovl62/ovl62",
@@ -36370,7 +36370,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C996C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C996C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitSniperMissile.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80022660",
@@ -36379,7 +36379,7 @@
   "fp": "3d07e30b1e651078",
   "fpn": "306db4f6c8e6b966",
   "leaf": false,
-  "name": "func_800C996C",
+  "name": "InitSniperMissile",
   "orig": "func_800C996C",
   "rom": 91832,
   "seg": "overlays/ovl62/ovl62",
@@ -36387,7 +36387,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C9A2C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C9A2C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitBigMissile.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80022660",
@@ -36396,7 +36396,7 @@
   "fp": "19175a7cdfa44c0a",
   "fpn": "85b49ae79dd2e3ef",
   "leaf": false,
-  "name": "func_800C9A2C",
+  "name": "InitBigMissile",
   "orig": "func_800C9A2C",
   "rom": 92024,
   "seg": "overlays/ovl62/ovl62",
@@ -36446,7 +36446,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C9B88": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C9B88.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitPolarMissile.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80022660",
@@ -36455,7 +36455,7 @@
   "fp": "ddb79ece5c0c0a36",
   "fpn": "de0a1e11cb00ae72",
   "leaf": false,
-  "name": "func_800C9B88",
+  "name": "InitPolarMissile",
   "orig": "func_800C9B88",
   "rom": 92372,
   "seg": "overlays/ovl62/ovl62",
@@ -36582,7 +36582,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800C9FC0": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800C9FC0.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotBearBoss.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800250B0",
@@ -36591,7 +36591,7 @@
   "fp": "bdb7b98bc4ae3517",
   "fpn": "48f5cde8aa317e62",
   "leaf": false,
-  "name": "func_800C9FC0",
+  "name": "PlotBearBoss",
   "orig": "func_800C9FC0",
   "rom": 93452,
   "seg": "overlays/ovl62/ovl62",
@@ -36599,7 +36599,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CA000": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CA000.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitBearBoss.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80024E30",
@@ -36610,7 +36610,7 @@
   "fp": "1798173846d7465b",
   "fpn": "f120f8e74a726bdb",
   "leaf": false,
-  "name": "func_800CA000",
+  "name": "InitBearBoss",
   "orig": "func_800CA000",
   "rom": 93516,
   "seg": "overlays/ovl62/ovl62",
@@ -36618,7 +36618,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CA0BC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CA0BC.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotPackEffect.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80022FD4",
@@ -36627,7 +36627,7 @@
   "fp": "9a4bb922647bd6af",
   "fpn": "47551d06dad2809d",
   "leaf": false,
-  "name": "func_800CA0BC",
+  "name": "PlotPackEffect",
   "orig": "func_800CA0BC",
   "rom": 93704,
   "seg": "overlays/ovl62/ovl62",
@@ -36635,13 +36635,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CA19C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CA19C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotCortexPack.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "b8801769a2403065",
   "fpn": "a1d2e15b029fd1b7",
   "leaf": true,
-  "name": "func_800CA19C",
+  "name": "PlotCortexPack",
   "orig": "func_800CA19C",
   "rom": 93928,
   "seg": "overlays/ovl62/ovl62",
@@ -36649,13 +36649,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CA1AC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CA1AC.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitCortexPack.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "f7764293667b35ed",
   "fpn": "ccda2eb80397b45f",
   "leaf": true,
-  "name": "func_800CA1AC",
+  "name": "InitCortexPack",
   "orig": "func_800CA1AC",
   "rom": 93944,
   "seg": "overlays/ovl62/ovl62",
@@ -36663,13 +36663,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CA220": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CA220.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitBrioPack.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "c8ce50bc8e121421",
   "fpn": "1e16d1e5c7a6e2c0",
   "leaf": true,
-  "name": "func_800CA220",
+  "name": "InitBrioPack",
   "orig": "func_800CA220",
   "rom": 94060,
   "seg": "overlays/ovl62/ovl62",
@@ -36677,13 +36677,13 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CA2B8": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CA2B8.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitDingoTail.s",
   "bin": "disc/ovl62.bin",
   "calls": [],
   "fp": "65dd383ddfeec61b",
   "fpn": "d82652b9c7a49a6f",
   "leaf": true,
-  "name": "func_800CA2B8",
+  "name": "InitDingoTail",
   "orig": "func_800CA2B8",
   "rom": 94212,
   "seg": "overlays/ovl62/ovl62",
@@ -36691,7 +36691,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CA344": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CA344.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotSimpleExplosion.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80022FD4",
@@ -36700,7 +36700,7 @@
   "fp": "9a4bb922647bd6af",
   "fpn": "47551d06dad2809d",
   "leaf": false,
-  "name": "func_800CA344",
+  "name": "PlotSimpleExplosion",
   "orig": "func_800CA344",
   "rom": 94352,
   "seg": "overlays/ovl62/ovl62",
@@ -36708,7 +36708,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CA424": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CA424.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitSmokeTrail.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590",
@@ -36717,7 +36717,7 @@
   "fp": "643ffb0186ee666c",
   "fpn": "dcc30c6e90019a43",
   "leaf": false,
-  "name": "func_800CA424",
+  "name": "InitSmokeTrail",
   "orig": "func_800CA424",
   "rom": 94576,
   "seg": "overlays/ovl62/ovl62",
@@ -36725,7 +36725,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CA514": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CA514.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotBearDeath.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590",
@@ -36739,7 +36739,7 @@
   "fp": "76a21b278f52623d",
   "fpn": "fc7f02d523f53c14",
   "leaf": false,
-  "name": "func_800CA514",
+  "name": "PlotBearDeath",
   "orig": "func_800CA514",
   "rom": 94816,
   "seg": "overlays/ovl62/ovl62",
@@ -36747,7 +36747,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CA628": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CA628.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitBearDeath.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80024E30",
@@ -36757,7 +36757,7 @@
   "fp": "b1fa99473fd33793",
   "fpn": "3e400c3563a06e30",
   "leaf": false,
-  "name": "func_800CA628",
+  "name": "InitBearDeath",
   "orig": "func_800CA628",
   "rom": 95092,
   "seg": "overlays/ovl62/ovl62",
@@ -36866,7 +36866,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CA890": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CA890.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitScratchMaster.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80018F3C"
@@ -36874,7 +36874,7 @@
   "fp": "5f0e93360025ec11",
   "fpn": "626f354cae89e14c",
   "leaf": false,
-  "name": "func_800CA890",
+  "name": "InitScratchMaster",
   "orig": "func_800CA890",
   "rom": 95708,
   "seg": "overlays/ovl62/ovl62",
@@ -36896,7 +36896,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CAA60": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CAA60.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotGravityObject.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "800BFD38"
@@ -36904,7 +36904,7 @@
   "fp": "8190636712d5b80f",
   "fpn": "7e264e59723fcded",
   "leaf": false,
-  "name": "func_800CAA60",
+  "name": "PlotGravityObject",
   "orig": "func_800CAA60",
   "rom": 96172,
   "seg": "overlays/ovl62/ovl62",
@@ -36912,7 +36912,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CAA90": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CAA90.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitGravityObject.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8002689C"
@@ -36920,7 +36920,7 @@
   "fp": "0fc3de7fdef0d700",
   "fpn": "1596b3773e78444c",
   "leaf": false,
-  "name": "func_800CAA90",
+  "name": "InitGravityObject",
   "orig": "func_800CAA90",
   "rom": 96220,
   "seg": "overlays/ovl62/ovl62",
@@ -36928,7 +36928,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CAB8C": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CAB8C.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitWeightDeath.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80022660",
@@ -36937,7 +36937,7 @@
   "fp": "437a1db278235934",
   "fpn": "31152ddd27c4b97b",
   "leaf": false,
-  "name": "func_800CAB8C",
+  "name": "InitWeightDeath",
   "orig": "func_800CAB8C",
   "rom": 96472,
   "seg": "overlays/ovl62/ovl62",
@@ -37375,7 +37375,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CB798": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CB798.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitBombGFX.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8002672C",
@@ -37385,7 +37385,7 @@
   "fp": "88ff8fcbacafa35f",
   "fpn": "7e39eaee95ae764f",
   "leaf": false,
-  "name": "func_800CB798",
+  "name": "InitBombGFX",
   "orig": "func_800CB798",
   "rom": 99556,
   "seg": "overlays/ovl62/ovl62",
@@ -37393,7 +37393,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CB8A4": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CB8A4.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/PlotBombMaker.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590",
@@ -37404,7 +37404,7 @@
   "fp": "9e7d11035b353016",
   "fpn": "5e31c9ebe218e21c",
   "leaf": false,
-  "name": "func_800CB8A4",
+  "name": "PlotBombMaker",
   "orig": "func_800CB8A4",
   "rom": 99824,
   "seg": "overlays/ovl62/ovl62",
@@ -37412,7 +37412,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800CB9DC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800CB9DC.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/InitBombMaker.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "8002689C"
@@ -37420,7 +37420,7 @@
   "fp": "fe17b5c5efaa0527",
   "fpn": "6c13fa6d42cb3b78",
   "leaf": false,
-  "name": "func_800CB9DC",
+  "name": "InitBombMaker",
   "orig": "func_800CB9DC",
   "rom": 100136,
   "seg": "overlays/ovl62/ovl62",

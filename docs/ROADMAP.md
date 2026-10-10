@@ -13,8 +13,10 @@ Build the headers and names that every later match depends on.
 - [ ] Turn the leaked minigame headers (Tank, Pogo, Arkenoid, Polar) into
   `include/bash/` headers: structs, enums and prototypes. Commit only the names
   and types, never the leaked text.
-- [ ] Name what the leak and the engine's AST table prove: each minigame's
-  Init/Plot pairs and the functions they reach.
+- [x] Name the AST Init/Plot pairs that the leaked enums prove (Pogo,
+  Arkenoid, Polar).
+- [ ] Name Tank's AST pairs (its enum is cut off in the leak) and the functions
+  the named pairs reach.
 - [ ] Recover the engine's core types, which the leak uses but doesn't define.
 - [ ] Retire `include/externs.h` and `include/prototypes.h` into owned headers.
 - [ ] Finish the overlay section splits (data vs rodata) so that functions using
