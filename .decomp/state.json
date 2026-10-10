@@ -4301,11 +4301,15 @@
  },
  "ovl5f:800C6828": {
   "auto_diff": 1,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-10T10:44:58Z",
+  "started": "2026-10-10T10:43:19Z",
+  "status": "matched"
  },
  "ovl5f:800C6848": {
   "auto_diff": 1,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-10T10:46:00Z",
+  "status": "matched",
+  "via": "copy"
  },
  "ovl5f:800C6868": {
   "auto_diff": 1,

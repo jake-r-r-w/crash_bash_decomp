@@ -1,8 +1,8 @@
 {
  "blocked": [],
- "commit": "346b9dc",
+ "commit": "010aed4",
  "game": "SCUS_945.70",
- "generated": "2026-10-10T10:36:22Z",
+ "generated": "2026-10-10T10:46:20Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -115,9 +115,39 @@
    "lib_f": 535,
    "lib_tb": 122112,
    "ts": "2026-10-10T10:36:22Z"
+  },
+  {
+   "commit": "010aed4",
+   "data_b": 128,
+   "data_tb": 616791,
+   "game_all_f": 2550,
+   "game_b": 19312,
+   "game_f": 393,
+   "game_named_f": 0,
+   "game_tb": 1019036,
+   "lib_b": 121280,
+   "lib_f": 535,
+   "lib_tb": 122112,
+   "ts": "2026-10-10T10:46:20Z"
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-10T10:46:00Z",
+   "auto": true,
+   "name": "func_800C6848",
+   "seg": "overlays/ovl5f/ovl5f",
+   "size": 32,
+   "tries": 0
+  },
+  {
+   "at": "2026-10-10T10:44:58Z",
+   "auto": true,
+   "name": "func_800C6828",
+   "seg": "overlays/ovl5f/ovl5f",
+   "size": 32,
+   "tries": 0
+  },
   {
    "at": "2026-10-10T10:36:02Z",
    "auto": true,
@@ -221,27 +251,11 @@
    "seg": "overlays/ovl67/ovl67",
    "size": 152,
    "tries": 0
-  },
-  {
-   "at": "2026-10-10T10:36:02Z",
-   "auto": true,
-   "name": "func_800B6A1C",
-   "seg": "overlays/ovl66/ovl66",
-   "size": 144,
-   "tries": 0
-  },
-  {
-   "at": "2026-10-10T10:36:02Z",
-   "auto": true,
-   "name": "func_800BD488",
-   "seg": "overlays/ovl65/ovl65",
-   "size": 84,
-   "tries": 0
   }
  ],
  "summary": {
   "blocked": 0,
-  "copies_b": 38432,
+  "copies_b": 38400,
   "data": {
    "done_b": 128,
    "pct": 0.02075257258941846,
@@ -252,10 +266,10 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 0,
-   "done_b": 19248,
-   "done_f": 391,
+   "done_b": 19312,
+   "done_f": 393,
    "named_f": 0,
-   "pct": 1.888843966258307,
+   "pct": 1.8951244116988997,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2550
@@ -347,13 +361,13 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
-    "done_b": 900,
-    "done_f": 21,
+    "done_b": 964,
+    "done_f": 23,
     "file": "ovl5f.bin",
     "files": 1,
     "lib": false,
     "named_f": 0,
-    "pct": 1.0435024580280123,
+    "pct": 1.1177070772655597,
     "sony_b": 0,
     "total_b": 86248,
     "total_f": 183,

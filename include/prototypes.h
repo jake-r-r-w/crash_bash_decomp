@@ -223,6 +223,8 @@ void func_800B790C(s32 arg0);
 void func_800B7D94(void);
 void func_800B7D9C(void);
 void func_800B7DA4(void);
+void func_800C6828(s32 arg0);
+void func_800C6848(s32 arg0);
 void func_800C68A8(void);
 void func_800C69BC(void);
 void func_800C6AF4(u8 *arg0);
