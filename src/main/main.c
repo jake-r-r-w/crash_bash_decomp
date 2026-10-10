@@ -2208,7 +2208,15 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8002B5B0);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002B6D0);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002B760);
+void func_8002B760(VECTOR *pos, View *view, VECTOR *out, s32 *sxy) {
+    D_800569CC.in.vx = pos->vx - view->pos.vx;
+    D_800569CC.in.vy = pos->vy - view->pos.vy;
+    D_800569CC.in.vz = pos->vz - view->pos.vz;
+    gte_ldv0(&D_800569CC.in);
+    gte_rtps();
+    gte_stlvl(out);
+    gte_stsxy(sxy);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002B7C8);
 

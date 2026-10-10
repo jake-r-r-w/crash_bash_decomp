@@ -8,6 +8,22 @@
 #include "common.h"
 #include "bash/nas.h"
 
+/* A viewpoint: its position (+0xC) is subtracted from world positions before
+ * they go through the GTE (func_8002B6D0, func_8002B760). */
+typedef struct {
+    s32 unk0[3];
+    VECTOR pos; /* 0x0C */
+} View;
+
+/* Scratch for one GTE transform (0x800569CC, 0x50 bytes; the next symbol is
+ * 0x80056A1C). func_8002B6D0 addresses `in` as `&out - 0x40`, so both are one
+ * object. */
+typedef struct {
+    SVECTOR in;       /* 0x00: position relative to the view */
+    u8 unk8[0x38];
+    VECTOR out;       /* 0x40: rotated and translated position */
+} GteScratch;
+
 void func_80011474(void);
 s32 func_8001151C(u8 *arg0);
 void func_80011530(u8 *arg0);
@@ -143,6 +159,8 @@ void func_8002AC18(void);
 void func_8002AC40(void);
 void func_8002AC70(void);
 void func_8002B4B8(void);
+s32 func_8002B6D0(VECTOR *pos, View *view);
+void func_8002B760(VECTOR *pos, View *view, VECTOR *out, s32 *sxy);
 void func_8002B96C(void);
 s32 func_8002BB80(void);
 void func_8002C284(s32 arg0);
@@ -157,6 +175,7 @@ void func_8002D254(void);
 void func_8002D274(void);
 void func_8002D33C(u8 *arg0);
 
+extern GteScratch D_800569CC;
 extern u8 D_800527C4[];
 extern s32 D_80064414;
 extern s32 D_8006559C;
