@@ -1677,7 +1677,34 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_800265DC);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", AddObject);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", AddEngine);
+EXTengine *AddEngine(NAS *nas, s32 id) {
+    EXTengine *eng;
+    EXTengine *prev;
+    EXTengine *ext;
+
+    eng = AllocExtension(nas, 0x9C, id | 0x100, &EngineTemplate);
+    if (eng != NULL) {
+        nas->flags |= 0x100;
+        *eng = EngineTemplate;
+        if (func_8001D390(eng, 1) != 0) {
+            prev = nas->eng;
+            if (prev == NULL) {
+                nas->eng = eng;
+            } else {
+                for (ext = prev->Extend.next; ext != NULL; ext = ext->Extend.next) {
+                    if (ext->EXTid & 0x100) {
+                        prev->next = ext;
+                        prev = ext;
+                    }
+                }
+            }
+        } else {
+            FreeExtension(eng);
+            eng = NULL;
+        }
+    }
+    return eng;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80026858);
 
