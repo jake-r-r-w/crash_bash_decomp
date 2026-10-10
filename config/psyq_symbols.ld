@@ -1,0 +1,22 @@
+/* Symbols pinned to the addresses the exe uses (decomp.py link-psyq). */
+SsFCALL = 0x80077344;
+VBLANK_MINUS = 0x80077334;
+_SsMarkCallback = 0x80076B34;
+_autopan = 0x80078788;
+_autovol = 0x8007878C;
+_snd_ev_flag = 0x80076B30;
+_snd_seq_s_max = 0x80077340;
+_snd_seq_t_max = 0x8007733C;
+_spu_Fr = 0x8003FF80;
+_ss_score = 0x800773D8;
+_svm_envx_ptr = 0x800781CC;
+_svm_okof1 = 0x80078770;
+_svm_okof2 = 0x80078774;
+_svm_okon1 = 0x80078778;
+_svm_okon2 = 0x8007877C;
+_svm_onos1 = 0x80078780;
+_svm_onos2 = 0x80078784;
+_svm_orev1 = 0x80078768;
+_svm_orev2 = 0x8007876C;
+_svm_sreg_buf = 0x8007804C;
+_svm_sreg_dirty = 0x800781D0;

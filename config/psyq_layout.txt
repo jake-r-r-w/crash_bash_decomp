@@ -1,0 +1,635 @@
+# Sony PsyQ objects checked against the exe by tools/psyq_objs.py.
+# object, file under the converted libs, text address, identical?, text size,
+# then section=address/size for its other sections (address ? = not referenced)
+LIBAPI.LIB/C81.OBJ libapi/c81.o 0x8002E86C ok 0x10
+LIBAPI.LIB/COUNTER.OBJ libapi/counter.o 0x8002E87C ok 0x170 .data=0x800678E4/0x20
+LIBGPU.LIB/SYS.OBJ libgpu/sys.o 0x8002E9EC ok 0x2F00 .bss=0x8006EA28/0x1850 .data=0x80067904/0x1A0 .rdata=0x8004CEFC/0x220
+LIBETC.LIB/INTR.OBJ libetc/intr.o 0x800318EC ok 0x6C0 .data=0x80067AA4/0x1100 .rdata=0x8004D11C/0x70
+LIBPAD.LIB/PDMAIINI.OBJ libpad/pdmaiini.o 0x80031FAC ok 0x110 .data=0x80068BA4/0x10
+LIBAPI.LIB/C113.OBJ libapi/c113.o 0x800320BC ok 0x10
+LIBETC.LIB/VSYNC.OBJ libetc/vsync.o 0x800320EC ok 0x210 .data=0x80068BB4/0x20 .rdata=0x8004D18C/0x10
+LIBC2.LIB/PRINTF.OBJ libc2/printf.o 0x800322FC ok 0x40
+LIBGTE.LIB/COR_05.OBJ libgte/cor_05.o 0x8003233C ok 0x1F0
+LIBGTE.LIB/GEO_03_2.OBJ libgte/geo_03_2.o 0x8003252C ok 0x120
+LIBGTE.LIB/MTX_00A.OBJ libgte/mtx_00a.o 0x8003264C ok 0x140
+LIBGTE.LIB/FGO_01.OBJ libgte/fgo_01.o 0x8003278C ok 0x290
+LIBGTE.LIB/FGO_02.OBJ libgte/fgo_02.o 0x80032A1C ok 0x290
+LIBGTE.LIB/FGO_03.OBJ libgte/fgo_03.o 0x80032CAC ok 0x290
+LIBC2.LIB/ABS_0.OBJ libc2/abs_0.o 0x80032F3C ok 0x20
+LIBGTE.LIB/MTX_03.OBJ libgte/mtx_03.o 0x80032F5C ok 0x110
+LIBGPU.LIB/P23.OBJ libgpu/p23.o 0x8003306C ok 0x20
+LIBC2.LIB/MEMCPY.OBJ libc2/memcpy.o 0x8003308C ok 0x40
+LIBGTE.LIB/MTX_004.OBJ libgte/mtx_004.o 0x800330CC ok 0x160
+LIBC2.LIB/MEMSET.OBJ libc2/memset.o 0x8003322C ok 0x30
+LIBGTE.LIB/MTX_000.OBJ libgte/mtx_000.o 0x8003325C ok 0x110
+LIBGPU.LIB/E03.OBJ libgpu/e03.o 0x8003336C ok 0xC0
+LIBSND.LIB/SSINIT_C.OBJ libsnd/ssinit_c.o 0x8003342C ok 0x40
+LIBGTE.LIB/MSC00.OBJ libgte/msc00.o 0x8003348C ok 0x90 .data=0x8006CBD4/0x10
+LIBGPU.LIB/FONT.OBJ libgpu/font.o 0x8003354C ok 0xA80 .bss=0x80070278/0x4410 .data=0x8006CBF4/0xB90 .rdata=0x8004D19C/0xA0
+LIBGPU.LIB/E04.OBJ libgpu/e04.o 0x80033FCC ok 0x40
+LIBCD.LIB/CDR_1.OBJ libcd/cdr_1.o 0x8003400C ok 0x9A0 .data=0x8006D784/0x40 .rdata=0x8004D23C/0x50
+LIBCD.LIB/TYPE_1.OBJ libcd/type_1.o 0x800349AC ok 0x140
+LIBCD.LIB/EVENT.OBJ libcd/event.o 0x80034AFC ok 0x150 .data=0x8006D7C4/0x10 .rdata=0x8004D28C/0x20
+LIBCD.LIB/ISO9660.OBJ libcd/iso9660.o 0x80034C6C ok 0x970 .bss=0x80074688/0x2400 .data=0x8006D7D4/0x10 .rdata=0x8004D2AC/0x1F0
+LIBCD.LIB/S_016.OBJ libcd/s_016.o 0x800355DC ok 0x3C0 .data=0x8006D7E4/0x80
+LIBCD.LIB/S_002.OBJ libcd/s_002.o 0x8003599C ok 0x110
+LIBCD.LIB/SYS.OBJ libcd/sys.o 0x80035AAC ok 0x80
+LIBSPU.LIB/S_SCA.OBJ libspu/s_sca.o 0x80035B2C ok 0x380 .rdata=0x8004D49C/0x40
+LIBPAD.LIB/PDENT2.OBJ libpad/pdent2.o 0x80035EAC ok 0xD0
+LIBPAD.LIB/PDTAPINI.OBJ libpad/pdtapini.o 0x80035F7C ok 0x160
+LIBPAD.LIB/PDCMD2.OBJ libpad/pdcmd2.o 0x800360DC ok 0x170
+LIBPAD.LIB/PDCMD3.OBJ libpad/pdcmd3.o 0x8003624C ok 0x160
+LIBPAD.LIB/PDCMD1.OBJ libpad/pdcmd1.o 0x800363AC ok 0x40
+LIBGPU.LIB/E02.OBJ libgpu/e02.o 0x800363EC ok 0x70
+LIBGPU.LIB/P00.OBJ libgpu/p00.o 0x8003645C ok 0x40
+LIBGPU.LIB/P34.OBJ libgpu/p34.o 0x8003649C ok 0x60
+LIBGPU.LIB/P01.OBJ libgpu/p01.o 0x800364FC ok 0x20
+LIBSND.LIB/SSTICK.OBJ libsnd/sstick.o 0x8003651C ok 0x150 .rdata=0x8004D4DC/0x20
+LIBSND.LIB/UT_RDEP.OBJ libsnd/ut_rdep.o 0x8003666C ok 0x90
+LIBSND.LIB/SSTABLE.OBJ libsnd/sstable.o 0x8003671C ok 0x220
+LIBSND.LIB/SSTICKCB.OBJ libsnd/sstickcb.o 0x8003693C ok 0x30
+LIBSND.LIB/UT_F.OBJ libsnd/ut_f.o 0x8003696C ok 0x40
+LIBSPU.LIB/S_RRWA.OBJ libspu/s_rrwa.o 0x800369AC ok 0x50
+LIBSND.LIB/UT_REV.OBJ libsnd/ut_rev.o 0x80036A1C ok 0xA0
+LIBSND.LIB/SSSTART.OBJ libsnd/ssstart.o 0x80036ABC ok 0x310 .data=0x8006D864/0x20
+LIBSND.LIB/SSEND.OBJ libsnd/ssend.o 0x80036DCC ok 0xB0
+LIBSND.LIB/UT_KEYV.OBJ libsnd/ut_keyv.o 0x80036E7C ok 0x3E0
+LIBSND.LIB/UT_VVOL4.OBJ libsnd/ut_vvol4.o 0x8003725C ok 0x90
+LIBSND.LIB/UT_GPA.OBJ libsnd/ut_gpa.o 0x800372EC ok 0x110
+LIBSND.LIB/VS_VTB.OBJ libsnd/vs_vtb.o 0x8003740C ok 0xC0
+LIBSND.LIB/UT_KEY.OBJ libsnd/ut_key.o 0x800374CC ok 0x4B0
+LIBSPU.LIB/SR_GAKS.OBJ libspu/sr_gaks.o 0x8003797C ok 0x160
+LIBSND.LIB/SSCALL.OBJ libsnd/sscall.o 0x80037ADC ok 0x270
+LIBSND.LIB/UT_CP.OBJ libsnd/ut_cp.o 0x80037D4C ok 0x130
+LIBSND.LIB/VS_VAB.OBJ libsnd/vs_vab.o 0x80037E7C ok 0xB0
+LIBSPU.LIB/S_ITC.OBJ libspu/s_itc.o 0x80037F2C ok 0xB0
+LIBSND.LIB/VS_VH2.OBJ libsnd/vs_vh2.o 0x80037FDC ok 0xA0
+LIBSND.LIB/UT_AKO.OBJ libsnd/ut_ako.o 0x8003807C ok 0x150
+LIBSND.LIB/UT_GVA.OBJ libsnd/ut_gva.o 0x800381CC ok 0x240
+LIBSND.LIB/SSVOL.OBJ libsnd/ssvol.o 0x8003840C ok 0x190
+LIBSND.LIB/SSREPLAY.OBJ libsnd/ssreplay.o 0x8003859C ok 0xF0
+LIBSND.LIB/SSACCELE.OBJ libsnd/ssaccele.o 0x8003868C ok 0x240
+LIBSND.LIB/SSSMV.OBJ libsnd/sssmv.o 0x800388CC ok 0x50
+LIBSND.LIB/SSDECRES.OBJ libsnd/ssdecres.o 0x8003891C ok 0x1D0
+LIBSND.LIB/SSOPENQ.OBJ libsnd/ssopenq.o 0x80038AEC ok 0x290 .rdata=0x8004D4FC/0x30
+LIBSND.LIB/SSPLAY.OBJ libsnd/ssplay.o 0x80038D7C ok 0x40
+LIBSND.LIB/SSSM.OBJ libsnd/sssm.o 0x80038DBC ok 0x50
+LIBSND.LIB/SSSTOP.OBJ libsnd/ssstop.o 0x80038E0C ok 0x1E0
+LIBSND.LIB/SSCLOSE.OBJ libsnd/ssclose.o 0x80038FEC ok 0x1D0
+LIBSND.LIB/SSPAUSE.OBJ libsnd/sspause.o 0x800391BC ok 0x120
+LIBMCRD.LIB/LIBMCRD.OBJ libmcrd/libmcrd.o 0x800392DC ok 0x18D0 .bss=0x80076A88/0x90 .data=0x8006D884/0x20 .rdata=0x8004D52C/0x1D0
+LIBMCRD.LIB/INIT.OBJ libmcrd/init.o 0x8003ABAC ok 0x50 .data=0x8006D8A4/0x10
+LIBC2.LIB/STRCMP.OBJ libc2/strcmp.o 0x8003ABFC ok 0x70
+LIBC.LIB/A56.OBJ libc/a56.o 0x8003AC6C ok 0x10
+LIBC2.LIB/STRLEN.OBJ libc2/strlen.o 0x8003AC7C ok 0x40
+LIBAPI.LIB/A81.OBJ libapi/a81.o 0x8003ACBC ok 0x10
+LIBAPI.LIB/C57.OBJ libapi/c57.o 0x8003ACCC ok 0x10
+LIBAPI.LIB/C73.OBJ libapi/c73.o 0x8003ACDC ok 0x10
+LIBC2.LIB/SETJMP.OBJ libc2/setjmp.o 0x8003ACEC ok 0x80
+LIBAPI.LIB/A25.OBJ libapi/a25.o 0x8003AD6C ok 0x10
+LIBETC.LIB/INTR_VB.OBJ libetc/intr_vb.o 0x8003AD7C ok 0x120 .data=0x8006D8BC/0x30
+LIBETC.LIB/INTR_DMA.OBJ libetc/intr_dma.o 0x8003AE9C ok 0x2A0 .data=0x8006D8EC/0x30 .rdata=0x8004D6FC/0x30
+LIBAPI.LIB/C114.OBJ libapi/c114.o 0x8003B13C ok 0x20
+LIBAPI.LIB/A37.OBJ libapi/a37.o 0x8003B15C ok 0x10
+LIBAPI.LIB/A23.OBJ libapi/a23.o 0x8003B16C ok 0x10
+LIBAPI.LIB/A91.OBJ libapi/a91.o 0x8003B17C ok 0x10
+LIBAPI.LIB/L10.OBJ libapi/l10.o 0x8003B18C ok 0x10
+LIBAPI.LIB/A36.OBJ libapi/a36.o 0x8003B19C ok 0x10
+LIBAPI.LIB/A24.OBJ libapi/a24.o 0x8003B1AC ok 0x10
+LIBPAD.LIB/PDRESRES.OBJ libpad/pdresres.o 0x8003B1BC ok 0x1E70 .bss=0x80076B18/0x18 .data=0x8006D91C/0xB0
+LIBAPI.LIB/L03.OBJ libapi/l03.o 0x8003D02C ok 0x10
+LIBAPI.LIB/L02.OBJ libapi/l02.o 0x8003D03C ok 0x10
+LIBC2.LIB/PUTS.OBJ libc2/puts.o 0x8003D04C ok 0x60 .data=0x8006D9CC/0x10 .rdata=0x8004D72C/0x10
+LIBC2.LIB/PRNT.OBJ libc2/prnt.o 0x8003D0AC ok 0x6A0 .rdata=0x8004D73C/0x220
+LIBGTE.LIB/SMP_00_1.OBJ libgte/smp_00_1.o 0x8003D74C ok 0x20
+LIBGTE.LIB/SMP_00_9.OBJ libgte/smp_00_9.o 0x8003D76C ok 0x60
+LIBGTE.LIB/MSC02.OBJ libgte/msc02.o 0x8003D7CC ok 0x2B0 .data=0x8006D9DC/0x1A0
+LIBSPU.LIB/S_CRWA.OBJ libspu/s_crwa.o 0x8003DA9C ok 0x1A0
+LIBSND.LIB/SSINIT.OBJ libsnd/ssinit.o 0x8003DC3C ok 0xA0 .bss=0x80076B30/0x93A .data=0x8006DB7C/0x30
+LIBGTE.LIB/PATCHGTE.OBJ libgte/patchgte.o 0x8003DCDC ok 0xE0 .bss=0x80077604/0x10
+LIBGPU.LIB/E00.OBJ libgpu/e00.o 0x8003DDBC ok 0xF0
+LIBGPU.LIB/P41.OBJ libgpu/p41.o 0x8003DEAC ok 0xA0
+LIBGPU.LIB/P26.OBJ libgpu/p26.o 0x8003DF4C ok 0x20
+LIBGPU.LIB/P10.OBJ libgpu/p10.o 0x8003DF6C ok 0x30
+LIBGPU.LIB/P20.OBJ libgpu/p20.o 0x8003DF9C ok 0x20
+LIBGPU.LIB/P09.OBJ libgpu/p09.o 0x8003DFBC ok 0x20
+LIBGPU.LIB/P06.OBJ libgpu/p06.o 0x8003DFDC ok 0x40
+LIBCD.LIB/S_023.OBJ libcd/s_023.o 0x8003E03C ok 0x30
+LIBCD.LIB/BIOS_1.OBJ libcd/bios_1.o 0x8003E14C ok 0x1580 .bss=0x80077614/0x34 .data=0x8006DBAC/0x310 .rdata=0x8004D95C/0x260
+LIBAPI.LIB/A07.OBJ libapi/a07.o 0x8003F6CC ok 0x10
+LIBC2.LIB/STRNCMP.OBJ libc2/strncmp.o 0x8003F6DC ok 0x80
+LIBSPU.LIB/SPU.OBJ libspu/spu.o 0x8003F75C ok 0xB40 .bss=0x80077648/0x14 .data=0x8006DEBC/0x60 .rdata=0x8004DBBC/0x50
+LIBPAD.LIB/PDTAPRES.OBJ libpad/pdtapres.o 0x8004029C ok 0x1140 .bss=0x8007765C/0x9F0 .data=0x8006DF1C/0x10
+LIBSPU.LIB/S_SRMP.OBJ libspu/s_srmp.o 0x800413DC ok 0x4E0
+LIBSPU.LIB/S_Q.OBJ libspu/s_q.o 0x800418BC ok 0x80
+LIBSND.LIB/VM_F.OBJ libsnd/vm_f.o 0x8004193C ok 0x4D0 .bss=0x800781E0/0x76A
+LIBSPU.LIB/S_INI.OBJ libspu/s_ini.o 0x80041E0C ok 0x160 .data=0x8006DF2C/0x80
+LIBSPU.LIB/S_M_UTIL.OBJ libspu/s_m_util.o 0x80041F6C ok 0x110
+LIBSPU.LIB/S_SR.OBJ libspu/s_sr.o 0x8004207C ok 0xF0
+LIBSND.LIB/VM_VSU.OBJ libsnd/vm_vsu.o 0x8004216C ok 0xC0
+LIBSND.LIB/VM_ALOC2.OBJ libsnd/vm_aloc2.o 0x8004222C ok 0x1D0
+LIBSND.LIB/VM_NO1.OBJ libsnd/vm_no1.o 0x800423FC ok 0x570
+LIBSND.LIB/VM_N2P.OBJ libsnd/vm_n2p.o 0x8004296C ok 0x1E0 .data=0x8006DFAC/0x120
+LIBSND.LIB/VM_NOWON.OBJ libsnd/vm_nowon.o 0x80042B4C ok 0x4D0
+LIBSND.LIB/VM_NOWOF.OBJ libsnd/vm_nowof.o 0x8004301C ok 0xC0
+LIBSPU.LIB/S_STM.OBJ libspu/s_stm.o 0x800430DC ok 0x30
+LIBSPU.LIB/S_STSA.OBJ libspu/s_stsa.o 0x8004310C ok 0x60
+LIBSPU.LIB/S_R.OBJ libspu/s_r.o 0x8004316C ok 0x60
+LIBSPU.LIB/S_IT.OBJ libspu/s_it.o 0x800431CC ok 0x40
+LIBSND.LIB/VM_ALOC1.OBJ libsnd/vm_aloc1.o 0x8004320C ok 0x270
+LIBSND.LIB/VM_NOFF.OBJ libsnd/vm_noff.o 0x8004347C ok 0x40
+LIBSND.LIB/CRES.OBJ libsnd/cres.o 0x800434EC ok 0x210
+LIBSND.LIB/TEMPO.OBJ libsnd/tempo.o 0x800436FC ok 0x220
+LIBSND.LIB/PAUSE.OBJ libsnd/pause.o 0x8004391C ok 0xA0
+LIBSND.LIB/REPLAY.OBJ libsnd/replay.o 0x800439BC ok 0x60
+LIBSPU.LIB/S_M_F.OBJ libspu/s_m_f.o 0x80043A1C ok 0x80
+LIBAPI.LIB/A11.OBJ libapi/a11.o 0x80043A9C ok 0x10
+LIBSND.LIB/VS_VH.OBJ libsnd/vs_vh.o 0x80043AAC ok 0x460
+LIBSPU.LIB/S_M_M.OBJ libspu/s_m_m.o 0x80043F0C ok 0x2D0
+LIBSPU.LIB/S_SVA.OBJ libspu/s_sva.o 0x800441DC ok 0x600 .rdata=0x8004DC0C/0x40
+LIBSND.LIB/VM_SEQ.OBJ libsnd/vm_seq.o 0x800447DC ok 0x680
+LIBSND.LIB/VOL.OBJ libsnd/vol.o 0x80044E5C ok 0x70
+LIBSND.LIB/SEQINIT.OBJ libsnd/seqinit.o 0x80044ECC ok 0x350 .rdata=0x8004DC4C/0x40
+LIBSND.LIB/MIDINOTE.OBJ libsnd/midinote.o 0x8004521C ok 0xE0
+LIBSND.LIB/MIDIPROG.OBJ libsnd/midiprog.o 0x800452FC ok 0x70
+LIBSND.LIB/MIDIMETA.OBJ libsnd/midimeta.o 0x8004536C ok 0x1D0
+LIBSND.LIB/MIDIBEND.OBJ libsnd/midibend.o 0x8004553C ok 0xB0
+LIBSND.LIB/MIDICC.OBJ libsnd/midicc.o 0x800455EC ok 0x230
+LIBSND.LIB/CC_0.OBJ libsnd/cc_0.o 0x8004581C ok 0x80
+LIBSND.LIB/CC_7.OBJ libsnd/cc_7.o 0x8004589C ok 0xD0
+LIBSND.LIB/CC_10.OBJ libsnd/cc_10.o 0x8004596C ok 0xD0
+LIBSND.LIB/CC_11.OBJ libsnd/cc_11.o 0x80045A3C ok 0xF0
+LIBSND.LIB/CC_64.OBJ libsnd/cc_64.o 0x80045B2C ok 0xB0
+LIBSND.LIB/CC_98.OBJ libsnd/cc_98.o 0x80045BDC ok 0x100
+LIBSND.LIB/CC_99.OBJ libsnd/cc_99.o 0x80045CDC ok 0x140
+LIBSND.LIB/CC_100.OBJ libsnd/cc_100.o 0x80045E1C ok 0x70
+LIBSND.LIB/CC_101.OBJ libsnd/cc_101.o 0x80045E8C ok 0x70
+LIBSND.LIB/CC_91.OBJ libsnd/cc_91.o 0x80045EFC ok 0x90
+LIBSND.LIB/CC_121.OBJ libsnd/cc_121.o 0x80045F8C ok 0xC0
+LIBSND.LIB/CC_6.OBJ libsnd/cc_6.o 0x8004604C ok 0x380
+LIBSND.LIB/DE_0.OBJ libsnd/de_0.o 0x800463CC ok 0x90
+LIBSND.LIB/DE_1.OBJ libsnd/de_1.o 0x8004645C ok 0xC0
+LIBSND.LIB/DE_2.OBJ libsnd/de_2.o 0x8004651C ok 0x90
+LIBSND.LIB/DE_3.OBJ libsnd/de_3.o 0x800465AC ok 0x90
+LIBSND.LIB/DE_4.OBJ libsnd/de_4.o 0x8004663C ok 0xB0
+LIBSND.LIB/DE_5.OBJ libsnd/de_5.o 0x800466EC ok 0xC0
+LIBSND.LIB/DE_6.OBJ libsnd/de_6.o 0x800467AC ok 0xB0
+LIBSND.LIB/DE_7.OBJ libsnd/de_7.o 0x8004685C ok 0xB0
+LIBSND.LIB/DE_8.OBJ libsnd/de_8.o 0x8004690C ok 0xB0
+LIBSND.LIB/DE_9.OBJ libsnd/de_9.o 0x800469BC ok 0xC0
+LIBSND.LIB/DE_10.OBJ libsnd/de_10.o 0x80046A7C ok 0xB0
+LIBSND.LIB/DE_11.OBJ libsnd/de_11.o 0x80046B2C ok 0xB0
+LIBSND.LIB/DE_12.OBJ libsnd/de_12.o 0x80046BDC ok 0xE0
+LIBSND.LIB/DE_13.OBJ libsnd/de_13.o 0x80046CBC ok 0xA0
+LIBSND.LIB/DE_14.OBJ libsnd/de_14.o 0x80046D5C ok 0xA0
+LIBSND.LIB/DE_16.OBJ libsnd/de_16.o 0x80046E2C ok 0x30
+LIBSND.LIB/PLAYMODE.OBJ libsnd/playmode.o 0x80046EEC ok 0x120
+LIBSPU.LIB/S_SM.OBJ libspu/s_sm.o 0x8004700C ok 0x60
+LIBMCRD.LIB/USERFUNC.OBJ libmcrd/userfunc.o 0x8004707C ok 0x110 .bss=0x80078790/0x50 .data=0x8006E0CC/0x10 .rdata=0x8004DC8C/0x20
+LIBMCRD.LIB/BIOS.OBJ libmcrd/bios.o 0x8004718C ok 0x6B0 .bss=0x800787E0/0x40
+LIBCARD.LIB/C171.OBJ libcard/c171.o 0x8004783C ok 0x10
+LIBCARD.LIB/CARD.OBJ libcard/card.o 0x8004784C ok 0x40
+LIBCARD.LIB/C172.OBJ libcard/c172.o 0x8004788C ok 0x10
+LIBC2.LIB/STRCAT.OBJ libc2/strcat.o 0x8004789C ok 0xB0
+LIBAPI.LIB/A50.OBJ libapi/a50.o 0x8004794C ok 0x10
+LIBAPI.LIB/A54.OBJ libapi/a54.o 0x8004795C ok 0x10
+LIBAPI.LIB/A51.OBJ libapi/a51.o 0x8004796C ok 0x10
+LIBAPI.LIB/A52.OBJ libapi/a52.o 0x8004797C ok 0x10
+LIBAPI.LIB/A53.OBJ libapi/a53.o 0x8004798C ok 0x10
+LIBAPI.LIB/FIRST.OBJ libapi/first.o 0x8004799C ok 0x2A0 .bss=0x80078820/0x30
+LIBAPI.LIB/A67.OBJ libapi/a67.o 0x80047C3C ok 0x10
+LIBMCRD.LIB/LOW.OBJ libmcrd/low.o 0x80047C4C ok 0xA90 .bss=0x80078850/0x2C0 .rdata=0x8004DCAC/0x10
+LIBCARD.LIB/INIT.OBJ libcard/init.o 0x800486DC ok 0x100 .data=0x8006E0DC/0x10
+LIBAPI.LIB/C112.OBJ libapi/c112.o 0x800487DC ok 0x10
+LIBC2.LIB/PUTCHAR.OBJ libc2/putchar.o 0x800487EC ok 0x260 .bss=0x80078B10/0x20 .data=0x8006E0EC/0x10
+LIBC2.LIB/MEMCHR.OBJ libc2/memchr.o 0x80048A4C ok 0x50
+LIBAPI.LIB/A10.OBJ libapi/a10.o 0x80048A9C ok 0x10
+LIBSND.LIB/VM_INIT.OBJ libsnd/vm_init.o 0x80048AAC ok 0x350 .bss=0x80078B30/0x110
+LIBAPI.LIB/C68.OBJ libapi/c68.o 0x80048DFC ok 0x10
+LIBCD.LIB/BIOS_3.OBJ libcd/bios_3.o 0x80048E0C ok 0xF0 .data=0x8006E5BC/0x20
+LIBCD.LIB/BIOS_2.OBJ libcd/bios_2.o 0x80048EFC ok 0x100 .data=0x8006E5DC/0x20
+LIBC2.LIB/BZERO.OBJ libc2/bzero.o 0x80048FFC ok 0x30
+LIBSPU.LIB/S_SRA.OBJ libspu/s_sra.o 0x8004902C ok 0x4D0
+LIBSPU.LIB/S_DCB.OBJ libspu/s_dcb.o 0x800494FC ok 0x30
+LIBAPI.LIB/A09.OBJ libapi/a09.o 0x8004952C ok 0x10
+LIBAPI.LIB/A13.OBJ libapi/a13.o 0x8004953C ok 0x10
+LIBSPU.LIB/S_GVEX.OBJ libspu/s_gvex.o 0x8004954C ok 0x20
+LIBSPU.LIB/S_SNV.OBJ libspu/s_snv.o 0x8004956C ok 0x30
+LIBSPU.LIB/S_SK.OBJ libspu/s_sk.o 0x8004959C ok 0x1C0
+LIBSPU.LIB/S_GRV.OBJ libspu/s_grv.o 0x8004975C ok 0x30
+LIBSPU.LIB/S_SRV.OBJ libspu/s_srv.o 0x8004978C ok 0x30
+LIBSPU.LIB/S_GNV.OBJ libspu/s_gnv.o 0x800497BC ok 0x30
+LIBAPI.LIB/A08.OBJ libapi/a08.o 0x800497EC ok 0x10
+LIBAPI.LIB/A12.OBJ libapi/a12.o 0x800497FC ok 0x10
+LIBSPU.LIB/S_SNC.OBJ libspu/s_snc.o 0x8004980C ok 0x50
+LIBSND.LIB/MIDIREAD.OBJ libsnd/midiread.o 0x8004985C ok 0x6F0
+LIBSPU.LIB/S_M_INT.OBJ libspu/s_m_int.o 0x80049F4C ok 0x300
+LIBSPU.LIB/S_N2P.OBJ libspu/s_n2p.o 0x8004A24C ok 0x200 .data=0x8006E8BC/0x120
+LIBSND.LIB/MIDITIME.OBJ libsnd/miditime.o 0x8004A44C ok 0xB0
+LIBSND.LIB/VM_KEY.OBJ libsnd/vm_key.o 0x8004A4FC ok 0x7A0
+LIBSND.LIB/VM_PB.OBJ libsnd/vm_pb.o 0x8004AC9C ok 0x2D0
+LIBSND.LIB/VM_VOL.OBJ libsnd/vm_vol.o 0x8004AF6C ok 0x5A0
+LIBSND.LIB/VM_PROG2.OBJ libsnd/vm_prog2.o 0x8004B50C ok 0x70
+LIBSND.LIB/UT_SVA.OBJ libsnd/ut_sva.o 0x8004B5AC ok 0x1D0
+LIBSND.LIB/CCADSR.OBJ libsnd/ccadsr.o 0x8004B77C ok 0x100
+LIBSND.LIB/UT_RFB.OBJ libsnd/ut_rfb.o 0x8004B87C ok 0x40
+LIBSND.LIB/UT_RDEL.OBJ libsnd/ut_rdel.o 0x8004B8BC ok 0x40
+LIBCARD.LIB/A80.OBJ libcard/a80.o 0x8004B8FC ok 0x10
+LIBCARD.LIB/A78.OBJ libcard/a78.o 0x8004B90C ok 0x10
+LIBAPI.LIB/A66.OBJ libapi/a66.o 0x8004B91C ok 0x10
+LIBCARD.LIB/A79.OBJ libcard/a79.o 0x8004B92C ok 0x10
+LIBC2.LIB/STRNCPY.OBJ libc2/strncpy.o 0x8004B93C ok 0x70
+LIBAPI.LIB/PAD.OBJ libapi/pad.o 0x8004B9AC ok 0x290 .bss=0x80078C40/0x10 .data=0x8006E9DC/0x10
+LIBCARD.LIB/A74.OBJ libcard/a74.o 0x8004BC3C ok 0x10
+LIBCARD.LIB/PATCH.OBJ libcard/patch.o 0x8004BC4C ok 0x220 .bss=0x80078C50/0x10
+LIBCARD.LIB/A75.OBJ libcard/a75.o 0x8004BE6C ok 0x10
+LIBCARD.LIB/A76.OBJ libcard/a76.o 0x8004BE7C ok 0x10
+LIBCARD.LIB/END.OBJ libcard/end.o 0x8004BE8C ok 0x80 .bss=0x80078C60/0x10
+LIBSPU.LIB/S_M_INIT.OBJ libspu/s_m_init.o 0x8004BF0C ok 0x60
+LIBSPU.LIB/S_SAV.OBJ libspu/s_sav.o 0x8004BF6C ok 0x2C0
+LIBSPU.LIB/S_GAV.OBJ libspu/s_gav.o 0x8004C22C ok 0x30
+LIBSND.LIB/NEXT.OBJ libsnd/next.o 0x8004C25C ok 0x100
+LIBSND.LIB/VM_STAV.OBJ libsnd/vm_stav.o 0x8004C35C ok 0xD0
+LIBAPI.LIB/CHCLRPAD.OBJ libapi/chclrpad.o 0x8004C42C ok 0x70 .bss=0x80078C70/0x10
+LIBAPI.LIB/PATCH.OBJ libapi/patch.o 0x8004C49C ok 0xA0 .bss=0x80078C80/0x10
+LIBAPI.LIB/A21.OBJ libapi/a21.o 0x8004C53C ok 0x10
+LIBAPI.LIB/A18.OBJ libapi/a18.o 0x8004C54C ok 0x10
+LIBAPI.LIB/A19.OBJ libapi/a19.o 0x8004C55C ok 0x10
+# references to symbols defined elsewhere than the exe calls them: ! symbol address
+! SsFCALL 0x80077344
+! VBLANK_MINUS 0x80077334
+! _SsMarkCallback 0x80076B34
+! _autopan 0x80078788
+! _autovol 0x8007878C
+! _snd_ev_flag 0x80076B30
+! _snd_seq_s_max 0x80077340
+! _snd_seq_t_max 0x8007733C
+! _spu_Fr 0x8003FF80
+! _ss_score 0x800773D8
+! _svm_envx_ptr 0x800781CC
+! _svm_okof1 0x80078770
+! _svm_okof2 0x80078774
+! _svm_okon1 0x80078778
+! _svm_okon2 0x8007877C
+! _svm_onos1 0x80078780
+! _svm_onos2 0x80078784
+! _svm_orev1 0x80078768
+! _svm_orev2 0x8007876C
+! _svm_sreg_buf 0x8007804C
+! _svm_sreg_dirty 0x800781D0
+# externals: symbol=address the objects' references resolve to in the exe
+= AddPrim 0x8003DFDC
+= CD_cbread 0x8006D7C4
+= CD_cbready 0x8006DBB8
+= CD_cbsync 0x8006DBB4
+= CD_cw 0x8003EBF8
+= CD_debug 0x8006DBBC
+= CD_init 0x8003F29C
+= CD_initvol 0x8003F160
+= CD_nopen 0x8006DBC8
+= CD_read_dma_mode 0x8006D7C8
+= CD_status 0x8006DBC0
+= CD_sync 0x8003E6B0
+= CdControl 0x800355DC
+= CdControlB 0x8003584C
+= CdControlF 0x80035718
+= CdDataCallback 0x8003E03C
+= CdDataSync 0x8003E08C
+= CdFlush 0x8003E0FC
+= CdGetSector 0x8003E0AC
+= CdGetSector2 0x8003E06C
+= CdIntToPos 0x8003599C
+= CdLastPos 0x8003E0EC
+= CdMode 0x8003E11C
+= CdPosToInt 0x80035AAC
+= CdRead 0x8003470C
+= CdReadSync 0x800348A8
+= CdReady 0x8003E12C
+= CdReadyCallback 0x8003E0CC
+= CdStatus 0x80034AEC
+= CdSyncCallback 0x8003E01C
+= ChangeClearPAD 0x8003B17C
+= ChangeClearRCnt 0x8003B18C
+= CheckCallback 0x80031A40
+= CloseEvent 0x8004952C
+= DMACallback 0x8003194C
+= DeliverEvent 0x8003F6CC
+= DisableEvent 0x8004953C
+= DrawOTag 0x8002F35C
+= EnableEvent 0x800497FC
+= EnablePAD 0x8004C49C
+= EnterCriticalSection 0x8003B19C
+= ExitCriticalSection 0x8003B15C
+= FlushCache 0x80048DFC
+= GPU_cw 0x8003ACDC
+= GPU_printf 0x80067950
+= GetClut 0x800364FC
+= GetTPage 0x8003645C
+= GetVideoMode 0x80033530
+= HookEntryInt 0x8003AD6C
+= InitCARD 0x800486DC
+= InitCARD2 0x8004BC3C
+= InitPAD2 0x8004C54C
+= InterruptCallback 0x8003191C
+= LoadClut2 0x800363EC
+= LoadImage 0x8002F014
+= LoadTPage 0x8003DDBC
+= Lzc 0x8003D74C
+= OpenEvent 0x800497EC
+= OuterProduct12 0x8003D76C
+= PAD_init2 0x8004C53C
+= ReadInitPadFlag 0x8004B9B8
+= ResetCallback 0x800318EC
+= ResetEntryInt 0x8003B1AC
+= ResetRCnt 0x8002E9B4
+= ReturnFromException 0x8003B16C
+= SetDrawMode 0x8003DEAC
+= SetIntrMask 0x80031A68
+= SetRCnt 0x8002E87C
+= SetSemiTrans 0x8003DF6C
+= SetSprt8 0x8003DF9C
+= SetTile 0x8003DF4C
+= Snd_SetPlayMode 0x80046EEC
+= SpuClearReverbWorkArea 0x8003DA9C
+= SpuFree 0x80043A1C
+= SpuGetNoiseVoice 0x800497BC
+= SpuGetReverbVoice 0x8004975C
+= SpuGetVoiceEnvelope 0x8004954C
+= SpuInit 0x8003DA7C
+= SpuInitMalloc 0x8004BF0C
+= SpuMalloc 0x80043F0C
+= SpuSetCommonAttr 0x80035B2C
+= SpuSetKey 0x8004959C
+= SpuSetMute 0x8004700C
+= SpuSetNoiseClock 0x8004980C
+= SpuSetNoiseVoice 0x8004956C
+= SpuSetReverb 0x8004207C
+= SpuSetReverbModeParam 0x800413DC
+= SpuSetReverbVoice 0x8004978C
+= SpuSetTransferMode 0x800430DC
+= SpuSetTransferStartAddr 0x8004310C
+= SpuSetVoiceAttr 0x800441DC
+= SpuWrite 0x8004316C
+= SsFCALL 0x80077344
+= SsUtGetProgAtr 0x800372EC
+= SsUtGetVagAtr 0x800381CC
+= SsUtReverbOff 0x8004B58C
+= SsUtReverbOn 0x800369FC
+= SsUtSetReverbDepth 0x8003666C
+= SsUtSetVagAtr 0x8004B5AC
+= StartCARD 0x8004876C
+= StartCARD2 0x8004BE6C
+= StartPAD2 0x8004C55C
+= StopCARD 0x800487B4
+= StopCARD2 0x8004BE7C
+= SysDeqIntRP 0x8003D02C
+= SysEnqIntRP 0x8003D03C
+= TermPrim 0x8003DFBC
+= TestEvent 0x80043A9C
+= UserFuncComplete 0x80047174
+= UserFuncExecute 0x80047108
+= UserFuncInit 0x8004707C
+= UserFuncOpen 0x8004708C
+= VBLANK_MINUS 0x80077334
+= VSync 0x800320EC
+= VSyncCallback 0x8003197C
+= VSyncCallbacks 0x800319B0
+= Vcount 0x8006D8DC
+= VectorNormal 0x8003D86C
+= WaitEvent 0x80048A9C
+= _96_remove 0x8003B144
+= _ExitCard 0x8004BE8C
+= _SpuDataCallback 0x800494FC
+= _SpuGetAnyVoice 0x8004C22C
+= _SpuIsInAllocateArea_ 0x80041FEC
+= _SpuSetAnyVoice 0x8004BF6C
+= _SsContBankChange 0x8004581C
+= _SsContDamper 0x80045B2C
+= _SsContDataEntry 0x8004604C
+= _SsContExpression 0x80045A3C
+= _SsContExternal 0x80045EFC
+= _SsContMainVol 0x8004589C
+= _SsContNrpn1 0x80045BDC
+= _SsContNrpn2 0x80045CDC
+= _SsContPanpot 0x8004596C
+= _SsContResetAll 0x80045F8C
+= _SsContRpn1 0x80045E1C
+= _SsContRpn2 0x80045E8C
+= _SsGetMetaEvent 0x8004536C
+= _SsInit 0x8003DC3C
+= _SsInitSoundSeq 0x80044ECC
+= _SsMarkCallback 0x80076B34
+= _SsNoteOn 0x8004521C
+= _SsReadDeltaValue 0x8004A44C
+= _SsSetControlChange 0x800455EC
+= _SsSetNrpnVabAttr0 0x800463CC
+= _SsSetNrpnVabAttr1 0x8004645C
+= _SsSetNrpnVabAttr10 0x80046A7C
+= _SsSetNrpnVabAttr11 0x80046B2C
+= _SsSetNrpnVabAttr12 0x80046BDC
+= _SsSetNrpnVabAttr13 0x80046CBC
+= _SsSetNrpnVabAttr14 0x80046D5C
+= _SsSetNrpnVabAttr15 0x80046DFC
+= _SsSetNrpnVabAttr16 0x80046E2C
+= _SsSetNrpnVabAttr17 0x80046E5C
+= _SsSetNrpnVabAttr18 0x80046E8C
+= _SsSetNrpnVabAttr19 0x80046EBC
+= _SsSetNrpnVabAttr2 0x8004651C
+= _SsSetNrpnVabAttr3 0x800465AC
+= _SsSetNrpnVabAttr4 0x8004663C
+= _SsSetNrpnVabAttr5 0x800466EC
+= _SsSetNrpnVabAttr6 0x800467AC
+= _SsSetNrpnVabAttr7 0x8004685C
+= _SsSetNrpnVabAttr8 0x8004690C
+= _SsSetNrpnVabAttr9 0x800469BC
+= _SsSetPitchBend 0x8004553C
+= _SsSetProgramChange 0x800452FC
+= _SsSndCrescendo 0x800434EC
+= _SsSndNextSep 0x8004C25C
+= _SsSndPause 0x8004391C
+= _SsSndPlay 0x800434BC
+= _SsSndReplay 0x800439BC
+= _SsSndSetVolData 0x80044E5C
+= _SsSndStop 0x80038E0C
+= _SsSndTempo 0x800436FC
+= _SsUtBuildADSR 0x8004B7D8
+= _SsUtResolveADSR 0x8004B77C
+= _SsVabOpenHeadWithMode 0x80043B1C
+= _SsVmAlloc 0x8004320C
+= _SsVmDamperOff 0x8004706C
+= _SsVmDamperOn 0x8004B57C
+= _SsVmDoAllocate 0x8004222C
+= _SsVmFlush 0x8004193C
+= _SsVmGetSeqVol 0x80044D48
+= _SsVmInit 0x80048AAC
+= _SsVmKeyOff 0x8004AA18
+= _SsVmKeyOffNow 0x8004301C
+= _SsVmKeyOn 0x8004A4FC
+= _SsVmKeyOnNow 0x80042B4C
+= _SsVmMaxVoice 0x80077600
+= _SsVmPitchBend 0x8004AE88
+= _SsVmSelectToneAndVag 0x8004C35C
+= _SsVmSeqKeyOff 0x80044DAC
+= _SsVmSetProgVol 0x8004B50C
+= _SsVmSetSeqVol 0x800447DC
+= _SsVmSetVol 0x8004AF6C
+= _SsVmVSetUp 0x8004216C
+= _apiPadPatch 0x80078C40
+= _autopan 0x80078788
+= _autovol 0x8007878C
+= _bu_init 0x800487DC
+= _card_clear 0x8004784C
+= _card_create2 0x8004801C
+= _card_format2 0x80047C4C
+= _card_info 0x8004783C
+= _card_load 0x8004788C
+= _card_read 0x8004B92C
+= _card_start 0x8004725C
+= _card_stop 0x80047458
+= _card_write 0x8004B90C
+= _chk_card_event 0x800477C4
+= _chk_card_event_x 0x80047800
+= _clr_card_event 0x8004750C
+= _copy_memcard_patch 0x8004BE2C
+= _ctype_ 0x8006E0FC
+= _get_card_event 0x80047614
+= _get_card_event_x 0x800476EC
+= _mtapLastResult 0x8006DF1C
+= _new_card 0x8004B8FC
+= _padChanStop 0x8006D978
+= _padCmdParaMode 0x8003C5E0
+= _padFixResult 0x8006D97C
+= _padFuncChkEng 0x8006D940
+= _padFuncClrCmdNo 0x8006D948
+= _padFuncClrInfo 0x8006D928
+= _padFuncCurrLimit 0x8006D930
+= _padFuncGetTxd 0x8006D92C
+= _padFuncNextPort 0x8006D924
+= _padFuncPort2Info 0x8006D938
+= _padFuncRecvAuto 0x8006D944
+= _padFuncSendAuto 0x8006D93C
+= _padInfoDir 0x8006D958
+= _padInitMtapPort 0x8004029C
+= _padInitSioMode 0x8003B3B4
+= _padIntExec 0x8006D95C
+= _padModeMtap 0x8006D970
+= _padRecvAtLoadInfo 0x8003BDC4
+= _padRestPeriod 0x80076B28
+= _padSendAtLoadInfo 0x8003BD40
+= _padSetCmd 0x8003BD30
+= _padSioChan 0x8006D964
+= _padSioState 0x8006D968
+= _padTotalCurr 0x8006D96C
+= _padVsyncParam 0x8006D984
+= _patch_card 0x8004BD28
+= _patch_card2 0x8004BDBC
+= _patch_card_info 0x8004BC4C
+= _patch_gte 0x8003DCDC
+= _patch_pad 0x8004C4C4
+= _putchar 0x800487EC
+= _putchar_flash 0x800488E8
+= _que 0x8006EA78
+= _remove_ChgclrPAD 0x8004C42C
+= _snd_ev_flag 0x80076B30
+= _snd_openflag 0x80077338
+= _snd_seq_s_max 0x80077340
+= _snd_seq_t_max 0x8007733C
+= _snd_seq_tick_env 0x8006D864
+= _snd_vmask 0x8006DB7C
+= _spu_AllocBlockNum 0x8006E8AC
+= _spu_AllocLastNum 0x8006E8B0
+= _spu_EVdma 0x8006DF34
+= _spu_FiDMA 0x8003FB9C
+= _spu_Fr 0x8003FF80
+= _spu_FsetRXX 0x80040068
+= _spu_FsetRXXa 0x800400AC
+= _spu_IRQCallback 0x8006DEF8
+= _spu_RQ 0x80077648
+= _spu_RQmask 0x8006DF64
+= _spu_RQvoice 0x8006DF60
+= _spu_RXX 0x8006DEBC
+= _spu_env 0x8006DF98
+= _spu_gcSPU 0x80049F4C
+= _spu_getInTransfer 0x800431F4
+= _spu_inTransfer 0x8006DEF0
+= _spu_init 0x8003F75C
+= _spu_isCalled 0x8006DF9C
+= _spu_keystat 0x8006DF38
+= _spu_memList 0x8006E8B4
+= _spu_mem_mode_plus 0x8006DEE4
+= _spu_mem_mode_unitM 0x8006DEEC
+= _spu_note2pitch 0x8004A24C
+= _spu_rev_attr 0x8006DF4C
+= _spu_rev_flag 0x8006DF40
+= _spu_rev_offsetaddr 0x8006DF48
+= _spu_rev_param 0x8006E5FC
+= _spu_rev_reserve_wa 0x8006DF44
+= _spu_rev_startaddr 0x8006E18C
+= _spu_setInTransfer 0x800431CC
+= _spu_setReverbAttr 0x8004902C
+= _spu_t 0x8003FD00
+= _spu_transMode 0x8006DED8
+= _spu_trans_mode 0x8006DF3C
+= _spu_transferCallback 0x8006DEF4
+= _spu_tsa 0x8006DED4
+= _spu_voice_centerNote 0x8006DF68
+= _spu_zerobuf 0x8006E1BC
+= _ss_score 0x800773D8
+= _svm_auto_kof_mode 0x800775FC
+= _svm_cur 0x80077530
+= _svm_damper 0x8007755C
+= _svm_envx_hist 0x800781E8
+= _svm_envx_ptr 0x800781CC
+= _svm_okof1 0x80078770
+= _svm_okof2 0x80078774
+= _svm_okon1 0x80078778
+= _svm_okon2 0x8007877C
+= _svm_onos1 0x80078780
+= _svm_onos2 0x80078784
+= _svm_orev1 0x80078768
+= _svm_orev2 0x8007876C
+= _svm_pg 0x800775F4
+= _svm_rattr 0x8007751C
+= _svm_sreg_buf 0x8007804C
+= _svm_sreg_dirty 0x800781D0
+= _svm_stereo_mono 0x80077518
+= _svm_tn 0x800775EC
+= _svm_vab_count 0x80077560
+= _svm_vab_not_send_size 0x80077564
+= _svm_vab_pg 0x800774D8
+= _svm_vab_start 0x800775A8
+= _svm_vab_tn 0x80077498
+= _svm_vab_total 0x80077568
+= _svm_vab_used 0x8007754C
+= _svm_vab_vh 0x80077458
+= _svm_vh 0x800775E8
+= _svm_voice 0x80078228
+= bzero 0x80048FFC
+= close 0x8004795C
+= firstfile 0x8004799C
+= firstfile2 0x8004B91C
+= kMaxPrograms 0x800775F8
+= lseek 0x8004796C
+= memchr 0x80048A4C
+= memcpy 0x8003308C
+= memset 0x8003322C
+= nextfile 0x80047C3C
+= note2pitch 0x8004296C
+= note2pitch2 0x800429B8
+= open 0x8004794C
+= printf 0x800322FC
+= prnt 0x8003D0AC
+= puts 0x8003D04C
+= rcossin_tbl 0x80068BD4
+= read 0x8004797C
+= setjmp 0x8003ACEC
+= startIntrDMA 0x8003AE9C
+= startIntrVSync 0x8003AD7C
+= strcat 0x8004789C
+= strcmp 0x8003ABFC
+= strlen 0x8003AC7C
+= strncmp 0x8003F6DC
+= strncpy 0x8004B93C
+= vmNoiseOff 0x8004347C
+= vmNoiseOn 0x800423FC
+= write 0x8004798C
