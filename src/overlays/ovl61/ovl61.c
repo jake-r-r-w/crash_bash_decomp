@@ -185,7 +185,7 @@ u8 *func_800C01B8(void) {
     if (var_v0 >= 9) {
         return NULL;
     }
-    temp_v0 = func_80022A3C(0x1000, 0x1000, 0x1000, 0x1501, 0x11);
+    temp_v0 = SpawnNASById(0x1000, 0x1000, 0x1000, 0x1501, 0x11);
     if ((temp_v0 != NULL) && ((*(s32*)((u8*)(temp_v0) + 84)) != 0)) {
         temp_v0_2 = (*(s32*)((u8*)(temp_v0) + 88));
         if (temp_v0_2 != NULL) {
@@ -207,7 +207,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C04B8);
 
 void func_800C04FC(s32 arg0) {
     func_800B62F4();
-    func_800854C0(arg0, 0x1A);
+    SetHeroSeq(arg0, 0x1A);
 }
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C052C);

@@ -692,3 +692,15 @@ StartPAD2 = 0x8004C55C; // type:func
 // 0x80032F3C: ambiguous (abs in LIBC2.LIB/ABS_0.OBJ / labs in LIBC2.LIB/ABS_1.OBJ) - unnamed
 // 0x8004316C: ambiguous (SpuRead in LIBSPU.LIB/S_R.OBJ / SpuWrite in LIBSPU.LIB/S_W.OBJ) - unnamed
 // --- end PsyQ signatures ---
+Random = 0x80015590; // type:func
+get_angle = 0x8001463C; // type:func
+PlaySfx = 0x80022660; // type:func
+StopSfx = 0x800225C4; // type:func
+SpawnNASById = 0x80022A3C; // type:func
+SpawnNASFromRecord = 0x80022DDC; // type:func
+KillNAS = 0x80022FD4; // type:func
+AllocExtension = 0x800232B0; // type:func
+FreeExtension = 0x80023404; // type:func
+AddExtension = 0x8002689C; // type:func
+AddEngine = 0x8002672C; // type:func
+FindExtension = 0x800264E8; // type:func

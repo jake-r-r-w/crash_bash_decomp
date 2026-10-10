@@ -33,7 +33,7 @@ BASH_SIZE_CHECK(SLONG_XYZ, 0xC);
 
 /* Link of an object's extension chain. Every EXT* extension starts with
  * `s32 EXTid; EXTnode Extend;`. The chain starts at NAS.ext; prev is the
- * object or extension this one was appended to (func_800232B0). */
+ * object or extension this one was appended to (AllocExtension). */
 typedef struct EXTnode {
     void *prev;
     void *next;
@@ -42,7 +42,7 @@ BASH_SIZE_CHECK(EXTnode, 0x8);
 #define BASH_HAVE_EXTNODE
 
 /* An engine object instance: an entry of the AST table ({id, Init, Plot}),
- * spawned by func_80022DDC from a pool of copies of a template. */
+ * spawned by SpawnNASFromRecord from a pool of copies of a template. */
 struct NAS {
     /* 0x00 */ u32 flags;               /* 1 when spawned; 0x100 once it has an engine */
     /* 0x04 */ u8 unk04[4];
@@ -53,7 +53,7 @@ struct NAS {
     /* 0x48 */ void (*Init)(NAS *);     /* AST Init: called once when spawned */
     /* 0x4C */ void (*Plot)(NAS *);     /* AST Plot */
     /* 0x50 */ void *spawn;             /* spawn record: +0x00 position (to eng), +0x18 AST id */
-    /* 0x54 */ EXTengine *eng;          /* first engine extension (func_8002672C) */
+    /* 0x54 */ EXTengine *eng;          /* first engine extension (AddEngine) */
     /* 0x58 */ void *unk58;
     /* 0x5C */ u16 unk5C;
     /* 0x5E */ u16 unk5E;
@@ -66,7 +66,7 @@ struct NAS {
 };
 BASH_SIZE_CHECK(NAS, 0x70);
 
-/* Engine extension, made by func_8002672C(nas, id) from a template: EXTid is
+/* Engine extension, made by AddEngine(nas, id) from a template: EXTid is
  * id | 0x100. The first one is NAS.eng; later ones are linked through next. */
 struct EXTengine {
     /* 0x00 */ s32 EXTid;

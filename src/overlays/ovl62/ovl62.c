@@ -423,7 +423,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBombMaker);
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBombMaker);
 
 u32 func_800CBA28(u8 *arg0) {
-    return (u32) ((func_8001463C((*(s32*)((u8*)(arg0) + 0)), (*(s32*)((u8*)(arg0) + 8))) - 0x7D) & 0xFFF) >> 8;
+    return (u32) ((get_angle((*(s32*)((u8*)(arg0) + 0)), (*(s32*)((u8*)(arg0) + 8))) - 0x7D) & 0xFFF) >> 8;
 }
 
 s32 func_800CBA5C(void) {

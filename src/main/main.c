@@ -417,7 +417,7 @@ void func_8001452C(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80014540);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001463C);
+INCLUDE_ASM("asm/nonmatchings/main/main", get_angle);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001492C);
 
@@ -471,7 +471,7 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80015518);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80015554);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80015590);
+INCLUDE_ASM("asm/nonmatchings/main/main", Random);
 
 void func_800155E8(s32 arg0, s32 arg1) {
     D_800517B8 = arg0;
@@ -976,7 +976,7 @@ void func_8001D174(u8 *arg0) {
 
     temp_a0 = (*(s32*)((u8*)(arg0) + 148));
     if (temp_a0 != 0) {
-        func_800225C4(temp_a0);
+        StopSfx(temp_a0);
     }
     temp_s2 = (*(s32*)((u8*)(arg0) + 108));
     temp_s4 = (*(s32*)((u8*)(arg0) + 112));
@@ -1463,9 +1463,9 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8002235C);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80022504);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800225C4);
+INCLUDE_ASM("asm/nonmatchings/main/main", StopSfx);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80022660);
+INCLUDE_ASM("asm/nonmatchings/main/main", PlaySfx);
 
 void func_800227C0(void) {
     u8 *var_v1;
@@ -1501,7 +1501,7 @@ void func_80022838(void) {
         do {
             temp_s1 = (*(s32*)((u8*)(var_s0) + 24));
             if (func_8002235C(var_s0) != 1) {
-                func_800225C4(var_s0);
+                StopSfx(var_s0);
             }
             var_s0 = temp_s1;
         } while (var_s0 != NULL);
@@ -1528,21 +1528,21 @@ void func_800229D4(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800229FC);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80022A3C);
+INCLUDE_ASM("asm/nonmatchings/main/main", SpawnNASById);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80022C3C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80022DDC);
+INCLUDE_ASM("asm/nonmatchings/main/main", SpawnNASFromRecord);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80022FD4);
+INCLUDE_ASM("asm/nonmatchings/main/main", KillNAS);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80023158);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002321C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800232B0);
+INCLUDE_ASM("asm/nonmatchings/main/main", AllocExtension);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80023404);
+INCLUDE_ASM("asm/nonmatchings/main/main", FreeExtension);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800235BC);
 
@@ -1644,7 +1644,7 @@ void func_800264B4(void) {
     D_8006EA00 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800264E8);
+INCLUDE_ASM("asm/nonmatchings/main/main", FindExtension);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80026540);
 
@@ -1652,11 +1652,11 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_800265DC);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80026684);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002672C);
+INCLUDE_ASM("asm/nonmatchings/main/main", AddEngine);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80026858);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002689C);
+INCLUDE_ASM("asm/nonmatchings/main/main", AddExtension);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800268BC);
 
@@ -1789,7 +1789,7 @@ void func_80027040(s32 arg0) {
         do {
             temp_s0 = (*(s32*)((u8*)(var_a0) + 16));
             if (((*(s32*)((u8*)(var_a0) + 0)) & 1) && ((*(u16*)((u8*)(var_a0) + 108)) == (arg0 & 0xFFFF))) {
-                func_80022FD4(var_a0);
+                KillNAS(var_a0);
             }
             var_a0 = temp_s0;
         } while (var_a0 != NULL);
@@ -1803,7 +1803,7 @@ void func_800270B0(u8 *arg0) {
     if (temp_v1 != NULL) {
         (*(u16*)((u8*)(temp_v1) + 26)) = (u16) ((*(u16*)((u8*)(temp_v1) + 26)) | 0x8000);
     }
-    func_80022FD4();
+    KillNAS();
 }
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800270F0);

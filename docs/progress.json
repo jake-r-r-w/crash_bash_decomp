@@ -1,8 +1,8 @@
 {
  "blocked": [],
- "commit": "a5d3b8e",
+ "commit": "c4dee58",
  "game": "SCUS_945.70",
- "generated": "2026-10-10T13:13:27Z",
+ "generated": "2026-10-10T13:22:23Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -187,6 +187,22 @@
    "lib_f": 535,
    "lib_tb": 122112,
    "ts": "2026-10-10T13:13:27Z"
+  },
+  {
+   "commit": "c4dee58",
+   "data_b": 128,
+   "data_tb": 616791,
+   "game_all_f": 2550,
+   "game_b": 19312,
+   "game_c_f": 393,
+   "game_f": 393,
+   "game_named_f": 137,
+   "game_tb": 1019036,
+   "game_typed_f": 273,
+   "lib_b": 121280,
+   "lib_f": 535,
+   "lib_tb": 122112,
+   "ts": "2026-10-10T13:22:23Z"
   }
  ],
  "recent": [
@@ -336,7 +352,7 @@
      "text": "Retire `include/externs.h` and `include/prototypes.h` into owned headers."
     },
     {
-     "done": false,
+     "done": true,
      "text": "Name the core engine functions every match calls (spawn by AST id, extension and engine allocation, extension lookup, random, sound, angle, and the most-called exe and engine functions), each with code evidence."
     },
     {
@@ -498,7 +514,7 @@
    "c_f": 393,
    "done_b": 19312,
    "done_f": 393,
-   "named_f": 122,
+   "named_f": 137,
    "pct": 1.8951244116988997,
    "sony_b": 0,
    "total_b": 1019036,
@@ -532,7 +548,7 @@
     "file": "engine.bin",
     "files": 1,
     "lib": false,
-    "named_f": 10,
+    "named_f": 13,
     "pct": 2.0237653174897883,
     "phase": 3,
     "sony_b": 0,
@@ -553,7 +569,7 @@
     "file": "SCUS_945.70",
     "files": 1,
     "lib": false,
-    "named_f": 0,
+    "named_f": 12,
     "pct": 6.978532521627684,
     "phase": 2,
     "sony_b": 0,

@@ -2,6 +2,31 @@
 
 Newest first. Each session appends: what changed, what was learned, what's next.
 
+## 2026-10-10 - core engine function names
+
+**State at end of session:** `make verify` -> 16 targets OK; 137 game functions named.
+
+**Done**
+- Named 15 core functions with code evidence (`docs/ARCHITECTURE.md`, "Core
+  engine functions"): `PlaySfx`/`StopSfx`, `Random`, `get_angle` (the leak's
+  name), `SpawnNASById`/`SpawnNASFromRecord`/`KillNAS`, the extension calls
+  (`AllocExtension`, `AddExtension`, `AddEngine`, `FindExtension`,
+  `FreeExtension`), `SetHeroAction`, `SetHeroSeq` and `GetEngineSlot`. All but
+  `get_angle` are descriptive names. Roadmap item ticked.
+
+**Learned / gotchas**
+- The player/hero array `D_8009D52C` has 0x6C-byte entries; `hero+0x2E` is the
+  character (1-8).
+- `D_800A0E78` is a pool of 0x9C-byte engines.
+- Most-called list: `grep -rhoE "jal +func_800[0-9A-F]{5}" asm/nonmatchings | sort | uniq -c | sort -rn`.
+
+**Next**
+1. Core globals: the AST table (`D_8005AA6C`, count `D_8005AA60`), the NAS
+   lists (`D_8005AA04`/`08`/`0C`), the hero array (`D_8009D52C`), the random
+   seeds and the engine pool.
+2. PsyQ headers in the game sources; then the hero struct and `bool`.
+
+
 ## 2026-10-10 - owned headers
 
 **State at end of session:** `make verify` -> 16 targets OK.

@@ -144,7 +144,7 @@ u8 *func_800BB624(void) {
     if (var_v0 >= 9) {
         return NULL;
     }
-    temp_v0 = func_80022A3C(0x1000, 0x1000, 0x1000, 0x1B01, 0x11);
+    temp_v0 = SpawnNASById(0x1000, 0x1000, 0x1000, 0x1B01, 0x11);
     if ((temp_v0 != NULL) && ((*(s32*)((u8*)(temp_v0) + 84)) != 0)) {
         temp_v0_2 = (*(s32*)((u8*)(temp_v0) + 88));
         if (temp_v0_2 != NULL) {
@@ -199,24 +199,24 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BC3A4);
 void func_800BC6B8(void) {
     s32 temp_v0;
 
-    temp_v0 = func_80015590(6);
+    temp_v0 = Random(6);
     if (temp_v0 == 0) {
-        func_80022660(0x2BC, 0, 0, 0x1000, 0x1E00, 0);
+        PlaySfx(0x2BC, 0, 0, 0x1000, 0x1E00, 0);
     }
     if (temp_v0 == 1) {
-        func_80022660(0x2BD, 0, 0, 0x1000, 0x1E00, 0);
+        PlaySfx(0x2BD, 0, 0, 0x1000, 0x1E00, 0);
     }
     if (temp_v0 == 2) {
-        func_80022660(0x2BE, 0, 0, 0x1000, 0x1E00, 0);
+        PlaySfx(0x2BE, 0, 0, 0x1000, 0x1E00, 0);
     }
     if (temp_v0 == 3) {
-        func_80022660(0x2BF, 0, 0, 0x1000, 0x1E00, 0);
+        PlaySfx(0x2BF, 0, 0, 0x1000, 0x1E00, 0);
     }
     if (temp_v0 == 4) {
-        func_80022660(0x2C0, 0, 0, 0x1000, 0x1E00, 0);
+        PlaySfx(0x2C0, 0, 0, 0x1000, 0x1E00, 0);
     }
     if (temp_v0 == 5) {
-        func_80022660(0x2C1, 0, 0, 0x1000, 0x1E00, 0);
+        PlaySfx(0x2C1, 0, 0, 0x1000, 0x1E00, 0);
     }
 }
 
@@ -324,18 +324,18 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800C323C);
 void func_800C3370(void) {
     s32 temp_v0;
 
-    temp_v0 = func_80015590(4);
+    temp_v0 = Random(4);
     if (temp_v0 == 0) {
-        func_80022660(0x28B, 0, 0, 0x1000, 0x1E00, 0);
+        PlaySfx(0x28B, 0, 0, 0x1000, 0x1E00, 0);
     }
     if (temp_v0 == 1) {
-        func_80022660(0x28C, 0, 0, 0x1000, 0x1E00, 0);
+        PlaySfx(0x28C, 0, 0, 0x1000, 0x1E00, 0);
     }
     if (temp_v0 == 2) {
-        func_80022660(0x28D, 0, 0, 0x1000, 0x1E00, 0);
+        PlaySfx(0x28D, 0, 0, 0x1000, 0x1E00, 0);
     }
     if (temp_v0 == 3) {
-        func_80022660(0x28E, 0, 0, 0x1000, 0x1E00, 0);
+        PlaySfx(0x28E, 0, 0, 0x1000, 0x1E00, 0);
     }
 }
 

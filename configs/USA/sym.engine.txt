@@ -9,3 +9,6 @@ InitSmokePoof = 0x8008CEF8; // type:func
 PlotSmokePoof = 0x8008C368; // type:func
 InitWeatherNas = 0x8008CDB4; // type:func
 PlotWeatherNas = 0x8008CD40; // type:func
+SetHeroAction = 0x800868B4; // type:func
+SetHeroSeq = 0x800854C0; // type:func
+GetEngineSlot = 0x80095E38; // type:func

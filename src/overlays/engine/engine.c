@@ -68,7 +68,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007A91C);
 void func_8007A9D0(u8 *arg0) {
     D_80098718 = arg0;
     D_8009871C = 0;
-    func_80022660((*(u16*)((u8*)(arg0) + 4)), 0, 0, 0x1000, 0x1E00, 0);
+    PlaySfx((*(u16*)((u8*)(arg0) + 4)), 0, 0, 0x1000, 0x1E00, 0);
 }
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007AA18);
@@ -295,7 +295,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80084E04);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008502C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800854C0);
+INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", SetHeroSeq);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80085584);
 
@@ -360,7 +360,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80086868);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008688C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800868B4);
+INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", SetHeroAction);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80086918);
 
@@ -534,7 +534,7 @@ void InitFloatyScore(u8 *arg0) {
         (*(s8*)((u8*)(temp_v1) + 93)) = 2;
     }
     if ((*(u16*)((u8*)(arg0) + 106)) != 0) {
-        func_80022FD4();
+        KillNAS();
     }
 }
 
@@ -994,7 +994,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80095D88);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80095DBC);
 
-u8 *func_80095E38(s32 arg0) {
+u8 *GetEngineSlot(s32 arg0) {
     return (arg0 * 0x9C) + D_800A0E78;
 }
 

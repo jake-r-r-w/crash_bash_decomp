@@ -219,7 +219,7 @@ void func_800BA804(void) {
     s32 temp_a0;
     u8 *temp_v0;
 
-    temp_v0 = func_80095E38(6);
+    temp_v0 = GetEngineSlot(6);
     if (temp_v0 != NULL) {
         temp_a0 = (*(s32*)((u8*)(temp_v0) + 20));
         if (temp_a0 < 0x21C) {
@@ -232,7 +232,7 @@ void func_800BA848(void) {
     s32 temp_a0;
     u8 *temp_v0;
 
-    temp_v0 = func_80095E38(6);
+    temp_v0 = GetEngineSlot(6);
     if (temp_v0 != NULL) {
         temp_a0 = (*(s32*)((u8*)(temp_v0) + 20));
         if (temp_a0 >= 0x155) {
@@ -253,7 +253,7 @@ void func_800BA978(u8 *arg0) {
         (*(s16*)((u8*)(arg0) + 94)) = 0;
     }
     if ((*(u16*)((u8*)(arg0) + 106)) != 0) {
-        func_80022FD4();
+        KillNAS();
     }
 }
 
@@ -262,7 +262,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/ovl6a", func_800BA9C8);
 void func_800BAAFC(void) {
     func_8009440C();
     func_80018B08(D_8009F67C, D_8009F734);
-    func_8001C2C0(func_80095E38(6));
+    func_8001C2C0(GetEngineSlot(6));
 }
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/ovl6a", func_800BAB40);

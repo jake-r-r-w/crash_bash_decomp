@@ -259,7 +259,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6F70);
 void func_800C6F88(u8 *arg0) {
     (*(s32*)((u8*)(arg0) + 100)) = 0;
     if ((*(u16*)((u8*)(arg0) + 106)) != 0) {
-        func_80022FD4();
+        KillNAS();
     }
 }
 
@@ -295,7 +295,7 @@ void func_800C7350(u8 *arg0) {
     (*(s32*)((u8*)(temp_v1_2) + 108)) = D_80053694;
     (*(s16*)((u8*)(temp_v1_2) + 116)) = 0x2019;
     if ((*(u16*)((u8*)(arg0) + 106)) != 0) {
-        func_80022FD4();
+        KillNAS();
     }
 }
 
@@ -314,7 +314,7 @@ void func_800C7494(u8 *arg0) {
     (*(s16*)((u8*)(temp_v1_2) + 116)) = 0x2019;
     (*(s16*)((u8*)(arg0) + 92)) = 0;
     if ((*(u16*)((u8*)(arg0) + 106)) != 0) {
-        func_80022FD4();
+        KillNAS();
     }
 }
 

@@ -65,7 +65,7 @@ void func_80094F60(void);
 void func_80094FA8(void);
 void func_80094FE0(void);
 void func_80095A04(s32 arg0);
-u8 *func_80095E38(s32 arg0);
+u8 *GetEngineSlot(s32 arg0);
 s32 func_800976A8(u8 *arg0, s32 arg1);
 void func_80098278(void);
 

@@ -76,7 +76,7 @@ code finds 15 code files; nothing else on the disc holds code.
   cut off in the leak). Leaf functions reached only through this table are
   declared in `configs/USA/sym.<ovl>.txt` so splat splits them.
 - **AST names**: the field order is fixed by the engine's spawn code
-  (`func_80022DDC`): it stores `+4` at `nas+0x48` and calls it at once
+  (`SpawnNASFromRecord`): it stores `+4` at `nas+0x48` and calls it at once
   (Init), and it stores `+8` at `nas+0x4C` (Plot). Each Pogo, Arkenoid and
   Polar id is named from its leaked enum entry (id = `*_AST_zero` + position).
   The functions take the leak's own `Init`/`Plot` prototype spelling where one
@@ -158,17 +158,47 @@ signature alone is not enough.
     `IsPtInALLZone`.
   - `func_800C9B5C()` counts a list linked through `+0x20`, which could be
     `CountBears`.
-  - `func_8001463C(x, z)` returns a 12-bit angle, as the leak's inline
+  - `get_angle(x, z)` returns a 12-bit angle, as the leak's inline
     `get_angle` does. That's one use, so not yet proof.
   - The rest of the reached helpers have no prototype in the leak.
+
+## Core engine functions
+
+The most-called functions in the exe and the engine. `get_angle` is the leak's
+own name, from the inline `CalcCurrentSector` in polar.h. The others are
+**descriptive names**: the leak doesn't name them, so replace them if the
+originals turn up. Call counts are `jal` sites across all binaries.
+
+| Name | Address | Calls | Evidence |
+|---|---|---|---|
+| `PlaySfx` | `0x80022660` | 911 | Looks the id up in the table at `D_80064508`, takes a voice from the pool at `D_800590D0+0x540`, returns it. `Roo_GoBoing` passes a random id and `&eng->unk10`. |
+| `Random(n)` | `0x80015590` | 650 | Advances two seeds (`D_800517B8`, `D_800517BC`) and returns `seed % n`, or 0 for `n < 2`. |
+| `FindExtension(nas, id)` | `0x800264E8` | 438 | Walks the extension chain from `NAS.ext`, matching `EXTid` (and the low byte when given). |
+| `SpawnNASById(x, y, z, id, ...)` | `0x80022A3C` | 349 | Finds `id` in the AST table, then builds a `NAS` the way `SpawnNASFromRecord` does. Callers pass `AST_*` ids. |
+| `SetHeroAction(player, action)` | `0x800868B4` | 310 | Stores the action at `hero+0x2C` (the previous one at `+0x4C`) and calls its handler from `D_8009DCA0`. |
+| `get_angle(x, z)` | `0x8001463C` | 300 | Arctangent through the table at `D_800517C0`, giving a 12-bit angle; used as `get_angle(x, z) & 4095` as in the leak. |
+| `GetEngineSlot(i)` | `0x80095E38` | 237 | `&D_800A0E78[i]` with 0x9C-byte entries (`sizeof(EXTengine)`); its sibling copies the engine template into one. |
+| `KillNAS(nas)` | `0x80022FD4` | 225 | Frees the engines and extensions, unlinks from the active list (`D_8005AA08`), clears `flags`, pushes onto the free list (`D_8005AA0C`). |
+| `StopSfx(voice)` | `0x800225C4` | 173 | Stops the voice (`func_8002B8F4(voice+0x2C)`) and returns it to `PlaySfx`'s pool. |
+| `SetHeroSeq(player, seq)` | `0x800854C0` | 133 | Picks the per-character table from `D_8009D29C` by `hero+0x2E` (1-8, the leak's eight `hero_seq` prefixes) and sets `hero+0x56`. |
+| `AddExtension(nas, size, id)` | `0x8002689C` | 75 | `AllocExtension` with no template. |
+| `AddEngine(nas, id)` | `0x8002672C` | 44 | 0x9C-byte engine from a template, first one in `NAS.eng`. |
+| `SpawnNASFromRecord(rec)` | `0x80022DDC` | - | Takes a `NAS` from the free list and sets it up (see Engine types). |
+| `AllocExtension(owner, size, id, tmpl)` | `0x800232B0` | - | The heap allocator behind the extension calls. |
+| `FreeExtension(ext)` | `0x80023404` | - | Range-checks against the heap, unlinks from the chain, frees the block. |
+
+Also called often but not named yet, because their roles aren't proven:
+`func_8008502C` (116, a 26-case switch), `func_80025A48` (94, looks up a flagged
+entry through `eng+0x6C`), `func_80026980` (63, unlinks from a list at
+`D_8005AA34`), `func_800250B0`, `func_80095BEC`, `func_80025FAC`.
 
 ## Engine types
 
 The engine's object model, as far as code proves it. The definitions are in
 `include/bash/nas.h`, and each size has a compile-time check.
 
-- **Extension allocator.** `func_8002689C(owner, size, id)` calls
-  `func_800232B0`. That allocates `size` bytes after a 0x18-byte heap header,
+- **Extension allocator.** `AddExtension(owner, size, id)` calls
+  `AllocExtension`. That allocates `size` bytes after a 0x18-byte heap header,
   then writes `id` at `+0` (`EXTid`), the previous link at `+4` and a null at
   `+8`. It appends the new extension to the owner's chain, which starts at
   `NAS+0x08` and continues through each extension's `+8`. On failure it sets bit
@@ -181,16 +211,16 @@ The engine's object model, as far as code proves it. The definitions are in
   fields: `fadeuprate` at `+0xC`, `angle` at `+0x2C`, and `EXTbombmaker.timer`
   is set to 180.
 - **NAS (0x70 bytes).**
-  - `func_80022DDC(spawn)` takes one from the free list (linked through
+  - `SpawnNASFromRecord(spawn)` takes one from the free list (linked through
     `+0x10`), copies a 0x70-byte template over it, and appends it to the active
     list (`+0x0C` prev, `+0x10` next).
   - It sets `flags` (`+0`) to 1, the AST index (`s16` at `+0x6C`) and the spawn
     record (`+0x50`).
   - It stores the AST entry's Init and Plot at `+0x48`/`+0x4C`, calls
-    `func_8002672C(nas, 1)` to make the engine extension, and then calls Init.
+    `AddEngine(nas, 1)` to make the engine extension, and then calls Init.
   - Field widths elsewhere come from a survey of every named Init/Plot (`a0` is
     the `NAS`).
-- **EXTengine (0x9C bytes).** `func_8002672C(nas, id)` allocates 0x9C bytes
+- **EXTengine (0x9C bytes).** `AddEngine(nas, id)` allocates 0x9C bytes
   with `EXTid = id | 0x100` from a template, and sets `0x100` in `NAS.flags`.
   - The first engine extension goes to `NAS+0x54` (`eng`); later ones are
     linked through `+0x7C`.

@@ -200,7 +200,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C0AFC);
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C0B70);
 
 void func_800C0BF0(s32 arg0, s32 arg1) {
-    D_800C5BB0 = func_80022A3C((arg0 << 9) - 0x700, D_8005A5D8, (arg1 << 9) - 0x700, 0x1408, 0x11);
+    D_800C5BB0 = SpawnNASById((arg0 << 9) - 0x700, D_8005A5D8, (arg1 << 9) - 0x700, 0x1408, 0x11);
 }
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C0C34);
@@ -233,7 +233,7 @@ void Init_PogoProjectile(NAS *arg0) {
         (*(s32*)((u8*)(arg0) + 100)) = 0;
     }
     if ((*(u16*)((u8*)(arg0) + 106)) != 0) {
-        func_80022FD4();
+        KillNAS();
     }
 }
 

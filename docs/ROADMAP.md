@@ -31,7 +31,7 @@ or types.
 - [x] Recover the core engine layouts: `NAS`, `EXTnode`, `EXTengine` and
   `SLONG_XYZ` (sizes and proven fields).
 - [x] Retire `include/externs.h` and `include/prototypes.h` into owned headers.
-- [ ] Name the core engine functions every match calls (spawn by AST id,
+- [x] Name the core engine functions every match calls (spawn by AST id,
   extension and engine allocation, extension lookup, random, sound, angle, and
   the most-called exe and engine functions), each with code evidence.
 - [ ] Name the core globals: the AST table, the NAS lists and the player/hero

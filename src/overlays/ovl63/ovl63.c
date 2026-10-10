@@ -226,7 +226,7 @@ s32 func_800C4D1C(u8 *arg0, u8 *arg1) {
 
 void func_800C4D70(u8 *arg0) {
     D_800C6D20 = 0x12C;
-    func_80022660(0x452, (*(s32*)((u8*)(arg0) + 84)) + 0x94, 0, 0x1000, 0x1E00, 0);
+    PlaySfx(0x452, (*(s32*)((u8*)(arg0) + 84)) + 0x94, 0, 0x1000, 0x1E00, 0);
 }
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4DB8);

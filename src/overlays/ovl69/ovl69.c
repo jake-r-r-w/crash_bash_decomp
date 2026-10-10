@@ -182,7 +182,7 @@ void func_800B81F0(void) {
             if (temp_v0 < 0) {
                 D_800BAACC = 1;
             }
-            func_80022660(0x385, 0, 0, 0x1000, 0x1E00, 0);
+            PlaySfx(0x385, 0, 0, 0x1000, 0x1E00, 0);
         }
         if (D_80051380 & 0x20) {
             temp_v0_2 = D_800BAACC + 1;
@@ -190,12 +190,12 @@ void func_800B81F0(void) {
             if (temp_v0_2 >= 2) {
                 D_800BAACC = 0;
             }
-            func_80022660(0x385, 0, 0, 0x1000, 0x1E00, 0);
+            PlaySfx(0x385, 0, 0, 0x1000, 0x1E00, 0);
         }
         func_800B7EF4();
         if (D_80051380 & 0x4000) {
             func_800B5410();
-            func_80022660(0x192, 0, 0, 0x1000, 0x1E00, 0);
+            PlaySfx(0x192, 0, 0, 0x1000, 0x1E00, 0);
         }
     }
     if ((D_80051380 & 0x10) && (D_800BAAC8 > 0)) {
@@ -205,7 +205,7 @@ void func_800B81F0(void) {
         D_800BAAC8 += 1;
     }
     if (D_80051380 & 0x1000) {
-        func_80022660(0x384, 0, 0, 0x1000, 0x1E00, 0);
+        PlaySfx(0x384, 0, 0, 0x1000, 0x1E00, 0);
         func_800B53D4();
     }
 }
@@ -230,7 +230,7 @@ void func_800B8498(void) {
 }
 
 void func_800B84B8(void) {
-    func_8001C2C0(func_80095E38(2));
+    func_8001C2C0(GetEngineSlot(2));
 }
 
 void func_800B84E0(void) {
