@@ -32,6 +32,9 @@ Newest first. Each session appends: what changed, what was learned, what's next.
   outside it, and `auto` is retired (`--legacy`). See `docs/MATCHING.md` and
   the `/match-function` skill. First match through it: `func_800C6828` (ovl5f,
   `d3386d9`; m2c dropped the pass-through `a0`).
+- README: states the goal (a source-only Crash Bash: all C, no INCLUDE_ASM,
+  byte-identical; PsyQ from Sony objects) and has a Mermaid diagram of the
+  matching loop and gate ("How functions are matched").
 
 **Next**
 1. `/match-function`, one function per commit. `next` still shows the old

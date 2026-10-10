@@ -1,7 +1,7 @@
 # Matching workflow
 
 Functions are matched by hand, by a person or an AI agent, **one function per
-commit**, and every commit goes through one validation gate. The bulk matcher
+commit**, and every commit goes through one validation gate ([diagram](../README.md#how-functions-are-matched)). The bulk matcher
 (`decomp.py auto`) is retired. Its earlier drafts still show up in `next` as a
 starting point.
 

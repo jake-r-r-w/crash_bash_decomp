@@ -3,9 +3,18 @@
 Work-in-progress matching decompilation of the North American PlayStation
 release of Crash Bash, target `SCUS_945.70`.
 
-This repository is source-only. It does not contain disc images, extracted game
-files, Sony PsyQ SDK files, compiler binaries, or generated split output.
-Contributors must provide their own legally obtained copy of the game.
+**Goal: a source-only Crash Bash.** Every function in the executable and the
+15 code overlays should exist as C that compiles back to the retail bytes. The
+data should exist as C tables and structs. Nothing should be included as
+assembly. The code should be named, typed and split into the files it came
+from. The PsyQ libraries are the one exception: they come from Sony's own
+objects, which are linked in place rather than decompiled. The result should
+read like the source the developers wrote and rebuild the game byte for byte.
+
+This repository is source-only in the other sense too. It does not contain
+disc images, extracted game files, Sony PsyQ SDK files, compiler binaries, or
+generated split output. Contributors must provide their own legally obtained
+copy of the game.
 
 ## Target
 
@@ -33,15 +42,55 @@ data for scripts and `docs/badges/` feeds the badges above. Regenerate all three
 with `make progress`; `decomp.py done` does it on every match. This README
 intentionally avoids hardcoded numbers.
 
-A function counts only when the **whole executable still matches the retail
-SHA-1** after it is added: `done` rebuilds from scratch and compares before
-recording or committing anything. Functions still included as assembly receive
+A function counts only when **every binary still matches the retail bytes**
+after it is added: `done` rebuilds the exe and all overlays from scratch and
+compares them before recording or committing anything. Functions still included as assembly receive
 no credit. PsyQ code is not decompiled: Sony's own converted objects are linked
 in place and counted as library progress, separately from game code.
 
 Binary matching is only one quality level. A file is finished when it is also
 named, typed and placed in its subsystem; [docs/CONVENTIONS.md](docs/CONVENTIONS.md)
 defines that bar. See [CONTRIBUTING.md](CONTRIBUTING.md) for the working contract.
+
+## How functions are matched
+
+Every function starts as assembly, split from the retail binaries and pulled
+into its C file with `INCLUDE_ASM`. Functions are then replaced with C by hand,
+by a person or an AI agent, **one function per commit**. Each one goes through
+a single validation gate, `decomp.py done`, before anything is recorded. A
+match is the first step. The same function is later named, typed and moved
+into its original file, until no assembly is left.
+
+```mermaid
+flowchart TD
+    disc["Retail disc: SCUS_945.70 + CRASHBSH.DAT overlays"] --> split["splat: one asm file per function; C files are INCLUDE_ASM lines"]
+    split --> next["decomp.py next: pick one function, show its asm + m2c draft"]
+    next --> write["Write C in place of its INCLUDE_ASM line"]
+    write --> diff{"make diff: same instructions?"}
+    diff -. "no: adjust the C" .-> write
+    diff -. "stuck after ~10 rounds" .-> permute["make permute"]
+    permute -. "found a fix" .-> write
+    permute -. "still differs" .-> block["decomp.py block: park it, best C kept under NON_MATCHING"]
+    diff -- "yes" --> g1
+
+    subgraph gate ["decomp.py done gate"]
+        direction TB
+        g1["Scope: only this function's INCLUDE_ASM replaced"] --> g2["Lint: no m2c leftovers; register pins / asm barriers need --hack"]
+        g2 --> g3["Function: compiled words equal the target"]
+        g3 --> g4["Full build: clean rebuild of the exe and all 15 overlays is byte-identical"]
+    end
+
+    gate -. "any check fails" .-> write
+    g4 -- "all pass" --> commit["One commit per function: Match NAME; identical copies matched too; dashboard refreshed"]
+    hook["pre-commit hook"] -. "refuses matches made any other way" .-> commit
+    commit --> quality["Later passes: named, typed, placed in its original file"]
+    quality --> goal(["Source-only Crash Bash: all C, no INCLUDE_ASM, byte-identical"])
+```
+
+The loop is described in [docs/MATCHING.md](docs/MATCHING.md). An AI agent runs
+it one function at a time with the `/match-function` project skill
+(`.claude/skills/match-function`). The bulk m2c matcher (`decomp.py auto`) is
+retired.
 
 ## How the game is built
 
@@ -70,7 +119,9 @@ build pipeline are described in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
   (`psyq/`: objects found, their layout, linker glue).
 - `tools/scripts/` - build, match and report helpers (`decomp.py` is the main
   CLI); `tools/docker/` - the toolchain image; `tools/hooks/` - the pre-commit
-  hook that keeps game data out of git.
+  hook that keeps game data out of git and refuses matches made outside
+  `decomp.py done` (enable with `git config core.hooksPath tools/hooks`).
+- `.claude/skills/match-function/` - the AI agent's matching loop.
 - `.decomp/` - matching state: function index, statuses and progress history.
 - `docs/` - the dashboard, badges and contracts.
 
@@ -114,6 +165,7 @@ mkdir -p disc ext/psyq47
 cp "/path/to/Crash Bash.bin" disc/CrashBash.bin     # and a .cue naming CrashBash.bin
 tar -xf psyq-4.7-converted-full.7z -C ext/psyq47    # Windows tar reads 7z
 
+git config core.hooksPath tools/hooks                 # data guard + match gate
 tools/dk python3 tools/scripts/decomp.py extract disc/CrashBash.cue
 tools/dk make split
 tools/dk make check
@@ -126,10 +178,16 @@ Useful extras:
 
 ```sh
 tools/dk make verify                 # clean rebuild + checksum
-tools/dk make diff FUNC=func_80012345
-tools/dk make permute FUNC=func_80012345
 tools/dk make progress               # dashboard + badges
-tools/dk python3 tools/scripts/decomp.py next   # pick the next function to match
+```
+
+Matching one function (see [How functions are matched](#how-functions-are-matched)):
+
+```sh
+tools/dk python3 tools/scripts/decomp.py next            # pick a function: asm + draft
+tools/dk make diff FUNC=func_80012345                    # after writing its C
+tools/dk make permute FUNC=func_80012345                 # if stuck
+tools/dk python3 tools/scripts/decomp.py done func_80012345 --commit --note "what made it match"
 ```
 
 ## Local dashboard and objdiff
