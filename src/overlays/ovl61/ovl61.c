@@ -95,11 +95,11 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", InitBall);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", PlotBall);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BB41C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", CalcArkInfluence);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BB674);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", FreeGrabbedObject);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BB924);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", AlignGrabBall);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Plot_N_Gin);
 
@@ -131,7 +131,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BE1C4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BE4D4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BEFD4);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", ArkHeroRad2ObjectCollision);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", ArkHeroRad2ObjectRepel);
 

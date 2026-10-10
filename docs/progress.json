@@ -1,8 +1,8 @@
 {
  "blocked": [],
- "commit": "e3efba2",
+ "commit": "5265e39",
  "game": "SCUS_945.70",
- "generated": "2026-10-10T13:49:46Z",
+ "generated": "2026-10-10T17:32:11Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -219,6 +219,22 @@
    "lib_f": 535,
    "lib_tb": 122112,
    "ts": "2026-10-10T13:49:46Z"
+  },
+  {
+   "commit": "5265e39",
+   "data_b": 128,
+   "data_tb": 616791,
+   "game_all_f": 2550,
+   "game_b": 19312,
+   "game_c_f": 393,
+   "game_f": 393,
+   "game_named_f": 144,
+   "game_tb": 1019036,
+   "game_typed_f": 280,
+   "lib_b": 121280,
+   "lib_f": 535,
+   "lib_tb": 122112,
+   "ts": "2026-10-10T17:32:11Z"
   }
  ],
  "recent": [
@@ -530,12 +546,12 @@
    "c_f": 393,
    "done_b": 19312,
    "done_f": 393,
-   "named_f": 138,
+   "named_f": 144,
    "pct": 1.8951244116988997,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2550,
-   "typed_f": 276
+   "typed_f": 280
   },
   "lib": {
    "all_f": 566,
@@ -585,14 +601,14 @@
     "file": "SCUS_945.70",
     "files": 1,
     "lib": false,
-    "named_f": 13,
+    "named_f": 15,
     "pct": 6.978532521627684,
     "phase": 2,
     "sony_b": 0,
     "title": "main.exe",
     "total_b": 124840,
     "total_f": 574,
-    "typed_f": 67,
+    "typed_f": 71,
     "unit": "main exe"
    },
    {
@@ -690,7 +706,7 @@
     "file": "ovl61.bin",
     "files": 1,
     "lib": false,
-    "named_f": 18,
+    "named_f": 22,
     "pct": 0.5309090909090909,
     "phase": 4,
     "sony_b": 0,

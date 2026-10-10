@@ -38,10 +38,12 @@ or types.
   array.
 - [x] Include Sony's PsyQ headers in the game sources, so library calls get
   real prototypes.
-- [ ] Recover the layouts of the engine types `main.exe`'s code uses (from
+- [x] Recover the layouts of the engine types `main.exe`'s code uses (from
   `EXTobject`, `EXTmotion`, `NASTrigger`, `subengine`, `hero_seq`, ...) and the
   player/hero struct indexed from `D_8009D52C`, and settle the size of `bool`.
   Naming `unkXX` fields is ongoing work in every phase, not part of this item.
+  `NASTrigger` and the other minigame-only types (`EXTbotai`, `EXTheromove`,
+  `TA_player`) are only used in the overlays, so they're recovered with them.
 
 ## Phase 2 - `main.exe` to source-only
 

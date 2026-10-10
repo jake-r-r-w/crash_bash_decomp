@@ -17,3 +17,7 @@ Plot_ArkLaserWall = 0x800BFB14; // type:func
 Plot_Ark_Pickup = 0x800BDAB8; // type:func
 ArkHeroRad2ObjectRepel = 0x800BF2BC; // type:func
 ArkHeroRad2ObjectAttract = 0x800BF474; // type:func
+ArkHeroRad2ObjectCollision = 0x800BEFD4; // type:func
+CalcArkInfluence = 0x800BB41C; // type:func
+FreeGrabbedObject = 0x800BB674; // type:func
+AlignGrabBall = 0x800BB924; // type:func

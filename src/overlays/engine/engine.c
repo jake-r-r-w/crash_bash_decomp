@@ -982,7 +982,7 @@ void func_80095A04(s32 arg0) {
     EXTengine *eng;
 
     eng = &EnginePool[arg0];
-    func_8001D334(eng->unk6C);
+    func_8001D334(eng->sub);
     eng->flags &= 0xFFFF7FFF;
 }
 

@@ -5906,14 +5906,14 @@
   "src": "src/main/main.c"
  },
  "80026540": {
-  "asm": "asm/nonmatchings/main/main/func_80026540.s",
+  "asm": "asm/nonmatchings/main/main/AddMotion.s",
   "calls": [
    "800232B0"
   ],
   "fp": "7ff92127a7a7dc5d",
   "fpn": "332b600bd38cced0",
   "leaf": false,
-  "name": "func_80026540",
+  "name": "AddMotion",
   "orig": "func_80026540",
   "rom": 93504,
   "seg": "main/main",
@@ -5936,14 +5936,14 @@
   "src": "src/main/main.c"
  },
  "80026684": {
-  "asm": "asm/nonmatchings/main/main/func_80026684.s",
+  "asm": "asm/nonmatchings/main/main/AddObject.s",
   "calls": [
    "800232B0"
   ],
   "fp": "1f6a16eac60d61c2",
   "fpn": "848a829077b070cf",
   "leaf": false,
-  "name": "func_80026684",
+  "name": "AddObject",
   "orig": "func_80026684",
   "rom": 93828,
   "seg": "main/main",
@@ -33714,7 +33714,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800BB41C": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800BB41C.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/CalcArkInfluence.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "8001463C",
@@ -33723,7 +33723,7 @@
   "fp": "3de30ebd08d40b13",
   "fpn": "435d4b0345533e26",
   "leaf": false,
-  "name": "func_800BB41C",
+  "name": "CalcArkInfluence",
   "orig": "func_800BB41C",
   "rom": 33128,
   "seg": "overlays/ovl61/ovl61",
@@ -33731,7 +33731,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800BB674": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800BB674.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/FreeGrabbedObject.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "8001463C",
@@ -33744,7 +33744,7 @@
   "fp": "bb400281301f6259",
   "fpn": "6869256e22ac2c47",
   "leaf": false,
-  "name": "func_800BB674",
+  "name": "FreeGrabbedObject",
   "orig": "func_800BB674",
   "rom": 33728,
   "seg": "overlays/ovl61/ovl61",
@@ -33752,7 +33752,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800BB924": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800BB924.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/AlignGrabBall.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "8001463C",
@@ -33765,7 +33765,7 @@
   "fp": "a8ed840bb3c35586",
   "fpn": "85d6fafab2c81b2a",
   "leaf": false,
-  "name": "func_800BB924",
+  "name": "AlignGrabBall",
   "orig": "func_800BB924",
   "rom": 34416,
   "seg": "overlays/ovl61/ovl61",
@@ -34051,7 +34051,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800BEFD4": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800BEFD4.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/ArkHeroRad2ObjectCollision.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "8001463C",
@@ -34063,7 +34063,7 @@
   "fp": "3027f818268c4548",
   "fpn": "416a845af546e6df",
   "leaf": false,
-  "name": "func_800BEFD4",
+  "name": "ArkHeroRad2ObjectCollision",
   "orig": "func_800BEFD4",
   "rom": 48416,
   "seg": "overlays/ovl61/ovl61",

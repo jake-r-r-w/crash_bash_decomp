@@ -2,6 +2,51 @@
 
 Newest first. Each session appends: what changed, what was learned, what's next.
 
+## 2026-10-10 - engine types, hero struct and bool (Phase 1 done)
+
+**State at end of session:** `make verify` -> 16 targets OK; 144 game
+functions named, 280/393 matched functions typed.
+
+**Done**
+- `bash/nas.h` now defines `Hero` (0x6C; `Heroes[4]` in `engine.h`),
+  `subengine` (0xA8), `EXTmotion` (0x34, id 0x800), `EXTobject` (0x2C, id
+  0x1000) and `hero_seq` (one halfword). `EXTengine` gained `sub`/`subLast`
+  (`+0x6C`/`+0x70`), `unk94` and `subCount` (`+0x9A`). Evidence is in
+  `docs/ARCHITECTURE.md` (Engine types).
+- `bool` is 32 bits: the callees of two of the leak's bool parameters reload
+  them with `lw` and don't narrow them.
+- `BASH_HAVE_HERO_SEQ` is defined, so the leak's `*_seq_*` externs now compile
+  in. Only `BASH_HAVE_TA_PLAYER` is still guarded.
+- Named `AddMotion`, `AddObject` and four Arkenoid functions from the leak's
+  order after `PlotBall`/before `ArkHeroRad2ObjectRepel`:
+  `ArkHeroRad2ObjectCollision`, `CalcArkInfluence`, `FreeGrabbedObject`,
+  `AlignGrabBall`.
+- Typed the four matched subengine-release functions (`func_8001D174`,
+  `func_8001D220`, `func_8001D2B4`, `func_8001D334`) with the new structs; the
+  build still matches, which checks those offsets.
+- `tools/scripts/field_survey.py`: counts every load/store through a struct
+  pointer (by array symbol, function return or loaded field), giving each
+  offset's widths and signedness. That's where the field types come from.
+- Roadmap: last Phase 1 item ticked. `NASTrigger`, `EXTbotai`, `EXTheromove`
+  and `TA_player` are used only by the minigame overlays and stay incomplete
+  until those are worked on.
+
+**Learned / gotchas**
+- `make verify` wipes `build/`, including the full disassembly that
+  `make objdiff-config` writes to `build/objdiff/asm`. Re-run objdiff-config
+  before surveying matched functions too; `asm/` alone lacks them.
+- `NAS+0x58` is a per-object pointer: `EXTobject` for Arkenoid balls, other
+  extension types elsewhere. Leave it `void *`.
+- The leak's prototype order follows the code order inside a file
+  (Arkenoid twice now), so neighbours of a named function are good candidates.
+
+**Next**
+1. Phase 2: match `main.exe` game functions, one per session
+   (`/match-function`, `decomp.py next`). Use the new types (`Hero`,
+   `subengine`, ...) in place of m2c offsets.
+2. Name the hero's `+0x18`/`+0x1C`/`+0x20` extensions and `func_8008502C`
+   (the `hero_seq` interpreter) once their leak names are proven.
+
 ## 2026-10-10 - objdiff-config fixed
 
 **State at end of session:** `make verify` -> 16 targets OK; `make

@@ -75,6 +75,8 @@ extern s32 D_8009AE78;
 extern u8 D_8009F658[];
 extern u8 D_800A015C[];
 extern EXTengine EnginePool[];
+extern Hero Heroes[4];
+extern hero_seq **HeroSeqTables[]; /* by Hero.character (1-8): each character's sequences, by id */
 extern s32 D_8009BD04;
 extern s32 D_800A02C0;
 extern s32 D_800A02C4;

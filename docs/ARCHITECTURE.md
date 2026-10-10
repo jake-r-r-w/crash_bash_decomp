@@ -116,11 +116,11 @@ own header (`ovl5f`, `ovl60`, `ovl61`, `ovl62`). Differences from the leak:
   one-argument form is kept, and the other is noted in a comment until the
   definition settles it.
 - The engine types the leak uses but never defines (`NAS`, `EXTengine`,
-  `EXTnode`, `hero_seq`, ...) are incomplete structs in `bash/nas.h`.
-  Declarations that need one of them complete are wrapped in
-  `#ifdef BASH_HAVE_<TYPE>`: the `EXT*` extension structs (which embed
-  `EXTnode`) and the hero animation tables (`hero_seq`, `TA_player`).
-- `bool` is provisionally `s32`. Its size is not confirmed from code yet.
+  `EXTnode`, `hero_seq`, ...) are defined in `bash/nas.h` as their layouts are
+  recovered (see Engine types); the rest stay incomplete. Declarations that
+  need one of them complete are wrapped in `#ifdef BASH_HAVE_<TYPE>`. Only
+  `TA_player` is still guarded.
+- `bool` is 32 bits (`s32`); see Engine types.
 
 ### Functions reached from the AST pairs
 
@@ -150,6 +150,15 @@ signature alone is not enough.
   that differs in one way: the direction is negated in Repel and not in the
   twin. That twin is `ArkHeroRad2ObjectAttract`, the next prototype in the
   leak.
+  - `ArkHeroRad2ObjectCollision(player, radius, bool)` is the function right
+    before Repel, as in the leak's order. It adds the radius to a size from
+    the hero's engine and compares with the distance, and its two callers
+    pass 0 and 1 as the third argument.
+  - After `PlotBall`, the code follows the leak's order: `CalcArkInfluence`
+    (`0x800BB41C`, called by `PlotBall` with `FindExtension(nas, 0x800)`, an
+    `EXTmotion`), `FreeGrabbedObject(player, bool)` (`0x800BB674`) and
+    `AlignGrabBall(eng, motion, object)` (`0x800BB924`, called by `PlotBall`
+    with `nas->eng`, the 0x800 extension and `nas->unk58`).
 - **Ambiguous, left unnamed:**
   - Both of the leak's `Roo_FireRocket` declarations match real functions:
     `func_800BFFF4(eng)` and `func_800C02AC(eng, dir)` both spawn
@@ -183,13 +192,15 @@ originals turn up. Call counts are `jal` sites across all binaries.
 | `SetHeroSeq(player, seq)` | `0x800854C0` | 133 | Picks the per-character table from `D_8009D29C` by `hero+0x2E` (1-8, the leak's eight `hero_seq` prefixes) and sets `hero+0x56`. |
 | `AddExtension(nas, size, id)` | `0x8002689C` | 75 | `AllocExtension` with no template. |
 | `AddEngine(nas, id)` | `0x8002672C` | 44 | 0x9C-byte engine from a template, first one in `NAS.eng`. |
+| `AddMotion(nas)` | `0x80026540` | - | 0x34-byte `EXTmotion`, id 0x800, from the template `D_8005A9CC`; sets 0x800 in `NAS.flags`. |
+| `AddObject(nas)` | `0x80026684` | - | 0x2C-byte `EXTobject`, id 0x1000, from the template `D_8005A974`; sets 0x1000 in `NAS.flags`. |
 | `SpawnNASFromRecord(rec)` | `0x80022DDC` | - | Takes a `NAS` from the free list and sets it up (see Engine types). |
 | `AllocExtension(owner, size, id, tmpl)` | `0x800232B0` | - | The heap allocator behind the extension calls. |
 | `FreeExtension(ext)` | `0x80023404` | - | Range-checks against the heap, unlinks from the chain, frees the block. |
 
 Also called often but not named yet, because their roles aren't proven:
-`func_8008502C` (116, a 26-case switch), `func_80025A48` (94, looks up a flagged
-entry through `eng+0x6C`), `func_80026980` (63, unlinks from a list at
+`func_8008502C` (116, the `hero_seq` interpreter's 27-case switch), `func_80025A48` (94, looks up a flagged
+entry through `eng->sub`), `func_80026980` (63, unlinks from a list at
 `D_8005AA34`), `func_800250B0`, `func_80095BEC`, `func_80025FAC`.
 
 ## Core globals
@@ -207,9 +218,9 @@ Descriptive names (the leak doesn't name these), with types in `bash/main.h`,
 | `NASTemplate` | `0x8005A7C0` | `NAS` | Copied over each spawned `NAS` (0x70 bytes). |
 | `EngineTemplate` | `0x8005A8D8` | `EXTengine` | Copied over each new engine by `AddEngine` and `func_80095BEC`. |
 | `EnginePool` | `0x800A0E78` | `EXTengine[]` | `GetEngineSlot(i)` returns `&EnginePool[i]`. |
-| `Heroes` | `0x8009D52C` | not typed yet | The player/hero array: 0x6C-byte entries, `+0x2E` character (1-8); used by 822 functions. |
+| `Heroes` | `0x8009D52C` | `Hero[4]` | The player/hero array (see Engine types); used by 822 functions. `func_80083708` sets up all four. |
 | `HeroActionTable` | `0x8009DCA0` | not typed yet | 8-byte entries; `SetHeroAction` calls entry `action`'s handler. |
-| `HeroSeqTables` | `0x8009D29C` | not typed yet | One table per character; `SetHeroSeq` indexes it by `hero+0x2E`. |
+| `HeroSeqTables` | `0x8009D29C` | `hero_seq **[]` | One table of sequences per character; `SetHeroSeq` indexes it by `Hero.character`, then by the sequence id. |
 | `RandomSeedA` / `RandomSeedB` | `0x800517B8` / `0x800517BC` | `s32` | `Random`'s state; `SetRandomSeed(a, b)` (`0x800155E8`) sets both. |
 | `AtanTable` | `0x800517C0` | `s16[]` | `get_angle`'s lookup table. |
 | `SfxTable` | `0x80064508` | not typed yet | 2-byte entries per sound id, read by `PlaySfx`. |
@@ -250,11 +261,43 @@ The engine's object model, as far as code proves it. The definitions are in
   - The spawn record's first 12 bytes are copied to `+0x10`.
   - `EXTtransmuter.it_eng` and `light_eng[]` (both `EXTengine *` in the leak)
     are filled from this same constructor, which confirms the type.
-- **Still unknown.** The names of most fields, which stay `unkXX`. The size of
-  `bool`, provisionally `s32`. And the layouts of `EXTobject`, `EXTmotion`,
-  `EXTbotai`, `EXTheromove`, `NASTrigger`, `subengine`, `hero_seq`, `TA_player`
-  and the shell types. `EXTengine+0x6C` points to a sub-object that may be
-  `EXTobject`: not yet proven.
+  - `+0x6C`/`+0x70` are the first and last of the engine's `subengine`s,
+    `+0x9A` their count, and `+0x94` a sound voice that `func_8001D174` stops
+    when it frees them.
+- **subengine (0xA8 bytes).** `func_80018F3C(eng, n)` (through
+  `func_8001D390`) moves `n` nodes from the free list `D_80058ACC` onto the
+  engine, copying the 0xA8-byte template `D_8005A830` over each, and links them
+  through `+0x5C` (next) and `+0x60` (prev). `func_8001D174` and its siblings
+  call each node's `+0x58` callback with the node and return the chain to the
+  free list. Pogo's grid setup (`func_800B3C44`) stores each node of such a
+  chain in `PogoSquare.sub`, which the leak types `subengine *`.
+- **EXTmotion (0x34 bytes, id 0x800)** and **EXTobject (0x2C bytes, id
+  0x1000)** come from `AddMotion` and `AddObject` (see Core engine functions).
+  The leak names them through Arkenoid: `PlotBall` passes
+  `FindExtension(nas, 0x800)` to `CalcArkInfluence(EXTmotion *)`, and
+  `nas->unk58` (which `InitBall` sets to `AddObject(nas)`) to the
+  `AR_*_TestOutOfBounds(EXTengine *, EXTobject *, bool)` hooks and to
+  `AlignGrabBall`. `NAS+0x58` holds other extension types in other objects, so
+  it stays `void *`. Field widths come from a survey of every access through
+  those pointers.
+- **hero_seq** is one halfword. The sequence interpreter (`func_8008502C`)
+  reads `seq[pos]` with a 2-byte stride; `0x8000 | n` is command `n` (27 of
+  them, some with halfword operands) and other values are frames.
+- **Hero (0x6C bytes).** `func_80083708` sets up the four `Heroes`: `nas` from a
+  pool at `D_8005AA1C` (AST index 3), `eng = AddEngine(nas, 1)`, `sub =
+  eng->sub`, three more engines (`AddEngine` ids 2, 3, 3) at `+0x0C..+0x14`,
+  0x54- and 0x44-byte extensions at `+0x18`/`+0x20`, and at `+0x1C` the
+  0x2C-byte id-0x400 extension from `func_800265DC` that plays the current
+  `hero_seq` (`SetHeroSeq` sets its `+0x0C`). The rest is halfwords; widths
+  and signedness come from a survey of every `Heroes[i]` access (signed where
+  most loads are `lh`).
+- **bool is 32 bits.** `ArkHeroRad2ObjectCollision` and `FreeGrabbedObject`
+  keep their `bool` argument in its home slot and reload it with `lw`, with no
+  truncation; gcc would narrow a `char` or `short` parameter on entry.
+- **Still unknown.** The names of most fields, which stay `unkXX`. The layouts
+  of the minigame-only types `EXTbotai`, `EXTheromove`, `EXTobject_TA`,
+  `NASTrigger` and `TA_player`, and of the shell types. Which leak names the
+  hero's `+0x18`, `+0x1C` and `+0x20` extensions have.
 
 ## PsyQ
 

@@ -965,116 +965,116 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8001CFE8);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001D048);
 
-void func_8001D174(u8 *arg0) {
-    s32 (*temp_v0)(u8 *);
-    s32 temp_a0;
-    u8 *temp_s1;
-    u8 *temp_s2;
-    u8 *temp_s4;
-    u8 *temp_v1;
-    u8 *var_s0;
+void func_8001D174(EXTengine *eng) {
+    void (*release)(subengine *);
+    s32 voice;
+    subengine *next;
+    subengine *first;
+    subengine *last;
+    subengine *freeList;
+    subengine *sub;
 
-    temp_a0 = (*(s32*)((u8*)(arg0) + 148));
-    if (temp_a0 != 0) {
-        StopSfx(temp_a0);
+    voice = eng->unk94;
+    if (voice != 0) {
+        StopSfx(voice);
     }
-    temp_s2 = (*(s32*)((u8*)(arg0) + 108));
-    temp_s4 = (*(s32*)((u8*)(arg0) + 112));
-    var_s0 = temp_s2;
-    if (temp_s2 != NULL) {
+    first = eng->sub;
+    last = eng->subLast;
+    sub = first;
+    if (first != NULL) {
         do {
-            temp_v0 = (*(s32*)((u8*)(var_s0) + 88));
-            temp_s1 = (*(s32*)((u8*)(var_s0) + 92));
-            if (temp_v0 != NULL) {
-                temp_v0(var_s0);
+            release = sub->release;
+            next = sub->next;
+            if (release != NULL) {
+                release(sub);
             }
-            (*(s32*)((u8*)(var_s0) + 84)) = 0;
-            (*(s32*)((u8*)(var_s0) + 88)) = NULL;
-            (*(s32*)((u8*)(var_s0) + 0)) = 0;
-            var_s0 = temp_s1;
-        } while (var_s0 != NULL);
-        temp_v1 = D_80058ACC;
-        D_80058ACC = temp_s2;
-        (*(s32*)((u8*)(temp_s4) + 92)) = temp_v1;
+            sub->unk54 = 0;
+            sub->release = NULL;
+            sub->flags = 0;
+            sub = next;
+        } while (sub != NULL);
+        freeList = D_80058ACC;
+        D_80058ACC = first;
+        last->next = freeList;
     }
-    (*(s32*)((u8*)(arg0) + 108)) = NULL;
-    (*(s16*)((u8*)(arg0) + 154)) = 0;
+    eng->sub = NULL;
+    eng->subCount = 0;
 }
 
-void func_8001D220(u8 *arg0) {
-    s32 (*temp_v0)(u8 *);
-    u8 *temp_s1;
-    u8 *temp_s2;
-    u8 *temp_s4;
-    u8 *temp_v1;
-    u8 *var_s0;
+void func_8001D220(EXTengine *eng) {
+    void (*release)(subengine *);
+    subengine *next;
+    subengine *first;
+    subengine *last;
+    subengine *freeList;
+    subengine *sub;
 
-    temp_s2 = (*(s32*)((u8*)(arg0) + 108));
-    temp_s4 = (*(s32*)((u8*)(arg0) + 112));
-    var_s0 = temp_s2;
-    if (temp_s2 != NULL) {
+    first = eng->sub;
+    last = eng->subLast;
+    sub = first;
+    if (first != NULL) {
         do {
-            temp_v0 = (*(s32*)((u8*)(var_s0) + 88));
-            temp_s1 = (*(s32*)((u8*)(var_s0) + 92));
-            if (temp_v0 != NULL) {
-                temp_v0(var_s0);
+            release = sub->release;
+            next = sub->next;
+            if (release != NULL) {
+                release(sub);
             }
-            (*(s32*)((u8*)(var_s0) + 84)) = 0;
-            (*(s32*)((u8*)(var_s0) + 88)) = NULL;
-            (*(s32*)((u8*)(var_s0) + 0)) = 0;
-            var_s0 = temp_s1;
-        } while (var_s0 != NULL);
-        temp_v1 = D_80058ACC;
-        D_80058ACC = temp_s2;
-        (*(s32*)((u8*)(temp_s4) + 92)) = temp_v1;
+            sub->unk54 = 0;
+            sub->release = NULL;
+            sub->flags = 0;
+            sub = next;
+        } while (sub != NULL);
+        freeList = D_80058ACC;
+        D_80058ACC = first;
+        last->next = freeList;
     }
-    (*(s32*)((u8*)(arg0) + 108)) = NULL;
-    (*(s16*)((u8*)(arg0) + 154)) = 0;
+    eng->sub = NULL;
+    eng->subCount = 0;
 }
 
-void func_8001D2B4(u8 *arg0, u8 *arg1) {
-    s32 (*temp_v0)(u8 *);
-    u8 *temp_s1;
-    u8 *temp_v1;
-    u8 *var_s0;
+void func_8001D2B4(subengine *first, subengine *last) {
+    void (*release)(subengine *);
+    subengine *next;
+    subengine *freeList;
+    subengine *sub;
 
-    if (arg0 != NULL) {
-        var_s0 = arg0;
+    if (first != NULL) {
+        sub = first;
         do {
-            temp_v0 = (*(s32*)((u8*)(var_s0) + 88));
-            temp_s1 = (*(s32*)((u8*)(var_s0) + 92));
-            if (temp_v0 != NULL) {
-                temp_v0(var_s0);
+            release = sub->release;
+            next = sub->next;
+            if (release != NULL) {
+                release(sub);
             }
-            (*(s32*)((u8*)(var_s0) + 84)) = 0;
-            (*(s32*)((u8*)(var_s0) + 88)) = NULL;
-            (*(s32*)((u8*)(var_s0) + 0)) = 0;
-            var_s0 = temp_s1;
-        } while (var_s0 != NULL);
-        temp_v1 = D_80058ACC;
-        D_80058ACC = arg0;
-        (*(s32*)((u8*)(arg1) + 92)) = temp_v1;
+            sub->unk54 = 0;
+            sub->release = NULL;
+            sub->flags = 0;
+            sub = next;
+        } while (sub != NULL);
+        freeList = D_80058ACC;
+        D_80058ACC = first;
+        last->next = freeList;
     }
 }
 
-void func_8001D334(u8 *arg0) {
-    s32 (*temp_v0)(u8 *);
-    u8 *temp_s1;
-    u8 *var_s0;
+void func_8001D334(subengine *first) {
+    void (*release)(subengine *);
+    subengine *next;
+    subengine *sub;
 
-    var_s0 = arg0;
-    if (var_s0 != NULL) {
+    sub = first;
+    if (sub != NULL) {
         do {
-            temp_v0 = (*(s32*)((u8*)(var_s0) + 88));
-            temp_s1 = (*(s32*)((u8*)(var_s0) + 92));
-            if (temp_v0 != NULL) {
-                temp_v0(var_s0);
+            release = sub->release;
+            next = sub->next;
+            if (release != NULL) {
+                release(sub);
             }
-            (*(s32*)((u8*)(var_s0) + 84)) = 0;
-            (*(s32*)((u8*)(var_s0) + 88)) = NULL;
-            (*(s32*)((u8*)(var_s0) + 0)) = 0;
-            var_s0 = temp_s1;
-        } while (var_s0 != NULL);
+            sub->unk54 = 0;
+            sub->release = NULL;
+            sub->flags = 0;
+            sub = next;
+        } while (sub != NULL);
     }
 }
 
@@ -1646,11 +1646,11 @@ void func_800264B4(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", FindExtension);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80026540);
+INCLUDE_ASM("asm/nonmatchings/main/main", AddMotion);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800265DC);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80026684);
+INCLUDE_ASM("asm/nonmatchings/main/main", AddObject);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", AddEngine);
 

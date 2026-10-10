@@ -13,8 +13,9 @@
 
 #include "common.h"
 
-/* Provisional: the leak uses bool but never defines it, and its size is not
- * confirmed from code yet. */
+/* The leak uses bool but never defines it. It is 32 bits: the callees of the
+ * leak's bool parameters (ArkHeroRad2ObjectCollision, FreeGrabbedObject) read
+ * them as whole words, with no truncation to a char or short. */
 typedef s32 bool;
 
 /* Compile-time size check (C89): fails to compile if the size is wrong. */
@@ -22,6 +23,7 @@ typedef s32 bool;
 
 typedef struct NAS NAS;
 typedef struct EXTengine EXTengine;
+typedef struct subengine subengine;
 
 /* Three s32 coordinates (x, y, z); polar.h reads x and z. */
 typedef struct SLONG_XYZ {
@@ -94,22 +96,168 @@ struct EXTengine {
     /* 0x60 */ s32 unk60;
     /* 0x64 */ s32 unk64;
     /* 0x68 */ s32 unk68;
-    /* 0x6C */ void *unk6C;
-    /* 0x70 */ u8 unk70[0x7C - 0x70];
+    /* 0x6C */ subengine *sub;           /* first of the engine's subengines */
+    /* 0x70 */ subengine *subLast;       /* last of them */
+    /* 0x74 */ u8 unk74[0x7C - 0x74];
     /* 0x7C */ EXTengine *next;          /* next engine extension of the same NAS */
-    /* 0x80 */ u8 unk80[0x9C - 0x80];
+    /* 0x80 */ u8 unk80[0x94 - 0x80];
+    /* 0x94 */ s32 unk94;                /* a PlaySfx voice: StopSfx'd when the subengines are freed */
+    /* 0x98 */ u8 unk98[2];
+    /* 0x9A */ u16 subCount;             /* number of subengines */
 };
 BASH_SIZE_CHECK(EXTengine, 0x9C);
 
-/* Not recovered yet: incomplete, usable through pointers only. */
+/* A node of an engine's subengine chain (EXTengine.sub .. subLast, linked
+ * through next/prev). They come from one pool: func_80018F3C moves n of them
+ * from the free list (D_80058ACC) onto an engine, copying the 0xA8-byte
+ * template D_8005A830 over each; func_8001D174 returns them. Pogo's
+ * PogoSquare.sub (subengine * in the leak) points at these nodes. */
+struct subengine {
+    /* 0x00 */ u32 flags;
+    /* 0x04 */ s32 unk04;
+    /* 0x08 */ s32 unk08;
+    /* 0x0C */ s32 unk0C;
+    /* 0x10 */ s16 unk10;
+    /* 0x12 */ s16 unk12;
+    /* 0x14 */ s16 unk14;
+    /* 0x16 */ s16 unk16;
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ u8 unk1C[0x20 - 0x1C];
+    /* 0x20 */ SLONG_XYZ unk20;
+    /* 0x2C */ u8 unk2C[0x50 - 0x2C];
+    /* 0x50 */ u8 unk50;
+    /* 0x51 */ u8 unk51;
+    /* 0x52 */ s16 unk52;
+    /* 0x54 */ s32 unk54;
+    /* 0x58 */ void (*release)(subengine *); /* called when the node is freed */
+    /* 0x5C */ subengine *next;
+    /* 0x60 */ subengine *prev;
+    /* 0x64 */ u8 unk64[0x68 - 0x64];
+    /* 0x68 */ s16 unk68;
+    /* 0x6A */ u8 unk6A[2];
+    /* 0x6C */ void *unk6C;
+    /* 0x70 */ s16 unk70;
+    /* 0x72 */ u8 unk72[2];
+    /* 0x74 */ u16 unk74;
+    /* 0x76 */ u16 unk76;
+    /* 0x78 */ u8 unk78[0xA8 - 0x78];
+};
+BASH_SIZE_CHECK(subengine, 0xA8);
+
+/* Extension id 0x800, 0x34 bytes, made by AddMotion(nas) from the template
+ * D_8005A9CC (it also sets 0x800 in NAS.flags). The leak's
+ * CalcArkInfluence(EXTmotion *) is passed FindExtension(nas, 0x800). */
+typedef struct EXTmotion {
+    /* 0x00 */ s32 EXTid;
+    /* 0x04 */ EXTnode Extend;
+    /* 0x0C */ u8 unk0C;
+    /* 0x0D */ u8 unk0D;
+    /* 0x0E */ s16 unk0E;
+    /* 0x10 */ u16 unk10;
+    /* 0x12 */ u16 unk12;
+    /* 0x14 */ s16 unk14;
+    /* 0x16 */ s16 unk16;
+    /* 0x18 */ s16 unk18;
+    /* 0x1A */ u16 unk1A;
+    /* 0x1C */ u16 unk1C;
+    /* 0x1E */ s16 unk1E;
+    /* 0x20 */ u8 unk20[2];
+    /* 0x22 */ s16 unk22;
+    /* 0x24 */ s16 unk24;
+    /* 0x26 */ s16 unk26;
+    /* 0x28 */ s16 unk28;
+    /* 0x2A */ s16 unk2A;
+    /* 0x2C */ s16 unk2C;
+    /* 0x2E */ u8 unk2E[0x32 - 0x2E];
+    /* 0x32 */ u16 unk32;
+} EXTmotion;
+BASH_SIZE_CHECK(EXTmotion, 0x34);
+
+/* Extension id 0x1000, 0x2C bytes, made by AddObject(nas) from the template
+ * D_8005A974 (it also sets 0x1000 in NAS.flags). InitBall stores it in
+ * NAS.unk58, and PlotBall passes that to the leak's AR_*_TestOutOfBounds and
+ * AlignGrabBall as their EXTobject *. */
+typedef struct EXTobject {
+    /* 0x00 */ s32 EXTid;
+    /* 0x04 */ EXTnode Extend;
+    /* 0x0C */ u8 unk0C[0x14 - 0x0C];
+    /* 0x14 */ u16 unk14;
+    /* 0x16 */ s16 unk16;               /* a player index (AlignGrabBall) */
+    /* 0x18 */ s16 unk18;
+    /* 0x1A */ u16 unk1A;
+    /* 0x1C */ u16 unk1C;
+    /* 0x1E */ u16 unk1E;
+    /* 0x20 */ s16 unk20;
+    /* 0x22 */ s16 unk22;
+    /* 0x24 */ s16 unk24;
+    /* 0x26 */ s16 unk26;
+    /* 0x28 */ s16 unk28;
+    /* 0x2A */ u8 unk2A[2];
+} EXTobject;
+BASH_SIZE_CHECK(EXTobject, 0x2C);
+
+/* A hero animation sequence is a stream of halfwords: the interpreter
+ * (func_8008502C) reads seq[pos] and treats 0x8000 | n as command n (27 of
+ * them, some taking halfword operands) and anything else as a frame. The leak
+ * declares the sequences as `hero_seq NAME[]`. */
+typedef u16 hero_seq;
+#define BASH_HAVE_HERO_SEQ
+
+/* A player's hero: Heroes[4] in the engine overlay, set up by func_80083708.
+ * Functions take the player index (the leak's `unsigned int player`). */
+typedef struct Hero {
+    /* 0x00 */ NAS *nas;                /* from the pool at D_8005AA1C, AST index 3 */
+    /* 0x04 */ EXTengine *eng;          /* AddEngine(nas, 1) */
+    /* 0x08 */ subengine *sub;          /* eng->sub */
+    /* 0x0C */ EXTengine *unk0C;        /* AddEngine(nas, 2) */
+    /* 0x10 */ EXTengine *unk10;        /* AddEngine(nas, 3) */
+    /* 0x14 */ EXTengine *unk14;        /* AddEngine(nas, 3) */
+    /* 0x18 */ void *unk18;             /* AddExtension(nas, 0x54, 0x400000F0) */
+    /* 0x1C */ void *unk1C;             /* func_800265DC(nas): 0x2C bytes, id 0x400; plays the hero_seq (+0x0C) */
+    /* 0x20 */ void *unk20;             /* AddExtension(nas, 0x44, 0x400000F4) */
+    /* 0x24 */ void *unk24;
+    /* 0x28 */ s32 unk28;
+    /* 0x2C */ u16 action;              /* SetHeroAction */
+    /* 0x2E */ u16 character;           /* 1-8, selects the HeroSeqTables entry */
+    /* 0x30 */ s16 unk30;
+    /* 0x32 */ u16 unk32;
+    /* 0x34 */ u16 unk34;
+    /* 0x36 */ s16 unk36;
+    /* 0x38 */ u16 unk38;
+    /* 0x3A */ u16 unk3A;
+    /* 0x3C */ u16 unk3C;
+    /* 0x3E */ u16 unk3E;
+    /* 0x40 */ u16 unk40;
+    /* 0x42 */ u16 unk42;
+    /* 0x44 */ u16 unk44;
+    /* 0x46 */ u16 unk46;
+    /* 0x48 */ u16 unk48;
+    /* 0x4A */ u16 unk4A;
+    /* 0x4C */ u16 prevAction;          /* SetHeroAction keeps the previous action here */
+    /* 0x4E */ u16 unk4E;
+    /* 0x50 */ s16 unk50;
+    /* 0x52 */ s16 unk52;
+    /* 0x54 */ u16 unk54;
+    /* 0x56 */ u16 seq;                 /* SetHeroSeq: index into the character's table */
+    /* 0x58 */ u16 unk58;
+    /* 0x5A */ u16 unk5A;
+    /* 0x5C */ u16 unk5C;
+    /* 0x5E */ u16 unk5E;
+    /* 0x60 */ u16 unk60;
+    /* 0x62 */ u16 unk62;
+    /* 0x64 */ s16 unk64;
+    /* 0x66 */ u16 unk66;
+    /* 0x68 */ u16 unk68;
+    /* 0x6A */ u16 unk6A;
+} Hero;
+BASH_SIZE_CHECK(Hero, 0x6C);
+
+/* Not recovered yet: incomplete, usable through pointers only. These are used
+ * by the minigame overlays only. */
 typedef struct NASTrigger NASTrigger;
-typedef struct EXTobject EXTobject;
 typedef struct EXTobject_TA EXTobject_TA;
-typedef struct EXTmotion EXTmotion;
 typedef struct EXTheromove EXTheromove;
 typedef struct EXTbotai EXTbotai;
-typedef struct subengine subengine;
-typedef struct hero_seq hero_seq;           /* hero animation sequence */
 typedef struct TA_player TA_player;         /* Tank player state */
 typedef struct PreMap PreMap;
 typedef struct LevSpec LevSpec;

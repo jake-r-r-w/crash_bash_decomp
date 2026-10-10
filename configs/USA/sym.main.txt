@@ -718,3 +718,5 @@ SfxTable = 0x80064508;
 SfxVoicePool = 0x800590D0;
 SfxActiveVoices = 0x80059614;
 SetRandomSeed = 0x800155E8; // type:func
+AddMotion = 0x80026540; // type:func
+AddObject = 0x80026684; // type:func
