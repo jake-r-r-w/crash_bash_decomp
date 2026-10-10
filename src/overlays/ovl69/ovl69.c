@@ -1,4 +1,6 @@
 #include "common.h"
+#include "prototypes.h"
+#include "externs.h"
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B37BC);
 
@@ -35,9 +37,16 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B5244);
 void func_800B5324(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B532C);
+void func_800B532C(void) {
+    func_80095BEC(4, D_800B8F20);
+    D_800B9508 = 0;
+    D_800B950C = 0;
+}
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B5360);
+void func_800B5360(s32 *arg0) {
+    D_800B9620 = arg0;
+    func_8001E848(&D_8009F8A4, *arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B5390);
 
@@ -48,7 +57,10 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B5410);
 void func_800B544C(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B5454);
+void func_800B5454(void) {
+    func_80095BEC(0, D_800B8974);
+    D_800B962C = 2;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B5484);
 
@@ -79,7 +91,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B5A40);
 void func_800B5A6C(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B5A74);
+void func_800B5A74(void) {
+    func_800139A8();
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B5A94);
 
@@ -146,17 +160,29 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B7EF4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B81F0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B83A4);
+void func_800B83A4(void) {
+    func_80095BEC(0, D_800BA754);
+    D_800BAAC8 = 0;
+    D_800BAACC = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B83D8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B8470);
+void func_800B8470(void) {
+    func_800917B4();
+}
 
 void func_800B8490(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B8498);
+void func_800B8498(void) {
+    func_8009246C();
+}
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B84B8);
+void func_800B84B8(void) {
+    func_8001C2C0(func_80095E38(2));
+}
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B84E0);
+void func_800B84E0(void) {
+    func_80095BEC(2, D_800BAAD0);
+}

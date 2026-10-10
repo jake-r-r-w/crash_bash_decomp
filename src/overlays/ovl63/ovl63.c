@@ -1,4 +1,6 @@
 #include "common.h"
+#include "prototypes.h"
+#include "externs.h"
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B345C);
 
@@ -174,7 +176,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C3F68);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C44B0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4618);
+void func_800C4618(void) {
+    func_800250B0();
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4638);
 
@@ -190,15 +194,21 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C49DC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4ABC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4BB0);
+void func_800C4BB0(void) {
+    func_800250B0();
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4BD0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4C14);
+void func_800C4C14(void) {
+    func_800250B0();
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4C34);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4C98);
+void func_800C4C98(void) {
+    func_800250B0();
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4CB8);
 
@@ -218,9 +228,19 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4F30);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4FC0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5014);
+s32 func_800C5014(s32 arg0) {
+    s32 var_a0;
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5028);
+    var_a0 = arg0;
+    if (var_a0 < 0) {
+        var_a0 += 0x1FF;
+    }
+    return var_a0 >> 9;
+}
+
+void func_800C5028(void) {
+    func_800250B0();
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5048);
 
@@ -232,7 +252,13 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5204);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5334);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C53BC);
+void func_800C53BC(s32 arg0) {
+    func_80085890();
+    if (func_8008A200(arg0) != 0) {
+        func_8008A810();
+    }
+    func_8008502C(arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5400);
 
@@ -258,11 +284,15 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5978);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5A50);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5AF8);
+s32 func_800C5AF8(void) {
+    return D_800C6930;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5B08);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5B7C);
+s32 func_800C5B7C(void) {
+    return 0;
+}
 
 void func_800C5B84(void) {
 }
@@ -278,7 +308,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5C64);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5D0C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5D8C);
+void func_800C5D8C(void) {
+    func_800B4708();
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5DAC);
 

@@ -1,4 +1,6 @@
 #include "common.h"
+#include "prototypes.h"
+#include "externs.h"
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B3740);
 
@@ -264,7 +266,17 @@ void func_800CA768(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA770);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA850);
+void func_800CA850(u8 *arg0) {
+    u8 *temp_a1;
+    u8 *temp_v1;
+
+    temp_a1 = (*(s32*)((u8*)(arg0) + 84));
+    (*(s32*)((u8*)(temp_a1) + 16)) = (s32) ((*(s32*)((u8*)(temp_a1) + 16)) + ((s32) (*(s32*)((u8*)(arg0) + 100)) >> 8));
+    temp_v1 = (*(s32*)((u8*)(arg0) + 84));
+    if ((*(s32*)((u8*)(temp_v1) + 16)) >= 0x1AF5) {
+        (*(s32*)((u8*)(temp_v1) + 16)) = -0x1C84;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA890);
 
@@ -286,7 +298,17 @@ void func_800CAD0C(void) {
 void func_800CAD14(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAD1C);
+void func_800CAD1C(void) {
+    u8 *var_v1;
+
+    var_v1 = (*(s32*)((u8*)(D_80058AD0) + 28));
+    if (var_v1 != NULL) {
+        do {
+            (*(s32*)((u8*)(var_v1) + 0)) = (s32) ((*(s32*)((u8*)(var_v1) + 0)) | 0x01000000);
+            var_v1 = (*(s32*)((u8*)(var_v1) + 92));
+        } while (var_v1 != NULL);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAD60);
 
@@ -296,7 +318,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAEB0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAF94);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAFF0);
+s32 func_800CAFF0(void) {
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAFF8);
 
@@ -346,9 +370,13 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB8A4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB9DC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CBA28);
+u32 func_800CBA28(u8 *arg0) {
+    return (u32) ((func_8001463C((*(s32*)((u8*)(arg0) + 0)), (*(s32*)((u8*)(arg0) + 8))) - 0x7D) & 0xFFF) >> 8;
+}
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CBA5C);
+s32 func_800CBA5C(void) {
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CBA64);
 
@@ -454,7 +482,11 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D307C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D30C0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D3170);
+void func_800D3170(void) {
+    if (D_8005A648 != 0x16) {
+        func_800D2D2C();
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D31A0);
 

@@ -1,4 +1,6 @@
 #include "common.h"
+#include "prototypes.h"
+#include "externs.h"
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B3B24);
 
@@ -188,7 +190,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6868);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6888);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C68A8);
+void func_800C68A8(void) {
+    func_80089BE8();
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C68C8);
 
@@ -231,7 +235,12 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6F20);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6F70);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6F88);
+void func_800C6F88(u8 *arg0) {
+    (*(s32*)((u8*)(arg0) + 100)) = 0;
+    if ((*(u16*)((u8*)(arg0) + 106)) != 0) {
+        func_80022FD4();
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6FB8);
 
@@ -290,7 +299,9 @@ void func_800C7C68(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7C70);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7D04);
+void func_800C7D04(void) {
+    func_80089BE8();
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7D24);
 
@@ -361,15 +372,30 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8870);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C88A8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C891C);
+u8 func_800C891C(s32 arg0, s32 arg1) {
+    return *(((arg1 >> 9) * D_800CAFF4) + (arg0 >> 9) + D_800CACFC);
+}
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8950);
+u8 func_800C8950(s32 arg0, s32 arg1) {
+    return *(((arg1 >> 9) * D_800CAFF4) + (arg0 >> 9) + D_800CACB4);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8984);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C89D8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8A40);
+void func_800C8A40(s32 arg0) {
+    u8 *temp_v0;
+
+    temp_v0 = (arg0 * 0x2C) + D_800CAFFC;
+    (*(s32*)((u8*)(temp_v0) + 0)) = 0;
+    (*(s32*)((u8*)(temp_v0) + 4)) = 0;
+    (*(s32*)((u8*)(temp_v0) + 8)) = 0;
+    (*(s32*)((u8*)(temp_v0) + 12)) = 0;
+    (*(s32*)((u8*)(temp_v0) + 16)) = 0;
+    (*(s32*)((u8*)(temp_v0) + 28)) = 0;
+    (*(s16*)((u8*)(temp_v0) + 40)) = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8A80);
 

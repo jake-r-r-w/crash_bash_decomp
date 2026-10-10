@@ -1,4 +1,6 @@
 #include "common.h"
+#include "prototypes.h"
+#include "externs.h"
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B3528);
 
@@ -144,7 +146,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BFC04);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BFD14);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BFD9C);
+s32 func_800BFD9C(u8 *arg0) {
+    return (*(s32*)((u8*)(arg0) + 20)) - D_8005A5D8;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BFDB0);
 
@@ -152,7 +156,11 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BFE70);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BFF0C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BFF78);
+void func_800BFF78(u8 *arg0) {
+    if ((*(s32*)((u8*)(arg0) + 84)) != 0) {
+        func_800250B0();
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BFFA8);
 
@@ -170,7 +178,10 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C0448);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C04B8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C04FC);
+void func_800C04FC(s32 arg0) {
+    func_800B62F4();
+    func_800854C0(arg0, 0x1A);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C052C);
 

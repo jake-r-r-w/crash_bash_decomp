@@ -1,4 +1,6 @@
 #include "common.h"
+#include "prototypes.h"
+#include "externs.h"
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B3A38);
 
@@ -80,7 +82,11 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BA830);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BA8A4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BA964);
+void func_800BA964(u8 *arg0) {
+    if ((*(s32*)((u8*)(arg0) + 84)) != 0) {
+        func_800250B0();
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BA994);
 
