@@ -65,6 +65,25 @@ words; `tools/scripts/dmpsx.py` turns them into the real instructions after
 cc1, as Sony's DMPSX did. The gate's lint doesn't count these macros as
 inline asm. m2c can't draft GTE functions, so write them from the asm.
 
+## Loops gcc rotates but the target doesn't
+
+gcc 2.8 moves a `while`/`for` loop's exit test to the bottom when that test
+jumps to the loop's own end. If the target tests at the top and jumps back
+with `j` at the bottom, the source left the loop by `return` or by `goto` to
+a label after it:
+
+```c
+for (;;) {
+    if (--n == -1) {
+        goto none; /* or return */
+    }
+    ...
+}
+```
+
+A loop built from labels and `goto` alone doesn't match: loop.c then skips it,
+so loop constants (`li $a0, -1`) aren't hoisted.
+
 ## For AI agents
 
 - Work on one function at a time and commit it before picking the next.

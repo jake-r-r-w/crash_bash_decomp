@@ -53,6 +53,19 @@ typedef struct {
     s16 ofy;       /* halved */
 } GteSetup;
 
+/* Returned by func_8001562C: points with flag bits (func_80015780 picks the
+ * first point with a given flag). */
+typedef struct {
+    s16 vx, vy, vz;
+    u16 flags;
+} FlagPoint;
+
+typedef struct {
+    s16 count;
+    s16 unk2;
+    FlagPoint pts[1]; /* [count] */
+} PointList;
+
 void func_80011474(void);
 s32 func_8001151C(u8 *arg0);
 void func_80011530(u8 *arg0);
@@ -102,6 +115,9 @@ void func_8001C008(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc);
 void func_8001C0F0(s32 p, MorphModel *model, u16 *ia, u16 *ib, s16 (*verts)[3]);
 void func_8001965C(void *arg0, void *arg1, void *arg2, u8 *arg3, GteSetup *out);
 void func_8001CD04(void *arg0, void *arg1, void *arg2);
+void func_800142D4(void *arg0);
+PointList *func_8001562C(subengine *sub);
+FlagPoint *func_80015780(EXTengine *eng, subengine *sub, u16 flag, VECTOR *out);
 void func_8001C2C0(u8 *arg0);
 void func_8001C378(u8 *arg0);
 void func_8001CBD4(u32 arg0);

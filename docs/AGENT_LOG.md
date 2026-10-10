@@ -2,6 +2,51 @@
 
 Newest first. Each session appends: what changed, what was learned, what's next.
 
+## 2026-10-10 - GTE functions
+
+**State at end of session:** `make verify` -> 16 targets OK; 403/2550 game
+functions matched (main.exe 157/574), 1 parked.
+
+**Done**
+- Matched five GTE functions through `done`: `func_8002B760` and
+  `func_8002B6D0` (rtps of a position relative to a `View`, through the
+  `GteScratch` at `0x800569CC`), `func_8001C008` and `func_8001C0F0` (vertex
+  interpolation with `gte_intpl` over a `MorphModel` run list; the second
+  picks vertices through two index lists), and `func_8001CD04` (loads a
+  `GteSetup` from `func_8001965C` into the GTE: `gte_SetGeomOffset`,
+  `gte_SetTransVector`, `gte_SetRotMatrix`).
+- New types in `bash/main.h`: `View`, `GteScratch`, `MorphModel`,
+  `GfxState` (placeholder for the 161-reference global at `0x80056998`; only
+  the fields `func_8001CD04` touches), `GteSetup`, `FlagPoint`/`PointList`.
+  `EXTengine` gained `unk3C` (split from `unk38`) and `unk5E` is `u16`.
+- Parked `func_80015780` (first flagged point of a subengine, transformed
+  with `gte_rt`): 2 instructions off, best C under `NON_MATCHING`.
+- `docs/MATCHING.md`: when gcc rotates a loop and the target doesn't.
+
+**Learned / gotchas**
+- splat marks functions with cop2 moves as `/* Handwritten function */`; they
+  are ordinary C with Sony's macros (`gte_ldsv`, `gte_ldfcdir`, `gte_stsv`,
+  `gte_SetGeomOffset`, ...).
+- gcc 2.8 rotates a loop (moves its exit test to the bottom) only when the
+  test jumps to the loop's own end label. A target with the test at the top
+  and `j` back at the bottom came from an exit by `return` or `goto` past
+  the loop; that keeps loop.c's hoisting, unlike a hand-made goto loop.
+- `gte_intpl_b()` (no nops) when the target has other instructions right
+  before `intpl`.
+- Two pointers stepping in lockstep (one loaded through, one returned) were
+  two variables in the source.
+- Bash heredocs collapse `\\n` in Python: write generator scripts with the
+  Write tool (bit me twice this session).
+- `make permute` runs in its own container; stopping the background task
+  doesn't stop it: `docker stop` it before running `done`.
+
+**Next**
+1. `func_80015780`: the hoisted `li -1` is scheduled after the pointer copy;
+   try declaring the locals in a different order or moving the copy.
+2. Remaining GTE functions in the exe: `func_8001D048`, `func_8002AEE0`,
+   `func_8001C974`, `func_800177F4`, `func_8001C690`, `func_8001C7FC`,
+   `func_80015C1C`, then the larger ones.
+
 ## 2026-10-10 - Phase 2: GTE code
 
 **State at end of session:** `make verify` -> 16 targets OK; 398/2550 game

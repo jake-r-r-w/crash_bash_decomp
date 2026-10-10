@@ -89,10 +89,11 @@ struct EXTengine {
     /* 0x20 */ s16 unk20;
     /* 0x22 */ u8 unk22[0x2C - 0x22];
     /* 0x2C */ SLONG_XYZ unk2C;
-    /* 0x38 */ u8 unk38[0x5C - 0x38];
+    /* 0x38 */ u8 unk38[0x3C - 0x38];
+    /* 0x3C */ u8 unk3C[0x5C - 0x3C];   /* passed to func_8001CD04 (GTE setup) */
     /* 0x5C */ u8 unk5C;
     /* 0x5D */ u8 unk5D;
-    /* 0x5E */ s16 unk5E;
+    /* 0x5E */ u16 unk5E;
     /* 0x60 */ s32 unk60;
     /* 0x64 */ s32 unk64;
     /* 0x68 */ s32 unk68;
