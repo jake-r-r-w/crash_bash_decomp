@@ -482,7 +482,11 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_800155FC);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001562C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80015758);
+void func_80015758(SVECTOR *v, VECTOR *out) {
+    gte_ldv0(v);
+    gte_rt();
+    gte_stlvl(out);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80015780);
 

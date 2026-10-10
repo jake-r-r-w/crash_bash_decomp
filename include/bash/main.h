@@ -255,4 +255,6 @@ EXTengine *AddEngine(NAS *nas, s32 id);
 
 s32 func_80025BBC(EXTengine *eng);
 
+void func_80015758(SVECTOR *v, VECTOR *out);
+
 #endif /* BASH_MAIN_H */
