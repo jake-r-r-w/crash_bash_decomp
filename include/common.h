@@ -5,6 +5,7 @@
  * use it here too instead of labels.inc, which would redefine the macros. */
 #define INCLUDE_ASM_USE_MACRO_INC 1
 #include "include_asm.h"
+#include "psyq.h"
 
 typedef signed char s8;
 typedef unsigned char u8;

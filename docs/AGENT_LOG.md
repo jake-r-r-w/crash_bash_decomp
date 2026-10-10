@@ -2,6 +2,33 @@
 
 Newest first. Each session appends: what changed, what was learned, what's next.
 
+## 2026-10-10 - PsyQ headers in the game sources
+
+**State at end of session:** `make verify` -> 16 targets OK.
+
+**Done**
+- `include/psyq.h` includes Sony's PsyQ 4.7 headers (libc, `libapi`, `libetc`,
+  `libgte`, `libgpu`, `libcd`, `libspu`, `libsnd`, `libpad`, `libmcrd`), and
+  `common.h` includes it, so every library call now has Sony's prototype. Before,
+  they were implicit declarations. The game calls 125 library functions.
+- Fixed the call sites the prototypes flagged, all codegen-neutral:
+  `D_8005B640` is a `RECT`, `D_8005B698` a `RECT *` (two rects), `D_8006EA14`
+  a `CdlLOC` (with `CdlSetloc`/`CdlSeekL`), and `D_800643F8` the saved tick
+  callback `void (*)()`. Roadmap item ticked.
+- m2c drafts now see the SDK too (`decomp.py m2c` context includes it).
+
+**Learned / gotchas**
+- Sony's `memory.h` declares `memcpy` K&R-style; gcc's builtin prototype still
+  warns on the untyped `func_800162E4`. That clears when the function is typed.
+- `make objdiff-config` is broken (separate from this change): overlay keys
+  (`engine:ADDR`) break `objdiff_config.py`, and the target units need asm for
+  already-matched functions, which splat doesn't write. Flagged as its own task.
+
+**Next**
+1. The hero struct (0x6C, at `Heroes`), the other engine types `main.exe` uses,
+   and `bool`. That finishes Phase 1.
+
+
 ## 2026-10-10 - core globals
 
 **State at end of session:** `make verify` -> 16 targets OK; 138 game functions

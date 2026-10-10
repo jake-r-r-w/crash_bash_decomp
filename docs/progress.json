@@ -1,8 +1,8 @@
 {
  "blocked": [],
- "commit": "e14fba1",
+ "commit": "e3efba2",
  "game": "SCUS_945.70",
- "generated": "2026-10-10T13:36:22Z",
+ "generated": "2026-10-10T13:49:46Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -205,7 +205,7 @@
    "ts": "2026-10-10T13:27:13Z"
   },
   {
-   "commit": "e14fba1",
+   "commit": "e3efba2",
    "data_b": 128,
    "data_tb": 616791,
    "game_all_f": 2550,
@@ -218,7 +218,7 @@
    "lib_b": 121280,
    "lib_f": 535,
    "lib_tb": 122112,
-   "ts": "2026-10-10T13:36:22Z"
+   "ts": "2026-10-10T13:49:46Z"
   }
  ],
  "recent": [
@@ -376,7 +376,7 @@
      "text": "Name the core globals: the AST table, the NAS lists and the player/hero array."
     },
     {
-     "done": false,
+     "done": true,
      "text": "Include Sony's PsyQ headers in the game sources, so library calls get real prototypes."
     },
     {

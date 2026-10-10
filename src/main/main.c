@@ -1820,7 +1820,7 @@ s32 func_8002718C(void) {
     func_80027F00();
     func_8003351C(D_800637A8);
     DrawSync(0);
-    ClearImage2(D_8005B640, 0, 0, 0);
+    ClearImage2(&D_8005B640, 0, 0, 0);
     DrawSync(0);
     func_8002AABC();
     func_80028C94();
@@ -1837,7 +1837,7 @@ s32 func_8002718C(void) {
 
 void func_8002726C(void) {
     DrawSync(0);
-    ClearImage2(D_8005B640, 0, 0, 0);
+    ClearImage2(&D_8005B640, 0, 0, 0);
     DrawSync(0);
 }
 
@@ -1846,13 +1846,13 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_800272AC);
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80027408);
 
 void func_8002759C(void) {
-    s32 temp_s0;
+    RECT *temp_s0;
 
     temp_s0 = D_8005B698;
     if (temp_s0 != 0) {
         DrawSync(0);
-        ClearImage(temp_s0 + 8, 0, 0, 0);
-        ClearImage(temp_s0, 0, 0, 0);
+        ClearImage(&temp_s0[1], 0, 0, 0);
+        ClearImage(&temp_s0[0], 0, 0, 0);
     }
 }
 
@@ -1869,9 +1869,9 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8002775C);
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80027790);
 
 void func_800278BC(s32 *arg0, s32 arg1) {
-    CdIntToPos(*arg0 + arg1, D_8006EA14);
-    CdControlF(2, D_8006EA14);
-    CdControlF(0x15, D_8006EA14);
+    CdIntToPos(*arg0 + arg1, &D_8006EA14);
+    CdControlF(CdlSetloc, (u8 *)&D_8006EA14);
+    CdControlF(CdlSeekL, (u8 *)&D_8006EA14);
 }
 
 void func_80027908(void) {
