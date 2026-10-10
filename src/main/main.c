@@ -909,7 +909,48 @@ void func_8001C008(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001C0F0);
+void func_8001C0F0(s32 p, MorphModel *model, u16 *ia, u16 *ib, s16 (*verts)[3]) {
+    SVECTOR *dst = D_80056AC8;
+    u8 *run;
+    u32 a;
+    u32 b;
+    s16 *va;
+    s16 *vb;
+    s32 flag;
+    s32 i, n;
+    s32 r, g, bl;
+
+    gte_lddp(p);
+    a = *ia;
+    b = *ib;
+    run = (u8 *)(model->runs + (s32)model) + 0x15;
+    for (;;) {
+        n = *run;
+        if (n == 0xFF) {
+            return;
+        }
+        i = n + 2;
+        while (i-- > 0) {
+            va = verts[a >> 2];
+            vb = verts[b >> 2];
+            gte_ldsv(va);
+            flag = b & 3;
+            r = vb[0];
+            g = vb[1];
+            bl = vb[2];
+            gte_ldfcdir(r, g, bl);
+            ia++;
+            ib++;
+            gte_intpl_b();
+            b = *ib;
+            a = *ia;
+            gte_stsv(dst);
+            dst->pad = flag;
+            dst++;
+        }
+        run += 2;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001C1E0);
 

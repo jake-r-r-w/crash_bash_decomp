@@ -77,6 +77,8 @@ void func_80018728(s32 arg0, s32 arg1);
 void func_80018764(s32 *arg0);
 void func_8001888C(void);
 void func_800189E0(u8 *arg0);
+void func_8001C008(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc);
+void func_8001C0F0(s32 p, MorphModel *model, u16 *ia, u16 *ib, s16 (*verts)[3]);
 void func_8001C2C0(u8 *arg0);
 void func_8001C378(u8 *arg0);
 void func_8001CBD4(u32 arg0);
