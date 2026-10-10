@@ -53,6 +53,18 @@ Renames (`decomp.py rename`), header moves, typing an already matched function,
 and file splits are ordinary small commits made after `tools/dk make verify`
 prints `OK` for every target. Keep each one to a single purpose.
 
+## GTE code
+
+Write GTE code with Sony's macros from `inline_c.h` and `gtemac.h` (PsyQ 4.7,
+included by `include/psyq.h`): `gte_ldv0(v); gte_rt(); gte_stlvl(out);` is
+`lwc2 x2, nop, nop, mvmva, swc2 x3`. Read the target's cop2 instruction to pick
+the macro: `rtps`, `nclip`, `avsz3`, and `mvmva sf, mx, v, cv, lm`, where mx
+0/1/2 = RT/LL/LC, v 0..2 = V0..V2 (3 = IR), cv 0/1/3 = TR/BK/none
+(`mvmva 1,0,0,0,0` is `gte_rt`/`gte_rtv0tr`). The macros emit placeholder
+words; `tools/scripts/dmpsx.py` turns them into the real instructions after
+cc1, as Sony's DMPSX did. The gate's lint doesn't count these macros as
+inline asm. m2c can't draft GTE functions, so write them from the asm.
+
 ## For AI agents
 
 - Work on one function at a time and commit it before picking the next.

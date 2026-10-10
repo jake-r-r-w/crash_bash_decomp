@@ -2,6 +2,41 @@
 
 Newest first. Each session appends: what changed, what was learned, what's next.
 
+## 2026-10-10 - Phase 2: GTE code
+
+**State at end of session:** `make verify` -> 16 targets OK; 398/2550 game
+functions matched (main.exe 152/574). First Phase 2 item ticked.
+
+**Done**
+- `include/psyq.h` includes Sony's `inline_c.h` and `gtemac.h` (PsyQ 4.7,
+  unmodified). Their GTE commands are DMPSX placeholder words
+  (`.word (index << 6) | 0x3f`); `tools/scripts/dmpsx.py` rewrites them to
+  cop2 instructions inside `#APP` blocks, between cc1 and maspsx, in the
+  Makefile pipelines and `decomp.py`'s (permuter, probes). Unknown
+  placeholders stop the build. Every cop2 command in the game's asm is in
+  the table.
+- `obj_func` now runs `objdump -z`: without it, runs of zero words (the GTE's
+  two nops) were printed as `...` and dropped from `make diff`, so a correct
+  object looked 2 instructions short.
+- Matched `func_80015758` (`gte_ldv0`, `gte_rt`, `gte_stlvl`; an entry of
+  the engine API table that `func_8001492C` fills, at `+0x194`).
+- `docs/MATCHING.md` has a GTE section (how to read `mvmva` fields into a
+  macro name).
+
+**Learned / gotchas**
+- The table's `ll`/`lc`/`sqr` entries (lm bit, BK for `lc`) come from the
+  command encodings, not from a retail match; only `rtps`, `rtpt`, `rt`,
+  `dpcs`, `intpl`, `nclip`, `avsz3` are used by game code in the asm. If one
+  of the others ever mismatches by a bit, check the table first.
+- `gte_rt` and `gte_rtv0tr` are the same instruction.
+- Grepping asm for `4A`/`4B` opcode bytes also hits ASCII in data ("MARK").
+
+**Next**
+1. The other GTE functions (`func_8002B760`, `func_8002B6D0` are
+   `rtps` + `gte_stlvl` + `gte_stsxy`; `func_80015C1C` is marked
+   handwritten by splat, check whether it's C with `gte_SetRotMatrix`).
+2. Keep matching `main.exe` (`/match-function`).
+
 ## 2026-10-10 - Phase 1 exit check
 
 **State at end of session:** `make verify` -> 16 targets OK; 397/2550 game

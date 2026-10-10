@@ -54,7 +54,7 @@ its data is C, every function and global is named and typed, and
 plus `2MBYTE.OBJ`. `CRASHBSH.DAT` extracts, and so do the formats whose
 loaders are in the exe, each documented.
 
-- [ ] Match GTE code: include Sony's GTE macros (`inline_c.h`, `gtemac.h`) in
+- [x] Match GTE code: include Sony's GTE macros (`inline_c.h`, `gtemac.h`) in
   the game sources and match one GTE function through `done`. 27 of the exe's
   game functions use the GTE, and m2c can't draft them.
 - [ ] Match every game function in the executable.
