@@ -40,6 +40,11 @@ or types.
 
 ## Phase 2 - `main.exe` to source-only
 
+**Done when** the exe's game code has no `INCLUDE_ASM` or `INCLUDE_RODATA`
+left, it's split into its translation units, its data is C, every function and
+global is named and typed, and `build/main.exe` still matches. The library
+code is Sony's objects plus `2MBYTE.OBJ`.
+
 - [ ] Match every game function in the executable.
 - [ ] Split `main.c` into its original translation units.
 - [ ] Turn its rodata, data and bss into C.
@@ -50,6 +55,10 @@ or types.
 
 Its types are the vocabulary the minigames are written in.
 
+**Done when** `src/overlays/engine/` has no `INCLUDE_ASM` or `INCLUDE_RODATA`,
+it's split into its translation units, its data is C, everything is named and
+typed, and `build/engine.bin` still matches.
+
 - [ ] Match every function in `engine`.
 - [ ] Split it into its original translation units.
 - [ ] Turn its data and jump-table rodata into C.
@@ -58,6 +67,11 @@ Its types are the vocabulary the minigames are written in.
 
 Their functions start out named and typed. Finish one overlay completely
 before starting the next.
+
+**Done when** Tank, Pogo, Arkenoid and Polar (`ovl5f`, `ovl60`, `ovl61`,
+`ovl62`) are source-only and still match. Every declaration in their
+`include/bash/` headers is either defined by matched code or noted in
+`docs/ARCHITECTURE.md` as not in this build.
 
 - [ ] Finish the slot overlays' section splits (data vs rodata), so functions
   using strings and jump tables can match.
@@ -76,11 +90,19 @@ before starting the next.
 
 One at a time, starting with code shared or near-identical between minigames.
 
+**Done when** every slot overlay is identified in `docs/ARCHITECTURE.md`, is
+source-only, and still matches.
+
 - [ ] Identify which minigame or mode each remaining overlay is, then list them
   here, one box each.
 - [ ] Every remaining slot overlay is source-only.
 
 ## Phase 6 - Finish
+
+**Done when** the matching build is byte-identical to retail with no
+`INCLUDE_ASM`, `INCLUDE_RODATA`, parked functions or `func_`/`D_` placeholder
+names anywhere, and a `NON_MATCHING` build with shifted code boots and plays
+in an emulator.
 
 - [ ] No `INCLUDE_ASM` or `INCLUDE_RODATA` anywhere, and no parked functions.
 - [ ] A shiftable `NON_MATCHING` build that runs in an emulator.
