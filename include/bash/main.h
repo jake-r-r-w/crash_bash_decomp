@@ -159,6 +159,7 @@ void func_8002AC18(void);
 void func_8002AC40(void);
 void func_8002AC70(void);
 void func_8002B4B8(void);
+s32 func_8002B020(VECTOR *v, s32 *range);
 s32 func_8002B6D0(VECTOR *pos, View *view);
 void func_8002B760(VECTOR *pos, View *view, VECTOR *out, s32 *sxy);
 void func_8002B96C(void);
@@ -176,6 +177,7 @@ void func_8002D274(void);
 void func_8002D33C(u8 *arg0);
 
 extern GteScratch D_800569CC;
+extern s32 D_80064478[];
 extern u8 D_800527C4[];
 extern s32 D_80064414;
 extern s32 D_8006559C;
