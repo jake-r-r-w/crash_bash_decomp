@@ -875,7 +875,8 @@
   "auto_failed": "diff"
  },
  "8001CD04": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-10T19:44:52Z",
+  "status": "matched"
  },
  "8001CE00": {
   "auto_diff": 16,

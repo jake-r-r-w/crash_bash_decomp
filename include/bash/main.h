@@ -32,6 +32,27 @@ typedef struct {
                * pairs ending in a count of 0xFF */
 } MorphModel;
 
+/* Graphics state at 0x80056998 (placeholder name; 161 references). Only the
+ * fields func_8001CD04 uses are known: two pointers it aims at buffers inside
+ * the struct itself, and a block at +0x28 it passes to func_8001965C. */
+typedef struct {
+    u8 unk0[0x28];
+    u8 unk28[0x5C];
+    u8 *unk84; /* 0x84: = unkCC */
+    u8 *unk88; /* 0x88: = unk10C */
+    u8 unk8C[0x40];
+    u8 unkCC[0x40];
+    u8 unk10C[0x40];
+} GfxState;
+
+/* Filled by func_8001965C for func_8001CD04, which loads it into the GTE. */
+typedef struct {
+    MATRIX *rot;
+    VECTOR *trans; /* may be NULL: translation left as it is */
+    s16 ofx;       /* scaled by the screen width / 640 */
+    s16 ofy;       /* halved */
+} GteSetup;
+
 void func_80011474(void);
 s32 func_8001151C(u8 *arg0);
 void func_80011530(u8 *arg0);
@@ -79,6 +100,8 @@ void func_8001888C(void);
 void func_800189E0(u8 *arg0);
 void func_8001C008(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc);
 void func_8001C0F0(s32 p, MorphModel *model, u16 *ia, u16 *ib, s16 (*verts)[3]);
+void func_8001965C(void *arg0, void *arg1, void *arg2, u8 *arg3, GteSetup *out);
+void func_8001CD04(void *arg0, void *arg1, void *arg2);
 void func_8001C2C0(u8 *arg0);
 void func_8001C378(u8 *arg0);
 void func_8001CBD4(u32 arg0);
@@ -245,6 +268,7 @@ extern CdlLOC D_8006EA14;
 void func_80016D98();
 void func_80016188();
 extern RECT *D_8005B698;
+extern GfxState D_80056998;
 extern u8 D_80053694[];
 void *AllocExtension(void *owner, s32 size, s32 id, void *tmpl);
 extern EXTmotion D_8005A9CC;

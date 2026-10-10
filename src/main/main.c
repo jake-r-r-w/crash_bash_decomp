@@ -1024,7 +1024,18 @@ void func_8001CC08(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001CC10);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001CD04);
+void func_8001CD04(void *arg0, void *arg1, void *arg2) {
+    GteSetup s;
+
+    D_80056998.unk84 = D_80056998.unkCC;
+    D_80056998.unk88 = D_80056998.unk10C;
+    func_8001965C(arg0, arg1, arg2, D_80056998.unk28, &s);
+    gte_SetGeomOffset(s.ofx * D_8005B698->w / 640, s.ofy / 2);
+    if (s.trans != NULL) {
+        gte_SetTransVector(s.trans);
+    }
+    gte_SetRotMatrix(s.rot);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001CE00);
 
