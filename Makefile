@@ -145,9 +145,11 @@ progress:
 	@$(DECOMP) progress
 
 # ---- objdiff ----
-# tools/scripts/objdiff_config.py writes objdiff.json (generated, not committed) and
-# build/objdiff/target/<unit>.c (every function of the unit as INCLUDE_ASM); those compile with
-# the normal pipeline into the target objects objdiff compares build/src/<unit>.c.o against.
+# splat runs again with configs/USA/objdiff.yaml merged in, disassembling every function (matched
+# ones too) into build/objdiff/asm/. tools/scripts/objdiff_config.py then writes objdiff.json
+# (generated, not committed) and build/objdiff/target/<unit>.c (every function of the unit as
+# INCLUDE_ASM from there); those compile with the normal pipeline into the target objects objdiff
+# compares build/src/<unit>.c.o against.
 OBJDIFF_VER := v3.8.2
 OBJDIFF_CLI := ext/objdiff/objdiff-cli-$(OBJDIFF_VER)
 
@@ -156,6 +158,8 @@ build/objdiff/target/%.o: build/objdiff/target/%.c
 	$(CPP) $(CPPFLAGS) $< | $(CC1) $(CC1FLAGS) | $(MASPSX) $(MASPSX_ARGS) | $(AS) $(ASFLAGS) -o $@
 
 objdiff-config: build
+	rm -rf build/objdiff/asm build/objdiff/target
+	@for y in $(YAML) $(OVL_YAMLS); do $(PYTHON) -m splat split $$y $(CFG)/objdiff.yaml > /dev/null || exit 1; done
 	$(PYTHON) tools/scripts/objdiff_config.py
 	@$(MAKE) --no-print-directory $$(find build/objdiff/target -name '*.c' | sed 's/[.]c$$/.o/')
 

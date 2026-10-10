@@ -1,0 +1,15 @@
+# Merged over each splat config by `make objdiff-config` (splat split <config> objdiff.yaml):
+# disassembles every function, matched or not, into build/objdiff/asm/nonmatchings/<dir>/ so the
+# objdiff target objects hold the original code of the whole unit. Everything else splat writes
+# goes under build/objdiff/ too, leaving asm/, src/, assets/ and linkers/ alone.
+options:
+  disassemble_all: True
+  asm_path: build/objdiff/asm
+  matchings_path: nonmatchings   # relative to asm_path: matched functions next to the rest
+  asset_path: build/objdiff/assets
+  create_c_files: False
+  ld_script_path: build/objdiff/splat/scratch.ld
+  ld_dependencies: False
+  undefined_funcs_auto_path: build/objdiff/splat/undefined_funcs_auto.txt
+  undefined_syms_auto_path: build/objdiff/splat/undefined_syms_auto.txt
+  cache_path: build/objdiff/splat/.splache

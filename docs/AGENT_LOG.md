@@ -2,6 +2,38 @@
 
 Newest first. Each session appends: what changed, what was learned, what's next.
 
+## 2026-10-10 - objdiff-config fixed
+
+**State at end of session:** `make verify` -> 16 targets OK; `make
+objdiff-config` exits 0 (34 units); `make report` -> functions 393/2575.
+
+**Done**
+- `make objdiff-config` runs splat a second time per config with
+  `configs/USA/objdiff.yaml` merged in (`splat split <cfg> objdiff.yaml`):
+  `disassemble_all`, with asm, assets, linker script, undefined-symbol files and
+  cache all under `build/objdiff/`, and `matchings_path: nonmatchings` so
+  matched functions land next to the rest. `asm/`, `src/` and `linkers/` are
+  untouched.
+- `objdiff_config.py` now reads each unit's functions (name and address) from
+  those asm files instead of from `functions.json` keys and names. That fixes
+  both failures: overlay keys like `engine:80078CA4` are no longer parsed, and
+  renamed functions (`SetRandomSeed`, still `func_800155E8` in
+  `functions.json`) get the right file. Target `.text` sizes equal the base
+  objects' sizes (checked for main, engine, ovl5d).
+
+**Learned / gotchas**
+- splat 0.50 merges extra yaml files given after the config (dicts merge,
+  scalars override, lists append), so per-run overrides need no copy of the yaml.
+- `functions.json` names can lag `sym.*.txt` renames; don't trust them for file
+  paths.
+- Target objects also carry `NAME.NON_MATCHING` markers for matched functions.
+  The report's matched count is still right (393), so they don't get in the way.
+
+**Next**
+1. Unchanged from the previous entry (hero struct, remaining engine types,
+   `bool`).
+
+
 ## 2026-10-10 - PsyQ headers in the game sources
 
 **State at end of session:** `make verify` -> 16 targets OK.
