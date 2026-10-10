@@ -133,9 +133,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BE4D4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BEFD4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BF2BC);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", ArkHeroRad2ObjectRepel);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BF474);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", ArkHeroRad2ObjectAttract);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BF640);
 

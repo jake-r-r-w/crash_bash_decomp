@@ -15,7 +15,7 @@ Build the headers and names that every later match depends on.
   and types, never the leaked text.
 - [x] Name the AST Init/Plot pairs that the leaked enums prove (Pogo,
   Arkenoid, Polar).
-- [ ] Name the functions the named AST pairs reach, using the prototypes in
+- [x] Name the functions the named AST pairs reach, using the prototypes in
   `include/bash/`.
 - [x] Recover the core engine layouts: `NAS`, `EXTnode`, `EXTengine` and
   `SLONG_XYZ` (sizes and proven fields).

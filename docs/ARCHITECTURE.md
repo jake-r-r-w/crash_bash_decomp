@@ -122,6 +122,46 @@ own header (`ovl5f`, `ovl60`, `ovl61`, `ovl62`). Differences from the leak:
   `EXTnode`) and the hero animation tables (`hero_seq`, `TA_player`).
 - `bool` is provisionally `s32`. Its size is not confirmed from code yet.
 
+### Functions reached from the AST pairs
+
+Named from the leaked prototypes, with code evidence for each name. A matching
+signature alone is not enough.
+
+- **Pogo, Ripper Roo** (helpers that only `Plot_PogoRipperRoo` reaches):
+  - `Roo_ChangeDirOnEdge()`: no arguments; clamps the Roo's grid square
+    (`D_800C5BD8`/`DC`) to the 8x8 board edge and picks a new direction.
+  - `Roo_FindNewSquare(eng)`: the caller tests its result; it picks a random
+    direction and calls `SquareIsFreeForRoo(x, y)`.
+  - `SquareIsFreeForRoo(x, y)` returns 1 off the board, and otherwise checks
+    `PogoSquare.occupied` (`+0xE`) and `reserved` (`+0x10`), where 5 is the
+    Roo's own reservation.
+  - `Roo_Bounce(nas)` returns a bool; every 14 frames it calls
+    `Roo_GoBoing(eng)`, which plays one of six random sounds at the engine's
+    position.
+  - `Roo_UpdateVelocities(eng)` computes velocity and heading toward the target
+    square. `Roo_UpdatePosition(eng)` adds them to the position and moves the
+    grid reservation.
+  - `Roo_ShootAtHumans(nas)` compares each player's square with the Roo's row
+    and column and fires along a match.
+  - The grid at `0x800C53DC` is 8x8 `PogoSquare` with rows of 0xE0, so
+    `sizeof(PogoSquare)` is 0x1C (checked in pogo.h).
+- **Arkenoid.** `ArkHeroRad2ObjectRepel(player, radius)` is called by
+  `Plot_RepulseRing` with `(NAS+0x60, 0x800)`. It has a twin right after it
+  that differs in one way: the direction is negated in Repel and not in the
+  twin. That twin is `ArkHeroRad2ObjectAttract`, the next prototype in the
+  leak.
+- **Ambiguous, left unnamed:**
+  - Both of the leak's `Roo_FireRocket` declarations match real functions:
+    `func_800BFFF4(eng)` and `func_800C02AC(eng, dir)` both spawn
+    `AST_PogoProjectile`. One of them must have another name.
+  - `func_800B4260(pos, n)` (Polar) fits `CheckMelted`, `IsRayEndInZone` and
+    `IsPtInALLZone`.
+  - `func_800C9B5C()` counts a list linked through `+0x20`, which could be
+    `CountBears`.
+  - `func_8001463C(x, z)` returns a 12-bit angle, as the leak's inline
+    `get_angle` does. That's one use, so not yet proof.
+  - The rest of the reached helpers have no prototype in the leak.
+
 ## Engine types
 
 The engine's object model, as far as code proves it. The definitions are in

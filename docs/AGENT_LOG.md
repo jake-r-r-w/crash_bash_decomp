@@ -2,6 +2,30 @@
 
 Newest first. Each session appends: what changed, what was learned, what's next.
 
+## 2026-10-10 - functions reached from the AST pairs
+
+**State at end of session:** `make verify` -> 16 targets OK; 122 game functions named.
+
+**Done**
+- Named 10 helpers from the leaked prototypes, each with code evidence: eight
+  Ripper Roo functions in Pogo, and Arkenoid's
+  `ArkHeroRad2ObjectRepel`/`Attract`. `PogoSquare` is size-checked at 0x1C.
+  Evidence and the ambiguous leads are in `docs/ARCHITECTURE.md` ("Functions
+  reached from the AST pairs"). Roadmap item ticked.
+
+**Learned / gotchas**
+- `func_80022A3C(x, y, z, id, ...)` spawns an object by AST id.
+  `func_800264E8(nas, id)` finds an extension by `EXTid`. A constant AST id
+  passed to the first is the best "this function creates X" evidence.
+- Fingerprint scripts: `disc/scratch/callsites.py OVL` (what each call passes,
+  and whether the result is used) and `disc/scratch/callgraph.py spawns`.
+
+**Next**
+1. Phase 1: retire `include/externs.h`/`prototypes.h`, finish the overlay
+   section splits, and identify the overlays.
+2. Follow the ambiguous leads once more code is matched (see ARCHITECTURE).
+
+
 ## 2026-10-10 - core engine types
 
 **State at end of session:** `make verify` -> 16 targets OK.

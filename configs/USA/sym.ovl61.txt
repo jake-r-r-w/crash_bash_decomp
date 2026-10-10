@@ -15,3 +15,5 @@ Plot_seaweed = 0x800BFF78; // type:func
 Init_ArkLaserWall = 0x800BDFA4; // type:func
 Plot_ArkLaserWall = 0x800BFB14; // type:func
 Plot_Ark_Pickup = 0x800BDAB8; // type:func
+ArkHeroRad2ObjectRepel = 0x800BF2BC; // type:func
+ArkHeroRad2ObjectAttract = 0x800BF474; // type:func

@@ -122,6 +122,7 @@ typedef struct {
     s16 old_player;
     u8 sfx;
 } PogoSquare;
+BASH_SIZE_CHECK(PogoSquare, 0x1C); /* the 8x8 grid at 0x800C53DC has rows of 0xE0 */
 
 typedef struct {
     s32 player;

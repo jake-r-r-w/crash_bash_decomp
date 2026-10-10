@@ -177,17 +177,17 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Init_PogoRipperRoo);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoRipperRoo);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BF8E4);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Roo_UpdatePosition);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BFA14);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Roo_ChangeDirOnEdge);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BFC6C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Roo_FindNewSquare);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BFF58);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Roo_GoBoing);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BFFF4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C0164);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Roo_ShootAtHumans);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C02AC);
 
@@ -205,11 +205,11 @@ void func_800C0BF0(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C0C34);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C0C70);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", SquareIsFreeForRoo);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C0CF4);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Roo_Bounce);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C0D44);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Roo_UpdateVelocities);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C0DE4);
 
