@@ -2,6 +2,36 @@
 
 Newest first. Each session appends: what changed, what was learned, what's next.
 
+## 2026-10-10 - auto-matching pass, compiler settled
+
+**State at end of session:** `tools/dk make verify` -> 16 targets OK. Game code
+1.89% (19,248 / 1,019,036 bytes, 391 / 2,550 functions); was 97 functions.
+
+**Done**
+- Compiler tie settled: **2.8.1-psx -O2 -G0** (kept in `configs/USA/project.mk`).
+  Same pool, `auto --max-size 128` (200 functions, the default `--limit`),
+  no commit, reverted between runs: 2.7.2-cdk matched 71, 2.8.1-psx matched 128.
+  All 71 from 2.7.2-cdk are among the 2.8.1 ones (57 extra, none the other way).
+- Auto run over every function (`--max-size 1000000 --limit 100000`), committed in
+  `346b9dc` (its title says 77, but it also holds the 128 from the 2.8.1 tie run)
+  and `693366a` (89). Remaining failures in `.decomp/state.json`: 814 types,
+  716 compile, 628 diff, 16 m2c, 7 in-file, 1 full-build.
+- `decomp.py` `land()`: when the full build fails, it now bisects the batch and
+  leaves out only the functions that break it (tagged `full-build`), instead of
+  reverting everything.
+
+**Learned / gotchas**
+- `auto` defaults to `--limit 200`: pass `--limit 100000` for a full sweep.
+- A function can match on its own and still break the binary: `func_800C8BA0`
+  (ovl5f) adds 4 bytes of data/rodata (ovl5f offset 0x4C). It needs its literal
+  or constant placed as in the original (likely rodata belongs to another file).
+
+**Next**
+1. `auto --retry --permute` on the 628 `diff` near-misses (smallest first).
+2. The 814 `types` + 716 `compile` failures need headers: start with the leaked
+   Pogo/Arkenoid/Polar headers (`disc/leaked_source.txt`) as `include/` files.
+3. Fix `func_800C8BA0` by hand (see above).
+
 ## 2026-10-10 - overlays and leaked-source scan
 
 **State at end of session:** `tools/dk make verify` -> 16 targets OK

@@ -1372,6 +1372,22 @@ def land(cands, funcs, proj, st, protos=True, tag="auto_failed"):
         half = len(sel) // 2                          # didn't build: bisect
         return settle(sel[half:], settle(sel[:half], good))
 
+    def settle_full(sel, good):
+        """Add the candidates in `sel` that keep the full build matching (a function can match on
+        its own yet add data or rodata that shifts the rest of the file). Bisects on failure."""
+        if not sel:
+            return good
+        apply(good + sel)
+        ok, msg = verify_build(proj, funcs)
+        if ok:
+            return good + sel
+        if len(sel) == 1:
+            st.setdefault(sel[0][0], {})[tag] = "full-build"
+            print(f"  {sel[0][2]}: breaks the full build, left out ({msg.splitlines()[-1].strip()})")
+            return good
+        half = len(sel) // 2
+        return settle_full(sel[half:], settle_full(sel[:half], good))
+
     good = settle(cands, [])
     apply(good)
     if not good:
@@ -1379,6 +1395,13 @@ def land(cands, funcs, proj, st, protos=True, tag="auto_failed"):
         jsave(P_STATE, st)
         print("  none survived in the real source files")
         return []
+    good = settle_full(good, [])
+    apply(good)
+    if not good:
+        apply([])
+        jsave(P_STATE, st)
+        print("  full build failed with every new match, all reverted")
+        return None
     ok, msg = verify_build(proj, funcs)
     if not ok:
         apply([])
