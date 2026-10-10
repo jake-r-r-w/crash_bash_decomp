@@ -3,9 +3,10 @@
 The goal is a **source-only Crash Bash**: the executable and every overlay
 rebuilt byte for byte from C, data included, with no `INCLUDE_ASM` left, and
 everything named, typed and split into its original files. The game's assets
-(textures, sounds, models, levels) extract to editable formats and rebuild byte
-for byte into a playable disc. Assets stay on the user's machine and never go
-in git; only the tools and format documentation do. Phases are ordered but
+(textures, sounds, models, levels) are not part of the source: a tool extracts
+them from the user's own disc into editable formats, and their formats are
+documented. Assets stay on the user's machine and never go in git; only the
+tools and format documentation do. Phases are ordered but
 overlap; matching continues throughout. Progress lives on the dashboard and
 badges. Tick a box in the commit that finishes that item, and run
 `tools/dk make progress` in it so the dashboard and roadmap badge update.
@@ -47,19 +48,17 @@ or types.
 **Done when** the exe's game code has no `INCLUDE_ASM` or `INCLUDE_RODATA`
 left, it's split into its translation units, its data is C, every function and
 global is named and typed, and `build/main.exe` still matches. The library
-code is Sony's objects plus `2MBYTE.OBJ`. `make disc` rebuilds a retail-identical
-disc image, and the asset formats the exe loads round-trip.
+code is Sony's objects plus `2MBYTE.OBJ`, and the asset formats the exe loads
+extract and are documented.
 
 - [ ] Match every game function in the executable.
 - [ ] Split `main.c` into its original translation units.
 - [ ] Turn its rodata, data and bss into C.
 - [ ] Close the PsyQ gaps. Sony's hand-written `2MBYTE.OBJ` is the one documented
   exception.
-- [ ] `make disc`: pack the built exe and overlays, plus the user's extracted
-  files, into `CRASHBSH.DAT` and a bin/cue byte-identical to retail.
-- [ ] Document the asset formats the exe loads (the `CRASHBSH.DAT` index, file
-  groups, textures, sound banks). Write extractors to `assets/` and rebuilders
-  that reproduce the original bytes.
+- [ ] Asset extraction tool: read the `CRASHBSH.DAT` index and file groups from
+  the user's disc, and extract the formats the exe loads (textures, sound
+  banks, ...) to editable files in `assets/`. Document each format.
 
 ## Phase 3 - The engine overlay
 
@@ -68,26 +67,26 @@ Its types are the vocabulary the minigames are written in.
 **Done when** `src/overlays/engine/` has no `INCLUDE_ASM` or `INCLUDE_RODATA`,
 it's split into its translation units, its data is C, everything is named and
 typed, `build/engine.bin` still matches, and the formats the engine loads
-round-trip.
+extract and are documented.
 
 - [ ] Match every function in `engine`.
 - [ ] Split it into its original translation units.
 - [ ] Turn its data and jump-table rodata into C.
-- [ ] Document the asset formats the engine loads (models, animation, level
-  data, ...), with extractors and byte-identical rebuilders.
+- [ ] Extract and document the asset formats the engine loads (models,
+  animation, level data, ...).
 
 ## Phase 4 - The leaked minigames
 
 Their functions start out named and typed. Finish one overlay completely
 before starting the next. A minigame's box is ticked when its overlay is
 source-only, the globals its header declares are named, and its asset files
-(its `file_group_*` groups) round-trip.
+(its `file_group_*` groups) extract.
 
 **Done when** Tank, Pogo, Arkenoid and Polar (`ovl5f`, `ovl60`, `ovl61`,
 `ovl62`) are source-only and still match. Every declaration in their
 `include/bash/` headers is either defined by matched code or noted in
 `docs/ARCHITECTURE.md` as not in this build. Each of their asset files
-round-trips.
+extracts.
 
 - [ ] Finish the slot overlays' section splits (data vs rodata), so functions
   using strings and jump tables can match.
@@ -106,7 +105,7 @@ round-trips.
 One at a time, starting with code shared or near-identical between minigames.
 
 **Done when** every slot overlay is identified in `docs/ARCHITECTURE.md`, is
-source-only, and still matches, and its asset files round-trip.
+source-only, and still matches, and its asset files extract.
 
 - [ ] Identify which minigame or mode each remaining overlay is (the asset
   files it loads are the best clue), then list them here, one box each.
@@ -116,15 +115,22 @@ source-only, and still matches, and its asset files round-trip.
 
 **Done when** the matching build is byte-identical to retail with no
 `INCLUDE_ASM`, `INCLUDE_RODATA`, parked functions or `func_`/`D_` placeholder
-names anywhere. Every file on the disc round-trips through documented
-extractors and rebuilders. `make disc` from the extracted assets gives a
-retail-identical image, and a `NON_MATCHING` build with shifted code boots and
-plays in an emulator.
+names anywhere. Every file on the disc extracts with a documented format, and
+a `NON_MATCHING` build with shifted code boots and plays in an emulator.
 
 - [ ] No `INCLUDE_ASM` or `INCLUDE_RODATA` anywhere, and no parked functions.
 - [ ] Every remaining disc file (music, movies, anything not covered above)
-  round-trips, and the formats are documented.
-- [ ] A shiftable `NON_MATCHING` build that runs in an emulator.
+  extracts, and the formats are documented.
+- [ ] A shiftable `NON_MATCHING` build that runs in an emulator. Running it needs
+  the built exe and overlays packed into a disc image with the user's files.
 - [ ] Every file at quality level 4 ([CONVENTIONS.md](CONVENTIONS.md)), with no
   placeholder names.
 - [ ] `docs/ARCHITECTURE.md` describes the game's systems.
+
+## Afterwards - decided once the source is complete
+
+These are not phases yet. Each gets its own plan when Phase 6 is done.
+
+- **Native PC port.** Build the C for PC, with assets loaded from the extracted
+  files instead of the CD. That means replacing the PS1 hardware layers (CD,
+  GPU and GTE, SPU sound, pads) with PC equivalents.

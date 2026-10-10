@@ -1,8 +1,8 @@
 {
  "blocked": [],
- "commit": "babb629",
+ "commit": "a5d3b8e",
  "game": "SCUS_945.70",
- "generated": "2026-10-10T13:09:28Z",
+ "generated": "2026-10-10T13:13:27Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -173,7 +173,7 @@
    "ts": "2026-10-10T12:37:12Z"
   },
   {
-   "commit": "babb629",
+   "commit": "a5d3b8e",
    "data_b": 128,
    "data_tb": 616791,
    "game_all_f": 2550,
@@ -186,7 +186,7 @@
    "lib_b": 121280,
    "lib_f": 535,
    "lib_tb": 122112,
-   "ts": "2026-10-10T13:09:28Z"
+   "ts": "2026-10-10T13:13:27Z"
   }
  ],
  "recent": [
@@ -355,7 +355,7 @@
    "title": "Phase 1 - Foundations: types and names"
   },
   {
-   "done_when": "the exe's game code has no `INCLUDE_ASM` or `INCLUDE_RODATA` left, it's split into its translation units, its data is C, every function and global is named and typed, and `build/main.exe` still matches. The library code is Sony's objects plus `2MBYTE.OBJ`. `make disc` rebuilds a retail-identical disc image, and the asset formats the exe loads round-trip.",
+   "done_when": "the exe's game code has no `INCLUDE_ASM` or `INCLUDE_RODATA` left, it's split into its translation units, its data is C, every function and global is named and typed, and `build/main.exe` still matches. The library code is Sony's objects plus `2MBYTE.OBJ`, and the asset formats the exe loads extract and are documented.",
    "items": [
     {
      "done": false,
@@ -375,17 +375,13 @@
     },
     {
      "done": false,
-     "text": "`make disc`: pack the built exe and overlays, plus the user's extracted files, into `CRASHBSH.DAT` and a bin/cue byte-identical to retail."
-    },
-    {
-     "done": false,
-     "text": "Document the asset formats the exe loads (the `CRASHBSH.DAT` index, file groups, textures, sound banks). Write extractors to `assets/` and rebuilders that reproduce the original bytes."
+     "text": "Asset extraction tool: read the `CRASHBSH.DAT` index and file groups from the user's disc, and extract the formats the exe loads (textures, sound banks, ...) to editable files in `assets/`. Document each format."
     }
    ],
    "title": "Phase 2 - `main.exe` to source-only"
   },
   {
-   "done_when": "`src/overlays/engine/` has no `INCLUDE_ASM` or `INCLUDE_RODATA`, it's split into its translation units, its data is C, everything is named and typed, `build/engine.bin` still matches, and the formats the engine loads round-trip.",
+   "done_when": "`src/overlays/engine/` has no `INCLUDE_ASM` or `INCLUDE_RODATA`, it's split into its translation units, its data is C, everything is named and typed, `build/engine.bin` still matches, and the formats the engine loads extract and are documented.",
    "items": [
     {
      "done": false,
@@ -401,13 +397,13 @@
     },
     {
      "done": false,
-     "text": "Document the asset formats the engine loads (models, animation, level data, ...), with extractors and byte-identical rebuilders."
+     "text": "Extract and document the asset formats the engine loads (models, animation, level data, ...)."
     }
    ],
    "title": "Phase 3 - The engine overlay"
   },
   {
-   "done_when": "Tank, Pogo, Arkenoid and Polar (`ovl5f`, `ovl60`, `ovl61`, `ovl62`) are source-only and still match. Every declaration in their `include/bash/` headers is either defined by matched code or noted in `docs/ARCHITECTURE.md` as not in this build. Each of their asset files round-trips.",
+   "done_when": "Tank, Pogo, Arkenoid and Polar (`ovl5f`, `ovl60`, `ovl61`, `ovl62`) are source-only and still match. Every declaration in their `include/bash/` headers is either defined by matched code or noted in `docs/ARCHITECTURE.md` as not in this build. Each of their asset files extracts.",
    "items": [
     {
      "done": false,
@@ -441,7 +437,7 @@
    "title": "Phase 4 - The leaked minigames"
   },
   {
-   "done_when": "every slot overlay is identified in `docs/ARCHITECTURE.md`, is source-only, and still matches, and its asset files round-trip.",
+   "done_when": "every slot overlay is identified in `docs/ARCHITECTURE.md`, is source-only, and still matches, and its asset files extract.",
    "items": [
     {
      "done": false,
@@ -455,7 +451,7 @@
    "title": "Phase 5 - The remaining overlays"
   },
   {
-   "done_when": "the matching build is byte-identical to retail with no `INCLUDE_ASM`, `INCLUDE_RODATA`, parked functions or `func_`/`D_` placeholder names anywhere. Every file on the disc round-trips through documented extractors and rebuilders. `make disc` from the extracted assets gives a retail-identical image, and a `NON_MATCHING` build with shifted code boots and plays in an emulator.",
+   "done_when": "the matching build is byte-identical to retail with no `INCLUDE_ASM`, `INCLUDE_RODATA`, parked functions or `func_`/`D_` placeholder names anywhere. Every file on the disc extracts with a documented format, and a `NON_MATCHING` build with shifted code boots and plays in an emulator.",
    "items": [
     {
      "done": false,
@@ -463,11 +459,11 @@
     },
     {
      "done": false,
-     "text": "Every remaining disc file (music, movies, anything not covered above) round-trips, and the formats are documented."
+     "text": "Every remaining disc file (music, movies, anything not covered above) extracts, and the formats are documented."
     },
     {
      "done": false,
-     "text": "A shiftable `NON_MATCHING` build that runs in an emulator."
+     "text": "A shiftable `NON_MATCHING` build that runs in an emulator. Running it needs the built exe and overlays packed into a disc image with the user's files."
     },
     {
      "done": false,
@@ -479,6 +475,11 @@
     }
    ],
    "title": "Phase 6 - Finish"
+  },
+  {
+   "done_when": "",
+   "items": [],
+   "title": "Afterwards - decided once the source is complete"
   }
  ],
  "summary": {
