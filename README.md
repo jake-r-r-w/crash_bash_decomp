@@ -32,12 +32,16 @@ copy of the game.
 ![game code](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fjake-r-r-w%2Fcrash_bash_decomp%2Fmain%2Fdocs%2Fbadges%2Fcode.json)
 ![functions](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fjake-r-r-w%2Fcrash_bash_decomp%2Fmain%2Fdocs%2Fbadges%2Ffunctions.json)
 ![PsyQ](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fjake-r-r-w%2Fcrash_bash_decomp%2Fmain%2Fdocs%2Fbadges%2Fpsyq.json)
+![roadmap](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fjake-r-r-w%2Fcrash_bash_decomp%2Fmain%2Fdocs%2Fbadges%2Froadmap.json)
 
 Progress is measured in **bytes of code** produced by C that compiles to the
 retail bytes, game code and PsyQ library reported apart. The dashboard
 [`docs/index.html`](docs/index.html) is self-contained (no network, works from
-disk or GitHub Pages on `/docs`): totals per binary and per library, a history
-chart, recent matches and parked functions. `docs/progress.json` holds the same
+disk or GitHub Pages on `/docs`). It shows the roadmap's phases and current
+phase, read from [docs/ROADMAP.md](docs/ROADMAP.md). It also shows how much
+code is matched, named and typed (matched C with no raw pointer offsets), and
+how much data is C, per binary grouped by roadmap phase. Then a history chart,
+recent matches and parked functions. `docs/progress.json` holds the same
 data for scripts and `docs/badges/` feeds the badges above. Regenerate all three
 with `make progress`; `decomp.py done` does it on every match. This README
 intentionally avoids hardcoded numbers.

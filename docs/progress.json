@@ -1,8 +1,8 @@
 {
  "blocked": [],
- "commit": "3cb52fc",
+ "commit": "babb629",
  "game": "SCUS_945.70",
- "generated": "2026-10-10T12:52:53Z",
+ "generated": "2026-10-10T13:09:28Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -173,32 +173,20 @@
    "ts": "2026-10-10T12:37:12Z"
   },
   {
-   "commit": "3cb52fc",
+   "commit": "babb629",
    "data_b": 128,
    "data_tb": 616791,
    "game_all_f": 2550,
    "game_b": 19312,
-   "game_f": 393,
-   "game_named_f": 123,
-   "game_tb": 1019036,
-   "lib_b": 121280,
-   "lib_f": 535,
-   "lib_tb": 122112,
-   "ts": "2026-10-10T12:50:46Z"
-  },
-  {
-   "commit": "3cb52fc",
-   "data_b": 128,
-   "data_tb": 616791,
-   "game_all_f": 2550,
-   "game_b": 19312,
+   "game_c_f": 393,
    "game_f": 393,
    "game_named_f": 122,
    "game_tb": 1019036,
+   "game_typed_f": 273,
    "lib_b": 121280,
    "lib_f": 535,
    "lib_tb": 122112,
-   "ts": "2026-10-10T12:52:53Z"
+   "ts": "2026-10-10T13:09:28Z"
   }
  ],
  "recent": [
@@ -323,6 +311,176 @@
    "tries": 0
   }
  ],
+ "roadmap": [
+  {
+   "done_when": "matching `main.exe` functions no longer stalls on missing names or types.",
+   "items": [
+    {
+     "done": true,
+     "text": "Turn the leaked minigame headers (Tank, Pogo, Arkenoid, Polar) into `include/bash/` headers: structs, enums and prototypes. Commit only the names and types, never the leaked text."
+    },
+    {
+     "done": true,
+     "text": "Name the AST Init/Plot pairs that the leaked enums prove (Pogo, Arkenoid, Polar)."
+    },
+    {
+     "done": true,
+     "text": "Name the functions the named AST pairs reach, using the prototypes in `include/bash/`."
+    },
+    {
+     "done": true,
+     "text": "Recover the core engine layouts: `NAS`, `EXTnode`, `EXTengine` and `SLONG_XYZ` (sizes and proven fields)."
+    },
+    {
+     "done": true,
+     "text": "Retire `include/externs.h` and `include/prototypes.h` into owned headers."
+    },
+    {
+     "done": false,
+     "text": "Name the core engine functions every match calls (spawn by AST id, extension and engine allocation, extension lookup, random, sound, angle, and the most-called exe and engine functions), each with code evidence."
+    },
+    {
+     "done": false,
+     "text": "Name the core globals: the AST table, the NAS lists and the player/hero array."
+    },
+    {
+     "done": false,
+     "text": "Include Sony's PsyQ headers in the game sources, so library calls get real prototypes."
+    },
+    {
+     "done": false,
+     "text": "Recover the layouts of the engine types `main.exe`'s code uses (from `EXTobject`, `EXTmotion`, `NASTrigger`, `subengine`, `hero_seq`, ...) and the player/hero struct indexed from `D_8009D52C`, and settle the size of `bool`. Naming `unkXX` fields is ongoing work in every phase, not part of this item."
+    }
+   ],
+   "title": "Phase 1 - Foundations: types and names"
+  },
+  {
+   "done_when": "the exe's game code has no `INCLUDE_ASM` or `INCLUDE_RODATA` left, it's split into its translation units, its data is C, every function and global is named and typed, and `build/main.exe` still matches. The library code is Sony's objects plus `2MBYTE.OBJ`. `make disc` rebuilds a retail-identical disc image, and the asset formats the exe loads round-trip.",
+   "items": [
+    {
+     "done": false,
+     "text": "Match every game function in the executable."
+    },
+    {
+     "done": false,
+     "text": "Split `main.c` into its original translation units."
+    },
+    {
+     "done": false,
+     "text": "Turn its rodata, data and bss into C."
+    },
+    {
+     "done": false,
+     "text": "Close the PsyQ gaps. Sony's hand-written `2MBYTE.OBJ` is the one documented exception."
+    },
+    {
+     "done": false,
+     "text": "`make disc`: pack the built exe and overlays, plus the user's extracted files, into `CRASHBSH.DAT` and a bin/cue byte-identical to retail."
+    },
+    {
+     "done": false,
+     "text": "Document the asset formats the exe loads (the `CRASHBSH.DAT` index, file groups, textures, sound banks). Write extractors to `assets/` and rebuilders that reproduce the original bytes."
+    }
+   ],
+   "title": "Phase 2 - `main.exe` to source-only"
+  },
+  {
+   "done_when": "`src/overlays/engine/` has no `INCLUDE_ASM` or `INCLUDE_RODATA`, it's split into its translation units, its data is C, everything is named and typed, `build/engine.bin` still matches, and the formats the engine loads round-trip.",
+   "items": [
+    {
+     "done": false,
+     "text": "Match every function in `engine`."
+    },
+    {
+     "done": false,
+     "text": "Split it into its original translation units."
+    },
+    {
+     "done": false,
+     "text": "Turn its data and jump-table rodata into C."
+    },
+    {
+     "done": false,
+     "text": "Document the asset formats the engine loads (models, animation, level data, ...), with extractors and byte-identical rebuilders."
+    }
+   ],
+   "title": "Phase 3 - The engine overlay"
+  },
+  {
+   "done_when": "Tank, Pogo, Arkenoid and Polar (`ovl5f`, `ovl60`, `ovl61`, `ovl62`) are source-only and still match. Every declaration in their `include/bash/` headers is either defined by matched code or noted in `docs/ARCHITECTURE.md` as not in this build. Each of their asset files round-trips.",
+   "items": [
+    {
+     "done": false,
+     "text": "Finish the slot overlays' section splits (data vs rodata), so functions using strings and jump tables can match."
+    },
+    {
+     "done": false,
+     "text": "Recover the minigame-only types (`EXTbotai`, `EXTheromove`, `TA_player`, ...) as each minigame needs them."
+    },
+    {
+     "done": false,
+     "text": "Pogo (`ovl60`)"
+    },
+    {
+     "done": false,
+     "text": "Arkenoid (`ovl61`)"
+    },
+    {
+     "done": false,
+     "text": "Polar (`ovl62`)"
+    },
+    {
+     "done": false,
+     "text": "Name Tank's AST pairs. Its enum is cut off in the leak, so match each table entry to its `Init`/`Plot` prototype from evidence in the code (calls, spawned objects, assets)."
+    },
+    {
+     "done": false,
+     "text": "Tank (`ovl5f`)"
+    }
+   ],
+   "title": "Phase 4 - The leaked minigames"
+  },
+  {
+   "done_when": "every slot overlay is identified in `docs/ARCHITECTURE.md`, is source-only, and still matches, and its asset files round-trip.",
+   "items": [
+    {
+     "done": false,
+     "text": "Identify which minigame or mode each remaining overlay is (the asset files it loads are the best clue), then list them here, one box each."
+    },
+    {
+     "done": false,
+     "text": "Every remaining slot overlay is source-only."
+    }
+   ],
+   "title": "Phase 5 - The remaining overlays"
+  },
+  {
+   "done_when": "the matching build is byte-identical to retail with no `INCLUDE_ASM`, `INCLUDE_RODATA`, parked functions or `func_`/`D_` placeholder names anywhere. Every file on the disc round-trips through documented extractors and rebuilders. `make disc` from the extracted assets gives a retail-identical image, and a `NON_MATCHING` build with shifted code boots and plays in an emulator.",
+   "items": [
+    {
+     "done": false,
+     "text": "No `INCLUDE_ASM` or `INCLUDE_RODATA` anywhere, and no parked functions."
+    },
+    {
+     "done": false,
+     "text": "Every remaining disc file (music, movies, anything not covered above) round-trips, and the formats are documented."
+    },
+    {
+     "done": false,
+     "text": "A shiftable `NON_MATCHING` build that runs in an emulator."
+    },
+    {
+     "done": false,
+     "text": "Every file at quality level 4 ([CONVENTIONS.md](CONVENTIONS.md)), with no placeholder names."
+    },
+    {
+     "done": false,
+     "text": "`docs/ARCHITECTURE.md` describes the game's systems."
+    }
+   ],
+   "title": "Phase 6 - Finish"
+  }
+ ],
  "summary": {
   "blocked": 0,
   "copies_b": 38400,
@@ -336,26 +494,30 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 0,
+   "c_f": 393,
    "done_b": 19312,
    "done_f": 393,
    "named_f": 122,
    "pct": 1.8951244116988997,
    "sony_b": 0,
    "total_b": 1019036,
-   "total_f": 2550
+   "total_f": 2550,
+   "typed_f": 273
   },
   "lib": {
    "all_f": 566,
    "asm_b": 196,
    "asm_f": 2,
    "blocked": 0,
+   "c_f": 0,
    "done_b": 121280,
    "done_f": 535,
    "named_f": 426,
    "pct": 99.31865828092243,
    "sony_b": 121280,
    "total_b": 122112,
-   "total_f": 564
+   "total_f": 564,
+   "typed_f": 0
   },
   "units": [
    {
@@ -363,6 +525,7 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
+    "c_f": 60,
     "done_b": 2616,
     "done_f": 60,
     "file": "engine.bin",
@@ -370,9 +533,12 @@
     "lib": false,
     "named_f": 10,
     "pct": 2.0237653174897883,
+    "phase": 3,
     "sony_b": 0,
+    "title": "Engine",
     "total_b": 129264,
     "total_f": 357,
+    "typed_f": 52,
     "unit": "engine"
    },
    {
@@ -380,6 +546,7 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
+    "c_f": 147,
     "done_b": 8712,
     "done_f": 147,
     "file": "SCUS_945.70",
@@ -387,9 +554,12 @@
     "lib": false,
     "named_f": 0,
     "pct": 6.978532521627684,
+    "phase": 2,
     "sony_b": 0,
+    "title": "main.exe",
     "total_b": 124840,
     "total_f": 574,
+    "typed_f": 67,
     "unit": "main exe"
    },
    {
@@ -397,6 +567,7 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
+    "c_f": 4,
     "done_b": 328,
     "done_f": 4,
     "file": "ovl5d.bin",
@@ -404,9 +575,12 @@
     "lib": false,
     "named_f": 0,
     "pct": 0.5212637467421016,
+    "phase": 5,
     "sony_b": 0,
+    "title": "",
     "total_b": 62924,
     "total_f": 104,
+    "typed_f": 2,
     "unit": "ovl5d"
    },
    {
@@ -414,6 +588,7 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
+    "c_f": 6,
     "done_b": 504,
     "done_f": 6,
     "file": "ovl5e.bin",
@@ -421,9 +596,12 @@
     "lib": false,
     "named_f": 0,
     "pct": 1.3398553806890685,
+    "phase": 5,
     "sony_b": 0,
+    "title": "",
     "total_b": 37616,
     "total_f": 73,
+    "typed_f": 4,
     "unit": "ovl5e"
    },
    {
@@ -431,6 +609,7 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
+    "c_f": 23,
     "done_b": 964,
     "done_f": 23,
     "file": "ovl5f.bin",
@@ -438,9 +617,12 @@
     "lib": false,
     "named_f": 0,
     "pct": 1.1177070772655597,
+    "phase": 4,
     "sony_b": 0,
+    "title": "Tank (probably)",
     "total_b": 86248,
     "total_f": 183,
+    "typed_f": 17,
     "unit": "ovl5f"
    },
    {
@@ -448,6 +630,7 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
+    "c_f": 14,
     "done_b": 708,
     "done_f": 14,
     "file": "ovl60.bin",
@@ -455,9 +638,12 @@
     "lib": false,
     "named_f": 24,
     "pct": 1.0758570386579138,
+    "phase": 4,
     "sony_b": 0,
+    "title": "Pogo",
     "total_b": 65808,
     "total_f": 180,
+    "typed_f": 11,
     "unit": "ovl60"
    },
    {
@@ -465,6 +651,7 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
+    "c_f": 7,
     "done_b": 292,
     "done_f": 7,
     "file": "ovl61.bin",
@@ -472,9 +659,12 @@
     "lib": false,
     "named_f": 18,
     "pct": 0.5309090909090909,
+    "phase": 4,
     "sony_b": 0,
+    "title": "Arkenoid",
     "total_b": 55000,
     "total_f": 97,
+    "typed_f": 4,
     "unit": "ovl61"
    },
    {
@@ -482,6 +672,7 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
+    "c_f": 28,
     "done_b": 620,
     "done_f": 28,
     "file": "ovl62.bin",
@@ -489,9 +680,12 @@
     "lib": false,
     "named_f": 70,
     "pct": 0.47505210248866003,
+    "phase": 4,
     "sony_b": 0,
+    "title": "Polar",
     "total_b": 130512,
     "total_f": 226,
+    "typed_f": 24,
     "unit": "ovl62"
    },
    {
@@ -499,6 +693,7 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
+    "c_f": 15,
     "done_b": 604,
     "done_f": 15,
     "file": "ovl63.bin",
@@ -506,9 +701,12 @@
     "lib": false,
     "named_f": 0,
     "pct": 0.7884294068504595,
+    "phase": 5,
     "sony_b": 0,
+    "title": "",
     "total_b": 76608,
     "total_f": 139,
+    "typed_f": 13,
     "unit": "ovl63"
    },
    {
@@ -516,6 +714,7 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
+    "c_f": 6,
     "done_b": 104,
     "done_f": 6,
     "file": "ovl64.bin",
@@ -523,9 +722,12 @@
     "lib": false,
     "named_f": 0,
     "pct": 0.3101884991648771,
+    "phase": 5,
     "sony_b": 0,
+    "title": "",
     "total_b": 33528,
     "total_f": 58,
+    "typed_f": 6,
     "unit": "ovl64"
    },
    {
@@ -533,6 +735,7 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
+    "c_f": 8,
     "done_b": 460,
     "done_f": 8,
     "file": "ovl65.bin",
@@ -540,9 +743,12 @@
     "lib": false,
     "named_f": 0,
     "pct": 1.1159631246967492,
+    "phase": 5,
     "sony_b": 0,
+    "title": "",
     "total_b": 41220,
     "total_f": 80,
+    "typed_f": 6,
     "unit": "ovl65"
    },
    {
@@ -550,6 +756,7 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
+    "c_f": 13,
     "done_b": 528,
     "done_f": 13,
     "file": "ovl66.bin",
@@ -557,9 +764,12 @@
     "lib": false,
     "named_f": 0,
     "pct": 2.1717670286278383,
+    "phase": 5,
     "sony_b": 0,
+    "title": "",
     "total_b": 24312,
     "total_f": 80,
+    "typed_f": 13,
     "unit": "ovl66"
    },
    {
@@ -567,6 +777,7 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
+    "c_f": 12,
     "done_b": 836,
     "done_f": 12,
     "file": "ovl67.bin",
@@ -574,9 +785,12 @@
     "lib": false,
     "named_f": 0,
     "pct": 1.2617725187152862,
+    "phase": 5,
     "sony_b": 0,
+    "title": "",
     "total_b": 66256,
     "total_f": 135,
+    "typed_f": 10,
     "unit": "ovl67"
    },
    {
@@ -584,6 +798,7 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
+    "c_f": 10,
     "done_b": 180,
     "done_f": 10,
     "file": "ovl68.bin",
@@ -591,9 +806,12 @@
     "lib": false,
     "named_f": 0,
     "pct": 0.5286033125807589,
+    "phase": 5,
     "sony_b": 0,
+    "title": "",
     "total_b": 34052,
     "total_f": 93,
+    "typed_f": 9,
     "unit": "ovl68"
    },
    {
@@ -601,6 +819,7 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
+    "c_f": 16,
     "done_b": 920,
     "done_f": 16,
     "file": "ovl69.bin",
@@ -608,9 +827,12 @@
     "lib": false,
     "named_f": 0,
     "pct": 4.649282393369719,
+    "phase": 5,
     "sony_b": 0,
+    "title": "",
     "total_b": 19788,
     "total_f": 77,
+    "typed_f": 16,
     "unit": "ovl69"
    },
    {
@@ -618,6 +840,7 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
+    "c_f": 24,
     "done_b": 936,
     "done_f": 24,
     "file": "ovl6a.bin",
@@ -625,9 +848,12 @@
     "lib": false,
     "named_f": 0,
     "pct": 3.013522215067611,
+    "phase": 5,
     "sony_b": 0,
+    "title": "",
     "total_b": 31060,
     "total_f": 94,
+    "typed_f": 19,
     "unit": "ovl6a"
    },
    {
@@ -635,6 +861,7 @@
     "asm_b": 196,
     "asm_f": 2,
     "blocked": 0,
+    "c_f": 0,
     "done_b": 121280,
     "done_f": 535,
     "file": "SCUS_945.70",
@@ -642,9 +869,12 @@
     "lib": true,
     "named_f": 426,
     "pct": 99.31865828092243,
+    "phase": null,
     "sony_b": 121280,
+    "title": "",
     "total_b": 122112,
     "total_f": 564,
+    "typed_f": 0,
     "unit": "psyq"
    }
   ],

@@ -7,7 +7,8 @@ everything named, typed and split into its original files. The game's assets
 for byte into a playable disc. Assets stay on the user's machine and never go
 in git; only the tools and format documentation do. Phases are ordered but
 overlap; matching continues throughout. Progress lives on the dashboard and
-badges. Tick a box in the commit that finishes that item.
+badges. Tick a box in the commit that finishes that item, and run
+`tools/dk make progress` in it so the dashboard and roadmap badge update.
 
 Preparation goes in the phase that first needs it. When later work turns up
 something new to do, add it to the phase it blocks, not to an earlier one.
@@ -78,7 +79,9 @@ round-trip.
 ## Phase 4 - The leaked minigames
 
 Their functions start out named and typed. Finish one overlay completely
-before starting the next.
+before starting the next. A minigame's box is ticked when its overlay is
+source-only, the globals its header declares are named, and its asset files
+(its `file_group_*` groups) round-trip.
 
 **Done when** Tank, Pogo, Arkenoid and Polar (`ovl5f`, `ovl60`, `ovl61`,
 `ovl62`) are source-only and still match. Every declaration in their
@@ -90,16 +93,13 @@ round-trips.
   using strings and jump tables can match.
 - [ ] Recover the minigame-only types (`EXTbotai`, `EXTheromove`, `TA_player`,
   ...) as each minigame needs them.
-- [ ] Round-trip each minigame's own asset files (its `file_group_*` groups) as
-  its overlay is finished.
-- [ ] Pogo, including the globals its header declares (`PogoPlay`, ...).
-- [ ] Arkenoid
-- [ ] Polar, including the globals its header declares (`BombMaster`,
-  `Walrus`, `HeadPolarObject`, ...).
+- [ ] Pogo (`ovl60`)
+- [ ] Arkenoid (`ovl61`)
+- [ ] Polar (`ovl62`)
 - [ ] Name Tank's AST pairs. Its enum is cut off in the leak, so match each
   table entry to its `Init`/`Plot` prototype from evidence in the code (calls,
   spawned objects, assets).
-- [ ] Tank
+- [ ] Tank (`ovl5f`)
 
 ## Phase 5 - The remaining overlays
 

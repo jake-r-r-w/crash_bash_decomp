@@ -2344,6 +2344,19 @@ def cmd_permute(a):
 PLACEHOLDER_NAME = re.compile(r"^(func|sub|fn)_[0-9A-Fa-f]{8}$")
 
 
+# raw offset arithmetic m2c leaves behind: a matched function with this is not typed yet
+UNTYPED = re.compile(r"\(\s*(?:u8|s8|char)\s*\*\s*\)\s*\(?\s*\w+\s*\)?\s*\+|M2C_FIELD")
+
+
+def unit_meta(unit, proj):
+    """(title, roadmap phase) for a dashboard row, from project.json: the exe is phase 2, and each
+    overlay entry may carry "title" and "phase" (the roadmap phase that finishes it)."""
+    if unit == "main exe":
+        return proj.get("title", "main exe"), proj.get("phase", 2)
+    o = next((o for o in proj.get("overlays", []) if o["name"] == unit), {})
+    return o.get("title", ""), o.get("phase")
+
+
 def unit_of(e, proj):
     """Dashboard row a function counts under: its PsyQ library, or the binary it is in."""
     if is_lib(e, proj):
@@ -2357,7 +2370,18 @@ def summary(funcs, stat, proj):
     are recovered as .s and counted apart from the C totals; names and copies are tracked too."""
     syms = sym_names()
     blank = lambda: {"done_b": 0, "total_b": 0, "done_f": 0, "total_f": 0, "asm_b": 0, "asm_f": 0,
-                     "named_f": 0, "all_f": 0, "blocked": 0, "sony_b": 0}
+                     "named_f": 0, "all_f": 0, "blocked": 0, "sony_b": 0, "c_f": 0, "typed_f": 0}
+    texts = {}
+
+    def typed(k, e):
+        """None if the function has no C of its own, else whether its C is free of raw offsets."""
+        src = e.get("src")
+        if not src or not os.path.exists(src):
+            return None
+        if src not in texts:
+            texts[src] = read(src)
+        body = extract_function(texts[src], cur_name(k, e, syms))
+        return None if body is None else not UNTYPED.search(body)
     grp = {g: blank() for g in ("game", "lib")}
     units = {}
     twins = defaultdict(list)
@@ -2368,8 +2392,13 @@ def summary(funcs, stat, proj):
         if stat[k] == "unsplit":
             continue
         g = "lib" if is_lib(e, proj) else "game"
-        u = units.setdefault(unit_of(e, proj), dict(blank(), unit=unit_of(e, proj), lib=g == "lib",
-                                                    files=set(), file=os.path.basename(e.get("bin") or proj["exe"])))
+        un = unit_of(e, proj)
+        u = units.get(un)
+        if u is None:
+            title, phase = unit_meta(un, proj) if g == "game" else ("", None)
+            u = units[un] = dict(blank(), unit=un, lib=g == "lib", files=set(), title=title, phase=phase,
+                                 file=os.path.basename(e.get("bin") or proj["exe"]))
+        ty = typed(k, e) if stat[k] == "matched" and g == "game" else None
         u["files"].add(e["seg"])
         for t in (grp[g], u):
             t["all_f"] += 1
@@ -2386,6 +2415,9 @@ def summary(funcs, stat, proj):
             if stat[k] in ("matched", "sony"):
                 t["done_b"] += e["size"]
                 t["done_f"] += 1
+            if ty is not None:
+                t["c_f"] += 1
+                t["typed_f"] += ty
     for t in list(grp.values()) + list(units.values()):
         t["pct"] = 100.0 * t["done_b"] / t["total_b"] if t["total_b"] else 0.0
     for u in units.values():
@@ -2446,6 +2478,43 @@ def data_summary(funcs, stat, proj):
     return {"done_b": done, "total_b": total, "pct": 100.0 * done / total if total else 0.0}
 
 
+P_ROADMAP = "docs/ROADMAP.md"
+
+
+def roadmap():
+    """Phases of docs/ROADMAP.md: [{title, done_when, items: [{done, text}]}]."""
+    if not os.path.exists(P_ROADMAP):
+        return []
+    phases, cur, item = [], None, None
+    for line in read(P_ROADMAP).splitlines():
+        if line.startswith("## "):
+            cur = {"title": line[3:].strip(), "done_when": "", "items": []}
+            phases.append(cur)
+            item = None
+            continue
+        if cur is None:
+            continue
+        m = re.match(r"^- \[([ xX])\] (.*)$", line)
+        if m:
+            item = {"done": m.group(1) != " ", "text": m.group(2).strip()}
+            cur["items"].append(item)
+        elif item and line.startswith("  ") and line.strip():
+            item["text"] += " " + line.strip()
+        elif line.startswith("**Done when**"):
+            cur["done_when"] = line[len("**Done when**"):].strip()
+            item = "dw"
+        elif item == "dw" and line.strip():
+            cur["done_when"] += " " + line.strip()
+        else:
+            item = None if not line.strip() else item
+    return phases
+
+
+def current_phase(phases):
+    """Index of the first phase with an unticked item, or None when all are done."""
+    return next((i for i, ph in enumerate(phases) if any(not it["done"] for it in ph["items"])), None)
+
+
 def write_badges(g, l):
     """docs/badges/*.json in shields.io endpoint format, so the README shows live figures without
     hard-coded numbers. Game code is the headline; Sony's linked objects are reported apart."""
@@ -2457,6 +2526,16 @@ def write_badges(g, l):
     fp = 100.0 * g["done_f"] / g["total_f"] if g["total_f"] else 0.0
     badge("functions", "functions", f"{g['done_f']}/{g['total_f']}", fp)
     badge("psyq", "PsyQ", f"{l['pct']:.2f}%", l["pct"])
+    phases = roadmap()
+    i = current_phase(phases)
+    if phases:
+        if i is None:
+            badge("roadmap", "roadmap", "complete", 100.0)
+        else:
+            its = phases[i]["items"]
+            done = sum(it["done"] for it in its)
+            badge("roadmap", "roadmap", f"{phases[i]['title'].split(' - ')[0]} · {done}/{len(its)}",
+                  100.0 * done / len(its))
 
 
 def cmd_progress(a):
@@ -2469,6 +2548,7 @@ def cmd_progress(a):
              "game_b": s["game"]["done_b"], "game_tb": s["game"]["total_b"], "game_f": s["game"]["done_f"],
              "lib_b": s["lib"]["done_b"], "lib_tb": s["lib"]["total_b"], "lib_f": s["lib"]["done_f"],
              "game_named_f": s["game"]["named_f"], "game_all_f": s["game"]["all_f"],
+             "game_c_f": s["game"]["c_f"], "game_typed_f": s["game"]["typed_f"],
              "data_b": s["data"]["done_b"], "data_tb": s["data"]["total_b"]}
     hist = jload(P_HIST, [])
     same = lambda p, q: all(p.get(k) == q.get(k) for k in point if k not in ("ts", "commit"))
@@ -2481,6 +2561,7 @@ def cmd_progress(a):
                      if stat.get(k) == "matched" and r.get("matched_at")), reverse=True)[:15]
     data = {
         "game": proj.get("exe"), "generated": now(), "commit": commit, "summary": s, "history": hist,
+        "roadmap": roadmap(),
         "recent": [{"name": cur_name(k, funcs[k], syms), "seg": funcs[k]["seg"], "size": funcs[k]["size"],
                     "at": t, "tries": st[k].get("tries", 0),
                     "auto": st[k].get("via") == "auto" or not st[k].get("tries")} for t, k in recent],
@@ -2495,7 +2576,8 @@ def cmd_progress(a):
     write_badges(g, l)
     fmt = lambda t: f"{t['pct']:.2f}% ({t['done_b']}/{t['total_b']} bytes, {t['done_f']}/{t['total_f']} functions)"
     print(f"progress: game code {fmt(g)}; libs {fmt(l)}, +{l['asm_b']} bytes hand-written asm; "
-          f"game functions named {g['named_f']}/{g['all_f']}; data {s['data']['pct']:.2f}%; "
+          f"game functions named {g['named_f']}/{g['all_f']}; typed {g['typed_f']}/{g['c_f']} matched; "
+          f"data {s['data']['pct']:.2f}%; "
           f"parked {s['blocked']} -> docs/index.html")
 
 
@@ -2550,6 +2632,20 @@ font-size:12px;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.15);display:non
 .scale button[aria-pressed="true"]{background:var(--track);color:var(--ink);font-weight:600}
 .wrap{overflow-x:auto}
 code{font-size:12px}
+.ph{border-top:1px solid var(--grid);padding:10px 0}
+.ph:first-child{border-top:0;padding-top:0}
+.ph summary{display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none}
+.ph summary::-webkit-details-marker{display:none}
+.ph .t{flex:1;font-weight:600;font-size:14px}
+.pill{font-size:11px;border-radius:999px;padding:1px 8px;border:1px solid var(--axis);color:var(--ink2);white-space:nowrap}
+.pill.cur{border-color:var(--s1);color:var(--s1)}
+.pill.done{border-color:var(--s3);color:var(--s3)}
+.dw{color:var(--ink2);font-size:13px;margin:8px 0 6px}
+.items{list-style:none;margin:0;padding:0;font-size:13px}
+.items li{display:flex;gap:8px;padding:3px 0}
+.items li .ck{flex:none;width:16px;color:var(--muted)}
+.items li.y .ck{color:var(--s3)}
+.items li.y .tx{color:var(--muted)}
 </style>
 </head>
 <body>
@@ -2557,7 +2653,9 @@ code{font-size:12px}
 <div class="head"><div><h1 id="title">Decomp progress</h1><div class="sub" id="sub"></div></div>
 <div class="scale" id="theme" role="group" aria-label="Theme"></div></div>
 <div class="tiles" id="tiles"></div>
-<div class="card"><div class="head"><h2>Progress over time</h2><div class="scale" id="scale" role="group" aria-label="Time scale"></div></div>
+<div class="card" id="rmcard"><div class="head"><h2>Roadmap</h2><span class="small" id="rmsum"></span></div><div id="roadmap"></div>
+<div class="small" style="margin-top:8px">From <code>docs/ROADMAP.md</code>: a phase is current until all its boxes are ticked.</div></div>
+<div class="card section"><div class="head"><h2>Progress over time</h2><div class="scale" id="scale" role="group" aria-label="Time scale"></div></div>
 <div class="legend" id="legend"></div><div id="chart"></div></div>
 <div class="card section"><h2>By binary and library</h2><div class="wrap"><table id="segs"></table></div>
 <div class="small" style="margin-top:8px">Hand-written: library objects Sony wrote in assembly; their .s files are the original source and are not counted in the C totals.</div></div>
@@ -2594,9 +2692,30 @@ const named=S.game.named_f, all=S.game.all_f, DA=S.data||{done_b:0,total_b:0,pct
 $("tiles").innerHTML=grpTile("Game code matched",S.game,"var(--s1)")+
  (hasLib?grpTile("Library C matched",S.lib,"var(--s2)",S.lib.asm_b?`<br>+ ${n(S.lib.asm_b)} bytes hand-written asm, kept as .s`:""):"")+
  tile("Game functions named",f2(pct(named,all)),`${n(named)} / ${n(all)} with a real name`,pct(named,all),"var(--s3)")+
+ tile("Matched functions typed",f2(pct(S.game.typed_f||0,S.game.c_f||0)),`${n(S.game.typed_f||0)} / ${n(S.game.c_f||0)} matched C functions with no raw pointer offsets`,pct(S.game.typed_f||0,S.game.c_f||0),"var(--s3)")+
  tile("Data in C",f2(DA.pct),`${n(DA.done_b)} / ${n(DA.total_b)} bytes of data and rodata`,DA.pct,"var(--s4)")+
  tile("Identical copies",n(S.copies_b||0)+" B",`unmatched code that is a copy of other code; matching one fills in the rest`,null)+
  tile("Parked",`${S.blocked}`,"functions waiting for another attempt",null);
+
+// roadmap: phases from docs/ROADMAP.md, the current one open with its exit condition and items
+(function(){
+ const R=D.roadmap||[], el=$("roadmap");
+ if(!R.length){$("rmcard").style.display="none";return}
+ const md=s=>esc(s).replace(/`([^`]+)`/g,"<code>$1</code>").replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>")
+  .replace(/\[([^\]]+)\]\([^)]+\)/g,"$1");
+ const cur=R.findIndex(p=>p.items.some(i=>!i.done));
+ const all=R.reduce((a,p)=>a+p.items.length,0), done=R.reduce((a,p)=>a+p.items.filter(i=>i.done).length,0);
+ $("rmsum").textContent=`${done} / ${all} items done`+(cur<0?" · complete":` · current: ${R[cur].title.split(" - ")[0]}`);
+ el.innerHTML=R.map((p,i)=>{
+  const d=p.items.filter(x=>x.done).length, t=p.items.length;
+  const st=t&&d==t?["done","Done"]:i==cur?["cur","Current"]:["","Not started"];
+  if(st[0]==""&&d)st[1]="In progress";
+  return `<details class="ph" ${i==cur?"open":""}><summary><span class="t">${md(p.title)}</span>
+   <span class="small">${d} / ${t}</span><span class="mini"><span style="width:${pct(d,t)}%;background:var(--s3)"></span></span>
+   <span class="pill ${st[0]}">${st[1]}</span></summary>
+   ${p.done_when?`<div class="dw"><b>Done when</b> ${md(p.done_when)}</div>`:""}
+   <ul class="items">${p.items.map(x=>`<li class="${x.done?"y":""}"><span class="ck">${x.done?"✓":"○"}</span><span class="tx">${md(x.text)}</span></li>`).join("")}</ul></details>`}).join("");
+})();
 
 // history chart: % of bytes matched per group, bucketed by a selectable time unit
 (function(){
@@ -2682,23 +2801,29 @@ $("tiles").innerHTML=grpTile("Game code matched",S.game,"var(--s1)")+
 (function(){
  // [key, label, numeric, hidden on narrow screens]
  const cols=[["unit","Unit",0],["file","File",0,1],["files","Source files",1,1],["pct","C bytes matched",1],["done_f","Functions",1],
-  ["total_b","C size",1,1],["asm_b","Hand-written",1,1],["named_f","Named",1],["blocked","Parked",1,1]];
+  ["total_b","C size",1,1],["asm_b","Hand-written",1,1],["named_f","Named",1],["typed_f","Typed",1,1],["blocked","Parked",1,1]];
  let key="unit",dir=1;
  function draw(){
   const cmp=(a,b)=>((a[key]>b[key]?1:a[key]<b[key]?-1:0)||(a.unit>b.unit?1:-1))*dir;
   const cls=c=>[c[2]?"num":"",c[3]?"opt":""].join(" ");
   const row=s=>{const c=s.total_b>0;   // no C (all hand-written): a dash, not 0.00%
-   return `<tr><td>${esc(s.unit)}</td><td class="opt"><code>${esc(s.file||"")}</code></td>
+   return `<tr><td>${esc(s.unit)}${s.title&&s.title!=s.unit?`<div class="small">${esc(s.title)}</div>`:""}</td><td class="opt"><code>${esc(s.file||"")}</code></td>
    <td class="num opt">${n(s.files)}</td>
    <td class="num">${c?`${f2(s.pct)} <span class="mini"><span style="width:${s.pct}%;${s.lib?"background:var(--s2)":""}"></span></span>`:"—"}</td>
    <td class="num">${c?`${n(s.done_f)} / ${n(s.total_f)}`:"—"}</td><td class="num opt">${c?n(s.total_b)+" B":"—"}</td>
-   <td class="num opt">${s.asm_b?n(s.asm_b)+" B":""}</td><td class="num">${n(s.named_f)} / ${n(s.all_f)}</td><td class="num opt">${s.blocked||""}</td></tr>`};
-  const all=S.units||[], game=all.filter(s=>!s.lib).sort(cmp), lib=all.filter(s=>s.lib).sort(cmp);
-  const head=t=>`<tr class="grp"><td colspan="9">${t}</td></tr>`;
+   <td class="num opt">${s.asm_b?n(s.asm_b)+" B":""}</td><td class="num">${n(s.named_f)} / ${n(s.all_f)}</td>
+   <td class="num opt">${s.lib?"":`${n(s.typed_f||0)} / ${n(s.c_f||0)}`}</td><td class="num opt">${s.blocked||""}</td></tr>`};
+  const all=S.units||[], game=all.filter(s=>!s.lib), lib=all.filter(s=>s.lib).sort(cmp);
+  const head=t=>`<tr class="grp"><td colspan="10">${t}</td></tr>`;
+  // game rows grouped by the roadmap phase that finishes them, sorted within each group
+  const R=D.roadmap||[], phases=[...new Set(game.map(s=>s.phase??null))].sort((a,b)=>(a??99)-(b??99));
+  const ptitle=p=>p==null?"Game code":esc((R[p-1]||{}).title||("Phase "+p)).replace(/`/g,"");
+  const gameRows=phases.map(p=>{const g=game.filter(s=>(s.phase??null)===p).sort(cmp);
+   return (phases.length>1||lib.length?head(ptitle(p)):"")+g.map(row).join("")}).join("");
   $("segs").innerHTML="<tr>"+cols.map(c=>`<th class="${cls(c)}" data-k="${c[0]}">${c[1]}${key==c[0]?(dir>0?" ▲":" ▼"):""}</th>`).join("")+"</tr>"+
-   (all.length?(lib.length?head("Game code"):"")+game.map(row).join("")+
+   (all.length?gameRows+
     (lib.length?head("PsyQ library: Sony's objects, linked in place")+lib.map(row).join(""):"")
-   :'<tr><td class="empty" colspan="9">Nothing indexed yet.</td></tr>');
+   :'<tr><td class="empty" colspan="10">Nothing indexed yet.</td></tr>');
   $("segs").querySelectorAll("th").forEach(th=>th.onclick=()=>{const k=th.dataset.k;dir=key==k?-dir:(k=="unit"||k=="file"?1:-1);key=k;draw()});
  }
  draw();
