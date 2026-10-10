@@ -1078,8 +1078,8 @@ void func_8001D334(subengine *first) {
     }
 }
 
-void func_8001D390(void) {
-    func_80018F3C();
+s32 func_8001D390(EXTengine *eng, s32 n) {
+    return func_80018F3C(eng, n);
 }
 
 void func_8001D3B0(EXTengine *eng, s32 n, subengine *sub) {
