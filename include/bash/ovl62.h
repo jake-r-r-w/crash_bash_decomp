@@ -1,0 +1,29 @@
+#ifndef BASH_OVL62_H
+#define BASH_OVL62_H
+
+/* Functions and data defined in the ovl62 overlay. Anything the original headers
+ * declare (bash/pogo.h, ...) is declared there instead, not here.
+ * owner: src/overlays/ovl62/ovl62.c */
+
+#include "common.h"
+#include "bash/nas.h"
+
+void func_800CAD0C(void);
+void func_800CAD14(void);
+void func_800CAD1C(void);
+s32 func_800CAFF0(void);
+void func_800CB124(void);
+void func_800CB12C(void);
+void func_800CB6B4(void);
+void func_800CB6BC(void);
+s32 func_800CB6C4(s32 arg0);
+s32 func_800CB744(u8 *arg0, u8 *arg1);
+u32 func_800CBA28(u8 *arg0);
+s32 func_800CBA5C(void);
+void func_800D3170(void);
+void func_800D34F0(void);
+void func_800D34F8(void);
+void func_800D3500(void);
+void func_800D3508(void);
+
+#endif /* BASH_OVL62_H */

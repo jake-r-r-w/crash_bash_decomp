@@ -1,6 +1,5 @@
 #include "common.h"
-#include "prototypes.h"
-#include "externs.h"
+#include "bash/ovl68.h"
 
 void func_800B3330(void) {
 }

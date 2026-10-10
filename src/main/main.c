@@ -1,6 +1,5 @@
 #include "common.h"
-#include "prototypes.h"
-#include "externs.h"
+#include "bash/main.h"
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80010000);
 

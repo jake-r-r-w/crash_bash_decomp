@@ -2,6 +2,38 @@
 
 Newest first. Each session appends: what changed, what was learned, what's next.
 
+## 2026-10-10 - owned headers
+
+**State at end of session:** `make verify` -> 16 targets OK.
+
+**Done**
+- `include/externs.h` and `include/prototypes.h` are gone. Their declarations
+  are now in one owned header per source file: `bash/main.h`, `bash/engine.h`,
+  `bash/ovl5d.h`..`bash/ovl6a.h`, each marked `owner: <src>`. Functions go to
+  the file that defines them. Data goes by address: the exe's to `main.h`, the
+  engine's to `engine.h`, and slot-overlay data to each overlay that uses it.
+  Names the leak-derived headers declare are not repeated. Sources include only
+  the headers they use. Roadmap item ticked.
+- The engine types header moved from `bash/engine.h` to `bash/nas.h` (the name
+  `engine.h` is now the engine overlay's owned header).
+- `decomp.py`:
+  - `declare()` adds declarations to a file's owned header (it's used by
+    `land()`, so by `done`'s duplicate propagation and by legacy `auto`).
+  - `done` declares the matched function's prototype.
+  - `rename` rewrites a slot overlay's owned headers and drops an owned
+    declaration once the name is declared in an original header.
+  - Propagated copies no longer include another file's owned header.
+  - `write_prototypes`/`add_externs` are removed.
+
+**Learned / gotchas**
+- Renaming a function to a leak-declared name and back loses its owned
+  declaration (the dedupe runs on the way in). Re-add it by hand if that
+  happens.
+
+**Next**
+1. Phase 1: finish the overlay section splits, and identify the overlays.
+
+
 ## 2026-10-10 - functions reached from the AST pairs
 
 **State at end of session:** `make verify` -> 16 targets OK; 122 game functions named.

@@ -5,7 +5,7 @@
  * (GameEng/Pogo/pogo.h and psx_pogo.h).
  * Names and types only; see docs/ARCHITECTURE.md (Leaked source). */
 
-#include "bash/engine.h"
+#include "bash/nas.h"
 
 enum POGO_AST_types {
     POGO_AST_zero = 0x1400,

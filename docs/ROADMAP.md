@@ -22,7 +22,7 @@ Build the headers and names that every later match depends on.
 - [ ] Recover the remaining engine types (`EXTobject`, `EXTmotion`, `EXTbotai`,
   `EXTheromove`, `NASTrigger`, `subengine`, `hero_seq`, `TA_player`, `bool`)
   and name the `unkXX` fields.
-- [ ] Retire `include/externs.h` and `include/prototypes.h` into owned headers.
+- [x] Retire `include/externs.h` and `include/prototypes.h` into owned headers.
 - [ ] Finish the overlay section splits (data vs rodata) so that functions using
   strings and jump tables can match.
 - [ ] Identify which minigame or mode each overlay is.

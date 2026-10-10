@@ -116,7 +116,7 @@ own header (`ovl5f`, `ovl60`, `ovl61`, `ovl62`). Differences from the leak:
   one-argument form is kept, and the other is noted in a comment until the
   definition settles it.
 - The engine types the leak uses but never defines (`NAS`, `EXTengine`,
-  `EXTnode`, `hero_seq`, ...) are incomplete structs in `bash/engine.h`.
+  `EXTnode`, `hero_seq`, ...) are incomplete structs in `bash/nas.h`.
   Declarations that need one of them complete are wrapped in
   `#ifdef BASH_HAVE_<TYPE>`: the `EXT*` extension structs (which embed
   `EXTnode`) and the hero animation tables (`hero_seq`, `TA_player`).
@@ -165,7 +165,7 @@ signature alone is not enough.
 ## Engine types
 
 The engine's object model, as far as code proves it. The definitions are in
-`include/bash/engine.h`, and each size has a compile-time check.
+`include/bash/nas.h`, and each size has a compile-time check.
 
 - **Extension allocator.** `func_8002689C(owner, size, id)` calls
   `func_800232B0`. That allocates `size` bytes after a 0x18-byte heap header,

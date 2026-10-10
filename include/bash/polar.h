@@ -5,7 +5,7 @@
  * (GameEng/Polar/polar.h: the leak ends part-way through it).
  * Names and types only; see docs/ARCHITECTURE.md (Leaked source). */
 
-#include "bash/engine.h"
+#include "bash/nas.h"
 
 extern NAS *briosmokepack;
 extern NAS *Cortexsmokepack;

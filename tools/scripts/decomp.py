@@ -996,6 +996,10 @@ def cmd_done(a):
     if hacks and not a.hack:
         die(f"{name} uses {' and '.join(hacks)}: pass --hack \"why it is needed\" (it goes in the commit "
             "message) or remove it")
+    # its prototype goes in its file's owned header (unless an original header declares it)
+    proto = prototype_of(read(src), name)
+    if proto:
+        declare(src, [proto])
     # 3. the function itself, 4. the whole build
     if not check_function(key, e, proj, name, quiet=True)[0]:
         print(f"{name} does not match: nothing recorded or committed")
@@ -1067,7 +1071,6 @@ def commit_match(items, trailers, title=None):
 
 MEM_OP = re.compile(r"^(lw|lh|lhu|lb|lbu|sw|sh|sb)\s+\$\w+,\s*(?:%lo\((\w+)\)|(-?0x[0-9A-Fa-f]+|-?\d+))\(\$\w+\)")
 EXTERN_LINE = re.compile(r"^extern\s+(.+?)\s*(\**)\s*(\w+)\s*(\[\d*\])?\s*;\s*$")
-EXTERNS_H = "include/externs.h"
 FUNC_DECL_LINE = re.compile(r"^[A-Za-z_?][\w \t*?]*\b\w+\s*\([^;{}]*\)\s*;\s*(/\*.*\*/)?\s*$")
 
 
@@ -1147,19 +1150,106 @@ def src_includes(src):
     return [l for l in read(src).splitlines() if l.lstrip().startswith("#include")]
 
 
-def ensure_externs_include(src):
-    ensure_include(src, EXTERNS_H)
+HEADERS = "include"
+OWNER = re.compile(r"\bowner:\s*(\S+)")
 
 
-def add_externs(decls):
-    cur = read(EXTERNS_H) if os.path.exists(EXTERNS_H) else (
-        "#ifndef EXTERNS_H\n#define EXTERNS_H\n\n/* Globals declared by `decomp.py auto`; move them to a\n"
-        " * proper header and give them real types as you learn what they are. */\n\n#endif\n")
-    have = set(cur.splitlines())
-    new = [d for d in decls if d not in have]
-    if new or not os.path.exists(EXTERNS_H):
-        cur = cur.replace("\n#endif\n", "\n" + "\n".join(new) + "\n#endif\n") if "\n#endif\n" in cur else cur + "\n".join(new) + "\n"
-        write(EXTERNS_H, cur)
+def all_headers():
+    return sorted(p.replace("\\", "/") for p in glob.glob(f"{HEADERS}/**/*.h", recursive=True))
+
+
+def header_owner(h):
+    m = OWNER.search(read(h))
+    return m.group(1) if m else None
+
+
+def owned_header(src):
+    """The header that declares what `src` defines (marked `owner: <src>`); created if missing.
+    One owner per declaration: see docs/CONVENTIONS.md (Headers)."""
+    for h in all_headers():
+        if header_owner(h) == src:
+            return h
+    stem = os.path.splitext(os.path.basename(src))[0]
+    h, g = f"{HEADERS}/bash/{stem}.h", f"BASH_{stem.upper()}_H"
+    if os.path.exists(h):
+        die(f"{h} exists but is not marked `owner: {src}`")
+    write(h, f"#ifndef {g}\n#define {g}\n\n/* Functions and data defined in {src}. Anything the original "
+          f"headers\n * declare (bash/pogo.h, ...) is declared there instead, not here.\n * owner: {src} */\n\n"
+          f'#include "common.h"\n#include "bash/nas.h"\n\n#endif /* {g} */\n')
+    return h
+
+
+DECL_NAME = re.compile(r"\b(\w+)\s*(?:\([^;{}]*\)|\[[^\]]*\])?\s*;\s*(?:/\*.*\*/)?\s*$")
+
+
+def decl_name(line):
+    """Name declared by a one-line prototype or extern, or None."""
+    l = line.strip()
+    if not l or l.startswith(("#", "/*", "*", "typedef", "}")) or not l.endswith((";", "*/")):
+        return None
+    m = DECL_NAME.search(l)
+    return m.group(1) if m else None
+
+
+def visible_names(src):
+    """Names declared by the headers `src` includes (one level, plus their own includes)."""
+    seen, names, todo = set(), set(), [re.search(r'"([^"]+)"', l).group(1)
+                                       for l in src_includes(src) if '"' in l]
+    while todo:
+        h = f"{HEADERS}/{todo.pop()}"
+        if h in seen or not os.path.exists(h):
+            continue
+        seen.add(h)
+        for l in read(h).splitlines():
+            if l.lstrip().startswith("#include") and '"' in l:
+                todo.append(re.search(r'"([^"]+)"', l).group(1))
+            n = decl_name(l)
+            if n:
+                names.add(n)
+    return names
+
+
+def declare(src, decls):
+    """Add declarations for things `src` uses or defines to its owned header, skipping names
+    any header it includes already declares, and make sure it includes that header."""
+    h = owned_header(src)
+    ensure_include(src, h)
+    have = visible_names(src)
+    new = []
+    for d in decls:
+        n = decl_name(d)
+        if n and n not in have:
+            new.append(d.strip())
+            have.add(n)
+    if new:
+        t = read(h)
+        i = t.rstrip().rfind("#endif")
+        write(h, t[:i] + "\n".join(new) + "\n\n" + t[i:])
+
+
+def prototype_of(ftext, name):
+    """One-line prototype for function `name` defined in `ftext`, or None."""
+    for m in FUNC_DEF.finditer(ftext):
+        if m.group(2) == name:
+            ret, params = " ".join(m.group(1).split()), " ".join(m.group(3).split())
+            return re.sub(r"\s*\*\s*", " *", f"{ret} {name}({params or 'void'});").replace("( *", "(*")
+    return None
+
+
+def dedupe_owned(src):
+    """Drop owned-header declarations of names another header `src` includes now declares
+    (e.g. after a rename to a name the original headers use)."""
+    h = owned_header(src)
+    others = set()
+    for l in src_includes(src):
+        m = re.search(r'"([^"]+)"', l)
+        p = f"{HEADERS}/{m.group(1)}" if m else None
+        if p and p != h and os.path.exists(p):
+            others |= {decl_name(x) for x in read(p).splitlines()} - {None}
+    lines = read(h).splitlines(keepends=True)
+    kept = [l for l in lines if decl_name(l) not in others]
+    if len(kept) != len(lines):
+        write(h, "".join(kept))
 
 
 def compile_alone(src, decls, ftext, name, cfg, tag="t"):
@@ -1167,8 +1257,6 @@ def compile_alone(src, decls, ftext, name, cfg, tag="t"):
     `tag` names the scratch files, so parallel workers don't collide."""
     os.makedirs("build/auto", exist_ok=True)
     incs = src_includes(src)
-    if os.path.exists(EXTERNS_H) and not any("externs.h" in l for l in incs):
-        incs.append(f'#include "{os.path.basename(EXTERNS_H)}"')
     c, o = f"build/auto/{tag}.c", f"build/auto/{tag}.o"
     write(c, "\n".join(incs + decls) + "\n\n" + ftext)
     g = int(cfg.get("GVAL", "0"))
@@ -1200,39 +1288,14 @@ def auto_try(job):
     return k, None, decls, ftext, 0
 
 
-PROTOS_H = "include/prototypes.h"
 FUNC_DEF = re.compile(r"^(?!static\b|typedef\b|extern\b)([A-Za-z_][\w \t]*?[\s*]+)(\w+)\s*\(([^;{}()]*)\)\s*\{", re.M)
 NOT_FUNCS = {"if", "while", "for", "switch", "return", "else", "sizeof", "do"}
 
 
-def write_prototypes():
-    """Prototype every C function defined in src/, so calls before a definition don't get an
-    implicit `int f()` declaration that clashes with it (and so m2c's context has the signatures)."""
-    protos, incs = {}, []
-    for p in sorted(glob.glob("src/**/*.c", recursive=True)):
-        text = read(p)
-        # every header any source uses, so the prototypes' types are defined wherever this is included
-        for l in text.splitlines():
-            l = l.strip()
-            if l.startswith("#include") and os.path.basename(PROTOS_H) not in l and l not in incs:
-                incs.append(l)
-        for m in FUNC_DEF.finditer(text):
-            ret, name, params = " ".join(m.group(1).split()), m.group(2), " ".join(m.group(3).split())
-            if name not in NOT_FUNCS and ret.split()[0] not in NOT_FUNCS:
-                protos.setdefault(name, []).append(
-                    f"{ret.replace(' *', '*')} {name}({params or 'void'});".replace("* ", "*"))
-    # a name defined in several files (overlays sharing a load address) has no single signature
-    lines = [v[0] for v in protos.values() if len(v) == 1]
-    write(PROTOS_H, "#ifndef PROTOTYPES_H\n#define PROTOTYPES_H\n\n/* Generated by `decomp.py auto` from the C "
-          "definitions in src/ - don't edit, it is rewritten. */\n\n" + "\n".join(incs) + "\n\n"
-          + "\n".join(lines) + "\n\n#endif\n")
-    for p in glob.glob("src/**/*.c", recursive=True):
-        ensure_include(p, PROTOS_H)
-
-
 def ensure_include(src, header):
     text = read(src)
-    inc = f'#include "{os.path.basename(header)}"'
+    rel = os.path.relpath(header, HEADERS).replace("\\", "/") if header.startswith(HEADERS + "/") else header
+    inc = f'#include "{rel}"'
     if inc in text:
         return
     lines = text.splitlines(keepends=True)
@@ -1307,20 +1370,7 @@ def cmd_auto(a):
         die("no candidates (all small functions matched or already tried; --retry or a larger --max-size)")
     jobs = a.jobs or max(1, (os.cpu_count() or 2) - 1)
     srcs = sorted(glob.glob("src/**/*.c", recursive=True))
-    # Prototypes for every C function already in src/ (better m2c context, no implicit-int clashes).
-    # They must not change existing matches, so keep them only if the full build still matches.
     protos = not a.no_protos
-    if protos:
-        snap = {p: read(p) for p in srcs + ([PROTOS_H] if os.path.exists(PROTOS_H) else [])}
-        write_prototypes()
-        ok, msg = verify_build(proj, funcs)
-        if not ok:
-            for p, t in snap.items():
-                write(p, t)
-            if PROTOS_H not in snap and os.path.exists(PROTOS_H):
-                os.remove(PROTOS_H)
-            protos = False
-            print(f"  prototypes header left out: it changes the build ({msg.splitlines()[0]})")
     print(f"auto: trying {len(pool)} functions <= {a.max_size} bytes on {jobs} workers")
     # m2c context: one preprocessed header set per source file, shared by that file's candidates
     os.makedirs("build/auto", exist_ok=True)
@@ -1376,23 +1426,19 @@ def land(cands, funcs, proj, st, protos=True, tag="auto_failed"):
     ones that still match there, then check the full build. Returns the kept candidates, or None
     when the full build failed (everything reverted)."""
     srcs = sorted(glob.glob("src/**/*.c", recursive=True))
-    protos = protos and os.path.exists(PROTOS_H)
-    extra = [h for h in (EXTERNS_H, PROTOS_H) if os.path.exists(h)]
-    backup = {p: read(p) for p in srcs + extra}
+    backup = {p: read(p) for p in srcs + all_headers()}
 
     def apply(sel):
         for p, t in backup.items():
             write(p, t)
-        for h in (EXTERNS_H, PROTOS_H):
-            if h not in backup and os.path.exists(h):
+        for h in all_headers():
+            if h not in backup:
                 os.remove(h)
-        if sel:
-            add_externs([d for c in sel for d in c[4]])
         for k, e, name, src, decls, ftext in sel:
-            ensure_externs_include(src)
+            # the data it uses and its own prototype go in its file's owned header
+            proto = prototype_of(ftext, name) if protos else None
+            declare(src, list(decls) + ([proto] if proto else []))
             write(src, read(src).replace(f'INCLUDE_ASM("{os.path.dirname(e["asm"])}", {name});', ftext.rstrip("\n"), 1))
-        if protos:
-            write_prototypes()
 
     def real_ok(sel):
         good = []
@@ -1903,18 +1949,19 @@ def set_symbol(ovl, addr, name, typ=None):
 
 def ref_files(ovl):
     """(sources to rename in, headers to rename in). A slot overlay's names are only its own:
-    other overlays may use the same placeholder for a different thing at the same address."""
+    other overlays may use the same placeholder for a different thing at the same address, so
+    only its sources and the headers they own are rewritten."""
     srcs = [p.replace("\\", "/") for p in glob.glob("src/**/*.c", recursive=True)]
-    hdrs = sorted(glob.glob("include/*.h"))
     if ovl in ("", "engine"):
-        return srcs, hdrs
-    return [p for p in srcs if p == f"src/{ovl}.c" or p.startswith((f"src/{ovl}/", f"src/overlays/{ovl}/"))], []
+        return srcs, all_headers()
+    mine = [p for p in srcs if p == f"src/{ovl}.c" or p.startswith((f"src/{ovl}/", f"src/overlays/{ovl}/"))]
+    return mine, [h for h in all_headers() if header_owner(h) in mine]
 
 
 def apply_renames(pairs, proj, write_syms=True):
     """pairs: [(ovl, addr, old, new, typ)]. Writes the names, rewrites references in src/ and
     include/, re-splits, re-indexes and checks the build; undoes everything if it differs."""
-    snap = {p: read(p) for p in glob.glob(f"{CFG}/**/*", recursive=True) + glob.glob("include/*.h")
+    snap = {p: read(p) for p in glob.glob(f"{CFG}/**/*", recursive=True) + all_headers()
             + glob.glob("src/**/*.c", recursive=True) + [P_FUNCS] if os.path.isfile(p)}
     created = set()
     yamls = set()
@@ -1937,12 +1984,10 @@ def apply_renames(pairs, proj, write_syms=True):
             n = rename_syms(t, mp)
             if n != t:
                 write(p, n)
-        if ovl not in ("", "engine"):
-            # shared headers: add renamed copies of the declarations, other overlays keep theirs
-            decls = [rename_syms(l, mp) for h in glob.glob("include/*.h") for l in read(h).splitlines()
-                     if l.startswith("extern") and any(re.search(rf"\b{re.escape(o)}\b", l) for o in mp)]
-            if decls:
-                add_externs(decls)
+        # a new name the original headers already declare keeps only that declaration
+        for p in srcs:
+            if any(header_owner(h) == p for h in all_headers()):
+                dedupe_owned(p)
 
     def resplit_all():
         for y in sorted(yamls):
@@ -2076,17 +2121,14 @@ def rename_syms(text, mp):
 
 
 def header_decls(mp):
-    """extern lines for renamed data symbols, copied from how the source symbols are declared."""
-    texts = [read(p) for p in sorted(glob.glob("include/*.h"))]
-    declared = lambda s: any(re.search(rf"^extern\b[^;]*\b{re.escape(s)}\b", t, re.M) for t in texts)
+    """Declarations (externs and prototypes) for renamed symbols, copied from how the source
+    symbols are declared. declare() later skips any the copy's file can already see."""
+    lines = [l for p in all_headers() for l in read(p).splitlines()]
     out = []
     for a, b in mp.items():
-        if declared(b):
-            continue
-        for t in texts:
-            m = re.search(rf"^extern\b[^;\n]*\b{re.escape(a)}\b[^;\n]*;", t, re.M)
-            if m:
-                out.append(rename_syms(m.group(0), {a: b}))
+        for l in lines:
+            if decl_name(l) == a:
+                out.append(rename_syms(l.strip(), {a: b}))
                 break
     return out
 
@@ -2123,11 +2165,13 @@ def propagate_candidates(funcs, stat, syms, only=None, st=None, proj=None):
             mp = sym_map(se, e, sname, name) if src and os.path.exists(e.get("asm", "")) else None
             if mp is None:
                 continue
-            # the copy must see the same headers as the original
+            # the copy must see the same headers as the original (except the headers another
+            # file owns: what it needs from those comes in through header_decls)
             for inc in src_includes(ssrc):
                 hm = re.search(r'"([^"]+)"', inc)
-                if hm:
-                    ensure_include(src, hm.group(1))
+                if hm and not (os.path.exists(f"{HEADERS}/{hm.group(1)}")
+                               and header_owner(f"{HEADERS}/{hm.group(1)}") not in (None, src)):
+                    ensure_include(src, f"{HEADERS}/{hm.group(1)}")
             out.append((k, e, name, src, header_decls(mp), rename_syms(base, mp), sk))
     return out
 
@@ -2728,7 +2772,7 @@ def main():
     p.add_argument("--max-diff", type=int, default=4, help="near-miss: at most this many instructions differ")
     p.add_argument("--permute-seconds", type=int, default=60, help="permuter time per function")
     p.add_argument("--permute-limit", type=int, default=20, help="most near-misses to permute per run")
-    p.add_argument("--no-protos", action="store_true", help="do not (re)generate include/prototypes.h")
+    p.add_argument("--no-protos", action="store_true", help="do not declare landed functions in their owned headers")
     p.add_argument("--no-propagate", action="store_true", help="do not copy matches to identical functions")
     p.add_argument("--legacy", action="store_true", help="run the retired bulk matcher anyway")
     p.add_argument("--commit", action="store_true")

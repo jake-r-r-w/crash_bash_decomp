@@ -5,7 +5,7 @@
  * (GameEng/Tank: the leak starts part-way through it).
  * Names and types only; see docs/ARCHITECTURE.md (Leaked source). */
 
-#include "bash/engine.h"
+#include "bash/nas.h"
 
 void TA_Triggers(NASTrigger *, s32);
 void TA_EarliestTriggers();

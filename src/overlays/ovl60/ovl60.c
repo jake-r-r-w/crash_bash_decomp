@@ -1,6 +1,6 @@
 #include "common.h"
-#include "prototypes.h"
-#include "externs.h"
+#include "bash/main.h"
+#include "bash/ovl60.h"
 #include "bash/pogo.h"
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B3534);

@@ -16,9 +16,10 @@ the host has no Python. In Git Bash loops, pass `</dev/null` to `tools/dk`.
 2. **Write C** in the file that `next` printed (`src ...`), replacing that
    function's `INCLUDE_ASM` line only. Rules:
    - C89: declarations at the top of blocks, `/* */` comments, `s32`/`u8`/... types.
-   - Declare callees with a prototype, either in a header under `include/` or
-     above the function in the same file. Don't add to
-     `include/externs.h` / `include/prototypes.h`.
+   - Declare what the function uses in the owned header of the file that defines
+     it (`bash/main.h`, `bash/engine.h`, `bash/ovlXX.h`, marked `owner:`), or in
+     the original headers (`bash/pogo.h`, ...) if they already name it. `done`
+     adds the function's own prototype. See docs/CONVENTIONS.md (Headers).
    - No `M2C_*` macros, no `?` types, no `asm()` with instructions.
    - Prefer struct fields over pointer arithmetic once the layout is known.
 3. **Diff:** `tools/dk make diff FUNC=NAME`, then iterate. Typical fixes:
