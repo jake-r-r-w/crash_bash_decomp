@@ -941,28 +941,81 @@ def cmd_verify(a):
     sys.exit(0 if ok else 1)
 
 
+# m2c leftovers and hacks a hand match must not contain (see docs/CONVENTIONS.md, Matching rules)
+LINT_ERRORS = [
+    (re.compile(r"\bM2C_\w+"), "m2c macro"),
+    (re.compile(r"(^|[\s(,])\?(\s|\*)"), "m2c unknown type `?`"),
+    (re.compile(r"\b(asm|__asm__)\s*(volatile\s*)?\(\s*\"[^\"]"), "inline asm with instructions"),
+]
+# allowed only with --hack "reason", which goes into the commit message
+LINT_HACKS = [
+    (re.compile(r"\bregister\b[^;]*\b(asm|__asm__)\s*\("), "register pin"),
+    (re.compile(r"\b(asm|__asm__)\s*(volatile\s*)?\(\s*\"\"\s*\)"), "empty asm barrier"),
+]
+INCLUDE_ASM_LINE = re.compile(r'^\s*INCLUDE_ASM\(\s*"[^"]+"\s*,\s*(\w+)\s*\)')
+
+
+def lint_function(src, name):
+    """(errors, hacks) found in NAME's definition in SRC."""
+    body = extract_function(read(src), name) or ""
+    body = re.sub(r"/\*.*?\*/", "", body, flags=re.S)
+    errs = sorted({why for rx, why in LINT_ERRORS if rx.search(body)})
+    hacks = sorted({why for rx, why in LINT_HACKS if rx.search(body)})
+    return errs, hacks
+
+
+def matched_in_worktree():
+    """Functions whose INCLUDE_ASM line the working tree removes from src/ compared with HEAD."""
+    r = run(["git", "diff", "HEAD", "-U0", "--", "src"])
+    gone = {m.group(1) for l in r.stdout.splitlines() if l.startswith("-") and not l.startswith("---")
+            for m in [INCLUDE_ASM_LINE.match(l[1:])] if m}
+    back = {m.group(1) for l in r.stdout.splitlines() if l.startswith("+") and not l.startswith("+++")
+            for m in [INCLUDE_ASM_LINE.match(l[1:])] if m}
+    return gone - back
+
+
 def cmd_done(a):
+    """Validation gate for one hand-matched function: scope, lint, function match, full build.
+    Only after all four pass is it recorded (and committed with --commit)."""
     proj, funcs = need_proj(), need_funcs()
     syms = sym_names()
-    items = []
-    for fname in a.funcs:
-        key, e = find_func(funcs, fname)
-        name = cur_name(key, e, syms)
-        if not check_function(key, e, proj, name, quiet=True)[0]:
-            print(f"{name} does not match: nothing recorded or committed")
-            sys.exit(1)
-        items.append((key, e, name))
+    key, e = find_func(funcs, a.func)
+    name = cur_name(key, e, syms)
+    src = e.get("src") or locate_def(name)
+    if not src:
+        die(f"can't find the source file defining {name}")
+    # 1. scope: one function per commit
+    others = sorted(matched_in_worktree() - {name, e["name"], e["orig"]})
+    if others:
+        die(f"the working tree also replaces INCLUDE_ASM for {', '.join(others)}: one function per "
+            "commit. Restore those INCLUDE_ASM lines (keep the C elsewhere) and match them separately.")
+    # 2. lint: no m2c leftovers, hacks only when declared
+    errs, hacks = lint_function(src, name)
+    if errs:
+        die(f"{name}: {', '.join(errs)} left in the C - clean it up before recording the match")
+    if hacks and not a.hack:
+        die(f"{name} uses {' and '.join(hacks)}: pass --hack \"why it is needed\" (it goes in the commit "
+            "message) or remove it")
+    # 3. the function itself, 4. the whole build
+    if not check_function(key, e, proj, name, quiet=True)[0]:
+        print(f"{name} does not match: nothing recorded or committed")
+        sys.exit(1)
     ok, msg = verify_build(proj, funcs)
     if not ok:
-        print(f"{', '.join(n for *_, n in items)} match alone, but the full build does not:\n{msg}")
+        print(f"{name} matches alone, but the full build does not:\n{msg}")
         sys.exit(1)
+    items = [(key, e, name)]
     record_matches(items, funcs)
     # the same code elsewhere (other overlays, copies in the exe) takes the same C
-    copies = propagate(funcs, proj, only={k for k, *_ in items})
-    items += [(k, e, name) for k, e, name, *_ in copies]
+    copies = propagate(funcs, proj, only={key})
     cmd_progress(a)
     if a.commit:
-        commit_match(items, a.trailer or [])
+        notes = ([a.note] if a.note else []) + ([f"Hack: {', '.join(hacks)} - {a.hack}"] if hacks else [])
+        if copies:
+            notes.append("Identical copies matched with the same C:\n"
+                         + "\n".join(f"- {n} ({ce['seg']})" for _, ce, n, *_ in copies))
+        commit_match(items, notes + ["Validated-by: decomp.py done (scope, lint, function, full build)"]
+                     + (a.trailer or []))
 
 
 def record_matches(items, funcs, via=None):
@@ -1001,7 +1054,9 @@ def commit_match(items, trailers, title=None):
         subject = title or f"Match {len(items)} functions ({sum(e['size'] for _, e, _ in items)} bytes)"
         body = "\n".join(f"- {n} ({e['seg']}, {e['size']} bytes)" for _, e, n in items)
     msg = subject + ("\n\n" + body if body else "") + ("\n\n" + "\n".join(trailers) if trailers else "")
-    r = run(["git", "commit", "-q", "-m", msg, "--", *paths])
+    # tools/hooks/pre-commit refuses matches (removed INCLUDE_ASM lines) committed without this
+    r = subprocess.run(["git", "commit", "-q", "-m", msg, "--", *paths], capture_output=True, text=True,
+                       env={**os.environ, "DECOMP_VALIDATED": "1"})
     if r.returncode:
         print("git commit failed (matches are recorded; commit by hand):\n" + tail(r.stderr + r.stdout))
         sys.exit(1)
@@ -1237,6 +1292,9 @@ def auto_permute(a, funcs, stat, st, proj, syms, cfg, jobs, skip):
 
 
 def cmd_auto(a):
+    if not a.legacy:
+        die("auto is retired: functions are matched by hand, one per commit (docs/MATCHING.md). "
+            "--legacy runs it anyway")
     proj, funcs = need_proj(), need_funcs()
     stat, st = statuses(funcs)
     syms, cfg = sym_names(), mk_config()
@@ -2672,6 +2730,7 @@ def main():
     p.add_argument("--permute-limit", type=int, default=20, help="most near-misses to permute per run")
     p.add_argument("--no-protos", action="store_true", help="do not (re)generate include/prototypes.h")
     p.add_argument("--no-propagate", action="store_true", help="do not copy matches to identical functions")
+    p.add_argument("--legacy", action="store_true", help="run the retired bulk matcher anyway")
     p.add_argument("--commit", action="store_true")
     p.add_argument("--trailer", action="append")
     p.set_defaults(fn=cmd_auto)
@@ -2705,10 +2764,12 @@ def main():
     p.add_argument("func")
     p.add_argument("--note", required=True)
     p.set_defaults(fn=cmd_block)
-    p = sub.add_parser("done", help="verify full build, mark matched, refresh progress")
-    p.add_argument("funcs", nargs="+")
+    p = sub.add_parser("done", help="validate one hand match (scope, lint, function, full build), record it")
+    p.add_argument("func")
     p.add_argument("--commit", action="store_true",
-                   help="after both checks pass, commit src/ include/ configs/ .decomp/ docs/")
+                   help="after every check passes, commit src/ include/ configs/ .decomp/ docs/")
+    p.add_argument("--note", help="what made it match (types, statement order, ...): goes in the commit body")
+    p.add_argument("--hack", help="why a register pin / asm(\"\") barrier is needed (required if used)")
     p.add_argument("--trailer", action="append", help="line appended to the commit message (repeatable)")
     p.set_defaults(fn=cmd_done)
     sub.add_parser("verify", help="clean rebuild and byte compare").set_defaults(fn=cmd_verify)

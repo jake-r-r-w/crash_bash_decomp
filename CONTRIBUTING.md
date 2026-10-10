@@ -17,25 +17,23 @@
 
 ## Matching a function
 
-All commands run through `tools/dk` (Docker):
+Functions are matched by hand (by a person or an AI agent), **one function per
+commit**, through the validation gate described in
+[docs/MATCHING.md](docs/MATCHING.md). All commands run through `tools/dk`:
 
 ```sh
-tools/dk python3 tools/scripts/decomp.py next            # target, asm listing and m2c draft
+tools/dk python3 tools/scripts/decomp.py next            # target, asm listing and draft
 # replace its INCLUDE_ASM line in src/... with C
 tools/dk make diff FUNC=func_80012345                    # build that file and diff the function
-tools/dk make permute FUNC=func_80012345                 # if stuck after a few attempts
-tools/dk python3 tools/scripts/decomp.py done func_80012345 --commit
+tools/dk make permute FUNC=func_80012345                 # if stuck after ~10 rounds
+tools/dk python3 tools/scripts/decomp.py done func_80012345 --commit --note "what made it match"
 ```
 
-`done` re-checks the function, rebuilds from scratch and compares the whole
-executable, copies the C to identical functions elsewhere, refreshes the
-dashboard and badges, and commits `src/ include/ configs/ .decomp/ docs/` as
-`Match NAME (seg, N bytes)`. Never commit a match by hand: `done` is the only
-path that guarantees the full build was checked.
-
-Small functions can be batched: `next --count 4`, then `done A B C D --commit`.
-`decomp.py auto --max-size 128 --commit` matches trivial functions from m2c
-drafts without any manual work; run it at the start and end of a session.
+`done` is the gate. It checks scope (only this function's `INCLUDE_ASM` is
+replaced), lint (no m2c leftovers, hacks declared with `--hack`), the function
+and a clean full build of every target. Only then does it record and commit
+`Match NAME (seg, N bytes)`. The pre-commit hook refuses matches committed any
+other way. The bulk matcher `decomp.py auto` is retired.
 
 Functions that won't match go to `decomp.py block NAME --note "..."`.
 

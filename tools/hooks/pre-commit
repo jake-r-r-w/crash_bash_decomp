@@ -20,3 +20,21 @@ if [ $fail -ne 0 ]; then
   echo "Game data must stay out of the repo (copyright). Unstage those files." >&2
   exit 1
 fi
+
+# A match (an INCLUDE_ASM line replaced by C) is committed only through the validation gate,
+# `decomp.py done NAME --commit`, which checks scope, lint, the function and the full build.
+if [ -z "${DECOMP_VALIDATED:-}" ]; then
+  matched=$(git diff --cached -U0 -- src \
+    | grep -E '^-[[:space:]]*INCLUDE_ASM\(' \
+    | sed -E 's/.*,[[:space:]]*([A-Za-z0-9_]+)[[:space:]]*\).*/\1/' | sort -u || true)
+  readded=$(git diff --cached -U0 -- src \
+    | grep -E '^\+[[:space:]]*INCLUDE_ASM\(' \
+    | sed -E 's/.*,[[:space:]]*([A-Za-z0-9_]+)[[:space:]]*\).*/\1/' | sort -u || true)
+  new=$(comm -23 <(echo "$matched") <(echo "$readded") | grep . || true)
+  if [ -n "$new" ]; then
+    echo "pre-commit: this commit matches functions outside the validation gate:" >&2
+    echo "$new" | sed 's/^/  /' >&2
+    echo "Commit each one with: tools/dk python3 tools/scripts/decomp.py done NAME --commit" >&2
+    exit 1
+  fi
+fi

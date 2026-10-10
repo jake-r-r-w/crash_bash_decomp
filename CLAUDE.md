@@ -9,5 +9,8 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   `tools/scripts/decomp.py` (not `tools/decomp.py`), `configs/USA/` (not
   `config/`), symbols in `configs/USA/sym.main.txt`, exe target `build/main.exe`.
 - Never commit game data or `ext/`; never commit a match except via
-  `decomp.py done --commit`.
+  `decomp.py done NAME --commit`.
+- Matching is by hand, one function per commit, through the validation gate
+  `decomp.py done NAME --commit` ([docs/MATCHING.md](docs/MATCHING.md); skill
+  `/match-function`). `decomp.py auto` is retired.
 - Append an entry to `docs/AGENT_LOG.md` at the end of every session.
