@@ -118,7 +118,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BD510);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BD770);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", PlotAR_PU);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Plot_Ark_Pickup);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BDD30);
 

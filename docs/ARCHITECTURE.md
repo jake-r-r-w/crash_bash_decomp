@@ -84,7 +84,7 @@ code finds 15 code files; nothing else on the disc holds code.
   otherwise (`InitGravityObject`). Arkenoid spells four objects differently
   in its enum and its prototypes: `ArkFlash`/`_ArkCameraFlash`,
   `NGDeadWall`/`_NGArkDeadWall`, `LaserWall`/`_ArkLaserWall`,
-  `ArkRepulse`/`_RepulseRing`. `AST_ArkDeadWall` and `AST_NGDeadWall` share
+  `ArkRepulse`/`_RepulseRing`. `AST_AR_PU` is the Arkenoid pickup: it has no Init (stub) and the leak declares only `Plot_Ark_Pickup` for it. `AST_ArkDeadWall` and `AST_NGDeadWall` share
   one Plot (`Plot_ArkDeadWall`). Some of these objects live in the engine
   rather than the slot (`FloatyScore`, `ParticleEffect`, `ScriptFX`,
   `SmokePoof`, `WeatherNas`). Tank's pairs are not named: its enum is cut

@@ -33935,7 +33935,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800BDAB8": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/PlotAR_PU.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/Plot_Ark_Pickup.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "80022660",
@@ -33946,7 +33946,7 @@
   "fp": "75fc99be37a045aa",
   "fpn": "55838d1fbc9c8d05",
   "leaf": false,
-  "name": "PlotAR_PU",
+  "name": "Plot_Ark_Pickup",
   "orig": "func_800BDAB8",
   "rom": 43012,
   "seg": "overlays/ovl61/ovl61",
