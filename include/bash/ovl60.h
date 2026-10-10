@@ -22,7 +22,7 @@ void func_800C34D0(void);
 void func_800C34F0(s32 arg0);
 void func_800C3510(u8 *arg0);
 
-extern u8 func_800C353C[];
+void func_800C353C();
 extern s32 D_800C5BB0;
 extern s32 D_800C52E0;
 extern s32 D_800C52E4;

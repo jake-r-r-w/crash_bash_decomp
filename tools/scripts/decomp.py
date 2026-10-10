@@ -1123,6 +1123,10 @@ def sanitize_draft(draft, texts):
             if "?" not in typ:
                 out_ext.append(m.group(0).strip())
                 continue
+            if name.startswith("func_"):     # a function whose address is taken (a callback)
+                out_ext.append(f"void {name}();")
+                text = re.sub(rf"&{name}\b", name, text)
+                continue
             if re.search(rf"\b{name}\.unk", text) or re.search(rf"&{name}\b", text) or name not in syms:
                 out_ext.append(f"extern u8 {name}[];")
                 text = re.sub(rf"\b{name}\.unk(-?[0-9A-Fa-f]+)\b", lambda mm: field(name, mm.group(1)), text)
