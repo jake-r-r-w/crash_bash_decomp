@@ -36,7 +36,10 @@ Newest first. Each session appends: what changed, what was learned, what's next.
   byte-identical; PsyQ from Sony objects) and has a Mermaid diagram of the
   matching loop and gate ("How functions are matched").
 
-**Next**
+- Added `docs/ROADMAP.md`: six phases (foundations: types and names; main.exe;
+  engine; leaked minigames; other overlays; finish) with exit criteria.
+
+**Next** (phase 1 of `docs/ROADMAP.md`)
 1. `/match-function`, one function per commit. `next` still shows the old
    auto drafts for the 628 near-misses, which are good starting points.
 2. Many failures need types: turn the leaked Pogo/Arkenoid/Polar headers
