@@ -1,0 +1,74 @@
+# Engine module: CRASHBSH.DAT index entry 0x3DF (sector 0x8AEB, table at 0x8004E110 in the exe:
+# {u32 sector, u32 size}), loaded at 0x80078C90 (most jal targets land on prologues at that base).
+# The file also reserves the minigame slot at 0x800B32B4 (offset 0x3A624): it holds a stub with id
+# 0x5C and, from offset 0x54000, leftover build-machine memory (leaked headers). Header word 4
+# (0x800D7144) is the end of that slot image.
+name: engine
+sha1: 2a7e5094fb0c5b7e865268820a35dc63822e1149
+options:
+  basename: engine
+  target_path: disc/engine.bin
+  elf_path: build/engine.ovl.elf
+  base_path: ../../..
+  platform: psx
+  compiler: PSYQ
+
+  asm_path: asm
+  src_path: src
+  build_path: build
+  asset_path: assets
+
+  ld_script_path: linkers/engine.ld
+  ld_dependencies: True
+
+  find_file_boundaries: True
+  migrate_rodata_to_functions: True
+  ld_align_section_vram_end: False
+  ld_align_segment_vram_end: False
+  gp_value: 0x8006E9EC
+
+  o_as_suffix: False
+  use_legacy_include_asm: False
+
+  section_order: [".text", ".data", ".rodata", ".sdata", ".bss"]
+
+  symbol_addrs_path:
+    - configs/USA/sym.main.txt
+    - configs/USA/sym.engine.txt
+
+  undefined_funcs_auto_path: linkers/engine_undefined_funcs_auto.txt
+  undefined_syms_auto_path: linkers/engine_undefined_syms_auto.txt
+
+  subalign: 2
+
+  string_encoding: ASCII
+  data_string_encoding: ASCII
+  rodata_string_guesser_level: 2
+  data_string_guesser_level: 2
+
+segments:
+  - name: engine
+    type: code
+    start: 0x0
+    align: 4
+    vram: 0x80078C90
+    subsegments:
+      - [0x0, textbin, overlays/engine/engine_header]   # entry pointers + image end, read by the exe's loader
+      - [0x14, c, overlays/engine/engine]
+      # .data: written by the engine; the last word (0x800ADBCC) is followed by 8-byte alignment
+      - [0x1F904, data, overlays/engine/engine_data]
+      # .rodata: only the switch jump tables (first jtbl_800ADBD8 .. last ends 0x800AEC58)
+      - [0x34F48, .rodata, overlays/engine/engine]
+      # second writable block after the rodata (stored to from 0x800AEC58 on)
+      - [0x35FC8, sdata, overlays/engine/engine_sdata]
+  # The minigame slot image the file reserves (vram 0x800B32B4): stub id 0x5C, zeros, then
+  # leftover build-machine memory from offset 0x54000 (leaked headers). Its own segment so it
+  # is not grouped with the engine's .data.
+  - name: engine_slot
+    type: code
+    start: 0x3A624
+    align: 4
+    vram: 0x800B32B4
+    subsegments:
+      - [0x3A624, bin, overlays/engine/engine_slot]
+  - [0x5E4B8]

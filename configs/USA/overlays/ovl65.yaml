@@ -1,0 +1,56 @@
+# Minigame slot overlay id 0x65 (first word): CRASHBSH.DAT index entry 0x2CF (sector 0x6CD4),
+# loaded at the shared slot 0x800B32B4. Layout: .rodata (id, strings, jump tables), .text, .data.
+name: ovl65
+sha1: 1d2cd8b029c9796641a0f271fc012c57da74017a
+options:
+  basename: ovl65
+  target_path: disc/ovl65.bin
+  elf_path: build/ovl65.ovl.elf
+  base_path: ../../..
+  platform: psx
+  compiler: PSYQ
+
+  asm_path: asm
+  src_path: src
+  build_path: build
+  asset_path: assets
+
+  ld_script_path: linkers/ovl65.ld
+  ld_dependencies: True
+
+  find_file_boundaries: True
+  migrate_rodata_to_functions: True
+  ld_align_section_vram_end: False
+  ld_align_segment_vram_end: False
+  gp_value: 0x8006E9EC
+
+  o_as_suffix: False
+  use_legacy_include_asm: False
+
+  section_order: [".rodata", ".text", ".data", ".bss"]
+
+  symbol_addrs_path:
+    - configs/USA/sym.main.txt
+    - configs/USA/sym.engine.txt
+    - configs/USA/sym.ovl65.txt
+
+  undefined_funcs_auto_path: linkers/ovl65_undefined_funcs_auto.txt
+  undefined_syms_auto_path: linkers/ovl65_undefined_syms_auto.txt
+
+  subalign: 2
+
+  string_encoding: ASCII
+  data_string_encoding: ASCII
+  rodata_string_guesser_level: 2
+  data_string_guesser_level: 2
+
+segments:
+  - name: ovl65
+    type: code
+    start: 0x0
+    vram: 0x800B32B4
+    subsegments:
+      - [0x0, .rodata, overlays/ovl65/ovl65]
+      - [0x124, c, overlays/ovl65/ovl65]
+      - [0xA228, data, overlays/ovl65/ovl65_data]
+  - [0xA9D4]

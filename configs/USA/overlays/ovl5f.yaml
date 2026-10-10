@@ -1,0 +1,56 @@
+# Minigame slot overlay id 0x5F (first word): CRASHBSH.DAT index entry 0x2D6 (sector 0x6DAA),
+# loaded at the shared slot 0x800B32B4. Layout: .rodata (id, strings, jump tables), .text, .data.
+name: ovl5f
+sha1: c68fe73c256380452e952ecfafc782d47a6ee30f
+options:
+  basename: ovl5f
+  target_path: disc/ovl5f.bin
+  elf_path: build/ovl5f.ovl.elf
+  base_path: ../../..
+  platform: psx
+  compiler: PSYQ
+
+  asm_path: asm
+  src_path: src
+  build_path: build
+  asset_path: assets
+
+  ld_script_path: linkers/ovl5f.ld
+  ld_dependencies: True
+
+  find_file_boundaries: True
+  migrate_rodata_to_functions: True
+  ld_align_section_vram_end: False
+  ld_align_segment_vram_end: False
+  gp_value: 0x8006E9EC
+
+  o_as_suffix: False
+  use_legacy_include_asm: False
+
+  section_order: [".rodata", ".text", ".data", ".bss"]
+
+  symbol_addrs_path:
+    - configs/USA/sym.main.txt
+    - configs/USA/sym.engine.txt
+    - configs/USA/sym.ovl5f.txt
+
+  undefined_funcs_auto_path: linkers/ovl5f_undefined_funcs_auto.txt
+  undefined_syms_auto_path: linkers/ovl5f_undefined_syms_auto.txt
+
+  subalign: 2
+
+  string_encoding: ASCII
+  data_string_encoding: ASCII
+  rodata_string_guesser_level: 2
+  data_string_guesser_level: 2
+
+segments:
+  - name: ovl5f
+    type: code
+    start: 0x0
+    vram: 0x800B32B4
+    subsegments:
+      - [0x0, .rodata, overlays/ovl5f/ovl5f]
+      - [0x870, c, overlays/ovl5f/ovl5f]
+      - [0x15958, data, overlays/ovl5f/ovl5f_data]
+  - [0x17FE0]

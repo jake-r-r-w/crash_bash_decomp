@@ -1,0 +1,479 @@
+#include "common.h"
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B3740);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B38A0);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B3AA0);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B4094);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B4260);
+
+INCLUDE_RODATA("asm/nonmatchings/overlays/ovl62/ovl62", D_800B32B4);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B44B4);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B4A1C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B4B04);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B4C74);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B5074);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B5570);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B5684);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B5788);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B5910);
+
+INCLUDE_RODATA("asm/nonmatchings/overlays/ovl62/ovl62", D_800B3358);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B5AC4);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B5EBC);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B60B8);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B6258);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B649C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B6708);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B6D74);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B6EB4);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B6FD4);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B6FEC);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B7224);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B7520);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B767C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B77B0);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B782C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B7874);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B787C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B7A58);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B7B88);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B7CDC);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B7F70);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B889C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B90C0);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B9398);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B94B8);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B9600);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B9714);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B98AC);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B9994);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B9B6C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B9D1C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B9D48);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BA7BC);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BAFA0);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BB810);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BBF2C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BCC9C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BCF08);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BD058);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BD198);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BD67C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BFA98);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BFD38);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BFEE0);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C01C8);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C06D0);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C0888);
+
+INCLUDE_RODATA("asm/nonmatchings/overlays/ovl62/ovl62", D_800B3498);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C0E94);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C0FE8);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C121C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C1584);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C2ECC);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C32A4);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C358C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C3E6C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C40B8);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C42A0);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C4498);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C45BC);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C4748);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C4810);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C48E8);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C4918);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C49DC);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C4A3C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C4ABC);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C4CB8);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C5CD0);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C5DCC);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C5EEC);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C5FF8);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C63D0);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C7870);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C7C74);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C7ED4);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C7FE0);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C82CC);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C8CC4);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9230);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C996C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9A2C);
+
+void func_800C9B4C(void) {
+}
+
+void func_800C9B54(void) {
+}
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9B5C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9B88);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9C98);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9D74);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9EC4);
+
+void func_800C9F50(void) {
+}
+
+void func_800C9F58(void) {
+}
+
+void func_800C9F60(void) {
+}
+
+void func_800C9F68(void) {
+}
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9F70);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9FC0);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA000);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA0BC);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA19C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA1AC);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA220);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA2B8);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA344);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA424);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA514);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA628);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA6E8);
+
+void func_800CA750(void) {
+}
+
+void func_800CA758(void) {
+}
+
+void func_800CA760(void) {
+}
+
+void func_800CA768(void) {
+}
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA770);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA850);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA890);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA930);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAA60);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAA90);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAB8C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAC20);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CACC0);
+
+void func_800CAD0C(void) {
+}
+
+void func_800CAD14(void) {
+}
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAD1C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAD60);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAE10);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAEB0);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAF94);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAFF0);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAFF8);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB0A4);
+
+void func_800CB124(void) {
+}
+
+void func_800CB12C(void) {
+}
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB134);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB178);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB284);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB2C8);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB314);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB368);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB41C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB508);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB56C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB5F4);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB650);
+
+void func_800CB6B4(void) {
+}
+
+void func_800CB6BC(void) {
+}
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB6C4);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB744);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB798);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB8A4);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB9DC);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CBA28);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CBA5C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CBA64);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CBAA4);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CBB8C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CBBE8);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CC024);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CC2BC);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CC3B4);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CCCB8);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CD118);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CD214);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CD560);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CD594);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CDA54);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CDBD0);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CDE8C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CE664);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CED58);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CF6F8);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CF9EC);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CFB7C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CFC58);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CFF44);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D0060);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D034C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D0470);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D05A8);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D0650);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D0750);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D0808);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D0A6C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D10A0);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D1188);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D14CC);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D17E8);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D191C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D1C14);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D1DB4);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2044);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2248);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2334);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D257C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2B58);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2C38);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2CB8);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2D2C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2D9C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2E00);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2EB0);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2F48);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D3018);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D307C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D30C0);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D3170);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D31A0);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D325C);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D32CC);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D3394);
+
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D3460);
+
+void func_800D34F0(void) {
+}
+
+void func_800D34F8(void) {
+}
+
+void func_800D3500(void) {
+}
+
+void func_800D3508(void) {
+}

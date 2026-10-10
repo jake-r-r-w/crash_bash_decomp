@@ -2,6 +2,51 @@
 
 Newest first. Each session appends: what changed, what was learned, what's next.
 
+## 2026-10-10 - overlays and leaked-source scan
+
+**State at end of session:** `tools/dk make verify` -> 16 targets OK
+(`build/main.exe`, `build/engine.bin`, `build/ovl5d.bin`..`build/ovl6a.bin`).
+Game code is now 1,019,036 bytes / 2,550 functions (was ~125 KB / 574): the exe
+was about an eighth of the game.
+
+**Done**
+- Found the `CRASHBSH.DAT` index in the exe: `{u32 sector, u32 size}` x 993 at
+  `0x8004E110`. Code scan of every entry and of the whole DAT/`BASHY.`: 15 code
+  files, nothing else.
+- Registered them (`add-overlay`, yamls in `configs/USA/overlays/`, sources in
+  `src/overlays/<ovl>/`): `engine` (entry 0x3DF, loads at `0x80078C90`) and 14
+  slot overlays at `0x800B32B4`, named by their id word (`ovl5d`..`ovl6a`).
+  Facts and evidence are in `docs/ARCHITECTURE.md` (Overlays) and the yaml
+  comments.
+- Engine split into header (textbin), `.text`, `.data`, `.rodata` (jump tables
+  only), `sdata` (second writable block), plus a separate `engine_slot` segment
+  for the slot image it reserves (stub id 0x5C + the leaked text).
+- AST table (`0x80098720`) maps id groups to overlays (Pogo `ovl60`, Arkenoid
+  `ovl61`, Polar `ovl62`, probably Tank `ovl5f`); its 10 pointers that fell
+  inside ovl62 functions are now function symbols in `sym.ovl62.txt`.
+- Leak scan: one block only (40 KB headers, DAT `0x45C9800`); no other paths or
+  `__FILE__` strings anywhere. Local copy `disc/leaked_source.txt`.
+
+**Learned / gotchas**
+- splat only writes `.s` files for functions an existing C file `INCLUDE_ASM`s,
+  and never rewrites `src/`. After adding function symbols to an overlay that
+  has no C yet, delete its scaffold `.c` and re-split. And `make check` won't
+  notice: `.c.o` doesn't depend on the included `.s` files, so a stale object
+  still matches. Use `make verify` (clean) after any re-split.
+- Packed segments: `align: 4` is needed on *every* segment in a file, since
+  splat aligns each segment's end (`__romPos = ALIGN(..., 16)` by default).
+- `make clean` wipes `build/`: keep scratch scripts in `disc/scratch/`.
+
+**Next**
+1. Slot overlays: split `.data` vs trailing rodata the same way (store
+   evidence), and look for more pointer-only leaf functions (data tables of
+   function pointers, as the AST table did for ovl62).
+2. Turn the leaked headers into `include/` headers for Pogo/Arkenoid/Polar
+   (structs, prototypes in id order), name the AST Init/Plot pairs.
+3. Start matching: `decomp.py auto --max-size 128 --commit` (now across 2,550
+   functions), then break the compiler tie (2.7.2-cdk vs 2.8.1) with
+   `auto --max-size 48` under each.
+
 ## 2026-10-10 - project setup and restructure
 
 **State at end of session:** `tools/dk make verify` -> `build/main.exe: OK`.

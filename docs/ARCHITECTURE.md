@@ -1,16 +1,16 @@
 # Architecture
 
-How `SCUS_945.70` is laid out and how this repository rebuilds it. The
-evidence behind each boundary is kept as comments next to it in
-`configs/USA/main.yaml`.
+How `SCUS_945.70` and its code overlays are laid out and how this repository
+rebuilds them. The evidence behind each boundary is kept as comments next to it
+in `configs/USA/main.yaml` and `configs/USA/overlays/*.yaml`.
 
 ## Disc
 
 | File | Size | Contents |
 |---|---|---|
 | `SYSTEM.CNF` | 69 B | boots `SCUS_945.70` |
-| `SCUS_945.70` | 422 KB | resident executable (the current build target) |
-| `CRASHBSH/CRASHBSH.DAT` | 70 MB | data archive; expected to hold the code overlays (engine + minigames), not yet indexed |
+| `SCUS_945.70` | 422 KB | resident executable |
+| `CRASHBSH/CRASHBSH.DAT` | 70 MB | data archive indexed by the exe; holds the engine module and 14 slot overlays (see Overlays) |
 | `BASHY.` | 30 MB | unidentified (likely streamed audio/video) |
 | `SPYRO3/SPYRO3.EXE`, `WAD.WAD`, `SPEECH.STR` | | Spyro: Year of the Dragon demo, out of scope |
 
@@ -28,6 +28,9 @@ PS-X EXE header at file offset `0x0`; the file body (offset `0x800`) loads at
 | `0x8004DCBC..0x80079000` | `0x3E4BC` | `.data` | game and library data, still one blob |
 | `0x80079000..` | | `.bss` | not yet measured |
 
+The engine module loads at `0x80078C90`, over the last `0x370` bytes of the
+exe's `.data` (zeros in the file).
+
 How the boundaries were found:
 
 - **Library start** `0x8002E7A8` (`__main`, 2MBYTE.OBJ): lowest address matched
@@ -39,6 +42,50 @@ How the boundaries were found:
 - **`.data` start** `0x8004DCBC`: the first game table (pointers to the game's
   own strings) after the last LIBMCRD string; the lowest stored-to address is
   `0x8004E0B4`.
+
+## Overlays
+
+`CRASHBSH.DAT` has no header; the exe indexes it with a table of
+`{u32 sector, u32 size}` pairs at `0x8004E110` (993 entries, each sector =
+previous + ceil(size / 2048)). Scanning every entry (and the whole file) for MIPS
+code finds 15 code files; nothing else on the disc holds code.
+
+| Overlay | DAT entry | Sector | Size | Loads at | Contents |
+|---|---|---|---|---|---|
+| `engine` | `0x3DF` | `0x8AEB` | `0x5E4B8` | `0x80078C90` | engine module, then the reserved slot image |
+| `ovl5d`..`ovl6a` | `0x1E7`, `0x2CC`..`0x2D8` | | `0x6CD8`..`0x23690` | `0x800B32B4` | slot overlays, one at a time |
+
+- **Load addresses** from `jal` targets: at `0x80078C90` 308 of the engine's
+  internal calls land on prologues (next best 150); every slot overlay's calls
+  into itself fit `0x800B32B4`. The engine's own `.data` stores
+  `0x800B32B4`, and its header word 4 (`0x800D7144`) is the end of the slot image.
+- **Engine layout**: 5 header words (4 entry pointers + image end), `.text`
+  `0x80078CA4..0x80098594`, `.data`, `.rodata` (only switch jump tables,
+  `0x800ADBD8..0x800AEC58`), a second writable block, then the slot image at
+  `0x800B32B4` (file offset `0x3A624`): a stub with id `0x5C`, zeros, and from
+  offset `0x54000` 40 KB of leftover build-machine memory (see below).
+- **Slot overlays** are named by their first word, an id (`0x5D`..`0x6A`).
+  Layout: `.rodata` (id, strings, jump tables), `.text`, `.data`.
+- **Which game is which**: the engine's AST table at `0x80098720`
+  (`{id, Init, Plot}` x 0xAE) points into the slot. Groups by id high byte:
+  `0x13` -> `ovl5f`, `0x14` -> `ovl60` (Pogo), `0x15` -> `ovl61` (Arkenoid),
+  `0x16` -> `ovl62` (Polar), `0x17` -> `ovl63`, `0x11`/`0x02` -> `ovl5d`,
+  `0x12` -> `ovl5e`, `0x18`..`0x1D` -> `ovl64`..`ovl68` (`0x1B`, `0x1C` both
+  `ovl67`), `0x1F` -> `ovl6a`. The Pogo/Arkenoid/Polar ids match the leaked
+  enums (`POGO_AST_zero = 0x1400`, ...); `ovl5f` is probably Tank (its enum is
+  cut off in the leak). Leaf functions reached only through this table are
+  declared in `configs/USA/sym.<ovl>.txt` so splat splits them.
+
+### Leaked source
+
+A scan of every disc file for long printable runs with C keywords finds one
+block: 40 KB of preprocessed headers in the engine's slot image (DAT offset
+`0x45C9800`), from `c:\Crash4\GameEng\{Tank,Pogo,Arkenoid,Polar}\` and
+`c:\Crash4\Core\Shell\include\alldbase.h`: about 400 prototypes, the AST
+enums and the minigame structs. It does not define the engine's own types.
+It stays on the disc (re-extract it with any strings tool); only names and types
+derived from it are committed. No other source paths or `__FILE__` strings exist
+in the exe or the overlays.
 
 ## PsyQ
 
@@ -75,7 +122,7 @@ pulls `asm/nonmatchings/<seg>/<func>.s` into the compiled object, so the build
 matches at every step. splat (`make split`) regenerates `asm/` and `linkers/`
 from the retail executable; it never overwrites existing `src/` files.
 
-Overlays (once registered with `decomp.py add-overlay`) get their own
+Overlays (registered with `decomp.py add-overlay`) get their own
 `configs/USA/overlays/<ovl>.yaml`, are cut from their archive to
 `disc/<ovl>.bin`, link from `linkers/<ovl>.ld` into `build/<ovl>.bin` against
 the executable's symbols, and are checked by the same `checksum.sha`.
