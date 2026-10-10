@@ -128,7 +128,28 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BCCE8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BCD64);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BCDF0);
+s32 func_800BCDF0(u8 *arg0) {
+    s32 var_v1;
+
+    var_v1 = 0;
+    if ((*(s32*)((u8*)(arg0) + 16)) >= 0x801) {
+        (*(s32*)((u8*)(arg0) + 16)) = 0x800;
+        var_v1 = 1;
+    }
+    if ((*(s32*)((u8*)(arg0) + 16)) < -0x800) {
+        (*(s32*)((u8*)(arg0) + 16)) = -0x800;
+        var_v1 = 1;
+    }
+    if ((*(s32*)((u8*)(arg0) + 24)) >= 0x801) {
+        (*(s32*)((u8*)(arg0) + 24)) = 0x800;
+        var_v1 = 1;
+    }
+    if ((*(s32*)((u8*)(arg0) + 24)) < -0x800) {
+        (*(s32*)((u8*)(arg0) + 24)) = -0x800;
+        var_v1 = 1;
+    }
+    return var_v1;
+}
 
 void func_800BCE6C(void) {
 }
@@ -171,6 +192,57 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BD2B8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BD320);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BD408);
+s32 func_800BD408(s32 arg0) {
+    s32 var_a1;
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BD488);
+    var_a1 = 0;
+    if (arg0 & 0x80) {
+        var_a1 = 0xC00;
+    }
+    if (arg0 & 0x20) {
+        var_a1 = 0x400;
+    }
+    if (arg0 & 0x10) {
+        var_a1 = 0;
+    }
+    if (arg0 & 0x40) {
+        var_a1 = 0x800;
+    }
+    if ((arg0 & 0x90) == 0x90) {
+        var_a1 = 0xE00;
+    }
+    if ((arg0 & 0xC0) == 0xC0) {
+        var_a1 = 0xA00;
+    }
+    if ((arg0 & 0x30) == 0x30) {
+        var_a1 = 0x200;
+    }
+    if ((arg0 & 0x60) == 0x60) {
+        var_a1 = 0x600;
+    }
+    return var_a1;
+}
+
+s32 func_800BD488(u8 *arg0, u8 *arg1) {
+    s32 temp_a0;
+    s32 temp_a0_2;
+    s32 temp_a2;
+    s32 temp_v0;
+    s32 var_v1;
+
+    temp_v0 = (*(s32*)((u8*)(arg0) + 0));
+    temp_a0 = (*(s32*)((u8*)(arg1) + 0));
+    var_v1 = (temp_a0 < temp_v0) << 7;
+    if (temp_v0 < temp_a0) {
+        var_v1 |= 0x20;
+    }
+    temp_a2 = (*(s32*)((u8*)(arg0) + 8));
+    temp_a0_2 = (*(s32*)((u8*)(arg1) + 8));
+    if (temp_a0_2 < temp_a2) {
+        var_v1 |= 0x40;
+    }
+    if (temp_a2 < temp_a0_2) {
+        var_v1 |= 0x10;
+    }
+    return var_v1;
+}

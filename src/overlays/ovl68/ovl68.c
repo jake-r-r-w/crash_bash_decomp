@@ -195,7 +195,20 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BB4F8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BB5A0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BB640);
+void func_800BB640(s32 arg0) {
+    u8 *temp_v0;
+
+    temp_v0 = (arg0 * 0x30) + D_800BC210;
+    (*(s32*)((u8*)(temp_v0) + 0)) = 1;
+    (*(s32*)((u8*)(temp_v0) + 4)) = 1;
+    (*(s32*)((u8*)(temp_v0) + 8)) = 0;
+    (*(s32*)((u8*)(temp_v0) + 24)) = 0;
+    (*(s32*)((u8*)(temp_v0) + 28)) = 0;
+    (*(s32*)((u8*)(temp_v0) + 32)) = 0;
+    (*(s32*)((u8*)(temp_v0) + 36)) = 0;
+    (*(s32*)((u8*)(temp_v0) + 40)) = 0x8000;
+    (*(s32*)((u8*)(temp_v0) + 44)) = 0x8000;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BB688);
 

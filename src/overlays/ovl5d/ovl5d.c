@@ -114,7 +114,52 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BAFDC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BB100);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BB1B4);
+s32 func_800BB1B4(u8 *arg0) {
+    s32 temp_a0;
+    s32 temp_v1;
+    s32 var_a2;
+
+    var_a2 = 0;
+    if ((*(s32*)((u8*)(arg0) + 144)) & 0x40) {
+        temp_a0 = 0x800 - (*(s16*)((u8*)(arg0) + 138));
+        if (temp_a0 < (*(s32*)((u8*)(arg0) + 16))) {
+            (*(s32*)((u8*)(arg0) + 16)) = temp_a0;
+            var_a2 = 1;
+        }
+        temp_v1 = -temp_a0;
+        if ((*(s32*)((u8*)(arg0) + 16)) < temp_v1) {
+            (*(s32*)((u8*)(arg0) + 16)) = temp_v1;
+            var_a2 = 1;
+        }
+        if (temp_a0 < (*(s32*)((u8*)(arg0) + 24))) {
+            (*(s32*)((u8*)(arg0) + 24)) = temp_a0;
+            var_a2 = 1;
+        }
+        if ((*(s32*)((u8*)(arg0) + 24)) < temp_v1) {
+            (*(s32*)((u8*)(arg0) + 24)) = temp_v1;
+            goto block_17;
+        }
+    } else {
+        if ((*(s32*)((u8*)(arg0) + 16)) >= 0x801) {
+            (*(s32*)((u8*)(arg0) + 16)) = 0x800;
+            var_a2 = 1;
+        }
+        if ((*(s32*)((u8*)(arg0) + 16)) < -0x800) {
+            (*(s32*)((u8*)(arg0) + 16)) = -0x800;
+            var_a2 = 1;
+        }
+        if ((*(s32*)((u8*)(arg0) + 24)) >= 0x801) {
+            (*(s32*)((u8*)(arg0) + 24)) = 0x800;
+            var_a2 = 1;
+        }
+        if ((*(s32*)((u8*)(arg0) + 24)) < -0x800) {
+            (*(s32*)((u8*)(arg0) + 24)) = -0x800;
+block_17:
+            var_a2 = 1;
+        }
+    }
+    return var_a2;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BB2BC);
 

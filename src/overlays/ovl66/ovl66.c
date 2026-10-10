@@ -108,7 +108,21 @@ void func_800B69A0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B69D0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B6A1C);
+void func_800B6A1C(void) {
+    D_8005A5D8 = -0x10;
+    func_8007EB1C(0x140, 0x28, 0);
+    func_8007B7FC(0x130, 0x81D0);
+    func_800B69D0();
+    D_800B9EEC = 0x10;
+    func_800B6774();
+    func_800B69A0();
+    func_800B68EC();
+    func_800B68BC();
+    func_800B688C();
+    func_800B9264();
+    func_800B347C();
+    func_800B6568();
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B6AAC);
 
