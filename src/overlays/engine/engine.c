@@ -90,8 +90,8 @@ void func_8007AB6C(void) {
 
 void func_8007AB8C(void) {
     D_8005AA58 = 0;
-    D_8005AA6C = D_80098720;
-    D_8005AA60 = func_8007AC00();
+    ASTTable = EngineASTTable;
+    ASTCount = func_8007AC00();
 }
 
 void func_8007ABC4(void) {
@@ -979,11 +979,11 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80095258);
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800952F8);
 
 void func_80095A04(s32 arg0) {
-    u8 *temp_s0;
+    EXTengine *eng;
 
-    temp_s0 = (arg0 * 0x9C) + D_800A0E78;
-    func_8001D334((*(s32*)((u8*)(temp_s0) + 108)));
-    (*(s32*)((u8*)(temp_s0) + 12)) = (s32) ((*(s32*)((u8*)(temp_s0) + 12)) & 0xFFFF7FFF);
+    eng = &EnginePool[arg0];
+    func_8001D334(eng->unk6C);
+    eng->flags &= 0xFFFF7FFF;
 }
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80095A60);
@@ -994,8 +994,8 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80095D88);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80095DBC);
 
-u8 *GetEngineSlot(s32 arg0) {
-    return (arg0 * 0x9C) + D_800A0E78;
+EXTengine *GetEngineSlot(s32 arg0) {
+    return &EnginePool[arg0];
 }
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80095E5C);

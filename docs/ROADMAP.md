@@ -34,7 +34,7 @@ or types.
 - [x] Name the core engine functions every match calls (spawn by AST id,
   extension and engine allocation, extension lookup, random, sound, angle, and
   the most-called exe and engine functions), each with code evidence.
-- [ ] Name the core globals: the AST table, the NAS lists and the player/hero
+- [x] Name the core globals: the AST table, the NAS lists and the player/hero
   array.
 - [ ] Include Sony's PsyQ headers in the game sources, so library calls get
   real prototypes.

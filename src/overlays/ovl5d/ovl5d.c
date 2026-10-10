@@ -1,7 +1,4 @@
 #include "common.h"
-#include "bash/ovl66.h"
-#include "bash/ovl67.h"
-#include "bash/ovl69.h"
 #include "bash/ovl5d.h"
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B3A38);

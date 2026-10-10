@@ -217,26 +217,26 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/ovl6a", func_800BA7BC);
 
 void func_800BA804(void) {
     s32 temp_a0;
-    u8 *temp_v0;
+    EXTengine *eng;
 
-    temp_v0 = GetEngineSlot(6);
-    if (temp_v0 != NULL) {
-        temp_a0 = (*(s32*)((u8*)(temp_v0) + 20));
+    eng = GetEngineSlot(6);
+    if (eng != NULL) {
+        temp_a0 = eng->unk10.y;
         if (temp_a0 < 0x21C) {
-            (*(s32*)((u8*)(temp_v0) + 20)) = (s32) (temp_a0 + 5);
+            eng->unk10.y = temp_a0 + 5;
         }
     }
 }
 
 void func_800BA848(void) {
     s32 temp_a0;
-    u8 *temp_v0;
+    EXTengine *eng;
 
-    temp_v0 = GetEngineSlot(6);
-    if (temp_v0 != NULL) {
-        temp_a0 = (*(s32*)((u8*)(temp_v0) + 20));
+    eng = GetEngineSlot(6);
+    if (eng != NULL) {
+        temp_a0 = eng->unk10.y;
         if (temp_a0 >= 0x155) {
-            (*(s32*)((u8*)(temp_v0) + 20)) = (s32) (temp_a0 - 5);
+            eng->unk10.y = temp_a0 - 5;
         }
     }
 }

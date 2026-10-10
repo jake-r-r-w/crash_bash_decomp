@@ -32,7 +32,7 @@ void func_8001452C(s32 arg0, s32 arg1);
 s32 *func_800153A8(void);
 s32 func_80015480(s32 arg0, s32 arg1);
 s32 func_800154A0(s32 arg0, s32 arg1);
-void func_800155E8(s32 arg0, s32 arg1);
+void SetRandomSeed(s32 arg0, s32 arg1);
 void func_80015D08(u8 *arg0);
 s32 func_80015E94(u8 *arg0, u8 *arg1);
 s32 func_800160F8(u8 *arg0, s32 arg1);
@@ -164,8 +164,8 @@ extern void *D_80051240;
 extern void *D_80050F3C;
 extern s32 D_800517B0;
 extern s32 D_800517B4;
-extern s32 D_800517B8;
-extern s32 D_800517BC;
+extern s32 RandomSeedA;
+extern s32 RandomSeedB;
 extern void *D_80058B70;
 extern s32 D_8005A5D8;
 extern s32 D_800655A8;
@@ -196,10 +196,10 @@ extern u8 D_8005A688;
 extern s32 D_80063A7C;
 extern s32 D_800654B8;
 extern s32 D_800655B0;
-extern s32 D_8005AA60;
-extern s32 *D_8005AA6C;
+extern s32 ASTCount;            /* entries in ASTTable */
+extern ASTEntry *ASTTable;      /* the AST table in use */
 extern s32 D_80058AC8;
-extern void *D_80059614;
+extern void *SfxActiveVoices;
 extern s32 D_800637B4;
 extern s32 D_8005AA48;
 extern void *D_80058B78;
@@ -214,9 +214,9 @@ extern u8 func_80016188[];
 extern s32 D_8005B698;
 extern u8 D_80053694[];
 extern s32 D_800643F8;
-extern void *D_8005AA08;
+extern NAS *NASActiveTail;
 extern s32 *D_80056858;
-extern void *D_8005AA04;
+extern NAS *NASActiveHead;
 extern s32 D_800654AC;
 extern s32 D_800654B0;
 extern s32 D_800654B4;
@@ -232,5 +232,10 @@ extern void *D_8005AA38;
 extern void *D_80056864;
 extern u8 D_8005B790[];
 extern s32 D_800637A8;
+
+extern NAS *NASFreeList;
+extern NAS NASTemplate;            /* copied over each spawned NAS */
+extern EXTengine EngineTemplate;   /* copied over each new engine */
+extern s16 AtanTable[];            /* get_angle */
 
 #endif /* BASH_MAIN_H */

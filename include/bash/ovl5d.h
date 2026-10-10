@@ -13,4 +13,8 @@ s32 func_800BB1B4(u8 *arg0);
 void func_800BB360(void);
 void func_800BB368(void);
 
+void func_800B62EC(void);
+void func_800C2E58(void);
+void func_800B7D20(void);
+
 #endif /* BASH_OVL5D_H */

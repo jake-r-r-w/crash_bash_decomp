@@ -15,4 +15,6 @@ void func_800C0B7C(void);
 void func_800C0B84(void);
 void func_800C0B8C(void);
 
+void func_800B84B8(void);
+
 #endif /* BASH_OVL61_H */

@@ -27,4 +27,7 @@ void func_800C5D8C(void);
 extern s32 D_800C6930;
 extern s32 D_800C6D20;
 
+void func_800B7D94(void);
+void func_800B5360(s32 *arg0);
+
 #endif /* BASH_OVL63_H */

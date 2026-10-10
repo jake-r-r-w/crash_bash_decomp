@@ -192,6 +192,29 @@ Also called often but not named yet, because their roles aren't proven:
 entry through `eng+0x6C`), `func_80026980` (63, unlinks from a list at
 `D_8005AA34`), `func_800250B0`, `func_80095BEC`, `func_80025FAC`.
 
+## Core globals
+
+Descriptive names (the leak doesn't name these), with types in `bash/main.h`,
+`bash/engine.h` and `bash/nas.h` where they're known.
+
+| Name | Address | Type | Evidence |
+|---|---|---|---|
+| `ASTTable` | `0x8005AA6C` | `ASTEntry *` | The engine's `func_8007AB8C` points it at `EngineASTTable`; the spawners index it by id with 12-byte steps. |
+| `ASTCount` | `0x8005AA60` | `s32` | Set from `func_8007AC00` (which counts the entries); the bound of every `ASTTable` search. |
+| `EngineASTTable` | `0x80098720` | `ASTEntry[]` | The engine's table (`{id, Init, Plot}`, see Overlays). |
+| `NASActiveHead` / `NASActiveTail` | `0x8005AA04` / `0x8005AA08` | `NAS *` | Head and tail of the active list: `SpawnNASFromRecord` appends, `KillNAS` unlinks. |
+| `NASFreeList` | `0x8005AA0C` | `NAS *` | Spawners pop from it, `KillNAS` pushes onto it (linked through `+0x10`). |
+| `NASTemplate` | `0x8005A7C0` | `NAS` | Copied over each spawned `NAS` (0x70 bytes). |
+| `EngineTemplate` | `0x8005A8D8` | `EXTengine` | Copied over each new engine by `AddEngine` and `func_80095BEC`. |
+| `EnginePool` | `0x800A0E78` | `EXTengine[]` | `GetEngineSlot(i)` returns `&EnginePool[i]`. |
+| `Heroes` | `0x8009D52C` | not typed yet | The player/hero array: 0x6C-byte entries, `+0x2E` character (1-8); used by 822 functions. |
+| `HeroActionTable` | `0x8009DCA0` | not typed yet | 8-byte entries; `SetHeroAction` calls entry `action`'s handler. |
+| `HeroSeqTables` | `0x8009D29C` | not typed yet | One table per character; `SetHeroSeq` indexes it by `hero+0x2E`. |
+| `RandomSeedA` / `RandomSeedB` | `0x800517B8` / `0x800517BC` | `s32` | `Random`'s state; `SetRandomSeed(a, b)` (`0x800155E8`) sets both. |
+| `AtanTable` | `0x800517C0` | `s16[]` | `get_angle`'s lookup table. |
+| `SfxTable` | `0x80064508` | not typed yet | 2-byte entries per sound id, read by `PlaySfx`. |
+| `SfxVoicePool` / `SfxActiveVoices` | `0x800590D0` / `0x80059614` | not typed yet | The voice pool: free list at `+0x540`, active list at `+0x544` (`SfxActiveVoices`). |
+
 ## Engine types
 
 The engine's object model, as far as code proves it. The definitions are in

@@ -36,4 +36,6 @@ extern u8 D_800BA754[];
 extern s32 D_800BAAC8;
 extern s32 D_800BAACC;
 
+void func_800B7E04(void);
+
 #endif /* BASH_OVL69_H */

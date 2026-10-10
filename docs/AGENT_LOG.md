@@ -2,6 +2,35 @@
 
 Newest first. Each session appends: what changed, what was learned, what's next.
 
+## 2026-10-10 - core globals
+
+**State at end of session:** `make verify` -> 16 targets OK; 138 game functions
+named, 276/393 matched functions typed.
+
+**Done**
+- Named 18 core globals, with evidence in `docs/ARCHITECTURE.md` ("Core
+  globals"): the AST table and count, the NAS lists and template, the engine
+  template and pool, the hero array and its tables, the random seeds, the atan
+  table and the sound tables. `ASTEntry` (12 bytes) is in `bash/nas.h`.
+  `ASTTable`, the NAS lists and `EnginePool` have real types, and the matched
+  C that used them now uses fields (`GetEngineSlot`, `func_80095A04`, and two
+  `ovl6a` functions use `eng->unk10.y`). `SetRandomSeed` named. Roadmap item
+  ticked.
+- Fixed a slip from the owned-headers migration: overlays included other
+  overlays' headers wherever a placeholder name coincided. Each overlay now
+  includes only its own header; the few same-named asm functions its C calls
+  are declared there.
+
+**Learned / gotchas**
+- `decomp.py rename` prints `ERROR: unknown function OVL:ADDR` for data
+  symbols given as `OVL:ADDR`. That's a lookup attempt; the rename still works.
+
+**Next**
+1. PsyQ headers in the game sources.
+2. The hero struct (0x6C, at `Heroes`), the other engine types `main.exe` uses,
+   and `bool`.
+
+
 ## 2026-10-10 - core engine function names
 
 **State at end of session:** `make verify` -> 16 targets OK; 137 game functions named.

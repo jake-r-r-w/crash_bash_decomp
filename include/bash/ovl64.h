@@ -15,4 +15,6 @@ void func_800B9038(void);
 void func_800B9040(void);
 void func_800B9048(void);
 
+void func_800BB37C(void);
+
 #endif /* BASH_OVL64_H */

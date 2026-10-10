@@ -473,9 +473,9 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80015554);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", Random);
 
-void func_800155E8(s32 arg0, s32 arg1) {
-    D_800517B8 = arg0;
-    D_800517BC = arg1;
+void SetRandomSeed(s32 arg0, s32 arg1) {
+    RandomSeedA = arg0;
+    RandomSeedB = arg1;
 }
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800155FC);
@@ -1470,7 +1470,7 @@ INCLUDE_ASM("asm/nonmatchings/main/main", PlaySfx);
 void func_800227C0(void) {
     u8 *var_v1;
 
-    var_v1 = D_80059614;
+    var_v1 = SfxActiveVoices;
     if (var_v1 != NULL) {
         do {
             (*(s32*)((u8*)(var_v1) + 28)) = (s32) ((*(s32*)((u8*)(var_v1) + 28)) | 4);
@@ -1482,7 +1482,7 @@ void func_800227C0(void) {
 void func_800227FC(void) {
     u8 *var_v1;
 
-    var_v1 = D_80059614;
+    var_v1 = SfxActiveVoices;
     if (var_v1 != NULL) {
         do {
             (*(s32*)((u8*)(var_v1) + 28)) = (s32) ((*(s32*)((u8*)(var_v1) + 28)) | 2);
@@ -1496,7 +1496,7 @@ void func_80022838(void) {
     u8 *var_s0;
 
     func_8002AEE0();
-    var_s0 = D_80059614;
+    var_s0 = SfxActiveVoices;
     if (var_s0 != NULL) {
         do {
             temp_s1 = (*(s32*)((u8*)(var_s0) + 24));
@@ -1755,7 +1755,7 @@ void func_80026C94(u8 *arg0, u8 *arg1) {
             if (temp_v1_2 != NULL) {
                 (*(s32*)((u8*)(temp_v1_2) + 12)) = (u8 *) (*(s32*)((u8*)(arg0) + 12));
             } else {
-                D_8005AA08 = (*(s32*)((u8*)(arg0) + 12));
+                NASActiveTail = (*(s32*)((u8*)(arg0) + 12));
             }
         }
         (*(s32*)((u8*)(temp_a2) + 16)) = arg0;
@@ -1784,7 +1784,7 @@ void func_80027040(s32 arg0) {
     u8 *temp_s0;
     u8 *var_a0;
 
-    var_a0 = D_8005AA04;
+    var_a0 = NASActiveHead;
     if (var_a0 != NULL) {
         do {
             temp_s0 = (*(s32*)((u8*)(var_a0) + 16));

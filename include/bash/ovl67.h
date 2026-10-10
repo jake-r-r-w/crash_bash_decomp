@@ -23,4 +23,6 @@ void func_800C36E4(void);
 
 extern u16 D_800C417A;
 
+void func_800C318C(s32 arg0);
+
 #endif /* BASH_OVL67_H */

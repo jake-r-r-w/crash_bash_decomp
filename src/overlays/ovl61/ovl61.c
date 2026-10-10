@@ -1,6 +1,5 @@
 #include "common.h"
 #include "bash/main.h"
-#include "bash/ovl69.h"
 #include "bash/ovl61.h"
 #include "bash/arkenoid.h"
 

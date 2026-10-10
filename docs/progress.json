@@ -1,8 +1,8 @@
 {
  "blocked": [],
- "commit": "c4dee58",
+ "commit": "e14fba1",
  "game": "SCUS_945.70",
- "generated": "2026-10-10T13:22:23Z",
+ "generated": "2026-10-10T13:36:22Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -189,7 +189,7 @@
    "ts": "2026-10-10T13:13:27Z"
   },
   {
-   "commit": "c4dee58",
+   "commit": "e14fba1",
    "data_b": 128,
    "data_tb": 616791,
    "game_all_f": 2550,
@@ -202,7 +202,23 @@
    "lib_b": 121280,
    "lib_f": 535,
    "lib_tb": 122112,
-   "ts": "2026-10-10T13:22:23Z"
+   "ts": "2026-10-10T13:27:13Z"
+  },
+  {
+   "commit": "e14fba1",
+   "data_b": 128,
+   "data_tb": 616791,
+   "game_all_f": 2550,
+   "game_b": 19312,
+   "game_c_f": 393,
+   "game_f": 393,
+   "game_named_f": 138,
+   "game_tb": 1019036,
+   "game_typed_f": 276,
+   "lib_b": 121280,
+   "lib_f": 535,
+   "lib_tb": 122112,
+   "ts": "2026-10-10T13:36:22Z"
   }
  ],
  "recent": [
@@ -356,7 +372,7 @@
      "text": "Name the core engine functions every match calls (spawn by AST id, extension and engine allocation, extension lookup, random, sound, angle, and the most-called exe and engine functions), each with code evidence."
     },
     {
-     "done": false,
+     "done": true,
      "text": "Name the core globals: the AST table, the NAS lists and the player/hero array."
     },
     {
@@ -514,12 +530,12 @@
    "c_f": 393,
    "done_b": 19312,
    "done_f": 393,
-   "named_f": 137,
+   "named_f": 138,
    "pct": 1.8951244116988997,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2550,
-   "typed_f": 273
+   "typed_f": 276
   },
   "lib": {
    "all_f": 566,
@@ -555,7 +571,7 @@
     "title": "Engine",
     "total_b": 129264,
     "total_f": 357,
-    "typed_f": 52,
+    "typed_f": 53,
     "unit": "engine"
    },
    {
@@ -569,7 +585,7 @@
     "file": "SCUS_945.70",
     "files": 1,
     "lib": false,
-    "named_f": 12,
+    "named_f": 13,
     "pct": 6.978532521627684,
     "phase": 2,
     "sony_b": 0,
@@ -870,7 +886,7 @@
     "title": "",
     "total_b": 31060,
     "total_f": 94,
-    "typed_f": 19,
+    "typed_f": 21,
     "unit": "ovl6a"
    },
    {

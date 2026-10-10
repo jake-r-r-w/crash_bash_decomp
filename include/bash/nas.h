@@ -66,6 +66,15 @@ struct NAS {
 };
 BASH_SIZE_CHECK(NAS, 0x70);
 
+/* An AST table entry: an object type's id and its Init/Plot. The engine's
+ * table is EngineASTTable; ASTTable points at the one in use. */
+typedef struct ASTEntry {
+    s32 id;
+    void (*Init)(NAS *);
+    void (*Plot)(NAS *);
+} ASTEntry;
+BASH_SIZE_CHECK(ASTEntry, 0xC);
+
 /* Engine extension, made by AddEngine(nas, id) from a template: EXTid is
  * id | 0x100. The first one is NAS.eng; later ones are linked through next. */
 struct EXTengine {
