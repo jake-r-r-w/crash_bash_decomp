@@ -10,9 +10,9 @@
   "t_size": 430080
  },
  "lib_segments": [
-  "^lib"
+  "^main/psyq/"
  ],
- "name": "scus_945.70",
+ "name": "main",
  "other_exes": [
   "SPYRO3/SPYRO3.EXE"
  ],

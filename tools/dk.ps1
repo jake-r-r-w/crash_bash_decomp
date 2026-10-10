@@ -1,6 +1,6 @@
 # PowerShell twin of tools/dk for running commands by hand on Windows:
 #   .\tools\dk.ps1 make -s
-#   .\tools\dk.ps1 python3 tools/decomp.py status
+#   .\tools\dk.ps1 python3 tools/scripts/decomp.py status
 $ErrorActionPreference = "Stop"
 $Image = if ($env:PSX_DECOMP_IMAGE) { $env:PSX_DECOMP_IMAGE } else { "psx-decomp:1" }
 $Root = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path

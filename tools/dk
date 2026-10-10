@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Run a command inside the PSX decomp toolchain container, with the repo mounted at /work.
 #   tools/dk make -s
-#   tools/dk python3 tools/decomp.py next
+#   tools/dk python3 tools/scripts/decomp.py next
 # Works from Linux, macOS, WSL and Git Bash on Windows (Claude Code's shell there).
 set -euo pipefail
 
