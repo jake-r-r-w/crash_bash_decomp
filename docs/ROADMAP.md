@@ -15,8 +15,8 @@ Build the headers and names that every later match depends on.
   and types, never the leaked text.
 - [x] Name the AST Init/Plot pairs that the leaked enums prove (Pogo,
   Arkenoid, Polar).
-- [ ] Name Tank's AST pairs (its enum is cut off in the leak) and the functions
-  the named pairs reach.
+- [ ] Name the functions the named AST pairs reach, using the prototypes in
+  `include/bash/`.
 - [ ] Recover the engine's core types, which the leak uses but doesn't define.
 - [ ] Retire `include/externs.h` and `include/prototypes.h` into owned headers.
 - [ ] Finish the overlay section splits (data vs rodata) so that functions using
@@ -47,6 +47,9 @@ before starting the next.
 - [ ] Pogo
 - [ ] Arkenoid
 - [ ] Polar
+- [ ] Name Tank's AST pairs. Its enum is cut off in the leak, so match each
+  table entry to its `Init`/`Plot` prototype from evidence in the code (calls,
+  spawned objects, assets).
 - [ ] Tank
 
 ## Phase 5 - The remaining overlays
