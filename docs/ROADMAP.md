@@ -48,19 +48,34 @@ or types.
 ## Phase 2 - `main.exe` to source-only
 
 **Done when** the exe's game code has no `INCLUDE_ASM` or `INCLUDE_RODATA`
-left, it's split into its translation units, its data is C, every function and
-global is named and typed, and `build/main.exe` still matches. The library
-code is Sony's objects plus `2MBYTE.OBJ`, and the asset formats the exe loads
-extract and are documented.
+left, it's split into translation units at the boundaries the binary shows,
+its data is C, every function and global is named and typed, and
+`build/main.exe` still matches. The library is Sony's objects, code and data,
+plus `2MBYTE.OBJ`. `CRASHBSH.DAT` extracts, and so do the formats whose
+loaders are in the exe, each documented.
 
+- [ ] Match GTE code: include Sony's GTE macros (`inline_c.h`, `gtemac.h`) in
+  the game sources and match one GTE function through `done`. 27 of the exe's
+  game functions use the GTE, and m2c can't draft them.
 - [ ] Match every game function in the executable.
-- [ ] Split `main.c` into its original translation units.
+- [ ] Name and type every function and global in the exe (a descriptive name
+  where the original is unknown, per [CONVENTIONS.md](CONVENTIONS.md)).
+- [ ] Split `main.c` into translation units at the boundaries the binary shows
+  (rodata and data order, alignment padding, file-local data), with the
+  evidence for each in `docs/ARCHITECTURE.md`. The exe has no file names, so
+  the units are named by what they contain. Do this before the data, so each
+  file's local data moves with it.
 - [ ] Turn its rodata, data and bss into C.
-- [ ] Close the PsyQ gaps. Sony's hand-written `2MBYTE.OBJ` is the one documented
+- [ ] Close the PsyQ gaps: find the object for each function in
+  `src/main/psyq/unknown/` (mostly one-call wrappers such as `CdSync`) and
+  link it, or match it as C; name `func_80032F3C` (`abs` and `labs` are
+  identical objects); and take the objects' data from the objects instead of
+  the retail data blob. Sony's hand-written `2MBYTE.OBJ` is the one documented
   exception.
-- [ ] Asset extraction tool: read the `CRASHBSH.DAT` index and file groups from
-  the user's disc, and extract the formats the exe loads (textures, sound
-  banks, ...) to editable files in `assets/`. Document each format.
+- [ ] Asset extraction tool: read the `CRASHBSH.DAT` index (993 entries at
+  `0x8004E110`) from the user's disc and extract its files to `assets/`, plus
+  the formats whose loaders are in the exe, to editable files. Document each
+  format. Formats parsed by the engine or a minigame belong to that phase.
 
 ## Phase 3 - The engine overlay
 
