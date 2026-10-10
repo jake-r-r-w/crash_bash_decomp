@@ -2269,6 +2269,7 @@ def cmd_block(a):
     rec.update(status="blocked", note=a.note, blocked_at=now())
     jsave(P_STATE, st)
     print(f"parked {e['name']}: {a.note}")
+    cmd_progress(a)  # the dashboard lists parked functions
 
 
 def permute_run(d, name, e, base_c, cfg, jobs, seconds):

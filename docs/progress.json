@@ -1,8 +1,15 @@
 {
- "blocked": [],
- "commit": "7268171",
+ "blocked": [
+  {
+   "name": "func_80015780",
+   "note": "2 instructions: li a0,-1 (hoisted loop constant) is scheduled after move s0,s1 (the second pointer copy); target has it before. Best C under NON_MATCHING; loop exits via goto so gcc doesn't rotate it",
+   "seg": "main/main",
+   "size": 240
+  }
+ ],
+ "commit": "a315078",
  "game": "SCUS_945.70",
- "generated": "2026-10-10T19:45:14Z",
+ "generated": "2026-10-10T20:12:13Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -381,7 +388,7 @@
    "ts": "2026-10-10T19:42:23Z"
   },
   {
-   "commit": "7268171",
+   "commit": "a315078",
    "data_b": 128,
    "data_tb": 616791,
    "game_all_f": 2550,
@@ -394,7 +401,7 @@
    "lib_b": 121280,
    "lib_f": 535,
    "lib_tb": 122112,
-   "ts": "2026-10-10T19:45:14Z"
+   "ts": "2026-10-10T20:12:13Z"
   }
  ],
  "recent": [
@@ -520,7 +527,7 @@
   }
  ],
  "summary": {
-  "blocked": 0,
+  "blocked": 1,
   "copies_b": 38400,
   "data": {
    "done_b": 128,
@@ -531,7 +538,7 @@
    "all_f": 2550,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 0,
+   "blocked": 1,
    "c_f": 403,
    "done_b": 21196,
    "done_f": 403,
@@ -583,7 +590,7 @@
     "all_f": 574,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 0,
+    "blocked": 1,
     "c_f": 157,
     "done_b": 10596,
     "done_f": 157,

@@ -465,7 +465,7 @@
  },
  "80015780": {
   "auto_failed": "types",
-  "blocked_at": "2026-10-10T20:01:34Z",
+  "blocked_at": "2026-10-10T20:11:51Z",
   "note": "2 instructions: li a0,-1 (hoisted loop constant) is scheduled after move s0,s1 (the second pointer copy); target has it before. Best C under NON_MATCHING; loop exits via goto so gcc doesn't rotate it",
   "status": "blocked"
  },
