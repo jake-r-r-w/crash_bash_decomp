@@ -366,7 +366,7 @@ def extract_function(text, name):
 # ---------------------------------------------------------------- compile and compare
 
 def obj_func(obj, name):
-    r = run([X + "objdump", "-dr", f"--disassemble={name}", obj])
+    r = run([X + "objdump", "-drz", f"--disassemble={name}", obj])
     words, texts, relocs, base = [], [], {}, None
     for line in r.stdout.splitlines():
         m = REL_LINE.match(line)
@@ -495,7 +495,7 @@ def check_function(key, e, proj, name, quiet=False):
 def pipeline(c_path, o_path, cc, opt, g, maspsx):
     gflag = f"-G{g}"
     return (f"{X}cpp {' '.join(CPPFLAGS)} {c_path} | {GCC_ROOT}/{cc}/cc1 -quiet {opt} {gflag} "
-            f"| python3 {MASPSX} {maspsx}{' ' + gflag if g else ''} | {X}as {' '.join(ASFLAGS)} -o {o_path}")
+            f"| python3 tools/scripts/dmpsx.py | python3 {MASPSX} {maspsx}{' ' + gflag if g else ''} | {X}as {' '.join(ASFLAGS)} -o {o_path}")
 
 
 def m2c_draft(e, src=None):

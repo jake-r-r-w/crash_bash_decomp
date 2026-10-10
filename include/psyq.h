@@ -18,4 +18,9 @@
 #include <libpad.h>
 #include <libmcrd.h>
 
+/* GTE macros (DMPSX version 3). Their command words are placeholders that
+ * tools/scripts/dmpsx.py turns into cop2 instructions after cc1. */
+#include <inline_c.h>
+#include <gtemac.h>
+
 #endif

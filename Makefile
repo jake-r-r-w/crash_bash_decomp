@@ -23,6 +23,8 @@ CROSS    ?= mipsel-linux-gnu-
 GCC_ROOT ?= /opt/gcc
 CC1      ?= $(GCC_ROOT)/$(CC_VER)/cc1
 MASPSX   ?= python3 /opt/maspsx/maspsx.py
+# DMPSX: turns the GTE placeholder words of inline_c.h into cop2 instructions
+DMPSX    ?= python3 tools/scripts/dmpsx.py
 PSYQ_SDK ?= ext/psyq47
 PYTHON   ?= python3
 AS      := $(CROSS)as
@@ -73,7 +75,7 @@ linkers/%.ld: $(CFG)/overlays/%.yaml $(CFG)/sym.main.txt
 # Headers aren't tracked per file: any change under include/ rebuilds the C objects.
 build/%.c.o: %.c $(shell find include -name '*.h' 2>/dev/null)
 	@mkdir -p $(@D)
-	$(CPP) $(CPPFLAGS) $< | tee $(@:.o=.i) | $(CC1) $(CC1FLAGS) | $(MASPSX) $(MASPSX_ARGS) | $(AS) $(ASFLAGS) -o $@
+	$(CPP) $(CPPFLAGS) $< | tee $(@:.o=.i) | $(CC1) $(CC1FLAGS) | $(DMPSX) | $(MASPSX) $(MASPSX_ARGS) | $(AS) $(ASFLAGS) -o $@
 
 build/%.s.o: %.s
 	@mkdir -p $(@D)
@@ -155,7 +157,7 @@ OBJDIFF_CLI := ext/objdiff/objdiff-cli-$(OBJDIFF_VER)
 
 build/objdiff/target/%.o: build/objdiff/target/%.c
 	@mkdir -p $(@D)
-	$(CPP) $(CPPFLAGS) $< | $(CC1) $(CC1FLAGS) | $(MASPSX) $(MASPSX_ARGS) | $(AS) $(ASFLAGS) -o $@
+	$(CPP) $(CPPFLAGS) $< | $(CC1) $(CC1FLAGS) | $(DMPSX) | $(MASPSX) $(MASPSX_ARGS) | $(AS) $(ASFLAGS) -o $@
 
 objdiff-config: build
 	rm -rf build/objdiff/asm build/objdiff/target
