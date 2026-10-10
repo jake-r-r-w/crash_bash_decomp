@@ -1,8 +1,8 @@
 {
  "blocked": [],
- "commit": "a0b5754",
+ "commit": "24680ba",
  "game": "SCUS_945.70",
- "generated": "2026-10-10T17:38:11Z",
+ "generated": "2026-10-10T17:49:59Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -235,9 +235,33 @@
    "lib_f": 535,
    "lib_tb": 122112,
    "ts": "2026-10-10T17:38:11Z"
+  },
+  {
+   "commit": "24680ba",
+   "data_b": 128,
+   "data_tb": 616791,
+   "game_all_f": 2550,
+   "game_b": 19468,
+   "game_c_f": 394,
+   "game_f": 394,
+   "game_named_f": 144,
+   "game_tb": 1019036,
+   "game_typed_f": 281,
+   "lib_b": 121280,
+   "lib_f": 535,
+   "lib_tb": 122112,
+   "ts": "2026-10-10T17:49:59Z"
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-10T17:49:39Z",
+   "auto": true,
+   "name": "AddMotion",
+   "seg": "main/main",
+   "size": 156,
+   "tries": 0
+  },
   {
    "at": "2026-10-10T10:46:00Z",
    "auto": true,
@@ -349,14 +373,6 @@
    "seg": "overlays/ovl67/ovl67",
    "size": 80,
    "tries": 0
-  },
-  {
-   "at": "2026-10-10T10:36:02Z",
-   "auto": true,
-   "name": "func_800BB624",
-   "seg": "overlays/ovl67/ovl67",
-   "size": 152,
-   "tries": 0
   }
  ],
  "summary": {
@@ -372,15 +388,15 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 0,
-   "c_f": 393,
-   "done_b": 19312,
-   "done_f": 393,
+   "c_f": 394,
+   "done_b": 19468,
+   "done_f": 394,
    "named_f": 144,
-   "pct": 1.8951244116988997,
+   "pct": 1.910432997460345,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2550,
-   "typed_f": 280
+   "typed_f": 281
   },
   "lib": {
    "all_f": 566,
@@ -424,20 +440,20 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
-    "c_f": 147,
-    "done_b": 8712,
-    "done_f": 147,
+    "c_f": 148,
+    "done_b": 8868,
+    "done_f": 148,
     "file": "SCUS_945.70",
     "files": 1,
     "lib": false,
     "named_f": 15,
-    "pct": 6.978532521627684,
+    "pct": 7.103492470362063,
     "phase": 2,
     "sony_b": 0,
     "title": "main.exe",
     "total_b": 124840,
     "total_f": 574,
-    "typed_f": 71,
+    "typed_f": 72,
     "unit": "main exe"
    },
    {

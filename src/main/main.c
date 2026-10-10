@@ -1646,7 +1646,16 @@ void func_800264B4(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", FindExtension);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", AddMotion);
+EXTmotion *AddMotion(NAS *nas) {
+    EXTmotion *mot;
+
+    mot = AllocExtension(nas, 0x34, 0x800, &D_8005A9CC);
+    if (mot != NULL) {
+        nas->flags |= 0x800;
+        *mot = D_8005A9CC;
+    }
+    return mot;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800265DC);
 

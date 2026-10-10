@@ -1484,7 +1484,9 @@
  },
  "80026540": {
   "auto_diff": 40,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-10T17:49:39Z",
+  "started": "2026-10-10T17:47:54Z",
+  "status": "matched"
  },
  "800265DC": {
   "auto_diff": 46,
