@@ -2,6 +2,8 @@
 #   make split   - run splat on every config/*.yaml (regenerates asm/, assets/, linker scripts)
 #   make         - build build/$(NAME).exe and every overlay build/<ovl>.bin
 #   make check   - build and compare sha1 of every target against the original
+#   make objdiff - objdiff.json + the original (all-asm) object of every unit, for objdiff
+#   make report  - objdiff progress report in build/report.json (the format decomp.dev reads)
 SHELL := /bin/bash -o pipefail
 .DEFAULT_GOAL := all
 
@@ -37,7 +39,7 @@ S_FILES   := $(shell find asm -name '*.s' -not -path 'asm/nonmatchings/*' 2>/dev
 BIN_FILES := $(shell find assets -name '*.bin' 2>/dev/null)
 O_FILES   := $(C_FILES:%=build/%.o) $(S_FILES:%=build/%.o) $(BIN_FILES:%=build/%.o)
 
-.PHONY: all split check clean
+.PHONY: all split check clean objdiff report
 
 # Two passes: splat must have produced asm/ before the object list above is computed.
 all:
@@ -109,6 +111,29 @@ build/%.bin: build/%.ovl.elf
 
 check: all
 	@sha1sum -c config/$(NAME).sha1 $(OVLS:%=config/%.sha1)
+
+# objdiff: tools/objdiff_gen.py writes objdiff.json and build/objdiff/target/<unit>.c (every
+# function of the unit as INCLUDE_ASM); those compile with the normal pipeline into the target
+# objects objdiff compares build/src/<unit>.c.o against.
+OBJDIFF_VER := v3.8.2
+OBJDIFF_CLI := ext/objdiff/objdiff-cli-$(OBJDIFF_VER)
+
+build/objdiff/target/%.o: build/objdiff/target/%.c
+	@mkdir -p $(@D)
+	$(CPP) $(CPPFLAGS) $< | $(CC1) $(CC1FLAGS) | $(MASPSX) $(MASPSX_ARGS) | $(AS) $(ASFLAGS) -o $@
+
+objdiff: all
+	python3 tools/objdiff_gen.py
+	@$(MAKE) --no-print-directory $$(find build/objdiff/target -name '*.c' | sed 's/[.]c$$/.o/')
+
+$(OBJDIFF_CLI):
+	@mkdir -p $(@D)
+	curl -sSfL -o $@ https://github.com/encounter/objdiff/releases/download/$(OBJDIFF_VER)/objdiff-cli-linux-x86_64
+	chmod +x $@
+
+report: objdiff $(OBJDIFF_CLI)
+	$(OBJDIFF_CLI) report generate -o build/report.json
+	@python3 -c "import json;m=json.load(open('build/report.json'))['measures'];print('objdiff: code %.2f%% (%s/%s bytes), functions %s/%s'%(m.get('matched_code_percent',0),m.get('matched_code',0),m.get('total_code',0),m.get('matched_functions',0),m.get('total_functions',0)))"
 
 clean:
 	rm -rf build
