@@ -9,7 +9,9 @@
   "t_addr": "80010000",
   "t_size": 430080
  },
- "lib_segments": [],
+ "lib_segments": [
+  "^lib"
+ ],
  "name": "scus_945.70",
  "other_exes": [
   "SPYRO3/SPYRO3.EXE"
