@@ -1,6 +1,7 @@
 #include "common.h"
 #include "prototypes.h"
 #include "externs.h"
+#include "bash/polar.h"
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B3740);
 
@@ -198,10 +199,10 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitSniperMissile);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBigMissile);
 
-void PlotBossTransmuter(void) {
+void PlotBossTransmuter(NAS *m) {
 }
 
-void InitBossTransmuter(void) {
+void InitBossTransmuter(NAS *m) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9B5C);
@@ -214,16 +215,16 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9D74);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9EC4);
 
-void PlotBearCam(void) {
+void PlotBearCam(NAS *m) {
 }
 
-void InitBearCam(void) {
+void InitBearCam(NAS *m) {
 }
 
-void PlotRockProjectile(void) {
+void PlotRockProjectile(NAS *m) {
 }
 
-void InitRockProjectile(void) {
+void InitRockProjectile(NAS *m) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9F70);
@@ -252,21 +253,21 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBearDeath);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA6E8);
 
-void PlotBreathMaster(void) {
+void PlotBreathMaster(NAS *m) {
 }
 
-void InitBreathMaster(void) {
+void InitBreathMaster(NAS *m) {
 }
 
-void PlotSnowMaster(void) {
+void PlotSnowMaster(NAS *m) {
 }
 
-void InitSnowMaster(void) {
+void InitSnowMaster(NAS *m) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA770);
 
-void PlotIceBerg(u8 *arg0) {
+void PlotIceBerg(NAS *arg0) {
     u8 *temp_a1;
     u8 *temp_v1;
 

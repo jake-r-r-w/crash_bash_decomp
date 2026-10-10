@@ -1,6 +1,7 @@
 #include "common.h"
 #include "prototypes.h"
 #include "externs.h"
+#include "bash/arkenoid.h"
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B3528);
 
@@ -156,7 +157,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Plot_ArkCameraFlash);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Init_ArkCameraFlash);
 
-void Plot_seaweed(u8 *arg0) {
+void Plot_seaweed(NAS *arg0) {
     if ((*(s32*)((u8*)(arg0) + 84)) != 0) {
         func_800250B0();
     }

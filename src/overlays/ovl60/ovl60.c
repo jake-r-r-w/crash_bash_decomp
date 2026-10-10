@@ -1,6 +1,7 @@
 #include "common.h"
 #include "prototypes.h"
 #include "externs.h"
+#include "bash/pogo.h"
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B3534);
 
@@ -224,7 +225,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1068);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C10F8);
 
-void Init_PogoProjectile(u8 *arg0) {
+void Init_PogoProjectile(NAS *arg0) {
     if ((*(s32*)((u8*)(arg0) + 84)) != 0) {
         (*(s16*)((u8*)(arg0) + 92)) = 0;
         (*(s16*)((u8*)(arg0) + 94)) = 0;

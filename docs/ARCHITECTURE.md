@@ -102,6 +102,26 @@ It stays on the disc (re-extract it with any strings tool); only names and types
 derived from it are committed. No other source paths or `__FILE__` strings exist
 in the exe or the overlays.
 
+The declarations are in `include/bash/`: `tank.h`, `pogo.h` (with
+`psx_pogo.h`), `arkenoid.h` and `polar.h`. Each overlay's source includes its
+own header (`ovl5f`, `ovl60`, `ovl61`, `ovl62`). Differences from the leak:
+- Types are written as `s32`/`u16`/... and the layout is the repo's. The
+  leak's comments, preprocessor residue and the inline helper bodies
+  (`CalcCurrentSector`, `KeepWithinZone2`) are not kept. Those helpers appear
+  as prototypes only.
+- The fragments where the leak is cut off are dropped. That covers the start of
+  Tank's header and the end of Polar's.
+- `CheckMineToBoss` names two parameters `PosX`. The third is left unnamed.
+- `Roo_FireRocket` is declared twice with different parameters. The
+  one-argument form is kept, and the other is noted in a comment until the
+  definition settles it.
+- The engine types the leak uses but never defines (`NAS`, `EXTengine`,
+  `EXTnode`, `hero_seq`, ...) are incomplete structs in `bash/engine.h`.
+  Declarations that need one of them complete are wrapped in
+  `#ifdef BASH_HAVE_<TYPE>`: the `EXT*` extension structs (which embed
+  `EXTnode`) and the hero animation tables (`hero_seq`, `TA_player`).
+- `bool` is provisionally `s32`. Its size is not confirmed from code yet.
+
 ## PsyQ
 
 Version 4.7 (signature scan: 262 objects, best of all versions; `$Id` strings

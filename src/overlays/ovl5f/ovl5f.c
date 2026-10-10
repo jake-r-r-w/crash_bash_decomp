@@ -1,6 +1,7 @@
 #include "common.h"
 #include "prototypes.h"
 #include "externs.h"
+#include "bash/tank.h"
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B3B24);
 

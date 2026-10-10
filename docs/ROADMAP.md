@@ -10,7 +10,7 @@ and badges. Tick a box in the commit that finishes that item.
 
 Build the headers and names that every later match depends on.
 
-- [ ] Turn the leaked minigame headers (Tank, Pogo, Arkenoid, Polar) into
+- [x] Turn the leaked minigame headers (Tank, Pogo, Arkenoid, Polar) into
   `include/bash/` headers: structs, enums and prototypes. Commit only the names
   and types, never the leaked text.
 - [x] Name the AST Init/Plot pairs that the leaked enums prove (Pogo,
