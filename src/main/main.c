@@ -1604,7 +1604,27 @@ void func_80025AE4(u8 *arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4, s32 arg5, s
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80025B10);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80025BBC);
+s32 func_80025BBC(EXTengine *eng) {
+    s32 dy;
+
+    func_80032F3C(eng->unk10.y - eng->unk64);
+    func_80032F3C(eng->unk10.x - eng->unk60);
+    func_80032F3C(eng->unk10.z - eng->unk68);
+    if (D_8005AA94 != NULL) {
+        dy = D_8005AA94(eng);
+    } else {
+        dy = func_80025E00(eng, eng->unk10.y - D_8005A5D8);
+    }
+    D_8005B5B8 = dy;
+    if (dy == 0x7FFFFFFF) {
+        return 0;
+    }
+    if (dy < 0) {
+        return 0;
+    }
+    eng->unk10.y -= dy;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80025C80);
 

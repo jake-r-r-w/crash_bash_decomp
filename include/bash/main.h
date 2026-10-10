@@ -218,6 +218,10 @@ void *AllocExtension(void *owner, s32 size, s32 id, void *tmpl);
 extern EXTmotion D_8005A9CC;
 extern subengine D_8005A830;
 void FreeExtension(void *ext);
+s32 func_80032F3C(s32);         /* abs or labs (LIBC2: identical objects) */
+s32 func_80025E00(EXTengine *eng, s32 y);
+extern s32 (*D_8005AA94)(EXTengine *eng); /* optional hook: replaces func_80025E00 */
+extern s32 D_8005B5B8;
 extern void (*D_800643F8)();
 extern NAS *NASActiveTail;
 extern s32 *D_80056858;
@@ -248,5 +252,7 @@ EXTmotion *AddMotion(NAS *nas);
 void func_8001D3B0(EXTengine *eng, s32 n, subengine *sub);
 
 EXTengine *AddEngine(NAS *nas, s32 id);
+
+s32 func_80025BBC(EXTengine *eng);
 
 #endif /* BASH_MAIN_H */

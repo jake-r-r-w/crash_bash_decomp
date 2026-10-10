@@ -626,7 +626,9 @@
  },
  "80016F34": {
   "auto_diff": 1,
-  "auto_failed": "diff"
+  "auto_failed": "diff",
+  "started": "2026-10-10T17:56:49Z",
+  "status": "in_progress"
  },
  "80016F54": {
   "auto_diff": 17,
@@ -1429,7 +1431,9 @@
   "auto_failed": "types"
  },
  "80025BBC": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-10T17:58:53Z",
+  "started": "2026-10-10T17:57:03Z",
+  "status": "matched"
  },
  "80025C80": {
   "auto_failed": "compile"
