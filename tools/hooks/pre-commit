@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Refuse commits that would add game data: PS-X EXE files, disc images, splat output, big binaries.
+set -euo pipefail
+fail=0
+while IFS= read -r -d '' f; do
+  case "$f" in
+    disc/*|asm/*|assets/*|build/*|*.bin|*.cue|*.iso|*.img|*.chd)
+      echo "pre-commit: refusing game data path: $f" >&2; fail=1; continue ;;
+  esac
+  [ -f "$f" ] || continue
+  size=$(wc -c < "$f")
+  if [ "$size" -gt 2097152 ]; then
+    echo "pre-commit: refusing file over 2 MB: $f" >&2; fail=1; continue
+  fi
+  if [ "$(head -c 8 "$f" 2>/dev/null)" = "PS-X EXE" ]; then
+    echo "pre-commit: refusing PlayStation executable: $f" >&2; fail=1
+  fi
+done < <(git diff --cached --name-only --diff-filter=ACMR -z)
+if [ $fail -ne 0 ]; then
+  echo "Game data must stay out of the repo (copyright). Unstage those files." >&2
+  exit 1
+fi

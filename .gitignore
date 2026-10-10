@@ -1,0 +1,32 @@
+# Game data: copyrighted and large. Never commit.
+disc/
+asm/
+assets/
+build/
+expected/
+*.bin
+*.cue
+*.iso
+*.img
+*.chd
+*.exe
+SLUS_*
+SCUS_*
+SLES_*
+SCES_*
+SLPS_*
+SCPS_*
+SLPM_*
+# Windows git ignores case, so the exe patterns above also match config/scus_*.yaml/.sha1
+!config/*.yaml
+!config/*.sha1
+
+# Third-party downloads (e.g. PsyQ signatures, no licence): local only
+ext/
+
+# Tooling noise
+__pycache__/
+*.pyc
+*.tmp
+nonmatchings/
+disk/
