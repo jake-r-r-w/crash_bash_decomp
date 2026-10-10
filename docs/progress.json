@@ -1,0 +1,78 @@
+{
+ "blocked": [],
+ "commit": "9d2e150",
+ "game": "SCUS_945.70",
+ "generated": "2026-10-10T08:35:31Z",
+ "history": [
+  {
+   "commit": "9d2e150",
+   "data_b": 0,
+   "data_tb": 182932,
+   "game_all_f": 1140,
+   "game_b": 152,
+   "game_f": 19,
+   "game_named_f": 0,
+   "game_tb": 247148,
+   "lib_b": 0,
+   "lib_f": 0,
+   "lib_tb": 0,
+   "ts": "2026-10-10T08:35:31Z"
+  }
+ ],
+ "recent": [],
+ "summary": {
+  "blocked": 0,
+  "copies_b": 3340,
+  "data": {
+   "done_b": 0,
+   "pct": 0.0,
+   "total_b": 182932
+  },
+  "game": {
+   "all_f": 1140,
+   "asm_b": 0,
+   "asm_f": 0,
+   "blocked": 0,
+   "done_b": 152,
+   "done_f": 19,
+   "named_f": 0,
+   "pct": 0.061501610371113666,
+   "sony_b": 0,
+   "total_b": 247148,
+   "total_f": 1140
+  },
+  "lib": {
+   "all_f": 0,
+   "asm_b": 0,
+   "asm_f": 0,
+   "blocked": 0,
+   "done_b": 0,
+   "done_f": 0,
+   "named_f": 0,
+   "pct": 0.0,
+   "sony_b": 0,
+   "total_b": 0,
+   "total_f": 0
+  },
+  "units": [
+   {
+    "all_f": 1140,
+    "asm_b": 0,
+    "asm_f": 0,
+    "blocked": 0,
+    "done_b": 152,
+    "done_f": 19,
+    "file": "SCUS_945.70",
+    "files": 1,
+    "lib": false,
+    "named_f": 0,
+    "pct": 0.061501610371113666,
+    "sony_b": 0,
+    "total_b": 247148,
+    "total_f": 1140,
+    "unit": "main exe"
+   }
+  ],
+  "unsplit": 0
+ }
+}

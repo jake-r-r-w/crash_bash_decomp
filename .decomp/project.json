@@ -1,0 +1,18 @@
+{
+ "cue": "disc/CrashBash.cue",
+ "exe": "SCUS_945.70",
+ "gp_funcs": 0,
+ "header": {
+  "gp0": "00000000",
+  "pc0": "8002E7B0",
+  "region": "Sony Computer Entertainment Inc. for North America a",
+  "t_addr": "80010000",
+  "t_size": 430080
+ },
+ "lib_segments": [],
+ "name": "scus_945.70",
+ "other_exes": [
+  "SPYRO3/SPYRO3.EXE"
+ ],
+ "sha1": "c4a06208612ff2625b9083596d36fdf60b01be5f"
+}
