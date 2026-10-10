@@ -1082,7 +1082,23 @@ void func_8001D390(void) {
     func_80018F3C();
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001D3B0);
+void func_8001D3B0(EXTengine *eng, s32 n, subengine *sub) {
+    if (eng != NULL) {
+        eng->sub = sub;
+        eng->subCount = n;
+    }
+    *sub = D_8005A830;
+    n--;
+    sub->prev = NULL;
+    while (n != 0) {
+        sub->next = sub + 1;
+        sub++;
+        *sub = D_8005A830;
+        n--;
+        sub->prev = sub - 1;
+    }
+    sub->next = NULL;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001D48C);
 

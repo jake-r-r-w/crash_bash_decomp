@@ -1,8 +1,8 @@
 {
  "blocked": [],
- "commit": "24680ba",
+ "commit": "4654ebd",
  "game": "SCUS_945.70",
- "generated": "2026-10-10T17:49:59Z",
+ "generated": "2026-10-10T17:52:13Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -251,9 +251,33 @@
    "lib_f": 535,
    "lib_tb": 122112,
    "ts": "2026-10-10T17:49:59Z"
+  },
+  {
+   "commit": "4654ebd",
+   "data_b": 128,
+   "data_tb": 616791,
+   "game_all_f": 2550,
+   "game_b": 19688,
+   "game_c_f": 395,
+   "game_f": 395,
+   "game_named_f": 144,
+   "game_tb": 1019036,
+   "game_typed_f": 282,
+   "lib_b": 121280,
+   "lib_f": 535,
+   "lib_tb": 122112,
+   "ts": "2026-10-10T17:52:13Z"
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-10T17:51:53Z",
+   "auto": true,
+   "name": "func_8001D3B0",
+   "seg": "main/main",
+   "size": 220,
+   "tries": 0
+  },
   {
    "at": "2026-10-10T17:49:39Z",
    "auto": true,
@@ -365,14 +389,6 @@
    "seg": "overlays/ovl67/ovl67",
    "size": 296,
    "tries": 0
-  },
-  {
-   "at": "2026-10-10T10:36:02Z",
-   "auto": true,
-   "name": "func_800BBD18",
-   "seg": "overlays/ovl67/ovl67",
-   "size": 80,
-   "tries": 0
   }
  ],
  "summary": {
@@ -388,15 +404,15 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 0,
-   "c_f": 394,
-   "done_b": 19468,
-   "done_f": 394,
+   "c_f": 395,
+   "done_b": 19688,
+   "done_f": 395,
    "named_f": 144,
-   "pct": 1.910432997460345,
+   "pct": 1.9320220286623828,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2550,
-   "typed_f": 281
+   "typed_f": 282
   },
   "lib": {
    "all_f": 566,
@@ -440,20 +456,20 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
-    "c_f": 148,
-    "done_b": 8868,
-    "done_f": 148,
+    "c_f": 149,
+    "done_b": 9088,
+    "done_f": 149,
     "file": "SCUS_945.70",
     "files": 1,
     "lib": false,
     "named_f": 15,
-    "pct": 7.103492470362063,
+    "pct": 7.279718039090035,
     "phase": 2,
     "sony_b": 0,
     "title": "main.exe",
     "total_b": 124840,
     "total_f": 574,
-    "typed_f": 72,
+    "typed_f": 73,
     "unit": "main exe"
    },
    {

@@ -215,6 +215,7 @@ extern RECT *D_8005B698;
 extern u8 D_80053694[];
 void *AllocExtension(void *owner, s32 size, s32 id, void *tmpl);
 extern EXTmotion D_8005A9CC;
+extern subengine D_8005A830;
 extern void (*D_800643F8)();
 extern NAS *NASActiveTail;
 extern s32 *D_80056858;
@@ -241,5 +242,7 @@ extern EXTengine EngineTemplate;   /* copied over each new engine */
 extern s16 AtanTable[];            /* get_angle */
 
 EXTmotion *AddMotion(NAS *nas);
+
+void func_8001D3B0(EXTengine *eng, s32 n, subengine *sub);
 
 #endif /* BASH_MAIN_H */
