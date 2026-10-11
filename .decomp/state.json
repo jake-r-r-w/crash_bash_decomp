@@ -1062,7 +1062,9 @@
  },
  "8001E598": {
   "auto_diff": 4,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T16:25:49Z",
+  "started": "2026-10-11T16:21:49Z",
+  "status": "matched"
  },
  "8001E610": {
   "auto_failed": "compile"

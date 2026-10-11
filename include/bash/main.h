@@ -553,4 +553,6 @@ s32 func_80011410(Heap *heap);
 
 void func_8002B9A4(void);
 
+s32 func_8001E598(u8 *arg0);
+
 #endif /* BASH_MAIN_H */

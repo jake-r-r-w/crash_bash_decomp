@@ -1777,7 +1777,29 @@ void func_8001E588(u8 *arg0, s32 arg1, s32 arg2) {
     (*(s32*)((u8*)(arg0) + 8)) = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001E598);
+s32 func_8001E598(u8 *arg0) {
+    s32 step;
+    s32 level;
+
+    step = *(s32 *)(arg0 + 4);
+    if (step != 0) {
+        level = *(s32 *)(arg0 + 0) + step;
+        *(s32 *)(arg0 + 0) = level;
+        if (*(s32 *)(arg0 + 4) > 0) {
+            if (level >= 0x1000) {
+                *(s32 *)(arg0 + 0) = 0x1000;
+                *(s32 *)(arg0 + 8) += 1;
+            }
+        } else if (level <= 0) {
+            *(s32 *)(arg0 + 0) = 0;
+            *(s32 *)(arg0 + 8) += 1;
+            if (*(s32 *)(arg0 + 8) >= 3) {
+                *(s32 *)(arg0 + 4) = 0;
+            }
+        }
+    }
+    return *(s32 *)(arg0 + 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001E610);
 
