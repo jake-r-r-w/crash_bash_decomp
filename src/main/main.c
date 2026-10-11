@@ -606,7 +606,16 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80015304);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001534C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001538C);
+s32 func_8001538C(u32 x) {
+    s32 bits;
+
+    bits = 0;
+    while (x != 0) {
+        x >>= 1;
+        bits++;
+    }
+    return bits;
+}
 
 s32 *func_800153A8(void) {
     return D_800527C4;

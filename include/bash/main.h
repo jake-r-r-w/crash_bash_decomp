@@ -567,4 +567,6 @@ s32 func_800280C0(u8 *src, u8 *dst, s32 n);
 
 void func_80013C78(void);
 
+s32 func_8001538C(u32 x);
+
 #endif /* BASH_MAIN_H */
