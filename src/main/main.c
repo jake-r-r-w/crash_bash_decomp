@@ -487,7 +487,13 @@ s32 func_800154A0(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800154C0);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800154EC);
+void func_800154EC(u16 *arg0, s32 arg1) {
+    s32 i;
+
+    for (i = arg1 - 1; i != -1; i--) {
+        *arg0++ |= 0x8000;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80015518);
 

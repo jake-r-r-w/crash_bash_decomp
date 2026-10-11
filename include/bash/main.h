@@ -414,4 +414,6 @@ void func_80012E54(void);
 
 void func_8001325C(void);
 
+void func_800154EC(u16 *arg0, s32 arg1);
+
 #endif /* BASH_MAIN_H */
