@@ -73,7 +73,8 @@ struct NAS {
     /* 0x1C */ u8 unk1C[0x28 - 0x1C];
     /* 0x28 */ NAS *prev28;             /* list headed by D_8005AA24 (func_80026A54 unlinks) */
     /* 0x2C */ NAS *next28;
-    /* 0x30 */ u8 unk30[0x38 - 0x30];
+    /* 0x30 */ NAS *prev30;             /* list headed by D_8005AA2C (func_8002694C pushes) */
+    /* 0x34 */ NAS *next30;
     /* 0x38 */ NAS *prev38;             /* list headed by D_8005AA34 (func_80026980 unlinks) */
     /* 0x3C */ NAS *next38;
     /* 0x40 */ u8 unk40[0x48 - 0x40];

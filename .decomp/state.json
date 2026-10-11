@@ -1621,7 +1621,9 @@
  },
  "8002694C": {
   "auto_diff": 7,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T18:56:50Z",
+  "started": "2026-10-11T18:54:42Z",
+  "status": "matched"
  },
  "80026980": {
   "matched_at": "2026-10-11T14:32:07Z",

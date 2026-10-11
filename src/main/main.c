@@ -2896,7 +2896,14 @@ void *AddExtension(void *owner, s32 size, s32 id) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800268BC);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002694C);
+void func_8002694C(NAS *nas, s32 bits) {
+    if (D_8005AA2C != NULL) {
+        nas->next30 = D_8005AA2C;
+        D_8005AA2C->prev30 = nas;
+    }
+    D_8005AA2C = nas;
+    nas->unk68 = (nas->unk68 & ~0x300) | bits;
+}
 
 void func_80026980(NAS *nas) {
     NAS **head = (NAS **)&D_8005AA34;

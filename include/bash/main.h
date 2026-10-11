@@ -398,6 +398,7 @@ extern void *D_8005AA24;
 extern s32 D_8006557C;
 extern VabSlot D_800644C0[6];
 extern NodePool D_80056844;
+extern NAS *D_8005AA2C;
 extern void *D_80063BB4;          /* list walked by func_80028A00 (next at +4) */
 extern s32 D_8004E104;            /* func_80011410: free bytes */
 extern s32 D_8004E108;            /* func_80011410: free blocks */
@@ -625,5 +626,7 @@ void func_8002A830(u8 *src, u8 *out, s32 len);
 void *func_80021EEC(void);
 
 void *func_80028A00(void);
+
+void func_8002694C(NAS *nas, s32 bits);
 
 #endif /* BASH_MAIN_H */
