@@ -3599,9 +3599,17 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C0E0);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C11C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C158);
+void func_8002C158(u8 *arg0) {
+    if (*(s32 *)(arg0 + 4) >= 0) {
+        SsSeqReplay(*(s32 *)(arg0 + 4));
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C18C);
+void func_8002C18C(u8 *arg0) {
+    if (*(s32 *)(arg0 + 4) >= 0) {
+        SsSeqPause(*(s32 *)(arg0 + 4));
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C1C0);
 

@@ -606,4 +606,8 @@ void func_80026B94(NAS *list, NAS *nas);
 
 void func_8001682C(s32 *arg0);
 
+void func_8002C158(u8 *arg0);
+
+void func_8002C18C(u8 *arg0);
+
 #endif /* BASH_MAIN_H */
