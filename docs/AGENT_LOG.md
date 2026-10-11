@@ -25,7 +25,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 1. Core API first (no prototypes yet, called ~3,000 times across exe,
    engine and overlays):
-   `func_80025FAC`, then, `func_800110A8`.
+   `func_800110A8` (508 bytes, 39 callers).
    Then the 9 functions with identical copies (`decomp.py dups`).
    Quick wins from `dups` with a matched copy: ten 32-byte ovl5f/ovl65
    copies of `func_800C6828` (one commit each, `apply_one.py`).
