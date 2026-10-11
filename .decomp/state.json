@@ -1902,7 +1902,9 @@
   "auto_failed": "diff"
  },
  "8002AEE0": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-11T07:55:12Z",
+  "started": "2026-10-11T07:51:50Z",
+  "status": "matched"
  },
  "8002B020": {
   "auto_diff": 104,

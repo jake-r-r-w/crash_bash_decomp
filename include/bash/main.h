@@ -54,6 +54,19 @@ typedef struct {
  * (lw + mtc2), where Sony's gte_ldv0 loads straight from memory (lwc2). */
 #define gte_ldv0_w(xy, z) __asm__ volatile (				"mtc2	%0, $0;"						"mtc2	%1, $1"							:								: "r"(xy), "r"(z) )
 
+/* A VAB file in memory: the header and body as byte offsets from its start
+ * (func_8002ADD4 opens it with SsVabOpenHead / SsVabTransBody). */
+typedef struct {
+    s32 body;
+    s32 head;
+} VabFile;
+
+typedef struct {
+    u8 *head;
+    s32 id;   /* set once the transfer completes */
+    s32 unk8;
+} VabSlot;
+
 /* Filled by func_8001965C for func_8001CD04, which loads it into the GTE. */
 typedef struct {
     MATRIX *rot;
@@ -271,8 +284,10 @@ extern u16 D_8005A646;
 extern s32 D_8005B2B4;
 extern u8 *D_8005B63C;
 extern s32 D_8006EA00;
-extern s32 D_800654C0;
-extern s32 D_800654C4;
+extern VabFile *D_800654C0;  /* VAB being transferred to the SPU, or NULL */
+extern VabSlot *D_800654C4;  /* where its id goes */
+extern s32 D_800654C8;       /* the id from SsVabOpenHead */
+extern u8 D_800644A8[];
 extern u8 D_8005A688;
 extern s32 D_80063A7C;
 extern s32 D_800654B8;
@@ -293,6 +308,9 @@ extern CdlLOC D_8006EA14;
 void func_80016D98();
 void func_80016188();
 extern RECT *D_8005B698;
+void *func_800112A4(void *base, s32 offset, u8 *arg2);
+void func_80014540(u8 *arg0, RECT *rect);
+void func_8002ACA0(s32 id, s32 arg1);
 extern GfxState D_80056998;
 extern u8 D_80053694[];
 void *AllocExtension(void *owner, s32 size, s32 id, void *tmpl);
@@ -341,5 +359,7 @@ void func_80015758(SVECTOR *v, VECTOR *out);
 void func_8001C008(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc);
 
 void func_8001D048(SVECTOR *v, POLY_GT4 *poly);
+
+void func_8002AEE0(void);
 
 #endif /* BASH_MAIN_H */

@@ -2328,7 +2328,26 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8002ACA0);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002ADD4);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002AEE0);
+void func_8002AEE0(void) {
+    MATRIX *m;
+
+    if (D_800654C0 != NULL || D_800654C4 != NULL) {
+        if (SpuIsTransferCompleted(SPU_TRANSFER_PEEK) == 1) {
+            D_800654C4->id = D_800654C8;
+            func_800112A4(D_800654C0, D_800654C0->head, D_8004E0F0);
+            func_8002ACA0(D_800654C4->id, 0);
+            D_800654C0 = NULL;
+            D_800654C4 = NULL;
+        }
+    }
+    SpuGetAllKeysStatus(D_800644A8);
+    func_80014540(D_80051640, D_8005B698);
+    m = (MATRIX *)(D_80051640 + 0x74);
+    gte_SetRotMatrix(m);
+    gte_SetGeomScreen(*(s32 *)(D_80051640 + 0x18));
+    gte_SetTransMatrix(m);
+    gte_SetGeomOffset(D_8005B698->w / 2, 175);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002B020);
 
