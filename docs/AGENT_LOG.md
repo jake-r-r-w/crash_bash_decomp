@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 425/2550 game functions matched (main.exe 179/574), 4 parked. `make check`
+- 425/2550 game functions matched (main.exe 179/574), 5 parked. `make check`
   OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
@@ -25,7 +25,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 1. Core API first (no prototypes yet, called ~3,000 times across exe,
    engine and overlays):
-   `SpawnNASById`, `get_angle`, then `func_80025A48`,
+   `get_angle`, then `func_80025A48`,
    `func_80026980`, `func_800250B0`, `func_80025FAC`, `func_800110A8`.
    Then the 9 functions with identical copies (`decomp.py dups`).
    A function that parks still gets its prototype in `bash/main.h` (an
@@ -57,6 +57,11 @@ Parked (`decomp.py block`; best C under `#ifndef NON_MATCHING` in
   back to it; gcc puts the merged return after the compare, already at the
   first jump pass (`-dj`). Many forms and 10 min of permuter tried (block
   note). Its prototype is in `bash/main.h`.
+- **`SpawnNASById`**: 4 operands. The free-list pop's next pointer is in s0
+  (reusing `nas`, as the permuter found) where the target uses a1; a fresh
+  temp, reusing `eng`, or a `static inline AllocNAS` all give 34 lines.
+  `SpawnNASFromRecord` has the same three sequences: match it next and
+  compare. Prototype is in `bash/main.h`.
 - **`func_8001C7FC`**: `return func_8001A0D8(...)` (s32) fixes the division
   region (the returned pseudo prefers v0, so `mfhi` lands in v1), but then v0
   is live at the shared exit and gcc leaves the first `beqz` delay slot
@@ -111,6 +116,9 @@ Other:
   call it with no arguments (m2c dropped a pass-through `a0`). Pass what
   the argument register holds at the call; the code doesn't change
   (`KillNAS((NAS *)arg0)` in six overlay Init functions).
+- A new prototype can also change a matched caller's code through the
+  type it assigns to (`D_800C5BB0` had to become `NAS *`). Run `make check`
+  after adding one.
 - Register pins pass the lint as hacks (`--hack`) since `ef8fdc9`; before,
   `asm("$20")` was misread as inline asm.
 - Renaming a function to a leak-declared name and back loses its owned
@@ -146,6 +154,10 @@ Other:
   match: if one mismatches by a bit, check `tools/scripts/dmpsx.py` first.
 - Grepping asm for `4A`/`4B` opcode bytes also hits ASCII in data ("MARK").
 
+**Progress check:** `tools/dk python3 tools/scripts/check_progress.py` recounts
+every unit from the committed sources, prints functions % and bytes % side by
+side (the dashboard's headline is bytes), and checks `docs/progress.json`.
+
 **Scripts** (`disc/scratch/`, not committed): `callsites.py OVL` (what each
 call passes, whether the result is used), `callgraph.py spawns`,
 `nas_fields.py ARGREG FUNC...` (field offsets through a pointer argument).
@@ -162,7 +174,9 @@ Newest first, a few lines each. Details are in the commits.
   parked `FindExtension` (branch layout) but added its prototype; matched
   `StopSfx` on the first diff with new `SfxVoice`/`SfxPool` types, and
   `PlaySfx` (352 bytes; allocation written out in place, one final return),
-  and `KillNAS` (388 bytes; `NASSpawn` typed, six callers fixed).
+  and `KillNAS` (388 bytes; `NASSpawn` typed, six callers fixed). Parked
+  `SpawnNASById` at 4 operands with its prototype. Dashboard now shows
+  function % beside byte %; new `check_progress.py`.
 - **2026-10-11:** Matched `func_800193A8` (692 bytes, GTE triangle strips;
   register pins, `--hack`) through the new process; six Diff patterns rows.
   Fixed the gate lint so pins count as hacks.
