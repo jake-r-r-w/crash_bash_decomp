@@ -44,7 +44,9 @@
   "auto_failed": "compile"
  },
  "800110A8": {
-  "auto_failed": "types"
+  "auto_failed": "types",
+  "started": "2026-10-11T14:41:18Z",
+  "status": "in_progress"
  },
  "800112A4": {
   "auto_failed": "types"
@@ -1501,7 +1503,9 @@
   "auto_failed": "types"
  },
  "80025FAC": {
-  "auto_failed": "types"
+  "auto_failed": "types",
+  "started": "2026-10-11T14:41:14Z",
+  "status": "in_progress"
  },
  "80026048": {
   "auto_diff": 72,
@@ -2114,8 +2118,9 @@
  },
  "8002C44C": {
   "auto_diff": 10,
-  "auto_failed": "diff",
-  "copy_failed": "8001D604"
+  "copy_failed": "8001D604",
+  "matched_at": "2026-10-11T14:44:58Z",
+  "status": "matched"
  },
  "8002C488": {
   "auto_diff": 3,

@@ -2931,7 +2931,7 @@ void func_8002AAAC(void) {
 }
 
 void func_8002AABC(void) {
-    *(s32 *)D_8006557C = 0;
+    D_8006557C = 0;
     SsInit();
     SsSetTableSize(D_800654CC, 1, 1);
     SpuReserveReverbWorkArea(1);
@@ -3139,10 +3139,15 @@ void func_8002C3F0(s32 arg0, s32 *arg1) {
 }
 
 void func_8002C428(void) {
-    func_8002C090(D_8006557C);
+    func_8002C090(&D_8006557C);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C44C);
+void func_8002C44C(void) {
+    if (D_8006557C != 0) {
+        func_800110A8(D_8006557C, D_8004E0F0);
+        D_8006557C = 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C488);
 

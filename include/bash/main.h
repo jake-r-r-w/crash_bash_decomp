@@ -341,7 +341,7 @@ extern u8 D_8004E0F0[];
 extern u8 D_80055684[];
 extern void *D_8005AA34;
 extern void *D_8005AA24;
-extern u8 D_8006557C[];
+extern s32 D_8006557C;
 extern char D_800654CC[];
 extern u8 D_8005A614[];
 extern s32 D_800675C8;
@@ -488,5 +488,7 @@ s32 get_angle(s32 x, s32 z);
 FlagRecord *func_80025A48(EXTengine *eng, u32 flag);
 
 s16 func_800250B0(NAS *nas);
+
+void func_8002C44C(void);
 
 #endif /* BASH_MAIN_H */
