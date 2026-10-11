@@ -43,6 +43,14 @@ typedef struct EXTnode {
 BASH_SIZE_CHECK(EXTnode, 0x8);
 #define BASH_HAVE_EXTNODE
 
+/* The prefix every extension shares, for code that walks a chain of mixed
+ * types (FindExtension). Placeholder name: the leak has no such struct. */
+typedef struct EXTheader {
+    s32 EXTid;
+    EXTnode Extend;
+} EXTheader;
+BASH_SIZE_CHECK(EXTheader, 0xC);
+
 /* An engine object instance: an entry of the AST table ({id, Init, Plot}),
  * spawned by SpawnNASFromRecord from a pool of copies of a template. */
 struct NAS {

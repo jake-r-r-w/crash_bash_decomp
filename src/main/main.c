@@ -2124,7 +2124,28 @@ void func_800264B4(void) {
     D_8006EA00 = 0;
 }
 
+#ifndef NON_MATCHING
 INCLUDE_ASM("asm/nonmatchings/main/main", FindExtension);
+#else
+void *FindExtension(NAS *nas, s32 id) {
+    EXTheader *ext;
+    s32 sub;
+
+    sub = id & 0xFF;
+    id &= ~0xFF;
+    for (ext = nas->ext; ext != NULL; ext = ext->Extend.next) {
+        if (ext->EXTid & id) {
+            if (sub == 0) {
+                return ext;
+            }
+            if ((ext->EXTid & 0xFF) == sub) {
+                return ext;
+            }
+        }
+    }
+    return NULL;
+}
+#endif
 
 EXTmotion *AddMotion(NAS *nas) {
     EXTmotion *mot;
