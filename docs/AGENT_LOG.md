@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 494/2550 game functions matched (main.exe 239/574), 4 parked. `make check`
+- 495/2550 game functions matched (main.exe 240/574), 4 parked. `make check`
   OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
@@ -65,10 +65,6 @@ Parked (`decomp.py block`; best C under `#ifndef NON_MATCHING` in
   Permuter's best reused a temp for `tpage & ~0x60`.
 
 Other:
-- `func_8001534C` (string hash: sum of `c * position`): 9 register operands
-  off (target keeps the counter in a1, the sum in a2, and loads the next
-  character into v1). Tried `while`, `for`, guarded `do`, a product temp and
-  declaration order. Prototype `s32 func_8001534C(u8 *s)` is in place.
 - `D_8004E0F0` is the main `Heap` (`bash/main.h`) but is still declared
   `u8[]`, so `func_800110A8`'s callers warn. Retype it together with the
   `u8 *` heap parameters of `func_80011DB4` and `func_800112A4`.
@@ -172,6 +168,9 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-11:** Matched `func_8001534C` (string hash) with a 10-minute
+  permuter run after the loop rewrites stalled at 9 operands: the product goes
+  through a reused `s32` temp. Diff patterns row added.
 - **2026-10-11:** Third hour of `next`: 18 main.exe functions (16 matches,
   two identical copies), one via the permuter (`func_80015518`). New types:
   `SeqSlot` (`D_8006557C`, was an `s32`), `OffsetTable`, `PadState`,
