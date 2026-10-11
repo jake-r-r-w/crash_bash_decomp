@@ -347,7 +347,7 @@ extern GfxState D_80056998;
 extern u16 D_800569DC;
 extern s32 D_8005B690; /* frame counter: its low bit picks the frame buffer */
 void func_8001A6D4(void *arg0, u32 hidden);
-void func_8001A0D8(void *arg0, u32 flags);
+s32 func_8001A0D8(void *arg0, u32 flags);
 extern u8 D_80053694[];
 void *AllocExtension(void *owner, s32 size, s32 id, void *tmpl);
 extern EXTmotion D_8005A9CC;

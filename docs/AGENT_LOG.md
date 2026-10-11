@@ -2,6 +2,46 @@
 
 Newest first. Each session appends: what changed, what was learned, what's next.
 
+## 2026-10-11 - func_8001C7FC: root cause found, still parked
+
+**State at end of session:** `make check` OK; 409/2550 game functions matched
+(main.exe 163/574), 2 parked (`func_8001C7FC`, `func_800177F4`).
+
+**Done**
+- Traced the one-instruction difference in `func_8001C7FC` through cc1 dumps
+  (`-dl -dg`, `-fno-schedule-insns2`). It is not a scheduling-order problem
+  in the source: sched1 gives the same order in both functions. The `mfhi`
+  pseudo prefers HI_REG, so local-alloc skips it and global.c picks its
+  register. In `func_8001C974` the return value pseudo prefers v0, so pass 0
+  of `find_reg` skips v0 and `mfhi` lands in v1; then `lhu` into v1 can't be
+  hoisted past `sra a1,v1,8` by sched2. In `func_8001C7FC` nothing prefers
+  v0, `mfhi` gets v0 and sched2 hoists the `lhu`.
+- `return func_8001A0D8(...)` with `s32` return reproduces the target's
+  division region exactly (`func_8001A0D8` does return a value; callers
+  `sh v0`, header updated). But then v0 is live at the shared exit and gcc
+  no longer fills the first `beqz` delay slot itself (`.set noreorder` block
+  vanishes); the target has `lui v0,0x200` in that slot. Parked with that
+  note; the attempt is under `#ifndef NON_MATCHING`.
+
+**Learned / gotchas**
+- Raw compiler output: `tools/dk sh -c 'mipsel-linux-gnu-cpp -P -nostdinc
+  -undef -Iinclude -Iext/psyq47/include -D__GNUC__=2 -D_LANGUAGE_C -DPSX
+  -DGVAL=0 src/main/main.c > x.i && /opt/gcc/2.8.1-psx/cc1 -quiet -O2 -G0
+  -dl -dg -o x.s x.i'`. `.lreg` lists "Register N in M" (local-alloc), `.greg`
+  "Register dispositions"; "pref HI_REG" marks `mfhi` results.
+- gcc 2.8.1 fills a delay slot itself (emits `.set noreorder`) only when the
+  slot insn is safe on the taken path; a live return register blocks it.
+- A `lhu`+`sll 16`+`sra 16` for an `s16` field is normal here (combine
+  reuses the shifted value for the `srl 31` of the `/ 2`).
+
+**Next**
+1. `func_8001C7FC`: find a source form where a pseudo prefers v0 (copy
+   to/from a hard reg) without v0 live on the early-exit path. Candidates:
+   a non-void return only on the matched path isn't it; try an `s32` result
+   from `func_8001A0D8` stored to a struct field, or check whether the
+   original was `void` and something else copies from v0.
+2. Unpark `func_800177F4` (registers); keep matching `main.exe`.
+
 ## 2026-10-11 - dashboard: progress over time per binary
 
 **State at end of session:** 409/2550 game functions matched (main.exe
