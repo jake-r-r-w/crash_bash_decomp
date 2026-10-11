@@ -538,6 +538,7 @@ extern NAS *NASFreeList;
 extern NAS NASTemplate;            /* copied over each spawned NAS */
 extern EXTengine EngineTemplate;   /* copied over each new engine */
 extern s16 AtanTable[];            /* get_angle */
+extern u16 D_8005A644;
 
 EXTmotion *AddMotion(NAS *nas);
 

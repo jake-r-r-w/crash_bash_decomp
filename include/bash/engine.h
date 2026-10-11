@@ -113,8 +113,11 @@ extern u8 D_8009E7F4[];
 extern u8 D_8009E8B4[];
 extern u8 D_8009EB3C[];
 extern s32 D_8009EB98;
+extern s32 D_8009E5DC;
 
 void SetHeroSeq(HeroInfo *hero, s32 seq);
 void SetHeroAction(HeroInfo *hero, s32 action);
+
+void func_8008F068(void);
 
 #endif /* BASH_ENGINE_H */
