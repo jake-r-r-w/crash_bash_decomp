@@ -541,4 +541,6 @@ u8 *func_800160C4(u8 *arg0, s32 i);
 
 void func_8002BD0C(s32 arg0);
 
+void func_80021330(u8 *arg0, s32 *arg1);
+
 #endif /* BASH_MAIN_H */

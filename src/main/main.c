@@ -1569,7 +1569,7 @@ void func_8001D174(EXTengine *eng) {
             if (release != NULL) {
                 release(sub);
             }
-            sub->unk54 = 0;
+            sub->hook = NULL;
             sub->release = NULL;
             sub->flags = 0;
             sub = next;
@@ -1600,7 +1600,7 @@ void func_8001D220(EXTengine *eng) {
             if (release != NULL) {
                 release(sub);
             }
-            sub->unk54 = 0;
+            sub->hook = NULL;
             sub->release = NULL;
             sub->flags = 0;
             sub = next;
@@ -1627,7 +1627,7 @@ void func_8001D2B4(subengine *first, subengine *last) {
             if (release != NULL) {
                 release(sub);
             }
-            sub->unk54 = 0;
+            sub->hook = NULL;
             sub->release = NULL;
             sub->flags = 0;
             sub = next;
@@ -1651,7 +1651,7 @@ void func_8001D334(subengine *first) {
             if (release != NULL) {
                 release(sub);
             }
-            sub->unk54 = 0;
+            sub->hook = NULL;
             sub->release = NULL;
             sub->flags = 0;
             sub = next;
@@ -1866,7 +1866,28 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80021238);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002128C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80021330);
+void func_80021330(u8 *arg0, s32 *arg1) {
+    subengine *first;
+    subengine *sub;
+    s32 val;
+    u32 flags;
+
+    first = *(subengine **)(arg0 + 0xC);
+    val = *arg1;
+    if (first != NULL) {
+        sub = first;
+        flags = sub->flags;
+        for (;;) {
+            if (sub == NULL) {
+                return;
+            }
+            if (sub->hook != NULL) {
+                sub->hook(sub, val, flags);
+            }
+            sub = sub->next;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800213A0);
 

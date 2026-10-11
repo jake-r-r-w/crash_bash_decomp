@@ -1188,7 +1188,9 @@
  },
  "80021330": {
   "auto_diff": 3,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T16:02:57Z",
+  "started": "2026-10-11T16:00:23Z",
+  "status": "matched"
  },
  "800213A0": {
   "auto_diff": 24,

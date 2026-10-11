@@ -161,7 +161,7 @@ struct subengine {
     /* 0x50 */ u8 unk50;
     /* 0x51 */ u8 unk51;
     /* 0x52 */ s16 unk52;
-    /* 0x54 */ s32 unk54;
+    /* 0x54 */ void (*hook)(subengine *, s32, u32); /* func_80021330 calls it on each node */
     /* 0x58 */ void (*release)(subengine *); /* called when the node is freed */
     /* 0x5C */ subengine *next;
     /* 0x60 */ subengine *prev;
