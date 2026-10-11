@@ -418,4 +418,6 @@ void func_800154EC(u16 *arg0, s32 arg1);
 
 void func_8002775C(u8 *arg0);
 
+void func_800154C0(u16 *arg0, s32 arg1);
+
 #endif /* BASH_MAIN_H */
