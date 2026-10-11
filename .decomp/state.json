@@ -518,7 +518,9 @@
  },
  "80015A78": {
   "auto_diff": 7,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T18:59:29Z",
+  "started": "2026-10-11T18:57:19Z",
+  "status": "matched"
  },
  "80015AB0": {
   "auto_diff": 6,
