@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 442/2550 game functions matched (main.exe 187/574), 5 parked. `make check`
+- 444/2550 game functions matched (main.exe 189/574), 4 parked. `make check`
   OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
@@ -50,14 +50,6 @@ Parked (`decomp.py block`; best C under `#ifndef NON_MATCHING` in
   plain `A += B; B += A + ((u32)A >> 31);`, which here is the 2-off form:
   this function's source is written differently, not just compiled in
   another context.
-- **`FindExtension`**: 5 opcodes, branch layout only. The target puts the
-  `return ext` block right after `bnez sub` and the low-byte compare branches
-  back to it; gcc puts the merged return after the compare, already at the
-  first jump pass (`-dj`). Many forms and 10 min of permuter tried (block
-  note). Its prototype is in `bash/main.h`.
-  Lead: `func_800250B0` has `FindExtension(nas, 0x400)` written out in place
-  (`for` + `goto found`, then `anim = NULL;` after the loop): try that
-  shape here.
 - **`SpawnNASById`**: 4 operands. The free-list pop's next pointer is in s0
   (reusing `nas`, as the permuter found) where the target uses a1; a fresh
   temp, reusing `eng`, or a `static inline AllocNAS` all give 34 lines.
@@ -174,6 +166,10 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-11:** Matched `func_80016AD4` (116 bytes, first diff): unloads
+  what `func_80016C18` loads; `func_80012F04` takes one argument. Unparked
+  `FindExtension`: a label inside the first `return` block, `goto` from the
+  second (Diff patterns row updated).
 - **2026-10-11:** Matched nine 32-byte wrappers like `func_800C6828` (eight
   in ovl5f, `func_800BCA18` in ovl65): pass `a0` through with a constant.
   `SetHeroSeq`/`SetHeroAction` prototypes (`Hero *`) in `bash/engine.h`.
