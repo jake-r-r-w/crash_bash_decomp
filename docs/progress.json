@@ -1,15 +1,8 @@
 {
- "blocked": [
-  {
-   "name": "func_80015780",
-   "note": "2 instructions: li a0,-1 (hoisted loop constant) is scheduled after move s0,s1 (the second pointer copy); target has it before. Best C under NON_MATCHING; loop exits via goto so gcc doesn't rotate it",
-   "seg": "main/main",
-   "size": 240
-  }
- ],
- "commit": "a315078",
+ "blocked": [],
+ "commit": "8360c55",
  "game": "SCUS_945.70",
- "generated": "2026-10-10T20:12:13Z",
+ "generated": "2026-10-11T07:45:01Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -402,9 +395,33 @@
    "lib_f": 535,
    "lib_tb": 122112,
    "ts": "2026-10-10T20:12:13Z"
+  },
+  {
+   "commit": "8360c55",
+   "data_b": 128,
+   "data_tb": 616791,
+   "game_all_f": 2550,
+   "game_b": 21436,
+   "game_c_f": 404,
+   "game_f": 404,
+   "game_named_f": 144,
+   "game_tb": 1019036,
+   "game_typed_f": 291,
+   "lib_b": 121280,
+   "lib_f": 535,
+   "lib_tb": 122112,
+   "ts": "2026-10-11T07:45:01Z"
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-11T07:44:36Z",
+   "auto": true,
+   "name": "func_80015780",
+   "seg": "main/main",
+   "size": 240,
+   "tries": 0
+  },
   {
    "at": "2026-10-10T19:44:52Z",
    "auto": true,
@@ -516,18 +533,10 @@
    "seg": "overlays/ovl6a/ovl6a",
    "size": 68,
    "tries": 0
-  },
-  {
-   "at": "2026-10-10T10:36:02Z",
-   "auto": true,
-   "name": "func_800BA978",
-   "seg": "overlays/ovl6a/ovl6a",
-   "size": 80,
-   "tries": 0
   }
  ],
  "summary": {
-  "blocked": 1,
+  "blocked": 0,
   "copies_b": 38400,
   "data": {
    "done_b": 128,
@@ -538,16 +547,16 @@
    "all_f": 2550,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 1,
-   "c_f": 403,
-   "done_b": 21196,
-   "done_f": 403,
+   "blocked": 0,
+   "c_f": 404,
+   "done_b": 21436,
+   "done_f": 404,
    "named_f": 144,
-   "pct": 2.0800050243563524,
+   "pct": 2.1035566947585758,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2550,
-   "typed_f": 290
+   "typed_f": 291
   },
   "lib": {
    "all_f": 566,
@@ -590,21 +599,21 @@
     "all_f": 574,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 1,
-    "c_f": 157,
-    "done_b": 10596,
-    "done_f": 157,
+    "blocked": 0,
+    "c_f": 158,
+    "done_b": 10836,
+    "done_f": 158,
     "file": "SCUS_945.70",
     "files": 1,
     "lib": false,
     "named_f": 15,
-    "pct": 8.487664210189042,
+    "pct": 8.679910285165011,
     "phase": 2,
     "sony_b": 0,
     "title": "main.exe",
     "total_b": 124840,
     "total_f": 574,
-    "typed_f": 81,
+    "typed_f": 82,
     "unit": "main exe"
    },
    {

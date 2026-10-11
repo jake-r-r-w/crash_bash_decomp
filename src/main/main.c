@@ -488,24 +488,25 @@ void func_80015758(SVECTOR *v, VECTOR *out) {
     gte_stlvl(out);
 }
 
-#ifndef NON_MATCHING
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80015780);
-#else
 FlagPoint *func_80015780(EXTengine *eng, subengine *sub, u16 flag, VECTOR *out) {
     PointList *list = func_8001562C(sub);
+    FlagPoint *pts;
     FlagPoint *pt;
     FlagPoint *p;
+    s32 i;
     s32 n;
 
+    pt = list->pts;
     if (list == NULL) {
         return NULL;
     }
     n = list->count;
-    pt = list->pts;
-    for (p = pt;;) {
+    pts = pt;
+    for (i = 0;;) {
         if (--n == -1) {
             goto none;
         }
+        p = &pts[i];
         if (p->flags & flag) {
             if (eng->unk5E != 0) {
                 func_800142D4(&eng->unk1C);
@@ -516,13 +517,12 @@ FlagPoint *func_80015780(EXTengine *eng, subengine *sub, u16 flag, VECTOR *out) 
             gte_stlvl(out);
             return pt;
         }
-        p++;
+        i++;
         pt++;
     }
 none:
     return NULL;
 }
-#endif
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80015870);
 
