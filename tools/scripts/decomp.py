@@ -835,8 +835,11 @@ def cmd_next(a):
     cg_callers = call_graph(funcs)[1]
     for i, (key, e) in enumerate(targets):
         name = cur_name(key, e, syms)
-        rec = st.setdefault(key, {})
-        if rec.get("status") != "in_progress":
+        rec = st.get(key, {})
+        # only a single pick is being worked on; --count N is a survey and marks nothing
+        # (in_progress functions are served first, so stray marks would bias every later pick)
+        if len(targets) == 1 and rec.get("status") != "in_progress":
+            rec = st.setdefault(key, {})
             rec.update(status="in_progress", started=now())
         if i:
             print()
