@@ -1811,7 +1811,21 @@ void func_8001E898(u8 *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001E8F0);
+/* arg0 points to a table of handlers; calls handler 0 if there is one. */
+void func_8001E8F0(void *arg0) {
+    void (**ops)(void);
+    void (*fn)(void);
+
+    if (arg0 != NULL) {
+        ops = *(void (***)(void))arg0;
+        if (ops != NULL) {
+            fn = ops[0];
+            if (fn != NULL) {
+                fn();
+            }
+        }
+    }
+}
 
 void func_8001E934(u8 *arg0, s32 arg1) {
     (*(s32*)((u8*)(arg0) + 0)) = arg1;

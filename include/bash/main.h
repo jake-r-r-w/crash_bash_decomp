@@ -551,4 +551,6 @@ void func_8002BBB4(void);
 
 void func_8001E854(void *arg0);
 
+void func_8001E8F0(void *arg0);
+
 #endif /* BASH_MAIN_H */
