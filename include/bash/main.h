@@ -437,4 +437,6 @@ void func_8002D0C8(void);
 
 void func_8002AABC(void);
 
+s32 Random(s32 n);
+
 #endif /* BASH_MAIN_H */

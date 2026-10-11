@@ -505,7 +505,14 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80015518);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80015554);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", Random);
+s32 Random(s32 n) {
+    if (n < 2) {
+        return 0;
+    }
+    RandomSeedA += RandomSeedB;
+    RandomSeedB += RandomSeedA + ((u32)RandomSeedA >> 31);
+    return (u32)RandomSeedA % n;
+}
 
 void SetRandomSeed(s32 arg0, s32 arg1) {
     RandomSeedA = arg0;
