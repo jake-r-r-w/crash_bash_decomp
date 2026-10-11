@@ -114,4 +114,7 @@ extern u8 D_8009E8B4[];
 extern u8 D_8009EB3C[];
 extern s32 D_8009EB98;
 
+void SetHeroSeq(Hero *hero, s32 seq);
+void SetHeroAction(Hero *hero, s32 action);
+
 #endif /* BASH_ENGINE_H */

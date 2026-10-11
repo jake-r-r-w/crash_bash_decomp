@@ -1,6 +1,7 @@
 #include "common.h"
 #include "bash/main.h"
 #include "bash/ovl5f.h"
+#include "bash/engine.h"
 #include "bash/tank.h"
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B3B24);
@@ -195,9 +196,13 @@ void func_800C6848(s32 arg0) {
     func_800C4320(arg0, 0x131F);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6868);
+void func_800C6868(s32 arg0) {
+    func_800C60AC(arg0, 0x131E);
+}
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6888);
+void func_800C6888(s32 arg0) {
+    func_800C4320(arg0, 0x131E);
+}
 
 void func_800C68A8(void) {
     func_80089BE8();

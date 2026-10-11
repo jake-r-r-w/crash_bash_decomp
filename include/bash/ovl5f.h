@@ -8,6 +8,9 @@
 #include "common.h"
 #include "bash/nas.h"
 
+void func_800C0C68(s32 arg0, s32 arg1);
+void func_800C0F24(s32 arg0, s32 arg1);
+
 void func_800C6828(s32 arg0);
 void func_800C6848(s32 arg0);
 void func_800C68A8(void);
@@ -36,5 +39,9 @@ extern u8 D_800CACFC[];
 extern s32 D_800CAFF4;
 extern u8 D_800CACB4[];
 extern u8 D_800CAFFC[];
+
+void func_800C6868(s32 arg0);
+
+void func_800C6888(s32 arg0);
 
 #endif /* BASH_OVL5F_H */

@@ -4399,11 +4399,14 @@
  },
  "ovl5f:800C6868": {
   "auto_diff": 1,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T15:03:56Z",
+  "status": "matched"
  },
  "ovl5f:800C6888": {
   "auto_diff": 1,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T15:06:59Z",
+  "status": "matched",
+  "via": "copy"
  },
  "ovl5f:800C68A8": {
   "matched_at": "2026-10-10T10:11:53Z",
