@@ -222,9 +222,9 @@
  },
  "80012E54": {
   "auto_diff": 1,
-  "auto_failed": "diff",
+  "matched_at": "2026-10-11T09:02:42Z",
   "started": "2026-10-11T08:54:04Z",
-  "status": "in_progress"
+  "status": "matched"
  },
  "80012E90": {
   "auto_failed": "types"

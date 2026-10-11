@@ -279,7 +279,18 @@ void func_80012E14(u8 *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80012E28);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80012E54);
+void func_80012E54(void) {
+    u8 *p;
+    s32 i;
+
+    p = D_80050F40;
+    D_80051240 = p;
+    for (i = 62; i != -1; i--) {
+        *(u8 **)(p + 8) = p + 0xC;
+        p += 0xC;
+    }
+    *(u8 **)(p + 8) = NULL;
+}
 
 void func_80012E88(void) {
 }
