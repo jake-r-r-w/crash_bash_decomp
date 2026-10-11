@@ -2054,7 +2054,76 @@ void func_800229D4(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800229FC);
 
+#ifndef NON_MATCHING
 INCLUDE_ASM("asm/nonmatchings/main/main", SpawnNASById);
+#else
+NAS *SpawnNASById(s32 x, s32 y, s32 z, u16 id, u16 flags) {
+    NAS *nas;
+    NAS *free;
+    EXTengine *eng;
+    s32 i;
+    s32 r;
+    s32 want;
+    u16 ast;
+
+    nas = NULL;
+    want = id;
+    for (i = 0; i < ASTCount; i++) {
+        if (ASTTable[i].id == want) {
+            r = i;
+            goto found;
+        }
+    }
+    r = 0;
+found:
+    ast = r;
+    if (ast != 0 && ast < ASTCount) {
+        nas = NULL;
+        free = NASFreeList;
+        if (free != NULL) {
+            nas = free->next;
+            NASFreeList = nas;
+            if (nas != NULL) {
+                nas->prev = NULL;
+            }
+            nas = free;
+        }
+        if (nas != NULL) {
+            *nas = NASTemplate;
+            nas->flags = 1;
+            if (NASActiveTail != NULL) {
+                NASActiveTail->next = nas;
+                nas->prev = NASActiveTail;
+                NASActiveTail = nas;
+            } else {
+                NASActiveTail = nas;
+                NASActiveHead = nas;
+            }
+            nas->ast = ast;
+            nas->Init = ASTTable[ast].Init;
+            nas->Plot = ASTTable[ast].Plot;
+            if (flags & 1) {
+                eng = AddEngine(nas, 1);
+                if (eng != NULL) {
+                    eng->unk10.x = x;
+                    eng->unk10.y = y;
+                    eng->unk10.z = z;
+                } else {
+                    if (flags & 0x10) {
+                        KillNAS(nas);
+                    }
+                    return NULL;
+                }
+            }
+            nas->Init(nas);
+            if (nas->flags == 0) {
+                nas = NULL;
+            }
+        }
+    }
+    return nas;
+}
+#endif
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80022C3C);
 
