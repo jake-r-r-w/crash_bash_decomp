@@ -827,7 +827,19 @@ void func_80016234(u8 *arg0, u8 *arg1) {
     func_80015F60(arg0, (*(s32*)((u8*)(arg1) + 52)));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80016274);
+s32 func_80016274(s32 *list, u8 *arg1) {
+    if (list != NULL) {
+        for (;; list++) {
+            if (*list == 0) {
+                return 0;
+            }
+            if (func_8001534C(*list) == *(s32 *)(arg1 + 0x10)) {
+                return *list;
+            }
+        }
+    }
+    return 0;
+}
 
 void func_800162E4(u8 *arg0, s32 arg1) {
     s32 *temp_v0;
