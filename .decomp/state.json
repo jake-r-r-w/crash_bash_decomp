@@ -3540,7 +3540,9 @@
  },
  "engine:80095D88": {
   "auto_diff": 1,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T23:32:51Z",
+  "started": "2026-10-11T23:29:48Z",
+  "status": "matched"
  },
  "engine:80095DBC": {
   "auto_diff": 34,

@@ -120,4 +120,6 @@ void SetHeroAction(HeroInfo *hero, s32 action);
 
 void func_8008F068(void);
 
+s32 func_80095D88(s32 *rec);
+
 #endif /* BASH_ENGINE_H */

@@ -995,7 +995,18 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80095A60);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80095BEC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80095D88);
+/* Counts the 0x24-byte records before the first whose leading word is
+ * below 2. */
+s32 func_80095D88(s32 *rec) {
+    s32 n;
+
+    n = 0;
+    while (*rec >= 2) {
+        rec += 9;
+        n++;
+    }
+    return n;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80095DBC);
 
