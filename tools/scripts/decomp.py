@@ -959,7 +959,9 @@ def lint_function(src, name):
     """(errors, hacks) found in NAME's definition in SRC."""
     body = extract_function(read(src), name) or ""
     body = re.sub(r"/\*.*?\*/", "", body, flags=re.S)
-    errs = sorted({why for rx, why in LINT_ERRORS if rx.search(body)})
+    # a register pin's asm("$20") names a register, not instructions: it's a hack, not an error
+    unpinned = re.sub(r"(\bregister\b[^;]*?)\b(asm|__asm__)\s*\(\s*\"[^\"]*\"\s*\)", r"\1", body)
+    errs = sorted({why for rx, why in LINT_ERRORS if rx.search(unpinned)})
     hacks = sorted({why for rx, why in LINT_HACKS if rx.search(body)})
     return errs, hacks
 
