@@ -338,7 +338,9 @@
  },
  "80013C78": {
   "auto_diff": 6,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T17:07:19Z",
+  "started": "2026-10-11T17:04:53Z",
+  "status": "matched"
  },
  "80013C94": {
   "matched_at": "2026-10-10T10:11:53Z",

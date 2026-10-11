@@ -497,7 +497,11 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80013B0C);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80013C24);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80013C78);
+void func_80013C78(void) {
+    u32 *p = (u32 *)D_8005A614;
+
+    p[1] |= 0x80010000;
+}
 
 void func_80013C94(u8 *arg0, s32 arg1) {
     (*(s32*)((u8*)(arg0) + 48)) = arg1;
