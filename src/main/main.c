@@ -3264,7 +3264,9 @@ void func_8002C44C(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C488);
+void func_8002C488(s32 arg0, s32 type) {
+    func_8002C394(arg0, &D_8006557C, type);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C4B0);
 

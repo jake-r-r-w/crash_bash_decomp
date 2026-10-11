@@ -2125,7 +2125,9 @@
  },
  "8002C488": {
   "auto_diff": 3,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T15:46:43Z",
+  "started": "2026-10-11T15:44:50Z",
+  "status": "matched"
  },
  "8002C4B0": {
   "auto_diff": 66,
