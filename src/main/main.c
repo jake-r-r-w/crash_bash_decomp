@@ -3259,7 +3259,15 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80028774);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80028994);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80028A00);
+void *func_80028A00(void) {
+    u8 *cur;
+
+    cur = D_80063BB4;
+    if (cur != NULL) {
+        D_80063BB4 = *(void **)(cur + 4);
+    }
+    return cur;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80028A28);
 
