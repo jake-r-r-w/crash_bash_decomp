@@ -520,7 +520,9 @@
  },
  "80015AB0": {
   "auto_diff": 6,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T17:15:23Z",
+  "started": "2026-10-11T17:13:22Z",
+  "status": "matched"
  },
  "80015AD4": {
   "auto_failed": "types"

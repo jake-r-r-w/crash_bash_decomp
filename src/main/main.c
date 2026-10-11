@@ -746,7 +746,15 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80015A18);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80015A78);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80015AB0);
+void *func_80015AB0(s32 *arg0, u8 *rec) {
+    void **node;
+
+    node = *(void ***)(rec + 0x14);
+    if (node == NULL) {
+        return NULL;
+    }
+    return *node;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80015AD4);
 
