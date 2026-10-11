@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 422/2550 game functions matched (main.exe 176/574), 3 parked. `make check`
+- 422/2550 game functions matched (main.exe 176/574), 4 parked. `make check`
   OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
@@ -24,10 +24,12 @@ leads**, add any new gotcha, and add one short entry at the top of the
 ## Next
 
 1. Core API first (no prototypes yet, called ~3,000 times across exe,
-   engine and overlays): `FindExtension`, `StopSfx`, `PlaySfx`,
+   engine and overlays): `StopSfx`, `PlaySfx`,
    `KillNAS`, `SpawnNASById`, `get_angle`, then `func_80025A48`,
    `func_80026980`, `func_800250B0`, `func_80025FAC`, `func_800110A8`.
    Then the 9 functions with identical copies (`decomp.py dups`).
+   A function that parks still gets its prototype in `bash/main.h` (an
+   ordinary commit after `make check`), as `FindExtension` did.
 2. Keep matching `main.exe`, one function per commit:
    `decomp.py next --seg main/main` (not always the smallest). Use the
    MATCHING.md process: evidence, Diff patterns, checklist, cc1 dump, then
@@ -50,6 +52,11 @@ Parked (`decomp.py block`; best C under `#ifndef NON_MATCHING` in
   plain `A += B; B += A + ((u32)A >> 31);`, which here is the 2-off form:
   this function's source is written differently, not just compiled in
   another context.
+- **`FindExtension`**: 5 opcodes, branch layout only. The target puts the
+  `return ext` block right after `bnez sub` and the low-byte compare branches
+  back to it; gcc puts the merged return after the compare, already at the
+  first jump pass (`-dj`). Many forms and 10 min of permuter tried (block
+  note). Its prototype is in `bash/main.h`.
 - **`func_8001C7FC`**: `return func_8001A0D8(...)` (s32) fixes the division
   region (the returned pseudo prefers v0, so `mfhi` lands in v1), but then v0
   is live at the shared exit and gcc leaves the first `beqz` delay slot
@@ -141,7 +148,8 @@ offset. Most-called functions:
 Newest first, a few lines each. Details are in the commits.
 
 - **2026-10-11:** Started the core API (most-called unmatched functions,
-  ~3,000 call sites; plan below in Next): matched `Random` on the first diff.
+  ~3,000 call sites; plan in Next): matched `Random` on the first diff,
+  parked `FindExtension` (branch layout) but added its prototype.
 - **2026-10-11:** Matched `func_800193A8` (692 bytes, GTE triangle strips;
   register pins, `--hack`) through the new process; six Diff patterns rows.
   Fixed the gate lint so pins count as hacks.
