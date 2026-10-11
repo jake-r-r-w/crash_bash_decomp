@@ -1928,7 +1928,7 @@ void StopSfx(SfxVoice *voice) {
         if (voice->owner != NULL) {
             *voice->owner = 0;
         }
-        func_8002B8F4(voice->unk2C);
+        func_8002B8F4(&voice->unk2C);
         if (voice->next != NULL) {
             voice->next->prev = voice->prev;
         }
@@ -1942,7 +1942,56 @@ void StopSfx(SfxVoice *voice) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", PlaySfx);
+SfxVoice *PlaySfx(s32 id, SfxVoice **handle, SLONG_XYZ *pos, s32 arg3, s32 arg4, s32 flags) {
+    SfxVoice *voice;
+    SfxVoice *v;
+
+    voice = NULL;
+    if (id & 0x8000) {
+        func_80027A74();
+    } else {
+        if (SfxTable[id][1] == -1) {
+            return NULL;
+        }
+        v = SfxVoicePool.free;
+        if (v != NULL) {
+            SfxVoicePool.free = v->next;
+            v->next = SfxVoicePool.active;
+            v->prev = NULL;
+            if (SfxVoicePool.active != NULL) {
+                SfxVoicePool.active->prev = v;
+            }
+            voice = v;
+            voice->owner = NULL;
+            voice->unk28 = -1;
+            voice->unk2C = -1;
+        }
+        if (voice != NULL) {
+            voice->next = SfxVoicePool.active;
+            voice->prev = NULL;
+            SfxVoicePool.active = voice;
+            voice->id = id;
+            voice->unk20 = arg3;
+            voice->unk24 = arg4;
+            voice->flags = flags;
+            voice->unk28 = -1;
+            if (handle != NULL) {
+                if (*handle != NULL) {
+                    StopSfx(*handle);
+                }
+                *handle = voice;
+                voice->owner = handle;
+                voice->pos = pos;
+            } else if (pos != NULL) {
+                voice->posCopy = *pos;
+                voice->pos = &voice->posCopy;
+            } else {
+                voice->pos = NULL;
+            }
+        }
+    }
+    return voice;
+}
 
 void func_800227C0(void) {
     u8 *var_v1;

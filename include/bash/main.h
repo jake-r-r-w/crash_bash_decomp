@@ -75,15 +75,20 @@ typedef struct {
 #define gte_stsxy3_10(r0) __asm__ volatile (				"swc2	$12, 16( %0 );"					"swc2	$13, 24( %0 );"					"swc2	$14, 32( %0 )"					:								: "r"(r0)							: "memory" )
 
 /* A playing sound (PlaySfx), linked into SfxVoicePool's active or free list.
- * Placeholder names; only the fields StopSfx and its neighbours use. */
+ * Placeholder names, from PlaySfx and StopSfx. */
 typedef struct SfxVoice {
-    s32 *owner;             /* 0x00: the caller's handle, cleared on stop */
-    u8 unk4[0x10];
-    struct SfxVoice *prev;  /* 0x14: active list */
-    struct SfxVoice *next;  /* 0x18: active list, or the free list */
-    s32 flags;              /* 0x1C */
-    u8 unk20[0xC];
-    u8 unk2C[0xC];          /* 0x2C: handed to func_8002B8F4 to stop it */
+    struct SfxVoice **owner; /* 0x00: the caller's handle, cleared on stop */
+    SLONG_XYZ posCopy;       /* 0x04: the position, when no handle is given */
+    SLONG_XYZ *pos;          /* 0x10: the caller's position, posCopy, or NULL */
+    struct SfxVoice *prev;   /* 0x14: active list */
+    struct SfxVoice *next;   /* 0x18: active list, or the free list */
+    s32 flags;               /* 0x1C: PlaySfx's 6th argument */
+    s32 unk20;               /* 0x20: PlaySfx's 4th argument (0x1000) */
+    s32 unk24;               /* 0x24: PlaySfx's 5th argument (0x1E00) */
+    s32 unk28;               /* 0x28: -1 when started */
+    s32 unk2C;               /* 0x2C: -1 when allocated; func_8002B8F4 stops it */
+    s32 unk30;
+    s32 id;                  /* 0x34: the SfxTable id */
 } SfxVoice;
 BASH_SIZE_CHECK(SfxVoice, 0x38);
 
@@ -358,6 +363,7 @@ extern ASTEntry *ASTTable;      /* the AST table in use */
 extern s32 D_80058AC8;
 extern void *SfxActiveVoices;
 extern SfxPool SfxVoicePool;
+extern s8 SfxTable[][2]; /* by sound id; [1] == -1: no sound */
 void func_8002B8F4(void *arg0);
 extern s32 D_800637B4;
 extern s32 D_8005AA48;
@@ -463,5 +469,7 @@ s32 Random(s32 n);
 void *FindExtension(NAS *nas, s32 id);
 
 void StopSfx(SfxVoice *voice);
+
+SfxVoice *PlaySfx(s32 id, SfxVoice * *handle, SLONG_XYZ *pos, s32 arg3, s32 arg4, s32 flags);
 
 #endif /* BASH_MAIN_H */
