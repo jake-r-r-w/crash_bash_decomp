@@ -594,4 +594,6 @@ void func_80018388(void *data);
 
 void func_800183DC(void);
 
+s32 func_80026A28(void);
+
 #endif /* BASH_MAIN_H */

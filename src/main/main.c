@@ -2843,7 +2843,16 @@ void func_80026A04(u8 *arg0) {
     D_8005AA34 = arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80026A28);
+s32 func_80026A28(void) {
+    NAS *nas;
+    s32 n;
+
+    n = 0;
+    for (nas = D_8005AA24; nas != NULL; nas = nas->next28) {
+        n++;
+    }
+    return n;
+}
 
 void func_80026A54(NAS *nas) {
     NAS **head = (NAS **)&D_8005AA24;
