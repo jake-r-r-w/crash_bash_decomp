@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 498/2550 game functions matched (main.exe 240/574), 4 parked. `make check`
+- 499/2550 game functions matched (main.exe 240/574), 4 parked. `make check`
   OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
@@ -184,6 +184,9 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-12:** Matched `func_80095D88` (engine, 52 bytes): counts 0x24-byte
+  records while the first word is >= 2; m2c's stride was in bytes. Diff
+  patterns row.
 - **2026-10-12:** Matched `PlotRaceFire` (ovl63, 32 bytes): `FindExtension(nas,
   0x10000000)` with `nas` passed through; `ovl63.c` now includes `main.h`.
 - **2026-10-12:** Matched `func_8008F068` (engine, 28 bytes): two global
