@@ -2,6 +2,34 @@
 
 Newest first. Each session appends: what changed, what was learned, what's next.
 
+## 2026-10-11 - func_80015780 unparked
+
+**State at end of session:** `done` full build OK; 404/2550 game functions
+matched (main.exe 158/574), 0 parked.
+
+**Done**
+- Matched `func_80015780` (`ba9c5b0`). The source walks the list with an
+  index: `p = &pts[i]` is the pointer it loads through, and `pt++` is the
+  separate pointer it returns.
+
+**Learned / gotchas**
+- An instruction stuck after a hoisted loop constant comes from source
+  order. A pointer init that the target places *after* the constant
+  (`li a0,-1` then `move s0,s1`) is a strength-reduced giv. loop.c emits
+  giv inits after the moved invariants. Write it as `&base[i]` with an `i`
+  counter.
+- Reduced giv increments go where the counter's `i++` is. Put `i++` before
+  or after the other pointer's `++` to set the order of the two `addiu`s.
+- Whether loop.c hoists a constant depends on the loop's size
+  (`threshold * savings * lifetime >= insn_count`). Writing `&pts[i]` twice
+  cost two address computations and the `-1` stayed in the loop. Computing
+  it once into a local (`p = &pts[i]`) brought it back out.
+
+**Next**
+1. Remaining GTE functions in the exe: `func_8001D048`, `func_8002AEE0`,
+   `func_8001C974`, `func_800177F4`, `func_8001C690`, `func_8001C7FC`,
+   `func_80015C1C`, then the larger ones.
+
 ## 2026-10-10 - GTE functions
 
 **State at end of session:** `make verify` -> 16 targets OK; 403/2550 game
