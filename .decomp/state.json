@@ -1885,7 +1885,9 @@
  },
  "8002A650": {
   "auto_diff": 4,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T16:06:14Z",
+  "started": "2026-10-11T16:03:29Z",
+  "status": "matched"
  },
  "8002A684": {
   "auto_diff": 38,

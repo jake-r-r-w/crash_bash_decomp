@@ -3024,7 +3024,14 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8002A4C0);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002A5A4);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002A650);
+/* Size in bytes: 0xB0 plus +8 records of 0x38 and +0xA records of 0xC. */
+s32 func_8002A650(u8 *arg0) {
+    s32 size;
+
+    size = *(u16 *)(arg0 + 8) * 0x38 + 0xB0;
+    size += *(u16 *)(arg0 + 0xA) * 0xC;
+    return size;
+}
 
 void func_8002A67C(void) {
 }
