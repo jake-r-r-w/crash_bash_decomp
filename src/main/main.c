@@ -2250,7 +2250,10 @@ void func_800276A4(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800276C4);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002775C);
+void func_8002775C(u8 *arg0) {
+    ClearOTagR((u_long *)arg0, 0x1000);
+    *(s32 *)(arg0 + 0x4008) = *(s32 *)(arg0 + 0x4000);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80027790);
 
