@@ -3209,7 +3209,12 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8002BBEC);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002BCB0);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002BD0C);
+void func_8002BD0C(s32 arg0) {
+    if (D_800654BC < 6) {
+        func_8002BA10(arg0, &D_800644C0[D_800654BC]);
+        D_800654BC++;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002BD68);
 

@@ -166,6 +166,13 @@ typedef struct MemBlock {
 #define MEMBLOCK_NEXT(b) ((MemBlock *)((u8 *)(b) + (b)->size * 4 + sizeof(MemBlock)))
 
 /* A heap (D_8004E0F0 is the main one). Only these fields are known. */
+/* One of six slots (D_800644C0) that func_8002BA10 hands to func_80013688
+ * with the func_8002ADD4 callback. */
+typedef struct LoadSlot {
+    /* 0x00 */ u8 unk0[8];
+    /* 0x08 */ s32 handle;               /* func_80013688's result */
+} LoadSlot;
+
 typedef struct Heap {
     /* 0x00 */ u8 unk0[8];
     /* 0x08 */ MemBlock *free;           /* free list, smallest first */
@@ -188,8 +195,8 @@ void func_80012E0C(void);
 void func_80012E14(u8 *arg0);
 void func_80012F04(void *arg0);
 void func_8002C394(s32 arg0, s32 *slot, s32 type);
-void func_80013688(s32 arg0, void (*done)(s32, s32 *), s32 *slot);
-void func_8002C3F0(s32 arg0, s32 *arg1);
+s32 func_80013688(s32 arg0, void (*done)(), void *ctx);
+void func_8002BA10(s32 arg0, LoadSlot *slot);
 void func_80012E88(void);
 void func_80012F90(u8 *arg0);
 u8 *func_80013110(u8 *arg0);
@@ -368,6 +375,8 @@ extern u8 D_80055684[];
 extern void *D_8005AA34;
 extern void *D_8005AA24;
 extern s32 D_8006557C;
+extern LoadSlot D_800644C0[6];
+extern s32 D_800654BC;            /* slots of D_800644C0 in use */
 extern char D_800654CC[];
 extern u8 D_8005A614[];
 extern s32 D_800675C8;
@@ -528,5 +537,7 @@ void func_8002C488(s32 arg0, s32 type);
 void func_8002D108(void);
 
 u8 *func_800160C4(u8 *arg0, s32 i);
+
+void func_8002BD0C(s32 arg0);
 
 #endif /* BASH_MAIN_H */
