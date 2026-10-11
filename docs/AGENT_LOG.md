@@ -2,6 +2,41 @@
 
 Newest first. Each session appends: what changed, what was learned, what's next.
 
+## 2026-10-11 - small main.exe functions batch
+
+**State at end of session:** `make check` OK; 419/2550 game functions matched
+(main.exe 173/574), 2 parked (unchanged).
+
+**Done**
+- Matched 10 small functions, one commit each: `func_80016F34`,
+  `AddExtension` (`AllocExtension(owner, size, id, NULL)`), `func_80012E54` /
+  `func_8001325C` (free-list inits of the 63-entry pools `D_80050F40` (0xC) and
+  `D_8005063C` (0x24)), `func_800154C0` / `func_800154EC` (clear/set bit 15 on
+  `n` halfwords), `func_8002775C` (ClearOTagR wrapper), `func_8001CFE8`
+  (MorphModel run list), `func_80028BC8` (list length), `func_8002D0C8`.
+- Prototypes for `func_80019094` / `func_800193A8` added to `bash/main.h`.
+
+**Learned / gotchas**
+- Count-down loops ending in `bne v1, a1(-1)` with a `beqz` guard come from
+  `for (i = n - 1; i != -1; i--)`; `while (n--)` gives a different shape.
+- A constant stored to two globals with `li` scheduled before the first
+  `lui` came from holding it in a local (`on = TRUE; A = on; B = on;`).
+- `decomp.py done` refuses when other functions in the file are also
+  un-`INCLUDE_ASM`ed. To commit a batch: keep the full file in
+  `disc/scratch/`, `git checkout` the source, apply one function, `done`,
+  repeat (`disc/scratch/apply_one.py FULL SRC SEGDIR FUNC`). `tools/dk` right after
+  `git checkout` sometimes hits a Windows `PermissionError`; retry.
+- `tools/dk python3 - <<EOF ... </dev/null` silently runs nothing: the
+  `</dev/null` replaces the heredoc.
+
+**Next**
+1. `func_800155FC` (seed step `A += B; B += A + ((u32)A >> 31)`): left as
+   `INCLUDE_ASM`, not parked. Best form (`a = A; b = B; a += b; A = a;
+   c = a + ((u32)a >> 31); B = b + c;`) is 2 register operands off (target
+   puts the sum in v1, not v0); the permuter got to score 10 in 8 minutes.
+2. Keep taking the smallest `main.exe` targets (`decomp.py next --count 12
+   --seg main/main`), e.g. `func_8002AABC` (136 bytes).
+
 ## 2026-10-11 - func_8001C7FC: root cause found, still parked
 
 **State at end of session:** `make check` OK; 409/2550 game functions matched
