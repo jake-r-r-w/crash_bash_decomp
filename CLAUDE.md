@@ -13,4 +13,7 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
 - Matching is by hand, one function per commit, through the validation gate
   `decomp.py done NAME --commit` ([docs/MATCHING.md](docs/MATCHING.md); skill
   `/match-function`). `decomp.py auto` is retired.
-- Append an entry to `docs/AGENT_LOG.md` at the end of every session.
+- At the end of every session, update `docs/AGENT_LOG.md`: Current state,
+  Next and Open leads, any new gotcha, and one short entry at the top of its
+  Session log. Matching idioms go in the Diff patterns table in
+  `docs/MATCHING.md`, game facts in `docs/ARCHITECTURE.md`.

@@ -43,9 +43,10 @@ the host has no Python. In Git Bash loops, pass `</dev/null` to `tools/dk`.
    If `done` refuses, fix the reason it gives (scope, lint, hack, function, or
    full build). Never commit a match with plain `git commit`, and never use
    `--no-verify`.
-6. **Report** the commit hash, the function, and anything learned. Add
-   anything reusable (an idiom, a struct, a compiler quirk) to the
-   session's `docs/AGENT_LOG.md` entry.
+6. **Report** the commit hash, the function, and anything learned. Put an
+   idiom or compiler quirk in the Diff patterns table in docs/MATCHING.md;
+   update `docs/AGENT_LOG.md` (Current state, Open leads for a park, and the
+   session's Session log entry).
 
 One function per invocation. To do several, invoke the skill again for each.
 Each function gets its own commit.

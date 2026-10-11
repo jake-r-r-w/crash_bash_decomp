@@ -193,8 +193,9 @@ so loop constants (`li $a0, -1`) aren't hoisted.
 
 - Work on one function at a time and commit it before picking the next.
 - Start each session by reading [AGENT_LOG.md](AGENT_LOG.md). End it by
-  appending an entry that covers what matched, what got parked and why, and
-  any idioms you learned.
+  updating its current state, next steps and open leads (what got parked and
+  why), and adding a short session-log entry. Idioms you learned go in
+  [Diff patterns](#diff-patterns).
 - Never fake a match: no whole-function `asm()`, no editing `asm/`, `build/`
   or the checksums, and no committing around the gate.
 - The project skill `.claude/skills/match-function` runs this loop: `/match-function`

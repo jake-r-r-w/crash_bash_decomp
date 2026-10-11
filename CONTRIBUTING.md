@@ -46,6 +46,9 @@ config and file splits: ordinary commits after `tools/dk make verify` prints
 
 ## Session log
 
-Agents and contributors append a short entry to
-[docs/AGENT_LOG.md](docs/AGENT_LOG.md) at the end of each working session:
-what changed, what was learned, and what to do next.
+At the end of each working session, agents and contributors update
+[docs/AGENT_LOG.md](docs/AGENT_LOG.md): its current state, next steps, open
+leads and gotchas, plus a short entry at the top of its session log.
+Matching idioms go in the Diff patterns table in
+[docs/MATCHING.md](docs/MATCHING.md), facts about the game in
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
