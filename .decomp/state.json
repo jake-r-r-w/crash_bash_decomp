@@ -462,7 +462,9 @@
  },
  "80015518": {
   "auto_diff": 7,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T19:06:51Z",
+  "started": "2026-10-11T19:02:12Z",
+  "status": "matched"
  },
  "80015554": {
   "auto_diff": 8,

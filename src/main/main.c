@@ -691,7 +691,18 @@ void func_800154EC(u16 *arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80015518);
+void func_80015518(u8 *p, s32 n) {
+    s32 i;
+    u8 lo;
+    s32 v;
+
+    for (i = n - 1; i != -1; i--) {
+        lo = *p >> 4;
+        v = ((*p << 4) & 0xF0) | lo;
+        *p = v;
+        p++;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80015554);
 

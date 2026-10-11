@@ -631,4 +631,6 @@ void func_8002694C(NAS *nas, s32 bits);
 
 u8 *func_80015A78(s32 i, u8 *rec);
 
+void func_80015518(u8 *p, s32 n);
+
 #endif /* BASH_MAIN_H */
