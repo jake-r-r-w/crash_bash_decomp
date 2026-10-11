@@ -179,6 +179,13 @@ typedef struct NodePool {
     PoolNode *done;
 } NodePool;
 
+/* Data with a table of self-relative offsets at +0x1C: entry i points to
+ * &offs[i] + offs[i] (func_80021E44). */
+typedef struct OffsetTable {
+    /* 0x00 */ u8 unk0[0x1C];
+    /* 0x1C */ s32 offs[1];
+} OffsetTable;
+
 typedef struct Heap {
     /* 0x00 */ u8 unk0[8];
     /* 0x08 */ MemBlock *free;           /* free list, smallest first */
@@ -609,5 +616,7 @@ void func_8001682C(s32 *arg0);
 void func_8002C158(u8 *arg0);
 
 void func_8002C18C(u8 *arg0);
+
+u8 *func_80021E44(OffsetTable *tbl, s32 i);
 
 #endif /* BASH_MAIN_H */

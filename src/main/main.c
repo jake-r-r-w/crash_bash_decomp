@@ -2209,7 +2209,9 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80021D1C);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80021DD4);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80021E44);
+u8 *func_80021E44(OffsetTable *tbl, s32 i) {
+    return (u8 *)&tbl->offs[i] + tbl->offs[i];
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80021E60);
 
