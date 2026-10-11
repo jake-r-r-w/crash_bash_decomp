@@ -3233,7 +3233,19 @@ s32 func_8002BB80(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002BBB4);
+/* Empties the D_800644C0 slots and clears SfxTable. */
+void func_8002BBB4(void) {
+    s8 *p;
+    s32 i;
+
+    D_800654BC = 0;
+    p = SfxTable[0];
+    for (i = 0; i < 2001; i++) {
+        p[0] = -1;
+        p[1] = -1;
+        p += 2;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002BBEC);
 

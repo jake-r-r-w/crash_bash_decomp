@@ -547,4 +547,6 @@ s32 func_8002A650(u8 *arg0);
 
 void func_8002BD68(void);
 
+void func_8002BBB4(void);
+
 #endif /* BASH_MAIN_H */

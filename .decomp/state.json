@@ -2041,7 +2041,9 @@
  },
  "8002BBB4": {
   "auto_diff": 4,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T16:11:05Z",
+  "started": "2026-10-11T16:09:13Z",
+  "status": "matched"
  },
  "8002BBEC": {
   "auto_failed": "types"
