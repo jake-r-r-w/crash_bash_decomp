@@ -288,6 +288,8 @@ extern s32 D_8006559C;
 extern s32 D_800655AC;
 extern void *D_80051240;
 extern void *D_80050F3C;
+extern u8 D_80050F40[]; /* 63 x 0xC pool, free list in D_80051240 */
+extern u8 D_8005063C[]; /* 63 x 0x24 pool, free list in D_80050F3C */
 extern s32 D_800517B0;
 extern s32 D_800517B4;
 extern s32 RandomSeedA;
@@ -405,5 +407,7 @@ void func_8001C690(NAS *nas, u8 *arg1);
 void func_80015C1C(PointSprites *ps, MATRIX *m);
 
 void func_80016F34(u8 *arg0, u8 *arg1);
+
+void *AddExtension(void *owner, s32 size, s32 id);
 
 #endif /* BASH_MAIN_H */

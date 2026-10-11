@@ -2012,7 +2012,9 @@ EXTengine *AddEngine(NAS *nas, s32 id) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80026858);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", AddExtension);
+void *AddExtension(void *owner, s32 size, s32 id) {
+    return AllocExtension(owner, size, id, NULL);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800268BC);
 
