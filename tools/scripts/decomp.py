@@ -2543,6 +2543,31 @@ def write_badges(g, l):
                   100.0 * done / len(its))
 
 
+def backfill_units(hist, funcs, stat, st, proj):
+    """Per-unit figures for history points recorded before they were kept: a game function counts
+    from its matched_at (untimed matches from the start, overlays once they were indexed), and
+    Sony's objects from the first point with the library linked."""
+    old = [h for h in hist if "units" not in h]
+    if not old:
+        return
+    done = [(st.get(k, {}).get("matched_at"), unit_of(e, proj), e["size"], is_lib(e, proj))
+            for k, e in funcs.items() if stat[k] in ("matched", "sony")]
+    exe_f = sum(1 for e in funcs.values() if not is_lib(e, proj) and unit_of(e, proj) == "main exe")
+    for h in old:
+        u = defaultdict(lambda: [0, 0])
+        for at, un, size, lib in done:
+            if lib:
+                ok = h.get("lib_b", 0) > 0
+            elif at:
+                ok = at <= h["ts"]
+            else:
+                ok = un == "main exe" or h.get("game_all_f", 0) > exe_f
+            if ok:
+                u[un][0] += size
+                u[un][1] += 1
+        h["units"] = dict(u)
+
+
 def cmd_progress(a):
     proj, funcs = need_proj(), need_funcs()
     stat, st = statuses(funcs)
@@ -2554,8 +2579,10 @@ def cmd_progress(a):
              "lib_b": s["lib"]["done_b"], "lib_tb": s["lib"]["total_b"], "lib_f": s["lib"]["done_f"],
              "game_named_f": s["game"]["named_f"], "game_all_f": s["game"]["all_f"],
              "game_c_f": s["game"]["c_f"], "game_typed_f": s["game"]["typed_f"],
-             "data_b": s["data"]["done_b"], "data_tb": s["data"]["total_b"]}
+             "data_b": s["data"]["done_b"], "data_tb": s["data"]["total_b"],
+             "units": {u["unit"]: [u["done_b"], u["done_f"]] for u in s["units"]}}
     hist = jload(P_HIST, [])
+    backfill_units(hist, funcs, stat, st, proj)
     same = lambda p, q: all(p.get(k) == q.get(k) for k in point if k not in ("ts", "commit"))
     if hist and same(hist[-1], point):
         hist[-1] = point
@@ -2635,6 +2662,13 @@ font-size:12px;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.15);display:non
 .scale button+button{border-left:1px solid var(--axis)}
 .scale button[aria-pressed="true"]{background:var(--track);color:var(--ink);font-weight:600}
 .wrap{overflow-x:auto}
+.multi{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.multi>div{border:1px solid var(--grid);border-radius:8px;padding:10px 10px 4px}
+.multi .mh{display:flex;justify-content:space-between;gap:8px;font-size:13px}
+.multi .mh b{font-weight:600}
+.multi svg{display:block;margin-top:4px}
+.sub2{color:var(--ink2);font-size:12px;font-weight:600;margin:16px 0 8px}
+details summary{cursor:pointer;color:var(--ink2);font-size:12px;font-weight:600;margin:16px 0 8px}
 code{font-size:12px}
 </style>
 </head>
@@ -2645,6 +2679,9 @@ code{font-size:12px}
 <div class="tiles" id="tiles"></div>
 <div class="card section"><div class="head"><h2>Progress over time</h2><div class="scale" id="scale" role="group" aria-label="Time scale"></div></div>
 <div class="legend" id="legend"></div><div id="chart"></div></div>
+<div class="card section"><h2>Progress over time by binary and library</h2>
+<div class="small" style="margin-bottom:10px">C bytes matched in each unit, on the time scale above. Each panel is scaled to its own peak, so compare the figures, not the heights.</div>
+<div id="multi"></div></div>
 <div class="card section"><h2>By binary and library</h2><div class="wrap"><table id="segs"></table></div>
 <div class="small" style="margin-top:8px">Hand-written: library objects Sony wrote in assembly; their .s files are the original source and are not counted in the C totals.</div></div>
 <div class="two section">
@@ -2725,8 +2762,9 @@ $("tiles").innerHTML=grpTile("Game code matched",S.game,"var(--s1)")+
  function draw(){
   ctl.innerHTML=Object.entries(UNITS).map(([k,v])=>`<button data-u="${k}" aria-pressed="${k==unit}">${v.label}</button>`).join("");
   ctl.querySelectorAll("button").forEach(b=>b.onclick=()=>{unit=b.dataset.u;try{localStorage.setItem("decomp-scale",unit)}catch(e){}draw()});
-  if(!H.length){el.innerHTML='<div class="empty">The chart fills in as functions are matched.</div>';return}
+  if(!H.length){el.innerHTML='<div class="empty">The chart fills in as functions are matched.</div>';$("multi").innerHTML="";return}
   const {out:Bk,before}=buckets(unit), N=Bk.length;
+  multi(Bk,before);
   // every point against today's totals: the code known to exist grew (overlays were added
   // later), and a percentage of a smaller total would make the line fall when nothing was lost
   const v=(s,h)=>!h?0:s.num?pct(h[s.num]||0,s.den=="game_all_f"?S.game.all_f:(S.data||{}).total_b):pct(h[s.k+"_b"],s.G.total_b);
@@ -2760,6 +2798,40 @@ $("tiles").innerHTML=grpTile("Game code matched",S.game,"var(--s1)")+
     return `<br>${s.name}: ${f2(v(s,b.h))} · ${n(b.h?b.h[s.k+"_f"]:0)} functions`+(gf||gb?` <span class="small">(+${n(gf)} fn, +${n(gb)} B)</span>`:"")}).join("");
    tip.style.display="block";tip.style.left=Math.min(ev.clientX+12,innerWidth-300)+"px";tip.style.top=(ev.clientY+12)+"px";});
   el.querySelector("#hit").addEventListener("mouseleave",()=>{tip.style.display="none";xh.setAttribute("visibility","hidden")});
+ }
+ // one small chart per unit (the rows of the table below), same buckets as the main chart
+ function multi(Bk,before){
+  const N=Bk.length, all=S.units||[], W=240, Ht=64, L=4, R=6, T=6, B=4, iw=W-L-R, ih=Ht-T-B, bw=iw/Math.max(1,N);
+  const at=(h,u)=>h&&h.units&&h.units[u.unit]||[0,0];
+  const panel=(u,i)=>{
+   const v=h=>pct(at(h,u)[0],u.total_b), hi=Math.max(...Bk.map(b=>v(b.h)));
+   const ymax=Math.min(100,Math.max(1,hi*1.15)), x=j=>L+bw*(j+.5), y=val=>T+ih*(1-val/ymax), col=u.lib?"var(--s2)":"var(--s1)";
+   let d="";Bk.forEach((b,j)=>{d+=(j?"L":"M")+x(j).toFixed(1)+","+y(v(b.h)).toFixed(1)});
+   const g=`<line x1="${L}" x2="${W-R}" y1="${T+ih}" y2="${T+ih}" stroke="var(--axis)"/>`+
+    `<path d="${d}" fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round"/>`+
+    `<circle cx="${x(N-1).toFixed(1)}" cy="${y(v(Bk[N-1].h)).toFixed(1)}" r="4" fill="${col}" stroke="var(--surface)" stroke-width="2"/>`+
+    `<line class="xh" y1="${T}" y2="${T+ih}" stroke="var(--axis)" visibility="hidden"/>`+
+    `<rect x="0" y="0" width="${W}" height="${Ht}" fill="transparent" class="hit"/>`;
+   return `<div data-i="${i}"><div class="mh"><span><b>${esc(u.unit)}</b>${u.title&&u.title!=u.unit?` <span class="small">${esc(u.title)}</span>`:""}</span>`+
+    `<span class="small">${u.total_b?f2(u.pct):"—"}</span></div>`+
+    `<svg width="100%" viewBox="0 0 ${W} ${Ht}" role="img" aria-label="${esc(u.unit)}: C bytes matched by ${unit}">${g}</svg></div>`};
+  const game=all.filter(u=>!u.lib), lib=all.filter(u=>u.lib), list=game.concat(lib);
+  $("multi").innerHTML=`<div class="multi">${game.map((u,i)=>panel(u,i)).join("")}</div>`+
+   (lib.length?`<details><summary>PsyQ library: Sony's objects, linked in place (${lib.length})</summary>`+
+    `<div class="multi">${lib.map((u,i)=>panel(u,game.length+i)).join("")}</div></details>`:"");
+  const tip=$("tip");
+  $("multi").querySelectorAll("[data-i]").forEach(div=>{
+   const u=list[+div.dataset.i], svg=div.querySelector("svg"), xh=div.querySelector(".xh"), hit=div.querySelector(".hit");
+   hit.addEventListener("mousemove",ev=>{
+    const r=svg.getBoundingClientRect(), mx=(ev.clientX-r.left)*W/r.width;
+    const j=Math.max(0,Math.min(N-1,Math.floor((mx-L)/bw))), b=Bk[j], p=j?Bk[j-1].h:before;
+    const c=at(b.h,u), q=at(p,u), gb=c[0]-q[0], gf=c[1]-q[1];
+    xh.setAttribute("x1",L+bw*(j+.5));xh.setAttribute("x2",L+bw*(j+.5));xh.setAttribute("visibility","visible");
+    tip.innerHTML=`<b>${esc(u.unit)} · ${esc(lab(b.t,unit))}</b><br>${f2(pct(c[0],u.total_b))} · ${n(c[1])} / ${n(u.total_f)} functions`+
+     (gf||gb?` <span class="small">(+${n(gf)} fn, +${n(gb)} B)</span>`:"");
+    tip.style.display="block";tip.style.left=Math.min(ev.clientX+12,innerWidth-300)+"px";tip.style.top=(ev.clientY+12)+"px"});
+   hit.addEventListener("mouseleave",()=>{tip.style.display="none";xh.setAttribute("visibility","hidden")});
+  });
  }
  draw();
  let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(draw,150)});

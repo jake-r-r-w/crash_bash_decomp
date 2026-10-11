@@ -2,6 +2,26 @@
 
 Newest first. Each session appends: what changed, what was learned, what's next.
 
+## 2026-10-11 - dashboard: progress over time per binary
+
+**State at end of session:** 409/2550 game functions matched (main.exe
+163/574; the previous entry's 158 was written before its GTE batch), 2 parked.
+
+**Done**
+- Dashboard: a new card under "Progress over time" gives one small chart per
+  unit (the rows of "By binary and library"), on the same time scale, with
+  hover tooltips. The PsyQ library units are folded into a `<details>`.
+- `decomp.py progress` now records `units: {unit: [done_b, done_f]}` on each
+  history point. Older points were backfilled once by `backfill_units`: game
+  functions count from their `matched_at`, untimed matches from the start
+  (overlays only once they were indexed), and Sony's objects from the first point
+  with the library linked.
+
+**Next**
+- Unchanged: unpark `func_8001C7FC` then `func_800177F4`, keep matching
+  `main.exe` (name each function as it's matched; only 15/574 are named), and
+  close the PsyQ gaps and start the `CRASHBSH.DAT` extractor alongside.
+
 ## 2026-10-11 - func_80015780 unparked
 
 **State at end of session:** `done` full build OK; 404/2550 game functions
