@@ -470,6 +470,6 @@ void *FindExtension(NAS *nas, s32 id);
 
 void StopSfx(SfxVoice *voice);
 
-SfxVoice *PlaySfx(s32 id, SfxVoice * *handle, SLONG_XYZ *pos, s32 arg3, s32 arg4, s32 flags);
+SfxVoice *PlaySfx(s32 id, SfxVoice **handle, SLONG_XYZ *pos, s32 arg3, s32 arg4, s32 flags);
 
 #endif /* BASH_MAIN_H */
