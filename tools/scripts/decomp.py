@@ -2659,6 +2659,8 @@ tr.grp td{color:var(--ink2);font-weight:600;font-size:12px;padding-top:14px;bord
 font-size:12px;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.15);display:none;white-space:nowrap}
 .empty{color:var(--muted);font-size:13px}
 .head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+details.card>summary{cursor:pointer;list-style-position:inside}
+details.card>summary h2{display:inline;margin:0}
 .ctl{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 .scale{display:inline-flex;border:1px solid var(--axis);border-radius:6px;overflow:hidden}
 .scale button{font:inherit;font-size:12px;background:transparent;color:var(--ink2);border:0;padding:4px 10px;cursor:pointer}
@@ -2682,15 +2684,11 @@ code{font-size:12px}
 <div class="tiles" id="tiles"></div>
 <div class="card section"><div class="head"><h2>Progress over time</h2><div class="ctl"><div class="scale" id="measure" role="group" aria-label="Measure"></div><div class="scale" id="scale" role="group" aria-label="Time scale"></div></div></div>
 <div class="legend" id="legend"></div><div id="chart"></div></div>
-<div class="card section"><h2>Progress over time by binary and library</h2>
-<div class="small" style="margin-bottom:10px"><span id="multi-what">C bytes matched</span> in each unit, on the time scale and measure above. Each panel is scaled to its own peak, so compare the figures, not the heights.</div>
-<div id="multi"></div></div>
-<div class="card section"><h2>By binary and library</h2><div class="wrap"><table id="segs"></table></div>
-<div class="small" style="margin-top:8px">Hand-written: library objects Sony wrote in assembly; their .s files are the original source and are not counted in the C totals.</div></div>
-<div class="two section">
-<div class="card"><h2>Recently matched</h2><div class="wrap"><table id="recent"></table></div></div>
-<div class="card"><h2>Parked functions</h2><div class="wrap"><table id="blocked"></table></div></div>
-</div>
+<details class="card section"><summary><h2>Progress over time per unit</h2></summary>
+<div class="small" style="margin:10px 0"><span id="multi-what">C bytes matched</span> in each unit, on the time scale and measure above. Each panel is scaled to its own peak, so compare the figures, not the heights.</div>
+<div id="multi"></div></details>
+<div class="card section"><h2>By binary</h2><div class="wrap"><table id="segs"></table></div></div>
+<div class="card section"><h2>Parked functions</h2><div class="wrap"><table id="blocked"></table></div></div>
 </main>
 <div class="tip" id="tip"></div>
 <script>
@@ -2718,12 +2716,8 @@ const grpTile=(label,G,color,extra)=>tile(label,f2(G.pct),
  `${n(G.done_b)} / ${n(G.total_b)} bytes<br>${n(G.done_f)} / ${n(G.total_f)} functions · ${f2(pct(G.done_f,G.total_f))}`+(extra||""),G.pct,color);
 const named=S.game.named_f, all=S.game.all_f, DA=S.data||{done_b:0,total_b:0,pct:0};
 $("tiles").innerHTML=grpTile("Game code matched",S.game,"var(--s1)")+
- (hasLib?grpTile("Library C matched",S.lib,"var(--s2)",S.lib.asm_b?`<br>+ ${n(S.lib.asm_b)} bytes hand-written asm, kept as .s`:""):"")+
  tile("Game functions named",f2(pct(named,all)),`${n(named)} / ${n(all)} with a real name`,pct(named,all),"var(--s3)")+
- tile("Matched functions typed",f2(pct(S.game.typed_f||0,S.game.c_f||0)),`${n(S.game.typed_f||0)} / ${n(S.game.c_f||0)} matched C functions with no raw pointer offsets`,pct(S.game.typed_f||0,S.game.c_f||0),"var(--s3)")+
- tile("Data in C",f2(DA.pct),`${n(DA.done_b)} / ${n(DA.total_b)} bytes of data and rodata`,DA.pct,"var(--s4)")+
- tile("Identical copies",n(S.copies_b||0)+" B",`unmatched code that is a copy of other code; matching one fills in the rest`,null)+
- tile("Parked",`${S.blocked}`,"functions waiting for another attempt",null);
+ tile("Data in C",f2(DA.pct),`${n(DA.done_b)} / ${n(DA.total_b)} bytes of data and rodata`,DA.pct,"var(--s4)");
 
 // history chart: % of bytes matched per group, bucketed by a selectable time unit
 (function(){
@@ -2853,38 +2847,31 @@ $("tiles").innerHTML=grpTile("Game code matched",S.game,"var(--s1)")+
 // segment table, sortable
 (function(){
  // [key, label, numeric, hidden on narrow screens]
- const cols=[["unit","Unit",0],["file","File",0,1],["files","Source files",1,1],["pct","C bytes matched",1],["done_f","Functions matched",1],
-  ["total_b","C size",1,1],["asm_b","Hand-written",1,1],["named_f","Named",1],["typed_f","Typed",1,1],["blocked","Parked",1,1]];
+ const cols=[["unit","Unit",0],["pct","C bytes matched",1],["done_f","Functions matched",1],["named_f","Named",1,1],["blocked","Parked",1,1]];
  let key="unit",dir=1;
  function draw(){
   const cmp=(a,b)=>((a[key]>b[key]?1:a[key]<b[key]?-1:0)||(a.unit>b.unit?1:-1))*dir;
   const cls=c=>[c[2]?"num":"",c[3]?"opt":""].join(" ");
   const row=s=>{const c=s.total_b>0;   // no C (all hand-written): a dash, not 0.00%
-   return `<tr><td>${esc(s.unit)}${s.title&&s.title!=s.unit?`<div class="small">${esc(s.title)}</div>`:""}</td><td class="opt"><code>${esc(s.file||"")}</code></td>
-   <td class="num opt">${n(s.files)}</td>
+   return `<tr><td>${esc(s.unit)}${s.title&&s.title!=s.unit?`<div class="small">${esc(s.title)}</div>`:""}</td>
    <td class="num">${c?`${f2(s.pct)} <span class="mini"><span style="width:${s.pct}%;${s.lib?"background:var(--s2)":""}"></span></span>`:"—"}</td>
-   <td class="num">${c?`${n(s.done_f)} / ${n(s.total_f)} <span class="small">${f2(pct(s.done_f,s.total_f))}</span>`:"—"}</td><td class="num opt">${c?n(s.total_b)+" B":"—"}</td>
-   <td class="num opt">${s.asm_b?n(s.asm_b)+" B":""}</td><td class="num">${n(s.named_f)} / ${n(s.all_f)}</td>
-   <td class="num opt">${s.lib?"":`${n(s.typed_f||0)} / ${n(s.c_f||0)}`}</td><td class="num opt">${s.blocked||""}</td></tr>`};
+   <td class="num">${c?`${n(s.done_f)} / ${n(s.total_f)} <span class="small">${f2(pct(s.done_f,s.total_f))}</span>`:"—"}</td>
+   <td class="num opt">${n(s.named_f)} / ${n(s.all_f)}</td><td class="num opt">${s.blocked||""}</td></tr>`};
   const all=S.units||[], game=all.filter(s=>!s.lib), lib=all.filter(s=>s.lib).sort(cmp);
-  const head=t=>`<tr class="grp"><td colspan="10">${t}</td></tr>`;
+  const head=t=>`<tr class="grp"><td colspan="5">${t}</td></tr>`;
   const gameRows=(lib.length?head("Game code"):"")+game.sort(cmp).map(row).join("");
   $("segs").innerHTML="<tr>"+cols.map(c=>`<th class="${cls(c)}" data-k="${c[0]}">${c[1]}${key==c[0]?(dir>0?" ▲":" ▼"):""}</th>`).join("")+"</tr>"+
    (all.length?gameRows+
     (lib.length?head("PsyQ library: Sony's objects, linked in place")+lib.map(row).join(""):"")
-   :'<tr><td class="empty" colspan="10">Nothing indexed yet.</td></tr>');
-  $("segs").querySelectorAll("th").forEach(th=>th.onclick=()=>{const k=th.dataset.k;dir=key==k?-dir:(k=="unit"||k=="file"?1:-1);key=k;draw()});
+   :'<tr><td class="empty" colspan="5">Nothing indexed yet.</td></tr>');
+  $("segs").querySelectorAll("th").forEach(th=>th.onclick=()=>{const k=th.dataset.k;dir=key==k?-dir:(k=="unit"?1:-1);key=k;draw()});
  }
  draw();
 })();
 
-$("recent").innerHTML=D.recent.length?"<tr><th>Function</th><th>Segment</th><th class='num'>Size</th><th class='num'>Attempts</th><th class='num'>When</th></tr>"+
- D.recent.map(r=>`<tr><td><code>${esc(r.name)}</code></td><td>${esc(r.seg)}</td><td class="num">${r.size} B</td>
- <td class="num">${r.auto?'<span class="tag" title="matched by decomp.py auto from the m2c draft">auto</span>':n(r.tries||1)}</td>
- <td class="num" title="${esc(new Date(r.at).toLocaleString())}">${new Date(r.at).toLocaleDateString()}</td></tr>`).join(""):'<tr><td class="empty">Nothing matched yet.</td></tr>';
-$("blocked").innerHTML=D.blocked.length?"<tr><th>Function</th><th class='num'>Size</th><th>Note</th></tr>"+
- D.blocked.map(r=>`<tr><td><code>${esc(r.name)}</code><div class="small">${esc(r.seg)}</div></td><td class="num">${r.size} B</td>
- <td>${esc(r.note)}</td></tr>`).join(""):'<tr><td class="empty">None parked.</td></tr>';
+$("blocked").innerHTML=D.blocked.length?"<tr><th>Function</th><th>Segment</th><th class='num'>Size</th></tr>"+
+ D.blocked.map(r=>`<tr><td><code>${esc(r.name)}</code></td><td>${esc(r.seg)}</td><td class="num">${r.size} B</td></tr>`).join("")
+ :'<tr><td class="empty">None parked.</td></tr>';
 </script>
 </body>
 </html>
