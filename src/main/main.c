@@ -3190,7 +3190,9 @@ void func_8002B96C(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002B9A4);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002BA10);
+void func_8002BA10(s32 arg0, LoadSlot *slot) {
+    slot->handle = func_80013688(arg0, func_8002ADD4, slot);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002BA44);
 
