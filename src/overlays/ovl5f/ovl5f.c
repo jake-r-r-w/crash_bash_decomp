@@ -424,7 +424,16 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8450);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C84D8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8560);
+void func_800C8560(NAS *nas) {
+    s32 i;
+
+    for (i = 0; i < 8; i++) {
+        if (D_800CB264[i] == nas) {
+            D_800CB264[i] = NULL;
+            return;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8598);
 

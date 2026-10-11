@@ -4768,7 +4768,9 @@
  },
  "ovl5f:800C8560": {
   "auto_diff": 1,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T23:46:00Z",
+  "started": "2026-10-11T23:42:42Z",
+  "status": "matched"
  },
  "ovl5f:800C8598": {
   "auto_diff": 1,
