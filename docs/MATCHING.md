@@ -80,6 +80,7 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | Several branches go to the later of two identical `j top; addiu` blocks; ours all go to the first | Each skip path `goto`s one label before the shared `p++` at the loop's end; repeated `p++; continue;` blocks get cross-jumped | `func_800193A8` |
 | `base + 1` kept in its own register (`addiu t3,a2,1`), initialised after the hoisted constants | Read `base[1]` twice in the loop (test and use) so loop.c makes it a giv; a separate `count` pointer is initialised too early | `func_800193A8` |
 | A late register copy of a value loaded earlier (`addu t0,v1,zero` before `rtps`) | Read the same value again at that point in the source (`n = runs[1]` after the test); CSE turns the reread into the copy | `func_800193A8` |
+| Two identical `return x` blocks merged, but the target keeps the block before the second test (`bnez a; jr ra; ...; beq b,c → back`) where ours keeps it after (`beqz a → forward`) | Still open: every source form tried gives ours, already at the first jump pass (`-dj`). Don't spend long on it; park and move on | `FindExtension` (parked) |
 
 ## Classify the diff, then work through the list
 
@@ -134,7 +135,9 @@ so delete them afterwards.
   picks the register, avoiding registers other pseudos prefer (a return
   value prefers v0).
 
-Add `-fno-schedule-insns2` to tell register choice apart from sched2's
+For branch layout differences, dump the jump passes instead (`-dj -dJ -dd`
+write `x.i.jump`, `x.i.jump2` and `x.i.dbr`) to see which pass fixes the
+layout. Add `-fno-schedule-insns2` to tell register choice apart from sched2's
 reordering.
 
 ## The validation gate (`done`)
