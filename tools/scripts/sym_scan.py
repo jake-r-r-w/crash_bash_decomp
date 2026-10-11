@@ -81,9 +81,12 @@ def rec(d, p):
                     return None
                 dims = list(struct.unpack_from("<%dI" % nd, d, q))
                 q += 4 * nd
-                tagname, q = pstr(d, q)
-                if tagname is None:
-                    return None
+                if d[q] == 0:  # basic-type arrays have an empty tag
+                    tagname, q = "", q + 1
+                else:
+                    tagname, q = pstr(d, q)
+                    if tagname is None:
+                        return None
             name, q = pstr(d, q)
             if name is None or cls not in (1, 2, 3, 4, 8, 9, 10, 11, 12, 13, 15, 16, 18, 102):
                 return None

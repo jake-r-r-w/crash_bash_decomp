@@ -17,6 +17,6 @@ void func_800BD1FC(void);
 s32 func_800BD408(s32 arg0);
 s32 func_800BD488(u8 *arg0, u8 *arg1);
 
-void func_800BCA18(Hero *hero);
+void func_800BCA18(HeroInfo *hero);
 
 #endif /* BASH_OVL65_H */

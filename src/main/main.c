@@ -1682,14 +1682,14 @@ void func_8001C690(NAS *nas, u8 *arg1) {
     GteSetup s;
     u32 hidden;
 
-    if (nas->flags & 0x8000) {
-        hidden = nas->flags & 0x10000000;
-        if (nas->flags & 0x02000000) {
-            D_800569DC = nas->unk68;
+    if (nas->NASid & 0x8000) {
+        hidden = nas->NASid & 0x10000000;
+        if (nas->NASid & 0x02000000) {
+            D_800569DC = nas->Class;
         } else {
             D_800569DC = 0;
         }
-        if (!(nas->flags & 0x10000000)) {
+        if (!(nas->NASid & 0x10000000)) {
             D_80056998.unk84 = D_80056998.unkCC;
             D_80056998.unk88 = D_80056998.unk10C;
             func_8001965C(nas, arg1, arg1 + 0x14, D_80056998.unk28, &s);
@@ -1699,7 +1699,7 @@ void func_8001C690(NAS *nas, u8 *arg1) {
             }
             gte_SetRotMatrix(s.rot);
         }
-        func_8001A6D4(&nas->ast, hidden);
+        func_8001A6D4(&nas->Type, hidden);
     }
 }
 
@@ -1710,14 +1710,14 @@ s32 func_8001C7FC(NAS *nas, u8 *arg1, u32 flags) {
     GteSetup s;
     u32 f;
 
-    if (nas->flags & 0x8000) {
-        f = flags | nas->flags;
-        if (nas->flags & 0x02000000) {
-            D_800569DC = nas->unk68;
+    if (nas->NASid & 0x8000) {
+        f = flags | nas->NASid;
+        if (nas->NASid & 0x02000000) {
+            D_800569DC = nas->Class;
         } else {
             D_800569DC = 0;
         }
-        if (!(nas->flags & 0x10000000)) {
+        if (!(nas->NASid & 0x10000000)) {
             D_80056998.unk84 = D_80056998.unkCC;
             D_80056998.unk88 = D_80056998.unk10C;
             func_8001965C(nas, arg1, arg1 + 0x14, D_80056998.unk28, &s);
@@ -1728,7 +1728,7 @@ s32 func_8001C7FC(NAS *nas, u8 *arg1, u32 flags) {
             gte_SetRotMatrix(s.rot);
         }
         f &= ~0x10000000;
-        return func_8001A0D8(&nas->ast, f | nas->flags);
+        return func_8001A0D8(&nas->Type, f | nas->NASid);
     }
 }
 #endif
@@ -1736,13 +1736,13 @@ s32 func_8001C7FC(NAS *nas, u8 *arg1, u32 flags) {
 u32 func_8001C974(NAS *nas, u8 *arg1, u32 flags) {
     GteSetup s;
 
-    flags |= nas->flags;
-    if (nas->flags & 0x02000000) {
-        D_800569DC = nas->unk68;
+    flags |= nas->NASid;
+    if (nas->NASid & 0x02000000) {
+        D_800569DC = nas->Class;
     } else {
         D_800569DC = 0;
     }
-    if (!(nas->flags & 0x10000000)) {
+    if (!(nas->NASid & 0x10000000)) {
         D_80056998.unk84 = D_80056998.unkCC;
         D_80056998.unk88 = D_80056998.unk10C;
         func_8001965C(nas, arg1, arg1 + 0x14, D_80056998.unk28, &s);
@@ -1753,7 +1753,7 @@ u32 func_8001C974(NAS *nas, u8 *arg1, u32 flags) {
         gte_SetRotMatrix(s.rot);
     }
     flags &= ~0x10000000;
-    return flags | nas->flags;
+    return flags | nas->NASid;
 }
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001CAD4);
@@ -1826,19 +1826,19 @@ void func_8001D048(SVECTOR *v, POLY_GT4 *poly) {
 
 void func_8001D174(EXTengine *eng) {
     void (*release)(subengine *);
-    s32 voice;
+    _sfx_handler *voice;
     subengine *next;
     subengine *first;
     subengine *last;
     subengine *freeList;
     subengine *sub;
 
-    voice = eng->unk94;
+    voice = eng->sfx;
     if (voice != 0) {
         StopSfx(voice);
     }
     first = eng->sub;
-    last = eng->subLast;
+    last = eng->last;
     sub = first;
     if (first != NULL) {
         do {
@@ -1857,7 +1857,7 @@ void func_8001D174(EXTengine *eng) {
         last->next = freeList;
     }
     eng->sub = NULL;
-    eng->subCount = 0;
+    eng->num_subs = 0;
 }
 
 void func_8001D220(EXTengine *eng) {
@@ -1869,7 +1869,7 @@ void func_8001D220(EXTengine *eng) {
     subengine *sub;
 
     first = eng->sub;
-    last = eng->subLast;
+    last = eng->last;
     sub = first;
     if (first != NULL) {
         do {
@@ -1888,7 +1888,7 @@ void func_8001D220(EXTengine *eng) {
         last->next = freeList;
     }
     eng->sub = NULL;
-    eng->subCount = 0;
+    eng->num_subs = 0;
 }
 
 void func_8001D2B4(subengine *first, subengine *last) {
@@ -1944,7 +1944,7 @@ s32 func_8001D390(EXTengine *eng, s32 n) {
 void func_8001D3B0(EXTengine *eng, s32 n, subengine *sub) {
     if (eng != NULL) {
         eng->sub = sub;
-        eng->subCount = n;
+        eng->num_subs = n;
     }
     *sub = D_8005A830;
     n--;
@@ -2428,7 +2428,7 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8002235C);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80022504);
 
-void StopSfx(SfxVoice *voice) {
+void StopSfx(_sfx_handler *voice) {
     if (voice != NULL) {
         if (voice->owner != NULL) {
             *voice->owner = 0;
@@ -2447,9 +2447,9 @@ void StopSfx(SfxVoice *voice) {
     }
 }
 
-SfxVoice *PlaySfx(s32 id, SfxVoice **handle, SLONG_XYZ *pos, s32 arg3, s32 arg4, s32 flags) {
-    SfxVoice *voice;
-    SfxVoice *v;
+_sfx_handler *PlaySfx(s32 id, _sfx_handler **handle, SLONG_XYZ *pos, s32 arg3, s32 arg4, s32 flags) {
+    _sfx_handler *voice;
+    _sfx_handler *v;
 
     voice = NULL;
     if (id & 0x8000) {
@@ -2546,7 +2546,7 @@ void func_800228A4(u8 *arg0, s32 arg1) {
     }
 }
 
-void func_800228C4(SfxVoice *voice) {
+void func_800228C4(_sfx_handler *voice) {
     if (voice->next != NULL) {
         voice->next->prev = voice->prev;
     }
@@ -2599,27 +2599,27 @@ found:
         nas = NULL;
         free = NASFreeList;
         if (free != NULL) {
-            nas = free->next;
+            nas = free->Tag.Child;
             NASFreeList = nas;
             if (nas != NULL) {
-                nas->prev = NULL;
+                nas->Tag.Parent = NULL;
             }
             nas = free;
         }
         if (nas != NULL) {
             *nas = NASTemplate;
-            nas->flags = 1;
+            nas->NASid = 1;
             if (NASActiveTail != NULL) {
-                NASActiveTail->next = nas;
-                nas->prev = NASActiveTail;
+                NASActiveTail->Tag.Child = nas;
+                nas->Tag.Parent = NASActiveTail;
                 NASActiveTail = nas;
             } else {
                 NASActiveTail = nas;
                 NASActiveHead = nas;
             }
-            nas->ast = ast;
-            nas->Init = ASTTable[ast].Init;
-            nas->Plot = ASTTable[ast].Plot;
+            nas->Type = ast;
+            nas->InitDelete = ASTTable[ast].Init;
+            nas->Handler = ASTTable[ast].Plot;
             if (flags & 1) {
                 eng = AddEngine(nas, 1);
                 if (eng != NULL) {
@@ -2633,8 +2633,8 @@ found:
                     return NULL;
                 }
             }
-            nas->Init(nas);
-            if (nas->flags == 0) {
+            nas->InitDelete(nas);
+            if (nas->NASid == 0) {
                 nas = NULL;
             }
         }
@@ -2650,29 +2650,29 @@ INCLUDE_ASM("asm/nonmatchings/main/main", SpawnNASFromRecord);
 s32 KillNAS(NAS *nas) {
     EXTengine *eng;
 
-    if (!(nas->flags & 1)) {
+    if (!(nas->NASid & 1)) {
         return 1;
     }
-    if (nas->spawn != NULL && (nas->spawn->flags & 0x10)) {
+    if (nas->trigger != NULL && (nas->trigger->Status & 0x10)) {
         return 0;
     }
-    if (nas->unk68 & 4) {
-        nas->Init(nas);
+    if (nas->Class & 4) {
+        nas->InitDelete(nas);
     }
-    if (nas->spawn != NULL) {
-        nas->spawn->flags &= ~1;
+    if (nas->trigger != NULL) {
+        nas->trigger->Status &= ~1;
     }
-    eng = nas->eng;
+    eng = nas->Engine;
     for (;;) {
         if (eng == NULL) {
             goto freed;
         }
-        if (eng->link != NULL) {
-            eng->link->link = NULL;
+        if (eng->platform != NULL) {
+            eng->platform->platform = NULL;
         }
-        eng->link = NULL;
+        eng->platform = NULL;
         func_8001C270(eng);
-        eng = eng->next;
+        eng = eng->Engine;
     }
 freed:
     func_80026430(nas);
@@ -2681,24 +2681,24 @@ freed:
     func_80026980(nas);
     func_80026A54(nas);
     func_800268BC(nas);
-    if (nas->prev != NULL) {
-        nas->prev->next = nas->next;
-        if (nas->next != NULL) {
-            nas->next->prev = nas->prev;
+    if (nas->Tag.Parent != NULL) {
+        nas->Tag.Parent->Tag.Child = nas->Tag.Child;
+        if (nas->Tag.Child != NULL) {
+            nas->Tag.Child->Tag.Parent = nas->Tag.Parent;
         } else {
-            NASActiveTail = nas->prev;
+            NASActiveTail = nas->Tag.Parent;
         }
     }
-    nas->flags = 0;
+    nas->NASid = 0;
     if (NASFreeList != NULL) {
-        NASFreeList->prev = nas;
-        nas->next = NASFreeList;
+        NASFreeList->Tag.Parent = nas;
+        nas->Tag.Child = NASFreeList;
         NASFreeList = nas;
     } else {
         NASFreeList = nas;
-        nas->next = NULL;
+        nas->Tag.Child = NULL;
     }
-    nas->prev = NULL;
+    nas->Tag.Parent = NULL;
     return 1;
 }
 
@@ -2734,16 +2734,16 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80024FA4);
 
 s16 func_800250B0(NAS *nas) {
     EXTengine *eng;
-    EXTanim *anim;
+    EXTanimator *anim;
     subengine *sub;
     s32 id;
     s32 kind;
     s32 want;
 
-    if ((nas->flags & 0x500) == 0x500 && (eng = nas->eng) != NULL) {
+    if ((nas->NASid & 0x500) == 0x500 && (eng = nas->Engine) != NULL) {
         id = 0x400;
         want = 0;
-        for (anim = nas->ext; anim != NULL; anim = anim->Extend.next) {
+        for (anim = (EXTanimator *)nas->Extend.Child; anim != NULL; anim = (EXTanimator *)anim->Extend.Child) {
             if (anim->EXTid & id) {
                 if (want == 0) {
                     goto found;
@@ -2757,8 +2757,8 @@ s16 func_800250B0(NAS *nas) {
     found:
         if (anim != NULL) {
             kind = anim->EXTid & 0xFF;
-            if (anim->eng != NULL) {
-                eng = anim->eng;
+            if (anim->Engine != NULL) {
+                eng = anim->Engine;
             }
             sub = anim->sub;
             if (sub == NULL) {
@@ -2786,8 +2786,8 @@ FlagRecord *func_80025A48(EXTengine *eng, u32 flag) {
     FlagRecord *rec;
     s32 n;
 
-    if (eng->rec.flags & flag) {
-        return &eng->rec;
+    if (eng->collision_box.flags & flag) {
+        return &eng->collision_box;
     }
     if (eng->sub != NULL && (list = func_8001562C(eng->sub)) != NULL) {
         n = list->nRecs;
@@ -2816,9 +2816,9 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80025B10);
 s32 func_80025BBC(EXTengine *eng) {
     s32 dy;
 
-    func_80032F3C(eng->unk10.y - eng->unk64);
-    func_80032F3C(eng->unk10.x - eng->unk60);
-    func_80032F3C(eng->unk10.z - eng->unk68);
+    func_80032F3C(eng->unk10.y - eng->OldXYZ.y);
+    func_80032F3C(eng->unk10.x - eng->OldXYZ.x);
+    func_80032F3C(eng->unk10.z - eng->OldXYZ.z);
     if (D_8005AA94 != NULL) {
         dy = D_8005AA94(eng);
     } else {
@@ -2855,31 +2855,31 @@ void func_80025F9C(void) {
 void func_80025FA4(void) {
 }
 
-void func_80025FAC(EXTanim *anim, s16 n) {
+void func_80025FAC(EXTanimator *anim, s16 n) {
     switch (anim->EXTid & 0xFF) {
     case 1:
-        if (anim->seqs != NULL) {
-            anim->seqId = n;
-            anim->seq = anim->seqs[n];
+        if (anim->Alist != NULL) {
+            anim->ALindex = n;
+            anim->Atable = anim->Alist[n];
         }
-        anim->unk1E = 0;
-        anim->unk1C = -1;
-        anim->unk28 = 0;
+        anim->Aindex = 0;
+        anim->Aspeed = -1;
+        anim->Seq_count = 0;
         break;
     case 2:
-        if (anim->seqs != NULL) {
-            anim->seqId = n;
-            anim->seq = anim->seqs[n];
+        if (anim->Alist != NULL) {
+            anim->ALindex = n;
+            anim->Atable = anim->Alist[n];
         }
-        anim->unk1E = -1;
-        anim->unk1C = -1;
-        anim->unk28 = 0;
+        anim->Aindex = -1;
+        anim->Aspeed = -1;
+        anim->Seq_count = 0;
         break;
     default:
-        anim->unk28 = 0;
+        anim->Seq_count = 0;
         break;
     }
-    anim->unk2A = 0;
+    anim->Seq_count_down = 0;
 }
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80026048);
@@ -2915,12 +2915,12 @@ void func_800264B4(void) {
 }
 
 void *FindExtension(NAS *nas, s32 id) {
-    EXTheader *ext;
+    EXT *ext;
     s32 sub;
 
     sub = id & 0xFF;
     id &= ~0xFF;
-    for (ext = nas->ext; ext != NULL; ext = ext->Extend.next) {
+    for (ext = nas->Extend.Child; ext != NULL; ext = ext->Extend.Child) {
         if (ext->EXTid & id) {
             if (sub == 0) {
             found:
@@ -2939,7 +2939,7 @@ EXTmotion *AddMotion(NAS *nas) {
 
     mot = AllocExtension(nas, 0x34, 0x800, &D_8005A9CC);
     if (mot != NULL) {
-        nas->flags |= 0x800;
+        nas->NASid |= 0x800;
         *mot = D_8005A9CC;
     }
     return mot;
@@ -2956,16 +2956,16 @@ EXTengine *AddEngine(NAS *nas, s32 id) {
 
     eng = AllocExtension(nas, 0x9C, id | 0x100, &EngineTemplate);
     if (eng != NULL) {
-        nas->flags |= 0x100;
+        nas->NASid |= 0x100;
         *eng = EngineTemplate;
         if (func_8001D390(eng, 1) != 0) {
-            prev = nas->eng;
+            prev = nas->Engine;
             if (prev == NULL) {
-                nas->eng = eng;
+                nas->Engine = eng;
             } else {
-                for (ext = prev->Extend.next; ext != NULL; ext = ext->Extend.next) {
+                for (ext = (EXTengine *)prev->Extend.Child; ext != NULL; ext = (EXTengine *)ext->Extend.Child) {
                     if (ext->EXTid & 0x100) {
-                        prev->next = ext;
+                        prev->Engine = ext;
                         prev = ext;
                     }
                 }
@@ -2988,28 +2988,28 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_800268BC);
 
 void func_8002694C(NAS *nas, s32 bits) {
     if (D_8005AA2C != NULL) {
-        nas->next30 = D_8005AA2C;
-        D_8005AA2C->prev30 = nas;
+        nas->Solid.Child = D_8005AA2C;
+        D_8005AA2C->Solid.Parent = nas;
     }
     D_8005AA2C = nas;
-    nas->unk68 = (nas->unk68 & ~0x300) | bits;
+    nas->Class = (nas->Class & ~0x300) | bits;
 }
 
 void func_80026980(NAS *nas) {
     NAS **head = (NAS **)&D_8005AA34;
 
-    if (nas->prev38 != NULL || nas->next38 != NULL) {
-        if (nas->prev38 != NULL) {
-            nas->prev38->next38 = nas->next38;
-            if (nas->next38 != NULL) {
-                nas->next38->prev38 = nas->prev38;
+    if (nas->Camera.Parent != NULL || nas->Camera.Child != NULL) {
+        if (nas->Camera.Parent != NULL) {
+            nas->Camera.Parent->Camera.Child = nas->Camera.Child;
+            if (nas->Camera.Child != NULL) {
+                nas->Camera.Child->Camera.Parent = nas->Camera.Parent;
             }
         } else {
-            *head = nas->next38;
-            nas->next38->prev38 = NULL;
+            *head = nas->Camera.Child;
+            nas->Camera.Child->Camera.Parent = NULL;
         }
-        nas->prev38 = NULL;
-        nas->next38 = NULL;
+        nas->Camera.Parent = NULL;
+        nas->Camera.Child = NULL;
     } else if (*head == nas) {
         *head = NULL;
     }
@@ -3028,7 +3028,7 @@ s32 func_80026A28(void) {
     s32 n;
 
     n = 0;
-    for (nas = D_8005AA24; nas != NULL; nas = nas->next28) {
+    for (nas = D_8005AA24; nas != NULL; nas = nas->Object.Child) {
         n++;
     }
     return n;
@@ -3037,18 +3037,18 @@ s32 func_80026A28(void) {
 void func_80026A54(NAS *nas) {
     NAS **head = (NAS **)&D_8005AA24;
 
-    if (nas->prev28 != NULL || nas->next28 != NULL) {
-        if (nas->prev28 != NULL) {
-            nas->prev28->next28 = nas->next28;
-            if (nas->next28 != NULL) {
-                nas->next28->prev28 = nas->prev28;
+    if (nas->Object.Parent != NULL || nas->Object.Child != NULL) {
+        if (nas->Object.Parent != NULL) {
+            nas->Object.Parent->Object.Child = nas->Object.Child;
+            if (nas->Object.Child != NULL) {
+                nas->Object.Child->Object.Parent = nas->Object.Parent;
             }
         } else {
-            *head = nas->next28;
-            nas->next28->prev28 = NULL;
+            *head = nas->Object.Child;
+            nas->Object.Child->Object.Parent = NULL;
         }
-        nas->prev28 = NULL;
-        nas->next28 = NULL;
+        nas->Object.Parent = NULL;
+        nas->Object.Child = NULL;
     } else if (*head == nas) {
         *head = NULL;
     }
@@ -3077,18 +3077,18 @@ void func_80026B70(u8 **arg0, u8 *arg1) {
 }
 
 void func_80026B94(NAS *list, NAS *nas) {
-    if (nas->prev14 != NULL) {
-        nas->prev14->next14 = nas->next14;
+    if (nas->Family.Parent != NULL) {
+        nas->Family.Parent->Family.Child = nas->Family.Child;
     }
-    if (nas->next14 != NULL) {
-        nas->next14->prev14 = nas->prev14;
+    if (nas->Family.Child != NULL) {
+        nas->Family.Child->Family.Parent = nas->Family.Parent;
     }
-    while (list->next14 != NULL) {
-        list = list->next14;
+    while (list->Family.Child != NULL) {
+        list = list->Family.Child;
     }
-    list->next14 = nas;
-    nas->prev14 = list;
-    nas->next14 = NULL;
+    list->Family.Child = nas;
+    nas->Family.Parent = list;
+    nas->Family.Child = NULL;
 }
 
 void func_80026BF4(u8 *arg0) {
@@ -3188,8 +3188,8 @@ void func_80027040(s32 arg0) {
 }
 
 void func_800270B0(NAS *nas) {
-    if (nas->spawn != NULL) {
-        nas->spawn->flags |= 0x8000;
+    if (nas->trigger != NULL) {
+        nas->trigger->Status |= 0x8000;
     }
     KillNAS(nas);
 }

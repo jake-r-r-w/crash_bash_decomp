@@ -76,13 +76,13 @@ Other:
   `u8 *` heap parameters of `func_80011DB4` and `func_800112A4`.
 - `func_800C8BA0` (ovl5f) matches alone but adds 4 bytes of data/rodata to
   the overlay (offset 0x4C): its literal belongs in another file's rodata.
-- Prototype debug types (ARCHITECTURE.md, Prototype debug types): the Oct 9
-  build's leftover SN records define `NAStype`, `EXTengtype`, `HeroInfo`,
-  `TA_player`, the script/trigger/map structs and every minigame's AST enum.
-  Adopt them into `bash/nas.h` and the minigame headers one type at a time,
-  each checked against retail code (offsets so far agree), and name every
-  AST Init/Plot pair from the enums, Tank's included (`ovl5f` is Tank).
-  Needs the images in `protos/` (`sym_scan.py`).
+- Prototype debug types (ARCHITECTURE.md, Prototype debug types): the engine
+  and Tank types are in the headers now. Still to use: name every AST
+  Init/Plot pair from the enums (Tank's included: `ovl5f` is Tank) through
+  `decomp.py rename`, and add the other games' AST enums and structs
+  (`HUB_AST_types`, `RACE_AST_types`, `BossInfo`, `HubGateway`, script and
+  map structs, ...) when their code is matched. Needs the images in `protos/`
+  (`sym_scan.py`).
 - `func_8001A0D8` (blocks `func_8001C7FC`) stores SXY at +0x10/+0x18/+0x20
   too: use `gte_stsxy3_10`.
 - Sound voices: `SfxActiveVoices` (`0x80059614`) is `SfxVoicePool.active`
@@ -103,6 +103,11 @@ Other:
   runs nothing.
 - Git Bash heredocs collapse `\\` to `\`: write Python with escapes using
   the Write tool.
+- A C error does not stop the build: the Makefile pipes `cc1` into maspsx
+  and `as`, so the pipeline's status is `as`'s and a partial object gets
+  linked (a missed field rename showed up only as a 20-byte-short exe). After
+  header changes, grep the build log for `stdin:N:` lines that are not
+  warnings.
 - `tryf.sh` replaces only the function, so a comment line above it in the
   draft file is added again on every run. Keep comments out of drafts.
 - `make clean`/`make verify` wipe `build/` (including `build/objdiff/asm`; rerun
@@ -179,6 +184,11 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-11:** Integrated the Oct 9 prototype types: `nas.h` now uses the
+  original names (`NAStype`, `EXTengtype`, `HeroInfo`, `EXTanimator`,
+  `NASTrigger` for `NASSpawn`, `_sfx_handler` for `SfxVoice`) and defines
+  `EXTheromove`, `EXTbotai`, `PreMap`, `LevSpec`; `tank.h` gains the Tank enums,
+  `TA_player`, `TA_Bot`, `EXTobject_TA`. All binaries still match.
 - **2026-10-11:** Searched the three Hidden Palace prototypes (`protos/`,
   git-ignored). No `.SYM`/`.MAP` files or text leaks, but the Aug 23 and
   Oct 9 DATs end in SN debug type records: engine structs with offsets and all

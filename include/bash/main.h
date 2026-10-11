@@ -75,13 +75,14 @@ typedef struct {
 #define gte_stsxy3_10(r0) __asm__ volatile (				"swc2	$12, 16( %0 );"					"swc2	$13, 24( %0 );"					"swc2	$14, 32( %0 )"					:								: "r"(r0)							: "memory" )
 
 /* A playing sound (PlaySfx), linked into SfxVoicePool's active or free list.
- * Placeholder names, from PlaySfx and StopSfx. */
-typedef struct SfxVoice {
-    struct SfxVoice **owner; /* 0x00: the caller's handle, cleared on stop */
+ * The type name is the prototype's (EXTengine.sfx, TA_player's handlers);
+ * the field names are placeholders, from PlaySfx and StopSfx. */
+struct _sfx_handler {
+    struct _sfx_handler **owner; /* 0x00: the caller's handle, cleared on stop */
     SLONG_XYZ posCopy;       /* 0x04: the position, when no handle is given */
     SLONG_XYZ *pos;          /* 0x10: the caller's position, posCopy, or NULL */
-    struct SfxVoice *prev;   /* 0x14: active list */
-    struct SfxVoice *next;   /* 0x18: active list, or the free list */
+    struct _sfx_handler *prev;   /* 0x14: active list */
+    struct _sfx_handler *next;   /* 0x18: active list, or the free list */
     s32 flags;               /* 0x1C: PlaySfx's 6th argument */
     s32 unk20;               /* 0x20: PlaySfx's 4th argument (0x1000) */
     s32 unk24;               /* 0x24: PlaySfx's 5th argument (0x1E00) */
@@ -89,14 +90,14 @@ typedef struct SfxVoice {
     s32 unk2C;               /* 0x2C: -1 when allocated; func_8002B8F4 stops it */
     s32 unk30;
     s32 id;                  /* 0x34: the SfxTable id */
-} SfxVoice;
-BASH_SIZE_CHECK(SfxVoice, 0x38);
+};
+BASH_SIZE_CHECK(_sfx_handler, 0x38);
 
 /* 24 voices (func_80022984 links them into the free list). */
 typedef struct {
-    SfxVoice voices[24];
-    SfxVoice *free;         /* 0x540 */
-    SfxVoice *active;       /* 0x544: also named SfxActiveVoices */
+    _sfx_handler voices[24];
+    _sfx_handler *free;         /* 0x540 */
+    _sfx_handler *active;       /* 0x544: also named SfxActiveVoices */
 } SfxPool;
 
 /* A VAB file in memory: the header and body as byte offsets from its start
@@ -509,8 +510,8 @@ extern subengine D_8005A830;
 void FreeExtension(void *ext);
 s32 func_80032F3C(s32);         /* abs or labs (LIBC2: identical objects) */
 s32 func_80025E00(EXTengine *eng, s32 y);
-s16 func_800251A8(NAS *nas, EXTengine *eng, subengine *sub, EXTanim *anim);
-s16 func_80025534(NAS *nas, EXTengine *eng, subengine *sub, EXTanim *anim);
+s16 func_800251A8(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim);
+s16 func_80025534(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim);
 extern s32 (*D_8005AA94)(EXTengine *eng); /* optional hook: replaces func_80025E00 */
 extern s32 D_8005B5B8;
 extern void (*D_800643F8)();
@@ -586,9 +587,9 @@ s32 Random(s32 n);
 void *FindExtension(NAS *nas, s32 id);
 NAS *SpawnNASById(s32 x, s32 y, s32 z, u16 id, u16 flags);
 
-void StopSfx(SfxVoice *voice);
+void StopSfx(_sfx_handler *voice);
 
-SfxVoice *PlaySfx(s32 id, SfxVoice **handle, SLONG_XYZ *pos, s32 arg3, s32 arg4, s32 flags);
+_sfx_handler *PlaySfx(s32 id, _sfx_handler **handle, SLONG_XYZ *pos, s32 arg3, s32 arg4, s32 flags);
 
 s32 KillNAS(NAS *nas);
 
@@ -600,7 +601,7 @@ s16 func_800250B0(NAS *nas);
 
 void func_8002C44C(void);
 
-void func_80025FAC(EXTanim *anim, s16 n);
+void func_80025FAC(EXTanimator *anim, s16 n);
 
 void func_800110A8(void *ptr, Heap *heap);
 
@@ -680,7 +681,7 @@ u8 *func_80015A78(s32 i, u8 *rec);
 
 void func_80015518(u8 *p, s32 n);
 
-void func_800228C4(SfxVoice *voice);
+void func_800228C4(_sfx_handler *voice);
 
 void func_80027F00(void);
 

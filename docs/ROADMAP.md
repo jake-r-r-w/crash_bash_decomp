@@ -107,8 +107,9 @@ extracts.
 
 - [ ] Finish the slot overlays' section splits (data vs rodata), so functions
   using strings and jump tables can match.
-- [ ] Recover the minigame-only types (`EXTbotai`, `EXTheromove`, `TA_player`,
-  ...) as each minigame needs them.
+- [x] Recover the minigame-only types (`EXTbotai`, `EXTheromove`, `TA_player`,
+  `EXTobject_TA`, `NASTrigger`, ...): done from the Oct 9 prototype's debug
+  types (ARCHITECTURE.md, Prototype debug types).
 - [ ] Pogo (`ovl60`)
 - [ ] Arkenoid (`ovl61`)
 - [ ] Polar (`ovl62`)

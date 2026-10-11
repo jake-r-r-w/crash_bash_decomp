@@ -117,10 +117,10 @@ own header (`ovl5f`, `ovl60`, `ovl61`, `ovl62`). Differences from the leak:
   one-argument form is kept, and the other is noted in a comment until the
   definition settles it.
 - The engine types the leak uses but never defines (`NAS`, `EXTengine`,
-  `EXTnode`, `hero_seq`, ...) are defined in `bash/nas.h` as their layouts are
-  recovered (see Engine types); the rest stay incomplete. Declarations that
-  need one of them complete are wrapped in `#ifdef BASH_HAVE_<TYPE>`. Only
-  `TA_player` is still guarded.
+  `EXTnode`, `hero_seq`, ...) are defined in `bash/nas.h`, mostly from the
+  Oct 9 prototype (see Engine types); the rest stay incomplete. Declarations that
+  need one of them complete are wrapped in `#ifdef BASH_HAVE_<TYPE>`; every
+  guarded type is now defined (`TA_player`, `EXTobject_TA` in `bash/tank.h`).
 - `bool` is 32 bits (`s32`); see Engine types.
 
 ### Prototype debug types
@@ -216,7 +216,7 @@ signature alone is not enough.
     (`0x800BB41C`, called by `PlotBall` with `FindExtension(nas, 0x800)`, an
     `EXTmotion`), `FreeGrabbedObject(player, bool)` (`0x800BB674`) and
     `AlignGrabBall(eng, motion, object)` (`0x800BB924`, called by `PlotBall`
-    with `nas->eng`, the 0x800 extension and `nas->unk58`).
+    with `nas->Engine`, the 0x800 extension and `nas->FUX`).
 - **Ambiguous, left unnamed:**
   - Both of the leak's `Roo_FireRocket` declarations match real functions:
     `func_800BFFF4(eng)` and `func_800C02AC(eng, dir)` both spawn
@@ -240,7 +240,7 @@ originals turn up. Call counts are `jal` sites across all binaries.
 |---|---|---|---|
 | `PlaySfx` | `0x80022660` | 911 | Looks the id up in the table at `D_80064508`, takes a voice from the pool at `D_800590D0+0x540`, returns it. `Roo_GoBoing` passes a random id and `&eng->unk10`. |
 | `Random(n)` | `0x80015590` | 650 | Advances two seeds (`D_800517B8`, `D_800517BC`) and returns `seed % n`, or 0 for `n < 2`. |
-| `FindExtension(nas, id)` | `0x800264E8` | 438 | Walks the extension chain from `NAS.ext`, matching `EXTid` (and the low byte when given). |
+| `FindExtension(nas, id)` | `0x800264E8` | 438 | Walks the extension chain from `NAS.Extend.Child`, matching `EXTid` (and the low byte when given). |
 | `SpawnNASById(x, y, z, id, ...)` | `0x80022A3C` | 349 | Finds `id` in the AST table, then builds a `NAS` the way `SpawnNASFromRecord` does. Callers pass `AST_*` ids. |
 | `SetHeroAction(player, action)` | `0x800868B4` | 310 | Stores the action at `hero+0x2C` (the previous one at `+0x4C`) and calls its handler from `D_8009DCA0`. |
 | `get_angle(x, z)` | `0x8001463C` | 300 | Arctangent through the table at `D_800517C0`, giving a 12-bit angle; used as `get_angle(x, z) & 4095` as in the leak. |
@@ -249,7 +249,7 @@ originals turn up. Call counts are `jal` sites across all binaries.
 | `StopSfx(voice)` | `0x800225C4` | 173 | Stops the voice (`func_8002B8F4(voice+0x2C)`) and returns it to `PlaySfx`'s pool. |
 | `SetHeroSeq(player, seq)` | `0x800854C0` | 133 | Picks the per-character table from `D_8009D29C` by `hero+0x2E` (1-8, the leak's eight `hero_seq` prefixes) and sets `hero+0x56`. |
 | `AddExtension(nas, size, id)` | `0x8002689C` | 75 | `AllocExtension` with no template. |
-| `AddEngine(nas, id)` | `0x8002672C` | 44 | 0x9C-byte engine from a template, first one in `NAS.eng`. |
+| `AddEngine(nas, id)` | `0x8002672C` | 44 | 0x9C-byte engine from a template, first one in `NAS.Engine`. |
 | `AddMotion(nas)` | `0x80026540` | - | 0x34-byte `EXTmotion`, id 0x800, from the template `D_8005A9CC`; sets 0x800 in `NAS.flags`. |
 | `AddObject(nas)` | `0x80026684` | - | 0x2C-byte `EXTobject`, id 0x1000, from the template `D_8005A974`; sets 0x1000 in `NAS.flags`. |
 | `SpawnNASFromRecord(rec)` | `0x80022DDC` | - | Takes a `NAS` from the free list and sets it up (see Engine types). |
@@ -276,9 +276,9 @@ Descriptive names (the leak doesn't name these), with types in `bash/main.h`,
 | `NASTemplate` | `0x8005A7C0` | `NAS` | Copied over each spawned `NAS` (0x70 bytes). |
 | `EngineTemplate` | `0x8005A8D8` | `EXTengine` | Copied over each new engine by `AddEngine` and `func_80095BEC`. |
 | `EnginePool` | `0x800A0E78` | `EXTengine[]` | `GetEngineSlot(i)` returns `&EnginePool[i]`. |
-| `Heroes` | `0x8009D52C` | `Hero[4]` | The player/hero array (see Engine types); used by 822 functions. `func_80083708` sets up all four. |
+| `Heroes` | `0x8009D52C` | `HeroInfo[4]` | The player/hero array (see Engine types); used by 822 functions. `func_80083708` sets up all four. |
 | `HeroActionTable` | `0x8009DCA0` | not typed yet | 8-byte entries; `SetHeroAction` calls entry `action`'s handler. |
-| `HeroSeqTables` | `0x8009D29C` | `hero_seq **[]` | One table of sequences per character; `SetHeroSeq` indexes it by `Hero.character`, then by the sequence id. |
+| `HeroSeqTables` | `0x8009D29C` | `hero_seq **[]` | One table of sequences per character; `SetHeroSeq` indexes it by `HeroInfo.hero_name`, then by the sequence id. |
 | `RandomSeedA` / `RandomSeedB` | `0x800517B8` / `0x800517BC` | `s32` | `Random`'s state; `SetRandomSeed(a, b)` (`0x800155E8`) sets both. |
 | `AtanTable` | `0x800517C0` | `s16[]` | `get_angle`'s lookup table. |
 | `SfxTable` | `0x80064508` | not typed yet | 2-byte entries per sound id, read by `PlaySfx`. |
@@ -286,42 +286,51 @@ Descriptive names (the leak doesn't name these), with types in `bash/main.h`,
 
 ## Engine types
 
-The engine's object model, as far as code proves it. The definitions are in
-`include/bash/nas.h`, and each size has a compile-time check.
+The engine's object model. The definitions are in `include/bash/nas.h`, and
+each size has a compile-time check. Type, tag and field names come from the
+Oct 9 prototype's debug types (see Prototype debug types) wherever it defines
+the type; every layout below was first recovered from retail code, and the
+prototype's offsets agree with all of it. Its field types were adopted too
+(the build still matches with them), except `EXTanimator.Alist`, which code
+indexes as `void **`. Fields of types the fragment does not define
+(`subengine`, `EXTengine`'s `xyzrf` block at `0x0C..0x60`, `_sfx_handler`)
+keep code-derived names (`unkXX` where only offset and width are known).
 
 - **Extension allocator.** `AddExtension(owner, size, id)` calls
   `AllocExtension`. That allocates `size` bytes after a 0x18-byte heap header,
-  then writes `id` at `+0` (`EXTid`), the previous link at `+4` and a null at
-  `+8`. It appends the new extension to the owner's chain, which starts at
-  `NAS+0x08` and continues through each extension's `+8`. On failure it sets bit
-  0 of `NAS+0x6A`. So every extension starts with `s32 EXTid; EXTnode Extend;`,
-  and `EXTnode` is two pointers (8 bytes).
+  then writes `id` at `+0` (`EXTid`), the owner at `+4` (`Extend.Parent`) and
+  a null at `+8` (`Extend.Child`). It appends the new extension to the owner's
+  chain, which starts at `NAS.Extend.Child` and continues through each
+  extension's `Extend.Child`. On failure it sets bit 0 of `NAS.Failure`. So
+  every extension starts with `s32 EXTid; EXTnode Extend;` (the prototype's
+  `EXTtype`, typedef `EXT`).
 - **Checked against the leak.** The leak's extension structs have exactly the
   allocated size if `EXTnode` is 8 bytes and `SLONG_XYZ` is 12: `InitSmokeTrail`
   allocates 0x30 (`EXTsmoketrail`), `InitBombMaker` 0x1C (`EXTbombmaker`) and
   `InitTransmuterBeam` 0x1E0 (`EXTtransmuter`). The stores land on the leak's
   fields: `fadeuprate` at `+0xC`, `angle` at `+0x2C`, and `EXTbombmaker.timer`
   is set to 180.
-- **NAS (0x70 bytes).**
-  - `SpawnNASFromRecord(spawn)` takes one from the free list (linked through
-    `+0x10`), copies a 0x70-byte template over it, and appends it to the active
-    list (`+0x0C` prev, `+0x10` next).
-  - It sets `flags` (`+0`) to 1, the AST index (`s16` at `+0x6C`) and the spawn
-    record (`+0x50`).
-  - It stores the AST entry's Init and Plot at `+0x48`/`+0x4C`, calls
+- **NAS (`struct NAStype`, 0x70 bytes).**
+  - `SpawnNASFromRecord(trigger)` takes one from the free list (linked through
+    `Tag.Child`), copies a 0x70-byte template over it, and appends it to the
+    active list (`Tag.Parent`/`Tag.Child`).
+  - It sets `NASid` to 1, `Type` (the AST index) and `trigger` (the
+    `NASTrigger` it was built from; `Type` there is the AST id and `Status`
+    bit 0 means spawned).
+  - It stores the AST entry's Init and Plot in `InitDelete`/`Handler`, calls
     `AddEngine(nas, 1)` to make the engine extension, and then calls Init.
-  - Field widths elsewhere come from a survey of every named Init/Plot (`a0` is
-    the `NAS`).
-- **EXTengine (0x9C bytes).** `AddEngine(nas, id)` allocates 0x9C bytes
-  with `EXTid = id | 0x100` from a template, and sets `0x100` in `NAS.flags`.
-  - The first engine extension goes to `NAS+0x54` (`eng`); later ones are
-    linked through `+0x7C`.
-  - The spawn record's first 12 bytes are copied to `+0x10`.
+- **EXTengine (`struct EXTengtype`, 0x9C bytes).** `AddEngine(nas, id)`
+  allocates 0x9C bytes with `EXTid = id | 0x100` from a template, and sets
+  `0x100` in `NAS.NASid`.
+  - The first engine extension goes to `NAS.Engine`; later ones are linked
+    through `EXTengine.Engine`.
+  - The trigger's `TrigXYZ` is copied to `+0x10`.
   - `EXTtransmuter.it_eng` and `light_eng[]` (both `EXTengine *` in the leak)
     are filled from this same constructor, which confirms the type.
-  - `+0x6C`/`+0x70` are the first and last of the engine's `subengine`s,
-    `+0x9A` their count, and `+0x94` a sound voice that `func_8001D174` stops
-    when it frees them.
+  - `sub`/`last` are the first and last of the engine's `subengine`s,
+    `num_subs` their count, and `sfx` a playing sound (`_sfx_handler`, the
+    repo's former `SfxVoice`) that `func_8001D174` stops when it frees them.
+    `platform` pairs two engines; `KillNAS` clears it both ways.
 - **subengine (0xA8 bytes).** `func_80018F3C(eng, n)` (through
   `func_8001D390`) moves `n` nodes from the free list `D_80058ACC` onto the
   engine, copying the 0xA8-byte template `D_8005A830` over each, and links them
@@ -333,29 +342,30 @@ The engine's object model, as far as code proves it. The definitions are in
   0x1000)** come from `AddMotion` and `AddObject` (see Core engine functions).
   The leak names them through Arkenoid: `PlotBall` passes
   `FindExtension(nas, 0x800)` to `CalcArkInfluence(EXTmotion *)`, and
-  `nas->unk58` (which `InitBall` sets to `AddObject(nas)`) to the
+  `nas->FUX` (which `InitBall` sets to `AddObject(nas)`) to the
   `AR_*_TestOutOfBounds(EXTengine *, EXTobject *, bool)` hooks and to
-  `AlignGrabBall`. `NAS+0x58` holds other extension types in other objects, so
-  it stays `void *`. Field widths come from a survey of every access through
-  those pointers.
+  `AlignGrabBall`. `FUX` holds other extension types in other objects, so it
+  is an `EXT *`.
 - **hero_seq** is one halfword. The sequence interpreter (`func_8008502C`)
   reads `seq[pos]` with a 2-byte stride; `0x8000 | n` is command `n` (27 of
-  them, some with halfword operands) and other values are frames.
-- **Hero (0x6C bytes).** `func_80083708` sets up the four `Heroes`: `nas` from a
-  pool at `D_8005AA1C` (AST index 3), `eng = AddEngine(nas, 1)`, `sub =
-  eng->sub`, three more engines (`AddEngine` ids 2, 3, 3) at `+0x0C..+0x14`,
-  0x54- and 0x44-byte extensions at `+0x18`/`+0x20`, and at `+0x1C` the
-  0x2C-byte id-0x400 extension from `func_800265DC` that plays the current
-  `hero_seq` (`SetHeroSeq` sets its `+0x0C`). The rest is halfwords; widths
-  and signedness come from a survey of every `Heroes[i]` access (signed where
-  most loads are `lh`).
+  them, some with halfword operands; the prototype's `HEROcmds`) and other
+  values are frames.
+- **HeroInfo (0x6C bytes).** `func_80083708` sets up the four `Heroes`: `hero`
+  from a pool at `D_8005AA1C` (AST index 3), `hero_eng = AddEngine(nas, 1)`,
+  `hero_sub = hero_eng->sub`, three more engines (`AddEngine` ids 2, 3, 3:
+  `hero_shadow`, `hero_powerup`, `hero_fx`), `hero_move` (0x54-byte
+  `EXTheromove`), `hero_anim` (the 0x2C-byte id-0x400 `EXTanimator` from
+  `func_800265DC`, which plays the current `hero_seq`; `SetHeroSeq` sets its
+  `Atable`) and `hero_ai` (0x44-byte `EXTbotai`). `SetHeroAction` sets
+  `hero_mode` and keeps the old one in `hero_last_mode`; `hero_name` (1-8)
+  picks the character's sequence table. The prototype's sizes for the three
+  extensions match the sizes code allocates.
 - **bool is 32 bits.** `ArkHeroRad2ObjectCollision` and `FreeGrabbedObject`
   keep their `bool` argument in its home slot and reload it with `lw`, with no
   truncation; gcc would narrow a `char` or `short` parameter on entry.
-- **Still unknown.** The names of most fields, which stay `unkXX`. The layouts
-  of the minigame-only types `EXTbotai`, `EXTheromove`, `EXTobject_TA`,
-  `NASTrigger` and `TA_player`, and of the shell types. Which leak names the
-  hero's `+0x18`, `+0x1C` and `+0x20` extensions have.
+- **Still unknown.** The layouts of `subengine`, `EXTengine.xyzrf` and
+  `_sfx_handler` (the fragment names them but does not define them), and of
+  the shell types (`shell_setup`, `file_group_load_info`).
 
 ## PsyQ
 
