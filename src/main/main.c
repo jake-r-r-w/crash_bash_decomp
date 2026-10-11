@@ -2533,7 +2533,9 @@ void func_800229D4(void) {
     func_80022984();
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800229FC);
+void func_800229FC(s32 i) {
+    func_8002C488(D_80058B88[i].file, D_80058B88[i].reverb);
+}
 
 #ifndef NON_MATCHING
 INCLUDE_ASM("asm/nonmatchings/main/main", SpawnNASById);

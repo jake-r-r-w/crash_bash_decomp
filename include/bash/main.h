@@ -206,6 +206,13 @@ typedef struct SeqSlot {
     /* 0x04 */ s32 seq;                  /* SsSeq access number, or -1 */
 } SeqSlot;
 
+/* D_80058B88: what func_800229FC passes to func_8002C488 for an index. */
+typedef struct MusicEntry {
+    /* 0x00 */ s32 file;
+    /* 0x04 */ s16 reverb;               /* SsUtSetReverbType */
+    /* 0x06 */ u8 unk6[0x14 - 0x06];
+} MusicEntry;
+
 typedef struct Heap {
     /* 0x00 */ u8 unk0[8];
     /* 0x08 */ MemBlock *free;           /* free list, smallest first */
@@ -417,6 +424,7 @@ extern u8 D_80055684[];
 extern void *D_8005AA34;
 extern void *D_8005AA24;
 extern SeqSlot D_8006557C;
+extern MusicEntry D_80058B88[];
 extern VabSlot D_800644C0[6];
 extern NodePool D_80056844;
 extern NAS *D_8005AA2C;
@@ -666,5 +674,7 @@ void func_8002C0E0(void);
 void func_8002C11C(void);
 
 void func_80015554(u16 *p, s32 n);
+
+void func_800229FC(s32 i);
 
 #endif /* BASH_MAIN_H */

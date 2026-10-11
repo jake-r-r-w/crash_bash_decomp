@@ -1440,7 +1440,9 @@
  },
  "800229FC": {
   "auto_diff": 8,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T19:25:00Z",
+  "started": "2026-10-11T19:23:17Z",
+  "status": "matched"
  },
  "80022A3C": {
   "auto_failed": "compile",
