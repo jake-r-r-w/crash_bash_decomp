@@ -29,6 +29,12 @@ Newest first. Each session appends: what changed, what was learned, what's next.
 - The cc1 recipe writes `x.i`/`x.s`/`.lreg`/`.greg` in the repo root and
   they're not gitignored.
 
+**Phase 2 match (same session):** `func_8002AABC` (`cb86a75`, sound init:
+`SsInit`, table size, reverb, saves the old tick callback in `D_800643F8`)
+matched on the first diff. `D_800654CC` (the `SsSetTableSize` table) and the
+unnamed library function `func_800369FC` are declared in `bash/main.h`.
+420/2550 matched (main.exe 174/574). No new diff pattern.
+
 **Next**
 1. `func_800155FC` / `Random`: find a form where A's pseudo outranks the
    srl/sum group in local-alloc priority with the operands swapped.
