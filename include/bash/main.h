@@ -473,6 +473,7 @@ void func_8002AABC(void);
 
 s32 Random(s32 n);
 void *FindExtension(NAS *nas, s32 id);
+NAS *SpawnNASById(s32 x, s32 y, s32 z, u16 id, u16 flags);
 
 void StopSfx(SfxVoice *voice);
 
