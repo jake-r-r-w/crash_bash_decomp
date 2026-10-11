@@ -761,7 +761,55 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80017388);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80017640);
 
+#ifndef NON_MATCHING
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800177F4);
+#else
+void func_800177F4(RelTable *face, POLY_GT4 *poly, s32 arg2, s32 mode) {
+    u16 *idx;
+    u32 *colors;
+    u32 *c;
+    s32 semi = mode & 1;
+    s32 abr = mode & 0x60;
+    u32 code;
+    u16 tpage;
+
+    gte_ldfcdir(D_80056998.farColor[0], D_80056998.farColor[1], D_80056998.farColor[2]);
+    gte_lddp(D_80056998.dp);
+    idx = (u16 *)((u8 *)&face->table + face->table);
+    colors = (u32 *)((u8 *)&D_80056998.unk0->colors->table + D_80056998.unk0->colors->table);
+    c = &colors[idx[0] & 0x1FFF];
+    gte_ldrgb(c);
+    gte_dpcs();
+    gte_strgb(&poly->r0);
+    c++;
+    gte_ldrgb(c);
+    gte_dpcs();
+    gte_strgb(&poly->r1);
+    c++;
+    gte_ldrgb(c);
+    gte_dpcs();
+    gte_strgb(&poly->r2);
+    setPolyGT4(poly);
+    if (idx[0] & 0x8000) {
+        code = *(u32 *)&poly->r0 | 0x02000000;
+        tpage = (poly->tpage & ~0x60) | 0x20;
+    } else {
+        if (semi) {
+            code = *(u32 *)&poly->r0 | 0x02000000;
+            tpage = poly->tpage;
+        } else {
+            code = *(u32 *)&poly->r0 & ~0x02000000;
+            tpage = poly->tpage;
+        }
+        tpage = (tpage & ~0x60) | abr;
+    }
+    *(u32 *)&poly->r0 = code; /* code byte: semi-transparency bit */
+    poly->tpage = tpage;
+    gte_ldrgb(&colors[idx[1] & 0x1FFF]);
+    gte_dpcs();
+    gte_strgb(&poly->r3);
+}
+#endif
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001795C);
 
@@ -1086,7 +1134,35 @@ void func_8001C690(NAS *nas, u8 *arg1) {
     }
 }
 
+#ifndef NON_MATCHING
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001C7FC);
+#else
+void func_8001C7FC(NAS *nas, u8 *arg1, u32 flags) {
+    GteSetup s;
+    u32 f;
+
+    if (nas->flags & 0x8000) {
+        f = flags | nas->flags;
+        if (nas->flags & 0x02000000) {
+            D_800569DC = nas->unk68;
+        } else {
+            D_800569DC = 0;
+        }
+        if (!(nas->flags & 0x10000000)) {
+            D_80056998.unk84 = D_80056998.unkCC;
+            D_80056998.unk88 = D_80056998.unk10C;
+            func_8001965C(nas, arg1, arg1 + 0x14, D_80056998.unk28, &s);
+            gte_SetGeomOffset(s.ofx * D_8005B698->w / 640, s.ofy / 2);
+            if (s.trans != NULL) {
+                gte_SetTransVector(s.trans);
+            }
+            gte_SetRotMatrix(s.rot);
+        }
+        f &= ~0x10000000;
+        func_8001A0D8(&nas->ast, f | nas->flags);
+    }
+}
+#endif
 
 u32 func_8001C974(NAS *nas, u8 *arg1, u32 flags) {
     GteSetup s;

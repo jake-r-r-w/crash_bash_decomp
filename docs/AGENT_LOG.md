@@ -25,10 +25,28 @@ matched (main.exe 158/574), 0 parked.
   cost two address computations and the `-1` stayed in the loop. Computing
   it once into a local (`p = &pts[i]`) brought it back out.
 
+**GTE batch (same day):** matched `func_8001D048` (4-vertex `rtps` into a
+`POLY_GT4`, `addPrim`), `func_8002AEE0` (finish a VAB transfer, then GTE
+setup), `func_8001C974`, `func_8001C690`, and `func_80015C1C` (points to
+`TILE_1`s). That's 409/2550. Parked `func_800177F4` and `func_8001C7FC`;
+the `block` notes say what still differs.
+- New types: `GfxState.ot`/`otzAdd`/`otLen`/`farColor`/`dp`, `GfxModel`,
+  `RelTable`, `VabFile`/`VabSlot`, `PointSprites`/`PointSpriteSet`.
+- `gte_ldv0_w(xy, z)` in `bash/main.h`: the game loads vector 0 with
+  `lw` + `mtc2`, which no Sony macro does. Load the arguments into locals
+  before a store macro when the target's `lw`s come first.
+- `lw t4/t5/t6` + `ctc2` comes from Sony's `gte_SetRotMatrix` and its siblings.
+  Pass one `MATRIX *` local to both `gte_SetRotMatrix` and
+  `gte_SetTransMatrix`, so the pointer is computed once.
+- `addiu a0,a0,0x6C` and then fields at small offsets means the code took a
+  pointer to a sub-struct (`&ps->set`).
+- The words of a POLY can be updated whole (`*(u32 *)&poly->r0 |= 0x02000000`
+  for semi-transparency, not `setSemiTrans`).
+
 **Next**
-1. Remaining GTE functions in the exe: `func_8001D048`, `func_8002AEE0`,
-   `func_8001C974`, `func_800177F4`, `func_8001C690`, `func_8001C7FC`,
-   `func_80015C1C`, then the larger ones.
+1. Unpark `func_8001C7FC` (scheduling only) and `func_800177F4` (registers).
+2. More of `main.exe` (`/match-function`). Of the GTE functions only
+   the larger ones are left.
 
 ## 2026-10-10 - GTE functions
 

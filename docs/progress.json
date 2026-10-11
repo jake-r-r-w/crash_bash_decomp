@@ -1,8 +1,21 @@
 {
- "blocked": [],
- "commit": "ecf9577",
+ "blocked": [
+  {
+   "name": "func_800177F4",
+   "note": "24 regs off: colour pointer in v0 (target v1), tpage/0x02000000 constant swap a0/v0; control flow matches. Permuter best: reuse a temp for tpage & ~0x60",
+   "seg": "main/main",
+   "size": 360
+  },
+  {
+   "name": "func_8001C7FC",
+   "note": "1 insn long: lhu of s.ofy scheduled before mfhi (func_8001C974 has it after); body is func_8001C974's inside the 0x8000 check",
+   "seg": "main/main",
+   "size": 376
+  }
+ ],
+ "commit": "ec7459e",
  "game": "SCUS_945.70",
- "generated": "2026-10-11T08:12:23Z",
+ "generated": "2026-10-11T08:13:22Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -477,7 +490,7 @@
    "ts": "2026-10-11T08:10:14Z"
   },
   {
-   "commit": "ecf9577",
+   "commit": "ec7459e",
    "data_b": 128,
    "data_tb": 616791,
    "game_all_f": 2550,
@@ -490,7 +503,7 @@
    "lib_b": 121280,
    "lib_f": 535,
    "lib_tb": 122112,
-   "ts": "2026-10-11T08:12:23Z"
+   "ts": "2026-10-11T08:13:22Z"
   }
  ],
  "recent": [
@@ -616,7 +629,7 @@
   }
  ],
  "summary": {
-  "blocked": 0,
+  "blocked": 2,
   "copies_b": 38400,
   "data": {
    "done_b": 128,
@@ -627,7 +640,7 @@
    "all_f": 2550,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 0,
+   "blocked": 2,
    "c_f": 409,
    "done_b": 23008,
    "done_f": 409,
@@ -679,7 +692,7 @@
     "all_f": 574,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 0,
+    "blocked": 2,
     "c_f": 163,
     "done_b": 12408,
     "done_f": 163,

@@ -674,8 +674,10 @@
  },
  "800177F4": {
   "auto_failed": "types",
+  "blocked_at": "2026-10-11T08:12:35Z",
+  "note": "24 regs off: colour pointer in v0 (target v1), tpage/0x02000000 constant swap a0/v0; control flow matches. Permuter best: reuse a temp for tpage & ~0x60",
   "started": "2026-10-11T07:58:36Z",
-  "status": "in_progress"
+  "status": "blocked"
  },
  "8001795C": {
   "auto_failed": "types"
@@ -863,7 +865,10 @@
   "status": "matched"
  },
  "8001C7FC": {
-  "auto_failed": "types"
+  "auto_failed": "types",
+  "blocked_at": "2026-10-11T08:12:59Z",
+  "note": "1 insn long: lhu of s.ofy scheduled before mfhi (func_8001C974 has it after); body is func_8001C974's inside the 0x8000 check",
+  "status": "blocked"
  },
  "8001C974": {
   "matched_at": "2026-10-11T07:58:06Z",
