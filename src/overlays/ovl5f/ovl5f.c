@@ -251,9 +251,13 @@ void func_800C6D20(s32 arg0) {
     func_800C0C68(arg0, 0x131C);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6D40);
+void func_800C6D40(s32 arg0) {
+    func_800C0F24(arg0, 0x131B);
+}
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6D60);
+void func_800C6D60(s32 arg0) {
+    func_800C0C68(arg0, 0x131B);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6D80);
 
