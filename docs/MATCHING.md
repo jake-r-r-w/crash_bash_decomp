@@ -85,6 +85,8 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | Another function's body repeated inside this one | gcc 2.8 `-O2` doesn't inline, and the helper is often defined after the caller: write the code out in place (or a macro) | `PlaySfx` (`func_80022924`) |
 | A pointer copied into a saved register in a branch delay slot, while nearby stores still use the original register | Assign the copy after those stores (`if (a) a->prev = v; voice = v;`); reorg moves it into the slot | `PlaySfx` |
 | A `beqz` on a pointer jumps past the following `if`/`else` too, not just its own block | The second block is nested inside the first: `if (p->prev) { ...; if (p->next) ... else ...; }` | `KillNAS` |
+| A loaded global hoisted above the argument copies in the prologue (the target keeps source order) | Copy a narrow (`u16`) parameter into an `int` local before using it (`want = id;`); permuter find | `SpawnNASById` (parked) |
+| A short-lived temp gets the wrong register, and a fresh temp doesn't help | Reuse an existing variable for it (`nas = free->next; NASFreeList = nas; ...; nas = free;`): reuse changes the allocation priorities; permuter find | `SpawnNASById` (parked) |
 
 ## Classify the diff, then work through the list
 
