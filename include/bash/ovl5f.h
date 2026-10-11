@@ -54,4 +54,6 @@ void func_800C6D60(s32 arg0);
 
 void func_800C7D24(Hero *hero);
 
+void func_800C7EF8(Hero *hero);
+
 #endif /* BASH_OVL5F_H */
