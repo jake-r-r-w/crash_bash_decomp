@@ -1,0 +1,7 @@
+
+InitPodiumOdo = 0x800BA978; // type:func
+PlotPodiumOdo = 0x800B92A0; // type:func
+InitPodiumTrophy = 0x800BA8EC; // type:func
+PlotPodiumTrophy = 0x800B9538; // type:func
+InitGatewayTrophy = 0x800B7E0C; // type:func
+PlotGatewayTrophy = 0x800B7E04; // type:func

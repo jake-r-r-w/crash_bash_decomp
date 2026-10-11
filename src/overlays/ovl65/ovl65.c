@@ -60,7 +60,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B85DC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B86C8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B88E0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", PlotDinoSmoke);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B8A40);
 
@@ -92,15 +92,15 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BAD18);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BAE94);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BB23C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", InitDinoGem);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BB3EC);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", PlotDinoGem);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BC1BC);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", PlotDinoScratch);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BC5B0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BC5E0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", InitDinoScratch);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BC684);
 
@@ -128,7 +128,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BCBB8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BCCE8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BCD64);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", InitDinoSmoke);
 
 s32 func_800BCDF0(u8 *arg0) {
     s32 var_v1;

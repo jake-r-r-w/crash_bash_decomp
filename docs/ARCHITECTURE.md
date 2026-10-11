@@ -72,8 +72,8 @@ code finds 15 code files; nothing else on the disc holds code.
   `0x16` -> `ovl62` (Polar), `0x17` -> `ovl63`, `0x11`/`0x02` -> `ovl5d`,
   `0x12` -> `ovl5e`, `0x18`..`0x1D` -> `ovl64`..`ovl68` (`0x1B`, `0x1C` both
   `ovl67`), `0x1F` -> `ovl6a`. The Pogo/Arkenoid/Polar ids match the leaked
-  enums (`POGO_AST_zero = 0x1400`, ...); `ovl5f` is probably Tank (its enum is
-  cut off in the leak). Leaf functions reached only through this table are
+  enums (`POGO_AST_zero = 0x1400`, ...); `ovl5f` is Tank (`TANK_AST_zero = 0x1300` in
+  the Oct 9 prototype). Leaf functions reached only through this table are
   declared in `configs/USA/sym.<ovl>.txt` so splat splits them.
 - **AST names**: the field order is fixed by the engine's spawn code
   (`SpawnNASFromRecord`): it stores `+4` at `nas+0x48` and calls it at once
@@ -87,10 +87,15 @@ code finds 15 code files; nothing else on the disc holds code.
   `ArkRepulse`/`_RepulseRing`. `AST_AR_PU` is the Arkenoid pickup: it has no Init (stub) and the leak declares only `Plot_Ark_Pickup` for it. `AST_ArkDeadWall` and `AST_NGDeadWall` share
   one Plot (`Plot_ArkDeadWall`). Some of these objects live in the engine
   rather than the slot (`FloatyScore`, `ParticleEffect`, `ScriptFX`,
-  `SmokePoof`, `WeatherNas`). Tank's pairs are not named: its enum is cut
-  off, and the prototype order does not follow the table order (Pogo shows
-  this), so the leak alone cannot match its ids to names; the prototype
-  enums can (see Prototype debug types).
+  `SmokePoof`, `WeatherNas`). Every other id is named the same way from the
+  Oct 9 prototype's enums (see Prototype debug types): Tank's 68 names come
+  out exactly as the leaked Tank header spells its `Init`/`Plot` prototypes.
+  Left unnamed because one function serves several ids: `ovl5d`'s
+  `func_800BBD48` (Init of `Crate` and `PACrate`), `func_800BC038` (Plot of
+  `Crate`, `CrateType`) and `func_800BE9D0` (Plot of five pickups); the
+  engine's `InitScriptFX`/`PlotScriptFX` also serve `AST_SpecialFX`. The
+  Plot of `PACrate`/`PACrateType` (`0x800B87A0`) is not a function start in
+  `ovl5d`.
 
 ### Leaked source
 

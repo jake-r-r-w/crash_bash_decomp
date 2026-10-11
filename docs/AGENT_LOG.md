@@ -32,7 +32,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
    the old `auto`, weighted by identical copies, then size). Use the
    MATCHING.md process: evidence, Diff patterns, checklist, cc1 dump, then
    permuter.
-3. Name each function as it's matched when the evidence allows (only 144 of
+3. Name each function as it's matched when the evidence allows (345 of
    2550 are named).
 4. Unpark when a new idea comes up (see Open leads).
 5. Later Phase 2 items: split `main.c` into units, data to C, the PsyQ gaps,
@@ -77,11 +77,12 @@ Other:
 - `func_800C8BA0` (ovl5f) matches alone but adds 4 bytes of data/rodata to
   the overlay (offset 0x4C): its literal belongs in another file's rodata.
 - Prototype debug types (ARCHITECTURE.md, Prototype debug types): the engine
-  and Tank types are in the headers now. Still to use: name every AST
-  Init/Plot pair from the enums (Tank's included: `ovl5f` is Tank) through
-  `decomp.py rename`, and add the other games' AST enums and structs
-  (`HUB_AST_types`, `RACE_AST_types`, `BossInfo`, `HubGateway`, script and
-  map structs, ...) when their code is matched. Needs the images in `protos/`
+  and Tank types are in the headers and every single-id AST Init/Plot is
+  named (ARCHITECTURE.md, AST names, lists the shared ones). Still
+  to use: the other games' AST enums and structs (`HUB_AST_types`,
+  `RACE_AST_types`, `BossInfo`, `HubGateway`, script and map structs, ...)
+  when their code is matched, and the 14 Tank functions retyped to `NAS *`
+  are still m2c pointer arithmetic. Needs the images in `protos/`
   (`sym_scan.py`).
 - `func_8001A0D8` (blocks `func_8001C7FC`) stores SXY at +0x10/+0x18/+0x20
   too: use `gte_stsxy3_10`.
@@ -184,6 +185,9 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-12:** Named 201 AST Init/Plot functions from the Oct 9 enums
+  (game functions named: 144 -> 345). Tank's 68 match the leaked Tank
+  prototypes exactly; 14 matched Tank wrappers were retyped to `NAS *` first.
 - **2026-10-11:** Integrated the Oct 9 prototype types: `nas.h` now uses the
   original names (`NAStype`, `EXTengtype`, `HeroInfo`, `EXTanimator`,
   `NASTrigger` for `NASSpawn`, `_sfx_handler` for `SfxVoice`) and defines

@@ -8,19 +8,11 @@
 #include "common.h"
 #include "bash/nas.h"
 
-void func_800C0C68(s32 arg0, s32 arg1);
-void func_800C0F24(s32 arg0, s32 arg1);
+void func_800C0C68(NAS *nas, s32 id);
+void func_800C0F24(NAS *nas, s32 id);
 
-void func_800C6828(s32 arg0);
-void func_800C6848(s32 arg0);
 void func_800C68A8(void);
 void func_800C69BC(void);
-void func_800C6AF4(u8 *arg0);
-void func_800C6F88(u8 *arg0);
-void func_800C7288(void);
-void func_800C7290(void);
-void func_800C7350(u8 *arg0);
-void func_800C7494(u8 *arg0);
 void func_800C7C08(u8 *arg0);
 void func_800C7C68(void);
 void func_800C7D04(void);
@@ -40,17 +32,11 @@ extern s32 D_800CAFF4;
 extern u8 D_800CACB4[];
 extern u8 D_800CAFFC[];
 
-void func_800C6868(s32 arg0);
 
-void func_800C6888(s32 arg0);
 
-void func_800C6D00(s32 arg0);
 
-void func_800C6D20(s32 arg0);
 
-void func_800C6D40(s32 arg0);
 
-void func_800C6D60(s32 arg0);
 
 void func_800C7D24(HeroInfo *hero);
 

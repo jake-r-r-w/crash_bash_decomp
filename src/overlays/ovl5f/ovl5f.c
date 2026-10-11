@@ -80,55 +80,55 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BAF64);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BAFFC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BB6D4);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotLaserBitTA);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BB874);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotFlamerBitTA);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BBA9C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotFlubberTA);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BBEF4);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotSwirlyTA);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BC0B0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotShell);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BC27C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotLobber_TA);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BC7D8);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotRocketTA);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BCD80);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotMine);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BD084);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotWaterMine);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BD384);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotTorpedo);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BD654);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BD868);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotShrapnelBit);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BDC50);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotPickupGenerator_TA);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BE234);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitHelicopterTA);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BE47C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotHelicopterTA);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BE7DC);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitPickupTA);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BE988);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotPickupTA);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BF548);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BF718);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotRock_TA);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BF804);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotPeriscope);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C0050);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotPeriscopeGun);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C0200);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotBoatField);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C0348);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotPillarControl);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C04E0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotPillar);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C0898);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotTotemPole);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C0C68);
 
@@ -140,23 +140,23 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C18F0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C1F44);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C2080);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitTankBoss);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C22B8);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotTankBoss);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C2940);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C30C0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C33A0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotTankBossCrashTurret);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C3778);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C3A70);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotTankBossCortexTurret);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C3D48);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C405C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotTankBossRocketTurret);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C4320);
 
@@ -184,24 +184,24 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C5BCC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C60AC);
 
-void func_800C60AC(s32 arg0, s32 arg1);
+void func_800C60AC(NAS *nas, s32 id);
 
-void func_800C6828(s32 arg0) {
-    func_800C60AC(arg0, 0x131F);
+void PlotJoe(NAS *nas) {
+    func_800C60AC(nas, 0x131F);
 }
 
-void func_800C4320(s32 arg0, s32 arg1);
+void func_800C4320(NAS *nas, s32 id);
 
-void func_800C6848(s32 arg0) {
-    func_800C4320(arg0, 0x131F);
+void InitJoe(NAS *nas) {
+    func_800C4320(nas, 0x131F);
 }
 
-void func_800C6868(s32 arg0) {
-    func_800C60AC(arg0, 0x131E);
+void PlotMoe(NAS *nas) {
+    func_800C60AC(nas, 0x131E);
 }
 
-void func_800C6888(s32 arg0) {
-    func_800C4320(arg0, 0x131E);
+void InitMoe(NAS *nas) {
+    func_800C4320(nas, 0x131E);
 }
 
 void func_800C68A8(void) {
@@ -219,9 +219,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C69C4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6A30);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6A80);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitTankBossRocketTurret);
 
-void func_800C6AF4(u8 *arg0) {
+void InitTankBossCortexTurret(NAS *arg0) {
     u8 *temp_a1;
     u8 *temp_v1;
 
@@ -235,7 +235,7 @@ void func_800C6AF4(u8 *arg0) {
     (*(s16*)((u8*)(arg0) + 92)) = 0x11;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6B3C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitTankBossCrashTurret);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6B9C);
 
@@ -243,62 +243,62 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6C30);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6C90);
 
-void func_800C6D00(s32 arg0) {
-    func_800C0F24(arg0, 0x131C);
+void PlotTotemBot(NAS *nas) {
+    func_800C0F24(nas, 0x131C);
 }
 
-void func_800C6D20(s32 arg0) {
-    func_800C0C68(arg0, 0x131C);
+void InitTotemBot(NAS *nas) {
+    func_800C0C68(nas, 0x131C);
 }
 
-void func_800C6D40(s32 arg0) {
-    func_800C0F24(arg0, 0x131B);
+void PlotTotemTop(NAS *nas) {
+    func_800C0F24(nas, 0x131B);
 }
 
-void func_800C6D60(s32 arg0) {
-    func_800C0C68(arg0, 0x131B);
+void InitTotemTop(NAS *nas) {
+    func_800C0C68(nas, 0x131B);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6D80);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitTotemPole);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6E5C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotPillarCover);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6F00);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitPillarCover);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6F20);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitPillar);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6F70);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitPillarControl);
 
-void func_800C6F88(u8 *arg0) {
+void InitBoatField(NAS *arg0) {
     (*(s32*)((u8*)(arg0) + 100)) = 0;
     if ((*(u16*)((u8*)(arg0) + 106)) != 0) {
         KillNAS((NAS *)arg0);
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6FB8);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotBoatWake);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7074);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitBoatWake);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C70C4);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitPeriscopeGun);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7124);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitPeriscope);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C71E0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitRock_TA);
 
-void func_800C7288(void) {
+void PlotBigApple(NAS *nas) {
 }
 
-void func_800C7290(void) {
+void InitBigApple(NAS *nas) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7298);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C72E8);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitPickupGenerator_TA);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7300);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotShellExplosion);
 
-void func_800C7350(u8 *arg0) {
+void InitShellExplosion(NAS *arg0) {
     u8 *temp_v1;
     u8 *temp_v1_2;
 
@@ -312,11 +312,11 @@ void func_800C7350(u8 *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C73B0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitShrapnelBit);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7428);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotMineBall);
 
-void func_800C7494(u8 *arg0) {
+void InitMineBall(NAS *arg0) {
     u8 *temp_v1;
     u8 *temp_v1_2;
 
@@ -331,25 +331,25 @@ void func_800C7494(u8 *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C74F4);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitTorpedo);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7598);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitWaterMine);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7614);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitMine);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C76A8);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitRocketTA);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7714);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitLobber_TA);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C77E4);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitShell);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C78B4);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitSwirlyTA);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C798C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitFlubberTA);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7AAC);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitFlamerBitTA);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7B38);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitLaserBitTA);
 
 void func_800C7C08(u8 *arg0) {
     u32 temp_v0;

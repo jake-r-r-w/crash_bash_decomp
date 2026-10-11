@@ -8,7 +8,7 @@
 #include "common.h"
 #include "bash/nas.h"
 
-void func_800BA964(u8 *arg0);
+void PlotBoing(u8 *arg0);
 s32 func_800BB1B4(u8 *arg0);
 void func_800BB360(void);
 void func_800BB368(void);

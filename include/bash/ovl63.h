@@ -8,14 +8,14 @@
 #include "common.h"
 #include "bash/nas.h"
 
-void func_800C4618(NAS *nas);
-void func_800C4BB0(NAS *nas);
-void func_800C4C14(NAS *nas);
-void func_800C4C98(NAS *nas);
+void PlotRaceSmokeBoostWater(NAS *nas);
+void PlotRaceGreenSmokeBoost(NAS *nas);
+void PlotRaceGreenSmokePoof(NAS *nas);
+void PlotRaceSmokePoof(NAS *nas);
 s32 func_800C4D1C(u8 *arg0, u8 *arg1);
-void func_800C4D70(u8 *arg0);
+void InitRaceTag(u8 *arg0);
 s32 func_800C5014(s32 arg0);
-void func_800C5028(NAS *nas);
+void PlotRaceSmokeBoost(NAS *nas);
 void func_800C53BC(s32 arg0);
 s32 func_800C5AF8(void);
 s32 func_800C5B7C(void);

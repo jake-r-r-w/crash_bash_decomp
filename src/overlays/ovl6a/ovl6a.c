@@ -112,10 +112,10 @@ void func_800B7DB4(u8 *arg0, s32 arg1) {
     }
 }
 
-void func_800B7E04(void) {
+void PlotGatewayTrophy(void) {
 }
 
-void func_800B7E0C(void) {
+void InitGatewayTrophy(void) {
 }
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/ovl6a", func_800B7E14);
@@ -195,11 +195,11 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/ovl6a", func_800B8CA0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/ovl6a", func_800B8F50);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/ovl6a", func_800B92A0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/ovl6a", PlotPodiumOdo);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/ovl6a", func_800B93B4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/ovl6a", func_800B9538);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/ovl6a", PlotPodiumTrophy);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/ovl6a", func_800B96F4);
 
@@ -243,9 +243,9 @@ void func_800BA848(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/ovl6a", func_800BA88C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/ovl6a", func_800BA8EC);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/ovl6a", InitPodiumTrophy);
 
-void func_800BA978(u8 *arg0) {
+void InitPodiumOdo(u8 *arg0) {
     if ((*(s32*)((u8*)(arg0) + 84)) != 0) {
         (*(s32*)((u8*)(arg0) + 96)) = 0;
         (*(s32*)((u8*)(arg0) + 100)) = 0;

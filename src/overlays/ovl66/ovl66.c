@@ -10,13 +10,13 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B34F8);
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl66/ovl66", D_800B32B4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B3668);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", PlotBonkStool);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B3D28);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B3F10);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", InitBonkCrate);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B4038);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", PlotBonkCrate);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B4454);
 
@@ -51,15 +51,15 @@ s32 func_800B62C8(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return (temp_a0 * temp_a0) + (temp_a1 * temp_a1);
 }
 
-void func_800B62EC(NAS *nas) {
+void PlotBonkFlag(NAS *nas) {
     func_800250B0(nas);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B630C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", InitBonkFlag);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B6380);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", PlotBonkShockwave);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B6414);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", InitBonkShockwave);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B64B4);
 
@@ -68,7 +68,7 @@ void func_800B6560(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B6568);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B65F0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", InitBonkStool);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B66C8);
 

@@ -66,11 +66,11 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B6F6C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B722C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B7364);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotBarrelGenerator);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B7570);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", InitBarrelCH);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B766C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotBarrelCH);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B7948);
 
@@ -78,19 +78,19 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B7B80);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B7DF0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B8114);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotCoalFlame);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B8368);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotCircleFire);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B85D0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotEgg);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B8E10);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotCoalFlameSFX);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B8F38);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotPUGenerator_CH);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B9160);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", InitPickupCH);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B928C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotPickupCH);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B94FC);
 
@@ -104,7 +104,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BA5A0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BA630);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BA67C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", InitPUGenerator_CH);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BA694);
 
@@ -112,21 +112,21 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BA70C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BA784);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BA85C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", InitCoalFlameSFX);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BA868);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", InitEgg);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BA944);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", InitCircleFire);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BAA34);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", InitCoalFlame);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BAAD4);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotCoal);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BABB4);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", InitCoal);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BAC30);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BAC80);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", InitBarrelGenerator);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BAC98);
 

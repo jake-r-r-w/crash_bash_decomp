@@ -1,0 +1,19 @@
+
+InitBarrelCH = 0x800B7570; // type:func
+PlotBarrelCH = 0x800B766C; // type:func
+InitCoal = 0x800BABB4; // type:func
+PlotCoal = 0x800BAAD4; // type:func
+InitPUGenerator_CH = 0x800BA67C; // type:func
+PlotPUGenerator_CH = 0x800B8F38; // type:func
+InitPickupCH = 0x800B9160; // type:func
+PlotPickupCH = 0x800B928C; // type:func
+InitCoalFlame = 0x800BAA34; // type:func
+PlotCoalFlame = 0x800B8114; // type:func
+InitBarrelGenerator = 0x800BAC80; // type:func
+PlotBarrelGenerator = 0x800B7364; // type:func
+InitCircleFire = 0x800BA944; // type:func
+PlotCircleFire = 0x800B8368; // type:func
+InitEgg = 0x800BA868; // type:func
+PlotEgg = 0x800B85D0; // type:func
+InitCoalFlameSFX = 0x800BA85C; // type:func
+PlotCoalFlameSFX = 0x800B8E10; // type:func

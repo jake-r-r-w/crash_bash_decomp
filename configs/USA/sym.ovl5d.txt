@@ -1,0 +1,22 @@
+
+InitCratePickup = 0x800BE1D0; // type:func
+InitShieldPickup = 0x800BE370; // type:func
+InitBootsPickup = 0x800BE508; // type:func
+InitAnvilPickup = 0x800BE6A0; // type:func
+InitSlowmoPickup = 0x800BE838; // type:func
+InitSnowGlint = 0x800BAB04; // type:func
+PlotSnowGlint = 0x800B8694; // type:func
+InitBashPenguin = 0x800BAA1C; // type:func
+PlotBashPenguin = 0x800B879C; // type:func
+InitBash8way = 0x800B9A34; // type:func
+PlotBash8way = 0x800B9B70; // type:func
+InitBashHomer = 0x800B9DD8; // type:func
+PlotBashHomer = 0x800BA02C; // type:func
+InitBashShox = 0x800BA354; // type:func
+PlotBashShox = 0x800BA488; // type:func
+InitMissileExplode = 0x800BA830; // type:func
+PlotMissileExplode = 0x800BA780; // type:func
+InitTumbler = 0x800B8FF0; // type:func
+PlotTumbler = 0x800B91EC; // type:func
+InitBoing = 0x800BA994; // type:func
+PlotBoing = 0x800BA964; // type:func

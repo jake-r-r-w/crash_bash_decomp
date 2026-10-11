@@ -1,0 +1,9 @@
+
+InitBonkStool = 0x800B65F0; // type:func
+PlotBonkStool = 0x800B3668; // type:func
+InitBonkFlag = 0x800B630C; // type:func
+PlotBonkFlag = 0x800B62EC; // type:func
+InitBonkShockwave = 0x800B6414; // type:func
+PlotBonkShockwave = 0x800B6380; // type:func
+InitBonkCrate = 0x800B3F10; // type:func
+PlotBonkCrate = 0x800B4038; // type:func

@@ -1,0 +1,3 @@
+
+PlotHazardType = 0x800B54CC; // type:func
+PlotBalloon = 0x800B6044; // type:func

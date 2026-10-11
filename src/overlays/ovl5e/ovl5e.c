@@ -22,9 +22,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B42C0);
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl5e/ovl5e", D_800B32B4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B4340);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", InitPapuBoss);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B4480);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", PlotPapuBoss);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B4B9C);
 
@@ -32,7 +32,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B4D70);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B4EE8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B5090);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", PlotPapuMinion);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B5E44);
 
@@ -139,9 +139,9 @@ void func_800B790C(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B794C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B7988);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", PlotPapuColumn);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B7AA4);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", InitPapuColumn);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B7B10);
 

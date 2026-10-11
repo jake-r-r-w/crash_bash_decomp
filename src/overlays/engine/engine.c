@@ -542,15 +542,15 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008D5D4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008D6C8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008D824);
+INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", InitHealth);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008DA78);
+INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", PlotHealth);
 
-void func_8008DD20(NAS *nas) {
+void PlotBigPoof(NAS *nas) {
     func_800250B0(nas);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008DD40);
+INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", InitBigPoof);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008DDC0);
 
@@ -564,7 +564,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008DEC8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008E27C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008E52C);
+INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", InitCrateExplode);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008E5BC);
 

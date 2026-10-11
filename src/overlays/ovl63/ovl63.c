@@ -125,15 +125,15 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BEBC0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BF0F8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BF2B8);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRaceMissile);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BF460);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotRaceMissile);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BFC38);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRacePickUp);
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl63/ovl63", D_800B3400);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BFD84);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotRacePickUp);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C0218);
 
@@ -143,47 +143,47 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C0CB4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C0F5C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C0F68);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotTNTCrate);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C12F0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitDinoEgg);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C142C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotDinoEgg);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C1CFC);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotRaceShield);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C1FFC);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotRaceTag);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C2284);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRaceVolcano);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C2388);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotRaceVolcano);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C2E10);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotGlob);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C310C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C32BC);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitBarrelRoll);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C3494);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotBarrelRoll);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C3738);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitTrackGlob);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C3934);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotTrackGlob);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C3D3C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitDac);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C3F68);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotDac);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C44B0);
 
-void func_800C4618(NAS *nas) {
+void PlotRaceSmokeBoostWater(NAS *nas) {
     func_800250B0(nas);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4638);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRaceSmokeBoostWater);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C467C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4774);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitGlob);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4810);
 
@@ -193,23 +193,23 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C49DC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4ABC);
 
-void func_800C4BB0(NAS *nas) {
+void PlotRaceGreenSmokeBoost(NAS *nas) {
     func_800250B0(nas);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4BD0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRaceGreenSmokeBoost);
 
-void func_800C4C14(NAS *nas) {
+void PlotRaceGreenSmokePoof(NAS *nas) {
     func_800250B0(nas);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4C34);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRaceGreenSmokePoof);
 
-void func_800C4C98(NAS *nas) {
+void PlotRaceSmokePoof(NAS *nas) {
     func_800250B0(nas);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4CB8);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRaceSmokePoof);
 
 s32 func_800C4D1C(u8 *arg0, u8 *arg1) {
     s32 temp_v0;
@@ -222,22 +222,22 @@ s32 func_800C4D1C(u8 *arg0, u8 *arg1) {
     return (temp_v0 * temp_v0) + (temp_v0_2 * temp_v0_2) + (temp_v0_3 * temp_v0_3);
 }
 
-void func_800C4D70(u8 *arg0) {
+void InitRaceTag(u8 *arg0) {
     D_800C6D20 = 0x12C;
     PlaySfx(0x452, (*(s32*)((u8*)(arg0) + 84)) + 0x94, 0, 0x1000, 0x1E00, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4DB8);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRaceShield);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4DF8);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotRaceFire);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4E18);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRaceFire);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4E54);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4F30);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4FC0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitTNTCrate);
 
 s32 func_800C5014(s32 arg0) {
     s32 var_a0;
@@ -249,11 +249,11 @@ s32 func_800C5014(s32 arg0) {
     return var_a0 >> 9;
 }
 
-void func_800C5028(NAS *nas) {
+void PlotRaceSmokeBoost(NAS *nas) {
     func_800250B0(nas);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5048);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRaceSmokeBoost);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C50B0);
 

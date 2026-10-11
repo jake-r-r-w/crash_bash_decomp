@@ -27,11 +27,11 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B4F7C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B51A0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B54CC);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", PlotHazardType);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B5D3C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B6044);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", PlotBalloon);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B697C);
 

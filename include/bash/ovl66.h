@@ -9,7 +9,7 @@
 #include "bash/nas.h"
 
 s32 func_800B62C8(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
-void func_800B62EC(NAS *nas);
+void PlotBonkFlag(NAS *nas);
 void func_800B6560(void);
 void func_800B67C4(void);
 void func_800B6868(s32 arg0);

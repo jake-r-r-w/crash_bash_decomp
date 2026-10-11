@@ -45,17 +45,17 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B8314);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B8578);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B8694);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotSnowGlint);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B879C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotBashPenguin);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B8B00);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B8C9C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B8FF0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitTumbler);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B91EC);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotTumbler);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B94C4);
 
@@ -63,35 +63,35 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B95F0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B97A8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B9A34);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitBash8way);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B9B70);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotBash8way);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B9DD8);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitBashHomer);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BA02C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotBashHomer);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BA354);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitBashShox);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BA488);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotBashShox);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BA780);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotMissileExplode);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BA830);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitMissileExplode);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BA8A4);
 
-void func_800BA964(u8 *arg0) {
+void PlotBoing(u8 *arg0) {
     if ((*(s32*)((u8*)(arg0) + 84)) != 0) {
         func_800250B0((NAS *)arg0);
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BA994);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitBoing);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BAA1C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitBashPenguin);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BAB04);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitSnowGlint);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BAC10);
 
@@ -186,15 +186,15 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BBD48);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BC038);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BE1D0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitCratePickup);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BE370);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitShieldPickup);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BE508);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitBootsPickup);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BE6A0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitAnvilPickup);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BE838);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitSlowmoPickup);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BE9D0);
 
