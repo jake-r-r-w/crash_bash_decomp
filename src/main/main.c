@@ -3301,7 +3301,13 @@ void func_8002D0C8(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002D108);
+void func_8002D108(void) {
+    s32 mode = 2;
+
+    D_800675C8 = 1;
+    D_800655C4 = mode;
+    D_800655C0 |= 0x80;
+}
 
 void func_8002D134(s32 arg0) {
     D_800675C8 = 1;
