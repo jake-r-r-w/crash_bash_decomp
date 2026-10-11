@@ -555,4 +555,6 @@ void func_8002B9A4(void);
 
 s32 func_8001E598(u8 *arg0);
 
+void func_800101E0(void);
+
 #endif /* BASH_MAIN_H */

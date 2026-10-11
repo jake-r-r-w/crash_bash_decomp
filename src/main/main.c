@@ -7,7 +7,24 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80010158);
 
 INCLUDE_RODATA("asm/nonmatchings/main/main", D_8004C56C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800101E0);
+/* Shuts the system down and runs the Spyro 3 demo from the disc. */
+void func_800101E0(void) {
+    char unused[24]; /* never used, but the frame has room for it */
+
+    func_8002AB44();
+    DrawSync(0);
+    StopRCnt(RCntCNT0);
+    StopRCnt(RCntCNT1);
+    StopRCnt(RCntCNT2);
+    StopRCnt(RCntCNT3);
+    VSync(4);
+    ResetGraph(3);
+    PadStopCom();
+    StopCallback();
+    VSync(10);
+    _96_init();
+    LoadExec("cdrom:\\SPYRO3\\SPYRO3.EXE;1", 0, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80010278);
 

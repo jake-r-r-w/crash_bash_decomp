@@ -8,7 +8,9 @@
  },
  "800101E0": {
   "auto_diff": 4,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T16:35:35Z",
+  "started": "2026-10-11T16:26:54Z",
+  "status": "matched"
  },
  "80010278": {
   "auto_failed": "compile"
