@@ -76,8 +76,13 @@ Other:
   `u8 *` heap parameters of `func_80011DB4` and `func_800112A4`.
 - `func_800C8BA0` (ovl5f) matches alone but adds 4 bytes of data/rodata to
   the overlay (offset 0x4C): its literal belongs in another file's rodata.
-- Tank (`ovl5f`, probably): find its AST ids another way (strings, the
-  overlay's own tables) before naming anything.
+- Prototype debug types (ARCHITECTURE.md, Prototype debug types): the Oct 9
+  build's leftover SN records define `NAStype`, `EXTengtype`, `HeroInfo`,
+  `TA_player`, the script/trigger/map structs and every minigame's AST enum.
+  Adopt them into `bash/nas.h` and the minigame headers one type at a time,
+  each checked against retail code (offsets so far agree), and name every
+  AST Init/Plot pair from the enums, Tank's included (`ovl5f` is Tank).
+  Needs the images in `protos/` (`sym_scan.py`).
 - `func_8001A0D8` (blocks `func_8001C7FC`) stores SXY at +0x10/+0x18/+0x20
   too: use `gte_stsxy3_10`.
 - Sound voices: `SfxActiveVoices` (`0x80059614`) is `SfxVoicePool.active`
@@ -173,6 +178,12 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-11:** Searched the three Hidden Palace prototypes (`protos/`,
+  git-ignored). No `.SYM`/`.MAP` files or text leaks, but the Aug 23 and
+  Oct 9 DATs end in SN debug type records: engine structs with offsets and all
+  AST enums, which name every overlay's game. New `leak_scan.py`,
+  `sym_scan.py`.
 
 - **2026-10-11:** Copied `func_80026A28` to `func_800C9B5C` (ovl62). The two
   PsyQ-gap copies don't fit in the build (function padding, see Open leads).

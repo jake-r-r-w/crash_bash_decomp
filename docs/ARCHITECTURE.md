@@ -89,7 +89,8 @@ code finds 15 code files; nothing else on the disc holds code.
   rather than the slot (`FloatyScore`, `ParticleEffect`, `ScriptFX`,
   `SmokePoof`, `WeatherNas`). Tank's pairs are not named: its enum is cut
   off, and the prototype order does not follow the table order (Pogo shows
-  this), so its ids cannot be matched to names.
+  this), so the leak alone cannot match its ids to names; the prototype
+  enums can (see Prototype debug types).
 
 ### Leaked source
 
@@ -121,6 +122,63 @@ own header (`ovl5f`, `ovl60`, `ovl61`, `ovl62`). Differences from the leak:
   need one of them complete are wrapped in `#ifdef BASH_HAVE_<TYPE>`. Only
   `TA_player` is still guarded.
 - `bool` is 32 bits (`s32`); see Engine types.
+
+### Prototype debug types
+
+Three prototype discs are archived on Hidden Palace (Aug 23, Sep 14 and
+Oct 9 2000; the Oct 9 one is a PAL review build, `SCES_028.34`). Keep the
+images in `protos/` (git-ignored); commit only the names and types derived
+from them. None ships a `.SYM` or `.MAP` file, and none has a text leak like
+retail's.
+
+The padding at the end of two of the prototype `CRASHBSH.DAT` files holds
+pages of build-machine memory with SN debug type records (the `.SYM` def
+format: `u32 value`, tag `0x94`/`0x96`, class, type, size, name). They hold
+only types: no functions, globals or line numbers.
+- **Aug 23** (DAT `0x2AD5800`): the start of an SN `LNK` object for
+  `C:\crash4\Core\Shell\PSX\PSX_PAD.CPP`, its include list (about 90 headers
+  under `C:\CRASH4\{CORE,GAMEENG,GAMESPEC,LANGUAGE}`), then 784 records.
+- **Oct 9** (DAT `0x54B3E00`..`0x54CAA00`): 3429 records. It defines the engine's
+  own types, which the retail leak lacks: `NAStype` (typedef `NAS`),
+  `EXTtype` (`EXT`), `EXTengtype` (`EXTengine`), `EXTnode`, `NASnode`,
+  `subengine`, `HeroInfo`, `EXTobject`, `EXTanimator`, `EXTmotion`, the
+  script, trigger and map structs, `TA_player`, and the `*_AST_types` enum of
+  every minigame. Struct members carry their offsets.
+
+`tools/scripts/sym_scan.py FILE --from OFF --c` prints the records as C. The
+Oct 9 layouts agree with the ones recovered from retail code, so retail is
+close to that build: `NAStype` is 0x70 bytes with `InitDelete`/`Handler` at
+`0x48`/`0x4C` (our `Init`/`Plot`), `trigger` `0x50`, `Engine` `0x54`, `FUX`
+`0x58`, `UserInfo` `0x5C`, `Class`/`Failure`/`Type` at `0x68`/`0x6A`/`0x6C`;
+`EXTengtype` has `sub`/`last` at `0x6C`/`0x70`, `Engine` (next) `0x7C`,
+`platform` `0x80`, `collision_box` `0x84`, `sfx` `0x94`. Check each type
+against retail code before adopting it: the enums moved between Aug and Oct
+(`RACE_AST_zero` is `0x1800` in Aug, `0x1700` in Oct).
+
+The Oct 9 enums name every id in the retail AST table except `0x0001`, and
+so name each slot overlay's game:
+
+| Ids | Enum | Overlay |
+|---|---|---|
+| `0x00xx` | `HERO_AST_types` | none: Init and Plot are the stub `0x80026D00` |
+| `0x02xx` | `XTRAS_AST_types` (crates, pickups) | `ovl5d` and the engine (`0x0205`, `0x0207`, `0x020C`, `0x020D`) |
+| `0x10xx` | `TITLES_AST_types` | none: the stub `0x80026D00` |
+| `0x11xx` | `BASH_AST_types` | `ovl5d` |
+| `0x12xx` | `PAPU_AST_types` | `ovl5e` |
+| `0x13xx` | `TANK_AST_types` | `ovl5f` |
+| `0x14xx` | `POGO_AST_types` | `ovl60` |
+| `0x15xx` | `ARKENOID_AST_types` | `ovl61` |
+| `0x16xx` | `POLAR_AST_types` | `ovl62` |
+| `0x17xx` | `RACE_AST_types` | `ovl63` |
+| `0x18xx` | `SPIN_AST_types` | `ovl64` |
+| `0x19xx` | `DINO_AST_types` | `ovl65` |
+| `0x1Axx` | `BONK_AST_types` | `ovl66` |
+| `0x1Bxx`, `0x1Cxx` | `N2O_AST_types`, `NOX_AST_types` | `ovl67` |
+| `0x1Dxx` | `CHASE_AST_types` | `ovl68` |
+| `0x1Fxx` | `HUB_AST_types` | `ovl6a` |
+
+Tank's ids are `TANK_AST_zero = 0x1300` + position, like the other three
+leaked games (`AST_Shell` is `0x1301`, ..., `AST_Torpedo` `0x1322`).
 
 ### Functions reached from the AST pairs
 

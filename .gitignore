@@ -1,5 +1,6 @@
 # Game data: copyrighted and large. Never commit.
 disc/
+protos/
 asm/
 assets/
 build/
