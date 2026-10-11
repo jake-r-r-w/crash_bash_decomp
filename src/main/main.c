@@ -2482,7 +2482,19 @@ void func_8002AAAC(void) {
     D_80064414 = 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002AABC);
+void func_8002AABC(void) {
+    *(s32 *)D_8006557C = 0;
+    SsInit();
+    SsSetTableSize(D_800654CC, 1, 1);
+    SpuReserveReverbWorkArea(1);
+    SsUtSetReverbType(7);
+    SsUtSetReverbDepth(100, 0);
+    func_800369FC();
+    func_8002AAA0();
+    D_800643F8 = (void (*)())SsSetTickCallback(func_8002ABA8);
+    SsSetTickMode(1);
+    SsStart();
+}
 
 void func_8002AB44(void) {
     if (D_800643F8 != 0) {

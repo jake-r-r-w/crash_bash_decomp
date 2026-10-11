@@ -254,6 +254,7 @@ void func_8002A67C(void);
 void func_8002A740(u8 *arg0);
 void func_8002AA50(u8 *arg0);
 void func_8002AA8C(u8 *arg0);
+void func_800369FC(void);
 void func_8002AAA0(void);
 void func_8002AAAC(void);
 void func_8002AB44(void);
@@ -305,6 +306,7 @@ extern u8 D_80055684[];
 extern void *D_8005AA34;
 extern void *D_8005AA24;
 extern u8 D_8006557C[];
+extern char D_800654CC[];
 extern u8 D_8005A614[];
 extern s32 D_800675C8;
 extern s32 D_8005A620;
@@ -427,5 +429,7 @@ void *func_8001CFE8(MorphModel *model, void *arg1, s32 arg2);
 s32 func_80028BC8(u8 * *arg0);
 
 void func_8002D0C8(void);
+
+void func_8002AABC(void);
 
 #endif /* BASH_MAIN_H */
