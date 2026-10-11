@@ -23,17 +23,11 @@
    "note": "4 operands: the free-list pop's next pointer is in s0 (it reuses nas, as the permuter found) where the target uses a1; a separate temp (top or block scope), reusing eng, or a static inline AllocNAS all give the old allocation (34 lines). Prologue fixed by copying the u16 id into an int local. 3 permuter runs (30 min)",
    "seg": "main/main",
    "size": 512
-  },
-  {
-   "name": "FindExtension",
-   "note": "branch layout only (5 opcodes): target puts the 'return ext' block right after 'bnez sub' and the low-byte compare branches back to it (beq); gcc merges the two returns after the compare instead. Fixed already at the first jump pass (-dj). Tried for/while/do-while, && / || / ternary, nested ifs, continue, a found: label with goto, swapped conditions, u8/u32 types; permuter 10 min (nothing valid)",
-   "seg": "main/main",
-   "size": 88
   }
  ],
- "commit": "2eb8771",
+ "commit": "0466240",
  "game": "SCUS_945.70",
- "generated": "2026-10-11T15:31:36Z",
+ "generated": "2026-10-11T15:34:48Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -5304,9 +5298,103 @@
      535
     ]
    }
+  },
+  {
+   "commit": "0466240",
+   "data_b": 128,
+   "data_tb": 616791,
+   "game_all_f": 2550,
+   "game_b": 27964,
+   "game_c_f": 444,
+   "game_f": 444,
+   "game_named_f": 144,
+   "game_tb": 1019036,
+   "game_typed_f": 332,
+   "lib_b": 121280,
+   "lib_f": 535,
+   "lib_tb": 122112,
+   "ts": "2026-10-11T15:34:48Z",
+   "units": {
+    "engine": [
+     2616,
+     60
+    ],
+    "main exe": [
+     17076,
+     189
+    ],
+    "ovl5d": [
+     328,
+     4
+    ],
+    "ovl5e": [
+     504,
+     6
+    ],
+    "ovl5f": [
+     1220,
+     31
+    ],
+    "ovl60": [
+     708,
+     14
+    ],
+    "ovl61": [
+     292,
+     7
+    ],
+    "ovl62": [
+     620,
+     28
+    ],
+    "ovl63": [
+     604,
+     15
+    ],
+    "ovl64": [
+     104,
+     6
+    ],
+    "ovl65": [
+     492,
+     9
+    ],
+    "ovl66": [
+     528,
+     13
+    ],
+    "ovl67": [
+     836,
+     12
+    ],
+    "ovl68": [
+     180,
+     10
+    ],
+    "ovl69": [
+     920,
+     16
+    ],
+    "ovl6a": [
+     936,
+     24
+    ],
+    "psyq": [
+     121280,
+     535
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-11T15:34:23Z",
+   "auto": true,
+   "name": "FindExtension",
+   "seg": "main/main",
+   "size": 88,
+   "tries": 0
+  },
   {
    "at": "2026-10-11T15:31:11Z",
    "auto": true,
@@ -5418,18 +5506,10 @@
    "seg": "main/main",
    "size": 248,
    "tries": 0
-  },
-  {
-   "at": "2026-10-11T14:35:23Z",
-   "auto": true,
-   "name": "func_80026A54",
-   "seg": "main/main",
-   "size": 132,
-   "tries": 0
   }
  ],
  "summary": {
-  "blocked": 5,
+  "blocked": 4,
   "copies_b": 38304,
   "data": {
    "done_b": 128,
@@ -5440,16 +5520,16 @@
    "all_f": 2550,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 5,
-   "c_f": 443,
-   "done_b": 27876,
-   "done_f": 443,
+   "blocked": 4,
+   "c_f": 444,
+   "done_b": 27964,
+   "done_f": 444,
    "named_f": 144,
-   "pct": 2.7355265172182337,
+   "pct": 2.744162129699049,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2550,
-   "typed_f": 331
+   "typed_f": 332
   },
   "lib": {
    "all_f": 566,
@@ -5492,21 +5572,21 @@
     "all_f": 574,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 5,
-    "c_f": 188,
-    "done_b": 16988,
-    "done_f": 188,
+    "blocked": 4,
+    "c_f": 189,
+    "done_b": 17076,
+    "done_f": 189,
     "file": "SCUS_945.70",
     "files": 1,
     "lib": false,
     "named_f": 15,
-    "pct": 13.607818007049023,
+    "pct": 13.67830823454021,
     "phase": 2,
     "sony_b": 0,
     "title": "main.exe",
     "total_b": 124840,
     "total_f": 574,
-    "typed_f": 113,
+    "typed_f": 114,
     "unit": "main exe"
    },
    {

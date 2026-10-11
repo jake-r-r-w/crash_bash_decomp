@@ -1543,11 +1543,10 @@
  },
  "800264E8": {
   "auto_diff": 12,
-  "auto_failed": "diff",
   "blocked_at": "2026-10-11T12:30:01Z",
-  "note": "branch layout only (5 opcodes): target puts the 'return ext' block right after 'bnez sub' and the low-byte compare branches back to it (beq); gcc merges the two returns after the compare instead. Fixed already at the first jump pass (-dj). Tried for/while/do-while, && / || / ternary, nested ifs, continue, a found: label with goto, swapped conditions, u8/u32 types; permuter 10 min (nothing valid)",
+  "matched_at": "2026-10-11T15:34:23Z",
   "started": "2026-10-11T12:13:02Z",
-  "status": "blocked"
+  "status": "matched"
  },
  "80026540": {
   "auto_diff": 40,
