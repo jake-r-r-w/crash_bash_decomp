@@ -37,6 +37,6 @@ extern u8 D_800C7294[];
 extern s32 D_800BCED4;
 extern s32 D_800BCED8;
 extern s32 D_800BCEE0;
-extern s32 D_800BCEE8;
+extern subengine *D_800BCEE8;
 
 #endif /* BASH_OVL6A_H */

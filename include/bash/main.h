@@ -557,4 +557,6 @@ s32 func_8001E598(u8 *arg0);
 
 void func_800101E0(void);
 
+subengine *func_8001DCD4(s32 i, s32 val);
+
 #endif /* BASH_MAIN_H */

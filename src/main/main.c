@@ -1733,7 +1733,16 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8001D894);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001DAF8);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001DCD4);
+subengine *func_8001DCD4(s32 i, s32 val) {
+    subengine *sub;
+
+    for (sub = *(subengine **)((u8 *)D_80058AD0 + 0x1C); sub != NULL; sub = sub->next) {
+        if (((u8 *)sub + i)[0x64] == val) {
+            return sub;
+        }
+    }
+    return NULL;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001DD20);
 

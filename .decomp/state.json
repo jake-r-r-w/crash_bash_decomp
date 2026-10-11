@@ -1002,7 +1002,9 @@
  },
  "8001DCD4": {
   "auto_diff": 5,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T16:49:00Z",
+  "started": "2026-10-11T16:36:47Z",
+  "status": "matched"
  },
  "8001DD20": {
   "auto_failed": "compile"
