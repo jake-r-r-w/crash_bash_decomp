@@ -621,4 +621,6 @@ u8 *func_80021E44(OffsetTable *tbl, s32 i);
 
 void func_8002A830(u8 *src, u8 *out, s32 len);
 
+void *func_80021EEC(void);
+
 #endif /* BASH_MAIN_H */

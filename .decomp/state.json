@@ -1320,7 +1320,9 @@
  },
  "80021EEC": {
   "auto_diff": 7,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T18:51:49Z",
+  "started": "2026-10-11T18:49:54Z",
+  "status": "matched"
  },
  "80021F14": {
   "matched_at": "2026-10-10T10:36:02Z",

@@ -2225,7 +2225,15 @@ void func_80021ED8(u8 *arg0) {
     (*(s32*)((u8*)(arg0) + 180)) = temp_v1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80021EEC);
+void *func_80021EEC(void) {
+    u8 *cur;
+
+    cur = D_80058B70;
+    if (cur != NULL) {
+        D_80058B70 = *(void **)(cur + 0xB4);
+    }
+    return cur;
+}
 
 void func_80021F14(u8 *arg0) {
     u8 *temp_v1;
