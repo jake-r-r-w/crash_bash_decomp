@@ -380,4 +380,139 @@ extern hero_seq BRO_seq_polarwin[];
 
 extern s16 PBQualityFactor1[];
 
+/* Polar's structs past the point where the leak ends, from the Oct 9 2000
+ * prototype's debug types (docs/ARCHITECTURE.md, Prototype debug types). */
+
+typedef struct EXTpolarAI EXTpolarAI;
+typedef struct EXTGravMotion EXTGravMotion;
+typedef struct EXTpolarbomb EXTpolarbomb;
+typedef struct EXTwalrus EXTwalrus;
+typedef struct EXTbeardeath EXTbeardeath;
+typedef struct EXTpolardata EXTpolardata;
+typedef struct Grav Grav;
+
+struct EXTpolarAI {
+    /* 0x00 */ s32 EXTid;
+    /* 0x04 */ EXTnode Extend;
+    /* 0x0C */ SLONG_XYZ end;
+    /* 0x18 */ SLONG_XYZ start;
+    /* 0x24 */ s32 choice_timer;
+    /* 0x28 */ s32 target_player;
+    /* 0x2C */ s32 danger_player;
+    /* 0x30 */ s32 AI_action;
+    /* 0x34 */ s32 AI_sub_action;
+    /* 0x38 */ s32 beamflag;
+    /* 0x3C */ s32 BotUpdateDelay;
+    /* 0x40 */ s32 last_ang;
+    /* 0x44 */ void (*DoFunction)();
+    /* 0x48 */ s32 hit_count;
+    /* 0x4C */ s32 ai_status;
+    /* 0x50 */ s32 tauntflag;
+    /* 0x54 */ s32 fire_delay_timer;
+    /* 0x58 */ s32 weightflag;
+    /* 0x5C */ s32 attack_delay;
+};
+BASH_SIZE_CHECK(EXTpolarAI, 0x60);
+
+struct EXTGravMotion {
+    /* 0x00 */ s32 gravity;
+    /* 0x04 */ s32 initflag;
+    /* 0x08 */ s32 ybounceheight;
+    /* 0x0C */ s32 intialyvelocity;
+    /* 0x10 */ s32 bounceperiod;
+    /* 0x14 */ s32 currentyvelocity;
+    /* 0x18 */ s32 floorheight;
+    /* 0x1C */ s32 timeinstance;
+    /* 0x20 */ s32 DampenBounce;
+    /* 0x24 */ s32 xprojectileangle;
+    /* 0x28 */ s32 zprojectileangle;
+    /* 0x2C */ s32 xrange;
+    /* 0x30 */ s32 zrange;
+    /* 0x34 */ s32 xvelocity;
+    /* 0x38 */ s32 zvelocity;
+    /* 0x3C */ s32 bounceflag;
+    /* 0x40 */ s32 scale;
+    /* 0x44 */ s32 magvelocity;
+    /* 0x48 */ s32 ang[2]; /* struct ._23 (0x8 bytes), not in the fragment */
+    /* 0x50 */ s32 bouncecount;
+};
+BASH_SIZE_CHECK(EXTGravMotion, 0x54);
+
+struct EXTpolarbomb {
+    /* 0x00 */ s32 EXTid;
+    /* 0x04 */ EXTnode Extend;
+    /* 0x0C */ s32 NasStatus;
+    /* 0x10 */ s32 timer;
+    /* 0x14 */ u32 parent_id;
+    /* 0x18 */ SLONG_XYZ aimpoint;
+    /* 0x24 */ SLONG_XYZ startpoint;
+    /* 0x30 */ EXTGravMotion grav;
+};
+BASH_SIZE_CHECK(EXTpolarbomb, 0x84);
+
+struct EXTwalrus {
+    /* 0x00 */ s32 EXTid;
+    /* 0x04 */ EXTnode Extend;
+    /* 0x0C */ s32 NasStatus;
+    /* 0x10 */ s32 timer;
+    /* 0x14 */ EXTGravMotion grav;
+    /* 0x68 */ SLONG_XYZ aimpoint;
+    /* 0x74 */ SLONG_XYZ startpoint;
+    /* 0x80 */ EXTanimator *anim;
+    /* 0x84 */ NAS *fish;
+    /* 0x88 */ s32 vel;
+    /* 0x8C */ s32 maxvel;
+    /* 0x90 */ s32 yang;
+};
+BASH_SIZE_CHECK(EXTwalrus, 0x94);
+
+struct EXTbeardeath {
+    /* 0x00 */ s32 EXTid;
+    /* 0x04 */ EXTnode Extend;
+    /* 0x0C */ s32 NasStatus;
+    /* 0x10 */ s32 ydir;
+    /* 0x14 */ SLONG_XYZ aimpoint;
+    /* 0x20 */ SLONG_XYZ startpoint;
+    /* 0x2C */ EXTGravMotion grav;
+    /* 0x80 */ s32 timer;
+    /* 0x84 */ s32 trailtimer;
+};
+BASH_SIZE_CHECK(EXTbeardeath, 0x88);
+
+struct EXTpolardata {
+    /* 0x00 */ s32 EXTid;
+    /* 0x04 */ EXTnode Extend;
+    /* 0x0C */ s32 camera_hold;
+    /* 0x10 */ s32 attack_timer;
+    /* 0x14 */ s32 teeter_timer;
+    /* 0x18 */ s32 teeter_vel;
+    /* 0x1C */ s32 dazed_timer;
+    /* 0x20 */ s32 boost_fuel;
+    /* 0x24 */ s32 status;
+    /* 0x28 */ s32 bomb_ammo;
+    /* 0x2C */ EXTGravMotion grav;
+    /* 0x80 */ SLONG_XYZ aimpoint;
+    /* 0x8C */ SLONG_XYZ startpoint;
+    /* 0x98 */ s32 trailtimer;
+    /* 0x9C */ s32 camtimer;
+    /* 0xA0 */ NAS *bombnas;
+    /* 0xA4 */ NAS *boostgfx;
+    /* 0xA8 */ s32 fallflag;
+    /* 0xAC */ s32 makefall;
+    /* 0xB0 */ EXTengine *hiteng;
+    /* 0xB4 */ s32 winanim;
+};
+BASH_SIZE_CHECK(EXTpolardata, 0xB8);
+
+struct Grav {
+    /* 0x00 */ SLONG_XYZ vel;
+    /* 0x0C */ SLONG_XYZ acc;
+    /* 0x18 */ s32 grav;
+    /* 0x1C */ s32 floorheight;
+    /* 0x20 */ s32 DampingRatio;
+    /* 0x24 */ s32 flag;
+    /* 0x28 */ s32 initialvely;
+};
+BASH_SIZE_CHECK(Grav, 0x2C);
+
 #endif /* BASH_POLAR_H */

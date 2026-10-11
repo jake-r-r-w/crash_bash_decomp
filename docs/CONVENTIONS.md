@@ -51,9 +51,10 @@ A file is finished when every function in it reaches level 4.
   file is split, its declarations move with its functions to the new file's
   header.
 - The headers recovered from the original source (`bash/tank.h`, `pogo.h`,
-  `arkenoid.h`, `polar.h`) win: a name they declare is not repeated in an owned
-  header. `decomp.py rename` drops the owned copy when a function takes such a
-  name.
+  `arkenoid.h`, `polar.h`, and the ones built from the Oct 9 prototype's debug
+  types: `core.h`, `hero.h`, `shell.h`, `hub.h`, ...; see ARCHITECTURE.md)
+  win: a name they declare is not repeated in an owned header. `decomp.py
+  rename` drops the owned copy when a function takes such a name.
 - `bash/nas.h` holds the engine object model (`NAS`, the `EXT*` extensions) and
   the other shared engine types.
 - `decomp.py done` adds the matched function's prototype to its owned header.

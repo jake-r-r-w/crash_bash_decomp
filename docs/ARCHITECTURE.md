@@ -160,8 +160,8 @@ close to that build: `NAStype` is 0x70 bytes with `InitDelete`/`Handler` at
 against retail code before adopting it: the enums moved between Aug and Oct
 (`RACE_AST_zero` is `0x1800` in Aug, `0x1700` in Oct).
 
-The Oct 9 enums name every id in the retail AST table except `0x0001`, and
-so name each slot overlay's game:
+The Oct 9 enums name every id in the retail AST table (`0x0001` is
+`Null_AST` in `HERO_AST_types`), and so name each slot overlay's game:
 
 | Ids | Enum | Overlay |
 |---|---|---|
@@ -184,6 +184,21 @@ so name each slot overlay's game:
 
 Tank's ids are `TANK_AST_zero = 0x1300` + position, like the other three
 leaked games (`AST_Shell` is `0x1301`, ..., `AST_Torpedo` `0x1322`).
+
+Where the types are in the repo: the object model in `bash/nas.h`; Tank's in
+`bash/tank.h` and the structs the Polar leak is missing at the end of
+`bash/polar.h`; the rest in headers named after the original `GameEng`
+directories: `bash/core.h` (scripts, maps, animation tables, memory,
+geometry, particles), `hero.h`, `shell.h` (pause, panel, movies, cheat menu,
+camera modes, map ids), `xtras.h` (crates, pickups), `bash.h`, `papu.h`,
+`race.h`, `titles.h`, `hub.h`, `spin.h`, `dino.h`, `bonk.h`, `n2o.h` (N2O and
+NOX) and `chase.h`. Each overlay includes its game's header (`engine.c`
+includes `hero.h` and `shell.h`). Every struct carries the prototype's size
+as a compile-time check. A member whose type the fragment never defines (an
+anonymous struct from a lost page, such as `fadescreen_info.master`) is a word
+or byte array of the recorded size: the word arrays keep the real types'
+alignment, which `fadescreen_info` and `PedestalInfo` need for their sizes.
+The fragment was printed in include order, and the headers keep that order.
 
 ### Functions reached from the AST pairs
 

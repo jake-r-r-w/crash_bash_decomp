@@ -76,14 +76,13 @@ Other:
   `u8 *` heap parameters of `func_80011DB4` and `func_800112A4`.
 - `func_800C8BA0` (ovl5f) matches alone but adds 4 bytes of data/rodata to
   the overlay (offset 0x4C): its literal belongs in another file's rodata.
-- Prototype debug types (ARCHITECTURE.md, Prototype debug types): the engine
-  and Tank types are in the headers and every single-id AST Init/Plot is
-  named (ARCHITECTURE.md, AST names, lists the shared ones). Still
-  to use: the other games' AST enums and structs (`HUB_AST_types`,
-  `RACE_AST_types`, `BossInfo`, `HubGateway`, script and map structs, ...)
-  when their code is matched, and the 14 Tank functions retyped to `NAS *`
-  are still m2c pointer arithmetic. Needs the images in `protos/`
-  (`sym_scan.py`).
+- Prototype debug types (ARCHITECTURE.md, Prototype debug types): every type
+  in the Oct 9 fragment is in a header now, and every single-id AST
+  Init/Plot is named. Use them while matching: type `NAS` fields, `FUX`
+  extensions and globals with them instead of offsets (the 14 Tank functions
+  retyped to `NAS *` are still m2c pointer arithmetic). 34 fields of 15 types
+  whose bodies were on lost pages are word or byte arrays; retype them if code
+  shows their fields.
 - `func_8001A0D8` (blocks `func_8001C7FC`) stores SXY at +0x10/+0x18/+0x20
   too: use `gte_stsxy3_10`.
 - Sound voices: `SfxActiveVoices` (`0x80059614`) is `SfxVoicePool.active`
@@ -185,6 +184,10 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-12:** Added the rest of the Oct 9 types: new headers `core.h`,
+  `hero.h`, `shell.h` and one per game (`hub.h`, `race.h`, `chase.h`, ...),
+  plus Polar's missing structs in `polar.h`; each overlay includes its game's
+  header. About 100 size checks; all binaries still match.
 - **2026-10-12:** Named 201 AST Init/Plot functions from the Oct 9 enums
   (game functions named: 144 -> 345). Tank's 68 match the leaked Tank
   prototypes exactly; 14 matched Tank wrappers were retyped to `NAS *` first.

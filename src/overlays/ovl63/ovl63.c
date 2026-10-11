@@ -1,5 +1,6 @@
 #include "common.h"
 #include "bash/ovl63.h"
+#include "bash/race.h"
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B345C);
 

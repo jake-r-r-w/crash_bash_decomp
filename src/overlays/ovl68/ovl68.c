@@ -1,5 +1,6 @@
 #include "common.h"
 #include "bash/ovl68.h"
+#include "bash/chase.h"
 
 void func_800B3330(void) {
 }

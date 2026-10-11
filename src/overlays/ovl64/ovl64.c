@@ -1,5 +1,6 @@
 #include "common.h"
 #include "bash/ovl64.h"
+#include "bash/spin.h"
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B3428);
 

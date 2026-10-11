@@ -2,6 +2,7 @@
 #include "bash/engine.h"
 #include "bash/main.h"
 #include "bash/ovl6a.h"
+#include "bash/hub.h"
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/ovl6a", func_800B4694);
 

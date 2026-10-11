@@ -1,6 +1,8 @@
 #include "common.h"
 #include "bash/main.h"
 #include "bash/engine.h"
+#include "bash/hero.h"
+#include "bash/shell.h"
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80078CA4);
 

@@ -1,6 +1,7 @@
 #include "common.h"
 #include "bash/main.h"
 #include "bash/ovl66.h"
+#include "bash/bonk.h"
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B33A4);
 
