@@ -3246,7 +3246,19 @@ void func_8002BD0C(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002BD68);
+/* Clears SfxTable: no sound for any id. */
+/* Clears SfxTable: no sound for any id. */
+void func_8002BD68(void) {
+    s8 *p;
+    s32 i;
+
+    p = SfxTable[0];
+    for (i = 0; i < 2001; i++) {
+        p[0] = -1;
+        p[1] = -1;
+        p += 2;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002BD98);
 
