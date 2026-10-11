@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 432/2550 game functions matched (main.exe 186/574), 5 parked. `make check`
+- 433/2550 game functions matched (main.exe 187/574), 5 parked. `make check`
   OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
@@ -23,10 +23,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-1. Core API first (no prototypes yet, called ~3,000 times across exe,
-   engine and overlays):
-   `func_800110A8` (508 bytes, 39 callers).
-   Then the 9 functions with identical copies (`decomp.py dups`).
+1. The core API list is done (all matched or parked with prototypes).
+   Next: the 9 functions with identical copies (`decomp.py dups`).
    Quick wins from `dups` with a matched copy: ten 32-byte ovl5f/ovl65
    copies of `func_800C6828` (one commit each, `apply_one.py`).
    A function that parks still gets its prototype in `bash/main.h` (an
@@ -77,6 +75,9 @@ Parked (`decomp.py block`; best C under `#ifndef NON_MATCHING` in
   Permuter's best reused a temp for `tpage & ~0x60`.
 
 Other:
+- `D_8004E0F0` is the main `Heap` (`bash/main.h`) but is still declared
+  `u8[]`, so `func_800110A8`'s callers warn. Retype it together with the
+  `u8 *` heap parameters of `func_80011DB4` and `func_800112A4`.
 - `func_800C8BA0` (ovl5f) matches alone but adds 4 bytes of data/rodata to
   the overlay (offset 0x4C): its literal belongs in another file's rodata.
 - Tank (`ovl5f`, probably): find its AST ids another way (strings, the
@@ -174,6 +175,9 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-11:** Matched `func_800110A8` (508 bytes): the heap's free
+  (merge with free neighbours, sorted insert). New `MemBlock`/`Heap` types.
+  Finishes the core API list. Two new Diff patterns.
 - **2026-10-11:** Matched `func_80025FAC` (156 bytes, first diff): selects
   sequence `n` of an `EXTanim` (`seq = seqs[n]`) and resets its state by kind.
 - **2026-10-11:** Matched `func_8002C44C` (60 bytes) with `func_8001D604`'s
