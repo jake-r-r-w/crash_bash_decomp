@@ -1,4 +1,5 @@
 #include "common.h"
+#include "bash/main.h"
 #include "bash/ovl63.h"
 #include "bash/race.h"
 
@@ -230,7 +231,9 @@ void InitRaceTag(u8 *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRaceShield);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotRaceFire);
+void PlotRaceFire(NAS *nas) {
+    FindExtension(nas, 0x10000000);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRaceFire);
 

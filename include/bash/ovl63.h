@@ -30,4 +30,6 @@ extern s32 D_800C6D20;
 void func_800B7D94(void);
 void func_800B5360(s32 *arg0);
 
+void PlotRaceFire(NAS *nas);
+
 #endif /* BASH_OVL63_H */
