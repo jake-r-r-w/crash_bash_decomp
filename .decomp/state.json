@@ -1420,7 +1420,9 @@
  },
  "800228C4": {
   "auto_diff": 7,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T19:09:37Z",
+  "started": "2026-10-11T19:07:37Z",
+  "status": "matched"
  },
  "80022924": {
   "auto_failed": "compile"

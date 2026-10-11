@@ -2500,7 +2500,18 @@ void func_800228A4(u8 *arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800228C4);
+void func_800228C4(SfxVoice *voice) {
+    if (voice->next != NULL) {
+        voice->next->prev = voice->prev;
+    }
+    if (voice->prev != NULL) {
+        voice->prev->next = voice->next;
+    } else {
+        SfxVoicePool.active = voice->next;
+    }
+    voice->next = SfxVoicePool.free;
+    SfxVoicePool.free = voice;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80022924);
 

@@ -633,4 +633,6 @@ u8 *func_80015A78(s32 i, u8 *rec);
 
 void func_80015518(u8 *p, s32 n);
 
+void func_800228C4(SfxVoice *voice);
+
 #endif /* BASH_MAIN_H */
