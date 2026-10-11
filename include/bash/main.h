@@ -166,6 +166,12 @@ typedef struct MemBlock {
 #define MEMBLOCK_NEXT(b) ((MemBlock *)((u8 *)(b) + (b)->size * 4 + sizeof(MemBlock)))
 
 /* A heap (D_8004E0F0 is the main one). Only these fields are known. */
+/* Header of a pool entry (free list at D_80056844); the data follows it. */
+typedef struct PoolNode {
+    struct PoolNode *next;
+    s32 unk4;
+} PoolNode;
+
 typedef struct Heap {
     /* 0x00 */ u8 unk0[8];
     /* 0x08 */ MemBlock *free;           /* free list, smallest first */
@@ -372,6 +378,7 @@ extern void *D_8005AA34;
 extern void *D_8005AA24;
 extern s32 D_8006557C;
 extern VabSlot D_800644C0[6];
+extern PoolNode *D_80056844;      /* func_800183B0 pops from it */
 extern s32 D_8004E104;            /* func_80011410: free bytes */
 extern s32 D_8004E108;            /* func_80011410: free blocks */
 extern s32 D_8004E10C;            /* func_80011410: largest free block, bytes */
@@ -572,5 +579,7 @@ s32 func_8001538C(u32 x);
 s32 func_80015284(s32 a, s32 b, s32 t);
 
 void *func_80015AB0(s32 *arg0, u8 *rec);
+
+void *func_800183B0(void);
 
 #endif /* BASH_MAIN_H */

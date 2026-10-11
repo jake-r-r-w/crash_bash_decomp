@@ -1084,7 +1084,16 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8001830C);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80018388);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800183B0);
+void *func_800183B0(void) {
+    PoolNode *node;
+
+    node = D_80056844;
+    if (node != NULL) {
+        D_80056844 = node->next;
+        return node + 1;
+    }
+    return NULL;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800183DC);
 
