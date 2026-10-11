@@ -412,4 +412,6 @@ void *AddExtension(void *owner, s32 size, s32 id);
 
 void func_80012E54(void);
 
+void func_8001325C(void);
+
 #endif /* BASH_MAIN_H */

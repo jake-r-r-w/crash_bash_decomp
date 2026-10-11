@@ -269,9 +269,9 @@
  },
  "8001325C": {
   "auto_diff": 1,
-  "auto_failed": "diff",
+  "matched_at": "2026-10-11T09:04:46Z",
   "started": "2026-10-11T08:54:04Z",
-  "status": "in_progress"
+  "status": "matched"
  },
  "80013290": {
   "auto_diff": 37,
