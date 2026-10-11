@@ -2917,7 +2917,20 @@ void func_80026B70(u8 **arg0, u8 *arg1) {
     (*(s32*)((u8*)(arg1) + 36)) = arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80026B94);
+void func_80026B94(NAS *list, NAS *nas) {
+    if (nas->prev14 != NULL) {
+        nas->prev14->next14 = nas->next14;
+    }
+    if (nas->next14 != NULL) {
+        nas->next14->prev14 = nas->prev14;
+    }
+    while (list->next14 != NULL) {
+        list = list->next14;
+    }
+    list->next14 = nas;
+    nas->prev14 = list;
+    nas->next14 = NULL;
+}
 
 void func_80026BF4(u8 *arg0) {
     u8 *temp_v1;

@@ -598,4 +598,6 @@ s32 func_80026A28(void);
 
 void func_80013CFC(s32 pad, u8 *out);
 
+void func_80026B94(NAS *list, NAS *nas);
+
 #endif /* BASH_MAIN_H */
