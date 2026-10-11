@@ -1406,7 +1406,8 @@
   "auto_failed": "types"
  },
  "80022FD4": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-11T13:00:40Z",
+  "status": "matched"
  },
  "80023158": {
   "auto_diff": 46,

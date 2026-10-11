@@ -233,7 +233,7 @@ void Init_PogoProjectile(NAS *arg0) {
         (*(s32*)((u8*)(arg0) + 100)) = 0;
     }
     if ((*(u16*)((u8*)(arg0) + 106)) != 0) {
-        KillNAS();
+        KillNAS((NAS *)arg0);
     }
 }
 

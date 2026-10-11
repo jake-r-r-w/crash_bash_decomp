@@ -2060,7 +2060,60 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80022C3C);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", SpawnNASFromRecord);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", KillNAS);
+s32 KillNAS(NAS *nas) {
+    EXTengine *eng;
+
+    if (!(nas->flags & 1)) {
+        return 1;
+    }
+    if (nas->spawn != NULL && (nas->spawn->flags & 0x10)) {
+        return 0;
+    }
+    if (nas->unk68 & 4) {
+        nas->Init(nas);
+    }
+    if (nas->spawn != NULL) {
+        nas->spawn->flags &= ~1;
+    }
+    eng = nas->eng;
+    for (;;) {
+        if (eng == NULL) {
+            goto freed;
+        }
+        if (eng->link != NULL) {
+            eng->link->link = NULL;
+        }
+        eng->link = NULL;
+        func_8001C270(eng);
+        eng = eng->next;
+    }
+freed:
+    func_80026430(nas);
+    func_80026BF4((u8 *)nas);
+    func_80026AFC(nas);
+    func_80026980(nas);
+    func_80026A54(nas);
+    func_800268BC(nas);
+    if (nas->prev != NULL) {
+        nas->prev->next = nas->next;
+        if (nas->next != NULL) {
+            nas->next->prev = nas->prev;
+        } else {
+            NASActiveTail = nas->prev;
+        }
+    }
+    nas->flags = 0;
+    if (NASFreeList != NULL) {
+        NASFreeList->prev = nas;
+        nas->next = NASFreeList;
+        NASFreeList = nas;
+    } else {
+        NASFreeList = nas;
+        nas->next = NULL;
+    }
+    nas->prev = NULL;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80023158);
 
@@ -2401,14 +2454,11 @@ void func_80027040(s32 arg0) {
     }
 }
 
-void func_800270B0(u8 *arg0) {
-    u8 *temp_v1;
-
-    temp_v1 = (*(s32*)((u8*)(arg0) + 80));
-    if (temp_v1 != NULL) {
-        (*(u16*)((u8*)(temp_v1) + 26)) = (u16) ((*(u16*)((u8*)(temp_v1) + 26)) | 0x8000);
+void func_800270B0(NAS *nas) {
+    if (nas->spawn != NULL) {
+        nas->spawn->flags |= 0x8000;
     }
-    KillNAS();
+    KillNAS(nas);
 }
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800270F0);

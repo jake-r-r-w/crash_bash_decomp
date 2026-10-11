@@ -257,12 +257,18 @@ void func_80026A04(u8 *arg0);
 void func_80026AD8(u8 *arg0);
 void func_80026B70(u8 * *arg0, u8 *arg1);
 void func_80026BF4(u8 *arg0);
+void func_8001C270(EXTengine *eng);
+void func_80026430(NAS *nas);
+void func_80026AFC(NAS *nas);
+void func_80026980(NAS *nas);
+void func_80026A54(NAS *nas);
+void func_800268BC(NAS *nas);
 void func_80026C38(u8 *arg0, u8 *arg1);
 void func_80026C6C(u8 *arg0, u8 *arg1);
 void func_80026C94(u8 *arg0, u8 *arg1);
 void func_80026D00(void);
 void func_80027040(s32 arg0);
-void func_800270B0(u8 *arg0);
+void func_800270B0(NAS *nas);
 s32 func_8002718C(void);
 void func_8002726C(void);
 void func_8002759C(void);
@@ -471,5 +477,7 @@ void *FindExtension(NAS *nas, s32 id);
 void StopSfx(SfxVoice *voice);
 
 SfxVoice *PlaySfx(s32 id, SfxVoice **handle, SLONG_XYZ *pos, s32 arg3, s32 arg4, s32 flags);
+
+s32 KillNAS(NAS *nas);
 
 #endif /* BASH_MAIN_H */

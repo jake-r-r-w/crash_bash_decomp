@@ -51,6 +51,15 @@ typedef struct EXTheader {
 } EXTheader;
 BASH_SIZE_CHECK(EXTheader, 0xC);
 
+/* A spawn record (placement data) that SpawnNASFromRecord builds a NAS from.
+ * Placeholder names; only these fields are known. */
+typedef struct NASSpawn {
+    /* 0x00 */ SLONG_XYZ pos;           /* copied to the engine (EXTengine.unk10) */
+    /* 0x0C */ u8 unkC[0xC];
+    /* 0x18 */ u16 id;                  /* AST id */
+    /* 0x1A */ u16 flags;               /* bit 0: spawned; 0x10: KillNAS leaves the NAS alive */
+} NASSpawn;
+
 /* An engine object instance: an entry of the AST table ({id, Init, Plot}),
  * spawned by SpawnNASFromRecord from a pool of copies of a template. */
 struct NAS {
@@ -62,7 +71,7 @@ struct NAS {
     /* 0x14 */ u8 unk14[0x48 - 0x14];
     /* 0x48 */ void (*Init)(NAS *);     /* AST Init: called once when spawned */
     /* 0x4C */ void (*Plot)(NAS *);     /* AST Plot */
-    /* 0x50 */ void *spawn;             /* spawn record: +0x00 position (to eng), +0x18 AST id */
+    /* 0x50 */ NASSpawn *spawn;         /* the spawn record it was built from, or NULL */
     /* 0x54 */ EXTengine *eng;          /* first engine extension (AddEngine) */
     /* 0x58 */ void *unk58;
     /* 0x5C */ u16 unk5C;
@@ -109,7 +118,8 @@ struct EXTengine {
     /* 0x70 */ subengine *subLast;       /* last of them */
     /* 0x74 */ u8 unk74[0x7C - 0x74];
     /* 0x7C */ EXTengine *next;          /* next engine extension of the same NAS */
-    /* 0x80 */ u8 unk80[0x94 - 0x80];
+    /* 0x80 */ EXTengine *link;          /* paired engine (its link points back); cleared both ways by KillNAS */
+    /* 0x84 */ u8 unk84[0x94 - 0x84];
     /* 0x94 */ s32 unk94;                /* a PlaySfx voice: StopSfx'd when the subengines are freed */
     /* 0x98 */ u8 unk98[2];
     /* 0x9A */ u16 subCount;             /* number of subengines */

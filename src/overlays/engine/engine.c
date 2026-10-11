@@ -534,7 +534,7 @@ void InitFloatyScore(u8 *arg0) {
         (*(s8*)((u8*)(temp_v1) + 93)) = 2;
     }
     if ((*(u16*)((u8*)(arg0) + 106)) != 0) {
-        KillNAS();
+        KillNAS((NAS *)arg0);
     }
 }
 

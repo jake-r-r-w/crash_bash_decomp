@@ -253,7 +253,7 @@ void func_800BA978(u8 *arg0) {
         (*(s16*)((u8*)(arg0) + 94)) = 0;
     }
     if ((*(u16*)((u8*)(arg0) + 106)) != 0) {
-        KillNAS();
+        KillNAS((NAS *)arg0);
     }
 }
 
