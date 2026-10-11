@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 420/2550 game functions matched (main.exe 174/574), 3 parked. `make check`
+- 421/2550 game functions matched (main.exe 175/574), 3 parked. `make check`
   OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
@@ -24,7 +24,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 ## Next
 
 1. Keep matching `main.exe`, one function per commit:
-   `decomp.py next --seg main/main` picks the smallest first. Use the
+   `decomp.py next --seg main/main` (not always the smallest). Use the
    MATCHING.md process: evidence, Diff patterns, checklist, cc1 dump, then
    permuter.
 2. Name each function as it's matched when the evidence allows (only 144 of
@@ -57,6 +57,8 @@ Other:
   the overlay (offset 0x4C): its literal belongs in another file's rodata.
 - Tank (`ovl5f`, probably): find its AST ids another way (strings, the
   overlay's own tables) before naming anything.
+- `func_8001A0D8` (blocks `func_8001C7FC`) stores SXY at +0x10/+0x18/+0x20
+  too: use `gte_stsxy3_10`.
 - Ambiguous naming leads are listed in ARCHITECTURE.md ("Functions reached
   from the AST pairs").
 
@@ -82,6 +84,11 @@ Other:
   source, apply one function (`disc/scratch/apply_one.py FULL SRC SEGDIR
   FUNC`), `done`, repeat.
 - `done`'s scope check compares names: commit renames before matching.
+- `make diff` shows at most 40 rows. For the whole diff, or to swap a draft
+  in and diff in one step: `tools/dk python3 disc/scratch/fulldiff.py FUNC`,
+  `sh disc/scratch/tryf.sh FUNC FILE.c [LINES]` (main.c only).
+- Register pins pass the lint as hacks (`--hack`) since `ef8fdc9`; before,
+  `asm("$20")` was misread as inline asm.
 - Renaming a function to a leak-declared name and back loses its owned
   declaration; re-add it by hand.
 - `rename` prints `ERROR: unknown function OVL:ADDR` for data symbols; the
@@ -126,6 +133,9 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-11:** Matched `func_800193A8` (692 bytes, GTE triangle strips;
+  register pins, `--hack`) through the new process; six Diff patterns rows.
+  Fixed the gate lint so pins count as hacks.
 - **2026-10-11:** MATCHING.md gained the evidence step, the Diff patterns
   table, per-kind checklists and the cc1 dump recipe; the skill's step 4 now
   requires them before the permuter. Parked `func_800155FC`. Matched
