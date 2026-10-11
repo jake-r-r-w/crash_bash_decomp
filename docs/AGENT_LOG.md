@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 421/2550 game functions matched (main.exe 175/574), 3 parked. `make check`
+- 422/2550 game functions matched (main.exe 176/574), 3 parked. `make check`
   OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
@@ -23,14 +23,19 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-1. Keep matching `main.exe`, one function per commit:
+1. Core API first (no prototypes yet, called ~3,000 times across exe,
+   engine and overlays): `FindExtension`, `StopSfx`, `PlaySfx`,
+   `KillNAS`, `SpawnNASById`, `get_angle`, then `func_80025A48`,
+   `func_80026980`, `func_800250B0`, `func_80025FAC`, `func_800110A8`.
+   Then the 9 functions with identical copies (`decomp.py dups`).
+2. Keep matching `main.exe`, one function per commit:
    `decomp.py next --seg main/main` (not always the smallest). Use the
    MATCHING.md process: evidence, Diff patterns, checklist, cc1 dump, then
    permuter.
-2. Name each function as it's matched when the evidence allows (only 144 of
+3. Name each function as it's matched when the evidence allows (only 144 of
    2550 are named).
-3. Unpark when a new idea comes up (see Open leads).
-4. Later Phase 2 items: split `main.c` into units, data to C, the PsyQ gaps,
+4. Unpark when a new idea comes up (see Open leads).
+5. Later Phase 2 items: split `main.c` into units, data to C, the PsyQ gaps,
    the `CRASHBSH.DAT` extractor.
 
 ## Open leads
@@ -41,8 +46,10 @@ Parked (`decomp.py block`; best C under `#ifndef NON_MATCHING` in
   operands off. The target ties `A + srl` to the srl's register; writing the
   srl first ties it right, but then local-alloc gives A v1 instead of v0.
   Tried 17 forms (temps, operand order, `u32` globals, store order).
-  `Random` (0x80015590) is the same step plus `divu` (unsigned `%`): match
-  them together.
+  `Random` (matched, `4adea44`) has the same step and matches with the
+  plain `A += B; B += A + ((u32)A >> 31);`, which here is the 2-off form:
+  this function's source is written differently, not just compiled in
+  another context.
 - **`func_8001C7FC`**: `return func_8001A0D8(...)` (s32) fixes the division
   region (the returned pseudo prefers v0, so `mfhi` lands in v1), but then v0
   is live at the shared exit and gcc leaves the first `beqz` delay slot
@@ -133,6 +140,8 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-11:** Started the core API (most-called unmatched functions,
+  ~3,000 call sites; plan below in Next): matched `Random` on the first diff.
 - **2026-10-11:** Matched `func_800193A8` (692 bytes, GTE triangle strips;
   register pins, `--hack`) through the new process; six Diff patterns rows.
   Fixed the gate lint so pins count as hacks.
