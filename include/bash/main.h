@@ -213,6 +213,15 @@ typedef struct MusicEntry {
     /* 0x06 */ u8 unk6[0x14 - 0x06];
 } MusicEntry;
 
+/* D_80050628: file loader state (func_80013238 resets it). Only these fields are known. */
+typedef struct LoaderState {
+    /* 0x00 */ s32 state;                /* 3 after a reset */
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s32 unk10;
+} LoaderState;
+
 typedef struct Heap {
     /* 0x00 */ u8 unk0[8];
     /* 0x08 */ MemBlock *free;           /* free list, smallest first */
@@ -429,6 +438,7 @@ extern u8 D_80055684[];
 extern void *D_8005AA34;
 extern void *D_8005AA24;
 extern SeqSlot D_8006557C;
+extern LoaderState D_80050628;
 extern MusicEntry D_80058B88[];
 extern VabSlot D_800644C0[6];
 extern NodePool D_80056844;
@@ -683,5 +693,7 @@ void func_80015554(u16 *p, s32 n);
 void func_800229FC(s32 i);
 
 void func_80016CA0(u8 *rec);
+
+void func_80013238(void);
 
 #endif /* BASH_MAIN_H */

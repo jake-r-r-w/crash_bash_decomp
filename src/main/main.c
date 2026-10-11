@@ -459,7 +459,13 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8001316C);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800131B0);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80013238);
+void func_80013238(void) {
+    D_80050628.state = 3;
+    D_80050628.unk4 = 0;
+    D_80050628.unk8 = 0;
+    D_80050628.unkC = 0;
+    D_80050628.unk10 = 0;
+}
 
 void func_8001325C(void) {
     u8 *p;
