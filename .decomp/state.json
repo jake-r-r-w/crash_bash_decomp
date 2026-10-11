@@ -538,7 +538,9 @@
  },
  "800160C4": {
   "auto_diff": 3,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T15:54:39Z",
+  "started": "2026-10-11T15:52:38Z",
+  "status": "matched"
  },
  "800160F8": {
   "matched_at": "2026-10-10T10:16:46Z",

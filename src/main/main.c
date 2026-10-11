@@ -758,7 +758,15 @@ block_4:
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80015F60);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800160C4);
+u8 *func_800160C4(u8 *arg0, s32 i) {
+    if (arg0 != NULL) {
+        arg0 += 0x10;
+        if (*(s32 *)(arg0 + 8) != 0) {
+            return *(u8 **)(arg0 + 0xC) + i * 0xC;
+        }
+    }
+    return NULL;
+}
 
 s32 func_800160F8(u8 *arg0, s32 arg1) {
     s32 temp_a0;
