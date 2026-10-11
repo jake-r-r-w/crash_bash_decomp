@@ -1002,7 +1002,111 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80018F3C);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80019094);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800193A8);
+/* Draws the triangle strips of a model: `runs` holds {mode, count} byte
+ * pairs ended by count 0xFF, `v` the vertices (vz's high half carries
+ * flags: 0x10000 flips the winding test, 0x20000 skips it). Mode bit 0
+ * selects primitives whose SXY go at +0x10/+0x18/+0x20 and whose length is
+ * preset; otherwise each is a POLY_GT3. The three register variables are
+ * the original's: only they give s4/s3/s2 with s0/s1 unused. */
+void func_800193A8(POLY_GT3 *poly, SVECTOR *v, u8 *runs) {
+    u32 otz;
+    s32 opz;
+    GfxState *gs;
+    s32 n;
+    s32 mode;
+    register s32 xy asm("$20");
+    register s32 z asm("$19");
+    register s32 flags asm("$18");
+
+    gs = &D_80056998;
+    xy = ((s32 *)v)[0];
+    z = ((s32 *)v)[1];
+    for (;;) {
+        if (runs[1] == 0xFF) {
+            return;
+        }
+        gte_ldv0_w(xy, z);
+        v++;
+        n = runs[1];
+        gte_rtps_b();
+        xy = ((s32 *)v)[0];
+        z = ((s32 *)v)[1];
+        gte_ldv0_w(xy, z);
+        v++;
+        mode = *runs;
+        gte_rtps_b();
+        xy = ((s32 *)v)[0];
+        z = ((s32 *)v)[1];
+        if (mode & 1) {
+            for (;;) {
+                if (n-- <= 0) {
+                    goto next;
+                }
+                gte_ldv0_w(xy, z);
+                v++;
+                flags = z;
+                gte_rtps_b();
+                xy = ((s32 *)v)[0];
+                z = ((s32 *)v)[1];
+                gte_avsz3_b();
+                gte_stotz(&otz);
+                if (otz != 0) {
+                    otz = (otz + gs->otzAdd) >> 1;
+                    if (otz < gs->otLen) {
+                        if (!(flags & 0x20000)) {
+                            gte_nclip_b();
+                            gte_stopz(&opz);
+                            if (flags & 0x10000) {
+                                if (opz > 0) {
+                                    goto skip;
+                                }
+                            } else if (opz <= 0) {
+                                goto skip;
+                            }
+                        }
+                        addPrim(gs->ot + otz, poly);
+                        gte_stsxy3_10(poly);
+                    }
+                }
+            skip:
+                poly++;
+            }
+        } else {
+            while (n-- > 0) {
+                gte_ldv0_w(xy, z);
+                v++;
+                flags = z;
+                gte_rtps_b();
+                xy = ((s32 *)v)[0];
+                z = ((s32 *)v)[1];
+                gte_avsz3_b();
+                gte_stotz(&otz);
+                otz = (otz + gs->otzAdd) >> 1;
+                if (otz < gs->otLen) {
+                    if (!(flags & 0x20000)) {
+                        gte_nclip_b();
+                        gte_stopz(&opz);
+                        if (flags & 0x10000) {
+                            if (opz > 0) {
+                                poly++;
+                                continue;
+                            }
+                        } else if (opz <= 0) {
+                            poly++;
+                            continue;
+                        }
+                    }
+                    poly->tag = 0x09000000 | (gs->ot[otz] & 0xFFFFFF);
+                    setaddr(gs->ot + otz, poly);
+                    gte_stsxy3_gt3(poly);
+                }
+                poly++;
+            }
+        }
+    next:
+        runs += 2;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001965C);
 

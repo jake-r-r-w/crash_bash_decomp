@@ -796,9 +796,9 @@
   "status": "in_progress"
  },
  "800193A8": {
-  "auto_failed": "types",
+  "matched_at": "2026-10-11T11:58:48Z",
   "started": "2026-10-11T09:11:35Z",
-  "status": "in_progress"
+  "status": "matched"
  },
  "8001965C": {
   "auto_failed": "types"

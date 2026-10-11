@@ -69,6 +69,11 @@ typedef struct {
  * (lw + mtc2), where Sony's gte_ldv0 loads straight from memory (lwc2). */
 #define gte_ldv0_w(xy, z) __asm__ volatile (				"mtc2	%0, $0;"						"mtc2	%1, $1"							:								: "r"(xy), "r"(z) )
 
+/* Stores SXY0..2 at +0x10, +0x18, +0x20 of a primitive. None of Sony's
+ * gte_stsxy3_* macros uses these offsets; func_800193A8 and func_8001A0D8
+ * store them straight off the primitive pointer. */
+#define gte_stsxy3_10(r0) __asm__ volatile (				"swc2	$12, 16( %0 );"					"swc2	$13, 24( %0 );"					"swc2	$14, 32( %0 )"					:								: "r"(r0)							: "memory" )
+
 /* A VAB file in memory: the header and body as byte offsets from its start
  * (func_8002ADD4 opens it with SsVabOpenHead / SsVabTransBody). */
 typedef struct {
@@ -353,7 +358,7 @@ extern s32 D_8005B690; /* frame counter: its low bit picks the frame buffer */
 void func_8001A6D4(void *arg0, u32 hidden);
 s32 func_8001A0D8(void *arg0, u32 flags);
 void *func_80019094(void *arg0, s32 arg1);
-void func_800193A8(void *arg0, void *arg1, u8 *runs);
+void func_800193A8(POLY_GT3 *poly, SVECTOR *v, u8 *runs);
 extern u8 D_80053694[];
 void *AllocExtension(void *owner, s32 size, s32 id, void *tmpl);
 extern EXTmotion D_8005A9CC;
