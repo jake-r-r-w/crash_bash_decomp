@@ -200,6 +200,12 @@ typedef struct PadState {
     /* 0x2A */ u8 unk2A[0x58 - 0x2A];
 } PadState;
 
+/* Loaded sound data and the sequence opened from it (D_8006557C). */
+typedef struct SeqSlot {
+    /* 0x00 */ s32 data;                 /* heap block, freed by func_8002C44C */
+    /* 0x04 */ s32 seq;                  /* SsSeq access number, or -1 */
+} SeqSlot;
+
 typedef struct Heap {
     /* 0x00 */ u8 unk0[8];
     /* 0x08 */ MemBlock *free;           /* free list, smallest first */
@@ -229,7 +235,7 @@ s32 func_80013034(s32 arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *ar
 void func_80029560(u8 *arg0);
 void func_8002A5A4(u8 *arg0, u8 *arg1);
 void func_80027AD4(u8 *src, u8 *dst, s32 n);
-void func_8002C394(s32 arg0, s32 *slot, s32 type);
+void func_8002C394(s32 arg0, SeqSlot *slot, s32 type);
 s32 func_80013688(s32 arg0, void (*done)(), void *ctx);
 void func_8002BA10(s32 arg0, VabSlot *slot);
 void func_8002ADD4(void *data, VabSlot *slot);
@@ -410,7 +416,7 @@ extern u8 D_8004E0F0[];
 extern u8 D_80055684[];
 extern void *D_8005AA34;
 extern void *D_8005AA24;
-extern s32 D_8006557C;
+extern SeqSlot D_8006557C;
 extern VabSlot D_800644C0[6];
 extern NodePool D_80056844;
 extern NAS *D_8005AA2C;
@@ -654,5 +660,9 @@ void func_80015518(u8 *p, s32 n);
 void func_800228C4(SfxVoice *voice);
 
 void func_80027F00(void);
+
+void func_8002C0E0(void);
+
+void func_8002C11C(void);
 
 #endif /* BASH_MAIN_H */

@@ -3481,7 +3481,7 @@ void func_8002AAAC(void) {
 }
 
 void func_8002AABC(void) {
-    D_8006557C = 0;
+    D_8006557C.data = 0;
     SsInit();
     SsSetTableSize(D_800654CC, 1, 1);
     SpuReserveReverbWorkArea(1);
@@ -3694,9 +3694,17 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C060);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C090);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C0E0);
+void func_8002C0E0(void) {
+    if (D_8006557C.seq >= 0) {
+        SsSeqReplay(D_8006557C.seq);
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C11C);
+void func_8002C11C(void) {
+    if (D_8006557C.seq >= 0) {
+        SsSeqPause(D_8006557C.seq);
+    }
+}
 
 void func_8002C158(u8 *arg0) {
     if (*(s32 *)(arg0 + 4) >= 0) {
@@ -3732,7 +3740,7 @@ void func_8002C2AC(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C2C4);
 
-void func_8002C394(s32 arg0, s32 *slot, s32 type) {
+void func_8002C394(s32 arg0, SeqSlot *slot, s32 type) {
     func_80013688(arg0, func_8002C3F0, slot);
     SpuReserveReverbWorkArea(1);
     SsUtSetReverbType(type);
@@ -3753,9 +3761,9 @@ void func_8002C428(void) {
 }
 
 void func_8002C44C(void) {
-    if (D_8006557C != 0) {
-        func_800110A8(D_8006557C, D_8004E0F0);
-        D_8006557C = 0;
+    if (D_8006557C.data != 0) {
+        func_800110A8(D_8006557C.data, D_8004E0F0);
+        D_8006557C.data = 0;
     }
 }
 

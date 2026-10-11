@@ -2135,10 +2135,14 @@
   "auto_failed": "types"
  },
  "8002C0E0": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-11T19:17:47Z",
+  "started": "2026-10-11T19:13:53Z",
+  "status": "matched"
  },
  "8002C11C": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-11T19:20:42Z",
+  "status": "matched",
+  "via": "copy"
  },
  "8002C158": {
   "matched_at": "2026-10-11T18:40:59Z",
