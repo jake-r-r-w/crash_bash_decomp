@@ -2622,11 +2622,11 @@ DASHBOARD = r"""<!doctype html>
 <title>Decomp Progress</title>
 <style>
 :root{--page:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#898781;--grid:#e1e0d9;--axis:#c3c2b7;
---s1:#2a78d6;--s2:#eb6834;--s3:#1f9e74;--s4:#8a63d2;--track:#ecebe7;--warn:#fab219}
+--s1:#2a78d6;--s2:#eb6834;--s3:#1f9e74;--s4:#8a63d2;--u3:#1baf7a;--track:#ecebe7;--warn:#fab219}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--page:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;
---muted:#898781;--grid:#2c2c2a;--axis:#383835;--s1:#3987e5;--s2:#d95926;--s3:#2bb487;--s4:#9d7be0;--track:#2c2c2a}}
+--muted:#898781;--grid:#2c2c2a;--axis:#383835;--s1:#3987e5;--s2:#d95926;--s3:#2bb487;--s4:#9d7be0;--u3:#199e70;--track:#2c2c2a}}
 :root[data-theme="dark"]{--page:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--muted:#898781;--grid:#2c2c2a;
---axis:#383835;--s1:#3987e5;--s2:#d95926;--s3:#2bb487;--s4:#9d7be0;--track:#2c2c2a}
+--axis:#383835;--s1:#3987e5;--s2:#d95926;--s3:#2bb487;--s4:#9d7be0;--u3:#199e70;--track:#2c2c2a}
 *{box-sizing:border-box}
 body{margin:0;background:var(--page);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
 main{max-width:1040px;margin:0 auto;padding:28px 16px 48px}
@@ -2667,11 +2667,11 @@ details.card>summary h2{display:inline;margin:0}
 .scale button+button{border-left:1px solid var(--axis)}
 .scale button[aria-pressed="true"]{background:var(--track);color:var(--ink);font-weight:600}
 .wrap{overflow-x:auto}
-.multi{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
-.multi>div{border:1px solid var(--grid);border-radius:8px;padding:10px 10px 4px}
-.multi .mh{display:flex;justify-content:space-between;gap:8px;font-size:13px}
-.multi .mh b{font-weight:600}
-.multi svg{display:block;margin-top:4px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chips button{font:inherit;font-size:12px;border:1px solid var(--grid);background:transparent;color:var(--ink2);border-radius:999px;padding:2px 10px;cursor:pointer}
+.chips button[aria-pressed="true"]{color:var(--ink);font-weight:600;border-color:var(--axis)}
+.chips i{display:inline-block;width:12px;height:2px;margin-right:6px;vertical-align:middle;background:var(--axis);border-radius:1px}
+#multi svg .ctx{cursor:pointer}
 .sub2{color:var(--ink2);font-size:12px;font-weight:600;margin:16px 0 8px}
 details summary{cursor:pointer;color:var(--ink2);font-size:12px;font-weight:600;margin:16px 0 8px}
 code{font-size:12px}
@@ -2684,11 +2684,11 @@ code{font-size:12px}
 <div class="tiles" id="tiles"></div>
 <div class="card section"><div class="head"><h2>Progress over time</h2><div class="ctl"><div class="scale" id="measure" role="group" aria-label="Measure"></div><div class="scale" id="scale" role="group" aria-label="Time scale"></div></div></div>
 <div class="legend" id="legend"></div><div id="chart"></div></div>
-<details class="card section"><summary><h2>Progress over time per unit</h2></summary>
-<div class="small" style="margin:10px 0"><span id="multi-what">C bytes matched</span> in each unit, on the time scale and measure above. Each panel is scaled to its own peak, so compare the figures, not the heights.</div>
-<div id="multi"></div></details>
+<div class="card section"><h2>Progress per unit</h2>
+<div class="small" style="margin-bottom:6px"><span id="multi-what">C bytes matched</span> in each unit, on the time scale and measure above. main.exe and the engine are highlighted; click a unit to highlight it too. PsyQ (Sony's objects, ~99%) is left out.</div>
+<div id="multi"></div><div class="chips" id="uchips" role="group" aria-label="Highlight a unit"></div></div>
 <div class="card section"><h2>By binary</h2><div class="wrap"><table id="segs"></table></div></div>
-<div class="card section"><h2>Parked functions</h2><div class="wrap"><table id="blocked"></table></div></div>
+
 </main>
 <div class="tip" id="tip"></div>
 <script>
@@ -2717,7 +2717,8 @@ const grpTile=(label,G,color,extra)=>tile(label,f2(G.pct),
 const named=S.game.named_f, all=S.game.all_f, DA=S.data||{done_b:0,total_b:0,pct:0};
 $("tiles").innerHTML=grpTile("Game code matched",S.game,"var(--s1)")+
  tile("Game functions named",f2(pct(named,all)),`${n(named)} / ${n(all)} with a real name`,pct(named,all),"var(--s3)")+
- tile("Data in C",f2(DA.pct),`${n(DA.done_b)} / ${n(DA.total_b)} bytes of data and rodata`,DA.pct,"var(--s4)");
+ tile("Data in C",f2(DA.pct),`${n(DA.done_b)} / ${n(DA.total_b)} bytes of data and rodata`,DA.pct,"var(--s4)")+
+ tile("Parked",`${S.blocked}`,"functions waiting for another attempt",null);
 
 // history chart: % of bytes matched per group, bucketed by a selectable time unit
 (function(){
@@ -2806,39 +2807,60 @@ $("tiles").innerHTML=grpTile("Game code matched",S.game,"var(--s1)")+
    tip.style.display="block";tip.style.left=Math.min(ev.clientX+12,innerWidth-300)+"px";tip.style.top=(ev.clientY+12)+"px";});
   el.querySelector("#hit").addEventListener("mouseleave",()=>{tip.style.display="none";xh.setAttribute("visibility","hidden")});
  }
- // one small chart per unit (the rows of the table below), same buckets as the main chart
+ // all game units on one chart: every unit a thin grey line, main.exe and the engine in
+ // colour, plus one unit the viewer picks (palette slots 1-3; more hues would not stay apart)
+ let pick=null;try{pick=localStorage.getItem("decomp-unit")}catch(e){}
  function multi(Bk,before){
-  const N=Bk.length, all=S.units||[], W=240, Ht=64, L=4, R=6, T=6, B=4, iw=W-L-R, ih=Ht-T-B, bw=iw/Math.max(1,N);
+  $("tip").style.display="none";
+  const box=$("multi"), N=Bk.length, units=(S.units||[]).filter(u=>!u.lib&&u.total_b>0);
+  const FIX={"main exe":"var(--s1)","engine":"var(--s2)"};
+  if(!units.some(u=>u.unit==pick&&!FIX[u.unit]))pick=null;
+  const col=u=>FIX[u.unit]||(u.unit==pick?"var(--u3)":null);
   const at=(h,u)=>h&&h.units&&h.units[u.unit]||[0,0];
-  const panel=(u,i)=>{
-   const v=h=>fnMode()?pct(at(h,u)[1],u.total_f):pct(at(h,u)[0],u.total_b), hi=Math.max(...Bk.map(b=>v(b.h)));
-   const ymax=Math.min(100,Math.max(1,hi*1.15)), x=j=>L+bw*(j+.5), y=val=>T+ih*(1-val/ymax), col=u.lib?"var(--s2)":"var(--s1)";
-   let d="";Bk.forEach((b,j)=>{d+=(j?"L":"M")+x(j).toFixed(1)+","+y(v(b.h)).toFixed(1)});
-   const g=`<line x1="${L}" x2="${W-R}" y1="${T+ih}" y2="${T+ih}" stroke="var(--axis)"/>`+
-    `<path d="${d}" fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round"/>`+
-    `<circle cx="${x(N-1).toFixed(1)}" cy="${y(v(Bk[N-1].h)).toFixed(1)}" r="4" fill="${col}" stroke="var(--surface)" stroke-width="2"/>`+
-    `<line class="xh" y1="${T}" y2="${T+ih}" stroke="var(--axis)" visibility="hidden"/>`+
-    `<rect x="0" y="0" width="${W}" height="${Ht}" fill="transparent" class="hit"/>`;
-   return `<div data-i="${i}"><div class="mh"><span><b>${esc(u.unit)}</b>${u.title&&u.title!=u.unit?` <span class="small">${esc(u.title)}</span>`:""}</span>`+
-    `<span class="small">${u.total_b?`${f2(u.pct)} of bytes · ${f2(pct(u.done_f,u.total_f))} of functions`:"—"}</span></div>`+
-    `<svg width="100%" viewBox="0 0 ${W} ${Ht}" role="img" aria-label="${esc(u.unit)}: ${fnMode()?"functions":"C bytes"} matched by ${unit}">${g}</svg></div>`};
-  const game=all.filter(u=>!u.lib), lib=all.filter(u=>u.lib), list=game.concat(lib);
-  $("multi").innerHTML=`<div class="multi">${game.map((u,i)=>panel(u,i)).join("")}</div>`+
-   (lib.length?`<details><summary>PsyQ library: Sony's objects, linked in place (${lib.length})</summary>`+
-    `<div class="multi">${lib.map((u,i)=>panel(u,game.length+i)).join("")}</div></details>`:"");
-  const tip=$("tip");
-  $("multi").querySelectorAll("[data-i]").forEach(div=>{
-   const u=list[+div.dataset.i], svg=div.querySelector("svg"), xh=div.querySelector(".xh"), hit=div.querySelector(".hit");
-   hit.addEventListener("mousemove",ev=>{
-    const r=svg.getBoundingClientRect(), mx=(ev.clientX-r.left)*W/r.width;
-    const j=Math.max(0,Math.min(N-1,Math.floor((mx-L)/bw))), b=Bk[j], p=j?Bk[j-1].h:before;
-    const c=at(b.h,u), q=at(p,u), gb=c[0]-q[0], gf=c[1]-q[1];
-    xh.setAttribute("x1",L+bw*(j+.5));xh.setAttribute("x2",L+bw*(j+.5));xh.setAttribute("visibility","visible");
-    tip.innerHTML=`<b>${esc(u.unit)} · ${esc(lab(b.t,unit))}</b><br>${f2(pct(c[0],u.total_b))} of bytes · ${n(c[1])} / ${n(u.total_f)} functions (${f2(pct(c[1],u.total_f))})`+
-     (gf||gb?` <span class="small">(+${n(gf)} fn, +${n(gb)} B)</span>`:"");
-    tip.style.display="block";tip.style.left=Math.min(ev.clientX+12,innerWidth-300)+"px";tip.style.top=(ev.clientY+12)+"px"});
-   hit.addEventListener("mouseleave",()=>{tip.style.display="none";xh.setAttribute("visibility","hidden")});
-  });
+  const val=(h,u)=>fnMode()?pct(at(h,u)[1],u.total_f):pct(at(h,u)[0],u.total_b);
+  const name=u=>u.unit+(u.title&&u.title!=u.unit?` (${u.title})`:"");
+  const W=Math.max(320,box.clientWidth||900),Ht=280,L=44,R=Math.min(150,W*.28),T=10,B=28,iw=W-L-R,ih=Ht-T-B,bw=iw/Math.max(1,N);
+  const hi=Math.max(...units.flatMap(u=>Bk.map(b=>val(b.h,u))));
+  const ymax=Math.min(100,Math.max(1,hi*1.1)), x=i=>L+bw*(i+.5), y=v=>T+ih*(1-v/ymax);
+  let g="";
+  for(let i=0;i<=4;i++){const v=ymax*i/4,yy=y(v).toFixed(1);
+   g+=`<line x1="${L}" x2="${L+iw}" y1="${yy}" y2="${yy}" stroke="${i?"var(--grid)":"var(--axis)"}" stroke-width="1"/>`+
+      `<text x="${L-6}" y="${+yy+4}" text-anchor="end">${v<1?v.toFixed(2):v<10?v.toFixed(1):v.toFixed(0)}%</text>`}
+  const nl=Math.max(1,Math.min(N,Math.floor(iw/110)));
+  for(let k=0;k<nl;k++){const i=nl==1?N-1:Math.round(k*(N-1)/(nl-1));
+   g+=`<text x="${x(i).toFixed(1)}" y="${Ht-8}" text-anchor="${k==0&&nl>1?"start":k==nl-1?"end":"middle"}">${esc(lab(Bk[i].t,unit))}</text>`}
+  const path=u=>Bk.map((b,i)=>(i?"L":"M")+x(i).toFixed(1)+","+y(val(b.h,u)).toFixed(1)).join("");
+  // context lines first, highlighted ones on top; a wide transparent stroke is the click target
+  const ctx=units.filter(u=>!col(u)), hl=units.filter(u=>col(u));
+  for(const u of ctx)g+=`<g class="ctx" data-u="${esc(u.unit)}"><path d="${path(u)}" fill="none" stroke="var(--axis)" stroke-width="1.25" stroke-linejoin="round"/>`+
+   `<path d="${path(u)}" fill="none" stroke="transparent" stroke-width="10"><title>${esc(name(u))}</title></path></g>`;
+  for(const u of hl){g+=`<path d="${path(u)}" fill="none" stroke="${col(u)}" stroke-width="2" stroke-linejoin="round"/>`+
+   `<circle cx="${x(N-1).toFixed(1)}" cy="${y(val(Bk[N-1].h,u)).toFixed(1)}" r="4" fill="${col(u)}" stroke="var(--surface)" stroke-width="2"/>`}
+  // direct labels for the highlighted lines, nudged apart so they never overlap
+  const labs=hl.map(u=>({u,v:val(Bk[N-1].h,u),yy:y(val(Bk[N-1].h,u))})).sort((a,b)=>a.yy-b.yy);
+  for(let i=1;i<labs.length;i++)labs[i].yy=Math.max(labs[i].yy,labs[i-1].yy+14);
+  for(const l of labs)g+=`<text x="${(x(N-1)+8).toFixed(1)}" y="${(l.yy+4).toFixed(1)}" style="fill:var(--ink2)">${esc(l.u.unit)} ${f2(l.v)}</text>`;
+  g+=`<line class="xh" y1="${T}" y2="${T+ih}" stroke="var(--axis)" stroke-width="1" visibility="hidden"/>`;
+  g+=`<rect class="hit" x="${L}" y="${T}" width="${iw}" height="${ih}" fill="transparent" pointer-events="none"/>`;
+  box.innerHTML=`<svg width="100%" viewBox="0 0 ${W} ${Ht}" role="img" aria-label="${fnMode()?"Functions":"C bytes"} matched per unit by ${unit}">${g}</svg>`;
+  $("uchips").innerHTML=units.map(u=>`<button data-u="${esc(u.unit)}" aria-pressed="${!!col(u)}"${FIX[u.unit]?" disabled":""}>`+
+   `<i style="background:${col(u)||"var(--axis)"}"></i>${esc(name(u))}</button>`).join("");
+  const choose=un=>{pick=pick==un?null:un;try{localStorage.setItem("decomp-unit",pick||"")}catch(e){}multi(Bk,before)};
+  $("uchips").querySelectorAll("button:not([disabled])").forEach(b=>b.onclick=()=>choose(b.dataset.u));
+  box.querySelectorAll(".ctx").forEach(e=>{e.onclick=()=>choose(e.dataset.u);
+   e.onmouseenter=()=>e.firstChild.setAttribute("stroke","var(--ink2)");e.onmouseleave=()=>e.firstChild.setAttribute("stroke","var(--axis)")});
+  // hover anywhere: every unit's value at that time, highest first
+  const svg=box.querySelector("svg"), xh=box.querySelector(".xh"), tip=$("tip");
+  svg.addEventListener("mousemove",ev=>{
+   const r=svg.getBoundingClientRect(),mx=(ev.clientX-r.left)*W/r.width;
+   if(mx<L||mx>L+iw){tip.style.display="none";xh.setAttribute("visibility","hidden");return}
+   const i=Math.max(0,Math.min(N-1,Math.floor((mx-L)/bw))),b=Bk[i];
+   xh.setAttribute("x1",x(i));xh.setAttribute("x2",x(i));xh.setAttribute("visibility","visible");
+   tip.innerHTML=`<b>${esc(lab(b.t,unit))}</b> · ${fnMode()?"functions":"bytes"}`+units.map(u=>({u,v:val(b.h,u)})).sort((a,c)=>c.v-a.v)
+    .map(o=>`<br><i style="display:inline-block;width:10px;height:2px;vertical-align:middle;margin-right:6px;background:${col(o.u)||"var(--axis)"}"></i>`+
+     `${col(o.u)?"<b>":""}${esc(o.u.unit)} ${f2(o.v)}${col(o.u)?"</b>":""}`).join("");
+   tip.style.display="block";tip.style.left=Math.min(ev.clientX+12,innerWidth-220)+"px";tip.style.top=Math.max(8,Math.min(ev.clientY+12,innerHeight-tip.offsetHeight-8))+"px"});
+  svg.addEventListener("mouseleave",()=>{tip.style.display="none";xh.setAttribute("visibility","hidden")});
  }
  draw();
  let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(draw,150)});
@@ -2869,9 +2891,7 @@ $("tiles").innerHTML=grpTile("Game code matched",S.game,"var(--s1)")+
  draw();
 })();
 
-$("blocked").innerHTML=D.blocked.length?"<tr><th>Function</th><th>Segment</th><th class='num'>Size</th></tr>"+
- D.blocked.map(r=>`<tr><td><code>${esc(r.name)}</code></td><td>${esc(r.seg)}</td><td class="num">${r.size} B</td></tr>`).join("")
- :'<tr><td class="empty">None parked.</td></tr>';
+
 </script>
 </body>
 </html>
