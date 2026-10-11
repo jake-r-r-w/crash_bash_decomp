@@ -665,4 +665,6 @@ void func_8002C0E0(void);
 
 void func_8002C11C(void);
 
+void func_80015554(u16 *p, s32 n);
+
 #endif /* BASH_MAIN_H */

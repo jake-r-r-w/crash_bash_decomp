@@ -704,7 +704,18 @@ void func_80015518(u8 *p, s32 n) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80015554);
+void func_80015554(u16 *p, s32 n) {
+    s32 i;
+    u16 lo;
+    s32 v;
+
+    for (i = n - 1; i != -1; i--) {
+        lo = *p >> 8;
+        v = ((*p << 8) & 0xFF00) | lo;
+        *p = v;
+        p++;
+    }
+}
 
 s32 Random(s32 n) {
     if (n < 2) {
