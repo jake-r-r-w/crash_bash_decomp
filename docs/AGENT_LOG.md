@@ -10,7 +10,7 @@ At the end of a session, update **Current state**, **Next** and **Open
 leads**, add any new gotcha, and add one short entry at the top of the
 **Session log**.
 
-## Current state (2026-10-11)
+## Current state (2026-10-12)
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
@@ -20,6 +20,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
   2.7.2-cdk matched a strict subset).
 - PsyQ 4.7: Sony's objects are linked in place of the library; the gaps are
   in `src/main/psyq/unknown/`.
+- Every type and AST id in the Oct 9 prototype's debug fragment is in
+  `include/bash/` and every overlay is identified (ARCHITECTURE.md, Prototype
+  debug types). The disc images are in the git-ignored `protos/`.
 
 ## Next
 
@@ -35,7 +38,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
 3. Name each function as it's matched when the evidence allows (345 of
    2550 are named).
 4. Unpark when a new idea comes up (see Open leads).
-5. Later Phase 2 items: split `main.c` into units, data to C, the PsyQ gaps,
+5. Quick follow-ups from the last session: the rest of Tank's
+   `D_800CB264` table functions (`func_800C8598` add, `func_800C85D0` clear,
+   `func_800C84D8` distance test), next to the matched `func_800C8560`.
+6. Later Phase 2 items: split `main.c` into units, data to C, the PsyQ gaps,
    the `CRASHBSH.DAT` extractor.
 
 ## Open leads
