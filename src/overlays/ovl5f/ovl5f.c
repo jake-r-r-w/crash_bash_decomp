@@ -369,7 +369,9 @@ void func_800C7D04(void) {
     func_80089BE8();
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7D24);
+void func_800C7D24(Hero *hero) {
+    SetHeroSeq(hero, 0x58);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7D44);
 
