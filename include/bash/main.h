@@ -402,4 +402,6 @@ u32 func_8001C974(NAS *nas, u8 *arg1, u32 flags);
 
 void func_8001C690(NAS *nas, u8 *arg1);
 
+void func_80015C1C(PointSprites *ps, MATRIX *m);
+
 #endif /* BASH_MAIN_H */

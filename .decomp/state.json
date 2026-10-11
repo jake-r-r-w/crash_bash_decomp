@@ -499,7 +499,8 @@
   "auto_failed": "types"
  },
  "80015C1C": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-11T08:12:00Z",
+  "status": "matched"
  },
  "80015D08": {
   "matched_at": "2026-10-10T10:36:02Z",

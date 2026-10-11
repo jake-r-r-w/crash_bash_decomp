@@ -540,8 +540,28 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80015AB0);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80015AD4);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80015C1C);
+void func_80015C1C(PointSprites *ps, MATRIX *m) {
+    PointSpriteSet *set = &ps->set;
+    PointSpriteSrc *src = set->src;
+    TILE_1 *prim = set->prims[D_8005B690 & 1];
+    s32 n;
 
+    gte_SetRotMatrix(m);
+    gte_SetTransMatrix(m);
+    n = set->count;
+    for (;;) {
+        if (n == 0) {
+            return;
+        }
+        gte_ldv0(&src->v);
+        gte_rtps();
+        gte_stsxy(&prim->x0);
+        src++;
+        n--;
+        addPrim(D_80056998.ot, prim);
+        prim++;
+    }
+}
 void func_80015D08(u8 *arg0) {
     u8 *temp_s2;
 

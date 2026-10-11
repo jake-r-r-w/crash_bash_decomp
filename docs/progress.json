@@ -1,8 +1,8 @@
 {
  "blocked": [],
- "commit": "21427e1",
+ "commit": "ecf9577",
  "game": "SCUS_945.70",
- "generated": "2026-10-11T08:10:14Z",
+ "generated": "2026-10-11T08:12:23Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -475,9 +475,33 @@
    "lib_f": 535,
    "lib_tb": 122112,
    "ts": "2026-10-11T08:10:14Z"
+  },
+  {
+   "commit": "ecf9577",
+   "data_b": 128,
+   "data_tb": 616791,
+   "game_all_f": 2550,
+   "game_b": 23008,
+   "game_c_f": 409,
+   "game_f": 409,
+   "game_named_f": 144,
+   "game_tb": 1019036,
+   "game_typed_f": 296,
+   "lib_b": 121280,
+   "lib_f": 535,
+   "lib_tb": 122112,
+   "ts": "2026-10-11T08:12:23Z"
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-11T08:12:00Z",
+   "auto": true,
+   "name": "func_80015C1C",
+   "seg": "main/main",
+   "size": 236,
+   "tries": 0
+  },
   {
    "at": "2026-10-11T08:09:51Z",
    "auto": true,
@@ -589,14 +613,6 @@
    "seg": "main/main",
    "size": 220,
    "tries": 0
-  },
-  {
-   "at": "2026-10-10T17:49:39Z",
-   "auto": true,
-   "name": "AddMotion",
-   "seg": "main/main",
-   "size": 156,
-   "tries": 0
   }
  ],
  "summary": {
@@ -612,15 +628,15 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 0,
-   "c_f": 408,
-   "done_b": 22772,
-   "done_f": 408,
+   "c_f": 409,
+   "done_b": 23008,
+   "done_f": 409,
    "named_f": 144,
-   "pct": 2.234660993330952,
+   "pct": 2.2578201358931382,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2550,
-   "typed_f": 295
+   "typed_f": 296
   },
   "lib": {
    "all_f": 566,
@@ -664,20 +680,20 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
-    "c_f": 162,
-    "done_b": 12172,
-    "done_f": 162,
+    "c_f": 163,
+    "done_b": 12408,
+    "done_f": 163,
     "file": "SCUS_945.70",
     "files": 1,
     "lib": false,
     "named_f": 15,
-    "pct": 9.75008010253124,
+    "pct": 9.93912207625761,
     "phase": 2,
     "sony_b": 0,
     "title": "main.exe",
     "total_b": 124840,
     "total_f": 574,
-    "typed_f": 86,
+    "typed_f": 87,
     "unit": "main exe"
    },
    {
