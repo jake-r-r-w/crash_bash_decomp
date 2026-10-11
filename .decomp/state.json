@@ -44,9 +44,9 @@
   "auto_failed": "compile"
  },
  "800110A8": {
-  "auto_failed": "types",
+  "matched_at": "2026-10-11T14:59:00Z",
   "started": "2026-10-11T14:41:18Z",
-  "status": "in_progress"
+  "status": "matched"
  },
  "800112A4": {
   "auto_failed": "types"

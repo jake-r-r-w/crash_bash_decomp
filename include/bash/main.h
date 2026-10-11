@@ -150,6 +150,28 @@ typedef struct {
     FlagPoint pts[1]; /* [count], then nRecs FlagRecords */
 } PointList;
 
+/* Header of a heap block, 0x18 bytes before the pointer the allocator hands
+ * out; the next block follows its size words of data. Free blocks are on the
+ * heap's free list, sorted by size (func_800110A8 frees and merges). */
+typedef struct MemBlock {
+    /* 0x00 */ u16 unk0;
+    /* 0x02 */ u8 unk2[2];
+    /* 0x04 */ void **owner;             /* cleared on free; (void **)-1 for none; NULL when free */
+    /* 0x08 */ u32 size;                 /* in words, header not included */
+    /* 0x0C */ struct MemBlock *prev;    /* the block before it in memory */
+    /* 0x10 */ struct MemBlock *prevFree;
+    /* 0x14 */ struct MemBlock *nextFree;
+} MemBlock;
+
+#define MEMBLOCK_NEXT(b) ((MemBlock *)((u8 *)(b) + (b)->size * 4 + sizeof(MemBlock)))
+
+/* A heap (D_8004E0F0 is the main one). Only these fields are known. */
+typedef struct Heap {
+    /* 0x00 */ u8 unk0[8];
+    /* 0x08 */ MemBlock *free;           /* free list, smallest first */
+    /* 0x0C */ MemBlock *lowest;         /* lowest free block, or NULL */
+} Heap;
+
 void func_80011474(void);
 s32 func_8001151C(u8 *arg0);
 void func_80011530(u8 *arg0);
@@ -492,5 +514,7 @@ s16 func_800250B0(NAS *nas);
 void func_8002C44C(void);
 
 void func_80025FAC(EXTanim *anim, s16 n);
+
+void func_800110A8(void *ptr, Heap *heap);
 
 #endif /* BASH_MAIN_H */

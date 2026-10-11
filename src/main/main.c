@@ -31,7 +31,83 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80010C70);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80010E8C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800110A8);
+void func_800110A8(void *ptr, Heap *heap) {
+    MemBlock *blk;
+    MemBlock *next;
+    MemBlock *prev;
+    MemBlock *p;
+    MemBlock *q;
+
+    blk = (MemBlock *)ptr - 1;
+    if (blk->owner != (void **)-1) {
+        *blk->owner = NULL;
+    }
+    prev = blk->prev;
+    next = (MemBlock *)((u32 *)(blk + 1) + blk->size);
+    if (blk < heap->lowest || heap->lowest == NULL) {
+        heap->lowest = blk;
+    }
+    if (next->owner == NULL) {
+        if (next->prevFree != NULL) {
+            next->prevFree->nextFree = next->nextFree;
+        } else {
+            heap->free = next->nextFree;
+        }
+        if (next->nextFree != NULL) {
+            next->nextFree->prevFree = next->prevFree;
+        }
+        blk->size += 6 + next->size;
+        blk->unk0 = 0;
+        MEMBLOCK_NEXT(blk)->prev = blk;
+    }
+    if (prev != NULL && prev->owner == NULL) {
+        prev->size += 6 + blk->size;
+        prev->unk0 = 0;
+        MEMBLOCK_NEXT(blk)->prev = prev;
+        if (prev->prevFree != NULL) {
+            prev->prevFree->nextFree = prev->nextFree;
+        } else {
+            heap->free = prev->nextFree;
+        }
+        if (prev->nextFree != NULL) {
+            prev->nextFree->prevFree = prev->prevFree;
+        }
+        blk = prev;
+        if (blk < heap->lowest || heap->lowest == NULL) {
+            heap->lowest = blk;
+        }
+    } else {
+        blk->owner = NULL;
+    }
+    p = heap->free;
+    if (p == NULL) {
+        heap->free = blk;
+        blk->nextFree = NULL;
+        blk->prevFree = NULL;
+        return;
+    }
+    while (p != NULL) {
+        if (p->size >= blk->size) {
+            q = p->prevFree;
+            if (q != NULL) {
+                q->nextFree = blk;
+            } else {
+                heap->free = blk;
+            }
+            blk->prevFree = q;
+            blk->nextFree = p;
+            p->prevFree = blk;
+            return;
+        }
+        if (p->nextFree == NULL) {
+            p->nextFree = blk;
+            blk->prevFree = p;
+            blk->nextFree = NULL;
+            return;
+        }
+        p = p->nextFree;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800112A4);
 
