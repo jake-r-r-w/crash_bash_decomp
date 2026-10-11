@@ -26,4 +26,9 @@ void func_800D34F8(void);
 void func_800D3500(void);
 void func_800D3508(void);
 
+/* Head of a list linked through +0x20 (counted by func_800C9B5C). */
+extern u8 *D_800D5454;
+
+s32 func_800C9B5C(void);
+
 #endif /* BASH_OVL62_H */

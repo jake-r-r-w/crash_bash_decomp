@@ -205,7 +205,16 @@ void PlotBossTransmuter(NAS *m) {
 void InitBossTransmuter(NAS *m) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9B5C);
+s32 func_800C9B5C(void) {
+    u8 *p;
+    s32 n;
+
+    n = 0;
+    for (p = D_800D5454; p != NULL; p = *(u8 **)(p + 0x20)) {
+        n++;
+    }
+    return n;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitPolarMissile);
 

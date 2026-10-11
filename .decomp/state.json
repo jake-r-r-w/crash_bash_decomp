@@ -2339,7 +2339,10 @@
   "auto_diff": 5,
   "auto_failed": "diff"
  },
- "80033530": {},
+ "80033530": {
+  "started": "2026-10-11T20:35:59Z",
+  "status": "in_progress"
+ },
  "80034AEC": {},
  "80034C4C": {
   "auto_diff": 2,
@@ -2375,7 +2378,10 @@
   "auto_diff": 5,
   "auto_failed": "diff"
  },
- "8003E0EC": {},
+ "8003E0EC": {
+  "started": "2026-10-11T20:35:56Z",
+  "status": "in_progress"
+ },
  "8003E0FC": {
   "auto_diff": 2,
   "auto_failed": "diff"
@@ -6026,7 +6032,9 @@
  },
  "ovl62:800C9B5C": {
   "auto_diff": 6,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T20:38:27Z",
+  "started": "2026-10-11T20:36:01Z",
+  "status": "matched"
  },
  "ovl62:800C9B88": {
   "auto_failed": "types"
