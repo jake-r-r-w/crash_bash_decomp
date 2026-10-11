@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 422/2550 game functions matched (main.exe 176/574), 4 parked. `make check`
+- 423/2550 game functions matched (main.exe 177/574), 4 parked. `make check`
   OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
@@ -24,7 +24,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 ## Next
 
 1. Core API first (no prototypes yet, called ~3,000 times across exe,
-   engine and overlays): `StopSfx`, `PlaySfx`,
+   engine and overlays): `PlaySfx` (use `SfxVoice`/`SfxPool`, `bash/main.h`),
    `KillNAS`, `SpawnNASById`, `get_angle`, then `func_80025A48`,
    `func_80026980`, `func_800250B0`, `func_80025FAC`, `func_800110A8`.
    Then the 9 functions with identical copies (`decomp.py dups`).
@@ -73,6 +73,12 @@ Other:
   overlay's own tables) before naming anything.
 - `func_8001A0D8` (blocks `func_8001C7FC`) stores SXY at +0x10/+0x18/+0x20
   too: use `gte_stsxy3_10`.
+- Sound voices: `SfxActiveVoices` (`0x80059614`) is `SfxVoicePool.active`
+  (+0x544). Drop the separate symbol and retype the matched voice walkers
+  (`func_800227C0`, `func_800227FC`, `func_80022838`, `func_800228A4`) with
+  `SfxVoice`. `func_80022504` is "stop all" (`StopSfx` inlined in a loop),
+  `func_800228C4` unlinks without stopping, `func_80022924` allocates,
+  `func_80022984` inits the pool.
 - Ambiguous naming leads are listed in ARCHITECTURE.md ("Functions reached
   from the AST pairs").
 
@@ -149,7 +155,8 @@ Newest first, a few lines each. Details are in the commits.
 
 - **2026-10-11:** Started the core API (most-called unmatched functions,
   ~3,000 call sites; plan in Next): matched `Random` on the first diff,
-  parked `FindExtension` (branch layout) but added its prototype.
+  parked `FindExtension` (branch layout) but added its prototype; matched
+  `StopSfx` on the first diff with new `SfxVoice`/`SfxPool` types.
 - **2026-10-11:** Matched `func_800193A8` (692 bytes, GTE triangle strips;
   register pins, `--hack`) through the new process; six Diff patterns rows.
   Fixed the gate lint so pins count as hacks.
