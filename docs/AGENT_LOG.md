@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 462/2550 game functions matched (main.exe 207/574), 4 parked. `make check`
+- 476/2550 game functions matched (main.exe 221/574), 4 parked. `make check`
   OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
@@ -168,6 +168,11 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-11:** Second hour of `next`: 14 main.exe matches (`func_800280C0`
+  to `func_8001682C`), one with the permuter (`func_8001828C`). New types:
+  `NodePool`/`PoolNode` (`D_80056844`), `NAS.prev14`/`next14`.
+  `func_80016EF4` takes a second argument (passed to `func_8002A5A4`).
+  Four Diff patterns.
 - **2026-10-11:** Matched `func_80016274` (112 bytes, first diff): first entry
   of a NULL-terminated array whose `func_8001534C` value equals `arg1`+0x10.
 - **2026-10-11:** One hour of `next`: 17 main.exe matches (`func_8002C488` to
