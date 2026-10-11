@@ -1103,7 +1103,17 @@ void *func_800183B0(void) {
     return NULL;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800183DC);
+void func_800183DC(void) {
+    NodePool *pool;
+
+    DrawSync(0);
+    func_8001828C();
+    pool = &D_80056844;
+    if (pool->mem != NULL) {
+        func_800110A8(pool->mem, (Heap *)D_8004E0F0);
+    }
+    pool->mem = NULL;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80018430);
 

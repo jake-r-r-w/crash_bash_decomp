@@ -201,6 +201,7 @@ void func_80012E0C(void);
 void func_80012E14(u8 *arg0);
 void func_80012F04(void *arg0);
 s32 func_8001534C(s32 arg0);
+void func_8001828C(void);
 void func_80027AD4(u8 *src, u8 *dst, s32 n);
 void func_8002C394(s32 arg0, s32 *slot, s32 type);
 s32 func_80013688(s32 arg0, void (*done)(), void *ctx);
@@ -590,5 +591,7 @@ void *func_80015AB0(s32 *arg0, u8 *rec);
 void *func_800183B0(void);
 
 void func_80018388(void *data);
+
+void func_800183DC(void);
 
 #endif /* BASH_MAIN_H */
