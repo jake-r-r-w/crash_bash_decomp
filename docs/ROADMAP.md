@@ -113,9 +113,9 @@ extracts.
 - [ ] Pogo (`ovl60`)
 - [ ] Arkenoid (`ovl61`)
 - [ ] Polar (`ovl62`)
-- [ ] Name Tank's AST pairs. Its enum is cut off in the leak, so match each
-  table entry to its `Init`/`Plot` prototype from evidence in the code (calls,
-  spawned objects, assets).
+- [x] Name Tank's AST pairs. Its enum is cut off in the leak; the Oct 9
+  prototype's `TANK_AST_types` gives every id, and all 68 names match the
+  leak's `Init`/`Plot` prototypes.
 - [ ] Tank (`ovl5f`)
 
 ## Phase 5 - The remaining overlays
@@ -125,9 +125,20 @@ One at a time, starting with code shared or near-identical between minigames.
 **Done when** every slot overlay is identified in `docs/ARCHITECTURE.md`, is
 source-only, and still matches, and its asset files extract.
 
-- [ ] Identify which minigame or mode each remaining overlay is (the asset
-  files it loads are the best clue), then list them here, one box each.
-- [ ] Every remaining slot overlay is source-only.
+- [x] Identify which minigame or mode each remaining overlay is: the Oct 9
+  prototype's AST enums name each one's game (ARCHITECTURE.md, Prototype
+  debug types). `ovl69` has no AST entries and is still unknown.
+- [ ] Bash (`ovl5d`, with the crates and pickups of `XTRAS_AST_types`)
+- [ ] Papu (`ovl5e`)
+- [ ] Race (`ovl63`)
+- [ ] Spin (`ovl64`)
+- [ ] Dino (`ovl65`)
+- [ ] Bonk (`ovl66`)
+- [ ] N2O and NOX (`ovl67`)
+- [ ] Chase (`ovl68`)
+- [ ] Hub (`ovl6a`)
+- [ ] Identify `ovl69` (the asset files it loads are the best clue), then
+  make it source-only.
 
 ## Phase 6 - Finish
 

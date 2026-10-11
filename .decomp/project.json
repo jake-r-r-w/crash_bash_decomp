@@ -32,7 +32,8 @@
    "offset": 57643008,
    "phase": 5,
    "sha1": "d0d0387d0963759f9a52f91e7619f16de56f9032",
-   "size": 70945
+   "size": 70945,
+   "title": "Bash"
   },
   {
    "from": "disc/files/CRASHBSH/CRASHBSH.DAT",
@@ -40,7 +41,8 @@
    "offset": 57595904,
    "phase": 5,
    "sha1": "848cc443eb6608d2e46b79e1219a08c7106f2040",
-   "size": 46722
+   "size": 46722,
+   "title": "Papu"
   },
   {
    "from": "disc/files/CRASHBSH/CRASHBSH.DAT",
@@ -49,7 +51,7 @@
    "phase": 4,
    "sha1": "c68fe73c256380452e952ecfafc782d47a6ee30f",
    "size": 98272,
-   "title": "Tank (probably)"
+   "title": "Tank"
   },
   {
    "from": "disc/files/CRASHBSH/CRASHBSH.DAT",
@@ -84,7 +86,8 @@
    "offset": 57257984,
    "phase": 5,
    "sha1": "ea10dcc5124cf65bd67160da0c90afa28627b2b8",
-   "size": 95260
+   "size": 95260,
+   "title": "Race"
   },
   {
    "from": "disc/files/CRASHBSH/CRASHBSH.DAT",
@@ -92,7 +95,8 @@
    "offset": 57102336,
    "phase": 5,
    "sha1": "7d3e46040ad33ec59b1ccfc2f910e521fcab48ec",
-   "size": 36272
+   "size": 36272,
+   "title": "Spin"
   },
   {
    "from": "disc/files/CRASHBSH/CRASHBSH.DAT",
@@ -100,7 +104,8 @@
    "offset": 57057280,
    "phase": 5,
    "sha1": "1d2cd8b029c9796641a0f271fc012c57da74017a",
-   "size": 43476
+   "size": 43476,
+   "title": "Dino"
   },
   {
    "from": "disc/files/CRASHBSH/CRASHBSH.DAT",
@@ -108,7 +113,8 @@
    "offset": 57028608,
    "phase": 5,
    "sha1": "f111975a08684066d50c9b4799e992271736f0af",
-   "size": 27864
+   "size": 27864,
+   "title": "Bonk"
   },
   {
    "from": "disc/files/CRASHBSH/CRASHBSH.DAT",
@@ -116,7 +122,8 @@
    "offset": 56944640,
    "phase": 5,
    "sha1": "944e98e5e7e7019b78e1a657c94a32118fd74d13",
-   "size": 83000
+   "size": 83000,
+   "title": "N2O, NOX"
   },
   {
    "from": "disc/files/CRASHBSH/CRASHBSH.DAT",
@@ -124,7 +131,8 @@
    "offset": 56899584,
    "phase": 5,
    "sha1": "b92bfadc46085aa0e00d115fd34cad28b42c9b9d",
-   "size": 43828
+   "size": 43828,
+   "title": "Chase"
   },
   {
    "from": "disc/files/CRASHBSH/CRASHBSH.DAT",
@@ -140,7 +148,8 @@
    "offset": 57139200,
    "phase": 5,
    "sha1": "3284b2f1f1426d216ada385a088f4477bd7da8a8",
-   "size": 85084
+   "size": 85084,
+   "title": "Hub"
   }
  ],
  "phase": 2,
