@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 433/2550 game functions matched (main.exe 187/574), 5 parked. `make check`
+- 442/2550 game functions matched (main.exe 187/574), 5 parked. `make check`
   OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
@@ -25,8 +25,6 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 1. The core API list is done (all matched or parked with prototypes).
    Next: the 9 functions with identical copies (`decomp.py dups`).
-   Quick wins from `dups` with a matched copy: ten 32-byte ovl5f/ovl65
-   copies of `func_800C6828` (one commit each, `apply_one.py`).
    A function that parks still gets its prototype in `bash/main.h` (an
    ordinary commit after `make check`), as `FindExtension` did.
 2. Keep matching `main.exe`, one function per commit:
@@ -113,7 +111,8 @@ Other:
 - `done` refuses when another function in the file is also un-`INCLUDE_ASM`ed.
   For a batch: keep the full file in `disc/scratch/`, `git checkout` the
   source, apply one function (`disc/scratch/apply_one.py FULL SRC SEGDIR
-  FUNC`), `done`, repeat.
+  FUNC`), `done`, repeat. `done` also applies the same C to byte-identical
+  copies in the file and commits them together: skip those (apply_one asserts).
 - `done`'s scope check compares names: commit renames before matching.
 - `make diff` shows at most 40 rows. For the whole diff, or to swap a draft
   in and diff in one step: `tools/dk python3 disc/scratch/fulldiff.py FUNC`,
@@ -175,6 +174,9 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-11:** Matched nine 32-byte wrappers like `func_800C6828` (eight
+  in ovl5f, `func_800BCA18` in ovl65): pass `a0` through with a constant.
+  `SetHeroSeq`/`SetHeroAction` prototypes (`Hero *`) in `bash/engine.h`.
 - **2026-10-11:** Matched `func_800110A8` (508 bytes): the heap's free
   (merge with free neighbours, sorted insert). New `MemBlock`/`Heap` types.
   Finishes the core API list. Two new Diff patterns.
