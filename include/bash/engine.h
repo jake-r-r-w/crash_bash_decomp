@@ -117,9 +117,13 @@ extern s32 D_8009E5DC;
 
 void SetHeroSeq(HeroInfo *hero, s32 seq);
 void SetHeroAction(HeroInfo *hero, s32 action);
+s32 func_8008EF70(void);
+void func_8008ECE4(void);
 
 void func_8008F068(void);
 
 s32 func_80095D88(s32 *rec);
+
+void func_8008EF9C(void);
 
 #endif /* BASH_ENGINE_H */
