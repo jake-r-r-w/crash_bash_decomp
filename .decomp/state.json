@@ -862,7 +862,9 @@
   "auto_failed": "types"
  },
  "8001C974": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-11T07:58:06Z",
+  "started": "2026-10-11T07:55:44Z",
+  "status": "matched"
  },
  "8001CAD4": {
   "auto_diff": 64,

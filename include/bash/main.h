@@ -312,6 +312,7 @@ void *func_800112A4(void *base, s32 offset, u8 *arg2);
 void func_80014540(u8 *arg0, RECT *rect);
 void func_8002ACA0(s32 id, s32 arg1);
 extern GfxState D_80056998;
+extern u16 D_800569DC;
 extern u8 D_80053694[];
 void *AllocExtension(void *owner, s32 size, s32 id, void *tmpl);
 extern EXTmotion D_8005A9CC;
@@ -361,5 +362,7 @@ void func_8001C008(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc);
 void func_8001D048(SVECTOR *v, POLY_GT4 *poly);
 
 void func_8002AEE0(void);
+
+u32 func_8001C974(NAS *nas, u8 *arg1, u32 flags);
 
 #endif /* BASH_MAIN_H */
