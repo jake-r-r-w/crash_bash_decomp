@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 444/2550 game functions matched (main.exe 189/574), 4 parked. `make check`
+- 461/2550 game functions matched (main.exe 206/574), 4 parked. `make check`
   OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
@@ -92,6 +92,8 @@ Other:
   runs nothing.
 - Git Bash heredocs collapse `\\` to `\`: write Python with escapes using
   the Write tool.
+- `tryf.sh` replaces only the function, so a comment line above it in the
+  draft file is added again on every run. Keep comments out of drafts.
 - `make clean`/`make verify` wipe `build/` (including `build/objdiff/asm`; rerun
   `make objdiff-config`). Keep scratch scripts in `disc/scratch/`.
 - `tools/dk` right after `git checkout` sometimes hits a Windows
@@ -166,6 +168,11 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-11:** One hour of `next`: 17 main.exe matches (`func_8002C488` to
+  `func_8001DCD4`), most on the first diff. `func_800101E0` launches the
+  Spyro 3 demo (unused local for the frame). Subengine +0x54 is `hook`,
+  `VabSlot.handle`, heap free-stats globals, ovl6a `D_800BCEE8` is a
+  `subengine *`. Three Diff patterns.
 - **2026-10-11:** Matched `func_80016AD4` (116 bytes, first diff): unloads
   what `func_80016C18` loads; `func_80012F04` takes one argument. Unparked
   `FindExtension`: a label inside the first `return` block, `goto` from the
