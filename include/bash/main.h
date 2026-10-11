@@ -377,6 +377,9 @@ extern void *D_8005AA34;
 extern void *D_8005AA24;
 extern s32 D_8006557C;
 extern LoadSlot D_800644C0[6];
+extern s32 D_8004E104;            /* func_80011410: free bytes */
+extern s32 D_8004E108;            /* func_80011410: free blocks */
+extern s32 D_8004E10C;            /* func_80011410: largest free block, bytes */
 extern s32 D_800654BC;            /* slots of D_800644C0 in use */
 extern char D_800654CC[];
 extern u8 D_8005A614[];
@@ -552,5 +555,7 @@ void func_8002BBB4(void);
 void func_8001E854(void *arg0);
 
 void func_8001E8F0(void *arg0);
+
+s32 func_80011410(Heap *heap);
 
 #endif /* BASH_MAIN_H */

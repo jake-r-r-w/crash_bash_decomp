@@ -111,7 +111,23 @@ void func_800110A8(void *ptr, Heap *heap) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800112A4);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80011410);
+/* Free-list statistics for a heap; returns the free bytes. */
+s32 func_80011410(Heap *heap) {
+    MemBlock *blk;
+    s32 bytes;
+
+    bytes = 0;
+    blk = heap->free;
+    D_8004E108 = 0;
+    D_8004E104 = 0;
+    for (; blk != NULL; blk = blk->nextFree) {
+        bytes = blk->size * 4;
+        D_8004E108++;
+        D_8004E104 += bytes;
+    }
+    D_8004E10C = bytes;
+    return D_8004E104;
+}
 
 void func_80011474(void) {
     func_80011410(D_8004E0F0);
@@ -3286,7 +3302,6 @@ void func_8002BD0C(s32 arg0) {
     }
 }
 
-/* Clears SfxTable: no sound for any id. */
 /* Clears SfxTable: no sound for any id. */
 void func_8002BD68(void) {
     s8 *p;
