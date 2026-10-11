@@ -2443,7 +2443,25 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_800268BC);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002694C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80026980);
+void func_80026980(NAS *nas) {
+    NAS **head = (NAS **)&D_8005AA34;
+
+    if (nas->prev38 != NULL || nas->next38 != NULL) {
+        if (nas->prev38 != NULL) {
+            nas->prev38->next38 = nas->next38;
+            if (nas->next38 != NULL) {
+                nas->next38->prev38 = nas->prev38;
+            }
+        } else {
+            *head = nas->next38;
+            nas->next38->prev38 = NULL;
+        }
+        nas->prev38 = NULL;
+        nas->next38 = NULL;
+    } else if (*head == nas) {
+        *head = NULL;
+    }
+}
 
 void func_80026A04(u8 *arg0) {
     if (D_8005AA34 != NULL) {

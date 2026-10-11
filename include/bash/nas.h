@@ -68,7 +68,13 @@ struct NAS {
     /* 0x08 */ void *ext;               /* first extension (EXTid, EXTnode, ...) */
     /* 0x0C */ NAS *prev;               /* active list */
     /* 0x10 */ NAS *next;               /* active list, or the free list */
-    /* 0x14 */ u8 unk14[0x48 - 0x14];
+    /* 0x14 */ u8 unk14[0x28 - 0x14];
+    /* 0x28 */ NAS *prev28;             /* list headed by D_8005AA24 (func_80026A54 unlinks) */
+    /* 0x2C */ NAS *next28;
+    /* 0x30 */ u8 unk30[0x38 - 0x30];
+    /* 0x38 */ NAS *prev38;             /* list headed by D_8005AA34 (func_80026980 unlinks) */
+    /* 0x3C */ NAS *next38;
+    /* 0x40 */ u8 unk40[0x48 - 0x40];
     /* 0x48 */ void (*Init)(NAS *);     /* AST Init: called once when spawned */
     /* 0x4C */ void (*Plot)(NAS *);     /* AST Plot */
     /* 0x50 */ NASSpawn *spawn;         /* the spawn record it was built from, or NULL */
