@@ -79,8 +79,8 @@ Other:
 - Prototype debug types (ARCHITECTURE.md, Prototype debug types): every type
   in the Oct 9 fragment is in a header now, and every single-id AST
   Init/Plot is named. Use them while matching: type `NAS` fields, `FUX`
-  extensions and globals with them instead of offsets (the 14 Tank functions
-  retyped to `NAS *` are still m2c pointer arithmetic). 34 fields of 15 types
+  extensions and globals with them instead of offsets, as the four Tank
+  Inits (`InitMineBall`, ...) now are. 34 fields of 15 types
   whose bodies were on lost pages are word or byte arrays; retype them if code
   shows their fields.
 - `func_8001A0D8` (blocks `func_8001C7FC`) stores SXY at +0x10/+0x18/+0x20
@@ -184,6 +184,9 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-12:** Rewrote the four m2c Tank Inits (`InitTankBossCortexTurret`,
+  `InitBoatField`, `InitShellExplosion`, `InitMineBall`) with `NAS`,
+  `EXTengine` and `subengine` fields; typed 383 -> 387.
 - **2026-10-12:** Added the rest of the Oct 9 types: new headers `core.h`,
   `hero.h`, `shell.h` and one per game (`hub.h`, `race.h`, `chase.h`, ...),
   plus Polar's missing structs in `polar.h`; each overlay includes its game's

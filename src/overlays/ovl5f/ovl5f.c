@@ -221,18 +221,18 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6A30);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitTankBossRocketTurret);
 
-void InitTankBossCortexTurret(NAS *arg0) {
-    u8 *temp_a1;
-    u8 *temp_v1;
+void InitTankBossCortexTurret(NAS *nas) {
+    EXTengine *eng;
+    subengine *sub;
 
-    temp_v1 = (*(s32*)((u8*)(arg0) + 84));
-    (*(s8*)((u8*)(temp_v1) + 93)) = 1;
-    temp_a1 = (*(s32*)((u8*)(temp_v1) + 108));
-    (*(s32*)((u8*)(temp_a1) + 108)) = D_800536CC;
-    (*(s16*)((u8*)(temp_a1) + 116)) = 0x2004;
-    (*(s16*)((u8*)(temp_a1) + 104)) = 0x100;
-    (*(s32*)((u8*)(temp_a1) + 0)) = (s32) ((*(s32*)((u8*)(temp_a1) + 0)) | 0x02000000);
-    (*(s16*)((u8*)(arg0) + 92)) = 0x11;
+    eng = nas->Engine;
+    eng->unk5D = 1;
+    sub = eng->sub;
+    sub->unk6C = D_800536CC;
+    sub->unk74 = 0x2004;
+    sub->unk68 = 0x100;
+    sub->flags |= 0x02000000;
+    nas->UserInfo.status = 0x11;
 }
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitTankBossCrashTurret);
@@ -269,10 +269,10 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitPillar);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitPillarControl);
 
-void InitBoatField(NAS *arg0) {
-    (*(s32*)((u8*)(arg0) + 100)) = 0;
-    if ((*(u16*)((u8*)(arg0) + 106)) != 0) {
-        KillNAS((NAS *)arg0);
+void InitBoatField(NAS *nas) {
+    nas->UserInfo.user2 = 0;
+    if (nas->Failure != 0) {
+        KillNAS(nas);
     }
 }
 
@@ -298,17 +298,17 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitPickupGenerator_TA);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotShellExplosion);
 
-void InitShellExplosion(NAS *arg0) {
-    u8 *temp_v1;
-    u8 *temp_v1_2;
+void InitShellExplosion(NAS *nas) {
+    EXTengine *eng;
+    subengine *sub;
 
-    temp_v1 = (*(s32*)((u8*)(arg0) + 84));
-    (*(s32*)((u8*)(temp_v1) + 12)) = (s32) ((*(s32*)((u8*)(temp_v1) + 12)) | 0x21);
-    temp_v1_2 = (*(s32*)((u8*)(temp_v1) + 108));
-    (*(s32*)((u8*)(temp_v1_2) + 108)) = D_80053694;
-    (*(s16*)((u8*)(temp_v1_2) + 116)) = 0x2019;
-    if ((*(u16*)((u8*)(arg0) + 106)) != 0) {
-        KillNAS((NAS *)arg0);
+    eng = nas->Engine;
+    eng->flags |= 0x21;
+    sub = eng->sub;
+    sub->unk6C = D_80053694;
+    sub->unk74 = 0x2019;
+    if (nas->Failure != 0) {
+        KillNAS(nas);
     }
 }
 
@@ -316,18 +316,18 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitShrapnelBit);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotMineBall);
 
-void InitMineBall(NAS *arg0) {
-    u8 *temp_v1;
-    u8 *temp_v1_2;
+void InitMineBall(NAS *nas) {
+    EXTengine *eng;
+    subengine *sub;
 
-    temp_v1 = (*(s32*)((u8*)(arg0) + 84));
-    (*(s32*)((u8*)(temp_v1) + 12)) = (s32) ((*(s32*)((u8*)(temp_v1) + 12)) | 0x21);
-    temp_v1_2 = (*(s32*)((u8*)(temp_v1) + 108));
-    (*(s32*)((u8*)(temp_v1_2) + 108)) = D_80053694;
-    (*(s16*)((u8*)(temp_v1_2) + 116)) = 0x2019;
-    (*(s16*)((u8*)(arg0) + 92)) = 0;
-    if ((*(u16*)((u8*)(arg0) + 106)) != 0) {
-        KillNAS((NAS *)arg0);
+    eng = nas->Engine;
+    eng->flags |= 0x21;
+    sub = eng->sub;
+    sub->unk6C = D_80053694;
+    sub->unk74 = 0x2019;
+    nas->UserInfo.status = 0;
+    if (nas->Failure != 0) {
+        KillNAS(nas);
     }
 }
 
