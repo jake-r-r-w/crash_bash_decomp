@@ -1468,7 +1468,9 @@
  },
  "80025A48": {
   "auto_diff": 33,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T14:26:14Z",
+  "started": "2026-10-11T14:22:40Z",
+  "status": "matched"
  },
  "80025AE4": {
   "matched_at": "2026-10-10T10:11:53Z",

@@ -146,8 +146,8 @@ typedef struct {
 
 typedef struct {
     s16 count;
-    s16 unk2;
-    FlagPoint pts[1]; /* [count] */
+    s16 nRecs;
+    FlagPoint pts[1]; /* [count], then nRecs FlagRecords */
 } PointList;
 
 void func_80011474(void);
@@ -482,5 +482,7 @@ SfxVoice *PlaySfx(s32 id, SfxVoice **handle, SLONG_XYZ *pos, s32 arg3, s32 arg4,
 s32 KillNAS(NAS *nas);
 
 s32 get_angle(s32 x, s32 z);
+
+FlagRecord *func_80025A48(EXTengine *eng, u32 flag);
 
 #endif /* BASH_MAIN_H */

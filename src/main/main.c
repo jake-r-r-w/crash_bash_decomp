@@ -2258,7 +2258,25 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80025534);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002578C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80025A48);
+FlagRecord *func_80025A48(EXTengine *eng, u32 flag) {
+    PointList *list;
+    FlagRecord *rec;
+    s32 n;
+
+    if (eng->rec.flags & flag) {
+        return &eng->rec;
+    }
+    if (eng->sub != NULL && (list = func_8001562C(eng->sub)) != NULL) {
+        n = list->nRecs;
+        rec = (FlagRecord *)&list->pts[list->count];
+        for (; n != 0; n--, rec++) {
+            if (rec->flags & flag) {
+                return rec;
+            }
+        }
+    }
+    return NULL;
+}
 
 void func_80025AE4(u8 *arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4, s32 arg5, s32 arg6) {
     (*(s16*)((u8*)(arg0) + 132)) = arg1;

@@ -94,6 +94,14 @@ typedef struct ASTEntry {
 } ASTEntry;
 BASH_SIZE_CHECK(ASTEntry, 0xC);
 
+/* A 16-byte record with flag bits, found by func_80025A48: an engine has one
+ * of its own (EXTengine.rec), and a PointList carries more after its points. */
+typedef struct {
+    /* 0x00 */ u8 unk0[0xC];
+    /* 0x0C */ u32 flags;
+} FlagRecord;
+BASH_SIZE_CHECK(FlagRecord, 0x10);
+
 /* Engine extension, made by AddEngine(nas, id) from a template: EXTid is
  * id | 0x100. The first one is NAS.eng; later ones are linked through next. */
 struct EXTengine {
@@ -119,7 +127,7 @@ struct EXTengine {
     /* 0x74 */ u8 unk74[0x7C - 0x74];
     /* 0x7C */ EXTengine *next;          /* next engine extension of the same NAS */
     /* 0x80 */ EXTengine *link;          /* paired engine (its link points back); cleared both ways by KillNAS */
-    /* 0x84 */ u8 unk84[0x94 - 0x84];
+    /* 0x84 */ FlagRecord rec;            /* checked first by func_80025A48 */
     /* 0x94 */ s32 unk94;                /* a PlaySfx voice: StopSfx'd when the subengines are freed */
     /* 0x98 */ u8 unk98[2];
     /* 0x9A */ u16 subCount;             /* number of subengines */
