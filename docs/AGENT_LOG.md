@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 430/2550 game functions matched (main.exe 184/574), 5 parked. `make check`
+- 431/2550 game functions matched (main.exe 185/574), 5 parked. `make check`
   OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
@@ -27,6 +27,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
    engine and overlays):
    `func_80025FAC`, then, `func_800110A8`.
    Then the 9 functions with identical copies (`decomp.py dups`).
+   Quick wins from `dups` with a matched copy: ten 32-byte ovl5f/ovl65
+   copies of `func_800C6828` (one commit each, `apply_one.py`).
    A function that parks still gets its prototype in `bash/main.h` (an
    ordinary commit after `make check`), as `FindExtension` did.
 2. Keep matching `main.exe`, one function per commit:
@@ -172,6 +174,8 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-11:** Matched `func_8002C44C` (60 bytes) with `func_8001D604`'s
+  C; `D_8006557C` is an `s32`, not an array.
 - **2026-10-11:** Matched `func_800250B0` (248 bytes): runs a NAS's id-0x400
   `EXTanim` (new type) with `func_800251A8`/`func_80025534` by kind. Callees
   take `nas` through; ten overlay callers now pass `nas` (headers too).
