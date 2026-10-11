@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 426/2550 game functions matched (main.exe 180/574), 5 parked. `make check`
+- 427/2550 game functions matched (main.exe 181/574), 5 parked. `make check`
   OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
@@ -25,8 +25,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 1. Core API first (no prototypes yet, called ~3,000 times across exe,
    engine and overlays):
-   `func_80025A48`, then
-   `func_80026980`, `func_800250B0`, `func_80025FAC`, `func_800110A8`.
+   `func_80026980`, then `func_800250B0`, `func_80025FAC`, `func_800110A8`.
    Then the 9 functions with identical copies (`decomp.py dups`).
    A function that parks still gets its prototype in `bash/main.h` (an
    ordinary commit after `make check`), as `FindExtension` did.
@@ -170,6 +169,10 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-11:** Matched `func_80025A48` (156 bytes): finds the engine's
+  `FlagRecord` with a flag (its own at +0x84, then the ones after a
+  `PointList`'s points). New `FlagRecord` type, `PointList.nRecs`. Block
+  layout came from joining the NULL checks with `&&` (Diff patterns).
 - **2026-10-11:** Matched `get_angle` (752 bytes, `s32 get_angle(s32 x, s32 z)`,
   0x1000 per turn) on the second diff: the draft only had one quadrant's
   branch inverted; writing the `x >= z` case first there fixed it.
