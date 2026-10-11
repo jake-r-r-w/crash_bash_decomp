@@ -243,7 +243,7 @@ void func_80012DDC(s32 arg0);
 void func_80012E0C(void);
 void func_80012E14(u8 *arg0);
 void func_80012F04(void *arg0);
-s32 func_8001534C(s32 arg0);
+s32 func_8001534C(u8 *s);
 void func_8001828C(void);
 s32 func_80013650(s32 arg0, void (*done)(), void *ctx);
 s32 func_80012FFC(void);

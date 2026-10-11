@@ -424,7 +424,9 @@
  },
  "8001534C": {
   "auto_diff": 9,
-  "auto_failed": "diff"
+  "auto_failed": "diff",
+  "started": "2026-10-11T19:29:53Z",
+  "status": "in_progress"
  },
  "8001538C": {
   "auto_diff": 6,

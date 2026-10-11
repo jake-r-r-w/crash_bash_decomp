@@ -927,7 +927,7 @@ s32 func_80016274(s32 *list, u8 *arg1) {
             if (*list == 0) {
                 return 0;
             }
-            if (func_8001534C(*list) == *(s32 *)(arg1 + 0x10)) {
+            if (func_8001534C((u8 *)*list) == *(s32 *)(arg1 + 0x10)) {
                 return *list;
             }
         }
