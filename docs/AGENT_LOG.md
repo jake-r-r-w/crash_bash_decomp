@@ -25,7 +25,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 1. Core API first (no prototypes yet, called ~3,000 times across exe,
    engine and overlays):
-   `func_800250B0`, then, `func_80025FAC`, `func_800110A8`.
+   `func_800250B0`, then `func_80025FAC`, `func_800110A8`.
    Then the 9 functions with identical copies (`decomp.py dups`).
    A function that parks still gets its prototype in `bash/main.h` (an
    ordinary commit after `make check`), as `FindExtension` did.
