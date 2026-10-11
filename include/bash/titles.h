@@ -1,8 +1,8 @@
 #ifndef BASH_TITLES_H
 #define BASH_TITLES_H
 
-/* The title screens and menus (TITLES_AST_types; its AST entries are
- * stubs).
+/* The title screens and front-end menus (overlay ovl69). Its AST entries
+ * (TITLES_AST_types) are stubs in retail.
  * Names and layouts come from the Oct 9 2000 prototype's debug types; see
  * docs/ARCHITECTURE.md (Prototype debug types). Fields whose type the fragment
  * does not define are word (or byte) arrays of the recorded size. */

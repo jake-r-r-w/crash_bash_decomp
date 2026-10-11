@@ -127,7 +127,8 @@ source-only, and still matches, and its asset files extract.
 
 - [x] Identify which minigame or mode each remaining overlay is: the Oct 9
   prototype's AST enums name each one's game (ARCHITECTURE.md, Prototype
-  debug types). `ovl69` has no AST entries and is still unknown.
+  debug types). `ovl69` has no AST entries; its strings and the Titles enums
+  make it the front end.
 - [ ] Bash (`ovl5d`, with the crates and pickups of `XTRAS_AST_types`)
 - [ ] Papu (`ovl5e`)
 - [ ] Race (`ovl63`)
@@ -137,8 +138,7 @@ source-only, and still matches, and its asset files extract.
 - [ ] N2O and NOX (`ovl67`)
 - [ ] Chase (`ovl68`)
 - [ ] Hub (`ovl6a`)
-- [ ] Identify `ovl69` (the asset files it loads are the best clue), then
-  make it source-only.
+- [ ] Titles, the front end (`ovl69`)
 
 ## Phase 6 - Finish
 

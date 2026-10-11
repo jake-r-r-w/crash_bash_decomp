@@ -167,7 +167,7 @@ The Oct 9 enums name every id in the retail AST table (`0x0001` is
 |---|---|---|
 | `0x00xx` | `HERO_AST_types` | none: Init and Plot are the stub `0x80026D00` |
 | `0x02xx` | `XTRAS_AST_types` (crates, pickups) | `ovl5d` and the engine (`0x0205`, `0x0207`, `0x020C`, `0x020D`) |
-| `0x10xx` | `TITLES_AST_types` | none: the stub `0x80026D00` |
+| `0x10xx` | `TITLES_AST_types` | `ovl69` (the entries are the stub `0x80026D00`; see below) |
 | `0x11xx` | `BASH_AST_types` | `ovl5d` |
 | `0x12xx` | `PAPU_AST_types` | `ovl5e` |
 | `0x13xx` | `TANK_AST_types` | `ovl5f` |
@@ -184,6 +184,17 @@ The Oct 9 enums name every id in the retail AST table (`0x0001` is
 
 Tank's ids are `TANK_AST_zero = 0x1300` + position, like the other three
 leaked games (`AST_Shell` is `0x1301`, ..., `AST_Torpedo` `0x1322`).
+
+`ovl69` is the front end (Titles). It has no entries in the AST table (the
+`TITLES_AST_types` ids `0x1001`/`0x1002` point at the stub), but its strings
+are the title menus: game type (`ADVENTURE MODE`, `BATTLE MODE`, `TOURNAMENT`,
+`OPTIONS`), player count, `NEW GAME`/`LOAD GAME`, the sound and controller
+options, `CHARACTER SELECT`, the arena and level choosers and `VS BATTLE`/
+`TEAM BATTLE`. Those match the prototype's Titles enums (`TITLES_INIT_MAIN_MENU`,
+`TITLES_INIT_PLAYTYPE_MENU`, `TITLES_INIT_CHARACTER_SELECTION`, ...;
+`OPT_ONEPLAYER`, `OPT_TEAMPLAY`, ...) and the Aug 23 include list's
+`GAMEENG\TITLES` headers (`LOADGAME.H`, `TEAMMODE.H`, `TOURNSEL.H`,
+`ARENASEL.H`, `CHARSEL.H`, `TITLES.H`, `GAMEFLOW.H`, `BOOTUP.H`).
 
 Where the types are in the repo: the object model in `bash/nas.h`; Tank's in
 `bash/tank.h` and the structs the Polar leak is missing at the end of
