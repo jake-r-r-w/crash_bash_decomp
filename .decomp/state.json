@@ -1503,9 +1503,9 @@
   "auto_failed": "types"
  },
  "80025FAC": {
-  "auto_failed": "types",
+  "matched_at": "2026-10-11T14:48:11Z",
   "started": "2026-10-11T14:41:14Z",
-  "status": "in_progress"
+  "status": "matched"
  },
  "80026048": {
   "auto_diff": 72,

@@ -2373,7 +2373,32 @@ void func_80025F9C(void) {
 void func_80025FA4(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80025FAC);
+void func_80025FAC(EXTanim *anim, s16 n) {
+    switch (anim->EXTid & 0xFF) {
+    case 1:
+        if (anim->seqs != NULL) {
+            anim->seqId = n;
+            anim->seq = anim->seqs[n];
+        }
+        anim->unk1E = 0;
+        anim->unk1C = -1;
+        anim->unk28 = 0;
+        break;
+    case 2:
+        if (anim->seqs != NULL) {
+            anim->seqId = n;
+            anim->seq = anim->seqs[n];
+        }
+        anim->unk1E = -1;
+        anim->unk1C = -1;
+        anim->unk28 = 0;
+        break;
+    default:
+        anim->unk28 = 0;
+        break;
+    }
+    anim->unk2A = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80026048);
 

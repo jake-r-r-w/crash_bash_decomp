@@ -213,10 +213,16 @@ BASH_SIZE_CHECK(EXTmotion, 0x34);
 typedef struct EXTanim {
     /* 0x00 */ s32 EXTid;
     /* 0x04 */ EXTnode Extend;
-    /* 0x0C */ u8 unk0C[0x14 - 0x0C];
+    /* 0x0C */ void *seq;               /* the one playing: seqs[seqId] */
+    /* 0x10 */ void **seqs;             /* table func_80025FAC picks from, or NULL */
     /* 0x14 */ EXTengine *eng;           /* or NULL for NAS.eng */
     /* 0x18 */ subengine *sub;           /* or NULL for the engine's first */
-    /* 0x1C */ u8 unk1C[0x2C - 0x1C];
+    /* 0x1C */ s16 unk1C;
+    /* 0x1E */ s16 unk1E;
+    /* 0x20 */ s16 seqId;
+    /* 0x22 */ u8 unk22[0x28 - 0x22];
+    /* 0x28 */ s16 unk28;
+    /* 0x2A */ s16 unk2A;
 } EXTanim;
 BASH_SIZE_CHECK(EXTanim, 0x2C);
 

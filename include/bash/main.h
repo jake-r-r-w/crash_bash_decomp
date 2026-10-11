@@ -491,4 +491,6 @@ s16 func_800250B0(NAS *nas);
 
 void func_8002C44C(void);
 
+void func_80025FAC(EXTanim *anim, s16 n);
+
 #endif /* BASH_MAIN_H */
