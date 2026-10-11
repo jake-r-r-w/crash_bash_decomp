@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 495/2550 game functions matched (main.exe 240/574), 4 parked. `make check`
+- 497/2550 game functions matched (main.exe 240/574), 4 parked. `make check`
   OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
@@ -184,6 +184,8 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-12:** Matched `func_8008F068` (engine, 28 bytes): two global
+  stores; `D_8005A644` is `u16` (its 0x8008 loads with `ori`). Diff patterns row.
 - **2026-10-12:** Rewrote the four m2c Tank Inits (`InitTankBossCortexTurret`,
   `InitBoatField`, `InitShellExplosion`, `InitMineBall`) with `NAS`,
   `EXTengine` and `subengine` fields; typed 383 -> 387.
