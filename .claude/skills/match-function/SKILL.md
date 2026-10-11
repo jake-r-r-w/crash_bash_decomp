@@ -25,9 +25,17 @@ the host has no Python. In Git Bash loops, pass `</dev/null` to `tools/dk`.
 3. **Diff:** `tools/dk make diff FUNC=NAME`, then iterate. Typical fixes:
    statement order, signed/unsigned, `s16`/`s32` locals, temporaries, `do {} while`
    instead of `for`, pointer increments instead of indexing.
-4. **Budget.** After about 10 rounds without progress, run
-   `tools/dk make permute FUNC=NAME MINUTES=10` and port the useful change.
-   If it still doesn't match, restore the `INCLUDE_ASM` line, keep the attempt
+4. **Before the permuter.** Use `make permute` only after all of these:
+   - the evidence step from docs/MATCHING.md ("Evidence first": `decomp.py dups`,
+     grep matched C in `src/` for the same globals or shape, the headers in
+     `include/bash/` and the leaked minigame headers);
+   - the "Diff patterns" table and the checklist for this kind of diff
+     (register-only, instruction order, or opcode/length), noting in your
+     reasoning which items you tried;
+   - for register differences, the cc1 dump ("Why does a register differ?").
+   Then run `tools/dk make permute FUNC=NAME MINUTES=10`. When it finds
+   something, port it by hand and add the general rule as a row in the
+   "Diff patterns" table. If it still doesn't match, restore the `INCLUDE_ASM` line, keep the attempt
    under `#ifndef NON_MATCHING ... #endif`, run
    `decomp.py block NAME --note "what still differs"`, and stop. Report it as parked.
 5. **Validate and commit:**
