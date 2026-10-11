@@ -1,6 +1,12 @@
 {
  "blocked": [
   {
+   "name": "func_800155FC",
+   "note": "2 operands: target ties A+srl to the srl's reg (addu v1,v0,v1), ours to A's (v0). Writing srl+A first ties right but local-alloc then gives A v1. Tried 17 forms (temps, u32 globals, store order), cc1 -dl dump",
+   "seg": "main/main",
+   "size": 48
+  },
+  {
    "name": "func_800177F4",
    "note": "24 regs off: colour pointer in v0 (target v1), tpage/0x02000000 constant swap a0/v0; control flow matches. Permuter best: reuse a temp for tpage & ~0x60",
    "seg": "main/main",
@@ -13,9 +19,9 @@
    "size": 376
   }
  ],
- "commit": "9ce7b65",
+ "commit": "37afd90",
  "game": "SCUS_945.70",
- "generated": "2026-10-11T09:28:35Z",
+ "generated": "2026-10-11T09:34:10Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -3396,7 +3402,7 @@
    }
   },
   {
-   "commit": "9ce7b65",
+   "commit": "37afd90",
    "data_b": 128,
    "data_tb": 616791,
    "game_all_f": 2550,
@@ -3409,7 +3415,7 @@
    "lib_b": 121280,
    "lib_f": 535,
    "lib_tb": 122112,
-   "ts": "2026-10-11T09:28:35Z",
+   "ts": "2026-10-11T09:34:10Z",
    "units": {
     "engine": [
      2616,
@@ -3605,7 +3611,7 @@
   }
  ],
  "summary": {
-  "blocked": 2,
+  "blocked": 3,
   "copies_b": 38400,
   "data": {
    "done_b": 128,
@@ -3616,7 +3622,7 @@
    "all_f": 2550,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 2,
+   "blocked": 3,
    "c_f": 419,
    "done_b": 23516,
    "done_f": 419,
@@ -3668,7 +3674,7 @@
     "all_f": 574,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 2,
+    "blocked": 3,
     "c_f": 173,
     "done_b": 12916,
     "done_f": 173,

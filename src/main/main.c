@@ -512,7 +512,14 @@ void SetRandomSeed(s32 arg0, s32 arg1) {
     RandomSeedB = arg1;
 }
 
+#ifndef NON_MATCHING
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800155FC);
+#else
+void func_800155FC(void) {
+    RandomSeedA += RandomSeedB;
+    RandomSeedB += RandomSeedA + ((u32)RandomSeedA >> 31);
+}
+#endif
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001562C);
 

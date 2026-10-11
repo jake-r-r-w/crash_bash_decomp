@@ -462,8 +462,10 @@
  "800155FC": {
   "auto_diff": 2,
   "auto_failed": "diff",
+  "blocked_at": "2026-10-11T09:33:47Z",
+  "note": "2 operands: target ties A+srl to the srl's reg (addu v1,v0,v1), ours to A's (v0). Writing srl+A first ties right but local-alloc then gives A v1. Tried 17 forms (temps, u32 globals, store order), cc1 -dl dump",
   "started": "2026-10-11T08:54:06Z",
-  "status": "in_progress"
+  "status": "blocked"
  },
  "8001562C": {
   "auto_diff": 67,
