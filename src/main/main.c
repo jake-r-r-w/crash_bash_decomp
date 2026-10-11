@@ -510,7 +510,28 @@ void func_80013C94(u8 *arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80013CA4);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80013CFC);
+void func_80013CFC(s32 pad, u8 *out) {
+    if (pad & 0xA0) {
+        if (pad & 0x80) {
+            *(s32 *)(out + 0x10) = 0;
+        } else {
+            *(s32 *)(out + 0x10) = 0xFF;
+        }
+    } else {
+        *(s32 *)(out + 0x10) = 0x80;
+    }
+    if (pad & 0x50) {
+        if (pad & 0x10) {
+            *(s32 *)(out + 0x14) = 0;
+        } else {
+            *(s32 *)(out + 0x14) = 0xFF;
+        }
+    } else {
+        *(s32 *)(out + 0x14) = 0x80;
+    }
+    *(s32 *)(out + 8) = 0x80;
+    *(s32 *)(out + 0xC) = 0x80;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80013D54);
 
