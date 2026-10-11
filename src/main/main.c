@@ -1078,7 +1078,38 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80017EE8);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800180BC);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001828C);
+void func_8001828C(void) {
+    NodePool *pool;
+    PoolNode *node;
+    PoolNode *prev;
+    PoolNode *next;
+    PoolNode *head;
+
+    for (;;) {
+        pool = &D_80056844;
+        head = pool->done;
+        if (head == NULL) {
+            return;
+        }
+        node = head;
+        prev = NULL;
+        do {
+            next = node->next;
+            if (--node->state == 0) {
+                if (prev != NULL) {
+                    prev->next = node->next;
+                } else {
+                    pool->done = node->next;
+                }
+                node->next = D_80056844.free;
+                D_80056844.free = node;
+            } else {
+                prev = node;
+            }
+            node = next;
+        } while (node != NULL);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001830C);
 
