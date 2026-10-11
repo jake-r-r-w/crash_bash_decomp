@@ -656,7 +656,9 @@
  },
  "80016CA0": {
   "auto_diff": 8,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T19:27:12Z",
+  "started": "2026-10-11T19:25:27Z",
+  "status": "matched"
  },
  "80016D44": {
   "matched_at": "2026-10-10T10:36:02Z",

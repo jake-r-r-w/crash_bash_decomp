@@ -1059,7 +1059,23 @@ block_5:
     return var_v0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80016CA0);
+void func_80016CA0(u8 *rec) {
+    if (*(s32 *)(rec + 8) == 0 && *(s32 *)(rec + 0xC) == 0) {
+        *(s32 *)(rec + 8) = func_80013650(*(s32 *)(rec + 4), func_80016D98, rec);
+    }
+    for (;;) {
+        if (func_80012FFC() == 0) {
+            goto done;
+        }
+        func_8001231C();
+        func_80010AE8(D_8004E0F0);
+        func_8002BAE8();
+    }
+done:
+    DrawSync(0);
+    while (func_80011DB4(D_8004E0F0) != NULL) {
+    }
+}
 
 void func_80016D44(u8 *arg0) {
     if (((*(s32*)((u8*)(arg0) + 8)) == 0) && ((*(s32*)((u8*)(arg0) + 12)) == 0)) {

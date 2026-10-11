@@ -236,6 +236,11 @@ void func_80012E14(u8 *arg0);
 void func_80012F04(void *arg0);
 s32 func_8001534C(s32 arg0);
 void func_8001828C(void);
+s32 func_80013650(s32 arg0, void (*done)(), void *ctx);
+s32 func_80012FFC(void);
+void func_8001231C(void);
+void func_80010AE8(u8 *arg0);
+void func_8002BAE8(void);
 void func_8002C894(void);
 MemBlock *func_80011C5C(u32 words, MemBlock *blk);
 s32 func_80013034(s32 arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *arg4, s32 arg5, s32 arg6);
@@ -676,5 +681,7 @@ void func_8002C11C(void);
 void func_80015554(u16 *p, s32 n);
 
 void func_800229FC(s32 i);
+
+void func_80016CA0(u8 *rec);
 
 #endif /* BASH_MAIN_H */
