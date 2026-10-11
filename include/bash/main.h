@@ -74,6 +74,26 @@ typedef struct {
  * store them straight off the primitive pointer. */
 #define gte_stsxy3_10(r0) __asm__ volatile (				"swc2	$12, 16( %0 );"					"swc2	$13, 24( %0 );"					"swc2	$14, 32( %0 )"					:								: "r"(r0)							: "memory" )
 
+/* A playing sound (PlaySfx), linked into SfxVoicePool's active or free list.
+ * Placeholder names; only the fields StopSfx and its neighbours use. */
+typedef struct SfxVoice {
+    s32 *owner;             /* 0x00: the caller's handle, cleared on stop */
+    u8 unk4[0x10];
+    struct SfxVoice *prev;  /* 0x14: active list */
+    struct SfxVoice *next;  /* 0x18: active list, or the free list */
+    s32 flags;              /* 0x1C */
+    u8 unk20[0xC];
+    u8 unk2C[0xC];          /* 0x2C: handed to func_8002B8F4 to stop it */
+} SfxVoice;
+BASH_SIZE_CHECK(SfxVoice, 0x38);
+
+/* 24 voices (func_80022984 links them into the free list). */
+typedef struct {
+    SfxVoice voices[24];
+    SfxVoice *free;         /* 0x540 */
+    SfxVoice *active;       /* 0x544: also named SfxActiveVoices */
+} SfxPool;
+
 /* A VAB file in memory: the header and body as byte offsets from its start
  * (func_8002ADD4 opens it with SsVabOpenHead / SsVabTransBody). */
 typedef struct {
@@ -337,6 +357,8 @@ extern s32 ASTCount;            /* entries in ASTTable */
 extern ASTEntry *ASTTable;      /* the AST table in use */
 extern s32 D_80058AC8;
 extern void *SfxActiveVoices;
+extern SfxPool SfxVoicePool;
+void func_8002B8F4(void *arg0);
 extern s32 D_800637B4;
 extern s32 D_8005AA48;
 extern void *D_80058B78;
@@ -439,5 +461,7 @@ void func_8002AABC(void);
 
 s32 Random(s32 n);
 void *FindExtension(NAS *nas, s32 id);
+
+void StopSfx(SfxVoice *voice);
 
 #endif /* BASH_MAIN_H */

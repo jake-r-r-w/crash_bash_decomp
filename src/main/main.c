@@ -1923,7 +1923,24 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8002235C);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80022504);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", StopSfx);
+void StopSfx(SfxVoice *voice) {
+    if (voice != NULL) {
+        if (voice->owner != NULL) {
+            *voice->owner = 0;
+        }
+        func_8002B8F4(voice->unk2C);
+        if (voice->next != NULL) {
+            voice->next->prev = voice->prev;
+        }
+        if (voice->prev != NULL) {
+            voice->prev->next = voice->next;
+        } else {
+            SfxVoicePool.active = voice->next;
+        }
+        voice->next = SfxVoicePool.free;
+        SfxVoicePool.free = voice;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", PlaySfx);
 
