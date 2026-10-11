@@ -2356,7 +2356,16 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80028A28);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80028AE4);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80028BC8);
+s32 func_80028BC8(u8 **arg0) {
+    u8 *p;
+    s32 n;
+
+    n = 0;
+    for (p = *arg0; p != NULL; p = *(u8 **)(p + 4)) {
+        n++;
+    }
+    return n;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80028BF0);
 

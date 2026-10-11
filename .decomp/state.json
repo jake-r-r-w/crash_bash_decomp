@@ -1796,9 +1796,9 @@
  },
  "80028BC8": {
   "auto_diff": 2,
-  "auto_failed": "diff",
+  "matched_at": "2026-10-11T09:16:55Z",
   "started": "2026-10-11T08:54:06Z",
-  "status": "in_progress"
+  "status": "matched"
  },
  "80028BF0": {
   "auto_failed": "in-file"

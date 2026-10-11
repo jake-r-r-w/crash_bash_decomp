@@ -424,4 +424,6 @@ void func_800154C0(u16 *arg0, s32 arg1);
 
 void *func_8001CFE8(MorphModel *model, void *arg1, s32 arg2);
 
+s32 func_80028BC8(u8 * *arg0);
+
 #endif /* BASH_MAIN_H */
