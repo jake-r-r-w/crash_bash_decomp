@@ -926,7 +926,43 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_800166FC);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800167A8);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001682C);
+void func_8001682C(s32 *arg0) {
+    u8 *tbl;
+    u8 *t;
+    u8 *rec;
+    u8 *node;
+    s32 n;
+    s32 i;
+    s32 start;
+    s32 handle;
+
+    tbl = *(u8 **)(arg0 + 3);
+    if (tbl != NULL) {
+        n = *(s32 *)(tbl + 0x40);
+        for (i = 0;; i++) {
+            if (i >= n) {
+                return;
+            }
+            t = *(u8 **)(arg0 + 3);
+            if (t != NULL && i < *(s32 *)(t + 0x40)) {
+                rec = t + (*(s32 *)(t + 0x44) + 0x44);
+                rec += i * 0x18;
+                if (*(u8 **)(rec + 0x14) == NULL) {
+                    node = func_80012E28();
+                    if (node != NULL) {
+                        start = *(s32 *)rec;
+                        *(u8 **)(rec + 0x14) = node;
+                        handle = func_800133C8(*arg0, start, node, *(s32 *)(rec + 4) - start);
+                        *(s32 *)(node + 4) = handle;
+                        if (handle == 0) {
+                            func_80012E14(node);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80016928);
 
