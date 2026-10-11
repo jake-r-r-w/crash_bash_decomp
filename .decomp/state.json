@@ -222,7 +222,9 @@
  },
  "80012E54": {
   "auto_diff": 1,
-  "auto_failed": "diff"
+  "auto_failed": "diff",
+  "started": "2026-10-11T08:54:04Z",
+  "status": "in_progress"
  },
  "80012E90": {
   "auto_failed": "types"
@@ -267,7 +269,9 @@
  },
  "8001325C": {
   "auto_diff": 1,
-  "auto_failed": "diff"
+  "auto_failed": "diff",
+  "started": "2026-10-11T08:54:04Z",
+  "status": "in_progress"
  },
  "80013290": {
   "auto_diff": 37,
@@ -428,11 +432,15 @@
  },
  "800154C0": {
   "auto_diff": 1,
-  "auto_failed": "diff"
+  "auto_failed": "diff",
+  "started": "2026-10-11T08:54:03Z",
+  "status": "in_progress"
  },
  "800154EC": {
   "auto_diff": 1,
-  "auto_failed": "diff"
+  "auto_failed": "diff",
+  "started": "2026-10-11T08:54:03Z",
+  "status": "in_progress"
  },
  "80015518": {
   "auto_diff": 7,
@@ -453,7 +461,9 @@
  },
  "800155FC": {
   "auto_diff": 2,
-  "auto_failed": "diff"
+  "auto_failed": "diff",
+  "started": "2026-10-11T08:54:06Z",
+  "status": "in_progress"
  },
  "8001562C": {
   "auto_diff": 67,
@@ -631,9 +641,9 @@
  },
  "80016F34": {
   "auto_diff": 1,
-  "auto_failed": "diff",
+  "matched_at": "2026-10-11T08:56:01Z",
   "started": "2026-10-10T17:56:49Z",
-  "status": "in_progress"
+  "status": "matched"
  },
  "80016F54": {
   "auto_diff": 17,
@@ -908,7 +918,9 @@
  },
  "8001CFE8": {
   "auto_diff": 1,
-  "auto_failed": "diff"
+  "auto_failed": "diff",
+  "started": "2026-10-11T08:54:05Z",
+  "status": "in_progress"
  },
  "8001D048": {
   "matched_at": "2026-10-11T07:51:17Z",
@@ -1533,7 +1545,9 @@
  },
  "8002689C": {
   "auto_diff": 1,
-  "auto_failed": "diff"
+  "auto_failed": "diff",
+  "started": "2026-10-11T08:54:02Z",
+  "status": "in_progress"
  },
  "800268BC": {
   "auto_failed": "compile"
@@ -1666,7 +1680,9 @@
  },
  "8002775C": {
   "auto_diff": 1,
-  "auto_failed": "diff"
+  "auto_failed": "diff",
+  "started": "2026-10-11T08:54:04Z",
+  "status": "in_progress"
  },
  "80027790": {
   "auto_diff": 75,
@@ -1776,7 +1792,9 @@
  },
  "80028BC8": {
   "auto_diff": 2,
-  "auto_failed": "diff"
+  "auto_failed": "diff",
+  "started": "2026-10-11T08:54:06Z",
+  "status": "in_progress"
  },
  "80028BF0": {
   "auto_failed": "in-file"
@@ -1880,7 +1898,9 @@
  },
  "8002AABC": {
   "auto_diff": 1,
-  "auto_failed": "diff"
+  "auto_failed": "diff",
+  "started": "2026-10-11T08:54:05Z",
+  "status": "in_progress"
  },
  "8002AB44": {
   "matched_at": "2026-10-10T10:36:02Z",
@@ -2095,7 +2115,9 @@
  },
  "8002D0C8": {
   "auto_diff": 2,
-  "auto_failed": "diff"
+  "auto_failed": "diff",
+  "started": "2026-10-11T08:54:07Z",
+  "status": "in_progress"
  },
  "8002D108": {
   "auto_diff": 3,

@@ -404,4 +404,6 @@ void func_8001C690(NAS *nas, u8 *arg1);
 
 void func_80015C1C(PointSprites *ps, MATRIX *m);
 
+void func_80016F34(u8 *arg0, u8 *arg1);
+
 #endif /* BASH_MAIN_H */

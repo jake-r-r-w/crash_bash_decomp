@@ -726,7 +726,9 @@ void func_80016EF4(u8 *arg0) {
     (*(s32*)((u8*)(arg0) + 32)) = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80016F34);
+void func_80016F34(u8 *arg0, u8 *arg1) {
+    func_80011544(arg0, arg1 + 0xC);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80016F54);
 
