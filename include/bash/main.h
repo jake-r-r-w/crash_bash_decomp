@@ -481,4 +481,6 @@ SfxVoice *PlaySfx(s32 id, SfxVoice **handle, SLONG_XYZ *pos, s32 arg3, s32 arg4,
 
 s32 KillNAS(NAS *nas);
 
+s32 get_angle(s32 x, s32 z);
+
 #endif /* BASH_MAIN_H */

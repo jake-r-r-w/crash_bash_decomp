@@ -439,7 +439,43 @@ void func_8001452C(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80014540);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", get_angle);
+/* Angle of (x, z) in 0x1000 units per turn, from the 0x800-entry arctangent table */
+s32 get_angle(s32 x, s32 z) {
+    if (x == 0 && z == 0) {
+        return 0;
+    }
+    if (x == 0x80000000) {
+        x = 0x80000001;
+    }
+    if (z == 0x80000000) {
+        z = 0x80000001;
+    }
+    if (x >= 0) {
+        if (z >= 0) {
+            if (x < z) {
+                return AtanTable[(x << 11) / z];
+            }
+            return 0x400 - AtanTable[(z << 11) / x];
+        }
+        z = -z;
+        if (x >= z) {
+            return AtanTable[(z << 11) / x] + 0x400;
+        }
+        return 0x800 - AtanTable[(x << 11) / z];
+    }
+    x = -x;
+    if (z < 0) {
+        z = -z;
+        if (x < z) {
+            return AtanTable[(x << 11) / z] + 0x800;
+        }
+        return 0xC00 - AtanTable[(z << 11) / x];
+    }
+    if (x >= z) {
+        return AtanTable[(z << 11) / x] + 0xC00;
+    }
+    return 0x1000 - AtanTable[(x << 11) / z];
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001492C);
 

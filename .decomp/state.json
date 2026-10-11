@@ -375,7 +375,9 @@
  },
  "8001463C": {
   "auto_diff": 135,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T14:19:02Z",
+  "started": "2026-10-11T14:16:48Z",
+  "status": "matched"
  },
  "8001492C": {
   "auto_failed": "types"
