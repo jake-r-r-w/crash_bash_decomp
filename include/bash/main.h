@@ -109,7 +109,7 @@ typedef struct {
 typedef struct {
     u8 *head;
     s32 id;   /* set once the transfer completes */
-    s32 unk8;
+    s32 handle; /* func_80013688's result (func_8002BA10) */
 } VabSlot;
 
 /* Points drawn as one-pixel tiles by func_80015C1C (an engine API entry). */
@@ -166,13 +166,6 @@ typedef struct MemBlock {
 #define MEMBLOCK_NEXT(b) ((MemBlock *)((u8 *)(b) + (b)->size * 4 + sizeof(MemBlock)))
 
 /* A heap (D_8004E0F0 is the main one). Only these fields are known. */
-/* One of six slots (D_800644C0) that func_8002BA10 hands to func_80013688
- * with the func_8002ADD4 callback. */
-typedef struct LoadSlot {
-    /* 0x00 */ u8 unk0[8];
-    /* 0x08 */ s32 handle;               /* func_80013688's result */
-} LoadSlot;
-
 typedef struct Heap {
     /* 0x00 */ u8 unk0[8];
     /* 0x08 */ MemBlock *free;           /* free list, smallest first */
@@ -196,8 +189,8 @@ void func_80012E14(u8 *arg0);
 void func_80012F04(void *arg0);
 void func_8002C394(s32 arg0, s32 *slot, s32 type);
 s32 func_80013688(s32 arg0, void (*done)(), void *ctx);
-void func_8002BA10(s32 arg0, LoadSlot *slot);
-void func_8002ADD4(void *data, LoadSlot *slot);
+void func_8002BA10(s32 arg0, VabSlot *slot);
+void func_8002ADD4(void *data, VabSlot *slot);
 void func_80012E88(void);
 void func_80012F90(u8 *arg0);
 u8 *func_80013110(u8 *arg0);
@@ -376,7 +369,7 @@ extern u8 D_80055684[];
 extern void *D_8005AA34;
 extern void *D_8005AA24;
 extern s32 D_8006557C;
-extern LoadSlot D_800644C0[6];
+extern VabSlot D_800644C0[6];
 extern s32 D_8004E104;            /* func_80011410: free bytes */
 extern s32 D_8004E108;            /* func_80011410: free blocks */
 extern s32 D_8004E10C;            /* func_80011410: largest free block, bytes */
@@ -557,5 +550,7 @@ void func_8001E854(void *arg0);
 void func_8001E8F0(void *arg0);
 
 s32 func_80011410(Heap *heap);
+
+void func_8002B9A4(void);
 
 #endif /* BASH_MAIN_H */

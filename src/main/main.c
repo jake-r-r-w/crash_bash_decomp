@@ -3260,9 +3260,25 @@ void func_8002B96C(void) {
     SsUtAllKeyOff(0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002B9A4);
+void func_8002B9A4(void) {
+    s8 *p;
+    s32 i;
 
-void func_8002BA10(s32 arg0, LoadSlot *slot) {
+    SpuIsTransferCompleted(SPU_TRANSFER_WAIT);
+    p = SfxTable[0];
+    for (i = 0; i < 2001; i++) {
+        p[0] = -1;
+        p[1] = -1;
+        p += 2;
+    }
+    D_800654BC = 0;
+    D_800654C0 = NULL;
+    D_800654C4 = NULL;
+    D_800654B8 = 0;
+    func_8002B96C();
+}
+
+void func_8002BA10(s32 arg0, VabSlot *slot) {
     slot->handle = func_80013688(arg0, func_8002ADD4, slot);
 }
 
