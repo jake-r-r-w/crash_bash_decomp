@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 428/2550 game functions matched (main.exe 182/574), 5 parked. `make check`
+- 429/2550 game functions matched (main.exe 183/574), 5 parked. `make check`
   OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
@@ -25,8 +25,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 1. Core API first (no prototypes yet, called ~3,000 times across exe,
    engine and overlays):
-   `func_80026A54` (same code as the matched `func_80026980`, the +0x28
-   list), then `func_800250B0`, `func_80025FAC`, `func_800110A8`.
+   `func_800250B0`, then, `func_80025FAC`, `func_800110A8`.
    Then the 9 functions with identical copies (`decomp.py dups`).
    A function that parks still gets its prototype in `bash/main.h` (an
    ordinary commit after `make check`), as `FindExtension` did.
@@ -170,6 +169,8 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-11:** Matched `func_80026A54` (132 bytes) with `func_80026980`'s C
+  on the +0x28 list (`D_8005AA24`), first diff.
 - **2026-10-11:** Matched `func_80026980` (132 bytes): unlinks a NAS from the
   list at +0x38/+0x3C headed by `D_8005AA34`. `NAS` gains `prev28`/`next28`
   and `prev38`/`next38`. Two new Diff patterns (head pointer local, `a || b`
