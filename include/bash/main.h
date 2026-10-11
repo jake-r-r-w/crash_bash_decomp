@@ -188,6 +188,7 @@ void func_80012E0C(void);
 void func_80012E14(u8 *arg0);
 void func_80012F04(void *arg0);
 s32 func_8001534C(s32 arg0);
+void func_80027AD4(u8 *src, u8 *dst, s32 n);
 void func_8002C394(s32 arg0, s32 *slot, s32 type);
 s32 func_80013688(s32 arg0, void (*done)(), void *ctx);
 void func_8002BA10(s32 arg0, VabSlot *slot);
@@ -561,5 +562,7 @@ void func_800101E0(void);
 subengine *func_8001DCD4(s32 i, s32 val);
 
 s32 func_80016274(s32 *list, u8 *arg1);
+
+s32 func_800280C0(u8 *src, u8 *dst, s32 n);
 
 #endif /* BASH_MAIN_H */
