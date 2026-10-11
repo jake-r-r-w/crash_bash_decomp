@@ -1,8 +1,8 @@
 {
  "blocked": [],
- "commit": "721ee1f",
+ "commit": "21427e1",
  "game": "SCUS_945.70",
- "generated": "2026-10-11T07:58:29Z",
+ "generated": "2026-10-11T08:10:14Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -459,9 +459,33 @@
    "lib_f": 535,
    "lib_tb": 122112,
    "ts": "2026-10-11T07:58:29Z"
+  },
+  {
+   "commit": "21427e1",
+   "data_b": 128,
+   "data_tb": 616791,
+   "game_all_f": 2550,
+   "game_b": 22772,
+   "game_c_f": 408,
+   "game_f": 408,
+   "game_named_f": 144,
+   "game_tb": 1019036,
+   "game_typed_f": 295,
+   "lib_b": 121280,
+   "lib_f": 535,
+   "lib_tb": 122112,
+   "ts": "2026-10-11T08:10:14Z"
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-11T08:09:51Z",
+   "auto": true,
+   "name": "func_8001C690",
+   "seg": "main/main",
+   "size": 364,
+   "tries": 0
+  },
   {
    "at": "2026-10-11T07:58:06Z",
    "auto": true,
@@ -573,14 +597,6 @@
    "seg": "main/main",
    "size": 156,
    "tries": 0
-  },
-  {
-   "at": "2026-10-10T10:46:00Z",
-   "auto": true,
-   "name": "func_800C6848",
-   "seg": "overlays/ovl5f/ovl5f",
-   "size": 32,
-   "tries": 0
   }
  ],
  "summary": {
@@ -596,15 +612,15 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 0,
-   "c_f": 407,
-   "done_b": 22408,
-   "done_f": 407,
+   "c_f": 408,
+   "done_b": 22772,
+   "done_f": 408,
    "named_f": 144,
-   "pct": 2.19894095988758,
+   "pct": 2.234660993330952,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2550,
-   "typed_f": 294
+   "typed_f": 295
   },
   "lib": {
    "all_f": 566,
@@ -648,20 +664,20 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
-    "c_f": 161,
-    "done_b": 11808,
-    "done_f": 161,
+    "c_f": 162,
+    "done_b": 12172,
+    "done_f": 162,
     "file": "SCUS_945.70",
     "files": 1,
     "lib": false,
     "named_f": 15,
-    "pct": 9.458506888817686,
+    "pct": 9.75008010253124,
     "phase": 2,
     "sony_b": 0,
     "title": "main.exe",
     "total_b": 124840,
     "total_f": 574,
-    "typed_f": 85,
+    "typed_f": 86,
     "unit": "main exe"
    },
    {

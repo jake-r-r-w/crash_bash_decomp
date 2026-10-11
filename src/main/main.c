@@ -1041,7 +1041,30 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8001C448);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001C584);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001C690);
+void func_8001C690(NAS *nas, u8 *arg1) {
+    GteSetup s;
+    u32 hidden;
+
+    if (nas->flags & 0x8000) {
+        hidden = nas->flags & 0x10000000;
+        if (nas->flags & 0x02000000) {
+            D_800569DC = nas->unk68;
+        } else {
+            D_800569DC = 0;
+        }
+        if (!(nas->flags & 0x10000000)) {
+            D_80056998.unk84 = D_80056998.unkCC;
+            D_80056998.unk88 = D_80056998.unk10C;
+            func_8001965C(nas, arg1, arg1 + 0x14, D_80056998.unk28, &s);
+            gte_SetGeomOffset(s.ofx * D_8005B698->w / 640, s.ofy / 2);
+            if (s.trans != NULL) {
+                gte_SetTransVector(s.trans);
+            }
+            gte_SetRotMatrix(s.rot);
+        }
+        func_8001A6D4(&nas->ast, hidden);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001C7FC);
 

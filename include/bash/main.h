@@ -32,12 +32,27 @@ typedef struct {
                * pairs ending in a count of 0xFF */
 } MorphModel;
 
+/* A block holding a table at a byte offset from its field at +0x20. */
+typedef struct {
+    u8 unk0[0x20];
+    s32 table; /* 0x20: byte offset from this field */
+} RelTable;
+
+typedef struct GfxModel {
+    u8 unk0[0xC];
+    RelTable *colors; /* 0x0C: u32 colours, indexed by a face's 13-bit indices */
+} GfxModel;
+
 /* Graphics state at 0x80056998 (placeholder name; 161 references). Only the
  * fields func_8001CD04 and func_8001D048 use are known: two pointers it aims
  * at buffers inside the struct itself, a block at +0x28 it passes to
  * func_8001965C, and the ordering table that primitives are added to. */
 typedef struct {
-    u8 unk0[0x28];
+    struct GfxModel *unk0;
+    u8 unk4[4];
+    s32 *farColor; /* 0x08: r, g, b for gte_ldfcdir */
+    s32 dp;        /* 0x0C: depth-cue factor for gte_lddp */
+    u8 unk10[0x18];
     u8 unk28[0x18];
     u32 *ot;   /* 0x40 */
     s16 otzAdd; /* 0x44: added to the average Z before it is halved */
@@ -66,6 +81,23 @@ typedef struct {
     s32 id;   /* set once the transfer completes */
     s32 unk8;
 } VabSlot;
+
+/* Points drawn as one-pixel tiles by func_80015C1C (an engine API entry). */
+typedef struct {
+    SVECTOR v;
+    u8 unk8[0x10];
+} PointSpriteSrc;
+
+typedef struct {
+    PointSpriteSrc *src;
+    TILE_1 *prims[2]; /* one per frame buffer (D_8005B690 & 1) */
+    s32 count;
+} PointSpriteSet;
+
+typedef struct {
+    u8 unk0[0x6C];
+    PointSpriteSet set; /* 0x6C */
+} PointSprites;
 
 /* Filled by func_8001965C for func_8001CD04, which loads it into the GTE. */
 typedef struct {
@@ -313,6 +345,9 @@ void func_80014540(u8 *arg0, RECT *rect);
 void func_8002ACA0(s32 id, s32 arg1);
 extern GfxState D_80056998;
 extern u16 D_800569DC;
+extern s32 D_8005B690; /* frame counter: its low bit picks the frame buffer */
+void func_8001A6D4(void *arg0, u32 hidden);
+void func_8001A0D8(void *arg0, u32 flags);
 extern u8 D_80053694[];
 void *AllocExtension(void *owner, s32 size, s32 id, void *tmpl);
 extern EXTmotion D_8005A9CC;
@@ -364,5 +399,7 @@ void func_8001D048(SVECTOR *v, POLY_GT4 *poly);
 void func_8002AEE0(void);
 
 u32 func_8001C974(NAS *nas, u8 *arg1, u32 flags);
+
+void func_8001C690(NAS *nas, u8 *arg1);
 
 #endif /* BASH_MAIN_H */

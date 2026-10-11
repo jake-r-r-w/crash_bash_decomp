@@ -672,7 +672,9 @@
   "auto_failed": "compile"
  },
  "800177F4": {
-  "auto_failed": "types"
+  "auto_failed": "types",
+  "started": "2026-10-11T07:58:36Z",
+  "status": "in_progress"
  },
  "8001795C": {
   "auto_failed": "types"
@@ -856,7 +858,8 @@
   "auto_failed": "diff"
  },
  "8001C690": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-11T08:09:51Z",
+  "status": "matched"
  },
  "8001C7FC": {
   "auto_failed": "types"
