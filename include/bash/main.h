@@ -186,6 +186,7 @@ u8 *func_80011DB4(u8 *arg0);
 void func_80012DDC(s32 arg0);
 void func_80012E0C(void);
 void func_80012E14(u8 *arg0);
+void func_80012F04(void *arg0);
 void func_80012E88(void);
 void func_80012F90(u8 *arg0);
 u8 *func_80013110(u8 *arg0);
@@ -516,5 +517,7 @@ void func_8002C44C(void);
 void func_80025FAC(EXTanim *anim, s16 n);
 
 void func_800110A8(void *ptr, Heap *heap);
+
+u8 *func_80016AD4(s32 *arg0, u8 *rec);
 
 #endif /* BASH_MAIN_H */

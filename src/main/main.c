@@ -833,7 +833,24 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80016928);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80016A20);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80016AD4);
+/* Unloads what func_80016C18 loaded: the record's node at +0x14 holds a heap
+ * block or (if that is NULL) a handle at +4. */
+u8 *func_80016AD4(s32 *arg0, u8 *rec) {
+    u8 *node;
+
+    node = *(u8 **)(rec + 0x14);
+    if (node == NULL) {
+        return NULL;
+    }
+    if (*(void **)node != NULL) {
+        func_800110A8(*(void **)node, (Heap *)D_8004E0F0);
+    } else {
+        func_80012F04(*(void **)(node + 4));
+    }
+    func_80012E14(node);
+    *(u8 **)(rec + 0x14) = NULL;
+    return rec;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80016B48);
 
