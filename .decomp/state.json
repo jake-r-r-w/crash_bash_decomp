@@ -135,7 +135,9 @@
  },
  "80011C5C": {
   "auto_diff": 7,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T19:01:42Z",
+  "started": "2026-10-11T18:59:56Z",
+  "status": "matched"
  },
  "80011C98": {
   "auto_failed": "compile"

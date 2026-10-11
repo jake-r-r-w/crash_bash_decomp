@@ -280,7 +280,14 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80011BC0);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80011BF8);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80011C5C);
+MemBlock *func_80011C5C(u32 words, MemBlock *blk) {
+    for (; blk != NULL; blk = blk->nextFree) {
+        if (blk->size >= words) {
+            return blk;
+        }
+    }
+    return blk;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80011C98);
 
@@ -1044,7 +1051,7 @@ void func_80016D98(u8 *data, u8 *rec) {
 
     size = func_8002A650(data);
     heap = (Heap *)D_8004E0F0;
-    if (func_80011C5C((size + 3) >> 2, heap->free) == 0) {
+    if (func_80011C5C((size + 3) >> 2, heap->free) == NULL) {
         func_800110A8(data, heap);
         *(s32 *)(rec + 8) = 0;
         func_80016D44(rec);

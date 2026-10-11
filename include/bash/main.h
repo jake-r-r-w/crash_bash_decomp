@@ -209,7 +209,7 @@ void func_80012E14(u8 *arg0);
 void func_80012F04(void *arg0);
 s32 func_8001534C(s32 arg0);
 void func_8001828C(void);
-s32 func_80011C5C(s32 words, MemBlock *free);
+MemBlock *func_80011C5C(u32 words, MemBlock *blk);
 s32 func_80013034(s32 arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *arg4, s32 arg5, s32 arg6);
 void func_80029560(u8 *arg0);
 void func_8002A5A4(u8 *arg0, u8 *arg1);
