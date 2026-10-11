@@ -598,7 +598,11 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8001517C);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80015210);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80015284);
+s32 func_80015284(s32 a, s32 b, s32 t) {
+    b = (b - a) * t;
+    b /= 0x1000;
+    return a + b;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800152A8);
 
