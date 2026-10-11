@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 423/2550 game functions matched (main.exe 177/574), 4 parked. `make check`
+- 424/2550 game functions matched (main.exe 178/574), 4 parked. `make check`
   OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
@@ -24,7 +24,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 ## Next
 
 1. Core API first (no prototypes yet, called ~3,000 times across exe,
-   engine and overlays): `PlaySfx` (use `SfxVoice`/`SfxPool`, `bash/main.h`),
+   engine and overlays):
    `KillNAS`, `SpawnNASById`, `get_angle`, then `func_80025A48`,
    `func_80026980`, `func_800250B0`, `func_80025FAC`, `func_800110A8`.
    Then the 9 functions with identical copies (`decomp.py dups`).
@@ -156,7 +156,8 @@ Newest first, a few lines each. Details are in the commits.
 - **2026-10-11:** Started the core API (most-called unmatched functions,
   ~3,000 call sites; plan in Next): matched `Random` on the first diff,
   parked `FindExtension` (branch layout) but added its prototype; matched
-  `StopSfx` on the first diff with new `SfxVoice`/`SfxPool` types.
+  `StopSfx` on the first diff with new `SfxVoice`/`SfxPool` types, and
+  `PlaySfx` (352 bytes; allocation written out in place, one final return).
 - **2026-10-11:** Matched `func_800193A8` (692 bytes, GTE triangle strips;
   register pins, `--hack`) through the new process; six Diff patterns rows.
   Fixed the gate lint so pins count as hacks.
