@@ -2815,7 +2815,7 @@ $("tiles").innerHTML=grpTile("Game code matched",S.game,"var(--s1)")+
     `<line class="xh" y1="${T}" y2="${T+ih}" stroke="var(--axis)" visibility="hidden"/>`+
     `<rect x="0" y="0" width="${W}" height="${Ht}" fill="transparent" class="hit"/>`;
    return `<div data-i="${i}"><div class="mh"><span><b>${esc(u.unit)}</b>${u.title&&u.title!=u.unit?` <span class="small">${esc(u.title)}</span>`:""}</span>`+
-    `<span class="small">${u.total_b?f2(u.pct):"—"}</span></div>`+
+    `<span class="small">${u.total_b?`${f2(u.pct)} of bytes · ${f2(pct(u.done_f,u.total_f))} of functions`:"—"}</span></div>`+
     `<svg width="100%" viewBox="0 0 ${W} ${Ht}" role="img" aria-label="${esc(u.unit)}: C bytes matched by ${unit}">${g}</svg></div>`};
   const game=all.filter(u=>!u.lib), lib=all.filter(u=>u.lib), list=game.concat(lib);
   $("multi").innerHTML=`<div class="multi">${game.map((u,i)=>panel(u,i)).join("")}</div>`+
@@ -2842,7 +2842,7 @@ $("tiles").innerHTML=grpTile("Game code matched",S.game,"var(--s1)")+
 // segment table, sortable
 (function(){
  // [key, label, numeric, hidden on narrow screens]
- const cols=[["unit","Unit",0],["file","File",0,1],["files","Source files",1,1],["pct","C bytes matched",1],["done_f","Functions",1],
+ const cols=[["unit","Unit",0],["file","File",0,1],["files","Source files",1,1],["pct","C bytes matched",1],["done_f","Functions matched",1],
   ["total_b","C size",1,1],["asm_b","Hand-written",1,1],["named_f","Named",1],["typed_f","Typed",1,1],["blocked","Parked",1,1]];
  let key="unit",dir=1;
  function draw(){
@@ -2852,7 +2852,7 @@ $("tiles").innerHTML=grpTile("Game code matched",S.game,"var(--s1)")+
    return `<tr><td>${esc(s.unit)}${s.title&&s.title!=s.unit?`<div class="small">${esc(s.title)}</div>`:""}</td><td class="opt"><code>${esc(s.file||"")}</code></td>
    <td class="num opt">${n(s.files)}</td>
    <td class="num">${c?`${f2(s.pct)} <span class="mini"><span style="width:${s.pct}%;${s.lib?"background:var(--s2)":""}"></span></span>`:"—"}</td>
-   <td class="num">${c?`${n(s.done_f)} / ${n(s.total_f)}`:"—"}</td><td class="num opt">${c?n(s.total_b)+" B":"—"}</td>
+   <td class="num">${c?`${n(s.done_f)} / ${n(s.total_f)} <span class="small">${f2(pct(s.done_f,s.total_f))}</span>`:"—"}</td><td class="num opt">${c?n(s.total_b)+" B":"—"}</td>
    <td class="num opt">${s.asm_b?n(s.asm_b)+" B":""}</td><td class="num">${n(s.named_f)} / ${n(s.all_f)}</td>
    <td class="num opt">${s.lib?"":`${n(s.typed_f||0)} / ${n(s.c_f||0)}`}</td><td class="num opt">${s.blocked||""}</td></tr>`};
   const all=S.units||[], game=all.filter(s=>!s.lib), lib=all.filter(s=>s.lib).sort(cmp);
