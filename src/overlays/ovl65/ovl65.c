@@ -114,7 +114,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BC8D0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BC948);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BCA18);
+void func_800BCA18(Hero *hero) {
+    SetHeroSeq(hero, 0x4E);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BCA38);
 
