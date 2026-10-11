@@ -546,8 +546,8 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008D824);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008DA78);
 
-void func_8008DD20(void) {
-    func_800250B0();
+void func_8008DD20(NAS *nas) {
+    func_800250B0(nas);
 }
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008DD40);

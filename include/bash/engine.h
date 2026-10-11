@@ -40,7 +40,7 @@ s32 func_8008CEB0(u8 *arg0, u8 *arg1);
 void PlotParticleEffect(void);
 void InitParticleEffect(void);
 void InitFloatyScore(u8 *arg0);
-void func_8008DD20(void);
+void func_8008DD20(NAS *nas);
 s32 func_8008DE8C(void);
 void func_8008EB3C(void);
 void func_8008EB8C(void);

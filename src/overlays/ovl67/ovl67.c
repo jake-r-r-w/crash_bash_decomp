@@ -352,8 +352,8 @@ void func_800C36D4(void) {
 void func_800C36DC(void) {
 }
 
-void func_800C36E4(void) {
-    func_800250B0();
+void func_800C36E4(NAS *nas) {
+    func_800250B0(nas);
 }
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800C3704);

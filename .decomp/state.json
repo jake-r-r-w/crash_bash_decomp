@@ -1455,7 +1455,9 @@
   "auto_failed": "types"
  },
  "800250B0": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-11T14:39:29Z",
+  "started": "2026-10-11T14:36:14Z",
+  "status": "matched"
  },
  "800251A8": {
   "auto_failed": "types"

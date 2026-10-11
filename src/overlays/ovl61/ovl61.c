@@ -159,7 +159,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Init_ArkCameraFlash);
 
 void Plot_seaweed(NAS *arg0) {
     if ((*(s32*)((u8*)(arg0) + 84)) != 0) {
-        func_800250B0();
+        func_800250B0(arg0);
     }
 }
 

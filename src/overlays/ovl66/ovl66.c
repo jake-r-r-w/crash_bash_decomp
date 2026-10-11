@@ -51,8 +51,8 @@ s32 func_800B62C8(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return (temp_a0 * temp_a0) + (temp_a1 * temp_a1);
 }
 
-void func_800B62EC(void) {
-    func_800250B0();
+void func_800B62EC(NAS *nas) {
+    func_800250B0(nas);
 }
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B630C);

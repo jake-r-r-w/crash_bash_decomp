@@ -400,6 +400,8 @@ extern subengine D_8005A830;
 void FreeExtension(void *ext);
 s32 func_80032F3C(s32);         /* abs or labs (LIBC2: identical objects) */
 s32 func_80025E00(EXTengine *eng, s32 y);
+s16 func_800251A8(NAS *nas, EXTengine *eng, subengine *sub, EXTanim *anim);
+s16 func_80025534(NAS *nas, EXTengine *eng, subengine *sub, EXTanim *anim);
 extern s32 (*D_8005AA94)(EXTengine *eng); /* optional hook: replaces func_80025E00 */
 extern s32 D_8005B5B8;
 extern void (*D_800643F8)();
@@ -484,5 +486,7 @@ s32 KillNAS(NAS *nas);
 s32 get_angle(s32 x, s32 z);
 
 FlagRecord *func_80025A48(EXTengine *eng, u32 flag);
+
+s16 func_800250B0(NAS *nas);
 
 #endif /* BASH_MAIN_H */

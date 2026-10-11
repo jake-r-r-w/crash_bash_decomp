@@ -19,7 +19,7 @@ void func_800C3234(void);
 void func_800C3370(void);
 void func_800C36D4(void);
 void func_800C36DC(void);
-void func_800C36E4(void);
+void func_800C36E4(NAS *nas);
 
 extern u16 D_800C417A;
 

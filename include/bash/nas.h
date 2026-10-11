@@ -206,6 +206,20 @@ typedef struct EXTmotion {
 } EXTmotion;
 BASH_SIZE_CHECK(EXTmotion, 0x34);
 
+/* Extension id 0x400 | kind, 0x2C bytes, made by func_800265DC (which also
+ * sets 0x400 in NAS.flags). It plays a hero_seq (+0x0C, set by SetHeroSeq);
+ * func_800250B0 runs it: kind 1 with func_800251A8, kind 2 with
+ * func_80025534. Placeholder name. */
+typedef struct EXTanim {
+    /* 0x00 */ s32 EXTid;
+    /* 0x04 */ EXTnode Extend;
+    /* 0x0C */ u8 unk0C[0x14 - 0x0C];
+    /* 0x14 */ EXTengine *eng;           /* or NULL for NAS.eng */
+    /* 0x18 */ subengine *sub;           /* or NULL for the engine's first */
+    /* 0x1C */ u8 unk1C[0x2C - 0x1C];
+} EXTanim;
+BASH_SIZE_CHECK(EXTanim, 0x2C);
+
 /* Extension id 0x1000, 0x2C bytes, made by AddObject(nas) from the template
  * D_8005A974 (it also sets 0x1000 in NAS.flags). InitBall stores it in
  * NAS.unk58, and PlotBall passes that to the leak's AR_*_TestOutOfBounds and

@@ -83,7 +83,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BA8A4);
 
 void func_800BA964(u8 *arg0) {
     if ((*(s32*)((u8*)(arg0) + 84)) != 0) {
-        func_800250B0();
+        func_800250B0((NAS *)arg0);
     }
 }
 

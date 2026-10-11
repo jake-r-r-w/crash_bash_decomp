@@ -2250,7 +2250,48 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80024E30);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80024FA4);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800250B0);
+s16 func_800250B0(NAS *nas) {
+    EXTengine *eng;
+    EXTanim *anim;
+    subengine *sub;
+    s32 id;
+    s32 kind;
+    s32 want;
+
+    if ((nas->flags & 0x500) == 0x500 && (eng = nas->eng) != NULL) {
+        id = 0x400;
+        want = 0;
+        for (anim = nas->ext; anim != NULL; anim = anim->Extend.next) {
+            if (anim->EXTid & id) {
+                if (want == 0) {
+                    goto found;
+                }
+                if ((anim->EXTid & 0xFF) == want) {
+                    goto found;
+                }
+            }
+        }
+        anim = NULL;
+    found:
+        if (anim != NULL) {
+            kind = anim->EXTid & 0xFF;
+            if (anim->eng != NULL) {
+                eng = anim->eng;
+            }
+            sub = anim->sub;
+            if (sub == NULL) {
+                sub = eng->sub;
+            }
+            switch (kind) {
+            case 1:
+                return func_800251A8(nas, eng, sub, anim);
+            case 2:
+                return func_80025534(nas, eng, sub, anim);
+            }
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800251A8);
 
