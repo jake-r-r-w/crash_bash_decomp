@@ -37,14 +37,15 @@ copy of the game.
 Progress is measured in **bytes of code** produced by C that compiles to the
 retail bytes, game code and PsyQ library reported apart. The dashboard
 [`docs/index.html`](docs/index.html) is self-contained (no network, works from
-disk or GitHub Pages on `/docs`). It shows the roadmap's phases and current
-phase, read from [docs/ROADMAP.md](docs/ROADMAP.md). It also shows how much
-code is matched, named and typed (matched C with no raw pointer offsets), and
-how much data is C, per binary grouped by roadmap phase. Then a history chart,
-recent matches and parked functions. `docs/progress.json` holds the same
-data for scripts and `docs/badges/` feeds the badges above. Regenerate all three
-with `make progress`; `decomp.py done` does it on every match. This README
-intentionally avoids hardcoded numbers.
+disk or GitHub Pages on `/docs`). It shows how much game code is matched,
+named and in C as data, and how many functions are parked; a history chart and
+one chart comparing every binary, each switchable between bytes and functions;
+and a table per binary. `docs/progress.json` holds the full data for scripts
+and `docs/badges/` feeds the badges above. Regenerate all three with
+`make progress`; `decomp.py done` and `decomp.py block` do it on every match or
+park. `tools/scripts/check_progress.py` recounts everything from the sources
+and checks the dashboard against it. This README intentionally avoids
+hardcoded numbers.
 
 A function counts only when **every binary still matches the retail bytes**
 after it is added: `done` rebuilds the exe and all overlays from scratch and
