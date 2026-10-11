@@ -188,6 +188,8 @@ void func_80012E0C(void);
 void func_80012E14(u8 *arg0);
 void func_80012F04(void *arg0);
 void func_8002C394(s32 arg0, s32 *slot, s32 type);
+void func_80013688(s32 arg0, void (*done)(s32, s32 *), s32 *slot);
+void func_8002C3F0(s32 arg0, s32 *arg1);
 void func_80012E88(void);
 void func_80012F90(u8 *arg0);
 u8 *func_80013110(u8 *arg0);

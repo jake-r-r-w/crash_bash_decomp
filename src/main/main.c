@@ -3243,7 +3243,13 @@ void func_8002C2AC(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C2C4);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C394);
+void func_8002C394(s32 arg0, s32 *slot, s32 type) {
+    func_80013688(arg0, func_8002C3F0, slot);
+    SpuReserveReverbWorkArea(1);
+    SsUtSetReverbType(type);
+    SsUtSetReverbDepth(0, 0);
+    func_800369FC();
+}
 
 void func_8002C3F0(s32 arg0, s32 *arg1) {
     *arg1 = arg0;
