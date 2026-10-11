@@ -3352,7 +3352,15 @@ void func_8002A740(u8 *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002A77C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002A830);
+void func_8002A830(u8 *src, u8 *out, s32 len) {
+    u16 id;
+
+    id = *(u16 *)src;
+    src -= len - 4;
+    *(s32 *)(out + 4) = 0;
+    *(u8 **)(out + 8) = src;
+    *(u16 *)out = id;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002A84C);
 

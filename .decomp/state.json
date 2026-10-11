@@ -1943,7 +1943,9 @@
  },
  "8002A830": {
   "auto_diff": 7,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T18:49:27Z",
+  "started": "2026-10-11T18:47:25Z",
+  "status": "matched"
  },
  "8002A84C": {
   "auto_failed": "types"
