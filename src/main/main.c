@@ -2693,7 +2693,18 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C97C);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002D094);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002D0C8);
+void func_8002D0C8(void) {
+    s32 flags;
+    s32 on;
+
+    flags = D_800655C0;
+    if ((flags & 2) && (flags & 0x30)) {
+        on = TRUE;
+        D_800675C8 = on;
+        D_800655C4 = on;
+        D_800655C0 = flags | 0x80;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002D108);
 

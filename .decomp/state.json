@@ -2119,9 +2119,9 @@
  },
  "8002D0C8": {
   "auto_diff": 2,
-  "auto_failed": "diff",
+  "matched_at": "2026-10-11T09:28:12Z",
   "started": "2026-10-11T08:54:07Z",
-  "status": "in_progress"
+  "status": "matched"
  },
  "8002D108": {
   "auto_diff": 3,
