@@ -44,4 +44,8 @@ void func_800C6868(s32 arg0);
 
 void func_800C6888(s32 arg0);
 
+void func_800C6D00(s32 arg0);
+
+void func_800C6D20(s32 arg0);
+
 #endif /* BASH_OVL5F_H */

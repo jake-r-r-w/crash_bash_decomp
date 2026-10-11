@@ -4456,11 +4456,14 @@
  },
  "ovl5f:800C6D00": {
   "auto_diff": 1,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T15:09:03Z",
+  "status": "matched"
  },
  "ovl5f:800C6D20": {
   "auto_diff": 1,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T15:12:01Z",
+  "status": "matched",
+  "via": "copy"
  },
  "ovl5f:800C6D40": {
   "auto_diff": 1,
