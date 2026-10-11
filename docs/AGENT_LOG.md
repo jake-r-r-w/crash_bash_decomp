@@ -65,6 +65,12 @@ Parked (`decomp.py block`; best C under `#ifndef NON_MATCHING` in
   Permuter's best reused a temp for `tpage & ~0x60`.
 
 Other:
+- PsyQ gaps (`src/main/psyq/unknown/`) can't be matched as C yet: Sony's
+  objects pad each function to 16 bytes with `nop`s, and our gcc doesn't, so
+  `func_8003E0EC` and `func_80033530` match alone but the exe comes out 4 bytes
+  short. They need per-file padding in the build, or the real objects linked
+  (`func_8003E0EC` is identical to `McrdGetGlobalStructure`, `func_80033530` to
+  `ReadInitPadFlag`).
 - `D_8004E0F0` is the main `Heap` (`bash/main.h`) but is still declared
   `u8[]`, so `func_800110A8`'s callers warn. Retype it together with the
   `u8 *` heap parameters of `func_80011DB4` and `func_800112A4`.
@@ -168,6 +174,8 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-11:** Copied `func_80026A28` to `func_800C9B5C` (ovl62). The two
+  PsyQ-gap copies don't fit in the build (function padding, see Open leads).
 - **2026-10-11:** Matched `func_8001534C` (string hash) with a 10-minute
   permuter run after the loop rewrites stalled at 9 operands: the product goes
   through a reused `s32` temp. Diff patterns row added.
