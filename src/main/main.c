@@ -1253,7 +1253,15 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8001CEB4);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001CF50);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001CFE8);
+void *func_8001CFE8(MorphModel *model, void *arg1, s32 arg2) {
+    void *p;
+
+    p = func_80019094(model, arg2);
+    if (p != NULL) {
+        func_800193A8(p, arg1, (u8 *)&model->runs + model->runs);
+    }
+    return p;
+}
 
 void func_8001D048(SVECTOR *v, POLY_GT4 *poly) {
     u32 otz;

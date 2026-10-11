@@ -350,6 +350,8 @@ extern u16 D_800569DC;
 extern s32 D_8005B690; /* frame counter: its low bit picks the frame buffer */
 void func_8001A6D4(void *arg0, u32 hidden);
 s32 func_8001A0D8(void *arg0, u32 flags);
+void *func_80019094(void *arg0, s32 arg1);
+void func_800193A8(void *arg0, void *arg1, u8 *runs);
 extern u8 D_80053694[];
 void *AllocExtension(void *owner, s32 size, s32 id, void *tmpl);
 extern EXTmotion D_8005A9CC;
@@ -419,5 +421,7 @@ void func_800154EC(u16 *arg0, s32 arg1);
 void func_8002775C(u8 *arg0);
 
 void func_800154C0(u16 *arg0, s32 arg1);
+
+void *func_8001CFE8(MorphModel *model, void *arg1, s32 arg2);
 
 #endif /* BASH_MAIN_H */

@@ -789,10 +789,14 @@
   "auto_failed": "diff"
  },
  "80019094": {
-  "auto_failed": "types"
+  "auto_failed": "types",
+  "started": "2026-10-11T09:11:33Z",
+  "status": "in_progress"
  },
  "800193A8": {
-  "auto_failed": "types"
+  "auto_failed": "types",
+  "started": "2026-10-11T09:11:35Z",
+  "status": "in_progress"
  },
  "8001965C": {
   "auto_failed": "types"
@@ -918,9 +922,9 @@
  },
  "8001CFE8": {
   "auto_diff": 1,
-  "auto_failed": "diff",
+  "matched_at": "2026-10-11T09:14:48Z",
   "started": "2026-10-11T08:54:05Z",
-  "status": "in_progress"
+  "status": "matched"
  },
  "8001D048": {
   "matched_at": "2026-10-11T07:51:17Z",
