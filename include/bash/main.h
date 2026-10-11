@@ -186,6 +186,20 @@ typedef struct OffsetTable {
     /* 0x1C */ s32 offs[1];
 } OffsetTable;
 
+/* Per-pad state, 8 of them at D_80051338 (func_80027F00 resets them). */
+typedef struct PadState {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ u8 unk8[0x18 - 0x08];
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ s32 unk1C;
+    /* 0x20 */ u8 unk20[2];
+    /* 0x22 */ s16 unk22;
+    /* 0x24 */ u8 unk24[4];
+    /* 0x28 */ s16 unk28;
+    /* 0x2A */ u8 unk2A[0x58 - 0x2A];
+} PadState;
+
 typedef struct Heap {
     /* 0x00 */ u8 unk0[8];
     /* 0x08 */ MemBlock *free;           /* free list, smallest first */
@@ -209,6 +223,7 @@ void func_80012E14(u8 *arg0);
 void func_80012F04(void *arg0);
 s32 func_8001534C(s32 arg0);
 void func_8001828C(void);
+void func_8002C894(void);
 MemBlock *func_80011C5C(u32 words, MemBlock *blk);
 s32 func_80013034(s32 arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *arg4, s32 arg5, s32 arg6);
 void func_80029560(u8 *arg0);
@@ -399,6 +414,9 @@ extern s32 D_8006557C;
 extern VabSlot D_800644C0[6];
 extern NodePool D_80056844;
 extern NAS *D_8005AA2C;
+extern s32 D_800515F8;
+extern u8 D_80063A90[2][0x34];    /* PadInitMtap buffers */
+extern PadState D_80051338[8];
 extern void *D_80063BB4;          /* list walked by func_80028A00 (next at +4) */
 extern s32 D_8004E104;            /* func_80011410: free bytes */
 extern s32 D_8004E108;            /* func_80011410: free blocks */
@@ -634,5 +652,7 @@ u8 *func_80015A78(s32 i, u8 *rec);
 void func_80015518(u8 *p, s32 n);
 
 void func_800228C4(SfxVoice *voice);
+
+void func_80027F00(void);
 
 #endif /* BASH_MAIN_H */

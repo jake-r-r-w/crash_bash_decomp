@@ -1813,7 +1813,9 @@
  },
  "80027F00": {
   "auto_diff": 7,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-11T19:13:21Z",
+  "started": "2026-10-11T19:10:14Z",
+  "status": "matched"
  },
  "80027F7C": {
   "auto_failed": "types"

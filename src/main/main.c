@@ -3247,7 +3247,31 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80027AD4);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80027D90);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80027F00);
+void func_80027F00(void) {
+    PadState *pad;
+    s32 i;
+    s32 on;
+
+    D_800515F8 = 0;
+    PadInitMtap(D_80063A90[0], D_80063A90[1]);
+    i = 0;
+    on = 1;
+    pad = D_80051338;
+loop:
+    if (i < 8) {
+        i++;
+        pad->unk4 = 0;
+        pad->unk0 = 0;
+        pad->unk18 = on;
+        pad->unk1C = 0;
+        pad->unk22 = 0;
+        pad->unk28 = 0;
+        pad++;
+        goto loop;
+    }
+    func_8002C894();
+    PadStartCom();
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80027F7C);
 
