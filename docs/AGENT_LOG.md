@@ -2,6 +2,39 @@
 
 Newest first. Each session appends: what changed, what was learned, what's next.
 
+## 2026-10-11 - matching docs: evidence before the permuter
+
+**State at end of session:** `make check` OK; 419/2550 game functions matched
+(main.exe 173/574), 3 parked (`func_800155FC` added).
+
+**Done**
+- `docs/MATCHING.md`: an "Evidence first" step (`dups`, grep matched C,
+  headers and the leak), a "Diff patterns" table (symptom, source change,
+  example) seeded from this log, per-kind checklists (register-only,
+  instruction order, opcode/length), and "Why does a register differ?" with
+  the cc1 `-dl -dg` recipe. Step 4 now allows the permuter only after those.
+- `match-function` skill step 4 says the same; permuter finds get ported by
+  hand and added to the table.
+- Tested the process on the two near-misses. `func_8002D0C8` was already
+  matched in `f5eb589` (constant in a local). `func_800155FC` parked after
+  17 forms (temps, operand order, `u32` globals, store order) and the dump:
+  the target ties `A + srl` to the srl's register; writing the srl first
+  ties it right, but then local-alloc gives A v1 instead of v0.
+
+**Learned / gotchas**
+- local-alloc ties an insn's result to the first source operand that dies
+  there; that's the knob for "result in the other operand's register".
+- `Random` (0x80015590) is the same seed step plus `divu` (unsigned `%`);
+  match both together.
+- The cc1 recipe writes `x.i`/`x.s`/`.lreg`/`.greg` in the repo root and
+  they're not gitignored.
+
+**Next**
+1. `func_800155FC` / `Random`: find a form where A's pseudo outranks the
+   srl/sum group in local-alloc priority with the operands swapped.
+2. Keep taking small `main.exe` targets with the new process; add a
+   Diff patterns row for anything learned.
+
 ## 2026-10-11 - small main.exe functions batch
 
 **State at end of session:** `make check` OK; 419/2550 game functions matched
