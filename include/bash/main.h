@@ -33,17 +33,26 @@ typedef struct {
 } MorphModel;
 
 /* Graphics state at 0x80056998 (placeholder name; 161 references). Only the
- * fields func_8001CD04 uses are known: two pointers it aims at buffers inside
- * the struct itself, and a block at +0x28 it passes to func_8001965C. */
+ * fields func_8001CD04 and func_8001D048 use are known: two pointers it aims
+ * at buffers inside the struct itself, a block at +0x28 it passes to
+ * func_8001965C, and the ordering table that primitives are added to. */
 typedef struct {
     u8 unk0[0x28];
-    u8 unk28[0x5C];
+    u8 unk28[0x18];
+    u32 *ot;   /* 0x40 */
+    s16 otzAdd; /* 0x44: added to the average Z before it is halved */
+    s16 otLen;  /* 0x46: entries in ot */
+    u8 unk48[0x3C];
     u8 *unk84; /* 0x84: = unkCC */
     u8 *unk88; /* 0x88: = unk10C */
     u8 unk8C[0x40];
     u8 unkCC[0x40];
     u8 unk10C[0x40];
 } GfxState;
+
+/* Loads GTE vector 0 from two words (vx|vy, vz) in general registers
+ * (lw + mtc2), where Sony's gte_ldv0 loads straight from memory (lwc2). */
+#define gte_ldv0_w(xy, z) __asm__ volatile (				"mtc2	%0, $0;"						"mtc2	%1, $1"							:								: "r"(xy), "r"(z) )
 
 /* Filled by func_8001965C for func_8001CD04, which loads it into the GTE. */
 typedef struct {
@@ -330,5 +339,7 @@ s32 func_80025BBC(EXTengine *eng);
 void func_80015758(SVECTOR *v, VECTOR *out);
 
 void func_8001C008(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc);
+
+void func_8001D048(SVECTOR *v, POLY_GT4 *poly);
 
 #endif /* BASH_MAIN_H */

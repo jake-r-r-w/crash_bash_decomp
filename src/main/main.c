@@ -1079,7 +1079,33 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8001CF50);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001CFE8);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001D048);
+void func_8001D048(SVECTOR *v, POLY_GT4 *poly) {
+    u32 otz;
+    s32 xy;
+    s32 z;
+
+    gte_ldv0_w(((s32 *)v)[0], ((s32 *)v)[1]);
+    v++;
+    gte_rtps();
+    gte_ldv0_w(((s32 *)v)[0], ((s32 *)v)[1]);
+    v++;
+    gte_rtps();
+    gte_ldv0_w(((s32 *)v)[0], ((s32 *)v)[1]);
+    v++;
+    gte_rtps();
+    xy = ((s32 *)v)[0];
+    z = ((s32 *)v)[1];
+    gte_stsxy3_gt4(poly);
+    gte_ldv0_w(xy, z);
+    gte_rtps();
+    gte_stsxy(&poly->x3);
+    gte_avsz3();
+    gte_stotz(&otz);
+    otz = (otz + D_80056998.otzAdd) >> 1;
+    if (otz < D_80056998.otLen) {
+        addPrim(D_80056998.ot + otz, poly);
+    }
+}
 
 void func_8001D174(EXTengine *eng) {
     void (*release)(subengine *);
