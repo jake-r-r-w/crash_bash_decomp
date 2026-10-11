@@ -2659,6 +2659,7 @@ tr.grp td{color:var(--ink2);font-weight:600;font-size:12px;padding-top:14px;bord
 font-size:12px;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.15);display:none;white-space:nowrap}
 .empty{color:var(--muted);font-size:13px}
 .head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.ctl{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 .scale{display:inline-flex;border:1px solid var(--axis);border-radius:6px;overflow:hidden}
 .scale button{font:inherit;font-size:12px;background:transparent;color:var(--ink2);border:0;padding:4px 10px;cursor:pointer}
 .scale button+button{border-left:1px solid var(--axis)}
@@ -2679,10 +2680,10 @@ code{font-size:12px}
 <div class="head"><div><h1 id="title">Decomp progress</h1><div class="sub" id="sub"></div></div>
 <div class="scale" id="theme" role="group" aria-label="Theme"></div></div>
 <div class="tiles" id="tiles"></div>
-<div class="card section"><div class="head"><h2>Progress over time</h2><div class="scale" id="scale" role="group" aria-label="Time scale"></div></div>
+<div class="card section"><div class="head"><h2>Progress over time</h2><div class="ctl"><div class="scale" id="measure" role="group" aria-label="Measure"></div><div class="scale" id="scale" role="group" aria-label="Time scale"></div></div></div>
 <div class="legend" id="legend"></div><div id="chart"></div></div>
 <div class="card section"><h2>Progress over time by binary and library</h2>
-<div class="small" style="margin-bottom:10px">C bytes matched in each unit, on the time scale above. Each panel is scaled to its own peak, so compare the figures, not the heights.</div>
+<div class="small" style="margin-bottom:10px"><span id="multi-what">C bytes matched</span> in each unit, on the time scale and measure above. Each panel is scaled to its own peak, so compare the figures, not the heights.</div>
 <div id="multi"></div></div>
 <div class="card section"><h2>By binary and library</h2><div class="wrap"><table id="segs"></table></div>
 <div class="small" style="margin-top:8px">Hand-written: library objects Sony wrote in assembly; their .s files are the original source and are not counted in the C totals.</div></div>
@@ -2726,13 +2727,19 @@ $("tiles").innerHTML=grpTile("Game code matched",S.game,"var(--s1)")+
 
 // history chart: % of bytes matched per group, bucketed by a selectable time unit
 (function(){
- const el=$("chart"), ctl=$("scale");
+ const el=$("chart"), ctl=$("scale"), mctl=$("measure");
+ const MEASURES={bytes:"Bytes",functions:"Functions"};
+ let measure=null;try{measure=localStorage.getItem("decomp-measure")}catch(e){}
+ if(!MEASURES[measure])measure="bytes";
+ const fnMode=()=>measure=="functions";
  const H=(D.history||[]).filter(h=>h.game_tb>0);
  const series=[{k:"game",name:"Game code",col:"var(--s1)",G:S.game}];
  // the library is linked whole from Sony's objects: charting it would only flatten the game lines
  series.push({k:"named",name:"Game functions named",col:"var(--s3)",num:"game_named_f",den:"game_all_f"});
- series.push({k:"data",name:"Data in C",col:"var(--s4)",num:"data_b",den:"data_tb"});
- $("legend").innerHTML=series.length>1?series.map(s=>`<span><i style="background:${s.col}"></i>${s.name}</span>`).join(""):"";
+ // data has no functions: its line stays in bytes in both measures, and says so
+ series.push({k:"data",name:"Data in C",col:"var(--s4)",num:"data_b",den:"data_tb",bytesOnly:1});
+ const legend=()=>{$("legend").innerHTML=series.map(s=>`<span><i style="background:${s.col}"></i>${s.name}`+
+  (s.G?` (${fnMode()?"functions":"bytes"})`:s.bytesOnly?` (bytes${fnMode()?"; data has no functions":""})`:"")+`</span>`).join("")};
  const UNITS={minute:{label:"Minutes",win:120},hour:{label:"Hours",win:48},day:{label:"Days",win:60},
   week:{label:"Weeks",win:52},month:{label:"Months",win:0}};
  const floor=(t,u)=>{const d=new Date(t);d.setSeconds(0,0);if(u!="minute"){d.setMinutes(0);if(u!="hour"){d.setHours(0);
@@ -2764,12 +2771,16 @@ $("tiles").innerHTML=grpTile("Game code matched",S.game,"var(--s1)")+
  function draw(){
   ctl.innerHTML=Object.entries(UNITS).map(([k,v])=>`<button data-u="${k}" aria-pressed="${k==unit}">${v.label}</button>`).join("");
   ctl.querySelectorAll("button").forEach(b=>b.onclick=()=>{unit=b.dataset.u;try{localStorage.setItem("decomp-scale",unit)}catch(e){}draw()});
+  mctl.innerHTML=Object.entries(MEASURES).map(([k,v])=>`<button data-m="${k}" aria-pressed="${k==measure}">${v}</button>`).join("");
+  mctl.querySelectorAll("button").forEach(b=>b.onclick=()=>{measure=b.dataset.m;try{localStorage.setItem("decomp-measure",measure)}catch(e){}draw()});
+  legend();$("multi-what").textContent=fnMode()?"Functions matched":"C bytes matched";
   if(!H.length){el.innerHTML='<div class="empty">The chart fills in as functions are matched.</div>';$("multi").innerHTML="";return}
   const {out:Bk,before}=buckets(unit), N=Bk.length;
   multi(Bk,before);
   // every point against today's totals: the code known to exist grew (overlays were added
   // later), and a percentage of a smaller total would make the line fall when nothing was lost
-  const v=(s,h)=>!h?0:s.num?pct(h[s.num]||0,s.den=="game_all_f"?S.game.all_f:(S.data||{}).total_b):pct(h[s.k+"_b"],s.G.total_b);
+  const v=(s,h)=>!h?0:s.num?pct(h[s.num]||0,s.den=="game_all_f"?S.game.all_f:(S.data||{}).total_b)
+   :fnMode()?pct(h[s.k+"_f"],s.G.total_f):pct(h[s.k+"_b"],s.G.total_b);
   const W=Math.max(320,el.clientWidth||900),Ht=240,L=44,R=16,T=10,B=28,iw=W-L-R,ih=Ht-T-B;
   const hi=Math.max(...Bk.map(b=>Math.max(...series.map(s=>v(s,b.h)))));
   const ymax=Math.min(100,Math.max(1,hi*1.15)), bw=iw/Math.max(1,N);
@@ -2788,7 +2799,7 @@ $("tiles").innerHTML=grpTile("Game code matched",S.game,"var(--s1)")+
   }
   g+=`<line id="xh" y1="${T}" y2="${T+ih}" stroke="var(--axis)" stroke-width="1" visibility="hidden"/>`;
   g+=`<rect x="${L}" y="${T}" width="${iw}" height="${ih}" fill="transparent" id="hit"/>`;
-  el.innerHTML=`<svg width="100%" viewBox="0 0 ${W} ${Ht}" role="img" aria-label="Matched code percentage by ${unit}">${g}</svg>`;
+  el.innerHTML=`<svg width="100%" viewBox="0 0 ${W} ${Ht}" role="img" aria-label="Matched ${fnMode()?"functions":"code bytes"} percentage by ${unit}">${g}</svg>`;
   const tip=$("tip"),xh=el.querySelector("#xh"),svg=el.querySelector("svg");
   el.querySelector("#hit").addEventListener("mousemove",ev=>{
    const r=svg.getBoundingClientRect(),mx=(ev.clientX-r.left)*W/r.width;
@@ -2806,7 +2817,7 @@ $("tiles").innerHTML=grpTile("Game code matched",S.game,"var(--s1)")+
   const N=Bk.length, all=S.units||[], W=240, Ht=64, L=4, R=6, T=6, B=4, iw=W-L-R, ih=Ht-T-B, bw=iw/Math.max(1,N);
   const at=(h,u)=>h&&h.units&&h.units[u.unit]||[0,0];
   const panel=(u,i)=>{
-   const v=h=>pct(at(h,u)[0],u.total_b), hi=Math.max(...Bk.map(b=>v(b.h)));
+   const v=h=>fnMode()?pct(at(h,u)[1],u.total_f):pct(at(h,u)[0],u.total_b), hi=Math.max(...Bk.map(b=>v(b.h)));
    const ymax=Math.min(100,Math.max(1,hi*1.15)), x=j=>L+bw*(j+.5), y=val=>T+ih*(1-val/ymax), col=u.lib?"var(--s2)":"var(--s1)";
    let d="";Bk.forEach((b,j)=>{d+=(j?"L":"M")+x(j).toFixed(1)+","+y(v(b.h)).toFixed(1)});
    const g=`<line x1="${L}" x2="${W-R}" y1="${T+ih}" y2="${T+ih}" stroke="var(--axis)"/>`+
@@ -2816,7 +2827,7 @@ $("tiles").innerHTML=grpTile("Game code matched",S.game,"var(--s1)")+
     `<rect x="0" y="0" width="${W}" height="${Ht}" fill="transparent" class="hit"/>`;
    return `<div data-i="${i}"><div class="mh"><span><b>${esc(u.unit)}</b>${u.title&&u.title!=u.unit?` <span class="small">${esc(u.title)}</span>`:""}</span>`+
     `<span class="small">${u.total_b?`${f2(u.pct)} of bytes · ${f2(pct(u.done_f,u.total_f))} of functions`:"—"}</span></div>`+
-    `<svg width="100%" viewBox="0 0 ${W} ${Ht}" role="img" aria-label="${esc(u.unit)}: C bytes matched by ${unit}">${g}</svg></div>`};
+    `<svg width="100%" viewBox="0 0 ${W} ${Ht}" role="img" aria-label="${esc(u.unit)}: ${fnMode()?"functions":"C bytes"} matched by ${unit}">${g}</svg></div>`};
   const game=all.filter(u=>!u.lib), lib=all.filter(u=>u.lib), list=game.concat(lib);
   $("multi").innerHTML=`<div class="multi">${game.map((u,i)=>panel(u,i)).join("")}</div>`+
    (lib.length?`<details><summary>PsyQ library: Sony's objects, linked in place (${lib.length})</summary>`+
@@ -2829,7 +2840,7 @@ $("tiles").innerHTML=grpTile("Game code matched",S.game,"var(--s1)")+
     const j=Math.max(0,Math.min(N-1,Math.floor((mx-L)/bw))), b=Bk[j], p=j?Bk[j-1].h:before;
     const c=at(b.h,u), q=at(p,u), gb=c[0]-q[0], gf=c[1]-q[1];
     xh.setAttribute("x1",L+bw*(j+.5));xh.setAttribute("x2",L+bw*(j+.5));xh.setAttribute("visibility","visible");
-    tip.innerHTML=`<b>${esc(u.unit)} · ${esc(lab(b.t,unit))}</b><br>${f2(pct(c[0],u.total_b))} · ${n(c[1])} / ${n(u.total_f)} functions`+
+    tip.innerHTML=`<b>${esc(u.unit)} · ${esc(lab(b.t,unit))}</b><br>${f2(pct(c[0],u.total_b))} of bytes · ${n(c[1])} / ${n(u.total_f)} functions (${f2(pct(c[1],u.total_f))})`+
      (gf||gb?` <span class="small">(+${n(gf)} fn, +${n(gb)} B)</span>`:"");
     tip.style.display="block";tip.style.left=Math.min(ev.clientX+12,innerWidth-300)+"px";tip.style.top=(ev.clientY+12)+"px"});
    hit.addEventListener("mouseleave",()=>{tip.style.display="none";xh.setAttribute("visibility","hidden")});
