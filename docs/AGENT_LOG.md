@@ -31,7 +31,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
    A function that parks still gets its prototype in `bash/main.h` (an
    ordinary commit after `make check`), as `FindExtension` did.
 2. Keep matching `main.exe`, one function per commit:
-   `decomp.py next --seg main/main` (not always the smallest). Use the
+   `decomp.py next --seg main/main` (least work first: near-miss drafts from
+   the old `auto`, weighted by identical copies, then size). Use the
    MATCHING.md process: evidence, Diff patterns, checklist, cc1 dump, then
    permuter.
 3. Name each function as it's matched when the evidence allows (only 144 of
