@@ -179,7 +179,18 @@ s16 func_8001156C(u8 *arg0) {
     return (*(s16*)((u8*)(arg0) + -24));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80011578);
+void func_80011578(u8 *arg0, MemBlock *arg1, s32 arg2) {
+    MemBlock *blk;
+
+    blk = (MemBlock *)(arg0 - 0x18);
+    if (blk->owner != (void **)-1) {
+        *blk->owner = NULL;
+    }
+    func_80011530(arg0);
+    blk->nextFree = arg1->prevFree;
+    *(s16 *)&blk->unk2 = arg2;
+    arg1->prevFree = blk;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800115D8);
 

@@ -789,4 +789,6 @@ IdEntry *func_800263D8(IdEntry *p, s32 id);
 
 s32 func_80015984(s32 i, EntryBlock *blk);
 
+void func_80011578(u8 *arg0, MemBlock *arg1, s32 arg2);
+
 #endif /* BASH_MAIN_H */
