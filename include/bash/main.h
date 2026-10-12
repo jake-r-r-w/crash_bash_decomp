@@ -467,6 +467,15 @@ extern s32 D_800655A8;
 extern s32 D_800655C0;
 extern s32 D_800655C4;
 extern s32 D_800675CC;
+extern s32 D_800675D0;
+
+/* 0x28-byte entries starting at 0x800675D4; D_800675D0 is the count. */
+typedef struct {
+    u8 unk0[0x18];
+    s32 size; /* 0x18 */
+    u8 unk1C[0xC];
+} SizeEntry;
+extern SizeEntry D_800675D4[];
 extern u8 D_8004E0F0[];
 extern u8 D_80055684[];
 extern void *D_8005AA34;
@@ -812,5 +821,7 @@ void func_8001702C(SlotList *arg0);
 void func_80027A30(s16 vol);
 
 void func_80021940(s32 arg0, u8 *arg1, s32 arg2);
+
+s32 func_8002D178(void);
 
 #endif /* BASH_MAIN_H */

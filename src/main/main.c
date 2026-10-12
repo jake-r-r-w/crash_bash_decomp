@@ -4353,7 +4353,27 @@ void func_8002D15C(void) {
     D_800655C0 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002D178);
+s32 func_8002D178(void) {
+    SizeEntry *p;
+    s32 i;
+    s32 sum;
+
+    i = D_800675D0;
+    if (i >= 0xF) {
+        return 0;
+    }
+    p = D_800675D4;
+    i--;
+    sum = 0;
+    if (i != -1) {
+        do {
+            sum += p->size;
+            p++;
+            i--;
+        } while (i != -1);
+    }
+    return 0x1E000 - sum;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002D1D4);
 
