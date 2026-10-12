@@ -226,7 +226,9 @@
  },
  "80012E28": {
   "auto_diff": 10,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-12T08:47:19Z",
+  "started": "2026-10-12T08:45:29Z",
+  "status": "matched"
  },
  "80012E54": {
   "auto_diff": 1,

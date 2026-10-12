@@ -709,4 +709,6 @@ s32 func_80016450(u8 *arg0, s32 arg1);
 
 void func_8001C298(EXTengine *eng);
 
+void *func_80012E28(void);
+
 #endif /* BASH_MAIN_H */
