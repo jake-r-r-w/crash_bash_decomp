@@ -1150,7 +1150,8 @@
  },
  "8001E41C": {
   "auto_diff": 24,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-12T13:36:34Z",
+  "status": "matched"
  },
  "8001E48C": {
   "auto_failed": "compile"

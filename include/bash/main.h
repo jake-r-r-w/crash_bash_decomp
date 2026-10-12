@@ -73,6 +73,22 @@ typedef struct {
     u8 unk10C[0x40];
 } GfxState;
 
+/* A 0x1C-byte entry of a sorted table at +0x4C of a block (func_8001E41C). */
+typedef struct {
+    u8 unk0[0xC];
+    s32 key;   /* 0x0C */
+    u8 unk10[4];
+    u32 flags; /* 0x14 */
+    u8 unk18[4];
+} KeyEntry;
+
+typedef struct {
+    u8 unk0[4];
+    s32 count; /* 0x04 */
+    u8 unk8[0x44];
+    KeyEntry entries[1]; /* 0x4C */
+} KeyBlock;
+
 /* Loads GTE vector 0 from two words (vx|vy, vz) in general registers
  * (lw + mtc2), where Sony's gte_ldv0 loads straight from memory (lwc2). */
 #define gte_ldv0_w(xy, z) __asm__ volatile (				"mtc2	%0, $0;"						"mtc2	%1, $1"							:								: "r"(xy), "r"(z) )
@@ -967,5 +983,7 @@ void func_8001D640(s32 n);
 _sfx_handler *func_80022924(void);
 
 s32 *func_800219B8(u8 *arg0, s32 arg1);
+
+KeyEntry *func_8001E41C(KeyBlock *arg0, s32 arg1);
 
 #endif /* BASH_MAIN_H */

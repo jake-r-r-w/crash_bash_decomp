@@ -2659,7 +2659,25 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8001E0A8);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001E21C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001E41C);
+KeyEntry *func_8001E41C(KeyBlock *arg0, s32 arg1) {
+    KeyEntry *p;
+    KeyEntry *q;
+
+    if (arg1 < 0 || (p = arg0->entries, arg0->count < arg1)) {
+        return NULL;
+    }
+    q = p;
+    if (arg1 >= p->key) {
+        do {
+            if (q->flags & 0x2000) {
+                return p;
+            }
+            q++;
+            p++;
+        } while (arg1 >= q->key);
+    }
+    return p - 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001E48C);
 
