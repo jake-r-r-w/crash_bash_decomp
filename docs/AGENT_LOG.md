@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 510/2550 game functions matched (main.exe 246/574), 4 parked. `make check`
+- 530/2550 game functions matched (main.exe 266/574), 5 parked. `make check`
   OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
@@ -59,6 +59,11 @@ Parked (`decomp.py block`; best C under `#ifndef NON_MATCHING` in
   gets no hoisting; `for (;;) { if (i < first) break; ...}` hoists it but
   adds a `nas + 12` induction pointer (37 insns vs 36). The `KillNAS` push
   may be a `static inline FreeNAS()`, but that alone changed nothing.
+- **`func_80011E80`** (block after `heap->lowest` unless owner -1, size 0
+  or flag 2): 4 operands, all in the tail. The target keeps the result in v0
+  and the block in a0; the m2c result-variable form, early returns and
+  clearing to NULL all add 1-2 insns. Try `static inline` helpers for either
+  half (they fixed `func_80021E98`).
 - **`func_8001C7FC`**: `return func_8001A0D8(...)` (s32) fixes the division
   region (the returned pseudo prefers v0, so `mfhi` lands in v1), but then v0
   is live at the shared exit and gcc leaves the first `beqz` delay slot
@@ -188,6 +193,15 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-12:** One-hour run: 20 matches in `main.exe` (`func_80012E28`,
+  `func_8001C34C`, `func_80028158`, `func_80026FCC`, `func_80026D9C`,
+  `func_8002120C`, `func_8001D5D0`, `func_8002D094`, `func_80021E60`,
+  `func_80022984`, `func_8002B8F4`, `func_80016E5C`, `func_8001DD20`,
+  `func_8002C060`, `func_80021E98`, `func_80011828`, `func_800138A4`,
+  `func_800133C8`, `func_8002D360`, `func_8001316C`); parked
+  `func_80011E80`. `GfxState.unk8C` is a `MATRIX`. Six new Diff patterns
+  rows (an inlined pop helper again, increment and constant order, operand
+  order, early global loads).
 - **2026-10-12:** Parked `func_80026D08` (free-list rebuild, not a spawner;
   declared the pool globals `D_8005AA10/12/1C`). Matched `func_8001636C`
   by copying its matched sibling `func_800163E0`, then `func_80016450` (same
