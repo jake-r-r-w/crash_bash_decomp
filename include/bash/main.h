@@ -843,6 +843,17 @@ s32 func_80015304(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
 void func_8002C248(s32 arg0);
 
+/* Per-note pitch data: a signed note and a signed fine nibble in the top of +1. */
+typedef struct {
+    s8 note;
+    u8 fine; /* 0x01: high nibble is a signed fine value */
+} PitchInfo;
+
+typedef struct {
+    s16 voice;       /* 0x00 */
+    PitchInfo *info; /* 0x04 */
+} PitchVoice;
+
 IdEntry *func_800263D8(IdEntry *p, s32 id);
 
 s32 func_80015984(s32 i, EntryBlock *blk);
@@ -878,5 +889,7 @@ void func_80026858(void *owner, s32 size, s32 id, Words3 *tmpl);
 void func_80028BF0(void);
 
 void func_80028C94(void);
+
+void func_8002B4D8(PitchVoice *arg0, s32 arg1);
 
 #endif /* BASH_MAIN_H */

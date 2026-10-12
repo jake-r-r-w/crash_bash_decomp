@@ -4242,7 +4242,12 @@ void func_8002B4B8(void) {
     SsSeqCalledTbyT();
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002B4D8);
+void func_8002B4D8(PitchVoice *arg0, s32 arg1) {
+    PitchInfo *info = arg0->info;
+
+    SsUtChangePitch(arg0->voice, info->note, ((s32)(info->fine << 24)) >> 28, 0x3C, 0,
+                    (s32)(arg1 << 9) >> 16, arg1 & 0x7F);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002B52C);
 
