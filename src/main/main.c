@@ -1153,7 +1153,24 @@ void func_80016D98(u8 *data, u8 *rec) {
     *(s32 *)(rec + 8) = func_80013034(*(s32 *)(rec + 0), 0, *(s32 *)(rec + 0x24), func_80016F34, rec, 1, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80016E5C);
+void func_80016E5C(u8 *arg0, u8 *arg1) {
+    Heap *heap;
+    s32 n;
+
+    n = func_8002A650(arg0);
+    heap = (Heap *)D_8004E0F0;
+    if (func_80011C5C((n + 3) >> 2, heap->free) == NULL) {
+        func_800110A8(arg0, heap);
+        *(s32 *)(arg1 + 8) = 0;
+        func_80016D44(arg1);
+    } else {
+        arg1 += 0x10;
+        func_8002A5A4(arg1, arg0);
+        func_80029560(arg1);
+        func_8002A35C(arg1);
+    }
+}
+
 
 void func_80016EF4(u8 *arg0, u8 *arg1) {
     u8 *temp_s0;
