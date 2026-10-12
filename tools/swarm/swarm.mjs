@@ -732,7 +732,7 @@ ${job.permuterDiff}
         if (!f || !fs.existsSync(tried) ||
             !/^MATCH /m.test(fs.readFileSync(tried, 'utf8'))) continue;
         const res = readJson(path.join(dir, 'result.json'), {});
-        this.integQueue.push({ f, model: 'resumed', attempt: 1, notes: [], conflicts: 0, dir,
+        this.integQueue.push({ f, model: this.o.model, resumed: true, attempt: 1, notes: [], conflicts: 0, dir,
                                patch: path.join(dir, 'patch.diff'), note: res.note || '' });
         n++;
       }
