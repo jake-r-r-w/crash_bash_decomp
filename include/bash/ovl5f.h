@@ -45,4 +45,6 @@ void func_800C7EF8(HeroInfo *hero);
 
 void func_800C8560(NAS *nas);
 
+void func_800C8598(NAS *nas);
+
 #endif /* BASH_OVL5F_H */
