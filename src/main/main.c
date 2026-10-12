@@ -3208,7 +3208,20 @@ void func_80026308(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002633C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800263D8);
+IdEntry *func_800263D8(IdEntry *p, s32 id) {
+    if (p != NULL) {
+        do {
+            if (p->id == id) {
+                return p;
+            }
+            if (p->id == 0x3E7) {
+                return NULL;
+            }
+            p++;
+        } while (p != NULL);
+    }
+    return NULL;
+}
 
 void func_80026418(void) {
 }

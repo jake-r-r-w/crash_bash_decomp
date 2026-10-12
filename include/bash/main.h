@@ -188,6 +188,12 @@ typedef struct OffsetTable {
     /* 0x1C */ s32 offs[1];
 } OffsetTable;
 
+/* 0x18-byte entry of an id-keyed table ended by id 0x3E7 (func_800263D8). */
+typedef struct IdEntry {
+    /* 0x00 */ u16 id;
+    /* 0x02 */ u8 unk2[0x16];
+} IdEntry;
+
 /* Per-pad state, 8 of them at D_80051338 (func_80027F00 resets them). */
 typedef struct PadState {
     /* 0x00 */ s32 unk0;
@@ -771,5 +777,7 @@ MemBlock *func_80011878(MemBlock *blk, s32 words);
 s32 func_80015304(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
 void func_8002C248(s32 arg0);
+
+IdEntry *func_800263D8(IdEntry *p, s32 id);
 
 #endif /* BASH_MAIN_H */
