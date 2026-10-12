@@ -202,8 +202,13 @@ Newest first, a few lines each. Details are in the commits.
   timeout, escalation, a cheating patch, a false match claim). Then: CLI
   installed (npm), workers use `dontAsk` and `--max-budget-usd`, run cost
   cap; `done`'s full build now runs `make -j` (149 s to 30 s, same bytes),
-  so a swarm commit takes ~1 min. Not yet run with real workers: the CLI
-  needs `claude auth login` first.
+  so a swarm commit takes ~1 min. First real runs (1 worker, Sonnet,
+  `func_80012FFC`): run 1 parked at once because `sed -i` was refused
+  (the prompt now says to edit with Edit/Write and not chain commands);
+  run 2 worked properly but parked after 11 min, 10 of them waiting on the
+  permuter (score 805 to 300). So the permuter moved to its own pool:
+  workers hand off `needs_permute`, a follow-up worker ports the result.
+  `func_80012FFC` has used its 2 attempts (`--retry-failed` to retry).
 
 - **2026-10-12:** Short follow-on run: matched `func_80013688` (wrapper of
   `func_80013034`) and `func_80011BC0` (tail-recursive walk to the next free

@@ -204,6 +204,9 @@ class Swarm {
       results: path.join(o.dir, 'results'),
     };
     this.slots = Array.from({ length: o.workers }, (_, i) => ({ id: `w${i + 1}`, dir: path.join(o.dir, 'workers', `w${i + 1}`), job: null }));
+    // permuter pool: plain compute, no Claude; a stuck worker hands its closest C here and frees its slot
+    this.pslots = Array.from({ length: o.permuters }, (_, i) => ({ id: `p${i + 1}`, dir: path.join(o.dir, 'permuters', `p${i + 1}`), job: null }));
+    this.permQueue = [];
     this.children = new Set();      // every process we started, for the hard stop
     this.queue = [];
     this.retry = [];                // jobs to run again (escalated model, or after a conflict)
@@ -217,7 +220,10 @@ class Swarm {
     this.consecutiveFailures = 0;
     this.stopping = null;
     this.history = readJson(this.paths.history, {});
-    this.cpus = Math.max(1, Math.floor(os.cpus().length / o.workers));
+    // half the cores for workers' builds, half for the permuters (all to workers without a pool)
+    const ncpu = os.cpus().length, share = o.permuters ? ncpu / 2 : ncpu;
+    this.cpus = Math.max(1, Math.floor(share / o.workers));
+    this.permCpus = Math.max(1, Math.floor(share / Math.max(1, o.permuters)));
   }
 
   log(msg) {
@@ -263,23 +269,28 @@ class Swarm {
     this.log(`integrating into ${o.branch} at ${gitOk(this.integ, 'rev-parse', '--short', 'HEAD')}`);
   }
 
-  // tools/dk in a clone, async; containers are labelled for the stop switch
-  dk(cwd, args, slot = 'integ') {
+  // tools/dk in a clone, async; containers are labelled for the stop switch. `minutes` kills it.
+  dk(cwd, args, slot = 'integ', { cpus = this.cpus, minutes = 0 } = {}) {
     useOurDk(cwd);
     return new Promise(resolve => {
       const env = {
         ...process.env, MSYS_NO_PATHCONV: '1',
         DK_DOCKER_ARGS: `--label ${LABEL}=${this.id} --label ${LABEL}-slot=${this.id}-${slot}` +
           // parallel make for done's full build, whatever the branch's decomp.py does
-          (slot === 'integ' ? ` -e MAKEFLAGS=-j${os.cpus().length}` : ` --cpus ${this.cpus}`),
+          (slot === 'integ' ? ` -e MAKEFLAGS=-j${os.cpus().length}` : ` --cpus ${cpus}`),
       };
       const p = spawn(this.bash, ['tools/dk', ...args], { cwd, env, stdio: ['ignore', 'pipe', 'pipe'], detached: !WIN });
       this.children.add(p);
-      let out = '';
+      let out = '', timedOut = false;
+      const timer = minutes && setTimeout(() => {
+        timedOut = true;
+        killTree(p.pid);
+        dockerKill(`${LABEL}-slot=${this.id}-${slot}`, cwd);
+      }, minutes * 60e3);
       p.stdout.on('data', d => { out += d; });
       p.stderr.on('data', d => { out += d; });
-      p.on('close', code => { this.children.delete(p); resolve({ code: code ?? -1, out }); });
-      p.on('error', err => { this.children.delete(p); resolve({ code: -1, out: String(err) }); });
+      p.on('close', code => { clearTimeout(timer); this.children.delete(p); resolve({ code: code ?? -1, out, timedOut }); });
+      p.on('error', err => { clearTimeout(timer); this.children.delete(p); resolve({ code: -1, out: String(err), timedOut }); });
     });
   }
 
@@ -297,7 +308,8 @@ class Swarm {
   }
 
   activeJobs() {
-    return [...this.slots.map(s => s.job).filter(Boolean), ...this.integQueue, ...(this.integrating ? [this.integrating] : [])];
+    return [...[...this.slots, ...this.pslots].map(s => s.job).filter(Boolean), ...this.permQueue,
+            ...this.integQueue, ...(this.integrating ? [this.integrating] : [])];
   }
 
   nextJob(peek = false) {
@@ -315,6 +327,7 @@ class Swarm {
   // ---- workers
   prompt(job) {
     const { f } = job;
+    const canPermute = this.pslots.length > 0 && !job.permuted;
     const patterns = fs.existsSync(this.paths.patterns)
       ? fs.readFileSync(this.paths.patterns, 'utf8').trim().split('\n').slice(-30).join('\n') : '';
     return `You are one worker in a swarm matching Crash Bash functions. Match exactly one function:
@@ -328,26 +341,49 @@ skill, CLAUDE.md and the docs:
 - Do not run \`decomp.py done\`, \`decomp.py block\`, \`make clean\`, \`make verify\` or any git command
   that changes the repo, and do not edit docs/, .decomp/, configs/ or tools/. The orchestrator
   validates and commits your work.
-- \`tools/dk make permute FUNC=${f.name} MINUTES=10\` at most once, and only after the evidence step,
-  the checklist and (for register diffs) the cc1 dump.
-- Pass </dev/null to tools/dk. You have about ${this.o.workerMinutes} minutes.
+- Don't run the permuter (it is refused). ${canPermute
+    ? `If the evidence step, the Diff patterns, the checklist and (for register diffs) the cc1 dump
+  don't get you to a match, leave your closest C in place of the INCLUDE_ASM line and finish with
+  status "needs_permute": the orchestrator runs the permuter in the background and gives its result
+  to a worker, so you free your slot instead of waiting on it.`
+    : 'This function has had its permuter run already.'}
+- Tools: change files only with the Edit and Write tools (shell edits such as \`sed -i\`, \`>\` or
+  \`tee\` are refused). Run each \`tools/dk ... </dev/null\` as its own Bash command, not chained
+  with \`&&\` or \`;\` (a chain is refused if any part isn't allowed). Read-only shell commands
+  (grep, sed -n, head, ...) are fine. If a command is refused, do the same thing another way;
+  a refusal is never a reason to stop.
+- You have about ${this.o.workerMinutes} minutes.
 - Stop when \`tools/dk make diff FUNC=${f.name}\` prints MATCH, or when you are out of ideas.
-  If it does not match, put the INCLUDE_ASM line back exactly as it was and leave no changes in src/
-  or include/.
+  If it does not match${canPermute ? ' and you are not asking for the permuter' : ''}, put the
+  INCLUDE_ASM line back exactly as it was and leave no changes in src/ or include/.
 - Last, write ${RESULT} in the repo root, JSON:
-  {"status": "matched" | "parked", "note": "one line: what made it match, or what still differs",
+  {"status": "matched" | "parked"${canPermute ? ' | "needs_permute"' : ''},
+   "note": "one line: what made it match, or what still differs",
    "pattern": "a new Diff patterns table row (| symptom | change | example |), or empty",
    "best_c": "your closest C when parked, else empty"}
-${f.note ? `\nNote recorded for this function earlier: ${f.note}\n` : ''}${job.notes.length ? `\nEarlier swarm attempts at it:\n${job.notes.map(n => '- ' + n).join('\n')}\n` : ''}${patterns ? `\nDiff patterns other workers found in this run (not yet in MATCHING.md):\n${patterns}\n` : ''}`;
+${job.permuterDiff ? `
+An earlier worker's closest C for ${f.name} is already in ${f.src}. The permuter then got its score
+from ${job.permuterScore.base} to ${job.permuterScore.best}${job.permuterScore.best === 0 ? ' (a MATCH)' : ''} (0 is a match) with these changes to that C. Port
+the useful ones by hand (usually a temp, a statement order, a type or a cast; drop permuter noise
+such as odd casts that don't change the code) and check with make diff:
+\`\`\`
+${job.permuterDiff}
+\`\`\`
+` : ''}${f.note ? `\nNote recorded for this function earlier: ${f.note}\n` : ''}${job.notes.length ? `\nEarlier swarm attempts at it:\n${job.notes.map(n => '- ' + n).join('\n')}\n` : ''}${patterns ? `\nDiff patterns other workers found in this run (not yet in MATCHING.md):\n${patterns}\n` : ''}`;
   }
 
   startJob(slot, job) {
     const { f } = job;
     job.base = gitOk(this.integ, 'rev-parse', 'HEAD');
-    job.dir = path.join(this.paths.results, f.name, `attempt${job.attempt}-${this.id}`);
+    job.dir = path.join(this.paths.results, f.name, `attempt${job.attempt}${job.startPatch ? '-port' : ''}-${this.id}`);
     fs.mkdirSync(job.dir, { recursive: true });
     makeClone(slot.dir, this.integ, 'HEAD', m => this.log(m));   // HEAD may have moved on: base is in it
     resetClone(slot.dir, job.base);
+    // a follow-up after the permuter starts from the earlier worker's C
+    if (job.startPatch) {
+      gitOk(slot.dir, 'apply', '--3way', '--whitespace=nowarn', job.startPatch);
+      gitOk(slot.dir, 'reset', '-q');   // --3way stages it: unstaged, `git checkout -- src` undoes it
+    }
     fs.rmSync(path.join(slot.dir, RESULT), { force: true });
     useOurDk(slot.dir);
     const prompt = this.prompt(job);
@@ -439,11 +475,23 @@ ${f.note ? `\nNote recorded for this function earlier: ${f.note}\n` : ''}${job.n
     fs.writeFileSync(path.join(job.dir, 'patch.diff'), patch);
     const errs = this.checkPatch(patch, f);
     if (errs.length) return this.fail(slot, job, `patch refused: ${errs.join('; ')}`);
+    if (res.status === 'needs_permute') {
+      if (!this.pslots.length || job.permuted)
+        return this.notMatched(slot, job, `asked for the permuter again; ${res.note || ''}`.trim());
+      slot.job = null;              // the slot is free now: the permuter runs without Claude
+      job.note = res.note || '';
+      job.bestPatch = path.join(job.dir, 'patch.diff');
+      this.permQueue.push(job);
+      this.log(`${slot.id} ${f.name}: handed to the permuter pool (${job.note})`);
+      return;
+    }
     // don't trust the worker's word: build and compare the function ourselves
     const r = await this.dk(slot.dir, ['python3', 'tools/scripts/decomp.py', 'try', f.name], slot.id);
     fs.writeFileSync(path.join(job.dir, 'try.txt'), r.out);
     if (r.code !== 0 || !/^MATCH /m.test(r.out))
-      return this.notMatched(slot, job, `claimed a match that try rejects; ${res.note || ''}`.trim());
+      return this.notMatched(slot, job, res.status === 'matched'
+        ? `claimed a match that try rejects; ${res.note || ''}`.trim()
+        : `${res.note || 'not matched'} (left its C in place)`);
     job.note = res.note || '';
     job.patch = path.join(job.dir, 'patch.diff');
     slot.job = null;
@@ -451,9 +499,56 @@ ${f.note ? `\nNote recorded for this function earlier: ${f.note}\n` : ''}${job.n
     this.log(`${slot.id} ${f.name}: try says MATCH, queued for integration`);
   }
 
+  // ---- the permuter pool: no Claude, just CPU; an improvement goes back to a worker to port
+  async runPermute(ps, job) {
+    const { f } = job;
+    ps.job = job;
+    ps.killed = false;
+    job.permuted = true;
+    try {
+      makeClone(ps.dir, this.integ, 'HEAD', m => this.log(m));
+      resetClone(ps.dir, job.base);
+      gitOk(ps.dir, 'apply', '--3way', '--whitespace=nowarn', job.bestPatch);
+      fs.rmSync(path.join(ps.dir, 'build', 'permuter', f.name), { recursive: true, force: true });
+      this.log(`${ps.id} permuting ${f.name} for ${this.o.permuteMinutes} min (${this.permCpus} cpus)`);
+      const r = await this.dk(ps.dir, ['make', 'permute', `FUNC=${f.name}`, `MINUTES=${this.o.permuteMinutes}`], ps.id,
+                              { cpus: this.permCpus, minutes: this.o.permuteMinutes + 5 });
+      fs.writeFileSync(path.join(job.dir, 'permute.txt'), r.out);
+      if (this.stopping) {          // a stop cuts permuter runs short: no worker would port the result
+        this.finished.add(f.key);
+        this.log(`${ps.id} ${f.name}: permuter stopped; worker's C kept in ${job.bestPatch}`);
+        return;
+      }
+      const m = r.out.match(/permuter best score (\d+)(?: \(base (\d+)\))?: (\S+)\/source\.c/);
+      const best = m ? +m[1] : null, base = m && m[2] !== undefined ? +m[2] : null;
+      if (!m || (base !== null && best >= base)) {
+        const why = r.timedOut ? 'permuter timed out' : 'permuter found no improvement';
+        return this.notMatched(ps, job, `${why}; worker: ${job.note}`);
+      }
+      const outDir = path.join(ps.dir, m[3]);
+      let diff = fs.existsSync(path.join(outDir, 'diff.txt')) ? fs.readFileSync(path.join(outDir, 'diff.txt'), 'utf8') : '';
+      if (diff.length > 6000) diff = diff.slice(0, 6000) + '\n... (cut)';
+      fs.writeFileSync(path.join(job.dir, 'permuter-diff.txt'), diff);
+      if (fs.existsSync(path.join(outDir, 'source.c'))) fs.copyFileSync(path.join(outDir, 'source.c'), path.join(job.dir, 'permuter-source.c'));
+      const note = `permuter: score ${base ?? '?'} -> ${best}${best === 0 ? ' (MATCH)' : ''}`;
+      this.record(job, 'permuted', note);
+      this.log(`${ps.id} ${f.name}: ${note}; back in the queue for a worker to port`);
+      ps.job = null;
+      if (!this.stopping)
+        this.retry.unshift({ f, model: job.model, attempt: job.attempt, retry: true, permuted: true,
+                             notes: [...job.notes, `${job.note} (${note})`], startPatch: job.bestPatch,
+                             permuterDiff: diff || '(no diff.txt)', permuterScore: { base: base ?? '?', best } });
+      else this.finished.add(f.key);
+    } catch (e) {
+      this.fail(ps, job, `permuter: ${e.message}`);
+    } finally {
+      ps.job = null;
+    }
+  }
+
   record(job, status, note) {
     const h = this.history[job.f.key] ||= { name: job.f.name, attempts: 0, notes: [] };
-    if (status !== 'conflict') h.attempts++;
+    if (status !== 'conflict' && status !== 'permuted') h.attempts++;
     h.last = status;
     h.notes = [...h.notes, `${stamp()} ${job.model}: ${status}: ${note}`].slice(-6);
     writeJson(this.paths.history, this.history);
@@ -465,7 +560,8 @@ ${f.note ? `\nNote recorded for this function earlier: ${f.note}\n` : ''}${job.n
     this.record(job, 'parked', note);
     if (this.o.escalateModel && job.model !== this.o.escalateModel && job.attempt < this.o.maxAttempts && !this.stopping) {
       this.log(`${job.f.name}: not matched (${note}); retrying with ${this.o.escalateModel}`);
-      this.retry.push({ f: job.f, model: this.o.escalateModel, attempt: job.attempt + 1, notes: [...job.notes, note], retry: true });
+      this.retry.push({ f: job.f, model: this.o.escalateModel, attempt: job.attempt + 1, notes: [...job.notes, note],
+                        retry: true, permuted: job.permuted });
       return;
     }
     this.stats.parked++;
@@ -571,6 +667,8 @@ ${f.note ? `\nNote recorded for this function earlier: ${f.note}\n` : ''}${job.n
       branch: this.o.branch, stats: this.stats, costUsd: +this.costUsd.toFixed(2), leases: this.leases, queued: this.queue.length,
       workers: this.slots.map(s => ({ slot: s.id, func: s.job?.f.name || null, model: s.job?.model || null, pid: s.job?.pid || null,
                                       minutes: s.job ? +((Date.now() - s.job.started) / 60e3).toFixed(1) : null })),
+      permuters: this.pslots.map(s => ({ slot: s.id, func: s.job?.f.name || null })),
+      permuteWaiting: this.permQueue.map(j => j.f.name),
       integrating: this.integrating?.f.name || null, waiting: this.integQueue.map(j => j.f.name),
     });
   }
@@ -587,7 +685,7 @@ ${f.note ? `\nNote recorded for this function earlier: ${f.note}\n` : ''}${job.n
     try {
       this.setupInteg();
       await this.refreshQueue();
-      this.log(`run ${this.id}: ${this.o.workers} workers, ${this.queue.length} candidates` +
+      this.log(`run ${this.id}: ${this.o.workers} workers, ${this.o.permuters} permuters, ${this.queue.length} candidates` +
                `${this.o.only ? ` (--only ${this.o.only.join(',')})` : ` in ${this.o.seg || 'all game code'}`}` +
                `${this.o.dryRun ? ', DRY RUN' : ''}${this.o.workerCmd ? `, worker command: ${this.o.workerCmd}` : ''}`);
       for (;;) {
@@ -602,6 +700,21 @@ ${f.note ? `\nNote recorded for this function earlier: ${f.note}\n` : ''}${job.n
             this.log(`integration error: ${e.stack || e}`);
             this.stopping ||= 'graceful';
           });
+        if (this.stopping) {
+          // no worker will port permuter results: drop waiting runs and cut running ones short
+          for (const job of this.permQueue.splice(0)) {
+            this.finished.add(job.f.key);
+            this.log(`${job.f.name}: permuter run dropped by the stop; worker's C kept in ${job.bestPatch}`);
+          }
+          for (const ps of this.pslots)
+            if (ps.job && !ps.killed) {
+              ps.killed = true;
+              dockerKill(`${LABEL}-slot=${this.id}-${ps.id}`, ps.dir);
+            }
+        } else
+          for (const ps of this.pslots)
+            if (!ps.job && this.permQueue.length)
+              this.runPermute(ps, this.permQueue.shift()).catch(e => this.log(`permuter error: ${e.stack || e}`));
         if (!this.stopping)
           for (const slot of this.slots) {
             if (slot.job || (this.leases >= this.o.maxFunctions && !this.retry.length)) continue;
@@ -677,6 +790,8 @@ function status(o) {
   console.log(`  ${st.stats.matched} matched, ${st.stats.parked} parked, ${st.stats.failed} failed, ` +
               `${st.stats.conflicts} conflicts; ${st.leases} leased, ${st.queued} in the queue`);
   for (const w of st.workers) console.log(`  ${w.slot}: ${w.func ? `${w.func} (${w.model}, ${w.minutes} min)` : 'idle'}`);
+  for (const p of st.permuters || []) console.log(`  ${p.slot}: ${p.func ? `permuting ${p.func}` : 'idle'}`);
+  if (st.permuteWaiting?.length) console.log(`  waiting for a permuter: ${st.permuteWaiting.join(', ')}`);
   if (st.integrating || st.waiting.length)
     console.log(`  integrating ${st.integrating || '-'}; waiting ${st.waiting.join(', ') || '-'}`);
   const log = path.join(o.dir, 'swarm.log');

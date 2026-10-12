@@ -10,7 +10,16 @@ workers (N clones)                         integrator (one clone, serial)
  reset to the integration tip               git apply --3way the patch
  claude -p: match-function steps 1-4  -->   decomp.py done NAME --commit
  orchestrator: patch checks + `try`         push to the swarm branch
+        |
+        | stuck: "needs_permute" + closest C (the worker's slot is freed)
+        v
+permuter pool (M clones, no Claude)
+ make permute on that C; if the score improves, the function goes back to the
+ front of the queue and the next worker starts from that C plus the permuter's diff
 ```
+
+Workers can't run the permuter themselves: a 10-minute permuter run would hold a Claude slot
+idle. Each function gets one permuter run.
 
 ## Turning it off
 
@@ -37,6 +46,8 @@ dontAsk`: anything outside the allowed tools is denied, never prompted. Options 
 `config.json`, override any with `--kebab-case value`):
 
 - `--workers` (3), `--seg` (`main/main`), `--only f1,f2` (exactly these functions)
+- `--permuters` (2), `--permute-minutes` (10): the permuter pool; `--permuters 0` turns it off
+  (workers then just park).
 - `--branch` (`swarm/integration`): where matches are committed, created from `--base` (`main`)
   the first time. Merge it into `main` yourself after review.
 - `--model` (`sonnet`), `--escalate-model` (`opus`): a function the first model doesn't match gets
@@ -69,7 +80,9 @@ dontAsk`: anything outside the allowed tools is denied, never prompted. Options 
   A session that fails to start (not logged in, API down) counts as a failure, so three in a
   row stop the run.
 - **One run at a time** per `--dir` (lock file with the PID).
-- **CPU:** each worker's containers get `--cpus` (cores / workers).
+- **CPU:** with a permuter pool, workers share half the cores and permuters the other half
+  (Docker `--cpus`); without one, workers get them all. A stop cuts running permuter runs short
+  (nobody would port their result); the worker's C stays in `results/`.
 
 ## Output
 
