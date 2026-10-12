@@ -1651,7 +1651,9 @@ void func_8001C270(EXTengine *eng) {
     eng->kill(eng);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001C298);
+void func_8001C298(EXTengine *eng) {
+    eng->render(eng);
+}
 
 void func_8001C2C0(u8 *arg0) {
     s32 (*temp_v0)(u8 *, s32, s32);

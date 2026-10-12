@@ -901,7 +901,9 @@
   "status": "matched"
  },
  "8001C298": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-12T08:36:55Z",
+  "started": "2026-10-12T08:35:13Z",
+  "status": "matched"
  },
  "8001C2C0": {
   "matched_at": "2026-10-10T10:36:02Z",
