@@ -454,6 +454,13 @@ extern s32 D_800655A4;
 extern s32 D_800655B4;
 extern s32 D_800655AC;
 extern void *D_80051240;
+typedef struct {
+    u8 unk0[8];
+    void (*unk8)(void);
+} VTable8;
+extern VTable8 *D_8004E0DC;
+extern s32 D_8004E0E0;
+void func_800272AC(s32 arg0);
 extern void *D_80050F3C;
 extern u8 D_80050F40[]; /* 63 x 0xC pool, free list in D_80051240 */
 extern u8 D_8005063C[]; /* 63 x 0x24 pool, free list in D_80050F3C */
@@ -823,5 +830,7 @@ void func_80027A30(s16 vol);
 void func_80021940(s32 arg0, u8 *arg1, s32 arg2);
 
 s32 func_8002D178(void);
+
+void func_80010354(void);
 
 #endif /* BASH_MAIN_H */

@@ -30,7 +30,10 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80010278);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800102F8);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80010354);
+void func_80010354(void) {
+    D_8004E0DC->unk8();
+    func_800272AC(D_8004E0E0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80010394);
 
