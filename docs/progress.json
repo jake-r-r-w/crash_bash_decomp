@@ -17,11 +17,17 @@
    "note": "Two conflicting fixes: 'return func_8001A0D8(...)' (s32) makes the returned pseudo prefer v0 so global alloc puts mfhi in v1 and sched2 keeps lhu after sra (division region matches), but then v0 is live at the shared exit and gcc leaves the first beqz delay slot empty (target fills it with lui 0x200). Need a form where something prefers v0 without v0 live on the early-exit path.",
    "seg": "main/main",
    "size": 376
+  },
+  {
+   "name": "func_80026D08",
+   "note": "Rebuilds NASFreeList from the pool (D_8005AA1C, slots D_8005AA10..D_8005AA12-1). Best: goto loop, 18 off: target keeps %hi(NASFreeList) in a1 (a copy, so loop.c hoisted it) and loads D_8005AA10 once before the loop. goto loops get no hoisting; for(;;)+break with a 'first' local hoists the lui but adds a nas+12 giv (37 insns); while/for with the global, index inside the loop, head pointer local, store order, static inline FreeNAS: no better. Permuter 10 min: only a semantics-breaking goto move.",
+   "seg": "main/main",
+   "size": 148
   }
  ],
- "commit": "1959774",
+ "commit": "dcf30af",
  "game": "SCUS_945.70",
- "generated": "2026-10-12T07:54:35Z",
+ "generated": "2026-10-12T08:11:49Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -10712,7 +10718,7 @@
    }
   },
   {
-   "commit": "1959774",
+   "commit": "dcf30af",
    "data_b": 44,
    "data_tb": 616791,
    "game_all_f": 2550,
@@ -10725,7 +10731,7 @@
    "lib_b": 121280,
    "lib_f": 535,
    "lib_tb": 122112,
-   "ts": "2026-10-12T07:54:35Z",
+   "ts": "2026-10-12T08:11:49Z",
    "units": {
     "engine": [
      2752,
@@ -10921,7 +10927,7 @@
   }
  ],
  "summary": {
-  "blocked": 3,
+  "blocked": 4,
   "copies_b": 38192,
   "data": {
    "done_b": 44,
@@ -10932,7 +10938,7 @@
    "all_f": 2550,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 3,
+   "blocked": 4,
    "c_f": 506,
    "done_b": 33364,
    "done_f": 506,
@@ -10984,7 +10990,7 @@
     "all_f": 574,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 3,
+    "blocked": 4,
     "c_f": 242,
     "done_b": 21976,
     "done_f": 242,

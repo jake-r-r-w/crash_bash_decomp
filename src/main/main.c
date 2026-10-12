@@ -3217,7 +3217,39 @@ void func_80026C94(u8 *arg0, u8 *arg1) {
 void func_80026D00(void) {
 }
 
+#ifndef NON_MATCHING
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80026D08);
+#else
+static inline void FreeNAS(NAS *nas) {
+    if (NASFreeList != NULL) {
+        NASFreeList->Tag.Parent = nas;
+        nas->Tag.Child = NASFreeList;
+        NASFreeList = nas;
+    } else {
+        NASFreeList = nas;
+        nas->Tag.Child = NULL;
+    }
+    nas->Tag.Parent = NULL;
+}
+
+void func_80026D08(void) {
+    NAS *nas;
+    s32 i;
+
+    NASFreeList = NULL;
+    i = D_8005AA12 - 1;
+    nas = &D_8005AA1C[i];
+loop:
+    if (i >= D_8005AA10) {
+        if (nas->NASid == 0) {
+            FreeNAS(nas);
+        }
+        nas--;
+        i--;
+        goto loop;
+    }
+}
+#endif
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80026D9C);
 

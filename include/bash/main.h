@@ -535,6 +535,9 @@ extern u8 D_8005B790[];
 extern s32 D_800637A8;
 
 extern NAS *NASFreeList;
+extern u16 D_8005AA10;            /* first pool slot func_80026D08 frees */
+extern u16 D_8005AA12;            /* pool slot count */
+extern NAS *D_8005AA1C;           /* NAS pool */
 extern NAS NASTemplate;            /* copied over each spawned NAS */
 extern EXTengine EngineTemplate;   /* copied over each new engine */
 extern s16 AtanTable[];            /* get_angle */
