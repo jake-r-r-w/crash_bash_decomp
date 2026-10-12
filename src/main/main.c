@@ -669,7 +669,17 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_800139A8);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80013B0C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80013C24);
+void func_80013C24(void) {
+    if (D_800512A4 != 0) {
+        D_800512A4 = 0;
+        D_80051638[0] = 4;
+        D_80051638[1] = 3;
+        return;
+    }
+    D_800512A4 = 1;
+    D_80051638[0] = 0x10;
+    D_80051638[1] = 9;
+}
 
 void func_80013C78(void) {
     u32 *p = (u32 *)D_8005A614;

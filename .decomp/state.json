@@ -364,7 +364,8 @@
   "auto_failed": "compile"
  },
  "80013C24": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-12T12:24:25Z",
+  "status": "matched"
  },
  "80013C78": {
   "auto_diff": 6,

@@ -600,6 +600,8 @@ extern NAS NASTemplate;            /* copied over each spawned NAS */
 extern EXTengine EngineTemplate;   /* copied over each new engine */
 extern s16 AtanTable[];            /* get_angle */
 extern u16 D_8005A644;
+extern s32 D_800512A4;
+extern s32 D_80051638[2];
 
 EXTmotion *AddMotion(NAS *nas);
 
@@ -834,5 +836,7 @@ s32 func_8002D178(void);
 void func_80010354(void);
 
 MemBlock *func_80011F74(Heap *heap);
+
+void func_80013C24(void);
 
 #endif /* BASH_MAIN_H */
