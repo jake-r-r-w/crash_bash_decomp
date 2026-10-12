@@ -2552,7 +2552,26 @@ void func_8001D604(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001D640);
+void func_8001D640(s32 n) {
+    subengine *sub;
+    s32 i;
+    u8 *p;
+
+    p = func_80011654(n * 0xA8, D_8004E0F0);
+    i = n - 1;
+    sub = (subengine *)p;
+    D_80058AC8 = (s32)sub;
+    D_80058ACC = sub;
+    if (i > 0) {
+        do {
+            subengine *nx = (subengine *)((u8 *)sub + 0xA8);
+            sub->next = nx;
+            i--;
+            sub = nx;
+        } while (i > 0);
+    }
+    sub->next = NULL;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001D6B4);
 
