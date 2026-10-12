@@ -57,6 +57,9 @@ dontAsk`: anything outside the allowed tools is denied, never prompted. Options 
 - `--model` (`sonnet`), `--escalate-model` (`opus`): a function the first model doesn't match gets
   one more attempt with the second, carrying the first attempt's notes.
 - `--dir` (`<repo>-swarm`, next to the repo): clones, logs and results.
+- `--resume RUN`: after a stop, send the matches run RUN verified with `try` but never committed
+  straight to the gate instead of matching them again (the run id is in `swarm.log`). Matches
+  that sat a long time may no longer fit `main`; the gate refuses those and a worker fixes them.
 - `--dry-run`: everything but Claude (workers report "parked"). `--worker-cmd CMD`: run CMD in
   the worker clone instead of Claude (env `SWARM_FUNC`, `SWARM_SRC`, `SWARM_RESULT`), for tests.
 

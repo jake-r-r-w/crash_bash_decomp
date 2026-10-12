@@ -96,8 +96,10 @@ What gets matched in what order, and when each binary counts as finished, is
 in [docs/ROADMAP.md](docs/ROADMAP.md). The loop is described in
 [docs/MATCHING.md](docs/MATCHING.md). An AI agent runs
 it one function at a time with the `/match-function` project skill
-(`.claude/skills/match-function`). The bulk m2c matcher (`decomp.py auto`) is
-retired.
+(`.claude/skills/match-function`), or several at once with the swarm
+([tools/swarm](tools/swarm/README.md)): parallel Claude workers do the matching
+and one integrator commits each match through the same `done` gate. The bulk
+m2c matcher (`decomp.py auto`) is retired.
 
 ## How the game is built
 

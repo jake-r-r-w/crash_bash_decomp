@@ -35,6 +35,11 @@ and a clean full build of every target. Only then does it record and commit
 `Match NAME (seg, N bytes)`. The pre-commit hook refuses matches committed any
 other way. The bulk matcher `decomp.py auto` is retired.
 
+The swarm ([tools/swarm](tools/swarm/README.md)) matches several functions at
+once and commits through the same gate. It batches: `done --defer-build` per
+function (still one commit each), then one `decomp.py verify` for the batch,
+and nothing is pushed unless that passes.
+
 Functions that won't match go to `decomp.py block NAME --note "..."`.
 
 ## Other changes
