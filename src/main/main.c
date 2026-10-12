@@ -3979,7 +3979,13 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8002BD98);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002BEA8);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C060);
+void func_8002C060(void) {
+    D_8006557C.data = 0;
+    D_8006557C.seq = -1;
+    D_800655A4 = -1;
+    D_8006559C = -1;
+    D_800655B4 = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C090);
 

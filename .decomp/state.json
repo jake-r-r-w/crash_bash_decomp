@@ -2176,7 +2176,9 @@
   "auto_failed": "types"
  },
  "8002C060": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-12T09:21:22Z",
+  "started": "2026-10-12T09:19:11Z",
+  "status": "matched"
  },
  "8002C090": {
   "auto_failed": "types"

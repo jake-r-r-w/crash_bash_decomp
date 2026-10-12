@@ -421,6 +421,8 @@ extern s32 D_80064478[];
 extern u8 D_800527C4[];
 extern s32 D_80064414;
 extern s32 D_8006559C;
+extern s32 D_800655A4;
+extern s32 D_800655B4;
 extern s32 D_800655AC;
 extern void *D_80051240;
 extern void *D_80050F3C;
@@ -740,5 +742,7 @@ void func_80022984(void);
 void func_80016E5C(u8 *arg0, u8 *arg1);
 
 s32 func_8001DD20(s32 *arg0);
+
+void func_8002C060(void);
 
 #endif /* BASH_MAIN_H */
