@@ -3300,7 +3300,26 @@ void func_800228C4(_sfx_handler *voice) {
     SfxVoicePool.free = voice;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80022924);
+_sfx_handler *func_80022924(void) {
+    _sfx_handler *v;
+    _sfx_handler *r;
+
+    v = SfxVoicePool.free;
+    if (v == NULL) {
+        return NULL;
+    }
+    SfxVoicePool.free = v->next;
+    v->next = SfxVoicePool.active;
+    v->prev = NULL;
+    if (SfxVoicePool.active != NULL) {
+        SfxVoicePool.active->prev = v;
+    }
+    r = v;
+    r->owner = NULL;
+    r->unk28 = -1;
+    r->unk2C = -1;
+    return r;
+}
 
 void func_80022984(void) {
     _sfx_handler *v;

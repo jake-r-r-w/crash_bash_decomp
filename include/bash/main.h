@@ -964,4 +964,6 @@ s32 func_8002A2EC(s32 r, s32 g, s32 b);
 
 void func_8001D640(s32 n);
 
+_sfx_handler *func_80022924(void);
+
 #endif /* BASH_MAIN_H */
