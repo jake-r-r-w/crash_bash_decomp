@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 509/2550 game functions matched (main.exe 245/574), 4 parked. `make check`
+- 510/2550 game functions matched (main.exe 246/574), 4 parked. `make check`
   OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
@@ -192,7 +192,8 @@ Newest first, a few lines each. Details are in the commits.
   declared the pool globals `D_8005AA10/12/1C`). Matched `func_8001636C`
   by copying its matched sibling `func_800163E0`, then `func_80016450` (same
   record; the pointer must be a local or gcc folds the offsets).
-  Then `func_8001C270` (`eng->kill(eng)`, called from `KillNAS`).
+  Then `func_8001C270` (`eng->kill(eng)`, called from `KillNAS`) and its
+  twin `func_8001C298` (`eng->render(eng)`).
 - **2026-10-12:** Matched `SpawnNASFromRecord` (504 bytes) and unparked
   `SpawnNASById` (512 bytes): both pop the free list through a
   `static inline AllocNAS()` with an early `return NULL` (an earlier inline
