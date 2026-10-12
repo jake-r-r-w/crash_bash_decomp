@@ -271,7 +271,20 @@ void *func_80011828(void *ptr, s32 bytes) {
 
 
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80011878);
+MemBlock *func_80011878(MemBlock *blk, s32 words) {
+    MemBlock *split;
+    MemBlock *next;
+
+    split = (MemBlock *)((u32 *)blk + words);
+    next = (MemBlock *)((u32 *)(blk + 1) + blk->size);
+    split->unk0 = 4;
+    split->owner = (void **)-1;
+    split->size = blk->size - words;
+    split->prev = blk;
+    blk->size = words - 6;
+    next->prev = split;
+    return split;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800118BC);
 
