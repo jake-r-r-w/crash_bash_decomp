@@ -2388,8 +2388,26 @@ u8 *func_80021E60(u8 *arg0, s32 arg1) {
     return NULL;
 }
 
+static inline u8 *PopD_80058B70(void) {
+    u8 *cur;
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80021E98);
+    cur = D_80058B70;
+    if (cur != NULL) {
+        D_80058B70 = *(void **)(cur + 0xB4);
+    }
+    return cur;
+}
+
+u8 *func_80021E98(u8 *arg0) {
+    u8 *p;
+
+    p = PopD_80058B70();
+    if (p != NULL) {
+        *(u8 **)(p + 0xB4) = *(u8 **)(arg0 + 8);
+        *(u8 **)(arg0 + 8) = p;
+    }
+    return p;
+}
 
 void func_80021ED8(u8 *arg0) {
     u8 *temp_v1;
