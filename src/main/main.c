@@ -960,7 +960,21 @@ void func_800162E4(u8 *arg0, s32 arg1) {
     memcpy(*temp_v0, arg1 + (*(s32*)((u8*)(arg0) + 0)), temp_s0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001636C);
+void func_8001636C(u8 *arg0, s32 arg1) {
+    u8 *temp_s0;
+    u8 *temp_v0;
+
+    temp_v0 = (*(s32*)((u8*)(arg0) + 12));
+    temp_s0 = temp_v0 + ((*(s32*)((u8*)(temp_v0) + 60)) + 0x3C) + ((arg1 * 0x10) + 4);
+    if ((*(s32*)((u8*)(temp_s0) + 8)) != 0) {
+        func_800110A8((void *)(*(s32*)((u8*)(temp_s0) + 8)), (Heap *)&D_8004E0F0);
+        (*(s32*)((u8*)(temp_s0) + 12)) = 0;
+    } else if ((*(s32*)((u8*)(temp_s0) + 12)) != 0) {
+        func_80012F04((void *)(*(s32*)((u8*)(temp_s0) + 12)));
+        (*(s32*)((u8*)(temp_s0) + 12)) = 0;
+    }
+}
+
 
 void func_800163E0(u8 *arg0, s32 arg1) {
     s32 temp_a1;
