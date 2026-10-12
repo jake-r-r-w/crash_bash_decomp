@@ -1647,7 +1647,9 @@ void func_8001C0F0(s32 p, MorphModel *model, u16 *ia, u16 *ib, s16 (*verts)[3]) 
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001C1E0);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001C270);
+void func_8001C270(EXTengine *eng) {
+    eng->kill(eng);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001C298);
 
