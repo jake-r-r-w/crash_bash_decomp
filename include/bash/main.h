@@ -458,6 +458,7 @@ extern s32 D_80064478[];
 extern u8 D_800527C4[];
 extern u8 D_80052A54[];
 extern s32 D_80064414;
+extern s32 D_800569AC;
 extern s32 D_8006559C;
 extern s32 D_800655A4;
 extern s32 D_800655B4;
@@ -958,5 +959,7 @@ void func_8002BCB0(s32 *arg0);
 void func_80020BA8(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4);
 
 MemBlock *func_80011EF0(Heap *heap);
+
+s32 func_8002A2EC(s32 r, s32 g, s32 b);
 
 #endif /* BASH_MAIN_H */

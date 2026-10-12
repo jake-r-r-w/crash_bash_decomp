@@ -4370,7 +4370,25 @@ void func_8002A2DC(void) {
 void func_8002A2E4(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002A2EC);
+s32 func_8002A2EC(s32 r, s32 g, s32 b) {
+    s32 t;
+    s32 d;
+
+    d = D_800569AC;
+    if (d != 0) {
+        t = 0x1000 - d;
+        r *= t;
+        g *= t;
+        b *= t;
+        r >>= 12;
+        r &= 0xFF;
+        g >>= 12;
+        g &= 0xFF;
+        b >>= 12;
+        b &= 0xFF;
+    }
+    return (r << 16) | (g << 8) | b;
+}
 
 void func_8002A35C(u8 *arg0) {
     u8 *temp_a0;
