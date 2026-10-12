@@ -559,6 +559,19 @@ extern s32 D_8005B690; /* frame counter: its low bit picks the frame buffer */
 void func_8001A6D4(void *arg0, u32 hidden);
 s32 func_8001A0D8(void *arg0, u32 flags);
 void *func_80019094(void *arg0, s32 arg1);
+s32 func_8001AF2C(void *arg0);
+
+typedef struct {
+    u8 unk0[0x10];
+    s32 off; /* 0x10: byte offset from this field to a block */
+    s32 runs; /* 0x14: see MorphModel */
+    u8 unk18[0x1C];
+} ModelEntry;
+
+typedef struct {
+    u8 unk0[0x24];
+    ModelEntry entries[1]; /* 0x24, stride 0x34 */
+} ModelSet;
 void func_800193A8(POLY_GT3 *poly, SVECTOR *v, u8 *runs);
 extern u8 D_80053694[];
 void *AllocExtension(void *owner, s32 size, s32 id, void *tmpl);
@@ -844,5 +857,7 @@ void func_80013CA4(void);
 s32 func_800159C4(s32 arg0, u8 *arg1);
 
 void func_80016F54(u8 *arg0);
+
+void func_8001CE00(s32 arg0, ModelSet *set, s32 arg2);
 
 #endif /* BASH_MAIN_H */
