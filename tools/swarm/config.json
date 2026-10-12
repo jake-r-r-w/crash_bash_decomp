@@ -2,6 +2,8 @@
   "workers": 3,
   "permuters": 2,
   "permuteMinutes": 10,
+  "batchMax": 6,
+  "maxQueued": 3,
   "seg": "main/main",
   "maxFunctions": 20,
   "maxMinutes": 240,

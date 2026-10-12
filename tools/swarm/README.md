@@ -71,8 +71,16 @@ dontAsk`: anything outside the allowed tools is denied, never prompted. Options 
 - **Patch checks:** only `src/` and `include/`, under 64 KB, removes exactly the target's
   `INCLUDE_ASM` line and adds none, no inline asm. Then the orchestrator runs `decomp.py try`
   itself; a worker's claim of a match is not trusted.
-- **The gate is unchanged:** every commit is made by `decomp.py done --commit` (scope, lint,
-  function, full build), one function per commit, in one integrator at a time.
+- **The gate, batched:** every commit is made by `decomp.py done --commit`, one function per
+  commit, in one integrator. Matches waiting for the gate go through together (up to
+  `--batch-max`, 6): each gets `done --defer-build` (scope, lint, function check, its own commit),
+  then one `decomp.py verify` checks the batch's final state and only then is the batch pushed.
+  If that build fails, nothing is pushed and each function goes through the full `done` alone.
+  Batching only happens when the branch's `decomp.py` has `--defer-build`.
+- **Gate builds get the CPU:** running permuter containers are paused (`docker pause`) while
+  the gate works and resumed after.
+- **Back-pressure:** no new functions are leased while more than `--max-queued` (3) matches wait
+  for the gate, so workers don't run ahead into conflicts.
 - **No duplicate work:** a function is leased to one worker; identical copies (same fingerprint)
   are never leased together. `history.json` stops a function being tried more than
   `--max-attempts` (2) across runs (`--retry-failed` to override).

@@ -1021,10 +1021,15 @@ def cmd_done(a):
     if not check_function(key, e, proj, name, quiet=True)[0]:
         print(f"{name} does not match: nothing recorded or committed")
         sys.exit(1)
-    ok, msg = verify_build(proj, funcs)
-    if not ok:
-        print(f"{name} matches alone, but the full build does not:\n{msg}")
-        sys.exit(1)
+    if a.defer_build:
+        # batch mode (tools/swarm): the caller runs `decomp.py verify` once after the batch's last
+        # function and publishes none of the batch's commits unless it passes
+        print(f"{name}: full build deferred to the end of the batch")
+    else:
+        ok, msg = verify_build(proj, funcs)
+        if not ok:
+            print(f"{name} matches alone, but the full build does not:\n{msg}")
+            sys.exit(1)
     items = [(key, e, name)]
     record_matches(items, funcs)
     # the same code elsewhere (other overlays, copies in the exe) takes the same C
@@ -1035,8 +1040,9 @@ def cmd_done(a):
         if copies:
             notes.append("Identical copies matched with the same C:\n"
                          + "\n".join(f"- {n} ({ce['seg']})" for _, ce, n, *_ in copies))
-        commit_match(items, notes + ["Validated-by: decomp.py done (scope, lint, function, full build)"]
-                     + (a.trailer or []))
+        gate = ("scope, lint, function; full build once for the batch" if a.defer_build
+                else "scope, lint, function, full build")
+        commit_match(items, notes + [f"Validated-by: decomp.py done ({gate})"] + (a.trailer or []))
 
 
 def record_matches(items, funcs, via=None):
@@ -3015,6 +3021,9 @@ def main():
     p.add_argument("--note", help="what made it match (types, statement order, ...): goes in the commit body")
     p.add_argument("--hack", help="why a register pin / asm(\"\") barrier is needed (required if used)")
     p.add_argument("--trailer", action="append", help="line appended to the commit message (repeatable)")
+    p.add_argument("--defer-build", action="store_true",
+                   help="batch mode (tools/swarm): skip the full build; run `decomp.py verify` after the "
+                        "batch and publish none of its commits unless it passes")
     p.set_defaults(fn=cmd_done)
     sub.add_parser("verify", help="clean rebuild and byte compare").set_defaults(fn=cmd_verify)
     sub.add_parser("progress", help="refresh docs/ dashboard and history").set_defaults(fn=cmd_progress)

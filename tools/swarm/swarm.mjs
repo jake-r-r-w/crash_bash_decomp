@@ -131,7 +131,10 @@ function dockerKill(filter, under) {
         if (sp > 0 && mounts.split('|').some(m => m && norm(m).startsWith(root))) ids.add(id.slice(0, 12));
       }
   }
-  if (ids.size) sh('docker', ['kill', ...ids]);
+  if (ids.size) {
+    sh('docker', ['unpause', ...ids]);   // a paused container (permuter during a gate build) refuses kill
+    sh('docker', ['kill', ...ids]);
+  }
   return ids.size;
 }
 
@@ -332,7 +335,7 @@ class Swarm {
 
   activeJobs() {
     return [...[...this.slots, ...this.pslots].map(s => s.job).filter(Boolean), ...this.permQueue,
-            ...this.integQueue, ...(this.integrating ? [this.integrating] : [])];
+            ...this.integQueue, ...(this.integrating || [])];
   }
 
   nextJob(peek = false) {
@@ -506,6 +509,8 @@ ${job.permuterDiff}
     if (session.is_error && !patch.trim() && !res.status)
       return this.fail(slot, job, `claude: ${String(session.result || session.terminal_reason).slice(0, 200)}`);
     if (!patch.trim()) return this.notMatched(slot, job, res.note || (job.timedOut ? 'timed out' : 'no change'));
+    // a park that left edits behind (a header type it added): a park, not a bad patch
+    if (res.status === 'parked') return this.notMatched(slot, job, `${res.note || 'parked'} (its leftover edits dropped)`);
     fs.writeFileSync(path.join(job.dir, 'patch.diff'), patch);
     const errs = this.checkPatch(patch, f);
     if (errs.length) return this.fail(slot, job, `patch refused: ${errs.join('; ')}`);
@@ -546,7 +551,7 @@ ${job.permuterDiff}
       fs.rmSync(path.join(ps.dir, 'build', 'permuter', f.name), { recursive: true, force: true });
       this.log(`${ps.id} permuting ${f.name} for ${this.o.permuteMinutes} min (${this.permCpus} cpus)`);
       const r = await this.dk(ps.dir, ['make', 'permute', `FUNC=${f.name}`, `MINUTES=${this.o.permuteMinutes}`], ps.id,
-                              { cpus: this.permCpus, minutes: this.o.permuteMinutes + 5 });
+                              { cpus: this.permCpus, minutes: this.o.permuteMinutes + 20 });
       fs.writeFileSync(path.join(job.dir, 'permute.txt'), r.out);
       if (this.stopping) {          // a stop cuts permuter runs short: no worker would port the result
         this.finished.add(f.key);
@@ -612,69 +617,118 @@ ${job.permuterDiff}
     this.log(`${job.f.name}: FAILED: ${why} (${this.consecutiveFailures} in a row)`);
   }
 
-  // ---- the single integrator: apply, validate and commit with decomp.py done, push
-  async integrate(job) {
-    const { f } = job;
-    this.integrating = job;
+  // ---- the single integrator. A batch: each match through decomp.py done (scope, lint, function)
+  // with its own commit, then one full build for the whole batch (decomp.py verify), then one push.
+  // If the batch's build fails, nothing is pushed and its functions go through the full gate singly.
+  async integrateBatch(jobs) {
+    this.integrating = jobs;
+    const batch = jobs.length > 1;
+    const paused = this.pausePermuters();         // the gate's builds get every core
     try {
       if (!this.syncInteg()) throw new Error(`can't fetch ${this.o.remote}/${this.o.branch}`);
-      const ap = git(this.integ, 'apply', '--3way', '--whitespace=nowarn', job.patch);
-      if (ap.code) {
-        resetClone(this.integ, 'HEAD');
-        this.stats.conflicts++;
-        this.record(job, 'conflict', (ap.err || ap.out).trim().split('\n').slice(-2).join(' '));
-        if (job.conflicts++ < 1 && !this.stopping) {
-          this.log(`${f.name}: patch conflicts with newer commits; it goes back in the queue`);
-          this.retry.push({ f, model: job.model, attempt: job.attempt, notes: job.notes, retry: true, conflicts: job.conflicts });
-        } else this.fail(null, job, 'patch conflicts twice');
-        return;
+      const base = gitOk(this.integ, 'rev-parse', 'HEAD');
+      if (batch) this.log(`gate: batch of ${jobs.length}: ${jobs.map(j => j.f.name).join(', ')}`);
+      const passed = [];
+      for (const job of jobs) {
+        if (this.stopping === 'now') return;
+        if (await this.gateOne(job, batch)) passed.push(job);
       }
-      const trailers = [...this.o.trailers, `Swarm-Run: ${this.id} (${job.model})`];
-      const args = ['python3', 'tools/scripts/decomp.py', 'done', f.name, '--commit',
-                    '--note', job.note || 'matched by a swarm worker', ...trailers.flatMap(t => ['--trailer', t])];
-      const before = gitOk(this.integ, 'rev-parse', 'HEAD');
-      const r = await this.dk(this.integ, args);
-      fs.writeFileSync(path.join(job.dir, 'done.txt'), r.out);
-      const after = gitOk(this.integ, 'rev-parse', 'HEAD');
-      if (this.stopping === 'now') return;
-      if (r.code !== 0 || after === before) {
-        resetClone(this.integ, before);
-        const why = r.out.trim().split('\n').slice(-6).join('\n');
-        // the bytes matched (try said so): what's left is usually fixable (a header, lint), once
-        if (!job.gateFix && !this.stopping) {
-          this.record(job, 'gate-refused', why.replace(/\n/g, ' '));
-          this.log(`${f.name}: done refused it; back to a worker to fix: ${why.split('\n').pop()}`);
-          this.retry.unshift({ f, model: job.model, attempt: job.attempt, retry: true, permuted: job.permuted,
-                               notes: job.notes, startPatch: job.patch, gateFix: why });
+      if (!passed.length || this.stopping === 'now') return;
+      if (batch) {
+        const v = await this.dk(this.integ, ['python3', 'tools/scripts/decomp.py', 'verify']);
+        fs.writeFileSync(path.join(passed[0].dir, 'batch-verify.txt'), v.out);
+        if (this.stopping === 'now') return;
+        if (v.code !== 0 || !/^OK/m.test(v.out)) {
+          resetClone(this.integ, base);
+          this.log(`gate: the batch's full build failed (${v.out.trim().split('\n').pop()}); ` +
+                   `redoing ${passed.length} one at a time with the full gate`);
+          for (const job of passed.reverse()) this.integQueue.unshift(Object.assign(job, { single: true }));
           return;
         }
-        return this.fail(null, job, `done refused: ${why.replace(/\n/g, ' ')}`);
       }
-      const dirty = git(this.integ, 'status', '--porcelain').out.split('\n')
-        .filter(l => l.trim() && !l.endsWith('tools/dk'));   // our copy of tools/dk
-      if (dirty.length) this.log(`${f.name}: note: done left changes behind, discarded: ${dirty.join(', ')}`);
-      resetClone(this.integ, 'HEAD');
       const push = git(this.integ, 'push', '-q', this.remoteUrl, `HEAD:refs/heads/${this.o.branch}`);
       if (push.code) {
         // someone pushed since our fetch: run the gate again on top of their commits
-        if (/rejected|non-fast-forward|fetch first/i.test(push.err) && (job.pushRetries = (job.pushRetries || 0) + 1) <= 3) {
-          this.log(`${f.name}: ${this.o.branch} moved on while the gate ran; redoing it on the new tip`);
-          this.integQueue.unshift(job);
+        if (/rejected|non-fast-forward|fetch first/i.test(push.err) && passed.every(j => (j.pushRetries = (j.pushRetries || 0) + 1) <= 3)) {
+          this.log(`gate: ${this.o.branch} moved on while the gate ran; redoing ${passed.length} on the new tip`);
+          this.integQueue.unshift(...passed);
           return;
         }
         this.stopping ||= 'graceful';
-        return this.fail(null, job, `push to ${this.o.remote}/${this.o.branch} failed, stopping: ${push.err.trim()}`);
+        for (const job of passed) this.fail(null, job, `push to ${this.o.remote}/${this.o.branch} failed, stopping: ${push.err.trim()}`);
+        return;
       }
       this.updateLocal();
-      this.stats.matched++;
-      this.consecutiveFailures = 0;
-      this.finished.add(f.key);
-      this.record(job, 'matched', `${gitOk(this.integ, 'rev-parse', '--short', 'HEAD')} ${job.note}`);
-      this.log(`${f.name}: COMMITTED ${gitOk(this.integ, 'log', '-1', '--format=%h %s')}`);
+      for (const job of passed) {
+        this.stats.matched++;
+        this.consecutiveFailures = 0;
+        this.finished.add(job.f.key);
+        this.record(job, 'matched', `${job.commit} ${job.note}`);
+        this.log(`${job.f.name}: COMMITTED ${job.commit} ${job.subject}`);
+      }
       await this.refreshQueue();   // done fills identical copies too
     } finally {
+      this.unpause(paused);
       this.integrating = null;
     }
+  }
+
+  // one match through `done --commit` on top of the integration clone; true if it committed
+  async gateOne(job, defer) {
+    const { f } = job;
+    const ap = git(this.integ, 'apply', '--3way', '--whitespace=nowarn', job.patch);
+    if (ap.code) {
+      resetClone(this.integ, 'HEAD');
+      this.stats.conflicts++;
+      this.record(job, 'conflict', (ap.err || ap.out).trim().split('\n').slice(-2).join(' '));
+      if (job.conflicts++ < 1 && !this.stopping) {
+        this.log(`${f.name}: patch conflicts with newer commits; it goes back in the queue`);
+        this.retry.push({ f, model: job.model, attempt: job.attempt, notes: job.notes, retry: true, conflicts: job.conflicts });
+      } else this.fail(null, job, 'patch conflicts twice');
+      return false;
+    }
+    const trailers = [...this.o.trailers, `Swarm-Run: ${this.id} (${job.model})`];
+    const args = ['python3', 'tools/scripts/decomp.py', 'done', f.name, '--commit',
+                  '--note', job.note || 'matched by a swarm worker', ...trailers.flatMap(t => ['--trailer', t]),
+                  ...(defer ? ['--defer-build'] : [])];
+    const before = gitOk(this.integ, 'rev-parse', 'HEAD');
+    const r = await this.dk(this.integ, args);
+    fs.writeFileSync(path.join(job.dir, 'done.txt'), r.out);
+    const after = gitOk(this.integ, 'rev-parse', 'HEAD');
+    if (this.stopping === 'now') return false;
+    if (r.code !== 0 || after === before) {
+      resetClone(this.integ, before);
+      const why = r.out.trim().split('\n').slice(-6).join('\n');
+      // the bytes matched (try said so): what's left is usually fixable (a header, lint), once
+      if (!job.gateFix && !this.stopping) {
+        this.record(job, 'gate-refused', why.replace(/\n/g, ' '));
+        this.log(`${f.name}: done refused it; back to a worker to fix: ${why.split('\n').pop()}`);
+        this.retry.unshift({ f, model: job.model, attempt: job.attempt, retry: true, permuted: job.permuted,
+                             notes: job.notes, startPatch: job.patch, gateFix: why });
+        return false;
+      }
+      this.fail(null, job, `done refused: ${why.replace(/\n/g, ' ')}`);
+      return false;
+    }
+    const dirty = git(this.integ, 'status', '--porcelain').out.split('\n')
+      .filter(l => l.trim() && !l.endsWith('tools/dk'));   // our copy of tools/dk
+    if (dirty.length) this.log(`${f.name}: note: done left changes behind, discarded: ${dirty.join(', ')}`);
+    resetClone(this.integ, 'HEAD');
+    job.commit = gitOk(this.integ, 'rev-parse', '--short', 'HEAD');
+    job.subject = gitOk(this.integ, 'log', '-1', '--format=%s');
+    return true;
+  }
+
+  // freeze running permuter containers while the gate builds (docker pause), and thaw them after
+  pausePermuters() {
+    const ids = this.pslots.filter(p => p.job).flatMap(p =>
+      sh('docker', ['ps', '-q', '--filter', `label=${LABEL}-slot=${this.id}-${p.id}`]).out.split(/\s+/).filter(Boolean));
+    if (ids.length) sh('docker', ['pause', ...ids]);
+    return ids;
+  }
+
+  unpause(ids) {
+    if (ids.length) sh('docker', ['unpause', ...ids]);
   }
 
   // ---- stop switch
@@ -714,7 +768,7 @@ ${job.permuterDiff}
                                       minutes: s.job ? +((Date.now() - s.job.started) / 60e3).toFixed(1) : null })),
       permuters: this.pslots.map(s => ({ slot: s.id, func: s.job?.f.name || null })),
       permuteWaiting: this.permQueue.map(j => j.f.name),
-      integrating: this.integrating?.f.name || null, waiting: this.integQueue.map(j => j.f.name),
+      integrating: this.integrating ? this.integrating.map(j => j.f.name).join(', ') : null, waiting: this.integQueue.map(j => j.f.name),
     });
   }
 
@@ -740,11 +794,18 @@ ${job.permuterDiff}
           exitCode = 130;
           break;
         }
-        if (!this.integrating && this.integQueue.length)
-          this.integrate(this.integQueue.shift()).catch(e => {
+        if (!this.integrating && this.integQueue.length) {
+          // a batch of up to --batch-max; a function from a failed batch goes through alone
+          let n = 1;
+          // only if the branch's own gate has batch mode (done --defer-build)
+          const batchable = fs.readFileSync(path.join(this.integ, 'tools/scripts/decomp.py'), 'utf8').includes('--defer-build');
+          if (batchable && !this.integQueue[0].single)
+            while (n < Math.min(this.o.batchMax, this.integQueue.length) && !this.integQueue[n].single) n++;
+          this.integrateBatch(this.integQueue.splice(0, n)).catch(e => {
             this.log(`integration error: ${e.stack || e}`);
             this.stopping ||= 'graceful';
           });
+        }
         if (this.stopping) {
           // no worker will port permuter results: drop waiting runs and cut running ones short
           for (const job of this.permQueue.splice(0)) {
@@ -760,7 +821,8 @@ ${job.permuterDiff}
           for (const ps of this.pslots)
             if (!ps.job && this.permQueue.length)
               this.runPermute(ps, this.permQueue.shift()).catch(e => this.log(`permuter error: ${e.stack || e}`));
-        if (!this.stopping)
+        // back-pressure: no new work while more matches wait for the gate than --max-queued
+        if (!this.stopping && this.integQueue.length <= this.o.maxQueued)
           for (const slot of this.slots) {
             if (slot.job || (this.leases >= this.o.maxFunctions && !this.retry.length)) continue;
             const job = this.nextJob();
