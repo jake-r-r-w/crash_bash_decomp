@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 531/2550 game functions matched (main.exe 267/574), 5 parked. `make check`
+- 533/2550 game functions matched (main.exe 269/574), 5 parked. `make check`
   OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
@@ -193,6 +193,11 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-12:** Short follow-on run: matched `func_80013688` (wrapper of
+  `func_80013034`) and `func_80011BC0` (tail-recursive walk to the next free
+  heap block; the NULL return goes last). `func_80012FFC` (sum of
+  `D_80050628` fields) is next in the queue, untried: start from the m2c
+  draft with a local for `unkC != 0`.
 - **2026-10-12:** One-hour run: 21 matches in `main.exe` (`func_8001361C`, `func_80012E28`,
   `func_8001C34C`, `func_80028158`, `func_80026FCC`, `func_80026D9C`,
   `func_8002120C`, `func_8001D5D0`, `func_8002D094`, `func_80021E60`,
