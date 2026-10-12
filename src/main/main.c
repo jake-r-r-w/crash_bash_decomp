@@ -692,7 +692,25 @@ void func_80013C94(u8 *arg0, s32 arg1) {
     (*(s32*)((u8*)(arg0) + 44)) = 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80013CA4);
+void func_80013CA4(void) {
+    PadState *pad;
+    s32 i;
+
+    pad = D_80051338;
+    i = 7;
+    do {
+        pad->unk0 = 0;
+        pad->unk4 = 0;
+        *(s32 *)&pad->unk2A[0x30 - 0x2A + 0x14] = 0;
+        *(s32 *)&pad->unk2A[0x30 - 0x2A + 0x18] = 0;
+        *(s32 *)&pad->unk2A[0x30 - 0x2A + 0x8] = 0;
+        *(s32 *)&pad->unk2A[0x30 - 0x2A + 0xC] = 0;
+        *(s32 *)&pad->unk2A[0x30 - 0x2A] = 0;
+        pad++;
+    } while (--i != -1);
+    D_800515FC = -1;
+    D_80051604 = 0;
+}
 
 void func_80013CFC(s32 pad, u8 *out) {
     if (pad & 0xA0) {

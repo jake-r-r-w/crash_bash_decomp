@@ -839,4 +839,6 @@ MemBlock *func_80011F74(Heap *heap);
 
 void func_80013C24(void);
 
+void func_80013CA4(void);
+
 #endif /* BASH_MAIN_H */
