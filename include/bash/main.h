@@ -550,6 +550,11 @@ extern CdlLOC D_8006EA14;
 void func_80016D98();
 void func_80016188();
 extern RECT *D_8005B698;
+extern s32 D_800335BC;
+extern u32 D_80063AF8[];
+extern s32 D_800643E8;
+extern s32 D_800643EC;
+extern s32 D_800643F0;
 void *func_800112A4(void *base, s32 offset, u8 *arg2);
 void func_80014540(u8 *arg0, RECT *rect);
 void func_8002ACA0(s32 id, s32 arg1);
@@ -869,5 +874,9 @@ void func_8001CE00(s32 arg0, ModelSet *set, s32 arg2);
 void func_80025F44(EXTengine *eng);
 
 void func_80026858(void *owner, s32 size, s32 id, Words3 *tmpl);
+
+void func_80028BF0(void);
+
+void func_80028C94(void);
 
 #endif /* BASH_MAIN_H */

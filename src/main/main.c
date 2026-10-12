@@ -4015,9 +4015,21 @@ s32 func_80028BC8(u8 **arg0) {
     return n;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80028BF0);
+void func_80028BF0(void) {
+    D_800335BC = 0x2626001F;
+    FntLoad(0x380, 0x100);
+    D_800643E8 = FntOpen(0x10, 0x10, D_8005B698->w - 8, 0xE0, 0, 0x800);
+    D_800643EC = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
+    D_800643F0 = LoadClut2(D_80063AF8, 0x380, 0x11F) & 0xFFFF;
+}
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80028C94);
+void func_80028C94(void) {
+    D_800335BC = 0x2626001F;
+    FntLoad(0x380, 0x100);
+    D_800643E8 = FntOpen(0x10, 0x10, D_8005B698->w - 8, 0xE0, 0, 0x800);
+    D_800643EC = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
+    D_800643F0 = LoadClut2(D_80063AF8, 0x380, 0x11F) & 0xFFFF;
+}
 
 void func_80028D38(void) {
 }

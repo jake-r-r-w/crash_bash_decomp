@@ -1971,10 +1971,13 @@
   "status": "matched"
  },
  "80028BF0": {
-  "auto_failed": "in-file"
+  "matched_at": "2026-10-12T13:05:03Z",
+  "status": "matched"
  },
  "80028C94": {
-  "auto_failed": "in-file"
+  "matched_at": "2026-10-12T13:05:33Z",
+  "status": "matched",
+  "via": "copy"
  },
  "80028D40": {
   "auto_failed": "types"
