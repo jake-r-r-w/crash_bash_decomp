@@ -728,7 +728,8 @@ ${job.permuterDiff}
       for (const d of fs.readdirSync(path.join(this.paths.results, name)).filter(d => d.endsWith(`-${runId}`))) {
         const dir = path.join(this.paths.results, name, d), f = byName.get(name);
         const tried = path.join(dir, 'try.txt');
-        if (!f || fs.existsSync(path.join(dir, 'done.txt')) || !fs.existsSync(tried) ||
+        // not in the queue = matched already; done.txt alone proves nothing (a stop may cut a batch)
+        if (!f || !fs.existsSync(tried) ||
             !/^MATCH /m.test(fs.readFileSync(tried, 'utf8'))) continue;
         const res = readJson(path.join(dir, 'result.json'), {});
         this.integQueue.push({ f, model: 'resumed', attempt: 1, notes: [], conflicts: 0, dir,
