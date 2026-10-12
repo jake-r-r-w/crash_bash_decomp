@@ -4641,7 +4641,14 @@ void func_8002BBB4(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002BBEC);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002BCB0);
+void func_8002BCB0(s32 *arg0) {
+    SpuIsTransferCompleted(1);
+    func_8002ACA0(arg0[1], 1);
+    SsVabClose((s16)arg0[1]);
+    func_800110A8((void *)arg0[0], (Heap *)D_8004E0F0);
+    arg0[0] = 0;
+    arg0[1] = -1;
+}
 
 void func_8002BD0C(s32 arg0) {
     if (D_800654BC < 6) {

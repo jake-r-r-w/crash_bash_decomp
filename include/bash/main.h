@@ -953,4 +953,6 @@ void func_800102F8(void);
 
 s32 func_80012D80(s32 *arg0, s32 *arg1);
 
+void func_8002BCB0(s32 *arg0);
+
 #endif /* BASH_MAIN_H */
