@@ -719,6 +719,25 @@ ${job.permuterDiff}
     return true;
   }
 
+  // --resume RUN: matches an earlier run verified with `try` but stopped before gating go straight
+  // to the gate (still unmatched ones only: the queue lists those)
+  resumeFrom(runId) {
+    const byName = new Map(this.queue.map(f => [f.name, f]));
+    let n = 0;
+    for (const name of fs.existsSync(this.paths.results) ? fs.readdirSync(this.paths.results) : [])
+      for (const d of fs.readdirSync(path.join(this.paths.results, name)).filter(d => d.endsWith(`-${runId}`))) {
+        const dir = path.join(this.paths.results, name, d), f = byName.get(name);
+        const tried = path.join(dir, 'try.txt');
+        if (!f || fs.existsSync(path.join(dir, 'done.txt')) || !fs.existsSync(tried) ||
+            !/^MATCH /m.test(fs.readFileSync(tried, 'utf8'))) continue;
+        const res = readJson(path.join(dir, 'result.json'), {});
+        this.integQueue.push({ f, model: 'resumed', attempt: 1, notes: [], conflicts: 0, dir,
+                               patch: path.join(dir, 'patch.diff'), note: res.note || '' });
+        n++;
+      }
+    this.log(`resumed ${n} verified match(es) from run ${runId} into the gate queue`);
+  }
+
   // freeze running permuter containers while the gate builds (docker pause), and thaw them after
   pausePermuters() {
     const ids = this.pslots.filter(p => p.job).flatMap(p =>
@@ -784,6 +803,7 @@ ${job.permuterDiff}
     try {
       this.setupInteg();
       await this.refreshQueue();
+      if (this.o.resume) this.resumeFrom(String(this.o.resume));
       this.log(`run ${this.id}: ${this.o.workers} workers, ${this.o.permuters} permuters, ${this.queue.length} candidates` +
                `${this.o.only ? ` (--only ${this.o.only.join(',')})` : ` in ${this.o.seg || 'all game code'}`}` +
                `${this.o.dryRun ? ', DRY RUN' : ''}${this.o.workerCmd ? `, worker command: ${this.o.workerCmd}` : ''}`);
