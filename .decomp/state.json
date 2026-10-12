@@ -1058,7 +1058,9 @@
   "status": "matched"
  },
  "8001DD20": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-12T09:18:39Z",
+  "started": "2026-10-12T09:16:21Z",
+  "status": "matched"
  },
  "8001DD50": {
   "auto_failed": "compile"

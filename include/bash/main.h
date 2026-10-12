@@ -739,4 +739,6 @@ void func_80022984(void);
 
 void func_80016E5C(u8 *arg0, u8 *arg1);
 
+s32 func_8001DD20(s32 *arg0);
+
 #endif /* BASH_MAIN_H */

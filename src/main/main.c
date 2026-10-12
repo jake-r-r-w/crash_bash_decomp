@@ -2061,7 +2061,16 @@ subengine *func_8001DCD4(s32 i, s32 val) {
     return NULL;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001DD20);
+s32 func_8001DD20(s32 *arg0) {
+    s32 v;
+
+    v = ((s32 *)(arg0[1] + (s32)arg0))[1];
+    if (v == 0) {
+        return 0;
+    }
+    return v + arg0[0];
+}
+
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001DD50);
 
