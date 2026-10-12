@@ -875,6 +875,18 @@ def cmd_next(a):
     jsave(P_STATE, st)
 
 
+def cmd_queue(a):
+    """The next targets as JSON, in `next` order, marking nothing (for tools/swarm)."""
+    proj, funcs = need_proj(), need_funcs()
+    stat, st = statuses(funcs)
+    syms = sym_names()
+    out = [{"key": k, "name": cur_name(k, e, syms), "seg": e["seg"], "size": e["size"],
+            "src": e.get("src"), "fp": e.get("fp") if e["size"] > 8 else None,
+            "tries": st.get(k, {}).get("tries", 0), "note": st.get(k, {}).get("note", "")}
+           for k, e in pick_targets(funcs, stat, st, proj, a.seg, a.count)]
+    print(json.dumps(out))
+
+
 def cmd_m2c(a):
     funcs = need_funcs()
     key, e = find_func(funcs, a.func)
@@ -2940,6 +2952,10 @@ def main():
     p.add_argument("--max-lines", type=int, default=120)
     p.add_argument("--asm-lines", type=int, default=80)
     p.set_defaults(fn=cmd_next)
+    p = sub.add_parser("queue", help="the next targets as JSON, marking nothing (tools/swarm)")
+    p.add_argument("--seg")
+    p.add_argument("--count", type=int, default=50)
+    p.set_defaults(fn=cmd_queue)
     p = sub.add_parser("m2c", help="print m2c draft")
     p.add_argument("func")
     p.set_defaults(fn=cmd_m2c)

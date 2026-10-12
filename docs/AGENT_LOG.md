@@ -193,6 +193,16 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-12:** Built the swarm orchestrator on branch `swarm-orchestrator`
+  (`tools/swarm/`, README there): parallel Claude workers in clones, one
+  serial integrator through `done --commit`, stop switch (`stop`, `stop
+  --now`, STOP file), patch checks, its own `try`, circuit breakers. Added
+  `decomp.py queue` and `DK_DOCKER_ARGS` in `tools/dk`. Tested end to end
+  with fake workers (replayed two past matches, hard and graceful stop,
+  timeout, escalation, a cheating patch, a false match claim). Not yet run
+  with real `claude` workers: the CLI isn't on this machine's PATH. The
+  full build in `done` takes ~2.5 min, which caps integration at ~25/hour.
+
 - **2026-10-12:** Short follow-on run: matched `func_80013688` (wrapper of
   `func_80013034`) and `func_80011BC0` (tail-recursive walk to the next free
   heap block; the NULL return goes last). `func_80012FFC` (sum of
