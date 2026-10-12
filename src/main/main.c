@@ -295,7 +295,18 @@ void func_80011B74(u8 *arg0, u8 *arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80011BC0);
+MemBlock *func_80011BC0(MemBlock *blk) {
+    if (blk->size != 0) {
+        blk = (MemBlock *)((u32 *)(blk + 1) + blk->size);
+        if (blk->owner != NULL) {
+            return func_80011BC0(blk);
+        }
+        return blk;
+    }
+    return NULL;
+}
+
+
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80011BF8);
 

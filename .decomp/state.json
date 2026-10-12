@@ -130,7 +130,9 @@
   "via": "auto"
  },
  "80011BC0": {
-  "auto_failed": "m2c"
+  "matched_at": "2026-10-12T10:01:11Z",
+  "started": "2026-10-12T09:58:55Z",
+  "status": "matched"
  },
  "80011BF8": {
   "auto_failed": "types"
