@@ -774,7 +774,9 @@ s32 func_80015284(s32 a, s32 b, s32 t) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800152A8);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80015304);
+s32 func_80015304(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    return ((arg1 - arg0) * arg3) / arg2 + arg0;
+}
 
 s32 func_8001534C(u8 *s) {
     s32 sum;

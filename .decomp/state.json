@@ -443,7 +443,8 @@
  },
  "80015304": {
   "auto_diff": 15,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-12T12:03:31Z",
+  "status": "matched"
  },
  "8001534C": {
   "auto_diff": 9,
