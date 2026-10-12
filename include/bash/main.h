@@ -570,6 +570,8 @@ extern SfxPool SfxVoicePool;
 extern s8 SfxTable[][2]; /* by sound id; [1] == -1: no sound */
 void func_8002B8F4(s32 *voice);
 extern s32 D_800637B4;
+extern u8 D_8006EA08;
+void func_80034AEC(void);
 extern s32 D_8005AA48;
 extern void *D_80058B78;
 extern RECT D_8005B640;
@@ -1000,5 +1002,7 @@ s32 func_80013488(s32 arg0, s32 arg1, s32 arg2);
 void func_8001C448(PosDst *arg0, s32 arg1, s32 arg2);
 
 void func_8001DD50(void *arg0, void *arg1);
+
+s32 func_80027944(void);
 
 #endif /* BASH_MAIN_H */

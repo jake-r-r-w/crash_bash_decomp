@@ -4289,7 +4289,19 @@ void func_80027908(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80027944);
+s32 func_80027944(void) {
+    s32 r;
+    r = D_800637B4;
+    if (r > 0) {
+        D_800637B4 = CdReadSync(1, 0);
+        if (D_800637B4 == 0) {
+            CdControl(1, 0, &D_8006EA08);
+            func_80034AEC();
+        }
+        r = D_800637B4;
+    }
+    return r;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800279A4);
 
