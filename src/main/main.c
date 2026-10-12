@@ -2760,9 +2760,17 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_800219B8);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80021A1C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80021AF0);
+void func_80021AF0(s32 *arg0, s32 *arg1, s16 *arg2, s32 arg3, s32 arg4) {
+    arg2[0] = func_800152A8(arg0[0], arg1[0], arg3, arg4);
+    arg2[1] = func_800152A8(arg0[1], arg1[1], arg3, arg4);
+    arg2[2] = func_800152A8(arg0[2], arg1[2], arg3, arg4);
+}
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80021B88);
+void func_80021B88(s32 *arg0, s32 *arg1, s16 *arg2, s32 arg3, s32 arg4) {
+    arg2[0] = func_80015304(arg0[0], arg1[0], arg3, arg4);
+    arg2[1] = func_80015304(arg0[1], arg1[1], arg3, arg4);
+    arg2[2] = func_80015304(arg0[2], arg1[2], arg3, arg4);
+}
 
 void func_80021C20(u8 *arg0, u8 *arg1, u8 *arg2, s32 arg3, s32 arg4) {
     (*(s32*)((u8*)(arg2) + 0)) = func_80015304((*(s32*)((u8*)(arg0) + 0)), (*(s32*)((u8*)(arg1) + 0)), arg3, arg4);
