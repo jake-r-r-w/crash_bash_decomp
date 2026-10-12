@@ -4558,7 +4558,18 @@ void func_8002BA10(s32 arg0, VabSlot *slot) {
     slot->handle = func_80013688(arg0, func_8002ADD4, slot);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002BA44);
+void func_8002BA44(void) {
+    SpuIsTransferCompleted(1);
+    if (D_800654C0 != NULL || D_800654C4 != NULL) {
+        if (SpuIsTransferCompleted(SPU_TRANSFER_PEEK) == 1) {
+            D_800654C4->id = D_800654C8;
+            func_800112A4(D_800654C0, D_800654C0->head, D_8004E0F0);
+            func_8002ACA0(D_800654C4->id, 0);
+            D_800654C0 = NULL;
+            D_800654C4 = NULL;
+        }
+    }
+}
 
 void func_8002BAE8(void) {
     if ((D_800654C0 != NULL || D_800654C4 != NULL) && SpuIsTransferCompleted(0) == 1) {
