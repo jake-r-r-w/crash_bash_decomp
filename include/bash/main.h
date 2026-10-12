@@ -607,6 +607,7 @@ extern s32 D_800654B4;
 extern s32 D_8004E0D8;
 extern s32 D_800590CC;
 extern subengine *D_80058ACC;
+extern s32 D_80058B60;
 extern s32 D_80058B68;
 extern s32 D_80058B6C;
 void func_8001DFF8();
@@ -899,5 +900,7 @@ void func_8002C090(SeqSlot *slot);
 void func_8001CEB4(u16 arg0, u8 *arg1, s32 arg2);
 
 u8 *func_80015A18(s32 arg0, u8 *arg1);
+
+void func_80021238(u8 *arg0, s32 *arg1);
 
 #endif /* BASH_MAIN_H */

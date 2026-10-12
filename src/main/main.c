@@ -2608,7 +2608,21 @@ void func_8002120C(u8 *arg0) {
     (*(void (**)(u8 *))(p + 0x58))(p);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80021238);
+void func_80021238(u8 *arg0, s32 *arg1) {
+    s32 saved;
+    u32 flags;
+    subengine *sub;
+    s32 val;
+
+    sub = (subengine *)(arg0 + 8);
+    flags = *(u32 *)(arg0 + 8);
+    val = *arg1;
+    saved = D_80058B60;
+    if (flags & 0x8000) {
+        sub->hook(sub, val, flags);
+    }
+    D_80058B60 = saved;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002128C);
 
