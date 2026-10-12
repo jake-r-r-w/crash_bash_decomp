@@ -650,7 +650,8 @@ ${job.permuterDiff}
       if (push.code) {
         // someone pushed since our fetch: run the gate again on top of their commits
         if (/rejected|non-fast-forward|fetch first/i.test(push.err) && passed.every(j => (j.pushRetries = (j.pushRetries || 0) + 1) <= 3)) {
-          this.log(`gate: ${this.o.branch} moved on while the gate ran; redoing ${passed.length} on the new tip`);
+          this.log(`gate: push rejected, redoing ${passed.length} on the new tip of ${this.o.branch}: ` +
+                   push.err.trim().split('\n').filter(l => /rejected|error|hint: Updates/i.test(l)).join(' | '));
           this.integQueue.unshift(...passed);
           return;
         }
