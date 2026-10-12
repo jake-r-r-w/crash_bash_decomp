@@ -2507,7 +2507,36 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80021878);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800218DC);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80021940);
+static inline u8 *Pop2(void) {
+    u8 *cur;
+
+    cur = D_80058B70;
+    if (cur != NULL) {
+        D_80058B70 = *(void **)(cur + 0xB4);
+    }
+    return cur;
+}
+
+static inline u8 *Push2(u8 *arg0) {
+    u8 *p;
+
+    p = Pop2();
+    if (p != NULL) {
+        *(u8 **)(p + 0xB4) = *(u8 **)(arg0 + 8);
+        *(u8 **)(arg0 + 8) = p;
+    }
+    return p;
+}
+
+void func_80021940(s32 arg0, u8 *arg1, s32 arg2) {
+    u8 *p;
+
+    p = Push2(arg1);
+    if (p != NULL) {
+        *(s32 *)(p + 4) = 2;
+        *(s32 *)p = arg2;
+    }
+}
 
 void func_80021990(u8 *arg0, s32 *arg1) {
     func_80019F1C(arg0 + 8, *arg1, (*(s32*)((u8*)(arg0) + 8)));

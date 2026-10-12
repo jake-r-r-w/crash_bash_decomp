@@ -811,4 +811,6 @@ void func_8001702C(SlotList *arg0);
 
 void func_80027A30(s16 vol);
 
+void func_80021940(s32 arg0, u8 *arg1, s32 arg2);
+
 #endif /* BASH_MAIN_H */
