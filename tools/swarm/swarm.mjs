@@ -159,6 +159,12 @@ function makeClone(dir, src, rev, log) {
     gitOk(dir, 'config', 'core.hooksPath', 'tools/hooks');   // git refuses this one at clone time
     gitOk(dir, 'remote', 'set-url', '--push', 'origin', 'PUSH-DISABLED');
   }
+  // headers: keep both sides' added lines when patches meet. Every match appends its prototype to
+  // the end of bash/main.h, so without this a worker patch that touches the end of main.h
+  // conflicts with every commit made while it worked. A bad union (a duplicate declaration) fails
+  // the gate's compile. Clone-local (.git/info), not the repo's .gitattributes.
+  fs.mkdirSync(path.join(dir, '.git', 'info'), { recursive: true });
+  fs.writeFileSync(path.join(dir, '.git', 'info', 'attributes'), 'include/**/*.h merge=union\n');
   // a branch or HEAD fetches; a bare commit id may not, but the clone usually has it already
   let target = 'FETCH_HEAD';
   if (git(dir, 'fetch', '-q', src, rev).code) {
