@@ -255,6 +255,12 @@ typedef struct LoaderState {
     /* 0x10 */ s32 unk10;
 } LoaderState;
 
+typedef struct LoadNode {
+    /* 0x00 */ u8 unk0[0x1C];
+    /* 0x1C */ struct LoadNode *next;
+    /* 0x20 */ struct LoadNode *prev;
+} LoadNode;
+
 typedef struct Heap {
     /* 0x00 */ u8 unk0[8];
     /* 0x08 */ MemBlock *free;           /* free list, smallest first */
@@ -928,5 +934,7 @@ extern PosEntry D_8005689C[];
 void func_80024214(s32 *a, s32 *b);
 
 void func_8001C584(PosDst *arg0, s32 arg1);
+
+void func_80012FA4(LoadNode *arg0);
 
 #endif /* BASH_MAIN_H */

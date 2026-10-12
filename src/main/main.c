@@ -524,7 +524,20 @@ void func_80012F90(u8 *arg0) {
     (*(s32*)((u8*)(arg0) + 28)) = temp_v1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80012FA4);
+void func_80012FA4(LoadNode *arg0) {
+    LoaderState *ls = &D_80050628;
+    LoadNode *prev = arg0->prev;
+
+    if (prev != NULL) {
+        prev->next = arg0->next;
+    } else {
+        ls->unkC = (s32)arg0->next;
+    }
+    arg0->next->prev = prev->next;
+    if ((s32)arg0 == ls->unk10) {
+        ls->unk10 = (s32)prev;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80012FFC);
 

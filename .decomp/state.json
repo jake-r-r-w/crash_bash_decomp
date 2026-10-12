@@ -260,7 +260,8 @@
   "via": "auto"
  },
  "80012FA4": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-12T13:28:15Z",
+  "status": "matched"
  },
  "80012FFC": {
   "auto_failed": "types"
