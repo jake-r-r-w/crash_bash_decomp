@@ -2970,7 +2970,18 @@ void func_80021990(u8 *arg0, s32 *arg1) {
     func_80019F1C(arg0 + 8, *arg1, (*(s32*)((u8*)(arg0) + 8)));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800219B8);
+s32 *func_800219B8(u8 *arg0, s32 arg1) {
+    s32 *p;
+
+    p = (s32 *)(arg0 + 0x24);
+    while (p[1] != 0) {
+        if (arg1 >= p[0] && arg1 < p[0] + p[1]) {
+            return p;
+        }
+        p += 20;
+    }
+    return p;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80021A1C);
 

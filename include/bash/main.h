@@ -966,4 +966,6 @@ void func_8001D640(s32 n);
 
 _sfx_handler *func_80022924(void);
 
+s32 *func_800219B8(u8 *arg0, s32 arg1);
+
 #endif /* BASH_MAIN_H */
