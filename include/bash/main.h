@@ -941,4 +941,6 @@ s32 func_80028994(s32 a, s32 b, s32 c);
 
 void func_800150E8(char *dst, s32 val, s32 div);
 
+char *func_8001517C(char *arg0, s32 arg1, s32 arg2);
+
 #endif /* BASH_MAIN_H */

@@ -845,7 +845,21 @@ void func_800150E8(char *dst, s32 val, s32 div) {
     dst[1] = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001517C);
+char *func_8001517C(char *arg0, s32 arg1, s32 arg2) {
+    s32 q;
+
+    if (arg2 >= 10) {
+        do {
+            q = arg1 / arg2;
+            *arg0 = q + 0x30;
+            arg1 -= arg2 * q;
+            arg2 /= 10;
+            arg0++;
+        } while (arg2 >= 10);
+    }
+    *arg0 = arg1 + 0x30;
+    return arg0 + 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80015210);
 
