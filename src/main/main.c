@@ -1406,7 +1406,41 @@ void func_80016F34(u8 *arg0, u8 *arg1) {
     func_80011544(arg0, arg1 + 0xC);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80016F54);
+void func_80016F54(u8 *arg0) {
+    s32 i;
+    u8 *p;
+    u8 *q;
+
+    if (*(u8 **)(arg0 + 0xC) != NULL) {
+        func_80016928();
+        p = *(u8 **)(arg0 + 0xC);
+        q = p + 0x58;
+        i = *(s32 *)(p + 0x54);
+        i--;
+        if (i != -1) {
+            do {
+                u8 *e = *(u8 **)q;
+                if (e != NULL) {
+                    *(s16 *)(e + 0x56) = 1;
+                }
+                i--;
+                q += 0x34;
+            } while (i != -1);
+        }
+        func_800110A8(*(void **)(arg0 + 0xC), D_8004E0F0);
+        *(s32 *)(arg0 + 0xC) = 0;
+        func_80029790(arg0 + 0x10);
+        *(s32 *)(arg0 + 8) = 0;
+        return;
+    }
+    if (*(s32 *)(arg0 + 8) != 0) {
+        if (*(s32 *)(arg0 + 0x18) != 0) {
+            func_80029790(arg0 + 0x10);
+        }
+        func_80012F04(*(void **)(arg0 + 8));
+        *(s32 *)(arg0 + 8) = 0;
+    }
+}
 
 void func_8001702C(SlotList *arg0) {
     s32 i;
