@@ -38,6 +38,13 @@ typedef struct {
     s32 table; /* 0x20: byte offset from this field */
 } RelTable;
 
+/* A block with 12-byte entries at a byte offset from its field at +0x1C + 0x1C
+ * (func_80015984). */
+typedef struct {
+    u8 unk0[0x1C];
+    s32 entries; /* 0x1C */
+} EntryBlock;
+
 typedef struct GfxModel {
     u8 unk0[0xC];
     RelTable *colors; /* 0x0C: u32 colours, indexed by a face's 13-bit indices */
@@ -779,5 +786,7 @@ s32 func_80015304(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 void func_8002C248(s32 arg0);
 
 IdEntry *func_800263D8(IdEntry *p, s32 id);
+
+s32 func_80015984(s32 i, EntryBlock *blk);
 
 #endif /* BASH_MAIN_H */

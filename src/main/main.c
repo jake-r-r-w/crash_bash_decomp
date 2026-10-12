@@ -943,7 +943,18 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80015870);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800158E4);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80015984);
+s32 func_80015984(s32 i, EntryBlock *blk) {
+    s32 idx = i;
+
+    u8 *base;
+
+    if (blk == NULL) {
+        return -1;
+    }
+    base = (u8 *)blk + (blk->entries + 0x1C);
+    idx = (idx - 1) & 0xFFF;
+    return *(s32 *)(base + idx * 12 + 0xC);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800159C4);
 
