@@ -58,18 +58,24 @@ O_FILES   := $(C_FILES:%=build/%.o) $(S_FILES:%=build/%.o) $(BIN_FILES:%=build/%
 .PHONY: all build split check verify diff permute progress objdiff-config report clean
 
 # Two passes: splat must have produced asm/ before the object list above is computed.
+# The splat pass is serial (-j1) even under make -j: concurrent splat runs share asm/ and gave
+# intermittently short exes. Compiling and linking (the second pass) stay parallel.
 build all:
-	@$(MAKE) --no-print-directory $(LD_SCRIPT) $(OVL_LDS)
+	@$(MAKE) --no-print-directory -j1 $(LD_SCRIPT) $(OVL_LDS)
 	@$(MAKE) --no-print-directory $(TARGET) $(OVL_BINS)
 
 split:
 	@for y in $(YAML) $(OVL_YAMLS); do $(PYTHON) -m splat split $$y || exit 1; done
 
+# splat leaves an unchanged linker script alone, so without the touch it stays older than its
+# inputs and every build re-runs every split
 $(LD_SCRIPT): $(YAML) $(CFG)/sym.main.txt
 	$(PYTHON) -m splat split $(YAML)
+	@touch $@
 
 linkers/%.ld: $(CFG)/overlays/%.yaml $(CFG)/sym.main.txt
 	$(PYTHON) -m splat split $<
+	@touch $@
 
 # .i is kept next to the object so decomp.py can show the line a compile error refers to.
 # Headers aren't tracked per file: any change under include/ rebuilds the C objects.

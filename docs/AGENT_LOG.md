@@ -226,6 +226,14 @@ Newest first, a few lines each. Details are in the commits.
   batch re-check caught `func_80015A18`, which matched on an older main but
   not today's. 11 verified matches are waiting:
   `swarm.mjs run --branch main --resume 20261012120212`.
+  Then profiled the gate: `done` spent ~36 s on the dashboard
+  (`sym_names()` called per matched function; `rodata_syms` re-parsing
+  2800 .s files): now ~5 s (hoisted, cached in build/cache). And every
+  build re-ran all 16 splat splits (splat leaves an unchanged .ld alone, so
+  it stayed older than sym.main.txt); under `make -j` those ran
+  concurrently and sometimes produced a short exe. The splat pass is now
+  serial and touches the .ld: full build 149 s -> 8 s, 11 verifies in a
+  row OK. A flaky build could only refuse a good match, never pass a bad one.
 
 - **2026-10-12:** Short follow-on run: matched `func_80013688` (wrapper of
   `func_80013034`) and `func_80011BC0` (tail-recursive walk to the next free
