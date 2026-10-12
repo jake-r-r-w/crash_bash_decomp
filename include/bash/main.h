@@ -747,4 +747,6 @@ void func_8002C060(void);
 
 u8 *func_80021E98(u8 *arg0);
 
+void *func_80011828(void *ptr, s32 bytes);
+
 #endif /* BASH_MAIN_H */

@@ -250,7 +250,26 @@ block_10:
     return var_v0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80011828);
+void *func_80011828(void *ptr, s32 bytes) {
+    MemBlock *blk;
+    MemBlock *split;
+    MemBlock *next;
+    s32 words;
+
+    blk = (MemBlock *)ptr - 1;
+    words = bytes >> 2;
+    split = (MemBlock *)((u32 *)blk + words);
+    next = (MemBlock *)((u32 *)(blk + 1) + blk->size);
+    split->unk0 = 4;
+    split->owner = (void **)-1;
+    split->size = blk->size - words;
+    split->prev = blk;
+    blk->size = words - 6;
+    next->prev = split;
+    return split + 1;
+}
+
+
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80011878);
 
