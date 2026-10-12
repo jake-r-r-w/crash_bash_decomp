@@ -969,7 +969,8 @@
  },
  "8001C584": {
   "auto_diff": 19,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-12T13:27:43Z",
+  "status": "matched"
  },
  "8001C690": {
   "matched_at": "2026-10-11T08:09:51Z",

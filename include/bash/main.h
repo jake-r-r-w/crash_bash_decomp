@@ -913,4 +913,20 @@ void func_80021708(u8 *arg0, u8 *arg1, s32 arg2);
 
 void func_800170D4(void);
 
+typedef struct {
+    s32 a[3]; /* 0x00 */
+    s32 mode; /* 0x0C */
+    s32 b[3]; /* 0x10 */
+} PosEntry;
+typedef struct {
+    u8 unk0[0x70];
+    s32 y; /* 0x70 */
+    s32 z; /* 0x74 */
+    s32 x; /* 0x78 */
+} PosDst;
+extern PosEntry D_8005689C[];
+void func_80024214(s32 *a, s32 *b);
+
+void func_8001C584(PosDst *arg0, s32 arg1);
+
 #endif /* BASH_MAIN_H */
