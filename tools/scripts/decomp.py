@@ -1549,11 +1549,30 @@ DLABEL = re.compile(r"^\s*dlabel\s+(\w+)")
 ROM_COMMENT = re.compile(r"/\*\s*([0-9A-Fa-f]+)\s+[0-9A-Fa-f]{8}\s")
 
 
+RODATA_CACHE = "build/cache/rodata_syms.json"
+
+
 def rodata_syms(seg):
     """[(rom, symbol, owners)] for the rodata splat put under asm/nonmatchings/<seg>/: owners is
-    the function it was migrated into, else every function that refers to it."""
+    the function it was migrated into, else every function that refers to it.
+    Cached in build/: parsing ~2800 .s files over Docker's Windows bind mount takes ~11 s, and the
+    dashboard (so every `done`) needs it. The .s files only change when splat runs, which depends
+    on the configs and symbol files, so those mtimes and the file list are the cache key."""
+    files = sorted(glob.glob(f"asm/nonmatchings/{seg}/*.s"))
+    inputs = sorted(glob.glob(f"{CFG}/**/*.yaml", recursive=True) + glob.glob(f"{CFG}/sym.*.txt"))
+    key = hashlib.sha1(json.dumps([files, [(p, os.path.getmtime(p)) for p in inputs]]).encode()).hexdigest()
+    cache = jload(RODATA_CACHE, {})
+    if cache.get(seg, {}).get("key") == key:
+        return [(rom, sym, owners) for rom, sym, owners in cache[seg]["syms"]]
+    out = _rodata_syms(seg, files)
+    cache[seg] = {"key": key, "syms": out}
+    jsave(RODATA_CACHE, cache)
+    return out
+
+
+def _rodata_syms(seg, files):
     syms, ftext = [], {}
-    for p in sorted(glob.glob(f"asm/nonmatchings/{seg}/*.s")):
+    for p in files:
         name = os.path.splitext(os.path.basename(p))[0]
         text = read(p)
         is_func = re.search(r"^glabel\s", text, re.M) is not None
@@ -2484,7 +2503,8 @@ def data_summary(funcs, stat, proj):
     """Data bytes (everything outside code subsegments) and how much of it is produced by C:
     rodata migrated into matched functions, plus data subsegments owned by a C file (.data etc.)
     with nothing left in asm."""
-    matched = {cur_name(k, e, sym_names()) for k, e in funcs.items() if stat.get(k) == "matched"}
+    syms = sym_names()  # once: inside the comprehension it re-read every symbol file per function
+    matched = {cur_name(k, e, syms) for k, e in funcs.items() if stat.get(k) == "matched"}
     total = done = 0
     yamls = [yaml_of(proj['name'])] + [yaml_of(o['name']) for o in proj.get("overlays", [])]
     for y in yamls:
