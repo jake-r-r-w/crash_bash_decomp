@@ -2589,7 +2589,20 @@ void func_8001DF74(u8 *arg0, u8 **arg1) {
     (*(s32*)((u8*)(temp_s1) + 8)) = func_80013034((*(s32*)((u8*)(temp_s1) + 0)), 0, (*(s32*)((u8*)(temp_s1) + 36)), func_8001DFF8, arg1, 0, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001DFF8);
+void func_8001DFF8(s32 arg0, s32 *arg1) {
+    s32 *temp_s1;
+    s32 *t;
+
+    t = *(s32 **)arg1;
+    D_80058AD0 = arg1;
+    t[3] = arg0;
+    temp_s1 = *(s32 **)arg1;
+    arg1[2] = 0;
+    func_8001DE18(arg1);
+    arg1[7] = 0;
+    func_8001D6B4(arg1);
+    func_8001682C(temp_s1);
+}
 
 void func_8001E054(u8 *arg0, s32 arg1) {
     (*(s32*)((u8*)(arg0) + 0)) = arg1;

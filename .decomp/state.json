@@ -1131,7 +1131,8 @@
   "via": "auto"
  },
  "8001DFF8": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-12T13:33:14Z",
+  "status": "matched"
  },
  "8001E054": {
   "matched_at": "2026-10-10T10:36:02Z",
