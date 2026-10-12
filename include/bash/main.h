@@ -469,6 +469,9 @@ typedef struct {
 } VTable8;
 extern VTable8 *D_8004E0DC;
 extern s32 D_8004E0E0;
+extern u8 D_80078C90[];
+void func_80011BF8(u8 *heap, u8 *start, s32 size);
+void func_80012E90(void);
 void func_800272AC(s32 arg0);
 extern void *D_80050F3C;
 extern u8 D_80050F40[]; /* 63 x 0xC pool, free list in D_80051240 */
@@ -944,5 +947,7 @@ void func_800150E8(char *dst, s32 val, s32 div);
 char *func_8001517C(char *arg0, s32 arg1, s32 arg2);
 
 void func_8002BA44(void);
+
+void func_800102F8(void);
 
 #endif /* BASH_MAIN_H */

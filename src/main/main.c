@@ -28,7 +28,13 @@ void func_800101E0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80010278);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800102F8);
+void func_800102F8(void) {
+    D_8004E0E0 = 2;
+    func_80011BF8(D_8004E0F0, D_80078C90, 0x801FF000 - (s32)D_80078C90);
+    func_80012E90();
+    func_80013CA4();
+    func_800138A4();
+}
 
 void func_80010354(void) {
     D_8004E0DC->unk8();

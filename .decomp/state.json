@@ -16,7 +16,8 @@
   "auto_failed": "compile"
  },
  "800102F8": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-12T13:31:31Z",
+  "status": "matched"
  },
  "80010354": {
   "matched_at": "2026-10-12T12:23:02Z",
