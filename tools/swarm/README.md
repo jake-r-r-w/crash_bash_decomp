@@ -31,7 +31,9 @@ node tools/swarm/swarm.mjs run --workers 3 --max-functions 10
 node tools/swarm/swarm.mjs status
 ```
 
-Needs Docker and `claude` on `PATH` (`--claude-bin` for another path). Options (defaults in
+Needs Docker and `claude` on `PATH` (`npm i -g @anthropic-ai/claude-code`, then log in once with
+`claude auth login`; `--claude-bin` for another path). Workers run with `--permission-mode
+dontAsk`: anything outside the allowed tools is denied, never prompted. Options (defaults in
 `config.json`, override any with `--kebab-case value`):
 
 - `--workers` (3), `--seg` (`main/main`), `--only f1,f2` (exactly these functions)
@@ -62,6 +64,10 @@ Needs Docker and `claude` on `PATH` (`--claude-bin` for another path). Options (
 - **Circuit breakers:** stops after `--max-consecutive-failures` (3) refused patches, gate
   failures or conflicts in a row, after `--max-minutes` (240), after `--max-functions` (20)
   leases, or if a push fails. Each worker is killed after `--worker-minutes` (45).
+- **Cost caps:** each worker session is capped by `--worker-budget-usd` (5, passed to
+  `claude --max-budget-usd`); the run stops when the workers' total reaches `--max-run-usd` (50).
+  A session that fails to start (not logged in, API down) counts as a failure, so three in a
+  row stop the run.
 - **One run at a time** per `--dir` (lock file with the PID).
 - **CPU:** each worker's containers get `--cpus` (cores / workers).
 

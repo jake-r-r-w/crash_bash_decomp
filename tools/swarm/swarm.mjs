@@ -83,6 +83,13 @@ function which(name) {
   return null;
 }
 
+// npm's claude.cmd wraps a native claude.exe: run that directly (no cmd.exe quoting)
+function realClaude(p) {
+  if (!p || !/\.cmd$/i.test(p)) return p;
+  const exe = path.join(path.dirname(p), 'node_modules', '@anthropic-ai', 'claude-code', 'bin', 'claude.exe');
+  return fs.existsSync(exe) ? exe : p;
+}
+
 // Git Bash, not WSL's bash.exe, which comes first on a Windows PATH
 function findBash() {
   if (!WIN) return 'bash';
@@ -206,6 +213,7 @@ class Swarm {
     this.leases = 0;
     this.finished = new Set();      // keys done with this run (matched, parked or failed)
     this.stats = { matched: 0, parked: 0, failed: 0, conflicts: 0 };
+    this.costUsd = 0;
     this.consecutiveFailures = 0;
     this.stopping = null;
     this.history = readJson(this.paths.history, {});
@@ -229,7 +237,7 @@ class Swarm {
     if (head === o.branch) die(`${o.branch} is checked out in ${REPO}: switch away from it first`);
     if (sh('docker', ['info']).code) die('Docker is not reachable');
     if (!o.workerCmd && !o.dryRun) {
-      this.claude = which(o.claudeBin);
+      this.claude = realClaude(which(o.claudeBin));
       if (!this.claude) die(`${o.claudeBin} not found on PATH (install Claude Code or pass --claude-bin)`);
     }
     fs.mkdirSync(o.dir, { recursive: true });
@@ -262,7 +270,8 @@ class Swarm {
       const env = {
         ...process.env, MSYS_NO_PATHCONV: '1',
         DK_DOCKER_ARGS: `--label ${LABEL}=${this.id} --label ${LABEL}-slot=${this.id}-${slot}` +
-          (slot === 'integ' ? '' : ` --cpus ${this.cpus}`),
+          // parallel make for done's full build, whatever the branch's decomp.py does
+          (slot === 'integ' ? ` -e MAKEFLAGS=-j${os.cpus().length}` : ` --cpus ${this.cpus}`),
       };
       const p = spawn(this.bash, ['tools/dk', ...args], { cwd, env, stdio: ['ignore', 'pipe', 'pipe'], detached: !WIN });
       this.children.add(p);
@@ -360,6 +369,7 @@ ${f.note ? `\nNote recorded for this function earlier: ${f.note}\n` : ''}${job.n
     } else {
       cmd = this.claude;
       args = [...this.o.claudeArgs, '--model', job.model,
+              '--max-budget-usd', String(this.o.workerBudgetUsd),
               '--allowedTools', this.o.allowedTools.join(','), '--disallowedTools', this.o.disallowedTools.join(',')];
       if (WIN && /\.(cmd|bat)$/i.test(cmd)) {
         shell = true;
@@ -412,10 +422,19 @@ ${f.note ? `\nNote recorded for this function earlier: ${f.note}\n` : ''}${job.n
     git(slot.dir, 'add', '-A', '--', 'src', 'include');
     const patch = git(slot.dir, 'diff', '--cached', '--binary', job.base, '--', 'src', 'include').out;
     const mins = ((Date.now() - job.started) / 60e3).toFixed(1);
-    this.log(`${slot.id} ${f.name}: worker exited ${code}${job.timedOut ? ' (timeout)' : ''} after ${mins} min, ` +
-             `says ${res.status || 'nothing'}`);
+    // claude -p --output-format json: the last JSON line has the cost and any session error
+    const out = fs.readFileSync(path.join(job.dir, 'worker.out'), 'utf8').trim().split('\n');
+    let session = {};
+    try { session = JSON.parse(out.reverse().find(l => l.startsWith('{"')) || '{}'); } catch { /* not claude */ }
+    const cost = Number(session.total_cost_usd) || 0;
+    this.costUsd += cost;
+    this.log(`${slot.id} ${f.name}: worker exited ${code}${job.timedOut ? ' (timeout)' : ''} after ${mins} min` +
+             `${cost ? `, $${cost.toFixed(2)} (run $${this.costUsd.toFixed(2)})` : ''}, says ${res.status || 'nothing'}`);
     if (res.pattern) fs.appendFileSync(this.paths.patterns, `${res.pattern.trim()}  <!-- ${f.name} -->\n`);
     if (this.stopping === 'now') return;
+    // a session that never got going (not logged in, API down) is a failure, not a park
+    if (session.is_error && !patch.trim() && !res.status)
+      return this.fail(slot, job, `claude: ${String(session.result || session.terminal_reason).slice(0, 200)}`);
     if (!patch.trim()) return this.notMatched(slot, job, res.note || (job.timedOut ? 'timed out' : 'no change'));
     fs.writeFileSync(path.join(job.dir, 'patch.diff'), patch);
     const errs = this.checkPatch(patch, f);
@@ -528,6 +547,7 @@ ${f.note ? `\nNote recorded for this function earlier: ${f.note}\n` : ''}${job.n
     }
     const mins = (Date.now() - this.started) / 60e3;
     const reason = mins > this.o.maxMinutes ? `--max-minutes ${this.o.maxMinutes} reached`
+      : this.costUsd >= this.o.maxRunUsd ? `run cost ${this.costUsd.toFixed(2)} reached --max-run-usd ${this.o.maxRunUsd}`
       : this.consecutiveFailures >= this.o.maxConsecutiveFailures ? `${this.consecutiveFailures} failures in a row`
       : null;
     if (reason && !this.stopping) {
@@ -548,7 +568,7 @@ ${f.note ? `\nNote recorded for this function earlier: ${f.note}\n` : ''}${job.n
   writeStatus(state = 'running') {
     writeJson(this.paths.status, {
       id: this.id, pid: process.pid, state, stopping: this.stopping, started: new Date(this.started).toISOString(),
-      branch: this.o.branch, stats: this.stats, leases: this.leases, queued: this.queue.length,
+      branch: this.o.branch, stats: this.stats, costUsd: +this.costUsd.toFixed(2), leases: this.leases, queued: this.queue.length,
       workers: this.slots.map(s => ({ slot: s.id, func: s.job?.f.name || null, model: s.job?.model || null, pid: s.job?.pid || null,
                                       minutes: s.job ? +((Date.now() - s.job.started) / 60e3).toFixed(1) : null })),
       integrating: this.integrating?.f.name || null, waiting: this.integQueue.map(j => j.f.name),

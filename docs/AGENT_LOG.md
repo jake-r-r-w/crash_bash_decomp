@@ -199,9 +199,11 @@ Newest first, a few lines each. Details are in the commits.
   --now`, STOP file), patch checks, its own `try`, circuit breakers. Added
   `decomp.py queue` and `DK_DOCKER_ARGS` in `tools/dk`. Tested end to end
   with fake workers (replayed two past matches, hard and graceful stop,
-  timeout, escalation, a cheating patch, a false match claim). Not yet run
-  with real `claude` workers: the CLI isn't on this machine's PATH. The
-  full build in `done` takes ~2.5 min, which caps integration at ~25/hour.
+  timeout, escalation, a cheating patch, a false match claim). Then: CLI
+  installed (npm), workers use `dontAsk` and `--max-budget-usd`, run cost
+  cap; `done`'s full build now runs `make -j` (149 s to 30 s, same bytes),
+  so a swarm commit takes ~1 min. Not yet run with real workers: the CLI
+  needs `claude auth login` first.
 
 - **2026-10-12:** Short follow-on run: matched `func_80013688` (wrapper of
   `func_80013034`) and `func_80011BC0` (tail-recursive walk to the next free

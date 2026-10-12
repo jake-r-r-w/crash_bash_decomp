@@ -920,7 +920,7 @@ def cmd_try(a):
 
 def verify_build(proj, funcs=None):
     shutil.rmtree("build/src", ignore_errors=True)
-    r = run(["make", "-s", "all"])
+    r = run(["make", "-s", f"-j{os.cpu_count() or 1}", "all"])  # ~5x faster, same bytes
     if r.returncode:
         out = r.stderr + r.stdout
         errs = [l for l in out.splitlines() if re.search(r"error|undefined reference|No rule|Error \d", l, re.I)]
