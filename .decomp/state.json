@@ -1257,7 +1257,8 @@
  },
  "80020B44": {
   "auto_diff": 25,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-12T13:38:11Z",
+  "status": "matched"
  },
  "80020BA8": {
   "auto_diff": 23,

@@ -990,4 +990,6 @@ s32 func_80015210(s32 a, s32 b, s32 t);
 
 s32 *func_800218DC(u8 *arg0, s32 arg1);
 
+void func_80020B44(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5);
+
 #endif /* BASH_MAIN_H */

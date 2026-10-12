@@ -2828,7 +2828,9 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80020344);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80020680);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80020B44);
+void func_80020B44(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
+    func_80020680(a0, a1, (a4 << 12) / a3, a2, a5);
+}
 
 void func_80020BA8(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4) {
     func_80020344(a0, a1, (a4 << 12) / a3, a2);
