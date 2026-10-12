@@ -2262,7 +2262,9 @@
  },
  "8002D094": {
   "auto_diff": 11,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-12T09:03:57Z",
+  "started": "2026-10-12T09:02:15Z",
+  "status": "matched"
  },
  "8002D0C8": {
   "auto_diff": 2,

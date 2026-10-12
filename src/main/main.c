@@ -4013,7 +4013,12 @@ INCLUDE_RODATA("asm/nonmatchings/main/main", D_8004CDAC);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C97C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002D094);
+s32 func_8002D094(void) {
+    if (D_800655C4 == 1 && (D_800655C0 & 0x80)) {
+        return 1;
+    }
+    return 0;
+}
 
 void func_8002D0C8(void) {
     s32 flags;

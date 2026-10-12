@@ -730,4 +730,6 @@ void func_8002120C(u8 *arg0);
 
 void func_8001D5D0(void);
 
+s32 func_8002D094(void);
+
 #endif /* BASH_MAIN_H */
