@@ -2225,7 +2225,8 @@
   "status": "matched"
  },
  "8002C090": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-12T13:06:08Z",
+  "status": "matched"
  },
  "8002C0E0": {
   "matched_at": "2026-10-11T19:17:47Z",

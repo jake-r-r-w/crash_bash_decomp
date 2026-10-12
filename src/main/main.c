@@ -4381,7 +4381,13 @@ void func_8002C060(void) {
     D_800655B4 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C090);
+void func_8002C090(SeqSlot *slot) {
+    if (slot->seq >= 0) {
+        SsSeqClose(slot->seq);
+        SsSepStop(slot->seq, 0);
+    }
+    slot->unk1C = -1;
+}
 
 void func_8002C0E0(void) {
     if (D_8006557C.seq >= 0) {

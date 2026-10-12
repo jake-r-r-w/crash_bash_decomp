@@ -235,6 +235,8 @@ typedef struct PadState {
 typedef struct SeqSlot {
     /* 0x00 */ s32 data;                 /* heap block, freed by func_8002C44C */
     /* 0x04 */ s32 seq;                  /* SsSeq access number, or -1 */
+    /* 0x08 */ u8 unk8[0x1C - 0x08];
+    /* 0x1C */ s32 unk1C;                /* set to -1 on close */
 } SeqSlot;
 
 /* D_80058B88: what func_800229FC passes to func_8002C488 for an index. */
@@ -891,5 +893,7 @@ void func_80028BF0(void);
 void func_80028C94(void);
 
 void func_8002B4D8(PitchVoice *arg0, s32 arg1);
+
+void func_8002C090(SeqSlot *slot);
 
 #endif /* BASH_MAIN_H */
