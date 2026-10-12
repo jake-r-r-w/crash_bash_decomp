@@ -988,4 +988,6 @@ KeyEntry *func_8001E41C(KeyBlock *arg0, s32 arg1);
 
 s32 func_80015210(s32 a, s32 b, s32 t);
 
+s32 *func_800218DC(u8 *arg0, s32 arg1);
+
 #endif /* BASH_MAIN_H */
