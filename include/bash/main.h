@@ -999,4 +999,6 @@ s32 func_80013488(s32 arg0, s32 arg1, s32 arg2);
 
 void func_8001C448(PosDst *arg0, s32 arg1, s32 arg2);
 
+void func_8001DD50(void *arg0, void *arg1);
+
 #endif /* BASH_MAIN_H */

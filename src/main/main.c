@@ -2649,7 +2649,19 @@ s32 func_8001DD20(s32 *arg0) {
 }
 
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001DD50);
+extern void func_8001D894(void *a, void *b, s32 c, s32 d);
+extern void func_80019A60(u16 a, s32 b, s32 c, void *d);
+void func_8001DD50(void *arg0, void *arg1) {
+    s32 flags;
+    s32 x;
+
+    flags = *(s32 *)arg0;
+    x = *(s32 *)(*(u8 **)((u8 *)arg0 + 0x6C) + 0xC);
+    if ((flags & 0x8000) && x != 0) {
+        func_8001D894(arg0, arg1, flags, x);
+        func_80019A60(*(u16 *)((u8 *)arg0 + 0x74), x, *(s32 *)arg0, arg0);
+    }
+}
 
 void func_8001DDB4(s32 *arg0) {
     func_80029100(*arg0 + 0x10);
