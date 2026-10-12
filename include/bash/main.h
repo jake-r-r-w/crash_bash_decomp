@@ -764,4 +764,6 @@ s32 func_8001361C(s32 *arg0, u8 *arg1);
 
 MemBlock *func_80011BC0(MemBlock *blk);
 
+s32 func_800135E4(s32 *arg0, u8 *arg1);
+
 #endif /* BASH_MAIN_H */
