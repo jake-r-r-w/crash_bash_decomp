@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 501/2550 game functions matched (main.exe 240/574), 4 parked. `make check`
+- 504/2550 game functions matched (main.exe 240/574), 4 parked. `make check`
   OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
@@ -38,10 +38,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 3. Name each function as it's matched when the evidence allows (345 of
    2550 are named).
 4. Unpark when a new idea comes up (see Open leads).
-5. Quick follow-ups from the last session: the rest of Tank's
-   `D_800CB264` table functions (`func_800C8598` add, `func_800C85D0` clear,
-   `func_800C84D8` distance test), next to the matched `func_800C8560`.
-6. Later Phase 2 items: split `main.c` into units, data to C, the PsyQ gaps,
+5. Later Phase 2 items: split `main.c` into units, data to C, the PsyQ gaps,
    the `CRASHBSH.DAT` extractor.
 
 ## Open leads
@@ -190,6 +187,10 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-12:** Matched the rest of Tank's `D_800CB264` table:
+  `func_800C8598` (add), `func_800C85D0` (clear, descending loop) and
+  `func_800C84D8` (returns the slot within `dist` of x/z; local declaration
+  order fixed a t0/a3 swap).
 - **2026-10-12:** Matched `func_800C8560` (Tank, 56 bytes): removes a `NAS *`
   from the 8-slot table `D_800CB264` (siblings `func_800C8598` add,
   `func_800C85D0` clear, `func_800C84D8` distance test: next candidates).
