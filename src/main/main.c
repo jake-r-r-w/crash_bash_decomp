@@ -3507,7 +3507,14 @@ EXTengine *AddEngine(NAS *nas, s32 id) {
     return eng;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80026858);
+void func_80026858(void *owner, s32 size, s32 id, Words3 *tmpl) {
+    Words3 *ext;
+
+    ext = AllocExtension(owner, size, id, tmpl);
+    if (ext != NULL) {
+        *ext = *tmpl;
+    }
+}
 
 void *AddExtension(void *owner, s32 size, s32 id) {
     return AllocExtension(owner, size, id, NULL);

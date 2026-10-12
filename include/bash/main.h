@@ -574,6 +574,12 @@ typedef struct {
 } ModelSet;
 void func_800193A8(POLY_GT3 *poly, SVECTOR *v, u8 *runs);
 extern u8 D_80053694[];
+typedef struct Words3 {
+    s32 w0;
+    s32 w4;
+    s32 w8;
+} Words3;
+
 void *AllocExtension(void *owner, s32 size, s32 id, void *tmpl);
 extern EXTmotion D_8005A9CC;
 extern subengine D_8005A830;
@@ -861,5 +867,7 @@ void func_80016F54(u8 *arg0);
 void func_8001CE00(s32 arg0, ModelSet *set, s32 arg2);
 
 void func_80025F44(EXTengine *eng);
+
+void func_80026858(void *owner, s32 size, s32 id, Words3 *tmpl);
 
 #endif /* BASH_MAIN_H */
