@@ -705,4 +705,6 @@ NAS *SpawnNASFromRecord(NASTrigger *trig);
 
 void func_8001636C(u8 *arg0, s32 arg1);
 
+s32 func_80016450(u8 *arg0, s32 arg1);
+
 #endif /* BASH_MAIN_H */
