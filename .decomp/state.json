@@ -914,7 +914,9 @@
  },
  "8001C34C": {
   "auto_diff": 10,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-12T08:49:34Z",
+  "started": "2026-10-12T08:47:50Z",
+  "status": "matched"
  },
  "8001C378": {
   "matched_at": "2026-10-10T10:36:02Z",

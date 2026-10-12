@@ -711,4 +711,6 @@ void func_8001C298(EXTengine *eng);
 
 void *func_80012E28(void);
 
+subengine *func_8001C34C(s32 n, subengine *sub);
+
 #endif /* BASH_MAIN_H */

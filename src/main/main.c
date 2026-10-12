@@ -1691,7 +1691,14 @@ loop_3:
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001C34C);
+subengine *func_8001C34C(s32 n, subengine *sub) {
+    while (sub != NULL && n != 0) {
+        sub = sub->next;
+        n--;
+    }
+    return sub;
+}
+
 
 void func_8001C378(u8 *arg0) {
     s32 temp_a0;
