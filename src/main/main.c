@@ -920,7 +920,17 @@ char *func_8001517C(char *arg0, s32 arg1, s32 arg2) {
     return arg0 + 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80015210);
+s32 func_80015210(s32 a, s32 b, s32 t) {
+    s32 d;
+
+    d = b - a;
+    if (func_80032F3C(d) < 3) {
+        return b;
+    }
+    d = d * t;
+    d = d / 4096;
+    return a + d;
+}
 
 s32 func_80015284(s32 a, s32 b, s32 t) {
     b = (b - a) * t;
