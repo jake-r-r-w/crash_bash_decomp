@@ -833,4 +833,6 @@ s32 func_8002D178(void);
 
 void func_80010354(void);
 
+MemBlock *func_80011F74(Heap *heap);
+
 #endif /* BASH_MAIN_H */

@@ -425,7 +425,20 @@ MemBlock *func_80011E80(Heap *heap) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80011EF0);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80011F74);
+MemBlock *func_80011F74(Heap *heap) {
+    MemBlock *blk;
+    MemBlock *next;
+
+    blk = heap->lowest;
+    if (blk == NULL) {
+        return NULL;
+    }
+    next = (MemBlock *)((u8 *)blk + (blk->size * 4 + sizeof(MemBlock)));
+    if (next->owner == (void **)-1 || next->size == 0) {
+        return NULL;
+    }
+    return next;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80011FC8);
 
