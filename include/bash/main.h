@@ -760,4 +760,6 @@ s32 func_8002D360(u8 *arg0);
 
 u8 *func_8001316C(u8 *arg0);
 
+s32 func_8001361C(s32 *arg0, u8 *arg1);
+
 #endif /* BASH_MAIN_H */
