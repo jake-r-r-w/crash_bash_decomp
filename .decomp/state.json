@@ -297,7 +297,9 @@
  },
  "800133C8": {
   "auto_diff": 13,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-12T09:33:32Z",
+  "started": "2026-10-12T09:31:46Z",
+  "status": "matched"
  },
  "800133FC": {
   "auto_diff": 30,

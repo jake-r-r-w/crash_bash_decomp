@@ -754,4 +754,6 @@ void *func_80011828(void *ptr, s32 bytes);
 
 void func_800138A4(void);
 
+s32 func_800133C8(s32 arg0, s32 arg1, u8 *arg2, s32 arg3);
+
 #endif /* BASH_MAIN_H */
