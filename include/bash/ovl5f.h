@@ -47,4 +47,6 @@ void func_800C8560(NAS *nas);
 
 void func_800C8598(NAS *nas);
 
+void func_800C85D0(void);
+
 #endif /* BASH_OVL5F_H */
