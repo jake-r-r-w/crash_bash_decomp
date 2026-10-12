@@ -828,7 +828,22 @@ s32 get_angle(s32 x, s32 z) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001492C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800150E8);
+void func_800150E8(char *dst, s32 val, s32 div) {
+    s32 q;
+    s32 t;
+    if (div >= 10) {
+        do {
+            q = val / div;
+            t = div * q;
+            *dst = q + '0';
+            div /= 10;
+            dst++;
+            val -= t;
+        } while (div >= 10);
+    }
+    *dst = val + '0';
+    dst[1] = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001517C);
 

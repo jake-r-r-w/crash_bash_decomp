@@ -939,4 +939,6 @@ void func_80012FA4(LoadNode *arg0);
 
 s32 func_80028994(s32 a, s32 b, s32 c);
 
+void func_800150E8(char *dst, s32 val, s32 div);
+
 #endif /* BASH_MAIN_H */
