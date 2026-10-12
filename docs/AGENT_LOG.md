@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 506/2550 game functions matched (main.exe 242/574), 3 parked. `make check`
+- 507/2550 game functions matched (main.exe 243/574), 4 parked. `make check`
   OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
@@ -38,9 +38,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 3. Name each function as it's matched when the evidence allows (345 of
    2550 are named).
 4. Unpark when a new idea comes up (see Open leads).
-5. `func_80026D08` also touches `NASFreeList`: check whether it is
-   another spawner that uses `AllocNAS()` (`src/main/main.c`).
-6. Later Phase 2 items: split `main.c` into units, data to C, the PsyQ gaps,
+5. Later Phase 2 items: split `main.c` into units, data to C, the PsyQ gaps,
    the `CRASHBSH.DAT` extractor.
 
 ## Open leads
@@ -55,6 +53,12 @@ Parked (`decomp.py block`; best C under `#ifndef NON_MATCHING` in
   plain `A += B; B += A + ((u32)A >> 31);`, which here is the 2-off form:
   this function's source is written differently, not just compiled in
   another context.
+- **`func_80026D08`** (rebuilds `NASFreeList` from the pool): 18 off. The
+  target hoists `%hi(NASFreeList)` out of the loop (a copy into a1, so
+  loop.c ran) but keeps the loop test at the top, unrotated. A `goto` loop
+  gets no hoisting; `for (;;) { if (i < first) break; ...}` hoists it but
+  adds a `nas + 12` induction pointer (37 insns vs 36). The `KillNAS` push
+  may be a `static inline FreeNAS()`, but that alone changed nothing.
 - **`func_8001C7FC`**: `return func_8001A0D8(...)` (s32) fixes the division
   region (the returned pseudo prefers v0, so `mfhi` lands in v1), but then v0
   is live at the shared exit and gcc leaves the first `beqz` delay slot
@@ -184,6 +188,9 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-12:** Parked `func_80026D08` (free-list rebuild, not a spawner;
+  declared the pool globals `D_8005AA10/12/1C`). Matched `func_8001636C`
+  by copying its matched sibling `func_800163E0`.
 - **2026-10-12:** Matched `SpawnNASFromRecord` (504 bytes) and unparked
   `SpawnNASById` (512 bytes): both pop the free list through a
   `static inline AllocNAS()` with an early `return NULL` (an earlier inline
