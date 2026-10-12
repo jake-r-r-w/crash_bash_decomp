@@ -2241,7 +2241,12 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80021054);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800210F8);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002120C);
+void func_8002120C(u8 *arg0) {
+    u8 *p;
+
+    p = arg0 + 8;
+    (*(void (**)(u8 *))(p + 0x58))(p);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80021238);
 

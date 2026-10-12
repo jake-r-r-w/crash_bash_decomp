@@ -725,4 +725,6 @@ void func_80026FCC(void);
 
 void func_80026D9C(void);
 
+void func_8002120C(u8 *arg0);
+
 #endif /* BASH_MAIN_H */
