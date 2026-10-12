@@ -2572,6 +2572,22 @@ void func_800229FC(s32 i) {
     func_8002C488(D_80058B88[i].file, D_80058B88[i].reverb);
 }
 
+static inline NAS *AllocNAS(void) {
+    NAS *free;
+    NAS *next;
+
+    free = NASFreeList;
+    if (free == NULL) {
+        return NULL;
+    }
+    next = free->Tag.Child;
+    NASFreeList = next;
+    if (next != NULL) {
+        next->Tag.Parent = NULL;
+    }
+    return free;
+}
+
 #ifndef NON_MATCHING
 INCLUDE_ASM("asm/nonmatchings/main/main", SpawnNASById);
 #else
@@ -2645,7 +2661,63 @@ found:
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80022C3C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", SpawnNASFromRecord);
+NAS *SpawnNASFromRecord(NASTrigger *trig) {
+    NAS *nas;
+    EXTengine *eng;
+    s32 i;
+    s32 type;
+    u8 dir;
+
+    nas = NULL;
+    type = trig->Type;
+    for (i = 0; i < ASTCount; i++) {
+        if (ASTTable[i].id == type) {
+            goto found;
+        }
+    }
+    i = 0;
+found:
+    if (i > 0 && i < ASTCount) {
+        nas = AllocNAS();
+        if (nas != NULL) {
+            *nas = NASTemplate;
+            nas->NASid = 1;
+            if (NASActiveTail != NULL) {
+                NASActiveTail->Tag.Child = nas;
+                nas->Tag.Parent = NASActiveTail;
+                NASActiveTail = nas;
+            } else {
+                NASActiveTail = nas;
+                NASActiveHead = nas;
+            }
+            nas->Type = i;
+            nas->trigger = trig;
+            trig->Status |= 1;
+            nas->InitDelete = ASTTable[i].Init;
+            nas->Handler = ASTTable[i].Plot;
+            eng = AddEngine(nas, 1);
+            if (eng != NULL) {
+                eng->unk10.x = trig->TrigXYZ.x;
+                eng->unk10.y = trig->TrigXYZ.y;
+                eng->unk10.z = trig->TrigXYZ.z;
+                dir = 0;
+                if (trig->Status & 0x20) {
+                    dir = 0xFF;
+                }
+                eng->direction = dir;
+            } else {
+                KillNAS(nas);
+                return NULL;
+            }
+            nas->InitDelete(nas);
+            if (nas->NASid == 0) {
+                nas = NULL;
+            }
+        }
+    }
+    return nas;
+}
+
 
 s32 KillNAS(NAS *nas) {
     EXTengine *eng;

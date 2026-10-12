@@ -698,4 +698,6 @@ void func_80016CA0(u8 *rec);
 
 void func_80013238(void);
 
+NAS *SpawnNASFromRecord(NASTrigger *trig);
+
 #endif /* BASH_MAIN_H */
