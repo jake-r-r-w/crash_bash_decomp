@@ -479,6 +479,7 @@ extern u8 D_800644A8[];
 extern u8 D_8005A688;
 extern s32 D_80063A7C;
 extern s32 D_800654B8;
+extern s32 D_80064418[];       /* voice bit masks, by voice */
 extern s32 D_800655B0;
 extern s32 ASTCount;            /* entries in ASTTable */
 extern ASTEntry *ASTTable;      /* the AST table in use */
@@ -486,7 +487,7 @@ extern s32 D_80058AC8;
 extern void *SfxActiveVoices;
 extern SfxPool SfxVoicePool;
 extern s8 SfxTable[][2]; /* by sound id; [1] == -1: no sound */
-void func_8002B8F4(void *arg0);
+void func_8002B8F4(s32 *voice);
 extern s32 D_800637B4;
 extern s32 D_8005AA48;
 extern void *D_80058B78;

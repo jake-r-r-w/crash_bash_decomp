@@ -3861,7 +3861,15 @@ void func_8002B760(VECTOR *pos, View *view, VECTOR *out, s32 *sxy) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002B7C8);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002B8F4);
+void func_8002B8F4(s32 *voice) {
+    if (*voice != -1) {
+        SsUtKeyOffV(*voice);
+        D_800654B8 &= ~D_80064418[*voice];
+        func_800373FC(D_800654B8);
+        *voice = -1;
+    }
+}
+
 
 void func_8002B96C(void) {
     SpuIsTransferCompleted(1);
