@@ -453,6 +453,9 @@ extern void *D_8005AA30;            /* tail of the D_8005AA2C list */
 extern s32 D_8005A5DC;
 extern s32 D_8005B5BC[16][2];       /* entries 1..15 cleared by func_80026D9C */
 extern s32 D_800515F8;
+extern s32 D_800515FC;            /* first pad with flag 1 set, or -1 */
+extern s32 D_80051600;            /* pads 0..n-1 all have flag 1 */
+extern s32 D_80051604;            /* frames with no button down */
 extern u8 D_80063A90[2][0x34];    /* PadInitMtap buffers */
 extern PadState D_80051338[8];
 extern void *D_80063BB4;          /* list walked by func_80028A00 (next at +4) */
@@ -748,5 +751,7 @@ void func_8002C060(void);
 u8 *func_80021E98(u8 *arg0);
 
 void *func_80011828(void *ptr, s32 bytes);
+
+void func_800138A4(void);
 
 #endif /* BASH_MAIN_H */

@@ -532,7 +532,37 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80013688);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800136BC);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800138A4);
+void func_800138A4(void) {
+    PadState *pad;
+    s32 any;
+    s32 i;
+
+    func_80027D90();
+    pad = D_80051338;
+    any = 0;
+    D_80051600 = 0;
+    D_800515FC = -1;
+    for (i = 0; i < 8; pad++, i++) {
+        func_800136BC(pad);
+        if (pad->unk0 & 1) {
+            if (D_800515FC < 0) {
+                D_800515FC = i;
+            }
+            if (D_80051600 == i) {
+                D_80051600 = i + 1;
+            }
+            any |= pad->unk4;
+        } else {
+            pad->unk4 = 0;
+        }
+    }
+    if (any != 0) {
+        D_80051604 = 0;
+    } else {
+        D_80051604++;
+    }
+}
+
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800139A8);
 
