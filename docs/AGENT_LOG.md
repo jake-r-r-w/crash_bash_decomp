@@ -209,6 +209,13 @@ Newest first, a few lines each. Details are in the commits.
   permuter (score 805 to 300). So the permuter moved to its own pool:
   workers hand off `needs_permute`, a follow-up worker ports the result.
   `func_80012FFC` has used its 2 attempts (`--retry-failed` to retry).
+  First full run (2 workers, 1 permuter, 4 functions, $0.74 notional):
+  3 matched on `swarm/integration` (`func_800135E4`, `func_80013650`, and
+  `func_80011878` by Opus after Sonnet + permuter: it returns the split
+  block). `func_800263D8` matched but `done` refused it (struct declared in
+  main.c, prototype in main.h): workers are now told types go in the owned
+  header, and a gate refusal goes back to a worker once. Two Diff patterns
+  rows are waiting in `crash_bash_decomp-swarm/patterns.md`.
 
 - **2026-10-12:** Short follow-on run: matched `func_80013688` (wrapper of
   `func_80013034`) and `func_80011BC0` (tail-recursive walk to the next free

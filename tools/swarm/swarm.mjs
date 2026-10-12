@@ -338,6 +338,9 @@ Follow .claude/skills/match-function/SKILL.md and docs/MATCHING.md, steps 1 to 4
 skill, CLAUDE.md and the docs:
 - Work only on ${f.name}. Change only its INCLUDE_ASM line in ${f.src}, and headers under include/
   when it needs a declaration or a type. Never touch another function's INCLUDE_ASM line.
+- New structs, typedefs and global declarations go in the owned header of ${f.src} (the
+  include/bash/*.h marked \`owner: ${f.src}\`), never in the .c file: the gate adds the function's
+  prototype to that header, and it won't compile if a type in it is only declared in the .c.
 - Do not run \`decomp.py done\`, \`decomp.py block\`, \`make clean\`, \`make verify\` or any git command
   that changes the repo, and do not edit docs/, .decomp/, configs/ or tools/. The orchestrator
   validates and commits your work.
@@ -361,7 +364,15 @@ skill, CLAUDE.md and the docs:
    "note": "one line: what made it match, or what still differs",
    "pattern": "a new Diff patterns table row (| symptom | change | example |), or empty",
    "best_c": "your closest C when parked, else empty"}
-${job.permuterDiff ? `
+${job.gateFix ? `
+An earlier worker's C for ${f.name} is already in ${f.src} and matches the bytes, but the validation
+gate (decomp.py done: scope, lint, full build) refused it with:
+\`\`\`
+${job.gateFix}
+\`\`\`
+Fix that (often a type declared in the .c instead of the owned header, or a lint finding), keep the
+function matching (make diff), and report "matched".
+` : ''}${job.permuterDiff ? `
 An earlier worker's closest C for ${f.name} is already in ${f.src}. The permuter then got its score
 from ${job.permuterScore.base} to ${job.permuterScore.best}${job.permuterScore.best === 0 ? ' (a MATCH)' : ''} (0 is a match) with these changes to that C. Port
 the useful ones by hand (usually a temp, a statement order, a type or a cast; drop permuter noise
@@ -375,7 +386,7 @@ ${job.permuterDiff}
   startJob(slot, job) {
     const { f } = job;
     job.base = gitOk(this.integ, 'rev-parse', 'HEAD');
-    job.dir = path.join(this.paths.results, f.name, `attempt${job.attempt}${job.startPatch ? '-port' : ''}-${this.id}`);
+    job.dir = path.join(this.paths.results, f.name, `attempt${job.attempt}${job.gateFix ? '-gatefix' : job.startPatch ? '-port' : ''}-${this.id}`);
     fs.mkdirSync(job.dir, { recursive: true });
     makeClone(slot.dir, this.integ, 'HEAD', m => this.log(m));   // HEAD may have moved on: base is in it
     resetClone(slot.dir, job.base);
@@ -548,7 +559,7 @@ ${job.permuterDiff}
 
   record(job, status, note) {
     const h = this.history[job.f.key] ||= { name: job.f.name, attempts: 0, notes: [] };
-    if (status !== 'conflict' && status !== 'permuted') h.attempts++;
+    if (!['conflict', 'permuted', 'gate-refused'].includes(status)) h.attempts++;
     h.last = status;
     h.notes = [...h.notes, `${stamp()} ${job.model}: ${status}: ${note}`].slice(-6);
     writeJson(this.paths.history, this.history);
@@ -605,7 +616,16 @@ ${job.permuterDiff}
       if (this.stopping === 'now') return;
       if (r.code !== 0 || after === before) {
         resetClone(this.integ, before);
-        return this.fail(null, job, `done refused: ${r.out.trim().split('\n').slice(-3).join(' ')}`);
+        const why = r.out.trim().split('\n').slice(-6).join('\n');
+        // the bytes matched (try said so): what's left is usually fixable (a header, lint), once
+        if (!job.gateFix && !this.stopping) {
+          this.record(job, 'gate-refused', why.replace(/\n/g, ' '));
+          this.log(`${f.name}: done refused it; back to a worker to fix: ${why.split('\n').pop()}`);
+          this.retry.unshift({ f, model: job.model, attempt: job.attempt, retry: true, permuted: job.permuted,
+                               notes: job.notes, startPatch: job.patch, gateFix: why });
+          return;
+        }
+        return this.fail(null, job, `done refused: ${why.replace(/\n/g, ' ')}`);
       }
       const dirty = git(this.integ, 'status', '--porcelain').out.split('\n')
         .filter(l => l.trim() && !l.endsWith('tools/dk'));   // our copy of tools/dk
