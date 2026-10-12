@@ -2350,7 +2350,18 @@ u8 *func_80021E44(OffsetTable *tbl, s32 i) {
     return (u8 *)&tbl->offs[i] + tbl->offs[i];
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80021E60);
+u8 *func_80021E60(u8 *arg0, s32 arg1) {
+    u8 *p;
+    s32 *e;
+
+    p = *(u8 **)(arg0 + 0xC);
+    if (p != NULL) {
+        e = (s32 *)(p + (*(s32 *)(p + 0x4C) + 0x4C) + arg1 * 4);
+        return (u8 *)e + *e;
+    }
+    return NULL;
+}
+
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80021E98);
 

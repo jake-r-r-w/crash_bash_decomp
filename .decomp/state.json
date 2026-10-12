@@ -1337,7 +1337,9 @@
  },
  "80021E60": {
   "auto_diff": 11,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-12T09:06:48Z",
+  "started": "2026-10-12T09:04:49Z",
+  "status": "matched"
  },
  "80021E98": {
   "auto_diff": 12,
