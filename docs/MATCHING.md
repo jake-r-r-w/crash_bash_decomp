@@ -35,6 +35,9 @@ All commands run through `tools/dk` (Docker).
 5. **Validate and commit:**
    `tools/dk python3 tools/scripts/decomp.py done NAME --commit --note "what made it match"`
 
+To run this loop for several functions at once, see [tools/swarm](../tools/swarm/README.md):
+Claude workers do steps 1-4 in their own clones, and one integrator does step 5 for each.
+
 ## Evidence first
 
 Most matches come from what's already known, not from guessing. Before the

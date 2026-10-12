@@ -193,6 +193,30 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-12:** Built the swarm orchestrator on branch `swarm-orchestrator`
+  (`tools/swarm/`, README there): parallel Claude workers in clones, one
+  serial integrator through `done --commit`, stop switch (`stop`, `stop
+  --now`, STOP file), patch checks, its own `try`, circuit breakers. Added
+  `decomp.py queue` and `DK_DOCKER_ARGS` in `tools/dk`. Tested end to end
+  with fake workers (replayed two past matches, hard and graceful stop,
+  timeout, escalation, a cheating patch, a false match claim). Then: CLI
+  installed (npm), workers use `dontAsk` and `--max-budget-usd`, run cost
+  cap; `done`'s full build now runs `make -j` (149 s to 30 s, same bytes),
+  so a swarm commit takes ~1 min. First real runs (1 worker, Sonnet,
+  `func_80012FFC`): run 1 parked at once because `sed -i` was refused
+  (the prompt now says to edit with Edit/Write and not chain commands);
+  run 2 worked properly but parked after 11 min, 10 of them waiting on the
+  permuter (score 805 to 300). So the permuter moved to its own pool:
+  workers hand off `needs_permute`, a follow-up worker ports the result.
+  `func_80012FFC` has used its 2 attempts (`--retry-failed` to retry).
+  First full run (2 workers, 1 permuter, 4 functions, $0.74 notional):
+  3 matched on `swarm/integration` (`func_800135E4`, `func_80013650`, and
+  `func_80011878` by Opus after Sonnet + permuter: it returns the split
+  block). `func_800263D8` matched but `done` refused it (struct declared in
+  main.c, prototype in main.h): workers are now told types go in the owned
+  header, and a gate refusal goes back to a worker once. Two Diff patterns
+  rows are waiting in `crash_bash_decomp-swarm/patterns.md`.
+
 - **2026-10-12:** Short follow-on run: matched `func_80013688` (wrapper of
   `func_80013034`) and `func_80011BC0` (tail-recursive walk to the next free
   heap block; the NULL return goes last). `func_80012FFC` (sum of
