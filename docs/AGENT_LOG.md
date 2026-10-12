@@ -234,6 +234,13 @@ Newest first, a few lines each. Details are in the commits.
   concurrently and sometimes produced a short exe. The splat pass is now
   serial and touches the .ld: full build 149 s -> 8 s, 11 verifies in a
   row OK. A flaky build could only refuse a good match, never pass a bad one.
+  Then: 10-min run 15 commits, 20-min run 29 commits (~85/hour), mostly
+  limited by conflicts on the end of `bash/main.h`. Fixed in the swarm:
+  union merge for headers in its clones, neighbours (within 8 lines) never
+  leased together, and a conflicting patch is re-applied mechanically
+  instead of going back to Claude. Next swarm idea, not done: `done` could
+  insert prototypes in address order instead of appending (fewer header
+  clashes, also for hand sessions); long term, split `main.c` into units.
 
 - **2026-10-12:** Short follow-on run: matched `func_80013688` (wrapper of
   `func_80013034`) and `func_80011BC0` (tail-recursive walk to the next free
