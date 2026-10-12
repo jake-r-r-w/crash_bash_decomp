@@ -19,7 +19,8 @@ All commands run through `tools/dk` (Docker).
    from `include/` (add structs there, see [CONVENTIONS.md](CONVENTIONS.md)).
    Don't leave m2c leftovers.
 3. **Diff:** `tools/dk make diff FUNC=NAME` builds that file and shows
-   only the differing instructions. Look the symptom up in
+   only the differing instructions. It stops after 40 rows; for more, run
+   `tools/dk sh -c 'DIFF_ROWS=300 python3 tools/scripts/decomp.py try NAME'`. Look the symptom up in
    [Diff patterns](#diff-patterns), then
    [classify the diff and work through its list](#classify-the-diff-then-work-through-the-list).
    For register differences, also read the [cc1 dump](#why-does-a-register-differ).
@@ -103,8 +104,8 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | A mask kept as `andi 0xF0` before a byte or halfword store (ours uses a hoisted `-16`), and the value loaded twice | Read the other half into a narrow local first and pass the result through an `s32` before the store: `lo = *p >> 4; v = ((*p << 4) & 0xF0) | lo; *p = v;` (permuter find) | `func_80015518`, `func_80015554` |
 | A loop accumulator and counter in the wrong registers (sum `a1`, target `a2`), every loop rewrite stuck at the same diff | Route the term through a reused `s32` temp: `c = *s++; c = c * i++; sum += c;` (permuter find) | `func_8001534C` |
 | A `beqz` on a pointer jumps past the following `if`/`else` too, not just its own block | The second block is nested inside the first: `if (p->prev) { ...; if (p->next) ... else ...; }` | `KillNAS` |
-| A loaded global hoisted above the argument copies in the prologue (the target keeps source order) | Copy a narrow (`u16`) parameter into an `int` local before using it (`want = id;`); permuter find | `SpawnNASById` (parked) |
-| A short-lived temp gets the wrong register, and a fresh temp doesn't help | Reuse an existing variable for it (`nas = free->next; NASFreeList = nas; ...; nas = free;`): reuse changes the allocation priorities; permuter find | `SpawnNASById` (parked) |
+| A loaded global hoisted above the argument copies in the prologue (the target keeps source order) | Copy a narrow (`u16`) parameter into an `int` local before using it (`want = id;`); permuter find | `SpawnNASById` |
+| Two temps of a small sequence (a free-list pop) swap registers, and no reordering, fresh temp or reused variable fixes it | It was a `static inline` helper with its own early `return` (`AllocNAS()`: `if (free == NULL) return NULL; ...; return free;`). Inlining changes the pseudos and their priorities; the same block written in place never matches. Look for one when the same sequence appears in several functions | `SpawnNASFromRecord`, `SpawnNASById` |
 
 ## Classify the diff, then work through the list
 

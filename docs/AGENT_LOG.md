@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 504/2550 game functions matched (main.exe 240/574), 4 parked. `make check`
+- 506/2550 game functions matched (main.exe 242/574), 3 parked. `make check`
   OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
@@ -38,7 +38,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
 3. Name each function as it's matched when the evidence allows (345 of
    2550 are named).
 4. Unpark when a new idea comes up (see Open leads).
-5. Later Phase 2 items: split `main.c` into units, data to C, the PsyQ gaps,
+5. `func_80026D08` also touches `NASFreeList`: check whether it is
+   another spawner that uses `AllocNAS()` (`src/main/main.c`).
+6. Later Phase 2 items: split `main.c` into units, data to C, the PsyQ gaps,
    the `CRASHBSH.DAT` extractor.
 
 ## Open leads
@@ -53,11 +55,6 @@ Parked (`decomp.py block`; best C under `#ifndef NON_MATCHING` in
   plain `A += B; B += A + ((u32)A >> 31);`, which here is the 2-off form:
   this function's source is written differently, not just compiled in
   another context.
-- **`SpawnNASById`**: 4 operands. The free-list pop's next pointer is in s0
-  (reusing `nas`, as the permuter found) where the target uses a1; a fresh
-  temp, reusing `eng`, or a `static inline AllocNAS` all give 34 lines.
-  `SpawnNASFromRecord` has the same three sequences: match it next and
-  compare. Prototype is in `bash/main.h`.
 - **`func_8001C7FC`**: `return func_8001A0D8(...)` (s32) fixes the division
   region (the returned pseudo prefers v0, so `mfhi` lands in v1), but then v0
   is live at the shared exit and gcc leaves the first `beqz` delay slot
@@ -187,6 +184,11 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-12:** Matched `SpawnNASFromRecord` (504 bytes) and unparked
+  `SpawnNASById` (512 bytes): both pop the free list through a
+  `static inline AllocNAS()` with an early `return NULL` (an earlier inline
+  attempt without the early return had failed). `decomp.py try` now takes
+  `DIFF_ROWS` for longer diffs. The ternary `?:` trips the `?` lint: use an `if`.
 - **2026-10-12:** Matched the rest of Tank's `D_800CB264` table:
   `func_800C8598` (add), `func_800C85D0` (clear, descending loop) and
   `func_800C84D8` (returns the slot within `dist` of x/z; local declaration
