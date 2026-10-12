@@ -1521,7 +1521,27 @@ void func_80017094(u8 *arg0, s32 arg1, s32 arg2) {
     func_80029560(temp_s0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800170D4);
+void func_800170D4(void) {
+    s32 i;
+    s32 end;
+    u8 *base;
+    u8 *p;
+
+    i = 0x11B;
+    end = -1;
+    base = D_80052A54;
+    p = base + 0x10;
+loop:
+    i--;
+    if (i != end) {
+        *(s32 *)(p - 8) = 0;
+        *(s32 *)(p - 4) = 0;
+        *(s32 *)(p + 0x24) = 0;
+        func_8002AA8C(p);
+        p += 0x38;
+        goto loop;
+    }
+}
 
 void func_80017138(u8 *arg0) {
     (*(s32*)((u8*)(arg0) + 8)) = 0;
