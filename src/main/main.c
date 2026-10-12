@@ -1334,7 +1334,21 @@ void func_80016F34(u8 *arg0, u8 *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80016F54);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001702C);
+void func_8001702C(SlotList *arg0) {
+    s32 i;
+    SlotEntry *e;
+
+    i = arg0->count;
+    i--;
+    e = arg0->entries;
+    while (i != -1) {
+        if (e->target != NULL) {
+            e->target->flag = 1;
+        }
+        i--;
+        e++;
+    }
+}
 
 void func_80017070(void) {
     func_80016CA0(D_80055684);

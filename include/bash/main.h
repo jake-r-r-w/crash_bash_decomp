@@ -181,6 +181,22 @@ typedef struct PoolNode {
     s32 state;                        /* 2 once handed back (func_80018388) */
 } PoolNode;
 
+typedef struct SlotTarget {
+    /* 0x00 */ u8 unk0[0x56];
+    /* 0x56 */ u16 flag;
+} SlotTarget;
+
+typedef struct SlotEntry {
+    /* 0x00 */ SlotTarget *target;
+    /* 0x04 */ u8 unk4[0x30];
+} SlotEntry;
+
+typedef struct SlotList {
+    /* 0x00 */ u8 unk0[0x54];
+    /* 0x54 */ s32 count;
+    /* 0x58 */ SlotEntry entries[1];
+} SlotList;
+
 /* D_80056844: entries come from free (func_800183B0) and go back on done. */
 typedef struct NodePool {
     PoolNode *free;
@@ -790,5 +806,7 @@ IdEntry *func_800263D8(IdEntry *p, s32 id);
 s32 func_80015984(s32 i, EntryBlock *blk);
 
 void func_80011578(u8 *arg0, MemBlock *arg1, s32 arg2);
+
+void func_8001702C(SlotList *arg0);
 
 #endif /* BASH_MAIN_H */
