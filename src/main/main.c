@@ -4212,7 +4212,20 @@ void func_8002D33C(u8 *arg0) {
     (*(s8*)((u8*)(arg0) + 7)) = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002D360);
+s32 func_8002D360(u8 *arg0) {
+    u32 *p;
+    u32 *end;
+    s32 sum;
+
+    p = (u32 *)(arg0 + 0x200);
+    end = (u32 *)(arg0 + 0x850);
+    sum = 0;
+    while (p < end) {
+        sum += *p++;
+    }
+    return sum;
+}
+
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002D394);
 

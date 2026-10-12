@@ -2335,7 +2335,9 @@
   "via": "auto"
  },
  "8002D360": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-12T09:36:35Z",
+  "started": "2026-10-12T09:34:05Z",
+  "status": "matched"
  },
  "8002D394": {
   "auto_failed": "compile"
