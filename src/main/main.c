@@ -2588,12 +2588,8 @@ static inline NAS *AllocNAS(void) {
     return free;
 }
 
-#ifndef NON_MATCHING
-INCLUDE_ASM("asm/nonmatchings/main/main", SpawnNASById);
-#else
 NAS *SpawnNASById(s32 x, s32 y, s32 z, u16 id, u16 flags) {
     NAS *nas;
-    NAS *free;
     EXTengine *eng;
     s32 i;
     s32 r;
@@ -2612,16 +2608,7 @@ NAS *SpawnNASById(s32 x, s32 y, s32 z, u16 id, u16 flags) {
 found:
     ast = r;
     if (ast != 0 && ast < ASTCount) {
-        nas = NULL;
-        free = NASFreeList;
-        if (free != NULL) {
-            nas = free->Tag.Child;
-            NASFreeList = nas;
-            if (nas != NULL) {
-                nas->Tag.Parent = NULL;
-            }
-            nas = free;
-        }
+        nas = AllocNAS();
         if (nas != NULL) {
             *nas = NASTemplate;
             nas->NASid = 1;
@@ -2657,7 +2644,6 @@ found:
     }
     return nas;
 }
-#endif
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80022C3C);
 

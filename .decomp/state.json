@@ -1451,10 +1451,9 @@
   "status": "matched"
  },
  "80022A3C": {
-  "auto_failed": "compile",
   "blocked_at": "2026-10-11T13:40:47Z",
-  "note": "4 operands: the free-list pop's next pointer is in s0 (it reuses nas, as the permuter found) where the target uses a1; a separate temp (top or block scope), reusing eng, or a static inline AllocNAS all give the old allocation (34 lines). Prologue fixed by copying the u16 id into an int local. 3 permuter runs (30 min)",
-  "status": "blocked"
+  "matched_at": "2026-10-12T07:54:08Z",
+  "status": "matched"
  },
  "80022C3C": {
   "auto_failed": "compile"
