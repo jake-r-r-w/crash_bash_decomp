@@ -488,7 +488,7 @@ def check_function(key, e, proj, name, quiet=False):
     ttext = parse_asm(e["asm"])[3] if os.path.exists(e.get("asm", "")) else [f"{w:08x}" for w in tw]
     print(f"DIFF {name}: {len(diffs)}/{max(nt, nc)} instructions differ "
           f"({ops} opcode, {len(diffs) - ops} operand-only); length target {nt} vs compiled {nc}")
-    show_diff(diffs, ttext, ctext, nt, nc)
+    show_diff(diffs, ttext, ctext, nt, nc, int(os.environ.get("DIFF_ROWS", "40")))
     return False, len(diffs)
 
 
