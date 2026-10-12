@@ -898,4 +898,6 @@ void func_8002C090(SeqSlot *slot);
 
 void func_8001CEB4(u16 arg0, u8 *arg1, s32 arg2);
 
+u8 *func_80015A18(s32 arg0, u8 *arg1);
+
 #endif /* BASH_MAIN_H */

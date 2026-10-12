@@ -1025,7 +1025,18 @@ s32 func_800159C4(s32 arg0, u8 *arg1) {
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80015A18);
+u8 *func_80015A18(s32 arg0, u8 *arg1) {
+    s32 k;
+
+    k = arg0 & 0x7000;
+    if (k != 0x2000) {
+        if (k == 0x5000) {
+            return (u8 *)func_800159C4(arg0 & 0xFFF, arg1);
+        }
+        return NULL;
+    }
+    return arg1 + ((arg0 & 0xFFF) * 0x34 + 0x24);
+}
 
 u8 *func_80015A78(s32 i, u8 *rec) {
     void **node;
