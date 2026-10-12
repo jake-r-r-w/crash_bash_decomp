@@ -2005,7 +2005,18 @@ void func_8001D3B0(EXTengine *eng, s32 n, subengine *sub) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001D48C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001D5D0);
+void func_8001D5D0(void) {
+    D_80056998.unk8C.m[0][0] = 0x1000;
+    D_80056998.unk8C.m[0][1] = 0;
+    D_80056998.unk8C.m[0][2] = 0;
+    D_80056998.unk8C.m[1][0] = 0;
+    D_80056998.unk8C.m[1][1] = 0x1000;
+    D_80056998.unk8C.m[1][2] = 0;
+    D_80056998.unk8C.m[2][0] = 0;
+    D_80056998.unk8C.m[2][1] = 0;
+    D_80056998.unk8C.m[2][2] = 0x1000;
+}
+
 
 void func_8001D604(void) {
     if (D_80058AC8 != 0) {

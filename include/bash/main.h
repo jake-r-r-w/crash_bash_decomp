@@ -60,7 +60,8 @@ typedef struct {
     u8 unk48[0x3C];
     u8 *unk84; /* 0x84: = unkCC */
     u8 *unk88; /* 0x88: = unk10C */
-    u8 unk8C[0x40];
+    MATRIX unk8C; /* 0x8C: set to identity by func_8001D5D0 */
+    u8 unkAC[0x20];
     u8 unkCC[0x40];
     u8 unk10C[0x40];
 } GfxState;
@@ -726,5 +727,7 @@ void func_80026FCC(void);
 void func_80026D9C(void);
 
 void func_8002120C(u8 *arg0);
+
+void func_8001D5D0(void);
 
 #endif /* BASH_MAIN_H */
