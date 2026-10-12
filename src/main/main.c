@@ -2632,7 +2632,21 @@ void func_800228C4(_sfx_handler *voice) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80022924);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80022984);
+void func_80022984(void) {
+    _sfx_handler *v;
+    s32 i;
+
+    v = SfxVoicePool.voices;
+    for (i = 22; i >= 0; i--) {
+        v->next = v + 1;
+        v++;
+    }
+    v->next = NULL;
+    SfxVoicePool.active = NULL;
+    SfxVoicePool.free = SfxVoicePool.voices;
+    func_8002B9A4();
+}
+
 
 void func_800229D4(void) {
     func_8002BBB4();
