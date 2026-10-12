@@ -4169,7 +4169,35 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8002854C);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80028774);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80028994);
+s32 func_80028994(s32 a, s32 b, s32 c) {
+    s32 r;
+    s32 h;
+
+    r = 0;
+    if (c == 0x10) {
+        h = a >> 1;
+        if (h >= b) {
+            b = h;
+            c = 0x100;
+            goto dec;
+        }
+    }
+    if (b < a) {
+        b = a;
+    }
+dec:
+    b--;
+    b >>= 3;
+    while (b > 0) {
+        b >>= 1;
+        r++;
+    }
+    r <<= 1;
+    if (c == 0x100) {
+        r++;
+    }
+    return r;
+}
 
 void *func_80028A00(void) {
     u8 *cur;

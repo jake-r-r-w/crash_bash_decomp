@@ -937,4 +937,6 @@ void func_8001C584(PosDst *arg0, s32 arg1);
 
 void func_80012FA4(LoadNode *arg0);
 
+s32 func_80028994(s32 a, s32 b, s32 c);
+
 #endif /* BASH_MAIN_H */
