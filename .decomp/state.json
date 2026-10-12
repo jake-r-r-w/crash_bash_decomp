@@ -175,7 +175,8 @@
  },
  "80011EF0": {
   "auto_diff": 23,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-12T13:33:30Z",
+  "status": "matched"
  },
  "80011F74": {
   "auto_diff": 17,

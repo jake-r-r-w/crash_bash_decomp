@@ -957,4 +957,6 @@ void func_8002BCB0(s32 *arg0);
 
 void func_80020BA8(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4);
 
+MemBlock *func_80011EF0(Heap *heap);
+
 #endif /* BASH_MAIN_H */

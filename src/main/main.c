@@ -429,7 +429,29 @@ MemBlock *func_80011E80(Heap *heap) {
 }
 #endif
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80011EF0);
+MemBlock *func_80011EF0(Heap *heap) {
+    MemBlock *blk;
+    MemBlock *next;
+    MemBlock *ret;
+
+    blk = heap->lowest;
+    ret = NULL;
+    if (blk != NULL) {
+        next = (MemBlock *)((u8 *)blk + (blk->size * 4 + sizeof(MemBlock)));
+        if (next->owner != (void **)-1) {
+            ret = next;
+            if (next->size == 0) {
+                ret = NULL;
+            }
+        }
+    }
+    if (ret != NULL) {
+        if ((ret->unk0 & 2) && (ret->unk0 & 1) == (D_8005B690 & 1)) {
+            return NULL;
+        }
+    }
+    return ret;
+}
 
 MemBlock *func_80011F74(Heap *heap) {
     MemBlock *blk;
