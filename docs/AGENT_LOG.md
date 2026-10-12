@@ -216,6 +216,16 @@ Newest first, a few lines each. Details are in the commits.
   main.c, prototype in main.h): workers are now told types go in the owned
   header, and a gate refusal goes back to a worker once. Two Diff patterns
   rows are waiting in `crash_bash_decomp-swarm/patterns.md`.
+  Swarm on main (`--branch main`, 3 workers): 14 commits in ~25 min, and
+  workers verified matches far faster than the one-at-a-time gate could
+  commit them. Added the batched gate (`done --defer-build` + one
+  `decomp.py verify` per batch), permuter pause during gate builds,
+  back-pressure (`--max-queued`) and `--resume RUN`. First batch: 5 of 6
+  committed in ~4 min (~50 s each, not 6x: per-function `done` overhead
+  dominates; next, skip `cmd_progress` per function in batch mode). The
+  batch re-check caught `func_80015A18`, which matched on an older main but
+  not today's. 11 verified matches are waiting:
+  `swarm.mjs run --branch main --resume 20261012120212`.
 
 - **2026-10-12:** Short follow-on run: matched `func_80013688` (wrapper of
   `func_80013034`) and `func_80011BC0` (tail-recursive walk to the next free
