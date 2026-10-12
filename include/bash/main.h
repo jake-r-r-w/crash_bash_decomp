@@ -518,6 +518,7 @@ extern PadState D_80051338[8];
 extern void *D_80063BB4;          /* list walked by func_80028A00 (next at +4) */
 extern s32 D_8004E104;            /* func_80011410: free bytes */
 extern s32 D_8004E108;            /* func_80011410: free blocks */
+extern s32 D_8004E110[];         /* func_80012D80: 8-byte entries */
 extern s32 D_8004E10C;            /* func_80011410: largest free block, bytes */
 extern s32 D_800654BC;            /* slots of D_800644C0 in use */
 extern char D_800654CC[];
@@ -949,5 +950,7 @@ char *func_8001517C(char *arg0, s32 arg1, s32 arg2);
 void func_8002BA44(void);
 
 void func_800102F8(void);
+
+s32 func_80012D80(s32 *arg0, s32 *arg1);
 
 #endif /* BASH_MAIN_H */

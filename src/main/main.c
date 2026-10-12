@@ -470,7 +470,38 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80012BC8);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80012CD4);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80012D80);
+s32 func_80012D80(s32 *arg0, s32 *arg1) {
+    s32 *base;
+    s32 *p;
+    s32 n;
+    s32 end;
+    s32 first;
+    s32 *tbl;
+    s32 end2;
+
+    tbl = D_8004E110;
+    n = arg1[1];
+    n--;
+    base = tbl;
+    base = base + arg1[0] * 2;
+    end = -1;
+    first = *base;
+    if (n != end) {
+        end2 = end;
+        p = base;
+loop:
+        n -= 1;
+        if (p == arg0) {
+            return *p - first;
+        }
+        p += 2;
+        if (n == end2) {
+            return -1;
+        }
+        goto loop;
+    }
+    return end;
+}
 
 void func_80012DDC(s32 arg0) {
     do {
