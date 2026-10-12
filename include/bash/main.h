@@ -1005,4 +1005,6 @@ void func_8001DD50(void *arg0, void *arg1);
 
 s32 func_80027944(void);
 
+MemBlock *func_80011C98(MemBlock *arg0);
+
 #endif /* BASH_MAIN_H */

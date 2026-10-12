@@ -352,7 +352,19 @@ MemBlock *func_80011C5C(u32 words, MemBlock *blk) {
     return blk;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80011C98);
+MemBlock *func_80011C98(MemBlock *arg0) {
+    MemBlock *blk;
+    MemBlock *p;
+
+    blk = (MemBlock *)arg0->owner;
+    blk = blk->prev;
+    for (; blk != NULL; blk = blk->prev) {
+        if (blk->owner == NULL && (p = blk->prev) != NULL && p->owner != (void **)-1) {
+            return blk;
+        }
+    }
+    return blk;
+}
 
 void func_80011D00(s32 arg0) {
     func_800107C8(arg0 - 0x18, D_8004E0F0);
