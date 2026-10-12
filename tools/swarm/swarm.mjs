@@ -236,11 +236,11 @@ class Swarm {
   preflight() {
     const o = this.o;
     if (!(o.workers >= 1 && o.workers <= 16)) die('--workers must be 1..16');
-    if (o.branch === 'main' || o.branch === 'master') {
-      if (!o.allowMain) die(`refusing to integrate into ${o.branch}; pick another --branch (or --allow-main)`);
-    }
-    const head = git(REPO, 'symbolic-ref', '--short', 'HEAD').out.trim();
-    if (head === o.branch) die(`${o.branch} is checked out in ${REPO}: switch away from it first`);
+    // commits go to <remote>/<branch> (GitHub main by default), never into your checkout directly
+    const named = git(REPO, 'remote', 'get-url', o.remote);
+    this.remoteUrl = named.code === 0 ? named.out.trim() : o.remote;
+    this.remoteName = named.code === 0 ? o.remote : null;
+    if (git(REPO, 'ls-remote', '-q', this.remoteUrl).code) die(`can't reach remote ${o.remote} (${this.remoteUrl})`);
     if (sh('docker', ['info']).code) die('Docker is not reachable');
     if (!o.workerCmd && !o.dryRun) {
       this.claude = realClaude(which(o.claudeBin));
@@ -257,16 +257,39 @@ class Swarm {
     writeJson(this.paths.lock, { pid: process.pid, id: this.id, started: stamp() });
   }
 
-  // integration clone on the target branch (created from --base the first time)
+  // integration clone at the remote branch's tip (the branch is created from --base if it's new)
   setupInteg() {
     const o = this.o;
-    const exists = git(REPO, 'rev-parse', '--verify', '-q', `refs/heads/${o.branch}`).code === 0;
-    const rev = exists ? `refs/heads/${o.branch}` : o.base;
-    if (exists && o.baseGiven) this.log(`note: ${o.branch} exists; --base ${o.base} ignored`);
-    makeClone(this.integ, REPO, rev, m => this.log(m));
-    resetClone(this.integ, 'HEAD');
-    if (!exists) gitOk(this.integ, 'push', '-q', REPO, `HEAD:refs/heads/${o.branch}`);
-    this.log(`integrating into ${o.branch} at ${gitOk(this.integ, 'rev-parse', '--short', 'HEAD')}`);
+    makeClone(this.integ, REPO, 'HEAD', m => this.log(m));
+    if (!this.syncInteg()) {
+      if (git(this.integ, 'fetch', '-q', REPO, o.base).code) die(`--base ${o.base} not found`);
+      resetClone(this.integ, 'FETCH_HEAD');
+      gitOk(this.integ, 'push', '-q', this.remoteUrl, `HEAD:refs/heads/${o.branch}`);
+      this.log(`created ${o.branch} on ${o.remote} from ${o.base}`);
+    }
+    this.log(`integrating into ${o.remote}/${o.branch} at ${gitOk(this.integ, 'rev-parse', '--short', 'HEAD')}`);
+  }
+
+  // integration clone to the remote branch's tip: others (you, a hand session) may have pushed
+  syncInteg() {
+    if (git(this.integ, 'fetch', '-q', this.remoteUrl, `refs/heads/${this.o.branch}`).code) return false;
+    resetClone(this.integ, 'FETCH_HEAD');
+    return true;
+  }
+
+  // your checkout follows along when it's on the branch and has no uncommitted changes to tracked files
+  updateLocal() {
+    if (!this.remoteName) return;
+    git(REPO, 'fetch', '-q', this.remoteName, this.o.branch);
+    const head = git(REPO, 'symbolic-ref', '--short', 'HEAD').out.trim();
+    const dirty = git(REPO, 'status', '--porcelain', '--untracked-files=no').out.trim();
+    const ff = head === this.o.branch && !dirty &&
+      git(REPO, 'merge', '-q', '--ff-only', `${this.remoteName}/${this.o.branch}`).code === 0;
+    if (!ff && !this.warnedLocal) {
+      this.warnedLocal = true;
+      this.log(`note: your checkout isn't updated (${head !== this.o.branch ? `on ${head}` : dirty ? 'uncommitted changes' : 'diverged'}); ` +
+               `\`git pull\` gets the swarm's commits`);
+    }
   }
 
   // tools/dk in a clone, async; containers are labelled for the stop switch. `minutes` kills it.
@@ -594,7 +617,7 @@ ${job.permuterDiff}
     const { f } = job;
     this.integrating = job;
     try {
-      resetClone(this.integ, 'HEAD');
+      if (!this.syncInteg()) throw new Error(`can't fetch ${this.o.remote}/${this.o.branch}`);
       const ap = git(this.integ, 'apply', '--3way', '--whitespace=nowarn', job.patch);
       if (ap.code) {
         resetClone(this.integ, 'HEAD');
@@ -631,16 +654,18 @@ ${job.permuterDiff}
         .filter(l => l.trim() && !l.endsWith('tools/dk'));   // our copy of tools/dk
       if (dirty.length) this.log(`${f.name}: note: done left changes behind, discarded: ${dirty.join(', ')}`);
       resetClone(this.integ, 'HEAD');
-      const push = git(this.integ, 'push', '-q', REPO, `HEAD:refs/heads/${this.o.branch}`);
+      const push = git(this.integ, 'push', '-q', this.remoteUrl, `HEAD:refs/heads/${this.o.branch}`);
       if (push.code) {
+        // someone pushed since our fetch: run the gate again on top of their commits
+        if (/rejected|non-fast-forward|fetch first/i.test(push.err) && (job.pushRetries = (job.pushRetries || 0) + 1) <= 3) {
+          this.log(`${f.name}: ${this.o.branch} moved on while the gate ran; redoing it on the new tip`);
+          this.integQueue.unshift(job);
+          return;
+        }
         this.stopping ||= 'graceful';
-        return this.fail(null, job, `push to ${this.o.branch} failed, stopping: ${push.err.trim()}`);
+        return this.fail(null, job, `push to ${this.o.remote}/${this.o.branch} failed, stopping: ${push.err.trim()}`);
       }
-      if (this.o.pushOrigin) {
-        const url = gitOk(REPO, 'remote', 'get-url', 'origin');
-        const pr = git(this.integ, 'push', '-q', url, `HEAD:refs/heads/${this.o.branch}`);
-        if (pr.code) this.log(`warning: push to origin failed: ${pr.err.trim()}`);
-      }
+      this.updateLocal();
       this.stats.matched++;
       this.consecutiveFailures = 0;
       this.finished.add(f.key);

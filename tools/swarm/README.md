@@ -9,7 +9,7 @@ clone, and a single integrator that commits every match through the validation g
 workers (N clones)                         integrator (one clone, serial)
  reset to the integration tip               git apply --3way the patch
  claude -p: match-function steps 1-4  -->   decomp.py done NAME --commit
- orchestrator: patch checks + `try`         push to the swarm branch
+ orchestrator: patch checks + `try`         push to <remote>/<branch>
         |
         | stuck: "needs_permute" + closest C (the worker's slot is freed)
         v
@@ -48,19 +48,23 @@ dontAsk`: anything outside the allowed tools is denied, never prompted. Options 
 - `--workers` (3), `--seg` (`main/main`), `--only f1,f2` (exactly these functions)
 - `--permuters` (2), `--permute-minutes` (10): the permuter pool; `--permuters 0` turns it off
   (workers then just park).
-- `--branch` (`swarm/integration`): where matches are committed, created from `--base` (`main`)
-  the first time. Merge it into `main` yourself after review.
+- `--branch` (`swarm/integration`), `--remote` (`origin`): each match is pushed to
+  `<remote>/<branch>` as soon as the gate passes (the branch is created from `--base`, `main`, if
+  it's new). The default is a review branch; `--branch main` commits straight to GitHub's `main`
+  like a hand session, with the gate as the only check. If the branch moves while the gate runs
+  (a hand session pushed), the swarm redoes the gate on the new tip. Your checkout fast-forwards
+  when it's on that branch with no uncommitted changes; otherwise `git pull`.
 - `--model` (`sonnet`), `--escalate-model` (`opus`): a function the first model doesn't match gets
   one more attempt with the second, carrying the first attempt's notes.
 - `--dir` (`<repo>-swarm`, next to the repo): clones, logs and results.
-- `--push-origin`: also push the swarm branch to GitHub.
 - `--dry-run`: everything but Claude (workers report "parked"). `--worker-cmd CMD`: run CMD in
   the worker clone instead of Claude (env `SWARM_FUNC`, `SWARM_SRC`, `SWARM_RESULT`), for tests.
 
 ## Safeguards
 
-- **Never on `main`:** refuses `--branch main` (unless `--allow-main`) and a branch checked out
-  in your repo. Your checkout is never touched: all work happens in clones under `--dir`.
+- **`main` only when asked:** by default matches go to a review branch; `main` needs `--branch
+  main` on the command line. All work happens in clones under `--dir`; your checkout is only
+  ever fast-forwarded, never edited.
 - **Workers can't commit or push:** the allowed tools are file edits, `tools/dk` and read-only
   commands; `git commit/push/reset/clean`, `rm`, web and sub-agents are denied, and each clone's
   push URL is disabled. The orchestrator takes only `git diff` of `src/` and `include/`.
