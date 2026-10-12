@@ -355,6 +355,7 @@ void func_80026AD8(u8 *arg0);
 void func_80026B70(u8 * *arg0, u8 *arg1);
 void func_80026BF4(u8 *arg0);
 void func_8001C270(EXTengine *eng);
+void func_80026D08(void);
 void func_80026430(NAS *nas);
 void func_80026AFC(NAS *nas);
 void func_80026980(NAS *nas);
@@ -444,6 +445,10 @@ extern MusicEntry D_80058B88[];
 extern VabSlot D_800644C0[6];
 extern NodePool D_80056844;
 extern NAS *D_8005AA2C;
+extern void *D_8005AA28;            /* tail of the D_8005AA24 list */
+extern void *D_8005AA30;            /* tail of the D_8005AA2C list */
+extern s32 D_8005A5DC;
+extern s32 D_8005B5BC[16][2];       /* entries 1..15 cleared by func_80026D9C */
 extern s32 D_800515F8;
 extern u8 D_80063A90[2][0x34];    /* PadInitMtap buffers */
 extern PadState D_80051338[8];
@@ -717,5 +722,7 @@ subengine *func_8001C34C(s32 n, subengine *sub);
 void func_80028158(void);
 
 void func_80026FCC(void);
+
+void func_80026D9C(void);
 
 #endif /* BASH_MAIN_H */

@@ -3295,7 +3295,25 @@ loop:
 }
 #endif
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80026D9C);
+void func_80026D9C(void) {
+    s32 i;
+
+    D_8005AA34 = NULL;
+    D_8005AA2C = NULL;
+    D_8005AA30 = NULL;
+    D_8005AA24 = NULL;
+    D_8005AA28 = NULL;
+    NASActiveHead = NULL;
+    NASActiveTail = NULL;
+    D_8005A5D8 = 0;
+    D_8005A5DC = 1;
+    func_80026D08();
+    for (i = 1; i < 16; i++) {
+        D_8005B5BC[i][0] = 0;
+        D_8005B5BC[i][1] = 0;
+    }
+}
+
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80026E2C);
 

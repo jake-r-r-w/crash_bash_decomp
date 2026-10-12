@@ -1725,7 +1725,9 @@
  },
  "80026D9C": {
   "auto_diff": 10,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-12T08:56:56Z",
+  "started": "2026-10-12T08:55:03Z",
+  "status": "matched"
  },
  "80026E2C": {
   "auto_diff": 42,
