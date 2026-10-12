@@ -1011,7 +1011,19 @@ s32 func_80015984(s32 i, EntryBlock *blk) {
     return *(s32 *)(base + idx * 12 + 0xC);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800159C4);
+s32 func_800159C4(s32 arg0, u8 *arg1) {
+    u8 *base;
+    s32 t;
+    s32 r;
+
+    t = (arg0 - 1) & 0xFFF;
+    base = arg1 + (*(s32 *)(arg1 + 0x1C) + 0x1C);
+    r = func_8001DD20((s32 *)(base + (t * 0xC + 4)));
+    if (r == 0) {
+        return 0;
+    }
+    return r;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80015A18);
 

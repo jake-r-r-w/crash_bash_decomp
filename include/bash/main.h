@@ -841,4 +841,6 @@ void func_80013C24(void);
 
 void func_80013CA4(void);
 
+s32 func_800159C4(s32 arg0, u8 *arg1);
+
 #endif /* BASH_MAIN_H */
