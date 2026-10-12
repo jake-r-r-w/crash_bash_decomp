@@ -3351,7 +3351,13 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80025D40);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80025E00);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80025F44);
+void func_80025F44(EXTengine *eng) {
+    if (D_8005AA94 == NULL) {
+        func_80025E00(eng, eng->unk10.y - D_8005A5D8);
+    } else {
+        D_8005AA94(eng);
+    }
+}
 
 void func_80025F8C(void) {
 }

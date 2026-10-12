@@ -860,4 +860,6 @@ void func_80016F54(u8 *arg0);
 
 void func_8001CE00(s32 arg0, ModelSet *set, s32 arg2);
 
+void func_80025F44(EXTengine *eng);
+
 #endif /* BASH_MAIN_H */
