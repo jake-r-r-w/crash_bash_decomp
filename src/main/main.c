@@ -310,7 +310,43 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_800118BC);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800119D4);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80011AE8);
+void func_80011AE8(MemBlock *blk, Heap *heap) {
+    MemBlock *p;
+    MemBlock *prev;
+
+    p = heap->free;
+    if (p == NULL) {
+        heap->free = blk;
+        blk->nextFree = NULL;
+        blk->prevFree = NULL;
+        return;
+    }
+    goto loop;
+append:
+    p->nextFree = blk;
+    blk->prevFree = p;
+    blk->nextFree = NULL;
+    return;
+loop:
+    if (p->size >= blk->size) {
+        prev = p->prevFree;
+        if (prev != NULL) {
+            prev->nextFree = blk;
+        } else {
+            heap->free = blk;
+        }
+        blk->prevFree = prev;
+        blk->nextFree = p;
+        p->prevFree = blk;
+        return;
+    }
+    prev = p->nextFree;
+    if (prev == NULL) {
+        goto append;
+    }
+    p = prev;
+    goto loop;
+}
 
 void func_80011B74(u8 *arg0, u8 *arg1) {
     u8 *temp_v1;

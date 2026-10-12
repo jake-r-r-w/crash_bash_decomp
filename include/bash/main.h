@@ -1011,4 +1011,6 @@ s32 func_8001E51C(s32 arg0);
 
 void func_80026F48(void);
 
+void func_80011AE8(MemBlock *blk, Heap *heap);
+
 #endif /* BASH_MAIN_H */
