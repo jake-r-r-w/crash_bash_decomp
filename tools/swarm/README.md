@@ -79,6 +79,11 @@ dontAsk`: anything outside the allowed tools is denied, never prompted. Options 
   Batching only happens when the branch's `decomp.py` has `--defer-build`.
 - **Gate builds get the CPU:** running permuter containers are paused (`docker pause`) while
   the gate works and resumed after.
+- **Conflicts:** headers merge with `merge=union` in the swarm's clones (every match appends its
+  prototype to the end of `bash/main.h`). Two functions within 8 lines of each other in a file
+  are never leased at once. If a patch still conflicts, the orchestrator re-applies the worker's
+  C mechanically (its INCLUDE_ASM line becomes the C, added lines go after the same anchor) and
+  the gate checks it; only a patch it can't re-apply goes back to a worker.
 - **Back-pressure:** no new functions are leased while more than `--max-queued` (3) matches wait
   for the gate, so workers don't run ahead into conflicts.
 - **No duplicate work:** a function is leased to one worker; identical copies (same fingerprint)

@@ -24,6 +24,7 @@ const DATA_DIRS = ['asm', 'assets', 'linkers', 'ext'];
 const DISC_FILE_MAX = 16 << 20;           // disc/: the exe and overlay binaries, not the 170 MB image
 const RESULT = '.swarm-result.json';
 const PATCH_MAX = 64 << 10;
+const NEIGHBOUR = 8;            // lines between two INCLUDE_ASMs below which they aren't leased together
 // environment of the session that started us: a nested claude must not inherit it
 const STRIP_ENV = /^(CLAUDECODE|CLAUDE_CODE_(SESSION_ID|ENTRYPOINT|CHILD_SESSION|HOST_SESSION_ID|MESSAGING_\w+|SESSION_ATTENDED)|CLAUDE_PID)$/;
 
@@ -192,6 +193,72 @@ function useOurDk(dir) {
   fs.copyFileSync(path.join(REPO, 'tools', 'dk'), path.join(dir, 'tools', 'dk'));
 }
 
+// Re-apply a worker's patch whose context no longer matches: the target's INCLUDE_ASM line is
+// replaced by the worker's C, and lines the patch only adds go back after the same anchor line
+// (the nearest non-blank context line above them, if it's unique in the file; lines already there,
+// such as a prototype `done` added, are skipped). Anything else (the patch edits or deletes another
+// line, an anchor is gone or ambiguous) gives up. Writes nothing unless every file works out.
+// Returns null when done, else why not. The gate checks the result like any other.
+const INCLUDE_LINE = /^\s*INCLUDE_ASM\(\s*"[^"]+"\s*,\s*(\w+)\s*\)/;
+
+function reapply(dir, patch, f) {
+  const out = {};
+  let replaced = false;
+  const unique = (lines, s) => {
+    const i = lines.indexOf(s);
+    return i >= 0 && lines.indexOf(s, i + 1) < 0 ? i : -1;
+  };
+  for (const sec of patch.split(/^diff --git /m).slice(1)) {
+    const file = (sec.match(/^a\/\S+ b\/(\S+)/) || [])[1];
+    if (!file) return 'unreadable patch';
+    if (/^(new file|deleted file|rename from)/m.test(sec)) return `${file} is new, deleted or renamed`;
+    const p = path.join(dir, file);
+    if (!out[file] && !fs.existsSync(p)) return `${file} is missing`;
+    const lines = out[file] ||= fs.readFileSync(p, 'utf8').split('\n');
+    for (const hunk of sec.split(/^@@[^\n]*\n/m).slice(1)) {
+      let anchor = null, blanks = 0, del = null, run = [];
+      const flush = () => {
+        if (!run.length && !del) return null;
+        if (del) {                              // the INCLUDE_ASM line -> the worker's C
+          const i = unique(lines, del);
+          if (i < 0) return `${f.name}'s INCLUDE_ASM line isn't there once`;
+          lines.splice(i, 1, ...run);
+          replaced = true;
+        } else {                                // added lines (declarations) after their anchor
+          const i = anchor === null ? -1 : unique(lines, anchor);
+          if (i < 0) return `no unique anchor for an added line in ${file}`;
+          const add = run.filter(l => !l.trim() || !lines.includes(l));
+          lines.splice(i + 1 + blanks, 0, ...add);
+        }
+        del = null;
+        run = [];
+        return null;
+      };
+      for (const l of hunk.split('\n')) {
+        if (!l || l.startsWith('\\')) continue;
+        const t = l.slice(1);
+        if (l[0] === '+') { run.push(t); continue; }
+        if (l[0] === '-') {
+          const m = t.match(INCLUDE_LINE);
+          if (!m || ![f.name, `func_${f.key}`].includes(m[1])) return `it changes an existing line in ${file}`;
+          const err = flush();
+          if (err) return err;
+          del = t;
+          continue;
+        }
+        const err = flush();                    // a context line ends a run
+        if (err) return err;
+        if (t.trim()) { anchor = t; blanks = 0; } else if (anchor !== null) blanks++;
+      }
+      const err = flush();
+      if (err) return err;
+    }
+  }
+  if (!replaced) return `no INCLUDE_ASM replacement for ${f.name} in the patch`;
+  for (const [file, lines] of Object.entries(out)) fs.writeFileSync(path.join(dir, file), lines.join('\n'));
+  return null;
+}
+
 // back to `rev`, dropping every tracked change and untracked file (ignored data stays)
 function resetClone(dir, rev) {
   gitOk(dir, 'reset', '-q', '--hard', rev);
@@ -336,7 +403,25 @@ class Swarm {
     if (r.code || !line) throw new Error('decomp.py queue failed:\n' + r.out.slice(-2000));
     let q = JSON.parse(line);
     if (this.o.only) q = q.filter(f => this.o.only.includes(f.name) || this.o.only.includes(f.key));
+    // where each function's INCLUDE_ASM line is, to keep neighbours apart (nextJob)
+    const lines = {};
+    for (const src of new Set(q.map(f => f.src).filter(Boolean))) {
+      const p = path.join(this.integ, src);
+      if (!fs.existsSync(p)) continue;
+      fs.readFileSync(p, 'utf8').split('\n').forEach((l, i) => {
+        const m = l.match(/^\s*INCLUDE_ASM\(\s*"[^"]+"\s*,\s*(\w+)\s*\)/);
+        if (m) lines[`${src}:${m[1]}`] = i;
+      });
+    }
+    for (const f of q) f.line = lines[`${f.src}:${f.name}`];
     this.queue = q;
+  }
+
+  // within NEIGHBOUR lines of a function someone is already on, in the same file: patches that
+  // close together overlap in their context lines and conflict
+  nearBusy(f, busy) {
+    return f.line !== undefined && busy.some(j => j.f.src === f.src && j.f.line !== undefined &&
+                                                  Math.abs(j.f.line - f.line) <= NEIGHBOUR);
   }
 
   activeJobs() {
@@ -349,7 +434,7 @@ class Swarm {
     const busy = this.activeJobs();
     const keys = new Set(busy.map(j => j.f.key)), fps = new Set(busy.map(j => j.f.fp).filter(Boolean));
     for (const f of this.queue) {
-      if (this.finished.has(f.key) || keys.has(f.key) || (f.fp && fps.has(f.fp))) continue;
+      if (this.finished.has(f.key) || keys.has(f.key) || (f.fp && fps.has(f.fp)) || this.nearBusy(f, busy)) continue;
       if ((this.history[f.key]?.attempts || 0) >= this.o.maxAttempts && !this.o.retryFailed) continue;
       return { f, model: this.o.model, attempt: 1, notes: [] };
     }
@@ -683,7 +768,16 @@ ${job.permuterDiff}
   // one match through `done --commit` on top of the integration clone; true if it committed
   async gateOne(job, defer) {
     const { f } = job;
-    const ap = git(this.integ, 'apply', '--3way', '--whitespace=nowarn', job.patch);
+    let ap = git(this.integ, 'apply', '--3way', '--whitespace=nowarn', job.patch);
+    if (ap.code) {
+      resetClone(this.integ, 'HEAD');
+      // the worker's C is fine, only its surroundings moved: put it in place ourselves
+      const why = reapply(this.integ, fs.readFileSync(job.patch, 'utf8'), f);
+      if (why === null) {
+        this.log(`${f.name}: patch conflicted; re-applied its C to the new ${this.o.branch} mechanically`);
+        ap = { code: 0 };
+      } else this.log(`${f.name}: patch conflicted and can't be re-applied mechanically (${why})`);
+    }
     if (ap.code) {
       resetClone(this.integ, 'HEAD');
       this.stats.conflicts++;
