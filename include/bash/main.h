@@ -471,6 +471,7 @@ void func_8002D33C(u8 *arg0);
 extern GteScratch D_800569CC;
 extern SVECTOR D_80056AC8[];
 extern s32 D_80064478[];
+extern s32 D_8006E9F8;
 extern u8 D_800527C4[];
 extern u8 D_80052A54[];
 extern s32 D_80064414;
@@ -991,5 +992,7 @@ s32 func_80015210(s32 a, s32 b, s32 t);
 s32 *func_800218DC(u8 *arg0, s32 arg1);
 
 void func_80020B44(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5);
+
+s32 func_80013488(s32 arg0, s32 arg1, s32 arg2);
 
 #endif /* BASH_MAIN_H */
