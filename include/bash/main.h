@@ -896,4 +896,6 @@ void func_8002B4D8(PitchVoice *arg0, s32 arg1);
 
 void func_8002C090(SeqSlot *slot);
 
+void func_8001CEB4(u16 arg0, u8 *arg1, s32 arg2);
+
 #endif /* BASH_MAIN_H */
