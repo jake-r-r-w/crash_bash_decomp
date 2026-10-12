@@ -713,4 +713,6 @@ void *func_80012E28(void);
 
 subengine *func_8001C34C(s32 n, subengine *sub);
 
+void func_80028158(void);
+
 #endif /* BASH_MAIN_H */

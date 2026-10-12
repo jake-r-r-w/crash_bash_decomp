@@ -3479,7 +3479,15 @@ s32 func_800280C0(u8 *src, u8 *dst, s32 n) {
     return count;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80028158);
+void func_80028158(void) {
+    s32 v;
+    s32 i;
+
+    v = 1;
+    for (i = 7; i >= 0; i--) {
+        D_80051338[i].unk28 = v;
+    }
+}
 
 void func_80028184(u8 *arg0, s32 arg1, s8 arg2) {
     (*(s8*)((u8*)(arg0) + 5)) = arg2;

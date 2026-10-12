@@ -25,9 +25,9 @@
    "size": 148
   }
  ],
- "commit": "a276c48",
+ "commit": "b3801c9",
  "game": "SCUS_945.70",
- "generated": "2026-10-12T08:50:03Z",
+ "generated": "2026-10-12T08:52:45Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -11318,9 +11318,103 @@
      535
     ]
    }
+  },
+  {
+   "commit": "b3801c9",
+   "data_b": 44,
+   "data_tb": 616791,
+   "game_all_f": 2550,
+   "game_b": 33732,
+   "game_c_f": 513,
+   "game_f": 513,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 402,
+   "lib_b": 121280,
+   "lib_f": 535,
+   "lib_tb": 122112,
+   "ts": "2026-10-12T08:52:45Z",
+   "units": {
+    "engine": [
+     2752,
+     63
+    ],
+    "main exe": [
+     22344,
+     249
+    ],
+    "ovl5d": [
+     328,
+     4
+    ],
+    "ovl5e": [
+     504,
+     6
+    ],
+    "ovl5f": [
+     1508,
+     35
+    ],
+    "ovl60": [
+     708,
+     14
+    ],
+    "ovl61": [
+     292,
+     7
+    ],
+    "ovl62": [
+     664,
+     29
+    ],
+    "ovl63": [
+     636,
+     16
+    ],
+    "ovl64": [
+     104,
+     6
+    ],
+    "ovl65": [
+     492,
+     9
+    ],
+    "ovl66": [
+     528,
+     13
+    ],
+    "ovl67": [
+     836,
+     12
+    ],
+    "ovl68": [
+     180,
+     10
+    ],
+    "ovl69": [
+     920,
+     16
+    ],
+    "ovl6a": [
+     936,
+     24
+    ],
+    "psyq": [
+     121280,
+     535
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-12T08:52:18Z",
+   "auto": true,
+   "name": "func_80028158",
+   "seg": "main/main",
+   "size": 44,
+   "tries": 0
+  },
   {
    "at": "2026-10-12T08:49:34Z",
    "auto": true,
@@ -11432,14 +11526,6 @@
    "seg": "overlays/engine/engine",
    "size": 52,
    "tries": 0
-  },
-  {
-   "at": "2026-10-11T23:27:12Z",
-   "auto": true,
-   "name": "PlotRaceFire",
-   "seg": "overlays/ovl63/ovl63",
-   "size": 32,
-   "tries": 0
   }
  ],
  "summary": {
@@ -11455,15 +11541,15 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 4,
-   "c_f": 512,
-   "done_b": 33688,
-   "done_f": 512,
+   "c_f": 513,
+   "done_b": 33732,
+   "done_f": 513,
    "named_f": 345,
-   "pct": 3.305869468792074,
+   "pct": 3.3101872750324817,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2550,
-   "typed_f": 401
+   "typed_f": 402
   },
   "lib": {
    "all_f": 566,
@@ -11507,20 +11593,20 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 4,
-    "c_f": 248,
-    "done_b": 22300,
-    "done_f": 248,
+    "c_f": 249,
+    "done_b": 22344,
+    "done_f": 249,
     "file": "SCUS_945.70",
     "files": 1,
     "lib": false,
     "named_f": 15,
-    "pct": 17.86286446651714,
+    "pct": 17.898109580262737,
     "phase": 2,
     "sony_b": 0,
     "title": "main.exe",
     "total_b": 124840,
     "total_f": 574,
-    "typed_f": 170,
+    "typed_f": 171,
     "unit": "main exe"
    },
    {
