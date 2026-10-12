@@ -2753,7 +2753,28 @@ KeyEntry *func_8001E41C(KeyBlock *arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001E48C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001E51C);
+s32 func_8001E51C(s32 arg0) {
+    s32 *p;
+    s32 n;
+    s32 i;
+
+    p = NULL;
+    if (*(s32 *)D_80058AD0 != 0) {
+        p = *(s32 **)((u8 *)D_80058AD0 + 0x28);
+    }
+    i = 0;
+    n = *p;
+loop:
+    p++;
+    if (i < n) {
+        if (*(s32 *)((u8 *)p + *p + 0xC) == arg0) {
+            return i;
+        }
+        i++;
+        goto loop;
+    }
+    return -1;
+}
 
 void func_8001E588(u8 *arg0, s32 arg1, s32 arg2) {
     (*(s32*)((u8*)(arg0) + 4)) = arg1;
