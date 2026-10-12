@@ -485,7 +485,27 @@ s32 func_80013160(u8 *arg0) {
     return (*(s32*)((u8*)(arg0) + 12));
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001316C);
+u8 *func_8001316C(u8 *arg0) {
+    u8 *node;
+    u8 *next;
+    u8 *head;
+
+    head = D_80050F3C;
+    node = *(u8 **)(arg0 + 12);
+    *(u8 **)(arg0 + 12) = *(u8 **)(node + 28);
+    *(u8 **)(node + 28) = head;
+    next = *(u8 **)(arg0 + 12);
+    D_80050F3C = node;
+    if (next != NULL) {
+        *(u8 **)(next + 32) = NULL;
+    } else {
+        *(u8 **)(arg0 + 16) = NULL;
+    }
+    return node;
+}
+
+
+
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800131B0);
 
