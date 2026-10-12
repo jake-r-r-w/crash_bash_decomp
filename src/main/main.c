@@ -3692,7 +3692,17 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80027944);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800279A4);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80027A30);
+void func_80027A30(s16 vol) {
+    SpuCommonAttr attr;
+
+    attr.mask = SPU_COMMON_MVOLL | SPU_COMMON_MVOLR | SPU_COMMON_CDVOLL | SPU_COMMON_CDVOLR | SPU_COMMON_CDMIX;
+    attr.mvol.left = 0x37FF;
+    attr.mvol.right = 0x37FF;
+    attr.cd.volume.left = vol;
+    attr.cd.volume.right = vol;
+    attr.cd.mix = 1;
+    SpuSetCommonAttr(&attr);
+}
 
 void func_80027A74(void) {
     func_80012FFC();

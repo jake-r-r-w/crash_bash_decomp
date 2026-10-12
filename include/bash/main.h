@@ -809,4 +809,6 @@ void func_80011578(u8 *arg0, MemBlock *arg1, s32 arg2);
 
 void func_8001702C(SlotList *arg0);
 
+void func_80027A30(s16 vol);
+
 #endif /* BASH_MAIN_H */
