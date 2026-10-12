@@ -4212,7 +4212,13 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80026E2C);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80026ECC);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80026F48);
+void func_80026F48(void) {
+    s32 i;
+
+    for (i = D_8005AA10; i < D_8005AA14; i++) {
+        KillNAS(&D_8005AA1C[i]);
+    }
+}
 
 void func_80026FCC(void) {
     s32 i;
