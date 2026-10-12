@@ -951,7 +951,9 @@ typedef struct {
     s32 y; /* 0x70 */
     s32 z; /* 0x74 */
     s32 x; /* 0x78 */
+    s32 idx; /* 0x7C */
 } PosDst;
+void func_8001A82C(PosDst *arg0, s32 arg1, s32 arg2);
 extern PosEntry D_8005689C[];
 void func_80024214(s32 *a, s32 *b);
 
@@ -994,5 +996,7 @@ s32 *func_800218DC(u8 *arg0, s32 arg1);
 void func_80020B44(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5);
 
 s32 func_80013488(s32 arg0, s32 arg1, s32 arg2);
+
+void func_8001C448(PosDst *arg0, s32 arg1, s32 arg2);
 
 #endif /* BASH_MAIN_H */

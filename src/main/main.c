@@ -2193,7 +2193,36 @@ void func_8001C378(u8 *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001C3D0);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001C448);
+void func_8001C448(PosDst *arg0, s32 arg1, s32 arg2) {
+    PosEntry *e;
+    s32 sp10;
+    s32 sp14;
+
+    e = &D_8005689C[arg0->idx];
+    switch (e->mode) {
+    case 1:
+        if (D_8005B690 & 4) {
+    case 0:
+            arg0->x = e->a[0];
+            arg0->y = e->a[1];
+            arg0->z = e->a[2];
+        } else {
+            arg0->x = e->b[0];
+            arg0->y = e->b[1];
+            arg0->z = e->b[2];
+        }
+        break;
+    case 2:
+        sp10 = e->a[1];
+        sp14 = e->a[2];
+        func_80024214(&sp10, &sp14);
+        arg0->x = e->b[0];
+        arg0->y = sp10;
+        arg0->z = sp14;
+        break;
+    }
+    func_8001A82C(arg0, arg1, arg2);
+}
 
 void func_8001C584(PosDst *arg0, s32 arg1) {
     PosEntry *e;
