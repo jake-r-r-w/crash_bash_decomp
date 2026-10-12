@@ -4158,7 +4158,11 @@ void func_8002C18C(u8 *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C1C0);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C248);
+void func_8002C248(s32 arg0) {
+    if (D_8006557C.seq >= 0) {
+        SsSeqSetDecrescendo(D_8006557C.seq, 0x7F, arg0);
+    }
+}
 
 void func_8002C284(s32 arg0) {
     D_8006559C = arg0;
