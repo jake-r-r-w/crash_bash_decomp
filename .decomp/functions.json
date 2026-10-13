@@ -6415,7 +6415,22 @@
   "orig": "func_80027408",
   "rom": 97288,
   "seg": "main/main",
-  "size": 404,
+  "size": 244,
+  "src": "src/main/main.c"
+ },
+ "800274FC": {
+  "asm": "asm/nonmatchings/main/main/func_800274FC.s",
+  "calls": [
+   "80011654"
+  ],
+  "fp": "62edc875f501cef8",
+  "fpn": "b06255ff89526157",
+  "leaf": false,
+  "name": "func_800274FC",
+  "orig": "func_800274FC",
+  "rom": 97532,
+  "seg": "main/main",
+  "size": 160,
   "src": "src/main/main.c"
  },
  "8002759C": {

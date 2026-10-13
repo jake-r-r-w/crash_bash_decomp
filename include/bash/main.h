@@ -1896,6 +1896,8 @@ NAS *func_80022C3C(s32 x, s32 y, s32 z, u16 id, s32 slot);
 
 s32 func_8002578C(NAS *nas);
 
+void func_80027408(void);
+
 void func_80027D90(void);
 
 void func_80029790(u8 *arg0);

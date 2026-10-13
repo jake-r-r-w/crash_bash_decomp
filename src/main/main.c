@@ -8570,7 +8570,41 @@ void func_800272AC(s32 arg0) {
     func_80017388();
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80027408);
+void func_80027408(void) {
+    DISPENV disp;
+    DRAWENV draw;
+
+    DrawSync(0);
+    SetDefDispEnv(&disp, 0, 0, 0x200, 0xF0);
+    SetDispMask(1);
+    disp.disp.x = 0;
+    disp.disp.y = 0;
+    disp.disp.w = 0x200;
+    disp.disp.h = 0xF0;
+    disp.screen.x = 0;
+    disp.screen.y = 0;
+    disp.screen.w = 0x200;
+    disp.screen.h = 0xF0;
+    disp.isinter = 0;
+    disp.isrgb24 = 0;
+    PutDispEnv(&disp);
+    SetDefDrawEnv(&draw, 0, 0, 0x200, 0xF0);
+    draw.dfe = 1;
+    draw.isbg = 1;
+    draw.dtd = 0;
+    while (1) {
+        ClearOTag((u_long *)D_8005B68C, 0x10);
+        draw.r0 = Random(0xFF);
+        draw.g0 = Random(0xFF);
+        draw.b0 = Random(0xFF);
+        PutDrawEnv(&draw);
+        DrawOTag((u_long *)D_8005B68C);
+        DrawSync(0);
+        VSync(2);
+    }
+}
+
+INCLUDE_ASM("asm/nonmatchings/main/main", func_800274FC);
 
 void func_8002759C(void) {
     RECT *temp_s0;

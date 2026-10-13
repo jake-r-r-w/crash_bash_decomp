@@ -720,3 +720,4 @@ SetRandomSeed = 0x800155E8; // type:func
 AddMotion = 0x80026540; // type:func
 AddObject = 0x80026684; // type:func
 abs = 0x80032F3C; // type:func
+func_800274FC = 0x800274FC; // type:func  (func_80027408 never returns, it ends in a j. This starts after it, and the engine jals here)
