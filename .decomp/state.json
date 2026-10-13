@@ -1785,7 +1785,8 @@
   "status": "matched"
  },
  "800268BC": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-13T08:51:12Z",
+  "status": "matched"
  },
  "8002694C": {
   "auto_diff": 7,

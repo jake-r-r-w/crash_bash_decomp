@@ -5143,7 +5143,26 @@ void *AddExtension(void *owner, s32 size, s32 id) {
     return AllocExtension(owner, size, id, NULL);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800268BC);
+void func_800268BC(NAS *nas) {
+    NAS **head = (NAS **)&D_8005AA2C;
+
+    if (nas->Solid.Parent != NULL || nas->Solid.Child != NULL) {
+        if (nas->Solid.Parent != NULL) {
+            nas->Solid.Parent->Solid.Child = nas->Solid.Child;
+            if (nas->Solid.Child != NULL) {
+                nas->Solid.Child->Solid.Parent = nas->Solid.Parent;
+            }
+        } else {
+            *head = nas->Solid.Child;
+            nas->Solid.Child->Solid.Parent = NULL;
+        }
+        nas->Solid.Parent = NULL;
+        nas->Solid.Child = NULL;
+        nas->Class &= ~0x300;
+    } else if (*head == nas) {
+        *head = NULL;
+    }
+}
 
 void func_8002694C(NAS *nas, s32 bits) {
     if (D_8005AA2C != NULL) {
