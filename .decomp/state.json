@@ -229,7 +229,8 @@
  },
  "80012BC8": {
   "auto_diff": 59,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-13T09:28:04Z",
+  "status": "matched"
  },
  "80012CD4": {
   "auto_diff": 33,

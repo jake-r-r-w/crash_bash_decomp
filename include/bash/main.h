@@ -1411,6 +1411,8 @@ typedef struct PadRumble {
     /* 0x0C */ s16 reset;
 } PadRumble;
 
+void func_80012BC8(s32 * *arg0, s32 *arg1, u8 *arg2);
+
 s32 func_800281C0(PadRumble *r, s32 port);
 
 #endif /* BASH_MAIN_H */
