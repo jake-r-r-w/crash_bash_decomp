@@ -7832,7 +7832,41 @@ void func_8002AC70(void) {
     func_80027A9C();
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002ACA0);
+void func_8002ACA0(s32 id, s32 arg1) {
+    ProgAtr prog;
+    VagAtr vag;
+    s32 i;
+    s32 j;
+    s32 n;
+
+    func_8002AAAC();
+    for (i = 0;; i++) {
+        if (i >= 16) {
+            goto done;
+        }
+        SsUtGetProgAtr(id, i, &prog);
+        for (j = 0;; j++) {
+            if (j >= prog.tones) {
+                goto next;
+            }
+            if (SsUtGetVagAtr(id, i, j, &vag) == 0) {
+                n = vag.min + (vag.max << 8);
+                if (n != 0) {
+                    if (arg1 != 0) {
+                        SfxTable[n][0] = -1;
+                        SfxTable[n][1] = -1;
+                    } else {
+                        SfxTable[n][0] = id;
+                        SfxTable[n][1] = (i << 4) | (j & 0xF);
+                    }
+                }
+            }
+        }
+    next:;
+    }
+done:
+    func_8002AAA0();
+}
 
 void func_8002ADD4(void *data, VabSlot *slot) {
     u8 *head;
