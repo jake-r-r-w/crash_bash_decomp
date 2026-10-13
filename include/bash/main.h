@@ -1857,6 +1857,8 @@ typedef struct {
     /* 0x34 */ s32 f34;
 } TexDst2A84C;
 
+void func_8001097C(Heap *heap);
+
 void func_800139A8(void);
 
 void func_80015F60(u8 *arg0, s32 *arg1);

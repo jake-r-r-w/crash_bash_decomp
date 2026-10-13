@@ -87,7 +87,58 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80010488);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800107C8);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001097C);
+void func_8001097C(Heap *heap) {
+    MemBlock *cur;
+    MemBlock *prev;
+    MemBlock *next;
+    MemBlock *blk;
+    MemBlock *new;
+    u32 size;
+    u32 *dst;
+    u32 *src;
+    s32 n;
+
+    while (1) {
+        cur = *(MemBlock **)&heap->unk0[4];
+        for (;;) {
+            cur = cur->prev;
+            if (cur == NULL) break;
+            if (cur->owner != NULL) continue;
+            if (cur->prev == NULL) continue;
+            if (cur->prev->owner != (void **)-1) break;
+        }
+        blk = cur;
+        if (blk == NULL) {
+            return;
+        }
+        size = blk->size;
+        /* redundant duplicate: keeps cur out of blk's register and the loop unrotated */
+        if (prev != NULL) {
+            prev = blk->prev;
+        } else {
+            prev = blk->prev;
+        }
+        next = (MemBlock *)((u8 *)blk + (size * 4 + 0x18));
+        if (prev == NULL) {
+            continue;
+        }
+        func_80011B74((u8 *)blk, (u8 *)heap);
+        dst = (u32 *)((u8 *)blk + (blk->size * 4 + 0x14));
+        n = prev->size;
+        src = (u32 *)((u8 *)prev + (n * 4 + 0x14));
+        new = (MemBlock *)((u8 *)dst - n * 4 - 0x14);
+        next->prev = new;
+        for (n--; n != -1; n--) {
+            *dst-- = *src--;
+        }
+        *new = *prev;
+        *new->owner = new + 1;
+        new->prev = prev;
+        prev->owner = (void **)-1;
+        prev->size = size;
+        func_800110A8(prev + 1, heap);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80010AE8);
 
