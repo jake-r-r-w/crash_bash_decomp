@@ -190,7 +190,6 @@ typedef struct MemBlock {
 
 #define MEMBLOCK_NEXT(b) ((MemBlock *)((u8 *)(b) + (b)->size * 4 + sizeof(MemBlock)))
 
-/* A heap (D_8004E0F0 is the main one). Only these fields are known. */
 /* Header of a pool entry; the data follows it. */
 typedef struct PoolNode {
     struct PoolNode *next;
@@ -277,10 +276,12 @@ typedef struct LoadNode {
     /* 0x20 */ struct LoadNode *prev;
 } LoadNode;
 
+/* A heap (D_8004E0F0 is the main one). Only these fields are known. */
 typedef struct Heap {
     /* 0x00 */ u8 unk0[8];
     /* 0x08 */ MemBlock *free;           /* free list, smallest first */
     /* 0x0C */ MemBlock *lowest;         /* lowest free block, or NULL */
+    /* 0x10 */ MemBlock *deferred;       /* freed once unk2 ticks run out (func_80011578, func_80011DB4) */
 } Heap;
 
 void func_80011474(void);
@@ -288,12 +289,12 @@ s32 func_8001151C(u8 *arg0);
 void func_80011530(u8 *arg0);
 void func_80011544(u8 *arg0, u8 * *arg1);
 s16 func_8001156C(u8 *arg0);
-u8 *func_80011654(s32 arg0, u8 *arg1);
+u8 *func_80011654(s32 arg0, Heap *arg1);
 u8 *func_80011748(s32 arg0, u8 *arg1);
 void func_80011B74(u8 *arg0, u8 *arg1);
 void func_80011D00(s32 arg0);
 void func_80011D28(u8 *arg0);
-u8 *func_80011DB4(u8 *arg0);
+u8 *func_80011DB4(Heap *arg0);
 void func_80012DDC(s32 arg0);
 void func_80012E0C(void);
 void func_80012E14(u8 *arg0);
@@ -303,7 +304,7 @@ void func_8001828C(void);
 s32 func_80013650(s32 arg0, void (*done)(), void *ctx);
 s32 func_80012FFC(void);
 void func_8001231C(void);
-void func_80010AE8(u8 *arg0);
+void func_80010AE8(Heap *arg0);
 void func_8002BAE8(void);
 void func_8002C894(void);
 MemBlock *func_80011C5C(u32 words, MemBlock *blk);
@@ -488,7 +489,7 @@ typedef struct {
 extern VTable8 *D_8004E0DC;
 extern s32 D_8004E0E0;
 extern u8 D_80078C90[];
-void func_80011BF8(u8 *heap, u8 *start, s32 size);
+void func_80011BF8(Heap *heap, u8 *start, s32 size);
 void func_80012E90(void);
 void func_800272AC(s32 arg0);
 extern void *D_80050F3C;
@@ -513,7 +514,7 @@ typedef struct {
     u8 unk1C[0xC];
 } SizeEntry;
 extern SizeEntry D_800675D4[];
-extern u8 D_8004E0F0[];
+extern Heap D_8004E0F0;
 extern u8 D_80055684[];
 extern void *D_8005AA34;
 extern void *D_8005AA24;
@@ -588,7 +589,7 @@ extern u32 D_80063AF8[];
 extern s32 D_800643E8;
 extern s32 D_800643EC;
 extern s32 D_800643F0;
-void *func_800112A4(void *base, s32 offset, u8 *arg2);
+void *func_800112A4(void *base, s32 offset, Heap *arg2);
 void func_80014540(u8 *arg0, RECT *rect);
 void func_8002ACA0(s32 id, s32 arg1);
 extern GfxState D_80056998;
@@ -892,7 +893,7 @@ IdEntry *func_800263D8(IdEntry *p, s32 id);
 
 s32 func_80015984(s32 i, EntryBlock *blk);
 
-void func_80011578(u8 *arg0, MemBlock *arg1, s32 arg2);
+void func_80011578(u8 *arg0, Heap *heap, s32 arg2);
 
 void func_8001702C(SlotList *arg0);
 

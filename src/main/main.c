@@ -30,7 +30,7 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80010278);
 
 void func_800102F8(void) {
     D_8004E0E0 = 2;
-    func_80011BF8(D_8004E0F0, D_80078C90, 0x801FF000 - (s32)D_80078C90);
+    func_80011BF8(&D_8004E0F0, D_80078C90, 0x801FF000 - (s32)D_80078C90);
     func_80012E90();
     func_80013CA4();
     func_800138A4();
@@ -156,7 +156,7 @@ s32 func_80011410(Heap *heap) {
 }
 
 void func_80011474(void) {
-    func_80011410(D_8004E0F0);
+    func_80011410(&D_8004E0F0);
 }
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80011498);
@@ -188,7 +188,7 @@ s16 func_8001156C(u8 *arg0) {
     return (*(s16*)((u8*)(arg0) + -24));
 }
 
-void func_80011578(u8 *arg0, MemBlock *arg1, s32 arg2) {
+void func_80011578(u8 *arg0, Heap *heap, s32 arg2) {
     MemBlock *blk;
 
     blk = (MemBlock *)(arg0 - 0x18);
@@ -196,14 +196,14 @@ void func_80011578(u8 *arg0, MemBlock *arg1, s32 arg2) {
         *blk->owner = NULL;
     }
     func_80011530(arg0);
-    blk->nextFree = arg1->prevFree;
+    blk->nextFree = heap->deferred;
     *(s16 *)&blk->unk2 = arg2;
-    arg1->prevFree = blk;
+    heap->deferred = blk;
 }
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800115D8);
 
-u8 *func_80011654(s32 arg0, u8 *arg1) {
+u8 *func_80011654(s32 arg0, Heap *arg1) {
     u16 *var_a0_2;
     u8 *temp_v1;
     u8 *var_a0;
@@ -403,7 +403,7 @@ MemBlock *func_80011C98(MemBlock *arg0) {
 }
 
 void func_80011D00(s32 arg0) {
-    func_800107C8(arg0 - 0x18, D_8004E0F0);
+    func_800107C8(arg0 - 0x18, &D_8004E0F0);
 }
 
 void func_80011D28(u8 *arg0) {
@@ -421,7 +421,7 @@ void func_80011D28(u8 *arg0) {
     func_800107C8(var_a0, arg0);
 }
 
-u8 *func_80011DB4(u8 *arg0) {
+u8 *func_80011DB4(Heap *arg0) {
     u16 temp_v0;
     u8 *var_a0;
     u8 *var_s0;
@@ -440,7 +440,7 @@ u8 *func_80011DB4(u8 *arg0) {
                 } else {
                     (*(s32*)((u8*)(arg0) + 16)) = (u8 *) (*(s32*)((u8*)(var_a0) + 20));
                 }
-                func_800110A8(var_a0 + 0x18, D_8004E0F0);
+                func_800110A8(var_a0 + 0x18, &D_8004E0F0);
                 var_a0 = NULL;
                 if (var_s0 != NULL) {
                     var_a0 = (*(s32*)((u8*)(var_s0) + 20));
@@ -736,7 +736,7 @@ s32 func_80013488(s32 arg0, s32 arg1, s32 arg2) {
     func_80013034(arg0, arg1, arg2, NULL, (u8 *)&D_8006E9F8, 0, 0);
     while (func_80012FFC() != 0) {
         func_8001231C();
-        func_80010AE8(D_8004E0F0);
+        func_80010AE8(&D_8004E0F0);
         func_8002BAE8();
     }
     return D_8006E9F8;
@@ -1259,9 +1259,9 @@ void func_80015D08(u8 *arg0) {
     u8 *temp_s2;
 
     temp_s2 = arg0 + 0x6C;
-    func_80011578((*(s32*)((u8*)(temp_s2) + 4)), D_8004E0F0, 2);
-    func_80011578((*(s32*)((u8*)(temp_s2) + 8)), D_8004E0F0, 2);
-    func_800110A8((*(s32*)((u8*)(arg0) + 108)), D_8004E0F0);
+    func_80011578((*(s32*)((u8*)(temp_s2) + 4)), &D_8004E0F0, 2);
+    func_80011578((*(s32*)((u8*)(temp_s2) + 8)), &D_8004E0F0, 2);
+    func_800110A8((*(s32*)((u8*)(arg0) + 108)), &D_8004E0F0);
 }
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80015D70);
@@ -1274,15 +1274,15 @@ s32 func_80015E94(u8 *arg0, u8 *arg1) {
     (*(s32*)((u8*)(arg1) + 8)) = 0;
     (*(s32*)((u8*)(arg1) + 0)) = 0;
     (*(s32*)((u8*)(arg1) + 12)) = 0;
-    func_800115D8((*(s32*)((u8*)(arg0) + 4)), temp_s3, D_8004E0F0, 2);
+    func_800115D8((*(s32*)((u8*)(arg0) + 4)), temp_s3, &D_8004E0F0, 2);
     if ((*(s32*)((u8*)(arg1) + 4)) != 0) {
-        func_800115D8((*(s32*)((u8*)(arg0) + 4)), arg1 + 8, D_8004E0F0, 3);
+        func_800115D8((*(s32*)((u8*)(arg0) + 4)), arg1 + 8, &D_8004E0F0, 3);
         if ((*(s32*)((u8*)(arg1) + 8)) != 0) {
-            func_800115D8((*(s32*)((u8*)(arg0) + 8)), arg1, D_8004E0F0, 3);
+            func_800115D8((*(s32*)((u8*)(arg0) + 8)), arg1, &D_8004E0F0, 3);
             (*(s32*)((u8*)(arg1) + 12)) = (s32) (*(s32*)((u8*)(arg0) + 0));
             return (*(s32*)((u8*)(arg1) + 0));
         }
-        func_800110A8(temp_s3, D_8004E0F0);
+        func_800110A8(temp_s3, &D_8004E0F0);
         goto block_4;
     }
 block_4:
@@ -1326,7 +1326,7 @@ void func_80016188(u8 *arg0, u8 *arg1) {
     s32 n;
 
     n = func_8002A650(arg0);
-    heap = (Heap *)&D_8004E0F0;
+    heap = &D_8004E0F0;
     if (func_80011C5C((n + 3) >> 2, heap->free) == NULL) {
         func_800110A8(arg0, heap);
         *(s32 *)(arg1 + 8) = 0;
@@ -1367,7 +1367,7 @@ void func_800162E4(u8 *arg0, s32 arg1) {
     (*(s32*)((u8*)(arg0) + 20)) = temp_v0;
     temp_s0 = (*(s32*)((u8*)(arg0) + 4)) - (*(s32*)((u8*)(arg0) + 0));
     func_800131B0(temp_s0);
-    func_800115D8(temp_s0, temp_v0, D_8004E0F0, 0);
+    func_800115D8(temp_s0, temp_v0, &D_8004E0F0, 0);
     memcpy(*temp_v0, arg1 + (*(s32*)((u8*)(arg0) + 0)), temp_s0);
 }
 
@@ -1378,7 +1378,7 @@ void func_8001636C(u8 *arg0, s32 arg1) {
     temp_v0 = (*(s32*)((u8*)(arg0) + 12));
     temp_s0 = temp_v0 + ((*(s32*)((u8*)(temp_v0) + 60)) + 0x3C) + ((arg1 * 0x10) + 4);
     if ((*(s32*)((u8*)(temp_s0) + 8)) != 0) {
-        func_800110A8((void *)(*(s32*)((u8*)(temp_s0) + 8)), (Heap *)&D_8004E0F0);
+        func_800110A8((void *)(*(s32*)((u8*)(temp_s0) + 8)), &D_8004E0F0);
         (*(s32*)((u8*)(temp_s0) + 12)) = 0;
     } else if ((*(s32*)((u8*)(temp_s0) + 12)) != 0) {
         func_80012F04((void *)(*(s32*)((u8*)(temp_s0) + 12)));
@@ -1483,7 +1483,7 @@ u8 *a;
                 e = slot[5];
                 if (e != NULL) {
                     if (*(void **)e != NULL) {
-                        func_800110A8(*(void **)e, (Heap *)D_8004E0F0);
+                        func_800110A8(*(void **)e, &D_8004E0F0);
                     } else {
                         func_80012F04(*(void **)(e + 4));
                     }
@@ -1510,7 +1510,7 @@ u8 *func_80016AD4(s32 *arg0, u8 *rec) {
         return NULL;
     }
     if (*(void **)node != NULL) {
-        func_800110A8(*(void **)node, (Heap *)D_8004E0F0);
+        func_800110A8(*(void **)node, &D_8004E0F0);
     } else {
         func_80012F04(*(void **)(node + 4));
     }
@@ -1558,12 +1558,12 @@ void func_80016CA0(u8 *rec) {
             goto done;
         }
         func_8001231C();
-        func_80010AE8(D_8004E0F0);
+        func_80010AE8(&D_8004E0F0);
         func_8002BAE8();
     }
 done:
     DrawSync(0);
-    while (func_80011DB4(D_8004E0F0) != NULL) {
+    while (func_80011DB4(&D_8004E0F0) != NULL) {
     }
 }
 
@@ -1578,7 +1578,7 @@ void func_80016D98(u8 *data, u8 *rec) {
     s32 size;
 
     size = func_8002A650(data);
-    heap = (Heap *)D_8004E0F0;
+    heap = &D_8004E0F0;
     if (func_80011C5C((size + 3) >> 2, heap->free) == NULL) {
         func_800110A8(data, heap);
         *(s32 *)(rec + 8) = 0;
@@ -1596,7 +1596,7 @@ void func_80016E5C(u8 *arg0, u8 *arg1) {
     s32 n;
 
     n = func_8002A650(arg0);
-    heap = (Heap *)D_8004E0F0;
+    heap = &D_8004E0F0;
     if (func_80011C5C((n + 3) >> 2, heap->free) == NULL) {
         func_800110A8(arg0, heap);
         *(s32 *)(arg1 + 8) = 0;
@@ -1644,7 +1644,7 @@ void func_80016F54(u8 *arg0) {
                 q += 0x34;
             } while (i != -1);
         }
-        func_800110A8(*(void **)(arg0 + 0xC), D_8004E0F0);
+        func_800110A8(*(void **)(arg0 + 0xC), &D_8004E0F0);
         *(s32 *)(arg0 + 0xC) = 0;
         func_80029790(arg0 + 0x10);
         *(s32 *)(arg0 + 8) = 0;
@@ -1847,7 +1847,7 @@ void func_800183DC(void) {
     func_8001828C();
     pool = &D_80056844;
     if (pool->mem != NULL) {
-        func_800110A8(pool->mem, (Heap *)D_8004E0F0);
+        func_800110A8(pool->mem, &D_8004E0F0);
     }
     pool->mem = NULL;
 }
@@ -1930,7 +1930,7 @@ void func_80018764(s32 *arg0) {
     var_a0 = NULL;
     if (arg0 != NULL) {
         do {
-            func_800110A8((*(s32*)((u8*)(var_s0) + 4)), D_8004E0F0);
+            func_800110A8((*(s32*)((u8*)(var_s0) + 4)), &D_8004E0F0);
             var_a0 = var_s0;
             var_s0 = (*(s32*)((u8*)(var_a0) + 0));
         } while (var_s0 != NULL);
@@ -2643,7 +2643,7 @@ void func_8001D5D0(void) {
 
 void func_8001D604(void) {
     if (D_80058AC8 != 0) {
-        func_800110A8(D_80058AC8, D_8004E0F0);
+        func_800110A8(D_80058AC8, &D_8004E0F0);
         D_80058AC8 = 0;
     }
 }
@@ -2653,7 +2653,7 @@ void func_8001D640(s32 n) {
     s32 i;
     u8 *p;
 
-    p = func_80011654(n * 0xA8, D_8004E0F0);
+    p = func_80011654(n * 0xA8, &D_8004E0F0);
     i = n - 1;
     sub = (subengine *)p;
     D_80058AC8 = (s32)sub;
@@ -2717,7 +2717,7 @@ void func_8001DDB4(s32 *arg0) {
 
 void func_8001DDD8(u8 *arg0) {
     func_80016F54((*(s32*)((u8*)(arg0) + 0)));
-    func_800110A8((*(s32*)((u8*)(arg0) + 28)), D_8004E0F0);
+    func_800110A8((*(s32*)((u8*)(arg0) + 28)), &D_8004E0F0);
     (*(s32*)((u8*)(arg0) + 28)) = 0;
 }
 
@@ -2917,8 +2917,8 @@ void func_8001E948(void) {
     func_8001888C();
     do {
 
-    } while (func_80011DB4(D_8004E0F0) != 0);
-    func_80010AE8(D_8004E0F0);
+    } while (func_80011DB4(&D_8004E0F0) != 0);
+    func_80010AE8(&D_8004E0F0);
 }
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001E984);
@@ -3032,7 +3032,7 @@ void func_8002141C(u8 *arg0) {
     }
     temp_a0_2 = (*(s32*)((u8*)(arg0) + 20));
     if (temp_a0_2 != 0) {
-        func_800110A8(temp_a0_2, D_8004E0F0);
+        func_800110A8(temp_a0_2, &D_8004E0F0);
         (*(s32*)((u8*)(arg0) + 20)) = 0;
     }
 }
@@ -3277,10 +3277,10 @@ void func_80021FB0(void) {
         } while (var_a0 != NULL);
     }
     if (D_80058B6C != 0) {
-        func_800110A8(D_80058B6C, D_8004E0F0);
+        func_800110A8(D_80058B6C, &D_8004E0F0);
     }
     if (D_80058B68 != 0) {
-        func_800110A8(D_80058B68, D_8004E0F0);
+        func_800110A8(D_80058B68, &D_8004E0F0);
     }
 }
 
@@ -3934,7 +3934,7 @@ void func_80026428(void) {
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80026430);
 
 void func_800264B4(void) {
-    func_800110A8(D_8006EA00, D_8004E0F0);
+    func_800110A8(D_8006EA00, &D_8004E0F0);
     D_8006EA00 = 0;
 }
 
@@ -4625,13 +4625,13 @@ void func_8002A35C(u8 *arg0) {
 
     if ((*(s32*)((u8*)(arg0) + 24)) != 0) {
         temp_a0 = (*(s32*)((u8*)(arg0) + 16));
-        temp_v0 = func_800112A4(temp_a0, (*(s32*)((u8*)(temp_a0) + 24)), D_8004E0F0);
+        temp_v0 = func_800112A4(temp_a0, (*(s32*)((u8*)(temp_a0) + 24)), &D_8004E0F0);
         (*(s32*)((u8*)(arg0) + 16)) = temp_v0;
         func_80011544(temp_v0, arg0 + 0x18);
         (*(s32*)((u8*)(arg0) + 16)) = NULL;
         return;
     }
-    func_80011578((*(s32*)((u8*)(arg0) + 16)), D_8004E0F0, 2);
+    func_80011578((*(s32*)((u8*)(arg0) + 16)), &D_8004E0F0, 2);
     (*(s32*)((u8*)(arg0) + 16)) = NULL;
 }
 
@@ -4778,7 +4778,7 @@ void func_8002AEE0(void) {
     if (D_800654C0 != NULL || D_800654C4 != NULL) {
         if (SpuIsTransferCompleted(SPU_TRANSFER_PEEK) == 1) {
             D_800654C4->id = D_800654C8;
-            func_800112A4(D_800654C0, D_800654C0->head, D_8004E0F0);
+            func_800112A4(D_800654C0, D_800654C0->head, &D_8004E0F0);
             func_8002ACA0(D_800654C4->id, 0);
             D_800654C0 = NULL;
             D_800654C4 = NULL;
@@ -4884,7 +4884,7 @@ void func_8002BA44(void) {
     if (D_800654C0 != NULL || D_800654C4 != NULL) {
         if (SpuIsTransferCompleted(SPU_TRANSFER_PEEK) == 1) {
             D_800654C4->id = D_800654C8;
-            func_800112A4(D_800654C0, D_800654C0->head, D_8004E0F0);
+            func_800112A4(D_800654C0, D_800654C0->head, &D_8004E0F0);
             func_8002ACA0(D_800654C4->id, 0);
             D_800654C0 = NULL;
             D_800654C4 = NULL;
@@ -4895,7 +4895,7 @@ void func_8002BA44(void) {
 void func_8002BAE8(void) {
     if ((D_800654C0 != NULL || D_800654C4 != NULL) && SpuIsTransferCompleted(0) == 1) {
         D_800654C4->id = D_800654C8;
-        func_800112A4(D_800654C0, D_800654C0->head, D_8004E0F0);
+        func_800112A4(D_800654C0, D_800654C0->head, &D_8004E0F0);
         func_8002ACA0(D_800654C4->id, 0);
         D_800654C0 = NULL;
         D_800654C4 = NULL;
@@ -4929,7 +4929,7 @@ void func_8002BCB0(s32 *arg0) {
     SpuIsTransferCompleted(1);
     func_8002ACA0(arg0[1], 1);
     SsVabClose((s16)arg0[1]);
-    func_800110A8((void *)arg0[0], (Heap *)D_8004E0F0);
+    func_800110A8((void *)arg0[0], &D_8004E0F0);
     arg0[0] = 0;
     arg0[1] = -1;
 }
@@ -5046,7 +5046,7 @@ void func_8002C428(void) {
 
 void func_8002C44C(void) {
     if (D_8006557C.data != 0) {
-        func_800110A8(D_8006557C.data, D_8004E0F0);
+        func_800110A8(D_8006557C.data, &D_8004E0F0);
         D_8006557C.data = 0;
     }
 }

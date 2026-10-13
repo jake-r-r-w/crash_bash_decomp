@@ -53,7 +53,7 @@ void func_8007A6F8(void) {
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007A718);
 
 void func_8007A7C0(void) {
-    func_80011410(D_8004E0F0);
+    func_80011410(&D_8004E0F0);
     func_80079554();
     D_8005AA58 = 4;
     func_8007AF3C();
