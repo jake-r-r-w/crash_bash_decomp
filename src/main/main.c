@@ -7098,7 +7098,68 @@ FreeHdr *func_800282F8(u8 *arg0) {
 #undef pool
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80028420);
+ClutPos *func_80028420(void) {
+    s32 i;
+    FreeNode *a;
+    FreeNode *head;
+    FreeNode *prev;
+    FreeNode *n;
+    FreeNode *nx;
+    FreeNode *t;
+    FreeHdr *src;
+    FreeHdr h;
+    FreeNode *ret;
+    s32 cnt;
+    FreeNode *u;
+
+    a =D_80063BAC;
+    if (a == NULL) {
+        head = D_80063B18;
+        D_80063B18 = head->next;
+        src = func_800282F8(D_80063B58);
+        prev = NULL;
+        h = *src;
+        i = 0x1F;
+        do {
+            n = D_80063B18;
+            nx = n->next;
+            i--;
+            n->next = prev;
+            n->fC = head;
+            n->hdr = h;
+            prev = n;
+            D_80063B18 = nx;
+            h.f2++;
+        } while (i != -1);
+        a = head;
+        a->f14 = 0x20;
+        a->f10 = n;
+        a->fC = src;
+        a->f8 = 0;
+        a->next = NULL;
+        D_80063BAC = a;
+    }
+    ret = a->f10;
+    cnt = a->f14;
+    u = ret->next;
+    cnt--;
+    a->f14 = cnt;
+    a->f10 = u;
+    if (cnt == 0) {
+        t = a->next;
+        D_80063BAC = t;
+        if (t != NULL) {
+            t->f8 = 0;
+        }
+        a->next = D_80063BB0;
+        if (D_80063BB0 != NULL) {
+            D_80063BB0->f8 = (s32)a;
+        }
+        a->f8 = 0;
+        D_80063BB0 = a;
+    }
+    return ret;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002854C);
 
