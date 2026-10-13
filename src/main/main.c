@@ -6054,7 +6054,55 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_800248A0);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80024AD8);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80024E30);
+ScriptCursor *func_80024E30(NAS *nas, ScriptInit *init) {
+    ScriptCursor *c;
+    EXT *e;
+    Ext400 *ext;
+    u32 flags;
+    s32 sub;
+    s32 id;
+
+    flags = init->flags;
+    if (flags & 0x400) {
+    id = 0x400 & ~0xFF;
+    sub = 0x400 & 0xFF;
+    for (e = nas->Extend.Child; e != NULL; e = e->Extend.Child) {
+        if (e->EXTid & id) {
+            if (sub == 0) {
+                goto found;
+            }
+            if ((e->EXTid & 0xFF) == sub) {
+                goto found;
+            }
+        }
+    }
+    c = NULL;
+done:
+    if (c == NULL) {
+        ext = AllocExtension(nas, 0x2C, 0x400, &D_8005A9A0);
+        if (ext != NULL) {
+            nas->NASid |= 0x400;
+            *ext = D_8005A9A0;
+        }
+        c = (ScriptCursor *)ext;
+        if (c == NULL) {
+            return NULL;
+        }
+        goto skip;
+    found:
+        c = (ScriptCursor *)e;
+        goto done;
+    }
+skip:
+    flags &= 0xFF;
+    *(s32 *)c = (*(s32 *)c & ~0xFF) | flags;
+    c->cur = init->cur;
+    c->tbl = init->tbl;
+    func_80024FA4(c);
+    return c;
+    }
+    return NULL;
+}
 
 void func_80024FA4(ScriptCursor *c) {
     s32 e;
