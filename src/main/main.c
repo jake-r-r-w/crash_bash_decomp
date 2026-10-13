@@ -2031,7 +2031,53 @@ void func_800155FC(void) {
 }
 #endif
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001562C);
+PointList *func_8001562C(subengine *sub) {
+    s32 flag;
+    u8 *base;
+    u8 *rec;
+    s32 off;
+
+    flag = sub->unk74;
+    if (flag != 0) {
+        if (sub->unk6C == NULL) {
+            return NULL;
+        }
+        base = *(u8 **)((u8 *)sub->unk6C + 0xC);
+        if (base == NULL) {
+            return NULL;
+        }
+        switch (flag & 0x7000) {
+        case 0x3000:
+            break;
+        case 0x4000:
+            rec = func_80015A78(flag, base + (*(s32 *)(base + 0x44) + 0x44) + ((flag & 0xF80) >> 7) * 0x18);
+            if (rec != NULL) {
+                off = *(s32 *)(rec + 0xC);
+                if (off == 0) {
+                    break;
+                }
+                return (PointList *)(rec + (off + 0xC));
+            }
+            return NULL;
+        case 0x5000:
+            rec = (u8 *)func_800159C4(flag & 0xFFF, base);
+        tail:
+            off = *(s32 *)(rec + 0x2C);
+            if (off != 0) {
+                goto found;
+            }
+            return NULL;
+        case 0x2000:
+            rec = base + ((flag & 0xFFF) * 0x34 + 0x24);
+            goto tail;
+        found:
+            return (PointList *)(rec + (off + 0x2C));
+        default:
+            return NULL;
+        }
+    }
+    return NULL;
+}
 
 void func_80015758(SVECTOR *v, VECTOR *out) {
     gte_ldv0(v);
