@@ -668,7 +668,43 @@ end:
     return NULL;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800125B4);
+PosNode *func_800125B4(PosList *arg0) {
+    PosNode *cur;
+    PosNode *nxt;
+    PosNode *t;
+
+    cur = arg0->head;
+loop:
+    if (cur != NULL) {
+        nxt = cur->next;
+        if (nxt == NULL) {
+            goto end;
+        }
+        if (*nxt->base + nxt->off / 2048 < *cur->base + cur->off / 2048) {
+            t = cur->prev;
+            nxt->prev = t;
+            if (t != NULL) {
+                t->next = nxt;
+            } else {
+                arg0->head = nxt;
+            }
+            t = nxt->next;
+            cur->next = t;
+            if (t != NULL) {
+                t->prev = cur;
+            } else {
+                arg0->tail = cur;
+            }
+            nxt->next = cur;
+            cur->prev = nxt;
+            return cur;
+        }
+        cur = nxt;
+        goto loop;
+    }
+end:
+    return NULL;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80012678);
 

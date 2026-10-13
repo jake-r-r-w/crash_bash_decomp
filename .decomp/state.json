@@ -210,7 +210,8 @@
   "status": "matched"
  },
  "800125B4": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-13T08:53:24Z",
+  "status": "matched"
  },
  "80012678": {
   "auto_diff": 110,

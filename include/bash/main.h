@@ -1224,6 +1224,21 @@ typedef struct {
 
 SortNode *func_8001251C(SortList *arg0);
 
+typedef struct PosNode {
+    s32 *base;         /* 0x00 */
+    s32 off;           /* 0x04 */
+    u8 pad8[0x14];
+    struct PosNode *next; /* 0x1C */
+    struct PosNode *prev; /* 0x20 */
+} PosNode;
+typedef struct PosList {
+    u8 pad0[0xC];
+    PosNode *head;     /* 0x0C */
+    PosNode *tail;     /* 0x10 */
+} PosList;
+
+PosNode *func_800125B4(PosList *arg0);
+
 s32 func_800131B0(s32 arg0);
 
 s32 func_80013290(s32 *arg0, u8 * *arg1);
