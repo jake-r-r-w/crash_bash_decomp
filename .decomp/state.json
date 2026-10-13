@@ -643,7 +643,8 @@
  },
  "80015F60": {
   "auto_diff": 84,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-13T21:59:09Z",
+  "status": "matched"
  },
  "800160C4": {
   "auto_diff": 3,

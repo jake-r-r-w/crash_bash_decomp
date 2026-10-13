@@ -425,6 +425,22 @@ typedef struct Heap {
     /* 0x10 */ MemBlock *deferred;       /* freed once unk2 ticks run out (func_80011578, func_80011DB4) */
 } Heap;
 
+/* A node from the free list func_80012E28 hands out (func_80012E14 returns
+ * it); ptr is the heap block it owns. */
+typedef struct {
+    /* 0x00 */ u8 *ptr;
+} BlockRef;
+
+/* An entry of the 0x18-byte table at +0x44 (+ offset at +0x44) of a file
+ * loaded by func_80016234 (func_80015F60). */
+typedef struct {
+    /* 0x00 */ s32 start;
+    /* 0x04 */ s32 end;
+    /* 0x08 */ u8 unk8[8];
+    /* 0x10 */ s32 hash;   /* func_8001534C of its name */
+    /* 0x14 */ BlockRef *block;
+} FileEntry;
+
 /* A per-frame-buffer allocation slot used by func_8001CC10. */
 typedef struct {
     /* 0x0 */ void *ptr;
@@ -1842,6 +1858,8 @@ typedef struct {
 } TexDst2A84C;
 
 void func_800139A8(void);
+
+void func_80015F60(u8 *arg0, s32 *arg1);
 
 void func_80017B08(FaceRuns *faces, FacePrim *prim, s32 arg2, s32 mode);
 

@@ -2520,7 +2520,67 @@ block_4:
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80015F60);
+void func_80015F60(u8 *arg0, s32 *arg1) {
+    FileEntry *tbl;
+    FileEntry *e;
+    FileEntry *next;
+    s32 *p;
+    s32 found;
+    BlockRef *blk;
+    BlockRef *old;
+    s32 i;
+
+    i = *(s32 *)(arg0 + 0x40) - 1;
+    tbl = (FileEntry *)(arg0 + (*(s32 *)(arg0 + 0x44) + 0x44));
+    next = (FileEntry *)(i * sizeof(FileEntry) + (u32)tbl);
+    for (;;) {
+        if (i < 0) {
+            goto second;
+        }
+        e = next;
+        blk = func_80012E28();
+        e->block = blk;
+        blk->ptr = func_80011828(arg0, e->start);
+        i--;
+        func_80011544(blk->ptr, &blk->ptr);
+        func_80011498(blk->ptr, e->end - e->start, &D_8004E0F0);
+        next = e - 1;
+    }
+second:
+    if (arg1 != NULL) {
+        e = tbl;
+        i = *(s32 *)(arg0 + 0x40);
+        for (;;) {
+            if (i == 0) {
+                goto end;
+            }
+            p = arg1;
+            if (p != NULL) {
+                for (;; p++) {
+                    if (*p == 0) {
+                        goto none;
+                    }
+                    if (func_8001534C((u8 *)*p) == e->hash) {
+                        found = *p;
+                        goto chk;
+                    }
+                }
+            }
+none:
+            found = 0;
+chk:
+            if (found == 0) {
+                old = e->block;
+                func_800110A8(old->ptr, &D_8004E0F0);
+                e->block = NULL;
+                func_80012E14((u8 *)old);
+            }
+            e++;
+            i--;
+        }
+    }
+end:
+}
 
 u8 *func_800160C4(u8 *arg0, s32 i) {
     if (arg0 != NULL) {
