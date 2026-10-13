@@ -1245,6 +1245,8 @@ s32 func_80013290(s32 *arg0, u8 * *arg1);
 
 s32 func_80013334(s32 arg0, s32 arg1, u8 * *arg2, s32 arg3);
 
+s32 func_800153B4(s32 *a, s32 *b, s16 *out);
+
 u8 *func_80015870(u8 *arg0, s32 arg1);
 
 s32 func_800158E4(u8 *arg0, s32 arg1);

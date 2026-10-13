@@ -1354,7 +1354,21 @@ s32 *func_800153A8(void) {
     return D_800527C4;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800153B4);
+s32 func_800153B4(s32 *a, s32 *b, s16 *out) {
+    s32 dx, dy, dz;
+    s32 xx, zz;
+    s32 flat;
+
+    dx = a[0] - b[0];
+    xx = dx * dx;
+    dz = b[2] - a[2];
+    zz = dz * dz;
+    dy = b[1] - a[1];
+    flat = csqrt(xx + zz) >> 6;
+    out[1] = get_angle(dx, dz);
+    out[0] = get_angle(dy, flat) & 0xFFF;
+    return csqrt(xx + dy * dy + zz) >> 6;
+}
 
 s32 func_80015480(s32 arg0, s32 arg1) {
     s32 var_a0;
