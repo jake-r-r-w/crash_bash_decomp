@@ -377,7 +377,7 @@ class Swarm {
     useOurDk(cwd);
     return new Promise(resolve => {
       const env = {
-        ...process.env, MSYS_NO_PATHCONV: '1',
+        ...process.env, MSYS_NO_PATHCONV: '1', DK_NAME: `swarm-${slot}`,
         DK_DOCKER_ARGS: `--label ${LABEL}=${this.id} --label ${LABEL}-slot=${this.id}-${slot}` +
           // parallel make for done's full build, whatever the branch's decomp.py does
           (slot === 'integ' ? ` -e MAKEFLAGS=-j${os.cpus().length}` : ` --cpus ${cpus}`),
@@ -679,6 +679,7 @@ Fix that, keep it matching, and report "matched".
     const env = Object.fromEntries(Object.entries(process.env).filter(([k]) => !STRIP_ENV.test(k)));
     Object.assign(env, {
       DK_DOCKER_ARGS: `--label ${LABEL}=${this.id} --label ${LABEL}-slot=${this.id}-${slot.id} --cpus ${this.cpus}`,
+      DK_NAME: `swarm-${slot.id}`,
       SWARM_FUNC: f.name, SWARM_KEY: f.key, SWARM_SRC: f.src || '', SWARM_MODEL: job.model, SWARM_RESULT: RESULT,
     });
     let cmd, args, shell = false;
