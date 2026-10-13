@@ -6623,7 +6623,53 @@ void func_800220E8(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80022140);
+void func_80022140(s32 arg0, s32 arg1) {
+    D5A614View *p;
+    u8 *q;
+    u32 t8;
+    u32 t;
+    u32 v;
+    s32 i;
+    s32 f;
+    u32 c;
+    u16 *d;
+
+    p = (D5A614View *)D_8005A614;
+    if (p->mode != 0x28) {
+        func_8002BBB4();
+        if (p->flags & 0x80) {
+            f = D_80058B88[arg0].unkC;
+        } else {
+            f = D_80058B88[arg0].unk8;
+        }
+        func_8002BD0C(f);
+    }
+    do {
+        q = D_8004E9C0;
+        t8 = (u32)(q - 8);
+    } while (0);
+    d = D_8004DDD0;
+    f = ((D5A614View *)D_8005A614)->mode;
+    c = d[f * 3] - 0x101;
+    f = (s32)(q - 0x10);
+    if (c >= 2U) {
+        f = (s32)t8;
+        if (!(((D5A614View *)D_8005A614)->flags & 0x1E0)) {
+            f = (s32)q;
+        }
+    }
+    func_8002BD0C(f);
+    t = arg1 - 0x101;
+    if (t >= 2U) {
+        arg1 = t;
+        for (i = 0; i < 4; i++) {
+            v = D_8005A614[i + 0x50] - 1;
+            if (v < 8U) {
+                func_8002BD0C(D_80058F0C[arg1][v]);
+            }
+        }
+    }
+}
 
 void func_800222BC(void) {
     func_8003347C();

@@ -397,7 +397,9 @@ typedef struct {
 typedef struct MusicEntry {
     /* 0x00 */ s32 file;
     /* 0x04 */ s16 reverb;               /* SsUtSetReverbType */
-    /* 0x06 */ u8 unk6[0x10 - 0x06];
+    /* 0x06 */ u8 unk6[2];
+    /* 0x08 */ s32 unk8;                 /* func_80022140: music file */
+    /* 0x0C */ s32 unkC;                 /* func_80022140: alt music file (flag 0x80) */
     /* 0x10 */ s16 tempo;
     /* 0x12 */ u8 unk12[0x14 - 0x12];
 } MusicEntry;
@@ -794,6 +796,17 @@ extern s32 D_800654BC;            /* slots of D_800644C0 in use */
 extern char D_800654CC[];
 extern s32 D_8005A608;
 extern u8 D_8005A614[];
+/* D_8005A614 as seen by func_80022140. */
+typedef struct D5A614View {
+    /* 0x00 */ u8 unk0[0x32];
+    /* 0x32 */ u16 flags;
+    /* 0x34 */ s16 mode;
+    /* 0x36 */ u8 unk36[0x50 - 0x36];
+    /* 0x50 */ u8 unk50[4];
+} D5A614View;
+extern u16 D_8004DDD0[];          /* func_80022140: 6-byte entries indexed by D_8005A614+0x34 */
+extern u8 D_8004E9C0[];           /* func_80022140: passed (-0x10/-8/+0) to func_8002BD0C */
+extern s32 D_80058F0C[][8];       /* func_80022140 */
 extern s8 D_8005A604[];
 extern s32 D_800675C8;
 extern s32 D_8005A620;
@@ -1874,6 +1887,8 @@ void func_8001A43C(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4);
 void func_8001E0A8(u8 *arg0);
 
 void func_8001FCDC(u8 *arg0, u8 *arg1);
+
+void func_80022140(s32 arg0, s32 arg1);
 
 s32 func_8002235C(_sfx_handler *voice);
 
