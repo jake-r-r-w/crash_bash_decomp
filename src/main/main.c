@@ -1925,7 +1925,25 @@ void func_800184D4(u8 **arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800184F0);
+s32 *func_800184F0(s32 arg0, s32 *arg1, s32 arg2, s32 arg3) {
+    s32 *node;
+    s32 *data;
+
+    node = D_80056850;
+    if (node == NULL) {
+        return NULL;
+    }
+    D_80056850 = (s32 *) *node;
+    if (arg1[1] == 0) {
+        arg1[2] = (s32) node;
+    }
+    data = node + 1;
+    *node = arg1[1];
+    arg1[1] = (s32) node;
+    func_80017EE8(arg3, data);
+    func_80017D90(arg3, data);
+    return data;
+}
 
 s32 *func_80018570(u8 *arg0) {
     s32 **temp_a1;

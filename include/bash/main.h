@@ -644,6 +644,7 @@ extern s32 (*D_8005AA94)(EXTengine *eng); /* optional hook: replaces func_80025E
 extern s32 D_8005B5B8;
 extern void (*D_800643F8)();
 extern NAS *NASActiveTail;
+extern s32 *D_80056850;
 extern s32 *D_80056858;
 extern NAS *NASActiveHead;
 extern s32 D_800654AC;
@@ -997,6 +998,8 @@ char *func_8001517C(char *arg0, s32 arg1, s32 arg2);
 s32 func_80015210(s32 a, s32 b, s32 t);
 
 void func_8001830C(void);
+
+s32 *func_800184F0(s32 arg0, s32 *arg1, s32 arg2, s32 arg3);
 
 void func_8001C3D0(u8 *arg0);
 
