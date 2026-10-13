@@ -5709,7 +5709,16 @@ void func_8002A4B8(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002A4C0);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002A5A4);
+void func_8002A5A4(u8 *a0, u8 *arg1) {
+    Func2A5A4Obj *arg0 = (Func2A5A4Obj *)a0;
+    arg0->src = arg1;
+    func_800115D8(*(u16 *)(arg1 + 8) * 0x38, (void **)&arg0->f8, (s32)&D_8004E0F0, 0);
+    func_800115D8(*(u16 *)(arg0->src + 0xA) * 0xC, (void **)&arg0->fC, (s32)&D_8004E0F0, 0);
+    arg0->f0 = *(u16 *)(arg0->src + 8);
+    arg0->f4 = *(u16 *)(arg0->src + 0xA);
+    arg0->f14 = *(s32 *)(arg0->src + 0x14);
+    func_8002926C(arg0);
+}
 
 /* Size in bytes: 0xB0 plus +8 records of 0x38 and +0xA records of 0xC. */
 s32 func_8002A650(u8 *arg0) {

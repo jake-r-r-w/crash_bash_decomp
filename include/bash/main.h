@@ -1177,6 +1177,17 @@ u8 *func_80011498(u8 *arg0, s32 arg1, Heap *arg2);
 
 void *func_800115D8(s32 arg0, void * *arg1, s32 arg2, s16 arg3);
 
+void func_8002926C(void *arg0);
+
+typedef struct {
+    s32 f0;
+    s32 f4;
+    u8 *f8;
+    u8 *fC;
+    u8 *src;
+    s32 f14;
+} Func2A5A4Obj;
+
 SortNode *func_8001251C(SortList *arg0);
 
 s32 func_800131B0(s32 arg0);
