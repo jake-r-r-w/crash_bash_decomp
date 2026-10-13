@@ -6541,7 +6541,34 @@ void func_8002BBB4(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002BBEC);
+void func_8002BBEC(void) {
+    VabSlot *slot;
+    s32 new_var;
+    s8 *p;
+    s32 i;
+
+    for (;;) {
+        s32 n = new_var = D_800654BC;
+        if (n == 0) {
+            break;
+        }
+        n--;
+        slot = &D_800644C0[n];
+        D_800654BC = n;
+        SpuIsTransferCompleted(1);
+        func_8002ACA0(slot->id, 1);
+        SsVabClose(slot->id);
+        func_800110A8(slot->head, &D_8004E0F0);
+        slot->head = NULL;
+        slot->id = -1;
+    }
+    p = SfxTable[0];
+    for (i = 0; i < 2001; i++) {
+        p[0] = -1;
+        p[1] = -1;
+        p += 2;
+    }
+}
 
 void func_8002BCB0(s32 *arg0) {
     SpuIsTransferCompleted(1);

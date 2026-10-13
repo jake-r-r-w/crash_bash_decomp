@@ -1345,6 +1345,8 @@ void func_8002A77C(ClutUpload *arg0, s32 arg1);
 
 void func_8002A9AC(s32 *arg0, s32 arg1);
 
+void func_8002BBEC(void);
+
 void func_8002D294(void);
 
 #endif /* BASH_MAIN_H */
