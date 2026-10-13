@@ -8634,7 +8634,28 @@ void func_8002AEE0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002B020);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002B210);
+S16Pair func_8002B210(VECTOR *pos) {
+    S16Pair sxy;
+    S16Pair ret;
+    S16Pair tmp;
+    s32 vol;
+
+    ViewProject(pos, (s32 *)&sxy);
+    vol = ViewVolumeXY(pos, (View *)D_80051640, (s32 *)&ret);
+    if (D_8005A60C != 0) {
+        vol *= 0x1450;
+        vol /= 4096;
+        if (vol > 0x1000) {
+            vol = 0x1000;
+        }
+        tmp = PanVolume(sxy.a, vol);
+        ret = tmp;
+    } else {
+        ret.a = vol;
+        ret.b = vol;
+    }
+    return ret;
+}
 
 void func_8002B4B8(void) {
     SsSeqCalledTbyT();

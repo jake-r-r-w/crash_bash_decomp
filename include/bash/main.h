@@ -1708,6 +1708,63 @@ s16 func_8002B5B0(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 
 S16Pair func_8002B7C8(s32 x, s32 v);
 
+extern s32 D_8005A60C;
+
+/* Inlined copies of func_8002B6D0, func_8002B760 and func_8002B7C8 (used by
+ * func_8002B210). */
+static inline void ViewProject(VECTOR *pos, s32 *psxy) {
+    VECTOR *out = &D_800569CC.out;
+    SVECTOR *in = &D_800569CC.in;
+    View *view = (View *)D_80051640;
+
+    in->vx = pos->vx - view->pos.vx;
+    in->vy = pos->vy - view->pos.vy;
+    in->vz = pos->vz - view->pos.vz;
+    gte_ldv0(in);
+    gte_rtps();
+    gte_stlvl(out);
+    gte_stsxy(psxy);
+}
+
+static inline S16Pair PanVolume(s32 x, s32 v) {
+    S16Pair r;
+    s32 lo = 0;
+    s32 hi = 0x200;
+
+    if (x < lo) {
+        r.a = v;
+    } else if (x > hi) {
+        r.a = 0;
+    } else {
+        s32 d = 0x40000;
+        r.a = ((d - x * x) * v) / d;
+    }
+    if (0x200 - lo < x) {
+        r.b = v;
+    } else if (x < 0x200 - hi) {
+        r.b = 0;
+    } else {
+        r.b = ((hi * hi - (0x200 - x) * (0x200 - x)) * v) / (hi * hi - lo);
+    }
+    return r;
+}
+
+static inline s32 ViewVolumeXY(VECTOR *pos, View *view, s32 *psxy) {
+    VECTOR *out = &D_800569CC.out;
+    SVECTOR *in = &D_800569CC.in;
+
+    in->vx = pos->vx - view->pos.vx;
+    in->vy = pos->vy - view->pos.vy;
+    in->vz = pos->vz - view->pos.vz;
+    gte_ldv0(in);
+    gte_rtps();
+    gte_stlvl(out);
+    gte_stsxy(psxy);
+    return func_8002B020(out, D_80064478);
+}
+
+S16Pair func_8002B210(VECTOR *pos);
+
 typedef struct { u8 pad[0xC]; } Slot12;
 extern Slot12 D_80063B1C[];
 
