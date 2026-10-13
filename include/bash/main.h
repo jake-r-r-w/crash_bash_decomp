@@ -1267,6 +1267,19 @@ typedef struct {
     s32 f14;
 } Func2A5A4Obj;
 
+/* func_8002A4C0: count at +0, then 0x10-byte entries from +4. */
+typedef struct {
+    s32 idx;      /* 0x0: record index into the 0x38-byte table */
+    s32 unk4;
+    s32 unk8;
+    FreeHdr *pos; /* 0xC: VRAM slot from func_800282F8 */
+} TexUploadEntry;
+
+typedef struct {
+    s32 count;
+    TexUploadEntry e[1];
+} TexUploadList;
+
 SortNode *func_8001251C(SortList *arg0);
 
 typedef struct PosNode {
@@ -1416,5 +1429,7 @@ void func_80012BC8(s32 * *arg0, s32 *arg1, u8 *arg2);
 void func_8001F4F8(u8 *arg0, u8 *arg1);
 
 s32 func_800281C0(PadRumble *r, s32 port);
+
+void func_8002A4C0(TexUploadList *arg0, u8 *arg1);
 
 #endif /* BASH_MAIN_H */

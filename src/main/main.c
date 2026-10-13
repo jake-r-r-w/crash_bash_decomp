@@ -6700,7 +6700,33 @@ void func_8002A3D0(u8 *arg0) {
 void func_8002A4B8(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002A4C0);
+void func_8002A4C0(TexUploadList *arg0, u8 *arg1) {
+    s32 n;
+    u8 *rec;
+    s32 *ip;
+    FreeHdr **pp;
+    s32 base;
+    RECT rect;
+
+    ip = &arg0->e[0].idx;
+    pp = &arg0->e[0].pos;
+    n = arg0->count;
+loop:
+    n--;
+    if (n != -1) {
+        rec = *(u8 **)(arg1 + 8) + *ip * 0x38;
+        ip += 4;
+        *pp = func_800282F8(*(u8 **)(rec + 4));
+        rect.w = *(u16 *)(rec + 0x1C);
+        rect.h = *(u16 *)(rec + 0x1E);
+        rect.x = (*pp)->f0;
+        rect.y = (*pp)->f2;
+        pp += 4;
+        base = *(s32 *)(arg1 + 0x10);
+        LoadImage(&rect, (u_long *)(*(s32 *)(rec + 0x30) + base));
+        goto loop;
+    }
+}
 
 void func_8002A5A4(u8 *a0, u8 *arg1) {
     Func2A5A4Obj *arg0 = (Func2A5A4Obj *)a0;
