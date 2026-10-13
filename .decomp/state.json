@@ -144,7 +144,8 @@
   "status": "matched"
  },
  "80011BF8": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-13T07:59:01Z",
+  "status": "matched"
  },
  "80011C5C": {
   "auto_diff": 7,

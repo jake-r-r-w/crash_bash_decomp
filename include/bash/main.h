@@ -506,7 +506,7 @@ void func_8002BEA8(void);
 extern VTable8 *D_8004E0DC;
 extern s32 D_8004E0E0;
 extern u8 D_80078C90[];
-void func_80011BF8(Heap *heap, u8 *start, s32 size);
+MemBlock *func_80011BF8(Heap *heap, u8 *start, s32 size);
 extern u8 D_80050008[];
 extern u8 D_8004E0B8[];
 void func_800134FC(u8 *a, u8 *b);

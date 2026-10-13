@@ -415,7 +415,29 @@ MemBlock *func_80011BC0(MemBlock *blk) {
 
 
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80011BF8);
+MemBlock *func_80011BF8(Heap *heap, u8 *start, s32 size) {
+    MemBlock *blk;
+    MemBlock *end;
+
+    blk = (MemBlock *)start;
+    blk->size = ((u32)(size + 3) >> 2) - 12;
+    blk->owner = NULL;
+    blk->unk0 = 0;
+    blk->prev = NULL;
+    blk->nextFree = NULL;
+    blk->prevFree = NULL;
+    end = (MemBlock *)((u32 *)(blk + 1) + blk->size);
+    end->size = 0;
+    end->owner = (void **)-1;
+    end->unk0 = 0;
+    end->prev = blk;
+    *(MemBlock **)&heap->unk0[0] = blk;
+    heap->free = blk;
+    heap->lowest = blk;
+    *(MemBlock **)&heap->unk0[4] = end;
+    heap->deferred = NULL;
+    return blk;
+}
 
 MemBlock *func_80011C5C(u32 words, MemBlock *blk) {
     for (; blk != NULL; blk = blk->nextFree) {
