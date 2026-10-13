@@ -509,10 +509,29 @@ def check_function(key, e, proj, name, quiet=False):
     return False, len(diffs)
 
 
-def pipeline(c_path, o_path, cc, opt, g, maspsx):
+def pipeline(c_path, o_path, cc, opt, g, maspsx, post=""):
     gflag = f"-G{g}"
     return (f"{X}cpp {' '.join(CPPFLAGS)} {c_path} | {GCC_ROOT}/{cc}/cc1 -quiet {opt} {gflag} "
-            f"| python3 tools/scripts/dmpsx.py | python3 {MASPSX} {maspsx}{' ' + gflag if g else ''} | {X}as {' '.join(ASFLAGS)} -o {o_path}")
+            f"| python3 tools/scripts/dmpsx.py | python3 {MASPSX} {maspsx}{' ' + gflag if g else ''} "
+            f"{post + ' ' if post else ''}| {X}as {' '.join(ASFLAGS)} -o {o_path}")
+
+
+def unit_cfg(cfg, src):
+    """project.mk's settings with the Makefile's per-unit overrides for `src` applied
+    (lines `build/<src>.o: VAR = value`)."""
+    out = dict(cfg)
+    if src and os.path.exists("Makefile"):
+        pat = re.compile(rf"^build/{re.escape(src)}\.o:\s*([A-Z_0-9]+)\s*:?=\s*(.*?)\s*$")
+        for line in read("Makefile").splitlines():
+            m = pat.match(line)
+            if m:
+                out[m.group(1)] = m.group(2).replace("$(PYTHON)", "python3")
+    return out
+
+
+def post_filters(cfg):
+    """The Makefile's extra stages after maspsx, as a shell fragment starting with `|`."""
+    return " ".join(v for v in (cfg.get("ASPSX_FILL", ""),) if v)
 
 
 def m2c_draft(e, src=None):
@@ -666,8 +685,9 @@ def cmd_index(a):
             e.pop("bin", None)
         if (seg, name) in inc:
             e["src"] = inc[(seg, name)][0]
-        elif not e.get("src") or not os.path.exists(e["src"]):
-            # no INCLUDE_ASM (or its file moved): splat wrote it as C itself (empty `void f(void) {}`), which matches
+        elif not e.get("src") or not os.path.exists(e["src"]) or e["src"] != f"src/{seg}.c":
+            # no INCLUDE_ASM: matched C, or splat wrote it as C itself (empty `void f(void) {}`); look in
+            # its segment's file, which changes when a split moves it
             p = f"src/{seg}.c"
             if os.path.exists(p):
                 if p not in src_text:
@@ -1341,9 +1361,10 @@ def compile_alone(src, decls, ftext, name, cfg, tag="t"):
     incs = src_includes(src)
     c, o = f"build/auto/{tag}.c", f"build/auto/{tag}.o"
     write(c, "\n".join(incs + decls) + "\n\n" + ftext)
+    cfg = unit_cfg(cfg, src)
     g = int(cfg.get("GVAL", "0"))
     cmd = pipeline(c, o, cfg["CC_VER"], cfg["OPT_FLAGS"], g,
-                   re.sub(r"\s*-G\d+", "", cfg.get("MASPSX_ARGS", DEFAULT_MASPSX)))
+                   re.sub(r"\s*-G\d+", "", cfg.get("MASPSX_ARGS", DEFAULT_MASPSX)), post_filters(cfg))
     # pipefail: without it a cc1 error is hidden and `as` still writes an object from partial output
     if run("set -o pipefail; " + cmd).returncode:
         return None
@@ -2381,7 +2402,7 @@ def permute_run(d, name, e, base_c, cfg, jobs, seconds):
         return None, None, None, "could not assemble target:\n" + tail(r.stderr)
     g = int(cfg.get("GVAL", "0"))
     cmd = pipeline('"$1"', '"$3"', cfg["CC_VER"], cfg["OPT_FLAGS"], g,
-                   re.sub(r"\s*-G\d+", "", cfg.get("MASPSX_ARGS", DEFAULT_MASPSX)))
+                   re.sub(r"\s*-G\d+", "", cfg.get("MASPSX_ARGS", DEFAULT_MASPSX)), post_filters(cfg))
     cmd = cmd.replace("-Iinclude", "-I/work/include").replace("-Iext/", "-I/work/ext/")
     write(f"{d}/compile.sh", f"#!/bin/bash\nset -eo pipefail\ncd /work\n{cmd}\n")
     os.chmod(f"{d}/compile.sh", 0o755)
@@ -2429,7 +2450,7 @@ def cmd_permute(a):
     base_c = permuter_base(src, [], body, name)
     if base_c is None:
         die(f"could not preprocess {name} for the permuter - does `try {name}` build?")
-    best, path, base, log = permute_run(d, name, e, base_c, cfg, jobs, a.minutes * 60)
+    best, path, base, log = permute_run(d, name, e, base_c, unit_cfg(cfg, src), jobs, a.minutes * 60)
     if path is None:
         print(f"permuter found no improvement{f' (base score {base})' if base is not None else ''}; log {d}/log.txt")
         if base is None:
