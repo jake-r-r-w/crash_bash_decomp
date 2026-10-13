@@ -601,6 +601,7 @@ extern void *D_8005AA24;
 extern SeqSlot D_8006557C;
 extern LoaderState D_80050628;
 extern char D_8004C83C[];
+extern void func_80012840(u8 *, u8 *);
 extern MusicEntry D_80058B88[];
 extern VabSlot D_800644C0[6];
 extern NodePool D_80056844;
@@ -1423,6 +1424,8 @@ typedef struct PadRumble {
     /* 0x0A */ s16 time1;
     /* 0x0C */ s16 reset;
 } PadRumble;
+
+u8 *func_800129D0(u8 *arg0, s32 arg1);
 
 void func_80012BC8(s32 * *arg0, s32 *arg1, u8 *arg2);
 
