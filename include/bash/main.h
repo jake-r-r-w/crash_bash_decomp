@@ -284,6 +284,12 @@ typedef struct Heap {
     /* 0x10 */ MemBlock *deferred;       /* freed once unk2 ticks run out (func_80011578, func_80011DB4) */
 } Heap;
 
+/* A per-frame-buffer allocation slot used by func_8001CC10. */
+typedef struct {
+    /* 0x0 */ void *ptr;
+    /* 0x4 */ u16 size;
+} Func8001CC10Slot;
+
 void func_80011474(void);
 s32 func_8001151C(u8 *arg0);
 void func_80011530(u8 *arg0);
@@ -981,6 +987,8 @@ s32 func_80015210(s32 a, s32 b, s32 t);
 void func_8001C448(PosDst *arg0, s32 arg1, s32 arg2);
 
 void func_8001C584(PosDst *arg0, s32 arg1);
+
+s32 func_8001CC10(void *arg0, s32 arg1);
 
 void func_8001D640(s32 n);
 

@@ -1013,7 +1013,8 @@
  },
  "8001CC10": {
   "auto_diff": 27,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-13T07:44:55Z",
+  "status": "matched"
  },
  "8001CD04": {
   "matched_at": "2026-10-10T19:44:52Z",

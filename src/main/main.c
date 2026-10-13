@@ -2418,7 +2418,31 @@ void func_8001CBD4(u32 arg0) {
 void func_8001CC08(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001CC10);
+s32 func_8001CC10(void *arg0, s32 arg1) {
+    Func8001CC10Slot *slot;
+    u16 want;
+
+    s32 off;
+
+    off = (D_8005B690 & 1) * 12 + 0x90;
+    slot = (Func8001CC10Slot *)(arg1 + off);
+    want = *(u16 *)((u8 *)arg0 + 8);
+    if (want != slot->size) {
+        if (slot->size < want) {
+            if (slot->ptr != 0) {
+                func_800110A8(slot, &D_8004E0F0);
+            }
+            func_800115D8(*(u16 *)((u8 *)arg0 + 8) * 0x28, slot, &D_8004E0F0, ((D_8005B690 & 1)?3:2));
+            if (slot->ptr == 0) {
+                slot->size = 0;
+                return 0;
+            }
+            slot->size = *(u16 *)((u8 *)arg0 + 8);
+        }
+        func_80018728((s32)arg0, (s32)slot->ptr);
+    }
+    return (s32)slot->ptr;
+}
 
 void func_8001CD04(void *arg0, void *arg1, void *arg2) {
     GteSetup s;
