@@ -6776,7 +6776,51 @@ found:
     return nas;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80022C3C);
+NAS *func_80022C3C(s32 x, s32 y, s32 z, u16 id, s32 slot) {
+    NAS *nas;
+    EXTengine *eng;
+    s32 i;
+    s32 r;
+    s32 want;
+    u16 ast;
+
+    nas = NULL;
+    want = id;
+    for (i = 0; i < ASTCount; i++) {
+        if (ASTTable[i].id == want) {
+            r = i;
+            goto found;
+        }
+    }
+    r = 0;
+found:
+    ast = r;
+    if (ast != 0 && ast < ASTCount) {
+        nas = &D_8005AA1C[slot];
+        *nas = NASTemplate;
+        nas->NASid = 1;
+        if (NASActiveTail != NULL) {
+            NASActiveTail->Tag.Child = nas;
+            nas->Tag.Parent = NASActiveTail;
+            NASActiveTail = nas;
+        } else {
+            NASActiveTail = nas;
+            NASActiveHead = nas;
+        }
+        nas->Type = ast;
+        nas->InitDelete = ASTTable[ast].Init;
+        nas->Handler = ASTTable[ast].Plot;
+        eng = AddEngine(nas, 1);
+        if (eng == NULL) {
+            return NULL;
+        }
+        eng->unk10.x = x;
+        eng->unk10.y = y;
+        eng->unk10.z = z;
+        nas->InitDelete(nas);
+    }
+    return nas;
+}
 
 NAS *SpawnNASFromRecord(NASTrigger *trig) {
     NAS *nas;
