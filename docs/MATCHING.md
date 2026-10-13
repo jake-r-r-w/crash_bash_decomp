@@ -270,6 +270,17 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | `sb`/`sh`/`sw 0x6C` scheduled before the `lhu` (target: `sw 0x6C`, `lhu`, then the rest) | Load both sources into locals first, then store 0x6C, 0x51, 0x52, 0x74 in that order | `func_80021604` |
 | `li`/`lhu` order of `RECT` stores (`li 1` before `lhu w`) | Assign `rect.w` from the load before `rect.h = 1` | `func_8002A77C` |
 | Scheduling or operand order around one load is off and nothing structural helps | Permuter finds: a chained temp (`n = new_var = G;`), `int new_var = data + o18;` before a store, `new_var = -b->x + new_var` | `func_8002BBEC`, `func_8002C2C4`, `func_80025D40` |
+| Matches alone, but the full build grows by 4 bytes and later rodata shifts: a `switch` jump table at a 4-mod-8 rodata offset (cc1 2.8.1 emits `.align 3` before jump tables) | Replace the `switch` with `static const void *const tbl[] = {&&l0, ...}; if (i < N) goto *tbl[i]; goto ldef;` (gets `.align 2`). Computed goto stops loop-invariant hoisting: put the table pointer and other invariants in locals before the loop | `func_80025534` |
+| An `s32` global loaded with `lhu`, or stores to a local dropped as dead | Keep the local `s32` (an `s16` destination narrows the load); put the stores in a struct whose address is passed, so none are dead | `func_8001CAD4` |
+| A loop's exit test duplicated at its bottom (ours ~10 insns longer); the target has one head with a `bltz` back to it | Don't open the body with `if (x) break;` (it gets moved to the loop's end): wrap the rest in `if (!x) { ... }` and let jump threading reach the exit | `func_80025534` |
+| A loop rotated to a bottom test where the target jumps back to a top test, or a constant folded into a load's offset | `while (1) { if (--n == -1) break; ... }`; write `(u8 *)d + (off + 4)` so the `+4` isn't folded into the load | `func_80029100` |
+| The target places an out-of-line block (reached from the loop's tail) before the loop head; ours after the loop | Blocks come out in source order: put that block first, `goto start; app: ...; goto done; start: for (;;) { ... goto app; }` | `func_800119D4` |
+| `addu` operands swapped for `base + idx * 4` (target `addu v0,s2,v0`) | `(base + K) - (-(idx * 4))` instead of `base + K + idx * 4` | `func_8002BD98` |
+| A parameter's `move sN,a0` at the very top of the function (a0 then reused as a `lui` temp); ours lower, with the s-registers rotated | Use the parameter itself, not a typed local copy (`T *p = arg0;`): sched1 moves the local's copy but not the entry copy. If the prototype can't change, cast at each use (`((T *)arg0)->f`) | `func_8001D894` |
+| A pointer sum done as `(base + off)` then `+ const`, in another order or with an extra `move` | Byte arithmetic `(u8 *)p + (n * 4 + K)`, not typed `(s32 *)p + n + K` (also for both block pointers instead of `MEMBLOCK_NEXT`) | `func_800120E8`, `func_80011FC8` |
+| Two `if`/`else` tails merged by cross-jumping; the target is 3 insns longer | The target runs a common statement after the branches: move the shared assignment out of both so their own tails differ | `func_800136BC` |
+| The target loads a field (`lw`) before forming a pointer or storing a function address; ours loads it after the stores, with an extra `nop` | Read the field into a (block-)local before the pointer and the stores | `func_800118BC`, `func_80015D70` |
+| A `do`/`while` re-tests a loaded value; gcc merges the inner `if (e == 0)` with `while (e == 0)` into a `j` and picks other registers | Write the inner test as a re-read of memory (`if (c->tbl[c->idx] == 0)`) and keep `while (e == 0)` | `func_80024FA4` |
 
 ## Classify the diff, then work through the list
 
@@ -340,17 +351,6 @@ reordering.
 | Hacks | a register pin or an `asm("")` barrier is used without `--hack "why"` |
 | Function | the function's compiled words differ from the target |
 | Full build | a clean rebuild of every target (exe and overlays) is not byte-identical |
-| Matches alone, but the full build grows by 4 bytes and later rodata shifts: a `switch` jump table at a 4-mod-8 rodata offset (cc1 2.8.1 emits `.align 3` before jump tables) | Replace the `switch` with `static const void *const tbl[] = {&&l0, ...}; if (i < N) goto *tbl[i]; goto ldef;` (gets `.align 2`). Computed goto stops loop-invariant hoisting: put the table pointer and other invariants in locals before the loop | `func_80025534` |
-| An `s32` global loaded with `lhu`, or stores to a local dropped as dead | Keep the local `s32` (an `s16` destination narrows the load); put the stores in a struct whose address is passed, so none are dead | `func_8001CAD4` |
-| A loop's exit test duplicated at its bottom (ours ~10 insns longer); the target has one head with a `bltz` back to it | Don't open the body with `if (x) break;` (it gets moved to the loop's end): wrap the rest in `if (!x) { ... }` and let jump threading reach the exit | `func_80025534` |
-| A loop rotated to a bottom test where the target jumps back to a top test, or a constant folded into a load's offset | `while (1) { if (--n == -1) break; ... }`; write `(u8 *)d + (off + 4)` so the `+4` isn't folded into the load | `func_80029100` |
-| The target places an out-of-line block (reached from the loop's tail) before the loop head; ours after the loop | Blocks come out in source order: put that block first, `goto start; app: ...; goto done; start: for (;;) { ... goto app; }` | `func_800119D4` |
-| `addu` operands swapped for `base + idx * 4` (target `addu v0,s2,v0`) | `(base + K) - (-(idx * 4))` instead of `base + K + idx * 4` | `func_8002BD98` |
-| A parameter's `move sN,a0` at the very top of the function (a0 then reused as a `lui` temp); ours lower, with the s-registers rotated | Use the parameter itself, not a typed local copy (`T *p = arg0;`): sched1 moves the local's copy but not the entry copy. If the prototype can't change, cast at each use (`((T *)arg0)->f`) | `func_8001D894` |
-| A pointer sum done as `(base + off)` then `+ const`, in another order or with an extra `move` | Byte arithmetic `(u8 *)p + (n * 4 + K)`, not typed `(s32 *)p + n + K` (also for both block pointers instead of `MEMBLOCK_NEXT`) | `func_800120E8`, `func_80011FC8` |
-| Two `if`/`else` tails merged by cross-jumping; the target is 3 insns longer | The target runs a common statement after the branches: move the shared assignment out of both so their own tails differ | `func_800136BC` |
-| The target loads a field (`lw`) before forming a pointer or storing a function address; ours loads it after the stores, with an extra `nop` | Read the field into a (block-)local before the pointer and the stores | `func_800118BC`, `func_80015D70` |
-| A `do`/`while` re-tests a loaded value; gcc merges the inner `if (e == 0)` with `while (e == 0)` into a `j` and picks other registers | Write the inner test as a re-read of memory (`if (c->tbl[c->idx] == 0)`) and keep `while (e == 0)` | `func_80024FA4` |
 
 Then it records the match, copies the same C to identical functions elsewhere
 (they're listed in the commit body), refreshes the dashboard, and commits
