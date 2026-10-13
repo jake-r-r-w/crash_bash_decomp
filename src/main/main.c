@@ -753,7 +753,53 @@ u8 *func_800129D0(u8 *arg0, s32 arg1) {
     return q;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80012AC4);
+u8 *func_80012AC4(u8 *arg0) {
+    LoadNode *p;
+    LoadNode *next;
+    LoadNode *tail;
+    u8 *q;
+    s32 a;
+    s32 b;
+    void (*fn)(u8 *, u8 *);
+    LoaderState *ls;
+
+    if (*(u8 **)arg0 == NULL) {
+        return NULL;
+    }
+    if (*(s32 *)(arg0 + 4) == 0) {
+        return NULL;
+    }
+    a = (s32)D_8004E110 + **(s32 **)arg0 * 8;
+    fn = func_80012678;
+    ls = &D_80050628;
+    b = *(s32 *)(*(u8 **)arg0 + 8);
+    p = D_80050F3C;
+    if (p != NULL) {
+        next = p->next;
+        p->next = NULL;
+        p->prev = (LoadNode *)ls->unk10;
+        D_80050F3C = next;
+        tail = (LoadNode *)ls->unk10;
+        if (tail != NULL) {
+            tail->next = p;
+        } else {
+            ls->unkC = (s32)p;
+        }
+        ls->unk10 = (s32)p;
+    }
+    q = (u8 *)p;
+    if (q == NULL) {
+        printf(D_8004C83C);
+    }
+    *(s32 *)(q + 0) = a;
+    *(s32 *)(q + 4) = 0;
+    *(s32 *)(q + 0xC) = 1;
+    *(s32 *)(q + 8) = b;
+    *(void **)(q + 0x10) = fn;
+    *(u8 **)(q + 0x14) = arg0;
+    *(s32 *)(q + 0x18) = 0;
+    return q;
+}
 
 static inline s32 func_80012BC8_find(s32 *arg0, s32 *arg1) {
     s32 *base;
