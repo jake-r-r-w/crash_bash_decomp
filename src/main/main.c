@@ -3080,7 +3080,20 @@ void func_80021770(u8 *arg0, s32 *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80021798);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80021878);
+s32 *func_80021878(u8 *arg0, s32 arg1) {
+    s32 *p;
+
+    p = (s32 *)(arg0 + 0x30);
+    if (p[1] != 0) {
+        do {
+            if (arg1 >= p[0] && arg1 < p[0] + p[1]) {
+                return p;
+            }
+            p += 19;
+        } while (p[1] != 0);
+    }
+    return p;
+}
 
 s32 *func_800218DC(u8 *arg0, s32 arg1) {
     s32 *p;
