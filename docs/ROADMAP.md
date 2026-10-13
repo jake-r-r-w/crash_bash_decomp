@@ -6,8 +6,10 @@ everything named, typed and split into its original files. The game's assets
 (textures, sounds, models, levels) are not part of the source: a tool extracts
 them from the user's own disc into editable formats, and their formats are
 documented. Assets stay on the user's machine and never go in git; only the
-tools and format documentation do. Phases are ordered but
-overlap; matching continues throughout. Progress lives on the dashboard and
+tools and format documentation do. [The final test](#the-final-test) says
+when it's done: a rebuilt disc, a shifted build that plays, and a recorded
+session that replays identically on both. Phases are ordered but overlap;
+matching continues throughout. Progress lives on the dashboard and
 badges. Tick a box in the commit that finishes that item, and run
 `tools/dk make progress` in it so the dashboard and roadmap badge update.
 
@@ -57,22 +59,21 @@ loaders are in the exe, each documented.
 - [x] Match GTE code: include Sony's GTE macros (`inline_c.h`, `gtemac.h`) in
   the game sources and match one GTE function through `done`. 27 of the exe's
   game functions use the GTE, and m2c can't draft them.
-- [ ] Match every game function in the executable.
-- [ ] Name and type every function and global in the exe (a descriptive name
-  where the original is unknown, per [CONVENTIONS.md](CONVENTIONS.md)).
 - [ ] Split `main.c` into translation units at the boundaries the binary shows
   (rodata and data order, alignment padding, file-local data), with the
   evidence for each in `docs/ARCHITECTURE.md`. The exe has no file names, so
   the units are named by what they contain. Do this before the data, so each
-  file's local data moves with it.
+  file's local data moves with it, and early in the matching: code in
+  the wrong unit can't match its rodata, and a split moves functions out
+  from under swarm patches, so do it between swarm runs.
+- [ ] Match every game function in the executable.
+- [ ] Name and type every function and global in the exe (a descriptive name
+  where the original is unknown, per [CONVENTIONS.md](CONVENTIONS.md)).
 - [ ] Turn its rodata, data and bss into C.
-- [x] Close the PsyQ gaps: find the object for each function in
-  `src/main/psyq/unknown/` (mostly one-call wrappers such as `CdSync`) and
-  link it, or match it as C; name `func_80032F3C` (`abs` and `labs` are
-  identical objects); and take the objects' data from the objects instead of
-  the retail data blob. Sony's hand-written `2MBYTE.OBJ` is the one documented
-  exception. Done: all 281 objects linked; the `.data` of `bios_1.o` stays from
-  the exe because the game's libcd differs from 4.7 in one initial value
+- [x] Close the PsyQ gaps: every library function is linked from Sony's 4.7
+  objects (281, plus the hand-written `2MBYTE.OBJ`), with their data. The one
+  exception is `bios_1.o`'s `.data`, kept from the exe because the game's
+  libcd differs from 4.7 in one initial value
   (`configs/USA/psyq/data_keep.txt`, ARCHITECTURE.md, PsyQ).
 - [ ] Asset extraction tool: read the `CRASHBSH.DAT` index (993 entries at
   `0x8004E110`) from the user's disc and extract its files to `assets/`, plus
@@ -144,53 +145,71 @@ source-only, and still matches, and its asset files extract.
 
 ## Phase 6 - Finish
 
-**Done when** the matching build is byte-identical to retail with no
-`INCLUDE_ASM`, `INCLUDE_RODATA`, parked functions or `func_`/`D_` placeholder
-names anywhere. Every file on the disc extracts with a documented format, and
-a `NON_MATCHING` build with shifted code boots and plays in an emulator.
+**Done when** every test in [The final test](#the-final-test) passes.
 
 - [ ] No `INCLUDE_ASM` or `INCLUDE_RODATA` anywhere, and no parked functions.
 - [ ] Every remaining disc file (music, movies, anything not covered above)
   extracts, and the formats are documented.
-- [ ] A shiftable `NON_MATCHING` build that runs in an emulator. Running it needs
-  the built exe and overlays packed into a disc image with the user's files.
+- [ ] A disc packer: put the built exe and overlays, with the user's other
+  files, back into a disc image with the retail layout (every file at its
+  original sector).
+- [ ] A shiftable `NON_MATCHING` build: an option that adds padding to every
+  unit's code and data, so everything moves, and the packer then builds a
+  disc from it.
+- [ ] A replay harness: play an emulator input recording (BizHawk or Mednafen
+  movie) on two discs and compare each frame's image hash and a set of game
+  values (positions, scores, the random seed, the current mode), read from
+  wherever each build keeps them. It reports the first frame that differs.
+- [ ] The recordings for test 4, made on the retail disc.
+- [ ] A build with a current GCC for MIPS (`NON_MATCHING`).
 - [ ] Every file at quality level 4 ([CONVENTIONS.md](CONVENTIONS.md)), with no
   placeholder names.
 - [ ] `docs/ARCHITECTURE.md` describes the game's systems.
 
-## Afterwards - decided once the source is complete
-
-These are not phases yet. Each gets its own plan when Phase 6 is done.
-
-- **Native PC port.** Build the C for PC, with assets loaded from the extracted
-  files instead of the CD. That means replacing the PS1 hardware layers (CD,
-  GPU and GTE, SPU sound, pads) with PC equivalents.
-
 ## The final test
 
 The decomp is done when all of these pass. Each proves something a byte match
-alone does not.
+alone does not. The tools for them are Phase 6 items, but tests 3 and 4 are
+worth running as soon as they exist: an overlay that is fully source can be
+shift-tested on its own, and a hard-coded address is cheaper to find while the
+code is fresh.
 
 1. **Clean rebuild.** A fresh clone, the user's disc and `tools/dk make check`
    (nothing else) rebuild `main.exe` and every overlay, and each matches
-   `configs/USA/checksum.sha`. Packing them back into a disc image gives a
-   disc whose game files hash the same as retail. *Proves: nothing outside the
+   `configs/USA/checksum.sha`. The disc packer then rebuilds the disc image,
+   and it matches the retail image byte for byte. *Proves: nothing outside the
    repo is needed except the user's disc.*
 2. **Nothing hidden.** No `INCLUDE_ASM`, `INCLUDE_RODATA`, `.incbin` of code or
    data, parked function or `func_`/`D_` name anywhere; the only binary inputs
    are the assets the extractor reads from the disc. *Proves: everything is
    source.*
-3. **Shifted build plays.** The `NON_MATCHING` build with every function and
-   data block moved (padding added in each unit) boots in an emulator and
-   plays: the front end, a save and a load, the hub, and every minigame through
-   to a win. *Proves: no address is hard-coded; the code works as code, not
-   as bytes that happen to land in the right place.*
-4. **Same game, frame for frame.** An emulator input recording of a long
-   session (the adventure mode from a new save, plus each minigame) replays on
-   the retail disc and on the shifted build with the same frames and the same
-   game state. *Proves: the rebuilt game behaves identically, not just
-   similarly.*
+3. **Shifted build plays.** The shifted `NON_MATCHING` build boots in an
+   emulator and plays: the front end, a save and a load, the hub, and every
+   minigame through to a win. *Proves: no address is hard-coded; the code works
+   as code, not as bytes that happen to land in the right place.*
+4. **Same game, frame for frame.** Input recordings of a long session (the
+   adventure mode from a new save, plus each minigame), made on the retail
+   disc, replay on the shifted build with the same frames and the same game
+   state. *Proves: the rebuilt game behaves identically, not just similarly.*
+   - Run it on the matching build first. That build is the retail bytes, so it
+     must pass; if it doesn't, the harness is wrong, not the game.
+   - Compare frames and game values, never raw RAM: in the shifted build
+     everything sits at other addresses, so a RAM dump always differs.
+   - Keep the retail disc layout. Load times depend on where files sit on the
+     CD; a file in another place finishes loading a frame later and every
+     frame after it is off by one, which looks like a bug but isn't.
 5. **A modern compiler.** The source builds with a current GCC for MIPS
    (warnings allowed, `NON_MATCHING`) and passes test 4. *Proves: the C is
    correct C, not C that only works because of the old compiler's quirks;
    this is also the first step of the PC port.*
+
+## Afterwards - decided once the source is complete
+
+These are not phases yet. Each gets its own plan when the final test passes.
+
+- **Native PC port.** Build the C for PC, with assets loaded from the extracted
+  files instead of the CD. That means replacing the PS1 hardware layers (CD,
+  GPU and GTE, SPU sound, pads) with PC equivalents.
+- **The library as C.** Sony's PsyQ code is linked from Sony's own objects.
+  Rewriting it as C that compiles to the same objects would make the whole
+  game source; the PC port replaces most of it anyway, so decide after that.
