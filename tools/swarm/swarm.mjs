@@ -353,6 +353,7 @@ class Swarm {
   syncInteg() {
     if (git(this.integ, 'fetch', '-q', this.remoteUrl, `refs/heads/${this.o.branch}`).code) return false;
     resetClone(this.integ, 'FETCH_HEAD');
+    this.tip = gitOk(this.integ, 'rev-parse', 'HEAD');
     return true;
   }
 
@@ -635,7 +636,9 @@ Fix that, keep it matching, and report "matched".
 
   startJob(slot, job) {
     const { f } = job;
-    job.base = gitOk(this.integ, 'rev-parse', 'HEAD');
+    // the last pushed tip, not the integration clone's HEAD: while a batch is in the gate HEAD has
+    // its unpushed commits, which a failed batch throws away (and a permuter could then not find)
+    job.base = this.tip || gitOk(this.integ, 'rev-parse', 'HEAD');
     const kind = job.big ? `big${job.attempt}` : `attempt${job.attempt}`;
     job.dir = path.join(this.paths.results, f.name, `${kind}${job.gateFix ? '-gatefix' : job.startPatch ? '-port' : ''}-${this.id}`);
     fs.mkdirSync(job.dir, { recursive: true });
@@ -999,6 +1002,7 @@ Fix that, keep it matching, and report "matched".
         for (const job of passed) this.fail(null, job, `push to ${this.o.remote}/${this.o.branch} failed, stopping: ${push.err.trim()}`);
         return;
       }
+      this.tip = gitOk(this.integ, 'rev-parse', 'HEAD');
       this.updateLocal();
       for (const job of passed) {
         this.stats.matched++;
