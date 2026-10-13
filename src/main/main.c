@@ -4245,7 +4245,29 @@ s32 *func_800219B8(u8 *arg0, s32 arg1) {
     return p;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80021A1C);
+void func_80021A1C(u8 *arg0, u8 *arg1, s32 arg2) {
+    u8 *p;
+    u8 *sub;
+    s32 v;
+    u16 w;
+
+    p = Push4(arg1);
+    if (p != NULL) {
+        sub = p + 8;
+        *(s32 *)(p + 4) = 0;
+        *(subengine *)sub = D_8005A830;
+        v = *(s32 *)arg1;
+        *(s16 *)(sub + 0x74) = 0;
+        *(s32 *)sub = 0;
+        *(s32 *)(sub + 0x6C) = v;
+        w = *(u16 *)(arg0 + 0x1C);
+        *(u16 *)(sub + 0x68) = w;
+        if ((w << 16) != 0) {
+            *(s32 *)sub |= 0x2000000;
+        }
+        *(s32 *)p = arg2;
+    }
+}
 
 void func_80021AF0(s32 *arg0, s32 *arg1, s16 *arg2, s32 arg3, s32 arg4) {
     arg2[0] = func_800152A8(arg0[0], arg1[0], arg3, arg4);
