@@ -1988,7 +1988,8 @@
   "status": "matched"
  },
  "80028018": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-13T08:43:16Z",
+  "status": "matched"
  },
  "800280C0": {
   "auto_diff": 5,

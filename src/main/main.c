@@ -5389,7 +5389,17 @@ void func_80027F7C(s32 pad, s32 arg1, s8 arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80028018);
+void func_80028018(s32 pad, s32 arg1) {
+    u8 *p;
+
+    if (D_8005A614[pad + 0x5C] == 0 && !(*(s32 *)(D_8005A614 + 4) & 0x80) && pad < 4 && D_8005A604[pad + 0xC] != 0 &&
+        (D_80051338[pad].unk0 & 8)) {
+        p = (u8 *)&D_80051338[pad] + 0x1C;
+        p[4] = 1;
+        *(s16 *)(p + 8) = arg1 + 1;
+        *(u16 *)(p + 6) |= 1;
+    }
+}
 
 s32 func_800280C0(u8 *src, u8 *dst, s32 n) {
     s32 count;

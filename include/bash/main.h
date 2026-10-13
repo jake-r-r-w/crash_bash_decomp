@@ -1224,6 +1224,8 @@ void func_800279A4(void);
 
 void func_80027F7C(s32 pad, s32 arg1, s8 arg2);
 
+void func_80028018(s32 pad, s32 arg1);
+
 void func_8002A684(u8 *arg0, u8 *arg1);
 
 #endif /* BASH_MAIN_H */
