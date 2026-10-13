@@ -29,11 +29,17 @@
    "note": "Rebuilds NASFreeList from the pool (D_8005AA1C, slots D_8005AA10..D_8005AA12-1). Best: goto loop, 18 off: target keeps %hi(NASFreeList) in a1 (a copy, so loop.c hoisted it) and loads D_8005AA10 once before the loop. goto loops get no hoisting; for(;;)+break with a 'first' local hoists the lui but adds a nas+12 giv (37 insns); while/for with the global, index inside the loop, head pointer local, store order, static inline FreeNAS: no better. Permuter 10 min: only a semantics-breaking goto move.",
    "seg": "main/main",
    "size": 148
+  },
+  {
+   "name": "func_800274FC",
+   "note": "registers 4/40: func_800276C4's body + D_8005B698 = NULL. Target loads the last *arg0 into a0 and the D_8005B698 lui into v1 (sched1 put the lui before the load); ours v1 then v0. Tried: operand orders, a block-local, static inline body, &D_8005B698 taken early; permuter 10 min no gain. Next: cc1 -dS dump of sched1 order",
+   "seg": "main/main",
+   "size": 160
   }
  ],
- "commit": "84f731c",
+ "commit": "5be0d8b",
  "game": "SCUS_945.70",
- "generated": "2026-10-13T22:44:46Z",
+ "generated": "2026-10-13T22:57:46Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -33428,7 +33434,7 @@
    }
   },
   {
-   "commit": "84f731c",
+   "commit": "5be0d8b",
    "data_b": 384,
    "data_tb": 606943,
    "game_all_f": 2551,
@@ -33441,7 +33447,7 @@
    "lib_b": 122112,
    "lib_f": 564,
    "lib_tb": 122112,
-   "ts": "2026-10-13T22:44:46Z",
+   "ts": "2026-10-13T22:57:45Z",
    "units": {
     "engine": [
      2752,
@@ -33637,7 +33643,7 @@
   }
  ],
  "summary": {
-  "blocked": 5,
+  "blocked": 6,
   "copies_b": 37444,
   "data": {
    "done_b": 384,
@@ -33648,7 +33654,7 @@
    "all_f": 2551,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 5,
+   "blocked": 6,
    "c_f": 765,
    "done_b": 86380,
    "done_f": 768,
@@ -33700,7 +33706,7 @@
     "all_f": 575,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 5,
+    "blocked": 6,
     "c_f": 501,
     "done_b": 74992,
     "done_f": 504,

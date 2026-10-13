@@ -1653,6 +1653,7 @@ Ext1000 *AddObject(NAS *nas);
 
 void func_80026E2C(void);
 
+void func_800274FC(s32 *arg0);  /* func_800276C4, then D_8005B698 = NULL */
 void func_800276C4(s32 *arg0);
 
 void func_800279A4(void);
