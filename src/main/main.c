@@ -3123,7 +3123,90 @@ void func_80017138(u8 *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80017164);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80017388);
+static inline void PrimList_Flush(ListNode18938 *arg0, s32 arg1) {
+    arg0->f0 = 0;
+    if (arg1 == 1) {
+        func_80018764(arg0->fC);
+    } else {
+        *arg0->f8 = D_80056850;
+        D_80056850 = arg0->fC;
+        if (arg0->f10 != NULL) {
+            *arg0->f10 = NULL;
+        } else {
+            arg0->f4 = 0;
+        }
+        arg0->f8 = arg0->f10;
+    }
+    if (arg0->f10 != NULL) {
+        *arg0->f10 = NULL;
+    } else {
+        arg0->f4 = 0;
+    }
+    arg0->f8 = arg0->f10;
+}
+
+static inline void PrimSet_Free(PrimSet *prev, PrimSet *set) {
+    PrimSet *next;
+
+    if (prev != NULL) {
+        prev->next = set->next;
+    } else {
+        next = set->next;
+        D_80056864 = next;
+    }
+    set->next = (PrimSet *) D_80056860;
+    D_80056860 = (s32 *) set;
+}
+
+void func_80017388(void) {
+    PrimSet *set;
+    PrimSet *prev;
+    s32 off;
+    PrimSet *p;
+    PrimSet *q;
+
+    off =(D_8005B690 & 1) * sizeof(PrimListPair);
+    set = D_80056864;
+    prev = NULL;
+    while (1) {
+        p = (PrimSet *) ((u8 *) set + off);
+        if (set == NULL) {
+            break;
+        }
+        if (p->pairs[0].a.fC != NULL) {
+            if (++p->pairs[0].a.f0 >= 16) {
+                PrimList_Flush(&p->pairs[0].a, set->mode);
+            }
+        } else {
+            p->pairs[0].a.f0 = 0;
+        }
+        p = (PrimSet *) ((u8 *) set + off);
+        if (p->pairs[0].b.fC != NULL) {
+            if (++p->pairs[0].b.f0 >= 16) {
+                PrimList_Flush(&p->pairs[0].b, set->mode);
+            }
+        } else {
+            p->pairs[0].b.f0 = 0;
+        }
+        q = (PrimSet *) ((u8 *) set + off);
+        q->pairs[0].a.f10 = NULL;
+        q->pairs[0].b.f10 = NULL;
+        q->pairs[0].a.fC = (s32 *) q->pairs[0].a.f4;
+        q->pairs[0].b.fC = (s32 *) q->pairs[0].b.f4;
+        if (set->dead == 1 && set->pairs[0].a.f4 == 0 && set->pairs[1].a.f4 == 0
+            && set->pairs[0].b.f4 == 0 && set->pairs[1].b.f4 == 0) {
+            PrimSet_Free(prev, set);
+            if (prev != NULL) {
+                set = prev->next;
+            } else {
+                set = D_80056864;
+            }
+        } else {
+            prev = set;
+            set = set->next;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80017640);
 

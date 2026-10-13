@@ -1004,6 +1004,16 @@ typedef struct ListNode18938 {
     s32 *fC;
     s32 **f10;
 } ListNode18938;
+typedef struct {
+    ListNode18938 b; /* 0x00 */
+    ListNode18938 a; /* 0x14 */
+} PrimListPair;
+typedef struct PrimSet {
+    struct PrimSet *next;  /* 0x00 */
+    PrimListPair pairs[2]; /* 0x04 */
+    u16 mode;              /* 0x54 */
+    u16 dead;              /* 0x56 */
+} PrimSet;
 extern s32 *D_80056858;
 extern NAS *NASActiveHead;
 extern s32 D_800654AC;
