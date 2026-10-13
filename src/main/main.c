@@ -3857,7 +3857,61 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8001A6D4);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001A82C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001AA48);
+static inline u8 *func_8001AA48_setup(ModelObj *obj, void *arg1, s32 flags, RelTable *colors, u8 *t) {
+    func_8001D894(obj, arg1, flags, (s32)colors);
+    return t;
+}
+
+void func_8001AA48(ModelObj *obj, void *arg1, s32 flags) {
+    RelTable *colors;
+    POLY_GT4 *prim;
+    u8 *t;
+    s32 xy, z;
+    u32 otz;
+
+    if (!(obj->flags & 0x8000)) {
+        return;
+    }
+    colors = obj->model->colors;
+    if (colors == NULL) {
+        return;
+    }
+    prim = obj->slots[D_8005B690 & 1].prim;
+    if (prim == NULL) {
+        prim = func_800183B0();
+        obj->slots[D_8005B690 & 1].prim = prim;
+        if (prim == NULL) {
+            return;
+        }
+        D_80056998.unk0 = obj->model;
+        func_8001795C(func_80015A18(obj->index, (u8 *)colors), prim);
+    }
+    t = func_80015A18(obj->index, (u8 *)colors);
+    D_80056998.dp = D_80056998.modelDp;
+    D_80056998.unk0 = obj->model;
+    func_800177F4((RelTable *)t, prim, (s32)D_80056998.farColor, flags);
+    colors = obj->model->colors;
+    t = func_8001AA48_setup(obj, arg1, flags, colors, func_80015A18(obj->index, (u8 *)colors));
+    t += *(s32 *)(t + 0x10) + 0x10;
+    gte_ldv0_t(t + 0x14);
+    gte_rtps();
+    gte_ldv0_t(t + 0x1C);
+    gte_rtps();
+    gte_ldv0_t(t + 0x24);
+    gte_rtps();
+    xy = *(s32 *)(t + 0x2C);
+    z = *(s32 *)(t + 0x30);
+    gte_stsxy3_gt3(prim);
+    gte_ldv0_w(xy, z);
+    gte_rtps();
+    gte_stsxy2(&prim->x3);
+    gte_avsz3();
+    gte_stotz(&otz);
+    otz = (otz + D_80056998.otzAdd) >> 1;
+    if (otz < D_80056998.otLen) {
+        addPrim(D_80056998.ot + otz, prim);
+    }
+}
 
 MATRIX *func_8001ACC0(GfxXform *obj) {
     GfxState *gs;

@@ -93,6 +93,23 @@ typedef struct GfxModel {
     RelTable *colors; /* 0x0C: u32 colours, indexed by a face's 13-bit indices */
 } GfxModel;
 
+/* An object drawn as one textured quad (func_8001AA48, func_8001C3D0,
+ * func_8001C378): one primitive per frame buffer. */
+typedef struct {
+    POLY_GT4 *prim; /* from func_800183B0, freed with func_80018388 */
+    u8 unk4[8];
+} ModelObjSlot;
+
+typedef struct {
+    u32 flags;               /* 0x00: 0x8000 visible */
+    u8 unk4[0x68];
+    struct GfxModel *model;  /* 0x6C */
+    u8 unk70[4];
+    u16 index;               /* 0x74: passed to func_80015A18 */
+    u8 unk76[0x1A];
+    ModelObjSlot slots[2];   /* 0x90: indexed by D_8005B690 & 1 */
+} ModelObj;
+
 /* At +0x54 of GfxCamera; func_8001ACC0 takes a pointer to it. */
 typedef struct {
     u8 unk0[0x10];
@@ -135,7 +152,9 @@ typedef struct {
     u8 unk4[4];
     s32 *farColor; /* 0x08: r, g, b for gte_ldfcdir */
     s32 dp;        /* 0x0C: depth-cue factor for gte_lddp */
-    u8 unk10[0x10];
+    u8 unk10[4];
+    s32 modelDp;   /* 0x14: dp for ModelObj quads (func_8001AA48) */
+    u8 unk18[8];
     s32 ofx;   /* 0x20: geometry offset x (scaled by the screen width / 640) */
     s32 ofy;   /* 0x24: geometry offset y (halved) */
     u8 unk28[0x18];
@@ -171,6 +190,10 @@ typedef struct {
 /* Loads GTE vector 0 from two words (vx|vy, vz) in general registers
  * (lw + mtc2), where Sony's gte_ldv0 loads straight from memory (lwc2). */
 #define gte_ldv0_w(xy, z) __asm__ volatile (				"mtc2	%0, $0;"						"mtc2	%1, $1"							:								: "r"(xy), "r"(z) )
+
+/* Loads GTE vector 0 from memory through $t0/$t1 (lw + mtc2), where Sony's
+ * gte_ldv0 uses lwc2. */
+#define gte_ldv0_t(r0) __asm__ volatile (				"lw	$t0, %0;"					"lw	$t1, %1;"					"mtc2	$t0, $0;"					"mtc2	$t1, $1"					:								: "m"(((s32 *)(r0))[0]), "m"(((s32 *)(r0))[1])	: "$8", "$9" )
 
 /* Stores SXY0..2 at +0x10, +0x18, +0x20 of a primitive. None of Sony's
  * gte_stsxy3_* macros uses these offsets; func_800193A8 and func_8001A0D8
@@ -490,7 +513,9 @@ PointList *func_8001562C(subengine *sub);
 FlagPoint *func_80015780(EXTengine *eng, subengine *sub, u16 flag, VECTOR *out);
 void func_8001C2C0(u8 *arg0);
 void func_8001C378(u8 *arg0);
-void func_8001AA48(u8 *arg0);
+void func_8001AA48(ModelObj *obj, void *arg1, s32 flags);
+void func_800177F4(RelTable *face, POLY_GT4 *poly, s32 arg2, s32 mode);
+void func_8001795C(u8 *face, POLY_GT4 *poly);
 void func_8001CBD4(u32 arg0);
 void func_8001CC08(void);
 void func_8001D174(EXTengine *eng);
