@@ -1126,7 +1126,30 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80013F44);
 
 INCLUDE_RODATA("asm/nonmatchings/main/main", D_8004C83C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800142D4);
+void func_800142D4(void *arg0) {
+    RotScale *p = arg0;
+
+    p->dirty = 0;
+    switch (p->order) {
+    case 0:
+        RotMatrix(&p->rot, &p->mtx);
+        break;
+    case 1:
+        RotMatrixYXZ(&p->rot, &p->mtx);
+        break;
+    case 2:
+        RotMatrixZYX(&p->rot, &p->mtx);
+        break;
+    case 3:
+        func_80013D54(&p->rot, &p->mtx);
+        break;
+    case 4:
+        break;
+    }
+    if (p->hasScale != 0) {
+        ScaleMatrixL(&p->mtx, &p->scale);
+    }
+}
 
 void func_80014388(u8 *arg0) {
     D_800517B0 = 0;

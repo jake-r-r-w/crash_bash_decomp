@@ -359,6 +359,16 @@ void func_8001C008(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc);
 void func_8001C0F0(s32 p, MorphModel *model, u16 *ia, u16 *ib, s16 (*verts)[3]);
 void func_8001965C(void *arg0, void *arg1, void *arg2, u8 *arg3, GteSetup *out);
 void func_8001CD04(void *arg0, void *arg1, void *arg2);
+typedef struct RotScale {
+    /* 0x00 */ SVECTOR rot;
+    /* 0x08 */ u8 pad8[8];
+    /* 0x10 */ VECTOR scale;
+    /* 0x20 */ MATRIX mtx;
+    /* 0x40 */ u8 hasScale;
+    /* 0x41 */ u8 order;
+    /* 0x42 */ s16 dirty;
+} RotScale;
+void func_80013D54(SVECTOR *rot, MATRIX *m);
 void func_800142D4(void *arg0);
 PointList *func_8001562C(subengine *sub);
 FlagPoint *func_80015780(EXTengine *eng, subengine *sub, u16 flag, VECTOR *out);
