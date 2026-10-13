@@ -3249,7 +3249,26 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80021CB8);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80021D1C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80021DD4);
+u8 *func_80021DD4(u8 *arg0, s32 arg1, s32 arg2) {
+    u8 *p;
+    u8 *r;
+    s32 *q;
+
+    D_80058B7C = arg0;
+    p = *(u8 **)(arg0 + 0xC);
+    D_80058B80 = arg1;
+    D_80058B84 = arg2;
+    if (p == NULL) {
+        r = NULL;
+    } else {
+        q = (s32 *)(p + (*(s32 *)(p + 0x4C) + 0x4C) + arg1 * 4);
+        r = (u8 *)q + *q;
+    }
+    if (r == NULL) {
+        return NULL;
+    }
+    return r + (arg2 * 4 + 0x1C) + *(s32 *)(r + (arg2 << 2) + 0x1C);
+}
 
 u8 *func_80021E44(OffsetTable *tbl, s32 i) {
     return (u8 *)&tbl->offs[i] + tbl->offs[i];

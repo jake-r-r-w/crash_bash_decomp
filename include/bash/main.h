@@ -655,6 +655,9 @@ extern void *D_8005AA38;
 extern void *D_80056864;
 extern u8 D_8005B790[];
 extern s32 D_800637A8;
+extern u8 *D_80058B7C;
+extern s32 D_80058B80;
+extern s32 D_80058B84;
 
 extern NAS *NASFreeList;
 extern u16 D_8005AA10;            /* first pool slot func_80026D08 frees */
@@ -1009,6 +1012,8 @@ s32 *func_80021878(u8 *arg0, s32 arg1);
 s32 *func_800218DC(u8 *arg0, s32 arg1);
 
 s32 *func_800219B8(u8 *arg0, s32 arg1);
+
+u8 *func_80021DD4(u8 *arg0, s32 arg1, s32 arg2);
 
 _sfx_handler *func_80022924(void);
 
