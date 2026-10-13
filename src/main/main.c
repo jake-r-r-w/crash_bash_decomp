@@ -197,7 +197,35 @@ void func_80011474(void) {
     func_80011410(&D_8004E0F0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80011498);
+u8 *func_80011498(u8 *arg0, s32 arg1, Heap *arg2) {
+    MemBlock *blk;
+    MemBlock *new_blk;
+    u32 words;
+    u32 old;
+    s32 rest;
+    Heap *heap;
+
+    void **neg1;
+
+    words = (u32)arg1 + 3;
+    words = words >> 2;
+    heap = arg2;
+    blk = (MemBlock *)(arg0 - 0x18);
+    old = blk->size;
+    neg1 = (void **)-1;
+    rest = old - words - 6;
+    if (rest >= 0x10) {
+        blk->size = words;
+        new_blk = (MemBlock *)((u8 *)blk + (0x18 + words * 4));
+        new_blk->owner = neg1;
+        new_blk->size = rest;
+        new_blk->unk0 = 0;
+        new_blk->prev = blk;
+        ((MemBlock *)((u8 *)blk + old * 4 + 0x18))->prev = new_blk;
+        func_800110A8((u8 *)new_blk + 0x18, heap);
+    }
+    return arg0;
+}
 
 s32 func_8001151C(u8 *arg0) {
     return ~(*(s32*)((u8*)(arg0) + -20)) == 0;
@@ -627,7 +655,7 @@ void func_80012CD4(void *arg0, s32 *arg1) {
         s0 = &D_8004E110[(first + n) * 2];
         for (;;) {
             if (n == 0) {
-                break;
+                return;
             }
             func_80011498(func_80011828(arg0, (s0[0] - s2[0]) << 11), s0[1], &D_8004E0F0);
             n--;
