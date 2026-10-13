@@ -607,6 +607,14 @@ typedef struct FreeNode {
     void *f10;
     s32 f14;
 } FreeNode;
+typedef struct BufNode {
+    s32 f0;
+    struct BufNode *next;
+    struct BufNode *prev;
+    struct BufNode *parent;
+    struct BufNode *child;
+    struct BufNode **head;
+} BufNode;
 extern FreeNode *D_80063B18;
 extern u8 D_80063B58[];
 extern FreeHdr *func_800282F8(u8 *);
@@ -1338,6 +1346,8 @@ void func_80027F7C(s32 pad, s32 arg1, s8 arg2);
 void func_80028018(s32 pad, s32 arg1);
 
 FreeNode *func_80028A28(void);
+
+void func_80028AE4(BufNode *arg0);
 
 void func_8002A684(u8 *arg0, u8 *arg1);
 

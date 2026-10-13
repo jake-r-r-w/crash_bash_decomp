@@ -2070,7 +2070,8 @@
   "status": "matched"
  },
  "80028AE4": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-13T09:05:00Z",
+  "status": "matched"
  },
  "80028BC8": {
   "auto_diff": 2,

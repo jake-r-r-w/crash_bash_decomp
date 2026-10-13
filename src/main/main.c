@@ -6067,7 +6067,35 @@ FreeNode *func_80028A28(void) {
     return head;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80028AE4);
+void func_80028AE4(BufNode *arg0) {
+    BufNode *p;
+    BufNode *old;
+
+    p = arg0->parent;
+    if (p != NULL && p->child == NULL) {
+        if (p->prev != NULL) {
+            p->prev->next = p->next;
+        } else {
+            *p->head = p->next;
+        }
+        if (p->next != NULL) {
+            p->next->prev = p->prev;
+        }
+        func_80028AE4(arg0->child);
+        old = (BufNode *)D_80063B18;
+        D_80063B18 = (FreeNode *)arg0;
+        p->next = old;
+        arg0->next = p;
+        return;
+    }
+    arg0->child = NULL;
+    arg0->next = *arg0->head;
+    *arg0->head = arg0;
+    arg0->prev = NULL;
+    if (arg0->next != NULL) {
+        arg0->next->prev = arg0;
+    }
+}
 
 s32 func_80028BC8(u8 **arg0) {
     u8 *p;
