@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 767/2550 game functions matched (main.exe ~502/574),
+- 768/2551 game functions matched (main.exe ~503/575), 7 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
@@ -95,15 +95,18 @@ Other:
   differs, extend it from the target.
 - `main/8002e0f0` is gcc 2.7.2 + ASPSX now (Makefile), so 2.7.2 runs from
   `0x8002D488` to PsyQ; whether `8002d488` and `8002e0f0` are one file is
-  open. `func_8002E0F0` and `func_8002E25C` were only tried under 2.8.1:
-  the next run retries them. `func_8002E0F0` may need `aspsx_fill.py` to
+  open. `func_8002E0F0` was only tried under 2.8.1: the next run retries
+  it. `func_8002E0F0` may need `aspsx_fill.py` to
   expand `lw rD,sym(rI)` through rD instead of `$at`.
-- `func_80027408`'s symbol holds two functions: a no-return error-screen
-  loop (`0x80027408..0x800274F8`, ends in `j`) and a second from
-  `0x800274FC` (the `func_800276C4` body, then `D_8005B698 = NULL`; `jr ra`
-  at `0x80027594`). Add `func_800274FC` to `configs/USA/sym.main.txt`; the
-  big session's C for the first half matches all its 60 insns
-  (`results/func_80027408/big1-20261013212154/`).
+- **`func_800274FC`** (parked; split out of `func_80027408`, now matched):
+  registers 4/40. It's `func_800276C4`'s body plus `D_8005B698 = NULL`;
+  the target loads the last `*arg0` into a0 and the global's `lui` into v1
+  (so sched1 put the `lui` before the load), ours v1 then v0. Next: the
+  cc1 sched1 dump.
+- **`func_8002E25C`** (parked, the debug text printer): structure 68/93 under
+  2.7.2. The target reloads `*str` in the Kanji and ROM-glyph paths but
+  compares the first load for `' '`; ours reuses it. Find what stops 2.7.2's
+  CSE there (a char local, `volatile` and an index loop didn't).
 - Swarm: `--seg` is a prefix and defaults to `main/main`, so the new units
   need `--seg main/8002` (or `--only`).
 - Heap: `D_8004E0F0` is a `Heap` now. Its +0x10 is the deferred-free list
@@ -241,6 +244,10 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-14 (by hand):** Split `func_80027408` at `0x800274FC` (a
+  `// type:func` line in `sym.main.txt`; it never returns) and matched it.
+  After a split, `decomp.py index` keeps the old size: fix `size` in
+  `.decomp/functions.json`. Parked `func_800274FC` and `func_8002E25C`.
 - **2026-10-14:** 1-hour swarm run: 20 committed, $41. Its parks showed
   `main/8002e0f0` is gcc 2.7.2 (Makefile changed; `func_8002E618` then
   matched by hand, with `pad` subsegments for the unit's end padding).
