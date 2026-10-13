@@ -989,6 +989,8 @@ s32 func_80012D80(s32 *arg0, s32 *arg1);
 
 void func_80012FA4(LoadNode *arg0);
 
+s32 func_800133FC(s32 *arg0);
+
 s32 func_80013488(s32 arg0, s32 arg1, s32 arg2);
 
 void func_800150E8(char *dst, s32 val, s32 div);

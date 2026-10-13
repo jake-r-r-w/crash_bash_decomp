@@ -760,7 +760,21 @@ s32 func_800133C8(s32 arg0, s32 arg1, u8 *arg2, s32 arg3) {
     return func_80013034(arg0, arg1, arg3, NULL, arg2, 1, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800133FC);
+s32 func_800133FC(s32 *arg0) {
+    s32 a2 = arg0[1];
+
+    if (a2 == -1) {
+        return 0;
+    }
+    D_8006E9F8 = 0;
+    func_80013034((s32)arg0, 0, a2, NULL, (u8 *)&D_8006E9F8, 0, 0);
+    while (func_80012FFC() != 0) {
+        func_8001231C();
+        func_80010AE8(&D_8004E0F0);
+        func_8002BAE8();
+    }
+    return D_8006E9F8;
+}
 
 s32 func_80013488(s32 arg0, s32 arg1, s32 arg2) {
     D_8006E9F8 = 0;
