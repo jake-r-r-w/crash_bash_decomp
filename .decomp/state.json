@@ -2138,7 +2138,8 @@
   "via": "auto"
  },
  "8002A77C": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-13T08:47:24Z",
+  "status": "matched"
  },
  "8002A830": {
   "auto_diff": 7,

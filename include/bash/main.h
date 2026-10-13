@@ -882,6 +882,17 @@ void func_8002A830(u8 *src, u8 *out, s32 len);
 void *func_80021EEC(void);
 
 void *func_80028A00(void);
+typedef struct {
+    u16 x;
+    u16 y;
+} ClutPos;
+typedef struct {
+    u16 w;
+    u16 clut;
+    ClutPos *pos;
+    s32 off;
+} ClutUpload;
+ClutPos *func_80028420(void);
 
 void func_8002694C(NAS *nas, s32 bits);
 
@@ -1251,5 +1262,7 @@ void func_80027F7C(s32 pad, s32 arg1, s8 arg2);
 void func_80028018(s32 pad, s32 arg1);
 
 void func_8002A684(u8 *arg0, u8 *arg1);
+
+void func_8002A77C(ClutUpload *arg0, s32 arg1);
 
 #endif /* BASH_MAIN_H */

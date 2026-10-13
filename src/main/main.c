@@ -5856,7 +5856,21 @@ void func_8002A740(u8 *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002A77C);
+void func_8002A77C(ClutUpload *arg0, s32 arg1) {
+    RECT rect;
+
+    if (arg0->w < 0x11U) {
+        arg0->pos = func_80028420();
+    } else {
+        arg0->pos = func_80028A00();
+    }
+    rect.x = arg0->pos->x;
+    rect.y = arg0->pos->y;
+    rect.w = arg0->w;
+    rect.h = 1;
+    LoadImage(&rect, (u_long *)(arg1 + arg0->off));
+    arg0->clut = GetClut(rect.x, rect.y);
+}
 
 void func_8002A830(u8 *src, u8 *out, s32 len) {
     u16 id;
