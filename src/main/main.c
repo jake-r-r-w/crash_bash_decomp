@@ -7844,7 +7844,45 @@ void func_80027A9C(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80027AD4);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80027D90);
+static inline s32 func_80027D90_read(u8 *src, u8 *dst, s32 n) {
+    s32 count;
+
+    if ((*(u16 *)src & 0xF000) == 0x8000) {
+        if (n == 0) {
+            func_80027AD4(src + 2, dst, 0);
+            func_80027AD4(src + 0xA, dst + 0x58, 1);
+            func_80027AD4(src + 0x12, dst + 0xB0, 2);
+            func_80027AD4(src + 0x1A, dst + 0x108, 3);
+            count = 4;
+        } else {
+            count = 0;
+        }
+    } else {
+        func_80027AD4(src, dst, n);
+        count = 1;
+    }
+    return count;
+}
+
+void func_80027D90(void) {
+    s32 count;
+    PadState *pad;
+
+    pad = D_80051338;
+    D_800515F8 = 0;
+    D_800515F8 += func_80027D90_read(D_80063A90[0], (u8 *)pad, 0);
+    D_800515F8 += func_80027D90_read(D_80063AC4, (u8 *)&pad[D_800515F8], 0x10);
+    count = 8 - D_800515F8;
+    pad += D_800515F8;
+    if (count > 0) {
+        do {
+            pad->unk4 = 0;
+            pad->unk0 = 0;
+            pad->unk18 = 1;
+            pad++;
+        } while (--count > 0);
+    }
+}
 
 void func_80027F00(void) {
     PadState *pad;

@@ -734,6 +734,7 @@ extern s32 D_800515FC;            /* first pad with flag 1 set, or -1 */
 extern s32 D_80051600;            /* pads 0..n-1 all have flag 1 */
 extern s32 D_80051604;            /* frames with no button down */
 extern u8 D_80063A90[2][0x34];    /* PadInitMtap buffers */
+extern u8 D_80063AC4[0x34];       /* D_80063A90[1] */
 extern PadState D_80051338[8];
 typedef struct FreeHdr { u16 f0; u16 f2; } FreeHdr;
 typedef struct FreeNode {
@@ -1829,6 +1830,8 @@ void func_80017B08(FaceRuns *faces, FacePrim *prim, s32 arg2, s32 mode);
 void func_80017D90(FaceRuns *faces, FacePrim *prim);
 
 void func_8001A43C(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4);
+
+void func_80027D90(void);
 
 void func_8002A84C(TexSrc2A84C *s, TexDst2A84C *d, s32 n);
 

@@ -2042,7 +2042,8 @@
  },
  "80027D90": {
   "auto_diff": 89,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-13T21:28:01Z",
+  "status": "matched"
  },
  "80027F00": {
   "auto_diff": 7,
