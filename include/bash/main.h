@@ -584,6 +584,7 @@ extern void *D_8005AA34;
 extern void *D_8005AA24;
 extern SeqSlot D_8006557C;
 extern LoaderState D_80050628;
+extern char D_8004C83C[];
 extern MusicEntry D_80058B88[];
 extern VabSlot D_800644C0[6];
 extern NodePool D_80056844;
