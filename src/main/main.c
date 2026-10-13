@@ -3711,7 +3711,40 @@ void func_80021238(u8 *arg0, s32 *arg1) {
     D_80058B60 = saved;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002128C);
+static inline u8 *Pop4(void) {
+    u8 *cur;
+
+    cur = D_80058B70;
+    if (cur != NULL) {
+        D_80058B70 = *(void **)(cur + 0xB4);
+    }
+    return cur;
+}
+
+static inline u8 *Push4(u8 *arg1) {
+    u8 *p;
+
+    p = Pop4();
+    if (p != NULL) {
+        *(u8 **)(p + 0xB4) = *(u8 **)(arg1 + 8);
+        *(u8 **)(arg1 + 8) = p;
+    }
+    return p;
+}
+
+void func_8002128C(u8 *arg0, u8 *arg1, s32 arg2) {
+    u8 *p;
+    subengine *sub;
+
+    p = Push4(arg1);
+    if (p != NULL) {
+        sub = (subengine *)(p + 8);
+        *(s32 *)(p + 4) = 5;
+        *(s32 *)p = arg2;
+        *sub = D_8005A830;
+        *(s32 *)sub = 0;
+    }
+}
 
 void func_80021330(u8 *arg0, s32 *arg1) {
     subengine *first;

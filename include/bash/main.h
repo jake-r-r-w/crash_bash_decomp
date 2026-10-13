@@ -1209,6 +1209,8 @@ void func_80020DF8(u8 *arg0);
 
 void func_80021054(u8 *arg0);
 
+void func_8002128C(u8 *arg0, u8 *arg1, s32 arg2);
+
 void func_8002147C(VelObj *obj, VelParams *p, VelState *s);
 void *func_80010E8C(s32 a, s32 b);
 
