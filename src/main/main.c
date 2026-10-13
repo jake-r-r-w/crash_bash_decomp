@@ -6831,7 +6831,27 @@ void func_8002C2AC(void) {
     D_800655A8 += 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C2C4);
+void func_8002C2C4(SeqSlot *slot) {
+    u8 *body;
+    int new_var;
+    u8 *head;
+
+    SeqHdr *h = (SeqHdr *)slot->data;
+
+    head = (u8 *)h + h->head;
+    body = (u8 *)h + h->body;
+    slot->p8 = (s32)h + h->o8;
+    slot->pC = slot->data + ((SeqHdr *)slot->data)->oC;
+    slot->p10 = slot->data + ((SeqHdr *)slot->data)->o10;
+    slot->p14 = slot->data + ((SeqHdr *)slot->data)->o14;
+    new_var = slot->data + ((SeqHdr *)slot->data)->o18;
+    slot->unk1C = -1;
+    slot->p18 = new_var;
+    slot->seq = SsVabOpenHead(head, -1);
+    SsVabTransBody(body, (s16)slot->seq);
+    SpuIsTransferCompleted(1);
+    slot->data = (s32)func_800112A4((void *)slot->data, ((s32 *)slot->data)[1], &D_8004E0F0);
+}
 
 void func_8002C394(s32 arg0, SeqSlot *slot, s32 type) {
     func_80013688(arg0, func_8002C3F0, slot);

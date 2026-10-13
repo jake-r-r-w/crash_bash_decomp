@@ -259,9 +259,24 @@ typedef struct PadState {
 typedef struct SeqSlot {
     /* 0x00 */ s32 data;                 /* heap block, freed by func_8002C44C */
     /* 0x04 */ s32 seq;                  /* SsSeq access number, or -1 */
-    /* 0x08 */ u8 unk8[0x1C - 0x08];
+    /* 0x08 */ s32 p8;                   /* data + header offset (func_8002C2C4) */
+    /* 0x0C */ s32 pC;
+    /* 0x10 */ s32 p10;
+    /* 0x14 */ s32 p14;
+    /* 0x18 */ s32 p18;
     /* 0x1C */ s32 unk1C;                /* set to -1 on close */
 } SeqSlot;
+
+/* The offsets at the start of the loaded sound data. */
+typedef struct {
+    s32 body;
+    s32 head;
+    s32 o8;
+    s32 oC;
+    s32 o10;
+    s32 o14;
+    s32 o18;
+} SeqHdr;
 
 /* D_80058B88: what func_800229FC passes to func_8002C488 for an index. */
 typedef struct MusicEntry {
@@ -1364,6 +1379,8 @@ void func_8002A77C(ClutUpload *arg0, s32 arg1);
 void func_8002A9AC(s32 *arg0, s32 arg1);
 
 void func_8002BBEC(void);
+
+void func_8002C2C4(SeqSlot *slot);
 
 void func_8002D294(void);
 
