@@ -507,6 +507,7 @@ void func_8002C29C(void);
 void func_8002C2AC(void);
 void func_8002C3F0(s32 arg0, s32 *arg1);
 void func_8002C428(void);
+s32 func_8002C4B0(u8 arg0);
 void func_8002D134(s32 arg0);
 void func_8002D15C(void);
 void func_8002D254(void);
@@ -1383,5 +1384,7 @@ void func_8002BBEC(void);
 void func_8002C2C4(SeqSlot *slot);
 
 void func_8002D294(void);
+
+void func_8002D394(u8 *arg0, s16 *arg1);
 
 #endif /* BASH_MAIN_H */

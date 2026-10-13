@@ -7100,7 +7100,40 @@ s32 func_8002D360(u8 *arg0) {
 }
 
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002D394);
+void func_8002D394(u8 *arg0, s16 *arg1) {
+    s16 *end;
+    s16 fill;
+    s32 i;
+    s32 done;
+    u8 c;
+    s32 r;
+    s32 r2;
+
+    r2 = func_8002C4B0(0x20);
+    fill = ((r2 & 0xFF) << 8) | ((u32)(func_8002C4B0(0x20) & 0xFFFF) >> 8);
+    i = 0;
+    done = 0;
+    end = arg1 + 0x20;
+    do {
+        if (done == 0) {
+            c = arg0[i];
+            i++;
+            if (c >= 0x20U) {
+                r = func_8002C4B0(c);
+                *arg1 = ((r & 0xFF) << 8) | ((u32)(func_8002C4B0(c) & 0xFFFF) >> 8);
+            } else {
+                done = 1;
+            }
+            if (done != 0) {
+                goto fillit;
+            }
+        } else {
+fillit:
+            *arg1 = fill;
+        }
+        arg1++;
+    } while ((s32)arg1 < (s32)end);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002D488);
 
