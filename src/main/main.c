@@ -4627,7 +4627,38 @@ void func_80026308(void) {
     D_8005B63C = D_80055684;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002633C);
+s32 func_8002633C(u8 *s) {
+    s32 sum;
+    s32 c;
+    s32 d;
+    s32 e;
+
+    c = *s;
+    d = c & 0xFF;
+    sum = 0;
+    if (d != 0 && d != 10) {
+        do {
+            s32 idx;
+            u8 *f;
+            s8 *w;
+            s32 v;
+            if (c == 13) {
+                break;
+            }
+            idx = *s + (D_8005B2B4 << 8);
+            w = &D_8005AEB4[idx];
+            f = &D_8005B0B4[idx];
+            v = *w;
+            if (!(*f & 2)) {
+                sum += v;
+            }
+            s++;
+            c = *s;
+            e = c & 0xFF;
+        } while (e != 0 && e != 10);
+    }
+    return sum;
+}
 
 IdEntry *func_800263D8(IdEntry *p, s32 id) {
     if (p != NULL) {

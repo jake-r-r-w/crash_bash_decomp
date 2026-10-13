@@ -582,6 +582,8 @@ extern u8 D_800555A4[];
 extern s16 D_8005A648;
 extern u16 D_8005A646;
 extern s32 D_8005B2B4;
+extern s8 D_8005AEB4[];
+extern u8 D_8005B0B4[];
 extern u8 *D_8005B63C;
 extern s32 D_8006EA00;
 extern u32 D_8006EA04;
@@ -1181,6 +1183,8 @@ s32 *func_80021CB8(s32 *arg0, s32 arg1, s32 arg2);
 void func_8002321C(void);
 
 void func_8002617C(void);
+
+s32 func_8002633C(u8 *s);
 
 void func_800276C4(s32 *arg0);
 
