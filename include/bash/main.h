@@ -479,6 +479,8 @@ void func_8002D33C(u8 *arg0);
 
 extern GteScratch D_800569CC;
 extern SVECTOR D_80056AC8[];
+typedef struct { s16 unk0; s16 unk2; } TrigEntry;
+extern TrigEntry D_80068BD4[];
 extern s32 D_80064478[];
 extern s32 D_8006E9F8;
 extern u8 D_800527C4[];
@@ -1013,6 +1015,8 @@ s32 func_8001E51C(s32 arg0);
 void func_80020B44(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5);
 
 void func_80020BA8(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4);
+
+s16 func_80020C4C(s32 arg0);
 
 s32 func_800213A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 

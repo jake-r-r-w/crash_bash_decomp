@@ -3030,7 +3030,12 @@ void func_80020BA8(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80020C04);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80020C4C);
+s16 func_80020C4C(s32 arg0) {
+    if (arg0 & 1) {
+        return (D_80068BD4[((arg0 >> 1) - 0x400) & 0xFFF].unk2 + D_80068BD4[((arg0 >> 1) - 0x3FF) & 0xFFF].unk2) >> 1;
+    }
+    return D_80068BD4[((arg0 >> 1) - 0x400) & 0xFFF].unk2;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80020CC4);
 
