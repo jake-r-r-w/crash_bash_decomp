@@ -9913,7 +9913,7 @@
   "src": "src/main/psyq/unknown/800320cc.c"
  },
  "800320DC": {
-  "asm": "asm/nonmatchings/main/psyq/unknown/800320cc/func_800320DC.s",
+  "asm": "asm/nonmatchings/main/psyq/unknown/800320dc/func_800320DC.s",
   "calls": [],
   "fp": "9b8e04ea30506c8e",
   "fpn": "9b8e04ea30506c8e",
@@ -9921,9 +9921,9 @@
   "name": "func_800320DC",
   "orig": "func_800320DC",
   "rom": 141532,
-  "seg": "main/psyq/unknown/800320cc",
+  "seg": "main/psyq/unknown/800320dc",
   "size": 16,
-  "src": "src/main/psyq/unknown/800320cc.c"
+  "src": "src/main/psyq/unknown/800320dc.c"
  },
  "800320EC": {
   "asm": "asm/nonmatchings/main/psyq/libetc/vsync/VSync.s",
@@ -13748,7 +13748,7 @@
   "src": "src/main/psyq/unknown/8003e06c.c"
  },
  "8003E0EC": {
-  "asm": "asm/nonmatchings/main/psyq/unknown/8003e06c/func_8003E0EC.s",
+  "asm": "asm/nonmatchings/main/psyq/unknown/8003e0ec/func_8003E0EC.s",
   "calls": [],
   "fp": "2a51c093207f3b65",
   "fpn": "2a51c093207f3b65",
@@ -13756,12 +13756,12 @@
   "name": "func_8003E0EC",
   "orig": "func_8003E0EC",
   "rom": 190700,
-  "seg": "main/psyq/unknown/8003e06c",
+  "seg": "main/psyq/unknown/8003e0ec",
   "size": 16,
-  "src": "src/main/psyq/unknown/8003e06c.c"
+  "src": "src/main/psyq/unknown/8003e0ec.c"
  },
  "8003E0FC": {
-  "asm": "asm/nonmatchings/main/psyq/unknown/8003e06c/func_8003E0FC.s",
+  "asm": "asm/nonmatchings/main/psyq/unknown/8003e0fc/func_8003E0FC.s",
   "calls": [
    "8003F08C"
   ],
@@ -13771,12 +13771,12 @@
   "name": "func_8003E0FC",
   "orig": "func_8003E0FC",
   "rom": 190716,
-  "seg": "main/psyq/unknown/8003e06c",
+  "seg": "main/psyq/unknown/8003e0fc",
   "size": 32,
-  "src": "src/main/psyq/unknown/8003e06c.c"
+  "src": "src/main/psyq/unknown/8003e0fc.c"
  },
  "8003E11C": {
-  "asm": "asm/nonmatchings/main/psyq/unknown/8003e06c/func_8003E11C.s",
+  "asm": "asm/nonmatchings/main/psyq/unknown/8003e0fc/func_8003E11C.s",
   "calls": [],
   "fp": "a3234dc79d2b0730",
   "fpn": "a3234dc79d2b0730",
@@ -13784,12 +13784,12 @@
   "name": "func_8003E11C",
   "orig": "func_8003E11C",
   "rom": 190748,
-  "seg": "main/psyq/unknown/8003e06c",
+  "seg": "main/psyq/unknown/8003e0fc",
   "size": 16,
-  "src": "src/main/psyq/unknown/8003e06c.c"
+  "src": "src/main/psyq/unknown/8003e0fc.c"
  },
  "8003E12C": {
-  "asm": "asm/nonmatchings/main/psyq/unknown/8003e06c/func_8003E12C.s",
+  "asm": "asm/nonmatchings/main/psyq/unknown/8003e0fc/func_8003E12C.s",
   "calls": [
    "8003E930"
   ],
@@ -13799,9 +13799,9 @@
   "name": "func_8003E12C",
   "orig": "func_8003E12C",
   "rom": 190764,
-  "seg": "main/psyq/unknown/8003e06c",
+  "seg": "main/psyq/unknown/8003e0fc",
   "size": 32,
-  "src": "src/main/psyq/unknown/8003e06c.c"
+  "src": "src/main/psyq/unknown/8003e0fc.c"
  },
  "8003E14C": {
   "asm": "asm/nonmatchings/main/psyq/libcd/bios_1/func_8003E14C.s",
@@ -15665,7 +15665,7 @@
   "src": "src/main/psyq/unknown/80046e5c.c"
  },
  "80046E8C": {
-  "asm": "asm/nonmatchings/main/psyq/unknown/80046e5c/func_80046E8C.s",
+  "asm": "asm/nonmatchings/main/psyq/unknown/80046e8c/func_80046E8C.s",
   "calls": [
    "8004B8BC"
   ],
@@ -15675,12 +15675,12 @@
   "name": "func_80046E8C",
   "orig": "func_80046E8C",
   "rom": 226956,
-  "seg": "main/psyq/unknown/80046e5c",
+  "seg": "main/psyq/unknown/80046e8c",
   "size": 48,
-  "src": "src/main/psyq/unknown/80046e5c.c"
+  "src": "src/main/psyq/unknown/80046e8c.c"
  },
  "80046EBC": {
-  "asm": "asm/nonmatchings/main/psyq/unknown/80046e5c/func_80046EBC.s",
+  "asm": "asm/nonmatchings/main/psyq/unknown/80046ebc/func_80046EBC.s",
   "calls": [
    "8004B8BC"
   ],
@@ -15690,9 +15690,9 @@
   "name": "func_80046EBC",
   "orig": "func_80046EBC",
   "rom": 227004,
-  "seg": "main/psyq/unknown/80046e5c",
+  "seg": "main/psyq/unknown/80046ebc",
   "size": 48,
-  "src": "src/main/psyq/unknown/80046e5c.c"
+  "src": "src/main/psyq/unknown/80046ebc.c"
  },
  "80046EEC": {
   "asm": "asm/nonmatchings/main/psyq/libsnd/playmode/Snd_SetPlayMode.s",
