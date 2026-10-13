@@ -5447,7 +5447,34 @@ s32 func_8002A650(u8 *arg0) {
 void func_8002A67C(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002A684);
+void func_8002A684(u8 *arg0, u8 *arg1) {
+    s32 old;
+    s32 pos;
+    s32 step;
+    s32 idx;
+    s32 *p;
+    u8 *rect;
+
+    rect = *(u8 **)(arg1 + 8) + *(s32 *)(arg0 + 4) * 0x38;
+    old = *(s32 *)(arg0 + 0x10) >> 8;
+    pos = *(s32 *)(arg0 + 0x10) + *(s32 *)(arg0 + 0xC);
+    *(s32 *)(arg0 + 0x10) = pos;
+    if (*(s32 *)(arg0 + 0xC) < 0) {
+        if (pos < 0) {
+            *(s32 *)(arg0 + 0x10) = pos + (*(s32 *)(arg0 + 8) << 8);
+        }
+    } else {
+        step = *(s32 *)(arg0 + 8);
+        if ((pos >> 8) >= step) {
+            *(s32 *)(arg0 + 0x10) = pos - (step << 8);
+        }
+    }
+    idx = *(s32 *)(arg0 + 0x10) >> 8;
+    if (idx != old) {
+        p = (s32 *)(arg0 + *(s32 *)arg0 + idx * 4);
+        LoadImage((RECT *)(rect + 0x18), (u_long *)((u8 *)p + *p));
+    }
+}
 
 void func_8002A740(u8 *arg0) {
     s32 temp_a0;

@@ -2113,7 +2113,8 @@
  },
  "8002A684": {
   "auto_diff": 38,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-13T08:22:03Z",
+  "status": "matched"
  },
  "8002A740": {
   "matched_at": "2026-10-10T10:16:46Z",
