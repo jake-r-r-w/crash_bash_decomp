@@ -598,6 +598,8 @@ extern SfxPool SfxVoicePool;
 extern s8 SfxTable[][2]; /* by sound id; [1] == -1: no sound */
 void func_8002B8F4(s32 *voice);
 extern s32 D_800637B4;
+extern s32 D_800637B8;
+void func_80034C4C(s32, s32);
 extern u8 D_8006EA08;
 void func_80034AEC(void);
 extern s32 D_8005AA48;
@@ -1134,5 +1136,7 @@ void func_8001C1E0(u8 *arg0, u16 *src, u8 *tab, u16 *dst);
 s32 *func_8001E48C(s32 arg0);
 
 void func_8002147C(VelObj *obj, VelParams *p, VelState *s);
+
+void func_800279A4(void);
 
 #endif /* BASH_MAIN_H */

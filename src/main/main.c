@@ -4912,7 +4912,19 @@ s32 func_80027944(void) {
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800279A4);
+void func_800279A4(void) {
+    CdlFILE file;
+
+    do {
+        CdInit();
+    } while (CdDiskReady(1) != 2);
+    func_80034C4C(0, 0);
+    D_800637B4 = 0;
+    while (CdSearchFile(&file, "\\CRASHBSH\\CRASHBSH.DAT;1") == NULL) {
+        printf("Cant find CRASHBSH.DAT");
+    }
+    D_800637B8 = CdPosToInt(&file.pos);
+}
 
 void func_80027A30(s16 vol) {
     SpuCommonAttr attr;
