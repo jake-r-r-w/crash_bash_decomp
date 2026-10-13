@@ -1977,7 +1977,8 @@
   "status": "matched"
  },
  "80027F7C": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-13T08:21:35Z",
+  "status": "matched"
  },
  "80028018": {
   "auto_failed": "types"

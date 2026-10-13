@@ -5217,7 +5217,17 @@ loop:
     PadStartCom();
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80027F7C);
+void func_80027F7C(s32 pad, s32 arg1, s8 arg2) {
+    u8 *p;
+
+    if (D_8005A614[pad + 0x5C] == 0 && !(*(s32 *)(D_8005A614 + 4) & 0x80) && D_8005A604[pad + 0xC] != 0 &&
+        (D_80051338[pad].unk0 & 8)) {
+        p = (u8 *)&D_80051338[pad] + 0x1C;
+        p[5] = arg2;
+        *(s16 *)(p + 0xA) = arg1 + 1;
+        *(u16 *)(p + 6) |= 1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80028018);
 

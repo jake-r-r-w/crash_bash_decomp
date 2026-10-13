@@ -571,6 +571,7 @@ extern s32 D_800654BC;            /* slots of D_800644C0 in use */
 extern char D_800654CC[];
 extern s32 D_8005A608;
 extern u8 D_8005A614[];
+extern s8 D_8005A604[];
 extern s32 D_800675C8;
 extern s32 D_8005A620;
 extern u8 D_800556F4[];
@@ -1182,5 +1183,7 @@ void func_8002617C(void);
 void func_800276C4(s32 *arg0);
 
 void func_800279A4(void);
+
+void func_80027F7C(s32 pad, s32 arg1, s8 arg2);
 
 #endif /* BASH_MAIN_H */
