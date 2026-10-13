@@ -889,7 +889,20 @@ void func_8001325C(void) {
     *(u8 **)(p + 0x1C) = NULL;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80013290);
+s32 func_80013290(s32 *arg0, u8 **arg1) {
+    s32 size;
+
+    size = arg0[1];
+    D_8006E9FC = NULL;
+    func_80013034((s32)arg0, 0, size, NULL, (u8 *)&D_8006E9FC, 1, 0);
+    while (func_80012FFC() != 0) {
+        func_8001231C();
+        func_80010AE8(&D_8004E0F0);
+        func_8002BAE8();
+    }
+    func_80011544(D_8006E9FC, arg1);
+    return size;
+}
 
 s32 func_80013334(s32 arg0, s32 arg1, u8 **arg2, s32 arg3) {
     D_8006E9FC = NULL;
