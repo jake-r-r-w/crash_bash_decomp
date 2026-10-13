@@ -3019,7 +3019,21 @@ void func_80021330(u8 *arg0, s32 *arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800213A0);
+s32 func_800213A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    if (arg5 < 0) {
+        return arg0;
+    }
+    if (arg5 < arg2) {
+        return func_80015304(arg0, arg1, arg2, arg5);
+    }
+    if (arg3 < arg5) {
+        if (arg4 < arg5) {
+            return arg0;
+        }
+        return func_80015304(arg1, arg0, arg4 - arg3, arg5 - arg3);
+    }
+    return arg1;
+}
 
 void func_8002141C(u8 *arg0) {
     s32 temp_a0;

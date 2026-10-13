@@ -1317,7 +1317,8 @@
  },
  "800213A0": {
   "auto_diff": 24,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-13T07:39:10Z",
+  "status": "matched"
  },
  "8002141C": {
   "matched_at": "2026-10-10T10:36:02Z",
