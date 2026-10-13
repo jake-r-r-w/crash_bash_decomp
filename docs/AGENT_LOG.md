@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 596/2550 game functions matched, 537/564 PsyQ functions, 5 parked.
+- 640/2550 game functions matched, 537/564 PsyQ functions, 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
@@ -106,6 +106,10 @@ Other:
 ## Gotchas
 
 **Tooling**
+- Before 2026-10-13, `try` masked every relocated word, so a `j` to the
+  wrong label inside the function still "matched alone" and only the full
+  build failed. Local jumps are compared now; a "matches alone, full build
+  doesn't" refusal from before then is worth a fresh `try`.
 - Everything runs through `tools/dk` (Docker); the host has no Python.
 - In shell loops, give `tools/dk` `</dev/null` (it runs `docker -i`). But
   never with a heredoc: `tools/dk python3 - <<EOF ... </dev/null` silently
@@ -192,6 +196,13 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-13:** Swarm, 30 min, 3 workers: 43 matches, 0 conflicts (the
+  ordered prototypes worked), 1 failed, $11.16. The failure,
+  `func_8001251C`, "matched alone" because `try` masked the in-function `j`
+  targets. `compare` now checks them (91 functions with local jumps
+  re-checked, only that one was wrong), and it matched by hand with a
+  top-tested `goto` loop. 29 more Diff patterns rows folded in.
 
 - **2026-10-13:** Improvements, no swarm run. Folded 36 swarm rows into
   MATCHING.md (the swarm's `patterns.md` was renamed to
