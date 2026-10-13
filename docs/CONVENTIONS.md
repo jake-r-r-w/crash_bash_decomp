@@ -31,14 +31,20 @@ A file is finished when every function in it reaches level 4.
 
 ## Source layout
 
-- `src/main/main.c` is scaffolding: one file for the whole game segment. Split
-  it into `src/main/<subsystem>/<file>.c` as boundaries are found (jump-table
-  alignment hints from splat, alignment padding, `.data`/`.bss` order, strings).
-  Each split is a yaml subsegment change followed by `make split` and
-  `make verify`.
+- `src/main/main.c` is scaffolding: one file for most of the game segment.
+  Split it into `src/main/<subsystem>/<file>.c` as boundaries are found
+  (jump-table alignment hints from splat, alignment padding, `.data`/`.bss`
+  order, strings, a change of compiler style). Each split is a yaml
+  subsegment change for `.text` and `.rodata`, then `make split`,
+  `decomp.py index` and `make verify`, with the evidence in
+  ARCHITECTURE.md. Until a unit's content is known it is named by its start
+  address (`src/main/8002d488.c`); rename it when it is.
+- A unit built with other compiler settings than `configs/USA/project.mk`
+  gets them in the Makefile as `build/<src>.o: VAR = value` lines
+  (`CC_VER`, `ASPSX_FILL`); `decomp.py` reads the same lines.
 - Overlays go in `src/overlays/<overlay>/`.
-- Library code that is not covered by a Sony object stays under
-  `src/main/psyq/`; it is not decompiled.
+- PsyQ library code is Sony's objects, linked in place (`decomp.py
+  link-psyq`); it is never decompiled.
 
 ## Headers
 
@@ -46,7 +52,8 @@ A file is finished when every function in it reaches level 4.
   prototype is declared in exactly one header, included where needed.
 - Every source file has an **owned header** that declares the functions and data
   it defines: `bash/main.h` (`src/main/main.c`), `bash/engine.h` (the engine
-  overlay) and `bash/ovl5d.h`..`bash/ovl6a.h`. Each is marked
+  overlay), `bash/ovl5d.h`..`bash/ovl6a.h`, and one per split unit
+  (`bash/8002d488.h`, created by `decomp.py done` when it first needs one). Each is marked
   `owner: <source path>`, and that marker is how `decomp.py` finds it. When a
   file is split, its declarations move with its functions to the new file's
   header.

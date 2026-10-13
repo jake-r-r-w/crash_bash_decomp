@@ -24,7 +24,7 @@ PS-X EXE header at file offset `0x0`; the file body (offset `0x800`) loads at
 | `0x80010000..0x8002D488` | `0x800` | `.text` | game code, `src/main/main.c` |
 | `0x8002D488..0x8002E0F0` | `0x1DC88` | `.text` | game code built with gcc 2.7.2 + ASPSX, `src/main/8002d488.c` |
 | `0x8002E0F0..0x8002E7A8` | `0x1E8F0` | `.text` | game code, `src/main/8002e0f0.c` |
-| `0x8002E7A8..0x8004C56C` | `0x1EFA8` | `.text` | PsyQ 4.7: 254 Sony objects linked in place, plus `src/main/psyq/` |
+| `0x8002E7A8..0x8004C56C` | `0x1EFA8` | `.text` | PsyQ 4.7: 281 Sony objects linked in place, plus `2MBYTE.OBJ` (asm) |
 | `0x8004C56C..0x8004CEFC` | `0x3CD6C` | `.rodata` | game (strings, jump tables) |
 | `0x8004CEFC..0x8004DCBC` | `0x3D6FC` | `.rodata` | PsyQ, per object (`.rdata` of the linked objects) |
 | `0x8004DCBC..0x80079000` | `0x3E4BC` | `.data` | game data (blob pieces), with 32 PsyQ objects' `.data` linked from the objects |

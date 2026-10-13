@@ -29,23 +29,29 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-1. The core API list is done (all matched or parked with prototypes).
-   Next: the 9 functions with identical copies (`decomp.py dups`).
-   A function that parks still gets its prototype in `bash/main.h` (an
-   ordinary commit after `make check`), as `FindExtension` did.
-2. Keep matching `main.exe` with the swarm, now with big mode (untried on a
-   real function yet): `swarm.mjs run --branch main --seg main/` (normal
-   workers take the < 600 B functions, one big worker the rest, resuming
-   from checkpoints). First real run: watch the big worker's sessions in
-   `swarm.log` and `checkpoints/`, then `swarm.mjs stats` to tune
-   `--big-bytes`. By hand: `decomp.py next --seg main/`, the MATCHING.md
-   process (check the unit, evidence, STAGE by STAGE, Diff patterns, cc1
-   dump, then permuter).
-3. Name each function as it's matched when the evidence allows (345 of
-   2550 are named).
-4. Unpark when a new idea comes up (see Open leads).
-5. Later Phase 2 items: split `main.c` into units, data to C, the PsyQ gaps,
-   the `CRASHBSH.DAT` extractor.
+1. A 1-2 hour swarm run to try big mode with real workers (untried so
+   far): `swarm.mjs run --branch main --seg main/ --max-minutes 120
+   --max-functions 300 --max-run-usd 80` (normal workers take the < 600 B
+   functions, one big worker the rest, resuming from checkpoints). Watch the
+   big worker's sessions in `swarm.log` and `checkpoints/`, then
+   `swarm.mjs stats` to tune `--big-bytes`.
+2. Split `main.c` into its translation units, between swarm runs (a split
+   moves functions, so workers' patches and big-mode checkpoints for them
+   stop applying). Find the boundaries first and write the evidence in
+   ARCHITECTURE.md: rodata order, alignment padding, file-local statics,
+   changes of compiler style (as at `0x8002D488`). Doing this before the
+   rest of the matching helps it: code in the wrong unit can't match, and
+   the rodata batch failures came from `main.c`'s single rodata block.
+3. Keep matching `main.exe` (swarm runs, alternating with split steps). By
+   hand: `decomp.py next --seg main/`, the MATCHING.md process (check the
+   unit, evidence, STAGE by STAGE, Diff patterns, cc1 dump, then permuter).
+   The 9 functions with identical copies (`decomp.py dups`) are worth doing
+   by hand. A function that parks still gets its prototype in its owned
+   header (an ordinary commit after `make check`).
+4. Name each function as it's matched when the evidence allows (345 of
+   2550 are named). Unpark when a new idea comes up (see Open leads).
+5. Later Phase 2 items: data to C (after the split), naming and typing
+   passes, and the `CRASHBSH.DAT` extractor (independent: any time).
 
 ## Open leads
 

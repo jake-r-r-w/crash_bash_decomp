@@ -117,9 +117,11 @@ build pipeline are described in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Layout
 
-- `src/main/` - the executable: game code in `main.c` (to be split into
-  subsystem files as translation-unit boundaries are found); PsyQ code not
-  covered by Sony's objects under `src/main/psyq/`.
+- `src/main/` - the executable's game code: `main.c` (to be split into
+  subsystem files as translation-unit boundaries are found), and the units
+  split out so far, named by address (`8002d488.c`, built with gcc 2.7.2,
+  and `8002e0f0.c`). All PsyQ code is Sony's own objects, linked in place;
+  only the hand-written `2MBYTE.OBJ` is asm (`asm/main/psyq/2mbyte.s`).
 - `src/overlays/<overlay>/` - one directory per overlay binary: `engine` and
   the slot overlays `ovl5d`..`ovl6a`, named by their id word.
 - `include/` - shared headers; game headers go under `include/bash/`, one owner

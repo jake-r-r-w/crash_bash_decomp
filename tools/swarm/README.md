@@ -81,8 +81,8 @@ dontAsk`: anything outside the allowed tools is denied, never prompted. Options 
 `config.json`, override any with `--kebab-case value`):
 
 - `--workers` (3), `--seg` (`main/main`), `--only f1,f2` (exactly these functions). `--seg` is a
-  prefix of the segment: `main/` takes every unit of `main.exe`, including the gcc 2.7.2 one
-  (`main/8002d488`) and the PsyQ gaps.
+  prefix of the segment: `main/` takes every game unit of `main.exe`, including the gcc 2.7.2
+  one (`main/8002d488`).
 - Big mode: `--big-workers` (1), `--big-bytes` (600), `--big-model` (`opus`), `--big-minutes`
   (150), `--big-budget-usd` (20, per session), `--big-sessions` (6), `--big-stale` (2),
   `--big-permute-minutes` (60), `--escalate-big` (`true`). See [Big mode](#big-mode).
