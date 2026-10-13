@@ -8248,7 +8248,21 @@ void func_8002B52C(s16 *arg0, s32 arg1, s32 arg2) {
     SsUtSetVVol(*arg0, (arg1 * vol) / 409600, (arg2 * vol) / 409600);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002B5B0);
+s16 func_8002B5B0(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    s32 *p = (s32 *)D_8005A604;
+    s8 *sfx = SfxTable[arg1];
+    s16 v;
+
+    v = SsUtKeyOn(sfx[0], (s32)(((u8 *)sfx)[1] << 24) >> 28, ((u8 *)sfx)[1] & 0xF, (s32)(arg2 << 9) >> 16,
+                  arg2 & 0x7F, (arg3 * ((p[1] << 7) - p[1])) / 409600, (arg4 * ((p[1] << 7) - p[1])) / 409600);
+    arg0[0] = v;
+    arg0[1] = (s32)sfx;
+    if (v != -1) {
+        D_800654B8 |= D_80064418[v];
+        func_800373FC(D_800654B8);
+    }
+    return v;
+}
 
 s32 func_8002B6D0(VECTOR *pos, View *view) {
     VECTOR *out = &D_800569CC.out;
