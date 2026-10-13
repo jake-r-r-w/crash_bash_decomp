@@ -33,9 +33,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
    120 --max-functions 300 --max-run-usd 80`. Big mode works on real
    functions (first run: 612 B and 600 B both matched in one ~6-min opus
    session each); nothing has needed a second session or a checkpoint yet,
-   so watch those on the bigger ones. After each run: `swarm.mjs stats`, and
-   fold `patterns.pending.md` (13 rows from 2026-10-13, not folded yet) into
-   the Diff patterns table.
+   so watch those on the bigger ones. After each run, the checklist at the
+   end of tools/swarm/README.md (`stats`, parks, fold `patterns.md`, this
+   log).
 2. Split `main.c` into its translation units, between swarm runs (a split
    moves functions, so workers' patches and big-mode checkpoints for them
    stop applying). Find the boundaries first and write the evidence in
@@ -95,11 +95,13 @@ Other:
   differs, extend it from the target.
 - Swarm: `--seg` is a prefix and defaults to `main/main`, so the new units
   need `--seg main/8002` (or `--only`).
-- `func_80025534` (600 B) matches alone (try MATCH, twice) but the full
-  build comes out 4 bytes long: rodata again (see the Diff patterns rows for
-  string literals that duplicate an `INCLUDE_RODATA` one, and gcc's `.align
-  3` jump tables). Its C is in the swarm's
-  `results/func_80025534/big1-20261013122415/patch.diff`.
+- `func_80025534` (600 B) is solved but not committed. Its first C matched
+  alone but the full build was 4 bytes long (gcc's `.align 3` jump table);
+  the gate-fix session replaced the `switch` with a computed-goto table (the
+  Diff patterns row), and that C then failed to build only because
+  `func_80024FA4`, matched in the same run, declares a type its patch also
+  declares. Apply `results/func_80025534/big1-gatefix-20261013122415/patch.diff`
+  from the swarm dir, drop the duplicate declaration, and run `done`.
 - Heap: `D_8004E0F0` is a `Heap` now. Its +0x10 is the deferred-free list
   (`func_80011578` pushes, `func_80011DB4` counts down); `MemBlock.unk2` is
   the countdown. The heap functions still in asm (`func_800107C8`,
@@ -126,6 +128,11 @@ Other:
 ## Gotchas
 
 **Tooling**
+- The swarm: start it with the Bash tool's `run_in_background`, not `&`, and
+  wait for `run <id> finished` in `swarm.log` (or the pid gone, by
+  `tasklist //FI "PID eq N"`; `process.kill(pid, 0)` doesn't work for it on
+  Windows). Don't wait on a bare `fatal`: git errors quoted in the log
+  contain it. `swarm.log` timestamps are UTC, an hour behind local time.
 - Git Bash heredocs can fail outright ("unexpected EOF while looking for
   matching quote") on long scripts with backticks and quotes: write the
   script with the Write tool and run it with `tools/dk python3 build/x.py`.
