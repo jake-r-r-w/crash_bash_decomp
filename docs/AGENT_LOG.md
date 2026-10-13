@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 705/2550 game functions matched (main.exe 441/574, ~40% of its bytes),
+- 715/2550 game functions matched (main.exe ~450/574, ~45% of its bytes),
   537/564 PsyQ functions, 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
@@ -29,12 +29,13 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-1. A 1-2 hour swarm run to try big mode with real workers (untried so
-   far): `swarm.mjs run --branch main --seg main/ --max-minutes 120
-   --max-functions 300 --max-run-usd 80` (normal workers take the < 600 B
-   functions, one big worker the rest, resuming from checkpoints). Watch the
-   big worker's sessions in `swarm.log` and `checkpoints/`, then
-   `swarm.mjs stats` to tune `--big-bytes`.
+1. More swarm runs: `swarm.mjs run --branch main --seg main/ --max-minutes
+   120 --max-functions 300 --max-run-usd 80`. Big mode works on real
+   functions (first run: 612 B and 600 B both matched in one ~6-min opus
+   session each); nothing has needed a second session or a checkpoint yet,
+   so watch those on the bigger ones. After each run: `swarm.mjs stats`, and
+   fold `patterns.pending.md` (13 rows from 2026-10-13, not folded yet) into
+   the Diff patterns table.
 2. Split `main.c` into its translation units, between swarm runs (a split
    moves functions, so workers' patches and big-mode checkpoints for them
    stop applying). Find the boundaries first and write the evidence in
@@ -94,6 +95,11 @@ Other:
   differs, extend it from the target.
 - Swarm: `--seg` is a prefix and defaults to `main/main`, so the new units
   need `--seg main/8002` (or `--only`).
+- `func_80025534` (600 B) matches alone (try MATCH, twice) but the full
+  build comes out 4 bytes long: rodata again (see the Diff patterns rows for
+  string literals that duplicate an `INCLUDE_RODATA` one, and gcc's `.align
+  3` jump tables). Its C is in the swarm's
+  `results/func_80025534/big1-20261013122415/patch.diff`.
 - Heap: `D_8004E0F0` is a `Heap` now. Its +0x10 is the deferred-free list
   (`func_80011578` pushes, `func_80011DB4` counts down); `MemBlock.unk2` is
   the countdown. The heap functions still in asm (`func_800107C8`,
@@ -213,6 +219,13 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-13:** First real big-mode run (stopped early, ~18 min): 10
+  matches incl. `func_8001D894` (612 B) by the big worker in one session,
+  0 conflicts, $9. `func_80025534` matched alone but failed the gate on
+  rodata (Open leads). Fixed: workers based on the integration clone's HEAD
+  during a batch, so a failed batch dropped the base a permuter needed (now
+  the last pushed tip); `stats` counts first-session big matches as big.
 
 - **2026-10-13:** PsyQ gaps closed. The 27 gap functions were Sony's own tiny
   4.7 objects that signatures can't tell apart (identical bytes, different

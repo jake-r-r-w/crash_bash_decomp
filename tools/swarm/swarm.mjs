@@ -808,6 +808,7 @@ Fix that, keep it matching, and report "matched".
     slot.job = null;
     const note = res.note || (job.timedOut ? 'killed at --big-minutes' : 'no note');
     if (score?.stage === 'match') {
+      (this.history[f.key] ||= { name: f.name, attempts: 0, notes: [] }).big = true;   // for `stats`
       job.note = note;
       job.patch = file;
       this.integQueue.push(job);
