@@ -9425,7 +9425,43 @@ void func_8002AEE0(void) {
     gte_SetGeomOffset(D_8005B698->w / 2, 175);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002B020);
+s32 func_8002B020(VECTOR *v, s32 *range) {
+    s32 d[3];
+    s32 r;
+
+    if (v->vx < 0) {
+        v->vx = -v->vx;
+    }
+    v->vx -= range[0];
+    if (v->vx < 0) {
+        v->vx = 0;
+    }
+    d[0] = (v->vx << 12) / (range[3] - range[0]);
+    if (v->vy < 0) {
+        v->vy = -v->vy;
+    }
+    v->vy -= range[1];
+    if (v->vy < 0) {
+        v->vy = 0;
+    }
+    d[1] = (v->vy << 12) / (range[4] - range[1]);
+    if (v->vz < 0) {
+        v->vz = -v->vz;
+    }
+    v->vz -= range[2];
+    if (v->vz < 0) {
+        v->vz = 0;
+    }
+    d[2] = (v->vz << 12) / (range[5] - range[2]);
+    r = 0x1000 - (csqrt(d[0] * d[0] + d[1] * d[1] + d[2] * d[2]) >> 6);
+    if (r < 0) {
+        r = 0;
+    }
+    if (r > 0x1000) {
+        r = 0x1000;
+    }
+    return r;
+}
 
 S16Pair func_8002B210(VECTOR *pos) {
     S16Pair sxy;
