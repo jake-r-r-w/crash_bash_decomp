@@ -582,6 +582,8 @@ extern u16 D_8005A646;
 extern s32 D_8005B2B4;
 extern u8 *D_8005B63C;
 extern s32 D_8006EA00;
+extern u32 D_8006EA04;
+extern s32 D_8005A7A0[];
 extern VabFile *D_800654C0;  /* VAB being transferred to the SPU, or NULL */
 extern VabSlot *D_800654C4;  /* where its id goes */
 extern s32 D_800654C8;       /* the id from SsVabOpenHead */
@@ -1139,6 +1141,8 @@ s32 *func_8001E48C(s32 arg0);
 
 void func_8002147C(VelObj *obj, VelParams *p, VelState *s);
 void *func_80010E8C(s32 a, s32 b);
+
+void func_8002321C(void);
 
 void func_800279A4(void);
 
