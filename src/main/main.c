@@ -3717,7 +3717,91 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80019F1C);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001A0D8);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001A43C);
+void func_8001A43C(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4) {
+    QuadVerts q;
+    s32 x;
+    s32 w;
+    s32 l;
+    s32 r;
+
+    w = (s16) arg0[3];
+    x = (s16) arg0[0];
+    if ((x & 0xC000) == 0x8000) {
+        x = 0x140 - (w / 2);
+        x -= D_800569C0;
+        w += x;
+    }
+    l = x - arg3;
+    q.v[0].x = l;
+    q.v[0].y = arg0[1];
+    q.v[0].z = arg0[2];
+    q.v[1].x = x;
+    q.v[1].y = arg0[1];
+    q.v[1].z = arg0[2];
+    q.v[2].x = l;
+    q.v[2].y = arg0[4];
+    q.v[2].z = arg0[2];
+    q.v[3].x = x;
+    q.v[3].y = arg0[4];
+    q.v[3].z = arg0[2];
+    q.c[0] = arg1;
+    q.c[1] = arg1;
+    q.c[2] = arg1;
+    q.c[3] = arg1;
+    func_8001A0D8(&q, arg2);
+    r = w + arg3;
+    q.v[0].x = w;
+    q.v[0].y = arg0[1];
+    q.v[0].z = arg0[2];
+    q.v[1].x = r;
+    q.v[1].y = arg0[1];
+    q.v[1].z = arg0[2];
+    q.v[2].x = w;
+    q.v[2].y = arg0[4];
+    q.v[2].z = arg0[2];
+    q.v[3].x = r;
+    q.v[3].y = arg0[4];
+    q.v[3].z = arg0[2];
+    q.c[0] = arg1;
+    q.c[1] = arg1;
+    q.c[2] = arg1;
+    q.c[3] = arg1;
+    func_8001A0D8(&q, arg2);
+    q.v[0].x = l;
+    q.v[0].y = arg0[1] - arg4;
+    q.v[0].z = arg0[2];
+    q.v[1].x = r;
+    q.v[1].y = arg0[1] - arg4;
+    q.v[1].z = arg0[2];
+    q.v[2].x = l;
+    q.v[2].y = arg0[1];
+    q.v[2].z = arg0[2];
+    q.v[3].x = r;
+    q.v[3].y = arg0[1];
+    q.v[3].z = arg0[2];
+    q.c[0] = arg1;
+    q.c[1] = arg1;
+    q.c[2] = arg1;
+    q.c[3] = arg1;
+    func_8001A0D8(&q, arg2);
+    q.v[0].x = l;
+    q.v[0].y = arg0[4];
+    q.v[0].z = arg0[2];
+    q.v[1].x = r;
+    q.v[1].y = arg0[4];
+    q.v[1].z = arg0[2];
+    q.v[2].x = l;
+    q.v[2].y = arg0[4] + arg4;
+    q.v[2].z = arg0[2];
+    q.v[3].x = r;
+    q.v[3].y = arg0[4] + arg4;
+    q.v[3].z = arg0[2];
+    q.c[0] = arg1;
+    q.c[1] = arg1;
+    q.c[2] = arg1;
+    q.c[3] = arg1;
+    func_8001A0D8(&q, arg2);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001A6D4);
 
