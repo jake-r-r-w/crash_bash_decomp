@@ -4911,7 +4911,32 @@ s32 func_80025BBC(EXTengine *eng) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80025C80);
+s32 func_80025C80(EXTengine *eng) {
+    s32 lim;
+    s32 dy;
+
+    lim = func_80032F3C(eng->unk10.x - eng->OldXYZ.x);
+    if (lim < 0x10) {
+        lim = 4;
+    }
+    if (D_8005AA94 != NULL) {
+        dy = D_8005AA94(eng);
+    } else {
+        dy = func_80025E00(eng, eng->unk10.y - D_8005A5D8);
+    }
+    if (dy == 0x7FFFFFFF) {
+        return 0;
+    }
+    if (dy >= 0) {
+        return 0;
+    }
+    lim = ~lim + 1;
+    if (dy < lim) {
+        return 0;
+    }
+    eng->unk10.y += dy;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80025D40);
 
