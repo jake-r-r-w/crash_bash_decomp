@@ -3698,7 +3698,23 @@ void func_80020DF8(u8 *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80020E9C);
+void func_80020E9C(NAS *nas, u8 *arg1) {
+    struct { s32 a; s32 b; } saved;
+    GteSetup s;
+    u8 *sub;
+
+    if (nas->NASid & 0x8000) {
+        sub = (u8 *)nas + 0x6C;
+        if (func_80020064(sub) == 0) {
+            nas->NASid &= ~0x8000;
+            return;
+        }
+        saved = *(typeof(saved) *)D_80056998.unk28;
+        func_8001965C(nas, arg1, arg1 + 0x14, D_80056998.unk28, &s);
+        func_800201BC(sub, &s);
+        *(typeof(saved) *)D_80056998.unk28 = saved;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80020F5C);
 

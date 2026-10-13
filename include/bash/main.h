@@ -1256,6 +1256,8 @@ s32 *func_8001E48C(s32 arg0);
 
 void func_80020DF8(u8 *arg0);
 
+void func_80020E9C(NAS *nas, u8 *arg1);
+
 void func_80021054(u8 *arg0);
 
 void func_8002128C(u8 *arg0, u8 *arg1, s32 arg2);

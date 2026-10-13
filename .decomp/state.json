@@ -1322,7 +1322,8 @@
  },
  "80020E9C": {
   "auto_diff": 47,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-13T08:52:25Z",
+  "status": "matched"
  },
  "80020F5C": {
   "auto_failed": "compile"
