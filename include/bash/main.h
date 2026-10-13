@@ -604,7 +604,9 @@ extern s32 D_800637B8;
 void func_80034C4C(s32, s32);
 extern u8 D_8006EA08;
 void func_80034AEC(void);
-extern s32 D_8005AA48;
+extern NASTrigger *D_8005AA48;
+extern s32 D_8005AA4C;
+extern void (*D_8005AA84)(void);
 extern void *D_80058B78;
 extern RECT D_8005B640;
 extern void *D_80058B74;
@@ -1171,6 +1173,8 @@ void *func_80010E8C(s32 a, s32 b);
 s32 *func_80021CB8(s32 *arg0, s32 arg1, s32 arg2);
 
 void func_8002321C(void);
+
+void func_8002617C(void);
 
 void func_800276C4(s32 *arg0);
 

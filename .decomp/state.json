@@ -1700,7 +1700,8 @@
   "auto_failed": "diff"
  },
  "8002617C": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-13T08:17:44Z",
+  "status": "matched"
  },
  "80026210": {
   "auto_diff": 62,

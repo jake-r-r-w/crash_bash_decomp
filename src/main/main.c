@@ -4557,7 +4557,20 @@ void func_80025FAC(EXTanimator *anim, s16 n) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80026048);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002617C);
+void func_8002617C(void) {
+    s32 i;
+    NASTrigger *trig;
+
+    trig = D_8005AA48;
+    if (D_8005AA84 != NULL) {
+        D_8005AA84();
+    }
+    for (i = 0; i < D_8005AA4C; i++, trig++) {
+        if (!(trig->Status & 0x8001)) {
+            SpawnNASFromRecord(trig);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80026210);
 
