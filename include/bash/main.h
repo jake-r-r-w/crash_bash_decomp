@@ -814,6 +814,12 @@ s32 abs(s32);         /* LIBC2 ABS_0.OBJ (labs in ABS_1.OBJ is identical); a cal
 s32 func_80025E00(EXTengine *eng, s32 y);
 s16 func_800251A8(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim);
 s16 func_80025534(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim);
+/* A step of a kind 2 animator's Atable (func_80025534): cmd >= 0 is a frame
+ * shown for arg ticks, 0x8000 | n is command n with operand arg. */
+typedef struct AnimStep {
+    s16 cmd;
+    u16 arg;
+} AnimStep;
 extern s32 (*D_8005AA94)(EXTengine *eng); /* optional hook: replaces func_80025E00 */
 extern s32 D_8005B5B8;
 extern void (*D_800643F8)();

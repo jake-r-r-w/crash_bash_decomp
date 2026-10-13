@@ -5781,7 +5781,88 @@ s16 func_800250B0(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800251A8);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80025534);
+s16 func_80025534(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) {
+    /* A label table, not a switch: cc1 2.8.1 aligns a switch's jump table
+     * to 8 in .rodata, but this one sits at a 4 mod 8 offset. */
+    static const void *const tbl[17] = {
+        &&l8000, &&l8001, &&l8002, &&l8003, &&l8004, &&l8005, &&l8006, &&ldef,
+        &&ldef, &&ldef, &&ldef, &&l800B, &&l800C, &&l800D, &&l800E, &&ldef,
+        &&l8010
+    };
+    void (*fn)(NAS *, EXTanimator *, s16);
+    u16 cmd;
+    s32 ret;
+    u32 i;
+    const void *const *t;
+    s32 vol;
+    s32 (*hooks)[2];
+
+    ret = 0;
+    if (--anim->Aspeed < 0) {
+        t = tbl;
+        vol = 0x1E00;
+        hooks = D_8005B5BC;
+        do {
+            anim->Aindex++;
+            cmd = ((AnimStep *)anim->Atable)[anim->Aindex].cmd;
+            if (((AnimStep *)anim->Atable)[anim->Aindex].cmd < 0) {
+            i = cmd - 0x8000;
+            if (i < 0x11) {
+                goto *t[i];
+            }
+            goto ldef;
+            l8000:
+                anim->Aindex = -1;
+                ret = 2;
+                goto next;
+            l8001:
+                func_80024FA4((ScriptCursor *)anim);
+                ret = 3;
+                goto next;
+            l8002:
+                eng->direction = ~eng->direction;
+                goto next;
+            l8004:
+                if (nas->trigger != NULL) {
+                    nas->trigger->Status |= 0x8000;
+                }
+            l8003:
+                KillNAS(nas);
+                cmd = 0;
+                goto next;
+            l8006:
+                cmd = sub->unk74;
+            l8005:
+                ret = ((AnimStep *)anim->Atable)[anim->Aindex].arg;
+                goto next;
+            l800B:
+                PlaySfx(((AnimStep *)anim->Atable)[anim->Aindex].arg, &eng->sfx, NULL, 0x1000, vol, 0);
+                goto next;
+            l800D:
+                PlaySfx(((AnimStep *)anim->Atable)[anim->Aindex].arg, &eng->sfx, NULL, 0x1000, vol, 0);
+                goto next;
+            l800C:
+                PlaySfx(((AnimStep *)anim->Atable)[anim->Aindex].arg, NULL, &eng->unk10, 0x1000, vol, 0);
+                goto next;
+            l800E:
+                PlaySfx(((AnimStep *)anim->Atable)[anim->Aindex].arg, NULL, NULL, 0x1000, vol, 0);
+                goto next;
+            l8010:
+                sub->unk6C = &D_80052A54[((AnimStep *)anim->Atable)[anim->Aindex].arg * 0x38];
+                goto next;
+            ldef:
+                fn = (void (*)(NAS *, EXTanimator *, s16))hooks[((s16)cmd >> 8) & 0xF][1];
+                if (fn != NULL) {
+                    fn(nas, anim, cmd);
+                }
+            next:;
+            }
+        } while ((s16)cmd < 0);
+        sub->unk74 = cmd;
+        anim->Aspeed = ((AnimStep *)anim->Atable)[anim->Aindex].arg;
+    }
+    return ret;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002578C);
 
