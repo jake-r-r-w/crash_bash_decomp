@@ -2465,7 +2465,8 @@
  },
  "8002E584": {
   "auto_diff": 33,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-13T07:54:37Z",
+  "status": "matched"
  },
  "8002E618": {
   "auto_failed": "types"

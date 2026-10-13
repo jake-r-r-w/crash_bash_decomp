@@ -1072,4 +1072,6 @@ void func_8002BCB0(s32 *arg0);
 
 SizeEntry *func_8002D1D4(void);
 
+s32 func_8002E584(u8 *arg0);
+
 #endif /* BASH_MAIN_H */
