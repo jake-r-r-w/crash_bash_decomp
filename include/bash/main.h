@@ -507,6 +507,10 @@ extern u8 D_80078C90[];
 void func_80011BF8(Heap *heap, u8 *start, s32 size);
 void func_80012E90(void);
 void func_800272AC(s32 arg0);
+extern s32 D_8004E0B4;
+extern s32 D_8006E9F4;
+s32 func_800320CC(void);
+void func_800320DC(s32 arg0);
 extern void *D_80050F3C;
 extern u8 D_80050F40[]; /* 63 x 0xC pool, free list in D_80051240 */
 extern u8 D_8005063C[]; /* 63 x 0x24 pool, free list in D_80050F3C */
@@ -978,6 +982,8 @@ typedef struct {
 } PosDst;
 void func_8001A82C(PosDst *arg0, s32 arg1, s32 arg2);
 extern PosEntry D_8005689C[];
+void func_80010278(void);
+
 void func_800102F8(void);
 
 void func_80010394(void);
