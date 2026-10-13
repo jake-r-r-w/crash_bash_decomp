@@ -3,7 +3,16 @@
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80010000);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80010158);
+void func_80010158(void) {
+    D_8004E0E0 = 2;
+    func_80011BF8(&D_8004E0F0, D_80078C90, 0x801FF000 - (s32)D_80078C90);
+    func_80012E90();
+    func_80013CA4();
+    func_800138A4();
+    func_800134FC(D_80050008, D_80078C90);
+    D_8004E0DC = (VTable8 *)D_80078C90;
+    func_800270F0(D_8004E0B8);
+}
 
 INCLUDE_RODATA("asm/nonmatchings/main/main", D_8004C56C);
 

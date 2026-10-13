@@ -4,7 +4,8 @@
   "auto_failed": "diff"
  },
  "80010158": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-13T07:55:56Z",
+  "status": "matched"
  },
  "800101E0": {
   "auto_diff": 4,

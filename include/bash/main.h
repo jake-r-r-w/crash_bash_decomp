@@ -505,6 +505,10 @@ extern VTable8 *D_8004E0DC;
 extern s32 D_8004E0E0;
 extern u8 D_80078C90[];
 void func_80011BF8(Heap *heap, u8 *start, s32 size);
+extern u8 D_80050008[];
+extern u8 D_8004E0B8[];
+void func_800134FC(u8 *a, u8 *b);
+void func_800270F0(u8 *a);
 void func_80012E90(void);
 void func_800272AC(s32 arg0);
 extern s32 D_8004E0B4;
@@ -982,6 +986,8 @@ typedef struct {
 } PosDst;
 void func_8001A82C(PosDst *arg0, s32 arg1, s32 arg2);
 extern PosEntry D_8005689C[];
+void func_80010158(void);
+
 void func_80010278(void);
 
 void func_800102F8(void);
