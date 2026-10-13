@@ -546,6 +546,13 @@ extern D_80058B00_Entry D_80058B00[];
 extern s32 D_8005A5D8;
 extern s32 D_800655A8;
 extern s32 D_800655C0;
+extern u8 D_800655C8[];
+typedef struct {
+    u8 b[8];
+    u8 pad[0x18C];
+} D_800657C8_Slot;
+extern D_800657C8_Slot D_800657C8[];
+extern s32 D_80065E24;
 extern s32 D_800655C4;
 extern s32 D_800675CC;
 extern s32 D_800675D0;
@@ -1326,5 +1333,7 @@ FreeNode *func_80028A28(void);
 void func_8002A684(u8 *arg0, u8 *arg1);
 
 void func_8002A77C(ClutUpload *arg0, s32 arg1);
+
+void func_8002D294(void);
 
 #endif /* BASH_MAIN_H */
