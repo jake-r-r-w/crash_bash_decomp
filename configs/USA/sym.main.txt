@@ -689,7 +689,6 @@ PAD_init2 = 0x8004C53C; // type:func
 InitPAD2 = 0x8004C54C; // type:func
 // LIBAPI.LIB/A19.OBJ
 StartPAD2 = 0x8004C55C; // type:func
-// 0x80032F3C: ambiguous (abs in LIBC2.LIB/ABS_0.OBJ / labs in LIBC2.LIB/ABS_1.OBJ) - unnamed
 // 0x8004316C: ambiguous (SpuRead in LIBSPU.LIB/S_R.OBJ / SpuWrite in LIBSPU.LIB/S_W.OBJ) - unnamed
 // --- end PsyQ signatures ---
 Random = 0x80015590; // type:func
@@ -720,3 +719,4 @@ SfxActiveVoices = 0x80059614;
 SetRandomSeed = 0x800155E8; // type:func
 AddMotion = 0x80026540; // type:func
 AddObject = 0x80026684; // type:func
+abs = 0x80032F3C; // type:func

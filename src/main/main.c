@@ -1524,7 +1524,7 @@ s32 func_80015210(s32 a, s32 b, s32 t) {
     s32 d;
 
     d = b - a;
-    if (func_80032F3C(d) < 3) {
+    if (abs(d) < 3) {
         return b;
     }
     d = d * t;
@@ -5520,9 +5520,9 @@ void func_80025B10(EXTengine *eng, u32 flag) {
 s32 func_80025BBC(EXTengine *eng) {
     s32 dy;
 
-    func_80032F3C(eng->unk10.y - eng->OldXYZ.y);
-    func_80032F3C(eng->unk10.x - eng->OldXYZ.x);
-    func_80032F3C(eng->unk10.z - eng->OldXYZ.z);
+    abs(eng->unk10.y - eng->OldXYZ.y);
+    abs(eng->unk10.x - eng->OldXYZ.x);
+    abs(eng->unk10.z - eng->OldXYZ.z);
     if (D_8005AA94 != NULL) {
         dy = D_8005AA94(eng);
     } else {
@@ -5543,7 +5543,7 @@ s32 func_80025C80(EXTengine *eng) {
     s32 lim;
     s32 dy;
 
-    lim = func_80032F3C(eng->unk10.x - eng->OldXYZ.x);
+    lim = abs(eng->unk10.x - eng->OldXYZ.x);
     if (lim < 0x10) {
         lim = 4;
     }
@@ -5572,8 +5572,8 @@ s32 func_80025D40(EXTengine *eng) {
 
     new_var = eng->unk10.x;
     new_var = -eng->OldXYZ.x + new_var;
-    func_80032F3C(new_var);
-    func_80032F3C(eng->unk10.z - eng->OldXYZ.z);
+    abs(new_var);
+    abs(eng->unk10.z - eng->OldXYZ.z);
     if (D_8005AA94 != NULL) {
         dy = D_8005AA94(eng);
     } else {
@@ -5582,7 +5582,7 @@ s32 func_80025D40(EXTengine *eng) {
     if (dy == 0x7FFFFFFF) {
         return 1;
     }
-    if (func_80032F3C(dy) < 0x20) {
+    if (abs(dy) < 0x20) {
         eng->unk10.y -= dy;
         return 0;
     } else {
@@ -5616,7 +5616,7 @@ s32 func_80025E00(EXTengine *eng, s32 y) {
                         top = other->unk10.y + rec->height;
                         if (dx * dx + dz * dz < r) {
                             dy = eng->unk10.y - top;
-                            if (func_80032F3C(dy) < func_80032F3C(y)) {
+                            if (abs(dy) < abs(y)) {
                                 y = dy;
                                 D_8005AA9C = nas;
                             }

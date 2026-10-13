@@ -255,6 +255,33 @@ LIBAPI.LIB/PATCH.OBJ libapi/patch.o 0x8004C49C ok 0xA0 .bss=0x80078C80/0x10
 LIBAPI.LIB/A21.OBJ libapi/a21.o 0x8004C53C ok 0x10
 LIBAPI.LIB/A18.OBJ libapi/a18.o 0x8004C54C ok 0x10
 LIBAPI.LIB/A19.OBJ libapi/a19.o 0x8004C55C ok 0x10
+LIBAPI.LIB/A95.OBJ libapi/a95.o 0x800320CC ok 0x10
+LIBAPI.LIB/A39.OBJ libapi/a39.o 0x800320DC ok 0x10
+LIBSND.LIB/VS_MONO.OBJ libsnd/vs_mono.o 0x8003346C ok 0x20
+LIBETC.LIB/VMODE.OBJ libetc/vmode.o 0x8003351C ok 0x30 .data=0x8006CBE4/0x10
+LIBCD.LIB/S_003.OBJ libcd/s_003.o 0x80034AEC ok 0x10
+LIBCD.LIB/S_012.OBJ libcd/s_012.o 0x80034C4C ok 0x20
+LIBSND.LIB/SSQUIT.OBJ libsnd/ssquit.o 0x800366FC ok 0x20
+LIBSND.LIB/UT_RON.OBJ libsnd/ut_ron.o 0x800369FC ok 0x20
+LIBSND.LIB/SSVM.OBJ libsnd/ssvm.o 0x800373FC ok 0x10
+LIBSPU.LIB/S_I.OBJ libspu/s_i.o 0x8003DA7C ok 0x20
+LIBCD.LIB/S_014.OBJ libcd/s_014.o 0x8003E01C ok 0x20
+LIBCD.LIB/S_022.OBJ libcd/s_022.o 0x8003E06C ok 0x20
+LIBCD.LIB/S_024.OBJ libcd/s_024.o 0x8003E08C ok 0x20
+LIBCD.LIB/S_021.OBJ libcd/s_021.o 0x8003E0AC ok 0x20
+LIBCD.LIB/S_015.OBJ libcd/s_015.o 0x8003E0CC ok 0x20
+LIBCD.LIB/S_006.OBJ libcd/s_006.o 0x8003E0EC ok 0x10
+LIBCD.LIB/S_008.OBJ libcd/s_008.o 0x8003E0FC ok 0x20
+LIBCD.LIB/S_004.OBJ libcd/s_004.o 0x8003E11C ok 0x10
+LIBCD.LIB/S_013.OBJ libcd/s_013.o 0x8003E12C ok 0x20
+LIBSND.LIB/PLAY.OBJ libsnd/play.o 0x800434BC ok 0x30
+LIBSND.LIB/DE_15.OBJ libsnd/de_15.o 0x80046DFC ok 0x30
+LIBSND.LIB/DE_17.OBJ libsnd/de_17.o 0x80046E5C ok 0x30
+LIBSND.LIB/DE_18.OBJ libsnd/de_18.o 0x80046E8C ok 0x30
+LIBSND.LIB/DE_19.OBJ libsnd/de_19.o 0x80046EBC ok 0x30
+LIBSND.LIB/VM_DOFF.OBJ libsnd/vm_doff.o 0x8004706C ok 0x10
+LIBSND.LIB/VM_DON.OBJ libsnd/vm_don.o 0x8004B57C ok 0x10
+LIBSND.LIB/UT_ROFF.OBJ libsnd/ut_roff.o 0x8004B58C ok 0x20
 # references to symbols defined elsewhere than the exe calls them: ! symbol address
 ! SsFCALL 0x80077344
 ! VBLANK_MINUS 0x80077334
@@ -283,11 +310,18 @@ LIBAPI.LIB/A19.OBJ libapi/a19.o 0x8004C55C ok 0x10
 = CD_cbready 0x8006DBB8
 = CD_cbsync 0x8006DBB4
 = CD_cw 0x8003EBF8
+= CD_datasync 0x8003F47C
 = CD_debug 0x8006DBBC
+= CD_flush 0x8003F08C
+= CD_getsector 0x80048EFC
+= CD_getsector2 0x80048E0C
 = CD_init 0x8003F29C
 = CD_initvol 0x8003F160
+= CD_mode 0x8006DBD0
 = CD_nopen 0x8006DBC8
+= CD_pos 0x8006DBCC
 = CD_read_dma_mode 0x8006D7C8
+= CD_ready 0x8003E930
 = CD_status 0x8006DBC0
 = CD_sync 0x8003E6B0
 = CdControl 0x800355DC
@@ -358,6 +392,7 @@ LIBAPI.LIB/A19.OBJ libapi/a19.o 0x8004C55C ok 0x10
 = SpuInit 0x8003DA7C
 = SpuInitMalloc 0x8004BF0C
 = SpuMalloc 0x80043F0C
+= SpuQuit 0x800418BC
 = SpuSetCommonAttr 0x80035B2C
 = SpuSetKey 0x8004959C
 = SpuSetMute 0x8004700C
@@ -375,7 +410,10 @@ LIBAPI.LIB/A19.OBJ libapi/a19.o 0x8004C55C ok 0x10
 = SsUtGetVagAtr 0x800381CC
 = SsUtReverbOff 0x8004B58C
 = SsUtReverbOn 0x800369FC
+= SsUtSetReverbDelay 0x8004B8BC
 = SsUtSetReverbDepth 0x8003666C
+= SsUtSetReverbFeedback 0x8004B87C
+= SsUtSetReverbType 0x80036A1C
 = SsUtSetVagAtr 0x8004B5AC
 = StartCARD 0x8004876C
 = StartCARD2 0x8004BE6C
@@ -401,6 +439,7 @@ LIBAPI.LIB/A19.OBJ libapi/a19.o 0x8004C55C ok 0x10
 = _ExitCard 0x8004BE8C
 = _SpuDataCallback 0x800494FC
 = _SpuGetAnyVoice 0x8004C22C
+= _SpuInit 0x80041E0C
 = _SpuIsInAllocateArea_ 0x80041FEC
 = _SpuSetAnyVoice 0x8004BF6C
 = _SsContBankChange 0x8004581C
@@ -421,6 +460,7 @@ LIBAPI.LIB/A19.OBJ libapi/a19.o 0x8004C55C ok 0x10
 = _SsMarkCallback 0x80076B34
 = _SsNoteOn 0x8004521C
 = _SsReadDeltaValue 0x8004A44C
+= _SsSeqPlay 0x8004985C
 = _SsSetControlChange 0x800455EC
 = _SsSetNrpnVabAttr0 0x800463CC
 = _SsSetNrpnVabAttr1 0x8004645C

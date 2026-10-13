@@ -9904,26 +9904,28 @@
   "calls": [],
   "fp": "53a402fc14d5ea4e",
   "fpn": "53a402fc14d5ea4e",
+  "kind": "sony",
   "leaf": true,
   "name": "func_800320CC",
+  "obj": "LIBAPI.LIB/A95.OBJ",
   "orig": "func_800320CC",
   "rom": 141516,
   "seg": "main/psyq/unknown/800320cc",
-  "size": 16,
-  "src": "src/main/psyq/unknown/800320cc.c"
+  "size": 16
  },
  "800320DC": {
   "asm": "asm/nonmatchings/main/psyq/unknown/800320dc/func_800320DC.s",
   "calls": [],
   "fp": "9b8e04ea30506c8e",
   "fpn": "9b8e04ea30506c8e",
+  "kind": "sony",
   "leaf": true,
   "name": "func_800320DC",
+  "obj": "LIBAPI.LIB/A39.OBJ",
   "orig": "func_800320DC",
   "rom": 141532,
   "seg": "main/psyq/unknown/800320dc",
-  "size": 16,
-  "src": "src/main/psyq/unknown/800320dc.c"
+  "size": 16
  },
  "800320EC": {
   "asm": "asm/nonmatchings/main/psyq/libetc/vsync/VSync.s",
@@ -10217,26 +10219,28 @@
   "calls": [],
   "fp": "480efc30d55caad4",
   "fpn": "86d6ccc15b79e11c",
+  "kind": "sony",
   "leaf": true,
   "name": "func_8003346C",
+  "obj": "LIBSND.LIB/VS_MONO.OBJ",
   "orig": "func_8003346C",
   "rom": 146540,
   "seg": "main/psyq/unknown/8003346c",
-  "size": 16,
-  "src": "src/main/psyq/unknown/8003346c.c"
+  "size": 16
  },
  "8003347C": {
   "asm": "asm/nonmatchings/main/psyq/unknown/8003346c/func_8003347C.s",
   "calls": [],
   "fp": "eacdce8f0e68504b",
   "fpn": "eacdce8f0e68504b",
+  "kind": "sony",
   "leaf": true,
   "name": "func_8003347C",
+  "obj": "LIBSND.LIB/VS_MONO.OBJ",
   "orig": "func_8003347C",
   "rom": 146556,
   "seg": "main/psyq/unknown/8003346c",
-  "size": 16,
-  "src": "src/main/psyq/unknown/8003346c.c"
+  "size": 16
  },
  "8003348C": {
   "asm": "asm/main/psyq/libgte/msc00.s",
@@ -10273,26 +10277,28 @@
   "calls": [],
   "fp": "d243af0fd5e1b63e",
   "fpn": "d243af0fd5e1b63e",
+  "kind": "sony",
   "leaf": true,
   "name": "func_8003351C",
+  "obj": "LIBETC.LIB/VMODE.OBJ",
   "orig": "func_8003351C",
   "rom": 146716,
   "seg": "main/psyq/unknown/8003351c",
-  "size": 20,
-  "src": "src/main/psyq/unknown/8003351c.c"
+  "size": 20
  },
  "80033530": {
   "asm": "asm/nonmatchings/main/psyq/unknown/8003351c/func_80033530.s",
   "calls": [],
   "fp": "3f5427b863916ba8",
   "fpn": "3f5427b863916ba8",
+  "kind": "sony",
   "leaf": true,
   "name": "func_80033530",
+  "obj": "LIBETC.LIB/VMODE.OBJ",
   "orig": "func_80033530",
   "rom": 146736,
   "seg": "main/psyq/unknown/8003351c",
-  "size": 28,
-  "src": "src/main/psyq/unknown/8003351c.c"
+  "size": 28
  },
  "8003354C": {
   "asm": "asm/nonmatchings/main/psyq/libgpu/font/SetDumpFnt.s",
@@ -10564,13 +10570,14 @@
   "calls": [],
   "fp": "a3234dc79d2b0730",
   "fpn": "a3234dc79d2b0730",
+  "kind": "sony",
   "leaf": true,
   "name": "func_80034AEC",
+  "obj": "LIBCD.LIB/S_003.OBJ",
   "orig": "func_80034AEC",
   "rom": 152300,
   "seg": "main/psyq/unknown/80034aec",
-  "size": 16,
-  "src": "src/main/psyq/unknown/80034aec.c"
+  "size": 16
  },
  "80034AFC": {
   "asm": "asm/nonmatchings/main/psyq/libcd/event/CdInit.s",
@@ -10661,13 +10668,14 @@
   ],
   "fp": "8322d54650f48c0c",
   "fpn": "a8af055176362958",
+  "kind": "sony",
   "leaf": false,
   "name": "func_80034C4C",
+  "obj": "LIBCD.LIB/S_012.OBJ",
   "orig": "func_80034C4C",
   "rom": 152652,
   "seg": "main/psyq/unknown/80034c4c",
-  "size": 32,
-  "src": "src/main/psyq/unknown/80034c4c.c"
+  "size": 32
  },
  "80034C6C": {
   "asm": "asm/nonmatchings/main/psyq/libcd/iso9660/CdSearchFile.s",
@@ -11099,13 +11107,14 @@
   ],
   "fp": "8322d54650f48c0c",
   "fpn": "a8af055176362958",
+  "kind": "sony",
   "leaf": false,
   "name": "func_800366FC",
+  "obj": "LIBSND.LIB/SSQUIT.OBJ",
   "orig": "func_800366FC",
   "rom": 159484,
   "seg": "main/psyq/unknown/800366fc",
-  "size": 32,
-  "src": "src/main/psyq/unknown/800366fc.c"
+  "size": 32
  },
  "8003671C": {
   "asm": "asm/nonmatchings/main/psyq/libsnd/sstable/SsSetTableSize.s",
@@ -11174,13 +11183,14 @@
   ],
   "fp": "9d8a61acb5a87c20",
   "fpn": "732ceb0fabc7f945",
+  "kind": "sony",
   "leaf": false,
   "name": "func_800369FC",
+  "obj": "LIBSND.LIB/UT_RON.OBJ",
   "orig": "func_800369FC",
   "rom": 160252,
   "seg": "main/psyq/unknown/800369fc",
-  "size": 32,
-  "src": "src/main/psyq/unknown/800369fc.c"
+  "size": 32
  },
  "80036A1C": {
   "asm": "asm/nonmatchings/main/psyq/libsnd/ut_rev/SsUtSetReverbType.s",
@@ -11370,13 +11380,14 @@
   "calls": [],
   "fp": "f2b99c161d31804c",
   "fpn": "f2b99c161d31804c",
+  "kind": "sony",
   "leaf": true,
   "name": "func_800373FC",
+  "obj": "LIBSND.LIB/SSVM.OBJ",
   "orig": "func_800373FC",
   "rom": 162812,
   "seg": "main/psyq/unknown/800373fc",
-  "size": 16,
-  "src": "src/main/psyq/unknown/800373fc.c"
+  "size": 16
  },
  "8003740C": {
   "asm": "asm/nonmatchings/main/psyq/libsnd/vs_vtb/SsVabTransBody.s",
@@ -13485,13 +13496,14 @@
   ],
   "fp": "ff1e9f787c2e6efd",
   "fpn": "e2740f506dece743",
+  "kind": "sony",
   "leaf": false,
   "name": "func_8003DA7C",
+  "obj": "LIBSPU.LIB/S_I.OBJ",
   "orig": "func_8003DA7C",
   "rom": 189052,
   "seg": "main/psyq/unknown/8003da7c",
-  "size": 32,
-  "src": "src/main/psyq/unknown/8003da7c.c"
+  "size": 32
  },
  "8003DA9C": {
   "asm": "asm/nonmatchings/main/psyq/libspu/s_crwa/SpuClearReverbWorkArea.s",
@@ -13665,13 +13677,14 @@
   "calls": [],
   "fp": "d243af0fd5e1b63e",
   "fpn": "d243af0fd5e1b63e",
+  "kind": "sony",
   "leaf": true,
   "name": "func_8003E01C",
+  "obj": "LIBCD.LIB/S_014.OBJ",
   "orig": "func_8003E01C",
   "rom": 190492,
   "seg": "main/psyq/unknown/8003e01c",
-  "size": 32,
-  "src": "src/main/psyq/unknown/8003e01c.c"
+  "size": 32
  },
  "8003E03C": {
   "asm": "asm/nonmatchings/main/psyq/libcd/s_023/CdDataCallback.s",
@@ -13696,13 +13709,14 @@
   ],
   "fp": "11a3a1f28635d2e5",
   "fpn": "98355f74c795a860",
+  "kind": "sony",
   "leaf": false,
   "name": "func_8003E06C",
+  "obj": "LIBCD.LIB/S_022.OBJ",
   "orig": "func_8003E06C",
   "rom": 190572,
   "seg": "main/psyq/unknown/8003e06c",
-  "size": 32,
-  "src": "src/main/psyq/unknown/8003e06c.c"
+  "size": 32
  },
  "8003E08C": {
   "asm": "asm/nonmatchings/main/psyq/unknown/8003e06c/func_8003E08C.s",
@@ -13711,13 +13725,14 @@
   ],
   "fp": "8322d54650f48c0c",
   "fpn": "a8af055176362958",
+  "kind": "sony",
   "leaf": false,
   "name": "func_8003E08C",
+  "obj": "LIBCD.LIB/S_022.OBJ",
   "orig": "func_8003E08C",
   "rom": 190604,
   "seg": "main/psyq/unknown/8003e06c",
-  "size": 32,
-  "src": "src/main/psyq/unknown/8003e06c.c"
+  "size": 32
  },
  "8003E0AC": {
   "asm": "asm/nonmatchings/main/psyq/unknown/8003e06c/func_8003E0AC.s",
@@ -13726,39 +13741,42 @@
   ],
   "fp": "11a3a1f28635d2e5",
   "fpn": "98355f74c795a860",
+  "kind": "sony",
   "leaf": false,
   "name": "func_8003E0AC",
+  "obj": "LIBCD.LIB/S_022.OBJ",
   "orig": "func_8003E0AC",
   "rom": 190636,
   "seg": "main/psyq/unknown/8003e06c",
-  "size": 32,
-  "src": "src/main/psyq/unknown/8003e06c.c"
+  "size": 32
  },
  "8003E0CC": {
   "asm": "asm/nonmatchings/main/psyq/unknown/8003e06c/func_8003E0CC.s",
   "calls": [],
   "fp": "d243af0fd5e1b63e",
   "fpn": "d243af0fd5e1b63e",
+  "kind": "sony",
   "leaf": true,
   "name": "func_8003E0CC",
+  "obj": "LIBCD.LIB/S_022.OBJ",
   "orig": "func_8003E0CC",
   "rom": 190668,
   "seg": "main/psyq/unknown/8003e06c",
-  "size": 32,
-  "src": "src/main/psyq/unknown/8003e06c.c"
+  "size": 32
  },
  "8003E0EC": {
   "asm": "asm/nonmatchings/main/psyq/unknown/8003e0ec/func_8003E0EC.s",
   "calls": [],
   "fp": "2a51c093207f3b65",
   "fpn": "2a51c093207f3b65",
+  "kind": "sony",
   "leaf": true,
   "name": "func_8003E0EC",
+  "obj": "LIBCD.LIB/S_006.OBJ",
   "orig": "func_8003E0EC",
   "rom": 190700,
   "seg": "main/psyq/unknown/8003e0ec",
-  "size": 16,
-  "src": "src/main/psyq/unknown/8003e0ec.c"
+  "size": 16
  },
  "8003E0FC": {
   "asm": "asm/nonmatchings/main/psyq/unknown/8003e0fc/func_8003E0FC.s",
@@ -13767,26 +13785,28 @@
   ],
   "fp": "8322d54650f48c0c",
   "fpn": "a8af055176362958",
+  "kind": "sony",
   "leaf": false,
   "name": "func_8003E0FC",
+  "obj": "LIBCD.LIB/S_008.OBJ",
   "orig": "func_8003E0FC",
   "rom": 190716,
   "seg": "main/psyq/unknown/8003e0fc",
-  "size": 32,
-  "src": "src/main/psyq/unknown/8003e0fc.c"
+  "size": 32
  },
  "8003E11C": {
   "asm": "asm/nonmatchings/main/psyq/unknown/8003e0fc/func_8003E11C.s",
   "calls": [],
   "fp": "a3234dc79d2b0730",
   "fpn": "a3234dc79d2b0730",
+  "kind": "sony",
   "leaf": true,
   "name": "func_8003E11C",
+  "obj": "LIBCD.LIB/S_008.OBJ",
   "orig": "func_8003E11C",
   "rom": 190748,
   "seg": "main/psyq/unknown/8003e0fc",
-  "size": 16,
-  "src": "src/main/psyq/unknown/8003e0fc.c"
+  "size": 16
  },
  "8003E12C": {
   "asm": "asm/nonmatchings/main/psyq/unknown/8003e0fc/func_8003E12C.s",
@@ -13795,13 +13815,14 @@
   ],
   "fp": "8322d54650f48c0c",
   "fpn": "a8af055176362958",
+  "kind": "sony",
   "leaf": false,
   "name": "func_8003E12C",
+  "obj": "LIBCD.LIB/S_008.OBJ",
   "orig": "func_8003E12C",
   "rom": 190764,
   "seg": "main/psyq/unknown/8003e0fc",
-  "size": 32,
-  "src": "src/main/psyq/unknown/8003e0fc.c"
+  "size": 32
  },
  "8003E14C": {
   "asm": "asm/nonmatchings/main/psyq/libcd/bios_1/func_8003E14C.s",
@@ -14799,13 +14820,14 @@
   ],
   "fp": "fd864a44a1e6aa17",
   "fpn": "633aff1dfb4c7202",
+  "kind": "sony",
   "leaf": false,
   "name": "func_800434BC",
+  "obj": "LIBSND.LIB/PLAY.OBJ",
   "orig": "func_800434BC",
   "rom": 212156,
   "seg": "main/psyq/unknown/800434bc",
-  "size": 48,
-  "src": "src/main/psyq/unknown/800434bc.c"
+  "size": 48
  },
  "800434EC": {
   "asm": "asm/nonmatchings/main/psyq/libsnd/cres/_SsSndCrescendo.s",
@@ -15625,13 +15647,14 @@
   ],
   "fp": "5472b1e867340d16",
   "fpn": "07e8b5b1dd3be01c",
+  "kind": "sony",
   "leaf": false,
   "name": "func_80046DFC",
+  "obj": "LIBSND.LIB/DE_15.OBJ",
   "orig": "func_80046DFC",
   "rom": 226812,
   "seg": "main/psyq/unknown/80046dfc",
-  "size": 48,
-  "src": "src/main/psyq/unknown/80046dfc.c"
+  "size": 48
  },
  "80046E2C": {
   "asm": "asm/nonmatchings/main/psyq/libsnd/de_16/_SsSetNrpnVabAttr16.s",
@@ -15656,13 +15679,14 @@
   ],
   "fp": "5472b1e867340d16",
   "fpn": "07e8b5b1dd3be01c",
+  "kind": "sony",
   "leaf": false,
   "name": "func_80046E5C",
+  "obj": "LIBSND.LIB/DE_17.OBJ",
   "orig": "func_80046E5C",
   "rom": 226908,
   "seg": "main/psyq/unknown/80046e5c",
-  "size": 48,
-  "src": "src/main/psyq/unknown/80046e5c.c"
+  "size": 48
  },
  "80046E8C": {
   "asm": "asm/nonmatchings/main/psyq/unknown/80046e8c/func_80046E8C.s",
@@ -15671,13 +15695,14 @@
   ],
   "fp": "5472b1e867340d16",
   "fpn": "07e8b5b1dd3be01c",
+  "kind": "sony",
   "leaf": false,
   "name": "func_80046E8C",
+  "obj": "LIBSND.LIB/DE_18.OBJ",
   "orig": "func_80046E8C",
   "rom": 226956,
   "seg": "main/psyq/unknown/80046e8c",
-  "size": 48,
-  "src": "src/main/psyq/unknown/80046e8c.c"
+  "size": 48
  },
  "80046EBC": {
   "asm": "asm/nonmatchings/main/psyq/unknown/80046ebc/func_80046EBC.s",
@@ -15686,13 +15711,14 @@
   ],
   "fp": "5472b1e867340d16",
   "fpn": "07e8b5b1dd3be01c",
+  "kind": "sony",
   "leaf": false,
   "name": "func_80046EBC",
+  "obj": "LIBSND.LIB/DE_19.OBJ",
   "orig": "func_80046EBC",
   "rom": 227004,
   "seg": "main/psyq/unknown/80046ebc",
-  "size": 48,
-  "src": "src/main/psyq/unknown/80046ebc.c"
+  "size": 48
  },
  "80046EEC": {
   "asm": "asm/nonmatchings/main/psyq/libsnd/playmode/Snd_SetPlayMode.s",
@@ -15729,13 +15755,14 @@
   "calls": [],
   "fp": "eacdce8f0e68504b",
   "fpn": "eacdce8f0e68504b",
+  "kind": "sony",
   "leaf": true,
   "name": "func_8004706C",
+  "obj": "LIBSND.LIB/VM_DOFF.OBJ",
   "orig": "func_8004706C",
   "rom": 227436,
   "seg": "main/psyq/unknown/8004706c",
-  "size": 16,
-  "src": "src/main/psyq/unknown/8004706c.c"
+  "size": 16
  },
  "8004707C": {
   "asm": "asm/nonmatchings/main/psyq/libmcrd/userfunc/UserFuncInit.s",
@@ -16950,13 +16977,14 @@
   "calls": [],
   "fp": "041a88f3ebc8399e",
   "fpn": "86d6ccc15b79e11c",
+  "kind": "sony",
   "leaf": true,
   "name": "func_8004B57C",
+  "obj": "LIBSND.LIB/VM_DON.OBJ",
   "orig": "func_8004B57C",
   "rom": 245116,
   "seg": "main/psyq/unknown/8004b57c",
-  "size": 16,
-  "src": "src/main/psyq/unknown/8004b57c.c"
+  "size": 16
  },
  "8004B58C": {
   "asm": "asm/nonmatchings/main/psyq/unknown/8004b57c/func_8004B58C.s",
@@ -16965,13 +16993,14 @@
   ],
   "fp": "ff1e9f787c2e6efd",
   "fpn": "e2740f506dece743",
+  "kind": "sony",
   "leaf": false,
   "name": "func_8004B58C",
+  "obj": "LIBSND.LIB/VM_DON.OBJ",
   "orig": "func_8004B58C",
   "rom": 245132,
   "seg": "main/psyq/unknown/8004b57c",
-  "size": 32,
-  "src": "src/main/psyq/unknown/8004b57c.c"
+  "size": 32
  },
  "8004B5AC": {
   "asm": "asm/nonmatchings/main/psyq/libsnd/ut_sva/SsUtSetVagAtr.s",

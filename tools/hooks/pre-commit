@@ -24,9 +24,11 @@ fi
 # A match (an INCLUDE_ASM line replaced by C) is committed only through the validation gate,
 # `decomp.py done NAME --commit`, which checks scope, lint, the function and the full build.
 # Counted, not compared by name: renames and file splits rewrite INCLUDE_ASM lines without
-# removing any.
+# removing any. A PsyQ gap file deleted whole (decomp.py link-psyq linked Sony's object in its
+# place, after a full build check) isn't a match: library code isn't a matching target.
 if [ -z "${DECOMP_VALIDATED:-}" ]; then
-  diff=$(git diff --cached -U0 -- src)
+  gone=$(git diff --cached --name-only --diff-filter=D -- 'src/main/psyq/' | sed 's/^/:(exclude)/')
+  diff=$(git diff --cached -U0 -- src $gone)
   removed=$(printf '%s\n' "$diff" | grep -cE '^-[[:space:]]*INCLUDE_ASM\(' || true)
   added=$(printf '%s\n' "$diff" | grep -cE '^\+[[:space:]]*INCLUDE_ASM\(' || true)
   if [ "$removed" -gt "$added" ]; then

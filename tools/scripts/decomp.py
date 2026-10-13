@@ -1385,7 +1385,7 @@ def compile_alone(src, decls, ftext, name, cfg, tag="t"):
     write(c, "\n".join(incs + decls) + "\n\n" + ftext)
     cfg = unit_cfg(cfg, src)
     g = int(cfg.get("GVAL", "0"))
-    cmd = pipeline(c, o, cfg["CC_VER"], cfg["OPT_FLAGS"], g,
+    cmd = pipeline(c, o, cfg["CC_VER"], f"{cfg['OPT_FLAGS']} {cfg.get('EXTRA_CC1FLAGS', '')}".strip(), g,
                    re.sub(r"\s*-G\d+", "", cfg.get("MASPSX_ARGS", DEFAULT_MASPSX)), post_filters(cfg))
     # pipefail: without it a cc1 error is hidden and `as` still writes an object from partial output
     if run("set -o pipefail; " + cmd).returncode:
@@ -1953,7 +1953,12 @@ def cmd_link_psyq(a):
             print(f"  {o}: no member {stem}.o in {lib}.a, left as is")
             continue
         rom = addr - vram_off
-        m = re.search(rf"- \[0x{rom:X}, (c|asm), (lib/[\w/]+)\]", text)
+        # already linked (an earlier run): keep it, it still needs its sections placed
+        if f"- [0x{rom:X}, lib, {lib}, {mem}, .text]" in text:
+            members[o] = (lib, mem, secs)
+            continue
+        # a splat-named library file, or a PsyQ gap identified later (tools/scripts/psyq_gaps.py)
+        m = re.search(rf"- \[0x{rom:X}, (c|asm), (lib/[\w/]+|main/psyq/unknown/\w+)\]", text)
         if m:
             text = text.replace(m.group(0), f"- [0x{rom:X}, lib, {lib}, {mem}, .text]", 1)
             linked[m.group(2)] = (lib, mem, o)
@@ -2423,7 +2428,7 @@ def permute_run(d, name, e, base_c, cfg, jobs, seconds):
     if r.returncode:
         return None, None, None, "could not assemble target:\n" + tail(r.stderr)
     g = int(cfg.get("GVAL", "0"))
-    cmd = pipeline('"$1"', '"$3"', cfg["CC_VER"], cfg["OPT_FLAGS"], g,
+    cmd = pipeline('"$1"', '"$3"', cfg["CC_VER"], f"{cfg['OPT_FLAGS']} {cfg.get('EXTRA_CC1FLAGS', '')}".strip(), g,
                    re.sub(r"\s*-G\d+", "", cfg.get("MASPSX_ARGS", DEFAULT_MASPSX)), post_filters(cfg))
     cmd = cmd.replace("-Iinclude", "-I/work/include").replace("-Iext/", "-I/work/ext/")
     write(f"{d}/compile.sh", f"#!/bin/bash\nset -eo pipefail\ncd /work\n{cmd}\n")

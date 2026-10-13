@@ -762,7 +762,7 @@ typedef struct Ext1000 {
 extern Ext1000 D_8005A974;
 extern subengine D_8005A830;
 void FreeExtension(void *ext);
-s32 func_80032F3C(s32);         /* abs or labs (LIBC2: identical objects) */
+s32 abs(s32);         /* LIBC2 ABS_0.OBJ (labs in ABS_1.OBJ is identical); a call, not inlined: -fno-builtin */
 s32 func_80025E00(EXTengine *eng, s32 y);
 s16 func_800251A8(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim);
 s16 func_80025534(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim);

@@ -256,4 +256,5 @@ def main():
         print("wrote configs/USA/psyq/layout.txt")
 
 
-main()
+if __name__ == "__main__":
+    main()
