@@ -2468,8 +2468,9 @@
   "auto_failed": "diff"
  },
  "80033530": {
+  "matched_at": "2026-10-13T07:34:00Z",
   "started": "2026-10-11T20:35:59Z",
-  "status": "in_progress"
+  "status": "matched"
  },
  "80034AEC": {},
  "80034C4C": {
