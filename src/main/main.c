@@ -3710,7 +3710,39 @@ void func_8001E948(void) {
     func_80010AE8(&D_8004E0F0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001E984);
+void func_8001E984(s32 arg0, s32 arg1) {
+    u8 *p;
+    u8 *next;
+
+    if (arg0 != 0) {
+        D_80058B6C = (s32)func_80011654(arg0 * 0x7C, &D_8004E0F0);
+        p = (u8 *)D_80058B6C;
+        for (; arg0 >= 2; arg0--) {
+            next = p + 0x7C;
+            *(u8 **)(p + 0x74) = next;
+            p = next;
+        }
+        *(s32 *)(p + 0x74) = 0;
+    } else {
+        D_80058B6C = 0;
+    }
+    D_80058B78 = NULL;
+    D_80058B74 = (void *)D_80058B6C;
+    if (arg1 != 0) {
+        D_80058B68 = (s32)func_80011654(arg1 * 0xB8, &D_8004E0F0);
+        p = (u8 *)D_80058B68;
+        for (; arg1 >= 2; arg1--) {
+            next = p + 0xB8;
+            *(u8 **)(p + 0xB4) = next;
+            p = next;
+        }
+        *(s32 *)(p + 0xB4) = 0;
+    } else {
+        D_80058B68 = 0;
+    }
+    D_80058B64 = 0x10000;
+    D_80058B70 = (void *)D_80058B68;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001EAA4);
 

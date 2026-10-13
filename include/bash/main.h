@@ -741,6 +741,7 @@ extern s32 D_8004E0D8;
 extern s32 D_800590CC;
 extern subengine *D_80058ACC;
 extern s32 D_80058B60;
+extern s32 D_80058B64;
 extern s32 D_80058B68;
 extern s32 D_80058B6C;
 void func_8001DFF8();
@@ -1272,6 +1273,8 @@ void func_8001C1E0(u8 *arg0, u16 *src, u8 *tab, u16 *dst);
 void *func_8001CF50(ModelEntry *e, s32 arg1);
 
 s32 *func_8001E48C(s32 arg0);
+
+void func_8001E984(s32 arg0, s32 arg1);
 
 void func_80020DF8(u8 *arg0);
 
