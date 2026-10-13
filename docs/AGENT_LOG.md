@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 715/2550 game functions matched (main.exe ~450/574, ~45% of its bytes),
+- 716/2550 game functions matched (main.exe ~450/574, ~45% of its bytes),
   537/564 PsyQ functions, 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
@@ -95,13 +95,6 @@ Other:
   differs, extend it from the target.
 - Swarm: `--seg` is a prefix and defaults to `main/main`, so the new units
   need `--seg main/8002` (or `--only`).
-- `func_80025534` (600 B) is solved but not committed. Its first C matched
-  alone but the full build was 4 bytes long (gcc's `.align 3` jump table);
-  the gate-fix session replaced the `switch` with a computed-goto table (the
-  Diff patterns row), and that C then failed to build only because
-  `func_80024FA4`, matched in the same run, declares a type its patch also
-  declares. Apply `results/func_80025534/big1-gatefix-20261013122415/patch.diff`
-  from the swarm dir, drop the duplicate declaration, and run `done`.
 - Heap: `D_8004E0F0` is a `Heap` now. Its +0x10 is the deferred-free list
   (`func_80011578` pushes, `func_80011DB4` counts down); `MemBlock.unk2` is
   the countdown. The heap functions still in asm (`func_800107C8`,
@@ -226,6 +219,10 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-13 (evening):** Committed `func_80025534` (600 B) from the
+  swarm's gate-fix patch. `ScriptCursor` (`func_80024FA4`) is a partial
+  view of `EXTanimator` (both 0x2C), so the call casts; merge the two types.
 
 - **2026-10-13:** First real big-mode run (stopped early, ~18 min): 10
   matches incl. `func_8001D894` (612 B) by the big worker in one session,
