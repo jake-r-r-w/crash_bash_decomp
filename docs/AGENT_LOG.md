@@ -135,6 +135,11 @@ Other:
 ## Gotchas
 
 **Tooling**
+- Splitting a function by adding a symbol (`name = 0x...; // type:func` in
+  `sym.main.txt`, no `;` in the comment): run `decomp.py index`, which adds
+  the new function but keeps the old one's `size` in
+  `.decomp/functions.json`. Fix that by hand, or `make diff` compares
+  against the old length.
 - A unit whose last function ends in padding `nop`s (and rodata ending in
   zero padding) comes out short once that function is C: add a splat
   `[offset, pad]` subsegment after it (`configs/USA/main.yaml` has the two
