@@ -4710,7 +4710,46 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8001FCDC);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001FE80);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80020064);
+s32 func_80020064(u8 *arg0) {
+    u8 *s;
+    s32 *a;
+    u8 *c;
+    void (*fn)(u8 *, u8 *);
+    s32 idx;
+
+    s = *(u8 **)(arg0 + 8);
+    D_80058B60 = 0;
+    while (s != NULL) {
+        fn = (void (*)(u8 *, u8 *))D_80058B00[*(s32 *)(s + 4)].unk4;
+        if (fn != NULL) {
+            fn(s, arg0);
+        }
+        s = *(u8 **)(s + 0xB4);
+    }
+    *(s32 *)(arg0 + 0xC) = *(s32 *)(arg0 + 0xC) + D_80058B64;
+    c = *(u8 **)(*(u8 **)arg0 + 0xC);
+    idx = *(s32 *)(arg0 + 4);
+    if (c == NULL) {
+        a = NULL;
+    } else {
+        s32 *t = (s32 *)(c + (*(s32 *)(c + 0x4C) + 0x4C) + idx * 4);
+        a = (s32 *)((u8 *)t + *t);
+    }
+    if (*(s16 *)(arg0 + 0xE) >= a[2]) {
+        *(s32 *)(arg0 + 0x14) |= 0x10;
+        if (*(s32 *)(arg0 + 0x14) & 8) {
+            *(s32 *)(arg0 + 0xC) = (a[2] - 1) << 16;
+        }
+        if (*(s32 *)(arg0 + 0x14) & 2) {
+            *(s16 *)(arg0 + 0xE) = *(u16 *)(a + 3);
+        }
+        if (*(s32 *)(arg0 + 0x14) & 4) {
+            func_80021054(arg0);
+            return 0;
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800201BC);
 

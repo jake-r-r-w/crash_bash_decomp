@@ -1659,6 +1659,8 @@ typedef struct ScriptInit {
     u32 flags;
 } ScriptInit;
 
+s32 func_80020064(u8 *arg0);
+
 ScriptCursor *func_80024E30(NAS *nas, ScriptInit *init);
 
 void func_80024FA4(ScriptCursor *c);
