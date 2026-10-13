@@ -1217,7 +1217,8 @@
   "via": "auto"
  },
  "8001E0A8": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-13T21:34:53Z",
+  "status": "matched"
  },
  "8001E21C": {
   "auto_diff": 124,

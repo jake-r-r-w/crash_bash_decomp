@@ -4950,7 +4950,42 @@ void func_8001E054(u8 *arg0, s32 arg1) {
     func_8001682C(arg1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001E0A8);
+void func_8001E0A8(u8 *arg0) {
+    u8 *dst;
+    u8 *src;
+    s32 n;
+    s32 end;
+
+    dst = *(u8 **)(arg0 + 0x1C);
+    src = *(u8 **)(arg0 + 0x14);
+    n = *(s32 *)(arg0 + 0x18);
+    n--;
+    if (n != -1) do {
+        *(subengine *)dst = D_8005A830;
+        *(s32 *)(dst + 0) = *(s32 *)(src + 0);
+        *(Words3 *)(dst + 4) = *(Words3 *)(src + 4);
+        *(Words4 *)(dst + 0x30) = *(Words4 *)(src + 0x28);
+        *(Words4 *)(dst + 0x40) = *(Words4 *)(src + 0x38);
+        *(void **)(dst + 0x54) = func_8001DD50;
+        *(s32 *)(dst + 0x6C) = *(s32 *)arg0;
+        *(u16 *)(dst + 0x74) = *(u16 *)(src + 0x88);
+        *(u16 *)(dst + 0x8A) = *(u16 *)(src + 0x9E);
+        *(u16 *)(dst + 0x68) = *(u16 *)(src + 0x9C);
+        *(u8 *)(dst + 0x64) = *(u8 *)(src + 0x74);
+        *(u8 *)(dst + 0x65) = *(u8 *)(src + 0x75);
+        *(u8 *)(dst + 0x66) = *(u8 *)(src + 0x76);
+        *(u8 *)(dst + 0x67) = *(u8 *)(src + 0x77);
+        if (n > 0) {
+            *(u8 **)(dst + 0x5C) = dst + 0xA8;
+        } else {
+            *(u8 **)(dst + 0x5C) = NULL;
+        }
+        src += 0xA0;
+        dst += 0xA8;
+        n--;
+        end = -1;
+    } while (n != end);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001E21C);
 

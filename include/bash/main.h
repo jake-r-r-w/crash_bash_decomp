@@ -975,6 +975,9 @@ typedef struct Ext1000 {
 } Ext1000;
 extern Ext1000 D_8005A974;
 extern subengine D_8005A830;
+typedef struct Words4 {
+    s32 w[4];
+} Words4;
 void FreeExtension(void *ext);
 s32 abs(s32);         /* LIBC2 ABS_0.OBJ (labs in ABS_1.OBJ is identical); a call, not inlined: -fno-builtin */
 s32 func_80025E00(EXTengine *eng, s32 y);
@@ -1830,6 +1833,8 @@ void func_80017B08(FaceRuns *faces, FacePrim *prim, s32 arg2, s32 mode);
 void func_80017D90(FaceRuns *faces, FacePrim *prim);
 
 void func_8001A43C(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4);
+
+void func_8001E0A8(u8 *arg0);
 
 void func_80027D90(void);
 
