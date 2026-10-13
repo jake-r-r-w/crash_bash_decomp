@@ -81,7 +81,12 @@ linkers/%.ld: $(CFG)/overlays/%.yaml $(CFG)/sym.main.txt
 # Headers aren't tracked per file: any change under include/ rebuilds the C objects.
 build/%.c.o: %.c $(shell find include -name '*.h' 2>/dev/null)
 	@mkdir -p $(@D)
-	$(CPP) $(CPPFLAGS) $< | tee $(@:.o=.i) | $(CC1) $(CC1FLAGS) | $(DMPSX) | $(MASPSX) $(MASPSX_ARGS) | $(AS) $(ASFLAGS) -o $@
+	$(CPP) $(CPPFLAGS) $< | tee $(@:.o=.i) | $(CC1) $(CC1FLAGS) | $(DMPSX) | $(MASPSX) $(MASPSX_ARGS) $(PAD16) | $(AS) $(ASFLAGS) -o $@
+
+# Sony's objects pad .text to a multiple of 16 bytes with nops (from the object's start, which
+# need not be 16-aligned); our gcc doesn't, so the PsyQ gaps written as C get the padding here.
+PAD16_START := .Lpad16_start
+build/src/main/psyq/%.c.o: PAD16 = | { printf '\t.text\n$(PAD16_START):\n'; cat; printf '\t.text\n\t.space (16 - ((. - $(PAD16_START)) & 15)) & 15\n'; }
 
 build/%.s.o: %.s
 	@mkdir -p $(@D)
