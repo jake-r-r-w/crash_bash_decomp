@@ -223,6 +223,9 @@ Newest first, a few lines each. Details are in the commits.
 - **2026-10-13 (evening):** Committed `func_80025534` (600 B) from the
   swarm's gate-fix patch. `ScriptCursor` (`func_80024FA4`) is a partial
   view of `EXTanimator` (both 0x2C), so the call casts; merge the two types.
+  Roadmap: a final test (clean rebuild, shifted build plays, frame-for-frame
+  replay vs retail, modern GCC), with its tools placed where first needed
+  (packer + replay harness Phase 2, shift build Phase 4).
 
 - **2026-10-13:** First real big-mode run (stopped early, ~18 min): 10
   matches incl. `func_8001D894` (612 B) by the big worker in one session,
