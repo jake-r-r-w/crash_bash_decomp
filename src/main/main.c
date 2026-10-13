@@ -6415,7 +6415,87 @@ void func_8002321C(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", AllocExtension);
+void *AllocExtension(void *owner, s32 size, s32 id, void *tmpl) {
+    ExtBlk *b;
+    ExtBlk *n;
+    ExtBlk *p;
+    ExtBlk *r;
+    ExtBlk *q;
+    EXT *e;
+    EXT *o;
+    s32 want;
+    s32 total;
+    u32 have;
+
+    want = (size + 3) & ~3;
+    total = (size + 0x1B) & ~3;
+    n = D_8005A7AC;
+    for (;;) {
+        if (n == NULL) {
+            goto fail;
+        }
+        have = n->size & ~3;
+        b = n;
+        if ((s32)have >= want) {
+        r = n;
+        if (total + 8 < (s32)have) {
+            n = (ExtBlk *)((u8 *)n + total);
+            p = b->next;
+            if (p != NULL) {
+                p->prev = n;
+            }
+            n->next = p;
+            n->prev = b;
+            b->next = n;
+            b->size = want;
+            have -= total;
+            n->size = have | 1;
+            p = b->fprev;
+            n->fprev = p;
+            if (p != NULL) {
+                p->fnext = n;
+            }
+            p = b->fnext;
+            n->fnext = p;
+            if (p != NULL) {
+                p->fprev = n;
+            }
+            b->fprev = NULL;
+            b->fnext = NULL;
+        } else {
+            ExtBlk *s = n->fprev;
+            q = n->fnext;
+            n->size = have;
+            s->fnext = q;
+            if (q != NULL) {
+                n->fnext->fprev = n->fprev;
+            }
+            n->fprev = NULL;
+            n->fnext = NULL;
+        }
+        b->owner = owner;
+        o = owner;
+        while (o->Extend.Child != NULL) {
+            o = o->Extend.Child;
+        }
+        e = &r->ext;
+        if (tmpl != NULL) {
+            ((EXT *)tmpl)->EXTid = id;
+            ((EXT *)tmpl)->Extend.Parent = o;
+        } else {
+            e->EXTid = id;
+            e->Extend.Parent = o;
+            e->Extend.Child = NULL;
+        }
+        o->Extend.Child = e;
+        return e;
+        }
+        n = n->fnext;
+    }
+fail:
+    ((NAS *)owner)->Failure |= 1;
+    return NULL;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", FreeExtension);
 

@@ -766,6 +766,17 @@ extern u8 *D_8005B63C;
 extern s32 D_8006EA00;
 extern u32 D_8006EA04;
 extern s32 D_8005A7A0[];
+typedef struct ExtBlk ExtBlk;
+struct ExtBlk {
+    ExtBlk *prev;
+    ExtBlk *next;
+    ExtBlk *fprev;
+    ExtBlk *fnext;
+    u32 size;
+    EXT *owner;
+    EXT ext;
+};
+extern ExtBlk *D_8005A7AC;
 extern VabFile *D_800654C0;  /* VAB being transferred to the SPU, or NULL */
 extern VabSlot *D_800654C4;  /* where its id goes */
 extern s32 D_800654C8;       /* the id from SsVabOpenHead */

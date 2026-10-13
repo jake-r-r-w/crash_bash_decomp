@@ -31,9 +31,9 @@
    "size": 148
   }
  ],
- "commit": "8c866a9b",
+ "commit": "b5efe762",
  "game": "SCUS_945.70",
- "generated": "2026-10-13T21:01:38Z",
+ "generated": "2026-10-13T21:08:36Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -31276,9 +31276,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "b5efe762",
+   "data_b": 344,
+   "data_tb": 606951,
+   "game_all_f": 2550,
+   "game_b": 75604,
+   "game_c_f": 740,
+   "game_f": 743,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 595,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-13T21:08:36Z",
+   "units": {
+    "engine": [
+     2752,
+     63
+    ],
+    "main exe": [
+     64216,
+     479
+    ],
+    "ovl5d": [
+     328,
+     4
+    ],
+    "ovl5e": [
+     504,
+     6
+    ],
+    "ovl5f": [
+     1508,
+     35
+    ],
+    "ovl60": [
+     708,
+     14
+    ],
+    "ovl61": [
+     292,
+     7
+    ],
+    "ovl62": [
+     664,
+     29
+    ],
+    "ovl63": [
+     636,
+     16
+    ],
+    "ovl64": [
+     104,
+     6
+    ],
+    "ovl65": [
+     492,
+     9
+    ],
+    "ovl66": [
+     528,
+     13
+    ],
+    "ovl67": [
+     836,
+     12
+    ],
+    "ovl68": [
+     180,
+     10
+    ],
+    "ovl69": [
+     920,
+     16
+    ],
+    "ovl6a": [
+     936,
+     24
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-13T21:08:28Z",
+   "auto": true,
+   "name": "AllocExtension",
+   "seg": "main/main",
+   "size": 340,
+   "tries": 0
+  },
   {
    "at": "2026-10-13T21:01:29Z",
    "auto": true,
@@ -31390,14 +31484,6 @@
    "seg": "main/main",
    "size": 372,
    "tries": 0
-  },
-  {
-   "at": "2026-10-13T20:31:08Z",
-   "auto": true,
-   "name": "func_8001D48C",
-   "seg": "main/main",
-   "size": 324,
-   "tries": 0
   }
  ],
  "summary": {
@@ -31413,11 +31499,11 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 5,
-   "c_f": 739,
-   "done_b": 75264,
-   "done_f": 742,
+   "c_f": 740,
+   "done_b": 75604,
+   "done_f": 743,
    "named_f": 345,
-   "pct": 7.38580383813722,
+   "pct": 7.419168704540369,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2550,
@@ -31465,14 +31551,14 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 5,
-    "c_f": 475,
-    "done_b": 63876,
-    "done_f": 478,
+    "c_f": 476,
+    "done_b": 64216,
+    "done_f": 479,
     "file": "SCUS_945.70",
     "files": 3,
     "lib": false,
     "named_f": 15,
-    "pct": 51.16629285485421,
+    "pct": 51.43864146107017,
     "phase": 2,
     "sony_b": 0,
     "title": "main.exe",
