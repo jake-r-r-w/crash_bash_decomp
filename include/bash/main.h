@@ -1399,4 +1399,18 @@ void func_8002D294(void);
 
 void func_8002D394(u8 *arg0, s16 *arg1);
 
+extern u8 D_80063A84[];
+
+/* Pad rumble state (func_800281C0). */
+typedef struct PadRumble {
+    /* 0x00 */ u8 unk0[4];
+    /* 0x04 */ u8 act[2];  /* motor values passed to PadSetAct */
+    /* 0x06 */ u16 dirty;
+    /* 0x08 */ s16 time0;
+    /* 0x0A */ s16 time1;
+    /* 0x0C */ s16 reset;
+} PadRumble;
+
+s32 func_800281C0(PadRumble *r, s32 port);
+
 #endif /* BASH_MAIN_H */

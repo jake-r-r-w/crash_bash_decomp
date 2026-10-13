@@ -6341,7 +6341,41 @@ void func_800281A0(u8 *arg0, s32 arg1) {
     (*(u16*)((u8*)(arg0) + 6)) = (u16) ((*(u16*)((u8*)(arg0) + 6)) | 1);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800281C0);
+s32 func_800281C0(PadRumble *r, s32 port) {
+    if (r->reset != 0) {
+        if (r->time0 != 0) {
+            r->time0 = 1;
+        }
+        if (r->time1 != 0) {
+            r->time1 = 1;
+        }
+    }
+    r->reset = 0;
+    if (r->time0 != 0) {
+        r->time0 = r->time0 - 1;
+        if ((r->time0 << 16) == 0) {
+            r->act[0] = 0;
+            r->dirty |= 1;
+        }
+    }
+    if (r->time1 != 0) {
+        r->time1 = r->time1 - 1;
+        if ((r->time1 << 16) == 0) {
+            r->act[1] = 0;
+            r->dirty |= 2;
+        }
+    }
+    if (PadGetState(port) != 6) {
+        return 0;
+    }
+    if (r->dirty != 0) {
+        PadSetAct(port, r->act, 2);
+        if (PadSetActAlign(port, D_80063A84) == 1) {
+            r->dirty = 0;
+        }
+    }
+    return 8;
+}
 
 void func_800282D8(u8 *arg0) {
     (*(s32*)((u8*)(arg0) + 4)) = 0;
