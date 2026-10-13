@@ -41,7 +41,17 @@ void func_80010354(void) {
     func_800272AC(D_8004E0E0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80010394);
+void func_80010394(void) {
+    func_8001231C();
+    func_800138A4();
+    func_800155FC();
+    func_80022838();
+    func_8002BEA8();
+    if (!(D_8005B690 & 1)) {
+        func_8002D274();
+    }
+    D_8004E0DC->unk4();
+}
 
 void func_80010410(void) {
     u8 *p = D_8004E0DC->unk10;

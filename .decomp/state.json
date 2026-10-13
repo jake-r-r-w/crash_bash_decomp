@@ -24,7 +24,8 @@
   "status": "matched"
  },
  "80010394": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-13T07:48:42Z",
+  "status": "matched"
  },
  "80010410": {
   "matched_at": "2026-10-13T07:45:26Z",
