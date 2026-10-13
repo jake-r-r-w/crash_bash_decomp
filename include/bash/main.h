@@ -580,7 +580,19 @@ extern s32 D_80051600;            /* pads 0..n-1 all have flag 1 */
 extern s32 D_80051604;            /* frames with no button down */
 extern u8 D_80063A90[2][0x34];    /* PadInitMtap buffers */
 extern PadState D_80051338[8];
-extern void *D_80063BB4;          /* list walked by func_80028A00 (next at +4) */
+typedef struct FreeHdr { u16 f0; u16 f2; } FreeHdr;
+typedef struct FreeNode {
+    FreeHdr hdr;
+    struct FreeNode *next;
+    s32 f8;
+    void *fC;
+    void *f10;
+    s32 f14;
+} FreeNode;
+extern FreeNode *D_80063B18;
+extern u8 D_80063B58[];
+extern FreeHdr *func_800282F8(u8 *);
+extern void *D_80063BB4;        /* list walked by func_80028A00 (next at +4) */
 extern s32 D_8004E104;            /* func_80011410: free bytes */
 extern s32 D_8004E108;            /* func_80011410: free blocks */
 extern s32 D_8004E110[];         /* func_80012D80: 8-byte entries */
@@ -1280,6 +1292,8 @@ void func_800279A4(void);
 void func_80027F7C(s32 pad, s32 arg1, s8 arg2);
 
 void func_80028018(s32 pad, s32 arg1);
+
+FreeNode *func_80028A28(void);
 
 void func_8002A684(u8 *arg0, u8 *arg1);
 

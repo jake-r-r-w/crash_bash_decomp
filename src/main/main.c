@@ -5847,7 +5847,37 @@ void *func_80028A00(void) {
     return cur;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80028A28);
+FreeNode *func_80028A28(void) {
+    FreeNode *head;
+    FreeNode *prev;
+    FreeNode *n;
+    FreeNode *nx;
+    FreeHdr *src;
+    FreeHdr h;
+    s32 i;
+
+    head = D_80063B18;
+    D_80063B18 = head->next;
+    src = func_800282F8(D_80063B58);
+    prev = NULL;
+    h = *src;
+    i = 0x1F;
+    do {
+        n = D_80063B18;
+        nx = n->next;
+        i--;
+        n->next = prev;
+        n->fC = head;
+        n->hdr = h;
+        prev = n;
+        D_80063B18 = nx;
+        h.f2++;
+    } while (i != -1);
+    head->f10 = n;
+    head->f14 = 0x20;
+    head->fC = src;
+    return head;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80028AE4);
 
