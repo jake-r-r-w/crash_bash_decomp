@@ -6551,7 +6551,58 @@ void func_8002232C(void) {
     func_8002C44C();
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002235C);
+s32 func_8002235C(_sfx_handler *voice) {
+    S16Pair vol;
+    S16Pair tmp;
+    S16Pair tmp2;
+    s32 f;
+    SLONG_XYZ *pos = voice->pos;
+    s32 *slot = &voice->unk2C;
+
+    if (voice->unk28 != -1) {
+        if (D_800644A8[voice->unk2C] != 1) {
+            return 0;
+        }
+        f = voice->flags & 0xE;
+        voice->flags &= ~8;
+        if (pos != NULL) {
+            f |= 8;
+            tmp = func_8002B210((VECTOR *)pos);
+            vol = tmp;
+        } else {
+            u16 t = voice->unk20;
+            vol.b = t;
+            vol.a = t;
+        }
+        if (f & 2) {
+            if (f & 4) {
+                voice->flags &= ~6;
+            } else {
+                vol.b = 0;
+                vol.a = 0;
+            }
+        }
+        voice->flags &= ~4;
+        if (f != 0) {
+            func_8002B52C((s16 *)slot, vol.a, vol.b);
+        }
+        if (voice->flags & 1) {
+            func_8002B4D8((PitchVoice *)slot, voice->unk24);
+            voice->flags &= ~1;
+        }
+    } else {
+        if (pos != NULL) {
+            tmp2 = func_8002B210((VECTOR *)pos);
+            vol = tmp2;
+        } else {
+            u16 t = voice->unk20;
+            vol.b = t;
+            vol.a = t;
+        }
+        voice->unk28 = func_8002B5B0(&voice->unk2C, voice->id, voice->unk24, vol.a, vol.b);
+    }
+    return voice->unk28 != -1;
+}
 
 void func_80022504(void) {
     _sfx_handler *next;
@@ -9635,7 +9686,7 @@ void func_8002B52C(s16 *arg0, s32 arg1, s32 arg2) {
     SsUtSetVVol(*arg0, (arg1 * vol) / 409600, (arg2 * vol) / 409600);
 }
 
-s16 func_8002B5B0(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+s32 func_8002B5B0(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 *p = (s32 *)D_8005A604;
     s8 *sfx = SfxTable[arg1];
     s16 v;
