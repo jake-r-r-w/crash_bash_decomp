@@ -8847,7 +8847,100 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8002926C);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80029560);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80029790);
+static inline void func_8002AA50_i(u8 *arg0) {
+    s32 temp_a0;
+
+    temp_a0 = (*(s32*)((u8*)(arg0) + 32));
+    if (temp_a0 != 0) {
+        func_80028AE4(temp_a0);
+        (*(s32*)((u8*)(arg0) + 32)) = 0;
+    }
+}
+
+static inline void func_8002A740_i(u8 *arg0) {
+    s32 temp_a0;
+
+    temp_a0 = (*(s32*)((u8*)(arg0) + 4));
+    if (temp_a0 != 0) {
+        func_8002854C(temp_a0);
+        (*(s32*)((u8*)(arg0) + 4)) = 0;
+    }
+}
+
+static inline void func_80029790_a(u8 *arg0) {
+    s32 n;
+    u8 *p;
+
+    n = *(s32 *)(arg0 + 0);
+    p = *(u8 **)(arg0 + 8);
+    for (;; p += 0x38) {
+        n--;
+        if (n == -1) {
+            return;
+        }
+        func_8002AA50_i(p);
+    }
+}
+
+static inline void func_80029790_b(u8 *arg0, u8 *p) {
+    s32 n;
+
+    n = *(s32 *)(arg0 + 4);
+    p -= 0xC;
+    for (;;) {
+        n--;
+        p += 0xC;
+        if (n == -1) {
+            return;
+        }
+        func_8002A740_i(p);
+    }
+}
+
+void func_80029790(u8 *arg0) {
+    s32 n;
+    u8 *d;
+    s32 *q;
+    s32 *r;
+    u8 *b;
+
+    b = *(u8 **)(arg0 + 0xC);
+    func_80029790_a(arg0);
+    func_80029790_b(arg0, b);
+    d = *(u8 **)(arg0 + 0x18);
+    if (d != NULL) {
+        if (*(s32 *)(d + 4) != 0) {
+            q = (s32 *)(d + (*(s32 *)(d + 4) + 4));
+            r = q + 1;
+            n = *q;
+            if (--n != -1) {
+                do {
+                    func_80028AE4(r[3]);
+                    r += 4;
+                } while (--n != -1);
+            }
+        }
+        func_800110A8(*(void **)(arg0 + 0x18), &D_8004E0F0);
+        *(s32 *)(arg0 + 0x18) = 0;
+    }
+    if (*(void **)(arg0 + 8) != NULL) {
+        func_800110A8(*(void **)(arg0 + 8), &D_8004E0F0);
+    }
+    *(s32 *)(arg0 + 8) = 0;
+    if (*(void **)(arg0 + 0xC) != NULL) {
+        func_800110A8(*(void **)(arg0 + 0xC), &D_8004E0F0);
+    }
+    *(s32 *)(arg0 + 0xC) = 0;
+    if (*(void **)(arg0 + 0x20) != NULL) {
+        func_800110A8(*(void **)(arg0 + 0x20), &D_8004E0F0);
+    }
+    *(s32 *)(arg0 + 0x20) = 0;
+    *(s32 *)(arg0 + 0x1C) = 0;
+    if (*(void **)(arg0 + 0x10) != NULL) {
+        func_800110A8(*(void **)(arg0 + 0x10), &D_8004E0F0);
+        *(s32 *)(arg0 + 0x10) = 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002992C);
 

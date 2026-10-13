@@ -1873,6 +1873,8 @@ void func_8001E0A8(u8 *arg0);
 
 void func_80027D90(void);
 
+void func_80029790(u8 *arg0);
+
 void func_8002A84C(TexSrc2A84C *s, TexDst2A84C *d, s32 n);
 
 #endif /* BASH_MAIN_H */
