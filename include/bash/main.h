@@ -73,6 +73,16 @@ typedef struct GfxModel {
     RelTable *colors; /* 0x0C: u32 colours, indexed by a face's 13-bit indices */
 } GfxModel;
 
+/* The camera GfxState.cam points at (func_8001D894). */
+typedef struct GfxCamera {
+    u8 unk0[0xC];
+    s32 x, y, z;    /* 0x0C */
+    u8 unk18[0x5C];
+    MATRIX view;    /* 0x74 */
+    u8 unk94[4];
+    MATRIX rot;     /* 0x98: rotation for screen-aligned objects */
+} GfxCamera;
+
 /* Graphics state at 0x80056998 (placeholder name; 161 references). Only the
  * fields func_8001CD04 and func_8001D048 use are known: two pointers it aims
  * at buffers inside the struct itself, a block at +0x28 it passes to
@@ -82,12 +92,15 @@ typedef struct {
     u8 unk4[4];
     s32 *farColor; /* 0x08: r, g, b for gte_ldfcdir */
     s32 dp;        /* 0x0C: depth-cue factor for gte_lddp */
-    u8 unk10[0x18];
+    u8 unk10[0x10];
+    s32 ofx;   /* 0x20: geometry offset x (scaled by the screen width / 640) */
+    s32 ofy;   /* 0x24: geometry offset y (halved) */
     u8 unk28[0x18];
     u32 *ot;   /* 0x40 */
     s16 otzAdd; /* 0x44: added to the average Z before it is halved */
     s16 otLen;  /* 0x46: entries in ot */
-    u8 unk48[0x3C];
+    struct GfxCamera *cam; /* 0x48 */
+    u8 unk4C[0x38];
     u8 *unk84; /* 0x84: = unkCC */
     u8 *unk88; /* 0x88: = unk10C */
     MATRIX unk8C; /* 0x8C: set to identity by func_8001D5D0 */
@@ -714,6 +727,7 @@ typedef struct ComboSeq {
     /* 0x10 */ s32 steps[1];
 } ComboSeq;
 
+extern MATRIX D_80058AD4;
 extern s32 D_80051380;
 extern u8 D_800536CC[];
 extern CdlLOC D_8006EA14;
@@ -1473,6 +1487,8 @@ void func_80012BC8(s32 * *arg0, s32 *arg1, u8 *arg2);
 void func_80013B0C(ComboSeq *c);
 
 void func_8001CAD4(u16 *arg0, s32 arg1, u32 arg2);
+
+void func_8001D894(void *sub, void *arg1, s32 flags, s32 arg3);
 
 void func_8001F4F8(u8 *arg0, u8 *arg1);
 

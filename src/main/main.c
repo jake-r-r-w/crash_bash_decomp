@@ -3883,7 +3883,40 @@ void func_8001D640(s32 n) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001D6B4);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001D894);
+void func_8001D894(void *sub, void *arg1, s32 flags, s32 arg3) {
+    MATRIX m;
+    VECTOR v;
+    MATRIX *rot;
+    MATRIX *mp;
+
+    m = D_80056998.cam->view;
+    D_80056998.unk0 = ((subengine *)sub)->unk6C = *(GfxModel **)D_80058AD0;
+    v.vx = ((subengine *)sub)->unk04 - D_80056998.cam->x;
+    v.vy = ((subengine *)sub)->unk08 - D_80056998.cam->y;
+    v.vz = ((subengine *)sub)->unk0C - D_80056998.cam->z;
+    mp = &m;
+    if (!(flags & 0x200000)) {
+        rot = &D_80056998.cam->view;
+    } else {
+        rot = &D_80058AD4;
+    }
+    ApplyMatrixLV(rot, &v, (VECTOR *)m.t);
+    m.t[0] += D_80056998.cam->view.t[0];
+    m.t[1] += D_80056998.cam->view.t[1];
+    m.t[2] += D_80056998.cam->view.t[2];
+    if (((subengine *)sub)->flags & 0x20000000) {
+        gte_SetRotMatrix(&D_80056998.cam->rot);
+    } else {
+        if (*(u16 *)&((subengine *)sub)->unk52 != 0) {
+            func_800142D4(&((subengine *)sub)->unk10);
+        }
+        MulMatrix0(rot, (MATRIX *)((u8 *)sub + 0x30), mp);
+        gte_SetRotMatrix(mp);
+    }
+    gte_SetTransMatrix(mp);
+    D_80056998.otzAdd = *(u16 *)(D_80056998.unk28 + 8) + ((subengine *)sub)->unk68;
+    gte_SetGeomOffset(D_80056998.ofx * D_8005B698->w / 640, D_80056998.ofy / 2);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001DAF8);
 
