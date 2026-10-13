@@ -10,16 +10,17 @@ At the end of a session, update **Current state**, **Next** and **Open
 leads**, add any new gotcha, and add one short entry at the top of the
 **Session log**.
 
-## Current state (2026-10-12)
+## Current state (2026-10-13)
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 533/2550 game functions matched (main.exe 269/574), 5 parked. `make check`
-  OK. Live figures: `decomp.py progress` / `docs/index.html`.
+- 596/2550 game functions matched, 537/564 PsyQ functions, 5 parked.
+  `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
 - PsyQ 4.7: Sony's objects are linked in place of the library; the gaps are
-  in `src/main/psyq/unknown/`.
+  in `src/main/psyq/unknown/`, one file per Sony object, and the build pads
+  each one's `.text` to 16 bytes as Sony's are, so they match as C.
 - Every type and AST id in the Oct 9 prototype's debug fragment is in
   `include/bash/` and every overlay is identified (ARCHITECTURE.md, Prototype
   debug types). The disc images are in the git-ignored `protos/`.
@@ -74,15 +75,15 @@ Parked (`decomp.py block`; best C under `#ifndef NON_MATCHING` in
   Permuter's best reused a temp for `tpage & ~0x60`.
 
 Other:
-- PsyQ gaps (`src/main/psyq/unknown/`) can't be matched as C yet: Sony's
-  objects pad each function to 16 bytes with `nop`s, and our gcc doesn't, so
-  `func_8003E0EC` and `func_80033530` match alone but the exe comes out 4 bytes
-  short. They need per-file padding in the build, or the real objects linked
-  (`func_8003E0EC` is identical to `McrdGetGlobalStructure`, `func_80033530` to
-  `ReadInitPadFlag`).
-- `D_8004E0F0` is the main `Heap` (`bash/main.h`) but is still declared
-  `u8[]`, so `func_800110A8`'s callers warn. Retype it together with the
-  `u8 *` heap parameters of `func_80011DB4` and `func_800112A4`.
+- PsyQ gaps: the rest (`src/main/psyq/unknown/`) can be matched as C now.
+  Several are setters in the `lui $at` style (`func_8003351C`,
+  `func_8003E01C`, `func_8003E0CC`), which `main.c`'s settings never give:
+  they were built with another compiler or aspsx, so try other `CC_VER` or
+  maspsx flags for those files.
+- Heap: `D_8004E0F0` is a `Heap` now. Its +0x10 is the deferred-free list
+  (`func_80011578` pushes, `func_80011DB4` counts down); `MemBlock.unk2` is
+  the countdown. The heap functions still in asm (`func_800107C8`,
+  `func_800115D8`, `func_80010C70`) need prototypes taking `Heap *`.
 - `func_800C8BA0` (ovl5f) matches alone but adds 4 bytes of data/rodata to
   the overlay (offset 0x4C): its literal belongs in another file's rodata.
 - Prototype debug types (ARCHITECTURE.md, Prototype debug types): every type
@@ -94,10 +95,9 @@ Other:
   shows their fields.
 - `func_8001A0D8` (blocks `func_8001C7FC`) stores SXY at +0x10/+0x18/+0x20
   too: use `gte_stsxy3_10`.
-- Sound voices: `SfxActiveVoices` (`0x80059614`) is `SfxVoicePool.active`
-  (+0x544). Drop the separate symbol and retype the matched voice walkers
-  (`func_800227C0`, `func_800227FC`, `func_80022838`, `func_800228A4`) with
-  `SfxVoice`. `func_80022504` is "stop all" (`StopSfx` inlined in a loop),
+- Sound voices: the C walkers use `SfxVoicePool.active`; the symbol
+  `SfxActiveVoices` stays only for the asm (`func_800228C4` and data). Drop it
+  from `sym.main.txt` once nothing in asm uses it. `func_80022504` is "stop all" (`StopSfx` inlined in a loop),
   `func_800228C4` unlinks without stopping, `func_80022924` allocates,
   `func_80022984` inits the pool.
 - Ambiguous naming leads are listed in ARCHITECTURE.md ("Functions reached
@@ -192,6 +192,16 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-13:** Improvements, no swarm run. Folded 36 swarm rows into
+  MATCHING.md (the swarm's `patterns.md` was renamed to
+  `patterns.folded-2026-10-13.md`). `declare()` now inserts prototypes in
+  address order into the run of prototypes at the end of each owned header
+  (`sort_protos.py` sorted the existing runs once), so parallel matches
+  conflict less. `D_8004E0F0` is typed `Heap` (21 fewer warnings), and the
+  Sfx walkers are typed. The build pads PsyQ gap objects to 16 bytes, and the
+  three gap files that held several objects are split, so `func_80033530`
+  and `func_8003E0EC` are matched.
 
 - **2026-10-12:** Built the swarm orchestrator on branch `swarm-orchestrator`
   (`tools/swarm/`, README there): parallel Claude workers in clones, one
