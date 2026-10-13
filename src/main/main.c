@@ -4671,7 +4671,46 @@ freed:
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80023158);
+void func_80023158(s32 arg0) {
+    s32 *base;
+    s32 *hd;
+    u32 size;
+    u32 words;
+
+    s32 *pb = &D_8006EA00;
+    u8 *res;
+
+    size = (arg0 + 3) & ~3;
+    D_8006EA04 = size;
+    res = func_80011654(size, &D_8004E0F0);
+    *pb = (s32)res;
+    if (res != NULL) {
+        base = (s32 *)res;
+        hd = D_8005A7A0;
+        hd[0] = 0;
+        hd[1] = (s32)base;
+        hd[2] = 0;
+        hd[3] = (s32)base;
+        hd[4] = size | 2;
+        hd[5] = 0;
+        hd[6] = (s32)base;
+        hd[7] = (s32)base + size;
+        size -= 0x18;
+        base[0] = (s32)hd;
+        base[1] = 0;
+        base[2] = (s32)hd;
+        base[3] = 0;
+        base[4] = size | 1;
+        base[5] = 0;
+        size = (size - 0x18) >> 2;
+        base += 6;
+        do {
+            *base = 0;
+            size--;
+            base++;
+        } while (size != 0);
+    }
+}
 
 void func_8002321C(void) {
     s32 *base;

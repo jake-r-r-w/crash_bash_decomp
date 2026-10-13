@@ -1257,6 +1257,8 @@ u8 *func_80021D1C(u8 *arg0, s32 arg1);
 
 void func_80022504(void);
 
+void func_80023158(s32 arg0);
+
 void func_8002321C(void);
 
 void func_80025B10(EXTengine *eng, u32 flag);
