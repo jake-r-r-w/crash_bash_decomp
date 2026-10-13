@@ -5,6 +5,7 @@
 //   node tools/swarm/swarm.mjs run [--workers 3] [--seg main/main] [--only f1,f2] ...
 //   node tools/swarm/swarm.mjs stop [--now]     graceful: finish and integrate current work
 //   node tools/swarm/swarm.mjs status
+//   node tools/swarm/swarm.mjs stats            outcomes by function size; big-mode checkpoints
 //   node tools/swarm/swarm.mjs clean            delete the worker and integration clones
 //
 // Runs on the host (Node, no dependencies): it launches `claude` and `tools/dk`, which can't
@@ -277,9 +278,11 @@ class Swarm {
       lock: path.join(o.dir, 'lock'), stop: path.join(o.dir, 'STOP'), status: path.join(o.dir, 'run.json'),
       log: path.join(o.dir, 'swarm.log'), history: path.join(o.dir, 'history.json'),
       report: path.join(o.dir, 'report.md'), patterns: path.join(o.dir, 'patterns.md'),
-      results: path.join(o.dir, 'results'),
+      results: path.join(o.dir, 'results'), checkpoints: path.join(o.dir, 'checkpoints'),
     };
     this.slots = Array.from({ length: o.workers }, (_, i) => ({ id: `w${i + 1}`, dir: path.join(o.dir, 'workers', `w${i + 1}`), job: null }));
+    // big mode: long resumable sessions on big functions (>= --big-bytes, or parked in normal mode)
+    this.bslots = Array.from({ length: o.bigWorkers }, (_, i) => ({ id: `b${i + 1}`, dir: path.join(o.dir, 'workers', `b${i + 1}`), job: null, big: true }));
     // permuter pool: plain compute, no Claude; a stuck worker hands its closest C here and frees its slot
     this.pslots = Array.from({ length: o.permuters }, (_, i) => ({ id: `p${i + 1}`, dir: path.join(o.dir, 'permuters', `p${i + 1}`), job: null }));
     this.permQueue = [];
@@ -425,24 +428,80 @@ class Swarm {
   }
 
   activeJobs() {
-    return [...[...this.slots, ...this.pslots].map(s => s.job).filter(Boolean), ...this.permQueue,
+    return [...[...this.slots, ...this.bslots, ...this.pslots].map(s => s.job).filter(Boolean), ...this.permQueue,
             ...this.integQueue, ...(this.integrating || [])];
   }
 
-  nextJob(peek = false) {
-    if (this.retry.length) return peek ? this.retry[0] : this.retry.shift();
+  // a big-mode function: at least --big-bytes, or escalated after parking in normal mode
+  isBig(f) {
+    return this.bslots.length > 0 && (f.size >= this.o.bigBytes || !!this.history[f.key]?.big);
+  }
+
+  // still worth a big session: under --big-sessions, and not --big-stale sessions in a row without progress
+  bigLeft(f) {
+    const h = this.history[f.key] || {};
+    return this.o.retryFailed || ((h.bigSessions || 0) < this.o.bigSessions && (h.bigStale || 0) < this.o.bigStale);
+  }
+
+  // `big`: for a big-mode slot (big functions only), else for a normal slot (small ones only)
+  nextJob(peek = false, big = false) {
+    const r = this.retry.findIndex(j => !!j.big === big);
+    if (r >= 0) return peek ? this.retry[r] : this.retry.splice(r, 1)[0];
     const busy = this.activeJobs();
     const keys = new Set(busy.map(j => j.f.key)), fps = new Set(busy.map(j => j.f.fp).filter(Boolean));
-    for (const f of this.queue) {
+    // big mode: resume the functions with a checkpoint first, then the smallest
+    const cands = big ? this.queue.filter(f => this.isBig(f))
+      .sort((a, b) => (this.checkpoint(b.name) ? 1 : 0) - (this.checkpoint(a.name) ? 1 : 0) || a.size - b.size)
+      : this.queue.filter(f => !this.isBig(f));
+    for (const f of cands) {
       if (this.finished.has(f.key) || keys.has(f.key) || (f.fp && fps.has(f.fp)) || this.nearBusy(f, busy)) continue;
-      if ((this.history[f.key]?.attempts || 0) >= this.o.maxAttempts && !this.o.retryFailed) continue;
-      return { f, model: this.o.model, attempt: 1, notes: [] };
+      if (big ? !this.bigLeft(f) : (this.history[f.key]?.attempts || 0) >= this.o.maxAttempts && !this.o.retryFailed) continue;
+      return big ? this.bigJob(f, 1, []) : { f, model: this.o.model, attempt: 1, notes: [] };
     }
     return null;
   }
 
+  bigJob(f, attempt, notes, extra = {}) {
+    return { f, model: this.o.bigModel, attempt, notes, big: true, ...extra };
+  }
+
+  // ---- big-mode checkpoints: the best C so far for a function, kept across sessions and runs
+  checkpoint(name) {
+    const j = readJson(path.join(this.paths.checkpoints, name, 'best.json'), null);
+    return j && fs.existsSync(path.join(this.paths.checkpoints, name, 'best.diff')) ? j : null;
+  }
+
+  // the `STAGE name stage n/total` line of decomp.py try (MATCH counts as the best stage)
+  static score(tryOut) {
+    if (/^MATCH /m.test(tryOut)) return { stage: 'match', diffs: 0, total: 0 };
+    const m = tryOut.match(/^STAGE \S+ (structure|instructions|registers) (\d+)\/(\d+)/m);
+    return m ? { stage: m[1], diffs: +m[2], total: +m[3] } : null;
+  }
+
+  static better(a, b) {
+    const rank = s => ['structure', 'instructions', 'registers', 'match'].indexOf(s.stage);
+    return !b || rank(a) > rank(b) || (rank(a) === rank(b) && a.diffs < b.diffs);
+  }
+
+  saveCheckpoint(job, patchFile, score, note, next) {
+    const d = path.join(this.paths.checkpoints, job.f.name);
+    fs.mkdirSync(d, { recursive: true });
+    const old = this.checkpoint(job.f.name);
+    const log = [...(old?.log || []), `${stamp()} ${job.model}: ${score.stage} ${score.diffs}/${score.total}. ${note}${next ? ` Next: ${next}` : ''}`].slice(-12);
+    fs.copyFileSync(patchFile, path.join(d, 'best.diff'));
+    writeJson(path.join(d, 'best.json'), { ...score, base: job.base, updated: stamp(), log });
+  }
+
+  noteCheckpoint(job, line) {
+    const old = this.checkpoint(job.f.name);
+    if (!old) return;
+    old.log = [...(old.log || []), `${stamp()} ${job.model}: ${line}`].slice(-12);
+    writeJson(path.join(this.paths.checkpoints, job.f.name, 'best.json'), old);
+  }
+
   // ---- workers
   prompt(job) {
+    if (job.big) return this.promptBig(job);
     const { f } = job;
     const canPermute = this.pslots.length > 0 && !job.permuted;
     const patterns = fs.existsSync(this.paths.patterns)
@@ -450,7 +509,7 @@ class Swarm {
     return `You are one worker in a swarm matching Crash Bash functions. Match exactly one function:
 ${f.name} (${f.seg}, ${f.size} bytes, defined in ${f.src}).
 
-Follow .claude/skills/match-function/SKILL.md and docs/MATCHING.md, steps 1 to 4 only (pick with
+Follow .claude/skills/match-function/SKILL.md steps 1 to 4 and docs/MATCHING.md steps 1 to 5 (pick with
 \`tools/dk python3 tools/scripts/decomp.py next --func ${f.name}\`). These swarm rules override the
 skill, CLAUDE.md and the docs:
 - Work only on ${f.name}. Change only its INCLUDE_ASM line in ${f.src}, and headers under include/
@@ -500,16 +559,110 @@ ${job.permuterDiff}
 ` : ''}${f.note ? `\nNote recorded for this function earlier: ${f.note}\n` : ''}${job.notes.length ? `\nEarlier swarm attempts at it:\n${job.notes.map(n => '- ' + n).join('\n')}\n` : ''}${patterns ? `\nDiff patterns other workers found in this run (not yet in MATCHING.md):\n${patterns}\n` : ''}`;
   }
 
+  // big mode: one session of several on a big function, resuming from the best C so far
+  promptBig(job) {
+    const { f } = job;
+    const cp = job.resumed;
+    const canPermute = this.pslots.length > 0;
+    const patterns = fs.existsSync(this.paths.patterns)
+      ? fs.readFileSync(this.paths.patterns, 'utf8').trim().split('\n').slice(-30).join('\n') : '';
+    return `You are a big-function worker in a swarm matching Crash Bash functions. Work on exactly one
+function: ${f.name} (${f.seg}, ${f.size} bytes, defined in ${f.src}). A big function takes several
+sessions; this is one of them. Make as much progress as you can and leave your best C in place: the
+orchestrator measures it with \`decomp.py try\` and keeps the best version for the next session.
+${cp ? `
+This session resumes from the best C so far, already in ${f.src} in place of the INCLUDE_ASM line
+(${cp.stage}, ${cp.diffs}/${cp.total} instructions differ). Log of earlier sessions, oldest first:
+${(cp.log || []).map(l => '- ' + l).join('\n')}
+` : `
+No session has worked on it yet: start from the m2c draft (\`tools/dk python3 tools/scripts/decomp.py
+next --func ${f.name}\` shows it, with the function's evidence).
+`}
+Read docs/MATCHING.md (process, Diff patterns, checklists) and the "Big functions" section in it.
+Work in stages; \`tools/dk make diff FUNC=${f.name} </dev/null\` prints a \`STAGE\` line that says
+which one you are in, and progress is measured by it (a later stage beats any count of diffs in an
+earlier one, then fewer diffs):
+1. structure: the same length and branch layout (control flow, switch/jump tables, loops, early
+   returns). Get this first; don't polish registers before it.
+2. instructions: the same opcodes in order (statement order, temps, types, casts).
+3. registers: operands only. The cc1 dump and the Diff patterns' register rows.
+Before matching code:
+- Check the compiler first: compare the function's global-access and delay-slot style with the units
+  in docs/ARCHITECTURE.md (Build pipeline, Executable memory map). If it looks like another unit's
+  code (e.g. every global store \`lui $at\` + \`sw\`), say so in "note" and stop: it needs a split.
+- Type the data: put structs for what it touches (fields at their offsets) in the owned header, using
+  include/bash/*.h, the prototype debug types and the leaked headers (docs/ARCHITECTURE.md). Typed
+  fields remove much of m2c's noise.
+- Look for helpers and siblings: repeated instruction runs inside it, or code like an already matched
+  function's (\`tools/dk python3 tools/scripts/decomp.py dups\`, callers and callees in
+  .decomp/functions.json). Original code often used \`static inline\` helpers and macros here.
+Rules (they override the skill, CLAUDE.md and the docs):
+- Work only on ${f.name}. Change only its definition (in place of its INCLUDE_ASM line) in ${f.src},
+  and headers under include/. New types and declarations go in the owned header of ${f.src} (the
+  include/bash/*.h marked \`owner: ${f.src}\`), never in the .c file.
+- Do not run \`decomp.py done\`, \`decomp.py block\`, \`make clean\`, \`make verify\` or any git command
+  that changes the repo, and do not edit docs/, .decomp/, configs/ or tools/.
+- Don't run the permuter (it is refused).${canPermute ? ` When you are at the registers stage and
+  stuck, finish with status "needs_permute": the orchestrator runs a long permuter on your C and the
+  next session gets its result.` : ''}
+- Tools: change files only with the Edit and Write tools. Run each \`tools/dk ... </dev/null\` as its
+  own Bash command, not chained. Read-only shell commands are fine. A refused command is never a
+  reason to stop: do the same thing another way.
+- You have about ${this.o.bigMinutes} minutes. Leave the file compiling at the end: C that doesn't
+  build is thrown away, and only C that beats the best so far is kept. Never put the INCLUDE_ASM
+  line back.
+- Last, write ${RESULT} in the repo root, JSON:
+  {"status": "matched" | "progress" | ${canPermute ? '"needs_permute" | ' : ''}"parked",
+   "note": "one line: what you changed this session and what still differs",
+   "next": "one line: what the next session should try first",
+   "pattern": "a new Diff patterns table row (| symptom | change | example |), or empty"}
+  "parked" means you believe it can't be matched from this file (wrong unit, needs a split, or every
+  idea is exhausted); say why in "note".
+${job.permuterDiff ? `
+The permuter ran on the best C (score ${job.permuterScore.base} -> ${job.permuterScore.best}, 0 is a match).
+Port the useful changes by hand (a temp, a statement order, a type or a cast; drop noise):
+\`\`\`
+${job.permuterDiff}
+\`\`\`
+` : ''}${job.gateFix ? `
+Your C matches the bytes, but the validation gate (decomp.py done) refused it with:
+\`\`\`
+${job.gateFix}
+\`\`\`
+Fix that, keep it matching, and report "matched".
+` : ''}${f.note ? `\nNote recorded for this function earlier: ${f.note}\n` : ''}${job.notes.length ? `\nEarlier swarm attempts at it:\n${job.notes.map(n => '- ' + n).join('\n')}\n` : ''}${patterns ? `\nDiff patterns other workers found in this run (not yet in MATCHING.md):\n${patterns}\n` : ''}`;
+  }
+
   startJob(slot, job) {
     const { f } = job;
     job.base = gitOk(this.integ, 'rev-parse', 'HEAD');
-    job.dir = path.join(this.paths.results, f.name, `attempt${job.attempt}${job.gateFix ? '-gatefix' : job.startPatch ? '-port' : ''}-${this.id}`);
+    const kind = job.big ? `big${job.attempt}` : `attempt${job.attempt}`;
+    job.dir = path.join(this.paths.results, f.name, `${kind}${job.gateFix ? '-gatefix' : job.startPatch ? '-port' : ''}-${this.id}`);
     fs.mkdirSync(job.dir, { recursive: true });
     makeClone(slot.dir, this.integ, 'HEAD', m => this.log(m));   // HEAD may have moved on: base is in it
     resetClone(slot.dir, job.base);
-    // a follow-up after the permuter starts from the earlier worker's C
+    // big mode resumes from the function's best C so far
+    if (job.big && !job.gateFix) {
+      const cp = this.checkpoint(f.name);
+      if (cp) {
+        job.resumed ||= cp;
+        job.startPatch ||= path.join(this.paths.checkpoints, f.name, 'best.diff');
+      }
+    }
+    // a follow-up after the permuter (or a big session) starts from the earlier worker's C
     if (job.startPatch) {
-      gitOk(slot.dir, 'apply', '--3way', '--whitespace=nowarn', job.startPatch);
+      const ap = git(slot.dir, 'apply', '--3way', '--whitespace=nowarn', job.startPatch);
+      if (ap.code) {
+        // main moved on under it: put the function's C in place mechanically
+        resetClone(slot.dir, job.base);
+        const why = reapply(slot.dir, fs.readFileSync(job.startPatch, 'utf8'), f);
+        if (why !== null) {
+          if (!job.big) throw new Error(`can't apply the earlier C: ${why}`);
+          this.log(`${slot.id} ${f.name}: the checkpoint doesn't apply to ${this.o.branch} any more (${why}); starting fresh`);
+          resetClone(slot.dir, job.base);
+          job.startPatch = job.resumed = null;
+        }
+      }
       gitOk(slot.dir, 'reset', '-q');   // --3way stages it: unstaged, `git checkout -- src` undoes it
     }
     fs.rmSync(path.join(slot.dir, RESULT), { force: true });
@@ -533,7 +686,7 @@ ${job.permuterDiff}
     } else {
       cmd = this.claude;
       args = [...this.o.claudeArgs, '--model', job.model,
-              '--max-budget-usd', String(this.o.workerBudgetUsd),
+              '--max-budget-usd', String(job.big ? this.o.bigBudgetUsd : this.o.workerBudgetUsd),
               '--allowedTools', this.o.allowedTools.join(','), '--disallowedTools', this.o.disallowedTools.join(',')];
       if (WIN && /\.(cmd|bat)$/i.test(cmd)) {
         shell = true;
@@ -548,19 +701,22 @@ ${job.permuterDiff}
     p.stdin.end(prompt);
     this.children.add(p);
     job.pid = p.pid;
+    const minutes = job.big ? this.o.bigMinutes : this.o.workerMinutes;
     job.timer = setTimeout(() => {
-      this.log(`${slot.id} ${f.name}: over ${this.o.workerMinutes} min, killing it`);
+      this.log(`${slot.id} ${f.name}: over ${minutes} min, killing it${job.big ? ' (its C is still measured and kept if better)' : ''}`);
       job.timedOut = true;
       killTree(p.pid);
       dockerKill(`${LABEL}-slot=${this.id}-${slot.id}`, slot.dir);
-    }, this.o.workerMinutes * 60e3);
+    }, minutes * 60e3);
     p.on('close', code => {
       this.children.delete(p);
       clearTimeout(job.timer);
       this.onWorkerExit(slot, job, code).catch(e => this.fail(slot, job, `orchestrator error: ${e.message}`));
     });
     p.on('error', err => this.log(`${slot.id} ${f.name}: could not start worker: ${err.message}`));
-    this.log(`${slot.id} start ${f.name} (${f.size} bytes, ${job.model}, attempt ${job.attempt})`);
+    this.log(`${slot.id} start ${f.name} (${f.size} bytes, ${job.model}, ${job.big
+      ? `big session ${job.attempt}${job.resumed ? `, from ${job.resumed.stage} ${job.resumed.diffs}/${job.resumed.total}` : ''}`
+      : `attempt ${job.attempt}`})`);
   }
 
   // which INCLUDE_ASM lines a patch removes and adds, and the paths it touches
@@ -599,6 +755,7 @@ ${job.permuterDiff}
     // a session that never got going (not logged in, API down) is a failure, not a park
     if (session.is_error && !patch.trim() && !res.status)
       return this.fail(slot, job, `claude: ${String(session.result || session.terminal_reason).slice(0, 200)}`);
+    if (job.big && !job.gateFix) return this.onBigExit(slot, job, res, patch);
     if (!patch.trim()) return this.notMatched(slot, job, res.note || (job.timedOut ? 'timed out' : 'no change'));
     // a park that left edits behind (a header type it added): a park, not a bad patch
     if (res.status === 'parked') return this.notMatched(slot, job, `${res.note || 'parked'} (its leftover edits dropped)`);
@@ -629,6 +786,84 @@ ${job.permuterDiff}
     this.log(`${slot.id} ${f.name}: try says MATCH, queued for integration`);
   }
 
+  // a big session ended (any status, or killed at --big-minutes): measure its C ourselves, keep it
+  // if it beats the checkpoint, then integrate, permute, run another session or park
+  async onBigExit(slot, job, res, patch) {
+    const { f } = job;
+    let score = null, errs = [];
+    const file = path.join(job.dir, 'patch.diff');
+    if (patch.trim()) {
+      fs.writeFileSync(file, patch);
+      errs = this.checkPatch(patch, f);
+      if (!errs.length) {
+        const r = await this.dk(slot.dir, ['python3', 'tools/scripts/decomp.py', 'try', f.name], slot.id);
+        fs.writeFileSync(path.join(job.dir, 'try.txt'), r.out);
+        score = Swarm.score(r.out);
+      }
+    }
+    if (this.stopping === 'now') return;
+    slot.job = null;
+    const note = res.note || (job.timedOut ? 'killed at --big-minutes' : 'no note');
+    if (score?.stage === 'match') {
+      job.note = note;
+      job.patch = file;
+      this.integQueue.push(job);
+      this.log(`${slot.id} ${f.name}: try says MATCH, queued for integration`);
+      return;
+    }
+    const h = this.history[f.key] ||= { name: f.name, attempts: 0, notes: [] };
+    Object.assign(h, { big: true, size: f.size, bigSessions: (h.bigSessions || 0) + 1 });
+    const cp = this.checkpoint(f.name);
+    const improved = !!score && Swarm.better(score, cp);
+    const desc = score ? `${score.stage} ${score.diffs}/${score.total}`
+      : errs.length ? `patch refused: ${errs.join('; ')}` : patch.trim() ? 'C did not build' : 'no C left';
+    if (improved) {
+      this.saveCheckpoint(job, file, score, note, res.next);
+      h.bigStale = 0;
+    } else {
+      h.bigStale = (h.bigStale || 0) + 1;
+      this.noteCheckpoint(job, `no progress (${desc}). ${note}${res.next ? ` Next: ${res.next}` : ''}`);
+    }
+    this.record(job, 'progress', `${desc}${improved ? ' (new best)' : ''}. ${note}`);
+    this.log(`${slot.id} ${f.name}: big session ${h.bigSessions}: ${desc}` +
+             `${improved ? ', new best' : `, no progress (${h.bigStale} in a row)`}; says ${res.status || 'nothing'}`);
+    if (res.status === 'parked') return this.parkBig(job, `worker parked it: ${note}`);
+    const best = this.checkpoint(f.name);
+    if (res.status === 'needs_permute' && this.pslots.length && best?.stage === 'registers' && !this.stopping) {
+      job.note = note;
+      job.bestPatch = path.join(this.paths.checkpoints, f.name, 'best.diff');
+      job.base = best.base;
+      this.permQueue.push(job);
+      this.log(`${slot.id} ${f.name}: best C handed to the permuter pool (${this.o.bigPermuteMinutes} min)`);
+      return;
+    }
+    this.continueBig(job, note);
+  }
+
+  // another big session, unless the function is out of sessions, stale, or the run is stopping
+  continueBig(job, note, extra = {}) {
+    const { f } = job;
+    if (this.stopping) {
+      this.finished.add(f.key);
+      return;
+    }
+    if (!this.bigLeft(f)) {
+      const h = this.history[f.key] || {};
+      return this.parkBig(job, (h.bigStale || 0) >= this.o.bigStale
+        ? `${h.bigStale} big sessions in a row without progress` : `${h.bigSessions} big sessions used`);
+    }
+    this.retry.push(this.bigJob(f, job.attempt + 1, [...job.notes, note].slice(-6), { retry: true, ...extra }));
+  }
+
+  parkBig(job, why) {
+    const cp = this.checkpoint(job.f.name);
+    this.stats.parked++;
+    this.finished.add(job.f.key);
+    this.record(job, 'parked', `big mode: ${why}`);
+    this.log(`${job.f.name}: parked (big mode): ${why}` +
+             `${cp ? `; best ${cp.stage} ${cp.diffs}/${cp.total} kept in ${path.join(this.paths.checkpoints, job.f.name)}` : ''}`);
+  }
+
   // ---- the permuter pool: no Claude, just CPU; an improvement goes back to a worker to port
   async runPermute(ps, job) {
     const { f } = job;
@@ -640,9 +875,10 @@ ${job.permuterDiff}
       resetClone(ps.dir, job.base);
       gitOk(ps.dir, 'apply', '--3way', '--whitespace=nowarn', job.bestPatch);
       fs.rmSync(path.join(ps.dir, 'build', 'permuter', f.name), { recursive: true, force: true });
-      this.log(`${ps.id} permuting ${f.name} for ${this.o.permuteMinutes} min (${this.permCpus} cpus)`);
-      const r = await this.dk(ps.dir, ['make', 'permute', `FUNC=${f.name}`, `MINUTES=${this.o.permuteMinutes}`], ps.id,
-                              { cpus: this.permCpus, minutes: this.o.permuteMinutes + 20 });
+      const mins = job.big ? this.o.bigPermuteMinutes : this.o.permuteMinutes;
+      this.log(`${ps.id} permuting ${f.name} for ${mins} min (${this.permCpus} cpus)`);
+      const r = await this.dk(ps.dir, ['make', 'permute', `FUNC=${f.name}`, `MINUTES=${mins}`], ps.id,
+                              { cpus: this.permCpus, minutes: mins + 20 });
       fs.writeFileSync(path.join(job.dir, 'permute.txt'), r.out);
       if (this.stopping) {          // a stop cuts permuter runs short: no worker would port the result
         this.finished.add(f.key);
@@ -653,6 +889,11 @@ ${job.permuterDiff}
       const best = m ? +m[1] : null, base = m && m[2] !== undefined ? +m[2] : null;
       if (!m || (base !== null && best >= base)) {
         const why = r.timedOut ? 'permuter timed out' : 'permuter found no improvement';
+        if (job.big) {
+          ps.job = null;
+          this.noteCheckpoint(job, why);
+          return this.continueBig(job, why);
+        }
         return this.notMatched(ps, job, `${why}; worker: ${job.note}`);
       }
       const outDir = path.join(ps.dir, m[3]);
@@ -665,8 +906,8 @@ ${job.permuterDiff}
       this.log(`${ps.id} ${f.name}: ${note}; back in the queue for a worker to port`);
       ps.job = null;
       if (!this.stopping)
-        this.retry.unshift({ f, model: job.model, attempt: job.attempt, retry: true, permuted: true,
-                             notes: [...job.notes, `${job.note} (${note})`], startPatch: job.bestPatch,
+        this.retry.unshift({ f, model: job.model, attempt: job.big ? job.attempt + 1 : job.attempt, retry: true, permuted: true,
+                             big: job.big, notes: [...job.notes, `${job.note} (${note})`], startPatch: job.bestPatch,
                              permuterDiff: diff || '(no diff.txt)', permuterScore: { base: base ?? '?', best } });
       else this.finished.add(f.key);
     } catch (e) {
@@ -678,7 +919,8 @@ ${job.permuterDiff}
 
   record(job, status, note) {
     const h = this.history[job.f.key] ||= { name: job.f.name, attempts: 0, notes: [] };
-    if (!['conflict', 'permuted', 'gate-refused'].includes(status)) h.attempts++;
+    h.size = job.f.size;
+    if (!['conflict', 'permuted', 'gate-refused', 'progress'].includes(status) && !job.big) h.attempts++;
     h.last = status;
     h.notes = [...h.notes, `${stamp()} ${job.model}: ${status}: ${note}`].slice(-6);
     writeJson(this.paths.history, this.history);
@@ -692,6 +934,13 @@ ${job.permuterDiff}
       this.log(`${job.f.name}: not matched (${note}); retrying with ${this.o.escalateModel}`);
       this.retry.push({ f: job.f, model: this.o.escalateModel, attempt: job.attempt + 1, notes: [...job.notes, note],
                         retry: true, permuted: job.permuted });
+      return;
+    }
+    if (this.o.escalateBig && this.bslots.length && !job.big && !this.stopping) {
+      this.history[job.f.key].big = true;
+      writeJson(this.paths.history, this.history);
+      this.log(`${job.f.name}: not matched (${note}); escalated to big mode`);
+      this.retry.push(this.bigJob(job.f, 1, [...job.notes, note], { retry: true }));
       return;
     }
     this.stats.parked++;
@@ -805,7 +1054,7 @@ ${job.permuterDiff}
         this.record(job, 'gate-refused', why.replace(/\n/g, ' '));
         this.log(`${f.name}: done refused it; back to a worker to fix: ${why.split('\n').pop()}`);
         this.retry.unshift({ f, model: job.model, attempt: job.attempt, retry: true, permuted: job.permuted,
-                             notes: job.notes, startPatch: job.patch, gateFix: why });
+                             big: job.big, notes: job.notes, startPatch: job.patch, gateFix: why });
         return false;
       }
       this.fail(null, job, `done refused: ${why.replace(/\n/g, ' ')}`);
@@ -874,7 +1123,7 @@ ${job.permuterDiff}
 
   hardStop() {
     this.log('hard stop: killing workers and containers');
-    for (const s of this.slots) if (s.job) clearTimeout(s.job.timer);
+    for (const s of [...this.slots, ...this.bslots]) if (s.job) clearTimeout(s.job.timer);
     for (const p of this.children) killTree(p.pid);
     const n = dockerKill(`${LABEL}=${this.id}`, this.o.dir);
     if (n) this.log(`killed ${n} container(s)`);
@@ -885,7 +1134,7 @@ ${job.permuterDiff}
     writeJson(this.paths.status, {
       id: this.id, pid: process.pid, state, stopping: this.stopping, started: new Date(this.started).toISOString(),
       branch: this.o.branch, stats: this.stats, costUsd: +this.costUsd.toFixed(2), leases: this.leases, queued: this.queue.length,
-      workers: this.slots.map(s => ({ slot: s.id, func: s.job?.f.name || null, model: s.job?.model || null, pid: s.job?.pid || null,
+      workers: [...this.slots, ...this.bslots].map(s => ({ slot: s.id, func: s.job?.f.name || null, model: s.job?.model || null, pid: s.job?.pid || null,
                                       minutes: s.job ? +((Date.now() - s.job.started) / 60e3).toFixed(1) : null })),
       permuters: this.pslots.map(s => ({ slot: s.id, func: s.job?.f.name || null })),
       permuteWaiting: this.permQueue.map(j => j.f.name),
@@ -906,7 +1155,9 @@ ${job.permuterDiff}
       this.setupInteg();
       await this.refreshQueue();
       if (this.o.resume) this.resumeFrom(String(this.o.resume));
-      this.log(`run ${this.id}: ${this.o.workers} workers, ${this.o.permuters} permuters, ${this.queue.length} candidates` +
+      const nbig = this.queue.filter(f => this.isBig(f)).length;
+      this.log(`run ${this.id}: ${this.o.workers} workers, ${this.o.bigWorkers} big, ${this.o.permuters} permuters, ` +
+               `${this.queue.length} candidates (${nbig} big: >= ${this.o.bigBytes} B or escalated)` +
                `${this.o.only ? ` (--only ${this.o.only.join(',')})` : ` in ${this.o.seg || 'all game code'}`}` +
                `${this.o.dryRun ? ', DRY RUN' : ''}${this.o.workerCmd ? `, worker command: ${this.o.workerCmd}` : ''}`);
       for (;;) {
@@ -957,8 +1208,21 @@ ${job.permuterDiff}
               this.fail(null, job, `could not start: ${e.message}`);
             }
           }
+        if (!this.stopping && this.integQueue.length <= this.o.maxQueued)
+          for (const slot of this.bslots) {
+            if (slot.job || (this.leases >= this.o.maxFunctions && !this.retry.some(j => j.big))) continue;
+            const job = this.nextJob(false, true);
+            if (!job) break;
+            job.conflicts ||= 0;
+            try {
+              this.startJob(slot, job);
+            } catch (e) {
+              slot.job = null;
+              this.fail(null, job, `could not start: ${e.message}`);
+            }
+          }
         const idle = !this.activeJobs().length;
-        const more = this.retry.length || (this.leases < this.o.maxFunctions && this.nextJob(true));
+        const more = this.retry.length || (this.leases < this.o.maxFunctions && (this.nextJob(true) || this.nextJob(true, true)));
         if (idle && (this.stopping || !more)) break;
         this.writeStatus();
         await sleep(2000);
@@ -1027,6 +1291,39 @@ function status(o) {
   if (fs.existsSync(log)) console.log(fs.readFileSync(log, 'utf8').trim().split('\n').slice(-8).map(l => '  | ' + l).join('\n'));
 }
 
+// outcomes by function size across all runs: where normal mode stops working is where --big-bytes goes
+function stats(o) {
+  const h = readJson(path.join(o.dir, 'history.json'), {});
+  const size = {};
+  const rep = path.join(o.dir, 'report.md');
+  if (fs.existsSync(rep))
+    for (const m of fs.readFileSync(rep, 'utf8').matchAll(/\*\*(\w+)\*\* \([^,]+, (\d+) B/g)) size[m[1]] = +m[2];
+  const rows = Object.values(h).map(e => ({ ...e, size: e.size ?? size[e.name] })).filter(e => e.size !== undefined);
+  const edges = [0, 150, 250, 400, 600, 900, 1400, Infinity];
+  console.log(`function outcomes by size (${rows.length} functions; --big-bytes is ${o.bigBytes})`);
+  console.log('  bytes        tried  matched  normal-mode  big-mode  parked  attempts  big sessions');
+  for (let i = 0; i + 1 < edges.length; i++) {
+    const b = rows.filter(e => e.size >= edges[i] && e.size < edges[i + 1]);
+    if (!b.length) continue;
+    const ok = b.filter(e => e.last === 'matched');
+    const big = b.filter(e => e.big);
+    const label = `${edges[i]}-${edges[i + 1] === Infinity ? '' : edges[i + 1] - 1}`.padEnd(11);
+    console.log(`  ${label} ${String(b.length).padStart(5)}  ${`${ok.length} (${Math.round(100 * ok.length / b.length)}%)`.padStart(8)}` +
+                `  ${String(ok.filter(e => !e.big).length).padStart(11)}  ${String(ok.filter(e => e.big).length).padStart(8)}` +
+                `  ${String(b.filter(e => e.last === 'parked').length).padStart(6)}` +
+                `  ${(b.reduce((s, e) => s + (e.attempts || 0), 0) / b.length).toFixed(1).padStart(8)}` +
+                `  ${big.length ? (big.reduce((s, e) => s + (e.bigSessions || 0), 0) / big.length).toFixed(1) : '-'}`.padStart(14));
+  }
+  const cps = fs.existsSync(path.join(o.dir, 'checkpoints')) ? fs.readdirSync(path.join(o.dir, 'checkpoints')) : [];
+  if (cps.length) {
+    console.log('big-mode checkpoints (best C so far):');
+    for (const n of cps) {
+      const j = readJson(path.join(o.dir, 'checkpoints', n, 'best.json'), null);
+      if (j) console.log(`  ${n}: ${j.stage} ${j.diffs}/${j.total} (${j.updated})`);
+    }
+  }
+}
+
 function clean(o) {
   const lock = readJson(path.join(o.dir, 'lock'), null);
   if (lock && alive(lock.pid)) die('a run is active; stop it first');
@@ -1039,5 +1336,6 @@ o.baseGiven = process.argv.includes('--base');
 if (cmd === 'run') await new Swarm(o).run();
 else if (cmd === 'stop') await stop(o);
 else if (cmd === 'status') status(o);
+else if (cmd === 'stats') stats(o);
 else if (cmd === 'clean') clean(o);
 else console.log(fs.readFileSync(fileURLToPath(import.meta.url), 'utf8').split('\n').slice(1, 11).map(l => l.replace(/^\/\/ ?/, '')).join('\n'));

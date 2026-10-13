@@ -21,6 +21,40 @@ permuter pool (M clones, no Claude)
 Workers can't run the permuter themselves: a 10-minute permuter run would hold a Claude slot
 idle. Each function gets one permuter run.
 
+## Big mode
+
+Normal workers get one short attempt per model. That matches 93-97% of functions under 400
+bytes, but a big function needs many hours, so big ones go to big-mode workers (`b1`, ...)
+instead:
+
+```
+big function (>= --big-bytes, or parked in normal mode)
+ session n: claude (opus, up to --big-minutes), starting from the checkpoint's C
+ orchestrator: `try` on whatever C it left -> STAGE line (structure / instructions / registers)
+ better than the checkpoint? -> new checkpoint (checkpoints/<func>/best.diff + best.json)
+ MATCH -> the gate, as usual
+ "needs_permute" at the registers stage -> permuter pool (--big-permute-minutes) -> session n+1
+ otherwise -> session n+1, until --big-sessions or --big-stale sessions in a row without progress
+```
+
+- **Which functions:** at least `--big-bytes` (600) bytes, or any function that parks in normal
+  mode after its escalation attempt (`--escalate-big`, on). Normal workers never take a big one.
+  `--big-workers 0` turns big mode off (every function goes to normal workers, as before).
+- **Progress** is the `STAGE` line of `decomp.py try`: a later stage beats any number of diffs
+  in an earlier one, then fewer diffs. Only C that builds, passes the patch checks and beats
+  the checkpoint replaces it, so a bad session can't lose earlier work. A session killed at
+  `--big-minutes` is measured the same way.
+- **Resuming:** each session starts from the checkpoint's C (re-applied mechanically if `main`
+  has moved), and its prompt carries the checkpoint's log: each session's stage, note and its
+  "next" suggestion. Checkpoints persist across runs in `--dir`.
+- **When it stops:** after `--big-sessions` (6) sessions, or `--big-stale` (2) sessions in a row
+  without progress, the function is parked and its best C stays in `checkpoints/`.
+  `--retry-failed` gives it more.
+- **Choosing `--big-bytes`:** `node tools/swarm/swarm.mjs stats` prints every function's outcome
+  by size across runs (matched in normal or big mode, parked, attempts, big sessions). Put the
+  threshold where normal mode's match rate drops; escalation catches the smaller functions that
+  turn out hard anyway.
+
 ## Turning it off
 
 | How | Effect |
@@ -38,6 +72,7 @@ them and `docker kill $(docker ps -q --filter label=crashbash-swarm)` stops them
 ```
 node tools/swarm/swarm.mjs run --workers 3 --max-functions 10
 node tools/swarm/swarm.mjs status
+node tools/swarm/swarm.mjs stats      # outcomes by size, big-mode checkpoints
 ```
 
 Needs Docker and `claude` on `PATH` (`npm i -g @anthropic-ai/claude-code`, then log in once with
@@ -45,7 +80,12 @@ Needs Docker and `claude` on `PATH` (`npm i -g @anthropic-ai/claude-code`, then 
 dontAsk`: anything outside the allowed tools is denied, never prompted. Options (defaults in
 `config.json`, override any with `--kebab-case value`):
 
-- `--workers` (3), `--seg` (`main/main`), `--only f1,f2` (exactly these functions)
+- `--workers` (3), `--seg` (`main/main`), `--only f1,f2` (exactly these functions). `--seg` is a
+  prefix of the segment: `main/` takes every unit of `main.exe`, including the gcc 2.7.2 one
+  (`main/8002d488`) and the PsyQ gaps.
+- Big mode: `--big-workers` (1), `--big-bytes` (600), `--big-model` (`opus`), `--big-minutes`
+  (150), `--big-budget-usd` (20, per session), `--big-sessions` (6), `--big-stale` (2),
+  `--big-permute-minutes` (60), `--escalate-big` (`true`). See [Big mode](#big-mode).
 - `--permuters` (2), `--permute-minutes` (10): the permuter pool; `--permuters 0` turns it off
   (workers then just park).
 - `--branch` (`swarm/integration`), `--remote` (`origin`): each match is pushed to
@@ -94,9 +134,11 @@ dontAsk`: anything outside the allowed tools is denied, never prompted. Options 
   `--max-attempts` (2) across runs (`--retry-failed` to override).
 - **Circuit breakers:** stops after `--max-consecutive-failures` (3) refused patches, gate
   failures or conflicts in a row, after `--max-minutes` (240), after `--max-functions` (20)
-  leases, or if a push fails. Each worker is killed after `--worker-minutes` (45).
+  leases, or if a push fails. Each worker is killed after `--worker-minutes` (45), a big-mode
+  session after `--big-minutes` (150).
 - **Cost caps:** each worker session is capped by `--worker-budget-usd` (5, passed to
-  `claude --max-budget-usd`); the run stops when the workers' total reaches `--max-run-usd` (50).
+  `claude --max-budget-usd`), a big-mode session by `--big-budget-usd` (20); the run stops when
+  the workers' total reaches `--max-run-usd` (50).
   A session that fails to start (not logged in, API down) counts as a failure, so three in a
   row stop the run.
 - **One run at a time** per `--dir` (lock file with the PID).
@@ -108,7 +150,15 @@ dontAsk`: anything outside the allowed tools is denied, never prompted. Options 
 
 In `--dir`: `swarm.log`, `run.json` (live state, read by `status`), `report.md` (one line per
 attempt), `patterns.md` (Diff patterns rows workers proposed, fed to later workers in the same
-run), `results/<func>/attempt*/` (prompt, worker output, patch, `try` and `done` output).
+run), `results/<func>/attempt*/` and `big*/` (prompt, worker output, patch, `try` and `done`
+output), `checkpoints/<func>/` (big mode's best C so far: `best.diff`, and `best.json` with its
+stage, diff count and the session log).
 
-Parks are not committed. Review `report.md`, fold good rows from `patterns.md` into
-`docs/MATCHING.md`, and add the session to `docs/AGENT_LOG.md`, as after any session.
+Parks are not committed. After a run:
+
+1. `node tools/swarm/swarm.mjs stats`: check the match rates by size, and move `--big-bytes`
+   if normal mode is failing below it or matching well above it.
+2. Review `report.md` and the parks; a big-mode park's best C is in `checkpoints/`.
+3. Fold good rows from `patterns.md` into `docs/MATCHING.md` (Diff patterns), then rename
+   `patterns.md` so they aren't folded twice.
+4. Add the run to `docs/AGENT_LOG.md` (Current state, Next, Session log), as after any session.

@@ -16,7 +16,12 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
 - Parallel matching: `node tools/swarm/swarm.mjs` (host Node; see
   [tools/swarm/README.md](tools/swarm/README.md)). Stop it with
   `node tools/swarm/swarm.mjs stop` (`--now` to kill). It commits only through
-  the same gate.
+  the same gate. Functions >= `--big-bytes` (600) go to resumable big-mode
+  workers; `swarm.mjs stats` shows match rates by size to tune that. `--seg`
+  is a prefix (`main/` covers every main.exe unit).
+- `make diff` / `decomp.py try` end with `STAGE NAME structure|instructions|registers n/total`:
+  fix the stages in that order. Check the asm's style fits the file's compiler
+  first (gcc 2.7.2 unit: `main/8002d488`; per-unit settings in the Makefile).
 - At the end of every session, update `docs/AGENT_LOG.md`: Current state,
   Next and Open leads, any new gotcha, and one short entry at the top of its
   Session log. Matching idioms go in the Diff patterns table in

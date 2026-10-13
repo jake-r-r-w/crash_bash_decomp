@@ -23,9 +23,10 @@ commit**, through the validation gate described in
 
 ```sh
 tools/dk python3 tools/scripts/decomp.py next            # target, asm listing and draft
+# check the asm's style fits the file's compiler (docs/MATCHING.md, step 2)
 # replace its INCLUDE_ASM line in src/... with C
-tools/dk make diff FUNC=func_80012345                    # build that file and diff the function
-tools/dk make permute FUNC=func_80012345                 # if stuck after ~10 rounds
+tools/dk make diff FUNC=func_80012345                    # diff; last line: STAGE structure/instructions/registers
+tools/dk make permute FUNC=func_80012345                 # only at the registers stage, if stuck
 tools/dk python3 tools/scripts/decomp.py done func_80012345 --commit --note "what made it match"
 ```
 
@@ -35,10 +36,14 @@ and a clean full build of every target. Only then does it record and commit
 `Match NAME (seg, N bytes)`. The pre-commit hook refuses matches committed any
 other way. The bulk matcher `decomp.py auto` is retired.
 
+Functions of about 600 bytes or more take several sessions; see Big
+functions in [docs/MATCHING.md](docs/MATCHING.md).
+
 The swarm ([tools/swarm](tools/swarm/README.md)) matches several functions at
 once and commits through the same gate. It batches: `done --defer-build` per
 function (still one commit each), then one `decomp.py verify` for the batch,
-and nothing is pushed unless that passes.
+and nothing is pushed unless that passes. Big functions go to its big-mode
+workers, which resume from the best C so far each session.
 
 Functions that won't match go to `decomp.py block NAME --note "..."`.
 

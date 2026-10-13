@@ -70,10 +70,11 @@ into its original file, until no assembly is left.
 flowchart TD
     disc["Retail disc: SCUS_945.70 + CRASHBSH.DAT overlays"] --> split["splat: one asm file per function; C files are INCLUDE_ASM lines"]
     split --> next["decomp.py next: pick one function, show its asm + m2c draft"]
-    next --> write["Write C in place of its INCLUDE_ASM line"]
+    next --> unit["Check the asm's style fits the file's compiler"]
+    unit --> write["Write C in place of its INCLUDE_ASM line"]
     write --> diff{"make diff: same instructions?"}
-    diff -. "no: adjust the C" .-> write
-    diff -. "stuck after ~10 rounds" .-> permute["make permute"]
+    diff -. "no: fix the STAGE it reports (structure, then instructions, then registers)" .-> write
+    diff -. "stuck at the registers stage" .-> permute["make permute"]
     permute -. "found a fix" .-> write
     permute -. "still differs" .-> block["decomp.py block: park it, best C kept under NON_MATCHING"]
     diff -- "yes" --> g1
@@ -98,7 +99,8 @@ in [docs/ROADMAP.md](docs/ROADMAP.md). The loop is described in
 it one function at a time with the `/match-function` project skill
 (`.claude/skills/match-function`), or several at once with the swarm
 ([tools/swarm](tools/swarm/README.md)): parallel Claude workers do the matching
-and one integrator commits each match through the same `done` gate. The bulk
+and one integrator commits each match through the same `done` gate. Big
+functions get resumable multi-session workers there (big mode). The bulk
 m2c matcher (`decomp.py auto`) is retired.
 
 ## How the game is built
@@ -194,8 +196,8 @@ Matching one function (see [How functions are matched](#how-functions-are-matche
 
 ```sh
 tools/dk python3 tools/scripts/decomp.py next            # pick a function: asm + draft
-tools/dk make diff FUNC=func_80012345                    # after writing its C
-tools/dk make permute FUNC=func_80012345                 # if stuck
+tools/dk make diff FUNC=func_80012345                    # after writing its C; ends with a STAGE line
+tools/dk make permute FUNC=func_80012345                 # if stuck at the registers stage
 tools/dk python3 tools/scripts/decomp.py done func_80012345 --commit --note "what made it match"
 ```
 

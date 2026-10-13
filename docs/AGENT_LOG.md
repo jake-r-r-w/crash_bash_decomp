@@ -32,11 +32,14 @@ leads**, add any new gotcha, and add one short entry at the top of the
    Next: the 9 functions with identical copies (`decomp.py dups`).
    A function that parks still gets its prototype in `bash/main.h` (an
    ordinary commit after `make check`), as `FindExtension` did.
-2. Keep matching `main.exe`, one function per commit:
-   `decomp.py next --seg main/main` (least work first: near-miss drafts from
-   the old `auto`, weighted by identical copies, then size). Use the
-   MATCHING.md process: evidence, Diff patterns, checklist, cc1 dump, then
-   permuter.
+2. Keep matching `main.exe` with the swarm, now with big mode (untried on a
+   real function yet): `swarm.mjs run --branch main --seg main/` (normal
+   workers take the < 600 B functions, one big worker the rest, resuming
+   from checkpoints). First real run: watch the big worker's sessions in
+   `swarm.log` and `checkpoints/`, then `swarm.mjs stats` to tune
+   `--big-bytes`. By hand: `decomp.py next --seg main/`, the MATCHING.md
+   process (check the unit, evidence, STAGE by STAGE, Diff patterns, cc1
+   dump, then permuter).
 3. Name each function as it's matched when the evidence allows (345 of
    2550 are named).
 4. Unpark when a new idea comes up (see Open leads).
@@ -114,6 +117,9 @@ Other:
 ## Gotchas
 
 **Tooling**
+- Git Bash heredocs can fail outright ("unexpected EOF while looking for
+  matching quote") on long scripts with backticks and quotes: write the
+  script with the Write tool and run it with `tools/dk python3 build/x.py`.
 - Before 2026-10-13, `try` masked every relocated word, so a `j` to the
   wrong label inside the function still "matched alone" and only the full
   build failed. Local jumps are compared now; a "matches alone, full build
@@ -204,6 +210,18 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-13:** Big functions. `try` prints a `STAGE` line (structure /
+  instructions / registers + diff count). Swarm big mode: functions >=
+  `--big-bytes` (600) or parked in normal mode go to big workers (opus,
+  150-min sessions, $20 each) that resume from a per-function checkpoint
+  (`checkpoints/<func>`), kept only when the `try` stage/score improves; parks
+  after 6 sessions or 2 without progress; the permuter (60 min) only at the
+  registers stage. `swarm.mjs stats`: outcomes by size (normal mode 93-97%
+  under 400 B, nothing bigger tried yet). Tested with fake workers (resume,
+  stale park, escalation). Docs: MATCHING.md loop refreshed (unit check,
+  stages) + Big functions section; swarm README, CONTRIBUTING, README,
+  CLAUDE.md and the skill updated.
 
 - **2026-10-13:** Swarm 1 h: 58 matches, 2 parked, 0 conflicts, $25.
   Two batch builds came out 8/32 bytes long: rodata, not code (a string

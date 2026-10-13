@@ -12,31 +12,76 @@ All commands run through `tools/dk` (Docker).
 1. **Pick:** `tools/dk python3 tools/scripts/decomp.py next`
    prints the target, its callers, the asm and a draft (m2c, or an earlier
    compiling draft). `next --func NAME` picks a specific one, `--seg REGEX`
-   restricts to a segment (`overlays/ovl62`, ...).
-2. **Evidence first, then write C.** Before writing anything, gather
+   restricts to a segment (`overlays/ovl62`, ...). From about 600 bytes up,
+   also read [Big functions](#big-functions).
+2. **Check the unit.** Compare the asm's style with its file's compiler
+   settings: every global store as `lui $at` + `sw`, or jump delay slots
+   filled from a store, is gcc 2.7.2 through ASPSX, not `main.c`'s gcc 2.8.1
+   (see the Diff patterns row for `func_8002D488`). Code in the wrong unit
+   never matches; it needs a split, with per-unit settings in the Makefile
+   ([ARCHITECTURE.md](ARCHITECTURE.md), Build pipeline).
+3. **Evidence first, then write C.** Before writing anything, gather
    evidence (see [Evidence first](#evidence-first)). Then replace the
    function's `INCLUDE_ASM` line in its source file with C. Use real types
    from `include/` (add structs there, see [CONVENTIONS.md](CONVENTIONS.md)).
    Don't leave m2c leftovers.
-3. **Diff:** `tools/dk make diff FUNC=NAME` builds that file and shows
+4. **Diff:** `tools/dk make diff FUNC=NAME` builds that file and shows
    only the differing instructions. It stops after 40 rows; for more, run
-   `tools/dk sh -c 'DIFF_ROWS=300 python3 tools/scripts/decomp.py try NAME'`. Look the symptom up in
-   [Diff patterns](#diff-patterns), then
+   `tools/dk sh -c 'DIFF_ROWS=300 python3 tools/scripts/decomp.py try NAME'`.
+   Its last line, `STAGE NAME stage n/total`, says how far the function has
+   got. Fix the stages in order, since later fixes don't hold while an
+   earlier stage is wrong:
+   - `structure`: the length or the branch layout differs (control flow,
+     loops, jump tables, early returns).
+   - `instructions`: same skeleton, some opcodes differ (statement order,
+     temps, types, casts).
+   - `registers`: operands only.
+
+   Look the symptom up in [Diff patterns](#diff-patterns), then
    [classify the diff and work through its list](#classify-the-diff-then-work-through-the-list).
    For register differences, also read the [cc1 dump](#why-does-a-register-differ).
    Note in your reasoning which items you tried.
-4. **Stuck?** Run the permuter only after the evidence step, the checklist
-   for that kind of diff and, for register differences, the cc1 dump:
+5. **Stuck?** Run the permuter only at the `registers` stage, after the
+   evidence step, the checklist for that kind of diff and the cc1 dump:
    `tools/dk make permute FUNC=NAME MINUTES=10`. When it finds something,
    port it by hand and add the general rule to [Diff patterns](#diff-patterns).
    Still stuck: restore the `INCLUDE_ASM` line, keep the best attempt under
-   `#ifndef NON_MATCHING`, and run `decomp.py block NAME --note "what differs"`.
-   Then move on.
-5. **Validate and commit:**
+   `#ifndef NON_MATCHING`, and run `decomp.py block NAME --note "STAGE line;
+   what differs"`. Then move on.
+6. **Validate and commit:**
    `tools/dk python3 tools/scripts/decomp.py done NAME --commit --note "what made it match"`
 
 To run this loop for several functions at once, see [tools/swarm](../tools/swarm/README.md):
-Claude workers do steps 1-4 in their own clones, and one integrator does step 5 for each.
+Claude workers do steps 1-5 in their own clones, and one integrator does step 6 for each.
+Big functions go to big-mode workers there, in resumable sessions.
+
+## Big functions
+
+A function of 600 bytes or more rarely matches in one sitting, and the
+permuter's random edits get nowhere on hundreds of instructions. Work on it
+over several sessions, keeping the best C between them:
+
+- **Measure progress with the `STAGE` line.** A later stage beats any number
+  of diffs in an earlier one. Within a stage, fewer diffs is better.
+- **Check the unit first** (step 2). `func_8002D4F4`, the largest function
+  left in `main.exe`, is in the gcc 2.7.2 unit.
+- **Type the data before matching.** Put structs for everything it touches
+  in the owned header, from `include/bash/`, the prototype debug types and
+  the leaked headers. m2c's offset casts and `u8 *` arithmetic cause most of
+  a big function's diff.
+- **Look for helpers and siblings.** A run of instructions repeated inside
+  the function, or shared with a matched function, is usually a
+  `static inline` helper or a macro (see the pop/push rows in Diff
+  patterns). `decomp.py dups`, and the callers and callees in
+  `.decomp/functions.json`, find matched code to copy from.
+- **Permute late and narrow.** Only at the `registers` stage, with a long
+  run (an hour, or overnight), and on the region that differs where you can.
+- **Keep the best C between sessions.** By hand: `decomp.py block NAME
+  --note "<STAGE line>; next: ..."` with the C under `#ifndef NON_MATCHING`,
+  so the next session starts from it. In the swarm, big mode keeps a
+  checkpoint per function and starts each session from it
+  ([tools/swarm](../tools/swarm/README.md), Big mode).
+
 
 ## Evidence first
 
