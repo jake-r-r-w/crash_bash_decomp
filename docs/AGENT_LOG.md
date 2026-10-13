@@ -14,7 +14,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 640/2550 game functions matched, 537/564 PsyQ functions, 5 parked.
+- 705/2550 game functions matched (main.exe 441/574, ~40% of its bytes),
+  537/564 PsyQ functions, 6 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
@@ -77,9 +78,16 @@ Parked (`decomp.py block`; best C under `#ifndef NON_MATCHING` in
 Other:
 - PsyQ gaps: the rest (`src/main/psyq/unknown/`) can be matched as C now.
   Several are setters in the `lui $at` style (`func_8003351C`,
-  `func_8003E01C`, `func_8003E0CC`), which `main.c`'s settings never give:
-  they were built with another compiler or aspsx, so try other `CC_VER` or
-  maspsx flags for those files.
+  `func_8003E01C`, `func_8003E0CC`): try the `main/8002d488` settings
+  (`CC_VER = 2.7.2-psx`, `ASPSX_FILL`) for those files.
+- `main/8002d488` (gcc 2.7.2 + `aspsx_fill.py`): `func_8002D488` matched.
+  `func_8002E000` (parked by the swarm in `main.c`) now compiles to the same
+  shape: an ordinary diff in the loop setup (target keeps the counter in a1
+  and a zero pointer in a2). `func_8002DE2C`, then `func_8002D4F4` (2360 B,
+  the biggest left). `aspsx_fill.py` only fills `j`/`jr`; if a `jal` slot
+  differs, extend it from the target.
+- Swarm: `--seg` is a prefix and defaults to `main/main`, so the new units
+  need `--seg main/8002` (or `--only`).
 - Heap: `D_8004E0F0` is a `Heap` now. Its +0x10 is the deferred-free list
   (`func_80011578` pushes, `func_80011DB4` counts down); `MemBlock.unk2` is
   the countdown. The heap functions still in asm (`func_800107C8`,
@@ -196,6 +204,15 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-13:** Swarm 1 h: 58 matches, 2 parked, 0 conflicts, $25.
+  Two batch builds came out 8/32 bytes long: rodata, not code (a string
+  literal duplicating an `INCLUDE_RODATA` one; gcc's `.align 3` jump table);
+  the gate sent both back and they matched (Diff patterns rows). Folded 54
+  rows (46 after merging). Split `0x8002D488..0x8002E0F0` into
+  `main/8002d488` (text and rodata), built with gcc 2.7.2-psx plus
+  `aspsx_fill.py` for ASPSX's delay-slot filling; per-unit Makefile
+  settings, read by `decomp.py` (`unit_cfg`). `func_8002D488` matched.
 
 - **2026-10-13:** Swarm, 30 min, 3 workers: 43 matches, 0 conflicts (the
   ordered prototypes worked), 1 failed, $11.16. The failure,
