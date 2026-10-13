@@ -1801,6 +1801,8 @@ void func_800139A8(void);
 
 void func_80017B08(FaceRuns *faces, FacePrim *prim, s32 arg2, s32 mode);
 
+void func_80017D90(FaceRuns *faces, FacePrim *prim);
+
 void func_8001A43C(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4);
 
 void func_8002A84C(TexSrc2A84C *s, TexDst2A84C *d, s32 n);

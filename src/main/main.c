@@ -3189,7 +3189,57 @@ void func_80017B08(FaceRuns *faces, FacePrim *prim, s32 arg2, s32 mode) {
 done:;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80017D90);
+void func_80017D90(FaceRuns *faces, FacePrim *prim) {
+    u16 *idx;
+    u8 *run;
+    u8 *count;
+    u32 *colors;
+    u32 *c;
+    s32 n;
+
+    idx = (u16 *)((u8 *)&faces->table + faces->table);
+    run = (u8 *)&faces->runs + faces->runs;
+    colors = (u32 *)((u8 *)&D_80056998.unk0->colors->table + D_80056998.unk0->colors->table);
+    count = run + 1;
+    for (;; count += 2, run += 2) {
+        if (*count == 0xFF) {
+            goto done;
+        }
+        n = *count;
+        for (;;) {
+            if (n-- == 0) {
+                goto next;
+            }
+            c = &colors[*idx & 0x1FFF];
+            if (run[0] & 1) {
+                FacePrim *p;
+
+                *(u32 *)&prim->g.tp.code[0] = ((*idx >> 8) & 0x60) | 0xE1000000;
+                p = prim;
+                *(u32 *)&p->g.g.r0 = *c | ((*idx & 0x8000) ? 0x32000000 : 0x30000000);
+                c++;
+                *(u32 *)&p->g.g.r1 = c[0];
+                *(u32 *)&p->g.g.r2 = c[1];
+            } else {
+                u32 code = *c | 0x34000000;
+
+                *(u32 *)&prim->gt.r0 = code;
+                if (*idx & 0x8000) {
+                    *(u32 *)&prim->gt.r0 = code | 0x02000000;
+                    prim->gt.tpage &= ~0x60;
+                    prim->gt.tpage |= (*idx >> 8) & 0x60;
+                }
+                c++;
+                *(u32 *)&prim->gt.r1 = c[0];
+                *(u32 *)&prim->gt.r2 = c[1];
+            }
+            prim++;
+            idx++;
+        }
+    next:;
+    }
+done:;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80017EE8);
 
