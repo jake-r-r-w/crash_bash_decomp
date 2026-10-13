@@ -973,7 +973,8 @@
   "via": "auto"
  },
  "8001C3D0": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-13T07:45:16Z",
+  "status": "matched"
  },
  "8001C448": {
   "auto_diff": 25,

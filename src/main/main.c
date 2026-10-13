@@ -2268,7 +2268,17 @@ void func_8001C378(u8 *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001C3D0);
+void func_8001C3D0(u8 *arg0) {
+    u8 *temp_v0;
+    u16 temp_a0;
+
+    temp_v0 = func_80015A18(*(u16*)(arg0 + 0x74), *(u8**)(*(u8**)(arg0 + 0x6C) + 0xC));
+    temp_a0 = *(u16*)(temp_v0 + 8);
+    if (temp_a0 == 2 && temp_v0[*(s32*)(temp_v0 + 0x14) + 0x15] == temp_a0) {
+        *(void**)(arg0 + 0x54) = func_8001AA48;
+        *(void**)(arg0 + 0x58) = func_8001C378;
+    }
+}
 
 void func_8001C448(PosDst *arg0, s32 arg1, s32 arg2) {
     PosEntry *e;

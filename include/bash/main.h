@@ -362,6 +362,7 @@ PointList *func_8001562C(subengine *sub);
 FlagPoint *func_80015780(EXTengine *eng, subengine *sub, u16 flag, VECTOR *out);
 void func_8001C2C0(u8 *arg0);
 void func_8001C378(u8 *arg0);
+void func_8001AA48(u8 *arg0);
 void func_8001CBD4(u32 arg0);
 void func_8001CC08(void);
 void func_8001D174(EXTengine *eng);
@@ -986,6 +987,8 @@ void func_800150E8(char *dst, s32 val, s32 div);
 char *func_8001517C(char *arg0, s32 arg1, s32 arg2);
 
 s32 func_80015210(s32 a, s32 b, s32 t);
+
+void func_8001C3D0(u8 *arg0);
 
 void func_8001C448(PosDst *arg0, s32 arg1, s32 arg2);
 
