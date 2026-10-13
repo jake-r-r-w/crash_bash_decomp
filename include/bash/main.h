@@ -1207,6 +1207,8 @@ void func_8002617C(void);
 
 s32 func_8002633C(u8 *s);
 
+void func_80026E2C(void);
+
 void func_800276C4(s32 *arg0);
 
 void func_800279A4(void);

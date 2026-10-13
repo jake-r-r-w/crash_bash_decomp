@@ -5106,7 +5106,20 @@ void func_80026D9C(void) {
 }
 
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80026E2C);
+void func_80026E2C(void) {
+    s32 i;
+
+    i = D_8005AA10;
+    for (;;) {
+        if (i < D_8005AA14) {
+            D_8005AA1C[i] = NASTemplate;
+            i++;
+        } else {
+            break;
+        }
+    }
+    func_80026D08();
+}
 
 void func_80026ECC(void) {
     s32 i;
