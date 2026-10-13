@@ -541,6 +541,7 @@ extern s32 D_8004E110[];         /* func_80012D80: 8-byte entries */
 extern s32 D_8004E10C;            /* func_80011410: largest free block, bytes */
 extern s32 D_800654BC;            /* slots of D_800644C0 in use */
 extern char D_800654CC[];
+extern s32 D_8005A608;
 extern u8 D_8005A614[];
 extern s32 D_800675C8;
 extern s32 D_8005A620;
@@ -1012,6 +1013,8 @@ s32 func_80027944(void);
 s32 func_80028994(s32 a, s32 b, s32 c);
 
 s32 func_8002A2EC(s32 r, s32 g, s32 b);
+
+void func_8002B52C(s16 *arg0, s32 arg1, s32 arg2);
 
 void func_8002BA44(void);
 

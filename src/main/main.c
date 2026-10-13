@@ -4835,7 +4835,11 @@ void func_8002B4D8(PitchVoice *arg0, s32 arg1) {
                     (s32)(arg1 << 9) >> 16, arg1 & 0x7F);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002B52C);
+void func_8002B52C(s16 *arg0, s32 arg1, s32 arg2) {
+    s32 vol = D_8005A608 * 0x7F;
+
+    SsUtSetVVol(*arg0, (arg1 * vol) / 409600, (arg2 * vol) / 409600);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002B5B0);
 
