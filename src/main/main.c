@@ -4279,7 +4279,38 @@ void func_8002147C(VelObj *obj, VelParams *p, VelState *s) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80021604);
+void func_80021604(u8 *arg0, u8 *arg1, s32 arg2) {
+    u8 *p;
+    u8 *e;
+    u8 *q;
+    s32 v;
+    u16 w;
+
+    p = Push4(arg1);
+    if (p != NULL) {
+        e = arg0 + 0x14;
+        *(s32 *)(p + 4) = 1;
+        *(s32 *)p = arg2;
+        *(s32 *)(p + 0xC) = 0;
+        *(s32 *)(p + 0x10) = 0;
+        *(s32 *)(p + 8) = func_8001D48C(p + 0xC, p + 0x10, *(s32 *)(e + 0x10));
+        q = *(u8 **)(p + 0xC);
+        if (q != NULL) {
+            do {
+                *(s32 *)q = 0;
+                v = *(s32 *)arg1;
+                *(s32 *)(q + 0x6C) = v;
+                w = *(u16 *)(arg0 + 0x3C);
+                *(u8 *)(q + 0x51) = 0;
+                *(s16 *)(q + 0x52) = 1;
+                *(u16 *)(q + 0x74) = w;
+                q = *(u8 **)(q + 0x5C);
+            } while (q != NULL);
+        }
+        *(s32 *)(p + 0x14) = 0;
+        func_800115D8(*(s32 *)(e + 0x10) * 0x28, (void **)(p + 0x14), (s32)&D_8004E0F0, 0);
+    }
+}
 
 static inline u8 *Pop3(void) {
     u8 *cur;
