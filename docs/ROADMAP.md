@@ -54,7 +54,8 @@ left, it's split into translation units at the boundaries the binary shows,
 its data is C, every function and global is named and typed, and
 `build/main.exe` still matches. The library is Sony's objects, code and data,
 plus `2MBYTE.OBJ`. `CRASHBSH.DAT` extracts, and so do the formats whose
-loaders are in the exe, each documented.
+loaders are in the exe, each documented. The disc packer and the replay
+harness work, so later phases can test what they finish.
 
 - [x] Match GTE code: include Sony's GTE macros (`inline_c.h`, `gtemac.h`) in
   the game sources and match one GTE function through `done`. 27 of the exe's
@@ -79,6 +80,16 @@ loaders are in the exe, each documented.
   `0x8004E110`) from the user's disc and extract its files to `assets/`, plus
   the formats whose loaders are in the exe, to editable files. Document each
   format. Formats parsed by the engine or a minigame belong to that phase.
+- [ ] A disc packer: put the built exe and overlays, with the user's other
+  files, back into a disc image with the retail layout (every file at its
+  original sector). Packing the matching build must give the retail image
+  byte for byte. It's the only way to run any build of ours in an emulator.
+- [ ] A replay harness: play an emulator input recording (BizHawk or Mednafen
+  movie) on two discs and compare each frame's image hash and a set of game
+  values (positions, scores, the random seed, the current mode), read from
+  wherever each build keeps them. It reports the first frame that differs.
+  Prove it on the matching build, which must pass (test 4 in
+  [The final test](#the-final-test)).
 
 ## Phase 3 - The engine overlay
 
@@ -99,15 +110,25 @@ extract and are documented.
 
 Their functions start out named and typed. Finish one overlay completely
 before starting the next. A minigame's box is ticked when its overlay is
-source-only, the globals its header declares are named, and its asset files
-(its `file_group_*` groups) extract.
+source-only, the globals its header declares are named, its asset files
+(its `file_group_*` groups) extract, and it passes its shift test: padded so
+everything in it moves, it plays through to a win and a recording of that
+replays with the same frames as retail. The slot overlays are the first units
+that can be shifted: the only pointers into one from outside are the engine's
+AST table entries (`Init`/`Plot`), which are C after Phase 3, so the engine
+is relinked against the moved overlay without moving itself. `main.exe` and
+the engine can't move until every overlay linking to them is source
+(Phase 6).
 
 **Done when** Tank, Pogo, Arkenoid and Polar (`ovl5f`, `ovl60`, `ovl61`,
 `ovl62`) are source-only and still match. Every declaration in their
 `include/bash/` headers is either defined by matched code or noted in
 `docs/ARCHITECTURE.md` as not in this build. Each of their asset files
-extracts.
+extracts, and each passes its shift test.
 
+- [ ] A shiftable `NON_MATCHING` build: an option that pads a source-only slot
+  overlay's code and data, relinks the engine's AST table against it, packs a
+  disc and runs the shift test.
 - [ ] Finish the slot overlays' section splits (data vs rodata), so functions
   using strings and jump tables can match.
 - [x] Recover the minigame-only types (`EXTbotai`, `EXTheromove`, `TA_player`,
@@ -126,7 +147,8 @@ extracts.
 One at a time, starting with code shared or near-identical between minigames.
 
 **Done when** every slot overlay is identified in `docs/ARCHITECTURE.md`, is
-source-only, and still matches, and its asset files extract.
+source-only, still matches, its asset files extract, and it passes its shift
+test (Phase 4). A box below is ticked on the same terms.
 
 - [x] Identify which minigame or mode each remaining overlay is: the Oct 9
   prototype's AST enums name each one's game (ARCHITECTURE.md, Prototype
@@ -150,17 +172,12 @@ source-only, and still matches, and its asset files extract.
 - [ ] No `INCLUDE_ASM` or `INCLUDE_RODATA` anywhere, and no parked functions.
 - [ ] Every remaining disc file (music, movies, anything not covered above)
   extracts, and the formats are documented.
-- [ ] A disc packer: put the built exe and overlays, with the user's other
-  files, back into a disc image with the retail layout (every file at its
-  original sector).
-- [ ] A shiftable `NON_MATCHING` build: an option that adds padding to every
-  unit's code and data, so everything moves, and the packer then builds a
-  disc from it.
-- [ ] A replay harness: play an emulator input recording (BizHawk or Mednafen
-  movie) on two discs and compare each frame's image hash and a set of game
-  values (positions, scores, the random seed, the current mode), read from
-  wherever each build keeps them. It reports the first frame that differs.
-- [ ] The recordings for test 4, made on the retail disc.
+- [ ] Shift everything at once: pad `main.exe` and the engine too, and relink
+  every overlay against their new addresses instead of the fixed ones in
+  `configs/USA/sym.main.txt` and `sym.engine.txt`. This needs every overlay's
+  data to be C, since a pointer left in a data blob keeps its old address.
+- [ ] The recordings for test 4, made on the retail disc: the adventure mode
+  from a new save, plus each minigame.
 - [ ] A build with a current GCC for MIPS (`NON_MATCHING`).
 - [ ] Every file at quality level 4 ([CONVENTIONS.md](CONVENTIONS.md)), with no
   placeholder names.
@@ -169,10 +186,10 @@ source-only, and still matches, and its asset files extract.
 ## The final test
 
 The decomp is done when all of these pass. Each proves something a byte match
-alone does not. The tools for them are Phase 6 items, but tests 3 and 4 are
-worth running as soon as they exist: an overlay that is fully source can be
-shift-tested on its own, and a hard-coded address is cheaper to find while the
-code is fresh.
+alone does not. The tools come earlier: the disc packer and replay harness in
+Phase 2, the shifted build in Phase 4, and every slot overlay passes a shift
+test of its own when it's finished. So these tests are the last check on the whole
+game, not the first time anything has been tested.
 
 1. **Clean rebuild.** A fresh clone, the user's disc and `tools/dk make check`
    (nothing else) rebuild `main.exe` and every overlay, and each matches
@@ -183,7 +200,7 @@ code is fresh.
    data, parked function or `func_`/`D_` name anywhere; the only binary inputs
    are the assets the extractor reads from the disc. *Proves: everything is
    source.*
-3. **Shifted build plays.** The shifted `NON_MATCHING` build boots in an
+3. **Shifted build plays.** The fully shifted `NON_MATCHING` build boots in an
    emulator and plays: the front end, a save and a load, the hub, and every
    minigame through to a win. *Proves: no address is hard-coded; the code works
    as code, not as bytes that happen to land in the right place.*
