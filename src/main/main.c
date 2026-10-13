@@ -2810,7 +2810,24 @@ void func_8001CEB4(u16 arg0, u8 *arg1, s32 arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001CF50);
+void *func_8001CF50(ModelEntry *e, s32 arg1) {
+    u8 *blk;
+    void *p;
+    u8 *q;
+
+    blk = (u8 *)&e->off + e->off;
+    if ((arg1 & 0x1000000) == 0) {
+        if (func_8001AF2C(blk) == 0) {
+            return NULL;
+        }
+    }
+    q = blk + 0x14;
+    p = func_80019094(e, arg1);
+    if (p != NULL) {
+        func_800193A8(p, (SVECTOR *)q,(u8 *)&e->runs + e->runs);
+    }
+    return p;
+}
 
 void *func_8001CFE8(MorphModel *model, void *arg1, s32 arg2) {
     void *p;
