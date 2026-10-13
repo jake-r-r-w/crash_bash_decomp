@@ -5388,7 +5388,28 @@ void func_8002759C(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800275F8);
+void func_800275F8(arg0)
+RECT *arg0;
+{
+    DrawSync(0);
+    D_8005B78C = 0;
+    if (arg0 != NULL) {
+        D_8005B694 = D_8005B690 + 1;
+        if (D_8005B698 == NULL) {
+            u8 *g = D_8005B790;
+            u8 *h;
+
+            ClearOTagR((u_long *)g, 0x1000);
+            h = g + 0x400C;
+            *(s32 *)(g + 0x4008) = *(s32 *)(g + 0x4000);
+            ClearOTagR((u_long *)h, 0x1000);
+            *(s32 *)(h + 0x4008) = *(s32 *)(h + 0x4000);
+        }
+    } else {
+        SetDispMask(0);
+    }
+    D_8005B698 = arg0;
+}
 
 void func_800276A4(void) {
     func_800275F8();

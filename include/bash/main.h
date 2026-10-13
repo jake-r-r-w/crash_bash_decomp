@@ -638,6 +638,8 @@ extern CdlLOC D_8006EA14;
 void func_80016D98();
 void func_80016188();
 extern RECT *D_8005B698;
+extern s32 D_8005B694;
+extern s32 D_8005B78C;
 extern s32 D_800335BC;
 extern u32 D_80063AF8[];
 extern s32 D_800643E8;
