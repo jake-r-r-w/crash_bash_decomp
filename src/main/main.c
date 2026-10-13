@@ -3555,7 +3555,51 @@ u8 *func_800189F4(u8 *arg0, s32 w, s32 h) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80018B08);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80018F3C);
+s32 func_80018F3C(EXTengine *eng, s32 n) {
+    s32 count;
+    subengine *free;
+    subengine *prev;
+    subengine *sub;
+    subengine **lastp;
+
+    count = 0;
+    free = D_80058ACC;
+    lastp = &eng->last;
+    if (free != NULL && n > 0) {
+        prev = *lastp;
+        sub = free;
+        if (prev == NULL) {
+            prev = free;
+            eng->sub = free;
+            free->prev = NULL;
+            D_8005A830.next = free->next;
+            D_8005A830.prev = free->prev;
+            *sub = D_8005A830;
+            n--;
+            count++;
+            free = free->next;
+        }
+        while (n != 0) {
+            if (free == NULL) {
+                break;
+            }
+            prev->next = free;
+            free->prev = prev;
+            prev = free;
+            D_8005A830.next = free->next;
+            D_8005A830.prev = free->prev;
+            *free = D_8005A830;
+            n--;
+            free = free->next;
+            count++;
+        }
+        prev->next = NULL;
+        *lastp = prev;
+        D_80058ACC = free;
+    }
+    eng->num_subs += count;
+    return count;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80019094);
 
