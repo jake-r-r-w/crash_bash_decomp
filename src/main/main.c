@@ -4170,7 +4170,19 @@ void func_80026420(void) {
 void func_80026428(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80026430);
+void func_80026430(NAS *nas) {
+    EXT *ext;
+
+    ext = (EXT *)nas;
+    while (ext->Extend.Child != NULL) {
+        ext = ext->Extend.Child;
+    }
+    while (ext->Extend.Parent != NULL) {
+        FreeExtension(ext);
+        ext = ext->Extend.Parent;
+    }
+    nas->NASid = *(u8 *)nas;
+}
 
 void func_800264B4(void) {
     func_800110A8(D_8006EA00, &D_8004E0F0);
