@@ -2528,7 +2528,8 @@
  },
  "8002D488": {
   "auto_diff": 26,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-13T09:52:35Z",
+  "status": "matched"
  },
  "8002D4F4": {
   "auto_failed": "compile"
