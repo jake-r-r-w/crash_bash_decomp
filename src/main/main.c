@@ -7239,7 +7239,35 @@ void func_8002775C(u8 *arg0) {
     *(s32 *)(arg0 + 0x4008) = *(s32 *)(arg0 + 0x4000);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80027790);
+s32 func_80027790(u8 *a, s32 b, u8 *c, s32 d) {
+    s32 r;
+    s32 s;
+    r = D_800637B4;
+    if (r > 0) {
+        D_800637B4 = CdReadSync(1, 0);
+        if (D_800637B4 == 0) {
+            CdControl(1, 0, &D_8006EA08);
+            func_80034AEC();
+        }
+        s = D_800637B4;
+    } else {
+        s = r;
+    }
+    if (s > 0) {
+        return -1;
+    }
+    CdIntToPos(*(s32 *)a + b + D_800637B8, &D_8006EA10);
+    if (CdControl(2, (u8 *)&D_8006EA10, 0) == 0 || CdRead(d, (u_long *)c, 0x80) == 0) {
+        return -1;
+    }
+    D_800637B4 = 1;
+    D_800637B4 = CdReadSync(1, 0);
+    if (D_800637B4 == 0) {
+        CdControl(1, 0, &D_8006EA08);
+        func_80034AEC();
+    }
+    return D_800637B4;
+}
 
 void func_800278BC(s32 *arg0, s32 arg1) {
     CdIntToPos(*arg0 + arg1, &D_8006EA14);

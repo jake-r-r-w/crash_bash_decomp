@@ -765,6 +765,7 @@ extern s32 D_800637B4;
 extern s32 D_800637B8;
 void func_80034C4C(s32, s32);
 extern u8 D_8006EA08;
+extern CdlLOC D_8006EA10;
 void func_80034AEC(void);
 extern NASTrigger *D_8005AA48;
 extern s32 D_8005AA4C;
