@@ -396,6 +396,7 @@ void func_800220E8(void);
 void func_800222BC(void);
 void func_800222DC(void);
 void func_800222FC(void);
+void func_800237BC(void);
 void func_8002232C(void);
 void func_800227C0(void);
 void func_800227FC(void);
@@ -490,8 +491,11 @@ extern s32 D_800655B4;
 extern s32 D_800655AC;
 extern void *D_80051240;
 typedef struct {
-    u8 unk0[8];
+    void (*unk0)(void);
+    u8 unk4[4];
     void (*unk8)(void);
+    u8 unkC[4];
+    u8 *unk10;
 } VTable8;
 extern VTable8 *D_8004E0DC;
 extern s32 D_8004E0E0;
@@ -969,6 +973,8 @@ typedef struct {
 void func_8001A82C(PosDst *arg0, s32 arg1, s32 arg2);
 extern PosEntry D_8005689C[];
 void func_800102F8(void);
+
+void func_80010410(void);
 
 void func_80011AE8(MemBlock *blk, Heap *heap);
 

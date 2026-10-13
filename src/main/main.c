@@ -43,7 +43,17 @@ void func_80010354(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80010394);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80010410);
+void func_80010410(void) {
+    u8 *p = D_8004E0DC->unk10;
+
+    if (p != NULL) {
+        func_80011BF8(&D_8004E0F0, p, 0x801FF000 - (s32)p);
+        func_80012E54();
+    }
+    func_800222FC();
+    func_800237BC();
+    D_8004E0DC->unk0();
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80010488);
 
