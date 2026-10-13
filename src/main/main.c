@@ -2237,7 +2237,37 @@ void *func_80015AB0(s32 *arg0, u8 *rec) {
     return *node;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80015AD4);
+void func_80015AD4(void *arg0) {
+    s32 *p = (s32 *)((u8 *)arg0 + 0x6C);
+    s32 n = p[3];
+    TILE_1 *a = (TILE_1 *)p[1];
+    TILE_1 *b = (TILE_1 *)p[2];
+    s16 *vel = ((s16 **)arg0)[0x6C / 4];
+
+    if (n != 0) {
+        do {
+            a->x0 = Random(0x200);
+            b->x0 = Random(0x200);
+            a->y0 = Random(0x200);
+            b->y0 = Random(0x200);
+            a->r0 = Random(0xFF);
+            a->g0 = Random(0xFF);
+            a->b0 = Random(0xFF);
+            b->r0 = Random(0xFF);
+            b->g0 = Random(0xFF);
+            b->b0 = Random(0xFF);
+            SetTile1(a);
+            SetTile1(b);
+            vel[0] = Random(0x2000) - 0x1000;
+            vel[1] = Random(0x2000) - 0x1000;
+            vel[2] = Random(0x2000) - 0x1000;
+            a++;
+            b++;
+            vel += 12;
+            n--;
+        } while (n != 0);
+    }
+}
 
 void func_80015C1C(PointSprites *ps, MATRIX *m) {
     PointSpriteSet *set = &ps->set;
