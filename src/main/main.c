@@ -6570,7 +6570,32 @@ void func_80025FAC(EXTanimator *anim, s16 n) {
     anim->Seq_count_down = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80026048);
+ScriptCursor *func_80026048(NAS *nas, s32 arg1, s32 arg2, ScriptInit *init) {
+    ScriptCursor *c;
+    Ext400 *ext;
+    u32 flags;
+
+    flags = init->flags;
+    if (flags & 0x400) {
+        ext = AllocExtension(nas, 0x2C, 0x400, &D_8005A9A0);
+        if (ext != NULL) {
+            nas->NASid |= 0x400;
+            *ext = D_8005A9A0;
+        }
+        c = (ScriptCursor *)ext;
+        flags &= 0xFF;
+        if (c != NULL) {
+            *(s32 *)c = (*(s32 *)c & ~0xFF) | flags;
+            c->cur = init->cur;
+            c->tbl = init->tbl;
+            *(s32 *)c->pad14 = arg1;
+            *(s32 *)(c->pad14 + 4) = arg2;
+            func_80024FA4(c);
+            return c;
+        }
+    }
+    return NULL;
+}
 
 void func_8002617C(void) {
     s32 i;

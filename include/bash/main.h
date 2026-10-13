@@ -1666,6 +1666,8 @@ ScriptCursor *func_80024E30(NAS *nas, ScriptInit *init);
 
 void func_80024FA4(ScriptCursor *c);
 
+ScriptCursor *func_80026048(NAS *nas, s32 arg1, s32 arg2, ScriptInit *init);
+
 S16Pair func_8002B7C8(s32 x, s32 v);
 
 #endif /* BASH_MAIN_H */
