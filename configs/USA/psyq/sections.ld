@@ -11,50 +11,18 @@
     psyq_libcard_end_bss 0x80078C60 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libcard.a:end.o(.bss) }
     psyq_libapi_chclrpad_bss 0x80078C70 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libapi.a:chclrpad.o(.bss) }
     psyq_libapi_patch_bss 0x80078C80 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libapi.a:patch.o(.bss) }
-    psyq_libapi_counter_data 0x800678E4 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libapi.a:counter.o(.data) }
-    psyq_libgpu_sys_data 0x80067904 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libgpu.a:sys.o(.data) }
     psyq_libgpu_sys_bss 0x8006EA28 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libgpu.a:sys.o(.bss) }
-    psyq_libetc_intr_data 0x80067AA4 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libetc.a:intr.o(.data) }
-    psyq_libpad_pdmaiini_data 0x80068BA4 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libpad.a:pdmaiini.o(.data) }
-    psyq_libetc_vsync_data 0x80068BB4 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libetc.a:vsync.o(.data) }
-    psyq_libgte_msc00_data 0x8006CBD4 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libgte.a:msc00.o(.data) }
-    psyq_libetc_vmode_data 0x8006CBE4 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libetc.a:vmode.o(.data) }
-    psyq_libgpu_font_data 0x8006CBF4 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libgpu.a:font.o(.data) }
     psyq_libgpu_font_bss 0x80070278 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libgpu.a:font.o(.bss) }
-    psyq_libcd_cdr_1_data 0x8006D784 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libcd.a:cdr_1.o(.data) }
-    psyq_libcd_event_data 0x8006D7C4 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libcd.a:event.o(.data) }
-    psyq_libcd_iso9660_data 0x8006D7D4 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libcd.a:iso9660.o(.data) }
     psyq_libcd_iso9660_bss 0x80074688 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libcd.a:iso9660.o(.bss) }
-    psyq_libcd_s_016_data 0x8006D7E4 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libcd.a:s_016.o(.data) }
-    psyq_libsnd_ssstart_data 0x8006D864 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libsnd.a:ssstart.o(.data) }
-    psyq_libmcrd_libmcrd_data 0x8006D884 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libmcrd.a:libmcrd.o(.data) }
     psyq_libmcrd_libmcrd_bss 0x80076A88 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libmcrd.a:libmcrd.o(.bss) }
-    psyq_libmcrd_init_data 0x8006D8A4 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libmcrd.a:init.o(.data) }
-    psyq_libetc_intr_vb_data 0x8006D8BC (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libetc.a:intr_vb.o(.data) }
-    psyq_libetc_intr_dma_data 0x8006D8EC (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libetc.a:intr_dma.o(.data) }
-    psyq_libpad_pdresres_data 0x8006D91C (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libpad.a:pdresres.o(.data) }
     psyq_libpad_pdresres_bss 0x80076B18 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libpad.a:pdresres.o(.bss) }
-    psyq_libc2_puts_data 0x8006D9CC (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libc2.a:puts.o(.data) }
-    psyq_libgte_msc02_data 0x8006D9DC (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libgte.a:msc02.o(.data) }
-    psyq_libsnd_ssinit_data 0x8006DB7C (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libsnd.a:ssinit.o(.data) }
     psyq_libsnd_ssinit_bss 0x80076B30 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libsnd.a:ssinit.o(.bss) }
     psyq_libcd_bios_1_data 0x8006DBAC (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libcd.a:bios_1.o(.data) }
     psyq_libcd_bios_1_bss 0x80077614 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libcd.a:bios_1.o(.bss) }
-    psyq_libspu_spu_data 0x8006DEBC (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libspu.a:spu.o(.data) }
     psyq_libspu_spu_bss 0x80077648 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libspu.a:spu.o(.bss) }
-    psyq_libpad_pdtapres_data 0x8006DF1C (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libpad.a:pdtapres.o(.data) }
     psyq_libpad_pdtapres_bss 0x8007765C (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libpad.a:pdtapres.o(.bss) }
-    psyq_libspu_s_ini_data 0x8006DF2C (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libspu.a:s_ini.o(.data) }
-    psyq_libsnd_vm_n2p_data 0x8006DFAC (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libsnd.a:vm_n2p.o(.data) }
-    psyq_libmcrd_userfunc_data 0x8006E0CC (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libmcrd.a:userfunc.o(.data) }
     psyq_libmcrd_userfunc_bss 0x80078790 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libmcrd.a:userfunc.o(.bss) }
-    psyq_libcard_init_data 0x8006E0DC (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libcard.a:init.o(.data) }
-    psyq_libc2_putchar_data 0x8006E0EC (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libc2.a:putchar.o(.data) }
     psyq_libc2_putchar_bss 0x80078B10 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libc2.a:putchar.o(.bss) }
-    psyq_libcd_bios_3_data 0x8006E5BC (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libcd.a:bios_3.o(.data) }
-    psyq_libcd_bios_2_data 0x8006E5DC (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libcd.a:bios_2.o(.data) }
-    psyq_libspu_s_n2p_data 0x8006E8BC (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libspu.a:s_n2p.o(.data) }
-    psyq_libapi_pad_data 0x8006E9DC (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libapi.a:pad.o(.data) }
     psyq_libapi_pad_bss 0x80078C40 (NOLOAD) : SUBALIGN(1) { ext/psyq47/lib/libapi.a:pad.o(.bss) }
     AddPrim = 0x8003DFDC;
     CD_cbread = 0x8006D7C4;

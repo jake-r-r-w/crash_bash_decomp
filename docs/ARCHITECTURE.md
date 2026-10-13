@@ -27,7 +27,7 @@ PS-X EXE header at file offset `0x0`; the file body (offset `0x800`) loads at
 | `0x8002E7A8..0x8004C56C` | `0x1EFA8` | `.text` | PsyQ 4.7: 254 Sony objects linked in place, plus `src/main/psyq/` |
 | `0x8004C56C..0x8004CEFC` | `0x3CD6C` | `.rodata` | game (strings, jump tables) |
 | `0x8004CEFC..0x8004DCBC` | `0x3D6FC` | `.rodata` | PsyQ, per object (`.rdata` of the linked objects) |
-| `0x8004DCBC..0x80079000` | `0x3E4BC` | `.data` | game and library data, still one blob |
+| `0x8004DCBC..0x80079000` | `0x3E4BC` | `.data` | game data (blob pieces), with 32 PsyQ objects' `.data` linked from the objects |
 | `0x80079000..` | | `.bss` | not yet measured |
 
 The engine module loads at `0x80078C90`, over the last `0x370` bytes of the
@@ -409,21 +409,31 @@ keep code-derived names (`unkXX` where only offset and width are known).
 
 Version 4.7 (signature scan: 262 objects, best of all versions; `$Id` strings
 dated 1998). Sony's converted libraries (`ext/psyq47/lib/*.a`) contain the
-objects the game was linked with: 254 of 255 identified objects are
-byte-identical, and are linked in place of their code instead of being
-decompiled. `configs/USA/psyq/`:
+objects the game was linked with, and all of the library code is linked from
+them instead of being decompiled: 281 objects, byte-identical, plus Sony's
+hand-written `2MBYTE.OBJ` (`asm/main/psyq/2mbyte.s`, not in the converted
+libraries). 254 were found by signature (`psyq_match.py`); the last 27 are
+tiny wrappers that are byte-identical to each other apart from what they call
+or which global they use (`CdSync`, `CdFlush`, `CdStatus`, ...), so the
+signatures left them unnamed. `tools/scripts/psyq_gaps.py` found them by
+comparing every object with each gap and checking every relocation against the
+address the exe uses. `configs/USA/psyq/`:
 
 - `objects.txt` - every object found in the exe (address, size, LIB/OBJ).
 - `layout.txt` - where each object's `.data`/`.bss`/`.rdata` sat, inferred from
   its relocations; the externals each object needs, at the exe's addresses.
-- `sections.ld` - the objects' data sections pinned `NOLOAD` at their original
-  addresses (the data blob still supplies the bytes).
+- `sections.ld` - the objects' `.bss` (and the `.data` of the objects in
+  `data_keep.txt`) pinned `NOLOAD` at their original addresses.
+- `data_keep.txt` - objects whose `.data` still comes from the exe because the
+  game's copy differs from 4.7: `bios_1.o` (libcd) has one static initialised
+  to 0 at `0x8006DE5C` where 4.7 has 1, so the game's libcd is a slightly
+  different build. Every other object's `.data` is linked from the object
+  (`decomp.py link-psyq --data` cut the data blob around them).
 - `symbols.ld` - symbols psylink placed differently from the objects' own
   layout; read last so they win.
 
-The few library functions not covered by an object are in
-`src/main/psyq/unknown/` (named by address) and `asm/main/psyq/2mbyte.s`
-(Sony's hand-written `2MBYTE.OBJ`, not in the converted libraries).
+`func_80032F3C` is `abs` (`ABS_0.OBJ`; `labs` in `ABS_1.OBJ` is identical
+code).
 
 ## Build pipeline
 
@@ -440,7 +450,8 @@ the Makefile; `decomp.py`'s `unit_cfg` reads the same lines):
 `main/8002d488` uses `CC_VER = 2.7.2-psx` and `ASPSX_FILL`
 (`tools/scripts/aspsx_fill.py`, which moves the instruction before a `j`/`jr`,
 or the second half of a store to a symbol, into its delay slot, as ASPSX
-does), and the PsyQ gaps get `PAD16`.
+does). Every unit is built with `-fno-builtin` (`EXTRA_CC1FLAGS`): the game
+calls `abs`, which gcc 2.8.1 would otherwise inline.
 
 Functions not yet decompiled stay in the C files as `INCLUDE_ASM(...)`, which
 pulls `asm/nonmatchings/<seg>/<func>.s` into the compiled object, so the build

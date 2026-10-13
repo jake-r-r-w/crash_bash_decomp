@@ -66,12 +66,14 @@ loaders are in the exe, each documented.
   the units are named by what they contain. Do this before the data, so each
   file's local data moves with it.
 - [ ] Turn its rodata, data and bss into C.
-- [ ] Close the PsyQ gaps: find the object for each function in
+- [x] Close the PsyQ gaps: find the object for each function in
   `src/main/psyq/unknown/` (mostly one-call wrappers such as `CdSync`) and
   link it, or match it as C; name `func_80032F3C` (`abs` and `labs` are
   identical objects); and take the objects' data from the objects instead of
   the retail data blob. Sony's hand-written `2MBYTE.OBJ` is the one documented
-  exception.
+  exception. Done: all 281 objects linked; the `.data` of `bios_1.o` stays from
+  the exe because the game's libcd differs from 4.7 in one initial value
+  (`configs/USA/psyq/data_keep.txt`, ARCHITECTURE.md, PsyQ).
 - [ ] Asset extraction tool: read the `CRASHBSH.DAT` index (993 entries at
   `0x8004E110`) from the user's disc and extract its files to `assets/`, plus
   the formats whose loaders are in the exe, to editable files. Document each

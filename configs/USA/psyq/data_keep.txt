@@ -1,0 +1,3 @@
+# Sony objects whose .data stays from the exe's data blob under `decomp.py link-psyq --data`,
+# because the game's copy differs from the PsyQ 4.7 object. One line each: LIB/OBJ, then why.
+LIBCD.LIB/BIOS_1.OBJ  .data+0x2B0 (a static, 0x8006DE5C) is 0 in the game, 1 in 4.7: an older libcd

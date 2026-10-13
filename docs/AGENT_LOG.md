@@ -19,9 +19,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
-- PsyQ 4.7: Sony's objects are linked in place of the library; the gaps are
-  in `src/main/psyq/unknown/`, one file per Sony object, and the build pads
-  each one's `.text` to 16 bytes as Sony's are, so they match as C.
+- PsyQ 4.7: all library code is Sony's objects (281, plus `2MBYTE.OBJ`), and
+  their `.data` comes from the objects except `bios_1.o`'s (one value differs;
+  `configs/USA/psyq/data_keep.txt`). Roadmap: the PsyQ gaps box is ticked.
+  The game is built with `-fno-builtin` (it calls `abs`).
 - Every type and AST id in the Oct 9 prototype's debug fragment is in
   `include/bash/` and every overlay is identified (ARCHITECTURE.md, Prototype
   debug types). The disc images are in the git-ignored `protos/`.
@@ -79,10 +80,6 @@ Parked (`decomp.py block`; best C under `#ifndef NON_MATCHING` in
   Permuter's best reused a temp for `tpage & ~0x60`.
 
 Other:
-- PsyQ gaps: the rest (`src/main/psyq/unknown/`) can be matched as C now.
-  Several are setters in the `lui $at` style (`func_8003351C`,
-  `func_8003E01C`, `func_8003E0CC`): try the `main/8002d488` settings
-  (`CC_VER = 2.7.2-psx`, `ASPSX_FILL`) for those files.
 - `main/8002d488` (gcc 2.7.2 + `aspsx_fill.py`): `func_8002D488` matched.
   `func_8002E000` (parked by the swarm in `main.c`) now compiles to the same
   shape: an ordinary diff in the loop setup (target keeps the counter in a1
@@ -210,6 +207,17 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-13:** PsyQ gaps closed. The 27 gap functions were Sony's own tiny
+  4.7 objects that signatures can't tell apart (identical bytes, different
+  call or global): `psyq_gaps.py` compares every object with each gap and
+  checks the relocations against the exe's symbol and data addresses, and
+  found one object for each. The three multi-object gap files were split per
+  object, then `link-psyq` (now incremental) linked them all. `--data` cut
+  the data blob around 32 objects' `.data` (bios_1's differs, kept from the
+  exe). `func_80032F3C` is `abs`; the rename only matches with
+  `-fno-builtin`, so the game was built with it (the whole build matches).
+  The pre-commit hook ignores whole PsyQ gap files deleted by link-psyq.
 
 - **2026-10-13:** Big functions. `try` prints a `STAGE` line (structure /
   instructions / registers + diff count). Swarm big mode: functions >=

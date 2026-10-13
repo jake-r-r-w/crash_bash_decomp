@@ -1905,6 +1905,7 @@ def cmd_split_lib(a):
 
 PSYQ_LIBS = "ext/psyq47/lib"
 PSYQ_SECTIONS = f"{PSYQ_CFG}/sections.ld"
+PSYQ_DATA_KEEP = f"{PSYQ_CFG}/data_keep.txt"   # objects whose .data stays from the exe (link-psyq --data)
 
 
 def psyq_layout():
@@ -1993,6 +1994,38 @@ def cmd_link_psyq(a):
         new = "\n".join(f"{ind}- [0x{v - vram_off:X}, lib, {lib}, {mem}, .rdata]" for v, lib, mem in rd)
         text = text.replace("\n".join(ro_lines), new, 1) if "\n".join(ro_lines) in text else die(
             "library rodata subsegments aren't contiguous in the yaml")
+    # --data: each object's .data from the object, cut out of the exe's data blob (the rest of the
+    # blob stays game data, in pieces named by their offset)
+    if a.data:
+        blobs = [(int(m.group(1), 16), m.group(0)) for m in re.finditer(r"- \[0x([0-9A-F]+), data, \w+\][^\n]*", text)]
+        if not blobs:
+            die("no `data` subsegment to cut the objects' .data out of")
+        ends = [int(m.group(1), 16) for m in re.finditer(r"^\s*- \[0x([0-9A-F]+)\]\s*$", text, re.M)]
+        ind = " " * 6
+        for start, line in blobs:
+            nxt = re.search(r"- \[0x([0-9A-F]+)[,\]]", text[text.index(line) + len(line):])
+            end = int(nxt.group(1), 16) if nxt else max(ends)
+            # objects whose .data differs from the game's copy keep theirs from the exe (with the reason)
+            keep = {l.split()[0] for l in (read(PSYQ_DATA_KEEP).splitlines() if os.path.exists(PSYQ_DATA_KEEP) else [])
+                    if l.strip() and not l.startswith("#")}
+            objs = sorted((s[".data"][0] - vram_off, s[".data"][1], lib, mem) for o, (lib, mem, s) in members.items()
+                          if ".data" in s and s[".data"][0] is not None and s[".data"][1] and o not in keep
+                          and start <= s[".data"][0] - vram_off < end)
+            if not objs:
+                continue
+            new, cur = [], start
+            for rom, n, lib, mem in objs:
+                if rom < cur:
+                    die(f"{lib}/{mem} .data at 0x{rom:X} overlaps the previous piece (ends 0x{cur:X})")
+                if rom > cur:
+                    new.append(f"- [0x{cur:X}, data, {cur:X}]")
+                new.append(f"- [0x{rom:X}, lib, {lib}, {mem}, .data]")
+                cur = rom + n
+            if cur < end:
+                new.append(f"- [0x{cur:X}, data, {cur:X}]")
+            text = text.replace(line, ("\n" + ind).join(new), 1)
+            print(f"  .data: {len(objs)} objects' data from the objects, the blob in {len(new) - len(objs)} pieces")
+    in_yaml = set(re.findall(r"- \[0x[0-9A-F]+, lib, (\w+), (\w+), \.data\]", text))
     if "lib_path:" not in text:
         text = text.replace("  asset_path: assets\n", f"  asset_path: assets\n  lib_path: {PSYQ_LIBS}\n", 1)
     # NOLOAD placement of the other sections
@@ -2002,8 +2035,8 @@ def cmd_link_psyq(a):
     spare = 0x81000000                     # unreferenced sections: anywhere out of the way
     for o, (lib, mem, secs) in sorted(members.items(), key=lambda kv: kv[1][2].get(".data", (0,))[0] or 0):
         for s in (".data", ".bss", ".sbss", ".sdata"):
-            if s not in secs or not secs[s][1]:
-                continue
+            if s not in secs or not secs[s][1] or (s == ".data" and (lib, mem) in in_yaml):
+                continue                   # (linked from the yaml, loaded)
             at = secs[s][0]
             if at is None:
                 at, spare = spare, spare + ((secs[s][1] + 15) & ~15)
@@ -3120,6 +3153,8 @@ def main():
     p.set_defaults(fn=cmd_rename)
     p = sub.add_parser("link-psyq", help="link Sony's PsyQ objects in place of the library code")
     p.add_argument("--keep", action="store_true", help="leave a failed attempt in place to inspect")
+    p.add_argument("--data", action="store_true", help="also take each object's .data from the object, "
+                   "cut out of the exe's data blob")
     p.set_defaults(fn=cmd_link_psyq)
     p = sub.add_parser("dups", help="report identical and near-identical functions")
     p.add_argument("--list", type=int, default=0, help="show the N largest groups")
