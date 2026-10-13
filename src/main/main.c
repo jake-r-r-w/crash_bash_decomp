@@ -3381,7 +3381,33 @@ void func_800189E0(u8 *arg0) {
     (*(s32*)((u8*)(arg0) + 16)) = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800189F4);
+u8 *func_800189F4(u8 *arg0, s32 w, s32 h) {
+    s32 pw;
+    s32 x;
+    u16 *src;
+    u16 *dst;
+    u16 c;
+    u8 *res;
+
+    pw = *(s16 *)(arg0 + 0xC);
+    if (pw < w) {
+        w = pw;
+    }
+    if (*(s16 *)(arg0 + 0xE) < h) {
+        h = pw;
+    }
+    res = func_80011654(w * h * 2, &D_8004E0F0);
+    src = (u16 *)(arg0 + (*(s16 *)(arg0 + 0xC) * (*(s16 *)(arg0 + 0xE) - 9) * 2 + 0x12));
+    dst = (u16 *)res;
+    for (h--; h != -1; h--) {
+        for (x = w - 1; x != -1; x--) {
+            c = *src++;
+            *dst++ = ((c >> 10) & 0x1F) | ((c & 0x1F) << 10) | (c & 0x3E0);
+        }
+        src -= w + *(s16 *)(arg0 + 0xC);
+    }
+    return res;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80018B08);
 
