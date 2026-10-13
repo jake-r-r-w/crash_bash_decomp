@@ -1670,7 +1670,31 @@ u8 *a;
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80016A20);
+u8 *func_80016A20(u8 *arg0, s32 arg1) {
+    u8 *base;
+    u8 *e;
+    void **item;
+
+    base = *(u8 **)(arg0 + 0xC);
+    if (base != NULL) {
+        if (arg1 < *(s32 *)(base + 0x40)) {
+            e = base + (*(s32 *)(base + 0x44) + 0x44);
+            e += arg1 * 0x18;
+            item = *(void ***)(e + 0x14);
+            if (item != NULL) {
+                if (item[0] != NULL) {
+                    func_800110A8(item[0], &D_8004E0F0);
+                } else {
+                    func_80012F04(item[1]);
+                }
+                func_80012E14((u8 *)item);
+                *(s32 *)(e + 0x14) = 0;
+                return e;
+            }
+        }
+    }
+    return NULL;
+}
 
 /* Unloads what func_80016C18 loaded: the record's node at +0x14 holds a heap
  * block or (if that is NULL) a handle at +4. */
