@@ -1413,6 +1413,8 @@ typedef struct PadRumble {
 
 void func_80012BC8(s32 * *arg0, s32 *arg1, u8 *arg2);
 
+void func_8001F4F8(u8 *arg0, u8 *arg1);
+
 s32 func_800281C0(PadRumble *r, s32 port);
 
 #endif /* BASH_MAIN_H */
