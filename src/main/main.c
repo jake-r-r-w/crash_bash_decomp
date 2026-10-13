@@ -3576,7 +3576,39 @@ void func_8001DDD8(u8 *arg0) {
     (*(s32*)((u8*)(arg0) + 28)) = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001DE18);
+void func_8001DE18(arg0)
+    s32 *arg0;
+{
+    s32 *outer;
+    u8 *p;
+    u8 *q;
+    u8 *r;
+    u8 *s;
+    u8 *t;
+    u8 *u;
+    s32 idx;
+
+    outer = (s32 *)arg0[0];
+    idx = arg0[2] * 4;
+    p = (u8 *)outer[3];
+    p = p + (*(s32 *)(p + 0x18) + 0x18);
+    arg0[3] = (s32)p;
+    q = p + (idx + 4) + *(s32 *)(p + idx + 4);
+    arg0[4] = (s32)q;
+    r = q + (*(s32 *)(q + 0xC) + 0xC);
+    arg0[10] = (s32)r;
+    arg0[11] = (s32)(r + 4);
+    arg0[12] = (s32)(q + (*(s32 *)(q + 0x10) + 0x10));
+    arg0[5] = (s32)(q + (*(s32 *)(q + 0x20) + 0x20));
+    arg0[6] = *(s32 *)(q + 0x1C);
+    s = (u8 *)outer[3];
+    s = s + (*(s32 *)(s + 0x1C) + 0x1C);
+    arg0[8] = (s32)s;
+    t = (u8 *)outer[3];
+    arg0[9] = *(s32 *)(t + 0x10) + (s32)t + 0x18;
+    u = (u8 *)outer[3];
+    *(s32 *)(*(s32 *)(u + 0x3C) + (s32)u + 0x48) = (s32)u;
+}
 
 void func_8001DEF4(s32 *arg0, s32 *arg1) {
     u8 *p;

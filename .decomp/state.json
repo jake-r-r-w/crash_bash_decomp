@@ -1166,7 +1166,8 @@
   "via": "auto"
  },
  "8001DE18": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-13T09:12:19Z",
+  "status": "matched"
  },
  "8001DEF4": {
   "auto_diff": 27,
