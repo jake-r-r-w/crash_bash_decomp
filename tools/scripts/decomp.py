@@ -1018,7 +1018,8 @@ def cmd_verify(a):
 # m2c leftovers and hacks a hand match must not contain (see docs/CONVENTIONS.md, Matching rules)
 LINT_ERRORS = [
     (re.compile(r"\bM2C_\w+"), "m2c macro"),
-    (re.compile(r"(^|[\s(,])\?(\s|\*)"), "m2c unknown type `?`"),
+    # where a type goes (a declaration, a cast, a parameter), so a ternary's `?` doesn't count
+    (re.compile(r"(^[ \t]*|[(,][ \t]*)\?(\s|\*)", re.M), "m2c unknown type `?`"),
     (re.compile(r"\b(asm|__asm__)\s*(volatile\s*)?\(\s*\"[^\"]"), "inline asm with instructions"),
 ]
 # allowed only with --hack "reason", which goes into the commit message

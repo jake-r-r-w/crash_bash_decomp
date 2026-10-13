@@ -47,18 +47,21 @@ if [ -n "${DK_DOCKER_ARGS:-}" ]; then read -r -a EXTRA_ARGS <<< "$DK_DOCKER_ARGS
 # Name the container after what it runs, so `docker ps` reads e.g. swarm-w1-diff-func_8001562C-1234:
 # $DK_NAME (default dk; tools/swarm sets swarm-<slot>), the make target or decomp.py subcommand,
 # the function if there is one, and a number that keeps concurrent names unique.
-TASK="$(basename "${1:-sh}" .py)"; FN=""
+TASK="${1:-sh}"; TASK="${TASK##*/}"; FN=""
 case "${1:-}" in
   make)
     for a in "${@:2}"; do
       case "$a" in FUNC=*) FN="${a#FUNC=}" ;; -*|*=*) ;; *) [ "$TASK" = make ] && TASK="$a" ;; esac
     done ;;
   python3|python)
-    TASK="$(basename "${2:-python}" .py)"
-    if [ $# -ge 3 ] && [ "${3#-}" = "$3" ]; then TASK="$3"; fi
-    if [ $# -ge 4 ] && [ "${4#-}" = "$4" ]; then FN="$4"; fi ;;
+    case "${2:--}" in
+      -*) ;;   # python3 -c ..., python3 -m ...: just "python3"
+      *) TASK="${2##*/}"; TASK="${TASK%.py}"
+         if [ $# -ge 3 ] && [ "${3#-}" = "$3" ]; then TASK="$3"; fi
+         if [ $# -ge 4 ] && [ "${4#-}" = "$4" ]; then FN="$4"; fi ;;
+    esac ;;
 esac
-NAME="${DK_NAME:-dk}-$TASK${FN:+-$FN}-$$$RANDOM"
+NAME="${DK_NAME:-dk}-${TASK:0:24}${FN:+-${FN:0:40}}-$$$RANDOM"
 NAME="$(printf '%s' "$NAME" | tr -c 'A-Za-z0-9_.-' '-')"
 
 exec docker run --rm -i --name "$NAME" ${USER_ARGS[@]+"${USER_ARGS[@]}"} ${GIT_ENV[@]+"${GIT_ENV[@]}"} \
