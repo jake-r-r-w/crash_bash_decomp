@@ -1054,6 +1054,8 @@ _sfx_handler *func_80022924(void);
 
 void func_80024214(s32 *a, s32 *b);
 
+void func_80026ECC(void);
+
 void func_80026F48(void);
 
 s32 func_80027944(void);
