@@ -720,7 +720,30 @@ void func_80012E90(void) {
     func_80012E54();
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80012F04);
+void func_80012F04(LoadNode *arg0) {
+    LoaderState *ls;
+    LoadNode *prev;
+    void *temp_v1;
+
+    if ((s32)arg0 == D_80050628.unkC && D_80050628.unk4 != 0) {
+        *(s32 *)arg0 = 0;
+        return;
+    }
+    ls = &D_80050628;
+    prev = arg0->prev;
+    if (prev != NULL) {
+        prev->next = arg0->next;
+    } else {
+        ls->unkC = (s32)arg0->next;
+    }
+    arg0->next->prev = prev->next;
+    if ((s32)arg0 == ls->unk10) {
+        ls->unk10 = (s32)prev;
+    }
+    temp_v1 = D_80050F3C;
+    D_80050F3C = arg0;
+    arg0->next = temp_v1;
+}
 
 void func_80012F90(u8 *arg0) {
     u8 *temp_v1;

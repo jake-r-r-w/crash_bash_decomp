@@ -264,7 +264,8 @@
   "status": "matched"
  },
  "80012F04": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-13T07:59:58Z",
+  "status": "matched"
  },
  "80012F90": {
   "matched_at": "2026-10-10T10:11:53Z",
