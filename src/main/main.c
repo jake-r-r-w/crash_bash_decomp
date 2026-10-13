@@ -4017,7 +4017,50 @@ void func_80020E9C(NAS *nas, u8 *arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80020F5C);
+void func_80020F5C(u8 *arg0) {
+    s32 *p;
+    u8 *cur;
+    u8 *next;
+    void *head;
+    u8 *prev;
+    u8 *nxt;
+    void *head2;
+    void (*fn)(u8 *, u8 *);
+
+    p = *(s32 **)(arg0 + 0x18);
+    cur = *(u8 **)(arg0 + 8);
+    if (p != NULL) {
+        *p = 0;
+    }
+    for (;;) {
+        if (cur == NULL) {
+            goto unlink;
+        }
+        fn = D_80058B00[*(s32 *)(cur + 4)].unkC;
+        next = *(u8 **)(cur + 0xB4);
+        if (fn != NULL) {
+            fn(cur, arg0);
+        }
+        head = D_80058B70;
+        D_80058B70 = cur;
+        *(void **)(cur + 0xB4) = head;
+        cur = next;
+    }
+unlink:
+    prev = *(u8 **)(arg0 + 0x70);
+    if (prev != NULL) {
+        *(s32 *)(prev + 0x74) = *(s32 *)(arg0 + 0x74);
+    } else {
+        D_80058B78 = *(void **)(arg0 + 0x74);
+    }
+    nxt = *(u8 **)(arg0 + 0x74);
+    if (nxt != NULL) {
+        *(s32 *)(nxt + 0x70) = *(s32 *)(arg0 + 0x70);
+    }
+    head2 = D_80058B74;
+    D_80058B74 = arg0;
+    *(void **)(arg0 + 0x74) = head2;
+}
 
 void func_80021054(u8 *arg0) {
     s32 *p;

@@ -1335,7 +1335,8 @@
   "status": "matched"
  },
  "80020F5C": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-13T09:14:41Z",
+  "status": "matched"
  },
  "80021054": {
   "matched_at": "2026-10-13T08:40:13Z",
