@@ -1010,6 +1010,8 @@ char *func_8001517C(char *arg0, s32 arg1, s32 arg2);
 
 s32 func_80015210(s32 a, s32 b, s32 t);
 
+u8 *func_800167A8(u8 *arg0, u8 *arg1);
+
 void func_8001830C(void);
 
 s32 *func_800184F0(s32 arg0, s32 *arg1, s32 arg2, s32 arg3);
