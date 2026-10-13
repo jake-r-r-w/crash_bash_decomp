@@ -5365,7 +5365,24 @@ s32 func_8002D178(void) {
     return 0x1E000 - sum;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002D1D4);
+SizeEntry *func_8002D1D4(void) {
+    SizeEntry *p;
+    s32 i;
+
+    i = D_800675D0;
+    p = D_800675D4;
+    i--;
+    if (i != -1) {
+        do {
+            if (strcmp(D_8004CDAC, (char *)p) == 0) {
+                return p;
+            }
+            i--;
+            p++;
+        } while (i != -1);
+    }
+    return NULL;
+}
 
 void func_8002D254(void) {
     MemCardStop();

@@ -529,6 +529,7 @@ typedef struct {
     u8 unk1C[0xC];
 } SizeEntry;
 extern SizeEntry D_800675D4[];
+extern char D_8004CDAC[];
 extern Heap D_8004E0F0;
 extern u8 D_80055684[];
 extern void *D_8005AA34;
@@ -1058,5 +1059,7 @@ void func_8002B52C(s16 *arg0, s32 arg1, s32 arg2);
 void func_8002BA44(void);
 
 void func_8002BCB0(s32 *arg0);
+
+SizeEntry *func_8002D1D4(void);
 
 #endif /* BASH_MAIN_H */
