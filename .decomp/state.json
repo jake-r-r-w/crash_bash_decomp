@@ -1911,7 +1911,8 @@
   "via": "auto"
  },
  "800276C4": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-13T08:09:53Z",
+  "status": "matched"
  },
  "8002775C": {
   "auto_diff": 1,

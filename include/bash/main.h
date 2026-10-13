@@ -1154,6 +1154,8 @@ s32 *func_80021CB8(s32 *arg0, s32 arg1, s32 arg2);
 
 void func_8002321C(void);
 
+void func_800276C4(s32 *arg0);
+
 void func_800279A4(void);
 
 #endif /* BASH_MAIN_H */

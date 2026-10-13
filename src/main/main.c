@@ -5012,7 +5012,17 @@ void func_800276A4(void) {
     func_800275F8();
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800276C4);
+void func_800276C4(s32 *arg0) {
+    u8 *g;
+    u8 *t;
+
+    t = func_80011654(*arg0 + 0x1800, &D_8004E0F0);
+    g = D_8005B790;
+    *(u8 **)(g + 0x4000) = t;
+    *(s32 *)(g + 0x4004) = *(s32 *)(g + 0x4000) + *arg0 + 0x1800;
+    *(u8 **)((g += 0x8000) + 0xC) = func_80011654(*arg0 + 0x1800, &D_8004E0F0);
+    *(s32 *)(g + 0x10) = *(s32 *)(g + 0xC) + *arg0 + 0x1800;
+}
 
 void func_8002775C(u8 *arg0) {
     ClearOTagR((u_long *)arg0, 0x1000);
