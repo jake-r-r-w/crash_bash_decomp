@@ -3853,7 +3853,74 @@ void func_8001A43C(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4) {
     func_8001A0D8(&q, arg2);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001A6D4);
+void func_8001A6D4(void *arg0, u32 hidden) {
+    QuadVerts q;
+    u32 f;
+    u16 *r;
+    s32 c;
+    s32 w;
+    s32 x;
+
+#define p ((u32 *) arg0)
+    f = p[0];
+    r = (u16 *) arg0 + 2;
+    if (f & 0x8000) {
+        f |= hidden;
+        w = (s16) r[3];
+        x = (s16) r[0];
+        c = p[4];
+        if ((x & 0xC000) == 0x8000) {
+            if (x & 0x3FFF) {
+                x = (x & 0xFFFF3FFF) - (w / 2);
+            } else {
+                x = 0x140 - (w / 2);
+                x -= D_800569C0;
+            }
+            w += x;
+        }
+        if (arg0) {
+            q.v[0].x = x;
+            q.v[0].y = r[1];
+            q.v[0].z = r[2];
+            q.v[1].x = w;
+            q.v[1].y = r[1];
+            q.v[1].z = r[2];
+            q.v[2].x = x;
+            q.v[2].y = r[4];
+            q.v[2].z = r[2];
+            q.v[3].x = w;
+            q.v[3].y = r[4];
+            q.v[3].z = r[2];
+            q.c[0] = c;
+            q.c[1] = c;
+            q.c[2] = c;
+            q.c[3] = c;
+            func_8001A0D8(&q, f);
+        } else {
+            q.v[0].x = x;
+            q.v[0].y = r[1];
+            q.v[0].z = r[2];
+            q.v[1].x = w;
+            q.v[1].y = r[1];
+            q.v[1].z = r[2];
+            q.v[2].x = x;
+            q.v[2].y = r[4];
+            q.v[2].z = r[2];
+            q.v[3].x = w;
+            q.v[3].y = r[4];
+            q.v[3].z = r[2];
+            q.c[0] = c;
+            q.c[1] = c;
+            q.c[2] = c;
+            q.c[3] = c;
+            func_8001A0D8(&q, f);
+        }
+    }
+    if (p[7] & 0x8000) {
+        func_8001A43C((u16 *) arg0 + 2, p[5], p[7] | hidden, ((s16 *) arg0)[12], ((s16 *) arg0)[13]);
+    }
+#undef p
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001A82C);
 

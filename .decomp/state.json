@@ -973,7 +973,8 @@
   "status": "matched"
  },
  "8001A6D4": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-13T21:28:33Z",
+  "status": "matched"
  },
  "8001A82C": {
   "auto_failed": "types"
