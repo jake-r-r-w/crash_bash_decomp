@@ -1969,7 +1969,8 @@
   "via": "auto"
  },
  "800272AC": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-13T21:41:12Z",
+  "status": "matched"
  },
  "80027408": {
   "auto_diff": 98,

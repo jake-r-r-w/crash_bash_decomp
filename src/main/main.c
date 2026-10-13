@@ -7789,7 +7789,47 @@ void func_8002726C(void) {
     DrawSync(0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800272AC);
+void func_800272AC(s32 arg0) {
+    DISPENV sp10;
+    RECT *r = D_8005B698;
+    RECT *src;
+    u8 *buf;
+
+    FntFlush(D_800643E8);
+    DrawSync(0);
+    func_80010488(&D_8004E0F0);
+    if (r != NULL) {
+        if (D_8005B790 == D_8005B68C) {
+            if (D_8005B790) {
+                src = r;
+            } else {
+                src = r;
+            }
+        } else {
+            src = r + 1;
+        }
+        sp10.disp = *src;
+        sp10.screen.x = 0;
+        sp10.screen.w = 0x100;
+        sp10.screen.y = (D_800637A8 == 0) ? 8 : 0x10;
+        sp10.screen.h = (D_800637A8 == 0) ? 0xF0 : 0x100;
+        sp10.isinter = ((u8 *)r)[0x14];
+        sp10.isrgb24 = ((u8 *)r)[0x10];
+        D_8004E0E4 = VSync(1);
+        VSync(arg0);
+        PutDispEnv(&sp10);
+        DrawOTag((u32 *)(D_8005B68C + 0x3FFC));
+        buf = D_8005B790;
+        if (D_8005B68C == buf) {
+            buf += 0x400C;
+        }
+        D_8005B68C = buf;
+        D_8005B690 += 1;
+        ClearOTagR((u32 *)buf, 0x1000);
+        *(s32 *)(buf + 0x4008) = *(s32 *)(buf + 0x4000);
+    }
+    func_80017388();
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80027408);
 
