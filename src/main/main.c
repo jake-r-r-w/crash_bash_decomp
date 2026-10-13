@@ -1780,7 +1780,46 @@ s32 func_80016450(u8 *arg0, s32 arg1) {
 }
 
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80016478);
+u8 *func_80016478(u8 *arg0, u8 *arg1) {
+    u8 *tbl;
+    u8 *p;
+    s32 n;
+    s32 key;
+    u8 *res;
+    u8 *blk;
+
+    tbl = *(u8 **)(arg0 + 0xC);
+    if (tbl == NULL) {
+        res = NULL;
+    } else {
+        key = func_8001534C(arg1);
+        p = tbl + (*(s32 *)(tbl + 0x44) + 0x44);
+        n = *(s32 *)(tbl + 0x40);
+        n--;
+        for (; n != -1; n--, p += 0x18) {
+            if (*(s32 *)(p + 0x10) == key) {
+                res = p;
+                goto found;
+            }
+        }
+        res = NULL;
+    }
+found:
+    if (res != NULL) {
+        blk = *(u8 **)(res + 0x14);
+        if (blk != NULL) {
+            if (*(void **)blk != NULL) {
+                func_800110A8(*(void **)blk, &D_8004E0F0);
+            } else {
+                func_80012F04(*(LoadNode **)(blk + 4));
+            }
+            func_80012E14(blk);
+            *(u8 **)(res + 0x14) = NULL;
+            return res;
+        }
+    }
+    return NULL;
+}
 
 s32 func_80016558(u8 *arg0, u8 *arg1) {
     u8 *tbl;
