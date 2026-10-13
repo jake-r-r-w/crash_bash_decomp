@@ -1676,4 +1676,38 @@ s16 func_8002B5B0(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 
 S16Pair func_8002B7C8(s32 x, s32 v);
 
+typedef struct { u8 pad[0xC]; } Slot12;
+extern Slot12 D_80063B1C[];
+
+typedef struct {
+    /* 0x00 */ u16 w0;
+    /* 0x02 */ u16 w2;
+    /* 0x04 */ u8 pad4[4];
+    /* 0x08 */ u32 w8;
+    /* 0x0C */ u32 wC;
+    /* 0x10 */ u32 w10;
+} TexSrc2A84C;
+
+typedef struct {
+    /* 0x00 */ u16 flag;
+    /* 0x02 */ s16 f2;
+    /* 0x04 */ Slot12 *slot;
+    /* 0x08 */ s16 f8;
+    /* 0x0A */ s16 fA;
+    /* 0x0C */ u32 fC;
+    /* 0x10 */ s8 f10;
+    /* 0x11 */ s8 f11;
+    /* 0x12 */ u16 f12;
+    /* 0x14 */ u32 f14;
+    /* 0x18 */ u8 pad18[4];
+    /* 0x1C */ u16 f1C;
+    /* 0x1E */ u16 f1E;
+    /* 0x20 */ s32 f20;
+    /* 0x24 */ u8 pad24[0xC];
+    /* 0x30 */ s32 f30;
+    /* 0x34 */ s32 f34;
+} TexDst2A84C;
+
+void func_8002A84C(TexSrc2A84C *s, TexDst2A84C *d, s32 n);
+
 #endif /* BASH_MAIN_H */

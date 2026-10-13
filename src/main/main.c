@@ -8096,7 +8096,34 @@ void func_8002A830(u8 *src, u8 *out, s32 len) {
     *(u16 *)out = id;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002A84C);
+void func_8002A84C(TexSrc2A84C *s, TexDst2A84C *d, s32 n) {
+    u32 t;
+    s32 u;
+
+    d->f20 = 0;
+    d->f34 = -1;
+    d->flag = *(u16 *)&s->wC & 1;
+    d->f2 = (s->wC >> 1) & 0x7FFF;
+    d->f12 = *(u16 *)((u8 *)s + 0xE);
+    d->f14 = s->w10;
+    d->fA = s->w2;
+    if (d->flag == 0) {
+        d->f8 = s->w0 << 2;
+        d->slot = &D_80063B1C[func_80028994(s->w0 << 2, s->w2, 0x10)];
+        d->f10 = (*(u8 *)s << 2) - 1;
+    } else {
+        d->f8 = s->w0 << 1;
+        d->slot = &D_80063B1C[func_80028994(s->w0 << 1, s->w2, 0x100)];
+        d->f10 = (*(u8 *)s << 1) - 1;
+    }
+    d->f11 = *(u8 *)((u8 *)s + 2) - 1;
+    d->f1C = s->w0;
+    d->f1E = s->w2;
+    u = n - 0x14;
+    t = s->w8;
+    d->f30 = (s32)s - u;
+    d->fC = t;
+}
 
 void func_8002A9AC(s32 *arg0, s32 arg1) {
     s32 n;

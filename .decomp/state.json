@@ -2210,7 +2210,8 @@
   "status": "matched"
  },
  "8002A84C": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-13T20:56:42Z",
+  "status": "matched"
  },
  "8002A9AC": {
   "auto_diff": 40,
