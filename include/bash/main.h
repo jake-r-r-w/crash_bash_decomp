@@ -258,7 +258,9 @@ typedef struct SeqSlot {
 typedef struct MusicEntry {
     /* 0x00 */ s32 file;
     /* 0x04 */ s16 reverb;               /* SsUtSetReverbType */
-    /* 0x06 */ u8 unk6[0x14 - 0x06];
+    /* 0x06 */ u8 unk6[0x10 - 0x06];
+    /* 0x10 */ s16 tempo;
+    /* 0x12 */ u8 unk12[0x14 - 0x12];
 } MusicEntry;
 
 /* D_80050628: file loader state (func_80013238 resets it). Only these fields are known. */
@@ -1079,6 +1081,8 @@ void func_8002B52C(s16 *arg0, s32 arg1, s32 arg2);
 void func_8002BA44(void);
 
 void func_8002BCB0(s32 *arg0);
+
+void func_8002C1C0(s32 arg0, s32 arg1);
 
 SizeEntry *func_8002D1D4(void);
 

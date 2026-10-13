@@ -5326,7 +5326,11 @@ void func_8002C18C(u8 *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C1C0);
+void func_8002C1C0(s32 arg0, s32 arg1) {
+    if (D_8006557C.seq >= 0) {
+        SsSeqSetAccelerando((s16)D_8006557C.seq, (D_80058B88[D_8005A648].tempo * arg0) / 100, arg1);
+    }
+}
 
 void func_8002C248(s32 arg0) {
     if (D_8006557C.seq >= 0) {
