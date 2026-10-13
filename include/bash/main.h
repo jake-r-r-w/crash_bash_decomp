@@ -541,6 +541,7 @@ typedef struct {
 extern SizeEntry D_800675D4[];
 extern char D_8004CDAC[];
 extern Heap D_8004E0F0;
+extern u8 *D_8006E9FC;
 extern u8 D_80055684[];
 extern void *D_8005AA34;
 extern void *D_8005AA24;
@@ -1120,6 +1121,8 @@ typedef struct VelState {
     /* 0x0C */ s32 vy;
     /* 0x10 */ s32 vz;
 } VelState;
+
+s32 func_80013334(s32 arg0, s32 arg1, u8 * *arg2, s32 arg3);
 
 void func_8002147C(VelObj *obj, VelParams *p, VelState *s);
 
