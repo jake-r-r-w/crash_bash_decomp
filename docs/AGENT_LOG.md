@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 746/2550 game functions matched (main.exe ~481/574),
+- 767/2550 game functions matched (main.exe ~502/574),
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
@@ -93,13 +93,17 @@ Other:
   and a zero pointer in a2). `func_8002DE2C`, then `func_8002D4F4` (2360 B,
   the biggest left). `aspsx_fill.py` only fills `j`/`jr`; if a `jal` slot
   differs, extend it from the target.
-- `func_8002E0F0` (parked by the swarm) has a `lui $at` store and an indexed
-  load expanded through the destination register (`lui rD; addu rD,rD,rI;
-  lw rD,%lo(sym)(rD)`), both 2.7.2/ASPSX traits that 2.8.1 never produces;
-  no other function in `main/8002e0f0` has them. The 2.7.2 unit probably
-  ends at `0x8002E25C`, not `0x8002E0F0` (ARCHITECTURE.md says the
-  opposite: recheck it). Move it as a split step, and `aspsx_fill.py` may
-  need to expand `lw rD,sym(rI)` through rD instead of `$at`.
+- `main/8002e0f0` is gcc 2.7.2 + ASPSX now (Makefile), so 2.7.2 runs from
+  `0x8002D488` to PsyQ; whether `8002d488` and `8002e0f0` are one file is
+  open. `func_8002E0F0` and `func_8002E25C` were only tried under 2.8.1:
+  the next run retries them. `func_8002E0F0` may need `aspsx_fill.py` to
+  expand `lw rD,sym(rI)` through rD instead of `$at`.
+- `func_80027408`'s symbol holds two functions: a no-return error-screen
+  loop (`0x80027408..0x800274F8`, ends in `j`) and a second from
+  `0x800274FC` (the `func_800276C4` body, then `D_8005B698 = NULL`; `jr ra`
+  at `0x80027594`). Add `func_800274FC` to `configs/USA/sym.main.txt`; the
+  big session's C for the first half matches all its 60 insns
+  (`results/func_80027408/big1-20261013212154/`).
 - Swarm: `--seg` is a prefix and defaults to `main/main`, so the new units
   need `--seg main/8002` (or `--only`).
 - Heap: `D_8004E0F0` is a `Heap` now. Its +0x10 is the deferred-free list
@@ -128,6 +132,10 @@ Other:
 ## Gotchas
 
 **Tooling**
+- A unit whose last function ends in padding `nop`s (and rodata ending in
+  zero padding) comes out short once that function is C: add a splat
+  `[offset, pad]` subsegment after it (`configs/USA/main.yaml` has the two
+  for `main/8002e0f0`).
 - The swarm refuses any patch that adds inline asm, even a GTE macro, and a
   big-mode function then parks as "no progress" though its sessions said
   MATCH. Read the parks' `result.json` notes after a run: `func_8001AA48`
@@ -233,6 +241,10 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-14:** 1-hour swarm run: 20 committed, $41. Its parks showed
+  `main/8002e0f0` is gcc 2.7.2 (Makefile changed; `func_8002E618` then
+  matched by hand, with `pad` subsegments for the unit's end padding).
+  `func_80027408` needs a symbol split (Open leads).
 - **2026-10-13 (night):** 1-hour swarm run: 28 committed, plus 2 by hand
   (`func_80017D90`: the gate's m2c `?` lint flagged a ternary, now fixed;
   `func_8001AA48`: refused for its GTE macro, see Gotchas), 1 real park
