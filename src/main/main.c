@@ -1578,7 +1578,44 @@ void func_800138A4(void) {
 }
 
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800139A8);
+void func_800139A8(void) {
+    ComboSeq *c;
+    s32 i;
+    s32 m;
+
+    c = (ComboSeq *)D_800512A8;
+    for (i = 0;; i++) {
+        if (i > 0) {
+            goto done;
+        }
+        m = c->steps[c->step];
+        if (m != 0 && (((PadStick *)D_80051338)->pressed & 0xFFFF)) {
+            if ((((PadStick *)D_80051338)->pressed & m) == m) {
+                if (c->step == 0) {
+                    c->startTime = D_8005B690;
+                }
+                c->step++;
+                if (c->steps[c->step] == 0) {
+                    c->step = 0;
+                    if (c->maxTime >= D_8005B690 - c->startTime) {
+                        PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+                        c->fn();
+                    }
+                }
+            } else {
+                m = c->steps[0];
+                if ((((PadStick *)D_80051338)->pressed & m) == m) {
+                    c->step = 1;
+                    c->startTime = D_8005B690;
+                } else {
+                    c->step = 0;
+                }
+            }
+        }
+        c = (ComboSeq *)((u8 *)c + 0x90);
+    }
+done:;
+}
 
 void func_80013B0C(ComboSeq *c) {
     s32 m;

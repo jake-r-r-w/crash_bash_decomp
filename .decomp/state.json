@@ -392,7 +392,8 @@
   "status": "matched"
  },
  "800139A8": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-13T20:57:35Z",
+  "status": "matched"
  },
  "80013B0C": {
   "matched_at": "2026-10-13T12:35:47Z",

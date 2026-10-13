@@ -785,6 +785,7 @@ typedef struct ComboSeq {
 
 extern MATRIX D_80058AD4;
 extern s32 D_80051380;
+extern u8 D_800512A8[]; /* ComboSeq table, 0x90 bytes per entry */
 extern u8 D_800536CC[];
 extern CdlLOC D_8006EA14;
 void func_80016D98();
@@ -1707,6 +1708,8 @@ typedef struct {
     /* 0x30 */ s32 f30;
     /* 0x34 */ s32 f34;
 } TexDst2A84C;
+
+void func_800139A8(void);
 
 void func_8002A84C(TexSrc2A84C *s, TexDst2A84C *d, s32 n);
 
