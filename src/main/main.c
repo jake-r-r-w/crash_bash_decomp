@@ -5658,7 +5658,48 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80024AD8);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80024E30);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80024FA4);
+void func_80024FA4(ScriptCursor *c) {
+    s32 e;
+
+    switch (c->kind) {
+    case 1:
+        if (c->tbl != NULL) {
+            c->idx++;
+            do {
+                e = c->tbl[c->idx];
+                if (c->tbl[c->idx] == 0) {
+                    c->idx++;
+                    c->idx = *(u16 *)&c->tbl[c->idx];
+                }
+            } while (e == 0);
+            c->cur = e;
+        }
+        c->unk1E = 0;
+        c->unk1C = -1;
+        c->unk28 = 0;
+        break;
+    case 2:
+        if (c->tbl != NULL) {
+            c->idx++;
+            do {
+                e = c->tbl[c->idx];
+                if (c->tbl[c->idx] == 0) {
+                    c->idx++;
+                    c->idx = *(u16 *)&c->tbl[c->idx];
+                }
+            } while (e == 0);
+            c->cur = e;
+        }
+        c->unk1E = -1;
+        c->unk1C = -1;
+        c->unk28 = 0;
+        break;
+    default:
+        c->unk28 = 0;
+        break;
+    }
+    c->unk2A = 0;
+}
 
 s16 func_800250B0(NAS *nas) {
     EXTengine *eng;

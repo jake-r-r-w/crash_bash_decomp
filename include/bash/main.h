@@ -1501,5 +1501,22 @@ void func_80029100(AnimOwner *arg0);
 void func_8002A4C0(TexUploadList *arg0, u8 *arg1);
 
 void func_8002BD98(SeqSlot *slot, s32 idx);
+/* A script cursor: kind 1 or 2 steps idx through a table of entries (0 entries
+ * jump to the index in their low half) and stores the entry in cur. */
+typedef struct ScriptCursor {
+    /* 0x00 */ u8 kind;
+    /* 0x01 */ u8 pad1[0xB];
+    /* 0x0C */ s32 cur;
+    /* 0x10 */ s32 *tbl;
+    /* 0x14 */ u8 pad14[8];
+    /* 0x1C */ s16 unk1C;
+    /* 0x1E */ s16 unk1E;
+    /* 0x20 */ s16 idx;
+    /* 0x22 */ u8 pad22[6];
+    /* 0x28 */ s16 unk28;
+    /* 0x2A */ s16 unk2A;
+} ScriptCursor;
+
+void func_80024FA4(ScriptCursor *c);
 
 #endif /* BASH_MAIN_H */

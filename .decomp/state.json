@@ -1680,7 +1680,8 @@
   "auto_failed": "diff"
  },
  "80024FA4": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-13T12:40:43Z",
+  "status": "matched"
  },
  "800250B0": {
   "matched_at": "2026-10-11T14:39:29Z",
