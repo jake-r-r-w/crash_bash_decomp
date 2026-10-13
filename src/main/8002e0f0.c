@@ -4,7 +4,42 @@
 
 INCLUDE_ASM("asm/nonmatchings/main/8002e0f0", func_8002E0F0);
 
+#ifndef NON_MATCHING
 INCLUDE_ASM("asm/nonmatchings/main/8002e0f0", func_8002E25C);
+#else
+void func_8002E25C(u8 *str, TextPos *pos, s32 arg2) {
+    s32 len;
+    s32 startX;
+    u8 *base;
+    u8 *glyph;
+    s32 w;
+    u32 hi;
+    u8 c;
+
+    len = strlen(str);
+    startX = pos->x;
+    for (base = str; str < base + len; str++) {
+        c = *str;
+        if (c == '
+') {
+            pos->x = startX;
+            pos->y += 18;
+        } else if (D_8006EA24 == 0) {
+            hi = *str++;
+            func_8002E3D0(pos, (u8 *)Krom2RawAdd(*str | (hi << 8)), arg2, 7);
+            pos->x = pos->x + 1 + pos->w;
+        } else if (c == ' ') {
+            pos->x += 8;
+        } else {
+            glyph = (u8 *)0xBFC7F8DE + (*str - 0x21) * 15;
+            w = func_8002E584(glyph);
+            pos->w = w - ((u32)w >> 16) + 1;
+            func_8002E3D0(pos, glyph, arg2, w);
+            pos->x = pos->x + 2 + pos->w;
+        }
+    }
+}
+#endif
 
 INCLUDE_ASM("asm/nonmatchings/main/8002e0f0", func_8002E3D0);
 

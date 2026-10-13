@@ -35,11 +35,17 @@
    "note": "registers 4/40: func_800276C4's body + D_8005B698 = NULL. Target loads the last *arg0 into a0 and the D_8005B698 lui into v1 (sched1 put the lui before the load); ours v1 then v0. Tried: operand orders, a block-local, static inline body, &D_8005B698 taken early; permuter 10 min no gain. Next: cc1 -dS dump of sched1 order",
    "seg": "main/main",
    "size": 160
+  },
+  {
+   "name": "func_8002E25C",
+   "note": "structure 68/93 (93 vs 91) under 2.7.2: the target reloads *str in the Kanji and ROM-glyph paths but compares the first load for ' '; ours reuses it (c local, volatile D_8006EA24 and an index loop didn't help; index loop 84/93 but 89 long). lh startX (s32) and x-before-w sum order are right. Next: what blocks CSE of *str in 2.7.2",
+   "seg": "main/8002e0f0",
+   "size": 372
   }
  ],
- "commit": "5be0d8b",
+ "commit": "4f7a5b6",
  "game": "SCUS_945.70",
- "generated": "2026-10-13T22:57:46Z",
+ "generated": "2026-10-13T23:01:20Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -33434,7 +33440,7 @@
    }
   },
   {
-   "commit": "5be0d8b",
+   "commit": "4f7a5b6",
    "data_b": 384,
    "data_tb": 606943,
    "game_all_f": 2551,
@@ -33447,7 +33453,7 @@
    "lib_b": 122112,
    "lib_f": 564,
    "lib_tb": 122112,
-   "ts": "2026-10-13T22:57:45Z",
+   "ts": "2026-10-13T23:01:20Z",
    "units": {
     "engine": [
      2752,
@@ -33643,7 +33649,7 @@
   }
  ],
  "summary": {
-  "blocked": 6,
+  "blocked": 7,
   "copies_b": 37444,
   "data": {
    "done_b": 384,
@@ -33654,7 +33660,7 @@
    "all_f": 2551,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 6,
+   "blocked": 7,
    "c_f": 765,
    "done_b": 86380,
    "done_f": 768,
@@ -33706,7 +33712,7 @@
     "all_f": 575,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 6,
+    "blocked": 7,
     "c_f": 501,
     "done_b": 74992,
     "done_f": 504,
