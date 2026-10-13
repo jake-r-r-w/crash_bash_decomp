@@ -1705,7 +1705,8 @@
   "status": "matched"
  },
  "80025D40": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-13T09:11:42Z",
+  "status": "matched"
  },
  "80025E00": {
   "auto_diff": 43,

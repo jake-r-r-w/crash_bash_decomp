@@ -5190,7 +5190,29 @@ s32 func_80025C80(EXTengine *eng) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80025D40);
+s32 func_80025D40(EXTengine *eng) {
+    s32 dy;
+    int new_var;
+
+    new_var = eng->unk10.x;
+    new_var = -eng->OldXYZ.x + new_var;
+    func_80032F3C(new_var);
+    func_80032F3C(eng->unk10.z - eng->OldXYZ.z);
+    if (D_8005AA94 != NULL) {
+        dy = D_8005AA94(eng);
+    } else {
+        dy = func_80025E00(eng, eng->unk10.y - D_8005A5D8);
+    }
+    if (dy == 0x7FFFFFFF) {
+        return 1;
+    }
+    if (func_80032F3C(dy) < 0x20) {
+        eng->unk10.y -= dy;
+        return 0;
+    } else {
+        return 1;
+    }
+}
 
 s32 func_80025E00(EXTengine *eng, s32 y) {
     NAS *nas;

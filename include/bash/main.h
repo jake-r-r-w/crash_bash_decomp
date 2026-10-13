@@ -1349,6 +1349,8 @@ void func_80025B10(EXTengine *eng, u32 flag);
 
 s32 func_80025C80(EXTengine *eng);
 
+s32 func_80025D40(EXTengine *eng);
+
 void func_8002617C(void);
 
 s32 func_8002633C(u8 *s);
