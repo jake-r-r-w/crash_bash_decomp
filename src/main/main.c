@@ -6005,7 +6005,29 @@ void func_8002AC70(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002ACA0);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002ADD4);
+void func_8002ADD4(void *data, VabSlot *slot) {
+    u8 *head;
+    u8 *body;
+    s16 id;
+
+    SpuIsTransferCompleted(SPU_TRANSFER_WAIT);
+    if ((D_800654C0 != NULL || D_800654C4 != NULL) && SpuIsTransferCompleted(SPU_TRANSFER_PEEK) == 1) {
+        D_800654C4->id = D_800654C8;
+        func_800112A4(D_800654C0, D_800654C0->head, &D_8004E0F0);
+        func_8002ACA0(D_800654C4->id, 0);
+        D_800654C0 = NULL;
+        D_800654C4 = NULL;
+    }
+    head = (u8 *)data + ((VabFile *)data)->head;
+    slot->head = head;
+    slot->handle = 0;
+    body = (u8 *)data + ((VabFile *)data)->body;
+    id = SsVabOpenHead(slot->head, -1);
+    SsVabTransBody(body, id);
+    D_800654C8 = id;
+    D_800654C0 = data;
+    D_800654C4 = slot;
+}
 
 void func_8002AEE0(void) {
     MATRIX *m;
