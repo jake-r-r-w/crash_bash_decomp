@@ -2127,7 +2127,45 @@ s32 *func_800185F8(u8 *arg0) {
     return temp_v1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80018694);
+s32 *func_80018694(s32 **arg0, s32 arg1) {
+    s32 *p;
+    s32 *next;
+    void *prev;
+
+    p = D_80056860;
+    if (p == NULL) {
+        return NULL;
+    }
+    *arg0 = p;
+    next = (s32 *)p[0];
+    prev = D_80056864;
+    D_80056864 = p;
+    p[6] = 0;
+    p[7] = 0;
+    p[8] = 0;
+    p[9] = 0;
+    p[10] = 0;
+    p[16] = 0;
+    p[17] = 0;
+    p[18] = 0;
+    p[19] = 0;
+    p[20] = 0;
+    p[1] = 0;
+    p[2] = 0;
+    p[3] = 0;
+    p[4] = 0;
+    p[5] = 0;
+    p[11] = 0;
+    p[12] = 0;
+    p[13] = 0;
+    p[14] = 0;
+    p[15] = 0;
+    *(s16 *)(p + 21) = arg1;
+    *((s16 *)(p + 21) + 1) = 0;
+    D_80056860 = next;
+    p[0] = (s32)prev;
+    return p;
+}
 
 void func_80018728(s32 arg0, s32 arg1) {
     func_80017EE8();

@@ -675,6 +675,7 @@ extern s8 D_8005A63C;
 extern void *D_8005699C;
 extern void *D_8005AA38;
 extern void *D_80056864;
+extern s32 *D_80056860;
 extern u8 D_8005B790[];
 extern s32 D_800637A8;
 extern u8 *D_80058B7C;
@@ -1123,6 +1124,8 @@ typedef struct VelState {
 } VelState;
 
 s32 func_80013334(s32 arg0, s32 arg1, u8 * *arg2, s32 arg3);
+
+s32 *func_80018694(s32 * *arg0, s32 arg1);
 
 void func_8002147C(VelObj *obj, VelParams *p, VelState *s);
 

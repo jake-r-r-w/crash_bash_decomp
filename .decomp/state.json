@@ -866,7 +866,8 @@
  },
  "80018694": {
   "auto_diff": 35,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-13T08:00:15Z",
+  "status": "matched"
  },
  "80018728": {
   "matched_at": "2026-10-10T10:16:46Z",
