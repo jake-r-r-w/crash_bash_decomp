@@ -121,7 +121,7 @@ BASH_SIZE_CHECK(_sfx_handler, 0x38);
 typedef struct {
     _sfx_handler voices[24];
     _sfx_handler *free;         /* 0x540 */
-    _sfx_handler *active;       /* 0x544: also named SfxActiveVoices */
+    _sfx_handler *active;       /* 0x544 (the symbol SfxActiveVoices, used by asm) */
 } SfxPool;
 
 /* A VAB file in memory: the header and body as byte offsets from its start
@@ -393,7 +393,7 @@ void func_8002232C(void);
 void func_800227C0(void);
 void func_800227FC(void);
 void func_80022838(void);
-void func_800228A4(u8 *arg0, s32 arg1);
+void func_800228A4(_sfx_handler *voice, s32 arg1);
 void func_800229D4(void);
 void func_80025AE4(u8 *arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4, s32 arg5, s32 arg6);
 void func_80025F8C(void);
@@ -566,7 +566,6 @@ extern s32 D_800655B0;
 extern s32 ASTCount;            /* entries in ASTTable */
 extern ASTEntry *ASTTable;      /* the AST table in use */
 extern s32 D_80058AC8;
-extern void *SfxActiveVoices;
 extern SfxPool SfxVoicePool;
 extern s8 SfxTable[][2]; /* by sound id; [1] == -1: no sound */
 void func_8002B8F4(s32 *voice);

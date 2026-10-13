@@ -3413,50 +3413,50 @@ _sfx_handler *PlaySfx(s32 id, _sfx_handler **handle, SLONG_XYZ *pos, s32 arg3, s
 }
 
 void func_800227C0(void) {
-    u8 *var_v1;
+    _sfx_handler *voice;
 
-    var_v1 = SfxActiveVoices;
-    if (var_v1 != NULL) {
+    voice = SfxVoicePool.active;
+    if (voice != NULL) {
         do {
-            (*(s32*)((u8*)(var_v1) + 28)) = (s32) ((*(s32*)((u8*)(var_v1) + 28)) | 4);
-            var_v1 = (*(s32*)((u8*)(var_v1) + 24));
-        } while (var_v1 != NULL);
+            voice->flags |= 4;
+            voice = voice->next;
+        } while (voice != NULL);
     }
 }
 
 void func_800227FC(void) {
-    u8 *var_v1;
+    _sfx_handler *voice;
 
-    var_v1 = SfxActiveVoices;
-    if (var_v1 != NULL) {
+    voice = SfxVoicePool.active;
+    if (voice != NULL) {
         do {
-            (*(s32*)((u8*)(var_v1) + 28)) = (s32) ((*(s32*)((u8*)(var_v1) + 28)) | 2);
-            var_v1 = (*(s32*)((u8*)(var_v1) + 24));
-        } while (var_v1 != NULL);
+            voice->flags |= 2;
+            voice = voice->next;
+        } while (voice != NULL);
     }
 }
 
 void func_80022838(void) {
-    u8 *temp_s1;
-    u8 *var_s0;
+    _sfx_handler *next;
+    _sfx_handler *voice;
 
     func_8002AEE0();
-    var_s0 = SfxActiveVoices;
-    if (var_s0 != NULL) {
+    voice = SfxVoicePool.active;
+    if (voice != NULL) {
         do {
-            temp_s1 = (*(s32*)((u8*)(var_s0) + 24));
-            if (func_8002235C(var_s0) != 1) {
-                StopSfx(var_s0);
+            next = voice->next;
+            if (func_8002235C(voice) != 1) {
+                StopSfx(voice);
             }
-            var_s0 = temp_s1;
-        } while (var_s0 != NULL);
+            voice = next;
+        } while (voice != NULL);
     }
 }
 
-void func_800228A4(u8 *arg0, s32 arg1) {
-    if (arg0 != NULL) {
-        (*(s32*)((u8*)(arg0) + 36)) = arg1;
-        (*(s32*)((u8*)(arg0) + 28)) = (s32) ((*(s32*)((u8*)(arg0) + 28)) | 1);
+void func_800228A4(_sfx_handler *voice, s32 arg1) {
+    if (voice != NULL) {
+        voice->unk24 = arg1;
+        voice->flags |= 1;
     }
 }
 
