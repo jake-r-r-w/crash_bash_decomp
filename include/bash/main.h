@@ -1595,6 +1595,8 @@ s32 func_80015D70(u8 *arg0, u8 *arg1);
 
 MATRIX *func_8001ACC0(GfxXform *obj);
 
+s32 func_8001D48C(subengine * *out_first, subengine * *last, s32 n);
+
 void func_80020CC4(u8 *arg0, s32 arg1, u8 *arg2, s32 arg3);
 
 void func_800210F8(u8 *arg0, s32 arg1, u8 *arg2, s32 arg3, u8 * *arg4);

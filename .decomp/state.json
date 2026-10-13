@@ -1129,7 +1129,8 @@
  },
  "8001D48C": {
   "auto_diff": 85,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-13T20:31:08Z",
+  "status": "matched"
  },
  "8001D5D0": {
   "auto_diff": 11,

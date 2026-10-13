@@ -4179,7 +4179,46 @@ void func_8001D3B0(EXTengine *eng, s32 n, subengine *sub) {
     sub->next = NULL;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001D48C);
+s32 func_8001D48C(subengine **out_first, subengine **last, s32 n) {
+    subengine *sub;
+    subengine *prev;
+    s32 count;
+
+    count = 0;
+    sub = D_80058ACC;
+    if (sub != NULL && n > 0) {
+        prev = *last;
+        if (prev == NULL) {
+            prev = sub;
+            *out_first = sub;
+            sub->prev = NULL;
+            D_8005A830.next = sub->next;
+            D_8005A830.prev = sub->prev;
+            *sub = D_8005A830;
+            n--;
+            count++;
+            sub = sub->next;
+        }
+        while (n != 0) {
+            if (sub == NULL) {
+                break;
+            }
+            prev->next = sub;
+            sub->prev = prev;
+            prev = sub;
+            D_8005A830.next = sub->next;
+            D_8005A830.prev = sub->prev;
+            *sub = D_8005A830;
+            n--;
+            sub = sub->next;
+            count++;
+        }
+        prev->next = NULL;
+        *last = prev;
+        D_80058ACC = sub;
+    }
+    return count;
+}
 
 void func_8001D5D0(void) {
     D_80056998.unk8C.m[0][0] = 0x1000;
