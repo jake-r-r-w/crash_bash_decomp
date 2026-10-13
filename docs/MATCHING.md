@@ -179,6 +179,52 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | A leading `move a3,a0`, the walker in a3 and its `+4` giv in a0 (ours keeps the walker in a0, no copy) | Step the parameter itself in the loop and return it, instead of copying it into a local | `func_80021CB8` |
 | A global's `lui`/`addiu` after the argument shift, and s0/s1 saved in another order | `Heap *h = &global;` as the first local, then `arg += 3; w = arg >> 2;` | `func_800131B0` |
 | A global base `addiu` hoisted before a call, or a `+0x8000` hoisted above the second call (target: `ori` + `addu` after it) | The call result into a local first, then `g = global;`; write the second store as `*(T *)((g += 0x8000) + 0xC) = call(...)` | `func_800276C4` |
+| Full build longer than the target (+8 or +32 bytes) though the function matches alone; the string is also in an `INCLUDE_RODATA` bundle | Don't write the literal: `extern char D_xxxx[];` in the owned header and `printf(D_xxxx)` | `func_80013034` |
+| Full build +8 bytes of rodata and everything after a jump table shifts; gcc's own table is `.align 3`, the target's 4-aligned | Replace the `switch` with `static const void *const tbl[N] = {&&l21, ...}; goto *tbl[c - 0x21];` and labelled returns (the default label for gaps) | `func_8002C4B0` |
+| A jump table (`sltiu 5` + `lw`/`jr`) where ours is a `beq` chain | Add the empty `case N: break;` for the table's last entry, so the range is 0..N | `func_800142D4` |
+| cc1 says "too few arguments" (shown only as make Error 33 with a misleading line) where a caller passes nothing to a function that passes a0 through | Define it K&R style: `void f(arg0) T *arg0; { ... }` | `func_800275F8` |
+| A loop keeps its test at the top with a `j` back; gcc rotates every `while`/`for`/`goto` form | `for (;;) { if (cur == NULL) return; ...; cur = next; }`; when code follows the loop, `goto tail;` instead of `return`, or `for (;;) { if (i < N) { body; i++; } else break; }`. Use the global directly, not a pool-pointer local | `func_80020DF8`, `func_80021054`, `func_80022504`, `func_80026E2C`, `func_80020F5C` |
+| An inner loop's test duplicated (guard + body + bottom test); ours merges it into one jump | Plain `while (g == p) {...}` inside the outer loop, not `if (g == p) do {...} while (g == p)` | `func_800270F0` |
+| `li t0,-1` hoisted and `bne a1,t0` as the loop test; ours `bgez` | `i = N; do { ...; i--; ... } while (i != -1);` | `func_80028A28` |
+| The counter's decrement in the `j` delay slot plus `lw s2; nop; addiu s2,-1` before the loop label | Decrement at the loop top: `n = count; loop: n--; if (n != -1) { ...; goto loop; }` | `func_8002A4C0` |
+| Counter and pointer swap s0/s1, the bound's `lw` after the `addiu` | `for (i = 0; i < N; i++, p++)`, counter first in the increment | `func_8002617C` |
+| A list-init loop with the counter in a2 and the next pointer in v1 (from a `do`/`while` with a hoisted guard) | Plain `for (i = 0; i < last; i++) { n = p + 1; p->next = n; p = n; }`, using the global directly | `func_80018430` |
+| Loop setup in the wrong order (`addiu p,base,0x20` before the `li -1`/`lui`) when walking `(s32 *)(base + 0x20)` | Type the table as a struct array and step `p++`, so strength reduction makes the +0x20 pointer | `func_8002A9AC` |
+| Unrolled byte stores split into base and base+7 pointers (`sb 0(a1)`, `-6..0(v1)`) | Index the global array (`G[i].b[k] = 0`), not a stepping struct pointer | `func_8002D294` |
+| End pointers off a re-`lui`'d base come out as `v1+1616` or `v1-512` | Put the offset in one `int` local used by both the store and `end`, and compute `end` before `q` | `func_8002D294` |
+| Byte fields at `0xE4 + k * 0x21` read through a stepping pointer; count and loop registers off by one | Type them `u8 f[5][0x21]`, index `arg0->f[k][i]` in a `for`, and reuse the loop variable for the later digits | `func_80010000` (parked) |
+| `sltu` where the target has `slt` on a pointer loop bound | Compare `(s32)p < (s32)end` | `func_8002D394` |
+| An out-of-line `j end; move v0,v1` for a hit, `v0 = 0` on a miss | A separate result local: `res = p; goto found;` in the loop, `res = NULL` otherwise | `func_800166FC` |
+| Target `bnez v0` then loads on the taken path, `v0 = 0` in the else; ours `beqz` + an out-of-line 0 | `if (res != NULL) { return ...; } return 0;`, not `if (res == NULL) return 0;` | `func_80016558` |
+| A 0x2000 block out of line after the call with NULL last; ours puts NULL in the middle | A `switch` with the later-tested case (0x5000) first in the source, then 0x2000, default NULL | `func_800158E4`, `func_80015870` |
+| `addu` operands swapped (`v0,v0,a1`) for `p + load` | `*(s32 *)(p + 0x1C) + (s32)p + 0x1C`, with the integer cast on `p` | `func_800158E4` |
+| Block layout: a NULL-parent path does `beqz child → C; j B`, with C placed last | The `\|\|` form of the sibling unlinks: `if (P != NULL \|\| C != NULL) { if (P) ... else ...; } else if (*head == nas) *head = NULL;` | `func_800268BC` |
+| Three separate `beqz v1` tests with the pointer in v1; ours merges them or adds a `move` | Pop and push as `static inline`s returning the pointer, then `if (p) { sub = ...; *sub = TEMPLATE; ... }` | `func_8002128C` |
+| An argument copied at entry (`addu v1,a1,zero`) and a field loaded into the freed register | Move the tail into a `static inline` taking the pointer (`return helper(arg0, e);`); put the success return last with `goto ok` | `func_80016B48` |
+| An inlined lookup with registers rotated, and `sll a0,v0` instead of `sll v0,v0` before the `addu` | The inline's result in a local, shifted as its own statement: `i = find(); i <<= 11; f(base + i);` | `func_80012BC8` |
+| The saved registers swap when one local holds both a looked-up field and a new allocation; the free path inline before `return node` | A separate local for the field test, and `if (h == 0) { free; return NULL; } return node;` | `func_800165F8` |
+| One local holds two call results: an extra saved register and a bigger frame (0x38 vs 0x30) | A separate local for the earlier result, so both share s0 | `func_8002D394` |
+| An extra saved register (a copy of arg0) and a bigger frame when arg0 is used through both an `s32 *` and an `s32 **` | One struct-typed argument, so there is one base pointer | `func_80018938` |
+| More pointer setup (`addiu a0,s0,8`) and 77 vs 70 insns with fields reached through cached `s16 *` locals | A struct with the real offsets, `r->field` directly (re-read `(r->t << 16) == 0` after the decrement) | `func_800281C0` |
+| m2c shows four word copies from a 16-byte record to `arg0 + 0x84..0x90` | Struct assignment: `eng->collision_box = *rec;` | `func_80025B10` |
+| m2c saves two words from a global on the stack and restores them after a call; the stack slots swapped | One 8-byte struct assignment (`saved = *(T *)G;`), declared before the other stack local | `func_80020E9C` |
+| `addiu a3,v0,0x7FF; bgez; addiu 0xFFE; sra 11` and a trailing `addu v0,zero,zero` | `(n + 0x7FF) / 2048` (a signed divide of the sum), and return `s32` 0 | `func_800134FC` |
+| `nor`/`addiu 1` for a negation and an unfilled slot after `bgez`; ours `negu` and a folded `0x7FFFFFFF` test | `lim = ~lim + 1;` and separate `if (dy == 0x7FFFFFFF) return 0; if (dy >= 0) return 0;` | `func_80025C80` |
+| A `u16` tested with `sll v0,v0,16; beqz`; ours `andi 0xffff` | `(w << 16) != 0` with `w` a `u16` local | `func_80021A1C` |
+| `mflo` registers off in a distance test `dx*dx + dz*dz < r*r` | Square the bound first (`r *= r;`), compute the later `top = y + height` before the `if`, compare with `r` | `func_80025E00` |
+| The first pointer (`base + i * 0x38`) computed up front and the old value's `sra` before the branch; registers one off | The pointer in a local first; `old = x >> 8` and the new index in separate locals | `func_8002A684` |
+| Both table bytes' addresses loaded, then `lb`, before the flag's `andi`; global registers swapped in the prologue | `&A[idx]` and `&B[idx]` into pointer locals (assignment order = base register order); load the value before the `if` | `func_8002633C` |
+| Engine pointer and index swap a2/v1 when one local is reassigned (`p = p->unkC`) | A separate local for the first pointer (`e = arg0->unk0; D_x = e; p = e->unkC;`) | `func_80021D1C` |
+| Registers one off with every opcode right; one local reused for reloads of the same field | Each reload its own local (`s = outer[3]; t = outer[3];`), so the first pointer's live range stays short | `func_8001DE18` |
+| A pointer field loaded once and copied along a chain (`addu v1,s1,zero ... addu v0,v1,zero`) | Write each use as a re-read, `slot->data + ((Hdr *)slot->data)->off` (CSE makes the copies); a local gave none | `func_8002C2C4` |
+| `*arg0` loaded twice, before and after a store through another pointer; ours CSEs it | Compute the first use before the aliasing store, read the later field after it; return the node (`u8 *`) | `func_800129D0` |
+| The pointer computed in v0, stored, then `move a0,v0` for the call; ours passes a0 directly | Compute into a local, store `slot->head = head; slot->handle = 0;`, then pass `slot->head` | `func_8002ADD4` |
+| The global stored from v0 before `move v1,v0`; ours copies first | Assign the global from the call (`G = (s32)f(...)`), then `p = (u8 *)G;` | `func_8001E984` |
+| A stack argument's load hoisted before the 8/0x10 stores, `move v0,s0` in the `bnez` slot | `q = p` before `if (q == NULL) printf(...)`, store through `q`, and the 0xC store before 0x8/0x10 | `func_80013034` |
+| The raw products stored (`sw t0,0x88`) and then shifted and stored again; ours drops the first store | Store both raw products first, then the other copies, then the `>> 12` stores as separate statements | `func_80014540` |
+| `sb`/`sh`/`sw 0x6C` scheduled before the `lhu` (target: `sw 0x6C`, `lhu`, then the rest) | Load both sources into locals first, then store 0x6C, 0x51, 0x52, 0x74 in that order | `func_80021604` |
+| `li`/`lhu` order of `RECT` stores (`li 1` before `lhu w`) | Assign `rect.w` from the load before `rect.h = 1` | `func_8002A77C` |
+| Scheduling or operand order around one load is off and nothing structural helps | Permuter finds: a chained temp (`n = new_var = G;`), `int new_var = data + o18;` before a store, `new_var = -b->x + new_var` | `func_8002BBEC`, `func_8002C2C4`, `func_80025D40` |
 
 ## Classify the diff, then work through the list
 
