@@ -383,6 +383,9 @@ def obj_func(obj, name):
     for i, (typ, sym) in relocs.items():
         if i < len(texts):
             texts[i] += f"  [{typ[7:]} {sym}]"
+        # a jump within the section: keep its target, as an offset from the function's start
+        if typ == "R_MIPS_26" and sym == ".text" and i < len(words):
+            relocs[i] = ("R_MIPS_26_LOCAL", (words[i] & 0x3FFFFFF) * 4 - base)
     return words, texts, relocs
 
 
@@ -414,7 +417,13 @@ def trim_nops(ws):
     return n
 
 
-def compare(tw, cw, relocs):
+def key_vram(key):
+    return int(str(key).split(":")[-1], 16)
+
+
+def compare(tw, cw, relocs, vram=None):
+    """Instruction diffs of compiled words `cw` against target words `tw`. Relocated fields are
+    masked; with the function's `vram`, a jump within it must also go to the same place."""
     nt, nc = trim_nops(tw), trim_nops(cw)
     diffs, ops = [], 0
     for i in range(max(nt, nc)):
@@ -422,7 +431,15 @@ def compare(tw, cw, relocs):
             diffs.append(i)
             ops += 1
             continue
-        keep = RELOC_KEEP.get(relocs.get(i, ("",))[0], 0xFFFFFFFF)
+        typ, arg = relocs.get(i, ("", None))
+        if typ == "R_MIPS_26_LOCAL":
+            typ = "R_MIPS_26"
+            if vram is not None and (tw[i] >> 26) == (cw[i] >> 26):
+                dest = ((tw[i] & 0x3FFFFFF) * 4 | (vram & 0xF0000000)) - vram
+                if dest != arg:
+                    diffs.append(i)
+                    continue
+        keep = RELOC_KEEP.get(typ, 0xFFFFFFFF)
         t, c = tw[i] & keep, cw[i] & keep
         if t != c:
             diffs.append(i)
@@ -480,7 +497,7 @@ def check_function(key, e, proj, name, quiet=False):
         print(f"{name} not found in {obj} - still INCLUDE_ASM, misspelled, or static and inlined?")
         return False, None
     tw = target_words(e, proj)
-    diffs, ops, nt, nc = compare(tw, cw, relocs)
+    diffs, ops, nt, nc = compare(tw, cw, relocs, key_vram(key))
     if not diffs:
         if not quiet:
             print(f"MATCH {name} ({nt} instructions)")
@@ -1347,7 +1364,7 @@ def auto_try(job):
     got = compile_alone(src, decls, ftext, name, cfg, tag=f"w_{k}")
     if got is None:
         return k, "compile", None, None, None
-    diffs = compare(target_words(e, proj), got[0], got[1])[0]
+    diffs = compare(target_words(e, proj), got[0], got[1], key_vram(k))[0]
     if diffs:
         return k, "diff", decls, ftext, len(diffs)   # keep the draft: next shows it, --permute starts from it
     return k, None, decls, ftext, 0
@@ -1412,7 +1429,7 @@ def auto_permute(a, funcs, stat, st, proj, syms, cfg, jobs, skip):
             continue
         body = extract_function(read(f"{path}/source.c"), name)
         got = compile_alone(src, d["decls"], body, name, cfg, tag=f"p_{k}") if body else None
-        if got and not compare(target_words(e, proj), got[0], got[1])[0]:
+        if got and not compare(target_words(e, proj), got[0], got[1], key_vram(k))[0]:
             print(f"    permuter matched {name} (was {nd} off)")
             found.append((k, e, name, src, d["decls"], body))
     print(f"  permute: {len(found)} matched")
@@ -1516,7 +1533,7 @@ def land(cands, funcs, proj, st, protos=True, tag="auto_failed"):
             for c in sel:
                 if c[3] == src:
                     w, _, rel = obj_func(obj, c[2])
-                    if w and not compare(target_words(c[1], proj), w, rel)[0]:
+                    if w and not compare(target_words(c[1], proj), w, rel, key_vram(c[0]))[0]:
                         good.append(c)
         return good
 
