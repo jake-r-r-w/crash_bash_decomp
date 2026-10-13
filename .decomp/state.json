@@ -2508,8 +2508,9 @@
   "auto_failed": "diff"
  },
  "8003E0EC": {
+  "matched_at": "2026-10-13T07:35:26Z",
   "started": "2026-10-11T20:35:56Z",
-  "status": "in_progress"
+  "status": "matched"
  },
  "8003E0FC": {
   "auto_diff": 2,

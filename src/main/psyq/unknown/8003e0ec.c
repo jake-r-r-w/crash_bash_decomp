@@ -1,3 +1,9 @@
 #include "common.h"
+#include "bash/8003e0ec.h"
 
-INCLUDE_ASM("asm/nonmatchings/main/psyq/unknown/8003e0ec", func_8003E0EC);
+extern u8 D_8006DBCC[];
+
+/* Identical to libmcrd's McrdGetGlobalStructure. */
+void *func_8003E0EC(void) {
+    return D_8006DBCC;
+}
