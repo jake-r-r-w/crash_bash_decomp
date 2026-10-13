@@ -73,15 +73,38 @@ typedef struct GfxModel {
     RelTable *colors; /* 0x0C: u32 colours, indexed by a face's 13-bit indices */
 } GfxModel;
 
+/* At +0x54 of GfxCamera; func_8001ACC0 takes a pointer to it. */
+typedef struct {
+    u8 unk0[0x10];
+    VECTOR scale; /* 0x10: diagonal of the screen-aligned matrix */
+} GfxCamScale;
+
 /* The camera GfxState.cam points at (func_8001D894). */
 typedef struct GfxCamera {
     u8 unk0[0xC];
     s32 x, y, z;    /* 0x0C */
-    u8 unk18[0x5C];
+    u8 unk18[0x3C];
+    GfxCamScale unk54; /* 0x54 */
     MATRIX view;    /* 0x74 */
     u8 unk94[4];
     MATRIX rot;     /* 0x98: rotation for screen-aligned objects */
 } GfxCamera;
+
+/* The transform block func_8001ACC0 reads (at +0xC or +0x1C of its owner). */
+typedef struct {
+    u32 flags;      /* 0x00: 0x10000000 screen space, 0x20000000 screen-aligned */
+    s32 x, y, z;    /* 0x04 */
+    u8 unk10[0x20]; /* 0x10: passed to func_800142D4 */
+    MATRIX rot;     /* 0x30 */
+    u16 unk50;
+    u16 unk52;      /* 0x52: nonzero: rot needs rebuilding */
+} GfxXform;
+
+/* The block at GfxState+0x28 (passed to func_8001965C). */
+typedef struct {
+    s32 x, y;  /* 0x0: screen offset */
+    u16 otz;   /* 0x8: becomes GfxState.otzAdd */
+} GfxScreen;
 
 /* Graphics state at 0x80056998 (placeholder name; 161 references). Only the
  * fields func_8001CD04 and func_8001D048 use are known: two pointers it aims
@@ -104,7 +127,7 @@ typedef struct {
     u8 *unk84; /* 0x84: = unkCC */
     u8 *unk88; /* 0x88: = unk10C */
     MATRIX unk8C; /* 0x8C: set to identity by func_8001D5D0 */
-    u8 unkAC[0x20];
+    MATRIX unkAC; /* 0xAC: object's local-to-screen matrix (func_8001ACC0) */
     u8 unkCC[0x40];
     u8 unk10C[0x40];
 } GfxState;
@@ -1526,6 +1549,8 @@ typedef struct ScriptCursor {
 u8 *func_800121F8(u8 *arg0);
 
 s32 func_80015D70(u8 *arg0, u8 *arg1);
+
+MATRIX *func_8001ACC0(GfxXform *obj);
 
 void func_80024FA4(ScriptCursor *c);
 

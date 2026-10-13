@@ -3313,7 +3313,81 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8001A82C);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001AA48);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001ACC0);
+MATRIX *func_8001ACC0(GfxXform *obj) {
+    GfxState *gs;
+    u32 flags;
+    MATRIX *view;
+    MATRIX *rot;
+    MATRIX *out;
+    GfxCamScale *cs;
+    VECTOR v;
+    s32 *pos;
+
+    gs = &D_80056998;
+    flags = obj->flags;
+    gs->unk84 = gs->unkCC;
+    view = &gs->cam->view;
+    gs->unk88 = gs->unk10C;
+    out = &gs->unkAC;
+    cs = &gs->cam->unk54;
+    if (flags & 0x10000000) {
+        ((GfxScreen *)gs->unk28)->x = obj->x + gs->ofx;
+        ((GfxScreen *)gs->unk28)->y = obj->y + gs->ofy;
+        if (flags & 0x20000000) {
+            out->m[0][0] = cs->scale.vx;
+            out->m[0][1] = 0;
+            out->m[0][2] = 0;
+            out->m[1][0] = 0;
+            out->m[1][1] = cs->scale.vy;
+            out->m[1][2] = 0;
+            out->m[2][0] = 0;
+            out->m[2][1] = 0;
+            out->m[2][2] = cs->scale.vz;
+        } else {
+            if (obj->unk52 != 0) {
+                func_800142D4(obj->unk10);
+            }
+            MulMatrix0(view, &obj->rot, out);
+        }
+        out->t[0] = view->t[0];
+        out->t[1] = view->t[1];
+        out->t[2] = view->t[2];
+    } else {
+        ((GfxScreen *)gs->unk28)->x = gs->ofx;
+        ((GfxScreen *)gs->unk28)->y = gs->ofy;
+        if (!(flags & 0x200000)) {
+            rot = view;
+        } else {
+            rot = &D_80058AD4;
+        }
+        pos = &D_80056998.cam->x;
+        v.vx = obj->x - pos[0];
+        v.vy = obj->y - pos[1];
+        v.vz = obj->z - pos[2];
+        ApplyMatrixLV(rot, &v, (VECTOR *)out->t);
+        out->t[0] += view->t[0];
+        out->t[1] += view->t[1];
+        out->t[2] += view->t[2];
+        if (flags & 0x20000000) {
+            out->m[0][0] = cs->scale.vx;
+            out->m[0][1] = 0;
+            out->m[0][2] = 0;
+            out->m[1][0] = 0;
+            out->m[1][1] = cs->scale.vy;
+            out->m[1][2] = 0;
+            out->m[2][0] = 0;
+            out->m[2][1] = 0;
+            out->m[2][2] = cs->scale.vz;
+        } else {
+            if (obj->unk52 != 0) {
+                func_800142D4(obj->unk10);
+            }
+            MulMatrix0(rot, &obj->rot, out);
+        }
+    }
+    D_80056998.otzAdd = ((GfxScreen *)D_80056998.unk28)->otz;
+    return out;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001AF2C);
 
