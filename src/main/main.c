@@ -1276,7 +1276,46 @@ void func_8001452C(s32 arg0, s32 arg1) {
     D_800517B4 = arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80014540);
+void func_80014540(u8 *arg0, RECT *rect) {
+    s32 t;
+    s32 y;
+    u16 a;
+    u16 b;
+    u16 c;
+
+    t = *(s32*)(arg0 + 0x38);
+    if (t != 0) {
+        *(s32*)(arg0 + 0x38) = t - 1;
+    }
+    func_800143F0(arg0);
+    RotMatrix((SVECTOR*)(arg0 + 0x54), (MATRIX*)(arg0 + 0x74));
+    if (arg0[0x94] != 0) {
+        ScaleMatrixL((MATRIX*)(arg0 + 0x74), (VECTOR*)(arg0 + 0x64));
+    }
+    a = *(u16*)(arg0 + 0x64);
+    b = *(u16*)(arg0 + 0x68);
+    c = *(u16*)(arg0 + 0x6C);
+    y = *(s32*)(arg0 + 8);
+    *(s32*)(arg0 + 0x88) = *(s32*)(arg0 + 0);
+    *(s16*)(arg0 + 0x9A) = 0;
+    *(s16*)(arg0 + 0x9C) = 0;
+    *(s16*)(arg0 + 0x9E) = 0;
+    *(s16*)(arg0 + 0xA2) = 0;
+    *(s32*)(arg0 + 0x8C) = *(s32*)(arg0 + 4);
+    *(s16*)(arg0 + 0xA4) = 0;
+    *(s16*)(arg0 + 0xA6) = 0;
+    *(s32*)(arg0 + 0xAC) = 0;
+    *(s32*)(arg0 + 0xB0) = 0;
+    *(s32*)(arg0 + 0xB4) = 0;
+    *(s32*)(arg0 + 0x88) = *(s32*)(arg0 + 0x88) * *(s32*)(arg0 + 0x64);
+    *(s32*)(arg0 + 0x8C) = *(s32*)(arg0 + 0x8C) * *(s32*)(arg0 + 0x68);
+    *(u16*)(arg0 + 0x98) = a;
+    *(u16*)(arg0 + 0xA0) = b;
+    *(u16*)(arg0 + 0xA8) = c;
+    *(s32*)(arg0 + 0x90) = y;
+    *(s32*)(arg0 + 0x88) = *(s32*)(arg0 + 0x88) >> 12;
+    *(s32*)(arg0 + 0x8C) = *(s32*)(arg0 + 0x8C) >> 12;
+}
 
 /* Angle of (x, z) in 0x1000 units per turn, from the 0x800-entry arctangent table */
 s32 get_angle(s32 x, s32 z) {
