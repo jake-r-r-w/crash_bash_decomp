@@ -4200,7 +4200,33 @@ void func_8002232C(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002235C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80022504);
+void func_80022504(void) {
+    _sfx_handler *next;
+    _sfx_handler *v;
+
+    v = SfxVoicePool.active;
+    for (;;) {
+        if (v == NULL) {
+            return;
+        }
+        next = v->next;
+        if (v->owner != NULL) {
+            *v->owner = 0;
+        }
+        func_8002B8F4(&v->unk2C);
+        if (v->next != NULL) {
+            v->next->prev = v->prev;
+        }
+        if (v->prev != NULL) {
+            v->prev->next = v->next;
+        } else {
+            SfxVoicePool.active = v->next;
+        }
+        v->next = SfxVoicePool.free;
+        SfxVoicePool.free = v;
+        v = next;
+    }
+}
 
 void StopSfx(_sfx_handler *voice) {
     if (voice != NULL) {
