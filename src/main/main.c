@@ -5090,7 +5090,16 @@ Ext400 *func_800265DC(NAS *nas) {
     return ext;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", AddObject);
+Ext1000 *AddObject(NAS *nas) {
+    Ext1000 *ext;
+
+    ext = AllocExtension(nas, 0x2C, 0x1000, &D_8005A974);
+    if (ext != NULL) {
+        nas->NASid |= 0x1000;
+        *ext = D_8005A974;
+    }
+    return ext;
+}
 
 EXTengine *AddEngine(NAS *nas, s32 id) {
     EXTengine *eng;

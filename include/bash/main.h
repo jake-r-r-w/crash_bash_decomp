@@ -698,6 +698,10 @@ typedef struct Ext400 {
     s32 w[11];
 } Ext400;
 extern Ext400 D_8005A9A0;
+typedef struct Ext1000 {
+    s32 w[11];
+} Ext1000;
+extern Ext1000 D_8005A974;
 extern subengine D_8005A830;
 void FreeExtension(void *ext);
 s32 func_80032F3C(s32);         /* abs or labs (LIBC2: identical objects) */
@@ -1262,6 +1266,8 @@ void func_8002617C(void);
 s32 func_8002633C(u8 *s);
 
 Ext400 *func_800265DC(NAS *nas);
+
+Ext1000 *AddObject(NAS *nas);
 
 void func_80026E2C(void);
 
