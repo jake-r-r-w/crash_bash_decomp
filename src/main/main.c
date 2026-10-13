@@ -4212,7 +4212,27 @@ void func_80026AD8(u8 *arg0) {
     D_8005AA24 = arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80026AFC);
+void func_80026AFC(NAS *nas) {
+    NAS **head = nas->Group.Head;
+
+    if (head != NULL) {
+        if (nas->Group.Parent != NULL) {
+            nas->Group.Parent->Group.Child = nas->Group.Child;
+            if (nas->Group.Child != NULL) {
+                nas->Group.Child->Group.Parent = nas->Group.Parent;
+            }
+        } else {
+            NAS *next = nas->Group.Child;
+            *head = next;
+            if (next != NULL) {
+                nas->Group.Child->Group.Parent = NULL;
+            }
+        }
+    }
+    nas->Group.Parent = NULL;
+    nas->Group.Child = NULL;
+    nas->Group.Head = NULL;
+}
 
 void func_80026B70(u8 **arg0, u8 *arg1) {
     u8 *temp_v0;
