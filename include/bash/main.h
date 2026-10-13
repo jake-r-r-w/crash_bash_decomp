@@ -1028,6 +1028,8 @@ void func_8001D640(s32 n);
 
 void func_8001DD50(void *arg0, void *arg1);
 
+void func_8001DEF4(s32 *arg0, s32 *arg1);
+
 KeyEntry *func_8001E41C(KeyBlock *arg0, s32 arg1);
 
 s32 func_8001E51C(s32 arg0);

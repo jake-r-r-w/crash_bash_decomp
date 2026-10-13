@@ -1142,7 +1142,8 @@
  },
  "8001DEF4": {
   "auto_diff": 27,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-13T07:55:12Z",
+  "status": "matched"
  },
  "8001DF74": {
   "matched_at": "2026-10-10T10:36:02Z",

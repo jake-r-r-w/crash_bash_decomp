@@ -2888,7 +2888,22 @@ void func_8001DDD8(u8 *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001DE18);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001DEF4);
+void func_8001DEF4(s32 *arg0, s32 *arg1) {
+    u8 *p;
+
+    arg0[0] = (s32)arg1;
+    arg0[2] = 0;
+    p = (u8 *)arg0[0] + 0x10;
+    D_80058AD0 = arg0;
+    if (arg1 == NULL) {
+        arg0[12] = 0;
+        arg0[1] &= ~3;
+        return;
+    }
+    arg0[1] = 3;
+    func_8002AA8C(p);
+    func_80013650(arg1[1], func_8001DF74, arg0);
+}
 
 void func_8001DF74(u8 *arg0, u8 **arg1) {
     u8 *temp_s0;
