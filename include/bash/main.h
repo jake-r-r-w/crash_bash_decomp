@@ -1125,6 +1125,8 @@ typedef struct VelState {
     /* 0x10 */ s32 vz;
 } VelState;
 
+void *func_800115D8(s32 arg0, void * *arg1, s32 arg2, s16 arg3);
+
 s32 func_80013334(s32 arg0, s32 arg1, u8 * *arg2, s32 arg3);
 
 u8 *func_80016A20(u8 *arg0, s32 arg1);
@@ -1136,6 +1138,7 @@ void func_8001C1E0(u8 *arg0, u16 *src, u8 *tab, u16 *dst);
 s32 *func_8001E48C(s32 arg0);
 
 void func_8002147C(VelObj *obj, VelParams *p, VelState *s);
+void *func_80010E8C(s32 a, s32 b);
 
 void func_800279A4(void);
 

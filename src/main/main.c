@@ -239,7 +239,25 @@ void func_80011578(u8 *arg0, Heap *heap, s32 arg2) {
     heap->deferred = blk;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800115D8);
+void *func_800115D8(s32 arg0, void **arg1, s32 arg2, s16 arg3) {
+    u8 *blk;
+    u8 *ret;
+
+    do {
+        blk = func_80010E8C(arg0, arg2);
+        if (blk == NULL) {
+            blk = func_80010E8C(arg0, arg2);
+            if (blk == NULL) {
+                return NULL;
+            }
+        }
+        ret = blk + 0x18;
+        *(void **)(blk + 4) = arg1;
+    } while (0);
+    *arg1 = ret;
+    *(s16 *)blk = arg3;
+    return ret;
+}
 
 u8 *func_80011654(s32 arg0, Heap *arg1) {
     u16 *var_a0_2;
