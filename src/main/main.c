@@ -2149,7 +2149,46 @@ u8 *func_80016AD4(s32 *arg0, u8 *rec) {
     return rec;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80016B48);
+/* Inlined copy of func_80016C18 (load a record's node); being an inline call
+ * is what puts arg1 in v1 and the table in a1. */
+static inline u8 *func_80016B48_load(s32 *arg0, u8 *arg1) {
+    u8 *cur;
+    u8 *node;
+    s32 start;
+    s32 h;
+
+    cur = *(u8 **)(arg1 + 0x14);
+    if (cur == NULL) {
+        node = func_80012E28();
+        if (node != NULL) {
+            start = *(s32 *)arg1;
+            *(u8 **)(arg1 + 0x14) = node;
+            h = func_800133C8(*arg0, start, node, *(s32 *)(arg1 + 4) - start);
+            *(s32 *)(node + 4) = h;
+            if (h != 0) {
+                goto ok;
+            }
+            func_80012E14(node);
+        }
+        return NULL;
+    ok:
+        return node;
+    }
+    return cur;
+}
+
+u8 *func_80016B48(u8 *arg0, s32 arg1) {
+    u8 *base;
+    u8 *e;
+
+    base = *(u8 **)(arg0 + 0xC);
+    if (base == NULL || arg1 >= *(s32 *)(base + 0x40)) {
+        return NULL;
+    }
+    e = base + (*(s32 *)(base + 0x44) + 0x44);
+    e += arg1 * 0x18;
+    return func_80016B48_load((s32 *)arg0, e);
+}
 
 u8 *func_80016C18(s32 *arg0, u8 *arg1) {
     s32 temp_a1;
