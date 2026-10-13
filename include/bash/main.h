@@ -1423,7 +1423,7 @@ void func_80022070(void);
 
 _sfx_handler *func_80022924(void);
 
-void func_80024214(s32 *a, s32 *b);
+void func_80024214(u8 *a, u8 *b);
 
 void func_80026ECC(void);
 

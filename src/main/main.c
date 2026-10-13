@@ -6713,7 +6713,30 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80023A90);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80024008);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80024214);
+void func_80024214(u8 *a, u8 *b) {
+    s32 t;
+    s32 bl, g, r;
+
+    r = a[0];
+    t = (D_80068BD4[(((D_8005B690 << 7) & 0x7FF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
+    g = a[1];
+    bl = a[2];
+    r += ((0xFF - r) * t) / 20;
+    a[0] = r;
+    g += ((0xFF - g) * t) / 20;
+    a[1] = g;
+    bl += ((0xFF - bl) * t) / 20;
+    a[2] = bl;
+    r = b[0];
+    g = b[1];
+    bl = b[2];
+    r += ((0xFF - r) * t) / 20;
+    b[0] = r;
+    g += ((0xFF - g) * t) / 20;
+    b[1] = g;
+    bl += (-bl * t) / 20;
+    b[2] = bl;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800243A0);
 
