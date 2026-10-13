@@ -3445,7 +3445,30 @@ void func_80022030(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80022070);
+void func_80022070(void) {
+    struct {
+        s32 a;
+        s32 b;
+        u16 c;
+        u16 d;
+    } s;
+    u8 *var_s0;
+    GfxState *gs;
+
+    var_s0 = D_80058B78;
+    gs = &D_80056998;
+    for (;;) {
+        if (var_s0 == NULL) {
+            break;
+        }
+        s.a = func_8001ACC0(var_s0 + 0x1C);
+        s.b = s.a + 0x14;
+        s.c = *(u16 *)&gs->unk28[0];
+        s.d = *(u16 *)&gs->unk28[4];
+        func_800201BC(var_s0, &s);
+        var_s0 = *(u8 **)(var_s0 + 0x74);
+    }
+}
 
 void func_800220E8(void) {
     u8 *temp_s1;
