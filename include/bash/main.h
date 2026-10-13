@@ -305,6 +305,28 @@ typedef struct PadState {
     /* 0x2A */ u8 unk2A[0x58 - 0x2A];
 } PadState;
 
+/* Analog/edge view of a PadState (func_800136BC). */
+typedef struct PadStick {
+    /* 0x00 */ s32 flags;
+    /* 0x04 */ s32 buttons;
+    /* 0x08 */ s32 rx;
+    /* 0x0C */ s32 ry;
+    /* 0x10 */ s32 lx;
+    /* 0x14 */ s32 ly;
+    /* 0x18 */ u8 unk18[0x2C - 0x18];
+    /* 0x2C */ s32 forced;
+    /* 0x30 */ s32 forcedButtons;
+    /* 0x34 */ s32 unk34;
+    /* 0x38 */ s32 angle;
+    /* 0x3C */ s32 dist;
+    /* 0x40 */ s32 held;
+    /* 0x44 */ s32 held2;
+    /* 0x48 */ s32 pressed;
+    /* 0x4C */ s32 dirHeld;
+    /* 0x50 */ s32 dirHeld2;
+    /* 0x54 */ s32 dirPressed;
+} PadStick;
+
 /* Loaded sound data and the sequence opened from it (D_8006557C). */
 typedef struct SeqSlot {
     /* 0x00 */ s32 data;                 /* heap block, freed by func_8002C44C */
@@ -1562,6 +1584,8 @@ typedef struct {
 } S16Pair;
 
 u8 *func_800121F8(u8 *arg0);
+
+void func_800136BC(PadState *pad);
 
 s32 func_80015D70(u8 *arg0, u8 *arg1);
 

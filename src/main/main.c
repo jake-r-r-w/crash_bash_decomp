@@ -1410,7 +1410,99 @@ s32 func_80013688(s32 arg0, void (*done)(), void *ctx) {
     return func_80013034(arg0, 0, ((s32 *)arg0)[1], done, ctx, 0, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800136BC);
+#define PS ((PadStick *)pad)
+
+void func_800136BC(PadState *pad) {
+    s32 btn;
+    s32 dir;
+    s32 x;
+    s32 y;
+
+    btn = PS->buttons;
+    if (PS->forced != 0) {
+        dir = PS->forcedButtons;
+        PS->forced = 0;
+        if (dir & 0xA0) {
+            if (dir & 0x80) {
+                PS->lx = 0;
+            } else {
+                PS->lx = 0xFF;
+            }
+        } else {
+            PS->lx = 0x80;
+        }
+        if (dir & 0x50) {
+            if (dir & 0x10) {
+                PS->ly = 0;
+            } else {
+                PS->ly = 0xFF;
+            }
+        } else {
+            PS->ly = 0x80;
+        }
+        PS->rx = 0x80;
+        PS->ry = 0x80;
+    } else {
+        if ((PS->flags & 2) && !(btn & 0xF0)) {
+            if (PS->lx < 0x25) {
+                btn |= 0x80;
+            }
+            if (PS->lx >= 0xDB) {
+                btn |= 0x20;
+            }
+            if (PS->ly < 0x25) {
+                btn |= 0x10;
+            }
+            if (PS->ly >= 0xDB) {
+                btn |= 0x40;
+            }
+        } else {
+            if (btn & 0xA0) {
+                if (btn & 0x80) {
+                    PS->lx = 0;
+                } else {
+                    PS->lx = 0xFF;
+                }
+            } else {
+                PS->lx = 0x80;
+            }
+            if (btn & 0x50) {
+                if (btn & 0x10) {
+                    PS->ly = 0;
+                } else {
+                    PS->ly = 0xFF;
+                }
+            } else {
+                PS->ly = 0x80;
+            }
+            PS->rx = 0x80;
+            PS->ry = 0x80;
+        }
+        dir = btn;
+    }
+    x = PS->lx - 0x80;
+    y = 0x80 - PS->ly;
+    PS->dist = csqrt(x * x + y * y);
+    PS->angle = get_angle(x, y);
+    {
+        s32 oldBtn = PS->held;
+        s32 oldDir = PS->dirHeld;
+        s32 t;
+        s32 u;
+        PS->held = btn;
+        PS->held2 = btn;
+        PS->dirHeld2 = dir;
+        PS->dirHeld = dir;
+        u = btn ^ oldBtn;
+        t = u & btn;
+        PS->pressed = t;
+        u = dir ^ oldDir;
+        t = dir & u;
+        PS->dirPressed = t;
+    }
+}
+
+#undef PS
 
 void func_800138A4(void) {
     PadState *pad;
