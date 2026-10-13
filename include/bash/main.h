@@ -685,8 +685,16 @@ typedef struct BufNode {
     struct BufNode *child;
     struct BufNode **head;
 } BufNode;
+typedef struct FreePool {
+    FreeNode *head;
+    u16 w;
+    u16 pad6;
+    u16 h;
+    u16 padA;
+} FreePool;
 extern FreeNode *D_80063B18;
 extern u8 D_80063B58[];
+extern u8 D_80063BA0[];
 extern FreeHdr *func_800282F8(u8 *);
 extern void *D_80063BB4;        /* list walked by func_80028A00 (next at +4) */
 extern s32 D_8004E104;            /* func_80011410: free bytes */
