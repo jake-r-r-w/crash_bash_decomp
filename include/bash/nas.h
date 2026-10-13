@@ -202,7 +202,9 @@ BASH_SIZE_CHECK(ASTEntry, 0xC);
  * of its own (EXTengine.collision_box), and a PointList carries more after its
  * points. The prototype's type for it is anonymous and not in the fragment. */
 typedef struct {
-    /* 0x00 */ u8 unk0[6];
+    /* 0x00 */ u8 unk0[2];
+    /* 0x02 */ s16 unk2;                 /* bottom (y offset) for func_8002578C */
+    /* 0x04 */ u8 unk4[2];
     /* 0x06 */ s16 radius;
     /* 0x08 */ s16 height;
     /* 0x0A */ u8 unkA[2];

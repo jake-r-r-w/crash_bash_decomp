@@ -7360,7 +7360,84 @@ s16 func_80025534(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002578C);
+static inline FlagRecord *func_80025A48_inline(EXTengine *eng, u32 flag) {
+    PointList *list;
+    FlagRecord *rec;
+    s32 n;
+
+    if (eng->collision_box.flags & flag) {
+        return &eng->collision_box;
+    }
+    if (eng->sub != NULL && (list = func_8001562C(eng->sub)) != NULL) {
+        n = list->nRecs;
+        rec = (FlagRecord *)&list->pts[list->count];
+        for (; n != 0; n--, rec++) {
+            if (rec->flags & flag) {
+                return rec;
+            }
+        }
+    }
+    return NULL;
+}
+
+s32 func_8002578C(NAS *nas) {
+    EXTengine *eng;
+    NAS *it;
+    s32 hit;
+    FlagRecord *box;
+    EXTengine *other;
+    s32 bot;
+    s32 top;
+    s32 dx;
+    s32 dz;
+    s32 d;
+    s32 ang;
+    s32 r;
+    s32 lo;
+    s32 hi;
+
+    eng = nas->Engine;
+    it = D_8005AA2C;
+    hit = 0;
+    if (eng != NULL && (box = func_80025A48_inline(eng, 0x50)) != NULL) {
+        top = eng->unk10.y + box->unk2;
+        bot = eng->unk10.y + box->height;
+        do {
+            FlagRecord *rec;
+
+            if (it == NULL) {
+                break;
+            }
+            if (it->Class & 0x200) {
+                other = it->Engine;
+                if (other != NULL && other != eng) {
+                    rec = func_80025A48_inline(other, 0x50);
+                    if (rec != NULL) {
+                        lo = other->unk10.y + rec->unk2;
+                        hi = other->unk10.y + rec->height;
+                        if (bot < lo && hi < top) {
+                            dx = other->unk10.x - eng->unk10.x;
+                            dz = other->unk10.z - eng->unk10.z;
+                            d = dx * dx + dz * dz;
+                            r = rec->radius;
+                            r *= r;
+                            if (d < r) {
+                                hit = 1;
+                                ang = get_angle(dx, dz) & 0xFFF;
+                                d = csqrt(d) >> 6;
+                                d = rec->radius - d;
+                                eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->unk10.z -= (d * D_80068BD4[ang].unk2) >> 12;
+                            }
+                        }
+                    }
+                }
+            }
+            it = it->Solid.Child;
+        } while (1);
+    }
+    return hit;
+}
 
 FlagRecord *func_80025A48(EXTengine *eng, u32 flag) {
     PointList *list;

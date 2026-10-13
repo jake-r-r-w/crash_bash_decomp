@@ -1727,7 +1727,8 @@
   "status": "matched"
  },
  "8002578C": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-13T22:07:18Z",
+  "status": "matched"
  },
  "80025A48": {
   "auto_diff": 33,
