@@ -1226,6 +1226,8 @@ void func_80018430(s32 count);
 
 s32 *func_80018694(s32 * *arg0, s32 arg1);
 
+void func_800187D4(ListNode18938 *arg0, s32 arg1);
+
 void func_80018938(ListNode18938 *arg0, s32 arg1);
 
 void func_8001C1E0(u8 *arg0, u16 *src, u8 *tab, u16 *dst);
