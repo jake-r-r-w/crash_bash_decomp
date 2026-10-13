@@ -576,7 +576,25 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80012AC4);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80012BC8);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80012CD4);
+void func_80012CD4(void *arg0, s32 *arg1) {
+    s32 first = arg1[0];
+    s32 n = arg1[1];
+    s32 *s2 = &D_8004E110[first * 2];
+    s32 *s0;
+
+    if (n != 0) {
+        n--;
+        s0 = &D_8004E110[(first + n) * 2];
+        for (;;) {
+            if (n == 0) {
+                break;
+            }
+            func_80011498(func_80011828(arg0, (s0[0] - s2[0]) << 11), s0[1], &D_8004E0F0);
+            n--;
+            s0 -= 2;
+        }
+    }
+}
 
 s32 func_80012D80(s32 *arg0, s32 *arg1) {
     s32 *base;

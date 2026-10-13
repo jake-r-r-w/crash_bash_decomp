@@ -1002,6 +1002,8 @@ MemBlock *func_80011C98(MemBlock *arg0);
 
 MemBlock *func_80011EF0(Heap *heap);
 
+void func_80012CD4(void *arg0, s32 *arg1);
+
 s32 func_80012D80(s32 *arg0, s32 *arg1);
 
 void func_80012FA4(LoadNode *arg0);
