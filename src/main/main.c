@@ -1449,7 +1449,27 @@ none:
     return NULL;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80015870);
+u8 *func_80015870(u8 *arg0, s32 arg1) {
+    u8 *base;
+    u8 *rec;
+
+    base = *(u8 **)(arg0 + 0xC);
+    switch (arg1 & 0x7000) {
+    case 0x5000:
+        rec = (u8 *)func_800159C4(arg1 & 0xFFF, base);
+        break;
+    case 0x2000:
+        rec = base + ((arg1 & 0xFFF) * 0x34 + 0x24);
+        break;
+    default:
+        rec = NULL;
+        break;
+    }
+    if (rec != NULL) {
+        return rec + 0xC;
+    }
+    return NULL;
+}
 
 s32 func_800158E4(u8 *arg0, s32 arg1) {
     u8 *base;
