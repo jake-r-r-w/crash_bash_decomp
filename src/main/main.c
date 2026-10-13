@@ -3373,7 +3373,36 @@ void func_80017388(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80017640);
+static inline void PrimList_Empty(ListNode18938 *arg0, u8 *node) {
+    s32 kind;
+
+    s32 *list;
+
+    list = (s32 *) arg0->f4;
+    kind = *(u16 *) (node + 0x54);
+    arg0->f10 = NULL;
+    arg0->fC = list;
+    if (arg0->fC != NULL) {
+        PrimList_Flush(arg0, kind);
+    }
+}
+
+void func_80017640(void) {
+    s32 idx;
+    u8 *node;
+
+    idx = (D_8005B690 & 1) ^ 1;
+    DrawSync(0);
+    node = D_80056864;
+    for (;;) {
+        if (node == NULL) {
+            return;
+        }
+        PrimList_Empty((ListNode18938 *) (node + idx * 0x28 + 0x18), node);
+        PrimList_Empty((ListNode18938 *) (node + idx * 0x28 + 4), node);
+        node = *(u8 **) node;
+    }
+}
 
 #ifndef NON_MATCHING
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800177F4);

@@ -1863,6 +1863,8 @@ void func_800139A8(void);
 
 void func_80015F60(u8 *arg0, s32 *arg1);
 
+void func_80017640(void);
+
 void func_80017B08(FaceRuns *faces, FacePrim *prim, s32 arg2, s32 mode);
 
 void func_80017D90(FaceRuns *faces, FacePrim *prim);
