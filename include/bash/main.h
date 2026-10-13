@@ -1587,6 +1587,8 @@ u8 *func_800121F8(u8 *arg0);
 
 void func_800136BC(PadState *pad);
 
+void func_800143F0(s32 arg0, s32 arg1);
+
 s32 func_80015D70(u8 *arg0, u8 *arg1);
 
 MATRIX *func_8001ACC0(GfxXform *obj);

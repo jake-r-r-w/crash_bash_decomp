@@ -1687,7 +1687,25 @@ void func_80014388(u8 *arg0) {
     (*(s32*)((u8*)(arg0) + 64)) = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800143F0);
+void func_800143F0(s32 arg0, s32 arg1) {
+    s32 t;
+    s32 v;
+    ((s32 *)arg0)[0x68 / 4] = 0x1000;
+    ((s32 *)arg0)[0x64 / 4] = (D_80051638[1] << 12) / D_80051638[0];
+    t = (((s32 *)arg0)[0x68 / 4] * *(s16 *)(arg1 + 6)) / 480;
+    ((s32 *)arg0)[0x68 / 4] = t;
+    if (D_800637A8 == 1) {
+        v = t * 0xF8;
+    } else {
+        v = t * 0xF0;
+    }
+    ((s32 *)arg0)[0x68 / 4] = v / 240;
+    ((s32 *)arg0)[0x64 / 4] = (((s32 *)arg0)[0x64 / 4] * *(s16 *)(arg1 + 4)) / 480;
+    ((s32 *)arg0)[0x6C / 4] = 0x1000;
+    if (((s32 *)arg0)[0x40 / 4] != 0) {
+        ((s32 *)arg0)[0x68 / 4] = -((s32 *)arg0)[0x68 / 4];
+    }
+}
 
 void func_8001452C(s32 arg0, s32 arg1) {
     D_800517B0 = arg1;
@@ -1705,7 +1723,7 @@ void func_80014540(u8 *arg0, RECT *rect) {
     if (t != 0) {
         *(s32*)(arg0 + 0x38) = t - 1;
     }
-    func_800143F0(arg0);
+    func_800143F0((s32)arg0, (s32)rect);
     RotMatrix((SVECTOR*)(arg0 + 0x54), (MATRIX*)(arg0 + 0x74));
     if (arg0[0x94] != 0) {
         ScaleMatrixL((MATRIX*)(arg0 + 0x74), (VECTOR*)(arg0 + 0x64));

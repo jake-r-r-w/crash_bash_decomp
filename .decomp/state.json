@@ -440,7 +440,8 @@
   "via": "auto"
  },
  "800143F0": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-13T20:27:59Z",
+  "status": "matched"
  },
  "8001452C": {
   "matched_at": "2026-10-10T10:11:53Z",
