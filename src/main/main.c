@@ -2446,7 +2446,27 @@ void func_8001888C(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80018938);
+void func_80018938(ListNode18938 *arg0, s32 arg1) {
+    arg0->f0 = 0;
+    if (arg1 == 1) {
+        func_80018764(arg0->fC);
+    } else {
+        *arg0->f8 = D_80056850;
+        D_80056850 = arg0->fC;
+        if (arg0->f10 != NULL) {
+            *arg0->f10 = NULL;
+        } else {
+            arg0->f4 = 0;
+        }
+        arg0->f8 = arg0->f10;
+    }
+    if (arg0->f10 != NULL) {
+        *arg0->f10 = NULL;
+    } else {
+        arg0->f4 = 0;
+    }
+    arg0->f8 = arg0->f10;
+}
 
 void func_800189E0(u8 *arg0) {
     (*(s32*)((u8*)(arg0) + 4)) = 0;

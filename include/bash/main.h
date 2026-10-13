@@ -702,6 +702,13 @@ extern s32 D_8005B5B8;
 extern void (*D_800643F8)();
 extern NAS *NASActiveTail;
 extern s32 *D_80056850;
+typedef struct ListNode18938 {
+    s32 f0;
+    s32 f4;
+    s32 **f8;
+    s32 *fC;
+    s32 **f10;
+} ListNode18938;
 extern s32 *D_80056858;
 extern NAS *NASActiveHead;
 extern s32 D_800654AC;
@@ -1187,6 +1194,8 @@ u8 *func_80016A20(u8 *arg0, s32 arg1);
 void func_80018430(s32 count);
 
 s32 *func_80018694(s32 * *arg0, s32 arg1);
+
+void func_80018938(ListNode18938 *arg0, s32 arg1);
 
 void func_8001C1E0(u8 *arg0, u16 *src, u8 *tab, u16 *dst);
 
