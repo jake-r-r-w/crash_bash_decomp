@@ -520,7 +520,7 @@ extern u8 D_80078C90[];
 MemBlock *func_80011BF8(Heap *heap, u8 *start, s32 size);
 extern u8 D_80050008[];
 extern u8 D_8004E0B8[];
-void func_800134FC(u8 *a, u8 *b);
+s32 func_800134FC(u8 *a, u8 *b);
 void func_800270F0(u8 *a);
 void func_80012E90(void);
 void func_800272AC(s32 arg0);
@@ -559,6 +559,8 @@ typedef struct {
 extern SizeEntry D_800675D4[];
 extern char D_8004CDAC[];
 extern Heap D_8004E0F0;
+extern s32 D_800637B0;
+s32 func_80027790(u8 *a, s32 b, u8 *c, s32 d);
 extern u8 *D_8006E9FC;
 extern u8 D_80055684[];
 extern void *D_8005AA34;

@@ -1034,7 +1034,33 @@ s32 func_80013488(s32 arg0, s32 arg1, s32 arg2) {
     return D_8006E9F8;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800134FC);
+s32 func_800134FC(u8 *a, u8 *b) {
+    s32 r;
+    s32 n;
+    printf("load file start\n");
+    while (func_80012FFC() != 0) {
+        func_8001231C();
+        func_80010AE8(&D_8004E0F0);
+        func_8002BAE8();
+    }
+    D_800637B0 = 0;
+    while (func_80027944() > 0) {
+    }
+    do {
+        for (;;) {
+            n = *(s32 *)(a + 4);
+            if (func_80027790(a, 0, b, (n + 0x7FF) / 2048) >= 0) {
+                break;
+            }
+        }
+        do {
+            r = func_80027944();
+        } while (r > 0);
+    } while (r < 0);
+    D_800637B0 = 1;
+    printf("done loading\n");
+    return 0;
+}
 
 s32 func_800135E4(s32 *arg0, u8 *arg1) {
     return func_80013034((s32)arg0, 0, arg0[1], NULL, arg1, 1, 0);
