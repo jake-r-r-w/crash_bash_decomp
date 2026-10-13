@@ -5453,7 +5453,37 @@ s32 func_80020064(u8 *arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800201BC);
+void func_800201BC(u8 *arg0, GteSetup *arg1) {
+    MATRIX m;
+    GteSetup out;
+    s32 dp;
+    u8 *p;
+    GfxState *gs;
+    void (*fn)(u8 *, GteSetup *);
+
+    dp = D_80056998.modelDp;
+    p = *(u8 **)(arg0 + 8);
+    D_80056998.modelDp =0x1000 - (((0x1000 - D_80058B60) * (0x1000 - dp)) >> 12);
+    m = *arg1->rot;
+    m.t[0] = arg1->trans->vx;
+    m.t[1] = arg1->trans->vy;
+    m.t[2] = arg1->trans->vz;
+    out.rot = &m;
+    out.trans = arg1->trans;
+    out.ofx = arg1->ofx;
+    out.ofy = arg1->ofy;
+    for (; p != NULL;) {
+        gs = &D_80056998;
+        ((GfxScreen *)gs->unk28)->x = arg1->ofx;
+        ((GfxScreen *)gs->unk28)->y = arg1->ofy;
+        fn = (void (*)(u8 *, GteSetup *))D_80058B00[*(s32 *)(p + 4)].unk8;
+        if (fn != NULL) {
+            fn(p, &out);
+        }
+        p = *(u8 **)(p + 0xB4);
+    }
+    D_800569AC = dp;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80020344);
 
@@ -6249,6 +6279,8 @@ void func_80022070(void) {
     var_s0 = D_80058B78;
     gs = &D_80056998;
     for (;;) {
+        /* block-scope declaration, as the implicit one was: keeps the loop unrotated */
+        extern void func_800201BC(u8 *, GteSetup *);
         if (var_s0 == NULL) {
             break;
         }

@@ -1329,7 +1329,8 @@
   "status": "matched"
  },
  "800201BC": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-13T21:46:04Z",
+  "status": "matched"
  },
  "80020344": {
   "auto_failed": "types"
