@@ -1088,4 +1088,39 @@ SizeEntry *func_8002D1D4(void);
 
 s32 func_8002E584(u8 *arg0);
 
+typedef struct VelObj {
+    /* 0x00 */ s32 flags;
+    /* 0x04 */ s32 x;
+    /* 0x08 */ s32 y;
+    /* 0x0C */ s32 z;
+    /* 0x10 */ u8 pad10[4];
+    /* 0x14 */ u16 angle;
+    /* 0x16 */ u8 pad16[0x3C];
+    /* 0x52 */ s16 dirty;
+} VelObj;
+
+typedef struct VelParams {
+    /* 0x00 */ u8 pad00[0x18];
+    /* 0x18 */ s32 limit;
+    /* 0x1C */ u8 pad1C[0x24];
+    /* 0x40 */ s32 addX;
+    /* 0x44 */ s32 mulX;
+    /* 0x48 */ s32 addY;
+    /* 0x4C */ s32 mulY;
+    /* 0x50 */ s32 addZ;
+    /* 0x54 */ s32 mulZ;
+    /* 0x58 */ u8 pad58[0x10];
+    /* 0x68 */ u16 dAngle;
+} VelParams;
+
+typedef struct VelState {
+    /* 0x00 */ s32 frame;
+    /* 0x04 */ u8 pad04[4];
+    /* 0x08 */ s32 vx;
+    /* 0x0C */ s32 vy;
+    /* 0x10 */ s32 vz;
+} VelState;
+
+void func_8002147C(VelObj *obj, VelParams *p, VelState *s);
+
 #endif /* BASH_MAIN_H */

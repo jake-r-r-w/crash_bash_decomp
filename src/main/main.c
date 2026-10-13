@@ -3263,7 +3263,40 @@ void func_8002141C(u8 *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002147C);
+void func_8002147C(VelObj *obj, VelParams *p, VelState *s) {
+    if (s->vx != 0) {
+        obj->x += s->vx >> 8;
+    }
+    if (s->vy != 0) {
+        obj->y += s->vy >> 8;
+    }
+    if (s->vz != 0) {
+        obj->z += s->vz >> 8;
+    }
+    if (p->addX != 0) {
+        s->vx += p->addX;
+    }
+    if (p->addY != 0) {
+        s->vy += p->addY;
+    }
+    if (p->addZ != 0) {
+        s->vz += p->addZ;
+    }
+    if (p->mulX != 0x100) {
+        s->vx = (s->vx * p->mulX) >> 8;
+    }
+    if (p->mulY != 0x100) {
+        s->vy = (s->vy * p->mulY) >> 8;
+    }
+    if (p->mulZ != 0x100) {
+        s->vz = (s->vz * p->mulZ) >> 8;
+    }
+    obj->angle += p->dAngle;
+    obj->dirty = 1;
+    if (p->limit < s->frame++) {
+        obj->flags &= ~0x8000;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80021604);
 
