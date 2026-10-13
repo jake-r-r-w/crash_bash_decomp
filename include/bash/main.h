@@ -996,6 +996,8 @@ char *func_8001517C(char *arg0, s32 arg1, s32 arg2);
 
 s32 func_80015210(s32 a, s32 b, s32 t);
 
+void func_8001830C(void);
+
 void func_8001C3D0(u8 *arg0);
 
 void func_8001C448(PosDst *arg0, s32 arg1, s32 arg2);

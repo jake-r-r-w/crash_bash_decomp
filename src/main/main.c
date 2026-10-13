@@ -1856,7 +1856,30 @@ void func_8001828C(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001830C);
+void func_8001830C(void) {
+    PoolNode *next;
+    PoolNode *prev;
+    PoolNode *cur;
+
+    cur = D_80056844.done;
+    prev = NULL;
+    if (cur != NULL) do {
+        next = cur->next;
+        cur->state--;
+        if (cur->state == 0) {
+            if (prev != NULL) {
+                prev->next = cur->next;
+            } else {
+                D_80056844.done = cur->next;
+            }
+            cur->next = D_80056844.free;
+            D_80056844.free = cur;
+        } else {
+            prev = cur;
+        }
+        cur = next;
+    } while (cur != NULL);
+}
 
 void func_80018388(void *data) {
     NodePool *pool = &D_80056844;
