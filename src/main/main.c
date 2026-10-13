@@ -4782,7 +4782,45 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80025C80);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80025D40);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80025E00);
+s32 func_80025E00(EXTengine *eng, s32 y) {
+    NAS *nas;
+    EXTengine *other;
+    FlagRecord *rec;
+    s32 dx;
+    s32 dz;
+    s32 r;
+    s32 top;
+    s32 dy;
+
+    nas = D_8005AA2C;
+    D_8005AA9C = NULL;
+    if (nas != NULL) {
+        do {
+            if (nas->Class & 0x100) {
+                other = nas->Engine;
+                if (other != NULL && other != eng) {
+                    rec = func_80025A48(other, 0x10);
+                    if (rec != NULL) {
+                        dx = other->unk10.x - eng->unk10.x;
+                        dz = other->unk10.z - eng->unk10.z;
+                        r = rec->radius + 0x40;
+                        r *= r;
+                        top = other->unk10.y + rec->height;
+                        if (dx * dx + dz * dz < r) {
+                            dy = eng->unk10.y - top;
+                            if (func_80032F3C(dy) < func_80032F3C(y)) {
+                                y = dy;
+                                D_8005AA9C = nas;
+                            }
+                        }
+                    }
+                }
+            }
+            nas = nas->Solid.Child;
+        } while (nas != NULL);
+    }
+    return y;
+}
 
 void func_80025F44(EXTengine *eng) {
     if (D_8005AA94 == NULL) {

@@ -569,6 +569,7 @@ extern MusicEntry D_80058B88[];
 extern VabSlot D_800644C0[6];
 extern NodePool D_80056844;
 extern NAS *D_8005AA2C;
+extern NAS *D_8005AA9C;
 extern void *D_8005AA28;            /* tail of the D_8005AA24 list */
 extern void *D_8005AA30;            /* tail of the D_8005AA2C list */
 extern s32 D_8005A5DC;
