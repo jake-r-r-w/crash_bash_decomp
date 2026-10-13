@@ -449,6 +449,25 @@ def compare(tw, cw, relocs, vram=None):
     return diffs, ops, nt, nc
 
 
+def is_branch(w):
+    """A branch or jump: REGIMM, j, jal, beq..bgtz, the -likely forms, or jr/jalr."""
+    op = w >> 26
+    return op in (1, 2, 3, 4, 5, 6, 7, 20, 21, 22, 23) or (op == 0 and (w & 0x3F) in (8, 9))
+
+
+STAGES = ("structure", "instructions", "registers", "match")
+
+
+def diff_stage(tw, cw, diffs, ops, nt, nc):
+    """How far a function has got: `structure` (length or branch layout differs), `instructions`
+    (same skeleton, some opcodes differ), `registers` (operands only), or `match`."""
+    if not diffs:
+        return "match"
+    if nt != nc or [i for i in range(nt) if is_branch(tw[i])] != [i for i in range(nc) if is_branch(cw[i])]:
+        return "structure"
+    return "instructions" if ops else "registers"
+
+
 def show_diff(diffs, ttext, ctext, nt, nc, limit=40):
     dset = set(diffs)
     n = max(nt, nc)
@@ -503,9 +522,12 @@ def check_function(key, e, proj, name, quiet=False):
             print(f"MATCH {name} ({nt} instructions)")
         return True, 0
     ttext = parse_asm(e["asm"])[3] if os.path.exists(e.get("asm", "")) else [f"{w:08x}" for w in tw]
+    stage = diff_stage(tw, cw, diffs, ops, nt, nc)
     print(f"DIFF {name}: {len(diffs)}/{max(nt, nc)} instructions differ "
           f"({ops} opcode, {len(diffs) - ops} operand-only); length target {nt} vs compiled {nc}")
     show_diff(diffs, ttext, ctext, nt, nc, int(os.environ.get("DIFF_ROWS", "40")))
+    # one machine-readable line (the swarm's big mode keeps the best C by it)
+    print(f"STAGE {name} {stage} {len(diffs)}/{max(nt, nc)} (length {nt} vs {nc})")
     return False, len(diffs)
 
 
