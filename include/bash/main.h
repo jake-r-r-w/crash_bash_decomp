@@ -536,6 +536,13 @@ extern s32 D_800517B4;
 extern s32 RandomSeedA;
 extern s32 RandomSeedB;
 extern void *D_80058B70;
+typedef struct {
+    s32 unk0;
+    s32 unk4;
+    s32 unk8;
+    void (*unkC)(u8 *, u8 *);
+} D_80058B00_Entry;
+extern D_80058B00_Entry D_80058B00[];
 extern s32 D_8005A5D8;
 extern s32 D_800655A8;
 extern s32 D_800655C0;
@@ -1186,6 +1193,8 @@ void func_8001C1E0(u8 *arg0, u16 *src, u8 *tab, u16 *dst);
 void *func_8001CF50(ModelEntry *e, s32 arg1);
 
 s32 *func_8001E48C(s32 arg0);
+
+void func_80021054(u8 *arg0);
 
 void func_8002147C(VelObj *obj, VelParams *p, VelState *s);
 void *func_80010E8C(s32 a, s32 b);

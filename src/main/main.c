@@ -3581,7 +3581,33 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80020E9C);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80020F5C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80021054);
+void func_80021054(u8 *arg0) {
+    s32 *p;
+    u8 *cur;
+    u8 *next;
+    void *head;
+    void (*fn)(u8 *, u8 *);
+
+    p = *(s32 **)(arg0 + 0x18);
+    cur = *(u8 **)(arg0 + 8);
+    if (p != NULL) {
+        *p = 0;
+    }
+    for (;;) {
+        if (cur == NULL) {
+            return;
+        }
+        fn = D_80058B00[*(s32 *)(cur + 4)].unkC;
+        next = *(u8 **)(cur + 0xB4);
+        if (fn != NULL) {
+            fn(cur, arg0);
+        }
+        head = D_80058B70;
+        D_80058B70 = cur;
+        *(void **)(cur + 0xB4) = head;
+        cur = next;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800210F8);
 
