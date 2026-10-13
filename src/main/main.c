@@ -7178,7 +7178,46 @@ void func_8002C488(s32 arg0, s32 type) {
     func_8002C394(arg0, &D_8006557C, type);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C4B0);
+s32 func_8002C4B0(u8 c) {
+    static const void *const tbl[31] = {
+        &&l21, &&l22, &&l23, &&l24, &&l25, &&ldef, &&ldef, &&l28,
+        &&l29, &&l2A, &&l2B, &&l2C, &&l2D, &&l2E, &&l2F, &&ldef,
+        &&ldef, &&ldef, &&ldef, &&ldef, &&ldef, &&ldef, &&ldef, &&ldef,
+        &&ldef, &&l3A, &&l3B, &&ldef, &&ldef, &&ldef, &&l3F
+    };
+    u32 i;
+    if ((u8)(c - 0x41) < 0x1A) {
+        return (c + 0x1F) | 0x8200;
+    }
+    if ((u8)(c - 0x61) < 0x1A) {
+        return (c + 0x20) | 0x8200;
+    }
+    if ((u8)(c - 0x30) < 0xA) {
+        return (c + 0x1F) | 0x8200;
+    }
+    i = c - 0x21;
+    if (i < 0x1F) {
+        goto *tbl[i];
+    }
+    goto ldef;
+l21: return 0x8149;
+l22: return 0x8168;
+l23: return 0x8194;
+l24: return 0x8190;
+l25: return 0x8193;
+l28: return 0x8169;
+l29: return 0x816A;
+l2A: return 0x8196;
+l2B: return 0x817B;
+l2C: return 0x8143;
+l2D: return 0x817C;
+l2E: return 0x8144;
+l2F: return 0x815E;
+l3A: return 0x8146;
+l3B: return 0x8147;
+l3F: return 0x8148;
+ldef: return 0x8140;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C5BC);
 
