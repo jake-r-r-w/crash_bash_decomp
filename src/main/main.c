@@ -7679,7 +7679,36 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80029790);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002992C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80029D28);
+s32 func_80029D28(SpriteFrame *f, s32 xy, s32 otz, u32 color) {
+    POLY_FT4 *p;
+    ScreenXY v;
+
+    if (D_8005B698 == NULL) {
+        return 0;
+    }
+    v.s.x = (s16)xy * D_8005B698->w / 640;
+    p = *(POLY_FT4 **)(D_8005B68C + 0x4008);
+    *(POLY_FT4 **)(D_8005B68C + 0x4008) = p + 1;
+    v.s.y = (s16)(xy >> 16) / 2;
+    *(u32 *)&p->r0 = FadeColor((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
+    setPolyFT4(p);
+    setSemiTrans(p, (s32)color < 0);
+    *(u16 *)&p->u0 = f->uv0;
+    *(u16 *)&p->u1 = f->uv1;
+    *(u16 *)&p->u2 = f->uv2;
+    *(u16 *)&p->u3 = f->uv3;
+    p->tpage = (f->tpage & 0xFF9F) | ((color >> 19) & 0x60);
+    p->clut = f->clut;
+    *(s32 *)&p->x0 = v.w;
+    v.s.x += f->w - 1;
+    *(s32 *)&p->x1 = v.w;
+    v.s.y += f->h - 1;
+    *(s32 *)&p->x3 = v.w;
+    v.s.x -= f->w - 1;
+    *(s32 *)&p->x2 = v.w;
+    addPrim(D_80056998.ot + otz, p);
+    return f->advance * 640 / D_8005B698->w;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80029F9C);
 

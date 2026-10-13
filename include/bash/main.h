@@ -800,6 +800,58 @@ void *func_800112A4(void *base, s32 offset, Heap *arg2);
 void func_80014540(u8 *arg0, RECT *rect);
 void func_8002ACA0(s32 id, s32 arg1);
 extern GfxState D_80056998;
+/* The current draw buffer: primitives are allocated from the pointer at
+ * +0x4008 (func_80029D28). */
+extern u8 *D_8005B68C;
+
+/* A sprite frame func_80029D28 draws as one POLY_FT4. */
+typedef struct {
+    u8 unk0[8];
+    s16 w;       /* 0x08 */
+    s16 h;       /* 0x0A */
+    u8 unkC[4];
+    u8 advance;  /* 0x10: returned scaled to the screen width */
+    u8 unk11[0x13];
+    u16 tpage;   /* 0x24 */
+    u16 clut;    /* 0x26 */
+    u16 uv0;     /* 0x28 */
+    u16 uv1;     /* 0x2A */
+    u16 uv2;     /* 0x2C */
+    u16 uv3;     /* 0x2E */
+} SpriteFrame;
+
+/* A screen position as one word (x low, y high). */
+typedef union {
+    s32 w;
+    struct {
+        s16 x, y;
+    } s;
+} ScreenXY;
+
+/* Draws f at xy (640-wide units) as a POLY_FT4 in ot[otz]; color bit 31 makes
+ * it semi-transparent, bits 29-30 its blend mode. Returns f's advance. */
+s32 func_80029D28(SpriteFrame *f, s32 xy, s32 otz, u32 color);
+
+/* func_8002A2EC: fades r, g, b towards black by D_800569AC / 0x1000. */
+static inline s32 FadeColor(s32 r, s32 g, s32 b) {
+    s32 t;
+    s32 d;
+
+    d = D_800569AC;
+    if (d != 0) {
+        t = 0x1000 - d;
+        r *= t;
+        g *= t;
+        b *= t;
+        r >>= 12;
+        r &= 0xFF;
+        g >>= 12;
+        g &= 0xFF;
+        b >>= 12;
+        b &= 0xFF;
+    }
+    return (r << 16) | (g << 8) | b;
+}
 extern u16 D_800569DC;
 extern s32 D_800569C0;
 
