@@ -5373,7 +5373,38 @@ void func_8002617C(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80026210);
+s16 func_80026210(s32 x, u8 *s) {
+    s32 sum;
+    s32 c;
+    s32 d;
+    s32 e;
+
+    c = *s;
+    d = c & 0xFF;
+    sum = 0;
+    if (d != 0 && d != 10) {
+        do {
+            s32 idx;
+            u8 *f;
+            s8 *w;
+            s32 v;
+            if (c == 13) {
+                break;
+            }
+            idx = *s + (D_8005B2B4 << 8);
+            w = &D_8005AEB4[idx];
+            f = &D_8005B0B4[idx];
+            v = *w;
+            if (!(*f & 2)) {
+                sum += v;
+            }
+            s++;
+            c = *s;
+            e = c & 0xFF;
+        } while (e != 0 && e != 10);
+    }
+    return x - (sum * 5 * 128) / D_8005B698->w / 2;
+}
 
 void func_80026308(void) {
     func_80023A90();

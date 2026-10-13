@@ -1355,6 +1355,8 @@ s32 func_80025D40(EXTengine *eng);
 
 void func_8002617C(void);
 
+s16 func_80026210(s32 x, u8 *s);
+
 s32 func_8002633C(u8 *s);
 
 Ext400 *func_800265DC(NAS *nas);
