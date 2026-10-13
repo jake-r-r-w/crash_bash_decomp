@@ -5033,7 +5033,20 @@ void func_800270B0(NAS *nas) {
     KillNAS(nas);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800270F0);
+void func_800270F0(u8 *a) {
+    VTable8 *p;
+
+    p = (VTable8 *)a;
+    while (p != NULL) {
+        D_8005B648 = p;
+        p->unk0();
+        while (D_8005B648 == p) {
+            p->unk4();
+            p->unk8();
+        }
+        p = D_8005B648;
+    }
+}
 
 s32 func_8002718C(void) {
     __main();

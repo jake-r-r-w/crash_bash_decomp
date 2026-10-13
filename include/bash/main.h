@@ -504,6 +504,7 @@ typedef struct {
 void func_800155FC(void);
 void func_8002BEA8(void);
 extern VTable8 *D_8004E0DC;
+extern VTable8 *D_8005B648;
 extern s32 D_8004E0E0;
 extern u8 D_80078C90[];
 MemBlock *func_80011BF8(Heap *heap, u8 *start, s32 size);
