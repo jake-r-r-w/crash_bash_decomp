@@ -705,6 +705,15 @@ extern void *D_80058B78;
 extern RECT D_8005B640;
 extern void *D_80058B74;
 extern void *D_80058AD0;
+/* A button-combo sequence: steps[] are pad masks, 0-terminated. */
+typedef struct ComboSeq {
+    /* 0x00 */ void (*fn)(void);
+    /* 0x04 */ s32 maxTime;
+    /* 0x08 */ s32 step;
+    /* 0x0C */ s32 startTime;
+    /* 0x10 */ s32 steps[1];
+} ComboSeq;
+
 extern s32 D_80051380;
 extern u8 D_800536CC[];
 extern CdlLOC D_8006EA14;
@@ -1460,6 +1469,8 @@ u8 *func_800129D0(u8 *arg0, s32 arg1);
 u8 *func_80012AC4(u8 *arg0);
 
 void func_80012BC8(s32 * *arg0, s32 *arg1, u8 *arg2);
+
+void func_80013B0C(ComboSeq *c);
 
 void func_8001CAD4(u16 *arg0, s32 arg1, u32 arg2);
 

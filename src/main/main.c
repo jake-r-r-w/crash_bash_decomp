@@ -1366,7 +1366,34 @@ void func_800138A4(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800139A8);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80013B0C);
+void func_80013B0C(ComboSeq *c) {
+    s32 m;
+
+    m = c->steps[c->step];
+    if (m != 0 && (D_80051380 & 0xFFFF)) {
+        if ((D_80051380 & m) == m) {
+            if (c->step == 0) {
+                c->startTime = D_8005B690;
+            }
+            c->step++;
+            if (c->steps[c->step] == 0) {
+                c->step = 0;
+                if (c->maxTime >= D_8005B690 - c->startTime) {
+                    PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+                    c->fn();
+                }
+            }
+        } else {
+            m = c->steps[0];
+            if ((D_80051380 & m) == m) {
+                c->step = 1;
+                c->startTime = D_8005B690;
+                return;
+            }
+            c->step = 0;
+        }
+    }
+}
 
 void func_80013C24(void) {
     if (D_800512A4 != 0) {
