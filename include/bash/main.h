@@ -1163,6 +1163,8 @@ s32 func_800166FC(u8 *arg0, u8 *arg1);
 
 u8 *func_80016A20(u8 *arg0, s32 arg1);
 
+void func_80018430(s32 count);
+
 s32 *func_80018694(s32 * *arg0, s32 arg1);
 
 void func_8001C1E0(u8 *arg0, u16 *src, u8 *tab, u16 *dst);

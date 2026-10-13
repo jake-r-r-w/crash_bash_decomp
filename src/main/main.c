@@ -2209,7 +2209,26 @@ void func_800183DC(void) {
     pool->mem = NULL;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80018430);
+void func_80018430(s32 count) {
+    PoolNode *p;
+    PoolNode *n;
+    s32 i;
+    s32 last;
+
+    if (D_80056844.mem == NULL) {
+        D_80056844.mem = func_80011654(count * 0x64, &D_8004E0F0);
+    }
+    p = D_80056844.mem;
+    last = count - 1;
+    for (i = 0; i < last; i++) {
+        n = (PoolNode *)((u8 *)p + 0x64);
+        p->next = n;
+        p = n;
+    }
+    p->next = NULL;
+    D_80056844.done = NULL;
+    D_80056844.free = D_80056844.mem;
+}
 
 void func_800184D4(u8 **arg0) {
     u8 *temp_a0;
