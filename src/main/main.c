@@ -3595,7 +3595,37 @@ s16 func_80020C4C(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80020CC4);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80020DF8);
+void func_80020DF8(u8 *arg0) {
+    u8 *p;
+    u8 *cur;
+    u8 *next;
+    s32 *flag;
+    void *old;
+    D_80058B00_Entry *tab;
+    void (*fn)(u8 *, u8 *);
+
+    p = arg0 + 0x6C;
+    flag = *(s32 **)(p + 0x18);
+    cur = *(u8 **)(p + 8);
+    if (flag != NULL) {
+        *flag = 0;
+    }
+    tab = D_80058B00;
+    for (;;) {
+        if (cur == NULL) {
+            return;
+        }
+        fn = tab[*(s32 *)(cur + 4)].unkC;
+        next = *(u8 **)(cur + 0xB4);
+        if (fn != NULL) {
+            fn(cur, p);
+        }
+        old = D_80058B70;
+        D_80058B70 = cur;
+        *(void **)(cur + 0xB4) = old;
+        cur = next;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80020E9C);
 
