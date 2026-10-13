@@ -15,6 +15,15 @@ typedef struct {
     VECTOR pos; /* 0x0C */
 } View;
 
+/* A 0x38-byte record in the table at +8 of the block func_8002A9AC frees
+ * (count at +0). */
+typedef struct TexAnimEntry {
+    /* 0x00 */ u8 unk0[0x20];
+    /* 0x20 */ s32 handle; /* freed with func_80028AE4 */
+    /* 0x24 */ u8 unk24[0x10];
+    /* 0x34 */ s32 time;   /* frame stamp, compared to D_8005B690 */
+} TexAnimEntry;
+
 /* Scratch for one GTE transform (0x800569CC, 0x50 bytes; the next symbol is
  * 0x80056A1C). func_8002B6D0 addresses `in` as `&out - 0x40`, so both are one
  * object. */
@@ -1333,6 +1342,8 @@ FreeNode *func_80028A28(void);
 void func_8002A684(u8 *arg0, u8 *arg1);
 
 void func_8002A77C(ClutUpload *arg0, s32 arg1);
+
+void func_8002A9AC(s32 *arg0, s32 arg1);
 
 void func_8002D294(void);
 

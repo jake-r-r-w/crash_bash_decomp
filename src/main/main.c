@@ -6256,7 +6256,25 @@ void func_8002A830(u8 *src, u8 *out, s32 len) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002A84C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002A9AC);
+void func_8002A9AC(s32 *arg0, s32 arg1) {
+    s32 n;
+    TexAnimEntry *p;
+
+    p = (TexAnimEntry *)arg0[2];
+    n = arg0[0];
+    if (p != NULL) {
+        for (;; p++) {
+            n--;
+            if (n == -1) {
+                return;
+            }
+            if (p->handle != 0 && D_8005B690 - p->time >= arg1) {
+                func_80028AE4(p->handle);
+                p->handle = 0;
+            }
+        }
+    }
+}
 
 void func_8002AA50(u8 *arg0) {
     s32 temp_a0;
