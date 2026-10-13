@@ -8,6 +8,20 @@
 #include "common.h"
 #include "bash/nas.h"
 
+typedef struct {
+    s32 tracksOff; /* 0x00 */
+    s32 subOff;    /* 0x04 */
+} AnimData;
+
+typedef struct {
+    u8 unk0[8];
+    u8 *table;      /* 0x08 */
+    u8 unkC[0xC];
+    AnimData *data; /* 0x18 */
+} AnimOwner;
+
+void func_80028F28(void *, void *);
+
 /* A viewpoint: its position (+0xC) is subtracted from world positions before
  * they go through the GTE (func_8002B6D0, func_8002B760). */
 typedef struct {
@@ -1450,6 +1464,8 @@ void func_8001CAD4(u16 *arg0, s32 arg1, u32 arg2);
 void func_8001F4F8(u8 *arg0, u8 *arg1);
 
 s32 func_800281C0(PadRumble *r, s32 port);
+
+void func_80029100(AnimOwner *arg0);
 
 void func_8002A4C0(TexUploadList *arg0, u8 *arg1);
 

@@ -6763,7 +6763,60 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80028D40);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80028F28);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80029100);
+void func_80029100(AnimOwner *arg0) {
+    AnimData *d;
+    s32 *p;
+    s32 n;
+    s32 i;
+    u8 *dst;
+    s32 old;
+    s32 pos;
+    s32 *q;
+    s32 *r;
+    s32 *base;
+
+    d = arg0->data;
+    if (d != NULL) {
+        if (d->tracksOff != 0) {
+            p = (s32 *)((u8 *)d + d->tracksOff);
+            n = *p;
+            base = p + 1;
+            while (1) {
+                if (--n == -1) {
+                    break;
+                }
+                i = base[1];
+                pos = base[4] + base[3];
+                dst = arg0->table + i * 0x38;
+                old = base[4] >> 8;
+                base[4] = pos;
+                if (base[3] < 0) {
+                    if (pos < 0) {
+                        base[4] = pos + (base[2] << 8);
+                    }
+                } else if ((pos >> 8) >= base[2]) {
+                    base[4] = pos - (base[2] << 8);
+                }
+                if ((base[4] >> 8) != old) {
+                    q = (s32 *)((u8 *)base + *base) + (base[4] >> 8);
+                    LoadImage((RECT *)(dst + 0x18), (u32 *)((u8 *)q + *q));
+                }
+                base += 5;
+            }
+        }
+        if (d->subOff != 0) {
+            p = (s32 *)((u8 *)d + (d->subOff + 4));
+            r = p + 1;
+            n = *p;
+            if (--n != -1) {
+                do {
+                    func_80028F28(r, arg0);
+                    r += 4;
+                } while (--n != -1);
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002926C);
 
