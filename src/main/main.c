@@ -2454,7 +2454,39 @@ void func_8001C0F0(s32 p, MorphModel *model, u16 *ia, u16 *ib, s16 (*verts)[3]) 
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001C1E0);
+void func_8001C1E0(u8 *arg0, u16 *src, u8 *tab, u16 *dst) {
+    u8 *p;
+    s32 n;
+    s32 c;
+    s32 prev;
+    u16 v;
+    u16 *e;
+
+    s32 off = *(s32 *)(arg0 + 0x14);
+    u8 *b = (u8 *)off + (s32)arg0;
+    p = b + 0x15;
+    for (;;) {
+        c = *p;
+        if (c == 0xFF) {
+            return;
+        }
+        n = c + 1;
+        if (c + 2 > 0) {
+            do {
+                v = *src++;
+                prev = n;
+                e = (u16 *)(tab + (v >> 2) * 6);
+                n--;
+                *dst = e[0];
+                dst[1] = e[1];
+                dst[2] = e[2];
+                dst[3] = v & 3;
+                dst += 4;
+            } while (prev > 0);
+        }
+        p += 2;
+    }
+}
 
 void func_8001C270(EXTengine *eng) {
     eng->kill(eng);
