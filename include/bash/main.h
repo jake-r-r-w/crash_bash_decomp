@@ -68,6 +68,26 @@ typedef struct {
     s32 entries; /* 0x1C */
 } EntryBlock;
 
+/* A 0x28-byte primitive slot of func_80017B08: a textured triangle, or (run flag
+ * bit 0) a draw-mode packet followed by an untextured gouraud triangle. */
+typedef union {
+    POLY_GT3 gt;
+    struct {
+        DR_TPAGE tp;
+        POLY_G3 g;
+    } g;
+} FacePrim;
+
+/* Face data func_80017B08 reads: a run list (as MorphModel's: pairs of a flags
+ * byte and a count, ending in a count of 0xFF) and one u16 colour index per face
+ * (bit 15: semi-transparent, bits 13-14: blend mode). */
+typedef struct {
+    u8 unk0[0x14];
+    s32 runs;  /* 0x14: byte offset from this field */
+    u8 unk18[8];
+    s32 table; /* 0x20: byte offset from this field */
+} FaceRuns;
+
 typedef struct GfxModel {
     u8 unk0[0xC];
     RelTable *colors; /* 0x0C: u32 colours, indexed by a face's 13-bit indices */
@@ -1710,6 +1730,8 @@ typedef struct {
 } TexDst2A84C;
 
 void func_800139A8(void);
+
+void func_80017B08(FaceRuns *faces, FacePrim *prim, s32 arg2, s32 mode);
 
 void func_8002A84C(TexSrc2A84C *s, TexDst2A84C *d, s32 n);
 

@@ -3110,7 +3110,84 @@ void func_800177F4(RelTable *face, POLY_GT4 *poly, s32 arg2, s32 mode) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001795C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80017B08);
+void func_80017B08(FaceRuns *faces, FacePrim *prim, s32 arg2, s32 mode) {
+    u16 *idx;
+    u8 *run;
+    u8 *count;
+    u32 *colors;
+    u32 *c;
+    s32 n;
+    s32 semi = mode & 1;
+    s32 abr = mode & 0x60;
+
+    idx = (u16 *)((u8 *)&faces->table + faces->table);
+    gte_ldfcdir(D_80056998.farColor[0], D_80056998.farColor[1], D_80056998.farColor[2]);
+    gte_lddp(D_80056998.dp);
+    run = (u8 *)&faces->runs + faces->runs;
+    colors = (u32 *)((u8 *)&D_80056998.unk0->colors->table + D_80056998.unk0->colors->table);
+    count = run + 1;
+    for (;; count += 2, run += 2) {
+        if (*count == 0xFF) {
+            goto done;
+        }
+        n = *count;
+        for (;;) {
+            if (n-- == 0) {
+                goto next;
+            }
+            c = &colors[*idx & 0x1FFF];
+            if (run[0] & 1) {
+                FacePrim *p = prim;
+
+                gte_ldrgb(c);
+                gte_dpcs();
+                gte_strgb(&prim->g.g.r0);
+                if (semi) {
+                    *(u32 *)&prim->g.g.r0 |= 0x32000000;
+                    *(u32 *)&prim->g.tp.code[0] = abr | 0xE1000000;
+                } else if (*idx & 0x8000) {
+                    *(u32 *)&prim->g.g.r0 |= 0x32000000;
+                    *(u32 *)&prim->g.tp.code[0] = ((*idx >> 8) & 0x60) | 0xE1000000;
+                } else {
+                    *(u32 *)&prim->g.g.r0 |= 0x30000000;
+                }
+                c++;
+                gte_ldrgb(c);
+                gte_dpcs();
+                gte_strgb(&p->g.g.r1);
+                c++;
+                gte_ldrgb(c);
+                gte_dpcs();
+                gte_strgb(&p->g.g.r2);
+            } else {
+                gte_ldrgb(c);
+                gte_dpcs();
+                gte_strgb(&prim->gt.r0);
+                if (semi) {
+                    *(u32 *)&prim->gt.r0 |= 0x36000000;
+                    prim->gt.tpage = (prim->gt.tpage & ~0x60) | abr;
+                } else if (*idx & 0x8000) {
+                    *(u32 *)&prim->gt.r0 |= 0x36000000;
+                    prim->gt.tpage = (prim->gt.tpage & ~0x60) | ((*idx >> 8) & 0x60);
+                } else {
+                    *(u32 *)&prim->gt.r0 |= 0x34000000;
+                }
+                c++;
+                gte_ldrgb(c);
+                gte_dpcs();
+                gte_strgb(&prim->gt.r1);
+                c++;
+                gte_ldrgb(c);
+                gte_dpcs();
+                gte_strgb(&prim->gt.r2);
+            }
+            prim++;
+            idx++;
+        }
+    next:;
+    }
+done:;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80017D90);
 
