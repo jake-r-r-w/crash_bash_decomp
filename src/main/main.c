@@ -1680,7 +1680,35 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_80016558);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800165F8);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800166FC);
+s32 func_800166FC(u8 *arg0, u8 *arg1) {
+    u8 *tbl;
+    u8 *p;
+    s32 n;
+    s32 key;
+    s32 d;
+
+    u8 *res;
+
+    tbl = *(u8 **)(arg0 + 0xC);
+    if (tbl == NULL) {
+        res = NULL;
+    } else {
+        key = func_8001534C(arg1);
+        p = tbl + (*(s32 *)(tbl + 0x44) + 0x44);
+        n = *(s32 *)(tbl + 0x40);
+        n--;
+        for (; n != -1; n--, p += 0x18) {
+            if (*(s32 *)(p + 0x10) == key) {
+                res = p;
+                goto found;
+            }
+        }
+        res = NULL;
+    }
+found:
+    d = *(s32 *)(res + 4) - *(s32 *)res;
+    return ((d + 0x7FF) / 0x800) * 0x800;
+}
 
 u8 *func_800167A8(u8 *arg0, u8 *arg1) {
     u8 *p;

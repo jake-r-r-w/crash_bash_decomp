@@ -686,7 +686,8 @@
  },
  "800166FC": {
   "auto_diff": 38,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-13T08:18:54Z",
+  "status": "matched"
  },
  "800167A8": {
   "auto_diff": 33,
