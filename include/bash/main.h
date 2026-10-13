@@ -650,6 +650,22 @@ typedef struct Words3 {
     s32 w8;
 } Words3;
 
+typedef struct SortKey {
+    s32 unk0;
+    s32 unk4;
+} SortKey;
+typedef struct SortNode {
+    SortKey *key;      /* 0x00 */
+    u8 pad4[0x18];
+    struct SortNode *next; /* 0x1C */
+    struct SortNode *prev; /* 0x20 */
+} SortNode;
+typedef struct SortList {
+    u8 pad0[0xC];
+    SortNode *head;    /* 0x0C */
+    SortNode *tail;    /* 0x10 */
+} SortList;
+
 void *AllocExtension(void *owner, s32 size, s32 id, void *tmpl);
 extern EXTmotion D_8005A9CC;
 extern subengine D_8005A830;
@@ -1130,6 +1146,8 @@ typedef struct VelState {
 u8 *func_80011498(u8 *arg0, s32 arg1, Heap *arg2);
 
 void *func_800115D8(s32 arg0, void * *arg1, s32 arg2, s16 arg3);
+
+SortNode *func_8001251C(SortList *arg0);
 
 s32 func_800131B0(s32 arg0);
 
