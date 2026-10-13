@@ -1871,6 +1871,8 @@ void func_8001A43C(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4);
 
 void func_8001E0A8(u8 *arg0);
 
+void func_8001FCDC(u8 *arg0, u8 *arg1);
+
 NAS *func_80022C3C(s32 x, s32 y, s32 z, u16 id, s32 slot);
 
 s32 func_8002578C(NAS *nas);

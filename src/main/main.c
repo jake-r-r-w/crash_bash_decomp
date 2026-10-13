@@ -5573,7 +5573,62 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8001F604);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001F828);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001FCDC);
+void func_8001FCDC(u8 *arg0, u8 *arg1) {
+    u8 *p;
+    u8 *r;
+    u8 *res;
+    s32 *q;
+    s32 lo;
+    s32 idx;
+    s32 v;
+    u8 *e;
+    u8 *d;
+    u32 t;
+
+    e = *(u8 **)(arg1 + 0);
+    lo = *(s32 *)(arg1 + 4);
+    idx = *(s32 *)(arg0 + 0);
+    v = *(s16 *)(arg1 + 0xE);
+    D_80058B7C = e;
+    p = *(u8 **)(e + 0xC);
+    D_80058B80 = lo;
+    D_80058B84 = idx;
+    if (p == NULL) {
+        r = NULL;
+    } else {
+        q = (s32 *)(p + (*(s32 *)(p + 0x4C) + 0x4C) + lo * 4);
+        r = (u8 *)q + *q;
+    }
+    if (r == NULL) {
+        res = NULL;
+    } else {
+        res = r + (idx * 4 + 0x1C) + *(s32 *)(r + (idx << 2) + 0x1C);
+    }
+    if (res != NULL) {
+        if (v < *(s32 *)(res + 4) || *(s32 *)(res + 8) < v) {
+            res = NULL;
+        }
+    }
+    d = arg0 + 8;
+    if (res != NULL && *(s32 *)(arg1 + 0xC) >= (*(s32 *)(res + 4) << 16) &&
+        !(*(s32 *)(arg0 + 8) & 0x8000)) {
+        *(s32 *)(d + 4) = *(s32 *)(res + 0x2C);
+        *(s32 *)(d + 8) = *(s32 *)(res + 0x30);
+        *(s32 *)(d + 0xC) = *(s32 *)(res + 0x34);
+        *(u16 *)(d + 0x10) = *(u16 *)(res + 0x38);
+        *(u16 *)(d + 0x12) = *(u16 *)(res + 0x3C);
+        *(u16 *)(d + 0x14) = *(u16 *)(res + 0x40);
+        *(s32 *)(d + 0x20) = *(s32 *)(res + 0x60);
+        *(s32 *)(d + 0x24) = *(s32 *)(res + 0x64);
+        *(s32 *)(d + 0x28) = *(s32 *)(res + 0x68);
+        *(u8 *)(d + 0x51) = 0;
+        t = *(u16 *)(res + 0x18);
+        *(u16 *)(d + 0x52) = 1;
+        *(u16 *)(d + 0x68) = t;
+        func_80020CC4(*(u8 **)arg1, *(s32 *)(res + 0x14), d, 0);
+        *(s32 *)(arg0 + 8) |= 0x8000;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001FE80);
 
