@@ -128,7 +128,8 @@
   "auto_failed": "compile"
  },
  "800119D4": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-13T12:35:27Z",
+  "status": "matched"
  },
  "80011AE8": {
   "auto_diff": 27,

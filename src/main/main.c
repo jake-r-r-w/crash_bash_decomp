@@ -392,7 +392,65 @@ MemBlock *func_80011878(MemBlock *blk, s32 words) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800118BC);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800119D4);
+void func_800119D4(MemBlock *arg0, s32 arg1, Heap *arg2) {
+    MemBlock *cur;
+    MemBlock *t;
+    MemBlock *nb;
+    MemBlock *p;
+    u32 sz;
+
+    t = arg0->prevFree;
+    if (t != NULL) {
+        t->nextFree = arg0->nextFree;
+    } else {
+        arg2->free = arg0->nextFree;
+    }
+    t = arg0->nextFree;
+    if (t != NULL) {
+        t->prevFree = arg0->prevFree;
+    }
+    sz = arg0->size - 6;
+    sz -= arg1;
+    arg0->size = sz;
+    cur = arg2->free;
+    if (cur == NULL) {
+        arg2->free = arg0;
+        arg0->nextFree = NULL;
+        arg0->prevFree = NULL;
+    } else {
+        goto start;
+    app:
+        cur->nextFree = arg0;
+        arg0->prevFree = cur;
+        arg0->nextFree = NULL;
+        goto done;
+    start:
+        for (;;) {
+            if (cur->size >= arg0->size) {
+                p = cur->prevFree;
+                if (p != NULL) {
+                    p->nextFree = arg0;
+                } else {
+                    arg2->free = arg0;
+                }
+                arg0->prevFree = p;
+                arg0->nextFree = cur;
+                cur->prevFree = arg0;
+                goto done;
+            }
+            p = cur->nextFree;
+            if (p == NULL) {
+                goto app;
+            }
+            cur = p;
+        }
+    }
+done:
+    nb = (MemBlock *)((u8 *)arg0 + (arg0->size * 4 + 0x18));
+    nb->size = arg1;
+    nb->prev = arg0;
+    MEMBLOCK_NEXT(nb)->prev = nb;
+}
 
 void func_80011AE8(MemBlock *blk, Heap *heap) {
     MemBlock *p;
