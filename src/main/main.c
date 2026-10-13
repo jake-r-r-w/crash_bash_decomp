@@ -624,7 +624,38 @@ MemBlock *func_80011F74(Heap *heap) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80011FC8);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800120E8);
+void func_800120E8(MemBlock *arg0, Heap *arg1) {
+    s32 size;
+    MemBlock *prev;
+    MemBlock *next;
+    MemBlock *dst;
+    s32 *d;
+    s32 *s;
+    s32 n;
+
+    size = arg0->size;
+    prev = arg0->prev;
+    next = (MemBlock *)((u8 *)arg0 + (size * 4 + 0x18));
+    if (prev != NULL) {
+        func_80011B74((u8 *)arg0, (u8 *)arg1);
+        d = (s32 *)((u8 *)arg0 + (arg0->size * 4 + 0x14));
+        n = prev->size;
+        s = (s32 *)((u8 *)prev + (n * 4 + 0x14));
+        dst = (MemBlock *)((u8 *)d - n * 4 - 0x14);
+        next->prev = dst;
+        n--;
+        while (n != -1) {
+            *d-- = *s--;
+            n--;
+        }
+        *dst = *prev;
+        *dst->owner = (void *)(dst + 1);
+        dst->prev = prev;
+        prev->owner = (void **)-1;
+        prev->size = size;
+        func_800110A8(prev + 1, arg1);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800121F8);
 
