@@ -554,6 +554,7 @@ typedef struct {
 extern D_80058B00_Entry D_80058B00[];
 extern s32 D_8005A5D8;
 extern s32 D_800655A8;
+extern s32 D_800655B8;
 extern s32 D_800655C0;
 extern u8 D_800655C8[];
 typedef struct {

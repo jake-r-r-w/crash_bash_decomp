@@ -6786,7 +6786,53 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C4B0);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C5BC);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C894);
+void func_8002C894(void) {
+    u8 *p;
+    s32 i;
+    s32 *q;
+    s32 *end;
+    s32 sum;
+    int new_var;
+
+    MemCardInit(0);
+    MemCardStart();
+    i = 0;
+    D_800655B8 = 0;
+    D_800655C0 = 0;
+    D_800675CC = 0;
+    D_800655C4 = 0;
+    for (;;) {
+        if (i < 4) {
+            D_800657C8[i].b[0] = 0;
+            D_800657C8[i].b[1] = 0;
+            D_800657C8[i].b[2] = 0;
+            D_800657C8[i].b[3] = 0;
+            D_800657C8[i].b[4] = 0;
+            D_800657C8[i].b[5] = 0;
+            D_800657C8[i].b[6] = 0;
+            D_800657C8[i].b[7] = 0;
+            i++;
+        } else {
+            break;
+        }
+    }
+    new_var = 0x850;
+    *(s32 *)(D_800655C8 + new_var) = 1;
+    i = 7;
+    p = D_800655C8 + i;
+    do {
+        p[0x854] = 0;
+        i--;
+        p--;
+    } while (i >= 0);
+    end = (s32 *)(D_800655C8 + new_var);
+    q = (s32 *)(D_800655C8 + 0x200);
+    sum = 0;
+    while (q < end) {
+        sum += *q++;
+    }
+    D_80065E24 = sum;
+}
 
 INCLUDE_RODATA("asm/nonmatchings/main/main", D_8004CD8C);
 
