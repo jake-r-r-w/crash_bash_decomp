@@ -738,7 +738,49 @@ MemBlock *func_80011F74(Heap *heap) {
     return next;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80011FC8);
+void func_80011FC8(MemBlock *arg0, Heap *arg1) {
+    MemBlock *next;
+    s32 new_var2;
+    MemBlock *prev;
+    MemBlock *new_var;
+    MemBlock *end;
+    MemBlock *nb;
+    s32 *d;
+    s32 *s;
+    s32 n;
+    s32 size;
+
+    func_80011B74((u8 *)arg0, (u8 *)arg1);
+    size = arg0->size;
+    next = (MemBlock *)((u8 *)arg0 + (size * 4 + 0x18));
+    new_var = arg0;
+    n = next->size;
+    prev = arg0->prev;
+    d = (s32 *)((u8 *)arg0 + 0x18);
+    *arg0 = *next;
+    s = (s32 *)((u8 *)next + 0x18);
+    new_var->prev = prev;
+    end = (MemBlock *)((u8 *)next + (n * 4 + 0x18));
+    new_var2 = size;
+    n--;
+    *arg0->owner = (void *)d;
+    if (n != -1) {
+        do {
+            *d++ = *s++;
+            n--;
+        } while (n != -1);
+    }
+    next = (MemBlock *)((u8 *)arg0 + (arg0->size * 4 + 0x18));
+    end->prev = next;
+    next->size = new_var2;
+    next->owner = (void **)-1;
+    next->unk0 = 0;
+    next->prev = arg0;
+    if (arg0 == arg1->lowest) {
+        arg1->lowest = func_80011BC0(next);
+    }
+    func_800110A8(next + 1, arg1);
+}
 
 void func_800120E8(MemBlock *arg0, Heap *arg1) {
     s32 size;

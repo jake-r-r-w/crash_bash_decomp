@@ -1583,6 +1583,8 @@ typedef struct {
     s16 b;
 } S16Pair;
 
+void func_80011FC8(MemBlock *arg0, Heap *arg1);
+
 u8 *func_800121F8(u8 *arg0);
 
 void func_800136BC(PadState *pad);

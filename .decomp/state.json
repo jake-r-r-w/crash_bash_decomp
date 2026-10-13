@@ -195,7 +195,8 @@
   "status": "matched"
  },
  "80011FC8": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-13T20:30:07Z",
+  "status": "matched"
  },
  "800120E8": {
   "matched_at": "2026-10-13T12:32:44Z",
