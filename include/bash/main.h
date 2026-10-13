@@ -1471,4 +1471,6 @@ void func_80029100(AnimOwner *arg0);
 
 void func_8002A4C0(TexUploadList *arg0, u8 *arg1);
 
+void func_8002BD98(SeqSlot *slot, s32 idx);
+
 #endif /* BASH_MAIN_H */

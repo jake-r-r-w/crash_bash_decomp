@@ -2356,7 +2356,8 @@
   "status": "matched"
  },
  "8002BD98": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-13T12:35:37Z",
+  "status": "matched"
  },
  "8002BEA8": {
   "auto_failed": "types"

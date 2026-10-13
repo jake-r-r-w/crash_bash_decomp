@@ -7423,7 +7423,24 @@ void func_8002BD68(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002BD98);
+void func_8002BD98(SeqSlot *slot, s32 idx) {
+    s16 vol;
+
+    if (slot->unk1C != -1) {
+        if (slot->seq != -1) {
+            SsSeqClose((s16)slot->seq);
+            SsSepStop((s16)slot->seq, 0);
+        }
+    }
+    SsSeqOpen(*(s32 *)(((u8 *)slot + 8) - (-(idx * 4))), (s16)slot->seq);
+    slot->unk1C = idx;
+    SsSetMVol(0x7F, 0x7F);
+    SsSeqPlay((s16)slot->seq, 1, 0);
+    vol = (*(s32 *)D_8005A604 * 0x7F) / 100;
+    SsSeqSetVol((s16)slot->seq, vol, vol);
+    D_800655B4 = (*(s32 *)D_8005A604 * 0x7F) / 100;
+    SsSetMute(0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002BEA8);
 
