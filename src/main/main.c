@@ -866,7 +866,22 @@ u8 *func_8001316C(u8 *arg0) {
 
 
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800131B0);
+s32 func_800131B0(s32 arg0) {
+    Heap *h = &D_8004E0F0;
+    s32 words;
+    arg0 += 3;
+    words = arg0 >> 2;
+    if (func_80011C5C(words, h->free) == NULL) {
+        func_80017640();
+        if (func_80011C5C(words, h->free) == NULL) {
+            func_80011D28((u8 *)h);
+            if (func_80011C5C(words, h->free) == NULL) {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
 
 void func_80013238(void) {
     D_80050628.state = 3;

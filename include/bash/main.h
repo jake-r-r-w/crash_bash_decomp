@@ -1131,6 +1131,8 @@ u8 *func_80011498(u8 *arg0, s32 arg1, Heap *arg2);
 
 void *func_800115D8(s32 arg0, void * *arg1, s32 arg2, s16 arg3);
 
+s32 func_800131B0(s32 arg0);
+
 s32 func_80013290(s32 *arg0, u8 * *arg1);
 
 s32 func_80013334(s32 arg0, s32 arg1, u8 * *arg2, s32 arg3);
