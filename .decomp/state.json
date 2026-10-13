@@ -1178,7 +1178,8 @@
   "status": "matched"
  },
  "8001E48C": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-13T08:00:33Z",
+  "status": "matched"
  },
  "8001E51C": {
   "matched_at": "2026-10-12T13:43:10Z",

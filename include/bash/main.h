@@ -1127,6 +1127,8 @@ s32 func_80013334(s32 arg0, s32 arg1, u8 * *arg2, s32 arg3);
 
 s32 *func_80018694(s32 * *arg0, s32 arg1);
 
+s32 *func_8001E48C(s32 arg0);
+
 void func_8002147C(VelObj *obj, VelParams *p, VelState *s);
 
 #endif /* BASH_MAIN_H */
