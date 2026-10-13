@@ -619,7 +619,28 @@ void func_80012E54(void) {
 void func_80012E88(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80012E90);
+void func_80012E90(void) {
+    LoadNode *node;
+    s32 i;
+
+    func_800279A4();
+    node = (LoadNode *)D_8005063C;
+    i = 0x3E;
+    D_80050628.state = 3;
+    D_80050628.unk4 = 0;
+    D_80050628.unk8 = 0;
+    D_80050628.unkC = 0;
+    D_80050628.unk10 = 0;
+    D_80050F3C = D_8005063C;
+    do {
+        LoadNode *next = (LoadNode *)((u8 *)node + 0x24);
+        node->next = next;
+        i--;
+        node = next;
+    } while (i != -1);
+    node->next = 0;
+    func_80012E54();
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80012F04);
 
