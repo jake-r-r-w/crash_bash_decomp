@@ -4669,7 +4669,43 @@ void func_80021054(u8 *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800210F8);
+void func_800210F8(u8 *arg0, s32 arg1, u8 *arg2, s32 arg3, u8 **arg4) {
+    u8 *e;
+    u8 *hdr;
+    s32 *t;
+    s32 *q;
+    s32 i;
+    void (*fn)(s32 *, u8 *, s32);
+
+    e = *(u8 **)(arg0 + 0xC);
+    if (e != NULL) {
+        s32 *p = (s32 *)(e + (*(s32 *)(e + 0x4C) + 0x4C)) + arg1;
+        hdr = (u8 *)p + *p;
+    } else {
+        hdr = NULL;
+    }
+    *(s32 *)(arg2 + 0x14) = arg3;
+    *(u8 **)(arg2 + 0x0) = arg0;
+    *(s32 *)(arg2 + 0x4) = arg1;
+    *(s32 *)(arg2 + 0x8) = 0;
+    *(s32 *)(arg2 + 0xC) = 0;
+    *(s16 *)(arg2 + 0xE) = *(s16 *)(hdr + 0xC);
+    *(s32 *)(arg2 + 0x10) = *(s32 *)(hdr + 0x8);
+    *(u8 ***)(arg2 + 0x18) = arg4;
+    if (arg4 != NULL) {
+        *arg4 = arg2;
+    }
+    t = (s32 *)(hdr + 0x1C);
+    for (i = 0; i < *(s32 *)hdr; i++) {
+        q = (s32 *)((u8 *)t + *t);
+        fn = (void (*)(s32 *, u8 *, s32))D_80058B00[*q].unk0;
+        if (fn != NULL) {
+            fn(q, arg2, i);
+        }
+        t++;
+    }
+    func_80020064(arg2);
+}
 
 void func_8002120C(u8 *arg0) {
     u8 *p;
