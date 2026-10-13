@@ -1451,7 +1451,34 @@ none:
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80015870);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800158E4);
+s32 func_800158E4(u8 *arg0, s32 arg1) {
+    u8 *base;
+    u8 *p;
+    s32 k;
+    u16 v;
+
+    base = *(u8 **)(arg0 + 0xC);
+    k = arg1 & 0x7000;
+    switch (k) {
+    case 0x5000:
+        p = (u8 *)func_800159C4(arg1 & 0xFFF, base);
+        break;
+    case 0x2000:
+        p = base + ((arg1 & 0xFFF) * 0x34 + 0x24);
+        break;
+    default:
+        p = NULL;
+        break;
+    }
+    if (p != NULL) {
+        v = *(u16 *)(*(s32 *)(p + 0x1C) + (s32)p + 0x1C);
+        if (!(v & 0x8000)) {
+            return (v & 0x1FF) | 0x3000;
+        }
+        return -1;
+    }
+    return -1;
+}
 
 s32 func_80015984(s32 i, EntryBlock *blk) {
     s32 idx = i;
