@@ -140,7 +140,72 @@ void func_8001097C(Heap *heap) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80010AE8);
+static inline MemBlock *func_80010AE8_next(Heap *heap) {
+    MemBlock *blk;
+    MemBlock *next;
+
+    blk = heap->lowest;
+    if (blk == NULL) {
+        return NULL;
+    }
+    next = (MemBlock *)((u8 *)blk + (blk->size * 4 + sizeof(MemBlock)));
+    if (next->owner == (void **)-1 || next->size == 0) {
+        return NULL;
+    }
+    return next;
+}
+
+static inline void func_80010AE8_merge(MemBlock *arg0, Heap *arg1) {
+    s32 m1;
+    MemBlock *next;
+    s32 new_var2;
+    MemBlock *prev;
+    MemBlock *new_var;
+    MemBlock *end;
+    s32 *d;
+    s32 *s;
+    s32 n;
+    s32 size;
+
+    func_80011B74((u8 *)arg0, (u8 *)arg1);
+    size = arg0->size;
+    next = (MemBlock *)((u8 *)arg0 + (size * 4 + 0x18));
+    new_var = arg0;
+    n = next->size;
+    prev = arg0->prev;
+    d = (s32 *)((u8 *)arg0 + 0x18);
+    *arg0 = *next;
+    s = (s32 *)((u8 *)next + 0x18);
+    new_var->prev = prev;
+    end = (MemBlock *)((u8 *)next + (n * 4 + 0x18));
+    new_var2 = size;
+    n--;
+    *arg0->owner = (void *)d;
+    if (n != -1) {
+        do {
+            m1 = -1;
+            *d++ = *s++;
+            n--;
+        } while (n != m1);
+    }
+    next = (MemBlock *)((u8 *)arg0 + (arg0->size * 4 + 0x18));
+    end->prev = next;
+    next->size = new_var2;
+    next->owner = (void **)-1;
+    next->unk0 = 0;
+    next->prev = arg0;
+    if (arg0 == arg1->lowest) {
+        arg1->lowest = func_80011BC0(next);
+    }
+    func_800110A8(next + 1, arg1);
+}
+
+void func_80010AE8(Heap *heap) {
+    DrawSync(0);
+    while (func_80010AE8_next(heap) != NULL) {
+        func_80010AE8_merge(heap->lowest, heap);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80010C70);
 
