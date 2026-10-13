@@ -88,6 +88,10 @@ build/%.c.o: %.c $(shell find include -name '*.h' 2>/dev/null)
 # with Sony's assembler, whose delay-slot filling tools/scripts/aspsx_fill.py does.
 build/src/main/8002d488.c.o: CC_VER = 2.7.2-psx
 build/src/main/8002d488.c.o: ASPSX_FILL = | $(PYTHON) tools/scripts/aspsx_fill.py
+# main/8002e0f0 is the same (lui $at stores, addu moves, ASPSX-filled slots; func_8002E618 matches
+# only with these), so 2.7.2 runs from 0x8002D488 to 0x8002E7A8.
+build/src/main/8002e0f0.c.o: CC_VER = 2.7.2-psx
+build/src/main/8002e0f0.c.o: ASPSX_FILL = | $(PYTHON) tools/scripts/aspsx_fill.py
 
 build/%.s.o: %.s
 	@mkdir -p $(@D)

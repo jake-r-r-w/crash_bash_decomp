@@ -23,7 +23,7 @@ PS-X EXE header at file offset `0x0`; the file body (offset `0x800`) loads at
 |---|---|---|---|
 | `0x80010000..0x8002D488` | `0x800` | `.text` | game code, `src/main/main.c` |
 | `0x8002D488..0x8002E0F0` | `0x1DC88` | `.text` | game code built with gcc 2.7.2 + ASPSX, `src/main/8002d488.c` |
-| `0x8002E0F0..0x8002E7A8` | `0x1E8F0` | `.text` | game code, `src/main/8002e0f0.c` |
+| `0x8002E0F0..0x8002E7A8` | `0x1E8F0` | `.text` | game code built with gcc 2.7.2 + ASPSX, `src/main/8002e0f0.c` |
 | `0x8002E7A8..0x8004C56C` | `0x1EFA8` | `.text` | PsyQ 4.7: 281 Sony objects linked in place, plus `2MBYTE.OBJ` (asm) |
 | `0x8004C56C..0x8004CEFC` | `0x3CD6C` | `.rodata` | game (strings, jump tables) |
 | `0x8004CEFC..0x8004DCBC` | `0x3D6FC` | `.rodata` | PsyQ, per object (`.rdata` of the linked objects) |
@@ -45,7 +45,12 @@ How the boundaries were found:
   every global store is `lui $at` + `sw`, and `j`/`jr` slots are filled by the
   assembler, which `main.c`'s gcc 2.8.1 never produces. gcc 2.7.2-psx through
   ASPSX does: `func_8002D488` (the region byte at `0xBFC7FF52`) matches with it.
-  `func_8002E0F0` after it is normal 2.8.1 code again.
+- **`main/8002e0f0`** (`0x8002E0F0..0x8002E7A8`) is 2.7.2 + ASPSX too, not
+  2.8.1 as first thought: `func_8002E0F0` has a `lui $at` store and an
+  indexed load expanded through its destination register, `func_8002E25C`
+  a `bne; nop` whose slot 2.8.1's reorg would fill, and `func_8002E618`
+  matches only under 2.7.2. So 2.7.2 code runs from `0x8002D488` to the
+  start of PsyQ; whether the two units are one file is still open.
 - **`.data` start** `0x8004DCBC`: the first game table (pointers to the game's
   own strings) after the last LIBMCRD string; the lowest stored-to address is
   `0x8004E0B4`.
