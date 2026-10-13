@@ -1474,6 +1474,8 @@ typedef struct PadRumble {
     /* 0x0C */ s16 reset;
 } PadRumble;
 
+MemBlock *func_800118BC(MemBlock *blk, s32 words, Heap *heap);
+
 void func_800119D4(MemBlock *arg0, s32 arg1, Heap *arg2);
 
 void func_800120E8(MemBlock *arg0, Heap *arg1);

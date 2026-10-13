@@ -125,7 +125,8 @@
   "status": "matched"
  },
  "800118BC": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-13T12:39:48Z",
+  "status": "matched"
  },
  "800119D4": {
   "matched_at": "2026-10-13T12:35:27Z",

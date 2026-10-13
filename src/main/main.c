@@ -390,7 +390,65 @@ MemBlock *func_80011878(MemBlock *blk, s32 words) {
     return split;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800118BC);
+MemBlock *func_800118BC(MemBlock *blk, s32 words, Heap *heap) {
+    MemBlock *split;
+    MemBlock *cur;
+    MemBlock *t;
+    u32 sz;
+
+    if (blk->prevFree != NULL) {
+        blk->prevFree->nextFree = blk->nextFree;
+    } else {
+        heap->free = blk->nextFree;
+    }
+    if (blk->nextFree != NULL) {
+        blk->nextFree->prevFree = blk->prevFree;
+    }
+    sz = blk->size - 6;
+    sz -= words;
+    split = (MemBlock *)((u8 *)blk + (words * 4 + 0x18));
+    split->prev = blk;
+    split->owner = NULL;
+    split->unk0 = 0;
+    split->size = sz;
+    blk->size = words;
+    MEMBLOCK_NEXT(split)->prev = split;
+    cur = heap->free;
+    if (cur == NULL) {
+        heap->free = split;
+        split->nextFree = NULL;
+        split->prevFree = NULL;
+    } else {
+        goto start;
+    app:
+        cur->nextFree = split;
+        split->prevFree = cur;
+        split->nextFree = NULL;
+        goto done;
+    start:
+        for (;;) {
+            if (cur->size >= split->size) {
+                t = cur->prevFree;
+                if (t != NULL) {
+                    t->nextFree = split;
+                } else {
+                    heap->free = split;
+                }
+                split->prevFree = t;
+                split->nextFree = cur;
+                cur->prevFree = split;
+                goto done;
+            }
+            t = cur->nextFree;
+            if (t == NULL) {
+                goto app;
+            }
+            cur = t;
+        }
+    }
+done:
+    return blk;
+}
 
 void func_800119D4(MemBlock *arg0, s32 arg1, Heap *arg2) {
     MemBlock *cur;
