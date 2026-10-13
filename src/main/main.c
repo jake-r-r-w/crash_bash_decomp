@@ -4009,7 +4009,41 @@ s32 *func_80021CB8(s32 *arg0, s32 arg1, s32 arg2) {
     return arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80021D1C);
+u8 *func_80021D1C(u8 *arg0, s32 arg1) {
+    u8 *p;
+    u8 *r;
+    u8 *res;
+    s32 *q;
+    s32 lo;
+    s32 v;
+
+    u8 *e;
+
+    e = *(u8 **)(arg0 + 0);
+    lo = *(s32 *)(arg0 + 4);
+    v = *(s16 *)(arg0 + 0xE);
+    D_80058B84 = arg1;
+    D_80058B7C = e;
+    p = *(u8 **)(e + 0xC);
+    D_80058B80 = lo;
+    if (p == NULL) {
+        r = NULL;
+    } else {
+        q = (s32 *)(p + (*(s32 *)(p + 0x4C) + 0x4C) + lo * 4);
+        r = (u8 *)q + *q;
+    }
+    if (r == NULL) {
+        res = NULL;
+    } else {
+        res = r + (arg1 * 4 + 0x1C) + *(s32 *)(r + (arg1 << 2) + 0x1C);
+    }
+    if (res != NULL) {
+        if (v < *(s32 *)(res + 4) || *(s32 *)(res + 8) < v) {
+            res = NULL;
+        }
+    }
+    return res;
+}
 
 u8 *func_80021DD4(u8 *arg0, s32 arg1, s32 arg2) {
     u8 *p;
