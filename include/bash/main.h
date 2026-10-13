@@ -1352,6 +1352,8 @@ FreeNode *func_80028A28(void);
 
 void func_80028AE4(BufNode *arg0);
 
+void func_8002A3D0(u8 *arg0);
+
 void func_8002A684(u8 *arg0, u8 *arg1);
 
 void func_8002A77C(ClutUpload *arg0, s32 arg1);

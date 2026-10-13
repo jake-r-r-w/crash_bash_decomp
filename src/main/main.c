@@ -6237,7 +6237,34 @@ void func_8002A35C(u8 *arg0) {
     (*(s32*)((u8*)(arg0) + 16)) = NULL;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002A3D0);
+void func_8002A3D0(u8 *arg0) {
+    RECT rect;
+    ClutUpload *e;
+    u8 *base;
+    s32 n;
+
+    e = *(ClutUpload **)(arg0 + 0xC);
+    base = *(u8 **)(arg0 + 0x10);
+    n = *(s32 *)(arg0 + 4);
+    for (;;) {
+        n--;
+        if (n == -1) {
+            return;
+        }
+        if (e->w < 0x11U) {
+            e->pos = func_80028420();
+        } else {
+            e->pos = func_80028A00();
+        }
+        rect.x = e->pos->x;
+        rect.y = e->pos->y;
+        rect.w = e->w;
+        rect.h = 1;
+        LoadImage(&rect, (u_long *)(base + e->off));
+        e->clut = GetClut(rect.x, rect.y);
+        e++;
+    }
+}
 
 void func_8002A4B8(void) {
 }
