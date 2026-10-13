@@ -1891,7 +1891,57 @@ found:
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800165F8);
+u8 *func_800165F8(u8 *arg0, u8 *arg1) {
+    u8 *tbl;
+    u8 *p;
+    s32 n;
+    s32 key;
+    u8 *res;
+    u8 *node;
+    u8 *cur;
+    s32 start;
+    s32 h;
+
+    tbl = *(u8 **)(arg0 + 0xC);
+    if (tbl == NULL) {
+        res = NULL;
+    } else {
+        key = func_8001534C(arg1);
+        p = tbl + (*(s32 *)(tbl + 0x44) + 0x44);
+        n = *(s32 *)(tbl + 0x40);
+        n--;
+        for (; n != -1; n--, p += 0x18) {
+            if (*(s32 *)(p + 0x10) == key) {
+                res = p;
+                goto found;
+            }
+        }
+        res = NULL;
+    }
+found:
+    if (res != NULL) {
+        cur = *(u8 **)(res + 0x14);
+        if (cur != NULL) {
+            return cur;
+        }
+        {
+            node = func_80012E28();
+            if (node != NULL) {
+                start = *(s32 *)res;
+                *(u8 **)(res + 0x14) = node;
+                h = func_800133C8(*(s32 *)arg0, start, node, *(s32 *)(res + 4) - start);
+                *(s32 *)(node + 4) = h;
+                if (h == 0) {
+                    func_80012E14(node);
+                    return NULL;
+                }
+                return node;
+            }
+            return NULL;
+        }
+    }
+    return NULL;
+}
 
 s32 func_800166FC(u8 *arg0, u8 *arg1) {
     u8 *tbl;

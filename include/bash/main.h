@@ -1282,6 +1282,8 @@ u8 *func_80016478(u8 *arg0, u8 *arg1);
 
 s32 func_80016558(u8 *arg0, u8 *arg1);
 
+u8 *func_800165F8(u8 *arg0, u8 *arg1);
+
 s32 func_800166FC(u8 *arg0, u8 *arg1);
 
 u8 *func_80016A20(u8 *arg0, s32 arg1);
