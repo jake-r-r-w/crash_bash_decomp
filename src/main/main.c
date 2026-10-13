@@ -7699,7 +7699,28 @@ void func_8002B760(VECTOR *pos, View *view, VECTOR *out, s32 *sxy) {
     gte_stsxy(sxy);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002B7C8);
+S16Pair func_8002B7C8(s32 x, s32 v) {
+    S16Pair r;
+    s32 lo = 0;
+    s32 hi = 0x200;
+
+    if (x < lo) {
+        r.a = v;
+    } else if (x > hi) {
+        r.a = 0;
+    } else {
+        s32 d = 0x40000;
+        r.a = ((d - x * x) * v) / d;
+    }
+    if (0x200 - lo < x) {
+        r.b = v;
+    } else if (x < 0x200 - hi) {
+        r.b = 0;
+    } else {
+        r.b = ((hi * hi - (0x200 - x) * (0x200 - x)) * v) / (hi * hi - lo);
+    }
+    return r;
+}
 
 void func_8002B8F4(s32 *voice) {
     if (*voice != -1) {
