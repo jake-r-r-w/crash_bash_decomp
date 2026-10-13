@@ -43,12 +43,12 @@ void func_800C7D24(HeroInfo *hero);
 
 void func_800C7EF8(HeroInfo *hero);
 
+NAS *func_800C84D8(s32 x, s32 z, s32 dist);
+
 void func_800C8560(NAS *nas);
 
 void func_800C8598(NAS *nas);
 
 void func_800C85D0(void);
-
-NAS *func_800C84D8(s32 x, s32 z, s32 dist);
 
 #endif /* BASH_OVL5F_H */

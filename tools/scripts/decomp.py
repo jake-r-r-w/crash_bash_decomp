@@ -1249,9 +1249,47 @@ def declare(src, decls):
             new.append(d.strip())
             have.add(n)
     if new:
-        t = read(h)
-        i = t.rstrip().rfind("#endif")
-        write(h, t[:i] + "\n".join(new) + "\n\n" + t[i:])
+        write(h, insert_decls(read(h), new))
+
+
+def func_addr(name, _cache={}):
+    """Load address of function `name` (func_XXXXXXXX or a symbol-file name), or None."""
+    m = re.fullmatch(r"func_([0-9A-Fa-f]{8})", name)
+    if m:
+        return int(m.group(1), 16)
+    if not _cache:
+        _cache.update({n: int(k.split(":")[-1], 16) for k, n in sym_names().items()})
+    return _cache.get(name)
+
+
+def insert_decls(t, new):
+    """Add declarations to header text `t`. A function prototype goes in address order into the
+    run of one-line prototypes that ends the header (so parallel matches touch different lines);
+    anything else, or a prototype with no known address, goes at the end."""
+    lines = t.splitlines(keepends=True)
+    end = max(i for i, l in enumerate(lines) if l.startswith("#endif"))
+    start = end
+    while start > 0 and (not lines[start - 1].strip() or (decl_name(lines[start - 1]) and "(" in lines[start - 1])):
+        start -= 1
+    tail = []
+    for d in new:
+        a = func_addr(decl_name(d)) if "(" in d else None
+        at = None
+        if a is not None:
+            for i in range(start, end):
+                n = decl_name(lines[i])
+                b = func_addr(n) if n and "(" in lines[i] else None
+                if b is not None and b > a:
+                    at = i
+                    break
+        if at is None:
+            tail.append(d)
+        else:
+            lines[at:at] = [d + "\n", "\n"]
+            end += 2
+    if tail:
+        lines[end:end] = ["\n".join(tail) + "\n\n"]
+    return "".join(lines)
 
 
 def prototype_of(ftext, name):

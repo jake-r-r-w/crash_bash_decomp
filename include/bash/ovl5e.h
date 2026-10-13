@@ -9,10 +9,15 @@
 #include "bash/nas.h"
 
 s32 func_800B7670(u8 *arg0);
+
 void func_800B7778(void);
+
 void func_800B790C(s32 arg0);
+
 void func_800B7D94(void);
+
 void func_800B7D9C(void);
+
 void func_800B7DA4(void);
 
 #endif /* BASH_OVL5E_H */

@@ -9,10 +9,15 @@
 #include "bash/nas.h"
 
 s32 func_800B8E4C(void);
+
 s32 func_800B8E54(void);
+
 void func_800B8E5C(void);
+
 void func_800B9038(void);
+
 void func_800B9040(void);
+
 void func_800B9048(void);
 
 void func_800BB37C(void);

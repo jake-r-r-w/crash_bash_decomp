@@ -957,60 +957,60 @@ typedef struct {
 } PosDst;
 void func_8001A82C(PosDst *arg0, s32 arg1, s32 arg2);
 extern PosEntry D_8005689C[];
-void func_80024214(s32 *a, s32 *b);
+void func_800102F8(void);
 
-void func_8001C584(PosDst *arg0, s32 arg1);
+void func_80011AE8(MemBlock *blk, Heap *heap);
+
+MemBlock *func_80011C98(MemBlock *arg0);
+
+MemBlock *func_80011EF0(Heap *heap);
+
+s32 func_80012D80(s32 *arg0, s32 *arg1);
 
 void func_80012FA4(LoadNode *arg0);
 
-s32 func_80028994(s32 a, s32 b, s32 c);
+s32 func_80013488(s32 arg0, s32 arg1, s32 arg2);
 
 void func_800150E8(char *dst, s32 val, s32 div);
 
 char *func_8001517C(char *arg0, s32 arg1, s32 arg2);
 
-void func_8002BA44(void);
-
-void func_800102F8(void);
-
-s32 func_80012D80(s32 *arg0, s32 *arg1);
-
-void func_8002BCB0(s32 *arg0);
-
-void func_80020BA8(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4);
-
-MemBlock *func_80011EF0(Heap *heap);
-
-s32 func_8002A2EC(s32 r, s32 g, s32 b);
-
-void func_8001D640(s32 n);
-
-_sfx_handler *func_80022924(void);
-
-s32 *func_800219B8(u8 *arg0, s32 arg1);
-
-KeyEntry *func_8001E41C(KeyBlock *arg0, s32 arg1);
-
 s32 func_80015210(s32 a, s32 b, s32 t);
-
-s32 *func_800218DC(u8 *arg0, s32 arg1);
-
-void func_80020B44(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5);
-
-s32 func_80013488(s32 arg0, s32 arg1, s32 arg2);
 
 void func_8001C448(PosDst *arg0, s32 arg1, s32 arg2);
 
+void func_8001C584(PosDst *arg0, s32 arg1);
+
+void func_8001D640(s32 n);
+
 void func_8001DD50(void *arg0, void *arg1);
 
-s32 func_80027944(void);
-
-MemBlock *func_80011C98(MemBlock *arg0);
+KeyEntry *func_8001E41C(KeyBlock *arg0, s32 arg1);
 
 s32 func_8001E51C(s32 arg0);
 
+void func_80020B44(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5);
+
+void func_80020BA8(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4);
+
+s32 *func_800218DC(u8 *arg0, s32 arg1);
+
+s32 *func_800219B8(u8 *arg0, s32 arg1);
+
+_sfx_handler *func_80022924(void);
+
+void func_80024214(s32 *a, s32 *b);
+
 void func_80026F48(void);
 
-void func_80011AE8(MemBlock *blk, Heap *heap);
+s32 func_80027944(void);
+
+s32 func_80028994(s32 a, s32 b, s32 c);
+
+s32 func_8002A2EC(s32 r, s32 g, s32 b);
+
+void func_8002BA44(void);
+
+void func_8002BCB0(s32 *arg0);
 
 #endif /* BASH_MAIN_H */
