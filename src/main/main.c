@@ -5001,7 +5001,16 @@ EXTmotion *AddMotion(NAS *nas) {
     return mot;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800265DC);
+Ext400 *func_800265DC(NAS *nas) {
+    Ext400 *ext;
+
+    ext = AllocExtension(nas, 0x2C, 0x400, &D_8005A9A0);
+    if (ext != NULL) {
+        nas->NASid |= 0x400;
+        *ext = D_8005A9A0;
+    }
+    return ext;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", AddObject);
 

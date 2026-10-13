@@ -694,6 +694,10 @@ typedef struct SortList {
 
 void *AllocExtension(void *owner, s32 size, s32 id, void *tmpl);
 extern EXTmotion D_8005A9CC;
+typedef struct Ext400 {
+    s32 w[11];
+} Ext400;
+extern Ext400 D_8005A9A0;
 extern subengine D_8005A830;
 void FreeExtension(void *ext);
 s32 func_80032F3C(s32);         /* abs or labs (LIBC2: identical objects) */
@@ -1250,6 +1254,8 @@ void func_80025B10(EXTengine *eng, u32 flag);
 void func_8002617C(void);
 
 s32 func_8002633C(u8 *s);
+
+Ext400 *func_800265DC(NAS *nas);
 
 void func_80026E2C(void);
 
