@@ -165,3 +165,32 @@ These are not phases yet. Each gets its own plan when Phase 6 is done.
 - **Native PC port.** Build the C for PC, with assets loaded from the extracted
   files instead of the CD. That means replacing the PS1 hardware layers (CD,
   GPU and GTE, SPU sound, pads) with PC equivalents.
+
+## The final test
+
+The decomp is done when all of these pass. Each proves something a byte match
+alone does not.
+
+1. **Clean rebuild.** A fresh clone, the user's disc and `tools/dk make check`
+   (nothing else) rebuild `main.exe` and every overlay, and each matches
+   `configs/USA/checksum.sha`. Packing them back into a disc image gives a
+   disc whose game files hash the same as retail. *Proves: nothing outside the
+   repo is needed except the user's disc.*
+2. **Nothing hidden.** No `INCLUDE_ASM`, `INCLUDE_RODATA`, `.incbin` of code or
+   data, parked function or `func_`/`D_` name anywhere; the only binary inputs
+   are the assets the extractor reads from the disc. *Proves: everything is
+   source.*
+3. **Shifted build plays.** The `NON_MATCHING` build with every function and
+   data block moved (padding added in each unit) boots in an emulator and
+   plays: the front end, a save and a load, the hub, and every minigame through
+   to a win. *Proves: no address is hard-coded; the code works as code, not
+   as bytes that happen to land in the right place.*
+4. **Same game, frame for frame.** An emulator input recording of a long
+   session (the adventure mode from a new save, plus each minigame) replays on
+   the retail disc and on the shifted build with the same frames and the same
+   game state. *Proves: the rebuilt game behaves identically, not just
+   similarly.*
+5. **A modern compiler.** The source builds with a current GCC for MIPS
+   (warnings allowed, `NON_MATCHING`) and passes test 4. *Proves: the C is
+   correct C, not C that only works because of the old compiler's quirks;
+   this is also the first step of the PC port.*
