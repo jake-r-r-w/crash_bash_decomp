@@ -773,7 +773,29 @@ void func_800120E8(MemBlock *arg0, Heap *arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800121F8);
+u8 *func_800121F8(u8 *arg0) {
+    Heap *h;
+    s32 words;
+
+    if (*(u8 **)(arg0 + 0x18) == NULL) {
+        if (*(s32 *)(arg0 + 0xC) == 0) {
+            return func_80011654(((*(s32 *)(arg0 + 8) + 0x7FF) / 0x800) << 11, &D_8004E0F0);
+        }
+        words = ((*(s32 *)(arg0 + 8) + 0x7FF) / 0x800) << 9;
+        h = &D_8004E0F0;
+        if (func_80011C5C(words, h->free) == NULL) {
+            func_80017640();
+            if (func_80011C5C(words, h->free) == NULL) {
+                func_80011D28((u8 *)h);
+                if (func_80011C5C(words, h->free) == NULL) {
+                    return NULL;
+                }
+            }
+        }
+        return func_80011748(((*(s32 *)(arg0 + 8) + 0x7FF) / 0x800) << 11, (u8 *)&D_8004E0F0);
+    }
+    return *(u8 **)(arg0 + 0x18);
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001231C);
 

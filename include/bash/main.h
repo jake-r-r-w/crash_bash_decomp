@@ -1523,6 +1523,8 @@ typedef struct ScriptCursor {
     /* 0x2A */ s16 unk2A;
 } ScriptCursor;
 
+u8 *func_800121F8(u8 *arg0);
+
 s32 func_80015D70(u8 *arg0, u8 *arg1);
 
 void func_80024FA4(ScriptCursor *c);
