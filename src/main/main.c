@@ -3402,7 +3402,40 @@ u32 func_8001C974(NAS *nas, u8 *arg1, u32 flags) {
     return flags | nas->NASid;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001CAD4);
+void func_8001CAD4(u16 *arg0, s32 arg1, u32 arg2) {
+    QuadVerts q;
+    s32 x;
+    s32 w;
+
+    w = (s16) arg0[3];
+    x = (s16) arg0[0];
+    if ((x & 0xC000) == 0x8000) {
+        if (x & 0x3FFF) {
+            x = (x & ~0xC000) - (w / 2);
+        } else {
+            x = 0x140 - (w / 2);
+            x -= D_800569C0;
+        }
+        w += x;
+    }
+    q.v[0].x = x;
+    q.v[0].y = arg0[1];
+    q.v[0].z = arg0[2];
+    q.v[1].x = w;
+    q.v[1].y = arg0[1];
+    q.v[1].z = arg0[2];
+    q.v[2].x = x;
+    q.v[2].y = arg0[4];
+    q.v[2].z = arg0[2];
+    q.v[3].x = w;
+    q.v[3].y = arg0[4];
+    q.v[3].z = arg0[2];
+    q.c[0] = arg1;
+    q.c[1] = arg1;
+    q.c[2] = arg1;
+    q.c[3] = arg1;
+    func_8001A0D8(&q, arg2);
+}
 
 void func_8001CBD4(u32 arg0) {
     func_8002A2EC((arg0 >> 0x10) & 0xFF, (arg0 >> 8) & 0xFF, arg0 & 0xFF);

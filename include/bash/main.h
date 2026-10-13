@@ -709,6 +709,17 @@ void func_80014540(u8 *arg0, RECT *rect);
 void func_8002ACA0(s32 id, s32 arg1);
 extern GfxState D_80056998;
 extern u16 D_800569DC;
+extern s32 D_800569C0;
+
+typedef struct {
+    struct {
+        s16 x;
+        u16 y;
+        u16 z;
+        u16 pad;
+    } v[4];
+    s32 c[4];
+} QuadVerts;
 extern s32 D_8005B690; /* frame counter: its low bit picks the frame buffer */
 void func_8001A6D4(void *arg0, u32 hidden);
 s32 func_8001A0D8(void *arg0, u32 flags);
@@ -1431,6 +1442,8 @@ u8 *func_800129D0(u8 *arg0, s32 arg1);
 u8 *func_80012AC4(u8 *arg0);
 
 void func_80012BC8(s32 * *arg0, s32 *arg1, u8 *arg2);
+
+void func_8001CAD4(u16 *arg0, s32 arg1, u32 arg2);
 
 void func_8001F4F8(u8 *arg0, u8 *arg1);
 
