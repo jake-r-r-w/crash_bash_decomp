@@ -57,7 +57,8 @@
   "status": "matched"
  },
  "800112A4": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-13T21:49:58Z",
+  "status": "matched"
  },
  "80011410": {
   "auto_diff": 4,

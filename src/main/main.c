@@ -173,7 +173,61 @@ void func_800110A8(void *ptr, Heap *heap) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800112A4);
+void *func_800112A4(void *base, s32 offset, Heap *arg2) {
+    MemBlock *blk;
+    MemBlock *nb;
+    MemBlock *prev;
+    MemBlock *next;
+    void **owner;
+    u32 words;
+    u32 sz;
+
+    words = (u32)offset >> 2;
+    words -= 6;
+    blk = (MemBlock *)base;
+    blk--;
+    next = (MemBlock *)((u8 *)blk + (blk->size * 4 + 0x18));
+    prev = blk->prev;
+    nb = (MemBlock *)((u8 *)blk + (words * 4 + 0x18));
+    nb->owner = blk->owner;
+    nb->unk0 = ((MemBlock *)base)[-1].unk0;
+    *(u16 *)nb->unk2 = *(u16 *)blk->unk2;
+    owner = nb->owner;
+    if (owner != (void **)-1) {
+        *owner = nb + 1;
+    }
+    sz = blk->size - 6;
+    sz -= words;
+    nb->size = sz;
+    if (words < 0x10) {
+        if (prev->owner == NULL) {
+            next->prev = nb;
+            if (prev->prevFree != NULL) {
+                prev->prevFree->nextFree = prev->nextFree;
+            } else {
+                arg2->free = prev->nextFree;
+            }
+            if (prev->nextFree != NULL) {
+                prev->nextFree->prevFree = prev->prevFree;
+            }
+            prev->owner = (void **)-1;
+            prev->size += (u32)offset >> 2;
+            nb->prev = prev;
+            func_800110A8(prev + 1, arg2);
+        } else {
+            printf("first call here tag onto end\n");
+            nb->prev = prev;
+            prev->size += offset;
+        }
+    } else {
+        blk->owner = (void **)-1;
+        blk->size = words;
+        next->prev = nb;
+        nb->prev = blk;
+        func_800110A8(base, arg2);
+    }
+    return nb + 1;
+}
 
 /* Free-list statistics for a heap; returns the free bytes. */
 s32 func_80011410(Heap *heap) {
