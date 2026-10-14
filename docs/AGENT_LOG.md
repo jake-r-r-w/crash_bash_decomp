@@ -29,6 +29,14 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
+- **Big functions (2026-10-14):** big mode now uses the `decomp.py regions`
+  prompt and ranks checkpoints by region score (paired, blocks, exact).
+  `func_80019A60` is at registers 17/303 (55/59 blocks, paired 303/303)
+  in the swarm checkpoint: resume it first
+  (`swarm.mjs run --clear-stop --only func_80019A60 ...`; the STOP file
+  from the hard stop is still there). Then try big mode on 1400+ B
+  functions (`func_8002D4F4`, `func_8001B6D4`, `func_8001492C`,
+  `func_8001AF2C`, `func_8002C97C`, `func_80023A90`).
 0. Current focus (ROADMAP.md, Current focus): `make disc` and `make
    replay` work; the matching build is frame-identical to retail. The
    harness's next step is a state-sequence mode (Phase 4; frame-exact is
@@ -291,6 +299,16 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-14 (hard-function test, ~45 min, $10.82):** `func_80019A60`
+  (1212 B, parked at 37/59 blocks by the old STAGE ranking) with the new
+  defaults: 5 sessions, each a new best: 37 -> 37 -> 38 -> 46 -> 48 -> 55/59
+  blocks, paired 280 -> 303/303, STAGE structure 291 -> registers 17/303.
+  Sessions 1-2 raised STAGE's count (291 -> 301) and would have been
+  dropped, and the function parked, under the old ranking. The jump to 46
+  blocks came from a `static inline` draw helper shared by two paths.
+  Stopped by hand during session 6; the permuter it had asked for logged
+  "no improvement" 2 s after starting (check it ran). Sessions still end
+  at 5-12 of 27 min.
 - **2026-10-14 (swarm A/B round 2, 60 min):** 4 pairs of fresh 908-1212 B
   main functions, 27-min sessions, $29.56: 7/8 matched (regions arm 4/4,
   control 3/4). Both rounds: regions 6/7 in ~66 session-min/$17, control
