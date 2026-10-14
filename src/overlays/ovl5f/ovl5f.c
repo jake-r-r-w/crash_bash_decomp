@@ -483,7 +483,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C872C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8800);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8870);
+s32 func_800C8870(s32 arg0, s32 arg1) {
+    return D_800CA34C[((arg1 >> 9) * D_800CAFF4) + (arg0 >> 9)];
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C88A8);
 

@@ -27,6 +27,7 @@ void func_800C8984(s32 arg0, s32 arg1);
 void func_800C89D8(s32 arg0, s32 arg1);
 void func_800C8A40(s32 arg0);
 
+extern s32 D_800CA34C[];
 extern u8 D_800CACFC[];
 extern s32 D_800CAFF4;
 extern u8 D_800CACB4[];
@@ -50,5 +51,7 @@ void func_800C8560(NAS *nas);
 void func_800C8598(NAS *nas);
 
 void func_800C85D0(void);
+
+s32 func_800C8870(s32 arg0, s32 arg1);
 
 #endif /* BASH_OVL5F_H */
