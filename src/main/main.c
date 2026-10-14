@@ -5795,7 +5795,31 @@ void func_8001D894(void *sub, void *arg1, s32 flags, s32 arg3) {
     gte_SetGeomOffset(D_80056998.ofx * D_8005B698->w / 640, D_80056998.ofy / 2);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001DAF8);
+void func_8001DAF8(GfxScene *scene) {
+    MATRIX m;
+    MATRIX view;
+    MATRIX *pv;
+    u8 *obj;
+    void (*fn)(u8 *, MATRIX *, s32);
+
+    D_80058AD0 = scene;
+    RotMatrix(&D_80058AF4, &m);
+    MulMatrix0(&D_80056998.cam->view, &m, &D_80058AD4);
+    pv = &view;
+    view = D_80056998.cam->view;
+    obj = scene->objs;
+    while (1) {
+        if (obj == NULL) {
+            break;
+        }
+        fn = *(void (**)(u8 *, MATRIX *, s32))(obj + 0x54);
+        if (fn != NULL) {
+            fn(obj, pv, 0);
+        }
+        obj = *(u8 **)(obj + 0x5C);
+    }
+    GfxSetSceneBg(&D_80056998, scene);
+}
 
 subengine *func_8001DCD4(s32 i, s32 val) {
     subengine *sub;

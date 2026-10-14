@@ -1106,6 +1106,7 @@ typedef struct ComboSeq {
 } ComboSeq;
 
 extern MATRIX D_80058AD4;
+extern SVECTOR D_80058AF4;
 extern s32 D_80051380;
 extern u8 D_800512A8[]; /* ComboSeq table, 0x90 bytes per entry */
 extern u8 D_800536CC[];
@@ -1151,6 +1152,40 @@ typedef struct {
     s32 unk20;
     u8 r, g, b, isbg;       /* 0x24: background */
 } GfxViewport;
+
+/* GfxViewport's background colour, copied as a block (func_8001DAF8). */
+typedef struct {
+    s8 r, g, b;
+} GfxRgb8;
+
+/* The scene func_8001DAF8 sets up (D_80058AD0 points at it). */
+typedef struct {
+    u8 unk0[0x10];
+    GfxViewport *viewport; /* 0x10 */
+    u8 unk14[8];
+    u8 *objs;              /* 0x1C: list linked at +0x5C, callback at +0x54 */
+} GfxScene;
+
+/* Copies a scene's background into the current viewport, faded by modelDp
+ * (func_8001DAF8). */
+static inline void GfxSetSceneBg(GfxState *gs, GfxScene *scene) {
+    GfxViewport *vp;
+
+    vp = gs->viewport;
+    vp->isbg = scene->viewport->isbg;
+    if (gs->modelDp != 0) {
+        vp->isbg = 1;
+    }
+    if (vp->isbg != 0) {
+        if (gs->modelDp != 0) {
+            vp->r = scene->viewport->r * (0x1000 - gs->modelDp) / 4096;
+            vp->g = scene->viewport->g * (0x1000 - gs->modelDp) / 4096;
+            vp->b = scene->viewport->b * (0x1000 - gs->modelDp) / 4096;
+        } else {
+            *(GfxRgb8 *)&vp->r = *(GfxRgb8 *)&scene->viewport->r;
+        }
+    }
+}
 
 /* Sets the clip area c (640-wide units) for cam. */
 static inline void GfxSetClip(GfxState *gs, RECT *c, GfxCamera *cam) {
@@ -2386,6 +2421,8 @@ void func_80013F44(CamView *cam, CamView *dst, CamEase *ease);
 FacePrim *func_800180BC(s32 arg0, ListNode18938 *list, ListNode18938 *pool, FaceRuns *faces, s32 arg4);
 
 void func_80018B08(GfxViewport *vp, GfxCamera *cam);
+
+void func_8001DAF8(GfxScene *scene);
 
 void func_8001F0D4(u8 *arg0, u8 *arg1);
 

@@ -1183,7 +1183,8 @@
   "status": "matched"
  },
  "8001DAF8": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-14T18:58:44Z",
+  "status": "matched"
  },
  "8001DCD4": {
   "auto_diff": 5,
