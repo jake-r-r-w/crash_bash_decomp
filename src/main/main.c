@@ -9966,7 +9966,54 @@ s32 func_80029D28(SpriteFrame *f, s32 xy, s32 otz, u32 color) {
     return f->advance * 640 / D_8005B698->w;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80029F9C);
+s32 func_80029F9C(SpriteFrame *f, GlyphPos *pos, s32 otz, u32 c0, u32 c1) {
+    POLY_GT4 *p;
+    GfxState *gs;
+    volatile SVECTOR v;
+    s32 t;
+
+    if (D_8005B698 == NULL) {
+        return 0;
+    }
+    p = *(POLY_GT4 **)(D_8005B68C + 0x4008);
+    *(POLY_GT4 **)(D_8005B68C + 0x4008) = p + 1;
+    gs = &D_80056998;
+    t = FadeColorGs(gs, (c0 >> 16) & 0xFF, (c0 >> 8) & 0xFF, c0 & 0xFF);
+    *(u32 *)&p->r0 = t;
+    *(u32 *)&p->r1 = t;
+    t = FadeColorGs(gs, (c1 >> 16) & 0xFF, (c1 >> 8) & 0xFF, c1 & 0xFF);
+    setlen(p, 12);
+    *(u32 *)&p->r2 = t;
+    *(u32 *)&p->r3 = t;
+    setcode(p, 0x3C);
+    *(u16 *)&p->u0 = f->uv0;
+    *(u16 *)&p->u1 = f->uv1;
+    *(u16 *)&p->u2 = f->uv2;
+    *(u16 *)&p->u3 = f->uv3;
+    p->tpage = (f->tpage & 0xFF9F) | ((c0 >> 19) & 0x60);
+    p->clut = f->clut;
+    setSemiTrans(p, (s32)c0 < 0);
+    v.vx = pos->v[0] - 0x80;
+    v.vy = pos->v[1] - 0x80;
+    v.vz = 0;
+    gte_ldv0((SVECTOR *)&v);
+    gte_rtps();
+    v.vx += 0x100;
+    gte_ldv0((SVECTOR *)&v);
+    gte_rtps();
+    v.vx -= 0x100;
+    v.vy += 0x100;
+    gte_ldv0((SVECTOR *)&v);
+    gte_rtps();
+    v.vx += 0x100;
+    gte_stsxy3_gt3(p);
+    gte_ldv0((SVECTOR *)&v);
+    gte_rtps();
+    gte_stsxy(&p->x3);
+    setSemiTrans(p, (s32)c0 < 0);
+    addPrim((u32 *)D_8005B68C + otz, p);
+    return f->advance * 640 / D_8005B698->w;
+}
 
 void func_8002A2DC(void) {
 }

@@ -926,7 +926,6 @@ extern s16 D_8005AAB4[];
 typedef struct GlyphPos {
     s16 v[3];
 } GlyphPos;
-void func_80029F9C(u8 *a, GlyphPos *pos, s32 b, s32 c, s32 d);
 extern s32 D_8006EA00;
 extern u32 D_8006EA04;
 extern s32 D_8005A7A0[];
@@ -1028,6 +1027,9 @@ typedef union {
 /* Draws f at xy (640-wide units) as a POLY_FT4 in ot[otz]; color bit 31 makes
  * it semi-transparent, bits 29-30 its blend mode. Returns f's advance. */
 s32 func_80029D28(SpriteFrame *f, s32 xy, s32 otz, u32 color);
+/* Draws f at the 3D point pos as a POLY_GT4 in the OT at D_8005B68C, c0 on
+ * the top vertices and c1 on the bottom ones; returns f's advance. */
+s32 func_80029F9C(SpriteFrame *f, GlyphPos *pos, s32 otz, u32 c0, u32 c1);
 
 /* func_8002A2EC: fades r, g, b towards black by D_800569AC / 0x1000. */
 static inline s32 FadeColor(s32 r, s32 g, s32 b) {
@@ -1037,6 +1039,24 @@ static inline s32 FadeColor(s32 r, s32 g, s32 b) {
     d = D_800569AC;
     if (d != 0) {
         t = 0x1000 - d;
+        r *= t;
+        g *= t;
+        b *= t;
+        r >>= 12;
+        r &= 0xFF;
+        g >>= 12;
+        g &= 0xFF;
+        b >>= 12;
+        b &= 0xFF;
+    }
+    return (r << 16) | (g << 8) | b;
+}
+/* FadeColor reading the fade from gs->modelDp (func_80029F9C). */
+static inline s32 FadeColorGs(GfxState *gs, s32 r, s32 g, s32 b) {
+    s32 t;
+
+    if (gs->modelDp != 0) {
+        t = 0x1000 - gs->modelDp;
         r *= t;
         g *= t;
         b *= t;
