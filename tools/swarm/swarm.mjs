@@ -7,7 +7,7 @@
 //   node tools/swarm/swarm.mjs status
 //   node tools/swarm/swarm.mjs stats            outcomes by function size; big-mode checkpoints
 //   node tools/swarm/swarm.mjs clean            delete the worker and integration clones
-//   node tools/swarm/swarm.mjs permute --only f1,f2 [--minutes 30] [--jobs N]
+//   node tools/swarm/swarm.mjs permute --only f1,f2 | --near [--minutes 30] [--jobs N]
 //                                               permuter only (no Claude), from each one's checkpoint
 //   node tools/swarm/swarm.mjs fold             fold patterns.md into docs/MATCHING.md (after a run)
 //   node tools/swarm/swarm.mjs forget --only f1,f2 --why "..." [--checkpoint]
@@ -1267,7 +1267,18 @@ Fix that, keep it matching, and report "matched".
   // `run --resume <id> --only NAME` sends it through the gate.
   async permuteOnly() {
     const o = this.o;
-    if (!o.only?.length) die('permute needs --only f1,f2,... (functions with a checkpoint or C to start from)');
+    if (o.near && !o.only?.length) {
+      // the near misses: every checkpoint whose C is at the registers stage, fewest diffs first
+      const d = path.join(o.dir, 'checkpoints');
+      const cps = fs.existsSync(d) ? fs.readdirSync(d).map(n => [n, readJson(path.join(d, n, 'best.json'), null)]) : [];
+      // still INCLUDE_ASM on main (a matched function's checkpoint is left over)
+      const unmatched = n => git(REPO, 'grep', '-q', '-E', `INCLUDE_ASM\\([^)]*, ${n}\\)`, 'origin/main', '--', 'src').code === 0;
+      o.only = cps.filter(([n, j]) => j?.stage === 'registers' && unmatched(n)).sort((x, y) => x[1].diffs - y[1].diffs)
+        .map(([n]) => n).slice(0, 16);
+      console.log(`near misses (registers stage): ${o.only.join(', ') || 'none'}`);
+      if (!o.only.length) return;
+    }
+    if (!o.only?.length) die('permute needs --only f1,f2,... or --near (functions with a checkpoint or C to start from)');
     if (o.only.length > 16) die('permute: at most 16 functions at once');
     if (sh('docker', ['info']).code) die('Docker is not reachable');
     fs.mkdirSync(o.dir, { recursive: true });

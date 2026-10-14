@@ -194,7 +194,12 @@ costs nothing but CPU:
 
 ```
 node tools/swarm/swarm.mjs permute --only func_8001795C,func_800248A0 --minutes 30
+node tools/swarm/swarm.mjs permute --near --minutes 60     # every unmatched checkpoint at registers
 ```
+
+`--near` picks the near misses itself: every checkpoint at the registers stage whose function is
+still `INCLUDE_ASM` on `origin/main`, fewest diffs first (at most 16), so an overnight run needs no
+list. Each run only randomizes the C of the blocks that differ (`decomp.py permute --differing`).
 
 Each function gets a clone of your checkout's HEAD (`permuters/h1`, ...) with its big-mode
 checkpoint applied, then `decomp.py permute --apply-best` (the permuter's best version goes into
