@@ -2,7 +2,58 @@
 #include "bash/main.h"
 #include "bash/8002e0f0.h"
 
-INCLUDE_ASM("asm/nonmatchings/main/8002e0f0", func_8002E0F0);
+/* the debug text screens, 12 bytes each, indexed by D_8006EA24 */
+extern u8 D_8006789E[]; /* +2: u8 */
+extern u8 D_800678A0[]; /* +4: s16 x */
+extern u8 D_800678A2[]; /* +6: s16 y */
+extern u8 D_800678A4[]; /* +8: u8 *text */
+
+void func_8002E0F0(void) {
+    DRAWENV draw;
+    DISPENV disp;
+    DR_ENV env;
+    u32 clear[3];
+    TextPos pos;
+    s32 colour;
+    s32 i;
+    s32 o;
+    s32 w;
+    s16 x;
+    s16 y;
+
+    ResetGraph(1);
+    StopCallback();
+    ResetGraph(5);
+    *(s16 *)0x1F801DAA = 0;
+    SetDefDrawEnv(&draw, 0, 0, 320, 240);
+    SetDefDispEnv(&disp, 0, 0, 320, 240);
+    draw.isbg = 1;
+    SetDrawEnv(&env, &draw);
+    DrawPrim(&env);
+    PutDispEnv(&disp);
+    clear[0] = 0x02000000;
+    clear[1] = 0xE6000002;
+    clear[2] = 0;
+    DrawPrim(clear);
+    colour = 0xFFFF;
+    i = 0;
+    w = D_8006789E[D_8006EA24 * 12];
+    pos.unk6 = 1;
+    pos.w = w;
+    do {
+        o = D_8006EA24 * 12;
+        x = *(s16 *)(D_800678A0 + o);
+        y = *(s16 *)(D_800678A2 + o);
+        pos.x = x + i;
+        pos.y = y + i;
+        i++;
+        func_8002E25C(*(u8 **)(D_800678A4 + o), &pos, colour);
+        colour = 0x8000;
+    } while (i < 2);
+    func_8002E618();
+    SetDispMask(1);
+    exit();
+}
 
 #ifndef NON_MATCHING
 INCLUDE_ASM("asm/nonmatchings/main/8002e0f0", func_8002E25C);
