@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 791/2551 game functions matched (main.exe ~525/575, 49 left), 8 parked,
+- 792/2551 game functions matched (main.exe ~526/575, 48 left), 8 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
@@ -38,15 +38,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
 1. Big functions. Big mode now works block by block with `decomp.py
    regions` and ranks checkpoints by region score (tools/swarm/README.md,
    Big mode); in the 2026-10-14 runs it matched 13 of 15 fresh 828-1212 B
-   functions and took a parked one from 37/59 to 55/59 blocks.
-   - Resume `func_80019A60` first: registers 17/303 (55/59 blocks, paired
-     303/303) in the swarm checkpoint. That C changes the first parameter
-     to s32 through a `#define func_80019A60` wrapper, which the swarm now
-     refuses: the next session must declare it s32 directly (main.h and
-     the extern above `func_8001DD50`; its checkpoint log says so). It has
-     used its big sessions: `swarm.mjs run --branch main --only
-     func_80019A60 --retry-failed --big-workers 1 ...`.
-   - Then the untried big ones: 1400+ B `func_8002D4F4` (gcc 2.7.2 unit),
+   functions and took a parked one (`func_80019A60`) from 37/59 to 55/59
+   blocks, which was then matched by hand.
+   - The untried big ones: 1400+ B `func_8002D4F4` (gcc 2.7.2 unit),
      `func_8001B6D4`, `func_8001492C`, `func_8001AF2C`, `func_8002C97C`,
      `func_80023A90`; 600-1399 B `func_80020680`, `func_800243A0`,
      `func_80019094`, `func_8002926C`. Sessions of ~27 min
@@ -301,6 +295,13 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-14 (by hand, `func_80019A60`, 1212 B):** matched from the
+  swarm checkpoint (55/59 blocks). The s32 first parameter declared
+  directly (no macro wrapper; both callers still match); the permuter,
+  now able to run on it, found the 0x8A field read into a local first
+  (56/59); the last 3 blocks needed three index variables instead of one
+  (gcc 2.8.1 gives a pseudo one register for its life, and the target had
+  a1/a1/v1). Two Diff patterns rows.
 - **2026-10-14 (hard-function test, ~45 min, $10.82):** `func_80019A60`
   (1212 B, parked at 37/59 blocks by the old STAGE ranking) with the new
   defaults: 5 sessions, each a new best: 37 -> 37 -> 38 -> 46 -> 48 -> 55/59
