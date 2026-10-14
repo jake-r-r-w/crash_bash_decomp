@@ -177,9 +177,12 @@ typedef struct GfxCamera {
 typedef struct {
     u32 flags;      /* 0x00: 0x10000000 screen space, 0x20000000 screen-aligned */
     s32 x, y, z;    /* 0x04 */
-    u8 unk10[0x20]; /* 0x10: passed to func_800142D4 */
+    u8 unk10[0x10]; /* 0x10: passed to func_800142D4 (0x20 bytes) */
+    s32 sx, sy, sz; /* 0x20: scale for screen-aligned (func_8001965C) */
+    u8 unk2C[4];
     MATRIX rot;     /* 0x30 */
-    u16 unk50;
+    u8 unk50;       /* 0x50: nonzero: scale the screen-aligned matrix */
+    u8 unk51;       /* 0x51: 4: no transform */
     u16 unk52;      /* 0x52: nonzero: rot needs rebuilding */
 } GfxXform;
 
@@ -1019,6 +1022,14 @@ void *func_800112A4(void *base, s32 offset, Heap *arg2);
 void func_80014540(u8 *arg0, RECT *rect);
 void func_8002ACA0(s32 id, s32 arg1);
 extern GfxState D_80056998;
+extern VECTOR D_8005688C; /* screen-space translation (func_8001965C) */
+
+/* Adds v to the translation GfxState.unk88 points at (func_8001965C). */
+static inline void GfxAddTrans(VECTOR *v) {
+    ((VECTOR *)D_80056998.unk88)->vx += v->vx;
+    ((VECTOR *)D_80056998.unk88)->vy += v->vy;
+    ((VECTOR *)D_80056998.unk88)->vz += v->vz;
+}
 /* The current draw buffer: primitives are allocated from the pointer at
  * +0x4008 (func_80029D28). */
 extern u8 *D_8005B68C;

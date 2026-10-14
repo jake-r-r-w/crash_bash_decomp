@@ -4275,7 +4275,80 @@ void func_800193A8(POLY_GT3 *poly, SVECTOR *v, u8 *runs) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001965C);
+void func_8001965C(void *arg0, void *arg1, void *arg2, u8 *arg3, GteSetup *arg4) {
+    GfxXform *obj = arg0;
+    MATRIX *m = arg1;
+    VECTOR *pos = arg2;
+    u32 flags;
+    GteSetup *out;
+
+    out = arg4;
+
+    flags = obj->flags;
+    if (flags & 0x10000000) {
+        GfxState *gs;
+
+        out->trans = NULL;
+        D_8005688C.vz = pos->vz + obj->z;
+        out->trans = &D_8005688C;
+        gs = &D_80056998;
+        out->ofx = ((GfxScreen *)gs->unk28)->x + obj->x;
+        out->ofy = ((GfxScreen *)gs->unk28)->y + obj->y;
+    } else {
+        GfxState *gs = &D_80056998;
+        out->ofx = ((GfxScreen *)gs->unk28)->x;
+        out->ofy = ((GfxScreen *)gs->unk28)->y;
+    }
+    if (!(flags & 0x10010000)) {
+        if (flags & 0x80000) {
+            ApplyMatrixLV(&D_80056998.cam->view, (VECTOR *)&obj->x, (VECTOR *)D_80056998.unk88);
+            ((VECTOR *)D_80056998.unk88)->vx += ((VECTOR *)D_80056998.cam)->vx;
+            ((VECTOR *)D_80056998.unk88)->vy += ((VECTOR *)D_80056998.cam)->vy;
+            ((VECTOR *)D_80056998.unk88)->vz += ((VECTOR *)D_80056998.cam)->vz;
+        } else {
+            ApplyMatrixLV(m, (VECTOR *)&obj->x, (VECTOR *)D_80056998.unk88);
+            GfxAddTrans(pos);
+        }
+        out->trans = (VECTOR *)D_80056998.unk88;
+    }
+    if (obj->unk51 != 4) {
+        if (obj->unk52 != 0) {
+            func_800142D4(obj->unk10);
+        }
+        if (flags & 0x40000) {
+            MulMatrix0(&D_80056998.cam->view, &obj->rot, (MATRIX *)D_80056998.unk84);
+        } else if (flags & 0x20000000) {
+            if (obj->unk50 != 0) {
+                D_80056998.unk84 = (u8 *)&D_80056998.unk8C;
+                D_80056998.unk8C.m[0][0] = (D_80056998.cam->rot.m[0][0] * obj->sx) >> 12;
+                D_80056998.unk8C.m[1][1] = (D_80056998.cam->rot.m[1][1] * obj->sy) >> 12;
+                D_80056998.unk8C.m[2][2] = (D_80056998.cam->rot.m[2][2] * obj->sz) >> 12;
+            } else {
+                D_80056998.unk84 = (u8 *)&D_80056998.cam->rot;
+            }
+        } else {
+            MulMatrix0(m, &obj->rot, (MATRIX *)D_80056998.unk84);
+        }
+        if ((flags & 0x10010000) == 0x10000) {
+            ApplyMatrixLV((MATRIX *)D_80056998.unk84, (VECTOR *)&obj->x, (VECTOR *)D_80056998.unk88);
+            if (flags & 0x80000) {
+                ((VECTOR *)D_80056998.unk88)->vx += ((VECTOR *)D_80056998.cam)->vx;
+                ((VECTOR *)D_80056998.unk88)->vy += ((VECTOR *)D_80056998.cam)->vy;
+                ((VECTOR *)D_80056998.unk88)->vz += ((VECTOR *)D_80056998.cam)->vz;
+            } else {
+                GfxAddTrans(pos);
+            }
+            out->trans = (VECTOR *)D_80056998.unk88;
+        }
+        out->rot = (MATRIX *)D_80056998.unk84;
+    } else if (flags & 0x20000000) {
+        out->rot = &D_80056998.cam->rot;
+    } else if (flags & 0x40000) {
+        out->rot = &D_80056998.cam->view;
+    } else {
+        out->rot = m;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80019A60);
 
