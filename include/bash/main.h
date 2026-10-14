@@ -699,6 +699,11 @@ extern GteScratch D_800569CC;
 extern SVECTOR D_80056AC8[];
 typedef struct { s16 unk0; s16 unk2; } TrigEntry;
 extern TrigEntry D_80068BD4[];
+/* A 4.12 fixed-point quaternion (func_80020344 slerps two of them). */
+typedef struct { s32 v[4]; } Quat;
+static inline s32 QuatDot(Quat *a, Quat *b) {
+    return (a->v[0] * b->v[0] + a->v[1] * b->v[1] + a->v[2] * b->v[2] + a->v[3] * b->v[3] + 0x800) >> 12;
+}
 extern s32 D_80064478[];
 extern s32 D_8006E9F8;
 extern u8 D_800527C4[];
@@ -2059,6 +2064,8 @@ void func_8001E0A8(u8 *arg0);
 void func_8001EDFC(u8 *arg0, u8 *arg1);
 
 void func_8001FCDC(u8 *arg0, u8 *arg1);
+
+void func_80020344(Quat *a, Quat *b, s32 t, Quat *out);
 
 void func_80022140(s32 arg0, s32 arg1);
 

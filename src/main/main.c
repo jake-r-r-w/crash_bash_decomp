@@ -5980,7 +5980,46 @@ void func_800201BC(u8 *arg0, GteSetup *arg1) {
     D_800569AC = dp;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80020344);
+void func_80020344(Quat *a, Quat *b, s32 t, Quat *out) {
+    Quat q;
+    s32 d;
+    s32 sq;
+    s32 s;
+    s32 ang;
+    s32 inv;
+    s32 ka;
+    s32 kb;
+
+    q.v[0] = b->v[0];
+    q.v[1] = b->v[1];
+    q.v[2] = b->v[2];
+    q.v[3] = b->v[3];
+    d = QuatDot(a, &q);
+    if (d < 0) {
+        q.v[0] = -q.v[0];
+        q.v[1] = -q.v[1];
+        q.v[2] = -q.v[2];
+        q.v[3] = -q.v[3];
+        d = QuatDot(a, &q);
+    }
+    sq = d * d;
+    s = csqrt(abs(0x1000 - ((sq >= 0 ? sq + 0x800 : sq - 0x800) >> 12)));
+    if (abs(s) < 0x80) {
+        out->v[0] = a->v[0];
+        out->v[1] = a->v[1];
+        out->v[2] = a->v[2];
+        out->v[3] = a->v[3];
+        return;
+    }
+    ang = get_angle(s, d);
+    inv = 0x1000000 / s;
+    ka = (D_80068BD4[((((0x1000 - t) * ang >> 12) & 0xFFF) - 0x400) & 0xFFF].unk2 * inv) >> 6;
+    kb = (D_80068BD4[(((t * ang >> 12) & 0xFFF) - 0x400) & 0xFFF].unk2 * inv) >> 6;
+    out->v[0] = (ka * a->v[0] + kb * q.v[0]) >> 18;
+    out->v[1] = (ka * a->v[1] + kb * q.v[1]) >> 18;
+    out->v[2] = (ka * a->v[2] + kb * q.v[2]) >> 18;
+    out->v[3] = (ka * a->v[3] + kb * q.v[3]) >> 18;
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80020680);
 
