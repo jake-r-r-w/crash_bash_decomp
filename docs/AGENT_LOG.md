@@ -301,6 +301,14 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-14 (tooling):** five new `decomp.py` commands, each tested on
+  `func_80019A60`: `similar` (matched functions by opcode 4-grams; ranks
+  `func_8001EAA4`'s sibling first), `splitvars` (all groupings of a
+  variable's assignments, scored by regions: found the 3-way split in 10 s),
+  `permute --differing` (PERM_RANDOMIZE on the differing blocks' C: block 0
+  matched in 2 of 4 runs of 2-3 min), `vars` (the variable behind each
+  register swap), `units` (split evidence; see Next). Fixed the regions C
+  line map (cpp -P squeezed blank lines). Swarm: `permute --near`.
 - **2026-10-14 (by hand, `func_80019A60`, 1212 B):** matched from the
   swarm checkpoint (55/59 blocks). The s32 first parameter declared
   directly (no macro wrapper; both callers still match); the permuter,
