@@ -10694,7 +10694,37 @@ void func_80028D38(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80028D40);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80028F28);
+void func_80028F28(AnimScroll *s, AnimOwner *o) {
+    AnimEntry *e;
+    DR_MOVE *p;
+    RECT r;
+    s32 pos;
+    s32 y;
+
+    e = (AnimEntry *)(o->table + s->idx * 0x38);
+    pos = s->pos + s->speed;
+    s->pos = pos;
+    if (s->speed > 0) {
+        if ((pos >> 8) >= e->h) {
+            s->pos = pos - (e->h << 8);
+        }
+    } else if (pos < 0) {
+        s->pos = pos + (e->h << 8);
+    }
+    y = s->pos >> 8;
+    r.x = s->dst[0];
+    r.y = s->dst[1] + y;
+    r.w = e->w;
+    r.h = e->h - y;
+    p = (*(DR_MOVE **)(D_8005B68C + 0x4008))++;
+    SetDrawMove(p, &r, e->src[0], e->src[1]);
+    addPrim(D_8005B68C + 0x3FFC, p);
+    r.y = s->dst[1];
+    r.h = y;
+    p = (*(DR_MOVE **)(D_8005B68C + 0x4008))++;
+    SetDrawMove(p, &r, e->src[0], e->src[1] + e->h - y);
+    addPrim(D_8005B68C + 0x3FFC, p);
+}
 
 void func_80029100(AnimOwner *arg0) {
     AnimData *d;

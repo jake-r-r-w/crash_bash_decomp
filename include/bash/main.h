@@ -20,7 +20,23 @@ typedef struct {
     AnimData *data; /* 0x18 */
 } AnimOwner;
 
-void func_80028F28(void *, void *);
+/* An AnimOwner table entry (0x38 bytes) scrolled by func_80028F28. */
+typedef struct {
+    u8 unk0[0x1C];
+    u16 w;          /* 0x1C */
+    s16 h;          /* 0x1E */
+    s16 *src;       /* 0x20: x, y */
+} AnimEntry;
+
+/* A scrolling track (func_80029100's sub list, 16 bytes each). */
+typedef struct {
+    s32 idx;        /* 0x00: entry in AnimOwner.table */
+    s32 speed;      /* 0x04 */
+    s32 pos;        /* 0x08: 24.8 */
+    s16 *dst;       /* 0x0C: x, y */
+} AnimScroll;
+
+void func_80028F28(AnimScroll *, AnimOwner *);
 
 /* A viewpoint: its position (+0xC) is subtracted from world positions before
  * they go through the GTE (func_8002B6D0, func_8002B760). */
