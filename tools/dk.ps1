@@ -2,8 +2,10 @@
 #   .\tools\dk.ps1 make -s
 #   .\tools\dk.ps1 python3 tools/scripts/decomp.py status
 $ErrorActionPreference = "Stop"
-$Image = if ($env:PSX_DECOMP_IMAGE) { $env:PSX_DECOMP_IMAGE } else { "psx-decomp:3" }
 $Root = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+# The tag is the Dockerfile's git blob hash, like tools/dk: a Dockerfile change builds a new image.
+$Hash = (git -C $Root hash-object tools/docker/Dockerfile).Substring(0, 12)
+$Image = if ($env:PSX_DECOMP_IMAGE) { $env:PSX_DECOMP_IMAGE } else { "psx-decomp:$Hash" }
 
 docker image inspect $Image *> $null
 if ($LASTEXITCODE -ne 0) {

@@ -14,8 +14,9 @@ shifted builds (ROADMAP.md, Phase 4) and the modern-compiler build.
 
 ## The disc packer
 
-`tools/scripts/pack_disc.py` unpacks the user's retail image with `dumpsxiso` into `build/disc/`
-(fresh every run), replaces `SCUS_945.70` with `build/main.exe`, writes each `build/<ovl>.bin`
+`tools/scripts/pack_disc.py` unpacks the user's retail image with `dumpsxiso` once into
+`build/disc-cache/` (kept by `make clean`, redone when the image changes), copies it to
+`build/disc/` every run (unchanged files as hard links), replaces `SCUS_945.70` with `build/main.exe`, writes each `build/<ovl>.bin`
 back into `CRASHBSH.DAT` at the offset `.decomp/project.json` records for it, and rebuilds the
 image with `mkpsxiso` from `dumpsxiso`'s layout, so every file keeps its retail sector. A file
 may shrink (it is zero-padded to its retail size) but not grow: an overlay is a slot in

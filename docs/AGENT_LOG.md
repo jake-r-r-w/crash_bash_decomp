@@ -146,18 +146,24 @@ Other:
 ## Gotchas
 
 **Tooling**
-- **`make verify` deletes `build/`** (it runs `make clean`): don't keep
-  scratch copies of C there across a verify.
+- **`make clean` (and `make verify`) delete `build/`** except
+  `build/scratch/` (keep drafts and notes there), `build/emu/` and
+  `build/disc-cache/`.
+- **The build tracks its pipeline:** C objects depend on `dmpsx.py`,
+  `aspsx_fill.py`, `project.mk` and the Makefile, and overlay linker scripts
+  on their own `sym.<ovl>.txt` and `sym.engine.txt`, so editing those
+  rebuilds or re-splits. `decomp.py` takes `CPPFLAGS`/`ASFLAGS` from the
+  Makefile (`make print-VAR`). `try` prints `STILL-ASM` for a function whose
+  INCLUDE_ASM is still in place instead of a self-match.
 - **Swarm clones and splat output.** Clones get `asm/` and `linkers/` copied
   from this checkout; since 2026-10-14 they are copied again when
   `configs/USA`'s sym/rel files or yamls change (a fingerprint in the clone's
   `.git/swarm-data`). Run `make split` here after such a change, before a
   swarm run: the clones copy this checkout's `asm/`. Before the fix, a symbol
   split made every gate fail ("can't open asm/nonmatchings/.../func_X.s").
-- **Toolchain image tag.** A change to `tools/docker/Dockerfile` needs the tag
-  in `tools/dk` and `tools/dk.ps1` bumped (now `psx-decomp:3`), or machines
-  that already have the image keep the old one. `tools/dk` builds a missing
-  image itself.
+- **Toolchain image tag.** `tools/dk` and `tools/dk.ps1` tag the image
+  `psx-decomp:<git hash-object of the Dockerfile, 12 chars>`, so a Dockerfile
+  change builds a new image by itself; nothing to bump.
 - **Replay recordings.** Menus ignore a press while they animate in: hold a
   button ~4 frames and leave a gap. Find frame counts with `replay.py run
   ... --shot N` and look at the PNGs (tools/replay/README.md).

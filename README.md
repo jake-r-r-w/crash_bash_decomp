@@ -148,7 +148,8 @@ working notes (`*.local.md`).
 Everything runs in a Docker image (`tools/docker/Dockerfile`), so the only
 host requirement is Docker Desktop. `tools/dk <command>` (or `tools\dk.ps1` from
 PowerShell) runs a command in it with the repository mounted at `/work`; the
-first call builds the image.
+first call builds the image. The image is tagged with a hash of the Dockerfile, so
+changing the Dockerfile builds a new one automatically.
 
 | Component | Source | Path in the image |
 |---|---|---|

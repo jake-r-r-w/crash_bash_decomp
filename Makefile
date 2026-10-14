@@ -72,17 +72,21 @@ split:
 
 # splat leaves an unchanged linker script alone, so without the touch it stays older than its
 # inputs and every build re-runs every split
-$(LD_SCRIPT): $(YAML) $(CFG)/sym.main.txt
+$(LD_SCRIPT): $(YAML) $(CFG)/sym.main.txt $(CFG)/rel.main.txt
 	$(PYTHON) -m splat split $(YAML)
 	@touch $@
 
-linkers/%.ld: $(CFG)/overlays/%.yaml $(CFG)/sym.main.txt
+# an overlay's yaml reads sym.main.txt, sym.engine.txt and its own sym.<ovl>.txt
+linkers/%.ld: $(CFG)/overlays/%.yaml $(CFG)/sym.main.txt $(CFG)/sym.engine.txt $(CFG)/sym.%.txt
 	$(PYTHON) -m splat split $<
 	@touch $@
 
 # .i is kept next to the object so decomp.py can show the line a compile error refers to.
 # Headers aren't tracked per file: any change under include/ rebuilds the C objects.
-build/%.c.o: %.c $(shell find include -name '*.h' 2>/dev/null)
+# The pipeline's own inputs count too: a change to a filter script, the compiler settings or this
+# Makefile (per-unit settings below) rebuilds the objects instead of leaving stale ones.
+PIPELINE_DEPS := tools/scripts/dmpsx.py tools/scripts/aspsx_fill.py $(CFG)/project.mk Makefile
+build/%.c.o: %.c $(shell find include -name '*.h' 2>/dev/null) $(PIPELINE_DEPS)
 	@mkdir -p $(@D)
 	$(CPP) $(CPPFLAGS) $< | tee $(@:.o=.i) | $(CC1) $(CC1FLAGS) | $(DMPSX) | $(MASPSX) $(MASPSX_ARGS) $(ASPSX_FILL) | $(AS) $(ASFLAGS) -o $@
 
@@ -208,5 +212,12 @@ report: objdiff-config $(OBJDIFF_CLI)
 	$(OBJDIFF_CLI) report generate -o build/report.json
 	@$(PYTHON) -c "import json;m=json.load(open('build/report.json'))['measures'];print('objdiff: code %.2f%% (%s/%s bytes), functions %s/%s'%(m.get('matched_code_percent',0),m.get('matched_code',0),m.get('total_code',0),m.get('matched_functions',0),m.get('total_functions',0)))"
 
+# make print-VAR: a variable's value (decomp.py reads CPPFLAGS and ASFLAGS this way)
+print-%:
+	@echo '$($*)'
+
+# Keeps build/scratch (your own notes and C drafts), build/emu and build/disc-cache (slow to
+# recreate); everything else under build/ is output and goes.
+KEEP_BUILD := scratch emu disc-cache
 clean:
-	rm -rf build
+	@if [ -d build ]; then find build -mindepth 1 -maxdepth 1 $(KEEP_BUILD:%=! -name %) -exec rm -rf {} +; fi

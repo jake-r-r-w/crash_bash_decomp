@@ -37,8 +37,6 @@ MASPSX = os.environ.get("MASPSX_PY", "/opt/maspsx/maspsx.py")
 M2C = os.environ.get("M2C_PY", "/opt/m2c/m2c.py")
 PERMUTER = os.environ.get("PERMUTER_PY", "/opt/permuter/permuter.py")
 X = os.environ.get("CROSS", "mipsel-linux-gnu-")
-CPPFLAGS = ["-P", "-nostdinc", "-undef", "-Iinclude", "-Iext/psyq47/include", "-D__GNUC__=2", "-D_LANGUAGE_C", "-DPSX"]
-ASFLAGS = ["-Iinclude", "-march=r3000", "-mtune=r3000", "-no-pad-sections", "-O1", "-G0"]
 DEFAULT_MASPSX = "--macro-inc --expand-div"
 
 # splat comment on each instruction: /* ROM VRAM WORD */ instruction
@@ -498,11 +496,34 @@ def compile_error(src, stderr):
     return out
 
 
+_MAKE_VARS = {}
+
+
+def make_flags(var):
+    """A Makefile variable (CPPFLAGS, ASFLAGS) as an argument list, so try/permute/m2c compile
+    exactly like the build."""
+    if var not in _MAKE_VARS:
+        r = run(["make", "-s", "--no-print-directory", f"print-{var}"])
+        if r.returncode:
+            die(f"make print-{var} failed: {tail(r.stderr + r.stdout)}")
+        _MAKE_VARS[var] = r.stdout.split()
+    return _MAKE_VARS[var]
+
+
+def still_asm(src, *names):
+    """True while src still has an INCLUDE_ASM line for any of names (its asm matches itself)."""
+    return bool(set(names) & {m.group(2) for m in INC_ASM.finditer(read(src))})
+
+
 def check_function(key, e, proj, name, quiet=False):
     """Build e's source file and compare. Returns (ok, ndiffs)."""
     src = e.get("src") or locate_def(name)
     if not src:
         die(f"can't find the source file defining {name}")
+    if still_asm(src, name, e["name"], e["orig"]):
+        print(f"STILL-ASM {name}: {src} still has its INCLUDE_ASM line, so its asm would match "
+              "itself. Replace that line with the C.")
+        return False, None
     obj = f"build/{src}.o"
     if os.path.exists(obj):
         os.remove(obj)
@@ -533,9 +554,9 @@ def check_function(key, e, proj, name, quiet=False):
 
 def pipeline(c_path, o_path, cc, opt, g, maspsx, post=""):
     gflag = f"-G{g}"
-    return (f"{X}cpp {' '.join(CPPFLAGS)} {c_path} | {GCC_ROOT}/{cc}/cc1 -quiet {opt} {gflag} "
+    return (f"{X}cpp {' '.join(make_flags('CPPFLAGS'))} {c_path} | {GCC_ROOT}/{cc}/cc1 -quiet {opt} {gflag} "
             f"| python3 tools/scripts/dmpsx.py | python3 {MASPSX} {maspsx}{' ' + gflag if g else ''} "
-            f"{post + ' ' if post else ''}| {X}as {' '.join(ASFLAGS)} -o {o_path}")
+            f"{post + ' ' if post else ''}| {X}as {' '.join(make_flags('ASFLAGS'))} -o {o_path}")
 
 
 def unit_cfg(cfg, src):
@@ -568,7 +589,7 @@ def m2c_draft(e, src=None):
 def build_ctx(src):
     incs = [l for l in read(src).splitlines() if l.lstrip().startswith("#include")]
     write("build/ctx_in.c", "\n".join(incs) + "\n")
-    r = run([X + "cpp", *CPPFLAGS, "-DM2CTX", "build/ctx_in.c"])
+    r = run([X + "cpp", *make_flags("CPPFLAGS"), "-DM2CTX", "build/ctx_in.c"])
     write("build/ctx.c", r.stdout if r.returncode == 0 else "")
     return r.stdout if r.returncode == 0 else ""
 
@@ -579,7 +600,7 @@ def permuter_base(src, decls, body, tag):
     incs = [l for l in read(src).splitlines() if l.lstrip().startswith("#include")]
     p = f"build/permuter/{tag}_in.c"
     write(p, "\n".join(incs + list(decls)) + "\n\n" + body)
-    r = run([X + "cpp", *CPPFLAGS, "-DM2CTX", "-DPERMUTER", p])
+    r = run([X + "cpp", *make_flags("CPPFLAGS"), "-DM2CTX", "-DPERMUTER", p])
     return r.stdout if r.returncode == 0 else None
 
 
@@ -1067,7 +1088,7 @@ def cmd_done(a):
         die(f"the working tree also replaces INCLUDE_ASM for {', '.join(others)}: one function per "
             "commit. Restore those INCLUDE_ASM lines (keep the C elsewhere) and match them separately.")
     # its INCLUDE_ASM must be gone: with it still there the asm "matches" itself
-    if {name, e["name"], e["orig"]} & {m.group(2) for m in INC_ASM.finditer(read(src))}:
+    if still_asm(src, name, e["name"], e["orig"]):
         die(f"{src} still has the INCLUDE_ASM line for {name}: replace it with the C first "
             "(nothing recorded or committed)")
     # 2. lint: no m2c leftovers, hacks only when declared
@@ -2462,7 +2483,7 @@ def permute_run(d, name, e, base_c, cfg, jobs, seconds):
     os.makedirs(d)
     write(f"{d}/base.c", base_c)
     write(f"{d}/target.s", f'.include "macro.inc"\n.set noat\n.set noreorder\n.text\n.include "{e["asm"]}"\n')
-    r = run([X + "as", *ASFLAGS, "-o", f"{d}/target.o", f"{d}/target.s"])
+    r = run([X + "as", *make_flags("ASFLAGS"), "-o", f"{d}/target.o", f"{d}/target.s"])
     if r.returncode:
         return None, None, None, "could not assemble target:\n" + tail(r.stderr)
     g = int(cfg.get("GVAL", "0"))

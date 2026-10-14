@@ -3,11 +3,12 @@
 
 Runs inside the toolchain container:   tools/dk make disc   (or make disc-check)
 
-The user's retail image is unpacked with dumpsxiso into build/disc/ (a fresh copy every run, so
-nothing from an earlier pack leaks in), build/main.exe replaces the boot exe, every build/<ovl>.bin
-is written back into CRASHBSH.DAT at the offset decomp.py add-overlay recorded, and mkpsxiso
-rebuilds the image from dumpsxiso's layout, which keeps every file at its retail sector. The result
-is build/CrashBash.bin/.cue. Packing the matching build gives the retail image byte for byte
+The user's retail image is unpacked with dumpsxiso once into build/disc-cache/ (kept by make
+clean, redone when the image changes) and copied to build/disc/ every run, so nothing from an
+earlier pack leaks in (files the pack doesn't change are hard links). build/main.exe replaces
+the boot exe, every build/<ovl>.bin is written back into CRASHBSH.DAT at the offset decomp.py
+add-overlay recorded, and mkpsxiso rebuilds the image from dumpsxiso's layout, which keeps every
+file at its retail sector. The result is build/CrashBash.bin/.cue. Packing the matching build gives the retail image byte for byte
 (configs/USA/disc.sha, checked by make disc-check).
 
 A file may shrink (it is zero-padded to its retail size, so nothing after it moves) but not grow:
@@ -22,6 +23,7 @@ import subprocess
 import sys
 
 P_PROJ = ".decomp/project.json"
+CACHE = "build/disc-cache"
 OUT = "build/disc"
 FILES = f"{OUT}/files"
 LAYOUT = f"{OUT}/layout.xml"
@@ -62,25 +64,58 @@ def read(p):
         return f.read()
 
 
+def unpacked(src):
+    """The retail image unpacked (files/ and layout.xml) in CACHE, and its sha1; redone when the
+    image's size or date changes."""
+    st = os.stat(src)
+    key = f"{st.st_size}-{int(st.st_mtime)}"
+    stamp = f"{CACHE}/key"
+    if not (os.path.exists(stamp) and open(stamp).read().split()[0] == key):
+        shutil.rmtree(CACHE, ignore_errors=True)
+        run(["dumpsxiso", "-x", f"{CACHE}/files", "-s", f"{CACHE}/layout.xml", src])
+        with open(stamp, "w") as f:
+            f.write(f"{key} {hashlib.sha1(read(src)).hexdigest()}\n")
+    return open(stamp).read().split()[1]
+
+
+def copy_tree(changed):
+    """CACHE -> OUT: the files in changed are copied (they get written), the rest hard-linked."""
+    shutil.rmtree(OUT, ignore_errors=True)
+    for dp, _, fns in os.walk(f"{CACHE}/files"):
+        rel = os.path.relpath(dp, CACHE)
+        os.makedirs(os.path.join(OUT, rel), exist_ok=True)
+        for fn in fns:
+            a, b = os.path.join(dp, fn), os.path.join(OUT, rel, fn)
+            if os.path.normpath(b) in changed:
+                shutil.copyfile(a, b)
+                continue
+            try:
+                os.link(a, b)
+            except OSError:
+                shutil.copyfile(a, b)
+    shutil.copyfile(f"{CACHE}/layout.xml", LAYOUT)
+
+
 def main():
     proj = json.load(open(P_PROJ))
     src = retail_bin(proj)
     if not os.path.exists(src):
         die(f"{src} not found (the retail disc image goes in disc/)")
 
-    shutil.rmtree(OUT, ignore_errors=True)
-    run(["dumpsxiso", "-x", FILES, "-s", LAYOUT, src])
-
+    retail_sha = unpacked(src)
+    # recorded as disc/files/..., the layout dumpsxiso writes; the same path under build/disc/
+    dats = {o["name"]: os.path.join(FILES, os.path.relpath(o["from"], "disc/files"))
+            for o in proj.get("overlays", [])}
     exe = f"{FILES}/{proj['exe']}"
+    copy_tree({os.path.normpath(p) for p in [exe, *dats.values()]})
+
     put(exe, read(f"build/{proj['name']}.exe"), size=os.path.getsize(exe))
     for o in proj.get("overlays", []):
-        # recorded as disc/files/..., the layout dumpsxiso writes; the same path under build/disc/
-        dat = os.path.join(FILES, os.path.relpath(o["from"], "disc/files"))
-        put(dat, read(f"build/{o['name']}.bin"), o["offset"], o["size"])
+        put(dats[o["name"]], read(f"build/{o['name']}.bin"), o["offset"], o["size"])
 
     run(["mkpsxiso", "-y", "-q", "-o", IMAGE, "-c", CUE, LAYOUT])
     sha = hashlib.sha1(read(IMAGE)).hexdigest()
-    same = sha == hashlib.sha1(read(src)).hexdigest()
+    same = sha == retail_sha
     print(f"{IMAGE} + {os.path.basename(CUE)}: sha1 {sha[:12]}, "
           + ("identical to the retail image" if same else "differs from the retail image"))
 

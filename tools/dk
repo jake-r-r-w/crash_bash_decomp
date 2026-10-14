@@ -5,8 +5,10 @@
 # Works from Linux, macOS, WSL and Git Bash on Windows (Claude Code's shell there).
 set -euo pipefail
 
-IMAGE="${PSX_DECOMP_IMAGE:-psx-decomp:3}"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# The tag is the Dockerfile's git blob hash, so a change to the Dockerfile builds a new image
+# by itself (no tag to bump; tools/dk.ps1 computes the same one).
+IMAGE="${PSX_DECOMP_IMAGE:-psx-decomp:$(git -C "$ROOT" hash-object tools/docker/Dockerfile | cut -c1-12)}"
 
 if ! command -v docker >/dev/null 2>&1; then
   echo "ERROR: docker not found. Install/start Docker Desktop (WSL 2 backend on Windows)." >&2
