@@ -5994,7 +5994,130 @@ void func_8001F4F8(u8 *arg0, u8 *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001F604);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001F828);
+void func_8001F828(u8 *arg0, u8 *arg1) {
+    u8 *p;
+    u8 *r;
+    u8 *res;
+    s32 *q;
+    s32 lo;
+    s32 idx;
+    u8 *e;
+    u8 *obj;
+    EmitPart *part;
+    u8 *def;
+    s32 spawn;
+    s32 a;
+    s32 scale;
+    s32 in;
+
+    obj = *(u8 **)(arg0 + 0xC);
+    part = *(EmitPart **)(arg0 + 0x14);
+    e = *(u8 **)(arg1 + 0);
+    lo = *(s32 *)(arg1 + 4);
+    idx = *(s32 *)(arg0 + 0);
+    D_80058B7C = e;
+    p = *(u8 **)(e + 0xC);
+    D_80058B80 = lo;
+    D_80058B84 = idx;
+    if (p == NULL) {
+        r = NULL;
+    } else {
+        q = (s32 *)(p + (*(s32 *)(p + 0x4C) + 0x4C) + lo * 4);
+        r = (u8 *)q + *q;
+    }
+    if (r == NULL) {
+        res = NULL;
+    } else {
+        res = r + (idx * 4 + 0x1C) + *(s32 *)(r + (idx << 2) + 0x1C);
+    }
+    if (res == NULL) {
+        return;
+    }
+    def = res + 0x14;
+    if (*(s16 *)(arg1 + 0xE) == *(s32 *)(res + 4)) {
+        *(s32 *)(arg0 + 0x18) = *(s32 *)(def + 0x10);
+    }
+    if (*(s32 *)(res + 4) >= *(s16 *)(arg1 + 0xE)) {
+        return;
+    }
+    if (*(s32 *)(arg0 + 0x18) != 0 || (spawn = 0, *(s32 *)(def + 0x6C) != 0)) {
+        spawn = *(s32 *)(def + 0x14);
+    }
+    if (*(s32 *)(def + 0x1C) < *(s16 *)(arg1 + 0xE)) {
+        spawn = 0;
+    }
+    *(s32 *)(arg0 + 0x18) -= spawn;
+    if (*(s32 *)(arg0 + 0x18) < 0) {
+        *(s32 *)(arg0 + 0x18) = 0;
+    }
+    for (;; obj = *(u8 **)(obj + 0x5C), part++) {
+        if (obj == NULL) {
+            return;
+        }
+        if (*(s32 *)obj & 0x8000) {
+            if (part->vel[0] != 0) {
+                *(s32 *)(obj + 4) += part->vel[0] >> 8;
+            }
+            if (part->vel[1] != 0) {
+                *(s32 *)(obj + 8) += part->vel[1] >> 8;
+            }
+            if (part->vel[2] != 0) {
+                *(s32 *)(obj + 0xC) += part->vel[2] >> 8;
+            }
+            if (*(s32 *)(def + 0x40) != 0) {
+                part->vel[0] += *(s32 *)(def + 0x40);
+            }
+            if (*(s32 *)(def + 0x48) != 0) {
+                part->vel[1] += *(s32 *)(def + 0x48);
+            }
+            if (*(s32 *)(def + 0x50) != 0) {
+                part->vel[2] += *(s32 *)(def + 0x50);
+            }
+            if (*(s32 *)(def + 0x44) != 0x100) {
+                part->vel[0] = (part->vel[0] * *(s32 *)(def + 0x44)) >> 8;
+            }
+            if (*(s32 *)(def + 0x4C) != 0x100) {
+                part->vel[1] = (part->vel[1] * *(s32 *)(def + 0x4C)) >> 8;
+            }
+            if (*(s32 *)(def + 0x54) != 0x100) {
+                part->vel[2] = (part->vel[2] * *(s32 *)(def + 0x54)) >> 8;
+            }
+            *(u16 *)(obj + 0x14) += *(u16 *)(def + 0x68);
+            *(s16 *)(obj + 0x52) = 1;
+            if (*(s32 *)(def + 0x18) < part->age++) {
+                *(s32 *)obj &= ~0x8000;
+            }
+            if (*(s32 *)obj & 0x8000) {
+                in = *(s32 *)(def + 0x58);
+                a = 0;
+                if (in != 0 || *(s32 *)(def + 0x5C) != 0) {
+                    a = EmitPart_Fade(in, *(s32 *)(def + 0x5C), part->age, *(s32 *)(def + 0x18), 0x1000, 0);
+                }
+                if (a != 0) {
+                    *(s32 *)obj |= 0x40000000;
+                } else {
+                    *(s32 *)obj &= ~0x40000000;
+                }
+                *(s16 *)(obj + 0x76) = a;
+                in = *(s32 *)(def + 0x60);
+                scale = 0x1000;
+                if (in != 0 || *(s32 *)(def + 0x64) != 0) {
+                    scale = EmitPart_Fade(in, *(s32 *)(def + 0x64), part->age, *(s32 *)(def + 0x18), 0, 0x1000);
+                }
+                *(s32 *)(obj + 0x28) = scale;
+                *(s32 *)(obj + 0x24) = scale;
+                *(s32 *)(obj + 0x20) = scale;
+                *(u8 *)(obj + 0x50) = 1;
+                *(s16 *)(obj + 0x52) = 1;
+            }
+        }
+        if (spawn != 0 && !(*(s32 *)obj & 0x8000)) {
+            *(s32 *)obj |= 0x8000;
+            func_8001F604(obj, part, def);
+            spawn--;
+        }
+    }
+}
 
 void func_8001FCDC(u8 *arg0, u8 *arg1) {
     u8 *p;

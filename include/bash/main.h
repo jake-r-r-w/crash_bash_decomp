@@ -1248,6 +1248,35 @@ extern u8 *D_80058B7C;
 extern s32 D_80058B80;
 extern s32 D_80058B84;
 
+/* func_8001F828: per-particle state, 0x28 bytes */
+typedef struct EmitPart {
+    s32 age;
+    s32 unk4;
+    s32 vel[3];
+    u8 pad14[0x14];
+} EmitPart;
+void func_8001F604(u8 *obj, EmitPart *part, u8 *def);
+
+/* fade from `from` to `to` over [0,in), hold `to`, back to `from` over (out,end] */
+static inline s32 EmitPart_Fade(s32 in, s32 out, s32 n, s32 end, s32 from, s32 to) {
+    s32 ret;
+
+    if (n < 0) {
+        ret = from;
+    } else if (n < in) {
+        ret = func_80015304(from, to, in, n);
+    } else if (out < n) {
+        if (end < n) {
+            ret = from;
+        } else {
+            ret = func_80015304(to, from, end - out, n - out);
+        }
+    } else {
+        ret = to;
+    }
+    return ret;
+}
+
 extern NAS *NASFreeList;
 extern u16 D_8005AA10;            /* first pool slot func_80026D08 frees */
 extern u16 D_8005AA12;            /* pool slot count */
@@ -2184,5 +2213,7 @@ typedef struct CamEase {
 } CamEase;
 
 void func_80013F44(CamView *cam, CamView *dst, CamEase *ease);
+
+void func_8001F828(u8 *arg0, u8 *arg1);
 
 #endif /* BASH_MAIN_H */
