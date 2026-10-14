@@ -282,6 +282,12 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-14 (swarm, 10 min):** no match. `func_8001795C` reached the
+  registers stage (17/107, checkpoint); `func_800248A0` stayed at registers
+  5/142 (2 stale sessions: big mode won't lease it again; it wants a long
+  permuter run or `forget`). `func_8002E3D0`'s session was hard-stopped at
+  19 min and lost. Big sessions run 13-20 min, so a run shorter than ~20
+  min mostly ends in a graceful wait or a hard stop that loses work.
 - **2026-10-14 (swarm, 15 min):** `--big-bytes 400 --workers 1
   --big-workers 3` (with 400, 52 of 54 candidates are big: give big mode
   the workers). `func_8002E000` matched in 3.5 min after 4 earlier fails
