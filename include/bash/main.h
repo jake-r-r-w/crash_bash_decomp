@@ -1317,6 +1317,15 @@ typedef union {
     } s;
 } ScreenXY;
 
+/* The same packed position built with bitfields (func_800248A0). */
+typedef union {
+    struct {
+        s32 x : 16;
+        s32 y : 16;
+    } f;
+    s32 w;
+} SprPos;
+
 /* Draws f at xy (640-wide units) as a POLY_FT4 in ot[otz]; color bit 31 makes
  * it semi-transparent, bits 29-30 its blend mode. Returns f's advance. */
 s32 func_80029D28(SpriteFrame *f, s32 xy, s32 otz, u32 color);
@@ -2566,5 +2575,9 @@ void func_8001D6B4(MapEnvHead *env);
 u8 *func_8001FE80(u8 *arg0, s32 arg1, Blk32 *arg2, CamVec3 *arg3, s32 arg4, u8 * *arg5);
 
 void func_80028D40(AnimTex *t, s32 base, AnimTexSet *set);
+
+/* func_800248A0: three 0x38-byte sprite records drawn side by side */
+extern u8 D_80053074[];
+extern u16 D_8005A5C0[][3];
 
 #endif /* BASH_MAIN_H */

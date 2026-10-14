@@ -1733,7 +1733,10 @@
  },
  "800248A0": {
   "auto_diff": 108,
-  "auto_failed": "diff"
+  "auto_failed": "diff",
+  "blocked_at": "2026-10-14T21:56:33Z",
+  "note": "registers 5/142 (ported to SpriteFrame/s32 xy with a SprPos union); only the entry: target tests a0 (andi a0,a0,0xC000) and loads arg4 into a3, ours tests s5 into v1. An s16/u16 arg0 fixes that but its conversion insn has a later luid, so sched2 puts move s5,a0 after the a2/a3 copies (6 diffs, prologue order). next: a form where arg0's s5 copy is the first param copy and a dying a0 copy feeds the andi",
+  "status": "blocked"
  },
  "80024AD8": {
   "matched_at": "2026-10-14T13:10:44Z",
