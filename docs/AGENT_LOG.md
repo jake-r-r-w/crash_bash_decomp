@@ -29,14 +29,12 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-0. Current focus (ROADMAP.md, Current focus): recording real play for the
-   replay harness. `make replay` works (headless PCSX-ReARMed, HLE BIOS;
-   `tools/replay/recordings/battle.txt` reaches the crate battle and plays
-   two minutes, 7512 frames in ~20 s per disc). Recordings are written by
-   hand (`<frames> [buttons]`, check progress with `replay.py run ... --shot
-   N` and look at the PNGs); for long sessions, convert RetroArch input
-   recordings made with the same core and `OPTIONS`. Add player positions
-   to `tools/replay/values.txt` (through `HeroInfo.hero`, a NAS pointer).
+0. Current focus (ROADMAP.md, Current focus): `make disc` and `make
+   replay` work; the matching build is frame-identical to retail. The
+   harness's next step is a state-sequence mode (Phase 4; frame-exact is
+   too strict for builds whose code changes size), wanted by the first
+   shiftable `NON_MATCHING` build. Recordings stay short and hand-written
+   (`<frames> [buttons]`, check with `replay.py run ... --shot N`).
 1. More swarm runs: `swarm.mjs run --branch main --seg main/ --max-minutes
    120 --max-functions 300 --max-run-usd 80`. Big mode works on real
    functions (first run: 612 B and 600 B both matched in one ~6-min opus

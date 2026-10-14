@@ -24,10 +24,12 @@ packs `build/main.exe` and the overlays into `build/CrashBash.bin`/`.cue`,
 which boots in an emulator, and `make disc-check` confirms the matching build
 packs to the retail image byte for byte. `tools/dk make replay` plays an
 input recording on the retail disc and the built one in a headless emulator
-and reports the first frame where they differ. Next is recording real play
-for it (Phase 2), then the shiftable `NON_MATCHING` build (Phase 4), the
-first build that isn't byte-identical and so the first one the harness
-really tests.
+and reports the first frame where they differ. That is as exact as testing
+needs to get: the matching build is the retail bytes, so it plays like retail
+by definition. The next step is the shiftable `NON_MATCHING` build
+(Phase 4), the first build that isn't byte-identical and so the first one
+the harness really tests. Short hand-written recordings (a few minutes, one
+per minigame) are enough; nothing needs long recorded sessions yet.
 
 ## Phase 1 - Foundations: types and names
 
@@ -87,11 +89,6 @@ harness work, so later phases can test what they finish.
   `tools/replay/recordings/battle.txt` (boot, menus, two minutes into the
   crate battle: 7512 identical frames), and it catches a one-instruction
   change to `Random` at the first frame the seed differs.
-- [ ] Record real play for the harness: a way to record long sessions by
-  playing, not by writing frame counts by hand. RetroArch with the same core
-  and the same options (`OPTIONS` in `replay.py`) gives the same timing, so
-  converting its input recordings is the likely route. Also log player
-  positions (through `HeroInfo.hero`) as game values.
 - [x] Match GTE code: include Sony's GTE macros (`inline_c.h`, `gtemac.h`) in
   the game sources and match one GTE function through `done`. 27 of the exe's
   game functions use the GTE, and m2c can't draft them.
@@ -137,8 +134,8 @@ Their functions start out named and typed. Finish one overlay completely
 before starting the next. A minigame's box is ticked when its overlay is
 source-only, the globals its header declares are named, its asset files
 (its `file_group_*` groups) extract, and it passes its shift test: padded so
-everything in it moves, it plays through to a win and a recording of that
-replays with the same frames as retail. The slot overlays are the first units
+everything in it moves, it boots, plays through to a win, and a short
+recording of that gives the same sequence of game values as retail. The slot overlays are the first units
 that can be shifted: the only pointers into one from outside are the engine's
 AST table entries (`Init`/`Plot`), which are C after Phase 3, so the engine
 is relinked against the moved overlay without moving itself. `main.exe` and
@@ -154,6 +151,13 @@ extracts, and each passes its shift test.
 - [ ] A shiftable `NON_MATCHING` build: an option that pads a source-only slot
   overlay's code and data, relinks the engine's AST table against it, packs a
   disc and runs the shift test.
+- [ ] A state-sequence mode for the replay harness: compare the sequence of
+  game values (seed, modes, health, scores, positions) and ignore the frame
+  each change lands on. A build whose code is a different size can finish a
+  heavy frame one frame earlier or later; that shifts every frame after it,
+  which the frame-exact comparison reports as a difference although the game
+  is right. Add player positions (through `HeroInfo.hero`) to the values.
+  A recording per minigame in `tools/replay/recordings/`, written by hand.
 - [ ] Finish the slot overlays' section splits (data vs rodata), so functions
   using strings and jump tables can match.
 - [x] Recover the minigame-only types (`EXTbotai`, `EXTheromove`, `TA_player`,
@@ -201,8 +205,10 @@ test (Phase 4). A box below is ticked on the same terms.
   every overlay against their new addresses instead of the fixed ones in
   `configs/USA/sym.main.txt` and `sym.engine.txt`. This needs every overlay's
   data to be C, since a pointer left in a data blob keeps its old address.
-- [ ] The recordings for test 4, made on the retail disc: the adventure mode
-  from a new save, plus each minigame.
+- [ ] The recordings for test 4: the adventure mode from a new save into the
+  hub and its first minigame, a save and a load, and each minigame. Short and
+  hand-written like the Phase 4 ones; record real play only if those turn out
+  to miss bugs.
 - [ ] A build with a current GCC for MIPS (`NON_MATCHING`).
 - [ ] Every file at quality level 4 ([CONVENTIONS.md](CONVENTIONS.md)), with no
   placeholder names.
@@ -229,14 +235,15 @@ game, not the first time anything has been tested.
    emulator and plays: the front end, a save and a load, the hub, and every
    minigame through to a win. *Proves: no address is hard-coded; the code works
    as code, not as bytes that happen to land in the right place.*
-4. **Same game, frame for frame.** Input recordings of a long session (the
-   adventure mode from a new save, plus each minigame), made on the retail
-   disc, replay on the shifted build with the same frames and the same game
-   state. *Proves: the rebuilt game behaves identically, not just similarly.*
-   - Run it on the matching build first. That build is the retail bytes, so it
-     must pass; if it doesn't, the harness is wrong, not the game.
-   - Compare frames and game values, never raw RAM: in the shifted build
-     everything sits at other addresses, so a RAM dump always differs.
+4. **Same game.** The test 4 recordings replay on the shifted build with the
+   same sequence of game values as on the retail disc (the harness's
+   state-sequence mode), and it looks right in the screenshots. *Proves: the
+   rebuilt game behaves like the original, not just roughly like it.*
+   - Run it on the matching build first, frame for frame. That build is the
+     retail bytes, so it must give identical frames; if it doesn't, the
+     harness is wrong, not the game.
+   - Compare game values, never raw RAM: in the shifted build everything
+     sits at other addresses, so a RAM dump always differs.
    - Keep the retail disc layout. Load times depend on where files sit on the
      CD; a file in another place finishes loading a frame later and every
      frame after it is off by one, which looks like a bug but isn't.
