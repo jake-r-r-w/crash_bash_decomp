@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 780/2551 game functions matched (main.exe ~514/575, 60 left), 7 parked,
+- 780/2551 game functions matched (main.exe ~514/575, 60 left), 8 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
@@ -70,6 +70,11 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 Parked (`decomp.py block`; best C under `#ifndef NON_MATCHING` in
 `src/main/main.c`):
+- **`func_80020C04`** (lerp on the `D_80068BD4` trig table, no callers):
+  retail emits `mult` with no `mflo` and returns `a`. In 2.8.1 every dead
+  product form also drops the `mult`; signed `>> 32` keeps one `mflo` (19 vs
+  18). Next: cc1 `-dc`/`-dl` dumps of that form, or test whether this region
+  is another compiler.
 - **`func_800155FC`** (seed step `A += B; B += A + ((u32)A >> 31)`): 2
   operands off. The target ties `A + srl` to the srl's register; writing the
   srl first ties it right, but then local-alloc gives A v1 instead of v0.
@@ -286,6 +291,9 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-14 (by hand, roadmap order):** `func_80020C04` (main) parked
+  at `structure` 18 vs 19 after compiler experiments (Open leads); the
+  permuter was stopped early when the session ended.
 - **2026-10-14 (by hand, 1 function):** `func_800C8870` (ovl5f) matched first
   try: an `s32` grid lookup `D_800CA34C[(y >> 9) * D_800CAFF4 + (x >> 9)]`,
   the same shape as its `u8` neighbours `func_800C891C`/`func_800C8950`.

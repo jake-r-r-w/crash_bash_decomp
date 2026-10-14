@@ -1359,7 +1359,11 @@
   "status": "matched"
  },
  "80020C04": {
-  "auto_failed": "compile"
+  "auto_failed": "compile",
+  "blocked_at": "2026-10-14T12:39:31Z",
+  "note": "STAGE structure 16/19 (18 vs 19): retail has mult with no mflo and returns a; every dead-product form (u16/>>32 splits, long long <<32, unused local) folds the mult away too in 2.8.1, signed >>32 keeps one mflo; 2.5.7/2.6 keep partial dead code; next: cc1 -dc/-dl dump of the >>32 form, or check whether this region is another compiler",
+  "started": "2026-10-14T12:27:22Z",
+  "status": "blocked"
  },
  "80020C4C": {
   "matched_at": "2026-10-13T07:46:09Z",
