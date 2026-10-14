@@ -2888,6 +2888,193 @@ def cmd_splitvars(a):
             print("the variable as written scores best: nothing applied")
 
 
+AUTO_SYM = re.compile(r"^(?:D|jtbl|jlabel|L|func|B)_([0-9A-Fa-f]{8})$")
+
+
+def sym_addrs():
+    """name -> address from every configs/USA/sym.*.txt."""
+    out = {}
+    for p in glob.glob(f"{CFG}/sym.*.txt"):
+        for l in read(p).splitlines():
+            m = SYM_LINE.match(l)
+            if m:
+                out[m.group(1)] = int(m.group(2), 16)
+    return out
+
+
+def func_refs(funcs):
+    """key -> [[symbol, offset], ...] each function's asm refers to, and whether its global
+    stores go through $at (gcc 2.7.2 + ASPSX), cached in build/units.json against functions.json."""
+    path = "build/units.json"
+    stamp = [1, os.path.getmtime(P_FUNCS)]
+    c = jload(path, {})
+    if c.get("stamp") == stamp:
+        return c["refs"]
+    refs = {}
+    for k, e in funcs.items():
+        p = e.get("asm")
+        if not p or not os.path.exists(p):
+            continue
+        texts = parse_asm(p)[3]
+        refs[k] = {"syms": [s for t in texts for s in insn_syms(t)],
+                   "at": sum(1 for t in texts if "%lo(" in t and "($at)" in t),
+                   "lo": sum(1 for t in texts if "%lo(" in t)}
+    os.makedirs("build", exist_ok=True)
+    jsave(path, {"stamp": stamp, "refs": refs})
+    return refs
+
+
+def cmd_units(a):
+    """Evidence for splitting a C segment (main/main) into its original translation units. Each
+    object's .rodata is linked in the same order as its .text and follows its functions' order,
+    file-local statics are used by one run of functions, separate files keep separate copies of a
+    string literal, and the compiler's style can change at a file boundary (gcc 2.7.2 + ASPSX
+    stores globals through $at). Prints each kind of evidence and ranks the gaps between
+    neighbouring functions as boundary candidates."""
+    import yaml
+    proj, funcs = need_proj(), need_funcs()
+    syms = sym_names()
+    y = yaml.safe_load(read(f"{CFG}/main.yaml"))
+    seg = next(s for s in y["segments"] if isinstance(s, dict) and s.get("name") == "main")
+    subs = [s for s in seg["subsegments"] if isinstance(s, list)]
+    v = lambda rom: rom - seg["start"] + seg["vram"]
+    rng = {}
+    for i, s in enumerate(subs):
+        nxt = subs[i + 1][0] if i + 1 < len(subs) else None
+        if len(s) >= 3 and s[2] == a.seg and nxt:
+            rng[".rodata" if s[1] == ".rodata" else "text"] = (v(s[0]), v(nxt))
+    if "text" not in rng:
+        die(f"no c segment {a.seg} in main.yaml")
+    ro = rng.get(".rodata", (0, 0))
+    code_end = v(next(s[0] for s in subs if len(s) > 1 and str(s[1]).lstrip(".") == "rodata"))  # data starts here
+    fl = sorted(((k, e) for k, e in funcs.items() if e["seg"] == a.seg), key=lambda x: x[1]["rom"])
+    idx = {k: i for i, (k, _) in enumerate(fl)}
+    refs = func_refs(funcs)
+    addrs = sym_addrs()
+
+    def addr(name):
+        m = AUTO_SYM.match(name)
+        return int(m.group(1), 16) if m else addrs.get(name)
+    names = [cur_name(k, e, syms) for k, e in fl]
+    nf = len(fl)
+    gaps = [{"score": 0.0, "why": []} for _ in range(nf - 1)]     # gap i: between function i and i+1
+
+    # 1. compiler style
+    style = []
+    for k, _ in fl:
+        r = refs.get(k, {"at": 0, "lo": 0})
+        style.append("2.7.2" if r["at"] else ("2.8.1" if r["lo"] else None))
+    last = None
+    for i, s in enumerate(style):
+        if s and last and s != last[1]:
+            for g in range(last[0], i):
+                gaps[g]["score"] += 3 / (i - last[0])
+                gaps[g]["why"].append(f"style {last[1]} -> {s}")
+        if s:
+            last = (i, s)
+
+    # 2. rodata order: a function whose rodata comes before an earlier function's
+    ro_first, ro_max = {}, -1
+    users = {}                                               # address -> functions using it
+    for i, (k, _) in enumerate(fl):
+        mine = sorted({addr(n) + o for n, o in refs.get(k, {}).get("syms", []) if addr(n) is not None
+                       and ro[0] <= addr(n) + o < ro[1]})
+        for x in mine:
+            users.setdefault(x, set()).add(i)
+        if mine:
+            if mine[0] < ro_max:
+                gaps[i - 1]["score"] += 2
+                gaps[i - 1]["why"].append(f"rodata goes back ({mine[0]:08X} < {ro_max:08X})")
+            ro_max = max(ro_max, mine[-1])
+
+    # 3. file-local data: a symbol used only by a run of this segment's functions
+    used_by = {}
+    for k, r in refs.items():
+        for n, o in r["syms"]:
+            used_by.setdefault(n, set()).add(k)
+    windows = []
+    for n, ks in used_by.items():
+        x = addr(n)
+        if x is None or x < code_end or ro[0] <= x < ro[1] or not all(k in idx for k in ks):
+            continue
+        ii = sorted(idx[k] for k in ks)
+        if len(ii) >= 2 and ii[-1] - ii[0] <= a.window:
+            windows.append((ii[0], ii[-1], n))
+    for lo, hi, n in windows:
+        for g in range(lo, hi):
+            gaps[g]["score"] -= 0.5
+
+    # 4. duplicate string literals in this segment's rodata
+    with open(os.path.join("disc", proj["exe"]), "rb") as f:
+        exe = f.read()
+    rom = lambda va: va - seg["vram"] + seg["start"]
+    strs = {}
+    for x, us in users.items():
+        b = exe[rom(x):rom(x) + 256]
+        end = b.find(b"\0")
+        if end >= 3 and all(32 <= ch < 127 or ch in (9, 10) for ch in b[:end]):
+            strs.setdefault(b[:end], []).append((x, us))
+    dups = [(s, cs) for s, cs in strs.items() if len(cs) > 1]
+    for s, cs in dups:
+        cs = sorted(cs, key=lambda c: min(c[1]))
+        for (x1, u1), (x2, u2) in zip(cs, cs[1:]):
+            if max(u1) < min(u2):
+                span = range(max(u1), min(u2))
+                for g in span:
+                    gaps[g]["score"] += 2 / len(span)
+                    gaps[g]["why"].append(f"string {s[:24]!r} copied (users {max(u1)}|{min(u2)})")
+
+    # 5. rodata padded to 8 after a string: a new object's .rodata starting 8-aligned
+    xs = sorted(users)
+    for x, nx in zip(xs, xs[1:]):
+        b = exe[rom(x):rom(nx)]
+        end = b.find(b"\0")
+        if end < 3 or not all(32 <= ch < 127 or ch in (9, 10) for ch in b[:end]):
+            continue
+        a4 = (x + end + 1 + 3) & ~3
+        if nx == a4 + 4 and nx % 8 == 0 and not any(exe[rom(a4):rom(nx)]):
+            i1, i2 = max(users[x]), min(users[nx])
+            if i1 < i2:
+                for g in range(i1, i2):
+                    gaps[g]["score"] += 2 / (i2 - i1)
+                    gaps[g]["why"].append(f"rodata padded to 8 at {nx:08X}")
+
+    # clusters: overlapping file-local windows chain functions that must share a file
+    cover = [0] * (nf - 1)
+    for lo, hi, n in windows:
+        for g in range(lo, hi):
+            cover[g] += 1
+    clusters, start = [], None
+    for g in range(nf - 1):
+        if cover[g] and start is None:
+            start = g
+        if not cover[g] and start is not None:
+            clusters.append((start, g))
+            start = None
+    if start is not None:
+        clusters.append((start, nf - 1))
+
+    print(f"{a.seg}: {nf} functions, text {rng['text'][0]:08X}-{rng['text'][1]:08X}, rodata {ro[0]:08X}-{ro[1]:08X}")
+    print(f"style: " + ", ".join(f"{s} x{style.count(s)}" for s in ("2.8.1", "2.7.2", None)))
+    print(f"file-local data candidates (used by one run of <= {a.window} functions): {len(windows)}")
+    print(f"duplicate string literals: {len(dups)}")
+    print(f"clusters that probably share a file (chained file-local data): {len(clusters)}, covering "
+          f"{sum(hi - lo + 1 for lo, hi in clusters)} of {nf} functions; boundaries fall between them")
+    if a.clusters:
+        for lo, hi in clusters:
+            local = sorted({n for l2, h2, n in windows if lo <= l2 and h2 <= hi})
+            print(f"  {names[lo]} .. {names[hi]} ({hi - lo + 1} functions): {', '.join(local[:6])}"
+                  + (" ..." if len(local) > 6 else ""))
+    ranked = sorted(range(nf - 1), key=lambda g: -gaps[g]["score"])
+    print(f"\ntop boundary candidates (gap after function i; + style, rodata, strings; - statics spanning it):")
+    for g in ranked[:a.top]:
+        if gaps[g]["score"] <= 0:
+            break
+        k = fl[g + 1][0]
+        print(f"{gaps[g]['score']:5.1f}  {names[g]} | {names[g + 1]} @{v(fl[g + 1][1]['rom']):08X}  "
+              + "; ".join(sorted(set(gaps[g]["why"])))[:150])
+
+
 def cmd_block(a):
     funcs = need_funcs()
     key, e = find_func(funcs, a.func)
@@ -3680,6 +3867,12 @@ def main():
     p.add_argument("--contain", type=float, default=0.6, help="also list functions this share of which is inside NAME (in)")
     p.add_argument("--all", action="store_true", help="unmatched functions too (siblings to do together)")
     p.set_defaults(fn=cmd_similar)
+    p = sub.add_parser("units", help="evidence for splitting a C segment into its translation units")
+    p.add_argument("seg", nargs="?", default="main/main")
+    p.add_argument("--window", type=int, default=12, help="longest run of functions a file-local symbol may span")
+    p.add_argument("--top", type=int, default=25)
+    p.add_argument("--clusters", action="store_true", help="list each cluster and its file-local symbols")
+    p.set_defaults(fn=cmd_units)
     p = sub.add_parser("vars", help="which C variables the differing blocks' register swaps belong to")
     p.add_argument("func")
     p.add_argument("--all", action="store_true", help="also list every variable's register or stack slot")

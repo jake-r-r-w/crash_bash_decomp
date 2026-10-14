@@ -56,7 +56,13 @@ leads**, add any new gotcha, and add one short entry at the top of the
    moves functions, so workers' patches and big-mode checkpoints for them
    stop applying). Find the boundaries first and write the evidence in
    ARCHITECTURE.md: rodata order, alignment padding, file-local statics,
-   changes of compiler style (as at `0x8002D488`). Code in the wrong unit
+   changes of compiler style (as at `0x8002D488`). `decomp.py units
+   [--clusters]` collects that evidence: for `main/main` (2026-10-14) style
+   and strings give nothing (all 2.8.1, no duplicate literals), two places
+   where rodata goes back (after `func_80013488`, after `func_8002D178`),
+   and 25 clusters of functions sharing file-local data (183 of 566
+   functions: random, SFX voices, CD, pad, SEQ sound, ...), so boundaries
+   fall between clusters. Code in the wrong unit
    can't match, and the rodata batch failures came from `main.c`'s single
    rodata block.
 4. By hand: `decomp.py next --seg main/`, the MATCHING.md process (check
