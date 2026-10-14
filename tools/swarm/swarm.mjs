@@ -472,10 +472,22 @@ class Swarm {
     return this.bslots.length > 0 && (f.size >= this.o.bigBytes || !!this.history[f.key]?.big);
   }
 
-  // still worth a big session: under --big-sessions, and not --big-stale sessions in a row without progress
+  // still worth a big session: under --big-sessions, and not --big-stale sessions in a row without progress.
+  // --retry-failed gives a used-up function a fresh allowance for this run (counted from its first lease
+  // in it, see retryBase), not an unlimited one: the stale rule still parks it within the run
   bigLeft(f) {
     const h = this.history[f.key] || {};
-    return this.o.retryFailed || ((h.bigSessions || 0) < this.o.bigSessions && (h.bigStale || 0) < this.o.bigStale);
+    const base = this.bigBase?.[f.key];
+    if (this.o.retryFailed && base === undefined) return true;
+    return (h.bigSessions || 0) - (base || 0) < this.o.bigSessions && (h.bigStale || 0) < this.o.bigStale;
+  }
+
+  // the first lease of a function in a --retry-failed run: its sessions count from here, its streak restarts
+  retryBase(f) {
+    if (!this.o.retryFailed || (this.bigBase ||= {})[f.key] !== undefined) return;
+    const h = this.history[f.key] ||= { name: f.name, attempts: 0, notes: [] };
+    this.bigBase[f.key] = h.bigSessions || 0;
+    h.bigStale = 0;
   }
 
   // `big`: for a big-mode slot (big functions only), else for a normal slot (small ones only)
@@ -491,6 +503,8 @@ class Swarm {
     for (const f of cands) {
       if (this.finished.has(f.key) || keys.has(f.key) || (f.fp && fps.has(f.fp)) || this.nearBusy(f, busy)) continue;
       if (big ? !this.bigLeft(f) : (this.history[f.key]?.attempts || 0) >= this.o.maxAttempts && !this.o.retryFailed) continue;
+      if (peek) return big ? this.bigJob(f, 1, []) : { f, model: this.o.model, attempt: 1, notes: [] };
+      if (big) this.retryBase(f);
       return big ? this.bigJob(f, 1, []) : { f, model: this.o.model, attempt: 1, notes: [] };
     }
     return null;
@@ -718,13 +732,15 @@ Rules (they override the skill, CLAUDE.md and the docs):
   own Bash command, not chained. Read-only shell commands are fine. A refused command is never a
   reason to stop: do the same thing another way.
 - This session ends at ${new Date(Date.now() + this.o.bigMinutes * 60e3).toTimeString().slice(0, 5)} local time
-  (\`date +%H:%M\` shows the time now): use all of it. Don't finish with "progress" while there is
-  time left; after each improvement, go on to the next difference. Finish early only on a match, or
-  as "parked" when you are sure it can't match from this file. When you are killed at the deadline,
-  the C left in the file is measured as usual, so keep it compiling and at your best version after
-  each step (undo an experiment that made it worse before trying the next). Never put the
+  (\`date +%H:%M\` shows the time now): use all of it. Being killed at the deadline is the normal end
+  of a session, not a failure: the C left in the file is measured as usual. So never stop to wrap
+  up, and never because little time is left: one block edit and a regions check take about a
+  minute, so with any time left, work on the next differing block. Finish early only on a match,
+  or as "parked" when you are sure it can't match from this file. Keep the file compiling and at
+  your best version after each step (undo an experiment that made it worse before the next), and
+  write ${RESULT} early and update it as you go, so a kill loses nothing. Never put the
   INCLUDE_ASM line back.
-- Last, write ${RESULT} in the repo root, JSON:
+- Keep ${RESULT} in the repo root up to date (write it early, rewrite it after each improvement), JSON:
   {"status": "matched" | "progress" | ${canPermute ? '"needs_permute" | ' : ''}"parked",
    "note": "one line: what you changed this session and what still differs",
    "next": "one line: what the next session should try first",
@@ -831,7 +847,7 @@ Fix that, keep it matching, and report "matched".
     });
     p.on('error', err => this.log(`${slot.id} ${f.name}: could not start worker: ${err.message}`));
     this.log(`${slot.id} start ${f.name} (${f.size} bytes, ${job.model}, ${job.big
-      ? `big session ${job.attempt}${job.resumed ? `, from ${Swarm.describe(job.resumed)}` : ''}`
+      ? `big session ${(this.history[f.key]?.bigSessions || 0) + 1}${job.resumed ? `, from ${Swarm.describe(job.resumed)}` : ''}`
       : `attempt ${job.attempt}`})`);
   }
 
@@ -915,6 +931,24 @@ Fix that, keep it matching, and report "matched".
       fs.writeFileSync(file, patch);
       errs = this.checkPatch(patch, f);
       if (!errs.length) score = (await this.measure(slot.dir, f.name, slot.id, job.dir)).score;
+    }
+    // a checkpoint from before region scores: measure it once (in this slot, before it is freed),
+    // so it is compared by region score like the rest rather than by STAGE
+    const old = this.checkpoint(f.name);
+    if (old && !old.regions && score?.regions && this.stopping !== 'now') {
+      resetClone(slot.dir, job.base);
+      const cpFile = path.join(this.paths.checkpoints, f.name, 'best.diff');
+      if (git(slot.dir, 'apply', '--3way', '--whitespace=nowarn', cpFile).code) {
+        resetClone(slot.dir, job.base);
+        reapply(slot.dir, fs.readFileSync(cpFile, 'utf8'), f);
+      }
+      git(slot.dir, 'reset', '-q');
+      const m = (await this.measure(slot.dir, f.name, slot.id)).score;
+      if (m?.regions && m.stage === old.stage && m.diffs === old.diffs) {   // the same C as when it was saved
+        old.regions = m.regions;
+        writeJson(path.join(this.paths.checkpoints, f.name, 'best.json'), old);
+        this.log(`${slot.id} ${f.name}: checkpoint measured: ${Swarm.describe(old)}`);
+      }
     }
     fs.writeFileSync(path.join(job.dir, 'ab.json'), JSON.stringify({
       arm: this.regionsArm(f) ? 'regions' : 'control', resumed: job.resumed ? Swarm.describe(job.resumed) : null,

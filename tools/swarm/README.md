@@ -54,7 +54,12 @@ big function (>= --big-bytes, or parked in normal mode)
   "next" suggestion. Checkpoints persist across runs in `--dir`.
 - **When it stops:** after `--big-sessions` (6) sessions, or `--big-stale` (2) sessions in a row
   without progress, the function is parked and its best C stays in `checkpoints/`.
-  `--retry-failed` gives it more.
+  `--retry-failed` gives it a fresh allowance for that run: its streak restarts and up to
+  `--big-sessions` more, still parked after `--big-stale` stale sessions in a row (before
+  2026-10-14 it removed both limits, so a stuck function ran until the run ended).
+- **Old checkpoints:** one saved before region scores is measured once, after the next session on
+  that function, and compared by region score from then on (against `STAGE` it can drop a better
+  session, as it did for `func_80010488`).
 - **The regions prompt** (the default, `--regions all`): big sessions work block by block with
   `decomp.py regions` (fix the first differing block, re-run). `--regions f1,f2` limits it to
   those functions and gives the rest the older `STAGE` prompt, for an A/B (`--regions none`: no

@@ -301,6 +301,15 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-14 (swarm check, 5 min, $2.9):** 3 big functions with the new
+  tools. No errors or refused commands; workers used `regions` (no `make
+  diff`); sessions too short for similar/vars/splitvars. Fixed after it:
+  workers stopped with minutes left ("only 5 min"): the prompt now says a
+  kill at the deadline is normal and the result file is kept current;
+  `--retry-failed` ignored the stale rule (now a fresh allowance per run);
+  old checkpoints without a region score were compared by STAGE and
+  dropped `func_80010488`'s better session (now measured once; that
+  session saved by hand: 22/37 blocks); session numbers in the log agree.
 - **2026-10-14 (tooling):** five new `decomp.py` commands, each tested on
   `func_80019A60`: `similar` (matched functions by opcode 4-grams; ranks
   `func_8001EAA4`'s sibling first), `splitvars` (all groupings of a
