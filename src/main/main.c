@@ -4388,7 +4388,165 @@ void func_8001965C(void *arg0, void *arg1, void *arg2, u8 *arg3, GteSetup *arg4)
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80019A60);
+void func_80019A60(s32 a, u8 *set, s32 c, void *d) {
+    u8 *e;
+    void *p;
+    s32 *anim;
+    s32 *fr;
+    u8 *ia;
+    u8 *verts;
+    s32 idx;
+    SVECTOR v;
+    s32 entry;
+    s32 frame;
+    s16 xy[2];
+    s32 depth;
+    s16 *q;
+    s32 x;
+    s32 n;
+    u32 flags;
+    s32 col;
+    s32 g;
+    s32 otz;
+    u32 fog = 0x40000000;
+
+    depth = *(s16 *)((u8 *)d + 0x8A);
+    {
+        s32 on = (*(u32 *)d | c) & fog;
+        D_80056AC4 = depth;
+        if (on) {
+            s32 dp = *(s16 *)((u8 *)d + 0x76);
+            D_80056998.farColor = (s32 *)((u8 *)d + 0x78);
+            D_80056998.dp = dp;
+        }
+    }
+    if (a == 0xFFFF) {
+        return;
+    }
+    switch (a & 0x7000) {
+    case 0x1000:
+    case 0x4000:
+        entry = (a & 0xF80) >> 7;
+        if (entry >= *(s32 *)(set + 0x40)) {
+            return;
+        }
+        e = set + (*(s32 *)(set + 0x44) + 0x44) + entry * 0x18;
+        anim = func_80015AB0((s32 *)a, e);
+        if (c < 0) {
+            frame = *(s16 *)((u8 *)d + 0x72);
+        } else {
+            frame = a & 0x7F;
+        }
+        if (frame >= *(s32 *)(e + 8)) {
+            return;
+        }
+        if (anim == NULL) {
+            return;
+        }
+        e += *(s32 *)(e + 0xC) + 0xC;
+        fr = (s32 *)((u8 *)anim + (frame * 16 + 4));
+        if (c & 0x400000) {
+            e = set + ((*(u16 *)((u8 *)d + 0x8E) & 0xFFF) * 0x34 + 0x24);
+        }
+        if (fr[0] == 0) {
+            return;
+        }
+        ia = (u8 *)fr + fr[0] + 0x14;
+        if (anim[0] != 0) {
+            verts = (u8 *)anim + anim[0];
+        } else {
+            verts = set + (*(s32 *)(set + 0x28) + 0x28);
+        }
+        if (c < 0 && (n = *(u16 *)((u8 *)d + 0x70)) != 0) {
+            s32 off;
+            s32 *nx = (s32 *)((u8 *)anim + (frame * 16 + 0x14));
+            s32 end = fr[6];
+            s32 start = fr[2];
+            s32 t;
+
+            if (end == 0) {
+                end = 0x1000;
+            }
+            t = n * (end - start);
+            if (t < 0) {
+                t += 0xFFFF;
+            }
+            n = t >> 16;
+            n += start;
+            if (nx[1] != 0) {
+                off = nx[1] + 4;
+            } else {
+                off = nx[0];
+            }
+            p = (u8 *)nx + off;
+            func_8001C0F0(n, (MorphModel *)e, (u16 *)ia,
+                          (u16 *)((u8 *)p + 0x14), (s16 (*)[3])verts);
+        } else if (fr[2] != 0) {
+            func_8001C0F0(fr[2], (MorphModel *)e, (u16 *)ia,
+                          (u16 *)((u8 *)(fr + 1) + fr[1] + 0x14), (s16 (*)[3])verts);
+        } else {
+            func_8001C1E0(e, (u16 *)ia, verts, (u16 *)D_80056AC8);
+        }
+        ModelEntry_Draw(e, c, D_80056AC8);
+        return;
+    case 0x2000:
+        idx = a & 0xFFF;
+        if (*(s32 *)(set + 0x54) < idx) {
+            return;
+        }
+        e = set + (idx * 0x34 + 0x24);
+        goto block;
+    case 0x5000:
+        e = (u8 *)func_800159C4(a & 0xFFFF, set);
+        if (e == NULL) {
+            return;
+        }
+    block:
+        set = e + (*(s32 *)(e + 0x10) + 0x10);
+        if (!(c & 0x1000000) && !func_8001AF2C(set)) {
+            return;
+        }
+        p = func_80019094(e, c);
+        set += 0x14;
+    draw:
+        if (p != NULL) {
+            func_800193A8(p, (SVECTOR *)set, e + (*(s32 *)(e + 0x14) + 0x14));
+        }
+        return;
+    case 0x3000:
+        memset(&v, 0, 8);
+        gte_ldv0(&v);
+        gte_rtps();
+        q = xy;
+        gte_stsxy(q);
+        x = xy[0] * 640 / D_8005B698->w;
+        flags = *(u32 *)d;
+        g = ((flags & 0x21) != 0) << 31;
+        g |= (((s32)flags >> 5) & 3) << 24;
+        e = (u8 *)(x & 0xFFFF);
+        e = (u8 *)((s32)e | ((u16)q[1] << 17));
+        if (flags & fog) {
+            idx = *(u16 *)((u8 *)d + 0x76) >> 4;
+            idx &= 0xFF;
+            col = idx | (idx << 8) | (idx << 16);
+        } else {
+            col = 0x808080;
+        }
+        g |= col;
+        otz = 1;
+        if (c & 0x2000000) {
+            otz = *(s16 *)((u8 *)d + 0x68);
+        }
+        if ((u32)otz < (u32)D_80056998.otLen) {
+            func_80029D28((SpriteFrame *)(*(u8 **)((u8 *)D_80056998.unk0 + 0x18) + (a & 0xFFF) * 0x38),
+                          (s32)e, otz, g);
+        }
+        return;
+    default:
+        printf("UNKNOWN FRAME NUM %X\n", a);
+        return;
+    }
+}
 
 void func_80019F1C(u8 *arg0, u8 *arg1, s32 arg2) {
     GteSetup s;
@@ -4420,7 +4578,7 @@ void func_80019F1C(u8 *arg0, u8 *arg1, s32 arg2) {
                     gte_SetTransVector(s.trans);
                 }
                 gte_SetRotMatrix(s.rot);
-                func_80019A60(n, (s32)colors, *(s32 *)arg0 | arg2, arg0);
+                func_80019A60(n, (u8 *)colors, *(s32 *)arg0 | arg2, arg0);
             }
         }
     }
@@ -5551,7 +5709,6 @@ s32 func_8001DD20(s32 *arg0) {
 
 
 extern void func_8001D894(void *a, void *b, s32 c, s32 d);
-extern void func_80019A60(u16 a, s32 b, s32 c, void *d);
 void func_8001DD50(void *arg0, void *arg1) {
     s32 flags;
     s32 x;
@@ -5560,7 +5717,7 @@ void func_8001DD50(void *arg0, void *arg1) {
     x = *(s32 *)(*(u8 **)((u8 *)arg0 + 0x6C) + 0xC);
     if ((flags & 0x8000) && x != 0) {
         func_8001D894(arg0, arg1, flags, x);
-        func_80019A60(*(u16 *)((u8 *)arg0 + 0x74), x, *(s32 *)arg0, arg0);
+        func_80019A60(*(u16 *)((u8 *)arg0 + 0x74), (u8 *)x, *(s32 *)arg0, arg0);
     }
 }
 

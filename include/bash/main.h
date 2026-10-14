@@ -644,7 +644,7 @@ void func_8001C008(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc);
 void func_8001C0F0(s32 p, MorphModel *model, u16 *ia, u16 *ib, s16 (*verts)[3]);
 void func_8001965C(void *arg0, void *arg1, void *arg2, u8 *arg3, GteSetup *out);
 void func_8001CD04(void *arg0, void *arg1, void *arg2);
-void func_80019A60(u16 a, s32 b, s32 c, void *d);
+void func_80019A60(s32 a, u8 *set, s32 c, void *d);
 typedef struct RotScale {
     /* 0x00 */ SVECTOR rot;
     /* 0x08 */ u8 pad8[8];
@@ -1264,6 +1264,16 @@ typedef struct {
     ModelEntry entries[1]; /* 0x24, stride 0x34 */
 } ModelSet;
 void func_800193A8(POLY_GT3 *poly, SVECTOR *v, u8 *runs);
+extern s32 D_80056AC4; /* func_80019A60: the object's +0x8A */
+
+/* func_80019A60: draw model entry e with vertices v. */
+static inline void ModelEntry_Draw(u8 *e, s32 c, SVECTOR *v) {
+    void *p = func_80019094(e, c);
+
+    if (p != NULL) {
+        func_800193A8(p, v, e + (*(s32 *)(e + 0x14) + 0x14));
+    }
+}
 extern u8 D_80053694[];
 typedef struct Words3 {
     s32 w0;
