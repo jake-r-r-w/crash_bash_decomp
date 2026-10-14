@@ -18,5 +18,14 @@ extern volatile u8 *D_80067878; /* CD command register */
 extern volatile u8 *D_8006787C; /* CD parameter FIFO */
 extern volatile u8 *D_80067880; /* CD interrupt flag register */
 extern u8 D_80067884[];
+extern u8 D_8006788C[]; /* CD response buffer */
+
+typedef struct CdResult {
+    u8 status;
+    u8 unk1;
+} CdResult;
+extern s32 D_80067898;
+
+s32 func_8002DE2C(s32 arg0);
 
 #endif /* BASH_8002D488_H */
