@@ -27,4 +27,28 @@ INCLUDE_ASM("asm/nonmatchings/main/8002d488", func_8002D4F4);
 
 INCLUDE_ASM("asm/nonmatchings/main/8002d488", func_8002DE2C);
 
-INCLUDE_ASM("asm/nonmatchings/main/8002d488", func_8002E000);
+void func_8002E000(s32 arg0) {
+    s32 i;
+    s32 off;
+
+    i = 0;
+    *D_80067874 = 1;
+    *D_80067880 = 7;
+    do {
+        *(s32 *)0 = i;
+        i++;
+    } while (i < 4);
+    *D_80067874 = 1;
+    *D_8006787C = 0x18;
+    *D_80067874 = 0;
+    off = arg0 * 4;
+    i = 0;
+    if (D_8006783C[off + 1] != 0) {
+        do {
+            *D_8006787C = D_80067884[i];
+            i++;
+        } while (i < D_8006783C[off + 1]);
+    }
+    *D_80067874 = 0;
+    *D_80067878 = D_8006783C[arg0 * 4];
+}

@@ -2617,7 +2617,8 @@
   "auto_failed": "types"
  },
  "8002E000": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-14T10:40:36Z",
+  "status": "matched"
  },
  "8002E0F0": {
   "auto_diff": 88,
