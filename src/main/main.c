@@ -11502,7 +11502,44 @@ void func_8002BD98(SeqSlot *slot, s32 idx) {
     SsSetMute(0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002BEA8);
+void func_8002BEA8(void) {
+    SeqSlot *slot = &D_8006557C;
+    s32 next = D_8006559C;
+    s32 cur = D_800655A4;
+    s32 vol;
+
+    if (next != cur || D_800655A8 != 0) {
+        s32 t = D_800655A0;
+
+        if (t != 0 || cur == -1) {
+            D_800655A0 = t - 1;
+            if (D_800655A0 == 0 || cur == -1) {
+                D_800655A8 = 0;
+                D_800655A0 = 0;
+                if (next != -1) {
+                    func_8002BD98(slot, next);
+                }
+                D_800655A4 = D_8006559C;
+            }
+        } else {
+            D_800655A0 = 10;
+            func_8002C248(20);
+        }
+    } else {
+        if (slot->seq >= 0) {
+            vol = (*(s32 *)D_8005A604 * 0x7F) / 100;
+            if (D_800655B4 != vol || D_800655AC != D_800655B0) {
+                if (D_800655AC != 0) {
+                    SeqSlot_SetVol(slot, (*(s32 *)D_8005A604 * 0x55) / 100);
+                } else {
+                    SeqSlot_SetVol(slot, vol);
+                }
+            }
+        }
+        D_800655B0 = D_800655AC;
+        D_800655B4 = (*(s32 *)D_8005A604 * 0x7F) / 100;
+    }
+}
 
 void func_8002C060(void) {
     D_8006557C.data = 0;

@@ -511,6 +511,11 @@ typedef struct SeqSlot {
     /* 0x1C */ s32 unk1C;                /* set to -1 on close */
 } SeqSlot;
 
+/* Set both channels of slot's sequence volume (func_8002BEA8). */
+static inline void SeqSlot_SetVol(SeqSlot *slot, s32 vol) {
+    SsSeqSetVol((s16)slot->seq, (s16)vol, (s16)vol);
+}
+
 /* The offsets at the start of the loaded sound data. */
 typedef struct {
     s32 body;
@@ -795,6 +800,7 @@ extern s32 D_80064414;
 extern s32 D_800569AC;
 extern s32 D_8006559C;
 extern s32 D_800655A4;
+extern s32 D_800655A0;
 extern s32 D_800655B4;
 extern s32 D_800655AC;
 extern void *D_80051240;
