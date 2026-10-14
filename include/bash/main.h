@@ -49,6 +49,11 @@ typedef struct {
     s32 v[3];
 } CamVec3;
 
+/* A 0x20-byte block func_8001FE80 copies whole. */
+typedef struct {
+    s32 v[8];
+} Blk32;
+
 /* A 0x28-byte camera key in the track func_8001EDFC walks; it interpolates
  * from one key to the next. */
 typedef struct CamKey {
@@ -2470,5 +2475,7 @@ static inline subengine *MapEnv_GetSubs(MapEnvHead *env) {
 }
 
 void func_8001D6B4(MapEnvHead *env);
+
+u8 *func_8001FE80(u8 *arg0, s32 arg1, Blk32 *arg2, CamVec3 *arg3, s32 arg4, u8 * *arg5);
 
 #endif /* BASH_MAIN_H */

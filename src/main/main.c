@@ -6617,7 +6617,69 @@ void func_8001FCDC(u8 *arg0, u8 *arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001FE80);
+u8 *func_8001FE80(u8 *arg0, s32 arg1, Blk32 *arg2, CamVec3 *arg3, s32 arg4, u8 **arg5) {
+    u8 *p;
+    u8 *e;
+    u8 *hdr;
+    s32 *t;
+    s32 *q;
+    s32 i;
+    u8 *prev;
+    u8 *n;
+    void (*fn)(s32 *, u8 *, s32);
+
+    if (*(u8 **)(arg0 + 0xC) == NULL) {
+        return NULL;
+    }
+    n = D_80058B74;
+    if (n != NULL) {
+        D_80058B74 = *(u8 **)(n + 0x74);
+        if (D_80058B78 != NULL) {
+            *(u8 **)((u8 *)D_80058B78 + 0x70) = n;
+        }
+        prev = D_80058B78;
+        *(u8 **)(n + 0x70) = NULL;
+        D_80058B78 = n;
+        *(u8 **)(n + 0x74) = prev;
+    }
+    p = n;
+    if (p != NULL) {
+        *(CamVec3 *)(p + 0x20) = *arg3;
+        *(Blk32 *)(p + 0x4C) = *arg2;
+        *(s32 *)(p + 0x1C) = 0x8000;
+        p[0x6D] = 4;
+        p[0x6C] = 0;
+        *(s16 *)(p + 0x6E) = 0;
+        e = *(u8 **)(arg0 + 0xC);
+        hdr = NULL;
+        if (e != NULL) {
+            s32 *r = (s32 *)(e + (*(s32 *)(e + 0x4C) + 0x4C)) + arg1;
+            hdr = (u8 *)r + *r;
+        }
+        *(s32 *)(p + 0x14) = arg4;
+        *(u8 **)(p + 0x0) = arg0;
+        *(s32 *)(p + 0x4) = arg1;
+        *(s32 *)(p + 0x8) = 0;
+        *(s32 *)(p + 0xC) = 0;
+        *(s16 *)(p + 0xE) = *(s16 *)(hdr + 0xC);
+        *(s32 *)(p + 0x10) = *(s32 *)(hdr + 0x8);
+        *(u8 ***)(p + 0x18) = arg5;
+        if (arg5 != NULL) {
+            *arg5 = p;
+        }
+        t = (s32 *)(hdr + 0x1C);
+        for (i = 0; i < *(s32 *)hdr; i++) {
+            q = (s32 *)((u8 *)t + *t);
+            fn = (void (*)(s32 *, u8 *, s32))D_80058B00[*q].unk0;
+            if (fn != NULL) {
+                fn(q, p, i);
+            }
+            t++;
+        }
+        func_80020064(p);
+    }
+    return p;
+}
 
 s32 func_80020064(u8 *arg0) {
     u8 *s;

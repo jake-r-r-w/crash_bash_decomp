@@ -1343,7 +1343,8 @@
   "status": "matched"
  },
  "8001FE80": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-14T19:04:24Z",
+  "status": "matched"
  },
  "80020064": {
   "matched_at": "2026-10-13T20:39:25Z",
