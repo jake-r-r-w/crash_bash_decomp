@@ -3,7 +3,7 @@
 
 Runs inside the toolchain container:
     tools/dk make replay [REC=tools/replay/recordings/battle.txt]        retail vs build disc
-    tools/dk python3 tools/replay/replay.py run DISC.cue REC [-o trace] [--shot N ...]
+    tools/dk python3 tools/replay/replay.py run DISC.cue REC [-o trace] [--shot N ...] [--video out.mp4]
     tools/dk python3 tools/replay/replay.py compare A.cue B.cue REC [--syms-b build/main.elf]
 
 The emulator is the PCSX-ReARMed libretro core, driven headless through ctypes: no window, no
@@ -69,6 +69,12 @@ class Variable(C.Structure):
 
 class GameInfo(C.Structure):
     _fields_ = [("path", C.c_char_p), ("data", C.c_void_p), ("size", C.c_size_t), ("meta", C.c_char_p)]
+
+
+class AvInfo(C.Structure):
+    _fields_ = [("base_width", C.c_uint), ("base_height", C.c_uint), ("max_width", C.c_uint),
+                ("max_height", C.c_uint), ("aspect_ratio", C.c_float), ("fps", C.c_double),
+                ("sample_rate", C.c_double)]
 
 
 def die(msg):
@@ -161,8 +167,9 @@ class Emu:
         self.pixfmt = 2          # RGB565 until the core says otherwise
         self.buttons = 0
         self.frame = None        # (bytes, width, height, bytes per pixel) of the last image
-        self.cbs = [ENV_CB(self._env), VIDEO_CB(self._video), AUDIO_CB(lambda l, r: None),
-                    AUDIO_BATCH_CB(lambda d, n: n), POLL_CB(lambda: None), STATE_CB(self._input)]
+        self.audio = None        # a list collecting s16 stereo samples, when recording a video
+        self.cbs = [ENV_CB(self._env), VIDEO_CB(self._video), AUDIO_CB(self._sample),
+                    AUDIO_BATCH_CB(self._samples), POLL_CB(lambda: None), STATE_CB(self._input)]
         L = self.lib
         L.retro_set_environment(self.cbs[0])
         L.retro_set_video_refresh(self.cbs[1])
@@ -181,6 +188,9 @@ class Emu:
         self.ram = L.retro_get_memory_data(MEM_SYSTEM_RAM)
         if not self.ram or L.retro_get_memory_size(MEM_SYSTEM_RAM) < RAM_SIZE:
             die("the core exposes no system RAM")
+        av = AvInfo()
+        L.retro_get_system_av_info(C.byref(av))
+        self.fps, self.sample_rate = av.fps, av.sample_rate
 
     def _env(self, cmd, data):
         cmd &= 0xFFFF   # drop RETRO_ENVIRONMENT_EXPERIMENTAL
@@ -215,6 +225,15 @@ class Emu:
         if pitch != row:
             raw = b"".join(raw[y * pitch:y * pitch + row] for y in range(h))
         self.frame = (raw, w, h, bpp)
+
+    def _sample(self, left, right):
+        if self.audio is not None:
+            self.audio.append(struct.pack("<hh", left, right))
+
+    def _samples(self, data, frames):
+        if self.audio is not None:
+            self.audio.append(C.string_at(data, frames * 4))
+        return frames
 
     def _input(self, port, device, index, id_):
         return (self.buttons >> id_) & 1 if port == 0 and device == 1 else 0
@@ -255,9 +274,57 @@ class Emu:
                     + chunk(b"IDAT", zlib.compress(rows, 6)) + chunk(b"IEND", b""))
 
 
+class Video:
+    """An MP4 of a run: every image scaled to one size (the PS1 changes resolution between screens),
+    piped to ffmpeg; the sound is muxed in at the end."""
+    W, H = 640, 480
+
+    def __init__(self, path, emu):
+        import numpy
+        self.np, self.path, self.emu = numpy, path, emu
+        self.tmp = path + ".noaudio.mp4"
+        self.ff = subprocess.Popen(
+            ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24",
+             "-s", f"{self.W}x{self.H}", "-r", f"{emu.fps:.4f}", "-i", "-", "-c:v", "libx264",
+             "-pix_fmt", "yuv420p", "-crf", "20", self.tmp], stdin=subprocess.PIPE)
+        self.maps = {}
+        emu.audio = []
+
+    def add(self):
+        np, f = self.np, self.emu.frame
+        if not f:
+            img = np.zeros((self.H, self.W, 3), np.uint8)
+        else:
+            raw, w, h, bpp = f
+            if bpp == 2:
+                p = np.frombuffer(raw, "<u2").reshape(h, w).astype(np.uint32)
+                r, g, b = (p >> 11) & 31, (p >> 5) & 63, p & 31
+                rgb = np.stack([(r << 3) | (r >> 2), (g << 2) | (g >> 4), (b << 3) | (b >> 2)], -1)
+            else:
+                rgb = np.frombuffer(raw, np.uint8).reshape(h, w, 4)[:, :, 2::-1]
+            if (w, h) not in self.maps:
+                self.maps[(w, h)] = (np.arange(self.H) * h // self.H, np.arange(self.W) * w // self.W)
+            ys, xs = self.maps[(w, h)]
+            img = rgb.astype(np.uint8)[ys][:, xs]
+        self.ff.stdin.write(img.tobytes())
+
+    def close(self):
+        self.ff.stdin.close()
+        self.ff.wait()
+        wav = self.path + ".s16"
+        with open(wav, "wb") as f:
+            f.write(b"".join(self.emu.audio))
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", self.tmp, "-f", "s16le", "-ar",
+                        str(round(self.emu.sample_rate)), "-ac", "2", "-i", wav, "-c:v", "copy",
+                        "-c:a", "aac", "-b:a", "160k", "-shortest", self.path], check=True)
+        os.remove(self.tmp)
+        os.remove(wav)
+
+
 # ---------------------------------------------------------------- commands
 
-def play(disc, rec, syms, trace, shots=(), stop=None, shot_dir="build/replay", bios_dir=None, tag=None):
+def play(disc, rec, syms, trace, shots=(), stop=None, shot_dir="build/replay", bios_dir=None, tag=None,
+         video=None, start=0):
     """Run the recording on disc, writing one trace line per frame; returns the frame count."""
     values = resolve(load_values(VALUES), load_syms(syms))
     steps = load_recording(rec)
@@ -265,6 +332,7 @@ def play(disc, rec, syms, trace, shots=(), stop=None, shot_dir="build/replay", b
     stop = total if stop is None else min(stop, total)
     shots = set(shots)
     emu = Emu(disc, bios_dir)
+    vid = None
     tag = tag or os.path.splitext(os.path.basename(disc))[0]
     os.makedirs(shot_dir, exist_ok=True)
     frame = 0
@@ -273,13 +341,21 @@ def play(disc, rec, syms, trace, shots=(), stop=None, shot_dir="build/replay", b
         for n, mask in steps:
             for _ in range(n):
                 if frame >= stop:
-                    return frame
+                    break
                 emu.run_frame(mask)
                 frame += 1
+                if video and frame > start:
+                    vid = vid or Video(video, emu)
+                    vid.add()
                 vals = " ".join(f"{emu.read(o, s, sg):X}" for _, o, s, sg in values)
                 out.write(f"{frame} {emu.image_hash()} {vals}\n")
                 if frame in shots:
                     emu.screenshot(f"{shot_dir}/{tag}_{frame:06d}.png")
+            else:
+                continue
+            break
+    if vid:
+        vid.close()
     return frame
 
 
@@ -296,7 +372,8 @@ def first_diff(ta, tb):
 def cmd_run(a):
     trace = a.output or f"build/replay/{os.path.splitext(os.path.basename(a.disc))[0]}.trace"
     os.makedirs(os.path.dirname(trace), exist_ok=True)
-    n = play(a.disc, a.rec, a.syms, trace, a.shot, a.frames, bios_dir=a.bios_dir, tag=a.tag)
+    n = play(a.disc, a.rec, a.syms, trace, a.shot, a.frames, bios_dir=a.bios_dir, tag=a.tag,
+             video=a.video, start=a.video_from)
     print(f"{a.disc}: {n} frames -> {trace}")
 
 
@@ -342,6 +419,8 @@ def main():
     r.add_argument("--shot", type=int, action="append", default=[], help="save a PNG of this frame")
     r.add_argument("--frames", type=int, help="stop after this many frames")
     r.add_argument("--bios-dir")
+    r.add_argument("--video", help="also record the run as this MP4, with sound")
+    r.add_argument("--video-from", type=int, default=0, help="start the video after this frame")
     r.add_argument("--tag", help="screenshot name prefix (default: the disc's name)")
     r.set_defaults(func=cmd_run)
     c = sub.add_parser("compare", help="play a recording on two discs, report the first difference")

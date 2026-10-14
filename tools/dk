@@ -5,7 +5,7 @@
 # Works from Linux, macOS, WSL and Git Bash on Windows (Claude Code's shell there).
 set -euo pipefail
 
-IMAGE="${PSX_DECOMP_IMAGE:-psx-decomp:2}"
+IMAGE="${PSX_DECOMP_IMAGE:-psx-decomp:3}"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 if ! command -v docker >/dev/null 2>&1; then
