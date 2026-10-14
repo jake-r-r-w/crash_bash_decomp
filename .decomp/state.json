@@ -1721,7 +1721,8 @@
   "auto_failed": "diff"
  },
  "80024AD8": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-14T13:10:44Z",
+  "status": "matched"
  },
  "80024E30": {
   "auto_diff": 84,

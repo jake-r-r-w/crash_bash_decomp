@@ -968,6 +968,29 @@ extern void *D_80058B78;
 extern RECT D_8005B640;
 extern void *D_80058B74;
 extern void *D_80058AD0;
+/* A map trigger record (func_80024AD8): position, then a word whose low 2
+ * bits are the cast and the rest the offset from +0xC to its info. */
+typedef struct MapTrigRec {
+    /* 0x00 */ SLONG_XYZ pos;
+    /* 0x0C */ s32 info;
+} MapTrigRec;
+typedef struct MapTrigInfo {
+    /* 0x00 */ u16 type;
+    /* 0x02 */ u16 flags;   /* 0x4000: a camera/point, not a NAS */
+    /* 0x04 */ s32 slot;
+    /* 0x08 */ SLONG_XYZ rot;
+} MapTrigInfo;
+typedef struct MapPoint {
+    /* 0x00 */ SLONG_XYZ pos;
+    /* 0x0C */ SLONG_XYZ rot;
+} MapPoint;
+typedef struct U16Table {
+    /* 0x00 */ u16 *data;
+    /* 0x04 */ u16 count;
+} U16Table;
+extern void *D_8005A5E0;
+extern void (*D_8005AA88)(NASTrigger *, s32);
+extern MapPoint D_8005B2B8[32];
 /* A button-combo sequence: steps[] are pad masks, 0-terminated. */
 typedef struct ComboSeq {
     /* 0x00 */ void (*fn)(void);
@@ -2114,6 +2137,8 @@ NAS *func_80022C3C(s32 x, s32 y, s32 z, u16 id, s32 slot);
 s16 func_80024008(s16 x, u8 *s);
 
 void func_800246D0(GlyphPos *arg0, u8 *s, s32 arg2, s32 arg3);
+
+void func_80024AD8(void);
 
 s32 func_8002578C(NAS *nas);
 

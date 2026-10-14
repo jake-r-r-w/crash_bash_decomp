@@ -7922,7 +7922,71 @@ void func_800246D0(GlyphPos *arg0, u8 *s, s32 arg2, s32 arg3) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800248A0);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80024AD8);
+void func_80024AD8(void) {
+    EXTengine tmp;
+    s32 pad[2];
+    U16Table *tbl;
+    u16 *types;
+    s32 ntypes;
+    s32 i;
+    NASTrigger *t;
+    NASTrigger *trig;
+    MapTrigRec *src;
+    MapTrigInfo *info;
+    s32 idx;
+
+    tmp = EngineTemplate;
+    tbl = *(U16Table **)((u8 *)D_8005A5E0 + 8);
+    types = tbl->data;
+    ntypes = tbl->count;
+    if ((D_8005AA4C = (*(s32 *)D_80058AD0 != 0) ? **(s32 **)((u8 *)D_80058AD0 + 0x30) : 0) == 0) {
+        return;
+    }
+    if (D_8005AA48 == NULL) {
+        D_8005AA48 = (NASTrigger *)func_80011654(D_8005AA4C * sizeof(NASTrigger), &D_8004E0F0);
+    }
+    t = D_8005AA48;
+    if (t != NULL) {
+    for (i = 0; i < 32; i++) {
+        D_8005B2B8[i].pos.x = D_8005B2B8[i].pos.y = D_8005B2B8[i].pos.z = 0;
+        D_8005B2B8[i].rot.x = D_8005B2B8[i].rot.y = D_8005B2B8[i].rot.z = 0;
+    }
+    trig = D_8005AA48;
+    for (i = 0; i < D_8005AA4C; i++, trig++) {
+        src = (MapTrigRec *)(*(u8 **)((u8 *)D_80058AD0 + 0x30) + 4) + i;
+        info = (MapTrigInfo *)((u8 *)src + ((src->info & ~3) + 0xC));
+        trig->InfoStruct = (MapTriggerInfo *)info;
+        if (info->flags & 0x4000) {
+            D_8005B2B8[info->slot].pos = src->pos;
+            D_8005B2B8[info->slot].rot.x = info->rot.x;
+            D_8005B2B8[info->slot].rot.y = info->rot.y;
+            D_8005B2B8[info->slot].rot.z = info->rot.z;
+            trig->TrigXYZ = *(SLONG_XYZ *)&src->pos;
+            trig->Status = 0x8000;
+            trig->cast = *(u16 *)&src->info & 3;
+        } else {
+            *(s32 *)&trig->TrigPath = 0x1FF;
+            trig->cast = *(u16 *)&src->info & 3;
+            if (!(src->info & 3)) {
+                trig->TrigXYZ = *(SLONG_XYZ *)&src->pos;
+            }
+            idx = info->type;
+            if (idx >= 0 && idx < ntypes) {
+                trig->Type = types[idx];
+            } else {
+                trig->Type = 0;
+            }
+            trig->Status = (info->flags & 0xF7FF) << 4;
+            trig->StartUp = *(u16 *)&info->slot;
+        }
+    }
+    if (D_8005AA88 != NULL) {
+        D_8005AA88(D_8005AA48, D_8005AA4C);
+    }
+    } else {
+        D_8005AA4C = 0;
+    }
+}
 
 ScriptCursor *func_80024E30(NAS *nas, ScriptInit *init) {
     ScriptCursor *c;
