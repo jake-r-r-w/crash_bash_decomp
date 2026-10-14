@@ -1347,8 +1347,15 @@ Fix that, keep it matching, and report "matched".
         }
         git(dir, 'reset', '-q');   // a --3way apply stages its result; keep the diff below simple
       }
-      const before = (await this.measure(dir, name, slot)).score;
-      if (!before) return this.log(`${name}: no C to start from (no checkpoint, still INCLUDE_ASM, or it doesn't build); skipped`);
+      const { score: before, out: beforeOut } = await this.measure(dir, name, slot);
+      if (!before) {
+        // say why: a checkpoint that stopped building (a later match declared something it also
+        // declares, differently) needs a big session to port it, not the permuter
+        const why = /BUILD FAILED/.test(beforeOut)
+          ? `its C no longer builds on this base (${(beforeOut.match(/^\s*line \d+ of preprocessed .*$/m) || ['see try'])[0].trim().slice(0, 140)}); a big session must port it`
+          : /STILL-ASM/.test(beforeOut) ? 'no C (still INCLUDE_ASM, no checkpoint)' : beforeOut.trim().split('\n').pop().slice(0, 140);
+        return this.log(`${name}: skipped: ${why}`);
+      }
       this.log(`${name}: starting from ${Swarm.describe(before)}${cp ? ' (checkpoint)' : ''}`);
       const r = await this.dk(dir, ['python3', 'tools/scripts/decomp.py', 'permute', name, '--minutes', String(minutes), '--differing',
                                     '--jobs', String(jobs), '--apply-best'], slot, { cpus: jobs, minutes: minutes + 10 });
