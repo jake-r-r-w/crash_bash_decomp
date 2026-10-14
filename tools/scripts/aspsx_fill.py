@@ -1,4 +1,6 @@
-"""Fill j/jr delay slots the way Sony's ASPSX does, on maspsx output (stdin -> stdout).
+"""Make maspsx output look like Sony's ASPSX for gcc 2.7.2 units (stdin -> stdout).
+
+1. Fill j/jr delay slots the way ASPSX does.
 
 gcc 2.7.2 leaves `j` (and the `j $31` return) in reorder mode for the assembler to fill.
 maspsx puts a nop there; ASPSX moves the instruction before the jump into the slot, and for
@@ -7,6 +9,14 @@ a store to a symbol (a two-instruction macro) it moves the second half:
     sw  $2,D_8006EA24          lui $at,%hi(D_8006EA24)
     j   $L1             ->     j   $L1
     nop                        sw  $2,%lo(D_8006EA24)($at)
+
+2. Expand an indexed load from a symbol through the load's own register, not $at. ASPSX (like
+GNU as) builds the address in the destination unless it is also the index register; maspsx
+always uses $at:
+
+    lbu $2,D_8006789E($3)      lui  $2,%hi(D_8006789E)       (maspsx: lui $at; addu $at,$at,$3;
+                        ->     addu $2,$2,$3                  lbu $2,%lo(D_8006789E)($at))
+                               lbu  $2,%lo(D_8006789E)($2)
 
 Only units built with gcc 2.7.2 use this (Makefile: ASPSX_FILL)."""
 import re
@@ -40,6 +50,28 @@ def fits16(v):
     except ValueError:
         return False
     return -0x8000 <= n <= 0xFFFF
+
+
+LOADS = {"lw", "lh", "lhu", "lb", "lbu"}
+LUI_AT = re.compile(r"^\s*lui\s+\$at,\s*%hi\(([^)]+)\)\s*$")
+ADDU_AT = re.compile(r"^\s*addu\s+\$at,\s*\$at,\s*(\$\w+)\s*$")
+LOAD_AT = re.compile(r"^\s*(\w+)\s+(\$\w+),\s*%lo\(([^)]+)\)\(\$at\)\s*$")
+
+
+def load_via_dest(lines):
+    """Rewrite `lui $at; addu $at,$at,rI; lX rD,%lo(sym)($at)` to use rD in place of $at."""
+    out = list(lines)
+    for i in range(len(out) - 2):
+        a, b, c = LUI_AT.match(out[i]), ADDU_AT.match(out[i + 1]), LOAD_AT.match(out[i + 2])
+        if not (a and b and c) or c.group(1) not in LOADS or c.group(3) != a.group(1):
+            continue
+        rd, ri = c.group(2), b.group(1)
+        if rd in (ri, "$0", "$zero"):
+            continue
+        out[i] = f"lui\t{rd},%hi({a.group(1)})"
+        out[i + 1] = f"addu\t{rd},{rd},{ri}"
+        out[i + 2] = f"{c.group(1)}\t{rd},%lo({a.group(1)})({rd})"
+    return out
 
 
 def fill(lines):
@@ -83,4 +115,4 @@ def fill(lines):
 
 if __name__ == "__main__":
     text = sys.stdin.read().split("\n")
-    sys.stdout.write("\n".join(fill(text)))
+    sys.stdout.write("\n".join(fill(load_via_dest(text))))

@@ -20,8 +20,7 @@ void func_8002E25C(u8 *str, TextPos *pos, s32 arg2) {
     startX = pos->x;
     for (base = str; str < base + len; str++) {
         c = *str;
-        if (c == '
-') {
+        if (c == '\n') {
             pos->x = startX;
             pos->y += 18;
         } else if (D_8006EA24 == 0) {
