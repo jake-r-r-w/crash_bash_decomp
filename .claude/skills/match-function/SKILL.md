@@ -46,7 +46,8 @@ the host has no Python. In Git Bash loops, pass `</dev/null` to `tools/dk`.
      reasoning which items you tried;
    - for register differences, the cc1 dump ("Why does a register differ?").
    - the `registers` stage: the permuter doesn't fix structure.
-   Then run `tools/dk make permute FUNC=NAME MINUTES=10`. When it finds
+   Then run `tools/dk make permute FUNC=NAME MINUTES=10` (for a big function add
+   `ARGS=--differing`: only the C of the blocks that differ). When it finds
    something, port it by hand and add the general rule as a row in the
    "Diff patterns" table. If it still doesn't match, restore the `INCLUDE_ASM` line, keep the attempt
    under `#ifndef NON_MATCHING ... #endif`, run

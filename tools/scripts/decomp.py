@@ -1043,14 +1043,10 @@ def c_lines(src, name, cfg):
     return out
 
 
-def cmd_regions(a):
+def region_score(key, e, proj, name, src, want_lines=True):
+    """Build src and score NAME block by block: (res, lines, tw, ttext, cw, ctext) with lines the
+    compiled index -> source line map (None without want_lines or when -g changes the code)."""
     import regions
-    proj, funcs = need_proj(), need_funcs()
-    key, e = find_func(funcs, a.func)
-    name = cur_name(key, e, sym_names())
-    src = e.get("src") or locate_def(name)
-    if not src or still_asm(src, name, e["name"], e["orig"]):
-        die(f"{name}: no C for it yet (still INCLUDE_ASM?)")
     obj = f"build/{src}.o"
     if os.path.exists(obj):
         os.remove(obj)
@@ -1068,13 +1064,31 @@ def cmd_regions(a):
     nt, nc = trim_nops(tw), trim_nops(cw)
     tw, ttext, cw, ctext = tw[:nt], ttext[:nt], cw[:nc], ctext[:nc]
     res = regions.score(tw, cw, ttext, relocs, vram, asm_labels(e["asm"], vram))
-    lines = None if a.no_lines else c_lines(src, name, mk_config())
+    lines = c_lines(src, name, mk_config()) if want_lines else None
+    return res, lines, tw, ttext, cw, ctext
+
+
+def block_span(b, lines):
+    """(first, last) source line of a block's compiled instructions, or None."""
+    if not lines or b["cstart"] is None:
+        return None
+    ls = sorted({lines[c] for c in range(b["cstart"], b["cend"]) if lines.get(c)})
+    return (ls[0], ls[-1]) if ls else None
+
+
+def cmd_regions(a):
+    proj, funcs = need_proj(), need_funcs()
+    key, e = find_func(funcs, a.func)
+    name = cur_name(key, e, sym_names())
+    src = e.get("src") or locate_def(name)
+    if not src or still_asm(src, name, e["name"], e["orig"]):
+        die(f"{name}: no C for it yet (still INCLUDE_ASM?)")
+    res, lines, tw, ttext, cw, ctext = region_score(key, e, proj, name, src, not a.no_lines)
+    nt, nc = len(tw), len(cw)
 
     def span(b):
-        if not lines or b["cstart"] is None:
-            return ""
-        ls = sorted({lines[c] for c in range(b["cstart"], b["cend"]) if lines.get(c)})
-        return f"L{ls[0]}" + (f"-{ls[-1]}" if len(ls) > 1 else "") if ls else ""
+        s = block_span(b, lines)
+        return "" if not s else f"L{s[0]}" + (f"-{s[1]}" if s[1] != s[0] else "")
 
     bad = [k for k, b in enumerate(res["blocks"]) if b["status"] != "ok"]
     print(f"{'#':>4} {'target':<13} {'len':>4} {'status':<9} {'exact':>7}  C")
@@ -2864,6 +2878,56 @@ def apply_permuter_best(key, e, proj, name, src, out_dir, n0):
         print(f"PERMUTE-RESULT {name} kept before {n0} after {n1}")
 
 
+DECL_LINE = re.compile(r"^\s*(?!return\b|goto\b|case\b|else\b)(?:(?:const|volatile|unsigned|signed|struct\s+\w+|\w+)\s+)+"
+                       r"\**\s*\w+\s*(\[[^\]]*\])?\s*(=[^;]*)?;\s*$")
+
+
+def perm_wrap(body, spans):
+    """Wrap the function body's lines in each (first, last) span (0-based, inside the body) in
+    PERM_RANDOMIZE(...), widened to whole statements, so the permuter only edits there. Spans are
+    kept off the declarations and the closing brace, and merged when they overlap."""
+    lines = body.split("\n")
+    first = 1
+    while first < len(lines) and (not lines[first].strip() or DECL_LINE.match(lines[first])):
+        first += 1
+    last = len(lines) - 1
+    while last > 0 and lines[last].strip() != "}":
+        last -= 1
+    ends = (";", "{", "}", ":")
+    out = []
+    for lo, hi in sorted(spans):
+        lo, hi = max(lo, first), min(hi, last - 1)
+        if lo > hi:
+            continue
+        for _ in range(400):
+            depth, low = 0, 0
+            for ch in "\n".join(lines[lo:hi + 1]):
+                depth += (ch == "{") - (ch == "}")
+                low = min(low, depth)
+            if low < 0 and lo > first:              # closes a block opened above: take it in
+                lo -= 1
+            elif depth > low and hi < last - 1:     # opens a block it doesn't close
+                hi += 1
+            elif not lines[hi].rstrip().endswith(ends) and hi < last - 1:
+                hi += 1
+            elif lo > first and lines[lo - 1].strip() and not lines[lo - 1].rstrip().endswith(ends):
+                lo -= 1
+            elif hi < last - 1 and re.match(r"\s*(\}\s*)?else\b", lines[hi + 1]):
+                hi += 1
+            elif re.match(r"\s*(\}\s*)?else\b", lines[lo]) and lo > first:
+                lo -= 1
+            else:
+                break
+        if out and lo <= out[-1][1] + 1:
+            out[-1] = (out[-1][0], max(hi, out[-1][1]))
+        else:
+            out.append((lo, hi))
+    for lo, hi in reversed(out):
+        lines[hi] += "\n)"
+        lines[lo] = "PERM_RANDOMIZE(\n" + lines[lo]
+    return "\n".join(lines), out
+
+
 def cmd_permute(a):
     proj, funcs = need_proj(), need_funcs()
     key, e = find_func(funcs, a.func)
@@ -2875,6 +2939,22 @@ def cmd_permute(a):
         die(f"no C definition of {name} found - write a first attempt in its source file")
     if not os.path.exists(e.get("asm", "")):
         die("function asm missing - run `make split`")
+    if a.block or a.lines or a.differing:
+        # only edit the C of the blocks that differ (or the given lines): PERM_RANDOMIZE regions
+        text = read(src)
+        line0 = text.count("\n", 0, func_def_regex(name).search(text).start()) + 1
+        spans = [tuple(int(x) for x in s.split("-")) for s in (a.lines or [])]
+        if a.block or a.differing:
+            res, lines, *_ = region_score(key, e, proj, name, src)
+            if not lines:
+                die("no C line map for the blocks (the -g build failed); use --lines A-B")
+            want = set(a.block or []) | ({k for k, b in enumerate(res["blocks"]) if b["status"] != "ok"}
+                                         if a.differing else set())
+            spans += [s for k in sorted(want) if k < len(res["blocks"]) for s in [block_span(res["blocks"][k], lines)] if s]
+        body, wrapped = perm_wrap(body, [(lo - line0, hi - line0) for lo, hi in spans])
+        if not wrapped:
+            die("no statements to randomize in those blocks/lines")
+        print("randomizing only " + ", ".join(f"L{lo + line0}-{hi + line0}" for lo, hi in wrapped))
     d = f"build/permuter/{name}"
     jobs = a.jobs or max(1, (os.cpu_count() or 2) - 1)
     base_c = permuter_base(src, [], body, name)
@@ -3567,6 +3647,10 @@ def main():
     p.add_argument("--jobs", type=int)
     p.add_argument("--apply-best", action="store_true",
                    help="put the best result in the source if try improves (else restore it)")
+    p.add_argument("--differing", action="store_true",
+                   help="only randomize the C of the blocks `regions` says differ")
+    p.add_argument("--block", type=int, action="append", help="only randomize this block's C (repeatable)")
+    p.add_argument("--lines", action="append", help="only randomize source lines A-B (repeatable)")
     p.set_defaults(fn=cmd_permute)
     p = sub.add_parser("block", help="park a function with a note")
     p.add_argument("func")

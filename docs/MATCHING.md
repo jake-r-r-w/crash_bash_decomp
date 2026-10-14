@@ -100,8 +100,14 @@ block by block over several sessions, keeping the best C between them:
   grouping of VAR's assignments and ranks them by region score (`--apply`
   writes the best; give the new `VAR_N` real names after). It found
   `func_80019A60`'s last 3 blocks in 10 s.
-- **Permute late and narrow.** Only at the `registers` stage, with a long
-  run (an hour, or overnight), and on the region that differs where you can.
+- **Permute late and narrow.** Only at the `registers` stage, and only on
+  the C that differs: `decomp.py permute NAME --differing` (`make permute
+  FUNC=NAME ARGS=--differing`) wraps the C lines of the blocks `regions`
+  says differ in `PERM_RANDOMIZE`, widened to whole statements, so the
+  permuter edits nothing else (`--block N`, `--lines A-B` to pick).
+  On `func_80019A60`'s block 0 it matched in about a minute; the
+  whole-function run had needed 15 to find the same fix. The swarm uses it
+  for big functions.
 - **Keep the best C between sessions.** By hand: `decomp.py block NAME
   --note "<REGIONS line>; next: ..."` with the C under `#ifndef
   NON_MATCHING`, so the next session starts from it. In the swarm, big mode

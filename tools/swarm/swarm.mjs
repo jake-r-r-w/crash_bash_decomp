@@ -994,7 +994,8 @@ Fix that, keep it matching, and report "matched".
       fs.rmSync(path.join(ps.dir, 'build', 'permuter', f.name), { recursive: true, force: true });
       const mins = job.big ? this.o.bigPermuteMinutes : this.o.permuteMinutes;
       this.log(`${ps.id} permuting ${f.name} for ${mins} min (${this.permCpus} cpus)`);
-      const r = await this.dk(ps.dir, ['make', 'permute', `FUNC=${f.name}`, `MINUTES=${mins}`], ps.id,
+      // a big function: only the C of the blocks that differ (decomp.py permute --differing)
+      const r = await this.dk(ps.dir, ['make', 'permute', `FUNC=${f.name}`, `MINUTES=${mins}`, ...(job.big ? ['ARGS=--differing'] : [])], ps.id,
                               { cpus: this.permCpus, minutes: mins + 20 });
       fs.writeFileSync(path.join(job.dir, 'permute.txt'), r.out);
       if (this.stopping) {          // a stop cuts permuter runs short: no worker would port the result
@@ -1302,7 +1303,7 @@ Fix that, keep it matching, and report "matched".
       const before = (await this.measure(dir, name, slot)).score;
       if (!before) return this.log(`${name}: no C to start from (no checkpoint, still INCLUDE_ASM, or it doesn't build); skipped`);
       this.log(`${name}: starting from ${Swarm.describe(before)}${cp ? ' (checkpoint)' : ''}`);
-      const r = await this.dk(dir, ['python3', 'tools/scripts/decomp.py', 'permute', name, '--minutes', String(minutes),
+      const r = await this.dk(dir, ['python3', 'tools/scripts/decomp.py', 'permute', name, '--minutes', String(minutes), '--differing',
                                     '--jobs', String(jobs), '--apply-best'], slot, { cpus: jobs, minutes: minutes + 10 });
       const res = r.out.match(/^PERMUTE-RESULT \S+ (\w+) before (\S+)(?: after (\S+))?/m);
       if (!res) return this.log(`${name}: the permuter didn't finish (${r.timedOut ? 'killed' : r.out.trim().split('\n').pop()})`);

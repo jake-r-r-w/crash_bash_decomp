@@ -183,8 +183,8 @@ diff:
 
 MINUTES ?= 15
 permute:
-	@test -n "$(FUNC)" || { echo "usage: make permute FUNC=name [MINUTES=15]"; exit 2; }
-	@$(DECOMP) permute $(FUNC) --minutes $(MINUTES)
+	@test -n "$(FUNC)" || { echo "usage: make permute FUNC=name [MINUTES=15] [ARGS=--differing]"; exit 2; }
+	@$(DECOMP) permute $(FUNC) --minutes $(MINUTES) $(ARGS)
 
 progress:
 	@$(DECOMP) progress
