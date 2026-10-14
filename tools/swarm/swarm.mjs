@@ -11,6 +11,7 @@
 // Runs on the host (Node, no dependencies): it launches `claude` and `tools/dk`, which can't
 // run inside the toolchain container.
 import { spawn, spawnSync } from 'node:child_process';
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -174,10 +175,17 @@ function makeClone(dir, src, rev, log) {
     target = rev;
   }
   gitOk(dir, 'checkout', '-q', '-f', '--detach', target);
-  if (fs.existsSync(path.join(dir, '.git', 'swarm-data'))) return;
+  // asm/ and linkers/ are splat's output, so they go stale when the symbols or yamls change (a
+  // symbol split adds an .s file the clone's copy lacks): copy again when their fingerprint differs.
+  const stampFile = path.join(dir, '.git', 'swarm-data');
+  const fp = splatFingerprint();
+  if (fs.existsSync(stampFile) && fs.readFileSync(stampFile, 'utf8').includes(fp)) return;
   log(`copying game data into ${path.basename(dir)}`);
-  for (const d of DATA_DIRS)
-    if (fs.existsSync(path.join(REPO, d))) fs.cpSync(path.join(REPO, d), path.join(dir, d), { recursive: true });
+  for (const d of DATA_DIRS) {
+    if (!fs.existsSync(path.join(REPO, d))) continue;
+    if (d === 'asm' || d === 'linkers') fs.rmSync(path.join(dir, d), { recursive: true, force: true });
+    fs.cpSync(path.join(REPO, d), path.join(dir, d), { recursive: true });
+  }
   fs.mkdirSync(path.join(dir, 'disc'), { recursive: true });
   for (const f of fs.readdirSync(path.join(REPO, 'disc'))) {
     const p = path.join(REPO, 'disc', f), s = fs.statSync(p);
@@ -185,7 +193,19 @@ function makeClone(dir, src, rev, log) {
   }
   const drafts = path.join(REPO, 'build', 'auto_drafts');
   if (fs.existsSync(drafts)) fs.cpSync(drafts, path.join(dir, 'build', 'auto_drafts'), { recursive: true });
-  fs.writeFileSync(path.join(dir, '.git', 'swarm-data'), stamp() + '\n');
+  fs.writeFileSync(stampFile, `${stamp()} ${fp}\n`);
+}
+
+// what splat's output in REPO was made from: configs/USA's sym and rel files and yamls
+function splatFingerprint() {
+  const h = crypto.createHash('sha1');
+  for (const sub of ['configs/USA', 'configs/USA/overlays']) {
+    const d = path.join(REPO, sub);
+    if (!fs.existsSync(d)) continue;
+    for (const f of fs.readdirSync(d).sort())
+      if (/\.(txt|yaml)$/.test(f)) h.update(f).update(fs.readFileSync(path.join(d, f)));
+  }
+  return 'splat:' + h.digest('hex').slice(0, 16);
 }
 
 // this checkout's tools/dk (labels, --cpus) in a clone; never committed (done commits src/ include/
@@ -1075,7 +1095,7 @@ Fix that, keep it matching, and report "matched".
     return true;
   }
 
-  // --resume RUN: matches an earlier run verified with `try` but stopped before gating go straight
+  // --resume RUN[,RUN...]: matches an earlier run verified with `try` but stopped before gating go straight
   // to the gate (still unmatched ones only: the queue lists those)
   resumeFrom(runId) {
     const byName = new Map(this.queue.map(f => [f.name, f]));
@@ -1160,7 +1180,7 @@ Fix that, keep it matching, and report "matched".
     try {
       this.setupInteg();
       await this.refreshQueue();
-      if (this.o.resume) this.resumeFrom(String(this.o.resume));
+      if (this.o.resume) for (const id of String(this.o.resume).split(',')) this.resumeFrom(id.trim());
       const nbig = this.queue.filter(f => this.isBig(f)).length;
       this.log(`run ${this.id}: ${this.o.workers} workers, ${this.o.bigWorkers} big, ${this.o.permuters} permuters, ` +
                `${this.queue.length} candidates (${nbig} big: >= ${this.o.bigBytes} B or escalated)` +

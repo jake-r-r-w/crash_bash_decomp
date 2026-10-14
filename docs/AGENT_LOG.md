@@ -141,6 +141,12 @@ Other:
 ## Gotchas
 
 **Tooling**
+- **Swarm clones and splat output.** Clones get `asm/` and `linkers/` copied
+  from this checkout; since 2026-10-14 they are copied again when
+  `configs/USA`'s sym/rel files or yamls change (a fingerprint in the clone's
+  `.git/swarm-data`). Run `make split` here after such a change, before a
+  swarm run: the clones copy this checkout's `asm/`. Before the fix, a symbol
+  split made every gate fail ("can't open asm/nonmatchings/.../func_X.s").
 - **Toolchain image tag.** A change to `tools/docker/Dockerfile` needs the tag
   in `tools/dk` and `tools/dk.ps1` bumped (now `psx-decomp:3`), or machines
   that already have the image keep the old one. `tools/dk` builds a missing
