@@ -1010,30 +1010,26 @@ def asm_labels(path, vram):
 
 
 def c_lines(src, name, cfg):
-    """Compiled instruction index -> source line, from a -g build of `src` (None if -g changes the
-    code or the build fails). cc1 reads cpp's output, so its lines are offset from the source's."""
+    """Compiled instruction index -> source line, from a -g build of `src` (None if the build
+    fails). cpp runs without -P here, so its line markers give cc1 the real file and lines (-P
+    squeezes blank lines, so an offset from the function's first line drifts). Code inlined from
+    a header maps to None."""
     os.makedirs("build/regions", exist_ok=True)
     cfg = unit_cfg(cfg, src)
     g = int(cfg.get("GVAL", "0"))
     o = f"build/regions/{name}.o"
     cmd = pipeline(src, o, cfg["CC_VER"], f"{cfg['OPT_FLAGS']} {cfg.get('EXTRA_CC1FLAGS', '')} -g".strip(), g,
                    re.sub(r"\s*-G\d+", "", cfg.get("MASPSX_ARGS", DEFAULT_MASPSX)), post_filters(cfg))
+    cmd = re.sub(r"^(\S*cpp\b[^|]*?)\s-P\b", r"\1", cmd, count=1)
     if run("set -o pipefail; " + cmd).returncode:
         return None
-    rx = func_def_regex(name)
-    defs = []
-    for text in (run([X + "cpp", *make_flags("CPPFLAGS"), src]).stdout, read(src)):
-        m = rx.search(text)
-        if not m:
-            return None
-        defs.append(text.count("\n", 0, m.start()))
-    pp_def, src_def = defs
     r = run([X + "objdump", "-dl", f"--disassemble={name}", o])
     out, line, base = {}, None, None
+    want = os.path.basename(src)
     for l in r.stdout.splitlines():
-        m = re.match(r"^\S*stdin:(\d+)", l)
+        m = re.match(r"^(\S+):(\d+)(?: \(discriminator \d+\))?$", l)
         if m:
-            line = int(m.group(1)) - 1 - pp_def + src_def + 1
+            line = int(m.group(2)) if os.path.basename(m.group(1)) == want else None
             continue
         m = OBJ_LINE.match(l)
         if m:
@@ -1074,6 +1070,97 @@ def block_span(b, lines):
         return None
     ls = sorted({lines[c] for c in range(b["cstart"], b["cend"]) if lines.get(c)})
     return (ls[0], ls[-1]) if ls else None
+
+
+REG_NAMES = ["zero", "at", "v0", "v1", "a0", "a1", "a2", "a3", "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7",
+             "s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "t8", "t9", "k0", "k1", "gp", "sp", "fp", "ra"]
+
+
+def var_homes(src, name, cfg):
+    """{variable: home} for NAME's parameters and locals, from cc1 -g's ECOFF .def lines: a
+    register name, or "sp+N" for a stack slot. Block-scoped locals are included."""
+    cfg = unit_cfg(cfg, src)
+    cmd = (f"{X}cpp {' '.join(make_flags('CPPFLAGS'))} {src} | {GCC_ROOT}/{cfg['CC_VER']}/cc1 -quiet "
+           f"{cfg['OPT_FLAGS']} {cfg.get('EXTRA_CC1FLAGS', '')} -G{cfg.get('GVAL', '0')} -g")
+    out = run(cmd).stdout
+    m = re.search(rf"^{re.escape(name)}:\s*$(.*?)^\s*\.end\s+{re.escape(name)}\b", out, re.M | re.S)
+    homes = {}
+    for d in re.finditer(r"\.def\s+(\w+);\s*\.val\s+(-?\d+);\s*\.scl\s+(\d+);", m.group(1) if m else ""):
+        var, val, scl = d.group(1), int(d.group(2)), int(d.group(3))
+        if scl in (4, 17) and 0 <= val < 32:               # register local, register parameter
+            homes[var] = REG_NAMES[val]
+        elif scl in (1, 9):                                 # auto, argument on the stack
+            homes[var] = f"sp{val:+d}"
+    return homes
+
+
+def reg_fields(w):
+    """The register fields an instruction uses: rs, rt (and rd for SPECIAL)."""
+    f = [(w >> 21) & 31, (w >> 16) & 31]
+    if w >> 26 == 0:
+        f.append((w >> 11) & 31)
+    return f
+
+
+def cmd_vars(a):
+    """Which C variables the register differences of the differing blocks belong to: each
+    block's compiled -> target register swaps, the variables cc1 put in the compiled register,
+    and of those the ones the block's C lines name. One variable wanting different registers in
+    different blocks is a split (`splitvars`)."""
+    proj, funcs = need_proj(), need_funcs()
+    key, e = find_func(funcs, a.func)
+    name = cur_name(key, e, sym_names())
+    src = e.get("src") or locate_def(name)
+    if not src or still_asm(src, name, e["name"], e["orig"]):
+        die(f"{name}: no C for it yet (still INCLUDE_ASM?)")
+    res, lines, tw, _, cw, _ = region_score(key, e, proj, name, src)
+    homes = var_homes(src, name, mk_config())
+    if not homes:
+        die("no variable homes from cc1 -g (no .def lines for this function)")
+    if a.all:
+        by = {}
+        for v, h in homes.items():
+            by.setdefault(h, []).append(v)
+        print("homes: " + "; ".join(f"{h}: {', '.join(vs)}" for h, vs in sorted(by.items())))
+    src_lines = read(src).split("\n")
+    pairs, exact = res["pairs"], res["exact_map"]
+    wants = {}                                              # var -> {target reg: [blocks]}
+    for k, b in enumerate(res["blocks"]):
+        if b["status"] == "ok":
+            continue
+        swaps = {}
+        for t in range(b["start"], b["end"]):
+            c = pairs.get(t)
+            if c is None or exact.get(t):
+                continue
+            for tf, cf in zip(reg_fields(tw[t]), reg_fields(cw[c])):
+                if tf != cf:
+                    swaps[(cf, tf)] = swaps.get((cf, tf), 0) + 1
+        span = block_span(b, lines)
+        text = "\n".join(src_lines[span[0] - 1:span[1]]) if span else ""
+        where = f"L{span[0]}-{span[1]}" if span else "?"
+        print(f"block {k} ({b['status']}, {where}):")
+        if not swaps:
+            print("  no register swaps (opcodes or immediates differ)")
+        for (cf, tf), n in sorted(swaps.items(), key=lambda x: -x[1]):
+            creg, treg = REG_NAMES[cf], REG_NAMES[tf]
+            held = [v for v, h in homes.items() if h == creg]
+            named = [v for v in held if re.search(rf"\b{re.escape(v)}\b", text)]
+            for v in named:
+                wants.setdefault(v, {}).setdefault(treg, []).append(k)
+            others = ", ".join(v for v in held if v not in named)
+            if named:
+                who = ", ".join(named) + (f" (also in {creg}: {others})" if others else "")
+            else:
+                who = f"in {creg}: {others}" if held else "a temporary"
+            print(f"  {creg} -> {treg} x{n}: {who}")
+    for v, ts in wants.items():
+        here = homes.get(v)
+        blocks = sorted({k for ks in ts.values() for k in ks})
+        if len(blocks) > 1 or len(ts) > 1:
+            want = ", ".join("%s (blocks %s)" % (t, ", ".join(map(str, ks))) for t, ks in ts.items())
+            print(f"{v} is in {here} but the target wants {want}: if {v} keeps {here} in the blocks "
+                  f"that match, the original had several variables: `decomp.py splitvars {name} {v}`")
 
 
 def cmd_regions(a):
@@ -3593,6 +3680,10 @@ def main():
     p.add_argument("--contain", type=float, default=0.6, help="also list functions this share of which is inside NAME (in)")
     p.add_argument("--all", action="store_true", help="unmatched functions too (siblings to do together)")
     p.set_defaults(fn=cmd_similar)
+    p = sub.add_parser("vars", help="which C variables the differing blocks' register swaps belong to")
+    p.add_argument("func")
+    p.add_argument("--all", action="store_true", help="also list every variable's register or stack slot")
+    p.set_defaults(fn=cmd_vars)
     p = sub.add_parser("splitvars", help="try splitting a local into several variables, scored by regions")
     p.add_argument("func")
     p.add_argument("var")

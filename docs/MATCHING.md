@@ -105,9 +105,9 @@ block by block over several sessions, keeping the best C between them:
   FUNC=NAME ARGS=--differing`) wraps the C lines of the blocks `regions`
   says differ in `PERM_RANDOMIZE`, widened to whole statements, so the
   permuter edits nothing else (`--block N`, `--lines A-B` to pick).
-  On `func_80019A60`'s block 0 it matched in about a minute; the
-  whole-function run had needed 15 to find the same fix. The swarm uses it
-  for big functions.
+  On `func_80019A60`'s block 0 it found the match in 2 of 4 runs of 2-3
+  minutes; the whole-function run needed 15 minutes to get part of the way.
+  It is random, so rerun a miss. The swarm uses it for big functions.
 - **Keep the best C between sessions.** By hand: `decomp.py block NAME
   --note "<REGIONS line>; next: ..."` with the C under `#ifndef
   NON_MATCHING`, so the next session starts from it. In the swarm, big mode
@@ -434,7 +434,16 @@ order. Note which ones you tried.
 
 ## Why does a register differ?
 
-Dump the compiler's register allocation for the file:
+Start with `tools/dk python3 tools/scripts/decomp.py vars NAME`. For each
+block `regions` says differs, it lists the register swaps (compiled `a1`
+where the target has `v1`), the C variables cc1 put in the compiled
+register (from the ECOFF `.def` lines of a `-g` build), and of those the
+ones the block's C lines name (`--all` lists every variable's register or
+stack slot). When one variable wants a different register in several
+blocks, it says so and points to `splitvars`.
+
+For the reason behind a choice, dump the compiler's register allocation for
+the file:
 
 ```sh
 tools/dk sh -c 'mipsel-linux-gnu-cpp -P -nostdinc -undef -Iinclude -Iext/psyq47/include -D__GNUC__=2 -D_LANGUAGE_C -DPSX -DGVAL=0 src/main/main.c > x.i && /opt/gcc/2.8.1-psx/cc1 -quiet -O2 -G0 -dl -dg -o x.s x.i'

@@ -672,8 +672,10 @@ aligned) is the structure, insns (exact) the rest. The loop:
 2. Re-run regions. Keep a change if blocks or paired went up; undo it if it broke blocks that were
    ok. A register change can cascade into later blocks, so judge by paired and the block list
    together, not insns alone.
-3. Repeat. When regions shows only "operands" blocks, use the cc1 dump and the Diff patterns'
-   register rows. If one variable sits in different registers in different blocks, run
+3. Repeat. When regions shows only "operands" blocks, run \`tools/dk python3 tools/scripts/decomp.py
+   vars ${f.name} </dev/null\`: it names the C variable behind each block's register swap. Then the
+   Diff patterns' register rows and the cc1 dump. If one variable sits in different registers in
+   different blocks, run
    \`tools/dk python3 tools/scripts/decomp.py splitvars ${f.name} VAR </dev/null\`: it tries every
    grouping of VAR's assignments into separate variables and ranks them (\`--apply\` writes the
    best; give the new VAR_N real names).
