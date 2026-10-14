@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 805/2551 game functions matched (main.exe ~539/575, 35 left), 8 parked,
+- 806/2551 game functions matched (main.exe ~540/575, 34 left), 8 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
@@ -309,6 +309,10 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-14 (by hand, `func_80028D40`, 488 B, no permuter):** matched
+  from the checkpoint (17/122). The uv low byte is a `u16 : 8` bitfield
+  (`TexUV.f`), the 8-bit tpage is `getTPage(1, 1, x >> 7 << 7, y)`, and the
+  clut id goes through `cl = &set->cluts[i]`.
 - **2026-10-14 (by hand, `func_80013D54`, 496 B, no permuter):** matched
   from the swarm checkpoint (6/124, a yz/zz register swap). The nine
   rounded products share one temp: `t = FIX12_MUL(..); var = t;`. Found
