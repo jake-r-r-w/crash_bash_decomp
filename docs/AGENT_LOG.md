@@ -291,6 +291,15 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-14 (swarm A/B, 30 min):** `--regions` arm vs control, 3
+  size-matched pairs of fresh 828-868 B main functions, one 25-min big
+  session each, $7.78. 4/6 matched (2 per arm: `func_80020344`,
+  `func_80024AD8` regions; `func_8001A0D8`, `func_80029F9C` control).
+  Left: `func_8001EAA4` (regions arm, paired 213/214, one missing move after
+  the key-search loop; checkpoint kept) and `func_80010488` (control, paired
+  187/208). Inconclusive: too easy, n too small, and every session quit
+  after 2-9 min of its 25. Next round: harder functions (900+ B or parked),
+  several sessions each, and tell big workers to use their time.
 - **2026-10-14 (tooling: regions):** new `decomp.py regions NAME`
   (tools/scripts/regions.py, tests in tools/scripts/tests): aligned,
   block-by-block score with C lines. Re-scored 22 saved swarm patches:
