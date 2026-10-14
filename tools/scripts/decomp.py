@@ -2520,6 +2520,28 @@ def permute_run(d, name, e, base_c, cfg, jobs, seconds):
     return best, path, (int(m.group(1)) if m else None), log
 
 
+def apply_permuter_best(key, e, proj, name, src, out_dir, n0):
+    """--apply-best: put the permuter's best version of the function in src (it's the preprocessed
+    text, so macros come back expanded), and keep it only if `try` gets fewer differences than
+    n0 (or a match); else src is restored. Ends with one line for tools/swarm:
+    PERMUTE-RESULT NAME kept|reverted before N0 after N1 (N1 0 = match)."""
+    new = extract_function(read(f"{out_dir}/source.c"), name)
+    text = read(src)
+    old = extract_function(text, name)
+    if not new or not old:
+        print(f"PERMUTE-RESULT {name} reverted before {n0} after ? (function not found in "
+              f"{'the permuter output' if not new else src})")
+        return
+    write(src, text.replace(old, new, 1))
+    ok, n1 = check_function(key, e, proj, name)
+    n1 = 0 if ok else n1
+    if n1 is None or (n0 is not None and n1 >= n0):
+        write(src, text)
+        print(f"PERMUTE-RESULT {name} reverted before {n0} after {n1}")
+    else:
+        print(f"PERMUTE-RESULT {name} kept before {n0} after {n1}")
+
+
 def cmd_permute(a):
     proj, funcs = need_proj(), need_funcs()
     key, e = find_func(funcs, a.func)
@@ -2536,11 +2558,17 @@ def cmd_permute(a):
     base_c = permuter_base(src, [], body, name)
     if base_c is None:
         die(f"could not preprocess {name} for the permuter - does `try {name}` build?")
+    n0 = check_function(key, e, proj, name, quiet=True)[1] if a.apply_best else None
     best, path, base, log = permute_run(d, name, e, base_c, unit_cfg(cfg, src), jobs, a.minutes * 60)
     if path is None:
         print(f"permuter found no improvement{f' (base score {base})' if base is not None else ''}; log {d}/log.txt")
         if base is None:
             print(tail(log, 6))
+        if a.apply_best:
+            print(f"PERMUTE-RESULT {name} unchanged before {n0}")
+        return
+    if a.apply_best:
+        apply_permuter_best(key, e, proj, name, src, path, n0)
         return
     print(f"permuter best score {best}{f' (base {base})' if base is not None else ''}: {path}/source.c"
           + ("  <- MATCH, apply this function's changes and run try" if best == 0 else ""))
@@ -3193,6 +3221,8 @@ def main():
     p.add_argument("func")
     p.add_argument("--minutes", type=int, default=15)
     p.add_argument("--jobs", type=int)
+    p.add_argument("--apply-best", action="store_true",
+                   help="put the best result in the source if try improves (else restore it)")
     p.set_defaults(fn=cmd_permute)
     p = sub.add_parser("block", help="park a function with a note")
     p.add_argument("func")

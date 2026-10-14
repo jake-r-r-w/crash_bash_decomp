@@ -7,6 +7,8 @@
 //   node tools/swarm/swarm.mjs status
 //   node tools/swarm/swarm.mjs stats            outcomes by function size; big-mode checkpoints
 //   node tools/swarm/swarm.mjs clean            delete the worker and integration clones
+//   node tools/swarm/swarm.mjs permute --only f1,f2 [--minutes 30] [--jobs N]
+//                                               permuter only (no Claude), from each one's checkpoint
 //   node tools/swarm/swarm.mjs fold             fold patterns.md into docs/MATCHING.md (after a run)
 //   node tools/swarm/swarm.mjs forget --only f1,f2 --why "..." [--checkpoint]
 //                                               reset functions' attempts (a tool fix unblocked them)
@@ -1177,6 +1179,83 @@ Fix that, keep it matching, and report "matched".
     try { resetClone(this.integ, 'HEAD'); } catch { /* best effort */ }
   }
 
+  // `permute --only f1,f2`: permuter only, no Claude. Each function gets a clone of this checkout's
+  // HEAD with its big-mode checkpoint applied, and `decomp.py permute --apply-best` for --minutes
+  // (all functions at once, the cores split between them). A better result becomes the function's
+  // checkpoint, so the next session starts from it; a match also goes to results/ so
+  // `run --resume <id> --only NAME` sends it through the gate.
+  async permuteOnly() {
+    const o = this.o;
+    if (!o.only?.length) die('permute needs --only f1,f2,... (functions with a checkpoint or C to start from)');
+    if (o.only.length > 16) die('permute: at most 16 functions at once');
+    if (sh('docker', ['info']).code) die('Docker is not reachable');
+    fs.mkdirSync(o.dir, { recursive: true });
+    const lock = readJson(this.paths.lock, null);
+    if (lock && alive(lock.pid)) die(`another run (pid ${lock.pid}) owns ${o.dir}`);
+    if (fs.existsSync(this.paths.stop)) {
+      if (!o.clearStop) die(`${this.paths.stop} exists: delete it or pass --clear-stop`);
+      fs.unlinkSync(this.paths.stop);
+    }
+    writeJson(this.paths.lock, { pid: process.pid, id: this.id, started: stamp() });
+    const minutes = o.minutes !== undefined ? Number(o.minutes) : 30;
+    const jobs = o.jobs !== undefined ? Number(o.jobs) : Math.max(1, Math.floor((os.cpus().length - 1) / o.only.length));
+    const base = gitOk(REPO, 'rev-parse', 'HEAD');
+    this.log(`permute ${this.id}: ${o.only.join(', ')}; ${minutes} min, ${jobs} jobs each, from ${base.slice(0, 8)}`);
+    const killAll = () => {
+      for (const p of this.children) killTree(p.pid);
+      dockerKill(`${LABEL}=${this.id}`, o.dir);
+    };
+    process.on('SIGINT', () => { this.log('Ctrl+C: killing the permuters (nothing is saved)'); killAll(); });
+    const watch = setInterval(() => { if (fs.existsSync(this.paths.stop)) { this.log('STOP file: killing the permuters'); killAll(); } }, 2000);
+    const one = async (name, i) => {
+      const slot = `h${i + 1}`, dir = path.join(o.dir, 'permuters', slot);
+      makeClone(dir, REPO, 'HEAD', m => this.log(m));
+      resetClone(dir, base);
+      const cp = this.checkpoint(name);
+      if (cp) {
+        const patch = path.join(this.paths.checkpoints, name, 'best.diff');
+        if (git(dir, 'apply', '--3way', '--whitespace=nowarn', patch).code) {
+          resetClone(dir, base);
+          const why = reapply(dir, fs.readFileSync(patch, 'utf8'), { name });
+          if (why !== null) return this.log(`${name}: its checkpoint doesn't apply to HEAD any more (${why}); skipped`);
+        }
+        git(dir, 'reset', '-q');   // a --3way apply stages its result; keep the diff below simple
+      }
+      const before = Swarm.score((await this.dk(dir, ['python3', 'tools/scripts/decomp.py', 'try', name], slot)).out);
+      if (!before) return this.log(`${name}: no C to start from (no checkpoint, still INCLUDE_ASM, or it doesn't build); skipped`);
+      this.log(`${name}: starting from ${before.stage} ${before.diffs}/${before.total}${cp ? ' (checkpoint)' : ''}`);
+      const r = await this.dk(dir, ['python3', 'tools/scripts/decomp.py', 'permute', name, '--minutes', String(minutes),
+                                    '--jobs', String(jobs), '--apply-best'], slot, { cpus: jobs, minutes: minutes + 10 });
+      const res = r.out.match(/^PERMUTE-RESULT \S+ (\w+) before (\S+)(?: after (\S+))?/m);
+      if (!res) return this.log(`${name}: the permuter didn't finish (${r.timedOut ? 'killed' : r.out.trim().split('\n').pop()})`);
+      if (res[1] !== 'kept') return this.log(`${name}: no improvement (${res[1]}${res[3] ? `, best ${res[3]}` : ''})`);
+      const tried = await this.dk(dir, ['python3', 'tools/scripts/decomp.py', 'try', name], slot);
+      const after = Swarm.score(tried.out);
+      if (!after || !Swarm.better(after, before)) return this.log(`${name}: permuter result not better on recheck; not saved`);
+      const patchFile = path.join(dir, '.permute.diff');
+      fs.writeFileSync(patchFile, git(dir, 'diff', '--', 'src', 'include').out);
+      const job = { f: { name }, model: 'permuter', base };
+      const old = this.checkpoint(name);
+      if (!old || Swarm.better(after, old)) this.saveCheckpoint(job, patchFile, after, `permuter ${minutes} min, from ${before.diffs}/${before.total}.`);
+      if (after.stage === 'match') {
+        const rd = path.join(this.paths.results, name, `permute-${this.id}`);
+        fs.mkdirSync(rd, { recursive: true });
+        fs.copyFileSync(patchFile, path.join(rd, 'patch.diff'));
+        fs.writeFileSync(path.join(rd, 'try.txt'), tried.out);
+        writeJson(path.join(rd, 'result.json'), { status: 'matched', note: `matched by the permuter (${minutes} min)` });
+        return this.log(`${name}: MATCH. Gate it: node tools/swarm/swarm.mjs run --branch main --only ${name} --resume ${this.id}`);
+      }
+      this.log(`${name}: ${before.stage} ${before.diffs}/${before.total} -> ${after.stage} ${after.diffs}/${after.total}, saved as its checkpoint`);
+    };
+    try {
+      await Promise.all(o.only.map((n, i) => one(n, i).catch(err => this.log(`${n}: error: ${err.message}`))));
+    } finally {
+      clearInterval(watch);
+      fs.rmSync(this.paths.lock, { force: true });
+    }
+    this.log(`permute ${this.id} finished`);
+  }
+
   writeStatus(state = 'running') {
     writeJson(this.paths.status, {
       id: this.id, pid: process.pid, state, stopping: this.stopping, started: new Date(this.started).toISOString(),
@@ -1456,6 +1535,7 @@ function clean(o) {
 const [cmd, o] = parseArgs(process.argv.slice(2));
 o.baseGiven = process.argv.includes('--base');
 if (cmd === 'run') await new Swarm(o).run();
+else if (cmd === 'permute') await new Swarm(o).permuteOnly();
 else if (cmd === 'stop') await stop(o);
 else if (cmd === 'status') status(o);
 else if (cmd === 'stats') stats(o);
