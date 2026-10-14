@@ -10470,7 +10470,63 @@ l3F: return 0x8148;
 ldef: return 0x8140;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C5BC);
+void func_8002C5BC(void) {
+    RECT clut;
+    RECT *rect;
+    u8 *base;
+    u8 *p;
+    s32 k;
+    u8 *img;
+    u8 *pal;
+    s16 h;
+    u16 w;
+    s32 *q;
+    s32 *end;
+    s32 sum;
+
+    ((McHeader *)D_800655C8)->magic = 0x4353;
+    ((McHeader *)D_800655C8)->frames = 2;
+    ((McHeader *)D_800655C8)->type = 1;
+    ((McHeader *)D_800655C8)->blocks = 1;
+    k = 0x1B;
+    p = D_800655C8 + k;
+    do {
+        p[0x44] = 0;
+        k--;
+        p--;
+    } while (k >= 0);
+    func_8001517C(D_800655BC + 0xC, func_80010000(D_800655C8 + 0x208), 100);
+    func_8001517C(D_800655BC + 0x11, func_80010000(D_800655C8 + 0x208 + 0x194), 100);
+    func_8001517C(D_800655BC + 0x16, func_80010000(D_800655C8 + 0x208 + 0x194 * 2), 100);
+    func_8001517C(D_800655BC + 0x1B, func_80010000(D_800655C8 + 0x208 + 0x194 * 3), 100);
+    McSetTitle(D_8004CD8C, ((McHeader *)D_800655C8)->title);
+    rect = (RECT *)(func_800160F8(D_80055684, 0x306B) + 0x18);
+    if (rect->w == 4) {
+        h = rect->h;
+        if (h == 0x10) {
+            StoreImage(rect, (u_long *)D_80065648);
+            img = (u8 *)func_800160F8(D_80055684, 0x306C);
+            StoreImage((RECT *)(img + 0x18), (u_long *)(D_80065648 + 0x80));
+            pal = func_800160C4(D_80055684, *(u16 *)(img + 2));
+            clut.x = (*(u16 **)(pal + 4))[0];
+            clut.y = (*(u16 **)(pal + 4))[1];
+            w = *(u16 *)pal;
+            if (w == h) {
+                clut.w = w;
+                clut.h = 1;
+                StoreImage(&clut, (u_long *)(D_80065648 - 0x20));
+            }
+        }
+    }
+    base = D_800655C8;
+    q = (s32 *)(base + 0x200);
+    end = (s32 *)(base + 0x850);
+    sum = 0;
+    while (q < end) {
+        sum += *q++;
+    }
+    D_80065E24 = sum;
+}
 
 void func_8002C894(void) {
     u8 *p;

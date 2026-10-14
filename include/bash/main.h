@@ -757,6 +757,56 @@ extern s32 D_800655A8;
 extern s32 D_800655B8;
 extern s32 D_800655C0;
 extern u8 D_800655C8[];
+/* The memory card save file header at D_800655C8 (PsyQ _CARD layout). */
+typedef struct {
+    u32 magic : 16;  /* 0x00 "SC" */
+    u32 frames : 4;  /* 0x02 icon frames */
+    u32 type : 4;
+    u32 blocks : 8;  /* 0x03 */
+    s16 title[32];   /* 0x04 Shift-JIS */
+} McHeader;
+extern char *D_800655BC;
+extern u8 D_80065648[]; /* the header's icon frames (D_800655C8 + 0x80) */
+extern u8 D_8004CD8C[];
+s32 func_80010000(u8 *arg0);
+s32 func_8002C4B0(u8 arg0);
+
+/* Writes up to 32 Shift-JIS characters of src (ASCII) to dst, padding with
+ * full-width spaces (func_8002C5BC). */
+static inline void McSetTitle(u8 *src, s16 *dst) {
+    s16 fill;
+    s32 i;
+    s32 n;
+    s32 done;
+    u8 c;
+    s32 r;
+    s32 r2;
+
+    i = 0;
+    done = 0;
+    n = 0;
+    r2 = func_8002C4B0(0x20);
+    fill = ((r2 & 0xFF) << 8) | ((u32)(func_8002C4B0(0x20) & 0xFFFF) >> 8);
+    do {
+        if (done == 0) {
+            c = src[i];
+            i++;
+            if (c >= 0x20U) {
+                r = func_8002C4B0(c);
+                dst[n] = ((r & 0xFF) << 8) | ((u32)(func_8002C4B0(c) & 0xFFFF) >> 8);
+            } else {
+                done = 1;
+            }
+            if (done != 0) {
+                goto fillit;
+            }
+        } else {
+fillit:
+            dst[n] = fill;
+        }
+        n++;
+    } while (n < 0x20);
+}
 typedef struct {
     u8 b[8];
     u8 pad[0x18C];
@@ -2020,5 +2070,7 @@ void func_80027D90(void);
 void func_80029790(u8 *arg0);
 
 void func_8002A84C(TexSrc2A84C *s, TexDst2A84C *d, s32 n);
+
+void func_8002C5BC(void);
 
 #endif /* BASH_MAIN_H */
