@@ -4292,7 +4292,59 @@ void func_80019F1C(u8 *arg0, u8 *arg1, s32 arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001A0D8);
+s32 func_8001A0D8(void *arg0, u32 flags) {
+    ModePolyG4 *p;
+    u32 otz;
+#define q ((ColorQuad *)arg0)
+
+    p =*(ModePolyG4 **)(D_8005B68C + 0x4008);
+    otz = 0;
+    *(ModePolyG4 **)(D_8005B68C + 0x4008) = p + 1;
+    if (!(flags & 0x8000)) {
+        return 0;
+    }
+    p->v[0].c = func_8002A2EC(q->c[0][2], q->c[0][1], q->c[0][0]);
+    p->v[1].c = func_8002A2EC(q->c[1][2], q->c[1][1], q->c[1][0]);
+    p->v[2].c = func_8002A2EC(q->c[2][2], q->c[2][1], q->c[2][0]);
+    p->v[3].c = func_8002A2EC(q->c[3][2], q->c[3][1], q->c[3][0]);
+    ((u8 *)p)[3] = 0xA;
+    ((u8 *)p)[0xF] = 0x38;
+    p->mode = 0xE1000200;
+    p->unk8 = 0;
+    if (flags & 0x21) {
+        p->mode = (flags & 0x60) | 0xE1000200;
+        p->v[0].c |= 0x32000000;
+    }
+    if (flags & 0x10000000) {
+        GfxState *gs = &D_80056998;
+#define s ((GfxScreen *)gs->unk28)
+
+        p->v[0].x = ((s->x + q->v[0].vx) * D_8005B698->w) / 640;
+        p->v[0].y = (s->y + q->v[0].vy) / 2;
+        p->v[1].x = ((s->x + q->v[1].vx) * D_8005B698->w) / 640;
+        p->v[1].y = (s->y + q->v[1].vy) / 2;
+        p->v[2].x = ((s->x + q->v[2].vx) * D_8005B698->w) / 640;
+        p->v[2].y = (s->y + q->v[2].vy) / 2;
+        p->v[3].x = ((s->x + q->v[3].vx) * D_8005B698->w) / 640;
+        p->v[3].y = (s->y + q->v[3].vy) / 2;
+#undef s
+    } else {
+        gte_ldv3c(q->v);
+        gte_rtpt();
+        gte_avsz3();
+        gte_stotz(&otz);
+        gte_stsxy3_10(p);
+        gte_ldv0(&q->v[3]);
+        gte_rtps();
+        gte_stsxy(&p->v[3].x);
+    }
+    otz = (otz + D_80056998.otzAdd) >> 1;
+    if (otz < D_80056998.otLen) {
+        addPrim(D_80056998.ot + otz, p);
+    }
+    return (s32)p;
+#undef q
+}
 
 void func_8001A43C(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4) {
     QuadVerts q;

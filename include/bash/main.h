@@ -1061,6 +1061,24 @@ typedef struct {
     } v[4];
     s32 c[4];
 } QuadVerts;
+
+/* func_8001A0D8's input: four vertices and four colours (bytes r, g, b). */
+typedef struct {
+    SVECTOR v[4];
+    u8 c[4][4];
+} ColorQuad;
+
+/* func_8001A0D8's primitive: a draw-mode word, then a POLY_G4 sharing the
+ * tag (len 0xA, code 0x38 at +0xF). */
+typedef struct {
+    u32 tag;
+    u32 mode;  /* 0x04: 0xE1000200 | abr bits */
+    u32 unk8;
+    struct {
+        u32 c;
+        s16 x, y;
+    } v[4];    /* 0x0C */
+} ModePolyG4;
 extern s32 D_8005B690; /* frame counter: its low bit picks the frame buffer */
 void func_8001A6D4(void *arg0, u32 hidden);
 s32 func_8001A0D8(void *arg0, u32 flags);
