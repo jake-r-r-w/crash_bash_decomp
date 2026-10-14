@@ -30,7 +30,7 @@ instead:
 ```
 big function (>= --big-bytes, or parked in normal mode)
  session n: claude (opus, up to --big-minutes), starting from the checkpoint's C
- orchestrator: `try` on whatever C it left -> STAGE line (structure / instructions / registers)
+ orchestrator: `try` and `regions` on whatever C it left -> STAGE line + region score
  better than the checkpoint? -> new checkpoint (checkpoints/<func>/best.diff + best.json)
  MATCH -> the gate, as usual
  "needs_permute" at the registers stage -> permuter pool (--big-permute-minutes) -> session n+1
@@ -40,21 +40,24 @@ big function (>= --big-bytes, or parked in normal mode)
 - **Which functions:** at least `--big-bytes` (600) bytes, or any function that parks in normal
   mode after its escalation attempt (`--escalate-big`, on). Normal workers never take a big one.
   `--big-workers 0` turns big mode off (every function goes to normal workers, as before).
-- **Progress** is the `STAGE` line of `decomp.py try`: a later stage beats any number of diffs
-  in an earlier one, then fewer diffs. Only C that builds, passes the patch checks and beats
-  the checkpoint replaces it, so a bad session can't lose earlier work. A session killed at
-  `--big-minutes` is measured the same way.
+- **Progress** is the region score of `decomp.py regions`: more of the target paired by opcode
+  (structure), then more identical blocks, then more exact instructions; on a tie, or against an
+  old checkpoint without a region score, the `STAGE` line of `decomp.py try` (a later stage, then
+  fewer diffs). `STAGE` counts positions, so one session can lose blocks at the same count as
+  another gained them (the 2026-10-14 A/B, `func_80019A60`). Only C that builds, passes the
+  patch checks and beats the checkpoint replaces it, so a bad session can't lose earlier work. A
+  session killed at `--big-minutes` is measured the same way.
 - **Resuming:** each session starts from the checkpoint's C (re-applied mechanically if `main`
   has moved), and its prompt carries the checkpoint's log: each session's stage, note and its
   "next" suggestion. Checkpoints persist across runs in `--dir`.
 - **When it stops:** after `--big-sessions` (6) sessions, or `--big-stale` (2) sessions in a row
   without progress, the function is parked and its best C stays in `checkpoints/`.
   `--retry-failed` gives it more.
-- **A/B of the regions prompt:** `--regions f1,f2` (or `all`) gives those functions' big sessions
-  a prompt built on `decomp.py regions` (fix the first differing block, re-run) instead of the
-  `STAGE` one; the rest are the control. Checkpoints are still ranked by `STAGE` in both arms.
-  After every big session the orchestrator writes `ab.json` (arm, start, status, `STAGE`) and
-  `regions.txt` (the region score of the session's C) to the session's results folder.
+- **The regions prompt** (the default, `--regions all`): big sessions work block by block with
+  `decomp.py regions` (fix the first differing block, re-run). `--regions f1,f2` limits it to
+  those functions and gives the rest the older `STAGE` prompt, for an A/B (`--regions none`: no
+  function). After every big session the orchestrator writes `ab.json` (arm, start, status,
+  score) and `regions.txt` (the region score of the session's C) to its results folder.
 - **Choosing `--big-bytes`:** `node tools/swarm/swarm.mjs stats` prints every function's outcome
   by size across runs (matched in normal or big mode, parked, attempts, big sessions). Put the
   threshold where normal mode's match rate drops; escalation catches the smaller functions that

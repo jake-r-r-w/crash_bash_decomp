@@ -519,16 +519,52 @@ class Swarm {
     return m ? { stage: m[1], diffs: +m[2], total: +m[3] } : null;
   }
 
+  // the `REGIONS name blocks m/n insns e/N (..%) paired p/N` line of decomp.py regions
+  static regionScore(out) {
+    const m = out.match(/^REGIONS \S+ blocks (\d+)\/(\d+) insns (\d+)\/(\d+) \S+ paired (\d+)\/(\d+)/m);
+    return m ? { blocks: +m[1], nblocks: +m[2], exact: +m[3], len: +m[4], paired: +m[5] } : null;
+  }
+
+  static describe(s) {
+    if (!s) return '-';
+    const r = s.regions;
+    return `${s.stage} ${s.diffs}/${s.total}${r ? ` (blocks ${r.blocks}/${r.nblocks}, paired ${r.paired}/${r.len}, exact ${r.exact}/${r.len})` : ''}`;
+  }
+
+  // a match beats everything; then, when both have a region score, more of the target paired by
+  // opcode (structure), then more blocks identical, then more exact instructions; otherwise (or on
+  // a tie) the STAGE line: a later stage, then fewer diffs
   static better(a, b) {
+    if (!b) return true;
+    if (a.stage === 'match' || b.stage === 'match') return a.stage === 'match' && b.stage !== 'match';
+    const ra = a.regions, rb = b.regions;
+    if (ra && rb) {
+      const key = r => [r.paired / r.len, r.blocks, r.exact / r.len];
+      const ka = key(ra), kb = key(rb);
+      for (let i = 0; i < ka.length; i++) if (ka[i] !== kb[i]) return ka[i] > kb[i];
+    }
     const rank = s => ['structure', 'instructions', 'registers', 'match'].indexOf(s.stage);
-    return !b || rank(a) > rank(b) || (rank(a) === rank(b) && a.diffs < b.diffs);
+    return rank(a) > rank(b) || (rank(a) === rank(b) && a.diffs < b.diffs);
+  }
+
+  // build and score the function in a clone: the STAGE line, plus the region score unless it matches
+  async measure(dir, name, slot, outDir = null) {
+    const r = await this.dk(dir, ['python3', 'tools/scripts/decomp.py', 'try', name], slot);
+    if (outDir) fs.writeFileSync(path.join(outDir, 'try.txt'), r.out);
+    const score = Swarm.score(r.out);
+    if (score && score.stage !== 'match') {
+      const g = await this.dk(dir, ['python3', 'tools/scripts/decomp.py', 'regions', name, '--no-lines'], slot);
+      if (outDir) fs.writeFileSync(path.join(outDir, 'regions.txt'), g.out);
+      score.regions = Swarm.regionScore(g.out);
+    }
+    return { score, out: r.out };
   }
 
   saveCheckpoint(job, patchFile, score, note, next) {
     const d = path.join(this.paths.checkpoints, job.f.name);
     fs.mkdirSync(d, { recursive: true });
     const old = this.checkpoint(job.f.name);
-    const log = [...(old?.log || []), `${stamp()} ${job.model}: ${score.stage} ${score.diffs}/${score.total}. ${note}${next ? ` Next: ${next}` : ''}`].slice(-12);
+    const log = [...(old?.log || []), `${stamp()} ${job.model}: ${Swarm.describe(score)}. ${note}${next ? ` Next: ${next}` : ''}`].slice(-12);
     fs.copyFileSync(patchFile, path.join(d, 'best.diff'));
     writeJson(path.join(d, 'best.json'), { ...score, base: job.base, updated: stamp(), log });
   }
@@ -613,7 +649,7 @@ sessions; this is one of them. Make as much progress as you can and leave your b
 orchestrator measures it with \`decomp.py try\` and keeps the best version for the next session.
 ${cp ? `
 This session resumes from the best C so far, already in ${f.src} in place of the INCLUDE_ASM line
-(${cp.stage}, ${cp.diffs}/${cp.total} instructions differ). Log of earlier sessions, oldest first:
+(${Swarm.describe(cp)}). Log of earlier sessions, oldest first:
 ${(cp.log || []).map(l => '- ' + l).join('\n')}
 ` : `
 No session has worked on it yet: start from the m2c draft (\`tools/dk python3 tools/scripts/decomp.py
@@ -634,8 +670,8 @@ aligned) is the structure, insns (exact) the rest. The loop:
    together, not insns alone.
 3. Repeat. When regions shows only "operands" blocks, use the cc1 dump and the Diff patterns'
    register rows.
-The orchestrator keeps the best C by \`tools/dk make diff FUNC=${f.name} </dev/null\`'s \`STAGE\`
-line (a later stage beats any count of diffs in an earlier one), so check that before you finish.` :
+The orchestrator keeps the best C by the same region score (paired first, then identical blocks,
+then exact instructions), so the version you leave should be your best by it.` :
 `Work in stages; \`tools/dk make diff FUNC=${f.name} </dev/null\` prints a \`STAGE\` line that says
 which one you are in, and progress is measured by it (a later stage beats any count of diffs in an
 earlier one, then fewer diffs):
@@ -779,7 +815,7 @@ Fix that, keep it matching, and report "matched".
     });
     p.on('error', err => this.log(`${slot.id} ${f.name}: could not start worker: ${err.message}`));
     this.log(`${slot.id} start ${f.name} (${f.size} bytes, ${job.model}, ${job.big
-      ? `big session ${job.attempt}${job.resumed ? `, from ${job.resumed.stage} ${job.resumed.diffs}/${job.resumed.total}` : ''}`
+      ? `big session ${job.attempt}${job.resumed ? `, from ${Swarm.describe(job.resumed)}` : ''}`
       : `attempt ${job.attempt}`})`);
   }
 
@@ -859,19 +895,10 @@ Fix that, keep it matching, and report "matched".
     if (patch.trim()) {
       fs.writeFileSync(file, patch);
       errs = this.checkPatch(patch, f);
-      if (!errs.length) {
-        const r = await this.dk(slot.dir, ['python3', 'tools/scripts/decomp.py', 'try', f.name], slot.id);
-        fs.writeFileSync(path.join(job.dir, 'try.txt'), r.out);
-        score = Swarm.score(r.out);
-        // the region score too, for every session whichever its arm (the A/B measurement)
-        if (score && score.stage !== 'match') {
-          const g = await this.dk(slot.dir, ['python3', 'tools/scripts/decomp.py', 'regions', f.name, '--no-lines'], slot.id);
-          fs.writeFileSync(path.join(job.dir, 'regions.txt'), g.out);
-        }
-      }
+      if (!errs.length) score = (await this.measure(slot.dir, f.name, slot.id, job.dir)).score;
     }
     fs.writeFileSync(path.join(job.dir, 'ab.json'), JSON.stringify({
-      arm: this.regionsArm(f) ? 'regions' : 'control', resumed: job.resumed ? `${job.resumed.stage} ${job.resumed.diffs}/${job.resumed.total}` : null,
+      arm: this.regionsArm(f) ? 'regions' : 'control', resumed: job.resumed ? Swarm.describe(job.resumed) : null,
       status: res.status || null, timedOut: !!job.timedOut, stage: score, ended: stamp() }, null, 1));
     if (this.stopping === 'now') return;
     slot.job = null;
@@ -888,7 +915,7 @@ Fix that, keep it matching, and report "matched".
     Object.assign(h, { big: true, size: f.size, bigSessions: (h.bigSessions || 0) + 1 });
     const cp = this.checkpoint(f.name);
     const improved = !!score && Swarm.better(score, cp);
-    const desc = score ? `${score.stage} ${score.diffs}/${score.total}`
+    const desc = score ? Swarm.describe(score)
       : errs.length ? `patch refused: ${errs.join('; ')}` : patch.trim() ? 'C did not build' : 'no C left';
     if (improved) {
       this.saveCheckpoint(job, file, score, note, res.next);
@@ -934,7 +961,7 @@ Fix that, keep it matching, and report "matched".
     this.finished.add(job.f.key);
     this.record(job, 'parked', `big mode: ${why}`);
     this.log(`${job.f.name}: parked (big mode): ${why}` +
-             `${cp ? `; best ${cp.stage} ${cp.diffs}/${cp.total} kept in ${path.join(this.paths.checkpoints, job.f.name)}` : ''}`);
+             `${cp ? `; best ${Swarm.describe(cp)} kept in ${path.join(this.paths.checkpoints, job.f.name)}` : ''}`);
   }
 
   // ---- the permuter pool: no Claude, just CPU; an improvement goes back to a worker to port
@@ -1255,16 +1282,16 @@ Fix that, keep it matching, and report "matched".
         }
         git(dir, 'reset', '-q');   // a --3way apply stages its result; keep the diff below simple
       }
-      const before = Swarm.score((await this.dk(dir, ['python3', 'tools/scripts/decomp.py', 'try', name], slot)).out);
+      const before = (await this.measure(dir, name, slot)).score;
       if (!before) return this.log(`${name}: no C to start from (no checkpoint, still INCLUDE_ASM, or it doesn't build); skipped`);
-      this.log(`${name}: starting from ${before.stage} ${before.diffs}/${before.total}${cp ? ' (checkpoint)' : ''}`);
+      this.log(`${name}: starting from ${Swarm.describe(before)}${cp ? ' (checkpoint)' : ''}`);
       const r = await this.dk(dir, ['python3', 'tools/scripts/decomp.py', 'permute', name, '--minutes', String(minutes),
                                     '--jobs', String(jobs), '--apply-best'], slot, { cpus: jobs, minutes: minutes + 10 });
       const res = r.out.match(/^PERMUTE-RESULT \S+ (\w+) before (\S+)(?: after (\S+))?/m);
       if (!res) return this.log(`${name}: the permuter didn't finish (${r.timedOut ? 'killed' : r.out.trim().split('\n').pop()})`);
       if (res[1] !== 'kept') return this.log(`${name}: no improvement (${res[1]}${res[3] ? `, best ${res[3]}` : ''})`);
-      const tried = await this.dk(dir, ['python3', 'tools/scripts/decomp.py', 'try', name], slot);
-      const after = Swarm.score(tried.out);
+      const { score: after, out: triedOut } = await this.measure(dir, name, slot);
+      const tried = { out: triedOut };
       if (!after || !Swarm.better(after, before)) return this.log(`${name}: permuter result not better on recheck; not saved`);
       const patchFile = path.join(dir, '.permute.diff');
       fs.writeFileSync(patchFile, git(dir, 'diff', '--', 'src', 'include').out);
@@ -1479,7 +1506,7 @@ function stats(o) {
     console.log('big-mode checkpoints (best C so far):');
     for (const n of cps) {
       const j = readJson(path.join(o.dir, 'checkpoints', n, 'best.json'), null);
-      if (j) console.log(`  ${n}: ${j.stage} ${j.diffs}/${j.total} (${j.updated})`);
+      if (j) console.log(`  ${n}: ${Swarm.describe(j)} (${j.updated})`);
     }
   }
 }

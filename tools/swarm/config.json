@@ -26,7 +26,7 @@
   "bigStale": 2,
   "bigPermuteMinutes": 60,
   "escalateBig": true,
-  "regions": "",
+  "regions": "all",
   "claudeBin": "claude",
   "claudeArgs": ["-p", "--output-format", "json", "--max-turns", "250",
                  "--permission-mode", "dontAsk", "--strict-mcp-config"],
