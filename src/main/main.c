@@ -5758,7 +5758,38 @@ void func_8001D640(s32 n) {
     sub->next = NULL;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001D6B4);
+void func_8001D6B4(MapEnvHead *env) {
+    subengine *sub;
+    Placement *p;
+    s32 n;
+
+    sub = MapEnv_GetSubs(env);
+    n = env->num_placements;
+    p = env->placements;
+    env->subs = sub;
+    while (--n != -1) {
+        *sub = D_8005A830;
+        sub->flags = p->flags;
+        *(SLONG_XYZ *)&sub->unk04 = p->pos;
+        *(PlacementBlk *)&sub->unk2C[4] = p->blk;
+        sub->hook = (void *)func_8001DD50;
+        sub->unk6C = env->dbase;
+        sub->unk74 = p->unk88;
+        sub->unk8A = p->unk9E;
+        sub->unk68 = p->unk9C;
+        sub->unk64[0] = p->unk74[0];
+        sub->unk64[1] = p->unk74[1];
+        sub->unk64[2] = p->unk74[2];
+        sub->unk64[3] = p->unk74[3];
+        if (n > 0) {
+            sub->next = sub + 1;
+        } else {
+            sub->next = NULL;
+        }
+        p++;
+        sub++;
+    }
+}
 
 void func_8001D894(void *sub, void *arg1, s32 flags, s32 arg3) {
     MATRIX m;

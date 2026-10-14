@@ -2430,4 +2430,45 @@ void func_8001F828(u8 *arg0, u8 *arg1);
 
 void func_800243A0(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5);
 
+/* Map placement record (map_enviroment.placements, 0xA0 bytes each),
+ * copied into a subengine by func_8001D6B4. */
+typedef struct { s32 w[8]; } PlacementBlk;
+typedef struct Placement {
+    /* 0x00 */ u32 flags;
+    /* 0x04 */ SLONG_XYZ pos;
+    /* 0x10 */ u8 unk10[0x28 - 0x10];
+    /* 0x28 */ PlacementBlk blk;
+    /* 0x48 */ u8 unk48[0x74 - 0x48];
+    /* 0x74 */ u8 unk74[4];
+    /* 0x78 */ u8 unk78[0x88 - 0x78];
+    /* 0x88 */ u16 unk88;
+    /* 0x8A */ u8 unk8A[0x9C - 0x8A];
+    /* 0x9C */ u16 unk9C;
+    /* 0x9E */ u16 unk9E;
+} Placement;
+/* Head of map_enviroment (core.h) as func_8001D6B4 uses it. */
+typedef struct MapEnvHead {
+    /* 0x00 */ void *dbase;
+    /* 0x04 */ u8 unk04[0x14 - 0x04];
+    /* 0x14 */ Placement *placements;
+    /* 0x18 */ s32 num_placements;
+    /* 0x1C */ subengine *subs;
+} MapEnvHead;
+/* func_8001D6B4: reuse the map's subengine array or allocate it. */
+static inline subengine *MapEnv_GetSubs(MapEnvHead *env) {
+    subengine *sub;
+    subengine *t;
+
+    t = env->subs;
+    if (t != NULL) {
+        sub = t;
+        func_8001D334(sub);
+    } else {
+        sub = (subengine *)func_80011654(env->num_placements * 0xA8, &D_8004E0F0);
+    }
+    return sub;
+}
+
+void func_8001D6B4(MapEnvHead *env);
+
 #endif /* BASH_MAIN_H */

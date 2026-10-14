@@ -1176,7 +1176,8 @@
   "status": "matched"
  },
  "8001D6B4": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-14T19:02:19Z",
+  "status": "matched"
  },
  "8001D894": {
   "matched_at": "2026-10-13T12:36:45Z",
