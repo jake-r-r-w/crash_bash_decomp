@@ -63,6 +63,16 @@ over several sessions, keeping the best C between them:
 
 - **Measure progress with the `STAGE` line.** A later stage beats any number
   of diffs in an earlier one. Within a stage, fewer diffs is better.
+- **Find the region to work on with `decomp.py regions NAME`.** `try`
+  compares instruction i with instruction i, so one extra instruction makes
+  everything after it a diff. `regions` aligns the two streams and scores
+  the target's basic blocks one by one (`ok`, `operands`, `differ`), with
+  each differing block's C lines and its side-by-side diff (`--block N` for
+  another one). Its last line, `REGIONS NAME blocks m/n insns e/N paired
+  p/N ...`, gives exact instructions and opcode-paired instructions
+  (structure). Fix the first differing block, re-run, repeat. A register
+  change can cascade through every later block, so `insns` can drop while
+  the C gets closer: read `paired` and the block list together.
 - **Check the unit first** (step 2). `func_8002D4F4`, the largest function
   left in `main.exe`, is in the gcc 2.7.2 unit.
 - **Type the data before matching.** Put structs for everything it touches

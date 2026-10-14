@@ -291,6 +291,14 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-14 (tooling: regions):** new `decomp.py regions NAME`
+  (tools/scripts/regions.py, tests in tools/scripts/tests): aligned,
+  block-by-block score with C lines. Re-scored 22 saved swarm patches:
+  it localises (`func_80028F28`: 6/7 blocks ok, STAGE said structure
+  59/118) and `paired` spotted a near-structure version STAGE called a
+  regression (`func_800248A0` 110/144 -> paired 140/144); register
+  cascades still mislead both. Not yet in the swarm; next: an A/B of big
+  sessions with and without it.
 - **2026-10-14 (by hand, roadmap order):** `func_80020C04` (main) parked
   at `structure` 18 vs 19 after compiler experiments (Open leads); the
   permuter was stopped early when the session ended.

@@ -998,6 +998,122 @@ def cmd_try(a):
     sys.exit(0 if all_ok else 1)
 
 
+LABEL_LINE = re.compile(r"^\s*\.L([0-9A-Fa-f]{8}):")
+
+
+def asm_labels(path, vram):
+    """Indices of the instructions the function's `.L` labels point at (branch and jump-table
+    targets)."""
+    return [(int(m.group(1), 16) - vram) // 4 for m in map(LABEL_LINE.match, read(path).splitlines()) if m]
+
+
+def c_lines(src, name, cfg):
+    """Compiled instruction index -> source line, from a -g build of `src` (None if -g changes the
+    code or the build fails). cc1 reads cpp's output, so its lines are offset from the source's."""
+    os.makedirs("build/regions", exist_ok=True)
+    cfg = unit_cfg(cfg, src)
+    g = int(cfg.get("GVAL", "0"))
+    o = f"build/regions/{name}.o"
+    cmd = pipeline(src, o, cfg["CC_VER"], f"{cfg['OPT_FLAGS']} {cfg.get('EXTRA_CC1FLAGS', '')} -g".strip(), g,
+                   re.sub(r"\s*-G\d+", "", cfg.get("MASPSX_ARGS", DEFAULT_MASPSX)), post_filters(cfg))
+    if run("set -o pipefail; " + cmd).returncode:
+        return None
+    rx = func_def_regex(name)
+    defs = []
+    for text in (run([X + "cpp", *make_flags("CPPFLAGS"), src]).stdout, read(src)):
+        m = rx.search(text)
+        if not m:
+            return None
+        defs.append(text.count("\n", 0, m.start()))
+    pp_def, src_def = defs
+    r = run([X + "objdump", "-dl", f"--disassemble={name}", o])
+    out, line, base = {}, None, None
+    for l in r.stdout.splitlines():
+        m = re.match(r"^\S*stdin:(\d+)", l)
+        if m:
+            line = int(m.group(1)) - 1 - pp_def + src_def + 1
+            continue
+        m = OBJ_LINE.match(l)
+        if m:
+            off = int(m.group(1), 16)
+            base = off if base is None else base
+            out[(off - base) // 4] = line
+    return out
+
+
+def cmd_regions(a):
+    import regions
+    proj, funcs = need_proj(), need_funcs()
+    key, e = find_func(funcs, a.func)
+    name = cur_name(key, e, sym_names())
+    src = e.get("src") or locate_def(name)
+    if not src or still_asm(src, name, e["name"], e["orig"]):
+        die(f"{name}: no C for it yet (still INCLUDE_ASM?)")
+    obj = f"build/{src}.o"
+    if os.path.exists(obj):
+        os.remove(obj)
+    r = run(["make", "-s", obj])
+    if r.returncode:
+        print("BUILD FAILED")
+        print(compile_error(src, r.stderr + r.stdout))
+        sys.exit(1)
+    cw, ctext, relocs = obj_func(obj, name)
+    if not cw:
+        die(f"{name} not found in {obj}")
+    tw = target_words(e, proj)
+    vram = key_vram(key)
+    _, _, _, ttext, _, _ = parse_asm(e["asm"])
+    nt, nc = trim_nops(tw), trim_nops(cw)
+    tw, ttext, cw, ctext = tw[:nt], ttext[:nt], cw[:nc], ctext[:nc]
+    res = regions.score(tw, cw, ttext, relocs, vram, asm_labels(e["asm"], vram))
+    lines = None if a.no_lines else c_lines(src, name, mk_config())
+
+    def span(b):
+        if not lines or b["cstart"] is None:
+            return ""
+        ls = sorted({lines[c] for c in range(b["cstart"], b["cend"]) if lines.get(c)})
+        return f"L{ls[0]}" + (f"-{ls[-1]}" if len(ls) > 1 else "") if ls else ""
+
+    bad = [k for k, b in enumerate(res["blocks"]) if b["status"] != "ok"]
+    print(f"{'#':>4} {'target':<13} {'len':>4} {'status':<9} {'exact':>7}  C")
+    for k, b in enumerate(res["blocks"]):
+        if b["status"] == "ok" and not a.all:
+            continue
+        print(f"{k:>4} {b['start'] * 4:#06x}-{b['end'] * 4:#06x} {b['end'] - b['start']:>4} {b['status']:<9} "
+              f"{b['exact']:>3}/{b['end'] - b['start']:<3}  {span(b)}")
+    if res["extra"]:
+        print(f"extra compiled instructions (no target partner): {len(res['extra'])} at "
+              + " ".join(f"{c * 4:#x}" for c in res["extra"][:12]) + (" ..." if len(res["extra"]) > 12 else ""))
+
+    show = a.block if a.block is not None else (bad[0] if bad else None)
+    if show is not None and 0 <= show < len(res["blocks"]):
+        b, pairs, ex = res["blocks"][show], res["pairs"], res["exact_map"]
+        print(f"\nblock {show} ({b['status']}):")
+        print(f"{'':6}{'target':<38}| compiled")
+        lo = max(b["start"] - 2, 0)
+        hi = min(b["end"] + 2, nt)
+        rows, prev = [], (pairs.get(lo - 1, -1) if lo else -1)
+        for t in range(lo, hi):
+            c = pairs.get(t)
+            if c is not None:
+                for x in range(prev + 1, c):             # compiled-only instructions before this pair
+                    rows.append((None, x))
+                prev = c
+            rows.append((t, c))
+        for t, c in rows:
+            inside = t is not None and b["start"] <= t < b["end"]
+            mark = "+" if t is None else ("!" if inside and not ex.get(t, False) else " ")
+            tt = f"{t * 4:4x} {ttext[t][:32]}" if t is not None else ""
+            ct = f"{ctext[c][:50]}" if c is not None else "-"
+            ln = f"  L{lines[c]}" if lines and c is not None and lines.get(c) else ""
+            print(f"{mark} {tt:<37}| {ct}{ln}")
+
+    print(f"REGIONS {name} blocks {res['ok']}/{res['total']} insns {res['exact']}/{res['len']} "
+          f"({100 * res['exact'] / max(res['len'], 1):.1f}%) paired {res['paired']}/{res['len']} "
+          f"differ {len(bad)} first {bad[0] if bad else '-'}")
+    sys.exit(0 if res["ok"] == res["total"] and nt == nc else 1)
+
+
 def verify_build(proj, funcs=None):
     shutil.rmtree("build/src", ignore_errors=True)
     r = run(["make", "-s", f"-j{os.cpu_count() or 1}", "all"])  # ~5x faster, same bytes
@@ -3178,6 +3294,12 @@ def main():
     p = sub.add_parser("try", help="build and diff one or more functions")
     p.add_argument("funcs", nargs="+")
     p.set_defaults(fn=cmd_try)
+    p = sub.add_parser("regions", help="score a function block by block (aligned diff, C lines)")
+    p.add_argument("func")
+    p.add_argument("--block", type=int, help="show this block's diff (default: the first that differs)")
+    p.add_argument("--all", action="store_true", help="list matching blocks too")
+    p.add_argument("--no-lines", action="store_true", help="skip the -g build that maps blocks to C lines")
+    p.set_defaults(fn=cmd_regions)
     p = sub.add_parser("auto", help="match small functions from m2c drafts without the model")
     p.add_argument("--max-size", type=int, default=32, help="largest function to try, in bytes")
     p.add_argument("--limit", type=int, default=200)
