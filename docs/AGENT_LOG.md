@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 802/2551 game functions matched (main.exe ~536/575, 38 left), 8 parked,
+- 803/2551 game functions matched (main.exe ~537/575, 37 left), 8 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
@@ -40,9 +40,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
    2026-10-14: 13 of 15 fresh 828-1212 B functions matched in the A/B
    runs, `func_80019A60` went 37/59 -> 55/59 blocks then matched by hand,
    and a 60-min `main/` run matched 10 of 16 functions leased.
-   - Near misses: `func_8002DE2C` (registers 2/116, 14/15 blocks) got 60
-     permuter minutes on its differing block on 2026-10-14 with no gain: try
-     `vars`/`splitvars` by hand. The checkpoints of `func_800248A0` (5/142)
+   - Near misses: the checkpoints of `func_800248A0` (5/142)
      and `func_8001795C` (12/107) no longer build: they declare things
      today's matches declared differently (`func_8002992C` is now
      `(SpriteFrame *, s32 xy, ...)`; `ModelTexInfo` exists). A big session
@@ -311,6 +309,13 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-14 (by hand, `func_8002DE2C`, 468 B, gcc 2.7.2 unit):** matched
+  from the checkpoint (2/116; 60 permuter minutes had found nothing).
+  `vars`: a temporary, `splitvars`: no gain; ~16 rewrites, then the
+  in-place mask `(t = buf[0], t &= 0x10, !t)`; the last slot was ASPSX
+  retargeting a branch to a filled `j`, now in `aspsx_fill.py`
+  (`steal_jump_slot`, all 16 binaries still match). Worth re-trying the
+  other 2.7.2-unit functions (`func_8002E3D0`, `func_8002D4F4`) with it.
 - **2026-10-14 (permute --near, 60 min, CPU only):** `func_8002DE2C`
   unchanged; `func_800248A0` and `func_8001795C` skipped: their
   checkpoints no longer build after the day's matches (the skip message
