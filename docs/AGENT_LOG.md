@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 806/2551 game functions matched (main.exe ~540/575, 34 left), 8 parked,
+- 806/2551 game functions matched (main.exe ~540/575, 34 left), 10 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
@@ -40,11 +40,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
    2026-10-14: 13 of 15 fresh 828-1212 B functions matched in the A/B
    runs, `func_80019A60` went 37/59 -> 55/59 blocks then matched by hand,
    and a 60-min `main/` run matched 10 of 16 functions leased.
-   - Near misses: the checkpoints of `func_800248A0` (5/142)
-     and `func_8001795C` (12/107) no longer build: they declare things
-     today's matches declared differently (`func_8002992C` is now
-     `(SpriteFrame *, s32 xy, ...)`; `ModelTexInfo` exists). A big session
-     (or a hand pass) must port them before the permuter can run.
+   - Near misses: `func_800248A0` (5/142) and `func_8001795C` (12/107)
+     are ported to today's declarations and parked as `NON_MATCHING`
+     blocks in `main.c` (Open leads). The fresh 400-800 B functions are
+     the cheapest swarm run.
    - The untried big ones: 1400+ B `func_8002D4F4` (gcc 2.7.2 unit),
      `func_8001B6D4`, `func_8001492C`, `func_8001AF2C`, `func_8002C97C`,
      `func_80023A90`; 600-1399 B `func_80020680`, `func_80019094`,
@@ -82,6 +81,17 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Open leads
 
+- **`func_800248A0`** (three sprites side by side): registers 5/142, only
+  the entry. The target tests `a0` (`andi a0,a0,0xC000`) right after
+  `move s5,a0` and loads arg4 into a3; ours tests s5 into v1. An s16/u16
+  `arg0` fixes the test, but its conversion insn comes after the a2/a3
+  param copies, so sched2 (luid tie-break) puts `move s5,a0` third: 6
+  diffs, prologue order only. `SprPos` (bitfield union) is in main.h.
+- **`func_8001795C`** (one textured quad): registers 12/107, only the
+  0x8000/else arms. sched1 hoists `t = &tex[count - 1].info` above the
+  cluts load, so t conflicts with ts. The sibling `func_80017EE8`'s clean
+  arm form gives structure 108-109. The C is permuter-shaped (swarm
+  checkpoint log has the history).
 - **Checkpoint ranking (decided 2026-10-14): stays paired, then blocks,
   then exact.** A sum of the three fractions would have kept a closer
   `func_8002E3D0` version (11/12 blocks, registers right, paired 106/109
@@ -309,6 +319,9 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-14 (by hand, parks):** ported the stale checkpoints of
+  `func_800248A0` (5/142) and `func_8001795C` (12/107) to today's types
+  and parked both (Open leads); neither moved by hand.
 - **2026-10-14 (by hand, `func_80028D40`, 488 B, no permuter):** matched
   from the checkpoint (17/122). The uv low byte is a `u16 : 8` bitfield
   (`TexUV.f`), the 8-bit tpage is `getTPage(1, 1, x >> 7 << 7, y)`, and the
