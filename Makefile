@@ -4,6 +4,8 @@
 #   make split           - splat every configs/USA yaml (regenerates asm/ and linkers/)
 #   make build           - compile and link build/main.exe and every overlay build/<ovl>.bin
 #   make check           - build, then compare every target with configs/USA/checksum.sha
+#   make disc            - build, then pack build/CrashBash.bin/.cue (bootable; tools/scripts/pack_disc.py)
+#   make disc-check      - make disc, then compare the image with the retail one (configs/USA/disc.sha)
 #   make verify          - clean rebuild + check (use after structural/config/header changes)
 #   make diff FUNC=name  - build one function's file and diff it against the original
 #   make permute FUNC=name [MINUTES=15] - run decomp-permuter on one function
@@ -55,7 +57,7 @@ S_FILES   := $(shell find asm -name '*.s' -not -path 'asm/nonmatchings/*' 2>/dev
 BIN_FILES := $(shell find assets -name '*.bin' 2>/dev/null)
 O_FILES   := $(C_FILES:%=build/%.o) $(S_FILES:%=build/%.o) $(BIN_FILES:%=build/%.o)
 
-.PHONY: all build split check verify diff permute progress objdiff-config report clean
+.PHONY: all build split check verify disc disc-check diff permute progress objdiff-config report clean
 
 # Two passes: splat must have produced asm/ before the object list above is computed.
 # The splat pass is serial (-j1) even under make -j: concurrent splat runs share asm/ and gave
@@ -148,6 +150,14 @@ check: build
 verify:
 	@$(MAKE) --no-print-directory clean
 	@$(MAKE) --no-print-directory check
+
+# The disc image: the user's retail image with build/main.exe and every build/<ovl>.bin put back
+# at their retail sectors. Boots in an emulator; the matching build packs to the retail image.
+disc: build
+	@$(PYTHON) tools/scripts/pack_disc.py
+
+disc-check: disc
+	@sha1sum -c $(CFG)/disc.sha
 
 # ---- matching helpers (tools/scripts/decomp.py) ----
 diff:

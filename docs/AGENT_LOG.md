@@ -29,6 +29,13 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
+0. Current focus (ROADMAP.md, Current focus): the replay harness. `make
+   disc` already packs a bootable `build/CrashBash.bin`/`.cue` and `make
+   disc-check` proves it is the retail image. The harness needs a headless
+   emulator in the toolchain image (Mednafen or a libretro core such as
+   Beetle PSX, driven by a script), an input recording format, and frame
+   hashes plus a few game values per frame. Prove it on the matching build
+   with a short recording (boot to the title, into one minigame).
 1. More swarm runs: `swarm.mjs run --branch main --seg main/ --max-minutes
    120 --max-functions 300 --max-run-usd 80`. Big mode works on real
    functions (first run: 612 B and 600 B both matched in one ~6-min opus
@@ -249,6 +256,11 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-14 (disc packer):** `make disc` / `make disc-check`
+  (`tools/scripts/pack_disc.py`): dumpsxiso the retail image into
+  `build/disc/`, put the built exe and overlays back, mkpsxiso it. The
+  matching build packs to the retail image byte for byte (~20 s). Roadmap:
+  packer ticked, a playable, testable build is now the current focus.
 - **2026-10-14 (by hand):** Split `func_80027408` at `0x800274FC` (a
   `// type:func` line in `sym.main.txt`; it never returns) and matched it.
   After a split, `decomp.py index` keeps the old size: fix `size` in

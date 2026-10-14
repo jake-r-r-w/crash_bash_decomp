@@ -16,6 +16,16 @@ badges. Tick a box in the commit that finishes that item, and run
 Preparation goes in the phase that first needs it. When later work turns up
 something new to do, add it to the phase it blocks, not to an earlier one.
 
+## Current focus: a build we can play and test
+
+Matching continues, but the first priority is being able to run any build of
+ours and check that it still plays the same as retail. `tools/dk make disc`
+packs `build/main.exe` and the overlays into `build/CrashBash.bin`/`.cue`,
+which boots in an emulator, and `make disc-check` confirms the matching build
+packs to the retail image byte for byte. Next is the replay harness (Phase 2),
+then the shiftable `NON_MATCHING` build (Phase 4). Until they exist, a build
+that isn't byte-identical can't be tested at all.
+
 ## Phase 1 - Foundations: types and names
 
 Build the names and types that matching `main.exe` depends on.
@@ -57,6 +67,21 @@ plus `2MBYTE.OBJ`. `CRASHBSH.DAT` extracts, and so do the formats whose
 loaders are in the exe, each documented. The disc packer and the replay
 harness work, so later phases can test what they finish.
 
+- [x] A disc packer: put the built exe and overlays, with the user's other
+  files, back into a disc image with the retail layout (every file at its
+  original sector). Packing the matching build must give the retail image
+  byte for byte. It's the only way to run any build of ours in an emulator.
+  `tools/dk make disc` (`tools/scripts/pack_disc.py`) and `make disc-check`
+  (`configs/USA/disc.sha`). A file may shrink but not grow; an overlay that
+  outgrows its `CRASHBSH.DAT` slot needs the DAT and its index rebuilt.
+- [ ] A replay harness: play an emulator input recording (BizHawk or Mednafen
+  movie) on two discs and compare each frame's image hash and a set of game
+  values (positions, scores, the random seed, the current mode), read from
+  wherever each build keeps them. It reports the first frame that differs.
+  It runs headless in the toolchain container, like everything else. Prove
+  it on the matching build, which must pass (test 4 in
+  [The final test](#the-final-test)), with a short recording first (boot to
+  the title screen and into one minigame).
 - [x] Match GTE code: include Sony's GTE macros (`inline_c.h`, `gtemac.h`) in
   the game sources and match one GTE function through `done`. 27 of the exe's
   game functions use the GTE, and m2c can't draft them.
@@ -80,16 +105,6 @@ harness work, so later phases can test what they finish.
   `0x8004E110`) from the user's disc and extract its files to `assets/`, plus
   the formats whose loaders are in the exe, to editable files. Document each
   format. Formats parsed by the engine or a minigame belong to that phase.
-- [ ] A disc packer: put the built exe and overlays, with the user's other
-  files, back into a disc image with the retail layout (every file at its
-  original sector). Packing the matching build must give the retail image
-  byte for byte. It's the only way to run any build of ours in an emulator.
-- [ ] A replay harness: play an emulator input recording (BizHawk or Mednafen
-  movie) on two discs and compare each frame's image hash and a set of game
-  values (positions, scores, the random seed, the current mode), read from
-  wherever each build keeps them. It reports the first frame that differs.
-  Prove it on the matching build, which must pass (test 4 in
-  [The final test](#the-final-test)).
 
 ## Phase 3 - The engine overlay
 
