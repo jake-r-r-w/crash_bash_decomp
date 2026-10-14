@@ -44,7 +44,10 @@ the host has no Python. In Git Bash loops, pass `</dev/null` to `tools/dk`.
    - the "Diff patterns" table and the checklist for this kind of diff
      (register-only, instruction order, or opcode/length), noting in your
      reasoning which items you tried;
-   - for register differences, the cc1 dump ("Why does a register differ?").
+   - for register differences, `decomp.py vars NAME` (the variable behind each
+     swap; it points to `decomp.py splitvars NAME VAR` when one variable wants
+     different registers in different blocks), then the cc1 dump ("Why does a
+     register differ?").
    - the `registers` stage: the permuter doesn't fix structure.
    Then run `tools/dk make permute FUNC=NAME MINUTES=10` (for a big function add
    `ARGS=--differing`: only the C of the blocks that differ). When it finds

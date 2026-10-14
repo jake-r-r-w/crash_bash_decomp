@@ -185,7 +185,10 @@ Parks are not committed. After a run:
    table in `docs/MATCHING.md` (pipes inside code escaped, rows already there skipped) and
    archives it as `patterns.folded-<date>.md`. Review `git diff docs/MATCHING.md`, drop weak
    rows, commit.
-4. Add the run to `docs/AGENT_LOG.md` (Current state, Next, Session log), as after any session.
+4. Near misses: `node tools/swarm/swarm.mjs permute --near --minutes 60` gives every unmatched
+   checkpoint at the registers stage a permuter run on its differing blocks (CPU only; can run
+   overnight). Gate a match with the `run --resume` line it prints.
+5. Add the run to `docs/AGENT_LOG.md` (Current state, Next, Session log), as after any session.
 
 ## Permuter-only sessions
 
