@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 780/2551 game functions matched (main.exe ~514/575, 60 left), 8 parked,
+- 791/2551 game functions matched (main.exe ~525/575, 49 left), 8 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
@@ -291,6 +291,15 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-14 (swarm A/B round 2, 60 min):** 4 pairs of fresh 908-1212 B
+  main functions, 27-min sessions, $29.56: 7/8 matched (regions arm 4/4,
+  control 3/4). Both rounds: regions 6/7 in ~66 session-min/$17, control
+  5/7 in ~85 min/$20; n too small to call. Control workers found `regions`
+  in the docs and used it on `func_80019A60` (parked: STAGE 291/305, best
+  37/59 blocks); its session 4 lost 10 blocks at the same STAGE count, so
+  STAGE can't rank checkpoints there. Sessions still end early (1-19 of
+  27 min). Next: regions as the big-mode default, checkpoints ranked by
+  paired/blocks too, then an A/B on 1400+ B and parked functions.
 - **2026-10-14 (swarm A/B, 30 min):** `--regions` arm vs control, 3
   size-matched pairs of fresh 828-868 B main functions, one 25-min big
   session each, $7.78. 4/6 matched (2 per arm: `func_80020344`,
