@@ -32,7 +32,11 @@ the host has no Python. In Git Bash loops, pass `</dev/null` to `tools/dk`.
    branches, loops, jump tables) first, then `instructions` (opcodes: order,
    temps, types), then `registers`. Typical fixes: statement order,
    signed/unsigned, `s16`/`s32` locals, temporaries, `do {} while` instead of
-   `for`, pointer increments instead of indexing.
+   `for`, pointer increments instead of indexing. When the diff is long, or
+   an early extra instruction shifts everything after it, use
+   `tools/dk python3 tools/scripts/decomp.py regions NAME` instead: it aligns
+   the code, lists the differing blocks with their C lines and shows the
+   first one side by side; fix that block, re-run.
 4. **Before the permuter.** Use `make permute` only after all of these:
    - the evidence step from docs/MATCHING.md ("Evidence first": `decomp.py dups`,
      grep matched C in `src/` for the same globals or shape, the headers in

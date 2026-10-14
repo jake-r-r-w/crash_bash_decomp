@@ -24,8 +24,10 @@ idle. Each function gets one permuter run.
 ## Big mode
 
 Normal workers get one short attempt per model. That matches 93-97% of functions under 400
-bytes, but a big function needs many hours, so big ones go to big-mode workers (`b1`, ...)
-instead:
+bytes but only about half from 400 B up, so big ones go to big-mode workers (`b1`, ...):
+opus sessions that work block by block with `decomp.py regions` and resume from a checkpoint.
+Most functions up to ~1200 B match in one session of 2-15 minutes (13 of 15 on 2026-10-14);
+the rest take several, each building on the best C so far:
 
 ```
 big function (>= --big-bytes, or parked in normal mode)

@@ -29,53 +29,51 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-- **Big functions (2026-10-14):** big mode now uses the `decomp.py regions`
-  prompt and ranks checkpoints by region score (paired, blocks, exact).
-  `func_80019A60` is at registers 17/303 (55/59 blocks, paired 303/303)
-  in the swarm checkpoint, but that C changes the first parameter to s32
-  through a `#define func_80019A60` wrapper, which the swarm now refuses:
-  the next session must declare it s32 directly (main.h and the extern
-  above `func_8001DD50`; the checkpoint log says so). Resume it first
-  (`swarm.mjs run --only func_80019A60 --retry-failed ...`: it has used
-  its big sessions).
-  Then try big mode on 1400+ B
-  functions (`func_8002D4F4`, `func_8001B6D4`, `func_8001492C`,
-  `func_8001AF2C`, `func_8002C97C`, `func_80023A90`).
 0. Current focus (ROADMAP.md, Current focus): `make disc` and `make
    replay` work; the matching build is frame-identical to retail. The
    harness's next step is a state-sequence mode (Phase 4; frame-exact is
    too strict for builds whose code changes size), wanted by the first
    shiftable `NON_MATCHING` build. Recordings stay short and hand-written
    (`<frames> [buttons]`, check with `replay.py run ... --shot N`).
-1. More swarm runs: `swarm.mjs run --branch main --seg main/ --max-minutes
-   60 --max-functions 300 --max-run-usd 80 --big-bytes 400 --workers 1
-   --big-workers 3`. 400-599 B
-   matches 57% in normal mode and big mode does better, hence
-   `--big-bytes 400`; 17 functions of that size have never been leased
-   (`func_80010C70`, `func_80010E8C`, `func_8001231C`, `func_80013D54`,
-   `func_80017164`, `func_80017EE8`, `func_8001A82C`, `func_8001D6B4`,
-   `func_8001E21C`, `func_8001E610`, `func_8001F604`, `func_8001FE80`,
-   `func_800235BC`, `func_8002854C`, `func_80028774`, `func_80028D40`,
-   `func_80029560`). The 2.7.2 functions the load fix unblocked were reset
-   with `swarm.mjs forget`, so no `--retry-failed` is needed. After each
-   run, the checklist at the end of tools/swarm/README.md (`stats`, parks,
-   `swarm.mjs fold`, this log).
-2. Split `main.c` into its translation units, between swarm runs (a split
+1. Big functions. Big mode now works block by block with `decomp.py
+   regions` and ranks checkpoints by region score (tools/swarm/README.md,
+   Big mode); in the 2026-10-14 runs it matched 13 of 15 fresh 828-1212 B
+   functions and took a parked one from 37/59 to 55/59 blocks.
+   - Resume `func_80019A60` first: registers 17/303 (55/59 blocks, paired
+     303/303) in the swarm checkpoint. That C changes the first parameter
+     to s32 through a `#define func_80019A60` wrapper, which the swarm now
+     refuses: the next session must declare it s32 directly (main.h and
+     the extern above `func_8001DD50`; its checkpoint log says so). It has
+     used its big sessions: `swarm.mjs run --branch main --only
+     func_80019A60 --retry-failed --big-workers 1 ...`.
+   - Then the untried big ones: 1400+ B `func_8002D4F4` (gcc 2.7.2 unit),
+     `func_8001B6D4`, `func_8001492C`, `func_8001AF2C`, `func_8002C97C`,
+     `func_80023A90`; 600-1399 B `func_80020680`, `func_800243A0`,
+     `func_80019094`, `func_8002926C`. Sessions of ~27 min
+     (`--big-minutes 27`); a 60-min run with one function per big worker
+     gives each about two.
+2. The rest of `main.exe` with the swarm: `swarm.mjs run --branch main --seg
+   main/ --max-minutes 60 --max-run-usd 80 --big-bytes 400 --workers 1
+   --big-workers 3`. 27 functions of 400-599 B are left (20 never leased)
+   and big mode does better than normal mode there, hence `--big-bytes
+   400`. After each run, the checklist at the end of tools/swarm/README.md
+   (`stats`, parks, `swarm.mjs fold`, this log).
+3. Split `main.c` into its translation units, between swarm runs (a split
    moves functions, so workers' patches and big-mode checkpoints for them
    stop applying). Find the boundaries first and write the evidence in
    ARCHITECTURE.md: rodata order, alignment padding, file-local statics,
-   changes of compiler style (as at `0x8002D488`). Doing this before the
-   rest of the matching helps it: code in the wrong unit can't match, and
-   the rodata batch failures came from `main.c`'s single rodata block.
-3. Keep matching `main.exe` (swarm runs, alternating with split steps). By
-   hand: `decomp.py next --seg main/`, the MATCHING.md process (check the
-   unit, evidence, STAGE by STAGE, Diff patterns, cc1 dump, then permuter).
-   No `main.exe` function left has an identical copy (`decomp.py dups`:
-   every main member of a group is matched). A function that parks still gets its prototype in its owned
-   header (an ordinary commit after `make check`).
-4. Name each function as it's matched when the evidence allows (345 of
-   2550 are named). Unpark when a new idea comes up (see Open leads).
-5. Later Phase 2 items: data to C (after the split), naming and typing
+   changes of compiler style (as at `0x8002D488`). Code in the wrong unit
+   can't match, and the rodata batch failures came from `main.c`'s single
+   rodata block.
+4. By hand: `decomp.py next --seg main/`, the MATCHING.md process (check
+   the unit, evidence, STAGE by STAGE, Diff patterns, cc1 dump, then
+   permuter); for a big function, `decomp.py regions` block by block. No
+   `main.exe` function left has an identical copy (`decomp.py dups`). A
+   function that parks still gets its prototype in its owned header (an
+   ordinary commit after `make check`).
+5. Name each function as it's matched when the evidence allows. Unpark
+   when a new idea comes up (see Open leads).
+6. Later Phase 2 items: data to C (after the split), naming and typing
    passes, and the `CRASHBSH.DAT` extractor (independent: any time).
 
 ## Open leads

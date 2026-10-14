@@ -59,38 +59,46 @@ Big functions go to big-mode workers there, in resumable sessions.
 
 A function of 600 bytes or more rarely matches in one sitting, and the
 permuter's random edits get nowhere on hundreds of instructions. Work on it
-over several sessions, keeping the best C between them:
+block by block over several sessions, keeping the best C between them:
 
-- **Measure progress with the `STAGE` line.** A later stage beats any number
-  of diffs in an earlier one. Within a stage, fewer diffs is better.
-- **Find the region to work on with `decomp.py regions NAME`.** `try`
-  compares instruction i with instruction i, so one extra instruction makes
-  everything after it a diff. `regions` aligns the two streams and scores
-  the target's basic blocks one by one (`ok`, `operands`, `differ`), with
-  each differing block's C lines and its side-by-side diff (`--block N` for
-  another one). Its last line, `REGIONS NAME blocks m/n insns e/N paired
-  p/N ...`, gives exact instructions and opcode-paired instructions
-  (structure). Fix the first differing block, re-run, repeat. A register
-  change can cascade through every later block, so `insns` can drop while
-  the C gets closer: read `paired` and the block list together.
+- **Work and measure with `decomp.py regions NAME`.** `try` compares
+  instruction i with instruction i, so one extra instruction makes
+  everything after it a diff, and its `STAGE` count can rise while the C
+  gets closer. `regions` aligns the two streams and scores the target's
+  basic blocks one by one (`ok`, `operands`, `differ`), with each differing
+  block's C lines and its side-by-side diff (`--block N` for another one,
+  `--no-lines` to skip the C-line build). Its last line, `REGIONS NAME
+  blocks m/n insns e/N paired p/N ...`, is the progress measure: more
+  `paired` (target instructions aligned by opcode: the structure), then
+  more identical blocks, then more exact instructions. Fix the first
+  differing block (its missing or extra instructions before its operands),
+  re-run, repeat; undo a change that loses blocks. A register change can
+  cascade through every later block, so read `paired` and the block list
+  together. `STAGE` still says when only registers are left (the
+  permuter's stage).
 - **Check the unit first** (step 2). `func_8002D4F4`, the largest function
   left in `main.exe`, is in the gcc 2.7.2 unit.
 - **Type the data before matching.** Put structs for everything it touches
   in the owned header, from `include/bash/`, the prototype debug types and
   the leaked headers. m2c's offset casts and `u8 *` arithmetic cause most of
   a big function's diff.
+- **Fix the function's own declarations.** A wrong parameter type in its
+  prototype or an `extern` elsewhere shifts code all through it; change
+  them in place (`done`'s full build catches a caller that stops
+  matching), not through a macro or wrapper named after the function.
 - **Look for helpers and siblings.** A run of instructions repeated inside
   the function, or shared with a matched function, is usually a
   `static inline` helper or a macro (see the pop/push rows in Diff
-  patterns). `decomp.py dups`, and the callers and callees in
-  `.decomp/functions.json`, find matched code to copy from.
+  patterns; `func_80019A60` gained 8 blocks from one shared draw helper).
+  `decomp.py dups`, and the callers and callees in `.decomp/functions.json`,
+  find matched code to copy from.
 - **Permute late and narrow.** Only at the `registers` stage, with a long
   run (an hour, or overnight), and on the region that differs where you can.
 - **Keep the best C between sessions.** By hand: `decomp.py block NAME
-  --note "<STAGE line>; next: ..."` with the C under `#ifndef NON_MATCHING`,
-  so the next session starts from it. In the swarm, big mode keeps a
-  checkpoint per function and starts each session from it
-  ([tools/swarm](../tools/swarm/README.md), Big mode).
+  --note "<REGIONS line>; next: ..."` with the C under `#ifndef
+  NON_MATCHING`, so the next session starts from it. In the swarm, big mode
+  keeps a checkpoint per function, ranked by the region score, and starts
+  each session from it ([tools/swarm](../tools/swarm/README.md), Big mode).
 
 
 ## Evidence first

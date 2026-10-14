@@ -28,6 +28,9 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
 - `make diff` / `decomp.py try` end with `STAGE NAME structure|instructions|registers n/total`:
   fix the stages in that order. Check the asm's style fits the file's compiler
   first (gcc 2.7.2 unit: `main/8002d488`; per-unit settings in the Makefile).
+  For a big function, `decomp.py regions NAME` aligns the code and scores it
+  block by block with C lines (MATCHING.md, Big functions); the swarm's big
+  mode works and ranks checkpoints by it.
 - At the end of every session, update `docs/AGENT_LOG.md`: Current state,
   Next and Open leads, any new gotcha, and one short entry at the top of its
   Session log. Matching idioms go in the Diff patterns table in
