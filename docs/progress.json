@@ -25,6 +25,12 @@
    "size": 376
   },
   {
+   "name": "func_80020C04",
+   "note": "STAGE structure 16/19 (18 vs 19): retail has mult with no mflo and returns a; every dead-product form (u16/>>32 splits, long long <<32, unused local) folds the mult away too in 2.8.1, signed >>32 keeps one mflo; 2.5.7/2.6 keep partial dead code; next: cc1 -dc/-dl dump of the >>32 form, or check whether this region is another compiler",
+   "seg": "main/main",
+   "size": 72
+  },
+  {
    "name": "func_80026D08",
    "note": "Rebuilds NASFreeList from the pool (D_8005AA1C, slots D_8005AA10..D_8005AA12-1). Best: goto loop, 18 off: target keeps %hi(NASFreeList) in a1 (a copy, so loop.c hoisted it) and loads D_8005AA10 once before the loop. goto loops get no hoisting; for(;;)+break with a 'first' local hoists the lui but adds a nas+12 giv (37 insns); while/for with the global, index inside the loop, head pointer local, store order, static inline FreeNAS: no better. Permuter 10 min: only a semantics-breaking goto move.",
    "seg": "main/main",
@@ -43,9 +49,9 @@
    "size": 372
   }
  ],
- "commit": "0901201",
+ "commit": "38df29a",
  "game": "SCUS_945.70",
- "generated": "2026-10-14T12:25:48Z",
+ "generated": "2026-10-14T12:39:35Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -34472,7 +34478,7 @@
    }
   },
   {
-   "commit": "0901201",
+   "commit": "38df29a",
    "data_b": 384,
    "data_tb": 606943,
    "game_all_f": 2551,
@@ -34485,7 +34491,7 @@
    "lib_b": 122112,
    "lib_f": 564,
    "lib_tb": 122112,
-   "ts": "2026-10-14T12:25:48Z",
+   "ts": "2026-10-14T12:39:35Z",
    "units": {
     "engine": [
      2752,
@@ -34681,7 +34687,7 @@
   }
  ],
  "summary": {
-  "blocked": 7,
+  "blocked": 8,
   "copies_b": 37444,
   "data": {
    "done_b": 384,
@@ -34692,7 +34698,7 @@
    "all_f": 2551,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 7,
+   "blocked": 8,
    "c_f": 777,
    "done_b": 91844,
    "done_f": 780,
@@ -34744,7 +34750,7 @@
     "all_f": 575,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 7,
+    "blocked": 8,
     "c_f": 512,
     "done_b": 80400,
     "done_f": 515,
