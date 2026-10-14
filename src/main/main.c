@@ -2114,7 +2114,47 @@ void func_80013CFC(s32 pad, u8 *out) {
     *(s32 *)(out + 0xC) = 0x80;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80013D54);
+/* 4.12 product rounded away from zero */
+#define FIX12_MUL(a, b) (((a) * (b) >= 0 ? (a) * (b) + 0x800 : (a) * (b) - 0x800) >> 12)
+
+void func_80013D54(SVECTOR *rot, MATRIX *m) {
+    Quat *q = (Quat *)rot;
+    s32 x2, y2, z2;
+    s32 wx, wy, wz, xx, xy, xz, yy, yz, zz;
+    s32 t;
+
+    x2 = q->v[0] * 2;
+    y2 = q->v[1] * 2;
+    z2 = q->v[2] * 2;
+    t = FIX12_MUL(q->v[3], x2);
+    wx = t;
+    t = FIX12_MUL(q->v[3], y2);
+    wy = t;
+    t = FIX12_MUL(q->v[3], z2);
+    wz = t;
+    t = FIX12_MUL(q->v[0], x2);
+    xx = t;
+    t = FIX12_MUL(q->v[0], y2);
+    xy = t;
+    t = FIX12_MUL(q->v[0], z2);
+    xz = t;
+    t = FIX12_MUL(q->v[1], y2);
+    yy = t;
+    t = FIX12_MUL(q->v[1], z2);
+    yz = t;
+    t = FIX12_MUL(q->v[2], z2);
+    zz = t;
+    m->m[0][0] = 0x1000 - (yy + zz);
+    m->m[0][1] = xy - wz;
+    m->m[0][2] = xz + wy;
+    m->m[1][0] = xy + wz;
+    m->m[1][1] = 0x1000 - (xx + zz);
+    m->m[1][2] = yz - wx;
+    m->m[2][0] = xz - wy;
+    m->m[2][1] = yz + wx;
+    m->m[2][2] = 0x1000 - (xx + yy);
+    MatrixNormal_1(m, m);
+}
 
 void func_80013F44(CamView *cam, CamView *dst, CamEase *ease) {
     if (ease != NULL) {
