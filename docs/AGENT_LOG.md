@@ -85,8 +85,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
   then exact.** A sum of the three fractions would have kept a closer
   `func_8002E3D0` version (11/12 blocks, registers right, paired 106/109
   vs 109/110; its C is in that session's result note), but the user
-  ruled it out as too slow (it accepts sideways moves). Port such a
-  version by hand instead.
+  ruled it out: it would make progress too slow. Port such a version by
+  hand instead.
 - **`func_80020C04`** (lerp on the `D_80068BD4` trig table, no callers):
   retail emits `mult` with no `mflo` and returns `a`. In 2.8.1 every dead
   product form also drops the `mult`; signed `>> 32` keeps one `mflo` (19 vs
