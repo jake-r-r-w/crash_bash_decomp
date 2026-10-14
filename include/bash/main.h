@@ -201,9 +201,11 @@ typedef struct {
     u8 unk4[4];
     s32 *farColor; /* 0x08: r, g, b for gte_ldfcdir */
     s32 dp;        /* 0x0C: depth-cue factor for gte_lddp */
-    u8 unk10[4];
+    void *viewport; /* 0x10: GfxViewport (func_80018B08) */
     s32 modelDp;   /* 0x14: dp for ModelObj quads (func_8001AA48) */
-    u8 unk18[8];
+    u8 unk18[4];
+    s16 clipX1;    /* 0x1C: viewport clip right/bottom on screen */
+    s16 clipY1;
     s32 ofx;   /* 0x20: geometry offset x (scaled by the screen width / 640) */
     s32 ofy;   /* 0x24: geometry offset y (halved) */
     u8 unk28[0x18];
@@ -1033,6 +1035,36 @@ static inline void GfxAddTrans(VECTOR *v) {
 /* The current draw buffer: primitives are allocated from the pointer at
  * +0x4008 (func_80029D28). */
 extern u8 *D_8005B68C;
+
+/* A screen offset pair, copied as one struct. */
+typedef struct {
+    s32 x, y;
+} GfxOffset;
+
+/* A viewport func_80018B08 makes current (coordinates in 640-wide units). */
+typedef struct {
+    s16 x0, y0, x1, y1;     /* 0x00: draw area */
+    s16 cx0, cy0, cx1, cy1; /* 0x08: clip area (func_80014540) */
+    s32 ofx, ofy;           /* 0x10: geometry offset */
+    s32 otIdx;              /* 0x18: first ot entry in D_8005B68C */
+    s32 otLen;              /* 0x1C */
+    s32 unk20;
+    u8 r, g, b, isbg;       /* 0x24: background */
+} GfxViewport;
+
+/* Sets the clip area c (640-wide units) for cam. */
+static inline void GfxSetClip(GfxState *gs, RECT *c, GfxCamera *cam) {
+    RECT clip;
+
+    clip.x = c->x * D_8005B698->w / 640;
+    clip.y = c->y / 2;
+    clip.w = (c->w - c->x) * D_8005B698->w / 640;
+    clip.h = (c->h - c->y) / 2;
+    gs->clipX1 = c->w * D_8005B698->w / 640;
+    gs->clipY1 = c->h / 2;
+    gs->cam = cam;
+    func_80014540((u8 *)cam, &clip);
+}
 
 /* A sprite frame func_80029D28 draws as one POLY_FT4. */
 typedef struct {
@@ -2213,6 +2245,8 @@ typedef struct CamEase {
 } CamEase;
 
 void func_80013F44(CamView *cam, CamView *dst, CamEase *ease);
+
+void func_80018B08(GfxViewport *vp, GfxCamera *cam);
 
 void func_8001F828(u8 *arg0, u8 *arg1);
 

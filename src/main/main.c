@@ -4119,7 +4119,45 @@ u8 *func_800189F4(u8 *arg0, s32 w, s32 h) {
     return res;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80018B08);
+void func_80018B08(GfxViewport *vp, GfxCamera *cam) {
+    DR_ENV *dr;
+    DRAWENV *env;
+    RECT *disp;
+    GfxState *gs = &D_80056998;
+
+    gs->viewport = vp;
+    GfxSetClip(gs, (RECT *)&vp->cx0, cam);
+    disp = D_8005B698;
+    if (D_8005B68C == D_8005B790) {
+        disp += 1;
+    }
+    env = (*(DRAWENV **)(D_8005B68C + 0x4008))++;
+    SetDefDrawEnv(env, vp->x0 * D_8005B698->w / 640 + disp->x, vp->y0 / 2 + disp->y,
+                  (vp->x1 - vp->x0) * D_8005B698->w / 640, (vp->y1 - vp->y0) / 2);
+    env->dfe = 1;
+    env->dtd = 0;
+    env->isbg = vp->isbg;
+    env->r0 = vp->r;
+    env->g0 = vp->g;
+    env->b0 = vp->b;
+    env->ofs[0] = disp->x;
+    env->ofs[1] = disp->y;
+    dr = (*(DR_ENV **)(D_8005B68C + 0x4008))++;
+    SetDrawEnv(dr, env);
+    addPrim((u32 *)D_8005B68C + vp->otIdx + vp->otLen - 1, dr);
+    *(GfxOffset *)&gs->ofx = *(GfxOffset *)&vp->ofx;
+    ((GfxOffset *)gs->unk28)->x = gs->ofx;
+    ((GfxOffset *)gs->unk28)->y = gs->ofy;
+    gte_SetGeomOffset(vp->ofx * D_8005B698->w / 640, vp->ofy / 2);
+    gte_SetGeomScreen(*(s32 *)(cam->unk18));
+    gte_SetRotMatrix(&cam->view);
+    gte_SetTransMatrix(&cam->view);
+    gs->ot = (u32 *)D_8005B68C + vp->otIdx;
+    gs->otLen = vp->otLen - 1;
+    ((GfxOffset *)gs->unk28)[1].x = vp->unk20;
+    gs->otzAdd = 0;
+    gs->modelDp = 0;
+}
 
 s32 func_80018F3C(EXTengine *eng, s32 n) {
     s32 count;
