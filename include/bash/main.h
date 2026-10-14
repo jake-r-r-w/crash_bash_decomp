@@ -522,7 +522,6 @@ MemBlock *func_80011C5C(u32 words, MemBlock *blk);
 s32 func_80013034(s32 arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *arg4, s32 arg5, s32 arg6);
 void func_80029560(u8 *arg0);
 void func_8002A5A4(u8 *arg0, u8 *arg1);
-void func_80027AD4(u8 *src, u8 *dst, s32 n);
 void func_8002C394(s32 arg0, SeqSlot *slot, s32 type);
 s32 func_80013688(s32 arg0, void (*done)(), void *ctx);
 void func_8002BA10(s32 arg0, VabSlot *slot);
@@ -1733,13 +1732,77 @@ extern u8 D_80063A84[];
 
 /* Pad rumble state (func_800281C0). */
 typedef struct PadRumble {
-    /* 0x00 */ u8 unk0[4];
+    /* 0x00 */ s32 unk0;
     /* 0x04 */ u8 act[2];  /* motor values passed to PadSetAct */
     /* 0x06 */ u16 dirty;
     /* 0x08 */ s16 time0;
     /* 0x0A */ s16 time1;
     /* 0x0C */ s16 reset;
 } PadRumble;
+
+/* Raw controller packet read by func_80027AD4 (status byte, type in the top nibble). */
+typedef struct PadPacket {
+    /* 0x00 */ u8 status;
+    /* 0x01 */ u8 unk1;
+    /* 0x02 */ u16 buttons;
+    /* 0x04 */ u8 rx;
+    /* 0x05 */ u8 ry;
+    /* 0x06 */ u8 lx;
+    /* 0x07 */ u8 ly;
+} PadPacket;
+
+/* PadState as written by func_80027AD4. */
+typedef struct PadInput {
+    /* 0x00 */ s32 flags;
+    /* 0x04 */ s32 buttons;
+    /* 0x08 */ s32 rx;
+    /* 0x0C */ s32 ry;
+    /* 0x10 */ s32 lx;
+    /* 0x14 */ s32 ly;
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ PadRumble rumble;
+} PadInput;
+
+void func_80027AD4(PadPacket *p, PadInput *in, s32 n);
+
+extern s32 D_80063A8C;
+
+/* func_800281C0's body, inlined into func_80027AD4. */
+static inline s32 PadRumble_update(PadRumble *r, s32 port) {
+    if (r->reset != 0) {
+        if (r->time0 != 0) {
+            r->time0 = 1;
+        }
+        if (r->time1 != 0) {
+            r->time1 = 1;
+        }
+    }
+    r->reset = 0;
+    if (r->time0 != 0) {
+        r->time0 = r->time0 - 1;
+        if ((r->time0 << 16) == 0) {
+            r->act[0] = 0;
+            r->dirty |= 1;
+        }
+    }
+    if (r->time1 != 0) {
+        r->time1 = r->time1 - 1;
+        if ((r->time1 << 16) == 0) {
+            r->act[1] = 0;
+            r->dirty |= 2;
+        }
+    }
+    if (PadGetState(port) != 6) {
+        return 0;
+    }
+    if (r->dirty != 0) {
+        PadSetAct(port, r->act, 2);
+        if (PadSetActAlign(port, D_80063A84) == 1) {
+            r->dirty = 0;
+        }
+    }
+    return 8;
+}
 
 MemBlock *func_800118BC(MemBlock *blk, s32 words, Heap *heap);
 

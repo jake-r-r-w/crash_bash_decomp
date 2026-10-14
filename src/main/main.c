@@ -8942,7 +8942,43 @@ void func_80027A9C(void) {
     func_80027A30(0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80027AD4);
+void func_80027AD4(PadPacket *p, PadInput *in, s32 n) {
+    if (p->status == 0) {
+        in->flags |= 1;
+        in->flags |= PadRumble_update(&in->rumble, n);
+        if (D_8005B690 > D_80063A8C + 10 &&(in->flags & 8) && in->unk18 != 0
+            && PadGetState(n) == 6 && PadSetMainMode(n, 1, 2) == 1) {
+            in->unk18 = 0;
+            D_80063A8C = D_8005B690;
+        }
+        in->flags &= ~6;
+        switch (*(u16 *)p >> 12) {
+        case 7:
+            in->flags |= 6;
+            in->rx += p->rx;
+            in->ry += p->ry;
+            in->lx += p->lx;
+            in->ly += p->ly;
+            in->rx >>= 1;
+            in->ry >>= 1;
+            in->lx >>= 1;
+            in->ly >>= 1;
+            in->buttons = ~p->buttons & 0xFFFF;
+            break;
+        case 4:
+            in->flags |= 4;
+            in->buttons = ~p->buttons & 0xFFFF;
+            break;
+        }
+    } else {
+        in->buttons = 0;
+        in->flags = 0;
+        in->unk18 = 1;
+        in->rumble.unk0 = 0;
+        in->rumble.dirty = 0;
+        in->rumble.reset = 0;
+    }
+}
 
 static inline s32 func_80027D90_read(u8 *src, u8 *dst, s32 n) {
     s32 count;

@@ -2067,7 +2067,8 @@
   "via": "auto"
  },
  "80027AD4": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-14T08:59:26Z",
+  "status": "matched"
  },
  "80027D90": {
   "auto_diff": 89,
