@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 804/2551 game functions matched (main.exe ~538/575, 36 left), 8 parked,
+- 805/2551 game functions matched (main.exe ~539/575, 35 left), 8 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
@@ -309,6 +309,12 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-14 (by hand, `func_80013D54`, 496 B, no permuter):** matched
+  from the swarm checkpoint (6/124, a yz/zz register swap). The nine
+  rounded products share one temp: `t = FIX12_MUL(..); var = t;`. Found
+  from the greg dump: zz (two sets, short life) was allocated first and
+  took the free `a0`. The checkpoint's `Fix12Mul`/`Fix12Round` inline
+  helpers are gone from `main.h`.
 - **2026-10-14 (by hand, `func_8002E3D0`, 436 B, gcc 2.7.2 unit, no
   permuter):** matched. `bits` is two `u16` halves: `lo = bits;` then
   `hi = bits >> 16;` (copy first, so `bits` dies at the `srl` in `a3`;
