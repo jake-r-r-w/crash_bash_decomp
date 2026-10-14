@@ -8,7 +8,13 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # The tag is the Dockerfile's git blob hash, so a change to the Dockerfile builds a new image
 # by itself (no tag to bump; tools/dk.ps1 computes the same one).
-IMAGE="${PSX_DECOMP_IMAGE:-psx-decomp:$(git -C "$ROOT" hash-object tools/docker/Dockerfile | cut -c1-12)}"
+# (cd first: some git builds can't take Git Bash's /c/... form for -C)
+HASH="$(cd "$ROOT" && git hash-object tools/docker/Dockerfile | cut -c1-12)"
+if [ -z "${PSX_DECOMP_IMAGE:-}" ] && [ ${#HASH} -ne 12 ]; then
+  echo "ERROR: could not hash tools/docker/Dockerfile for the image tag (git missing?)" >&2
+  exit 127
+fi
+IMAGE="${PSX_DECOMP_IMAGE:-psx-decomp:$HASH}"
 
 if ! command -v docker >/dev/null 2>&1; then
   echo "ERROR: docker not found. Install/start Docker Desktop (WSL 2 backend on Windows)." >&2
