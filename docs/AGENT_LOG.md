@@ -141,6 +141,13 @@ Other:
 ## Gotchas
 
 **Tooling**
+- **Toolchain image tag.** A change to `tools/docker/Dockerfile` needs the tag
+  in `tools/dk` and `tools/dk.ps1` bumped (now `psx-decomp:3`), or machines
+  that already have the image keep the old one. `tools/dk` builds a missing
+  image itself.
+- **Replay recordings.** Menus ignore a press while they animate in: hold a
+  button ~4 frames and leave a gap. Find frame counts with `replay.py run
+  ... --shot N` and look at the PNGs (tools/replay/README.md).
 - Splitting a function by adding a symbol (`name = 0x...; // type:func` in
   `sym.main.txt`, no `;` in the comment): run `decomp.py index`, which adds
   the new function but keeps the old one's `size` in
@@ -255,6 +262,11 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-14 (play and test docs):** `tools/replay/README.md` (packer,
+  playing in RetroArch, harness, recordings, limits), linked from README,
+  CONTRIBUTING (when to run `make replay`) and CLAUDE.md. RetroArch + the
+  PCSX-ReARMed core installed on the host at `C:\RetroArch-Win64`.
+  `replay.py --video` (MP4 with sound); memory cards pinned in `OPTIONS`.
 - **2026-10-14 (replay harness):** `make replay`: `tools/replay/replay.py`
   drives the PCSX-ReARMed libretro core through ctypes (pinned in the
   toolchain image, now `psx-decomp:2`), traces each frame's image hash and

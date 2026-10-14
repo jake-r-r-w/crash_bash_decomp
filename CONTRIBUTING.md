@@ -54,6 +54,18 @@ config and file splits: ordinary commits after `tools/dk make verify` prints
 `OK`. If a change affects progress, run `tools/dk make progress` and include
 `docs/` in the commit.
 
+## Testing a build in an emulator
+
+A match needs no emulator: `make check` proves the build is the retail bytes,
+so it plays like retail. Run `tools/dk make replay` (and look at its
+screenshots) for changes that make the build differ from retail on purpose:
+`NON_MATCHING` and shifted builds, and any change to the packer, the harness
+or the toolchain image. `tools/dk make disc` gives a disc image to play
+yourself. Details, controls and the recording format:
+[tools/replay/README.md](tools/replay/README.md). A new recording goes in
+`tools/replay/recordings/` with a comment saying what it covers, and the
+matching build must give `REPLAY OK` on it before it's committed.
+
 ## Session log
 
 At the end of each working session, agents and contributors update

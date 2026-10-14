@@ -19,6 +19,12 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   the same gate. Functions >= `--big-bytes` (600) go to resumable big-mode
   workers; `swarm.mjs stats` shows match rates by size to tune that. `--seg`
   is a prefix (`main/` covers every main.exe unit).
+- Playing/testing a build: `tools/dk make disc` (bootable `build/CrashBash.cue`),
+  `make disc-check` (byte-identical to retail), `make replay [REC=...]`
+  (headless emulator, retail vs build, first differing frame). To show the
+  user, launch it on the host: `C:/RetroArch-Win64/retroarch.exe -L
+  C:/RetroArch-Win64/cores/pcsx_rearmed_libretro.dll build/CrashBash.cue`.
+  See [tools/replay/README.md](tools/replay/README.md).
 - `make diff` / `decomp.py try` end with `STAGE NAME structure|instructions|registers n/total`:
   fix the stages in that order. Check the asm's style fits the file's compiler
   first (gcc 2.7.2 unit: `main/8002d488`; per-unit settings in the Makefile).

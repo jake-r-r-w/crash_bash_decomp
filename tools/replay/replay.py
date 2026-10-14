@@ -44,6 +44,8 @@ OPTIONS = {
     "pcsx_rearmed_region": "NTSC",
     "pcsx_rearmed_show_bios_bootlogo": "disabled",
     "pcsx_rearmed_frameskip_type": "disabled",
+    "pcsx_rearmed_memcard1": "libretro",    # a freshly formatted card in memory, never written out
+    "pcsx_rearmed_memcard2": "disabled",
 }
 
 # RETRO_DEVICE_ID_JOYPAD_*
