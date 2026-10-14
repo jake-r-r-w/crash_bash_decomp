@@ -113,6 +113,48 @@ def fill(lines):
     return out
 
 
+COND_BRANCHES = {"beq", "bne", "beqz", "bnez", "blez", "bgtz", "bltz", "bgez"}
+LABEL = re.compile(r"^\s*(\$?[\w.]+):\s*$")
+
+
+def steal_jump_slot(lines):
+    """A conditional branch with an empty slot whose target is a `j X` with a filled slot: branch
+    to X instead and copy that instruction into the empty slot. ASPSX does this (gcc 2.7.2 leaves
+    the branch for the assembler); func_8002DE2C's `beq a0,v0` returns 1 straight to the exit:
+
+        beq  $4,$2,$L26            beq  $4,$2,$L27
+        nop                  ->    li   $2,1
+        ...                        ...
+    $L26:                      $L26:
+        j    $L27                  j    $L27
+        li   $2,1                  li   $2,1
+    """
+    labels = {}
+    for i, line in enumerate(lines):
+        m = LABEL.match(line)
+        if m:
+            labels[m.group(1)] = i
+    out = list(lines)
+    for i, line in enumerate(lines[:-1]):
+        ins = insn(line)
+        if not ins or ins[0] not in COND_BRANCHES or not lines[i + 1].strip().startswith("nop"):
+            continue
+        args = [a.strip() for a in ins[1].split(",")]
+        t = labels.get(args[-1])
+        if t is None:
+            continue
+        k = t + 1                                   # first instruction at the target
+        while k < len(lines) and (not lines[k].strip() or LABEL.match(lines[k]) or lines[k].strip().startswith("#")):
+            k += 1
+        j = insn(lines[k]) if k < len(lines) else None
+        slot = insn(lines[k + 1]) if k + 1 < len(lines) else None
+        if not j or j[0] != "j" or j[1].strip().startswith("$31") or not slot or slot[0] in NO_MOVE | {"nop"}:
+            continue
+        out[i] = line.replace(args[-1], j[1].strip(), 1) if line.rstrip().endswith(args[-1]) else line
+        out[i + 1] = lines[k + 1]
+    return out
+
+
 if __name__ == "__main__":
     text = sys.stdin.read().split("\n")
-    sys.stdout.write("\n".join(fill(load_via_dest(text))))
+    sys.stdout.write("\n".join(steal_jump_slot(fill(load_via_dest(text)))))

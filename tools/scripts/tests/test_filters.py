@@ -99,6 +99,56 @@ class FillJumpSlots(unittest.TestCase):
         self.assertEqual(aspsx_fill.fill(src), src)
 
 
+class StealJumpSlot(unittest.TestCase):
+    """A conditional branch to a `j X` with a filled slot goes straight to X with a copy of it."""
+
+    TAIL = """
+        $L26:
+        j\t$L27
+        li\t$2,0x00000001
+        $L27:
+        j\t$31
+        nop  # DEBUG: branch/jump
+    """
+
+    def test_retargets_and_copies_the_slot(self):  # func_8002DE2C: return 1 for arg0 == 10
+        out = aspsx_fill.steal_jump_slot(lines("""
+            beq\t$4,$2,$L26
+            nop  # DEBUG: branch/jump
+        """ + self.TAIL))
+        out = [l for l in out if l.strip()]
+        self.assertEqual(out[:2], ["beq\t$4,$2,$L27", "li\t$2,0x00000001"])
+        self.assertEqual(out[2:5], ["$L26:", "j\t$L27", "li\t$2,0x00000001"])   # the jump stays for others
+
+    def test_filled_slot_untouched(self):
+        src = lines("""
+            beq\t$4,$2,$L26
+            addu\t$3,$3,1
+        """ + self.TAIL)
+        self.assertEqual(aspsx_fill.steal_jump_slot(src), src)
+
+    def test_target_not_a_jump(self):
+        src = lines("""
+            bnez\t$3,$L28
+            nop  # DEBUG: branch/jump
+            $L28:
+            addu\t$2,$0,$zero
+            j\t$31
+            nop  # DEBUG: branch/jump
+        """)
+        self.assertEqual(aspsx_fill.steal_jump_slot(src), src)
+
+    def test_return_jump_not_followed(self):  # `j $31` is a return, not a jump to follow
+        src = lines("""
+            beqz\t$3,$L28
+            nop  # DEBUG: branch/jump
+            $L28:
+            j\t$31
+            addu\t$2,$0,$zero
+        """)
+        self.assertEqual(aspsx_fill.steal_jump_slot(src), src)
+
+
 class Dmpsx(unittest.TestCase):
     """inline_c.h placeholder words -> the real cop2 encodings (documented GTE opcodes)."""
 
