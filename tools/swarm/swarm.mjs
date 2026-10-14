@@ -7,6 +7,9 @@
 //   node tools/swarm/swarm.mjs status
 //   node tools/swarm/swarm.mjs stats            outcomes by function size; big-mode checkpoints
 //   node tools/swarm/swarm.mjs clean            delete the worker and integration clones
+//   node tools/swarm/swarm.mjs fold             fold patterns.md into docs/MATCHING.md (after a run)
+//   node tools/swarm/swarm.mjs forget --only f1,f2 --why "..." [--checkpoint]
+//                                               reset functions' attempts (a tool fix unblocked them)
 //
 // Runs on the host (Node, no dependencies): it launches `claude` and `tools/dk`, which can't
 // run inside the toolchain container.
@@ -25,6 +28,15 @@ const LABEL = 'crashbash-swarm';
 const DATA_DIRS = ['asm', 'assets', 'linkers', 'ext'];
 const DISC_FILE_MAX = 16 << 20;           // disc/: the exe and overlay binaries, not the 170 MB image
 const RESULT = '.swarm-result.json';
+// gate output that means the environment is broken, not the function: the run stops at the first
+// one and the function is not charged an attempt (its verified match stays resumable)
+const INFRA_ERRORS = [
+  /can't open (?:asm|linkers)\/\S+ for reading/,      // stale splat output in the clone
+  /No rule to make target '[^']*'/,
+  /Cannot connect to the Docker daemon|docker: Error response from daemon[^\n]*/,
+  /No space left on device/,
+  /error while loading shared libraries[^\n]*/,
+];
 const PATCH_MAX = 64 << 10;
 const NEIGHBOUR = 8;            // lines between two INCLUDE_ASMs below which they aren't leased together
 // environment of the session that started us: a nested claude must not inherit it
@@ -1075,6 +1087,14 @@ Fix that, keep it matching, and report "matched".
     if (r.code !== 0 || after === before) {
       resetClone(this.integ, before);
       const why = r.out.trim().split('\n').slice(-6).join('\n');
+      const infra = INFRA_ERRORS.map(re => `${r.out}\n${r.err || ''}`.match(re)).find(Boolean);
+      if (infra) {
+        this.log(`${f.name}: the gate hit an environment error, not a problem with the function: ` +
+                 `${infra[0]}. Stopping the run; fix it, then \`run --resume ${this.id}\` gates the ` +
+                 'verified matches without matching them again');
+        if (!this.stopping) this.stopping = 'graceful';
+        return false;
+      }
       // the bytes matched (try said so): what's left is usually fixable (a header, lint), once
       if (!job.gateFix && !this.stopping) {
         this.record(job, 'gate-refused', why.replace(/\n/g, ' '));
@@ -1351,6 +1371,81 @@ function stats(o) {
   }
 }
 
+// a markdown table line's cells; a `|` inside backticks or escaped (\|) is not a separator
+function tableCells(line) {
+  const cells = [];
+  let cur = '', tick = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '\\' && line[i + 1] === '|') { cur += '\\|'; i++; continue; }
+    if (c === '`') tick = !tick;
+    if (c === '|' && !tick) { cells.push(cur.trim()); cur = ''; continue; }
+    cur += c;
+  }
+  cells.push(cur.trim());
+  return cells;
+}
+
+// fold: the after-run step 3. The rows workers added to patterns.md go to the end of the Diff
+// patterns table in docs/MATCHING.md (pipes inside code escaped, so the table keeps 3 columns),
+// and patterns.md is archived as patterns.folded-<date>.md so nothing is folded twice.
+function fold(o) {
+  const src = path.join(o.dir, 'patterns.md');
+  if (!fs.existsSync(src)) return console.log(`no ${src}: nothing to fold`);
+  const rows = [], bad = [];
+  for (const line of fs.readFileSync(src, 'utf8').split('\n')) {
+    const cells = tableCells(line.replace(/<!--.*?-->/g, '')).filter(Boolean);
+    if (!cells.length) continue;
+    // a worker's row can run into the next one on the same line: take the cells three at a time
+    if (cells.length % 3) { bad.push(line); continue; }
+    for (let i = 0; i < cells.length; i += 3) {
+      const [sym, fix, ex] = cells.slice(i, i + 3).map(c => c.replace(/`[^`]*`/g, m => m.replace(/(?<!\\)\|/g, '\\|')));
+      rows.push(`| ${sym} | ${fix} | ${/^`.*`$/.test(ex) ? ex : `\`${ex}\``} |`);
+    }
+  }
+  const doc = path.join(REPO, 'docs', 'MATCHING.md');
+  const text = fs.readFileSync(doc, 'utf8');
+  const start = text.indexOf('## Diff patterns'), next = text.indexOf('\n## ', start + 1);
+  if (start < 0 || next < 0) die('no Diff patterns section in docs/MATCHING.md');
+  const lastRow = text.lastIndexOf('\n|', next);
+  const at = text.indexOf('\n', lastRow + 1) + 1;
+  const fresh = rows.filter(r => !text.includes(r));
+  fs.writeFileSync(doc, text.slice(0, at) + fresh.map(r => r + '\n').join('') + text.slice(at));
+  let arch = path.join(o.dir, `patterns.folded-${stamp().slice(0, 10)}.md`);
+  for (let n = 0; fs.existsSync(arch); n++) arch = arch.replace(/(-\d{4}-\d\d-\d\d)[a-z]?\.md$/, `$1${'bcdefghij'[n]}.md`);
+  fs.renameSync(src, arch);
+  console.log(`folded ${fresh.length} row(s) into docs/MATCHING.md${rows.length > fresh.length ? ` (${rows.length - fresh.length} already there)` : ''}; ` +
+              `patterns.md -> ${path.basename(arch)}`);
+  for (const l of bad) console.log(`  not a 3-column row, left for you (in ${path.basename(arch)}): ${l.slice(0, 100)}`);
+  console.log('Review the new rows (git diff docs/MATCHING.md), then commit them.');
+}
+
+// forget: a fix (tool, header, split) made some functions' failures out of date. Their attempt and
+// big-session counts go back to 0, so runs lease them again without --retry-failed (which reopens
+// every failure), and their notes are replaced by the reason, so no worker is told the old blocker.
+function forget(o) {
+  if (!o.only?.length) die('forget needs --only f1,f2,... (function names)');
+  if (typeof o.why !== 'string' || !o.why.trim()) die('forget needs --why "what changed"');
+  const lock = readJson(path.join(o.dir, 'lock'), null);
+  if (lock && alive(lock.pid)) die('a run is active; stop it first');
+  const file = path.join(o.dir, 'history.json');
+  const h = readJson(file, {});
+  for (const name of o.only) {
+    const e = Object.values(h).find(v => v.name === name);
+    if (!e) { console.log(`${name}: no swarm history, nothing to reset`); continue; }
+    const was = `${e.attempts || 0} attempts${e.big ? `, ${e.bigSessions || 0} big sessions` : ''}`;
+    Object.assign(e, { attempts: 0, bigSessions: 0, bigStale: 0, last: 'reset',
+                       notes: [`${stamp()} reset (was ${was}, last ${e.last || '-'}): ${o.why.trim()}`] });
+    let cp = '';
+    if (o.checkpoint) {
+      const d = path.join(o.dir, 'checkpoints', name);
+      if (fs.existsSync(d)) { fs.rmSync(d, { recursive: true, force: true }); cp = ', checkpoint deleted'; }
+    }
+    console.log(`${name}: reset (was ${was})${cp}`);
+  }
+  writeJson(file, h);
+}
+
 function clean(o) {
   const lock = readJson(path.join(o.dir, 'lock'), null);
   if (lock && alive(lock.pid)) die('a run is active; stop it first');
@@ -1365,4 +1460,6 @@ else if (cmd === 'stop') await stop(o);
 else if (cmd === 'status') status(o);
 else if (cmd === 'stats') stats(o);
 else if (cmd === 'clean') clean(o);
+else if (cmd === 'forget') forget(o);
+else if (cmd === 'fold') fold(o);
 else console.log(fs.readFileSync(fileURLToPath(import.meta.url), 'utf8').split('\n').slice(1, 11).map(l => l.replace(/^\/\/ ?/, '')).join('\n'));

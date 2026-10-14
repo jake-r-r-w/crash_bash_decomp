@@ -199,6 +199,7 @@ tools/dk make progress               # dashboard + badges
 tools/dk make disc                   # pack build/CrashBash.bin/.cue to boot in an emulator
 tools/dk make disc-check             # ... and check it is the retail image byte for byte
 tools/dk make replay                 # play a recording on the retail and built discs, compare frames
+tools/dk make test-tools             # unit tests of the compile pipeline's asm filters
 ```
 
 Matching one function (see [How functions are matched](#how-functions-are-matched)):

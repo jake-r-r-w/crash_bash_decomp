@@ -137,6 +137,10 @@ dontAsk`: anything outside the allowed tools is denied, never prompted. Options 
 - **No duplicate work:** a function is leased to one worker; identical copies (same fingerprint)
   are never leased together. `history.json` stops a function being tried more than
   `--max-attempts` (2) across runs (`--retry-failed` to override).
+- **Environment errors stop the run:** gate output that says the environment is broken, not
+  the function (`can't open asm/... for reading`, `No rule to make target`, Docker unreachable,
+  disk full; `INFRA_ERRORS` in `swarm.mjs`), stops the run at the first one. The function is not
+  charged an attempt, and `run --resume RUN` gates its verified match once it's fixed.
 - **Circuit breakers:** stops after `--max-consecutive-failures` (3) refused patches, gate
   failures or conflicts in a row, after `--max-minutes` (240), after `--max-functions` (20)
   leases, or if a push fails. Each worker is killed after `--worker-minutes` (45), a big-mode
@@ -164,6 +168,15 @@ Parks are not committed. After a run:
 1. `node tools/swarm/swarm.mjs stats`: check the match rates by size, and move `--big-bytes`
    if normal mode is failing below it or matching well above it.
 2. Review `report.md` and the parks; a big-mode park's best C is in `checkpoints/`.
-3. Fold good rows from `patterns.md` into `docs/MATCHING.md` (Diff patterns), then rename
-   `patterns.md` so they aren't folded twice.
+3. `node tools/swarm/swarm.mjs fold`: appends the rows of `patterns.md` to the Diff patterns
+   table in `docs/MATCHING.md` (pipes inside code escaped, rows already there skipped) and
+   archives it as `patterns.folded-<date>.md`. Review `git diff docs/MATCHING.md`, drop weak
+   rows, commit.
 4. Add the run to `docs/AGENT_LOG.md` (Current state, Next, Session log), as after any session.
+
+When a fix (a tool change, a header, a split) makes earlier failures out of date, reset those
+functions so runs lease them again and no worker is told the old blocker:
+`node tools/swarm/swarm.mjs forget --only f1,f2 --why "what changed" [--checkpoint]`. It sets
+their attempts and big-mode sessions to 0 and replaces their notes with the reason (kept in
+`history.json`); `--checkpoint` also deletes a big-mode checkpoint built on the old state.
+`--retry-failed` does the same for every failure at once, for one run.

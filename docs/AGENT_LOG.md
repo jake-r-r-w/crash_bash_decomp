@@ -43,10 +43,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
    `func_80017164`, `func_80017EE8`, `func_8001A82C`, `func_8001D6B4`,
    `func_8001E21C`, `func_8001E610`, `func_8001F604`, `func_8001FE80`,
    `func_800235BC`, `func_8002854C`, `func_80028774`, `func_80028D40`,
-   `func_80029560`). Pass `--retry-failed` so the 2.7.2 functions the
-   load fix unblocked are leased again (see Open leads). After each run,
-   the checklist at the end of tools/swarm/README.md (`stats`, parks, fold
-   `patterns.md`, this log).
+   `func_80029560`). The 2.7.2 functions the load fix unblocked were reset
+   with `swarm.mjs forget`, so no `--retry-failed` is needed. After each
+   run, the checklist at the end of tools/swarm/README.md (`stats`, parks,
+   `swarm.mjs fold`, this log).
 2. Split `main.c` into its translation units, between swarm runs (a split
    moves functions, so workers' patches and big-mode checkpoints for them
    stop applying). Find the boundaries first and write the evidence in
@@ -281,6 +281,14 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-14 (tooling):** Make deps on the pipeline scripts and overlay
+  sym files; `try` prints `STILL-ASM`; flags from the Makefile; image
+  tagged by the Dockerfile's hash (old images deleted); `make clean` keeps
+  `build/scratch`, `emu`, `disc-cache`; disc cache. Swarm: stops at the
+  first environment error without charging the function; `fold` (after-run
+  step 3) and `forget` (reset functions a fix unblocked: done for
+  `func_8002E000`, `func_8002E3D0`, `func_8002DE2C`). `make test-tools`:
+  12 unit tests of `dmpsx.py` and `aspsx_fill.py`.
 - **2026-10-14 (tool fix):** `aspsx_fill.py` now expands indexed symbol
   loads through the load's own register, as ASPSX does (maspsx used `$at`),
   in the gcc 2.7.2 units. First win: `func_8002E0F0` matched by hand. The
