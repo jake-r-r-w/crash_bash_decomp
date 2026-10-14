@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 803/2551 game functions matched (main.exe ~537/575, 37 left), 8 parked,
+- 804/2551 game functions matched (main.exe ~538/575, 36 left), 8 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
@@ -309,19 +309,13 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
-- **2026-10-14 (by hand, `func_8002E3D0`, stopped early):** the
-  `steal_jump_slot` rule changes nothing for it (checkpoint still 7/12
-  blocks). The swarm worker's lead version gets 11/12 blocks, every
-  register right: from the checkpoint, add `u32 lo;`, set up as
-  `hi = (u32)bits >> 16; lo = bits; x = pos->x; y = pos->y; row = 0;`,
-  start the inner loop at `b = (u16)lo`, and write the pixel zero as
-  `bg = (u16)b; bg >>= 16;`. Only block 0 (the prologue) differs: the
-  target's `srl s4,a3,16` reads the incoming `a3`, ours reads the copy
-  in `s7` and comes later, swapping the `s3`/`s4` saves. `u16 lo` (the
-  row from the run) didn't change it here. Next: `permute --differing`
-  from that version (10 min was started and stopped), or find what
-  makes the target keep `bits` in `a3`. Not checkpointed: it ranks
-  below the 7/12 checkpoint (paired 106/109). `func_8002D4F4` not started.
+- **2026-10-14 (by hand, `func_8002E3D0`, 436 B, gcc 2.7.2 unit, no
+  permuter):** matched. `bits` is two `u16` halves: `lo = bits;` then
+  `hi = bits >> 16;` (copy first, so `bits` dies at the `srl` in `a3`;
+  `u16 hi` moves the `srl` early through sched2's hazard tie-break), the
+  swarm's `bg = (u16)b; bg >>= 16;` split, and the plain `b = lo; b >= hi`
+  loop. Got there with `vars` (register homes) and the cc1 `-dS -dR`
+  dumps. `func_8002D4F4` not started.
 - **2026-10-14 (by hand, `func_8002DE2C`, 468 B, gcc 2.7.2 unit):** matched
   from the checkpoint (2/116; 60 permuter minutes had found nothing).
   `vars`: a temporary, `splitvars`: no gain; ~16 rewrites, then the
