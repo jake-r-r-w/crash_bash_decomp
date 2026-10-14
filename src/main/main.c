@@ -85,7 +85,78 @@ void func_80010410(void) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80010488);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800107C8);
+static inline void func_800107C8_merge(MemBlock *a, Heap *arg1, s32 m1) {
+    s32 m2;
+    MemBlock *b;
+    s32 new_var2;
+    MemBlock *prev;
+    MemBlock *new_var;
+    MemBlock *end;
+    s32 *d;
+    s32 *s;
+    s32 n;
+    u32 size;
+
+    func_80011B74((u8 *)a, (u8 *)arg1);
+    size = a->size;
+    b = (MemBlock *)((u8 *)a + (size * 4 + 0x18));
+    new_var = a;
+    n = b->size;
+    prev = a->prev;
+    d = (s32 *)((u8 *)a + 0x18);
+    *a = *b;
+    s = (s32 *)((u8 *)b + 0x18);
+    new_var->prev = prev;
+    end = (MemBlock *)((u8 *)b + (n * 4 + 0x18));
+    new_var2 = size;
+    n--;
+    *a->owner = (void *)d;
+    if (n != m1) {
+        do {
+            m2 = -1;
+            *d++ = *s++;
+            n--;
+        } while (n != m2);
+    }
+    b = (MemBlock *)((u8 *)a + (a->size * 4 + 0x18));
+    end->prev = b;
+    b->size = new_var2;
+    b->owner = (void **)m1;
+    b->unk0 = 0;
+    b->prev = a;
+    if (a == arg1->lowest) {
+        arg1->lowest = func_80011BC0(b);
+    }
+    func_800110A8(b + 1, arg1);
+}
+
+void func_800107C8(MemBlock *arg0, Heap *arg1) {
+    s32 m1 = -1;
+    MemBlock *nx;
+    MemBlock *p;
+    MemBlock *ret;
+
+    for (;;) {
+        if (arg0 == NULL) {
+            return;
+        }
+        func_800107C8_merge(arg1->lowest, arg1, m1);
+        nx = arg1->lowest;
+        if (nx == NULL || (nx = (MemBlock *)((u8 *)nx + (nx->size * 4 + 0x18)),
+                           nx->owner == (void **)m1) || nx->size == 0) {
+            ret = NULL;
+        } else {
+            ret = nx;
+        }
+        p = ret;
+        if (p != NULL) {
+            if ((p->unk0 & 2) && (p->unk0 & 1) == (D_8005B690 & 1)) {
+                p = NULL;
+            }
+        }
+        arg0 = p;
+    }
+}
 
 void func_8001097C(Heap *heap) {
     MemBlock *cur;

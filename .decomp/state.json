@@ -37,7 +37,8 @@
   "auto_failed": "types"
  },
  "800107C8": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-14T08:57:31Z",
+  "status": "matched"
  },
  "8001097C": {
   "matched_at": "2026-10-13T22:00:21Z",
