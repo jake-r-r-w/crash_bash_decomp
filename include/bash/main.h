@@ -917,6 +917,11 @@ extern s32 D_8005B2B4;
 extern s8 D_8005AEB4[];
 extern u8 D_8005B0B4[];
 extern u8 *D_8005B63C;
+extern s16 D_8005AAB4[];
+typedef struct GlyphPos {
+    s16 v[3];
+} GlyphPos;
+void func_80029F9C(u8 *a, GlyphPos *pos, s32 b, s32 c, s32 d);
 extern s32 D_8006EA00;
 extern u32 D_8006EA04;
 extern s32 D_8005A7A0[];
@@ -2062,6 +2067,8 @@ s32 func_8002235C(_sfx_handler *voice);
 NAS *func_80022C3C(s32 x, s32 y, s32 z, u16 id, s32 slot);
 
 s16 func_80024008(s16 x, u8 *s);
+
+void func_800246D0(GlyphPos *arg0, u8 *s, s32 arg2, s32 arg3);
 
 s32 func_8002578C(NAS *nas);
 

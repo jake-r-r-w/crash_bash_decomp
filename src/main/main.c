@@ -7769,7 +7769,51 @@ void func_80024214(u8 *a, u8 *b) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800243A0);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800246D0);
+void func_800246D0(GlyphPos *arg0, u8 *s, s32 arg2, s32 arg3) {
+    GlyphPos pos;
+    GlyphPos tmp;
+    s32 c;
+    s32 n;
+    u8 *p;
+
+    pos = *arg0;
+    if ((arg0->v[0] & 0xC000) == 0x8000) {
+        p = s;
+        n = 0;
+        if (*p != 0 && *p != 10) {
+            do {
+                s32 idx;
+                u8 *f;
+                s8 *w;
+                s32 v;
+                if (*p == 13) {
+                    break;
+                }
+                idx = *p + (D_8005B2B4 << 8);
+                w = &D_8005AEB4[idx];
+                f = &D_8005B0B4[idx];
+                v = *w;
+                if (!(*f & 2)) {
+                    n += v;
+                }
+                p++;
+            } while (*p != 0 && *p != 10);
+        }
+        pos.v[0] = -((n * 16) >> 1);
+    }
+    c = *s++;
+    if (c != 0) {
+        u32 tab = (u32)D_8005AAB4;
+        do {
+            s32 g = *(s16 *)(c * 2 + (D_8005B2B4 << 9) + tab);
+            if (g != -1) {
+                func_80029F9C(*(u8 **)(D_8005B63C + 0x18) + (g & 0xFFF) * 0x38, &pos, 0, arg2, arg3);
+            }
+            pos.v[0] += (s32)((u8)D_8005AEB4[c + (D_8005B2B4 << 8)] << 24) >> 20;
+            c = *s++;
+        } while (c != 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800248A0);
 
