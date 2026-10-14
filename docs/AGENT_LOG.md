@@ -141,6 +141,8 @@ Other:
 ## Gotchas
 
 **Tooling**
+- **`make verify` deletes `build/`** (it runs `make clean`): don't keep
+  scratch copies of C there across a verify.
 - **Swarm clones and splat output.** Clones get `asm/` and `linkers/` copied
   from this checkout; since 2026-10-14 they are copied again when
   `configs/USA`'s sym/rel files or yamls change (a fingerprint in the clone's
@@ -268,6 +270,14 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-14 (tool fix):** `aspsx_fill.py` now expands indexed symbol
+  loads through the load's own register, as ASPSX does (maspsx used `$at`),
+  in the gcc 2.7.2 units. First win: `func_8002E0F0` matched by hand. The
+  other functions those units blocked on it (`func_8002E000`,
+  `func_8002E3D0`, `func_8002DE2C`, `func_8002D4F4`) are ordinary matching
+  now; their swarm notes predate the fix. `done` now refuses a function
+  whose INCLUDE_ASM is still in place (it "matched" itself: a bogus
+  metadata-only commit, and the swarm's duplicate resumes).
 - **2026-10-14 (swarm):** Two runs failed every gate: the clones' `asm/`
   predated the `func_800274FC` symbol split (fixed in `ed7dc7a`, Gotchas).
   Rerun with `--resume` of both: 9 matched in ~30 min (stopped early), $16;

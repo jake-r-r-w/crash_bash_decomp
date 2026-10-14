@@ -1066,6 +1066,10 @@ def cmd_done(a):
     if others:
         die(f"the working tree also replaces INCLUDE_ASM for {', '.join(others)}: one function per "
             "commit. Restore those INCLUDE_ASM lines (keep the C elsewhere) and match them separately.")
+    # its INCLUDE_ASM must be gone: with it still there the asm "matches" itself
+    if {name, e["name"], e["orig"]} & {m.group(2) for m in INC_ASM.finditer(read(src))}:
+        die(f"{src} still has the INCLUDE_ASM line for {name}: replace it with the C first "
+            "(nothing recorded or committed)")
     # 2. lint: no m2c leftovers, hacks only when declared
     errs, hacks = lint_function(src, name)
     if errs:
