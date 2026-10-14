@@ -32,9 +32,13 @@ leads**, add any new gotcha, and add one short entry at the top of the
 - **Big functions (2026-10-14):** big mode now uses the `decomp.py regions`
   prompt and ranks checkpoints by region score (paired, blocks, exact).
   `func_80019A60` is at registers 17/303 (55/59 blocks, paired 303/303)
-  in the swarm checkpoint: resume it first
-  (`swarm.mjs run --clear-stop --only func_80019A60 ...`; the STOP file
-  from the hard stop is still there). Then try big mode on 1400+ B
+  in the swarm checkpoint, but that C changes the first parameter to s32
+  through a `#define func_80019A60` wrapper, which the swarm now refuses:
+  the next session must declare it s32 directly (main.h and the extern
+  above `func_8001DD50`; the checkpoint log says so). Resume it first
+  (`swarm.mjs run --only func_80019A60 --retry-failed ...`: it has used
+  its big sessions).
+  Then try big mode on 1400+ B
   functions (`func_8002D4F4`, `func_8001B6D4`, `func_8001492C`,
   `func_8001AF2C`, `func_8002C97C`, `func_80023A90`).
 0. Current focus (ROADMAP.md, Current focus): `make disc` and `make
@@ -306,9 +310,13 @@ Newest first, a few lines each. Details are in the commits.
   Sessions 1-2 raised STAGE's count (291 -> 301) and would have been
   dropped, and the function parked, under the old ranking. The jump to 46
   blocks came from a `static inline` draw helper shared by two paths.
-  Stopped by hand during session 6; the permuter it had asked for logged
-  "no improvement" 2 s after starting (check it ran). Sessions still end
-  at 5-12 of 27 min.
+  Stopped by hand during session 6. Loose ends fixed after: the permuter
+  never ran (`func_def_regex` missed the parenthesized `void (name)(...)`
+  definition; now matched, permute starts); sessions ended early because
+  the fix they needed (the function's own u16 prototype) was outside the
+  prompt's scope, so workers may now fix their function's declarations
+  and are told to move on to the next block when blocked; a `#define`
+  named after the function is refused; the STOP file is cleared.
 - **2026-10-14 (swarm A/B round 2, 60 min):** 4 pairs of fresh 908-1212 B
   main functions, 27-min sessions, $29.56: 7/8 matched (regions arm 4/4,
   control 3/4). Both rounds: regions 6/7 in ~66 session-min/$17, control

@@ -58,6 +58,9 @@ big function (>= --big-bytes, or parked in normal mode)
   those functions and gives the rest the older `STAGE` prompt, for an A/B (`--regions none`: no
   function). After every big session the orchestrator writes `ab.json` (arm, start, status,
   score) and `regions.txt` (the region score of the session's C) to its results folder.
+- **Declarations:** a worker may fix its function's own prototype or extern anywhere in `src/`
+  and `include/` (the gate's full build catches a change that breaks another match). A
+  `#define` named after the function is refused: it hides a type change from the callers.
 - **Choosing `--big-bytes`:** `node tools/swarm/swarm.mjs stats` prints every function's outcome
   by size across runs (matched in normal or big mode, parked, attempts, big sessions). Put the
   threshold where normal mode's match rate drops; escalation catches the smaller functions that

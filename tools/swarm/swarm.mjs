@@ -591,6 +591,10 @@ Follow .claude/skills/match-function/SKILL.md steps 1 to 4 and docs/MATCHING.md 
 skill, CLAUDE.md and the docs:
 - Work only on ${f.name}. Change only its INCLUDE_ASM line in ${f.src}, and headers under include/
   when it needs a declaration or a type. Never touch another function's INCLUDE_ASM line.
+- If ${f.name}'s own declarations have the wrong type (its prototype in a header, an extern for
+  it elsewhere in src/), fix them in place: the gate rebuilds the whole exe and refuses a change
+  that breaks another function's match. Don't hide a type change behind a macro or wrapper named
+  like the function (refused).
 - New structs, typedefs and global declarations go in the owned header of ${f.src} (the
   include/bash/*.h marked \`owner: ${f.src}\`), never in the .c file: the gate adds the function's
   prototype to that header, and it won't compile if a type in it is only declared in the .c.
@@ -693,6 +697,12 @@ Rules (they override the skill, CLAUDE.md and the docs):
 - Work only on ${f.name}. Change only its definition (in place of its INCLUDE_ASM line) in ${f.src},
   and headers under include/. New types and declarations go in the owned header of ${f.src} (the
   include/bash/*.h marked \`owner: ${f.src}\`), never in the .c file.
+- If ${f.name}'s own declarations have the wrong type (its prototype in a header, an extern for
+  it elsewhere in src/), fix them in place: the gate rebuilds the whole exe and refuses a change
+  that breaks another function's match. Don't hide a type change behind a macro or wrapper named
+  like the function (refused).
+- When something blocks one difference, note it and go on to the next differing block until the
+  deadline: one blocker is not a reason to finish early.
 - Do not run \`decomp.py done\`, \`decomp.py block\`, \`make clean\`, \`make verify\` or any git command
   that changes the repo, and do not edit docs/, .decomp/, configs/ or tools/.
 - Don't run the permuter (it is refused).${canPermute ? ` When you are at the registers stage and
@@ -832,6 +842,9 @@ Fix that, keep it matching, and report "matched".
     if (removed.length !== 1 || ![f.name, `func_${f.key}`].includes(removed[0]))
       errs.push(`replaces INCLUDE_ASM for [${removed.join(', ')}], expected only ${f.name}`);
     if (/^\+.*\b(?:asm|__asm__)\s*(?:volatile\s*)?\(/m.test(patch)) errs.push('adds inline asm (needs a human --hack)');
+    // a function-like macro named after the function hides a change to its prototype from callers
+    if (new RegExp(`^\\+\\s*#\\s*define\\s+${f.name}\\s*\\(`, 'm').test(patch))
+      errs.push(`adds a macro named ${f.name} (fix its declarations instead)`);
     return errs;
   }
 

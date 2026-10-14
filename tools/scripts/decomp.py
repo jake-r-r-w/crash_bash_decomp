@@ -334,7 +334,9 @@ def is_lib(e, proj):
 
 
 def func_def_regex(name):
-    return re.compile(r"^[^\n;#{}]*\b" + re.escape(name) + r"\s*\([^;{]*\)\s*\{", re.M)
+    """A function's definition (not a prototype or call); the name may be parenthesized,
+    `void (name)(...) {`, which keeps a function-like macro of the same name from expanding."""
+    return re.compile(r"^[^\n;#{}]*?(?:\(\s*)?\b" + re.escape(name) + r"\b(?:\s*\))?\s*\([^;{]*\)\s*\{", re.M)
 
 
 def locate_def(name):
