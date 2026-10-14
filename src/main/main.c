@@ -8122,7 +8122,67 @@ fail:
     return NULL;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", FreeExtension);
+void FreeExtension(void *ext) {
+    ExtBlk *m;
+    ExtBlk *n;
+    ExtBlk *f;
+    ExtBlk *b;
+    EXT *e;
+    EXT *p;
+    ExtBlk *nx;
+    u32 size;
+
+    e = ext;
+    if ((u32)D_8005A7A0[6] < (u32)ext && (u32)ext < (u32)D_8005A7A0[7]) {
+        b = (ExtBlk *)((u8 *)ext - 0x18);
+        f = (ExtBlk *)b->owner;
+        size = b->size;
+        if (f != NULL) {
+            ((EXT *)f)->EXTid = !(e->EXTid & ~0xFF) ? ((EXT *)f)->EXTid & 1 : 0;
+        }
+        p = e->Extend.Parent;
+        if (p != NULL) {
+            if ((p->Extend.Child = e->Extend.Child) != NULL) {
+                e->Extend.Child->Extend.Parent = p;
+            }
+        }
+        f = b;
+        n = f->next;
+        m = (ExtBlk *)D_8005A7A0;
+        if (n != NULL && (n->size & 1)) {
+            size += 0x18 + (n->size & ~3);
+            if ((n->fprev->fnext = n->fnext) != NULL) {
+                n->fnext->fprev = n->fprev;
+            }
+            m = n->fprev;
+            n = n->next;
+        }
+        b = f->prev;
+        if (b != NULL && (b->size & 1)) {
+            f = b;
+            size += 0x18 + (f->size & ~3);
+            if ((f->fprev->fnext = f->fnext) != NULL) {
+                f->fnext->fprev = f->fprev;
+            }
+            m = f->fprev;
+        }
+        f->size = size | 1;
+        for (b = m->fnext; b != NULL && size >= b->size; b = m->fnext) {
+            m = b;
+        }
+        f->next = n;
+        if (n != NULL) {
+            n->prev = f;
+        }
+        nx = m->fnext;
+        f->fnext = nx;
+        if (nx != NULL) {
+            nx->fprev = f;
+        }
+        m->fnext = f;
+        f->fprev = m;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_800235BC);
 
