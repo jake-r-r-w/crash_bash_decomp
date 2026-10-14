@@ -91,7 +91,56 @@ void func_8002E25C(u8 *str, TextPos *pos, s32 arg2) {
 }
 #endif
 
-INCLUDE_ASM("asm/nonmatchings/main/8002e0f0", func_8002E3D0);
+void func_8002E3D0(TextPos *pos, u8 *glyph, s32 colour, s32 bits) {
+    GlyphRow p;
+    s32 x;
+    s32 y;
+    s16 *out;
+    s16 *dst;
+    u16 hi;
+    u16 lo;
+    s32 bg;
+    s32 b;
+    s32 i;
+    s32 row;
+
+    lo = bits;
+    hi = bits >> 16;
+    x = pos->x;
+    y = pos->y;
+    row = 0;
+    p.tag = (((pos->w + 1) >> 1) + 3) << 24;
+    p.cmd = 0xA0000000;
+    p.wh = *(s32 *)&pos->w;
+    do {
+        out = p.data;
+        i = 0;
+        if (D_8006789C[D_8006EA24].rowBytes != 0) {
+            do {
+                for (b = lo; b >= hi; b--) {
+                    dst = out++;
+                    bg = (u16)b;
+                    bg >>= 16;
+                    if ((*glyph >> b) & 1) {
+                        bg = colour;
+                    }
+                    *dst = bg;
+                }
+                i++;
+                glyph++;
+            } while (i < D_8006789C[D_8006EA24].rowBytes);
+        }
+        for (i = 0; i < 2; i++) {
+            p.xy = *(s32 *)pos;
+            DrawPrim(&p);
+            pos->x++;
+        }
+        row++;
+        pos->x = x;
+        pos->y++;
+    } while (row < 15);
+    pos->y = y;
+}
 
 s32 func_8002E584(u8 *arg0) {
     u16 max;

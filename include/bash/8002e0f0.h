@@ -16,12 +16,29 @@ typedef struct TextPos {
     /* 0x06 */ s16 unk6;
 } TextPos;
 
+/* LoadImage packet for one glyph row pair (func_8002E3D0) */
+typedef struct GlyphRow {
+    /* 0x00 */ u32 tag;
+    /* 0x04 */ u32 cmd;
+    /* 0x08 */ s32 xy;
+    /* 0x0C */ s32 wh;
+    /* 0x10 */ s16 data[16];
+} GlyphRow;
+
+/* the debug text screens, indexed by D_8006EA24 */
+typedef struct TextScreen {
+    /* 0x00 */ u8 rowBytes; /* bytes per glyph row */
+    /* 0x01 */ u8 unk1[11];
+} TextScreen;
+
+extern TextScreen D_8006789C[];
+
 extern s32 D_8006EA24; /* nonzero: ASCII from the BIOS ROM font, else Kanji (Krom2RawAdd) */
 
 void func_8002E0F0(void);
 
 void func_8002E25C(u8 *str, TextPos *pos, s32 arg2);
-void func_8002E3D0(TextPos *pos, u8 *glyph, s32 arg2, s32 arg3);
+void func_8002E3D0(TextPos *pos, u8 *glyph, s32 colour, s32 bits);
 s32 func_8002E584(u8 *glyph);
 void func_8002E618(void);
 

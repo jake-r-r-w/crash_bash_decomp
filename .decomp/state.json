@@ -2660,7 +2660,8 @@
   "status": "blocked"
  },
  "8002E3D0": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-14T21:34:58Z",
+  "status": "matched"
  },
  "8002E584": {
   "auto_diff": 33,
