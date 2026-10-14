@@ -1687,7 +1687,8 @@
   "auto_failed": "types"
  },
  "800237BC": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-14T09:00:38Z",
+  "status": "matched"
  },
  "80023A90": {
   "auto_failed": "types"

@@ -276,11 +276,21 @@ struct subengine {
     /* 0x68 */ s16 unk68;
     /* 0x6A */ u8 unk6A[2];
     /* 0x6C */ void *unk6C;
-    /* 0x70 */ s16 unk70;
-    /* 0x72 */ u8 unk72[2];
+    /* 0x70 */ s32 unk70;
     /* 0x74 */ u16 unk74;
     /* 0x76 */ u16 unk76;
-    /* 0x78 */ u8 unk78[0xA8 - 0x78];
+    /* 0x78 */ s32 unk78;
+    /* 0x7C */ s32 unk7C;
+    /* 0x80 */ s32 unk80;
+    /* 0x84 */ u8 unk84[0x8A - 0x84];
+    /* 0x8A */ s16 unk8A;
+    /* 0x8C */ u8 unk8C[0x90 - 0x8C];
+    /* 0x90 */ s32 unk90;
+    /* 0x94 */ s16 unk94;
+    /* 0x96 */ u8 unk96[0x9C - 0x96];
+    /* 0x9C */ s32 unk9C;
+    /* 0xA0 */ s16 unkA0;
+    /* 0xA2 */ u8 unkA2[0xA8 - 0xA2];
 };
 BASH_SIZE_CHECK(subengine, 0xA8);
 
