@@ -174,6 +174,23 @@ Parks are not committed. After a run:
    rows, commit.
 4. Add the run to `docs/AGENT_LOG.md` (Current state, Next, Session log), as after any session.
 
+## Permuter-only sessions
+
+For functions at the registers stage, the permuter often beats another model session, and it
+costs nothing but CPU:
+
+```
+node tools/swarm/swarm.mjs permute --only func_8001795C,func_800248A0 --minutes 30
+```
+
+Each function gets a clone of your checkout's HEAD (`permuters/h1`, ...) with its big-mode
+checkpoint applied, then `decomp.py permute --apply-best` (the permuter's best version goes into
+the source only if `try` improves). The cores are split between the functions (`--jobs` per
+function to override). A better result is saved as the function's checkpoint, so the next big
+session or permute run starts from it; a match also goes to `results/`, and the log prints the
+`run --resume <id> --only NAME` that gates it. Functions with no checkpoint and no C are skipped.
+Ctrl+C or `stop --now` kills it (nothing is saved). It refuses to start while a run is active.
+
 When a fix (a tool change, a header, a split) makes earlier failures out of date, reset those
 functions so runs lease them again and no worker is told the old blocker:
 `node tools/swarm/swarm.mjs forget --only f1,f2 --why "what changed" [--checkpoint]`. It sets

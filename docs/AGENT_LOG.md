@@ -238,6 +238,10 @@ Other:
   declaration; re-add it by hand.
 - `rename` prints `ERROR: unknown function OVL:ADDR` for data symbols; the
   rename still works.
+- **Near-misses at the registers stage:** `swarm.mjs permute --only ...`
+  before another Opus session. Checkpoints now: `func_8001795C` registers
+  12/107, `func_800248A0` 5/142 (the permuter didn't move it in 25 min),
+  `func_80015F60` 2/89.
 - `functions.json` names can lag `sym.*.txt` renames; don't trust them for
   file paths.
 
@@ -286,9 +290,9 @@ Newest first, a few lines each. Details are in the commits.
   runs (7 jobs each) from the swarm checkpoints. `func_8001795C`: registers
   17 -> 14/107 (`ti = ti & 0x1FF` inside the index; `r0 = r0 | 0x02000000`
   instead of `|=`), saved as its checkpoint. `func_800248A0` (5/142): no
-  improvement. To permute a checkpoint by hand: `git apply` its
-  `best.diff` (`--3way` if main.h moved), `try`, start `permute`, and
-  restore `src/` once `build/permuter/NAME/base.c` exists.
+  improvement. Now one command: `swarm.mjs permute --only f1,f2
+  --minutes 30` (tools/swarm/README.md); its first test took
+  `func_8001795C` from 14 to 12/107 in 3 minutes on 15 cores.
 - **2026-10-14 (swarm, 10 min):** no match. `func_8001795C` reached the
   registers stage (17/107, checkpoint); `func_800248A0` stayed at registers
   5/142 (2 stale sessions: big mode won't lease it again; it wants a long
