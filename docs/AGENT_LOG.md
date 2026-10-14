@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 792/2551 game functions matched (main.exe ~526/575, 48 left), 8 parked,
+- 802/2551 game functions matched (main.exe ~536/575, 38 left), 8 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
@@ -35,23 +35,26 @@ leads**, add any new gotcha, and add one short entry at the top of the
    too strict for builds whose code changes size), wanted by the first
    shiftable `NON_MATCHING` build. Recordings stay short and hand-written
    (`<frames> [buttons]`, check with `replay.py run ... --shot N`).
-1. Big functions. Big mode now works block by block with `decomp.py
-   regions` and ranks checkpoints by region score (tools/swarm/README.md,
-   Big mode); in the 2026-10-14 runs it matched 13 of 15 fresh 828-1212 B
-   functions and took a parked one (`func_80019A60`) from 37/59 to 55/59
-   blocks, which was then matched by hand.
+1. Big functions. Big mode works block by block with `decomp.py regions`
+   and ranks checkpoints by region score (tools/swarm/README.md, Big mode).
+   2026-10-14: 13 of 15 fresh 828-1212 B functions matched in the A/B
+   runs, `func_80019A60` went 37/59 -> 55/59 blocks then matched by hand,
+   and a 60-min `main/` run matched 10 of 16 functions leased.
+   - Near misses first, CPU only: `swarm.mjs permute --near --minutes 60`
+     (`func_8002DE2C` registers 2/116, `func_8001795C` registers 12/107,
+     `func_800248A0` registers 5/142; the 2026-10-14 run's permuters were
+     cut off by its stop).
    - The untried big ones: 1400+ B `func_8002D4F4` (gcc 2.7.2 unit),
      `func_8001B6D4`, `func_8001492C`, `func_8001AF2C`, `func_8002C97C`,
-     `func_80023A90`; 600-1399 B `func_80020680`, `func_800243A0`,
-     `func_80019094`, `func_8002926C`. Sessions of ~27 min
-     (`--big-minutes 27`); a 60-min run with one function per big worker
-     gives each about two.
+     `func_80023A90`; 600-1399 B `func_80020680`, `func_80019094`,
+     `func_8002926C`. A 60-min run with one function per big worker
+     (`--big-minutes 27`) gives each about two sessions.
 2. The rest of `main.exe` with the swarm: `swarm.mjs run --branch main --seg
    main/ --max-minutes 60 --max-run-usd 80 --big-bytes 400 --workers 1
-   --big-workers 3`. 27 functions of 400-599 B are left (20 never leased)
-   and big mode does better than normal mode there, hence `--big-bytes
-   400`. After each run, the checklist at the end of tools/swarm/README.md
-   (`stats`, parks, `swarm.mjs fold`, this log).
+   --big-workers 4 --big-minutes 27` ($54 for 10 matches on 2026-10-14).
+   18 functions of 400-599 B are left. After each run, the checklist at
+   the end of tools/swarm/README.md (`stats`, parks, `fold`, `permute
+   --near`, this log).
 3. Split `main.c` into its translation units, between swarm runs (a split
    moves functions, so workers' patches and big-mode checkpoints for them
    stop applying). Find the boundaries first and write the evidence in
@@ -78,6 +81,13 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Open leads
 
+- **Checkpoint ranking (2026-10-14):** paired, then blocks, then exact.
+  A `func_8002E3D0` worker found a version with 11/12 blocks (was 7/12),
+  every register right and the right length, only prologue order off,
+  but paired 106/109 < 109/110, so it ranks lower and wasn't kept (its
+  C is in that session's result note). A sum of the three fractions
+  would rank it higher and agrees with every other case seen so far;
+  decide before changing it.
 Parked (`decomp.py block`; best C under `#ifndef NON_MATCHING` in
 `src/main/main.c`):
 - **`func_80020C04`** (lerp on the `D_80068BD4` trig table, no callers):
@@ -301,6 +311,13 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-14 (swarm, main/, 60 min, $54.29):** 10 matched (`func_800243A0`,
+  `func_8002BEA8`, `FreeExtension`, `func_80012678`, `func_800180BC`,
+  `func_80028F28`, `func_8001DAF8`, `func_8001D6B4`, `func_8001FE80`,
+  `func_80017EE8`), 0 parked. Workers used `vars` in 11 of 22 sessions,
+  `splitvars` in 6, `similar` once; old checkpoints were measured; no
+  patch refused. Fixed after: `regions` exit code, cc1 dumps in build/.
+  Folded 41 pattern rows (dropped 2 asm-alias / macro-wrapper rows).
 - **2026-10-14 (swarm check, 5 min, $2.9):** 3 big functions with the new
   tools. No errors or refused commands; workers used `regions` (no `make
   diff`); sessions too short for similar/vars/splitvars. Fixed after it:
