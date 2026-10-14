@@ -29,6 +29,52 @@ typedef struct {
     VECTOR pos; /* 0x0C */
 } View;
 
+typedef struct {
+    s32 v[3];
+} CamVec3;
+
+/* A 0x28-byte camera key in the track func_8001EDFC walks; it interpolates
+ * from one key to the next. */
+typedef struct CamKey {
+    /* 0x00 */ s32 start;
+    /* 0x04 */ s32 len;   /* 0 ends the track */
+    /* 0x08 */ CamVec3 at;
+    /* 0x14 */ CamVec3 eye;
+    /* 0x20 */ u8 unk20[8];
+} CamKey;
+
+typedef struct {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ CamVec3 pos;
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ u8 unk1C[0x38];
+    /* 0x54 */ s16 rot[3];
+} CamState;
+
+s32 func_80015304(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
+
+/* out = a + (b - a) * t / len, per component. */
+static inline void CamVec3_Lerp(CamVec3 *out, CamVec3 *a, CamVec3 *b, s32 len, s32 t) {
+    out->v[0] = func_80015304(a->v[0], b->v[0], len, t);
+    out->v[1] = func_80015304(a->v[1], b->v[1], len, t);
+    out->v[2] = func_80015304(a->v[2], b->v[2], len, t);
+}
+
+/* The key of the camera track that covers frame v (or the terminating one). */
+static inline CamKey *CamTrack_FindKey(u8 *track, s32 v) {
+    CamKey *key = (CamKey *)(track + 0x1C);
+
+    while (key->len != 0) {
+        if (v >= key->start && v < key->start + key->len) {
+            return key;
+        }
+        key++;
+    }
+    return key;
+}
+
 /* A 0x38-byte record in the table at +8 of the block func_8002A9AC frees
  * (count at +0). */
 typedef struct TexAnimEntry {
@@ -1891,6 +1937,8 @@ void func_80019F1C(u8 *arg0, u8 *arg1, s32 arg2);
 void func_8001A43C(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4);
 
 void func_8001E0A8(u8 *arg0);
+
+void func_8001EDFC(u8 *arg0, u8 *arg1);
 
 void func_8001FCDC(u8 *arg0, u8 *arg1);
 

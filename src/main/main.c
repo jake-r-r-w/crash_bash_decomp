@@ -5723,7 +5723,72 @@ void func_8001E984(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001EAA4);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001EDFC);
+void func_8001EDFC(u8 *arg0, u8 *arg1) {
+    u8 *p;
+    u8 *r;
+    u8 *res;
+    s32 *q;
+    s32 lo;
+    s32 idx;
+    s32 v;
+    u8 *e;
+    CamKey *key;
+    CamState *cam;
+    s32 len;
+    s32 t;
+    CamVec3 eye;
+    CamVec3 at;
+    u8 *track;
+
+    e =*(u8 **)(arg1 + 0);
+    lo = *(s32 *)(arg1 + 4);
+    idx = *(s32 *)(arg0 + 0);
+    v = *(s16 *)(arg1 + 0xE);
+    D_80058B7C = e;
+    p = *(u8 **)(e + 0xC);
+    D_80058B80 = lo;
+    D_80058B84 = idx;
+    if (p == NULL) {
+        r = NULL;
+    } else {
+        q = (s32 *)(p + (*(s32 *)(p + 0x4C) + 0x4C) + lo * 4);
+        r = (u8 *)q + *q;
+    }
+    if (r == NULL) {
+        res = NULL;
+    } else {
+        res = r + (idx * 4 + 0x1C) + *(s32 *)(r + (idx << 2) + 0x1C);
+    }
+    if (res != NULL) {
+        if (v < *(s32 *)(res + 4) || *(s32 *)(res + 8) < v) {
+            res = NULL;
+        }
+    }
+    track = res;
+    if (track != NULL) {
+        key = CamTrack_FindKey(track, *(s16 *)(arg1 + 0xE));
+        cam = (CamState *)D_80051640;
+        cam->unk8 = 0x800;
+        cam->unk0 = 0;
+        cam->unk4 = 0;
+        cam->pos = key->at;
+        cam->unk18 = *(s32 *)(track + 0x18);
+        if (key->len != 0) {
+            len = key->len << 8;
+            t = (*(s32 *)(arg1 + 0xC) >> 8) - (key->start << 8);
+            CamVec3_Lerp(&eye, &key->eye, &key[1].eye, len, t);
+            CamVec3_Lerp(&at, &key->at, &key[1].at, len, t);
+        } else {
+            eye = key->eye;
+            at = key->at;
+        }
+        func_800153B4((s32 *)&eye, (s32 *)&at, cam->rot);
+        cam->pos = eye;
+        cam->unk8 = 0;
+        cam->unk0 = 0;
+        cam->unk4 = 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001F0D4);
 
