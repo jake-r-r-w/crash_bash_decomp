@@ -516,6 +516,7 @@ void func_8001C008(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc);
 void func_8001C0F0(s32 p, MorphModel *model, u16 *ia, u16 *ib, s16 (*verts)[3]);
 void func_8001965C(void *arg0, void *arg1, void *arg2, u8 *arg3, GteSetup *out);
 void func_8001CD04(void *arg0, void *arg1, void *arg2);
+void func_80019A60(u16 a, s32 b, s32 c, void *d);
 typedef struct RotScale {
     /* 0x00 */ SVECTOR rot;
     /* 0x08 */ u8 pad8[8];
@@ -1884,6 +1885,8 @@ void func_80017640(void);
 void func_80017B08(FaceRuns *faces, FacePrim *prim, s32 arg2, s32 mode);
 
 void func_80017D90(FaceRuns *faces, FacePrim *prim);
+
+void func_80019F1C(u8 *arg0, u8 *arg1, s32 arg2);
 
 void func_8001A43C(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4);
 

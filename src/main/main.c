@@ -4245,7 +4245,41 @@ INCLUDE_ASM("asm/nonmatchings/main/main", func_8001965C);
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80019A60);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80019F1C);
+void func_80019F1C(u8 *arg0, u8 *arg1, s32 arg2) {
+    GteSetup s;
+    GfxModel *model;
+    RelTable *colors;
+    u16 n;
+    GfxState *g;
+    u8 *p1 = arg1;
+
+    n = *(u16 *)(arg0 + 0x74);
+    if (*(s32 *)arg0 & 0x02000000) {
+        GfxState *g1 = &D_80056998;
+        g1->otzAdd = ((GfxScreen *)g1->unk28)->otz + *(u16 *)(arg0 + 0x68);
+    } else {
+        g = &D_80056998;
+        g->otzAdd = ((GfxScreen *)g->unk28)->otz;
+    }
+    if (n != 0 && (*(s32 *)arg0 & 0x8000)) {
+        model = *(GfxModel **)(arg0 + 0x6C);
+        if (model != NULL) {
+            D_80056998.unk0 = model;
+            colors = model->colors;
+            if (colors != NULL) {
+                D_80056998.unk84 = D_80056998.unkCC;
+                D_80056998.unk88 = D_80056998.unk10C;
+                func_8001965C(arg0, p1, p1 + 0x14, D_80056998.unk28, &s);
+                gte_SetGeomOffset(s.ofx * D_8005B698->w / 640, s.ofy / 2);
+                if (s.trans != NULL) {
+                    gte_SetTransVector(s.trans);
+                }
+                gte_SetRotMatrix(s.rot);
+                func_80019A60(n, (s32)colors, *(s32 *)arg0 | arg2, arg0);
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001A0D8);
 
