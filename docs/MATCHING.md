@@ -90,8 +90,10 @@ block by block over several sessions, keeping the best C between them:
   the function, or shared with a matched function, is usually a
   `static inline` helper or a macro (see the pop/push rows in Diff
   patterns; `func_80019A60` gained 8 blocks from one shared draw helper).
-  `decomp.py dups`, and the callers and callees in `.decomp/functions.json`,
-  find matched code to copy from.
+  `decomp.py similar NAME` ranks matched functions by shared code (`sim`:
+  a sibling to start from; `in`: a helper whose code is inside this one),
+  and `decomp.py dups` and the callers and callees in
+  `.decomp/functions.json` find more matched code to copy from.
 - **Permute late and narrow.** Only at the `registers` stage, with a long
   run (an hour, or overnight), and on the region that differs where you can.
 - **Keep the best C between sessions.** By hand: `decomp.py block NAME
@@ -109,6 +111,12 @@ first diff:
 - **Near-identical functions:** `tools/dk python3 tools/scripts/decomp.py dups`
   lists groups of identical functions and of near-identical ones ("constants
   differ"). If a member is matched, start from its C.
+- **Similar functions:** `tools/dk python3 tools/scripts/decomp.py similar
+  NAME` ranks matched functions by shared opcode 4-grams, with the file and
+  line of their C: `sim` is the share the two have in common (a sibling
+  written the same way), `in` the share of the other found inside NAME (a
+  helper or macro it inlines). `--all` includes unmatched ones, siblings to
+  do together. `func_8001EAA4`'s sibling `func_8001EDFC` comes first (0.62).
 - **Matched C:** grep `src/` for the same globals, callees or shape (the same
   loop, the same struct offsets). A sibling's C often shows the idiom.
   Example: `Random` and `func_800155FC` share the seed step.

@@ -38,7 +38,7 @@ the host has no Python. In Git Bash loops, pass `</dev/null` to `tools/dk`.
    the code, lists the differing blocks with their C lines and shows the
    first one side by side; fix that block, re-run.
 4. **Before the permuter.** Use `make permute` only after all of these:
-   - the evidence step from docs/MATCHING.md ("Evidence first": `decomp.py dups`,
+   - the evidence step from docs/MATCHING.md ("Evidence first": `decomp.py dups` and `similar NAME`,
      grep matched C in `src/` for the same globals or shape, the headers in
      `include/bash/` and the leaked minigame headers);
    - the "Diff patterns" table and the checklist for this kind of diff

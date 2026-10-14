@@ -691,7 +691,8 @@ Before matching code:
   include/bash/*.h, the prototype debug types and the leaked headers (docs/ARCHITECTURE.md). Typed
   fields remove much of m2c's noise.
 - Look for helpers and siblings: repeated instruction runs inside it, or code like an already matched
-  function's (\`tools/dk python3 tools/scripts/decomp.py dups\`, callers and callees in
+  function's (\`tools/dk python3 tools/scripts/decomp.py similar ${f.name}\` ranks matched
+  functions by shared code, with where their C is; \`decomp.py dups\`; callers and callees in
   .decomp/functions.json). Original code often used \`static inline\` helpers and macros here.
 Rules (they override the skill, CLAUDE.md and the docs):
 - Work only on ${f.name}. Change only its definition (in place of its INCLUDE_ASM line) in ${f.src},

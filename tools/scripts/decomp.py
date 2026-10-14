@@ -2583,6 +2583,87 @@ def cmd_dups(a):
                     f"{funcs[k]['seg']}/{cur_name(k, funcs[k], syms)}{'*' if stat[k] == 'matched' else ''}" for k in v))
 
 
+def opcode_seqs(funcs):
+    """key -> the function's opcode sequence (regions.mnemonic of each word), cached in
+    build/similar.json. The asm files only change when the project is re-split, which rewrites
+    functions.json, so the cache is valid while that file is unchanged (statting each asm file
+    through the Docker mount took ~20 s)."""
+    import regions
+    cache_path = "build/similar.json"
+    stamp = [3, os.path.getmtime(P_FUNCS)]      # format version, functions.json mtime
+    cache = jload(cache_path, {})
+    if cache.get("stamp") == stamp:
+        return cache["seqs"]
+    seqs = {}
+    for k, e in funcs.items():
+        p = e.get("asm")
+        if not p or not os.path.exists(p):
+            continue
+        # splat prints each word's bytes in file order: swap to the instruction
+        words = [int.from_bytes(w.to_bytes(4, "big"), "little") for w in parse_asm(p)[2]]
+        seqs[k] = ["%x.%s" % (w >> 26, "-".join(map(str, regions.mnemonic(w)[1:]))) for w in words[:trim_nops(words)]]
+    os.makedirs("build", exist_ok=True)
+    jsave(cache_path, {"stamp": stamp, "seqs": seqs})
+    return seqs
+
+
+def ngrams(seq, n=4):
+    from collections import Counter
+    return Counter(tuple(seq[i:i + n]) for i in range(len(seq) - n + 1))
+
+
+def cmd_similar(a):
+    """Matched functions whose code looks most like NAME's: a start for its C beyond `dups`'
+    identical copies (siblings, a minigame's copy of a helper, the same idiom elsewhere).
+    Scores compare opcode 4-grams: `sim` is the share both have (Dice), `in` the share of the
+    other function found inside this one (a helper or macro it inlines)."""
+    proj, funcs = need_proj(), need_funcs()
+    key, e = find_func(funcs, a.func)
+    syms = sym_names()
+    stat, _ = statuses(funcs)
+    seqs = opcode_seqs(funcs)
+    if not seqs.get(key):
+        die(f"no asm for {a.func}")
+    me = ngrams(seqs[key])
+    nme = sum(me.values()) or 1
+    calls = set(e.get("calls", []))
+    rows, weak = [], []
+    for k, seq in seqs.items():
+        f = funcs[k]
+        if k == key or is_lib(f, proj) or f.get("kind") in ("asm", "sony") or len(seq) < 8:
+            continue
+        if not a.all and stat.get(k) != "matched":
+            continue
+        g = ngrams(seq)
+        ng = sum(g.values()) or 1
+        common = sum((me & g).values())
+        sim, inside = 2 * common / (nme + ng), common / ng
+        if sim >= a.min or (inside >= a.contain and ng >= 24):
+            rows.append((sim, inside, k))
+        elif common:
+            weak.append((sim, inside, k))
+    rows.sort(key=lambda r: (-r[0], -r[1]))
+    weak_only = not rows
+    if weak_only:                    # nothing close: the nearest few, so there is still a lead
+        rows = sorted(weak, key=lambda r: (-r[0], -r[1]))[:3]
+    name = cur_name(key, e, syms)
+    print(f"{name} ({e['seg']}, {e['size']} B, {len(seqs[key])} insns): most similar "
+          f"{'functions' if a.all else 'matched functions'} by opcode 4-grams")
+    if weak_only:
+        print(f"(nothing at or above --min {a.min} or --contain {a.contain}: the nearest, all weak)")
+    print(f"{'sim':>4} {'in':>4} {'size':>5} {'calls':>5}  {'status':<8} function / C")
+    for r, inside, k in rows[:a.top]:
+        f = funcs[k]
+        nm = cur_name(k, f, syms)
+        shared = len(calls & set(f.get("calls", [])))
+        where = ""
+        if stat.get(k) == "matched" and f.get("src") and os.path.exists(f["src"]):
+            m = func_def_regex(nm).search(read(f["src"]))
+            if m:
+                where = f"  {f['src']}:{read(f['src']).count(chr(10), 0, m.start()) + 1}"
+        print(f"{r:4.2f} {inside:4.2f} {f['size']:5d} {shared:5d}  {stat.get(k, '?'):<8} {f['seg']}/{nm}{where}")
+
+
 def cmd_block(a):
     funcs = need_funcs()
     key, e = find_func(funcs, a.func)
@@ -3302,6 +3383,13 @@ def main():
     p.add_argument("--all", action="store_true", help="list matching blocks too")
     p.add_argument("--no-lines", action="store_true", help="skip the -g build that maps blocks to C lines")
     p.set_defaults(fn=cmd_regions)
+    p = sub.add_parser("similar", help="matched functions whose code looks most like this one")
+    p.add_argument("func")
+    p.add_argument("--top", type=int, default=10)
+    p.add_argument("--min", type=float, default=0.3, help="lowest similarity (sim) to list, 0-1")
+    p.add_argument("--contain", type=float, default=0.6, help="also list functions this share of which is inside NAME (in)")
+    p.add_argument("--all", action="store_true", help="unmatched functions too (siblings to do together)")
+    p.set_defaults(fn=cmd_similar)
     p = sub.add_parser("auto", help="match small functions from m2c drafts without the model")
     p.add_argument("--max-size", type=int, default=32, help="largest function to try, in bytes")
     p.add_argument("--limit", type=int, default=200)
