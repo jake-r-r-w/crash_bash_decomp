@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 778/2551 game functions matched (main.exe ~513/575, 61 left), 7 parked,
+- 779/2551 game functions matched (main.exe ~514/575, 60 left), 7 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
@@ -36,7 +36,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
    shiftable `NON_MATCHING` build. Recordings stay short and hand-written
    (`<frames> [buttons]`, check with `replay.py run ... --shot N`).
 1. More swarm runs: `swarm.mjs run --branch main --seg main/ --max-minutes
-   60 --max-functions 300 --max-run-usd 80 --big-bytes 400`. 400-599 B
+   60 --max-functions 300 --max-run-usd 80 --big-bytes 400 --workers 1
+   --big-workers 3`. 400-599 B
    matches 57% in normal mode and big mode does better, hence
    `--big-bytes 400`; 17 functions of that size have never been leased
    (`func_80010C70`, `func_80010E8C`, `func_8001231C`, `func_80013D54`,
@@ -101,8 +102,8 @@ Other:
 - The gcc 2.7.2 units (`main/8002d488`, `main/8002e0f0`): `aspsx_fill.py`
   fills `j`/`jr` slots and, since 2026-10-14, expands indexed symbol loads
   through the load's register as ASPSX does (that unblocked and matched
-  `func_8002E0F0`). Left: `func_8002E000` (240 B; loop setup: target keeps
-  the counter in a1 and a zero pointer in a2), `func_8002E3D0` (436 B; gcc
+  `func_8002E0F0` and `func_8002E000`). Left: `func_8002E3D0` (436 B; big-mode
+  checkpoint structure 107/111; gcc
   if-converts `v = 0; if (bit) v = arg2;`), `func_8002DE2C` (468 B; an
   extra `addu a3,v1,zero` copy in the target's first `bne` slot),
   `func_8002D4F4` (2360 B, never tried), `func_8002E25C` (parked, below).
@@ -281,6 +282,13 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-14 (swarm, 15 min):** `--big-bytes 400 --workers 1
+  --big-workers 3` (with 400, 52 of 54 candidates are big: give big mode
+  the workers). `func_8002E000` matched in 3.5 min after 4 earlier fails
+  (the 2.7.2 load fix). Checkpoints: `func_8002E3D0` 107/111 and
+  `func_8001795C` 106/108 (structure). $9.68. A first start died on
+  `tools/dk`'s image tag (`git -C` with a /c/ path under Windows git.exe;
+  fixed in `6dda356`).
 - **2026-10-14 (tooling):** Make deps on the pipeline scripts and overlay
   sym files; `try` prints `STILL-ASM`; flags from the Makefile; image
   tagged by the Dockerfile's hash (old images deleted); `make clean` keeps

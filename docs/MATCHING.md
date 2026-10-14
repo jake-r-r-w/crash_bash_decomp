@@ -357,6 +357,7 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | Frame 8 bytes bigger than ours with a struct copied via lwl/lwr (6-byte s16[3] struct), nothing at the extra slot | declare an extra unused local of the same struct type (gcc 2.7 reserves its slot) | `func_800246D0` |
 | `lui` of hoisted loop invariants emitted in the wrong order, and `addu v1,s4,v1` vs target `addu v1,v1,s4` | hoist the table address into a `u32 tab = (u32)D_X;` local before the do-while and write `*(s16 *)(c*2 + (m<<9) + tab)` | `func_800246D0` |
 | xy argument built with `and 0xFFFF0000` / `andi 0xFFFF` / `or` (s-reg order off, sll lands in a temp, mask CSE'd in the wrong reg) | pass a register-resident 4-byte struct by value: `typedef struct { s32 x:16; s32 y:16; } P;` and set fields (`p.y = y; p.x = x;` then `p.x = ...` per call). With s16 fields the struct is BLKmode and goes to the stack. Sibling func_800243A0 shows the same idiom (andi on an uninitialised s-reg, `sra 16` to read y) | `func_800248A0` |
+| extra `move aN,vM` before a loop that copies a CSE'd index offset (sll) into another register | hold the offset in an explicit `s32 off = arg0 * 4` variable and index the byte table with `tbl[off + 1]` in both the guard and the loop test | `func_8002E000` |
 
 ## Classify the diff, then work through the list
 
