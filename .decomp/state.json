@@ -859,7 +859,8 @@
   "auto_failed": "types"
  },
  "800180BC": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-14T18:52:05Z",
+  "status": "matched"
  },
  "8001828C": {
   "auto_diff": 14,

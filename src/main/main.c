@@ -3840,7 +3840,37 @@ done:;
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80017EE8);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800180BC);
+FacePrim *func_800180BC(s32 arg0, ListNode18938 *list, ListNode18938 *pool, FaceRuns *faces, s32 arg4) {
+    s32 *node;
+    FacePrim *prim;
+
+    node = ListNode18938_Take(pool);
+    if (node != NULL) {
+        *node = list->f4;
+        list->f4 = (s32)node;
+        if (list->f8 == NULL) {
+            list->f8 = (s32 **)node;
+        }
+        if (arg4 != 0) {
+            func_80017D90(faces, (FacePrim *)node[1]);
+        }
+    } else {
+        if (func_80011C5C(*(u16 *)((u8 *)faces + 8) * 10, D_8004E0F0.free) == NULL || (node = D_80056858) == NULL) {
+            return NULL;
+        }
+        D_80056858 = (s32 *)*node;
+        if (list->f4 == 0) {
+            list->f8 = (s32 **)node;
+        }
+        *node = list->f4;
+        list->f4 = (s32)node;
+        func_800115D8(*(u16 *)((u8 *)faces + 8) * 0x28, (void **)(node + 1), (s32)&D_8004E0F0, ((D_8005B690 & 1)?3:2));
+        prim = (FacePrim *)node[1];
+        func_80017EE8(faces, prim);
+        func_80017D90(faces, prim);
+    }
+    return (FacePrim *)node[1];
+}
 
 void func_8001828C(void) {
     NodePool *pool;

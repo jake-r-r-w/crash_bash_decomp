@@ -1340,6 +1340,33 @@ typedef struct ListNode18938 {
     s32 *fC;
     s32 **f10;
 } ListNode18938;
+
+/* Takes the node at the cursor fC of a list (func_800185F8's code). */
+static inline s32 *ListNode18938_Take(ListNode18938 *l) {
+    s32 *n;
+    s32 **tail;
+
+    if (l == NULL || (n = l->fC) == NULL) {
+        return NULL;
+    }
+    tail = l->f10;
+    l->fC = (s32 *)*n;
+    if (tail != NULL) {
+        *tail = (s32 *)*n;
+        l->fC = (s32 *)*n;
+        if (*n == 0) {
+            l->f8 = tail;
+        }
+    } else {
+        if (l->f8 == (s32 **)n) {
+            l->f8 = NULL;
+        }
+        l->f4 = *n;
+        l->fC = (s32 *)*n;
+        *n = 0;
+    }
+    return n;
+}
 typedef struct {
     ListNode18938 b; /* 0x00 */
     ListNode18938 a; /* 0x14 */
@@ -2339,6 +2366,8 @@ typedef struct CamEase {
 } CamEase;
 
 void func_80013F44(CamView *cam, CamView *dst, CamEase *ease);
+
+FacePrim *func_800180BC(s32 arg0, ListNode18938 *list, ListNode18938 *pool, FaceRuns *faces, s32 arg4);
 
 void func_80018B08(GfxViewport *vp, GfxCamera *cam);
 
