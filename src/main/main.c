@@ -8366,7 +8366,83 @@ void func_80024214(u8 *a, u8 *b) {
     b[2] = bl;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800243A0);
+void func_800243A0(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
+    s32 xy;
+    s32 col;
+    s16 x0;
+    s32 c;
+    s32 n;
+    s32 i;
+    s32 g;
+    s16 w;
+    u8 fl;
+    s32 y;
+    s32 ny;
+    s32 oy;
+
+    xy &= 0xFFFF;
+    xy |= arg1 << 16;
+    x0 = func_80024008(arg0, s);
+    col = 0;
+    if (arg5 != 0) {
+        func_80024214((u8 *)&arg3, (u8 *)&arg4);
+    }
+    c = *s++;
+    while (c != 0) {
+        if (c == '\n' || c == '\r') {
+            col = 0;
+            if (c == '\r') {
+                c = *s++;
+                n = c - '0';
+                n *= 10;
+                c = *s++;
+                oy = n - '0';
+                n = oy + c;
+                if (n > 50) {
+                    n -= 50;
+                    n = ~n + 1;
+                }
+                y = xy >> 16;
+                xy &= 0xFFFF;
+                xy |= (y + n * 2) << 16;
+            } else {
+                ny = xy >> 16;
+                xy &= 0xFFFF;
+                xy |= (ny + D_8005AEB4[D_8005B2B4 << 8] * 2) << 16;
+            }
+            x0 = func_80024008(arg0, s);
+        } else {
+            i = c + (D_8005B2B4 << 8);
+            w = D_8005AEB4[i];
+            fl = D_8005B0B4[i];
+            if (fl & 2) {
+                col -= w;
+            }
+            g = ((s16 (*)[256])&D_8005AAB4[c])[D_8005B2B4][0];
+            if (g != -1) {
+                xy &= 0xFFFF0000;
+                xy |= (u16)(x0 + col * 640 / D_8005B698->w);
+                if (fl & 1) {
+                    if (fl & 4) {
+                        oy = xy >> 16;
+                        xy &= 0xFFFF;
+                        xy |= (oy - 7) << 16;
+                        func_80029D28((SpriteFrame *)(*(u8 **)(D_8005B63C + 0x18) + (g & 0xFFF) * 0x38), xy, 0, 0x808080);
+                        oy = xy >> 16;
+                        xy &= 0xFFFF;
+                        xy |= (oy + 7) << 16;
+                    } else {
+                        func_80029D28((SpriteFrame *)(*(u8 **)(D_8005B63C + 0x18) + (g & 0xFFF) * 0x38), xy, 0, 0x808080);
+                    }
+                } else {
+                    func_8002992C((SpriteFrame *)(*(u8 **)(D_8005B63C + 0x18) + (g & 0xFFF) * 0x38), xy, 0, arg3, arg3, arg4, arg4);
+                }
+            }
+            col += w;
+        }
+        c = *s++;
+    }
+}
 
 void func_800246D0(GlyphPos *arg0, u8 *s, s32 arg2, s32 arg3) {
     GlyphPos pos;

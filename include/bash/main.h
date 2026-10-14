@@ -2340,4 +2340,6 @@ void func_8001F0D4(u8 *arg0, u8 *arg1);
 
 void func_8001F828(u8 *arg0, u8 *arg1);
 
+void func_800243A0(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5);
+
 #endif /* BASH_MAIN_H */
