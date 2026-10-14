@@ -294,7 +294,8 @@
   "status": "matched"
  },
  "80012FFC": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-14T09:02:40Z",
+  "status": "matched"
  },
  "80013034": {
   "matched_at": "2026-10-13T09:07:47Z",

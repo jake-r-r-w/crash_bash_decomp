@@ -1537,7 +1537,18 @@ void func_80012FA4(LoadNode *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80012FFC);
+s32 func_80012FFC(void) {
+    LoaderState *p = &D_80050628;
+    s32 a = p->unkC != 0;
+    s32 b = p->unk4;
+    s32 s = p->state;
+    int new_var;
+    if (b == 0) {
+        return a + s;
+    }
+    new_var = s + 1;
+    return a + new_var;
+}
 
 s32 func_80013034(s32 arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *arg4, s32 arg5, s32 arg6) {
     LoadNode *p;
