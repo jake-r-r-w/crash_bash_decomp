@@ -10,11 +10,11 @@ At the end of a session, update **Current state**, **Next** and **Open
 leads**, add any new gotcha, and add one short entry at the top of the
 **Session log**.
 
-## Current state (2026-10-13)
+## Current state (2026-10-14)
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 768/2551 game functions matched (main.exe ~503/575), 7 parked,
+- 777/2551 game functions matched (main.exe ~512/575), 7 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
@@ -268,6 +268,14 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-14 (swarm):** Two runs failed every gate: the clones' `asm/`
+  predated the `func_800274FC` symbol split (fixed in `ed7dc7a`, Gotchas).
+  Rerun with `--resume` of both: 9 matched in ~30 min (stopped early), $16;
+  `--resume` gated three functions twice (metadata-only commits), now one
+  attempt per function. 400-599 B matches only 57% in normal mode (12/21):
+  consider `--big-bytes 400`. Parks: `func_80010000` (registers 11/86),
+  `func_8002E3D0` (needs maspsx/aspsx_fill to expand loads through the
+  dest reg, not $at, in 2.7.2 units), `func_80020C04` (inline asm refused).
 - **2026-10-14 (play and test docs):** `tools/replay/README.md` (packer,
   playing in RetroArch, harness, recordings, limits), linked from README,
   CONTRIBUTING (when to run `make replay`) and CLAUDE.md. RetroArch + the

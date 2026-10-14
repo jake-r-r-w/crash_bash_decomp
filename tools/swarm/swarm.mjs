@@ -1105,7 +1105,8 @@ Fix that, keep it matching, and report "matched".
         const dir = path.join(this.paths.results, name, d), f = byName.get(name);
         const tried = path.join(dir, 'try.txt');
         // not in the queue = matched already; done.txt alone proves nothing (a stop may cut a batch)
-        if (!f || !fs.existsSync(tried) ||
+        // one per function: a run can verify two attempts of it, and the second would gate again
+        if (!f || this.integQueue.some(j => j.f === f) || !fs.existsSync(tried) ||
             !/^MATCH /m.test(fs.readFileSync(tried, 'utf8'))) continue;
         const res = readJson(path.join(dir, 'result.json'), {});
         this.integQueue.push({ f, model: this.o.model, resumed: true, attempt: 1, notes: [], conflicts: 0, dir,
