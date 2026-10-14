@@ -8381,7 +8381,119 @@ s16 func_800250B0(NAS *nas) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800251A8);
+s16 func_800251A8(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) {
+    /* A label table, not a switch: cc1 2.8.1 aligns a switch's jump table
+     * to 8 in .rodata, but this one sits at a 4 mod 8 offset (and is
+     * followed by a zero word). */
+    static const void *const tbl[20] = {
+        &&l8000, &&l8001, &&l8002, &&l8003, &&l8004, &&l8005, &&l8006, &&ldef,
+        &&ldef, &&ldef, &&ldef, &&l800B, &&l800C, &&l800D, &&l800E, &&l800F,
+        &&l8010, &&l8011, &&l8012, 0
+    };
+    void (*fn)(NAS *, EXTanimator *, s16);
+    u32 idx;
+    s16 frame;
+    s16 ret;
+    s32 held;
+    s32 vol;
+    s32 i;
+
+    ret = 0;
+    held = 0;
+    if (--anim->Aspeed < 0) {
+        vol = 0x1E00;
+        do {
+            if (anim->Seq_count_down != 0 && anim->Currentframe != 0) {
+                frame = anim->Currentframe - 1;
+                anim->Seq_count_down--;
+            } else if (anim->Seq_count != 0 && anim->Currentframe != 0) {
+                frame = anim->Currentframe + 1;
+                anim->Seq_count--;
+            } else {
+                frame = ((s16 *)anim->Atable)[++anim->Aindex];
+                if (frame < 0) {
+                    idx = (u16)frame - 0x8000;
+                    if (idx < 0x13) {
+                        goto *tbl[idx];
+                    }
+                    goto ldef;
+                l8000:
+                    anim->Aindex = 0;
+                    if (ret == 0) {
+                        ret = 2;
+                    }
+                    goto lnext;
+                l8001:
+                    func_80024FA4((ScriptCursor *)anim);
+                    if (ret == 0) {
+                        ret = 3;
+                    }
+                    goto lnext;
+                l8002:
+                    eng->direction = ~eng->direction;
+                    goto lnext;
+                l8004:
+                    if (nas->trigger != NULL) {
+                        nas->trigger->Status |= 0x8000;
+                    }
+                    KillNAS(nas);
+                    frame = 0;
+                    goto lnext;
+                l8003:
+                    KillNAS(nas);
+                    frame = 0;
+                    goto lnext;
+                l8005:
+                    ret = ((s16 *)anim->Atable)[++anim->Aindex];
+                    goto lnext;
+                l8006:
+                    ret = ((s16 *)anim->Atable)[++anim->Aindex];
+                    frame = sub->unk74;
+                    goto lnext;
+                l8011:
+                    anim->Seq_count = ((s16 *)anim->Atable)[++anim->Aindex] - 1;
+                    anim->Currentframe = 0;
+                    goto lnext;
+                l8012:
+                    anim->Seq_count_down = ((s16 *)anim->Atable)[++anim->Aindex] - 1;
+                    anim->Currentframe = 0;
+                    goto lnext;
+                l800D:
+                    PlaySfx(((s16 *)anim->Atable)[++anim->Aindex], &eng->sfx, NULL, 0x1000, vol, 0);
+                    goto lnext;
+                l800C:
+                    PlaySfx(((s16 *)anim->Atable)[++anim->Aindex], NULL, &eng->unk10, 0x1000, vol, 0);
+                    goto lnext;
+                l800B:
+                    PlaySfx(((s16 *)anim->Atable)[++anim->Aindex], NULL, NULL, 0x1000, vol, 0);
+                    goto lnext;
+                l800E:
+                    PlaySfx(((s16 *)anim->Atable)[++anim->Aindex], NULL, NULL, 0x1000, vol, 0);
+                    goto lnext;
+                l800F:
+                    held = 1;
+                    anim->Aspeed = ((s16 *)anim->Atable)[++anim->Aindex];
+                    goto lnext;
+                l8010:
+                    sub->unk6C = &D_80052A54[((s16 *)anim->Atable)[++anim->Aindex] * 0x38];
+                    goto lnext;
+                ldef:
+                    i = frame >> 8;
+                    fn = (void (*)(NAS *, EXTanimator *, s16))D_8005B5BC[i & 0xF][0];
+                    if (fn != NULL) {
+                        fn(nas, anim, frame);
+                    }
+                lnext:;
+                }
+            }
+        } while (frame < 0);
+        anim->Currentframe = sub->unk74 = frame;
+        if (held == 0) {
+            anim->Aspeed = *(s16 *)anim->Atable;
+        }
+    }
+    return ret;
+}
 
 s16 func_80025534(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) {
     /* A label table, not a switch: cc1 2.8.1 aligns a switch's jump table
