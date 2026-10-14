@@ -5987,7 +5987,87 @@ void func_8001EDFC(u8 *arg0, u8 *arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001F0D4);
+void func_8001F0D4(u8 *arg0, u8 *arg1) {
+    AnimKey *k;
+    AnimKey *key;
+    u8 *p;
+    u8 *r;
+    u8 *res;
+    s32 *q;
+    s32 lo;
+    s32 idx;
+    s32 v;
+    u8 *e;
+    AnimRange *range;
+    AnimPose *pose;
+    s32 f;
+    s32 frame;
+    s32 len;
+    s32 t;
+    s32 a;
+
+    e =*(u8 **)(arg1 + 0);
+    lo = *(s32 *)(arg1 + 4);
+    idx = *(s32 *)(arg0 + 0);
+    v = *(s16 *)(arg1 + 0xE);
+    D_80058B7C = e;
+    p = *(u8 **)(e + 0xC);
+    D_80058B80 = lo;
+    D_80058B84 = idx;
+    if (p == NULL) {
+        r = NULL;
+    } else {
+        q = (s32 *)(p + (*(s32 *)(p + 0x4C) + 0x4C) + lo * 4);
+        r = (u8 *)q + *q;
+    }
+    if (r == NULL) {
+        res = NULL;
+    } else {
+        res = r + (idx * 4 + 0x1C) + *(s32 *)(r + (idx << 2) + 0x1C);
+    }
+    if (res != NULL) {
+        if (v < *(s32 *)(res + 4) || *(s32 *)(res + 8) < v) {
+            res = NULL;
+        }
+    }
+    pose = (AnimPose *)(arg0 + 8);
+    if (res != NULL) {
+        range = (AnimRange *)(res + 0x14);
+        k = AnimTrack_FindKey((AnimKey *)(res + 0x30), *(s16 *)(arg1 + 0xE));
+        key = k;
+        f = *(s32 *)(arg1 + 0xC) - (*(s32 *)(res + 4) << 16);
+        frame = AnimRange_Frame(range, f);
+        pose->frame = frame;
+        pose->unk74 = range->base + range->lo;
+        len = key->len;
+        if (len != 0) {
+            len <<= 8;
+            t = (*(s32 *)(arg1 + 0xC) >> 8) - (key->start << 8);
+            func_80020B44((s32)key->rot, (s32)key[1].rot, (s32)pose->rot, len, t, (s32)key->unk30);
+            CamVec3_Lerp(&pose->pos, &key->pos, &key[1].pos, len, t);
+            CamVec3_Lerp(&pose->scale, &key->scale, &key[1].scale, len, t);
+            a = func_80015304(key->alpha, key[1].alpha, len << 8, t);
+        } else {
+            pose->pos = key->pos;
+            *(AnimRot *)pose->rot = *(AnimRot *)key->rot;
+            pose->scale.v[0] = key->scale.v[0];
+            pose->scale.v[1] = key->scale.v[1];
+            pose->scale.v[2] = key->scale.v[2];
+            a = key->alpha;
+        }
+        a = 0x1000 - a;
+        if (a != 0) {
+            pose->unk76 = a;
+            pose->flags |= 0x40000000;
+        }
+        pose->unk50 = 1;
+        pose->unk51 = 3;
+        pose->unk52 = 1;
+        pose->flags |= 0x80008000;
+    } else {
+        pose->flags = 0;
+    }
+}
 
 void func_8001F4F8(u8 *arg0, u8 *arg1) {
     u8 *p;

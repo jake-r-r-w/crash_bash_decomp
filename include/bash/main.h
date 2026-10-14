@@ -75,6 +75,84 @@ static inline CamKey *CamTrack_FindKey(u8 *track, s32 v) {
     return key;
 }
 
+/* A 0x4C-byte animation key of the track func_8001F0D4 walks (at track+0x30). */
+typedef struct AnimKey {
+    /* 0x00 */ s32 start;
+    /* 0x04 */ s32 len;   /* 0 ends the track */
+    /* 0x08 */ CamVec3 pos;
+    /* 0x14 */ s32 unk14[3];
+    /* 0x20 */ s32 rot[4];
+    /* 0x30 */ s32 unk30[3];
+    /* 0x3C */ CamVec3 scale;
+    /* 0x48 */ s32 alpha;
+} AnimKey;
+
+typedef struct {
+    s32 v[4];
+} AnimRot;
+
+static inline AnimKey *AnimTrack_FindKey(AnimKey *key, s32 v) {
+    while (key->len != 0) {
+        if (v >= key->start && v < key->start + key->len) {
+            return key;
+        }
+        key++;
+    }
+    return key;
+}
+
+/* Frame range of an animation track (at track+0x14). */
+typedef struct {
+    /* 0x00 */ u16 base;
+    /* 0x04 */ s32 lo;
+    /* 0x08 */ s32 hi;
+    /* 0x0C */ s32 off;
+    /* 0x10 */ s32 clamp;
+} AnimRange;
+
+/* Frame t (16.16) of the range, clamped or looped, relative to its first frame. */
+static inline s32 AnimRange_Frame(AnimRange *range, s32 t) {
+    s32 frame;
+
+    t -= range->off << 16;
+    if (t < 0) {
+        frame = range->lo << 16;
+    } else if (range->clamp != 0) {
+        if (t < (range->hi - range->lo) << 16) {
+            frame = t + (range->lo << 16);
+        } else {
+            frame = (range->hi - 1) << 16;
+        }
+    } else {
+        frame = t % ((range->hi - range->lo + 1) << 16);
+        frame += range->lo << 16;
+        if ((range->hi - 1) << 16 < frame) {
+            frame = (range->hi - 1) << 16;
+        }
+    }
+    frame -= range->lo << 16;
+    return frame;
+}
+
+/* The pose func_8001F0D4 writes (at obj+8). */
+typedef struct {
+    /* 0x00 */ s32 flags;
+    /* 0x04 */ CamVec3 pos;
+    /* 0x10 */ s32 rot[4];
+    /* 0x20 */ CamVec3 scale;
+    /* 0x2C */ u8 unk2C[0x24];
+    /* 0x50 */ u8 unk50;
+    /* 0x51 */ u8 unk51;
+    /* 0x52 */ s16 unk52;
+    /* 0x54 */ u8 unk54[0x1C];
+    /* 0x70 */ s32 frame;
+    /* 0x74 */ s16 unk74;
+    /* 0x76 */ s16 unk76;
+} AnimPose;
+
+void func_80020B44(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5);
+
+
 /* A 0x38-byte record in the table at +8 of the block func_8002A9AC frees
  * (count at +0). */
 typedef struct TexAnimEntry {
@@ -2247,6 +2325,8 @@ typedef struct CamEase {
 void func_80013F44(CamView *cam, CamView *dst, CamEase *ease);
 
 void func_80018B08(GfxViewport *vp, GfxCamera *cam);
+
+void func_8001F0D4(u8 *arg0, u8 *arg1);
 
 void func_8001F828(u8 *arg0, u8 *arg1);
 
