@@ -30,8 +30,8 @@ tools/dk make permute FUNC=func_80012345                 # only at the registers
 tools/dk python3 tools/scripts/decomp.py done func_80012345 --commit --note "what made it match"
 ```
 
-`done` is the gate. It checks scope (only this function's `INCLUDE_ASM` is
-replaced), lint (no m2c leftovers, hacks declared with `--hack`), the function
+`done` is the gate. It checks scope (this function's `INCLUDE_ASM` is
+replaced by C, and no other one is), lint (no m2c leftovers, hacks declared with `--hack`), the function
 and a clean full build of every target. Only then does it record and commit
 `Match NAME (seg, N bytes)`. The pre-commit hook refuses matches committed any
 other way. The bulk matcher `decomp.py auto` is retired.

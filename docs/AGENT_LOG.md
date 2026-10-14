@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 777/2551 game functions matched (main.exe ~512/575), 7 parked,
+- 778/2551 game functions matched (main.exe ~513/575, 61 left), 7 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
@@ -36,12 +36,17 @@ leads**, add any new gotcha, and add one short entry at the top of the
    shiftable `NON_MATCHING` build. Recordings stay short and hand-written
    (`<frames> [buttons]`, check with `replay.py run ... --shot N`).
 1. More swarm runs: `swarm.mjs run --branch main --seg main/ --max-minutes
-   120 --max-functions 300 --max-run-usd 80`. Big mode works on real
-   functions (first run: 612 B and 600 B both matched in one ~6-min opus
-   session each); nothing has needed a second session or a checkpoint yet,
-   so watch those on the bigger ones. After each run, the checklist at the
-   end of tools/swarm/README.md (`stats`, parks, fold `patterns.md`, this
-   log).
+   60 --max-functions 300 --max-run-usd 80 --big-bytes 400`. 400-599 B
+   matches 57% in normal mode and big mode does better, hence
+   `--big-bytes 400`; 17 functions of that size have never been leased
+   (`func_80010C70`, `func_80010E8C`, `func_8001231C`, `func_80013D54`,
+   `func_80017164`, `func_80017EE8`, `func_8001A82C`, `func_8001D6B4`,
+   `func_8001E21C`, `func_8001E610`, `func_8001F604`, `func_8001FE80`,
+   `func_800235BC`, `func_8002854C`, `func_80028774`, `func_80028D40`,
+   `func_80029560`). Pass `--retry-failed` so the 2.7.2 functions the
+   load fix unblocked are leased again (see Open leads). After each run,
+   the checklist at the end of tools/swarm/README.md (`stats`, parks, fold
+   `patterns.md`, this log).
 2. Split `main.c` into its translation units, between swarm runs (a split
    moves functions, so workers' patches and big-mode checkpoints for them
    stop applying). Find the boundaries first and write the evidence in
@@ -52,8 +57,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 3. Keep matching `main.exe` (swarm runs, alternating with split steps). By
    hand: `decomp.py next --seg main/`, the MATCHING.md process (check the
    unit, evidence, STAGE by STAGE, Diff patterns, cc1 dump, then permuter).
-   The 9 functions with identical copies (`decomp.py dups`) are worth doing
-   by hand. A function that parks still gets its prototype in its owned
+   No `main.exe` function left has an identical copy (`decomp.py dups`:
+   every main member of a group is matched). A function that parks still gets its prototype in its owned
    header (an ordinary commit after `make check`).
 4. Name each function as it's matched when the evidence allows (345 of
    2550 are named). Unpark when a new idea comes up (see Open leads).
@@ -93,17 +98,17 @@ Parked (`decomp.py block`; best C under `#ifndef NON_MATCHING` in
   Permuter's best reused a temp for `tpage & ~0x60`.
 
 Other:
-- `main/8002d488` (gcc 2.7.2 + `aspsx_fill.py`): `func_8002D488` matched.
-  `func_8002E000` (parked by the swarm in `main.c`) now compiles to the same
-  shape: an ordinary diff in the loop setup (target keeps the counter in a1
-  and a zero pointer in a2). `func_8002DE2C`, then `func_8002D4F4` (2360 B,
-  the biggest left). `aspsx_fill.py` only fills `j`/`jr`; if a `jal` slot
-  differs, extend it from the target.
-- `main/8002e0f0` is gcc 2.7.2 + ASPSX now (Makefile), so 2.7.2 runs from
-  `0x8002D488` to PsyQ; whether `8002d488` and `8002e0f0` are one file is
-  open. `func_8002E0F0` was only tried under 2.8.1: the next run retries
-  it. `func_8002E0F0` may need `aspsx_fill.py` to
-  expand `lw rD,sym(rI)` through rD instead of `$at`.
+- The gcc 2.7.2 units (`main/8002d488`, `main/8002e0f0`): `aspsx_fill.py`
+  fills `j`/`jr` slots and, since 2026-10-14, expands indexed symbol loads
+  through the load's register as ASPSX does (that unblocked and matched
+  `func_8002E0F0`). Left: `func_8002E000` (240 B; loop setup: target keeps
+  the counter in a1 and a zero pointer in a2), `func_8002E3D0` (436 B; gcc
+  if-converts `v = 0; if (bit) v = arg2;`), `func_8002DE2C` (468 B; an
+  extra `addu a3,v1,zero` copy in the target's first `bne` slot),
+  `func_8002D4F4` (2360 B, never tried), `func_8002E25C` (parked, below).
+  Swarm notes on them before 2026-10-14 blame the `$at` loads; ignore
+  those. If a `jal` slot differs, extend `aspsx_fill.py` from the target.
+  Whether the two units are one file is open.
 - **`func_800274FC`** (parked; split out of `func_80027408`, now matched):
   registers 4/40. It's `func_800276C4`'s body plus `D_8005B698 = NULL`;
   the target loads the last `*arg0` into a0 and the global's `lui` into v1
@@ -284,8 +289,8 @@ Newest first, a few lines each. Details are in the commits.
   `--resume` gated three functions twice (metadata-only commits), now one
   attempt per function. 400-599 B matches only 57% in normal mode (12/21):
   consider `--big-bytes 400`. Parks: `func_80010000` (registers 11/86),
-  `func_8002E3D0` (needs maspsx/aspsx_fill to expand loads through the
-  dest reg, not $at, in 2.7.2 units), `func_80020C04` (inline asm refused).
+  `func_8002E3D0` (needed loads expanded through the dest reg in 2.7.2
+  units: fixed the same day), `func_80020C04` (inline asm refused).
 - **2026-10-14 (play and test docs):** `tools/replay/README.md` (packer,
   playing in RetroArch, harness, recordings, limits), linked from README,
   CONTRIBUTING (when to run `make replay`) and CLAUDE.md. RetroArch + the

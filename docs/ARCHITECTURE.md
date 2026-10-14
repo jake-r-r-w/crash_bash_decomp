@@ -51,6 +51,17 @@ How the boundaries were found:
   a `bne; nop` whose slot 2.8.1's reorg would fill, and `func_8002E618`
   matches only under 2.7.2. So 2.7.2 code runs from `0x8002D488` to the
   start of PsyQ; whether the two units are one file is still open.
+  - Its indexed loads from a symbol (`lbu $2,D_X($3)`) are expanded through
+    the load's own register (`lui $2; addu $2,$2,$3; lbu $2,%lo(D_X)($2)`),
+    or through `$at` when that register is also the index: GNU as's rule,
+    and ASPSX's. maspsx always uses `$at`, so `aspsx_fill.py` rewrites it.
+  - `func_8002E0F0` is a fatal text screen: it resets the GPU, clears the
+    screen, prints one message twice with `func_8002E25C` (the debug text
+    printer; colour `0xFFFF`, then `0x8000` one pixel down-right) and calls
+    `exit()`. The message comes from a table of 12-byte entries at
+    `0x8006789C` indexed by `D_8006EA24` (the font mode): `+2` u8, `+4`/`+6`
+    s16 x/y, `+8` the text pointer. `TextPos` has a fourth s16 at `+6`
+    (set to 1 there).
 - **`.data` start** `0x8004DCBC`: the first game table (pointers to the game's
   own strings) after the last LIBMCRD string; the lowest stored-to address is
   `0x8004E0B4`.

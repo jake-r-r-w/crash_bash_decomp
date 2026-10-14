@@ -423,6 +423,7 @@ reordering.
 | Check | Fails when |
 |---|---|
 | Scope | the working tree replaces any other function's `INCLUDE_ASM` (one function per commit) |
+| Still asm | the function's own `INCLUDE_ASM` line is still in its file (its asm would "match" itself) |
 | Lint | the function still contains `M2C_*` macros, m2c's `?` type, or inline asm with instructions |
 | Hacks | a register pin or an `asm("")` barrier is used without `--hack "why"` |
 | Function | the function's compiled words differ from the target |

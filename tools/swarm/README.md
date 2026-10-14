@@ -120,6 +120,11 @@ dontAsk`: anything outside the allowed tools is denied, never prompted. Options 
   then one `decomp.py verify` checks the batch's final state and only then is the batch pushed.
   If that build fails, nothing is pushed and each function goes through the full `done` alone.
   Batching only happens when the branch's `decomp.py` has `--defer-build`.
+- **Fresh generated files:** each clone gets `asm/`, `linkers/`, `assets/` and `ext/` copied from
+  your checkout, and `asm/` and `linkers/` are copied again whenever `configs/USA`'s sym/rel
+  files or yamls change (a fingerprint in the clone's `.git/swarm-data`). So after a symbol
+  split, run `make split` in your checkout before the run: stale clones failed every gate with
+  "can't open asm/nonmatchings/.../func_X.s".
 - **Gate builds get the CPU:** running permuter containers are paused (`docker pause`) while
   the gate works and resumed after.
 - **Conflicts:** headers merge with `merge=union` in the swarm's clones (every match appends its
