@@ -38,6 +38,47 @@ typedef struct {
 
 void func_80028F28(AnimScroll *, AnimOwner *);
 
+/* The same 0x38-byte entry as func_80028D40 uploads it to VRAM. */
+typedef struct AnimTex {
+    u16 mode;       /* 0x00: 0 = 4-bit, else 8-bit */
+    u16 clut;       /* 0x02: 0x7FFF = none */
+    u8 *src;        /* 0x04 */
+    u8 unk8[8];
+    u8 du;          /* 0x10 */
+    u8 dv;          /* 0x11 */
+    u16 flags;      /* 0x12 */
+    s32 frames;     /* 0x14 */
+    RECT rect;      /* 0x18 */
+    struct FreeHdr *pos; /* 0x20 */
+    u16 tpage;      /* 0x24 */
+    u16 clutId;     /* 0x26 */
+    u16 uv0;        /* 0x28 */
+    u16 uv1;        /* 0x2A */
+    u16 uv2;        /* 0x2C */
+    u16 uv3;        /* 0x2E */
+    u8 *pix;        /* 0x30 */
+    u8 unk34[4];
+} AnimTex;
+
+typedef struct {
+    u16 unk0;
+    u16 id;         /* 0x02 */
+    u8 unk4[8];
+} AnimClut;
+
+typedef struct {
+    u8 unk0[0xC];
+    AnimClut *cluts; /* 0x0C */
+} AnimTexSet;
+
+typedef union {
+    u16 h;
+    u8 b[2];
+    struct { u16 u : 8; u16 v : 8; } f;
+} TexUV;
+
+extern s32 D_8005A640;
+
 /* A viewpoint: its position (+0xC) is subtracted from world positions before
  * they go through the GTE (func_8002B6D0, func_8002B760). */
 typedef struct {
@@ -2523,5 +2564,7 @@ static inline subengine *MapEnv_GetSubs(MapEnvHead *env) {
 void func_8001D6B4(MapEnvHead *env);
 
 u8 *func_8001FE80(u8 *arg0, s32 arg1, Blk32 *arg2, CamVec3 *arg3, s32 arg4, u8 * *arg5);
+
+void func_80028D40(AnimTex *t, s32 base, AnimTexSet *set);
 
 #endif /* BASH_MAIN_H */

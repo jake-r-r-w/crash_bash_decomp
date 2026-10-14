@@ -10928,7 +10928,43 @@ void func_80028C94(void) {
 void func_80028D38(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80028D40);
+void func_80028D40(AnimTex *t, s32 base, AnimTexSet *set) {
+    TexUV uv;
+    s16 y;
+    u8 *p;
+    AnimClut *cl;
+
+    t->pos = func_800282F8(t->src);
+    if (t->pos != NULL) {
+        t->rect.x = t->pos->f0;
+        t->rect.y = y = t->pos->f2;
+        if (t->mode != 0) {
+            t->tpage = getTPage(1, 1, t->rect.x >> 7 << 7, y);
+            uv.f.u = t->rect.x << 1;
+        } else {
+            t->tpage = getTPage(0, 1, t->rect.x, y);
+            uv.f.u = t->rect.x << 2;
+        }
+        if ((t->flags & 2) && D_8005A640 < t->frames) {
+            p = t[D_8005A640].pix + base;
+        } else {
+            p = t->pix + base;
+        }
+        LoadImage(&t->rect, (u_long *)p);
+        uv.h = uv.b[0] | (*(u8 *)&t->rect.y << 8);
+        t->uv0 = uv.h;
+        ((u8 *)&uv)[0] += t->du;
+        t->uv1 = uv.h;
+        ((u8 *)&uv)[1] += t->dv;
+        t->uv3 = uv.h;
+        uv.b[0] -= t->du;
+        t->uv2 = uv.h;
+        if (t->clut != 0x7FFF) {
+            cl = &set->cluts[t->clut];
+            t->clutId = cl->id;
+        }
+    }
+}
 
 void func_80028F28(AnimScroll *s, AnimOwner *o) {
     AnimEntry *e;
