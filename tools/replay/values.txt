@@ -1,0 +1,19 @@
+# Game values logged every frame by replay.py: `<symbol or 0xADDRESS> <u8|s8|u16|s16|u32|s32>`.
+# Addresses come from each disc's symbols, so a shifted build is read where it keeps them.
+# Only values that mean the same in every build: no pointers (a shifted build's differ).
+RandomSeedA u32
+RandomSeedB u32
+ASTCount u32
+# Heroes: HeroInfo[4] (0x6C each, include/bash/nas.h): hero_mode, hero_health, hero_score
+Heroes+0x2C u16
+Heroes+0x36 s16
+Heroes+0x50 s16
+Heroes+0x98 u16
+Heroes+0xA2 s16
+Heroes+0xBC s16
+Heroes+0x104 u16
+Heroes+0x10E s16
+Heroes+0x128 s16
+Heroes+0x170 u16
+Heroes+0x17A s16
+Heroes+0x194 s16

@@ -29,13 +29,14 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-0. Current focus (ROADMAP.md, Current focus): the replay harness. `make
-   disc` already packs a bootable `build/CrashBash.bin`/`.cue` and `make
-   disc-check` proves it is the retail image. The harness needs a headless
-   emulator in the toolchain image (Mednafen or a libretro core such as
-   Beetle PSX, driven by a script), an input recording format, and frame
-   hashes plus a few game values per frame. Prove it on the matching build
-   with a short recording (boot to the title, into one minigame).
+0. Current focus (ROADMAP.md, Current focus): recording real play for the
+   replay harness. `make replay` works (headless PCSX-ReARMed, HLE BIOS;
+   `tools/replay/recordings/battle.txt` reaches the crate battle and plays
+   two minutes, 7512 frames in ~20 s per disc). Recordings are written by
+   hand (`<frames> [buttons]`, check progress with `replay.py run ... --shot
+   N` and look at the PNGs); for long sessions, convert RetroArch input
+   recordings made with the same core and `OPTIONS`. Add player positions
+   to `tools/replay/values.txt` (through `HeroInfo.hero`, a NAS pointer).
 1. More swarm runs: `swarm.mjs run --branch main --seg main/ --max-minutes
    120 --max-functions 300 --max-run-usd 80`. Big mode works on real
    functions (first run: 612 B and 600 B both matched in one ~6-min opus
@@ -256,6 +257,12 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-14 (replay harness):** `make replay`: `tools/replay/replay.py`
+  drives the PCSX-ReARMed libretro core through ctypes (pinned in the
+  toolchain image, now `psx-decomp:2`), traces each frame's image hash and
+  `values.txt` (seeds, `Heroes` mode/health/score), compares two discs.
+  Retail vs build: 7512 identical frames; a patched `Random` is caught at
+  frame 1294. Deterministic run to run.
 - **2026-10-14 (disc packer):** `make disc` / `make disc-check`
   (`tools/scripts/pack_disc.py`): dumpsxiso the retail image into
   `build/disc/`, put the built exe and overlays back, mkpsxiso it. The

@@ -22,9 +22,12 @@ Matching continues, but the first priority is being able to run any build of
 ours and check that it still plays the same as retail. `tools/dk make disc`
 packs `build/main.exe` and the overlays into `build/CrashBash.bin`/`.cue`,
 which boots in an emulator, and `make disc-check` confirms the matching build
-packs to the retail image byte for byte. Next is the replay harness (Phase 2),
-then the shiftable `NON_MATCHING` build (Phase 4). Until they exist, a build
-that isn't byte-identical can't be tested at all.
+packs to the retail image byte for byte. `tools/dk make replay` plays an
+input recording on the retail disc and the built one in a headless emulator
+and reports the first frame where they differ. Next is recording real play
+for it (Phase 2), then the shiftable `NON_MATCHING` build (Phase 4), the
+first build that isn't byte-identical and so the first one the harness
+really tests.
 
 ## Phase 1 - Foundations: types and names
 
@@ -74,14 +77,21 @@ harness work, so later phases can test what they finish.
   `tools/dk make disc` (`tools/scripts/pack_disc.py`) and `make disc-check`
   (`configs/USA/disc.sha`). A file may shrink but not grow; an overlay that
   outgrows its `CRASHBSH.DAT` slot needs the DAT and its index rebuilt.
-- [ ] A replay harness: play an emulator input recording (BizHawk or Mednafen
-  movie) on two discs and compare each frame's image hash and a set of game
-  values (positions, scores, the random seed, the current mode), read from
-  wherever each build keeps them. It reports the first frame that differs.
-  It runs headless in the toolchain container, like everything else. Prove
-  it on the matching build, which must pass (test 4 in
-  [The final test](#the-final-test)), with a short recording first (boot to
-  the title screen and into one minigame).
+- [x] A replay harness: play an input recording on two discs in a headless
+  emulator and compare each frame's image hash and a set of game values (the
+  random seed, the players' modes, health and scores), read from wherever
+  each build keeps them. It reports the first frame that differs, with
+  screenshots of both. `tools/dk make replay [REC=...]`
+  (`tools/replay/replay.py`, the PCSX-ReARMed libretro core with its HLE
+  BIOS, built into the toolchain image). Proved on the matching build with
+  `tools/replay/recordings/battle.txt` (boot, menus, two minutes into the
+  crate battle: 7512 identical frames), and it catches a one-instruction
+  change to `Random` at the first frame the seed differs.
+- [ ] Record real play for the harness: a way to record long sessions by
+  playing, not by writing frame counts by hand. RetroArch with the same core
+  and the same options (`OPTIONS` in `replay.py`) gives the same timing, so
+  converting its input recordings is the likely route. Also log player
+  positions (through `HeroInfo.hero`) as game values.
 - [x] Match GTE code: include Sony's GTE macros (`inline_c.h`, `gtemac.h`) in
   the game sources and match one GTE function through `done`. 27 of the exe's
   game functions use the GTE, and m2c can't draft them.

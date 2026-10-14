@@ -6,6 +6,7 @@
 #   make check           - build, then compare every target with configs/USA/checksum.sha
 #   make disc            - build, then pack build/CrashBash.bin/.cue (bootable; tools/scripts/pack_disc.py)
 #   make disc-check      - make disc, then compare the image with the retail one (configs/USA/disc.sha)
+#   make replay [REC=..] - make disc, then play a recording on the retail and the built disc (tools/replay)
 #   make verify          - clean rebuild + check (use after structural/config/header changes)
 #   make diff FUNC=name  - build one function's file and diff it against the original
 #   make permute FUNC=name [MINUTES=15] - run decomp-permuter on one function
@@ -57,7 +58,7 @@ S_FILES   := $(shell find asm -name '*.s' -not -path 'asm/nonmatchings/*' 2>/dev
 BIN_FILES := $(shell find assets -name '*.bin' 2>/dev/null)
 O_FILES   := $(C_FILES:%=build/%.o) $(S_FILES:%=build/%.o) $(BIN_FILES:%=build/%.o)
 
-.PHONY: all build split check verify disc disc-check diff permute progress objdiff-config report clean
+.PHONY: all build split check verify disc disc-check replay diff permute progress objdiff-config report clean
 
 # Two passes: splat must have produced asm/ before the object list above is computed.
 # The splat pass is serial (-j1) even under make -j: concurrent splat runs share asm/ and gave
@@ -158,6 +159,13 @@ disc: build
 
 disc-check: disc
 	@sha1sum -c $(CFG)/disc.sha
+
+# The replay harness: play an input recording on the retail disc and on the built one, in a
+# headless emulator, and report the first frame whose image or game values differ.
+REC ?= tools/replay/recordings/battle.txt
+RETAIL_CUE ?= disc/CrashBash.cue
+replay: disc
+	@$(PYTHON) tools/replay/replay.py compare $(RETAIL_CUE) build/CrashBash.cue $(REC)
 
 # ---- matching helpers (tools/scripts/decomp.py) ----
 diff:
