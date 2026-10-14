@@ -673,7 +673,10 @@ aligned) is the structure, insns (exact) the rest. The loop:
    ok. A register change can cascade into later blocks, so judge by paired and the block list
    together, not insns alone.
 3. Repeat. When regions shows only "operands" blocks, use the cc1 dump and the Diff patterns'
-   register rows.
+   register rows. If one variable sits in different registers in different blocks, run
+   \`tools/dk python3 tools/scripts/decomp.py splitvars ${f.name} VAR </dev/null\`: it tries every
+   grouping of VAR's assignments into separate variables and ranks them (\`--apply\` writes the
+   best; give the new VAR_N real names).
 The orchestrator keeps the best C by the same region score (paired first, then identical blocks,
 then exact instructions), so the version you leave should be your best by it.` :
 `Work in stages; \`tools/dk make diff FUNC=${f.name} </dev/null\` prints a \`STAGE\` line that says

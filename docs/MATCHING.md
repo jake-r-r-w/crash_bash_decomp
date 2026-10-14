@@ -94,6 +94,12 @@ block by block over several sessions, keeping the best C between them:
   a sibling to start from; `in`: a helper whose code is inside this one),
   and `decomp.py dups` and the callers and callees in
   `.decomp/functions.json` find more matched code to copy from.
+- **Split a variable that changes register.** If `regions` shows one
+  variable in different registers in different blocks, the original
+  probably had several: `decomp.py splitvars NAME VAR` compiles every
+  grouping of VAR's assignments and ranks them by region score (`--apply`
+  writes the best; give the new `VAR_N` real names after). It found
+  `func_80019A60`'s last 3 blocks in 10 s.
 - **Permute late and narrow.** Only at the `registers` stage, with a long
   run (an hour, or overnight), and on the region that differs where you can.
 - **Keep the best C between sessions.** By hand: `decomp.py block NAME
@@ -386,7 +392,7 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | extra `move aN,vM` before a loop that copies a CSE'd index offset (sll) into another register | hold the offset in an explicit `s32 off = arg0 * 4` variable and index the byte table with `tbl[off + 1]` in both the guard and the loop test | `func_8002E000` |
 | Entry `move sN,a0` must come before the other param copies, but making a0's test die in a0 (s16 param or `s16 x = arg0`) leaves the copy after them | sched2 breaks priority-1 ties by luid, and param hard-reg copies always come before conversion and body copies. A same-mode local copy (`s32 x = arg0`) is folded back by cse, so the copy must change mode | ``func_800248A0` (unsolved)` |
 | A pointer's offset add is scheduled late (or early) against the target, so the base parameter dies at the wrong add and the registers rotate | sched1 gives single-set pseudos 'birthing' launch priority (0x7f000001 in the -dS dump). A variable set twice loses it: here `p = &uvs[*uvi++]; ... p = &uvs[*uvi]` instead of uvi[0]/uvi[1] (the same code once combine folds the +2) | `func_8001795C` |
-| One variable is in a different register in different cases of a switch (here `a1` in one case, `v1` in two others; `regions` shows the blocks) | gcc 2.8.1 gives a pseudo one hard register for its whole life, so the original used separate variables: split it by use (here three: entry index, frame index, and one shared by the other two cases); try each grouping, since a wrong split cascades through every block | `func_80019A60` |
+| One variable is in a different register in different cases of a switch (here `a1` in one case, `v1` in two others; `regions` shows the blocks) | gcc 2.8.1 gives a pseudo one hard register for its whole life, so the original used separate variables: split it by use (here three: entry index, frame index, and one shared by the other two cases). `decomp.py splitvars NAME VAR` tries every grouping of its assignments and scores each with `regions` (52 in 10 s here); a wrong split cascades through every block | `func_80019A60` |
 | Two loaded values swap `v0`/`v1` at the function entry | read the field into a function-scope local before the expression that uses the other value (`depth = d->f; on = ...; G = depth;`) | `func_80019A60` |
 
 ## Classify the diff, then work through the list

@@ -2664,6 +2664,129 @@ def cmd_similar(a):
         print(f"{r:4.2f} {inside:4.2f} {f['size']:5d} {shared:5d}  {stat.get(k, '?'):<8} {f['seg']}/{nm}{where}")
 
 
+def partitions(n, cap):
+    """Restricted growth strings: every way to put n items in groups (item 0 in group 0)."""
+    out = []
+
+    def rec(prefix, top):
+        if len(out) >= cap:
+            return
+        if len(prefix) == n:
+            out.append(tuple(prefix))
+            return
+        for g in range(top + 2):
+            rec(prefix + [g], max(top, g))
+    rec([0], 0)
+    return out
+
+
+def var_defs(ftext, var):
+    """The declaration of `var` in a function's text and its occurrences after it, each marked
+    as a plain assignment (a def: `var = ...` whose right side doesn't read var) or a use."""
+    decl = re.search(r"^([ \t]*)((?:(?:const|volatile|unsigned|signed|struct\s+\w+|\w+)\s+)+\**)"
+                     + re.escape(var) + r"(\s*=[^;]*)?;[ \t]*$", ftext, re.M)
+    if not decl:
+        return None, []
+    occ = []
+    for m in re.finditer(r"\b" + re.escape(var) + r"\b", ftext[decl.end():]):
+        at = decl.end() + m.start()
+        rest = ftext[at + len(var):]
+        a = re.match(r"\s*=(?!=)([^;]*);", rest)
+        occ.append((at, bool(a) and not re.search(r"\b" + re.escape(var) + r"\b", a.group(1))))
+    return decl, occ
+
+
+def cmd_splitvars(a):
+    """Try splitting one local into several: gcc 2.8.1 gives a pseudo one register for its whole
+    life, so a variable the original wrote as two (or three) shows up as one that sits in the
+    wrong register in some blocks. Every grouping of the variable's assignments is compiled with
+    the whole file and scored with `regions`."""
+    import concurrent.futures
+    import regions
+    proj, funcs = need_proj(), need_funcs()
+    key, e = find_func(funcs, a.func)
+    name = cur_name(key, e, sym_names())
+    src = e.get("src") or locate_def(name)
+    text = read(src)
+    m = func_def_regex(name).search(text) if src else None
+    ftext = extract_function(text, name) if m else None
+    if not ftext:
+        die(f"no C definition of {name} found")
+    fstart = m.start()
+    decl, occ = var_defs(ftext, a.var)
+    if not decl:
+        die(f"no declaration `<type> {a.var};` (one per line) in {name}")
+    defs = [at for at, is_def in occ if is_def]
+    if len(defs) < 2:
+        die(f"{a.var} is assigned {len(defs)} time(s): nothing to split")
+    groups = [tuple(int(x) for x in a.groups.split(","))] if a.groups else partitions(len(defs), a.max)
+    if a.groups and len(groups[0]) != len(defs):
+        die(f"--groups needs {len(defs)} numbers (one per assignment)")
+    line_of = lambda at: text.count("\n", 0, fstart + at) + 1
+
+    def variant(gs):
+        """The function with the variable split by group (group 0 keeps the name)."""
+        names = [a.var if g == 0 else f"{a.var}_{g}" for g in gs]
+        out, last, cur = [], 0, None
+        for at, is_def in occ:
+            if is_def:
+                cur = names[defs.index(at)]
+            out.append(ftext[last:at] + (cur or a.var))
+            last = at + len(a.var)
+        body = "".join(out) + ftext[last:]
+        extra = "".join(f"{decl.group(1)}{decl.group(2)}{a.var}_{g};\n" for g in sorted(set(gs)) if g)
+        cut = decl.end() + 1
+        return body[:cut] + extra + body[cut:]
+
+    cfg = unit_cfg(mk_config(), src)
+    gval = int(cfg.get("GVAL", "0"))
+    tw = target_words(e, proj)
+    nt = trim_nops(tw)
+    vram = key_vram(key)
+    ttext = parse_asm(e["asm"])[3][:nt]
+    labels = asm_labels(e["asm"], vram)
+    os.makedirs("build/splitvars", exist_ok=True)
+
+    def score(i, gs):
+        c, o = f"build/splitvars/v{i}.c", f"build/splitvars/v{i}.o"
+        write(c, text[:fstart] + variant(gs) + text[fstart + len(ftext):])
+        cmd = pipeline(c, o, cfg["CC_VER"], f"{cfg['OPT_FLAGS']} {cfg.get('EXTRA_CC1FLAGS', '')}".strip(), gval,
+                       re.sub(r"\s*-G\d+", "", cfg.get("MASPSX_ARGS", DEFAULT_MASPSX)), post_filters(cfg))
+        if run("set -o pipefail; " + cmd).returncode:
+            return gs, None
+        cw, _, rel = obj_func(o, name)
+        nc = trim_nops(cw)
+        if not cw:
+            return gs, None
+        r = regions.score(tw[:nt], cw[:nc], ttext, rel, vram, labels)
+        r["match"] = r["ok"] == r["total"] and nt == nc
+        return gs, r
+
+    print(f"{name}: {a.var} has {len(defs)} assignments; trying {len(groups)} grouping(s)")
+    for k, at in enumerate(defs):
+        print(f"  #{k} line {line_of(at)}: {ftext[at:ftext.index(';', at) + 1].strip()[:70]}")
+    with concurrent.futures.ThreadPoolExecutor(max_workers=a.jobs or max(1, (os.cpu_count() or 2) - 1)) as ex:
+        res = list(ex.map(lambda p: score(*p), enumerate(groups)))
+    good = [(gs, r) for gs, r in res if r]
+    keyf = lambda x: (x[1]["match"], x[1]["paired"] / x[1]["len"], x[1]["ok"], x[1]["exact"] / x[1]["len"])
+    good.sort(key=keyf, reverse=True)
+    print(f"{'groups':<{2 * len(defs) + 2}} blocks   paired   exact")
+    for gs, r in good[:a.top]:
+        tag = "  MATCH" if r["match"] else ("  (as written)" if not any(gs) else "")
+        print(f"{','.join(map(str, gs)):<{2 * len(defs) + 2}} {r['ok']:>3}/{r['total']:<3} "
+              f"{r['paired']:>4}/{r['len']:<4} {r['exact']:>4}/{r['len']:<4}{tag}")
+    if len(good) < len(res):
+        print(f"({len(res) - len(good)} grouping(s) didn't build)")
+    if good and a.apply:
+        gs, r = good[0]
+        base = next((r0 for g0, r0 in good if not any(g0)), None)
+        if any(gs) and (base is None or keyf((gs, r)) > keyf(((), base))):
+            write(src, text[:fstart] + variant(gs) + text[fstart + len(ftext):])
+            print(f"applied {','.join(map(str, gs))} to {src}: rename {a.var}_N to something meaningful")
+        else:
+            print("the variable as written scores best: nothing applied")
+
+
 def cmd_block(a):
     funcs = need_funcs()
     key, e = find_func(funcs, a.func)
@@ -3390,6 +3513,15 @@ def main():
     p.add_argument("--contain", type=float, default=0.6, help="also list functions this share of which is inside NAME (in)")
     p.add_argument("--all", action="store_true", help="unmatched functions too (siblings to do together)")
     p.set_defaults(fn=cmd_similar)
+    p = sub.add_parser("splitvars", help="try splitting a local into several variables, scored by regions")
+    p.add_argument("func")
+    p.add_argument("var")
+    p.add_argument("--max", type=int, default=300, help="most groupings to try")
+    p.add_argument("--groups", help="try one grouping only, e.g. 0,0,1,1 (one number per assignment)")
+    p.add_argument("--top", type=int, default=10)
+    p.add_argument("--jobs", type=int)
+    p.add_argument("--apply", action="store_true", help="write the best grouping into the source")
+    p.set_defaults(fn=cmd_splitvars)
     p = sub.add_parser("auto", help="match small functions from m2c drafts without the model")
     p.add_argument("--max-size", type=int, default=32, help="largest function to try, in bytes")
     p.add_argument("--limit", type=int, default=200)
