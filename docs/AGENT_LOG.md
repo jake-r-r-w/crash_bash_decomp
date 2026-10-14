@@ -309,6 +309,19 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-14 (by hand, `func_8002E3D0`, stopped early):** the
+  `steal_jump_slot` rule changes nothing for it (checkpoint still 7/12
+  blocks). The swarm worker's lead version gets 11/12 blocks, every
+  register right: from the checkpoint, add `u32 lo;`, set up as
+  `hi = (u32)bits >> 16; lo = bits; x = pos->x; y = pos->y; row = 0;`,
+  start the inner loop at `b = (u16)lo`, and write the pixel zero as
+  `bg = (u16)b; bg >>= 16;`. Only block 0 (the prologue) differs: the
+  target's `srl s4,a3,16` reads the incoming `a3`, ours reads the copy
+  in `s7` and comes later, swapping the `s3`/`s4` saves. `u16 lo` (the
+  row from the run) didn't change it here. Next: `permute --differing`
+  from that version (10 min was started and stopped), or find what
+  makes the target keep `bits` in `a3`. Not checkpointed: it ranks
+  below the 7/12 checkpoint (paired 106/109). `func_8002D4F4` not started.
 - **2026-10-14 (by hand, `func_8002DE2C`, 468 B, gcc 2.7.2 unit):** matched
   from the checkpoint (2/116; 60 permuter minutes had found nothing).
   `vars`: a temporary, `splitvars`: no gain; ~16 rewrites, then the
