@@ -19,6 +19,12 @@
    "size": 360
   },
   {
+   "name": "func_8001795C",
+   "note": "registers 12/107 (swarm checkpoint ported to GfxTexSet/GfxTexInfo/TexFaceRuns); only the 0x8000/else arms' registers differ (see checkpoint log: t's def is hoisted above the cluts load by sched1). Clean sibling-style arms (func_80017EE8's form) are structure 108-109. next: keep t = &tex[count-1].info after the cluts load",
+   "seg": "main/main",
+   "size": 428
+  },
+  {
    "name": "func_8001C7FC",
    "note": "Two conflicting fixes: 'return func_8001A0D8(...)' (s32) makes the returned pseudo prefer v0 so global alloc puts mfhi in v1 and sched2 keeps lhu after sra (division region matches), but then v0 is live at the shared exit and gcc leaves the first beqz delay slot empty (target fills it with lui 0x200). Need a form where something prefers v0 without v0 live on the early-exit path.",
    "seg": "main/main",
@@ -55,9 +61,9 @@
    "size": 372
   }
  ],
- "commit": "e2ec2b2",
+ "commit": "7c9c912",
  "game": "SCUS_945.70",
- "generated": "2026-10-14T21:56:39Z",
+ "generated": "2026-10-14T21:58:58Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -36720,7 +36726,7 @@
    }
   },
   {
-   "commit": "e2ec2b2",
+   "commit": "7c9c912",
    "data_b": 488,
    "data_tb": 606943,
    "game_all_f": 2551,
@@ -36733,7 +36739,7 @@
    "lib_b": 122112,
    "lib_f": 564,
    "lib_tb": 122112,
-   "ts": "2026-10-14T21:56:39Z",
+   "ts": "2026-10-14T21:58:58Z",
    "units": {
     "engine": [
      2752,
@@ -36929,7 +36935,7 @@
   }
  ],
  "summary": {
-  "blocked": 9,
+  "blocked": 10,
   "copies_b": 37444,
   "data": {
    "done_b": 488,
@@ -36940,7 +36946,7 @@
    "all_f": 2551,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 9,
+   "blocked": 10,
    "c_f": 802,
    "done_b": 110532,
    "done_f": 806,
@@ -36992,7 +36998,7 @@
     "all_f": 575,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 9,
+    "blocked": 10,
     "c_f": 537,
     "done_b": 99088,
     "done_f": 541,

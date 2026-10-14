@@ -3745,7 +3745,71 @@ void func_800177F4(RelTable *face, POLY_GT4 *poly, s32 arg2, s32 mode) {
 }
 #endif
 
+#ifndef NON_MATCHING
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001795C);
+#else
+void func_8001795C(u8 *arg0, POLY_GT4 *arg1)
+{
+  GfxModel *model = D_80056998.unk0;
+  GfxClutEntry **new_var;
+  TexFaceRuns *face = (TexFaceRuns *) arg0;
+  POLY_GT4 *poly = arg1;
+  u16 *idx;
+  u16 *uvi;
+  u16 *tex;
+  RelTable *mc;
+  u32 *colors;
+  u32 *c;
+  u16 *uvs;
+  u16 *p;
+  GfxTexInfo *t;
+  u16 uv;
+  s32 ti;
+  u16 clut;
+  GfxTexSet *ts;
+  uvi = (u16 *) (((u8 *) (&face->uvIdx)) + face->uvIdx);
+  idx = (u16 *) (((u8 *) (&face->table)) + face->table);
+  tex = (u16 *) (((u8 *) (&face->texs)) + face->texs);
+  mc = model->colors;
+  colors = (u32 *) (((u8 *) (&mc->table)) + mc->table);
+  uvs = (u16 *) (((u8 *) (&((UvTable *) mc)->uvs)) + ((UvTable *) mc)->uvs);
+  c = &colors[(*(idx++)) & 0x1FFF];
+  *((u32 *) (&poly->r0)) = *(c++);
+  *((u32 *) (&poly->r1)) = c[0];
+  *((u32 *) (&poly->r2)) = c[1];
+  c = &colors[(*idx) & 0x1FFF];
+  *((u32 *) (&poly->r3)) = *c;
+  ((P_TAG *) poly)->len = (u_char) 12, ((P_TAG *) poly)->code = (u_char) 0x3c;
+  ti = *tex;
+  ts = &model->texs;
+  if (ti & 0x8000)
+  {
+    ti &= 0x1FF;
+    new_var = &ts->cluts;
+    t = (GfxTexInfo *) (&ts->tex[ts->count]);
+    clut = (*new_var)[ti].clut;
+    t = &((GfxTexEntry *) t)[-1].info;
+  }
+  else
+  {
+    t = &ts->tex[ti = ti & 0x1FF].info;
+    clut = t->clut;
+  }
+  poly->clut = clut;
+  if ((*idx) & 0x8000)
+  {
+    *((u32 *) (&poly->r0)) = (*((u32 *) (&poly->r0))) | 0x02000000;
+  }
+  poly->tpage = t->tpage | 0x20;
+  uv = t->uv;
+  p = &uvs[*(uvi++)];
+  *((u16 *) (&poly->u0)) = uv | p[0];
+  *((u16 *) (&poly->u1)) = uv | p[1];
+  *((u16 *) (&poly->u2)) = uv | p[2];
+  p = &uvs[*uvi];
+  *((u16 *) (&poly->u3)) = uv | p[2];
+}
+#endif
 
 void func_80017B08(FaceRuns *faces, FacePrim *prim, s32 arg2, s32 mode) {
     u16 *idx;

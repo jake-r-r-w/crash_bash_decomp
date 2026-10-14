@@ -846,7 +846,10 @@
   "status": "blocked"
  },
  "8001795C": {
-  "auto_failed": "types"
+  "auto_failed": "types",
+  "blocked_at": "2026-10-14T21:58:35Z",
+  "note": "registers 12/107 (swarm checkpoint ported to GfxTexSet/GfxTexInfo/TexFaceRuns); only the 0x8000/else arms' registers differ (see checkpoint log: t's def is hoisted above the cluts load by sched1). Clean sibling-style arms (func_80017EE8's form) are structure 108-109. next: keep t = &tex[count-1].info after the cluts load",
+  "status": "blocked"
  },
  "80017B08": {
   "matched_at": "2026-10-13T20:59:30Z",
