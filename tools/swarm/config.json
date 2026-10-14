@@ -34,7 +34,7 @@
                    "Bash(tools/dk:*)", "Bash(git diff:*)", "Bash(git status:*)", "Bash(git log:*)",
                    "Bash(git show:*)", "Bash(git grep:*)", "Bash(ls:*)", "Bash(cat:*)", "Bash(head:*)",
                    "Bash(tail:*)", "Bash(grep:*)", "Bash(wc:*)", "Bash(sort:*)", "Bash(uniq:*)",
-                   "Bash(find:*)", "Bash(sed -n:*)"],
+                   "Bash(find:*)", "Bash(sed -n:*)", "Bash(date:*)"],
   "disallowedTools": ["Bash(git commit:*)", "Bash(git push:*)", "Bash(git reset:*)", "Bash(git clean:*)",
                       "Bash(rm:*)",
                       "Bash(tools/dk make permute:*)", "Bash(tools/dk python3 tools/scripts/decomp.py permute:*)", "WebFetch", "WebSearch", "Agent"],

@@ -665,9 +665,13 @@ Rules (they override the skill, CLAUDE.md and the docs):
 - Tools: change files only with the Edit and Write tools. Run each \`tools/dk ... </dev/null\` as its
   own Bash command, not chained. Read-only shell commands are fine. A refused command is never a
   reason to stop: do the same thing another way.
-- You have about ${this.o.bigMinutes} minutes. Leave the file compiling at the end: C that doesn't
-  build is thrown away, and only C that beats the best so far is kept. Never put the INCLUDE_ASM
-  line back.
+- This session ends at ${new Date(Date.now() + this.o.bigMinutes * 60e3).toTimeString().slice(0, 5)} local time
+  (\`date +%H:%M\` shows the time now): use all of it. Don't finish with "progress" while there is
+  time left; after each improvement, go on to the next difference. Finish early only on a match, or
+  as "parked" when you are sure it can't match from this file. When you are killed at the deadline,
+  the C left in the file is measured as usual, so keep it compiling and at your best version after
+  each step (undo an experiment that made it worse before trying the next). Never put the
+  INCLUDE_ASM line back.
 - Last, write ${RESULT} in the repo root, JSON:
   {"status": "matched" | "progress" | ${canPermute ? '"needs_permute" | ' : ''}"parked",
    "note": "one line: what you changed this session and what still differs",
