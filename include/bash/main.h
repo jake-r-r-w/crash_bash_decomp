@@ -233,10 +233,56 @@ typedef struct {
     s32 table; /* 0x20: byte offset from this field */
 } FaceRuns;
 
+/* The part of a 0x38-byte texture entry from +0x18 (func_80017EE8). */
+typedef struct {
+    u8 unk0[0xC];
+    u16 tpage; /* 0x0C */
+    u16 clut;  /* 0x0E */
+    u16 uv;    /* 0x10: ORed into each vertex's uv */
+} GfxTexInfo;
+
+typedef struct {
+    u8 unk0[0x18];
+    GfxTexInfo info; /* 0x18 */
+    u8 unk2A[0xE];
+} GfxTexEntry;
+
+typedef struct {
+    u8 unk0[2];
+    u16 clut; /* 0x02 */
+    u8 unk4[8];
+} GfxClutEntry;
+
+/* At +0x10 of GfxModel (func_80017EE8). */
+typedef struct {
+    s32 count;            /* 0x00: entries in tex */
+    u8 unk4[4];
+    GfxTexEntry *tex;     /* 0x08 */
+    GfxClutEntry *cluts;  /* 0x0C */
+} GfxTexSet;
+
+/* A block with a table at a byte offset from its field at +0x24. */
+typedef struct {
+    u8 unk0[0x24];
+    s32 uvs; /* 0x24: byte offset from this field */
+} UvTable;
+
 typedef struct GfxModel {
     u8 unk0[0xC];
     RelTable *colors; /* 0x0C: u32 colours, indexed by a face's 13-bit indices */
+    GfxTexSet texs;   /* 0x10 */
 } GfxModel;
+
+/* Face data func_80017EE8 reads: per face a uv index (0x18), a run-length
+ * texture index list (0x1C: bits 9-14 repeat count, bit 15 last texture, bits 0-8
+ * texture), and a blend index (0x20). */
+typedef struct {
+    u8 unk0[0x14];
+    s32 runs;  /* 0x14: byte offset from this field */
+    s32 uvIdx; /* 0x18 */
+    s32 texs;  /* 0x1C */
+    s32 table; /* 0x20 */
+} TexFaceRuns;
 
 /* An object drawn as one textured quad (func_8001AA48, func_8001C3D0,
  * func_8001C378): one primitive per frame buffer. */

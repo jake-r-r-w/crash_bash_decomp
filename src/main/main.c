@@ -3838,7 +3838,86 @@ void func_80017D90(FaceRuns *faces, FacePrim *prim) {
 done:;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80017EE8);
+void func_80017EE8(faces, prim)
+    TexFaceRuns *faces;
+    FacePrim *prim;
+{
+    u8 *p;
+    s32 n;
+    GfxTexSet *ts;
+    s32 left;
+    u32 t;
+    u16 *blend;
+    u16 *tex;
+    u16 *uvIdx;
+    u8 *run;
+    u16 *uvs;
+    u32 v;
+    u32 idx;
+    GfxTexInfo *ti;
+    UvTable *ut;
+    u16 base;
+
+    left = 0;
+    ts = &D_80056998.unk0->texs;
+    uvIdx = (u16 *)((u8 *)&faces->uvIdx + faces->uvIdx);
+    tex = (u16 *)((u8 *)&faces->texs + faces->texs);
+    ut = (UvTable *)D_80056998.unk0->colors;
+    blend = (u16 *)((u8 *)&faces->table + faces->table);
+    run = (u8 *)&faces->runs + faces->runs;
+    uvs = (u16 *)((u8 *)&ut->uvs + ut->uvs);
+    for (;;) {
+        if (run[1] == 0xFF) {
+            return;
+        }
+        n = run[1];
+        for (;;) {
+            u16 *uv;
+            u16 w;
+
+            if (--n == -1) {
+                break;
+            }
+            p = (u8 *)prim;
+            if (--left < 0) {
+                t = *tex++;
+                left = (t >> 9) & 0x3F;
+            }
+            if (run[0] & 1) {
+                p[3] = 8;
+                *(u32 *)(p + 4) = 0xE1000200;
+                p[15] = 0x30;
+                *(u32 *)(p + 8) = 0;
+            } else {
+                v = t;
+                if (v & 0x8000) {
+                    ti = &ts->tex[ts->count - 1].info;
+                    idx = v & 0x1FF;
+                    *(u16 *)(p + 14) = ts->cluts[idx].clut;
+                } else {
+                    v = t & 0x1FF;
+                    ti = &ts->tex[v].info;
+                    *(u16 *)(p + 14) = ti->clut;
+                }
+                base = ti->uv;
+                *(u16 *)(p + 0x1A) = (ti->tpage & 0xFF9F) | ((*blend >> 8) & 0x60);
+                {
+                    uv = &uvs[*uvIdx];
+                    *(u16 *)(p + 12) = base | uv[0];
+                    *(u16 *)(p + 0x18) = base | uv[1];
+                    w = uv[2];
+                    p[3] = 9;
+                    *(u16 *)(p + 0x24) = base | w;
+                    p[7] = 0x34;
+                }
+            }
+            prim++;
+            uvIdx++;
+            blend++;
+        }
+        run += 2;
+    }
+}
 
 FacePrim *func_800180BC(s32 arg0, ListNode18938 *list, ListNode18938 *pool, FaceRuns *faces, s32 arg4) {
     s32 *node;
