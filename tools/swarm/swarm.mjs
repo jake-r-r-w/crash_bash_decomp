@@ -500,6 +500,12 @@ class Swarm {
     return { f, model: this.o.bigModel, attempt, notes, big: true, ...extra };
   }
 
+  // the A/B arm of a big function: --regions f1,f2 (or "all") get the `decomp.py regions` prompt
+  regionsArm(f) {
+    const r = String(this.o.regions || '').split(',').map(s => s.trim()).filter(Boolean);
+    return r.includes('all') || r.includes(f.name);
+  }
+
   // ---- big-mode checkpoints: the best C so far for a function, kept across sessions and runs
   checkpoint(name) {
     const j = readJson(path.join(this.paths.checkpoints, name, 'best.json'), null);
@@ -614,13 +620,29 @@ No session has worked on it yet: start from the m2c draft (\`tools/dk python3 to
 next --func ${f.name}\` shows it, with the function's evidence).
 `}
 Read docs/MATCHING.md (process, Diff patterns, checklists) and the "Big functions" section in it.
-Work in stages; \`tools/dk make diff FUNC=${f.name} </dev/null\` prints a \`STAGE\` line that says
+${this.regionsArm(f) ? `Work region by region with \`tools/dk python3 tools/scripts/decomp.py regions ${f.name} </dev/null\`.
+It aligns your compiled code with the target (so an extra instruction doesn't shift every later
+diff, as \`make diff\` does), lists the target's basic blocks that differ with their status (ok /
+operands / differ) and C lines, and shows the first differing block side by side (\`--block N\` for
+another, \`--no-lines\` to skip the C-line build and save a few seconds). Its last line,
+\`REGIONS ${f.name} blocks m/n insns e/N paired p/N ...\`, is your progress: paired (opcodes
+aligned) is the structure, insns (exact) the rest. The loop:
+1. Fix the first differing block: its structure (missing or extra instructions, "differ") before
+   its operands. Read that block's C lines and the target asm for it; don't rewrite the rest.
+2. Re-run regions. Keep a change if blocks or paired went up; undo it if it broke blocks that were
+   ok. A register change can cascade into later blocks, so judge by paired and the block list
+   together, not insns alone.
+3. Repeat. When regions shows only "operands" blocks, use the cc1 dump and the Diff patterns'
+   register rows.
+The orchestrator keeps the best C by \`tools/dk make diff FUNC=${f.name} </dev/null\`'s \`STAGE\`
+line (a later stage beats any count of diffs in an earlier one), so check that before you finish.` :
+`Work in stages; \`tools/dk make diff FUNC=${f.name} </dev/null\` prints a \`STAGE\` line that says
 which one you are in, and progress is measured by it (a later stage beats any count of diffs in an
 earlier one, then fewer diffs):
 1. structure: the same length and branch layout (control flow, switch/jump tables, loops, early
    returns). Get this first; don't polish registers before it.
 2. instructions: the same opcodes in order (statement order, temps, types, casts).
-3. registers: operands only. The cc1 dump and the Diff patterns' register rows.
+3. registers: operands only. The cc1 dump and the Diff patterns' register rows.`}
 Before matching code:
 - Check the compiler first: compare the function's global-access and delay-slot style with the units
   in docs/ARCHITECTURE.md (Build pipeline, Executable memory map). If it looks like another unit's
@@ -837,8 +859,16 @@ Fix that, keep it matching, and report "matched".
         const r = await this.dk(slot.dir, ['python3', 'tools/scripts/decomp.py', 'try', f.name], slot.id);
         fs.writeFileSync(path.join(job.dir, 'try.txt'), r.out);
         score = Swarm.score(r.out);
+        // the region score too, for every session whichever its arm (the A/B measurement)
+        if (score && score.stage !== 'match') {
+          const g = await this.dk(slot.dir, ['python3', 'tools/scripts/decomp.py', 'regions', f.name, '--no-lines'], slot.id);
+          fs.writeFileSync(path.join(job.dir, 'regions.txt'), g.out);
+        }
       }
     }
+    fs.writeFileSync(path.join(job.dir, 'ab.json'), JSON.stringify({
+      arm: this.regionsArm(f) ? 'regions' : 'control', resumed: job.resumed ? `${job.resumed.stage} ${job.resumed.diffs}/${job.resumed.total}` : null,
+      status: res.status || null, timedOut: !!job.timedOut, stage: score, ended: stamp() }, null, 1));
     if (this.stopping === 'now') return;
     slot.job = null;
     const note = res.note || (job.timedOut ? 'killed at --big-minutes' : 'no note');

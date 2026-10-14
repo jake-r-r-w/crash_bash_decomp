@@ -50,6 +50,11 @@ big function (>= --big-bytes, or parked in normal mode)
 - **When it stops:** after `--big-sessions` (6) sessions, or `--big-stale` (2) sessions in a row
   without progress, the function is parked and its best C stays in `checkpoints/`.
   `--retry-failed` gives it more.
+- **A/B of the regions prompt:** `--regions f1,f2` (or `all`) gives those functions' big sessions
+  a prompt built on `decomp.py regions` (fix the first differing block, re-run) instead of the
+  `STAGE` one; the rest are the control. Checkpoints are still ranked by `STAGE` in both arms.
+  After every big session the orchestrator writes `ab.json` (arm, start, status, `STAGE`) and
+  `regions.txt` (the region score of the session's C) to the session's results folder.
 - **Choosing `--big-bytes`:** `node tools/swarm/swarm.mjs stats` prints every function's outcome
   by size across runs (matched in normal or big mode, parked, attempts, big sessions). Put the
   threshold where normal mode's match rate drops; escalation catches the smaller functions that
