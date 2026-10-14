@@ -2061,6 +2061,8 @@ s32 func_8002235C(_sfx_handler *voice);
 
 NAS *func_80022C3C(s32 x, s32 y, s32 z, u16 id, s32 slot);
 
+s16 func_80024008(s16 x, u8 *s);
+
 s32 func_8002578C(NAS *nas);
 
 void func_80027408(void);
