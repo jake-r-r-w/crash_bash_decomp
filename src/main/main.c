@@ -2035,7 +2035,30 @@ void func_80013CFC(s32 pad, u8 *out) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80013D54);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80013F44);
+void func_80013F44(CamView *cam, CamView *dst, CamEase *ease) {
+    if (ease != NULL) {
+        if (D_800517B0 != 0) {
+            ease = (CamEase *)D_800517B4;
+            D_800517B0--;
+        }
+        cam->dist += (dst->dist - cam->dist + 4) >> 2;
+        cam->at.x += (dst->at.x - cam->at.x + (ease->at.x >> 1)) / ease->at.x;
+        cam->at.y += (dst->at.y - cam->at.y + (ease->at.y >> 1)) / ease->at.y;
+        cam->at.z += (dst->at.z - cam->at.z + (ease->at.z >> 1)) / ease->at.z;
+        cam->eye.x += (dst->eye.x - cam->eye.x) / ease->eye.x;
+        cam->eye.y += (dst->eye.y - cam->eye.y) / ease->eye.y;
+        cam->eye.z += (dst->eye.z - cam->eye.z) / ease->eye.z;
+        cam->rot.vx += func_800154A0(cam->rot.vx, dst->rot.vx) / ease->rot.x;
+        cam->rot.vy += func_800154A0(cam->rot.vy, dst->rot.vy) / ease->rot.y;
+        cam->rot.vz += func_800154A0(cam->rot.vz, dst->rot.vz) / ease->rot.z;
+    } else {
+        D_800517B0 = 0;
+        cam->dist = dst->dist;
+        cam->at = dst->at;
+        cam->rot = dst->rot;
+        cam->eye = dst->eye;
+    }
+}
 
 INCLUDE_RODATA("asm/nonmatchings/main/main", D_8004C83C);
 

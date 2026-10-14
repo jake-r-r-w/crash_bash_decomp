@@ -2155,4 +2155,23 @@ void func_8002A84C(TexSrc2A84C *s, TexDst2A84C *d, s32 n);
 
 void func_8002C5BC(void);
 
+/* func_80013F44: camera eased towards a target view */
+typedef struct { s32 x, y, z; } CamXYZ;
+
+typedef struct CamView {
+    /* 0x00 */ CamXYZ eye;
+    /* 0x0C */ CamXYZ at;
+    /* 0x18 */ s32 dist;
+    /* 0x1C */ u8 pad1C[0x54 - 0x1C];
+    /* 0x54 */ SVECTOR rot;
+} CamView;
+
+typedef struct CamEase {
+    /* 0x00 */ CamXYZ at;
+    /* 0x0C */ CamXYZ rot;
+    /* 0x18 */ CamXYZ eye;
+} CamEase;
+
+void func_80013F44(CamView *cam, CamView *dst, CamEase *ease);
+
 #endif /* BASH_MAIN_H */
