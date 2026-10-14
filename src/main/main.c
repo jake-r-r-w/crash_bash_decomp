@@ -9997,7 +9997,41 @@ void func_80029790(u8 *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002992C);
+s32 func_8002992C(SpriteFrame *f, s32 xy, s32 otz, u32 c0, u32 c1, u32 c2, u32 c3) {
+    POLY_GT4 *p;
+    GfxState *gs;
+    ScreenXY v;
+
+    if (D_8005B698 == NULL) {
+        return 0;
+    }
+    v.s.x = (s16)xy * D_8005B698->w / 640;
+    p = *(POLY_GT4 **)(D_8005B68C + 0x4008);
+    *(POLY_GT4 **)(D_8005B68C + 0x4008) = p + 1;
+    v.s.y = (s16)(xy >> 16) / 2;
+    gs = &D_80056998;
+    *(u32 *)&p->r0 = FadeColorGs(gs, (c0 >> 16) & 0xFF, (c0 >> 8) & 0xFF, c0 & 0xFF);
+    *(u32 *)&p->r1 = FadeColorGs(gs, (c1 >> 16) & 0xFF, (c1 >> 8) & 0xFF, c1 & 0xFF);
+    *(u32 *)&p->r2 = FadeColorGs(gs, (c2 >> 16) & 0xFF, (c2 >> 8) & 0xFF, c2 & 0xFF);
+    *(u32 *)&p->r3 = FadeColorGs(gs, (c3 >> 16) & 0xFF, (c3 >> 8) & 0xFF, c3 & 0xFF);
+    setPolyGT4(p);
+    setSemiTrans(p, (s32)c0 < 0);
+    *(u16 *)&p->u0 = f->uv0;
+    *(u16 *)&p->u1 = f->uv1;
+    *(u16 *)&p->u2 = f->uv2;
+    *(u16 *)&p->u3 = f->uv3;
+    p->tpage = (f->tpage & 0xFF9F) | ((c0 >> 19) & 0x60);
+    p->clut = f->clut;
+    *(s32 *)&p->x0 = v.w;
+    v.s.x += f->w - 1;
+    *(s32 *)&p->x1 = v.w;
+    v.s.y += f->h - 1;
+    *(s32 *)&p->x3 = v.w;
+    v.s.x -= f->w - 1;
+    *(s32 *)&p->x2 = v.w;
+    addPrim(D_80056998.ot + otz, p);
+    return f->advance * 640 / D_8005B698->w;
+}
 
 s32 func_80029D28(SpriteFrame *f, s32 xy, s32 otz, u32 color) {
     POLY_FT4 *p;

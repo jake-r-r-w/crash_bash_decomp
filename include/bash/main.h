@@ -1050,6 +1050,9 @@ typedef union {
 /* Draws f at xy (640-wide units) as a POLY_FT4 in ot[otz]; color bit 31 makes
  * it semi-transparent, bits 29-30 its blend mode. Returns f's advance. */
 s32 func_80029D28(SpriteFrame *f, s32 xy, s32 otz, u32 color);
+/* func_80029D28 as a POLY_GT4 with one colour per vertex (c0 also sets the
+ * semi-transparency and blend mode). */
+s32 func_8002992C(SpriteFrame *f, s32 xy, s32 otz, u32 c0, u32 c1, u32 c2, u32 c3);
 /* Draws f at the 3D point pos as a POLY_GT4 in the OT at D_8005B68C, c0 on
  * the top vertices and c1 on the bottom ones; returns f's advance. */
 s32 func_80029F9C(SpriteFrame *f, GlyphPos *pos, s32 otz, u32 c0, u32 c1);
