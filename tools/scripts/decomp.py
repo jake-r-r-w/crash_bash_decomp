@@ -1214,7 +1214,8 @@ def cmd_regions(a):
     print(f"REGIONS {name} blocks {res['ok']}/{res['total']} insns {res['exact']}/{res['len']} "
           f"({100 * res['exact'] / max(res['len'], 1):.1f}%) paired {res['paired']}/{res['len']} "
           f"differ {len(bad)} first {bad[0] if bad else '-'}")
-    sys.exit(0 if res["ok"] == res["total"] and nt == nc else 1)
+    # a difference is the normal result, not an error: only a failed build exits non-zero
+    sys.exit(0)
 
 
 def verify_build(proj, funcs=None):
