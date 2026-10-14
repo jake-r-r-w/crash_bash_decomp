@@ -1158,7 +1158,88 @@ end:
     return NULL;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80012678);
+static inline s32 func_80012678_find(s32 *arg0, s32 *arg1) {
+    s32 *base;
+    s32 *p;
+    s32 n;
+    s32 end;
+    s32 first;
+    s32 *tbl;
+    s32 end2;
+    s32 i;
+
+    tbl = D_8004E110;
+    n = arg1[1];
+    n--;
+    base = tbl;
+    base = base + arg1[0] * 2;
+    end = -1;
+    first = *base;
+    if (n != end) {
+        end2 = end;
+        p = base;
+        i = 0;
+        do {
+            n -= 1;
+            if (&p[i * 2] == arg0) {
+                return p[i * 2] - first;
+            }
+            i++;
+        } while (n != end2);
+    }
+    return -1;
+}
+
+static inline void func_80012678_loop(u8 *arg0, s32 *arg1) {
+    s32 first = arg1[0];
+    s32 n = arg1[1];
+    s32 *s2 = &D_8004E110[first * 2];
+    s32 *s0;
+
+    if (n != 0) {
+        n--;
+        s0 = &D_8004E110[(first + n) * 2];
+        for (;;) {
+            if (n == 0) {
+                return;
+            }
+            func_80011498(func_80011828(arg0, (s0[0] - s2[0]) << 11), s0[1], &D_8004E0F0);
+            n--;
+            s0 -= 2;
+        }
+    }
+}
+
+void func_80012678(u8 *arg0, u8 *a1) {
+    s32 **c;
+    s32 *e;
+    u8 *h;
+    s32 i;
+
+    c = *(s32 ***)(a1 + 4);
+    if (c == NULL) {
+        return;
+    }
+    func_80012678_loop(arg0, *(s32 **)a1);
+    if (c == NULL) {
+        return;
+    }
+    for (;;) {
+        if (*c == NULL) {
+            return;
+        }
+        *(s32 *)((u8 *)*c + 0x34) = 0;
+        e = *(s32 **)a1;
+        h = (u8 *)c[0];
+        i = func_80012678_find(c[2], e);
+        i <<= 11;
+        func_80016E5C(arg0 + i, h);
+        i = func_80012678_find(c[1], e);
+        i <<= 11;
+        func_80016234(arg0 + i, h);
+        c += 3;
+    }
+}
 
 static inline s32 func_80012840_find(s32 *arg0, s32 *arg1) {
     s32 *base;
