@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 779/2551 game functions matched (main.exe ~514/575, 60 left), 7 parked,
+- 780/2551 game functions matched (main.exe ~514/575, 60 left), 7 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
@@ -287,6 +287,10 @@ offset. Most-called functions:
 Newest first, a few lines each. Details are in the commits.
 
 - **2026-10-14 (permuter only, ~25 min):** two parallel `decomp.py permute`
+- **2026-10-14 (by hand, 1 function):** `func_800C8870` (ovl5f) matched first
+  try: an `s32` grid lookup `D_800CA34C[(y >> 9) * D_800CAFF4 + (x >> 9)]`,
+  the same shape as its `u8` neighbours `func_800C891C`/`func_800C8950`.
+
   runs (7 jobs each) from the swarm checkpoints. `func_8001795C`: registers
   17 -> 14/107 (`ti = ti & 0x1FF` inside the index; `r0 = r0 | 0x02000000`
   instead of `|=`), saved as its checkpoint. `func_800248A0` (5/142): no
