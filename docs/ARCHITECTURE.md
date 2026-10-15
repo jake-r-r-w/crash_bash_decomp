@@ -178,10 +178,28 @@ code finds 15 code files; nothing else on the disc holds code.
   into itself fit `0x800B32B4`. The engine's own `.data` stores
   `0x800B32B4`, and its header word 4 (`0x800D7144`) is the end of the slot image.
 - **Engine layout**: 5 header words (4 entry pointers + image end), `.text`
-  `0x80078CA4..0x80098594`, `.data`, `.rodata` (only switch jump tables,
+  `0x80078CA4..0x80098594`, `.data`, `.rodata` (switch tables and strings,
   `0x800ADBD8..0x800AEC58`), a second writable block, then the slot image at
   `0x800B32B4` (file offset `0x3A624`): a stub with id `0x5C`, zeros, and from
   offset `0x54000` 40 KB of leftover build-machine memory (see below).
+- **Files inside the engine** (split 2026-10-15; `src/overlays/engine/`, each
+  with its owned header `bash/<unit>.h`, which `bash/engine.h` includes).
+  Each start is proven by a switch-table parity change (see Files inside
+  `main/main` for the rule); the exact function is the latest one the other
+  evidence allows in the proven range (function numbers count from 0 in the
+  engine):
+
+  | Unit | First function | Proven range for the start | Rodata from |
+  |---|---|---|---|
+  | `engine` | `func_80078CA4` (0) | - | `0x800ADBD8` |
+  | `8007ac20` | `func_8007AC20` (33) | 7..33: function 6's string stays before | `0x800ADC2C` |
+  | `8007ee2c` | `func_8007EE2C` (74) | 60..77; fewest call ties at 74 | `0x800ADDB0`: the mode names `D_8009AF00` (used by 77, 78) points to |
+  | `8008e27c` | `func_8008E27C` (208) | 176..208: function 175's strings can't straddle; no call ties from 192 | `0x800AE464` |
+  | `8009317c` | `func_8009317C` (282) | 248..289: the memory-card text tables are used up to 247; no call ties 273..282 | `0x800AEBC8` |
+  | `8009608c` | `func_8009608C` (330) | 321..330; no call ties from 328 | `0x800AEC34` |
+
+  A start can still move earlier inside its range, and a unit can hide more
+  starts where the parity doesn't change.
 - **Slot overlays** are named by their first word, an id (`0x5D`..`0x6A`).
   Layout: `.rodata` (id, strings, jump tables), `.text`, `.data`.
 - **Which game is which**: the engine's AST table at `0x80098720`

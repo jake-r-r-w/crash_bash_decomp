@@ -52,7 +52,7 @@ A file is finished when every function in it reaches level 4.
   prototype is declared in exactly one header, included where needed.
 - Every source file has an **owned header** that declares the functions and data
   it defines: `bash/main.h` (`src/main/main.c`), `bash/engine.h` (the engine
-  overlay), `bash/ovl5d.h`..`bash/ovl6a.h`, and one per split unit
+  overlay's first file, which includes the others' `bash/8007ac20.h` ...), `bash/ovl5d.h`..`bash/ovl6a.h`, and one per split unit
   (`bash/8002d488.h`, created by `decomp.py done` when it first needs one). Each is marked
   `owner: <source path>`, and that marker is how `decomp.py` finds it. When a
   file is split, its declarations move with its functions to the new file's

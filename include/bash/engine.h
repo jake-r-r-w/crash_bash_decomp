@@ -3,6 +3,7 @@
 
 /* Functions and data defined in the engine overlay. Anything the original headers
  * declare (bash/pogo.h, ...) is declared there instead, not here.
+ * The engine is several files; this one owns engine.c's and includes the others' headers.
  * owner: src/overlays/engine/engine.c */
 
 #include "common.h"
@@ -40,58 +41,7 @@ void func_8007AB20(void);
 void func_8007AB6C(void);
 void func_8007AB8C(void);
 void func_8007ABC4(void);
-void func_8007E7A4(void);
-s32 func_8007E7C8(void);
-void func_8007E874(void);
-void func_8007EB04(void);
-void func_80086704(void);
-s32 func_8008670C(void);
-s32 func_80086714(void);
-s32 func_8008671C(void);
-s32 func_80086724(void);
-void func_800867EC(void);
-void func_8008680C(void);
-void func_80086814(void);
-void func_8008AA90(void);
-s32 func_8008AB48(void);
-void func_8008AD9C(void);
-void func_8008CE10(void);
-void func_8008CE18(void);
-s32 func_8008CEB0(u8 *arg0, u8 *arg1);
-void PlotParticleEffect(void);
-void InitParticleEffect(void);
-void InitFloatyScore(u8 *arg0);
-void PlotBigPoof(NAS *nas);
-s32 func_8008DE8C(void);
-void func_8008EB3C(void);
-void func_8008EB8C(void);
-void func_8008FC58(void);
-void func_80090048(void);
-s32 func_800923F0(s32 *arg0);
-void func_800923FC(void);
-void func_80092404(void);
-void func_80092B7C(void);
-void func_80092BA0(void);
-void func_80092C54(void);
-void func_80092E40(void);
-void func_80094058(void);
-void func_8009407C(void);
-void func_80094120(void);
-void func_8009414C(void);
-void func_800941BC(void);
-void func_800941EC(void);
-void func_80094D88(s32 arg0, s32 arg1);
-s32 func_80094F30(void);
-void func_80094F60(void);
-void func_80094FA8(void);
-void func_80094FE0(void);
-void func_80095A04(s32 arg0);
-void func_800952F8(subengine *sub, s32 *recs);
-void func_80095BEC(s32 arg0, s32 *recs);
-void func_80091E58(void);
 extern s32 D_8009EF64;
-void func_80090310(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
-void func_80090564(u8 *arg0, s32 arg1);
 extern s32 D_8009F008;
 extern s32 D_8009F3B8;
 extern s32 D_8009F4BC;
@@ -99,11 +49,7 @@ extern s32 D_8009F40C;
 extern s32 D_8009EEB0;
 extern u8 D_800555DC[];
 extern u8 D_800558EC[];
-void func_800920DC(void);
 extern subengine D_800A13F4[][32]; /* 32 subengines per EnginePool slot */
-EXTengine *GetEngineSlot(s32 arg0);
-s32 func_800976A8(u8 *arg0, s32 arg1);
-void func_80098278(void);
 
 typedef struct { u16 a, b; } U16Pair;
 typedef struct { u16 a, b, c, d; } U16Quad;
@@ -159,14 +105,12 @@ extern u8 D_800A0224[];
 extern void *D_800A0D2C;
 extern u8 D_8009F8A4;
 extern void (*D_8009F8B4)(void);
-void func_80082590(void);
 extern u8 D_8009F8BC[];
 extern u8 D_800A016C[];
 extern s32 D_800A0158;
 extern s8 D_80064C93;
 extern Blk32 D_8009F9D4;
 extern CamVec3 D_8009F9F4;
-void func_80095258(u8 *arg0);
 extern ASTEntry EngineASTTable[];
 extern u8 D_8009F644[];
 extern s32 D_800ADBC4;
@@ -188,8 +132,6 @@ extern s32 D_8009F630;
 extern s32 D_8009F634;
 extern s32 D_8009F638;
 extern s32 D_8009F640;
-void func_80090A10(void);
-void func_80090E20(void);
 
 /* func_800936C4's level setup config (D_8005A5E4, or D_8009F96C if unset). */
 typedef struct EngineCfg {
@@ -201,7 +143,6 @@ typedef struct EngineCfg {
     /* 0x24 */ s32 nbuf;
 } EngineCfg;
 
-s32 func_8009317C(void);
 extern EngineCfg D_8009F96C;
 extern EngineCfg D_800A0314;
 extern u8 *D_80098594;
@@ -265,38 +206,8 @@ extern u16 D_8004DDD0[];
 void func_8001E8F0(void *arg0);
 void func_80079260(void);
 s32 func_8007A5E8(u8 *arg0);
-void func_800826F8(s32 arg0);
-void func_8009608C(s32 arg0);
-void func_80098570(void);
 void func_800B478C(void);
 
-/* func_80092CAC's tail: resets state, then starts the mode by its D_8004DDD0 world. */
-static inline void EngineBeginMode(s32 arg) {
-    EngineGameView *g = (EngineGameView *)D_8005A614;
-    s32 mode;
-    u16 world;
-
-    D_8009F6F4[0x24] = 0;
-    D_8009F6F4[0x25] = 0;
-    D_8009F6F4[0x26] = 0;
-    D_8009F6F4[0x27] = 0;
-    g->unk30 &= 0xFDFF;
-    func_8009608C(arg);
-    func_8001E8F0(&D_8009F8A4);
-    func_80098570();
-    mode = g->mode;
-    world = D_8004DDD0[mode * 3];
-    if (world != 0x101) {
-        if (world == 0x102) {
-            if (mode == 0x25) {
-                func_800B478C();
-            }
-        } else {
-            g->unk30 |= 0x1000;
-            func_800826F8(mode);
-        }
-    }
-}
 extern s32 D_800AEC5C;
 extern s32 D_8009D868;
 extern s32 D_8009D86C;
@@ -335,29 +246,6 @@ extern D_8009D90C_t D_8009D90C[400];
 
 int func_8007AC00(void);
 
-s32 SetHeroSeq(HeroInfo *hero, s32 seq);
-
-void SetHeroAction(HeroInfo *hero, s32 action);
-
-void func_80086FA0(void);
-
-void func_8008ECE4(void);
-
-s32 func_8008EF70(void);
-
-void func_8008EF9C(void);
-
-void func_8008F068(void);
-
-void func_80092F9C(void);
-
-void func_800940B0(s32 arg0, s32 arg1);
-
-void func_8009421C(void);
-
-s32 func_80095D88(s32 *rec);
-
-void func_800972BC(s32 arg0, s32 arg1);
 typedef struct {
     s32 unk0;
     s32 unk4;
@@ -369,16 +257,6 @@ extern D_800AD2EC_t D_800AD2EC;
 extern s32 D_800AD31C;
 extern D_800AD2EC_t D_800AD304;
 extern s32 D_800AD324;
-
-void func_8007E7F4(void);
-
-u8 *func_8008D24C(u8 *arg0, s32 *arg1);
-
-void func_8008EC94(void);
-
-s32 func_80092560(u8 *arg0);
-
-void func_80097334(s32 arg0, s32 arg1);
 
 /* PadState (D_80051338) seen by func_8007EE2C: button flags at 0x44/0x48. */
 typedef struct PadButtons {
@@ -393,21 +271,11 @@ extern s32 D_8009AEEC;
 extern s32 D_8009AEF0;
 void func_8007A614(s32 arg0);
 
-s32 func_8007EE2C(s32 pad);
-
 extern void (*D_8009D718)();
 extern void (*D_8009D73C)();
 extern s32 (*D_8009D728)(s32);
 extern s32 (*D_8009D72C)(s32);
-s32 func_80086FCC(s32 arg0);
 
-void func_80086F78(void);
-
-void func_8008A8F0(s32 arg0);
-
-u8 *func_8008D284(u8 *arg0, u8 *arg1);
-
-void func_8009029C(void);
 /* An entry of the list D_800A0D1C walks (func_80094860), 12 bytes. */
 typedef struct {
     s32 vab;   /* func_8002BA10's first argument; 0 ends the list */
@@ -421,39 +289,11 @@ typedef struct {
     s32 unk4;   /* -> D_800A0D1C */
     s32 unk8;   /* frame rate scale */
 } EngineStartArgs;
-s32 func_8007E894(void);
-
-void func_800831C4(s32 arg0);
-
-void func_8008352C(void);
-
-void func_80086868(void);
-
-void func_80086F4C(void);
-
-void func_8008EAC8(void);
-
-s32 func_8009020C(s32 arg0);
-
-void func_80092CAC(void);
-
-void func_800936C4(void);
-
-void func_800945C0(EngineStartArgs *arg0);
 
 typedef struct Vec3W {
     s32 a, b, c;
 } Vec3W;
 
-s32 func_800866DC(s32 *arg0);
-
-s32 func_8008DE94(s32 arg0);
-
-s32 func_80092598(u8 *arg0);
-
-void func_8009342C(void);
-
-void func_80095020(void);
 /* 32-byte records of D_8005A5E8, indexed by D_8005A61C (func_8008688C). */
 typedef struct {
     /* 0x00 */ u8 unk0[0xC];
@@ -464,7 +304,6 @@ extern EngineRec32 *D_8005A5E8;
 extern s32 D_8005A61C;
 extern u16 D_800AD12C;
 
-void func_800834E4(void);
 typedef struct EngineRec24 {
     s32 kind;
     s16 val;
@@ -473,24 +312,6 @@ typedef struct EngineRec24 {
 extern EngineRec24 *D_8009BD0C;
 extern EngineRec24 **D_8009BD10;
 extern s32 D_8009BD14;
-
-s16 func_800831F0(void);
-
-void func_8008688C(void);
-
-s32 func_8008AB04(s32 arg0);
-
-s32 func_800925C4(u8 *arg0);
-
-void func_80092C78(void);
-
-void func_80093110(void);
-
-void func_800943B8(void);
-
-void func_8009440C(void);
-
-s32 func_80095F48(s32 *p, s32 a1, s32 a2, s32 a3, s32 a4);
 
 /* Engine callback table filled by func_80083550 (0x54 is D_8009D73C). */
 typedef struct EngineHooks {
@@ -548,31 +369,6 @@ extern s16 D_8009E0E4;
 extern s16 D_8009E0E6;
 void func_8007AB28(void);
 
-void func_80084788();
-void func_800859D4();
-void func_80085C84();
-void func_80085D2C();
-void func_80088BAC(s32 arg0);
-
-void func_800894E0(s32 arg0);
-
-void func_8008A9F0();
-void func_8008AA40();
-void func_80083550(void);
-
-s32 func_80090008(void);
-
-s32 *func_800901B4(s32 arg0);
-
-void func_800917B4(void);
-
-s32 func_8009251C(u8 *arg0);
-
-void func_80092B40(void);
-
-void func_80094DD0(void);
-
-void func_80098428(void);
 /* Object wobbled by func_80093270 (D_800A0290); unk5C is a linked one. */
 typedef struct WobbleObj {
     /* 0x00 */ s32 unk0;
@@ -590,120 +386,15 @@ typedef struct WobbleObj {
 } WobbleObj;
 extern WobbleObj *D_800A0290;
 
-void func_8007D034(void);
-
-void func_8007D0BC(void);
-
-void func_8007EAC0(void);
-
-void func_80082590(void);
-
-void func_8008A810(void);
-
-void func_80093270(void);
-
 extern U16Pair D_80099280[4];
 extern s16 D_8005A650;
 extern s32 D_800A00F0[];
 
 void func_8007A8C4(void);
 
-void func_8007E8D0(EngineBox *p, s16 x, s16 y, s32 a, s32 b);
-
-void func_8007EB1C(s32 arg0, s32 arg1, s32 arg2);
-
-s32 func_80083488(void);
-
-s32 func_8008AB50(s32 arg0);
-
-void func_8008FD40(void *arg0);
-
-s32 func_80090248(void);
-
-void func_80092AA8(GameModeDef *arg0);
-
-void func_80092AF4(s32 arg0, s32 arg1);
-
-void func_80092E94(void);
-
-void func_8009400C(void);
-
-void func_80094364(void);
 extern u8 D_800C45DC[];
 
-void func_80086D88(void);
-
-void func_8008A99C(s32 arg0);
-
-void func_8008AAB0(s32 arg0);
-
-s32 func_8008AB94(s32 arg0);
-
-s32 func_8008C4C8(s32 *arg0, s32 arg1);
-
-void InitWeatherNas(u8 *arg0);
-
 extern u8 D_8009E200[];
-
-void func_8007CFAC(void);
-
-void func_80083244(void);
-
-s32 func_800832BC(void);
-
-void func_80088544(s32 arg0);
-
-void func_80088F78(s32 arg0);
-
-s32 func_8008ABF8(s32 arg0);
-
-s32 func_8008AC74(s32 arg0);
-
-void PlotWeatherNas(u8 *arg0);
-
-FlagPoint *func_8008CE20(subengine *sub, s32 idx, s32 mask);
-
-void func_8008D088(u8 *arg0, u8 *arg1, EmitPart *arg2, s32 *arg3, u8 *arg4);
-
-void func_8008D488(u8 *arg0, s32 arg1);
-
-void InitBigPoof(NAS *nas);
-
-void func_8008FD94(void);
-
-void func_8008FE00(void);
-
-s32 func_8008FF10(void);
-
-s32 func_8008FF94(void);
-
-void func_80092198(void);
-
-void func_80092BDC(void);
-
-void func_80092FB8(void);
-
-void func_80094EB8(void);
-
-s32 func_800950FC(void);
-
-void func_80095160(EngineStartArgs *arg0);
-
-void func_80095DBC(void);
-
-void func_80097244(u8 *p);
-
-void func_800973AC(s32 arg0, s32 arg1);
-
-void func_80097424(s32 arg0, s32 arg1);
-
-void func_8009749C(s32 arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5);
-
-void func_80098284(void);
-
-void func_800982E0(void);
-
-void func_80098464(void);
 
 extern s32 D_8009E424[];
 extern u8 D_80052F94[];
@@ -711,53 +402,46 @@ void func_8007A524(s32 arg0, u8 *arg1, u8 *arg2);
 
 void func_8007A718(void);
 
-void func_80088708(s32 arg0);
-
-void func_8008A854(s32 arg0);
-
-s32 func_8008ACF0(s32 arg0);
-
-void InitCrateExplode(NAS *arg0);
-
-void func_8008EC00(void);
-
-void func_8008EFD4(void);
-
-s32 func_8008FE68(s32 arg0);
-
-void func_8009246C(void);
-
-void func_80094754(void);
-
-void func_80094860(void);
-
-s32 func_800951D0(s32 arg0);
-
-s32 func_80097608(s32 *arg0, s32 *arg1, s32 arg2);
-
-void func_800984D4(void);
 extern s16 D_8006BBD6[];
 
 NAS *func_8007A464(s32 arg0, s32 *arg1, s32 arg2);
 
 void func_8007A91C(void);
 
-void func_8007B7FC(u32 a, u32 b);
+/* The engine's other files (ARCHITECTURE.md, Files inside the engine). */
+#include "bash/8007ac20.h"
+#include "bash/8007ee2c.h"
+#include "bash/8008e27c.h"
+#include "bash/8009317c.h"
+#include "bash/8009608c.h"
 
-void func_8007D144(void);
+/* Needs prototypes from the unit headers above. */
+/* func_80092CAC's tail: resets state, then starts the mode by its D_8004DDD0 world. */
+static inline void EngineBeginMode(s32 arg) {
+    EngineGameView *g = (EngineGameView *)D_8005A614;
+    s32 mode;
+    u16 world;
 
-void func_8007E93C(u16 arg0, s16 arg1, s16 arg2);
-
-void func_8008672C(s32 idx);
-
-void func_80087428(s32 arg0);
-
-void PlotSmokePoof(NAS *m);
-
-void func_8008CFBC(EXTengine *eng);
-
-void PlotFloatyScore(NAS *nas);
-
-void func_8009201C(void);
+    D_8009F6F4[0x24] = 0;
+    D_8009F6F4[0x25] = 0;
+    D_8009F6F4[0x26] = 0;
+    D_8009F6F4[0x27] = 0;
+    g->unk30 &= 0xFDFF;
+    func_8009608C(arg);
+    func_8001E8F0(&D_8009F8A4);
+    func_80098570();
+    mode = g->mode;
+    world = D_8004DDD0[mode * 3];
+    if (world != 0x101) {
+        if (world == 0x102) {
+            if (mode == 0x25) {
+                func_800B478C();
+            }
+        } else {
+            g->unk30 |= 0x1000;
+            func_800826F8(mode);
+        }
+    }
+}
 
 #endif /* BASH_ENGINE_H */

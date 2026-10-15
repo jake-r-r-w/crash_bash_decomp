@@ -15,6 +15,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
 - 971/2551 game functions matched (main.exe 559/575, 16 left: 15 parked
+- The engine overlay is six files since 2026-10-15 (`src/overlays/engine/`,
+  ARCHITECTURE.md, Files inside the engine); main.c is still one file.
   and `func_8002D4F4`; engine overlay 150 left), 15 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
@@ -72,9 +74,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
    between (ARCHITECTURE.md). With the call graph, 17 possible cut zones
    remain, none proven (no positive signal). Positive sign found: jump-table parity
    (`decomp.py units SEG`, any segment) proves file starts; main/main has
-   one (95..370), the engine five, five slot overlays some. Next: split the
-   engine at its proven boundaries, narrowing each with the call graph,
-   and keep main.c whole until a cut there is proven (a split
+   one (95..370), the engine five, five slot overlays some. The engine is split
+   (2026-10-15). Next: the slot overlays with parity flips (`ovl5d`,
+   `ovl5e`, `ovl66`, `ovl67`, `ovl6a`) the same way; keep main.c whole
+   until a cut there is proven (a split
    moves functions, so workers' patches and big-mode checkpoints for them
    stop applying). Find the boundaries first and write the evidence in
    ARCHITECTURE.md: rodata order, alignment padding, file-local statics,
@@ -209,6 +212,15 @@ Other:
 ## Gotchas
 
 **Tooling**
+- **Stale asm and `decomp.py index`.** splat rewrites `asm/nonmatchings/` only
+  for functions still under `INCLUDE_ASM`; a matched function's `.s` is the
+  one from when it was asm. `index` reads every `.s` there, so after a split
+  the old unit's copies overwrite the new segment, and stale files carry old
+  sizes (`func_80027408.s` is 404 bytes, `functions.json` says 244). After a
+  split, move the old unit's folder aside, `make split`, copy the matched
+  functions' `.s` into their new folders and update `functions.json`'s seg,
+  src and asm for the moved functions (as the engine split did) rather than
+  running `index` over everything.
 - **Rodata migrated into a function.** When a matched function's .s held
   `.rodata` (splat migrated it there), the full build loses that symbol. Add
   `D_xxx = 0x...; // force_not_migration:True` to `sym.main.txt`, put
@@ -354,6 +366,11 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-15 (by hand, engine split):** the engine overlay is six files
+  at its five proven starts (functions 33, 74, 208, 282, 330), each with
+  its rodata block and owned header; `make check` byte-identical. Swarm
+  checkpoints for engine functions were made against `engine.c` and may not
+  apply any more.
 - **2026-10-15 (by hand, file boundaries 4):** positive evidence at last:
   switch tables keep one address parity per file (`.align 3` relative to
   the object, objects 4-aligned), so a parity change proves a new file.
