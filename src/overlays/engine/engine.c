@@ -2353,7 +2353,25 @@ void func_80095160(EngineStartArgs *arg0) {
     D_800654B4 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800951D0);
+s32 func_800951D0(s32 arg0) {
+    s32 i;
+    EngineKeyed16 *e = D_800A0B60;
+    u8 *g;
+
+    for (i = 0, g = D_8005A614; i < 4; e++, i++) {
+        if (arg0 == e->key) {
+            s16 m = *(s16 *)(g + 0x44);
+            if (m == 1) {
+                return e->v[0];
+            }
+            if (m == 3) {
+                return e->v[2];
+            }
+            return e->v[1];
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80095258);
 

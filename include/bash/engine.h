@@ -235,6 +235,8 @@ typedef struct EngineGameView {
     /* 0xE0 */ s32 unkE0;
 } EngineGameView;
 extern u8 D_8009F6F4[];
+typedef struct { s32 key; s32 v[3]; } EngineKeyed16;
+extern EngineKeyed16 D_800A0B60[];
 extern s32 D_8009F8B8;
 typedef struct { s32 unk0; s32 unk4; s32 unk8; s32 unkC; } EngineEntry16Head;
 typedef struct { s32 unk0; EngineEntry16Head *unk4; s32 unk8; } EngineTable12;
@@ -684,5 +686,7 @@ void func_8007A524(s32 arg0, u8 *arg1, u8 *arg2);
 void InitCrateExplode(NAS *arg0);
 
 void func_8008EC00(void);
+
+s32 func_800951D0(s32 arg0);
 
 #endif /* BASH_ENGINE_H */
