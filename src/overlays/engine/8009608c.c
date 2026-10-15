@@ -15,7 +15,56 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009608c", func_800967E0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009608c", func_80096A08);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009608c", func_80096F98);
+void func_80096F98(s32 arg0) {
+    s32 pos[4];
+    s32 d[3];
+    View *view;
+    EngineGameView *g;
+    s32 z;
+    s32 w;
+    s32 v;
+
+    func_80078DD4();
+    func_80096A08();
+    if (func_800967E0(&D_800AD2EC, D_800AD2F8, &D_800AD304, D_800AD310, pos) != 0) {
+        d[0] = ((View *)D_80051640)->pos.vx - pos[0];
+    }
+    d[1] = ((View *)D_80051640)->pos.vy - pos[1];
+    g = (EngineGameView *)D_8005A614;
+    d[2] = ((View *)D_80051640)->pos.vz - pos[2];
+    if (!(g->unk30 & 0x801) && g->mode != 0x1F) {
+        if (d[0] < -0x514) {
+            d[0] = -0x514;
+        }
+        if (d[0] > 0x514) {
+            d[0] = 0x514;
+        }
+    }
+    if (arg0 != 0) {
+        ((s32 *)D_80051640)[0] = d[0];
+        ((s32 *)D_80051640)[1] = d[1];
+        ((s32 *)D_80051640)[2] = d[2];
+        return;
+    }
+    view = (View *)D_80051640;
+    w = d[2];
+    z = view->unk0[2];
+    if (w < z) {
+        if (D_8005A648 != 0x1F) {
+            view->unk0[2] = z + ((w - z) >> 4);
+            view->unk0[0] += (d[0] - view->unk0[0]) >> 4;
+            view->unk0[1] += (d[1] - view->unk0[1]) >> 4;
+        } else {
+            view->unk0[2] = z + ((w - z) >> 2);
+            view->unk0[0] += (d[0] - view->unk0[0]) >> 2;
+            view->unk0[1] += (d[1] - view->unk0[1]) >> 2;
+        }
+    } else {
+        view->unk0[2] = z + ((w - z) >> 2);
+        view->unk0[0] += (d[0] - view->unk0[0]) >> 2;
+        view->unk0[1] += (d[1] - view->unk0[1]) >> 2;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009608c", func_80097158);
 
