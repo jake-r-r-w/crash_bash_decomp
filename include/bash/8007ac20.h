@@ -53,6 +53,7 @@ extern EXTengine D_80099290[4];
 extern subengine D_8009971C[4][7];
 extern u16 D_800991D8[4];
 extern s16 D_800991E0[][2];
+extern s16 D_800991F0[][2];
 extern u16 D_80099218[];
 typedef struct { s16 x, y; } EngXY;
 extern EngXY D_80099240[4];
@@ -86,6 +87,8 @@ typedef struct PanelPrim {
 extern PanelPrim D_8009986C[4][7];
 extern S16Pair D_80099250[4];
 extern s32 D_8009AE88[4];
+
+void func_8007C170(void);
 
 void func_8007CC80(void);
 
