@@ -159,6 +159,8 @@ extern u8 D_800A00DC[];
 extern s32 D_8005A624;
 extern u8 D_8009BCE0[];
 extern EXTengine D_8009959C;
+extern u8 D_80052F5C[];
+extern ScriptInit D_8009E250;
 extern GfxViewport D_8009F6A4;
 extern GfxViewport D_800A0BCC;
 extern GfxCamera D_8009F7EC;
@@ -625,6 +627,8 @@ void PlotWeatherNas(u8 *arg0);
 void func_8008D088(u8 *arg0, u8 *arg1, EmitPart *arg2, s32 *arg3, u8 *arg4);
 
 void func_8008D488(u8 *arg0, s32 arg1);
+
+void InitBigPoof(NAS *nas);
 
 void func_8008FD94(void);
 

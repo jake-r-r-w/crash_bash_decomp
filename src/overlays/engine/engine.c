@@ -1221,7 +1221,19 @@ void PlotBigPoof(NAS *nas) {
     func_800250B0(nas);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", InitBigPoof);
+void InitBigPoof(NAS *nas) {
+    EXTengine *eng = nas->Engine;
+
+    if (eng != NULL) {
+        eng->sub->unk6C = D_80052F5C;
+        eng->sub->unk74 = 0;
+        func_80024E30(nas, &D_8009E250);
+        eng->flags |= 0x21;
+    }
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008DDC0);
 
