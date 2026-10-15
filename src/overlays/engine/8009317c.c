@@ -5,7 +5,25 @@
 #include "bash/hero.h"
 #include "bash/shell.h"
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009317c", func_8009317C);
+s32 func_8009317C(void) {
+    EngineGameView *g;
+    u8 *p;
+    s32 **tab = D_8009F954;
+    s32 **rp;
+
+    g = (EngineGameView *)D_8005A614;
+    rp =&tab[*(s32 *)(D_8005A614 + 0x2C)];
+    p = (u8 *)(*rp)[D_8004DDD0[g->mode * 3] - 0x101];
+    if (p != NULL) {
+        func_800134FC(p, D_80098598);
+    }
+    p = (u8 *)D_8009F8E4[D_8004DDD0[g->mode * 3] - 0x101];
+    if ((s32)p != D_8009F968) {
+        func_800134FC(p, D_80098594);
+        D_8009F968 = (s32)p;
+    }
+    return (s32)(D_80098594 + *(s32 *)(p + 4));
+}
 
 void func_80093270(void) {
     TrigEntry *t;

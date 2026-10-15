@@ -45,6 +45,9 @@ EXTengine *GetEngineSlot(s32 arg0);
 void func_80095258(u8 *arg0);
 
 s32 func_8009317C(void);
+extern s32 *D_8009F954[];
+extern s32 D_8009F8E4[];
+extern u8 *D_80098598;
 
 void func_800940B0(s32 arg0, s32 arg1);
 
