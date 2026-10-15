@@ -1241,7 +1241,13 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008FE68);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008FF10);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008FF94);
+s32 func_8008FF94(void) {
+    if (D_8005A614[0x29] < D_8009E7A0[D_8005A614[0x28]].unk8 - 1) {
+        D_8005A614[0x29] = D_8005A614[0x29] + 1;
+        return D_8009E7A0[D_8005A614[0x28]].unk4[D_8005A614[0x29]].unk4;
+    }
+    return 0x2B;
+}
 
 s32 func_80090008(void) {
     return D_8009E7A0[D_8005A614[0x28]].unk4[D_8005A614[0x29]].unk4;

@@ -601,6 +601,8 @@ void func_8008FD94(void);
 
 void func_8008FE00(void);
 
+s32 func_8008FF94(void);
+
 void func_80092198(void);
 
 void func_80094EB8(void);
