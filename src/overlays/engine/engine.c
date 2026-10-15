@@ -870,7 +870,21 @@ void func_80088544(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80088708);
+void func_80088708(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *hero = &base[arg0];
+    NAS *nas;
+
+    hero->hero_move->velocity_enable = 1;
+    SetHeroSeq((HeroInfo *)arg0, 0xA);
+    hero->hero_attack_delay += 0xF;
+    if (hero->hero_attack_delay > 0x28) {
+        hero->hero_attack_delay = 0x28;
+    }
+    hero->hero_attack_timer = hero->hero_attack_delay;
+    nas = hero->hero;
+    nas->Camera.look_ahead = nas->Camera.width;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80088794);
 
