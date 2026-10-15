@@ -1091,7 +1091,45 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", InitSmokePoof);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008CFBC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008D088);
+void func_8008D088(u8 *arg0, u8 *arg1, EmitPart *arg2, s32 *arg3, u8 *arg4) {
+    s32 life;
+    s32 t;
+    s32 u;
+
+    func_8001F604(arg0, arg2, arg1);
+    life = *(s32 *)(arg1 + 0x18);
+    if (life == 0) {
+        life = *(s32 *)(arg4 + 0x20);
+    }
+    t = *(s32 *)(arg1 + 0x58);
+    if (t != 0) {
+        arg3[0] = 0x1000 / t;
+        *(s16 *)(arg0 + 0x76) = 0x1000;
+    }
+    u = *(s32 *)(arg1 + 0x5C);
+    if (u != 0) {
+        arg3[1] = 0x1000 / (life - u);
+    }
+    t = *(s32 *)(arg1 + 0x60);
+    if (t != 0) {
+        arg3[2] = 0x1000 / t;
+        *(s32 *)(arg0 + 0x28) = 0;
+        *(s32 *)(arg0 + 0x24) = 0;
+        *(s32 *)(arg0 + 0x20) = 0;
+    }
+    u = *(s32 *)(arg1 + 0x64);
+    if (u != 0) {
+        if (life != u) {
+            arg3[3] = 0x1000 / (life - u);
+        } else {
+            arg3[3] = 0;
+        }
+    }
+    if (*(s32 *)(arg1 + 0x68) != 0) {
+        *(s16 *)(arg0 + 0x14) = Random(0x1000);
+    }
+    *(s32 *)(arg4 + 0x2C) += 1;
+}
 
 u8 *func_8008D24C(u8 *arg0, s32 *arg1) {
     u8 *r;
