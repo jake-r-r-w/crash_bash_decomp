@@ -642,7 +642,13 @@ void func_8008EB8C(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008EC00);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008EC94);
+void func_8008EC94(void) {
+    s32 f = D_8005B690;
+    RECT *a = &D_8005B698[f & 1];
+    RECT *r = &D_8005B698[(f + 1) & 1];
+
+    MoveImage2(a, r->x, r->y);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008ECE4);
 

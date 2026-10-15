@@ -175,6 +175,8 @@ void func_8007E7F4(void);
 
 u8 *func_8008D24C(u8 *arg0, s32 *arg1);
 
+void func_8008EC94(void);
+
 s32 func_80092560(u8 *arg0);
 
 void func_80097334(s32 arg0, s32 arg1);
