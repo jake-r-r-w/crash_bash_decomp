@@ -1881,7 +1881,26 @@ void func_80092404(void) {
     func_800183DC();
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8009246C);
+void func_8009246C(void) {
+    subengine *sub;
+
+    D_8009F3B8 = 0;
+    D_8009F4BC = 0x4D2;
+    func_800920DC();
+    D_8005B2B4 = 0;
+    D_8009F630 = 0;
+    D_8009F634 = 1;
+    func_80095BEC(8, &D_8009F40C);
+    sub = GetEngineSlot(8)->sub;
+    if (D_8005A648 == 0x28) {
+        sub->unk74 = 0x2007;
+        sub->unk6C = D_800555DC;
+    } else {
+        sub->unk74 = 0x201F;
+        sub->unk6C = D_800558EC;
+    }
+    func_80095BEC(1, &D_8009EEB0);
+}
 
 s32 func_8009251C(u8 *arg0) {
     u8 *p;

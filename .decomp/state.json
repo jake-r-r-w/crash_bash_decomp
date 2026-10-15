@@ -3767,7 +3767,8 @@
   "via": "auto"
  },
  "engine:8009246C": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-15T13:54:00Z",
+  "status": "matched"
  },
  "engine:8009251C": {
   "auto_diff": 14,

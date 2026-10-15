@@ -93,6 +93,12 @@ void func_80090310(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 void func_80090564(u8 *arg0, s32 arg1);
 extern s32 D_8009F008;
 extern s32 D_8009F3B8;
+extern s32 D_8009F4BC;
+extern s32 D_8009F40C;
+extern s32 D_8009EEB0;
+extern u8 D_800555DC[];
+extern u8 D_800558EC[];
+void func_800920DC(void);
 extern subengine D_800A13F4[][32]; /* 32 subengines per EnginePool slot */
 EXTengine *GetEngineSlot(s32 arg0);
 s32 func_800976A8(u8 *arg0, s32 arg1);
@@ -710,6 +716,8 @@ void func_8008EC00(void);
 void func_8008EFD4(void);
 
 s32 func_8008FE68(s32 arg0);
+
+void func_8009246C(void);
 
 void func_80094754(void);
 
