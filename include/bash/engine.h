@@ -475,5 +475,23 @@ void func_80092B40(void);
 void func_80094DD0(void);
 
 void func_80098428(void);
+/* Object wobbled by func_80093270 (D_800A0290); unk5C is a linked one. */
+typedef struct WobbleObj {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s16 unk10;
+    /* 0x12 */ s16 unk12;
+    /* 0x14 */ s16 unk14;
+    /* 0x16 */ u8 pad16[0x51 - 0x16];
+    /* 0x51 */ u8 unk51;
+    /* 0x52 */ s16 unk52;
+    /* 0x54 */ u8 pad54[0x5C - 0x54];
+    /* 0x5C */ struct WobbleObj *unk5C;
+} WobbleObj;
+extern WobbleObj *D_800A0290;
+
+void func_80093270(void);
 
 #endif /* BASH_ENGINE_H */

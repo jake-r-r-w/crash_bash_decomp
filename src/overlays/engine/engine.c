@@ -1305,7 +1305,35 @@ void func_80093110(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8009317C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80093270);
+void func_80093270(void) {
+    TrigEntry *t;
+    WobbleObj *o;
+    s32 f;
+    s32 i;
+
+    if (D_800A0158 >= 2 && (o = D_800A0290) != NULL) {
+        t = D_80068BD4;
+        o->unk51 = 0;
+        o->unk12 += 0x20;
+        f = D_8005B690;
+        o->unk10 = *(s32 *)&t[(((f * 70) & 0xFFF) - 0x400) & 0xFFF] >> 20;
+        o->unk12 = *(s32 *)&t[(((f * 140) & 0xFFF) - 0x400) & 0xFFF] >> 21;
+        o->unk14 = (t[(((f * 70) & 0xFFF) - 0x400) & 0xFFF].unk2 +
+                    t[(((f * 100) & 0xFFF) - 0x400) & 0xFFF].unk2) >> 5;
+        o->unk4 = *(s32 *)&t[(((f * 35) & 0xFFF) - 0x400) & 0xFFF] >> 23;
+        o->unk8 = (t[(((f * 45) & 0xFFF) - 0x400) & 0xFFF].unk2 +
+                   t[(((f * 145) & 0xFFF) - 0x400) & 0xFFF].unk2) >> 5;
+        o->unk52 = 1;
+        o = o->unk5C;
+        if (o != NULL) {
+            o->unk14 += 0x17;
+            i = (-f * 10) & 0xFFF;
+            o->unk10 = *(s32 *)&t[(i - 0x400) & 0xFFF] >> 20;
+            o->unk12 = *(s32 *)&t[i] >> 20;
+            o->unk52 = 1;
+        }
+    }
+}
 
 void func_8009342C(void) {
     u8 *p;
