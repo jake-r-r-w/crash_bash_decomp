@@ -109,6 +109,11 @@ extern CamVec3 D_8009F9F4;
 void func_80095258(u8 *arg0);
 extern ASTEntry EngineASTTable[];
 extern u8 D_8009F644[];
+extern s32 D_8005A624;
+extern u8 D_8009BCE0[];
+extern EXTengine D_8009959C;
+extern GfxViewport D_8009F6A4;
+extern GfxCamera D_8009F7EC;
 extern s32 D_800A0C08;
 extern GfxViewport D_8009F3BC;
 extern GfxViewport D_8009F3E4;
@@ -495,6 +500,8 @@ typedef struct WobbleObj {
 extern WobbleObj *D_800A0290;
 
 void func_8007EAC0(void);
+
+void func_80082590(void);
 
 void func_80093270(void);
 

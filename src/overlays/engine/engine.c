@@ -322,7 +322,44 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80081470);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80081F64);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80082590);
+void func_80082590(void) {
+    GfxState *gs;
+    u8 *e;
+
+    if (D_8005A624 & 0x7000) {
+        gs = &D_80056998;
+        *(s32 *)&gs->unk28[0] = 0;
+        *(s32 *)&gs->unk28[4] = 0;
+        if (D_8005A624 & 0x4000) {
+            e = D_8009BCE0;
+            if (*(s16 *)(e + 0xC) != -1) {
+                func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
+                gs->otzAdd = 0x200;
+                gs->modelDp = *(s32 *)D_8009F644;
+                func_8001A6D4(e, 0x10000000);
+            }
+        }
+    } else if (D_8005A624 & 1) {
+        gs = &D_80056998;
+        *(s32 *)&gs->unk28[0] = 0;
+        *(s32 *)&gs->unk28[4] = 0;
+        if (!(D_8005A624 & 0x40)) {
+            e = D_8009BCE0;
+            if (*(s16 *)(e + 0xC) != -1) {
+                func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
+                gs->otzAdd = 0x200;
+                gs->modelDp = *(s32 *)D_8009F644;
+                func_8001A6D4(e, 0x10000000);
+            }
+        }
+        func_80018B08(&D_8009F6A4, &D_8009F7EC);
+        func_8001C2C0((u8 *)GetEngineSlot(0));
+        func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
+        func_8001C2C0((u8 *)GetEngineSlot(4));
+        func_8001C298(&D_8009959C);
+        func_8001C298(&D_8009959C + 1);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800826F8);
 
