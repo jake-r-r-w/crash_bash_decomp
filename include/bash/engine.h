@@ -657,6 +657,8 @@ s32 func_800950FC(void);
 
 void func_80095160(EngineStartArgs *arg0);
 
+void func_80095DBC(void);
+
 void func_80097244(u8 *p);
 
 void func_800973AC(s32 arg0, s32 arg1);

@@ -2362,7 +2362,13 @@ s32 func_80095D88(s32 *rec) {
     return n;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80095DBC);
+void func_80095DBC(void) {
+    s32 i;
+
+    for (i = 0; i < 9; i++) {
+        EnginePool[i] = EngineTemplate;
+    }
+}
 
 EXTengine *GetEngineSlot(s32 arg0) {
     return &EnginePool[arg0];
