@@ -64,5 +64,29 @@ extern subengine D_80099500;
 extern subengine D_8009AD94;
 
 void func_8007EB68(void);
+typedef struct PanelPrim {
+    s32 unk0;
+    s32 unk4;
+    s32 unk8;
+    s32 unkC;
+    u8 pad10[0x44];
+    void *unk54;
+    u8 pad58[0x10];
+    s16 unk68, pad6A;
+    union {
+        void *ptr;
+        struct {
+            s16 unk6C, unk6E;
+        } s;
+    } u6C;
+    s16 unk70, pad72, unk74, unk76, unk78, pad7A, unk7C, unk7E, unk80, pad82, unk84, unk86, unk88, pad8A;
+    s32 unk8C, unk90, unk94, unk98;
+    u8 pad9C[0xC];
+} PanelPrim; /* 0xA8 */
+extern PanelPrim D_8009986C[4][7];
+extern S16Pair D_80099250[4];
+extern s32 D_8009AE88[4];
+
+void func_8007CC80(void);
 
 #endif /* BASH_8007AC20_H */

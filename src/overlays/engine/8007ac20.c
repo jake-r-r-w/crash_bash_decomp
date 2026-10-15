@@ -93,7 +93,100 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007C830);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007CA70);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007CC80);
+void func_8007CC80(void) {
+    s32 i;
+    s16 x0;
+    s16 x1;
+    s32 c0;
+    s32 c1;
+    s32 off;
+    PanelPrim *b;
+    PanelPrim *p;
+    PanelPrim *q;
+    s32 col;
+    s32 yb;
+    u8 *tim;
+    u8 *tex;
+    s16 y0;
+    s16 y1;
+    s32 code;
+    s16 n;
+
+    i = 0;
+    tim = D_80053074;
+    y0 = 0x37;
+    c0 = 0x3FFF7F;
+    c1 = 0xF4F2F;
+    tex = D_8001C7FC;
+    y1 = 0x43;
+    code = 0x12000000;
+    n = 8;
+    while (1) {
+        if (i >= 4) {
+            break;
+        }
+        col = 0;
+        D_8009AE88[i] = col;
+        if (Heroes[i].hero_name != 9) {
+            p = D_8009986C[i];
+            p->u6C.ptr = tim;
+            p->unk0 = 0x10008000;
+            p->unk4 = D_80099250[i].a - 0xE;
+            yb = D_80099250[i].b;
+            p->unk74 = 0x3021;
+            off = i * sizeof(D_8009986C[0]);
+            b = (PanelPrim *)(off + (u8 *)&D_8009986C[0][1]);
+            p->unkC = 0;
+            p->unk8 = yb - 0x10;
+            x0 = D_80099250[3].a + 0x10;
+            x1 = D_80099250[3].a + 0x50;
+            b->unk54 = tex;
+            b->u6C.s.unk6E = y0;
+            b->unk70 = 0;
+            b->unk76 = y0;
+            b->unk78 = 0;
+            b->unk7E = y1;
+            b->unk80 = 0;
+            b->unk86 = y1;
+            b->unk88 = 0;
+            b->unk8C = c0;
+            b->unk90 = c0;
+            b->unk94 = c1;
+            b->unk98 = c1;
+            b->unk0 = code;
+            b->unk68 = n;
+            b->u6C.s.unk6C = x0;
+            b->unk74 = x1;
+            b->unk7C = x0;
+            b->unk84 = x1;
+            x0 = D_80099250[3].a + 0x10;
+            x1 = D_80099250[3].a + 0x50;
+            q = &D_8009986C[i][2];
+            q->unk54 = tex;
+            q->u6C.s.unk6E = y0;
+            q->unk70 = 0;
+            q->u6C.s.unk6C = x0;
+            q->unk74 = x1;
+            q->unk84 = x1;
+            col = 0xBF;
+            q->unk76 = y0;
+            q->unk78 = 0;
+            q->unk7C = x0;
+            q->unk7E = y1;
+            q->unk80 = 0;
+            q->unk86 = y1;
+            q->unk88 = 0;
+            q->unk8C = col;
+            q->unk90 = col;
+            q->unk94 = col;
+            q->unk98 = col;
+            q->unk0 = code;
+            q->unk68 = n;
+        }
+        i++;
+    }
+    D_80099174 |= 0x10;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007CE50);
 
