@@ -2645,7 +2645,18 @@ void func_8009749C(s32 arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800974EC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80097608);
+s32 func_80097608(s32 *arg0, s32 *arg1, s32 arg2) {
+    s32 sp18[3];
+    s32 sp28[3];
+    s32 d = 0x2D0000 / D_80051658;
+    extern s32 func_80096530(s32 *, s32 *, s32 *, s32 *, s32);
+
+    sp18[1] = arg0[1] + d;
+    sp18[2] = arg0[2] - 0x3000;
+    sp28[1] = arg1[1] - d;
+    sp28[2] = arg1[2] - 0x3000;
+    return func_80096530(arg0, sp18, arg1, sp28, arg2) != 0;
+}
 
 s32 func_800976A8(u8 *arg0, s32 arg1) {
     s32 temp_v1;
