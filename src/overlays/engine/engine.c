@@ -472,7 +472,22 @@ void func_80083244(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800832BC);
+s32 func_800832BC(void) {
+    EngineRec24 *rec;
+
+    if (D_8009BD10 != NULL) {
+        rec = D_8009BD10[D_8009BD14 + 1];
+        if (rec != NULL) {
+            D_8009BD14 = D_8009BD14 + 1;
+            D_8009BD0C = rec;
+            func_80095BEC(0, &rec->kind);
+            return 1;
+        }
+    }
+    D_8009BD10 = NULL;
+    D_8009BD0C = NULL;
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80083334);
 

@@ -618,6 +618,8 @@ extern u8 D_8009E200[];
 
 void func_80083244(void);
 
+s32 func_800832BC(void);
+
 void func_80088544(s32 arg0);
 
 s32 func_8008ABF8(s32 arg0);
