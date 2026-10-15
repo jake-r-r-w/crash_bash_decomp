@@ -1451,7 +1451,16 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8009201C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800920DC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80092198);
+void func_80092198(void) {
+    EXTengine *eng;
+
+    func_80091E58();
+    func_80095BEC(2, &D_8009EF64);
+    GetEngineSlot(2)->unk10.x = 0x28;
+    GetEngineSlot(2)->unk10.y = 0x1E;
+    eng = GetEngineSlot(2);
+    eng->flags |= 0x10000000;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80092200);
 
