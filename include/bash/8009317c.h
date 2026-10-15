@@ -25,6 +25,7 @@ typedef struct Tmpl1C {
 
 extern Tmpl1C D_800A0D44[];
 extern u8 D_8001C690[];
+extern u8 *D_800A001C[];
 
 void func_80094058(void);
 
@@ -64,6 +65,8 @@ s32 func_8009317C(void);
 extern s32 *D_8009F954[];
 extern s32 D_8009F8E4[];
 extern u8 *D_80098598;
+
+void func_80093588(void);
 
 void func_800940B0(s32 arg0, s32 arg1);
 

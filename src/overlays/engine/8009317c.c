@@ -82,7 +82,37 @@ void func_8009342C(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009317c", func_80093588);
+void func_80093588(void) {
+    u8 *p;
+    s32 *q;
+
+    p = D_800A001C[D_8005A648];
+    if (p != NULL) {
+        func_80012AC4(p);
+        while (func_80012FFC() != 0) {
+            func_8001231C();
+            func_80010AE8(&D_8004E0F0);
+            func_8002BAE8();
+        }
+    }
+    func_80017070();
+    if (D_8005A648 == 0x28 && D_800590CC == 0) {
+        func_80016CA0(D_800556F4);
+    } else {
+        func_80016CA0(D_800555A4);
+    }
+    D_8009F8B4 = func_80093038;
+    func_80014388(D_80051640);
+    func_80014388(D_8009F734);
+    func_80014388((u8 *)&D_8009F7EC);
+    *(s32 *)&D_8009F734[0x14] = 0x2000;
+    func_80014388(D_800A016C);
+    *(s32 *)&D_800A016C[8] = 0xA24;
+    *(s32 *)&D_800A016C[0x14] = 0;
+    q = (s32 *)D_8009F6F4;
+    q[5] = 0x15E;
+    q[4] = 0x140;
+}
 
 static inline void func_800936C4_heap(Heap *heap, s32 p) {
     s32 size;
