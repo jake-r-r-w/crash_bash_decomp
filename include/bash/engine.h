@@ -80,6 +80,8 @@ void func_80098278(void);
 
 extern s32 D_800ADBC0;
 extern s32 D_80099174;
+extern s16 D_80099194;
+extern s32 D_80099700[];
 extern s32 D_8009AE78;
 extern s16 D_8009AE70;
 extern s32 D_8009AE3C;
@@ -491,6 +493,8 @@ typedef struct WobbleObj {
     /* 0x5C */ struct WobbleObj *unk5C;
 } WobbleObj;
 extern WobbleObj *D_800A0290;
+
+void func_8007EAC0(void);
 
 void func_80093270(void);
 
