@@ -11518,7 +11518,89 @@ void func_80029100(AnimOwner *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8002926C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80029560);
+static inline void Tex_UploadCluts(u8 *set) {
+    RECT rect;
+    ClutUpload *e;
+    u8 *base;
+    s32 n;
+
+    e = *(ClutUpload **)(set + 0xC);
+    base = *(u8 **)(set + 0x10);
+    n = *(s32 *)(set + 4);
+
+    for (;;) {
+        n--;
+        if (n == -1) {
+            return;
+        }
+        if (e->w < 0x11U) {
+            e->pos = func_80028420();
+        } else {
+            e->pos = func_80028A00();
+        }
+        rect.x = e->pos->x;
+        rect.y = e->pos->y;
+        rect.w = e->w;
+        rect.h = 1;
+        LoadImage(&rect, (u_long *)(base + e->off));
+        e->clut = GetClut(rect.x, rect.y);
+        e++;
+    }
+}
+
+static inline void Tex_UploadList(TexUploadList *arg0, u8 *arg1) {
+    s32 n;
+    u8 *rec;
+    s32 *ip;
+    FreeHdr **pp;
+    s32 base;
+    RECT rect;
+
+    ip = &arg0->e[0].idx;
+    n = arg0->count;
+    pp = &arg0->e[0].pos;
+loop:
+    n--;
+    if (n != -1) {
+        rec = *(u8 **)(arg1 + 8) + *ip * 0x38;
+        ip += 4;
+        *pp = func_800282F8(*(u8 **)(rec + 4));
+        rect.w = *(u16 *)(rec + 0x1C);
+        rect.h = *(u16 *)(rec + 0x1E);
+        rect.x = (*pp)->f0;
+        rect.y = (*pp)->f2;
+        pp += 4;
+        base = *(s32 *)(arg1 + 0x10);
+        LoadImage(&rect, (u_long *)(*(s32 *)(rec + 0x30) + base));
+        goto loop;
+    }
+}
+
+void func_80029560(u8 *arg0) {
+    AnimTex *t;
+    u8 *base;
+    s32 n;
+    u8 *p;
+
+    t = *(AnimTex **)(arg0 + 8);
+    base = *(u8 **)(arg0 + 0x10);
+    Tex_UploadCluts(arg0);
+    n = *(s32 *)arg0;
+    while (n != 0) {
+        func_80028D40(t, (s32)base, (AnimTexSet *)arg0);
+        if (t->flags & 2) {
+            n -= t->frames;
+            t += t->frames;
+        } else {
+            t++;
+            n--;
+        }
+    }
+    p = *(u8 **)(arg0 + 0x18);
+    if (p != NULL && *(s32 *)(p + 4) != 0) {
+        Tex_UploadList((TexUploadList *)(p + 4 + *(s32 *)(p + 4)), arg0);
+    }
+}
 
 static inline void func_8002AA50_i(u8 *arg0) {
     s32 temp_a0;
