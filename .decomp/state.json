@@ -3307,7 +3307,8 @@
   "auto_failed": "types"
  },
  "engine:80086C94": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-15T20:30:38Z",
+  "status": "matched"
  },
  "engine:80086D88": {
   "auto_diff": 39,

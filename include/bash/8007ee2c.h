@@ -170,11 +170,21 @@ void PlotFloatyScore(NAS *nas);
 
 extern s32 D_8009D764[16][4];
 
+typedef struct {
+    s16 unk0;
+    s16 unk2;
+    s16 unk4;
+} D_8009D87C_t;
+
+extern D_8009D87C_t D_8009D87C[];
+
 s32 func_80085584(s32 hero, u16 name, s32 seq);
 
 void func_80085650(void);
 
 s32 func_800863D0(s32 arg0);
+
+s32 func_80086C94(s32 arg0);
 
 void func_80088450(s32 arg0);
 

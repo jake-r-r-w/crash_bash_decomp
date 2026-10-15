@@ -482,7 +482,43 @@ void SetHeroAction(HeroInfo *hero, s32 action) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80086918);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80086C94);
+s32 func_80086C94(s32 arg0) {
+    s32 v;
+    u8 *g;
+    s32 idx;
+
+    if (arg0 < 0) {
+        return -1;
+    }
+    g = D_8005A614;
+    idx = *(s16 *)(g + 0x42);
+    if (idx == 0 ||*(s32 *)(g + 0x6C) != 0 || !(*(u16 *)(g + 0x32) & 0x10)) {
+        return -1;
+    }
+    {
+        u8 t = g[*(s16 *)(g + 0x34) + 0xAB];
+
+        if (t == 0) {
+            arg0 = arg0 / 2;
+        }
+        if (t == 1) {
+            v = arg0 * 3;
+            arg0 = v / 4;
+        }
+        if (D_8005A614[*(s16 *)(D_8005A614 + 0x34) + 0xAB] == 3) {
+            arg0 *= 2;
+        }
+        idx = *(s16 *)(D_8005A614 + 0x42);
+        if (idx != -1) {
+            D_8009D87C[idx].unk4 = arg0;
+        }
+        if (arg0 <= 0) {
+            arg0 = 1;
+        }
+        return arg0;
+    }
+    return -1;
+}
 
 void func_80086D88(void) {
     s32 i;
