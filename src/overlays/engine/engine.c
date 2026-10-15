@@ -2035,7 +2035,21 @@ s32 func_800950FC(void) {
     return ~D_800644C0[D_800A0D20[0]].id != 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80095160);
+void func_80095160(EngineStartArgs *arg0) {
+    D_800A0D1C = arg0->unk4;
+    D_800A0D20[0] = 0;
+    D_800A0D24[0] = 0;
+    func_8002232C();
+    D_800644C0[0].id = -1;
+    D_800644C0[0].handle = 0;
+    D_800644C0[0].head = NULL;
+    D_800644C0[1].id = -1;
+    D_800644C0[1].handle = 0;
+    D_800644C0[1].head = NULL;
+    D_800A0D28 = 0;
+    D_800654B0 = 0;
+    D_800654B4 = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800951D0);
 
