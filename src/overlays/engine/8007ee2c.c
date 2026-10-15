@@ -985,7 +985,36 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8008ADA4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8008B29C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8008B418);
+void func_8008B418(s32 idx) {
+    HeroInfo *h;
+    EXTengine *s;
+    EXTengine *e;
+
+    if (D_8005A614[idx + 0x50] != 9) {
+        HeroInfo *base = Heroes;
+        h = base + idx;
+        s = h->hero_shadow;
+        e = h->hero_eng;
+        s->unk10 = e->unk10;
+        if (((EngineGameView *)D_8005A614)->mode == 0x17) {
+            s->unk10.y = 0;
+        }
+        if (((EngineGameView *)D_8005A614)->mode == 0x19) {
+            s->unk10.y = 0;
+        }
+        if (((EngineGameView *)D_8005A614)->mode == 0x1A) {
+            s->unk10.y = 0;
+        }
+        if (((EngineGameView *)D_8005A614)->mode == 0x18) {
+            s->unk10.y = 0;
+        }
+        s->unk1E = h->hero_eng->unk1E;
+        s->unk5E = 1;
+        if (h->hero_status & 0xA400) {
+            s->sub->flags &= 0xFFFF7FFF;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", InitScriptFX);
 

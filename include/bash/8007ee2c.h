@@ -188,6 +188,8 @@ s32 func_80086C94(s32 arg0);
 
 void func_80088450(s32 arg0);
 
+void func_8008B418(s32 idx);
+
 void func_8008D5D4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 
 #endif /* BASH_8007EE2C_H */
