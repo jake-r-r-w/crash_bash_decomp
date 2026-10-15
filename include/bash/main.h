@@ -2925,6 +2925,8 @@ void func_8001EAA4(u8 *arg0, u8 *arg1);
 
 void func_800235BC(ArenaDef *arg0);
 
+void func_80023A90(void);
+
 void func_8002854C(FreeNode *n);
 
 void func_80028774(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf);

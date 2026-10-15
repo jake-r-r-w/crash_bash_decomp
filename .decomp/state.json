@@ -1747,7 +1747,8 @@
   "status": "matched"
  },
  "80023A90": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-15T09:33:53Z",
+  "status": "matched"
  },
  "80024008": {
   "auto_diff": 105,
