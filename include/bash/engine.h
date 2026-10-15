@@ -85,6 +85,10 @@ extern U16Pair D_80099270[4];
 
 extern s32 D_800ADBC0;
 extern s32 D_80099174;
+extern s32 D_80099178;
+extern s16 D_8009917C;
+extern s32 D_800996D4[3];
+extern s16 D_8009AE76;
 extern s16 D_80099194;
 extern s32 D_80099700[];
 extern s32 D_8009AE78;
@@ -519,6 +523,8 @@ void func_8008A810(void);
 void func_80093270(void);
 
 extern U16Pair D_80099280[4];
+
+void func_8007EB1C(s32 arg0, s32 arg1, s32 arg2);
 
 s32 func_8008AB50(s32 arg0);
 
