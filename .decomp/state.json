@@ -484,7 +484,8 @@
   "status": "matched"
  },
  "8001492C": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-15T09:13:52Z",
+  "status": "matched"
  },
  "800150E8": {
   "auto_diff": 22,

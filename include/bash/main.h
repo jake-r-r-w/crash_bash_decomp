@@ -958,6 +958,10 @@ extern s32 D_80064478[];
 extern s32 D_8006E9F8;
 extern u8 D_800527C4[];
 extern u8 D_80052A54[];
+extern u8 D_8004DDBC[];
+extern u8 D_80050010[];
+void func_8002D488(void);
+void func_8002D4F4();
 extern s32 D_80064414;
 extern s32 D_800569AC;
 extern s32 D_8006559C;
@@ -2700,6 +2704,8 @@ void func_80028D40(AnimTex *t, s32 base, AnimTexSet *set);
 /* func_800248A0: three 0x38-byte sprite records drawn side by side */
 extern u8 D_80053074[];
 extern u16 D_8005A5C0[][3];
+
+void func_8001492C(void);
 
 void func_8001C7FC(NAS *nas, u8 *arg1, u32 flags);
 
