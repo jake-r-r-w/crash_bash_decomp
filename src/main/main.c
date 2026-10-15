@@ -1429,7 +1429,85 @@ u8 *func_800121F8(u8 *arg0) {
     return *(u8 **)(arg0 + 0x18);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001231C);
+s32 func_8001231C(void) {
+    LoaderState *ls;
+    LoadNode *node;
+    u8 *buf;
+    u8 *data;
+    u8 *head;
+    s32 r;
+
+    ls = &D_80050628;
+    if (ls->state != 0) {
+        if (--ls->state == 0) {
+            if (func_80012FFC() != 0) {
+                return 0;
+            }
+            if (ls->unk8 != 0) {
+                ls->state = 3;
+                ls->unk8 = 0;
+            }
+        }
+        return 0;
+    }
+    if (ls->unk4 != 0) {
+        r = func_80027944();
+        if (r > 0) {
+            return 0;
+        }
+        if (r < 0) {
+            buf = (u8 *)ls->unk4;
+            goto free;
+        } else {
+            node = (LoadNode *)ls->unkC;
+            ls->unkC = (s32)node->next;
+            node->next = D_80050F3C;
+            D_80050F3C = node;
+            if (ls->unkC != 0) {
+                ((LoadNode *)ls->unkC)->prev = NULL;
+            } else {
+                ls->unk10 = 0;
+            }
+            buf = (u8 *)ls->unk4;
+            ls->unk4 = 0;
+            ls->state = 3;
+            if (node->file == NULL) {
+            free:
+                func_800110A8(buf, &D_8004E0F0);
+            } else if (node->fn != NULL) {
+                node->fn(buf, node->arg);
+            } else {
+                *(u8 **)node->arg = buf;
+                if (node->mode == 1) {
+                    func_80011544(buf, (u8 **)node->arg);
+                } else {
+                    *(u8 **)node->arg = buf;
+                }
+            }
+        }
+    }
+    if (ls->state != 0) {
+        return 0;
+    }
+    if (func_8002BB80() != 0) {
+        return 0;
+    }
+    head = (u8 *)ls->unkC;
+    if (head == NULL) {
+        return 0;
+    }
+    node = (LoadNode *)head;
+    data = func_800121F8(head);
+    ls->unk4 = (s32)data;
+    if (data == NULL) {
+        return 0;
+    }
+    if (func_80027790(node->file, node->offset / 2048, data, (node->size + 0x7FF) / 2048) < 0) {
+        func_800110A8((void *)ls->unk4, &D_8004E0F0);
+        ls->unk4 = 0;
+    }
+    return 0;
+}
 
 SortNode *func_8001251C(SortList *arg0) {
     SortNode *cur;

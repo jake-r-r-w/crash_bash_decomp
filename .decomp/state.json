@@ -225,7 +225,8 @@
   "status": "matched"
  },
  "8001231C": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-15T08:38:01Z",
+  "status": "matched"
  },
  "8001251C": {
   "matched_at": "2026-10-13T08:15:04Z",

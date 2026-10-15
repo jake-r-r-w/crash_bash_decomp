@@ -686,7 +686,13 @@ typedef struct LoaderState {
 } LoaderState;
 
 typedef struct LoadNode {
-    /* 0x00 */ u8 unk0[0x1C];
+    /* 0x00 */ u8 *file;                 /* file table entry; NULL once cancelled mid-load (func_80012F04) */
+    /* 0x04 */ s32 offset;               /* bytes into the file */
+    /* 0x08 */ s32 size;                 /* bytes */
+    /* 0x0C */ s32 mode;                 /* 1: func_80011544 after the load */
+    /* 0x10 */ void (*fn)(u8 *, u8 *);   /* called with (buffer, arg) when done */
+    /* 0x14 */ u8 *arg;
+    /* 0x18 */ u8 *buf;                  /* preset buffer (func_800121F8) */
     /* 0x1C */ struct LoadNode *next;
     /* 0x20 */ struct LoadNode *prev;
 } LoadNode;
@@ -740,7 +746,7 @@ s32 func_8001534C(u8 *s);
 void func_8001828C(void);
 s32 func_80013650(s32 arg0, void (*done)(), void *ctx);
 s32 func_80012FFC(void);
-void func_8001231C(void);
+s32 func_8001231C(void);
 void func_80010AE8(Heap *arg0);
 void func_8002BAE8(void);
 void func_8002C894(void);
