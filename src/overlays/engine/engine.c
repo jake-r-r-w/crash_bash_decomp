@@ -1112,7 +1112,10 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80092FB8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80093038);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80093110);
+void func_80093110(void) {
+    func_80018B08((GfxViewport *)D_8009F6F4, (GfxCamera *)D_80051640);
+    D_80056998.modelDp = 0x1000 - ((0x1000 - D_8009F8B8) * (0x1000 - *(s32 *)D_8009F644) / 4096);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8009317C);
 
