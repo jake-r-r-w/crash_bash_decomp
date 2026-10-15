@@ -1106,7 +1106,13 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80092AA8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80092AF4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80092B40);
+void func_80092B40(void) {
+    if (((ModeMgr *)D_8009F658)->cur != NULL) {
+        if (((ModeMgr *)D_8009F658)->cur->exit != NULL) {
+            ((ModeMgr *)D_8009F658)->cur->exit();
+        }
+    }
+}
 
 void func_80092B7C(void) {
     func_8001E898(D_8009F658);
