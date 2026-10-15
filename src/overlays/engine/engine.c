@@ -1328,7 +1328,14 @@ void func_80092AA8(GameModeDef *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80092AF4);
+void func_80092AF4(s32 arg0, s32 arg1) {
+    u8 *p = D_8009F658;
+
+    if (*(s32 *)(p + 4) != arg0) {
+        func_8001E588(D_8009F644, arg1, 0);
+        *(s32 *)(p + 4) = arg0;
+    }
+}
 
 void func_80092B40(void) {
     if (((ModeMgr *)D_8009F658)->cur != NULL) {

@@ -532,6 +532,8 @@ void func_8008FD40(void *arg0);
 
 void func_80092AA8(GameModeDef *arg0);
 
+void func_80092AF4(s32 arg0, s32 arg1);
+
 void func_80092E94(void);
 
 #endif /* BASH_ENGINE_H */
