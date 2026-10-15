@@ -470,6 +470,32 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | a run of stores in a long store-only block lands in the wrong scheduling group (the whole run after a later run), and regs shift around it | sched flushes its pending memory list every 32 mem refs: move a few stores whose final position doesn't matter from before the run to later in the source so the barrier shifts | `func_80023A90` |
 | a byte global stored then re-read (BCD convert) is reloaded with lbu after each sb in the target, yours reuses the value (andi 0xff) | do the conversion in a static inline helper with u8 parameters (gcc 2.7.2) | `func_8002D4F4` |
 | a 2.7.2-unit conditional branch's nop slot holds the first insn of its target in the target (branch to target+4), yours keeps the nop and no C form changes it | it's ASPSX's fill, not gcc's: tools/scripts/aspsx_fill.py only emulates the steal when the target starts with `j`; needs a tool change, not C | `func_8002D4F4` |
+| addu $a0,zero emitted before lui/addiu of the pointer | assign `i = 0, p = arr` in the for-init instead of declaring `p = arr` at its declaration | `func_80086FA0` |
+| indexed table access compiles to multiply (sll/addu) and extra insns | walk with a separate pointer incremented per iteration (t++) | `func_8009029C` |
+| addiu v0,v0,0x24 should sit in the bnez delay slot, compiled uses extra v1/move | write `if (p != NULL) return p + N; return NULL;` instead of assigning to the return variable | `func_8008D24C` |
+| Constant arg set at a branch join (`j` delay slot `li a0,1`, then again after the else call) and a global's address re-materialized into a new saved reg | Move the code after the join into a `static inline` taking the constant as a parameter and re-reading the global in its own local | `func_80092CAC` |
+| lui of a global pointer scheduled too late / base pointer reloaded per use | copy the pointer into a local and the flags field into a local, assign after the earlier global store | `func_8007E7F4` |
+| addu operands swapped (addu v0,v1,a0 vs a0,v1) on indexed byte load | write `(arg0 + i)[N]` instead of `arg0[i + N]` | `func_80092560` |
+| a0 index (x & 1) computed after the (x+1) & 1 index, extra register use | load the global into a local and take the first pointer into a local before the second | `func_8008EC94` |
+| lui+addiu of a global array's address before lw/sw N($a0) missing (compiled folds %lo(sym) into the load/store) | load the address into a local pointer first (`s32 *p = (s32 *)D_8005A614; p[4] &= ...`) | `func_8007EE2C` |
+| global fn-pointer call: lui/lw hoisted above the addiu sp (target keeps them after the s0 save) | pass the arg through the unprototyped pointer call `fp(arg0)` | `func_8008A8F0` |
+| gcc CSEs a lui/ori constant into an s-reg across calls where target reloads it before each use | Set a variable to the constant and then modify it (`size = 0x801FF000; size -= p;`, in a static inline used for both calls) so no register keeps the constant; split the align into `s = f() + 7; s &= ~7;` to get the target's order | `func_800936C4` |
+| lui of the 2nd arg's global address emitted after the first arg's address computation | load the second arg's global into a local pointer first, then pass it | `func_8007A614` |
+| li v1 scheduled after lui/addiu of the array pointer in a countdown loop | init the counter at its declaration (`s32 i = 399;`) and `p = arr` at declaration, `p += N` in for-init | `func_80086F78` |
+| Global stores float above/below struct-field loads through a param (sched order lw, sw C70, sw D2C, lw, sw D20, sw D24 wrong) | gcc 2.7 lets scalar fixed-address stores pass struct loads: make the stores that must stay ordered in-struct too (declare the globals s32[] and store [0], or store through a struct-pointer cast) | `func_800945C0` |
+| compiled folds the field offset (+0x50) into the loop pointer (addiu a0,v0,82; lh -2(a0)) | write `Heroes[i].a != Heroes[i].b` with an index instead of a walking struct pointer | `func_8007E894` |
+| loop counter kept in an s-reg directly, target counts in a1 then moves to s1 in the jal delay slot | count into a temp `i`, then `n = i;` before the call | `func_80095BEC` |
+| empty counting loop compiled to countdown (li v0,19 / addiu -1 / bgez) | write it as a label/goto loop `inner: if (j < 20) { j++; goto inner; }` instead of for/while/do | `func_80086F4C` |
+| first store to global uses lui/sw %lo but later stores use addiu'd base ($v0) | do the first store by name, then `p = &sym; p[1..]` for the rest | `func_80098570` |
+| dead local struct copy stored at sp+4 (not sp+0) in a 0x10 frame | declare `s32 buf[4]` and copy through `*(Vec3W *)(buf + 1)`; a lone struct or unused pad local lands at sp+0 | `func_800866DC` |
+| global base loaded into addiu s2 before the lw of a field, later s0 = s2+off (compiled folds %lo into the lw) | assign a local `b = D_80052A54` inside the condition `*(s32*)((b = G) + off)` and reuse b | `func_8009342C` |
+| struct-walk pointer split into base reg + base+8 giv (extra s-reg, addiu s1,s3,8) | index the array in the loop body (`m = &arr[i];`) instead of incrementing a pointer | `func_8009440C` |
+| loop test kept at top with `j` back-edge (no rotation) and first `i<4` test not folded after `i = 0` | write the outer loop as `loop: if (i < 4) { ...; i++; goto loop; }` (for/while rotate or fold the first test) | `func_80093854` |
+| missing bgez/addiu 0xFFF fixup before sra 12 on signed product | write `/ 4096` instead of `>> 12` | `func_80093110` |
+| loop counter and another s-reg var swapped (i s5/arg s4 vs target s4/s5) | assign the counter (`i = 0;`) right before the loop instead of at its declaration: shorter live length raises its allocation priority, sched1 still moves it to the top | `func_80093854` |
+| compiled tests kind==0 return first (bnez/jr/move) but target tests beqz to a shared return-0 later | write `if (k != 0) { if (k == 1) return v; } else { return 0; }` | `func_800831F0` |
+| null path placed at the end (beqz to addu v0,zero), compiled has bnez/jr early | write `if (p == NULL) return 0;` first then the body, not `if (p != NULL) {...return x;} return 0;` | `func_80095F48` |
+| loop-invariant global address wanted as `lui/addiu v0; move fp,v0` at the top, compiled as `addiu s7,v0,%lo` directly | do the early loads through a local `a = &G` and assign `g = a;` just before the loop | `func_80093854` |
 
 ## Classify the diff, then work through the list
 
