@@ -60,6 +60,8 @@ void func_800943B8(void);
 
 void func_8009440C(void);
 
+void func_80095E5C(u8 *arg0, u8 *arg1, s32 arg2);
+
 s32 func_80095F48(s32 *p, s32 a1, s32 a2, s32 a3, s32 a4);
 
 void func_80094DD0(void);

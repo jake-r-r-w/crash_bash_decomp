@@ -543,7 +543,33 @@ EXTengine *GetEngineSlot(s32 arg0) {
     return &EnginePool[arg0];
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009317c", func_80095E5C);
+void func_80095E5C(u8 *arg0, u8 *arg1, s32 arg2) {
+    u8 *p;
+    u32 flags;
+    u32 n;
+    u32 m;
+
+    p = *(u8 **)(arg0 + 0x64);
+    flags = *(u32 *)(p + 0x20);
+    if (flags & 1) {
+        *(u16 *)(arg0 + 0x10) += *(u16 *)(p + 0xC);
+    }
+    if (flags & 2) {
+        *(u16 *)(arg0 + 0x12) += *(u16 *)(p + 0xE);
+    }
+    if (flags & 4) {
+        *(u16 *)(arg0 + 0x14) += *(u16 *)(p + 0x10);
+    }
+    if (flags & 8) {
+        n = *(u32 *)(p + 0x18);
+        if (n != 0) {
+            m = D_8005B690 % n + 1;
+            *(u16 *)(arg0 + 0x74) = *(u16 *)(p + 0x1E) + (*(u16 *)(p + 0x18) - m);
+        }
+    }
+    *(u16 *)(arg0 + 0x52) = 1;
+    func_80019F1C(arg0, arg1, arg2);
+}
 
 s32 func_80095F48(s32 *p, s32 a1, s32 a2, s32 a3, s32 a4) {
     if (p == NULL) {
