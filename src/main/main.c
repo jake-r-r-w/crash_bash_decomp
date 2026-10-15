@@ -361,9 +361,232 @@ void func_80010AE8(Heap *heap) {
     }
 }
 
+#ifndef NON_MATCHING
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80010C70);
+#else
+static inline MemBlock *Heap_NextFreeAfter(MemBlock *p) {
+    while (p->size != 0) {
+        p = (MemBlock *)((u8 *)p + (p->size * 4 + 0x18));
+        if (p->owner == NULL) {
+            return p;
+        }
+    }
+    return NULL;
+}
 
+static inline MemBlock *Heap_FindFree(u32 words, MemBlock *blk) {
+    for (; blk != NULL; blk = blk->nextFree) {
+        if (blk->size >= words) {
+            return blk;
+        }
+    }
+    return blk;
+}
+
+MemBlock *func_80010C70(bytes, heap)
+    s32 bytes;
+    Heap *heap;
+{
+    u32 words;
+    MemBlock *blk;
+    MemBlock *ret;
+    MemBlock *cur;
+    MemBlock *p;
+    MemBlock *nb;
+    MemBlock *t;
+    u32 sz;
+
+    words = (u32)(bytes + 3) >> 2;
+    blk = Heap_FindFree(words, heap->free);
+    if (blk == NULL) {
+        return NULL;
+    }
+    if (blk->size <= words + 0x28) {
+        p = blk->prevFree;
+        if (p != NULL) {
+            p->nextFree = blk->nextFree;
+        } else {
+            heap->free = blk->nextFree;
+        }
+        p = blk->nextFree;
+        if (p != NULL) {
+            p->prevFree = blk->prevFree;
+        }
+        ret = blk;
+    } else {
+        p = blk->prevFree;
+        if (p != NULL) {
+            p->nextFree = blk->nextFree;
+        } else {
+            heap->free = blk->nextFree;
+        }
+        p = blk->nextFree;
+        if (p != NULL) {
+            p->prevFree = blk->prevFree;
+        }
+        sz = blk->size - 6;
+        sz -= words;
+        blk->size = sz;
+        cur = heap->free;
+        if (cur == NULL) {
+            heap->free = blk;
+            blk->nextFree = NULL;
+            blk->prevFree = NULL;
+        } else {
+            goto start;
+        app:
+            cur->nextFree = blk;
+            blk->prevFree = cur;
+            blk->nextFree = NULL;
+            goto done;
+        start:
+            for (;;) {
+                if (cur->size >= blk->size) {
+                    t = cur->prevFree;
+                    if (t != NULL) {
+                        t->nextFree = blk;
+                    } else {
+                        heap->free = blk;
+                    }
+                    blk->prevFree = t;
+                    blk->nextFree = cur;
+                    cur->prevFree = blk;
+                    goto done;
+                }
+                t = cur->nextFree;
+                if (t == NULL) {
+                    goto app;
+                }
+                cur = t;
+            }
+        }
+    done:
+        nb = (MemBlock *)((u8 *)blk + (blk->size * 4 + 0x18));
+        nb->size = words;
+        nb->prev = blk;
+        MEMBLOCK_NEXT(nb)->prev = nb;
+        ret = nb;
+    }
+    if (ret == heap->lowest) {
+        heap->lowest = Heap_NextFreeAfter(ret);
+    }
+    return ret;
+}
+#endif
+
+#ifndef NON_MATCHING
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80010E8C);
+#else
+static inline MemBlock *Heap_NextFreeAfter2(MemBlock *p) {
+    while (p->size != 0) {
+        p = (MemBlock *)((u8 *)p + (p->size * 4 + 0x18));
+        if (p->owner == NULL) {
+            return p;
+        }
+    }
+    return NULL;
+}
+static inline MemBlock *Heap_FindFree2(u32 words, MemBlock *blk) {
+    for (; blk != NULL; blk = blk->nextFree) {
+        if (blk->size >= words) {
+            return blk;
+        }
+    }
+    return blk;
+}
+
+void *func_80010E8C(bytes, heap)
+    s32 bytes;
+    Heap *heap;
+{
+    u32 words;
+    MemBlock *blk;
+    MemBlock *ret;
+    MemBlock *cur;
+    MemBlock *p;
+    MemBlock *nb;
+    MemBlock *t;
+    u32 sz;
+
+    words = (u32)(bytes + 3) >> 2;
+    blk = Heap_FindFree2(words, heap->free);
+    if (blk == NULL) {
+        return NULL;
+    }
+    if (blk->size <= words + 0x28) {
+        p = blk->prevFree;
+        if (p != NULL) {
+            p->nextFree = blk->nextFree;
+        } else {
+            heap->free = blk->nextFree;
+        }
+        p = blk->nextFree;
+        if (p != NULL) {
+            p->prevFree = blk->prevFree;
+        }
+        ret = blk;
+    } else {
+        p = blk->prevFree;
+        if (p != NULL) {
+            p->nextFree = blk->nextFree;
+        } else {
+            heap->free = blk->nextFree;
+        }
+        p = blk->nextFree;
+        if (p != NULL) {
+            p->prevFree = blk->prevFree;
+        }
+        sz = blk->size - 6;
+        sz -= words;
+        nb = (MemBlock *)((u8 *)blk + (words * 4 + 0x18));
+        nb->prev = blk;
+        nb->owner = NULL;
+        nb->unk0 = 0;
+        nb->size = sz;
+        blk->size = words;
+        MEMBLOCK_NEXT(nb)->prev = nb;
+        cur = heap->free;
+        if (cur == NULL) {
+            heap->free = nb;
+            nb->nextFree = NULL;
+            nb->prevFree = NULL;
+        } else {
+            goto start;
+        app:
+            cur->nextFree = nb;
+            nb->prevFree = cur;
+            nb->nextFree = NULL;
+            goto done;
+        start:
+            for (;;) {
+                if (cur->size >= nb->size) {
+                    t = cur->prevFree;
+                    if (t != NULL) {
+                        t->nextFree = nb;
+                    } else {
+                        heap->free = nb;
+                    }
+                    nb->prevFree = t;
+                    nb->nextFree = cur;
+                    cur->prevFree = nb;
+                    goto done;
+                }
+                t = cur->nextFree;
+                if (t == NULL) {
+                    goto app;
+                }
+                cur = t;
+            }
+        }
+    done:
+        ret = blk;
+    }
+    if (ret == heap->lowest) {
+        heap->lowest = Heap_NextFreeAfter2(ret);
+    }
+    return ret;
+}
+#endif
 
 void func_800110A8(void *ptr, Heap *heap) {
     MemBlock *blk;

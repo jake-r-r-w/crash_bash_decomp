@@ -7,6 +7,18 @@
    "size": 832
   },
   {
+   "name": "func_80010C70",
+   "note": "35/36 blocks, 133/135 insns: only the entry. Target addiu a0,3; lw v1,8(a1); nop; beqz v1; srl (sched2 put the heap->free load after the size add); ours lw first (sched2 rank prefers the addiu that feeds the srl). Tried: size in a statement, as a call arg, bytes reused as u32, an inline size helper, loading free first, func_80011C5C-style find inline. Rest matches with: find = func_80011C5C's loop as an inline, unlinks via t = blk->prevFree, the twin's split = func_800119D4/func_800118BC bodies, lowest update as an inline returning the next free block",
+   "seg": "main/main",
+   "size": 540
+  },
+  {
+   "name": "func_80010E8C",
+   "note": "35/36 blocks, 133/135 insns: only the entry. Target addiu a0,3; lw v1,8(a1); nop; beqz v1; srl (sched2 put the heap->free load after the size add); ours lw first (sched2 rank prefers the addiu that feeds the srl). Tried: size in a statement, as a call arg, bytes reused as u32, an inline size helper, loading free first, func_80011C5C-style find inline. Rest matches with: find = func_80011C5C's loop as an inline, unlinks via t = blk->prevFree, the twin's split = func_800119D4/func_800118BC bodies, lowest update as an inline returning the next free block (same entry as func_80010C70)",
+   "seg": "main/main",
+   "size": 540
+  },
+  {
    "name": "func_80011E80",
    "note": "Block after heap->lowest unless owner -1, size 0 or flag 2. Best 4 off: the tail; target is r = next; if (next) { r = NULL; if (!(f & 2)) r = next; } with r in v0 and next in a0 (m2c form), but that and early-return, clear-to-NULL forms give 28-29 insns. Permuter 5 min: int temp for the condition, still off. Try static inline helpers for either half.",
    "seg": "main/main",
@@ -55,9 +67,9 @@
    "size": 372
   }
  ],
- "commit": "8af2574",
+ "commit": "f2ee2d2",
  "game": "SCUS_945.70",
- "generated": "2026-10-15T07:25:35Z",
+ "generated": "2026-10-15T07:36:59Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -36978,7 +36990,7 @@
    }
   },
   {
-   "commit": "8af2574",
+   "commit": "f2ee2d2",
    "data_b": 488,
    "data_tb": 606943,
    "game_all_f": 2551,
@@ -36991,7 +37003,7 @@
    "lib_b": 122112,
    "lib_f": 564,
    "lib_tb": 122112,
-   "ts": "2026-10-15T07:25:35Z",
+   "ts": "2026-10-15T07:36:59Z",
    "units": {
     "engine": [
      2752,
@@ -37187,7 +37199,7 @@
   }
  ],
  "summary": {
-  "blocked": 9,
+  "blocked": 11,
   "copies_b": 37444,
   "data": {
    "done_b": 488,
@@ -37198,7 +37210,7 @@
    "all_f": 2551,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 9,
+   "blocked": 11,
    "c_f": 805,
    "done_b": 111924,
    "done_f": 809,
@@ -37250,7 +37262,7 @@
     "all_f": 575,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 9,
+    "blocked": 11,
     "c_f": 540,
     "done_b": 100480,
     "done_f": 544,
