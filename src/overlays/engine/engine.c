@@ -591,7 +591,18 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80088708);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80088794);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80088BAC);
+void func_80088BAC(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *hero = &base[arg0];
+
+    hero->hero_move->velocity_enable = 0;
+    SetHeroSeq((HeroInfo *)arg0, 0xA);
+    hero->hero_attack_delay += 0xF;
+    if (hero->hero_attack_delay > 0x28) {
+        hero->hero_attack_delay = 0x28;
+    }
+    hero->hero_attack_timer = hero->hero_attack_delay;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80088C28);
 
@@ -599,7 +610,18 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80088F78);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008900C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800894E0);
+void func_800894E0(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *hero = &base[arg0];
+
+    hero->hero_move->velocity_enable = 0;
+    SetHeroSeq((HeroInfo *)arg0, 0xA);
+    hero->hero_attack_delay += 0xF;
+    if (hero->hero_attack_delay > 0x28) {
+        hero->hero_attack_delay = 0x28;
+    }
+    hero->hero_attack_timer = hero->hero_attack_delay;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008955C);
 

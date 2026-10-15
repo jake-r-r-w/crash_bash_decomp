@@ -448,6 +448,10 @@ void func_80084788();
 void func_800859D4();
 void func_80085C84();
 void func_80085D2C();
+void func_80088BAC(s32 arg0);
+
+void func_800894E0(s32 arg0);
+
 void func_8008A9F0();
 void func_8008AA40();
 void func_80083550(void);
