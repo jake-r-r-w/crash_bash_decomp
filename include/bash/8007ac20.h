@@ -42,6 +42,11 @@ void func_8007B7FC(u32 a, u32 b);
 
 void func_8007D144(void);
 
+extern EXTengine D_80099290[];
+void func_8007EC48(void);
+
+void func_8007ED0C(void);
+
 void func_8007E93C(u16 arg0, s16 arg1, s16 arg2);
 
 #endif /* BASH_8007AC20_H */

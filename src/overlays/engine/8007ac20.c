@@ -304,6 +304,21 @@ void func_8007EB1C(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007EB68);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007EC48);
+void func_8007EC48(void) {
+    s32 i;
+
+    D_80099174 = 0;
+    do {
+        for (i = 0; i < 7; i++) {
+            do {
+            } while (0);
+            D_80099290[i] = EngineTemplate;
+            D_80099290[i].flags = 0;
+        }
+        ((s32 *)&D_8009970C)[i] = 0;
+        i++;
+    } while (i < 4);
+    func_8007ED0C();
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007ED0C);
