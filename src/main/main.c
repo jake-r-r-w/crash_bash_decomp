@@ -9270,7 +9270,57 @@ void FreeExtension(void *ext) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800235BC);
+INCLUDE_RODATA("asm/nonmatchings/main/main", D_8004C8D0);
+
+static inline ArenaDef *func_800235BC_find(ArenaDef *p, s32 id) {
+    while (p != NULL) {
+        if (p->id == id) {
+            return p;
+        }
+        if (p->id == 999) {
+            break;
+        }
+        p++;
+    }
+    return NULL;
+}
+
+void func_800235BC(ArenaDef *arg0) {
+    ArenaDef *e;
+
+    D_8005AA70[0] = 0;
+    D_8005AA70[1] = 0;
+    D_8005AA70[2] = 0;
+    D_8005AA70[3] = 0;
+    D_8005AA70[4] = 0;
+    D_8005AA70[5] = 0;
+    D_8005AA70[6] = 0;
+    D_8005AA70[7] = 0;
+    D_8005AA70[8] = 0;
+    D_8005AA70[9] = 0;
+    D_8005AA70[10] = 0;
+    e = func_800235BC_find(arg0, D_8005A648);
+    if (e == NULL) {
+        e = func_800235BC_find(arg0, D_8004DDD0[D_8005A648 * 3]);
+    }
+    if (e != NULL) {
+        D_8005AA10 = e->unk4 + 4;
+        D_8005AA12 = D_8005AA14 = e->unk2 + 4;
+        D_8005AA50 = e->unk6 << 10;
+        D_8005AA54 = e->unk8;
+        D_8005A5E4 = e->unk10;
+        ((D5A614View *)D_8005A614)->unk0 = e->unk14;
+        D_8005A5E0 = e->unkC;
+        if (((D5A614View *)D_8005A614)->flags & 0x80) {
+            ((D5A614View *)D_8005A614)->unk8 = ((LevelInfo *)D_8004DDD0)[((D5A614View *)D_8005A614)->mode].unk4;
+        } else {
+            ((D5A614View *)D_8005A614)->unk8 = ((LevelInfo *)D_8004DDD0)[((D5A614View *)D_8005A614)->mode].unk2;
+        }
+    }
+    if (e == NULL || D_8005A5E0 == NULL) {
+        printf(D_8004C8D0, D_8005A648, ((LevelInfo *)D_8004DDD0)[D_8005A648].world);
+    }
+}
 
 void func_800237BC(void) {
     NASTemplate.NASid = 0;

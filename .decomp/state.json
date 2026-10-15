@@ -1730,7 +1730,8 @@
   "status": "matched"
  },
  "800235BC": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-15T08:45:42Z",
+  "status": "matched"
  },
  "800237BC": {
   "matched_at": "2026-10-14T09:00:49Z",

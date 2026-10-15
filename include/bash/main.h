@@ -1140,13 +1140,40 @@ extern s32 D_8005A608;
 extern u8 D_8005A614[];
 /* D_8005A614 as seen by func_80022140. */
 typedef struct D5A614View {
-    /* 0x00 */ u8 unk0[0x32];
+    /* 0x00 */ s32 unk0;    /* func_800235BC: the arena's unk14 */
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ s32 unk8;    /* func_800235BC: a LevelInfo field by flags 0x80 */
+    /* 0x0C */ u8 unkC[0x30 - 0xC];
+    /* 0x30 */ u16 unk30;   /* bit 0 cleared on a mode change (func_8001E610) */
     /* 0x32 */ u16 flags;
     /* 0x34 */ s16 mode;
     /* 0x36 */ u8 unk36[0x50 - 0x36];
     /* 0x50 */ u8 unk50[4];
 } D5A614View;
 extern u16 D_8004DDD0[];          /* func_80022140: 6-byte entries indexed by D_8005A614+0x34 */
+/* D_8004DDD0 as 6-byte entries indexed by level (func_800235BC). */
+typedef struct LevelInfo {
+    /* 0x00 */ u16 world;
+    /* 0x02 */ u16 unk2;
+    /* 0x04 */ u16 unk4;
+} LevelInfo;
+/* An arena definition (func_800235BC): 0x18 bytes, a table ends at id 999. */
+typedef struct ArenaDef {
+    /* 0x00 */ u16 id;
+    /* 0x02 */ u16 unk2;
+    /* 0x04 */ u16 unk4;
+    /* 0x06 */ u16 unk6;
+    /* 0x08 */ u16 unk8;
+    /* 0x0A */ u8 unkA[2];
+    /* 0x0C */ void *unkC;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 unk14;
+} ArenaDef;
+extern s32 D_8005AA70[11];
+extern s32 D_8005AA50;
+extern s32 D_8005AA54;
+extern s32 D_8005A5E4;
+extern char D_8004C8D0[];         /* "FATAL METRICS ERROR ..." */
 extern u8 D_8004E9C0[];           /* func_80022140: passed (-0x10/-8/+0) to func_8002BD0C */
 extern s32 D_80058F0C[][8];       /* func_80022140 */
 extern s8 D_8005A604[];
@@ -2655,6 +2682,8 @@ void func_8001C7FC(NAS *nas, u8 *arg1, u32 flags);
 KeyEntry *func_8001E21C(KeyBlock *arg0, s32 arg1, SLONG_XYZ *out);
 
 void func_8001EAA4(u8 *arg0, u8 *arg1);
+
+void func_800235BC(ArenaDef *arg0);
 
 void func_8002854C(FreeNode *n);
 

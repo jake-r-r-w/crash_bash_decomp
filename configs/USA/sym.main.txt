@@ -721,3 +721,4 @@ AddMotion = 0x80026540; // type:func
 AddObject = 0x80026684; // type:func
 abs = 0x80032F3C; // type:func
 func_800274FC = 0x800274FC; // type:func  (func_80027408 never returns, it ends in a j. This starts after it, and the engine jals here)
+D_8004C8D0 = 0x8004C8D0; // force_not_migration:True
