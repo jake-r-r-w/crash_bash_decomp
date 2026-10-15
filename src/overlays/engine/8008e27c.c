@@ -664,7 +664,25 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_800926CC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_800928E8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_800929D8);
+void func_800929D8(void) {
+    *(s32 *)D_8009F658 = 0;
+    func_8001E934(D_8009F658, 0);
+    func_800928E8();
+    *(s32 *)D_8009F644 = 0x1000;
+    *(s32 *)(D_8009F644 + 8) = 3;
+    *(s32 *)(D_8009F644 + 4) = 0x100;
+    SetDispMask(1);
+    D_800590CC = 1;
+    func_80092AF4((s32)D_800A00DC, 0x200);
+    func_8001E598(D_8009F644);
+    func_8001E610(D_8009F658, D_8009F644);
+    func_8001E898(D_8009F658);
+    if (((ModeMgr *)D_8009F658)->cur != NULL) {
+        if (((ModeMgr *)D_8009F658)->cur->exit != NULL) {
+            ((ModeMgr *)D_8009F658)->cur->exit();
+        }
+    }
+}
 
 void func_80092AA8(GameModeDef *arg0) {
     if (((ModeMgr *)D_8009F658)->next != arg0) {
