@@ -353,6 +353,8 @@ extern EngineRec32 *D_8005A5E8;
 extern s32 D_8005A61C;
 extern u16 D_800AD12C;
 
+void func_800834E4(void);
+
 void func_8008688C(void);
 
 s32 func_800925C4(u8 *arg0);
