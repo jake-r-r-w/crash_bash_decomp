@@ -970,7 +970,20 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008C824);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008CA90);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", PlotWeatherNas);
+void PlotWeatherNas(u8 *arg0) {
+    if (*(s32 *)(arg0 + 0x60) == 0) {
+        s32 v = *(s32 *)(arg0 + 0x64);
+        switch (v) {
+        case 0:
+            func_80015D70(D_8009E200, *(u8 **)(*(u8 **)(arg0 + 0x54) + 0x6C));
+            *(s32 *)(arg0 + 0x60) = 1;
+            break;
+        case 1:
+            *(s32 *)(arg0 + 0x60) = v;
+            break;
+        }
+    }
+}
 
 void InitWeatherNas(u8 *arg0) {
     *(s32 *)(arg0 + 0x60) = 0;
