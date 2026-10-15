@@ -1521,7 +1521,29 @@ void func_8008FE00(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008FE68);
+s32 func_8008FE68(s32 arg0) {
+    EngineTable12 *base = D_8009E7A0;
+    EngineTable12 *t;
+    EngineEntry16Head *p;
+    s32 n;
+    s32 i;
+
+    t = base + arg0;
+    if (t->unk0 == 1) {
+        return 1;
+    }
+    if (t->unk0 == 2) {
+        return 0;
+    }
+    n = t->unk8;
+    p = t->unk4;
+    for (i = 0; i < n; i++, p++) {
+        if (!func_800B7EE4(p->unk4, D_8005A614)) {
+            return 0;
+        }
+    }
+    return 1;
+}
 
 s32 func_8008FF10(void) {
     u16 *wt = D_8004DDD0;
