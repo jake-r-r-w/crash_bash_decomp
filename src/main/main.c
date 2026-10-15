@@ -7245,7 +7245,51 @@ void func_8001F4F8(u8 *arg0, u8 *arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001F604);
+void func_8001F604(u8 *obj, EmitPart *part, u8 *def) {
+    s32 speed;
+    s32 n;
+    s32 yaw;
+    s32 pitch;
+    s32 radius;
+    s32 r;
+
+    yaw = *(s32 *)(def + 0x30);
+    pitch = *(s32 *)(def + 0x38);
+    radius = *(s32 *)(def + 0x2C);
+    n = *(s32 *)(def + 0x24) - *(s32 *)(def + 0x20);
+    if (n != 0) {
+        speed = *(s32 *)(def + 0x20) + Random(n);
+    } else {
+        speed = *(s32 *)(def + 0x20);
+    }
+    part->age = 0;
+    if (*(s32 *)(def + 0x68) != 0) {
+        *(s16 *)(obj + 0x14) = Random(0x1000);
+    }
+    if (*(s32 *)(def + 0x34) < *(s32 *)(def + 0x30)) {
+        r = abs((*(s32 *)(def + 0x34) - *(s32 *)(def + 0x30)) << 20 >> 20);
+    } else {
+        r = *(s32 *)(def + 0x34) - *(s32 *)(def + 0x30);
+    }
+    if (r != 0) {
+        yaw = (*(s32 *)(def + 0x30) + Random(r)) & 0xFFF;
+    }
+    if (*(s32 *)(def + 0x3C) < *(s32 *)(def + 0x38)) {
+        r = abs((*(s32 *)(def + 0x3C) - *(s32 *)(def + 0x38)) << 20 >> 20);
+    } else {
+        r = *(s32 *)(def + 0x3C) - *(s32 *)(def + 0x38);
+    }
+    if (r != 0) {
+        pitch = (*(s32 *)(def + 0x38) + Random(r)) & 0xFFF;
+    }
+    part->vel[0] = speed * D_80068BD4[(yaw - 0x400) & 0xFFF].unk2 >> 4;
+    part->vel[2] = speed * D_80068BD4[yaw & 0xFFF].unk2 >> 4;
+    part->vel[1] = -(speed * D_80068BD4[pitch & 0xFFF].unk2 >> 4);
+    *(s32 *)(obj + 4) = (radius * D_80068BD4[(yaw - 0x400) & 0xFFF].unk2 >> 12) + *(s32 *)(def + 4);
+    *(s32 *)(obj + 0xC) = (radius * D_80068BD4[yaw & 0xFFF].unk2 >> 12) + *(s32 *)(def + 0xC);
+    *(s32 *)(obj + 8) = *(s32 *)(def + 8) - (radius * D_80068BD4[pitch & 0xFFF].unk2 >> 12);
+    *(s32 *)(obj + 0) |= 0x8000;
+}
 
 void func_8001F828(u8 *arg0, u8 *arg1) {
     u8 *p;
