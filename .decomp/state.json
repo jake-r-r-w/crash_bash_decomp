@@ -3400,7 +3400,8 @@
   "status": "matched"
  },
  "engine:8008AA40": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-15T12:24:50Z",
+  "status": "matched"
  },
  "engine:8008AA90": {
   "matched_at": "2026-10-10T10:11:53Z",

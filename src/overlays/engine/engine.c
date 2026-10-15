@@ -745,7 +745,9 @@ void func_8008A9F0(s32 arg0) {
     Heroes[arg0].hero_idle_count = Random(0x258) + 0x12C;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008AA40);
+void func_8008AA40(s32 arg0) {
+    Heroes[arg0].hero_idle_count = Random(0x96) + 0x5A;
+}
 
 void func_8008AA90(void) {
     func_8008502C();
