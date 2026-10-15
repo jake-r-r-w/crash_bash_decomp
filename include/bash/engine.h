@@ -168,6 +168,8 @@ extern s32 D_80051658;
 extern D_800AD2EC_t D_800AD2EC;
 extern s32 D_800AD31C;
 
+u8 *func_8008D24C(u8 *arg0, s32 *arg1);
+
 void func_80097334(s32 arg0, s32 arg1);
 
 #endif /* BASH_ENGINE_H */

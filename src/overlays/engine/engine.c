@@ -533,7 +533,15 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008CFBC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008D088);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008D24C);
+u8 *func_8008D24C(u8 *arg0, s32 *arg1) {
+    u8 *r;
+
+    r = func_80021DD4(arg0, arg1[0x24 / 4], arg1[1]);
+    if (r != NULL) {
+        return r + 0x24;
+    }
+    return NULL;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008D284);
 
