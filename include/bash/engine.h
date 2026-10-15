@@ -597,4 +597,6 @@ void func_8009749C(s32 arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5);
 
 void func_80098284(void);
 
+void func_800982E0(void);
+
 #endif /* BASH_ENGINE_H */

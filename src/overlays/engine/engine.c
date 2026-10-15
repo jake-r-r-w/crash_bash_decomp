@@ -2144,7 +2144,15 @@ void func_80098284(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800982E0);
+extern s32 D_800ADBD4;
+void func_800982E0(void) {
+    s32 i;
+    subengine *s = GetEngineSlot(3)->sub + 2;
+    for (i = 0; i < D_800ADBD4; i++) {
+        s->flags &= ~0x8000;
+        s = s->next;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80098344);
 
