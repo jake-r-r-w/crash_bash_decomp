@@ -97,7 +97,14 @@ void func_8007AAF0(void) {
 void func_8007AB20(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007AB28);
+void func_8007AB28(void) {
+    D_8005AA58 = 0;
+    if (D_8005AA80 != NULL) {
+        D_8005AA80();
+    }
+    func_80086814();
+    func_80026FCC();
+}
 
 void func_8007AB6C(void) {
     func_8007A6F8();

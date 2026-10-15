@@ -12,6 +12,7 @@
 extern s32 D_80051658;
 extern s32 D_800AD2F8[];
 extern s32 D_800AD320;
+extern void (*D_8005AA80)(void);
 
 void func_8007A688(s32 arg0);
 void func_8007A6B0(s32 arg0);
@@ -447,6 +448,8 @@ extern s16 D_8009E0E0;
 extern s16 D_8009E0E2;
 extern s16 D_8009E0E4;
 extern s16 D_8009E0E6;
+void func_8007AB28(void);
+
 void func_80084788();
 void func_800859D4();
 void func_80085C84();
