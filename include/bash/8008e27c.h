@@ -10,6 +10,10 @@
 
 extern s32 D_8005687C[];
 void func_800798A4(void);
+s32 func_8007F314(void);
+void func_8007976C(void);
+void func_80097C28(void);
+extern u8 D_8005164C[];
 
 void func_8008EB3C(void);
 
@@ -136,5 +140,7 @@ s32 func_8008FC60(void *arg0);
 s32 func_800900CC(void);
 
 void func_800925F0(s32 arg0);
+
+void func_80092EDC(void);
 
 #endif /* BASH_8008E27C_H */

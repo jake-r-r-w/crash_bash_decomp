@@ -882,7 +882,26 @@ void func_80092E94(void) {
     func_8001E898(&D_8009F8A4);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_80092EDC);
+void func_80092EDC(void) {
+    if (func_8007F314() != 0) {
+        u8 *g;
+        D_8004E0D8++;
+        g = D_8005A614;
+        *(s32 *)(g + 0xC) += 1;
+        func_8007976C();
+        ((void (*)(void *, u8 *))func_8001DDB4)(D_80058AD0, D_8005164C);
+    } else {
+        func_8007A7C0();
+    }
+    ((GfxCamera *)D_8009F734)->z = 0;
+    *(s32 *)((u8 *)(GfxCamera *)D_8009F734 + 8) = 0x800;
+    D_8009F7EC.z = 0;
+    *(s32 *)((u8 *)&D_8009F7EC + 8) = 0x40C;
+    func_80097C28();
+    func_800220E8();
+    func_8001E610(&D_8009F8A4, D_8009F644);
+    func_8008EFD4();
+}
 
 void func_80092F9C(void) {
     D_8005A614[0x63] = 0xA;
