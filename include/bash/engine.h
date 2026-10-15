@@ -609,4 +609,6 @@ void func_80098284(void);
 
 void func_800982E0(void);
 
+void func_80098464(void);
+
 #endif /* BASH_ENGINE_H */
