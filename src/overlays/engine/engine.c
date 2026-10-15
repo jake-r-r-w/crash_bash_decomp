@@ -891,7 +891,17 @@ s32 func_8008AB50(s32 arg0) {
     return m != 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008AB94);
+s32 func_8008AB94(s32 arg0) {
+    s32 ret;
+
+    if (!(Heroes[arg0].hero_status & 0x2000)) {
+        ret = 0;
+    } else {
+        SetHeroAction((HeroInfo *)arg0, (u16)D_8009E0E2);
+        ret = 1;
+    }
+    return ret;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008ABF8);
 
