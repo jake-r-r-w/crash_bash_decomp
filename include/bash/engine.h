@@ -595,6 +595,8 @@ void func_8008FE00(void);
 
 void func_80094EB8(void);
 
+s32 func_800950FC(void);
+
 void func_8009749C(s32 arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5);
 
 void func_80098284(void);

@@ -2006,7 +2006,15 @@ void func_80095020(void) {
     D_800A0D3C += 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800950FC);
+s32 func_800950FC(void) {
+    if (D_800A0D1C == 0) {
+        return 1;
+    }
+    if (*(s32 *)D_800A0D1C == 0) {
+        return 1;
+    }
+    return ~D_800644C0[D_800A0D20[0]].id != 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80095160);
 
