@@ -109,6 +109,16 @@ How the boundaries were found:
     and a region can still hide a boundary if one of its inversions comes
     from a misplaced global (58-120 leans on `D_80050010`, used only by
     function 101).
+  - Calls: 84 functions are called only by code within 40 functions and
+    by nothing else (no other unit, no data table), so probably `static`
+    and in their callers' file; 217 are called from outside. Together with
+    the shared private data and the inversions, that leaves 17 possible cut
+    zones (`units --data`, last list), eight of them one or two functions
+    wide: after 0, 46, 56-57, 134-135, 456-457, 495-496, 527-528, 548. All
+    of this says where a boundary can't be; nothing yet proves one: no
+    duplicate literal, no style change, and the only byte-identical function
+    pairs (307/312, 467/468) are neighbours, so no `static` from a shared
+    header shows up in two places.
   - Who uses the rest of the data (`.data` labels with their code users,
     overlays included, and the pointers in each table): the first game data
     (`0x8004DCBC..0x8004DDD0`) is tables of pointers into the first rodata

@@ -3110,6 +3110,46 @@ def cmd_units(a):
         print("one file each (private data out of code order inside the span; boundaries lie between):")
         for l, h in same:
             print(f"  {l:4d}-{h:<4d} {names[l]} .. {names[h]}")
+        # 7. calls: a function only nearby code calls (no other unit, no data table, no far caller) is
+        # probably static, so it shares its callers' file and no boundary lies between them.
+        name2key = {}
+        for k, e in funcs.items():
+            name2key[e["name"]] = name2key[e.get("orig", e["name"])] = k
+        callers = {}
+        for k, e in funcs.items():
+            for c in e.get("calls", []):
+                callers.setdefault(c, set()).add(k)
+        for k, r in refs.items():
+            for n, o in r["syms"]:
+                t = name2key.get(n)
+                if t and t != k:
+                    callers.setdefault(t, set()).add(k)
+        tabled = set()
+        for p in glob.glob("asm/data/**/*.s", recursive=True):
+            for m in re.finditer(r"\.word (\w+)\s*$", read(p), re.M):
+                if name2key.get(m.group(1)) in idx:
+                    tabled.add(name2key[m.group(1)])
+        tied = [0] * (nf - 1)
+        for k, _ in fl:
+            cs = callers.get(k, set())
+            if not cs or k in tabled or not all(c in idx for c in cs):
+                continue
+            ii = [idx[c] for c in cs] + [idx[k]]
+            if max(ii) - min(ii) <= 40:
+                for g in range(min(ii), max(ii)):
+                    tied[g] += 1
+        inside = {g for l, h in same for g in range(l, h)} | {g for lo, hi in clusters for g in range(lo, hi)}
+        free = [g for g in range(nf - 1) if not tied[g] and g not in inside]
+        zones = []
+        for g in free:
+            if zones and zones[-1][1] == g - 1:
+                zones[-1][1] = g
+            else:
+                zones.append([g, g])
+        print(f"possible cut zones (no probably-static call, shared private data or data inversion spans "
+              f"the gap; a boundary may lie after any function listed, none is proven):")
+        for g0, g1 in zones:
+            print(f"  after {g0:4d}..{g1:<4d} {names[g0]} .. {names[g1]}")
     ranked = sorted(range(nf - 1), key=lambda g: -gaps[g]["score"])
     print(f"\ntop boundary candidates (gap after function i; + style, rodata, strings; - statics spanning it):")
     for g in ranked[:a.top]:

@@ -69,8 +69,11 @@ leads**, add any new gotcha, and add one short entry at the top of the
    boundary; see ARCHITECTURE.md, Files inside `main/main`). `decomp.py units
    --data` now shows the data blocks (regions of files); and, last, the
    inversions: eight probable one-file regions, boundaries in the gaps
-   between (ARCHITECTURE.md). Next: split at those gaps only where another
-   signal agrees, or study the engine overlay the same way (a split
+   between (ARCHITECTURE.md). With the call graph, 17 possible cut zones
+   remain, none proven (no positive signal). Don't split on them alone; a
+   proof needs a positive sign (two copies of one header `static`, a
+   literal in two places, a style change). Study the engine overlay the same
+   way (a split
    moves functions, so workers' patches and big-mode checkpoints for them
    stop applying). Find the boundaries first and write the evidence in
    ARCHITECTURE.md: rodata order, alignment padding, file-local statics,
@@ -350,6 +353,11 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-15 (by hand, file boundaries 3):** `units --data` adds the call
+  graph (84 probably-static functions tie their callers' file): 17 possible
+  cut zones, eight one or two functions wide, none proven. No byte-identical
+  copies apart from neighbours, so no positive evidence; the split stays on
+  hold.
 - **2026-10-15 (by hand, file boundaries 2):** mapped every game `.data`
   label to its code users (overlays too) and table pointers. Private data out
   of code order proves shared files: `units --data` now lists eight
