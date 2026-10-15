@@ -2295,7 +2295,17 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80096F98);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80097158);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80097244);
+void func_80097244(u8 *p) {
+    s32 *t = func_8001E48C(9);
+
+    if (t != NULL) {
+        *(s16 *)(p + 0x54) = (get_angle(t[0x58 / 4] - t[0x3C / 4], t[0x50 / 4] - t[0x34 / 4]) - 0x400) & 0xFFF;
+        *(s16 *)(p + 0x56) = 0;
+        *(s16 *)(p + 0x58) = 0;
+        *(s32 *)(p + 0x18) = 0x200;
+    }
+    D_8009F708 = 0x15E;
+}
 
 void func_800972BC(s32 arg0, s32 arg1) {
     s32 temp = arg0 - ((arg1 + 0x3000) * 0xF0) / D_80051658;

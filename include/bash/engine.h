@@ -124,6 +124,7 @@ typedef struct EngineBox {
 extern s16 D_8009AE70;
 extern s32 D_8009AE3C;
 extern u16 D_8009AE74;
+extern s32 D_8009F708;
 extern u8 D_8009F658[];
 extern u8 D_8009FA14[];
 extern u8 D_800A015C[];
@@ -635,6 +636,8 @@ void func_80094EB8(void);
 s32 func_800950FC(void);
 
 void func_80095160(EngineStartArgs *arg0);
+
+void func_80097244(u8 *p);
 
 void func_800973AC(s32 arg0, s32 arg1);
 
