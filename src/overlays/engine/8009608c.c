@@ -66,7 +66,34 @@ void func_80096F98(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009608c", func_80097158);
+void func_80097158(u8 *p) {
+    s32 *t = func_8001E48C(1);
+    EngineGameView *g;
+
+    if (t != NULL) {
+        *(s16 *)(p + 0x54) = (get_angle(t[0x58 / 4] - t[0x3C / 4], t[0x50 / 4] - t[0x34 / 4]) - 0x400) & 0xFFF;
+        *(s32 *)(p + 0x18) = 0x200;
+        g = (EngineGameView *)D_8005A614;
+        *(s16 *)(p + 0x56) = 0;
+        *(s16 *)(p + 0x58) = 0;
+        if (g->mode == 0x19) {
+            *(s32 *)(p + 0x18) = 0x258;
+        }
+        if (g->mode == 0x18) {
+            *(s32 *)(p + 0x18) = 0x22B;
+        }
+        if (g->mode == 0x17) {
+            *(s32 *)(p + 0x18) = 0x22B;
+        }
+        if (g->mode == 0x1A) {
+            *(s32 *)(p + 0x18) = 0x22B;
+        }
+        if (g->mode == 0x1C) {
+            *(s32 *)(p + 0x18) = 0x258;
+        }
+    }
+    D_8009F708 = 0x15E;
+}
 
 void func_80097244(u8 *p) {
     s32 *t = func_8001E48C(9);

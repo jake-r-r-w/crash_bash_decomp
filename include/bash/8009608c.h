@@ -10,6 +10,8 @@
 
 void func_80096F98(s32 arg0);
 
+void func_80097158(u8 *p);
+
 s32 func_800974EC(Vec3W *arg0, Vec3W *arg1, Vec3W *arg2);
 
 s32 func_800976A8(u8 *arg0, s32 arg1);
