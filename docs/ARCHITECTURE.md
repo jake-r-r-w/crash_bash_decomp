@@ -62,6 +62,32 @@ How the boundaries were found:
     `0x8006789C` indexed by `D_8006EA24` (the font mode): `+2` u8, `+4`/`+6`
     s16 x/y, `+8` the text pointer. `TextPos` has a fourth s16 at `+6`
     (set to 1 there).
+- **Files inside `main/main`** (`0x80010000..0x8002D488`, 566 functions),
+  evidence as of 2026-10-15. None of it places a boundary yet:
+  - No padding between functions (every symbol ends where the next starts),
+    so `.text` alignment marks no file end.
+  - Style: all 2.8.1, no change of compiler inside the unit.
+  - String literals: no duplicates across functions, and gcc 2.8 pools
+    identical literals per file, so each shared literal ties its users to one
+    file: `func_800129D0`, `func_80012AC4`, `func_80013034` ("too many loads
+    in queue", `0x8004C83C`) and `func_8002C97C`, `func_8002D1D4`
+    (`0x8004CDAC`). The second "rodata goes back" candidate of `decomp.py
+    units` is this sharing, not a boundary.
+  - `func_800134FC`'s two strings (`0x8004C818`, `0x8004C82C`) come before
+    `0x8004C83C`, though its text comes after the three users above. gcc
+    2.8.1 emits a literal at its first use (a `static inline` helper's at
+    the helper's definition, tested), and the linker keeps `.text` and
+    `.rodata` in the same file order, so no simple order of files explains
+    it. Open.
+  - File-local data: `decomp.py units --clusters` finds 25 runs of functions
+    that share data no other code uses (183 of 566 functions); each run is
+    one file, so boundaries fall between runs.
+  - Names: 15 functions are named; too few to read modules from.
+  - The Aug 23 prototype's debug pages name one shell source,
+    `C:\crash4\Core\Shell\PSX\PSX_PAD.CPP`, and about 50 headers under
+    `CORE\NASCORE`, `CORE\SHELL\INCLUDE` (`SHELL.H`, `ALLDBASE.H`),
+    `GAMEENG`, `GAMESPEC` (`FILES.H`) and `LANGUAGE`: the exe is probably the
+    `Core\Shell` code, but nothing maps functions to files.
 - **`.data` start** `0x8004DCBC`: the first game table (pointers to the game's
   own strings) after the last LIBMCRD string; the lowest stored-to address is
   `0x8004E0B4`.
