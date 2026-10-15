@@ -1376,7 +1376,11 @@
   "status": "matched"
  },
  "80020680": {
-  "auto_failed": "types"
+  "auto_failed": "types",
+  "blocked_at": "2026-10-15T08:02:17Z",
+  "note": "registers 18/305 (paired 305/305, 31/43 blocks): slerp with precomputed angle/inverse in arg 5 (get_angle's result is dropped). Left: Trig_HalfCos's result in v0 (target v1) and pa in v1 (target a0). Found: in-place if/else roundings (>>11, >>5), variables reused (ia then kb, ib then pb), and the second product recomputed in the ternary test (kb*q >= 0 ? pb+0x800 : pb-0x800) - the target computes it twice; the real source form is still unknown",
+  "started": "2026-10-15T07:55:35Z",
+  "status": "blocked"
  },
  "80020B44": {
   "auto_diff": 25,

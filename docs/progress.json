@@ -49,6 +49,12 @@
    "size": 540
   },
   {
+   "name": "func_80020680",
+   "note": "registers 18/305 (paired 305/305, 31/43 blocks): slerp with precomputed angle/inverse in arg 5 (get_angle's result is dropped). Left: Trig_HalfCos's result in v0 (target v1) and pa in v1 (target a0). Found: in-place if/else roundings (>>11, >>5), variables reused (ia then kb, ib then pb), and the second product recomputed in the ternary test (kb*q >= 0 ? pb+0x800 : pb-0x800) - the target computes it twice; the real source form is still unknown",
+   "seg": "main/main",
+   "size": 1220
+  },
+  {
    "name": "func_80020C04",
    "note": "STAGE structure 16/19 (18 vs 19): retail has mult with no mflo and returns a; every dead-product form (u16/>>32 splits, long long <<32, unused local) folds the mult away too in 2.8.1, signed >>32 keeps one mflo; 2.5.7/2.6 keep partial dead code; next: cc1 -dc/-dl dump of the >>32 form, or check whether this region is another compiler",
    "seg": "main/main",
@@ -73,9 +79,9 @@
    "size": 372
   }
  ],
- "commit": "b72752d",
+ "commit": "fb59b9c",
  "game": "SCUS_945.70",
- "generated": "2026-10-15T07:55:14Z",
+ "generated": "2026-10-15T08:02:24Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -37254,7 +37260,7 @@
    }
   },
   {
-   "commit": "b72752d",
+   "commit": "fb59b9c",
    "data_b": 488,
    "data_tb": 606943,
    "game_all_f": 2551,
@@ -37267,7 +37273,7 @@
    "lib_b": 122112,
    "lib_f": 564,
    "lib_tb": 122112,
-   "ts": "2026-10-15T07:55:14Z",
+   "ts": "2026-10-15T08:02:24Z",
    "units": {
     "engine": [
      2752,
@@ -37463,7 +37469,7 @@
   }
  ],
  "summary": {
-  "blocked": 12,
+  "blocked": 13,
   "copies_b": 37444,
   "data": {
    "done_b": 488,
@@ -37474,7 +37480,7 @@
    "all_f": 2551,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 12,
+   "blocked": 13,
    "c_f": 808,
    "done_b": 113580,
    "done_f": 812,
@@ -37526,7 +37532,7 @@
     "all_f": 575,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 12,
+    "blocked": 13,
     "c_f": 543,
     "done_b": 102136,
     "done_f": 547,
