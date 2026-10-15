@@ -388,7 +388,12 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800863D0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800864CC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800866DC);
+s32 func_800866DC(s32 *arg0) {
+    s32 buf[4];
+
+    *(Vec3W *)(buf + 1) = *(Vec3W *)(arg0 + 4);
+    return 0;
+}
 
 void func_80086704(void) {
 }

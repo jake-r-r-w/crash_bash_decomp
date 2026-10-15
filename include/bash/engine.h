@@ -312,4 +312,10 @@ void func_800936C4(void);
 
 void func_800945C0(EngineStartArgs *arg0);
 
+typedef struct Vec3W {
+    s32 a, b, c;
+} Vec3W;
+
+s32 func_800866DC(s32 *arg0);
+
 #endif /* BASH_ENGINE_H */
