@@ -658,7 +658,34 @@ s32 func_800925C4(u8 *arg0) {
     return n;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_800925F0);
+void func_800925F0(s32 arg0) {
+    s32 *src;
+    s32 *p;
+    s32 i;
+    s32 *base;
+
+    src = (s32 *)(arg0 * 4);
+    src = (s32 *)((s32)src + arg0);
+    src = (s32 *)((s32)src * 4);
+    src = (s32 *)((s32)src + (s32)D_8009F248);
+    base = (s32 *)GetEngineSlot(3)->sub;
+    p = base + 0xA8 / 4;
+    i = 0;
+    do {
+        if (*src == -1) {
+            p[0] &= ~0x8000;
+            p[0x2A] &= ~0x8000;
+        } else {
+            p[0] |= 0x8000;
+            p[0x2A] |= 0x8000;
+            p[1] = *src;
+            p[0x2B] = *src;
+        }
+        p += 0x54;
+        i++;
+        src++;
+    } while (i < 5);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_800926CC);
 
