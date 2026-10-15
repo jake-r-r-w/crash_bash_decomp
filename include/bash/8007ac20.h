@@ -59,4 +59,10 @@ extern EngXY D_80099240[4];
 
 void func_8007BFA8(void);
 
+extern subengine *D_80099170;
+extern subengine D_80099500;
+extern subengine D_8009AD94;
+
+void func_8007EB68(void);
+
 #endif /* BASH_8007AC20_H */

@@ -333,7 +333,35 @@ void func_8007EB1C(s32 arg0, s32 arg1, s32 arg2) {
     D_80099174 |= 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007EB68);
+void func_8007EB68(void) {
+    subengine *p;
+    subengine *d;
+
+    d = &D_80099500;
+    D_80099170 = d;
+    d->unk0C = 0x8000;
+    *(s32 *)&d->unk10 = 0;
+    *(s32 *)&d->unk14 = 0;
+    d->unk18 = 0;
+    d->unk6C = &D_8009AD94;
+    p = &D_8009AD94;
+    if (p != NULL) {
+        *p = D_8005A830;
+        p->unk6C = D_80053074;
+        p->unk74 = 0x2004;
+        p->flags = 0x11000000;
+        p->unk04 = 0x140;
+        p->unk08 = 0xB4;
+        p->unk50 = 1;
+        p->unk0C = 0;
+        p->unk20.x = 0xA00;
+        p->unk20.y = 0xA00;
+        p->unk20.z = 0xA00;
+        p->unk51 = 0;
+        p->next = NULL;
+        p->prev = NULL;
+    }
+}
 
 void func_8007EC48(void) {
     s32 i;
