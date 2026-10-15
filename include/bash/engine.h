@@ -563,5 +563,8 @@ void func_80092E94(void);
 void func_8009400C(void);
 
 void func_80094364(void);
+extern u8 D_800C45DC[];
+
+void InitWeatherNas(u8 *arg0);
 
 #endif /* BASH_ENGINE_H */

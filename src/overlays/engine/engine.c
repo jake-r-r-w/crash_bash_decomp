@@ -852,7 +852,14 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008CA90);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", PlotWeatherNas);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", InitWeatherNas);
+void InitWeatherNas(u8 *arg0) {
+    *(s32 *)(arg0 + 0x60) = 0;
+    *(s32 *)(arg0 + 0x64) = 0;
+    **(s32 **)(*(u8 **)(arg0 + 0x54) + 0x6C) = 0x20008000;
+    if (D_8005A648 == 0x1F) {
+        func_80015D70(D_800C45DC, *(u8 **)(*(u8 **)(arg0 + 0x54) + 0x6C));
+    }
+}
 
 void func_8008CE10(void) {
 }
