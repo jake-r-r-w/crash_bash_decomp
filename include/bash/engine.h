@@ -29,6 +29,8 @@ extern s32 D_800AD1E8;
 extern D_800AD1EC_entry D_800AD1EC[];
 extern void (*D_8005AA80)(void);
 extern void (*D_8009D704)(void);
+extern void (*D_8005AA74)(void);
+extern s32 D_8009E29C;
 
 void func_8007A688(s32 arg0);
 void func_8007A6B0(s32 arg0);
@@ -445,5 +447,7 @@ static inline void EngineBeginMode(s32 arg) {
         }
     }
 }
+
+void func_8007A808(void);
 
 #endif /* BASH_ENGINE_H */

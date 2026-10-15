@@ -134,7 +134,31 @@ void func_8007A7C0(void) {
     func_80081F64(0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007A808);
+void func_8007A808(void) {
+    s32 i;
+    s32 r;
+    s32 want;
+
+    D_8005AA58 = 0;
+    ASTTable = EngineASTTable;
+    ASTCount = func_8007AC00();
+    func_80083708();
+    func_80086918();
+    func_8007A6F8();
+    want = 0x20C;
+    for (i = 0; i < ASTCount; i++) {
+        if (ASTTable[i].id == want) {
+            r = i;
+            goto found;
+        }
+    }
+    r = 0;
+found:
+    D_8009E29C = r;
+    if (D_8005AA74 != NULL) {
+        D_8005AA74();
+    }
+}
 
 void func_8007A8C4(void) {
     EngineGameView *g = (EngineGameView *)D_8005A614;
