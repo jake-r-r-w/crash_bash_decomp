@@ -3804,7 +3804,8 @@
   "via": "auto"
  },
  "engine:80092E94": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-15T12:21:37Z",
+  "status": "matched"
  },
  "engine:80092EDC": {
   "auto_diff": 41,

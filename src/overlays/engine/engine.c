@@ -1365,7 +1365,12 @@ void func_80092E40(void) {
     func_8008ECE4();
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80092E94);
+void func_80092E94(void) {
+    D_8009F8B4();
+    D_800569AC = *(s32 *)D_8009F644;
+    func_80082590();
+    func_8001E898(&D_8009F8A4);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80092EDC);
 
