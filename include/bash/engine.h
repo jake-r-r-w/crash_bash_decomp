@@ -215,6 +215,7 @@ extern EngineTable12 D_8009E7A0[];
 /* Also in main.h; repeated for overlays that include engine.h first. */
 extern u8 D_8005A614[];
 extern s32 func_800B7EE4(s32, u8 *);
+extern u8 D_800657D0[];
 extern u16 D_8004DDD0[];
 void func_8001E8F0(void *arg0);
 void func_80079260(void);

@@ -3673,7 +3673,8 @@
   "auto_failed": "diff"
  },
  "engine:8008FC60": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-15T16:53:59Z",
+  "status": "matched"
  },
  "engine:8008FD40": {
   "matched_at": "2026-10-15T12:22:56Z",

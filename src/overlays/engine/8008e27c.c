@@ -172,7 +172,41 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_8008FB48);
 void func_8008FC58(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_8008FC60);
+s32 func_8008FC60(void *arg0) {
+    s32 i;
+    s32 j;
+    s32 cnt;
+    s32 obj;
+    u8 *p;
+    u8 *tab;
+
+    i = 0;
+    tab = D_800657D0;
+    for (;;) {
+        if (i >= *(s32 *)((u8 *)arg0 + 8)) {
+            goto done;
+        }
+        obj = *(s32 *)((u8 *)(i * 16 + *(s32 *)((u8 *)arg0 + 4)) + 4);
+        if (func_800B7EE4(obj, D_8005A614) == 0) {
+            cnt = 0;
+            j = cnt;
+            p = tab;
+            do {
+                if (func_800B7EE4(obj, p) != 0) {
+                    cnt++;
+                }
+                j++;
+                p += 0x194;
+            } while (j < 4);
+            if (cnt == 0) {
+                return 0;
+            }
+        }
+        i++;
+    }
+done:
+    return 1;
+}
 
 void func_8008FD40(void *arg0) {
     s32 i;

@@ -131,6 +131,8 @@ void func_8009201C(void);
 
 extern s32 D_8009F248[][5];
 
+s32 func_8008FC60(void *arg0);
+
 void func_800925F0(s32 arg0);
 
 #endif /* BASH_8008E27C_H */
