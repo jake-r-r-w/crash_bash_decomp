@@ -356,7 +356,8 @@ typedef struct PadButtons {
     /* 0x00 */ u8 unk0[0x44];
     /* 0x44 */ s32 held;
     /* 0x48 */ s32 pressed;
-    /* 0x4C */ u8 unk4C[0x58 - 0x4C];
+    /* 0x4C */ u8 unk4C[0x54 - 0x4C];
+    /* 0x54 */ s32 unk54;
 } PadButtons;
 
 extern s32 D_8009AEEC;
@@ -366,6 +367,9 @@ void func_8007A614(s32 arg0);
 s32 func_8007EE2C(s32 pad);
 
 extern void (*D_8009D73C)();
+extern s32 (*D_8009D728)(s32);
+extern s32 (*D_8009D72C)(s32);
+s32 func_80086FCC(s32 arg0);
 
 void func_80086F78(void);
 
@@ -605,6 +609,8 @@ void InitWeatherNas(u8 *arg0);
 extern u8 D_8009E200[];
 
 void func_80083244(void);
+
+void func_80088544(s32 arg0);
 
 void PlotWeatherNas(u8 *arg0);
 

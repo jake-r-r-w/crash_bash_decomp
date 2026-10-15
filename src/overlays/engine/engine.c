@@ -791,7 +791,55 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800882DC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80088450);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80088544);
+void func_80088544(s32 arg0) {
+    s32 ret;
+    u16 status;
+
+    status = Heroes[arg0].hero_status;
+    if (status & 0x200) {
+        SetHeroAction((HeroInfo *)arg0, (u16)D_8009E0E4);
+        ret = 1;
+    } else if (status & 0x400) {
+        SetHeroAction((HeroInfo *)arg0, (u16)D_8009E0E6);
+        ret = 1;
+    } else {
+        ret = 0;
+    }
+    if (ret == 0 && func_80086FCC(arg0) == 0) {
+        s32 ret2;
+        if (D_8009D72C != NULL) {
+            ret2 = D_8009D72C(arg0);
+        } else if (((PadButtons *)D_80051338)[arg0].unk54 & 0x4000) {
+            SetHeroAction((HeroInfo *)arg0, 4);
+            ret2 = 1;
+        } else {
+            ret2 = 0;
+        }
+        if (ret2 == 0) {
+            if (D_8009D728(arg0) != 0) {
+                ret = 1;
+            } else {
+                HeroInfo *base = Heroes;
+                HeroInfo *hero = &base[arg0];
+                if (hero->hero_move->forward_speed != 0) {
+                    if (hero->hero_mode == 0xF || hero->hero_mode == 0x17) {
+                        SetHeroAction((HeroInfo *)arg0, (u16)D_8009E0DE);
+                    } else {
+                        SetHeroAction((HeroInfo *)arg0, 3);
+                    }
+                    ret = 1;
+                } else {
+                    ret = 0;
+                }
+            }
+            if (ret == 0) {
+                D_8009D73C(arg0);
+                func_8008502C(arg0);
+                func_800871E4(arg0);
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80088708);
 
