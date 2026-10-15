@@ -103,7 +103,16 @@ void func_8007A8C4(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007A91C);
+void func_8007A91C(void) {
+    if (D_8009871C != 0) {
+        D_8009871C = D_8009871C - 1;
+    } else {
+        u8 *p = D_80098718;
+        p += Random(8) * 2;
+        PlaySfx(*(u16*)(p + 8), 0, 0, 0x1000, 0x1E00, 0);
+        D_8009871C = (*(u16*)((u8*)D_80098718) + Random(*(u16*)((u8*)D_80098718 + 2) - *(u16*)((u8*)D_80098718))) * 30;
+    }
+}
 
 void func_8007A9D0(u8 *arg0) {
     D_80098718 = arg0;

@@ -210,7 +210,7 @@ extern u8 D_8009F734[];
 extern u8 D_8009F46C[];
 extern s32 *D_8009F65C;
 extern void *D_80098718;
-extern s16 D_8009871C;
+extern u16 D_8009871C;
 extern u8 D_800A0BF4[];
 extern s32 D_800A0C0C;
 extern s32 D_800A0D30;
@@ -729,6 +729,8 @@ s32 func_80097608(s32 *arg0, s32 *arg1, s32 arg2);
 
 void func_800984D4(void);
 extern s16 D_8006BBD6[];
+
+void func_8007A91C(void);
 
 void PlotFloatyScore(NAS *nas);
 
