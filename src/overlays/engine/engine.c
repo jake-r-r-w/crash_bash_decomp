@@ -894,7 +894,26 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80086FCC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800871E4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80087428);
+void func_80087428(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h;
+    EXTengine *e;
+
+    h = base + arg0;
+
+    h->hero_move->jump_max = 0;
+    h->hero_move->velocity_enable = 1;
+    D_8009D718();
+    SetHeroSeq((HeroInfo *)arg0, 1);
+    h->hero->Camera.look_ahead = 0x400;
+    if (h->hero_ctrl & 4) {
+        e = h->hero_eng;
+        e->unk2C.z = 0x1000;
+        e->unk2C.y = 0x1000;
+        e->unk2C.x = 0x1000;
+        h->hero_ctrl &= 0xFFFB;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800874EC);
 
