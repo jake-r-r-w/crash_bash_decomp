@@ -332,7 +332,7 @@ extern D_8009D90C_t D_8009D90C[400];
 
 int func_8007AC00(void);
 
-void SetHeroSeq(HeroInfo *hero, s32 seq);
+s32 SetHeroSeq(HeroInfo *hero, s32 seq);
 
 void SetHeroAction(HeroInfo *hero, s32 action);
 
