@@ -1285,7 +1285,13 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80094274);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80094364);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800943B8);
+void func_800943B8(void) {
+    if (D_8005A648 == 0x28 && D_800590CC == 0) {
+        func_80016CA0(D_800556F4);
+    } else {
+        func_80016CA0(D_800555A4);
+    }
+}
 
 void func_8009440C(void) {
     s32 h = *(s32 *)(D_80056998.cam->unk18);

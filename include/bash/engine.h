@@ -372,6 +372,8 @@ void func_80092C78(void);
 
 void func_80093110(void);
 
+void func_800943B8(void);
+
 void func_8009440C(void);
 
 s32 func_80095F48(s32 *p, s32 a1, s32 a2, s32 a3, s32 a4);
