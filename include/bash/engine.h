@@ -195,6 +195,8 @@ typedef struct PadButtons {
 
 extern s32 D_8009AEEC;
 extern s32 D_8009AEF0;
+void func_8007A614(s32 arg0);
+
 s32 func_8007EE2C(s32 pad);
 
 extern void (*D_8009D73C)();
