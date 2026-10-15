@@ -758,7 +758,18 @@ s32 func_8008AB48(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008AB50);
+s32 func_8008AB50(s32 arg0) {
+    u16 temp_v1;
+    u32 m;
+
+    temp_v1 = Heroes[arg0].hero_status;
+
+    if (temp_v1 & 0x200) {
+        return 1;
+    }
+    m = temp_v1 & 0x400;
+    return m != 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008AB94);
 

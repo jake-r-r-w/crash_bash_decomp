@@ -520,6 +520,8 @@ void func_80093270(void);
 
 extern U16Pair D_80099280[4];
 
+s32 func_8008AB50(s32 arg0);
+
 void func_80092AA8(GameModeDef *arg0);
 
 void func_80092E94(void);
