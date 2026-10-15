@@ -232,7 +232,19 @@ void func_800982E0(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009608c", func_80098344);
+void func_80098344(void) {
+    s32 i;
+    subengine *s = GetEngineSlot(3)->sub + 2;
+    for (i = 0; i < D_800ADBD4; i++) {
+        s->unk20.z = 0x199;
+        s->unk51 = 0;
+        s->unk50 = 1;
+        s->flags |= 0x8000;
+        s->unk12 = i * (0x1000 / (D_800ADBD4 + 1)) + D_8005B690 * 40;
+        s->unk52 = 1;
+        s = s->next;
+    }
+}
 
 void func_80098428(void) {
     subengine *s = GetEngineSlot(3)->sub;
