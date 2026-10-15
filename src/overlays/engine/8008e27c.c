@@ -116,7 +116,50 @@ void func_8008F068(void) {
     D_8005A644 = 0x8008;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_8008F084);
+void func_8008F084(void) {
+    EngineEntry16Head *p;
+    EngineTable12 *base;
+    EngineTable12 *t;
+    subengine *sub;
+    TrigEntry *trig;
+    s32 n;
+    s32 i;
+    u32 mask;
+
+    i = 0;
+    trig = D_80068BD4;
+    base = D_8009E7A0;
+    t = base + (u8)D_8005A63C;
+    n = t->unk8;
+    p = t->unk4;
+loop:
+    if (i < n) {
+        sub = GetEngineSlot(i + 3)->sub;
+        sub->unk6C = (void *)p->unk8;
+        sub->unk74 = p->unkC;
+        if (p->unk0 == 1 || (p->unk0 == 2 && func_800B7EE4(p->unk4, D_8005A614) != 0)) {
+            sub->flags |= 0x8000;
+        } else {
+            sub->flags &= ~0x8000;
+        }
+        p++;
+        sub->unk10 = 0x7D;
+        sub->unk12 = 0;
+        sub->unk14 = 0;
+        sub->unk04 = trig[(((D_8004E0D8 * 20 + (i << 10)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;
+        sub->unk08 = (trig[(((D_8004E0D8 * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
+        i++;
+        goto loop;
+    }
+    i = n;
+    mask = ~0x8000;
+loop2:
+    if (i < 4) {
+        GetEngineSlot(i + 3)->sub->flags &= mask;
+        i++;
+        goto loop2;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_8008F248);
 
