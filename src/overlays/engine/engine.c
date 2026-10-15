@@ -364,7 +364,23 @@ void func_8007E8D0(EngineBox *p, s16 x, s16 y, s32 a, s32 b) {
     p->unk98 = b;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007E93C);
+void func_8007E93C(u16 arg0, s16 arg1, s16 arg2) {
+    if (D_80099174 & 2) {
+        void *p = &D_80052A54[arg0 * 0x38];
+        subengine *s = D_8009A04C;
+        s->unk6C = p;
+        s->unk74 = arg1;
+        D_8009970C.a[4] = D_80099208[4];
+        D_8009970C.a[5] = D_80099208[5];
+        D_8009970C.a[6] = 0;
+        s = (subengine *)((u8 *)s + 0x498);
+        s->unk6C = p;
+        s->unk74 = arg2;
+        D_8009970C.b[4] = D_80099208[6];
+        D_8009970C.b[5] = D_80099208[7];
+        D_8009970C.b[6] = 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007E9FC);
 
