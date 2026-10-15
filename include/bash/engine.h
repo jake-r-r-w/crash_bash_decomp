@@ -158,5 +158,16 @@ void func_8009421C(void);
 s32 func_80095D88(s32 *rec);
 
 void func_800972BC(s32 arg0, s32 arg1);
+typedef struct {
+    s32 unk0;
+    s32 unk4;
+    s32 unk8;
+} D_800AD2EC_t;
+
+extern s32 D_80051658;
+extern D_800AD2EC_t D_800AD2EC;
+extern s32 D_800AD31C;
+
+void func_80097334(s32 arg0, s32 arg1);
 
 #endif /* BASH_ENGINE_H */
