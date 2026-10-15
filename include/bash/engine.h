@@ -84,6 +84,8 @@ extern s32 D_800A02C4;
 extern u8 D_800A0224[];
 extern void *D_800A0D2C;
 extern u8 D_8009F8A4;
+extern u8 D_8009F8BC[];
+extern u8 D_800A016C[];
 extern s32 D_800A0158;
 extern ASTEntry EngineASTTable[];
 extern u8 D_8009F644[];
@@ -131,6 +133,8 @@ void func_8008EF9C(void);
 void func_8008F068(void);
 
 void func_800940B0(s32 arg0, s32 arg1);
+
+void func_8009421C(void);
 
 s32 func_80095D88(s32 *rec);
 

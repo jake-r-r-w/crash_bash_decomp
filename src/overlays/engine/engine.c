@@ -926,7 +926,13 @@ void func_800941EC(void) {
     func_80016F54(D_800555A4);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8009421C);
+void func_8009421C(void) {
+    if (D_800A0158 >= 2) {
+        func_80018B08((GfxViewport *)D_8009F8BC, (GfxCamera *)D_800A016C);
+        D_800569AC = *(s32 *)D_8009F644;
+        func_8001C298((EXTengine *)D_800A0224);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80094274);
 
