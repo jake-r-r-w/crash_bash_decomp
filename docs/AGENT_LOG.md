@@ -66,7 +66,11 @@ leads**, add any new gotcha, and add one short entry at the top of the
    --near`, this log).
 3. Split `main.c` into its translation units, between swarm runs (on hold
    since 2026-10-15: the evidence so far groups functions but places no
-   boundary; see ARCHITECTURE.md, Files inside `main/main`) (a split
+   boundary; see ARCHITECTURE.md, Files inside `main/main`). `decomp.py units
+   --data` now shows the data blocks (regions of files); next evidence to
+   try: which data each block holds besides the private symbols (who
+   references the rest, overlays included), and the engine overlay the same
+   way (a split
    moves functions, so workers' patches and big-mode checkpoints for them
    stop applying). Find the boundaries first and write the evidence in
    ARCHITECTURE.md: rodata order, alignment padding, file-local statics,
@@ -346,6 +350,11 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-15 (by hand, file boundaries):** `decomp.py units --data`
+  groups the data each run of functions uses alone into address blocks;
+  they climb along the code in one sequence (ARCHITECTURE.md, Files inside
+  `main/main`), which maps regions but no exact edge. The prototype exes
+  hold no source names, and Oct 9 has retail's link order.
 - **2026-10-15 (swarm, engine overlay, run 20261015132721):** `--max-functions
   500`, stopped by hand after 43 min: 59 matched, $27.60, 1 failed
   (`func_8008A924`, patch refused for inline asm). Big-mode checkpoints for

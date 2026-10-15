@@ -3066,6 +3066,34 @@ def cmd_units(a):
             local = sorted({n for l2, h2, n in windows if lo <= l2 and h2 <= hi})
             print(f"  {names[lo]} .. {names[hi]} ({hi - lo + 1} functions): {', '.join(local[:6])}"
                   + (" ..." if len(local) > 6 else ""))
+    if a.data:
+        # 6. data blocks: each object's .data is one block, linked in the same order as its .text, so
+        # the data a run of functions uses alone climbs block by block along the code. Within a
+        # block the order is the file's definition order, and a global used by one run can still
+        # be defined in another file: a block is evidence for a region, not proof of a file.
+        lib = [(v(s[0]), v(subs[i + 1][0])) for i, s in enumerate(subs[:-1])
+               if len(s) > 3 and s[1] == "lib" and s[-1] == ".data"]
+        dstart = v(next(s[0] for s in subs if len(s) > 1 and s[1] in ("data", ".data")))
+        local = []
+        for n, ks in used_by.items():
+            x = addr(n)
+            if x is None or x < dstart or any(lo <= x < hi for lo, hi in lib) or not all(k in idx for k in ks):
+                continue
+            ii = sorted(idx[k] for k in ks)
+            if ii[-1] - ii[0] <= a.window:
+                local.append((ii[0], ii[-1], x, n))
+        local.sort()
+        groups = []                                          # [first fn, last fn, lo addr, hi addr, count]
+        for lo, hi, x, n in local:
+            g = groups[-1] if groups else None
+            if g and g[2] - 0x1000 <= x <= g[3] + 0x1000:
+                g[1], g[2], g[3], g[4] = max(g[1], hi), min(g[2], x), max(g[3], x), g[4] + 1
+            else:
+                groups.append([lo, hi, x, x, 1])
+        print(f"\ndata used by one run of <= {a.window} functions, grouped into address blocks along the code "
+              f"({len(local)} symbols; a lone symbol out of line is usually a global defined elsewhere):")
+        for lo, hi, x0, x1, c in groups:
+            print(f"  {lo:4d}-{hi:<4d} {names[lo]} .. {names[hi]}: {x0:08X}-{x1:08X} ({c})")
     ranked = sorted(range(nf - 1), key=lambda g: -gaps[g]["score"])
     print(f"\ntop boundary candidates (gap after function i; + style, rodata, strings; - statics spanning it):")
     for g in ranked[:a.top]:
@@ -3873,6 +3901,7 @@ def main():
     p.add_argument("--window", type=int, default=12, help="longest run of functions a file-local symbol may span")
     p.add_argument("--top", type=int, default=25)
     p.add_argument("--clusters", action="store_true", help="list each cluster and its file-local symbols")
+    p.add_argument("--data", action="store_true", help="group the data each run of functions uses alone into address blocks")
     p.set_defaults(fn=cmd_units)
     p = sub.add_parser("vars", help="which C variables the differing blocks' register swaps belong to")
     p.add_argument("func")

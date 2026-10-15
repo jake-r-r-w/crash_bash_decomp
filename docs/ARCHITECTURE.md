@@ -82,6 +82,32 @@ How the boundaries were found:
   - File-local data: `decomp.py units --clusters` finds 25 runs of functions
     that share data no other code uses (183 of 566 functions); each run is
     one file, so boundaries fall between runs.
+  - Data blocks (`decomp.py units --data`): each object's `.data` is one
+    block, linked in `.text` order, so the data a run of functions uses alone
+    climbs block by block along the code. It does, in one sequence:
+    functions 1-55 use `0x8004E0B4..0x8004E110`, 58-73 `0x8005063C..0x80051240`,
+    85-120 `0x800512A4..0x800517C0`, 101-110 `0x800527C4`, 170-225
+    `0x8005683C..0x80056AC8`, 244 `0x80058AC8`, 332-347
+    `0x80058F0C..0x80059614`, 354-434 `0x8005A5C0..0x8005B78C`, 438-442
+    `0x800637B4`, 446-517 `0x80063A7C..0x80064478`, 513-562
+    `0x800654B8..0x80065E24`, 551-559 `0x800675C8..0x80067830` (function
+    numbers are positions in `main/main`). The zero-initialised region climbs
+    the same way: `0x8006E9F4` (3), `0x8006E9F8..FC` (74-78), `0x8006EA04`
+    (354), `0x8006EA08..14` (438-441). So the file order is the same in code
+    and data, and each block marks a region of one or a few files. It still
+    places no single edge: a global used by one run can be defined in another
+    file, and the stretches with no private data (121-169, 226-331) could
+    hold any number of files.
+  - `.data` interleaves game chunks with Sony's objects (`main.yaml`: game
+    data at `0x3E4BC`, `0x593D4` (the 16 KB trig table `D_80068BD4`),
+    `0x5E0B4`, `0x5E3AC`, ... between library `.data`), so the game objects
+    were linked among the library ones, not all before them.
+  - Prototype exes: none holds a source file name (only Sony's `$Id: sys.c`
+    lines); `Compiler version 2.8.1 SN32 BUILD 4.0.0009` is a game string
+    that retail has too. By masked code signature the Oct 9 exe has 466 of
+    the 566 functions (Sep 14: 295, Aug 23: 251) in the same order; the
+    offset changes at edited functions, and no block of functions moved, so
+    the link order didn't change between Oct 9 and retail.
   - Names: 15 functions are named; too few to read modules from.
   - The Aug 23 prototype's debug pages name one shell source,
     `C:\crash4\Core\Shell\PSX\PSX_PAD.CPP`, and about 50 headers under
