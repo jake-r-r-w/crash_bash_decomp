@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 806/2551 game functions matched (main.exe ~540/575, 34 left), 10 parked,
+- 812/2551 game functions matched (main.exe 547/575, 28 left), 13 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
@@ -81,6 +81,17 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Open leads
 
+- **Near misses parked 2026-10-14 (by hand)**, each with its C under
+  `NON_MATCHING` and a `block` note:
+  - `func_80010488` 2/208: only `lui s6` vs `li s5,-1` order in the loop
+    preheader (loop.c hoist order).
+  - `func_80010C70` / `func_80010E8C` 133/135 each: only the entry, where
+    sched2 puts the `heap->free` load before the size add. One fix probably
+    fixes both.
+  - `func_8001A82C` registers 12/135: `x` in a1 (target a0) in the 2D branch.
+  - `func_80020680` registers 18/305: slerp with precomputed angle; two
+    register swaps left.
+  - `func_800248A0` 5/142, `func_8001795C` 12/107 (below).
 - **`func_800248A0`** (three sprites side by side): registers 5/142, only
   the entry. The target tests `a0` (`andi a0,a0,0xC000`) right after
   `move s5,a0` and loads arg4 into a3; ours tests s5 into v1. An s16/u16
@@ -122,11 +133,6 @@ leads**, add any new gotcha, and add one short entry at the top of the
   and the block in a0; the m2c result-variable form, early returns and
   clearing to NULL all add 1-2 insns. Try `static inline` helpers for either
   half (they fixed `func_80021E98`).
-- **`func_8001C7FC`**: `return func_8001A0D8(...)` (s32) fixes the division
-  region (the returned pseudo prefers v0, so `mfhi` lands in v1), but then v0
-  is live at the shared exit and gcc leaves the first `beqz` delay slot
-  empty (the target has `lui v0,0x200` there). Look for a source form where a
-  pseudo prefers v0 without v0 being live on the early exit.
 - **`func_800177F4`**: 24 register operands off (colour pointer in v0, target
   v1; tpage/`0x02000000` constants swapped a0/v0); control flow matches.
   Permuter's best reused a temp for `tpage & ~0x60`.
@@ -143,11 +149,6 @@ Other:
   Swarm notes on them before 2026-10-14 blame the `$at` loads; ignore
   those. If a `jal` slot differs, extend `aspsx_fill.py` from the target.
   Whether the two units are one file is open.
-- **`func_800274FC`** (parked; split out of `func_80027408`, now matched):
-  registers 4/40. It's `func_800276C4`'s body plus `D_8005B698 = NULL`;
-  the target loads the last `*arg0` into a0 and the global's `lui` into v1
-  (so sched1 put the `lui` before the load), ours v1 then v0. Next: the
-  cc1 sched1 dump.
 - **`func_8002E25C`** (parked, the debug text printer): structure 68/93 under
   2.7.2. The target reloads `*str` in the Kanji and ROM-glyph paths but
   compares the first load for `' '`; ours reuses it. Find what stops 2.7.2's
@@ -319,6 +320,13 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-14 (by hand, main/, no permuter):** 6 matched: `func_800274FC`
+  (returns a value; `OtBuf` type for `D_8005B790`), `func_8001C7FC` (void),
+  `func_8001EAA4` (checkpoint plus `k = Find(); key = k;`), `func_80029560`,
+  `func_8002854C`, `func_80028774` (sibling bodies as static inlines). 4 new
+  parks within 2-18 insns (Open leads). `similar --all` on every main function:
+  the overlays share no code with it; the matched siblings in main are the
+  leads.
 - **2026-10-14 (by hand, parks):** ported the stale checkpoints of
   `func_800248A0` (5/142) and `func_8001795C` (12/107) to today's types
   and parked both (Open leads); neither moved by hand.
