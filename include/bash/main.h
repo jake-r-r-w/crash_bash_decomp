@@ -2589,4 +2589,6 @@ void func_80028D40(AnimTex *t, s32 base, AnimTexSet *set);
 extern u8 D_80053074[];
 extern u16 D_8005A5C0[][3];
 
+void func_8001C7FC(NAS *nas, u8 *arg1, u32 flags);
+
 #endif /* BASH_MAIN_H */

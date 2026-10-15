@@ -5486,10 +5486,7 @@ void func_8001C690(NAS *nas, u8 *arg1) {
     }
 }
 
-#ifndef NON_MATCHING
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001C7FC);
-#else
-s32 func_8001C7FC(NAS *nas, u8 *arg1, u32 flags) {
+void func_8001C7FC(NAS *nas, u8 *arg1, u32 flags) {
     GteSetup s;
     u32 f;
 
@@ -5511,10 +5508,9 @@ s32 func_8001C7FC(NAS *nas, u8 *arg1, u32 flags) {
             gte_SetRotMatrix(s.rot);
         }
         f &= ~0x10000000;
-        return func_8001A0D8(&nas->Type, f | nas->NASid);
+        func_8001A0D8(&nas->Type, f | nas->NASid);
     }
 }
-#endif
 
 u32 func_8001C974(NAS *nas, u8 *arg1, u32 flags) {
     GteSetup s;

@@ -1072,11 +1072,10 @@
   "status": "matched"
  },
  "8001C7FC": {
-  "auto_failed": "types",
   "best": 12,
   "blocked_at": "2026-10-11T08:48:55Z",
-  "note": "Two conflicting fixes: 'return func_8001A0D8(...)' (s32) makes the returned pseudo prefer v0 so global alloc puts mfhi in v1 and sched2 keeps lhu after sra (division region matches), but then v0 is live at the shared exit and gcc leaves the first beqz delay slot empty (target fills it with lui 0x200). Need a form where something prefers v0 without v0 live on the early-exit path.",
-  "status": "blocked",
+  "matched_at": "2026-10-15T07:10:49Z",
+  "status": "matched",
   "tries": 12
  },
  "8001C974": {
