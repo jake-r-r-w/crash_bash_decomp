@@ -1102,6 +1102,14 @@ typedef struct BufNode {
     struct BufNode *child;
     struct BufNode **head;
 } BufNode;
+
+/* func_80028774's VRAM areas: a list head and the area's position; x = -1
+ * ends the list. */
+typedef struct {
+    BufNode **head;
+    FreeHdr hdr;
+} VramArea;
+extern u8 *D_800643F4; /* the BufNode pool (func_80028774) */
 typedef struct FreePool {
     FreeNode *head;
     u16 w;
@@ -2626,5 +2634,7 @@ void func_8001C7FC(NAS *nas, u8 *arg1, u32 flags);
 void func_8001EAA4(u8 *arg0, u8 *arg1);
 
 void func_8002854C(FreeNode *n);
+
+void func_80028774(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf);
 
 #endif /* BASH_MAIN_H */

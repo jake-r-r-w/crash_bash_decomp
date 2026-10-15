@@ -2176,7 +2176,8 @@
   "status": "matched"
  },
  "80028774": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-15T07:48:53Z",
+  "status": "matched"
  },
  "80028994": {
   "auto_diff": 22,

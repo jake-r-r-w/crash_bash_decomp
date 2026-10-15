@@ -11335,7 +11335,58 @@ void func_8002854C(FreeNode *n) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80028774);
+void func_80028774(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf) {
+    FreeNode *n;
+    BufNode *b;
+    BufNode *first;
+    s32 i;
+
+    D_800643F4 = func_80011654(nbuf * 0x18, &D_8004E0F0);
+    D_80063BB4 = pool;
+    n = pool;
+    i = npool - 2;
+    while (i != -1) {
+        i--;
+        n->next = n + 1;
+        n->fC = NULL;
+        n++;
+    }
+    n->next = NULL;
+    D_80063BAC = NULL;
+    D_80063BB0 = NULL;
+    D_80063B18 = (FreeNode *)(b = (BufNode *)D_800643F4);
+    i = nbuf - 2;
+    while (i != -1) {
+        b->next = b + 1;
+        i--;
+        b++;
+    }
+    b->next = NULL;
+    for (i = 11; i >= 0; i--) {
+        *(s32 *)&D_80063B1C[i] = 0;
+    }
+    while ((s16)areas->hdr.f0 != -1) {
+        b = (BufNode *)D_80063B18;
+        b->parent = NULL;
+        b->child = NULL;
+        b->head = areas->head;
+        first = *areas->head;
+        D_80063B18 = (FreeNode *)b->next;
+        b->next = first;
+        if (first != NULL) {
+            first->prev = b;
+        }
+        b->prev = NULL;
+        *areas->head = b;
+        *(FreeHdr *)b = areas->hdr;
+        areas++;
+    }
+    D_800335BC = 0x2626001F;
+    FntLoad(0x380, 0x100);
+    D_800643E8 = FntOpen(0x10, 0x10, D_8005B698->w - 8, 0xE0, 0, 0x800);
+    D_800643EC = GetTPage(0, 1, 0x380, 0x100) & 0xFFFF;
+    D_800643F0 = LoadClut2(D_80063AF8, 0x380, 0x11F) & 0xFFFF;
+}
 
 s32 func_80028994(s32 a, s32 b, s32 c) {
     s32 r;
