@@ -89,6 +89,7 @@ extern EXTengine EnginePool[];
 extern HeroInfo Heroes[4];
 extern hero_seq **HeroSeqTables[]; /* by HeroInfo.hero_name (1-8): each character's sequences, by id */
 extern s32 D_8009BD04;
+extern s16 D_8009D6DC[];
 extern s32 D_800A02C0;
 extern s32 D_800A02C4;
 extern u8 D_800A0224[];
@@ -275,6 +276,8 @@ typedef struct {
 s32 func_8007E894(void);
 
 void func_8008352C(void);
+
+void func_80086868(void);
 
 void func_80086F4C(void);
 
