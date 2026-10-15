@@ -1476,7 +1476,17 @@ void func_800917B4(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8009196C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80091E58);
+void func_80091E58(void) {
+    u8 *p = (u8 *)D_800657C8;
+    u8 *pad = p + 8;
+
+    func_80090310(pad, 0,*(s32 *)D_800657C8 == 0, 0x28, 0x1E);
+    func_80090310(p + 0x19C, 1, *(s32 *)(p + 0x194) == 0, 0x140, 0x1E);
+    func_80090310(p + 0x330, 2, *(s32 *)(p + 0x328) == 0, 0x28, 0x7C);
+    func_80090310(p + 0x4C4, 3, *(s32 *)(p + 0x4BC) == 0, 0x140, 0x7C);
+    func_80095BEC(3, &D_8009F008);
+    func_80090564(pad + D_8009F3B8 * 0x194,*(s32 *)(p + D_8009F3B8 * 0x194) == 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80091F54);
 
