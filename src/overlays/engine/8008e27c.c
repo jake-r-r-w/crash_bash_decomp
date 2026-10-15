@@ -757,7 +757,31 @@ void func_800925F0(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_800926CC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_800928E8);
+void func_800928E8(void) {
+    EngineCfg *cfg = &D_8009F96C;
+    u8 *g;
+
+    func_800274FC((s32 *)cfg);
+    ((void (*)(u8 *))func_800276A4)(D_800637A8 == 0 ? D_8005B72C : D_8005B744);
+    g = D_8005A614;
+    *(s32 *)(g + 4) = 0x80000000;
+    func_80028774(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
+    func_80017164(cfg->pools);
+    func_800170D4();
+    func_80095DBC();
+    D_8004E0D4 = 0;
+    D_8009F654 = 0;
+    D_8004E0CC = 0;
+    *(s32 *)D_8005A604 = 0x46;
+    *(s32 *)(D_8005A604 + 4) = 0x64;
+    *(s32 *)(D_8005A604 + 8) = 1;
+    D_8005A604[0xC] = 1;
+    D_8005A604[0xD] = 1;
+    D_8005A604[0xE] = 1;
+    D_8005A604[0xF] = 1;
+    func_800926CC(g);
+    func_800222FC();
+}
 
 void func_800929D8(void) {
     *(s32 *)D_8009F658 = 0;

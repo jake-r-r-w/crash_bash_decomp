@@ -141,6 +141,8 @@ s32 func_800900CC(void);
 
 void func_800925F0(s32 arg0);
 
+void func_800928E8(void);
+
 void func_80092EDC(void);
 
 #endif /* BASH_8008E27C_H */
