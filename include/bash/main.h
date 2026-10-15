@@ -1948,7 +1948,21 @@ typedef struct {
     s32 x; /* 0x78 */
     s32 idx; /* 0x7C */
 } PosDst;
-void func_8001A82C(PosDst *arg0, s32 arg1, s32 arg2);
+/* A text object func_8001A82C draws: a NAS-like header with the position at
+ * +4 (x keeps func_800243A0's 0xC000 centring flags) and the text at +0x6C. */
+typedef struct {
+    s32 NASid;   /* 0x00: 0x8000 drawn, 0x10000000 2D (no GTE setup) */
+    s32 x;       /* 0x04 */
+    s32 y;       /* 0x08 */
+    s32 z;       /* 0x0C */
+    u8 unk10[0x5C];
+    u8 *str;     /* 0x6C */
+    u32 c0;      /* 0x70 */
+    u32 c1;      /* 0x74 */
+    s32 font;    /* 0x78: into D_8005B2B4 */
+} TextNAS;
+extern s16 D_800569C4;
+void func_8001A82C(TextNAS *t, s32 arg1, s32 arg2);
 extern PosEntry D_8005689C[];
 void func_80010158(void);
 

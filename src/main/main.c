@@ -5393,7 +5393,44 @@ void func_8001A6D4(void *arg0, u32 hidden) {
 #undef p
 }
 
+#ifndef NON_MATCHING
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001A82C);
+#else
+void func_8001A82C(TextNAS *t, s32 arg1, s32 arg2) {
+    GteSetup s;
+    s32 x;
+
+    if (!(t->NASid & 0x8000)) {
+        return;
+    }
+    if (t->str == NULL) {
+        return;
+    }
+    D_8005B2B4 = t->font;
+    if (t->NASid & 0x10000000) {
+        x = t->x;
+        if ((x & 0xC000) == 0x8000) {
+            x = (((x & ~0xC000) << 14 >> 14) + D_800569C0) & ~0xC000 | 0x8000;
+        } else {
+            x = D_800569C0 + x;
+        }
+        func_800243A0(x, (s16)(D_800569C4 + t->y), t->str, t->c0, t->c1, 0);
+        return;
+    }
+    D_80056998.unk84 = D_80056998.unkCC;
+    D_80056998.unk88 = D_80056998.unk10C;
+    func_8001965C(t, (u8 *)arg1, (u8 *)arg1 + 0x14, D_80056998.unk28, &s);
+    gte_SetGeomOffset(s.ofx * D_8005B698->w / 640, s.ofy / 2);
+    if (s.trans != NULL) {
+        gte_SetTransVector(s.trans);
+    }
+    gte_SetRotMatrix(s.rot);
+    ((GlyphPos *)&s)->v[0] = t->x;
+    ((GlyphPos *)&s)->v[1] = t->y;
+    ((GlyphPos *)&s)->v[2] = t->z;
+    func_800246D0((GlyphPos *)&s, t->str, t->c0, t->c1);
+}
+#endif
 
 static inline u8 *func_8001AA48_setup(ModelObj *obj, void *arg1, s32 flags, RelTable *colors, u8 *t) {
     func_8001D894(obj, arg1, flags, (s32)colors);
@@ -5734,7 +5771,7 @@ void func_8001C448(PosDst *arg0, s32 arg1, s32 arg2) {
         arg0->z = sp14;
         break;
     }
-    func_8001A82C(arg0, arg1, arg2);
+    func_8001A82C((TextNAS *)arg0, arg1, arg2);
 }
 
 void func_8001C584(PosDst *arg0, s32 arg1) {

@@ -1008,7 +1008,10 @@
   "status": "matched"
  },
  "8001A82C": {
-  "auto_failed": "types"
+  "auto_failed": "types",
+  "blocked_at": "2026-10-15T07:55:07Z",
+  "note": "registers 12/135, all in the 2D branch: target keeps x in a0 (the arg) with the ~0xC000 mask in v0 and D_800569C0's %hi in v1; ours has the mask in a0 so x goes to a1. Tried in-place ops, s16/u16 x, ternary arg, mask variable, 18-bit bitfield read. Rest matches: TextNAS (text at +0x6C), GteSetup's slot reused as the GlyphPos",
+  "status": "blocked"
  },
  "8001AA48": {
   "matched_at": "2026-10-13T21:16:55Z",

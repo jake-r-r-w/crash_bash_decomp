@@ -43,6 +43,12 @@
    "size": 428
   },
   {
+   "name": "func_8001A82C",
+   "note": "registers 12/135, all in the 2D branch: target keeps x in a0 (the arg) with the ~0xC000 mask in v0 and D_800569C0's %hi in v1; ours has the mask in a0 so x goes to a1. Tried in-place ops, s16/u16 x, ternary arg, mask variable, 18-bit bitfield read. Rest matches: TextNAS (text at +0x6C), GteSetup's slot reused as the GlyphPos",
+   "seg": "main/main",
+   "size": 540
+  },
+  {
    "name": "func_80020C04",
    "note": "STAGE structure 16/19 (18 vs 19): retail has mult with no mflo and returns a; every dead-product form (u16/>>32 splits, long long <<32, unused local) folds the mult away too in 2.8.1, signed >>32 keeps one mflo; 2.5.7/2.6 keep partial dead code; next: cc1 -dc/-dl dump of the >>32 form, or check whether this region is another compiler",
    "seg": "main/main",
@@ -67,9 +73,9 @@
    "size": 372
   }
  ],
- "commit": "70e377e",
+ "commit": "b72752d",
  "game": "SCUS_945.70",
- "generated": "2026-10-15T07:49:00Z",
+ "generated": "2026-10-15T07:55:14Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -37248,7 +37254,7 @@
    }
   },
   {
-   "commit": "70e377e",
+   "commit": "b72752d",
    "data_b": 488,
    "data_tb": 606943,
    "game_all_f": 2551,
@@ -37261,7 +37267,7 @@
    "lib_b": 122112,
    "lib_f": 564,
    "lib_tb": 122112,
-   "ts": "2026-10-15T07:49:00Z",
+   "ts": "2026-10-15T07:55:14Z",
    "units": {
     "engine": [
      2752,
@@ -37457,7 +37463,7 @@
   }
  ],
  "summary": {
-  "blocked": 11,
+  "blocked": 12,
   "copies_b": 37444,
   "data": {
    "done_b": 488,
@@ -37468,7 +37474,7 @@
    "all_f": 2551,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 11,
+   "blocked": 12,
    "c_f": 808,
    "done_b": 113580,
    "done_f": 812,
@@ -37520,7 +37526,7 @@
     "all_f": 575,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 11,
+    "blocked": 12,
     "c_f": 543,
     "done_b": 102136,
     "done_f": 547,
