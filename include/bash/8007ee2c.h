@@ -168,4 +168,8 @@ void func_8008CFBC(EXTengine *eng);
 
 void PlotFloatyScore(NAS *nas);
 
+extern s32 D_8009D764[16][4];
+
+void func_80085650(void);
+
 #endif /* BASH_8007EE2C_H */

@@ -282,7 +282,44 @@ s32 SetHeroSeq(HeroInfo *hero, s32 seq) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80085584);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80085650);
+void func_80085650(void) {
+    s32 i;
+    s32 j;
+    s32 off;
+    s32 k;
+    s32 tab;
+    s32 m;
+    s32 base;
+    s32 *p;
+    s32 *q;
+    s32 t;
+
+    i = 0;
+    tab = (s32)D_8009D764;
+    off = 0;
+    do {
+        j = 0;
+        m = off;
+        do {
+            *(s32 *)(m + tab) = j;
+            j++;
+            m += 4;
+        } while (j < 4);
+        j = 0;
+        base = off;
+        k = off;
+        do {
+            q = (s32 *)((Random(4) * 4 + base) + tab);
+            p = (s32 *)(k + tab);
+            t = *p;
+            *p = *q;
+            *q = t;
+            k += 4;
+        } while (++j < 4);
+        i++;
+        off += 16;
+    } while (i < 16);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80085718);
 
