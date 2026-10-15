@@ -5929,7 +5929,131 @@ MATRIX *func_8001ACC0(GfxXform *obj) {
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001AF2C);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001B6D4);
+s32 func_8001B6D4(SVECTOR *v) {
+    s16 sxy[9][2];
+    u32 sz[9];
+    s32 behind;
+    s32 inside;
+    s32 far;
+    s32 minX, maxX, minY, maxY;
+    u32 farZ;
+    s32 dx, dy;
+    s32 ret;
+    s16 clip;
+
+    behind = 0;
+    inside = 0;
+    far = 0;
+    farZ = (D_80056998.otLen - D_80056998.otzAdd) * 8;
+    gte_ldv3c(v);
+    v += 3;
+    gte_rtpt();
+    gte_stsxy3c(sxy[0]);
+    gte_stsz3c(&sz[0]);
+    gte_ldv3c(v);
+    v += 3;
+    gte_rtpt();
+    minX = sxy[0][0];
+    maxX = minX;
+    minY = sxy[0][1];
+    maxY = minY;
+    if (sz[0] != 0) {
+        if ((u16)sxy[0][0] < (u16)D_80056998.clipX1 && (u16)sxy[0][1] < (u16)D_80056998.clipY1) {
+            if (behind) return 2;
+            inside |= 1;
+        }
+        if (farZ < sz[0]) far |= 1;
+    } else {
+        behind |= 1;
+        if (inside) return 2;
+    }
+    if (sz[1] != 0) {
+        if ((u16)sxy[1][0] < (u16)D_80056998.clipX1 && (u16)sxy[1][1] < (u16)D_80056998.clipY1) {
+            if (behind) return 2;
+            inside |= 2;
+        }
+        if (farZ < sz[1]) far |= 2;
+    } else {
+        behind |= 2;
+        if (inside) return 2;
+    }
+    if (sxy[1][0] < minX) minX = sxy[1][0];
+    if (maxX < sxy[1][0]) maxX = sxy[1][0];
+    if (sxy[1][1] < minY) minY = sxy[1][1];
+    if (maxY < sxy[1][1]) maxY = sxy[1][1];
+    if (sz[2] != 0) {
+        if ((u16)sxy[2][0] < (u16)D_80056998.clipX1 && (u16)sxy[2][1] < (u16)D_80056998.clipY1) {
+            if (behind) return 2;
+            inside |= 4;
+        }
+        if (farZ < sz[2]) far |= 4;
+    } else {
+        behind |= 4;
+    }
+    if (sxy[2][0] < minX) minX = sxy[2][0];
+    if (maxX < sxy[2][0]) maxX = sxy[2][0];
+    if (sxy[2][1] < minY) minY = sxy[2][1];
+    if (maxY < sxy[2][1]) maxY = sxy[2][1];
+    gte_stsxy3c(sxy[3]);
+    gte_stsz3c(&sz[3]);
+    gte_ldv3c(v);
+    gte_rtpt();
+#define POINT(i)                                                                                      \
+    if (sz[i] != 0) {                                                                                 \
+        if ((u16)sxy[i][0] < (u16)D_80056998.clipX1 && (u16)sxy[i][1] < (u16)D_80056998.clipY1) {    \
+            if (behind) return 2;                                                                     \
+            inside |= 1 << i;                                                                         \
+            if (farZ < sz[i]) far |= 1 << i;                                                          \
+        }                                                                                             \
+    } else {                                                                                          \
+        behind |= 1 << i;                                                                             \
+    }                                                                                                 \
+    if (sxy[i][0] < minX) minX = sxy[i][0];                                                           \
+    if (maxX < sxy[i][0]) maxX = sxy[i][0];                                                           \
+    if (sxy[i][1] < minY) minY = sxy[i][1];                                                           \
+    if (maxY < sxy[i][1]) maxY = sxy[i][1];
+    POINT(3)
+    POINT(4)
+    POINT(5)
+    gte_stsxy3c(sxy[6]);
+    gte_stsz3c(&sz[6]);
+    POINT(6)
+    POINT(7)
+#undef POINT
+    if (far == 0xFF) return 0;
+    if (behind != 0) {
+        if (behind == 0xFF) return 0;
+        if (inside != 0) return 2;
+    } else if (inside == 0x7F) {
+        return 1;
+    }
+    if (sxy[0][0] < 0 && sxy[1][0] < 0 && sxy[2][0] < 0 && sxy[3][0] < 0 && sxy[4][0] < 0 &&
+        sxy[5][0] < 0 && sxy[6][0] < 0 && sxy[7][0] < 0) {
+        return 0;
+    }
+    clip = D_80056998.clipX1;
+    if (sxy[0][0] > clip && sxy[1][0] > clip && sxy[2][0] > clip && sxy[3][0] > clip &&
+        sxy[4][0] > clip && sxy[5][0] > clip && sxy[6][0] > clip && sxy[7][0] > clip) {
+        return 0;
+    }
+    clip = D_80056998.clipY1;
+    if (clip < sxy[0][1] && clip < sxy[1][1] && clip < sxy[2][1] && clip < sxy[3][1] &&
+        clip < sxy[4][1] && clip < sxy[5][1] && clip < sxy[6][1] && clip < sxy[7][1]) {
+        return 0;
+    }
+    if (sxy[0][1] < 0 && sxy[1][1] < 0 && sxy[2][1] < 0 && sxy[3][1] < 0 && sxy[4][1] < 0 &&
+        sxy[5][1] < 0 && sxy[6][1] < 0 && sxy[7][1] < 0) {
+        return 0;
+    }
+    ret = 0;
+    dx = maxX - minX;
+    dy = maxY - minY;
+    if (dx >= 0x400 || dy >= 0x200 || dx * dx + dy * dy > 0x7FA01) {
+        ret = 4;
+    }
+    if (behind) return ret | 2;
+    return ret | 1;
+}
 
 void func_8001C008(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc) {
     SVECTOR *dst = D_80056AC8;

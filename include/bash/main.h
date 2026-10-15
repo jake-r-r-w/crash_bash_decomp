@@ -2727,6 +2727,8 @@ extern u16 D_8005A5C0[][3];
 
 void func_8001492C(void);
 
+s32 func_8001B6D4(SVECTOR *v);
+
 void func_8001C7FC(NAS *nas, u8 *arg1, u32 flags);
 
 KeyEntry *func_8001E21C(KeyBlock *arg0, s32 arg1, SLONG_XYZ *out);
