@@ -5168,7 +5168,65 @@ s32 func_80018F3C(EXTengine *eng, s32 n) {
     return count;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80019094);
+void *func_80019094(void *arg0, s32 arg1) {
+    GfxState *gs;
+    PrimSet *set;
+    FacePrim *prim;
+    s32 dp;
+    s32 fog;
+    s32 t;
+    s32 off;
+    PrimSet *p;
+    s32 c[3];
+
+    prim = NULL;
+    if ((arg1 & 0x40000001) | D_800569AC | (D_80056878 != 0 && (u32)prim < D_80056AC4)) {
+        set = *(PrimSet **)arg0;
+        if (set != NULL || (set = (PrimSet *)func_80018694((s32 **)arg0, *(u16 *)((u8 *)arg0 + 8) >= 3)) != NULL) {
+            off = (D_8005B690 & 1) * sizeof(PrimListPair);
+            p = (PrimSet *)(off + (s32)set);
+            prim = PrimSet_NextPrim(set, off + 4, 1, &p->pairs[0].b, arg0, 0);
+        }
+        if (prim != NULL) {
+            gs = &D_80056998;
+            dp = gs->dp;
+            fog = arg1 & 0x40000000;
+            if (!fog) {
+                gs->dp = 0;
+            }
+            if (gs->modelDp != 0) {
+                gs->dp = gs->modelDp;
+                if (fog) {
+                    t = 0x1000 - gs->modelDp;
+                    c[0] = t * gs->farColor[0];
+                    c[1] = t * gs->farColor[1];
+                    c[2] = t * gs->farColor[2];
+                    c[0] >>= 12;
+                    c[1] >>= 12;
+                    gs->farColor = c;
+                    c[2] >>= 12;
+                } else {
+                    gs->farColor = D_80056868;
+                }
+            }
+            func_80017B08((FaceRuns *)arg0, prim, (s32)D_80056998.farColor, arg1);
+            D_80056998.dp = dp;
+        } else {
+            return NULL;
+        }
+    } else {
+        set = *(PrimSet **)arg0;
+        if (set != NULL || (set = (PrimSet *)func_80018694((s32 **)arg0, *(u16 *)((u8 *)arg0 + 8) >= 3)) != NULL) {
+            off = (D_8005B690 & 1) * sizeof(PrimListPair);
+            p = (PrimSet *)(off + (s32)set);
+            prim = PrimSet_NextPrim(set, off + 4, 0, &p->pairs[0].a, arg0, set->mode);
+        }
+        if (prim == NULL) {
+            return NULL;
+        }
+    }
+    return prim;
+}
 
 /* Draws the triangle strips of a model: `runs` holds {mode, count} byte
  * pairs ended by count 0xFF, `v` the vertices (vz's high half carries

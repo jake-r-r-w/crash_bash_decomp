@@ -1518,6 +1518,8 @@ typedef struct {
 } ModelSet;
 void func_800193A8(POLY_GT3 *poly, SVECTOR *v, u8 *runs);
 extern s32 D_80056AC4; /* func_80019A60: the object's +0x8A */
+extern s32 D_80056878;    /* func_80019094: with D_80056AC4, forces the depth-cued path */
+extern s32 D_80056868[3]; /* func_80019094: default far colour */
 
 /* func_80019A60: draw model entry e with vertices v. */
 static inline void ModelEntry_Draw(u8 *e, s32 c, SVECTOR *v) {
@@ -2665,6 +2667,37 @@ typedef struct CamEase {
 void func_80013F44(CamView *cam, CamView *dst, CamEase *ease);
 
 FacePrim *func_800180BC(s32 arg0, ListNode18938 *list, ListNode18938 *pool, FaceRuns *faces, s32 arg4);
+
+/* func_80019094: the next free primitive slot of list (refilled from pool). */
+static inline FacePrim *PrimSet_NextPrim(PrimSet *set, s32 pairOff, s32 which, ListNode18938 *pool,
+                                         void *faces, s32 flag) {
+    s32 *n;
+    s32 *next;
+    FacePrim *ret;
+    ListNode18938 *list =(ListNode18938 *)((u8 *)set + pairOff) + which;
+
+    if (set->mode == 1) {
+        n = list->fC;
+        if (n != NULL) {
+            next = (s32 *)*n;
+            list->f10 = (s32 **)n;
+            list->fC = next;
+            set = (PrimSet *)n[1];
+        } else {
+            set = (PrimSet *)func_800180BC((s32)set, list, pool, (FaceRuns *)faces, flag);
+        }
+    } else {
+        n = list->fC;
+        if (n != NULL) {
+            list->fC = (s32 *)*n;
+            list->f10 = (s32 **)n;
+            set = (PrimSet *)(n + 1);
+        } else {
+            set = (PrimSet *)func_800184F0((s32)set, (s32 *)list, (s32)pool, (s32)faces);
+        }
+    }
+    return (FacePrim *)set;
+}
 
 void func_80018B08(GfxViewport *vp, GfxCamera *cam);
 
