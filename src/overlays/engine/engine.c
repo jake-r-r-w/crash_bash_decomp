@@ -1093,7 +1093,32 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8009317C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80093270);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8009342C);
+void func_8009342C(void) {
+    u8 *p;
+    u8 *b;
+
+    if (D_800A0158 >= 2) {
+        if (D_800A02C0 == 0 && *(s32 *)((b = D_80052A54) + 0x2CAC) != 0) {
+            if (D_80064C93 != -1) {
+                PlaySfx(0x3C5, NULL, NULL, 0x1000, 0x1E00, 0);
+                PlaySfx(0x3C6, NULL, NULL, 0x1000, 0x1E00, 0);
+                PlaySfx(0x3C7, NULL, NULL, 0x1000, 0x1E00, 0);
+                p = b + 0x2CA0;
+                D_800A02C4 = 6;
+                func_80095258(p);
+                D_800A02C0 += 1;
+                func_8001FE80(p, 0, &D_8009F9D4, &D_8009F9F4, 8, NULL);
+            }
+        }
+        if (D_800A02C4 != 0) {
+            D_800A02C4 -= 1;
+            if (D_800A02C4 == 0) {
+                PlaySfx(0x3C8, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+        }
+        func_800220E8();
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80093588);
 

@@ -99,6 +99,10 @@ extern u8 D_8009F8A4;
 extern u8 D_8009F8BC[];
 extern u8 D_800A016C[];
 extern s32 D_800A0158;
+extern s8 D_80064C93;
+extern Blk32 D_8009F9D4;
+extern CamVec3 D_8009F9F4;
+void func_80095258(u8 *arg0);
 extern ASTEntry EngineASTTable[];
 extern u8 D_8009F644[];
 extern s32 D_800A0C08;
@@ -319,5 +323,7 @@ typedef struct Vec3W {
 s32 func_800866DC(s32 *arg0);
 
 s32 func_80092598(u8 *arg0);
+
+void func_8009342C(void);
 
 #endif /* BASH_ENGINE_H */
