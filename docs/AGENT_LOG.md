@@ -51,11 +51,11 @@ leads**, add any new gotcha, and add one short entry at the top of the
      `--only func_8002D4F4`, or by hand with `decomp.py regions`.
 1b. Overlays with the swarm, engine first (shared by every minigame):
    `swarm.mjs run --branch main --seg overlays/engine --max-minutes 60
-   --max-run-usd 80 --max-functions 40 --workers 3 --big-workers 2
+   --max-run-usd 80 --max-functions 500 --workers 3 --big-workers 2
    --big-bytes 400 --big-minutes 27` matched 45 in 60 min for $21.72 on
    2026-10-15 (mostly under 150 B, about $0.12 each). A second hour matched 38 for $16.46. Repeat it; 209 engine
-   functions are left. The 40-lease cap ends leasing before the hour (it
-   stalled at about 30 min); raise `--max-functions` to 80 to fill the hour. Sizes left per overlay: run the size loop over
+   functions are left. `--max-functions 500` leaves time and cost as the limits (40 stopped
+   leasing after about 30 min). Sizes left per overlay: run the size loop over
    `nonmatching NAME, 0xSIZE` headers (the `next --count` listing is slow).
 2. The rest of `main.exe` with the swarm: `swarm.mjs run --branch main --seg
    main/ --max-minutes 60 --max-run-usd 80 --big-bytes 400 --workers 1
