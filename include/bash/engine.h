@@ -380,4 +380,66 @@ void func_8009440C(void);
 
 s32 func_80095F48(s32 *p, s32 a1, s32 a2, s32 a3, s32 a4);
 
+/* Engine callback table filled by func_80083550 (0x54 is D_8009D73C). */
+typedef struct EngineHooks {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ void *unk4;
+    /* 0x08 */ void *unk8;
+    /* 0x0C */ void *unkC;
+    /* 0x10 */ void *unk10;
+    /* 0x14 */ void *unk14;
+    /* 0x18 */ void *unk18;
+    /* 0x1C */ void *unk1C;
+    /* 0x20 */ void *unk20;
+    /* 0x24 */ void *unk24;
+    /* 0x28 */ void *unk28;
+    /* 0x2C */ void *unk2C;
+    /* 0x30 */ void *unk30;
+    /* 0x34 */ void *unk34;
+    /* 0x38 */ void *unk38;
+    /* 0x3C */ void *unk3C;
+    /* 0x40 */ void *unk40;
+    /* 0x44 */ void *unk44;
+    /* 0x48 */ void *unk48;
+    /* 0x4C */ void *unk4C;
+    /* 0x50 */ void *unk50;
+    /* 0x54 */ void *unk54;
+    /* 0x58 */ void *unk58;
+    /* 0x5C */ void *unk5C;
+    /* 0x60 */ void *unk60;
+    /* 0x64 */ void *unk64;
+    /* 0x68 */ void *unk68;
+} EngineHooks;
+extern EngineHooks D_8009D6E8;
+extern u8 D_8009D2E4[];
+extern u8 D_8009D2F8[];
+extern u8 D_8009D318[];
+extern u8 D_8009D354[];
+extern u8 D_8009D894[];
+extern u8 D_8009D8A8[];
+extern u8 D_8009D8BC[];
+extern u8 D_8009D8D0[];
+extern u8 D_8009D8DC[];
+extern void *D_8009D8F4;
+extern void *D_8009D8F8;
+extern void *D_8009D8FC;
+extern void *D_8009D900;
+extern void *D_8009D904;
+extern s32 D_8009D908;
+extern s16 D_8009E0D8;
+extern s16 D_8009E0DA;
+extern s16 D_8009E0DC;
+extern s16 D_8009E0DE;
+extern s16 D_8009E0E0;
+extern s16 D_8009E0E2;
+extern s16 D_8009E0E4;
+extern s16 D_8009E0E6;
+void func_80084788();
+void func_800859D4();
+void func_80085C84();
+void func_80085D2C();
+void func_8008A9F0();
+void func_8008AA40();
+void func_80083550(void);
+
 #endif /* BASH_ENGINE_H */

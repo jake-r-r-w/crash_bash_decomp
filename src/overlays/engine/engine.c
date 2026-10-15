@@ -364,7 +364,49 @@ void func_8008352C(void) {
     *(u16 *)(p + 0x30) = b | 0x8002;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80083550);
+void func_80083550(void) {
+    D_8009D6E8.unk0 = 0;
+    D_8009D6E8.unk4 = D_8009D2E4;
+    D_8009D6E8.unkC = D_8009D318;
+    D_8009D6E8.unk10 = D_8009D354;
+    D_8009D6E8.unk14 = D_8009D2F8;
+    D_8009D6E8.unk20 = func_800859D4;
+    D_8009D6E8.unk24 = func_80085D2C;
+    D_8009D6E8.unk2C = func_80085C84;
+    D_8009D6E8.unk30 = func_8008AA40;
+    D_8009D6E8.unk34 = func_8008A9F0;
+    D_8009D6E8.unk38 = func_8008680C;
+    D_8009D6E8.unk3C = func_8008AB48;
+    D_8009D6E8.unk40 = func_8008AB48;
+    D_8009D6E8.unk4C = func_80086724;
+    D_8009D6E8.unk50 = func_8008671C;
+    D_8009D6E8.unk54 = func_80086714;
+    D_8009D6E8.unk64 = func_80084788;
+    D_8009D6E8.unk60 = func_80086704;
+    D_8009D6E8.unk8 = 0;
+    D_8009D6E8.unk18 = 0;
+    D_8009D6E8.unk1C = 0;
+    D_8009D6E8.unk28 = 0;
+    D_8009D6E8.unk44 = 0;
+    D_8009D6E8.unk48 = 0;
+    D_8009D6E8.unk5C = 0;
+    D_8009D6E8.unk58 = 0;
+    D_8009D6E8.unk68 = func_8008670C;
+    D_8009D8F4 = D_8009D894;
+    D_8009D8F8 = D_8009D8A8;
+    D_8009D8FC = D_8009D8BC;
+    D_8009D904 = D_8009D8DC;
+    D_8009D900 = D_8009D8D0;
+    D_8009D908 = 0;
+    D_8009E0D8 = 0xD;
+    D_8009E0DA = 0xE;
+    D_8009E0DC = 0xF;
+    D_8009E0DE = 0x10;
+    D_8009E0E0 = 0x11;
+    D_8009E0E2 = 0x13;
+    D_8009E0E4 = 0x14;
+    D_8009E0E6 = 0xC;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80083708);
 
