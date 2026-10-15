@@ -2347,7 +2347,15 @@ void func_800973AC(s32 arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80097424);
+void func_80097424(s32 arg0, s32 arg1) {
+    s32 v = arg0 + ((arg1 + 0x3000) * 0x140) / D_80051658;
+
+    if (v < D_800AD324) {
+        D_800AD324 = v;
+        D_800AD304.unk0 = arg0;
+        D_800AD304.unk8 = arg1;
+    }
+}
 
 void func_8009749C(s32 arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5) {
     D_800AD1EC_entry *e;

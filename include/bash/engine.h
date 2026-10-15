@@ -344,6 +344,8 @@ typedef struct {
 extern s32 D_80051658;
 extern D_800AD2EC_t D_800AD2EC;
 extern s32 D_800AD31C;
+extern D_800AD2EC_t D_800AD304;
+extern s32 D_800AD324;
 
 void func_8007E7F4(void);
 
@@ -643,6 +645,8 @@ void func_80095160(EngineStartArgs *arg0);
 void func_80097244(u8 *p);
 
 void func_800973AC(s32 arg0, s32 arg1);
+
+void func_80097424(s32 arg0, s32 arg1);
 
 void func_8009749C(s32 arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5);
 
