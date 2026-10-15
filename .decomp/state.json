@@ -3413,7 +3413,8 @@
   "via": "auto"
  },
  "engine:8008AAB0": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-15T12:28:49Z",
+  "status": "matched"
  },
  "engine:8008AB04": {
   "auto_diff": 14,

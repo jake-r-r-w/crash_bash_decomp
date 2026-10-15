@@ -797,7 +797,14 @@ void func_8008AA90(void) {
     func_8008502C();
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008AAB0);
+void func_8008AAB0(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = &base[arg0];
+
+    h->hero_move->jump_max = 0;
+    h->hero_move->velocity_enable = 0;
+    SetHeroSeq((HeroInfo *)arg0, 0);
+}
 
 s32 func_8008AB04(s32 arg0) {
     PadState *base = D_80051338;
