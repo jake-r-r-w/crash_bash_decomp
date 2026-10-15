@@ -32,7 +32,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007A5E8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007A614);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007A650);
+void func_8007A650(s32 arg0) {
+    func_8007A164(D_800986FC[arg0 & 0xFFFF]);
+}
 
 void func_8007A688(s32 arg0) {
     func_8007A164(arg0 & 0xFFFF, D_8005A614);
