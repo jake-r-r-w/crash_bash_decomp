@@ -310,7 +310,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80082C34);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80082D90);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800831C4);
+void func_800831C4(s32 arg0) {
+    GetEngineSlot(0)->unk10.y = arg0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800831F0);
 

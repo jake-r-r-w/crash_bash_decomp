@@ -275,6 +275,8 @@ typedef struct {
 } EngineStartArgs;
 s32 func_8007E894(void);
 
+void func_800831C4(s32 arg0);
+
 void func_8008352C(void);
 
 void func_80086868(void);
