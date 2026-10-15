@@ -326,4 +326,6 @@ s32 func_80092598(u8 *arg0);
 
 void func_8009342C(void);
 
+void func_80095020(void);
+
 #endif /* BASH_ENGINE_H */
