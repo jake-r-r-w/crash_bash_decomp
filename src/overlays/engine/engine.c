@@ -1062,7 +1062,37 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800943B8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8009440C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800945C0);
+void func_800945C0(EngineStartArgs *arg0) {
+    s32 rate;
+
+    while (func_80012FFC() != 0) {
+        func_8001231C();
+        func_80010AE8(&D_8004E0F0);
+        func_8002BAE8();
+    }
+    rate = 3;
+    D_8004E0E0 = rate;
+    D_80058B64 = 0x1E0000 / (60 / rate);
+    D_80058B64 = arg0->unk8 * rate / 60;
+    func_80014388(D_80051640);
+    D_800A0D30 = 0;
+    D_800A0D38 = 1;
+    D_800A0C70 = 0;
+    ((EngineStartArgs *)&D_800A0D2C)->unk0 = arg0->unk0;
+    D_800A0D1C = arg0->unk4;
+    D_800A0D20[0] = 0;
+    D_800A0D24[0] = 0;
+    func_8002232C();
+    D_800644C0[0].id = -1;
+    D_800644C0[0].handle = 0;
+    D_800644C0[0].head = NULL;
+    D_800644C0[1].id = -1;
+    D_800644C0[1].handle = 0;
+    D_800644C0[1].head = NULL;
+    D_800A0D28 = 0;
+    D_800654B0 = 0;
+    D_800654B4 = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80094754);
 

@@ -107,6 +107,12 @@ extern s16 D_8009871C;
 extern u8 D_800A0BF4[];
 extern s32 D_800A0C0C;
 extern s32 D_800A0D30;
+extern s32 D_800A0C70;
+extern s32 D_800A0D1C;
+extern s32 D_800A0D20[]; /* arrays: their stores must alias struct loads (gcc 2.7 sched) */
+extern s32 D_800A0D24[];
+extern s32 D_800A0D28;
+extern s32 D_800A0D38;
 extern u8 D_8009E498[];
 extern s32 D_800AEC5C;
 extern s32 D_8009D868;
@@ -208,5 +214,12 @@ void func_8008A8F0(s32 arg0);
 u8 *func_8008D284(u8 *arg0, u8 *arg1);
 
 void func_8009029C(void);
+/* func_800945C0's argument. */
+typedef struct {
+    void *unk0; /* -> D_800A0D2C */
+    s32 unk4;   /* -> D_800A0D1C */
+    s32 unk8;   /* frame rate scale */
+} EngineStartArgs;
+void func_800945C0(EngineStartArgs *arg0);
 
 #endif /* BASH_ENGINE_H */
