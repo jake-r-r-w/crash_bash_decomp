@@ -6819,7 +6819,51 @@ s32 func_8001E598(u8 *arg0) {
     return *(s32 *)(arg0 + 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001E610);
+void func_8001E610(u8 *mgr, u8 *fadeState) {
+    ModeMgr *arg0 = (ModeMgr *)mgr;
+    s32 *fade = (s32 *)fadeState;
+
+    if (arg0->next != NULL && fade != NULL && (fade[1] == 0 || fade[2] >= 3)) {
+        if (arg0->cur != NULL) {
+            if (!(arg0->flags & 1) && arg0->cur->exit != NULL) {
+                arg0->cur->exit();
+            }
+            if (fade != NULL && fade[1] != 0 && fade[2] >= 3) {
+                func_8001888C();
+                while (func_80011DB4(&D_8004E0F0) != NULL) {
+                }
+                func_80010AE8(&D_8004E0F0);
+            }
+        }
+        arg0->prev = arg0->cur;
+        arg0->cur = arg0->next;
+        arg0->next = NULL;
+        if (arg0->cur->heapStart != NULL) {
+            func_8002AC70();
+            while (func_80012FFC() != 0) {
+                func_8001231C();
+                func_80010AE8(&D_8004E0F0);
+                func_8002BAE8();
+            }
+            func_80011BF8(&D_8004E0F0, arg0->cur->heapStart, 0x801FF000 - (s32)arg0->cur->heapStart);
+            func_80012E54();
+        }
+        ((D5A614View *)D_8005A614)->unk30 &= ~1;
+        if (!(arg0->flags & 2)) {
+            if (arg0->flags & 0x10) {
+                arg0->flags = 0;
+            }
+            if (arg0->cur->init != NULL) {
+                arg0->cur->init();
+            }
+        } else if (arg0->flags & 0x10) {
+            arg0->flags = 0;
+        }
+    }
+    if (arg0->cur != NULL && !(arg0->flags & 8) && arg0->cur->update != NULL) {
+        arg0->cur->update();
+    }
+}
 
 void func_8001E824(u8 *arg0) {
     (*(s32*)((u8*)(arg0) + 12)) = 2;

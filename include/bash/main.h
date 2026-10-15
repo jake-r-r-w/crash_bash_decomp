@@ -685,6 +685,24 @@ typedef struct LoaderState {
     /* 0x10 */ s32 unk10;
 } LoaderState;
 
+/* A game mode (func_8001E610): called on entry, every frame and on exit;
+ * heapStart non-NULL resets the heap to start there. */
+typedef struct GameModeDef {
+    /* 0x00 */ void (*init)(void);
+    /* 0x04 */ void (*update)(void);
+    /* 0x08 */ void *unk8;
+    /* 0x0C */ void (*exit)(void);
+    /* 0x10 */ u8 *heapStart;
+} GameModeDef;
+
+/* The mode switcher (func_8001E610, D_8009F658). */
+typedef struct ModeMgr {
+    /* 0x00 */ GameModeDef *cur;
+    /* 0x04 */ GameModeDef *next;
+    /* 0x08 */ GameModeDef *prev;
+    /* 0x0C */ s32 flags;   /* 1: skip exit, 2: skip init, 8: skip update, 0x10: clear after a switch */
+} ModeMgr;
+
 typedef struct LoadNode {
     /* 0x00 */ u8 *file;                 /* file table entry; NULL once cancelled mid-load (func_80012F04) */
     /* 0x04 */ s32 offset;               /* bytes into the file */
@@ -2680,6 +2698,8 @@ extern u16 D_8005A5C0[][3];
 void func_8001C7FC(NAS *nas, u8 *arg1, u32 flags);
 
 KeyEntry *func_8001E21C(KeyBlock *arg0, s32 arg1, SLONG_XYZ *out);
+
+void func_8001E610(u8 *mgr, u8 *fadeState);
 
 void func_8001EAA4(u8 *arg0, u8 *arg1);
 
