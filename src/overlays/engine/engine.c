@@ -2728,7 +2728,22 @@ void func_80098464(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800984D4);
+void func_800984D4(void) {
+    s32 *s;
+    s32 v;
+    int new_var;
+
+    func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
+    D_800569AC = *(s32 *)D_8009F644;
+    if (D_800ADBC4 != -1) {
+        s = (s32 *)GetEngineSlot(3)->sub;
+        s[new_var = 0xA8 / 4] &= 0xFFFF7FFF;
+        if ((D_8005A624 & 0x240) != 0x240) {
+            s[0xA8 / 4] |= 0x8000;
+        }
+        func_8001C2C0((u8 *)GetEngineSlot(3));
+    }
+}
 
 void func_80098570(void) {
     s32 *p;

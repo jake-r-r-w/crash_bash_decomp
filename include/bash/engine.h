@@ -156,6 +156,7 @@ extern CamVec3 D_8009F9F4;
 void func_80095258(u8 *arg0);
 extern ASTEntry EngineASTTable[];
 extern u8 D_8009F644[];
+extern s32 D_800ADBC4;
 extern u8 D_800A00DC[];
 extern s32 D_8005A624;
 extern u8 D_8009BCE0[];
@@ -706,5 +707,7 @@ s32 func_8008FE68(s32 arg0);
 void func_80094860(void);
 
 s32 func_800951D0(s32 arg0);
+
+void func_800984D4(void);
 
 #endif /* BASH_ENGINE_H */
