@@ -3005,11 +3005,14 @@
  },
  "engine:8007D034": {
   "auto_diff": 32,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-15T12:20:43Z",
+  "status": "matched"
  },
  "engine:8007D0BC": {
   "auto_diff": 32,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-15T12:21:01Z",
+  "status": "matched",
+  "via": "copy"
  },
  "engine:8007D144": {
   "auto_failed": "compile"

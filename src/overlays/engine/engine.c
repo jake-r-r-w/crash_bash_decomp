@@ -166,9 +166,37 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007CE50);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007CFAC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007D034);
+void func_8007D034(void) {
+    s32 i;
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007D0BC);
+    for (i = 0; i < 4; i++) {
+        if (Heroes[i].hero_name != 9) {
+            D_8009AD74[i].a = 0;
+            D_8009AD74[i].b = D_80099270[i].a;
+            D_8009AD74[i].c = D_80099270[i].b;
+            D_8009AD74[i].d = 1;
+        } else {
+            D_8009AD74[i].d = 0;
+        }
+    }
+    D_80099174 |= 0x200;
+}
+
+void func_8007D0BC(void) {
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        if (Heroes[i].hero_name != 9) {
+            D_8009AD74[i].a = 0;
+            D_8009AD74[i].b = D_80099280[i].a;
+            D_8009AD74[i].c = D_80099280[i].b;
+            D_8009AD74[i].d = 1;
+        } else {
+            D_8009AD74[i].d = 0;
+        }
+    }
+    D_80099174 |= 0x200;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007D144);
 

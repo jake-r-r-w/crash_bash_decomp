@@ -78,6 +78,11 @@ EXTengine *GetEngineSlot(s32 arg0);
 s32 func_800976A8(u8 *arg0, s32 arg1);
 void func_80098278(void);
 
+typedef struct { u16 a, b; } U16Pair;
+typedef struct { u16 a, b, c, d; } U16Quad;
+extern U16Quad D_8009AD74[4];
+extern U16Pair D_80099270[4];
+
 extern s32 D_800ADBC0;
 extern s32 D_80099174;
 extern s16 D_80099194;
@@ -499,6 +504,10 @@ typedef struct WobbleObj {
 } WobbleObj;
 extern WobbleObj *D_800A0290;
 
+void func_8007D034(void);
+
+void func_8007D0BC(void);
+
 void func_8007EAC0(void);
 
 void func_80082590(void);
@@ -506,5 +515,7 @@ void func_80082590(void);
 void func_8008A810(void);
 
 void func_80093270(void);
+
+extern U16Pair D_80099280[4];
 
 #endif /* BASH_ENGINE_H */
