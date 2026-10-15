@@ -503,6 +503,8 @@ void func_8007EAC0(void);
 
 void func_80082590(void);
 
+void func_8008A810(void);
+
 void func_80093270(void);
 
 #endif /* BASH_ENGINE_H */
