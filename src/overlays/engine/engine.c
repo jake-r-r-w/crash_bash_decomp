@@ -382,7 +382,16 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80086F4C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80086F78);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80086FA0);
+void func_80086FA0(void) {
+    s32 i;
+    D_8009D90C_t *p;
+
+    for (i = 0, p = D_8009D90C; i < 400; i++) {
+        p->unk1 = 0;
+        p->unk0 = 0;
+        p++;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80086FCC);
 

@@ -127,11 +127,19 @@ extern u16 D_800986FC[];
 
 void func_8007A650(s32 arg0);
 
+typedef struct {
+    u8 unk0;
+    u8 unk1;
+} D_8009D90C_t;
+extern D_8009D90C_t D_8009D90C[400];
+
 int func_8007AC00(void);
 
 void SetHeroSeq(HeroInfo *hero, s32 seq);
 
 void SetHeroAction(HeroInfo *hero, s32 action);
+
+void func_80086FA0(void);
 
 void func_8008ECE4(void);
 
