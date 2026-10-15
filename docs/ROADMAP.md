@@ -90,6 +90,9 @@ phases can play what they finish.
 - [ ] Match every game function in the executable.
 - [ ] Name and type every function and global in the exe (a descriptive name
   where the original is unknown, per [CONVENTIONS.md](CONVENTIONS.md)).
+  For browsing cross-references across the whole binary, try Ghidra with a
+  PSX loader by hand first; an agent bridge such as REA
+  (github.com/morluto/rea) adds little over that and doesn't help matching.
 - [ ] Turn its rodata, data and bss into C.
 - [x] Close the PsyQ gaps: every library function is linked from Sony's 4.7
   objects (281, plus the hand-written `2MBYTE.OBJ`), with their data. The one
