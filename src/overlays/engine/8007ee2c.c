@@ -979,7 +979,20 @@ void PlotParticleEffect(void) {
 void InitParticleEffect(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", InitSmokePoof);
+void InitSmokePoof(NAS *nas) {
+    func_80024E30(nas, &D_8009E1E8);
+    nas->Engine->sub->unk6C = D_800546C4;
+    nas->Engine->sub->flags |= 0x40000041;
+    nas->UserInfo.user1 = 0;
+    if (((EngineGameView *)D_8005A614)->mode == 0x1C) {
+        nas->Engine->sub->flags = 0x40008021;
+    }
+    if (((EngineGameView *)D_8005A614)->mode == 0x17) {
+        nas->Engine->unk2C.x = 0x800;
+        nas->Engine->unk2C.y = 0x800;
+        nas->Engine->unk2C.z = 0x800;
+    }
+}
 
 void func_8008CFBC(EXTengine *eng) {
     NAS *nas;

@@ -3517,7 +3517,8 @@
   "via": "auto"
  },
  "engine:8008CEF8": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-15T16:46:53Z",
+  "status": "matched"
  },
  "engine:8008CFBC": {
   "auto_diff": 46,

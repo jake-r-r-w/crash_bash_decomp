@@ -40,6 +40,8 @@ void PlotParticleEffect(void);
 
 void InitParticleEffect(void);
 
+void InitSmokePoof(NAS *nas);
+
 void InitFloatyScore(u8 *arg0);
 
 void PlotBigPoof(NAS *nas);

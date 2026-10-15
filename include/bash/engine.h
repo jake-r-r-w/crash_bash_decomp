@@ -120,6 +120,8 @@ extern u8 D_8009BCE0[];
 extern EXTengine D_8009959C;
 extern u8 D_80052F5C[];
 extern ScriptInit D_8009E250;
+extern ScriptInit D_8009E1E8;
+extern u8 D_800546C4[];
 extern GfxViewport D_8009F6A4;
 extern GfxViewport D_800A0BCC;
 extern GfxCamera D_8009F7EC;
