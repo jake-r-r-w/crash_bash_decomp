@@ -10,6 +10,8 @@
 
 void func_80096F98(s32 arg0);
 
+s32 func_800974EC(Vec3W *arg0, Vec3W *arg1, Vec3W *arg2);
+
 s32 func_800976A8(u8 *arg0, s32 arg1);
 
 void func_80098278(void);
@@ -45,5 +47,7 @@ void func_80098464(void);
 s32 func_80097608(s32 *arg0, s32 *arg1, s32 arg2);
 
 void func_800984D4(void);
+
+s32 func_80096280(void *arg0, s32 *arg1, void *arg2, s32 *arg3, void *arg4);
 
 #endif /* BASH_8009608C_H */

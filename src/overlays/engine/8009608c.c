@@ -135,7 +135,27 @@ void func_8009749C(s32 arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009608c", func_800974EC);
+s32 func_800974EC(Vec3W *arg0, Vec3W *arg1, Vec3W *arg2) {
+    s32 sp18[3];
+    s32 sp28[3];
+    s32 d;
+
+    d = 0x3C0000 / D_80051658;
+    sp18[0] = arg0->a + d;
+    sp18[2] = arg0->c - 0x3000;
+    sp28[0] = arg1->a - d;
+    sp28[2] = arg1->c - 0x3000;
+    if (func_80096280(arg0, sp18, arg1, sp28, arg2) != 0) {
+        return 1;
+    }
+    if (arg0->c < arg1->c) {
+        *arg2 = *arg0;
+    } else {
+        *arg2 = *arg1;
+    }
+    arg2->c -= 0x600;
+    return 1;
+}
 
 s32 func_80097608(s32 *arg0, s32 *arg1, s32 arg2) {
     s32 sp18[3];
