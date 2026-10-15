@@ -86,7 +86,7 @@ the image with the repository at `/work`, building the image on first use.
 | Splitter | [splat](https://github.com/ethteck/splat) |
 | Decompiler, permuter | [m2c](https://github.com/matt-kempster/m2c), [decomp-permuter](https://github.com/simonlindholm/decomp-permuter) |
 | Disc tools | [mkpsxiso](https://github.com/Lameguy64/mkpsxiso) |
-| Emulator (replay) | [PCSX-ReARMed](https://github.com/libretro/pcsx_rearmed) libretro core |
+| Emulator (headless, `tools/replay/replay.py`) | [PCSX-ReARMed](https://github.com/libretro/pcsx_rearmed) libretro core |
 
 The compiler profile is in `configs/USA/project.mk` (GCC 2.8.1, `-O2 -G0`,
 maspsx `--aspsx-version=2.86`); change it with `decomp.py config`. Sony's SDK
@@ -116,9 +116,8 @@ tools/dk python3 tools/scripts/decomp.py done func_80012345 --commit --note "wha
 ```
 
 Other targets: `make verify` (clean rebuild + check), `make progress`,
-`make disc` / `make disc-check` (a bootable image, and that it equals retail),
-`make replay` (retail vs build in a headless emulator; see
-[tools/replay](tools/replay/README.md)), `make objdiff-config` (for
+`make disc` / `make disc-check` (a bootable image, and that it equals retail;
+how to play it: [tools/replay](tools/replay/README.md)), `make objdiff-config` (for
 [objdiff](https://github.com/encounter/objdiff)).
 
 ## License

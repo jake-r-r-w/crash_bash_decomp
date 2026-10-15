@@ -37,12 +37,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
 `--max-functions 500`), then the post-run checklist. The file splits are
 done as far as the evidence goes (item 3).
 
-0. Current focus (ROADMAP.md, Current focus): `make disc` and `make
-   replay` work; the matching build is frame-identical to retail. The
-   harness's next step is a state-sequence mode (Phase 4; frame-exact is
-   too strict for builds whose code changes size), wanted by the first
-   shiftable `NON_MATCHING` build. Recordings stay short and hand-written
-   (`<frames> [buttons]`, check with `replay.py run ... --shot N`).
+0. Current focus (ROADMAP.md, Current focus): `make disc` works and the
+   matching build is the retail image. The user tests builds by playing
+   them; no recordings are kept up.
 1. Big functions. Big mode works block by block with `decomp.py regions`
    and ranks checkpoints by region score (tools/swarm/README.md, Big mode).
    2026-10-14: 13 of 15 fresh 828-1212 B functions matched in the A/B
@@ -253,9 +250,6 @@ Other:
 - **Toolchain image tag.** `tools/dk` and `tools/dk.ps1` tag the image
   `psx-decomp:<git hash-object of the Dockerfile, 12 chars>`, so a Dockerfile
   change builds a new image by itself; nothing to bump.
-- **Replay recordings.** Menus ignore a press while they animate in: hold a
-  button ~4 frames and leave a gap. Find frame counts with `replay.py run
-  ... --shot N` and look at the PNGs (tools/replay/README.md).
 - Splitting a function by adding a symbol (`name = 0x...; // type:func` in
   `sym.main.txt`, no `;` in the comment): run `decomp.py index`, which adds
   the new function but keeps the old one's `size` in
