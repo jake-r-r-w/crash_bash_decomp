@@ -634,7 +634,18 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80085890);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800859D4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80085C84);
+void func_80085C84(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = base + arg0;
+
+    if (h->hero_frozen == 0) {
+        if (!(h->hero_ctrl & 1)) {
+            h->hero_eng->unk1E += func_800154A0(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
+        }
+        h->hero_ctrl &= 0xFFFE;
+        h->hero_eng->unk5E = 1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80085D2C);
 
