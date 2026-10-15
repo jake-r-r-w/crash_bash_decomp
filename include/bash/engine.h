@@ -115,6 +115,8 @@ extern u8 D_8009EB3C[];
 extern s32 D_8009EB98;
 extern s32 D_8009E5DC;
 
+int func_8007AC00(void);
+
 void SetHeroSeq(HeroInfo *hero, s32 seq);
 
 void SetHeroAction(HeroInfo *hero, s32 action);

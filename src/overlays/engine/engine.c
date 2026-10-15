@@ -104,7 +104,13 @@ void func_8007ABC4(void) {
     func_80026D9C();
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007AC00);
+int func_8007AC00(void) {
+    unsigned int i;
+
+    for (i = 0; i < 0xAE; i++) {
+    }
+    return i;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007AC20);
 

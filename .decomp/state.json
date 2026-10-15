@@ -2940,7 +2940,8 @@
  },
  "engine:8007AC00": {
   "auto_diff": 2,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-15T11:01:58Z",
+  "status": "matched"
  },
  "engine:8007AC20": {
   "auto_failed": "types"
