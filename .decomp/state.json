@@ -34,7 +34,10 @@
   "status": "matched"
  },
  "80010488": {
-  "auto_failed": "types"
+  "auto_failed": "types",
+  "blocked_at": "2026-10-15T07:25:28Z",
+  "note": "instructions 2/208: only the preheader order, target lui s6 (%hi D_8004E0EC, hoisted by loop.c) before li s5,-1 (m1); sched2 keeps RTL order, so in the target the -1 load came after the hoisted lui (hoisted too?). m1 set inside the loop after the exit tests is not a loop.c movable at all. Shape that got here: unrotated do{s32 t; if(!p)break;...}while(1), first site ternary with lo/nx, second site an inline with m1 param, merge = func_800107C8_merge",
+  "status": "blocked"
  },
  "800107C8": {
   "matched_at": "2026-10-14T08:57:59Z",

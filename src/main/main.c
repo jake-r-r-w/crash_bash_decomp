@@ -83,8 +83,6 @@ void func_80010410(void) {
     D_8004E0DC->unk0();
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80010488);
-
 static inline void func_800107C8_merge(MemBlock *a, Heap *arg1, s32 m1) {
     s32 m2;
     MemBlock *b;
@@ -129,6 +127,91 @@ static inline void func_800107C8_merge(MemBlock *a, Heap *arg1, s32 m1) {
     }
     func_800110A8(b + 1, arg1);
 }
+
+#ifndef NON_MATCHING
+INCLUDE_ASM("asm/nonmatchings/main/main", func_80010488);
+#else
+static inline MemBlock *Heap_NextLowest(Heap *heap, s32 m1) {
+    MemBlock *blk;
+    MemBlock *next;
+
+    blk = heap->lowest;
+    if (blk == NULL) {
+        return NULL;
+    }
+    next = (MemBlock *)((u8 *)blk + (blk->size * 4 + sizeof(MemBlock)));
+    if (next->owner == (void **)m1 || next->size == 0) {
+        return NULL;
+    }
+    return next;
+}
+
+void func_80010488(Heap *heap) {
+    s32 m1;
+    MemBlock *lo;
+    MemBlock *nx;
+    MemBlock *ret;
+    MemBlock *p;
+    MemBlock *q;
+    MemBlock *qprev;
+    s32 budget;
+
+    lo = heap->lowest;
+    if (lo == NULL || (nx = (MemBlock *)((u8 *)lo + (lo->size * 4 + 0x18)),
+                       nx->owner == (void **)-1) || nx->size == 0) {
+        ret = NULL;
+    } else {
+        ret = nx;
+    }
+    p = ret;
+    if (p != NULL) {
+        if ((p->unk0 & 2) && (p->unk0 & 1) == (D_8005B690 & 1)) {
+            p = NULL;
+        }
+    }
+    budget = (0x1FE - VSync(1)) * 0x70;
+    m1 = -1;
+    do {
+        s32 t;
+
+        if (p == NULL) break;
+        budget -= p->size;
+        if (budget <= 0) break;
+        t = VSync(1);
+        D_8004E0EC += p->size;
+        func_800107C8_merge(heap->lowest, heap, m1);
+        t = VSync(1) - t;
+        ret = Heap_NextLowest(heap, m1);
+        p = ret;
+        if (p != NULL) {
+            if ((p->unk0 & 2) && (p->unk0 & 1) == (D_8005B690 & 1)) {
+                p = NULL;
+            }
+        }
+        D_8004E0E8 += t;
+    } while (1);
+    q = heap->deferred;
+    qprev = NULL;
+    while (q != NULL) {
+        if (--*(s16 *)q->unk2 <= 0) {
+            if (qprev != NULL) {
+                qprev->nextFree = q->nextFree;
+            } else {
+                heap->deferred = q->nextFree;
+            }
+            func_800110A8(q + 1, &D_8004E0F0);
+            if (qprev != NULL) {
+                q = qprev->nextFree;
+            } else {
+                q = NULL;
+            }
+        } else {
+            qprev = q;
+            q = q->nextFree;
+        }
+    }
+}
+#endif
 
 void func_800107C8(MemBlock *arg0, Heap *arg1) {
     s32 m1 = -1;

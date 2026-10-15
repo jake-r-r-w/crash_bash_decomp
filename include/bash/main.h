@@ -1435,6 +1435,8 @@ typedef struct {
     } v[4];    /* 0x0C */
 } ModePolyG4;
 extern s32 D_8005B690; /* frame counter: its low bit picks the frame buffer */
+extern s32 D_8004E0E8; /* VSync ticks spent compacting the heap (func_80010488) */
+extern s32 D_8004E0EC; /* words moved compacting the heap (func_80010488) */
 void func_8001A6D4(void *arg0, u32 hidden);
 s32 func_8001A0D8(void *arg0, u32 flags);
 void *func_80019094(void *arg0, s32 arg1);
