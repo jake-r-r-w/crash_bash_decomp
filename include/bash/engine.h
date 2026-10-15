@@ -605,6 +605,8 @@ s32 func_8008FF94(void);
 
 void func_80092198(void);
 
+void func_80092FB8(void);
+
 void func_80094EB8(void);
 
 s32 func_800950FC(void);

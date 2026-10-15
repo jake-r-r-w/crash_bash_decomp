@@ -1671,7 +1671,18 @@ void func_80092F9C(void) {
     *(s32 *)(D_8005A614 + 0x64) = 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80092FB8);
+void func_80092FB8(void) {
+    EngineGameView *a = (EngineGameView *)D_8005A614;
+    EngineGameView *g;
+
+    if (a->mode == 0x24 && a->unkE0 <= 0) {
+        a->unkE0 = 1;
+    }
+    g = (EngineGameView *)D_8005A614;
+    if (func_8007A5E8((u8 *)g) >= 0x19 && g->unkE0 < 2) {
+        g->unkE0 = 2;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80093038);
 
