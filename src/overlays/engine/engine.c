@@ -218,7 +218,16 @@ void func_8007E874(void) {
     D_80099174 |= 0x8000;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007E894);
+s32 func_8007E894(void) {
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        if (Heroes[i].hero_score != Heroes[i].hero_score_displayed) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007E8D0);
 

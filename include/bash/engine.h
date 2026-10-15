@@ -220,6 +220,8 @@ typedef struct {
     s32 unk4;   /* -> D_800A0D1C */
     s32 unk8;   /* frame rate scale */
 } EngineStartArgs;
+s32 func_8007E894(void);
+
 s32 func_8009020C(s32 arg0);
 
 void func_800945C0(EngineStartArgs *arg0);
