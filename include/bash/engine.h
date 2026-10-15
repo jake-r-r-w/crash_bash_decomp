@@ -329,5 +329,16 @@ s32 func_80092598(u8 *arg0);
 void func_8009342C(void);
 
 void func_80095020(void);
+/* 32-byte records of D_8005A5E8, indexed by D_8005A61C (func_8008688C). */
+typedef struct {
+    /* 0x00 */ u8 unk0[0xC];
+    /* 0x0C */ u16 unkC;
+    /* 0x0E */ u8 unkE[0x12];
+} EngineRec32;
+extern EngineRec32 *D_8005A5E8;
+extern s32 D_8005A61C;
+extern u16 D_800AD12C;
+
+void func_8008688C(void);
 
 #endif /* BASH_ENGINE_H */

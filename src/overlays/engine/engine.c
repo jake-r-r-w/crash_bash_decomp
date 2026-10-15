@@ -448,7 +448,9 @@ void func_80086868(void) {
     D_8009D6DC[4] = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008688C);
+void func_8008688C(void) {
+    D_800AD12C = D_8005A5E8[D_8005A61C].unkC;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", SetHeroAction);
 
