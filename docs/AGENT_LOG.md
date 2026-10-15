@@ -10,11 +10,12 @@ At the end of a session, update **Current state**, **Next** and **Open
 leads**, add any new gotcha, and add one short entry at the top of the
 **Session log**.
 
-## Current state (2026-10-14)
+## Current state (2026-10-15)
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 812/2551 game functions matched (main.exe 547/575, 28 left), 13 parked,
+- 817/2551 game functions matched (main.exe 552/575, 23 left: 15 parked,
+  8 big ones never tried), 15 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
@@ -42,17 +43,17 @@ leads**, add any new gotcha, and add one short entry at the top of the
    and a 60-min `main/` run matched 10 of 16 functions leased.
    - Near misses: `func_800248A0` (5/142) and `func_8001795C` (12/107)
      are ported to today's declarations and parked as `NON_MATCHING`
-     blocks in `main.c` (Open leads). The fresh 400-800 B functions are
-     the cheapest swarm run.
-   - The untried big ones: 1400+ B `func_8002D4F4` (gcc 2.7.2 unit),
-     `func_8001B6D4`, `func_8001492C`, `func_8001AF2C`, `func_8002C97C`,
-     `func_80023A90`; 600-1399 B `func_80020680`, `func_80019094`,
-     `func_8002926C`. A 60-min run with one function per big worker
+     blocks in `main.c` (Open leads). No fresh small function is left.
+   - The untried big ones (all that is left besides parks): 1400+ B
+     `func_8002D4F4` (gcc 2.7.2 unit), `func_8001B6D4`, `func_8001492C`,
+     `func_8001AF2C`, `func_8002C97C`, `func_80023A90`; 756-788 B
+     `func_80019094`, `func_8002926C`. A 60-min run with one function per big worker
      (`--big-minutes 27`) gives each about two sessions.
 2. The rest of `main.exe` with the swarm: `swarm.mjs run --branch main --seg
    main/ --max-minutes 60 --max-run-usd 80 --big-bytes 400 --workers 1
    --big-workers 4 --big-minutes 27` ($54 for 10 matches on 2026-10-14).
-   18 functions of 400-599 B are left. After each run, the checklist at
+   No function under 600 B is left untried (2026-10-15); use `--only` with
+   the eight big ones. After each run, the checklist at
    the end of tools/swarm/README.md (`stats`, parks, `fold`, `permute
    --near`, this log).
 3. Split `main.c` into its translation units, between swarm runs (a split
@@ -81,6 +82,15 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Open leads
 
+- **Parked 2026-10-15 (by hand)**, C under `NON_MATCHING`:
+  - `func_80010000` instructions 36/86, length right: counts flags over 33
+    bytes, stores the count as BCD in `D_8004E0D0`. Only the BCD tail's
+    registers (target: 0x66666667 in a0, n/10 in a2, accumulator a0). `i`
+    (the loop counter) is reused for the quotient chain: a fresh variable
+    changes the length. Next: cc1 `-dl` (local-alloc) dump of the tail.
+  - `func_80017164` registers 22/137: allocates and links three node pools
+    (0x58, 0x54, 8 bytes). Only the 8-byte list pointer (target a1) and the
+    0x54 list pointer (target a0) are off. Next: `vars`/`splitvars`.
 - **Near misses parked 2026-10-14 (by hand)**, each with its C under
   `NON_MATCHING` and a `block` note:
   - `func_80010488` 2/208: only `lui s6` vs `li s5,-1` order in the loop
@@ -181,6 +191,12 @@ Other:
 ## Gotchas
 
 **Tooling**
+- **Rodata migrated into a function.** When a matched function's .s held
+  `.rodata` (splat migrated it there), the full build loses that symbol. Add
+  `D_xxx = 0x...; // force_not_migration:True` to `sym.main.txt`, put
+  `INCLUDE_RODATA(...)` where the function was, `extern char D_xxx[];`, and
+  `make split` (`func_800235BC`). Don't run `splat split --disassemble-all`:
+  it writes `asm/matchings/`, which the build assembles and fails on.
 - **`make clean` (and `make verify`) delete `build/`** except
   `build/scratch/` (keep drafts and notes there), `build/emu/` and
   `build/disc-cache/`.
@@ -320,6 +336,14 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-15 (by hand, the seven untried small main/ functions):** 5
+  matched: `func_8001E21C` (key interpolation; `func_8001E41C`'s search as
+  a static inline), `func_8001231C` (loader tick; three buffer variables by
+  role), `func_800235BC` (arena setup; rodata kept via
+  `force_not_migration`), `func_8001E610` (mode switcher; new `ModeMgr`,
+  `GameModeDef`), `func_8001F604` (emitter spawn). 2 parked:
+  `func_80010000`, `func_80017164` (Open leads). Only 8 big functions are
+  left untried in main.exe.
 - **2026-10-14 (by hand, main/, no permuter):** 6 matched: `func_800274FC`
   (returns a value; `OtBuf` type for `D_8005B790`), `func_8001C7FC` (void),
   `func_8001EAA4` (checkpoint plus `k = Find(); key = k;`), `func_80029560`,
