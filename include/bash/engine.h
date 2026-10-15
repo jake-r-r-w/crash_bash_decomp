@@ -201,6 +201,8 @@ s32 func_8007EE2C(s32 pad);
 
 extern void (*D_8009D73C)();
 
+void func_80086F78(void);
+
 void func_8008A8F0(s32 arg0);
 
 void func_8009029C(void);
