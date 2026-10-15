@@ -6,14 +6,12 @@
 #   make check           - build, then compare every target with configs/USA/checksum.sha
 #   make disc            - build, then pack build/CrashBash.bin/.cue (bootable; tools/scripts/pack_disc.py)
 #   make disc-check      - make disc, then compare the image with the retail one (configs/USA/disc.sha)
-#   make replay [REC=..] - make disc, then play a recording on the retail and the built disc (tools/replay)
 #   make test-tools      - unit tests of the pipeline's asm filters (tools/scripts/tests)
 #   make verify          - clean rebuild + check (use after structural/config/header changes)
 #   make diff FUNC=name  - build one function's file and diff it against the original
 #   make permute FUNC=name [MINUTES=15] - run decomp-permuter on one function
 #   make progress        - dashboard (docs/index.html), docs/progress.json and docs/badges/
 #   make objdiff-config  - objdiff.json + the original (all-asm) object of every unit
-#   make report          - objdiff report in build/report.json
 SHELL := /bin/bash -o pipefail
 .DEFAULT_GOAL := build
 
@@ -59,7 +57,7 @@ S_FILES   := $(shell find asm -name '*.s' -not -path 'asm/nonmatchings/*' 2>/dev
 BIN_FILES := $(shell find assets -name '*.bin' 2>/dev/null)
 O_FILES   := $(C_FILES:%=build/%.o) $(S_FILES:%=build/%.o) $(BIN_FILES:%=build/%.o)
 
-.PHONY: all build split check verify disc disc-check replay test-tools diff permute progress objdiff-config report clean
+.PHONY: all build split check verify disc disc-check test-tools diff permute progress objdiff-config clean
 
 # Two passes: splat must have produced asm/ before the object list above is computed.
 # The splat pass is serial (-j1) even under make -j: concurrent splat runs share asm/ and gave
@@ -165,13 +163,6 @@ disc: build
 disc-check: disc
 	@sha1sum -c $(CFG)/disc.sha
 
-# The replay harness: play an input recording on the retail disc and on the built one, in a
-# headless emulator, and report the first frame whose image or game values differ.
-REC ?= tools/replay/recordings/battle.txt
-RETAIL_CUE ?= disc/CrashBash.cue
-replay: disc
-	@$(PYTHON) tools/replay/replay.py compare $(RETAIL_CUE) build/CrashBash.cue $(REC)
-
 # the asm filters (dmpsx.py, aspsx_fill.py) against known before/after cases
 test-tools:
 	@$(PYTHON) -m unittest discover -s tools/scripts/tests
@@ -195,9 +186,6 @@ progress:
 # (generated, not committed) and build/objdiff/target/<unit>.c (every function of the unit as
 # INCLUDE_ASM from there); those compile with the normal pipeline into the target objects objdiff
 # compares build/src/<unit>.c.o against.
-OBJDIFF_VER := v3.8.2
-OBJDIFF_CLI := ext/objdiff/objdiff-cli-$(OBJDIFF_VER)
-
 build/objdiff/target/%.o: build/objdiff/target/%.c
 	@mkdir -p $(@D)
 	$(CPP) $(CPPFLAGS) $< | $(CC1) $(CC1FLAGS) | $(DMPSX) | $(MASPSX) $(MASPSX_ARGS) | $(AS) $(ASFLAGS) -o $@
@@ -208,21 +196,12 @@ objdiff-config: build
 	$(PYTHON) tools/scripts/objdiff_config.py
 	@$(MAKE) --no-print-directory $$(find build/objdiff/target -name '*.c' | sed 's/[.]c$$/.o/')
 
-$(OBJDIFF_CLI):
-	@mkdir -p $(@D)
-	curl -sSfL -o $@ https://github.com/encounter/objdiff/releases/download/$(OBJDIFF_VER)/objdiff-cli-linux-x86_64
-	chmod +x $@
-
-report: objdiff-config $(OBJDIFF_CLI)
-	$(OBJDIFF_CLI) report generate -o build/report.json
-	@$(PYTHON) -c "import json;m=json.load(open('build/report.json'))['measures'];print('objdiff: code %.2f%% (%s/%s bytes), functions %s/%s'%(m.get('matched_code_percent',0),m.get('matched_code',0),m.get('total_code',0),m.get('matched_functions',0),m.get('total_functions',0)))"
-
 # make print-VAR: a variable's value (decomp.py reads CPPFLAGS and ASFLAGS this way)
 print-%:
 	@echo '$($*)'
 
-# Keeps build/scratch (your own notes and C drafts), build/emu and build/disc-cache (slow to
+# Keeps build/scratch (your own notes and C drafts) and build/disc-cache (slow to
 # recreate); everything else under build/ is output and goes.
-KEEP_BUILD := scratch emu disc-cache
+KEEP_BUILD := scratch disc-cache
 clean:
 	@if [ -d build ]; then find build -mindepth 1 -maxdepth 1 $(KEEP_BUILD:%=! -name %) -exec rm -rf {} +; fi

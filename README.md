@@ -66,7 +66,7 @@ target. Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 - `configs/USA/` - splat config, symbols, relocations, checksums, compiler
   settings (`project.mk`) and PsyQ provenance (`psyq/`).
 - `tools/scripts/` - `decomp.py` (the main CLI) and build helpers;
-  `tools/swarm/`, `tools/replay/`, `tools/docker/`, `tools/hooks/`.
+  `tools/swarm/`, `tools/docker/`, `tools/hooks/`.
 - `.claude/skills/match-function/` - the agent's matching loop.
 - `.decomp/` - matching state; `docs/` - dashboard, badges and documentation.
 
@@ -86,7 +86,6 @@ the image with the repository at `/work`, building the image on first use.
 | Splitter | [splat](https://github.com/ethteck/splat) |
 | Decompiler, permuter | [m2c](https://github.com/matt-kempster/m2c), [decomp-permuter](https://github.com/simonlindholm/decomp-permuter) |
 | Disc tools | [mkpsxiso](https://github.com/Lameguy64/mkpsxiso) |
-| Emulator (headless, `tools/replay/replay.py`) | [PCSX-ReARMed](https://github.com/libretro/pcsx_rearmed) libretro core |
 
 The compiler profile is in `configs/USA/project.mk` (GCC 2.8.1, `-O2 -G0`,
 maspsx `--aspsx-version=2.86`); change it with `decomp.py config`. Sony's SDK
@@ -117,7 +116,7 @@ tools/dk python3 tools/scripts/decomp.py done func_80012345 --commit --note "wha
 
 Other targets: `make verify` (clean rebuild + check), `make progress`,
 `make disc` / `make disc-check` (a bootable image, and that it equals retail;
-how to play it: [tools/replay](tools/replay/README.md)), `make objdiff-config` (for
+how to play it: [docs/PLAYING.md](docs/PLAYING.md)), `make objdiff-config` (for
 [objdiff](https://github.com/encounter/objdiff)).
 
 ## License

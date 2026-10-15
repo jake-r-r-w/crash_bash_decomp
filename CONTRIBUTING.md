@@ -61,7 +61,7 @@ config and file splits: ordinary commits after `tools/dk make verify` prints
 A match needs no emulator: `make check` proves the build is the retail bytes,
 so it plays like retail. For a build that differs on purpose, `tools/dk make
 disc` gives a disc image to play yourself; how to run it is in
-[tools/replay/README.md](tools/replay/README.md).
+[docs/PLAYING.md](docs/PLAYING.md).
 
 ## Session log
 

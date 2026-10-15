@@ -41,13 +41,6 @@ RUN git clone --depth 1 --recursive https://github.com/Lameguy64/mkpsxiso /tmp/m
  && cmake --install /tmp/mkpsxiso/build \
  && rm -rf /tmp/mkpsxiso
 
-# PCSX-ReARMed libretro core for the replay harness (tools/replay/replay.py), headless, pinned
-ARG PCSX_REARMED_COMMIT=c8816799b50388e61cfe237fe2cdbb7d8175f20a
-RUN git clone https://github.com/libretro/pcsx_rearmed /tmp/pcsx  && git -C /tmp/pcsx checkout -q $PCSX_REARMED_COMMIT  && git -C /tmp/pcsx submodule update --init --depth 1  && make -C /tmp/pcsx -f Makefile.libretro -j"$(nproc)" > /dev/null  && install -D /tmp/pcsx/pcsx_rearmed_libretro.so /opt/libretro/pcsx_rearmed_libretro.so  && rm -rf /tmp/pcsx
-
-# ffmpeg and numpy for replay.py --video (MP4 of a run, with its sound)
-RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg     && rm -rf /var/lib/apt/lists/*     && pip3 install numpy
-
 # The repo is bind-mounted from the host with a different owner.
 RUN git config --system --add safe.directory '*'
 

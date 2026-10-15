@@ -233,8 +233,7 @@ Other:
   `make split` (`func_800235BC`). Don't run `splat split --disassemble-all`:
   it writes `asm/matchings/`, which the build assembles and fails on.
 - **`make clean` (and `make verify`) delete `build/`** except
-  `build/scratch/` (keep drafts and notes there), `build/emu/` and
-  `build/disc-cache/`.
+  `build/scratch/` (keep drafts and notes there) and `build/disc-cache/`.
 - **The build tracks its pipeline:** C objects depend on `dmpsx.py`,
   `aspsx_fill.py`, `project.mk` and the Makefile, and overlay linker scripts
   on their own `sym.<ovl>.txt` and `sym.engine.txt`, so editing those
@@ -368,6 +367,10 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-15 (tidy):** removed the replay harness (`replay.py`, recordings,
+  `make replay`, the emulator core, ffmpeg and numpy in the image) and
+  `make report` (decomp.dev's format); play instructions moved to
+  `docs/PLAYING.md`. The user tests builds by playing them.
 - **2026-10-15 (by hand, wrap-up):** no other positive split signal: no
   overlay or engine string stored twice, no 2.7.2 style in any overlay;
   main.c's proven boundary has three possible places. Docs brought up to
