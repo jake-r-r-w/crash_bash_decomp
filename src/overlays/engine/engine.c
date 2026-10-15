@@ -592,7 +592,14 @@ void func_8008AA90(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008AAB0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008AB04);
+s32 func_8008AB04(s32 arg0) {
+    PadState *base = D_80051338;
+    PadState *pad = &base[arg0];
+
+    *(s32 *)((u8 *)pad + 0x50) &= ~0x4000;
+    *(s32 *)((u8 *)pad + 0x54) &= ~0x4000;
+    return 0;
+}
 
 s32 func_8008AB48(void) {
     return 0;
