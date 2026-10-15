@@ -174,6 +174,8 @@ s32 func_80085584(s32 hero, u16 name, s32 seq);
 
 void func_80085650(void);
 
+s32 func_800863D0(s32 arg0);
+
 void func_8008D5D4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 
 #endif /* BASH_8007EE2C_H */

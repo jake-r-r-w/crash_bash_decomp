@@ -362,7 +362,37 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80085D2C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_800860D4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_800863D0);
+s32 func_800863D0(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = base + arg0;
+    s32 dist;
+    s32 dy;
+
+    int new_var;
+    s32 dz;
+    s32 far;
+
+    dist = abs(h->hero_eng->unk10.x - h->hero_eng->OldXYZ.x);
+    dz = abs(h->hero_eng->unk10.z - h->hero_eng->OldXYZ.z);
+    new_var = 0x40;
+    dist = (dist + new_var) + dz;
+    dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
+    if (dy == 0x7FFFFFFF) {
+        h->hero_eng->unk10 = h->hero_eng->OldXYZ;
+        return 0;
+    }
+    if (dy < 0) {
+        dist = ~dist + 1;
+        far = dy < dist;
+    } else {
+        far = dist < dy;
+    }
+    if (far) {
+        return 0;
+    }
+    h->hero_eng->unk10.y -= dy;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_800864CC);
 
