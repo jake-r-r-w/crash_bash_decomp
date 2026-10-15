@@ -6588,7 +6588,55 @@ void func_8001E0A8(u8 *arg0) {
     } while (n != end);
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001E21C);
+static inline KeyEntry *func_8001E21C_find(KeyBlock *arg0, s32 arg1) {
+    KeyEntry *p;
+    KeyEntry *q;
+
+    if (arg1 < 0 || (p = arg0->entries, arg0->count < arg1)) {
+        return NULL;
+    }
+    q = p;
+    if (arg1 >= p->key) {
+        do {
+            if (q->flags & 0x2000) {
+                return p;
+            }
+            q++;
+            p++;
+        } while (arg1 >= q->key);
+    }
+    return p - 1;
+}
+
+KeyEntry *func_8001E21C(KeyBlock *arg0, s32 arg1, SLONG_XYZ *out) {
+    KeyEntry *p;
+    SLONG_XYZ d;
+    s32 span;
+    s32 dt;
+
+    p = func_8001E21C_find(arg0, arg1);
+    if (p != NULL) {
+        if (p->flags & 0x2000) {
+            *out = p->pos;
+        } else {
+            dt = arg1 - p->key;
+            span = p[1].key - p->key;
+            d.x = p[1].pos.x - p->pos.x;
+            d.y = p[1].pos.y - p->pos.y;
+            d.z = p[1].pos.z - p->pos.z;
+            d.x *= dt;
+            d.y *= dt;
+            d.z *= dt;
+            d.x /= span;
+            d.y /= span;
+            d.z /= span;
+            out->x = p->pos.x + d.x;
+            out->y = p->pos.y + d.y;
+            out->z = p->pos.z + d.z;
+        }
+    }
+    return p;
+}
 
 KeyEntry *func_8001E41C(KeyBlock *arg0, s32 arg1) {
     KeyEntry *p;

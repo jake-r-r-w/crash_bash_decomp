@@ -440,7 +440,7 @@ typedef struct {
 
 /* A 0x1C-byte entry of a sorted table at +0x4C of a block (func_8001E41C). */
 typedef struct {
-    u8 unk0[0xC];
+    SLONG_XYZ pos; /* 0x00 */
     s32 key;   /* 0x0C */
     u8 unk10[4];
     u32 flags; /* 0x14 */
@@ -2645,6 +2645,8 @@ extern u8 D_80053074[];
 extern u16 D_8005A5C0[][3];
 
 void func_8001C7FC(NAS *nas, u8 *arg1, u32 flags);
+
+KeyEntry *func_8001E21C(KeyBlock *arg0, s32 arg1, SLONG_XYZ *out);
 
 void func_8001EAA4(u8 *arg0, u8 *arg1);
 
