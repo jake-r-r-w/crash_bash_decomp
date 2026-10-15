@@ -11,6 +11,7 @@
 
 extern s32 D_80051658;
 extern s32 D_800AD2F8[];
+extern u16 D_800A00D0[];
 extern s32 D_800AD320;
 extern void (*D_8005AA80)(void);
 
@@ -541,5 +542,7 @@ void func_80092AA8(GameModeDef *arg0);
 void func_80092AF4(s32 arg0, s32 arg1);
 
 void func_80092E94(void);
+
+void func_8009400C(void);
 
 #endif /* BASH_ENGINE_H */

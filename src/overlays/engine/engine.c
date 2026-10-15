@@ -1550,7 +1550,16 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800939FC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80093BE8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8009400C);
+void func_8009400C(void) {
+    struct E { s32 a, b; u8 pad[0x30]; };
+    struct G { struct E e[0x1C]; s32 x, y; } *g;
+    struct E *e;
+    u16 i = D_800A00D0[D_8005A640];
+    g = (void *)D_80052A54;
+    e = &g->e[i];
+    g->x = e->a;
+    g->y = e->b;
+}
 
 void func_80094058(void) {
     func_8001E854(D_800A015C);
