@@ -51,7 +51,12 @@ segments:
     vram: 0x800B32B4
     subsegments:
       - [0x0, .rodata, overlays/ovl5d/ovl5d]
+      - [0x480, .rodata, overlays/ovl5d/800bb64c]
+      - [0x764, .rodata, overlays/ovl5d/800bff1c]
       - [0x784, c, overlays/ovl5d/ovl5d]
+      # later files: starts proven by switch-table parity (ARCHITECTURE.md, Files inside the slot overlays)
+      - [0x8398, c, overlays/ovl5d/800bb64c]   # proven after 21 PlotBashPenguin, by 62; fewest call ties at 59
+      - [0xCC68, c, overlays/ovl5d/800bff1c]   # proven after 72, by 80; no call ties 77..80
       - [0xFD50, data, overlays/ovl5d/ovl5d_data]
       - [0x11520, bin, overlays/ovl5d/ovl5d_tail]
   - [0x11521]

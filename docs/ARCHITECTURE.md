@@ -200,6 +200,24 @@ code finds 15 code files; nothing else on the disc holds code.
 
   A start can still move earlier inside its range, and a unit can hide more
   starts where the parity doesn't change.
+- **Files inside the slot overlays** (split 2026-10-15, the same way). A slot
+  overlay's `.rodata` comes first (from `0x800B32B4`, 4 mod 8), then `.text`,
+  `.data`; each later file has its own `.rodata` range in the yaml and an
+  owned header `bash/<ovl>_<unit>.h` (slot overlays share one address range,
+  so the overlay name keeps header names unique), which `bash/<ovl>.h`
+  includes. Most of their functions are declared in the recovered original
+  headers (`bash.h`, `papu.h`, ...), which stay as they are.
+
+  | Overlay | Later files start at (function number, name) | Proven range | Rodata from |
+  |---|---|---|---|
+  | `ovl5d` | 59 `func_800BB64C`; 80 `func_800BFF1C` | 22..62 (fewest call ties at 59); 73..80 (none from 77) | `0x800B3734`; `0x800B3A18` |
+  | `ovl5e` | 50 `func_800B87A0` | 15..50 (fewest call ties at 44..50) | `0x800B33FC` |
+  | `ovl66` | 45 `func_800B6EFC` | 15..50 (fewest call ties at 44, 45) | `0x800B3364` |
+  | `ovl67` | 75 `func_800BBDB8` | 36..75 | `0x800B336C` (`D_800B336C`, used by 75, 78, 129) |
+  | `ovl6a` | 8 `func_800B4EAC` | 3..9 (fewest call ties at 8) | `0x800B330C` |
+
+  `ovl5f`..`ovl65`, `ovl68` have tables but no parity change; `ovl69` has
+  none.
 - **Slot overlays** are named by their first word, an id (`0x5D`..`0x6A`).
   Layout: `.rodata` (id, strings, jump tables), `.text`, `.data`.
 - **Which game is which**: the engine's AST table at `0x80098720`

@@ -51,6 +51,9 @@ segments:
     vram: 0x800B32B4
     subsegments:
       - [0x0, .rodata, overlays/ovl67/ovl67]
+      - [0xB8, .rodata, overlays/ovl67/800bbdb8]
       - [0x1F0, c, overlays/ovl67/ovl67]
+      # later files: starts proven by switch-table parity (ARCHITECTURE.md, Files inside the slot overlays)
+      - [0x8B04, c, overlays/ovl67/800bbdb8]   # proven after 35, by 75; its rodata starts with D_800B336C (used by 75, 78, 129)
       - [0x104C0, data, overlays/ovl67/ovl67_data]
   - [0x14438]

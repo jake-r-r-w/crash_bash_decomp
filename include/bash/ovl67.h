@@ -11,18 +11,10 @@
 s32 func_800BB05C(u8 *arg0);
 u8 *func_800BB624(void);
 void func_800BBD18(void);
-void func_800BC6B8(void);
-void func_800C2E58(void);
-s32 func_800C2F70(void);
-void func_800C3184(void);
-void func_800C3234(void);
-void func_800C3370(void);
-void func_800C36D4(void);
-void func_800C36DC(void);
-void PlotNitroSmokeBoost(NAS *nas);
 
 extern u16 D_800C417A;
 
-void func_800C318C(s32 arg0);
+/* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
+#include "bash/ovl67_800bbdb8.h"
 
 #endif /* BASH_OVL67_H */

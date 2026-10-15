@@ -15,8 +15,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
 - 971/2551 game functions matched (main.exe 559/575, 16 left: 15 parked
-- The engine overlay is six files since 2026-10-15 (`src/overlays/engine/`,
-  ARCHITECTURE.md, Files inside the engine); main.c is still one file.
+- The engine overlay is six files and `ovl5d` three, `ovl5e`, `ovl66`,
+  `ovl67`, `ovl6a` two each since 2026-10-15 (ARCHITECTURE.md, Files inside
+  the engine / the slot overlays); main.c is still one file.
   and `func_8002D4F4`; engine overlay 150 left), 15 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
@@ -75,9 +76,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
    remain, none proven (no positive signal). Positive sign found: jump-table parity
    (`decomp.py units SEG`, any segment) proves file starts; main/main has
    one (95..370), the engine five, five slot overlays some. The engine is split
-   (2026-10-15). Next: the slot overlays with parity flips (`ovl5d`,
-   `ovl5e`, `ovl66`, `ovl67`, `ovl6a`) the same way; keep main.c whole
-   until a cut there is proven (a split
+   (2026-10-15). The slot overlays with parity
+   flips are split too. Keep main.c whole until a cut there is proven;
+   more cuts need another positive signal (a split
    moves functions, so workers' patches and big-mode checkpoints for them
    stop applying). Find the boundaries first and write the evidence in
    ARCHITECTURE.md: rodata order, alignment padding, file-local statics,
@@ -366,6 +367,9 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-15 (by hand, slot overlay splits):** `ovl5d` (two cuts), `ovl5e`,
+  `ovl66`, `ovl67`, `ovl6a` split at their proven starts like the engine;
+  headers `bash/<ovl>_<unit>.h`; `make check` byte-identical.
 - **2026-10-15 (by hand, engine split):** the engine overlay is six files
   at its five proven starts (functions 33, 74, 208, 282, 330), each with
   its rodata block and owned header; `make check` byte-identical. Swarm

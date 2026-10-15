@@ -24647,7 +24647,7 @@
   "src": "src/overlays/ovl5d/ovl5d.c"
  },
  "ovl5d:800BB64C": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800BB64C.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bb64c/func_800BB64C.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "80032490"
@@ -24658,12 +24658,12 @@
   "name": "func_800BB64C",
   "orig": "func_800BB64C",
   "rom": 33688,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bb64c",
   "size": 364,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bb64c.c"
  },
  "ovl5d:800BB7B8": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800BB7B8.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bb64c/func_800BB7B8.s",
   "bin": "disc/ovl5d.bin",
   "calls": [],
   "fp": "533879a8373e61d0",
@@ -24672,12 +24672,12 @@
   "name": "func_800BB7B8",
   "orig": "func_800BB7B8",
   "rom": 34052,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bb64c",
   "size": 48,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bb64c.c"
  },
  "ovl5d:800BB7E8": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800BB7E8.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bb64c/func_800BB7E8.s",
   "bin": "disc/ovl5d.bin",
   "calls": [],
   "fp": "488381cfffcbe96a",
@@ -24686,12 +24686,12 @@
   "name": "func_800BB7E8",
   "orig": "func_800BB7E8",
   "rom": 34100,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bb64c",
   "size": 556,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bb64c.c"
  },
  "ovl5d:800BBA14": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800BBA14.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bb64c/func_800BBA14.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "80022660",
@@ -24708,12 +24708,12 @@
   "name": "func_800BBA14",
   "orig": "func_800BBA14",
   "rom": 34656,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bb64c",
   "size": 820,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bb64c.c"
  },
  "ovl5d:800BBD48": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800BBD48.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bb64c/func_800BBD48.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "80015590",
@@ -24729,12 +24729,12 @@
   "name": "func_800BBD48",
   "orig": "func_800BBD48",
   "rom": 35476,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bb64c",
   "size": 752,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bb64c.c"
  },
  "ovl5d:800BC038": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800BC038.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bb64c/func_800BC038.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "8001463C",
@@ -24765,12 +24765,12 @@
   "name": "func_800BC038",
   "orig": "func_800BC038",
   "rom": 36228,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bb64c",
   "size": 8600,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bb64c.c"
  },
  "ovl5d:800BE1D0": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/InitCratePickup.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bb64c/InitCratePickup.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "80015590",
@@ -24787,12 +24787,12 @@
   "name": "InitCratePickup",
   "orig": "func_800BE1D0",
   "rom": 44828,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bb64c",
   "size": 416,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bb64c.c"
  },
  "ovl5d:800BE370": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/InitShieldPickup.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bb64c/InitShieldPickup.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "80022660",
@@ -24809,12 +24809,12 @@
   "name": "InitShieldPickup",
   "orig": "func_800BE370",
   "rom": 45244,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bb64c",
   "size": 408,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bb64c.c"
  },
  "ovl5d:800BE508": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/InitBootsPickup.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bb64c/InitBootsPickup.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "80022660",
@@ -24831,12 +24831,12 @@
   "name": "InitBootsPickup",
   "orig": "func_800BE508",
   "rom": 45652,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bb64c",
   "size": 408,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bb64c.c"
  },
  "ovl5d:800BE6A0": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/InitAnvilPickup.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bb64c/InitAnvilPickup.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "80022660",
@@ -24853,12 +24853,12 @@
   "name": "InitAnvilPickup",
   "orig": "func_800BE6A0",
   "rom": 46060,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bb64c",
   "size": 408,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bb64c.c"
  },
  "ovl5d:800BE838": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/InitSlowmoPickup.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bb64c/InitSlowmoPickup.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "80022660",
@@ -24875,12 +24875,12 @@
   "name": "InitSlowmoPickup",
   "orig": "func_800BE838",
   "rom": 46468,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bb64c",
   "size": 408,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bb64c.c"
  },
  "ovl5d:800BE9D0": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800BE9D0.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bb64c/func_800BE9D0.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "80022660",
@@ -24895,12 +24895,12 @@
   "name": "func_800BE9D0",
   "orig": "func_800BE9D0",
   "rom": 46876,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bb64c",
   "size": 1048,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bb64c.c"
  },
  "ovl5d:800BEDE8": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800BEDE8.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bb64c/func_800BEDE8.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "80022660"
@@ -24911,12 +24911,12 @@
   "name": "func_800BEDE8",
   "orig": "func_800BEDE8",
   "rom": 47924,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bb64c",
   "size": 280,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bb64c.c"
  },
  "ovl5d:800BEF00": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800BEF00.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bb64c/func_800BEF00.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "80015780",
@@ -24931,12 +24931,12 @@
   "name": "func_800BEF00",
   "orig": "func_800BEF00",
   "rom": 48204,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bb64c",
   "size": 1284,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bb64c.c"
  },
  "ovl5d:800BF404": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800BF404.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bb64c/func_800BF404.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "80025A48",
@@ -24948,12 +24948,12 @@
   "name": "func_800BF404",
   "orig": "func_800BF404",
   "rom": 49488,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bb64c",
   "size": 772,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bb64c.c"
  },
  "ovl5d:800BF708": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800BF708.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bb64c/func_800BF708.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "80025A48",
@@ -24965,12 +24965,12 @@
   "name": "func_800BF708",
   "orig": "func_800BF708",
   "rom": 50260,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bb64c",
   "size": 544,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bb64c.c"
  },
  "ovl5d:800BF928": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800BF928.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bb64c/func_800BF928.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "80025A48"
@@ -24981,12 +24981,12 @@
   "name": "func_800BF928",
   "orig": "func_800BF928",
   "rom": 50804,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bb64c",
   "size": 408,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bb64c.c"
  },
  "ovl5d:800BFAC0": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800BFAC0.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bb64c/func_800BFAC0.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "80015590",
@@ -25000,12 +25000,12 @@
   "name": "func_800BFAC0",
   "orig": "func_800BFAC0",
   "rom": 51212,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bb64c",
   "size": 172,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bb64c.c"
  },
  "ovl5d:800BFB6C": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800BFB6C.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bb64c/func_800BFB6C.s",
   "bin": "disc/ovl5d.bin",
   "calls": [],
   "fp": "d728b2b0975559e4",
@@ -25014,12 +25014,12 @@
   "name": "func_800BFB6C",
   "orig": "func_800BFB6C",
   "rom": 51384,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bb64c",
   "size": 196,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bb64c.c"
  },
  "ovl5d:800BFC30": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800BFC30.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bb64c/func_800BFC30.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "80015590"
@@ -25030,12 +25030,12 @@
   "name": "func_800BFC30",
   "orig": "func_800BFC30",
   "rom": 51580,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bb64c",
   "size": 252,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bb64c.c"
  },
  "ovl5d:800BFD2C": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800BFD2C.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bb64c/func_800BFD2C.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "80015590",
@@ -25049,12 +25049,12 @@
   "name": "func_800BFD2C",
   "orig": "func_800BFD2C",
   "rom": 51832,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bb64c",
   "size": 496,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bb64c.c"
  },
  "ovl5d:800BFF1C": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800BFF1C.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bff1c/func_800BFF1C.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "80022660",
@@ -25068,12 +25068,12 @@
   "name": "func_800BFF1C",
   "orig": "func_800BFF1C",
   "rom": 52328,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bff1c",
   "size": 544,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bff1c.c"
  },
  "ovl5d:800C013C": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800C013C.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bff1c/func_800C013C.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "80015780",
@@ -25086,12 +25086,12 @@
   "name": "func_800C013C",
   "orig": "func_800C013C",
   "rom": 52872,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bff1c",
   "size": 408,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bff1c.c"
  },
  "ovl5d:800C02D4": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800C02D4.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bff1c/func_800C02D4.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "80015780",
@@ -25108,12 +25108,12 @@
   "name": "func_800C02D4",
   "orig": "func_800C02D4",
   "rom": 53280,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bff1c",
   "size": 724,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bff1c.c"
  },
  "ovl5d:800C05A8": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800C05A8.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bff1c/func_800C05A8.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "80015780",
@@ -25130,12 +25130,12 @@
   "name": "func_800C05A8",
   "orig": "func_800C05A8",
   "rom": 54004,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bff1c",
   "size": 588,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bff1c.c"
  },
  "ovl5d:800C07F4": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800C07F4.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bff1c/func_800C07F4.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "80015780",
@@ -25149,12 +25149,12 @@
   "name": "func_800C07F4",
   "orig": "func_800C07F4",
   "rom": 54592,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bff1c",
   "size": 512,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bff1c.c"
  },
  "ovl5d:800C09F4": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800C09F4.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bff1c/func_800C09F4.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "800225C4",
@@ -25167,12 +25167,12 @@
   "name": "func_800C09F4",
   "orig": "func_800C09F4",
   "rom": 55104,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bff1c",
   "size": 440,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bff1c.c"
  },
  "ovl5d:800C0BAC": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800C0BAC.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bff1c/func_800C0BAC.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "800225C4",
@@ -25188,12 +25188,12 @@
   "name": "func_800C0BAC",
   "orig": "func_800C0BAC",
   "rom": 55544,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bff1c",
   "size": 568,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bff1c.c"
  },
  "ovl5d:800C0DE4": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800C0DE4.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bff1c/func_800C0DE4.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "800225C4",
@@ -25205,12 +25205,12 @@
   "name": "func_800C0DE4",
   "orig": "func_800C0DE4",
   "rom": 56112,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bff1c",
   "size": 304,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bff1c.c"
  },
  "ovl5d:800C0F14": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800C0F14.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bff1c/func_800C0F14.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "800225C4",
@@ -25225,12 +25225,12 @@
   "name": "func_800C0F14",
   "orig": "func_800C0F14",
   "rom": 56416,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bff1c",
   "size": 636,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bff1c.c"
  },
  "ovl5d:800C1190": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800C1190.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bff1c/func_800C1190.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "80025F44",
@@ -25245,12 +25245,12 @@
   "name": "func_800C1190",
   "orig": "func_800C1190",
   "rom": 57052,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bff1c",
   "size": 232,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bff1c.c"
  },
  "ovl5d:800C1278": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800C1278.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bff1c/func_800C1278.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "800225C4",
@@ -25264,12 +25264,12 @@
   "name": "func_800C1278",
   "orig": "func_800C1278",
   "rom": 57284,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bff1c",
   "size": 604,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bff1c.c"
  },
  "ovl5d:800C14D4": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800C14D4.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bff1c/func_800C14D4.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "80025F44",
@@ -25281,12 +25281,12 @@
   "name": "func_800C14D4",
   "orig": "func_800C14D4",
   "rom": 57888,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bff1c",
   "size": 200,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bff1c.c"
  },
  "ovl5d:800C159C": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800C159C.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bff1c/func_800C159C.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "800142D4",
@@ -25303,12 +25303,12 @@
   "name": "func_800C159C",
   "orig": "func_800C159C",
   "rom": 58088,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bff1c",
   "size": 684,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bff1c.c"
  },
  "ovl5d:800C1848": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800C1848.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bff1c/func_800C1848.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "8001463C",
@@ -25320,12 +25320,12 @@
   "name": "func_800C1848",
   "orig": "func_800C1848",
   "rom": 58772,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bff1c",
   "size": 488,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bff1c.c"
  },
  "ovl5d:800C1A30": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800C1A30.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bff1c/func_800C1A30.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "800142D4",
@@ -25343,12 +25343,12 @@
   "name": "func_800C1A30",
   "orig": "func_800C1A30",
   "rom": 59260,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bff1c",
   "size": 3612,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bff1c.c"
  },
  "ovl5d:800C284C": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800C284C.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bff1c/func_800C284C.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "800142D4",
@@ -25365,12 +25365,12 @@
   "name": "func_800C284C",
   "orig": "func_800C284C",
   "rom": 62872,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bff1c",
   "size": 788,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bff1c.c"
  },
  "ovl5d:800C2B60": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800C2B60.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bff1c/func_800C2B60.s",
   "bin": "disc/ovl5d.bin",
   "calls": [],
   "fp": "d8a7d77aacd9ba99",
@@ -25379,12 +25379,12 @@
   "name": "func_800C2B60",
   "orig": "func_800C2B60",
   "rom": 63660,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bff1c",
   "size": 272,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bff1c.c"
  },
  "ovl5d:800C2C70": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800C2C70.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bff1c/func_800C2C70.s",
   "bin": "disc/ovl5d.bin",
   "calls": [],
   "fp": "0b1366fd74004bfd",
@@ -25393,12 +25393,12 @@
   "name": "func_800C2C70",
   "orig": "func_800C2C70",
   "rom": 63932,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bff1c",
   "size": 316,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bff1c.c"
  },
  "ovl5d:800C2DAC": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800C2DAC.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bff1c/func_800C2DAC.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "80089BE8",
@@ -25410,12 +25410,12 @@
   "name": "func_800C2DAC",
   "orig": "func_800C2DAC",
   "rom": 64248,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bff1c",
   "size": 172,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bff1c.c"
  },
  "ovl5d:800C2E58": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800C2E58.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bff1c/func_800C2E58.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "800854C0"
@@ -25426,12 +25426,12 @@
   "name": "func_800C2E58",
   "orig": "func_800C2E58",
   "rom": 64420,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bff1c",
   "size": 112,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bff1c.c"
  },
  "ovl5d:800C2EC8": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800C2EC8.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bff1c/func_800C2EC8.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "800854C0"
@@ -25442,12 +25442,12 @@
   "name": "func_800C2EC8",
   "orig": "func_800C2EC8",
   "rom": 64532,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bff1c",
   "size": 76,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bff1c.c"
  },
  "ovl5d:800C2F14": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800C2F14.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bff1c/func_800C2F14.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "800854C0"
@@ -25458,12 +25458,12 @@
   "name": "func_800C2F14",
   "orig": "func_800C2F14",
   "rom": 64608,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bff1c",
   "size": 76,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bff1c.c"
  },
  "ovl5d:800C2F60": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800C2F60.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bff1c/func_800C2F60.s",
   "bin": "disc/ovl5d.bin",
   "calls": [
    "800854C0"
@@ -25474,12 +25474,12 @@
   "name": "func_800C2F60",
   "orig": "func_800C2F60",
   "rom": 64684,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bff1c",
   "size": 80,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bff1c.c"
  },
  "ovl5d:800C2FB0": {
-  "asm": "asm/nonmatchings/overlays/ovl5d/ovl5d/func_800C2FB0.s",
+  "asm": "asm/nonmatchings/overlays/ovl5d/800bff1c/func_800C2FB0.s",
   "bin": "disc/ovl5d.bin",
   "calls": [],
   "fp": "a6d6e1c94c535fef",
@@ -25488,9 +25488,9 @@
   "name": "func_800C2FB0",
   "orig": "func_800C2FB0",
   "rom": 64764,
-  "seg": "overlays/ovl5d/ovl5d",
+  "seg": "overlays/ovl5d/800bff1c",
   "size": 84,
-  "src": "src/overlays/ovl5d/ovl5d.c"
+  "src": "src/overlays/ovl5d/800bff1c.c"
  },
  "ovl5e:800B35AC": {
   "asm": "asm/nonmatchings/overlays/ovl5e/ovl5e/func_800B35AC.s",
@@ -26369,7 +26369,7 @@
   "src": "src/overlays/ovl5e/ovl5e.c"
  },
  "ovl5e:800B87A0": {
-  "asm": "asm/nonmatchings/overlays/ovl5e/ovl5e/func_800B87A0.s",
+  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/func_800B87A0.s",
   "bin": "disc/ovl5e.bin",
   "calls": [
    "8001463C",
@@ -26393,12 +26393,12 @@
   "name": "func_800B87A0",
   "orig": "func_800B87A0",
   "rom": 21740,
-  "seg": "overlays/ovl5e/ovl5e",
+  "seg": "overlays/ovl5e/800b87a0",
   "size": 5844,
-  "src": "src/overlays/ovl5e/ovl5e.c"
+  "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5e:800B9E74": {
-  "asm": "asm/nonmatchings/overlays/ovl5e/ovl5e/func_800B9E74.s",
+  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/func_800B9E74.s",
   "bin": "disc/ovl5e.bin",
   "calls": [
    "80025A48",
@@ -26410,12 +26410,12 @@
   "name": "func_800B9E74",
   "orig": "func_800B9E74",
   "rom": 27584,
-  "seg": "overlays/ovl5e/ovl5e",
+  "seg": "overlays/ovl5e/800b87a0",
   "size": 952,
-  "src": "src/overlays/ovl5e/ovl5e.c"
+  "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5e:800BA22C": {
-  "asm": "asm/nonmatchings/overlays/ovl5e/ovl5e/func_800BA22C.s",
+  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/func_800BA22C.s",
   "bin": "disc/ovl5e.bin",
   "calls": [
    "80025A48"
@@ -26426,12 +26426,12 @@
   "name": "func_800BA22C",
   "orig": "func_800BA22C",
   "rom": 28536,
-  "seg": "overlays/ovl5e/ovl5e",
+  "seg": "overlays/ovl5e/800b87a0",
   "size": 408,
-  "src": "src/overlays/ovl5e/ovl5e.c"
+  "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5e:800BA3C4": {
-  "asm": "asm/nonmatchings/overlays/ovl5e/ovl5e/func_800BA3C4.s",
+  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/func_800BA3C4.s",
   "bin": "disc/ovl5e.bin",
   "calls": [
    "80015590"
@@ -26442,12 +26442,12 @@
   "name": "func_800BA3C4",
   "orig": "func_800BA3C4",
   "rom": 28944,
-  "seg": "overlays/ovl5e/ovl5e",
+  "seg": "overlays/ovl5e/800b87a0",
   "size": 252,
-  "src": "src/overlays/ovl5e/ovl5e.c"
+  "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5e:800BA4C0": {
-  "asm": "asm/nonmatchings/overlays/ovl5e/ovl5e/func_800BA4C0.s",
+  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/func_800BA4C0.s",
   "bin": "disc/ovl5e.bin",
   "calls": [
    "80015590",
@@ -26461,12 +26461,12 @@
   "name": "func_800BA4C0",
   "orig": "func_800BA4C0",
   "rom": 29196,
-  "seg": "overlays/ovl5e/ovl5e",
+  "seg": "overlays/ovl5e/800b87a0",
   "size": 268,
-  "src": "src/overlays/ovl5e/ovl5e.c"
+  "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5e:800BA5CC": {
-  "asm": "asm/nonmatchings/overlays/ovl5e/ovl5e/func_800BA5CC.s",
+  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/func_800BA5CC.s",
   "bin": "disc/ovl5e.bin",
   "calls": [
    "80022660",
@@ -26480,12 +26480,12 @@
   "name": "func_800BA5CC",
   "orig": "func_800BA5CC",
   "rom": 29464,
-  "seg": "overlays/ovl5e/ovl5e",
+  "seg": "overlays/ovl5e/800b87a0",
   "size": 524,
-  "src": "src/overlays/ovl5e/ovl5e.c"
+  "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5e:800BA7D8": {
-  "asm": "asm/nonmatchings/overlays/ovl5e/ovl5e/func_800BA7D8.s",
+  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/func_800BA7D8.s",
   "bin": "disc/ovl5e.bin",
   "calls": [
    "80015780",
@@ -26498,12 +26498,12 @@
   "name": "func_800BA7D8",
   "orig": "func_800BA7D8",
   "rom": 29988,
-  "seg": "overlays/ovl5e/ovl5e",
+  "seg": "overlays/ovl5e/800b87a0",
   "size": 384,
-  "src": "src/overlays/ovl5e/ovl5e.c"
+  "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5e:800BA958": {
-  "asm": "asm/nonmatchings/overlays/ovl5e/ovl5e/func_800BA958.s",
+  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/func_800BA958.s",
   "bin": "disc/ovl5e.bin",
   "calls": [
    "80015780",
@@ -26520,12 +26520,12 @@
   "name": "func_800BA958",
   "orig": "func_800BA958",
   "rom": 30372,
-  "seg": "overlays/ovl5e/ovl5e",
+  "seg": "overlays/ovl5e/800b87a0",
   "size": 584,
-  "src": "src/overlays/ovl5e/ovl5e.c"
+  "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5e:800BABA0": {
-  "asm": "asm/nonmatchings/overlays/ovl5e/ovl5e/func_800BABA0.s",
+  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/func_800BABA0.s",
   "bin": "disc/ovl5e.bin",
   "calls": [
    "80015780",
@@ -26542,12 +26542,12 @@
   "name": "func_800BABA0",
   "orig": "func_800BABA0",
   "rom": 30956,
-  "seg": "overlays/ovl5e/ovl5e",
+  "seg": "overlays/ovl5e/800b87a0",
   "size": 584,
-  "src": "src/overlays/ovl5e/ovl5e.c"
+  "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5e:800BADE8": {
-  "asm": "asm/nonmatchings/overlays/ovl5e/ovl5e/func_800BADE8.s",
+  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/func_800BADE8.s",
   "bin": "disc/ovl5e.bin",
   "calls": [
    "80015780",
@@ -26561,12 +26561,12 @@
   "name": "func_800BADE8",
   "orig": "func_800BADE8",
   "rom": 31540,
-  "seg": "overlays/ovl5e/ovl5e",
+  "seg": "overlays/ovl5e/800b87a0",
   "size": 492,
-  "src": "src/overlays/ovl5e/ovl5e.c"
+  "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5e:800BAFD4": {
-  "asm": "asm/nonmatchings/overlays/ovl5e/ovl5e/func_800BAFD4.s",
+  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/func_800BAFD4.s",
   "bin": "disc/ovl5e.bin",
   "calls": [
    "800225C4",
@@ -26578,12 +26578,12 @@
   "name": "func_800BAFD4",
   "orig": "func_800BAFD4",
   "rom": 32032,
-  "seg": "overlays/ovl5e/ovl5e",
+  "seg": "overlays/ovl5e/800b87a0",
   "size": 256,
-  "src": "src/overlays/ovl5e/ovl5e.c"
+  "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5e:800BB0D4": {
-  "asm": "asm/nonmatchings/overlays/ovl5e/ovl5e/func_800BB0D4.s",
+  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/func_800BB0D4.s",
   "bin": "disc/ovl5e.bin",
   "calls": [
    "800225C4",
@@ -26598,12 +26598,12 @@
   "name": "func_800BB0D4",
   "orig": "func_800BB0D4",
   "rom": 32288,
-  "seg": "overlays/ovl5e/ovl5e",
+  "seg": "overlays/ovl5e/800b87a0",
   "size": 564,
-  "src": "src/overlays/ovl5e/ovl5e.c"
+  "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5e:800BB308": {
-  "asm": "asm/nonmatchings/overlays/ovl5e/ovl5e/func_800BB308.s",
+  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/func_800BB308.s",
   "bin": "disc/ovl5e.bin",
   "calls": [
    "80025F44",
@@ -26618,12 +26618,12 @@
   "name": "func_800BB308",
   "orig": "func_800BB308",
   "rom": 32852,
-  "seg": "overlays/ovl5e/ovl5e",
+  "seg": "overlays/ovl5e/800b87a0",
   "size": 232,
-  "src": "src/overlays/ovl5e/ovl5e.c"
+  "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5e:800BB3F0": {
-  "asm": "asm/nonmatchings/overlays/ovl5e/ovl5e/func_800BB3F0.s",
+  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/func_800BB3F0.s",
   "bin": "disc/ovl5e.bin",
   "calls": [
    "800142D4",
@@ -26640,12 +26640,12 @@
   "name": "func_800BB3F0",
   "orig": "func_800BB3F0",
   "rom": 33084,
-  "seg": "overlays/ovl5e/ovl5e",
+  "seg": "overlays/ovl5e/800b87a0",
   "size": 684,
-  "src": "src/overlays/ovl5e/ovl5e.c"
+  "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5e:800BB69C": {
-  "asm": "asm/nonmatchings/overlays/ovl5e/ovl5e/func_800BB69C.s",
+  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/func_800BB69C.s",
   "bin": "disc/ovl5e.bin",
   "calls": [
    "8001463C",
@@ -26657,12 +26657,12 @@
   "name": "func_800BB69C",
   "orig": "func_800BB69C",
   "rom": 33768,
-  "seg": "overlays/ovl5e/ovl5e",
+  "seg": "overlays/ovl5e/800b87a0",
   "size": 464,
-  "src": "src/overlays/ovl5e/ovl5e.c"
+  "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5e:800BB86C": {
-  "asm": "asm/nonmatchings/overlays/ovl5e/ovl5e/func_800BB86C.s",
+  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/func_800BB86C.s",
   "bin": "disc/ovl5e.bin",
   "calls": [
    "800142D4",
@@ -26680,12 +26680,12 @@
   "name": "func_800BB86C",
   "orig": "func_800BB86C",
   "rom": 34232,
-  "seg": "overlays/ovl5e/ovl5e",
+  "seg": "overlays/ovl5e/800b87a0",
   "size": 2568,
-  "src": "src/overlays/ovl5e/ovl5e.c"
+  "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5e:800BC274": {
-  "asm": "asm/nonmatchings/overlays/ovl5e/ovl5e/func_800BC274.s",
+  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/func_800BC274.s",
   "bin": "disc/ovl5e.bin",
   "calls": [
    "800142D4",
@@ -26702,12 +26702,12 @@
   "name": "func_800BC274",
   "orig": "func_800BC274",
   "rom": 36800,
-  "seg": "overlays/ovl5e/ovl5e",
+  "seg": "overlays/ovl5e/800b87a0",
   "size": 788,
-  "src": "src/overlays/ovl5e/ovl5e.c"
+  "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5e:800BC588": {
-  "asm": "asm/nonmatchings/overlays/ovl5e/ovl5e/func_800BC588.s",
+  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/func_800BC588.s",
   "bin": "disc/ovl5e.bin",
   "calls": [],
   "fp": "d8a7d77aacd9ba99",
@@ -26716,12 +26716,12 @@
   "name": "func_800BC588",
   "orig": "func_800BC588",
   "rom": 37588,
-  "seg": "overlays/ovl5e/ovl5e",
+  "seg": "overlays/ovl5e/800b87a0",
   "size": 272,
-  "src": "src/overlays/ovl5e/ovl5e.c"
+  "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5e:800BC698": {
-  "asm": "asm/nonmatchings/overlays/ovl5e/ovl5e/func_800BC698.s",
+  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/func_800BC698.s",
   "bin": "disc/ovl5e.bin",
   "calls": [
    "80089BE8",
@@ -26733,12 +26733,12 @@
   "name": "func_800BC698",
   "orig": "func_800BC698",
   "rom": 37860,
-  "seg": "overlays/ovl5e/ovl5e",
+  "seg": "overlays/ovl5e/800b87a0",
   "size": 172,
-  "src": "src/overlays/ovl5e/ovl5e.c"
+  "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5e:800BC744": {
-  "asm": "asm/nonmatchings/overlays/ovl5e/ovl5e/func_800BC744.s",
+  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/func_800BC744.s",
   "bin": "disc/ovl5e.bin",
   "calls": [
    "800854C0"
@@ -26749,12 +26749,12 @@
   "name": "func_800BC744",
   "orig": "func_800BC744",
   "rom": 38032,
-  "seg": "overlays/ovl5e/ovl5e",
+  "seg": "overlays/ovl5e/800b87a0",
   "size": 112,
-  "src": "src/overlays/ovl5e/ovl5e.c"
+  "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5e:800BC7B4": {
-  "asm": "asm/nonmatchings/overlays/ovl5e/ovl5e/func_800BC7B4.s",
+  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/func_800BC7B4.s",
   "bin": "disc/ovl5e.bin",
   "calls": [
    "800854C0"
@@ -26765,12 +26765,12 @@
   "name": "func_800BC7B4",
   "orig": "func_800BC7B4",
   "rom": 38144,
-  "seg": "overlays/ovl5e/ovl5e",
+  "seg": "overlays/ovl5e/800b87a0",
   "size": 76,
-  "src": "src/overlays/ovl5e/ovl5e.c"
+  "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5e:800BC800": {
-  "asm": "asm/nonmatchings/overlays/ovl5e/ovl5e/func_800BC800.s",
+  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/func_800BC800.s",
   "bin": "disc/ovl5e.bin",
   "calls": [
    "800854C0"
@@ -26781,12 +26781,12 @@
   "name": "func_800BC800",
   "orig": "func_800BC800",
   "rom": 38220,
-  "seg": "overlays/ovl5e/ovl5e",
+  "seg": "overlays/ovl5e/800b87a0",
   "size": 76,
-  "src": "src/overlays/ovl5e/ovl5e.c"
+  "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5e:800BC84C": {
-  "asm": "asm/nonmatchings/overlays/ovl5e/ovl5e/func_800BC84C.s",
+  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/func_800BC84C.s",
   "bin": "disc/ovl5e.bin",
   "calls": [
    "800854C0"
@@ -26797,9 +26797,9 @@
   "name": "func_800BC84C",
   "orig": "func_800BC84C",
   "rom": 38296,
-  "seg": "overlays/ovl5e/ovl5e",
+  "seg": "overlays/ovl5e/800b87a0",
   "size": 80,
-  "src": "src/overlays/ovl5e/ovl5e.c"
+  "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5f:800B3B24": {
   "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800B3B24.s",
@@ -44184,7 +44184,7 @@
   "src": "src/overlays/ovl66/ovl66.c"
  },
  "ovl66:800B6EFC": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B6EFC.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B6EFC.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "80015780",
@@ -44199,12 +44199,12 @@
   "name": "func_800B6EFC",
   "orig": "func_800B6EFC",
   "rom": 15432,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 456,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B70C4": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B70C4.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B70C4.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "800154A0"
@@ -44215,12 +44215,12 @@
   "name": "func_800B70C4",
   "orig": "func_800B70C4",
   "rom": 15888,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 184,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B717C": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B717C.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B717C.s",
   "bin": "disc/ovl66.bin",
   "calls": [],
   "fp": "1b138037de6f5de6",
@@ -44229,12 +44229,12 @@
   "name": "func_800B717C",
   "orig": "func_800B717C",
   "rom": 16072,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 384,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B72FC": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B72FC.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B72FC.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "800854C0"
@@ -44245,12 +44245,12 @@
   "name": "func_800B72FC",
   "orig": "func_800B72FC",
   "rom": 16456,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 144,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B738C": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B738C.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B738C.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "8008502C",
@@ -44265,12 +44265,12 @@
   "name": "func_800B738C",
   "orig": "func_800B738C",
   "rom": 16600,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 240,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B747C": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B747C.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B747C.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "80022660",
@@ -44286,12 +44286,12 @@
   "name": "func_800B747C",
   "orig": "func_800B747C",
   "rom": 16840,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 592,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B76CC": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B76CC.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B76CC.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "8001463C",
@@ -44308,12 +44308,12 @@
   "name": "func_800B76CC",
   "orig": "func_800B76CC",
   "rom": 17432,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 304,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B77FC": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B77FC.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B77FC.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "8008502C",
@@ -44328,12 +44328,12 @@
   "name": "func_800B77FC",
   "orig": "func_800B77FC",
   "rom": 17736,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 268,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B7908": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B7908.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B7908.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "80022660",
@@ -44352,12 +44352,12 @@
   "name": "func_800B7908",
   "orig": "func_800B7908",
   "rom": 18004,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 576,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B7B48": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B7B48.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B7B48.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "800142D4",
@@ -44375,12 +44375,12 @@
   "name": "func_800B7B48",
   "orig": "func_800B7B48",
   "rom": 18580,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 2568,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B8550": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B8550.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B8550.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "80022A3C",
@@ -44393,12 +44393,12 @@
   "name": "func_800B8550",
   "orig": "func_800B8550",
   "rom": 21148,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 452,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B8714": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B8714.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B8714.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "800868B4"
@@ -44409,12 +44409,12 @@
   "name": "func_800B8714",
   "orig": "func_800B8714",
   "rom": 21600,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 88,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B876C": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B876C.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B876C.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "80026980",
@@ -44426,12 +44426,12 @@
   "name": "func_800B876C",
   "orig": "func_800B876C",
   "rom": 21688,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 168,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B8814": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B8814.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B8814.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "800868B4"
@@ -44442,12 +44442,12 @@
   "name": "func_800B8814",
   "orig": "func_800B8814",
   "rom": 21856,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 88,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B886C": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B886C.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B886C.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "8008502C",
@@ -44459,12 +44459,12 @@
   "name": "func_800B886C",
   "orig": "func_800B886C",
   "rom": 21944,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 172,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B8918": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B8918.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B8918.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "800854C0",
@@ -44476,12 +44476,12 @@
   "name": "func_800B8918",
   "orig": "func_800B8918",
   "rom": 22116,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 192,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B89D8": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B89D8.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B89D8.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "800868B4"
@@ -44492,12 +44492,12 @@
   "name": "func_800B89D8",
   "orig": "func_800B89D8",
   "rom": 22308,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 88,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B8A30": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B8A30.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B8A30.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "8008502C",
@@ -44512,12 +44512,12 @@
   "name": "func_800B8A30",
   "orig": "func_800B8A30",
   "rom": 22396,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 152,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B8AC8": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B8AC8.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B8AC8.s",
   "bin": "disc/ovl66.bin",
   "calls": [],
   "fp": "8593233f16efda43",
@@ -44526,12 +44526,12 @@
   "name": "func_800B8AC8",
   "orig": "func_800B8AC8",
   "rom": 22548,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 44,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B8AF4": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B8AF4.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B8AF4.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "800854C0"
@@ -44542,12 +44542,12 @@
   "name": "func_800B8AF4",
   "orig": "func_800B8AF4",
   "rom": 22592,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 72,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B8B3C": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B8B3C.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B8B3C.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "800854C0"
@@ -44558,12 +44558,12 @@
   "name": "func_800B8B3C",
   "orig": "func_800B8B3C",
   "rom": 22664,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 100,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B8BA0": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B8BA0.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B8BA0.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "80022660",
@@ -44575,12 +44575,12 @@
   "name": "func_800B8BA0",
   "orig": "func_800B8BA0",
   "rom": 22764,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 156,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B8C3C": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B8C3C.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B8C3C.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "8008502C",
@@ -44592,12 +44592,12 @@
   "name": "func_800B8C3C",
   "orig": "func_800B8C3C",
   "rom": 22920,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 120,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B8CB4": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B8CB4.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B8CB4.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "800225C4",
@@ -44609,12 +44609,12 @@
   "name": "func_800B8CB4",
   "orig": "func_800B8CB4",
   "rom": 23040,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 136,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B8D3C": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B8D3C.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B8D3C.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "800854C0"
@@ -44625,12 +44625,12 @@
   "name": "func_800B8D3C",
   "orig": "func_800B8D3C",
   "rom": 23176,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 76,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B8D88": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B8D88.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B8D88.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "800868B4"
@@ -44641,12 +44641,12 @@
   "name": "func_800B8D88",
   "orig": "func_800B8D88",
   "rom": 23252,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 128,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B8E08": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B8E08.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B8E08.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "800868B4"
@@ -44657,12 +44657,12 @@
   "name": "func_800B8E08",
   "orig": "func_800B8E08",
   "rom": 23380,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 92,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B8E64": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B8E64.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B8E64.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "800868B4"
@@ -44673,12 +44673,12 @@
   "name": "func_800B8E64",
   "orig": "func_800B8E64",
   "rom": 23472,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 140,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B8EF0": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B8EF0.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B8EF0.s",
   "bin": "disc/ovl66.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -44687,12 +44687,12 @@
   "name": "func_800B8EF0",
   "orig": "func_800B8EF0",
   "rom": 23612,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 8,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B8EF8": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B8EF8.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B8EF8.s",
   "bin": "disc/ovl66.bin",
   "calls": [],
   "fp": "e31945e132e21b8f",
@@ -44701,12 +44701,12 @@
   "name": "func_800B8EF8",
   "orig": "func_800B8EF8",
   "rom": 23620,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 108,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B8F64": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B8F64.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B8F64.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "8001463C"
@@ -44717,12 +44717,12 @@
   "name": "func_800B8F64",
   "orig": "func_800B8F64",
   "rom": 23728,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 240,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B9054": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B9054.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B9054.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "8001463C"
@@ -44733,12 +44733,12 @@
   "name": "func_800B9054",
   "orig": "func_800B9054",
   "rom": 23968,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 240,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B9144": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B9144.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B9144.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "800B9054"
@@ -44749,12 +44749,12 @@
   "name": "func_800B9144",
   "orig": "func_800B9144",
   "rom": 24208,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 120,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B91BC": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B91BC.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B91BC.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "80026540",
@@ -44768,12 +44768,12 @@
   "name": "func_800B91BC",
   "orig": "func_800B91BC",
   "rom": 24328,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 168,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl66:800B9264": {
-  "asm": "asm/nonmatchings/overlays/ovl66/ovl66/func_800B9264.s",
+  "asm": "asm/nonmatchings/overlays/ovl66/800b6efc/func_800B9264.s",
   "bin": "disc/ovl66.bin",
   "calls": [
    "800B91BC"
@@ -44784,9 +44784,9 @@
   "name": "func_800B9264",
   "orig": "func_800B9264",
   "rom": 24496,
-  "seg": "overlays/ovl66/ovl66",
+  "seg": "overlays/ovl66/800b6efc",
   "size": 56,
-  "src": "src/overlays/ovl66/ovl66.c"
+  "src": "src/overlays/ovl66/800b6efc.c"
  },
  "ovl67:800B34A4": {
   "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800B34A4.s",
@@ -46127,7 +46127,7 @@
   "src": "src/overlays/ovl67/ovl67.c"
  },
  "ovl67:800BBDB8": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800BBDB8.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800BBDB8.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "800322FC",
@@ -46144,12 +46144,12 @@
   "name": "func_800BBDB8",
   "orig": "func_800BBDB8",
   "rom": 35588,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 1516,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800BC3A4": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800BC3A4.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800BC3A4.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80015590",
@@ -46161,12 +46161,12 @@
   "name": "func_800BC3A4",
   "orig": "func_800BC3A4",
   "rom": 37104,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 788,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800BC6B8": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800BC6B8.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800BC6B8.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80015590",
@@ -46178,12 +46178,12 @@
   "name": "func_800BC6B8",
   "orig": "func_800BC6B8",
   "rom": 37892,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 296,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800BC7E0": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800BC7E0.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800BC7E0.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80022A3C",
@@ -46198,12 +46198,12 @@
   "name": "func_800BC7E0",
   "orig": "func_800BC7E0",
   "rom": 38188,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 468,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800BC9B4": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800BC9B4.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800BC9B4.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80015590",
@@ -46220,12 +46220,12 @@
   "name": "func_800BC9B4",
   "orig": "func_800BC9B4",
   "rom": 38656,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 3024,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800BD584": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800BD584.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800BD584.s",
   "bin": "disc/ovl67.bin",
   "calls": [],
   "fp": "ece19631755a6036",
@@ -46234,12 +46234,12 @@
   "name": "func_800BD584",
   "orig": "func_800BD584",
   "rom": 41680,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 356,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800BD6E8": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800BD6E8.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800BD6E8.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80015590",
@@ -46256,12 +46256,12 @@
   "name": "func_800BD6E8",
   "orig": "func_800BD6E8",
   "rom": 42036,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 1048,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800BDB00": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800BDB00.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800BDB00.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80026F48",
@@ -46275,12 +46275,12 @@
   "name": "func_800BDB00",
   "orig": "func_800BDB00",
   "rom": 43084,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 268,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800BDC0C": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800BDC0C.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800BDC0C.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "8001E588",
@@ -46295,12 +46295,12 @@
   "name": "func_800BDC0C",
   "orig": "func_800BDC0C",
   "rom": 43352,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 2816,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800BE70C": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800BE70C.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800BE70C.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80022A3C",
@@ -46314,12 +46314,12 @@
   "name": "func_800BE70C",
   "orig": "func_800BE70C",
   "rom": 46168,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 436,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800BE8C0": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800BE8C0.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800BE8C0.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "8001463C",
@@ -46331,12 +46331,12 @@
   "name": "func_800BE8C0",
   "orig": "func_800BE8C0",
   "rom": 46604,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 680,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800BEB68": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800BEB68.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800BEB68.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "800154A0"
@@ -46347,12 +46347,12 @@
   "name": "func_800BEB68",
   "orig": "func_800BEB68",
   "rom": 47284,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 1348,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800BF0AC": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800BF0AC.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800BF0AC.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "800BE8C0"
@@ -46363,12 +46363,12 @@
   "name": "func_800BF0AC",
   "orig": "func_800BF0AC",
   "rom": 48632,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 720,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800BF37C": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800BF37C.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800BF37C.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80015590",
@@ -46384,12 +46384,12 @@
   "name": "func_800BF37C",
   "orig": "func_800BF37C",
   "rom": 49352,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 1100,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800BF7C8": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800BF7C8.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800BF7C8.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80022A3C",
@@ -46404,12 +46404,12 @@
   "name": "func_800BF7C8",
   "orig": "func_800BF7C8",
   "rom": 50452,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 344,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800BF920": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/InitAsteroidRoll.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/InitAsteroidRoll.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "8002672C",
@@ -46421,12 +46421,12 @@
   "name": "InitAsteroidRoll",
   "orig": "func_800BF920",
   "rom": 50796,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 428,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800BFACC": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/PlotAsteroidRoll.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/PlotAsteroidRoll.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80022FD4",
@@ -46439,12 +46439,12 @@
   "name": "PlotAsteroidRoll",
   "orig": "func_800BFACC",
   "rom": 51224,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 412,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800BFC68": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/PlotNitroMine.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/PlotNitroMine.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80015590",
@@ -46460,12 +46460,12 @@
   "name": "PlotNitroMine",
   "orig": "func_800BFC68",
   "rom": 51636,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 2080,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C0488": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/PlotNitroMissile.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/PlotNitroMissile.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "8001463C",
@@ -46483,12 +46483,12 @@
   "name": "PlotNitroMissile",
   "orig": "func_800C0488",
   "rom": 53716,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 1952,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C0C28": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C0C28.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C0C28.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "8001463C",
@@ -46503,12 +46503,12 @@
   "name": "func_800C0C28",
   "orig": "func_800C0C28",
   "rom": 55668,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 636,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C0EA4": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/InitNitroBoss.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/InitNitroBoss.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "8001E21C",
@@ -46523,12 +46523,12 @@
   "name": "InitNitroBoss",
   "orig": "func_800C0EA4",
   "rom": 56304,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 288,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C0FC4": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/PlotNitroBoss.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/PlotNitroBoss.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "8001E41C",
@@ -46545,12 +46545,12 @@
   "name": "PlotNitroBoss",
   "orig": "func_800C0FC4",
   "rom": 56592,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 1140,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C1438": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/InitSpiralSat.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/InitSpiralSat.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80015590",
@@ -46565,12 +46565,12 @@
   "name": "InitSpiralSat",
   "orig": "func_800C1438",
   "rom": 57732,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 500,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C162C": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/PlotSpiralSat.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/PlotSpiralSat.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80022A3C",
@@ -46585,12 +46585,12 @@
   "name": "PlotSpiralSat",
   "orig": "func_800C162C",
   "rom": 58232,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 1740,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C1CF8": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/PlotMineSFX.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/PlotMineSFX.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80022660",
@@ -46602,12 +46602,12 @@
   "name": "PlotMineSFX",
   "orig": "func_800C1CF8",
   "rom": 59972,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 548,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C1F1C": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/PlotLaserShoot.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/PlotLaserShoot.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80015590",
@@ -46622,12 +46622,12 @@
   "name": "PlotLaserShoot",
   "orig": "func_800C1F1C",
   "rom": 60520,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 764,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C2218": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C2218.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C2218.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80015590"
@@ -46638,12 +46638,12 @@
   "name": "func_800C2218",
   "orig": "func_800C2218",
   "rom": 61284,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 356,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C237C": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C237C.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C237C.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80015590",
@@ -46656,12 +46656,12 @@
   "name": "func_800C237C",
   "orig": "func_800C237C",
   "rom": 61640,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 1112,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C27D4": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C27D4.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C27D4.s",
   "bin": "disc/ovl67.bin",
   "calls": [],
   "fp": "b5d3374d97acd169",
@@ -46670,12 +46670,12 @@
   "name": "func_800C27D4",
   "orig": "func_800C27D4",
   "rom": 62752,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 124,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C2850": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/InitLaserShoot.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/InitLaserShoot.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80026B70"
@@ -46686,12 +46686,12 @@
   "name": "InitLaserShoot",
   "orig": "func_800C2850",
   "rom": 62876,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 108,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C28BC": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/InitMineSFX.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/InitMineSFX.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80015590"
@@ -46702,12 +46702,12 @@
   "name": "InitMineSFX",
   "orig": "func_800C28BC",
   "rom": 62984,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 72,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C2904": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C2904.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C2904.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "8001463C",
@@ -46719,12 +46719,12 @@
   "name": "func_800C2904",
   "orig": "func_800C2904",
   "rom": 63056,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 240,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C29F4": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/InitNitroMissile.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/InitNitroMissile.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80015590",
@@ -46737,12 +46737,12 @@
   "name": "InitNitroMissile",
   "orig": "func_800C29F4",
   "rom": 63296,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 304,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C2B24": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/InitNitroMine.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/InitNitroMine.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80015590"
@@ -46753,12 +46753,12 @@
   "name": "InitNitroMine",
   "orig": "func_800C2B24",
   "rom": 63600,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 140,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C2BB0": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C2BB0.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C2BB0.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80022A3C"
@@ -46769,12 +46769,12 @@
   "name": "func_800C2BB0",
   "orig": "func_800C2BB0",
   "rom": 63740,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 88,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C2C08": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C2C08.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C2C08.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "8008502C",
@@ -46788,12 +46788,12 @@
   "name": "func_800C2C08",
   "orig": "func_800C2C08",
   "rom": 63828,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 132,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C2C8C": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C2C8C.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C2C8C.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80085718",
@@ -46805,12 +46805,12 @@
   "name": "func_800C2C8C",
   "orig": "func_800C2C8C",
   "rom": 63960,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 132,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C2D10": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C2D10.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C2D10.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "800868B4"
@@ -46821,12 +46821,12 @@
   "name": "func_800C2D10",
   "orig": "func_800C2D10",
   "rom": 64092,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 112,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C2D80": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C2D80.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C2D80.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "800868B4"
@@ -46837,12 +46837,12 @@
   "name": "func_800C2D80",
   "orig": "func_800C2D80",
   "rom": 64204,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 88,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C2DD8": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C2DD8.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C2DD8.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80022A3C",
@@ -46855,12 +46855,12 @@
   "name": "func_800C2DD8",
   "orig": "func_800C2DD8",
   "rom": 64292,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 128,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C2E58": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C2E58.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C2E58.s",
   "bin": "disc/ovl67.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -46869,12 +46869,12 @@
   "name": "func_800C2E58",
   "orig": "func_800C2E58",
   "rom": 64420,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 8,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C2E60": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C2E60.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C2E60.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "800854C0",
@@ -46886,12 +46886,12 @@
   "name": "func_800C2E60",
   "orig": "func_800C2E60",
   "rom": 64428,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 152,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C2EF8": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C2EF8.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C2EF8.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "800154A0"
@@ -46902,12 +46902,12 @@
   "name": "func_800C2EF8",
   "orig": "func_800C2EF8",
   "rom": 64580,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 120,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C2F70": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C2F70.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C2F70.s",
   "bin": "disc/ovl67.bin",
   "calls": [],
   "fp": "af99c5b3dbef98d9",
@@ -46916,12 +46916,12 @@
   "name": "func_800C2F70",
   "orig": "func_800C2F70",
   "rom": 64700,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 8,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C2F78": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C2F78.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C2F78.s",
   "bin": "disc/ovl67.bin",
   "calls": [],
   "fp": "2f29d8ad5f235fc4",
@@ -46930,12 +46930,12 @@
   "name": "func_800C2F78",
   "orig": "func_800C2F78",
   "rom": 64708,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 264,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C3080": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/PlotDummyCamera.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/PlotDummyCamera.s",
   "bin": "disc/ovl67.bin",
   "calls": [],
   "fp": "6bea5952325c3a84",
@@ -46944,12 +46944,12 @@
   "name": "PlotDummyCamera",
   "orig": "func_800C3080",
   "rom": 64972,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 244,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C3174": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/InitDummyCamera.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/InitDummyCamera.s",
   "bin": "disc/ovl67.bin",
   "calls": [],
   "fp": "edf61992dae7bcd4",
@@ -46958,12 +46958,12 @@
   "name": "InitDummyCamera",
   "orig": "func_800C3174",
   "rom": 65216,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 16,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C3184": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C3184.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C3184.s",
   "bin": "disc/ovl67.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -46972,12 +46972,12 @@
   "name": "func_800C3184",
   "orig": "func_800C3184",
   "rom": 65232,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 8,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C318C": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C318C.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C318C.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80018B08",
@@ -46990,12 +46990,12 @@
   "name": "func_800C318C",
   "orig": "func_800C318C",
   "rom": 65240,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 168,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C3234": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C3234.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C3234.s",
   "bin": "disc/ovl67.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -47004,12 +47004,12 @@
   "name": "func_800C3234",
   "orig": "func_800C3234",
   "rom": 65408,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 8,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C323C": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C323C.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C323C.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80022A3C",
@@ -47022,12 +47022,12 @@
   "name": "func_800C323C",
   "orig": "func_800C323C",
   "rom": 65416,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 308,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C3370": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C3370.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C3370.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80015590",
@@ -47039,12 +47039,12 @@
   "name": "func_800C3370",
   "orig": "func_800C3370",
   "rom": 65724,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 208,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C3440": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C3440.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C3440.s",
   "bin": "disc/ovl67.bin",
   "calls": [],
   "fp": "40cec383e1ac31c4",
@@ -47053,12 +47053,12 @@
   "name": "func_800C3440",
   "orig": "func_800C3440",
   "rom": 65932,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 92,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C349C": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C349C.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C349C.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "8001E0A8",
@@ -47073,12 +47073,12 @@
   "name": "func_800C349C",
   "orig": "func_800C349C",
   "rom": 66024,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 168,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C3544": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C3544.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C3544.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "800322FC",
@@ -47090,12 +47090,12 @@
   "name": "func_800C3544",
   "orig": "func_800C3544",
   "rom": 66192,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 280,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C365C": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C365C.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C365C.s",
   "bin": "disc/ovl67.bin",
   "calls": [],
   "fp": "2685898264f7d53e",
@@ -47104,12 +47104,12 @@
   "name": "func_800C365C",
   "orig": "func_800C365C",
   "rom": 66472,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 120,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C36D4": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C36D4.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C36D4.s",
   "bin": "disc/ovl67.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -47118,12 +47118,12 @@
   "name": "func_800C36D4",
   "orig": "func_800C36D4",
   "rom": 66592,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 8,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C36DC": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C36DC.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/func_800C36DC.s",
   "bin": "disc/ovl67.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -47132,9 +47132,9 @@
   "name": "func_800C36DC",
   "orig": "func_800C36DC",
   "rom": 66600,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 8,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C36E4": {
   "asm": "asm/nonmatchings/overlays/ovl67/ovl67/func_800C36E4.s",
@@ -47148,12 +47148,12 @@
   "name": "func_800C36E4",
   "orig": "func_800C36E4",
   "rom": 66608,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 32,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl67:800C3704": {
-  "asm": "asm/nonmatchings/overlays/ovl67/ovl67/InitNitroSmokeBoost.s",
+  "asm": "asm/nonmatchings/overlays/ovl67/800bbdb8/InitNitroSmokeBoost.s",
   "bin": "disc/ovl67.bin",
   "calls": [
    "80024E30"
@@ -47164,9 +47164,9 @@
   "name": "InitNitroSmokeBoost",
   "orig": "func_800C3704",
   "rom": 66640,
-  "seg": "overlays/ovl67/ovl67",
+  "seg": "overlays/ovl67/800bbdb8",
   "size": 112,
-  "src": "src/overlays/ovl67/ovl67.c"
+  "src": "src/overlays/ovl67/800bbdb8.c"
  },
  "ovl68:800B3330": {
   "asm": "asm/nonmatchings/overlays/ovl68/ovl68/func_800B3330.s",
@@ -50157,7 +50157,7 @@
   "src": "src/overlays/ovl6a/ovl6a.c"
  },
  "ovl6a:800B4EAC": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B4EAC.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B4EAC.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "8001E934",
@@ -50177,12 +50177,12 @@
   "name": "func_800B4EAC",
   "orig": "func_800B4EAC",
   "rom": 7160,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 684,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B5158": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B5158.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B5158.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "8001463C",
@@ -50196,12 +50196,12 @@
   "name": "func_800B5158",
   "orig": "func_800B5158",
   "rom": 7844,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 964,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B551C": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B551C.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B551C.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "8001636C",
@@ -50214,12 +50214,12 @@
   "name": "func_800B551C",
   "orig": "func_800B551C",
   "rom": 8808,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 500,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B5710": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B5710.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B5710.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80015480",
@@ -50241,12 +50241,12 @@
   "name": "func_800B5710",
   "orig": "func_800B5710",
   "rom": 9308,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 2836,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B6224": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B6224.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B6224.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80095BEC",
@@ -50258,12 +50258,12 @@
   "name": "func_800B6224",
   "orig": "func_800B6224",
   "rom": 12144,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 676,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B64C8": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B64C8.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B64C8.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80015284",
@@ -50282,12 +50282,12 @@
   "name": "func_800B64C8",
   "orig": "func_800B64C8",
   "rom": 12820,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 1156,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B694C": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B694C.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B694C.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "269e90c88a3dfd70",
@@ -50296,12 +50296,12 @@
   "name": "func_800B694C",
   "orig": "func_800B694C",
   "rom": 13976,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 240,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B6A3C": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B6A3C.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B6A3C.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80012FFC",
@@ -50319,12 +50319,12 @@
   "name": "func_800B6A3C",
   "orig": "func_800B6A3C",
   "rom": 14216,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 996,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B6E20": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B6E20.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B6E20.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80022A3C",
@@ -50336,12 +50336,12 @@
   "name": "func_800B6E20",
   "orig": "func_800B6E20",
   "rom": 15212,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 436,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B6FD4": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B6FD4.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B6FD4.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "8001463C",
@@ -50361,12 +50361,12 @@
   "name": "func_800B6FD4",
   "orig": "func_800B6FD4",
   "rom": 15648,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 2012,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B77B0": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B77B0.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B77B0.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80024E30",
@@ -50378,9 +50378,9 @@
   "name": "func_800B77B0",
   "orig": "func_800B77B0",
   "rom": 17660,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 196,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B7874": {
   "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B7874.s",
@@ -50392,12 +50392,12 @@
   "name": "func_800B7874",
   "orig": "func_800B7874",
   "rom": 17856,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 8,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B787C": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B787C.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B787C.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "b630d662f6e4527d",
@@ -50406,12 +50406,12 @@
   "name": "func_800B787C",
   "orig": "func_800B787C",
   "rom": 17864,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 268,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B7988": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B7988.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B7988.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "8001463C",
@@ -50423,12 +50423,12 @@
   "name": "func_800B7988",
   "orig": "func_800B7988",
   "rom": 18132,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 240,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B7A78": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B7A78.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B7A78.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "8001DCD4"
@@ -50439,12 +50439,12 @@
   "name": "func_800B7A78",
   "orig": "func_800B7A78",
   "rom": 18372,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 60,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B7AB4": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B7AB4.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B7AB4.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "1539159b4b7746cd",
@@ -50453,12 +50453,12 @@
   "name": "func_800B7AB4",
   "orig": "func_800B7AB4",
   "rom": 18432,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 132,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B7B38": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B7B38.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B7B38.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "0b996459525b0ac5",
@@ -50467,12 +50467,12 @@
   "name": "func_800B7B38",
   "orig": "func_800B7B38",
   "rom": 18564,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 68,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B7B7C": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B7B7C.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B7B7C.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80095A04"
@@ -50483,12 +50483,12 @@
   "name": "func_800B7B7C",
   "orig": "func_800B7B7C",
   "rom": 18632,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 40,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B7BA4": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B7BA4.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B7BA4.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80018B08",
@@ -50501,12 +50501,12 @@
   "name": "func_800B7BA4",
   "orig": "func_800B7BA4",
   "rom": 18672,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 212,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B7C78": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B7C78.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B7C78.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "800B64C8"
@@ -50517,12 +50517,12 @@
   "name": "func_800B7C78",
   "orig": "func_800B7C78",
   "rom": 18884,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 32,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B7C98": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B7C98.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B7C98.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "22cc78bdaf8171fd",
@@ -50531,12 +50531,12 @@
   "name": "func_800B7C98",
   "orig": "func_800B7C98",
   "rom": 18916,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 16,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B7CA8": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B7CA8.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B7CA8.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80018B08",
@@ -50549,12 +50549,12 @@
   "name": "func_800B7CA8",
   "orig": "func_800B7CA8",
   "rom": 18932,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 212,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B7D7C": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B7D7C.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B7D7C.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "22cc78bdaf8171fd",
@@ -50563,12 +50563,12 @@
   "name": "func_800B7D7C",
   "orig": "func_800B7D7C",
   "rom": 19144,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 16,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B7D8C": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B7D8C.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B7D8C.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80095A04"
@@ -50579,12 +50579,12 @@
   "name": "func_800B7D8C",
   "orig": "func_800B7D8C",
   "rom": 19160,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 40,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B7DB4": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B7DB4.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B7DB4.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "9dd9727daa998e95",
@@ -50593,9 +50593,9 @@
   "name": "func_800B7DB4",
   "orig": "func_800B7DB4",
   "rom": 19200,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 80,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B7E04": {
   "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B7E04.s",
@@ -50607,9 +50607,9 @@
   "name": "func_800B7E04",
   "orig": "func_800B7E04",
   "rom": 19280,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 8,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B7E0C": {
   "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B7E0C.s",
@@ -50621,12 +50621,12 @@
   "name": "func_800B7E0C",
   "orig": "func_800B7E0C",
   "rom": 19288,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 8,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B7E14": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B7E14.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B7E14.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80022660",
@@ -50639,12 +50639,12 @@
   "name": "func_800B7E14",
   "orig": "func_800B7E14",
   "rom": 19296,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 272,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B7F24": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B7F24.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B7F24.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80032490"
@@ -50655,12 +50655,12 @@
   "name": "func_800B7F24",
   "orig": "func_800B7F24",
   "rom": 19568,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 80,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B7F74": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B7F74.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B7F74.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "9d80a494e85795ec",
@@ -50669,12 +50669,12 @@
   "name": "func_800B7F74",
   "orig": "func_800B7F74",
   "rom": 19648,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 56,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B7FAC": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B7FAC.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B7FAC.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "696307244770e622",
@@ -50683,12 +50683,12 @@
   "name": "func_800B7FAC",
   "orig": "func_800B7FAC",
   "rom": 19704,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 36,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B7FD0": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B7FD0.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B7FD0.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "8001463C",
@@ -50700,12 +50700,12 @@
   "name": "func_800B7FD0",
   "orig": "func_800B7FD0",
   "rom": 19740,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 200,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B8098": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B8098.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B8098.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80013F44",
@@ -50717,12 +50717,12 @@
   "name": "func_800B8098",
   "orig": "func_800B8098",
   "rom": 19940,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 176,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B8148": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B8148.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B8148.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "2c8bf4f98905bc39",
@@ -50731,12 +50731,12 @@
   "name": "func_800B8148",
   "orig": "func_800B8148",
   "rom": 20116,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 44,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B8174": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B8174.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B8174.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "a497b14f79721a01",
@@ -50745,12 +50745,12 @@
   "name": "func_800B8174",
   "orig": "func_800B8174",
   "rom": 20160,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 168,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B821C": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B821C.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B821C.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "af99c5b3dbef98d9",
@@ -50759,12 +50759,12 @@
   "name": "func_800B821C",
   "orig": "func_800B821C",
   "rom": 20328,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 8,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B8224": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B8224.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B8224.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "af99c5b3dbef98d9",
@@ -50773,12 +50773,12 @@
   "name": "func_800B8224",
   "orig": "func_800B8224",
   "rom": 20336,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 8,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B822C": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B822C.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B822C.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "623e029c6ed2e4fe",
@@ -50787,12 +50787,12 @@
   "name": "func_800B822C",
   "orig": "func_800B822C",
   "rom": 20344,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 88,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B8284": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B8284.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B8284.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "38652016a5c5b0f4",
@@ -50801,12 +50801,12 @@
   "name": "func_800B8284",
   "orig": "func_800B8284",
   "rom": 20432,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 160,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B8324": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B8324.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B8324.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "57054a9ebc50f061",
@@ -50815,12 +50815,12 @@
   "name": "func_800B8324",
   "orig": "func_800B8324",
   "rom": 20592,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 104,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B838C": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B838C.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B838C.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "9717c059a5bf933a",
@@ -50829,12 +50829,12 @@
   "name": "func_800B838C",
   "orig": "func_800B838C",
   "rom": 20696,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 72,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B83D4": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B83D4.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B83D4.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "cf2c52553266ece0",
@@ -50843,12 +50843,12 @@
   "name": "func_800B83D4",
   "orig": "func_800B83D4",
   "rom": 20768,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 160,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B8474": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B8474.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B8474.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "8001E48C",
@@ -50861,12 +50861,12 @@
   "name": "func_800B8474",
   "orig": "func_800B8474",
   "rom": 20928,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 88,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B84CC": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B84CC.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B84CC.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80015480"
@@ -50877,12 +50877,12 @@
   "name": "func_800B84CC",
   "orig": "func_800B84CC",
   "rom": 21016,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 188,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B8588": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B8588.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B8588.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "8009440C"
@@ -50893,12 +50893,12 @@
   "name": "func_800B8588",
   "orig": "func_800B8588",
   "rom": 21204,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 32,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B85A8": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B85A8.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B85A8.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "800139A8",
@@ -50911,12 +50911,12 @@
   "name": "func_800B85A8",
   "orig": "func_800B85A8",
   "rom": 21236,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 60,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B85E4": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B85E4.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B85E4.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "8001463C"
@@ -50927,12 +50927,12 @@
   "name": "func_800B85E4",
   "orig": "func_800B85E4",
   "rom": 21296,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 200,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B86AC": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B86AC.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B86AC.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "91c7d9567c8e0890",
@@ -50941,12 +50941,12 @@
   "name": "func_800B86AC",
   "orig": "func_800B86AC",
   "rom": 21496,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 92,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B8708": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B8708.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B8708.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "57b019ee22e73e9e",
@@ -50955,12 +50955,12 @@
   "name": "func_800B8708",
   "orig": "func_800B8708",
   "rom": 21588,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 84,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B875C": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B875C.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B875C.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80016D44",
@@ -50973,12 +50973,12 @@
   "name": "func_800B875C",
   "orig": "func_800B875C",
   "rom": 21672,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 348,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B88B8": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B88B8.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B88B8.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "800165F8",
@@ -50993,12 +50993,12 @@
   "name": "func_800B88B8",
   "orig": "func_800B88B8",
   "rom": 22020,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 492,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B8AA4": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B8AA4.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B8AA4.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "fb4636f75d96100c",
@@ -51007,12 +51007,12 @@
   "name": "func_800B8AA4",
   "orig": "func_800B8AA4",
   "rom": 22512,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 292,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B8BC8": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B8BC8.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B8BC8.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "8f707dd29a37726b",
@@ -51021,12 +51021,12 @@
   "name": "func_800B8BC8",
   "orig": "func_800B8BC8",
   "rom": 22804,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 216,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B8CA0": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B8CA0.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B8CA0.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80015590",
@@ -51039,12 +51039,12 @@
   "name": "func_800B8CA0",
   "orig": "func_800B8CA0",
   "rom": 23020,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 688,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B8F50": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B8F50.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B8F50.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80015590",
@@ -51057,12 +51057,12 @@
   "name": "func_800B8F50",
   "orig": "func_800B8F50",
   "rom": 23708,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 848,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B92A0": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/PlotPodiumOdo.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/PlotPodiumOdo.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80015590",
@@ -51076,12 +51076,12 @@
   "name": "PlotPodiumOdo",
   "orig": "func_800B92A0",
   "rom": 24556,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 276,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B93B4": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B93B4.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B93B4.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80024E30",
@@ -51093,12 +51093,12 @@
   "name": "func_800B93B4",
   "orig": "func_800B93B4",
   "rom": 24832,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 388,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B9538": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/PlotPodiumTrophy.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/PlotPodiumTrophy.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "bb666d0249766d4c",
@@ -51107,12 +51107,12 @@
   "name": "PlotPodiumTrophy",
   "orig": "func_800B9538",
   "rom": 25220,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 444,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B96F4": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B96F4.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B96F4.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "8001463C",
@@ -51129,12 +51129,12 @@
   "name": "func_800B96F4",
   "orig": "func_800B96F4",
   "rom": 25664,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 1048,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B9B0C": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B9B0C.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B9B0C.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80095BEC",
@@ -51146,12 +51146,12 @@
   "name": "func_800B9B0C",
   "orig": "func_800B9B0C",
   "rom": 26712,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 528,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B9D1C": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B9D1C.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B9D1C.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80015D70",
@@ -51164,12 +51164,12 @@
   "name": "func_800B9D1C",
   "orig": "func_800B9D1C",
   "rom": 27240,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 372,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800B9E90": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800B9E90.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800B9E90.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80015590"
@@ -51180,12 +51180,12 @@
   "name": "func_800B9E90",
   "orig": "func_800B9E90",
   "rom": 27612,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 804,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800BA1B4": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800BA1B4.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800BA1B4.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "8001463C"
@@ -51196,12 +51196,12 @@
   "name": "func_800BA1B4",
   "orig": "func_800BA1B4",
   "rom": 28416,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 448,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800BA374": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800BA374.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800BA374.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "8002A2EC",
@@ -51213,12 +51213,12 @@
   "name": "func_800BA374",
   "orig": "func_800BA374",
   "rom": 28864,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 1096,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800BA7BC": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800BA7BC.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800BA7BC.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80022FD4"
@@ -51229,12 +51229,12 @@
   "name": "func_800BA7BC",
   "orig": "func_800BA7BC",
   "rom": 29960,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 72,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800BA804": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800BA804.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800BA804.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80095E38"
@@ -51245,12 +51245,12 @@
   "name": "func_800BA804",
   "orig": "func_800BA804",
   "rom": 30032,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 68,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800BA848": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800BA848.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800BA848.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80095E38"
@@ -51261,12 +51261,12 @@
   "name": "func_800BA848",
   "orig": "func_800BA848",
   "rom": 30100,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 68,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800BA88C": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800BA88C.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800BA88C.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "b554b3809705b058",
@@ -51275,12 +51275,12 @@
   "name": "func_800BA88C",
   "orig": "func_800BA88C",
   "rom": 30168,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 96,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800BA8EC": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/InitPodiumTrophy.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/InitPodiumTrophy.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80022FD4"
@@ -51291,9 +51291,9 @@
   "name": "InitPodiumTrophy",
   "orig": "func_800BA8EC",
   "rom": 30264,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 140,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800BA978": {
   "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800BA978.s",
@@ -51307,12 +51307,12 @@
   "name": "func_800BA978",
   "orig": "func_800BA978",
   "rom": 30404,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 80,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800BA9C8": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800BA9C8.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800BA9C8.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80018F3C",
@@ -51324,12 +51324,12 @@
   "name": "func_800BA9C8",
   "orig": "func_800BA9C8",
   "rom": 30484,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 308,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800BAAFC": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800BAAFC.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800BAAFC.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80018B08",
@@ -51343,12 +51343,12 @@
   "name": "func_800BAAFC",
   "orig": "func_800BAAFC",
   "rom": 30792,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 68,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800BAB40": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800BAB40.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800BAB40.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "800B8F50"
@@ -51359,12 +51359,12 @@
   "name": "func_800BAB40",
   "orig": "func_800BAB40",
   "rom": 30860,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 172,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800BABEC": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800BABEC.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800BABEC.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80022660"
@@ -51375,12 +51375,12 @@
   "name": "func_800BABEC",
   "orig": "func_800BABEC",
   "rom": 31032,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 1100,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800BB038": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800BB038.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800BB038.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80014388",
@@ -51397,12 +51397,12 @@
   "name": "func_800BB038",
   "orig": "func_800BB038",
   "rom": 32132,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 584,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800BB280": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800BB280.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800BB280.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80018B08",
@@ -51415,12 +51415,12 @@
   "name": "func_800BB280",
   "orig": "func_800BB280",
   "rom": 32716,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 228,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800BB364": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800BB364.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800BB364.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80095A04"
@@ -51431,12 +51431,12 @@
   "name": "func_800BB364",
   "orig": "func_800BB364",
   "rom": 32944,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 40,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800BB38C": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800BB38C.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800BB38C.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "800BABEC"
@@ -51447,12 +51447,12 @@
   "name": "func_800BB38C",
   "orig": "func_800BB38C",
   "rom": 32984,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 68,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800BB3D0": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800BB3D0.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800BB3D0.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80022660"
@@ -51463,12 +51463,12 @@
   "name": "func_800BB3D0",
   "orig": "func_800BB3D0",
   "rom": 33052,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 220,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800BB4AC": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800BB4AC.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800BB4AC.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "8001D334",
@@ -51481,12 +51481,12 @@
   "name": "func_800BB4AC",
   "orig": "func_800BB4AC",
   "rom": 33272,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 216,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800BB584": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800BB584.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800BB584.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "cc0b7fa51709ecd5",
@@ -51495,12 +51495,12 @@
   "name": "func_800BB584",
   "orig": "func_800BB584",
   "rom": 33488,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 108,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800BB5F0": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800BB5F0.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800BB5F0.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "800159C4"
@@ -51511,12 +51511,12 @@
   "name": "func_800BB5F0",
   "orig": "func_800BB5F0",
   "rom": 33596,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 1652,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800BBC64": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800BBC64.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800BBC64.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "8002FAF4"
@@ -51527,12 +51527,12 @@
   "name": "func_800BBC64",
   "orig": "func_800BBC64",
   "rom": 35248,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 440,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800BBE1C": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800BBE1C.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800BBE1C.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -51541,12 +51541,12 @@
   "name": "func_800BBE1C",
   "orig": "func_800BBE1C",
   "rom": 35688,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 8,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800BBE24": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800BBE24.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800BBE24.s",
   "bin": "disc/ovl6a.bin",
   "calls": [
    "80019A60",
@@ -51561,12 +51561,12 @@
   "name": "func_800BBE24",
   "orig": "func_800BBE24",
   "rom": 35696,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 288,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  },
  "ovl6a:800BBF44": {
-  "asm": "asm/nonmatchings/overlays/ovl6a/ovl6a/func_800BBF44.s",
+  "asm": "asm/nonmatchings/overlays/ovl6a/800b4eac/func_800BBF44.s",
   "bin": "disc/ovl6a.bin",
   "calls": [],
   "fp": "51544c3a20847432",
@@ -51575,8 +51575,8 @@
   "name": "func_800BBF44",
   "orig": "func_800BBF44",
   "rom": 35984,
-  "seg": "overlays/ovl6a/ovl6a",
+  "seg": "overlays/ovl6a/800b4eac",
   "size": 164,
-  "src": "src/overlays/ovl6a/ovl6a.c"
+  "src": "src/overlays/ovl6a/800b4eac.c"
  }
 }

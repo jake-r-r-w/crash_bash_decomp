@@ -20,4 +20,7 @@ void func_800B7D9C(void);
 
 void func_800B7DA4(void);
 
+/* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
+#include "bash/ovl5e_800b87a0.h"
+
 #endif /* BASH_OVL5E_H */

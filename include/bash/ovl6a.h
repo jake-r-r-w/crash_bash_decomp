@@ -10,33 +10,14 @@
 
 s32 *func_800B4D8C(void);
 void func_800B4DE8(void);
-void func_800B7874(void);
-void func_800B7A78(void);
-void func_800B7B7C(void);
-void func_800B7C78(void);
-void func_800B7C98(void);
-void func_800B7D7C(void);
-void func_800B7D8C(void);
-void func_800B7DB4(u8 *arg0, s32 arg1);
-void PlotGatewayTrophy(void);
-void InitGatewayTrophy(void);
-s32 func_800B7F74(u8 *arg0, u8 *arg1);
-s32 func_800B821C(void);
-s32 func_800B8224(void);
-void func_800B8588(void);
-void func_800B85A8(void);
-void func_800BA804(void);
-void func_800BA848(void);
-void InitPodiumOdo(u8 *arg0);
-void func_800BAAFC(void);
-void func_800BB364(void);
-void func_800BB38C(void);
-void func_800BBE1C(void);
 
 extern u8 D_800C7294[];
 extern s32 D_800BCED4;
 extern s32 D_800BCED8;
 extern s32 D_800BCEE0;
 extern subengine *D_800BCEE8;
+
+/* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
+#include "bash/ovl6a_800b4eac.h"
 
 #endif /* BASH_OVL6A_H */

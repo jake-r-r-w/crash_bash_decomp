@@ -20,6 +20,8 @@ void func_800BB360(void);
 
 void func_800BB368(void);
 
-void func_800C2E58(void);
+/* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
+#include "bash/ovl5d_800bb64c.h"
+#include "bash/ovl5d_800bff1c.h"
 
 #endif /* BASH_OVL5D_H */

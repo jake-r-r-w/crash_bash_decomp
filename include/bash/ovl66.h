@@ -19,9 +19,10 @@ void func_800B69A0(void);
 void func_800B6A1C(void);
 void func_800B6AF4(void);
 void func_800B6AFC(void);
-void func_800B8EF0(void);
-void func_800B9264(void);
 
 extern s32 D_800B9EEC;
+
+/* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
+#include "bash/ovl66_800b6efc.h"
 
 #endif /* BASH_OVL66_H */

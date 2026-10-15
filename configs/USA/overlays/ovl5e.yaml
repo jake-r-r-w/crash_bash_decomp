@@ -51,7 +51,10 @@ segments:
     vram: 0x800B32B4
     subsegments:
       - [0x0, .rodata, overlays/ovl5e/ovl5e]
+      - [0x148, .rodata, overlays/ovl5e/800b87a0]
       - [0x2F8, c, overlays/ovl5e/ovl5e]
+      # later files: starts proven by switch-table parity (ARCHITECTURE.md, Files inside the slot overlays)
+      - [0x54EC, c, overlays/ovl5e/800b87a0]   # proven after 14 PlotPapuMinion, by 50; fewest call ties at 44..50
       - [0x95E8, data, overlays/ovl5e/ovl5e_data]
       - [0xB680, bin, overlays/ovl5e/ovl5e_tail]
   - [0xB682]
