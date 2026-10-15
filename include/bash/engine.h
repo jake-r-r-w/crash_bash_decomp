@@ -101,6 +101,7 @@ void func_80098278(void);
 typedef struct { u16 a, b; } U16Pair;
 typedef struct { u16 a, b, c, d; } U16Quad;
 extern U16Quad D_8009AD74[4];
+extern U16Pair D_80099260[4];
 extern U16Pair D_80099270[4];
 
 extern s32 D_800ADBC0;
@@ -615,6 +616,8 @@ s32 func_8008C4C8(s32 *arg0, s32 arg1);
 void InitWeatherNas(u8 *arg0);
 
 extern u8 D_8009E200[];
+
+void func_8007CFAC(void);
 
 void func_80083244(void);
 
