@@ -3971,7 +3971,8 @@
   "auto_failed": "diff"
  },
  "engine:80094860": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-15T13:49:12Z",
+  "status": "matched"
  },
  "engine:80094A28": {
   "auto_failed": "types"

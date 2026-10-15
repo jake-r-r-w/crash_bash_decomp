@@ -2291,7 +2291,44 @@ void func_800945C0(EngineStartArgs *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80094754);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80094860);
+void func_80094860(void) {
+    VabSlot *slot;
+    VabSlot *base;
+    s32 n;
+    s32 ok;
+
+    if (D_800A0D1C == 0) {
+        return;
+    }
+    if (D_800654B4 != 0) {
+        if (((EngineVabCue *)D_800A0D1C)->vab == 0) {
+            ok = 1;
+        } else {
+            ok = ~D_800644C0[D_800A0D20[0]].id != 0;
+        }
+        if (ok) {
+            if (((EngineVabCue *)D_800A0D1C)->vab == 0) {
+                return;
+            }
+            PlaySfx(((EngineVabCue *)D_800A0D1C)->sfx, NULL, NULL, 0x1000, 0x1E00, 0);
+            D_800654B4 -= 1;
+            n = (D_800A0D20[0] + 1) & 1;
+            D_800A0D20[0] = n;
+            D_800654B0 = ((EngineVabCue *)D_800A0D1C)->unk8;
+            if (D_800644C0[n].id != -1) {
+                func_8002BCB0((s32 *)&D_800644C0[n]);
+            }
+            D_800A0D1C += sizeof(EngineVabCue);
+        }
+    }
+    if (((EngineVabCue *)D_800A0D1C)->vab != 0) {
+        base = D_800644C0;
+        slot = &base[D_800A0D20[0]];
+        if (slot->head == NULL && slot->handle == 0 && func_80012FFC() == 0) {
+            func_8002BA10(((EngineVabCue *)D_800A0D1C)->vab, &base[D_800A0D20[0]]);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80094A28);
 

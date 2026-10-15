@@ -390,6 +390,13 @@ void func_8008A8F0(s32 arg0);
 u8 *func_8008D284(u8 *arg0, u8 *arg1);
 
 void func_8009029C(void);
+/* An entry of the list D_800A0D1C walks (func_80094860), 12 bytes. */
+typedef struct {
+    s32 vab;   /* func_8002BA10's first argument; 0 ends the list */
+    s32 sfx;   /* PlaySfx id */
+    s32 unk8;  /* -> D_800654B0 */
+} EngineVabCue;
+
 /* func_800945C0's argument. */
 typedef struct {
     void *unk0; /* -> D_800A0D2C */
@@ -695,6 +702,8 @@ void func_8008EC00(void);
 void func_8008EFD4(void);
 
 s32 func_8008FE68(s32 arg0);
+
+void func_80094860(void);
 
 s32 func_800951D0(s32 arg0);
 
