@@ -1203,7 +1203,30 @@ void InitBigPoof(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8008DDC0);
+void func_8008DDC0(NAS *nas) {
+    EXTmotion *mot;
+    EXTengine *eng;
+    EXTengine *src;
+
+    mot = AddMotion(nas);
+    if (mot != NULL) {
+        mot->Ymax = 0xA0;
+        mot->Ydec = 0xE;
+        mot->Yacc = 0;
+        mot->Ydir = 0xFF;
+        mot->Yvel = 0;
+    }
+    eng = AddEngine(nas, 1);
+    if (eng != NULL) {
+        eng->sub->unk6C = D_80052F5C;
+        eng->sub->unk74 = 0x2001;
+        src = nas->Engine;
+        eng->unk10 = src->unk10;
+        eng->flags |= 0x8041;
+        eng->sub->unk76 = 0x800;
+        eng->sub->flags |= 0x40000000;
+    }
+}
 
 s32 func_8008DE8C(void) {
     return 0;

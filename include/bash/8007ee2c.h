@@ -46,6 +46,8 @@ void InitFloatyScore(u8 *arg0);
 
 void PlotBigPoof(NAS *nas);
 
+void func_8008DDC0(NAS *nas);
+
 s32 func_8008DE8C(void);
 
 void func_80082590(void);
