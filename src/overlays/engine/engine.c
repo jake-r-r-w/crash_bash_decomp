@@ -647,7 +647,66 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80086918);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80086C94);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80086D88);
+void func_80086D88(void) {
+    s32 i;
+    HeroInfo *hero;
+    EXTengine *eng;
+    s32 flag;
+    s32 px;
+    s32 x;
+    s32 z;
+    s32 xlo;
+    s32 xhi;
+    s32 zlo;
+    s32 zhi;
+
+    for (i = 0; i < 4; i++) {
+        hero = &Heroes[i];
+        if ((u32)(hero->hero_name - 1) < 8) {
+            eng = hero->hero_eng;
+            flag = (i << 5) | 0x80;
+            px = eng->unk10.x >> 8;
+            x = px + 10;
+            z = 9 - (eng->unk10.z >> 8);
+            if (x < 0) {
+                continue;
+            }
+            if (x >= 20) {
+                continue;
+            }
+            if (z < 0) {
+                continue;
+            }
+            if (z < 20) {
+                xhi = x;
+                xlo = xhi;
+                zhi = z;
+                zlo = zhi;
+                if (xhi > 0) {
+                    xlo = px + 9;
+                }
+                if (xhi < 19) {
+                    xhi = px + 11;
+                }
+                if (zhi > 0) {
+                    zlo = zhi - 1;
+                }
+                if (zhi < 19) {
+                    zhi++;
+                }
+                D_8009D90C[z * 20 + x].unk0 |= flag;
+                D_8009D90C[zlo * 20 + x].unk0 |= flag;
+                D_8009D90C[zhi * 20 + x].unk0 |= flag;
+                D_8009D90C[z * 20 + xlo].unk0 |= flag;
+                D_8009D90C[zlo * 20 + xlo].unk0 |= flag;
+                D_8009D90C[zhi * 20 + xlo].unk0 |= flag;
+                D_8009D90C[z * 20 + xhi].unk0 |= flag;
+                D_8009D90C[zlo * 20 + xhi].unk0 |= flag;
+                D_8009D90C[zhi * 20 + xhi].unk0 |= flag;
+            }
+        }
+    }
+}
 
 void func_80086F4C(void) {
     s32 i;
