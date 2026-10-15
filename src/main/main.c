@@ -5985,7 +5985,168 @@ MATRIX *func_8001ACC0(GfxXform *obj) {
     return out;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001AF2C);
+s32 func_8001AF2C(void *arg0) {
+    BoundBox *box = arg0;
+    DVECTOR sxy[8];
+    DVECTOR c;
+    s32 sz;
+    s32 flags;
+    SVECTOR *in;
+    GfxState *gs;
+    GfxCamera *cam;
+    s32 r;
+    s32 d;
+    s32 e;
+    s32 ey;
+
+    flags = 0;
+    in = &D_800569CC.in;
+    in = &box->center;
+    gte_ldv0(in);
+    in = &D_800569CC.in;
+    gte_rtps();
+    gte_stsxy(&c);
+    gte_stsz(&sz);
+    if (sz >= 2) {
+        r = box->center.pad;
+        gs = (GfxState *)((u8 *)in - 0x34);
+        if (r < 0x400) {
+            cam = gs->cam;
+            d = sz * 3 << 10;
+            e = r * cam->unk54.scale.vx * *(s32 *)cam->unk18 / d;
+            if (c.vx + e < 0 || gs->clipX1 < c.vx - e) {
+            culled:
+                return 0;
+            }
+            ey = r * cam->unk54.scale.vy * *(s32 *)cam->unk18 / d;
+            if (c.vy + ey < 0 || gs->clipY1 < c.vy - ey) {
+                goto culled;
+            }
+        }
+    }
+    in->vx = box->min[0];
+    in->vy = box->min[1];
+    in->vz = box->min[2];
+    gte_ldv0(in);
+    gte_rtps();
+    in->vx = box->max[0];
+    gte_stsxy(&sxy[0]);
+    gte_stsz(&sz);
+    if (sz > 0) {
+        if ((u16)sxy[0].vx < (u16)D_80056998.clipX1 && (u16)sxy[0].vy < (u16)D_80056998.clipY1) {
+            return 1;
+        }
+    } else {
+        flags |= 1;
+    }
+    gte_ldv0(in);
+    gte_rtps();
+    in->vx = box->min[0];
+    in->vy = box->max[1];
+    gte_stsxy(&sxy[1]);
+    gte_stsz(&sz);
+    if (sz > 0) {
+        if ((u16)sxy[1].vx < (u16)D_80056998.clipX1 && (u16)sxy[1].vy < (u16)D_80056998.clipY1) {
+            return 1;
+        }
+    } else {
+        flags |= 2;
+    }
+    gte_ldv0(in);
+    gte_rtps();
+    in->vx = box->max[0];
+    gte_stsxy(&sxy[2]);
+    gte_stsz(&sz);
+    if (sz > 0) {
+        if ((u16)sxy[2].vx < (u16)D_80056998.clipX1 && (u16)sxy[2].vy < (u16)D_80056998.clipY1) {
+            return 1;
+        }
+    } else {
+        flags |= 4;
+    }
+    gte_ldv0(in);
+    gte_rtps();
+    in->vx = box->min[0];
+    in->vy = box->min[1];
+    in->vz = box->max[2];
+    gte_stsxy(&sxy[3]);
+    gte_stsz(&sz);
+    if (sz > 0) {
+        if ((u16)sxy[3].vx < (u16)D_80056998.clipX1 && (u16)sxy[3].vy < (u16)D_80056998.clipY1) {
+            return 1;
+        }
+    } else {
+        flags |= 8;
+    }
+    gte_ldv0(in);
+    gte_rtps();
+    in->vx = box->max[0];
+    gte_stsxy(&sxy[4]);
+    gte_stsz(&sz);
+    if (sz > 0) {
+        if ((u16)sxy[4].vx < (u16)D_80056998.clipX1 && (u16)sxy[4].vy < (u16)D_80056998.clipY1) {
+            return 1;
+        }
+    } else {
+        flags |= 0x10;
+    }
+    gte_ldv0(in);
+    gte_rtps();
+    in->vx = box->min[0];
+    in->vy = box->max[1];
+    gte_stsxy(&sxy[5]);
+    gte_stsz(&sz);
+    if (sz > 0) {
+        if ((u16)sxy[5].vx < (u16)D_80056998.clipX1 && (u16)sxy[5].vy < (u16)D_80056998.clipY1) {
+            return 1;
+        }
+    } else {
+        flags |= 0x20;
+    }
+    gte_ldv0(in);
+    gte_rtps();
+    in->vx = box->max[0];
+    gte_stsxy(&sxy[6]);
+    gte_stsz(&sz);
+    if (sz > 0) {
+        if ((u16)sxy[6].vx < (u16)D_80056998.clipX1 && (u16)sxy[6].vy < (u16)D_80056998.clipY1) {
+            return 1;
+        }
+    } else {
+        flags |= 0x40;
+    }
+    gte_ldv0(in);
+    gte_rtps();
+    gte_stsxy(&sxy[7]);
+    gte_stsz(&sz);
+    if (sz > 0) {
+        if ((u16)sxy[7].vx < (u16)D_80056998.clipX1 && (u16)sxy[7].vy < (u16)D_80056998.clipY1) {
+            return 1;
+        }
+    } else {
+        flags |= 0x80;
+    }
+    if (flags == 0xFF) {
+        goto culled;
+    }
+    if (sxy[0].vx > D_80056998.clipX1 && sxy[1].vx > D_80056998.clipX1 &&
+        sxy[2].vx > D_80056998.clipX1 && sxy[3].vx > D_80056998.clipX1 &&
+        sxy[4].vx > D_80056998.clipX1 && sxy[5].vx > D_80056998.clipX1 &&
+        sxy[6].vx > D_80056998.clipX1 && sxy[7].vx > D_80056998.clipX1) {
+        goto culled;
+    }
+    if (sxy[0].vx < 0 && sxy[1].vx < 0 && sxy[2].vx < 0 && sxy[3].vx < 0 &&
+        sxy[4].vx < 0 && sxy[5].vx < 0 && sxy[6].vx < 0 && sxy[7].vx < 0) {
+        goto culled;
+    }
+    if (sxy[0].vy > D_80056998.clipY1 && sxy[1].vy > D_80056998.clipY1 &&
+        sxy[2].vy > D_80056998.clipY1 && sxy[3].vy > D_80056998.clipY1 &&
+        sxy[4].vy > D_80056998.clipY1 && sxy[5].vy > D_80056998.clipY1 &&
+        sxy[6].vy > D_80056998.clipY1 && sxy[7].vy > D_80056998.clipY1) {
+        return 0;
+    }
+    return 1;
+}
 
 s32 func_8001B6D4(SVECTOR *v) {
     s16 sxy[9][2];

@@ -263,6 +263,14 @@ typedef struct {
     VECTOR out;       /* 0x40: rotated and translated position */
 } GteScratch;
 
+/* Bounding box tested for visibility by func_8001AF2C: corners min/max and a
+ * centre whose pad is a radius. */
+typedef struct {
+    s16 min[3];     /* 0x00 */
+    s16 max[3];     /* 0x06 */
+    SVECTOR center; /* 0x0C: center.pad = radius */
+} BoundBox;
+
 /* A model whose vertices are interpolated between two sets (func_8001C008,
  * func_8001C0F0). Only the run list is known. */
 typedef struct {
