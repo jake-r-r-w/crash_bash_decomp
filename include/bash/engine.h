@@ -736,6 +736,8 @@ void func_8007A91C(void);
 
 void PlotSmokePoof(NAS *m);
 
+void func_8008CFBC(EXTengine *eng);
+
 void PlotFloatyScore(NAS *nas);
 
 #endif /* BASH_ENGINE_H */

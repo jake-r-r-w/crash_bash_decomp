@@ -1319,7 +1319,34 @@ void InitParticleEffect(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", InitSmokePoof);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008CFBC);
+void func_8008CFBC(EXTengine *eng) {
+    NAS *nas;
+    EXTscriptdata *sd;
+    threaddata *t;
+    s32 i;
+
+    nas = ((NAS **)eng)[-1];
+    if (nas != NULL) {
+        sd = FindExtension(nas, 0x10000000);
+        if (sd != NULL) {
+            i = 0;
+            while (1) {
+                if (i >= sd->threadcount) {
+                    break;
+                }
+                t = &sd->threads[i];
+                if (t->threadinfo != NULL) {
+                    func_800110A8(t->threadinfo, &D_8004E0F0);
+                }
+                if (t->threadcontrol != NULL) {
+                    func_800110A8(t->threadcontrol, &D_8004E0F0);
+                }
+                i++;
+            }
+            func_8001D174(eng);
+        }
+    }
+}
 
 void func_8008D088(u8 *arg0, u8 *arg1, EmitPart *arg2, s32 *arg3, u8 *arg4) {
     s32 life;

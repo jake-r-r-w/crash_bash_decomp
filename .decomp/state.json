@@ -3514,7 +3514,8 @@
  },
  "engine:8008CFBC": {
   "auto_diff": 46,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-15T13:58:05Z",
+  "status": "matched"
  },
  "engine:8008D088": {
   "matched_at": "2026-10-15T13:38:00Z",
