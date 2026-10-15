@@ -73,6 +73,7 @@ extern s32 D_800ADBC0;
 extern s32 D_80099174;
 extern s32 D_8009AE78;
 extern u8 D_8009F658[];
+extern u8 D_8009FA14[];
 extern u8 D_800A015C[];
 extern EXTengine EnginePool[];
 extern HeroInfo Heroes[4];
@@ -128,6 +129,8 @@ s32 func_8008EF70(void);
 void func_8008EF9C(void);
 
 void func_8008F068(void);
+
+void func_800940B0(s32 arg0, s32 arg1);
 
 s32 func_80095D88(s32 *rec);
 
