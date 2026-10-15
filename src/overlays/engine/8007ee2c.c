@@ -1232,7 +1232,42 @@ void InitFloatyScore(u8 *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8008D5D4);
+void func_8008D5D4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    EXTengine *eng;
+    NAS *nas;
+    subengine *sub;
+    s32 off;
+
+    if (arg3 >= 0x64) {
+        arg3 = 0x63;
+    }
+    nas = SpawnNASById(arg0, arg1, arg2, 0x1409, 0x11);
+    if (nas != NULL) {
+        eng = nas->Engine;
+        nas->UserInfo.user1 = arg4;
+        if (eng != NULL) {
+            off = 0;
+            if (arg3 >= 10) {
+                func_80018F3C(eng, 1);
+            }
+            sub = eng->sub;
+            if (sub != NULL) {
+                while (sub != NULL) {
+                    sub->unk6C = D_80053074;
+                    sub->unk04 = off;
+                    sub->unk74 = arg3 % 10 + 0x200E;
+                    sub = sub->next;
+                    arg3 /= 10;
+                    if (sub != NULL) {
+                        off -= 0xB4;
+                    }
+                }
+            }
+        } else {
+            KillNAS(nas);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8008D6C8);
 

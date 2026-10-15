@@ -3562,7 +3562,8 @@
  },
  "engine:8008D5D4": {
   "auto_diff": 59,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-15T20:28:07Z",
+  "status": "matched"
  },
  "engine:8008D6C8": {
   "auto_failed": "types"
