@@ -318,6 +318,20 @@ typedef struct {
     /* 0x0E */ u8 unkE[0x12];
 } EngineRec32;
 extern EngineRec32 *D_8005A5E8;
+typedef struct { s32 unk0; EngineRec32 *unk4; } EngineBootSrc;
+typedef struct {
+    /* 0x00 */ void (*unk0)();
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ u8 unkC[0x20];
+    /* 0x2C */ s32 unk2C;
+    /* 0x30 */ u8 unk30[0xC];
+    /* 0x3C */ u16 unk3C;
+} EngineBootView;
+extern u8 *D_8005AA20;
+extern u8 *D_8005AA44;
+extern s32 D_8005AAB0;
+extern s32 D_800986A4[];
 extern s32 D_8005A61C;
 extern u16 D_800AD12C;
 
@@ -487,5 +501,7 @@ typedef struct {
     u8 pad168[0x168 - 0x147 - 0x21];
     u8 e[1];
 } EngineReqObj;
+
+void func_80078CA4(void);
 
 #endif /* BASH_ENGINE_H */

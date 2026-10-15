@@ -2823,7 +2823,8 @@
   "auto_failed": "diff"
  },
  "engine:80078CA4": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-15T20:40:51Z",
+  "status": "matched"
  },
  "engine:80078DD4": {
   "auto_failed": "compile"

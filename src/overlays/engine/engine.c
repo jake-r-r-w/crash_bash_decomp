@@ -4,7 +4,33 @@
 #include "bash/hero.h"
 #include "bash/shell.h"
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80078CA4);
+void func_80078CA4(void) {
+    EngineRec32 *rec;
+    EngineBootView *v;
+    u8 *p;
+
+    rec = ((EngineBootSrc *)D_8005A5E0)->unk4;
+    D_8005A5E8 = rec;
+    if (rec != NULL) {
+        EngineBootView *w = (EngineBootView *)D_8005A614;
+        w->unk3C = *(u16 *)&rec[w->unk8];
+    }
+    v = (EngineBootView *)D_8005A614;
+    if (v->unk0 != NULL) {
+        v->unk0(rec);
+    }
+    func_800237BC();
+    func_8007EC48();
+    D_8005AA1C = (NAS *)func_80011654(D_8005AA14 * 0x70, &D_8004E0F0);
+    D_8005AA20 = (u8 *)D_8005AA1C + (D_8005AA14 * 0x70 - 0x70);
+    D_8005AA40 = (EngObj **)func_80011654(D_8005AA14 * 4, &D_8004E0F0);
+    *D_8005AA40 = NULL;
+    p = func_80011654(D_8005AA14 * 4, &D_8004E0F0);
+    D_8005AA44 = p;
+    *(s32 *)p = 0;
+    func_80026308();
+    D_8005AAB0 = D_800986A4[v->unk2C];
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80078DD4);
 
