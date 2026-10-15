@@ -135,6 +135,20 @@ extern u8 D_800A0BF4[];
 extern s32 D_800A0C0C;
 extern s32 D_800A0D30;
 extern s32 D_800A0C70;
+/* func_8009440C's entries (D_800A0C10, 0xC bytes) and the table they index (0x14 bytes). */
+typedef struct EngineMarker {
+    /* 0x0 */ u16 unk0;
+    /* 0x4 */ s32 idx;
+    /* 0x8 */ void *unk8;
+} EngineMarker;
+typedef struct EngineMarkerPos {
+    /* 0x00 */ s32 x, y, z;
+    /* 0x0C */ s16 unkC;
+    /* 0x0E */ u8 unkE[6];
+} EngineMarkerPos;
+extern EngineMarker D_800A0C10[];
+extern EngineMarkerPos D_800A02D8[];
+extern subengine D_800A0C74;
 extern s32 D_800A0D1C;
 extern s32 D_800A0D20[]; /* arrays: their stores must alias struct loads (gcc 2.7 sched) */
 extern s32 D_800A0D24[];
@@ -340,5 +354,7 @@ extern s32 D_8005A61C;
 extern u16 D_800AD12C;
 
 void func_8008688C(void);
+
+void func_8009440C(void);
 
 #endif /* BASH_ENGINE_H */

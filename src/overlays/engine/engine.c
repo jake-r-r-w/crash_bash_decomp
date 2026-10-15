@@ -1241,7 +1241,32 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80094364);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800943B8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8009440C);
+void func_8009440C(void) {
+    s32 h = *(s32 *)(D_80056998.cam->unk18);
+    subengine *e = &D_800A0C74;
+    EngineMarker *m;
+    EngineMarkerPos *p;
+    s32 i;
+    s32 s;
+
+    for (i = 0; i < D_800A0C70; i++) {
+        m = &D_800A0C10[i];
+        p = &D_800A02D8[m->idx];
+        *e = D_8005A830;
+        e->unk74 = m->unk0;
+        e->unk6C = m->unk8;
+        e->unk51 = 0;
+        s = D_8004E0D8;
+        e->unk10 = (s * p->x) >> 12;
+        e->unk12 = (s * p->y) >> 12;
+        e->unk14 = (s * p->z) >> 12;
+        e->flags = 0x03008000;
+        e->unk68 = p->unkC;
+        gte_SetGeomScreen(h);
+        func_80019F1C((u8 *)e, (u8 *)&D_80056998.cam->view, 0x03008000);
+        gte_SetGeomScreen(*(s32 *)(D_80056998.cam->unk18));
+    }
+}
 
 void func_800945C0(EngineStartArgs *arg0) {
     s32 rate;
