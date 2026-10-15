@@ -6,6 +6,7 @@
  * owner: src/overlays/engine/engine.c */
 
 #include "common.h"
+#include "bash/main.h"
 #include "bash/nas.h"
 
 extern s32 D_80051658;
@@ -101,6 +102,24 @@ extern s32 D_800A0158;
 extern ASTEntry EngineASTTable[];
 extern u8 D_8009F644[];
 extern s32 D_800A0C08;
+
+/* func_800936C4's level setup config (D_8005A5E4, or D_8009F96C if unset). */
+typedef struct EngineCfg {
+    /* 0x00 */ u8 unk0[0xC];
+    /* 0x0C */ s32 pools[3];       /* func_80017164 */
+    /* 0x18 */ VramArea *areas;    /* func_80028774 */
+    /* 0x1C */ FreeNode *pool;
+    /* 0x20 */ s32 npool;
+    /* 0x24 */ s32 nbuf;
+} EngineCfg;
+
+s32 func_8009317C(void);
+extern EngineCfg D_8009F96C;
+extern u8 D_800D7144[];
+extern ArenaDef D_80098F48;
+extern u8 D_800B9524[];
+extern u8 D_8005B72C[];
+extern u8 D_8005B744[];
 extern s32 D_800A0D3C;
 extern u8 D_8009F67C[];
 extern u8 D_8009F734[];
@@ -288,6 +307,8 @@ void func_8008EAC8(void);
 s32 func_8009020C(s32 arg0);
 
 void func_80092CAC(void);
+
+void func_800936C4(void);
 
 void func_800945C0(EngineStartArgs *arg0);
 

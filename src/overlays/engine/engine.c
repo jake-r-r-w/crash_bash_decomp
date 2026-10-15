@@ -1073,7 +1073,49 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8009342C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80093588);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800936C4);
+static inline void func_800936C4_heap(Heap *heap, s32 p) {
+    s32 size;
+
+    size = 0x801FF000;
+    size -= p;
+    func_80011BF8(heap, (u8 *)p, size);
+    func_80012E54();
+}
+
+void func_800936C4(void) {
+    s32 start;
+    EngineCfg *cfg;
+
+    func_8002AC70();
+    while (func_80012FFC() != 0) {
+        func_8001231C();
+        func_80010AE8(&D_8004E0F0);
+        func_8002BAE8();
+    }
+    func_800936C4_heap(&D_8004E0F0, (s32)D_800D7144);
+    start = func_8009317C() + 7;
+    start &= ~7;
+    func_800936C4_heap(&D_8004E0F0, start);
+    func_800235BC(&D_80098F48);
+    cfg = (EngineCfg *)D_8005A5E4;
+    if (cfg == NULL) {
+        cfg = &D_8009F96C;
+    }
+    func_800274FC((s32 *)cfg);
+    ((void (*)(u8 *))func_800276A4)(D_800637A8 == 0 ? D_8005B72C : D_8005B744);
+    D_8005A614[0x60] = 0;
+    D_8005A614[0x61] = 0;
+    func_80028774(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
+    func_80017164(cfg->pools);
+    func_800170D4();
+    func_800222FC();
+    func_8001D5D0();
+    D_800A0158 = 0;
+    if (((D5A614View *)D_8005A614)->mode == 0x28 && D_800590CC != 0) {
+        ((ModeMgr *)D_8009F658)->flags = 0x1D;
+        ((ModeMgr *)D_8009F658)->next = (GameModeDef *)D_800B9524;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80093854);
 
