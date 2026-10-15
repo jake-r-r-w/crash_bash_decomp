@@ -330,6 +330,11 @@ extern EngineRec24 *D_8009BD0C;
 extern EngineRec24 **D_8009BD10;
 extern s32 D_8009BD14;
 
+/* Hero jump parameters, 8 bytes per hero (EngineHooks.unk10). */
+typedef struct HeroJumpEnt {
+    u16 vel, max, acc, dec;
+} HeroJumpEnt;
+
 /* Engine callback table filled by func_80083550 (0x54 is D_8009D73C). */
 typedef struct EngineHooks {
     /* 0x00 */ s32 unk0;
