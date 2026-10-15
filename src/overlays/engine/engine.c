@@ -889,7 +889,23 @@ void func_80088BAC(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80088C28);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80088F78);
+void func_80088F78(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *hero = &base[arg0];
+
+    hero->hero_move->velocity_enable = 0;
+    SetHeroSeq((HeroInfo *)arg0, 0xA);
+    hero->hero_attack_delay += 0xF;
+    if (hero->hero_attack_delay > 0x28) {
+        hero->hero_attack_delay = 0x28;
+    }
+    hero->hero_attack_timer = hero->hero_attack_delay;
+    if (hero->hero_name == 3) {
+        hero->hero_weapon_timer = -2;
+    } else {
+        hero->hero_weapon_timer = 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008900C);
 
