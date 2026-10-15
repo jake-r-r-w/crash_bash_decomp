@@ -2246,7 +2246,8 @@
   "status": "matched"
  },
  "8002926C": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-15T09:16:09Z",
+  "status": "matched"
  },
  "80029560": {
   "matched_at": "2026-10-15T07:41:03Z",

@@ -12321,7 +12321,105 @@ void func_80029100(AnimOwner *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002926C);
+void func_8002926C(TexSet2926C *arg0) {
+    s32 n;
+    u8 *src;
+    TexEnt12 *e;
+    TexSrc2A84C *s;
+    TexDst2A84C *d;
+    u8 *b;
+    s32 *p;
+    s32 *r;
+    s32 cnt;
+    u8 *a;
+    s32 off;
+    u32 t;
+    s32 u;
+
+    n = arg0->nEnt;
+    e = arg0->ent;
+    b = arg0->base;
+    src = b + (*(s32 *)(b + 0x10) + 0x10);
+    while (1) {
+        u16 id;
+        u8 *q;
+        s32 len;
+
+        if (--n == -1) {
+            break;
+        }
+        q = src;
+        len = (s32)arg0->base;
+        id = *(u16 *)q;
+        q -= len - 4;
+        e->id = id;
+        e->f4 = 0;
+        e->off = (s32)q;
+        e++;
+        src += *(u16 *)src * 2 + 4;
+    }
+    n = arg0->nTex;
+    d = arg0->tex;
+    b = arg0->base;
+    s = (TexSrc2A84C *)(b + (*(s32 *)(b + 0xC) + 0xC));
+    while (1) {
+        u8 *b;
+        u32 t;
+        s32 u;
+
+        if (--n == -1) {
+            break;
+        }
+        b = arg0->base;
+        d->f20 = 0;
+        d->f34 = -1;
+        d->flag = *(u16 *)&s->wC & 1;
+        d->f2 = (s->wC >> 1) & 0x7FFF;
+        d->f12 = *(u16 *)((u8 *)s + 0xE);
+        d->f14 = s->w10;
+        d->fA = s->w2;
+        if (d->flag == 0) {
+            d->f8 = s->w0 << 2;
+            d->slot = &D_80063B1C[func_80028994(s->w0 << 2, s->w2, 0x10)];
+            d->f10 = (*(u8 *)s << 2) - 1;
+        } else {
+            d->f8 = s->w0 << 1;
+            d->slot = &D_80063B1C[func_80028994(s->w0 << 1, s->w2, 0x100)];
+            d->f10 = (*(u8 *)s << 1) - 1;
+        }
+        d->f11 = *(u8 *)((u8 *)s + 2) - 1;
+        d->f1C = s->w0;
+        d->f1E = s->w2;
+        u = (s32)b - 0x14;
+        t = s->w8;
+        d->fC = t;
+        d->f30 = (s32)s - u;
+        d++;
+        s = (TexSrc2A84C *)((u8 *)s + (s->w0 * s->w2 * 2 + 0x14));
+    }
+    b = arg0->base;
+    off = *(s32 *)(b + 0x1C);
+    if (off != 0) {
+        p = (s32 *)(b + (off + 0x1C));
+        r = p + 1;
+        cnt = *p;
+        a = func_80011654(cnt * 0x5A8, &D_8004E0F0);
+        arg0->nAnim = cnt;
+        arg0->anim = a;
+        while (--cnt != -1) {
+            *(s32 *)(a + 0x588) = *r++;
+            a += 0x5A8;
+        }
+    } else {
+        arg0->nAnim = 0;
+        arg0->anim = NULL;
+    }
+    if (*(s32 *)(arg0->base + 0x18) != 0) {
+        arg0->extra = arg0->base + *(s32 *)(arg0->base + 0x18);
+    } else {
+        arg0->extra = NULL;
+    }
+}
 
 static inline void Tex_UploadCluts(u8 *set) {
     RECT rect;
@@ -12728,7 +12826,7 @@ void func_8002A5A4(u8 *a0, u8 *arg1) {
     arg0->f0 = *(u16 *)(arg0->src + 8);
     arg0->f4 = *(u16 *)(arg0->src + 0xA);
     arg0->f14 = *(s32 *)(arg0->src + 0x14);
-    func_8002926C(arg0);
+    func_8002926C((TexSet2926C *)arg0);
 }
 
 /* Size in bytes: 0xB0 plus +8 records of 0x38 and +0xA records of 0xC. */
