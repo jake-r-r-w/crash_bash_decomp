@@ -587,6 +587,8 @@ void InitWeatherNas(u8 *arg0);
 
 void func_8008D488(u8 *arg0, s32 arg1);
 
+void func_8008FD94(void);
+
 void func_8008FE00(void);
 
 void func_80094EB8(void);
