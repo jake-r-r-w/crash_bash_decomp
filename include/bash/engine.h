@@ -745,4 +745,6 @@ void func_8008CFBC(EXTengine *eng);
 
 void PlotFloatyScore(NAS *nas);
 
+void func_8009201C(void);
+
 #endif /* BASH_ENGINE_H */
