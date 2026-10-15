@@ -117,7 +117,10 @@ extern subengine D_8009A04C[];
 extern struct { u8 pad[8]; s32 *a; s32 *b; } D_8009970C;
 extern s16 D_80099208[];
 extern s32 D_80099178;
-extern s16 D_8009917C;
+extern u16 D_8009917C;
+extern U16Pair D_80099180[];
+typedef struct { u16 a, b; s32 c; } GpuTextCmd;
+extern GpuTextCmd D_8009AD54[4];
 extern s32 D_800996D4[3];
 extern s16 D_8009AE76;
 extern s16 D_80099194;
@@ -738,6 +741,8 @@ extern s16 D_8006BBD6[];
 NAS *func_8007A464(s32 arg0, s32 *arg1, s32 arg2);
 
 void func_8007A91C(void);
+
+void func_8007B7FC(u32 a, u32 b);
 
 void func_8007D144(void);
 
