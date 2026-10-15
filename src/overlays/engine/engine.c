@@ -1291,7 +1291,12 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800928E8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800929D8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80092AA8);
+void func_80092AA8(GameModeDef *arg0) {
+    if (((ModeMgr *)D_8009F658)->next != arg0) {
+        ((void (*)(u8 *))func_8001E588)(D_8009F644);
+        ((ModeMgr *)D_8009F658)->next = arg0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80092AF4);
 

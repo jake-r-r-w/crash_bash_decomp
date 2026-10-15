@@ -520,6 +520,8 @@ void func_80093270(void);
 
 extern U16Pair D_80099280[4];
 
+void func_80092AA8(GameModeDef *arg0);
+
 void func_80092E94(void);
 
 #endif /* BASH_ENGINE_H */
