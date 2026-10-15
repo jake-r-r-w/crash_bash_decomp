@@ -1322,7 +1322,57 @@ u8 *func_8008D284(u8 *arg0, u8 *arg1) {
     return NULL;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", PlotFloatyScore);
+void PlotFloatyScore(NAS *nas) {
+    EXTengine *eng = nas->Engine;
+    s32 s;
+    s32 one;
+    s32 ang;
+    s32 y;
+
+    one = 1;
+    if (eng != NULL) {
+        switch (nas->UserInfo.status) {
+        case 0:
+            if (nas->UserInfo.user1 <= 0 || --nas->UserInfo.user1 <= 0) {
+                nas->UserInfo.status = one;
+                nas->UserInfo.user1 = 0;
+            }
+            break;
+        case 1:
+            eng->unk10.y -= 0x20;
+            if (nas->UserInfo.user2 - (D_8006BBD6[0] * 3 >> 7) >= eng->unk10.y) {
+                nas->UserInfo.status = 2;
+                nas->UserInfo.flags = 0x1E;
+            }
+            break;
+        case 2:
+            ang = ++nas->UserInfo.user1;
+            y = nas->UserInfo.user2;
+            ang = D_80068BD4[((ang << 7) & 0xFFF) - 0x400 & 0xFFF].unk2;
+            eng->unk5E = one;
+            eng->unk10.y = y - (ang * 3 >> 7);
+            s = eng->unk2C.x + 0x40;
+            eng->unk2C.z = s;
+            eng->unk2C.y = s;
+            eng->unk2C.x = s;
+            if (--nas->UserInfo.flags == 0) {
+                nas->UserInfo.status = 3;
+                nas->UserInfo.flags = 0x3C;
+                nas->UserInfo.user1 = 6;
+            }
+            break;
+        case 3:
+            eng->unk10.y -= nas->UserInfo.user1;
+            eng->unk5E = one;
+            eng->unk2C.x = eng->unk2C.y = eng->unk2C.z -= (eng->unk2C.x - 0x800) >> 5;
+            nas->UserInfo.user1 += 3;
+            if (--nas->UserInfo.flags == 0) {
+                KillNAS(nas);
+            }
+            break;
+        }
+    }
+}
 
 void func_8008D488(u8 *arg0, s32 arg1) {
     s32 a;

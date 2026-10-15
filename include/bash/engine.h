@@ -728,5 +728,8 @@ s32 func_800951D0(s32 arg0);
 s32 func_80097608(s32 *arg0, s32 *arg1, s32 arg2);
 
 void func_800984D4(void);
+extern s16 D_8006BBD6[];
+
+void PlotFloatyScore(NAS *nas);
 
 #endif /* BASH_ENGINE_H */
