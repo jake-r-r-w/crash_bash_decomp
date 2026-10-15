@@ -653,7 +653,37 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80087B8C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80087FC0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_800880E0);
+void func_800880E0(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h;
+    EXTengine *e;
+    EXTengine *p;
+    EXTobject *o;
+
+    h = base + arg0;
+    h->hero_move->velocity_enable = 1;
+    e = h->hero_eng;
+    p = e->platform;
+    if (p != NULL) {
+        p->platform = NULL;
+    }
+    e->platform = NULL;
+    h->hero_move->jump_vel = 8;
+    h->hero_move->jump_max = 0x70;
+    h->hero_move->jump_acc = 10;
+    h->hero_move->jump_dec = 0;
+    h->hero_move->jump_dir = 0;
+    o = h->hero_object;
+    if (o != NULL) {
+        o->player = h->hero_harm_player;
+        h->hero_object->status = 4;
+        h->hero_object = NULL;
+    }
+    if (h->hero_eng->sfx != NULL) {
+        StopSfx(h->hero_eng->sfx);
+    }
+    SetHeroSeq((HeroInfo *)arg0, 7);
+}
 
 void func_800881E0(s32 arg0) {
     HeroInfo *base = Heroes;
