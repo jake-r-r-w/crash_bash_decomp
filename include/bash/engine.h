@@ -531,6 +531,8 @@ extern U16Pair D_80099280[4];
 extern s16 D_8005A650;
 extern s32 D_800A00F0[];
 
+void func_8007A8C4(void);
+
 void func_8007EB1C(s32 arg0, s32 arg1, s32 arg2);
 
 s32 func_8008AB50(s32 arg0);

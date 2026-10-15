@@ -76,7 +76,16 @@ void func_8007A7C0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007A808);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007A8C4);
+void func_8007A8C4(void) {
+    EngineGameView *g = (EngineGameView *)D_8005A614;
+
+    g->flags &= 0xF4FF;
+    func_80083550();
+    func_8008688C();
+    if (D_8005AA70[0] != 0) {
+        ((void (*)(void))D_8005AA70[0])();
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007A91C);
 
