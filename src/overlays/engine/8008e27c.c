@@ -807,7 +807,21 @@ void func_80092FB8(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_80093038);
+void func_80093038(void) {
+    func_80018B08((GfxViewport *)D_8009F6F4, (GfxCamera *)D_80051640);
+    D_80056998.modelDp = 0x1000 - ((0x1000 - D_8009F8B8) * (0x1000 - *(s32 *)D_8009F644) / 4096);
+    D_80056878 = 0;
+    D_8005687C[0] = 0;
+    D_8005687C[1] = 0;
+    D_8005687C[2] = 0;
+    func_80022070();
+    func_8007A718();
+    func_8001DAF8((GfxScene *)D_80058AD0);
+    func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
+    D_80056998.modelDp = *(s32 *)D_8009F644;
+    func_800798A4();
+    func_800984D4();
+}
 
 void func_80093110(void) {
     func_80018B08((GfxViewport *)D_8009F6F4, (GfxCamera *)D_80051640);
