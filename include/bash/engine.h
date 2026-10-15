@@ -205,6 +205,8 @@ void func_80086F78(void);
 
 void func_8008A8F0(s32 arg0);
 
+u8 *func_8008D284(u8 *arg0, u8 *arg1);
+
 void func_8009029C(void);
 
 #endif /* BASH_ENGINE_H */

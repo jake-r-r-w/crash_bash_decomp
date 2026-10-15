@@ -598,7 +598,13 @@ u8 *func_8008D24C(u8 *arg0, s32 *arg1) {
     return NULL;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008D284);
+u8 *func_8008D284(u8 *arg0, u8 *arg1) {
+    u8 *p = func_80021DD4(arg0, *(s32 *)(arg1 + 0x24), *(s32 *)(arg1 + 4));
+    if (p != NULL) {
+        return p + 0x14;
+    }
+    return NULL;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", PlotFloatyScore);
 
