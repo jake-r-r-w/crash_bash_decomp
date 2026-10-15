@@ -357,6 +357,8 @@ void func_8008688C(void);
 
 s32 func_800925C4(u8 *arg0);
 
+void func_80092C78(void);
+
 void func_8009440C(void);
 
 #endif /* BASH_ENGINE_H */

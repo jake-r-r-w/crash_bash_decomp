@@ -1052,7 +1052,17 @@ void func_80092C54(void) {
     func_800926CC(D_8005A614);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80092C78);
+void func_80092C78(void) {
+    s8 *p;
+    *(s32 *)D_8005A604 = 0x46;
+    p = D_8005A604;
+    *(s32 *)(p + 4) = 0x64;
+    *(s32 *)(p + 8) = 1;
+    p[0xC] = 1;
+    p[0xD] = 1;
+    p[0xE] = 1;
+    p[0xF] = 1;
+}
 
 void func_80092CAC(void) {
     EngineGameView *g;
