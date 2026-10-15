@@ -655,7 +655,15 @@ void func_8008688C(void) {
     D_800AD12C = D_8005A5E8[D_8005A61C].unkC;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", SetHeroAction);
+void SetHeroAction(HeroInfo *hero, s32 action) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = base + (s32)hero;
+    u16 old = h->hero_mode;
+
+    h->hero_mode = action;
+    h->hero_last_mode = old;
+    HeroActionTable[action].fn();
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80086918);
 
