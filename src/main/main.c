@@ -13916,7 +13916,164 @@ INCLUDE_RODATA("asm/nonmatchings/main/main", D_8004CD8C);
 
 INCLUDE_RODATA("asm/nonmatchings/main/main", D_8004CDAC);
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002C97C);
+void func_8002C97C(void) {
+    static const char all[] = "*";
+    static const void *const tbl[8] = {
+        &&l0, &&l1, &&l2, &&l3, &&l4, &&l5, &&lend, &&l7
+    };
+    static const void *const tbl2[6] = {
+        &&l2_03, &&l2_1, &&l2_2, &&l2_03, &&l2_4, 0
+    };
+    static const void *const tbl4[5] = {
+        &&l4_024, &&l4_13, &&l4_024, &&l4_13, &&l4_024
+    };
+    u8 *p;
+    s32 i;
+    s32 *q;
+    s32 *end;
+    s32 sum;
+    u32 s;
+
+    if (MemCardSync(1, &D_8006782C, &D_80067830) == 0) {
+        return;
+    }
+    s = D_800675CC;
+    if (s < 8) {
+        goto *tbl[s];
+    }
+    goto lend;
+l0:
+    MemCardExist(D_800655B8);
+    i = 1;
+    D_800655C0 = 0;
+    D_800675CC = i;
+    return;
+l1:
+    switch (D_80067830) {
+    case 1:
+        D_800675CC = 0;
+        D_800655C0 = 0;
+        return;
+    case 0:
+    case 2:
+    case 3:
+    case 4:
+        MemCardAccept(D_800655B8);
+        D_800655C0 = 0x42;
+        D_800675CC = 2;
+        break;
+    }
+    goto lend;
+l2:
+    McResetSave();
+    s = D_80067830;
+    if (s < 5) {
+        goto *tbl2[s];
+    }
+    goto lend;
+l2_1:
+    D_800675CC = 0;
+    D_800655C0 = 0;
+    return;
+l2_4:
+    D_800655C0 = 6;
+    D_800675CC = 3;
+    goto lend;
+l2_03:
+    if (MemCardGetDirentry(D_800655B8, (char *)all,(struct DIRENTRY *)D_800675D4, &D_800675D0, 0, 0xF) != 0) {
+        D_800675CC = 0;
+    }
+    if (McFindSave() != NULL) {
+        McClearSave();
+        MemCardReadFile(D_800655B8, D_8004CDAC, (u32 *)D_800655C8, 0, 0x2000);
+        D_800675CC = 7;
+        goto lend;
+    }
+    McResetSave();
+    D_800655C0 = 0;
+    if (McFreeBytes() >= 0x2000) {
+        D_800655C0 |= 0x20;
+    }
+    D_800655C0 |= 2;
+    D_800675CC = 3;
+    return;
+l3:
+    if (D_800655C4 == 0 || D_800675C8 != 0) {
+        D_800675C8--;
+        MemCardExist(D_800655B8);
+        D_800675CC = 4;
+        goto lend;
+    }
+    switch (D_800655C4) {
+    case 2:
+        McResetSaveSum();
+        if (MemCardFormat(D_800655B8) == 0) {
+            D_800655C0 = 0x22;
+            D_800675CC = 3;
+            D_800655C4 = 0;
+            return;
+        }
+        D_800655C0 |= 0x100;
+        D_800675CC = 6;
+        return;
+    case 1:
+        if (!(D_800655C0 & 0x10) && MemCardCreateFile(D_800655B8, D_8004CDAC, 1) != 0) {
+            D_800675CC = 6;
+            D_800655C0 |= 0x100;
+        }
+        if (D_800675CC != 6) {
+            func_8002C5BC();
+            MemCardWriteFile(D_800655B8, D_8004CDAC, (u32 *)D_800655C8, 0, 0x2000);
+            D_800675CC = 5;
+            return;
+        }
+        break;
+    }
+    goto lend;
+l4:
+    s = D_80067830;
+    if (s < 5) {
+        goto *tbl4[s];
+    }
+    goto lend;
+l4_13:
+    D_800655C0 = 0;
+    D_800675CC = 0;
+    return;
+l5:
+    if (D_800655C4 == 1) {
+        if (D_80067830 == 0) {
+            D_800655C0 = 0x12;
+            D_800675CC = 3;
+            D_800655C4 = 0;
+            return;
+        }
+        D_800655C0 |= 0x100;
+        D_800675CC = 6;
+        return;
+    }
+    goto lend;
+l7:
+    if (D_80067830 == 0) {
+        p = D_800655C8;
+        q = (s32 *)(p + 0x200);
+        end = (s32 *)(p + 0x850);
+        sum = 0;
+        while (q < end) {
+            sum += *q++;
+        }
+        if (*(s32 *)(p + 0x85C) == sum) {
+            D_800675CC = 3;
+            D_800655C0 = 0x12;
+            return;
+        }
+    }
+l2_2:
+    D_800655C0 = 0xA;
+l4_024:
+    D_800675CC = 3;
+lend:;
+}
 
 s32 func_8002D094(void) {
     if (D_800655C4 == 1 && (D_800655C0 & 0x80)) {
