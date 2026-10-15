@@ -942,7 +942,20 @@ void func_8008A810(void) {
     *(u16 *)(p + 0x30) |= 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008A854);
+void func_8008A854(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = base + arg0;
+
+    s32 sum;
+
+    h->hero_frozen = 2;
+    sum = *(s32 *)((u8 *)h->hero_eng + 0x14) + *(s32 *)((u8 *)h->hero_sub + 8);
+    if (D_8005A5D8 + 0x180 < sum) {
+        SetHeroAction((HeroInfo *)arg0, (u16)D_8009E0E2);
+    }
+    D_8009D73C(arg0);
+    func_8008502C(arg0);
+}
 
 void func_8008A8F0(s32 arg0) {
     D_8009D73C(arg0);
