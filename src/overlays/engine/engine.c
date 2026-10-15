@@ -442,7 +442,16 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800832BC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80083334);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80083488);
+s32 func_80083488(void) {
+    PadButtons *base = (PadButtons *)D_80051338;
+    PadButtons *pad = &base[D_8009AEF0];
+    if ((pad->held & 9) != 9) {
+        if (pad->pressed & 0x4008) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 void func_800834E4(void) {
     s32 *p = (s32 *)D_8005A614;
