@@ -10383,22 +10383,19 @@ void func_80027408(void) {
     }
 }
 
-#ifndef NON_MATCHING
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800274FC);
-#else
-void func_800274FC(s32 *arg0) {
-    u8 *g;
+s32 func_800274FC(s32 *arg0) {
+    OtBuf *b;
     u8 *t;
 
     t = func_80011654(*arg0 + 0x1800, &D_8004E0F0);
-    g = D_8005B790;
-    *(u8 **)(g + 0x4000) = t;
-    *(s32 *)(g + 0x4004) = *(s32 *)(g + 0x4000) + *arg0 + 0x1800;
-    *(u8 **)((g += 0x8000) + 0xC) = func_80011654(*arg0 + 0x1800, &D_8004E0F0);
-    *(s32 *)(g + 0x10) = *(s32 *)(g + 0xC) + *arg0 + 0x1800;
+    b = (OtBuf *)D_8005B790;
+    b[0].prim = t;
+    b[0].end = b[0].prim + *arg0 + 0x1800;
+    b[1].prim = func_80011654(*arg0 + 0x1800, &D_8004E0F0);
+    b[1].end = b[1].prim + *arg0 + 0x1800;
     D_8005B698 = NULL;
+    return (s32)b[1].end;
 }
-#endif
 
 void func_8002759C(void) {
     RECT *temp_s0;

@@ -1547,6 +1547,15 @@ extern void *D_8005699C;
 extern void *D_8005AA38;
 extern void *D_80056864;
 extern s32 *D_80056860;
+/* An ordering table and the primitive area drawn through it (0x400C bytes;
+ * D_8005B790 holds two). */
+typedef struct {
+    u_long ot[0x1000];
+    u8 *prim; /* 0x4000 */
+    u8 *end;  /* 0x4004 */
+    u8 *cur;  /* 0x4008 */
+} OtBuf;
+
 extern u8 D_8005B790[];
 extern s32 D_800637A8;
 extern u8 *D_80058B7C;
@@ -2168,7 +2177,7 @@ Ext1000 *AddObject(NAS *nas);
 
 void func_80026E2C(void);
 
-void func_800274FC(s32 *arg0);  /* func_800276C4, then D_8005B698 = NULL */
+s32 func_800274FC(s32 *arg0);  /* func_800276C4, then D_8005B698 = NULL; returns the second end */
 void func_800276C4(s32 *arg0);
 
 void func_800279A4(void);

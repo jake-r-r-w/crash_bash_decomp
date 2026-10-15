@@ -49,21 +49,15 @@
    "size": 148
   },
   {
-   "name": "func_800274FC",
-   "note": "registers 4/40: func_800276C4's body + D_8005B698 = NULL. Target loads the last *arg0 into a0 and the D_8005B698 lui into v1 (sched1 put the lui before the load); ours v1 then v0. Tried: operand orders, a block-local, static inline body, &D_8005B698 taken early; permuter 10 min no gain. Next: cc1 -dS dump of sched1 order",
-   "seg": "main/main",
-   "size": 160
-  },
-  {
    "name": "func_8002E25C",
    "note": "structure 68/93 (93 vs 91) under 2.7.2: the target reloads *str in the Kanji and ROM-glyph paths but compares the first load for ' '; ours reuses it (c local, volatile D_8006EA24 and an index loop didn't help; index loop 84/93 but 89 long). lh startX (s32) and x-before-w sum order are right. Next: what blocks CSE of *str in 2.7.2",
    "seg": "main/8002e0f0",
    "size": 372
   }
  ],
- "commit": "7c9c912",
+ "commit": "e0b5478",
  "game": "SCUS_945.70",
- "generated": "2026-10-14T21:58:58Z",
+ "generated": "2026-10-15T07:08:53Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -36810,9 +36804,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "e0b5478",
+   "data_b": 488,
+   "data_tb": 606943,
+   "game_all_f": 2551,
+   "game_b": 110692,
+   "game_c_f": 803,
+   "game_f": 807,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 645,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-15T07:08:53Z",
+   "units": {
+    "engine": [
+     2752,
+     63
+    ],
+    "main exe": [
+     99248,
+     542
+    ],
+    "ovl5d": [
+     328,
+     4
+    ],
+    "ovl5e": [
+     504,
+     6
+    ],
+    "ovl5f": [
+     1564,
+     36
+    ],
+    "ovl60": [
+     708,
+     14
+    ],
+    "ovl61": [
+     292,
+     7
+    ],
+    "ovl62": [
+     664,
+     29
+    ],
+    "ovl63": [
+     636,
+     16
+    ],
+    "ovl64": [
+     104,
+     6
+    ],
+    "ovl65": [
+     492,
+     9
+    ],
+    "ovl66": [
+     528,
+     13
+    ],
+    "ovl67": [
+     836,
+     12
+    ],
+    "ovl68": [
+     180,
+     10
+    ],
+    "ovl69": [
+     920,
+     16
+    ],
+    "ovl6a": [
+     936,
+     24
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-15T07:08:46Z",
+   "auto": true,
+   "name": "func_800274FC",
+   "seg": "main/main",
+   "size": 160,
+   "tries": 0
+  },
   {
    "at": "2026-10-14T21:52:46Z",
    "auto": true,
@@ -36924,18 +37012,10 @@
    "seg": "main/main",
    "size": 816,
    "tries": 0
-  },
-  {
-   "at": "2026-10-14T15:59:06Z",
-   "auto": true,
-   "name": "func_80019A60",
-   "seg": "main/main",
-   "size": 1212,
-   "tries": 0
   }
  ],
  "summary": {
-  "blocked": 10,
+  "blocked": 9,
   "copies_b": 37444,
   "data": {
    "done_b": 488,
@@ -36946,16 +37026,16 @@
    "all_f": 2551,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 10,
-   "c_f": 802,
-   "done_b": 110532,
-   "done_f": 806,
+   "blocked": 9,
+   "c_f": 803,
+   "done_b": 110692,
+   "done_f": 807,
    "named_f": 345,
-   "pct": 10.84672180374393,
+   "pct": 10.862422917345413,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2551,
-   "typed_f": 644
+   "typed_f": 645
   },
   "lib": {
    "all_f": 566,
@@ -36998,21 +37078,21 @@
     "all_f": 575,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 10,
-    "c_f": 537,
-    "done_b": 99088,
-    "done_f": 541,
+    "blocked": 9,
+    "c_f": 538,
+    "done_b": 99248,
+    "done_f": 542,
     "file": "SCUS_945.70",
     "files": 3,
     "lib": false,
     "named_f": 15,
-    "pct": 79.3719961550785,
+    "pct": 79.50016020506249,
     "phase": 2,
     "sony_b": 0,
     "title": "main.exe",
     "total_b": 124840,
     "total_f": 575,
-    "typed_f": 412,
+    "typed_f": 413,
     "unit": "main exe"
    },
    {
