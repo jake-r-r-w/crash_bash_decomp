@@ -618,6 +618,8 @@ void func_80083244(void);
 
 void func_80088544(s32 arg0);
 
+s32 func_8008ABF8(s32 arg0);
+
 void PlotWeatherNas(u8 *arg0);
 
 void func_8008D088(u8 *arg0, u8 *arg1, EmitPart *arg2, s32 *arg3, u8 *arg4);

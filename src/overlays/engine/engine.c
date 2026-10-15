@@ -973,7 +973,21 @@ s32 func_8008AB94(s32 arg0) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008ABF8);
+s32 func_8008ABF8(s32 arg0) {
+    u16 temp_v1;
+    u16 act;
+
+    temp_v1 = Heroes[arg0].hero_status;
+    if (temp_v1 & 0x200) {
+        act = D_8009E0E4;
+    } else if (temp_v1 & 0x400) {
+        act = D_8009E0E6;
+    } else {
+        return 0;
+    }
+    SetHeroAction((HeroInfo *)arg0, act);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008AC74);
 
