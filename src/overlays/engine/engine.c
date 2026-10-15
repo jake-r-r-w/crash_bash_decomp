@@ -1231,7 +1231,35 @@ void func_80095A04(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80095A60);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80095BEC);
+void func_80095BEC(s32 arg0, s32 *recs) {
+    EXTengine *eng;
+    subengine *subs;
+    s32 *rec;
+    s32 i;
+    s32 n;
+
+    if (recs != NULL) {
+        eng = &EnginePool[arg0];
+        *eng = EngineTemplate;
+        rec = recs;
+        i = 0;
+        subs = D_800A13F4[arg0];
+        while (*rec >= 2) {
+            rec += 9;
+            i++;
+        }
+        n = i;
+        func_8001D334(eng->sub);
+        *eng = EngineTemplate;
+        eng->unk5C = 1;
+        eng->unk5D = 0;
+        eng->flags |= 0x10000000;
+        if (n > 0) {
+            func_8001D3B0(eng, n, subs);
+            func_800952F8(eng->sub, recs);
+        }
+    }
+}
 
 /* Counts the 0x24-byte records before the first whose leading word is
  * below 2. */
