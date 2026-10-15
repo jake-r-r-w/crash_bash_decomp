@@ -3454,7 +3454,8 @@
   "status": "matched"
  },
  "engine:8008ACF0": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-15T13:52:39Z",
+  "status": "matched"
  },
  "engine:8008ADA4": {
   "auto_failed": "types"

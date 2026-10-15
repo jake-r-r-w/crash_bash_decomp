@@ -701,6 +701,8 @@ void func_80088708(s32 arg0);
 
 void func_8008A854(s32 arg0);
 
+s32 func_8008ACF0(s32 arg0);
+
 void InitCrateExplode(NAS *arg0);
 
 void func_8008EC00(void);
