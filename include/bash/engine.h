@@ -573,4 +573,6 @@ void InitWeatherNas(u8 *arg0);
 
 void func_8008FE00(void);
 
+void func_80098284(void);
+
 #endif /* BASH_ENGINE_H */
