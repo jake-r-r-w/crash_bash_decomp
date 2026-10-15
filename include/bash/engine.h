@@ -421,6 +421,8 @@ typedef struct EngineRec24 {
     char pad[0x1E];
 } EngineRec24;
 extern EngineRec24 *D_8009BD0C;
+extern EngineRec24 **D_8009BD10;
+extern s32 D_8009BD14;
 
 s16 func_800831F0(void);
 
@@ -592,6 +594,8 @@ s32 func_8008C4C8(s32 *arg0, s32 arg1);
 void InitWeatherNas(u8 *arg0);
 
 extern u8 D_8009E200[];
+
+void func_80083244(void);
 
 void PlotWeatherNas(u8 *arg0);
 
