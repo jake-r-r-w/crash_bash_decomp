@@ -76,6 +76,9 @@ void func_80098278(void);
 extern s32 D_800ADBC0;
 extern s32 D_80099174;
 extern s32 D_8009AE78;
+extern s16 D_8009AE70;
+extern s32 D_8009AE3C;
+extern u16 D_8009AE74;
 extern u8 D_8009F658[];
 extern u8 D_8009FA14[];
 extern u8 D_800A015C[];
@@ -167,6 +170,8 @@ typedef struct {
 extern s32 D_80051658;
 extern D_800AD2EC_t D_800AD2EC;
 extern s32 D_800AD31C;
+
+void func_8007E7F4(void);
 
 u8 *func_8008D24C(u8 *arg0, s32 *arg1);
 

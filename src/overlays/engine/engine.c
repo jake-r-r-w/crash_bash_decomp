@@ -186,7 +186,29 @@ s32 func_8007E7C8(void) {
     return var_v0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007E7F4);
+void func_8007E7F4(void) {
+    u8 *p;
+    u16 f;
+
+    D_8009AE70 = 0;
+    D_8009AE3C = 0;
+    D_8009AE74 = 3;
+    p = D_8005A614;
+    f = *(u16 *)(p + 0x32);
+    if (f & 3) {
+        D_8009AE74 = *(u16 *)(p + 0x3A);
+    }
+    if (f & 0x20) {
+        if (f & 8) {
+            D_8009AE74 = 3;
+        } else {
+            D_8009AE74 = 2;
+        }
+    }
+    if (D_8005A648 == 0x20) {
+        D_8009AE74 = 3;
+    }
+}
 
 void func_8007E874(void) {
     D_8009AE78 = 0xF0;
