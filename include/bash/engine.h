@@ -27,6 +27,7 @@ typedef struct {
 extern s32 D_800AD1E8;
 extern D_800AD1EC_entry D_800AD1EC[];
 extern void (*D_8005AA80)(void);
+extern void (*D_8009D704)(void);
 
 void func_8007A688(s32 arg0);
 void func_8007A6B0(s32 arg0);
@@ -738,6 +739,8 @@ NAS *func_8007A464(s32 arg0, s32 *arg1, s32 arg2);
 void func_8007A91C(void);
 
 void func_8007E93C(u16 arg0, s16 arg1, s16 arg2);
+
+void func_8008672C(s32 idx);
 
 void PlotSmokePoof(NAS *m);
 

@@ -728,7 +728,25 @@ s32 func_80086724(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008672C);
+void func_8008672C(s32 idx) {
+    HeroInfo *h;
+    EXTengine *s;
+    EXTengine *e;
+
+    if (D_8009D704 != NULL) {
+        D_8009D704();
+    } else {
+        HeroInfo *base = Heroes;
+        h = base + idx;
+        s = h->hero_shadow;
+        e = h->hero_eng;
+        s->unk10 = e->unk10;
+        if (h->hero_status & 0xA000) {
+            s->sub->flags &= 0xFFFF7FFF;
+        }
+        s->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(s);
+    }
+}
 
 void func_800867EC(void) {
     func_80085D2C(1);
