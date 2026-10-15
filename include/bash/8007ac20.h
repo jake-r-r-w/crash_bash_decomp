@@ -63,6 +63,8 @@ void func_8007BFA8(void);
 extern subengine *D_80099170;
 extern subengine D_80099500;
 extern subengine D_8009AD94;
+extern subengine D_8009AC04;
+extern subengine D_8009ACAC;
 
 void func_8007EB68(void);
 typedef struct PanelPrim {

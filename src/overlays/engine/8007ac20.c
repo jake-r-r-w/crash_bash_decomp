@@ -535,4 +535,29 @@ void func_8007EC48(void) {
     func_8007ED0C();
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007ED0C);
+void func_8007ED0C(void) {
+    EXTengine *e;
+
+    e = &D_8009959C;
+    func_8001D3B0(e, 1, &D_8009AC04);
+    e->flags |= 0x10008000;
+    e->sub->flags |= 0x10008000;
+    e->sub->unk6C = D_80053074;
+    e->sub->unk74 = 0x2022;
+    e->unk5D = 0;
+    e->unk5C = 1;
+    e->unk2C.x = 0xE00;
+    e->unk2C.y = 0xE00;
+    e->unk2C.z = 0xE00;
+    e++;
+    func_8001D3B0(e, 1, &D_8009ACAC);
+    e->flags |= 0x10008000;
+    e->sub->flags |= 0x10008000;
+    e->sub->unk6C = D_80053074;
+    e->sub->unk74 = 0x2022;
+    e->unk5D = 0;
+    e->unk5C = 1;
+    e->unk2C.x = 0xE00;
+    e->unk2C.y = 0xE00;
+    e->unk2C.z = 0xE00;
+}
