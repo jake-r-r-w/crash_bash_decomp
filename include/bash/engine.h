@@ -177,6 +177,9 @@ typedef struct EngineGameView {
 } EngineGameView;
 extern u8 D_8009F6F4[];
 extern s32 D_8009F8B8;
+typedef struct { s32 unk0; s32 unk4; s32 unk8; s32 unkC; } EngineEntry16Head;
+typedef struct { s32 unk0; EngineEntry16Head *unk4; s32 unk8; } EngineTable12;
+extern EngineTable12 D_8009E7A0[];
 /* Also in main.h; repeated for overlays that include engine.h first. */
 extern u8 D_8005A614[];
 extern u16 D_8004DDD0[];
@@ -455,6 +458,8 @@ void func_800894E0(s32 arg0);
 void func_8008A9F0();
 void func_8008AA40();
 void func_80083550(void);
+
+s32 func_80090008(void);
 
 s32 *func_800901B4(s32 arg0);
 
