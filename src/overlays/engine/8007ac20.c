@@ -510,7 +510,41 @@ void func_8007D144(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007D208);
+void func_8007D208(void) {
+    s32 i;
+    s32 off;
+    PanelPrim *p;
+
+    i = 0;
+    while (1) {
+        if (i >= 4) {
+            break;
+        }
+        D_8009AE40[i].a = NULL;
+        D_8009AE40[i].b = NULL;
+        if (Heroes[i].hero_name != 9) {
+            D_8009AE40[i].a = &D_800CAD5C[i];
+            off = i * sizeof(D_80099A64[0]);
+            p = (PanelPrim *)(off + (u8 *)&D_80099A64[0][0]);
+            p->unk4 = 0x2E;
+            p->unk8 = 0x38;
+            p->u6C.ptr = D_8005365C;
+            p->unk0 = 0x10000000;
+            p->unkC = 0;
+            p->unk74 = 0x3029;
+            p = (PanelPrim *)(off + (u8 *)&D_80099A64[0][1]);
+            D_8009AE40[i].b = &D_800CAD5C[i].unk4;
+            p->unk4 = 0xA;
+            p->unk8 = 0x39;
+            p->u6C.ptr = D_8005365C;
+            p->unk0 = 0x10000000;
+            p->unkC = 0;
+            p->unk74 = 0x302B;
+        }
+        i++;
+    }
+    D_80099174 |= 0x100000;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007D2F4);
 
