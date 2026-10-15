@@ -8,6 +8,10 @@
 #include "common.h"
 #include "bash/nas.h"
 
+extern s32 D_80051658;
+extern s32 D_800AD2F8[];
+extern s32 D_800AD320;
+
 void func_8007A688(s32 arg0);
 void func_8007A6B0(s32 arg0);
 void func_8007A6D0(s32 arg0);
@@ -141,5 +145,7 @@ void func_800940B0(s32 arg0, s32 arg1);
 void func_8009421C(void);
 
 s32 func_80095D88(s32 *rec);
+
+void func_800972BC(s32 arg0, s32 arg1);
 
 #endif /* BASH_ENGINE_H */
