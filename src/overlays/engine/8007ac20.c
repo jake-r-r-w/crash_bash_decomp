@@ -48,7 +48,38 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007B8D4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007BE84);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007BFA8);
+void func_8007BFA8(void) {
+    s32 i;
+    s32 j;
+    subengine *sub;
+
+    for (i = 0; i < 4; i++) {
+        ((EXTengine **)&D_8009970C)[i] = &D_80099290[i];
+        sub = D_8009971C[i];
+        func_8001D3B0(((EXTengine **)&D_8009970C)[i], 7, sub);
+        for (j = 0; j < 7; j++) {
+            sub->unk6C = D_80053074;
+            sub->flags = 0x10000000;
+            sub++;
+        }
+        sub = D_8009971C[i];
+        sub->unk6C = D_80053074;
+        ((EXTengine **)&D_8009970C)[i]->flags = 0x10008000;
+        sub->flags = 0x10008000;
+        ((EXTengine **)&D_8009970C)[i]->unk10.x = D_800991E0[D_800991D8[i]][0];
+        ((EXTengine **)&D_8009970C)[i]->unk10.y = D_800991E0[D_800991D8[i]][1];
+        ((EXTengine **)&D_8009970C)[i]->unk10.z = 0;
+        sub->unk74 = D_80099218[Heroes[i].hero_name];
+        sub = &D_8009971C[i][1];
+        sub->unk6C = D_80053074;
+        sub->flags = 0;
+        sub->unk04 = D_80099240[i].x;
+        sub->unk08 = D_80099240[i].y;
+        sub->unk0C = 0;
+        sub->unk74 = 0x3026;
+    }
+    D_80099174 |= 2;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007C170);
 

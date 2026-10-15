@@ -49,4 +49,14 @@ void func_8007ED0C(void);
 
 void func_8007E93C(u16 arg0, s16 arg1, s16 arg2);
 
+extern EXTengine D_80099290[4];
+extern subengine D_8009971C[4][7];
+extern u16 D_800991D8[4];
+extern s16 D_800991E0[][2];
+extern u16 D_80099218[];
+typedef struct { s16 x, y; } EngXY;
+extern EngXY D_80099240[4];
+
+void func_8007BFA8(void);
+
 #endif /* BASH_8007AC20_H */
