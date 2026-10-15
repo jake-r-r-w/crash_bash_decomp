@@ -2316,7 +2316,29 @@ void func_800945C0(EngineStartArgs *arg0) {
     D_800654B4 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80094754);
+void func_80094754(void) {
+    EngineCfg *cfg;
+
+    func_8002AC70();
+    while (func_80012FFC() != 0) {
+        func_8001231C();
+        func_80010AE8(&D_8004E0F0);
+        func_8002BAE8();
+    }
+    D_800A0D3C = 0;
+    func_8002232C();
+    D_8009F968 = 0;
+    func_80011BF8(&D_8004E0F0, D_80098594, 0x801FF000 - (s32)D_80098594);
+    func_80012E54();
+    cfg = &D_800A0314;
+    func_800274FC((s32 *)cfg);
+    ((void (*)(u8 *))func_800276A4)(D_800637A8 == 0 ? D_8005B72C : D_8005B744);
+    func_80028774(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
+    func_80017164(cfg->pools);
+    func_800170D4();
+    func_8001E984(0x20, 0x80);
+    func_800945C0((EngineStartArgs *)D_800A0C0C);
+}
 
 void func_80094860(void) {
     VabSlot *slot;

@@ -190,6 +190,9 @@ typedef struct EngineCfg {
 
 s32 func_8009317C(void);
 extern EngineCfg D_8009F96C;
+extern EngineCfg D_800A0314;
+extern u8 *D_80098594;
+extern s32 D_8009F968;
 extern u8 D_800D7144[];
 extern ArenaDef D_80098F48;
 extern u8 D_800B9524[];
@@ -705,6 +708,8 @@ void func_8008EC00(void);
 void func_8008EFD4(void);
 
 s32 func_8008FE68(s32 arg0);
+
+void func_80094754(void);
 
 void func_80094860(void);
 
