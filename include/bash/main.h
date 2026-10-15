@@ -1575,6 +1575,7 @@ extern s32 D_800654AC;
 extern s32 D_800654B0;
 extern s32 D_800654B4;
 extern s32 D_8004E0D8;
+extern s32 D_8004E0D0; /* BCD of func_80010000's count */
 extern s32 D_800590CC;
 extern subengine *D_80058ACC;
 extern s32 D_80058B60;

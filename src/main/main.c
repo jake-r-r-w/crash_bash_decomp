@@ -1,7 +1,50 @@
 #include "common.h"
 #include "bash/main.h"
 
+#ifndef NON_MATCHING
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80010000);
+#else
+s32 func_80010000(u8 *arg0) {
+    s32 n;
+    s32 i;
+    u8 *p;
+    u8 b;
+    s32 t;
+
+    n = 0;
+    for (i = 0; i < 33; i++) {
+        p = &arg0[i];
+        if (p[0xE4] != 0) {
+            n++;
+        }
+        if (p[0x126] != 0) {
+            n++;
+        }
+        b = p[0x105];
+        if (b != 0) {
+            n++;
+        }
+        if (p[0x147] != 0) {
+            n++;
+        }
+        if (b >= 2) {
+            n += 2;
+        }
+        if (p[0x168] != 0) {
+            n += 8;
+        }
+    }
+    t = n % 10;
+    i = n / 10;
+    t |= (i % 10) << 4;
+    i /= 10;
+    t |= (i % 10) << 8;
+    i /= 10;
+    t |= (i % 10) << 12;
+    D_8004E0D0 = t;
+    return n;
+}
+#endif
 
 void func_80010158(void) {
     D_8004E0E0 = 2;

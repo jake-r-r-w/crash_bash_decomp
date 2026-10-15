@@ -1,6 +1,12 @@
 {
  "blocked": [
   {
+   "name": "func_80010000",
+   "note": "instructions 36/86 (length right); only the BCD tail's registers: target const 0x66666667 in a0, n/10 in a2, accumulator a0; i is reused for the quotient chain (a fresh var changes the length); permuter 10 min found nothing; next: cc1 -dl local-alloc dump",
+   "seg": "main/main",
+   "size": 344
+  },
+  {
    "name": "func_80010488",
    "note": "instructions 2/208: only the preheader order, target lui s6 (%hi D_8004E0EC, hoisted by loop.c) before li s5,-1 (m1); sched2 keeps RTL order, so in the target the -1 load came after the hoisted lui (hoisted too?). m1 set inside the loop after the exit tests is not a loop.c movable at all. Shape that got here: unrotated do{s32 t; if(!p)break;...}while(1), first site ternary with lo/nx, second site an inline with m1 param, merge = func_800107C8_merge",
    "seg": "main/main",
@@ -79,9 +85,9 @@
    "size": 372
   }
  ],
- "commit": "6d6a064",
+ "commit": "f4dbc0b",
  "game": "SCUS_945.70",
- "generated": "2026-10-15T08:02:47Z",
+ "generated": "2026-10-15T08:33:11Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -37260,7 +37266,7 @@
    }
   },
   {
-   "commit": "6d6a064",
+   "commit": "f4dbc0b",
    "data_b": 488,
    "data_tb": 606943,
    "game_all_f": 2551,
@@ -37273,7 +37279,7 @@
    "lib_b": 122112,
    "lib_f": 564,
    "lib_tb": 122112,
-   "ts": "2026-10-15T08:02:47Z",
+   "ts": "2026-10-15T08:33:11Z",
    "units": {
     "engine": [
      2752,
@@ -37469,7 +37475,7 @@
   }
  ],
  "summary": {
-  "blocked": 13,
+  "blocked": 14,
   "copies_b": 37444,
   "data": {
    "done_b": 488,
@@ -37480,7 +37486,7 @@
    "all_f": 2551,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 13,
+   "blocked": 14,
    "c_f": 808,
    "done_b": 113580,
    "done_f": 812,
@@ -37532,7 +37538,7 @@
     "all_f": 575,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 13,
+    "blocked": 14,
     "c_f": 543,
     "done_b": 102136,
     "done_f": 547,
