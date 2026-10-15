@@ -181,4 +181,16 @@ s32 func_80092560(u8 *arg0);
 
 void func_80097334(s32 arg0, s32 arg1);
 
+/* PadState (D_80051338) seen by func_8007EE2C: button flags at 0x44/0x48. */
+typedef struct PadButtons {
+    /* 0x00 */ u8 unk0[0x44];
+    /* 0x44 */ s32 held;
+    /* 0x48 */ s32 pressed;
+    /* 0x4C */ u8 unk4C[0x58 - 0x4C];
+} PadButtons;
+
+extern s32 D_8009AEEC;
+extern s32 D_8009AEF0;
+s32 func_8007EE2C(s32 pad);
+
 #endif /* BASH_ENGINE_H */

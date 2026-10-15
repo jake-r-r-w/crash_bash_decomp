@@ -237,7 +237,26 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007EC48);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007ED0C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007EE2C);
+s32 func_8007EE2C(s32 pad) {
+    if ((((PadButtons *)D_80051338)[pad].pressed & 0x80) && D_8009AEEC != 0) {
+        D_8009AEEC = 0;
+        PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    if ((((PadButtons *)D_80051338)[pad].pressed & 0x20) && D_8009AEEC == 0) {
+        D_8009AEEC = 1;
+        PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    if ((((PadButtons *)D_80051338)[pad].held & 9) != 9 &&
+        (((PadButtons *)D_80051338)[pad].pressed & 8)) {
+        s32 *p = (s32 *)D_8005A614;
+        D_8009AEF0 = 0;
+        D_8009AEEC = 0;
+        p[4] &= 0x04000010;
+        func_8002AC18();
+        return 0;
+    }
+    return ((PadButtons *)D_80051338)[pad].pressed & 0x4000;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007EFC0);
 
