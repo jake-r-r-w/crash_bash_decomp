@@ -306,7 +306,41 @@ void func_80090048(void) {
     D_8005A63C = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_800900CC);
+static inline s32 func_800900CC_find(s32 arg0) {
+    s32 i;
+    s32 *p;
+
+    for (i = 0, p = D_8009EDD4[0]; (u32)i < 10; i++, p += 5) {
+        if (*p == arg0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+s32 func_800900CC(void) {
+    s32 i;
+    s32 j;
+    s32 best;
+    s32 *t;
+
+    best = -1;
+    i = func_800900CC_find(D_8005A648);
+    if (i < 0) {
+        t = 0;
+    } else {
+        t = D_8009EDD4[i];
+    }
+    if (t == 0) {
+        return best;
+    }
+    for (j = 0; j < t[2]; j++) {
+        if (((s32(*)(s32))func_8007A6D0)(((u16 *)(t[3] + j * 8))[2]) != 0 && best < j) {
+            best = j;
+        }
+    }
+    return best;
+}
 
 static inline s32 func_800901B4_find(s32 arg0) {
     s32 i;
