@@ -101,7 +101,33 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B85DC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B86C8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", PlotDinoSmoke);
+void PlotDinoSmoke(NAS *m) {
+    s32 w = m->UserInfo.user1;
+    EXTengine **u;
+    EXTengine *e;
+    s32 x;
+    s32 z;
+
+    if (w != 0) {
+        u = (EXTengine **)w;
+        if (D_8005A648 != 0x1C) {
+            m->Engine->unk10.x += (u[1]->unk10.x - m->Engine->unk10.x) >> 4;
+            z = (u[1]->unk10.z - (e = m->Engine)->unk10.z) >> 4;
+            x = e->unk10.z;
+        } else {
+            m->Engine->unk10.x += (u[1]->unk10.x - m->Engine->unk10.x) / 6;
+            z = (u[1]->unk10.z - (e = m->Engine)->unk10.z) / 6;
+            x = e->unk10.z;
+        }
+        x += z;
+        e->unk10.z = x;
+        m->Engine->unk10.y = u[1]->unk10.y - ((u[1]->unk2C.x * 0x1A4) >> 12);
+        m->Engine->unk2C.x = u[1]->unk2C.x;
+        m->Engine->unk2C.y = u[1]->unk2C.y;
+        m->Engine->unk2C.z = u[1]->unk2C.z;
+    }
+    func_800250B0(m);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B8A40);
 

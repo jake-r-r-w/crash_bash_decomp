@@ -10,6 +10,8 @@
 
 s32 func_800B4C70(s32 *arg0, s32 arg1);
 
+void PlotDinoSmoke(NAS *m);
+
 void func_800BCA18(HeroInfo *hero);
 
 s32 func_800BCDF0(u8 *arg0);

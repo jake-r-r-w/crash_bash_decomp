@@ -732,6 +732,8 @@ extern s16 D_8006BBD6[];
 
 void func_8007A91C(void);
 
+void PlotSmokePoof(NAS *m);
+
 void PlotFloatyScore(NAS *nas);
 
 #endif /* BASH_ENGINE_H */
