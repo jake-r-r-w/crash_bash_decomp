@@ -98,6 +98,26 @@ How the boundaries were found:
     places no single edge: a global used by one run can be defined in another
     file, and the stretches with no private data (121-169, 226-331) could
     hold any number of files.
+  - Inversions (`units --data`, last list): when run A comes before run B
+    in the code but A's private data lies after B's in the same `.data`
+    chunk, B..A must be one file. Short spans (<= 40 functions; a global
+    used by one far function but defined elsewhere inverts against
+    everything, e.g. `D_8004E0E4` used only by function 430) give eight
+    probable one-file regions: 1-16, 58-120, 170-184, 199-225, 354-430,
+    458-493, 497-527, 550-557. The boundaries lie in the gaps between them
+    (17-57, 121-169, 185-198, 226-353, 431-457, 494-496, 528-549, 558-565),
+    and a region can still hide a boundary if one of its inversions comes
+    from a misplaced global (58-120 leans on `D_80050010`, used only by
+    function 101).
+  - Who uses the rest of the data (`.data` labels with their code users,
+    overlays included, and the pointers in each table): the first game data
+    (`0x8004DCBC..0x8004DDD0`) is tables of pointers into the first rodata
+    strings (`0x8004C56C..0x8004C7D0`) and the `D_8004DDD0` level table, used
+    by the engine, `ovl69` and functions 101/332-358, so the first object is a
+    shared tables file. The 2.7.2 units' data (`0x8006783C..0x80067898` for
+    `8002d488`, `0x8006789C..` for `8002e0f0`) follows `main/main`'s last data
+    directly, as their code follows it. Pointer tables tie functions to their
+    file: `D_80058B00` lists functions 276-314 and is used by 283-297.
   - `.data` interleaves game chunks with Sony's objects (`main.yaml`: game
     data at `0x3E4BC`, `0x593D4` (the 16 KB trig table `D_80068BD4`),
     `0x5E0B4`, `0x5E3AC`, ... between library `.data`), so the game objects

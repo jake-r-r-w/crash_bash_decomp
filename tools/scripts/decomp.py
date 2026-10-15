@@ -3094,6 +3094,22 @@ def cmd_units(a):
               f"({len(local)} symbols; a lone symbol out of line is usually a global defined elsewhere):")
         for lo, hi, x0, x1, c in groups:
             print(f"  {lo:4d}-{hi:<4d} {names[lo]} .. {names[hi]}: {x0:08X}-{x1:08X} ({c})")
+        # Inversions: run A before run B in the code but A's data after B's can't be two files (both
+        # sections keep file order), so B..A is one file. Only inside one game .data chunk (chunks are
+        # split by library objects), and only short spans: a global defined in another file and used
+        # by one far function inverts against everything in between.
+        chunk = lambda x: sum(1 for lo, _ in lib if lo <= x)
+        spans = sorted((l2, h1) for l1, h1, x1, _ in local for l2, h2, x2, _ in local
+                       if x1 < x2 and l1 > h2 and chunk(x1) == chunk(x2) and h1 - l2 <= 40)
+        same = []
+        for l, h in spans:
+            if same and l <= same[-1][1]:
+                same[-1][1] = max(same[-1][1], h)
+            else:
+                same.append([l, h])
+        print("one file each (private data out of code order inside the span; boundaries lie between):")
+        for l, h in same:
+            print(f"  {l:4d}-{h:<4d} {names[l]} .. {names[h]}")
     ranked = sorted(range(nf - 1), key=lambda g: -gaps[g]["score"])
     print(f"\ntop boundary candidates (gap after function i; + style, rodata, strings; - statics spanning it):")
     for g in ranked[:a.top]:

@@ -67,10 +67,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
 3. Split `main.c` into its translation units, between swarm runs (on hold
    since 2026-10-15: the evidence so far groups functions but places no
    boundary; see ARCHITECTURE.md, Files inside `main/main`). `decomp.py units
-   --data` now shows the data blocks (regions of files); next evidence to
-   try: which data each block holds besides the private symbols (who
-   references the rest, overlays included), and the engine overlay the same
-   way (a split
+   --data` now shows the data blocks (regions of files); and, last, the
+   inversions: eight probable one-file regions, boundaries in the gaps
+   between (ARCHITECTURE.md). Next: split at those gaps only where another
+   signal agrees, or study the engine overlay the same way (a split
    moves functions, so workers' patches and big-mode checkpoints for them
    stop applying). Find the boundaries first and write the evidence in
    ARCHITECTURE.md: rodata order, alignment padding, file-local statics,
@@ -350,6 +350,12 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-15 (by hand, file boundaries 2):** mapped every game `.data`
+  label to its code users (overlays too) and table pointers. Private data out
+  of code order proves shared files: `units --data` now lists eight
+  probable one-file regions; the boundaries lie in the gaps between. The
+  first data object is a shared tables file; the trig table is a data-only
+  object linked among the libraries.
 - **2026-10-15 (by hand, file boundaries):** `decomp.py units --data`
   groups the data each run of functions uses alone into address blocks;
   they climb along the code in one sequence (ARCHITECTURE.md, Files inside
