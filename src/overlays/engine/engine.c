@@ -1384,7 +1384,19 @@ void func_8008EB8C(void) {
     D_800590CC = 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008EC00);
+void func_8008EC00(void) {
+    u8 *a;
+    u8 *b;
+    s32 func_800133FC();
+
+    a = (u8 *)func_800133FC();
+    b = func_800189F4(a, D_8005B698->w, D_8005B698->h);
+    func_800110A8(a, &D_8004E0F0);
+    LoadImage(D_8005B698, (u32 *)b);
+    LoadImage(D_8005B698 + 1, (u32 *)b);
+    DrawSync(0);
+    func_800110A8(b, &D_8004E0F0);
+}
 
 void func_8008EC94(void) {
     s32 f = D_8005B690;
