@@ -268,7 +268,27 @@ void func_8007D0BC(void) {
     D_80099174 |= 0x200;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007D144);
+void func_8007D144(void) {
+    s32 t;
+    u8 *g = D_8005A614;
+
+    if (*(s32 *)(g + 0x6C) != 0) {
+        t = *(s16 *)(g + 0x48);
+        D_8009AD74[t].d = 1;
+        D_8009AD74[t].b += 0x46;
+        t = Heroes[t].hero_teammate;
+        if (t != -1) {
+            D_8009AD74[t].d = 0;
+        }
+        t = *(s16 *)(g + 0x4A);
+        D_8009AD74[t].d = 1;
+        D_8009AD74[t].b += 0x46;
+        t = Heroes[t].hero_teammate;
+        if (t != -1) {
+            D_8009AD74[t].d = 0;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007D208);
 

@@ -739,6 +739,8 @@ NAS *func_8007A464(s32 arg0, s32 *arg1, s32 arg2);
 
 void func_8007A91C(void);
 
+void func_8007D144(void);
+
 void func_8007E93C(u16 arg0, s16 arg1, s16 arg2);
 
 void func_8008672C(s32 idx);
