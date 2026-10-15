@@ -70,10 +70,11 @@ leads**, add any new gotcha, and add one short entry at the top of the
    --data` now shows the data blocks (regions of files); and, last, the
    inversions: eight probable one-file regions, boundaries in the gaps
    between (ARCHITECTURE.md). With the call graph, 17 possible cut zones
-   remain, none proven (no positive signal). Don't split on them alone; a
-   proof needs a positive sign (two copies of one header `static`, a
-   literal in two places, a style change). Study the engine overlay the same
-   way (a split
+   remain, none proven (no positive signal). Positive sign found: jump-table parity
+   (`decomp.py units SEG`, any segment) proves file starts; main/main has
+   one (95..370), the engine five, five slot overlays some. Next: split the
+   engine at its proven boundaries, narrowing each with the call graph,
+   and keep main.c whole until a cut there is proven (a split
    moves functions, so workers' patches and big-mode checkpoints for them
    stop applying). Find the boundaries first and write the evidence in
    ARCHITECTURE.md: rodata order, alignment padding, file-local statics,
@@ -353,6 +354,11 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-15 (by hand, file boundaries 4):** positive evidence at last:
+  switch tables keep one address parity per file (`.align 3` relative to
+  the object, objects 4-aligned), so a parity change proves a new file.
+  `decomp.py units SEG` prints them for any segment: the engine has five,
+  main/main one, `ovl5d` two, `ovl5e`/`ovl66`/`ovl67`/`ovl6a` one each.
 - **2026-10-15 (by hand, file boundaries 3):** `units --data` adds the call
   graph (84 probably-static functions tie their callers' file): 17 possible
   cut zones, eight one or two functions wide, none proven. No byte-identical

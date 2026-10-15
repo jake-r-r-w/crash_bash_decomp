@@ -109,6 +109,19 @@ How the boundaries were found:
     and a region can still hide a boundary if one of its inversions comes
     from a misplaced global (58-120 leans on `D_80050010`, used only by
     function 101).
+  - Jump-table parity (`units`, first list) is the one positive signal so
+    far. cc1 puts `.align 3` before every switch table, relative to its own
+    object's `.rodata`, and psylink places objects only 4-aligned, so inside
+    a file every table has the same address mod 8 (an odd-length table is
+    followed by a zero pad word). Proof from the engine: 13 tables in a row
+    at `0x800AE128..0x800AE3D0` are all 0 mod 8, back to back, each of even
+    length. So a table whose parity differs from the previous one is in a
+    later file. This is also why tables of matched functions landed at the
+    wrong mod-8 offset in the single `main.c` (the `goto *tbl` workaround in
+    MATCHING.md). In `main/main`: a file starts after function 95 and by
+    370 (it agrees with the data). The engine has five (after 4/by 33,
+    59/77, 154/208, 244/289, 320/330), and `ovl5d` two, `ovl5e`, `ovl66`,
+    `ovl67`, `ovl6a` one each (`decomp.py units overlays/<ovl>/<ovl>`).
   - Calls: 84 functions are called only by code within 40 functions and
     by nothing else (no other unit, no data table), so probably `static`
     and in their callers' file; 217 are called from outside. Together with

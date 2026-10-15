@@ -2925,6 +2925,35 @@ def func_refs(funcs):
     return refs
 
 
+def units_parity(seg, funcs, syms):
+    """Proven file boundaries from switch jump tables. cc1 puts `.align 3` before every jump table,
+    relative to the object's own .rodata, and psylink places objects only 4-aligned, so inside one
+    file every table has the same address mod 8 (odd-length tables get a zero pad word after them).
+    A table whose parity differs from the one before it is in a later file. Works for any segment."""
+    fl = sorted(((k, e) for k, e in funcs.items() if e["seg"] == seg), key=lambda x: x[1]["rom"])
+    idx = {k: i for i, (k, _) in enumerate(fl)}
+    names = [cur_name(k, e, syms) for k, e in fl]
+    refs = func_refs(funcs)
+    tabs = {}
+    for k, _ in fl:
+        for n, o in refs.get(k, {}).get("syms", []):
+            m = re.match(r"jtbl_([0-9A-Fa-f]{8})$", n)
+            if m:
+                tabs.setdefault(int(m.group(1), 16) + o, set()).add(idx[k])
+    rows = sorted(tabs.items())
+    print(f"{seg}: {len(rows)} jump tables; a parity change between consecutive tables proves a file boundary:")
+    found = 0
+    for (a0, u0), (a1, u1) in zip(rows, rows[1:]):
+        if a0 % 8 != a1 % 8:
+            lo, hi = max(u0), min(u1)
+            found += 1
+            print(f"  {a0:08X} ({a0 % 8}) -> {a1:08X} ({a1 % 8}): a file starts after {lo} {names[lo]} and by {hi} {names[hi]}"
+                  + ("" if lo < hi else "  (code order disagrees: check)"))
+    if not found:
+        print("  none")
+    print()
+
+
 def cmd_units(a):
     """Evidence for splitting a C segment (main/main) into its original translation units. Each
     object's .rodata is linked in the same order as its .text and follows its functions' order,
@@ -2935,6 +2964,7 @@ def cmd_units(a):
     import yaml
     proj, funcs = need_proj(), need_funcs()
     syms = sym_names()
+    units_parity(a.seg, funcs, syms)
     y = yaml.safe_load(read(f"{CFG}/main.yaml"))
     seg = next(s for s in y["segments"] if isinstance(s, dict) and s.get("name") == "main")
     subs = [s for s in seg["subsegments"] if isinstance(s, list)]
@@ -2945,7 +2975,8 @@ def cmd_units(a):
         if len(s) >= 3 and s[2] == a.seg and nxt:
             rng[".rodata" if s[1] == ".rodata" else "text"] = (v(s[0]), v(nxt))
     if "text" not in rng:
-        die(f"no c segment {a.seg} in main.yaml")
+        print(f"(the other evidence needs a c segment of main.yaml; {a.seg} has only the jump-table check)")
+        return
     ro = rng.get(".rodata", (0, 0))
     code_end = v(next(s[0] for s in subs if len(s) > 1 and str(s[1]).lstrip(".") == "rodata"))  # data starts here
     fl = sorted(((k, e) for k, e in funcs.items() if e["seg"] == a.seg), key=lambda x: x[1]["rom"])
