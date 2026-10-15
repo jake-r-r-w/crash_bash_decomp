@@ -1117,7 +1117,28 @@ void func_8008CE10(void) {
 void func_8008CE18(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008CE20);
+FlagPoint *func_8008CE20(subengine *sub, s32 idx, s32 mask) {
+    PointList *list = func_8001562C(sub);
+    u8 *p;
+    s32 i;
+    s32 n;
+
+    if (list != NULL) {
+        n = list->nRecs;
+        p = (u8 *)list->pts;
+        i = 0;
+        if (--n != -1) {
+            do {
+                if (p != NULL && i == idx && (((u32 *)p)[3] & 0xC0000000) == mask) {
+                    return (FlagPoint *)p;
+                }
+                i++;
+                p += 0x10;
+            } while (--n != -1);
+        }
+    }
+    return NULL;
+}
 
 s32 func_8008CEB0(u8 *arg0, u8 *arg1) {
     s32 temp_v0;

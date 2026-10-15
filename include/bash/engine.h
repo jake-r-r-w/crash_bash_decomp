@@ -628,6 +628,8 @@ s32 func_8008AC74(s32 arg0);
 
 void PlotWeatherNas(u8 *arg0);
 
+FlagPoint *func_8008CE20(subengine *sub, s32 idx, s32 mask);
+
 void func_8008D088(u8 *arg0, u8 *arg1, EmitPart *arg2, s32 *arg3, u8 *arg4);
 
 void func_8008D488(u8 *arg0, s32 arg1);
