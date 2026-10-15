@@ -398,7 +398,7 @@ extern u8 D_8009E200[];
 
 extern s32 D_8009E424[];
 extern u8 D_80052F94[];
-void func_8007A524(s32 arg0, u8 *arg1, u8 *arg2);
+NAS *func_8007A524(s32 arg0, s32 *arg1, s32 arg2);
 
 void func_8007A718(void);
 

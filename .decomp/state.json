@@ -2857,7 +2857,8 @@
   "status": "matched"
  },
  "engine:8007A524": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-15T16:45:31Z",
+  "status": "matched"
  },
  "engine:8007A5E8": {
   "auto_diff": 12,
