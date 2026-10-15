@@ -14,6 +14,8 @@ s32 func_8007E7C8(void);
 
 void func_8007E874(void);
 
+void func_8007E9FC(u16 arg0, s16 arg1);
+
 void func_8007EB04(void);
 
 void func_8007E7F4(void);

@@ -248,7 +248,20 @@ void func_8007E93C(u16 arg0, s16 arg1, s16 arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007E9FC);
+void func_8007E9FC(u16 arg0, s16 arg1) {
+    if (D_80099174 & 2) {
+        D_8009A4E4.unk6C = &D_80052A54[arg0 * 0x38];
+        D_8009A4E4.unk74 = arg1;
+        D_8009970C.b[4] = D_80099208[2];
+        D_8009970C.b[5] = D_80099208[3];
+        D_8009970C.b[6] = 0;
+        if (D_8005A680[0] == 0) {
+            D_8009970C.c[4] = D_80099208[0];
+            D_8009970C.c[5] = D_80099208[1];
+            D_8009970C.c[6] = 0;
+        }
+    }
+}
 
 void func_8007EAC0(void) {
     D_8004E0D0 = 0;
