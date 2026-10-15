@@ -28,7 +28,15 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007A464);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007A524);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007A5E8);
+s32 func_8007A5E8(u8 *arg0) {
+    s32 sum = 0;
+    s32 i = 0;
+    do {
+        sum += (arg0 + i)[0xE4];
+        i++;
+    } while (i < 0x21);
+    return sum;
+}
 
 void func_8007A614(s32 arg0) {
     u8 *p = D_8005A614;
