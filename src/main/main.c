@@ -4004,7 +4004,82 @@ void func_80017138(u8 *arg0) {
     func_8002AA8C(arg0 + 0x10);
 }
 
+#ifndef NON_MATCHING
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80017164);
+#else
+static inline void func_80017164_clear(u8 *p) {
+    *(s32 *)(p + 4) = 0;
+    *(s32 *)(p + 8) = 0;
+    *(s32 *)(p + 0xC) = 0;
+    *(s32 *)(p + 0x10) = 0;
+}
+
+void func_80017164(s32 *cfg) {
+    s32 cnt;
+    u8 *p;
+    u8 *q;
+    u8 *next;
+    s32 n;
+    s32 end;
+    s32 end2;
+    s32 end1;
+
+    cnt = cfg[0];
+    D_8005683C = cfg;
+    D_8005685C = func_80011654((u32)(cnt * 0x2C0) >> 3, &D_8004E0F0);
+    D_80056840 = func_80011654((u32)(cfg[2] * 0x2A0) >> 3, &D_8004E0F0);
+    q = func_80011654((u32)(cfg[1] << 6) >> 3, &D_8004E0F0);
+    D_80056854 = q;
+    p = D_8005685C;
+    next = D_80056840;
+    D_80056850 = (s32 *)next;
+    n = cfg[2] - 2;
+    if (n != -1) {
+        do {
+            *(u8 **)next = next + 0x54;
+            next += 0x54;
+            n--;
+            end1 = -1;
+        } while (n != end1);
+    }
+    *(u8 **)next = NULL;
+    n = cfg[1] - 2;
+    if (n != -1) {
+        do {
+            *(s32 *)(q + 4) = 0;
+            *(u8 **)q = q + 8;
+            q += 8;
+            n--;
+            end2 = -1;
+        } while (n != end2);
+    }
+    *(s32 *)(q + 4) = 0;
+    *(u8 **)q = NULL;
+    end = -1;
+    n = cfg[0] + end;
+    D_80056858 = (s32 *)D_80056854;
+loop:
+    n--;
+    if (n != end) {
+        next = p + 0x58;
+        *(u8 **)p = next;
+        func_80017164_clear(p + 4);
+        func_80017164_clear(p + 0x18);
+        func_80017164_clear(p + 0x2C);
+        func_80017164_clear(p + 0x40);
+        p = next;
+        goto loop;
+    }
+    func_80017164_clear(p + 4);
+    func_80017164_clear(p + 0x18);
+    func_80017164_clear(p + 0x2C);
+    func_80017164_clear(p + 0x40);
+    D_80056864 = NULL;
+    *(u8 **)p = NULL;
+    D_80056848 = 0;
+    D_80056860 = (s32 *)D_8005685C;
+}
+#endif
 
 static inline void PrimList_Flush(ListNode18938 *arg0, s32 arg1) {
     arg0->f0 = 0;

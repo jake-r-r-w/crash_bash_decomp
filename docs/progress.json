@@ -37,6 +37,12 @@
    "size": 48
   },
   {
+   "name": "func_80017164",
+   "note": "registers 22/137; loops: two do/while with end = -1 in the body (own end var each) and a goto loop for the 0x58 nodes; only q (8-byte list, target a1) and next (0x54 list, target a0) are in a0/a2; permuter 10 min nothing sound; next: vars/splitvars on q and next",
+   "seg": "main/main",
+   "size": 548
+  },
+  {
    "name": "func_800177F4",
    "note": "24 regs off: colour pointer in v0 (target v1), tpage/0x02000000 constant swap a0/v0; control flow matches. Permuter best: reuse a temp for tpage & ~0x60",
    "seg": "main/main",
@@ -85,9 +91,9 @@
    "size": 372
   }
  ],
- "commit": "71fd3b9",
+ "commit": "7718cf7",
  "game": "SCUS_945.70",
- "generated": "2026-10-15T08:50:08Z",
+ "generated": "2026-10-15T09:05:43Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -37696,7 +37702,7 @@
    }
   },
   {
-   "commit": "71fd3b9",
+   "commit": "7718cf7",
    "data_b": 488,
    "data_tb": 606943,
    "game_all_f": 2551,
@@ -37709,7 +37715,7 @@
    "lib_b": 122112,
    "lib_f": 564,
    "lib_tb": 122112,
-   "ts": "2026-10-15T08:50:08Z",
+   "ts": "2026-10-15T09:05:43Z",
    "units": {
     "engine": [
      2752,
@@ -37905,7 +37911,7 @@
   }
  ],
  "summary": {
-  "blocked": 14,
+  "blocked": 15,
   "copies_b": 37444,
   "data": {
    "done_b": 488,
@@ -37916,7 +37922,7 @@
    "all_f": 2551,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 14,
+   "blocked": 15,
    "c_f": 813,
    "done_b": 116196,
    "done_f": 817,
@@ -37968,7 +37974,7 @@
     "all_f": 575,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 14,
+    "blocked": 15,
     "c_f": 548,
     "done_b": 104752,
     "done_f": 552,

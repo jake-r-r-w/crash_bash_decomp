@@ -1576,6 +1576,12 @@ extern s32 D_8005B5B8;
 extern void (*D_800643F8)();
 extern NAS *NASActiveTail;
 extern s32 *D_80056850;
+extern s32 *D_8005683C;            /* pool sizes (func_80017164) */
+extern u8 *D_8005685C;             /* 0x58-byte nodes (func_80017164) */
+extern u8 *D_80056840;             /* 0x54-byte nodes, free list in D_80056850 */
+extern u8 *D_80056854;             /* 8-byte nodes, free list in D_80056858 */
+extern s32 D_80056848;
+void func_80017164(s32 *cfg);
 typedef struct ListNode18938 {
     s32 f0;
     s32 f4;
