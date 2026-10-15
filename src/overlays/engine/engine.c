@@ -665,7 +665,21 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", InitCrateExplode);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008E5BC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008EAC8);
+void func_8008EAC8(void) {
+    s32 f;
+    RECT *a;
+    RECT *r;
+
+    if (D_800AEC5C != 0) {
+        func_80016F54((u8 *)D_800AEC5C);
+    }
+    func_80021FB0();
+    func_8001D604();
+    f = D_8005B690;
+    a = &D_8005B698[f & 1];
+    r = &D_8005B698[(f + 1) & 1];
+    MoveImage2(a, r->x, r->y);
+}
 
 void func_8008EB3C(void) {
     func_80018B08(D_8009E498, D_80051640);
