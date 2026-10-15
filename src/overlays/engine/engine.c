@@ -891,7 +891,26 @@ void func_80090048(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800900CC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800901B4);
+static inline s32 func_800901B4_find(s32 arg0) {
+    s32 i;
+    s32 *p;
+
+    for (i = 0, p = D_8009EDD4[0]; (u32)i < 10; i++, p += 5) {
+        if (*p == arg0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+s32 *func_800901B4(s32 arg0) {
+    s32 i = func_800901B4_find(arg0);
+
+    if (i < 0) {
+        return 0;
+    }
+    return D_8009EDD4[i];
+}
 
 s32 func_8009020C(s32 arg0) {
     s32 i;

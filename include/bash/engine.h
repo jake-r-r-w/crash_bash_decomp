@@ -452,6 +452,8 @@ void func_8008A9F0();
 void func_8008AA40();
 void func_80083550(void);
 
+s32 *func_800901B4(s32 arg0);
+
 void func_800917B4(void);
 
 s32 func_8009251C(u8 *arg0);
