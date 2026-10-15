@@ -193,4 +193,8 @@ extern s32 D_8009AEEC;
 extern s32 D_8009AEF0;
 s32 func_8007EE2C(s32 pad);
 
+extern void (*D_8009D73C)();
+
+void func_8008A8F0(s32 arg0);
+
 #endif /* BASH_ENGINE_H */
