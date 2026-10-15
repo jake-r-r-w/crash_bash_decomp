@@ -63,7 +63,23 @@ void func_8007A6F8(void) {
     func_8002617C();
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007A718);
+void func_8007A718(void) {
+    NAS *nas;
+    EXTengine *eng;
+
+    for (nas = NASActiveHead; nas != NULL; nas = nas->Tag.Child) {
+        eng = nas->Engine;
+        if (eng != NULL && (nas->NASid & 1)) {
+            do {
+                if (!(nas->Class & 0x2000)) {
+                    eng->OldXYZ = eng->unk10;
+                }
+                func_8001C298(eng);
+                eng = eng->Engine;
+            } while (eng != NULL);
+        }
+    }
+}
 
 void func_8007A7C0(void) {
     func_80011410(&D_8004E0F0);
