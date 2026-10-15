@@ -777,7 +777,13 @@ void func_8008A8F0(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008A924);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008A99C);
+void func_8008A99C(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = &base[arg0];
+    h->hero_move->jump_max = 0;
+    h->hero_move->velocity_enable = 0;
+    SetHeroSeq((HeroInfo *)arg0, 2);
+}
 
 void func_8008A9F0(s32 arg0) {
     Heroes[arg0].hero_idle_count = Random(0x258) + 0x12C;
