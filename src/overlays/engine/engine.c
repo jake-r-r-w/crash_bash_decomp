@@ -1493,7 +1493,18 @@ EXTengine *GetEngineSlot(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80095E5C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80095F48);
+s32 func_80095F48(s32 *p, s32 a1, s32 a2, s32 a3, s32 a4) {
+    if (p == NULL) {
+        return 0;
+    }
+    p[0] = 0x10008000;
+    p[0x54 / 4] = (s32)D_8001C448;
+    p[1] = a1;
+    p[2] = a2;
+    p[0x6C / 4] = a3;
+    p[0x7C / 4] = a4;
+    return p[0x5C / 4];
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80095F88);
 

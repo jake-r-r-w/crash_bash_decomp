@@ -86,6 +86,7 @@ extern u16 D_8009AE74;
 extern u8 D_8009F658[];
 extern u8 D_8009FA14[];
 extern u8 D_800A015C[];
+extern u8 D_8001C448[];
 extern EXTengine EnginePool[];
 extern HeroInfo Heroes[4];
 extern hero_seq **HeroSeqTables[]; /* by HeroInfo.hero_name (1-8): each character's sequences, by id */
@@ -372,5 +373,7 @@ void func_80092C78(void);
 void func_80093110(void);
 
 void func_8009440C(void);
+
+s32 func_80095F48(s32 *p, s32 a1, s32 a2, s32 a3, s32 a4);
 
 #endif /* BASH_ENGINE_H */
