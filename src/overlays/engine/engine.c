@@ -1722,7 +1722,17 @@ void func_80092BA0(void) {
     func_8001E610(D_8009F658, D_8009F644);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80092BDC);
+void func_80092BDC(void) {
+    *(s32 *)D_8009F658 = 0;
+    func_8001E934(D_8009F658, 0);
+    func_800928E8();
+    *(s32 *)D_8009F644 = 0x1000;
+    *(s32 *)(D_8009F644 + 8) = 3;
+    *(s32 *)(D_8009F644 + 4) = 0x100;
+    SetDispMask(1);
+    D_800590CC = 1;
+    func_80092AF4((s32)D_800A00DC, 0x200);
+}
 
 void func_80092C54(void) {
     func_800926CC(D_8005A614);

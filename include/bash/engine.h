@@ -155,6 +155,7 @@ extern CamVec3 D_8009F9F4;
 void func_80095258(u8 *arg0);
 extern ASTEntry EngineASTTable[];
 extern u8 D_8009F644[];
+extern u8 D_800A00DC[];
 extern s32 D_8005A624;
 extern u8 D_8009BCE0[];
 extern EXTengine D_8009959C;
@@ -628,6 +629,8 @@ void func_8008FE00(void);
 s32 func_8008FF94(void);
 
 void func_80092198(void);
+
+void func_80092BDC(void);
 
 void func_80092FB8(void);
 
