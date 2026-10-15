@@ -123,6 +123,10 @@ extern u8 D_8009E7F4[];
 extern u8 D_8009E8B4[];
 extern u8 D_8009EB3C[];
 extern s32 D_8009EB98;
+typedef struct { u16 a, b, c, flags; } EngEntry;
+typedef struct { s32 unk0; EngEntry *entries; s32 unk8, unkC, unk10; } EngTable;
+typedef struct { u16 unk0; s32 unk4; s32 unk8; } EngState;
+extern EngState D_8009EE9C;
 extern s32 D_8009E5DC;
 extern u8 D_8005A676;
 extern s32 D_8009EDD4[][5];
@@ -196,5 +200,7 @@ s32 func_8007EE2C(s32 pad);
 extern void (*D_8009D73C)();
 
 void func_8008A8F0(s32 arg0);
+
+void func_8009029C(void);
 
 #endif /* BASH_ENGINE_H */

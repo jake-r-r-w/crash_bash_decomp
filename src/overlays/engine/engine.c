@@ -739,7 +739,23 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8009020C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80090248);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8009029C);
+void func_8009029C(void) {
+    s32 i;
+    EngEntry *e;
+    EngTable *t = (EngTable *)D_8009EDD4;
+
+    for (i = 9; i != -1; i--) {
+        e = t->entries;
+        while (e->a != 0) {
+            e->flags &= ~8;
+            e++;
+        }
+        t++;
+    }
+    D_8009EE9C.unk0 = 0;
+    D_8009EE9C.unk4 = 0;
+    D_8009EE9C.unk8 = 0x400;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80090310);
 
