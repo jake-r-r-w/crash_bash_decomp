@@ -132,6 +132,8 @@ void func_8008EF9C(void);
 
 void func_8008F068(void);
 
+void func_80092F9C(void);
+
 void func_800940B0(s32 arg0, s32 arg1);
 
 void func_8009421C(void);
