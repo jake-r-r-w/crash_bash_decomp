@@ -10,6 +10,22 @@
 
 extern u16 D_8009F994[];
 
+typedef struct Tmpl1C {
+    s32 f0;
+    s32 f4;
+    s32 f8;
+    s32 fC;
+    u16 f10;
+    u16 pad12;
+    u16 f14;
+    u16 pad16;
+    u16 f18;
+    u16 pad1A;
+} Tmpl1C;
+
+extern Tmpl1C D_800A0D44[];
+extern u8 D_8001C690[];
+
 void func_80094058(void);
 
 void func_8009407C(void);
@@ -92,5 +108,7 @@ void func_80094754(void);
 void func_80094860(void);
 
 s32 func_800951D0(s32 arg0);
+
+s32 func_80095F88(u8 *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx);
 
 #endif /* BASH_8009317C_H */

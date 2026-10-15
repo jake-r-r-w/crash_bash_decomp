@@ -628,4 +628,27 @@ s32 func_80095F48(s32 *p, s32 a1, s32 a2, s32 a3, s32 a4) {
     return p[0x5C / 4];
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009317c", func_80095F88);
+s32 func_80095F88(u8 *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx) {
+    Tmpl1C *t;
+    if (p == NULL) {
+        return 0;
+    }
+    t = &D_800A0D44[idx];
+    *(s32 *)p = t->f0 | 0x12008000;
+    *(s32 *)(p + 0x54) = (s32)D_8001C690;
+    if ((a1 & 0xC000) == 0x8000) {
+        a2 = a2 * 0x280 / D_8005B698->w;
+    }
+    *(s32 *)(p + 0x6C) = t->f0;
+    *(s16 *)(p + 0x70) = a1;
+    *(s16 *)(p + 0x76) = a2;
+    *(s16 *)(p + 0x72) = a3;
+    *(s16 *)(p + 0x78) = a4;
+    *(s32 *)(p + 0x7C) = t->f4;
+    *(u16 *)(p + 0x84) = t->f10;
+    *(u16 *)(p + 0x86) = t->f14;
+    *(s32 *)(p + 0x80) = t->fC;
+    *(s32 *)(p + 0x88) = t->f8;
+    *(u16 *)(p + 0x68) = t->f18;
+    return *(s32 *)(p + 0x5C);
+}
