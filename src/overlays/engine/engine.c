@@ -1097,7 +1097,20 @@ void func_80092404(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8009246C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8009251C);
+s32 func_8009251C(u8 *arg0) {
+    u8 *p;
+    s32 i;
+    s32 n;
+
+    n = 0;
+    for (i = 0; i < 0x21; i++) {
+        p = arg0 + i;
+        if (p[0x105] >= 2) {
+            n += p[0x105] - 1;
+        }
+    }
+    return n;
+}
 
 s32 func_80092560(u8 *arg0) {
     s32 n;
