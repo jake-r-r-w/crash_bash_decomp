@@ -689,6 +689,8 @@ void InitCrateExplode(NAS *arg0);
 
 void func_8008EC00(void);
 
+void func_8008EFD4(void);
+
 s32 func_800951D0(s32 arg0);
 
 #endif /* BASH_ENGINE_H */
