@@ -92,4 +92,15 @@ void func_8007C170(void);
 
 void func_8007CC80(void);
 
+void func_8007AF3C(void);
+void func_8007B330(void);
+void func_8007CA70(void);
+void func_8007CE50(void);
+void func_8007D2F4(void);
+void func_8007D4D0(void);
+void func_8007D9DC(void);
+extern s32 D_8005A618;
+extern u16 D_8009D524[4];
+s32 FntPrint();
+
 #endif /* BASH_8007AC20_H */

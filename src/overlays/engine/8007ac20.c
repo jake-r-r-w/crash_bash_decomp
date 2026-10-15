@@ -7,7 +7,38 @@
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007AC20);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007AF3C);
+void func_8007AF3C(void) {
+    u16 *t;
+
+    if (D_80099174 & 8) {
+        func_8007CA70();
+    }
+    if (D_80099174 & 0x10) {
+        func_8007CE50();
+    }
+    if (D_80099174 & 0x700) {
+        func_8007D4D0();
+    }
+    if (D_80099174 & 0x1000) {
+        func_8007B330();
+    }
+    if (D_80099174 & 0x8000) {
+        func_8007D5EC();
+    }
+    if (D_80099174 & 0x100000) {
+        func_8007D2F4();
+    }
+    func_8007D9DC();
+    if (D_8005A618 & 0x400) {
+        FntPrint("   HEALTH %2d   HEALTH %2d              HEALTH %2d    HEALTH %2d\n",
+                 Heroes[0].hero_health, Heroes[1].hero_health, Heroes[2].hero_health,
+                 Heroes[3].hero_health);
+        t = D_8009D524;
+        FntPrint("   LAST %d.%2d   LAST %d.%2d              LAST %d.%2d    LAST %d.%2d\n",
+                 t[0] >> 8, (t[0] & 0xFF) * 100 / 256, t[1] >> 8, (t[1] & 0xFF) * 100 / 256,
+                 t[2] >> 8, (t[2] & 0xFF) * 100 / 256, t[3] >> 8, (t[3] & 0xFF) * 100 / 256);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007B120);
 
