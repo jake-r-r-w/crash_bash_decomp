@@ -260,6 +260,10 @@ extern s32 D_8009E5DC;
 extern u8 D_8005A676;
 extern s32 D_8009EDD4[][5];
 extern u16 D_800986FC[];
+typedef struct { u8 pad0[2]; u16 unk2; u16 unk4; } EngSub90248;
+typedef struct { u8 pad0[0x14]; EngSub90248 *unk14; u8 pad18[0x10]; } EngRec90248;
+extern s8 D_8005A677;
+extern EngRec90248 D_800BCCF4[];
 
 void func_8007A650(s32 arg0);
 
@@ -529,6 +533,8 @@ void func_8007EB1C(s32 arg0, s32 arg1, s32 arg2);
 s32 func_8008AB50(s32 arg0);
 
 void func_8008FD40(void *arg0);
+
+s32 func_80090248(void);
 
 void func_80092AA8(GameModeDef *arg0);
 

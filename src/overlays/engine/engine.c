@@ -1067,7 +1067,14 @@ s32 func_8009020C(s32 arg0) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80090248);
+s32 func_80090248(void) {
+    EngSub90248 *p;
+
+    if (D_8005A677 < 0 || (p = D_800BCCF4[D_8005A677].unk14, p->unk2 != 2)) {
+        return -1;
+    }
+    return p->unk4;
+}
 
 void func_8009029C(void) {
     s32 i;
