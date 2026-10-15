@@ -730,6 +730,8 @@ s32 func_80097608(s32 *arg0, s32 *arg1, s32 arg2);
 void func_800984D4(void);
 extern s16 D_8006BBD6[];
 
+NAS *func_8007A464(s32 arg0, s32 *arg1, s32 arg2);
+
 void func_8007A91C(void);
 
 void PlotSmokePoof(NAS *m);

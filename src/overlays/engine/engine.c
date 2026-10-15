@@ -24,7 +24,29 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007A164);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007A26C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007A464);
+NAS *func_8007A464(s32 arg0, s32 *arg1, s32 arg2) {
+    NAS *nas;
+    s32 *ext;
+
+    nas = SpawnNASById(arg1[0], arg1[1], arg1[2], 0x1605, 0x11);
+    if (nas != NULL) {
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL) {
+            ext[3] = arg0;
+            ext[6] = 0x100;
+            if (arg2 != 0) {
+                ext[8] = 4;
+                ((s32 *)nas->Engine->sub)[0x6C / 4] = arg2;
+            } else {
+                ext[8] = 0;
+            }
+            ext[10] = 0;
+            nas->InitDelete(nas);
+        }
+        return nas;
+    }
+    return NULL;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007A524);
 
