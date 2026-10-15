@@ -855,7 +855,45 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", PlotScriptFX);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", PlotSmokePoof);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008C4C8);
+s32 func_8008C4C8(s32 *arg0, s32 arg1) {
+    s32 v[3];
+    u8 *base;
+    s32 off;
+    u8 *p;
+    u8 *a2;
+    u8 *a3;
+    TrigEntry *t;
+    s32 n;
+    s32 i;
+    s32 ang;
+
+    base = *(u8 **)((u8 *)D_80058AD0 + 0x10);
+    off = *(s32 *)(base + 0x14);
+    p = (u8 *)&((s32 *)(base + 0x14 + off))[arg1 + 1] + ((s32 *)(base + 0x14 + off))[arg1 + 1];
+    if (p != NULL) {
+        i = 0;
+        n = *(s32 *)(p + 0x38);
+        t = D_80068BD4;
+        a2 = p + 0x50;
+        a3 = p;
+        for (;;) {
+            if (i >= n) {
+                return 1;
+            }
+            ang = *(s32 *)(a3 + 0x64);
+            v[0] = arg0[0] - *(s32 *)(a2 - 8);
+            v[2] = arg0[2] - *(s32 *)a2;
+            ang = -ang;
+            a3 += 0x38;
+            if (((v[0] * t[ang & 0xFFF].unk2) >> 12) - ((v[2] * t[(ang - 0x400) & 0xFFF].unk2) >> 12) < 0) {
+                return 0;
+            }
+            i++;
+            a2 += 0x38;
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008C5C4);
 

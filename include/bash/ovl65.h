@@ -8,6 +8,8 @@
 #include "common.h"
 #include "bash/nas.h"
 
+s32 func_800B4C70(s32 *arg0, s32 arg1);
+
 void func_800BCA18(HeroInfo *hero);
 
 s32 func_800BCDF0(u8 *arg0);

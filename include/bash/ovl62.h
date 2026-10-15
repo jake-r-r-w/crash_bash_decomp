@@ -31,4 +31,6 @@ extern u8 *D_800D5454;
 
 s32 func_800C9B5C(void);
 
+s32 func_800CD118(s32 *arg0, s32 arg1);
+
 #endif /* BASH_OVL62_H */
