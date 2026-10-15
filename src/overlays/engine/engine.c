@@ -188,7 +188,28 @@ void func_8007A9D0(u8 *arg0) {
     PlaySfx((*(u16*)((u8*)(arg0) + 4)), 0, 0, 0x1000, 0x1E00, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007AA18);
+void func_8007AA18(void) {
+    s32 i;
+    EngObj *o;
+
+    D_8005AA58 = 2;
+    i = 0;
+    if (*(s32 *)D_8005AA40 > 0) {
+        do {
+            i++;
+            o = D_8005AA40[i];
+            if (o->flags & 1) {
+                o->update(o);
+            }
+        } while (i < *(s32 *)D_8005AA40);
+    }
+    D_8005AA58 = 0;
+    func_8007B8D4();
+    func_8007AF3C();
+    if (D_80099174 & 0x4000) {
+        func_8007D6D0();
+    }
+}
 
 void func_8007AAF0(void) {
     D_8005AA58 = 4;

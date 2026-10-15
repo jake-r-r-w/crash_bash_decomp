@@ -62,6 +62,12 @@ extern U16Pair D_80099270[4];
 
 extern s32 D_800ADBC0;
 extern s32 D_80099174;
+typedef struct EngObj {
+    s32 flags;
+    u8 pad[0x48];
+    void (*update)(struct EngObj *);
+} EngObj;
+extern EngObj **D_8005AA40;
 extern subengine D_8009A04C[];
 extern struct { s32 *c; u8 pad[4]; s32 *a; s32 *b; } D_8009970C;
 extern s16 D_80099208[];
@@ -452,5 +458,7 @@ static inline void EngineBeginMode(s32 arg) {
 }
 
 void func_8007A808(void);
+
+void func_8007AA18(void);
 
 #endif /* BASH_ENGINE_H */
