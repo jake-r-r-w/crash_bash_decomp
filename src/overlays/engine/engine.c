@@ -1004,7 +1004,25 @@ s32 func_8008ABF8(s32 arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008AC74);
+s32 func_8008AC74(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h;
+    u16 mode;
+    s32 a1;
+
+    h = base + arg0;
+    if (h->hero_move->forward_speed != 0) {
+        return 0;
+    }
+    mode = h->hero_mode;
+    if (mode == 0x10 || mode == 0x18) {
+        a1 = (u16)D_8009E0DC;
+    } else {
+        a1 = 0;
+    }
+    SetHeroAction((HeroInfo *)arg0, a1);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008ACF0);
 
