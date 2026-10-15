@@ -1871,7 +1871,13 @@ void func_80094DD0(void) {
     D_8004E0E0 = 2;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80094EB8);
+void func_80094EB8(void) {
+    func_80018B08(&D_800A0BCC, (GfxCamera *)D_80051640);
+    D_80056998.modelDp = *(s32 *)D_8009F644;
+    func_80022070();
+    D_80056998.modelDp = 0x1000 - (((0x1000 - D_80058B60) * (0x1000 - D_80056998.modelDp)) >> 12);
+    func_8009440C();
+}
 
 s32 func_80094F30(void) {
     s32 var_v0;

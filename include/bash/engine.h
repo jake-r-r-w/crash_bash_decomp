@@ -134,6 +134,7 @@ extern s32 D_8005A624;
 extern u8 D_8009BCE0[];
 extern EXTengine D_8009959C;
 extern GfxViewport D_8009F6A4;
+extern GfxViewport D_800A0BCC;
 extern GfxCamera D_8009F7EC;
 extern s32 D_800A0C08;
 extern GfxViewport D_8009F3BC;
@@ -576,6 +577,8 @@ void InitWeatherNas(u8 *arg0);
 void func_8008D488(u8 *arg0, s32 arg1);
 
 void func_8008FE00(void);
+
+void func_80094EB8(void);
 
 void func_80098284(void);
 
