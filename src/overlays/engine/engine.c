@@ -986,7 +986,16 @@ void func_8008FC58(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008FC60);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008FD40);
+void func_8008FD40(void *arg0) {
+    s32 i;
+    s32 n = *(s32 *)((u8 *)arg0 + 8);
+
+    for (i = 0; i < n; i++) {
+        u8 *e = *(u8 **)((u8 *)arg0 + 4);
+        D_8005A614[*(s32 *)(e + i * 16 + 4) + 0xE4] = 1;
+        n = *(s32 *)((u8 *)arg0 + 8);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008FD94);
 

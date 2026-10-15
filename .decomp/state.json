@@ -3624,7 +3624,8 @@
   "auto_failed": "compile"
  },
  "engine:8008FD40": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-15T12:22:56Z",
+  "status": "matched"
  },
  "engine:8008FD94": {
   "auto_diff": 24,
