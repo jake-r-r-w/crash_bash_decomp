@@ -13,6 +13,17 @@ extern s32 D_80051658;
 extern s32 D_800AD2F8[];
 extern u16 D_800A00D0[];
 extern s32 D_800AD320;
+typedef struct {
+    s32 unk0;
+    s16 unk4;
+    s16 unk6;
+    s16 unk8;
+    s16 unkA;
+    s16 unkC;
+    s16 unkE;
+} D_800AD1EC_entry;
+extern s32 D_800AD1E8;
+extern D_800AD1EC_entry D_800AD1EC[];
 extern void (*D_8005AA80)(void);
 
 void func_8007A688(s32 arg0);
@@ -579,6 +590,8 @@ void func_8008D488(u8 *arg0, s32 arg1);
 void func_8008FE00(void);
 
 void func_80094EB8(void);
+
+void func_8009749C(s32 arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5);
 
 void func_80098284(void);
 
