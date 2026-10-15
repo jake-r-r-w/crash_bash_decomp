@@ -93,6 +93,15 @@ extern s16 D_8009AE76;
 extern s16 D_80099194;
 extern s32 D_80099700[];
 extern s32 D_8009AE78;
+extern u8 D_8001C7FC[];
+typedef struct EngineBox {
+    s32 unk0;
+    u8 pad4[0x50];
+    void *unk54;
+    u8 pad58[0x10];
+    s16 unk68, pad6A, unk6C, unk6E, unk70, pad72, unk74, unk76, unk78, pad7A, unk7C, unk7E, unk80, pad82, unk84, unk86, unk88, pad8A;
+    s32 unk8C, unk90, unk94, unk98;
+} EngineBox;
 extern s16 D_8009AE70;
 extern s32 D_8009AE3C;
 extern u16 D_8009AE74;
@@ -532,6 +541,8 @@ extern s16 D_8005A650;
 extern s32 D_800A00F0[];
 
 void func_8007A8C4(void);
+
+void func_8007E8D0(EngineBox *p, s16 x, s16 y, s32 a, s32 b);
 
 void func_8007EB1C(s32 arg0, s32 arg1, s32 arg2);
 

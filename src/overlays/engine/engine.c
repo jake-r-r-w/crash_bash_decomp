@@ -281,7 +281,27 @@ s32 func_8007E894(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007E8D0);
+void func_8007E8D0(EngineBox *p, s16 x, s16 y, s32 a, s32 b) {
+    p->unk54 = D_8001C7FC;
+    p->unk6E = y;
+    p->unk76 = y;
+    p->unk74 = x + 0x40;
+    p->unk84 = x + 0x40;
+    p->unk6C = x;
+    p->unk70 = 0;
+    p->unk78 = 0;
+    p->unk7C = x;
+    p->unk7E = y + 0xC;
+    p->unk80 = 0;
+    p->unk86 = y + 0xC;
+    p->unk88 = 0;
+    p->unk8C = a;
+    p->unk90 = a;
+    p->unk0 = 0x12000000;
+    p->unk68 = 8;
+    p->unk94 = b;
+    p->unk98 = b;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007E93C);
 
