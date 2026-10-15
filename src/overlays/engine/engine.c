@@ -1011,7 +1011,53 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/engine/engine", D_800AEB1C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80090E20);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800917B4);
+void func_800917B4(void) {
+    EXTengine *e;
+    subengine *s;
+    s32 v;
+
+    func_80018B08(&D_8009F3E4, &D_8009F578);
+    e = GetEngineSlot(8);
+    s = e->sub;
+    s->unk14 = D_8005B690 * 20;
+    s->unk12 = 0x293;
+    s->unk50 = 1;
+    s->unk20.z = 0x2800;
+    s->unk20.x = 0x2800;
+    s->unk52 = 1;
+    s->unk51 = 0;
+    D_800569AC = *(s32 *)D_8009F644;
+    func_8001C2C0((u8 *)e);
+    func_80018B08(&D_8009F3BC, &D_8009F4C0);
+    switch (D_8009F630) {
+    case 0:
+        if (D_80051380 & 0xF0) {
+            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+            v = 1;
+            if (D_8009F634 == 1) {
+                v = 2;
+            }
+            D_8009F634 = v;
+        }
+        if (D_80051380 & 0x4000) {
+            PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+            if (D_8009F634 == 1) {
+                D_8009F640 = 0;
+                D_8009F630 = D_8009F634;
+            } else {
+                D_8009F638 = 0;
+                D_8009F630 = 2;
+            }
+        }
+        break;
+    case 1:
+        func_80090E20();
+        break;
+    case 2:
+        func_80090A10();
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8009196C);
 

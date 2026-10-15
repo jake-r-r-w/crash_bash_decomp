@@ -107,6 +107,16 @@ void func_80095258(u8 *arg0);
 extern ASTEntry EngineASTTable[];
 extern u8 D_8009F644[];
 extern s32 D_800A0C08;
+extern GfxViewport D_8009F3BC;
+extern GfxViewport D_8009F3E4;
+extern GfxCamera D_8009F4C0;
+extern GfxCamera D_8009F578;
+extern s32 D_8009F630;
+extern s32 D_8009F634;
+extern s32 D_8009F638;
+extern s32 D_8009F640;
+void func_80090A10(void);
+void func_80090E20(void);
 
 /* func_800936C4's level setup config (D_8005A5E4, or D_8009F96C if unset). */
 typedef struct EngineCfg {
@@ -441,6 +451,8 @@ void func_80085D2C();
 void func_8008A9F0();
 void func_8008AA40();
 void func_80083550(void);
+
+void func_800917B4(void);
 
 void func_80092B40(void);
 
