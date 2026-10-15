@@ -14,8 +14,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 911/2551 game functions matched (main.exe 559/575, 16 left: 15 parked
-  and `func_8002D4F4`; engine overlay 209 left), 15 parked,
+- 971/2551 game functions matched (main.exe 559/575, 16 left: 15 parked
+  and `func_8002D4F4`; engine overlay 150 left), 15 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
@@ -53,8 +53,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
    `swarm.mjs run --branch main --seg overlays/engine --max-minutes 60
    --max-run-usd 80 --max-functions 500 --workers 3 --big-workers 2
    --big-bytes 400 --big-minutes 27` matched 45 in 60 min for $21.72 on
-   2026-10-15 (mostly under 150 B, about $0.12 each). A second hour matched 38 for $16.46. Repeat it; 209 engine
-   functions are left. `--max-functions 500` leaves time and cost as the limits (40 stopped
+   2026-10-15 (mostly under 150 B, about $0.12 each). A second hour matched 38 for $16.46, a third 59 in 43 min for
+   $27.60 (stopped early). Repeat it; 150 engine functions are left. `--max-functions 500` leaves time and cost as the limits (40 stopped
    leasing after about 30 min). Sizes left per overlay: run the size loop over
    `nonmatching NAME, 0xSIZE` headers (the `next --count` listing is slow).
 2. The rest of `main.exe` with the swarm: `swarm.mjs run --branch main --seg
@@ -346,6 +346,11 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-15 (swarm, engine overlay, run 20261015132721):** `--max-functions
+  500`, stopped by hand after 43 min: 59 matched, $27.60, 1 failed
+  (`func_8008A924`, patch refused for inline asm). Big-mode checkpoints for
+  `func_8007BFA8` (28/114) and `func_8007C170` (17/114). Folded 37 Diff
+  patterns rows (dropped a register-pin row).
 - **2026-10-15 (swarm, engine overlay, run 20261015121127):** 38 matched,
   $16.46; leasing stopped at the 40-lease cap after about 30 min.
   `func_80093854` parked in big mode (instructions 53/106; checkpoint

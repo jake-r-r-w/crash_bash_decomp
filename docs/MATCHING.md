@@ -520,6 +520,43 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | andi/li swapped in a final compare block | insert do { } while (0); before the first store in the block | `func_8008D488` |
 | else branch of `if (a < s->f && g != K)` reloads a and s->f from memory | load both into locals before the if (`dz = a; z = s->f; if (dz < z && ...)`) | `func_80096F98` |
 | base/off regs swapped in prologue computing base+off+0x14+(i*4+4)+*(base+off+i*4+0x18) | it is a self-relative table entry: write `(u8 *)&((s32 *)(base + 0x14 + off))[i + 1] + ((s32 *)(base + 0x14 + off))[i + 1]` (table expression repeated, not hand-expanded sums) | `func_8008C4C8` |
+| `x >= 0 && x < N` compiles to one `sltiu`, target has `bltz` + `slti` | split it into separate `if (x < 0) continue; if (x >= N) continue;` statements | `func_80086D88` |
+| target has two separate `return 1` blocks (one in the middle, one at the end) but compiled merges them | write `if (x == 0) return 1;` guard then the final expression, not `if (x != 0) { return expr; } return 1;` | `func_800950FC` |
+| bnez over a `j` + `addu v0,zero,zero` (early-return layout, beqz generated) | write `if (!cond) { ret = 0; } else { call; ret = 1; } return ret;` instead of early return | `func_8008AB94` |
+| target tests `beqz` then `beq v1,1` (two-way compare, jump to shared exit) but if/else gives bnez + bne | write a `switch (v) { case 0: ...; break; case 1: ...; break; }` | `PlotWeatherNas` |
+| first block uses $a0 pointer, second (live across call) uses $s0, one local gives s0 for both | use two distinct pointer locals, each loaded from the global | `func_80092FB8` |
+| target keeps a second saved reg holding base+8 (s2) next to base (s0) | declare `u8 *pad = p + 8;` as its own local and use it for both the first arg and the indexed final arg | `func_80091E58` |
+| lui/addiu of a global base scheduled after the index math, target loads it first | copy the global to a local pointer first (`T *base = G; base + idx`) | `SetHeroAction` |
+| extra callee-saved reg (`li s0,1` after a jal) for a 1/0 result flag reused across inlined-helper-like sections | give each section its own result variable so none lives across a call | `func_80088544` |
+| one temp reused for several `if (x = p->f) ...` loads sits in $v1 for some and $v0 for others | use two locals, one per register, alternating as the target does | `func_8008D088` |
+| target shares one jal between two branches that each load a different $a1 (and a third path returns 0) | pick the arg into a local in if / else if, `else return 0;`, then one call + `return 1` | `func_8008ABF8` |
+| target does `lh; addiu -1; beq -1` before loop and a reg swap between count and pointer | `n = rec->count; p = rec->pts; if (--n != -1) do {...} while (--n != -1);` (load count first) | `func_8008CE20` |
+| lui order of globals differs and -0x101 folded into load offset | copy each global base to a local in target lui order; compute `s32 w = h - 0x101` then load via `(u8*)t + w*4` | `func_8008FF10` |
+| `D_tbl[Random(n) + k]` adds k before the sll, target does sll then lw k*4(base) with base in a saved reg | copy global to local `u8 *t = (u8*)D_tbl;` and write `*(s32*)(t + Random(n)*4 + k*4)` | `InitCrateExplode` |
+| extra `move a0,zero` before a jal whose target passes no arg, but prototype has a param | declare `s32 f();` unprototyped locally in the function and call `f()` | `func_8008EC00` |
+| lui/addiu of a second global scheduled before `li i,0` and loop increments swapped | init the local in the for-init after `i = 0` (`for (i = 0, g = G; ...; e++, i++)`) | `func_800951D0` |
+| global (D_8005A5D8) loaded before two field loads, target loads it after | compute the field sum into a local first, then compare with the global; also copy Heroes to a local base pointer | `func_8008A854` |
+| lui/addiu of global array base scheduled after the index math (sll/addu) in target-first-lui order | `T *base = G; t = base + idx;` | `func_8008FE68` |
+| `lh` + `sra 5` compiles as `lhu` + `sll 16` + `sra 21` (combine folds the sign extension) | the original scaled a 4096-unit trig value: `x * 128 >> 12` | `func_8008F084` |
+| store whose source load should sit in the branch delay slot ends up after a nop-filled load | write the two loads from the same table next to each other in source (`unk04 = p[0]; unk08 = p[1];`) even if the stores land later | `func_8007BFA8` |
+| index math for a second `&G[i]` scheduled above earlier stores, and the second section wants G's base in a saved reg | index the global directly (no slot local) where the target recomputes late; copy `T *base = G;` only in the section that keeps base in $s | `func_80094860` |
+| mask constant hoisted and ptr lands in a2 instead of a0 for `s[k] &= C` | add an unused int temp assigned inside the index: `s[tmp = k] &= C` | `func_800984D4` |
+| extra stack frame/arg regs differ, target passes untouched $a0 through to a jal | callee really has one more leading arg: pass the caller's first arg through (declare callee with 5 params locally) | `func_80097608` |
+| three field copies use v0,v1,a0 but target uses v1,a1,a2 | assign the whole struct (`a->OldXYZ = a->unk10;`) instead of per-field copies | `func_8007A718` |
+| target has one jal with the arg `move` in both branches' delay slots and an empty jal delay slot (nop) | write two separate calls `if (c) f(a, X); else f(a, 3);` instead of picking the arg into a local; gcc cross-jumps them | `func_8008ACF0` |
+| a global scalar load is hoisted above a store through a struct pointer, but the target keeps the store first (load-delay nop) | declare the global as an array (`extern s16 G[];`) and read `G[0]`: gcc 2.x treats struct/array MEMs as possibly aliasing each other | `PlotFloatyScore` |
+| `base + Random(n)*2 + k` folded into one addu v0,v0,s0 but target does addu s0,s0,v0 then lhu k(s0) | advance the pointer local first (`p += Random(n)*2;`) then index `p + k` | `func_8007A91C` |
+| second field pair needs t, Engine ptr, t.f, e.f load order and a shared tail `addu v1,v1,v0` reusing v1 | `z = (t->f - (e = m->Engine)->f) >> 4; x = e->f;` in each branch, then `x += z; e->f = x;` | `PlotSmokePoof` |
+| a pointer's addu (giv + global base) scheduled at the top of the block by sched1, and the target computes it late reusing a dead address reg | the single-set temp has priority 1; in the target it probably shared a variable with an earlier pointer (an anti-dep raises the priority). Writing `p = G; p += i;` (set twice) also moves which other pseudo gets the lower a-reg | `func_8007BFA8` |
+| early `return NULL` guard compiles to bnez over j + move v0,zero, target has beqz to a shared `move v0,zero` tail | wrap the body in `if (p != NULL) { ...; return p; } return NULL;` | `func_8007A464` |
+| loop keeps its test at the top with a `j` back, yet an invariant (lui of a global) is hoisted into a saved reg; for/while invert the test and goto never hoists | write `i = 0; while (1) { if (i >= n) break; ...; i++; }`: still a loop to loop.c (hoists) but jump.c has no exit test to duplicate | `func_8008CFBC` |
+| second struct at base+0x498 bytes where the stride differs from sizeof (addiu a1,0x498 on same reg) | advance the pointer local: `s = (T *)((u8 *)s + 0x498);` | `func_8007E93C` |
+| target subtracts $v0 after a jal to a function declared void | call through a cast `((s32 (*)(T *))f)(x)` to read the return value | `func_8008672C` |
+| guard path leaves v0=0 (move v0,zero in j delay slot) while the call path falls through | make the function s32: `if (ok) {...; return f(a, b);} return 0;` (change prototype in header) | `SetHeroSeq` |
+| index reg and the later loaded s16 teammate land in different regs (a0 vs v0) when one s16 local is reused | declare the shared local as s32, not s16 | `func_8007D144` |
+| ori of value scheduled after the lui of the global it is stored to (target ori first, lui into a different reg) | store through a local: `t = w \| 0x400; G = t;` | `func_8007B7FC` |
+| a pointer's addu (giv + global base) scheduled at the top of the block, target computes it after the last use of an earlier address (same reg) | reuse one pointer local: first `p = (T *)&G1[i];` for the earlier loads, then `p = G2; p += i;` (the anti-dep orders it) | `func_8007BFA8` |
+| a global table's address add (giv on the loop index) is scheduled before an earlier load and lands in another reg; target recomputes lui/addiu + addu sN late with sN += 4 | index it with its own byte-offset counter `for (i = 0, k = 0; ...; i++, k += 4)` and `*(T *)((u8 *)G + k)`: the separate biv's increment sorts after i++ so sched1 places the add late | `func_8007C170` |
 
 ## Classify the diff, then work through the list
 
