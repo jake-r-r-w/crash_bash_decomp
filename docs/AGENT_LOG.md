@@ -14,8 +14,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 869/2551 game functions matched (main.exe 559/575, 16 left: 15 parked
-  and `func_8002D4F4`; engine overlay 249 left), 15 parked,
+- 911/2551 game functions matched (main.exe 559/575, 16 left: 15 parked
+  and `func_8002D4F4`; engine overlay 209 left), 15 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
@@ -53,8 +53,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
    `swarm.mjs run --branch main --seg overlays/engine --max-minutes 60
    --max-run-usd 80 --max-functions 40 --workers 3 --big-workers 2
    --big-bytes 400 --big-minutes 27` matched 45 in 60 min for $21.72 on
-   2026-10-15 (mostly under 150 B, about $0.12 each). Repeat it; 249 engine
-   functions are left. Sizes left per overlay: run the size loop over
+   2026-10-15 (mostly under 150 B, about $0.12 each). A second hour matched 38 for $16.46. Repeat it; 209 engine
+   functions are left. The 40-lease cap ends leasing before the hour (it
+   stalled at about 30 min); raise `--max-functions` to 80 to fill the hour. Sizes left per overlay: run the size loop over
    `nonmatching NAME, 0xSIZE` headers (the `next --count` listing is slow).
 2. The rest of `main.exe` with the swarm: `swarm.mjs run --branch main --seg
    main/ --max-minutes 60 --max-run-usd 80 --big-bytes 400 --workers 1
@@ -345,6 +346,10 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-15 (swarm, engine overlay, run 20261015121127):** 38 matched,
+  $16.46; leasing stopped at the 40-lease cap after about 30 min.
+  `func_80093854` parked in big mode (instructions 53/106; checkpoint
+  kept). Folded 25 Diff patterns rows.
 - **2026-10-15 (swarm, engine overlay, run 20261015110034):** first swarm
   run on an overlay: 45 matched in 60 min, $21.72, no parks; gate
   refusals went back to workers as usual. `func_80093854` has a big-mode

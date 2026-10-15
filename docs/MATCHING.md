@@ -496,6 +496,30 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | compiled tests kind==0 return first (bnez/jr/move) but target tests beqz to a shared return-0 later | write `if (k != 0) { if (k == 1) return v; } else { return 0; }` | `func_800831F0` |
 | null path placed at the end (beqz to addu v0,zero), compiled has bnez/jr early | write `if (p == NULL) return 0;` first then the body, not `if (p != NULL) {...return x;} return 0;` | `func_80095F48` |
 | loop-invariant global address wanted as `lui/addiu v0; move fp,v0` at the top, compiled as `addiu s7,v0,%lo` directly | do the early loads through a local `a = &G` and assign `g = a;` just before the loop | `func_80093854` |
+| shared call arg chosen by if/else gives extra lui and 22 insns vs 21 | write the call in both branches: if (c) f(A); else f(B); | `func_800943B8` |
+| Target `lui`/`addiu` of a global array base first, ours does the index math first and fills the jr slot with a store | `T *base = array;` as the first statement, then `&base[i]` | `func_8008AB04` |
+| delay slot holds addiu n,-1 hoisted before reload, or `move` instead of `addu v1,a0,a1` in the preheader | write the sum as `n += x - 1` and put `p = arg0 + i` as the first statement of a for body (a do-while with p set before the loop folds it to a move) | `func_8009251C` |
+| a0/a1 swapped on final global stores (lui order right) | swap the order of the last two global assignments in C | `func_80094DD0` |
+| asm inlines a sibling's search loop (result -1 via v0, 22 insns) and hand-written loop gives 24-27 | wrap the loop in a static inline helper that returns i / -1, call it; then `if (i < 0) return 0;` for the bltz order | `func_800901B4` |
+| `lw` + `sra 20/21/23` from the D_80068BD4 sin/cos table where C gives `lhu 2` + `sll 16` + `sra` | read the whole entry as a word: `*(s32 *)&t[i] >> 20` (== `.unk2 >> 4`) | `func_80093270` |
+| global struct accessed as base+0x28 (addiu s1,v0,40 folded) but target keeps a base reg | take `gs = &G; e = ARR;` into locals inside the branch, nest the && conditions as separate ifs | `func_80082590` |
+| pointer-walk loop gets a second +6 base reg (35-36 insns vs 34) | write as for (i...) with global array indexing, not walking pointers; store order follows the C order | `func_8007D034` |
+| target calls a 3-arg function but sets only a0 (no move a1/a2, nop-free delay slot) | cast the call: ((void (*)(u8 *))f)(arg) | `func_80092AA8` |
+| single-bit test returned as bool gives srl+andi 1, target has andi mask + sltu zero | assign the mask to a u32 local then `return m != 0` | `func_8008AB50` |
+| target keeps global base in saved reg (lui/addiu s0) and ours reloads hi via s1 with different save order | `u8 *p = GLOBAL;` as first statement, access p+off | `func_80092AF4` |
+| u16 return with -1 gives li 0xffff and bne/lhu order wrong, target has shared `addiu v0,-1` after bltz | return s32 and write `if (a < 0 \|\| (p = ..., p->f != 2)) return -1; return p->g;` | `func_80090248` |
+| extra nop after first lw and second lw after the sw (load not hoisted past store), or CSE'd pointer lost | access both through struct types (struct G *g; struct E *e = &g->e[i]) so stores alias loads; read index into a local before assigning g | `func_8009400C` |
+| target materialises global arg address (lui/addiu a0) before a branch that computes the other arg | `T *a = GLOBAL;` as first statement, pass a to the call | `func_80094364` |
+| callee-saved loop counter and loop-invariant arg swapped (i s5/arg s4) | move `i = 0;` from the top to just before the loop, after the other invariant copies | `func_80093854` |
+| stack-arg lw hoisted to the top, target loads it just before its stores | access fields through a struct type (p->unkNN) instead of *(T *)(p + off) casts | `func_8007E8D0` |
+| target does lui/addiu of Heroes before the *28 index math, ours does index first | `HeroInfo *base = Heroes;` as first statement, then `&base[i]` | `func_8008A99C` |
+| u8 count test `blez` in target, ours `beqz` and addiu/li order off | load the u8 into an s32 local and test `n > 0` | `func_8008FE00` |
+| loop test at top with `li v0,1` in delay slot, lw of a later field hoisted above first subu | `i = 0; for (;;) { if (i >= n) return 1; ang = *(s32*)(a3+0x64); d0 = ...; ang = -ang; ...}`, walk a2/a3 pointers, n and table pointer as locals | `func_8008C4C8` |
+| a0 (li) and v0 loads swapped before the final call | wrap the preceding statements in do { ... } while (0); | `func_80098284` |
+| quotient temps land in a1/a0 instead of a0/a1 with u8 locals | make the digit temps s32 and mask with & 0xFF where compared | `func_8008D488` |
+| andi/li swapped in a final compare block | insert do { } while (0); before the first store in the block | `func_8008D488` |
+| else branch of `if (a < s->f && g != K)` reloads a and s->f from memory | load both into locals before the if (`dz = a; z = s->f; if (dz < z && ...)`) | `func_80096F98` |
+| base/off regs swapped in prologue computing base+off+0x14+(i*4+4)+*(base+off+i*4+0x18) | it is a self-relative table entry: write `(u8 *)&((s32 *)(base + 0x14 + off))[i + 1] + ((s32 *)(base + 0x14 + off))[i + 1]` (table expression repeated, not hand-expanded sums) | `func_8008C4C8` |
 
 ## Classify the diff, then work through the list
 
