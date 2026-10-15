@@ -20,7 +20,42 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007976C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800798A4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007A164);
+s32 func_8007A164(arg0, arg1)
+s32 arg0;
+EngineReqObj *arg1;
+{
+    s32 sa, sb, sc, sd;
+    s32 i;
+    EngineReq *r;
+    u8 *p;
+    EngineReq *tab;
+
+    if ((arg1->flags & 0x80002000) == 0x80002000) {
+        return 1;
+    }
+    sd = 0;
+    sb = 0;
+    sc = 0;
+    sa = 0;
+    i = 0;
+    do {
+        p = (u8 *)arg1 + i;
+        i++;
+        sa += p[0xE4];
+        sc += p[0x126];
+        sb += p[0x105];
+        sd += p[0x147];
+    } while (i < 0x21);
+    tab = D_8004DEE0;
+    r = &tab[arg0 & 0xFFFF];
+    if (sa < r->min0 || sc < r->min4 || sb < r->min2 || sd < r->min6) {
+        return 0;
+    }
+    if (r->off != 0 && *((u8 *)arg1 + r->off + 0x168) == 0) {
+        return 0;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007A26C);
 

@@ -465,4 +465,22 @@ void func_8007A808(void);
 
 void func_8007AA18(void);
 
+/* D_8004DEE0 rows (10 bytes) and the object func_8007A164 totals over. */
+typedef struct { u16 min0, min2, min4, min6, off; } EngineReq;
+extern EngineReq D_8004DEE0[];
+typedef struct {
+    u8 pad0[4];
+    u32 flags;
+    u8 pad8[0xE4 - 8];
+    u8 a[0x21];
+    u8 pad105[0x105 - 0xE4 - 0x21];
+    u8 b[0x21];
+    u8 pad126[0x126 - 0x105 - 0x21];
+    u8 c[0x21];
+    u8 pad147[0x147 - 0x126 - 0x21];
+    u8 d[0x21];
+    u8 pad168[0x168 - 0x147 - 0x21];
+    u8 e[1];
+} EngineReqObj;
+
 #endif /* BASH_ENGINE_H */
