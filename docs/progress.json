@@ -91,9 +91,9 @@
    "size": 372
   }
  ],
- "commit": "103a5889f",
+ "commit": "eaf1ea0e2",
  "game": "SCUS_945.70",
- "generated": "2026-10-15T13:44:08Z",
+ "generated": "2026-10-15T13:44:31Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -48192,9 +48192,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "eaf1ea0e2",
+   "data_b": 568,
+   "data_tb": 606943,
+   "game_all_f": 2551,
+   "game_b": 143292,
+   "game_c_f": 939,
+   "game_f": 943,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 771,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-15T13:44:30Z",
+   "units": {
+    "engine": [
+     18288,
+     180
+    ],
+    "main exe": [
+     115808,
+     559
+    ],
+    "ovl5d": [
+     328,
+     4
+    ],
+    "ovl5e": [
+     504,
+     6
+    ],
+    "ovl5f": [
+     1564,
+     36
+    ],
+    "ovl60": [
+     708,
+     14
+    ],
+    "ovl61": [
+     292,
+     7
+    ],
+    "ovl62": [
+     916,
+     30
+    ],
+    "ovl63": [
+     636,
+     16
+    ],
+    "ovl64": [
+     104,
+     6
+    ],
+    "ovl65": [
+     744,
+     10
+    ],
+    "ovl66": [
+     528,
+     13
+    ],
+    "ovl67": [
+     836,
+     12
+    ],
+    "ovl68": [
+     180,
+     10
+    ],
+    "ovl69": [
+     920,
+     16
+    ],
+    "ovl6a": [
+     936,
+     24
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-15T13:44:19Z",
+   "auto": true,
+   "name": "InitCrateExplode",
+   "seg": "overlays/engine/engine",
+   "size": 144,
+   "tries": 0
+  },
   {
    "at": "2026-10-15T13:43:57Z",
    "auto": true,
@@ -48306,14 +48400,6 @@
    "seg": "overlays/engine/engine",
    "size": 120,
    "tries": 0
-  },
-  {
-   "at": "2026-10-15T13:36:01Z",
-   "auto": true,
-   "name": "func_80088544",
-   "seg": "overlays/engine/engine",
-   "size": 452,
-   "tries": 0
   }
  ],
  "summary": {
@@ -48329,11 +48415,11 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 15,
-   "c_f": 938,
-   "done_b": 143148,
-   "done_f": 942,
+   "c_f": 939,
+   "done_b": 143292,
+   "done_f": 943,
    "named_f": 345,
-   "pct": 14.047393811406074,
+   "pct": 14.061524813647408,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2551,
@@ -48360,14 +48446,14 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
-    "c_f": 179,
-    "done_b": 18144,
-    "done_f": 179,
+    "c_f": 180,
+    "done_b": 18288,
+    "done_f": 180,
     "file": "engine.bin",
     "files": 1,
     "lib": false,
     "named_f": 18,
-    "pct": 14.03639064240624,
+    "pct": 14.147790568139621,
     "phase": 3,
     "sony_b": 0,
     "title": "Engine",

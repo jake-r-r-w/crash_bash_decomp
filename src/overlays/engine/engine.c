@@ -1333,7 +1333,17 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008DEC8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008E27C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", InitCrateExplode);
+void InitCrateExplode(NAS *arg0) {
+    EXTengine *e = arg0->Engine;
+    u8 *t;
+
+    if (e != NULL) {
+        t = (u8 *)D_8009E424;
+        PlaySfx(*(s32 *)(t + Random(4) * 4 + 0x30), NULL, NULL, 0x1000, 0x1E00, 0);
+        func_8007A524(2, (u8 *)e + 0x10, D_80052F94);
+    }
+    KillNAS(arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008E5BC);
 
