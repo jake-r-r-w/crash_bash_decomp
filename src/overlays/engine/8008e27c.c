@@ -627,7 +627,21 @@ void func_80092198(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_80092200);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_800922FC);
+void func_800922FC(u8 *dst) {
+    u8 *g = D_8005A614;
+
+    dst[0] = g[0x4C];
+    dst[1] = g[0x4D];
+    dst[2] = g[0x4E];
+    dst[3] = g[0x4F];
+    dst[4] = g[0x5C];
+    dst[5] = g[0x5D];
+    dst[6] = g[0x5E];
+    dst[7] = g[0x5F];
+    *(Blk16 *)(g + 0xD0) = *(Blk16 *)D_8005A604;
+    *(Blk18C *)(dst + 8) = *(Blk18C *)g;
+    func_80091E58();
+}
 
 s32 func_800923F0(s32 *arg0) {
     return *arg0 == 0;
