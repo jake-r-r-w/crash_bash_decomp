@@ -623,7 +623,40 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_800881E0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_800882DC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80088450);
+void func_80088450(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h;
+    EXTengine *e;
+    EXTengine *o;
+    EXTengine *t;
+    u8 *x;
+
+    h = base + arg0;
+    h->hero_move->velocity_enable = 1;
+    h->hero_move->jump_max = 0;
+    h->hero_sub->unk08 = 0;
+    SetHeroSeq((HeroInfo *)arg0, 8);
+    if (D_8005AA9C != NULL) {
+        e = h->hero_eng;
+        o = D_8005AA9C->Engine;
+        t = e->platform;
+        if (t != NULL) {
+            t->platform = NULL;
+            e->platform = NULL;
+        }
+        t = o->platform;
+        if (t != NULL) {
+            t->platform = NULL;
+            o->platform = NULL;
+        }
+        e->platform = o;
+        o->platform = e;
+        x = FindExtension(D_8005AA9C, 0x1000);
+        if (x != NULL && (*(u16 *)(x + 0x1C) & 8)) {
+            *(u16 *)(x + 0x1E) |= 8;
+        }
+    }
+}
 
 void func_80088544(s32 arg0) {
     s32 ret;
