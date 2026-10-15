@@ -923,7 +923,33 @@ u8 *func_8008D284(u8 *arg0, u8 *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", PlotFloatyScore);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008D488);
+void func_8008D488(u8 *arg0, s32 arg1) {
+    s32 a;
+    s32 b;
+
+    if (arg1 != 0) {
+        arg0[4] = 0x25;
+        arg0[3] = (arg1 % 10) + 0x30;
+        a = ((arg1 / 10) % 10) + 0x30;
+        arg0[2] = a;
+        b = (((arg1 / 10) / 10) % 10) + 0x30;
+        arg0[1] = b;
+        b &= 0xFF;
+        if (b == 0x30) {
+            s32 c = a & 0xFF;
+            do { } while (0);
+            arg0[1] = 0x20;
+            if (b == c) {
+                arg0[2] = 0x20;
+            }
+        }
+    } else {
+        arg0[1] = 0x20;
+        arg0[2] = 0x4F;
+        arg0[3] = 0x46;
+        arg0[4] = 0x46;
+    }
+}
 
 void InitFloatyScore(u8 *arg0) {
     u8 *temp_v1;
