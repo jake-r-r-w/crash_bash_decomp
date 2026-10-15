@@ -354,6 +354,14 @@ extern s32 D_8005A61C;
 extern u16 D_800AD12C;
 
 void func_800834E4(void);
+typedef struct EngineRec24 {
+    s32 kind;
+    s16 val;
+    char pad[0x1E];
+} EngineRec24;
+extern EngineRec24 *D_8009BD0C;
+
+s16 func_800831F0(void);
 
 void func_8008688C(void);
 

@@ -322,7 +322,23 @@ void func_800831C4(s32 arg0) {
     GetEngineSlot(0)->unk10.y = arg0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800831F0);
+s16 func_800831F0(void) {
+    EngineRec24 *p = D_8009BD0C;
+
+    if (p != NULL) {
+        do {
+            if (p->kind != 0) {
+                if (p->kind == 1) {
+                    return p->val;
+                }
+            } else {
+                return 0;
+            }
+            p++;
+        } while (p != NULL);
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80083244);
 
