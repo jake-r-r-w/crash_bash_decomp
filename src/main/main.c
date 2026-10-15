@@ -11255,7 +11255,85 @@ ClutPos *func_80028420(void) {
     return ret;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8002854C);
+static inline void BufNode_Release(BufNode *arg0) {
+    BufNode *p;
+    BufNode *old;
+
+    p = arg0->parent;
+    if (p != NULL && p->child == NULL) {
+        if (p->prev != NULL) {
+            p->prev->next = p->next;
+        } else {
+            *p->head = p->next;
+        }
+        if (p->next != NULL) {
+            p->next->prev = p->prev;
+        }
+        func_80028AE4(arg0->child);
+        old = (BufNode *)D_80063B18;
+        D_80063B18 = (FreeNode *)arg0;
+        p->next = old;
+        arg0->next = p;
+        return;
+    }
+    arg0->child = NULL;
+    arg0->next = *arg0->head;
+    *arg0->head = arg0;
+    arg0->prev = NULL;
+    if (arg0->next != NULL) {
+        arg0->next->prev = arg0;
+    }
+}
+
+void func_8002854C(FreeNode *n) {
+    FreeNode *a;
+    FreeNode *p;
+
+    a = n->fC;
+    if (a == NULL) {
+        n->next = D_80063BB4;
+        D_80063BB4 = n;
+        return;
+    }
+    n->next = a->f10;
+    a->f10 = n;
+    if (a->f14 == 0) {
+        if ((FreeNode *)a->f8 != NULL) {
+            ((FreeNode *)a->f8)->next = a->next;
+        } else {
+            D_80063BB0 = a->next;
+        }
+        if (a->next != NULL) {
+            a->next->f8 = a->f8;
+        }
+        a->next = D_80063BAC;
+        if (D_80063BAC != NULL) {
+            D_80063BAC->f8 = (s32)a;
+        }
+        a->f8 = 0;
+        D_80063BAC = a;
+    }
+    a->f14++;
+    if (a->f14 == 0x20) {
+        p = a->f10;
+        while (p->next != NULL) {
+            p = p->next;
+        }
+        p->next = D_80063B18;
+        D_80063B18 = a->f10;
+        if ((FreeNode *)a->f8 != NULL) {
+            ((FreeNode *)a->f8)->next = a->next;
+        } else {
+            D_80063BAC = a->next;
+        }
+        if (a->next != NULL) {
+            a->next->f8 = a->f8;
+        }
+        a->next = D_80063B18;
+        D_80063B18 = a;
+        BufNode_Release((BufNode *)a->fC);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/main/main", func_80028774);
 

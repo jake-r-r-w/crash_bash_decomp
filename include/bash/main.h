@@ -2625,4 +2625,6 @@ void func_8001C7FC(NAS *nas, u8 *arg1, u32 flags);
 
 void func_8001EAA4(u8 *arg0, u8 *arg1);
 
+void func_8002854C(FreeNode *n);
+
 #endif /* BASH_MAIN_H */
