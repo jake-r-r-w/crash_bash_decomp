@@ -105,4 +105,6 @@ extern s32 D_8005A618;
 extern u16 D_8009D524[4];
 s32 FntPrint();
 
+void func_8007C514(void);
+
 #endif /* BASH_8007AC20_H */
