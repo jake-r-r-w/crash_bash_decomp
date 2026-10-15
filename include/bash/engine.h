@@ -117,6 +117,8 @@ extern u8 D_8009E8B4[];
 extern u8 D_8009EB3C[];
 extern s32 D_8009EB98;
 extern s32 D_8009E5DC;
+extern u8 D_8005A676;
+extern s32 D_8009EDD4[][5];
 
 int func_8007AC00(void);
 
