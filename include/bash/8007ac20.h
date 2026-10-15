@@ -8,6 +8,10 @@
 #include "common.h"
 #include "bash/engine.h"
 
+extern s32 D_8005A554[];
+
+void func_8007D5EC(void);
+
 void func_8007E7A4(void);
 
 s32 func_8007E7C8(void);

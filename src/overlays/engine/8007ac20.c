@@ -142,7 +142,23 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007D2F4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007D4D0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007D5EC);
+void func_8007D5EC(void) {
+    EngineGameView *g = (EngineGameView *)D_8005A614;
+    EXTengine *e;
+
+    if (!(g->unk30 & 0x8801) && *(s32 *)(D_8005A614 + 0x68) == 0 && D_8009D908 != 0) {
+        if (D_8009AE78 != 0) {
+            D_8009AE78 -= 1;
+            return;
+        }
+        e = GetEngineSlot(5);
+        func_80095BEC(5, D_8005A554);
+        PlaySfx(0x194, NULL, NULL, 0x1000, 0x1E00, 0);
+        e->unk10.y = 0x1F4;
+        e->flags |= 0x10008000;
+        D_80099174 = (D_80099174 & 0xFFFF7FFF) | 0x4000;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007D6D0);
 
