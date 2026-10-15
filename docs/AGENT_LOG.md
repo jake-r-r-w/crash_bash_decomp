@@ -14,8 +14,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 817/2551 game functions matched (main.exe 552/575, 23 left: 15 parked,
-  8 big ones never tried), 15 parked,
+- 824/2551 game functions matched (main.exe 559/575, 16 left: 15 parked
+  and `func_8002D4F4`), 15 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
@@ -44,16 +44,16 @@ leads**, add any new gotcha, and add one short entry at the top of the
    - Near misses: `func_800248A0` (5/142) and `func_8001795C` (12/107)
      are ported to today's declarations and parked as `NON_MATCHING`
      blocks in `main.c` (Open leads). No fresh small function is left.
-   - The untried big ones (all that is left besides parks): 1400+ B
-     `func_8002D4F4` (gcc 2.7.2 unit), `func_8001B6D4`, `func_8001492C`,
-     `func_8001AF2C`, `func_8002C97C`, `func_80023A90`; 756-788 B
-     `func_80019094`, `func_8002926C`. A 60-min run with one function per big worker
-     (`--big-minutes 27`) gives each about two sessions.
+   - 2026-10-15: one big worker per function matched 7 of the 8 untried
+     big ones in 60 min ($40). Left: `func_8002D4F4` (2360 B, gcc 2.7.2
+     unit), checkpoint structure 495/598 (blocks 121/148) after 5 sessions;
+     its last session was refused for adding inline asm. Resume it with
+     `--only func_8002D4F4`, or by hand with `decomp.py regions`.
 2. The rest of `main.exe` with the swarm: `swarm.mjs run --branch main --seg
    main/ --max-minutes 60 --max-run-usd 80 --big-bytes 400 --workers 1
    --big-workers 4 --big-minutes 27` ($54 for 10 matches on 2026-10-14).
-   No function under 600 B is left untried (2026-10-15); use `--only` with
-   the eight big ones. After each run, the checklist at
+   No main.exe function is left untried (2026-10-15): what is left are
+   parks (Open leads) and `func_8002D4F4`. After each run, the checklist at
    the end of tools/swarm/README.md (`stats`, parks, `fold`, `permute
    --near`, this log).
 3. Split `main.c` into its translation units, between swarm runs (a split
@@ -336,6 +336,13 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-15 (swarm, run 20261015090944):** `--only` the 8 untried big
+  functions, `--big-workers 8 --big-minutes 27`, 60 min, $40.28: 7
+  matched (`func_8001492C`, `func_8002926C`, `func_8001B6D4`,
+  `func_80019094`, `func_8002C97C`, `func_8001AF2C`, `func_80023A90`), most
+  in one or two sessions. `func_8002D4F4` reached structure 495/598. Folded
+  12 of the workers' 15 Diff patterns rows (dropped an empty-`asm` hack,
+  an unverified `volatile` row and a duplicate jump-table row).
 - **2026-10-15 (by hand, the seven untried small main/ functions):** 5
   matched: `func_8001E21C` (key interpolation; `func_8001E41C`'s search as
   a static inline), `func_8001231C` (loader tick; three buffer variables by
