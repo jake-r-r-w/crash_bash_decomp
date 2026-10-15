@@ -437,7 +437,23 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80086C94);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80086D88);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80086F4C);
+void func_80086F4C(void) {
+    s32 i;
+    s32 j;
+
+    i = 0;
+loop:
+    j = 0;
+    if (i < 20) {
+inner:
+        if (j < 20) {
+            j++;
+            goto inner;
+        }
+        i++;
+        goto loop;
+    }
+}
 
 void func_80086F78(void) {
     s32 i = 399;
