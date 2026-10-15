@@ -184,7 +184,33 @@ void func_8009421C(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009317c", func_80094274);
+void func_80094274(void) {
+    EXTengine *eng = (EXTengine *)D_800A0224;
+    subengine *sub;
+    u16 *p;
+
+    *eng = EngineTemplate;
+    eng->unk5D = 0;
+    eng->unk10.x = 0;
+    eng->unk10.y = 0;
+    eng->flags |= 0x10000000;
+    func_80018F3C(eng, 2);
+    sub = eng->sub;
+    p = D_8009F994;
+    if (sub != NULL) {
+        do {
+            sub->unk6C = D_800555A4;
+            sub->flags = 0x01008000;
+            sub->unk74 = *p;
+            sub->unk04 = 0;
+            sub->unk08 = 0;
+            sub->unk0C = 0;
+            sub = sub->next;
+            p++;
+            sub->unk51 = 0;
+        } while (sub != NULL);
+    }
+}
 
 void func_80094364(void) {
     s32 *a = D_800A00F0;
