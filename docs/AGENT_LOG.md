@@ -68,8 +68,8 @@ done as far as the evidence goes (item 3).
    main/ --max-minutes 60 --max-run-usd 80 --big-bytes 400 --workers 1
    --big-workers 4 --big-minutes 27` ($54 for 10 matches on 2026-10-14).
    No main.exe function is left untried (2026-10-15): what is left are
-   parks (Open leads) and `func_8002D4F4`. After each run, the checklist at
-   the end of tools/swarm/README.md (`stats`, parks, `fold`, `permute
+   parks (Open leads) and `func_8002D4F4`. After each run, the "After a run"
+   checklist in tools/swarm/README.md (`stats`, parks, `fold`, `permute
    --near`, this log).
 3. Split `main.c` into its translation units, between swarm runs (on hold
    since 2026-10-15: the evidence so far groups functions but places no

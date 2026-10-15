@@ -1,9 +1,36 @@
 # Matching workflow
 
 Functions are matched by hand, by a person or an AI agent, **one function per
-commit**, and every commit goes through one validation gate ([diagram](../README.md#how-functions-are-matched)). The bulk matcher
-(`decomp.py auto`) is retired. Its earlier drafts still show up in `next` as a
-starting point.
+commit**, and every commit goes through one validation gate, `decomp.py done`.
+The retired bulk matcher (`decomp.py auto`) left drafts that `next` still
+shows as a starting point.
+
+```mermaid
+flowchart TD
+    disc["Retail disc: SCUS_945.70 + CRASHBSH.DAT overlays"] --> split["splat: one asm file per function; C files are INCLUDE_ASM lines"]
+    split --> next["decomp.py next: pick one function, show its asm + m2c draft"]
+    next --> unit["Check the asm's style fits the file's compiler"]
+    unit --> write["Write C in place of its INCLUDE_ASM line"]
+    write --> diff{"make diff: same instructions?"}
+    diff -. "no: fix the STAGE it reports (structure, then instructions, then registers)" .-> write
+    diff -. "stuck at the registers stage" .-> permute["make permute"]
+    permute -. "found a fix" .-> write
+    permute -. "still differs" .-> block["decomp.py block: park it, best C kept under NON_MATCHING"]
+    diff -- "yes" --> g1
+
+    subgraph gate ["decomp.py done gate"]
+        direction TB
+        g1["Scope: only this function's INCLUDE_ASM replaced"] --> g2["Lint: no m2c leftovers; register pins / asm barriers need --hack"]
+        g2 --> g3["Function: compiled words equal the target"]
+        g3 --> g4["Full build: clean rebuild of the exe and all 15 overlays is byte-identical"]
+    end
+
+    gate -. "any check fails" .-> write
+    g4 -- "all pass" --> commit["One commit per function: Match NAME; identical copies matched too; dashboard refreshed"]
+    hook["pre-commit hook"] -. "refuses matches made any other way" .-> commit
+    commit --> quality["Later passes: named, typed, placed in its original file"]
+    quality --> goal(["Source-only Crash Bash: all C, no INCLUDE_ASM, byte-identical"])
+```
 
 ## The loop
 
