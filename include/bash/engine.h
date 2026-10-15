@@ -114,6 +114,55 @@ extern s32 D_800A0D24[];
 extern s32 D_800A0D28;
 extern s32 D_800A0D38;
 extern u8 D_8009E498[];
+/* D_8005A614 as seen by func_80092CAC. */
+typedef struct EngineGameView {
+    /* 0x00 */ u8 unk0[0x30];
+    /* 0x30 */ u16 unk30;
+    /* 0x32 */ u16 flags;
+    /* 0x34 */ s16 mode;
+    /* 0x36 */ u8 unk36[0xE0 - 0x36];
+    /* 0xE0 */ s32 unkE0;
+} EngineGameView;
+extern u8 D_8009F6F4[];
+extern s32 D_8009F8B8;
+/* Also in main.h; repeated for overlays that include engine.h first. */
+extern u8 D_8005A614[];
+extern u16 D_8004DDD0[];
+void func_8001E8F0(void *arg0);
+void func_80079260(void);
+s32 func_8007A5E8(u8 *arg0);
+void func_800826F8(s32 arg0);
+void func_8009608C(s32 arg0);
+void func_80098570(void);
+void func_800B478C(void);
+
+/* func_80092CAC's tail: resets state, then starts the mode by its D_8004DDD0 world. */
+static inline void EngineBeginMode(s32 arg) {
+    EngineGameView *g = (EngineGameView *)D_8005A614;
+    s32 mode;
+    u16 world;
+
+    D_8009F6F4[0x24] = 0;
+    D_8009F6F4[0x25] = 0;
+    D_8009F6F4[0x26] = 0;
+    D_8009F6F4[0x27] = 0;
+    g->unk30 &= 0xFDFF;
+    func_8009608C(arg);
+    func_8001E8F0(&D_8009F8A4);
+    func_80098570();
+    mode = g->mode;
+    world = D_8004DDD0[mode * 3];
+    if (world != 0x101) {
+        if (world == 0x102) {
+            if (mode == 0x25) {
+                func_800B478C();
+            }
+        } else {
+            g->unk30 |= 0x1000;
+            func_800826F8(mode);
+        }
+    }
+}
 extern s32 D_800AEC5C;
 extern s32 D_8009D868;
 extern s32 D_8009D86C;
@@ -225,6 +274,8 @@ s32 func_8007E894(void);
 void func_8008EAC8(void);
 
 s32 func_8009020C(s32 arg0);
+
+void func_80092CAC(void);
 
 void func_800945C0(EngineStartArgs *arg0);
 

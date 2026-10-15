@@ -985,7 +985,30 @@ void func_80092C54(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80092C78);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80092CAC);
+void func_80092CAC(void) {
+    EngineGameView *g;
+
+    g = (EngineGameView *)D_8005A614;
+    g->unk30 &= 0x7FF8;
+    func_8001E588(D_8009F644, -0x300, 0);
+    D_8009F8B8 = 0;
+    if (g->mode == 0x24 && g->unkE0 <= 0) {
+        g->unkE0 = 1;
+    }
+    g = (EngineGameView *)D_8005A614;
+    if (func_8007A5E8((u8 *)g) >= 0x19 && g->unkE0 < 2) {
+        g->unkE0 = 2;
+    }
+    func_80017640();
+    func_80010AE8(&D_8004E0F0);
+    D_800590CC = 0;
+    if (D_8005A644 & 0x200) {
+        func_80079260();
+    } else {
+        func_8002C284(1);
+    }
+    EngineBeginMode(1);
+}
 
 void func_80092E40(void) {
     func_80022030();
