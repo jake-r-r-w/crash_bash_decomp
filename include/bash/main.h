@@ -163,6 +163,36 @@ static inline AnimKey *AnimTrack_FindKey(AnimKey *key, s32 v) {
     return key;
 }
 
+typedef struct {
+    s32 v[4];
+} ObjQuat;
+
+/* A 0x50-byte key of the object track func_8001EAA4 walks (from track + 0x24);
+ * it interpolates from one key to the next. */
+typedef struct ObjKey {
+    /* 0x00 */ s32 start;
+    /* 0x04 */ s32 len; /* 0 ends the track */
+    /* 0x08 */ s16 unk8;
+    /* 0x0A */ s16 unkA;
+    /* 0x0C */ CamVec3 pos;
+    /* 0x18 */ s32 unk18[3];
+    /* 0x24 */ ObjQuat rot;
+    /* 0x34 */ s32 unk34[3];
+    /* 0x40 */ CamVec3 scale;
+    /* 0x4C */ s32 unk4C;
+} ObjKey;
+
+/* The key of the object track that covers frame v (or the terminating one). */
+static inline ObjKey *ObjTrack_FindKey(ObjKey *key, s32 v) {
+    while (key->len != 0) {
+        if (v >= key->start && v < key->start + key->len) {
+            return key;
+        }
+        key++;
+    }
+    return key;
+}
+
 /* Frame range of an animation track (at track+0x14). */
 typedef struct {
     /* 0x00 */ u16 base;
@@ -2590,5 +2620,7 @@ extern u8 D_80053074[];
 extern u16 D_8005A5C0[][3];
 
 void func_8001C7FC(NAS *nas, u8 *arg1, u32 flags);
+
+void func_8001EAA4(u8 *arg0, u8 *arg1);
 
 #endif /* BASH_MAIN_H */

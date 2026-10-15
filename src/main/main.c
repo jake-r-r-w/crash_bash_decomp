@@ -6420,7 +6420,84 @@ void func_8001E984(s32 arg0, s32 arg1) {
     D_80058B70 = (void *)D_80058B68;
 }
 
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001EAA4);
+void func_8001EAA4(u8 *arg0, u8 *arg1) {
+    u8 *p;
+    u8 *r;
+    u8 *res;
+    s32 *q;
+    s32 lo;
+    s32 idx;
+    s32 v;
+    u8 *e;
+    u8 *track;
+    ObjKey *key;
+    ObjKey *k;
+    u8 *d;
+    s32 len;
+    s32 t;
+    s32 w;
+    s32 f;
+
+    e = *(u8 **)(arg1 + 0);
+    lo = *(s32 *)(arg1 + 4);
+    idx = *(s32 *)(arg0 + 0);
+    v = *(s16 *)(arg1 + 0xE);
+    D_80058B7C = e;
+    p = *(u8 **)(e + 0xC);
+    D_80058B80 = lo;
+    D_80058B84 = idx;
+    if (p == NULL) {
+        r = NULL;
+    } else {
+        q = (s32 *)(p + (*(s32 *)(p + 0x4C) + 0x4C) + lo * 4);
+        r = (u8 *)q + *q;
+    }
+    if (r == NULL) {
+        res = NULL;
+    } else {
+        res = r + (idx * 4 + 0x1C) + *(s32 *)(r + (idx << 2) + 0x1C);
+    }
+    if (res != NULL) {
+        if (v < *(s32 *)(res + 4) || *(s32 *)(res + 8) < v) {
+            res = NULL;
+        }
+    }
+    track = res;
+    if (track != NULL) {
+        k = ObjTrack_FindKey((ObjKey *)(track + 0x24), *(s16 *)(arg1 + 0xE));
+        key = k;
+        d = arg0 + 8;
+        f = key->len;
+        d[0x51] = 3;
+        if (f != 0) {
+            len = f << 8;
+            t = (*(s32 *)(arg1 + 0xC) >> 8) - (key->start << 8);
+            CamVec3_Lerp((CamVec3 *)(arg0 + 0xC), &key->pos, &key[1].pos, len, t);
+            func_80020B44((s32)&key->rot, (s32)&key[1].rot, (s32)(arg0 + 0x18), len, t, (s32)key->unk34);
+            *(s16 *)(d + 0x52) = 1;
+            CamVec3_Lerp((CamVec3 *)(arg0 + 0x28), &key->scale, &key[1].scale, len, t);
+            w = func_80015304(key->unk4C, key[1].unk4C, len, t);
+        } else {
+            *(CamVec3 *)(arg0 + 0xC) = key->pos;
+            *(s16 *)(d + 0x52) = 1;
+            *(ObjQuat *)(arg0 + 0x18) = key->rot;
+            *(s32 *)(d + 0x20) = key->scale.v[0];
+            *(s32 *)(d + 0x24) = key->scale.v[1];
+            *(s32 *)(d + 0x28) = key->scale.v[2];
+            w = key->unk4C;
+        }
+        w = 0x1000 - w;
+        *(s32 *)d |= *(s32 *)(track + 0x18) | 0x8000;
+        if (w != 0) {
+            *(s16 *)(d + 0x76) = w;
+            *(s32 *)d |= 0x40000000;
+        }
+        d[0x50] = 1;
+        *(s16 *)(d + 0x74) = key->unk8;
+    } else {
+        *(s32 *)(arg0 + 8) &= ~0x8000;
+    }
+}
 
 void func_8001EDFC(u8 *arg0, u8 *arg1) {
     u8 *p;
