@@ -1620,7 +1620,17 @@ void func_8009421C(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80094274);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80094364);
+void func_80094364(void) {
+    s32 *a = D_800A00F0;
+    s32 *p;
+
+    if (D_8005A650 >= 0) {
+        p = (s32 *)(D_80052A54 + D_8005A650 * 0x38);
+    } else {
+        p = NULL;
+    }
+    func_8001DEF4(a, p);
+}
 
 void func_800943B8(void) {
     if (D_8005A648 == 0x28 && D_800590CC == 0) {

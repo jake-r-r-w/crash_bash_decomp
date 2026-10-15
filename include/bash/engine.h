@@ -528,6 +528,8 @@ void func_8008A810(void);
 void func_80093270(void);
 
 extern U16Pair D_80099280[4];
+extern s16 D_8005A650;
+extern s32 D_800A00F0[];
 
 void func_8007EB1C(s32 arg0, s32 arg1, s32 arg2);
 
@@ -544,5 +546,7 @@ void func_80092AF4(s32 arg0, s32 arg1);
 void func_80092E94(void);
 
 void func_8009400C(void);
+
+void func_80094364(void);
 
 #endif /* BASH_ENGINE_H */
