@@ -557,6 +557,7 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | ori of value scheduled after the lui of the global it is stored to (target ori first, lui into a different reg) | store through a local: `t = w \| 0x400; G = t;` | `func_8007B7FC` |
 | a pointer's addu (giv + global base) scheduled at the top of the block, target computes it after the last use of an earlier address (same reg) | reuse one pointer local: first `p = (T *)&G1[i];` for the earlier loads, then `p = G2; p += i;` (the anti-dep orders it) | `func_8007BFA8` |
 | a global table's address add (giv on the loop index) is scheduled before an earlier load and lands in another reg; target recomputes lui/addiu + addu sN late with sN += 4 | index it with its own byte-offset counter `for (i = 0, k = 0; ...; i++, k += 4)` and `*(T *)((u8 *)G + k)`: the separate biv's increment sorts after i++ so sched1 places the add late | `func_8007C170` |
+| A switch's jump table lands 4 bytes off (the build grows or shrinks by 4 and later rodata shifts) though the function matches alone | cc1 8-aligns each table relative to its own file, and the retail file started at the other mod-8 parity: the function is in the wrong unit. Check `decomp.py units SEG` for a proven file start and split there; the `goto *tbl` table (rows above) is the workaround while it can't be split | `func_8002C4B0`, `func_80025534` |
 
 ## Classify the diff, then work through the list
 

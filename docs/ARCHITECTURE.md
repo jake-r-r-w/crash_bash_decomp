@@ -119,7 +119,12 @@ How the boundaries were found:
     later file. This is also why tables of matched functions landed at the
     wrong mod-8 offset in the single `main.c` (the `goto *tbl` workaround in
     MATCHING.md). In `main/main`: a file starts after function 95 and by
-    370 (it agrees with the data). The engine has five (after 4/by 33,
+    370 (it agrees with the data). The new file's rodata must start at an
+    item that is 0 mod 8 between the two tables: `0x8004C8A8` (used by
+    193), `0x8004C8B8` (202) or `0x8004C8D0` (358). With the one-file
+    regions below that leaves three separate places for the start, 121..193,
+    194..199 or 226..354, and nothing yet chooses between them, so `main.c`
+    stays whole. The engine has five (after 4/by 33,
     59/77, 154/208, 244/289, 320/330), and `ovl5d` two, `ovl5e`, `ovl66`,
     `ovl67`, `ovl6a` one each (`decomp.py units overlays/<ovl>/<ovl>`).
   - Calls: 84 functions are called only by code within 40 functions and
@@ -217,7 +222,10 @@ code finds 15 code files; nothing else on the disc holds code.
   | `ovl6a` | 8 `func_800B4EAC` | 3..9 (fewest call ties at 8) | `0x800B330C` |
 
   `ovl5f`..`ovl65`, `ovl68` have tables but no parity change; `ovl69` has
-  none.
+  none. The other positive signs are absent everywhere too (checked
+  2026-10-15): no overlay or engine string is stored twice, and no overlay
+  function has the gcc 2.7.2 `lui $at` stores. So the remaining files inside
+  each unit can't be placed yet.
 - **Slot overlays** are named by their first word, an id (`0x5D`..`0x6A`).
   Layout: `.rodata` (id, strings, jump tables), `.text`, `.data`.
 - **Which game is which**: the engine's AST table at `0x80098720`

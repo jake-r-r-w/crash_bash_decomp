@@ -33,6 +33,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
+**Start of next session: matching.** Run the engine swarm hour (item 1b,
+`--max-functions 500`), then the post-run checklist. The file splits are
+done as far as the evidence goes (item 3).
+
 0. Current focus (ROADMAP.md, Current focus): `make disc` and `make
    replay` work; the matching build is frame-identical to retail. The
    harness's next step is a state-sequence mode (Phase 4; frame-exact is
@@ -77,8 +81,11 @@ leads**, add any new gotcha, and add one short entry at the top of the
    (`decomp.py units SEG`, any segment) proves file starts; main/main has
    one (95..370), the engine five, five slot overlays some. The engine is split
    (2026-10-15). The slot overlays with parity
-   flips are split too. Keep main.c whole until a cut there is proven;
-   more cuts need another positive signal (a split
+   flips are split too. Keep main.c whole: its one proven boundary
+   (95..370) has three possible places (ARCHITECTURE.md), and no overlay
+   shows another positive sign (no string stored twice, no 2.7.2 style).
+   More cuts need new evidence (a leak, a symbol file of a game on this
+   engine) (a split
    moves functions, so workers' patches and big-mode checkpoints for them
    stop applying). Find the boundaries first and write the evidence in
    ARCHITECTURE.md: rodata order, alignment padding, file-local statics,
@@ -367,6 +374,10 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-15 (by hand, wrap-up):** no other positive split signal: no
+  overlay or engine string stored twice, no 2.7.2 style in any overlay;
+  main.c's proven boundary has three possible places. Docs brought up to
+  date; next session is matching.
 - **2026-10-15 (by hand, slot overlay splits):** `ovl5d` (two cuts), `ovl5e`,
   `ovl66`, `ovl67`, `ovl6a` split at their proven starts like the engine;
   headers `bash/<ovl>_<unit>.h`; `make check` byte-identical.

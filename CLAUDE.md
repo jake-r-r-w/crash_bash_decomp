@@ -33,8 +33,9 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   mode works and ranks checkpoints by it. Also: `similar NAME` (matched
   functions with the same code), `vars NAME` (the variable behind a register
   swap), `splitvars NAME VAR` (search splits of a variable), `permute NAME
-  --differing` (permute only the differing blocks' C), `units` (evidence
-  for splitting `main.c`).
+  --differing` (permute only the differing blocks' C), `units [SEG]` (evidence
+  for file boundaries: switch-table parity proves a file start in any
+  segment; `--data` adds data blocks, inversions and call ties for `main.c`).
 - At the end of every session, update `docs/AGENT_LOG.md`: Current state,
   Next and Open leads, any new gotcha, and one short entry at the top of its
   Session log. Matching idioms go in the Diff patterns table in

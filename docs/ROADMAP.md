@@ -99,6 +99,9 @@ harness work, so later phases can test what they finish.
   file's local data moves with it, and early in the matching: code in
   the wrong unit can't match its rodata, and a split moves functions out
   from under swarm patches, so do it between swarm runs.
+  Status: `decomp.py units` collects the evidence; switch-table parity
+  proves one boundary in `main/main`, but not yet where (ARCHITECTURE.md,
+  Files inside `main/main`), so `main.c` is still one file.
 - [ ] Match every game function in the executable.
 - [ ] Name and type every function and global in the exe (a descriptive name
   where the original is unknown, per [CONVENTIONS.md](CONVENTIONS.md)).
@@ -124,6 +127,9 @@ extract and are documented.
 
 - [ ] Match every function in `engine`.
 - [ ] Split it into its original translation units.
+  Status: split at every start the binary proves (switch-table parity;
+  ARCHITECTURE.md, Files inside the engine); more files may hide inside
+  those units. The slot overlays with proven starts are split the same way.
 - [ ] Turn its data and jump-table rodata into C.
 - [ ] Extract and document the asset formats the engine loads (models,
   animation, level data, ...).
