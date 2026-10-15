@@ -280,7 +280,25 @@ s32 SetHeroSeq(HeroInfo *hero, s32 seq) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80085584);
+s32 func_80085584(s32 hero, u16 name, s32 seq) {
+    HeroInfo *h;
+
+    if ((u16)(name - 1) < 8) {
+        hero_seq **t = HeroSeqTables[name];
+
+        HeroInfo *base = Heroes;
+
+        h = base + hero;
+        h->hero_aseq = seq;
+        h->hero_anim->Atable = t[seq];
+        h->hero_anim->Aspeed = -1;
+        h->hero_anim->Aindex = 0;
+        h->hero_anim->Masterspeed = *(u16 *)h->hero_anim->Atable;
+        h->hero_anim->Seq_count = 0;
+        return func_8008502C(hero);
+    }
+    return 0;
+}
 
 void func_80085650(void) {
     s32 i;

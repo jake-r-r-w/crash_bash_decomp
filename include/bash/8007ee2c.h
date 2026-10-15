@@ -170,6 +170,8 @@ void PlotFloatyScore(NAS *nas);
 
 extern s32 D_8009D764[16][4];
 
+s32 func_80085584(s32 hero, u16 name, s32 seq);
+
 void func_80085650(void);
 
 #endif /* BASH_8007EE2C_H */
