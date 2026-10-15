@@ -698,7 +698,9 @@ s32 func_8008DE8C(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008DE94);
+s32 func_8008DE94(s32 arg0) {
+    return (Heroes[arg0].hero_status & 0xFA00) == 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8008DEC8);
 

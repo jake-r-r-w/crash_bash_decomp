@@ -322,6 +322,8 @@ typedef struct Vec3W {
 
 s32 func_800866DC(s32 *arg0);
 
+s32 func_8008DE94(s32 arg0);
+
 s32 func_80092598(u8 *arg0);
 
 void func_8009342C(void);
