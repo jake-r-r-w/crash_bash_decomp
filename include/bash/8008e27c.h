@@ -18,6 +18,8 @@ void func_8008FC58(void);
 
 void func_80090048(void);
 
+void func_80091F54(void);
+
 s32 func_800923F0(s32 *arg0);
 
 void func_800923FC(void);
