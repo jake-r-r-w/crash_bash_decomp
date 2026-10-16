@@ -536,3 +536,40 @@ test('workers: no git status or memory in the system prompt, no skills or todo t
   assert.ok(c.claudeArgs.includes('--disable-slash-commands'));
   assert.ok(c.disallowedTools.includes('TodoWrite') && !c.allowedTools.includes('TodoWrite'));
 });
+
+// ---------------------------------------------------------------- overlay families
+
+const ovlFn = (ovl, addr, extra = {}) => fn(`func_${addr}`, { key: `${ovl}:${addr}`, ref: `${ovl}:${addr}`,
+  seg: `overlays/${ovl}/${ovl}`, src: `src/overlays/${ovl}/${ovl}.c`, ...extra });
+
+test('families: the lead of a cross-overlay group goes first; its twins wait while it is tried', () => {
+  const s = swarm();
+  const single = ovlFn('ovl5d', '800B4000', { line: 10 });
+  const a = ovlFn('ovl5d', '800B5000', { fp: 'g', line: 100 }), b = ovlFn('ovl60', '800B5000', { fp: 'g', line: 100 });
+  s.queue = [single, a, b];
+  assert.equal(s.nextJob().f, a);                       // the group's lead before the single
+  s.history[a.key] = { name: a.name, attempts: 1, notes: [] };
+  s.queue = [single, a, b];
+  const j = s.nextJob();
+  assert.equal(j.f, a);                                  // the lead again (escalated), not its twin
+  s.finished.add(a.key);
+  assert.equal(s.nextJob().f, single);                   // b waits behind its parked lead
+});
+
+test('families: --retry-failed leases one member per group per run', () => {
+  const s = swarm('--retry-failed');
+  const a = ovlFn('ovl5d', '800B5000', { fp: 'g' }), b = ovlFn('ovl60', '800B5000', { fp: 'g' });
+  s.queue = [a, b];
+  s.slots[0].job = s.nextJob();
+  s.slots[0].job = null;
+  s.finished.add(a.key);
+  assert.equal(s.nextJob(), null);
+});
+
+test('families: a function with a matched twin or template is never big; the prompt says so', () => {
+  const s = swarm('--big-workers', '1', '--big-bytes', '400');
+  const t = fn('func_80010000', { size: 900, twin: 'template' });
+  assert.equal(s.isBig(t), false);
+  assert.equal(s.isBig(fn('func_80020000', { size: 900 })), true);
+  assert.match(s.prompt({ f: t, model: 'sonnet', attempt: 1, notes: [] }), /prints the C of a matched function with the same code \(a look-alike\)/);
+});

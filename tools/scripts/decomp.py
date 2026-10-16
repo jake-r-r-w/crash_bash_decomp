@@ -1018,6 +1018,8 @@ def cmd_next(a):
             print(f"--- {twin[1]}'s C (identical code, matched), renamed for {name}"
                   f"{f'; the copy failed: {why}' if why else ''} ---")
             print(twin[2].rstrip())
+        elif len(targets) == 1:
+            print_template(key, e, name, funcs, stat, syms, proj)
     jsave(P_STATE, st)
 
 
@@ -1030,10 +1032,19 @@ def cmd_queue(a):
     shared = defaultdict(int)
     for k, e in funcs.items():
         shared[cur_name(k, e, syms)] += 1
+    # twin: "exact" when an identical function is matched (propagate's copy failed: next prints it),
+    # "near" when one differing only in constants is, "template" when a matched look-alike lines up
+    # at TEMPLATE_MIN (next prints its C); the swarm treats them as adapt jobs, never big mode
+    done_fp = {e.get("fp") for k, e in funcs.items() if stat[k] == "matched" and e["size"] > 8}
+    done_fpn = {e.get("fpn") for k, e in funcs.items() if stat[k] == "matched" and e["size"] > 8}
+    look = lookalikes(funcs, stat, proj, [k for k, _ in picked])
     # ref: what to pass to the tools. The key when slot overlays share the name (find_func would
     # die "ambiguous" on it), else the name
     out = [{"key": k, "name": cur_name(k, e, syms), "seg": e["seg"], "size": e["size"],
             "ref": k if shared[cur_name(k, e, syms)] > 1 else cur_name(k, e, syms),
+            "twin": "exact" if e.get("fp") and e["fp"] in done_fp and e["size"] > 8
+            else "near" if e.get("fpn") and e["fpn"] in done_fpn and e["size"] > 8
+            else "template" if look.get(k, [0])[0] >= TEMPLATE_MIN else None,
             "src": e.get("src"), "fp": e.get("fp") if e["size"] > 8 else None,
             "tries": st.get(k, {}).get("tries", 0), "note": st.get(k, {}).get("note", "")}
            for k, e in picked]
@@ -2698,6 +2709,31 @@ def file_decl(line):
     return decl_name(line)
 
 
+TEMPLATE_MIN = 0.9     # seq ratio from which a matched look-alike's C is a template (a known template
+                       # pair, func_8007CC80 from func_8007C338, scores 0.97)
+
+
+def print_template(key, e, name, funcs, stat, syms, proj):
+    """A matched look-alike's C (seq ratio >= TEMPLATE_MIN) for `next`: renamed where the two
+    functions' relocations line up, else as written, with where its types are declared."""
+    r, bk = best_lookalike(key, funcs, opcode_seqs(funcs), stat, proj, TEMPLATE_MIN - 1e-9)
+    if not bk:
+        return
+    se, sname = funcs[bk], cur_name(bk, funcs[bk], syms)
+    ssrc = se.get("src") or locate_def(sname)
+    base = def_with_decls(read(ssrc), sname) if ssrc else None
+    if not base:
+        return
+    mp = sym_map(se, e, sname, name) if os.path.exists(e.get("asm", "")) else None
+    owned = [h for h in all_headers() if header_owner(h) == ssrc]
+    print(f"--- template: {sname}'s C ({se['seg']}, matched, seq {r:.2f}), "
+          + (f"renamed for {name}" if mp is not None else
+             "as written: use this function's own names from its asm") + " ---")
+    if owned:
+        print(f"(its types and declarations: {', '.join(owned)} and the headers {ssrc} includes)")
+    print((rename_syms(base, mp) if mp else base).rstrip())
+
+
 def twin_source(key, funcs, stat, syms):
     """(original key, name, its C renamed for `key`) when an exact twin of `key` is matched."""
     e = funcs[key]
@@ -2850,12 +2886,14 @@ def cmd_dups(a):
 
 def opcode_seqs(funcs):
     """key -> the function's opcode sequence (regions.mnemonic of each word), cached in
-    build/similar.json. The asm files only change when the project is re-split, which rewrites
-    functions.json, so the cache is valid while that file is unchanged (statting each asm file
-    through the Docker mount took ~20 s)."""
+    build/similar.json. The asm files only change when the project is re-split, which changes
+    functions.json's entries, so the cache is keyed by a hash of each function's key, asm, size
+    and fingerprint (not the file's mtime: a clone's copy has its own, and statting each asm file
+    through the Docker mount took ~20 s). tools/swarm copies the cache into its clones."""
     import regions
     cache_path = "build/similar.json"
-    stamp = [3, os.path.getmtime(P_FUNCS)]      # format version, functions.json mtime
+    ident = sorted((k, e.get("asm"), e["size"], e.get("fp")) for k, e in funcs.items())
+    stamp = [4, hashlib.sha1(json.dumps(ident).encode()).hexdigest()]
     cache = jload(cache_path, {})
     if cache.get("stamp") == stamp:
         return cache["seqs"]
@@ -2872,6 +2910,84 @@ def opcode_seqs(funcs):
     return seqs
 
 
+def seq_ratio(a, b):
+    """How much of two opcode sequences lines up in order (difflib ratio, 0-1): unlike the 4-gram
+    Dice score it stays high for a small function with a few changed instructions."""
+    return difflib.SequenceMatcher(None, a, b, autojunk=False).ratio()
+
+
+def best_lookalike(key, funcs, seqs, stat, proj, floor=0.0, among=None):
+    """(ratio, key) of the matched function (of `among`, default all) whose opcode sequence lines
+    up best with key's (game code only, sizes within 2/3..3/2), or (0, None)."""
+    me = seqs.get(key)
+    if not me:
+        return 0.0, None
+    best, bk = floor, None
+    sm = difflib.SequenceMatcher(None, autojunk=False)
+    sm.set_seq2(me)
+    for k in (seqs if among is None else among):
+        seq, f = seqs.get(k), funcs[k]
+        if not seq or k == key or stat.get(k) != "matched" or not 2 * len(me) <= 3 * len(seq) <= 9 * len(me) / 2:
+            continue
+        if is_lib(f, proj) or f.get("kind") in ("asm", "sony"):
+            continue
+        sm.set_seq1(seq)
+        if sm.real_quick_ratio() <= best or sm.quick_ratio() <= best:
+            continue
+        r = sm.ratio()
+        if r > best:
+            best, bk = r, k
+    return (best, bk) if bk else (0.0, None)
+
+
+def lookalikes(funcs, stat, proj, keys):
+    """key -> [ratio, look-alike key] for `keys`, cached in build/lookalike.json: a new match only
+    needs comparing with the functions to match, so the queue can carry it (a full pass is ~45 s
+    for the overlays)."""
+    seqs = opcode_seqs(funcs)
+    path = "build/lookalike.json"
+    stamp = jload("build/similar.json", {}).get("stamp")
+    matched = {k for k in seqs if stat.get(k) == "matched"}
+    cache = jload(path, {}) if os.path.exists(path) else {}
+    if cache.get("stamp") != stamp or not set(cache.get("matched", [])) <= matched:
+        cache = {"stamp": stamp, "matched": [], "best": {}}
+    new = matched - set(cache["matched"])
+    best = cache["best"]
+    for k in keys:
+        old = best.get(k)
+        r, bk = best_lookalike(k, funcs, seqs, stat, proj, old[0] if old else 0.0,
+                               among=None if old is None else new)
+        if bk or old is None:
+            best[k] = [r, bk]
+    cache["matched"] = sorted(matched)
+    jsave(path, cache)
+    return best
+
+
+def cmd_similar_survey(a, proj, funcs):
+    """For every function still to match (in --seg), its best matched look-alike by seq ratio:
+    how many could start from another function's C."""
+    stat, _ = statuses(funcs)
+    syms = sym_names()
+    seqs = opcode_seqs(funcs)
+    todo = [k for k, e in funcs.items() if stat.get(k) in ("todo", "in_progress", "blocked") and k in seqs
+            and (e["seg"].startswith(a.seg) if a.seg else not is_lib(e, proj))]
+    best = lookalikes(funcs, stat, proj, todo)
+    rows = [(best[k][0], k, best[k][1]) for k in todo]
+    rows.sort(key=lambda x: -x[0])
+    for r, k, bk in rows[:a.top]:
+        e = funcs[k]
+        print(f"{r:4.2f} {e['size']:5d}  {e['seg']}/{cur_name(k, e, syms)}"
+              + (f"  <- {funcs[bk]['seg']}/{cur_name(bk, funcs[bk], syms)}" if bk else ""))
+    total = sum(funcs[k]["size"] for k in todo) or 1
+    print(f"{len(todo)} functions to match{f' in {a.seg}' if a.seg else ''}, {total} bytes. "
+          "With a matched look-alike at seq ratio >=:")
+    for th in (0.95, 0.9, 0.8, 0.7, 0.6):
+        hit = [k for r, k, _ in rows if r >= th]
+        print(f"  {th:.2f}: {len(hit):4d} functions, {sum(funcs[k]['size'] for k in hit):6d} bytes "
+              f"({100 * sum(funcs[k]['size'] for k in hit) / total:.0f}%)")
+
+
 def ngrams(seq, n=4):
     from collections import Counter
     return Counter(tuple(seq[i:i + n]) for i in range(len(seq) - n + 1))
@@ -2883,6 +2999,10 @@ def cmd_similar(a):
     Scores compare opcode 4-grams: `sim` is the share both have (Dice), `in` the share of the
     other function found inside this one (a helper or macro it inlines)."""
     proj, funcs = need_proj(), need_funcs()
+    if a.survey:
+        return cmd_similar_survey(a, proj, funcs)
+    if not a.func:
+        die("similar needs NAME (or --survey)")
     key, e = find_func(funcs, a.func)
     syms = sym_names()
     stat, _ = statuses(funcs)
@@ -4142,7 +4262,10 @@ def main():
     p.add_argument("--no-lines", action="store_true", help="skip the -g build that maps blocks to C lines")
     p.set_defaults(fn=cmd_regions)
     p = sub.add_parser("similar", help="matched functions whose code looks most like this one")
-    p.add_argument("func")
+    p.add_argument("func", nargs="?")
+    p.add_argument("--survey", action="store_true",
+                   help="every function to match (in --seg) with its best matched look-alike")
+    p.add_argument("--seg", help="--survey: segment prefix")
     p.add_argument("--top", type=int, default=10)
     p.add_argument("--min", type=float, default=0.3, help="lowest similarity (sim) to list, 0-1")
     p.add_argument("--contain", type=float, default=0.6, help="also list functions this share of which is inside NAME (in)")

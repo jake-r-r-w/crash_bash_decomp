@@ -39,8 +39,9 @@ too: `swarm.mjs stats` shows $/match by size from `ledger.jsonl`, and its
 findings (TOOLING_PLAN.md, Part 2) re-rank Part 3: docs are hardly read,
 cache writes and turns per big session drive the cost. 3.5 (aligned `make
 diff`, `regions --changed`) and 3.1 (no git status in workers' system
-prompt, inline loop) are done. Next there: a supervised swarm run to measure
-them, then 3.3/3.4; after each swarm run,
+prompt, inline loop) and 3.3 (families: seed leads, templates, twins never
+big) are done. Next there: 3.2 (carry the closest C into retries), 3.4, then
+a supervised swarm run to measure them all; after each swarm run,
 compare `stats --run ID` with the ledger's earlier runs. Deferred from Part 1: recognising
 the CLI's usage-limit result. It only matters for unattended runs, and the
 user runs the swarm supervised and conservatively; if a limit is ever hit,
@@ -390,6 +391,11 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-16 (tooling plan 3.3):** `similar --survey`; `next` prints a
+  matched look-alike's C (seq >= 0.90); queue `twin` field (exact / near /
+  template) keeps adapt jobs out of big mode; swarm seeds cross-overlay
+  identical groups and holds back a tried lead's twins.
 
 - **2026-10-16 (tooling plan 3.1):** a worker session's git status changes
   every job and cost ~11k tokens of cache writes per session; workers now run

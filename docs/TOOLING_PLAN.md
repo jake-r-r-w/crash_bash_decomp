@@ -337,6 +337,21 @@ starts from m2c, and `best_c` (`:637`) is read nowhere.
 
 ### 3.3 Overlay families: seed one, template the rest (S-M)
 
+**Done 2026-10-16.** `similar --survey [--seg]` (seq ratio = difflib on opcode
+sequences): of 1,514 overlay functions to match, 19 have a matched look-alike
+at >= 0.90, 85 at >= 0.80 (the known template pair scores 0.97; near-identical
+pairs 1.0), so most shared slot-overlay code has no matched member yet and
+seeding matters more than templates. `next` prints a look-alike's C at >= 0.90
+(`TEMPLATE_MIN`, renamed where the relocations line up); the queue's `twin`
+(exact / near / template; look-alikes cached incrementally in
+build/lookalike.json, a refresh stays ~2-3 s) keeps such functions out of big
+mode, goes into the ledger, and adds a line to the prompt. The swarm leases
+the first member of each cross-overlay identical group first
+(`seedFamilies`), holds back a tried lead's twins, and under
+`--retry-failed` leases one member per group per run. The similar cache is
+keyed by a hash of the functions, and clones get build/similar.json and
+lookalike.json.
+
 The slot overlays share code: 58 exact (fp) groups (132 functions) and 36 truly
 near groups, plus 13 big shapes of 600 B+ shared across overlay families, all
 unmatched. 41 of the 58 groups span overlays, so per-overlay runs rarely meet a

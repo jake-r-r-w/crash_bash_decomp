@@ -70,6 +70,11 @@ or keys. Checkpoints saved by name before 2026-10-16 still resume when the name 
   notes. Checkpoints persist across runs.
 - A function that stops progressing is parked with its best C in `checkpoints/`;
   `--retry-failed` gives it a fresh allowance for one run.
+- **Families:** identical functions (one fingerprint) are one job: the first member of each group
+  that spans overlays is leased first (`--seed-families`, on by default), and while a tried member
+  is unmatched its twins wait (a match fills them through `done`). A function with a matched twin
+  or look-alike (the queue's `twin`) is an adapt job: normal mode whatever its size, and `next`
+  prints the other C.
 - Use `stats` to place `--big-bytes` where normal mode's match rate drops, and its $ per match
   to compare runs (`--run ID`).
 

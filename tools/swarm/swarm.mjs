@@ -61,7 +61,9 @@ const LOOP = (f, r) => `The loop (docs/MATCHING.md has the detail: grep it for y
 CONVENTIONS.md and SKILL.md):
 1. \`tools/dk python3 tools/scripts/decomp.py next --func ${r}\` prints the asm, an m2c draft and
    relatives (identical or near copies, callers). Read the asm, not just the draft: m2c misses
-   pass-through arguments, signedness and struct offsets.${/^main\//.test(f.seg || '') ? `
+   pass-through arguments, signedness and struct offsets.${f.twin ? `
+   It also prints the C of a matched function with the same code (${f.twin === 'template'
+     ? 'a look-alike' : `an ${f.twin} twin`}): adapt that rather than the m2c draft.` : ''}${/^main\//.test(f.seg || '') ? `
    If every global store is \`lui $at\` + \`sw\`, or jump delay slots are filled from a store, the code
    is gcc 2.7.2 + ASPSX: in a 2.8.1 file it can't match; say so in "note" and stop.` : ''}
 2. Evidence before writing: \`decomp.py similar ${r}\` (matched functions with the same code, and
@@ -247,6 +249,9 @@ function makeClone(dir, src, rev, log) {
   }
   const drafts = path.join(REPO, 'build', 'auto_drafts');
   if (fs.existsSync(drafts)) fs.cpSync(drafts, path.join(dir, 'build', 'auto_drafts'), { recursive: true });
+  // decomp.py's opcode sequences and look-alikes (~20 s and ~45 s to rebuild from asm/)
+  for (const c of ['similar.json', 'lookalike.json'])
+    if (fs.existsSync(path.join(REPO, 'build', c))) fs.copyFileSync(path.join(REPO, 'build', c), path.join(dir, 'build', c));
   fs.writeFileSync(stampFile, `${stamp()} ${fp}\n`);
 }
 
@@ -659,8 +664,31 @@ class Swarm {
   }
 
   // a big-mode function: at least --big-bytes, or escalated after parking in normal mode
+  // (one with a matched twin or template is an adapt job: normal mode, whatever its size)
   isBig(f) {
-    return this.bslots.length > 0 && (f.size >= this.o.bigBytes || !!this.history[f.key]?.big);
+    return this.bslots.length > 0 && ((f.size >= this.o.bigBytes && !f.twin) || !!this.history[f.key]?.big);
+  }
+
+  // identical functions (one fingerprint) are one job: a match fills the rest (decomp.py done
+  // propagates it). So a group waits while a member was tried and is still unmatched (one ladder,
+  // not one per copy), and under --retry-failed one member per group is leased per run
+  heldBack(f) {
+    if (!f.fp) return false;
+    if (this.o.retryFailed) return this.leasedFps?.has(f.fp) && !this.leasedKeys?.has(f.key);
+    return this.queue.some(g => g.fp === f.fp && g.key !== f.key &&
+                                (this.history[g.key]?.attempts || this.history[g.key]?.bigSessions));
+  }
+
+  // --seed-families (default on): the first member of each identical group that spans overlays
+  // goes before the rest, so one match early fills copies across the slot overlays
+  seedOrder(cands) {
+    if (!this.o.seedFamilies) return cands;
+    const ovl = f => (f.key.includes(':') ? f.key.split(':')[0] : 'main');
+    const groups = {};
+    for (const f of this.queue) if (f.fp) (groups[f.fp] ||= new Set()).add(ovl(f));
+    const lead = new Set(), seen = new Set();
+    for (const f of cands) if (f.fp && groups[f.fp].size > 1 && !seen.has(f.fp)) { seen.add(f.fp); lead.add(f.key); }
+    return [...cands.filter(f => lead.has(f.key)), ...cands.filter(f => !lead.has(f.key))];
   }
 
   // still worth a big session: under --big-sessions, and not --big-stale sessions in a row without progress.
@@ -690,11 +718,13 @@ class Swarm {
     // big mode: resume the functions with a checkpoint first, then the smallest
     const cands = big ? this.queue.filter(f => this.isBig(f))
       .sort((a, b) => (this.checkpoint(b) ? 1 : 0) - (this.checkpoint(a) ? 1 : 0) || a.size - b.size)
-      : this.queue.filter(f => !this.isBig(f));
+      : this.seedOrder(this.queue.filter(f => !this.isBig(f)));
     for (const f of cands) {
       if (this.finished.has(f.key) || keys.has(f.key) || (f.fp && fps.has(f.fp)) || this.nearBusy(f, busy)) continue;
+      if (this.heldBack(f)) continue;
       if (big ? !this.bigLeft(f) : (this.history[f.key]?.attempts || 0) >= this.o.maxAttempts && !this.o.retryFailed) continue;
       if (!peek && big) this.retryBase(f);
+      if (!peek && f.fp) { (this.leasedFps ||= new Set()).add(f.fp); (this.leasedKeys ||= new Set()).add(f.key); }
       // a function an earlier run tried picks up where it left off: the escalated model, the next
       // attempt, and that run's last notes (forget's reason too)
       const tried = this.history[f.key]?.attempts || 0, notes = this.earlierNotes(f);
@@ -1445,7 +1475,7 @@ Fix that, keep it matching, and report "matched".
     const kind = `${job.big ? 'big' : 'normal'}${job.gateFix ? '-gatefix' : job.permuterDiff ? '-permuted' : job.startPatch ? '-port' : ''}`;
     fs.appendFileSync(this.paths.ledger, JSON.stringify({
       run: this.id, at: stamp(), key: f.key, name: f.name, seg: f.seg, size: f.size, kind, model: job.model,
-      attempt: job.attempt, outcome, timedOut: !!job.timedOut, usd: +u.usd.toFixed(4), estimated: u.estimated,
+      attempt: job.attempt, twin: f.twin || null, outcome, timedOut: !!job.timedOut, usd: +u.usd.toFixed(4), estimated: u.estimated,
       known: u.known, turns: u.turns, tokens: u.tokens, minutes: u.minutes, apiMinutes: u.apiMinutes,
       tries: job.tries, docReads: u.docReads, docGreps: u.docGreps, session: job.sessionId,
     }) + '\n');

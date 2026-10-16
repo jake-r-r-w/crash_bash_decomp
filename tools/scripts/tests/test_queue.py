@@ -128,5 +128,18 @@ class Declarations(unittest.TestCase):
                 os.chdir(cwd)
 
 
+class Lookalike(unittest.TestCase):
+    def test_best_matched_lookalike(self):
+        funcs = {k: fn("overlays/x/x", k, 4 * n) for k, n in (("a", 20), ("b", 20), ("c", 20), ("big", 60))}
+        seqs = {"a": list("abcdefghijklmnopqrst"), "b": list("abcdefghijklmnopqrsX"),
+                "c": list("abcdefghijXXXXXXXXXX"), "big": list("abcdefghijklmnopqrst") * 3}
+        stat = {"a": "todo", "b": "matched", "c": "matched", "big": "matched"}
+        r, k = decomp.best_lookalike("a", funcs, seqs, stat, PROJ)
+        self.assertEqual(k, "b")                     # not c (less alike), not big (3x the size)
+        self.assertAlmostEqual(r, 0.95)
+        self.assertEqual(decomp.best_lookalike("a", funcs, seqs, stat, PROJ, among=["c"])[1], "c")
+        self.assertEqual(decomp.best_lookalike("a", funcs, seqs, stat, PROJ, floor=0.96), (0.0, None))
+
+
 if __name__ == "__main__":
     unittest.main()
