@@ -184,10 +184,17 @@ left, for the permuter). `--max-functions 500` leaves time and cost as the limit
   ruled it out: it would make progress too slow. Port such a version by
   hand instead.
 - **`func_800177F4`**: registers 1/89. Only `idx`'s addu operand order
-  (target `addu t0,a0,v0` = face + table); every face-first form gives idx
-  a hard a0 preference, so tpage avoids a0 (58/89). The checkpoint's
-  tricks: s32 tpage changed in place, and the code word carried in the
-  colour pointer `c`.
+  (target `addu t0,a0,v0` = face + table). Why (2026-10-16, `-dg` dump):
+  global.c's set_preference takes a plus's first operand, and `face` is
+  local-allocated to a0, so face-first gives `idx` an a0 preference;
+  `tpage` (allocated first) then avoids a0 and everything shifts (31/89).
+  Retail has face first without that preference. The closest idea: copy
+  face into a longer-lived variable (`tpage = (s32)face;`): cse makes the
+  longer-lived copy canonical, so the add starts from a global pseudo and
+  `tpage` prefers a0, but sched1 hoists the colours-base load above the
+  add, local-alloc gives it a0, and `tpage` conflicts with a0 (one extra
+  move, 72/90). Find what keeps that load below the add or out of a0.
+  12 forms and a 15-min permuter run are in the park note.
 
 Other:
 - The gcc 2.7.2 units (`main/8002d488`, `main/8002e0f0`): `aspsx_fill.py`
@@ -405,6 +412,10 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-16 (by hand, `func_800177F4`):** not matched; still 1/89. The
+  `-dg` dump explains the last operand (Open leads); 12 forms and a
+  15-min permuter run failed. Park note updated.
 
 - **2026-10-16 (tool, ASPSX conditional-branch slots):** `aspsx_fill.py`
   fills the slots of branches gcc 2.7.2 leaves to the assembler: from
