@@ -76,5 +76,20 @@ class StallNote(unittest.TestCase):
                 os.chdir(cwd)
 
 
+class SplitPoints(unittest.TestCase):
+    JR_RA, NOP = 0x03E00008, 0
+    FRAME = 0x27BDFFE8                     # addiu $sp, $sp, -0x18
+
+    def test_second_function_after_jr(self):
+        words = [self.FRAME, self.NOP, self.JR_RA, self.NOP, self.NOP, self.FRAME, self.JR_RA, self.NOP]
+        self.assertEqual(decomp.split_points(words, []), [(5, "a stack frame set up after a jump")])
+
+    def test_code_a_branch_reaches_is_not_a_split(self):
+        beq_to_4 = (4 << 26) | 1                 # beq $zero, $zero, +1: from 2 lands on 4
+        words = [self.NOP, self.NOP, beq_to_4, self.NOP, self.JR_RA, self.NOP, 0x24020001, self.JR_RA, self.NOP]
+        self.assertEqual(decomp.split_points(words, [6]), [])
+        self.assertEqual(decomp.split_points(words, []), [(6, "code after a jump that nothing reaches")])
+
+
 if __name__ == "__main__":
     unittest.main()

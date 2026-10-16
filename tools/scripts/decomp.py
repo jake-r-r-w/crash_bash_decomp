@@ -1210,6 +1210,59 @@ def cmd_try(a):
     sys.exit(0 if all_ok else 1)
 
 
+def split_points(words, labels):
+    """Indices where a function's code looks like the start of another function: code after an
+    unconditional jump (and its delay slot) that no branch or jump table reaches, or a second
+    stack frame set up after a jump (`addiu $sp,$sp,-N`). Leading nops are skipped."""
+    import regions
+    n, out = len(words), []
+    reached = set(labels)
+    for i, w in enumerate(words):
+        if regions.is_branch(w):
+            reached.add(regions.branch_dest(w, i))
+    for i, w in enumerate(words):
+        if not regions.is_jump(w) or i + 2 >= n:
+            continue
+        j = i + 2
+        while j < n and words[j] == 0:
+            j += 1
+        if j >= n or j in reached:
+            continue
+        frame = (words[j] >> 16) == 0x27BD and words[j] & 0x8000          # addiu $sp, $sp, -N
+        out.append((j, "a stack frame set up after a jump" if frame else "code after a jump that nothing reaches"))
+    return out
+
+
+def cmd_splitcheck(a):
+    """Functions that are probably two (a mis-split, like func_80027408): each with the line to add
+    to its symbol file, so splat splits it."""
+    proj, funcs = need_proj(), need_funcs()
+    stat, _ = statuses(funcs)
+    syms = sym_names()
+    known = set()
+    for k in syms:
+        known.add(k)
+    found = 0
+    for k, e in sorted(funcs.items()):
+        if a.seg and not e["seg"].startswith(a.seg):
+            continue
+        if not a.all and stat.get(k) == "matched" or not os.path.exists(e.get("asm", "")):
+            continue
+        rom, vram, words, *_ = parse_asm(e["asm"])
+        words = [int.from_bytes(w.to_bytes(4, "big"), "little") for w in words]
+        words = words[:trim_nops(words)]
+        for j, why in split_points(words, asm_labels(e["asm"], vram)):
+            addr = vram + 4 * j
+            ovl = k.rpartition(":")[0]
+            nk = f"{ovl}:{addr:08X}" if ovl else f"{addr:08X}"
+            if nk in known or nk in funcs:
+                continue
+            found += 1
+            print(f"{e['seg']}/{cur_name(k, e, syms)} +0x{4 * j:X}: {why}. Add to {sym_file(ovl)}:\n"
+                  f"  func_{addr:08X} = 0x{addr:08X}; // type:func")
+    print(f"{found} probable split point(s){' (matched functions included)' if a.all else ''}")
+
+
 LABEL_LINE = re.compile(r"^\s*\.L([0-9A-Fa-f]{8}):")
 
 
@@ -4524,6 +4577,10 @@ def main():
     p.add_argument("--block", type=int, action="append", help="only randomize this block's C (repeatable)")
     p.add_argument("--lines", action="append", help="only randomize source lines A-B (repeatable)")
     p.set_defaults(fn=cmd_permute)
+    p = sub.add_parser("splitcheck", help="functions that look like two (a missing symbol to split them)")
+    p.add_argument("--seg", help="segment prefix")
+    p.add_argument("--all", action="store_true", help="matched functions too")
+    p.set_defaults(fn=cmd_splitcheck)
     p = sub.add_parser("permute-apply", help="put a permuter output's function in the source (if try builds it)")
     p.add_argument("func")
     p.add_argument("dir", help="the output directory (with source.c)")
