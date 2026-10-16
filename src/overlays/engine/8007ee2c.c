@@ -573,7 +573,35 @@ void func_80085650(void) {
     } while (i < 16);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80085718);
+static inline void HeroAnimSlotSet(volatile s16 *id, u16 *seq, volatile s32 *a, volatile s32 *p, volatile s32 *p2, s32 hero, u16 n) {
+    subengine *s;
+    volatile D_8009D6FC_t *t;
+    s32 q;
+    s32 v;
+
+    s = Heroes[hero].hero_anim->sub;
+    if (s == NULL) {
+        s = Heroes[hero].hero_sub;
+    }
+    *p = (s32)s->unk6C;
+    do {
+    } while (0);
+    q = *p2;
+    *id = hero;
+    t = (volatile D_8009D6FC_t *)(n * sizeof(D_8009D6FC_t) + (u32)*(D_8009D6FC_t * volatile *)&D_8009D6FC);
+    v = ((D_8009D6FC_t *)t)->a;
+    *a = v;
+    *seq = t->b;
+    func_800165F8((u8 *)q, (u8 *)((D_8009D6FC_t *)t)->a);
+}
+
+void func_80085718(s32 arg0, u16 arg1) {
+    if (D_8009D86C == 0) {
+        HeroAnimSlotSet(&D_8009D864, &D_8009D866, &D_8009D868, &D_8009D86C, (volatile s32 *)((u8 *)&D_8009D878 - 12), arg0, arg1);
+    } else if (D_8004DDD0[D_8005A648 * 3] != 0x104) {
+        HeroAnimSlotSet(&D_8009D870, &D_8009D872, &D_8009D874, &D_8009D878, (volatile s32 *)((u8 *)&D_8009D868 + 16), arg0, arg1);
+    }
+}
 
 s32 func_80085890(s32 arg0) {
     s32 i;

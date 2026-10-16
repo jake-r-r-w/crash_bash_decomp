@@ -10,6 +10,16 @@
 
 extern s32 (*D_8009D724)(s32);
 extern s32 (*D_8009D738)(s32, s32);
+typedef struct {
+    s32 a;
+    u16 b;
+    u16 pad;
+} D_8009D6FC_t;
+extern D_8009D6FC_t *D_8009D6FC;
+extern s16 D_8009D864;
+extern u16 D_8009D866;
+extern s16 D_8009D870;
+extern u16 D_8009D872;
 
 void func_80086704(void);
 
@@ -233,6 +243,8 @@ extern u8 D_80055534[];
 void func_80082AC4(void);
 
 void func_80084E04(s32 player, NAS *nas, s16 attacker, u16 flags, u16 sfx);
+
+void func_80085718(s32 arg0, u16 arg1);
 
 void func_8008B29C(s32 idx);
 
