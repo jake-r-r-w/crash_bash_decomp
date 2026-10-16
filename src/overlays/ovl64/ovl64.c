@@ -127,7 +127,10 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800BB37C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800BB4FC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800BB52C);
+void func_800BB52C(s32 arg0) {
+    D_8009D73C(arg0);
+    func_8008502C(arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800BB560);
 

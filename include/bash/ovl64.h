@@ -22,4 +22,7 @@ void func_800B9048(void);
 
 void func_800BB37C(void);
 
+void func_800BB52C(s32 arg0);
+extern void (*D_8009D73C)();
+
 #endif /* BASH_OVL64_H */
