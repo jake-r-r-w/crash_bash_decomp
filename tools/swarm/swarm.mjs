@@ -73,7 +73,8 @@ CONVENTIONS.md and SKILL.md):
 4. \`tools/dk make diff FUNC=${r}\`: fix the STAGE its last line names, in order: structure (length,
    branches, loops), then instructions (order, temps, types), then registers. Its KINDS line says
    which "Classify the diff" list in MATCHING.md applies, and the Diff patterns table there has
-   fixes by symptom (grep it).
+   fixes by symptom (grep it). After MATCH, its LINK line says whether the whole binary still
+   matches: fix a LINK difference (data or rodata the C adds or moves) before finishing.
 5. For register swaps: \`decomp.py vars ${r}\` names the variable behind each, and
    \`decomp.py splitvars ${r} VAR\` when one variable wants different registers in different
    blocks. For a long diff, \`decomp.py regions ${r}\` aligns it block by block (\`--changed\` after

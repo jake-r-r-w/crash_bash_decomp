@@ -440,6 +440,12 @@ the effect on turns and $ per big session with `stats --run ID`.
 
 ### 3.7 Gate feedback (S)
 
+**Done 2026-10-16**, except the optional %lo check. After a MATCH, `try` links
+the function's binary (1-3 s, incremental) and prints `LINK ok` or `LINK
+differs: <where>` with target and built disassembled at the first difference;
+`done`'s full-build failure prints the same. The loop in the prompts says to
+fix a LINK difference.
+
 - After a code MATCH, `try` runs the real incremental `make build/<bin>` and
   prints `LINK ok` or `LINK differs at <function or rodata label> +0xOFF`
   (`rodata_syms` already maps offsets). Keep printing MATCH and leave the swarm's

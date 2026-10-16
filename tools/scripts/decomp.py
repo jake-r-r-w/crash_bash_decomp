@@ -591,6 +591,8 @@ def check_function(key, e, proj, name, quiet=False):
     if not diffs:
         if not quiet:
             print(f"MATCH {name} ({nt} instructions)")
+            # the whole binary too: `done`'s full build would refuse a match that moves data
+            print(link_check(e, proj, jload(P_FUNCS, {})))
         return True, 0
     ttext = parse_asm(e["asm"])[3] if os.path.exists(e.get("asm", "")) else [f"{w:08x}" for w in tw]
     stage = diff_stage(tw, cw, diffs, ops, nt, nc)
@@ -1391,28 +1393,64 @@ def verify_build(proj, funcs=None):
         out = r.stderr + r.stdout
         errs = [l for l in out.splitlines() if re.search(r"error|undefined reference|No rule|Error \d", l, re.I)]
         return False, "BUILD FAILED\n" + ("\n".join(errs[:20]) if errs else tail(out, 20))
-    pairs = [(f"build/{proj['name']}.exe", os.path.join("disc", proj["exe"]), None)]
-    pairs += [(f"build/{o['name']}.bin", f"disc/{o['name']}.bin", f"disc/{o['name']}.bin")
-              for o in proj.get("overlays", [])]
     oks = []
-    for built_p, target_p, binkey in pairs:
-        with open(built_p, "rb") as f:
-            built = f.read()
-        with open(target_p, "rb") as f:
-            target = f.read()
-        if built == target:
-            oks.append(f"{built_p} ({len(built)} bytes)")
+    for built_p, target_p, binkey in binaries(proj):
+        diff = first_difference(built_p, target_p, binkey, funcs)
+        if diff is None:
+            oks.append(f"{built_p} ({os.path.getsize(built_p)} bytes)")
             continue
-        off = next((i for i in range(min(len(built), len(target))) if built[i] != target[i]),
-                   min(len(built), len(target)))
-        where = "outside indexed functions (data, rodata, header or padding)"
-        for e in (funcs or {}).values():
-            if e.get("bin") == binkey and e["rom"] <= off < e["rom"] + e["size"]:
-                where = f"inside {e['name']} (+0x{off - e['rom']:X})"
-                break
-        return False, (f"MISMATCH in {built_p}: first difference at file offset 0x{off:X}, {where}; "
-                       f"size built {len(built)} vs target {len(target)}")
+        return False, f"MISMATCH in {built_p}: {diff}"
     return True, "OK: " + ", ".join(oks) + " match"
+
+
+def binaries(proj):
+    """(built, target, functions.json `bin` value) for the exe and every overlay."""
+    return ([(f"build/{proj['name']}.exe", os.path.join("disc", proj["exe"]), None)]
+            + [(f"build/{o['name']}.bin", f"disc/{o['name']}.bin", f"disc/{o['name']}.bin")
+               for o in proj.get("overlays", [])])
+
+
+def first_difference(built_p, target_p, binkey, funcs):
+    """None when the two files are equal, else where they first differ (the function, or the
+    functions around a data difference) and both sides disassembled there."""
+    with open(built_p, "rb") as f:
+        built = f.read()
+    with open(target_p, "rb") as f:
+        target = f.read()
+    if built == target:
+        return None
+    off = next((i for i in range(min(len(built), len(target))) if built[i] != target[i]),
+               min(len(built), len(target)))
+    mine = sorted((e["rom"], e["size"], e["name"]) for e in (funcs or {}).values() if e.get("bin") == binkey and "rom" in e)
+    where = None
+    for rom, size, name in mine:
+        if rom <= off < rom + size:
+            where = f"inside {name} +0x{off - rom:X}"
+    if where is None:
+        before = [n for r, s, n in mine if r + s <= off]
+        after = [n for r, s, n in mine if r > off]
+        where = ("outside the functions (data, rodata or padding)"
+                 + (f", after {before[-1]}" if before else "") + (f", before {after[0]}" if after else ""))
+    out = [f"first difference at file offset 0x{off:X}, {where}; size built {len(built)} vs target {len(target)}"]
+    lo = max(off - off % 4 - 8, 0)
+    for label, path in (("target", target_p), ("built", built_p)):
+        r = run(["mipsel-linux-gnu-objdump", "-D", "-b", "binary", "-m", "mips:3000", "-EL",
+                 f"--start-address={lo:#x}", f"--stop-address={lo + 24:#x}", path])
+        rows = [l.strip() for l in r.stdout.splitlines() if re.match(r"\s*[0-9a-f]+:\s", l)]
+        if rows:
+            out.append(f"  {label}:" + "".join(f"\n    {x}" for x in rows))
+    return "\n".join(out)
+
+
+def link_check(e, proj, funcs):
+    """After a function matches on its own: link its binary (incrementally) and compare it whole.
+    A MATCH that breaks the link (data or rodata that moved) shows up here, before `done`."""
+    built_p, target_p, binkey = next(b for b in binaries(proj) if b[2] == e.get("bin"))
+    r = run(["make", "-s", built_p])
+    if r.returncode:
+        return f"LINK failed: {tail(r.stderr + r.stdout, 4)}"
+    diff = first_difference(built_p, target_p, binkey, funcs)
+    return "LINK ok" if diff is None else f"LINK differs: {diff}"
 
 
 def cmd_verify(a):

@@ -61,6 +61,8 @@ All commands run through `tools/dk` (Docker).
    diff](#classify-the-diff-then-work-through-the-list). It stops after 40
    rows; for more, run
    `tools/dk sh -c 'DIFF_ROWS=300 python3 tools/scripts/decomp.py try NAME'`.
+   On a match it also links the binary: `LINK ok`, or `LINK differs` with
+   where (data or rodata the C adds or moves; `done` would refuse it).
    Its last line, `STAGE NAME stage n/total`, says how far the function has
    got. Fix the stages in order, since later fixes don't hold while an
    earlier stage is wrong:
