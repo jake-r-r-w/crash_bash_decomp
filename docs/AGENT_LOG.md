@@ -14,8 +14,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1021/2551 game functions matched (main.exe 559/575, 16 left: 15 parked
-  and `func_8002D4F4`; engine overlay 101 left), 15 parked,
+- 1049/2551 game functions matched (main.exe 559/575, 16 left: 15 parked
+  and `func_8002D4F4`; engine overlay 73 left), 15 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - The engine overlay is six files and `ovl5d` three, `ovl5e`, `ovl66`,
@@ -42,10 +42,15 @@ diff`, `regions --changed`) and 3.1 (no git status in workers' system
 prompt, inline loop) and 3.3 (families: seed leads, templates, twins never
 big) and 3.2-3.9 are done: the whole plan's code (left: the model-tier pilot
 and the typing pass, which are runs and hand work, and `--chain`'s pilot).
-**Next: a supervised swarm run** (engine, an hour, `--max-run-usd 40`; watch
-the first 10 minutes for refused commands), then `stats --run ID` against
-the ledger's earlier runs, per size bucket; after each swarm run,
-compare `stats --run ID` with the ledger's earlier runs. Deferred from Part 1: recognising
+The first supervised run on it (engine, 2026-10-16, 60 min, $41.11)
+matched 28 (27 + one fixed by hand), parked 1. Against earlier runs, $/match
+fell for 250-399 B normal ($0.79 -> $0.66, first-session matches 54% ->
+70%) and 400-599 B big ($4.58 -> $3.52); small samples, and what is left
+is the harder remainder. The closest-C carry-over did the work: three
+functions parked close then matched on the retry from their C. **Next:
+repeat the engine hour** (73 left); `permute --near` first if there is CPU
+time. After each swarm run, compare `stats --run ID` with the ledger's
+earlier runs. Deferred from Part 1: recognising
 the CLI's usage-limit result. It only matters for unattended runs, and the
 user runs the swarm supervised and conservatively; if a limit is ever hit,
 keep that `worker.out` and match its result line then. The first run after these changes: watch
@@ -80,9 +85,15 @@ done as far as the evidence goes (item 3).
    2026-10-15 (mostly under 150 B; $21.72 / 45 = $0.48 a match, a floor: big
    sessions killed at their deadline cost $0 in the logs). A second hour matched 38 for $16.46, a third 59 in 43 min for
    $27.60 (stopped early). Evening: 20 in 24 min ($18.34) and 29 in 20 min
-(both stopped early). Repeat it; 101 engine functions are left. Near
+(both stopped early). 2026-10-16: 28 in 60 min ($41.11, mostly 250-600 B
+now). Repeat it; 73 engine functions are left. Near
 misses with big-mode checkpoints: `func_8007BFA8` (instructions 5/114),
-`func_8007C170` (17/114), `func_8007CC80` (structure 77/116). `--max-functions 500` leaves time and cost as the limits (40 stopped
+`func_8007C170` (17/114), `func_8007CC80` (structure 77/116),
+`func_8008F248` (registers 2/117), `func_800864CC` (5/132),
+`func_80079260` (4/98), `func_80094A28` (5/68), `func_800939FC`
+(registers 11/123: its checkpoint is the session the patch-check bug
+refused, restored by hand; the session log says the block-0 a0/a1 swap is
+left, for the permuter). `--max-functions 500` leaves time and cost as the limits (40 stopped
    leasing after about 30 min). Sizes left per overlay: run the size loop over
    `nonmatching NAME, 0xSIZE` headers (the `next --count` listing is slow).
 2. The rest of `main.exe` with the swarm: `swarm.mjs run --branch main --seg
@@ -241,6 +252,12 @@ Other:
 ## Gotchas
 
 **Tooling**
+- **A new prototype can break callers in other files.** The gate adds the
+  matched function's prototype to the owned header; an already matched
+  caller elsewhere that calls it with other arguments then fails to compile
+  (`func_80085890`: two `func_80085890()` calls in ovl63/ovl65). Fix the
+  calls (`grep -rn NAME src`), not the prototype; the full build proves the
+  callers' bytes. The gate's message shows cc1's error since 2026-10-16.
 - **Smoke-test swarm changes end to end** before a real run: a scripted
   `--worker-cmd` run against a local bare remote (`--remote <bare clone>
   --branch smoke --only KEY`) catches what the unit tests can't (clone setup,
@@ -398,6 +415,14 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-16 (supervised engine run):** 60 min, $41.11, 28 matched
+  (`func_80085890` by hand: callers in ovl63/ovl65 passed no argument).
+  Fixed: `checkPatch` read an added blank line before a context
+  INCLUDE_ASM as an add (`s*` spanned lines) and refused
+  `func_800939FC`'s best session; `verify_build` hid cc1's errors.
+  Folded 67 pattern rows (dropped a K&R-to-dodge-callers hack and an
+  unsolved row).
 
 - **2026-10-16 (tooling plan done):** `--chain N` session chaining (off by
   default); a scripted run checked the stale-checkpoint hand-off, keeping a
