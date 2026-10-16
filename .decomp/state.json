@@ -5,7 +5,9 @@
   "blocked_at": "2026-10-15T08:33:04Z",
   "note": "instructions 36/86 (length right); only the BCD tail's registers: target const 0x66666667 in a0, n/10 in a2, accumulator a0; i is reused for the quotient chain (a fresh var changes the length); permuter 10 min found nothing; next: cc1 -dl local-alloc dump",
   "started": "2026-10-15T08:04:46Z",
-  "status": "blocked"
+  "status": "todo",
+  "unblocked_at": "2026-10-16T13:33:01Z",
+  "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },
  "80010158": {
   "matched_at": "2026-10-13T07:55:56Z",
@@ -41,7 +43,9 @@
   "auto_failed": "types",
   "blocked_at": "2026-10-15T07:25:28Z",
   "note": "instructions 2/208: only the preheader order, target lui s6 (%hi D_8004E0EC, hoisted by loop.c) before li s5,-1 (m1); sched2 keeps RTL order, so in the target the -1 load came after the hoisted lui (hoisted too?). m1 set inside the loop after the exit tests is not a loop.c movable at all. Shape that got here: unrotated do{s32 t; if(!p)break;...}while(1), first site ternary with lo/nx, second site an inline with m1 param, merge = func_800107C8_merge",
-  "status": "blocked"
+  "status": "todo",
+  "unblocked_at": "2026-10-16T13:33:01Z",
+  "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },
  "800107C8": {
   "matched_at": "2026-10-14T08:57:59Z",
@@ -59,13 +63,17 @@
   "auto_failed": "compile",
   "blocked_at": "2026-10-15T07:36:31Z",
   "note": "35/36 blocks, 133/135 insns: only the entry. Target addiu a0,3; lw v1,8(a1); nop; beqz v1; srl (sched2 put the heap->free load after the size add); ours lw first (sched2 rank prefers the addiu that feeds the srl). Tried: size in a statement, as a call arg, bytes reused as u32, an inline size helper, loading free first, func_80011C5C-style find inline. Rest matches with: find = func_80011C5C's loop as an inline, unlinks via t = blk->prevFree, the twin's split = func_800119D4/func_800118BC bodies, lowest update as an inline returning the next free block",
-  "status": "blocked"
+  "status": "todo",
+  "unblocked_at": "2026-10-16T13:33:01Z",
+  "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },
  "80010E8C": {
   "auto_failed": "compile",
   "blocked_at": "2026-10-15T07:36:52Z",
   "note": "35/36 blocks, 133/135 insns: only the entry. Target addiu a0,3; lw v1,8(a1); nop; beqz v1; srl (sched2 put the heap->free load after the size add); ours lw first (sched2 rank prefers the addiu that feeds the srl). Tried: size in a statement, as a call arg, bytes reused as u32, an inline size helper, loading free first, func_80011C5C-style find inline. Rest matches with: find = func_80011C5C's loop as an inline, unlinks via t = blk->prevFree, the twin's split = func_800119D4/func_800118BC bodies, lowest update as an inline returning the next free block (same entry as func_80010C70)",
-  "status": "blocked"
+  "status": "todo",
+  "unblocked_at": "2026-10-16T13:33:01Z",
+  "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },
  "800110A8": {
   "matched_at": "2026-10-11T14:59:00Z",
@@ -199,7 +207,9 @@
   "blocked_at": "2026-10-12T09:47:33Z",
   "note": "Block after heap->lowest unless owner -1, size 0 or flag 2. Best 4 off: the tail; target is r = next; if (next) { r = NULL; if (!(f & 2)) r = next; } with r in v0 and next in a0 (m2c form), but that and early-return, clear-to-NULL forms give 28-29 insns. Permuter 5 min: int temp for the condition, still off. Try static inline helpers for either half.",
   "started": "2026-10-12T09:41:10Z",
-  "status": "blocked"
+  "status": "todo",
+  "unblocked_at": "2026-10-16T13:33:01Z",
+  "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },
  "80011EF0": {
   "auto_diff": 23,
@@ -589,7 +599,9 @@
   "blocked_at": "2026-10-11T09:33:47Z",
   "note": "2 operands: target ties A+srl to the srl's reg (addu v1,v0,v1), ours to A's (v0). Writing srl+A first ties right but local-alloc then gives A v1. Tried 17 forms (temps, u32 globals, store order), cc1 -dl dump",
   "started": "2026-10-11T08:54:06Z",
-  "status": "blocked"
+  "status": "todo",
+  "unblocked_at": "2026-10-16T13:33:01Z",
+  "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },
  "8001562C": {
   "auto_diff": 67,
@@ -846,7 +858,9 @@
   "auto_failed": "diff",
   "blocked_at": "2026-10-15T09:05:36Z",
   "note": "registers 22/137; loops: two do/while with end = -1 in the body (own end var each) and a goto loop for the 0x58 nodes; only q (8-byte list, target a1) and next (0x54 list, target a0) are in a0/a2; permuter 10 min nothing sound; next: vars/splitvars on q and next",
-  "status": "blocked"
+  "status": "todo",
+  "unblocked_at": "2026-10-16T13:33:01Z",
+  "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },
  "80017388": {
   "matched_at": "2026-10-13T21:45:19Z",
@@ -861,13 +875,17 @@
   "blocked_at": "2026-10-11T08:12:35Z",
   "note": "24 regs off: colour pointer in v0 (target v1), tpage/0x02000000 constant swap a0/v0; control flow matches. Permuter best: reuse a temp for tpage & ~0x60",
   "started": "2026-10-11T07:58:36Z",
-  "status": "blocked"
+  "status": "todo",
+  "unblocked_at": "2026-10-16T13:33:01Z",
+  "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },
  "8001795C": {
   "auto_failed": "types",
   "blocked_at": "2026-10-14T21:58:35Z",
   "note": "registers 12/107 (swarm checkpoint ported to GfxTexSet/GfxTexInfo/TexFaceRuns); only the 0x8000/else arms' registers differ (see checkpoint log: t's def is hoisted above the cluts load by sched1). Clean sibling-style arms (func_80017EE8's form) are structure 108-109. next: keep t = &tex[count-1].info after the cluts load",
-  "status": "blocked"
+  "status": "todo",
+  "unblocked_at": "2026-10-16T13:33:01Z",
+  "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },
  "80017B08": {
   "matched_at": "2026-10-13T20:59:30Z",
@@ -1021,7 +1039,9 @@
   "auto_failed": "types",
   "blocked_at": "2026-10-15T07:55:07Z",
   "note": "registers 12/135, all in the 2D branch: target keeps x in a0 (the arg) with the ~0xC000 mask in v0 and D_800569C0's %hi in v1; ours has the mask in a0 so x goes to a1. Tried in-place ops, s16/u16 x, ternary arg, mask variable, 18-bit bitfield read. Rest matches: TextNAS (text at +0x6C), GteSetup's slot reused as the GlyphPos",
-  "status": "blocked"
+  "status": "todo",
+  "unblocked_at": "2026-10-16T13:33:02Z",
+  "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },
  "8001AA48": {
   "matched_at": "2026-10-13T21:16:55Z",
@@ -1395,7 +1415,9 @@
   "blocked_at": "2026-10-15T08:02:17Z",
   "note": "registers 18/305 (paired 305/305, 31/43 blocks): slerp with precomputed angle/inverse in arg 5 (get_angle's result is dropped). Left: Trig_HalfCos's result in v0 (target v1) and pa in v1 (target a0). Found: in-place if/else roundings (>>11, >>5), variables reused (ia then kb, ib then pb), and the second product recomputed in the ternary test (kb*q >= 0 ? pb+0x800 : pb-0x800) - the target computes it twice; the real source form is still unknown",
   "started": "2026-10-15T07:55:35Z",
-  "status": "blocked"
+  "status": "todo",
+  "unblocked_at": "2026-10-16T13:33:01Z",
+  "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },
  "80020B44": {
   "auto_diff": 25,
@@ -1412,7 +1434,9 @@
   "blocked_at": "2026-10-14T12:39:31Z",
   "note": "STAGE structure 16/19 (18 vs 19): retail has mult with no mflo and returns a; every dead-product form (u16/>>32 splits, long long <<32, unused local) folds the mult away too in 2.8.1, signed >>32 keeps one mflo; 2.5.7/2.6 keep partial dead code; next: cc1 -dc/-dl dump of the >>32 form, or check whether this region is another compiler",
   "started": "2026-10-14T12:27:22Z",
-  "status": "blocked"
+  "status": "todo",
+  "unblocked_at": "2026-10-16T13:33:02Z",
+  "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },
  "80020C4C": {
   "matched_at": "2026-10-13T07:46:09Z",
@@ -1772,7 +1796,9 @@
   "auto_failed": "diff",
   "blocked_at": "2026-10-14T21:56:33Z",
   "note": "registers 5/142 (ported to SpriteFrame/s32 xy with a SprPos union); only the entry: target tests a0 (andi a0,a0,0xC000) and loads arg4 into a3, ours tests s5 into v1. An s16/u16 arg0 fixes that but its conversion insn has a later luid, so sched2 puts move s5,a0 after the a2/a3 copies (6 diffs, prologue order). next: a form where arg0's s5 copy is the first param copy and a dying a0 copy feeds the andi",
-  "status": "blocked"
+  "status": "todo",
+  "unblocked_at": "2026-10-16T13:33:02Z",
+  "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },
  "80024AD8": {
   "matched_at": "2026-10-14T13:10:44Z",
@@ -1998,7 +2024,9 @@
   "blocked_at": "2026-10-12T08:11:22Z",
   "note": "Rebuilds NASFreeList from the pool (D_8005AA1C, slots D_8005AA10..D_8005AA12-1). Best: goto loop, 18 off: target keeps %hi(NASFreeList) in a1 (a copy, so loop.c hoisted it) and loads D_8005AA10 once before the loop. goto loops get no hoisting; for(;;)+break with a 'first' local hoists the lui but adds a nas+12 giv (37 insns); while/for with the global, index inside the loop, head pointer local, store order, static inline FreeNAS: no better. Permuter 10 min: only a semantics-breaking goto move.",
   "started": "2026-10-12T07:57:39Z",
-  "status": "blocked"
+  "status": "todo",
+  "unblocked_at": "2026-10-16T13:33:02Z",
+  "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },
  "80026D9C": {
   "auto_diff": 10,
@@ -2703,7 +2731,9 @@
   "blocked_at": "2026-10-13T23:01:15Z",
   "note": "structure 68/93 (93 vs 91) under 2.7.2: the target reloads *str in the Kanji and ROM-glyph paths but compares the first load for ' '; ours reuses it (c local, volatile D_8006EA24 and an index loop didn't help; index loop 84/93 but 89 long). lh startX (s32) and x-before-w sum order are right. Next: what blocks CSE of *str in 2.7.2",
   "started": "2026-10-13T22:59:11Z",
-  "status": "blocked"
+  "status": "todo",
+  "unblocked_at": "2026-10-16T13:33:02Z",
+  "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },
  "8002E3D0": {
   "matched_at": "2026-10-14T21:34:58Z",

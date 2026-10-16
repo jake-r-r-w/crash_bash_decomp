@@ -1,99 +1,8 @@
 {
- "blocked": [
-  {
-   "name": "func_80010000",
-   "note": "instructions 36/86 (length right); only the BCD tail's registers: target const 0x66666667 in a0, n/10 in a2, accumulator a0; i is reused for the quotient chain (a fresh var changes the length); permuter 10 min found nothing; next: cc1 -dl local-alloc dump",
-   "seg": "main/main",
-   "size": 344
-  },
-  {
-   "name": "func_80010488",
-   "note": "instructions 2/208: only the preheader order, target lui s6 (%hi D_8004E0EC, hoisted by loop.c) before li s5,-1 (m1); sched2 keeps RTL order, so in the target the -1 load came after the hoisted lui (hoisted too?). m1 set inside the loop after the exit tests is not a loop.c movable at all. Shape that got here: unrotated do{s32 t; if(!p)break;...}while(1), first site ternary with lo/nx, second site an inline with m1 param, merge = func_800107C8_merge",
-   "seg": "main/main",
-   "size": 832
-  },
-  {
-   "name": "func_80010C70",
-   "note": "35/36 blocks, 133/135 insns: only the entry. Target addiu a0,3; lw v1,8(a1); nop; beqz v1; srl (sched2 put the heap->free load after the size add); ours lw first (sched2 rank prefers the addiu that feeds the srl). Tried: size in a statement, as a call arg, bytes reused as u32, an inline size helper, loading free first, func_80011C5C-style find inline. Rest matches with: find = func_80011C5C's loop as an inline, unlinks via t = blk->prevFree, the twin's split = func_800119D4/func_800118BC bodies, lowest update as an inline returning the next free block",
-   "seg": "main/main",
-   "size": 540
-  },
-  {
-   "name": "func_80010E8C",
-   "note": "35/36 blocks, 133/135 insns: only the entry. Target addiu a0,3; lw v1,8(a1); nop; beqz v1; srl (sched2 put the heap->free load after the size add); ours lw first (sched2 rank prefers the addiu that feeds the srl). Tried: size in a statement, as a call arg, bytes reused as u32, an inline size helper, loading free first, func_80011C5C-style find inline. Rest matches with: find = func_80011C5C's loop as an inline, unlinks via t = blk->prevFree, the twin's split = func_800119D4/func_800118BC bodies, lowest update as an inline returning the next free block (same entry as func_80010C70)",
-   "seg": "main/main",
-   "size": 540
-  },
-  {
-   "name": "func_80011E80",
-   "note": "Block after heap->lowest unless owner -1, size 0 or flag 2. Best 4 off: the tail; target is r = next; if (next) { r = NULL; if (!(f & 2)) r = next; } with r in v0 and next in a0 (m2c form), but that and early-return, clear-to-NULL forms give 28-29 insns. Permuter 5 min: int temp for the condition, still off. Try static inline helpers for either half.",
-   "seg": "main/main",
-   "size": 112
-  },
-  {
-   "name": "func_800155FC",
-   "note": "2 operands: target ties A+srl to the srl's reg (addu v1,v0,v1), ours to A's (v0). Writing srl+A first ties right but local-alloc then gives A v1. Tried 17 forms (temps, u32 globals, store order), cc1 -dl dump",
-   "seg": "main/main",
-   "size": 48
-  },
-  {
-   "name": "func_80017164",
-   "note": "registers 22/137; loops: two do/while with end = -1 in the body (own end var each) and a goto loop for the 0x58 nodes; only q (8-byte list, target a1) and next (0x54 list, target a0) are in a0/a2; permuter 10 min nothing sound; next: vars/splitvars on q and next",
-   "seg": "main/main",
-   "size": 548
-  },
-  {
-   "name": "func_800177F4",
-   "note": "24 regs off: colour pointer in v0 (target v1), tpage/0x02000000 constant swap a0/v0; control flow matches. Permuter best: reuse a temp for tpage & ~0x60",
-   "seg": "main/main",
-   "size": 360
-  },
-  {
-   "name": "func_8001795C",
-   "note": "registers 12/107 (swarm checkpoint ported to GfxTexSet/GfxTexInfo/TexFaceRuns); only the 0x8000/else arms' registers differ (see checkpoint log: t's def is hoisted above the cluts load by sched1). Clean sibling-style arms (func_80017EE8's form) are structure 108-109. next: keep t = &tex[count-1].info after the cluts load",
-   "seg": "main/main",
-   "size": 428
-  },
-  {
-   "name": "func_8001A82C",
-   "note": "registers 12/135, all in the 2D branch: target keeps x in a0 (the arg) with the ~0xC000 mask in v0 and D_800569C0's %hi in v1; ours has the mask in a0 so x goes to a1. Tried in-place ops, s16/u16 x, ternary arg, mask variable, 18-bit bitfield read. Rest matches: TextNAS (text at +0x6C), GteSetup's slot reused as the GlyphPos",
-   "seg": "main/main",
-   "size": 540
-  },
-  {
-   "name": "func_80020680",
-   "note": "registers 18/305 (paired 305/305, 31/43 blocks): slerp with precomputed angle/inverse in arg 5 (get_angle's result is dropped). Left: Trig_HalfCos's result in v0 (target v1) and pa in v1 (target a0). Found: in-place if/else roundings (>>11, >>5), variables reused (ia then kb, ib then pb), and the second product recomputed in the ternary test (kb*q >= 0 ? pb+0x800 : pb-0x800) - the target computes it twice; the real source form is still unknown",
-   "seg": "main/main",
-   "size": 1220
-  },
-  {
-   "name": "func_80020C04",
-   "note": "STAGE structure 16/19 (18 vs 19): retail has mult with no mflo and returns a; every dead-product form (u16/>>32 splits, long long <<32, unused local) folds the mult away too in 2.8.1, signed >>32 keeps one mflo; 2.5.7/2.6 keep partial dead code; next: cc1 -dc/-dl dump of the >>32 form, or check whether this region is another compiler",
-   "seg": "main/main",
-   "size": 72
-  },
-  {
-   "name": "func_800248A0",
-   "note": "registers 5/142 (ported to SpriteFrame/s32 xy with a SprPos union); only the entry: target tests a0 (andi a0,a0,0xC000) and loads arg4 into a3, ours tests s5 into v1. An s16/u16 arg0 fixes that but its conversion insn has a later luid, so sched2 puts move s5,a0 after the a2/a3 copies (6 diffs, prologue order). next: a form where arg0's s5 copy is the first param copy and a dying a0 copy feeds the andi",
-   "seg": "main/main",
-   "size": 568
-  },
-  {
-   "name": "func_80026D08",
-   "note": "Rebuilds NASFreeList from the pool (D_8005AA1C, slots D_8005AA10..D_8005AA12-1). Best: goto loop, 18 off: target keeps %hi(NASFreeList) in a1 (a copy, so loop.c hoisted it) and loads D_8005AA10 once before the loop. goto loops get no hoisting; for(;;)+break with a 'first' local hoists the lui but adds a nas+12 giv (37 insns); while/for with the global, index inside the loop, head pointer local, store order, static inline FreeNAS: no better. Permuter 10 min: only a semantics-breaking goto move.",
-   "seg": "main/main",
-   "size": 148
-  },
-  {
-   "name": "func_8002E25C",
-   "note": "structure 68/93 (93 vs 91) under 2.7.2: the target reloads *str in the Kanji and ROM-glyph paths but compares the first load for ' '; ours reuses it (c local, volatile D_8006EA24 and an index loop didn't help; index loop 84/93 but 89 long). lh startX (s32) and x-before-w sum order are right. Next: what blocks CSE of *str in 2.7.2",
-   "seg": "main/8002e0f0",
-   "size": 372
-  }
- ],
- "commit": "dcec48e",
+ "blocked": [],
+ "commit": "676e47f",
  "game": "SCUS_945.70",
- "generated": "2026-10-16T10:54:42Z",
+ "generated": "2026-10-16T13:33:10Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -57308,6 +57217,92 @@
      564
     ]
    }
+  },
+  {
+   "commit": "676e47f",
+   "data_b": 0,
+   "data_tb": 606943,
+   "game_all_f": 2551,
+   "game_b": 173196,
+   "game_c_f": 1049,
+   "game_f": 1049,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 872,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-16T13:33:10Z",
+   "units": {
+    "engine": [
+     47788,
+     284
+    ],
+    "main exe": [
+     115808,
+     559
+    ],
+    "ovl5d": [
+     328,
+     4
+    ],
+    "ovl5e": [
+     504,
+     6
+    ],
+    "ovl5f": [
+     1564,
+     36
+    ],
+    "ovl60": [
+     708,
+     14
+    ],
+    "ovl61": [
+     292,
+     7
+    ],
+    "ovl62": [
+     916,
+     30
+    ],
+    "ovl63": [
+     636,
+     16
+    ],
+    "ovl64": [
+     156,
+     7
+    ],
+    "ovl65": [
+     1096,
+     11
+    ],
+    "ovl66": [
+     528,
+     13
+    ],
+    "ovl67": [
+     836,
+     12
+    ],
+    "ovl68": [
+     180,
+     10
+    ],
+    "ovl69": [
+     920,
+     16
+    ],
+    "ovl6a": [
+     936,
+     24
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
@@ -57433,18 +57428,18 @@
   }
  ],
  "summary": {
-  "blocked": 15,
+  "blocked": 0,
   "copies_b": 36276,
   "data": {
-   "done_b": 828,
-   "pct": 0.1364213772957263,
+   "done_b": 0,
+   "pct": 0.0,
    "total_b": 606943
   },
   "game": {
    "all_f": 2551,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 15,
+   "blocked": 0,
    "c_f": 1049,
    "done_b": 173196,
    "done_f": 1049,
@@ -57496,7 +57491,7 @@
     "all_f": 575,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 15,
+    "blocked": 0,
     "c_f": 559,
     "done_b": 115808,
     "done_f": 559,

@@ -3841,6 +3841,22 @@ def cmd_block(a):
     cmd_progress(a)  # the dashboard counts parked functions
 
 
+def cmd_unblock(a):
+    """Unpark functions so `next`/`queue` (and the swarm) offer them again; the park note
+    stays as the function's note, which `next` and the swarm's workers see."""
+    funcs = need_funcs()
+    st = jload(P_STATE, {})
+    for name in a.funcs:
+        key, e = find_func(funcs, name)
+        rec = st.get(key, {})
+        if rec.get("status") != "blocked":
+            die(f"{e['name']} isn't parked")
+        rec.update(status="todo", unblocked_at=now(), why_unblocked=a.why)
+        print(f"unparked {e['name']}")
+    jsave(P_STATE, st)
+    cmd_progress(a)
+
+
 def permute_run(d, name, e, base_c, cfg, jobs, seconds):
     """Set up and run decomp-permuter in `d` on base_c for `seconds`.
     Returns (best score or None, best output dir or None, base score or None, log)."""
@@ -4731,6 +4747,10 @@ def main():
     p.add_argument("func")
     p.add_argument("--note", required=True)
     p.set_defaults(fn=cmd_block)
+    p = sub.add_parser("unblock", help="unpark functions (their park notes stay) so they are offered again")
+    p.add_argument("funcs", nargs="+")
+    p.add_argument("--why", required=True, help="what changed since they were parked")
+    p.set_defaults(fn=cmd_unblock)
     p = sub.add_parser("done", help="validate one hand match (scope, lint, function, full build), record it")
     p.add_argument("func")
     p.add_argument("--commit", action="store_true",
