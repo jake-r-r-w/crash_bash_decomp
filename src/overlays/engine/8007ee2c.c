@@ -1548,7 +1548,51 @@ void func_8008D5D4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8008D6C8);
+void func_8008D6C8(NAS *nas) {
+    EXTengine *eng;
+    EXTengine *next;
+    EXTmotion *m;
+    s32 dy;
+
+    eng = nas->Engine;
+    if (eng == NULL) {
+        return;
+    }
+    m = FindExtension(nas, 0x800);
+    if (m == NULL) {
+        return;
+    }
+    m->Yvel += m->Yacc - m->Ydec;
+    if (m->Yvel < 0) {
+        m->Yvel = 0;
+    }
+    if (m->Yvel > m->Ymax) {
+        m->Yvel = m->Ymax;
+    }
+    if (m->Ydir) {
+        eng->unk10.y -= m->Yvel;
+    } else {
+        eng->unk10.y += m->Yvel;
+    }
+    dy = ((s32 (*)(EXTengine *))func_80025F44)(eng);
+    next = eng->Engine;
+    if (next != NULL) {
+        next->unk10 = eng->unk10;
+        next->unk10.y -= dy;
+    }
+    if (m->Yvel == 0) {
+        s16 acc = m->Ydec;
+        m->Ydec = 0;
+        m->Ydir = 0;
+        m->Yacc = acc;
+    }
+    if (m->Ydir == 0 && func_80025BBC(eng) != 0) {
+        m->Ydec = 8;
+        m->Ydir = 0xFF;
+        m->Yacc = 0;
+        m->Yvel = 0x40;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", InitHealth);
 
