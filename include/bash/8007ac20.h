@@ -9,6 +9,7 @@
 #include "bash/engine.h"
 
 extern s32 D_8005A554[];
+extern u8 D_8005A674;
 
 typedef struct DigitEnt {
     u16 cmd;
@@ -137,5 +138,7 @@ void func_8007BE84(void);
 void func_8007D208(void);
 
 void func_8007D6D0(void);
+
+s16 func_8007D850(void);
 
 #endif /* BASH_8007AC20_H */
