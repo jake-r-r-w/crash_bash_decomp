@@ -85,8 +85,8 @@ or keys. Checkpoints saved by name before 2026-10-16 still resume when the name 
   through `DK_DOCKER_ARGS`).
 - **Environment errors stop the run uncharged:** tools/dk's Docker errors (exit 125-127), a
   `PermissionError`, a tools/dk call over its time limit, or Docker gone after a session that left
-  no patch. Fix it and run again. Not yet recognised: the CLI's usage-limit result (capture a real
-  `worker.out` first).
+  no patch. Fix it and run again. A usage limit isn't recognised as such
+  (deferred: runs are supervised); its sessions fail uncharged and three in a row stop the run.
 - **Tests:** `node --test tools/swarm/swarm.test.mjs` (host Node) after any change to the policy.
 - **Patch checks:** only `src/` and `include/`, under 64 KB, removes exactly the target's
   `INCLUDE_ASM` line, no inline asm; then the orchestrator runs `decomp.py try` itself.

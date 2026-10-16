@@ -36,9 +36,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
 **Tooling: [TOOLING_PLAN.md](TOOLING_PLAN.md) Part 1 is done (2026-10-16),
 so slot-overlay swarm runs can start.** Next there: Part 2 (cost per
 function: backfill from `results/*/*/worker.out`, then capture), then Part
-3 as the numbers justify, one commit each. Left from Part 1: recognising the
-CLI's usage-limit / sign-in result (capture a real `worker.out` first; the
-plan says not to guess its text). The first run after these changes: watch
+3 as the numbers justify, one commit each. Deferred from Part 1: recognising
+the CLI's usage-limit result. It only matters for unattended runs, and the
+user runs the swarm supervised and conservatively; if a limit is ever hit,
+keep that `worker.out` and match its result line then. The first run after these changes: watch
 `swarm.log` for refused commands (workers lost `git`, `find`, `sort`,
 `sed -n` on the host; git is `tools/dk git ...` now).
 

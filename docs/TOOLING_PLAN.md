@@ -17,9 +17,11 @@ commit after `tools/dk make check` (and `make test-tools`; see 1.0).
 
 ## Part 1: bugs to fix before the slot-overlay runs
 
-**Done 2026-10-16** (commits ec41088..9cbd1eb), except recognising the CLI's
-usage-limit / sign-in result in 1.3 (no real `worker.out` captured yet). The
-line numbers below are from before those commits.
+**Done 2026-10-16** (commits ec41088..9cbd1eb). Deferred: recognising the CLI's
+usage-limit result in 1.3. Runs are supervised, so today's handling (uncharged
+failures, the run stops after three in a row) is enough; if a limit is ever hit,
+keep that `worker.out` and match its result line then. The line numbers below
+are from before those commits.
 
 ### 1.0 Swarm policy tests (do first, S)
 
