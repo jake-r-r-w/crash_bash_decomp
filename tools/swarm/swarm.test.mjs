@@ -212,3 +212,38 @@ test('escalation: sonnet -> opus -> big mode -> parked', () => {
   assert.equal(s.stats.parked, 1);
   assert.ok(s.finished.has(f.key));
 });
+
+// ---------------------------------------------------------------- names shared across slot overlays
+
+const slot = ovl => fn('func_800B3A38', { key: `${ovl}:800B3A38`, ref: `${ovl}:800B3A38`,
+                                          seg: `overlays/${ovl}/${ovl}`, src: `src/overlays/${ovl}/${ovl}.c` });
+
+test('shared names: tools get the key, checkpoints and results are kept apart', () => {
+  const s = swarm('--big-workers', '1');
+  const a = slot('ovl5d'), b = slot('ovl60');
+  assert.notEqual(s.cpDir(a), s.cpDir(b));
+  assert.equal(path.basename(s.cpDir(a)), 'ovl5d_800B3A38');
+  const p = s.prompt({ f: a, model: 'sonnet', attempt: 1, notes: [] });
+  assert.match(p, /next --func ovl5d:800B3A38/);
+  assert.match(p, /make diff FUNC=ovl5d:800B3A38/);
+  assert.match(p, /Work only on func_800B3A38\./);
+  const pb = s.prompt(s.bigJob(a, 1, []));
+  assert.match(pb, /regions ovl5d:800B3A38/);
+  assert.doesNotMatch(pb, /(FUNC=|regions |vars |similar )func_800B3A38/);
+});
+
+test('checkpoints saved by name still resume, for unique names only', () => {
+  const s = swarm();
+  const d = path.join(s.paths.checkpoints, 'func_800B3A38');
+  fs.mkdirSync(d, { recursive: true });
+  fs.writeFileSync(path.join(d, 'best.json'), JSON.stringify({ stage: 'registers', diffs: 3, total: 30 }));
+  fs.writeFileSync(path.join(d, 'best.diff'), PATCH('func_800B3A38'));
+  assert.equal(s.checkpoint(slot('ovl5d')), null);
+  const unique = fn('func_800B3A38', { key: 'ovl5d:800B3A38' });
+  assert.equal(s.checkpoint(unique).diffs, 3);
+  s.saveCheckpoint({ f: slot('ovl60'), model: 'opus', base: 'x' }, path.join(d, 'best.diff'),
+                   { stage: 'instructions', diffs: 9, total: 30 }, 'n');
+  assert.equal(s.checkpoint(slot('ovl60')).diffs, 9);
+  assert.equal(s.checkpoint(slot('ovl60')).key, 'ovl60:800B3A38');
+  assert.equal(s.checkpoint(unique).diffs, 3);
+});

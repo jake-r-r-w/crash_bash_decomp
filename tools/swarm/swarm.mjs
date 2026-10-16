@@ -294,6 +294,12 @@ function reapply(dir, patch, f) {
   return null;
 }
 
+// what to pass to decomp.py for a function: the queue's ref (its key when the slot overlays share
+// its name, which find_func would refuse as ambiguous), else the name
+const ref = f => f.ref || f.name;
+// a function's directory under results/ and checkpoints/: by key (unique), ':' made path-safe
+const keyDir = f => (f.key || f.name).replace(':', '_');
+
 // back to `rev`, dropping every tracked change and untracked file (ignored data stays)
 function resetClone(dir, rev) {
   gitOk(dir, 'reset', '-q', '--hard', rev);
@@ -498,7 +504,7 @@ class Swarm {
     const keys = new Set(busy.map(j => j.f.key)), fps = new Set(busy.map(j => j.f.fp).filter(Boolean));
     // big mode: resume the functions with a checkpoint first, then the smallest
     const cands = big ? this.queue.filter(f => this.isBig(f))
-      .sort((a, b) => (this.checkpoint(b.name) ? 1 : 0) - (this.checkpoint(a.name) ? 1 : 0) || a.size - b.size)
+      .sort((a, b) => (this.checkpoint(b) ? 1 : 0) - (this.checkpoint(a) ? 1 : 0) || a.size - b.size)
       : this.queue.filter(f => !this.isBig(f));
     for (const f of cands) {
       if (this.finished.has(f.key) || keys.has(f.key) || (f.fp && fps.has(f.fp)) || this.nearBusy(f, busy)) continue;
@@ -521,9 +527,19 @@ class Swarm {
   }
 
   // ---- big-mode checkpoints: the best C so far for a function, kept across sessions and runs
-  checkpoint(name) {
-    const j = readJson(path.join(this.paths.checkpoints, name, 'best.json'), null);
-    return j && fs.existsSync(path.join(this.paths.checkpoints, name, 'best.diff')) ? j : null;
+  // keyed by function key; checkpoints saved before 2026-10-16 are keyed by name, and still resume
+  // when the name is unique
+  cpDir(f) {
+    const byKey = path.join(this.paths.checkpoints, keyDir(f));
+    if (fs.existsSync(byKey)) return byKey;
+    const byName = path.join(this.paths.checkpoints, f.name);
+    return ref(f) === f.name && fs.existsSync(byName) ? byName : byKey;
+  }
+
+  checkpoint(f) {
+    const d = this.cpDir(f);
+    const j = readJson(path.join(d, 'best.json'), null);
+    return j && fs.existsSync(path.join(d, 'best.diff')) ? j : null;
   }
 
   // the `STAGE name stage n/total` line of decomp.py try (MATCH counts as the best stage)
@@ -562,7 +578,8 @@ class Swarm {
   }
 
   // build and score the function in a clone: the STAGE line, plus the region score unless it matches
-  async measure(dir, name, slot, outDir = null) {
+  async measure(dir, f, slot, outDir = null) {
+    const name = ref(f);
     const r = await this.dk(dir, ['python3', 'tools/scripts/decomp.py', 'try', name], slot);
     if (outDir) fs.writeFileSync(path.join(outDir, 'try.txt'), r.out);
     const score = Swarm.score(r.out);
@@ -575,25 +592,25 @@ class Swarm {
   }
 
   saveCheckpoint(job, patchFile, score, note, next) {
-    const d = path.join(this.paths.checkpoints, job.f.name);
+    const d = this.cpDir(job.f);
     fs.mkdirSync(d, { recursive: true });
-    const old = this.checkpoint(job.f.name);
+    const old = this.checkpoint(job.f);
     const log = [...(old?.log || []), `${stamp()} ${job.model}: ${Swarm.describe(score)}. ${note}${next ? ` Next: ${next}` : ''}`].slice(-12);
     fs.copyFileSync(patchFile, path.join(d, 'best.diff'));
-    writeJson(path.join(d, 'best.json'), { ...score, base: job.base, updated: stamp(), log });
+    writeJson(path.join(d, 'best.json'), { ...score, name: job.f.name, key: job.f.key, seg: job.f.seg, base: job.base, updated: stamp(), log });
   }
 
   noteCheckpoint(job, line) {
-    const old = this.checkpoint(job.f.name);
+    const old = this.checkpoint(job.f);
     if (!old) return;
     old.log = [...(old.log || []), `${stamp()} ${job.model}: ${line}`].slice(-12);
-    writeJson(path.join(this.paths.checkpoints, job.f.name, 'best.json'), old);
+    writeJson(path.join(this.cpDir(job.f), 'best.json'), old);
   }
 
   // ---- workers
   prompt(job) {
     if (job.big) return this.promptBig(job);
-    const { f } = job;
+    const { f } = job, r = ref(f);
     const canPermute = this.pslots.length > 0 && !job.permuted;
     const patterns = fs.existsSync(this.paths.patterns)
       ? fs.readFileSync(this.paths.patterns, 'utf8').trim().split('\n').slice(-30).join('\n') : '';
@@ -601,7 +618,7 @@ class Swarm {
 ${f.name} (${f.seg}, ${f.size} bytes, defined in ${f.src}).
 
 Follow .claude/skills/match-function/SKILL.md steps 1 to 4 and docs/MATCHING.md steps 1 to 5 (pick with
-\`tools/dk python3 tools/scripts/decomp.py next --func ${f.name}\`). These swarm rules override the
+\`tools/dk python3 tools/scripts/decomp.py next --func ${r}\`). These swarm rules override the
 skill, CLAUDE.md and the docs:
 - Work only on ${f.name}. Change only its INCLUDE_ASM line in ${f.src}, and headers under include/
   when it needs a declaration or a type. Never touch another function's INCLUDE_ASM line.
@@ -627,7 +644,7 @@ skill, CLAUDE.md and the docs:
   (grep, sed -n, head, ...) are fine. If a command is refused, do the same thing another way;
   a refusal is never a reason to stop.
 - You have about ${this.o.workerMinutes} minutes.
-- Stop when \`tools/dk make diff FUNC=${f.name}\` prints MATCH, or when you are out of ideas.
+- Stop when \`tools/dk make diff FUNC=${r}\` prints MATCH, or when you are out of ideas.
   If it does not match${canPermute ? ' and you are not asking for the permuter' : ''}, put the
   INCLUDE_ASM line back exactly as it was and leave no changes in src/ or include/.
 - Last, write ${RESULT} in the repo root, JSON:
@@ -656,7 +673,7 @@ ${job.permuterDiff}
 
   // big mode: one session of several on a big function, resuming from the best C so far
   promptBig(job) {
-    const { f } = job;
+    const { f } = job, r = ref(f);
     const cp = job.resumed;
     const canPermute = this.pslots.length > 0;
     const patterns = fs.existsSync(this.paths.patterns)
@@ -671,10 +688,10 @@ This session resumes from the best C so far, already in ${f.src} in place of the
 ${(cp.log || []).map(l => '- ' + l).join('\n')}
 ` : `
 No session has worked on it yet: start from the m2c draft (\`tools/dk python3 tools/scripts/decomp.py
-next --func ${f.name}\` shows it, with the function's evidence).
+next --func ${r}\` shows it, with the function's evidence).
 `}
 Read docs/MATCHING.md (process, Diff patterns, checklists) and the "Big functions" section in it.
-${this.regionsArm(f) ? `Work region by region with \`tools/dk python3 tools/scripts/decomp.py regions ${f.name} </dev/null\`.
+${this.regionsArm(f) ? `Work region by region with \`tools/dk python3 tools/scripts/decomp.py regions ${r} </dev/null\`.
 It aligns your compiled code with the target (so an extra instruction doesn't shift every later
 diff, as \`make diff\` does), lists the target's basic blocks that differ with their status (ok /
 operands / differ) and C lines, and shows the first differing block side by side (\`--block N\` for
@@ -687,15 +704,15 @@ aligned) is the structure, insns (exact) the rest. The loop:
    ok. A register change can cascade into later blocks, so judge by paired and the block list
    together, not insns alone.
 3. Repeat. When regions shows only "operands" blocks, run \`tools/dk python3 tools/scripts/decomp.py
-   vars ${f.name} </dev/null\`: it names the C variable behind each block's register swap. Then the
+   vars ${r} </dev/null\`: it names the C variable behind each block's register swap. Then the
    Diff patterns' register rows and the cc1 dump. If one variable sits in different registers in
    different blocks, run
-   \`tools/dk python3 tools/scripts/decomp.py splitvars ${f.name} VAR </dev/null\`: it tries every
+   \`tools/dk python3 tools/scripts/decomp.py splitvars ${r} VAR </dev/null\`: it tries every
    grouping of VAR's assignments into separate variables and ranks them (\`--apply\` writes the
    best; give the new VAR_N real names).
 The orchestrator keeps the best C by the same region score (paired first, then identical blocks,
 then exact instructions), so the version you leave should be your best by it.` :
-`Work in stages; \`tools/dk make diff FUNC=${f.name} </dev/null\` prints a \`STAGE\` line that says
+`Work in stages; \`tools/dk make diff FUNC=${r} </dev/null\` prints a \`STAGE\` line that says
 which one you are in, and progress is measured by it (a later stage beats any count of diffs in an
 earlier one, then fewer diffs):
 1. structure: the same length and branch layout (control flow, switch/jump tables, loops, early
@@ -710,7 +727,7 @@ Before matching code:
   include/bash/*.h, the prototype debug types and the leaked headers (docs/ARCHITECTURE.md). Typed
   fields remove much of m2c's noise.
 - Look for helpers and siblings: repeated instruction runs inside it, or code like an already matched
-  function's (\`tools/dk python3 tools/scripts/decomp.py similar ${f.name}\` ranks matched
+  function's (\`tools/dk python3 tools/scripts/decomp.py similar ${r}\` ranks matched
   functions by shared code, with where their C is; \`decomp.py dups\`; callers and callees in
   .decomp/functions.json). Original code often used \`static inline\` helpers and macros here.
 Rules (they override the skill, CLAUDE.md and the docs):
@@ -768,16 +785,16 @@ Fix that, keep it matching, and report "matched".
     // its unpushed commits, which a failed batch throws away (and a permuter could then not find)
     job.base = this.tip || gitOk(this.integ, 'rev-parse', 'HEAD');
     const kind = job.big ? `big${job.attempt}` : `attempt${job.attempt}`;
-    job.dir = path.join(this.paths.results, f.name, `${kind}${job.gateFix ? '-gatefix' : job.startPatch ? '-port' : ''}-${this.id}`);
+    job.dir = path.join(this.paths.results, keyDir(f), `${kind}${job.gateFix ? '-gatefix' : job.startPatch ? '-port' : ''}-${this.id}`);
     fs.mkdirSync(job.dir, { recursive: true });
     makeClone(slot.dir, this.integ, 'HEAD', m => this.log(m));   // HEAD may have moved on: base is in it
     resetClone(slot.dir, job.base);
     // big mode resumes from the function's best C so far
     if (job.big && !job.gateFix) {
-      const cp = this.checkpoint(f.name);
+      const cp = this.checkpoint(f);
       if (cp) {
         job.resumed ||= cp;
-        job.startPatch ||= path.join(this.paths.checkpoints, f.name, 'best.diff');
+        job.startPatch ||= path.join(this.cpDir(f), 'best.diff');
       }
     }
     // a follow-up after the permuter (or a big session) starts from the earlier worker's C
@@ -908,7 +925,7 @@ Fix that, keep it matching, and report "matched".
       return;
     }
     // don't trust the worker's word: build and compare the function ourselves
-    const r = await this.dk(slot.dir, ['python3', 'tools/scripts/decomp.py', 'try', f.name], slot.id);
+    const r = await this.dk(slot.dir, ['python3', 'tools/scripts/decomp.py', 'try', ref(f)], slot.id);
     fs.writeFileSync(path.join(job.dir, 'try.txt'), r.out);
     if (r.code !== 0 || !/^MATCH /m.test(r.out))
       return this.notMatched(slot, job, res.status === 'matched'
@@ -930,23 +947,23 @@ Fix that, keep it matching, and report "matched".
     if (patch.trim()) {
       fs.writeFileSync(file, patch);
       errs = this.checkPatch(patch, f);
-      if (!errs.length) score = (await this.measure(slot.dir, f.name, slot.id, job.dir)).score;
+      if (!errs.length) score = (await this.measure(slot.dir, f, slot.id, job.dir)).score;
     }
     // a checkpoint from before region scores: measure it once (in this slot, before it is freed),
     // so it is compared by region score like the rest rather than by STAGE
-    const old = this.checkpoint(f.name);
+    const old = this.checkpoint(f);
     if (old && !old.regions && score?.regions && this.stopping !== 'now') {
       resetClone(slot.dir, job.base);
-      const cpFile = path.join(this.paths.checkpoints, f.name, 'best.diff');
+      const cpFile = path.join(this.cpDir(f), 'best.diff');
       if (git(slot.dir, 'apply', '--3way', '--whitespace=nowarn', cpFile).code) {
         resetClone(slot.dir, job.base);
         reapply(slot.dir, fs.readFileSync(cpFile, 'utf8'), f);
       }
       git(slot.dir, 'reset', '-q');
-      const m = (await this.measure(slot.dir, f.name, slot.id)).score;
+      const m = (await this.measure(slot.dir, f, slot.id)).score;
       if (m?.regions && m.stage === old.stage && m.diffs === old.diffs) {   // the same C as when it was saved
         old.regions = m.regions;
-        writeJson(path.join(this.paths.checkpoints, f.name, 'best.json'), old);
+        writeJson(path.join(this.cpDir(f), 'best.json'), old);
         this.log(`${slot.id} ${f.name}: checkpoint measured: ${Swarm.describe(old)}`);
       }
     }
@@ -966,7 +983,7 @@ Fix that, keep it matching, and report "matched".
     }
     const h = this.history[f.key] ||= { name: f.name, attempts: 0, notes: [] };
     Object.assign(h, { big: true, size: f.size, bigSessions: (h.bigSessions || 0) + 1 });
-    const cp = this.checkpoint(f.name);
+    const cp = this.checkpoint(f);
     const improved = !!score && Swarm.better(score, cp);
     const desc = score ? Swarm.describe(score)
       : errs.length ? `patch refused: ${errs.join('; ')}` : patch.trim() ? 'C did not build' : 'no C left';
@@ -981,10 +998,10 @@ Fix that, keep it matching, and report "matched".
     this.log(`${slot.id} ${f.name}: big session ${h.bigSessions}: ${desc}` +
              `${improved ? ', new best' : `, no progress (${h.bigStale} in a row)`}; says ${res.status || 'nothing'}`);
     if (res.status === 'parked') return this.parkBig(job, `worker parked it: ${note}`);
-    const best = this.checkpoint(f.name);
+    const best = this.checkpoint(f);
     if (res.status === 'needs_permute' && this.pslots.length && best?.stage === 'registers' && !this.stopping) {
       job.note = note;
-      job.bestPatch = path.join(this.paths.checkpoints, f.name, 'best.diff');
+      job.bestPatch = path.join(this.cpDir(f), 'best.diff');
       job.base = best.base;
       this.permQueue.push(job);
       this.log(`${slot.id} ${f.name}: best C handed to the permuter pool (${this.o.bigPermuteMinutes} min)`);
@@ -1009,12 +1026,12 @@ Fix that, keep it matching, and report "matched".
   }
 
   parkBig(job, why) {
-    const cp = this.checkpoint(job.f.name);
+    const cp = this.checkpoint(job.f);
     this.stats.parked++;
     this.finished.add(job.f.key);
     this.record(job, 'parked', `big mode: ${why}`);
     this.log(`${job.f.name}: parked (big mode): ${why}` +
-             `${cp ? `; best ${Swarm.describe(cp)} kept in ${path.join(this.paths.checkpoints, job.f.name)}` : ''}`);
+             `${cp ? `; best ${Swarm.describe(cp)} kept in ${this.cpDir(job.f)}` : ''}`);
   }
 
   // ---- the permuter pool: no Claude, just CPU; an improvement goes back to a worker to port
@@ -1031,7 +1048,7 @@ Fix that, keep it matching, and report "matched".
       const mins = job.big ? this.o.bigPermuteMinutes : this.o.permuteMinutes;
       this.log(`${ps.id} permuting ${f.name} for ${mins} min (${this.permCpus} cpus)`);
       // a big function: only the C of the blocks that differ (decomp.py permute --differing)
-      const r = await this.dk(ps.dir, ['make', 'permute', `FUNC=${f.name}`, `MINUTES=${mins}`, ...(job.big ? ['ARGS=--differing'] : [])], ps.id,
+      const r = await this.dk(ps.dir, ['make', 'permute', `FUNC=${ref(f)}`, `MINUTES=${mins}`, ...(job.big ? ['ARGS=--differing'] : [])], ps.id,
                               { cpus: this.permCpus, minutes: mins + 20 });
       fs.writeFileSync(path.join(job.dir, 'permute.txt'), r.out);
       if (this.stopping) {          // a stop cuts permuter runs short: no worker would port the result
@@ -1193,7 +1210,7 @@ Fix that, keep it matching, and report "matched".
       return false;
     }
     const trailers = [...this.o.trailers, `Swarm-Run: ${this.id} (${job.model})`];
-    const args = ['python3', 'tools/scripts/decomp.py', 'done', f.name, '--commit',
+    const args = ['python3', 'tools/scripts/decomp.py', 'done', ref(f), '--commit',
                   '--note', job.note || 'matched by a swarm worker', ...trailers.flatMap(t => ['--trailer', t]),
                   ...(defer ? ['--defer-build'] : [])];
     const before = gitOk(this.integ, 'rev-parse', 'HEAD');
@@ -1235,11 +1252,13 @@ Fix that, keep it matching, and report "matched".
   // --resume RUN[,RUN...]: matches an earlier run verified with `try` but stopped before gating go straight
   // to the gate (still unmatched ones only: the queue lists those)
   resumeFrom(runId) {
-    const byName = new Map(this.queue.map(f => [f.name, f]));
+    // results/ is keyed by function key; runs before 2026-10-16 keyed it by name (unique names only)
+    const byDir = new Map([...this.queue.filter(f => ref(f) === f.name).map(f => [f.name, f]),
+                           ...this.queue.map(f => [keyDir(f), f])]);
     let n = 0;
     for (const name of fs.existsSync(this.paths.results) ? fs.readdirSync(this.paths.results) : [])
       for (const d of fs.readdirSync(path.join(this.paths.results, name)).filter(d => d.endsWith(`-${runId}`))) {
-        const dir = path.join(this.paths.results, name, d), f = byName.get(name);
+        const dir = path.join(this.paths.results, name, d), f = byDir.get(name);
         const tried = path.join(dir, 'try.txt');
         // not in the queue = matched already; done.txt alone proves nothing (a stop may cut a batch)
         // one per function: a run can verify two attempts of it, and the second would gate again
@@ -1306,9 +1325,11 @@ Fix that, keep it matching, and report "matched".
       const d = path.join(o.dir, 'checkpoints');
       const cps = fs.existsSync(d) ? fs.readdirSync(d).map(n => [n, readJson(path.join(d, n, 'best.json'), null)]) : [];
       // still INCLUDE_ASM on main (a matched function's checkpoint is left over)
-      const unmatched = n => git(REPO, 'grep', '-q', '-E', `INCLUDE_ASM\\([^)]*, ${n}\\)`, 'origin/main', '--', 'src').code === 0;
-      o.only = cps.filter(([n, j]) => j?.stage === 'registers' && unmatched(n)).sort((x, y) => x[1].diffs - y[1].diffs)
-        .map(([n]) => n).slice(0, 16);
+      // (by segment too when the checkpoint records it: slot overlays share names)
+      const unmatched = (n, j) => git(REPO, 'grep', '-q', '-E',
+        `INCLUDE_ASM\\(${j.seg ? `"asm/nonmatchings/${j.seg}"` : '[^)]*'}, ${j.name || n}\\)`, 'origin/main', '--', 'src').code === 0;
+      o.only = cps.filter(([n, j]) => j?.stage === 'registers' && unmatched(n, j)).sort((x, y) => x[1].diffs - y[1].diffs)
+        .map(([n, j]) => j.key || n).slice(0, 16);
       console.log(`near misses (registers stage): ${o.only.join(', ') || 'none'}`);
       if (!o.only.length) return;
     }
@@ -1334,20 +1355,31 @@ Fix that, keep it matching, and report "matched".
     process.on('SIGINT', () => { this.log('Ctrl+C: killing the permuters (nothing is saved)'); killAll(); });
     const watch = setInterval(() => { if (fs.existsSync(this.paths.stop)) { this.log('STOP file: killing the permuters'); killAll(); } }, 2000);
     const one = async (name, i) => {
+      // a name or a key (--near lists keys for checkpoints saved with one); the C name comes from
+      // the checkpoint, and a name finds a checkpoint saved under its key
+      const f = { name, key: name.includes(':') ? name : undefined, ref: name };
+      if (!f.key && !this.checkpoint(f)) {
+        const d = this.paths.checkpoints;
+        const hits = (fs.existsSync(d) ? fs.readdirSync(d) : []).map(n => readJson(path.join(d, n, 'best.json'), null))
+          .filter(j => j?.name === name && j.key);
+        if (hits.length === 1) f.key = hits[0].key;
+      }
+      const cp0 = this.checkpoint(f);
+      if (cp0?.name) f.name = cp0.name;
       const slot = `h${i + 1}`, dir = path.join(o.dir, 'permuters', slot);
       makeClone(dir, REPO, 'HEAD', m => this.log(m));
       resetClone(dir, base);
-      const cp = this.checkpoint(name);
+      const cp = this.checkpoint(f);
       if (cp) {
-        const patch = path.join(this.paths.checkpoints, name, 'best.diff');
+        const patch = path.join(this.cpDir(f), 'best.diff');
         if (git(dir, 'apply', '--3way', '--whitespace=nowarn', patch).code) {
           resetClone(dir, base);
-          const why = reapply(dir, fs.readFileSync(patch, 'utf8'), { name });
+          const why = reapply(dir, fs.readFileSync(patch, 'utf8'), f);
           if (why !== null) return this.log(`${name}: its checkpoint doesn't apply to HEAD any more (${why}); skipped`);
         }
         git(dir, 'reset', '-q');   // a --3way apply stages its result; keep the diff below simple
       }
-      const { score: before, out: beforeOut } = await this.measure(dir, name, slot);
+      const { score: before, out: beforeOut } = await this.measure(dir, f, slot);
       if (!before) {
         // say why: a checkpoint that stopped building (a later match declared something it also
         // declares, differently) needs a big session to port it, not the permuter
@@ -1357,26 +1389,26 @@ Fix that, keep it matching, and report "matched".
         return this.log(`${name}: skipped: ${why}`);
       }
       this.log(`${name}: starting from ${Swarm.describe(before)}${cp ? ' (checkpoint)' : ''}`);
-      const r = await this.dk(dir, ['python3', 'tools/scripts/decomp.py', 'permute', name, '--minutes', String(minutes), '--differing',
+      const r = await this.dk(dir, ['python3', 'tools/scripts/decomp.py', 'permute', ref(f), '--minutes', String(minutes), '--differing',
                                     '--jobs', String(jobs), '--apply-best'], slot, { cpus: jobs, minutes: minutes + 10 });
       const res = r.out.match(/^PERMUTE-RESULT \S+ (\w+) before (\S+)(?: after (\S+))?/m);
       if (!res) return this.log(`${name}: the permuter didn't finish (${r.timedOut ? 'killed' : r.out.trim().split('\n').pop()})`);
       if (res[1] !== 'kept') return this.log(`${name}: no improvement (${res[1]}${res[3] ? `, best ${res[3]}` : ''})`);
-      const { score: after, out: triedOut } = await this.measure(dir, name, slot);
+      const { score: after, out: triedOut } = await this.measure(dir, f, slot);
       const tried = { out: triedOut };
       if (!after || !Swarm.better(after, before)) return this.log(`${name}: permuter result not better on recheck; not saved`);
       const patchFile = path.join(dir, '.permute.diff');
       fs.writeFileSync(patchFile, git(dir, 'diff', '--', 'src', 'include').out);
-      const job = { f: { name }, model: 'permuter', base };
-      const old = this.checkpoint(name);
+      const job = { f, model: 'permuter', base };
+      const old = this.checkpoint(f);
       if (!old || Swarm.better(after, old)) this.saveCheckpoint(job, patchFile, after, `permuter ${minutes} min, from ${before.diffs}/${before.total}.`);
       if (after.stage === 'match') {
-        const rd = path.join(this.paths.results, name, `permute-${this.id}`);
+        const rd = path.join(this.paths.results, keyDir(f), `permute-${this.id}`);
         fs.mkdirSync(rd, { recursive: true });
         fs.copyFileSync(patchFile, path.join(rd, 'patch.diff'));
         fs.writeFileSync(path.join(rd, 'try.txt'), tried.out);
         writeJson(path.join(rd, 'result.json'), { status: 'matched', note: `matched by the permuter (${minutes} min)` });
-        return this.log(`${name}: MATCH. Gate it: node tools/swarm/swarm.mjs run --branch main --only ${name} --resume ${this.id}`);
+        return this.log(`${name}: MATCH. Gate it: node tools/swarm/swarm.mjs run --branch main --only ${ref(f)} --resume ${this.id}`);
       }
       this.log(`${name}: ${before.stage} ${before.diffs}/${before.total} -> ${after.stage} ${after.diffs}/${after.total}, saved as its checkpoint`);
     };
@@ -1578,7 +1610,7 @@ function stats(o) {
     console.log('big-mode checkpoints (best C so far):');
     for (const n of cps) {
       const j = readJson(path.join(o.dir, 'checkpoints', n, 'best.json'), null);
-      if (j) console.log(`  ${n}: ${Swarm.describe(j)} (${j.updated})`);
+      if (j) console.log(`  ${j.key && j.name ? `${j.name} (${j.key})` : n}: ${Swarm.describe(j)} (${j.updated})`);
     }
   }
 }
@@ -1643,15 +1675,24 @@ function forget(o) {
   const file = path.join(o.dir, 'history.json');
   const h = readJson(file, {});
   for (const name of o.only) {
-    const e = Object.values(h).find(v => v.name === name);
-    if (!e) { console.log(`${name}: no swarm history, nothing to reset`); continue; }
+    // a name or a key; a name the slot overlays share needs the key
+    const hits = Object.entries(h).filter(([k, v]) => k === name || v.name === name);
+    if (hits.length > 1) { console.log(`${name}: ambiguous, give the key: ${hits.map(([k]) => k).join(', ')}`); continue; }
+    if (!hits.length) { console.log(`${name}: no swarm history, nothing to reset`); continue; }
+    const [key, e] = hits[0];
     const was = `${e.attempts || 0} attempts${e.big ? `, ${e.bigSessions || 0} big sessions` : ''}`;
     Object.assign(e, { attempts: 0, bigSessions: 0, bigStale: 0, last: 'reset',
                        notes: [`${stamp()} reset (was ${was}, last ${e.last || '-'}): ${o.why.trim()}`] });
     let cp = '';
     if (o.checkpoint) {
-      const d = path.join(o.dir, 'checkpoints', name);
-      if (fs.existsSync(d)) { fs.rmSync(d, { recursive: true, force: true }); cp = ', checkpoint deleted'; }
+      for (const n of [key.replace(':', '_'), e.name]) {
+        const d = path.join(o.dir, 'checkpoints', n);
+        const was = readJson(path.join(d, 'best.json'), {}).key;   // a name dir: no key, or this one
+        if (fs.existsSync(d) && (!was || was === key)) {
+          fs.rmSync(d, { recursive: true, force: true });
+          cp = ', checkpoint deleted';
+        }
+      }
     }
     console.log(`${name}: reset (was ${was})${cp}`);
   }

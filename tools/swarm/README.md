@@ -53,10 +53,15 @@ sessions that work block by block with `decomp.py regions` and resume from a che
 ```
 session n: claude (opus, up to --big-minutes), starting from the checkpoint's C
 orchestrator: `try` and `regions` on the C it left -> STAGE line + region score
-better than the checkpoint? -> new checkpoint (checkpoints/<func>/best.diff + best.json)
+better than the checkpoint? -> new checkpoint (checkpoints/<key>/best.diff + best.json)
 MATCH -> the gate; "needs_permute" at the registers stage -> permuter pool -> session n+1
 otherwise -> session n+1, until --big-sessions, or --big-stale sessions in a row without progress
 ```
+
+`checkpoints/` and `results/` are keyed by function key (`8002D4F4`, `ovl5d_800B3A38`): the 14 slot
+overlays all load at `0x800B32B4`, so 35 names repeat across them. For those the workers and
+`decomp.py` get the key (the queue's `ref`); `--only`, `permute --only` and `forget --only` take names
+or keys. Checkpoints saved by name before 2026-10-16 still resume when the name is unique.
 
 - Progress is the region score: more of the target paired by opcode, then more identical
   blocks, then more exact instructions. Only C that builds, passes the patch checks and beats

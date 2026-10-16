@@ -50,5 +50,50 @@ class PickTargets(unittest.TestCase):
         self.assertEqual(len(self.keys(count=2)), 2)
 
 
+class FindFunc(unittest.TestCase):
+    """Slot overlays all load at 0x800B32B4, so their splat names repeat across overlays."""
+
+    def setUp(self):
+        self.funcs = {
+            "8002D4F4": dict(fn("main/main", "func_8002D4F4", 40), src="src/main/main.c"),
+            "ovl5d:800B3A38": dict(fn("overlays/ovl5d/ovl5d", "func_800B3A38", 40), src="src/overlays/ovl5d/ovl5d.c"),
+            "ovl60:800B3A38": dict(fn("overlays/ovl60/ovl60", "func_800B3A38", 40), src="src/overlays/ovl60/ovl60.c"),
+        }
+        self.removed = {}
+        self.saved = decomp.sym_names, decomp.matched_in_worktree, decomp.die
+        decomp.sym_names = lambda: {}
+        decomp.matched_in_worktree = lambda path="src": self.removed.get(path, set())
+
+        def die(msg, code=2):
+            raise SystemExit(msg)
+        decomp.die = die
+
+    def tearDown(self):
+        decomp.sym_names, decomp.matched_in_worktree, decomp.die = self.saved
+
+    def find(self, name):
+        return decomp.find_func(self.funcs, name)[0]
+
+    def test_name_key_and_address(self):
+        self.assertEqual(self.find("func_8002D4F4"), "8002D4F4")
+        self.assertEqual(self.find("0x8002D4F4"), "8002D4F4")
+        self.assertEqual(self.find("ovl60:800B3A38"), "ovl60:800B3A38")
+        self.assertEqual(self.find("overlays/ovl5d/ovl5d/func_800B3A38"), "ovl5d:800B3A38")
+
+    def test_shared_name_is_ambiguous(self):
+        with self.assertRaisesRegex(SystemExit, "ambiguous.*ovl5d:800B3A38"):
+            self.find("func_800B3A38")
+        with self.assertRaisesRegex(SystemExit, "ambiguous"):
+            self.find("0x800B3A38")
+
+    def test_shared_name_being_worked_on(self):
+        self.removed["src/overlays/ovl60/ovl60.c"] = {"func_800B3A38"}
+        self.assertEqual(self.find("func_800B3A38"), "ovl60:800B3A38")
+
+    def test_did_you_mean(self):
+        with self.assertRaisesRegex(SystemExit, "did you mean func_8002D4F4"):
+            self.find("func_8002D4F5")
+
+
 if __name__ == "__main__":
     unittest.main()

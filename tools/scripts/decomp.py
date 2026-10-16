@@ -9,6 +9,7 @@ one-line summaries. Run with -h for the command list.
 """
 import argparse
 import datetime
+import difflib
 import glob
 import hashlib
 import json
@@ -295,19 +296,29 @@ def cur_name(key, e, syms):
 
 
 def find_func(funcs, name):
-    """NAME, SEG/NAME, or a functions.json key (ADDRESS or OVERLAY:ADDRESS)."""
+    """NAME, SEG/NAME, 0xADDRESS, or a functions.json key (ADDRESS or OVERLAY:ADDRESS). A name the
+    slot overlays share (they all load at one address) means the copy being worked on, when the
+    working tree has removed exactly one of their INCLUDE_ASM lines."""
     syms = sym_names()
     n = name.lower()
     seg = None
     if "/" in n and ":" not in n:
         seg, n = n.rsplit("/", 1)
+    addr = f"{int(n, 16):08X}" if re.fullmatch(r"0x[0-9a-f]{1,8}", n) else None
     hits = [(k, e) for k, e in funcs.items()
             if (seg is None or e["seg"].lower() == seg)
-            and n in (e["name"].lower(), e["orig"].lower(), cur_name(k, e, syms).lower(), k.lower())]
+            and (n in (e["name"].lower(), e["orig"].lower(), cur_name(k, e, syms).lower(), k.lower())
+                 or addr == k.rsplit(":", 1)[-1])]
     if len(hits) > 1:
-        die(f"{name} is ambiguous - give SEG/NAME: " + ", ".join(f"{e['seg']}/{e['name']}" for _, e in hits))
+        work = [(k, e) for k, e in hits if e.get("src") and cur_name(k, e, syms) in matched_in_worktree(e["src"])]
+        if len(work) == 1:
+            return work[0]
+        die(f"{name} is ambiguous - give SEG/NAME or the key: " + ", ".join(f"{e['seg']}/{e['name']} ({k})" for k, e in hits))
     if not hits:
-        die(f"unknown function {name} (not in .decomp/functions.json - re-run index?)")
+        names = {cur_name(k, e, syms) for k, e in funcs.items()} | set(funcs)
+        close = difflib.get_close_matches(name, names, n=3, cutoff=0.8)
+        die(f"unknown function {name} (not in .decomp/functions.json - re-run index?)"
+            + (f"; did you mean {', '.join(close)}?" if close else ""))
     return hits[0]
 
 
@@ -962,10 +973,17 @@ def cmd_queue(a):
     proj, funcs = need_proj(), need_funcs()
     stat, st = statuses(funcs)
     syms = sym_names()
+    picked = pick_targets(funcs, stat, st, proj, a.seg, a.count)
+    shared = defaultdict(int)
+    for k, e in funcs.items():
+        shared[cur_name(k, e, syms)] += 1
+    # ref: what to pass to the tools. The key when slot overlays share the name (find_func would
+    # die "ambiguous" on it), else the name
     out = [{"key": k, "name": cur_name(k, e, syms), "seg": e["seg"], "size": e["size"],
+            "ref": k if shared[cur_name(k, e, syms)] > 1 else cur_name(k, e, syms),
             "src": e.get("src"), "fp": e.get("fp") if e["size"] > 8 else None,
             "tries": st.get(k, {}).get("tries", 0), "note": st.get(k, {}).get("note", "")}
-           for k, e in pick_targets(funcs, stat, st, proj, a.seg, a.count)]
+           for k, e in picked]
     print(json.dumps(out))
 
 
@@ -1282,9 +1300,9 @@ def lint_function(src, name):
     return errs, hacks
 
 
-def matched_in_worktree():
-    """Functions whose INCLUDE_ASM line the working tree removes from src/ compared with HEAD."""
-    r = run(["git", "diff", "HEAD", "-U0", "--", "src"])
+def matched_in_worktree(path="src"):
+    """Functions whose INCLUDE_ASM line the working tree removes from PATH compared with HEAD."""
+    r = run(["git", "diff", "HEAD", "-U0", "--", path])
     gone = {m.group(1) for l in r.stdout.splitlines() if l.startswith("-") and not l.startswith("---")
             for m in [INCLUDE_ASM_LINE.match(l[1:])] if m}
     back = {m.group(1) for l in r.stdout.splitlines() if l.startswith("+") and not l.startswith("+++")
