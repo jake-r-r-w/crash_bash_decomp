@@ -138,7 +138,49 @@ void func_80082590(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_800826F8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80082AC4);
+void func_80082AC4(void) {
+    s32 i;
+    u8 *p;
+    u8 *g;
+    u8 *q;
+    u8 *r;
+
+    D_8009BD08 = 0x1E;
+    g = D_8005A614;
+    if (*(u16 *)(g + 0x32) & 0x100) {
+        (g + *(s16 *)(g + 0x34))[0xAB] += 2;
+        p = g + *(s16 *)(g + 0x34);
+        if (p[0xAB] >= 0x20) {
+            p[0xAB] = 0x1F;
+        }
+    }
+    q = D_8005A614;
+    if (*(u16 *)(q + 0x32) & 0x1E0) {
+        i = 3;
+        r = q + i;
+        for (; i >= 0; i--) {
+            r[0xCC] = 0;
+            r--;
+        }
+        if ((D_8005A646 & 0x40) && (D_80099174 & 1) && D_80099178 == 0) {
+            D_8009BD40 = 6;
+            D_8009BD44 = 3;
+            D_8009E0D2 = 0x28;
+            D_8009E0D4 = -1;
+            D_8009E0D0 = 0xF;
+            D_8009E0D6 = 0x1E;
+            return;
+        }
+        D_8009BD40 = 6;
+        D_8009BD44 = 3;
+        D_8009E0D2 = 0x1E;
+        D_8009E0D4 = -1;
+        D_8009E0D0 = 0xF;
+        D_8009E0D6 = 0x1E;
+        return;
+    }
+    D_8009BD40 = 5;
+}
 
 void func_80082C34(void) {
     s32 t;

@@ -183,6 +183,10 @@ typedef struct {
 
 extern D_8009D87C_t D_8009D87C[];
 
+extern s16 D_8009E0D0;
+extern s16 D_8009E0D2;
+extern s16 D_8009E0D4;
+extern s16 D_8009E0D6;
 extern s32 D_8009BD08;
 extern s32 D_8009BD40;
 extern s32 D_8009BD44;
@@ -217,6 +221,8 @@ void func_800882DC(s32 arg0);
 void func_80088450(s32 arg0);
 
 extern u8 D_80055534[];
+
+void func_80082AC4(void);
 
 void func_8008B29C(s32 idx);
 
