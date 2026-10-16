@@ -69,7 +69,7 @@ the main-menu arena models, some arena objects) differ and stay `.bin`.
 | 0x54 | u32 | number of meshes |
 | 0x58 | 0x34 each | mesh headers: u32 0, u32 0, s16 faces, s16 (4, 6, ...), u32, then six s32 offsets relative to their own position: vertices, strips, after the vertices, two per-face arrays' bounds, the end; then three u32 |
 | (vertices) | 0x14 + 8 each | a 0x14-byte block (looks like a bounding box), then s16 x, y, z and a u16 (small values, 0-3: not decoded) |
-| (strips) | u16 each | faces << 8 | flags, until 0xFFFF; a strip of n faces takes the next n + 2 vertices; flag 0x08 flips the first face's winding |
+| (strips) | u16 each | faces << 8 \| flags, until 0xFFFF; a strip of n faces takes the next n + 2 vertices; flag 0x08 flips the first face's winding |
 | (after the vertices) | 2 per face, twice | per-face values (small rising numbers; values near 0x240): probably texture coordinates and texture choice, not decoded |
 
 The meshes are often under a fifth of a file; the rest (probably animation) isn't decoded.
