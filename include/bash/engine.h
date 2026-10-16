@@ -514,4 +514,30 @@ void func_800793E8(void);
 
 s32 func_8007A26C(NAS *nas);
 
+/* D_8005A614 as seen by func_80079554. */
+typedef struct EngMenuGame {
+    /* 0x00 */ u8 pad0[0x10];
+    /* 0x10 */ s32 flags;
+    /* 0x14 */ u8 pad14[0x26 - 0x14];
+    /* 0x26 */ u8 count;
+    /* 0x27 */ u8 pad27[0x34 - 0x27];
+    /* 0x34 */ s16 mode;
+    /* 0x36 */ u8 pad36[0x68 - 0x36];
+    /* 0x68 */ s32 unk68;
+    /* 0x6C */ u8 pad6C[0x74 - 0x6C];
+    /* 0x74 */ u8 unk74;
+} EngMenuGame;
+/* 0x18-byte entries at D_8005A3EC (func_80079554). */
+typedef struct EngMenuItem {
+    /* 0x00 */ s16 unk0;
+    /* 0x02 */ s16 unk2;
+    /* 0x04 */ s16 unk4;
+    /* 0x06 */ s16 unk6;
+    /* 0x08 */ u8 pad8[0x18 - 0x08];
+} EngMenuItem;
+extern EngMenuItem D_8005A3EC[];
+extern s16 D_8005A3A4[];
+
+void func_80079554(void);
+
 #endif /* BASH_ENGINE_H */
