@@ -40,7 +40,34 @@ void func_8007AF3C(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007B120);
+void func_8007B120(void) {
+    D_8009A97C = EngineTemplate;
+    D_8009A97C.flags = 0x10008000;
+    D_8009A97C.unk10.x = 0x82;
+    D_8009A97C.unk10.y = 0x8C;
+    D_8009A97C.unk10.z = 0;
+    func_8001D3B0(&D_8009A97C, 1, &D_8009AAB4);
+    func_80095F48((s32 *)&D_8009AAB4, -0x30, 0, D_80099200, 0);
+    D_8009A97C.unk5D = 0;
+    D_8009A97C.unk5C = 1;
+    D_8009AAB4.flags &= ~0x10000000;
+    D_8009AA18 = EngineTemplate;
+    D_8009AA18.flags = 0x10008000;
+    D_8009AA18.unk10.x = 0x1E0;
+    D_8009AA18.unk10.y = 0x8C;
+    D_8009AA18.unk10.z = 0;
+    func_8001D3B0(&D_8009AA18, 1, &D_8009AB5C);
+    func_80095F48((s32 *)&D_8009AB5C, -0x30, 0, D_80099204, 0);
+    D_8009AA18.unk5C = 1;
+    D_8009AA18.unk5D = 0;
+    D_8009AE7C = 0x10;
+    D_8009AE7E = 0;
+    D_8009AE80 = 0;
+    D_8009AE82 = 0;
+    D_8009AE84 = 0;
+    D_8009AB5C.flags &= ~0x10000000;
+    D_80099174 |= 0x1000;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007B330);
 

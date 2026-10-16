@@ -143,4 +143,19 @@ void func_8007D6D0(void);
 
 s16 func_8007D850(void);
 
+s32 func_80095F48(s32 *p, s32 a1, s32 a2, s32 a3, s32 a4);
+extern s32 D_80099200;
+extern s32 D_80099204;
+extern EXTengine D_8009A97C;
+extern EXTengine D_8009AA18;
+extern subengine D_8009AAB4;
+extern subengine D_8009AB5C;
+extern s16 D_8009AE7C;
+extern s16 D_8009AE7E;
+extern s16 D_8009AE80;
+extern s16 D_8009AE82;
+extern s16 D_8009AE84;
+
+void func_8007B120(void);
+
 #endif /* BASH_8007AC20_H */
