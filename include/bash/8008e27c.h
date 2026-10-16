@@ -123,6 +123,9 @@ void func_80092E40(void);
 void func_80091E58(void);
 
 void func_80090310(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
+extern s32 D_8009F298[];
+extern void *D_8009F004[];
+extern char D_8009F4A8[][5];
 
 void func_80090564(u8 *arg0, s32 arg1);
 

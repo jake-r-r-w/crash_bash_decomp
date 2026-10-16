@@ -476,7 +476,48 @@ void func_8009029C(void) {
     D_8009EE9C.unk8 = 0x400;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_80090310);
+void func_80090310(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    EXTengine *e;
+    s32 n;
+    s32 d;
+    s32 r;
+
+    func_80095BEC(arg1 + 4, D_8009F298);
+    e = GetEngineSlot(arg1 + 4);
+    e->unk10.x = arg3;
+    e->unk10.y = arg4;
+    e->flags |= 0x10000000;
+    if (arg2 != 0) {
+        e->sub[3].unk74 = 0;
+        e->sub[4].unk74 = 0;
+        e->sub[5].unk74 = 0;
+        e->sub[6].unk74 = 0;
+        e->sub[2].unk6C = NULL;
+        e->sub[1].unk6C = D_8009F004[D_8005A640];
+        e->sub[1].unk04 = 0x8096;
+        e->sub[1].unk08 = 0x1E;
+        return;
+    }
+    e->sub[3].unk74 = D_80099218[arg0[0x4C]];
+    e->sub[4].unk74 = D_80099218[arg0[0x4D]];
+    e->sub[5].unk74 = D_80099218[arg0[0x4E]];
+    e->sub[6].unk74 = D_80099218[arg0[0x4F]];
+    e->sub[1].unk6C = arg0 + 0x18;
+    e->sub[1].unk04 = 0xC;
+    e->sub[1].unk08 = 2;
+    n = func_80010000(arg0);
+    D_8009F4A8[arg1][0] = n / 100 + '0';
+    n %= 100;
+    d = n / 10;
+    r = n - d * 10;
+    d += '0';
+    r += '0';
+    D_8009F4A8[arg1][1] = d;
+    D_8009F4A8[arg1][2] = r;
+    D_8009F4A8[arg1][3] = '%';
+    D_8009F4A8[arg1][4] = 0;
+    e->sub[2].unk6C = D_8009F4A8[arg1];
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_80090564);
 
