@@ -873,10 +873,10 @@
   "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },
  "8001795C": {
-  "auto_failed": "types",
   "blocked_at": "2026-10-16T14:50:12Z",
-  "note": "registers 12/107 (swarm checkpoint, unchanged by 2 more sessions 2026-10-16): only the 0x8000/else arms; target shares a2 between ts and t (t born after the last ts read). Variants with e set in both arms, e = ts->tex; e += count; t = &e[-1].info, clut orders, --e: none better",
-  "status": "blocked",
+  "matched_at": "2026-10-16T19:51:13Z",
+  "started": "2026-10-16T19:40:30Z",
+  "status": "matched",
   "unblocked_at": "2026-10-16T13:33:01Z",
   "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },

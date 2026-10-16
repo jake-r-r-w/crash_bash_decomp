@@ -1,21 +1,8 @@
 {
- "blocked": [
-  {
-   "name": "func_8001795C",
-   "note": "registers 12/107 (swarm checkpoint, unchanged by 2 more sessions 2026-10-16): only the 0x8000/else arms; target shares a2 between ts and t (t born after the last ts read). Variants with e set in both arms, e = ts->tex; e += count; t = &e[-1].info, clut orders, --e: none better",
-   "seg": "main/main",
-   "size": 428
-  },
-  {
-   "name": "func_800248A0",
-   "note": "registers 5/142 (swarm checkpoint, unchanged by 2 more sessions 2026-10-16): only the entry; target tests a0 (andi a0,a0,0xC000) after move s5,a0 and loads arg4 into a3. An s16/u16 arg0 fixes it but moves move s5,a0 after the a2/a3 copies; needs the permuter or a sched2 idea",
-   "seg": "main/main",
-   "size": 568
-  }
- ],
- "commit": "60a2d87",
+ "blocked": [],
+ "commit": "842255e",
  "game": "SCUS_945.70",
- "generated": "2026-10-16T19:37:00Z",
+ "generated": "2026-10-16T19:51:22Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -58434,9 +58421,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "842255e",
+   "data_b": 0,
+   "data_tb": 606943,
+   "game_all_f": 2551,
+   "game_b": 179300,
+   "game_c_f": 1063,
+   "game_f": 1063,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 882,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-16T19:51:22Z",
+   "units": {
+    "engine": [
+     47788,
+     284
+    ],
+    "main exe": [
+     121912,
+     573
+    ],
+    "ovl5d": [
+     328,
+     4
+    ],
+    "ovl5e": [
+     504,
+     6
+    ],
+    "ovl5f": [
+     1564,
+     36
+    ],
+    "ovl60": [
+     708,
+     14
+    ],
+    "ovl61": [
+     292,
+     7
+    ],
+    "ovl62": [
+     916,
+     30
+    ],
+    "ovl63": [
+     636,
+     16
+    ],
+    "ovl64": [
+     156,
+     7
+    ],
+    "ovl65": [
+     1096,
+     11
+    ],
+    "ovl66": [
+     528,
+     13
+    ],
+    "ovl67": [
+     836,
+     12
+    ],
+    "ovl68": [
+     180,
+     10
+    ],
+    "ovl69": [
+     920,
+     16
+    ],
+    "ovl6a": [
+     936,
+     24
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-16T19:51:13Z",
+   "auto": true,
+   "name": "func_8001795C",
+   "seg": "main/main",
+   "size": 428,
+   "tries": 0
+  },
   {
    "at": "2026-10-16T19:36:51Z",
    "auto": false,
@@ -58548,18 +58629,10 @@
    "seg": "overlays/engine/engine",
    "size": 392,
    "tries": 0
-  },
-  {
-   "at": "2026-10-16T10:37:19Z",
-   "auto": true,
-   "name": "func_8007CA70",
-   "seg": "overlays/engine/8007ac20",
-   "size": 528,
-   "tries": 0
   }
  ],
  "summary": {
-  "blocked": 2,
+  "blocked": 0,
   "copies_b": 36276,
   "data": {
    "done_b": 0,
@@ -58570,16 +58643,16 @@
    "all_f": 2551,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 2,
-   "c_f": 1062,
-   "done_b": 178872,
-   "done_f": 1062,
+   "blocked": 0,
+   "c_f": 1063,
+   "done_b": 179300,
+   "done_f": 1063,
    "named_f": 345,
-   "pct": 17.55305995077701,
+   "pct": 17.595060429660975,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2551,
-   "typed_f": 881
+   "typed_f": 882
   },
   "lib": {
    "all_f": 566,
@@ -58622,21 +58695,21 @@
     "all_f": 575,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 2,
-    "c_f": 572,
-    "done_b": 121484,
-    "done_f": 572,
+    "blocked": 0,
+    "c_f": 573,
+    "done_b": 121912,
+    "done_f": 573,
     "file": "SCUS_945.70",
     "files": 3,
     "lib": false,
     "named_f": 15,
-    "pct": 97.31175905158604,
+    "pct": 97.65459788529317,
     "phase": 2,
     "sony_b": 0,
     "title": "main.exe",
     "total_b": 124840,
     "total_f": 575,
-    "typed_f": 439,
+    "typed_f": 440,
     "unit": "main exe"
    },
    {
