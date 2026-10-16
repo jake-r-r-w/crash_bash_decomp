@@ -230,11 +230,44 @@ function useOurDk(dir) {
 
 // Re-apply a worker's patch whose context no longer matches: the target's INCLUDE_ASM line is
 // replaced by the worker's C, and lines the patch only adds go back after the same anchor line
-// (the nearest non-blank context line above them, if it's unique in the file; lines already there,
-// such as a prototype `done` added, are skipped). Anything else (the patch edits or deletes another
-// line, an anchor is gone or ambiguous) gives up. Writes nothing unless every file works out.
+// (the nearest non-blank context line above them, if it's unique in the file, or the end of the C
+// that replaced the INCLUDE_ASM line). Added declarations the file already has (a prototype `done`
+// added) are skipped whole, by declared name, never line by line: a struct's member line that
+// another struct also has stays. Anything else (the patch edits or deletes another line, an anchor
+// is gone or ambiguous) gives up. Writes nothing unless every file works out.
 // Returns null when done, else why not. The gate checks the result like any other.
 const INCLUDE_LINE = /^\s*INCLUDE_ASM\(\s*"[^"]+"\s*,\s*(\w+)\s*\)/;
+// as decomp.py's DECL_NAME: the name a declaration ending in `;` declares
+const DECL_NAME = /\b(\w+)\s*(?:\([^;{}]*\)|\[[^\]]*\])?\s*;\s*$/;
+
+// lines -> whole declarations: a blank, preprocessor or comment line, or everything up to the `;`
+// (or a body's closing `}`) that ends a declaration at brace depth 0
+function declUnits(lines) {
+  const units = [];
+  let cur = [], depth = 0;
+  for (const l of lines) {
+    cur.push(l);
+    const code = l.replace(/\/\*.*?\*\/|\/\/.*$/g, '').trim();
+    depth += (code.match(/{/g) || []).length - (code.match(/}/g) || []).length;
+    if (depth <= 0 && ((cur.length === 1 && (!code || code.startsWith('#'))) || /[;}]$/.test(code))) {
+      units.push(cur);
+      cur = [];
+      depth = 0;
+    }
+  }
+  if (cur.length) units.push(cur);
+  return units;
+}
+
+// what a declaration declares: a typedef's, variable's or function's name, else a struct's tag
+function declName(unit) {
+  const code = unit.join('\n').replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '').trim();
+  if (!code || code.startsWith('#')) return null;
+  const m = code.match(DECL_NAME);
+  if (m) return m[1];
+  const tag = code.match(/^(?:typedef\s+)?(?:struct|union|enum)\s+(\w+)\s*\{/);
+  return tag ? tag[1] : null;
+}
 
 function reapply(dir, patch, f) {
   const out = {};
@@ -251,7 +284,8 @@ function reapply(dir, patch, f) {
     if (!out[file] && !fs.existsSync(p)) return `${file} is missing`;
     const lines = out[file] ||= fs.readFileSync(p, 'utf8').split('\n');
     for (const hunk of sec.split(/^@@[^\n]*\n/m).slice(1)) {
-      let anchor = null, blanks = 0, del = null, run = [];
+      // the anchor: a context line's text, or (after the INCLUDE_ASM line's replacement) an index
+      let anchor = null, at = null, blanks = 0, del = null, run = [];
       const flush = () => {
         if (!run.length && !del) return null;
         if (del) {                              // the INCLUDE_ASM line -> the worker's C
@@ -259,11 +293,17 @@ function reapply(dir, patch, f) {
           if (i < 0) return `${f.name}'s INCLUDE_ASM line isn't there once`;
           lines.splice(i, 1, ...run);
           replaced = true;
+          at = i + run.length - 1;              // lines added after it go after the C, not inside it
+          anchor = null;
+          blanks = 0;
         } else {                                // added lines (declarations) after their anchor
-          const i = anchor === null ? -1 : unique(lines, anchor);
+          const i = at !== null ? at : anchor === null ? -1 : unique(lines, anchor);
           if (i < 0) return `no unique anchor for an added line in ${file}`;
-          const add = run.filter(l => !l.trim() || !lines.includes(l));
+          const have = new Set(declUnits(lines).map(declName).filter(Boolean));
+          const units = declUnits(run).filter(u => !have.has(declName(u)));
+          const add = units.some(u => u.some(l => l.trim())) ? units.flat() : [];
           lines.splice(i + 1 + blanks, 0, ...add);
+          if (at !== null) at += add.length;
         }
         del = null;
         run = [];
@@ -283,7 +323,7 @@ function reapply(dir, patch, f) {
         }
         const err = flush();                    // a context line ends a run
         if (err) return err;
-        if (t.trim()) { anchor = t; blanks = 0; } else if (anchor !== null) blanks++;
+        if (t.trim()) { anchor = t; at = null; blanks = 0; } else if (anchor !== null || at !== null) blanks++;
       }
       const err = flush();
       if (err) return err;

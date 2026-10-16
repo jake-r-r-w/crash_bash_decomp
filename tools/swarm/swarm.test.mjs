@@ -134,6 +134,49 @@ test('reapply gives up when the patch changes another line', () => {
   assert.match(reapply(dir, patch, fn('func_80012345')), /changes an existing line/);
 });
 
+const HEADER_PATCH = (decl) => `diff --git a/include/bash/main.h b/include/bash/main.h
+--- a/include/bash/main.h
++++ b/include/bash/main.h
+@@ -1,3 +1,6 @@
+ typedef struct Old { s16 x; s16 y; } Old;
+${decl.map(l => '+' + l).join('\n')}
+${SP}
+ void func_80000000(void);
+`;
+
+test('reapply keeps a new struct whole even when another struct has the same member line', () => {
+  const dir = clone({
+    'src/main/main.c': 'int other;\nINCLUDE_ASM("asm/nonmatchings/main/main", func_80012345);\n',
+    'include/bash/main.h': 'typedef struct Old {\n    s16 x;\n    s16 y;\n} Old;\n\nvoid func_80000000(void);\nvoid func_80012345(void);\n',
+  });
+  const decl = ['typedef struct New {', '    s16 x;', '    s16 y;', '    s32 z;', '} New;', 'void func_80012345(void);'];
+  const patch = HEADER_PATCH(decl).replace(' typedef struct Old { s16 x; s16 y; } Old;', ' } Old;') + PATCH('func_80012345');
+  assert.equal(reapply(dir, patch, fn('func_80012345')), null);
+  const h = fs.readFileSync(path.join(dir, 'include/bash/main.h'), 'utf8');
+  assert.match(h, /typedef struct New \{\n {4}s16 x;\n {4}s16 y;\n {4}s32 z;\n\} New;\n/);
+  assert.equal(h.match(/void func_80012345\(void\);/g).length, 1);   // the prototype `done` added stays single
+});
+
+test('reapply puts lines added after the replaced INCLUDE_ASM line after the new C', () => {
+  const dir = clone({ 'src/main/main.c': 'int other;\nINCLUDE_ASM("asm/nonmatchings/main/main", func_80012345);\n\nvoid g(void) {}\n' });
+  const patch = `diff --git a/src/main/main.c b/src/main/main.c
+--- a/src/main/main.c
++++ b/src/main/main.c
+@@ -1,4 +1,7 @@
+ int other;
+-INCLUDE_ASM("asm/nonmatchings/main/main", func_80012345);
++void func_80012345(void) {
++}
+${SP}
++static int added;
++
+ void g(void) {}
+`;
+  assert.equal(reapply(dir, patch, fn('func_80012345')), null);
+  assert.equal(fs.readFileSync(path.join(dir, 'src/main/main.c'), 'utf8'),
+               'int other;\nvoid func_80012345(void) {\n}\n\nstatic int added;\n\nvoid g(void) {}\n');
+});
+
 test('INCLUDE_LINE names the function', () => {
   assert.equal('INCLUDE_ASM("asm/nonmatchings/main/main", func_80012345);'.match(INCLUDE_LINE)[1], 'func_80012345');
 });
