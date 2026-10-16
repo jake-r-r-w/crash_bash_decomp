@@ -55,41 +55,39 @@ void func_8002E0F0(void) {
     exit();
 }
 
-#ifndef NON_MATCHING
-INCLUDE_ASM("asm/nonmatchings/main/8002e0f0", func_8002E25C);
-#else
 void func_8002E25C(u8 *str, TextPos *pos, s32 arg2) {
     s32 len;
-    s32 startX;
     u8 *base;
+    s32 startX;
     u8 *glyph;
     s32 w;
-    u32 hi;
     u8 c;
 
+    base = str;
     len = strlen(str);
     startX = pos->x;
-    for (base = str; str < base + len; str++) {
+    for (; str < base + len; str++) {
         c = *str;
         if (c == '\n') {
             pos->x = startX;
             pos->y += 18;
         } else if (D_8006EA24 == 0) {
-            hi = *str++;
-            func_8002E3D0(pos, (u8 *)Krom2RawAdd(*str | (hi << 8)), arg2, 7);
-            pos->x = pos->x + 1 + pos->w;
+            u32 hi = *(volatile u8 *)str++;
+            glyph = (u8 *)Krom2RawAdd(*(volatile u8 *)str | (hi << 8));
+            func_8002E3D0(pos, glyph, arg2, 7);
+            pos->x = pos->w + (s16)(pos->x + 1);
         } else if (c == ' ') {
             pos->x += 8;
         } else {
-            glyph = (u8 *)0xBFC7F8DE + (*str - 0x21) * 15;
+            w = (*(volatile u8 *)str - 0x21) * 15;
+            glyph = w + (u8 *)0xBFC7F8DE;
             w = func_8002E584(glyph);
             pos->w = w - ((u32)w >> 16) + 1;
             func_8002E3D0(pos, glyph, arg2, w);
-            pos->x = pos->x + 2 + pos->w;
+            pos->x = pos->w + (s16)(pos->x + 2);
         }
     }
 }
-#endif
 
 void func_8002E3D0(TextPos *pos, u8 *glyph, s32 colour, s32 bits) {
     GlyphRow p;
