@@ -450,7 +450,62 @@ void func_8007C6EC(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007C830);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007CA70);
+void func_8007CA70(void) {
+    s32 i;
+    s32 v;
+    s32 sum;
+    u8 *p;
+    s32 t;
+    subengine (*e)[7];
+    s32 c;
+
+    e = D_8009971C;
+    c = D_8004E0D8;
+    for (i = 0; i < 4; i++) {
+        t = c >> 1;
+        v = 0;
+        if (D_8009AE88[i] != 0) {
+            switch (((EngineGameView *)D_8005A614)->mode) {
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+                e[i][2].unk74 = (t + i * 4) % 14 + 0x2018;
+                v = (u16)(*(u16 *)D_8009AE88[i] / 3);
+                break;
+            case 0x1F:
+                e[i][2].unk74 = (t + i * 4) % 14 + 0x2018;
+                v = *(u16 *)D_8009AE88[i] >> 3;
+                break;
+            default:
+                e[i][2].unk74 = (t + i * 4) % 14 + 0x2018;
+                v = *(u16 *)D_8009AE88[i] * 31 / 20;
+                break;
+            }
+        }
+        if (v >= 0x20) {
+            v = 0x1F;
+        }
+        p = D_80099914 + i * 0x498;
+        sum = v * 2 + *(s16 *)(p + 0x6C);
+        *(s16 *)(p + 0x74) = sum;
+        *(s16 *)(p + 0x84) = sum;
+        if (v != 0) {
+            *(s32 *)p |= 0x8000;
+        } else {
+            *(s32 *)p &= 0xFFFF7FFF;
+        }
+        p = D_800999BC + i * 0x498;
+        *(s16 *)(p + 0x6C) = sum;
+        *(s16 *)(p + 0x7C) = sum;
+        if (v < 0x1F) {
+            *(s32 *)p |= 0x8000;
+        } else {
+            *(s32 *)p &= 0xFFFF7FFF;
+        }
+    }
+}
 
 void func_8007CC80(void) {
     s32 i;
