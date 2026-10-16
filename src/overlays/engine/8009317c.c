@@ -442,7 +442,65 @@ void func_80094A28(void) {
     D_800A0BF3 = ((MarkCtx *)D_800A0D2C)->unkC;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009317c", func_80094B38);
+void func_80094B38(void) {
+    MarkObj *o;
+    MarkObj *obj;
+    s32 ok;
+
+    D_8004E0D8 += 1;
+    func_800220E8();
+    if (D_800A0D2C != NULL) {
+        if (D_800A0D34 == NULL) {
+            if ((s32)((MarkCtx *)D_800A0D2C)->obj != D_800A0D30 && D_800A0D30 != 0) {
+                func_80016F54((u8 *)D_800A0D30);
+            }
+            if (((MarkCtx *)D_800A0D2C)->obj == NULL && D_800A0D3C == 0) {
+                if (D_800A0C08 != 0) {
+                    func_80092AF4(D_800A0C08, 0x200);
+                    D_800A0D3C += 1;
+                }
+            } else {
+                o = ((MarkCtx *)D_800A0D2C)->obj;
+                ok = 0;
+                if (o != NULL) {
+                    ok = o->src != NULL;
+                }
+                if (ok) {
+                    if (D_800A0D38 != 0) {
+                        if (D_800A0D1C == 0 || ((EngineVabCue *)D_800A0D1C)->vab == 0) {
+                            ok = 1;
+                        } else {
+                            ok = ~D_800644C0[D_800A0D20[0]].id != 0;
+                        }
+                        if (!ok) {
+                            goto end;
+                        }
+                    }
+                    func_80094A28();
+                    D_800A0D2C = (MarkCtx *)D_800A0D2C + 1;
+                    if (D_800A0D38 != 0) {
+                        D_800654B0 = 1;
+                        D_800A0D38 = 0;
+                        D_800A0D28 = 1;
+                        func_8001E588(D_8009F644, -0x800, 0);
+                    }
+                }
+            }
+        }
+    end:
+        if (D_800A0D3C == 0) {
+            obj = ((MarkCtx *)D_800A0D2C)->obj;
+            if (obj != NULL) {
+                func_8001612C((u8 *)obj, 0);
+            }
+        }
+    }
+    func_80094860();
+    if ((D_80051380 & 0x4000) && D_800A0D3C == 0 && D_800A0C08 != 0) {
+        func_80092AF4(D_800A0C08, 0x200);
+        D_800A0D3C += 1;
+    }
+}
 
 void func_80094D88(s32 arg0, s32 arg1) {
     D_800A0C08 = arg1;
