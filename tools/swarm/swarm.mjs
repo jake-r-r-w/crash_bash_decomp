@@ -56,7 +56,7 @@ const OLD_DIFF = '.swarm-old.diff';    // a checkpoint that no longer applies, f
 const PATTERN_REFUSED = /\b(?:asm|__asm|__asm__)\s*(?:volatile|__volatile__)?\s*\(|--hack|\bregister\b[^|]*\b(?:asm|__asm|__asm__)\b/i;
 const PATTERNS_MAX = 2500;
 // the matching loop both prompts give inline (workers then needn't read SKILL.md, whose steps the
-// swarm overrides, and the docs are for grepping: tooling plan 3.1)
+// swarm overrides, and the docs are for grepping)
 const LOOP = (f, r) => `The loop (docs/MATCHING.md has the detail: grep it for your symptom, e.g.
 \`grep -n -i 'WORD' docs/MATCHING.md\`, and never Read it whole; skip AGENT_LOG.md, CONTRIBUTING.md,
 CONVENTIONS.md and SKILL.md):
@@ -875,7 +875,7 @@ class Swarm {
     writeJson(path.join(this.cpDir(job.f), 'best.json'), old);
   }
 
-  // ---- session chaining (--chain N, off by default; tooling plan 3.9): after a normal session on a
+  // ---- session chaining (--chain N, off by default): after a normal session on a
   // small function, the next function of the same file runs in the same Claude session (--resume),
   // which already knows the file's types and globals. At most N in a row; a pilot (alternate
   // chained and single jobs, compare with `stats`), so it stays off until the numbers say so

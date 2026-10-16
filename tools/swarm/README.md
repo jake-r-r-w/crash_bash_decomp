@@ -97,6 +97,13 @@ towards `--max-run-usd`. The prices were fitted on 2026-10-16 from 745 sessions'
 (estimates within 2%); refit them when the models or prices change. Sessions before 2026-10-16 were
 backfilled into the ledger (`"backfilled": true`; their "matched" means `try` said MATCH).
 
+Where the money went (760 sessions to 2026-10-16): cache writes are the biggest share (49% of
+normal spend, 34% of big), then output and cache reads. Docs are hardly read (0.14 reads per big
+session); tool output fills the context, and a big session's cost comes from its turns (~70, each
+re-reading a growing context). Time outside the model is 44% of a normal session, 31% of a big one.
+So the levers are fewer turns (better starting points, short tool output) and less fixed context
+per session, not shorter docs.
+
 ## Safeguards
 
 - **`main` only when asked** (`--branch main`); all work happens in clones, and your checkout is

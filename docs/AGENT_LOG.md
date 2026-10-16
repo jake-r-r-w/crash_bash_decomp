@@ -33,16 +33,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**Tooling: [TOOLING_PLAN.md](TOOLING_PLAN.md) Part 1 is done (2026-10-16),
-so slot-overlay swarm runs can start.** Part 2 (cost per session) is done
-too: `swarm.mjs stats` shows $/match by size from `ledger.jsonl`, and its
-findings (TOOLING_PLAN.md, Part 2) re-rank Part 3: docs are hardly read,
-cache writes and turns per big session drive the cost. 3.5 (aligned `make
-diff`, `regions --changed`) and 3.1 (no git status in workers' system
-prompt, inline loop) and 3.3 (families: seed leads, templates, twins never
-big) and 3.2-3.9 are done: the whole plan's code (left: the model-tier pilot
-and the typing pass, which are runs and hand work, and `--chain`'s pilot).
-The first supervised run on it (engine, 2026-10-16, 60 min, $41.11)
+**Tooling: the 2026-10-16 tooling plan is done and removed** (it is in git
+history, `git show 94f04c7:docs/TOOLING_PLAN.md`; what it left is under
+Open leads, Tooling ideas). `swarm.mjs stats` shows $/match by size from
+`ledger.jsonl`. The first supervised run on it (engine, 2026-10-16, 60 min, $41.11)
 matched 28 (27 + one fixed by hand), parked 1. Against earlier runs, $/match
 fell for 250-399 B normal ($0.79 -> $0.66, first-session matches 54% ->
 70%) and 400-599 B big ($4.58 -> $3.52); small samples, and what is left
@@ -50,12 +44,7 @@ is the harder remainder. The closest-C carry-over did the work: three
 functions parked close then matched on the retry from their C. **Next:
 repeat the engine hour** (73 left); `permute --near` first if there is CPU
 time. After each swarm run, compare `stats --run ID` with the ledger's
-earlier runs. Deferred from Part 1: recognising
-the CLI's usage-limit result. It only matters for unattended runs, and the
-user runs the swarm supervised and conservatively; if a limit is ever hit,
-keep that `worker.out` and match its result line then. The first run after these changes: watch
-`swarm.log` for refused commands (workers lost `git`, `find`, `sort`,
-`sed -n` on the host; git is `tools/dk git ...` now).
+earlier runs.
 
 **Start of next session: matching.** Run the engine swarm hour (item 1b,
 `--max-functions 500`), then the post-run checklist (2026-10-15 evening
@@ -142,6 +131,21 @@ left, for the permuter). `--max-functions 500` leaves time and cost as the limit
    passes, and the `CRASHBSH.DAT` extractor (independent: any time).
 
 ## Open leads
+
+- **Tooling ideas not done** (from the 2026-10-16 plan):
+  - Pilots, no code: model tiers (`--model haiku --escalate-model sonnet
+    --big-workers 0` on ~40 functions under 128 B, check the first matches'
+    types by hand; an A/B of `--big-model sonnet`), and `--chain 3`
+    (alternate with single jobs, compare `normal-chained` in `stats`).
+  - A by-hand typing pass with `tools/scripts/field_survey.py` on the
+    overlays with no struct coverage (ovl64, ovl65, ovl67: enums only).
+  - Usage-limit result: not recognised (runs are supervised); if a limit is
+    ever hit, keep that `worker.out` and match its result line then.
+  - Optional: `try --regions`; a `%lo` relocation-target check in `try`
+    (must find 0 over all matched functions before it blocks anything);
+    idle permuter slots rotating over registers-stage checkpoints (~60 s
+    turns); a long-lived container per slot (`tools/dk` overhead measured
+    1.2 s, under the 1.5 s that would justify it).
 
 - **Parked 2026-10-15 (by hand)**, C under `NON_MATCHING`:
   - `func_80010000` instructions 36/86, length right: counts flags over 33
@@ -475,7 +479,7 @@ Newest first, a few lines each. Details are in the commits.
   (1021). Checked with a scripted `--worker-cmd` run on a local bare remote.
 
 - **2026-10-16 (review, no code):** compared decomp.wtf's tools with ours;
-  plan in TOOLING_PLAN.md. Found swarm bugs: shared overlay names are
+  plan in TOOLING_PLAN.md (done, removed after 94f04c7). Found swarm bugs: shared overlay names are
   ambiguous to `find_func`, checkpoints keyed by name, `reapply` drops
   header lines (reproduced), Docker loss not detected, killed big sessions
   uncosted, workers can rewrite `tools/dk` on the host.
