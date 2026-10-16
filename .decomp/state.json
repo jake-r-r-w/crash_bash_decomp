@@ -2700,11 +2700,10 @@
   "status": "matched"
  },
  "8002D4F4": {
-  "auto_failed": "compile",
   "blocked_at": "2026-10-16T21:03:33Z",
-  "note": "regions 145/148 (len 590 = target; C under NON_MATCHING). Unit built with -fno-rerun-cse-after-loop. The only diff left (state 6, blocks 47/48/50) is a compiler-build difference, not C: retail's reorg fills the unconditional j after 'beq ret,1' from its target (li $16,6) before the eager pass, so the beq then steals li $16,6 from it and case 1 keeps li $4,3. FSF 2.7.2 reorg (our 2.7.2-psx; read in gcc 2.7.2.3 reorg.c: fill_simple_delay_slots never fills a simple jump from its target) leaves the j empty, so fill_eager takes li $4,3 from case 1. 2.7.2-cdk and 2.8.1-psx behave like retail on a lab copy (scratch/lab/s6.c) and steal li $4,3 when the j can't be filled. No C form found that gives retail's slot under FSF reorg. Next: a cc1 with that reorg (the real PsyQ cc1psx) or a narrow aspsx_fill rule, if the user wants either",
+  "matched_at": "2026-10-16T21:11:06Z",
   "started": "2026-10-16T19:39:20Z",
-  "status": "blocked"
+  "status": "matched"
  },
  "8002DE2C": {
   "matched_at": "2026-10-14T21:11:34Z",

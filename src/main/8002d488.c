@@ -23,9 +23,6 @@ void func_8002D488(void) {
     }
 }
 
-#ifndef NON_MATCHING
-INCLUDE_ASM("asm/nonmatchings/main/8002d488", func_8002D4F4);
-#else
 s32 func_8002D4F4(s32 arg0) {
     s32 ret;
 
@@ -413,7 +410,6 @@ loop:
     }
     return ret;
 }
-#endif
 
 s32 func_8002DE2C(s32 arg0) {
     s32 limit;

@@ -1,15 +1,8 @@
 {
- "blocked": [
-  {
-   "name": "func_8002D4F4",
-   "note": "regions 145/148 (len 590 = target; C under NON_MATCHING). Unit built with -fno-rerun-cse-after-loop. The only diff left (state 6, blocks 47/48/50) is a compiler-build difference, not C: retail's reorg fills the unconditional j after 'beq ret,1' from its target (li $16,6) before the eager pass, so the beq then steals li $16,6 from it and case 1 keeps li $4,3. FSF 2.7.2 reorg (our 2.7.2-psx; read in gcc 2.7.2.3 reorg.c: fill_simple_delay_slots never fills a simple jump from its target) leaves the j empty, so fill_eager takes li $4,3 from case 1. 2.7.2-cdk and 2.8.1-psx behave like retail on a lab copy (scratch/lab/s6.c) and steal li $4,3 when the j can't be filled. No C form found that gives retail's slot under FSF reorg. Next: a cc1 with that reorg (the real PsyQ cc1psx) or a narrow aspsx_fill rule, if the user wants either",
-   "seg": "main/8002d488",
-   "size": 2360
-  }
- ],
- "commit": "d215beb",
+ "blocked": [],
+ "commit": "07750fc",
  "game": "SCUS_945.70",
- "generated": "2026-10-16T21:04:03Z",
+ "generated": "2026-10-16T21:11:15Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -58600,9 +58593,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "07750fc",
+   "data_b": 80,
+   "data_tb": 606943,
+   "game_all_f": 2551,
+   "game_b": 182228,
+   "game_c_f": 1065,
+   "game_f": 1065,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 884,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-16T21:11:15Z",
+   "units": {
+    "engine": [
+     47788,
+     284
+    ],
+    "main exe": [
+     124840,
+     575
+    ],
+    "ovl5d": [
+     328,
+     4
+    ],
+    "ovl5e": [
+     504,
+     6
+    ],
+    "ovl5f": [
+     1564,
+     36
+    ],
+    "ovl60": [
+     708,
+     14
+    ],
+    "ovl61": [
+     292,
+     7
+    ],
+    "ovl62": [
+     916,
+     30
+    ],
+    "ovl63": [
+     636,
+     16
+    ],
+    "ovl64": [
+     156,
+     7
+    ],
+    "ovl65": [
+     1096,
+     11
+    ],
+    "ovl66": [
+     528,
+     13
+    ],
+    "ovl67": [
+     836,
+     12
+    ],
+    "ovl68": [
+     180,
+     10
+    ],
+    "ovl69": [
+     920,
+     16
+    ],
+    "ovl6a": [
+     936,
+     24
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-16T21:11:06Z",
+   "auto": true,
+   "name": "func_8002D4F4",
+   "seg": "main/8002d488",
+   "size": 2360,
+   "tries": 0
+  },
   {
    "at": "2026-10-16T20:06:53Z",
    "auto": true,
@@ -58714,38 +58801,30 @@
    "seg": "main/main",
    "size": 48,
    "tries": 0
-  },
-  {
-   "at": "2026-10-16T13:44:02Z",
-   "auto": true,
-   "name": "func_8002E25C",
-   "seg": "main/8002e0f0",
-   "size": 372,
-   "tries": 0
   }
  ],
  "summary": {
-  "blocked": 1,
+  "blocked": 0,
   "copies_b": 36276,
   "data": {
-   "done_b": 0,
-   "pct": 0.0,
+   "done_b": 80,
+   "pct": 0.013180809400553264,
    "total_b": 606943
   },
   "game": {
    "all_f": 2551,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 1,
-   "c_f": 1064,
-   "done_b": 179868,
-   "done_f": 1064,
+   "blocked": 0,
+   "c_f": 1065,
+   "done_b": 182228,
+   "done_f": 1065,
    "named_f": 345,
-   "pct": 17.650799382946236,
+   "pct": 17.882390808568097,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2551,
-   "typed_f": 883
+   "typed_f": 884
   },
   "lib": {
    "all_f": 566,
@@ -58788,21 +58867,21 @@
     "all_f": 575,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 1,
-    "c_f": 574,
-    "done_b": 122480,
-    "done_f": 574,
+    "blocked": 0,
+    "c_f": 575,
+    "done_b": 124840,
+    "done_f": 575,
     "file": "SCUS_945.70",
     "files": 3,
     "lib": false,
     "named_f": 15,
-    "pct": 98.1095802627363,
+    "pct": 100.0,
     "phase": 2,
     "sony_b": 0,
     "title": "main.exe",
     "total_b": 124840,
     "total_f": 575,
-    "typed_f": 441,
+    "typed_f": 442,
     "unit": "main exe"
    },
    {
