@@ -5,7 +5,66 @@
 #include "bash/hero.h"
 #include "bash/shell.h"
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009608c", func_8009608C);
+void func_8009608C(s32 arg0) {
+    CamView view[2];
+    s32 *obj;
+    EngCam *cam;
+
+    switch (D_800AD12C) {
+    case 0:
+    case 5:
+        break;
+    case 1:
+        if (arg0 != 0) {
+            func_80097158(D_80051640);
+        }
+        func_80096F98(arg0);
+        break;
+    case 2:
+        if (arg0 != 0) {
+            func_80097158(D_80051640);
+        }
+        func_80096F98(arg0);
+        ((EngCam *)D_80051640)->rot.vx = -0x130;
+        ((EngCam *)D_80051640)->rot.vy = 0;
+        ((EngCam *)D_80051640)->rot.vz = 0x800;
+        break;
+    case 3:
+        func_800B5A40(D_80051640, arg0);
+        break;
+    case 6:
+        func_800B8098(D_80051640, arg0);
+        break;
+    case 4:
+        func_800B96F4(view, arg0);
+        func_80013F44((CamView *)D_80051640, view, &D_800AD0F4);
+        break;
+    case 7:
+        obj = func_8001E48C(1);
+        if (obj != NULL) {
+            cam = (EngCam *)D_80051640;
+            cam->eye.x = 0;
+            cam->eye.y = 0;
+            cam->eye.z = func_800153B4(obj + 0x13, obj + 0xC, &cam->rot.vx);
+            cam->at = *(CamXYZ *)(obj + 0xC);
+            cam->dist = 0x200;
+        }
+        D_8009F708 = 0x15E;
+        break;
+    case 8:
+        func_800BB184(D_80051640);
+        D_8009F708 = 0x15E;
+        break;
+    }
+    if (D_8005A624 == 0 && ((EngCam *)D_80051640)->shakeTime > 0) {
+        if (D_8004E0D8 & 1) {
+            ((EngCam *)D_80051640)->at.y = ((EngCam *)D_80051640)->at.y + ((EngCam *)D_80051640)->shakeAmp;
+        } else {
+            ((EngCam *)D_80051640)->at.y = ((EngCam *)D_80051640)->at.y - ((EngCam *)D_80051640)->shakeAmp;
+        }
+        ((EngCam *)D_80051640)->shakeTime--;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009608c", func_80096280);
 

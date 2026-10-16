@@ -24,6 +24,24 @@ void func_80078DD4(void);
 
 void func_8009608C(s32 arg0);
 
+/* D_80051640 as the engine camera (func_8009608C). */
+typedef struct EngCam {
+    /* 0x00 */ CamXYZ eye;
+    /* 0x0C */ CamXYZ at;
+    /* 0x18 */ s32 dist;
+    /* 0x1C */ u8 pad1C[0x38 - 0x1C];
+    /* 0x38 */ s32 shakeTime;
+    /* 0x3C */ s32 shakeAmp;
+    /* 0x40 */ u8 pad40[0x54 - 0x40];
+    /* 0x54 */ SVECTOR rot;
+} EngCam;
+
+extern CamEase D_800AD0F4;
+void func_800B5A40(u8 *cam, s32 arg1);
+void func_800B8098(u8 *cam, s32 arg1);
+void func_800B96F4(CamView *out, s32 arg1);
+void func_800BB184(u8 *cam);
+
 void func_80098344(void);
 
 void func_80098570(void);
