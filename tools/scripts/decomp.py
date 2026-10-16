@@ -969,6 +969,13 @@ def cmd_next(a):
         print("\n".join(lines[:a.max_lines]))
         if len(lines) > a.max_lines:
             print(f"... {len(lines) - a.max_lines} more lines (decomp.py m2c {name} for the rest)")
+        twin = twin_source(key, funcs, stat, syms)
+        if twin:
+            # the same code is matched elsewhere, but propagate's copy of it didn't fit here
+            why = rec.get("copy_failed_stage")
+            print(f"--- {twin[1]}'s C (identical code, matched), renamed for {name}"
+                  f"{f'; the copy failed: {why}' if why else ''} ---")
+            print(twin[2].rstrip())
     jsave(P_STATE, st)
 
 
@@ -1542,6 +1549,7 @@ def owned_header(src):
 
 
 DECL_NAME = re.compile(r"\b(\w+)\s*(?:\([^;{}]*\)|\[[^\]]*\])?\s*;\s*(?:/\*.*\*/)?\s*$")
+FPTR_NAME = re.compile(r"^[^(]*\(\s*\*\s*(\w+)\s*(?:\[[^\]]*\])?\s*\)\s*\(")
 
 
 def decl_name(line):
@@ -1549,14 +1557,20 @@ def decl_name(line):
     l = line.strip()
     if not l or l.startswith(("#", "/*", "*", "typedef", "}")) or not l.endswith((";", "*/")):
         return None
-    m = DECL_NAME.search(l)
+    # a function pointer (or an array of them): `extern s32 (*D_8009D728)(s32);`
+    m = FPTR_NAME.search(l) or DECL_NAME.search(l)
     return m.group(1) if m else None
 
 
 def visible_names(src):
     """Names declared by the headers `src` includes (one level, plus their own includes)."""
-    seen, names, todo = set(), set(), [re.search(r'"([^"]+)"', l).group(1)
-                                       for l in src_includes(src) if '"' in l]
+    return header_names([re.search(r'"([^"]+)"', l).group(1) for l in src_includes(src) if '"' in l])
+
+
+def header_names(todo, lines=None):
+    """Names declared by headers (paths under include/) and the headers they include. With
+    `lines`, each name's declaration line is added to it too (the first one found)."""
+    seen, names, todo = set(), set(), list(todo)
     while todo:
         h = f"{HEADERS}/{todo.pop()}"
         if h in seen or not os.path.exists(h):
@@ -1568,6 +1582,8 @@ def visible_names(src):
             n = decl_name(l)
             if n:
                 names.add(n)
+                if lines is not None and file_decl(l):
+                    lines.setdefault(n, l.strip())
     return names
 
 
@@ -1823,9 +1839,9 @@ def cmd_auto(a):
 
 
 def land(cands, funcs, proj, st, protos=True, tag="auto_failed"):
-    """Insert candidates (key, entry, name, src, decls, ftext) into the real sources and keep the
-    ones that still match there, then check the full build. Returns the kept candidates, or None
-    when the full build failed (everything reverted)."""
+    """Insert candidates (key, entry, name, src, decls, ftext[, headers to include]) into the real
+    sources and keep the ones that still match there, then check the full build. Returns the kept
+    candidates, or None when the full build failed (everything reverted)."""
     srcs = sorted(glob.glob("src/**/*.c", recursive=True))
     backup = {p: read(p) for p in srcs + all_headers()}
 
@@ -1835,7 +1851,9 @@ def land(cands, funcs, proj, st, protos=True, tag="auto_failed"):
         for h in all_headers():
             if h not in backup:
                 os.remove(h)
-        for k, e, name, src, decls, ftext in sel:
+        for k, e, name, src, decls, ftext, *incs in sel:
+            for h in (incs[0] if incs else ()):
+                ensure_include(src, h)
             # the data it uses and its own prototype go in its file's owned header
             proto = prototype_of(ftext, name) if protos else None
             declare(src, list(decls) + ([proto] if proto else []))
@@ -2591,9 +2609,54 @@ def header_decls(mp):
     return out
 
 
+def copy_decls(ftext, ssrc, src, incs, decls):
+    """Declarations for the names the copied C uses that its original's file sees and the copy's
+    file (with the headers `incs` it gets) doesn't: without one a call compiles silently as an
+    implicit declaration (there are no -W flags) and the copy mismatches."""
+    where = {}
+    for l in read(ssrc).splitlines():                # the original file's own externs and prototypes
+        n = file_decl(l)
+        if n:
+            where.setdefault(n, l.strip())
+    header_names([re.search(r'"([^"]+)"', l).group(1) for l in src_includes(ssrc) if '"' in l], where)
+    owned = [os.path.relpath(h, HEADERS) for h in all_headers() if header_owner(h) == src]
+    rel = [os.path.relpath(h, HEADERS).replace("\\", "/") for h in incs] + owned
+    have = visible_names(src) | header_names(rel)
+    have |= {decl_name(l) for l in read(src).splitlines()} | {decl_name(d) for d in decls}
+    body = re.sub(r"/\*.*?\*/", "", ftext, flags=re.S)
+    return [where[n] for n in sorted(set(re.findall(r"\b[A-Za-z_]\w*\b", body))) if n in where and n not in have]
+
+
+def file_decl(line):
+    """decl_name for a file-scope extern or prototype only (not a local, a struct member or a
+    definition of data, which must not be copied into a header)."""
+    if line[:1].isspace() or not (line.startswith("extern ") or "(" in line):
+        return None
+    return decl_name(line)
+
+
+def twin_source(key, funcs, stat, syms):
+    """(original key, name, its C renamed for `key`) when an exact twin of `key` is matched."""
+    e = funcs[key]
+    if not e.get("fp") or e["size"] <= 8 or not e.get("src") or not os.path.exists(e.get("asm", "")):
+        return None
+    name = cur_name(key, e, syms)
+    for sk in groups_by(funcs).get(e["fp"], []):
+        if sk == key or stat.get(sk) != "matched":
+            continue
+        se, sname = funcs[sk], cur_name(sk, funcs[sk], syms)
+        ssrc = se.get("src") or locate_def(sname)
+        base = def_with_decls(read(ssrc), sname) if ssrc else None
+        mp = sym_map(se, e, sname, name) if base else None
+        if mp is not None:
+            return sk, sname, rename_syms(base, mp)
+    return None
+
+
 def propagate_candidates(funcs, stat, syms, only=None, st=None, proj=None):
-    """(key, entry, name, src, decls, ftext) for every todo function whose exact twin is matched.
-    Copies that already failed from the same original (recorded in st) are skipped."""
+    """(key, entry, name, src, decls, ftext, original key, headers) for every todo function whose
+    exact twin is matched. Copies that already failed from the same original (recorded in st) are
+    skipped. Writes nothing: land() adds the headers and declarations."""
     out, texts = [], {}
     st = st or {}
     for keys in groups_by(funcs).values():
@@ -2624,13 +2687,16 @@ def propagate_candidates(funcs, stat, syms, only=None, st=None, proj=None):
             if mp is None:
                 continue
             # the copy must see the same headers as the original (except the headers another
-            # file owns: what it needs from those comes in through header_decls)
+            # file owns: what it needs from those comes in through header_decls and copy_decls)
+            incs = []
             for inc in src_includes(ssrc):
                 hm = re.search(r'"([^"]+)"', inc)
                 if hm and not (os.path.exists(f"{HEADERS}/{hm.group(1)}")
                                and header_owner(f"{HEADERS}/{hm.group(1)}") not in (None, src)):
-                    ensure_include(src, f"{HEADERS}/{hm.group(1)}")
-            out.append((k, e, name, src, header_decls(mp), rename_syms(base, mp), sk))
+                    incs.append(f"{HEADERS}/{hm.group(1)}")
+            ftext, decls = rename_syms(base, mp), header_decls(mp)
+            decls += copy_decls(ftext, ssrc, src, incs, decls)
+            out.append((k, e, name, src, decls, ftext, sk, incs))
     return out
 
 
@@ -2646,11 +2712,15 @@ def propagate(funcs, proj, only=None):
             break
         print(f"propagate: {len(cands)} copies of matched functions")
         origin = {c[0]: c[6] for c in cands}
-        good = land([c[:6] for c in cands], funcs, proj, st, tag="copy_failed")
+        good = land([c[:6] + (c[7],) for c in cands], funcs, proj, st, tag="copy_failed")
         st = jload(P_STATE, {})
         for k in origin:                              # remember which original didn't fit here
             if k not in {g[0] for g in good or []}:
-                st.setdefault(k, {})["copy_failed"] = origin[k]
+                rec = st.setdefault(k, {})
+                # land recorded where it failed ("in-file" or "full-build") under the same field
+                if rec.get("copy_failed") in ("in-file", "full-build"):
+                    rec["copy_failed_stage"] = rec["copy_failed"]
+                rec["copy_failed"] = origin[k]
         jsave(P_STATE, st)
         if not good:
             break

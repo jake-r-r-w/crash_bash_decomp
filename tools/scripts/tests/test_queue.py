@@ -2,6 +2,7 @@
 lease). Run: tools/dk make test-tools"""
 import os
 import sys
+import tempfile
 import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -93,6 +94,38 @@ class FindFunc(unittest.TestCase):
     def test_did_you_mean(self):
         with self.assertRaisesRegex(SystemExit, "did you mean func_8002D4F4"):
             self.find("func_8002D4F5")
+
+
+class Declarations(unittest.TestCase):
+    def test_decl_name_function_pointers(self):
+        self.assertEqual(decomp.decl_name("extern s32 (*D_8009D728)(s32);"), "D_8009D728")
+        self.assertEqual(decomp.decl_name("extern void (*D_800A0000[4])(void);"), "D_800A0000")
+        self.assertEqual(decomp.decl_name("void func_80010000(s32 (*cb)(void));"), "func_80010000")
+        self.assertEqual(decomp.decl_name("extern u8 D_80030000[16];"), "D_80030000")
+
+    def test_copy_decls(self):
+        """A copy gets the declarations its original's file sees and its own file doesn't (the
+        ovl64:800BB52C case: an implicit call to a function pointer)."""
+        cwd = os.getcwd()
+        with tempfile.TemporaryDirectory() as d:
+            os.chdir(d)
+            try:
+                for p, text in {
+                    "include/common.h": "",
+                    "include/bash/eng.h": "/* owner: src/eng.c */\ntypedef struct S {\n    s32 g;\n} S;\n"
+                                          "extern void (*D_8009D73C)();\nvoid func_8008502C(s32);\n",
+                    "include/bash/ovl.h": "/* owner: src/ovl.c */\nvoid func_8008502C(s32);\n",
+                    "src/eng.c": '#include "common.h"\n#include "bash/eng.h"\n',
+                    "src/ovl.c": '#include "common.h"\n#include "bash/ovl.h"\n',
+                }.items():
+                    os.makedirs(os.path.dirname(p), exist_ok=True)
+                    with open(p, "w") as fh:
+                        fh.write(text)
+                ftext = "void f(s32 g) {\n    D_8009D73C(g);\n    func_8008502C(g);\n}\n"
+                self.assertEqual(decomp.copy_decls(ftext, "src/eng.c", "src/ovl.c", ["include/common.h"], []),
+                                 ["extern void (*D_8009D73C)();"])
+            finally:
+                os.chdir(cwd)
 
 
 if __name__ == "__main__":
