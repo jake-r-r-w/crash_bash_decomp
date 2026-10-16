@@ -38,7 +38,17 @@ const INFRA_ERRORS = [
   /Cannot connect to the Docker daemon|docker: Error response from daemon[^\n]*/,
   /No space left on device/,
   /error while loading shared libraries[^\n]*/,
+  /ERROR: (?:docker not found|Docker daemon not reachable|could not hash tools\/docker\/Dockerfile)[^\n]*/,   // tools/dk
+  /PermissionError: [^\n]*/,                          // Windows holding a file in the clone
 ];
+
+// an environment error in a tools/dk call's output, or its exit code: 125 docker run failed,
+// 126 the command can't run, 127 not found (tools/dk's own checks exit 127 too)
+function infraError(out, code) {
+  const m = INFRA_ERRORS.map(re => out.match(re)).find(Boolean);
+  if (m) return m[0];
+  return [125, 126, 127].includes(code) ? `tools/dk exited ${code}: ${out.trim().split('\n').pop() || 'no output'}` : null;
+}
 const PATCH_MAX = 64 << 10;
 const NEIGHBOUR = 8;            // lines between two INCLUDE_ASMs below which they aren't leased together
 // environment of the session that started us: a nested claude must not inherit it
@@ -404,6 +414,11 @@ class Swarm {
     if (!o.workerCmd && !o.dryRun) {
       this.claude = realClaude(which(o.claudeBin));
       if (!this.claude) die(`${o.claudeBin} not found on PATH (install Claude Code or pass --claude-bin)`);
+      // signed out, every worker would fail at once
+      const auth = sh(this.claude, ['auth', 'status'], { timeout: 60e3 });
+      let st = null;
+      try { st = JSON.parse(auth.out); } catch { /* an older CLI: no JSON */ }
+      if (auth.code || st?.loggedIn === false) die(`${o.claudeBin} is not signed in (\`claude auth status\`): ${(auth.err || auth.out).trim().slice(0, 200)}`);
     }
     fs.mkdirSync(o.dir, { recursive: true });
     fs.mkdirSync(this.paths.results, { recursive: true });
@@ -623,12 +638,29 @@ class Swarm {
     const r = await this.dk(dir, ['python3', 'tools/scripts/decomp.py', 'try', name], slot);
     if (outDir) fs.writeFileSync(path.join(outDir, 'try.txt'), r.out);
     const score = Swarm.score(r.out);
+    let infra = infraError(r.out, r.code);
     if (score && score.stage !== 'match') {
       const g = await this.dk(dir, ['python3', 'tools/scripts/decomp.py', 'regions', name, '--no-lines'], slot);
       if (outDir) fs.writeFileSync(path.join(outDir, 'regions.txt'), g.out);
       score.regions = Swarm.regionScore(g.out);
+      infra ||= infraError(g.out, g.code);
     }
-    return { score, out: r.out };
+    return { score, out: r.out, infra };
+  }
+
+  dockerDown() {
+    return sh('docker', ['info'], { timeout: 60e3 }).code !== 0;
+  }
+
+  // the environment broke under a job (Docker gone, a file locked): not the function's fault, so
+  // nothing is charged, and the run stops rather than parking everything after it
+  infraStop(slot, job, why) {
+    if (slot) slot.job = null;
+    this.finished.add(job.f.key);
+    this.record(job, 'infra', why);
+    this.log(`${job.f.name}: environment error, not a problem with the function: ${why}. Stopping the run ` +
+             '(nothing charged; fix it and run again)');
+    this.stopping ||= 'graceful';
   }
 
   saveCheckpoint(job, patchFile, score, note, next) {
@@ -902,7 +934,10 @@ Fix that, keep it matching, and report "matched".
       clearTimeout(job.timer);
       this.onWorkerExit(slot, job, code).catch(e => this.fail(slot, job, `orchestrator error: ${e.message}`));
     });
-    p.on('error', err => this.log(`${slot.id} ${f.name}: could not start worker: ${err.message}`));
+    p.on('error', err => {
+      job.startError = err.message;   // 'close' follows: onWorkerExit records it uncharged
+      this.log(`${slot.id} ${f.name}: could not start worker: ${err.message}`);
+    });
     this.log(`${slot.id} start ${f.name} (${f.size} bytes, ${job.model}, ${job.big
       ? `big session ${(this.history[f.key]?.bigSessions || 0) + 1}${job.resumed ? `, from ${Swarm.describe(job.resumed)}` : ''}`
       : `attempt ${job.attempt}`})`);
@@ -944,9 +979,13 @@ Fix that, keep it matching, and report "matched".
              `${cost ? `, $${cost.toFixed(2)} (run $${this.costUsd.toFixed(2)})` : ''}, says ${res.status || 'nothing'}`);
     if (res.pattern) fs.appendFileSync(this.paths.patterns, `${res.pattern.trim()}  <!-- ${f.name} -->\n`);
     if (this.stopping === 'now') return;
-    // a session that never got going (not logged in, API down) is a failure, not a park
+    if (job.startError) return this.fail(slot, job, `could not start the worker: ${job.startError}`, false);
+    // a worker that couldn't build leaves no patch: if Docker went away, that's why
+    if (!patch.trim() && this.dockerDown()) return this.infraStop(slot, job, 'Docker is not reachable');
+    // a session that never got going (not logged in, API down) is a failure, not a park; not the
+    // function's either, so uncharged (three in a row still stop the run)
     if (session.is_error && !patch.trim() && !res.status)
-      return this.fail(slot, job, `claude: ${String(session.result || session.terminal_reason).slice(0, 200)}`);
+      return this.fail(slot, job, `claude: ${String(session.result || session.terminal_reason).slice(0, 200)}`, false);
     if (job.big && !job.gateFix) return this.onBigExit(slot, job, res, patch);
     if (!patch.trim()) return this.notMatched(slot, job, res.note || (job.timedOut ? 'timed out' : 'no change'));
     // a park that left edits behind (a header type it added): a park, not a bad patch
@@ -967,6 +1006,8 @@ Fix that, keep it matching, and report "matched".
     // don't trust the worker's word: build and compare the function ourselves
     const r = await this.dk(slot.dir, ['python3', 'tools/scripts/decomp.py', 'try', ref(f)], slot.id);
     fs.writeFileSync(path.join(job.dir, 'try.txt'), r.out);
+    const infra = infraError(r.out, r.code);
+    if (infra) return this.infraStop(slot, job, infra);
     if (r.code !== 0 || !/^MATCH /m.test(r.out))
       return this.notMatched(slot, job, res.status === 'matched'
         ? `claimed a match that try rejects; ${res.note || ''}`.trim()
@@ -982,13 +1023,14 @@ Fix that, keep it matching, and report "matched".
   // if it beats the checkpoint, then integrate, permute, run another session or park
   async onBigExit(slot, job, res, patch) {
     const { f } = job;
-    let score = null, errs = [];
+    let score = null, errs = [], infra = null;
     const file = path.join(job.dir, 'patch.diff');
     if (patch.trim()) {
       fs.writeFileSync(file, patch);
       errs = this.checkPatch(patch, f);
-      if (!errs.length) score = (await this.measure(slot.dir, f, slot.id, job.dir)).score;
+      if (!errs.length) ({ score, infra } = await this.measure(slot.dir, f, slot.id, job.dir));
     }
+    if (infra && this.stopping !== 'now') return this.infraStop(slot, job, infra);
     // a checkpoint from before region scores: measure it once (in this slot, before it is freed),
     // so it is compared by region score like the rest rather than by STAGE
     const old = this.checkpoint(f);
@@ -1122,7 +1164,7 @@ Fix that, keep it matching, and report "matched".
                              permuterDiff: diff || '(no diff.txt)', permuterScore: { base: base ?? '?', best } });
       else this.finished.add(f.key);
     } catch (e) {
-      this.fail(ps, job, `permuter: ${e.message}`);
+      this.fail(ps, job, `permuter: ${e.message}`, false);
     } finally {
       ps.job = null;
     }
@@ -1131,7 +1173,9 @@ Fix that, keep it matching, and report "matched".
   record(job, status, note) {
     const h = this.history[job.f.key] ||= { name: job.f.name, attempts: 0, notes: [] };
     h.size = job.f.size;
-    if (!['conflict', 'permuted', 'gate-refused', 'progress'].includes(status) && !job.big) h.attempts++;
+    // charged: a worker's go at it that ended (infra: the environment broke; error: the worker or
+    // permuter never ran properly)
+    if (!['conflict', 'permuted', 'gate-refused', 'progress', 'infra', 'error'].includes(status) && !job.big) h.attempts++;
     h.last = status;
     h.notes = [...h.notes, `${stamp()} ${job.model}: ${status}: ${note}`].slice(-6);
     writeJson(this.paths.history, this.history);
@@ -1159,12 +1203,14 @@ Fix that, keep it matching, and report "matched".
     this.log(`${job.f.name}: parked: ${note}`);
   }
 
-  fail(slot, job, why) {
+  // `charge` false: the failure isn't the function's (the worker or permuter never ran properly);
+  // it still counts towards the failures-in-a-row stop
+  fail(slot, job, why, charge = true) {
     if (slot) slot.job = null;
     this.stats.failed++;
     this.consecutiveFailures++;
     this.finished.add(job.f.key);
-    this.record(job, 'failed', why);
+    this.record(job, charge ? 'failed' : 'error', why);
     this.log(`${job.f.name}: FAILED: ${why} (${this.consecutiveFailures} in a row)`);
   }
 
@@ -1261,10 +1307,10 @@ Fix that, keep it matching, and report "matched".
     if (r.code !== 0 || after === before) {
       resetClone(this.integ, before);
       const why = r.out.trim().split('\n').slice(-6).join('\n');
-      const infra = INFRA_ERRORS.map(re => `${r.out}\n${r.err || ''}`.match(re)).find(Boolean);
+      const infra = infraError(r.out, r.code);
       if (infra) {
         this.log(`${f.name}: the gate hit an environment error, not a problem with the function: ` +
-                 `${infra[0]}. Stopping the run; fix it, then \`run --resume ${this.id}\` gates the ` +
+                 `${infra}. Stopping the run; fix it, then \`run --resume ${this.id}\` gates the ` +
                  'verified matches without matching them again');
         if (!this.stopping) this.stopping = 'graceful';
         return false;
@@ -1536,7 +1582,7 @@ Fix that, keep it matching, and report "matched".
               this.startJob(slot, job);
             } catch (e) {
               slot.job = null;
-              this.fail(null, job, `could not start: ${e.message}`);
+              this.fail(null, job, `could not start: ${e.message}`, false);
             }
           }
         if (!this.stopping && this.integQueue.length <= this.o.maxQueued)
@@ -1549,7 +1595,7 @@ Fix that, keep it matching, and report "matched".
               this.startJob(slot, job);
             } catch (e) {
               slot.job = null;
-              this.fail(null, job, `could not start: ${e.message}`);
+              this.fail(null, job, `could not start: ${e.message}`, false);
             }
           }
         const idle = !this.activeJobs().length;
@@ -1748,7 +1794,7 @@ function clean(o) {
 
 // for tools/swarm/swarm.test.mjs, which imports this file with SWARM_IMPORT=1 (an env guard: a
 // path comparison with argv[1] can misfire on Windows path case and keep `run` from starting)
-export { Swarm, reapply, parseArgs, INCLUDE_LINE };
+export { Swarm, reapply, parseArgs, INCLUDE_LINE, infraError };
 
 if (process.env.SWARM_IMPORT !== '1') {
   const [cmd, o] = parseArgs(process.argv.slice(2));

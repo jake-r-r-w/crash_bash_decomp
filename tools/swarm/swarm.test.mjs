@@ -290,3 +290,26 @@ test('checkpoints saved by name still resume, for unique names only', () => {
   assert.equal(s.checkpoint(slot('ovl60')).key, 'ovl60:800B3A38');
   assert.equal(s.checkpoint(unique).diffs, 3);
 });
+
+// ---------------------------------------------------------------- environment errors
+
+test('infraError: tools/dk messages, exit codes 125-127, Windows file locks; not a mismatch', async () => {
+  const { infraError } = await import('./swarm.mjs');
+  assert.match(infraError('ERROR: Docker daemon not reachable. Start Docker Desktop and retry.\n', 127), /daemon not reachable/);
+  assert.match(infraError('', 125), /exited 125/);
+  assert.match(infraError('PermissionError: [WinError 32] in use\n', 1), /PermissionError/);
+  assert.equal(infraError('STAGE func_80012345 registers 3/120 (length 120 vs 120)\n', 1), null);
+  assert.equal(infraError('MATCH func_80012345\n', 0), null);
+});
+
+test('environment errors and failed starts charge no attempt', () => {
+  const s = swarm();
+  const f = fn('func_80010000');
+  s.infraStop(null, { f, model: 'sonnet', notes: [] }, 'Docker is not reachable');
+  s.fail(null, { f, model: 'sonnet', notes: [] }, 'could not start', false);
+  assert.equal(s.history[f.key].attempts, 0);
+  assert.equal(s.stopping, 'graceful');
+  assert.equal(s.consecutiveFailures, 1);
+  s.fail(null, { f, model: 'sonnet', notes: [] }, 'bad patch');
+  assert.equal(s.history[f.key].attempts, 1);
+});
