@@ -33,6 +33,12 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
+**Before the next swarm run: [TOOLING_PLAN.md](TOOLING_PLAN.md).** Part 1
+fixes swarm bugs that break slot-overlay runs (35 function names shared
+across overlays make `decomp.py` die "ambiguous"; `reapply` drops header
+lines; a lost Docker daemon parks everything), then Part 2 (cost per
+function) and Part 3 (ideas from decomp.wtf), one commit each.
+
 **Start of next session: matching.** Run the engine swarm hour (item 1b,
 `--max-functions 500`), then the post-run checklist (2026-10-15 evening
 runs were stopped early: `fold` and `permute --near` not done yet). The file splits are
@@ -58,7 +64,8 @@ done as far as the evidence goes (item 3).
    `swarm.mjs run --branch main --seg overlays/engine --max-minutes 60
    --max-run-usd 80 --max-functions 500 --workers 3 --big-workers 2
    --big-bytes 400 --big-minutes 27` matched 45 in 60 min for $21.72 on
-   2026-10-15 (mostly under 150 B, about $0.12 each). A second hour matched 38 for $16.46, a third 59 in 43 min for
+   2026-10-15 (mostly under 150 B; $0.48 a match, a floor: big sessions killed at
+   their deadline cost $0 in the logs). A second hour matched 38 for $16.46, a third 59 in 43 min for
    $27.60 (stopped early). Evening: 20 in 24 min ($18.34) and 29 in 20 min
 (both stopped early). Repeat it; 101 engine functions are left. Near
 misses with big-mode checkpoints: `func_8007BFA8` (instructions 5/114),
@@ -371,6 +378,11 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-16 (review, no code):** compared decomp.wtf's tools with ours;
+  plan in TOOLING_PLAN.md. Found swarm bugs: shared overlay names are
+  ambiguous to `find_func`, checkpoints keyed by name, `reapply` drops
+  header lines (reproduced), Docker loss not detected, killed big sessions
+  uncosted, workers can rewrite `tools/dk` on the host.
 - **2026-10-15 (evening, swarm):** two engine runs, both stopped early by
   the user: 20 + 29 matched (1020/2551 now, engine 101 left), 1 parked
   (`func_80095258`, then retried). Stopped permuter runs kept their C in
