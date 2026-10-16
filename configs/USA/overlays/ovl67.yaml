@@ -13,7 +13,7 @@ options:
   asm_path: asm
   src_path: src
   build_path: build
-  asset_path: assets
+  asset_path: asm/bin
 
   ld_script_path: linkers/ovl67.ld
   ld_dependencies: True

@@ -269,8 +269,15 @@ def yaml_of(name):
 
 def set_checksum(built, sha):
     """Record `sha  built` in configs/USA/checksum.sha (one line per target, read by make check)."""
-    lines = [l for l in (read(P_SUMS).splitlines() if os.path.exists(P_SUMS) else []) if not l.endswith("  " + built)]
-    write(P_SUMS, "\n".join(lines + [f"{sha}  {built}"]) + "\n")
+    lines = read(P_SUMS).splitlines() if os.path.exists(P_SUMS) else []
+    new = f"{sha}  {built}"
+    at = [i for i, l in enumerate(lines) if l.endswith("  " + built)]
+    if at:                                   # in place, so extracting again leaves the file as it was
+        lines[at[0]] = new
+        lines = [l for i, l in enumerate(lines) if i not in at[1:]]
+    else:
+        lines.append(new)
+    write(P_SUMS, "\n".join(lines) + "\n")
 
 
 def sym_file(ovl):
@@ -771,6 +778,13 @@ def cmd_extract(a):
     for o in proj.get("overlays", []):
         extract_overlay(o)
         print(f"overlay {o['name']} -> disc/{o['name']}.bin")
+    # the game data, as editable files (docs/ASSETS.md); never over existing edits
+    if proj.get("overlays"):
+        import dat
+        if os.path.exists(dat.ASSETS):
+            print(f"{dat.ASSETS}/ kept (it holds your edits; dat.py extract --force starts it again)")
+        else:
+            dat.extract()
 
 
 def extract_overlay(o):
@@ -2737,7 +2751,7 @@ def cmd_link_psyq(a):
             print(f"  .data: {len(objs)} objects' data from the objects, the blob in {len(new) - len(objs)} pieces")
     in_yaml = set(re.findall(r"- \[0x[0-9A-F]+, lib, (\w+), (\w+), \.data\]", text))
     if "lib_path:" not in text:
-        text = text.replace("  asset_path: assets\n", f"  asset_path: assets\n  lib_path: {PSYQ_LIBS}\n", 1)
+        text = text.replace("  asset_path: asm/bin\n", f"  asset_path: asm/bin\n  lib_path: {PSYQ_LIBS}\n", 1)
     # NOLOAD placement of the other sections
     ld = ["/* Sony PsyQ objects' data sections at their original addresses (decomp.py link-psyq).",
           " * NOLOAD: the bytes come from the exe's data; this only makes references resolve.",

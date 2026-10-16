@@ -27,7 +27,7 @@ const DEFAULTS = JSON.parse(fs.readFileSync(path.join(REPO, 'tools/swarm/config.
 const WIN = process.platform === 'win32';
 const LABEL = 'crashbash-swarm';
 // game data and tool downloads are git-ignored: each clone gets a copy
-const DATA_DIRS = ['asm', 'assets', 'linkers', 'ext'];
+const DATA_DIRS = ['asm', 'linkers', 'ext'];   // splat's binary segments are in asm/bin; assets/ (the game data) isn't needed to match
 const DISC_FILE_MAX = 16 << 20;           // disc/: the exe and overlay binaries, not the 170 MB image
 const RESULT = '.swarm-result.json';
 // gate output that means the environment is broken, not the function: the run stops at the first

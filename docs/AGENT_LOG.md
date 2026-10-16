@@ -285,8 +285,11 @@ Other:
   `INCLUDE_RODATA(...)` where the function was, `extern char D_xxx[];`, and
   `make split` (`func_800235BC`). Don't run `splat split --disassemble-all`:
   it writes `asm/matchings/`, which the build assembles and fails on.
-- **`make clean` (and `make verify`) delete `build/`** except
-  `build/scratch/` (keep drafts and notes there) and `build/disc-cache/`.
+- **`make clean` (and `make verify`) delete all of `build/`** (since
+  2026-10-16). Keep drafts and notes in `scratch/` (ignored); the game data
+  dump is `assets/` (your edits: `dat.py extract` won't overwrite it without
+  `--force`); splat's binary segments are in `asm/bin/` (`asset_path`).
+  `disc/files/` must be complete for `make disc` (rerun `decomp.py extract`).
 - **The build tracks its pipeline:** C objects depend on `dmpsx.py`,
   `aspsx_fill.py`, `project.mk` and the Makefile, and overlay linker scripts
   on their own `sym.<ovl>.txt` and `sym.engine.txt`, so editing those
@@ -419,6 +422,13 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-16 (disposable build/):** `make clean` deletes all of `build/`;
+  `build/scratch` -> `scratch/`; splat's `asset_path` -> `asm/bin` (the
+  Makefile had been building all 992 DAT files from `assets/` into
+  objects); `pack_disc` uses `disc/files` (no `build/disc-cache`);
+  `decomp.py extract` also extracts `assets/` (never over edits). Checked by
+  deleting build/, asm/, linkers/, assets/ and running the Quick Start.
 
 - **2026-10-16 (assets: screens, text):** `tga.py` (5 title screens, plain
   TGA, to PNG) and `txt.py` (12 modes' text, strings in fixed slots

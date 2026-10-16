@@ -11,7 +11,7 @@ options:
   asm_path: asm
   src_path: src
   build_path: build
-  asset_path: assets
+  asset_path: asm/bin
   lib_path: ext/psyq47/lib
   # create_asm_dependencies: True
 

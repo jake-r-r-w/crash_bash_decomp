@@ -3,9 +3,9 @@
 
 Runs inside the toolchain container:   tools/dk make disc   (or make disc-check)
 
-The user's retail image is unpacked with dumpsxiso once into build/disc-cache/ (kept by make
-clean, redone when the image changes) and copied to build/disc/ every run, so nothing from an
-earlier pack leaks in (files the pack doesn't change are hard links). build/main.exe replaces
+It starts from the retail image as `decomp.py extract` unpacked it (dumpsxiso: disc/files/ and
+disc/layout.xml), copied to build/disc/ every run, so nothing from an earlier pack leaks in
+(files the pack doesn't change are hard links). build/main.exe replaces
 the boot exe; CRASHBSH.DAT is built from its files in assets/CRASHBSH/ (tools/scripts/dat.py,
 which extracts them from the retail DAT first if they aren't there), and every build/<ovl>.bin
 is written over it at the offset decomp.py add-overlay recorded; mkpsxiso rebuilds the image from dumpsxiso's layout, which keeps every
@@ -22,11 +22,12 @@ import re
 import shutil
 import subprocess
 import sys
+import xml.etree.ElementTree as ET
 
 import dat
 
 P_PROJ = ".decomp/project.json"
-CACHE = "build/disc-cache"
+SRC = "disc"                           # decomp.py extract: files/ and layout.xml
 OUT = "build/disc"
 FILES = f"{OUT}/files"
 LAYOUT = f"{OUT}/layout.xml"
@@ -68,24 +69,30 @@ def read(p):
 
 
 def unpacked(src):
-    """The retail image unpacked (files/ and layout.xml) in CACHE, and its sha1; redone when the
-    image's size or date changes."""
-    st = os.stat(src)
-    key = f"{st.st_size}-{int(st.st_mtime)}"
-    stamp = f"{CACHE}/key"
-    if not (os.path.exists(stamp) and open(stamp).read().split()[0] == key):
-        shutil.rmtree(CACHE, ignore_errors=True)
-        run(["dumpsxiso", "-x", f"{CACHE}/files", "-s", f"{CACHE}/layout.xml", src])
-        with open(stamp, "w") as f:
-            f.write(f"{key} {hashlib.sha1(read(src)).hexdigest()}\n")
-    return open(stamp).read().split()[1]
+    """The retail image's sha1, after checking disc/ holds every file its layout names (decomp.py
+    extract writes both; run it again if one is missing)."""
+    layout = f"{SRC}/layout.xml"
+    if not os.path.exists(layout):
+        die(f"no {layout}: run decomp.py extract on your cue first (README, Quick Start)")
+    tree = ET.parse(layout).getroot().find(".//directory_tree")
+
+    def files(node, rel):
+        for c in node:
+            if c.tag == "file":
+                yield os.path.join(rel, c.get("name"))
+            elif c.tag == "dir":
+                yield from files(c, os.path.join(rel, c.get("name")))
+    missing = [p for p in files(tree, f"{SRC}/files") if not os.path.exists(p)]
+    if missing:
+        die(f"{', '.join(missing[:3])} missing from {SRC}/files: run decomp.py extract again")
+    return hashlib.sha1(read(src)).hexdigest()
 
 
 def copy_tree(changed):
-    """CACHE -> OUT: the files in changed are copied (they get written), the rest hard-linked."""
+    """SRC -> OUT: the files in changed are copied (they get written), the rest hard-linked."""
     shutil.rmtree(OUT, ignore_errors=True)
-    for dp, _, fns in os.walk(f"{CACHE}/files"):
-        rel = os.path.relpath(dp, CACHE)
+    for dp, _, fns in os.walk(f"{SRC}/files"):
+        rel = os.path.relpath(dp, SRC)
         os.makedirs(os.path.join(OUT, rel), exist_ok=True)
         for fn in fns:
             a, b = os.path.join(dp, fn), os.path.join(OUT, rel, fn)
@@ -96,7 +103,7 @@ def copy_tree(changed):
                 os.link(a, b)
             except OSError:
                 shutil.copyfile(a, b)
-    shutil.copyfile(f"{CACHE}/layout.xml", LAYOUT)
+    shutil.copyfile(f"{SRC}/layout.xml", LAYOUT)
 
 
 def main():

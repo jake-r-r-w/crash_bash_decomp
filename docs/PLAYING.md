@@ -10,8 +10,8 @@ retail.
 
 ## The disc packer
 
-`tools/scripts/pack_disc.py` unpacks your retail image with `dumpsxiso` once into
-`build/disc-cache/`, replaces `SCUS_945.70` with `build/main.exe`, builds `CRASHBSH.DAT` from
+`tools/scripts/pack_disc.py` starts from your retail image as `decomp.py extract` unpacked it
+(`disc/files/`, `disc/layout.xml`), replaces `SCUS_945.70` with `build/main.exe`, builds `CRASHBSH.DAT` from
 its files in `assets/CRASHBSH/`, writes each `build/<ovl>.bin` over it at its retail offset, and
 rebuilds the image with `mkpsxiso` so every file keeps its retail sector. A file may shrink (it is
 zero-padded) but not grow: an overlay or a DAT entry is a fixed slot, and the packer refuses a

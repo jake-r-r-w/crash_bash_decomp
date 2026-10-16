@@ -115,7 +115,12 @@ def project():
     return proj, dats.pop()
 
 
-def extract(dest=ASSETS, quiet=False):
+def extract(dest=ASSETS, quiet=False, force=False):
+    """The retail DAT -> dest. An existing dest holds the user's edits: refused unless force (which
+    starts again from the retail files)."""
+    if os.path.exists(dest) and not force:
+        die(f"{dest}/ exists (your edits are in it): delete it, or pass --force, to extract again")
+    shutil.rmtree(dest, ignore_errors=True)
     proj, src = project()
     exe_path = os.path.join(os.path.dirname(os.path.dirname(src)), proj["exe"])
     entries = read_index(read(exe_path), int(proj["header"]["t_addr"], 16))
@@ -236,13 +241,14 @@ def build(out, src=ASSETS):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
-    sub.add_parser("extract", help=f"the retail DAT -> {ASSETS}/")
+    x = sub.add_parser("extract", help=f"the retail DAT -> {ASSETS}/")
+    x.add_argument("--force", action="store_true", help=f"replace an existing {ASSETS}/ (its edits are lost)")
     sub.add_parser("decode", help="the entries in a known format -> editable files")
     b = sub.add_parser("build", help=f"{ASSETS}/ -> a DAT")
     b.add_argument("out")
     a = ap.parse_args()
     if a.cmd == "extract":
-        extract()
+        extract(force=a.force)
     elif a.cmd == "decode":
         decode()
     else:

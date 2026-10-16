@@ -57,7 +57,8 @@ C_FILES   := $(shell find src -name '*.c' 2>/dev/null)
 # (pruned: asm/nonmatchings holds ~2,700 .s files that aren't objects; walking them cost ~90 ms
 # on every make, which `try` and `regions` run several times)
 S_FILES   := $(shell find asm -path asm/nonmatchings -prune -o -name '*.s' -print 2>/dev/null)
-BIN_FILES := $(shell find assets -name '*.bin' 2>/dev/null)
+# splat's binary segments (configs: asset_path); assets/ is the game data dump (dat.py), not built
+BIN_FILES := $(shell find asm/bin -name '*.bin' 2>/dev/null)
 O_FILES   := $(C_FILES:%=build/%.o) $(S_FILES:%=build/%.o) $(BIN_FILES:%=build/%.o)
 
 .PHONY: all build split check verify disc disc-check test-tools diff permute progress objdiff-config clean
@@ -203,8 +204,7 @@ objdiff-config: build
 print-%:
 	@echo '$($*)'
 
-# Keeps build/scratch (your own notes and C drafts) and build/disc-cache (slow to
-# recreate); everything else under build/ is output and goes.
-KEEP_BUILD := scratch disc-cache
+# build/ is output only: delete it all. Notes and drafts go in scratch/ (ignored), the game data
+# dump in assets/ (dat.py), both outside build/.
 clean:
-	@if [ -d build ]; then find build -mindepth 1 -maxdepth 1 $(KEEP_BUILD:%=! -name %) -exec rm -rf {} +; fi
+	rm -rf build
