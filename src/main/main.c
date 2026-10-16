@@ -10602,30 +10602,32 @@ void func_800246D0(GlyphPos *arg0, u8 *s, s32 arg2, s32 arg3) {
     }
 }
 
-#ifndef NON_MATCHING
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800248A0);
-#else
-void func_800248A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+void func_800248A0(x, y, c0, c1, n)
+    s16 x;
+    s16 y;
+    s32 c0;
+    s32 c1;
+    s32 n;
+{
     u8 *base;
     u16 *ids;
     u16 (*tbl)[3];
     SprPos pos;
 
-    if ((arg0 & 0xC000) == 0x8000) {
-        arg0 = 0x140 - (0x1D880 / D_8005B698->w) / 2;
+    if ((x & 0xC000) == 0x8000) {
+        x = 0x140 - (0x1D880 / D_8005B698->w) / 2;
     }
-    pos.f.y = arg1;
-    pos.f.x = arg0;
+    pos.f.y = y;
+    pos.f.x = x;
     tbl = D_8005A5C0;
-    ids = tbl[arg4];
+    ids = tbl[n];
     base = D_80053074;
-    func_8002992C((SpriteFrame *)(*(u8 **)(base + 0x18) + (ids[0] & 0xFFF) * 0x38), pos.w, 0, arg2, arg2, arg3, arg3);
-    pos.f.x = arg0 + 0x9D80 / D_8005B698->w;
-    func_8002992C((SpriteFrame *)(*(u8 **)(base + 0x18) + (ids[1] & 0xFFF) * 0x38), pos.w, 0, arg2, arg2, arg3, arg3);
-    pos.f.x = arg0 + 0x13B00 / D_8005B698->w;
-    func_8002992C((SpriteFrame *)(*(u8 **)(base + 0x18) + (ids[2] & 0xFFF) * 0x38), pos.w, 0, arg2, arg2, arg3, arg3);
+    func_8002992C((SpriteFrame *)(*(u8 **)(base + 0x18) + (ids[0] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
+    pos.f.x = x + 0x9D80 / D_8005B698->w;
+    func_8002992C((SpriteFrame *)(*(u8 **)(base + 0x18) + (ids[1] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
+    pos.f.x = x + 0x13B00 / D_8005B698->w;
+    func_8002992C((SpriteFrame *)(*(u8 **)(base + 0x18) + (ids[2] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
 }
-#endif
 
 void func_80024AD8(void) {
     EXTengine tmp;
