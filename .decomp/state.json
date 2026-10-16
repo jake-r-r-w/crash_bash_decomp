@@ -1,11 +1,10 @@
 {
  "80010000": {
   "auto_diff": 63,
-  "auto_failed": "diff",
   "blocked_at": "2026-10-15T08:33:04Z",
-  "note": "instructions 36/86 (length right); only the BCD tail's registers: target const 0x66666667 in a0, n/10 in a2, accumulator a0; i is reused for the quotient chain (a fresh var changes the length); permuter 10 min found nothing; next: cc1 -dl local-alloc dump",
+  "matched_at": "2026-10-16T14:40:35Z",
   "started": "2026-10-15T08:04:46Z",
-  "status": "todo",
+  "status": "matched",
   "unblocked_at": "2026-10-16T13:33:01Z",
   "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },

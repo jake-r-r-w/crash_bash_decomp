@@ -1,15 +1,14 @@
 #include "common.h"
 #include "bash/main.h"
 
-#ifndef NON_MATCHING
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80010000);
-#else
 s32 func_80010000(u8 *arg0) {
+    s32 q;
     s32 n;
     s32 i;
     u8 *p;
     u8 b;
     s32 t;
+    s32 d;
 
     n = 0;
     for (i = 0; i < 33; i++) {
@@ -34,17 +33,16 @@ s32 func_80010000(u8 *arg0) {
             n += 8;
         }
     }
-    t = n % 10;
-    i = n / 10;
-    t |= (i % 10) << 4;
+    q = n / 10;
+    t = 0;
+    i = q;
+    t = i - (i / 10) * 10;
     i /= 10;
-    t |= (i % 10) << 8;
+    d = i - (i / 10) * 10;
     i /= 10;
-    t |= (i % 10) << 12;
-    D_8004E0D0 = t;
+    D_8004E0D0 = (n - q * 10) | (t << 4) | (d << 8) | ((i % 10) << 12);
     return n;
 }
-#endif
 
 void func_80010158(void) {
     D_8004E0E0 = 2;
