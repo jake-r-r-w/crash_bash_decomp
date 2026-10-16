@@ -14,8 +14,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1065/2551 game functions matched: **main.exe is complete (575/575)**;
-  engine overlay 73 left. None parked,
+- 1084/2551 game functions matched: **main.exe is complete (575/575)**;
+  engine overlay 54 left. None parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - The engine overlay is six files and `ovl5d` three, `ovl5e`, `ovl66`,
@@ -47,7 +47,7 @@ fell for 250-399 B normal ($0.79 -> $0.66, first-session matches 54% ->
 70%) and 400-599 B big ($4.58 -> $3.52); small samples, and what is left
 is the harder remainder. The closest-C carry-over did the work: three
 functions parked close then matched on the retry from their C. **Next:
-repeat the engine hour** (73 left); `permute --near` first if there is CPU
+repeat the engine hour** (54 left) with the big-heavy recipe below; `permute --near` first if there is CPU
 time. After each swarm run, compare `stats --run ID` with the ledger's
 earlier runs.
 
@@ -84,10 +84,13 @@ hand since). main.exe is fully matched. The file splits are done as far as the e
    sessions killed at their deadline cost $0 in the logs). A second hour matched 38 for $16.46, a third 59 in 43 min for
    $27.60 (stopped early). Evening: 20 in 24 min ($18.34) and 29 in 20 min
 (both stopped early). 2026-10-16: 28 in 60 min ($41.11, mostly 250-600 B
-now). Repeat it; 73 engine functions are left. Near
+now). 2026-10-16 night: 19 in 60 min ($56.63, $2.98 a match, 0 parked) with
+`--workers 1 --big-workers 4`: 71 of the 73 left were big (>= 400 B or
+escalated), so 3 normal workers would idle; use that split for the engine
+from now on. Repeat it; 54 engine functions are left. Near
 misses with big-mode checkpoints: `func_8007BFA8` (instructions 5/114),
 `func_8007C170` (17/114), `func_8007CC80` (structure 77/116),
-`func_8008F248` (registers 2/117), `func_800864CC` (5/132),
+`func_800926CC` (instructions 10/134), `func_8008C824` (registers 25/155),
 `func_80079260` (4/98), `func_80094A28` (5/68), `func_800939FC`
 (registers 11/123: its checkpoint is the session the patch-check bug
 refused, restored by hand; the session log says the block-0 a0/a1 swap is
@@ -372,6 +375,12 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-16 night (engine swarm):** run 20261016213103, 60 min, 1 normal
+  + 4 big workers: 19 matched (incl. `InitHealth`, `PlotHealth`), 0 parked,
+  $56.63. The two small engine functions left (`func_80095258`,
+  `func_8008A924`: inline asm) are at max attempts, so the normal worker
+  idled. Folded 18 pattern rows from matched functions; dropped rows from
+  still-unmatched functions and `func_8002D4F4` duplicates.
 - **2026-10-16 (docs, cleanup):** ROADMAP's "match every game function in
   the executable" ticked; README, ARCHITECTURE, MATCHING and CLAUDE.md
   updated for the 2.7.2 units' settings and `tools/reference/`. Fixed the
