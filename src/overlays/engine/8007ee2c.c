@@ -1740,7 +1740,45 @@ s32 func_8008C4C8(s32 *arg0, s32 arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8008C5C4);
+s32 func_8008C5C4(s32 *from, s32 *to, Arc *arc, s32 *pos) {
+    s32 dx;
+    s32 dz;
+    s32 dist;
+    s32 n;
+    s32 dy;
+    s32 hit;
+    s32 ang;
+
+    hit = 0;
+    if (arc->started == 0) {
+        dx = to[0] - from[0];
+        dz = to[2] - from[2];
+        n = 0;
+        dist = csqrt(dx * dx + dz * dz) >> 6;
+        dy = to[1] - from[1];
+        if (arc->speed != 0) {
+            n = dist / arc->speed;
+        }
+        if (n == 0) {
+            return 1;
+        }
+        arc->vy = arc->vy0 = dy / n - (n >> 1) * arc->gravity;
+        ang = get_angle(dx, dz) & 0xFFF;
+        arc->angle = ang;
+        arc->vx = arc->speed * D_80068BD4[(ang - 0x400) & 0xFFF].unk2 >> 12;
+        arc->vz = arc->speed * D_80068BD4[arc->angle & 0xFFF].unk2 >> 12;
+        arc->started = 1;
+    }
+    pos[1] += arc->vy;
+    arc->vy += arc->gravity;
+    pos[0] += arc->vx;
+    pos[2] += arc->vz;
+    if (pos[1] >= arc->floor && arc->vy > 0) {
+        pos[1] -= abs(pos[1] - arc->floor);
+        hit = 1;
+    }
+    return hit;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8008C824);
 

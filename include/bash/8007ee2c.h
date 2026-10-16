@@ -319,4 +319,27 @@ void func_8008795C(s32 arg0);
 
 void InitHealth(NAS *nas);
 
+/* ballistic arc state used by func_8008C5C4 */
+typedef struct {
+    /* 0x00 */ s32 gravity;
+    /* 0x04 */ s32 started;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ s32 vy0;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 vy;
+    /* 0x18 */ s32 floor;
+    /* 0x1C */ s32 unk1C[2];
+    /* 0x24 */ s32 angle;
+    /* 0x28 */ s32 unk28[3];
+    /* 0x34 */ s32 vx;
+    /* 0x38 */ s32 vz;
+    /* 0x3C */ s32 unk3C[2];
+    /* 0x44 */ s32 speed;
+} Arc;
+
+s32 csqrt(s32 x);
+s32 abs(s32);
+
+s32 func_8008C5C4(s32 *from, s32 *to, Arc *arc, s32 *pos);
+
 #endif /* BASH_8007EE2C_H */
