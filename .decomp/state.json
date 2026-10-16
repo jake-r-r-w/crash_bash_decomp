@@ -850,10 +850,9 @@
  },
  "80017164": {
   "auto_diff": 141,
-  "auto_failed": "diff",
   "blocked_at": "2026-10-15T09:05:36Z",
-  "note": "registers 22/137; loops: two do/while with end = -1 in the body (own end var each) and a goto loop for the 0x58 nodes; only q (8-byte list, target a1) and next (0x54 list, target a0) are in a0/a2; permuter 10 min nothing sound; next: vars/splitvars on q and next",
-  "status": "todo",
+  "matched_at": "2026-10-16T14:22:13Z",
+  "status": "matched",
   "unblocked_at": "2026-10-16T13:33:01Z",
   "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },

@@ -4231,9 +4231,6 @@ void func_80017138(u8 *arg0) {
     func_8002AA8C(arg0 + 0x10);
 }
 
-#ifndef NON_MATCHING
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80017164);
-#else
 static inline void func_80017164_clear(u8 *p) {
     *(s32 *)(p + 4) = 0;
     *(s32 *)(p + 8) = 0;
@@ -4285,17 +4282,20 @@ void func_80017164(s32 *cfg) {
     end = -1;
     n = cfg[0] + end;
     D_80056858 = (s32 *)D_80056854;
-loop:
-    n--;
-    if (n != end) {
-        next = p + 0x58;
-        *(u8 **)p = next;
+    for (;;) {
+        u8 *np;
+
+        n--;
+        if (n == end) {
+            break;
+        }
+        np = p + 0x58;
+        *(u8 **)p = np;
         func_80017164_clear(p + 4);
         func_80017164_clear(p + 0x18);
         func_80017164_clear(p + 0x2C);
         func_80017164_clear(p + 0x40);
-        p = next;
-        goto loop;
+        p = np;
     }
     func_80017164_clear(p + 4);
     func_80017164_clear(p + 0x18);
@@ -4306,7 +4306,6 @@ loop:
     D_80056848 = 0;
     D_80056860 = (s32 *)D_8005685C;
 }
-#endif
 
 static inline void PrimList_Flush(ListNode18938 *arg0, s32 arg1) {
     arg0->f0 = 0;
