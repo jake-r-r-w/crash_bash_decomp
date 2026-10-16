@@ -172,7 +172,84 @@ static inline void func_800107C8_merge(MemBlock *a, Heap *arg1, s32 m1) {
 }
 
 #ifndef NON_MATCHING
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80010488);
+void func_80010488(Heap *heap) {
+    u32 size;
+    s32 size2;
+    s32 n;
+    s32 *s;
+    s32 *d;
+    MemBlock *end;
+    MemBlock *p;
+    MemBlock *a;
+    MemBlock *b;
+    MemBlock *prev;
+    MemBlock *q;
+    MemBlock *qprev;
+    s32 budget;
+
+    p = Heap_NextToMove(heap);
+    budget = (0x1FE - VSync(1)) * 0x70;
+    do {
+        s32 t;
+
+        if (p == NULL) break;
+        budget -= p->size;
+        if (budget <= 0) break;
+        t = VSync(1);
+        D_8004E0EC += p->size;
+        a = heap->lowest;
+        func_80011B74((u8 *)a, (u8 *)heap);
+        size = a->size;
+        b = (MemBlock *)((u8 *)a + (size * 4 + 0x18));
+        n = b->size;
+        prev = a->prev;
+        d = (s32 *)((u8 *)a + 0x18);
+        *a = *b;
+        s = (s32 *)((u8 *)b + 0x18);
+        a->prev = prev;
+        end = (MemBlock *)((u8 *)b + (n * 4 + 0x18));
+        size2 = size;
+        n--;
+        *a->owner = (void *)d;
+        while (n != -1) {
+            *d++ = *s++;
+            n--;
+        }
+        b = (MemBlock *)((u8 *)a + (a->size * 4 + 0x18));
+        end->prev = b;
+        b->size = size2;
+        b->owner = (void **)-1;
+        b->unk0 = 0;
+        b->prev = a;
+        if (a == heap->lowest) {
+            heap->lowest = func_80011BC0(b);
+        }
+        func_800110A8(b + 1, heap);
+        t = VSync(1) - t;
+        p = Heap_NextToMove(heap);
+        D_8004E0E8 += t;
+    } while (1);
+    q = heap->deferred;
+    qprev = NULL;
+    while (q != NULL) {
+        if (--*(s16 *)q->unk2 <= 0) {
+            if (qprev != NULL) {
+                qprev->nextFree = q->nextFree;
+            } else {
+                heap->deferred = q->nextFree;
+            }
+            func_800110A8(q + 1, &D_8004E0F0);
+            if (qprev != NULL) {
+                q = qprev->nextFree;
+            } else {
+                q = NULL;
+            }
+        } else {
+            qprev = q;
+            q = q->nextFree;
+        }
+    }
+}
 #else
 static inline MemBlock *Heap_NextLowest(Heap *heap, s32 m1) {
     MemBlock *blk;

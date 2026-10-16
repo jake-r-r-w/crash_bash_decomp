@@ -731,6 +731,35 @@ typedef struct Heap {
     /* 0x10 */ MemBlock *deferred;       /* freed once unk2 ticks run out (func_80011578, func_80011DB4) */
 } Heap;
 
+/* The used block right after the heap's lowest free block, or NULL. */
+static inline MemBlock *Heap_AfterLowest(Heap *heap) {
+    MemBlock *nx;
+    MemBlock *lo = heap->lowest;
+
+    if (lo == NULL) {
+        return NULL;
+    }
+    nx = (MemBlock *)((u8 *)lo + (lo->size * 4 + 0x18));
+    if (nx->owner == (void **)-1 || nx->size == 0) {
+        return NULL;
+    }
+    return nx;
+}
+
+
+extern s32 D_8005B690;
+
+/* Heap_AfterLowest, unless it is flagged busy for this frame buffer. */
+static inline MemBlock *Heap_NextToMove(Heap *heap) {
+    MemBlock *p;
+
+    p = Heap_AfterLowest(heap);
+    if (p != NULL && (p->unk0 & 2) && (p->unk0 & 1) == (D_8005B690 & 1)) {
+        return NULL;
+    }
+    return p;
+}
+
 /* A node from the free list func_80012E28 hands out (func_80012E14 returns
  * it); ptr is the heap block it owns. */
 typedef struct {
