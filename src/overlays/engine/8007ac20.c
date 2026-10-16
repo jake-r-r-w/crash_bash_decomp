@@ -77,7 +77,42 @@ void func_8007B7FC(u32 a, u32 b) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007B8D4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007BE84);
+void func_8007BE84(void) {
+    DigitEnt *e;
+    s32 v;
+    s32 n;
+    s32 i;
+
+    v = D_8004E0D0;
+    D_800996E0[0].flags = 0x10008000;
+    D_800996E0[0].cmd = 0x3014;
+    for (i = 1; i < 4; i++) {
+        n = v & 0xF;
+        if (n >= 10) {
+            n = 0;
+        }
+        v >>= 4;
+        D_800996E0[i].cmd = n + 0x3009;
+        D_800996E0[i].flags = 0x10008000;
+    }
+    n = 3;
+    i = 3;
+    do {
+        e = &D_800996E0[i];
+        if (e->cmd == 0x3009) {
+            n--;
+            e->flags &= 0xFFFF7FFF;
+        } else {
+            i = 0;
+        }
+        i--;
+    } while (i >= 2);
+    i = 1;
+    for (; i < 4; i++) {
+        D_800996E0[i].arg = *(u16 *)((u8 *)D_80099198 + n * 16 + i * 4);
+    }
+    D_800996E0[0].arg = *(u16 *)(n * 16 + (u8 *)D_80099198);
+}
 
 void func_8007BFA8(void) {
     s32 i;

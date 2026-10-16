@@ -10,6 +10,20 @@
 
 extern s32 D_8005A554[];
 
+typedef struct DigitEnt {
+    u16 cmd;
+    u16 arg;
+    s32 flags;
+} DigitEnt;
+
+typedef struct DigitSrc {
+    u16 v;
+    u16 pad;
+} DigitSrc;
+
+extern DigitEnt D_800996E0[4];
+extern DigitSrc D_80099198[];
+
 void func_8007D5EC(void);
 
 void func_8007E7A4(void);
@@ -115,6 +129,8 @@ extern EngPtr3 D_8009AE40[4];
 typedef struct { s32 unk0; s32 unk4; u8 pad8[0x9C]; } EngA4;
 extern EngA4 D_800CAD5C[4];
 extern u8 D_8005365C[];
+
+void func_8007BE84(void);
 
 void func_8007D208(void);
 
