@@ -14,6 +14,13 @@ s32 func_8007F314(void);
 void func_8007976C(void);
 void func_80097C28(void);
 extern u8 D_8005164C[];
+extern GfxViewport D_8009EA74;
+extern GfxViewport D_8009EA9C;
+extern GfxViewport D_8009EAC4;
+extern GfxViewport D_8009EAEC;
+extern GfxViewport D_8009EB14;
+extern GfxCamera D_800B9538;
+void func_800B566C(void);
 
 typedef struct { s32 w[4]; } Blk16;
 typedef struct { Blk16 a[0x18]; s32 b[3]; } Blk18C;
@@ -139,6 +146,8 @@ void func_8009246C(void);
 void func_8009201C(void);
 
 extern s32 D_8009F248[][5];
+
+void func_8008FB48(void);
 
 s32 func_8008FC60(void *arg0);
 

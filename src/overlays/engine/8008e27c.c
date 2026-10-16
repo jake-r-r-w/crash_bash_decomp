@@ -167,7 +167,24 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_8008F41C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_8008F554);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_8008FB48);
+void func_8008FB48(void) {
+    func_80018B08(&D_8009EA9C, &D_800B9538);
+    D_80056998.modelDp = *(s32 *)D_8009F644;
+    func_8001C2C0((u8 *)GetEngineSlot(3));
+    func_80018B08(&D_8009EAC4, &D_800B9538);
+    D_80056998.modelDp = *(s32 *)D_8009F644;
+    func_8001C2C0((u8 *)GetEngineSlot(4));
+    func_80018B08(&D_8009EAEC, &D_800B9538);
+    D_80056998.modelDp = *(s32 *)D_8009F644;
+    func_8001C2C0((u8 *)GetEngineSlot(5));
+    func_80018B08(&D_8009EB14, &D_800B9538);
+    D_80056998.modelDp = *(s32 *)D_8009F644;
+    func_8001C2C0((u8 *)GetEngineSlot(6));
+    func_800B566C();
+    func_80018B08(&D_8009EA74, &D_800B9538);
+    D_80056998.modelDp = *(s32 *)D_8009F644;
+    func_8001C2C0((u8 *)GetEngineSlot(2));
+}
 
 void func_8008FC58(void) {
 }
