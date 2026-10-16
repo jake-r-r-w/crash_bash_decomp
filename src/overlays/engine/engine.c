@@ -113,7 +113,60 @@ EngineReqObj *arg1;
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007A26C);
+s32 func_8007A26C(NAS *nas) {
+    EXTengine *eng;
+    EXTmotion *m;
+    s16 dec;
+
+    eng = nas->Engine;
+    if (eng == NULL) {
+        return 0;
+    }
+    m = FindExtension(nas, 0x800);
+    if (m == NULL) {
+        return 0;
+    }
+    m->Xvel += m->Xacc - m->Xdec;
+    if (m->Xvel < 0) {
+        m->Xvel = 0;
+    }
+    if (m->Xvel > m->Xmax) {
+        m->Xvel = m->Xmax;
+    }
+    eng->unk10.x -= m->Xvel * D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 >> 12;
+    eng->unk10.z -= m->Xvel * D_80068BD4[eng->unk1E & 0xFFF].unk2 >> 12;
+    m->Yvel += m->Yacc - m->Ydec;
+    if (m->Yvel < 0) {
+        m->Yvel = 0;
+    }
+    if (m->Yvel > m->Ymax) {
+        m->Yvel = m->Ymax;
+    }
+    if (m->Ydir) {
+        eng->unk10.y -= m->Yvel;
+    } else {
+        eng->unk10.y += m->Yvel;
+    }
+    if (m->Yvel == 0) {
+        s16 acc = m->Ydec;
+        m->Ydec = 0;
+        m->Ydir = 0;
+        m->Yacc = acc;
+    }
+    if (m->Ydir != 0) {
+        return 0;
+    }
+    if (func_80025BBC(eng) == 0) {
+        return 0;
+    }
+    dec = m->Yacc;
+    m->Ydir = 0xFF;
+    m->Yacc = 0;
+    m->Yvel = m->Yvel >> 1;
+    m->Xvel = m->Xvel >> 1;
+    m->Ydec = dec;
+    return 1;
+}
 
 NAS *func_8007A464(s32 arg0, s32 *arg1, s32 arg2) {
     NAS *nas;

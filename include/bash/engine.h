@@ -504,4 +504,6 @@ typedef struct {
 
 void func_80078CA4(void);
 
+s32 func_8007A26C(NAS *nas);
+
 #endif /* BASH_ENGINE_H */
