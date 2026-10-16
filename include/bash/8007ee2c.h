@@ -16,6 +16,8 @@ typedef struct {
     u16 pad;
 } D_8009D6FC_t;
 extern D_8009D6FC_t *D_8009D6FC;
+/* Per-hero run speed rows: 3 u16 per hero_name (func_800859D4). */
+extern u16 *D_8009D6F4;
 extern s16 D_8009D864;
 extern u16 D_8009D866;
 extern s16 D_8009D870;
