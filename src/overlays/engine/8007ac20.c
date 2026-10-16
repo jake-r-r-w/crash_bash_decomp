@@ -646,7 +646,40 @@ void func_8007D2F4(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007D4D0);
+void func_8007D4D0(void) {
+    U16Quad *q = D_8009AD74;
+    U16Quad *end = q;
+    HeroInfo *base = Heroes;
+    HeroInfo *h;
+    int i = 0;
+
+    do {
+        h = base + i;
+        if (h->hero_score >= 0x3E8) {
+            h->hero_score = 0x3E7;
+        }
+        if (h->hero_score < 0) {
+            h->hero_score = 0;
+        }
+        if (!(D_80099174 & 0x1000)) {
+            if (h->hero_score != h->hero_score_displayed &&
+                (!(D_8004E0D8 & 3) || (D_8009917C & 0x200))) {
+                if (h->hero_score_displayed < h->hero_score) {
+                    h->hero_score_displayed++;
+                } else {
+                    h->hero_score_displayed--;
+                }
+            }
+        }
+        if ((D_80099174 & 0x2000) && h->hero_teammate != -1) {
+            q->a = h->hero_score_displayed + base[h->hero_teammate].hero_score_displayed;
+        } else {
+            q->a = h->hero_score_displayed;
+        }
+        q++;
+        i++;
+    } while ((s32)q < (s32)end + 0x20);
+}
 
 void func_8007D5EC(void) {
     EngineGameView *g = (EngineGameView *)D_8005A614;
