@@ -345,4 +345,9 @@ void func_80089FA4(s32 arg0);
 
 s32 func_8008C5C4(s32 *from, s32 *to, Arc *arc, s32 *pos);
 
+extern u16 D_8009E214[];
+extern u16 D_8009E224[];
+
+void PlotHealth(NAS *nas);
+
 #endif /* BASH_8007EE2C_H */

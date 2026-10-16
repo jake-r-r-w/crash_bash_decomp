@@ -2260,7 +2260,65 @@ void InitHealth(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", PlotHealth);
+void PlotHealth(NAS *nas) {
+    EXTengine *eng;
+    EXTobject *obj;
+    EXTmotion *mot;
+    s32 p;
+    s32 n;
+    s32 st;
+
+    eng = nas->Engine;
+    if (eng == NULL) {
+        return;
+    }
+    nas->UserInfo.user2++;
+    eng->sub->unk74 = (nas->UserInfo.user2 >> 1) % 14 + 0x2018;
+    obj = (EXTobject *)nas->FUX;
+    if (obj == NULL) {
+        return;
+    }
+    st = obj->status;
+    if (st < 6) {
+        if (st < 4) {
+            goto plot;
+        }
+        mot = FindExtension(nas, 0x800);
+        if (mot != NULL && func_8007A26C(nas) != 0) {
+            if (obj->status == 4) {
+                PlaySfx(D_8009E214[Random(8)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            }
+            obj->status = 1;
+            mot->Ydec = 8;
+            mot->Ydir = 0xFF;
+            mot->Yacc = 0;
+            mot->Yvel = 0x40;
+        }
+        obj->will_do &= ~8;
+        return;
+    }
+plot:
+    func_8008D6C8(nas);
+    if (obj->will_do & 8) {
+        p = obj->player;
+        if (p != -1 && p < 5 && !(Heroes[p].hero_status & 0xFA00)) {
+            if (D_8005A614[p + 0x5C] != 0) {
+                n = 3 - D_8005A614[0x9B];
+            } else {
+                n = 0;
+            }
+            if (D_8009D908 != 0) {
+                n = 0;
+            }
+            Heroes[obj->player].hero_health += D_8009E224[n];
+            if (Heroes[obj->player].hero_health > 20) {
+                Heroes[obj->player].hero_health = 20;
+            }
+            PlaySfx(0x1C2, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        }
+        KillNAS(nas);
+    }
+}
 
 void PlotBigPoof(NAS *nas) {
     func_800250B0(nas);
