@@ -475,7 +475,138 @@ void func_8007C6EC(void) {
     D_80099174 |= 8;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007C830);
+void func_8007C830(s32 arg0, s32 arg1) {
+    s16 x0;
+    s16 x1;
+    s32 yb;
+    PanelPrim *b;
+    PanelPrim *p;
+    PanelPrim *q;
+    s32 col;
+    u8 *tim;
+    s16 y0;
+    s16 y1;
+    s32 code;
+    s16 n;
+
+    tim = D_80052F5C;
+
+    D_8009AE88[2] = arg0;
+    p = D_8009986C[2];
+    p->u6C.ptr = tim;
+    p->unk0 = 0x10008000;
+    y0 = 0x37;
+    y1 = 0x43;
+    code = 0x12000000;
+    n = 8;
+    p->unk4 = D_80099250[2].a;
+    yb = D_80099250[2].b;
+    p->unkC = 0;
+    p->unk74 = 0x2018;
+    p->unk8 = yb + 0x10;
+    b = p + 1;
+    x0 = (u16)D_80099250[2].a + 8;
+    x1 = (u16)D_80099250[2].a + 0x48;
+    b->unk54 = D_8001C7FC;
+    b->u6C.s.unk6C = x0;
+    b->u6C.s.unk6E = y0;
+    b->unk70 = 0;
+    b->unk74 = x1;
+    b->unk76 = y0;
+    b->unk78 = 0;
+    b->unk7C = x0;
+    b->unk7E = y1;
+    b->unk80 = 0;
+    b->unk84 = x1;
+    b->unk86 = y1;
+    b->unk88 = 0;
+    b->unk8C = 0x3FFF7F;
+    b->unk90 = 0x3FFF7F;
+    b->unk94 = 0xF4F2F;
+    b->unk98 = 0xF4F2F;
+    p[1].unk0 = code;
+    b->unk68 = n;
+    q = b + 1;
+    q->unk54 = D_8001C7FC;
+    q->u6C.s.unk6C = x0;
+    q->u6C.s.unk6E = y0;
+    q->unk70 = 0;
+    q->unk74 = x1;
+    q->unk7C = x0;
+    col = 0xBF;
+    q->unk76 = y0;
+    q->unk78 = 0;
+    q->unk7E = y1;
+    q->unk80 = 0;
+    q->unk84 = x1;
+    q->unk86 = y1;
+    q->unk88 = 0;
+    q->unk8C = col;
+    q->unk90 = col;
+    q->unk94 = col;
+    q->unk98 = col;
+    p[2].unk0 = code;
+    q->unk68 = n;
+
+    D_8009AE88[3] = arg1;
+    p = p + 7;
+    p->u6C.ptr = tim;
+    p->unk0 = 0x10008000;
+    p->unk4 = D_80099250[3].a;
+    yb = D_80099250[3].b;
+    p->unkC = 0;
+    p->unk74 = 0x2018;
+    p->unk8 = yb + 0x10;
+    x0 = (u16)D_80099250[3].a + 8;
+    x1 = (u16)D_80099250[3].a + 0x48;
+    {
+    PanelPrim *q;
+    q = b + 7;
+    q->unk54 = D_8001C7FC;
+    q->u6C.s.unk6C = x0;
+    q->u6C.s.unk6E = y0;
+    q->unk70 = 0;
+    q->unk74 = x1;
+    q->unk76 = y0;
+    q->unk78 = 0;
+    q->unk7C = x0;
+    q->unk7E = y1;
+    q->unk80 = 0;
+    q->unk84 = x1;
+    q->unk86 = y1;
+    q->unk88 = 0;
+    q->unk8C = 0x3FFF7F;
+    q->unk90 = 0x3FFF7F;
+    q->unk94 = 0xF4F2F;
+    q->unk98 = 0xF4F2F;
+    b[7].unk0 = code;
+    q->unk68 = n;
+    }
+    {
+    PanelPrim *q;
+    q = b + 8;
+    q->unk54 = D_8001C7FC;
+    q->u6C.s.unk6C = x0;
+    q->u6C.s.unk6E = y0;
+    q->unk70 = 0;
+    q->unk74 = x1;
+    q->unk76 = y0;
+    q->unk78 = 0;
+    q->unk7C = x0;
+    q->unk7E = y1;
+    q->unk80 = 0;
+    q->unk84 = x1;
+    q->unk86 = y1;
+    q->unk88 = 0;
+    q->unk8C = col;
+    q->unk90 = col;
+    q->unk94 = col;
+    q->unk98 = col;
+    b[8].unk0 = code;
+    q->unk68 = n;
+    }
+    D_80099174 |= 8;
+}
 
 void func_8007CA70(void) {
     s32 i;

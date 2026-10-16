@@ -158,4 +158,6 @@ extern s16 D_8009AE84;
 
 void func_8007B120(void);
 
+void func_8007C830(s32 arg0, s32 arg1);
+
 #endif /* BASH_8007AC20_H */
