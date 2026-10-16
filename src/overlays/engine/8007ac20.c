@@ -473,7 +473,71 @@ void func_8007CC80(void) {
     D_80099174 |= 0x10;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007CE50);
+void func_8007CE50(void) {
+    s32 i;
+    s32 off;
+    HeroInfo *h;
+    s32 v;
+    s32 sum;
+    u8 *e;
+    u8 *p;
+
+    i = 0;
+    off = i;
+    h = Heroes;
+loop:
+    if (i < 4) {
+        if (h->hero_name != 9) {
+            if (D_8005A648 < 0x12) {
+                v = 0;
+            } else {
+                if (D_8005A648 >= 0x17) {
+                    if (D_8005A648 >= 0x1B) {
+                        v = 0;
+                    } else {
+                        e = FindExtension(h->hero, 0x10000000);
+                        if (e != NULL) {
+                            v = *(s32 *)(e + 0x58) >> 10;
+                        } else {
+                            v = 0;
+                        }
+                    }
+                } else {
+                    e = FindExtension(h->hero, 0x20000000);
+                    if (e != NULL) {
+                        v = *(s32 *)(e + 0x20) >> 2;
+                    } else {
+                        v = 0;
+                    }
+                }
+            }
+            if (v >= 0x40) {
+                v = 0x3F;
+            }
+            p = D_80099914 + off;
+            sum = v + *(s16 *)(p + 0x6C);
+            *(s16 *)(p + 0x74) = sum;
+            *(s16 *)(p + 0x84) = sum;
+            if (v != 0) {
+                *(s32 *)p |= 0x8000;
+            } else {
+                *(s32 *)p &= 0xFFFF7FFF;
+            }
+            p = D_800999BC + off;
+            *(s16 *)(p + 0x6C) = sum;
+            *(s16 *)(p + 0x7C) = sum;
+            if (v < 0x3F) {
+                *(s32 *)p |= 0x8000;
+            } else {
+                *(s32 *)p &= 0xFFFF7FFF;
+            }
+        }
+        off += 0x498;
+        h++;
+        i++;
+        goto loop;
+    }
+}
 
 void func_8007CFAC(void) {
     s32 i;

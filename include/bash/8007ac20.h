@@ -112,6 +112,8 @@ void func_8007AF3C(void);
 void func_8007B330(void);
 void func_8007CA70(void);
 void func_8007CE50(void);
+extern u8 D_80099914[];
+extern u8 D_800999BC[];
 void func_8007D2F4(void);
 void func_8007D4D0(void);
 void func_8007D9DC(void);
