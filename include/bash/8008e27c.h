@@ -27,6 +27,13 @@ typedef struct { Blk16 a[0x18]; s32 b[3]; } Blk18C;
 typedef struct { s32 w[3]; } Blk12;
 typedef struct { Blk12 a; s32 b; } Blk12p4;
 
+typedef struct { u8 pad[0x6C]; s32 f6C; } Sub3F0;
+extern s32 D_8009EA64[];
+extern s32 D_8009EA68[];
+extern s32 D_8009EA6C[];
+extern s32 D_8009EA70[];
+s32 func_8008F248(s32 arg0);
+
 void func_8008EB3C(void);
 
 void func_8008EB8C(void);
@@ -146,6 +153,8 @@ void func_8009246C(void);
 void func_8009201C(void);
 
 extern s32 D_8009F248[][5];
+
+void func_8008F41C(void);
 
 void func_8008FB48(void);
 

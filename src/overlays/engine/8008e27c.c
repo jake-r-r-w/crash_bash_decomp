@@ -163,7 +163,41 @@ loop2:
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_8008F248);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_8008F41C);
+void func_8008F41C(void) {
+    u8 *s0;
+    Sub3F0 *s1;
+    s32 *tab;
+
+    s0 = (u8 *)GetEngineSlot(0)->sub;
+    s1 = (Sub3F0 *)(s0 + 0x3F0);
+    if (D_800655C0 & 2) {
+        if (D_800655C0 & 0x40) {
+            s1->f6C = D_8009EA6C[D_8005A640];
+            *(s32 *)(s0 + 0x3F0) |= 0x8000;
+            return;
+        } else if (D_800655C0 & 0x10) {
+            if (func_8008F248(0) != 0) {
+                s1->f6C = D_8009EA64[D_8005A640];
+                *(s32 *)(s0 + 0x3F0) |= 0x8000;
+                if (D_80051380 & 0x2000) {
+                    PlaySfx(0x396, NULL, NULL, 0x1000, 0x1E00, 0);
+                    func_8008F248(1);
+                }
+                return;
+            }
+            s1->f6C = D_8009EA70[D_8005A640];
+            *(s32 *)(s0 + 0x3F0) |= 0x8000;
+            return;
+        } else {
+            goto def;
+        }
+    } else {
+def:
+        tab = D_8009EA68;
+    }
+    s1->f6C = tab[D_8005A640];
+    *(s32 *)(s0 + 0x3F0) |= 0x8000;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_8008F554);
 
