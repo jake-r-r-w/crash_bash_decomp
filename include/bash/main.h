@@ -2954,6 +2954,8 @@ void func_8001E610(u8 *mgr, u8 *fadeState);
 
 void func_8001EAA4(u8 *arg0, u8 *arg1);
 
+void func_80020680(Quat *a, Quat *b, s32 t, Quat *out, s32 *pre);
+
 s32 func_80020C04(s32 arg0);
 
 void func_800235BC(ArenaDef *arg0);

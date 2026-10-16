@@ -8297,9 +8297,6 @@ void func_80020344(Quat *a, Quat *b, s32 t, Quat *out) {
     out->v[3] = (ka * a->v[3] + kb * q.v[3]) >> 18;
 }
 
-#ifndef NON_MATCHING
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80020680);
-#else
 /* Cosine at angle x / 2, linearly interpolated for odd x. */
 static inline s32 Trig_HalfCos(s32 x) {
     if (x & 1) {
@@ -8319,7 +8316,6 @@ void func_80020680(Quat *a, Quat *b, s32 t, Quat *out, s32 *pre) {
     s32 ib;
     s32 ka;
     s32 kb;
-    s32 pa;
     s32 pb;
 
     q.v[0] = b->v[0];
@@ -8361,7 +8357,12 @@ void func_80020680(Quat *a, Quat *b, s32 t, Quat *out, s32 *pre) {
     }
     ia >>= 11;
     ka = Trig_HalfCos(ia) * inv;
-    ia = Trig_HalfCos(ib) * inv;
+    if (ib & 1) {
+        ang = (D_80068BD4[((ib >> 1) - 0x400) & 0xFFF].unk2 + D_80068BD4[((ib >> 1) - 0x3FF) & 0xFFF].unk2) >> 1;
+    } else {
+        ang = D_80068BD4[((ib >> 1) - 0x400) & 0xFFF].unk2;
+    }
+    ia = ang * inv;
     if (ka > 0) {
         ka += 0x10;
     } else {
@@ -8374,20 +8375,19 @@ void func_80020680(Quat *a, Quat *b, s32 t, Quat *out, s32 *pre) {
         ia -= 0x10;
     }
     ia >>= 5;
-    pa = ka * a->v[0];
+    kb = ka * a->v[0];
     ib = ia * q.v[0];
-    out->v[0] = (((pa >= 0 ? pa + 0x800 : pa - 0x800) >> 12) + ((ia * q.v[0] >= 0 ? ib + 0x800 : ib - 0x800) >> 12)) >> 7;
-    pa = ka * a->v[1];
+    out->v[0] = (((kb >= 0 ? kb + 0x800 : kb - 0x800) >> 12) + ((ia * q.v[0] >= 0 ? ib + 0x800 : ib - 0x800) >> 12)) >> 7;
+    kb = ka * a->v[1];
     ib = ia * q.v[1];
-    out->v[1] = (((pa >= 0 ? pa + 0x800 : pa - 0x800) >> 12) + ((ia * q.v[1] >= 0 ? ib + 0x800 : ib - 0x800) >> 12)) >> 7;
-    pa = ka * a->v[2];
+    out->v[1] = (((kb >= 0 ? kb + 0x800 : kb - 0x800) >> 12) + ((ia * q.v[1] >= 0 ? ib + 0x800 : ib - 0x800) >> 12)) >> 7;
+    kb = ka * a->v[2];
     ib = ia * q.v[2];
-    out->v[2] = (((pa >= 0 ? pa + 0x800 : pa - 0x800) >> 12) + ((ia * q.v[2] >= 0 ? ib + 0x800 : ib - 0x800) >> 12)) >> 7;
-    pa = ka * a->v[3];
-    ib = ia * q.v[3];
-    out->v[3] = (((pa >= 0 ? pa + 0x800 : pa - 0x800) >> 12) + ((ia * q.v[3] >= 0 ? ib + 0x800 : ib - 0x800) >> 12)) >> 7;
+    out->v[2] = (((kb >= 0 ? kb + 0x800 : kb - 0x800) >> 12) + ((ia * q.v[2] >= 0 ? ib + 0x800 : ib - 0x800) >> 12)) >> 7;
+    pb = ka * a->v[3];
+    kb = ia * q.v[3];
+    out->v[3] = (((pb >= 0 ? pb + 0x800 : pb - 0x800) >> 12) + ((ia * q.v[3] >= 0 ? kb + 0x800 : kb - 0x800) >> 12)) >> 7;
 }
-#endif
 
 void func_80020B44(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
     func_80020680(a0, a1, (a4 << 12) / a3, a2, a5);
