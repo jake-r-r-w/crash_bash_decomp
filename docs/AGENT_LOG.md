@@ -14,9 +14,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1063/2551 game functions matched (main.exe 573/575, 2 left:
-  `func_800248A0` (parked, 5/142) and `func_8002D4F4`; engine overlay 73
-  left), 1 parked,
+- 1064/2551 game functions matched (main.exe 574/575, 1 left:
+  `func_8002D4F4`; engine overlay 73 left), none parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - The engine overlay is six files and `ovl5d` three, `ovl5e`, `ovl66`,
@@ -76,7 +75,7 @@ the three main.exe parks, all register-only). `func_8002D4F4` is at
    2026-10-14: 13 of 15 fresh 828-1212 B functions matched in the A/B
    runs, `func_80019A60` went 37/59 -> 55/59 blocks then matched by hand,
    and a 60-min `main/` run matched 10 of 16 functions leased.
-   - Near misses: `func_800248A0` (5/142) and `func_8001795C` (12/107, matched 2026-10-16)
+   - Near misses: `func_800248A0` (5/142) and `func_8001795C` (12/107), both matched 2026-10-16
      are ported to today's declarations and parked as `NON_MATCHING`
      blocks in `main.c` (Open leads). No fresh small function is left.
    - 2026-10-15: one big worker per function matched 7 of the 8 untried
@@ -162,19 +161,11 @@ left, for the permuter). `--max-functions 500` leaves time and cost as the limit
     turns); a long-lived container per slot (`tools/dk` overhead measured
     1.2 s, under the 1.5 s that would justify it).
 
-- **main.exe parks (2026-10-16 retry run: 12 of 15 matched).** Left
-  parked: `func_800248A0` (5/142, swarm checkpoint and `block` note);
-  `func_800177F4` and `func_8001795C` were matched by hand since, both
-  from the sibling's clean form plus a `-dl`/`-dg` dump, not the
-  permuter's C. Try the same on `func_800248A0` before permuting.
-  Its state.json entry says `in_progress` (started 19:39Z by an earlier
-  session), so `status` doesn't count it as parked.
-- **`func_800248A0`** (three sprites side by side): registers 5/142, only
-  the entry. The target tests `a0` (`andi a0,a0,0xC000`) right after
-  `move s5,a0` and loads arg4 into a3; ours tests s5 into v1. An s16/u16
-  `arg0` fixes the test, but its conversion insn comes after the a2/a3
-  param copies, so sched2 (luid tie-break) puts `move s5,a0` third: 6
-  diffs, prologue order only. `SprPos` (bitfield union) is in main.h.
+- **main.exe parks (2026-10-16 retry run: 12 of 15 matched).** The three
+  left parked (`func_800177F4`, `func_8001795C`, `func_800248A0`) were
+  matched by hand the same evening, each from a clean form plus a
+  `-dl`/`-dg`/`-dR` dump, none from the permuter's C. Read the dumps
+  before permuting a register-only park.
 - **Checkpoint ranking (decided 2026-10-14): stays paired, then blocks,
   then exact.** A sum of the three fractions would have kept a closer
   `func_8002E3D0` version (11/12 blocks, registers right, paired 106/109
@@ -398,6 +389,14 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-16 (by hand, `func_800248A0`):** matched (03bef8c), no
+  permuter. The caller passes x and y as shorts (`lh`, `sll/sra`), so the
+  definition is K&R with `short x, y;`. gcc copies a0 at entry and emits the
+  short conversion into s5; combine makes the test read the entry copy, which
+  stays local in a0. The earlier attempts' `s16` prototype or local put the
+  s5 move after the a2/a3 copies (Diff patterns row). main.exe: only
+  `func_8002D4F4` is left.
 
 - **2026-10-16 (by hand, `func_8001795C`):** matched (cfeda67), no
   permuter. Started from the sibling `func_80017EE8`'s arm form (clut
