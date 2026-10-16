@@ -471,7 +471,34 @@ void func_80085650(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80085718);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80085890);
+s32 func_80085890(s32 arg0) {
+    s32 i;
+
+    if (D_8009D864 == arg0) {
+        if (Heroes[arg0].hero_aseq == D_8009D866) {
+            return D_8009D866;
+        }
+        if (D_8009D86C != 0) {
+            if (func_80016558((u8 *)D_8009D86C, (u8 *)D_8009D868) != 0) {
+                SetHeroSeq((HeroInfo *)arg0, D_8009D866);
+                i = 3;
+                do {
+                    i -= 1;
+                } while (i >= 0);
+            }
+        }
+    }
+    if (D_8009D870 == arg0 && Heroes[arg0].hero_aseq != D_8009D872 && D_8009D878 != 0) {
+        if (func_80016558((u8 *)D_8009D878, (u8 *)D_8009D874) != 0) {
+            SetHeroSeq((HeroInfo *)arg0, D_8009D872);
+            i = 3;
+            do {
+                i -= 1;
+            } while (i >= 0);
+            return i;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_800859D4);
 

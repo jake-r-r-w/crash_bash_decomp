@@ -56,6 +56,11 @@ void func_800826F8(s32 arg0);
 
 s32 SetHeroSeq(HeroInfo *hero, s32 seq);
 
+extern s16 D_8009D864;
+extern u16 D_8009D866;
+extern s16 D_8009D870;
+extern u16 D_8009D872;
+
 void SetHeroAction(HeroInfo *hero, s32 action);
 
 void func_80086FA0(void);
@@ -194,6 +199,8 @@ void func_80083334(s32 arg0, s32 kind, s32 flag);
 s32 func_80085584(s32 hero, u16 name, s32 seq);
 
 void func_80085650(void);
+
+s32 func_80085890(s32 arg0);
 
 s32 func_800863D0(s32 arg0);
 

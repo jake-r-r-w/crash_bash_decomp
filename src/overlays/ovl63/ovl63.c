@@ -268,7 +268,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5204);
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5334);
 
 void func_800C53BC(s32 arg0) {
-    func_80085890();
+    func_80085890(arg0);
     if (func_8008A200(arg0) != 0) {
         func_8008A810();
     }
