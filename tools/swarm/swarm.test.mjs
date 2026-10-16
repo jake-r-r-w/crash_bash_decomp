@@ -419,3 +419,23 @@ test('checkPatch refuses every inline asm spelling', () => {
     assert.match(s.checkPatch(PATCH(f.name, '    ' + a), f).join(), /inline asm/, a);
   assert.deepEqual(s.checkPatch(PATCH(f.name, '    gte_ldv0(p);'), f), []);
 });
+
+// ---------------------------------------------------------------- what a worker can touch
+
+test('workers: Edit/Write only src/ include/ and the result file; no host commands that write or run', () => {
+  const allow = JSON.parse(fs.readFileSync(path.join(REPO, 'tools/swarm/config.json'), 'utf8')).allowedTools;
+  for (const t of allow) {
+    if (/^(Edit|Write)\b/.test(t)) assert.match(t, /^(Edit|Write)\((src\/\*\*|include\/\*\*|\.swarm-result\.json)\)$/, t);
+    // find -exec, sort -o, sed e/w, uniq OUT, git --output / grep -O all write or run on the host
+    assert.doesNotMatch(t, /^Bash\((find|sort|uniq|sed|git)\b/, t);
+  }
+});
+
+test('workers: their containers mount .git, tools/ and .claude/ read-only', async () => {
+  const { workerMounts } = await import('./swarm.mjs');
+  const dir = clone({ '.git/HEAD': 'x', 'tools/dk': 'x', 'src/a.c': '' });
+  const m = workerMounts(dir);
+  assert.ok(m.includes(`${path.join(dir, '.git')}:/work/.git:ro`));
+  assert.ok(m.includes(`${path.join(dir, 'tools')}:/work/tools:ro`));
+  assert.doesNotMatch(m, /\.claude|src/);
+});

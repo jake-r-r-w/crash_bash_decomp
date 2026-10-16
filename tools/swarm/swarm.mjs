@@ -204,6 +204,7 @@ function makeClone(dir, src, rev, log) {
     git(dir, 'fetch', '-q', src);
     target = rev;
   }
+  try { fs.chmodSync(path.join(dir, 'tools', 'dk'), 0o755); } catch { /* none */ }   // useOurDk's
   gitOk(dir, 'checkout', '-q', '-f', '--detach', target);
   // asm/ and linkers/ are splat's output, so they go stale when the symbols or yamls change (a
   // symbol split adds an .s file the clone's copy lacks): copy again when their fingerprint differs.
@@ -239,9 +240,21 @@ function splatFingerprint() {
 }
 
 // this checkout's tools/dk (labels, --cpus) in a clone; never committed (done commits src/ include/
-// configs/ .decomp/ docs/), and every reset puts the clone's own back
+// configs/ .decomp/ docs/), and every reset puts the clone's own back. Read-only: tools/dk runs on
+// the host, so a worker must not be able to rewrite it (see workerMounts)
 function useOurDk(dir) {
-  fs.copyFileSync(path.join(REPO, 'tools', 'dk'), path.join(dir, 'tools', 'dk'));
+  const dk = path.join(dir, 'tools', 'dk');
+  try { fs.chmodSync(dk, 0o755); } catch { /* not there yet */ }
+  fs.copyFileSync(path.join(REPO, 'tools', 'dk'), dk);
+  fs.chmodSync(dk, 0o555);
+}
+
+// a worker's containers see the clone's .git, tools/ and .claude/ read-only: from inside one it
+// could otherwise rewrite what the host runs (tools/dk, hooks, git config such as core.fsmonitor,
+// the session's settings). Workers run git through tools/dk for the same reason
+function workerMounts(dir) {
+  return ['.git', 'tools', '.claude'].filter(d => fs.existsSync(path.join(dir, d)))
+    .map(d => `-v ${path.join(dir, d)}:/work/${d}:ro`).join(' ');
 }
 
 // Re-apply a worker's patch whose context no longer matches: the target's INCLUDE_ASM line is
@@ -363,6 +376,7 @@ const keyDir = f => (f.key || f.name).replace(':', '_');
 
 // back to `rev`, dropping every tracked change and untracked file (ignored data stays)
 function resetClone(dir, rev) {
+  try { fs.chmodSync(path.join(dir, 'tools', 'dk'), 0o755); } catch { /* none */ }   // useOurDk's
   gitOk(dir, 'reset', '-q', '--hard', rev);
   gitOk(dir, 'clean', '-fdq');
 }
@@ -416,6 +430,7 @@ class Swarm {
   preflight() {
     const o = this.o;
     if (!(o.workers >= 1 && o.workers <= 16)) die('--workers must be 1..16');
+    if (/\s/.test(o.dir)) die(`--dir ${o.dir} has a space: tools/dk splits DK_DOCKER_ARGS (the worker mounts) on spaces`);
     // commits go to <remote>/<branch> (GitHub main by default), never into your checkout directly
     const named = git(REPO, 'remote', 'get-url', o.remote);
     this.remoteUrl = named.code === 0 ? named.out.trim() : o.remote;
@@ -783,8 +798,9 @@ skill, CLAUDE.md and the docs:
 - Tools: change files only with the Edit and Write tools (shell edits such as \`sed -i\`, \`>\` or
   \`tee\` are refused). Run each \`tools/dk ... </dev/null\` as its own Bash command, not chained
   with \`&&\` or \`;\` (a chain is refused if any part isn't allowed). Read-only shell commands
-  (grep, sed -n, head, ...) are fine. If a command is refused, do the same thing another way;
-  a refusal is never a reason to stop.
+  (grep, head, tail, cat, ls, wc) are fine; git runs as \`tools/dk git ...\` (log, show, diff,
+  status). If a command is refused, do the same thing another way; a refusal is never a reason
+  to stop.
 - You have about ${this.o.workerMinutes} minutes.
 - Stop when \`tools/dk make diff FUNC=${r}\` prints MATCH, or when you are out of ideas.
   If it does not match${canPermute ? ' and you are not asking for the permuter' : ''}, put the
@@ -831,7 +847,7 @@ ${(cp.log || []).map(l => '- ' + l).join('\n')}
 Earlier sessions got it to ${Swarm.describe(job.oldCheckpoint.cp)}, but that C no longer applies to
 this branch (${job.oldCheckpoint.why}): something it relied on was renamed, moved or redeclared
 since. ${f.src} still has the INCLUDE_ASM line. Port that C first: put it in place of the INCLUDE_ASM
-line, adapt it to today's names and headers (\`git log -3 -- ${f.src}\` and the headers it touches
+line, adapt it to today's names and headers (\`tools/dk git log -3 -- ${f.src}\` and the headers it touches
 show what changed), and get it building; then go on as usual. Its diff, for reference:
 \`\`\`
 ${job.oldCheckpoint.diff}
@@ -901,8 +917,9 @@ Rules (they override the skill, CLAUDE.md and the docs):
   stuck, finish with status "needs_permute": the orchestrator runs a long permuter on your C and the
   next session gets its result.` : ''}
 - Tools: change files only with the Edit and Write tools. Run each \`tools/dk ... </dev/null\` as its
-  own Bash command, not chained. Read-only shell commands are fine. A refused command is never a
-  reason to stop: do the same thing another way.
+  own Bash command, not chained. Read-only shell commands (grep, head, tail, cat, ls, wc) are fine;
+  git runs as \`tools/dk git ...\`. A refused command is never a reason to stop: do the same thing
+  another way.
 - This session ends at ${new Date(Date.now() + this.o.bigMinutes * 60e3).toTimeString().slice(0, 5)} local time
   (\`date +%H:%M\` shows the time now): use all of it. Being killed at the deadline is the normal end
   of a session, not a failure: the C left in the file is measured as usual. So never stop to wrap
@@ -988,9 +1005,9 @@ Fix that, keep it matching, and report "matched".
     const env = Object.fromEntries(Object.entries(process.env).filter(([k]) => !STRIP_ENV.test(k)));
     Object.assign(env, {
       // SWARM_RESULT in the container too: decomp.py words its hints for a worker
-      DK_DOCKER_ARGS: `--label ${LABEL}=${this.id} --label ${LABEL}-slot=${this.id}-${slot.id} --cpus ${this.cpus} -e SWARM_RESULT=${RESULT}`,
+      DK_DOCKER_ARGS: `--label ${LABEL}=${this.id} --label ${LABEL}-slot=${this.id}-${slot.id} --cpus ${this.cpus} -e SWARM_RESULT=${RESULT} ${workerMounts(slot.dir)}`,
       DK_NAME: `swarm-${slot.id}`,
-      SWARM_FUNC: f.name, SWARM_KEY: f.key, SWARM_SRC: f.src || '', SWARM_MODEL: job.model, SWARM_RESULT: RESULT,
+      SWARM_FUNC: f.name, SWARM_KEY: f.key, SWARM_REF: ref(f), SWARM_SRC: f.src || '', SWARM_MODEL: job.model, SWARM_RESULT: RESULT,
     });
     let cmd, args, shell = false;
     if (this.o.workerCmd) {
@@ -1925,7 +1942,7 @@ function clean(o) {
 
 // for tools/swarm/swarm.test.mjs, which imports this file with SWARM_IMPORT=1 (an env guard: a
 // path comparison with argv[1] can misfire on Windows path case and keep `run` from starting)
-export { Swarm, reapply, parseArgs, INCLUDE_LINE, infraError };
+export { Swarm, reapply, parseArgs, INCLUDE_LINE, infraError, workerMounts };
 
 if (process.env.SWARM_IMPORT !== '1') {
   const [cmd, o] = parseArgs(process.argv.slice(2));
