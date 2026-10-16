@@ -546,7 +546,70 @@ void func_8007D208(void) {
     D_80099174 |= 0x100000;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007D2F4);
+void func_8007D2F4(void) {
+    s32 i;
+    PanelPrim *p;
+
+    for (i = 0; i < 4; i++) {
+        if (Heroes[i].hero_name != 9) {
+            p = &D_80099A64[i][0];
+            switch (*(s32 *)D_8009AE40[i].a) {
+            case 3:
+                p->unk0 |= 0x8000;
+                switch (*(s32 *)D_8009AE40[i].b) {
+                case 1:
+                    p->unk74 = 0x3029;
+                    break;
+                case 2:
+                    p->unk74 = 0x302D;
+                    break;
+                default:
+                    p->unk74 = 0x302C;
+                    break;
+                }
+                break;
+            case 2:
+                p->unk0 |= 0x8000;
+                switch (*(s32 *)D_8009AE40[i].b) {
+                case 0:
+                    p->unk0 &= ~0x8000;
+                    break;
+                case 1:
+                    p->unk74 = 0x3030;
+                    break;
+                case 2:
+                    p->unk74 = 0x302F;
+                    break;
+                default:
+                    p->unk74 = 0x302E;
+                    break;
+                }
+                break;
+            default:
+                p->unk0 &= ~0x8000;
+                break;
+            }
+            p = &D_80099A64[i][1];
+            switch (*D_8009AE40[i].c) {
+            case 0:
+                p->unk0 &= ~0x8000;
+                break;
+            case 1:
+                p->unk74 = 0x302B;
+                p->unk0 |= 0x8000;
+                break;
+            case 2:
+                p->unk74 = 0x302A;
+                p->unk0 |= 0x8000;
+                break;
+            default:
+                p->unk74 = 0x3028;
+                p->unk0 |= 0x8000;
+                break;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007D4D0);
 

@@ -110,7 +110,7 @@ void func_8007C338(void);
 void func_8007C514(void);
 
 extern PanelPrim D_80099A64[4][7];
-typedef struct { void *a; void *b; s32 c; } EngPtr3;
+typedef struct { void *a; void *b; s32 *c; } EngPtr3;
 extern EngPtr3 D_8009AE40[4];
 typedef struct { s32 unk0; s32 unk4; u8 pad8[0x9C]; } EngA4;
 extern EngA4 D_800CAD5C[4];
