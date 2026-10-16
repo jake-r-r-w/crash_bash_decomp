@@ -112,6 +112,11 @@ test('checkPatch: another function, an added INCLUDE_ASM, a path outside src/inc
   assert.match(s.checkPatch(PATCH('func_80012345', '#define func_80012345(x) x'), f).join(), /macro named/);
 });
 
+test('checkPatch: an added blank line before a context INCLUDE_ASM is not an add', () => {
+  const p = PATCH('func_80012345').replace(/\+\}\n \n$/, `+}\n+\n${SP}\n INCLUDE_ASM("asm/nonmatchings/main/main", func_80012400);\n`);
+  assert.deepEqual(swarm().checkPatch(p, fn('func_80012345')), []);
+});
+
 // ---------------------------------------------------------------- reapply
 
 function clone(files) {

@@ -999,7 +999,9 @@ gate (decomp.py done: scope, lint, full build) refused it with:
 ${job.gateFix}
 \`\`\`
 Fix that (often a type declared in the .c instead of the owned header, or a lint finding), keep the
-function matching (make diff), and report "matched".
+function matching (make diff), and report "matched". A build error in another file is real, not a
+fluke: usually a caller there that no longer fits the prototype you added (\`grep -rn ${f.name} src\`);
+build that object (\`tools/dk make build/src/...c.o\`) to see it, and fix the call.
 ` : ''}${job.permuterDiff ? `
 An earlier worker's closest C for ${f.name} is already in ${f.src}. The permuter then got its score
 from ${job.permuterScore.base} to ${job.permuterScore.best}${job.permuterScore.best === 0 ? ' (a MATCH)' : ''} (0 is a match) with these changes to that C. Port
@@ -1251,7 +1253,8 @@ Fix that, keep it matching, and report "matched".
     if (patch.length > PATCH_MAX) errs.push(`patch is ${patch.length} bytes`);
     const files = [...patch.matchAll(/^diff --git a\/(\S+) b\/(\S+)/gm)].map(m => m[2]);
     for (const p of files) if (!/^(src|include)\//.test(p)) errs.push(`touches ${p}`);
-    const inc = /^([-+])\s*INCLUDE_ASM\(\s*"[^"]+"\s*,\s*(\w+)\s*\)/gm;
+    // [ \t]*, not \s*: \s spans lines, so an added blank line before a context INCLUDE_ASM read as an add
+    const inc = /^([-+])[ \t]*INCLUDE_ASM\(\s*"[^"]+"\s*,\s*(\w+)\s*\)/gm;
     const removed = [], added = [];
     for (const m of patch.matchAll(inc)) (m[1] === '-' ? removed : added).push(m[2]);
     if (added.length) errs.push(`adds INCLUDE_ASM for ${added.join(', ')}`);
@@ -1261,7 +1264,7 @@ Fix that, keep it matching, and report "matched".
     if (/^\+.*\b(?:asm|__asm|__asm__)\s*(?:(?:volatile|__volatile|__volatile__)\s*)?\(/m.test(patch))
       errs.push(`${ASM_REFUSED} (needs a human --hack)`);
     // a function-like macro named after the function hides a change to its prototype from callers
-    if (new RegExp(`^\\+\\s*#\\s*define\\s+${f.name}\\s*\\(`, 'm').test(patch))
+    if (new RegExp(`^\\+[ \\t]*#[ \\t]*define[ \\t]+${f.name}[ \\t]*\\(`, 'm').test(patch))
       errs.push(`adds a macro named ${f.name} (fix its declarations instead)`);
     return errs;
   }

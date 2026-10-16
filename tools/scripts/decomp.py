@@ -1633,7 +1633,10 @@ def verify_build(proj, funcs=None):
     r = run(["make", "-s", f"-j{os.cpu_count() or 1}", "all"])  # ~5x faster, same bytes
     if r.returncode:
         out = r.stderr + r.stdout
-        errs = [l for l in out.splitlines() if re.search(r"error|undefined reference|No rule|Error \d", l, re.I)]
+        # cc1's errors ("stdin:7427: too few arguments ...") carry no "error" word; without them the
+        # gate says only "Error 33" and the cause is lost. Its warnings would crowd them out
+        errs = [l for l in out.splitlines()
+                if re.search(r"error|undefined reference|No rule|Error \d|^\S+:\d+:\s+(?!\s|warning:|info:)", l, re.I)]
         return False, "BUILD FAILED\n" + ("\n".join(errs[:20]) if errs else tail(out, 20))
     oks = []
     for built_p, target_p, binkey in binaries(proj):
