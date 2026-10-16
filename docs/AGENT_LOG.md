@@ -74,12 +74,8 @@ hand since). main.exe is fully matched. The file splits are done as far as the e
    2026-10-14: 13 of 15 fresh 828-1212 B functions matched in the A/B
    runs, `func_80019A60` went 37/59 -> 55/59 blocks then matched by hand,
    and a 60-min `main/` run matched 10 of 16 functions leased.
-   - Near misses: `func_800248A0` (5/142) and `func_8001795C` (12/107), both matched 2026-10-16
-     are ported to today's declarations and parked as `NON_MATCHING`
-     blocks in `main.c` (Open leads). No fresh small function is left.
-   - 2026-10-15: one big worker per function matched 7 of the 8 untried
-     big ones in 60 min ($40). The last, `func_8002D4F4` (2360 B, gcc
-     2.7.2 unit), was matched by hand on 2026-10-16.
+   main.exe's big functions are all matched (the last four by hand on
+   2026-10-16); the engine's are next (1b).
 1b. Overlays with the swarm, engine first (shared by every minigame):
    `swarm.mjs run --branch main --seg overlays/engine --max-minutes 60
    --max-run-usd 80 --max-functions 500 --workers 3 --big-workers 2
@@ -98,12 +94,10 @@ refused, restored by hand; the session log says the block-0 a0/a1 swap is
 left, for the permuter). `--max-functions 500` leaves time and cost as the limits (40 stopped
    leasing after about 30 min). Sizes left per overlay: run the size loop over
    `nonmatching NAME, 0xSIZE` headers (the `next --count` listing is slow).
-2. The rest of `main.exe` with the swarm: `swarm.mjs run --branch main --seg
-   main/ --max-minutes 60 --max-run-usd 80 --big-bytes 400 --workers 1
-   --big-workers 4 --big-minutes 27` ($54 for 10 matches on 2026-10-14).
-   Nothing is left in main.exe (2026-10-16). After each run, the "After a run"
-   checklist in tools/swarm/README.md (`stats`, parks, `fold`, `permute
-   --near`, this log).
+2. After each swarm run, the "After a run" checklist in
+   tools/swarm/README.md (`stats`, parks, `fold`, `permute --near`, this
+   log). main.exe has no functions left; its swarm recipe (`--seg main/`,
+   `--big-bytes 400 --workers 1 --big-workers 4`) carries over to overlays.
 3. Split `main.c` into its translation units, between swarm runs (on hold
    since 2026-10-15: the evidence so far groups functions but places no
    boundary; see ARCHITECTURE.md, Files inside `main/main`). `decomp.py units
@@ -377,6 +371,11 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-16 (docs, cleanup):** ROADMAP's "match every game function in
+  the executable" ticked; README, ARCHITECTURE, MATCHING and CLAUDE.md
+  updated for the 2.7.2 units' settings and `tools/reference/`. Fixed the
+  2.7.2 unit's `EXTRA_CC1FLAGS` override dropping `-fno-builtin`.
 
 - **2026-10-16 (reference):** FSF gcc 2.7.2.3's C compiler and MIPS
   target source added under `tools/reference/gcc-2.7.2.3/` (read-only,

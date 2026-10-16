@@ -30,7 +30,8 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   `scratch/`.
 - `make diff` / `decomp.py try` end with `STAGE NAME structure|instructions|registers n/total`:
   fix the stages in that order. Check the asm's style fits the file's compiler
-  first (gcc 2.7.2 unit: `main/8002d488`; per-unit settings in the Makefile).
+  first (gcc 2.7.2 units: `main/8002d488`, `main/8002e0f0`; per-unit settings
+  in the Makefile; FSF gcc 2.7.2.3 source in `tools/reference/` to read).
   For a big function, `decomp.py regions NAME` aligns the code and scores it
   block by block with C lines (MATCHING.md, Big functions); the swarm's big
   mode works and ranks checkpoints by it. Also: `similar NAME` (matched

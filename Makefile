@@ -100,7 +100,7 @@ build/src/main/8002d488.c.o: CC_VER = 2.7.2-psx
 build/src/main/8002d488.c.o: ASPSX_FILL = | $(PYTHON) tools/scripts/aspsx_fill.py
 # No second cse pass: with it, `D_8006788C[1]` folds to a direct `sym+1` access; retail keeps `la` +
 # offsets (func_8002DE2C, func_8002D4F4). main/8002e0f0 is not built this way (func_8002E25C breaks).
-build/src/main/8002d488.c.o: EXTRA_CC1FLAGS = -fno-rerun-cse-after-loop
+build/src/main/8002d488.c.o: EXTRA_CC1FLAGS = -fno-builtin -fno-rerun-cse-after-loop
 # main/8002e0f0 is the same (lui $at stores, addu moves, ASPSX-filled slots; func_8002E618 matches
 # only with these), so 2.7.2 runs from 0x8002D488 to 0x8002E7A8.
 build/src/main/8002e0f0.c.o: CC_VER = 2.7.2-psx

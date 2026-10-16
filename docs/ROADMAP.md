@@ -87,7 +87,7 @@ phases can play what they finish.
   Status: `decomp.py units` collects the evidence; switch-table parity
   proves one boundary in `main/main`, but not yet where (ARCHITECTURE.md,
   Files inside `main/main`), so `main.c` is still one file.
-- [ ] Match every game function in the executable.
+- [x] Match every game function in the executable.
 - [ ] Name and type every function and global in the exe (a descriptive name
   where the original is unknown, per [CONVENTIONS.md](CONVENTIONS.md)).
   For browsing cross-references across the whole binary, try Ghidra with a

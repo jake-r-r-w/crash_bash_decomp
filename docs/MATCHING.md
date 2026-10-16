@@ -113,8 +113,9 @@ block by block over several sessions, keeping the best C between them:
   cascade through every later block, so read `paired` and the block list
   together. `STAGE` still says when only registers are left (the
   permuter's stage).
-- **Check the unit first** (step 2). `func_8002D4F4`, the largest function
-  left in `main.exe`, is in the gcc 2.7.2 unit.
+- **Check the unit first** (step 2). `func_8002D4F4` (2360 bytes, the
+  largest in `main.exe`) is in a gcc 2.7.2 unit; its last diffs were the unit's
+  compiler flags and a reorg difference, not its C.
 - **Type the data before matching.** Put structs for everything it touches
   in the owned header, from `include/bash/`, the prototype debug types and
   the leaked headers. m2c's offset casts and `u8 *` arithmetic cause most of
@@ -510,7 +511,7 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | target's `lui %hi(SYM)` sits above a gte_* asm, ours right after it (volatile asm is a scheduling barrier) | assign the SYM address to the variable once before the asm as a dead store (`p = &SYM; p = &other; gte_ldv0(p); p = &SYM;`): CSE reuses the early HIGH and flow deletes the dead lo_sum | `func_8001AF2C` |
 | a run of stores in a long store-only block lands in the wrong scheduling group (the whole run after a later run), and regs shift around it | sched flushes its pending memory list every 32 mem refs: move a few stores whose final position doesn't matter from before the run to later in the source so the barrier shifts | `func_80023A90` |
 | a byte global stored then re-read (BCD convert) is reloaded with lbu after each sb in the target, yours reuses the value (andi 0xff) | do the conversion in a static inline helper with u8 parameters (gcc 2.7.2) | `func_8002D4F4` |
-| a 2.7.2-unit conditional branch's nop slot holds the first insn of its target in the target (branch to target+4), yours keeps the nop and no C form changes it | it's ASPSX's fill, not gcc's: tools/scripts/aspsx_fill.py only emulates the steal when the target starts with `j`; needs a tool change, not C | `func_8002D4F4` |
+| a 2.7.2-unit conditional branch's nop slot holds the first insn of its target in the target (branch to target+4), yours keeps the nop and no C form changes it | it's ASPSX's fill, not gcc's: `aspsx_fill.py`'s `fill_branches` does it (since 127f996), nothing in C | `func_8002D4F4` |
 | addu $a0,zero emitted before lui/addiu of the pointer | assign `i = 0, p = arr` in the for-init instead of declaring `p = arr` at its declaration | `func_80086FA0` |
 | indexed table access compiles to multiply (sll/addu) and extra insns | walk with a separate pointer incremented per iteration (t++) | `func_8009029C` |
 | addiu v0,v0,0x24 should sit in the bnez delay slot, compiled uses extra v1/move | write `if (p != NULL) return p + N; return NULL;` instead of assigning to the return variable | `func_8008D24C` |
