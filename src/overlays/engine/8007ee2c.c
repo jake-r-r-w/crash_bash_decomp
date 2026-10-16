@@ -1062,7 +1062,30 @@ void func_80087428(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_800874EC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8008795C);
+void func_8008795C(s32 arg0) {
+    s32 ret2;
+
+    if (HeroCheckStatus2000(arg0) == 0 && HeroCheckStatus600(arg0) == 0 &&
+        func_80086FCC(arg0) == 0) {
+        if (D_8009D72C != NULL) {
+            ret2 = D_8009D72C(arg0);
+        } else if (((PadButtons *)D_80051338)[arg0].unk54 & 0x4000) {
+            SetHeroAction((HeroInfo *)arg0, 4);
+            ret2 = 1;
+        } else {
+            ret2 = 0;
+        }
+        if (ret2 == 0 && HeroCheckMoving(arg0) == 0) {
+            func_8008502C(arg0);
+            if (D_8005A5DC < 4) {
+                if (D_8005A5DC >= 2) {
+                    D_8009D73C(arg0);
+                }
+            }
+            func_800871E4(arg0);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80087B8C);
 

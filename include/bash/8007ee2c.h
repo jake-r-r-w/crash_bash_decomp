@@ -256,4 +256,63 @@ void func_8008D6C8(NAS *nas);
 
 s32 func_800864CC(s32 id, u32 flag);
 
+/* Inline copies of the hero action checks func_8008AB94, func_8008ABF8 and
+ * func_8008ACF0 (func_8008795C uses them). */
+static inline s32 HeroCheckStatus2000(s32 arg0) {
+    s32 ret;
+
+    if (Heroes[arg0].hero_status & 0x2000) {
+        SetHeroAction((HeroInfo *)arg0, (u16)D_8009E0E2);
+        ret = 1;
+    } else {
+        ret = 0;
+    }
+    return ret;
+}
+
+static inline s32 HeroCheckStatus600(s32 arg0) {
+    u16 temp_v1;
+    u16 act;
+    s32 ret;
+
+    temp_v1 = Heroes[arg0].hero_status;
+    if (temp_v1 & 0x200) {
+        act = D_8009E0E4;
+        goto call;
+    }
+    if (temp_v1 & 0x400) {
+        act = D_8009E0E6;
+    call:
+        SetHeroAction((HeroInfo *)arg0, act);
+        ret = 1;
+    } else {
+        ret = 0;
+    }
+    return ret;
+}
+
+static inline s32 HeroCheckMoving(s32 arg0) {
+    HeroInfo *base;
+    HeroInfo *h;
+    u16 mode;
+
+    if (D_8009D728(arg0) == 0) {
+        base = Heroes;
+        h = base + arg0;
+        if (h->hero_move->forward_speed != 0) {
+            mode = h->hero_mode;
+            if (mode == 0xF || mode == 0x17) {
+                SetHeroAction((HeroInfo *)arg0, (u16)D_8009E0DE);
+            } else {
+                SetHeroAction((HeroInfo *)arg0, 3);
+            }
+            return 1;
+        }
+        return 0;
+    }
+    return 1;
+}
+
+void func_8008795C(s32 arg0);
+
 #endif /* BASH_8007EE2C_H */
