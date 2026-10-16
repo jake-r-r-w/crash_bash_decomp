@@ -3,7 +3,8 @@
 ## Ground rules
 
 - **No game or SDK data in git.** Disc images, extracted files, the
-  executable, `asm/`, `assets/`, `linkers/`, `build/` and `ext/` stay local.
+  executable, `asm/`, `assets/`, `linkers/`, `build/` and `ext/` stay local
+  (so do your notes in `scratch/`).
   The pre-commit hook (`tools/hooks/pre-commit`, enabled with
   `git config core.hooksPath tools/hooks`) refuses PS-X EXE files, game data
   paths and anything over 2 MB.
@@ -58,6 +59,13 @@ case there. Headers,
 config and file splits: ordinary commits after `tools/dk make verify` prints
 `OK`. If a change affects progress, run `tools/dk make progress` and include
 `docs/` in the commit.
+
+A change to a game data tool (`tools/scripts/dat.py`, `tex.py`, `mdl.py`,
+`gltf.py`, `sfx.py`, `tga.py`, `txt.py`, `pack_disc.py`) needs `tools/dk make
+test-tools` to pass, a case in `tools/scripts/tests/`, and a fresh extraction
+to rebuild the retail disc: delete `assets/CRASHBSH/` (or `dat.py extract
+--force`), then `tools/dk make disc-check`. Formats go in
+[docs/ASSETS.md](docs/ASSETS.md).
 
 ## Testing a build in an emulator
 

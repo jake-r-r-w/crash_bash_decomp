@@ -23,6 +23,11 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   `make disc-check` (byte-identical to retail). To show the user, launch it on the host: `C:/RetroArch-Win64/retroarch.exe -L
   C:/RetroArch-Win64/cores/pcsx_rearmed_libretro.dll build/CrashBash.cue`.
   See [docs/PLAYING.md](docs/PLAYING.md).
+- Game data: `assets/` (ignored) holds the archive's files as editable formats
+  (`dat.py extract`, run by `decomp.py extract`; formats in
+  [docs/ASSETS.md](docs/ASSETS.md)); `make disc` builds `CRASHBSH.DAT` from it.
+  `build/` is disposable (`make clean` deletes it all); notes and drafts go in
+  `scratch/`.
 - `make diff` / `decomp.py try` end with `STAGE NAME structure|instructions|registers n/total`:
   fix the stages in that order. Check the asm's style fits the file's compiler
   first (gcc 2.7.2 unit: `main/8002d488`; per-unit settings in the Makefile).

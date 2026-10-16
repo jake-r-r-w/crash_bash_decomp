@@ -30,6 +30,11 @@ leads**, add any new gotcha, and add one short entry at the top of the
 - Every type and AST id in the Oct 9 prototype's debug fragment is in
   `include/bash/` and every overlay is identified (ARCHITECTURE.md, Prototype
   debug types). The disc images are in the git-ignored `protos/`.
+- Game data (2026-10-16): every `CRASHBSH.DAT` entry but the 15 code overlays
+  extracts to editable files in `assets/CRASHBSH/` (textures PNG, models OBJ
+  + glTF with animations, sounds WAV/VAB, music SEQ/MIDI, text, screens) and
+  packs back byte for byte; `make disc-check` from a fresh extraction is
+  identical (docs/ASSETS.md). ROADMAP's asset extraction box is ticked.
 
 ## Next
 
@@ -47,9 +52,9 @@ time. After each swarm run, compare `stats --run ID` with the ledger's
 earlier runs.
 
 **Start of next session: matching.** Run the engine swarm hour (item 1b,
-`--max-functions 500`), then the post-run checklist (2026-10-15 evening
-runs were stopped early: `fold` and `permute --near` not done yet). The file splits are
-done as far as the evidence goes (item 3).
+`--max-functions 500`), then the post-run checklist (`fold` was done
+2026-10-16; `permute --near` not yet). The file splits are done as far as
+the evidence goes (item 3).
 
 0. Current focus (ROADMAP.md, Current focus): `make disc` works and the
    matching build is the retail image. The user tests builds by playing

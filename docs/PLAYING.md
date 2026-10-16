@@ -24,7 +24,7 @@ files, `assets/CRASHBSH/000.bin` .. `3DF.bin` (ids as ARCHITECTURE.md names them
 `index.json` (each one's name, sector, size and format; the code overlays are tagged) and `filler.bin` (the bytes
 between files). `make disc` runs it the first time by itself. Edit a file and `make disc` puts it
 on the disc; delete `assets/CRASHBSH/` to start again from the retail DAT (extracting takes about
-4 minutes). The 400 texture sets come out as `<id>.tex/` folders of PNGs: edit an image's pixels in
+6 minutes). The 400 texture sets come out as `<id>.tex/` folders of PNGs: edit an image's pixels in
 `img_NNN.png` (keep it indexed, same size) and colours in `cluts.png`; the formats and the
 rules are in [ASSETS.md](ASSETS.md). The 400 model files come out as `<id>.mdl/`: `model.obj`
 (textured, with `model.mtl`) to move vertices in Blender or any OBJ editor, keeping each mesh's
