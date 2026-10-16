@@ -202,11 +202,10 @@
  },
  "80011E80": {
   "auto_diff": 13,
-  "auto_failed": "diff",
   "blocked_at": "2026-10-12T09:47:33Z",
-  "note": "Block after heap->lowest unless owner -1, size 0 or flag 2. Best 4 off: the tail; target is r = next; if (next) { r = NULL; if (!(f & 2)) r = next; } with r in v0 and next in a0 (m2c form), but that and early-return, clear-to-NULL forms give 28-29 insns. Permuter 5 min: int temp for the condition, still off. Try static inline helpers for either half.",
+  "matched_at": "2026-10-16T13:57:35Z",
   "started": "2026-10-12T09:41:10Z",
-  "status": "todo",
+  "status": "matched",
   "unblocked_at": "2026-10-16T13:33:01Z",
   "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },

@@ -1344,27 +1344,17 @@ u8 *func_80011DB4(Heap *arg0) {
     return var_s1;
 }
 
-#ifndef NON_MATCHING
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80011E80);
-#else
 MemBlock *func_80011E80(Heap *heap) {
-    MemBlock *blk;
     MemBlock *next;
 
-    blk = heap->lowest;
-    next = NULL;
-    if (blk != NULL) {
-        next = (MemBlock *)((u32 *)(blk + 1) + blk->size);
-        if (next->owner == (void **)-1 || next->size == 0) {
-            next = NULL;
+    next = Heap_AfterLowest(heap);
+    if (next != NULL) {
+        if (next->unk0 & 2) {
+            return NULL;
         }
     }
-    if (next != NULL && !(next->unk0 & 2)) {
-        return next;
-    }
-    return NULL;
+    return next;
 }
-#endif
 
 MemBlock *func_80011EF0(Heap *heap) {
     MemBlock *blk;

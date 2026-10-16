@@ -2940,6 +2940,8 @@ void func_80028D40(AnimTex *t, s32 base, AnimTexSet *set);
 extern u8 D_80053074[];
 extern u16 D_8005A5C0[][3];
 
+MemBlock *func_80011E80(Heap *heap);
+
 void func_8001492C(void);
 
 s32 func_8001B6D4(SVECTOR *v);
