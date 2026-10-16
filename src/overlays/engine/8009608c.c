@@ -70,7 +70,33 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009608c", func_80096280);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009608c", func_80096530);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009608c", func_800967E0);
+s32 func_800967E0(D_800AD2EC_t *a, s32 *b, D_800AD2EC_t *c, s32 *d, s32 *out) {
+    Vec3W hit;
+    s32 sp28[4];
+    s32 flags;
+    s32 k;
+
+    flags = 0;
+    if (EngCam_HitY((s32 *)a, b, sp28)) {
+        out[1] = sp28[1];
+        flags = 1;
+        out[2] = sp28[2];
+    }
+    if (EngCam_HitX((Vec3W *)c, (Vec3W *)d, &hit)) {
+        out[0] = hit.a;
+        if (flags != 0) {
+            k = sp28[2];
+            if (hit.c < k) {
+                k = hit.c;
+            }
+            out[2] = k;
+        } else {
+            out[2] = sp28[2];
+        }
+        flags |= 2;
+    }
+    return flags;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009608c", func_80096A08);
 
