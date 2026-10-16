@@ -31,6 +31,7 @@ extern void (*D_8005AA80)(void);
 extern void (*D_8009D704)(void);
 extern void (*D_8005AA74)(void);
 extern s32 D_8009E29C;
+extern s32 D_8009E298;
 
 void func_8007A688(s32 arg0);
 void func_8007A6B0(s32 arg0);

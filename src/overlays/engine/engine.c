@@ -74,7 +74,65 @@ void func_8007906C(void) {
     D_8005AA58 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80079260);
+void func_80079260(void) {
+    EngineGameView *g = (EngineGameView *)D_8005A614;
+    s32 r;
+    s32 i;
+    s32 want;
+    s32 n;
+
+    g->flags &= 0xF4FF;
+    func_80024AD8();
+    func_8001D6B4((MapEnvHead *)D_80058AD0);
+    func_80026ECC();
+    func_8002321C();
+    func_80026D9C();
+    func_80083550();
+    func_8008688C();
+    if (D_8005AA70[0] != 0) {
+        ((void (*)(void))D_8005AA70[0])();
+    }
+    D_8005AA58 = 0;
+    ASTTable = EngineASTTable;
+    ASTCount = func_8007AC00();
+    func_80083708();
+    func_80086918();
+    func_8007A6F8();
+    {
+        s32 w1 = 0x206;
+        for (r = 0; r < ASTCount; r++) {
+            if (ASTTable[r].id == w1) {
+                goto found1;
+            }
+        }
+        r = 0;
+    }
+found1:
+    D_8009E298 = r;
+    want = 0x20C;
+    i = 0;
+    if (ASTCount > 0) {
+        n = ASTCount;
+        r = (s32)ASTTable;
+        for (;;) {
+            if (((ASTEntry *)r)->id == want) {
+                r = i;
+                goto found2;
+            }
+            i++;
+            if (i >= n) {
+                break;
+            }
+            r += sizeof(ASTEntry);
+        }
+    }
+    r = 0;
+found2:
+    D_8009E29C = r;
+    if (D_8005AA74 != NULL) {
+        D_8005AA74();
+    }
+}
 
 void func_800793E8(void) {
     s32 w;
