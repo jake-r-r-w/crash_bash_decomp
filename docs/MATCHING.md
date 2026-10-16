@@ -53,7 +53,13 @@ All commands run through `tools/dk` (Docker).
    from `include/` (add structs there, see [CONVENTIONS.md](CONVENTIONS.md)).
    Don't leave m2c leftovers.
 4. **Diff:** `tools/dk make diff FUNC=NAME` builds that file and shows
-   only the differing instructions. It stops after 40 rows; for more, run
+   the target and compiled code aligned (an extra instruction is one `+`
+   row, not a shift of everything after it), with runs of identical rows
+   cut. Marks: `!` operands differ, `~` moved (statement order), `-`
+   target only, `+` compiled only. A `KINDS` line counts them (register,
+   operand, moved, missing, extra) for [Classify the
+   diff](#classify-the-diff-then-work-through-the-list). It stops after 40
+   rows; for more, run
    `tools/dk sh -c 'DIFF_ROWS=300 python3 tools/scripts/decomp.py try NAME'`.
    Its last line, `STAGE NAME stage n/total`, says how far the function has
    got. Fix the stages in order, since later fixes don't hold while an
@@ -88,13 +94,15 @@ A function of 600 bytes or more rarely matches in one sitting, and the
 permuter's random edits get nowhere on hundreds of instructions. Work on it
 block by block over several sessions, keeping the best C between them:
 
-- **Work and measure with `decomp.py regions NAME`.** `try` compares
-  instruction i with instruction i, so one extra instruction makes
-  everything after it a diff, and its `STAGE` count can rise while the C
-  gets closer. `regions` aligns the two streams and scores the target's
+- **Work and measure with `decomp.py regions NAME`.** `try`'s `STAGE`
+  count compares instruction i with instruction i, so one extra instruction
+  makes everything after it a diff, and the count can rise while the C gets
+  closer. `regions` aligns the two streams and scores the target's
   basic blocks one by one (`ok`, `operands`, `differ`), with each differing
   block's C lines and its side-by-side diff (`--block N` for another one,
-  `--no-lines` to skip the C-line build). Its last line, `REGIONS NAME
+  `--no-lines` to skip the C-line build). It lists the first 12 differing
+  blocks (`--all` for every block); after an edit, `--changed` lists only
+  the blocks whose status changed since the last `regions` call. Its last line, `REGIONS NAME
   blocks m/n insns e/N paired p/N ...`, is the progress measure: more
   `paired` (target instructions aligned by opcode: the structure), then
   more identical blocks, then more exact instructions. Fix the first

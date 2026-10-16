@@ -498,6 +498,39 @@ def show_diff(diffs, ttext, ctext, nt, nc, limit=40):
         print(f"   ... {len(rows) - limit} more rows")
 
 
+DIFF_MARKS = {"same": " ", "register": "!", "operand": "!", "moved": "~", "missing": "-", "extra": "+"}
+
+
+def show_aligned(rows, counts, ttext, ctext, limit=40):
+    """`try`'s diff: target and compiled aligned over the whole function (an extra instruction
+    doesn't shift every later row), one line counting each kind, runs of identical rows cut."""
+    moved = counts.get("moved", 0) // 2
+    print("KINDS " + ", ".join(f"{k} {n}" for k, n in (
+        ("register", counts.get("register", 0)), ("operand", counts.get("operand", 0)), ("moved", moved),
+        ("missing", counts.get("missing", 0)), ("extra", counts.get("extra", 0))) if n)
+        + "  (MATCHING.md, Classify the diff)")
+    show = {j for i, r in enumerate(rows) if r[0] != "same" for j in (i - 1, i, i + 1) if 0 <= j < len(rows)}
+    print(f"{'':6}{'target':<37}| compiled")
+    printed, gap = 0, 0
+    for i, (kind, t, c) in enumerate(rows):
+        if i not in show:
+            gap += 1
+            continue
+        if printed >= limit:
+            rest = sum(1 for r in rows[i:] if r[0] != "same")
+            print(f"   ... {rest} more differing rows (DIFF_ROWS=N for more)")
+            return
+        if gap:
+            print(f"   ... {gap} same")
+            gap = 0
+        tt = f"{t * 4:4x} {ttext[t][:31] if t < len(ttext) else '?'}" if t is not None else ""
+        ct = ctext[c][:50] if c is not None and c < len(ctext) else "-"
+        print(f"{DIFF_MARKS[kind]} {tt:<36} | {ct}")
+        printed += 1
+    if gap:
+        print(f"   ... {gap} same")
+
+
 def compile_error(src, stderr):
     """Short build error, with the offending preprocessed line where cc1 gives one."""
     out = tail(stderr, 12)
@@ -561,7 +594,16 @@ def check_function(key, e, proj, name, quiet=False):
     stage = diff_stage(tw, cw, diffs, ops, nt, nc)
     print(f"DIFF {name}: {len(diffs)}/{max(nt, nc)} instructions differ "
           f"({ops} opcode, {len(diffs) - ops} operand-only); length target {nt} vs compiled {nc}")
-    show_diff(diffs, ttext, ctext, nt, nc, int(os.environ.get("DIFF_ROWS", "40")))
+    limit = int(os.environ.get("DIFF_ROWS", "40"))
+    try:
+        import regions
+        vram = key_vram(key)
+        tt, ct = tw[:nt], cw[:nc]
+        res = regions.score(tt, ct, ttext[:nt], relocs, vram, asm_labels(e["asm"], vram))
+        show_aligned(*regions.diff_rows(tt, ct, ttext[:nt], relocs, res), ttext, ctext, limit)
+    except Exception as ex:                          # the positional diff still says something
+        print(f"(aligned diff failed: {ex}; positional diff instead)")
+        show_diff(diffs, ttext, ctext, nt, nc, limit)
     # one machine-readable line (the swarm's big mode keeps the best C by it)
     print(f"STAGE {name} {stage} {len(diffs)}/{max(nt, nc)} (length {nt} vs {nc})")
     return False, len(diffs)
@@ -1196,6 +1238,9 @@ def cmd_vars(a):
                   f"that match, the original had several variables: `decomp.py splitvars {name} {v}`")
 
 
+REGIONS_ROWS = 12      # differing blocks listed by default (big functions have 20+)
+
+
 def cmd_regions(a):
     proj, funcs = need_proj(), need_funcs()
     key, e = find_func(funcs, a.func)
@@ -1211,12 +1256,30 @@ def cmd_regions(a):
         return "" if not s else f"L{s[0]}" + (f"-{s[1]}" if s[1] != s[0] else "")
 
     bad = [k for k, b in enumerate(res["blocks"]) if b["status"] != "ok"]
+    # each call remembers the blocks' state, so --changed can list only what moved since the last
+    state_path = f"build/regions/{key.replace(':', '_')}.json"
+    last = jload(state_path, {}) if os.path.exists(state_path) else {}
+    now = {str(b["start"]): [b["status"], b["exact"]] for b in res["blocks"]}
+    os.makedirs("build/regions", exist_ok=True)
+    jsave(state_path, now)
+    changed = [k for k, b in enumerate(res["blocks"]) if last and last.get(str(b["start"])) != now[str(b["start"])]]
+    if a.changed:
+        rows = changed
+        print(f"changed since the last regions call: {len(changed)} block(s)" if last
+              else "no earlier regions call for this function: all differing blocks")
+        if not last:
+            rows = bad
+    else:
+        rows = list(range(len(res["blocks"]))) if a.all else bad[:REGIONS_ROWS]
     print(f"{'#':>4} {'target':<13} {'len':>4} {'status':<9} {'exact':>7}  C")
-    for k, b in enumerate(res["blocks"]):
-        if b["status"] == "ok" and not a.all:
-            continue
+    for k in rows:
+        b = res["blocks"][k]
+        was = last.get(str(b["start"])) if a.changed and last else None
         print(f"{k:>4} {b['start'] * 4:#06x}-{b['end'] * 4:#06x} {b['end'] - b['start']:>4} {b['status']:<9} "
-              f"{b['exact']:>3}/{b['end'] - b['start']:<3}  {span(b)}")
+              f"{b['exact']:>3}/{b['end'] - b['start']:<3}  {span(b)}"
+              + (f"  (was {was[0]} {was[1]})" if was else ""))
+    if not a.all and not a.changed and len(bad) > REGIONS_ROWS:
+        print(f"   ... {len(bad) - REGIONS_ROWS} more differing blocks (--all lists every block)")
     if res["extra"]:
         print(f"extra compiled instructions (no target partner): {len(res['extra'])} at "
               + " ".join(f"{c * 4:#x}" for c in res["extra"][:12]) + (" ..." if len(res["extra"]) > 12 else ""))
@@ -4074,6 +4137,8 @@ def main():
     p.add_argument("func")
     p.add_argument("--block", type=int, help="show this block's diff (default: the first that differs)")
     p.add_argument("--all", action="store_true", help="list matching blocks too")
+    p.add_argument("--changed", action="store_true",
+                   help="list only the blocks whose status changed since the last regions call")
     p.add_argument("--no-lines", action="store_true", help="skip the -g build that maps blocks to C lines")
     p.set_defaults(fn=cmd_regions)
     p = sub.add_parser("similar", help="matched functions whose code looks most like this one")

@@ -76,5 +76,39 @@ class Regions(unittest.TestCase):
         self.assertEqual(statuses(res), ["ok"])
 
 
+def kinds(cw, tw=TARGET):
+    rows, counts = regions.diff_rows(tw, cw, [""] * len(tw), {}, score(cw, tw))
+    return [r[0] for r in rows], counts
+
+
+class DiffRows(unittest.TestCase):
+    """`try`'s aligned diff: each row's kind, so one extra instruction is one `extra` row."""
+
+    def test_identical(self):
+        self.assertEqual(kinds(list(TARGET))[1], {"same": 9})
+
+    def test_register(self):
+        cw = list(TARGET)
+        cw[4] = addu(V1, V0, V0)
+        self.assertEqual(kinds(cw)[1], {"same": 8, "register": 1})
+
+    def test_operand(self):
+        cw = list(TARGET)
+        cw[6] = lw(V1, 8, A0)                 # the offset, not a register
+        self.assertEqual(kinds(cw)[1], {"same": 8, "operand": 1})
+
+    def test_inserted_instruction_is_one_extra_row(self):
+        cw = TARGET[:2] + [beq(V1, 0, 4), NOP, addu(V0, V0, V0), addu(A0, A0, A0),
+                           addu(V0, V0, V1)] + TARGET[6:]
+        rows, counts = kinds(cw)
+        self.assertEqual(counts.get("extra"), 1)
+        self.assertEqual(rows.index("extra"), 5)
+
+    def test_swapped_statements_are_moved(self):
+        tw = [lw(V0, 0, A0), lw(V1, 4, A0), addu(V0, V0, V1), JR_RA, NOP]
+        cw = [lw(V1, 4, A0), lw(V0, 0, A0), addu(V0, V0, V1), JR_RA, NOP]
+        self.assertEqual(kinds(cw, tw)[1], {"moved": 2, "same": 4})
+
+
 if __name__ == "__main__":
     unittest.main()

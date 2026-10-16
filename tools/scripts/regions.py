@@ -192,3 +192,46 @@ def score(tw, cw, ttexts, relocs, vram=None, labels=()):
         "pairs": pairs,
         "exact_map": exact,
     }
+
+
+REG_FIELDS = 0x03FF0000     # rs, rt; SPECIAL adds rd (0xF800)
+
+
+def diff_rows(tw, cw, ttexts, relocs, res):
+    """The whole function as aligned rows for `try`: [(kind, target index, compiled index)] in
+    target order, compiled-only instructions where they fall, and the count of each kind.
+    kind: same; register (paired, only register fields differ); operand (paired, an immediate or
+    a branch target differs); moved (an instruction both have, in another place: statement
+    order); missing (target only); extra (compiled only)."""
+    pairs, exact = res["pairs"], res["exact_map"]
+    tmask, cmask = target_masks(ttexts), compiled_masks(len(cw), relocs)
+    tkeys, ckeys = keys(tw, tmask), keys(cw, cmask)
+    rows, prev = [], -1
+    for t in range(len(tw)):
+        c = pairs.get(t)
+        if c is not None:
+            rows += [["extra", None, x] for x in range(prev + 1, c)]
+            prev = c
+            if exact[t]:
+                kind = "same"
+            else:
+                regs = REG_FIELDS | (0xF800 if tw[t] >> 26 == 0 else 0)
+                bits = (tw[t] ^ cw[c]) & tmask[t] & cmask[c]
+                kind = "register" if bits and not bits & ~regs else "operand"
+            rows.append([kind, t, c])
+        else:
+            rows.append(["missing", t, None])
+    rows += [["extra", None, x] for x in range(prev + 1, len(cw))]
+    # an unpaired instruction the other side also has unpaired: moved, not missing or extra
+    spare = {}
+    for r in rows:
+        if r[0] == "extra":
+            spare.setdefault(ckeys[r[2]], []).append(r)
+    for r in rows:
+        if r[0] == "missing" and spare.get(tkeys[r[1]]):
+            r[0] = "moved"
+            spare[tkeys[r[1]]].pop(0)[0] = "moved"
+    counts = {}
+    for r in rows:
+        counts[r[0]] = counts.get(r[0], 0) + 1
+    return [tuple(r) for r in rows], counts

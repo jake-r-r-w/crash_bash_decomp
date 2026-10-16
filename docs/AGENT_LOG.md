@@ -37,9 +37,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
 so slot-overlay swarm runs can start.** Part 2 (cost per session) is done
 too: `swarm.mjs stats` shows $/match by size from `ledger.jsonl`, and its
 findings (TOOLING_PLAN.md, Part 2) re-rank Part 3: docs are hardly read,
-cache writes and turns per big session drive the cost. Next there: Part 3,
-starting with 3.5 (shorter `regions`/`make diff` output) and 3.1's fixed
-per-session context, checked by `stats --run ID` against the ledger. Deferred from Part 1: recognising
+cache writes and turns per big session drive the cost. 3.5 (aligned `make
+diff`, `regions --changed`) is done. Next there: 3.1's fixed per-session
+context (the first-turn cache write), then 3.3/3.4; after each swarm run,
+compare `stats --run ID` with the ledger's earlier runs. Deferred from Part 1: recognising
 the CLI's usage-limit result. It only matters for unattended runs, and the
 user runs the swarm supervised and conservatively; if a limit is ever hit,
 keep that `worker.out` and match its result line then. The first run after these changes: watch
@@ -384,6 +385,12 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-16 (tooling plan 3.5):** `try`/`make diff` show target and
+  compiled aligned over the whole function (`regions.diff_rows`: register,
+  operand, moved, missing, extra) with a `KINDS` count, identical runs cut;
+  `DIFF`/`STAGE` lines unchanged. `regions` caps its table at 12 blocks
+  and has `--changed`; the big-mode prompt mentions it.
 
 - **2026-10-16 (tooling plan Part 2):** workers get `--session-id`; killed
   sessions are priced from their transcripts (prices fitted from 745 result

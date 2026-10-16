@@ -937,9 +937,10 @@ next --func ${r}\` shows it, with the function's evidence).
 Read docs/MATCHING.md (process, Diff patterns, checklists) and the "Big functions" section in it.
 ${this.regionsArm(f) ? `Work region by region with \`tools/dk python3 tools/scripts/decomp.py regions ${r} </dev/null\`.
 It aligns your compiled code with the target (so an extra instruction doesn't shift every later
-diff, as \`make diff\` does), lists the target's basic blocks that differ with their status (ok /
+diff, as \`make diff\`'s STAGE count does), lists the target's basic blocks that differ with their status (ok /
 operands / differ) and C lines, and shows the first differing block side by side (\`--block N\` for
-another, \`--no-lines\` to skip the C-line build and save a few seconds). Its last line,
+another, \`--no-lines\` to skip the C-line build and save a few seconds; after an edit,
+\`--changed\` lists only the blocks whose status changed since your last call). Its last line,
 \`REGIONS ${f.name} blocks m/n insns e/N paired p/N ...\`, is your progress: paired (opcodes
 aligned) is the structure, insns (exact) the rest. The loop:
 1. Fix the first differing block: its structure (missing or extra instructions, "differ") before

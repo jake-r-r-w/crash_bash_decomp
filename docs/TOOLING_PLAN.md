@@ -358,6 +358,12 @@ twin's lead.
 
 ### 3.5 Diff output (S)
 
+**Done 2026-10-16**, except the optional `try --regions`. `try`/`make diff`
+print the aligned diff with a `KINDS` line (on a test edit: 1.2k chars
+instead of 3.2k, and 3 moved + 2 extra rows instead of 48 positional diffs);
+`regions` lists 12 differing blocks by default and has `--changed`. Check
+the effect on turns and $ per big session with `stats --run ID`.
+
 - `make diff`/`try`: aligned rows over the whole function built from
   `regions.align`/`score`, a one-line count by kind (named after MATCHING.md's
   "Classify the diff" lists), long runs collapsed. Keep the `DIFF` and `STAGE`
