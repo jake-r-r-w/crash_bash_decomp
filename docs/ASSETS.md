@@ -28,7 +28,7 @@ What the entries are (first u32 is a type or a count, not a magic number):
 | Entries | Count | What | Decoded |
 |---|---|---|---|
 | mostly even ids, `000`..`3DD` | 400 | texture sets, type 8 | `<id>.tex/` (tex.py) |
-| the entry after each texture set | 400 | model files (`.mdl`), textured by the set before them | 319 `<id>.mdl/` (mdl.py, geometry only) |
+| the entry after each texture set | 400 | model files (`.mdl`), textured by the set before them | `<id>.mdl/` (mdl.py: OBJ + glTF) |
 | `1E7`, `2CC`..`2D8`, `3DF` | 15 | code overlays (`make disc` writes the built ones) | C/asm |
 | `.sfx`, e.g. `099`, `126` | 160 | sound packs: samples (VAB) and, in 28, music (SEQ) | `<id>.sfx/` (sfx.py) |
 | `08D`..`098` | 12 | mode text (`overlays/text/*.bin`): strings, then data pointing at them | `<id>.txt/` (txt.py) |
@@ -63,29 +63,64 @@ fields above) and `tail.bin`. An image keeps its size and depth; at most 16 (or 
 
 ## Model files (`.mdl`)
 
-`tools/scripts/mdl.py`; the mesh reading is CTR-tools' (`CTRFramework/Code/bash/BashMesh.cs`),
-confirmed on 319 of the 400 files: in each, every mesh's triangle strips use exactly its vertex
-count, each file packs back byte for byte, and the meshes look right (Uka Uka's mask and sky dome
-in `001`, Oxide's hover vehicle and its lower-detail versions in `13F`). The other 81 (fonts,
-the main-menu arena models, some arena objects) differ and stay `.bin`.
+`tools/scripts/mdl.py` and `gltf.py`. The mesh reading starts from CTR-tools' (`BashMesh.cs`);
+the rest comes from the game's own code, matched in `src/main/main.c`: `func_80017EE8` (texture
+coordinates), `func_80017D90` (colours), `func_800193A8` (drawing), `func_8001C0F0` and the draw
+switch around it (animation). All 400 files pack back byte for byte; 373 have meshes, the 22
+fonts and 5 arenas (e.g. `tank_jungle/arena.mdl`) have none in this table. Checked by eye: Uka
+Uka's mask textured and talking (`001`, `043`), Oxide's hovercraft (`13F`), the menu's arena
+pieces (`07F`).
+
+Offsets marked "self" are s32s counted from their own position.
 
 | Offset | Size | Field |
 |---|---|---|
-| 0x00 | 0x54 | file header, not decoded (u32s that look like self-relative offsets) |
-| 0x54 | u32 | number of meshes |
-| 0x58 | 0x34 each | mesh headers: u32 0, u32 0, s16 faces, s16 (4, 6, ...), u32, then six s32 offsets relative to their own position: vertices, strips, after the vertices, two per-face arrays' bounds, the end; then three u32 |
-| (vertices) | 0x14 + 8 each | a 0x14-byte block (looks like a bounding box), then s16 x, y, z and a u16 (small values, 0-3: not decoded) |
-| (strips) | u16 each | faces << 8 \| flags, until 0xFFFF; a strip of n faces takes the next n + 2 vertices; flag 0x08 flips the first face's winding |
-| (after the vertices) | 2 per face, twice | per-face values (small rising numbers; values near 0x240): probably texture coordinates and texture choice, not decoded |
+| 0x00 | u32 | tag (`0x0C160029`; `0x09160026` in one file) |
+| 0x20 | self | the colour table: u32 RGB + code, 3 per face (one a corner: Gouraud) |
+| 0x24 | self | the UV table: u16 `u \| v << 8` |
+| 0x28 | self | the default vertex pool for animations (s16 x, y, z) |
+| 0x40, 0x44 | u32, self | the animations: count, then 0x18-byte entries (below) |
+| 0x54 | u32 | number of meshes (0 in the fonts; then 0x1C + [0x20] = 0x54) |
+| 0x58 | 0x34 each | mesh headers |
 
-The meshes are often under a fifth of a file; the rest (probably animation) isn't decoded.
+A mesh header: u32 0, u32 0, s16 faces, s16 (4..7), u32 (flags), then self offsets at +0x10 to
+the vertices, +0x14 the strips, +0x18 the UV indices, +0x1C the texture runs, +0x20 the colour
+indices, +0x24 the end, +0x28 the normals (0: none), and two u32.
 
-`<id>.mdl/` holds `model.bin` (the whole file) and `model.obj` (one object per mesh: the file's
-integers with y and z negated, CTR-tools' orientation; faces from the strips, no texture
-coordinates yet). `make disc` writes the OBJ's vertex positions into `model.bin`: vertices can be
-moved, but each mesh keeps its vertex count and order (Blender: import with Split > Keep Vert
-Order). Next for models: texture coordinates (the per-face arrays and the vertices' u16), so the
-OBJ can carry the textures; the engine's model loader, once matched, will say.
+| Block | What |
+|---|---|
+| vertices | a 0x14-byte bounding box (s16 min[3], max[3], centre[3] and radius), then s16 x, y, z and a u16 each |
+| normals | lit meshes only: s16 x, y, z (4.12, length 4096) and a u16 each |
+| strips | u16 `faces << 8 \| flags` until 0xFFFF (in memory: a flags byte and a count byte, ended by count 0xFF); a strip of n faces takes the next n + 2 vertices; flag bit 0: untextured (Gouraud only); 0x08 flips the first face's winding |
+| UV indices | u16 a face: its corners are UV table entries i, i + 1, i + 2, in strip order (faces along a strip share two) |
+| texture runs | u16 entries, each for 1 + bits 9-14 faces: bits 0-8 the texture (image N of the texture set before the model in the DAT); bit 15: the set's last image with CLUT bits 0-8 instead (half of all faces) |
+| colour indices | u16 a face: bits 0-12 the first of its 3 colours, bit 15 semi-transparent, bits 13-14 the blend mode |
+
+Animation entry (0x18 bytes): u32 start and end (offsets of its data in the file), u32 frames,
+s32 offset from +0xC to the mesh header it moves, u32 (a speed? 0x1333), u32 0 (the loader's
+pointer). Its data: s32 offset to its own vertex pool (0: the file's), then 16 bytes a frame:
+s32 offset from the frame to an index list, s32 offset from +4 to a second one, s32 blend
+(0..0x1000), u32. An index list is a 0x14-byte bounding box, then a u16 per mesh vertex
+(`pool index << 2 \| flags`). A frame with blend 0 is a keyframe (its list's positions); the
+others blend the first list's towards the second's (1/3, 2/3: frames between two keyframes).
+1,037 animations in 225 files, 49,151 frames of which 13,648 keyframes.
+
+`<id>.mdl/` holds:
+
+- `model.bin`: the file as it is.
+- `model.obj` and `model.mtl`: one object per mesh, the vertices as the file's integers with y
+  and z negated (CTR-tools' orientation), normals, the faces with their texture coordinates and
+  a material each (the texture set's image, a recoloured copy for a bit-15 face, or the
+  untextured face's average colour).
+- `model.glb`: the same as glTF (textures embedded; positions as the file's 16-bit integers,
+  KHR_mesh_quantization, scaled 1/256), with each animation as morph targets (a keyframe each)
+  and a weights track: Blender imports them as shape keys and actions. 30 frames a second (the
+  real speed isn't decoded).
+
+`make disc` writes `model.obj`'s vertex positions and normals into `model.bin`: move vertices,
+keeping each mesh's count and order (Blender: Split > Keep Vert Order). Texture coordinates,
+materials, colours and the animations are for viewing: pack ignores them, and they stay as they
+are in `model.bin`. Edit the textures in the texture set's PNGs.
 
 ## Title screens (`.tga`)
 
@@ -122,14 +157,24 @@ All 160 pack back byte for byte (checked against the retail DAT).
 | SEQ | Sony sequences (`pQES`), the music |
 
 `<id>.sfx/` holds `bank.vh` and `bank.vb` (a standard VAB pair: PS1 sound tools, e.g. VGMTrans,
-open it with the SEQs), `music_N.seq`, `sample_NNN.wav` (sample N of the VAB, decoded to 16-bit
+open it with the SEQs), `music_N.seq` and `music_N.mid` (the SEQ as a MIDI file: an edited one
+becomes the SEQ, tracks merged; a SEQ's time-signature denominator that isn't a power of two, 3
+in one song, rides in a sequencer-specific event; all 57 songs go SEQ -> MIDI -> SEQ byte for
+byte), `sample_NNN.wav` (sample N of the VAB, decoded to 16-bit
 mono) and `sfx.json`. The WAVs are written at a nominal 22050 Hz: the game sets each note's pitch
 from the VAB's tones, so the true rate isn't one number; pack ignores it. Edit a WAV (16-bit mono)
 and pack encodes it to ADPCM (filter and shift chosen per block for the least error; about 55-70
 dB SNR on the game's own samples), keeps its one-shot or loop shape, and rewrites the VH's size
 table and the offsets; an unchanged WAV keeps its original bytes. A pack may shrink, not grow.
 
-## Next formats
+## What isn't decoded
 
-- Music as MIDI: SEQ is close to a MIDI file (VGMTrans already converts VAB/SEQ to MIDI and SF2).
-- Models: texture coordinates, animation, and the 81 other model files.
+Every file comes out editable or viewable. What is kept only as bytes (exact, in the folders'
+`.bin` files):
+
+- Models: the animations' timing (the entry's u32 at +0x10), the vertices' and indices' flag
+  bits, the header words not listed above, and the 27 mesh-less files' other sections.
+- Texture sets: the animated-texture records (`tail.bin`).
+- Mode text: the data after the strings (menus, layouts).
+- Editing beyond the slots: a file can't grow (the DAT would have to be laid out again), and
+  animations, texture coordinates and the mode data can't be edited yet.

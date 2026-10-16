@@ -118,5 +118,51 @@ class Files(unittest.TestCase):
             sfx.pack(out)
 
 
+def seq(events, den=4):
+    """A SEQ as the game writes them: header, events, two end-of-track markers."""
+    return (b"pQES" + struct.pack(">IH", 1, 384) + (431650).to_bytes(3, "big") + bytes((1, den))
+            + events + b"\x00\xff\x2f\x00" * 2)
+
+
+EVENTS = b"\x00\xb0\x07\x7f\x00\x90\x3c\x40\x60\x3e\x40\x83\x00\x80\x3c\x00"   # running status
+
+
+class Music(unittest.TestCase):
+    def test_seq_mid_seq_is_byte_identical(self):
+        for den in (4, 3):                                 # 3 isn't a power of two: kept anyway
+            s = seq(EVENTS, den)
+            m = sfx.seq_to_mid(s)
+            self.assertEqual(m[:4], b"MThd")
+            self.assertEqual(sfx.mid_to_seq(m), s)
+
+    def test_a_two_track_midi_is_merged(self):
+        def track(ev):
+            return b"MTrk" + struct.pack(">I", len(ev)) + ev
+        t1 = b"\x00\xff\x51\x03\x07\xa1\x20" + b"\x00\x90\x3c\x40\x60\x80\x3c\x00" + b"\x00\xff\x2f\x00"
+        t2 = b"\x30\x91\x40\x40\x60\x81\x40\x00\x00\xff\x2f\x00"
+        mid = b"MThd" + struct.pack(">IHHH", 6, 1, 2, 96) + track(t1) + track(t2)
+        s = sfx.mid_to_seq(mid)
+        self.assertEqual(struct.unpack(">H", s[8:10])[0], 96)
+        self.assertEqual(s[10:13], b"\x07\xa1\x20")
+        self.assertEqual(s[15:], b"\x00\x90\x3c\x40\x30\x91\x40\x40\x30\x80\x3c\x00\x30\x81\x40\x00"
+                         + b"\x00\xff\x2f\x00" * 2)
+
+    def test_an_edited_mid_becomes_the_seq(self):
+        d = pack_bytes([one_shot(tone(56))], seqs=[seq(EVENTS)], full_table=True)
+        tmp = tempfile.mkdtemp()
+        try:
+            src = os.path.join(tmp, "x.bin")
+            open(src, "wb").write(d)
+            out = os.path.join(tmp, "x.sfx")
+            sfx.unpack(src, out)
+            self.assertEqual(sfx.pack(out), d)
+            m = os.path.join(out, "music_0.mid")
+            edited = sfx.seq_to_mid(seq(EVENTS.replace(b"\x3e\x40", b"\x40\x40")))
+            open(m, "wb").write(edited)
+            self.assertEqual(sfx.parse(sfx.pack(out))[2][0], seq(EVENTS.replace(b"\x3e\x40", b"\x40\x40")))
+        finally:
+            shutil.rmtree(tmp)
+
+
 if __name__ == "__main__":
     unittest.main()

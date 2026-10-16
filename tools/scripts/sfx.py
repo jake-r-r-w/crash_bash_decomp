@@ -16,7 +16,10 @@ samples it has in the effects-only packs) and the SEQs (Sony's MIDI-like sequenc
 music_N.seq (the sequences as they are; none in an effects-only pack), sample_NNN.wav (each sample decoded: 16-bit mono, written
 at a nominal 22050 Hz, which pack ignores) and sfx.json. pack takes each sample's original bytes
 when its WAV still decodes the same, and encodes the WAV to ADPCM when it changed (looping or
-one-shot as the original was), then fixes the VH's size table and the offsets. A pack may come
+one-shot as the original was), then fixes the VH's size table and the offsets. Music:
+music_N.mid is each SEQ as a MIDI file (format 0; the SEQ's header as tempo and time-signature
+events). An edited one (any MIDI a sequencer saves; tracks are merged) becomes the SEQ; while it
+is as unpack wrote it, music_N.seq is used as it is. A pack may come
 out smaller than the original but not bigger (dat.py refuses).
 """
 import hashlib
@@ -140,6 +143,112 @@ def encode(pcm, original):
     return b"".join(out)
 
 
+# ---- SEQ <-> MIDI. A SEQ: "pQES", u32 version, then big-endian u16 ticks per quarter note, u24
+# microseconds per quarter note, u8 time-signature numerator and denominator; then MIDI events.
+
+def varlen(n):
+    out = [n & 0x7F]
+    n >>= 7
+    while n:
+        out.append(0x80 | (n & 0x7F))
+        n >>= 7
+    return bytes(reversed(out))
+
+
+def read_varlen(d, i):
+    n = 0
+    while True:
+        b = d[i]
+        i += 1
+        n = n << 7 | (b & 0x7F)
+        if not b & 0x80:
+            return n, i
+
+
+def seq_to_mid(seq):
+    if seq[:4] != b"pQES" or len(seq) < 15:
+        raise Bad("not a SEQ")
+    ppqn, tempo, num, den = struct.unpack(">H", seq[8:10])[0], seq[10:13], seq[13], seq[14]
+    power = den.bit_length() - 1 if den and den & (den - 1) == 0 else 2
+    track = b"\x00\xff\x51\x03" + tempo + bytes((0, 0xFF, 0x58, 4, num, power, 24, 8))
+    if 1 << power != den:                            # not a power of two (one song has 3): MIDI
+        track += b"\x00\xff\x7f\x05pQES" + bytes((den,))   # can't say it; a sequencer event keeps it
+    track += seq[15:]
+    return b"MThd" + struct.pack(">IHHH", 6, 0, 1, ppqn) + b"MTrk" + struct.pack(">I", len(track)) + track
+
+
+def midi_events(mid):
+    """(ticks per quarter, [(absolute tick, order, event bytes)]) of every track, merged."""
+    if mid[:4] != b"MThd":
+        raise Bad("not a MIDI file")
+    hlen, _, ntrk, div = struct.unpack(">IHHH", mid[4:14])
+    if div & 0x8000:
+        raise Bad("SMPTE time division isn't supported")
+    i, events, order = 8 + hlen, [], 0
+    for _ in range(ntrk):
+        if mid[i:i + 4] != b"MTrk":
+            raise Bad("bad track")
+        n = struct.unpack(">I", mid[i + 4:i + 8])[0]
+        j, end, tick, status = i + 8, i + 8 + n, 0, None
+        while j < end:
+            dt, j = read_varlen(mid, j)
+            tick += dt
+            b = mid[j]
+            if b == 0xFF:
+                kind = mid[j + 1]
+                ln, k = read_varlen(mid, j + 2)
+                ev = mid[j:k + ln]
+                j = k + ln
+                if kind == 0x2F:
+                    break
+            elif b in (0xF0, 0xF7):
+                ln, k = read_varlen(mid, j + 1)
+                j = k + ln
+                continue                             # sysex: a SEQ has none
+            else:
+                if b & 0x80:
+                    status, j = b, j + 1
+                if status is None:
+                    raise Bad("running status with no status")
+                size = 1 if status >> 4 in (0xC, 0xD) else 2
+                ev = bytes((status,)) + mid[j:j + size]
+                j += size
+            events.append((tick, order, ev))
+            order += 1
+        i = end
+    events.sort()
+    return div, events
+
+
+def mid_to_seq(mid):
+    """A SEQ from any MIDI file (tracks merged; tempo changes kept, other meta events and sysex
+    dropped), with running status as the game's SEQs have it."""
+    div, events = midi_events(mid)
+    tempo, sig = (500000).to_bytes(3, "big"), (4, 4)
+    for tick, _, ev in events:
+        if tick:
+            break
+        if ev[:2] == b"\xff\x51":
+            tempo = ev[3:6]
+        elif ev[:2] == b"\xff\x58":
+            sig = (ev[3], 1 << ev[4])
+        elif ev[:7] == b"\xff\x7f\x05pQES":
+            sig = (sig[0], ev[7])
+    out, last, status = bytearray(), 0, None
+    for tick, _, ev in events:
+        if ev[0] == 0xFF:
+            if ev[1] != 0x51 or not tick:            # tempo changes stay; the rest is MIDI-only
+                continue
+            out += varlen(tick - last) + ev
+            status = None
+        else:
+            out += varlen(tick - last) + (ev[1:] if ev[0] == status else ev)
+            status = ev[0]
+        last = tick
+    out += b"\x00\xff\x2f\x00" * 2                   # the game's SEQs all end with two
+    return b"pQES" + struct.pack(">IH", 1, div) + tempo + bytes(sig) + bytes(out)
+
+
 def write_wav(path, pcm):
     with wave.open(path, "wb") as w:
         w.setnchannels(1)
@@ -162,11 +271,15 @@ def unpack(src, dest):
     for name, data in (("bank.vb", vb), ("bank.vh", vh)):
         with open(os.path.join(dest, name), "wb") as f:
             f.write(data)
+    meta = {"rate": RATE, "seqs": len(seqs), "samples": [], "mid_sha1": {}}
     for i, s in enumerate(seqs):
         if s:                                        # an effects-only pack's empty one: no file
             with open(os.path.join(dest, f"music_{i}.seq"), "wb") as f:
                 f.write(s)
-    meta = {"rate": RATE, "seqs": len(seqs), "samples": []}
+            mid = seq_to_mid(s)
+            with open(os.path.join(dest, f"music_{i}.mid"), "wb") as f:
+                f.write(mid)
+            meta["mid_sha1"][str(i)] = hashlib.sha1(mid).hexdigest()
     for i, raw in enumerate(samples, 1):
         name = f"sample_{i:03d}.wav"
         blocks, flags = audio_blocks(raw)
@@ -181,8 +294,14 @@ def pack(src):
     meta = json.load(open(os.path.join(src, JSON)))
     vh = bytearray(open(os.path.join(src, "bank.vh"), "rb").read())
     vb = open(os.path.join(src, "bank.vb"), "rb").read()
-    seqs = [open(q, "rb").read() if os.path.exists(q) else b""
-            for q in (os.path.join(src, f"music_{i}.seq") for i in range(meta["seqs"]))]
+    seqs = []
+    for i in range(meta["seqs"]):
+        q, m = os.path.join(src, f"music_{i}.seq"), os.path.join(src, f"music_{i}.mid")
+        known = meta.get("mid_sha1", {}).get(str(i))
+        if os.path.exists(m) and known and hashlib.sha1(open(m, "rb").read()).hexdigest() != known:
+            seqs.append(mid_to_seq(open(m, "rb").read()))       # the MIDI was edited
+        else:
+            seqs.append(open(q, "rb").read() if os.path.exists(q) else b"")
     originals, p = [], 0
     for s in vag_sizes(bytes(vh)):
         originals.append(vb[p:p + s * 8])

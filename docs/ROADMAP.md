@@ -99,15 +99,17 @@ phases can play what they finish.
   exception is `bios_1.o`'s `.data`, kept from the exe because the game's
   libcd differs from 4.7 in one initial value
   (`configs/USA/psyq/data_keep.txt`, ARCHITECTURE.md, PsyQ).
-- [ ] Asset extraction tool: read the `CRASHBSH.DAT` index (992 entries at
+- [x] Asset extraction tool: read the `CRASHBSH.DAT` index (992 entries at
   `0x8004E110`) from the user's disc and extract its files to `assets/`, plus
   the formats whose loaders are in the exe, to editable files. The first half
   is done: `tools/scripts/dat.py` splits the DAT into `assets/CRASHBSH/` and
   `make disc` builds the DAT from there (2026-10-16). Formats decoded (docs/ASSETS.md): texture
-  sets, 400 of them, to PNGs and back byte for byte (`tools/scripts/tex.py`); model geometry,
-  319 of 400 files, to OBJ and back (`tools/scripts/mdl.py`); the 5 title screens to PNG
-  (`tga.py`), the 12 modes' text to text files (`txt.py`), and the 160 sound packs' samples to
-  WAV, with banks and music as VAB/SEQ (`sfx.py`). Next: model texture coordinates, music as MIDI. Document each
+  sets, 400 of them, to PNGs and back byte for byte (`tools/scripts/tex.py`); all 400 model
+  files to OBJ and back, with textures, and to glTF with their animations (`mdl.py`, `gltf.py`);
+  the 5 title screens to PNG (`tga.py`), the 12 modes' text to text files (`txt.py`), and the
+  160 sound packs' samples to WAV, banks as VAB, music as SEQ and MIDI (`sfx.py`). Every DAT
+  entry but the code overlays is a decoded folder (2026-10-16); ASSETS.md lists what is still
+  bytes. Document each
   format. Formats parsed by the engine or a minigame belong to that phase.
 
 ## Phase 3 - The engine overlay

@@ -26,12 +26,13 @@ between files). `make disc` runs it the first time by itself. Edit a file and `m
 on the disc; delete `assets/CRASHBSH/` to start again from the retail DAT (extracting takes about
 4 minutes). The 400 texture sets come out as `<id>.tex/` folders of PNGs: edit an image's pixels in
 `img_NNN.png` (keep it indexed, same size) and colours in `cluts.png`; the formats and the
-rules are in [ASSETS.md](ASSETS.md). 319 of the 400 model files come out as `<id>.mdl/model.obj`
-(geometry only, no textures yet): move vertices in Blender or any OBJ editor, keeping each mesh's
-vertex count and order. The 5 title screens are `<id>.tga/screen.png`, and the 12 modes' text is
+rules are in [ASSETS.md](ASSETS.md). The 400 model files come out as `<id>.mdl/`: `model.obj`
+(textured, with `model.mtl`) to move vertices in Blender or any OBJ editor, keeping each mesh's
+vertex count and order, and `model.glb` to view a model with its animations (Blender: File >
+Import > glTF). The 5 title screens are `<id>.tga/screen.png`, and the 12 modes' text is
 `<id>.txt/text.txt` (a string may change but not outgrow its slot). The 160 sound packs
-are `<id>.sfx/`: each sample a WAV (edit it, 16-bit mono), the bank and music as Sony's VAB and
-SEQ files. Everything else is still raw (`<id>.bin`: the 81 other models). It is your game data: `assets/` is git-ignored, never commit it. The 15 code overlays' entries are there too, but `make disc`
+are `<id>.sfx/`: each sample a WAV (edit it, 16-bit mono), the bank as Sony's VAB, and the music as
+SEQ and MIDI (edit the `.mid`). Only the 15 code overlays stay `<id>.bin`. It is your game data: `assets/` is git-ignored, never commit it. The 15 code overlays' entries are there too, but `make disc`
 always writes the built `build/<ovl>.bin` over them.
 
 ## Playing it

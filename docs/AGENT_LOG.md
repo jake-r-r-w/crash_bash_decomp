@@ -423,6 +423,16 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-16 (assets: the rest):** every DAT entry but the 15 code
+  overlays is decoded. Models: all 400 (16-byte vertices were normals,
+  +0x28; 27 have no meshes), texture coordinates and colours from main.c's
+  func_80017EE8/func_80017D90 (UV table at 0x24 + [0x24], colours at 0x20 +
+  [0x20], texture runs; image N of the set before the model), and
+  animations (func_8001C0F0: keyframes as index lists into a vertex pool)
+  exported as model.glb (morph targets, KHR_mesh_quantization; 259 MB).
+  Music: SEQ <-> MIDI, all 57 byte for byte. Checked in a three.js viewer
+  (Uka Uka talking). Re-extract from the disc + disc-check OK.
+
 - **2026-10-16 (assets: sound packs):** `sfx.py`: all 160 packs to
   `<id>.sfx/` (bank.vh/.vb, music_N.seq, a WAV per sample) and back byte
   for byte; an edited WAV is ADPCM-encoded (55-70 dB SNR), keeping its

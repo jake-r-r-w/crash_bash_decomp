@@ -1,4 +1,5 @@
 """Tests for mdl.py: model files' meshes to OBJ and back. Run: tools/dk make test-tools"""
+import json
 import os
 import shutil
 import struct
@@ -39,7 +40,7 @@ def sample():
 class Format(unittest.TestCase):
     def test_meshes(self):
         ms = mdl.meshes(sample())
-        self.assertEqual([(nv, strips) for _, nv, strips in ms], [(5, [0x300]), (0, [])])
+        self.assertEqual([(nv, strips, np_) for _, nv, strips, np_ in ms], [(5, [0x300], None), (0, [], None)])
 
     def test_not_a_model(self):
         for d in (b"", bytes(0x58), b"\x08" + bytes(200)):
@@ -80,6 +81,96 @@ class Files(unittest.TestCase):
         open(self.obj, "w").write(open(self.obj).read().replace("v 4 5 -6\n", ""))
         with self.assertRaises(mdl.Bad):
             mdl.pack(self.out)
+
+
+def lit():
+    """One mesh of one strip (2 faces, 4 vertices) with normals (+0x28 set), and an animation:
+    2 frames, a keyframe and one halfway to a second keyframe, from its own vertex pool."""
+    nv = 4
+    hdr = 0x58
+    strips = hdr + mdl.HEAD
+    verts = strips + 4
+    normals = verts + 0x14 + 8 * nv
+    after = normals + 8 * nv
+    uv_idx = after
+    texs = uv_idx + 2 * 2
+    table = texs + 2
+    last = table + 2 * 2
+    entry = last + 4
+    anim = entry + 0x18
+    frames = anim + 4
+    list_a = frames + 32
+    list_b = list_a + 0x14 + 2 * nv
+    pool = list_b + 0x14 + 2 * nv
+    end = pool + 6 * 8
+    d = bytearray(end)
+    struct.pack_into("<I", d, mdl.COUNT_AT, 1)
+    struct.pack_into("<h", d, hdr + 8, 2)
+    for k, target in enumerate((verts, strips, uv_idx, texs, table, last, normals)):
+        p = hdr + 0x10 + 4 * k
+        struct.pack_into("<i", d, p, target - p)
+    struct.pack_into("<HH", d, strips, 2 << 8, 0xFFFF)
+    for i in range(nv):
+        struct.pack_into("<hhh", d, verts + 0x14 + 8 * i, 100 * i, 10, 20)
+        struct.pack_into("<hhh", d, normals + 8 * i, 0, -4096, 0)
+    struct.pack_into("<I", d, 0x40, 1)
+    struct.pack_into("<i", d, 0x44, entry - 0x44)
+    struct.pack_into("<iiii", d, entry, anim, end, 2, hdr - (entry + 0xC))
+    struct.pack_into("<i", d, anim, pool - anim)
+    struct.pack_into("<iiii", d, frames, list_a - 0x14 - frames, 0, 0, 0)
+    struct.pack_into("<iiii", d, frames + 16, list_a - 0x14 - (frames + 16), list_b - 0x14 - (frames + 20), 0x800, 0)
+    struct.pack_into(f"<{nv}H", d, list_a + 0x14, *[4 * i for i in range(nv)])
+    struct.pack_into(f"<{nv}H", d, list_b + 0x14, *[4 * (i + 4) for i in range(nv)])
+    for i in range(8):
+        struct.pack_into("<hhh", d, pool + 6 * i, 100 * i, 10 * (i >= 4), 20)
+    return bytes(d)
+
+
+class Lit(unittest.TestCase):
+    def setUp(self):
+        self.dir = tempfile.mkdtemp()
+        self.bin = os.path.join(self.dir, "001.bin")
+        with open(self.bin, "wb") as f:
+            f.write(lit())
+        self.out = os.path.join(self.dir, "001.mdl")
+        mdl.unpack(self.bin, self.out)
+
+    def tearDown(self):
+        shutil.rmtree(self.dir)
+
+    def test_normals_round_trip_and_edit(self):
+        ms = mdl.meshes(lit())
+        self.assertIsNotNone(ms[0][3])
+        self.assertEqual(mdl.pack(self.out), lit())
+        obj = os.path.join(self.out, mdl.OBJ)
+        t = open(obj).read()
+        self.assertIn("vn 0 4096 0", t)
+        self.assertIn("f 1//1 3//3 2//2", t)
+        open(obj, "w").write(t.replace("vn 0 4096 0", "vn 4096 0 0", 1))
+        self.assertEqual(struct.unpack_from("<hhh", mdl.pack(self.out), ms[0][3]), (4096, 0, 0))
+
+    def test_glb_has_the_mesh_its_keyframes_and_animation(self):
+        d = open(os.path.join(self.out, mdl.GLB), "rb").read()
+        magic, version, length = struct.unpack_from("<III", d)
+        self.assertEqual((magic, version, length), (0x46546C67, 2, len(d)))
+        jl = struct.unpack_from("<I", d, 12)[0]
+        doc = json.loads(d[20:20 + jl])
+        prim = doc["meshes"][0]["primitives"][0]
+        self.assertEqual(len(prim["targets"]), 2)                 # the two keyframes
+        self.assertEqual(doc["accessors"][prim["indices"]]["type"], "SCALAR")
+        sampler = doc["animations"][0]["samplers"][0]
+        self.assertEqual(doc["accessors"][sampler["input"]]["count"], 2)
+
+
+class NoMeshes(unittest.TestCase):
+    def test_a_file_with_no_meshes_round_trips(self):
+        d = bytearray(0x78)
+        struct.pack_into("<I", d, 0x20, mdl.COUNT_AT - 0x1C)
+        self.assertEqual(mdl.meshes(bytes(d)), [])
+        d2 = bytearray(d)
+        struct.pack_into("<I", d2, 0x20, 0x100)
+        with self.assertRaises(mdl.Bad):
+            mdl.meshes(bytes(d2))
 
 
 if __name__ == "__main__":

@@ -37,9 +37,9 @@ import tga
 import txt
 import tex
 
-FORMATS = {"tex": (tex, "texture sets", "PNGs"), "mdl": (mdl, "model files", "OBJ"),
+FORMATS = {"tex": (tex, "texture sets", "PNGs"), "mdl": (mdl, "model files", "OBJ, glTF"),
            "tga": (tga, "title screens", "PNG"), "txt": (txt, "text files", "text"),
-           "sfx": (sfx, "sound packs", "WAV, VAB, SEQ")}
+           "sfx": (sfx, "sound packs", "WAV, VAB, SEQ, MIDI")}
 
 P_PROJ = ".decomp/project.json"
 ASSETS = "assets/CRASHBSH"
