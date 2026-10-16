@@ -285,7 +285,25 @@ s32 func_800976A8(u8 *arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009608c", func_800976F8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009608c", func_80097AA4);
+void func_80097AA4(subengine *s) {
+    TrigEntry *t;
+    s32 f;
+    TrigEntry *e;
+
+    s->unk51 = 0;
+    t = D_80068BD4;
+    f = D_8005B690;
+    e = &t[(((f * 70) & 0xFFF) - 0x400) & 0xFFF];
+    s->unk10 = *(s32 *)e >> 20;
+    s->unk12 = (t[(((f * 140) & 0xFFF) - 0x400) & 0xFFF].unk2 + 0x800) >> 5;
+    s->unk14 = (e->unk2 + t[(((f * 100) & 0xFFF) - 0x400) & 0xFFF].unk2) >> 5;
+    s->unk04 = *(s32 *)&t[(((f * 35) & 0xFFF) - 0x400) & 0xFFF] >> 23;
+    s->unk04 = (t[((f * 75) - 0x400) & 0xFFF].unk2 * 480) / 4096;
+    s->unk08 = (t[(((f * 45) & 0xFFF) - 0x400) & 0xFFF].unk2 + t[(((f * 145) & 0xFFF) - 0x400) & 0xFFF].unk2) >> 6;
+    s->unk20.z = 0x199;
+    s->unk50 = 1;
+    s->unk52 = 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009608c", func_80097C28);
 

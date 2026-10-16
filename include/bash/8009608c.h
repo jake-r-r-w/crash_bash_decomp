@@ -37,6 +37,8 @@ typedef struct EngCam {
 } EngCam;
 
 extern CamEase D_800AD0F4;
+void func_80097AA4(subengine *s);
+
 void func_800B5A40(u8 *cam, s32 arg1);
 void func_800B8098(u8 *cam, s32 arg1);
 void func_800B96F4(CamView *out, s32 arg1);
