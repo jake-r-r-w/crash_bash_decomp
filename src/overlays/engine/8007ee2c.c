@@ -1246,7 +1246,38 @@ void func_8008AD9C(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8008ADA4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8008B29C);
+void func_8008B29C(s32 idx) {
+    EXTengine *s;
+    EXTengine *e;
+
+    if (D_8005A614[idx + 0x50] != 9) {
+        s = Heroes[idx].hero_shadow;
+        if (((EngineGameView *)D_8005A614)->mode != 0x1C) {
+            s->sub->unk6C = D_800546C4;
+            s->sub->unk74 = 0x202F;
+        } else {
+            s->sub->unk6C = D_80055534;
+            s->sub->unk74 = 0x2014;
+        }
+        e = Heroes[idx].hero_eng;
+        s->unk10 = e->unk10;
+        s->flags |= 0x8041;
+        s->sub->unk76 = 0x400;
+        s->sub->flags |= 0x40000000;
+        if (((EngineGameView *)D_8005A614)->mode == 0x17) {
+            s->unk2C.x = s->unk2C.y = s->unk2C.z = 0x2000;
+        }
+        if (((EngineGameView *)D_8005A614)->mode == 0x19) {
+            s->unk2C.x = s->unk2C.y = s->unk2C.z = 0x2000;
+        }
+        if (((EngineGameView *)D_8005A614)->mode == 0x1A) {
+            s->unk2C.x = s->unk2C.y = s->unk2C.z = 0x2000;
+        }
+        if (((EngineGameView *)D_8005A614)->mode == 0x18) {
+            s->unk2C.x = s->unk2C.y = s->unk2C.z = 0x2000;
+        }
+    }
+}
 
 void func_8008B418(s32 idx) {
     HeroInfo *h;

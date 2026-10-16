@@ -216,6 +216,10 @@ void func_800882DC(s32 arg0);
 
 void func_80088450(s32 arg0);
 
+extern u8 D_80055534[];
+
+void func_8008B29C(s32 idx);
+
 void func_8008B418(s32 idx);
 
 void func_8008D5D4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
