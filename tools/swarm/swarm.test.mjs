@@ -643,3 +643,32 @@ test('a permuter match that try confirms goes to the gate; anything else to the 
     if (want) assert.match(fs.readFileSync(job.patch, 'utf8'), /-INCLUDE_ASM/);
   }
 });
+
+// ---------------------------------------------------------------- session chaining (off by default)
+
+test('chaining: the next function of the same file resumes the session, at most --chain in a row', () => {
+  const s = swarm('--chain', '2');
+  const a = fn('func_80010000', { line: 10 }), near = fn('func_80010100', { line: 14 }),
+        other = fn('func_80020000', { line: 10, src: 'src/main/other.c' }), b = fn('func_80030000', { line: 200 });
+  s.queue = [a, near, other, b];
+  const started = [];
+  s.startJob = (slot, job) => { started.push(job); slot.job = job; };
+  const slot = { id: 'w1', job: null };
+  s.integQueue.push({ f: a });                          // a matched: its patch waits for the gate
+  s.chainNext(slot, { f: a, model: s.o.model, resultSession: 'S1' });
+  assert.equal(started[0].f, b);                       // same file, not the neighbour within 8 lines of it
+  assert.equal(started[0].sessionId, 'S1');
+  assert.equal(started[0].chained, true);
+  slot.job = null;
+  s.chainNext(slot, { ...started[0], resultSession: 'S1', chainDepth: 2 });
+  assert.equal(started.length, 1);                     // depth 3 > --chain 2
+  s.chainNext(slot, { f: a, model: s.o.escalateModel, resultSession: 'S1' });
+  assert.equal(started.length, 1);                     // an escalated session isn't chained
+  assert.equal(swarm().o.chain, 0);                    // off by default
+});
+
+test('chaining: a chained prompt says the clone was reset', () => {
+  const s = swarm();
+  assert.match(s.prompt({ f: fn('func_80010000'), model: 'sonnet', attempt: 1, notes: [], chained: true }),
+               /^Next function, in the same session/);
+});

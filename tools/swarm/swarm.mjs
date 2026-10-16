@@ -875,6 +875,31 @@ class Swarm {
     writeJson(path.join(this.cpDir(job.f), 'best.json'), old);
   }
 
+  // ---- session chaining (--chain N, off by default; tooling plan 3.9): after a normal session on a
+  // small function, the next function of the same file runs in the same Claude session (--resume),
+  // which already knows the file's types and globals. At most N in a row; a pilot (alternate
+  // chained and single jobs, compare with `stats`), so it stays off until the numbers say so
+  chainNext(slot, job) {
+    const depth = (job.chainDepth || 0) + 1;
+    if (!this.o.chain || depth > this.o.chain || slot.job || this.stopping || job.big || job.gateFix || job.permuterDiff
+        || !job.resultSession || job.model !== this.o.model || this.leases >= this.o.maxFunctions) return;
+    const busy = this.activeJobs();
+    const keys = new Set(busy.map(j => j.f.key)), fps = new Set(busy.map(j => j.f.fp).filter(Boolean));
+    const f = this.queue.find(g => g.src === job.f.src && g.key !== job.f.key && !this.isBig(g) && !this.finished.has(g.key)
+      && !keys.has(g.key) && !(g.fp && fps.has(g.fp)) && !this.nearBusy(g, busy) && !this.heldBack(g)
+      && !(this.history[g.key]?.attempts));
+    if (!f) return;
+    const next = { f, model: job.model, attempt: 1, notes: this.earlierNotes(f), conflicts: 0,
+                   chained: true, chainDepth: depth, sessionId: job.resultSession };
+    this.log(`${slot.id} ${f.name}: chained into ${job.f.name}'s session (${depth}/${this.o.chain})`);
+    try {
+      this.startJob(slot, next);
+    } catch (e) {
+      slot.job = null;
+      this.fail(null, next, `could not start: ${e.message}`, false);
+    }
+  }
+
   // ---- Diff patterns workers propose (patterns.md, folded into MATCHING.md after a run)
   addPattern(f, row) {
     row = String(row).trim().replace(/\s*\n\s*/g, ' ');
@@ -909,7 +934,11 @@ class Swarm {
     const { f } = job, r = ref(f);
     const canPermute = this.pslots.length > 0 && !job.permuted;
     const patterns = this.patternsFor(f);
-    return `You are one worker in a swarm matching Crash Bash functions. Match exactly one function:
+    return `${job.chained ? `Next function, in the same session (your previous one is done with: the orchestrator took its work
+and reset the clone to a fresh base, so declarations you added then are gone unless they were
+committed; add again what this one needs).
+
+` : ''}You are one worker in a swarm matching Crash Bash functions. Match exactly one function:
 ${f.name} (${f.seg}, ${f.size} bytes, defined in ${f.src}).
 
 ${LOOP(f, r)}
@@ -1175,9 +1204,10 @@ Fix that, keep it matching, and report "matched".
       [cmd, args] = [this.bash, ['-c', `echo '{"status":"parked","note":"dry run"}' > ${RESULT}`]];
     } else {
       cmd = this.claude;
-      // a known session id finds its transcript when the session is killed (sessionUsage)
-      job.sessionId = crypto.randomUUID();
-      args = [...this.o.claudeArgs, '--model', job.model, '--session-id', job.sessionId,
+      // a known session id finds the transcript when the session is killed; a chained job resumes
+      // the previous function's session instead
+      job.sessionId ||= crypto.randomUUID();
+      args = [...this.o.claudeArgs, '--model', job.model, ...(job.chained ? ['--resume', job.sessionId] : ['--session-id', job.sessionId]),
               '--max-budget-usd', String(job.big ? this.o.bigBudgetUsd : this.o.workerBudgetUsd),
               '--allowedTools', this.o.allowedTools.join(','), '--disallowedTools', this.o.disallowedTools.join(',')];
       if (WIN && /\.(cmd|bat)$/i.test(cmd)) {
@@ -1203,7 +1233,8 @@ Fix that, keep it matching, and report "matched".
     p.on('close', code => {
       this.children.delete(p);
       clearTimeout(job.timer);
-      this.onWorkerExit(slot, job, code).catch(e => this.fail(slot, job, `orchestrator error: ${e.message}`));
+      this.onWorkerExit(slot, job, code).catch(e => this.fail(slot, job, `orchestrator error: ${e.message}`))
+        .then(() => this.chainNext(slot, job));
     });
     p.on('error', err => {
       job.startError = err.message;   // 'close' follows: onWorkerExit records it uncharged
@@ -1247,7 +1278,8 @@ Fix that, keep it matching, and report "matched".
     let session = {};
     try { session = JSON.parse(out.reverse().find(l => l.startsWith('{"')) || '{}'); } catch { /* not claude */ }
     // what it cost, killed sessions included (their transcript, priced), for --max-run-usd and the ledger
-    const use = job.sessionId ? sessionUsage(session, transcriptOf(job.sessionId), this.o.prices, this.priceScale()) : null;
+    const use = job.sessionId ? sessionUsage(session, job.chained ? null : transcriptOf(job.sessionId), this.o.prices, this.priceScale()) : null;
+    job.resultSession = session.session_id || null;
     if (use?.priced) { this.calib.reported += use.usd; this.calib.priced += use.priced; }
     const cost = use?.usd || 0;
     this.costUsd += cost;
@@ -1531,7 +1563,7 @@ Fix that, keep it matching, and report "matched".
     if (!job.usage || job.ledgered) return;
     job.ledgered = true;
     const { f } = job, u = job.usage;
-    const kind = `${job.big ? 'big' : 'normal'}${job.gateFix ? '-gatefix' : job.permuterDiff ? '-permuted' : job.startPatch ? '-port' : ''}`;
+    const kind = `${job.big ? 'big' : 'normal'}${job.gateFix ? '-gatefix' : job.permuterDiff ? '-permuted' : job.startPatch ? '-port' : job.chained ? '-chained' : ''}`;
     fs.appendFileSync(this.paths.ledger, JSON.stringify({
       run: this.id, at: stamp(), key: f.key, name: f.name, seg: f.seg, size: f.size, kind, model: job.model,
       attempt: job.attempt, twin: f.twin || null, outcome, timedOut: !!job.timedOut, usd: +u.usd.toFixed(4), estimated: u.estimated,

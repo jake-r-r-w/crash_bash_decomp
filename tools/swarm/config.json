@@ -27,6 +27,7 @@
   "bigPermuteMinutes": 60,
   "escalateBig": true,
   "seedFamilies": true,
+  "chain": 0,
   "regions": "all",
   "claudeBin": "claude",
   "prices": {"claude-sonnet-5-5": [2, 10, 0.1, 4], "claude-opus-5-5": [4, 20, 0.2, 8]},
