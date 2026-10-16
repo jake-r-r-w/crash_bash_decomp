@@ -763,7 +763,48 @@ void func_8007D5EC(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007D6D0);
+void func_8007D6D0(void) {
+    EXTengine *e;
+    s32 i;
+    EngineGameView *g;
+
+    g =(EngineGameView *)D_8005A614;
+    if (*(s32 *)((u8 *)g + 0x10) & 1) {
+        return;
+    }
+    e = GetEngineSlot(5);
+    if (D_80099174 & 0x10000) {
+        if (e->unk10.y < 0x258) {
+            e->unk10.y += 0x20;
+        } else {
+            D_80099174 &= ~0x4000;
+        }
+        return;
+    }
+    if (g->unk30 & 0x8801) {
+        D_80099174 |= 0x10000;
+        return;
+    }
+    if (e->unk10.y < 0x17D) {
+        e->unk10.y = 0x17C;
+    } else {
+        e->unk10.y -= 0x10;
+    }
+    i = 0;
+    for (;;) {
+        if (i >= 4) {
+            return;
+        }
+        if (D_8005A614[i + 0x5C] == 0 && (((PadStick *)D_80051338)[i].pressed & 0x4000)) {
+            PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
+            if (D_8005AA70[10] != 0) {
+                ((void (*)(void))D_8005AA70[10])();
+            }
+            D_80099174 |= 0x10000;
+        }
+        i++;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007D850);
 

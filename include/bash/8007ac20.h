@@ -136,4 +136,6 @@ void func_8007BE84(void);
 
 void func_8007D208(void);
 
+void func_8007D6D0(void);
+
 #endif /* BASH_8007AC20_H */
