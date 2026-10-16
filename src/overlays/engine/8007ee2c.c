@@ -863,7 +863,37 @@ void func_800881E0(s32 arg0) {
     func_8008502C(arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_800882DC);
+void func_800882DC(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h;
+    EXTengine *p;
+    EXTengine *e;
+
+    h = base + arg0;
+    h->hero_eng->unk10.x &= ~0x1FF;
+    h->hero_eng->unk10.x += 0x100;
+    h->hero_eng->unk10.z &= ~0x1FF;
+    h->hero_eng->unk10.z += 0x100;
+    h->hero_move->velocity_enable = 0;
+    h->hero_move->forward_speed = 0;
+    h->hero_move->jump_ctrl |= 0x10;
+    e = h->hero_eng;
+    p = e->platform;
+    if (p != NULL) {
+        p->platform = NULL;
+    }
+    e->platform = NULL;
+    h->hero_move->jump_vel = 8;
+    h->hero_move->jump_max = 0x70;
+    h->hero_move->jump_acc = 0xA;
+    h->hero_move->jump_dec = 0;
+    h->hero_move->jump_dir = 0;
+    h->hero_status |= 0x800;
+    if (h->hero_last_mode != 0xD) {
+        SetHeroSeq((HeroInfo *)arg0, 7);
+    }
+    PlaySfx(0x410, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+}
 
 void func_80088450(s32 arg0) {
     HeroInfo *base = Heroes;

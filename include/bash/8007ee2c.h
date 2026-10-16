@@ -205,6 +205,8 @@ void func_800880E0(s32 arg0);
 
 void func_800881E0(s32 arg0);
 
+void func_800882DC(s32 arg0);
+
 void func_80088450(s32 arg0);
 
 void func_8008B418(s32 idx);

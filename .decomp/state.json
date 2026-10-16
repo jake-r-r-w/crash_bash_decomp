@@ -3382,7 +3382,8 @@
   "status": "matched"
  },
  "engine:800882DC": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-16T10:03:30Z",
+  "status": "matched"
  },
  "engine:80088450": {
   "matched_at": "2026-10-15T20:30:07Z",
