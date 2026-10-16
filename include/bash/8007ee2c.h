@@ -186,6 +186,11 @@ typedef struct {
 
 extern D_8009D87C_t D_8009D87C[];
 
+/* func_80084E04: harm tables. */
+extern u16 D_8009D3B8[][4];
+extern u16 D_8009D400[][9];
+extern u16 D_8009D4A4[];
+
 extern s16 D_8009E0D0;
 extern s16 D_8009E0D2;
 extern s16 D_8009E0D4;
@@ -226,6 +231,8 @@ void func_80088450(s32 arg0);
 extern u8 D_80055534[];
 
 void func_80082AC4(void);
+
+void func_80084E04(s32 player, NAS *nas, s16 attacker, u16 flags, u16 sfx);
 
 void func_8008B29C(s32 idx);
 

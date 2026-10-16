@@ -429,7 +429,69 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80083E8C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80084788);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80084E04);
+void func_80084E04(s32 player, NAS *nas, s16 attacker, u16 flags, u16 sfx) {
+    HeroInfo *h;
+    u8 *base;
+    u8 *g;
+    s32 dist;
+    s32 v;
+
+    if (Heroes[player].hero_status & 0xFF00) {
+        return;
+    }
+    dist = D_8009D87C[player].unk0;
+    base = D_8005A614;
+    g = base + player;
+    v = 0x20 - (dist + g[0xCC]);
+    if (v < 0) {
+        v = 0;
+    }
+    if (v >= 0x20) {
+        v = 0x1F;
+    }
+    if (g[0x5C] == 0) {
+        v = D_8009D4A4[v] - base[0x9B];
+    } else {
+        v = 0;
+    }
+    if (D_8009D908 != 0) {
+        v = 0;
+    }
+    if (v < 0) {
+        v = 0;
+    }
+    if (v >= 4) {
+        v = 3;
+    }
+    if (((EngineGameView *)D_8005A614)->flags & 3) {
+        v = 0;
+    }
+    if (*(s32 *)(D_8005A614 + 4) & 1) {
+        return;
+    }
+    if (flags & 0x800) {
+        v = flags & 0xFF;
+    } else {
+        v = D_8009D3B8[flags & 0xF][v];
+    }
+    if (!(((EngineGameView *)D_8005A614)->flags & 3)) {
+        if (D_8005A614[player + 0x5C] != 0 && (u32)(dist -= 0x18) < 9) {
+            v = D_8009D400[v >> 8][dist];
+        }
+    }
+    if (flags & 0x1000) {
+        v = 0x7FFFF;
+        Heroes[player].hero_immunity = 0;
+    }
+    if (Heroes[player].hero_harm_value < v) {
+        h = &Heroes[player];
+        h->hero_harm_value = v;
+        h->hero_harm_flags = flags;
+        h->hero_harm_Nas = nas;
+        h->hero_harm_player = attacker;
+        h->hero_harm_sfx = sfx;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8008502C);
 
