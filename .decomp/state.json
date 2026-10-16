@@ -66,10 +66,9 @@
   "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },
  "80010E8C": {
-  "auto_failed": "compile",
   "blocked_at": "2026-10-15T07:36:52Z",
-  "note": "35/36 blocks, 133/135 insns: only the entry. Target addiu a0,3; lw v1,8(a1); nop; beqz v1; srl (sched2 put the heap->free load after the size add); ours lw first (sched2 rank prefers the addiu that feeds the srl). Tried: size in a statement, as a call arg, bytes reused as u32, an inline size helper, loading free first, func_80011C5C-style find inline. Rest matches with: find = func_80011C5C's loop as an inline, unlinks via t = blk->prevFree, the twin's split = func_800119D4/func_800118BC bodies, lowest update as an inline returning the next free block (same entry as func_80010C70)",
-  "status": "todo",
+  "matched_at": "2026-10-16T14:00:59Z",
+  "status": "matched",
   "unblocked_at": "2026-10-16T13:33:01Z",
   "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },

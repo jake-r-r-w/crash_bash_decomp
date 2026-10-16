@@ -592,9 +592,6 @@ MemBlock *func_80010C70(bytes, heap)
     return ret;
 }
 
-#ifndef NON_MATCHING
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80010E8C);
-#else
 static inline MemBlock *Heap_NextFreeAfter2(MemBlock *p) {
     while (p->size != 0) {
         p = (MemBlock *)((u8 *)p + (p->size * 4 + 0x18));
@@ -626,7 +623,9 @@ void *func_80010E8C(bytes, heap)
     MemBlock *t;
     u32 sz;
 
-    words = (u32)(bytes + 3) >> 2;
+    do {
+        words = (u32)(bytes + 3) >> 2;
+    } while (0);
     blk = Heap_FindFree2(words, heap->free);
     if (blk == NULL) {
         return NULL;
@@ -704,7 +703,6 @@ void *func_80010E8C(bytes, heap)
     }
     return ret;
 }
-#endif
 
 void func_800110A8(void *ptr, Heap *heap) {
     MemBlock *blk;
