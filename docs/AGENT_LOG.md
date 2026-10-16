@@ -40,8 +40,12 @@ findings (TOOLING_PLAN.md, Part 2) re-rank Part 3: docs are hardly read,
 cache writes and turns per big session drive the cost. 3.5 (aligned `make
 diff`, `regions --changed`) and 3.1 (no git status in workers' system
 prompt, inline loop) and 3.3 (families: seed leads, templates, twins never
-big) and 3.2 (the closest C carries into retries) are done. Next: a
-supervised swarm run to measure them all (then 3.4, 3.7); after each swarm run,
+big), 3.2, 3.4, 3.5, 3.6, 3.7, 3.8 and most of 3.9 (stall nudge,
+`splitcheck`, `port`, bigMinutes 27) are done. Left, paused 2026-10-16:
+3.9 session chaining (behind a flag, off by default), the 3.9 notes in
+TOOLING_PLAN.md, and a `--worker-cmd` smoke run of the swarm changes since
+3.2 (3.7 LINK line, 3.8 permuter apply, 3.9 port/.swarm-old.diff). Then a
+supervised swarm run to measure everything; after each swarm run,
 compare `stats --run ID` with the ledger's earlier runs. Deferred from Part 1: recognising
 the CLI's usage-limit result. It only matters for unattended runs, and the
 user runs the swarm supervised and conservatively; if a limit is ever hit,
@@ -395,6 +399,12 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-16 (tooling plan 3.4-3.9, paused):** `next` asm with offsets,
+  jump tables, strings, callees; `try` LINK check and disassembly at the
+  first difference; faster tools/dk/make/regions; permuter keeps GTE macros
+  and applies in-run matches; Dockerfile pins maspsx/m2c/permuter (make
+  verify OK); stall nudge; `splitcheck`; `port`.
 
 - **2026-10-16 (tooling plan 3.2):** parks keep their closest C as the
   function's checkpoint and every attempt resumes from it. A `--worker-cmd`
