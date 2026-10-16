@@ -593,7 +593,78 @@ s32 func_800863D0(s32 arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_800864CC);
+s32 func_800864CC(s32 id, u32 flag) {
+    VECTOR pos;
+    HeroInfo *base;
+    HeroInfo *me;
+    HeroInfo *h;
+    EXTengine *eng;
+    FlagRecord *box;
+    FlagRecord *rec;
+    s32 i;
+    s32 r;
+    s32 top;
+    s32 bot;
+    s32 y;
+    s32 dx;
+    s32 dz;
+    s32 lo;
+    s32 hi;
+    s32 d;
+
+    base = Heroes;
+    h = &base[id];
+    eng = h->hero_eng;
+    box = func_80025A48(eng, flag);
+    if (box == NULL) {
+        return -1;
+    }
+    if (eng->unk5E != 0) {
+        func_800142D4(&eng->unk1C);
+    }
+    func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
+    i = 0;
+    me = h;
+    h = base;
+    r = box->radius;
+    top = eng->unk10.y + box->unk2;
+    bot = eng->unk10.y + box->height;
+    func_80015758((SVECTOR *)box, &pos);
+    for (; i < 4; i++) {
+        if (i == id) {
+            continue;
+        }
+        if (h[i].hero_status & 0xF800) {
+            continue;
+        }
+        eng = h[i].hero_eng;
+        if (eng == NULL) {
+            continue;
+        }
+        rec = func_80025A48(eng, 0x40);
+        if (rec == NULL) {
+            continue;
+        }
+        lo = eng->unk10.y + rec->unk2;
+        hi = eng->unk10.y + rec->height;
+        if (bot < lo && hi < top) {
+            dx = eng->unk10.x - pos.vx;
+            dz = eng->unk10.z - pos.vz;
+            d = dx * dx + dz * dz;
+            y = rec->radius + r;
+            if (d < y * y) {
+                if (me->hero_pu != 0) {
+                    ((void (*)(s32, s32))D_8009D6E8.unk60)(id, i);
+                }
+                if (h[i].hero_pu != 0) {
+                    ((void (*)(s32, s32))D_8009D6E8.unk60)(i, id);
+                }
+                return i;
+            }
+        }
+    }
+    return -1;
+}
 
 s32 func_800866DC(s32 *arg0) {
     s32 buf[4];

@@ -235,4 +235,6 @@ void func_8008D5D4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 
 void func_8008D6C8(NAS *nas);
 
+s32 func_800864CC(s32 id, u32 flag);
+
 #endif /* BASH_8007EE2C_H */

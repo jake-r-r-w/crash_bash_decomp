@@ -3301,7 +3301,8 @@
   "status": "matched"
  },
  "engine:800864CC": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-16T21:39:24Z",
+  "status": "matched"
  },
  "engine:800866DC": {
   "auto_diff": 10,
