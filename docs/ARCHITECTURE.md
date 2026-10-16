@@ -169,8 +169,13 @@ How the boundaries were found:
 ## Overlays
 
 `CRASHBSH.DAT` has no header; the exe indexes it with a table of
-`{u32 sector, u32 size}` pairs at `0x8004E110` (993 entries, each sector =
-previous + ceil(size / 2048)). Scanning every entry (and the whole file) for MIPS
+`{u32 sector, u32 size}` pairs at `0x8004E110`: 992 entries, `0x000..0x3DF`
+(the pair after them, sector 0 size 0x88, starts another table). Each sector is
+the previous + ceil(size / 2048), except at 12 entries (`0x012`, `0x014`,
+`0x028`, `0x07C`, `0x093`, `0x09F`, `0x1DA`, `0x2A6`, `0x2AE`, `0x2D7`,
+`0x335`, `0x33B`), where one sector no entry points at comes first. Those
+sectors and the rest of each entry's last sector are not zeros (1.1 MB in
+all); `tools/scripts/dat.py` keeps them as `filler.bin`. Scanning every entry (and the whole file) for MIPS
 code finds 15 code files; nothing else on the disc holds code.
 
 | Overlay | DAT entry | Sector | Size | Loads at | Contents |

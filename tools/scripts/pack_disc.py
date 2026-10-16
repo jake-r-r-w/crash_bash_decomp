@@ -6,8 +6,9 @@ Runs inside the toolchain container:   tools/dk make disc   (or make disc-check)
 The user's retail image is unpacked with dumpsxiso once into build/disc-cache/ (kept by make
 clean, redone when the image changes) and copied to build/disc/ every run, so nothing from an
 earlier pack leaks in (files the pack doesn't change are hard links). build/main.exe replaces
-the boot exe, every build/<ovl>.bin is written back into CRASHBSH.DAT at the offset decomp.py
-add-overlay recorded, and mkpsxiso rebuilds the image from dumpsxiso's layout, which keeps every
+the boot exe; CRASHBSH.DAT is built from its files in assets/CRASHBSH/ (tools/scripts/dat.py,
+which extracts them from the retail DAT first if they aren't there), and every build/<ovl>.bin
+is written over it at the offset decomp.py add-overlay recorded; mkpsxiso rebuilds the image from dumpsxiso's layout, which keeps every
 file at its retail sector. The result is build/CrashBash.bin/.cue. Packing the matching build gives the retail image byte for byte
 (configs/USA/disc.sha, checked by make disc-check).
 
@@ -21,6 +22,8 @@ import re
 import shutil
 import subprocess
 import sys
+
+import dat
 
 P_PROJ = ".decomp/project.json"
 CACHE = "build/disc-cache"
@@ -107,9 +110,15 @@ def main():
     dats = {o["name"]: os.path.join(FILES, os.path.relpath(o["from"], "disc/files"))
             for o in proj.get("overlays", [])}
     exe = f"{FILES}/{proj['exe']}"
-    copy_tree({os.path.normpath(p) for p in [exe, *dats.values()]})
+    copy_tree({os.path.normpath(exe)})
 
     put(exe, read(f"build/{proj['name']}.exe"), size=os.path.getsize(exe))
+    if not os.path.exists(os.path.join(dat.ASSETS, dat.INDEX)):
+        print(f"pack_disc: no {dat.ASSETS}/ yet: extracting it from the retail DAT")
+        dat.extract()
+    for p in set(dats.values()):
+        os.remove(p)                 # a hard link into the cache: replace it, don't write through it
+        dat.build(p)
     for o in proj.get("overlays", []):
         put(dats[o["name"]], read(f"build/{o['name']}.bin"), o["offset"], o["size"])
 

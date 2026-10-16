@@ -420,6 +420,13 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-16 (assets, stage 1):** `tools/scripts/dat.py` splits
+  `CRASHBSH.DAT` into `assets/CRASHBSH/` (992 entries, not 993; plus
+  `filler.bin`: entry padding and 12 unreferenced sectors are not zeros),
+  and `make disc` builds the DAT from it (extracting first if missing);
+  `disc-check` OK. Stage 2, decoding formats (textures, sounds, models), is
+  not started.
+
 - **2026-10-16 (supervised engine run):** 60 min, $41.11, 28 matched
   (`func_80085890` by hand: callers in ovl63/ovl65 passed no argument).
   Fixed: `checkPatch` read an added blank line before a context

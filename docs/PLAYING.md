@@ -11,10 +11,22 @@ retail.
 ## The disc packer
 
 `tools/scripts/pack_disc.py` unpacks your retail image with `dumpsxiso` once into
-`build/disc-cache/`, replaces `SCUS_945.70` with `build/main.exe`, writes each `build/<ovl>.bin`
-back into `CRASHBSH.DAT` at its retail offset, and rebuilds the image with `mkpsxiso` so every
-file keeps its retail sector. A file may shrink (it is zero-padded) but not grow: an overlay is a
-fixed slot in `CRASHBSH.DAT`, and the packer refuses a bigger one.
+`build/disc-cache/`, replaces `SCUS_945.70` with `build/main.exe`, builds `CRASHBSH.DAT` from
+its files in `assets/CRASHBSH/`, writes each `build/<ovl>.bin` over it at its retail offset, and
+rebuilds the image with `mkpsxiso` so every file keeps its retail sector. A file may shrink (it is
+zero-padded) but not grow: an overlay or a DAT entry is a fixed slot, and the packer refuses a
+bigger one.
+
+## The game's files (`assets/`)
+
+`tools/dk python3 tools/scripts/dat.py extract` splits your retail `CRASHBSH.DAT` into its 992
+files, `assets/CRASHBSH/000.bin` .. `3DF.bin` (ids as ARCHITECTURE.md names them), with
+`index.json` (each one's sector and size; the code overlays are tagged) and `filler.bin` (the bytes
+between files). `make disc` runs it the first time by itself. Edit a file and `make disc` puts it
+on the disc; delete `assets/CRASHBSH/` to start again from the retail DAT. The files are raw
+(textures, models, sounds and levels are not decoded yet), and they are your game data: `assets/`
+is git-ignored, never commit it. The 15 code overlays' entries are there too, but `make disc`
+always writes the built `build/<ovl>.bin` over them.
 
 ## Playing it
 

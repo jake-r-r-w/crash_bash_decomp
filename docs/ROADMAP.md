@@ -99,9 +99,11 @@ phases can play what they finish.
   exception is `bios_1.o`'s `.data`, kept from the exe because the game's
   libcd differs from 4.7 in one initial value
   (`configs/USA/psyq/data_keep.txt`, ARCHITECTURE.md, PsyQ).
-- [ ] Asset extraction tool: read the `CRASHBSH.DAT` index (993 entries at
+- [ ] Asset extraction tool: read the `CRASHBSH.DAT` index (992 entries at
   `0x8004E110`) from the user's disc and extract its files to `assets/`, plus
-  the formats whose loaders are in the exe, to editable files. Document each
+  the formats whose loaders are in the exe, to editable files. The first half
+  is done: `tools/scripts/dat.py` splits the DAT into `assets/CRASHBSH/` and
+  `make disc` builds the DAT from there (2026-10-16); no format is decoded yet. Document each
   format. Formats parsed by the engine or a minigame belong to that phase.
 
 ## Phase 3 - The engine overlay
