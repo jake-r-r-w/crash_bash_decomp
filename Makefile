@@ -7,6 +7,7 @@
 #   make disc            - build, then pack build/CrashBash.bin/.cue (bootable; tools/scripts/pack_disc.py)
 #   make disc-check      - make disc, then compare the image with the retail one (configs/USA/disc.sha)
 #   make test-tools      - unit tests of the pipeline's asm filters (tools/scripts/tests)
+#                          (the swarm's on the host: node --test tools/swarm/swarm.test.mjs)
 #   make verify          - clean rebuild + check (use after structural/config/header changes)
 #   make diff FUNC=name  - build one function's file and diff it against the original
 #   make permute FUNC=name [MINUTES=15] - run decomp-permuter on one function

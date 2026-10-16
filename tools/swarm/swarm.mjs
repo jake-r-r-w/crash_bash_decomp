@@ -1665,14 +1665,20 @@ function clean(o) {
   console.log(`removed the clones under ${o.dir} (logs, history and results kept)`);
 }
 
-const [cmd, o] = parseArgs(process.argv.slice(2));
-o.baseGiven = process.argv.includes('--base');
-if (cmd === 'run') await new Swarm(o).run();
-else if (cmd === 'permute') await new Swarm(o).permuteOnly();
-else if (cmd === 'stop') await stop(o);
-else if (cmd === 'status') status(o);
-else if (cmd === 'stats') stats(o);
-else if (cmd === 'clean') clean(o);
-else if (cmd === 'forget') forget(o);
-else if (cmd === 'fold') fold(o);
-else console.log(fs.readFileSync(fileURLToPath(import.meta.url), 'utf8').split('\n').slice(1, 11).map(l => l.replace(/^\/\/ ?/, '')).join('\n'));
+// for tools/swarm/swarm.test.mjs, which imports this file with SWARM_IMPORT=1 (an env guard: a
+// path comparison with argv[1] can misfire on Windows path case and keep `run` from starting)
+export { Swarm, reapply, parseArgs, INCLUDE_LINE };
+
+if (process.env.SWARM_IMPORT !== '1') {
+  const [cmd, o] = parseArgs(process.argv.slice(2));
+  o.baseGiven = process.argv.includes('--base');
+  if (cmd === 'run') await new Swarm(o).run();
+  else if (cmd === 'permute') await new Swarm(o).permuteOnly();
+  else if (cmd === 'stop') await stop(o);
+  else if (cmd === 'status') status(o);
+  else if (cmd === 'stats') stats(o);
+  else if (cmd === 'clean') clean(o);
+  else if (cmd === 'forget') forget(o);
+  else if (cmd === 'fold') fold(o);
+  else console.log(fs.readFileSync(fileURLToPath(import.meta.url), 'utf8').split('\n').slice(1, 11).map(l => l.replace(/^\/\/ ?/, '')).join('\n'));
+}

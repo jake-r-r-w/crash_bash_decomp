@@ -51,7 +51,10 @@ Functions that won't match go to `decomp.py block NAME --note "..."`.
 
 Renames: `decomp.py rename OLD NEW` (checks the build itself). A change to an
 asm filter (`tools/scripts/dmpsx.py`, `aspsx_fill.py`) needs `tools/dk make
-test-tools` to pass and a case in `tools/scripts/tests/` for the new rule. Headers,
+test-tools` to pass and a case in `tools/scripts/tests/` for the new rule. A change to
+the swarm's policy (`tools/swarm/swarm.mjs`: leasing, scoring, escalation, patch
+checks) needs `node --test tools/swarm/swarm.test.mjs` (host Node) to pass and a
+case there. Headers,
 config and file splits: ordinary commits after `tools/dk make verify` prints
 `OK`. If a change affects progress, run `tools/dk make progress` and include
 `docs/` in the commit.
