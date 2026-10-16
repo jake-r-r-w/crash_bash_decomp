@@ -819,7 +819,62 @@ void func_80086FA0(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80086FCC);
+s32 func_80086FCC(s32 arg0) {
+    HeroInfo *base;
+    HeroInfo *h;
+    PadButtons *pads;
+    PadButtons *pad;
+    PadButtons *pads2;
+    PadButtons *pad2;
+    s32 action;
+
+    if (D_8009D724(arg0) != 0) {
+        return 1;
+    }
+    base = Heroes;
+    h = base + arg0;
+    if (!(h->hero_status & 0x10)) {
+        pads = (PadButtons *)D_80051338;
+        pad = pads + arg0;
+        if (pad->unk54 & 0x8000) {
+            if (h->hero_attack_timer != 0) {
+                pad->unk4C &= ~0x8000;
+            } else {
+                switch (h->hero_name) {
+                case 1:
+                case 2:
+                    SetHeroAction((HeroInfo *)arg0, 8);
+                    return 1;
+                case 7:
+                case 8:
+                    SetHeroAction((HeroInfo *)arg0, 9);
+                    return 1;
+                case 3:
+                case 4:
+                    SetHeroAction((HeroInfo *)arg0, 10);
+                    return 1;
+                default:
+                    SetHeroAction((HeroInfo *)arg0, 11);
+                    return 1;
+                }
+            }
+        }
+    }
+    if (D_8005A648 != 0x1E) {
+        pads2 = (PadButtons *)D_80051338;
+        pad2 = pads2 + arg0;
+        if (pad2->unk54 & 0x2000) {
+            if (D_8009D738(arg0, 0x280) != 0 || Heroes[arg0].hero_pick_delay == 0) {
+                SetHeroAction((HeroInfo *)arg0, (u16)D_8009E0DA);
+                return 1;
+            }
+            pad2->unk4C &= ~0x2000;
+        } else {
+            Heroes[arg0].hero_pick_delay = 5;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_800871E4);
 
