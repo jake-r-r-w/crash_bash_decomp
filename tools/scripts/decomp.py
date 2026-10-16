@@ -666,14 +666,37 @@ def build_ctx(src):
     return r.stdout if r.returncode == 0 else ""
 
 
+# macros the permuter keeps as calls (their definitions come back when it compiles), so its result
+# still reads gte_ldv0(...) and not the inline asm they expand to, which the gate's lint refuses
+PERMUTER_KEEP_MACROS = r"gte_\w+"
+
+
 def permuter_base(src, decls, body, tag):
     """base.c for decomp-permuter: the file's headers, decls and the function, preprocessed together
-    (a preprocessed header alone loses its macros, so a body using NULL etc. wouldn't compile)."""
+    (a preprocessed header alone loses its macros, so a body using NULL etc. wouldn't compile).
+    PERMUTER_KEEP_MACROS stay macro calls, through decomp-permuter's own import code."""
     incs = [l for l in read(src).splitlines() if l.lstrip().startswith("#include")]
     p = f"build/permuter/{tag}_in.c"
     write(p, "\n".join(incs + list(decls)) + "\n\n" + body)
-    r = run([X + "cpp", *make_flags("CPPFLAGS"), "-DM2CTX", "-DPERMUTER", p])
+    cpp = [X + "cpp", *make_flags("CPPFLAGS"), "-DM2CTX", "-DPERMUTER", p]
+    try:
+        imp = permuter_import()
+        keep = (re.compile(f"^(?:{PERMUTER_KEEP_MACROS})$"), lambda name: "void")
+        return imp.preprocess_c_with_macros(cpp, os.getcwd(), keep)[0]
+    except Exception as ex:                      # the old way: macros come back expanded
+        print(f"(permuter: keeping macros failed: {ex}; expanding them)")
+    r = run(cpp)
     return r.stdout if r.returncode == 0 else None
+
+
+def permuter_import():
+    """decomp-permuter's import.py as a module (it has the macro-keeping preprocessor)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("permuter_import", os.path.join(os.path.dirname(PERMUTER), "import.py"))
+    mod = importlib.util.module_from_spec(spec)
+    sys.path.insert(0, os.path.dirname(PERMUTER))
+    spec.loader.exec_module(mod)
+    return mod
 
 
 # ---------------------------------------------------------------- commands: setup
@@ -3642,6 +3665,18 @@ def permute_run(d, name, e, base_c, cfg, jobs, seconds):
     return best, path, (int(m.group(1)) if m else None), log
 
 
+def cmd_permute_apply(a):
+    """Put a permuter output's version of the function in its source if `try` gets a match or at
+    least builds (tools/swarm, for a permuter match in a run). Prints the PERMUTE-RESULT line."""
+    proj, funcs = need_proj(), need_funcs()
+    key, e = find_func(funcs, a.func)
+    name = cur_name(key, e, sym_names())
+    src = e.get("src") or locate_def(name)
+    if not src or not os.path.exists(f"{a.dir}/source.c"):
+        die(f"no source for {name} or no {a.dir}/source.c")
+    apply_permuter_best(key, e, proj, name, src, a.dir, None)
+
+
 def apply_permuter_best(key, e, proj, name, src, out_dir, n0):
     """--apply-best: put the permuter's best version of the function in src (it's the preprocessed
     text, so macros come back expanded), and keep it only if `try` gets fewer differences than
@@ -4460,6 +4495,10 @@ def main():
     p.add_argument("--block", type=int, action="append", help="only randomize this block's C (repeatable)")
     p.add_argument("--lines", action="append", help="only randomize source lines A-B (repeatable)")
     p.set_defaults(fn=cmd_permute)
+    p = sub.add_parser("permute-apply", help="put a permuter output's function in the source (if try builds it)")
+    p.add_argument("func")
+    p.add_argument("dir", help="the output directory (with source.c)")
+    p.set_defaults(fn=cmd_permute_apply)
     p = sub.add_parser("block", help="park a function with a note")
     p.add_argument("func")
     p.add_argument("--note", required=True)

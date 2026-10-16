@@ -29,9 +29,13 @@ RUN set -e; mkdir -p /opt/gcc; ok=0; \
     done; \
     [ $ok -gt 0 ] || { echo "no compilers installed"; exit 1; }; ls /opt/gcc
 
-RUN git clone --depth 1 https://github.com/mkst/maspsx /opt/maspsx \
- && git clone --depth 1 https://github.com/matt-kempster/m2c /opt/m2c \
- && git clone --depth 1 https://github.com/simonlindholm/decomp-permuter /opt/permuter \
+# Pinned (the commits the matches so far were made with): a new maspsx can change the build's
+# output, and decomp.py imports decomp-permuter's import.py. Bump one at a time, then make verify.
+RUN pin() { mkdir -p "$2" && git -C "$2" init -q && git -C "$2" fetch -q --depth 1 "$1" "$3" \
+            && git -C "$2" checkout -q FETCH_HEAD; } \
+ && pin https://github.com/mkst/maspsx /opt/maspsx e85ecb373828aabea96d7e6400974d4f91ce8c74 \
+ && pin https://github.com/matt-kempster/m2c /opt/m2c 708d2d2cb2698f091a92492b328f73b24209f72d \
+ && pin https://github.com/simonlindholm/decomp-permuter /opt/permuter 8556c81d80d1c1af98a858c8f4dc951357f29139 \
  && pip3 install "splat64[mips]" pycparser graphviz toml Levenshtein pyyaml
 
 # dumpsxiso / mkpsxiso for disc extraction (and optional disc rebuild)

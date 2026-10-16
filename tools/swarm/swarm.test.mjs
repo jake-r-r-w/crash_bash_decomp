@@ -627,3 +627,19 @@ test('a park leaves its C: measured, kept as the closest; one that matches goes 
     } else assert.equal(s.integQueue[0], job);
   }
 });
+
+test('a permuter match that try confirms goes to the gate; anything else to the port path', async () => {
+  for (const [out, want] of [['MATCH x\nPERMUTE-RESULT func_80012345 kept before None after 0\n', true],
+                             ['PERMUTE-RESULT func_80012345 kept before None after 3\n', false],
+                             ['PERMUTE-RESULT func_80012345 reverted before None after ?\n', false]]) {
+    const s = swarm();
+    const f = fn('func_80012345');
+    const { dir, base } = gitRepo();
+    s.dk = async () => ({ code: 0, out });
+    const job = { f, model: 'sonnet', attempt: 1, notes: [], base, dir: tmpDir(), note: 'w' };
+    const ps = { id: 'p1', dir, job };
+    assert.equal(await s.applyPermuted(ps, job, path.join(dir, 'build/permuter/x/output-0-1'), 'permuter: score 9 -> 0 (MATCH)'), want);
+    assert.equal(s.integQueue.length, want ? 1 : 0);
+    if (want) assert.match(fs.readFileSync(job.patch, 'utf8'), /-INCLUDE_ASM/);
+  }
+});

@@ -1467,6 +1467,8 @@ Fix that, keep it matching, and report "matched".
       fs.writeFileSync(path.join(job.dir, 'permuter-diff.txt'), diff);
       if (fs.existsSync(path.join(outDir, 'source.c'))) fs.copyFileSync(path.join(outDir, 'source.c'), path.join(job.dir, 'permuter-source.c'));
       const note = `permuter: score ${base ?? '?'} -> ${best}${best === 0 ? ' (MATCH)' : ''}`;
+      // a match goes straight to the gate when try confirms it: no Claude session to port it
+      if (best === 0 && !this.stopping && await this.applyPermuted(ps, job, outDir, note)) return;
       this.record(job, 'permuted', note);
       this.log(`${ps.id} ${f.name}: ${note}; back in the queue for a worker to port`);
       ps.job = null;
@@ -1480,6 +1482,26 @@ Fix that, keep it matching, and report "matched".
     } finally {
       ps.job = null;
     }
+  }
+
+  // the permuter's matching version, applied in its clone and checked with try (decomp.py
+  // permute-apply), queued for the gate like a worker's match. False (the port path) on any doubt
+  async applyPermuted(ps, job, outDir, note) {
+    const { f } = job;
+    const rel = path.relative(ps.dir, outDir).split(path.sep).join('/');
+    const r = await this.dk(ps.dir, ['python3', 'tools/scripts/decomp.py', 'permute-apply', ref(f), rel], ps.id,
+                            { minutes: TOOL_MINUTES });
+    fs.writeFileSync(path.join(job.dir, 'permute-apply.txt'), r.out);
+    if (!/^PERMUTE-RESULT \S+ kept before \S+ after 0\s*$/m.test(r.out)) return false;
+    const patch = git(ps.dir, 'diff', job.base, '--', 'src', 'include').out;   // the worker's C and the permuter's change
+    if (!patch.trim() || this.checkPatch(patch, f).length) return false;
+    const file = path.join(job.dir, 'patch.diff');
+    fs.writeFileSync(file, patch);
+    Object.assign(job, { patch: file, note: `matched by the permuter (${note}); worker: ${job.note}` });
+    ps.job = null;
+    this.integQueue.push(job);
+    this.log(`${ps.id} ${f.name}: ${note}; try confirms it, queued for integration without a port session`);
+    return true;
   }
 
   record(job, status, note) {

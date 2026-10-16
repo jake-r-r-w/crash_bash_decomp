@@ -469,6 +469,14 @@ fix a LINK difference.
 
 ### 3.8 Permuter (S)
 
+**Done 2026-10-16**, except the idle-slot rotation (later). `gte_*` macros stay
+macro calls in the permuter's base (decomp-permuter's own `preserve_macros`
+code), so its results pass the lint. maspsx, m2c and decomp-permuter are
+pinned in the Dockerfile to the commits in use (make verify OK on the new
+image). In a run, a permuter score 0 that `decomp.py permute-apply` confirms
+with `try` goes to the gate without a port session (16 of the 53 permuter
+runs in report.md reached 0).
+
 - `permuter_base` (`decomp.py:599-606`) runs cpp itself, so GTE macros come back
   as inline asm and the lint refuses them: keep `gte_*` and project macros as
   calls (decomp-permuter's preserve-macros support). Pin decomp-permuter in the
