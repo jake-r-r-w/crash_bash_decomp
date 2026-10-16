@@ -313,3 +313,43 @@ test('environment errors and failed starts charge no attempt', () => {
   s.fail(null, { f, model: 'sonnet', notes: [] }, 'bad patch');
   assert.equal(s.history[f.key].attempts, 1);
 });
+
+// ---------------------------------------------------------------- checkpoints that no longer apply
+
+test('reapply finds the INCLUDE_ASM line by name when its asm path changed (a file split)', () => {
+  const dir = clone({ 'src/main/main.c': 'int other;\nINCLUDE_ASM("asm/nonmatchings/main/split2", func_80012345);\n' });
+  assert.equal(reapply(dir, PATCH('func_80012345'), fn('func_80012345')), null);
+  assert.match(fs.readFileSync(path.join(dir, 'src/main/main.c'), 'utf8'), /void func_80012345\(void\) \{/);
+});
+
+test('a big session after a checkpoint that no longer applied: told to port it', () => {
+  const s = swarm('--big-workers', '1');
+  const f = fn('func_80030000', { size: 900 });
+  const cp = { stage: 'registers', diffs: 4, total: 225, log: ['2026-10-15 opus: registers 4/225.'] };
+  const p = s.prompt(s.bigJob(f, 1, [], { oldCheckpoint: { why: 'no unique anchor', diff: PATCH(f.name), cp } }));
+  assert.match(p, /no longer applies to\nthis branch \(no unique anchor\)/);
+  assert.match(p, /-INCLUDE_ASM/);
+  assert.match(p, /2026-10-15 opus: registers 4\/225\./);
+  assert.doesNotMatch(p, /No session has worked on it yet/);
+});
+
+test('the first C that builds replaces a checkpoint that no longer applied; failing to port is not stale', async () => {
+  const s = swarm('--big-workers', '1');
+  const f = fn('func_80030000', { size: 900 });
+  const d = s.cpDir(f);
+  fs.mkdirSync(d, { recursive: true });
+  fs.writeFileSync(path.join(d, 'best.json'), JSON.stringify({ stage: 'registers', diffs: 4, total: 225 }));
+  fs.writeFileSync(path.join(d, 'best.diff'), PATCH(f.name));
+  const session = async score => {
+    s.measure = async () => ({ score, infra: null });
+    const job = s.bigJob(f, 1, [], { oldCheckpoint: { why: 'gone', diff: '', cp: s.checkpoint(f) } });
+    job.dir = tmpDir();
+    await s.onBigExit({ id: 'b1', dir: job.dir, job }, job, { status: 'progress', note: 'n' }, PATCH(f.name));
+  };
+  await session(null);                                      // did not build
+  assert.equal(s.history[f.key].bigStale || 0, 0);
+  assert.equal(s.checkpoint(f).diffs, 4);
+  await session({ stage: 'structure', diffs: 60, total: 225 });
+  assert.equal(s.checkpoint(f).stage, 'structure');
+  assert.equal(s.history[f.key].bigStale, 0);
+});

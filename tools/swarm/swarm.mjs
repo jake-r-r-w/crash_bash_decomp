@@ -299,7 +299,12 @@ function reapply(dir, patch, f) {
       const flush = () => {
         if (!run.length && !del) return null;
         if (del) {                              // the INCLUDE_ASM line -> the worker's C
-          const i = unique(lines, del);
+          // by its text, else by the function's name (its asm path changes when a file is split)
+          let i = unique(lines, del);
+          if (i < 0) {
+            const own = lines.map((l, k) => [k, l.match(INCLUDE_LINE)?.[1]]).filter(([, n]) => n === del.match(INCLUDE_LINE)[1]);
+            if (own.length === 1) i = own[0][0];
+          }
           if (i < 0) return `${f.name}'s INCLUDE_ASM line isn't there once`;
           lines.splice(i, 1, ...run);
           replaced = true;
@@ -758,6 +763,17 @@ ${cp ? `
 This session resumes from the best C so far, already in ${f.src} in place of the INCLUDE_ASM line
 (${Swarm.describe(cp)}). Log of earlier sessions, oldest first:
 ${(cp.log || []).map(l => '- ' + l).join('\n')}
+` : job.oldCheckpoint ? `
+Earlier sessions got it to ${Swarm.describe(job.oldCheckpoint.cp)}, but that C no longer applies to
+this branch (${job.oldCheckpoint.why}): something it relied on was renamed, moved or redeclared
+since. ${f.src} still has the INCLUDE_ASM line. Port that C first: put it in place of the INCLUDE_ASM
+line, adapt it to today's names and headers (\`git log -3 -- ${f.src}\` and the headers it touches
+show what changed), and get it building; then go on as usual. Its diff, for reference:
+\`\`\`
+${job.oldCheckpoint.diff}
+\`\`\`
+Log of the sessions that made it, oldest first:
+${(job.oldCheckpoint.cp?.log || []).map(l => '- ' + l).join('\n')}
 ` : `
 No session has worked on it yet: start from the m2c draft (\`tools/dk python3 tools/scripts/decomp.py
 next --func ${r}\` shows it, with the function's evidence).
@@ -878,7 +894,16 @@ Fix that, keep it matching, and report "matched".
         const why = reapply(slot.dir, fs.readFileSync(job.startPatch, 'utf8'), f);
         if (why !== null) {
           if (!job.big) throw new Error(`can't apply the earlier C: ${why}`);
-          this.log(`${slot.id} ${f.name}: the checkpoint doesn't apply to ${this.o.branch} any more (${why}); starting fresh`);
+          // (a rename, a file split or a header change since): the session ports it by hand from
+          // the old diff, and its first C that builds replaces the checkpoint (onBigExit)
+          this.log(`${slot.id} ${f.name}: the checkpoint doesn't apply to ${this.o.branch} any more (${why}); ` +
+                   'starting from INCLUDE_ASM with the old diff as reference');
+          fs.appendFileSync(this.paths.report, `- ${stamp()} **${f.name}** (${f.seg}, ${f.size} B): checkpoint ` +
+                            `(${Swarm.describe(job.resumed)}) no longer applies: ${why}. A session ports it by hand.\n`);
+          (this.staleCheckpoints ||= []).push(f.name);
+          let diff = fs.readFileSync(job.startPatch, 'utf8');
+          if (diff.length > 12000) diff = diff.slice(0, 12000) + '\n... (cut)';
+          job.oldCheckpoint = { why, diff, cp: job.resumed };
           resetClone(slot.dir, job.base);
           job.startPatch = job.resumed = null;
         }
@@ -1034,7 +1059,7 @@ Fix that, keep it matching, and report "matched".
     // a checkpoint from before region scores: measure it once (in this slot, before it is freed),
     // so it is compared by region score like the rest rather than by STAGE
     const old = this.checkpoint(f);
-    if (old && !old.regions && score?.regions && this.stopping !== 'now') {
+    if (old && !old.regions && score?.regions && !job.oldCheckpoint && this.stopping !== 'now') {
       resetClone(slot.dir, job.base);
       const cpFile = path.join(this.cpDir(f), 'best.diff');
       if (git(slot.dir, 'apply', '--3way', '--whitespace=nowarn', cpFile).code) {
@@ -1066,19 +1091,25 @@ Fix that, keep it matching, and report "matched".
     const h = this.history[f.key] ||= { name: f.name, attempts: 0, notes: [] };
     Object.assign(h, { big: true, size: f.size, bigSessions: (h.bigSessions || 0) + 1 });
     const cp = this.checkpoint(f);
-    const improved = !!score && Swarm.better(score, cp);
+    // a checkpoint that no longer applied: the session's first C that builds replaces it, whatever
+    // its score (the old one can't be resumed), and a session that ports nothing isn't stale
+    const improved = !!score && (!!job.oldCheckpoint || Swarm.better(score, cp));
+    const port = !!job.oldCheckpoint && !improved;
     const desc = score ? Swarm.describe(score)
       : errs.length ? `patch refused: ${errs.join('; ')}` : patch.trim() ? 'C did not build' : 'no C left';
     if (improved) {
       this.saveCheckpoint(job, file, score, note, res.next);
       h.bigStale = 0;
+    } else if (port) {
+      this.noteCheckpoint(job, `could not port this checkpoint (${job.oldCheckpoint.why}): ${desc}. ${note}`);
     } else {
       h.bigStale = (h.bigStale || 0) + 1;
       this.noteCheckpoint(job, `no progress (${desc}). ${note}${res.next ? ` Next: ${res.next}` : ''}`);
     }
     this.record(job, 'progress', `${desc}${improved ? ' (new best)' : ''}. ${note}`);
     this.log(`${slot.id} ${f.name}: big session ${h.bigSessions}: ${desc}` +
-             `${improved ? ', new best' : `, no progress (${h.bigStale} in a row)`}; says ${res.status || 'nothing'}`);
+             `${improved ? ', new best' : port ? ', checkpoint not ported (not counted as stale)' : `, no progress (${h.bigStale} in a row)`}` +
+             `; says ${res.status || 'nothing'}`);
     if (res.status === 'parked') return this.parkBig(job, `worker parked it: ${note}`);
     const best = this.checkpoint(f);
     if (res.status === 'needs_permute' && this.pslots.length && best?.stage === 'registers' && !this.stopping) {
@@ -1613,6 +1644,8 @@ Fix that, keep it matching, and report "matched".
     const s = this.stats;
     this.log(`run ${this.id} finished: ${s.matched} matched, ${s.parked} parked, ${s.failed} failed, ` +
              `${s.conflicts} conflicts. Commits are on ${this.o.branch}; notes in ${this.paths.report}`);
+    if (this.staleCheckpoints?.length)
+      this.log(`checkpoints that no longer apply (sessions port them by hand): ${[...new Set(this.staleCheckpoints)].join(', ')}`);
     fs.rmSync(this.paths.lock, { force: true });
     fs.rmSync(this.paths.stop, { force: true });
     process.exit(exitCode);
