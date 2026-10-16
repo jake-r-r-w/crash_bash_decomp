@@ -576,6 +576,30 @@ def still_asm(src, *names):
     return bool(set(names) & {m.group(2) for m in INC_ASM.finditer(read(src))})
 
 
+LAST_SCORE = {}     # key -> (paired, ok blocks, exact, len, blocks) of the last diff check_function showed
+
+
+def stall_note(key, e, tries):
+    """Log this try's region score in build/attempts/<key>.json and, when the last N tries (more for
+    a bigger function) got nothing better than an earlier one, say which try was the closest."""
+    s = LAST_SCORE.get(key)
+    if not s:
+        return None
+    path = f"build/attempts/{key.replace(':', '_')}.json"
+    log = jload(path, []) if os.path.exists(path) else []
+    log.append([tries, *s])
+    os.makedirs("build/attempts", exist_ok=True)
+    jsave(path, log)
+    best = max(log, key=lambda r: (r[1], r[2], r[3]))      # paired, then ok blocks, then exact
+    n = min(12, 4 + e["size"] // 128)
+    since = sum(1 for r in log if r[0] > best[0])
+    if since < n:
+        return None
+    return (f"(no better in {since} tries: try {best[0]} was the closest, paired {best[1]}/{best[4]}, "
+            f"blocks {best[2]}/{best[5]}, exact {best[3]}/{best[4]}; go back to that C if the edits "
+            "since went nowhere, or try another idea)")
+
+
 def check_function(key, e, proj, name, quiet=False):
     """Build e's source file and compare. Returns (ok, ndiffs)."""
     src = e.get("src") or locate_def(name)
@@ -615,6 +639,7 @@ def check_function(key, e, proj, name, quiet=False):
         vram = key_vram(key)
         tt, ct = tw[:nt], cw[:nc]
         res = regions.score(tt, ct, ttext[:nt], relocs, vram, asm_labels(e["asm"], vram))
+        LAST_SCORE[key] = (res["paired"], res["ok"], res["exact"], res["len"], res["total"])
         show_aligned(*regions.diff_rows(tt, ct, ttext[:nt], relocs, res), ttext, ctext, limit)
     except Exception as ex:                          # the positional diff still says something
         print(f"(aligned diff failed: {ex}; positional diff instead)")
@@ -1170,6 +1195,10 @@ def cmd_try(a):
         rec["tries"] = rec.get("tries", 0) + 1
         if nd is not None:
             rec["best"] = min(rec.get("best", nd), nd)
+        # big-mode workers have their own measure (regions, checkpoints): normal mode and by hand only
+        note = stall_note(key, e, rec["tries"]) if not ok and not os.environ.get("SWARM_BIG") else None
+        if note:
+            print(note)
         if not ok and rec["tries"] >= 8 and rec["tries"] % 4 == 0:
             if os.environ.get("SWARM_RESULT"):   # a swarm worker: the orchestrator runs the permuter
                 print(f"({rec['tries']} tries so far - if no idea is left, finish \"needs_permute\" or "

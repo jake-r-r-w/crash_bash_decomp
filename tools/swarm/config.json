@@ -20,7 +20,7 @@
   "bigBytes": 600,
   "bigWorkers": 1,
   "bigModel": "opus",
-  "bigMinutes": 150,
+  "bigMinutes": 27,
   "bigBudgetUsd": 20,
   "bigSessions": 6,
   "bigStale": 2,

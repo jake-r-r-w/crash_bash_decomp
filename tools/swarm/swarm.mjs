@@ -1145,6 +1145,7 @@ Fix that, keep it matching, and report "matched".
       gitOk(slot.dir, 'reset', '-q');   // --3way stages it: unstaged, `git checkout -- src` undoes it
     }
     fs.rmSync(path.join(slot.dir, RESULT), { force: true });
+    fs.rmSync(path.join(slot.dir, 'build', 'attempts'), { recursive: true, force: true });   // try's stall log: per job
     useOurDk(slot.dir);
     const prompt = this.prompt(job);
     fs.writeFileSync(path.join(job.dir, 'prompt.txt'), prompt);
@@ -1155,7 +1156,7 @@ Fix that, keep it matching, and report "matched".
     const env = Object.fromEntries(Object.entries(process.env).filter(([k]) => !STRIP_ENV.test(k)));
     Object.assign(env, {
       // SWARM_RESULT in the container too: decomp.py words its hints for a worker
-      DK_DOCKER_ARGS: `--label ${LABEL}=${this.id} --label ${LABEL}-slot=${this.id}-${slot.id} --cpus ${this.cpus} -e SWARM_RESULT=${RESULT} ${workerMounts(slot.dir)}`,
+      DK_DOCKER_ARGS: `--label ${LABEL}=${this.id} --label ${LABEL}-slot=${this.id}-${slot.id} --cpus ${this.cpus} -e SWARM_RESULT=${RESULT}${job.big ? ' -e SWARM_BIG=1' : ''} ${workerMounts(slot.dir)}`,
       DK_NAME: `swarm-${slot.id}`,
       SWARM_FUNC: f.name, SWARM_KEY: f.key, SWARM_REF: ref(f), SWARM_SRC: f.src || '', SWARM_MODEL: job.model, SWARM_RESULT: RESULT,
     }, this.o.workerEnv || {});   // config.json: no git status in the system prompt (it changes every

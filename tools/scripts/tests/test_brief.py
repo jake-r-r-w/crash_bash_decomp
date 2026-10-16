@@ -58,5 +58,23 @@ class AsmListing(unittest.TestCase):
         self.assertEqual(text[0], "  .L80010010: (+0x10)")
 
 
+class StallNote(unittest.TestCase):
+    def test_no_better_in_n_tries(self):
+        cwd = os.getcwd()
+        with tempfile.TemporaryDirectory() as d:
+            os.chdir(d)
+            try:
+                e = {"size": 128}                      # 5 tries without progress (4 + 128 // 128)
+                scores = [(50, 2, 40), (60, 3, 45)] + [(55, 2, 41)] * 5
+                notes = []
+                for i, (paired, ok, exact) in enumerate(scores, 1):
+                    decomp.LAST_SCORE["k"] = (paired, ok, exact, 100, 10)
+                    notes.append(decomp.stall_note("k", e, i))
+                self.assertEqual(notes[:6], [None] * 6)
+                self.assertRegex(notes[6], r"no better in 5 tries: try 2 was the closest, paired 60/100")
+            finally:
+                os.chdir(cwd)
+
+
 if __name__ == "__main__":
     unittest.main()
