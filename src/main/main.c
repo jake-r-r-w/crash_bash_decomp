@@ -8410,21 +8410,23 @@ void func_80020BA8(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4) {
     func_80020344(a0, a1, (a4 << 12) / a3, a2);
 }
 
-#ifndef NON_MATCHING
-INCLUDE_ASM("asm/nonmatchings/main/main", func_80020C04);
-#else
-/* No callers. The retail code multiplies (b - a) by the fraction but never
- * reads lo (no mflo) and returns a: the product's use was folded away after
- * the mult was emitted. Closest form found: this one, one mflo too many. */
+/* No callers. Retail multiplies (b - a) by the fraction but never reads lo
+ * (no mflo) and returns a: the interpolating return sits behind a test that
+ * is always false, which only combine sees (after flow), so the mult stays
+ * and the dead block is dropped after reload. */
 s32 func_80020C04(s32 arg0) {
     s32 a;
     s32 b;
+    s32 t;
 
     a = D_80068BD4[((arg0 >> 16) - 0x400) & 0xFFF].unk2;
     b = D_80068BD4[((arg0 >> 16) - 0x3FF) & 0xFFF].unk2;
-    return a + (((b - a) * (arg0 & 0xFFFF)) >> 32);
+    t = (b - a) * (arg0 & 0xFFFF);
+    if (!((arg0 & 0x7FFF) >> 15)) {
+        return a;
+    }
+    return a + (t >> 16);
 }
-#endif
 
 s16 func_80020C4C(s32 arg0) {
     if (arg0 & 1) {
