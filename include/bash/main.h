@@ -985,7 +985,7 @@ typedef struct {
     u8 unkC[4];
     u8 *unk10;
 } VTable8;
-void func_800155FC(void);
+s32 func_800155FC(void);
 void func_8002BEA8(void);
 extern VTable8 *D_8004E0DC;
 extern VTable8 *D_8005B648;
