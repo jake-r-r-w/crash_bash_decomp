@@ -140,7 +140,46 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_800826F8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80082AC4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80082C34);
+void func_80082C34(void) {
+    s32 t;
+    s32 u;
+
+    switch (D_8009BD44) {
+    case 1:
+        t = D_8009AD94.unk20.x = (D_8009BD08 << 12) / 25;
+        D_8009AD94.unk20.y = t;
+        D_8009AD94.unk20.z = t;
+        D_8009AD94.unk10 = (D_8009BD08 << 10) / 25 - 0x400;
+        if (D_8009BD40 & 1) {
+            D_8009AD94.unk12 = D_8009AD94.unk12 + 0x80;
+        } else {
+            D_8009AD94.unk12 = D_8009AD94.unk12 - 0x80;
+        }
+        if (D_8009BD40 == 4) {
+            D_8009AD94.unk04 = 0x140;
+        }
+        if (D_8009AD94.unk20.x < 0x101) {
+            D_8009AD94.unk20.x = 0x1000;
+            D_8009AD94.unk20.y = 0x1000;
+            D_8009AD94.unk20.z = 0x1000;
+            D_8009AD94.unk12 = 0;
+            D_8009AD94.unk10 = 0;
+            D_8009AD94.unk04 = 0x140;
+            D_8009AD94.flags &= 0xFFFF7FFF;
+            if (D_8009BD40 == 4) {
+                u8 *g = D_8005A614;
+                D_8009BD44 = 0;
+                *(u16 *)(g + 0x30) &= 0xEFFF;
+            }
+        }
+        D_8009ADE6 = 1;
+        return;
+    case 3:
+        D_8009BD40 = 6;
+        D_8009BD44 = 0;
+        return;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80082D90);
 
