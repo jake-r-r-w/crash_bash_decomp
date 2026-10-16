@@ -54,7 +54,9 @@ OVL_LDS   := $(OVLS:%=linkers/%.ld)
 OVL_BINS  := $(OVLS:%=build/%.bin)
 
 C_FILES   := $(shell find src -name '*.c' 2>/dev/null)
-S_FILES   := $(shell find asm -name '*.s' -not -path 'asm/nonmatchings/*' 2>/dev/null)
+# (pruned: asm/nonmatchings holds ~2,700 .s files that aren't objects; walking them cost ~90 ms
+# on every make, which `try` and `regions` run several times)
+S_FILES   := $(shell find asm -path asm/nonmatchings -prune -o -name '*.s' -print 2>/dev/null)
 BIN_FILES := $(shell find assets -name '*.bin' 2>/dev/null)
 O_FILES   := $(C_FILES:%=build/%.o) $(S_FILES:%=build/%.o) $(BIN_FILES:%=build/%.o)
 

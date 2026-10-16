@@ -20,12 +20,13 @@ if ! command -v docker >/dev/null 2>&1; then
   echo "ERROR: docker not found. Install/start Docker Desktop (WSL 2 backend on Windows)." >&2
   exit 127
 fi
-if ! docker info >/dev/null 2>&1; then
-  echo "ERROR: Docker daemon not reachable. Start Docker Desktop and retry." >&2
-  exit 127
-fi
-
+# One Docker call when all is well (the image is there; ~0.5 s less than also running
+# `docker info` on every call): the daemon is only checked when that fails.
 if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
+  if ! docker info >/dev/null 2>&1; then
+    echo "ERROR: Docker daemon not reachable. Start Docker Desktop and retry." >&2
+    exit 127
+  fi
   echo "Building toolchain image $IMAGE (one-time, several minutes)..." >&2
   docker build -q -t "$IMAGE" "$ROOT/tools/docker" >&2
 fi

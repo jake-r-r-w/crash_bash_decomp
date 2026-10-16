@@ -279,8 +279,19 @@ def sym_file(ovl):
     return f"{CFG}/sym.{ovl}.txt" if ovl else f"{CFG}/sym.main.txt"
 
 
+_SYM_CACHE = {}
+
+
 def sym_names():
-    """functions.json-style key (ADDRESS or OVERLAY:ADDRESS) -> name."""
+    """functions.json-style key (ADDRESS or OVERLAY:ADDRESS) -> name. Read once per command (a
+    command asks many times), again only when a symbol file changed (rename writes them)."""
+    stamp = tuple((p, os.stat(p).st_mtime_ns, os.stat(p).st_size) for p in sorted(glob.glob(f"{CFG}/sym.*.txt")))
+    if _SYM_CACHE.get("stamp") != stamp:
+        _SYM_CACHE.update(stamp=stamp, names=read_sym_names())
+    return dict(_SYM_CACHE["names"])
+
+
+def read_sym_names():
     names = {}
     for p in glob.glob(f"{CFG}/sym.*.txt"):
         b = os.path.basename(p)[len("sym."):-len(".txt")]
@@ -1193,6 +1204,9 @@ def region_score(key, e, proj, name, src, want_lines=True):
     obj = f"build/{src}.o"
     if os.path.exists(obj):
         os.remove(obj)
+    # the -g build for the C lines runs alongside the normal one (two compiles of the same file)
+    pool = ThreadPoolExecutor(1) if want_lines else None
+    lines_job = pool.submit(c_lines, src, name, mk_config()) if pool else None
     r = run(["make", "-s", obj])
     if r.returncode:
         print("BUILD FAILED")
@@ -1207,7 +1221,9 @@ def region_score(key, e, proj, name, src, want_lines=True):
     nt, nc = trim_nops(tw), trim_nops(cw)
     tw, ttext, cw, ctext = tw[:nt], ttext[:nt], cw[:nc], ctext[:nc]
     res = regions.score(tw, cw, ttext, relocs, vram, asm_labels(e["asm"], vram))
-    lines = c_lines(src, name, mk_config()) if want_lines else None
+    lines = lines_job.result() if lines_job else None
+    if pool:
+        pool.shutdown()
     return res, lines, tw, ttext, cw, ctext
 
 

@@ -424,6 +424,15 @@ the effect on turns and $ per big session with `stats --run ID`.
 
 ### 3.6 Cheap speed fixes (S, measure first with Part 2)
 
+**Done 2026-10-16 (the cheap part).** Measured on the host: a `tools/dk` call
+cost 1.55 s (0.63 s of it `docker run`; `docker info` 0.47 s, `image inspect`
+0.28 s); now 1.2 s (the daemon is checked only when the image check fails).
+The Makefile no longer walks asm/nonmatchings (~90 ms per make). Symbol files
+are read once per command; `regions` runs its two compiles in parallel. A
+matching `try` went 3.4 -> 2.85 s (with 3.7's 0.8 s link check), `regions`
+2.97 -> 1.99 s. Not done: the long-lived container per slot (the overhead is
+under the 1.5 s this plan set for it), a named volume, function-only compiles.
+
 - `tools/dk` does five checks and starts a fresh container per call
   (`tools/dk:12-79`). Time `tools/dk true` vs `docker exec true` on the host.
   If the overhead is ~1.5 s+ per call: one labelled long-lived container per
