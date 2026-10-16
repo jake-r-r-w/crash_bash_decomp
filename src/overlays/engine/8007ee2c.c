@@ -2018,7 +2018,71 @@ void func_8008D6C8(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", InitHealth);
+void InitHealth(NAS *nas) {
+    EXTengine *eng;
+    EXTobject *obj;
+    EXTmotion *mot;
+    EXTengine *e2;
+    s32 x;
+    s32 z;
+
+    eng = nas->Engine;
+    if (eng != NULL) {
+        eng->sub->unk6C = D_80052F5C;
+        nas->UserInfo.user2 = D_8004E0D8;
+        eng->sub->unk74 = Random(0xE) + 0x2018;
+        obj = (EXTobject *)AddObject(nas);
+        if (obj != NULL) {
+            func_80026AD8((u8 *)nas);
+            func_8002694C(nas, 0x200);
+            nas->FUX = (EXT *)obj;
+            obj->whatami = 0x11;
+            obj->can_do |= 0x18;
+            func_80025AE4((u8 *)eng, 0, 0, 0, 0x80, -0x100, 0x40);
+            if (eng->unk10.y == D_8005A5D8) {
+                obj->status = 1;
+            } else {
+                obj->status = 4;
+            }
+            mot = AddMotion(nas);
+            if (mot != NULL) {
+                mot->Ymax = 0xA0;
+                mot->Ydec = 0xE;
+                mot->Yacc = 0;
+                mot->Ydir = 0xFF;
+                mot->Yvel = 0;
+            }
+            e2 = AddEngine(nas, 1);
+            if (e2 != NULL) {
+                e2->sub->unk6C = D_80052F5C;
+                e2->sub->unk74 = 0x2001;
+                e2->unk10 = nas->Engine->unk10;
+                e2->flags |= 0x8041;
+                e2->sub->unk76 = 0x800;
+                e2->sub->flags |= 0x40000000;
+            }
+            PlaySfx(0x3FA, NULL, NULL, 0x1000, 0x1E00, 0);
+            x = (eng->unk10.x >> 8) + 10;
+            z = 9 - (eng->unk10.z >> 8);
+            if (x >= 20) {
+                x = 19;
+            }
+            if (x < 0) {
+                x = 0;
+            }
+            if (z >= 20) {
+                z = 19;
+            }
+            if (z < 0) {
+                z = 0;
+            }
+            D_8009D90C[z * 20 + x].unk0 = 0x11;
+        }
+    }
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", PlotHealth);
 
