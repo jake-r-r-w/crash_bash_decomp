@@ -40,8 +40,8 @@ findings (TOOLING_PLAN.md, Part 2) re-rank Part 3: docs are hardly read,
 cache writes and turns per big session drive the cost. 3.5 (aligned `make
 diff`, `regions --changed`) and 3.1 (no git status in workers' system
 prompt, inline loop) and 3.3 (families: seed leads, templates, twins never
-big) are done. Next there: 3.2 (carry the closest C into retries), 3.4, then
-a supervised swarm run to measure them all; after each swarm run,
+big) and 3.2 (the closest C carries into retries) are done. Next: a
+supervised swarm run to measure them all (then 3.4, 3.7); after each swarm run,
 compare `stats --run ID` with the ledger's earlier runs. Deferred from Part 1: recognising
 the CLI's usage-limit result. It only matters for unattended runs, and the
 user runs the swarm supervised and conservatively; if a limit is ever hit,
@@ -238,6 +238,10 @@ Other:
 ## Gotchas
 
 **Tooling**
+- **Smoke-test swarm changes end to end** before a real run: a scripted
+  `--worker-cmd` run against a local bare remote (`--remote <bare clone>
+  --branch smoke --only KEY`) catches what the unit tests can't (clone setup,
+  the queue's Python, patches through `git`); see the 2026-10-16 entries.
 - **Claude Code allow rules for paths are `Edit(...)`.** They cover Write
   too; a `Write(path)` rule is ignored, so in `dontAsk` mode the write is
   refused. Check a permission change with a one-turn haiku session in a
@@ -391,6 +395,11 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-16 (tooling plan 3.2):** parks keep their closest C as the
+  function's checkpoint and every attempt resumes from it. A `--worker-cmd`
+  smoke run caught two 3.3 bugs that stopped runs at startup (no `build/` in
+  a new clone; the queue copy couldn't import `regions`); fixed.
 
 - **2026-10-16 (tooling plan 3.3):** `similar --survey`; `next` prints a
   matched look-alike's C (seq >= 0.90); queue `twin` field (exact / near /

@@ -1,6 +1,7 @@
 // Policy tests for swarm.mjs (no Docker, no Claude, no git remote).
 // Run: node --test tools/swarm/swarm.test.mjs
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -572,4 +573,57 @@ test('families: a function with a matched twin or template is never big; the pro
   assert.equal(s.isBig(t), false);
   assert.equal(s.isBig(fn('func_80020000', { size: 900 })), true);
   assert.match(s.prompt({ f: t, model: 'sonnet', attempt: 1, notes: [] }), /prints the C of a matched function with the same code \(a look-alike\)/);
+});
+
+// ---------------------------------------------------------------- the closest C carries over
+
+test('normal prompt: leave the closest C (no best_c); a resumed attempt is told where it starts', () => {
+  const s = swarm();
+  const f = fn('func_80010000');
+  const p = s.prompt({ f, model: 'sonnet', attempt: 1, notes: [] });
+  assert.match(p, /leave your closest C in place of the INCLUDE_ASM line/);
+  assert.doesNotMatch(p, /best_c|put the\s+INCLUDE_ASM line back/);
+  const r = s.prompt({ f, model: 'opus', attempt: 2, notes: [], resumed: { stage: 'registers', diffs: 4, total: 40, log: ['x: registers 4/40.'] } });
+  assert.match(r, /starts from the closest C so far[\s\S]*registers 4\/40[\s\S]*- x: registers 4\/40\./);
+});
+
+test('keepCheckpoint: only a closer C that builds; any C after a checkpoint that no longer applied', () => {
+  const s = swarm();
+  const f = fn('func_80010000');
+  const file = path.join(clone({ 'p.diff': PATCH(f.name) }), 'p.diff');
+  const job = { f, model: 'sonnet', base: 'x' };
+  assert.equal(s.keepCheckpoint(job, file, null, 'n'), false);
+  assert.equal(s.keepCheckpoint(job, file, { stage: 'instructions', diffs: 9, total: 40 }, 'n'), true);
+  assert.equal(s.keepCheckpoint(job, file, { stage: 'instructions', diffs: 12, total: 40 }, 'n'), false);
+  assert.equal(s.keepCheckpoint({ ...job, oldCheckpoint: {} }, file, { stage: 'structure', diffs: 30, total: 40 }, 'n'), true);
+  assert.equal(s.checkpoint(f).stage, 'structure');
+});
+
+function gitRepo() {
+  const dir = clone({ 'src/main/main.c': 'int other;\nINCLUDE_ASM("asm/nonmatchings/main/main", func_80012345);\n',
+                      'include/bash/main.h': '\n' });
+  const g = (...a) => execFileSync('git', a, { cwd: dir, encoding: 'utf8' }).trim();
+  g('init', '-q'); g('-c', 'user.email=t@t', '-c', 'user.name=t', 'add', '-A');
+  g('-c', 'user.email=t@t', '-c', 'user.name=t', 'commit', '-q', '-m', 'base');
+  fs.writeFileSync(path.join(dir, 'src/main/main.c'), 'int other;\nvoid func_80012345(void) {\n    other = 1;\n}\n');
+  return { dir, base: g('rev-parse', 'HEAD') };
+}
+
+test('a park leaves its C: measured, kept as the closest; one that matches goes to the gate', async () => {
+  for (const [score, want] of [[{ stage: 'registers', diffs: 2, total: 20 }, 'kept'], [{ stage: 'match', diffs: 0, total: 0 }, 'gate']]) {
+    const s = swarm();
+    const f = fn('func_80012345');
+    const { dir, base } = gitRepo();
+    const jobDir = tmpDir();
+    fs.writeFileSync(path.join(jobDir, 'worker.out'), '');
+    fs.writeFileSync(path.join(dir, '.swarm-result.json'), JSON.stringify({ status: 'parked', note: 'swap left' }));
+    s.measure = async () => ({ score, infra: null });
+    const job = { f, model: 'sonnet', attempt: 1, notes: [], base, dir: jobDir, started: Date.now() };
+    const slot = { id: 'w1', dir, job };
+    await s.onWorkerExit(slot, job, 0);
+    if (want === 'kept') {
+      assert.equal(s.checkpoint(f).diffs, 2);
+      assert.equal(s.integQueue.length, 0);
+    } else assert.equal(s.integQueue[0], job);
+  }
 });

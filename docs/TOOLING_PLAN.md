@@ -319,6 +319,14 @@ MATCHING.md (`:603-605`); clones load CLAUDE.md, which sends them to AGENT_LOG.
 
 ### 3.2 Carry the best C into retries (S)
 
+**Done 2026-10-16.** Normal workers leave their closest C and park; the
+orchestrator measures every park's C (`try` + `regions`), sends one that
+matches after all to the gate, and keeps the closest as the function's
+checkpoint (also when the permuter finds nothing). Every job, normal or big,
+any run, resumes from the checkpoint; a start patch that no longer applies is
+ported from its diff. The conflict retry carries its C. Checked with a
+scripted `--worker-cmd` run (attempt 2 started from attempt 1's C).
+
 Normal mode throws away the closest C at every escalation: the prompt says to
 restore INCLUDE_ASM (`:630-632`), parks drop their edits (`:896`), the opus retry
 starts from m2c, and `best_c` (`:637`) is read nowhere.

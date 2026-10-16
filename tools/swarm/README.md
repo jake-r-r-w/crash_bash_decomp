@@ -70,6 +70,10 @@ or keys. Checkpoints saved by name before 2026-10-16 still resume when the name 
   notes. Checkpoints persist across runs.
 - A function that stops progressing is parked with its best C in `checkpoints/`;
   `--retry-failed` gives it a fresh allowance for one run.
+- **The closest C carries over:** a normal worker that doesn't match leaves its closest C and
+  parks; the orchestrator measures it (one that matches after all goes to the gate) and keeps it
+  as the function's checkpoint if it is the closest yet. Every later attempt, normal or big, in any
+  run, starts from that checkpoint.
 - **Families:** identical functions (one fingerprint) are one job: the first member of each group
   that spans overlays is leased first (`--seed-families`, on by default), and while a tried member
   is unmatched its twins wait (a match fills them through `done`). A function with a matched twin

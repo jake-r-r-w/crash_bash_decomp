@@ -250,6 +250,7 @@ function makeClone(dir, src, rev, log) {
   const drafts = path.join(REPO, 'build', 'auto_drafts');
   if (fs.existsSync(drafts)) fs.cpSync(drafts, path.join(dir, 'build', 'auto_drafts'), { recursive: true });
   // decomp.py's opcode sequences and look-alikes (~20 s and ~45 s to rebuild from asm/)
+  fs.mkdirSync(path.join(dir, 'build'), { recursive: true });
   for (const c of ['similar.json', 'lookalike.json'])
     if (fs.existsSync(path.join(REPO, 'build', c))) fs.copyFileSync(path.join(REPO, 'build', c), path.join(dir, 'build', c));
   fs.writeFileSync(stampFile, `${stamp()} ${fp}\n`);
@@ -630,7 +631,8 @@ class Swarm {
   async refreshQueue() {
     // this checkout's decomp.py (the integration branch may predate `queue`); it only reads
     fs.copyFileSync(path.join(REPO, 'tools/scripts/decomp.py'), path.join(this.integ, '.swarm-queue.py'));
-    const args = ['python3', '.swarm-queue.py', 'queue', '--count', this.o.only ? '5000' : '300'];
+    // (run from the clone's root, so its own imports, such as regions, need tools/scripts on the path)
+    const args = ['env', 'PYTHONPATH=tools/scripts', 'python3', '.swarm-queue.py', 'queue', '--count', this.o.only ? '5000' : '300'];
     if (this.o.seg && !this.o.only) args.push('--seg', this.o.seg);
     const r = await this.dk(this.integ, args);
     const line = r.out.trim().split('\n').reverse().find(l => l.startsWith('['));
@@ -856,6 +858,14 @@ class Swarm {
     writeJson(path.join(d, 'best.json'), { ...score, name: job.f.name, key: job.f.key, seg: job.f.seg, base: job.base, updated: stamp(), log });
   }
 
+  // a normal attempt's C that didn't match becomes the function's checkpoint if it is the closest yet
+  keepCheckpoint(job, file, score, note) {
+    // (after a checkpoint that no longer applied, any C that builds replaces it: the old one is dead)
+    if (!score || score.stage === 'match' || (!job.oldCheckpoint && !Swarm.better(score, this.checkpoint(job.f)))) return false;
+    this.saveCheckpoint(job, file, score, note);
+    return true;
+  }
+
   noteCheckpoint(job, line) {
     const old = this.checkpoint(job.f);
     if (!old) return;
@@ -931,14 +941,25 @@ These swarm rules override CLAUDE.md and the docs:
   to stop.
 - You have about ${this.o.workerMinutes} minutes.
 - Stop when \`tools/dk make diff FUNC=${r}\` prints MATCH, or when you are out of ideas.
-  If it does not match${canPermute ? ' and you are not asking for the permuter' : ''}, put the
-  INCLUDE_ASM line back exactly as it was and leave no changes in src/ or include/.
+  If it does not match, leave your closest C in place of the INCLUDE_ASM line (not under
+  \`#ifndef NON_MATCHING\`) if it compiles, and finish "parked": the orchestrator measures it and
+  keeps the closest version, and the next attempt starts from it. Never put INCLUDE_ASM back.
 - Last, write ${RESULT} in the repo root, JSON:
   {"status": "matched" | "parked"${canPermute ? ' | "needs_permute"' : ''},
    "note": "one line: what made it match, or what still differs",
-   "pattern": "a new Diff patterns table row (| symptom | change | example |), or empty",
-   "best_c": "your closest C when parked, else empty"}
-${job.gateFix ? `
+   "pattern": "a new Diff patterns table row (| symptom | change | example |), or empty"}
+${job.resumed && !job.gateFix && !job.permuterDiff ? `
+This attempt starts from the closest C so far, already in ${f.src} in place of the INCLUDE_ASM line
+(${Swarm.describe(job.resumed)}). Its log, oldest first:
+${(job.resumed.log || []).map(l => '- ' + l).join('\n')}
+` : ''}${job.oldCheckpoint ? `
+An earlier attempt's C (${Swarm.describe(job.oldCheckpoint.cp)}) no longer applies to this branch
+(${job.oldCheckpoint.why}); ${f.src} still has the INCLUDE_ASM line. Port it first (\`tools/dk git log -3 --
+${f.src}\` shows what changed), then go on. Its diff:
+\`\`\`
+${job.oldCheckpoint.diff}
+\`\`\`
+` : ''}${job.gateFix ? `
 An earlier worker's C for ${f.name} is already in ${f.src} and matches the bytes, but the validation
 gate (decomp.py done: scope, lint, full build) refused it with:
 \`\`\`
@@ -1088,8 +1109,9 @@ Fix that, keep it matching, and report "matched".
     fs.mkdirSync(job.dir, { recursive: true });
     makeClone(slot.dir, this.integ, 'HEAD', m => this.log(m));   // HEAD may have moved on: base is in it
     resetClone(slot.dir, job.base);
-    // big mode resumes from the function's best C so far
-    if (job.big && !job.gateFix) {
+    // every job (big or normal, any run) resumes from the function's closest C so far; a normal job
+    // that already starts from other C (a permuter result, a conflict) keeps that
+    if (!job.gateFix && (job.big || !job.startPatch)) {
       const cp = this.checkpoint(f);
       if (cp) {
         job.resumed ||= cp;
@@ -1104,7 +1126,6 @@ Fix that, keep it matching, and report "matched".
         resetClone(slot.dir, job.base);
         const why = reapply(slot.dir, fs.readFileSync(job.startPatch, 'utf8'), f);
         if (why !== null) {
-          if (!job.big) throw new Error(`can't apply the earlier C: ${why}`);
           // (a rename, a file split or a header change since): the session ports it by hand from
           // the old diff, and its first C that builds replaces the checkpoint (onBigExit)
           this.log(`${slot.id} ${f.name}: the checkpoint doesn't apply to ${this.o.branch} any more (${why}); ` +
@@ -1114,7 +1135,8 @@ Fix that, keep it matching, and report "matched".
           (this.staleCheckpoints ||= []).push(f.name);
           let diff = fs.readFileSync(job.startPatch, 'utf8');
           if (diff.length > 12000) diff = diff.slice(0, 12000) + '\n... (cut)';
-          job.oldCheckpoint = { why, diff, cp: job.resumed };
+          job.oldCheckpoint = { why, diff, cp: job.resumed || { stage: '?', diffs: 0, total: 0 } };
+          job.permuterDiff = job.gateFix = null;   // their C isn't in place: port the diff instead
           resetClone(slot.dir, job.base);
           job.startPatch = job.resumed = null;
         }
@@ -1240,8 +1262,6 @@ Fix that, keep it matching, and report "matched".
     if (job.big && !job.gateFix) return this.onBigExit(slot, job, res, patch);
     if (capped && !patch.trim()) return this.notMatched(slot, job, `session hit its cap (${session.subtype}); ${res.note || ''}`.trim());
     if (!patch.trim()) return this.notMatched(slot, job, res.note || (job.timedOut ? 'timed out' : 'no change'));
-    // a park that left edits behind (a header type it added): a park, not a bad patch
-    if (res.status === 'parked') return this.notMatched(slot, job, `${res.note || 'parked'} (its leftover edits dropped)`);
     fs.writeFileSync(path.join(job.dir, 'patch.diff'), patch);
     const errs = this.checkPatch(patch, f);
     if (errs.length && errs.every(e => e.startsWith(ASM_REFUSED))) {
@@ -1252,6 +1272,9 @@ Fix that, keep it matching, and report "matched".
       if (hack) this.needsHack(job);
       return this.notMatched(slot, job, `patch refused: inline asm${hack ? ' (it matches with it: needs a human --hack)' : ''}; ${res.note || ''}`);
     }
+    // a park's leftover that the checks refuse is simply not kept; only a claimed match is a failure
+    if (errs.length && res.status !== 'matched')
+      return this.notMatched(slot, job, `${res.note || 'parked'} (its C not kept: ${errs.join('; ')})`);
     if (errs.length) return this.fail(slot, job, `patch refused: ${errs.join('; ')}`);
     if (res.status === 'needs_permute') {
       if (!this.pslots.length || job.permuted)
@@ -1263,15 +1286,16 @@ Fix that, keep it matching, and report "matched".
       this.log(`${slot.id} ${f.name}: handed to the permuter pool (${job.note})`);
       return;
     }
-    // don't trust the worker's word: build and compare the function ourselves
-    const r = await this.dk(slot.dir, ['python3', 'tools/scripts/decomp.py', 'try', ref(f)], slot.id, { minutes: TOOL_MINUTES });
-    fs.writeFileSync(path.join(job.dir, 'try.txt'), r.out);
-    const infra = infraError(r.out, r.code);
+    // don't trust the worker's word: build and compare the function ourselves (a park too: its C
+    // may match after all, and otherwise it is kept if it is the closest yet)
+    const { score, infra } = await this.measure(slot.dir, f, slot.id, job.dir);
     if (infra) return this.infraStop(slot, job, infra);
-    if (r.code !== 0 || !/^MATCH /m.test(r.out))
-      return this.notMatched(slot, job, res.status === 'matched'
+    if (score?.stage !== 'match') {
+      const kept = this.keepCheckpoint(job, path.join(job.dir, 'patch.diff'), score, res.note || '');
+      return this.notMatched(slot, job, (res.status === 'matched'
         ? `claimed a match that try rejects; ${res.note || ''}`.trim()
-        : `${res.note || 'not matched'} (left its C in place)`);
+        : `${res.note || 'not matched'}`) + ` (${score ? Swarm.describe(score) : 'C did not build'}${kept ? ', kept as the closest' : ''})`);
+    }
     job.note = res.note || '';
     job.patch = path.join(job.dir, 'patch.diff');
     slot.job = null;
@@ -1430,7 +1454,11 @@ Fix that, keep it matching, and report "matched".
           this.noteCheckpoint(job, why);
           return this.continueBig(job, why);
         }
-        return this.notMatched(ps, job, `${why}; worker: ${job.note}`);
+        // the worker's C goes on as the closest so far (the permuter usually ends registers-stage
+        // near misses here)
+        const { score } = await this.measure(ps.dir, f, ps.id);
+        const kept = this.keepCheckpoint(job, job.bestPatch, score, `${job.note} (${why})`);
+        return this.notMatched(ps, job, `${why}; worker: ${job.note}${kept ? ` (${Swarm.describe(score)}, kept as the closest)` : ''}`);
       }
       const outDir = path.join(ps.dir, m[3]);
       let diff = fs.existsSync(path.join(outDir, 'diff.txt')) ? fs.readFileSync(path.join(outDir, 'diff.txt'), 'utf8') : '';
@@ -1596,7 +1624,8 @@ Fix that, keep it matching, and report "matched".
       this.record(job, 'conflict', (ap.err || ap.out).trim().split('\n').slice(-2).join(' '));
       if (job.conflicts++ < 1 && !this.stopping) {
         this.log(`${f.name}: patch conflicts with newer commits; it goes back in the queue`);
-        this.retry.push({ f, model: job.model, attempt: job.attempt, notes: job.notes, retry: true, conflicts: job.conflicts });
+        this.retry.push({ f, model: job.model, attempt: job.attempt, notes: job.notes, retry: true, conflicts: job.conflicts,
+                          startPatch: job.patch });
       } else this.fail(null, job, 'patch conflicts twice');
       return false;
     }
