@@ -99,54 +99,134 @@ class FillJumpSlots(unittest.TestCase):
         self.assertEqual(aspsx_fill.fill(src), src)
 
 
-class StealJumpSlot(unittest.TestCase):
-    """A conditional branch to a `j X` with a filled slot goes straight to X with a copy of it."""
+class FillBranches(unittest.TestCase):
+    """gcc 2.7.2 leaves some conditional branches in reorder mode; ASPSX fills their slots from
+    below, else from the target, with an instruction whose register is dead on the other path."""
+
+    def run_fill(self, text):
+        return norm(aspsx_fill.fill_all_branches(lines(text)))
 
     TAIL = """
         $L26:
-        j\t$L27
-        li\t$2,0x00000001
+        j $L27
+        li $2,0x00000001
         $L27:
-        j\t$31
+        j $31
         nop  # DEBUG: branch/jump
-    """
+        .end f"""
 
-    def test_retargets_and_copies_the_slot(self):  # func_8002DE2C: return 1 for arg0 == 10
-        out = aspsx_fill.steal_jump_slot(lines("""
-            beq\t$4,$2,$L26
+    def test_jump_target_slot_copied(self):  # func_8002DE2C: return 1 for arg0 == 10
+        out = self.run_fill("""
+            beq $4,$2,$L26
             nop  # DEBUG: branch/jump
-        """ + self.TAIL))
-        out = [l for l in out if l.strip()]
-        self.assertEqual(out[:2], ["beq\t$4,$2,$L27", "li\t$2,0x00000001"])
-        self.assertEqual(out[2:5], ["$L26:", "j\t$L27", "li\t$2,0x00000001"])   # the jump stays for others
+            addu $3,$3,1
+            li $2,0x00000007
+            j $L27
+            nop  # DEBUG: branch/jump""" + self.TAIL)
+        self.assertEqual(out[:2], ["beq $4,$2,$L27", "li $2,0x00000001"])
+        self.assertIn("$L26:", out)                         # the jump stays for other entries
+
+    def test_register_read_on_the_fallthrough(self):  # func_8002D4F4: bne $16,$2 then sb $16
+        src = """
+            bne $16,$2,$L26
+            nop  # DEBUG: branch/jump
+            sb $16,D_80067884
+            $L26:
+            j $L27
+            li $16,0x00000007
+            $L27:
+            j $31
+            nop  # DEBUG: branch/jump
+            .end f"""
+        self.assertEqual(self.run_fill(src), norm(lines(src)))
+
+    def test_target_instruction_copied_and_dropped(self):  # func_8002D4F4's $L157 (12 beqs)
+        out = self.run_fill("""
+            beq $16,$2,$L157
+            nop  # DEBUG: branch/jump
+            bgez $16,$L13
+            li $2,-2
+            j $L13
+            li $16,-1
+            $L157:
+            li $2,0x00000001
+            $L177:
+            sw $2,0($4)
+            $L13:
+            j $31
+            nop  # DEBUG: branch/jump
+            .end f""")
+        self.assertEqual(out[:2], ["beq $16,$2,$L177", "li $2,0x00000001"])
+        self.assertNotIn("$L157:", out)                     # nothing reaches it now
+        self.assertEqual(out.count("li $2,0x00000001"), 1)
+
+    def test_from_below_past_a_label(self):  # func_8002D4F4: bgez $16,$L45 then $L175: li $2,-2
+        out = self.run_fill("""
+            bgez $16,$L45
+            nop  # DEBUG: branch/jump
+            $L175:
+            li $2,-2
+            beq $16,$2,$L13
+            nop  # DEBUG: branch/jump
+            $L45:
+            li $2,0x00000001
+            $L13:
+            j $31
+            nop  # DEBUG: branch/jump
+            .end f""")
+        self.assertEqual(out[:4], ["bgez $16,$L45", "$L175:", "li $2,-2", "beq $16,$2,$L13"])
+
+    def test_a_load_does_not_prove_it_dead(self):  # func_8002E25C: bne $2,$0 then lbu $2
+        src = """
+            bne $2,$0,$L174
+            nop  # DEBUG: branch/jump
+            lbu $4,0($18)
+            addu $18,$18,1
+            lbu $2,0($18)
+            j $31
+            nop  # DEBUG: branch/jump
+            $L174:
+            li $2,0x00000020
+            j $31
+            nop  # DEBUG: branch/jump
+            .end f"""
+        self.assertEqual(self.run_fill(src), norm(lines(src)))
+
+    def test_live_at_return(self):  # func_8002DE2C: $L187's sll $5 is never written before jr $31
+        src = """
+            bne $7,$2,$L187
+            nop  # DEBUG: branch/jump
+            sw $0,0($4)
+            j $31
+            nop  # DEBUG: branch/jump
+            $L187:
+            sll $5,$4,2
+            sw $5,0($4)
+            j $31
+            nop  # DEBUG: branch/jump
+            .end f"""
+        self.assertEqual(self.run_fill(src), norm(lines(src)))
+
+    def test_saved_register_dead_across_a_call(self):  # func_8002D4F4's state 15 (0x750)
+        out = self.run_fill("""
+            bne $16,$2,$L133
+            nop  # DEBUG: branch/jump
+            jal f2
+            addu $4,$0,$zero
+            $L133:
+            j $L13
+            li $16,0x0000000f
+            $L13:
+            j $31
+            nop  # DEBUG: branch/jump
+            .end f""")
+        self.assertEqual(out[:2], ["bne $16,$2,$L13", "li $16,0x0000000f"])
 
     def test_filled_slot_untouched(self):
-        src = lines("""
-            beq\t$4,$2,$L26
-            addu\t$3,$3,1
-        """ + self.TAIL)
-        self.assertEqual(aspsx_fill.steal_jump_slot(src), src)
-
-    def test_target_not_a_jump(self):
-        src = lines("""
-            bnez\t$3,$L28
-            nop  # DEBUG: branch/jump
-            $L28:
-            addu\t$2,$0,$zero
-            j\t$31
-            nop  # DEBUG: branch/jump
-        """)
-        self.assertEqual(aspsx_fill.steal_jump_slot(src), src)
-
-    def test_return_jump_not_followed(self):  # `j $31` is a return, not a jump to follow
-        src = lines("""
-            beqz\t$3,$L28
-            nop  # DEBUG: branch/jump
-            $L28:
-            j\t$31
-            addu\t$2,$0,$zero
-        """)
-        self.assertEqual(aspsx_fill.steal_jump_slot(src), src)
+        src = """
+            beq $4,$2,$L26
+            addu $3,$3,1""" + self.TAIL
+        self.assertEqual(self.run_fill(src), norm(lines(src)))
 
 
 class Dmpsx(unittest.TestCase):

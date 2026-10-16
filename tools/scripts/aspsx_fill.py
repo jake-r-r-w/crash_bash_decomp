@@ -18,6 +18,12 @@ always uses $at:
                         ->     addu $2,$2,$3                  lbu $2,%lo(D_8006789E)($at))
                                lbu  $2,%lo(D_8006789E)($2)
 
+3. Fill the slots of conditional branches gcc left to the assembler (fill_branches): from below,
+else from the target (its first instruction, or the slot of a `j` there), with an instruction
+whose register is dead on the other path; a target instruction every branch took and nothing
+else reaches is dropped. Derived from func_8002D4F4 against the retail code and checked on every
+matched function of the two units.
+
 Only units built with gcc 2.7.2 use this (Makefile: ASPSX_FILL)."""
 import re
 import sys
@@ -115,46 +121,231 @@ def fill(lines):
 
 COND_BRANCHES = {"beq", "bne", "beqz", "bnez", "blez", "bgtz", "bltz", "bgez"}
 LABEL = re.compile(r"^\s*(\$?[\w.]+):\s*$")
+REG = re.compile(r"\$\w+")
+# one instruction, writes one register, nothing else: safe to run on a path that didn't need it
+SPECULABLE = {"li", "lui", "move", "addu", "addiu", "subu", "and", "andi", "or", "ori", "xor", "xori",
+              "nor", "sll", "srl", "sra", "sllv", "srlv", "srav", "slt", "slti", "sltu", "sltiu"}
+SCAN = 16                                       # instructions looked at to prove a register dead
 
 
-def steal_jump_slot(lines):
-    """A conditional branch with an empty slot whose target is a `j X` with a filled slot: branch
-    to X instead and copy that instruction into the empty slot. ASPSX does this (gcc 2.7.2 leaves
-    the branch for the assembler); func_8002DE2C's `beq a0,v0` returns 1 straight to the exit:
+def is_slot_nop(line):
+    """maspsx's marker for a slot gcc left to the assembler (reorder mode)."""
+    s = line.strip()
+    return s.startswith("nop") and "branch/jump" in s
 
-        beq  $4,$2,$L26            beq  $4,$2,$L27
+
+def regs(args):
+    return [r for r in REG.findall(args) if r not in ("$0", "$zero")]
+
+
+def reads_writes(op, args):
+    rs = regs(args)
+    if op in STORES or op in BRANCHES or op in ("mult", "multu", "div", "divu", "mthi", "mtlo"):
+        return set(rs), set()
+    if not rs:
+        return set(), set()
+    first = args.split(",")[0].strip()
+    if first in ("$0", "$zero"):
+        return set(rs), set()
+    return set(rs[1:]), {first}
+
+
+def speculable(ins):
+    if not ins or ins[0] not in SPECULABLE:
+        return None
+    op, args = ins
+    ops = [a.strip() for a in args.split(",")]
+    if not all(REG.fullmatch(a) or re.fullmatch(r"-?(0x[0-9a-fA-F]+|\d+)", a) for a in ops):
+        return None                             # a symbol: a two-instruction macro
+    if op == "li" and not fits16(ops[1]):
+        return None                             # a big constant: lui + ori
+    w = reads_writes(op, args)[1]
+    return next(iter(w)) if len(w) == 1 else None
+
+
+ARGS = {"$4", "$5", "$6", "$7"}
+CALLER_SAVED = {f"${n}" for n in list(range(1, 16)) + [24, 25]}
+
+
+def dead_at(lines, k, reg, labels=None):
+    """True if reg is dead at line k: on every path from there it is written before it is read
+    (ASPSX's liveness). A call reads $4-$7 and leaves the caller-saved registers dead; a return, an
+    indirect jump or anything unclear counts as a read. A load's write doesn't count as one
+    (func_8002E25C's `bne $2,$0` is left unfilled though `lbu $2` follows on its fallthrough)."""
+    if labels is None:
+        labels = {LABEL.match(l).group(1): n for n, l in enumerate(lines) if LABEL.match(l)}
+    seen, todo = set(), [k]
+    while todo:
+        k = todo.pop()
+        while True:
+            k = first_insn(lines, k)
+            if k >= len(lines) or k in seen or len(seen) > 8 * SCAN:
+                if k in seen:
+                    break
+                return False
+            seen.add(k)
+            if not insn(lines[k]):
+                return False                          # the end of the function
+            op, args = insn(lines[k])
+            r, w = reads_writes(op, args)
+            if op in ("jal", "jalr", "bltzal", "bgezal"):
+                if reg in ARGS or reg in r:
+                    return False
+                slot = first_insn(lines, k + 1)       # the slot runs before the call
+                sr, sw = reads_writes(*insn(lines[slot]))
+                if reg in sr:
+                    return False
+                if reg in CALLER_SAVED or reg == "$31" or (reg in sw and insn(lines[slot])[0] not in LOADS):
+                    break
+                k = slot + 1
+                continue
+            if reg in r:
+                return False
+            if op in BRANCHES:
+                slot = first_insn(lines, k + 1)
+                si = insn(lines[slot]) if slot < len(lines) else None
+                if not si:
+                    return False
+                sr, sw = reads_writes(*si)
+                if reg in sr:
+                    return False
+                if reg in sw and si[0] not in LOADS:
+                    break
+                dest = args.split(",")[-1].strip()
+                if op in ("jr", "jalr") or dest not in labels:
+                    return False                      # a return or a jump table: assume it's read
+                todo.append(labels[dest])
+                if op in ("j", "b"):
+                    break
+                k = slot + 1                          # and the fallthrough
+                continue
+            if reg in w:
+                if op in LOADS:
+                    return False
+                break
+            k += 1
+    return True
+
+
+def first_insn(lines, k):
+    """The index of the first instruction at or after line k (past labels and comments), or of the
+    function's `.end`."""
+    while k < len(lines) and not insn(lines[k]) and not lines[k].strip().startswith(".end"):
+        k += 1
+    return k
+
+
+def fill_branches(lines, stolen=None):
+    """Fill the slot of a conditional branch gcc 2.7.2 left to the assembler, as ASPSX does: from
+    below if it can, else from the target. Either way the moved instruction must be one that can
+    run on the path that didn't need it: a single instruction writing one register that is dead
+    on that path (written before it is read).
+
+    From below, the next instruction moves into the slot, even past a label (the label then
+    points at the slot, so branches to it still run it). func_8002D4F4:
+
+        bgez $16,$L45              bgez $16,$L45
+        nop                  ->  $L175:
+    $L175:                         li   $2,-2
+        li   $2,-2                 beq  $16,$2,$L156
+
+    From the target, its first instruction is copied into the slot and the branch skips it; when
+    the target is a `j X` with a filled slot, its slot is copied and the branch goes to X
+    (func_8002DE2C's `beq $4,$2` returns 1 straight to the exit):
+
+        beq  $16,$2,$L157          beq  $16,$2,$L157_1
         nop                  ->    li   $2,1
         ...                        ...
-    $L26:                      $L26:
-        j    $L27                  j    $L27
+    $L157:                     $L157:
         li   $2,1                  li   $2,1
+        sw   $2,D_80067894     $L157_1:
+                                   sw   $2,D_80067894
     """
-    labels = {}
-    for i, line in enumerate(lines):
-        m = LABEL.match(line)
-        if m:
-            labels[m.group(1)] = i
     out = list(lines)
-    for i, line in enumerate(lines[:-1]):
-        ins = insn(line)
-        if not ins or ins[0] not in COND_BRANCHES or not lines[i + 1].strip().startswith("nop"):
+    i, made = 0, 0
+    while i < len(out) - 1:
+        ins = insn(out[i])
+        if not ins or ins[0] not in COND_BRANCHES or not is_slot_nop(out[i + 1]):
+            i += 1
             continue
-        args = [a.strip() for a in ins[1].split(",")]
-        t = labels.get(args[-1])
-        if t is None:
+        target = [a.strip() for a in ins[1].split(",")][-1]
+        f = first_insn(out, i + 2)
+        below = speculable(insn(out[f])) if f < len(out) else None
+        tl = next((n for n, l in enumerate(out) if LABEL.match(l) and LABEL.match(l).group(1) == target), None)
+        if below and all(not out[n].strip() or LABEL.match(out[n]) or out[n].strip().startswith("#")
+                         for n in range(i + 2, f)) and tl is not None and dead_at(out, tl + 1, below):
+            del out[i + 1]                       # the next instruction becomes the slot
+            i += 1
             continue
-        k = t + 1                                   # first instruction at the target
-        while k < len(lines) and (not lines[k].strip() or LABEL.match(lines[k]) or lines[k].strip().startswith("#")):
-            k += 1
-        j = insn(lines[k]) if k < len(lines) else None
-        slot = insn(lines[k + 1]) if k + 1 < len(lines) else None
-        if not j or j[0] != "j" or j[1].strip().startswith("$31") or not slot or slot[0] in NO_MOVE | {"nop"}:
-            continue
-        out[i] = line.replace(args[-1], j[1].strip(), 1) if line.rstrip().endswith(args[-1]) else line
-        out[i + 1] = lines[k + 1]
+        if tl is not None:
+            k = first_insn(out, tl + 1)
+            t = insn(out[k]) if k < len(out) else None
+            reg = speculable(t)
+            if reg and dead_at(out, i + 2, reg):
+                nk = first_insn(out, k + 1)
+                lab = next((LABEL.match(out[n]).group(1) for n in range(k + 1, nk) if LABEL.match(out[n])), None)
+                if lab is None:
+                    made += 1
+                    lab = f"{target}_aspsx{made}"
+                    out.insert(k + 1, f"{lab}:")
+                    if k + 1 <= i:                  # a target above the branch: it moved down
+                        i += 1
+                out[i] = out[i].rstrip()[: -len(target)] + lab
+                out[i + 1] = out[k]
+                if stolen is not None:
+                    stolen.add(target)
+                i += 2
+                continue
+            if t and t[0] == "j" and not t[1].strip().startswith("$31") and k + 1 < len(out):
+                s = insn(out[k + 1])
+                reg = speculable(s) if not is_slot_nop(out[k + 1]) else None
+                if reg and dead_at(out, i + 2, reg):
+                    out[i] = out[i].rstrip()[: -len(target)] + t[1].strip()
+                    out[i + 1] = out[k + 1]
+                    i += 2
+                    continue
+        i += 1
     return out
+
+
+def drop_unreached(lines, stolen):
+    """A target whose first instruction every branch took a copy of, and that nothing falls into
+    (it follows a jump's slot), loses that instruction: ASPSX moved it, so it is gone from the
+    retail code (func_8002D4F4's `$L157: li $2,1`, after 12 `beq`s to it)."""
+    out = list(lines)
+    for label in stolen:
+        tl = next((n for n, l in enumerate(out) if LABEL.match(l) and LABEL.match(l).group(1) == label), None)
+        if tl is None or any(re.search(rf"[\s,]{re.escape(label)}\s*$", l) for l in out if not LABEL.match(l)):
+            continue                                  # still a branch or a jump table to it
+        p = tl - 1
+        while p >= 0 and not insn(out[p]) and not LABEL.match(out[p]) and not out[p].strip().startswith("."):
+            p -= 1
+        q = p - 1
+        while q >= 0 and not insn(out[q]) and not LABEL.match(out[q]):
+            q -= 1
+        before = insn(out[q]) if q >= 0 and p >= 0 and insn(out[p]) else None
+        if not before or before[0] not in ("j", "jr", "b"):
+            continue                                  # code falls into it
+        k = first_insn(out, tl + 1)
+        if any(LABEL.match(out[n]) for n in range(tl + 1, k)):
+            continue
+        del out[k]
+        del out[tl]
+    return out
+
+
+def fill_all_branches(lines):
+    """fill_branches until nothing changes: a slot filled later in the code can prove a register
+    dead for an earlier branch (func_8002D4F4's `beq $16,$2,$L157` before a `bgez` filled from
+    below). Then drop the instructions every branch took and nothing else reaches."""
+    stolen = set()
+    while True:
+        new = fill_branches(lines, stolen)
+        if new == lines:
+            return drop_unreached(new, stolen)
+        lines = new
 
 
 if __name__ == "__main__":
     text = sys.stdin.read().split("\n")
-    sys.stdout.write("\n".join(steal_jump_slot(fill(load_via_dest(text)))))
+    sys.stdout.write("\n".join(fill_all_branches(fill(load_via_dest(text)))))
