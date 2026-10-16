@@ -569,11 +569,35 @@ class Swarm {
     for (const f of cands) {
       if (this.finished.has(f.key) || keys.has(f.key) || (f.fp && fps.has(f.fp)) || this.nearBusy(f, busy)) continue;
       if (big ? !this.bigLeft(f) : (this.history[f.key]?.attempts || 0) >= this.o.maxAttempts && !this.o.retryFailed) continue;
-      if (peek) return big ? this.bigJob(f, 1, []) : { f, model: this.o.model, attempt: 1, notes: [] };
-      if (big) this.retryBase(f);
-      return big ? this.bigJob(f, 1, []) : { f, model: this.o.model, attempt: 1, notes: [] };
+      if (!peek && big) this.retryBase(f);
+      // a function an earlier run tried picks up where it left off: the escalated model, the next
+      // attempt, and that run's last notes (forget's reason too)
+      const tried = this.history[f.key]?.attempts || 0, notes = this.earlierNotes(f);
+      return big ? this.bigJob(f, 1, notes)
+        : { f, model: tried ? this.o.escalateModel || this.o.model : this.o.model, attempt: tried + 1, notes };
     }
     return null;
+  }
+
+  // when the build pipeline last changed (the asm filters, compiler settings, the Makefile's lines
+  // about them): notes older than that may describe a bug since fixed (the old `$at` notes)
+  pipelineChanged() {
+    if (this.pipeline === undefined) {
+      const t = [git(REPO, 'log', '-1', '--format=%cI', '--', 'tools/scripts/dmpsx.py', 'tools/scripts/aspsx_fill.py',
+                     'configs/USA/project.mk'),
+                 git(REPO, 'log', '-1', '--format=%cI', '-G', 'CC_VER|CC1|MASPSX|DMPSX|ASPSX|CFLAGS|ASFLAGS', '--', 'Makefile')]
+        .map(r => Date.parse(r.out.trim())).filter(n => !isNaN(n));
+      this.pipeline = t.length ? Math.max(...t) : 0;
+    }
+    return this.pipeline;
+  }
+
+  // a function's last 3 history notes from earlier runs, minus those older than the pipeline
+  earlierNotes(f) {
+    const since = this.pipelineChanged();
+    return (this.history[f.key]?.notes || [])
+      .filter(n => { const at = Date.parse(n.slice(0, 19).replace(' ', 'T') + 'Z'); return isNaN(at) || at >= since; })
+      .slice(-3).map(n => `[earlier run] ${n}`);
   }
 
   bigJob(f, attempt, notes, extra = {}) {

@@ -353,3 +353,36 @@ test('the first C that builds replaces a checkpoint that no longer applied; fail
   assert.equal(s.checkpoint(f).stage, 'structure');
   assert.equal(s.history[f.key].bigStale, 0);
 });
+
+// ---------------------------------------------------------------- across runs
+
+test('a function an earlier run parked once comes back escalated, with its notes', () => {
+  const s = swarm('--max-attempts', '2');
+  const f = fn('func_80010000');
+  s.queue = [f];
+  s.pipeline = Date.parse('2026-10-14T12:00:00Z');
+  s.history[f.key] = { name: f.name, attempts: 1, notes: [
+    '2026-10-01 10:00:00 sonnet: parked: $at was wrong (before the filter fix)',
+    '2026-10-15 10:00:00 sonnet: parked: a register swap in the loop',
+  ] };
+  const j = s.nextJob();
+  assert.equal(j.model, s.o.escalateModel);
+  assert.equal(j.attempt, 2);
+  assert.deepEqual(j.notes, ['[earlier run] 2026-10-15 10:00:00 sonnet: parked: a register swap in the loop']);
+  assert.match(s.prompt(j), /\[earlier run\] 2026-10-15/);
+  // and that attempt's failure goes to big mode, not round the ladder again
+  s.notMatched({ job: j }, j, 'still a swap');
+  assert.equal(s.retry[0].big, true);
+});
+
+test('a forgotten function starts from the bottom, told why', () => {
+  const s = swarm();
+  const f = fn('func_80010000');
+  s.queue = [f];
+  s.pipeline = 0;
+  s.history[f.key] = { name: f.name, attempts: 0, notes: ['2026-10-16 09:00:00 reset (was 2 attempts): a header fix'] };
+  const j = s.nextJob();
+  assert.equal(j.model, s.o.model);
+  assert.equal(j.attempt, 1);
+  assert.match(j.notes[0], /a header fix/);
+});
