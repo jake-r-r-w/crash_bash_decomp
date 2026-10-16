@@ -633,6 +633,24 @@ test('a park leaves its C: measured, kept as the closest; one that matches goes 
   }
 });
 
+test('a session that errored before doing anything is an uncharged failure, even with a checkpoint in the clone', async () => {
+  const s = swarm();
+  const f = fn('func_80012345');
+  const { dir, base } = gitRepo();                    // the clone holds C: a big job's checkpoint
+  const jobDir = tmpDir();
+  fs.writeFileSync(path.join(jobDir, 'worker.out'), JSON.stringify({
+    type: 'result', is_error: true, subtype: 'success', num_turns: 1, total_cost_usd: 0,
+    terminal_reason: 'api_error', result: 'Failed to refresh OAuth token' }) + '\n');
+  let failed = null, measured = false;
+  s.fail = (slot, job, why, charge) => { failed = { why, charge }; };
+  s.onBigExit = async () => { measured = true; };
+  const job = { f, model: 'opus', big: true, attempt: 1, notes: [], base, dir: jobDir, started: Date.now() };
+  await s.onWorkerExit({ id: 'b1', dir, job }, job, 1);
+  assert.equal(measured, false);
+  assert.match(failed.why, /OAuth/);
+  assert.equal(failed.charge, false);
+});
+
 test('a permuter match that try confirms goes to the gate; anything else to the port path', async () => {
   for (const [out, want] of [['MATCH x\nPERMUTE-RESULT func_80012345 kept before None after 0\n', true],
                              ['PERMUTE-RESULT func_80012345 kept before None after 3\n', false],

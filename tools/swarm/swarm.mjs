@@ -1300,8 +1300,11 @@ Fix that, keep it matching, and report "matched".
     // a session that never got going (not logged in, API down) is a failure, not a park; not the
     // function's either, so uncharged (three in a row still stop the run)
     // a session stopped by --max-turns or its budget ends with an error result: that's a park
+    // A big session's clone starts with the checkpoint's C, so it always leaves a patch: one that
+    // cost nothing did no work either (2026-10-16: an OAuth refresh failure parked func_8002D4F4).
     const capped = /^error_max/.test(session.subtype || '');
-    if (session.is_error && !capped && !patch.trim() && !res.status)
+    const noWork = !patch.trim() || (session.total_cost_usd === 0 && !(session.num_turns > 1));
+    if (session.is_error && !capped && noWork && !res.status)
       return this.fail(slot, job, `claude: ${String(session.result || session.terminal_reason).slice(0, 200)}`, false);
     if (job.big && !job.gateFix) return this.onBigExit(slot, job, res, patch);
     if (capped && !patch.trim()) return this.notMatched(slot, job, `session hit its cap (${session.subtype}); ${res.note || ''}`.trim());
