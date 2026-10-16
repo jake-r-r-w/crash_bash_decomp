@@ -42,7 +42,37 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800793E8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80079554);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007976C);
+void func_8007976C(void) {
+    s32 i;
+    EngObj *o;
+
+    func_80011410(&D_8004E0F0);
+    func_80079554();
+    if (D_8005A618 & 0x10) {
+        FntPrint("\t\tFree Memory  - tot %d  max %d\n\0\x18\0", D_8004E104, D_8004E10C);
+    }
+    func_8007906C();
+    func_80083E8C();
+    D_8005AA58 = 2;
+    i = 0;
+    if (*(s32 *)D_8005AA40 > 0) {
+        do {
+            i++;
+            o = D_8005AA40[i];
+            if (o->flags & 1) {
+                o->update(o);
+            }
+        } while (i < *(s32 *)D_8005AA40);
+    }
+    D_8005AA58 = 0;
+    func_8007B8D4();
+    func_8007AF3C();
+    if (D_80099174 & 0x4000) {
+        func_8007D6D0();
+    }
+    func_80081F64(1);
+    func_8009608C(0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800798A4);
 
