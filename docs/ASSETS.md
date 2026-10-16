@@ -16,12 +16,16 @@ No header: the exe's table at `0x8004E110` gives 992 `{u32 sector, u32 size}` en
 or, when it decodes it, to a folder; `index.json` has each entry's sector, size and format, and
 `filler.bin` the non-zero bytes between entries. An entry may shrink but not grow.
 
+CTR-tools' `CTRFramework/Data/bash_filelist.txt` names all 992 entries for this release (decimal
+ids; 400 `.tex`, 400 `.mdl`, 160 `.sfx`, 27 `.bin`, 5 `.tga`), e.g. `000` is
+`models/cutscene/uka/data.tex` and `001` its `data.mdl`. It is GPL-2.0, so it is not copied here.
+
 What the entries are (first u32 is a type or a count, not a magic number):
 
 | Entries | Count | What | Decoded |
 |---|---|---|---|
 | mostly even ids, `000`..`3DD` | 400 | texture sets, type 8 | `<id>.tex/` (tex.py) |
-| odd ids after each texture set | 399 | probably the model the set before it textures (starts `29 00 16 0C`; its u32 at +0x50 equals the set's at +0x14) | no |
+| the entry after each texture set | 400 | model files (`.mdl`), textured by the set before them | 319 `<id>.mdl/` (mdl.py, geometry only) |
 | `1E7`, `2CC`..`2D8`, `3DF` | 15 | code overlays (`make disc` writes the built ones) | C/asm |
 | e.g. `099`, `126` | ~130 | sound banks: SPU ADPCM after a header (type 0x0C, 0x14) | no |
 | `08D`..`098` | ~15 | text (menu and objective strings; the first u32 is a count) | no |
@@ -51,8 +55,33 @@ the indices only), `cluts.png` (one row per CLUT: edit colours here; r, g, b are
 times 8, alpha 255 = STP off, 128 = STP on, 0 = the colour 0x0000, transparent), `tex.json` (the
 fields above) and `tail.bin`. An image keeps its size and depth; at most 16 (or 256) colours.
 
+## Model files (`.mdl`)
+
+`tools/scripts/mdl.py`; the mesh reading is CTR-tools' (`CTRFramework/Code/bash/BashMesh.cs`),
+confirmed on 319 of the 400 files: in each, every mesh's triangle strips use exactly its vertex
+count, each file packs back byte for byte, and the meshes look right (Uka Uka's mask and sky dome
+in `001`, Oxide's hover vehicle and its lower-detail versions in `13F`). The other 81 (fonts,
+the main-menu arena models, some arena objects) differ and stay `.bin`.
+
+| Offset | Size | Field |
+|---|---|---|
+| 0x00 | 0x54 | file header, not decoded (u32s that look like self-relative offsets) |
+| 0x54 | u32 | number of meshes |
+| 0x58 | 0x34 each | mesh headers: u32 0, u32 0, s16 faces, s16 (4, 6, ...), u32, then six s32 offsets relative to their own position: vertices, strips, after the vertices, two per-face arrays' bounds, the end; then three u32 |
+| (vertices) | 0x14 + 8 each | a 0x14-byte block (looks like a bounding box), then s16 x, y, z and a u16 (small values, 0-3: not decoded) |
+| (strips) | u16 each | faces << 8 | flags, until 0xFFFF; a strip of n faces takes the next n + 2 vertices; flag 0x08 flips the first face's winding |
+| (after the vertices) | 2 per face, twice | per-face values (small rising numbers; values near 0x240): probably texture coordinates and texture choice, not decoded |
+
+The meshes are often under a fifth of a file; the rest (probably animation) isn't decoded.
+
+`<id>.mdl/` holds `model.bin` (the whole file) and `model.obj` (one object per mesh: the file's
+integers with y and z negated, CTR-tools' orientation; faces from the strips, no texture
+coordinates yet). `make disc` writes the OBJ's vertex positions into `model.bin`: vertices can be
+moved, but each mesh keeps its vertex count and order (Blender: import with Split > Keep Vert
+Order). Next for models: texture coordinates (the per-face arrays and the vertices' u16), so the
+OBJ can carry the textures; the engine's model loader, once matched, will say.
+
 ## Next formats
 
-- Models (the odd entries): CTR-tools has `BashMesh.cs`; whether it covers these is unchecked.
 - Sound banks: CTR-tools `BashSfx.cs`; generic SPU ADPCM rippers may read the banks as they are.
 - Text: a count and fixed-size strings; small.

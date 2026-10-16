@@ -26,7 +26,9 @@ between files). `make disc` runs it the first time by itself. Edit a file and `m
 on the disc; delete `assets/CRASHBSH/` to start again from the retail DAT (extracting takes about
 4 minutes). The 400 texture sets come out as `<id>.tex/` folders of PNGs: edit an image's pixels in
 `img_NNN.png` (keep it indexed, same size) and colours in `cluts.png`; the formats and the
-rules are in [ASSETS.md](ASSETS.md). Everything else is still raw (`<id>.bin`: models, sounds,
+rules are in [ASSETS.md](ASSETS.md). 319 of the 400 model files come out as `<id>.mdl/model.obj`
+(geometry only, no textures yet): move vertices in Blender or any OBJ editor, keeping each mesh's
+vertex count and order. Everything else is still raw (`<id>.bin`: the other models, sounds,
 text). It is your game data: `assets/` is git-ignored, never commit it. The 15 code overlays' entries are there too, but `make disc`
 always writes the built `build/<ovl>.bin` over them.
 

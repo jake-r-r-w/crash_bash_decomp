@@ -420,6 +420,13 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-16 (assets: models):** `tools/scripts/mdl.py`: model files'
+  meshes to OBJ (`<id>.mdl/`, geometry only) and back byte for byte, 319
+  of 400 (CTR-tools' BashMesh reading; the other 81 differ); `dat.py` has
+  a FORMATS table and saves index.json however decode ends. disc-check OK.
+  CTR-tools' file-name list (GPL-2.0) names all 992 entries: not copied,
+  ask the user. Next: texture coordinates (per-face arrays), sound banks.
+
 - **2026-10-16 (assets, stage 2: textures):** `tools/scripts/tex.py`: the
   400 texture sets (type 8) to PNGs (`<id>.tex/`, true colours) and back
   byte for byte; `dat.py extract` decodes them, `make disc` packs them

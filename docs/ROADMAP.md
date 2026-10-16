@@ -104,7 +104,8 @@ phases can play what they finish.
   the formats whose loaders are in the exe, to editable files. The first half
   is done: `tools/scripts/dat.py` splits the DAT into `assets/CRASHBSH/` and
   `make disc` builds the DAT from there (2026-10-16). Formats decoded (docs/ASSETS.md): texture
-  sets, 400 of them, to PNGs and back byte for byte (`tools/scripts/tex.py`). Next: models,
+  sets, 400 of them, to PNGs and back byte for byte (`tools/scripts/tex.py`); model geometry,
+  319 of 400 files, to OBJ and back (`tools/scripts/mdl.py`). Next: model texture coordinates,
   sound banks, text. Document each
   format. Formats parsed by the engine or a minigame belong to that phase.
 

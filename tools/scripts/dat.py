@@ -14,8 +14,8 @@ entry's last sector, and 12 sectors no entry points at) are not zeros, so they g
 filler.bin; a rebuild puts them back and gives the retail DAT byte for byte.
 
 Entries in a format tools/scripts knows are decoded after the split (extract runs decode): a
-texture set (tex.py) becomes <id>.tex/ (PNGs) in place of <id>.bin, and index.json says
-"format": "tex". Each one is checked to pack back to the same bytes first; one that doesn't stays
+texture set (tex.py) becomes <id>.tex/ (PNGs) and a model file (mdl.py) <id>.mdl/ (OBJ) in place
+of <id>.bin, and index.json says "format": "tex" or "mdl". Each one is checked to pack back to the same bytes first; one that doesn't stays
 a .bin. build packs them again, cached in build/dat-cache/ until a file in the folder changes.
 
 An entry file may be edited. It may shrink (zero-padded to its retail size, so nothing moves) but
@@ -26,10 +26,14 @@ import argparse
 import hashlib
 import json
 import os
+import shutil
 import struct
 import sys
 
+import mdl
 import tex
+
+FORMATS = {"tex": (tex, "texture sets", "PNGs"), "mdl": (mdl, "model files", "OBJ")}
 
 P_PROJ = ".decomp/project.json"
 ASSETS = "assets/CRASHBSH"
@@ -139,31 +143,41 @@ def decode(dest=ASSETS, quiet=False):
     """Every raw entry in a known format -> its editable form, when it packs back exactly."""
     p = os.path.join(dest, INDEX)
     meta = json.load(open(p))
-    n = 0
-    for i, e in enumerate(meta["entries"]):
-        raw = os.path.join(dest, entry_name(i))
-        if e.get("format") or e.get("overlay") or not os.path.exists(raw):
-            continue
-        data = read(raw)
-        try:
-            tex.parse(data)
-        except tex.Bad:
-            continue
-        out = os.path.join(dest, f"{e['id']}.tex")
-        tex.unpack(raw, out)
-        if tex.pack(out) != data:
-            print(f"dat: {e['id']} doesn't pack back to the same bytes: kept as a .bin", file=sys.stderr)
-            continue
-        os.remove(raw)
-        e["format"] = "tex"
-        n += 1
-        if not quiet and n % 50 == 0:
-            print(f"  {n} texture sets decoded")
-    with open(p, "w") as f:
-        json.dump(meta, f, indent=1)
-        f.write("\n")
+    n = {k: 0 for k in FORMATS}
+    try:
+        for i, e in enumerate(meta["entries"]):
+            raw = os.path.join(dest, entry_name(i))
+            if e.get("format") or e.get("overlay") or not os.path.exists(raw):
+                continue
+            data = read(raw)
+            for kind, (mod, what, _) in FORMATS.items():
+                try:
+                    mod.parse(data)
+                except mod.Bad:
+                    continue
+                out = os.path.join(dest, f"{e['id']}.{kind}")
+                mod.unpack(raw, out)
+                try:
+                    same = mod.pack(out) == data
+                except mod.Bad:
+                    same = False
+                if not same:
+                    shutil.rmtree(out)
+                    print(f"dat: {e['id']} doesn't pack back to the same bytes: kept as a .bin", file=sys.stderr)
+                    break
+                e["format"] = kind         # before the .bin goes: the index is saved however this ends
+                os.remove(raw)
+                n[kind] += 1
+                if not quiet and n[kind] % 100 == 0:
+                    print(f"  {n[kind]} {what} decoded")
+                break
+    finally:
+        with open(p, "w") as f:
+            json.dump(meta, f, indent=1)
+            f.write("\n")
     if not quiet:
-        print(f"{dest}/: {n} texture sets decoded to <id>.tex/ (PNGs)")
+        for kind, (_, what, form) in FORMATS.items():
+            print(f"{dest}/: {n[kind]} {what} decoded to <id>.{kind}/ ({form})")
 
 
 def newest(d):
@@ -172,15 +186,17 @@ def newest(d):
 
 def entry_bytes(src, i, e):
     """Entry i's bytes: its .bin, or its decoded folder packed (cached until a file in it changes)."""
-    if e.get("format") != "tex":
+    kind = e.get("format")
+    if kind not in FORMATS:
         return read(os.path.join(src, entry_name(i)))
-    d = os.path.join(src, f"{e['id']}.tex")
+    mod = FORMATS[kind][0]
+    d = os.path.join(src, f"{e['id']}.{kind}")
     cached = os.path.join(CACHE, f"{e['id']}.bin")
     if os.path.exists(cached) and os.path.getmtime(cached) >= max(newest(d), os.path.getmtime(d)):
         return read(cached)
     try:
-        data = tex.pack(d)
-    except tex.Bad as err:
+        data = mod.pack(d)
+    except mod.Bad as err:
         die(f"{d}: {err}")
     os.makedirs(CACHE, exist_ok=True)
     with open(cached, "wb") as f:
