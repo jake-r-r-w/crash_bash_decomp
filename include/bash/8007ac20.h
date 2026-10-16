@@ -135,6 +135,8 @@ extern u8 D_8005365C[];
 
 void func_8007BE84(void);
 
+void func_8007C6EC(void);
+
 void func_8007D208(void);
 
 void func_8007D6D0(void);
