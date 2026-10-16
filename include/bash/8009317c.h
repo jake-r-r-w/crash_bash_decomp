@@ -141,4 +141,6 @@ extern u8 *D_800A0D34;
 
 void func_80094A28(void);
 
+void func_80095A60(s32 arg0, s32 arg1);
+
 #endif /* BASH_8009317C_H */

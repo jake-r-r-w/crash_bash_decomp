@@ -4126,7 +4126,8 @@
   "via": "auto"
  },
  "engine:80095A60": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-16T10:15:23Z",
+  "status": "matched"
  },
  "engine:80095BEC": {
   "auto_diff": 108,
