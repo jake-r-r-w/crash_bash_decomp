@@ -74,6 +74,9 @@ or keys. Checkpoints saved by name before 2026-10-16 still resume when the name 
   parks; the orchestrator measures it (one that matches after all goes to the gate) and keeps it
   as the function's checkpoint if it is the closest yet. Every later attempt, normal or big, in any
   run, starts from that checkpoint.
+- **Session chaining** (`--chain N`, off by default, a pilot): after a normal session, the next small
+  function of the same file runs in the same Claude session (`--resume`), up to N in a row. The
+  ledger marks those `normal-chained`; compare them with `normal` in `stats` before turning it on.
 - **Families:** identical functions (one fingerprint) are one job: the first member of each group
   that spans overlays is leased first (`--seed-families`, on by default), and while a tried member
   is unmatched its twins wait (a match fills them through `done`). A function with a matched twin

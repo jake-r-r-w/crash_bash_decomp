@@ -491,6 +491,15 @@ runs in report.md reached 0).
 
 ### 3.9 Later, after Part 2 numbers
 
+**Done 2026-10-16**, except the two that are runs or hand work, not code:
+the model-tier pilot (`--model haiku`, `--big-model sonnet`) and the typing
+pass. Session chaining is `--chain N` (off by default: pilot it, alternating,
+and compare `normal-chained` with `normal` in `stats`); the stall nudge is in
+`try`; `bigMinutes` defaults to 27; `decomp.py port` rebases a checkpoint (the
+swarm hands a dead one to the session as `.swarm-old.diff`); `decomp.py
+splitcheck` finds merged functions (none among those left today). A scripted
+`--worker-cmd` run checked the hand-off, the closest-C keep and chaining.
+
 - **Batch small neighbours.** Simplest form: session chaining. After a small job
   exits, start a neighbour in the same file and slot with
   `claude -p --resume <session_id>`, max 3, carrying header changes; everything

@@ -40,12 +40,11 @@ findings (TOOLING_PLAN.md, Part 2) re-rank Part 3: docs are hardly read,
 cache writes and turns per big session drive the cost. 3.5 (aligned `make
 diff`, `regions --changed`) and 3.1 (no git status in workers' system
 prompt, inline loop) and 3.3 (families: seed leads, templates, twins never
-big), 3.2, 3.4, 3.5, 3.6, 3.7, 3.8 and most of 3.9 (stall nudge,
-`splitcheck`, `port`, bigMinutes 27) are done. Left, paused 2026-10-16:
-3.9 session chaining (behind a flag, off by default), the 3.9 notes in
-TOOLING_PLAN.md, and a `--worker-cmd` smoke run of the swarm changes since
-3.2 (3.7 LINK line, 3.8 permuter apply, 3.9 port/.swarm-old.diff). Then a
-supervised swarm run to measure everything; after each swarm run,
+big) and 3.2-3.9 are done: the whole plan's code (left: the model-tier pilot
+and the typing pass, which are runs and hand work, and `--chain`'s pilot).
+**Next: a supervised swarm run** (engine, an hour, `--max-run-usd 40`; watch
+the first 10 minutes for refused commands), then `stats --run ID` against
+the ledger's earlier runs, per size bucket; after each swarm run,
 compare `stats --run ID` with the ledger's earlier runs. Deferred from Part 1: recognising
 the CLI's usage-limit result. It only matters for unattended runs, and the
 user runs the swarm supervised and conservatively; if a limit is ever hit,
@@ -399,6 +398,10 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-16 (tooling plan done):** `--chain N` session chaining (off by
+  default); a scripted run checked the stale-checkpoint hand-off, keeping a
+  park's C and chaining. Every Part 1-3 code item is in.
 
 - **2026-10-16 (tooling plan 3.4-3.9, paused):** `next` asm with offsets,
   jump tables, strings, callees; `try` LINK check and disassembly at the
