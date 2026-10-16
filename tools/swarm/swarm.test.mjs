@@ -423,10 +423,17 @@ test('checkPatch refuses every inline asm spelling', () => {
 
 // ---------------------------------------------------------------- what a worker can touch
 
+const allowRules = () => JSON.parse(fs.readFileSync(path.join(REPO, 'tools/swarm/config.json'), 'utf8')).allowedTools;
+
 test('workers: Edit/Write only src/ include/ and the result file; no host commands that write or run', () => {
-  const allow = JSON.parse(fs.readFileSync(path.join(REPO, 'tools/swarm/config.json'), 'utf8')).allowedTools;
+  assert.ok(allowRules().includes('Edit(.swarm-result.json)'));
+  const allow = allowRules();
   for (const t of allow) {
-    if (/^(Edit|Write)\b/.test(t)) assert.match(t, /^(Edit|Write)\((src\/\*\*|include\/\*\*|\.swarm-result\.json)\)$/, t);
+    // path rules work only as Edit(...), which covers Write too: a Write(path) rule is ignored
+    // (checked 2026-10-16: Write(.swarm-result.json) alone left workers unable to write their result)
+    assert.doesNotMatch(t, /^Write\(/, t);
+    if (/^Edit\b/.test(t)) assert.match(t, /^Edit\((src\/\*\*|include\/\*\*|\.swarm-result\.json)\)$/, t);
+    assert.ok(!['Edit', 'Write'].includes(t), t);
     // find -exec, sort -o, sed e/w, uniq OUT, git --output / grep -O all write or run on the host
     assert.doesNotMatch(t, /^Bash\((find|sort|uniq|sed|git)\b/, t);
   }
@@ -504,4 +511,28 @@ test('ledger: one line per session, at its first outcome; stats reads it', () =>
   assert.match(text, /2 sessions.*1 killed sessions estimated from transcripts, \$3\.00/);
   assert.match(text, /0-149\s+normal\s+1\s+\$0\.30\s+0\s+-\s+0\/1/);
   assert.match(text, /600-\s+big\s+1\s+\$3\.00\s+1\s+\$3\.00\s+1\/1/);
+});
+
+// ---------------------------------------------------------------- the fixed context of a session
+
+test('prompts: the loop inline, no SKILL.md; the 2.7.2 check only for main/; resumed big sessions skip the first checks', () => {
+  const s = swarm('--big-workers', '1');
+  const main = fn('func_80010000'), eng = fn('func_80078CA4', { seg: 'overlays/engine/engine', src: 'src/overlays/engine/engine.c' });
+  const n = s.prompt({ f: main, model: 'sonnet', attempt: 1, notes: [] });
+  assert.match(n, /The loop \(docs\/MATCHING\.md has the detail: grep it/);
+  assert.doesNotMatch(n, /Follow \.claude\/skills/);
+  assert.match(n, /gcc 2\.7\.2 \+ ASPSX/);
+  assert.doesNotMatch(s.prompt({ f: eng, model: 'sonnet', attempt: 1, notes: [] }), /gcc 2\.7\.2/);
+  const fresh = s.prompt(s.bigJob(eng, 1, []));
+  assert.match(fresh, /Before matching code:\n- Type the data/);
+  const resumed = s.prompt(s.bigJob(eng, 2, [], { resumed: { stage: 'registers', diffs: 3, total: 75, log: [] } }));
+  assert.doesNotMatch(resumed, /Before matching code/);
+  assert.match(resumed, /Earlier sessions did the first-session checks/);
+});
+
+test('workers: no git status or memory in the system prompt, no skills or todo tools', () => {
+  const c = JSON.parse(fs.readFileSync(path.join(REPO, 'tools/swarm/config.json'), 'utf8'));
+  assert.equal(c.workerEnv.CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS, '1');
+  assert.ok(c.claudeArgs.includes('--disable-slash-commands'));
+  assert.ok(c.disallowedTools.includes('TodoWrite') && !c.allowedTools.includes('TodoWrite'));
 });

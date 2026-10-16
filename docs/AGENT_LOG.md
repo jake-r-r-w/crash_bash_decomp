@@ -38,8 +38,9 @@ so slot-overlay swarm runs can start.** Part 2 (cost per session) is done
 too: `swarm.mjs stats` shows $/match by size from `ledger.jsonl`, and its
 findings (TOOLING_PLAN.md, Part 2) re-rank Part 3: docs are hardly read,
 cache writes and turns per big session drive the cost. 3.5 (aligned `make
-diff`, `regions --changed`) is done. Next there: 3.1's fixed per-session
-context (the first-turn cache write), then 3.3/3.4; after each swarm run,
+diff`, `regions --changed`) and 3.1 (no git status in workers' system
+prompt, inline loop) are done. Next there: a supervised swarm run to measure
+them, then 3.3/3.4; after each swarm run,
 compare `stats --run ID` with the ledger's earlier runs. Deferred from Part 1: recognising
 the CLI's usage-limit result. It only matters for unattended runs, and the
 user runs the swarm supervised and conservatively; if a limit is ever hit,
@@ -236,6 +237,10 @@ Other:
 ## Gotchas
 
 **Tooling**
+- **Claude Code allow rules for paths are `Edit(...)`.** They cover Write
+  too; a `Write(path)` rule is ignored, so in `dontAsk` mode the write is
+  refused. Check a permission change with a one-turn haiku session in a
+  worker clone before a run.
 - **Stale asm and `decomp.py index`.** splat rewrites `asm/nonmatchings/` only
   for functions still under `INCLUDE_ASM`; a matched function's `.s` is the
   one from when it was asm. `index` reads every `.s` there, so after a split
@@ -385,6 +390,12 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-16 (tooling plan 3.1):** a worker session's git status changes
+  every job and cost ~11k tokens of cache writes per session; workers now run
+  without git instructions, memory, skills, TodoWrite. Prompts carry the loop
+  inline. Real-session probe: the CLI ignores `Write(path)` allow rules, so
+  1.8's result-file rule is now `Edit(.swarm-result.json)` (gotcha below).
 
 - **2026-10-16 (tooling plan 3.5):** `try`/`make diff` show target and
   compiled aligned over the whole function (`regions.diff_rows`: register,

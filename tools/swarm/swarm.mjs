@@ -54,6 +54,29 @@ const PATCH_MAX = 64 << 10;
 // Diff patterns rows that teach what the gate refuses (pins, asm barriers, --hack) aren't passed on
 const PATTERN_REFUSED = /\b(?:asm|__asm|__asm__)\s*(?:volatile|__volatile__)?\s*\(|--hack|\bregister\b[^|]*\b(?:asm|__asm|__asm__)\b/i;
 const PATTERNS_MAX = 2500;
+// the matching loop both prompts give inline (workers then needn't read SKILL.md, whose steps the
+// swarm overrides, and the docs are for grepping: tooling plan 3.1)
+const LOOP = (f, r) => `The loop (docs/MATCHING.md has the detail: grep it for your symptom, e.g.
+\`grep -n -i 'WORD' docs/MATCHING.md\`, and never Read it whole; skip AGENT_LOG.md, CONTRIBUTING.md,
+CONVENTIONS.md and SKILL.md):
+1. \`tools/dk python3 tools/scripts/decomp.py next --func ${r}\` prints the asm, an m2c draft and
+   relatives (identical or near copies, callers). Read the asm, not just the draft: m2c misses
+   pass-through arguments, signedness and struct offsets.${/^main\//.test(f.seg || '') ? `
+   If every global store is \`lui $at\` + \`sw\`, or jump delay slots are filled from a store, the code
+   is gcc 2.7.2 + ASPSX: in a 2.8.1 file it can't match; say so in "note" and stop.` : ''}
+2. Evidence before writing: \`decomp.py similar ${r}\` (matched functions with the same code, and
+   where their C is), the relatives \`next\` printed, and \`grep\` in src/ for the globals it uses.
+3. Write C89 in place of its INCLUDE_ASM line; types and declarations in the owned header of
+   ${f.src} (the include/bash/*.h marked \`owner: ${f.src}\`); struct fields over pointer arithmetic.
+4. \`tools/dk make diff FUNC=${r}\`: fix the STAGE its last line names, in order: structure (length,
+   branches, loops), then instructions (order, temps, types), then registers. Its KINDS line says
+   which "Classify the diff" list in MATCHING.md applies, and the Diff patterns table there has
+   fixes by symptom (grep it).
+5. For register swaps: \`decomp.py vars ${r}\` names the variable behind each, and
+   \`decomp.py splitvars ${r} VAR\` when one variable wants different registers in different
+   blocks. For a long diff, \`decomp.py regions ${r}\` aligns it block by block (\`--changed\` after
+   an edit).
+`;
 const ASM_REFUSED = 'adds inline asm';   // checkPatch's finding, measured anyway
 const TOOL_MINUTES = 10;                  // the orchestrator's try/regions; done and verify get 2x
 const NEIGHBOUR = 8;            // lines between two INCLUDE_ASMs below which they aren't leased together
@@ -847,9 +870,8 @@ class Swarm {
     return `You are one worker in a swarm matching Crash Bash functions. Match exactly one function:
 ${f.name} (${f.seg}, ${f.size} bytes, defined in ${f.src}).
 
-Follow .claude/skills/match-function/SKILL.md steps 1 to 4 and docs/MATCHING.md steps 1 to 5 (pick with
-\`tools/dk python3 tools/scripts/decomp.py next --func ${r}\`). These swarm rules override the
-skill, CLAUDE.md and the docs:
+${LOOP(f, r)}
+These swarm rules override CLAUDE.md and the docs:
 - Work only on ${f.name}. Change only its INCLUDE_ASM line in ${f.src}, and headers under include/
   when it needs a declaration or a type. Never touch another function's INCLUDE_ASM line.
 - If ${f.name}'s own declarations have the wrong type (its prototype in a header, an extern for
@@ -934,8 +956,7 @@ ${(job.oldCheckpoint.cp?.log || []).map(l => '- ' + l).join('\n')}
 No session has worked on it yet: start from the m2c draft (\`tools/dk python3 tools/scripts/decomp.py
 next --func ${r}\` shows it, with the function's evidence).
 `}
-Read docs/MATCHING.md (process, Diff patterns, checklists) and the "Big functions" section in it.
-${this.regionsArm(f) ? `Work region by region with \`tools/dk python3 tools/scripts/decomp.py regions ${r} </dev/null\`.
+${LOOP(f, r)}${this.regionsArm(f) ? `Work region by region with \`tools/dk python3 tools/scripts/decomp.py regions ${r} </dev/null\`.
 It aligns your compiled code with the target (so an extra instruction doesn't shift every later
 diff, as \`make diff\`'s STAGE count does), lists the target's basic blocks that differ with their status (ok /
 operands / differ) and C lines, and shows the first differing block side by side (\`--block N\` for
@@ -964,10 +985,9 @@ earlier one, then fewer diffs):
    returns). Get this first; don't polish registers before it.
 2. instructions: the same opcodes in order (statement order, temps, types, casts).
 3. registers: operands only. The cc1 dump and the Diff patterns' register rows.`}
-Before matching code:
-- Check the compiler first: compare the function's global-access and delay-slot style with the units
-  in docs/ARCHITECTURE.md (Build pipeline, Executable memory map). If it looks like another unit's
-  code (e.g. every global store \`lui $at\` + \`sw\`), say so in "note" and stop: it needs a split.
+${cp ? `Earlier sessions did the first-session checks (data typed, helpers and siblings looked for); go
+on from the log above.
+` : `Before matching code:
 - Type the data: put structs for what it touches (fields at their offsets) in the owned header, using
   include/bash/*.h, the prototype debug types and the leaked headers (docs/ARCHITECTURE.md). Typed
   fields remove much of m2c's noise.
@@ -975,7 +995,7 @@ Before matching code:
   function's (\`tools/dk python3 tools/scripts/decomp.py similar ${r}\` ranks matched
   functions by shared code, with where their C is; \`decomp.py dups\`; callers and callees in
   .decomp/functions.json). Original code often used \`static inline\` helpers and macros here.
-Rules (they override the skill, CLAUDE.md and the docs):
+`}Rules (they override CLAUDE.md and the docs):
 - Work only on ${f.name}. Change only its definition (in place of its INCLUDE_ASM line) in ${f.src},
   and headers under include/. New types and declarations go in the owned header of ${f.src} (the
   include/bash/*.h marked \`owner: ${f.src}\`), never in the .c file.
@@ -1085,7 +1105,8 @@ Fix that, keep it matching, and report "matched".
       DK_DOCKER_ARGS: `--label ${LABEL}=${this.id} --label ${LABEL}-slot=${this.id}-${slot.id} --cpus ${this.cpus} -e SWARM_RESULT=${RESULT} ${workerMounts(slot.dir)}`,
       DK_NAME: `swarm-${slot.id}`,
       SWARM_FUNC: f.name, SWARM_KEY: f.key, SWARM_REF: ref(f), SWARM_SRC: f.src || '', SWARM_MODEL: job.model, SWARM_RESULT: RESULT,
-    });
+    }, this.o.workerEnv || {});   // config.json: no git status in the system prompt (it changes every
+                                  // job and made each session rewrite ~11k tokens of cache), no memory
     let cmd, args, shell = false;
     if (this.o.workerCmd) {
       [cmd, args] = [this.bash, ['-c', this.o.workerCmd]];

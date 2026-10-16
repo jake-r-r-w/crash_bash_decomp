@@ -92,7 +92,8 @@ backfilled into the ledger (`"backfilled": true`; their "matched" means `try` sa
 - **Workers can't commit or push:** file edits, `tools/dk` and read-only commands only. The
   orchestrator takes only `git diff` of `src/` and `include/`.
 - **Workers can't change what runs on the host:** Edit/Write only `src/**`, `include/**` and
-  `.swarm-result.json`; on the host only `ls`, `cat`, `head`, `tail`, `grep`, `wc`, `date` and
+  `.swarm-result.json` (allow rules for paths must be `Edit(...)`: they cover Write too, and the CLI
+  ignores a `Write(path)` rule); on the host only `ls`, `cat`, `head`, `tail`, `grep`, `wc`, `date` and
   `tools/dk` (git runs as `tools/dk git ...`); their containers see `.git`, `tools/` and `.claude/`
   read-only, and the clone's `tools/dk` is read-only. `--dir` can't contain spaces (the mounts go
   through `DK_DOCKER_ARGS`).

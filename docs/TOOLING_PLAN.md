@@ -275,6 +275,23 @@ AGENT_LOG is a floor.
 
 ### 3.1 Slim the big-mode context (S, biggest token item)
 
+**Done 2026-10-16.** Measured with one-turn sessions in a worker clone: the
+git status block in the system prompt changes with every job, and a change
+there made a session rewrite ~11.4k tokens of cache (the per-session write
+Part 2 found); with `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS=1` it rewrites
+none. Skills/slash commands added ~2.5k tokens to every turn. Workers now run
+with that env, no auto memory, `--disable-slash-commands`, no TodoWrite or
+NotebookEdit (fixed context 30.4k -> 24.2k tokens). Both prompts carry the
+loop inline (`LOOP` in swarm.mjs; workers had read SKILL.md in 41% of
+normal sessions and MATCHING.md almost never); the 2.7.2 check is one line,
+for `main/` only; resumed big sessions skip the first-session checks.
+`--append-system-prompt-file` was left out: the fixed rules are ~2k tokens
+and name the function. The same probe found that the CLI ignores
+`Write(path)` allow rules (path rules must be `Edit(...)`, which covers
+Write), so 1.8's `Write(.swarm-result.json)` would have kept every worker
+from writing its result; fixed before any run used it. Compare runs with
+`stats --run ID`.
+
 `promptBig` tells opus to read `docs/MATCHING.md` (117 KB; too big for one Read,
 so it pages it) (`swarm.mjs:676`) and ARCHITECTURE.md sections (`:706-711`), and
 carries that through ~50 turns. The normal prompt sends workers to SKILL.md and
