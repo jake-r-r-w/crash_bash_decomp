@@ -62,9 +62,10 @@ parked. **Retry parks with this recipe after tool upgrades.**
 **Start of next session: matching.** Run the engine swarm hour (item 1b,
 `--max-functions 500`), then the post-run checklist (`fold` was done
 2026-10-16 after the main.exe retry; `permute --near` not yet: it covers
-the three main.exe parks, all register-only). For `func_8002D4F4`, extend
-`aspsx_fill.py` first (Open leads). The file splits are done as far as
-the evidence goes (item 3).
+the three main.exe parks, all register-only). `func_8002D4F4` is at
+144/148 blocks since `aspsx_fill.py` fills conditional-branch slots
+(Open leads). The file splits are done as far as the evidence goes
+(item 3).
 
 0. Current focus (ROADMAP.md, Current focus): `make disc` works and the
    matching build is the retail image. The user tests builds by playing
@@ -79,9 +80,7 @@ the evidence goes (item 3).
      blocks in `main.c` (Open leads). No fresh small function is left.
    - 2026-10-15: one big worker per function matched 7 of the 8 untried
      big ones in 60 min ($40). Left: `func_8002D4F4` (2360 B, gcc 2.7.2
-     unit), checkpoint structure 495/598 (blocks 121/148) after 5 sessions;
-     its last session was refused for adding inline asm. Resume it with
-     `--only func_8002D4F4`, or by hand with `decomp.py regions`.
+     unit), 144/148 blocks on 2026-10-16 (Open leads).
 1b. Overlays with the swarm, engine first (shared by every minigame):
    `swarm.mjs run --branch main --seg overlays/engine --max-minutes 60
    --max-run-usd 80 --max-functions 500 --workers 3 --big-workers 2
@@ -201,34 +200,17 @@ Other:
   `func_8002D4F4` (2360 B, below). Swarm notes on them before 2026-10-14
   blame the `$at` loads; ignore those. If a `jal` slot differs, extend
   `aspsx_fill.py` from the target. Whether the two units are one file is open.
-- **`func_8002D4F4`** (the CD state machine, 2360 B): structure 486/598,
-  blocks 126/148 after 9 big sessions (checkpoint `8002D4F4`). The last
-  session's `-dd` dump says ~14 of the differing blocks are `.set reorder`
-  branches gcc leaves to the assembler (`beq s0,-1` whose target starts
-  `li v0,1`; state 4's `bgez`, whose fallthrough label is also state 7's
-  `bltz` target): ASPSX fills them from the target or fallthrough, which
-  `aspsx_fill.py` doesn't do yet. **Extend `aspsx_fill.py` for conditional
-  branches first** (check it against the matched 2.7.2 functions), then
-  resume the checkpoint. Also left: cse2 folds `base+N` to `sym+N` for
-  nonzero offsets where the target keeps the `la` base.
-  **Started 2026-10-16 (not finished, no code changed yet).** The rule,
-  read from the cc1 output (`scratch/aspsx/pipe.sh` runs the unit's
-  pipeline stage by stage) against retail: for a label `L: I` whose
-  every entry is a reorder-mode branch with an empty slot (or the
-  fallthrough of one), ASPSX moves `I` into each of those slots, retargets
-  the branches to `L+4`, and drops `I` from `L`. `$L157: li $2,1` (12
-  `beq $16,$2,$L157`, after a `j`) becomes `beq ...,$L177` + `li v0,1` in
-  every slot with no `li` left at L157; `$L175: li $2,-2` goes into the
-  `bgez` before it (fallthrough) and the `bltz` to it. And
-  `steal_jump_slot` over-fires: retail leaves `bne $16,$2,$L73` (target `j`
-  + filled slot, several entries) with a nop; it fired rightly in
-  `func_8002DE2C` (`beq $4,$2,$L195`). Not filled in matched code (keep
-  them unfilled): DE2C's `bne` to `$L182`/`$L187`/`$L190` and E000's `bne`
-  to `$L204` (targets entered by fallthrough too, or loop heads). Next:
-  pin down the entry condition from those, implement it in
-  `aspsx_fill.py` with tests, keep the 8 matched functions matching
-  (`scratch/aspsx/regress.sh` tries all 9; baseline 8 MATCH, D4F4
-  486/598), then apply the checkpoint (`crash_bash_decomp-swarm/checkpoints/func_8002D4F4/best.diff`).
+- **`func_8002D4F4`** (the CD state machine, 2360 B): blocks 144/148, paired
+  587/592, exact 580/592 (length 592 vs 590), parked by the swarm
+  2026-10-16 (checkpoint `func_8002D4F4`). `aspsx_fill.py` now fills the
+  conditional-branch slots (127f996), so every branch is right; what is
+  left is the C's addressing, all cse/sched1: block 29's `lui a2,0x8888`
+  (the /60 constant) issues after the `la D_8006788D` (sched1 ties them;
+  the la isn't birthing because `p` is set twice, `p++`), and in states
+  5/6 the `D_80067884` offset-2 store folds to `sym+2` and its `la` is
+  scheduled before the `D_8006EA20` loads. The last session's report entry
+  lists every form tried. Next: by hand with cc1 `-dS`/`-dc` dumps, or the
+  permuter on those blocks (`permute --differing`).
 - Swarm: `--seg` is a prefix and defaults to `main/main`, so the new units
   need `--seg main/8002` (or `--only`).
 - Heap: `D_8004E0F0` is a `Heap` now. Its +0x10 is the deferred-free list
@@ -423,6 +405,19 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-16 (tool, ASPSX conditional-branch slots):** `aspsx_fill.py`
+  fills the slots of branches gcc 2.7.2 leaves to the assembler: from
+  below, else from the target (or a `j`'s slot there), with an
+  instruction whose register is dead on the other path (path-following
+  liveness; a load's write doesn't count; a return reads everything); a
+  target instruction every branch took and nothing falls into is dropped.
+  Replaces `steal_jump_slot`. Every matched 2.7.2 function still matches;
+  `func_8002D4F4` 126 -> 142/148 blocks, then a big-mode run (4 sessions,
+  $9.63) took it to 144/148 and parked it (Open leads). Swarm fix: a big
+  session that errored before any work (an OAuth refresh failure) was
+  measured as "no progress" and parked the function; now an uncharged
+  failure (fa40cae).
 
 - **2026-10-16 (swarm, main.exe retry, run 20261016133425):** `decomp.py
   unblock` (new) unparked main.exe's 15 parks; big mode only, no
