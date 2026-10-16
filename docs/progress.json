@@ -1,12 +1,6 @@
 {
  "blocked": [
   {
-   "name": "func_800177F4",
-   "note": "registers 1/89 (swarm checkpoint 800177F4, 2026-10-16): only idx's addu operand order (target addu t0,a0,v0 = face + table); every face-first form gives idx a hard a0 preference so tpage avoids a0 (58/89). s32 tpage in place and the code word carried in the colour pointer c got the rest",
-   "seg": "main/main",
-   "size": 360
-  },
-  {
    "name": "func_8001795C",
    "note": "registers 12/107 (swarm checkpoint, unchanged by 2 more sessions 2026-10-16): only the 0x8000/else arms; target shares a2 between ts and t (t born after the last ts read). Variants with e set in both arms, e = ts->tex; e += count; t = &e[-1].info, clut orders, --e: none better",
    "seg": "main/main",
@@ -19,9 +13,9 @@
    "size": 568
   }
  ],
- "commit": "934369a",
+ "commit": "60a2d87",
  "game": "SCUS_945.70",
- "generated": "2026-10-16T14:50:20Z",
+ "generated": "2026-10-16T19:37:00Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -58354,9 +58348,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "60a2d87",
+   "data_b": 0,
+   "data_tb": 606943,
+   "game_all_f": 2551,
+   "game_b": 178872,
+   "game_c_f": 1062,
+   "game_f": 1062,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 881,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-16T19:37:00Z",
+   "units": {
+    "engine": [
+     47788,
+     284
+    ],
+    "main exe": [
+     121484,
+     572
+    ],
+    "ovl5d": [
+     328,
+     4
+    ],
+    "ovl5e": [
+     504,
+     6
+    ],
+    "ovl5f": [
+     1564,
+     36
+    ],
+    "ovl60": [
+     708,
+     14
+    ],
+    "ovl61": [
+     292,
+     7
+    ],
+    "ovl62": [
+     916,
+     30
+    ],
+    "ovl63": [
+     636,
+     16
+    ],
+    "ovl64": [
+     156,
+     7
+    ],
+    "ovl65": [
+     1096,
+     11
+    ],
+    "ovl66": [
+     528,
+     13
+    ],
+    "ovl67": [
+     836,
+     12
+    ],
+    "ovl68": [
+     180,
+     10
+    ],
+    "ovl69": [
+     920,
+     16
+    ],
+    "ovl6a": [
+     936,
+     24
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-16T19:36:51Z",
+   "auto": false,
+   "name": "func_800177F4",
+   "seg": "main/main",
+   "size": 360,
+   "tries": 1
+  },
   {
    "at": "2026-10-16T14:40:35Z",
    "auto": true,
@@ -58468,18 +58556,10 @@
    "seg": "overlays/engine/8007ac20",
    "size": 528,
    "tries": 0
-  },
-  {
-   "at": "2026-10-16T10:29:34Z",
-   "auto": true,
-   "name": "func_8007C6EC",
-   "seg": "overlays/engine/8007ac20",
-   "size": 324,
-   "tries": 0
   }
  ],
  "summary": {
-  "blocked": 3,
+  "blocked": 2,
   "copies_b": 36276,
   "data": {
    "done_b": 0,
@@ -58490,16 +58570,16 @@
    "all_f": 2551,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 3,
-   "c_f": 1061,
-   "done_b": 178512,
-   "done_f": 1061,
+   "blocked": 2,
+   "c_f": 1062,
+   "done_b": 178872,
+   "done_f": 1062,
    "named_f": 345,
-   "pct": 17.517732445173674,
+   "pct": 17.55305995077701,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2551,
-   "typed_f": 880
+   "typed_f": 881
   },
   "lib": {
    "all_f": 566,
@@ -58542,21 +58622,21 @@
     "all_f": 575,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 3,
-    "c_f": 571,
-    "done_b": 121124,
-    "done_f": 571,
+    "blocked": 2,
+    "c_f": 572,
+    "done_b": 121484,
+    "done_f": 572,
     "file": "SCUS_945.70",
     "files": 3,
     "lib": false,
     "named_f": 15,
-    "pct": 97.02338993912208,
+    "pct": 97.31175905158604,
     "phase": 2,
     "sony_b": 0,
     "title": "main.exe",
     "total_b": 124840,
     "total_f": 575,
-    "typed_f": 438,
+    "typed_f": 439,
     "unit": "main exe"
    },
    {

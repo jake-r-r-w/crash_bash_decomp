@@ -864,11 +864,11 @@
   "status": "matched"
  },
  "800177F4": {
-  "auto_failed": "types",
   "blocked_at": "2026-10-16T14:49:52Z",
-  "note": "registers 1/89 (swarm checkpoint 800177F4): only idx's addu operand order (target addu t0,a0,v0 = face + off). -dg dump: face-first gives idx (pseudo 84) a hard a0 preference (global.c set_preference takes a plus's first operand; face is local-allocated to a0), so tpage (87, allocated first) avoids a0 and the allocation shifts (31/89). Retail needs face first with no such preference. Tried 2026-10-16: plain/helper/do-while/index/ptr forms (31/89 or longer); carrying face in tpage or c (cse makes the longer-lived copy canonical, so the add starts from a global pseudo: right idea, but sched1 hoists the colors-base load above the add, local-alloc gives it a0, tpage then conflicts with a0: one extra move); permuter 15 min: nothing",
-  "started": "2026-10-11T07:58:36Z",
-  "status": "blocked",
+  "matched_at": "2026-10-16T19:36:51Z",
+  "started": "2026-10-16T19:32:19Z",
+  "status": "matched",
+  "tries": 1,
   "unblocked_at": "2026-10-16T13:33:01Z",
   "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },

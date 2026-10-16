@@ -4421,17 +4421,12 @@ void func_80017640(void) {
     }
 }
 
-#ifndef NON_MATCHING
-INCLUDE_ASM("asm/nonmatchings/main/main", func_800177F4);
-#else
 void func_800177F4(RelTable *face, POLY_GT4 *poly, s32 arg2, s32 mode) {
     u16 *idx;
     u32 *colors;
     u32 *c;
     s32 semi = mode & 1;
     s32 abr = mode & 0x60;
-    u32 code;
-    u16 tpage;
 
     gte_ldfcdir(D_80056998.farColor[0], D_80056998.farColor[1], D_80056998.farColor[2]);
     gte_lddp(D_80056998.dp);
@@ -4451,25 +4446,20 @@ void func_800177F4(RelTable *face, POLY_GT4 *poly, s32 arg2, s32 mode) {
     gte_strgb(&poly->r2);
     setPolyGT4(poly);
     if (idx[0] & 0x8000) {
-        code = *(u32 *)&poly->r0 | 0x02000000;
-        tpage = (poly->tpage & ~0x60) | 0x20;
+        *(u32 *)&poly->r0 = *(u32 *)&poly->r0 | 0x02000000;
+        poly->tpage = (poly->tpage & 0xFF9F) | 0x20;
+    } else if (semi) {
+        *(u32 *)&poly->r0 = *(u32 *)&poly->r0 | 0x02000000;
+        poly->tpage = (poly->tpage & 0xFF9F) | abr;
     } else {
-        if (semi) {
-            code = *(u32 *)&poly->r0 | 0x02000000;
-            tpage = poly->tpage;
-        } else {
-            code = *(u32 *)&poly->r0 & ~0x02000000;
-            tpage = poly->tpage;
-        }
-        tpage = (tpage & ~0x60) | abr;
+        *(u32 *)&poly->r0 = *(u32 *)&poly->r0 & ~0x02000000;
+        poly->tpage = (poly->tpage & 0xFF9F) | abr;
     }
-    *(u32 *)&poly->r0 = code; /* code byte: semi-transparency bit */
-    poly->tpage = tpage;
-    gte_ldrgb(&colors[idx[1] & 0x1FFF]);
+    c = &colors[idx[1] & 0x1FFF];
+    gte_ldrgb(c);
     gte_dpcs();
     gte_strgb(&poly->r3);
 }
-#endif
 
 #ifndef NON_MATCHING
 INCLUDE_ASM("asm/nonmatchings/main/main", func_8001795C);
