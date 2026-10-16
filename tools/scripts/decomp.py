@@ -1233,6 +1233,127 @@ def split_points(words, labels):
     return out
 
 
+PLACEHOLDER = re.compile(r"\b(func|D|jtbl)_([0-9A-Fa-f]{8})\b")
+
+
+def diff_parts(diff, names):
+    """From a unified diff: (the C that replaced an INCLUDE_ASM line for one of `names`, the other
+    added lines as whole declarations). Context and other files' layout are ignored."""
+    body, decls = [], []
+    for sec in re.split(r"^diff --git ", diff, flags=re.M)[1:]:
+        run, after_del = [], False
+        for line in sec.split("\n"):
+            if line.startswith(("+++", "---")):
+                continue
+            if line.startswith("-"):
+                m = INC_ASM.search(line)
+                after_del = bool(m and m.group(2) in names)
+                decls += run
+                run = []
+                continue
+            if line.startswith("+"):
+                (body if after_del else run).append(line[1:])
+                continue
+            after_del = False
+            decls += run
+            run = []
+        decls += run
+    return "\n".join(body), decls
+
+
+def port_renames(text, key):
+    """Placeholder names (func_/D_/jtbl_ + address) in `text` whose address has a name now: the name
+    as seen from `key`'s overlay (its own symbols, then the engine's, then the exe's)."""
+    syms = sym_names()
+    ovl = key.rpartition(":")[0]
+    mp = {}
+    for m in PLACEHOLDER.finditer(text):
+        addr = m.group(2).upper()
+        for k in ([f"{ovl}:{addr}"] if ovl else []) + [f"engine:{addr}", addr]:
+            if k in syms:
+                if syms[k] != m.group(0):
+                    mp[m.group(0)] = syms[k]
+                break
+    return mp
+
+
+def decl_units(lines):
+    """Lines -> whole declarations: everything up to the semicolon that ends one at brace depth 0
+    (a struct or typedef block is one unit). Blank and preprocessor lines are dropped."""
+    units, cur, depth = [], [], 0
+    # a body's closing brace glued to the next declaration (`}extern u8 D_x[];`, an edit that lost
+    # a newline) is two lines
+    lines = [x for l in lines for x in (re.match(r"^(\})(\s*(?:extern|static|typedef|void|[su](?:8|16|32))\b.*)$", l).groups()
+                                         if re.match(r"^\}\s*(?:extern|static|typedef|void|[su](?:8|16|32))\b", l) else (l,))]
+    for l in lines:
+        if not cur and (not l.strip() or l.lstrip().startswith("#")):
+            continue
+        cur.append(l)
+        code = re.sub(r"/\*.*?\*/|//.*$", "", l).strip()
+        depth += code.count("{") - code.count("}")
+        if depth <= 0 and code.endswith((";", "}")):
+            units.append(cur)
+            cur, depth = [], 0
+    return units
+
+
+def unit_name(unit):
+    """The name a declaration unit declares: a typedef's name, else a struct's tag."""
+    code = re.sub(r"/\*.*?\*/", "", " ".join(unit), flags=re.S).strip()
+    m = re.search(r"(\w+)\s*(?:\[[^\]]*\])?\s*;\s*$", code) if not code.endswith("};") else None
+    tag = re.search(r"\b(?:struct|union|enum)\s+(\w+)\s*\{", code)
+    return m.group(1) if m else tag.group(1) if tag else None
+
+
+def cmd_port(a):
+    """Re-apply an old diff of NAME's C (a swarm checkpoint) after renames and file splits: the C
+    goes in place of NAME's INCLUDE_ASM line wherever that is now, placeholder names become today's
+    names by address, and the declarations it added go through declare(). Then try."""
+    proj, funcs = need_proj(), need_funcs()
+    key, e = find_func(funcs, a.func)
+    syms = sym_names()
+    name = cur_name(key, e, syms)
+    src = e.get("src")
+    diff = read(a.diff)
+    body, added = diff_parts(diff, {name, e["name"], e["orig"], f"func_{key.rpartition(':')[2]}"})
+    if not body.strip():
+        die(f"the diff has no C in place of {name}'s INCLUDE_ASM line")
+    if not src or not still_asm(src, name, e["name"], e["orig"]):
+        die(f"{name} has no INCLUDE_ASM line to replace (already C?)")
+    mp = port_renames(body + "\n" + "\n".join(added), key)
+    body, added = rename_syms(body, mp), [rename_syms(l, mp) for l in added]
+    units = decl_units(added)
+    # an indented line edits an existing declaration (a field added to a struct): that needs a hand
+    skipped = [u for u in units if u[0][:1] in (" ", "\t", "}")]
+    units = [u for u in units if u not in skipped]
+    # helper functions it added (static inline ...) go in the file, just before it
+    def header(u):                    # a function definition's first line (after any comment)
+        return next((re.match(r"[^;{(/]*?\b(\w+)\s*\([^;]*\)\s*\{", l) for l in u
+                     if re.match(r"[^;{(/]*?\b\w+\s*\([^;]*\)\s*\{", l)), None)
+    defs = [u for u in units if u[-1].strip() == "}" and header(u)]
+    units = [u for u in units if u not in defs]
+    text = read(src)
+    helpers = "".join("\n".join(u) + "\n\n" for u in defs if not func_def_regex(header(u).group(1)).search(text))
+    m = next(x for x in INC_ASM.finditer(text) if x.group(2) in (name, e["name"], e["orig"]))
+    write(src, text[:m.start()] + helpers + body.rstrip("\n") + text[m.end() + (1 if text[m.end():m.end() + 1] == ";" else 0):])
+    # one-line declarations through declare() (it skips what the file sees); whole struct/typedef
+    # blocks into the owned header unless their name is visible already
+    declare(src, [u[0] for u in units if len(u) == 1 and decl_name(u[0])])
+    have = visible_names(src)
+    blocks = [u for u in units if len(u) > 1 and unit_name(u) and unit_name(u) not in have]
+    if skipped:
+        print(f"not ported ({sum(len(u) for u in skipped)} lines that edit existing declarations; redo by hand):")
+        print("\n".join("  " + l for u in skipped for l in u))
+    if blocks:
+        h = owned_header(src)
+        ht = read(h)
+        end = ht.rfind("#endif")
+        write(h, ht[:end] + "".join("\n".join(u) + "\n\n" for u in blocks) + ht[end:])
+    print(f"ported {name} into {src}" + (f"; renamed {', '.join(f'{k} -> {v}' for k, v in mp.items())}" if mp else ""))
+    ok, _ = check_function(key, e, proj, name)
+    sys.exit(0 if ok else 1)
+
+
 def cmd_splitcheck(a):
     """Functions that are probably two (a mis-split, like func_80027408): each with the line to add
     to its symbol file, so splat splits it."""
@@ -4577,6 +4698,10 @@ def main():
     p.add_argument("--block", type=int, action="append", help="only randomize this block's C (repeatable)")
     p.add_argument("--lines", action="append", help="only randomize source lines A-B (repeatable)")
     p.set_defaults(fn=cmd_permute)
+    p = sub.add_parser("port", help="re-apply an old diff of a function's C after renames and splits")
+    p.add_argument("func")
+    p.add_argument("diff", help="the old diff (a swarm checkpoint's best.diff)")
+    p.set_defaults(fn=cmd_port)
     p = sub.add_parser("splitcheck", help="functions that look like two (a missing symbol to split them)")
     p.add_argument("--seg", help="segment prefix")
     p.add_argument("--all", action="store_true", help="matched functions too")

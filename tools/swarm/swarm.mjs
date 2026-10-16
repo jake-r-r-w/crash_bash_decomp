@@ -51,6 +51,7 @@ function infraError(out, code) {
   return [125, 126, 127].includes(code) ? `tools/dk exited ${code}: ${out.trim().split('\n').pop() || 'no output'}` : null;
 }
 const PATCH_MAX = 64 << 10;
+const OLD_DIFF = '.swarm-old.diff';    // a checkpoint that no longer applies, for decomp.py port
 // Diff patterns rows that teach what the gate refuses (pins, asm barriers, --hack) aren't passed on
 const PATTERN_REFUSED = /\b(?:asm|__asm|__asm__)\s*(?:volatile|__volatile__)?\s*\(|--hack|\bregister\b[^|]*\b(?:asm|__asm|__asm__)\b/i;
 const PATTERNS_MAX = 2500;
@@ -955,8 +956,10 @@ This attempt starts from the closest C so far, already in ${f.src} in place of t
 ${(job.resumed.log || []).map(l => '- ' + l).join('\n')}
 ` : ''}${job.oldCheckpoint ? `
 An earlier attempt's C (${Swarm.describe(job.oldCheckpoint.cp)}) no longer applies to this branch
-(${job.oldCheckpoint.why}); ${f.src} still has the INCLUDE_ASM line. Port it first (\`tools/dk git log -3 --
-${f.src}\` shows what changed), then go on. Its diff:
+(${job.oldCheckpoint.why}); ${f.src} still has the INCLUDE_ASM line. Run \`tools/dk python3 tools/scripts/decomp.py port ${r} ${OLD_DIFF}\` first: it puts that C in place
+mechanically (today's names for the placeholder ones, its helpers and declarations) and lists what it
+couldn't port (edits to existing declarations); fix those and get it building.
+(\`tools/dk git log -3 -- ${f.src}\` shows what changed.) Then go on. Its diff:
 \`\`\`
 ${job.oldCheckpoint.diff}
 \`\`\`
@@ -996,9 +999,11 @@ ${(cp.log || []).map(l => '- ' + l).join('\n')}
 ` : job.oldCheckpoint ? `
 Earlier sessions got it to ${Swarm.describe(job.oldCheckpoint.cp)}, but that C no longer applies to
 this branch (${job.oldCheckpoint.why}): something it relied on was renamed, moved or redeclared
-since. ${f.src} still has the INCLUDE_ASM line. Port that C first: put it in place of the INCLUDE_ASM
-line, adapt it to today's names and headers (\`tools/dk git log -3 -- ${f.src}\` and the headers it touches
-show what changed), and get it building; then go on as usual. Its diff, for reference:
+since. ${f.src} still has the INCLUDE_ASM line. Run \`tools/dk python3 tools/scripts/decomp.py port ${r} ${OLD_DIFF}\` first: it puts that C in place
+mechanically (today's names for the placeholder ones, its helpers and declarations) and lists what it
+couldn't port (edits to existing declarations); fix those and get it building.
+(\`tools/dk git log -3 -- ${f.src}\` and the headers it touches show what changed.) Then go on as usual.
+Its diff, for reference:
 \`\`\`
 ${job.oldCheckpoint.diff}
 \`\`\`
@@ -1139,6 +1144,8 @@ Fix that, keep it matching, and report "matched".
           job.oldCheckpoint = { why, diff, cp: job.resumed || { stage: '?', diffs: 0, total: 0 } };
           job.permuterDiff = job.gateFix = null;   // their C isn't in place: port the diff instead
           resetClone(slot.dir, job.base);
+          // for `decomp.py port` (the prompt says to run it first); not under src/, so not in the patch
+          fs.copyFileSync(job.startPatch, path.join(slot.dir, OLD_DIFF));
           job.startPatch = job.resumed = null;
         }
       }
