@@ -21,7 +21,7 @@ bigger one.
 
 `tools/dk python3 tools/scripts/dat.py extract` splits your retail `CRASHBSH.DAT` into its 992
 files, `assets/CRASHBSH/000.bin` .. `3DF.bin` (ids as ARCHITECTURE.md names them), with
-`index.json` (each one's sector and size; the code overlays are tagged) and `filler.bin` (the bytes
+`index.json` (each one's name, sector, size and format; the code overlays are tagged) and `filler.bin` (the bytes
 between files). `make disc` runs it the first time by itself. Edit a file and `make disc` puts it
 on the disc; delete `assets/CRASHBSH/` to start again from the retail DAT (extracting takes about
 4 minutes). The 400 texture sets come out as `<id>.tex/` folders of PNGs: edit an image's pixels in

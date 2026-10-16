@@ -3,6 +3,7 @@ Run: tools/dk make test-tools"""
 import os
 import struct
 import sys
+import tempfile
 import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -51,6 +52,20 @@ class SplitJoin(unittest.TestCase):
         files[1] = bytes(51)
         with self.assertRaises(SystemExit):
             dat.join(files, filler, ENTRIES, TOTAL)
+
+
+class Names(unittest.TestCase):
+    def test_list_lines_become_slash_paths(self):
+        with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False) as f:
+            f.write("# a comment\n\n000=models\\cutscene\\uka\\data.tex\n991=overlays\\gameeng.bin\n")
+        try:
+            self.assertEqual(dat.names(f.name), {0: "models/cutscene/uka/data.tex", 991: "overlays/gameeng.bin"})
+        finally:
+            os.remove(f.name)
+
+    def test_the_list_names_every_entry(self):
+        self.assertEqual(sorted(dat.names(os.path.join(os.path.dirname(__file__), "..", "..", "..", dat.NAMES))),
+                         list(range(dat.COUNT)))
 
 
 if __name__ == "__main__":

@@ -183,6 +183,11 @@ code finds 15 code files; nothing else on the disc holds code.
 | `engine` | `0x3DF` | `0x8AEB` | `0x5E4B8` | `0x80078C90` | engine module, then the reserved slot image |
 | `ovl5d`..`ovl6a` | `0x1E7`, `0x2CC`..`0x2D8` | | `0x6CD8`..`0x23690` | `0x800B32B4` | slot overlays, one at a time |
 
+- **File names** (`configs/USA/dat_names.txt`, from CTR-tools): the engine is
+  `overlays/gameeng.bin`, the slot overlays `overlays/modes/<mode>.bin`: crate
+  (ovl5d), papu, tank, pogo, ball (ovl61), dash (ovl63), ring (ovl64), dino,
+  mallet (ovl66), oxide (ovl67), kegs (ovl68), menu (ovl69), warp (ovl6a),
+  polar (ovl62).
 - **Load addresses** from `jal` targets: at `0x80078C90` 308 of the engine's
   internal calls land on prologues (next best 150); every slot overlay's calls
   into itself fit `0x800B32B4`. The engine's own `.data` stores

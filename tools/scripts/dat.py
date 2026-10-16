@@ -15,7 +15,8 @@ filler.bin; a rebuild puts them back and gives the retail DAT byte for byte.
 
 Entries in a format tools/scripts knows are decoded after the split (extract runs decode): a
 texture set (tex.py) becomes <id>.tex/ (PNGs) and a model file (mdl.py) <id>.mdl/ (OBJ) in place
-of <id>.bin, and index.json says "format": "tex" or "mdl". Each one is checked to pack back to the same bytes first; one that doesn't stays
+of <id>.bin, and index.json says "format": "tex" or "mdl". index.json also gives each entry its name
+(configs/USA/dat_names.txt, from CTR-tools), e.g. 001 is models/cutscene/uka/data.mdl. Each one is checked to pack back to the same bytes first; one that doesn't stays
 a .bin. build packs them again, cached in build/dat-cache/ until a file in the folder changes.
 
 An entry file may be edited. It may shrink (zero-padded to its retail size, so nothing moves) but
@@ -43,6 +44,7 @@ TABLE = 0x8004E110
 COUNT = 992
 SECTOR = 2048
 CACHE = "build/dat-cache"
+NAMES = "configs/USA/dat_names.txt"   # CTR-tools' list of the entries' names
 
 
 def die(msg):
@@ -139,10 +141,24 @@ def extract(dest=ASSETS, quiet=False):
     decode(dest, quiet)
 
 
+def names(path=NAMES):
+    """{entry: its name, e.g. models/cutscene/uka/data.tex} from the list (decimal id = path)."""
+    out = {}
+    if os.path.exists(path):
+        for line in open(path, encoding="utf-8"):
+            k, sep, v = line.strip().partition("=")
+            if sep and k.isdigit():
+                out[int(k)] = v.replace("\\", "/")
+    return out
+
+
 def decode(dest=ASSETS, quiet=False):
     """Every raw entry in a known format -> its editable form, when it packs back exactly."""
     p = os.path.join(dest, INDEX)
     meta = json.load(open(p))
+    for i, name in names().items():
+        if i < len(meta["entries"]):
+            meta["entries"][i]["name"] = name
     n = {k: 0 for k in FORMATS}
     try:
         for i, e in enumerate(meta["entries"]):

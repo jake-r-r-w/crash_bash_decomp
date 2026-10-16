@@ -16,9 +16,12 @@ No header: the exe's table at `0x8004E110` gives 992 `{u32 sector, u32 size}` en
 or, when it decodes it, to a folder; `index.json` has each entry's sector, size and format, and
 `filler.bin` the non-zero bytes between entries. An entry may shrink but not grow.
 
-CTR-tools' `CTRFramework/Data/bash_filelist.txt` names all 992 entries for this release (decimal
-ids; 400 `.tex`, 400 `.mdl`, 160 `.sfx`, 27 `.bin`, 5 `.tga`), e.g. `000` is
-`models/cutscene/uka/data.tex` and `001` its `data.mdl`. It is GPL-2.0, so it is not copied here.
+Every entry has a name: `configs/USA/dat_names.txt` (CTR-tools'
+`CTRFramework/Data/bash_filelist.txt`, GPL-2.0, credited in its header; decimal ids) lists all
+992 for this release, 400 `.tex`, 400 `.mdl`, 160 `.sfx` (sound packs; its comments say the music
+ones hold VAB/SEQ), 27 `.bin` (the code overlays and text) and 5 `.tga` (title screens).
+`dat.py` copies each name into `index.json` (e.g. `000` is `models/cutscene/uka/data.tex`, `001`
+its `data.mdl`, `3DF` `overlays/gameeng.bin`).
 
 What the entries are (first u32 is a type or a count, not a magic number):
 
