@@ -2,14 +2,14 @@
  "blocked": [
   {
    "name": "func_8002D4F4",
-   "note": "regions 145/148 (paired 587/590, len 590 = target; C under NON_MATCHING). Unit now built with -fno-rerun-cse-after-loop (Makefile): without cse2, plain D_8006788C[k]/D_80067884[k] accesses come out as la+offset like retail, which fixed states 4/5 and dropped func_8002DE2C's always-zero offset. Left: state 6 case 1 only (blocks 47/48/50): gcc's reorg steals case 1's first insn li $4,3 into the 'beq ret,1' slot; retail leaves it and takes li $16,6 from the fallthrough j's slot. Reorg tries the target thread first here; li $4,3 must be rejected (a0 live on the fallthrough per mark_target_live_regs, or the thread not own). Tried: case orders, default split from case 0, no locals, store orders, inline helper (fixes the slot but folds the stores and moves li into the jal slot), -fno-schedule-insns (fixes slot, wrong order). Next: read gcc 2.7.2 reorg.c (mostly_true_jump, mark_target_live_regs/find_basic_block) for what makes li $4,3 ineligible",
+   "note": "regions 145/148 (len 590 = target; C under NON_MATCHING). Unit built with -fno-rerun-cse-after-loop. The only diff left (state 6, blocks 47/48/50) is a compiler-build difference, not C: retail's reorg fills the unconditional j after 'beq ret,1' from its target (li $16,6) before the eager pass, so the beq then steals li $16,6 from it and case 1 keeps li $4,3. FSF 2.7.2 reorg (our 2.7.2-psx; read in gcc 2.7.2.3 reorg.c: fill_simple_delay_slots never fills a simple jump from its target) leaves the j empty, so fill_eager takes li $4,3 from case 1. 2.7.2-cdk and 2.8.1-psx behave like retail on a lab copy (scratch/lab/s6.c) and steal li $4,3 when the j can't be filled. No C form found that gives retail's slot under FSF reorg. Next: a cc1 with that reorg (the real PsyQ cc1psx) or a narrow aspsx_fill rule, if the user wants either",
    "seg": "main/8002d488",
    "size": 2360
   }
  ],
- "commit": "e568f81",
+ "commit": "d215beb",
  "game": "SCUS_945.70",
- "generated": "2026-10-16T20:49:47Z",
+ "generated": "2026-10-16T21:04:03Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -58516,7 +58516,7 @@
    }
   },
   {
-   "commit": "e568f81",
+   "commit": "d215beb",
    "data_b": 0,
    "data_tb": 606943,
    "game_all_f": 2551,
@@ -58529,7 +58529,7 @@
    "lib_b": 122112,
    "lib_f": 564,
    "lib_tb": 122112,
-   "ts": "2026-10-16T20:49:47Z",
+   "ts": "2026-10-16T21:04:02Z",
    "units": {
     "engine": [
      47788,

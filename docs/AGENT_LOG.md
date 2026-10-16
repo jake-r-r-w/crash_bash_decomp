@@ -189,18 +189,21 @@ Other:
   second cse pass, plain `D_8006788C[1]` / `D_80067884[k]` accesses come
   out as `la` + offsets like retail, which fixed states 4/5 and let
   `func_8002DE2C` drop its always-zero `((u8)limit >> 8)` offset.
-  Only state 6's case 1 is left (blocks 47/48/50): gcc's reorg tries the
-  case-1 target first and moves its first insn `li $4,3` into the
-  `beq ret,1` slot; retail keeps it there and takes `li $16,6` from the
-  fall-through `j`'s slot instead (as our build does when case 1 starts
-  with a 2-word macro). So retail's reorg found `li $4,3` ineligible: a0
-  live on the fall-through (`mark_target_live_regs`/`find_basic_block`) or
-  the thread not own. Tried, no change: case orders, `default` split from
-  `case 0`, no locals, store orders, `-fno-schedule-insns` (fixes the slot,
-  breaks the order), an inline helper (fixes the slot, folds the stores).
-  Next: read gcc 2.7.2's reorg.c for what rejects `li $4,3` there; the lab
-  file pattern (a small switch in scratch, compiled with the unit's flags)
-  reproduces it in a second.
+  Only state 6's case 1 is left (blocks 47/48/50), and it is the compiler,
+  not the C. Retail's reorg fills the unconditional `j` after `beq ret,1`
+  from its target (`li $16,6`) before the eager pass; the `beq` then
+  steals that from the `j` and case 1 keeps `li $4,3`. FSF 2.7.2's reorg
+  (our `2.7.2-psx`; read in gcc-2.7.2.3 `reorg.c`, kept in
+  `scratch/gcc272src/`) never fills a simple jump from its target in
+  `fill_simple_delay_slots`, so `fill_eager_delay_slots` finds the `j`
+  empty and takes `li $4,3` from case 1 instead. On a lab copy
+  (`scratch/lab/s6.c`, `scratch/lab/run.sh`), `2.7.2-cdk` and `2.8.1-psx`
+  give retail's slot, and steal `li $4,3` like ours when the `j` can't be
+  filled; `2.6.3-psx` behaves like ours. The whole unit under 2.8.1 is far
+  off (102/148), so the original is a 2.7.2 with the newer reorg (SN's
+  build of a Cygnus tree?). No C form gives retail's slot under FSF
+  reorg. Options: the real PsyQ `cc1psx` in the toolchain, or a narrow
+  `aspsx_fill.py` rule that redoes this fill order.
 - `main/8002e0f0` with the same flag: `func_8002E25C` stops matching
   (structure 44/95), the other four still match. Whether both units had the
   flag (and E25C's C leans on cse2) is open.
@@ -405,8 +408,9 @@ Newest first, a few lines each. Details are in the commits.
   per-unit `EXTRA_CC1FLAGS` applies): array accesses through a constant
   base keep `la` + offsets, the `D_8006788D` symbol is just
   `D_8006788C[1]`, and `func_8002DE2C` matches without its always-zero
-  offset. `make check` OK. Left: one reorg delay-slot choice in state 6
-  (Open leads). No permuter.
+  offset. `make check` OK. Left: one reorg delay-slot choice in state 6,
+  which turned out to be a compiler-build difference (Open leads). No
+  permuter.
 
 - **2026-10-16 (by hand, `func_800248A0`):** matched (03bef8c), no
   permuter. The caller passes x and y as shorts (`lh`, `sll/sra`), so the
