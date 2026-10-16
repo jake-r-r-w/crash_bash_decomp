@@ -163,9 +163,9 @@ left, for the permuter). `--max-functions 500` leaves time and cost as the limit
 
 - **main.exe parks (2026-10-16 retry run: 12 of 15 matched).** Left
   parked, each with a swarm checkpoint and a fresh `block` note: `func_800248A0`
-  (5/142), `func_8001795C` (12/107), `func_800177F4` (1/89). All three are
-  register-only: next is `swarm.mjs permute --only` on them (the retry ran
-  without the permuter on purpose).
+  (5/142) and `func_8001795C` (12/107); `func_800177F4` was matched by hand
+  since. Both are register-only: next is `swarm.mjs permute --only` on them
+  (the retry ran without the permuter on purpose).
 - **`func_800248A0`** (three sprites side by side): registers 5/142, only
   the entry. The target tests `a0` (`andi a0,a0,0xC000`) right after
   `move s5,a0` and loads arg4 into a3; ours tests s5 into v1. An s16/u16
@@ -183,18 +183,6 @@ left, for the permuter). `--max-functions 500` leaves time and cost as the limit
   vs 109/110; its C is in that session's result note), but the user
   ruled it out: it would make progress too slow. Port such a version by
   hand instead.
-- **`func_800177F4`**: registers 1/89. Only `idx`'s addu operand order
-  (target `addu t0,a0,v0` = face + table). Why (2026-10-16, `-dg` dump):
-  global.c's set_preference takes a plus's first operand, and `face` is
-  local-allocated to a0, so face-first gives `idx` an a0 preference;
-  `tpage` (allocated first) then avoids a0 and everything shifts (31/89).
-  Retail has face first without that preference. The closest idea: copy
-  face into a longer-lived variable (`tpage = (s32)face;`): cse makes the
-  longer-lived copy canonical, so the add starts from a global pseudo and
-  `tpage` prefers a0, but sched1 hoists the colours-base load above the
-  add, local-alloc gives it a0, and `tpage` conflicts with a0 (one extra
-  move, 72/90). Find what keeps that load below the add or out of a0.
-  12 forms and a 15-min permuter run are in the park note.
 
 Other:
 - The gcc 2.7.2 units (`main/8002d488`, `main/8002e0f0`): `aspsx_fill.py`
@@ -413,9 +401,12 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
-- **2026-10-16 (by hand, `func_800177F4`):** not matched; still 1/89. The
-  `-dg` dump explains the last operand (Open leads); 12 forms and a
-  15-min permuter run failed. Park note updated.
+- **2026-10-16 (by hand, `func_800177F4`):** matched (c8e99ad), no
+  permuter. The target's tail (both loads per arm, shared `andi/or` and
+  `sw/sh` behind labels) is cross-jumped per-arm stores: writing the store
+  in each arm makes tpage arm-local in a0, so idx's a0 preference is
+  pruned and the face-first add allocates as retail. The earlier session
+  had chased the preference with carrier variables (Diff patterns row).
 
 - **2026-10-16 (tool, ASPSX conditional-branch slots):** `aspsx_fill.py`
   fills the slots of branches gcc 2.7.2 leaves to the assembler: from
