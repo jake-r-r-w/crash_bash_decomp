@@ -24,6 +24,10 @@ whose register is dead on the other path; a target instruction every branch took
 else reaches is dropped. Derived from func_8002D4F4 against the retail code and checked on every
 matched function of the two units.
 
+4. Not ASPSX but gcc (refill_from_jump, run first): Sony's gcc 2.7.2 fills a `beq` followed by a
+`j` from the `j`'s slot, where FSF 2.7.2's reorg (our cc1) takes the `beq` target's first
+instruction. Redone for the one shape func_8002D4F4 shows.
+
 Only units built with gcc 2.7.2 use this (Makefile: ASPSX_FILL)."""
 import re
 import sys
@@ -334,6 +338,84 @@ def drop_unreached(lines, stolen):
     return out
 
 
+def refill_from_jump(lines):
+    """Redo one gcc slot fill in the order Sony's gcc 2.7.2 used (not FSF 2.7.2's, which our cc1 has).
+
+    Sony's reorg fills an unconditional `j` from its target before it fills the conditional
+    branches; a `beq` (predicted not taken) followed by that `j` then takes the `j`'s slot
+    instruction. FSF 2.7.2 fills the `j` later, so the `beq` takes the first instruction of its
+    own target instead. 2.7.2-cdk and 2.8.1-psx do it Sony's way. func_8002D4F4 state 6:
+
+        beq  $16,$2,$L62           beq  $16,$2,$L62
+        li   $4,3                  li   $16,6
+        j    $L13            ->    j    $L13
+        li   $16,6                 nop
+        ...                        ...
+    $L62:                      $L62:
+        lbu  $3,D_8006EA20         li   $4,3
+                                   lbu  $3,D_8006EA20
+
+    Only when gcc's eager pass did the fill: nothing above the `beq` could fill it (a label or
+    another branch's slot is right before it), its target is reached only from it and nothing
+    falls into it (so the slot instruction was moved from there), and the `j`'s slot register is
+    dead at the target."""
+    out = list(lines)
+    labels = {LABEL.match(l).group(1): n for n, l in enumerate(out) if LABEL.match(l)}
+    i = 0
+    while i < len(out) - 1:
+        ins = insn(out[i])
+        if not ins or ins[0] not in ("beq", "beqz") or is_slot_nop(out[i + 1]) or not insn(out[i + 1]):
+            i += 1
+            continue
+        target = [a.strip() for a in ins[1].split(",")][-1]
+        f = first_insn(out, i + 2)
+        jmp = insn(out[f]) if f < len(out) else None
+        between = range(i + 2, f)
+        if (not jmp or jmp[0] != "j" or jmp[1].strip() == "$31" or f + 1 >= len(out)
+                or is_slot_nop(out[f + 1]) or not insn(out[f + 1])
+                or any(LABEL.match(out[n]) for n in between) or target not in labels):
+            i += 1
+            continue
+        # nothing above could fill the beq: a label, or another branch's slot, right before it
+        p = i - 1
+        while p >= 0 and not out[p].strip():
+            p -= 1
+        q = p - 1
+        while q >= 0 and not out[q].strip():
+            q -= 1
+        prev, before = (insn(out[p]) if p >= 0 else None), (insn(out[q]) if q >= 0 else None)
+        if not (p >= 0 and LABEL.match(out[p])) and not (prev and before and before[0] in BRANCHES):
+            i += 1
+            continue
+        # the target is the beq's own: one reference, and code doesn't fall into it
+        tl = labels[target]
+        refs = sum(1 for l in out if not LABEL.match(l) and re.search(rf"[\s,]{re.escape(target)}\s*$", l))
+        a = tl - 1
+        while a >= 0 and not insn(out[a]):
+            a -= 1
+        b = a - 1
+        while b >= 0 and not insn(out[b]):
+            b -= 1
+        fallen_into = not (a >= 0 and b >= 0 and insn(out[b])[0] in ("j", "jr", "b"))
+        moved, stolen = out[i + 1], out[f + 1]
+        k = first_insn(out, tl + 1)
+        reg = speculable(insn(stolen))
+        if (refs != 1 or fallen_into or not speculable(insn(moved)) or not reg
+                or (k < len(out) and out[k].strip() == moved.strip())):
+            i += 1
+            continue
+        new = out[:tl + 1] + [moved] + out[tl + 1:]
+        new[i + 1] = stolen
+        new[f + 1] = "nop  # DEBUG: branch/jump"
+        if not dead_at(new, tl + 1, reg):
+            i += 1
+            continue
+        out = new
+        labels = {LABEL.match(l).group(1): n for n, l in enumerate(out) if LABEL.match(l)}
+        i += 2
+    return out
+
+
 def fill_all_branches(lines):
     """fill_branches until nothing changes: a slot filled later in the code can prove a register
     dead for an earlier branch (func_8002D4F4's `beq $16,$2,$L157` before a `bgez` filled from
@@ -348,4 +430,4 @@ def fill_all_branches(lines):
 
 if __name__ == "__main__":
     text = sys.stdin.read().split("\n")
-    sys.stdout.write("\n".join(fill_all_branches(fill(load_via_dest(text)))))
+    sys.stdout.write("\n".join(fill_all_branches(fill(load_via_dest(refill_from_jump(text))))))

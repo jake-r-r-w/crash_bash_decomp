@@ -229,6 +229,60 @@ class FillBranches(unittest.TestCase):
         self.assertEqual(self.run_fill(src), norm(lines(src)))
 
 
+class RefillFromJump(unittest.TestCase):
+    """Sony's reorg fills a `j` from its target before the branches, so a `beq` followed by that
+    `j` takes the `j`'s slot; FSF 2.7.2 (our cc1) gives the `beq` its target's first instruction."""
+
+    def run_refill(self, text):
+        return norm(aspsx_fill.refill_from_jump(lines(text)))
+
+    def case(self, op="beq $16,$2,$L62", before="beq $16,$0,$L64\nli $2,0x00000001",
+             pre_target="j $L13\nnop  # DEBUG: branch/jump", tail="lbu $3,D_8006EA20"):
+        return f"""
+            {before}
+            {op}
+            li $4,0x00000003
+
+            j $L13
+            li $16,0x00000006
+
+            {pre_target}
+            $L62:
+            {tail}
+            jal f2
+            sb $5,1($2)
+            $L64:
+            j $L13
+            li $16,0x00000006
+            $L13:
+            j $31
+            nop  # DEBUG: branch/jump
+            .end f"""
+
+    def test_state6(self):  # func_8002D4F4 state 6 (0x3f4): retail has beq; li $16,6; j; nop
+        out = self.run_refill(self.case())
+        i = out.index("beq $16,$2,$L62")
+        self.assertEqual(out[i + 1:i + 4], ["li $16,0x00000006", "j $L13", "nop  # DEBUG: branch/jump"])
+        k = out.index("$L62:")
+        self.assertEqual(out[k + 1], "li $4,0x00000003")
+
+    def test_bne_untouched(self):  # predicted taken: the target is tried first anyway
+        src = self.case(op="bne $16,$2,$L62")
+        self.assertEqual(self.run_refill(src), norm(lines(src)))
+
+    def test_fill_from_above_untouched(self):  # an instruction above could have filled it
+        src = self.case(before="addu $3,$3,1")
+        self.assertEqual(self.run_refill(src), norm(lines(src)))
+
+    def test_target_fallen_into_untouched(self):  # not the beq's own target
+        src = self.case(pre_target="addu $3,$3,1")
+        self.assertEqual(self.run_refill(src), norm(lines(src)))
+
+    def test_jump_slot_register_live_at_target(self):  # $16 read before it is set there
+        src = self.case(tail="sb $16,D_80067884")
+        self.assertEqual(self.run_refill(src), norm(lines(src)))
+
+
 class Dmpsx(unittest.TestCase):
     """inline_c.h placeholder words -> the real cop2 encodings (documented GTE opcodes)."""
 
