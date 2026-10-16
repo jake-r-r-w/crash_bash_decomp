@@ -1048,7 +1048,9 @@ Fix that, keep it matching, and report "matched".
     if (added.length) errs.push(`adds INCLUDE_ASM for ${added.join(', ')}`);
     if (removed.length !== 1 || ![f.name, `func_${f.key}`].includes(removed[0]))
       errs.push(`replaces INCLUDE_ASM for [${removed.join(', ')}], expected only ${f.name}`);
-    if (/^\+.*\b(?:asm|__asm__)\s*(?:volatile\s*)?\(/m.test(patch)) errs.push(`${ASM_REFUSED} (needs a human --hack)`);
+    // every spelling (decomp.py's ASM_CALL): asm, __asm, __asm__, optionally volatile; pins too
+    if (/^\+.*\b(?:asm|__asm|__asm__)\s*(?:(?:volatile|__volatile|__volatile__)\s*)?\(/m.test(patch))
+      errs.push(`${ASM_REFUSED} (needs a human --hack)`);
     // a function-like macro named after the function hides a change to its prototype from callers
     if (new RegExp(`^\\+\\s*#\\s*define\\s+${f.name}\\s*\\(`, 'm').test(patch))
       errs.push(`adds a macro named ${f.name} (fix its declarations instead)`);

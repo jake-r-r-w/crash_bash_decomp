@@ -411,3 +411,11 @@ test('both prompts forbid inline asm', () => {
   assert.match(s.prompt({ f, model: 'sonnet', attempt: 1, notes: [] }), /Pure C only: no `asm`/);
   assert.match(s.prompt(s.bigJob(f, 1, [])), /Pure C only: no `asm`/);
 });
+
+test('checkPatch refuses every inline asm spelling', () => {
+  const s = swarm(), f = fn('func_80012345');
+  for (const a of ['asm("nop");', '__asm("nop");', '__asm__ __volatile__("nop");', 'asm __volatile__("");',
+                   'asm("" ::: "memory");', 'register int x __asm("$20");'])
+    assert.match(s.checkPatch(PATCH(f.name, '    ' + a), f).join(), /inline asm/, a);
+  assert.deepEqual(s.checkPatch(PATCH(f.name, '    gte_ldv0(p);'), f), []);
+});

@@ -346,8 +346,10 @@ def is_lib(e, proj):
 
 def func_def_regex(name):
     """A function's definition (not a prototype or call); the name may be parenthesized,
-    `void (name)(...) {`, which keeps a function-like macro of the same name from expanding."""
-    return re.compile(r"^[^\n;#{}]*?(?:\(\s*)?\b" + re.escape(name) + r"\b(?:\s*\))?\s*\([^;{]*\)\s*\{", re.M)
+    `void (name)(...) {`, which keeps a function-like macro of the same name from expanding; K&R
+    definitions (`void f(a) u8 *a; {`) count."""
+    return re.compile(r"^[^\n;#{}]*?(?:\(\s*)?\b" + re.escape(name) + r"\b(?:\s*\))?\s*\([^;{]*\)"
+                      r"(?:\s*[^;{}()#]+;)*\s*\{", re.M)
 
 
 def locate_def(name):
@@ -1280,17 +1282,21 @@ def cmd_verify(a):
     sys.exit(0 if ok else 1)
 
 
+# every spelling of an inline asm statement: asm, __asm, __asm__, each optionally volatile
+# (tools/swarm/swarm.mjs checkPatch refuses the same in a worker's patch)
+ASM_CALL = r"\b(?:asm|__asm|__asm__)\s*(?:(?:volatile|__volatile|__volatile__)\s*)?\("
 # m2c leftovers and hacks a hand match must not contain (see docs/CONVENTIONS.md, Matching rules)
 LINT_ERRORS = [
     (re.compile(r"\bM2C_\w+"), "m2c macro"),
     # where a type goes (a declaration, a cast, a parameter), so a ternary's `?` doesn't count
     (re.compile(r"(^[ \t]*|[(,][ \t]*)\?(\s|\*)", re.M), "m2c unknown type `?`"),
-    (re.compile(r"\b(asm|__asm__)\s*(volatile\s*)?\(\s*\"[^\"]"), "inline asm with instructions"),
+    (re.compile(ASM_CALL + r"\s*\"[^\"]"), "inline asm with instructions"),
 ]
 # allowed only with --hack "reason", which goes into the commit message
 LINT_HACKS = [
-    (re.compile(r"\bregister\b[^;]*\b(asm|__asm__)\s*\("), "register pin"),
-    (re.compile(r"\b(asm|__asm__)\s*(volatile\s*)?\(\s*\"\"\s*\)"), "empty asm barrier"),
+    (re.compile(r"\bregister\b[^;]*" + ASM_CALL), "register pin"),
+    # no instructions, with or without operands: asm("" ::: "memory"), asm("" : "=r"(p) : "0"(p))
+    (re.compile(ASM_CALL + r"\s*\"\""), "empty asm barrier"),
 ]
 INCLUDE_ASM_LINE = re.compile(r'^\s*INCLUDE_ASM\(\s*"[^"]+"\s*,\s*(\w+)\s*\)')
 
@@ -1300,7 +1306,7 @@ def lint_function(src, name):
     body = extract_function(read(src), name) or ""
     body = re.sub(r"/\*.*?\*/", "", body, flags=re.S)
     # a register pin's asm("$20") names a register, not instructions: it's a hack, not an error
-    unpinned = re.sub(r"(\bregister\b[^;]*?)\b(asm|__asm__)\s*\(\s*\"[^\"]*\"\s*\)", r"\1", body)
+    unpinned = re.sub(r"(\bregister\b[^;]*?)" + ASM_CALL + r"\s*\"[^\"]*\"\s*\)", r"\1", body)
     errs = sorted({why for rx, why in LINT_ERRORS if rx.search(unpinned)})
     hacks = sorted({why for rx, why in LINT_HACKS if rx.search(body)})
     return errs, hacks
