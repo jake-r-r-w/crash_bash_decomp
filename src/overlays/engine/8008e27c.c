@@ -161,7 +161,30 @@ loop2:
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_8008F248);
+s32 func_8008F248(s32 arg0) {
+    s32 cnt;
+    s32 i;
+    u8 *tab;
+
+    tab = D_800657D0;
+    cnt = 0;
+    i = 0;
+    for (;;) {
+    loop:
+        if (i >= 7) {
+            break;
+        }
+        if (D_8009E7A0[i].unk0 == 3 && !EngineTable_AllDone(&D_8009E7A0[i]) &&
+            EngineTable_Reachable(&D_8009E7A0[i], tab)) {
+            cnt++;
+            if (arg0 != 0) {
+                EngineTable_MarkDone(&D_8009E7A0[i]);
+            }
+        }
+        i++;
+    }
+    return cnt;
+}
 
 void func_8008F41C(void) {
     u8 *s0;

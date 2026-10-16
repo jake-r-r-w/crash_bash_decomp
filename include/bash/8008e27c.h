@@ -34,6 +34,64 @@ extern s32 D_8009EA6C[];
 extern s32 D_8009EA70[];
 s32 func_8008F248(s32 arg0);
 
+/* Inlined copies used by func_8008F248. */
+static inline s32 EngineTable_AllDone(EngineTable12 *t) {
+    EngineEntry16Head *p;
+    s32 n;
+    s32 i;
+
+    n = t->unk8;
+    p = t->unk4;
+    for (i = 0; i < n; i++, p++) {
+        if (!func_800B7EE4(p->unk4, D_8005A614)) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+static inline s32 EngineTable_Reachable(void *arg0, u8 *tab) {
+    s32 i;
+    s32 j;
+    s32 cnt;
+    s32 obj;
+    u8 *p;
+
+    i = 0;
+    for (;;) {
+        if (i >= *(s32 *)((u8 *)arg0 + 8)) {
+            goto done;
+        }
+        obj = *(s32 *)((u8 *)(i * 16 + *(s32 *)((u8 *)arg0 + 4)) + 4);
+        if (func_800B7EE4(obj, D_8005A614) == 0) {
+            cnt = 0;
+            j = cnt;
+            p = tab;
+            do {
+                if (func_800B7EE4(obj, p) != 0) {
+                    cnt++;
+                }
+                j++;
+                p += 0x194;
+            } while (j < 4);
+            if (cnt == 0) {
+                return 0;
+            }
+        }
+        i++;
+    }
+done:
+    return 1;
+}
+
+static inline void EngineTable_MarkDone(void *arg0) {
+    s32 i;
+
+    for (i = 0; i < ((EngineTable12 *)arg0)->unk8; i++) {
+        D_8005A614[((EngineTable12 *)arg0)->unk4[i].unk4 + 0xE4] = 1;
+    }
+}
+
 void func_8008EB3C(void);
 
 void func_8008EB8C(void);
