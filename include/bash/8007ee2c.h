@@ -313,6 +313,8 @@ static inline s32 HeroCheckMoving(s32 arg0) {
     return 1;
 }
 
+s32 func_800871E4(s32 arg0);
+
 void func_8008795C(s32 arg0);
 
 void InitHealth(NAS *nas);

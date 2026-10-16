@@ -1037,7 +1037,84 @@ s32 func_80086FCC(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_800871E4);
+s32 func_800871E4(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = base + arg0;
+    HeroInfo *base13;
+    HeroInfo *h13;
+    HeroInfo *base2;
+    HeroInfo *h2;
+    EXTengine *e;
+    EXTengine *e2;
+    EXTengine *p;
+    s32 moved;
+
+    if (h->hero_move->jump_max != 0) {
+        if (func_80025BBC(h->hero_eng) != 0) {
+            h->hero_move->jump_max = 0;
+            h->hero_sub->unk08 = 0;
+        } else if (!(h->hero_ctrl & 8)) {
+            e = h->hero_eng;
+            if (D_8005A5D8 < e->unk10.y + h->hero_sub->unk08) {
+                if (D_8005B5B8 == 0x7FFFFFFF) {
+                    goto set6;
+                }
+                e->unk10.y = D_8005A5D8;
+                h->hero_sub->unk08 = 0;
+            }
+        }
+    } else if ((moved = func_800863D0(arg0) != 1)) {
+        switch (h->hero_mode) {
+        case 0:
+        case 2:
+        case 3:
+        case 4:
+        case 7:
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+            SetHeroAction((HeroInfo *)arg0, 5);
+            return 1;
+        case 14:
+        case 15:
+        case 16:
+        case 17:
+        case 22:
+        case 23:
+        case 24:
+        case 25:
+            SetHeroAction((HeroInfo *)arg0, 5);
+            return 1;
+        case 13:
+            base13 = Heroes;
+            h13 = base13 + arg0;
+            if (!(h13->hero_ctrl & 8) && D_8005A5D8 < h13->hero_eng->unk10.y + h13->hero_sub->unk08) {
+                if (D_8005B5B8 == 0x7FFFFFFF) {
+                set6:
+                    SetHeroAction((HeroInfo *)arg0, 6);
+                    return 1;
+                }
+            }
+        default:
+            base2 = Heroes;
+            h2 = base2 + arg0;
+            e2 = h2->hero_eng;
+            p = e2->platform;
+            if (p != NULL) {
+                p->platform = NULL;
+            }
+            e2->platform = NULL;
+            h2->hero_move->jump_vel = 8;
+            h2->hero_move->jump_max = 0x70;
+            h2->hero_move->jump_acc = 10;
+            h2->hero_move->jump_dec = 0;
+            h2->hero_move->jump_dir = 0;
+            return 0;
+        }
+    }
+    return 0;
+}
 
 void func_80087428(s32 arg0) {
     HeroInfo *base = Heroes;
