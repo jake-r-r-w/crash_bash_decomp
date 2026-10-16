@@ -386,3 +386,28 @@ test('a forgotten function starts from the bottom, told why', () => {
   assert.equal(j.attempt, 1);
   assert.match(j.notes[0], /a header fix/);
 });
+
+// ---------------------------------------------------------------- Diff patterns passed between workers
+
+test('patterns: asm tricks dropped, duplicates once, same overlay first, capped', () => {
+  const s = swarm();
+  const eng = fn('func_80078CA4', { seg: 'overlays/engine/engine' }), main = fn('func_80012345');
+  s.addPattern(main, '| main row | change | ex |');
+  s.addPattern(eng, '| pin | `register s32 x asm("v1")` | ex |');
+  s.addPattern(eng, '| barrier | `__asm__("" : "=r"(p))` | ex |');
+  s.addPattern(eng, '| target has a gte_* asm barrier | reorder | ex |');   // mentions asm, teaches no asm
+  s.addPattern(eng, '| engine row | change | ex |');
+  s.addPattern(main, '| engine row | change | ex |');
+  fs.appendFileSync(s.paths.patterns, '| old pin | `--hack` | ex |  <!-- func_1 -->\n');   // from before the filter
+  const rows = s.patternsFor(fn('func_8007AC20', { seg: 'overlays/engine/8007ac20' })).split('\n');
+  assert.deepEqual(rows, ['| engine row | change | ex |', '| target has a gte_* asm barrier | reorder | ex |', '| main row | change | ex |']);
+  for (let i = 0; i < 100; i++) s.addPattern(main, `| row ${i} ${'x'.repeat(60)} | change | ex |`);
+  assert.ok(s.patternsFor(main).length <= 2500);
+});
+
+test('both prompts forbid inline asm', () => {
+  const s = swarm('--big-workers', '1');
+  const f = fn('func_80010000');
+  assert.match(s.prompt({ f, model: 'sonnet', attempt: 1, notes: [] }), /Pure C only: no `asm`/);
+  assert.match(s.prompt(s.bigJob(f, 1, [])), /Pure C only: no `asm`/);
+});

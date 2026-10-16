@@ -918,7 +918,9 @@ def cmd_next(a):
     if a.func:
         key, e = find_func(funcs, a.func)
         if stat[key] == "matched":
-            die(f"{a.func} is already matched")
+            # C in place of its INCLUDE_ASM line: matched, or a session resuming earlier C (a port
+            # or gate-fix session). The brief is still the evidence; nothing is marked
+            print(f"(note: {a.func} already has C in place of its INCLUDE_ASM line; brief for reference)")
         targets = [(key, e)]
     else:
         targets = pick_targets(funcs, stat, st, proj, a.seg, max(1, a.count))
@@ -931,7 +933,7 @@ def cmd_next(a):
         rec = st.get(key, {})
         # only a single pick is being worked on; --count N is a survey and marks nothing
         # (in_progress functions are served first, so stray marks would bias every later pick)
-        if len(targets) == 1 and rec.get("status") != "in_progress":
+        if len(targets) == 1 and rec.get("status") != "in_progress" and stat[key] != "matched":
             rec = st.setdefault(key, {})
             rec.update(status="in_progress", started=now())
         if i:
@@ -1012,7 +1014,11 @@ def cmd_try(a):
         if nd is not None:
             rec["best"] = min(rec.get("best", nd), nd)
         if not ok and rec["tries"] >= 8 and rec["tries"] % 4 == 0:
-            print(f"({rec['tries']} tries so far - consider `permute {name}` or `block {name} --note ...`)")
+            if os.environ.get("SWARM_RESULT"):   # a swarm worker: the orchestrator runs the permuter
+                print(f"({rec['tries']} tries so far - if no idea is left, finish \"needs_permute\" or "
+                      f"\"parked\" in {os.environ['SWARM_RESULT']})")
+            else:
+                print(f"({rec['tries']} tries so far - consider `permute {name}` or `block {name} --note ...`)")
         all_ok &= ok
     jsave(P_STATE, st)
     sys.exit(0 if all_ok else 1)

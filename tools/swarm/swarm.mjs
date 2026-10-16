@@ -40,6 +40,7 @@ const INFRA_ERRORS = [
   /error while loading shared libraries[^\n]*/,
   /ERROR: (?:docker not found|Docker daemon not reachable|could not hash tools\/docker\/Dockerfile)[^\n]*/,   // tools/dk
   /PermissionError: [^\n]*/,                          // Windows holding a file in the clone
+  /TIMEOUT: tools\/dk killed after \d+ min/,           // a hung container (Swarm.dk's minutes)
 ];
 
 // an environment error in a tools/dk call's output, or its exit code: 125 docker run failed,
@@ -50,6 +51,11 @@ function infraError(out, code) {
   return [125, 126, 127].includes(code) ? `tools/dk exited ${code}: ${out.trim().split('\n').pop() || 'no output'}` : null;
 }
 const PATCH_MAX = 64 << 10;
+// Diff patterns rows that teach what the gate refuses (pins, asm barriers, --hack) aren't passed on
+const PATTERN_REFUSED = /\b(?:asm|__asm|__asm__)\s*(?:volatile|__volatile__)?\s*\(|--hack|\bregister\b[^|]*\b(?:asm|__asm|__asm__)\b/i;
+const PATTERNS_MAX = 2500;
+const ASM_REFUSED = 'adds inline asm';   // checkPatch's finding, measured anyway
+const TOOL_MINUTES = 10;                  // the orchestrator's try/regions; done and verify get 2x
 const NEIGHBOUR = 8;            // lines between two INCLUDE_ASMs below which they aren't leased together
 // environment of the session that started us: a nested claude must not inherit it
 const STRIP_ENV = /^(CLAUDECODE|CLAUDE_CODE_(SESSION_ID|ENTRYPOINT|CHILD_SESSION|HOST_SESSION_ID|MESSAGING_\w+|SESSION_ATTENDED)|CLAUDE_PID)$/;
@@ -492,7 +498,12 @@ class Swarm {
       }, minutes * 60e3);
       p.stdout.on('data', d => { out += d; });
       p.stderr.on('data', d => { out += d; });
-      p.on('close', code => { clearTimeout(timer); this.children.delete(p); resolve({ code: code ?? -1, out, timedOut }); });
+      p.on('close', code => {
+        clearTimeout(timer);
+        this.children.delete(p);
+        if (timedOut) out += `\nTIMEOUT: tools/dk killed after ${minutes} min\n`;
+        resolve({ code: code ?? -1, out, timedOut });
+      });
       p.on('error', err => { clearTimeout(timer); this.children.delete(p); resolve({ code: -1, out: String(err), timedOut }); });
     });
   }
@@ -664,12 +675,12 @@ class Swarm {
   // build and score the function in a clone: the STAGE line, plus the region score unless it matches
   async measure(dir, f, slot, outDir = null) {
     const name = ref(f);
-    const r = await this.dk(dir, ['python3', 'tools/scripts/decomp.py', 'try', name], slot);
+    const r = await this.dk(dir, ['python3', 'tools/scripts/decomp.py', 'try', name], slot, { minutes: TOOL_MINUTES });
     if (outDir) fs.writeFileSync(path.join(outDir, 'try.txt'), r.out);
     const score = Swarm.score(r.out);
     let infra = infraError(r.out, r.code);
     if (score && score.stage !== 'match') {
-      const g = await this.dk(dir, ['python3', 'tools/scripts/decomp.py', 'regions', name, '--no-lines'], slot);
+      const g = await this.dk(dir, ['python3', 'tools/scripts/decomp.py', 'regions', name, '--no-lines'], slot, { minutes: TOOL_MINUTES });
       if (outDir) fs.writeFileSync(path.join(outDir, 'regions.txt'), g.out);
       score.regions = Swarm.regionScore(g.out);
       infra ||= infraError(g.out, g.code);
@@ -708,13 +719,40 @@ class Swarm {
     writeJson(path.join(this.cpDir(job.f), 'best.json'), old);
   }
 
+  // ---- Diff patterns workers propose (patterns.md, folded into MATCHING.md after a run)
+  addPattern(f, row) {
+    row = String(row).trim().replace(/\s*\n\s*/g, ' ');
+    if (!row || PATTERN_REFUSED.test(row)) return;
+    fs.appendFileSync(this.paths.patterns, `${row}  <!-- ${f.name} ${f.seg} -->\n`);
+  }
+
+  // the rows to show a worker on f: no asm tricks (rows from before addPattern filtered), no
+  // duplicates, the same overlay's first, newest first, about PATTERNS_MAX characters
+  patternsFor(f) {
+    if (!fs.existsSync(this.paths.patterns)) return '';
+    const unit = s => (s || '').split('/')[s?.startsWith('overlays/') ? 1 : 0];
+    const rows = new Map();          // row -> found on the same overlay (by any worker proposing it)
+    for (const line of fs.readFileSync(this.paths.patterns, 'utf8').trim().split('\n').reverse()) {
+      const m = line.match(/^(.*?)\s*<!--\s*(\S+)(?:\s+(\S+))?\s*-->\s*$/);
+      const row = (m ? m[1] : line).trim();
+      if (!row || PATTERN_REFUSED.test(row)) continue;
+      rows.set(row, rows.get(row) || (!!m?.[3] && unit(m[3]) === unit(f.seg)));
+    }
+    const all = [...rows];
+    let out = '';
+    for (const [row] of [...all.filter(r => r[1]), ...all.filter(r => !r[1])]) {
+      if (out.length + row.length > PATTERNS_MAX) break;
+      out += row + '\n';
+    }
+    return out.trim();
+  }
+
   // ---- workers
   prompt(job) {
     if (job.big) return this.promptBig(job);
     const { f } = job, r = ref(f);
     const canPermute = this.pslots.length > 0 && !job.permuted;
-    const patterns = fs.existsSync(this.paths.patterns)
-      ? fs.readFileSync(this.paths.patterns, 'utf8').trim().split('\n').slice(-30).join('\n') : '';
+    const patterns = this.patternsFor(f);
     return `You are one worker in a swarm matching Crash Bash functions. Match exactly one function:
 ${f.name} (${f.seg}, ${f.size} bytes, defined in ${f.src}).
 
@@ -733,6 +771,9 @@ skill, CLAUDE.md and the docs:
 - Do not run \`decomp.py done\`, \`decomp.py block\`, \`make clean\`, \`make verify\` or any git command
   that changes the repo, and do not edit docs/, .decomp/, configs/ or tools/. The orchestrator
   validates and commits your work.
+- Pure C only: no \`asm\`/\`__asm__\` of any kind and no register pins (the swarm refuses the
+  patch). Use the \`gte_*\` macros already in include/. If only asm would match, finish "parked" and
+  say why.
 - Don't run the permuter (it is refused). ${canPermute
     ? `If the evidence step, the Diff patterns, the checklist and (for register diffs) the cc1 dump
   don't get you to a match, leave your closest C in place of the INCLUDE_ASM line and finish with
@@ -777,8 +818,7 @@ ${job.permuterDiff}
     const { f } = job, r = ref(f);
     const cp = job.resumed;
     const canPermute = this.pslots.length > 0;
-    const patterns = fs.existsSync(this.paths.patterns)
-      ? fs.readFileSync(this.paths.patterns, 'utf8').trim().split('\n').slice(-30).join('\n') : '';
+    const patterns = this.patternsFor(f);
     return `You are a big-function worker in a swarm matching Crash Bash functions. Work on exactly one
 function: ${f.name} (${f.seg}, ${f.size} bytes, defined in ${f.src}). A big function takes several
 sessions; this is one of them. Make as much progress as you can and leave your best C in place: the
@@ -854,6 +894,9 @@ Rules (they override the skill, CLAUDE.md and the docs):
   deadline: one blocker is not a reason to finish early.
 - Do not run \`decomp.py done\`, \`decomp.py block\`, \`make clean\`, \`make verify\` or any git command
   that changes the repo, and do not edit docs/, .decomp/, configs/ or tools/.
+- Pure C only: no \`asm\`/\`__asm__\` of any kind and no register pins (the swarm refuses the
+  patch). Use the \`gte_*\` macros already in include/. If only asm would match, finish "parked" and
+  say why.
 - Don't run the permuter (it is refused).${canPermute ? ` When you are at the registers stage and
   stuck, finish with status "needs_permute": the orchestrator runs a long permuter on your C and the
   next session gets its result.` : ''}
@@ -944,7 +987,8 @@ Fix that, keep it matching, and report "matched".
 
     const env = Object.fromEntries(Object.entries(process.env).filter(([k]) => !STRIP_ENV.test(k)));
     Object.assign(env, {
-      DK_DOCKER_ARGS: `--label ${LABEL}=${this.id} --label ${LABEL}-slot=${this.id}-${slot.id} --cpus ${this.cpus}`,
+      // SWARM_RESULT in the container too: decomp.py words its hints for a worker
+      DK_DOCKER_ARGS: `--label ${LABEL}=${this.id} --label ${LABEL}-slot=${this.id}-${slot.id} --cpus ${this.cpus} -e SWARM_RESULT=${RESULT}`,
       DK_NAME: `swarm-${slot.id}`,
       SWARM_FUNC: f.name, SWARM_KEY: f.key, SWARM_SRC: f.src || '', SWARM_MODEL: job.model, SWARM_RESULT: RESULT,
     });
@@ -1004,7 +1048,7 @@ Fix that, keep it matching, and report "matched".
     if (added.length) errs.push(`adds INCLUDE_ASM for ${added.join(', ')}`);
     if (removed.length !== 1 || ![f.name, `func_${f.key}`].includes(removed[0]))
       errs.push(`replaces INCLUDE_ASM for [${removed.join(', ')}], expected only ${f.name}`);
-    if (/^\+.*\b(?:asm|__asm__)\s*(?:volatile\s*)?\(/m.test(patch)) errs.push('adds inline asm (needs a human --hack)');
+    if (/^\+.*\b(?:asm|__asm__)\s*(?:volatile\s*)?\(/m.test(patch)) errs.push(`${ASM_REFUSED} (needs a human --hack)`);
     // a function-like macro named after the function hides a change to its prototype from callers
     if (new RegExp(`^\\+\\s*#\\s*define\\s+${f.name}\\s*\\(`, 'm').test(patch))
       errs.push(`adds a macro named ${f.name} (fix its declarations instead)`);
@@ -1026,21 +1070,32 @@ Fix that, keep it matching, and report "matched".
     this.costUsd += cost;
     this.log(`${slot.id} ${f.name}: worker exited ${code}${job.timedOut ? ' (timeout)' : ''} after ${mins} min` +
              `${cost ? `, $${cost.toFixed(2)} (run $${this.costUsd.toFixed(2)})` : ''}, says ${res.status || 'nothing'}`);
-    if (res.pattern) fs.appendFileSync(this.paths.patterns, `${res.pattern.trim()}  <!-- ${f.name} -->\n`);
+    if (res.pattern) this.addPattern(f, res.pattern);
     if (this.stopping === 'now') return;
     if (job.startError) return this.fail(slot, job, `could not start the worker: ${job.startError}`, false);
     // a worker that couldn't build leaves no patch: if Docker went away, that's why
     if (!patch.trim() && this.dockerDown()) return this.infraStop(slot, job, 'Docker is not reachable');
     // a session that never got going (not logged in, API down) is a failure, not a park; not the
     // function's either, so uncharged (three in a row still stop the run)
-    if (session.is_error && !patch.trim() && !res.status)
+    // a session stopped by --max-turns or its budget ends with an error result: that's a park
+    const capped = /^error_max/.test(session.subtype || '');
+    if (session.is_error && !capped && !patch.trim() && !res.status)
       return this.fail(slot, job, `claude: ${String(session.result || session.terminal_reason).slice(0, 200)}`, false);
     if (job.big && !job.gateFix) return this.onBigExit(slot, job, res, patch);
+    if (capped && !patch.trim()) return this.notMatched(slot, job, `session hit its cap (${session.subtype}); ${res.note || ''}`.trim());
     if (!patch.trim()) return this.notMatched(slot, job, res.note || (job.timedOut ? 'timed out' : 'no change'));
     // a park that left edits behind (a header type it added): a park, not a bad patch
     if (res.status === 'parked') return this.notMatched(slot, job, `${res.note || 'parked'} (its leftover edits dropped)`);
     fs.writeFileSync(path.join(job.dir, 'patch.diff'), patch);
     const errs = this.checkPatch(patch, f);
+    if (errs.length && errs.every(e => e.startsWith(ASM_REFUSED))) {
+      // measured anyway: a match that needs the asm goes to a human (`done --hack`), not lost
+      const r = await this.dk(slot.dir, ['python3', 'tools/scripts/decomp.py', 'try', ref(f)], slot.id, { minutes: TOOL_MINUTES });
+      fs.writeFileSync(path.join(job.dir, 'try.txt'), r.out);
+      const hack = /^MATCH /m.test(r.out);
+      if (hack) this.needsHack(job);
+      return this.notMatched(slot, job, `patch refused: inline asm${hack ? ' (it matches with it: needs a human --hack)' : ''}; ${res.note || ''}`);
+    }
     if (errs.length) return this.fail(slot, job, `patch refused: ${errs.join('; ')}`);
     if (res.status === 'needs_permute') {
       if (!this.pslots.length || job.permuted)
@@ -1053,7 +1108,7 @@ Fix that, keep it matching, and report "matched".
       return;
     }
     // don't trust the worker's word: build and compare the function ourselves
-    const r = await this.dk(slot.dir, ['python3', 'tools/scripts/decomp.py', 'try', ref(f)], slot.id);
+    const r = await this.dk(slot.dir, ['python3', 'tools/scripts/decomp.py', 'try', ref(f)], slot.id, { minutes: TOOL_MINUTES });
     fs.writeFileSync(path.join(job.dir, 'try.txt'), r.out);
     const infra = infraError(r.out, r.code);
     if (infra) return this.infraStop(slot, job, infra);
@@ -1072,12 +1127,15 @@ Fix that, keep it matching, and report "matched".
   // if it beats the checkpoint, then integrate, permute, run another session or park
   async onBigExit(slot, job, res, patch) {
     const { f } = job;
-    let score = null, errs = [], infra = null;
+    let score = null, errs = [], infra = null, asmScore = null;
     const file = path.join(job.dir, 'patch.diff');
     if (patch.trim()) {
       fs.writeFileSync(file, patch);
       errs = this.checkPatch(patch, f);
       if (!errs.length) ({ score, infra } = await this.measure(slot.dir, f, slot.id, job.dir));
+      // refused for inline asm only: measured anyway (never kept as the checkpoint), so a match
+      // that needs the asm reaches a human
+      else if (errs.every(e => e.startsWith(ASM_REFUSED))) ({ score: asmScore, infra } = await this.measure(slot.dir, f, slot.id, job.dir));
     }
     if (infra && this.stopping !== 'now') return this.infraStop(slot, job, infra);
     // a checkpoint from before region scores: measure it once (in this slot, before it is freed),
@@ -1104,6 +1162,10 @@ Fix that, keep it matching, and report "matched".
     if (this.stopping === 'now') return;
     slot.job = null;
     const note = res.note || (job.timedOut ? 'killed at --big-minutes' : 'no note');
+    if (asmScore?.stage === 'match') {
+      this.needsHack(job);
+      return this.parkBig(job, `matches only with inline asm: needs a human --hack. ${note}`);
+    }
     if (score?.stage === 'match') {
       (this.history[f.key] ||= { name: f.name, attempts: 0, notes: [] }).big = true;   // for `stats`
       job.note = note;
@@ -1120,7 +1182,7 @@ Fix that, keep it matching, and report "matched".
     const improved = !!score && (!!job.oldCheckpoint || Swarm.better(score, cp));
     const port = !!job.oldCheckpoint && !improved;
     const desc = score ? Swarm.describe(score)
-      : errs.length ? `patch refused: ${errs.join('; ')}` : patch.trim() ? 'C did not build' : 'no C left';
+      : errs.length ? `patch refused: ${errs.join('; ')}${asmScore ? ` (with it: ${Swarm.describe(asmScore)})` : ''}` : patch.trim() ? 'C did not build' : 'no C left';
     if (improved) {
       this.saveCheckpoint(job, file, score, note, res.next);
       h.bigStale = 0;
@@ -1160,6 +1222,15 @@ Fix that, keep it matching, and report "matched".
         ? `${h.bigStale} big sessions in a row without progress` : `${h.bigSessions} big sessions used`);
     }
     this.retry.push(this.bigJob(f, job.attempt + 1, [...job.notes, note].slice(-6), { retry: true, ...extra }));
+  }
+
+  // a C that matches only with inline asm: a human can commit it with `done --hack "reason"`
+  needsHack(job) {
+    const { f } = job;
+    (this.hacks ||= []).push(f.name);
+    fs.appendFileSync(this.paths.report, `- ${stamp()} **${f.name}** (${f.seg}, ${f.size} B): matches only with inline asm: ` +
+                      `needs a human \`--hack\` (patch: ${path.join(job.dir, 'patch.diff')})\n`);
+    this.log(`${f.name}: matches only with inline asm; listed in report.md for a human --hack`);
   }
 
   parkBig(job, why) {
@@ -1287,7 +1358,7 @@ Fix that, keep it matching, and report "matched".
       }
       if (!passed.length || this.stopping === 'now') return;
       if (batch) {
-        const v = await this.dk(this.integ, ['python3', 'tools/scripts/decomp.py', 'verify']);
+        const v = await this.dk(this.integ, ['python3', 'tools/scripts/decomp.py', 'verify'], 'integ', { minutes: 2 * TOOL_MINUTES });
         fs.writeFileSync(path.join(passed[0].dir, 'batch-verify.txt'), v.out);
         if (this.stopping === 'now') return;
         if (v.code !== 0 || !/^OK/m.test(v.out)) {
@@ -1355,7 +1426,7 @@ Fix that, keep it matching, and report "matched".
                   '--note', job.note || 'matched by a swarm worker', ...trailers.flatMap(t => ['--trailer', t]),
                   ...(defer ? ['--defer-build'] : [])];
     const before = gitOk(this.integ, 'rev-parse', 'HEAD');
-    const r = await this.dk(this.integ, args);
+    const r = await this.dk(this.integ, args, 'integ', { minutes: 2 * TOOL_MINUTES });
     fs.writeFileSync(path.join(job.dir, 'done.txt'), r.out);
     const after = gitOk(this.integ, 'rev-parse', 'HEAD');
     if (this.stopping === 'now') return false;
@@ -1670,6 +1741,7 @@ Fix that, keep it matching, and report "matched".
              `${s.conflicts} conflicts. Commits are on ${this.o.branch}; notes in ${this.paths.report}`);
     if (this.staleCheckpoints?.length)
       this.log(`checkpoints that no longer apply (sessions port them by hand): ${[...new Set(this.staleCheckpoints)].join(', ')}`);
+    if (this.hacks?.length) this.log(`match only with inline asm, for a human --hack (report.md): ${this.hacks.join(', ')}`);
     fs.rmSync(this.paths.lock, { force: true });
     fs.rmSync(this.paths.stop, { force: true });
     process.exit(exitCode);
