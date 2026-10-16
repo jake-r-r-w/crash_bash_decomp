@@ -1,8 +1,27 @@
 {
- "blocked": [],
- "commit": "ecb20beff",
+ "blocked": [
+  {
+   "name": "func_800177F4",
+   "note": "registers 1/89 (swarm checkpoint 800177F4, 2026-10-16): only idx's addu operand order (target addu t0,a0,v0 = face + table); every face-first form gives idx a hard a0 preference so tpage avoids a0 (58/89). s32 tpage in place and the code word carried in the colour pointer c got the rest",
+   "seg": "main/main",
+   "size": 360
+  },
+  {
+   "name": "func_8001795C",
+   "note": "registers 12/107 (swarm checkpoint, unchanged by 2 more sessions 2026-10-16): only the 0x8000/else arms; target shares a2 between ts and t (t born after the last ts read). Variants with e set in both arms, e = ts->tex; e += count; t = &e[-1].info, clut orders, --e: none better",
+   "seg": "main/main",
+   "size": 428
+  },
+  {
+   "name": "func_800248A0",
+   "note": "registers 5/142 (swarm checkpoint, unchanged by 2 more sessions 2026-10-16): only the entry; target tests a0 (andi a0,a0,0xC000) after move s5,a0 and loads arg4 into a3. An s16/u16 arg0 fixes it but moves move s5,a0 after the a2/a3 copies; needs the permuter or a sched2 idea",
+   "seg": "main/main",
+   "size": 568
+  }
+ ],
+ "commit": "934369a",
  "game": "SCUS_945.70",
- "generated": "2026-10-16T14:40:44Z",
+ "generated": "2026-10-16T14:50:20Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -58251,7 +58270,7 @@
    }
   },
   {
-   "commit": "ecb20beff",
+   "commit": "934369a",
    "data_b": 0,
    "data_tb": 606943,
    "game_all_f": 2551,
@@ -58264,7 +58283,7 @@
    "lib_b": 122112,
    "lib_f": 564,
    "lib_tb": 122112,
-   "ts": "2026-10-16T14:40:44Z",
+   "ts": "2026-10-16T14:50:20Z",
    "units": {
     "engine": [
      47788,
@@ -58460,7 +58479,7 @@
   }
  ],
  "summary": {
-  "blocked": 0,
+  "blocked": 3,
   "copies_b": 36276,
   "data": {
    "done_b": 0,
@@ -58471,7 +58490,7 @@
    "all_f": 2551,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 0,
+   "blocked": 3,
    "c_f": 1061,
    "done_b": 178512,
    "done_f": 1061,
@@ -58523,7 +58542,7 @@
     "all_f": 575,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 0,
+    "blocked": 3,
     "c_f": 571,
     "done_b": 121124,
     "done_f": 571,

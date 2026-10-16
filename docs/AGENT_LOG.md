@@ -14,8 +14,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1049/2551 game functions matched (main.exe 559/575, 16 left: 15 parked
-  and `func_8002D4F4`; engine overlay 73 left), 15 parked,
+- 1061/2551 game functions matched (main.exe 571/575, 4 left: 3 parked
+  and `func_8002D4F4`; engine overlay 73 left), 3 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - The engine overlay is six files and `ovl5d` three, `ovl5e`, `ovl66`,
@@ -51,9 +51,19 @@ repeat the engine hour** (73 left); `permute --near` first if there is CPU
 time. After each swarm run, compare `stats --run ID` with the ledger's
 earlier runs.
 
+**main.exe retry (2026-10-16, run 20261016133425):** the 15 parked
+main.exe functions, unparked with `decomp.py unblock` and run in big mode
+only (`--big-bytes 1 --big-workers 5 --permuters 0 --retry-failed`), plus
+`func_8002D4F4`: 12 matched in 75 min for $53.46 ($4.46 a match), most in
+one session of 1-16 min. The day's tool upgrades (closest-C checkpoints,
+`regions`, the fixed patch check and gate) cracked what hand sessions had
+parked. **Retry parks with this recipe after tool upgrades.**
+
 **Start of next session: matching.** Run the engine swarm hour (item 1b,
 `--max-functions 500`), then the post-run checklist (`fold` was done
-2026-10-16; `permute --near` not yet). The file splits are done as far as
+2026-10-16 after the main.exe retry; `permute --near` not yet: it covers
+the three main.exe parks, all register-only). For `func_8002D4F4`, extend
+`aspsx_fill.py` first (Open leads). The file splits are done as far as
 the evidence goes (item 3).
 
 0. Current focus (ROADMAP.md, Current focus): `make disc` works and the
@@ -93,8 +103,8 @@ left, for the permuter). `--max-functions 500` leaves time and cost as the limit
 2. The rest of `main.exe` with the swarm: `swarm.mjs run --branch main --seg
    main/ --max-minutes 60 --max-run-usd 80 --big-bytes 400 --workers 1
    --big-workers 4 --big-minutes 27` ($54 for 10 matches on 2026-10-14).
-   No main.exe function is left untried (2026-10-15): what is left are
-   parks (Open leads) and `func_8002D4F4`. After each run, the "After a run"
+   After the 2026-10-16 retry only four are left: three register-only
+   parks and `func_8002D4F4` (Open leads). After each run, the "After a run"
    checklist in tools/swarm/README.md (`stats`, parks, `fold`, `permute
    --near`, this log).
 3. Split `main.c` into its translation units, between swarm runs (on hold
@@ -133,7 +143,7 @@ left, for the permuter). `--max-functions 500` leaves time and cost as the limit
 5. Name each function as it's matched when the evidence allows. Unpark
    when a new idea comes up (see Open leads).
 6. Later Phase 2 items: data to C (after the split), naming and typing
-   passes, and the `CRASHBSH.DAT` extractor (independent: any time).
+   passes. (The `CRASHBSH.DAT` extractor is done: docs/ASSETS.md.)
 
 ## Open leads
 
@@ -152,26 +162,11 @@ left, for the permuter). `--max-functions 500` leaves time and cost as the limit
     turns); a long-lived container per slot (`tools/dk` overhead measured
     1.2 s, under the 1.5 s that would justify it).
 
-- **Parked 2026-10-15 (by hand)**, C under `NON_MATCHING`:
-  - `func_80010000` instructions 36/86, length right: counts flags over 33
-    bytes, stores the count as BCD in `D_8004E0D0`. Only the BCD tail's
-    registers (target: 0x66666667 in a0, n/10 in a2, accumulator a0). `i`
-    (the loop counter) is reused for the quotient chain: a fresh variable
-    changes the length. Next: cc1 `-dl` (local-alloc) dump of the tail.
-  - `func_80017164` registers 22/137: allocates and links three node pools
-    (0x58, 0x54, 8 bytes). Only the 8-byte list pointer (target a1) and the
-    0x54 list pointer (target a0) are off. Next: `vars`/`splitvars`.
-- **Near misses parked 2026-10-14 (by hand)**, each with its C under
-  `NON_MATCHING` and a `block` note:
-  - `func_80010488` 2/208: only `lui s6` vs `li s5,-1` order in the loop
-    preheader (loop.c hoist order).
-  - `func_80010C70` / `func_80010E8C` 133/135 each: only the entry, where
-    sched2 puts the `heap->free` load before the size add. One fix probably
-    fixes both.
-  - `func_8001A82C` registers 12/135: `x` in a1 (target a0) in the 2D branch.
-  - `func_80020680` registers 18/305: slerp with precomputed angle; two
-    register swaps left.
-  - `func_800248A0` 5/142, `func_8001795C` 12/107 (below).
+- **main.exe parks (2026-10-16 retry run: 12 of 15 matched).** Left
+  parked, each with a swarm checkpoint and a fresh `block` note: `func_800248A0`
+  (5/142), `func_8001795C` (12/107), `func_800177F4` (1/89). All three are
+  register-only: next is `swarm.mjs permute --only` on them (the retry ran
+  without the permuter on purpose).
 - **`func_800248A0`** (three sprites side by side): registers 5/142, only
   the entry. The target tests `a0` (`andi a0,a0,0xC000`) right after
   `move s5,a0` and loads arg4 into a3; ours tests s5 into v1. An s16/u16
@@ -189,33 +184,11 @@ left, for the permuter). `--max-functions 500` leaves time and cost as the limit
   vs 109/110; its C is in that session's result note), but the user
   ruled it out: it would make progress too slow. Port such a version by
   hand instead.
-- **`func_80020C04`** (lerp on the `D_80068BD4` trig table, no callers):
-  retail emits `mult` with no `mflo` and returns `a`. In 2.8.1 every dead
-  product form also drops the `mult`; signed `>> 32` keeps one `mflo` (19 vs
-  18). Next: cc1 `-dc`/`-dl` dumps of that form, or test whether this region
-  is another compiler.
-- **`func_800155FC`** (seed step `A += B; B += A + ((u32)A >> 31)`): 2
-  operands off. The target ties `A + srl` to the srl's register; writing the
-  srl first ties it right, but then local-alloc gives A v1 instead of v0.
-  Tried 17 forms (temps, operand order, `u32` globals, store order).
-  `Random` (matched, `4adea44`) has the same step and matches with the
-  plain `A += B; B += A + ((u32)A >> 31);`, which here is the 2-off form:
-  this function's source is written differently, not just compiled in
-  another context.
-- **`func_80026D08`** (rebuilds `NASFreeList` from the pool): 18 off. The
-  target hoists `%hi(NASFreeList)` out of the loop (a copy into a1, so
-  loop.c ran) but keeps the loop test at the top, unrotated. A `goto` loop
-  gets no hoisting; `for (;;) { if (i < first) break; ...}` hoists it but
-  adds a `nas + 12` induction pointer (37 insns vs 36). The `KillNAS` push
-  may be a `static inline FreeNAS()`, but that alone changed nothing.
-- **`func_80011E80`** (block after `heap->lowest` unless owner -1, size 0
-  or flag 2): 4 operands, all in the tail. The target keeps the result in v0
-  and the block in a0; the m2c result-variable form, early returns and
-  clearing to NULL all add 1-2 insns. Try `static inline` helpers for either
-  half (they fixed `func_80021E98`).
-- **`func_800177F4`**: 24 register operands off (colour pointer in v0, target
-  v1; tpage/`0x02000000` constants swapped a0/v0); control flow matches.
-  Permuter's best reused a temp for `tpage & ~0x60`.
+- **`func_800177F4`**: registers 1/89. Only `idx`'s addu operand order
+  (target `addu t0,a0,v0` = face + table); every face-first form gives idx
+  a hard a0 preference, so tpage avoids a0 (58/89). The checkpoint's
+  tricks: s32 tpage changed in place, and the code word carried in the
+  colour pointer `c`.
 
 Other:
 - The gcc 2.7.2 units (`main/8002d488`, `main/8002e0f0`): `aspsx_fill.py`
@@ -225,20 +198,25 @@ Other:
   checkpoint structure 107/111; gcc
   if-converts `v = 0; if (bit) v = arg2;`), `func_8002DE2C` (468 B; an
   extra `addu a3,v1,zero` copy in the target's first `bne` slot),
-  `func_8002D4F4` (2360 B, never tried), `func_8002E25C` (parked, below).
-  Swarm notes on them before 2026-10-14 blame the `$at` loads; ignore
-  those. If a `jal` slot differs, extend `aspsx_fill.py` from the target.
-  Whether the two units are one file is open.
-- **`func_8002E25C`** (parked, the debug text printer): structure 68/93 under
-  2.7.2. The target reloads `*str` in the Kanji and ROM-glyph paths but
-  compares the first load for `' '`; ours reuses it. Find what stops 2.7.2's
-  CSE there (a char local, `volatile` and an index loop didn't).
+  `func_8002D4F4` (2360 B, below). Swarm notes on them before 2026-10-14
+  blame the `$at` loads; ignore those. If a `jal` slot differs, extend
+  `aspsx_fill.py` from the target. Whether the two units are one file is open.
+- **`func_8002D4F4`** (the CD state machine, 2360 B): structure 486/598,
+  blocks 126/148 after 9 big sessions (checkpoint `8002D4F4`). The last
+  session's `-dd` dump says ~14 of the differing blocks are `.set reorder`
+  branches gcc leaves to the assembler (`beq s0,-1` whose target starts
+  `li v0,1`; state 4's `bgez`, whose fallthrough label is also state 7's
+  `bltz` target): ASPSX fills them from the target or fallthrough, which
+  `aspsx_fill.py` doesn't do yet. **Extend `aspsx_fill.py` for conditional
+  branches first** (check it against the matched 2.7.2 functions), then
+  resume the checkpoint. Also left: cse2 folds `base+N` to `sym+N` for
+  nonzero offsets where the target keeps the `la` base.
 - Swarm: `--seg` is a prefix and defaults to `main/main`, so the new units
   need `--seg main/8002` (or `--only`).
 - Heap: `D_8004E0F0` is a `Heap` now. Its +0x10 is the deferred-free list
   (`func_80011578` pushes, `func_80011DB4` counts down); `MemBlock.unk2` is
   the countdown. The heap functions still in asm (`func_800107C8`,
-  `func_800115D8`, `func_80010C70`) need prototypes taking `Heap *`.
+  `func_800115D8`) need prototypes taking `Heap *`.
 - `func_800C8BA0` (ovl5f) matches alone but adds 4 bytes of data/rodata to
   the overlay (offset 0x4C): its literal belongs in another file's rodata.
 - Prototype debug types (ARCHITECTURE.md, Prototype debug types): every type
@@ -427,6 +405,17 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-16 (swarm, main.exe retry, run 20261016133425):** `decomp.py
+  unblock` (new) unparked main.exe's 15 parks; big mode only, no
+  permuter, 90 min / $100 cap. 12 matched in 75 min for $53.46:
+  `func_8002E25C`, `func_800155FC`, `func_80010488`, `func_80026D08`,
+  `func_80011E80` (refused once by the gate after a neighbour's commit,
+  redone in 1.6 min), `func_80020C04`, `func_80010C70`, `func_80010E8C`,
+  `func_8001A82C`, `func_80020680`, `func_80017164`, `func_80010000`.
+  Re-parked: `func_800248A0`, `func_8001795C`, `func_800177F4` (1/89).
+  `func_8002D4F4` to 126/148 blocks; its rest needs `aspsx_fill.py`.
+  Folded 16 Diff patterns rows.
 
 - **2026-10-16 (assets: the rest):** every DAT entry but the 15 code
   overlays is decoded. Models: all 400 (16-byte vertices were normals,

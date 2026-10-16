@@ -865,18 +865,18 @@
  },
  "800177F4": {
   "auto_failed": "types",
-  "blocked_at": "2026-10-11T08:12:35Z",
-  "note": "24 regs off: colour pointer in v0 (target v1), tpage/0x02000000 constant swap a0/v0; control flow matches. Permuter best: reuse a temp for tpage & ~0x60",
+  "blocked_at": "2026-10-16T14:49:52Z",
+  "note": "registers 1/89 (swarm checkpoint 800177F4, 2026-10-16): only idx's addu operand order (target addu t0,a0,v0 = face + table); every face-first form gives idx a hard a0 preference so tpage avoids a0 (58/89). s32 tpage in place and the code word carried in the colour pointer c got the rest",
   "started": "2026-10-11T07:58:36Z",
-  "status": "todo",
+  "status": "blocked",
   "unblocked_at": "2026-10-16T13:33:01Z",
   "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },
  "8001795C": {
   "auto_failed": "types",
-  "blocked_at": "2026-10-14T21:58:35Z",
-  "note": "registers 12/107 (swarm checkpoint ported to GfxTexSet/GfxTexInfo/TexFaceRuns); only the 0x8000/else arms' registers differ (see checkpoint log: t's def is hoisted above the cluts load by sched1). Clean sibling-style arms (func_80017EE8's form) are structure 108-109. next: keep t = &tex[count-1].info after the cluts load",
-  "status": "todo",
+  "blocked_at": "2026-10-16T14:50:12Z",
+  "note": "registers 12/107 (swarm checkpoint, unchanged by 2 more sessions 2026-10-16): only the 0x8000/else arms; target shares a2 between ts and t (t born after the last ts read). Variants with e set in both arms, e = ts->tex; e += count; t = &e[-1].info, clut orders, --e: none better",
+  "status": "blocked",
   "unblocked_at": "2026-10-16T13:33:01Z",
   "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },
@@ -1784,9 +1784,9 @@
  "800248A0": {
   "auto_diff": 108,
   "auto_failed": "diff",
-  "blocked_at": "2026-10-14T21:56:33Z",
-  "note": "registers 5/142 (ported to SpriteFrame/s32 xy with a SprPos union); only the entry: target tests a0 (andi a0,a0,0xC000) and loads arg4 into a3, ours tests s5 into v1. An s16/u16 arg0 fixes that but its conversion insn has a later luid, so sched2 puts move s5,a0 after the a2/a3 copies (6 diffs, prologue order). next: a form where arg0's s5 copy is the first param copy and a dying a0 copy feeds the andi",
-  "status": "todo",
+  "blocked_at": "2026-10-16T14:50:02Z",
+  "note": "registers 5/142 (swarm checkpoint, unchanged by 2 more sessions 2026-10-16): only the entry; target tests a0 (andi a0,a0,0xC000) after move s5,a0 and loads arg4 into a3. An s16/u16 arg0 fixes it but moves move s5,a0 after the a2/a3 copies; needs the permuter or a sched2 idea",
+  "status": "blocked",
   "unblocked_at": "2026-10-16T13:33:02Z",
   "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },

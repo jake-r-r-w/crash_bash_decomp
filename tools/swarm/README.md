@@ -159,4 +159,7 @@ differing blocks; a better result becomes its checkpoint, and a match prints the
 
 When a change (a tool, a header, a split) makes old failures out of date:
 `swarm.mjs forget --only f1,f2 --why "what changed" [--checkpoint]` resets their attempts and notes
-(`--checkpoint` also deletes the old checkpoint).
+(`--checkpoint` also deletes the old checkpoint). Functions parked by hand (`decomp.py block`) are
+never queued: `decomp.py unblock f1 f2 --why "..."` puts them back (their park notes stay, and the
+workers see them). After tool upgrades, retry them in big mode only (`--big-bytes 1 --retry-failed`):
+on 2026-10-16 that matched 12 of main.exe's 15 parks in 75 min.
