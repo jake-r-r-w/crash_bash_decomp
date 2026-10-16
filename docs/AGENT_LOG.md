@@ -15,7 +15,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
 - 1064/2551 game functions matched (main.exe 574/575, 1 left:
-  `func_8002D4F4`; engine overlay 73 left), none parked,
+  `func_8002D4F4`, parked at 145/148 blocks; engine overlay 73 left), 1 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - The engine overlay is six files and `ovl5d` three, `ovl5e`, `ovl66`,
@@ -63,8 +63,7 @@ parked. **Retry parks with this recipe after tool upgrades.**
 `--max-functions 500`), then the post-run checklist (`fold` was done
 2026-10-16 after the main.exe retry; `permute --near` not yet: it covers
 the three main.exe parks, all register-only). `func_8002D4F4` is at
-144/148 blocks since `aspsx_fill.py` fills conditional-branch slots
-(Open leads). The file splits are done as far as the evidence goes
+145/148 blocks: one delay slot in state 6 (Open leads). The file splits are done as far as the evidence goes
 (item 3).
 
 0. Current focus (ROADMAP.md, Current focus): `make disc` works and the
@@ -184,17 +183,27 @@ Other:
   `func_8002D4F4` (2360 B, below). Swarm notes on them before 2026-10-14
   blame the `$at` loads; ignore those. If a `jal` slot differs, extend
   `aspsx_fill.py` from the target. Whether the two units are one file is open.
-- **`func_8002D4F4`** (the CD state machine, 2360 B): blocks 144/148, paired
-  587/592, exact 580/592 (length 592 vs 590), parked by the swarm
-  2026-10-16 (checkpoint `func_8002D4F4`). `aspsx_fill.py` now fills the
-  conditional-branch slots (127f996), so every branch is right; what is
-  left is the C's addressing, all cse/sched1: block 29's `lui a2,0x8888`
-  (the /60 constant) issues after the `la D_8006788D` (sched1 ties them;
-  the la isn't birthing because `p` is set twice, `p++`), and in states
-  5/6 the `D_80067884` offset-2 store folds to `sym+2` and its `la` is
-  scheduled before the `D_8006EA20` loads. The last session's report entry
-  lists every form tried. Next: by hand with cc1 `-dS`/`-dc` dumps, or the
-  permuter on those blocks (`permute --differing`).
+- **`func_8002D4F4`** (the CD state machine, 2360 B): regions 145/148,
+  paired 587/590, length 590 (= retail), C under `NON_MATCHING`. The unit
+  is now built with `-fno-rerun-cse-after-loop` (Makefile): without the
+  second cse pass, plain `D_8006788C[1]` / `D_80067884[k]` accesses come
+  out as `la` + offsets like retail, which fixed states 4/5 and let
+  `func_8002DE2C` drop its always-zero `((u8)limit >> 8)` offset.
+  Only state 6's case 1 is left (blocks 47/48/50): gcc's reorg tries the
+  case-1 target first and moves its first insn `li $4,3` into the
+  `beq ret,1` slot; retail keeps it there and takes `li $16,6` from the
+  fall-through `j`'s slot instead (as our build does when case 1 starts
+  with a 2-word macro). So retail's reorg found `li $4,3` ineligible: a0
+  live on the fall-through (`mark_target_live_regs`/`find_basic_block`) or
+  the thread not own. Tried, no change: case orders, `default` split from
+  `case 0`, no locals, store orders, `-fno-schedule-insns` (fixes the slot,
+  breaks the order), an inline helper (fixes the slot, folds the stores).
+  Next: read gcc 2.7.2's reorg.c for what rejects `li $4,3` there; the lab
+  file pattern (a small switch in scratch, compiled with the unit's flags)
+  reproduces it in a second.
+- `main/8002e0f0` with the same flag: `func_8002E25C` stops matching
+  (structure 44/95), the other four still match. Whether both units had the
+  flag (and E25C's C leans on cse2) is open.
 - Swarm: `--seg` is a prefix and defaults to `main/main`, so the new units
   need `--seg main/8002` (or `--only`).
 - Heap: `D_8004E0F0` is a `Heap` now. Its +0x10 is the deferred-free list
@@ -389,6 +398,15 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-16 (by hand, `func_8002D4F4`):** parked at 145/148 (was 144,
+  length 592 -> 590). Found that the 2.7.2 unit compiles without cse2
+  (`-fno-rerun-cse-after-loop`, Makefile; `CC1FLAGS` is now `=` so
+  per-unit `EXTRA_CC1FLAGS` applies): array accesses through a constant
+  base keep `la` + offsets, the `D_8006788D` symbol is just
+  `D_8006788C[1]`, and `func_8002DE2C` matches without its always-zero
+  offset. `make check` OK. Left: one reorg delay-slot choice in state 6
+  (Open leads). No permuter.
 
 - **2026-10-16 (by hand, `func_800248A0`):** matched (03bef8c), no
   permuter. The caller passes x and y as shorts (`lh`, `sll/sra`), so the

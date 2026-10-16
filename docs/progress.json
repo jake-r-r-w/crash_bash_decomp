@@ -1,8 +1,15 @@
 {
- "blocked": [],
- "commit": "9b76c7a",
+ "blocked": [
+  {
+   "name": "func_8002D4F4",
+   "note": "regions 145/148 (paired 587/590, len 590 = target; C under NON_MATCHING). Unit now built with -fno-rerun-cse-after-loop (Makefile): without cse2, plain D_8006788C[k]/D_80067884[k] accesses come out as la+offset like retail, which fixed states 4/5 and dropped func_8002DE2C's always-zero offset. Left: state 6 case 1 only (blocks 47/48/50): gcc's reorg steals case 1's first insn li $4,3 into the 'beq ret,1' slot; retail leaves it and takes li $16,6 from the fallthrough j's slot. Reorg tries the target thread first here; li $4,3 must be rejected (a0 live on the fallthrough per mark_target_live_regs, or the thread not own). Tried: case orders, default split from case 0, no locals, store orders, inline helper (fixes the slot but folds the stores and moves li into the jal slot), -fno-schedule-insns (fixes slot, wrong order). Next: read gcc 2.7.2 reorg.c (mostly_true_jump, mark_target_live_regs/find_basic_block) for what makes li $4,3 ineligible",
+   "seg": "main/8002d488",
+   "size": 2360
+  }
+ ],
+ "commit": "e568f81",
  "game": "SCUS_945.70",
- "generated": "2026-10-16T20:07:32Z",
+ "generated": "2026-10-16T20:49:47Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -58509,7 +58516,7 @@
    }
   },
   {
-   "commit": "9b76c7a",
+   "commit": "e568f81",
    "data_b": 0,
    "data_tb": 606943,
    "game_all_f": 2551,
@@ -58522,7 +58529,7 @@
    "lib_b": 122112,
    "lib_f": 564,
    "lib_tb": 122112,
-   "ts": "2026-10-16T20:07:32Z",
+   "ts": "2026-10-16T20:49:47Z",
    "units": {
     "engine": [
      47788,
@@ -58718,7 +58725,7 @@
   }
  ],
  "summary": {
-  "blocked": 0,
+  "blocked": 1,
   "copies_b": 36276,
   "data": {
    "done_b": 0,
@@ -58729,7 +58736,7 @@
    "all_f": 2551,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 0,
+   "blocked": 1,
    "c_f": 1064,
    "done_b": 179868,
    "done_f": 1064,
@@ -58781,7 +58788,7 @@
     "all_f": 575,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 0,
+    "blocked": 1,
     "c_f": 574,
     "done_b": 122480,
     "done_f": 574,

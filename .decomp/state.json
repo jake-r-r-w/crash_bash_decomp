@@ -2701,8 +2701,10 @@
  },
  "8002D4F4": {
   "auto_failed": "compile",
+  "blocked_at": "2026-10-16T20:49:36Z",
+  "note": "regions 145/148 (paired 587/590, len 590 = target; C under NON_MATCHING). Unit now built with -fno-rerun-cse-after-loop (Makefile): without cse2, plain D_8006788C[k]/D_80067884[k] accesses come out as la+offset like retail, which fixed states 4/5 and dropped func_8002DE2C's always-zero offset. Left: state 6 case 1 only (blocks 47/48/50): gcc's reorg steals case 1's first insn li $4,3 into the 'beq ret,1' slot; retail leaves it and takes li $16,6 from the fallthrough j's slot. Reorg tries the target thread first here; li $4,3 must be rejected (a0 live on the fallthrough per mark_target_live_regs, or the thread not own). Tried: case orders, default split from case 0, no locals, store orders, inline helper (fixes the slot but folds the stores and moves li into the jal slot), -fno-schedule-insns (fixes slot, wrong order). Next: read gcc 2.7.2 reorg.c (mostly_true_jump, mark_target_live_regs/find_basic_block) for what makes li $4,3 ineligible",
   "started": "2026-10-16T19:39:20Z",
-  "status": "in_progress"
+  "status": "blocked"
  },
  "8002DE2C": {
   "matched_at": "2026-10-14T21:11:34Z",
