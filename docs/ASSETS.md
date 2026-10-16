@@ -30,7 +30,7 @@ What the entries are (first u32 is a type or a count, not a magic number):
 | mostly even ids, `000`..`3DD` | 400 | texture sets, type 8 | `<id>.tex/` (tex.py) |
 | the entry after each texture set | 400 | model files (`.mdl`), textured by the set before them | 319 `<id>.mdl/` (mdl.py, geometry only) |
 | `1E7`, `2CC`..`2D8`, `3DF` | 15 | code overlays (`make disc` writes the built ones) | C/asm |
-| `.sfx`, e.g. `099`, `126` | 160 | sound packs: SPU ADPCM after a header; the music ones VAB/SEQ (the name list says) | no |
+| `.sfx`, e.g. `099`, `126` | 160 | sound packs: samples (VAB) and, in 28, music (SEQ) | `<id>.sfx/` (sfx.py) |
 | `08D`..`098` | 12 | mode text (`overlays/text/*.bin`): strings, then data pointing at them | `<id>.txt/` (txt.py) |
 | `088`..`08C` | 5 | title screens (`screens/*.tga`): plain TGA files | `<id>.tga/` (tga.py) |
 
@@ -109,7 +109,27 @@ the tail of a string cut short in development ("9IN THE ALLOTTED TIME").
 `\r`, `\xNN`, `\\` for the bytes above). An unchanged line keeps its slot byte for byte; a changed
 one is written in, zero-padded, and one too long for its slot is refused.
 
+## Sound packs (`.sfx`)
+
+`tools/scripts/sfx.py`; the split into Sony's files is CTR-tools' reading (`BashSfx.cs`).
+All 160 pack back byte for byte (checked against the retail DAT).
+
+| Part | What |
+|---|---|
+| offset table | u32s: VB, VH, each SEQ (the first is the table's size; the last SEQ runs to the end of the file). The 132 effects-only packs have one empty SEQ, its offset the file's end; 27 music packs have two, one has three |
+| VB | the samples, SPU ADPCM, back to back: 16-byte blocks of 28 samples (byte 0 shift \| filter << 4, byte 1 flags). Every sample starts with a silent block; a one-shot ends with flag 1 on its last block, then a terminator block (flag 7); a loop has flags 6, 2 ... 2, 3 |
+| VH | a VAB header (`pBAV`, version 7): 0x20 bytes, 128 program slots of 16, 16 tones of 32 per program, then u16 sample sizes / 8 (slot 0 unused): one per sample in the effects packs, all 256 in the music packs |
+| SEQ | Sony sequences (`pQES`), the music |
+
+`<id>.sfx/` holds `bank.vh` and `bank.vb` (a standard VAB pair: PS1 sound tools, e.g. VGMTrans,
+open it with the SEQs), `music_N.seq`, `sample_NNN.wav` (sample N of the VAB, decoded to 16-bit
+mono) and `sfx.json`. The WAVs are written at a nominal 22050 Hz: the game sets each note's pitch
+from the VAB's tones, so the true rate isn't one number; pack ignores it. Edit a WAV (16-bit mono)
+and pack encodes it to ADPCM (filter and shift chosen per block for the least error; about 55-70
+dB SNR on the game's own samples), keeps its one-shot or loop shape, and rewrites the VH's size
+table and the offsets; an unchanged WAV keeps its original bytes. A pack may shrink, not grow.
+
 ## Next formats
 
-- Sound packs (160): CTR-tools `BashSfx.cs` converts them to VAB/SEQ (Sony's sound bank and
-  sequence formats); from there, WAV for the samples and MIDI for the music.
+- Music as MIDI: SEQ is close to a MIDI file (VGMTrans already converts VAB/SEQ to MIDI and SF2).
+- Models: texture coordinates, animation, and the 81 other model files.

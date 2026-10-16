@@ -423,6 +423,12 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-16 (assets: sound packs):** `sfx.py`: all 160 packs to
+  `<id>.sfx/` (bank.vh/.vb, music_N.seq, a WAV per sample) and back byte
+  for byte; an edited WAV is ADPCM-encoded (55-70 dB SNR), keeping its
+  loop/one-shot shape. Offset table: VB, VH, SEQs (the last runs to EOF;
+  effects packs have one empty SEQ). 241 raw -> 81 (the odd models).
+
 - **2026-10-16 (disposable build/):** `make clean` deletes all of `build/`;
   `build/scratch` -> `scratch/`; splat's `asset_path` -> `asm/bin` (the
   Makefile had been building all 992 DAT files from `assets/` into

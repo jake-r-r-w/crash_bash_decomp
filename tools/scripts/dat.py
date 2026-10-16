@@ -32,12 +32,14 @@ import struct
 import sys
 
 import mdl
+import sfx
 import tga
 import txt
 import tex
 
 FORMATS = {"tex": (tex, "texture sets", "PNGs"), "mdl": (mdl, "model files", "OBJ"),
-           "tga": (tga, "title screens", "PNG"), "txt": (txt, "text files", "text")}
+           "tga": (tga, "title screens", "PNG"), "txt": (txt, "text files", "text"),
+           "sfx": (sfx, "sound packs", "WAV, VAB, SEQ")}
 
 P_PROJ = ".decomp/project.json"
 ASSETS = "assets/CRASHBSH"

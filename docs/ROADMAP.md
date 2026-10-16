@@ -106,8 +106,8 @@ phases can play what they finish.
   `make disc` builds the DAT from there (2026-10-16). Formats decoded (docs/ASSETS.md): texture
   sets, 400 of them, to PNGs and back byte for byte (`tools/scripts/tex.py`); model geometry,
   319 of 400 files, to OBJ and back (`tools/scripts/mdl.py`); the 5 title screens to PNG
-  (`tga.py`) and the 12 modes' text to text files (`txt.py`). Next: the 160 sound packs, then
-  model texture coordinates. Document each
+  (`tga.py`), the 12 modes' text to text files (`txt.py`), and the 160 sound packs' samples to
+  WAV, with banks and music as VAB/SEQ (`sfx.py`). Next: model texture coordinates, music as MIDI. Document each
   format. Formats parsed by the engine or a minigame belong to that phase.
 
 ## Phase 3 - The engine overlay
