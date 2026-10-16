@@ -62,34 +62,36 @@ byte for byte ([docs/PLAYING.md](docs/PLAYING.md)).
 
 ```mermaid
 flowchart TD
-    disc[("Your disc image (bin/cue)")]
-    disc -- "decomp.py extract" --> files["disc/files<br/>disc layout and the files<br/>outside the game archive"]
-    disc -- "decomp.py extract" --> assets["assets/<br/>game data as PNG, OBJ/glTF,<br/>WAV/MIDI and text: edit here"]
-    disc -- "make split" --> asm["asm/<br/>functions not decompiled yet"]
-    src["src/<br/>our C: matched functions"] --> make["make<br/>compile, assemble, link"]
+    src["src/ : our C"]
+    disc[("Your disc image")]
+    disc -- "make split" --> asm["asm/ : code not decompiled yet"]
+    disc -- "decomp.py extract" --> assets["assets/ : game data you edit"]
+    disc -- "decomp.py extract" --> files["disc/files : other disc files"]
+    src --> make["make"]
     asm --> make
-    make --> exe["build/main.exe"]
-    make --> ovl["build/&lt;ovl&gt;.bin x 15<br/>engine and minigames"]
-
-    subgraph built ["make disc: build/CrashBash.bin, identical to retail (make disc-check)"]
-        direction LR
-        boot["SCUS_945.70<br/>= our main.exe"]
-        dat["CRASHBSH.DAT<br/>= our overlays + assets/"]
-        other["SYSTEM.CNF, licence,<br/>BASHY. filler, Spyro 3 demo"]
-    end
-
-    exe --> boot
-    ovl --> dat
+    make --> exe["main.exe"]
+    make --> ovl["15 overlays"]
+    exe --> boot["SCUS_945.70"]
+    ovl --> dat["CRASHBSH.DAT"]
     assets --> dat
-    files --> other
+    files --> other["other files"]
+    boot --> out[("make disc: rebuilt disc")]
+    dat --> out
+    other --> out
 
-    classDef code fill:#EEEDFE,stroke:#534AB7,color:#3C3489
-    classDef data fill:#E1F5EE,stroke:#0F6E56,color:#085041
+    classDef code fill:#EEEDFE,stroke:#534AB7,color:#26215C
+    classDef data fill:#E1F5EE,stroke:#0F6E56,color:#04342C
+    classDef plain fill:#F1EFE8,stroke:#5F5E5A,color:#2C2C2A
     class src,asm,make,exe,ovl,boot code
     class assets,dat data
+    class disc,files,other,out plain
 ```
 
-As functions are matched they move from `asm/` to `src/`; the disc stays identical throughout.
+Purple is code, green is game data. `main.exe` becomes the disc's boot file (`SCUS_945.70`);
+the engine and the 14 minigame overlays go into `CRASHBSH.DAT` with the game data from
+`assets/`; the other files (`SYSTEM.CNF`, the licence data, the `BASHY.` filler, the bundled
+Spyro 3 demo) come from the disc as they are. As functions are matched they move from `asm/` to
+`src/`; the disc stays identical throughout.
 
 ## Layout
 
