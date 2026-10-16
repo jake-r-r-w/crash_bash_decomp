@@ -76,7 +76,71 @@ void func_8007906C(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80079260);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800793E8);
+void func_800793E8(void) {
+    s32 w;
+    s32 i;
+    s32 j;
+    s32 n;
+    s32 found;
+    s32 off;
+    u16 v;
+    u8 *g;
+    u8 *p;
+
+    switch (D_8004DDD0[D_8009E5DC * 3]) {
+    case 0x104:
+        w = 0;
+        break;
+    case 0x109:
+        w = 1;
+        break;
+    case 0x107:
+        w = 2;
+        break;
+    case 0x108:
+        w = 3;
+        break;
+    case 0x106:
+        w = 4;
+        break;
+    case 0x10A:
+        w = 5;
+        break;
+    case 0x103:
+    case 0x10B:
+    case 0x10D:
+    case 0x10E:
+        w = 6;
+        break;
+    default:
+        return;
+    }
+    n = 0;
+    i = 0;
+    g = D_8005A614;
+    for (; i < 4; i++) {
+        if (i != 0 && (*(s32 *)(g + 0x6C) == 0 || i != 1)) {
+            found = 1;
+            while (n < 6) {
+                p = (u8 *)(i + (s32)g);
+                if (found == 0) {
+                    break;
+                }
+                v = *(u16 *)((u8 *)D_800986BC + (n * 2 + w * 8));
+                n++;
+                found = 0;
+                for (j = 0; j < 4; j++) {
+                    if ((j == 0 || (*(s32 *)(g + 0x6C) != 0 && j == 1)) && g[j + 0x50] == v) {
+                        found = 1;
+                    }
+                }
+                if (found == 0) {
+                    p[0x50] = v;
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80079554);
 
