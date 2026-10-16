@@ -10,11 +10,11 @@ At the end of a session, update **Current state**, **Next** and **Open
 leads**, add any new gotcha, and add one short entry at the top of the
 **Session log**.
 
-## Current state (2026-10-15)
+## Current state (2026-10-16)
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1020/2551 game functions matched (main.exe 559/575, 16 left: 15 parked
+- 1021/2551 game functions matched (main.exe 559/575, 16 left: 15 parked
   and `func_8002D4F4`; engine overlay 101 left), 15 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
@@ -33,11 +33,14 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**Before the next swarm run: [TOOLING_PLAN.md](TOOLING_PLAN.md).** Part 1
-fixes swarm bugs that break slot-overlay runs (35 function names shared
-across overlays make `decomp.py` die "ambiguous"; `reapply` drops header
-lines; a lost Docker daemon parks everything), then Part 2 (cost per
-function) and Part 3 (ideas from decomp.wtf), one commit each.
+**Tooling: [TOOLING_PLAN.md](TOOLING_PLAN.md) Part 1 is done (2026-10-16),
+so slot-overlay swarm runs can start.** Next there: Part 2 (cost per
+function: backfill from `results/*/*/worker.out`, then capture), then Part
+3 as the numbers justify, one commit each. Left from Part 1: recognising the
+CLI's usage-limit / sign-in result (capture a real `worker.out` first; the
+plan says not to guess its text). The first run after these changes: watch
+`swarm.log` for refused commands (workers lost `git`, `find`, `sort`,
+`sed -n` on the host; git is `tools/dk git ...` now).
 
 **Start of next session: matching.** Run the engine swarm hour (item 1b,
 `--max-functions 500`), then the post-run checklist (2026-10-15 evening
@@ -64,8 +67,8 @@ done as far as the evidence goes (item 3).
    `swarm.mjs run --branch main --seg overlays/engine --max-minutes 60
    --max-run-usd 80 --max-functions 500 --workers 3 --big-workers 2
    --big-bytes 400 --big-minutes 27` matched 45 in 60 min for $21.72 on
-   2026-10-15 (mostly under 150 B; $0.48 a match, a floor: big sessions killed at
-   their deadline cost $0 in the logs). A second hour matched 38 for $16.46, a third 59 in 43 min for
+   2026-10-15 (mostly under 150 B; $21.72 / 45 = $0.48 a match, a floor: big
+   sessions killed at their deadline cost $0 in the logs). A second hour matched 38 for $16.46, a third 59 in 43 min for
    $27.60 (stopped early). Evening: 20 in 24 min ($18.34) and 29 in 20 min
 (both stopped early). Repeat it; 101 engine functions are left. Near
 misses with big-mode checkpoints: `func_8007BFA8` (instructions 5/114),
@@ -377,6 +380,18 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-16 (tooling plan Part 1):** all nine items, one commit each,
+  with `tools/swarm/swarm.test.mjs` (node:test, 32 cases) and new
+  `test_queue.py`/`test_lint.py`. Slot-overlay names go to tools as keys
+  (`ovl5d:800B3A38`), checkpoints/results keyed by key; `reapply` keeps
+  whole declarations; environment errors stop runs uncharged; unapplicable
+  checkpoints get ported; escalation and notes carry across runs; asm-only
+  matches go to report.md for a human `--hack`; gate lint covers every asm
+  spelling and K&R definitions; workers are sandboxed from the host.
+  propagate: `decl_name` misread function-pointer externs, which hid
+  `D_8009D73C` from `ovl64:800BB52C`'s copy; fixed, and it matched
+  (1021). Checked with a scripted `--worker-cmd` run on a local bare remote.
 
 - **2026-10-16 (review, no code):** compared decomp.wtf's tools with ours;
   plan in TOOLING_PLAN.md. Found swarm bugs: shared overlay names are

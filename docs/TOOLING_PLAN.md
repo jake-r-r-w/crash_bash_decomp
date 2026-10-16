@@ -17,6 +17,10 @@ commit after `tools/dk make check` (and `make test-tools`; see 1.0).
 
 ## Part 1: bugs to fix before the slot-overlay runs
 
+**Done 2026-10-16** (commits ec41088..9cbd1eb), except recognising the CLI's
+usage-limit / sign-in result in 1.3 (no real `worker.out` captured yet). The
+line numbers below are from before those commits.
+
 ### 1.0 Swarm policy tests (do first, S)
 
 Nothing tests `swarm.mjs`. A prototype of the suite below found bug 1.2.

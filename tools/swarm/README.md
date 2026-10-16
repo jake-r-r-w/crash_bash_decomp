@@ -78,6 +78,16 @@ or keys. Checkpoints saved by name before 2026-10-16 still resume when the name 
   only fast-forwarded.
 - **Workers can't commit or push:** file edits, `tools/dk` and read-only commands only. The
   orchestrator takes only `git diff` of `src/` and `include/`.
+- **Workers can't change what runs on the host:** Edit/Write only `src/**`, `include/**` and
+  `.swarm-result.json`; on the host only `ls`, `cat`, `head`, `tail`, `grep`, `wc`, `date` and
+  `tools/dk` (git runs as `tools/dk git ...`); their containers see `.git`, `tools/` and `.claude/`
+  read-only, and the clone's `tools/dk` is read-only. `--dir` can't contain spaces (the mounts go
+  through `DK_DOCKER_ARGS`).
+- **Environment errors stop the run uncharged:** tools/dk's Docker errors (exit 125-127), a
+  `PermissionError`, a tools/dk call over its time limit, or Docker gone after a session that left
+  no patch. Fix it and run again. Not yet recognised: the CLI's usage-limit result (capture a real
+  `worker.out` first).
+- **Tests:** `node --test tools/swarm/swarm.test.mjs` (host Node) after any change to the policy.
 - **Patch checks:** only `src/` and `include/`, under 64 KB, removes exactly the target's
   `INCLUDE_ASM` line, no inline asm; then the orchestrator runs `decomp.py try` itself.
 - **The gate:** every commit is `decomp.py done --commit`, one function each; waiting matches
