@@ -211,6 +211,24 @@ Other:
   branches first** (check it against the matched 2.7.2 functions), then
   resume the checkpoint. Also left: cse2 folds `base+N` to `sym+N` for
   nonzero offsets where the target keeps the `la` base.
+  **Started 2026-10-16 (not finished, no code changed yet).** The rule,
+  read from the cc1 output (`scratch/aspsx/pipe.sh` runs the unit's
+  pipeline stage by stage) against retail: for a label `L: I` whose
+  every entry is a reorder-mode branch with an empty slot (or the
+  fallthrough of one), ASPSX moves `I` into each of those slots, retargets
+  the branches to `L+4`, and drops `I` from `L`. `$L157: li $2,1` (12
+  `beq $16,$2,$L157`, after a `j`) becomes `beq ...,$L177` + `li v0,1` in
+  every slot with no `li` left at L157; `$L175: li $2,-2` goes into the
+  `bgez` before it (fallthrough) and the `bltz` to it. And
+  `steal_jump_slot` over-fires: retail leaves `bne $16,$2,$L73` (target `j`
+  + filled slot, several entries) with a nop; it fired rightly in
+  `func_8002DE2C` (`beq $4,$2,$L195`). Not filled in matched code (keep
+  them unfilled): DE2C's `bne` to `$L182`/`$L187`/`$L190` and E000's `bne`
+  to `$L204` (targets entered by fallthrough too, or loop heads). Next:
+  pin down the entry condition from those, implement it in
+  `aspsx_fill.py` with tests, keep the 8 matched functions matching
+  (`scratch/aspsx/regress.sh` tries all 9; baseline 8 MATCH, D4F4
+  486/598), then apply the checkpoint (`crash_bash_decomp-swarm/checkpoints/func_8002D4F4/best.diff`).
 - Swarm: `--seg` is a prefix and defaults to `main/main`, so the new units
   need `--seg main/8002` (or `--only`).
 - Heap: `D_8004E0F0` is a `Heap` now. Its +0x10 is the deferred-free list
