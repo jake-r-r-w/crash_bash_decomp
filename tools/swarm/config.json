@@ -28,6 +28,7 @@
   "escalateBig": true,
   "regions": "all",
   "claudeBin": "claude",
+  "prices": {"claude-sonnet-5-5": [2, 10, 0.1, 4], "claude-opus-5-5": [4, 20, 0.2, 8]},
   "claudeArgs": ["-p", "--output-format", "json", "--max-turns", "250",
                  "--permission-mode", "dontAsk", "--strict-mcp-config"],
   "allowedTools": ["Read", "Grep", "Glob", "TodoWrite",

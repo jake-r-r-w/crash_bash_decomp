@@ -210,6 +210,40 @@ ovl64:800BB52C, probably compiled silently as an implicit call to
 
 ## Part 2: measure (S-M, before tuning anything)
 
+**Done 2026-10-16.** Workers get a `--session-id`, and a killed session's
+transcript is priced (the CLI keeps transcripts, so the switch to stream-json
+wasn't needed); `ledger.jsonl` has one line per session, backfilled for the
+760 sessions so far; `stats` shows $/match by size and mode. Findings:
+
+- **Spend so far $453** (760 sessions): normal $174, big $279. Killed sessions
+  were only 11 ($11): the "big-mode figures are a floor" worry was small.
+- **$/match** (all spend in a bucket over its matches): normal $0.22 (<150 B),
+  $0.32 (150-249), $0.79 (250-399), $3.09 (400-599, 12/57 sessions match);
+  big $4.44 (400-599), $2.32 (600-899), $5.80 (900-1399), $7.11 (1400+).
+  First normal sessions match 71% overall, 52/97 at 250-399, 7/37 at 400-599.
+- **Where the tokens go:** cache writes are the biggest share (49% of normal
+  spend, 34% of big), then output (28% / 32%) and cache reads (23% / 34%).
+  Each session's first turn writes ~13-15k tokens to the cache (its prompt,
+  CLAUDE.md and other per-clone context) on top of a ~12k shared prefix; a
+  normal session writes ~30k in all, a big one ~78k.
+- **Docs are hardly read:** 0.14 Reads of `docs/*.md` per big session, ~0 in
+  normal ones. What fills context is tool output: `regions` (30% of a big
+  session's tool output, 2,600 calls, ~1k chars each), Read, `sed`, `make
+  diff` (42% in normal sessions). A big session's tool output is ~57k chars
+  in all, so it isn't what makes big sessions cost $4: their ~71 turns each
+  re-read and extend the context.
+- **Time outside the model:** 44% of normal sessions' wall-clock, 31% of
+  big ones' (tools, builds, Docker): the ceiling for 3.6.
+
+What this changes in Part 3: 3.1's premise (opus pages MATCHING.md every
+session) doesn't hold; its useful part is the fixed per-session context (the
+first-turn cache write, CLAUDE.md, the "Before matching code" checks). The
+cheapest levers look like fewer turns per big session (3.5's shorter
+`regions` and `make diff` output, 3.3/3.4 better starting points) and fewer
+cache writes per session (3.1's fixed-prompt and env items). The 400-599
+normal bucket costs more per match than 600-899 big: try `--big-bytes 400`
+as the default (runs already pass it).
+
 No per-function cost exists, and big sessions killed at their deadline print
 no JSON, so they count as $0 in the logs and in `--max-run-usd`
 (`swarm.mjs:129-134,836-842,881-885,1279`). Every big-mode figure in

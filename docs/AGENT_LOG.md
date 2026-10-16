@@ -34,9 +34,12 @@ leads**, add any new gotcha, and add one short entry at the top of the
 ## Next
 
 **Tooling: [TOOLING_PLAN.md](TOOLING_PLAN.md) Part 1 is done (2026-10-16),
-so slot-overlay swarm runs can start.** Next there: Part 2 (cost per
-function: backfill from `results/*/*/worker.out`, then capture), then Part
-3 as the numbers justify, one commit each. Deferred from Part 1: recognising
+so slot-overlay swarm runs can start.** Part 2 (cost per session) is done
+too: `swarm.mjs stats` shows $/match by size from `ledger.jsonl`, and its
+findings (TOOLING_PLAN.md, Part 2) re-rank Part 3: docs are hardly read,
+cache writes and turns per big session drive the cost. Next there: Part 3,
+starting with 3.5 (shorter `regions`/`make diff` output) and 3.1's fixed
+per-session context, checked by `stats --run ID` against the ledger. Deferred from Part 1: recognising
 the CLI's usage-limit result. It only matters for unattended runs, and the
 user runs the swarm supervised and conservatively; if a limit is ever hit,
 keep that `worker.out` and match its result line then. The first run after these changes: watch
@@ -381,6 +384,12 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-16 (tooling plan Part 2):** workers get `--session-id`; killed
+  sessions are priced from their transcripts (prices fitted from 745 result
+  lines, within 2%); `ledger.jsonl` (backfilled for 760 sessions, $453) and
+  `stats` $/match by size and mode. Docs are read ~0.14 times per big
+  session; cache writes are 34-49% of spend. Usage-limit detection deferred.
 
 - **2026-10-16 (tooling plan Part 1):** all nine items, one commit each,
   with `tools/swarm/swarm.test.mjs` (node:test, 32 cases) and new

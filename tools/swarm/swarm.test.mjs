@@ -8,7 +8,8 @@ import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 process.env.SWARM_IMPORT = '1';
-const { Swarm, reapply, parseArgs, INCLUDE_LINE } = await import('./swarm.mjs');
+const { Swarm, reapply, parseArgs, INCLUDE_LINE, sessionUsage: sessionUsageFn, readTranscript: readTranscriptFn,
+        ledgerStats: ledgerStatsFn } = await import('./swarm.mjs');
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DECOMP = fs.readFileSync(path.join(REPO, 'tools/scripts/decomp.py'), 'utf8');
@@ -438,4 +439,69 @@ test('workers: their containers mount .git, tools/ and .claude/ read-only', asyn
   assert.ok(m.includes(`${path.join(dir, '.git')}:/work/.git:ro`));
   assert.ok(m.includes(`${path.join(dir, 'tools')}:/work/tools:ro`));
   assert.doesNotMatch(m, /\.claude|src/);
+});
+
+// ---------------------------------------------------------------- what sessions cost
+
+const PRICES = { 'claude-opus-5-5': [4, 20, 0.2, 8] };
+const TRANSCRIPT = [
+  // one API message split over two lines (thinking, then a tool call): its usage counts once
+  { type: 'assistant', message: { id: 'm1', model: 'claude-opus-5-5', usage: { input_tokens: 1000, output_tokens: 100, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 },
+    content: [{ type: 'thinking' }] } },
+  { type: 'assistant', message: { id: 'm1', model: 'claude-opus-5-5', usage: { input_tokens: 1000, output_tokens: 100, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 },
+    content: [{ type: 'tool_use', id: 't1', name: 'Read', input: { file_path: 'C:/x/docs/MATCHING.md' } }] } },
+  { type: 'assistant', message: { id: 'm2', model: 'claude-opus-5-5', usage: { input_tokens: 0, output_tokens: 1000, cache_read_input_tokens: 1e6, cache_creation_input_tokens: 0 },
+    content: [{ type: 'tool_use', id: 't2', name: 'Bash', input: { command: 'grep -n -i swap docs/MATCHING.md' } },
+              { type: 'tool_use', id: 't3', name: 'Read', input: { file_path: 'src/main/main.c' } }] } },
+  { type: 'assistant', isSidechain: true, message: { id: 'm3', model: 'claude-opus-5-5', usage: { input_tokens: 9e9, output_tokens: 0 } } },
+].map(j => JSON.stringify(j)).join('\n') + '\n';
+
+test('readTranscript: tokens once per API message, docs reads and greps', () => {
+  const dir = clone({ 's.jsonl': TRANSCRIPT });
+  const t = readTranscriptFn(path.join(dir, 's.jsonl'));
+  assert.deepEqual(t.tokens, { in: 1000, out: 1100, cacheRead: 1e6, cacheWrite: 0 });
+  assert.equal(t.turns, 2);
+  assert.equal(t.docReads, 1);
+  assert.equal(t.docGreps, 1);
+});
+
+test('sessionUsage: the result line when there is one, else the transcript priced and scaled', () => {
+  const dir = clone({ 's.jsonl': TRANSCRIPT });
+  const file = path.join(dir, 's.jsonl');
+  const done = sessionUsageFn({ type: 'result', total_cost_usd: 0.5, num_turns: 7, duration_api_ms: 60000,
+                                usage: { input_tokens: 1, output_tokens: 2 } }, file, PRICES);
+  assert.equal(done.usd, 0.5);
+  assert.equal(done.estimated, false);
+  assert.equal(done.turns, 7);
+  assert.ok(Math.abs(done.priced - 0.226) < 1e-9);          // (1000*4 + 1100*20 + 1e6*0.2) / 1e6
+  const killed = sessionUsageFn({}, file, PRICES, 2);
+  assert.ok(Math.abs(killed.usd - 0.452) < 1e-9);
+  assert.equal(killed.estimated, true);
+  assert.equal(killed.known, true);
+  assert.equal(sessionUsageFn({}, null, PRICES).known, false);
+});
+
+test('ledger: one line per session, at its first outcome; stats reads it', () => {
+  const s = swarm();
+  const f = fn('func_80010000', { size: 120 });
+  const job = { f, model: 'sonnet', attempt: 1, notes: [], sessionId: 'x',
+                usage: { usd: 0.3, estimated: false, known: true, turns: 9, tokens: null, minutes: 1, apiMinutes: 0.5, docReads: 0, docGreps: 2 } };
+  s.notMatched({ job }, job, 'no idea');          // records "parked"
+  s.record(job, 'conflict', 'again');              // a later record of the same session: not a second line
+  const lines = fs.readFileSync(s.paths.ledger, 'utf8').trim().split('\n').map(l => JSON.parse(l));
+  assert.equal(lines.length, 1);
+  assert.equal(lines[0].outcome, 'parked');
+  assert.equal(lines[0].kind, 'normal');
+  assert.equal(lines[0].key, f.key);
+  const big = { f: fn('func_80020000', { size: 700 }), model: 'opus', attempt: 1, notes: [], big: true,
+                usage: { usd: 3, estimated: true, known: true, turns: 50, minutes: 27 } };
+  s.ledger(big, 'matched');
+  const out = [];
+  const log = console.log;
+  console.log = (...a) => out.push(a.join(' '));
+  try { ledgerStatsFn(s.paths.ledger, [0, 150, 600, Infinity]); } finally { console.log = log; }
+  const text = out.join('\n');
+  assert.match(text, /2 sessions.*1 killed sessions estimated from transcripts, \$3\.00/);
+  assert.match(text, /0-149\s+normal\s+1\s+\$0\.30\s+0\s+-\s+0\/1/);
+  assert.match(text, /600-\s+big\s+1\s+\$3\.00\s+1\s+\$3\.00\s+1\/1/);
 });

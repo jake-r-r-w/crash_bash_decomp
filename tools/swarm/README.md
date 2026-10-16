@@ -22,7 +22,7 @@ function back to the front of the queue with the permuter's diff
 node tools/swarm/swarm.mjs run --branch main --seg overlays/engine --max-minutes 60 --max-run-usd 80 \
   --max-functions 500 --workers 3 --big-workers 2 --big-bytes 400 --big-minutes 27
 node tools/swarm/swarm.mjs status
-node tools/swarm/swarm.mjs stats      # outcomes by size, big-mode checkpoints
+node tools/swarm/swarm.mjs stats      # outcomes and $ per match by size (--run ID: one run), checkpoints
 node tools/swarm/swarm.mjs stop       # graceful; --now kills (then `run --clear-stop` to start again)
 ```
 
@@ -70,7 +70,20 @@ or keys. Checkpoints saved by name before 2026-10-16 still resume when the name 
   notes. Checkpoints persist across runs.
 - A function that stops progressing is parked with its best C in `checkpoints/`;
   `--retry-failed` gives it a fresh allowance for one run.
-- Use `stats` to place `--big-bytes` where normal mode's match rate drops.
+- Use `stats` to place `--big-bytes` where normal mode's match rate drops, and its $ per match
+  to compare runs (`--run ID`).
+
+## What sessions cost
+
+Each worker session gets a `--session-id`; when it ends, one line goes to `ledger.jsonl` in the swarm
+directory (function, size, kind, model, attempt, outcome, $, tokens, turns, minutes, `try` runs,
+reads and greps of `docs/*.md`). A finished session's $ is its result line's; a killed one (its
+deadline, a stop) has none, so its transcript (`~/.claude/projects/<clone>/<session>.jsonl`) is
+priced with `prices` in config.json ($ per million tokens: input, output, cache read, cache write),
+scaled by how this run's finished sessions compare with their own transcripts priced. Both count
+towards `--max-run-usd`. The prices were fitted on 2026-10-16 from 745 sessions' result lines
+(estimates within 2%); refit them when the models or prices change. Sessions before 2026-10-16 were
+backfilled into the ledger (`"backfilled": true`; their "matched" means `try` said MATCH).
 
 ## Safeguards
 

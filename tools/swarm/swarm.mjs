@@ -5,7 +5,7 @@
 //   node tools/swarm/swarm.mjs run [--workers 3] [--seg main/main] [--only f1,f2] ...
 //   node tools/swarm/swarm.mjs stop [--now]     graceful: finish and integrate current work
 //   node tools/swarm/swarm.mjs status
-//   node tools/swarm/swarm.mjs stats            outcomes by function size; big-mode checkpoints
+//   node tools/swarm/swarm.mjs stats [--run ID] outcomes and $ per match by function size; checkpoints
 //   node tools/swarm/swarm.mjs clean            delete the worker and integration clones
 //   node tools/swarm/swarm.mjs permute --only f1,f2 | --near [--minutes 30] [--jobs N]
 //                                               permuter only (no Claude), from each one's checkpoint
@@ -381,6 +381,80 @@ function resetClone(dir, rev) {
   gitOk(dir, 'clean', '-fdq');
 }
 
+// ---------------------------------------------------------------- what a session cost
+
+// where Claude Code keeps session transcripts (<project>/<session id>.jsonl)
+const CLAUDE_PROJECTS = path.join(process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude'), 'projects');
+
+function transcriptOf(sessionId) {
+  if (!sessionId || !fs.existsSync(CLAUDE_PROJECTS)) return null;
+  for (const d of fs.readdirSync(CLAUDE_PROJECTS)) {
+    const p = path.join(CLAUDE_PROJECTS, d, `${sessionId}.jsonl`);
+    if (fs.existsSync(p)) return p;
+  }
+  return null;
+}
+
+// a transcript's model, token totals (one usage per API message: a message's content blocks are
+// separate lines repeating it) and how often it went to docs/*.md (Read; Grep or a grep command)
+function readTranscript(file) {
+  const byId = new Map(), tools = new Set();
+  let model = null, docReads = 0, docGreps = 0;
+  for (const line of fs.readFileSync(file, 'utf8').split('\n')) {
+    if (!line.startsWith('{')) continue;
+    let j;
+    try { j = JSON.parse(line); } catch { continue; }
+    if (j.isSidechain || j.type !== 'assistant' || !j.message) continue;
+    if (j.message.usage && j.message.id) {
+      byId.set(j.message.id, j.message.usage);
+      model = j.message.model || model;
+    }
+    for (const c of Array.isArray(j.message.content) ? j.message.content : []) {
+      if (c.type !== 'tool_use' || tools.has(c.id)) continue;
+      tools.add(c.id);
+      const arg = String(c.input?.file_path || c.input?.path || c.input?.command || '');
+      if (!/\bdocs[\\/]\w+\.md\b|\bdocs[\\/]?$/.test(arg)) continue;
+      if (c.name === 'Read') docReads++;
+      else if (c.name === 'Grep' || (c.name === 'Bash' && /\bgrep\b/.test(arg))) docGreps++;
+    }
+  }
+  const tokens = { in: 0, out: 0, cacheRead: 0, cacheWrite: 0 };
+  for (const u of byId.values()) {
+    tokens.in += u.input_tokens || 0;
+    tokens.out += u.output_tokens || 0;
+    tokens.cacheRead += u.cache_read_input_tokens || 0;
+    tokens.cacheWrite += u.cache_creation_input_tokens || 0;
+  }
+  return { model, tokens, turns: byId.size, docReads, docGreps };
+}
+
+// $ for tokens at config.json's prices ($ per million: input, output, cache read, cache write)
+function priceOf(model, t, prices) {
+  const p = prices?.[model];
+  return p ? (t.in * p[0] + t.out * p[1] + t.cacheRead * p[2] + t.cacheWrite * p[3]) / 1e6 : 0;
+}
+
+// a session's usage: its result line's cost when it finished; killed (at its deadline, by a stop),
+// the transcript's tokens priced, times `scale` (this run's reported / estimated cost so far)
+function sessionUsage(result, transcript, prices, scale = 1) {
+  const t = transcript ? readTranscript(transcript) : null;
+  const done = result?.type === 'result' && typeof result.total_cost_usd === 'number';
+  const ru = result?.usage;
+  return {
+    usd: done ? result.total_cost_usd : t ? priceOf(t.model, t.tokens, prices) * scale : 0,
+    estimated: !done,
+    known: done || !!(t && prices?.[t.model]),
+    model: t?.model || Object.keys(result?.modelUsage || {})[0] || null,
+    tokens: ru ? { in: ru.input_tokens || 0, out: ru.output_tokens || 0, cacheRead: ru.cache_read_input_tokens || 0,
+                   cacheWrite: ru.cache_creation_input_tokens || 0 } : t?.tokens || null,
+    turns: result?.num_turns ?? t?.turns ?? null,
+    apiMinutes: done && result.duration_api_ms ? +(result.duration_api_ms / 60e3).toFixed(2) : null,
+    docReads: t ? t.docReads : null, docGreps: t ? t.docGreps : null,
+    // for calibrating estimates: the same session priced from its transcript
+    priced: done && t ? priceOf(t.model, t.tokens, prices) : null,
+  };
+}
+
 // ---------------------------------------------------------------- the run
 
 class Swarm {
@@ -394,6 +468,7 @@ class Swarm {
       log: path.join(o.dir, 'swarm.log'), history: path.join(o.dir, 'history.json'),
       report: path.join(o.dir, 'report.md'), patterns: path.join(o.dir, 'patterns.md'),
       results: path.join(o.dir, 'results'), checkpoints: path.join(o.dir, 'checkpoints'),
+      ledger: path.join(o.dir, 'ledger.jsonl'),
     };
     this.slots = Array.from({ length: o.workers }, (_, i) => ({ id: `w${i + 1}`, dir: path.join(o.dir, 'workers', `w${i + 1}`), job: null }));
     // big mode: long resumable sessions on big functions (>= --big-bytes, or parked in normal mode)
@@ -411,6 +486,7 @@ class Swarm {
     this.finished = new Set();      // keys done with this run (matched, parked or failed)
     this.stats = { matched: 0, parked: 0, failed: 0, conflicts: 0 };
     this.costUsd = 0;
+    this.calib = { reported: 0, priced: 0 };   // finished sessions: reported $ vs their transcript priced
     this.consecutiveFailures = 0;
     this.stopping = null;
     this.history = readJson(this.paths.history, {});
@@ -1016,7 +1092,9 @@ Fix that, keep it matching, and report "matched".
       [cmd, args] = [this.bash, ['-c', `echo '{"status":"parked","note":"dry run"}' > ${RESULT}`]];
     } else {
       cmd = this.claude;
-      args = [...this.o.claudeArgs, '--model', job.model,
+      // a known session id finds its transcript when the session is killed (sessionUsage)
+      job.sessionId = crypto.randomUUID();
+      args = [...this.o.claudeArgs, '--model', job.model, '--session-id', job.sessionId,
               '--max-budget-usd', String(job.big ? this.o.bigBudgetUsd : this.o.workerBudgetUsd),
               '--allowedTools', this.o.allowedTools.join(','), '--disallowedTools', this.o.disallowedTools.join(',')];
       if (WIN && /\.(cmd|bat)$/i.test(cmd)) {
@@ -1085,12 +1163,19 @@ Fix that, keep it matching, and report "matched".
     const out = fs.readFileSync(path.join(job.dir, 'worker.out'), 'utf8').trim().split('\n');
     let session = {};
     try { session = JSON.parse(out.reverse().find(l => l.startsWith('{"')) || '{}'); } catch { /* not claude */ }
-    const cost = Number(session.total_cost_usd) || 0;
+    // what it cost, killed sessions included (their transcript, priced), for --max-run-usd and the ledger
+    const use = job.sessionId ? sessionUsage(session, transcriptOf(job.sessionId), this.o.prices, this.priceScale()) : null;
+    if (use?.priced) { this.calib.reported += use.usd; this.calib.priced += use.priced; }
+    const cost = use?.usd || 0;
     this.costUsd += cost;
+    // `try` runs this session made (decomp.py counts them in the clone's state.json)
+    job.tries = readJson(path.join(slot.dir, '.decomp', 'state.json'), {})[f.key]?.tries ?? null;
+    job.usage = use && { ...use, minutes: +mins };
     this.log(`${slot.id} ${f.name}: worker exited ${code}${job.timedOut ? ' (timeout)' : ''} after ${mins} min` +
-             `${cost ? `, $${cost.toFixed(2)} (run $${this.costUsd.toFixed(2)})` : ''}, says ${res.status || 'nothing'}`);
+             `${cost ? `, $${cost.toFixed(2)}${use.estimated ? ' (estimated from its transcript)' : ''} (run $${this.costUsd.toFixed(2)})` : ''}` +
+             `${use && !use.known ? ', cost unknown (no result line, no transcript or price)' : ''}, says ${res.status || 'nothing'}`);
     if (res.pattern) this.addPattern(f, res.pattern);
-    if (this.stopping === 'now') return;
+    if (this.stopping === 'now') return this.ledger(job, 'stopped');
     if (job.startError) return this.fail(slot, job, `could not start the worker: ${job.startError}`, false);
     // a worker that couldn't build leaves no patch: if Docker went away, that's why
     if (!patch.trim() && this.dockerDown()) return this.infraStop(slot, job, 'Docker is not reachable');
@@ -1280,6 +1365,7 @@ Fix that, keep it matching, and report "matched".
       fs.writeFileSync(path.join(job.dir, 'permute.txt'), r.out);
       if (this.stopping) {          // a stop cuts permuter runs short: no worker would port the result
         this.finished.add(f.key);
+        this.ledger(job, 'stopped');
         this.log(`${ps.id} ${f.name}: permuter stopped; worker's C kept in ${job.bestPatch}`);
         return;
       }
@@ -1325,6 +1411,28 @@ Fix that, keep it matching, and report "matched".
     h.notes = [...h.notes, `${stamp()} ${job.model}: ${status}: ${note}`].slice(-6);
     writeJson(this.paths.history, this.history);
     fs.appendFileSync(this.paths.report, `- ${stamp()} **${job.f.name}** (${job.f.seg}, ${job.f.size} B, ${job.model}): ${status}. ${note}\n`);
+    this.ledger(job, status);
+  }
+
+  // one line per worker session in ledger.jsonl, written when its outcome is first known (`stats`
+  // reads it): the function, the kind of session, its usage and what came of it
+  ledger(job, outcome) {
+    if (!job.usage || job.ledgered) return;
+    job.ledgered = true;
+    const { f } = job, u = job.usage;
+    const kind = `${job.big ? 'big' : 'normal'}${job.gateFix ? '-gatefix' : job.permuterDiff ? '-permuted' : job.startPatch ? '-port' : ''}`;
+    fs.appendFileSync(this.paths.ledger, JSON.stringify({
+      run: this.id, at: stamp(), key: f.key, name: f.name, seg: f.seg, size: f.size, kind, model: job.model,
+      attempt: job.attempt, outcome, timedOut: !!job.timedOut, usd: +u.usd.toFixed(4), estimated: u.estimated,
+      known: u.known, turns: u.turns, tokens: u.tokens, minutes: u.minutes, apiMinutes: u.apiMinutes,
+      tries: job.tries, docReads: u.docReads, docGreps: u.docGreps, session: job.sessionId,
+    }) + '\n');
+  }
+
+  // estimates of killed sessions are scaled by how this run's finished sessions compare with their
+  // own transcripts priced (1 until there are some)
+  priceScale() {
+    return this.calib.priced > 0 ? this.calib.reported / this.calib.priced : 1;
   }
 
   notMatched(slot, job, note) {
@@ -1705,6 +1813,7 @@ Fix that, keep it matching, and report "matched".
           // no worker will port permuter results: drop waiting runs and cut running ones short
           for (const job of this.permQueue.splice(0)) {
             this.finished.add(job.f.key);
+            this.ledger(job, 'stopped');
             this.log(`${job.f.name}: permuter run dropped by the stop; worker's C kept in ${job.bestPatch}`);
           }
           for (const ps of this.pslots)
@@ -1839,6 +1948,7 @@ function stats(o) {
                 `  ${(b.reduce((s, e) => s + (e.attempts || 0), 0) / b.length).toFixed(1).padStart(8)}` +
                 `  ${big.length ? (big.reduce((s, e) => s + (e.bigSessions || 0), 0) / big.length).toFixed(1) : '-'}`.padStart(14));
   }
+  ledgerStats(path.join(o.dir, 'ledger.jsonl'), edges, o.run ? String(o.run) : null);
   const cps = fs.existsSync(path.join(o.dir, 'checkpoints')) ? fs.readdirSync(path.join(o.dir, 'checkpoints')) : [];
   if (cps.length) {
     console.log('big-mode checkpoints (best C so far):');
@@ -1846,6 +1956,35 @@ function stats(o) {
       const j = readJson(path.join(o.dir, 'checkpoints', n, 'best.json'), null);
       if (j) console.log(`  ${j.key && j.name ? `${j.name} (${j.key})` : n}: ${Swarm.describe(j)} (${j.updated})`);
     }
+  }
+}
+
+// spend from ledger.jsonl by function size and mode: $ per match (everything spent in the bucket,
+// failures included, over the functions it matched) and how often a first session matches. Use it
+// to set --big-bytes and to compare prompt or tool changes between runs (--run ID for one run)
+function ledgerStats(file, edges, run = null) {
+  if (!fs.existsSync(file)) return console.log('no ledger.jsonl yet: spend per session is recorded from the next run');
+  const rows = fs.readFileSync(file, 'utf8').split('\n').filter(Boolean).map(l => JSON.parse(l))
+    .filter(r => !run || r.run === run);
+  const sum = (a, f) => a.reduce((s, r) => s + (f(r) || 0), 0);
+  const med = a => { const s = a.filter(x => x != null).sort((x, y) => x - y); return s.length ? s[s.length >> 1] : '-'; };
+  const est = rows.filter(r => r.estimated);
+  console.log(`\nspend by size and mode (${rows.length} sessions${run ? ` in run ${run}` : ''}, $${sum(rows, r => r.usd).toFixed(2)}; ` +
+              `${est.length} killed sessions estimated from transcripts, $${sum(est, r => r.usd).toFixed(2)}` +
+              `${rows.some(r => r.known === false) ? `; ${rows.filter(r => r.known === false).length} of unknown cost` : ''})`);
+  console.log('  bytes        mode     sessions    spend  matched  $/match  1st session  med turns  docs reads/greps');
+  for (let i = 0; i + 1 < edges.length; i++) for (const mode of ['normal', 'big']) {
+    const b = rows.filter(r => r.size >= edges[i] && r.size < edges[i + 1] && r.kind.split('-')[0] === mode);
+    if (!b.length) continue;
+    const spend = sum(b, r => r.usd), matched = new Set(b.filter(r => r.outcome === 'matched').map(r => r.key)).size;
+    const first = b.filter(r => r.attempt === 1 && r.kind === mode);
+    const docs = b.filter(r => r.docReads != null);
+    console.log(`  ${`${edges[i]}-${edges[i + 1] === Infinity ? '' : edges[i + 1] - 1}`.padEnd(11)}  ${mode.padEnd(7)}` +
+                `  ${String(b.length).padStart(8)}  ${`$${spend.toFixed(2)}`.padStart(7)}  ${String(matched).padStart(7)}` +
+                `  ${(matched ? `$${(spend / matched).toFixed(2)}` : '-').padStart(7)}` +
+                `  ${(first.length ? `${first.filter(r => r.outcome === 'matched').length}/${first.length}` : '-').padStart(11)}` +
+                `  ${String(med(b.map(r => r.turns))).padStart(9)}` +
+                `  ${docs.length ? `${(sum(docs, r => r.docReads) / docs.length).toFixed(1)}/${(sum(docs, r => r.docGreps) / docs.length).toFixed(1)}` : '-'}`);
   }
 }
 
@@ -1942,7 +2081,7 @@ function clean(o) {
 
 // for tools/swarm/swarm.test.mjs, which imports this file with SWARM_IMPORT=1 (an env guard: a
 // path comparison with argv[1] can misfire on Windows path case and keep `run` from starting)
-export { Swarm, reapply, parseArgs, INCLUDE_LINE, infraError, workerMounts };
+export { Swarm, reapply, parseArgs, INCLUDE_LINE, infraError, workerMounts, sessionUsage, readTranscript, ledgerStats };
 
 if (process.env.SWARM_IMPORT !== '1') {
   const [cmd, o] = parseArgs(process.argv.slice(2));
