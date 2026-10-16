@@ -55,6 +55,42 @@ inside `CRASHBSH/CRASHBSH.DAT`: the engine (`0x80078C90`) and 14 minigame and
 mode overlays sharing one slot (`0x800B32B4`). Each overlay is its own build
 target. Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+From your disc image to a rebuilt disc. All of its code comes from this repository's build:
+our C, plus the asm of the functions not decompiled yet. Its game data comes from `assets/`
+([docs/ASSETS.md](docs/ASSETS.md)), and `make disc-check` proves the result is the retail disc
+byte for byte ([docs/PLAYING.md](docs/PLAYING.md)).
+
+```mermaid
+flowchart TD
+    disc[("Your disc image (bin/cue)")]
+    disc -- "decomp.py extract" --> files["disc/files<br/>disc layout and the files<br/>outside the game archive"]
+    disc -- "decomp.py extract" --> assets["assets/<br/>game data as PNG, OBJ/glTF,<br/>WAV/MIDI and text: edit here"]
+    disc -- "make split" --> asm["asm/<br/>functions not decompiled yet"]
+    src["src/<br/>our C: matched functions"] --> make["make<br/>compile, assemble, link"]
+    asm --> make
+    make --> exe["build/main.exe"]
+    make --> ovl["build/&lt;ovl&gt;.bin x 15<br/>engine and minigames"]
+
+    subgraph built ["make disc: build/CrashBash.bin, identical to retail (make disc-check)"]
+        direction LR
+        boot["SCUS_945.70<br/>= our main.exe"]
+        dat["CRASHBSH.DAT<br/>= our overlays + assets/"]
+        other["SYSTEM.CNF, licence,<br/>BASHY. filler, Spyro 3 demo"]
+    end
+
+    exe --> boot
+    ovl --> dat
+    assets --> dat
+    files --> other
+
+    classDef code fill:#EEEDFE,stroke:#534AB7,color:#3C3489
+    classDef data fill:#E1F5EE,stroke:#0F6E56,color:#085041
+    class src,asm,make,exe,ovl,boot code
+    class assets,dat data
+```
+
+As functions are matched they move from `asm/` to `src/`; the disc stays identical throughout.
+
 ## Layout
 
 - `src/main/` - the executable's game code (`main.c` and units split out by
