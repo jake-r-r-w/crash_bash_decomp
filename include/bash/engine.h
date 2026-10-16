@@ -68,6 +68,7 @@ typedef struct EngObj {
     void (*update)(struct EngObj *);
 } EngObj;
 extern EngObj **D_8005AA40;
+extern void (*D_8005AA7C)(void);
 extern subengine D_8009A04C[];
 extern struct { s32 *c; u8 pad[4]; s32 *a; s32 *b; } D_8009970C;
 extern s16 D_80099208[];
@@ -503,6 +504,8 @@ typedef struct {
 } EngineReqObj;
 
 void func_80078CA4(void);
+
+void func_8007906C(void);
 
 s32 func_8007A26C(NAS *nas);
 

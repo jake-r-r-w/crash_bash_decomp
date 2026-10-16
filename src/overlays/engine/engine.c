@@ -34,7 +34,45 @@ void func_80078CA4(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80078DD4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_8007906C);
+void func_8007906C(void) {
+    s32 i;
+    s32 n;
+    NAS *nas;
+    u16 cls;
+
+    D_8005AA58 = 1;
+    *D_8005AA40 = NULL;
+    *(s32 *)D_8005AA44 = 0;
+    i = 0;
+    if (D_8005AA7C != NULL) {
+        D_8005AA7C();
+    }
+    do {
+        if (Heroes[i].hero->Class & 0x1000) {
+            n = ++*(s32 *)D_8005AA44;
+            ((NAS **)D_8005AA44)[n] = Heroes[i].hero;
+        }
+        i++;
+    } while (i < 4);
+    for (i = D_8005AA10; i < D_8005AA12; i++) {
+        nas = &D_8005AA1C[i];
+        if (nas->NASid & 1) {
+            cls = nas->Class;
+            if (cls & 1) {
+                nas->Handler(nas);
+            }
+            if (cls & 2) {
+                n = ++*(s32 *)D_8005AA40;
+                D_8005AA40[n] = (EngObj *)nas;
+            }
+            if (cls & 0x1000) {
+                n = ++*(s32 *)D_8005AA44;
+                ((NAS **)D_8005AA44)[n] = nas;
+            }
+        }
+    }
+    D_8005AA58 = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80079260);
 
