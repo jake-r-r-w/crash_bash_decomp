@@ -1786,7 +1786,8 @@
   "auto_failed": "diff",
   "blocked_at": "2026-10-16T14:50:02Z",
   "note": "registers 5/142 (swarm checkpoint, unchanged by 2 more sessions 2026-10-16): only the entry; target tests a0 (andi a0,a0,0xC000) after move s5,a0 and loads arg4 into a3. An s16/u16 arg0 fixes it but moves move s5,a0 after the a2/a3 copies; needs the permuter or a sched2 idea",
-  "status": "blocked",
+  "started": "2026-10-16T19:39:24Z",
+  "status": "in_progress",
   "unblocked_at": "2026-10-16T13:33:02Z",
   "why_unblocked": "retry after the 2026-10-16 tooling upgrades (regions, closest-C carry-over, gate fixes)"
  },
@@ -2700,7 +2701,9 @@
   "status": "matched"
  },
  "8002D4F4": {
-  "auto_failed": "compile"
+  "auto_failed": "compile",
+  "started": "2026-10-16T19:39:20Z",
+  "status": "in_progress"
  },
  "8002DE2C": {
   "matched_at": "2026-10-14T21:11:34Z",

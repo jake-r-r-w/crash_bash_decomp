@@ -14,8 +14,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1061/2551 game functions matched (main.exe 571/575, 4 left: 3 parked
-  and `func_8002D4F4`; engine overlay 73 left), 3 parked,
+- 1062/2551 game functions matched (main.exe 572/575, 3 left: 2 parked
+  and `func_8002D4F4`; engine overlay 73 left), 2 parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - The engine overlay is six files and `ovl5d` three, `ovl5e`, `ovl66`,
