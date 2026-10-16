@@ -28,8 +28,9 @@ on the disc; delete `assets/CRASHBSH/` to start again from the retail DAT (extra
 `img_NNN.png` (keep it indexed, same size) and colours in `cluts.png`; the formats and the
 rules are in [ASSETS.md](ASSETS.md). 319 of the 400 model files come out as `<id>.mdl/model.obj`
 (geometry only, no textures yet): move vertices in Blender or any OBJ editor, keeping each mesh's
-vertex count and order. Everything else is still raw (`<id>.bin`: the other models, sounds,
-text). It is your game data: `assets/` is git-ignored, never commit it. The 15 code overlays' entries are there too, but `make disc`
+vertex count and order. The 5 title screens are `<id>.tga/screen.png`, and the 12 modes' text is
+`<id>.txt/text.txt` (a string may change but not outgrow its slot). Everything else is still raw
+(`<id>.bin`: the other models, the sound packs). It is your game data: `assets/` is git-ignored, never commit it. The 15 code overlays' entries are there too, but `make disc`
 always writes the built `build/<ovl>.bin` over them.
 
 ## Playing it

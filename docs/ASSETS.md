@@ -30,9 +30,12 @@ What the entries are (first u32 is a type or a count, not a magic number):
 | mostly even ids, `000`..`3DD` | 400 | texture sets, type 8 | `<id>.tex/` (tex.py) |
 | the entry after each texture set | 400 | model files (`.mdl`), textured by the set before them | 319 `<id>.mdl/` (mdl.py, geometry only) |
 | `1E7`, `2CC`..`2D8`, `3DF` | 15 | code overlays (`make disc` writes the built ones) | C/asm |
-| e.g. `099`, `126` | ~130 | sound banks: SPU ADPCM after a header (type 0x0C, 0x14) | no |
-| `08D`..`098` | ~15 | text (menu and objective strings; the first u32 is a count) | no |
-| `088`..`08C` | 5 | 256 KB blocks starting `00 00 02 00` | no |
+| `.sfx`, e.g. `099`, `126` | 160 | sound packs: SPU ADPCM after a header; the music ones VAB/SEQ (the name list says) | no |
+| `08D`..`098` | 12 | mode text (`overlays/text/*.bin`): strings, then data pointing at them | `<id>.txt/` (txt.py) |
+| `088`..`08C` | 5 | title screens (`screens/*.tga`): plain TGA files | `<id>.tga/` (tga.py) |
+
+The rest of the disc holds nothing more of Crash Bash's: `BASHY.` (30 MB) is all zeros, a
+filler, and `SPYRO3/` is the bundled Spyro 3 demo.
 
 ## Texture sets (type 8)
 
@@ -84,7 +87,29 @@ moved, but each mesh keeps its vertex count and order (Blender: import with Spli
 Order). Next for models: texture coordinates (the per-face arrays and the vertices' u16), so the
 OBJ can carry the textures; the engine's model loader, once matched, will say.
 
+## Title screens (`.tga`)
+
+`tools/scripts/tga.py`. Plain TGA 2.0: an 18-byte header (type 2, uncompressed; 16 bits a pixel,
+x1r5g5b5; 1 attribute bit, unused in all five; rows bottom-up), the pixels, the 26-byte footer.
+Four are 512x256, `089` 512x240. `<id>.tga/` holds `screen.png` (RGB, the top 5 bits of each
+channel count) and `tga.json` (header and footer as they are). `08A` is the Universal Interactive
+Studios screen.
+
+## Mode text (`overlays/text/*.bin`)
+
+`tools/scripts/txt.py`. A u32 (the file's number, 7 for `ball` to 18 for `tank`), then the mode's
+strings (menu names, objectives, controls), each zero-terminated and starting on a 4-byte
+boundary, then data with absolute pointers to them (e.g. `0x800AEC64`): a string can change but
+not move or grow past its slot (its start to the boundary after its terminator). In the strings,
+`0A` and `0D` break lines (`0D` is followed by two digits, a layout code) and `FC`..`FF` look like
+button icons. Four files (`ring`, `dino`, `kegs`, `mallet`) hold, after "DECREASE SCORE TO ZERO",
+the tail of a string cut short in development ("9IN THE ALLOTTED TIME").
+
+`<id>.txt/` holds `data.bin` (the file as it is) and `text.txt` (`@offset: text` a line; `\n`,
+`\r`, `\xNN`, `\\` for the bytes above). An unchanged line keeps its slot byte for byte; a changed
+one is written in, zero-padded, and one too long for its slot is refused.
+
 ## Next formats
 
-- Sound banks: CTR-tools `BashSfx.cs`; generic SPU ADPCM rippers may read the banks as they are.
-- Text: a count and fixed-size strings; small.
+- Sound packs (160): CTR-tools `BashSfx.cs` converts them to VAB/SEQ (Sony's sound bank and
+  sequence formats); from there, WAV for the samples and MIDI for the music.

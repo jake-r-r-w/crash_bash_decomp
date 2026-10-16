@@ -420,6 +420,13 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-16 (assets: screens, text):** `tga.py` (5 title screens, plain
+  TGA, to PNG) and `txt.py` (12 modes' text, strings in fixed slots
+  because data points at them by address; four files keep a cut string's
+  tail after its terminator) round-trip byte for byte; disc-check OK.
+  `BASHY.` is 30 MB of zeros (filler), `SPYRO3/` the bundled demo: all of
+  Crash Bash's data is in the DAT. Next: the 160 sound packs (VAB/SEQ).
+
 - **2026-10-16 (assets: models):** `tools/scripts/mdl.py`: model files'
   meshes to OBJ (`<id>.mdl/`, geometry only) and back byte for byte, 319
   of 400 (CTR-tools' BashMesh reading; the other 81 differ); `dat.py` has
