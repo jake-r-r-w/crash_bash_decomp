@@ -114,4 +114,31 @@ s32 func_800951D0(s32 arg0);
 
 s32 func_80095F88(u8 *p, s16 a1, s32 a2, s16 a3, s32 a4, s32 idx);
 
+typedef struct MarkSrcEnt {
+    /* 0x00 */ s16 val;
+    /* 0x02 */ u8 pad2[0x32];
+} MarkSrcEnt;
+typedef struct MarkSrc {
+    /* 0x00 */ u8 pad0[0x54];
+    /* 0x54 */ s32 count;
+    /* 0x58 */ u8 pad58[0xE];
+    /* 0x66 */ MarkSrcEnt ent[1];
+} MarkSrc;
+typedef struct MarkObj {
+    /* 0x0 */ u8 pad0[0xC];
+    /* 0xC */ MarkSrc *src;
+} MarkObj;
+typedef struct MarkCtx {
+    /* 0x0 */ s32 unk0;
+    /* 0x4 */ MarkObj *obj;
+    /* 0x8 */ s32 unk8;
+    /* 0xC */ u8 unkC;
+} MarkCtx;
+extern Blk32 D_800A0BA0;
+extern CamVec3 D_800A0BC0;
+extern u8 D_800A0BF3;
+extern u8 *D_800A0D34;
+
+void func_80094A28(void);
+
 #endif /* BASH_8009317C_H */

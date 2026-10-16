@@ -402,7 +402,45 @@ void func_80094860(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009317c", func_80094A28);
+void func_80094A28(void) {
+    MarkObj *o;
+    MarkSrc *s;
+    EngineMarker *m;
+    EngineMarker *b;
+    s32 i;
+    s32 n;
+    s32 v;
+    s32 t;
+    MarkSrcEnt *e;
+
+    func_8001FE80((u8 *)((MarkCtx *)D_800A0D2C)->obj, ((MarkCtx *)D_800A0D2C)->unk8, &D_800A0BA0, &D_800A0BC0, 4, &D_800A0D34);
+    D_800A0C70 = 0;
+    t = (s32)((MarkCtx *)D_800A0D2C)->obj;
+    D_800A0D30 = t;
+    o = (MarkObj *)t;
+    if (o != NULL) {
+        s = o->src;
+        if (s != NULL) {
+            i = 0;
+            if (s->count > 0) {
+                do {
+                    e = s->ent;
+                    if (((s16 *)&e[i])[-1] == 0x64) {
+                        b = D_800A0C10;
+                        n = D_800A0C70;
+                        m = &b[n];
+                        m->unk8 = o;
+                        *(s32 *)m = i + 0x2001;
+                        v = e[i].val;
+                        D_800A0C70 = n + 1;
+                        m->idx = v;
+                    }
+                } while (++i < s->count);
+            }
+        }
+    }
+    D_800A0BF3 = ((MarkCtx *)D_800A0D2C)->unkC;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009317c", func_80094B38);
 
