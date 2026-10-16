@@ -5874,9 +5874,6 @@ void func_8001A6D4(void *arg0, u32 hidden) {
 #undef p
 }
 
-#ifndef NON_MATCHING
-INCLUDE_ASM("asm/nonmatchings/main/main", func_8001A82C);
-#else
 void func_8001A82C(TextNAS *t, s32 arg1, s32 arg2) {
     GteSetup s;
     s32 x;
@@ -5891,9 +5888,14 @@ void func_8001A82C(TextNAS *t, s32 arg1, s32 arg2) {
     if (t->NASid & 0x10000000) {
         x = t->x;
         if ((x & 0xC000) == 0x8000) {
-            x = (((x & ~0xC000) << 14 >> 14) + D_800569C0) & ~0xC000 | 0x8000;
+            x &= ~0xC000;
+            x <<= 14;
+            x >>= 14;
+            x += D_800569C0;
+            x &= ~0xC000;
+            x |= 0x8000;
         } else {
-            x = D_800569C0 + x;
+            x = D_800569C0 + t->x;
         }
         func_800243A0(x, (s16)(D_800569C4 + t->y), t->str, t->c0, t->c1, 0);
         return;
@@ -5911,7 +5913,6 @@ void func_8001A82C(TextNAS *t, s32 arg1, s32 arg2) {
     ((GlyphPos *)&s)->v[2] = t->z;
     func_800246D0((GlyphPos *)&s, t->str, t->c0, t->c1);
 }
-#endif
 
 static inline u8 *func_8001AA48_setup(ModelObj *obj, void *arg1, s32 flags, RelTable *colors, u8 *t) {
     func_8001D894(obj, arg1, flags, (s32)colors);
