@@ -53,7 +53,23 @@ s32 func_8007EFC0(s32 pad, s32 max) {
     return ((PadButtons *)D_80051338)[pad].pressed & 0x4000;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8007F1A8);
+s32 func_8007F1A8(s32 pad, s32 max) {
+    if ((((PadButtons *)D_80051338)[pad].pressed & 0x10) && D_8009AEEC > 0) {
+        PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        D_8009AEEC--;
+    }
+    if ((((PadButtons *)D_80051338)[pad].pressed & 0x40) && D_8009AEEC < max) {
+        PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        D_8009AEEC++;
+    }
+    if (D_8009AEEC < 0) {
+        D_8009AEEC = 0;
+    }
+    if (D_8009AEEC > max) {
+        D_8009AEEC = max;
+    }
+    return ((PadButtons *)D_80051338)[pad].pressed & 0x4008;
+}
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8007ee2c", D_800ADDB0);
 
