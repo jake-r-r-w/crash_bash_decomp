@@ -136,6 +136,29 @@ void func_80090A10(void);
 void func_80090E20(void);
 
 void func_8008ECE4(void);
+/* D_8005A614 as seen by func_8008ECE4. */
+typedef struct EngineModeView {
+    /* 0x00 */ u8 pad0[0x30];
+    /* 0x30 */ u16 unk30;
+    /* 0x32 */ u16 unk32;
+    /* 0x34 */ s16 mode;
+    /* 0x36 */ u8 pad36[0x44 - 0x36];
+    /* 0x44 */ s16 unk44;
+    /* 0x46 */ u8 pad46[0x4C - 0x46];
+    /* 0x4C */ u8 unk4C[4];
+    /* 0x50 */ u8 unk50[4];
+    /* 0x54 */ u8 unk54[4];
+    /* 0x58 */ u8 unk58[4];
+    /* 0x5C */ u8 pad5C[0x60 - 0x5C];
+    /* 0x60 */ u8 unk60;
+    /* 0x61 */ u8 pad61[0x187 - 0x61];
+    /* 0x187 */ u8 unk187;
+} EngineModeView;
+extern s8 D_8004E0A4[];
+extern s32 D_8009F720[];
+extern u8 D_800A0858[];
+extern u8 D_800A0870[];
+extern u8 D_800A0888[];
 
 s32 func_8008EF70(void);
 

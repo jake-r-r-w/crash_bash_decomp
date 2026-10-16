@@ -80,7 +80,105 @@ void func_8008EC94(void) {
     MoveImage2(a, r->x, r->y);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_8008ECE4);
+void func_8008ECE4(void) {
+    EngineModeView *g = (EngineModeView *)D_8005A614;
+    s32 msg;
+    s32 res;
+    u16 flags;
+    u16 w;
+
+    if (!(g->unk30 & 0x8000)) {
+        return;
+    }
+    g->unk50[0] = g->unk4C[0];
+    g->unk50[1] = g->unk4C[1];
+    g->unk50[2] = g->unk4C[2];
+    g->unk50[3] = g->unk4C[3];
+    g->unk58[0] = g->unk54[0];
+    g->unk58[1] = g->unk54[1];
+    g->unk58[2] = g->unk54[2];
+    g->unk58[3] = g->unk54[3];
+    if (g->unk32 & 0x20) {
+        func_800793E8();
+    }
+    flags = g->unk30;
+    if ((flags & 0x8008) == 0x8008) {
+        g->mode = D_8009E5DC;
+        res = func_800951D0((s16)D_8009E5DC);
+        if (res == 0) {
+            D_8009F65C = (s32 *)D_800A00DC;
+            return;
+        }
+        func_80094D88(res, (s32)D_800A00DC);
+        return;
+    }
+    w = D_8004DDD0[g->mode * 3];
+    if (w == 0x101) {
+        return;
+    }
+    if (w == 0x102) {
+        if (g->mode == 0x2B) {
+            g->mode = 0x28;
+            D_8009F65C = (s32 *)D_800A00DC;
+            return;
+        }
+        if (flags == 0x8002) {
+            g->mode = func_8008EF70();
+        } else {
+            g->mode = D_8009E5DC;
+        }
+        D_8009F65C = (s32 *)D_800A00DC;
+        return;
+    }
+    if (flags & 0x200) {
+        D_8009F65C = D_8009F720;
+        return;
+    }
+    switch (g->mode) {
+    case 0x1F:
+        if (g->unk187 != 0 && (flags & 1)) {
+            if (g->unk44 == 3) {
+                g->mode = 0x20;
+                func_80094D88((s32)D_800A0888, (s32)D_800A00DC);
+            } else if (g->unk44 == 1) {
+                g->mode = 0x25;
+                func_80094D88((s32)D_800A0858, (s32)D_800A00DC);
+            } else {
+                g->mode = 0x25;
+                func_80094D88((s32)D_800A0870, (s32)D_800A00DC);
+            }
+            return;
+        }
+        D_8005A648 = func_8008EF70();
+        return;
+    case 0x20:
+        g->mode = 0x25;
+        if (D_8004E0A4[g->unk60] == 1) {
+            msg = (s32)D_800A0858;
+        } else {
+            msg = (s32)D_800A0870;
+        }
+        func_80094D88(msg, (s32)D_800A00DC);
+        return;
+    }
+    g = (EngineModeView *)D_8005A614;
+    switch (*(u8 *)&g->unk32) {
+    case 2:
+        if (g->unk30 & 1) {
+            g->mode = func_8008FF94();
+        } else {
+            g->mode = 0x2A;
+        }
+        break;
+    case 1:
+        g->mode = 0x29;
+        break;
+    default:
+        g->mode = func_8008EF70();
+        break;
+    }
+    D_8009F65C = (s32 *)D_800A00DC;
+}
 
 s32 func_8008EF70(void) {
     return D_8009EDD4[D_8005A676][0];
