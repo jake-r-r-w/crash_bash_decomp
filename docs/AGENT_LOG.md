@@ -14,8 +14,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1064/2551 game functions matched (main.exe 574/575, 1 left:
-  `func_8002D4F4`, parked at 145/148 blocks; engine overlay 73 left), 1 parked,
+- 1065/2551 game functions matched: **main.exe is complete (575/575)**;
+  engine overlay 73 left. None parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - The engine overlay is six files and `ovl5d` three, `ovl5e`, `ovl66`,
@@ -62,8 +62,8 @@ parked. **Retry parks with this recipe after tool upgrades.**
 **Start of next session: matching.** Run the engine swarm hour (item 1b,
 `--max-functions 500`), then the post-run checklist (`fold` was done
 2026-10-16 after the main.exe retry; `permute --near` not yet: it covers
-the three main.exe parks, all register-only). `func_8002D4F4` is at
-145/148 blocks: one delay slot in state 6 (Open leads). The file splits are done as far as the evidence goes
+the three main.exe parks, all register-only; all three were matched by
+hand since). main.exe is fully matched. The file splits are done as far as the evidence goes
 (item 3).
 
 0. Current focus (ROADMAP.md, Current focus): `make disc` works and the
@@ -78,8 +78,8 @@ the three main.exe parks, all register-only). `func_8002D4F4` is at
      are ported to today's declarations and parked as `NON_MATCHING`
      blocks in `main.c` (Open leads). No fresh small function is left.
    - 2026-10-15: one big worker per function matched 7 of the 8 untried
-     big ones in 60 min ($40). Left: `func_8002D4F4` (2360 B, gcc 2.7.2
-     unit), 144/148 blocks on 2026-10-16 (Open leads).
+     big ones in 60 min ($40). The last, `func_8002D4F4` (2360 B, gcc
+     2.7.2 unit), was matched by hand on 2026-10-16.
 1b. Overlays with the swarm, engine first (shared by every minigame):
    `swarm.mjs run --branch main --seg overlays/engine --max-minutes 60
    --max-run-usd 80 --max-functions 500 --workers 3 --big-workers 2
@@ -101,8 +101,7 @@ left, for the permuter). `--max-functions 500` leaves time and cost as the limit
 2. The rest of `main.exe` with the swarm: `swarm.mjs run --branch main --seg
    main/ --max-minutes 60 --max-run-usd 80 --big-bytes 400 --workers 1
    --big-workers 4 --big-minutes 27` ($54 for 10 matches on 2026-10-14).
-   After the 2026-10-16 retry only four are left: three register-only
-   parks and `func_8002D4F4` (Open leads). After each run, the "After a run"
+   Nothing is left in main.exe (2026-10-16). After each run, the "After a run"
    checklist in tools/swarm/README.md (`stats`, parks, `fold`, `permute
    --near`, this log).
 3. Split `main.c` into its translation units, between swarm runs (on hold
@@ -173,40 +172,18 @@ left, for the permuter). `--max-functions 500` leaves time and cost as the limit
   hand instead.
 
 Other:
-- The gcc 2.7.2 units (`main/8002d488`, `main/8002e0f0`): `aspsx_fill.py`
-  fills `j`/`jr` slots and, since 2026-10-14, expands indexed symbol loads
-  through the load's register as ASPSX does (that unblocked and matched
-  `func_8002E0F0` and `func_8002E000`). Left: `func_8002E3D0` (436 B; big-mode
-  checkpoint structure 107/111; gcc
-  if-converts `v = 0; if (bit) v = arg2;`), `func_8002DE2C` (468 B; an
-  extra `addu a3,v1,zero` copy in the target's first `bne` slot),
-  `func_8002D4F4` (2360 B, below). Swarm notes on them before 2026-10-14
-  blame the `$at` loads; ignore those. If a `jal` slot differs, extend
-  `aspsx_fill.py` from the target. Whether the two units are one file is open.
-- **`func_8002D4F4`** (the CD state machine, 2360 B): regions 145/148,
-  paired 587/590, length 590 (= retail), C under `NON_MATCHING`. The unit
-  is now built with `-fno-rerun-cse-after-loop` (Makefile): without the
-  second cse pass, plain `D_8006788C[1]` / `D_80067884[k]` accesses come
-  out as `la` + offsets like retail, which fixed states 4/5 and let
-  `func_8002DE2C` drop its always-zero `((u8)limit >> 8)` offset.
-  Only state 6's case 1 is left (blocks 47/48/50), and it is the compiler,
-  not the C. Retail's reorg fills the unconditional `j` after `beq ret,1`
-  from its target (`li $16,6`) before the eager pass; the `beq` then
-  steals that from the `j` and case 1 keeps `li $4,3`. FSF 2.7.2's reorg
-  (our `2.7.2-psx`; read in gcc-2.7.2.3 `reorg.c`, kept in
-  `scratch/gcc272src/`) never fills a simple jump from its target in
-  `fill_simple_delay_slots`, so `fill_eager_delay_slots` finds the `j`
-  empty and takes `li $4,3` from case 1 instead. On a lab copy
-  (`scratch/lab/s6.c`, `scratch/lab/run.sh`), `2.7.2-cdk` and `2.8.1-psx`
-  give retail's slot, and steal `li $4,3` like ours when the `j` can't be
-  filled; `2.6.3-psx` behaves like ours. The whole unit under 2.8.1 is far
-  off (102/148), so the original is a 2.7.2 with the newer reorg (SN's
-  build of a Cygnus tree?). No C form gives retail's slot under FSF
-  reorg. Options: the real PsyQ `cc1psx` in the toolchain, or a narrow
-  `aspsx_fill.py` rule that redoes this fill order.
-- `main/8002e0f0` with the same flag: `func_8002E25C` stops matching
-  (structure 44/95), the other four still match. Whether both units had the
-  flag (and E25C's C leans on cse2) is open.
+- The gcc 2.7.2 units (`main/8002d488`, `main/8002e0f0`) are fully
+  matched. Their toolchain differences, all in the Makefile and
+  `aspsx_fill.py`: ASPSX's slot filling and load expansion; `8002d488` is
+  compiled with `-fno-rerun-cse-after-loop` (global arrays keep `la` +
+  offsets); and `refill_from_jump` redoes one slot fill where Sony's reorg
+  differs from FSF 2.7.2's (it fills a `j` from its target before the
+  branches; FSF 2.7.2.3 `reorg.c` in `scratch/gcc272src/`, a lab copy in
+  `scratch/lab/s6.c`). 2.7.2-cdk and 2.8.1-psx share Sony's reorg order but
+  not its codegen, so a gcc 2.7.2 game elsewhere may need the same rule.
+- `main/8002e0f0` with `-fno-rerun-cse-after-loop`: `func_8002E25C` stops
+  matching (structure 44/95), the other four still match. Whether both
+  units had the flag (and E25C's C leans on cse2) is open.
 - Swarm: `--seg` is a prefix and defaults to `main/main`, so the new units
   need `--seg main/8002` (or `--only`).
 - Heap: `D_8004E0F0` is a `Heap` now. Its +0x10 is the deferred-free list
@@ -401,6 +378,14 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-16 (by hand + tool, `func_8002D4F4`):** matched (710a20d);
+  main.exe is complete. The last slot (state 6) was the compiler, not the
+  C: read gcc-2.7.2.3 `reorg.c` (downloaded to `scratch/gcc272src/`) and
+  found FSF reorg fills a `j` after the branches, Sony's (like 2.7.2-cdk
+  and 2.8.1-psx on a lab copy) before them. `aspsx_fill.py`'s new
+  `refill_from_jump` redoes that order for a `beq` + `j` (07750fc, 5 tests);
+  every matched function of both 2.7.2 units still matches, `make check` OK.
 
 - **2026-10-16 (by hand, `func_8002D4F4`):** parked at 145/148 (was 144,
   length 592 -> 590). Found that the 2.7.2 unit compiles without cse2
