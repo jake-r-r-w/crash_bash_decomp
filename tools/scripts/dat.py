@@ -3,6 +3,7 @@
 
 Runs inside the toolchain container:
     tools/dk python3 tools/scripts/dat.py extract     retail DAT -> assets/CRASHBSH/
+    tools/dk python3 tools/scripts/dat.py decode      the formats it knows -> editable files
     tools/dk python3 tools/scripts/dat.py build OUT   assets/CRASHBSH/ -> OUT (make disc does this)
 
 The DAT has no header: the exe indexes it with a table of {u32 sector, u32 size} pairs at
@@ -11,6 +12,11 @@ assets/CRASHBSH/<id>.bin (id in hex, as ARCHITECTURE.md names them: the engine i
 index.json records each one's sector and retail size. The bytes no entry covers (the rest of each
 entry's last sector, and 12 sectors no entry points at) are not zeros, so they go, in DAT order, to
 filler.bin; a rebuild puts them back and gives the retail DAT byte for byte.
+
+Entries in a format tools/scripts knows are decoded after the split (extract runs decode): a
+texture set (tex.py) becomes <id>.tex/ (PNGs) in place of <id>.bin, and index.json says
+"format": "tex". Each one is checked to pack back to the same bytes first; one that doesn't stays
+a .bin. build packs them again, cached in build/dat-cache/ until a file in the folder changes.
 
 An entry file may be edited. It may shrink (zero-padded to its retail size, so nothing moves) but
 not grow: a bigger one needs the DAT laid out again and the exe's index rewritten. assets/ is
@@ -23,6 +29,8 @@ import os
 import struct
 import sys
 
+import tex
+
 P_PROJ = ".decomp/project.json"
 ASSETS = "assets/CRASHBSH"
 INDEX = "index.json"
@@ -30,6 +38,7 @@ FILLER = "filler.bin"
 TABLE = 0x8004E110
 COUNT = 992
 SECTOR = 2048
+CACHE = "build/dat-cache"
 
 
 def die(msg):
@@ -123,13 +132,67 @@ def extract(dest=ASSETS, quiet=False):
         f.write("\n")
     if not quiet:
         print(f"{src}: {len(entries)} entries and {len(filler)} filler bytes -> {dest}/")
+    decode(dest, quiet)
+
+
+def decode(dest=ASSETS, quiet=False):
+    """Every raw entry in a known format -> its editable form, when it packs back exactly."""
+    p = os.path.join(dest, INDEX)
+    meta = json.load(open(p))
+    n = 0
+    for i, e in enumerate(meta["entries"]):
+        raw = os.path.join(dest, entry_name(i))
+        if e.get("format") or e.get("overlay") or not os.path.exists(raw):
+            continue
+        data = read(raw)
+        try:
+            tex.parse(data)
+        except tex.Bad:
+            continue
+        out = os.path.join(dest, f"{e['id']}.tex")
+        tex.unpack(raw, out)
+        if tex.pack(out) != data:
+            print(f"dat: {e['id']} doesn't pack back to the same bytes: kept as a .bin", file=sys.stderr)
+            continue
+        os.remove(raw)
+        e["format"] = "tex"
+        n += 1
+        if not quiet and n % 50 == 0:
+            print(f"  {n} texture sets decoded")
+    with open(p, "w") as f:
+        json.dump(meta, f, indent=1)
+        f.write("\n")
+    if not quiet:
+        print(f"{dest}/: {n} texture sets decoded to <id>.tex/ (PNGs)")
+
+
+def newest(d):
+    return max(os.path.getmtime(os.path.join(d, f)) for f in os.listdir(d))
+
+
+def entry_bytes(src, i, e):
+    """Entry i's bytes: its .bin, or its decoded folder packed (cached until a file in it changes)."""
+    if e.get("format") != "tex":
+        return read(os.path.join(src, entry_name(i)))
+    d = os.path.join(src, f"{e['id']}.tex")
+    cached = os.path.join(CACHE, f"{e['id']}.bin")
+    if os.path.exists(cached) and os.path.getmtime(cached) >= max(newest(d), os.path.getmtime(d)):
+        return read(cached)
+    try:
+        data = tex.pack(d)
+    except tex.Bad as err:
+        die(f"{d}: {err}")
+    os.makedirs(CACHE, exist_ok=True)
+    with open(cached, "wb") as f:
+        f.write(data)
+    return data
 
 
 def build(out, src=ASSETS):
     """Write the DAT rebuilt from src to out; returns its index (for the overlays' slots)."""
     meta = json.load(open(os.path.join(src, INDEX)))
     entries = [(e["sector"], e["size"]) for e in meta["entries"]]
-    files = [read(os.path.join(src, entry_name(i))) for i in range(len(entries))]
+    files = [entry_bytes(src, i, e) for i, e in enumerate(meta["entries"])]
     with open(out, "wb") as f:
         f.write(join(files, read(os.path.join(src, FILLER)), entries, meta["size"]))
     return meta
@@ -139,11 +202,14 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("extract", help=f"the retail DAT -> {ASSETS}/")
+    sub.add_parser("decode", help="the entries in a known format -> editable files")
     b = sub.add_parser("build", help=f"{ASSETS}/ -> a DAT")
     b.add_argument("out")
     a = ap.parse_args()
     if a.cmd == "extract":
         extract()
+    elif a.cmd == "decode":
+        decode()
     else:
         meta = build(a.out)
         sha = hashlib.sha1(read(a.out)).hexdigest()

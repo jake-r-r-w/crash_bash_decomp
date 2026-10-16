@@ -45,6 +45,9 @@ RUN git clone --depth 1 --recursive https://github.com/Lameguy64/mkpsxiso /tmp/m
  && cmake --install /tmp/mkpsxiso/build \
  && rm -rf /tmp/mkpsxiso
 
+# PNG in and out for the asset converters (tools/scripts/tex.py)
+RUN pip3 install Pillow==10.4.0
+
 # The repo is bind-mounted from the host with a different owner.
 RUN git config --system --add safe.directory '*'
 

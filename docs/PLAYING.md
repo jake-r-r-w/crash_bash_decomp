@@ -23,9 +23,11 @@ bigger one.
 files, `assets/CRASHBSH/000.bin` .. `3DF.bin` (ids as ARCHITECTURE.md names them), with
 `index.json` (each one's sector and size; the code overlays are tagged) and `filler.bin` (the bytes
 between files). `make disc` runs it the first time by itself. Edit a file and `make disc` puts it
-on the disc; delete `assets/CRASHBSH/` to start again from the retail DAT. The files are raw
-(textures, models, sounds and levels are not decoded yet), and they are your game data: `assets/`
-is git-ignored, never commit it. The 15 code overlays' entries are there too, but `make disc`
+on the disc; delete `assets/CRASHBSH/` to start again from the retail DAT (extracting takes about
+4 minutes). The 400 texture sets come out as `<id>.tex/` folders of PNGs: edit an image's pixels in
+`img_NNN.png` (keep it indexed, same size) and colours in `cluts.png`; the formats and the
+rules are in [ASSETS.md](ASSETS.md). Everything else is still raw (`<id>.bin`: models, sounds,
+text). It is your game data: `assets/` is git-ignored, never commit it. The 15 code overlays' entries are there too, but `make disc`
 always writes the built `build/<ovl>.bin` over them.
 
 ## Playing it

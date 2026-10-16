@@ -420,6 +420,14 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-16 (assets, stage 2: textures):** `tools/scripts/tex.py`: the
+  400 texture sets (type 8) to PNGs (`<id>.tex/`, true colours) and back
+  byte for byte; `dat.py extract` decodes them, `make disc` packs them
+  (cached in build/dat-cache/); disc-check OK; Pillow in the Docker image.
+  Image->CLUT pairing and depth from CTR-tools' reading (the s16 at +12 is
+  CLUT << 1 | 8-bit). Formats in the new docs/ASSETS.md; next: models (the
+  odd entries), sound banks, text.
+
 - **2026-10-16 (assets, stage 1):** `tools/scripts/dat.py` splits
   `CRASHBSH.DAT` into `assets/CRASHBSH/` (992 entries, not 993; plus
   `filler.bin`: entry padding and 12 unreferenced sectors are not zeros),

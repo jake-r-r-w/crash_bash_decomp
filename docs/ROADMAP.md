@@ -103,7 +103,9 @@ phases can play what they finish.
   `0x8004E110`) from the user's disc and extract its files to `assets/`, plus
   the formats whose loaders are in the exe, to editable files. The first half
   is done: `tools/scripts/dat.py` splits the DAT into `assets/CRASHBSH/` and
-  `make disc` builds the DAT from there (2026-10-16); no format is decoded yet. Document each
+  `make disc` builds the DAT from there (2026-10-16). Formats decoded (docs/ASSETS.md): texture
+  sets, 400 of them, to PNGs and back byte for byte (`tools/scripts/tex.py`). Next: models,
+  sound banks, text. Document each
   format. Formats parsed by the engine or a minigame belong to that phase.
 
 ## Phase 3 - The engine overlay
