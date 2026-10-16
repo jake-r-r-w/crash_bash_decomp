@@ -2,3 +2,5 @@
 * text=auto eol=lf
 *.ps1 text eol=crlf
 *.png binary
+# Vendored third-party source, kept byte for byte (no EOL changes), not counted as project code
+tools/reference/** -text linguist-vendored

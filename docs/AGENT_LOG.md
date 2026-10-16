@@ -178,8 +178,7 @@ Other:
   compiled with `-fno-rerun-cse-after-loop` (global arrays keep `la` +
   offsets); and `refill_from_jump` redoes one slot fill where Sony's reorg
   differs from FSF 2.7.2's (it fills a `j` from its target before the
-  branches; FSF 2.7.2.3 `reorg.c` in `scratch/gcc272src/`, a lab copy in
-  `scratch/lab/s6.c`). 2.7.2-cdk and 2.8.1-psx share Sony's reorg order but
+  branches; FSF 2.7.2.3's source is in `tools/reference/gcc-2.7.2.3/`). 2.7.2-cdk and 2.8.1-psx share Sony's reorg order but
   not its codegen, so a gcc 2.7.2 game elsewhere may need the same rule.
 - `main/8002e0f0` with `-fno-rerun-cse-after-loop`: `func_8002E25C` stops
   matching (structure 44/95), the other four still match. Whether both
@@ -379,9 +378,13 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-16 (reference):** FSF gcc 2.7.2.3's C compiler and MIPS
+  target source added under `tools/reference/gcc-2.7.2.3/` (read-only,
+  vendored, GPL; `README.decomp.md` maps passes to files).
+
 - **2026-10-16 (by hand + tool, `func_8002D4F4`):** matched (710a20d);
   main.exe is complete. The last slot (state 6) was the compiler, not the
-  C: read gcc-2.7.2.3 `reorg.c` (downloaded to `scratch/gcc272src/`) and
+  C: read gcc-2.7.2.3 `reorg.c` (now in `tools/reference/gcc-2.7.2.3/`) and
   found FSF reorg fills a `j` after the branches, Sony's (like 2.7.2-cdk
   and 2.8.1-psx on a lab copy) before them. `aspsx_fill.py`'s new
   `refill_from_jump` redoes that order for a `beq` + `j` (07750fc, 5 tests);

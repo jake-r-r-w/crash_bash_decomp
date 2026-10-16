@@ -751,6 +751,11 @@ write `build/x.i.jump`, `build/x.i.jump2` and `build/x.i.dbr`) to see which pass
 layout. Add `-fno-schedule-insns2` to tell register choice apart from sched2's
 reordering.
 
+For a gcc 2.7.2 unit (`CC_VER = 2.7.2-psx`), run `/opt/gcc/2.7.2-psx/cc1` instead (with the
+unit's `EXTRA_CC1FLAGS`). Its source is in `tools/reference/gcc-2.7.2.3/` (FSF 2.7.2.3; its
+`README.decomp.md` says which file holds which pass): read the pass a dump points at before
+guessing at C. It also notes the one known way Sony's 2.7.2 differs from it.
+
 ## The validation gate (`done`)
 
 `done` records nothing, and commits nothing, unless every check passes:
