@@ -183,7 +183,57 @@ s32 func_800832BC(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80083334);
+void func_80083334(s32 arg0, s32 kind, s32 flag) {
+    EngineRec24 ***t;
+    EngineRec24 **set;
+    EngineRec24 *rec;
+
+    t = ((EngineRec24 ****)D_8005AAB0)[D_8005A648];
+    if (flag != 0) {
+        switch (kind) {
+        case 3:
+            set = t[6];
+            break;
+        case 4:
+            set = t[8];
+            break;
+        case 5:
+            set = t[4];
+            break;
+        case 6:
+            set = t[2];
+            break;
+        default:
+            set = t[0];
+            break;
+        }
+    } else {
+        switch (kind) {
+        case 3:
+            set = t[7];
+            break;
+        case 4:
+            set = t[9];
+            break;
+        case 5:
+            set = t[5];
+            break;
+        case 6:
+            set = t[3];
+            break;
+        default:
+            set = t[1];
+            break;
+        }
+    }
+    if (set != NULL) {
+        D_8009BD10 = set;
+        rec = *set;
+        D_8009BD14 = 0;
+        D_8009BD0C = rec;
+        func_80095BEC(0, &rec->kind);
+    }
+}
 
 s32 func_80083488(void) {
     PadButtons *base = (PadButtons *)D_80051338;

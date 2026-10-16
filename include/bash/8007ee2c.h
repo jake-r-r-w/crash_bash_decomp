@@ -180,6 +180,8 @@ extern D_8009D87C_t D_8009D87C[];
 
 s32 func_8007EFC0(s32 pad, s32 max);
 
+void func_80083334(s32 arg0, s32 kind, s32 flag);
+
 s32 func_80085584(s32 hero, u16 name, s32 seq);
 
 void func_80085650(void);
