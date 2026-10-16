@@ -1437,7 +1437,68 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_800898EC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80089BE8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80089FA4);
+void func_80089FA4(s32 arg0) {
+    u16 mate;
+    EngineGameView *g;
+
+    mate = Heroes[arg0].hero_teammate;
+    func_8002C1C0(100, 5);
+    func_8002C29C();
+    g = (EngineGameView *)D_8005A614;
+    if (g->mode == 0x20) {
+        if (D_8004E0A4[D_8005A614[0x60]] == 1) {
+            D_8009E0D0 = 0xF;
+            D_8009E0D2 = 0xF;
+            D_8009E0D6 = 0x1E;
+            D_8009E0D4 = arg0;
+        } else {
+            D_8009E0D0 = 0xF;
+            D_8009E0D2 = 0x10;
+            D_8009E0D6 = 0x1E;
+            D_8009E0D4 = arg0;
+        }
+    } else if (g->flags & 0x1E0) {
+        if ((s16)mate != -1) {
+            if (Heroes[(s16)mate].hero_status & 0x200) {
+                if (!(arg0 & 1)) {
+                    D_8009E0D0 = 0x23;
+                    D_8009E0D2 = 0x14;
+                    D_8009E0D6 = 0x1E;
+                    D_8009E0D4 = arg0;
+                }
+            } else {
+                D_8009E0D0 = 0x23;
+                D_8009E0D6 = 0x1E;
+                D_8009E0D2 = 0x14;
+                D_8009E0D4 = arg0;
+            }
+        } else {
+            D_8009E0D0 = 0x23;
+            D_8009E0D2 = 0x14;
+            D_8009E0D6 = 0x1E;
+            D_8009E0D4 = arg0;
+        }
+    } else if ((s16)mate != -1) {
+        if (Heroes[(s16)mate].hero_status & 0x200) {
+            if (!(arg0 & 1)) {
+                D_8009E0D0 = 0x23;
+                D_8009E0D2 = 9;
+                D_8009E0D6 = 0x1E;
+                D_8009E0D4 = arg0;
+            }
+        } else {
+            D_8009E0D0 = 0x23;
+            D_8009E0D2 = 9;
+            D_8009E0D6 = 0x1E;
+            D_8009E0D4 = arg0;
+        }
+    } else {
+        D_8009E0D0 = 0x1E;
+        D_8009E0D2 = 0;
+        D_8009E0D6 = 0x1E;
+        D_8009E0D4 = arg0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8008A200);
 

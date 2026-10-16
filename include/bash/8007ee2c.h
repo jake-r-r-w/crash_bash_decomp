@@ -205,6 +205,7 @@ extern s16 D_8009E0D0;
 extern s16 D_8009E0D2;
 extern s16 D_8009E0D4;
 extern s16 D_8009E0D6;
+extern s8 D_8004E0A4[];
 extern s32 D_8009BD08;
 extern s32 D_8009BD40;
 extern s32 D_8009BD44;
@@ -339,6 +340,8 @@ typedef struct {
 
 s32 csqrt(s32 x);
 s32 abs(s32);
+
+void func_80089FA4(s32 arg0);
 
 s32 func_8008C5C4(s32 *from, s32 *to, Arc *arc, s32 *pos);
 
