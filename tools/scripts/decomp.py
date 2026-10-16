@@ -42,6 +42,8 @@ DEFAULT_MASPSX = "--macro-inc --expand-div"
 
 # splat comment on each instruction: /* ROM VRAM WORD */ instruction
 ASM_LINE = re.compile(r"/\*\s*([0-9A-Fa-f]+)\s+([0-9A-Fa-f]{8})\s+([0-9A-Fa-f]{8})\s*\*/\s*(.*)$")
+# the same on a data line, whose word may be missing (a string's bytes follow on the next line)
+DATA_LINE = re.compile(r"/\*\s*[0-9A-Fa-f]+\s+[0-9A-Fa-f]{8}(?:\s+[0-9A-Fa-f]{8})?\s*\*/\s*(\S.*)$")
 INC_ASM = re.compile(r'INCLUDE_ASM\(\s*"([^"]+)"\s*,\s*(\w+)\s*\)')
 SYM_LINE = re.compile(r"^\s*(\w+)\s*=\s*(0x[0-9A-Fa-f]+)\s*;")
 OBJ_LINE = re.compile(r"^\s*([0-9a-f]+):\s+([0-9a-f]{8})\s+(.*)$")
@@ -886,26 +888,68 @@ def cmd_status(a):
           f"parked {s['blocked']}; in progress: {', '.join(inprog) or 'none'}")
 
 
-def asm_listing(path, limit):
-    """Compact listing of a function's .s: instructions and branch labels, plus its own rodata labels."""
-    out, rodata, in_text = [], [], True
+def asm_listing(path, limit, start=0, name=None):
+    """Compact listing of a function's .s from offset `start`: each instruction at its offset in
+    the function (as `try` and `regions` print them), branch labels with theirs, then the
+    function's own rodata (strings as text, jump tables as the offsets they go to)."""
+    rows, rodata, data, label_off, pending = [], [], [], {}, []
+    in_text, base = True, None
     for line in read(path).splitlines():
         s = line.strip()
         if s.startswith(".section"):
             in_text = ".text" in s
             continue
-        if not in_text:
-            m = re.match(r"dlabel\s+(\w+)", s)
-            if m:
-                rodata.append(m.group(1))
-            continue
         m = ASM_LINE.search(line)
+        if not in_text:
+            d = re.match(r"dlabel\s+(\w+)", s)
+            if d:
+                rodata.append(d.group(1))
+                data.append((d.group(1), []))
+            elif data and DATA_LINE.search(line):     # a string's line has no instruction word
+                data[-1][1].append(re.sub(r"\s+", " ", DATA_LINE.search(line).group(1)).strip())
+            continue
         if m:
-            out.append("    " + re.sub(r"\s+", " ", m.group(4)).strip())
+            off = int(m.group(2), 16) - (base if base is not None else int(m.group(2), 16))
+            base = int(m.group(2), 16) - off
+            for lab in pending:
+                label_off[lab] = off
+                rows.append((off, f"  {lab}: (+{off:#x})"))
+            pending = []
+            rows.append((off, f"  {off:4x}  " + re.sub(r"\s+", " ", m.group(4)).strip()))
         elif re.match(r"^\.L\w+:", s):
-            out.append("  " + s)
-    text = out[:limit] + ([f"    ... {len(out) - limit} more lines ({path})"] if len(out) > limit else [])
+            pending.append(s[:-1])
+    rows = [r for r in rows if r[0] >= start]
+    text = [r[1] for r in rows[:limit]]
+    if len(rows) > limit:
+        text.append(f"    ... {len(rows) - limit} more lines (decomp.py asm {name or path} --from {rows[limit][0]:#x})")
+    for lab, items in data:
+        jumps = [re.match(r"\.word\s+(\.L\w+)", x) for x in items]
+        if items and all(jumps):
+            text.append(f"  {lab}: jump table, {len(jumps)} cases -> " + ", ".join(
+                f"+{label_off[j.group(1)]:#x}" if j.group(1) in label_off else j.group(1) for j in jumps))
+        else:
+            shown = [x for x in items if x.startswith((".asciz", ".ascii"))] or items
+            text.append(f"  {lab}: " + " ".join(shown[:4]) + (" ..." if len(shown) > 4 else ""))
     return text, rodata
+
+
+def callee_lines(key, funcs, syms):
+    """What the function calls, each with its prototype where a header has one. A `(void)`
+    prototype is flagged: a call that passes arguments to it compiles with none (the mistake
+    that made `auto` commit wrong matches)."""
+    protos = {}
+    header_names([os.path.relpath(h, HEADERS) for h in all_headers()], protos)
+    src = funcs[key].get("src")
+    for l in (read(src).splitlines() if src and os.path.exists(src) else []):   # its file's own externs
+        if file_decl(l):
+            protos.setdefault(file_decl(l), l.strip())
+    out = []
+    for k in sorted(call_graph(funcs)[0].get(key, ())):
+        n = cur_name(k, funcs[k], syms)
+        p = protos.get(n)
+        flag = "  (check arity: the asm may pass arguments)" if p and re.search(r"\(\s*void\s*\)\s*;", p) else ""
+        out.append(f"    {p or n + ' (no prototype)'}{flag}")
+    return out
 
 
 def pick_targets(funcs, stat, st, proj, seg, count):
@@ -996,7 +1040,11 @@ def cmd_next(a):
         if not os.path.exists(e.get("asm", "")):
             print("  asm file missing - run `make split`")
             continue
-        lst, rodata = asm_listing(e["asm"], a.asm_lines)
+        calls = callee_lines(key, funcs, syms)
+        if calls:
+            print(f"  calls {len(calls)}:")
+            print("\n".join(calls))
+        lst, rodata = asm_listing(e["asm"], a.asm_lines, name=name)
         print("--- asm" + (f" (own rodata: {', '.join(rodata)})" if rodata else "") + " ---")
         print("\n".join(lst))
         ad = auto_draft(key)
@@ -1010,7 +1058,7 @@ def cmd_next(a):
         lines = draft.rstrip().splitlines()
         print("\n".join(lines[:a.max_lines]))
         if len(lines) > a.max_lines:
-            print(f"... {len(lines) - a.max_lines} more lines (decomp.py m2c {name} for the rest)")
+            print(f"... {len(lines) - a.max_lines} more lines (decomp.py m2c {name} --from {a.max_lines + 1})")
         twin = twin_source(key, funcs, stat, syms)
         if twin:
             # the same code is matched elsewhere, but propagate's copy of it didn't fit here
@@ -1055,7 +1103,18 @@ def cmd_m2c(a):
     funcs = need_funcs()
     key, e = find_func(funcs, a.func)
     ok, draft = m2c_draft(e, e.get("src"))
-    print(draft.rstrip())
+    lines = draft.rstrip().splitlines()
+    print("\n".join(lines[max(a.start, 1) - 1:]))
+
+
+def cmd_asm(a):
+    """A function's compact asm (offsets as try/regions print them), from --from on."""
+    funcs = need_funcs()
+    key, e = find_func(funcs, a.func)
+    if not os.path.exists(e.get("asm", "")):
+        die(f"no asm for {a.func} - run `make split`")
+    text, _ = asm_listing(e["asm"], a.lines, int(a.start, 0), cur_name(key, e, sym_names()))
+    print("\n".join(text))
 
 
 def cmd_try(a):
@@ -4241,7 +4300,7 @@ def main():
     p.add_argument("--seg")
     p.add_argument("--count", type=int, default=1, help="show the N smallest targets at once")
     p.add_argument("--max-lines", type=int, default=120)
-    p.add_argument("--asm-lines", type=int, default=80)
+    p.add_argument("--asm-lines", type=int, default=400)
     p.set_defaults(fn=cmd_next)
     p = sub.add_parser("queue", help="the next targets as JSON, marking nothing (tools/swarm)")
     p.add_argument("--seg")
@@ -4249,7 +4308,13 @@ def main():
     p.set_defaults(fn=cmd_queue)
     p = sub.add_parser("m2c", help="print m2c draft")
     p.add_argument("func")
+    p.add_argument("--from", dest="start", type=int, default=1, help="from this line of the draft")
     p.set_defaults(fn=cmd_m2c)
+    p = sub.add_parser("asm", help="a function's compact asm with offsets, jump tables and strings")
+    p.add_argument("func")
+    p.add_argument("--from", dest="start", default="0", help="from this offset (0x...)")
+    p.add_argument("--lines", type=int, default=400)
+    p.set_defaults(fn=cmd_asm)
     p = sub.add_parser("try", help="build and diff one or more functions")
     p.add_argument("funcs", nargs="+")
     p.set_defaults(fn=cmd_try)

@@ -385,6 +385,13 @@ twin's lead.
 
 ### 3.4 A richer `next` brief (S)
 
+**Done 2026-10-16**, except the data block (Part 2 showed lookups are cheap).
+The asm has offsets that line up with `try`/`regions`, labels with theirs,
+jump tables as their case offsets and strings as text; `next` shows up to
+400 lines (`decomp.py asm NAME --from 0xOFF` for the rest; `m2c NAME --from N`
+for the draft), and lists callees with their prototypes, flagging `(void)`
+ones.
+
 - Print the whole compact asm (default `--asm-lines` 80 -> 400) with a hex
   offset on branch labels that lines up with `regions`; `decomp.py asm NAME
   --from 0xOFF` for the rest; render the function's own jump tables and strings
