@@ -3003,7 +3003,139 @@ s32 func_8008ACF0(s32 arg0) {
 void func_8008AD9C(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8008ADA4);
+s32 func_8008ADA4(u8 *arg0, u8 *arg1, u8 *arg2, s32 *arg3) {
+    volatile s32 t0;
+    volatile s32 t1;
+    EmitPart *part;
+    s32 *st;
+    u8 *def;
+    u8 *obj;
+    u8 *p;
+    s32 n;
+    s32 i;
+    s32 t;
+
+    obj = arg1;
+    i = 0;
+    part = *(EmitPart **)(arg2 + 0x30);
+    st = *(s32 **)(arg2 + 0x34);
+    t0 = VSync(1);
+    def = NULL;
+    p = func_80021DD4(((FxOwner *)arg0)->fx, ((FxEmitter *)arg2)->unk24, ((FxEmitter *)arg2)->unk4);
+    if (p != NULL) {
+        def = p + 0x14;
+    }
+    if (def != NULL) {
+        n = 0;
+        if (*(s32 *)(arg2 + 0x2C) <= *(s32 *)(def + 0x10)) {
+            st[4] = 0;
+            for (;;) {
+                s32 life;
+
+                if (n >= *(s32 *)(def + 0x14)) {
+                    break;
+                }
+                if (!(*(s32 *)obj & 0x8000)) {
+                func_8001F604(obj, part, def);
+                life = *(s32 *)(def + 0x18);
+                if (life == 0) {
+                    life = *(s32 *)(arg2 + 0x20);
+                }
+                if (*(s32 *)(def + 0x58) != 0) {
+                    st[0] = 0x1000 / *(s32 *)(def + 0x58);
+                    *(s16 *)(obj + 0x76) = 0x1000;
+                }
+                if (*(s32 *)(def + 0x5C) != 0) {
+                    st[1] = 0x1000 / (life - *(s32 *)(def + 0x5C));
+                }
+                if (*(s32 *)(def + 0x60) != 0) {
+                    st[2] = 0x1000 / *(s32 *)(def + 0x60);
+                    *(s32 *)(obj + 0x28) = 0;
+                    *(s32 *)(obj + 0x24) = 0;
+                    *(s32 *)(obj + 0x20) = 0;
+                }
+                if (*(s32 *)(def + 0x64) != 0) {
+                    if (life != *(s32 *)(def + 0x64)) {
+                        st[3] = 0x1000 / (life - *(s32 *)(def + 0x64));
+                    } else {
+                        st[3] = 0;
+                    }
+                }
+                if (*(s32 *)(def + 0x68) != 0) {
+                    *(s16 *)(obj + 0x14) = Random(0x1000);
+                }
+                n++;
+                *(s32 *)(arg2 + 0x2C) += 1;
+                }
+                obj = *(u8 **)(obj + 0x5C);
+                part++;
+            }
+        }
+        part = *(EmitPart **)(arg2 + 0x30);
+        obj = arg1;
+        for (; i < *(s32 *)(def + 0x10); i++, obj = *(u8 **)(obj + 0x5C), part++) {
+            if (obj == NULL || !(*(s32 *)obj & 0x8000)) {
+                continue;
+            }
+            t = *(s32 *)(def + 0x58);
+            if (t != 0 && part->age < t) {
+                if ((*(s16 *)(obj + 0x76) -= st[0]) < 0) {
+                    *(s16 *)(obj + 0x76) = 0;
+                }
+            }
+            t = *(s32 *)(def + 0x5C);
+            if (t != 0 && t < part->age) {
+                if ((*(s16 *)(obj + 0x76) += st[1]) > 0x1000) {
+                    *(s16 *)(obj + 0x76) = 0x1000;
+                }
+            }
+            t = *(s32 *)(def + 0x60);
+            if (t != 0 && t >= part->age) {
+                if ((*(s32 *)(obj + 0x20) += st[2]) <= 0) {
+                    *(s32 *)(obj + 0x20) = 0;
+                }
+                *(s32 *)(obj + 0x24) = *(s32 *)(obj + 0x28) = *(s32 *)(obj + 0x20);
+            }
+            t = *(s32 *)(def + 0x64);
+            if (t != 0 && part->age >= t) {
+                if ((*(s32 *)(obj + 0x20) -= st[3]) <= 0) {
+                    *(s32 *)(obj + 0x20) = 0;
+                }
+                *(s32 *)(obj + 0x24) = *(s32 *)(obj + 0x28) = *(s32 *)(obj + 0x20);
+            }
+            func_8002147C((VelObj *)obj, (VelParams *)def, (VelState *)part);
+            if (!(*(s32 *)obj & 0x8000) && *(s32 *)(def + 0x6C) != 0) {
+                if ((*(s32 *)(arg2 + 0x2C) -= 1) < 0) {
+                    *(s32 *)(arg2 + 0x2C) = 0;
+                }
+                part->age = 0;
+            }
+        }
+    }
+    if (*arg3 == 1) {
+        obj = arg1;
+        while (obj != NULL) {
+            s32 t;
+
+            *(s32 *)obj &= ~0x8000;
+            *(s32 *)(obj + 0x20) = 0x1000;
+            *(s32 *)(obj + 0x28) = 0x1000;
+            *(s32 *)(obj + 0x24) = 0x1000;
+            *(s16 *)(obj + 0x76) = 0;
+            t = *(s32 *)(def + 0x14);
+            obj = *(u8 **)(obj + 0x5C);
+            *(s32 *)(arg2 + 0x2C) = t;
+        }
+        *arg3 = 0;
+    }
+    if (*(s32 *)(arg0 + 0x14) >= *(s32 *)(def + 0x1C) << 8) {
+        *arg3 = 2;
+    }
+    t1 = VSync(1);
+    t1;
+    t0;
+    return st[9];
+}
 
 void func_8008B29C(s32 idx) {
     EXTengine *s;

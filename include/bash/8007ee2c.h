@@ -512,6 +512,24 @@ typedef struct EngineLevelInfo {
     /* 0xBC */ u8 *unkBC;
     /* 0xC0 */ u8 *unkC0;
 } EngineLevelInfo;
+/* func_8008ADA4: script FX emitter state */
+typedef struct FxEmitter {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ u8 pad8[0x18];
+    /* 0x20 */ s32 life;
+    /* 0x24 */ s32 unk24;
+    /* 0x28 */ s32 unk28;
+    /* 0x2C */ s32 live;
+    /* 0x30 */ EmitPart *parts;
+    /* 0x34 */ s32 *rates;
+} FxEmitter;
+typedef struct FxOwner {
+    /* 0x000 */ u8 pad0[0x14];
+    /* 0x014 */ s32 time;
+    /* 0x018 */ u8 pad18[0x3A0];
+    /* 0x3B8 */ u8 *fx;
+} FxOwner;
 extern EngineLevelInfo *D_80059748[];
 extern s16 D_8005975C[];
 extern s16 D_8005981C[];
@@ -541,6 +559,8 @@ void func_800809A0(s16 *arg0, s32 arg1);
 void func_80080FBC(void);
 
 void func_8008900C(s32 arg0);
+
+s32 func_8008ADA4(u8 *arg0, u8 *arg1, u8 *arg2, s32 *arg3);
 
 void func_8008CA90(u8 *arg0, MATRIX *m);
 
