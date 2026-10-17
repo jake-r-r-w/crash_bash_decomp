@@ -247,7 +247,168 @@ void func_8007B7FC(u32 a, u32 b) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007B8D4);
+void func_8007B8D4(void) {
+    EngineClockView *v;
+    u32 s;
+    u32 t;
+    u32 e;
+    s32 sec;
+    s32 f;
+    s32 min;
+    s32 n;
+    s32 i;
+    s32 d;
+    s32 fl;
+    GpuTextCmd *p;
+    HeroInfo *h;
+
+    if (!(D_80099174 & 1)) {
+        return;
+    }
+    if (D_8005A644 & 0x9800) {
+        return;
+    }
+    s = (u32)D_80099178 >> 8;
+    if (D_8009917C & 0x400) {
+        if (D_80099178 == 0x2000) {
+            func_8002C1C0(0x6E, 0xF0);
+        }
+    }
+    if (D_8009917C & 0x200) {
+        if (func_8007E894() != 0) {
+            s32 k = 100;
+
+            for (d = 3; d >= 0; d--) {
+                Heroes[d].hero_frozen = k;
+            }
+        } else {
+            n = 1;
+            if (D_8005A618 & 0x800) {
+                n = 0x201;
+            }
+            D_8009D74C(-1, n);
+            D_8009917C = 0x8000;
+        }
+    }
+    if ((D_8009917C & 0x100) && s == 0) {
+        PlaySfx(0x19C, NULL, NULL, 0x1000, 0x1E00, 0);
+        if (func_8007E894() != 0) {
+            D_80099178 = 0;
+            D_8009917C = 0x8200;
+        } else {
+            n = 1;
+            if (D_8005A618 & 0x800) {
+                n = 0x201;
+            }
+            D_8009D74C(-1, n);
+            D_80099178 = 0;
+            D_8009917C = 0x8000;
+        }
+    }
+    v = (EngineClockView *)D_8005A614;
+    if (!(v->unk4 & 0x40) && !(v->unk10 & 0x04000000)) {
+        if (D_8009917C & 0x20) {
+            u32 bf;
+            u32 bs;
+            u32 bm;
+
+            sec = (u32)D_80099178 >> 8;
+            min = (u32)D_80099178 >> 16;
+            bf = *(u8 *)&D_80099178;
+            f = (bf >> 4) * 10 + (bf & 0xF);
+            bs = (u8)sec;
+            sec = (bs >> 4) * 10 + (bs & 0xF);
+            bm = (u8)min;
+            min = (bm >> 4) * 10 + (bm & 0xF);
+            f += 2;
+            if (v->unk21 < f) {
+                sec++;
+                f -= v->unk21;
+            }
+            if (sec >= 60) {
+                min++;
+                sec -= 60;
+            }
+            if (min >= 60) {
+                min -= 60;
+            }
+            e = (f / 10) * 16 + f % 10;
+            sec = (sec / 10) * 16 + sec % 10;
+            min = (min / 10) * 16 + min % 10;
+            D_80099178 = ((min & 0xFF) << 16) + ((sec & 0xFF) << 8) + (e & 0xFF);
+        }
+        if (D_8009917C & 0x40) {
+            s32 min;
+            u32 bf;
+            u32 bs;
+            u32 m;
+
+            sec = (u32)D_80099178 >> 8;
+            min = (u32)D_80099178 >> 16;
+            bf = *(u8 *)&D_80099178;
+            f = (bf >> 4) * 10 + (bf & 0xF);
+            bs = (u8)sec;
+            sec = (bs >> 4) * 10 + (bs & 0xF);
+            m = (u8)min;
+            min = (m >> 4) * 10 + (m & 0xF);
+            f -= 2;
+            if (f < 0) {
+                sec--;
+                f += ((EngineClockView *)D_8005A614)->unk21;
+            }
+            if (sec < 0) {
+                min--;
+                sec += 60;
+            }
+            if (min < 0) {
+                min += 60;
+            }
+            e = (f / 10) * 16 + f % 10;
+            sec = (sec / 10) * 16 + sec % 10;
+            min = (min / 10) * 16 + min % 10;
+            D_80099178 = ((min & 0xFF) << 16) + ((sec & 0xFF) << 8) + (e & 0xFF);
+        }
+    }
+    if (D_8009917C & 0x80) {
+        if (s < 6) {
+            if ((u16)D_8009AE76 != s) {
+                PlaySfx(0x19B, NULL, NULL, 0x1000, 0x1E00, 0);
+                D_8009AE76 = s;
+            }
+        } else {
+            D_8009AE76 = 99;
+        }
+    }
+    fl = D_8009917C;
+    do {
+        if (!(fl & 0x10)) {
+            goto join;
+        }
+        p = D_8009AD54;
+        t = p->c & ~0x8000;
+        p->c = t;
+    } while (0);
+    if (!(fl & 2) && (u32)(D_80099178 & 0x70) < 0x1D) {
+        do {
+            t |= 0x8000;
+            D_8009AD54->c = t;
+            break;
+        } while (1);
+    }
+join:
+    f = 4;
+    if (D_8009917C & 4) {
+        f = 3;
+    }
+    for (i = 1; i < f; i++) {
+        d = s & 0xF;
+        if (d >= 10) {
+            d = 0;
+        }
+        D_8009AD54[i].a = d + 0x3009;
+        s >>= 4;
+    }
+}
 
 void func_8007BE84(void) {
     DigitEnt *e;

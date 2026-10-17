@@ -172,4 +172,17 @@ typedef struct EngineSlotView {
 
 void func_8007AC20(void);
 
+/* D_8005A614 as seen by func_8007B8D4. */
+typedef struct EngineClockView {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ u8 unk8[0x10 - 0x08];
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ u8 unk14[0x21 - 0x14];
+    /* 0x21 */ s8 unk21;
+} EngineClockView;
+
+extern void (*D_8009D74C)(s32, s32);
+void func_8007B8D4(void);
+
 #endif /* BASH_8007AC20_H */
