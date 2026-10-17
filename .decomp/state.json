@@ -3943,7 +3943,10 @@
  },
  "engine:800926CC": {
   "auto_diff": 126,
-  "auto_failed": "diff"
+  "auto_failed": "diff",
+  "blocked_at": "2026-10-17T13:36:06Z",
+  "note": "instructions 1/134 with s8 j (kept under #ifdef NON_MATCHING): only the compare's li a1,1 comes out as move a1,a0. Root cause of the old 4/134: sched1 gives a single-set REG-dest pseudo 'birthing' launch priority (sched.c adjust_priority/birthing_insn_p), so s16 j's li a0,1 lands next to sh 0x38; the target's li sits 2nd like a no-dependency constant. s8 j fixes that: unk38 = j sign-extends via extendqihi2, cse folds it to (set (subreg:SI (reg:HI)) 1), a SUBREG dest (not birthing). But post-reload CSE (gcc 2.8 reload_cse_regs) then sees a0 holding SImode 1 and rewrites the compare's later li a1,1 to move a1,a0 (a narrower-or-equal mode request matches). Target therefore had a HI/QI-recorded a0 that was still non-birthing: j set twice with the extra set costing no code. Proven: s16 j as the loop1 counter gives the right li placement (rest identical) but adds sll/move to the loop; a then-block set via (s8)j survives cse but becomes move v1,a1 and swaps j/t regs; an asm volatile barrier after j = 1 places it right but swaps j/compare to a1/a0. Failed: j = arg0->unk38, j = 1 in else/after the if (cse deletes self-copies), j = volatile load, s32 i for the 1 (cse merges the compare's 1), u8 j (same as s16), j += t >> 6. Next: find a second set of a HI/QI j that cse keeps and combine or reload_cse removes without decrementing reg_n_sets (MATCHING row func_8001795C: a self-referencing set absorbed by combine), or accept the barrier with --hack after fixing the a0/a1 swap",
+  "status": "blocked"
  },
  "engine:800928E8": {
   "matched_at": "2026-10-15T20:27:46Z",

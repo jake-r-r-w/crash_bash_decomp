@@ -15,7 +15,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
 - 1128/2551 game functions matched: **main.exe is complete (575/575)**;
-  engine overlay 10 left. None parked,
+  engine overlay 10 left; `func_800926CC` parked (1/134, hand session 2026-10-17),
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - The engine overlay is six files and `ovl5d` three, `ovl5e`, `ovl66`,
@@ -96,7 +96,7 @@ matched 2 more (`func_80083708` 1924 B, `func_8007D9DC` 3528 B; $6.37,
 killed early). Repeat it; 10 engine functions are left. Near
 misses with big-mode checkpoints: `func_8007BFA8` (instructions 5/114),
 `func_8007C170` (17/114), `func_8007CC80` (structure 77/116),
-`func_800926CC` (instructions 4/134, parked: 6 big sessions used), `func_8008C824` (registers 25/155, parked: 2 stale sessions),
+`func_800926CC` (instructions 1/134 by hand with `s8 j`, parked: its block note has the full analysis), `func_8008C824` (registers 25/155, parked: 2 stale sessions),
 `func_80079260` (4/98), `func_80094A28` (5/68), `func_800939FC`
 (registers 11/123: its checkpoint is the session the patch-check bug
 refused, restored by hand; the session log says the block-0 a0/a1 swap is
@@ -381,6 +381,12 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-17 (hand, no permuter):** `func_800926CC` from the swarm's 4/134 to
+  1/134 and parked. The misplaced `li a0,1` was sched1's birthing priority on a
+  single-set pseudo; `s8 j` avoids it, but post-reload CSE then turns the
+  compare's `li a1,1` into `move a1,a0`. The target needs a HI/QI `j` set twice
+  with the extra set costing nothing; the `decomp.py block` note lists what was
+  proven and tried. New Diff patterns row for the birthing/SUBREG trick.
 - **2026-10-17 midday (engine swarm):** runs 20261017113732 (60 min, 10
   matched, $63.10) and 20261017124451 (15 min, killed at the end of the
   session: 2 matched, $6.37; `func_8007F314` and `PlotScriptFX` sessions

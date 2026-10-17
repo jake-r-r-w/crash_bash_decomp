@@ -1577,7 +1577,109 @@ void func_800925F0(s32 arg0) {
     } while (i < 5);
 }
 
+#ifdef NON_MATCHING
+void func_800926CC(GameState *arg0) {
+    s32 i;
+    u8 t;
+    u8 *p;
+    s8 j;
+    s16 k;
+
+    arg0->unk34 = 0x28;
+    arg0->unk36 = 0;
+    arg0->unk37 = 0;
+    arg0->unk63 = -1;
+    arg0->unk64 = 0;
+    arg0->unk36 = 0;
+    arg0->unk37 = 0;
+    k = ' ';
+    for (i = 7, p = (u8 *)arg0 + i; i >= 0; i--, p--) {
+        p[0x18] = k;
+    }
+    t = 0x3C;
+    j = 1;
+    arg0->unk32 = 0x14;
+    arg0->unk3E = 0x200;
+    arg0->unk20 = 0;
+    arg0->unkE0 = 0;
+    arg0->unk8 = 0;
+    arg0->unkC = 0;
+    arg0->unk38 = j;
+    arg0->unk24 = 0;
+    arg0->unk30 = 0;
+    arg0->unk10 = 0;
+    if (D_800637A8 == 1) {
+        t = 0x32;
+    }
+    arg0->unk21 = t;
+    arg0->unk4C = j;
+    arg0->unk3A = 3;
+    arg0->unk4D[0] = 3;
+    arg0->unk4D[1] = 5;
+    arg0->unk4D[2] = 7;
+    arg0->unk44 = 1;
+    arg0->unk54[0] = -1;
+    arg0->unk54[1] = -1;
+    arg0->unk54[2] = -1;
+    arg0->unk54[3] = -1;
+    arg0->unk14 = 0;
+    arg0->unk68 = 0;
+    arg0->unk60 = 0;
+    arg0->unk61 = 0;
+    arg0->unk5C[0] = 0;
+    arg0->unk5C[1] = 0;
+    arg0->unk5C[2] = 0;
+    arg0->unk5C[3] = 0;
+    arg0->unk46 = 2;
+    arg0->unk48 = 0;
+    arg0->unk4A = 2;
+    arg0->unk50 = arg0->unk4C;
+    arg0->unk51[0] = arg0->unk4D[0];
+    arg0->unk51[1] = arg0->unk4D[1];
+    arg0->unk51[2] = arg0->unk4D[2];
+    arg0->unk58[0] = arg0->unk54[0];
+    arg0->unk58[1] = arg0->unk54[1];
+    arg0->unk74 = 0;
+    arg0->unk75 = 0;
+    arg0->unk58[2] = arg0->unk54[2];
+    arg0->unk58[3] = arg0->unk54[3];
+    for (i = 0; i < 0x21; i++) {
+        arg0->unkAB[i] = 0;
+        arg0->unk76[i] = 0;
+        arg0->unkE4[i] = 0;
+        arg0->unk126[i] = 0;
+        arg0->unk105[i] = 0;
+        arg0->unk147[i] = 0;
+        arg0->unk168[i] = 0;
+    }
+    t = 1;
+    arg0->unkA9 = 2;
+    arg0->unkAA = 3;
+    arg0->unk9B[0] = 0;
+    arg0->unk9B[1] = 0;
+    arg0->unk9B[2] = 0;
+    arg0->unk9B[3] = 0;
+    arg0->unkCC[0] = 0;
+    arg0->unkCC[1] = 0;
+    arg0->unkCC[2] = 0;
+    arg0->unkCC[3] = 0;
+    arg0->unk9B[4] = 0;
+    arg0->unk9B[5] = 0;
+    arg0->unk9B[6] = 0;
+    arg0->unk9B[7] = 0;
+    arg0->unkA7 = 0;
+    arg0->unkA8 = t;
+    arg0->unk26 = t;
+    arg0->unk27 = 0;
+    arg0->unk42 = -1;
+    arg0->unk6C = 0;
+    arg0->unk70 = 0;
+    arg0->unk2C = D_8004E0D4;
+    arg0->unkD0 = *(Blk12p4 *)D_8005A604;
+}
+#else
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_800926CC);
+#endif
 
 void func_800928E8(void) {
     EngineCfg *cfg = &D_8009F96C;
@@ -1601,7 +1703,7 @@ void func_800928E8(void) {
     D_8005A604[0xD] = 1;
     D_8005A604[0xE] = 1;
     D_8005A604[0xF] = 1;
-    func_800926CC(g);
+    func_800926CC((GameState *)g);
     func_800222FC();
 }
 
