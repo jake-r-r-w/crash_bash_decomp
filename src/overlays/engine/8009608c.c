@@ -656,7 +656,154 @@ void func_80097AA4(subengine *s) {
     s->unk52 = 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009608c", func_80097C28);
+void func_80097C28(void) {
+    s32 *p = &D_800ADBC0;
+    EXTengine *eng;
+    subengine *s;
+    s32 *q;
+    s32 i;
+    s32 v;
+
+    if (p[1] == -1) {
+        return;
+    }
+    eng = GetEngineSlot(3);
+    if (eng->sub == NULL) {
+        return;
+    }
+    eng->flags = 0x10008000;
+    eng->unk10.x = 0x140;
+    eng->unk5D = 0;
+    eng->unk10.y = 0x118;
+    eng->unk10.z = 0;
+    switch (p[1]) {
+    case 0:
+        eng->unk20 = func_800152A8(-0x800, 0, 0x14, p[2]);
+        eng->unk1C = func_800152A8(-0x400, 0, 0x14, p[2]);
+        v = func_80015304(0x800, 0x1800, 0x14, p[2]);
+        eng->unk2C.z = v;
+        eng->unk2C.y = v;
+        eng->unk2C.x = v;
+        eng->unk5E = 1;
+        s = GetEngineSlot(3)->sub + 2;
+        for (i = 0; i < D_800ADBD4; i++) {
+            s->unk20.z = 0x199;
+            s->unk51 = 0;
+            s->unk50 = 1;
+            s->flags |= 0x8000;
+            s->unk12 = i * (0x1000 / (D_800ADBD4 + 1)) + D_8005B690 * 40;
+            s->unk52 = 1;
+            s = s->next;
+        }
+        {
+            subengine *e = GetEngineSlot(3)->sub;
+            u32 t = D_8005A646 & 0xF0;
+            if (t == 0x40 || t == 0x80) {
+                e->flags |= 0x8000;
+                func_80097AA4(e);
+            } else {
+                e->flags &= ~0x8000;
+            }
+        }
+        q = &D_800ADBC0;
+        if (++q[2] > 0x14) {
+            q[2] = 0;
+            q[1] = 1;
+        }
+        break;
+    case 1:
+        s = GetEngineSlot(3)->sub + 2;
+        for (i = 0; i < D_800ADBD4; i++) {
+            s->unk20.z = 0x199;
+            s->unk51 = 0;
+            s->unk50 = 1;
+            s->flags |= 0x8000;
+            s->unk12 = i * (0x1000 / (D_800ADBD4 + 1)) + D_8005B690 * 40;
+            s->unk52 = 1;
+            s = s->next;
+        }
+        {
+            subengine *e = GetEngineSlot(3)->sub;
+            u32 t = D_8005A646 & 0xF0;
+            if (t == 0x40 || t == 0x80) {
+                e->flags |= 0x8000;
+                func_80097AA4(e);
+            } else {
+                e->flags &= ~0x8000;
+            }
+        }
+        if (!(D_8005A646 & 0xC0)) {
+            q = &D_800ADBC0;
+            if (q[3] != 0) {
+                q[1] = 2;
+                q[2] = 0;
+                PlaySfx(0x19F, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+        }
+        break;
+    case 2:
+        if (p[2] < 10) {
+            s = GetEngineSlot(3)->sub + 2;
+            for (i = 0; i < D_800ADBD4; i++) {
+                s->unk20.z = 0x199;
+                s->unk51 = 0;
+                s->unk50 = 1;
+                s->flags |= 0x8000;
+                s->unk12 = i * (0x1000 / (D_800ADBD4 + 1)) + D_8005B690 * 40;
+                s->unk52 = 1;
+                s = s->next;
+            }
+            {
+                subengine *e = GetEngineSlot(3)->sub;
+                u32 t = D_8005A646 & 0xF0;
+                if (t == 0x40 || t == 0x80) {
+                    e->flags |= 0x8000;
+                    func_80097AA4(e);
+                } else {
+                    e->flags &= ~0x8000;
+                }
+            }
+        } else {
+            {
+                subengine *e = GetEngineSlot(3)->sub;
+                e->flags |= 0x8000;
+                func_80097AA4(e);
+            }
+            {
+                s32 j;
+                subengine *e = GetEngineSlot(3)->sub + 2;
+                for (j = 0; j < D_800ADBD4; j++) {
+                    e->flags &= ~0x8000;
+                    e = e->next;
+                }
+            }
+        }
+        {
+            s32 *r = &D_800ADBC0;
+            eng->unk1E = func_800152A8(0, 0x800, 0x14, ++r[2]);
+            eng->unk5E = 1;
+            if (r[2] >= 0x14) {
+                r[1] = 3;
+            }
+        }
+        break;
+    case 3:
+        {
+            subengine *e = GetEngineSlot(3)->sub;
+            e->flags |= 0x8000;
+            func_80097AA4(e);
+        }
+        {
+            s32 j;
+            subengine *e = GetEngineSlot(3)->sub + 2;
+            for (j = 0; j < D_800ADBD4; j++) {
+                e->flags &= ~0x8000;
+                e = e->next;
+            }
+        }
+        break;
+    }
+}
 
 void func_80098278(void) {
     D_800ADBC0 = 0;
