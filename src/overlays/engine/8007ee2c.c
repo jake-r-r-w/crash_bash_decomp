@@ -2840,7 +2840,201 @@ void func_80089FA4(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8008A200);
+s32 func_8008A200(s32 arg0) {
+    HeroInfo *h;
+    HeroInfo *p;
+    s32 ret;
+    s32 i;
+    u16 t;
+
+    ret = 0;
+    if (arg0 != -1) {
+        p = Heroes;
+        h = &p[arg0];
+        if (!(h->hero_ctrl & 2)) {
+            h->hero_eng->unk1E += func_800154A0(h->hero_eng->unk1E, ret) >> 2;
+        }
+        h->hero_ctrl |= 1;
+        h->hero_eng->unk5E = 1;
+    } else if ((u16)D_8009E0D2 < 9) {
+        return 1;
+    }
+    if (D_8009E0D4 != arg0) {
+        return ret;
+    }
+    t = D_8009E0D0;
+    if (t != 0) {
+        D_8009E0D0 = t - 1;
+    } else {
+    switch ((u16)D_8009E0D2) {
+    case 0:
+        switch (Heroes[arg0].hero_name) {
+        case 1:
+            PlaySfx(1,NULL, NULL, 0x1000, 0x1E00, 0);
+            D_8009E0D0 = 0x18;
+            break;
+        case 2:
+            PlaySfx(0x33, NULL, NULL, 0x1000, 0x1E00, 0);
+            D_8009E0D0 = 0x17;
+            break;
+        case 3:
+            PlaySfx(0x65, NULL, NULL, 0x1000, 0x1E00, 0);
+            D_8009E0D0 = 0x1A;
+            break;
+        case 4:
+            PlaySfx(0x97, NULL, NULL, 0x1000, 0x1E00, 0);
+            D_8009E0D0 = 0x17;
+            break;
+        case 7:
+            PlaySfx(0xFB, NULL, NULL, 0x1000, 0x1E00, 0);
+            D_8009E0D0 = 0x1A;
+            break;
+        case 8:
+            PlaySfx(0xC9, NULL, NULL, 0x1000, 0x1E00, 0);
+            D_8009E0D0 = 0x1A;
+            break;
+        case 5:
+            PlaySfx(0x12D, NULL, NULL, 0x1000, 0x1E00, 0);
+            D_8009E0D0 = 0x17;
+            break;
+        case 6:
+            PlaySfx(0x15F, NULL, NULL, 0x1000, 0x1E00, 0);
+            D_8009E0D0 = 0x17;
+            break;
+        default:
+            D_8009E0D0 = 0x5A;
+            D_8009E0D2 = 3;
+            break;
+        }
+        break;
+    case 1:
+        PlaySfx(0x1B0, NULL, NULL, 0x1000, 0x1E00, 0);
+        D_8009E0D0 = 0x1E;
+        break;
+    case 2:
+        ret = 1;
+        switch (Heroes[arg0].hero_name) {
+        case 1:
+            PlaySfx(7, NULL, NULL, 0x1000, 0x1E00, 0);
+            D_8009E0D0 = 0x12;
+            break;
+        case 2:
+            PlaySfx(0x39, NULL, NULL, 0x1000, 0x1E00, 0);
+            D_8009E0D0 = 0x12;
+            break;
+        case 3:
+            PlaySfx(0x6B, NULL, NULL, 0x1000, 0x1E00, 0);
+            D_8009E0D0 = 0x12;
+            break;
+        case 4:
+            PlaySfx(0x9D, NULL, NULL, 0x1000, 0x1E00, 0);
+            D_8009E0D0 = 0x12;
+            break;
+        case 7:
+            PlaySfx(0x101, NULL, NULL, 0x1000, 0x1E00, 0);
+            D_8009E0D0 = 0x12;
+            break;
+        case 8:
+            PlaySfx(0xCF, NULL, NULL, 0x1000, 0x1E00, 0);
+            D_8009E0D0 = 0x12;
+            break;
+        case 5:
+            PlaySfx(0x133, NULL, NULL, 0x1000, 0x1E00, 0);
+            D_8009E0D0 = 0x12;
+            break;
+        case 6:
+            PlaySfx(0x165, NULL, NULL, 0x1000, 0x1E00, 0);
+            D_8009E0D0 = 0x12;
+            break;
+        default:
+            D_8009E0D0 = 0x12;
+            D_8009E0D2 = 3;
+            break;
+        }
+        break;
+    case 9:
+        for (i = 0; i < 4; i++) {
+            if (Heroes[i].hero_name == D_8005A614[0x60]) {
+                if (i & 2) {
+                    PlaySfx(0x1AE, NULL, NULL, 0x1000, 0x1E00, 0);
+                    D_8009E0D0 = 0xE;
+                } else {
+                    PlaySfx(0x1AE, NULL, NULL, 0x1000, 0x1E00, 0);
+                    D_8009E0D0 = 0xB;
+                }
+                break;
+            }
+        }
+        break;
+    case 10:
+        D_8009E0D0 = 0;
+        D_8009E0D2 = 0;
+        for (i = 0; i < 4; i++) {
+            if (Heroes[i].hero_name == D_8005A614[0x60]) {
+                if (i & 2) {
+                    PlaySfx(0x1A5, NULL, NULL, 0x1000, 0x1E00, 0);
+                    D_8009E0D0 = 0x16;
+                    D_8009E0D2 = 0;
+                } else {
+                    PlaySfx(0x1A4, NULL, NULL, 0x1000, 0x1E00, 0);
+                    D_8009E0D0 = 0x1B;
+                    D_8009E0D2 = 0;
+                }
+                break;
+            }
+        }
+        break;
+    case 15:
+        PlaySfx(0x1B1, NULL, NULL, 0x1000, 0x1E00, 0);
+        D_8009E0D0 = 0x10;
+        D_8009E0D2 = 0;
+        break;
+    case 16:
+        PlaySfx(0x1B2, NULL, NULL, 0x1000, 0x1E00, 0);
+        D_8009E0D0 = 0x14;
+        D_8009E0D2 = 0;
+        break;
+    case 21:
+        PlaySfx(0x1B9, NULL, NULL, 0x1000, 0x1E00, 0);
+        D_8009E0D0 = 0x1B;
+        break;
+    case 22:
+        ret = 1;
+        D_8009E0D2 = 1;
+        D_8009E0D0 = 0x1B;
+        break;
+    case 20:
+    case 30:
+        PlaySfx(0x1B8, NULL, NULL, 0x1000, 0x1E00, 0);
+        D_8009E0D0 = 0xC;
+        break;
+    case 31:
+        PlaySfx(0x1BA, NULL, NULL, 0x1000, 0x1E00, 0);
+        D_8009E0D0 = 0x27;
+        break;
+    case 32:
+        ret = 1;
+        D_8009E0D2 = 3;
+        D_8009E0D0 = 2;
+        break;
+    case 40:
+        PlaySfx(0x1BB, NULL, NULL, 0x1000, 0x1E00, 0);
+        D_8009E0D0 = 0x1E;
+        break;
+    case 41:
+        ret = 1;
+        D_8009E0D2 = 3;
+        D_8009E0D0 = 0x1B;
+        break;
+    default:
+        D_8009E0D0 = 0xB4;
+        D_8009E0D2 = 3;
+        break;
+    }
+    D_8009E0D2++;
+    }
+    return ret;
+}
 
 void func_8008A810(void) {
     u8 *p = D_8005A614;

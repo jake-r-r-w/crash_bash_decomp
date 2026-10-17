@@ -560,6 +560,8 @@ void func_80080FBC(void);
 
 void func_8008900C(s32 arg0);
 
+s32 func_8008A200(s32 arg0);
+
 s32 func_8008ADA4(u8 *arg0, u8 *arg1, u8 *arg2, s32 *arg3);
 
 void func_8008CA90(u8 *arg0, MATRIX *m);
