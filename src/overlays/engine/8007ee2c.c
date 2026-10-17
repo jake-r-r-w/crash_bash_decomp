@@ -89,7 +89,170 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8007ee2c", D_800ADE38);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8007F314);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_800809A0);
+void func_800809A0(HudEntry *e, s32 arg1) {
+    s32 n;
+    HudGameView *g;
+    HudEngView *eng;
+    s16 *row;
+    s16 *row2;
+    s32 i;
+    s32 k;
+    s32 sfx;
+
+    for (n = 0; e->type != -1; e++) {
+        g = (HudGameView *)D_8005A614;
+        switch (e->type) {
+        case 1:
+            if ((g->state & 0x80010000) != 0x80010000) {
+                break;
+            }
+        case 0:
+            if (D_8009AF00 == 0) {
+                func_800243A0(e->x, (s16)(e->y + arg1),
+                              ((u8 **)D_80059748[g->level])[e->idx], e->a, e->b,
+                              D_8009AEEC == n);
+            }
+            n++;
+            break;
+        case 2:
+            HUDBOX->unk10 = e->a;
+            HUDBOX->unk14 = e->c;
+            HUDBOX->unk6 = e->x + arg1;
+            HUDBOX->unk4 = 0x7C;
+            HUDBOX->unkA = 0x204;
+            if ((g->state & 0x80010000) != 0x80010000) {
+                HUDBOX->unkC = arg1 + (e->x + e->y);
+            } else {
+                HUDBOX->unkC = arg1 + (e->x + e->idx);
+            }
+            break;
+        case 3:
+            if (D_8009AF00 == 0) {
+                func_800243A0(e->x, (s16)(e->y + arg1), (u8 *)e->idx, e->a, e->b, 0);
+            }
+            break;
+        case 4:
+            if (D_8004DDD0[g->mode * 3] == 0x102 && (g->flags & 0x40)) {
+                goto clear;
+            }
+            func_800248A0(e->x, (s16)(e->y + arg1), e->a, e->b, e->idx);
+            if (!(g->flags & 0xC0)) {
+                goto clear;
+            }
+            if (g->flags & 0x40) {
+                row = D_8009AE98[g->level];
+                i = arg1 + e->y;
+                HUDENG->x0 = row[0] + 0x140;
+                HUDENG->y0 = i + row[1];
+                HUDENG->x1 = row[2] + 0x140;
+                HUDENG->y1 = i + row[3];
+            } else {
+                row2 = D_8009AE98[g->level];
+                i = arg1 + e->y;
+                HUDENG->x0 = row2[4] + 0x140;
+                HUDENG->y0 = i + row2[5];
+                HUDENG->x1 = row2[6] + 0x140;
+                HUDENG->y1 = i + row2[7];
+            }
+            sfx = 0;
+            if (g->unk32 & 0x10) {
+                sfx = 0x2022;
+            }
+            if (g->unk32 & 0x80) {
+                sfx = 0x201E;
+            }
+            if (g->unk32 & 0x40) {
+                sfx = 0x201F;
+            }
+            if (g->unk32 & 0x20) {
+                sfx = 0x2021;
+                if (g->unk32 & 8) {
+                    sfx = 0x2020;
+                }
+            }
+            if (g->mode == 0x20) {
+                sfx = 0;
+            }
+            if (g->unk32 & 0x100) {
+                sfx = 0;
+            }
+            if (D_8004DDD0[g->mode * 3] == 0x102) {
+                sfx = 0;
+            }
+            D_8009AC78 = sfx;
+            D_8009AD20 = sfx;
+            break;
+        clear:
+            D_8009AC78 = 0;
+            D_8009AD20 = 0;
+            break;
+        case 5:
+            if (D_8009AF00 != 0) {
+                break;
+            }
+            func_800243A0(e->x, (s16)(e->y + arg1),
+                          ((u8 **)D_80059748[g->level])[e->idx], e->a, e->b, 0);
+            break;
+        case 6:
+            D_8005B2B4 = e->x;
+            break;
+        case 7:
+            HUDBOX->unk10 = e->a;
+            HUDBOX->unk14 = e->c;
+            HUDBOX->unk6 = e->x + arg1;
+            HUDBOX->unk4 = 0x40;
+            HUDBOX->unkA = 0x240;
+            if ((g->state & 0x80010000) != 0x80010000) {
+                HUDBOX->unkC = arg1 + (e->x + e->y);
+            } else {
+                HUDBOX->unkC = arg1 + (e->x + e->idx);
+            }
+            break;
+        case 10: case 11: case 12: case 13: case 14:
+        case 15: case 16: case 17: case 18: case 19:
+            k = e->type - 10;
+            if (((u16 *)D_8009BD1C)[k] != 1) {
+                break;
+            }
+            if (D_8009AEEC != k) {
+                goto draw;
+            }
+            func_800243A0(e->x, (s16)(e->y + arg1),
+                          ((u8 **)D_80059748[g->level])[e->idx], e->c, e->d, 0);
+            break;
+        case 20: case 21: case 22: case 23: case 24:
+        case 25: case 26: case 27: case 28: case 29:
+            k = e->type - 20;
+            if (((u16 *)D_8009BD1C)[k] != 0) {
+                break;
+            }
+            if (D_8009AEEC != k) {
+                goto draw;
+            }
+            func_800243A0(e->x, (s16)(e->y + arg1),
+                          ((u8 **)D_80059748[g->level])[e->idx], e->c, e->d, 0);
+            break;
+        case 30: case 31: case 32: case 33: case 34:
+        case 35: case 36: case 37: case 38: case 39:
+            k = e->type - 30;
+            if (((u16 *)D_8009BD1C)[k] != 9) {
+                break;
+            }
+        draw:
+            func_800243A0(e->x, (s16)(e->y + arg1),
+                          ((u8 **)D_80059748[g->level])[e->idx], e->a, e->b, 0);
+            break;
+        }
+    }
+    if (D_8009AF00 != 0) {
+        D_8009AF00--;
+    }
+    eng = (HudEngView *)D_80099290;
+    eng->on0 = 1;
+    eng->on1 = 1;
+    eng->rot0 += 0x40;
+    eng->rot1 += 0x40;
+}
 
 void func_80080FBC(void) {
     u8 *e;

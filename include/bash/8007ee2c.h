@@ -560,7 +560,65 @@ extern s32 D_8009BD34;
 extern s32 D_8009BD38;
 extern s32 D_8009BD3C;
 void func_80081470(s32 arg0);
-void func_800809A0(s16 *arg0, s32 arg1);
+/* func_800809A0: one 0x18-byte HUD script entry; the list ends at type -1. */
+typedef struct HudEntry {
+    /* 0x00 */ s16 type;
+    /* 0x02 */ s16 x;
+    /* 0x04 */ s16 y;
+    /* 0x06 */ s16 idx;
+    /* 0x08 */ s32 a;
+    /* 0x0C */ s32 b;
+    /* 0x10 */ s32 c;
+    /* 0x14 */ s32 d;
+} HudEntry;
+/* D_8005A614 as seen by func_800809A0. */
+typedef struct HudGameView {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ u32 state;
+    /* 0x08 */ u8 unk8[0x10 - 0x8];
+    /* 0x10 */ u32 flags;
+    /* 0x14 */ u8 unk14[0x2C - 0x14];
+    /* 0x2C */ s32 level;
+    /* 0x30 */ u8 unk30[2];
+    /* 0x32 */ u16 unk32;
+    /* 0x34 */ s16 mode;
+} HudGameView;
+/* D_8009BCE0 as seen by func_800809A0. */
+typedef struct HudBox {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s16 unk4;
+    /* 0x06 */ s16 unk6;
+    /* 0x08 */ s16 unk8;
+    /* 0x0A */ s16 unkA;
+    /* 0x0C */ s16 unkC;
+    /* 0x0E */ s16 unkE;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 unk14;
+} HudBox;
+/* D_80099290 as seen by func_800809A0. */
+typedef struct HudEngView {
+    /* 0x000 */ u8 pad0[0x31C];
+    /* 0x31C */ s32 x0;
+    /* 0x320 */ s32 y0;
+    /* 0x324 */ u8 pad324[0x32A - 0x324];
+    /* 0x32A */ u16 rot0;
+    /* 0x32C */ u8 pad32C[0x36A - 0x32C];
+    /* 0x36A */ s16 on0;
+    /* 0x36C */ u8 pad36C[0x3B8 - 0x36C];
+    /* 0x3B8 */ s32 x1;
+    /* 0x3BC */ s32 y1;
+    /* 0x3C0 */ u8 pad3C0[0x3C6 - 0x3C0];
+    /* 0x3C6 */ u16 rot1;
+    /* 0x3C8 */ u8 pad3C8[0x406 - 0x3C8];
+    /* 0x406 */ s16 on1;
+} HudEngView;
+#define HUDG ((HudGameView *)D_8005A614)
+#define HUDBOX ((HudBox *)D_8009BCE0)
+#define HUDENG ((HudEngView *)D_80099290)
+extern s32 D_8009AF00;
+extern s16 D_8009AE98[][8];
+void func_800248A0();
+void func_800809A0(HudEntry *e, s32 arg1);
 
 void func_80080FBC(void);
 
