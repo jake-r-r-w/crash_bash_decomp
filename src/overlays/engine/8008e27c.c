@@ -1003,7 +1003,82 @@ void func_800917B4(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_8009196C);
+void func_8009196C(void) {
+    PadState *pad;
+    EXTengine *e;
+    EXTengine *e2;
+
+    if (D_800655C0 & 2) {
+        u8 *c = D_800655C8;
+        if (*(s32 *)(c + 0x85C) != D_8009F4BC) {
+            func_80092198();
+            D_8009F4BC = *(s32 *)(c + 0x85C);
+        }
+    }
+    pad = D_80051338;
+    if (*(s32 *)((u8 *)pad + 0x48) & 0x10) {
+        PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        SELECT_SLOT(D_8009F3B8 - 2);
+    }
+    if (*(s32 *)((u8 *)pad + 0x48) & 0x40) {
+        PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        SELECT_SLOT(D_8009F3B8 + 2);
+    }
+    if (*(s32 *)((u8 *)pad + 0x48) & 0x80) {
+        PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        SELECT_SLOT(D_8009F3B8 - 1);
+    }
+    if (*(s32 *)((u8 *)pad + 0x48) & 0x20) {
+        PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        SELECT_SLOT(D_8009F3B8 + 1);
+    }
+    D_8009F3B8 &= 3;
+    e = GetEngineSlot(D_8009F3B8 | 4);
+    e2 = GetEngineSlot(2);
+    e2->unk10.y = e->unk10.y;
+    e2->unk10.x = e->unk10.x;
+    D_80056998.modelDp = *(s32 *)D_8009F644;
+    func_8001C2C0((u8 *)GetEngineSlot(4));
+    func_8001C2C0((u8 *)GetEngineSlot(5));
+    func_8001C2C0((u8 *)GetEngineSlot(6));
+    func_8001C2C0((u8 *)GetEngineSlot(7));
+    func_8001C2C0((u8 *)GetEngineSlot(3));
+    func_8001C2C0((u8 *)GetEngineSlot(2));
+    switch (D_8009F630) {
+    case 2:
+        {
+            s32 idx;
+            u8 *p;
+            u8 *g;
+            idx = D_8009F3B8 * 0x194;
+            p = (u8 *)D_800657C8;
+            if (*(s32 *)(idx + p) == 0) {
+                GetEngineSlot(3)->sub[13].unk6C = 0;
+            } else {
+                GetEngineSlot(3)->sub[13].unk6C = D_8009EFB4[D_8005A640];
+            }
+            GetEngineSlot(3)->sub[12].unk6C = D_8009EFC8[*(s32 *)((g = D_8005A614) + 0x2C)];
+            GetEngineSlot(3)->sub[14].unk6C = D_8009F000[*(s32 *)(g + 0x2C)];
+        }
+        break;
+    case 1:
+        {
+            s32 idx;
+            u8 *p;
+            u8 *g;
+            idx = D_8009F3B8 * 0x194;
+            p = (u8 *)D_800657C8;
+            if (*(s32 *)(idx + p) == 0) {
+                GetEngineSlot(3)->sub[13].unk6C = D_8009EFB8[D_8005A640];
+            } else {
+                GetEngineSlot(3)->sub[13].unk6C = D_8009EFB0[D_8005A640];
+            }
+            GetEngineSlot(3)->sub[12].unk6C = D_8009EFC0[*(s32 *)((g = D_8005A614) + 0x2C)];
+            GetEngineSlot(3)->sub[14].unk6C = D_8009EFC4[*(s32 *)(g + 0x2C)];
+        }
+        break;
+    }
+}
 
 void func_80091E58(void) {
     u8 *p = (u8 *)D_800657C8;

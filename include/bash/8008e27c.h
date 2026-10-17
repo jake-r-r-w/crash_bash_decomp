@@ -258,6 +258,31 @@ extern void *D_8009EFD0[];
 extern void *D_8009EFD4[];
 extern void *D_8009EFD8[];
 extern void *D_8009EFDC[];
+/* func_8009196C: move the save slot cursor to slot (n) & 3 and redraw it. */
+#define SELECT_SLOT(n)                                \
+    {                                                 \
+        s32 i_;                                       \
+        u8 *p_;                                       \
+        s32 off_;                                     \
+        s32 b_;                                       \
+        u8 *q_;                                       \
+        u8 *a_;                                       \
+        i_ = (n) & 3;                                 \
+        off_ = i_ * 0x194;                            \
+        p_ = (u8 *)D_800657C8;                        \
+        b_ = *(s32 *)(off_ + p_) == 0;                \
+        q_ = p_ + 8;                                  \
+        a_ = q_ + off_;                               \
+        D_8009F3B8 = i_;                              \
+        func_80090564(a_, b_);                        \
+    }
+extern void *D_8009EFB0[];
+extern void *D_8009EFB4[];
+extern void *D_8009EFB8[];
+extern void *D_8009EFC0[];
+extern void *D_8009EFC4[];
+extern void *D_8009EFC8[];
+extern void *D_8009F000[];
 extern s32 D_8009F63C;
 void func_8009196C(void);
 extern u8 D_800A0858[];
