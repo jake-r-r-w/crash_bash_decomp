@@ -355,6 +355,35 @@ extern void *D_8009EFC0[];
 extern void *D_8009EFC4[];
 extern void *D_8009EFC8[];
 extern void *D_8009F000[];
+extern void *D_8009EFAC[];
+extern void *D_8009EFE0[];
+extern void *D_8009EFE4[];
+extern void *D_8009EFE8[];
+extern void *D_8009EFEC[];
+extern void *D_8009EFF0[];
+extern void *D_8009EFF4[];
+extern void *D_8009EFF8[];
+extern void *D_8009EFFC[];
+extern void *D_8009F454[];
+/* Optional callbacks used by the save menu (func_80090E20). */
+typedef struct {
+    /* 0x0 */ void (*unk0)(void);
+    /* 0x4 */ void (*unk4)(void);
+    /* 0x8 */ void (*unk8)(void);
+    /* 0xC */ void (*unkC)(void);
+} SaveMenuHooks;
+extern SaveMenuHooks D_800BDB3C;
+extern s32 D_800BDB50;
+/* func_80090E20: show slot 1's menu frames from tbl for the current mode. */
+#define SAVEMENU_SET_ANIM(tbl)                                                 \
+    {                                                                          \
+        EXTengine *e_;                                                         \
+        u8 *g_;                                                                \
+        e_ = GetEngineSlot(1);                                                 \
+        e_->sub[1].unk6C = (tbl)[*(s32 *)((g_ = D_8005A614) + 0x2C)];          \
+        GetEngineSlot(1)->sub->unk6C = D_8009EFE4[*(s32 *)(g_ + 0x2C)];        \
+        func_8001C2C0((u8 *)GetEngineSlot(1));                                 \
+    }
 extern s32 D_8009F63C;
 void func_8009196C(void);
 extern u8 D_800A0858[];

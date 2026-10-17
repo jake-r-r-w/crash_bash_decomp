@@ -3860,7 +3860,8 @@
   "status": "matched"
  },
  "engine:80090E20": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-17T12:22:02Z",
+  "status": "matched"
  },
  "engine:800917B4": {
   "matched_at": "2026-10-15T12:15:27Z",
