@@ -456,6 +456,8 @@ typedef struct {
 extern D_8009E0E8_t D_8009E0E8[3][4];
 extern u8 D_80053004[];
 
+void func_80082D90(s32 arg0);
+
 void func_80086918(void);
 
 void func_80087B8C(s32 arg0);
