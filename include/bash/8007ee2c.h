@@ -10,6 +10,7 @@
 
 extern s32 (*D_8009D724)(s32);
 extern s32 (*D_8009D738)(s32, s32);
+extern s32 (*D_8009D730)(s32);
 typedef struct {
     s32 a;
     u16 b;
@@ -400,6 +401,8 @@ typedef struct {
 } D_8009E0E8_t;
 extern D_8009E0E8_t D_8009E0E8[3][4];
 extern u8 D_80053004[];
+
+void func_8008955C(s32 arg0);
 
 void func_800898EC(s32 arg0);
 
