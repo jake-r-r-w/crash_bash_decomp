@@ -716,7 +716,103 @@ void func_80085C84(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80085D2C);
+void func_80085D2C(s32 arg0) {
+    HeroInfo *h;
+    EXTengine *e;
+    EXTheromove *m;
+    s32 step;
+    HeroInfo *base;
+
+    base = Heroes;
+    h = base + arg0;
+    e = h->hero_eng;
+    m = h->hero_move;
+    ((void (*)(s32))D_8009D6E8.unk2C)(arg0);
+    func_800860D4(arg0);
+    switch (m->velocity_calc) {
+    case 2:
+        m->x_vel += m->x_acc - m->x_dec;
+        if (m->x_vel < 0) {
+            m->x_vel = 0;
+        }
+        if (m->x_vel > m->x_max) {
+            m->x_vel = m->x_max;
+        }
+        if (m->x_dir != 0) {
+            e->unk10.x -= m->x_vel;
+        } else {
+            e->unk10.x += m->x_vel;
+        }
+        m->z_vel += m->z_acc - m->z_dec;
+        if (m->z_vel < 0) {
+            m->z_vel = 0;
+        }
+        if (m->z_vel > m->z_max) {
+            m->z_vel = m->z_max;
+        }
+        if (m->z_dir != 0) {
+            e->unk10.z -= m->z_vel;
+        } else {
+            e->unk10.z += m->z_vel;
+        }
+        break;
+    case 3:
+        if (m->x_vel != m->x_max) {
+            if (m->x_max != 0) {
+                step = m->x_acc;
+            } else {
+                step = m->x_dec;
+            }
+            if (m->x_vel < m->x_max) {
+                m->x_vel += step;
+                if (m->x_vel > m->x_max) {
+                    m->x_vel = m->x_max;
+                }
+            } else {
+                m->x_vel -= step;
+                if (m->x_vel < m->x_max) {
+                    m->x_vel = m->x_max;
+                }
+            }
+        }
+        if (m->z_vel != m->z_max) {
+            if (m->z_max != 0) {
+                step = m->z_acc;
+            } else {
+                step = m->z_dec;
+            }
+            if (m->z_vel < m->z_max) {
+                m->z_vel += step;
+                if (m->z_vel > m->z_max) {
+                    m->z_vel = m->z_max;
+                }
+            } else {
+                m->z_vel -= step;
+                if (m->z_vel < m->z_max) {
+                    m->z_vel = m->z_max;
+                }
+            }
+        }
+        e->unk10.z += m->z_vel;
+        e->unk10.x += m->x_vel;
+        break;
+    case 9:
+        break;
+    case 1:
+    default:
+        e->unk10.x -= (m->forward_speed * D_80068BD4[(m->forward_angle - 0x400) & 0xFFF].unk2) >> 12;
+        e->unk10.z -= (m->forward_speed * D_80068BD4[m->forward_angle & 0xFFF].unk2) >> 12;
+        if (m->reactive_speed != 0) {
+            e->unk10.x -= (m->reactive_speed * D_80068BD4[(m->reactive_angle - 0x400) & 0xFFF].unk2) >> 12;
+            e->unk10.z -= (m->reactive_speed * D_80068BD4[m->reactive_angle & 0xFFF].unk2) >> 12;
+            m->reactive_speed -= 4;
+            if (m->reactive_speed < 0) {
+                m->reactive_speed = 0;
+            }
+        }
+        break;
+    }
+}
 
 void func_800860D4(s32 arg0) {
     HeroInfo *b0;

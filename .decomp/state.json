@@ -3296,7 +3296,8 @@
   "status": "matched"
  },
  "engine:80085D2C": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-17T07:16:10Z",
+  "status": "matched"
  },
  "engine:800860D4": {
   "matched_at": "2026-10-17T07:06:47Z",
