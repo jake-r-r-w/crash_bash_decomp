@@ -1565,7 +1565,74 @@ void func_80087428(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_800874EC);
+void func_800874EC(s32 arg0) {
+    s32 ret2;
+    HeroInfo *h;
+    HeroInfo *h2;
+    HeroInfo *base;
+    HeroInfo *base2;
+    EXTheromove *m;
+    EXTengine *e;
+
+    if (HeroCheckStatus2000(arg0) == 0 && HeroCheckStatus600(arg0) == 0 &&
+        func_80086FCC(arg0) == 0) {
+        if (D_8009D72C != NULL) {
+            ret2 = D_8009D72C(arg0);
+        } else if (((PadButtons *)D_80051338)[arg0].unk54 & 0x4000) {
+            SetHeroAction((HeroInfo *)arg0, 4);
+            ret2 = 1;
+        } else {
+            ret2 = 0;
+        }
+        if (ret2 == 0 && HeroCheckMoving(arg0) == 0 &&
+            HeroCheckPad1000(arg0) == 0) {
+            base = Heroes;
+            h = base + arg0;
+            m = h->hero_move;
+            if (m->velocity_calc == 3) {
+                e = h->hero_eng;
+                if (e->unk10.y < D_8005A5D8) {
+                    if (h->hero_aseq == 0xE) {
+                        SetHeroSeq((HeroInfo *)arg0, 1);
+                    }
+                } else if (m->x_vel != 0 || m->z_vel != 0) {
+                    if (h->hero_aseq != 1) {
+                        goto idle_done;
+                    }
+                    PlaySfx(D_8009DC2C[Random(6)], &h->hero_eng->sfx, NULL,
+                            0x1000, 0x1E00, 0);
+                    SetHeroSeq((HeroInfo *)arg0, 0xE);
+                } else if (h->hero_aseq == 0xE) {
+                    if (e->sfx != NULL) {
+                        StopSfx(e->sfx);
+                    }
+                    SetHeroSeq((HeroInfo *)arg0, 1);
+                }
+            }
+            base2 = Heroes;
+            h2 = base2 + arg0;
+            if (h2->hero_aseq == 1) {
+                if (h2->hero_idle_count != 0) {
+                    h2->hero_idle_count--;
+                } else {
+                    D_8009D71C(arg0);
+                }
+            }
+        idle_done:
+            func_8008502C(arg0);
+            if (D_8005A5DC < 4) {
+                if (D_8005A5DC >= 2) {
+                    D_8009D73C(arg0);
+                } else if (D_8009D740 != NULL) {
+                    D_8009D740(arg0);
+                }
+            } else if (D_8009D740 != NULL) {
+                D_8009D740(arg0);
+            }
+            func_800871E4(arg0);
+        }
+    }
+}
 
 void func_8008795C(s32 arg0) {
     s32 ret2;

@@ -401,6 +401,11 @@ static inline s32 HeroCheckStopped(s32 arg0) {
     }
     return 0;
 }
+extern void (*D_8009D71C)(s32);
+extern void (*D_8009D740)(s32);
+extern u16 D_8009DC2C[];
+
+void func_800874EC(s32 arg0);
 
 void InitHealth(NAS *nas);
 
