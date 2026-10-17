@@ -126,7 +126,7 @@ void func_8008688C(void);
 
 s32 func_8008AB04(s32 arg0);
 
-void func_80084788();
+void func_80084788(s32 idx, u16 arg1);
 
 void func_800859D4();
 
@@ -613,6 +613,23 @@ typedef struct HudEngView {
     /* 0x406 */ s16 on1;
 } HudEngView;
 #define HUDG ((HudGameView *)D_8005A614)
+/* D_8005A614 as seen by func_80084788. */
+typedef struct WinnerView {
+    /* 0x00 */ u8 unk0[0x30];
+    /* 0x30 */ u16 flags;
+    /* 0x32 */ u16 unk32;
+    /* 0x34 */ s16 mode;
+    /* 0x36 */ u8 unk36[0x48 - 0x36];
+    /* 0x48 */ s16 team0;
+    /* 0x4A */ s16 team1;
+    /* 0x4C */ u8 unk4C[0x5C - 0x4C];
+    /* 0x5C */ u8 out[4];
+    /* 0x60 */ u8 winner;
+    /* 0x61 */ u8 unk61[0x6C - 0x61];
+    /* 0x6C */ s32 teams;
+} WinnerView;
+#define WINV ((WinnerView *)D_8005A614)
+extern s32 D_8009D758;
 #define HUDBOX ((HudBox *)D_8009BCE0)
 #define HUDENG ((HudEngView *)D_80099290)
 extern s32 D_8009AF00;

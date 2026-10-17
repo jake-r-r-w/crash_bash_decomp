@@ -1076,7 +1076,202 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8007ee2c", D_800ADFAC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80083E8C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80084788);
+void func_80084788(s32 idx, u16 arg1) {
+    HeroInfo *h;
+    HeroInfo *m;
+    s32 i;
+    s32 n;
+    s32 best;
+
+    if (WINV->flags & 0x801) {
+        return;
+    }
+    if (WINV->unk32 & 0xE0) {
+        if (idx == -1) {
+            WINV->winner = 0;
+            WINV->flags |= arg1;
+            for (i = 0; i < 4; i++) {
+                h = &Heroes[i];
+                if (!(h->hero_status & 0xFA00)) {
+                    h->hero_status |= 0x400;
+                }
+            }
+        } else {
+            n = 0;
+            for (i = 0; i < 4; i++) {
+                h = &Heroes[i];
+                if (!(h->hero_status & 0xF800) && WINV->out[i] == 0) {
+                    n++;
+                }
+            }
+            if (n == 0) {
+                WINV->winner = 0;
+                WINV->flags |= arg1;
+                for (i = 0; i < 4; i++) {
+                    h = &Heroes[i];
+                    if (!(h->hero_status & 0xFA00)) {
+                        h->hero_status |= 0x400;
+                    }
+                }
+                return;
+            }
+            if (WINV->out[idx] != 0) {
+                return;
+            }
+        }
+    }
+    best = 0;
+    if (idx == -1) {
+        if (!(WINV->unk32 & 0xE0)) {
+            switch (WINV->mode) {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 18:
+            case 19:
+            case 20:
+            case 21:
+            case 30:
+            case 32:
+                if (WINV->teams != 0 && WINV->mode != 0x20) {
+                    HeroInfo *hb = Heroes;
+                    s32 t0 = WINV->team0;
+                    s32 t1;
+                    s32 dead0, dead1;
+                    u16 mate0, mate1;
+                    s32 h0, h1;
+
+                    m = &hb[t0];
+                    dead0 = m->hero_status & 0xF800;
+                    h0 = 0;
+                    if (!dead0) {
+                        h0 = m->hero_health;
+                    }
+                    mate0 = m->hero_teammate;
+                    h = &Heroes[mate0];
+                    if (!(h->hero_status & 0xF800)) {
+                        h0 += h->hero_health;
+                    }
+                    t1 = WINV->team1;
+                    h = &Heroes[t1];
+                    dead1 = h->hero_status & 0xF800;
+                    h1 = 0;
+                    if (!dead1) {
+                        h1 = h->hero_health;
+                    }
+                    mate1 = h->hero_teammate;
+                    h = &Heroes[mate1];
+                    if (!(h->hero_status & 0xF800)) {
+                        h1 += h->hero_health;
+                    }
+                    if (h0 == h1) {
+                        idx = -1;
+                    } else if (h0 > h1) {
+                        idx = mate0;
+                        if (!dead0) {
+                            idx = t0;
+                        }
+                    } else {
+                        idx = mate1;
+                        if (!dead1) {
+                            idx = t1;
+                        }
+                    }
+                } else {
+                    for (i = 0; i < 4; i++) {
+                        h = &Heroes[i];
+                        if (!(h->hero_status & 0xF800)) {
+                            if (best < h->hero_health) {
+                                best = h->hero_health;
+                                idx = i;
+                            } else if (h->hero_health == best) {
+                                idx = -1;
+                            }
+                        }
+                    }
+                }
+                break;
+            case 4:
+            case 9:
+                D_8009D6DC[2] |= 0x200;
+                break;
+            }
+            if (idx != -1) {
+                HeroInfo *b1 = Heroes;
+                HeroInfo *w = &b1[idx];
+
+                w->hero_status |= 0x200;
+                if (WINV->teams != 0 && WINV->mode != 0x20) {
+                    m = &b1[(u16)w->hero_teammate];
+                    if (!(m->hero_status & 0xA000)) {
+                        m->hero_status |= 0x200;
+                    }
+                }
+                WINV->winner = Heroes[idx].hero_name;
+                WINV->flags |= 0x800;
+            } else {
+                WINV->winner = 0;
+                WINV->flags |= arg1;
+            }
+        }
+    } else {
+        WinnerView *g;
+        HeroInfo *base = Heroes;
+
+        h = &base[idx];
+        g = WINV;
+        n = (u16)h->hero_teammate;
+        if (g->teams != 0 && g->mode != 0x20) {
+            idx = D_8009D758;
+            if (idx < 3) {
+                m = &base[(u16)n];
+                if (m->hero_status & 0xA000) {
+                    if (idx < 2) {
+                        h->hero_status |= 0x200;
+                        g->winner = h->hero_name;
+                        g->flags |= 0x800;
+                    }
+                } else {
+                    h->hero_status |= 0x200;
+                    m->hero_status |= 0x200;
+                    g->winner = h->hero_name;
+                    g->flags |= 0x800;
+                }
+            }
+        } else if (D_8009D758 < 2) {
+            Heroes[idx].hero_status |= 0x200;
+            WINV->winner = Heroes[idx].hero_name;
+            WINV->flags |= 0x800;
+        }
+    }
+    if (D_8005A644 & 0x800) {
+        for (i = 0; i < 4; i++) {
+            h = &Heroes[i];
+            if (!(h->hero_status & 0xFA00)) {
+                h->hero_status |= 0x400;
+            }
+        }
+    }
+    if (D_8009D908 == 0) {
+        D_8009D908 = 1;
+        for (i = 0; i < 4; i++) {
+            h = &Heroes[i];
+            if (!(h->hero_status & 0xFA00)) {
+                if (WINV->out[i] == 0) {
+                    D_8009D908 = 0;
+                }
+                if (WINV->teams != 0 && WINV->out[h->hero_teammate] == 0) {
+                    D_8009D908 = 0;
+                }
+            }
+        }
+    }
+}
 
 void func_80084E04(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx) {
     HeroInfo *h;
