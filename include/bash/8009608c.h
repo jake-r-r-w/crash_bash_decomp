@@ -36,7 +36,7 @@ typedef struct EngCam {
     /* 0x54 */ SVECTOR rot;
 } EngCam;
 
-s32 func_80096280(void *arg0, s32 *arg1, void *arg2, s32 *arg3, void *arg4);
+s32 func_80096280(s32 *arg0, s32 *arg1, s32 *arg2, s32 *arg3, s32 *arg4);
 
 /* func_80097608's body, inlined by func_800967E0. */
 static inline s32 EngCam_HitY(s32 *arg0, s32 *arg1, s32 *arg2) {

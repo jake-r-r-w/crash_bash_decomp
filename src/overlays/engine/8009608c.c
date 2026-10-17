@@ -66,7 +66,79 @@ void func_8009608C(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009608c", func_80096280);
+s32 func_80096280(s32 *p0, s32 *p1, s32 *q0, s32 *q1, s32 *out) {
+    s32 denom, num, u, t;
+    s32 dqz;
+    s32 dpx;
+    s32 dpz, dqx, ez, ex;
+    s32 a, b, c;
+
+    a = p0[2];
+    if (a < (b = q0[2]) && (c = p1[2]) < b && a < q1[2] && c < q1[2]) {
+        return 0;
+    }
+    if ((b = q0[2]) < a && b < (c = p1[2]) && q1[2] < a && q1[2] < c) {
+        return 0;
+    }
+    do {
+        do {
+            a = p0[0];
+        } while (0);
+    } while (0);
+    if (a < (b = q0[0]) && (c = p1[0]) < b && a < q1[0] && c < q1[0]) {
+        return 0;
+    }
+    if ((b = q0[0]) < a && b < (c = p1[0]) && q1[0] < a && q1[0] < c) {
+        return 0;
+    }
+    dqz = (q0[2] - q1[2]) >> 4;
+    dpx = (p0[0] - q0[0]) >> 4;
+    dpz = (p0[2] - q0[2]) >> 4;
+    dqx = (q0[0] - q1[0]) >> 4;
+    ez = (p1[2] - p0[2]) >> 4;
+    ex = (p1[0] - p0[0]) >> 4;
+    num = dqz * dpx - dqx * dpz;
+    denom = ez * dqx - ex * dqz;
+    if (denom > 0) {
+        if (denom < num) {
+            return 0;
+        }
+        if (num < 0) {
+            return 0;
+        }
+    } else {
+        if (num < denom) {
+            return 0;
+        }
+        if (num > 0) {
+            return 0;
+        }
+    }
+    u = ex * dpz - ez * dpx;
+    if (denom > 0) {
+        if (denom < u) {
+            return 0;
+        }
+        if (u < 0) {
+            return 0;
+        }
+    } else {
+        if (u < denom) {
+            return 0;
+        }
+        if (u > 0) {
+            return 0;
+        }
+    }
+    if (denom == 0) {
+        return 0;
+    }
+    t = (num << 8) / denom;
+    out[0] = p0[0] + (((p1[0] - p0[0]) * t) >> 8);
+    out[2] = p0[2] + (((p1[2] - p0[2]) * t) >> 8);
+    out[1] = 0;
+    return 1;
+}
 
 s32 func_80096530(s32 *p0, s32 *p1, s32 *q0, s32 *q1, s32 *out) {
     s32 denom, num, u, t;

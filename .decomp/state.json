@@ -4223,7 +4223,8 @@
  },
  "engine:80096280": {
   "auto_diff": 152,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-17T10:20:30Z",
+  "status": "matched"
  },
  "engine:80096530": {
   "auto_diff": 149,
