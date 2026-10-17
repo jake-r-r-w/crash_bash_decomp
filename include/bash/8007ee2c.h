@@ -21,6 +21,9 @@ typedef struct {
 extern s32 (*D_8009D724)(s32);
 extern s32 (*D_8009D738)(s32, s32);
 extern s32 (*D_8009D730)(s32);
+/* Hero engine scale tables, 12 steps (func_80088794). */
+extern u16 D_8009DC38[];
+extern u16 D_8009DC50[];
 typedef struct {
     s32 a;
     u16 b;
@@ -429,6 +432,8 @@ extern D_8009E0E8_t D_8009E0E8[3][4];
 extern u8 D_80053004[];
 
 void func_80086918(void);
+
+void func_80088794(s32 arg0);
 
 void func_8008955C(s32 arg0);
 

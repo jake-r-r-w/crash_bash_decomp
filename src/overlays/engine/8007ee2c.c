@@ -1809,7 +1809,77 @@ void func_80088708(s32 arg0) {
     nas->Camera.look_ahead = nas->Camera.width;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80088794);
+void func_80088794(s32 arg0) {
+    s32 ret2;
+    s32 id;
+    HeroInfo *base;
+    HeroInfo *h;
+    HeroInfo *o;
+    EXTengine *me;
+    EXTengine *oe;
+    EXTheromove *m;
+    s32 angle;
+    s32 vc;
+    s32 idx;
+    s32 ret;
+    u16 status;
+
+    status = Heroes[arg0].hero_status;
+    if (status & 0x200) {
+        SetHeroAction((HeroInfo *)arg0, (u16)D_8009E0E4);
+        ret = 1;
+    } else if (status & 0x400) {
+        SetHeroAction((HeroInfo *)arg0, (u16)D_8009E0E6);
+        ret = 1;
+    } else {
+        ret = 0;
+    }
+    if (ret == 0) {
+        if (D_8009D72C != NULL) {
+            ret2 = D_8009D72C(arg0);
+        } else if (((PadButtons *)D_80051338)[arg0].unk54 & 0x4000) {
+            SetHeroAction((HeroInfo *)arg0, 4);
+            ret2 = 1;
+        } else {
+            ret2 = 0;
+        }
+        if (ret2 == 0) {
+            if (HeroCheckPad1000(arg0) == 0) {
+                base = Heroes;
+                h = base + arg0;
+                h->hero_eng->unk1E -= 0x155;
+                idx = (s16)((h->hero_eng->unk1E & 0xFFF) / 341);
+                idx = (s16)(idx % 12);
+                h->hero_eng->unk2C.x = D_8009DC38[idx];
+                h->hero_eng->unk2C.y = D_8009DC50[idx];
+                h->hero_eng->unk2C.z = D_8009DC38[idx];
+                h->hero_ctrl |= 5;
+                id = func_800864CC(arg0, 0x400);
+                if (id != -1) {
+                    o = base + id;
+                    if ((o->hero_immunity | o->hero_hit) == 0) {
+                        me = h->hero_eng;
+                        oe = o->hero_eng;
+                        angle = get_angle(me->unk10.x - oe->unk10.x, me->unk10.z - oe->unk10.z);
+                        m = o->hero_move;
+                        vc = m->velocity_calc;
+                        if (vc != 1) if (vc != 0) if (vc < 4) {
+                            m->x_vel -= (D_80068BD4[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
+                            o->hero_move->z_vel -= (D_80068BD4[angle & 0xFFF].unk2 * 3) >> 8;
+                        }
+                        Heroes[id].hero_move->reactive_angle = angle;
+                        Heroes[id].hero_move->reactive_speed = 0x30;
+                        func_80084E04(id, NULL, arg0, 0x8001, 0x446);
+                    }
+                }
+                ((void (*)(s32, s32, s32, s32))D_8009D6E8.unk4C)(arg0, 2, 0x400, 0);
+                ((void (*)(s32))D_8009D6E8.unk54)(arg0);
+                func_8008502C(arg0);
+                func_800871E4(arg0);
+            }
+        }
+    }
+}
 
 void func_80088BAC(s32 arg0) {
     HeroInfo *base = Heroes;
