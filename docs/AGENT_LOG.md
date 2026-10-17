@@ -14,8 +14,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1084/2551 game functions matched: **main.exe is complete (575/575)**;
-  engine overlay 54 left. None parked,
+- 1093/2551 game functions matched: **main.exe is complete (575/575)**;
+  engine overlay 45 left. None parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - The engine overlay is six files and `ovl5d` three, `ovl5e`, `ovl66`,
@@ -47,7 +47,7 @@ fell for 250-399 B normal ($0.79 -> $0.66, first-session matches 54% ->
 70%) and 400-599 B big ($4.58 -> $3.52); small samples, and what is left
 is the harder remainder. The closest-C carry-over did the work: three
 functions parked close then matched on the retry from their C. **Next:
-repeat the engine hour** (54 left) with the big-heavy recipe below; `permute --near` first if there is CPU
+repeat the engine hour** (45 left) with the big-heavy recipe below; `permute --near` first if there is CPU
 time. After each swarm run, compare `stats --run ID` with the ledger's
 earlier runs.
 
@@ -87,10 +87,11 @@ hand since). main.exe is fully matched. The file splits are done as far as the e
 now). 2026-10-16 night: 19 in 60 min ($56.63, $2.98 a match, 0 parked) with
 `--workers 1 --big-workers 4`: 71 of the 73 left were big (>= 400 B or
 escalated), so 3 normal workers would idle; use that split for the engine
-from now on. Repeat it; 54 engine functions are left. Near
+from now on. 2026-10-17: 9 in 38 min ($28.30; stopped when the internet dropped), 600-1399 B now.
+Repeat it; 45 engine functions are left. Near
 misses with big-mode checkpoints: `func_8007BFA8` (instructions 5/114),
 `func_8007C170` (17/114), `func_8007CC80` (structure 77/116),
-`func_800926CC` (instructions 10/134), `func_8008C824` (registers 25/155),
+`func_800926CC` (instructions 4/134, parked: 6 big sessions used), `func_8008C824` (registers 25/155),
 `func_80079260` (4/98), `func_80094A28` (5/68), `func_800939FC`
 (registers 11/123: its checkpoint is the session the patch-check bug
 refused, restored by hand; the session log says the block-0 a0/a1 swap is
@@ -375,6 +376,13 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-17 (engine swarm):** run 20261017064912, stopped at 38 min
+  (internet down): 9 matched (688-948 B, $28.30), parked `func_80078DD4`
+  and `func_800926CC`. The first launch failed in seconds: the OAuth token
+  had expired overnight and 4 workers raced to refresh it (uncharged, but it
+  writes error notes into history.json that feed later prompts; removed by
+  hand). Gotcha: after a long idle, run `claude -p "reply ok"` once before
+  `swarm.mjs run`. Folded 9 rows from matched functions.
 - **2026-10-16 night (engine swarm):** run 20261016213103, 60 min, 1 normal
   + 4 big workers: 19 matched (incl. `InitHealth`, `PlotHealth`), 0 parked,
   $56.63. The two small engine functions left (`func_80095258`,
