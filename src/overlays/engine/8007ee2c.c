@@ -91,7 +91,120 @@ INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8007F314);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_800809A0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80080FBC);
+void func_80080FBC(void) {
+    u8 *e;
+    s32 i;
+    s32 sel;
+
+    if (MSGV->flags == 0) {
+        return;
+    }
+    D_8009AC78 = 0;
+    D_8009AD20 = 0;
+    func_8007E7A4();
+    func_8007BE84();
+    D_8009BD18 = 0x70;
+    e = D_8009BCE0;
+    *(s16 *)(e + 6) = -1;
+    *(s16 *)(e + 0xC) = -1;
+    D_8005B2B4 = 0;
+    if (MSGV->flags & 0x08000002) {
+        return;
+    }
+    if (MSGV->flags & 0x7000) {
+        if (MSGV->flags & 0x2000) {
+            func_800809A0(D_8005A4DC, 0x70);
+            return;
+        }
+        if (MSGV->flags & 0x1000) {
+            func_800809A0(D_8005A494, 0x70);
+            return;
+        }
+        if (MSGV->flags & 0x4000) {
+            func_800809A0(D_8005A3A4, 0x70);
+            return;
+        }
+    }
+    switch (MSGV->flags & 0x023F8FEC) {
+    case 0:
+        if (MSGV->mode == 0x20) {
+            func_800809A0(D_8005981C, D_8009BD18);
+            D_8009BD30 = 0;
+            return;
+        }
+        if (MSGV->unk32 & 4) {
+            func_800809A0(D_8005975C, D_8009BD18);
+        } else {
+            func_800809A0(D_800598DC, D_8009BD18);
+        }
+        D_8009BD30 = 1;
+        break;
+    case 8:
+        func_800809A0(D_800599B4, D_8009BD18);
+        D_8009BD30 = 1;
+        break;
+    case 0x8000:
+        func_800809A0(D_80059C24, D_8009BD18);
+        break;
+    case 4:
+    case 0xC:
+        func_800809A0(D_80059ABC, D_8009BD18);
+        break;
+    case 0x40:
+    case 0x240:
+        func_800809A0(D_80059A5C, D_8009BD18);
+        func_800831C4(D_8009BD18);
+        break;
+    case 0x80:
+        func_800809A0(D_80059A8C, D_8009BD18);
+        func_800831C4(D_8009BD18);
+        break;
+    case 0x100:
+    case 0x108:
+        sel = D_8009AEE8;
+        switch (sel) {
+        case 1:
+            D_8009BD1C[1] = sel;
+            D_8009BD1C[2] = sel;
+            D_8009BD1C[0] = OPTV->unk8 != 0;
+            func_8008D488(D_80059748[MSGV->level]->unkBC, OPTV->unk0);
+            func_8008D488(D_80059748[MSGV->level]->unkC0, OPTV->unk4);
+            func_800809A0(D_80059D2C, D_8009BD18);
+            break;
+        case 2:
+            for (i = 0; i < MSGV->numPlayers; i++) {
+                if (D_80051338[i].unk0 & 8) {
+                    D_8009BD1C[i] = OPTV->unkC[i] != 0;
+                } else {
+                    D_8009BD1C[i] = 9;
+                }
+            }
+            for (; i < 4; i++) {
+                D_8009BD1C[i] = 9;
+            }
+            func_800809A0(D_80059E4C, D_8009BD18);
+            break;
+        default:
+            func_800809A0(D_80059C9C, D_8009BD18);
+            break;
+        }
+        break;
+    case 0x200:
+        func_800809A0(D_8005A14C, D_8009BD18);
+        break;
+    case 0x20:
+        func_800809A0(D_8005A1C4, D_8009BD18);
+        break;
+    case 0x400:
+        func_800809A0(D_8005A20C, D_8009BD18);
+        break;
+    case 0x2000000:
+        if (MSGV->unkC & 0x10) {
+            func_800809A0(D_8005A524, D_8009BD18);
+        }
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80081470);
 

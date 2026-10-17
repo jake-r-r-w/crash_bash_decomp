@@ -468,4 +468,59 @@ void func_8008955C(s32 arg0);
 
 void func_800898EC(s32 arg0);
 
+/* D_8005A614 as seen by func_80080FBC. */
+typedef struct EngineMsgView {
+    /* 0x00 */ u8 unk0[0xC];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ u32 flags;
+    /* 0x14 */ u8 unk14[0x26 - 0x14];
+    /* 0x26 */ u8 numPlayers;
+    /* 0x27 */ u8 unk27[0x2C - 0x27];
+    /* 0x2C */ s32 level;
+    /* 0x30 */ u8 unk30[2];
+    /* 0x32 */ u16 unk32;
+    /* 0x34 */ s16 mode;
+} EngineMsgView;
+#define MSGV ((EngineMsgView *)D_8005A614)
+/* D_8005A604 as seen by func_80080FBC. */
+typedef struct EngineOptView {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ s8 unkC[4];
+} EngineOptView;
+#define OPTV ((EngineOptView *)D_8005A604)
+typedef struct EngineLevelInfo {
+    /* 0x00 */ u8 unk0[0xBC];
+    /* 0xBC */ u8 *unkBC;
+    /* 0xC0 */ u8 *unkC0;
+} EngineLevelInfo;
+extern EngineLevelInfo *D_80059748[];
+extern s16 D_8005975C[];
+extern s16 D_8005981C[];
+extern s16 D_800598DC[];
+extern s16 D_800599B4[];
+extern s16 D_80059A5C[];
+extern s16 D_80059A8C[];
+extern s16 D_80059ABC[];
+extern s16 D_80059C24[];
+extern s16 D_80059C9C[];
+extern s16 D_80059D2C[];
+extern s16 D_80059E4C[];
+extern s16 D_8005A14C[];
+extern s16 D_8005A1C4[];
+extern s16 D_8005A20C[];
+extern s16 D_8005A494[];
+extern s16 D_8005A4DC[];
+extern s16 D_8005A524[];
+extern s16 D_8009AC78;
+extern s16 D_8009AD20;
+extern s32 D_8009AEE8;
+extern s16 D_8009BD18;
+extern s16 D_8009BD1C[4];
+extern s32 D_8009BD30;
+void func_800809A0(s16 *arg0, s32 arg1);
+
+void func_80080FBC(void);
+
 #endif /* BASH_8007EE2C_H */
