@@ -713,7 +713,102 @@ void func_80084E04(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8008502C);
+s32 func_8008502C(player)
+s32 player;
+{
+    HeroInfo *h;
+    EXTanimator *anim = Heroes[player].hero_anim;
+    subengine *sub;
+    s32 ret;
+    u16 cmd;
+
+    ret = 0;
+    if (--anim->Aspeed < 0) {
+        h = &Heroes[player];
+        do {
+            if (anim->Seq_count != 0 && anim->Currentframe != 0) {
+                cmd = anim->Currentframe + 1;
+                anim->Seq_count--;
+                continue;
+            }
+            cmd = ((hero_seq *)anim->Atable)[++anim->Aindex];
+            if (!(cmd & 0x8000)) {
+                break;
+            }
+            switch (cmd) {
+            case 0x8002:
+                ret = ((s16 *)anim->Atable)[++anim->Aindex];
+                cmd = h->hero_sub->unk74;
+                break;
+            case 0x8003:
+                ret = ((s16 *)anim->Atable)[++anim->Aindex];
+                break;
+            case 0x8004:
+                SetHeroAction((HeroInfo *)player, ((s16 *)anim->Atable)[++anim->Aindex]);
+                return ret;
+            case 0x8005:
+                return SetHeroSeq((HeroInfo *)player, ((s16 *)anim->Atable)[++anim->Aindex]);
+            case 0x8001:
+                h->hero_anim->Atable = (u8 *)h->hero_anim->Atable + (h->hero_anim->Aindex * 2 + 2);
+                anim->Aindex = 0;
+                break;
+            case 0x8000:
+                anim->Aindex = ((s16 *)anim->Atable)[++anim->Aindex];
+                do {
+                    do {
+                        do {
+                            if (ret == 0) {
+                                ret = 2;
+                            }
+                        } while (0);
+                    } while (0);
+                } while (0);
+                break;
+            case 0x8006:
+                h->hero_sub->unk6C = &D_80052A54[((s16 *)anim->Atable)[++anim->Aindex] * 0x38];
+                break;
+            case 0x8007:
+                anim->Seq_count = ((s16 *)anim->Atable)[++anim->Aindex] - 1;
+                anim->Currentframe = 0;
+                break;
+            case 0x8008:
+                PlaySfx(((s16 *)anim->Atable)[++anim->Aindex], NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 0x8009:
+                PlaySfx(((s16 *)anim->Atable)[++anim->Aindex], NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+                break;
+            case 0x800A:
+                PlaySfx(((s16 *)anim->Atable)[++anim->Aindex], &h->hero_eng->sfx, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 0x800B:
+                if (h->hero_eng->sfx != NULL) {
+                    StopSfx(h->hero_eng->sfx);
+                }
+                break;
+            case 0x8017:
+                func_80084E04(player, NULL, -1, 0x1000, 0);
+                break;
+            case 0x8018:
+                anim->Masterspeed = ((s16 *)anim->Atable)[++anim->Aindex];
+                break;
+            case 0x8019:
+                h->hero_move->jump_ctrl |= ((u8 *)anim->Atable)[++anim->Aindex * 2];
+                break;
+            case 0x801A:
+                h->hero_move->jump_ctrl &= ~((u8 *)anim->Atable)[++anim->Aindex * 2];
+                break;
+            }
+        } while (cmd & 0x8000);
+        sub = anim->sub;
+        if (sub == NULL) {
+            sub = Heroes[player].hero_sub;
+        }
+        sub->unk74 = cmd;
+        anim->Currentframe = cmd;
+        anim->Aspeed = anim->Masterspeed;
+    }
+    return ret;
+}
 
 s32 SetHeroSeq(HeroInfo *hero, s32 seq) {
     HeroInfo *base = Heroes;
