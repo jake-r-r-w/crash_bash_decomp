@@ -630,6 +630,25 @@ typedef struct WinnerView {
 } WinnerView;
 #define WINV ((WinnerView *)D_8005A614)
 extern s32 D_8009D758;
+/* D_8005A614 as seen by func_80083E8C. */
+typedef struct HeroLoopView {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 state;
+    /* 0x08 */ u8 unk8[0x10 - 0x8];
+    /* 0x10 */ s32 flags;
+    /* 0x14 */ u8 unk14[0x30 - 0x14];
+    /* 0x30 */ u16 unk30;
+    /* 0x32 */ u16 unk32;
+    /* 0x34 */ s16 mode;
+    /* 0x36 */ u8 unk36[0x5C - 0x36];
+    /* 0x5C */ u8 out[4];
+} HeroLoopView;
+#define HLV ((HeroLoopView *)D_8005A614)
+#define HPADS ((PadButtons *)D_80051338)
+extern s32 D_8009D75C;
+extern u16 D_8009D760;
+extern u16 D_8009D6E0;
+extern u16 D_8009D524[4];
 #define HUDBOX ((HudBox *)D_8009BCE0)
 #define HUDENG ((HudEngView *)D_80099290)
 extern s32 D_8009AF00;
@@ -640,6 +659,8 @@ void func_800809A0(HudEntry *e, s32 arg1);
 void func_80080FBC(void);
 
 void func_80081F64(s32 arg0);
+
+void func_80083E8C(void);
 
 void func_8008900C(s32 arg0);
 

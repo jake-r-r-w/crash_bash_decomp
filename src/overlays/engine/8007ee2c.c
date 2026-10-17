@@ -442,7 +442,7 @@ void func_80081F64(s32 arg0) {
             break;
         }
         pads = (PadButtons *)D_80051338;
-        if (pads[D_8009AEF0].pressed & 0x1000) {
+        if (HPADS[D_8009AEF0].pressed & 0x1000) {
             if (D_8005A646 & 2) {
                 D_8009BD00 = 5;
             } else {
@@ -488,7 +488,7 @@ void func_80081F64(s32 arg0) {
             break;
         }
         pads = (PadButtons *)D_80051338;
-        if (pads[D_8009AEF0].pressed & 0x1000) {
+        if (HPADS[D_8009AEF0].pressed & 0x1000) {
             if (D_8005A646 & 2) {
                 D_8009BD00 = 5;
             } else {
@@ -1074,7 +1074,245 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8007ee2c", D_800ADFA4);
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8007ee2c", D_800ADFAC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80083E8C);
+void func_80083E8C(void) {
+    HeroInfo *h;
+    HeroInfo *b;
+    u16 *pc;
+    HeroInfo *c;
+    HeroInfo *d;
+    HeroInfo *e;
+    s32 r;
+    s32 i;
+    s32 id;
+    s32 last;
+    s32 ok;
+    u16 status;
+    u16 harm;
+    u16 st;
+    u16 lvl;
+    subengine *sub;
+    s32 bits;
+    s32 pad;
+
+    r = Random(0x10);
+    last = -1;
+    i = 0;
+    D_8009D758 = 0;
+    D_8009D75C = 0;
+    for (;; i++) {
+        HeroInfo *a;
+
+        if (i >= 4) {
+            break;
+        }
+        id = D_8009D764[r][i];
+        a = &Heroes[id];
+        status = a->hero_status;
+        if (status & 0x1080) {
+            a->hero_shadow->flags = 0;
+            a->hero_eng->flags = 0;
+            goto next;
+        }
+        if (status & 0x40) {
+            goto next;
+        }
+        if (status & 0xFF00) {
+            a->hero_immunity = 0;
+            a->hero_eng->flags |= 0x8000;
+            HPADS[id].unk50 = 0;
+            HPADS[id].unk54 = 0;
+            goto reset;
+        }
+        if (HLV->state < 0 && (HLV->state & 4) &&
+            (pad = D_800515F8 - 1, HPADS[pad].held & 0x400)) {
+            a->hero_status = status | 0x2000;
+            SetHeroAction((HeroInfo *)id, (u16)D_8009E0E2);
+            goto reset;
+        }
+        b = &Heroes[id];
+        if (b->hero_status & 0xFF00) {
+            goto reset;
+        }
+        ok = 1;
+        if (b->hero_immunity | b->hero_hit) {
+            lvl = b->hero_harm_flags & 0x300;
+            if (b->hero_immunity_level < lvl) {
+                b->hero_immunity_level = lvl;
+            } else {
+                ok = 0;
+            }
+        } else {
+            b->hero_immunity_level = 0;
+        }
+        h = &Heroes[id];
+        harm = h->hero_harm_flags;
+        if (harm & 0x1000) {
+            h->hero_status |= 0x2000;
+            SetHeroAction((HeroInfo *)id, (u16)D_8009E0E2);
+            h->hero_immunity = 0;
+            h->hero_health = 0;
+            goto reset;
+        }
+        if (ok && harm) {
+            h->hero_immunity_level = harm & 0x300;
+            if (h->hero_harm_sfx != 0) {
+                PlaySfx(h->hero_harm_sfx, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (h->hero_pu == 0x12) {
+                h->hero_pu_timer = 0;
+                SetHeroAction((HeroInfo *)id, (u16)D_8009E0D8);
+            } else {
+                D_8009D524[id] = h->hero_harm_value;
+                h->hero_health -= h->hero_harm_value >> 8;
+                h->hero_health -= h->hero_harm_fraction >> 8;
+                h->hero_harm_fraction = (u8)h->hero_harm_fraction;
+                h->hero_harm_fraction += (u8)h->hero_harm_value;
+                SetHeroAction((HeroInfo *)id, (u16)D_8009E0D8);
+                h->hero_immunity = 0;
+                if (h->hero_harm_flags & 0x8000) {
+                    ((void (*)(s32, s32, s32))func_80027F7C)(id, 4, 0xFF);
+                } else {
+                    func_80028018(id, 0xC);
+                    ((void (*)(s32, s32, s32))func_80027F7C)(id, 0xC, 0xFF);
+                }
+            }
+        }
+        h = &Heroes[id];
+        if (h->hero_health < 0) {
+            h->hero_health = 0;
+        }
+        if (h->hero_hit != 0) {
+            if (--h->hero_hit == 0) {
+                if (h->hero_health <= 0) {
+                    if (!(HLV->state & 2)) {
+                        h->hero_status |= 0x2000;
+                        SetHeroAction((HeroInfo *)id, (u16)D_8009E0E2);
+                        h->hero_immunity = 0;
+                    }
+                } else {
+                    h->hero_immunity = 0x28;
+                }
+            }
+            if (!(HLV->unk32 & 0x1000)) {
+                HPADS[id].unk50 = 0;
+                HPADS[id].unk54 = 0;
+            }
+        }
+    reset:
+        c = &Heroes[id];
+        st = c->hero_status;
+        c->hero_harm_Nas = NULL;
+        c->hero_harm_player = -1;
+        c->hero_harm_value = 0;
+        c->hero_harm_flags = 0;
+        if (st & 0x8000) {
+            c->hero_eng->flags = 0;
+            func_80026980(c->hero);
+            continue;
+        }
+        if (!(st & 0x2000)) {
+            last = id;
+            D_8009D758++;
+        } else if (HLV->unk30 & 0x800) {
+            func_80026980(c->hero);
+        } else {
+            D_8009D75C++;
+        }
+        d = &Heroes[id];
+        if (d->hero_frozen != 0) {
+            d->hero_frozen--;
+        }
+        if (d->hero_attack_timer != 0) {
+            d->hero_attack_timer--;
+        } else if (d->hero_attack_delay != 0) {
+            d->hero_attack_delay--;
+        }
+        e = &Heroes[id];
+        if (e->hero_immunity != 0 &&
+            (e->hero_immunity--, e->hero_immunity % 3 == 0)) {
+            e->hero_eng->flags &= ~0x8000;
+        } else {
+            e->hero_eng->flags |= 0x8000;
+        }
+        sub = Heroes[id].hero_fx->sub;
+        if (sub != NULL) {
+            sub->flags &= ~0x8000;
+        }
+        if (!(HLV->state & 0x100) && HLV->out[id] != 0) {
+            ((void (*)(s32))D_8009D6E8.unk38)(id);
+        }
+        h = &Heroes[id];
+        if (h->hero_pu != 0x15 || (D_8004E0D8 & 1)) {
+            if (HLV->flags & 0x4000000) {
+                HPADS[id].unk50 = 0;
+                HPADS[id].unk54 = 0;
+            }
+            ((void (*)(s32))D_8009D6E8.unk20)(id);
+            ((void (*)(s32))HeroActionTable[h->hero_mode].pad)(id);
+            ((void (*)(s32))D_8009D6E8.unk24)(id);
+            if (D_8009D6E8.unk28 != NULL) {
+                ((void (*)(s32))D_8009D6E8.unk28)(id);
+            }
+        }
+        ((void (*)(EXTengine *))D_8009D6E8.unk68)(Heroes[id].hero_eng);
+        func_8008672C(id);
+        if (D_8009D6E8.unk5C != NULL) {
+            ((void (*)(s32))D_8009D6E8.unk5C)(id);
+        }
+    next:;
+    }
+    if (HLV->unk32 & 0x100) {
+        if (!(D_8009D6E0 & 0x8000)) {
+            if (!(D_8009D6E0 & 0x2000)) {
+                D_8009D758++;
+            } else if (!(HLV->unk30 & 0x800)) {
+                D_8009D75C++;
+            }
+            pc = (u16 *)D_8009D6DC;
+            if (pc[4] != 0) {
+                pc[4]--;
+            }
+        }
+    }
+    if (!(HLV->state & 0x20)) {
+        bits = 1;
+        if (HLV->state & 0x800) {
+            bits = 0x201;
+        }
+        if (!(HLV->unk32 & 0x200)) {
+            ((void (*)(s32, s32))D_8009D6E8.unk64)(last, bits);
+        }
+        if (HLV->unk32 & 0x400) {
+            HLV->unk30 |= bits;
+        }
+    }
+    if (!(HLV->unk30 & 0x801) && D_8009D760 == 0) {
+        switch (HLV->mode) {
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+        case 14:
+        case 15:
+        case 16:
+        case 17:
+        case 18:
+        case 19:
+        case 20:
+        case 21:
+        case 30:
+            if (D_8009D758 + D_8009D75C < 3) {
+                D_8009D760 = 1;
+                func_8002C1C0(0x6E, 0xF0);
+            }
+            break;
+        }
+    }
+}
 
 void func_80084788(s32 idx, u16 arg1) {
     HeroInfo *h;
