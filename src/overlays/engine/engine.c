@@ -311,7 +311,159 @@ void func_8007976C(void) {
     func_8009608C(0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_800798A4);
+void func_800798A4(void) {
+    s32 show;
+    s32 i;
+    s32 n;
+    SprPos pos;
+    u32 c0;
+    u32 c1;
+    u8 *tim;
+
+    if (D_8004DDD0[HUDGAME->mode * 3] == 0x102) {
+        show = 1;
+        if (!(HUDGAME->flags & 1)) {
+            show = 0;
+        } else if (HUDGAME->flags & 0x0A007662) {
+            show = 0;
+        }
+        if (D_8005A646 & 3) {
+            show = 0;
+        }
+        if (show && (D_80099174 & 0x20000)) {
+            tim = D_80053074;
+            c0 = 0xFFFFFF;
+            c1 = 0xFFFF;
+            pos.f.y = D_80099700[1];
+            for (i = 0; i < 4; i++) {
+                if (D_800996E0[i].flags & 0x8000) {
+                    pos.f.x = D_80099700[0] + D_800996E0[i].arg;
+                    func_8002992C((SpriteFrame *)(*(u8 **)(tim + 0x18) + (D_800996E0[i].cmd & 0xFFF) * 0x38),
+                                  pos.w, 0, c0, c0, c1, c1);
+                }
+            }
+        }
+        return;
+    }
+    if (D_80099174 >= 0) {
+        return;
+    }
+    if ((D_80099174 & 1) && (D_8009917C & 0x8000)) {
+        show = (u32)D_8005B690 >> 5;
+        show &= 1;
+    } else {
+        show = 1;
+    }
+    if (!(D_8005A624 & 1)) {
+        show = 0;
+    } else if (D_8005A624 & 0x0A007662) {
+        show = 0;
+    }
+    if (HUDGAME->unk32 & 3) {
+        show = 0;
+    }
+    if (show) {
+        if (D_80099174 & 0x20000) {
+            tim = D_80053074;
+            c0 = 0xFFFFFF;
+            c1 = 0xFFFF;
+            pos.f.y = D_80099700[1];
+            for (i = 0; i < 4; i++) {
+                if (D_800996E0[i].flags & 0x8000) {
+                    pos.f.x = D_80099700[0] + D_800996E0[i].arg;
+                    func_8002992C((SpriteFrame *)(*(u8 **)(tim + 0x18) + (D_800996E0[i].cmd & 0xFFF) * 0x38),
+                                  pos.w, 0, c0, c0, c1, c1);
+                }
+            }
+        }
+    } else if ((D_80099174 & 1) && (D_8009917C & 0x8000)) {
+        tim = D_80053074;
+        c0 = 0xD0FF;
+        c1 = 0xFF;
+        pos.f.y = D_800996D4[1];
+        if (!(D_8009917C & 2) && (HUDGAME->flags & 1)) {
+            D_8009AD54[0].c |= 0x8000;
+        }
+        for (i = 0; i < 4; i++) {
+            if (D_8009AD54[i].c & 0x8000) {
+                pos.f.x = D_800996D4[0] + D_8009AD54[i].b;
+                func_8002992C((SpriteFrame *)(*(u8 **)(tim + 0x18) + (D_8009AD54[i].a & 0xFFF) * 0x38),
+                              pos.w, 0, c0, c0, c1, c1);
+            }
+        }
+    }
+    if (D_80099170 != NULL) {
+        func_8001C298((EXTengine *)D_80099170);
+    }
+    if (D_80099174 & 0x1000) {
+        func_8001C298(&D_8009A97C);
+        func_8001C298(&D_8009AA18);
+    }
+    i = 0;
+    do {
+        EXTengine *e = HUDPLAYERS[i];
+        if (e != NULL) {
+            subengine *s = (subengine *)((u8 *)&D_8009971C[0][1] + i * sizeof(D_8009971C[0]));
+            u32 v = s->flags & ~0x8000;
+            s->flags = v;
+            if (D_8009AEF4 == i && (D_8005B690 & 8)) {
+                s->flags = v | 0x8000;
+            }
+            func_8001C298(HUDPLAYERS[i]);
+        }
+        if (D_80099174 & 0x400) {
+            if (D_8009AD74[i].d != 0) {
+                tim = D_80053074;
+                c0 = 0xD0FF;
+                c1 = 0xFF;
+                pos.f.x = HUDPLAYERS[i]->unk10.x + D_8009AD74[i].b;
+                pos.f.y = HUDPLAYERS[i]->unk10.y + D_8009AD74[i].c;
+                n = D_8009AD74[i].a;
+                func_8002992C((SpriteFrame *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
+                              pos.w, 0, c0, c0, c1, c1);
+                n /= 10;
+                pos.f.x -= 0x18;
+                func_8002992C((SpriteFrame *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
+                              pos.w, 0, c0, c0, c1, c1);
+                n /= 10;
+                pos.f.x -= 0x18;
+                func_8002992C((SpriteFrame *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
+                              pos.w, 0, c0, c0, c1, c1);
+            }
+        }
+        if (D_80099174 & 0x200) {
+            if (D_8009AD74[i].d != 0) {
+                tim = D_80053074;
+                c0 = 0xD0FF;
+                c1 = 0xFF;
+                pos.f.x = HUDPLAYERS[i]->unk10.x + D_8009AD74[i].b;
+                pos.f.y = HUDPLAYERS[i]->unk10.y + D_8009AD74[i].c;
+                n = D_8009AD74[i].a;
+                func_8002992C((SpriteFrame *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
+                              pos.w, 0, c0, c0, c1, c1);
+                n /= 10;
+                pos.f.x -= 0x18;
+                func_8002992C((SpriteFrame *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
+                              pos.w, 0, c0, c0, c1, c1);
+            }
+        }
+        if ((D_80099174 & 0x100) && D_8009AD74[i].d != 0) {
+            tim = D_80053074;
+            c0 = 0xD0FF;
+            c1 = 0xFF;
+            n = D_8009AD74[i].a;
+            pos.f.x = HUDPLAYERS[i]->unk10.x + D_8009AD74[i].b;
+            pos.f.y = HUDPLAYERS[i]->unk10.y + D_8009AD74[i].c;
+            func_8002992C((SpriteFrame *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
+                          pos.w, 0, c0, c0, c1, c1);
+        }
+        i++;
+    } while (i < 4);
+    if (!(D_8005A624 & 1) && (D_80099174 & 0x4000)) {
+        func_80018B08(&D_8009F6A4, &D_8009F7EC);
+        func_8001C2C0((u8 *)GetEngineSlot(5));
+    }
+}
 
 s32 func_8007A164(arg0, arg1)
 s32 arg0;

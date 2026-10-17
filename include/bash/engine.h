@@ -540,4 +540,17 @@ extern s16 D_8005A3A4[];
 
 void func_80079554(void);
 
+/* D_8005A614 as seen by func_800798A4. */
+typedef struct EngHudGame {
+    /* 0x00 */ u8 pad0[0x10];
+    /* 0x10 */ s32 flags;
+    /* 0x14 */ u8 pad14[0x32 - 0x14];
+    /* 0x32 */ u16 unk32;
+    /* 0x34 */ s16 mode;
+} EngHudGame;
+#define HUDGAME ((EngHudGame *)D_8005A614)
+#define HUDPLAYERS ((EXTengine **)&D_8009970C)
+extern s32 D_8009AEF4;
+void func_800798A4(void);
+
 #endif /* BASH_ENGINE_H */
