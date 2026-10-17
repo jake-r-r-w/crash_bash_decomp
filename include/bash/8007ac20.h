@@ -185,4 +185,40 @@ typedef struct EngineClockView {
 extern void (*D_8009D74C)(s32, s32);
 void func_8007B8D4(void);
 
+/* D_8005A614 as seen by func_8007D9DC. */
+typedef struct EngModeD9DC {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ u8 unk8[0x10 - 0x08];
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ u8 unk18[0x30 - 0x18];
+    /* 0x30 */ u16 unk30;
+    /* 0x32 */ u16 unk32;
+    /* 0x34 */ s16 unk34;
+    /* 0x36 */ u8 unk36[0x42 - 0x36];
+    /* 0x42 */ s16 unk42;
+    /* 0x44 */ u8 unk44[0x5C - 0x44];
+    /* 0x5C */ u8 unk5C[4];
+    /* 0x60 */ u8 unk60;
+    /* 0x61 */ u8 unk61[0x6C - 0x61];
+    /* 0x6C */ s32 unk6C;
+    /* 0x70 */ u8 unk70[0x9F - 0x70];
+    /* 0x9F */ u8 unk9F[4];
+    /* 0xA3 */ u8 unkA3[0xA7 - 0xA3];
+    /* 0xA7 */ u8 unkA7[4];
+    /* 0xAB */ u8 unkAB[0xCC - 0xAB];
+    /* 0xCC */ u8 unkCC[0xE4 - 0xCC];
+    /* 0xE4 */ u8 unkE4[0x105 - 0xE4];
+    /* 0x105 */ u8 unk105[0x126 - 0x105];
+    /* 0x126 */ u8 unk126[0x147 - 0x126];
+    /* 0x147 */ u8 unk147[0x168 - 0x147];
+    /* 0x168 */ u8 unk168[0x21];
+} EngModeD9DC;
+#define MODEV ((EngModeD9DC *)D_8005A614)
+
+extern s16 D_8009AE72;
+extern u16 D_8009AF38[7];
+extern s32 D_800ADBCC;
+
 #endif /* BASH_8007AC20_H */

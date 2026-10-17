@@ -1442,7 +1442,435 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8007ac20", D_800ADD3C);
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8007ac20", D_800ADD40);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007D9DC);
+void func_8007D9DC(void) {
+    s32 key;
+    u16 *p;
+    s32 mode;
+    s32 i;
+    s32 k;
+    s32 n;
+    s32 used;
+    s32 slot;
+    s16 r;
+    s32 t;
+    u8 v;
+
+    if (D_8009AE3C != 0) {
+        D_8009AE3C--;
+    }
+    if (!(D_8005A646 & 0x100)) {
+        s32 j;
+        j = 0;
+        key = D_8005A646 & 0xFF;
+        p = D_8009AF38;
+        do {
+            if (key == *p) {
+                mode = j;
+                goto found;
+            }
+            j++;
+            p++;
+        } while (j < 7);
+        mode = 0;
+    } else {
+        mode = 7;
+    }
+found:
+    switch ((u16)D_8009AE70) {
+    case 0:
+        if ((MODEV->unk30 & 1) && !(MODEV->unk30 & 0x8000)) {
+            MODEV->unk14 = 0;
+            MODEV->unk10 |= 0x4000000;
+            if (MODEV->unk60 == 0) {
+                func_8002C1C0(100, 5);
+                func_8002C29C();
+                func_80082AC4();
+                D_8009AE72 = -1;
+                D_8009AE70 = 0xC;
+                D_8009AE3C = 0x78;
+            } else if (MODEV->unk32 & 0x100) {
+                D_8009AE72 = func_8007D850();
+                slot = MODEV->unk34;
+                if (D_8009AE72 != -1) {
+                    MODEV->unk168[slot] = 1;
+                    func_80092F9C();
+                }
+                D_8009AE70 = 0x10;
+                D_8009AE3C = 0x78;
+            } else {
+                if (MODEV->unk34 == 0x20) {
+                    D_8009AE72 = func_8007D850();
+                    if (D_8009AE72 != -1) {
+                        MODEV->unkCC[D_8009AE72]++;
+                        func_80098284();
+                    }
+                } else {
+                    D_8009AE72 = func_8007D850();
+                    if (D_8009AE72 != -1) {
+                        MODEV->unkCC[D_8009AE72]++;
+                        r = D_8009AE72;
+                        t = Heroes[r].hero_teammate;
+                        if (t != -1) {
+                            MODEV->unkCC[t] = MODEV->unkCC[r];
+                        }
+                        func_80098284();
+                    }
+                }
+                D_8009AE70 = 1;
+                D_8009AE3C = 2;
+            }
+        }
+        break;
+    case 1:
+        if (D_8009AE3C == 0) {
+            D_8009AE70 = 3;
+            D_8009AE3C = 0x5A;
+        }
+        break;
+    case 3:
+        if (D_8009AE3C != 0) {
+            break;
+        }
+        D_8009AE70 = 0xD;
+        D_8009AE3C = 0x1E;
+        if (MODEV->unk42 == -1) {
+            MODEV->unk42 = D_8009AE72;
+        } else if (MODEV->unkCC[D_8009AE72] > MODEV->unkCC[MODEV->unk42]) {
+            MODEV->unk42 = D_8009AE72;
+        }
+        printf("mode%x\n", mode);
+        switch (mode) {
+        case 2:
+            if (MODEV->unkCC[D_8009AE72] < D_8009AE74) {
+                break;
+            }
+            if ((MODEV->unk4 & 0x800) || (MODEV->unk30 & 0x200)) {
+                MODEV->unkCC[D_8009AE72] = D_8009AE74;
+                t = Heroes[D_8009AE72].hero_teammate;
+                if (t != -1) {
+                    MODEV->unkCC[t] = MODEV->unkCC[D_8009AE72];
+                }
+                break;
+            }
+            if (MODEV->unk6C != 0) {
+                MODEV->unkA7[2] = (D_8009AE72 & 2) ? 0 : 2;
+                MODEV->unkA7[0] = D_8009AE72 & 2;
+                MODEV->unkA7[1] = D_8009AE72 ^ 1;
+                MODEV->unkA7[3] = (D_8009AE72 & 2) ? 1 : 3;
+            } else {
+                n = 0;
+                k = 3;
+                used = 0;
+                while (1) {
+                    if (k < 0) {
+                        break;
+                    }
+                    i = 0;
+                    while (1) {
+                        if (i >= 4) {
+                            break;
+                        }
+                        if (MODEV->unkCC[i] == k && !((used >> i) & 1)) {
+                            MODEV->unkA7[n] = i;
+                            used |= 1 << i;
+                            n++;
+                        }
+                        i++;
+                    }
+                    k--;
+                }
+            }
+            D_8009AE70 = 5;
+            slot = MODEV->unk34;
+            if (MODEV->unk5C[D_8009AE72] == 0) {
+                MODEV->unkE4[slot] = 1;
+            }
+            if (MODEV->unkE4[slot] != 0) {
+                MODEV->unkAB[slot] = 0;
+            } else {
+                v = ++MODEV->unkAB[slot];
+                if (v >= 4) {
+                    MODEV->unkAB[slot] = 3;
+                }
+            }
+            break;
+        case 3:
+            if (MODEV->unkCC[0] < D_8009AE74) {
+                break;
+            }
+            slot = MODEV->unk34;
+            if (MODEV->unk5C[D_8009AE72] == 0) {
+                MODEV->unk105[slot] = 1;
+            }
+            D_8009AE70 = 6;
+            break;
+        case 4:
+            if (MODEV->unkCC[0] < D_8009AE74) {
+                break;
+            }
+            slot = MODEV->unk34;
+            if (MODEV->unk5C[D_8009AE72] == 0) {
+                MODEV->unk105[slot] = 2;
+            }
+            D_8009AE70 = 6;
+            break;
+        case 5:
+            if (MODEV->unkCC[0] == 0) {
+                break;
+            }
+            slot = MODEV->unk34;
+            if (MODEV->unk5C[D_8009AE72] == 0) {
+                MODEV->unk126[slot] = 1;
+            }
+            D_8009AE70 = 7;
+            break;
+        case 6:
+            if (MODEV->unkCC[0] == 0) {
+                break;
+            }
+            slot = MODEV->unk34;
+            if (MODEV->unk5C[D_8009AE72] == 0) {
+                MODEV->unk147[slot] = 1;
+            }
+            D_8009AE70 = 8;
+            break;
+        case 0:
+        case 1:
+            if (MODEV->unkCC[D_8009AE72] < D_8009AE74) {
+                break;
+            }
+            if ((MODEV->unk4 & 0x800) || (MODEV->unk30 & 0x200)) {
+                MODEV->unkCC[D_8009AE72] = D_8009AE74;
+                t = Heroes[D_8009AE72].hero_teammate;
+                if (t != -1) {
+                    MODEV->unkCC[t] = MODEV->unkCC[D_8009AE72];
+                }
+                break;
+            }
+            if (MODEV->unk6C != 0) {
+                MODEV->unkA7[2] = (D_8009AE72 & 2) ? 0 : 2;
+                MODEV->unkA7[0] = D_8009AE72 & 2;
+                MODEV->unkA7[1] = D_8009AE72 ^ 1;
+                MODEV->unkA7[3] = (D_8009AE72 & 2) ? 1 : 3;
+            } else {
+                n = 0;
+                k = 3;
+                used = 0;
+                while (1) {
+                    if (k < 0) {
+                        break;
+                    }
+                    i = 0;
+                    while (1) {
+                        if (i >= 4) {
+                            break;
+                        }
+                        if (MODEV->unkCC[i] == k && !((used >> i) & 1)) {
+                            MODEV->unkA7[n] = i;
+                            used |= 1 << i;
+                            n++;
+                        }
+                        i++;
+                    }
+                    k--;
+                }
+            }
+            if (mode == 0) {
+                D_8009AE70 = 4;
+            } else {
+                D_8009AE70 = 0xB;
+                MODEV->unk9F[0] += MODEV->unkCC[0];
+                MODEV->unk9F[1] += MODEV->unkCC[1];
+                MODEV->unk9F[2] += MODEV->unkCC[2];
+                MODEV->unk9F[3] += MODEV->unkCC[3];
+            }
+            break;
+        }
+        break;
+    case 5:
+        if (MODEV->unk5C[D_8009AE72] != 0) {
+            D_800ADBCC = 1;
+            D_8009AEEC = 0;
+            D_8009AE3C = 900;
+            MODEV->unk10 |= 0x21;
+            PlaySfx(0x19E, NULL, NULL, 0x1000, 0x1E00, 0);
+            D_8009AE70 = 9;
+            break;
+        }
+        if (MODEV->unk34 != 0x20) {
+            D_800ADBCC = 1;
+            D_8009AE3C = 0x78;
+        }
+        D_8009AE70 = 0xB;
+        break;
+    case 6:
+        D_800ADBCC = 1;
+        D_8009AE3C = 0x78;
+        D_8009AE70 = 0xB;
+        break;
+    case 8:
+        D_800ADBCC = 1;
+        D_8009AE3C = 0x78;
+        D_8009AE70 = 0xB;
+        break;
+    case 7:
+        D_800ADBCC = 1;
+        D_8009AE3C = 0x78;
+        D_8009AE70 = 0xB;
+        break;
+    case 17:
+        D_8009AE3C = 0x1E;
+        D_8009AE70 = 0xB;
+        break;
+    case 4:
+        D_800ADBCC = 1;
+        D_8009AEEC = 0;
+        D_8009AE3C = 900;
+        MODEV->unk10 |= 0x201;
+        PlaySfx(0x19E, NULL, NULL, 0x1000, 0x1E00, 0);
+        D_8009AE70 = 0xA;
+        break;
+    case 9:
+        for (i = 0; i < 4; i++) {
+            if (HUDPLAYERS[i]->unk10.y >= -0xFF) {
+                HUDPLAYERS[i]->unk10.y -= 8;
+            }
+        }
+        if (D_800996D4[1] >= -0xFF) {
+            D_800996D4[1] -= 8;
+        }
+        if (D_8009A97C.unk10.y >= -0xFF) {
+            D_8009A97C.unk10.y -= 8;
+        }
+        if (D_8009AA18.unk10.y >= -0xFF) {
+            D_8009AA18.unk10.y -= 8;
+        }
+        if (D_8009AE3C == 0) {
+            if (D_8009AEEC == 0) {
+                MODEV->unk42 = -1;
+                MODEV->unkCC[0] = 0;
+                MODEV->unkCC[1] = 0;
+                MODEV->unkCC[2] = 0;
+                MODEV->unkCC[3] = 0;
+                D_8009AE70 = 0xD;
+            } else {
+                func_80098278();
+                func_8008352C();
+                MODEV->unk10 &= ~1;
+            }
+        }
+        D_8009AE3C++;
+        break;
+    case 10:
+        for (i = 0; i < 4; i++) {
+            if (HUDPLAYERS[i]->unk10.y >= -0xFF) {
+                HUDPLAYERS[i]->unk10.y -= 8;
+            }
+        }
+        if (D_800996D4[1] >= -0xFF) {
+            D_800996D4[1] -= 8;
+        }
+        if (D_8009A97C.unk10.y >= -0xFF) {
+            D_8009A97C.unk10.y -= 8;
+        }
+        if (D_8009AA18.unk10.y >= -0xFF) {
+            D_8009AA18.unk10.y -= 8;
+        }
+        if (D_8009AE3C == 0) {
+            switch (D_8009AEEC) {
+            case 0:
+                MODEV->unk42 = -1;
+                MODEV->unkCC[0] = 0;
+                MODEV->unkCC[1] = 0;
+                MODEV->unkCC[2] = 0;
+                MODEV->unkCC[3] = 0;
+                D_8009AE70 = 0xD;
+                MODEV->unk10 &= ~1;
+                break;
+            case 1:
+                MODEV->unk10 |= 0x40;
+                break;
+            case 3:
+                D_8009E5DC = 0x28;
+                MODEV->unk30 = 0x8008;
+                MODEV->unk10 &= ~0x21;
+                break;
+            case 2:
+            default:
+                func_80098278();
+                func_8008352C();
+                MODEV->unk10 &= ~1;
+                break;
+            }
+        }
+        D_8009AE3C++;
+        break;
+    case 12:
+        {
+            s32 ok = func_8008A200(-1) ^ 1;
+            if (ok) {
+                func_80082D90(0);
+                break;
+            }
+        }
+        switch (mode) {
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+            D_8009AEEC = 0;
+            D_8009AE3C = 900;
+            MODEV->unk10 |= 0x401;
+            PlaySfx(0x19E, NULL, NULL, 0x1000, 0x1E00, 0);
+            D_8009AE70 = 0xF;
+            break;
+        case 7:
+            D_8009AEEC = 0;
+            D_8009AE3C = 900;
+            MODEV->unk10 |= 0x401;
+            PlaySfx(0x19E, NULL, NULL, 0x1000, 0x1E00, 0);
+            D_8009AE70 = 0xF;
+            func_80080FBC();
+            break;
+        default:
+            D_8009AE70 = 0xE;
+            break;
+        }
+        break;
+    case 15:
+        if (D_8009AE3C == 0) {
+            if (D_8009AEEC == 0) {
+                MODEV->unk42 = -1;
+                MODEV->unkCC[0] = 0;
+                MODEV->unkCC[1] = 0;
+                MODEV->unkCC[2] = 0;
+                MODEV->unkCC[3] = 0;
+                D_8009AE70 = 0xD;
+            } else {
+                func_80098278();
+                func_8008352C();
+                MODEV->unk10 &= ~1;
+            }
+        }
+        D_8009AE3C++;
+    case 14:
+        func_80082D90(0);
+    case 13:
+        if (D_8009AE3C != 0) {
+            break;
+        }
+        MODEV->unk30 |= 0x8200;
+        func_80098278();
+        func_8002C290();
+    case 11:
+    case 16:
+        if (D_8009AE3C == 0) {
+            func_80098278();
+            func_8008352C();
+        }
+        break;
+    }
+}
 
 void func_8007E7A4(void) {
     func_80010000(D_8005A614);
