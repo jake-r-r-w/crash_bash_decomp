@@ -2150,7 +2150,76 @@ void func_800898EC(s32 arg0) {
     func_80085584(arg0, 1, 0xB);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80089BE8);
+void func_80089BE8(arg0)
+s32 arg0;
+{
+    s32 y;
+    EXTengine *e;
+    subengine *sub;
+    subengine *s;
+    s32 i;
+
+    sub = Heroes[arg0].hero_sub;
+    Heroes[arg0].hero_frozen = 2;
+    y = sub->unk08;
+    y -= 0x18;
+    sub->unk08 = y;
+    Heroes[arg0].hero_eng->unk5D = 4;
+    Heroes[arg0].hero_sub->unk51 = 4;
+    Heroes[arg0].hero_fx->unk5D = 4;
+    Heroes[arg0].hero_fx->sub->unk51 = 4;
+    Heroes[arg0].hero_eng->unk5C = 0;
+    Heroes[arg0].hero_sub->unk50 = 0;
+    Heroes[arg0].hero_fx->unk5C = 0;
+    Heroes[arg0].hero_fx->sub->unk50 = 0;
+    e = Heroes[arg0].hero_fx;
+    s = e->sub;
+    if (y < -0xA00) {
+        Heroes[arg0].hero_status |= 0x8000;
+        for (s = s->next; s != NULL; s = s->next) {
+            s->flags &= ~0x8000;
+        }
+        return;
+    }
+    e->unk10 = Heroes[arg0].hero_eng->unk10;
+    *(SLONG_XYZ *)&s->unk04 = *(SLONG_XYZ *)&Heroes[arg0].hero_sub->unk04;
+    s->flags |= 0x8000;
+    func_8008502C(arg0, y);
+    for (s = s->next, i = 0; s != NULL; s = s->next, i++) {
+        if (D_8009E0E8[i][arg0].unk2 != 0) {
+            D_8009E0E8[i][arg0].unk6 -= 3;
+            if (D_8009E0E8[i][arg0].unk6 < 0) {
+                D_8009E0E8[i][arg0].unk6 = 0;
+            }
+            s->unk04 += D_8009E0E8[i][arg0].unk6 * D_80068BD4[(D_8009E0E8[i][arg0].unk4 - 0x400) & 0xFFF].unk2 >> 12;
+            s->unk0C += D_8009E0E8[i][arg0].unk6 * D_80068BD4[D_8009E0E8[i][arg0].unk4 & 0xFFF].unk2 >> 12;
+            y = D_8009E0E8[i][arg0].unk8;
+            y += D_8009E0E8[i][arg0].unkA;
+            if (y > 0x30) {
+                y = 0x30;
+            }
+            D_8009E0E8[i][arg0].unk8 = y;
+            s->unk08 += y;
+            s->flags |= 0x8000;
+            s->unk76 = D_8009E0E8[i][arg0].unkC += 0x60;
+            if (D_8005A5D8 < s->unk08 || D_8009E0E8[i][arg0].unkC >= 0x1000) {
+                D_8009E0E8[i][arg0].unk2 = 0;
+                D_8009E0E8[i][arg0].unk0 = Random(10) + 2;
+                s->flags &= ~0x8000;
+            }
+        } else if (D_8009E0E8[i][arg0].unk0 != 0) {
+            D_8009E0E8[i][arg0].unk0--;
+        } else {
+            D_8009E0E8[i][arg0].unk2 = 1;
+            D_8009E0E8[i][arg0].unk4 = Random(0x800) + 0x400;
+            D_8009E0E8[i][arg0].unk6 = 0x30;
+            D_8009E0E8[i][arg0].unk8 = -0x40;
+            D_8009E0E8[i][arg0].unkA = 4;
+            D_8009E0E8[i][arg0].unkC = 0x100;
+            *(SLONG_XYZ *)&s->unk04 = *(SLONG_XYZ *)&Heroes[arg0].hero_fx->sub->unk04;
+        }
+    }
+}
 
 void func_80089FA4(s32 arg0) {
     u16 mate;

@@ -420,9 +420,9 @@ void PlotHealth(NAS *nas);
 
 /* func_800898EC: a 14-byte record per hero, 3 rows of 4 heroes. */
 typedef struct {
-    s16 unk0;
-    s16 unk2;
-    s16 unk4;
+    u16 unk0;
+    u16 unk2;
+    u16 unk4;
     s16 unk6;
     s16 unk8;
     s16 unkA;
