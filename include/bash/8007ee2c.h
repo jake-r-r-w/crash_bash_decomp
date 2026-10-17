@@ -245,7 +245,7 @@ extern u8 D_80055534[];
 
 void func_80082AC4(void);
 
-void func_80084E04(s32 player, NAS *nas, s16 attacker, u16 flags, u16 sfx);
+void func_80084E04(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx);
 
 void func_80085718(s32 arg0, u16 arg1);
 
@@ -330,6 +330,26 @@ static inline s32 HeroCheckMoving(s32 arg0) {
 
 s32 func_800871E4(s32 arg0);
 
+extern s32 (*D_8009D730)(s32);
+
+static inline s32 HeroCheckPad1000(s32 arg0) {
+    s32 ret;
+
+    if (D_8009D730 != NULL) {
+        return D_8009D730(arg0);
+    }
+    if (Heroes[arg0].hero_status & 0xFA00) {
+        return 0;
+    }
+    if (((PadButtons *)D_80051338)[arg0].unk50 & 0x1000) {
+        SetHeroAction((HeroInfo *)arg0, 2);
+        ret = 1;
+    } else {
+        ret = 0;
+    }
+    return ret;
+}
+
 void func_8008795C(s32 arg0);
 
 void InitHealth(NAS *nas);
@@ -363,6 +383,8 @@ extern u16 D_8009E214[];
 extern u16 D_8009E224[];
 
 void func_800860D4(s32 arg0);
+
+void func_80088C28(s32 arg0);
 
 void PlotHealth(NAS *nas);
 
