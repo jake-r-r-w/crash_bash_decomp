@@ -653,7 +653,39 @@ void func_80090310(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     e->sub[2].unk6C = D_8009F4A8[arg1];
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_80090564);
+void func_80090564(u8 *arg0, s32 arg1) {
+    EXTengine *e;
+
+    e = GetEngineSlot(3);
+    e->unk10.x = 0x28;
+    e->unk10.y = 0xDA;
+    e->flags |= 0x10000000;
+    if (arg1 != 0) {
+        EngineSetSlot3Digits(3, 3);
+        return;
+    }
+    func_800150E8(D_8009F498, func_8007A5E8(arg0), 10);
+    e->sub[2].unk6C = D_8009F498;
+    func_800150E8(D_8009F498 + 3, EngineSum147(arg0), 10);
+    e->sub[6].unk6C = D_8009F498 + 3;
+    func_800150E8(D_8009F49E, EngineSum126(arg0), 10);
+    e->sub[4].unk6C = D_8009F49E;
+    func_800150E8(D_8009F4A1, EngineCount105(arg0), 10);
+    e->sub[8].unk6C = D_8009F4A1;
+    func_8001517C(D_8009F4A4, EngineExtra105(arg0), 10);
+    e->sub[10].unk6C = D_8009F4A4;
+    switch (*(s32 *)(arg0 + 0xE0)) {
+    case 1:
+        EngineSetSlot3Digits(3, 1);
+        break;
+    case 2:
+        EngineSetSlot3Digits(3, 2);
+        break;
+    default:
+        EngineSetSlot3Digits(3, 0);
+        break;
+    }
+}
 
 void func_80090A10(void) {
     PadState *pad;

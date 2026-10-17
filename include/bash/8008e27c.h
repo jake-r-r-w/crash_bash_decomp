@@ -126,6 +126,103 @@ void func_80090310(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 extern s32 D_8009F298[];
 extern void *D_8009F004[];
 extern char D_8009F4A8[][5];
+void func_80090564(u8 *arg0, s32 arg1);
+extern char D_8009F498[];
+extern char D_8009F49E[];
+extern char D_8009F4A1[];
+extern char D_8009F4A4[];
+
+extern s32 D_8009F248[][5];
+EXTengine *GetEngineSlot(s32 arg0);
+
+/* func_800925C4's body, inlined by func_80090564. */
+static inline s32 EngineSum147(u8 *arg0) {
+    s32 n;
+    s32 i;
+
+    n = 0;
+    i = 0;
+    do {
+        n += (arg0 + i)[0x147];
+        i++;
+    } while (i < 0x21);
+    return n;
+}
+
+/* func_80092598's body, inlined by func_80090564. */
+static inline s32 EngineSum126(u8 *arg0) {
+    s32 n;
+    s32 i;
+
+    n = 0;
+    i = 0;
+    do {
+        n += (arg0 + i)[0x126];
+        i++;
+    } while (i < 0x21);
+    return n;
+}
+
+/* func_80092560's body, inlined by func_80090564. */
+static inline s32 EngineCount105(u8 *arg0) {
+    s32 n;
+    s32 i;
+
+    n = 0;
+    i = 0;
+    do {
+        if ((arg0 + i)[0x105] != 0) {
+            n++;
+        }
+        i++;
+    } while (i < 0x21);
+    return n;
+}
+
+/* func_8009251C's body, inlined by func_80090564. */
+static inline s32 EngineExtra105(u8 *arg0) {
+    u8 *p;
+    s32 i;
+    s32 n;
+
+    n = 0;
+    for (i = 0; i < 0x21; i++) {
+        p = arg0 + i;
+        if (p[0x105] >= 2) {
+            n += p[0x105] - 1;
+        }
+    }
+    return n;
+}
+
+/* func_800925F0's body, inlined by func_80090564. */
+static inline void EngineSetSlot3Digits(s32 slot, s32 arg0) {
+    s32 *src;
+    s32 *p;
+    s32 i;
+    s32 *base;
+    s32 *tbl;
+
+    tbl = (s32 *)D_8009F248 + arg0 * 5;
+    base = (s32 *)GetEngineSlot(slot)->sub;
+    src = tbl;
+    p = base + 0xA8 / 4;
+    i = 0;
+    do {
+        if (*src == -1) {
+            p[0] &= ~0x8000;
+            p[0x2A] &= ~0x8000;
+        } else {
+            p[0] |= 0x8000;
+            p[0x2A] |= 0x8000;
+            p[1] = *src;
+            p[0x2B] = *src;
+        }
+        p += 0x54;
+        i++;
+        src++;
+    } while (i < 5);
+}
 
 void func_80090564(u8 *arg0, s32 arg1);
 
