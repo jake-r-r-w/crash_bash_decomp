@@ -5,7 +5,43 @@
 #include "bash/hero.h"
 #include "bash/shell.h"
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_8008E27C);
+void func_8008E27C(s32 *arg0, HitInfo *arg1, s32 arg2) {
+    s32 id;
+    s32 obj;
+
+    obj = ((s32 *)arg1)[-1];
+    id = arg2 != 0 ? arg1->unk16 : -1;
+    switch (arg1->unk14) {
+    case 5:
+    case 7:
+        PlaySfx(D_8009E424[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+        func_8007A524(1, arg0, (s32)D_80052F94);
+        func_8008DEC8(obj, 0x280, id, 0x208, 0xA0);
+        break;
+    case 6:
+        PlaySfx(((HitSfxTable *)D_8009E424)->hit6[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+        func_8007A524(0, arg0, (s32)D_80052F94);
+        func_8008DEC8(obj, 0x280, id, 0x208, 0);
+        break;
+    case 2:
+        PlaySfx(((HitSfxTable *)D_8009E424)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+        func_8007A524(2, arg0, (s32)D_80052F94);
+        break;
+    case 3:
+        PlaySfx(((HitSfxTable *)D_8009E424)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+        func_8007A524(4, arg0, (s32)D_80052F94);
+        func_8008DEC8(obj, 0x280, id, 0x203, 0xA0);
+        break;
+    default:
+        PlaySfx(((HitSfxTable *)D_8009E424)->other[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+        func_8007A524(3, arg0, (s32)D_80052F94);
+        func_8008DEC8(obj, 0x280, id, 0x205, 0xA0);
+        break;
+    }
+    if (D_8009E488.unk8 != NULL) {
+        D_8009E488.unk8(arg0[0], arg0[1], arg0[2], 0, id, arg1->unk14);
+    }
+}
 
 void InitCrateExplode(NAS *arg0) {
     EXTengine *e = arg0->Engine;

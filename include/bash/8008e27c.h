@@ -256,4 +256,25 @@ void func_800928E8(void);
 
 void func_80092EDC(void);
 
+typedef struct {
+    s32 unk0;
+    s32 unk4;
+    void (*unk8)(s32, s32, s32, s32, s32, s32);
+} HitCallbacks;
+extern HitCallbacks D_8009E488;
+
+typedef struct {
+    u8 pad0[0x14];
+    u16 unk14;
+    s16 unk16;
+} HitInfo;
+typedef struct {
+    s32 hit[4];
+    s32 hit6[4];
+    s32 other[4];
+    s32 crate[4];
+} HitSfxTable;
+void func_8008DEC8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
+void func_8008E27C(s32 *arg0, HitInfo *arg1, s32 arg2);
+
 #endif /* BASH_8008E27C_H */
