@@ -1067,7 +1067,94 @@ void SetHeroAction(HeroInfo *hero, s32 action) {
     HeroActionTable[action].fn();
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80086918);
+void func_80086918(void) {
+    D_8009D87C_t *t;
+    u8 *g;
+    s32 ret;
+    s32 i;
+    u16 flags;
+    s32 c;
+    s32 n;
+
+    ret = -1;
+    g = D_8005A614;
+    t = D_8009D87C;
+    for (i = 0; i < 4; i++) {
+        flags = *(u16 *)(g + 0x32);
+        if (flags & 0x100) {
+            c = g[*(s16 *)(g + 0x34) + 0xAB];
+            g[i + 0x9B] = c;
+            t[i].unk0 = ((u16 *)D_8009D8FC)[c];
+            t[i].unk4 = 0x10;
+        } else if (flags & 1) {
+            t[i].unk0 = ((u16 *)D_8009D900)[*(s16 *)(g + 0x38)];
+            t[i].unk4 = 0x10;
+        } else if (flags & 2) {
+            t[i].unk0 = ((u16 *)D_8009D900)[*(s16 *)(g + 0x38) + 3];
+            t[i].unk4 = 0x10;
+        } else if (flags & 0x40) {
+            t[i].unk0 = ((u16 *)D_8009D8FC)[4];
+            if (g[i + 0x5C] != 0) {
+                ret = t[i].unk4 = ((u16 *)D_8009D8F4)[4];
+            } else {
+                t[i].unk4 = ((u16 *)D_8009D8F8)[4];
+            }
+        } else if (flags & 0x20) {
+            if (flags & 8) {
+                t[i].unk0 = ((u16 *)D_8009D8FC)[9];
+                if (g[i + 0x5C] != 0) {
+                    ret = t[i].unk4 = ((u16 *)D_8009D8F4)[9];
+                } else {
+                    t[i].unk4 = ((u16 *)D_8009D8F8)[9];
+                }
+            } else {
+                t[i].unk0 = ((u16 *)D_8009D8FC)[5];
+                if (g[i + 0x5C] != 0) {
+                    ret = t[i].unk4 = ((u16 *)D_8009D8F4)[5];
+                } else {
+                    t[i].unk4 = ((u16 *)D_8009D8F8)[5];
+                }
+            }
+        } else if (flags & 0x80) {
+            t[i].unk0 = ((u16 *)D_8009D8FC)[6];
+            if (g[i + 0x5C] != 0) {
+                ret = t[i].unk4 = ((u16 *)D_8009D8F4)[6];
+            } else {
+                t[i].unk4 = ((u16 *)D_8009D8F8)[6];
+            }
+        } else if (flags & 0x10) {
+            if (*(s32 *)(g + 0x70) != 0) {
+                c = g[*(s16 *)(g + 0x34) + 0xAB];
+                g[i + 0x9B] = c;
+                t[i].unk0 = ((u16 *)D_8009D8FC)[3];
+                if (g[i + 0x5C] != 0) {
+                    ret = t[i].unk4 = ((u16 *)D_8009D8F4)[3];
+                } else {
+                    t[i].unk4 = ((u16 *)D_8009D904)[9];
+                }
+            } else {
+                c = g[*(s16 *)(g + 0x34) + 0xAB];
+                g[i + 0x9B] = c;
+                t[i].unk0 = ((u16 *)D_8009D8FC)[c];
+                if (g[i + 0x5C] != 0) {
+                    ret = t[i].unk4 = ((u16 *)D_8009D8F4)[g[0x9B]];
+                } else {
+                    n = g[i + 0xCC];
+                    if (n >= 3) {
+                        n = 2;
+                    }
+                    t[i].unk4 = ((u16 (*)[3])D_8009D904)[c][n];
+                }
+            }
+        }
+    }
+    func_80086C94(ret);
+    n = 0;
+    do {
+        flags = n < 4;
+        n++;
+    } while (flags);
+}
 
 s32 func_80086C94(s32 arg0) {
     s32 v;
