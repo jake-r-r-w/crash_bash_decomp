@@ -447,7 +447,75 @@ def:
     *(s32 *)(s0 + 0x3F0) |= 0x8000;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_8008F554);
+void func_8008F554(void) {
+    u8 *g;
+    u8 *p;
+    subengine *sub;
+    s32 i;
+
+    func_800B3A9C();
+    func_8008F084();
+    if (D_8009EB98 != 0) {
+        D_8009EB98--;
+        func_80017640();
+        func_80011D28((u8 *)&D_8004E0F0);
+    }
+    if (D_80051380 & 0x80) {
+        EngineWorldPrev();
+    }
+    if (D_80051380 & 0x20) {
+        EngineWorldNext();
+    }
+    if (D_80051380 & 0x1000) {
+        PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
+        func_800B53D4();
+    }
+    if (EngineTable_Unlocked(D_8005A614[0x28]) && (D_80051380 & 0x4000)) {
+        g = D_8005A614;
+        ((EngineModeView *)g)->unk32 = (((EngineModeView *)g)->unk32 & 0xFF00) | 2;
+        PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+        g[0x29] = 0;
+        D_8009E5DC = D_8009E7A0[g[0x28]].unk4->unk4;
+        func_800B5410();
+        p = D_8005A614;
+        for (i = 0; i < 4; i++) {
+            p[i + 0x9F] = 0;
+            p[i + 0xA3] = 0;
+        }
+    }
+    GetEngineSlot(0)->sub->unk6C = (void *)EngineCurWorldName();
+    if (D_8005A614[0x28] != 0) {
+        GetEngineSlot(0)->sub[8].flags |= 0x8000;
+    } else {
+        GetEngineSlot(0)->sub[8].flags &= ~0x8000;
+    }
+    if ((u8)D_8005A63C < 6) {
+        GetEngineSlot(0)->sub[9].flags |= 0x8000;
+    } else {
+        GetEngineSlot(0)->sub[9].flags &= ~0x8000;
+    }
+    if (EngineTable_Unlocked(D_8005A614[0x28])) {
+        GetEngineSlot(0)->sub[7].flags |= 0x8000;
+        GetEngineSlot(0)->sub[4].flags &= ~0x8000;
+        GetEngineSlot(0)->sub[3].flags &= ~0x8000;
+        GetEngineSlot(0)->sub[5].flags &= ~0x8000;
+        GetEngineSlot(0)->sub[6].flags &= ~0x8000;
+        return;
+    }
+    GetEngineSlot(0)->sub[7].flags &= ~0x8000;
+    GetEngineSlot(0)->sub[3].flags |= 0x8000;
+    sub = &GetEngineSlot(0)->sub[4];
+    sub->flags |= 0x02008000;
+    sub->unk68 = -0x80;
+    sub->unk6C = D_800555DC;
+    sub->unk74 = 0x2006;
+    sub->unk12 = D_8005B690 * 50;
+    sub->unk10 = 0;
+    sub->unk14 = D_80068BD4[(((D_8004E0D8 * 100) & 0xFFF) - 0x400) & 0xFFF].unk2 * 25 >> 9;
+    sub->unk52 = 1;
+    GetEngineSlot(0)->sub[5].flags |= 0x8000;
+    func_8008F41C();
+}
 
 void func_8008FB48(void) {
     func_80018B08(&D_8009EA9C, &D_800B9538);

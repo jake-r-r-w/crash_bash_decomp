@@ -98,6 +98,78 @@ void func_8008EB8C(void);
 
 void func_8008F084(void);
 
+void func_800B3A9C(void);
+void func_800B53D4(void);
+void func_800B5410(void);
+
+/* func_8008FD94's body, inlined by func_8008F554. */
+static inline void EngineWorldNext(void) {
+    u8 *g = D_8005A614;
+    s32 n;
+
+    D_8009EB98 = 4;
+    n = g[0x28];
+    if (n < 6) {
+        n++;
+        PlaySfx(0x190, 0, 0, 0x1000, 0x1E00, 0);
+        g[0x28] = n;
+    }
+}
+
+/* func_8008FE00's body, inlined by func_8008F554. */
+static inline void EngineWorldPrev(void) {
+    u8 *g = D_8005A614;
+    s32 n;
+
+    D_8009EB98 = 4;
+    n = g[0x28];
+    if (n > 0) {
+        n--;
+        PlaySfx(0x190, 0, 0, 0x1000, 0x1E00, 0);
+        g[0x28] = n;
+    }
+}
+
+/* func_8008FE68's body, inlined by func_8008F554. */
+static inline s32 EngineTable_Unlocked(s32 arg0) {
+    EngineTable12 *base = D_8009E7A0;
+    EngineTable12 *t;
+    EngineEntry16Head *p;
+    s32 n;
+    s32 i;
+
+    t = base + arg0;
+    if (t->unk0 == 1) {
+        return 1;
+    }
+    if (t->unk0 == 2) {
+        return 0;
+    }
+    n = t->unk8;
+    p = t->unk4;
+    for (i = 0; i < n; i++, p++) {
+        if (!func_800B7EE4(p->unk4, D_8005A614)) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+/* func_8008FF10's body, inlined by func_8008F554. */
+static inline s32 EngineCurWorldName(void) {
+    u16 *wt = D_8004DDD0;
+    EngineTable12 *tab = D_8009E7A0;
+    u8 *g = D_8005A614;
+    EngineEntry16Head *e = tab[g[0x28]].unk4;
+    s32 idx = e[g[0x29]].unk4;
+    s32 **tbl;
+    s32 w = wt[idx * 3] - 0x101;
+    s32 *t;
+    tbl = (s32 **)D_8004DDBC;
+    t = tbl[*(s32 *)(g + 0x2C)];
+    return *(s32 *)((u8 *)t + w * 4);
+}
+
 void func_8008FC58(void);
 
 void func_80090048(void);
@@ -425,5 +497,7 @@ extern _sfx_handler *D_8009E5C4;
 void func_8008E5BC(void);
 void func_8008DEC8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 void func_8008E27C(s32 *arg0, HitInfo *arg1, s32 arg2);
+
+void func_8008F554(void);
 
 #endif /* BASH_8008E27C_H */
