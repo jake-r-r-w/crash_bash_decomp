@@ -222,6 +222,22 @@ extern s8 D_8004E0A4[];
 extern s32 D_8009BD08;
 extern s32 D_8009BD40;
 extern s32 D_8009BD44;
+extern s32 D_8009BD48;
+/* D_8005A614 as seen by func_800826F8. */
+typedef struct EngineHintView {
+    /* 0x00 */ u8 unk0[0x10];
+    /* 0x10 */ s32 flags;
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ u8 unk18[0x32 - 0x18];
+    /* 0x32 */ u16 unk32;
+    /* 0x34 */ s16 mode;
+    /* 0x36 */ u8 unk36[0x5C - 0x36];
+    /* 0x5C */ u8 unk5C[4];
+    /* 0x60 */ u8 unk60[0x68 - 0x60];
+    /* 0x68 */ s32 unk68;
+    /* 0x6C */ u8 unk6C[0x76 - 0x6C];
+    /* 0x76 */ u8 shown[1];
+} EngineHintView;
 extern s16 D_8009ADE6;
 
 s32 func_8007EFC0(s32 pad, s32 max);

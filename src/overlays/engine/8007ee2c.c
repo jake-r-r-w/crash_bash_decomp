@@ -136,7 +136,121 @@ void func_80082590(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_800826F8);
+void func_800826F8(s32 arg0) {
+    EngineHintView *g;
+    EngineHintView *g2;
+    EngineRec24 **set;
+    EngineRec24 *rec;
+
+    D_8009E0D0 = 0x4B;
+    D_8009E0D2 = 4;
+    D_8009E0D4 = 0x63;
+    D_8009BD08 = 0x19;
+    D_8009BD40 = 0;
+    D_8009BD44 = 1;
+    g = (EngineHintView *)D_8005A614;
+    g->flags &= 0xFDC07013;
+    D_8009BD48 = 3;
+    g->flags |= 0x04000000;
+    if (g->unk68 != 0) {
+        g->flags |= 0x02000000;
+        g->unk14 = 0x384;
+        g->unk5C[0] = 1;
+        g->unk5C[1] = 1;
+        g->unk5C[2] = 1;
+        g->unk5C[3] = 1;
+        return;
+    }
+    switch (g->unk32 & 0xE0) {
+    case 0x80:
+        if (g->shown[g->mode] & 0x80) {
+            return;
+        }
+        set = ((EngineRec24 ****)D_8005AAB0)[g->mode][2];
+        if (set != NULL) {
+            D_8009BD10 = set;
+            rec = *set;
+            D_8009BD14 = 0;
+            D_8009BD0C = rec;
+            func_80095BEC(0, &rec->kind);
+        }
+        g->shown[g->mode] |= 0x80;
+        D_8009AEF0 = 0;
+        g->flags |= 0x41;
+        D_8009BD08 >>= 1;
+        return;
+    case 0x20:
+        if (g->unk32 & 8) {
+            if (g->shown[g->mode] & 8) {
+                return;
+            }
+            set = ((EngineRec24 ****)D_8005AAB0)[g->mode][8];
+            if (set != NULL) {
+                D_8009BD10 = set;
+                rec = *set;
+                D_8009BD14 = 0;
+                D_8009BD0C = rec;
+                func_80095BEC(0, &rec->kind);
+            }
+            g->shown[g->mode] |= 8;
+            D_8009AEF0 = 0;
+            g->flags |= 0x41;
+            D_8009BD08 >>= 1;
+        } else {
+            if (g->shown[g->mode] & 0x20) {
+                return;
+            }
+            set = ((EngineRec24 ****)D_8005AAB0)[g->mode][6];
+            if (set != NULL) {
+                D_8009BD10 = set;
+                rec = *set;
+                D_8009BD14 = 0;
+                D_8009BD0C = rec;
+                func_80095BEC(0, &rec->kind);
+            }
+            g->shown[g->mode] |= 0x20;
+            D_8009AEF0 = 0;
+            g->flags |= 0x41;
+            D_8009BD08 >>= 1;
+        }
+        return;
+    case 0x40:
+        if (g->shown[g->mode] & 0x40) {
+            return;
+        }
+        set = ((EngineRec24 ****)D_8005AAB0)[g->mode][4];
+        if (set != NULL) {
+            D_8009BD10 = set;
+            rec = *set;
+            D_8009BD14 = 0;
+            D_8009BD0C = rec;
+            func_80095BEC(0, &rec->kind);
+        }
+        g->shown[g->mode] |= 0x40;
+        D_8009AEF0 = 0;
+        g->flags |= 0x41;
+        D_8009BD08 >>= 1;
+        return;
+    default:
+        g2 = (EngineHintView *)D_8005A614;
+        if (g2->shown[g2->mode] & 0x10) {
+            return;
+        }
+        set = ((EngineRec24 ****)D_8005AAB0)[g2->mode][0];
+        if (set != NULL) {
+            D_8009BD10 = set;
+            rec = *set;
+            D_8009BD14 = 0;
+            D_8009BD0C = rec;
+            func_80095BEC(0, &rec->kind);
+        }
+        g2->shown[g2->mode] |= 0x10;
+        D_8009AEF0 = 0;
+        g2->flags |= 0x41;
+        D_8009BD08 >>= 1;
+        return;
+    }
+}
 
 void func_80082AC4(void) {
     s32 i;
