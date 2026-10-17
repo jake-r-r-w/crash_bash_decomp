@@ -139,6 +139,41 @@ extern CamVec3 D_800A0BC0;
 extern u8 D_800A0BF3;
 extern u8 *D_800A0D34;
 
+/* D_8005A614 as seen by func_80093BE8. */
+typedef struct EngStateView {
+    /* 0x00 */ u8 pad0[0x10];
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ u8 pad14[0x30 - 0x14];
+    /* 0x30 */ u16 unk30;
+    /* 0x32 */ u16 pad32;
+    /* 0x34 */ s16 mode;
+    /* 0x36 */ u8 pad36[0x42 - 0x36];
+    /* 0x42 */ s16 unk42;
+    /* 0x44 */ u8 pad44[0xCC - 0x44];
+    /* 0xCC */ u8 unkCC[4];
+} EngStateView;
+typedef struct EngRgb {
+    u8 r, g, b;
+} EngRgb;
+typedef struct EngColor {
+    /* 0x00 */ u8 pad0[0x24];
+    /* 0x24 */ EngRgb rgb;
+    /* 0x27 */ u8 code;
+} EngColor;
+typedef struct EngColorSrc {
+    /* 0x00 */ u8 pad0[0x10];
+    /* 0x10 */ EngColor *col;
+} EngColorSrc;
+extern u8 D_8009F998[];
+extern u8 D_8009FA00[];
+extern u8 D_8004E998[];
+extern s32 D_8009F720[];
+void func_80093854(void);
+void func_800939FC(void);
+void func_80092AF4(s32 arg0, s32 arg1);
+
+void func_80093BE8(void);
+
 void func_80094A28(void);
 
 void func_80094B38(void);
