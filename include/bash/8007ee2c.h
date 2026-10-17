@@ -467,6 +467,20 @@ void func_80088794(s32 arg0);
 void func_8008955C(s32 arg0);
 
 void func_800898EC(s32 arg0);
+/* func_8008CA90: one falling particle, drawn as a quad between two points */
+typedef struct {
+    SVECTOR top;  /* 0x0 */
+    SVECTOR bot;  /* 0x8 */
+    s32 angle;    /* 0x10 */
+    s32 base;     /* 0x14 */
+} FallParticle;
+
+typedef struct {
+    FallParticle *parts; /* 0x0 */
+    POLY_FT4 *prims[2];  /* 0x4: indexed by D_8005B690 & 1 */
+    s32 count;           /* 0xC */
+} FallParticles;
+
 
 /* D_8005A614 as seen by func_80080FBC. */
 typedef struct EngineMsgView {
@@ -522,5 +536,7 @@ extern s32 D_8009BD30;
 void func_800809A0(s16 *arg0, s32 arg1);
 
 void func_80080FBC(void);
+
+void func_8008CA90(u8 *arg0, MATRIX *m);
 
 #endif /* BASH_8007EE2C_H */

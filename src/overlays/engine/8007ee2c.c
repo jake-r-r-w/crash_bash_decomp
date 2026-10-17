@@ -3070,7 +3070,62 @@ s32 func_8008C5C4(s32 *from, s32 *to, Arc *arc, s32 *pos) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8008C824);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8008CA90);
+void func_8008CA90(u8 *arg0, MATRIX *m) {
+    FallParticles *fp = (FallParticles *)(arg0 + 0x6C);
+    FallParticle *p;
+    POLY_FT4 *prim;
+    s32 n;
+    s32 col;
+    s32 tag2;
+    s16 *sxy;
+    s32 tag;
+    s32 t;
+    SVECTOR *v;
+
+    p = fp->parts;
+    prim = fp->prims[D_8005B690 & 1];
+    gte_SetRotMatrix(m);
+    gte_SetTransMatrix(m);
+    n = fp->count;
+    col = func_8002A2EC(0x10, 0x10, 0x10);
+    tag = col | 0x2E000000;
+    while (n != 0) {
+        p->top.vy += 0x18;
+        p->top.vx = p->base + (D_80068BD4[(p->angle - 0x400) & 0xFFF].unk2 * 512 >> 12);
+        p->angle = (p->angle + 0x10) & 0xFFF;
+        if (p->top.vy > 0x800) {
+            p->angle = Random(0xFFF);
+            p->base = Random(0x3000) - Random(0x3000);
+            p->top.vx = p->base + (D_80068BD4[(p->angle - 0x400) & 0xFFF].unk2 * 512 >> 12);
+            t = Random(0x4000) - Random(0x1000);
+            p->top.vz = t;
+            p->top.vy = -0xDAC;
+            p->bot.vx = p->top.vx + 0x40;
+            p->bot.vz = p->top.vz;
+        }
+        p->bot.vy = p->top.vy + 0x40;
+        p->bot.vx = p->top.vx + 0x40;
+        v = &p->top;
+        do { gte_ldv0(v); } while (0);
+        gte_rtps();
+        tag2 = tag;
+        sxy = &prim->x0;
+        do { *(s32 *)&prim->r0 = tag2; } while (0);
+        gte_stsxy(sxy);
+        v = &p->bot;
+        gte_ldv0(v);
+        gte_rtps();
+        prim->y1 = prim->y0;
+        prim->x2 = prim->x0;
+        gte_stsxy(&prim->x3);
+        prim->x1 = prim->x3;
+        prim->y2 = prim->y3;
+        addPrim(D_80056998.ot + 0x40, prim);
+        prim++;
+        p++;
+        n--;
+    }
+}
 
 void PlotWeatherNas(u8 *arg0) {
     if (*(s32 *)(arg0 + 0x60) == 0) {
