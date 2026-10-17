@@ -1592,7 +1592,69 @@ void func_8008795C(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80087B8C);
+void func_80087B8C(s32 arg0) {
+    HeroInfo *base;
+    HeroInfo *h;
+    s32 ret2;
+    s32 id;
+
+    if (HeroCheckStatus2000(arg0) == 0 && HeroCheckStatus600(arg0) == 0 &&
+        func_80086FCC(arg0) == 0) {
+        if (D_8009D72C != NULL) {
+            ret2 = D_8009D72C(arg0);
+        } else if (((PadButtons *)D_80051338)[arg0].unk54 & 0x4000) {
+            SetHeroAction((HeroInfo *)arg0, 4);
+            ret2 = 1;
+        } else {
+            ret2 = 0;
+        }
+        if (ret2 == 0 && HeroCheckPad1000(arg0) == 0 && HeroCheckStopped(arg0) == 0) {
+            base = Heroes;
+            h = base + arg0;
+            h->hero_move->velocity_enable = 1;
+            D_8009D73C(arg0);
+            switch (func_8008502C(arg0)) {
+            case 8:
+                if (h->hero_pu != 0x15) {
+                    switch (h->hero_name) {
+                    case 1: id = 0xA; break;
+                    case 2: id = 0x3C; break;
+                    case 3: id = 0x6E; break;
+                    case 4: id = 0xA0; break;
+                    case 7: id = 0x104; break;
+                    case 8: id = 0xD2; break;
+                    case 5: id = 0x136; break;
+                    case 6: id = 0x168; break;
+                    default: goto end;
+                    }
+                    PlaySfx(id, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                } else {
+                    PlaySfx(0x41E, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+                }
+                break;
+            case 9:
+                if (h->hero_pu == 0x15) {
+                    break;
+                }
+                switch (h->hero_name) {
+                case 1: id = 0xB; break;
+                case 2: id = 0x3D; break;
+                case 3: id = 0x6F; break;
+                case 4: id = 0xA1; break;
+                case 7: id = 0x105; break;
+                case 8: id = 0xD3; break;
+                case 5: id = 0x137; break;
+                case 6: id = 0x169; break;
+                default: goto end;
+                }
+                PlaySfx(id, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                break;
+            }
+        end:
+            func_800871E4(arg0);
+        }
+    }
+}
 
 void func_80087FC0(s32 arg0) {
     HeroInfo *base = Heroes;

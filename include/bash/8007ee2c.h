@@ -382,6 +382,26 @@ static inline s32 HeroCheckPad1000(s32 arg0) {
 
 void func_8008795C(s32 arg0);
 
+/* func_80087B8C: stop check (hero not moving). */
+static inline s32 HeroCheckStopped(s32 arg0) {
+    HeroInfo *base;
+    HeroInfo *h;
+    u16 mode;
+
+    base = Heroes;
+    h = base + arg0;
+    if (h->hero_move->forward_speed == 0) {
+        mode = h->hero_mode;
+        if (mode == 0x10 || mode == 0x18) {
+            SetHeroAction((HeroInfo *)arg0, (u16)D_8009E0DC);
+        } else {
+            SetHeroAction((HeroInfo *)arg0, 0);
+        }
+        return 1;
+    }
+    return 0;
+}
+
 void InitHealth(NAS *nas);
 
 /* ballistic arc state used by func_8008C5C4 */
@@ -432,6 +452,8 @@ extern D_8009E0E8_t D_8009E0E8[3][4];
 extern u8 D_80053004[];
 
 void func_80086918(void);
+
+void func_80087B8C(s32 arg0);
 
 void func_80088794(s32 arg0);
 
