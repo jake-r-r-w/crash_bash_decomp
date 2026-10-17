@@ -53,6 +53,109 @@ void func_80094FE0(void);
 
 void func_80095A04(s32 arg0);
 
+/* 0x24-byte placement record read by func_800952F8. */
+typedef struct PlaceRec {
+    /* 0x00 */ s32 type;
+    /* 0x04 */ s16 x;
+    /* 0x06 */ s16 y;
+    /* 0x08 */ s16 z;
+    /* 0x0A */ s16 scale;
+    /* 0x0C */ s16 unkC;
+    /* 0x0E */ s16 unkE;
+    /* 0x10 */ s16 unk10;
+    /* 0x12 */ s16 pad12;
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ s16 unk1C;
+    /* 0x1E */ s16 unk1E;
+    /* 0x20 */ s32 unk20;
+} PlaceRec;
+
+/* subengine as filled by func_800952F8. */
+typedef struct PlaceSub {
+    /* 0x00 */ u32 flags;
+    /* 0x04 */ s32 x;
+    /* 0x08 */ s32 y;
+    /* 0x0C */ s32 z;
+    /* 0x10 */ s16 unk10;
+    /* 0x12 */ s16 unk12;
+    /* 0x14 */ s16 unk14;
+    /* 0x16 */ u8 pad16[0x20 - 0x16];
+    /* 0x20 */ s32 sx;
+    /* 0x24 */ s32 sy;
+    /* 0x28 */ s32 sz;
+    /* 0x2C */ u8 pad2C[0x50 - 0x2C];
+    /* 0x50 */ u8 unk50;
+    /* 0x51 */ u8 unk51;
+    /* 0x52 */ s16 unk52;
+    /* 0x54 */ void *hook;
+    /* 0x58 */ void *release;
+    /* 0x5C */ struct PlaceSub *next;
+    /* 0x60 */ void *prev;
+    /* 0x64 */ PlaceRec *rec;
+    /* 0x68 */ s16 unk68;
+    /* 0x6A */ u8 pad6A[2];
+    /* 0x6C */ s32 unk6C;
+    /* 0x70 */ s16 unk70;
+    /* 0x72 */ s16 unk72;
+    /* 0x74 */ u16 unk74;
+    /* 0x76 */ s16 unk76;
+    /* 0x78 */ s16 unk78;
+    /* 0x7A */ u8 pad7A[2];
+    /* 0x7C */ s32 unk7C;
+    /* 0x80 */ s32 unk80;
+    /* 0x84 */ u16 unk84;
+    /* 0x86 */ u16 unk86;
+    /* 0x88 */ s32 unk88;
+} PlaceSub;
+
+/* D_8005A614 as seen by func_800952F8. */
+typedef struct PlaceGameView {
+    /* 0x00 */ u8 pad0[0x10];
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ u8 pad14[0x2C - 0x14];
+    /* 0x2C */ s32 unk2C;
+    /* 0x30 */ u16 pad30;
+    /* 0x32 */ u16 unk32;
+    /* 0x34 */ u8 pad34[0x6C - 0x34];
+    /* 0x6C */ s32 unk6C;
+} PlaceGameView;
+
+static inline void PlaceSprite(PlaceSub *s, s32 x, s32 y, s32 img, s32 clut) {
+    if (s != NULL) {
+        s->flags = 0x10008000;
+        s->hook = D_8001C448;
+        s->x = x;
+        s->y = y;
+        s->unk6C = img;
+        s->unk7C = clut;
+    }
+}
+
+static inline void PlaceTmpl(PlaceSub *s, s32 x, s32 y, s32 z, s32 scale, s32 idx) {
+    Tmpl1C *t;
+
+    if (s != NULL) {
+        t = &D_800A0D44[idx];
+        s->flags = t->f0 | 0x12008000;
+        s->hook = D_8001C690;
+        if ((x & 0xC000) == 0x8000) {
+            y = y * 640 / D_8005B698->w;
+        }
+        s->unk6C = t->f0;
+        s->unk70 = x;
+        s->unk76 = y;
+        s->unk72 = z;
+        s->unk78 = scale;
+        s->unk7C = t->f4;
+        s->unk84 = t->f10;
+        s->unk86 = t->f14;
+        s->unk80 = t->fC;
+        s->unk88 = t->f8;
+        s->unk68 = t->f18;
+    }
+}
+
 void func_800952F8(subengine *sub, s32 *recs);
 
 void func_80095BEC(s32 arg0, s32 *recs);

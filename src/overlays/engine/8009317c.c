@@ -758,7 +758,188 @@ s32 func_800951D0(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009317c", func_80095258);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009317c", func_800952F8);
+void func_800952F8(subengine *sub, s32 *recs) {
+    PlaceSub *s;
+    PlaceRec *rec;
+    s32 skip;
+
+    s = (PlaceSub *)sub;
+    rec = (PlaceRec *)recs;
+    skip = 0;
+    for (;;) {
+        if (s == NULL || rec->type < 2) {
+            break;
+        }
+        switch (rec->type) {
+        case 13:
+            switch (rec->unk20 & 0x8F0) {
+            case 0x800:
+                skip = 0;
+                break;
+            case 0x20:
+                skip = ((PlaceGameView *)D_8005A614)->unk6C == 0;
+                break;
+            case 0x10:
+                skip = ((PlaceGameView *)D_8005A614)->unk6C;
+                break;
+            case 0x30:
+                skip = ((PlaceGameView *)D_8005A614)->unk10 ^ 1;
+                skip &= 1;
+                break;
+            case 0x40:
+                skip = ((PlaceGameView *)D_8005A614)->unk10 & 1;
+                break;
+            case 0x60:
+                skip = 0;
+                if (!(((PlaceGameView *)D_8005A614)->unk10 & 1) ||
+                    !(((PlaceGameView *)D_8005A614)->unk32 & 0x10)) {
+                    skip = 1;
+                }
+                break;
+            case 0x50:
+                skip = 0;
+                if (((PlaceGameView *)D_8005A614)->unk10 & 1) {
+                    skip = (u32)skip < (((PlaceGameView *)D_8005A614)->unk32 & 0x10);
+                }
+                break;
+            case 0x70:
+                skip = 0;
+                if (!(((PlaceGameView *)D_8005A614)->unk10 & 1) ||
+                    !(((PlaceGameView *)D_8005A614)->unk32 & 0xE0)) {
+                    skip = 1;
+                }
+                break;
+            }
+            break;
+        case 3:
+        case 11:
+        case 14:
+            if (skip == 0) {
+                if (rec->type == 14) {
+                    PlaceSprite(s, rec->x, rec->y,
+                                ((s32 *)rec->unk14)[((PlaceGameView *)D_8005A614)->unk2C],
+                                rec->unk18);
+                } else {
+                    PlaceSprite(s, rec->x, rec->y, rec->unk14, rec->unk18);
+                }
+                if (rec->type == 11) {
+                    s->z = 0;
+                    s->flags &= 0xEFFFFFFF;
+                }
+            }
+            break;
+        case 4:
+        case 12:
+        case 16:
+        case 18:
+            if (skip == 0) {
+                if (rec->type == 18) {
+                    PlaceTmpl(s, rec->x,
+                              ((s32 *)rec->unk14)[((PlaceGameView *)D_8005A614)->unk2C],
+                              rec->z, rec->scale, rec->unkC);
+                } else {
+                    PlaceTmpl(s, rec->x, rec->y, rec->z, rec->scale, rec->unkC);
+                }
+                if (rec->type == 12) {
+                    s->flags &= 0xEFFFFFFF;
+                    s->unk84 *= 8;
+                    s->unk86 *= 8;
+                    s->z = rec->unkE;
+                }
+                if (rec->type == 16) {
+                    s->unk68 = 200;
+                    s->flags |= 0x2000000;
+                }
+            }
+            break;
+        case 6:
+        case 7:
+        case 15:
+        case 17:
+            if (skip == 0) {
+                s->flags |= 0x8000;
+                if (rec->type == 15) {
+                    s->flags |= 0x2000000;
+                    s->unk68 = 100;
+                }
+                if (rec->type == 17) {
+                    s->unk68 = 90;
+                    s->flags |= 0x2000000;
+                }
+                s->sx = rec->scale;
+                s->sy = rec->scale;
+                s->sz = rec->scale;
+                s->unk50 = 1;
+                s->unk51 = 0;
+                s->unk52 = 1;
+                if (rec->type != 7) {
+                    s->flags |= 0x10000000;
+                }
+                s->x = rec->x;
+                s->y = rec->y;
+                s->z = rec->z;
+                s->unk6C = (s32)(D_80052A54 + rec->unk1C * 0x38);
+                s->unk74 = rec->unk1E;
+            }
+            break;
+        case 8:
+        case 9:
+            if (skip == 0) {
+                s->flags |= 0x8000;
+                s->sx = rec->scale;
+                s->sy = rec->scale;
+                s->sz = rec->scale;
+                s->unk50 = 1;
+                s->unk51 = 0;
+                s->unk52 = 1;
+                if (rec->type != 7) {
+                    s->flags |= 0x10000000;
+                }
+                s->x = rec->x;
+                s->y = rec->y;
+                s->z = rec->z;
+                s->unk6C = (s32)D_80053074;
+                {
+                    u16 *tbl = D_80099218;
+                    s32 name = Heroes[rec->unk1E].hero_name;
+                    s->unk74 = tbl[name];
+                }
+            }
+            break;
+        case 10:
+            if (skip == 0) {
+                s->hook = func_80095E5C;
+                s->rec = rec;
+                s->flags |= 0x10008000;
+                s->x = rec->x;
+                s->y = rec->y;
+                s->z = rec->z;
+                s->unk51 = 0;
+                s->unk50 = 1;
+                s->sx = s->sy = s->sz = rec->scale;
+                s->unk10 = rec->unkC;
+                s->unk12 = rec->unkE;
+                s->unk14 = rec->unk10;
+                s->unk6C = (s32)(D_80052A54 + rec->unk1C * 0x38);
+                s->unk74 = rec->unk1E;
+            }
+            break;
+        case 5:
+            if (skip == 0) {
+                s->flags |= 0x10008000;
+                s->x = rec->x;
+                s->y = rec->y;
+                s->z = rec->z;
+                func_80020CC4(D_80052A54 + rec->unk1C * 0x38, rec->unk1E, (u8 *)s, rec->unk20);
+            }
+            break;
+        case 2:
+            break;
+        }
+        rec++;
+        s = s->next;
+    }
+}
 
 void func_80095A04(s32 arg0) {
     EXTengine *eng;

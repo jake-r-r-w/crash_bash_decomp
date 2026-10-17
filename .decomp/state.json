@@ -4193,7 +4193,8 @@
   "auto_failed": "types"
  },
  "engine:800952F8": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-17T12:04:31Z",
+  "status": "matched"
  },
  "engine:80095A04": {
   "matched_at": "2026-10-10T10:36:02Z",
