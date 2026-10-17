@@ -68,7 +68,79 @@ void func_8009608C(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009608c", func_80096280);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009608c", func_80096530);
+s32 func_80096530(s32 *p0, s32 *p1, s32 *q0, s32 *q1, s32 *out) {
+    s32 denom, num, u, t;
+    s32 dqz;
+    s32 dpy;
+    s32 dpz, dqy, ez, ey;
+    s32 a, b, c;
+
+    a = p0[2];
+    if (a < (b = q0[2]) && (c = p1[2]) < b && a < q1[2] && c < q1[2]) {
+        return 0;
+    }
+    if ((b = q0[2]) < a && b < (c = p1[2]) && q1[2] < a && q1[2] < c) {
+        return 0;
+    }
+    do {
+        do {
+            a = p0[1];
+        } while (0);
+    } while (0);
+    if (a < (b = q0[1]) && (c = p1[1]) < b && a < q1[1] && c < q1[1]) {
+        return 0;
+    }
+    if ((b = q0[1]) < a && b < (c = p1[1]) && q1[1] < a && q1[1] < c) {
+        return 0;
+    }
+    dqz = (q0[2] - q1[2]) >> 4;
+    dpy = (p0[1] - q0[1]) >> 4;
+    dpz = (p0[2] - q0[2]) >> 4;
+    dqy = (q0[1] - q1[1]) >> 4;
+    ez = (p1[2] - p0[2]) >> 4;
+    ey = (p1[1] - p0[1]) >> 4;
+    num = dqz * dpy - dqy * dpz;
+    denom = ez * dqy - ey * dqz;
+    if (denom > 0) {
+        if (denom < num) {
+            return 0;
+        }
+        if (num < 0) {
+            return 0;
+        }
+    } else {
+        if (num < denom) {
+            return 0;
+        }
+        if (num > 0) {
+            return 0;
+        }
+    }
+    u = ey * dpz - ez * dpy;
+    if (denom > 0) {
+        if (denom < u) {
+            return 0;
+        }
+        if (u < 0) {
+            return 0;
+        }
+    } else {
+        if (u < denom) {
+            return 0;
+        }
+        if (u > 0) {
+            return 0;
+        }
+    }
+    if (denom == 0) {
+        return 0;
+    }
+    t = (num << 8) / denom;
+    out[0] = 0;
+    out[1] = p0[1] + (((p1[1] - p0[1]) * t) >> 8);
+    out[2] = p0[2] + (((p1[2] - p0[2]) * t) >> 8);
+    return 1;
+}
 
 s32 func_800967E0(D_800AD2EC_t *a, s32 *b, D_800AD2EC_t *c, s32 *d, s32 *out) {
     Vec3W hit;
@@ -273,13 +345,13 @@ s32 func_80097608(s32 *arg0, s32 *arg1, s32 arg2) {
     s32 sp18[3];
     s32 sp28[3];
     s32 d = 0x2D0000 / D_80051658;
-    extern s32 func_80096530(s32 *, s32 *, s32 *, s32 *, s32);
+    extern s32 func_80096530(s32 *, s32 *, s32 *, s32 *, s32 *);
 
     sp18[1] = arg0[1] + d;
     sp18[2] = arg0[2] - 0x3000;
     sp28[1] = arg1[1] - d;
     sp28[2] = arg1[2] - 0x3000;
-    return func_80096530(arg0, sp18, arg1, sp28, arg2) != 0;
+    return func_80096530(arg0, sp18, arg1, sp28, (s32 *)arg2) != 0;
 }
 
 s32 func_800976A8(u8 *arg0, s32 arg1) {
