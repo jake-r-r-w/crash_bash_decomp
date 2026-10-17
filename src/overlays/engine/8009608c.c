@@ -309,7 +309,86 @@ s32 func_800976A8(u8 *arg0, s32 arg1) {
     return var_t0 - var_a3;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009608c", func_800976F8);
+extern s32 D_800ADBD4;
+void func_800976F8(s32 *arg0) {
+    EXTengine *eng;
+    s32 v;
+
+    eng = GetEngineSlot(3);
+    D_800AD32C[6].unk1E = D_8009922C[GV->unk50[0]];
+    D_800AD32C[7].unk1E = D_8009922C[GV->unk50[1]];
+    D_800AD32C[8].unk1E = D_8009922C[GV->unk50[2]];
+    D_800AD32C[9].unk1E = D_8009922C[GV->unk50[3]];
+    D_800AD32C[10].unk1E = GV->unkCC[0] + 0x200E;
+    D_800AD32C[11].unk1E = GV->unkCC[1] + 0x200E;
+    D_800AD32C[12].unk1E = GV->unkCC[2] + 0x200E;
+    D_800AD32C[13].unk1E = GV->unkCC[3] + 0x200E;
+    D_800AD5D8[4].unk1E = D_8009922C[GV->unk50[0]];
+    D_800AD5D8[5].unk1E = D_8009922C[GV->unk50[1]];
+    D_800AD5D8[6].unk1E = D_8009922C[GV->unk50[2]];
+    D_800AD5D8[7].unk1E = D_8009922C[GV->unk50[3]];
+    D_800AD5D8[8].unk1E = GV->unkCC[GV->unk48] + 0x200E;
+    D_800AD5D8[9].unk1E = GV->unkCC[GV->unk4A] + 0x200E;
+    D_800ADBD4 = 0;
+    D_800AD7AC[3].unk1E = D_8009922C[GV->unk50[0]];
+    D_800AD7AC[4].unk1E = D_8009922C[GV->unk50[1]];
+    D_800AD7AC[5].unk1E = GV->unkCC[0] + 0x200E;
+    D_800AD9C8[4].unk1E = D_8009922C[GV->unk50[0]];
+    D_800AD9C8[5].unk1E = D_8009922C[GV->unk50[1]];
+    D_800AD9C8[6].unk1E = GV->unkCC[0] + 0x200E;
+    D_800AD9C8[7].unk1E = GV->unkCC[1] + 0x200E;
+    D_800AD8CC[3].unk1E = D_8009922C[GV->unk50[0]];
+    D_800AD8CC[4].unk1E = GV->unkCC[0] + 0x200E;
+    switch (GV->flags & 0xF0) {
+    case 0x20:
+        v = 0x2021;
+        if (GV->flags & 8) {
+            v = 0x2020;
+        }
+        D_800AD32C[0].unk1E = v;
+        D_800AD5D8[0].unk1E = v;
+        D_800AD7AC[0].unk1E = v;
+        D_800AD8CC[0].unk1E = v;
+        if (GV->unk6C != 0) {
+            func_80095BEC(3, (s32 *)D_800AD7AC);
+            D_800ADBD4 = 1;
+        } else {
+            func_80095BEC(3, (s32 *)D_800AD8CC);
+            D_800ADBD4 = 1;
+        }
+        break;
+    case 0x40:
+        D_800ADB54[0].unk1E = 0x201F;
+        func_80095BEC(3, (s32 *)D_800ADB54);
+        goto end;
+    case 0x80:
+        D_800ADB54[0].unk1E = 0x201E;
+        func_80095BEC(3, (s32 *)D_800ADB54);
+        goto end;
+    case 0x10:
+    default:
+        D_800AD32C[0].unk1E = 0x2022;
+        D_800AD5D8[0].unk1E = 0x2022;
+        D_800AD7AC[0].unk1E = 0x2022;
+        D_800AD8CC[0].unk1E = 0x2022;
+        if (GV->mode == 0x20) {
+            func_80095BEC(3, (s32 *)D_800AD9C8);
+            D_800ADBD4 = 2;
+        } else if (GV->unk6C != 0) {
+            func_80095BEC(3, (s32 *)D_800AD5D8);
+            D_800ADBD4 = 2;
+        } else {
+            func_80095BEC(3, (s32 *)D_800AD32C);
+            D_800ADBD4 = 4;
+        }
+        break;
+    }
+    eng->sub->flags &= 0xFFFF7FFF;
+end:
+    GetEngineSlot(3)->unk10.x = 0x140;
+    GetEngineSlot(3)->unk10.y = 0x118;
+    GetEngineSlot(3)->flags &= 0xEFFFFFFF;
+}
 
 void func_80097AA4(subengine *s) {
     TrigEntry *t;

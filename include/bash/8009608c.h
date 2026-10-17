@@ -110,4 +110,41 @@ s32 func_80097608(s32 *arg0, s32 *arg1, s32 arg2);
 
 void func_800984D4(void);
 
+/* 0x24-byte engine records handed to func_80095BEC (func_800976F8). */
+typedef struct EngRec24 {
+    /* 0x00 */ u8 pad0[0x1E];
+    /* 0x1E */ s16 unk1E;
+    /* 0x20 */ u8 pad20[4];
+} EngRec24;
+
+/* D_8005A614 as seen by func_800976F8. */
+typedef struct EngRecView {
+    /* 0x00 */ u8 pad0[0x32];
+    /* 0x32 */ u16 flags;
+    /* 0x34 */ s16 mode;
+    /* 0x36 */ u8 pad36[0x48 - 0x36];
+    /* 0x48 */ s16 unk48;
+    /* 0x4A */ s16 unk4A;
+    /* 0x4C */ u8 pad4C[4];
+    /* 0x50 */ u8 unk50[4];
+    /* 0x54 */ u8 pad54[0x6C - 0x54];
+    /* 0x6C */ s32 unk6C;
+    /* 0x70 */ u8 pad70[0xCC - 0x70];
+    /* 0xCC */ u8 unkCC[4];
+} EngRecView;
+
+/* Read through a cast, not a local: sched then sees the base as the symbol and
+ * moves these loads past the record stores, as the target does. */
+#define GV ((EngRecView *)D_8005A614)
+
+extern u16 D_8009922C[];
+extern EngRec24 D_800AD32C[];
+extern EngRec24 D_800AD5D8[];
+extern EngRec24 D_800AD7AC[];
+extern EngRec24 D_800AD8CC[];
+extern EngRec24 D_800AD9C8[];
+extern EngRec24 D_800ADB54[];
+
+void func_800976F8(s32 *arg0);
+
 #endif /* BASH_8009608C_H */
