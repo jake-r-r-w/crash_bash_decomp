@@ -388,4 +388,19 @@ void func_80088C28(s32 arg0);
 
 void PlotHealth(NAS *nas);
 
+/* func_800898EC: a 14-byte record per hero, 3 rows of 4 heroes. */
+typedef struct {
+    s16 unk0;
+    s16 unk2;
+    s16 unk4;
+    s16 unk6;
+    s16 unk8;
+    s16 unkA;
+    s16 unkC;
+} D_8009E0E8_t;
+extern D_8009E0E8_t D_8009E0E8[3][4];
+extern u8 D_80053004[];
+
+void func_800898EC(s32 arg0);
+
 #endif /* BASH_8007EE2C_H */

@@ -1624,7 +1624,86 @@ void func_800894E0(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8008955C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_800898EC);
+void func_800898EC(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = base + arg0;
+    EXTengine *e;
+    subengine *s;
+    s32 i;
+
+    h->hero_sub->unk6C = D_80053004;
+    e = h->hero_eng;
+    s = h->hero_sub;
+    e->flags |= 0x8021;
+    s->flags |= 0x8021;
+    e->unk20 = 0;
+    e->unk1E = 0;
+    e->unk1C = 0;
+    s->unk14 = 0;
+    s->unk12 = 0;
+    s->unk10 = 0;
+    h->hero_anim->sub = NULL;
+    e->unk2C.x = 0x1000;
+    e->unk2C.y = 0x1000;
+    e->unk2C.z = 0x1000;
+    s->unk20.x = 0x1000;
+    s->unk20.y = 0x1000;
+    s->unk20.z = 0x1000;
+    h->hero_ctrl |= 1;
+    e->unk5E = 1;
+    s->unk52 = 1;
+    e = h->hero_fx;
+    s = e->sub;
+    e->unk20 = 0;
+    e->unk1E = 0;
+    e->unk1C = 0;
+    s->unk14 = 0;
+    s->unk12 = 0;
+    s->unk10 = 0;
+    e->flags |= 0x8021;
+    s->flags |= 0x8021;
+    h->hero_move->jump_max = 0;
+    h->hero_move->x_vel = 0;
+    h->hero_move->x_max = 0;
+    h->hero_move->z_vel = 0;
+    h->hero_move->z_max = 0;
+    h->hero_move->jump_ctrl = 0;
+    s->unk6C = D_80053004;
+    s->unk74 = 0x2002;
+    e->unk2C.x = 0x1000;
+    e->unk2C.y = 0x1000;
+    e->unk2C.z = 0x1000;
+    s->unk20.x = 0x1000;
+    s->unk20.y = 0x1000;
+    s->unk20.z = 0x1000;
+    e->unk5E = 1;
+    s->unk52 = 1;
+    e->unk10 = h->hero_eng->unk10;
+    *(SLONG_XYZ *)&s->unk04 = *(SLONG_XYZ *)&h->hero_sub->unk04;
+    for (s = s->next; s != NULL; s = s->next) {
+        s->unk04 = 0;
+        s->unk08 = 0;
+        s->unk0C = 0;
+        s->unk6C = D_80053004;
+        s->unk74 = 0x2003;
+        s->flags = (s->flags | 0x60000021) & ~0x8000;
+    }
+    for (i = 0; i < 3; i++) {
+        D_8009E0E8[i][arg0].unk0 = Random(10) + i * 3;
+        D_8009E0E8[i][arg0].unk2 = 0;
+        D_8009E0E8[i][arg0].unk4 = 0;
+        D_8009E0E8[i][arg0].unk6 = 0;
+        D_8009E0E8[i][arg0].unk8 = 0;
+        D_8009E0E8[i][arg0].unkA = 0;
+        D_8009E0E8[i][arg0].unkC = 0;
+    }
+    if (Random(2) != 0) {
+        PlaySfx(0x1C4, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+    } else {
+        PlaySfx(0x1C3, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+    }
+    func_80085584(arg0, 1, 0xB);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80089BE8);
 
