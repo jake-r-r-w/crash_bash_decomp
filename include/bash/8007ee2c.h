@@ -466,6 +466,9 @@ void func_80088794(s32 arg0);
 
 void func_8008955C(s32 arg0);
 
+/* func_8008900C: per weapon-timer step, an s16 triple. */
+extern s16 D_8009DC68[][3];
+
 void func_800898EC(s32 arg0);
 /* func_8008CA90: one falling particle, drawn as a quad between two points */
 typedef struct {
@@ -536,6 +539,8 @@ extern s32 D_8009BD30;
 void func_800809A0(s16 *arg0, s32 arg1);
 
 void func_80080FBC(void);
+
+void func_8008900C(s32 arg0);
 
 void func_8008CA90(u8 *arg0, MATRIX *m);
 

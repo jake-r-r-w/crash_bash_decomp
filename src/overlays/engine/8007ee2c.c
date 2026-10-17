@@ -2417,7 +2417,120 @@ void func_80088F78(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8008900C);
+void func_8008900C(s32 arg0) {
+    s32 ret2;
+    s32 ret3;
+    s32 other;
+    HeroInfo *base;
+    HeroInfo *h2;
+    HeroInfo *h;
+    HeroInfo *self;
+    HeroInfo *base2;
+    s16 (*tbl)[3];
+    EXTheromove *m;
+    subengine *s;
+    s16 *p;
+    u16 t;
+    s32 i;
+    VECTOR pos;
+    s32 angle;
+    s32 vc;
+    s32 ret;
+    u16 status;
+
+    status = Heroes[arg0].hero_status;
+    if (status & 0x200) {
+        SetHeroAction((HeroInfo *)arg0, (u16)D_8009E0E4);
+        ret = 1;
+    } else if (status & 0x400) {
+        SetHeroAction((HeroInfo *)arg0, (u16)D_8009E0E6);
+        ret = 1;
+    } else {
+        ret = 0;
+    }
+    if (ret == 0) {
+        if (D_8009D72C != NULL) {
+            ret2 = D_8009D72C(arg0);
+        } else if (((PadButtons *)D_80051338)[arg0].unk54 & 0x4000) {
+            SetHeroAction((HeroInfo *)arg0, 4);
+            ret2 = 1;
+        } else {
+            ret2 = 0;
+        }
+        if (ret2 == 0) {
+            if (D_8009D730 != NULL) {
+                ret3 = D_8009D730(arg0);
+            } else if (Heroes[arg0].hero_status & 0xFA00) {
+                ret3 = 0;
+            } else if (((PadButtons *)D_80051338)[arg0].unk50 & 0x1000) {
+                SetHeroAction((HeroInfo *)arg0, 2);
+                ret3 = 1;
+            } else {
+                ret3 = 0;
+            }
+            if (ret3 == 0) {
+                other = func_800864CC(arg0, 0x400);
+                if (other != -1) {
+                    base = Heroes;
+                    h2 = &base[other];
+                    if ((h2->hero_immunity | h2->hero_hit) == 0) {
+                        h = &base[arg0];
+                        if (func_80015480(h->hero_move->forward_angle,
+                                          get_angle(h->hero_eng->unk10.x - h2->hero_eng->unk10.x,
+                                                    h->hero_eng->unk10.z - h2->hero_eng->unk10.z)) < 0x200) {
+                            angle = h->hero_move->forward_angle;
+                            h2->hero_move->forward_angle = angle ^ 0x800;
+                            m = h2->hero_move;
+                            vc = m->velocity_calc;
+                            if (vc != 1) {
+                                if (vc != 0) {
+                                    if (vc < 4) {
+                                        m->x_vel -= (D_80068BD4[(angle - 0x400) & 0xFFF].unk2 * 3) >> 8;
+                                        h2->hero_move->z_vel -= (D_80068BD4[angle & 0xFFF].unk2 * 3) >> 8;
+                                    }
+                                }
+                            }
+                            Heroes[other].hero_move->reactive_angle = angle;
+                            Heroes[other].hero_move->reactive_speed = 0x30;
+                            func_80084E04(other, NULL, arg0, 0x8001, 0x446);
+                        }
+                    }
+                }
+                ((void (*)(s32, s32, s32, s32))D_8009D6E8.unk4C)(arg0, 2, 0x400, 0x280);
+                ((void (*)(s32))D_8009D6E8.unk54)(arg0);
+                func_8008502C(arg0);
+                base2 = Heroes;
+                self = &base2[arg0];
+                s = self->hero_fx->sub;
+                if (s != NULL && func_80015780(self->hero_eng, self->hero_sub, 0x40, &pos) != NULL) {
+                    self->hero_fx->unk10 = self->hero_eng->unk10;
+                    t = self->hero_weapon_timer;
+                    i = (s16)t;
+                    if (i < 0) {
+                        self->hero_weapon_timer = t + 1;
+                    } else {
+                        tbl = D_8009DC68;
+                        p = tbl[i];
+                        if (*p != 0) {
+                            s->unk20.x = p[0];
+                            s->unk20.y = p[1];
+                            s->unk20.x = p[2];
+                            s->unk04 = pos.vx - self->hero_eng->unk10.x;
+                            s->unk08 = pos.vy - self->hero_eng->unk10.y;
+                            s->unk0C = pos.vz - self->hero_eng->unk10.z;
+                            s->flags |= 0x20008000;
+                            s->unk52 = 1;
+                            self->hero_weapon_timer++;
+                        } else {
+                            s->flags &= ~0x8000;
+                        }
+                    }
+                }
+                func_800871E4(arg0);
+            }
+        }
+    }
+}
 
 void func_800894E0(s32 arg0) {
     HeroInfo *base = Heroes;
