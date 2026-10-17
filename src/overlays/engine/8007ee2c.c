@@ -3711,7 +3711,298 @@ void func_8008B418(s32 idx) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", InitScriptFX);
+void InitScriptFX(NAS *nas)
+{
+  u32 id;
+  EXTscriptdata *sd;
+  u8 *dbase;
+  u8 *scripts;
+  u8 *hdr;
+  NAS *new_var;
+  u8 *th;
+  u8 *r;
+  u8 *k;
+  u8 *kf;
+  s32 *ent;
+  threaddata *t;
+  subengine *sub;
+  s32 i;
+  s32 j;
+  EXTengine *eng;
+  EXT *fux;
+  s32 type;
+  s32 frames;
+  s32 keys;
+
+  new_var = nas;
+  eng = new_var->Engine;
+  if (eng == 0)
+  {
+    KillNAS(new_var);
+    return;
+  }
+  eng->flags |= 0x8000;
+  new_var->Engine->sub->flags = 0x42008000;
+  new_var->Engine->unk5D = 0;
+  new_var->Engine->unk5C = 1;
+  eng = new_var->Engine;
+  eng->unk2C.z = 0x1000;
+  eng->unk2C.y = 0x1000;
+  eng->unk2C.x = 0x1000;
+  fux = new_var->FUX;
+  if (fux == 0)
+  {
+    sd = AddExtension(new_var, 0x3BC, 0x10000000);
+    new_var->FUX = (EXT *) sd;
+    if (sd == 0)
+    {
+      goto kill;
+    }
+    if (new_var->trigger == 0)
+    {
+      return;
+    }
+  }
+  else
+  {
+    sd = (EXTscriptdata *) fux;
+  }
+
+  if (sd == 0)
+  {
+    return;
+  }
+  if (!(sd->flags & 4))
+  {
+
+    new_var->Engine->sub->unk6C = *((void **) D_80058AD0);
+
+  }
+
+  scripts = new_var->Engine->sub->unk6C;
+  if (scripts == 0)
+  {
+    printf("script dbase NULL (probably not loaded)\n");
+    goto kill;
+  }
+
+  dbase = scripts;
+
+  sd->dbase = (obj_dbase *) dbase;
+  scripts = *((u8 **) (dbase + 0xC));
+  if (scripts == 0)
+  {
+    return;
+  }
+  sub = new_var->Engine->sub;
+  sd->times = 0;
+  id = 0;
+  if (new_var->trigger != 0)
+  {
+    MapTriggerInfo *info = new_var->trigger->InfoStruct;
+    sd->scriptnumber = info->val1;
+    sd->speed = info->val2;
+    if (sd->speed == 0)
+    {
+      sd->speed = 0x100;
+    }
+    id = info->val3;
+    sd->maxloops = 0;
+    sd->flags = 0;
+  }
+
+  sd->timer = 0;
+  if ((*((s32 *) (scripts + 0x48))) == 0)
+  {
+    return;
+  }
+  if (sd->scriptnumber >= (*((s32 *) (scripts + 0x48))))
+  {
+    printf("requested script %d out of range\n", sd->scriptnumber);
+    goto kill;
+  }
+
+  hdr = (scripts + ((*((s32 *) (scripts + 0x4C))) + 0x4C)) + (sd->scriptnumber * 4);
+  hdr += *((s32 *) hdr);
+  sd->threadcount = *((s32 *) hdr);
+  sd->subcount = *((s32 *) (hdr + 4));
+  ent = (s32 *) (hdr + 0x1C);
+  if (func_80018F3C(new_var->Engine, sd->subcount) != sd->subcount)
+  {
+    for (i = 0; i < sd->threadcount; i++)
+    {
+      t = &sd->threads[i];
+      t->threadinfo = 0;
+      t->threadcontrol = 0;
+    }
+
+    goto kill;
+  }
+
+  i = 0;
+  if (sd->threadcount != 0)
+  {
+    goto start;
+  }
+  goto kill;
+  nokey:
+  printf("must define more than one keyframe\n");
+
+  kill:
+  {
+
+    KillNAS(new_var);
+  }
+
+  return;
+
+  start:
+  {
+
+    new_var->Engine->kill = func_8008CFBC;
+  }
+
+  while (1)
+  {
+    if (i >= sd->threadcount)
+    {
+      break;
+    }
+    t = &sd->threads[i];
+    th = ((u8 *) ent) + (*ent);
+    type = *((s32 *) th);
+    frames = *((s32 *) (th + 0xC));
+    keys = *((s32 *) (th + 0x10));
+    sd->totalframes = frames;
+    t->threadtype = type;
+    t->scriptnumber = sd->scriptnumber;
+    t->keyindex = 0;
+    t->keycount = keys;
+    t->framecount = frames;
+    t->start = new_var->Engine->unk10;
+    t->threadnumber = i;
+    t->timer = 0;
+    t->threadinfo = 0;
+    t->threadcontrol = 0;
+    switch (t->threadtype)
+    {
+      case 0:
+        if (keys == 0)
+      {
+        goto nokey;
+      }
+        if (sub == 0)
+      {
+        break;
+      }
+        sub->unk6C = dbase;
+        sub->unk68 = id;
+        sub->flags = 0x42000000;
+        sub->flags = ((*((u32 *) (th + 0x18))) | 0x42000000) & (~0x8000);
+        if (sd->flags & 8)
+      {
+        sub->unk51 = 3;
+      }
+      else
+      {
+        sub->unk51 = 2;
+      }
+        sub->unk50 = 1;
+        r = func_80021DD4(dbase, t->scriptnumber, t->threadnumber);
+        kf = 0;
+        if (r != 0)
+      {
+        kf = r + 0x24;
+      }
+        if (kf == 0)
+      {
+        break;
+      }
+        sub->unk10 = *((u16 *) (kf + 0x18));
+        sub->unk12 = *((u16 *) (kf + 0x1C));
+        sub->unk14 = *((u16 *) (kf + 0x20));
+        sub->unk04 = *((s32 *) (kf + 0xC));
+        sub->unk08 = *((s32 *) (kf + 0x10));
+        sub->unk0C = *((s32 *) (kf + 0x14));
+        sub->unk20.x = *((s32 *) (kf + 0x40));
+        sub->unk20.y = *((s32 *) (kf + 0x44));
+        sub->unk20.z = *((s32 *) (kf + 0x48));
+        sub->unk74 = *((u16 *) (kf + 0x8));
+        sub->unk52 = 1;
+        sub = sub->next;
+        break;
+
+      case 1:
+        r = func_80021DD4(dbase, t->scriptnumber, t->threadnumber);
+        k = 0;
+        if (r != 0)
+      {
+        k = r + 0x14;
+      }
+        if (k == 0)
+      {
+        break;
+      }
+        if (func_80011C5C(((u32) ((*((s32 *) (k + 0x10))) * 0x28)) >> 2, D_8004E0F0.free) == 0)
+      {
+        goto kill;
+      }
+        func_800115D8((*((s32 *) (k + 0x10))) * 0x28, &t->threadinfo, (s32) (&D_8004E0F0), 0);
+        if (func_80011C5C(0xA, D_8004E0F0.free) == 0)
+      {
+        goto kill;
+      }
+        func_800115D8(0x28, &t->threadcontrol, (s32) (&D_8004E0F0), 0);
+        t->particlesactive = *((s32 *) (k + 0x14));
+        ((pcontrol *) t->threadcontrol)->freqcounter = 0;
+        j = 1;
+        if ((*((s32 *) (k + 0x10))) > 0)
+      {
+        do
+        {
+          if (sub != 0)
+          {
+            sub->flags = 0x42000000;
+            if ((*((u32 *) k)) & 0x20000000)
+            {
+              sub->flags = 0x62000000;
+            }
+            sub->unk6C = dbase;
+            sub->unk68 = id;
+            sub->flags &= ~0x8000;
+            if (sd->flags & 8)
+            {
+              sub->unk51 = 3;
+            }
+            else
+            {
+              sub->unk51 = 2;
+            }
+            sub->unk50 = 1;
+            sub->unk04 = 0;
+            sub->unk08 = 0;
+            sub->unk0C = 0;
+            sub->unk74 = *((u16 *) (k + 0x28));
+            sub->unk20.x = 0x1000;
+            sub->unk20.z = 0x1000;
+            sub->unk20.y = 0x1000;
+            sub->unk76 = 0;
+          }
+          sub = sub->next;
+        }
+        while ((j++) < (*((s32 *) (k + 0x10))));
+      }
+        ((pcontrol *) t->threadcontrol)->lastsub = sub;
+        break;
+
+    }
+
+    ent++;
+    i++;
+  }
+
+
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", PlotScriptFX);
 
