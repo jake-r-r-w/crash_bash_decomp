@@ -554,9 +554,17 @@ extern s32 D_8009AEE8;
 extern s16 D_8009BD18;
 extern s16 D_8009BD1C[4];
 extern s32 D_8009BD30;
+extern u16 D_8009BD00;
+extern u16 D_8009BD2C;
+extern s32 D_8009BD34;
+extern s32 D_8009BD38;
+extern s32 D_8009BD3C;
+void func_80081470(s32 arg0);
 void func_800809A0(s16 *arg0, s32 arg1);
 
 void func_80080FBC(void);
+
+void func_80081F64(s32 arg0);
 
 void func_8008900C(s32 arg0);
 

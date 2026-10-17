@@ -208,7 +208,160 @@ void func_80080FBC(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80081470);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80081F64);
+void func_80081F64(s32 arg0) {
+    EXTengine *e;
+    s32 lim;
+    PadButtons *pads;
+
+    lim = 0x15E;
+    if (D_8004DDD0[D_8005A648 * 3] == 0x102) {
+        lim = 0x140;
+    }
+    e = GetEngineSlot(4);
+    if (D_8009BD30 == 0) {
+        if (D_8009BD2C != 0) {
+            D_8009BD2C = 9;
+        }
+    } else {
+        switch (D_8009BD2C) {
+        case 3:
+        case 4:
+            if (D_8009BD00 == 1) {
+                D_8009BD2C = 2;
+            }
+            if (D_8009BD00 == 5) {
+                D_8009BD2C = 6;
+            }
+            break;
+        case 1:
+        case 2:
+        case 5:
+        case 6:
+            if (D_8009BD00 == 3) {
+                D_8009BD2C = 4;
+            }
+            break;
+        default:
+            if (D_8009BD00 == 1) {
+                D_8009BD2C = 2;
+            }
+            if (D_8009BD00 == 3) {
+                D_8009BD2C = 4;
+            }
+            if (D_8009BD00 == 5) {
+                D_8009BD2C = 6;
+            }
+            break;
+        }
+    }
+    D_8009BD30 = 0;
+    switch (D_8009BD2C) {
+    case 1:
+        if (e->unk10.y > lim) {
+            e->unk10.y -= 0x20;
+        }
+        if (e->unk10.y < lim) {
+            e->unk10.y = lim;
+        }
+        if (D_8009BD38 != 0 && (((PadButtons *)D_80051338)[D_8009AEF0].pressed & 0x1000)) {
+            D_8009BD00 = 3;
+            PlaySfx(0x195, 0, 0, 0x1000, 0x1E00, 0);
+        }
+        break;
+    case 3:
+        if (e->unk10.y > lim) {
+            e->unk10.y -= 0x20;
+        }
+        if (e->unk10.y < lim) {
+            e->unk10.y = lim;
+        }
+        if (D_8009BD34 == 0 && D_8009BD3C == 0) {
+            break;
+        }
+        pads = (PadButtons *)D_80051338;
+        if (pads[D_8009AEF0].pressed & 0x1000) {
+            if (D_8005A646 & 2) {
+                D_8009BD00 = 5;
+            } else {
+                D_8009BD00 = 1;
+            }
+            PlaySfx(0x195, 0, 0, 0x1000, 0x1E00, 0);
+        }
+        break;
+    case 5:
+        if (e->unk10.y > lim) {
+            e->unk10.y -= 0x20;
+        }
+        if (e->unk10.y < lim) {
+            e->unk10.y = lim;
+        }
+        if (D_8009BD38 != 0 && (((PadButtons *)D_80051338)[D_8009AEF0].pressed & 0x1000)) {
+            D_8009BD00 = 3;
+            PlaySfx(0x195, 0, 0, 0x1000, 0x1E00, 0);
+        }
+        break;
+    case 2:
+        if (e->unk10.y <= 0x1E0) {
+            e->unk10.y += 0x20;
+        } else {
+            func_80095A04(4);
+            func_80081470(1);
+            PlaySfx(0x194, 0, 0, 0x1000, 0x1E00, 0);
+        }
+        if (D_8009BD38 != 0 && (((PadButtons *)D_80051338)[D_8009AEF0].pressed & 0x1000)) {
+            D_8009BD00 = 3;
+            PlaySfx(0x195, 0, 0, 0x1000, 0x1E00, 0);
+        }
+        break;
+    case 4:
+        if (e->unk10.y <= 0x1E0) {
+            e->unk10.y += 0x20;
+        } else {
+            func_80095A04(4);
+            func_80081470(3);
+            PlaySfx(0x194, 0, 0, 0x1000, 0x1E00, 0);
+        }
+        if (D_8009BD34 == 0 && D_8009BD3C == 0) {
+            break;
+        }
+        pads = (PadButtons *)D_80051338;
+        if (pads[D_8009AEF0].pressed & 0x1000) {
+            if (D_8005A646 & 2) {
+                D_8009BD00 = 5;
+            } else {
+                D_8009BD00 = 1;
+            }
+            PlaySfx(0x195, 0, 0, 0x1000, 0x1E00, 0);
+        }
+        break;
+    case 6:
+        if (e->unk10.y <= 0x1E0) {
+            e->unk10.y += 0x20;
+        } else {
+            func_80095A04(4);
+            func_80081470(5);
+            PlaySfx(0x194, 0, 0, 0x1000, 0x1E00, 0);
+        }
+        if (D_8009BD38 != 0 && (((PadButtons *)D_80051338)[D_8009AEF0].pressed & 0x1000)) {
+            D_8009BD00 = 5;
+            PlaySfx(0x195, 0, 0, 0x1000, 0x1E00, 0);
+        }
+        break;
+    case 9:
+        if (arg0 != 0) {
+            e->unk10.y = 0x1E0;
+        }
+        if (e->unk10.y < 0x1E0) {
+            e->unk10.y += 0x20;
+            if (e->unk10.y < 0x1E0) {
+                break;
+            }
+        }
+        func_80095A04(4);
+        D_8009BD2C = 0;
+        break;
+    }
+}
 
 void func_80082590(void) {
     GfxState *gs;
