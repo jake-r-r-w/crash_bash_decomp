@@ -259,6 +259,18 @@ void func_8008D6C8(NAS *nas);
 
 s32 func_800864CC(s32 id, u32 flag);
 
+/* Inline copy of SetHeroAction, the action handler taking the hero id
+ * (func_800860D4 uses it). */
+static inline void SetHeroActionInline(s32 hero, s32 action) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = base + hero;
+    u16 old = h->hero_mode;
+
+    h->hero_mode = action;
+    h->hero_last_mode = old;
+    ((void (*)(s32))HeroActionTable[action].fn)(hero);
+}
+
 /* Inline copies of the hero action checks func_8008AB94, func_8008ABF8 and
  * func_8008ACF0 (func_8008795C uses them). */
 static inline s32 HeroCheckStatus2000(s32 arg0) {
@@ -349,6 +361,8 @@ s32 func_8008C5C4(s32 *from, s32 *to, Arc *arc, s32 *pos);
 
 extern u16 D_8009E214[];
 extern u16 D_8009E224[];
+
+void func_800860D4(s32 arg0);
 
 void PlotHealth(NAS *nas);
 

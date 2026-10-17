@@ -284,7 +284,7 @@ typedef struct PadButtons {
     /* 0x44 */ s32 held;
     /* 0x48 */ s32 pressed;
     /* 0x4C */ s32 unk4C;
-    /* 0x50 */ u8 unk50[0x54 - 0x50];
+    /* 0x50 */ s32 unk50;
     /* 0x54 */ s32 unk54;
 } PadButtons;
 

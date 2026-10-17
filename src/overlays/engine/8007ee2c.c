@@ -718,7 +718,69 @@ void func_80085C84(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80085D2C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_800860D4);
+void func_800860D4(s32 arg0) {
+    HeroInfo *b0;
+    HeroInfo *base;
+    HeroInfo *h;
+    EXTheromove *m;
+    HeroInfo *h2;
+    s32 dec;
+    s32 v;
+    s32 y;
+
+    b0 = Heroes;
+    h = b0 + arg0;
+    if ((m = h->hero_move)->jump_max == 0) {
+        return;
+    }
+    if (m->jump_dir != 0) {
+        dec = m->jump_dec;
+        if ((m->jump_ctrl & 1) && D_8005A614[arg0 + 0x5C] == 0 &&
+            !(((PadButtons *)D_80051338)[arg0].unk50 & 0x4000) && m->jump_vel >= 0x41) {
+            dec = 0x28;
+        }
+        base = Heroes;
+        h2 = base + arg0;
+        v = h2->hero_move->jump_vel - dec;
+        h2->hero_move->jump_vel = v;
+        if (v < 0) {
+            h2->hero_move->jump_vel = 0;
+            h2->hero_move->jump_dir = 0;
+            switch (h2->hero_mode) {
+            case 0x33:
+            case 0x39:
+            case 0x3B:
+            case 0x3C:
+            case 0x3F:
+                return;
+            case 0x34:
+                SetHeroActionInline(arg0, 0x35);
+                break;
+            case 0x78:
+                SetHeroActionInline(arg0, 0x7A);
+                break;
+            default:
+                SetHeroActionInline(arg0, 5);
+                break;
+            }
+        } else {
+            h2->hero_eng->unk10.y -= h2->hero_move->jump_vel;
+        }
+    } else {
+        m->jump_vel += m->jump_acc;
+        if (h->hero_move->jump_max < m->jump_vel) {
+            h->hero_move->jump_vel = h->hero_move->jump_max;
+        }
+        h->hero_eng->unk10.y += h->hero_move->jump_vel;
+        if (h->hero_move->jump_ctrl & 0x10) {
+            y = h->hero_eng->unk10.y;
+            if (D_8005A5D8 < y) {
+                h->hero_sub->unk08 += y - D_8005A5D8;
+                h->hero_eng->unk10.y = D_8005A5D8;
+            }
+        }
+    }
+}
 
 s32 func_800863D0(s32 arg0) {
     HeroInfo *base = Heroes;
