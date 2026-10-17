@@ -242,7 +242,109 @@ s32 func_800967E0(D_800AD2EC_t *a, s32 *b, D_800AD2EC_t *c, s32 *d, s32 *out) {
     return flags;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009608c", func_80096A08);
+void func_80096A08(void) {
+    MATRIX m;
+    VECTOR in;
+    VECTOR out;
+    D_800AD1EC_entry *e;
+    s32 n;
+    EngCam *cam;
+    s32 z0;
+
+    cam = (EngCam *)D_80051640;
+    RotMatrix(&cam->rot, &m);
+    n = D_800AD1E8;
+    D_800AD31C = 0x7FFFFFFF;
+    D_800AD320 = 0x80000000;
+    D_800AD324 = 0x7FFFFFFF;
+    D_800AD328 = 0x80000000;
+    e = D_800AD1EC;
+    for (;;) {
+        s32 z;
+        s32 x;
+        s32 xr;
+        s32 w;
+        s32 v;
+
+        if (--n == -1) {
+            break;
+        }
+        in.vx = ((s32 *)e->unk0)[0] - cam->at.x;
+        in.vy = ((s32 *)e->unk0)[1] - cam->at.y;
+        in.vz = ((s32 *)e->unk0)[2] - cam->at.z;
+        ApplyMatrixLV(&m, &in, &out);
+        out.vx += cam->at.x;
+        out.vy += cam->at.y;
+        out.vz += cam->at.z;
+
+        z0 = out.vz - e->unk8;
+        x = out.vx - e->unk4;
+        v = x + (z0 + 0x3000) * 320 / ((EngCam *)D_80051640)->dist;
+        if (v < D_800AD324) {
+            D_800AD324 = v;
+            D_800AD304.unk0 = x;
+            D_800AD304.unk8 = z0;
+        }
+        z = out.vz - e->unk8;
+        xr =out.vx + e->unk6;
+        v = xr - (z + 0x3000) * 320 / ((EngCam *)D_80051640)->dist;
+        if (v > D_800AD328) {
+            D_800AD328 = v;
+            D_800AD310[0] = xr;
+            D_800AD310[2] = z;
+        }
+        z = out.vz - e->unk8;
+        xr = out.vy - e->unkC;
+        v = xr + (z + 0x3000) * 240 / ((EngCam *)D_80051640)->dist;
+        if (v < D_800AD31C) {
+            D_800AD31C = v;
+            D_800AD2EC.unk4 = xr;
+            D_800AD2EC.unk8 = z;
+        }
+        z = out.vz - e->unk8;
+        w = out.vy + e->unkC;
+        v = w - (z + 0x3000) * 240 / ((EngCam *)D_80051640)->dist;
+        if (v > D_800AD320) {
+            D_800AD320 = v;
+            ((D_800AD2EC_t *)D_800AD2F8)->unk4 = w;
+            ((D_800AD2EC_t *)D_800AD2F8)->unk8 = z;
+        }
+
+        z = out.vz + e->unkA;
+        xr = out.vx - e->unk4;
+        v = xr + (z + 0x3000) * 320 / ((EngCam *)D_80051640)->dist;
+        if (v < D_800AD324) {
+            D_800AD324 = v;
+            D_800AD304.unk0 = xr;
+            D_800AD304.unk8 = z;
+        }
+        z = out.vz + e->unkA;
+        w = out.vx + e->unk6;
+        v = w - (z + 0x3000) * 320 / ((EngCam *)D_80051640)->dist;
+        if (v > D_800AD328) {
+            D_800AD328 = v;
+            D_800AD310[0] = w;
+            D_800AD310[2] = z;
+        }
+        z = out.vz + e->unkA;
+        w = out.vy - e->unkC;
+        v = w + (z + 0x3000) * 240 / ((EngCam *)D_80051640)->dist;
+        if (v < D_800AD31C) {
+            D_800AD31C = v;
+            D_800AD2EC.unk4 = w;
+            D_800AD2EC.unk8 = z;
+        }
+        w = out.vy + e->unkC;
+        z = out.vz + e->unkA;
+        v = w - (z + 0x3000) * 240 / ((EngCam *)D_80051640)->dist;
+        if (v > D_800AD320) {
+            D_800AD320 = v;
+            ((D_800AD2EC_t *)D_800AD2F8)->unk4 = w;
+            ((D_800AD2EC_t *)D_800AD2F8)->unk8 = z;
+        }
+        e++;
+    }
+}
 
 void func_80096F98(s32 arg0) {
     s32 pos[4];

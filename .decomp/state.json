@@ -4253,7 +4253,8 @@
   "status": "matched"
  },
  "engine:80096A08": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-17T11:05:55Z",
+  "status": "matched"
  },
  "engine:80096F98": {
   "matched_at": "2026-10-15T16:49:42Z",
