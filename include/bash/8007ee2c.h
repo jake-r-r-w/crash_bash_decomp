@@ -8,6 +8,16 @@
 #include "common.h"
 #include "bash/engine.h"
 
+/* Hook func_8008DEC8 calls with its own arguments after the hero loop. */
+extern void (*D_8009E494)(s32, s32, s32, s32);
+/* The part of a NAS's FUX extension func_8008DEC8 flags. */
+typedef struct {
+    /* 0x00 */ u8 pad0[0x16];
+    /* 0x16 */ s16 unk16;
+    /* 0x18 */ u8 pad18[4];
+    /* 0x1C */ u16 unk1C;
+    /* 0x1E */ u16 unk1E;
+} FuxFlags;
 extern s32 (*D_8009D724)(s32);
 extern s32 (*D_8009D738)(s32, s32);
 extern s32 (*D_8009D730)(s32);

@@ -2815,4 +2815,94 @@ s32 func_8008DE94(s32 arg0) {
     return (Heroes[arg0].hero_status & 0xFA00) == 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8008DEC8);
+void func_8008DEC8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    EXTengine *eng;
+    HeroInfo *hero;
+    NAS *nas;
+    FuxFlags *fux;
+    EXTengine *e;
+    s32 x, y, z;
+    s32 dx, dz;
+    s32 dist;
+    s32 i;
+    s32 ok;
+    s32 ang;
+    s32 vc;
+
+    if (D_8005A644 & 0x801) {
+        return;
+    }
+    eng = ((NAS *)arg0)->Engine;
+    i = 0;
+    if (eng == NULL) {
+        return;
+    }
+    hero = Heroes;
+    x = eng->unk10.x;
+    y = eng->unk10.y;
+    z = eng->unk10.z;
+    do {
+        if (arg2 != i && !(hero[i].hero_status & 0xFA00)) {
+            if (arg4 != 0) {
+                if (hero[i].hero_mode == 4 ? hero[i].hero_eng->unk10.y < y - arg4 : arg1 < y) {
+                    continue;
+                }
+            }
+            e = hero[i].hero_eng;
+            dx = e->unk10.x - x;
+            dz = e->unk10.z - z;
+            dist = csqrt(dx * dx + dz * dz) >> 6;
+            if (dist < arg1) {
+                if ((D_8005A618 & 0x80000001) != 0x80000001) {
+                    ok = 1;
+                    if (hero[i].hero_hit != 0) {
+                        ok = hero[i].hero_immunity_level < 0x200;
+                    }
+                    if (hero[i].hero_immunity != 0) {
+                        ok = 0;
+                    }
+                    if (ok) {
+                        if (dist < 0x80) {
+                            ang = hero[i].hero_move->facing_angle;
+                        } else {
+                            ang = get_angle(dx, dz);
+                        }
+                        dist = (arg1 - dist) >> 3;
+                        vc = hero[i].hero_move->velocity_calc;
+                        if (vc != 1) if (vc != 0) if (vc < 4) {
+                            hero[i].hero_move->x_vel = (dist * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                            hero[i].hero_move->z_vel = (dist * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+                            hero[i].hero_move->x_max = 0;
+                            hero[i].hero_move->z_max = 0;
+                        }
+                        hero[i].hero_move->reactive_angle = ang ^ 0x800;
+                        hero[i].hero_move->reactive_speed = dist;
+                        hero[i].hero_frozen = 0x1E;
+                        hero[i].hero_move->forward_angle = hero[i].hero_move->reactive_angle + 0x800;
+                    }
+                }
+                ((void (*)(s32, NAS *, s32, s32, s32))func_80084E04)(i, NULL, -1, arg3, 0);
+            }
+        }
+    } while (++i < 4);
+    if (D_8009E494 != NULL) {
+        D_8009E494(arg0, arg1, arg2, arg3);
+    }
+    if (abs(eng->unk10.y - D_8005A5D8) < 0x80) {
+        arg1 = arg1 * arg1;
+        for (nas = D_8005AA24; nas != NULL; nas = nas->Object.Child) {
+            fux = (FuxFlags *)nas->FUX;
+            if (fux != NULL && (fux->unk1C & 0x100)) {
+                e = nas->Engine;
+                if (e != NULL) {
+                    dx = e->unk10.x - x;
+                    dz = e->unk10.z - z;
+                    if (dx * dx + dz * dz < arg1) {
+                        fux->unk16 = -1;
+                        fux->unk1E |= 0x100;
+                    }
+                }
+            }
+        }
+    }
+}

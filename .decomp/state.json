@@ -3678,7 +3678,8 @@
   "status": "matched"
  },
  "engine:8008DEC8": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-17T07:22:05Z",
+  "status": "matched"
  },
  "engine:8008E27C": {
   "matched_at": "2026-10-17T06:59:42Z",
