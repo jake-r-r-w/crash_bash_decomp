@@ -55,7 +55,98 @@ void InitCrateExplode(NAS *arg0) {
     KillNAS(arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_8008E5BC);
+void func_8008E5BC(void) {
+    IntroStep *e;
+    IntroStep *tbl;
+    s32 type;
+    u8 *a;
+    u8 *b;
+
+    D_8004E0D8++;
+    if ((D_8005137C & 0x8C08) == 0x8C08) {
+        func_800101E0();
+    }
+    func_800220E8();
+    if (D_8009E5B4 != 0) {
+        if (--D_8009E5B4 == 0) {
+            PlaySfx(D_8009E5B0, &D_8009E5C4, NULL, 0x1000, 0x1E00, 0);
+        }
+    }
+    if (D_800AEC58 != 0) {
+        return;
+    }
+    if (D_800AEC5C != 0) {
+        func_80016F54((u8 *)D_800AEC5C);
+        D_800AEC5C = 0;
+    }
+    if (D_8009E5A4 == 1 && D_8009E5A8 == D_8009E4E4) {
+        func_8002D4F4(0);
+    }
+    if (D_8009E5A8 < 0) {
+        return;
+    }
+    if (--D_8009E5A8 > 0) {
+        return;
+    }
+    if (func_80012FFC() != 0) {
+        D_8009E5A8 = 1;
+        return;
+    }
+    if ((u32)D_8009E5A4 >= 4) {
+        ((ModeMgr *)D_8009F658)->flags = 0x12;
+        ((ModeMgr *)D_8009F658)->next = (GameModeDef *)D_800A00DC;
+        D_8009E5A8 = -1;
+        return;
+    }
+    tbl = D_8009E4C0;
+    e = &tbl[D_8009E5A4];
+    type = e->type;
+    switch (type) {
+    case 1:
+        D_8009E5A8 = e->delay;
+        a = (u8 *)func_800133FC(e->pic);
+        b = func_800189F4(a, D_8005B698->w, D_8005B698->h);
+        func_800110A8(a, &D_8004E0F0);
+        LoadImage(D_8005B698, (u32 *)b);
+        LoadImage(D_8005B698 + 1, (u32 *)b);
+        DrawSync(0);
+        func_800110A8(b, &D_8004E0F0);
+        if (D_8009E4C0[D_8009E5A4].sfx[0] != -1) {
+            PlaySfx(D_8009E4C0[D_8009E5A4].sfx[0], &D_8009E5B8[0], NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(D_8009E4C0[D_8009E5A4].sfx[1], &D_8009E5B8[1], NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(D_8009E4C0[D_8009E5A4].sfx[2], &D_8009E5B8[2], NULL, 0x1000, 0x1E00, 0);
+            D_8009E5B4 = 6;
+            D_8009E5B0 = D_8009E4C0[D_8009E5A4].sfxNext;
+        }
+        break;
+    case 2:
+        D_8009E5A8 = e->delay;
+        func_80095258(e->model);
+        D_80058B64 = 0x10000;
+        D_8004E0E0 = type;
+        D_8009E5AC = func_8001FE80(D_8009E4C0[D_8009E5A4].model, D_8009E4C0[D_8009E5A4].unkC,
+                                   &D_8009E560, &D_8009E580, 4, (u8 **)&D_800AEC58);
+        if (D_8009E4C0[D_8009E5A4].sfx[0] != -1) {
+            PlaySfx(D_8009E4C0[D_8009E5A4].sfx[0], &D_8009E5B8[0], NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(D_8009E4C0[D_8009E5A4].sfx[1], &D_8009E5B8[1], NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(D_8009E4C0[D_8009E5A4].sfx[2], &D_8009E5B8[2], NULL, 0x1000, 0x1E00, 0);
+            D_8009E5B4 = 0x16;
+            D_8009E5B0 = D_8009E4C0[D_8009E5A4].sfxNext;
+        }
+        if (D_8009E4C0[D_8009E5A4].unk10 != -1) {
+            func_8002C284(D_8009E4C0[D_8009E5A4].unk10);
+        }
+        if (D_800AEC5C != 0) {
+            func_80016F54((u8 *)D_800AEC5C);
+        }
+        D_800AEC5C = (s32)D_8009E4C0[D_8009E5A4].model;
+        break;
+    }
+    D_8009E5A4++;
+    if (D_8009E4C0[D_8009E5A4].type == 2) {
+        func_8001612C(D_8009E4C0[D_8009E5A4].model, 0);
+    }
+}
 
 void func_8008EAC8(void) {
     s32 f;

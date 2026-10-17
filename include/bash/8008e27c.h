@@ -378,6 +378,26 @@ typedef struct {
     s32 other[4];
     s32 crate[4];
 } HitSfxTable;
+/* Intro/cutscene step script run by func_8008E5BC. */
+typedef struct {
+    /* 0x00 */ s32 type;   /* 1: picture, 2: model */
+    /* 0x04 */ s32 *pic;
+    /* 0x08 */ u8 *model;
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 sfx[3];
+    /* 0x20 */ s32 sfxNext;
+    /* 0x24 */ s32 delay;
+} IntroStep;
+extern IntroStep D_8009E4C0[];
+extern s32 D_8009E4E4;
+extern s32 D_8005137C;
+extern Blk32 D_8009E560;
+extern CamVec3 D_8009E580;
+extern u8 *D_8009E5AC;
+extern _sfx_handler *D_8009E5B8[3];
+extern _sfx_handler *D_8009E5C4;
+void func_8008E5BC(void);
 void func_8008DEC8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 void func_8008E27C(s32 *arg0, HitInfo *arg1, s32 arg2);
 
