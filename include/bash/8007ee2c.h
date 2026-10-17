@@ -560,6 +560,40 @@ extern s32 D_8009BD34;
 extern s32 D_8009BD38;
 extern s32 D_8009BD3C;
 void func_80081470(s32 arg0);
+/* D_8005A614 as seen by func_80081470. */
+typedef struct ScoreView {
+    /* 0x00 */ u8 unk0[4];
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ u8 unk8[0x10 - 0x8];
+    /* 0x10 */ s32 flags;
+    /* 0x14 */ u8 unk14[0x32 - 0x14];
+    /* 0x32 */ u16 unk32;
+    /* 0x34 */ u8 unk34[0x9F - 0x34];
+    /* 0x9F */ u8 bonus[4];
+    /* 0xA3 */ u8 unkA3[0xCC - 0xA3];
+    /* 0xCC */ u8 score[4];
+    /* 0xD0 */ u8 unkD0[0xE0 - 0xD0];
+    /* 0xE0 */ s32 unkE0;
+    /* 0xE4 */ u8 got0[0x21];
+    /* 0x105 */ u8 got2[0x21];
+    /* 0x126 */ u8 got1[0x21];
+    /* 0x147 */ u8 got3[0x21];
+} ScoreView;
+#define SCV ((ScoreView *)D_8005A614)
+/* Two-digit text fields (tens, units) of the score panel. */
+extern char D_8009AF48[2];
+extern char D_8009AF4C[2];
+extern char D_8009AF50[2];
+extern char D_8009AF54[2];
+extern char D_8009AF58[2];
+extern s32 D_8009AF60[];
+extern s32 D_8009B0C8[];
+extern s32 D_8009B230[];
+extern s32 D_8009B3E0[];
+extern s32 D_8009B590[];
+extern s32 D_8009B788[];
+extern s32 D_8009B980[];
+extern s32 D_8009BB30[];
 /* func_800809A0: one 0x18-byte HUD script entry; the list ends at type -1. */
 typedef struct HudEntry {
     /* 0x00 */ s16 type;

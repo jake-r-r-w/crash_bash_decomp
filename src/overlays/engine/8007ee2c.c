@@ -369,7 +369,219 @@ void func_80080FBC(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80081470);
+void func_80081470(s32 arg0) {
+    u16 mode;
+    s32 n[4];
+    s32 c0, c1, c2, c3, c4;
+    s32 i;
+    EXTengine *e;
+    subengine *sub;
+
+    mode = arg0;
+    c3 = 0;
+    c4 = 0;
+    c2 = 0;
+    c1 = 0;
+    c0 = 0;
+    for (i = 0; i < 0x21; i++) {
+        if (SCV->got0[i] != 0) {
+            c0++;
+        }
+        if (SCV->got1[i] != 0) {
+            c1++;
+        }
+        if (SCV->got2[i] != 0) {
+            c2++;
+        }
+        if (SCV->got2[i] == 2) {
+            c4++;
+        }
+        if (SCV->got3[i] != 0) {
+            c3++;
+        }
+    }
+    for (i = 0; i < 4; i++) {
+        n[i] = SCV->score[i];
+        if (mode == 5 && (SCV->unk32 & 2)) {
+            n[i] += SCV->bonus[i];
+        }
+    }
+    if (D_8005A646 & 0xC0) {
+        D_8009BD38 = 0;
+    } else {
+        D_8009BD38 = 1;
+    }
+    if (SCV->flags & 8) {
+        D_8009BD38 = 0;
+    }
+    if (SCV->unk32 & 0x100) {
+        D_8009BD38 = 0;
+    }
+    if (SCV->unk32 & 3) {
+        D_8009BD34 = 0;
+    } else {
+        D_8009BD34 = 1;
+    }
+    if (D_8005A646 & 2) {
+        D_8009BD3C = 1;
+    } else {
+        D_8009BD3C = 0;
+    }
+    if (mode == 1 && D_8009BD34 == 0) {
+        D_8009BD00 = 3;
+        mode = 3;
+    }
+    if (mode == 3 && D_8009BD38 == 0) {
+        D_8009BD00 = 1;
+        mode = 1;
+    }
+    if (D_8009BD38 == 0 && D_8009BD34 == 0) {
+        mode = 0;
+    }
+    D_8009BD2C = mode;
+    e = GetEngineSlot(4);
+    switch (mode) {
+    case 1:
+        i = c0;
+        D_8009AF48[1] = i % 10 + '0';
+        i /= 10;
+        D_8009AF48[0] = i % 10 + '0';
+        i = c1;
+        D_8009AF4C[1] = i % 10 + '0';
+        i /= 10;
+        D_8009AF4C[0] = i % 10 + '0';
+        i = c3;
+        D_8009AF50[1] = i % 10 + '0';
+        i /= 10;
+        D_8009AF50[0] = i % 10 + '0';
+        i = c2;
+        D_8009AF54[1] = i % 10 + '0';
+        i /= 10;
+        D_8009AF54[0] = i % 10 + '0';
+        i = c4;
+        D_8009AF58[1] = i % 10 + '0';
+        i /= 10;
+        D_8009AF58[0] = i % 10 + '0';
+        if (SCV->unk4 & 0x2000) {
+            if (SCV->flags & 8) {
+                func_80095BEC(4, D_8009B788);
+            } else {
+                func_80095BEC(4, D_8009B590);
+            }
+        } else {
+            switch (SCV->unkE0) {
+            case 1:
+                if (SCV->flags & 8) {
+                    func_80095BEC(4, D_8009B3E0);
+                } else {
+                    func_80095BEC(4, D_8009B230);
+                }
+                break;
+            case 2:
+                if (SCV->flags & 8) {
+                    func_80095BEC(4, D_8009B788);
+                } else {
+                    func_80095BEC(4, D_8009B590);
+                }
+                break;
+            default:
+                if (D_8005A624 & 8) {
+                    func_80095BEC(4, D_8009B0C8);
+                } else {
+                    func_80095BEC(4, D_8009AF60);
+                }
+                break;
+            }
+        }
+        e->unk10.x = 0x60;
+        e->unk10.y = 0x1F4;
+        sub = e->sub;
+        if (SCV->unk32 & 0x10) {
+            sub[1].unk04 = sub[3].unk04;
+        }
+        if (SCV->unk32 & 0x40) {
+            sub[1].unk04 = sub[5].unk04;
+        }
+        if (SCV->unk32 & 0x80) {
+            sub[1].unk04 = sub[7].unk04;
+        }
+        if (SCV->unk32 & 0x20) {
+            sub[1].unk04 = sub[9].unk04;
+        }
+        if (SCV->unk32 & 8) {
+            sub[1].unk04 = sub[11].unk04;
+        }
+        if (D_8009BD38 != 0) {
+            sub[2].flags |= 0x8000;
+        } else {
+            sub[2].flags &= ~0x8000;
+        }
+        e->flags |= 0x10008000;
+        break;
+    case 3:
+        i = n[0];
+        D_8009AF48[1] = i % 10 + '0';
+        i /= 10;
+        D_8009AF48[0] = i % 10 + '0';
+        i = n[1];
+        D_8009AF4C[1] = i % 10 + '0';
+        i /= 10;
+        D_8009AF4C[0] = i % 10 + '0';
+        i = n[2];
+        D_8009AF50[1] = i % 10 + '0';
+        i /= 10;
+        D_8009AF50[0] = i % 10 + '0';
+        i = n[3];
+        D_8009AF54[1] = i % 10 + '0';
+        i /= 10;
+        D_8009AF54[0] = i % 10 + '0';
+        func_80095BEC(4, D_8009B980);
+        e->unk10.x = 0x60;
+        e->unk10.y = 0x1E0;
+        sub = e->sub;
+        e->flags |= 0x10008000;
+        if (D_8009BD34 != 0) {
+            sub[2].flags |= 0x8000;
+        } else {
+            sub[2].flags &= ~0x8000;
+        }
+        if (D_8009BD3C != 0) {
+            sub[2].flags |= 0x8000;
+        }
+        break;
+    case 5:
+        i = n[0];
+        D_8009AF48[1] = i % 10 + '0';
+        i /= 10;
+        D_8009AF48[0] = i % 10 + '0';
+        i = n[1];
+        D_8009AF4C[1] = i % 10 + '0';
+        i /= 10;
+        D_8009AF4C[0] = i % 10 + '0';
+        i = n[2];
+        D_8009AF50[1] = i % 10 + '0';
+        i /= 10;
+        D_8009AF50[0] = i % 10 + '0';
+        i = n[3];
+        D_8009AF54[1] = i % 10 + '0';
+        i /= 10;
+        D_8009AF54[0] = i % 10 + '0';
+        func_80095BEC(4, D_8009BB30);
+        e->unk10.x = 0x60;
+        e->unk10.y = 0x1E0;
+        sub = e->sub;
+        e->flags |= 0x10008000;
+        if (D_8009BD34 != 0) {
+            sub[2].flags |= 0x8000;
+        } else {
+            sub[2].flags &= ~0x8000;
+        }
+        if (D_8009BD3C != 0) {
+            sub[2].flags |= 0x8000;
+        }
+        break;
+    }
+}
 
 void func_80081F64(s32 arg0) {
     EXTengine *e;
