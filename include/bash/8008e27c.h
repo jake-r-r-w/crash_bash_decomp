@@ -156,6 +156,13 @@ typedef struct EngineModeView {
 } EngineModeView;
 extern s8 D_8004E0A4[];
 extern s32 D_8009F720[];
+extern void *D_8009EFCC[];
+extern void *D_8009EFD0[];
+extern void *D_8009EFD4[];
+extern void *D_8009EFD8[];
+extern void *D_8009EFDC[];
+extern s32 D_8009F63C;
+void func_8009196C(void);
 extern u8 D_800A0858[];
 extern u8 D_800A0870[];
 extern u8 D_800A0888[];
