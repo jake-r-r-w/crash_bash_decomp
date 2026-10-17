@@ -706,4 +706,23 @@ void InitScriptFX(NAS *nas);
 
 void func_8008CA90(u8 *arg0, MATRIX *m);
 
+/* func_80083708: hero setup. */
+extern s32 D_8009D758;
+extern s32 D_8009D75C;
+extern u16 D_8009D3A4[];
+
+/* D_8005A614 as seen by func_80083708. */
+typedef struct HeroSetupView {
+    /* 0x00 */ u8 unk0[0x10];
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ u8 unk14[0x30 - 0x14];
+    /* 0x30 */ u16 unk30;
+    /* 0x32 */ u8 unk32[0x50 - 0x32];
+    /* 0x50 */ u8 unk50[8];
+    /* 0x58 */ s8 unk58[8];
+} HeroSetupView;
+#define HSV ((HeroSetupView *)D_8005A614)
+
+void func_80083708(void);
+
 #endif /* BASH_8007EE2C_H */

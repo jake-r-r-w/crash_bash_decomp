@@ -1264,7 +1264,282 @@ void func_80083550(void) {
     D_8009E0E6 = 0xC;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_80083708);
+void func_80083708(void) {
+    s32 i;
+    s32 j;
+    HeroInfo *h;
+    EXTengine *eng;
+    EXTengine *e;
+    EXTengine *fx;
+    subengine *sub;
+    s32 name;
+    NAS *nas;
+    NAS *hn;
+    EXTheromove *mv;
+    EXTbotai *ai;
+    D_8009D87C_t *c;
+    HeroSetupView *g;
+    u8 *p;
+    u8 *q;
+    s32 m;
+    s32 k;
+    u16 ang;
+    s32 mask;
+    s32 fxmask;
+    HeroInfo *hb;
+    s8 tm;
+    s32 idx;
+    s32 fxv;
+
+    i = 0;
+    m = 0;
+    k = 0;
+    D_8009D864 = -1;
+    D_8009D866 = 0;
+    D_8009D872 = 0;
+    D_8009D868 = 0;
+    D_8009D874 = 0;
+    D_8009D86C = 0;
+    D_8009D878 = 0;
+    D_8009D758 = 4;
+    D_8009D75C = 4;
+    D_8009D760 = 0;
+    HSV->unk30 &= 0xF7FF;
+    hb = Heroes;
+    while (1) {
+        if (i >= 4) {
+            break;
+        }
+        nas = (NAS *)((u8 *)D_8005AA1C + m * 16);
+        h = &hb[i];
+        h->hero = nas;
+        *nas = NASTemplate;
+        hn = h->hero;
+        if (NASActiveTail != NULL) {
+            NASActiveTail->Tag.Child = hn;
+            hn->Tag.Parent = NASActiveTail;
+            NASActiveTail = hn;
+        } else {
+            NASActiveTail = hn;
+            NASActiveHead = hn;
+        }
+        h->hero->NASid = 1;
+        h->hero->Class = 0x1400;
+        h->hero->Type = 3;
+        h->hero_eng = NULL;
+        h->hero_sub = NULL;
+        h->hero_shadow = NULL;
+        h->hero_powerup = NULL;
+        h->hero_fx = NULL;
+        h->hero_move = NULL;
+        h->hero_anim = NULL;
+        h->hero_ai = NULL;
+        h->hero_object = NULL;
+        h->hero_health = 0x14;
+        g = HSV;
+        g->unk10 = 0;
+        g = (HeroSetupView *)((u8 *)g + i);
+        h->hero_status = 0;
+        h->hero_strength = 0x14;
+        h->hero_immunity = 0;
+        h->hero_immunity_level = 0;
+        h->hero_hit = 0;
+        h->hero_last_mode = 0;
+        h->hero_mode = 0;
+        tm = g->unk58[0];
+        h->hero_idle_count = 600;
+        h->hero_harm_player = -1;
+        h->hero_pick_delay = 0;
+        h->hero_aseq = 0;
+        h->hero_harm_Nas = NULL;
+        h->hero_harm_value = 0;
+        h->hero_harm_fraction = 0;
+        h->hero_teammate = tm;
+        h->hero_harm_flags = 0;
+        h->hero_harm_sfx = 0;
+        h->hero_ctrl = 0;
+        h->hero_score = 0;
+        h->hero_score_displayed = 0;
+        h->hero_pu = 0;
+        h->hero_pu_timer = 0;
+        h->hero_pu_lock = 0;
+        h->hero_attack_timer = 0;
+        h->hero_attack_delay = 0;
+        h->hero_pu_action = 0;
+        h->hero_pu_action_timer = 0;
+        h->hero_weapon_count = 0;
+        h->hero_weapon_timer = 0;
+        h->hero_attack_counter = 0;
+        D_8009D524[i] = 0;
+        h->hero_name = g->unk50[0];
+        c = (D_8009D87C_t *)((s16 *)D_8009D87C + k);
+        c->unk0 = 0x10;
+        c->unk2 = 0x10;
+        c->unk4 = 0x10;
+        if (h->hero_name == 9) {
+            h->hero_status = 0x1000;
+        }
+        eng = AddEngine(h->hero, 1);
+        if (eng == NULL) {
+            goto next;
+        }
+        sub = eng->sub;
+        h->hero_eng = eng;
+        h->hero_sub = sub;
+        eng->unk5D = 0;
+        eng->unk10 = D_8005B2B8[i].pos;
+        h->hero_eng->unk10.y = D_8005A5D8;
+        eng->OldXYZ = eng->unk10;
+        h->hero_anim = func_800265DC(h->hero);
+        name = h->hero_name;
+        if ((u32)(name - 1) < 8) {
+            h->hero_sub->unk6C = D_80052A54 + ((u16 *)D_8009D6E8.unk4)[name] * 0x38;
+        } else {
+            h->hero_sub->unk6C = NULL;
+        }
+        sub->unk74 = D_8009D3A4[name];
+        func_80025B10(eng, 0x50);
+        if (D_8009D6E8.unk0 != 0) {
+            ((void (*)(s32))D_8009D6E8.unk0)(i);
+        } else {
+            SetHeroAction((HeroInfo *)i, 0);
+        }
+        e = AddEngine(h->hero, 2);
+        if (e != NULL) {
+            h->hero_shadow = e;
+            if (D_8009D6E8.unk18 != NULL) {
+                ((void (*)(s32))D_8009D6E8.unk18)(i);
+            } else {
+                e->sub->unk6C = D_80052F5C;
+                e->sub->unk74 = 0x2001;
+                e->unk10 = eng->unk10;
+                e->flags |= 0x8041;
+                e->sub->unk76 = 0x800;
+                e->sub->flags |= 0x40000000;
+            }
+        }
+        fx = AddEngine(h->hero, 3);
+        if (fx != NULL) {
+            h->hero_powerup = fx;
+            fx->unk10 = eng->unk10;
+            sub = fx->sub;
+            fx->unk5D = 0;
+            if (sub != NULL) {
+                sub->unk6C = D_80052F5C;
+                sub->unk74 = 0;
+                mask = ~0x8000;
+                sub->flags &= mask;
+            }
+        }
+        fx = AddEngine(h->hero, 3);
+        if (fx != NULL) {
+            h->hero_fx = fx;
+            fx->unk10 = eng->unk10;
+            fx->unk5D = 0;
+            func_8001D390(fx, 3);
+            sub = fx->sub;
+            fxv = 0x2002;
+            while (sub != NULL) {
+                idx = ((u16 *)D_8009D6E8.unk4)[name];
+                fxmask = ~0x8000;
+                sub->flags &= fxmask;
+                sub->unk50 = 1;
+                sub->unk51 = 0;
+                sub->unk6C = D_80052A54 + idx * 0x38;
+                if (name == 3) {
+                    sub->unk74 = fxv;
+                } else if (name == 4) {
+                    sub->unk74 = fxv;
+                } else {
+                    sub->unk74 = 0;
+                }
+                sub = sub->next;
+            }
+        }
+        if (h->hero_move == NULL) {
+            mv = AddExtension(h->hero, 0x54, 0x400000F0);
+            if (mv != NULL) {
+                h->hero_move = mv;
+                mv->forward_speed = 0;
+                mv->reactive_speed = 0;
+                mv->forward_angle = 0;
+                mv->facing_angle = 0;
+                mv->reactive_angle = 0;
+                mv->run_walk = 1;
+                mv->jump_ctrl = 3;
+                mv->velocity_calc = 1;
+                mv->velocity_enable = 1;
+                mv->x_vel = 0;
+                mv->x_max = 0;
+                mv->x_acc = 0;
+                mv->x_dec = 0;
+                mv->x_dir = 0;
+                mv->jump_vel = 0;
+                mv->jump_max = 0;
+                mv->jump_acc = 0;
+                mv->jump_dec = 0;
+                mv->jump_dir = 0;
+                mv->z_vel = 0;
+                mv->z_max = 0;
+                mv->z_acc = 0;
+                mv->z_dec = 0;
+                mv->z_dir = 0;
+                ang = D_8005B2B8[i].rot.x;
+                eng->unk1E = ang;
+                mv->facing_angle = ang;
+                mv->forward_angle = ang;
+                mv->HitBy = -1;
+            }
+        }
+        if (h->hero_ai == NULL) {
+            ai = AddExtension(h->hero, 0x44, 0x400000F4);
+            if (ai != NULL) {
+                h->hero_ai = ai;
+                ai->AImode = 0;
+                ai->AIaborted_mode = 0;
+                ai->AItimer1 = 0;
+                ai->AItimer2 = 0;
+                ai->AItimer3 = 0;
+                ai->AIang = 0;
+                ai->AIpad = 0;
+                ai->pTargetNas = NULL;
+                ai->TargetPlayer = -1;
+                ai->TargetXYZ.z = 0;
+                ai->TargetXYZ.y = 0;
+                ai->TargetXYZ.x = 0;
+                ai->AIinitial_delay = Random(0x3C) + 0x1E;
+                ai->AIsleep = 8;
+                j = 7;
+                p = (u8 *)ai + j;
+                do {
+                    p[0x34] = 0;
+                    j--;
+                    p--;
+                } while (j >= 0);
+                j = 7;
+                q = (u8 *)ai + j;
+                do {
+                    q[0x3C] = 0;
+                    j--;
+                    q--;
+                } while (j >= 0);
+            }
+        }
+        if (h->hero_status != 0x1000) {
+            h->hero->Camera.width = 0x200;
+            h->hero->Camera.height = 0x500;
+            h->hero->Camera.look_ahead = 0x400;
+            func_80026A04((u8 *)h->hero);
+        }
+    next:
+        i++;
+        m += 7;
+        k += 3;
+    }
+    func_8007AC20();
+    func_80085650();
+    func_80086FA0();
+}
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8007ee2c", D_800ADF60);
 
