@@ -160,4 +160,16 @@ void func_8007B120(void);
 
 void func_8007C830(s32 arg0, s32 arg1);
 
+/* D_8005A614 as seen by func_8007AC20. */
+typedef struct EngineSlotView {
+    /* 0x00 */ u8 unk0[0x48];
+    /* 0x48 */ s16 unk48;
+    /* 0x4A */ s16 unk4A;
+    /* 0x4C */ u8 unk4C[0x58 - 0x4C];
+    /* 0x58 */ s8 unk58[0x14];
+    /* 0x6C */ s32 unk6C;
+} EngineSlotView;
+
+void func_8007AC20(void);
+
 #endif /* BASH_8007AC20_H */

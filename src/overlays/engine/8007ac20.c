@@ -5,7 +5,152 @@
 #include "bash/hero.h"
 #include "bash/shell.h"
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007AC20);
+void func_8007AC20(void) {
+    EngineSlotView *v;
+    s32 i;
+
+    D_80099174 = (D_80099174 | 0x80000000) & 0xFFFE2FFF;
+    v = (EngineSlotView *)D_8005A614;
+    if (v->unk6C != 0) {
+        i = v->unk48;
+        D_800991D8[0] = i;
+        D_800991D8[1] = i;
+        i = v->unk58[i];
+        if (i != -1) {
+            D_800991D8[1] = i;
+        }
+        i = v->unk4A;
+        D_800991D8[2] = i;
+        D_800991D8[3] = i;
+        i = v->unk58[i];
+        if (i != -1) {
+            D_800991D8[3] = i;
+        }
+    } else {
+        D_800991D8[0] = 0;
+        D_800991D8[1] = 1;
+        D_800991D8[2] = 2;
+        D_800991D8[3] = 3;
+    }
+    func_8007EAC0();
+    if (D_8004DDD0[D_8005A648 * 3] != 0x101 && D_8004DDD0[D_8005A648 * 3] != 0x102) {
+        switch (D_8005A648) {
+        case 14:
+        case 15:
+        case 16:
+        case 17:
+            func_8007BFA8();
+            func_8007D0BC();
+            func_8007EB68();
+            func_8007E874();
+            break;
+        case 10:
+        case 11:
+        case 12:
+            func_8007BFA8();
+            func_8007CFAC();
+            func_8007EB68();
+            break;
+        case 13:
+            func_8007BFA8();
+            func_8007CFAC();
+            func_8007EB68();
+            break;
+        case 29:
+            func_8007BFA8();
+            func_8007CFAC();
+            func_8007EB68();
+            break;
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+            func_8007BFA8();
+            func_8007C338();
+            func_8007EB68();
+            func_8007E874();
+            func_8007D208();
+            break;
+        case 9:
+            func_8007BFA8();
+            func_8007C338();
+            func_8007EB68();
+            func_8007D208();
+            break;
+        case 30:
+            func_8007BFA8();
+            func_8007CFAC();
+            func_8007EB68();
+            func_8007E874();
+            break;
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+            func_8007BFA8();
+            func_8007C338();
+            func_8007EB68();
+            func_8007E874();
+            break;
+        case 4:
+            func_8007BFA8();
+            func_8007C338();
+            func_8007EB68();
+            break;
+        case 32:
+            func_8007C170();
+            func_8007C338();
+            func_8007EB68();
+            break;
+        case 23:
+        case 24:
+        case 25:
+        case 26:
+            func_8007BFA8();
+            func_8007EB68();
+            func_8007D034();
+            func_8007CC80();
+            break;
+        case 28:
+            func_8007BFA8();
+            func_8007CFAC();
+            func_8007EB68();
+            break;
+        case 27:
+            func_8007BFA8();
+            func_8007CFAC();
+            func_8007EB68();
+            break;
+        case 22:
+            func_8007BFA8();
+            func_8007CC80();
+            func_8007EB68();
+            break;
+        case 18:
+        case 19:
+        case 20:
+        case 21:
+            func_8007BFA8();
+            func_8007CC80();
+            func_8007EB68();
+            func_8007E874();
+            break;
+        case 31:
+            func_8007BFA8();
+            func_8007C338();
+            func_8007EB68();
+            break;
+        default:
+            func_8007BFA8();
+            func_8007EB68();
+            break;
+        }
+    }
+    func_8007E7F4();
+    D_8009BD10 = 0;
+    D_8009BD0C = 0;
+    D_8009BD14 = 0;
+}
 
 void func_8007AF3C(void) {
     u16 *t;
