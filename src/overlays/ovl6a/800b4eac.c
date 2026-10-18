@@ -70,7 +70,12 @@ void func_800B7A78(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B7AB4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B7B38);
+u16 func_800B7B38(void) {
+    if (D_8005A677 >= 0) {
+        return D_800BCCF4[D_8005A677].unk14->unk2;
+    }
+    return 0;
+}
 
 void func_800B7B7C(void) {
     func_80095A04(1);
