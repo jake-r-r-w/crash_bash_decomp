@@ -220,7 +220,7 @@ extern u8 D_800C1008[];
 extern u8 D_800C1014[];
 extern u8 D_800C102C[];
 extern u8 D_800C1040[];
-extern char func_800B3B20[];
+void func_800B3B20(void);
 void func_800B40AC(void);
 void func_800B9728(void);
 
@@ -290,9 +290,44 @@ extern _sfx_handler *D_800C1C60;
 typedef struct {
     u8 pad0[0x30];
     u16 unk30;
-    u8 pad32[2];
+    u16 unk32;
     s16 unk34;
+    u8 pad36[0x6C - 0x36];
+    s32 unk6C;
 } Ovl61ModeView;
+
+/* func_800B3B20 (stage setup) */
+extern s32 D_8005AA3C;
+extern s16 D_800C1F02;
+extern s16 D_800C1F04;
+extern s16 D_800C1F06;
+extern s16 D_800C1F08;
+extern s16 D_800C1F0A;
+extern s16 D_800C1F16;
+extern s16 D_800C2718;
+extern s32 D_800C1C74;
+extern s32 D_800C1C78;
+extern s32 D_800C1C7C;
+extern s16 D_800C1EF8;
+extern s16 D_800C1EFA;
+extern s16 D_800C1EFC;
+extern EXTengine D_800C1B30;
+extern EXTengine D_800C1BCC;
+extern Ovl61Circle *D_800C1A80;
+extern Ovl61Circle *D_800C1A84;
+extern Ovl61Circle D_800C1094[];
+extern Ovl61Circle D_800C10AC[];
+extern Ovl61Circle D_800C10C4[];
+extern Ovl61Circle D_800C10F4[];
+extern Ovl61Circle D_800C110C[];
+extern Ovl61Circle D_800C1124[];
+extern Ovl61Circle D_800C1154[];
+extern Ovl61Circle D_800C116C[];
+extern Ovl61Circle D_800C1184[];
+extern Ovl61Circle D_800C11B4[];
+extern Ovl61Circle D_800C11CC[];
+extern Ovl61Circle D_800C11E4[];
+void func_800BC564(void);
 extern u16 D_800C139C[];
 extern _sfx_handler *D_800C1BC4;
 

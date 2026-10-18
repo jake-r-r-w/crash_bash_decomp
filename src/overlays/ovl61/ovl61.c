@@ -164,7 +164,162 @@ void func_800B36CC(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B3B20);
+void func_800B3B20(void) {
+    Ovl61ModeView *m;
+    Ovl61ModeView *m2;
+    HeroInfo *h;
+    EXTengine *e;
+    EXTheromove *mv;
+    s32 i;
+    s32 a;
+
+    D_8005A5D8 = 0;
+    D_8005AA38 = 0;
+    D_8005AA3C = 0;
+    D_800C1F02 = 0;
+    D_800C1F04 = 0;
+    D_800C1F06 = 0;
+    D_800C1F08 = 0;
+    D_800C1F0A = 0xB4;
+    D_800C1F0C = 0xB4;
+    D_800C1F14 = 0;
+    D_800C1F16 = -1;
+    D_800C1B28 = 0;
+    D_800C1B2C = 0;
+    D_800C1C84 = 0;
+    D_800C2718 = Random(15);
+    D_800C1C70 = 150;
+    D_800C1C74 = Random(18);
+    D_800C1C78 = 270;
+    D_800C1C7C = Random(18);
+    D_800C1C80 = -1;
+    D_800C1EF8 = 0;
+    D_800C1EFA = 0;
+    D_800C1EFC = 10;
+    D_800C1F00 = 0;
+    D_800C1B30 = EngineTemplate;
+    D_800C1BCC = EngineTemplate;
+    D_800C1C88 = 30;
+    D_800C1EFE = 0;
+
+    for (i = 0, m = (Ovl61ModeView *)D_8005A614; i < 4; i++) {
+        h = &Heroes[i];
+        a = get_angle(h->hero_eng->unk10.x, h->hero_eng->unk10.z) + 0x7F;
+        mv = h->hero_move;
+        e = h->hero_eng;
+        a &= 0xC00;
+        e->unk1E = a;
+        mv->facing_angle = a;
+        mv->forward_angle = a;
+        func_80026980(h->hero);
+        switch (m->unk34) {
+        case 15:
+            D_800C1A7C = D_800C10F4;
+            D_800C1A80 = D_800C110C;
+            h->hero_score = 12;
+            h->hero_health = 12;
+            D_800C1A84 = D_800C1124;
+            if (m->unk32 & 0x40) {
+                if (m->unk6C != 0) {
+                    Heroes[0].hero_score = 18;
+                    Heroes[1].hero_score = 0;
+                    Heroes[2].hero_score = 30;
+                    Heroes[3].hero_score = 0;
+                } else {
+                    Heroes[0].hero_score = 9;
+                    Heroes[1].hero_score = 15;
+                    Heroes[2].hero_score = 15;
+                    Heroes[3].hero_score = 15;
+                }
+            }
+            break;
+        case 16:
+            D_800C1A7C = D_800C1154;
+            D_800C1A80 = D_800C116C;
+            h->hero_score = 20;
+            h->hero_health = 20;
+            D_800C1A84 = D_800C1184;
+            if (m->unk32 & 0x40) {
+                if (m->unk6C != 0) {
+                    Heroes[0].hero_score = 30;
+                    Heroes[1].hero_score = 0;
+                    Heroes[2].hero_score = 40;
+                    Heroes[3].hero_score = 0;
+                } else {
+                    Heroes[0].hero_score = 15;
+                    Heroes[1].hero_score = 20;
+                    Heroes[2].hero_score = 20;
+                    Heroes[3].hero_score = 20;
+                }
+            }
+            break;
+        case 17:
+            D_800C1A7C = D_800C11B4;
+            D_800C1A80 = D_800C11CC;
+            D_800C1A84 = D_800C11E4;
+            if (m->unk32 & 0x80) {
+                h->hero_score = 10;
+                h->hero_health = 10;
+            } else {
+                h->hero_score = 20;
+                h->hero_health = 20;
+            }
+            if (m->unk32 & 0x40) {
+                if (m->unk6C != 0) {
+                    Heroes[0].hero_score = 18;
+                    Heroes[1].hero_score = 0;
+                    Heroes[2].hero_score = 25;
+                    Heroes[3].hero_score = 0;
+                } else {
+                    Heroes[0].hero_score = 9;
+                    Heroes[1].hero_score = 15;
+                    Heroes[2].hero_score = 15;
+                    Heroes[3].hero_score = 15;
+                }
+            }
+            break;
+        case 0:
+        default:
+            D_800C1A7C = D_800C1094;
+            D_800C1A80 = D_800C10AC;
+            h->hero_score = 15;
+            h->hero_health = 15;
+            D_800C1A84 = D_800C10C4;
+            if (m->unk32 & 0x40) {
+                if (m->unk6C != 0) {
+                    Heroes[0].hero_score = Heroes[0].hero_score_displayed = 18;
+                    Heroes[1].hero_score = Heroes[1].hero_score_displayed = 0;
+                    Heroes[2].hero_score = Heroes[2].hero_score_displayed = 30;
+                    Heroes[3].hero_score = Heroes[3].hero_score_displayed = 0;
+                } else {
+                    Heroes[0].hero_score = Heroes[0].hero_score_displayed = 9;
+                    Heroes[1].hero_score = Heroes[1].hero_score_displayed = 15;
+                    Heroes[2].hero_score = Heroes[2].hero_score_displayed = 15;
+                    Heroes[3].hero_score = Heroes[3].hero_score_displayed = 15;
+                }
+            }
+            break;
+        }
+        Heroes[0].hero_score_displayed = Heroes[0].hero_score;
+        Heroes[1].hero_score_displayed = Heroes[1].hero_score;
+        Heroes[2].hero_score_displayed = Heroes[2].hero_score;
+        Heroes[3].hero_score_displayed = Heroes[3].hero_score;
+        func_800B3528(i);
+    }
+    m2 = (Ovl61ModeView *)D_8005A614;
+    if ((m2->unk32 & 0x40) && m2->unk6C != 0) {
+        func_8007D144();
+    }
+    switch (D_8005A648) {
+    case 0x10:
+        SpawnNASById(0, D_8005A5D8, 0, 0x1507, 0x11);
+        break;
+    case 0x11:
+        PlaySfx(0x5C8, &D_800C1BC4, 0, 0x1000, 0x1E00, 0);
+        break;
+    }
+    func_800BC564();
+}
 
 void func_800B40AC(void) {
     s32 i;
