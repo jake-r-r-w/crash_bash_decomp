@@ -247,7 +247,15 @@ s32 func_800C2F70(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C2F78);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", PlotDummyCamera);
+void PlotDummyCamera(NAS *nas) {
+    nas->Camera.width = Heroes[nas->UserInfo.user1].hero->Camera.width;
+    nas->Camera.height = Heroes[nas->UserInfo.user1].hero->Camera.height;
+    nas->Camera.look_ahead = Heroes[nas->UserInfo.user1].hero->Camera.look_ahead;
+    nas->Engine->unk10 = Heroes[nas->UserInfo.user1].hero_eng->unk10;
+    if (nas->Engine->unk10.y < -0x900) {
+        nas->Engine->unk10.y = -0x900;
+    }
+}
 
 void InitDummyCamera(NAS *nas) {
     *(s32 *)((u8 *)nas->Engine + 0x14) = -0x480;

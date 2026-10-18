@@ -174,6 +174,8 @@ void func_800C2E60(s32 arg0);
 
 void func_800C2EF8(s32 arg0);
 
+void PlotDummyCamera(NAS *nas);
+
 s32 func_800C365C(void);
 
 #endif /* BASH_OVL67_800BBDB8_H */
