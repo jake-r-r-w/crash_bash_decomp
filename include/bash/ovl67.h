@@ -143,7 +143,24 @@ extern Ovl67Round D_800C4398;
 extern s32 D_8005AA3C;
 extern s32 D_800C4080;
 extern NAS *D_800C4084;
-extern void *D_800C418C;
+typedef struct {
+    s16 x;
+    s16 z;
+    s16 r;
+} Ovl67Circle;
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 x;
+    u8 pad14[4];
+    s32 z;
+    u8 pad1C[0x6E];
+    s16 radius;
+    u8 pad8C[4];
+    u32 flags;
+} Ovl67Obj;
+
+extern Ovl67Circle *D_800C418C;
 extern u8 D_800C37DC[];
 extern char D_80054504[];
 extern s16 D_800C4370;
@@ -192,6 +209,8 @@ typedef struct Ovl67Pos {
     s32 y;
     s32 z;
 } Ovl67Pos;
+
+s32 func_800B3C04(Ovl67Obj *arg0);
 
 void func_800B4FA4(s32 arg0);
 

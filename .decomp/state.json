@@ -8427,9 +8427,10 @@
  },
  "ovl67:800B3C04": {
   "auto_diff": 49,
-  "auto_failed": "diff",
   "copy_failed": "ovl61:800B4EFC",
-  "copy_failed_stage": "in-file"
+  "copy_failed_stage": "in-file",
+  "matched_at": "2026-10-18T16:51:03Z",
+  "status": "matched"
  },
  "ovl67:800B3CD0": {
   "auto_failed": "types",
