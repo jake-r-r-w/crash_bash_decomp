@@ -151,7 +151,31 @@ s32 func_800BFD9C(u8 *arg0) {
     return (*(s32*)((u8*)(arg0) + 20)) - D_8005A5D8;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Plot_ArkDeadWall);
+void Plot_ArkDeadWall(NAS *arg0) {
+    EXTengine *eng;
+    subengine *sub;
+
+    if (D_800C1C88 == 0) {
+        D_800C1F14 &= ~arg0->UserInfo.flags;
+        KillNAS(arg0);
+        return;
+    }
+    eng = arg0->Engine;
+    if (eng != NULL) {
+        if (arg0->UserInfo.user1 != 0) {
+            arg0->UserInfo.user1 = arg0->UserInfo.user1 - 1;
+        } else {
+            eng->flags |= 0x8000;
+        }
+        sub = eng->sub;
+        if (sub != NULL) {
+            do {
+                sub->unk74 = (D_8004E0D8 & 7) + 0x2001;
+                sub = sub->next;
+            } while (sub != NULL);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Plot_ArkCameraFlash);
 
