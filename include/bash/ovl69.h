@@ -51,6 +51,8 @@ extern Ovl69Entry D_800BA324[];
 
 void func_800B5A94(void);
 
+int func_800B6B88(int a0, int a1, int a2, int a3, int a4);
+
 s32 func_800B7DE8(s32 arg0);
 
 void func_800B7E04(void);

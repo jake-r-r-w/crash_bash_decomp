@@ -164,7 +164,37 @@ void func_800B6A64(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B6ACC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B6B88);
+int func_800B6B88(int a0, int a1, int a2, int a3, int a4) {
+    int v;
+
+    if (a0 != a1) {
+        if (a0 < a1) {
+            if (a2 < 0) {
+                a2 += a4;
+            } else {
+                a2 += a3;
+            }
+        } else if (a2 > 0) {
+            a2 -= a4;
+        } else {
+            a2 -= a3;
+        }
+    }
+    v = a2;
+    if (a2 < 0) {
+        v = -a2;
+    }
+    if (a3 >= v) {
+        v = a1 - a0;
+        if (v < 0) {
+            v = -v;
+        }
+        if (a3 >= v) {
+            a2 = 0;
+        }
+    }
+    return a2;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B6C04);
 
