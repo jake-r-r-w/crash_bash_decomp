@@ -46,7 +46,64 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B4848);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B4910);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B4F1C);
+void func_800B4F1C(void) {
+    subengine *sub;
+    s32 n;
+    s32 i;
+
+    sub = GetEngineSlot(4)->sub;
+    D_80056998.modelDp = *(s32 *)D_8009F644;
+    switch (D_800B950C) {
+    case 1:
+        func_8008D488(sub[7].unk6C, *(s32 *)D_8005A604);
+        if (((s32 *)D_8005A604)[2] != 0) {
+            sub[5].flags &= ~0x8000;
+            sub[4].flags |= 0x8000;
+        } else {
+            sub[5].flags |= 0x8000;
+            sub[4].flags &= ~0x8000;
+        }
+        func_8008D488(sub[9].unk6C, D_8005A608);
+        break;
+    case 2:
+        n = D_800515F8;
+        if (n >= 5) {
+            n = 4;
+        }
+        for (i = 0; i < n; i++) {
+            if (D_80051338[i].unk0 & 8) {
+                sub[i * 3 + 5].unk7C = 0;
+                if (D_8005A604[i + 0xC] != 0) {
+                    sub[i * 3 + 4].flags |= 0x8000;
+                    sub[i * 3 + 5].flags &= ~0x8000;
+                    sub[i * 3 + 6].flags &= ~0x8000;
+                } else {
+                    sub[i * 3 + 4].flags &= ~0x8000;
+                    sub[i * 3 + 5].flags |= 0x8000;
+                    sub[i * 3 + 6].flags &= ~0x8000;
+                }
+            } else {
+                sub[i * 3 + 4].flags &= ~0x8000;
+                sub[i * 3 + 5].flags &= ~0x8000;
+                sub[i * 3 + 6].flags |= 0x8000;
+            }
+        }
+        for (; i < 4; i++) {
+            sub[i * 3 + 5].unk7C = 3;
+            sub[i * 3 + 4].flags &= ~0x8000;
+            sub[i * 3 + 5].flags &= ~0x8000;
+            sub[i * 3 + 6].flags |= 0x8000;
+        }
+        break;
+    }
+    func_80018B08(&D_800B8DD8, &D_800B9538);
+    func_8001C2C0((u8 *)GetEngineSlot(4));
+    GetEngineSlot(1)->sub[1].flags &= ~0x8000;
+    GetEngineSlot(1)->sub[2].flags &= ~0x8000;
+    func_80018B08(&D_800B8E00, &D_800B9538);
+    D_80056998.modelDp = *(s32 *)D_8009F644;
+    func_8001C2C0((u8 *)GetEngineSlot(1));
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B51C0);
 

@@ -65,5 +65,13 @@ s32 func_800B7DE8(s32 arg0);
 void func_800B7E04(void);
 
 void func_800B83D8(s32 arg0, s32 arg1);
+/* func_800B4F1C */
+#include "bash/main.h"
+void func_8008D488(u8 *arg0, s32 arg1);
+extern GfxCamera D_800B9538;
+extern GfxViewport D_800B8DD8;
+extern GfxViewport D_800B8E00;
+
+void func_800B4F1C(void);
 
 #endif /* BASH_OVL69_H */
