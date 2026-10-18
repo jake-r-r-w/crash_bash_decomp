@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1228/2551 game functions matched: **main.exe is complete (575/575)**;
+- 1229/2551 game functions matched: **main.exe is complete (575/575)**;
   engine overlay 2 left, both parked (`func_8007F314`, `PlotScriptFX`),
   ovl61 95/97 (two 2026-10-18 swarm runs and three hand matches; 2 big ones left),
   all 564 PsyQ functions (Sony objects), 5 parked.
@@ -455,6 +455,13 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-18 (hand):** `func_800B9CB8` (ovl67, 1924 B) matched (e4529709) by
+  porting ovl61's `func_800BE4D4`: no grab path, its own reach boxes
+  (`D_800C4190`; the hero's y read once into a separate `hy` for top/bot) and
+  one combined whatami-2 test ending in `KillNAS`. Three fixes after the first
+  compile: `hero` assigned after the near point, `hy` apart from the loop's
+  `y`, and ovl61's `-b + a` get_angle arguments kept (the plain `a - b` I
+  wrote while porting loads the operands the other way).
 - **2026-10-18 (hand):** `func_800BE4D4` (2816 B) matched (9fd67e11), no hack
   or permuter, from the swarm's 699/704 paired. The sin indexes' register copies
   (only here and in ovl67's `func_800B9CB8` in the whole game) are `u16` copies
@@ -463,7 +470,7 @@ Newest first, a few lines each. Details are in the commits.
   second sin/cos copy's roles filled with the variables global.c had already
   put in the target's registers, and dz/x1 for the height test. Takes a second,
   unused parameter (its matched callers pass two). MATCHING.md: two rows.
-  Lead: `func_800B9CB8` (ovl67) has the same code; port this C.
+  ovl67's `func_800B9CB8` (the same code) was ported from it the same day.
 - **2026-10-18 (hand):** `func_800B85DC` matched (5b63fbe1), no register pin
   or permuter, from the swarm's 182/226 (s-reg rotation only). Worked through
   global.c's priority (floor_log2(refs) * refs / live) per pseudo from -dl:
