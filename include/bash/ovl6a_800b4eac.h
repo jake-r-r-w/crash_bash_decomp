@@ -23,7 +23,15 @@ typedef struct Ovl6aGameView {
     /* 0x024 */ s16 unk24;
     /* 0x026 */ u8 pad26[0x30 - 0x26];
     /* 0x030 */ u16 unk30;
-    /* 0x032 */ u8 pad32[0xE0 - 0x32];
+    /* 0x032 */ u16 unk32;
+    /* 0x034 */ u8 pad34[0x4C - 0x34];
+    /* 0x04C */ u8 unk4C;
+    /* 0x04D */ u8 pad4D[3];
+    /* 0x050 */ u8 unk50;
+    /* 0x051 */ u8 unk51;
+    /* 0x052 */ u8 unk52;
+    /* 0x053 */ u8 unk53;
+    /* 0x054 */ u8 pad54[0xE0 - 0x54];
     /* 0x0E0 */ s32 unkE0;
     /* 0x0E4 */ u8 unkE4[0x21];
     /* 0x105 */ u8 unk105[0x21];
@@ -118,6 +126,7 @@ s32 func_800B821C(void);
 s32 func_800B8224(void);
 
 void func_800B822C(s32 arg0);
+void func_800B5710(s32 arg0);
 
 void func_800B8324(s32 arg0);
 

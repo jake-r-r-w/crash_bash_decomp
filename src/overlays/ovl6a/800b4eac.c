@@ -400,7 +400,16 @@ void func_800B85A8(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B85E4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B86AC);
+void func_800B86AC(void) {
+    ((Ovl6aGameView *)D_8005A614)->unk51 = 9;
+    ((Ovl6aGameView *)D_8005A614)->unk52 = 9;
+    ((Ovl6aGameView *)D_8005A614)->unk53 = 9;
+    D_8009D6E8.unk0 = (s32)func_800B8474;
+    D_8009D6E8.unk20 = (void *)func_800B5710;
+    D_8009D6E8.unk34 = (void *)func_800B822C;
+    ((Ovl6aGameView *)D_8005A614)->unk50 = ((Ovl6aGameView *)D_8005A614)->unk4C;
+    ((Ovl6aGameView *)D_8005A614)->unk32 |= 0x200;
+}
 
 s32 func_800B8708(s32 arg0) {
     KeyedPair *p = D_800BCB54;
