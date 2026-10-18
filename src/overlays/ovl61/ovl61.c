@@ -154,7 +154,34 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BF640);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BFA24);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Plot_ArkLaserWall);
+void Plot_ArkLaserWall(NAS *nas) {
+    EXTengine *eng;
+    subengine *sub;
+
+    if (D_8005A644 & 0x801) {
+        D_800C1F14 &= ~nas->UserInfo.flags;
+        KillNAS(nas);
+        return;
+    }
+    eng = nas->Engine;
+    if (eng != NULL) {
+        if (D_800C1C70 == 0) {
+            D_800C1F14 &= ~nas->UserInfo.flags;
+            if (eng->sfx != NULL) {
+                StopSfx(eng->sfx);
+            }
+            PlaySfx(0x5B8, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            KillNAS(nas);
+            return;
+        }
+        sub = eng->sub;
+        if (sub != NULL) {
+            do {
+                sub = sub->next;
+            } while (sub != NULL);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Init_RepulseRing);
 

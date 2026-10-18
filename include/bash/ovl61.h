@@ -27,6 +27,10 @@ extern s32 D_800C2728;
 extern u16 D_800C1C88;
 extern u16 D_800C1F14;
 extern HeroInfo Heroes[4];
+extern s32 D_800C1C70;
+extern u16 D_800C1F14;
+
+void Plot_ArkLaserWall(NAS *nas);
 
 void func_800B84B8(void);
 void func_800BDD30(s32 arg0);
