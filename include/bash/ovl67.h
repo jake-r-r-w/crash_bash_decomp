@@ -22,8 +22,12 @@ extern HeroInfo Heroes[4];
 
 void func_800B59A8(s32 arg0);
 extern char D_80053EE4[];
+s32 csqrt(s32 x);
+
 NAS *func_8007A524(s32 arg0, s32 *arg1, s32 arg2);
 void func_800898EC(s32 arg0);
+
+void func_800B9800(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r);
 
 s32 func_800BBBB4(s32 arg0, s16 arg1, s32 arg2, s16 arg3);
 

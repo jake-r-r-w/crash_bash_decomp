@@ -134,7 +134,63 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B92D4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", InitN2ODeadWall);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B9800);
+void func_800B9800(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r) {
+    SLONG_XYZ start;
+    SLONG_XYZ d;
+    SLONG_XYZ dir;
+    s32 a;
+    s32 b;
+    s32 c;
+    s32 s;
+    s32 t1;
+    s32 t2;
+
+    arg1 = (arg1 + 0x800) & 0xFFF;
+    start = *pos;
+    start.x -= (0x200 * D_80068BD4[(arg1 - 0x400) & 0xFFF].unk2) >> 12;
+    start.z -= (0x200 * D_80068BD4[arg1].unk2) >> 12;
+    dir.x = start.x - pos->x;
+    dir.y = 0;
+    dir.z = start.z - pos->z;
+    if (dir.x == 0) {
+        return;
+    }
+    d.x = target->x - start.x;
+    d.y = 0;
+    d.z = target->z - start.z;
+    a = (dir.x * dir.x + dir.z * dir.z) >> 4;
+    b = ((dir.x * d.x + dir.z * d.z) * 2) >> 4;
+    c = (d.x * d.x + d.z * d.z - r * r) >> 4;
+    s = b * b - a * c * 4;
+    if (s < 0) {
+        return;
+    }
+    s = csqrt(s) >> 6;
+    t1 = ((-b + s) << 8) / (a * 2);
+    t2 = ((-b - s) << 8) / (a * 2);
+    if (t1 < 0 && t2 < 0) {
+        return;
+    }
+    if (t1 < t2) {
+        if (t1 < 0) {
+            pos->x = start.x - ((dir.x * t2) >> 8);
+            pos->y = start.y - ((dir.y * t2) >> 8);
+            pos->z = start.z - ((dir.z * t2) >> 8);
+        } else {
+            pos->x = start.x - ((dir.x * t1) >> 8);
+            pos->y = start.y - ((dir.y * t1) >> 8);
+            pos->z = start.z - ((dir.z * t1) >> 8);
+        }
+    } else if (t2 >= 0) {
+        pos->x = start.x - ((dir.x * t2) >> 8);
+        pos->y = start.y - ((dir.y * t2) >> 8);
+        pos->z = start.z - ((dir.z * t2) >> 8);
+    } else {
+        pos->x = start.x - ((dir.x * t1) >> 8);
+        pos->y = start.y - ((dir.y * t1) >> 8);
+        pos->z = start.z - ((dir.z * t1) >> 8);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B9B10);
 
