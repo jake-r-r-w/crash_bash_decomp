@@ -355,7 +355,23 @@ s32 func_800C05B8(s32 arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C0624);
+s32 func_800C0624(s32 arg0) {
+    HeroInfo *base = Heroes;
+    u16 st = base[arg0].hero_status;
+    s32 act;
+
+    if (st & 0x200) {
+        act = 0x22;
+    } else if (st & 0x2000) {
+        act = 0x24;
+    } else if (st & 0x400) {
+        act = 0x23;
+    } else {
+        return 0;
+    }
+    SetHeroAction((HeroInfo *)arg0, act);
+    return 1;
+}
 
 void func_800C069C(s32 arg0) {
     HeroInfo *base = Heroes;
