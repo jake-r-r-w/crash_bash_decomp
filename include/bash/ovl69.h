@@ -26,6 +26,9 @@ void func_800B84B8(void);
 void func_800B84E0(void);
 
 extern GfxViewport D_800B8DD8;
+extern u8 D_800A0840[];
+extern u16 D_800B8DC8[];
+void func_80094D88(s32 arg0, s32 arg1);
 extern u8 D_800BAAD0[];
 extern GfxViewport D_800B8DD8;
 extern GfxCamera D_800B9F1C;
@@ -48,6 +51,8 @@ typedef struct {
 } Ovl69Entry;
 
 extern Ovl69Entry D_800BA324[];
+
+void func_800B39C8(void);
 
 void func_800B5880(void);
 

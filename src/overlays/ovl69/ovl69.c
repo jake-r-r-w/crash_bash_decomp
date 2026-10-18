@@ -6,7 +6,27 @@
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B37BC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B39C8);
+void func_800B39C8(void) {
+    s32 f;
+    if (D_80051604 >= 0x385) {
+        D_80051604 = 0;
+        func_8001E588(D_8009F644, 0x200, 0);
+        f = D_8009F654;
+        if (f & 1) {
+            D_8005A648 = 0x28;
+            func_80094D88((s32)D_800A0840, (s32)D_800A00DC);
+        } else {
+            u8 *g = D_8005A614;
+            u8 *t = (u8 *)D_800B8DC8;
+            u16 v = *(u16 *)(t + ((f * 2) & 0xC));
+            *(s32 *)(g + 0x68) = 1;
+            *(s32 *)(g + 0x14) = 0x384;
+            D_8009F65C = (s32 *)D_800A00DC;
+            *(u16 *)(g + 0x34) = v;
+        }
+        D_8009F654 += 1;
+    }
+}
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl69/ovl69", D_800B32B4);
 
