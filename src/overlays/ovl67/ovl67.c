@@ -20,7 +20,97 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B3E74);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B4138);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B447C);
+void func_800B447C(s32 arg0) {
+    EXTheromove *m;
+    HeroInfo *h;
+    HeroInfo *c;
+    Ovl67Pad *p;
+    Ovl67Pad *pads;
+    s32 d;
+    s32 max;
+    s32 acc;
+    s32 fast;
+    s32 b;
+    s32 v;
+
+    c = Heroes;
+    h = c + arg0;
+    m = h->hero_move;
+    h->hero_eng->flags |= 0x8000;
+    pads = (Ovl67Pad *)D_80051338;
+    p = pads + arg0;
+    max = 0x68;
+    acc = 0x22;
+    fast = 0;
+    if ((p->unk0 & 1) || h->hero_ai->AImode != 0) {
+        if (p->unk50 & 0xF00) {
+            max = 0xA0;
+            acc = 0x38;
+        }
+        if (p->unk50 & 0xA0) {
+            if (m->velocity_enable != 0) {
+                d = 0;
+                if (D_8009D750(h->hero_eng) != 0) {
+                    fast = 1;
+                }
+                b = p->unk50;
+                if (b & 0x80) {
+                    d = -acc;
+                }
+                if (b & 0x20) {
+                    d += acc;
+                }
+                if (fast != 0) {
+                    if (d < 0) {
+                        d -= max >> 1;
+                    }
+                    if (d > 0) {
+                        d += max >> 1;
+                    }
+                }
+                m->forward_speed += d;
+                if (m->forward_speed > max) {
+                    m->forward_speed = max;
+                }
+                if (m->forward_speed < -max) {
+                    m->forward_speed = -max;
+                }
+                if (m->forward_speed == 0) {
+                    if (d != 0) {
+                        v = 1;
+                        if (d < 0) {
+                            v = -1;
+                        }
+                        m->forward_speed = v;
+                    }
+                }
+            }
+            D_800C4184[arg0] = m->forward_speed;
+        } else {
+            D_800C4184[arg0] = 0;
+            if (D_8009D750(h->hero_eng) != 0) {
+                m->forward_speed = 0;
+            }
+            if (m->forward_speed > 0) {
+                v = m->forward_speed - 0x12;
+                m->forward_speed = v;
+                if (v >= 0) {
+                    goto end;
+                }
+                m->forward_speed = 0;
+            }
+            if (m->forward_speed < 0) {
+                v = m->forward_speed + 0x12;
+                m->forward_speed = v;
+                if (v > 0) {
+                    m->forward_speed = 0;
+                }
+            }
+        }
+    end:
+        m->forward_angle = m->facing_angle;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B46DC);
 

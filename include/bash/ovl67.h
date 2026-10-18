@@ -16,6 +16,16 @@ void func_800B361C(void);
 
 extern u16 D_800C417A;
 extern u16 D_800C438A;
+extern s16 D_800C4184[];
+extern s32 (*D_8009D750)(EXTengine *);
+
+/* PadState (D_80051338) as func_800B447C reads it: the buttons at 0x50. */
+typedef struct Ovl67Pad {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ u8 pad4[0x50 - 0x04];
+    /* 0x50 */ s32 unk50;
+    /* 0x54 */ u8 pad54[0x58 - 0x54];
+} Ovl67Pad;
 
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
 #include "bash/ovl67_800bbdb8.h"
@@ -67,6 +77,8 @@ typedef struct Ovl67Vel {
     s32 pad14;
     s32 z;
 } Ovl67Vel;
+
+void func_800B447C(s32 arg0);
 
 s32 func_800BAEA8(Ovl67Vel *arg0, s32 arg1);
 
