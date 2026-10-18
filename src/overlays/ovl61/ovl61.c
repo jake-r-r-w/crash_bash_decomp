@@ -740,7 +740,80 @@ s32 arg0;
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B649C);
+s32 func_800B649C(arg0)
+s32 arg0;
+{
+  s32 v;
+  s32 t;
+  u32 u;
+  u16 *p;
+  u16 *d;
+  subengine *s;
+  v = D_800C1EF0[arg0];
+  if (v == 0)
+  {
+    d = &D_800C1EE8[arg0];
+    do
+    {
+    }
+    while (0);
+    p = (u16 *) D_800C13AC;
+    p += Heroes[arg0].hero_name * 5;
+    if ((*d) <= p[2])
+    {
+      t = p[2];
+    }
+    else
+    {
+      t = p[3];
+    }
+    if (D_800C1EE8[arg0] == t)
+    {
+      if (p || Heroes[arg0].hero_name)
+      {
+        return 1;
+      }
+      else
+      {
+        return 1;
+      }
+    }
+  }
+  else
+  {
+    if ((arg0 == D_800C2724) || (arg0 == D_800C2720))
+    {
+      v = (~v) + 1;
+    }
+    if (v < 0)
+    {
+      u = D_800C13AC[Heroes[arg0].hero_name][0];
+    }
+    else
+    {
+      u = D_800C13AC[Heroes[arg0].hero_name][1];
+    }
+    if (D_800C1EE8[arg0] == u)
+    {
+      goto skip;
+    }
+  }
+  D_800C1EE8[arg0] += 1;
+  skip:
+  if (D_800C1EE8[arg0] >= 0x1D)
+  {
+    D_800C1EE8[arg0] = 1;
+  }
+
+  s = Heroes[arg0].hero_sub;
+  s = s->next;
+  if (s != 0)
+  {
+    s->unk74 = D_800C13AC[Heroes[arg0].hero_name][4] + D_800C1EE8[arg0];
+    return 0;
+  }
+  return 1;
+}
 
 static inline s32 HeroCheckPad54(s32 arg0) {
     s32 ret;

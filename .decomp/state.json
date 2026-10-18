@@ -6256,7 +6256,8 @@
   "status": "matched"
  },
  "ovl61:800B649C": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-18T13:16:21Z",
+  "status": "matched"
  },
  "ovl61:800B66D0": {
   "matched_at": "2026-10-18T11:47:42Z",
