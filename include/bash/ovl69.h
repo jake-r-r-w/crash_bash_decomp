@@ -81,7 +81,9 @@ int func_800B6B88(int a0, int a1, int a2, int a3, int a4);
 
 s32 func_800B7DE8(s32 arg0);
 
-void func_800B7E04(void);
+extern s32 *D_8004DD70[];
+
+s32 func_800B7E04(s32 a, s32 b);
 
 void func_800B83D8(s32 arg0, s32 arg1);
 /* func_800B4F1C */
