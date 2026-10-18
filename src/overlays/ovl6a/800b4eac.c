@@ -1159,7 +1159,118 @@ void PlotPodiumTrophy(PodiumTrophy *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B96F4);
+void func_800B96F4(CamView *out, s32 arg1) {
+    SLONG_XYZ key;
+    CamXYZ d;
+    u8 *o;
+    PodiumChild *c;
+    s32 id;
+    s32 end;
+    s32 t;
+
+    if (arg1 != 0) {
+        D_800BD5B0 = 0;
+        switch (D_8005A614[D_8005A614[0xA7] + 0x4C]) {
+        case 1:
+        case 2:
+            PlaySfx(0x352, NULL, NULL, 0x1000, 0x1E00, 0);
+            break;
+        case 5:
+        case 7:
+            PlaySfx(0x353, NULL, NULL, 0x1000, 0x1E00, 0);
+            break;
+        case 3:
+        case 4:
+        case 6:
+        case 8:
+            PlaySfx(0x354, NULL, NULL, 0x1000, 0x1E00, 0);
+            break;
+        }
+    }
+    id = 2;
+    if (D_800BD5B0 < 2) {
+        id = 1;
+    }
+    o = (u8 *)func_8001E48C(id);
+    if (arg1 != 0) {
+        t = *(s32 *)(o + 0x58);
+        D_800C7F04 = *(CamXYZ *)(o + 0x30);
+        D_800C7EF4 = t;
+    }
+    func_8001E21C((KeyBlock *)o, D_800C7EF4, &key);
+    D_800C7F04.x += (*(s32 *)(o + 0x30) - D_800C7F04.x) >> 4;
+    D_800C7F04.y += (*(s32 *)(o + 0x34) - D_800C7F04.y) >> 4;
+    D_800C7F04.z += (*(s32 *)(o + 0x38) - D_800C7F04.z) >> 4;
+    out->at = D_800C7F04;
+    d.x = D_800C7F04.x - key.x;
+    d.y = D_800C7F04.y - key.y;
+    d.z = D_800C7F04.z - key.z;
+    out->eye.z = csqrt(d.x * d.x + d.y * d.y + d.z * d.z) >> 6;
+    out->eye.x = 0;
+    out->eye.y = 0;
+    out->rot.vy = get_angle(-d.x, d.z);
+    out->rot.vx = get_angle(d.y, csqrt(d.x * d.x + d.z * d.z) >> 6);
+    out->rot.vz = 0;
+    switch (D_800BD5B0) {
+    case 0:
+        end = *(s32 *)(o + 4);
+        D_800C7EF4 += 0x20;
+        if (D_800C7EF4 >= end) {
+            D_800C7EF4 = end;
+            D_800BD5AC = 0x3C;
+            D_800BD5B0 = 1;
+        }
+        break;
+    case 1:
+        if (--D_800BD5AC <= 0) {
+            D_800BD5B0 = 2;
+            D_800C7EF4 = *(s32 *)((u8 *)func_8001E48C(2) + 0x58);
+            if (D_800BD594 != NULL) {
+                c = D_800BD594->child;
+                if (c != NULL && D_800BD594->f5C == 0) {
+                    D_800BD594->f5C = 1;
+                    c->f5C = 1;
+                    c->f34 = 0;
+                    c->f30 = 0;
+                    c->f2C = 0;
+                    c->f5E = 1;
+                    c->flags |= 0x8000;
+                }
+            }
+        }
+        break;
+    case 2:
+        end = *(s32 *)(o + 4);
+        D_800C7EF4 += 0x20;
+        if (D_800C7EF4 >= end) {
+            D_800BD5AC = 0xF0;
+            D_800C7EF4 = end;
+            D_800BD5B0 = 3;
+            D_800BD5B4 = 1;
+        }
+        break;
+    case 3:
+        func_800BA848();
+        if (--D_800BD5AC <= 0) {
+            D_800BD5B0 = 4;
+        }
+        break;
+    case 4:
+        D_800BD5B0 = 5;
+        D_800BD5AC = 0x3C;
+        break;
+    case 5:
+        func_800BA804();
+        if (--D_800BD5AC <= 0) {
+            D_800BD5B0 = 0x64;
+        }
+        break;
+    case 0x64:
+        break;
+    }
+    out->dist = 0x200;
+    D_8009F708 = 0x15E;
+}
 
 void func_800B9B0C(void) {
     EXTengine *e;

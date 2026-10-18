@@ -87,6 +87,9 @@ typedef struct PodiumTrophy {
 } PodiumTrophy;
 #define PODIUM_SIN(k) D_80068BD4[((((D_8005B690 * (k)) & 0xFFF) - 0x400) & 0xFFF)].unk2
 extern u32 D_800BD5B0;
+extern s32 D_800BD5AC;
+extern s32 D_800C7EF4;
+extern CamXYZ D_800C7F04;
 extern u8 D_80055924[];
 extern u8 D_8005595C[];
 extern u8 D_80055994[];
