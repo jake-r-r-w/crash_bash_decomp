@@ -14,8 +14,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1135/2551 game functions matched: **main.exe is complete (575/575)**;
-  engine overlay 3 left, 1 parked (`func_8007F314`),
+- 1136/2551 game functions matched: **main.exe is complete (575/575)**;
+  engine overlay 2 left, 1 parked (`func_8007F314`),
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - The engine overlay is six files and `ovl5d` three, `ovl5e`, `ovl66`,
@@ -47,8 +47,8 @@ fell for 250-399 B normal ($0.79 -> $0.66, first-session matches 54% ->
 70%) and 400-599 B big ($4.58 -> $3.52); small samples, and what is left
 is the harder remainder. The closest-C carry-over did the work: three
 functions parked close then matched on the retry from their C. **Next:
-repeat the engine hour** (3 left: `func_8007F314` 5772 B (parked),
-`PlotScriptFX` 2080 B, `func_80078DD4` 664 B) with the big-heavy recipe below; `permute --near` first if there is CPU
+repeat the engine hour** (2 left: `func_8007F314` 5772 B (parked),
+`PlotScriptFX` 2080 B) with the big-heavy recipe below; `permute --near` first if there is CPU
 time. After each swarm run, compare `stats --run ID` with the ledger's
 earlier runs.
 
@@ -417,6 +417,13 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-18 (hand):** `func_80078DD4` matched (308bf0e), no hack or
+  permuter, from the swarm's 156/166 checkpoint (stuck on a b/t `a3`/`v1`
+  swap). global.c's `set_preference` gives arg 4's variable `a3`, and t can
+  always take `v1`, so no ordering of b and t works. Reusing `dx` for b does:
+  dx is live in the other branch while that call sets `a3 = 0`, so
+  `prune_preferences` drops the preference. Plus the target's b-first/t-last
+  arm order. `EngineGameView` names `unk4`.
 - **2026-10-18 (hand):** `func_80093854` matched (8ef8052), no hack or
   permuter, from the swarm's 66/106 checkpoint. Worked through by hand from
   global.c, loop.c, stmt.c, sched.c and local-alloc.c: its nine `s` registers

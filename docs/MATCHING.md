@@ -452,6 +452,7 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | Two copies of one inner scan (pointer `p`, counter `j`) get `p` in `s0` and `j` in `s1` | Make `j` and the compared value one function-level variable shared by both scans, with a block-local `p` in each. The shared counter's refs double (14 over 28 = 15000), tying the second scan's `p`, and it wins on its lower pseudo number | `func_80093854` |
 | A block-local address of a global and a record-index chain swap `a0`/`a1` (local-alloc: both 6 refs, life 18 against 17) | Compute the index first (`n = tab[k]; b = GLOBAL; t = &b[n];`), so the address local is born later and its shorter life ranks it first | `func_80093854` |
 | `addu rd,base,prod` where the target has `addu rd,prod,base` for `e = tab[c] * 0x38 + base` | Write it on integers: `tab[c] * 0x38 + (s32)base` | `func_80093854` |
+| Two clamp results swap `a3`/`v1` (target: the one passed as arg 4 in `v1`, the other in `a3`), and the `-dg` dump shows arg 4's variable with `preferences: 7` from `sll a3,x,15`, allocated first | Give arg 4's value to a variable that is live while `a3` is set as a hard register elsewhere: here `dx`, which the other branch already uses for the height while that call sets `a3 = 0`. `prune_preferences` then drops the `a3` preference, the variable keeps `v1`, and the other one, now conflicting with `v1`, takes `a3` | `func_80078DD4` |
 | A struct pointer's `%hi` gets a third register (`lui a0`) at a join where the target has it in `v0` and the other `%hi` in `v1` | One pointer reused for two structs dies twice, so local-alloc leaves it to global and can't tie the dying `%hi` to it. Use a separate pointer per struct (each dies once and is tied). If that lets later loads move above the stores (alias analysis now knows both bases), put each struct's stores in `do { } while (0)`: the loop notes are a sched1 barrier | `func_8007B330` |
 | gcc 2.7.2 unit: a test of a loaded byte computes `andi` into another register (`andi v0,v1,0x10`) where the target masks in place (`andi v1,v1`) | load into the variable and mask it in place inside the condition: `(t = buf[0], t &= 0x10, !t)` (an `(x = buf[0]) & 0x10` temp gets its own register) | `func_8002DE2C` |
 | gcc 2.7.2 unit: a branch whose target is `j X` with a filled slot keeps a `nop` in its own slot, where the target branches straight to X with that instruction | ASPSX does it, not cc1: `aspsx_fill.py` (`steal_jump_slot`) does it now | `func_8002DE2C` |
@@ -935,6 +936,14 @@ The rules found so far, each one checked against a trace:
     priorities go to the lower pseudo number. In that order each one takes
     the first free register, so for two pseudos that cross calls, the first
     takes the lower `s` register (`func_8008C824`).
+  - Preferences (`set_preference`): an insn `dest = (op src ...)` gives src a
+    preference for dest's hard register, including a local temp already placed
+    in an argument register (`sll a3,b,15` before `sra a3,a3,16`).
+    `find_reg` takes a preferred register over the one it found if it is free.
+    `prune_preferences` first drops any preferred register that is a hard
+    conflict, i.e. live as a hard register during the pseudo's life. A
+    lower-priority neighbour's preference keeps a register out of pass 0
+    only if the pseudo doesn't prefer it too (`func_80078DD4`).
   - Refs are flow's counts, taken before combine (`flow.c`, one per register
     occurrence in an insn, times the loop depth between the notes); combine
     doesn't lower them.
