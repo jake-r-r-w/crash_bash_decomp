@@ -421,7 +421,29 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C0760);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C0804);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C08C8);
+s32 func_800C08C8(Ovl61Obj *arg0) {
+    Ovl61Circle *base = D_800C1A7C;
+    Ovl61Circle *c;
+    s32 i;
+    s32 dx;
+    s32 dz;
+    s32 r;
+
+    for (i = 0; i < 4; i++) {
+        c = &base[i];
+        if (arg0->flags & 0x40) {
+            r = c->r + arg0->radius;
+        } else {
+            r = c->r + 0x80;
+        }
+        dx = arg0->x - c->x;
+        dz = arg0->z - c->z;
+        if (dx * dx + dz * dz < r * r) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 s32 func_800C096C(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2) {
     s32 lim;

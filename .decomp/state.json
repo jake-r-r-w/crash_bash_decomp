@@ -6488,7 +6488,8 @@
  },
  "ovl61:800C08C8": {
   "auto_diff": 40,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-18T10:55:32Z",
+  "status": "matched"
  },
  "ovl61:800C096C": {
   "auto_diff": 2,
