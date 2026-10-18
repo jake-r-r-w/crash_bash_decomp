@@ -137,7 +137,19 @@ s32 func_800C2D10(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C2D80);
+void func_800C2D80(s32 arg0) {
+    HeroInfo *h;
+    s32 act;
+
+    HeroInfo *base = Heroes;
+    h = &base[arg0];
+    act = 0x2F;
+    if (h->hero_health <= 0) {
+        h->hero_health = 0;
+        act = 0x30;
+    }
+    SetHeroAction((HeroInfo *)arg0, act);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C2DD8);
 
