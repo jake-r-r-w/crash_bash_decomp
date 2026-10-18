@@ -3442,7 +3442,136 @@ loop:
     } while (0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BD770);
+void func_800BD770(void)
+{
+  SLONG_XYZ pos;
+  HeroInfo *base;
+  HeroInfo *h1;
+  HeroInfo *h2;
+  EXTengine *eng;
+  s32 s;
+  Ovl61Spark *obj;
+  NAS *nas;
+  NAS *tgt;
+  s32 i;
+  s32 k;
+  i = 0;
+  if (((u16) D_800C1B2C->unk1A) != 0)
+  {
+    return;
+  }
+  base = Heroes;
+  h1 = &base[D_800C2728];
+  h2 = &base[D_800C2720];
+  for (;;)
+  {
+    if (i >= 5)
+    {
+      return;
+    }
+    D_800C2718++;
+    s = D_800C1440[D_800C2718];
+    i++;
+    switch (s)
+    {
+      case 0:
+        if ((h1->hero_status & 0xFA00) && (h2->hero_status & 0xFA00))
+      {
+        do
+        {
+          s = -1;
+        }
+        while (0);
+      }
+        break;
+
+      case 1:
+        if ((h1->hero_status & 0xFA00) && (base[D_800C271C].hero_status & 0xFA00))
+      {
+        do
+        {
+          s = -1;
+        }
+        while (0);
+      }
+        break;
+
+      case 2:
+        if ((base[D_800C2724].hero_status & 0xFA00) && (h2->hero_status & 0xFA00))
+      {
+        do
+        {
+          s = -1;
+        }
+        while (0);
+      }
+        break;
+
+      case 3:
+        if ((base[D_800C2724].hero_status & 0xFA00) && (base[D_800C271C].hero_status & 0xFA00))
+      {
+        do
+        {
+          s = -1;
+        }
+        while (0);
+      }
+        break;
+
+      default:
+        D_800C2718 = 0;
+        break;
+
+    }
+
+    if (s >= 0)
+    {
+      nas = SpawnNASById(D_800C1A7C[s].x, 0, D_800C1A7C[s].z, 0x1502, 0x11);
+      if (nas == 0)
+      {
+        return;
+      }
+      eng = nas->Engine;
+      if (eng != 0)
+      {
+
+        k = 0x12;
+        Random(8);
+        obj = (Ovl61Spark *) AddObject(nas);
+        if (obj != 0)
+        {
+          nas->FUX = (EXT *) obj;
+          obj->unk14 = k;
+          obj->unk1A = 7;
+        }
+
+        eng->flags = 0;
+        D_8009E25C.n++;
+        obj->unk24 = k;
+        nas->UserInfo.user1 = s;
+        nas->UserInfo.user2 = 0xB4;
+      }
+      break;
+    }
+  }
+
+  pos = D_8005B2B8[s + 4].pos;
+  D_800C1E28[nas->UserInfo.user1].unk10 = 1;
+  tgt = func_8007A464(1, (s32 *) (&pos), *((s32 *) D_80058AD0));
+  if (tgt != 0)
+  {
+    func_80026C38((u8 *) nas, (u8 *) tgt);
+  }
+  if (nas->Failure != 0)
+  {
+    tgt = nas->Family.Child;
+    if (tgt != 0)
+    {
+      KillNAS(tgt);
+    }
+    KillNAS(nas);
+  }
+}
 
 void Plot_Ark_Pickup(NAS *arg0) {
     EXTobject *fux;

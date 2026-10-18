@@ -152,6 +152,18 @@ typedef struct {
 
 extern Ovl61Slot D_800C1E28[];
 
+typedef struct {
+    u8 pad0[0x14];
+    s16 unk14;
+    u8 pad16[4];
+    s16 unk1A;
+    u8 pad1C[8];
+    s16 unk24;
+} Ovl61Spark;
+
+extern u16 D_800C2718;
+extern s16 D_800C1440[];
+
 void func_800BE1C4(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r);
 
 s32 func_800B4880(Ovl61Obj *arg0, s32 arg1);
@@ -302,7 +314,6 @@ extern s16 D_800C1F06;
 extern s16 D_800C1F08;
 extern u16 D_800C1F0A;
 extern s16 D_800C1F16;
-extern s16 D_800C2718;
 extern s32 D_800C1C74;
 extern s32 D_800C1C78;
 extern s32 D_800C1C7C;
