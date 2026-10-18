@@ -249,7 +249,16 @@ void func_800B5734(void) {
     func_8001C2C0((u8 *)GetEngineSlot(1));
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B57BC);
+void func_800B57BC(void) {
+    GetEngineSlot(1)->sub[1].flags |= 0x8000;
+    GetEngineSlot(1)->sub[2].flags |= 0x8000;
+    func_80018B08(&D_800B8DD8, &D_800B9538);
+    D_80056998.modelDp = *(s32 *)D_8009F644;
+    func_8001C2C0((u8 *)GetEngineSlot(0));
+    func_80018B08(&D_800B8E00, &D_800B9538);
+    D_80056998.modelDp = *(s32 *)D_8009F644;
+    func_8001C2C0((u8 *)GetEngineSlot(1));
+}
 
 void func_800B5880(void) {
     PlaceSub *s = (PlaceSub *)GetEngineSlot(1)->sub;

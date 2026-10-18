@@ -136,6 +136,8 @@ void func_800B54B0(void);
 
 void func_800B55B8(void);
 
+void func_800B57BC(void);
+
 void func_800B58E4(void);
 
 void func_800B7B30(void);
