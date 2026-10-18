@@ -3974,7 +3974,282 @@ void func_800BE1C4(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BE4D4);
+s32 func_800BE4D4(s32 arg0, EXTengine *unused) {
+    SLONG_XYZ tgt;
+    SLONG_XYZ nearp;
+    SLONG_XYZ farp;
+    VECTOR pos;
+    SVECTOR spot;
+    EXTengine *me;
+    s32 speed;
+    FlagRecord *grab;
+    s32 top;
+    s32 bot;
+    s32 rnear;
+    s32 rfar;
+    HeroInfo *hero;
+    Ovl61HeroBox *box;
+    NAS *nas;
+    EXTengine *eng;
+    FlagRecord *rec;
+    FlagRecord *fr;
+    EXTobject *obj;
+    Ovl61Puck *puck;
+    s32 r;
+    s32 rad;
+    s32 back;
+    s32 d;
+    s32 dist;
+    s32 y;
+    s32 x1;
+    s32 z1;
+    s32 x2;
+    s32 z2;
+    s32 dz;
+    s32 fa;
+    s16 sp;
+    s32 idx;
+    TrigEntry *tbl;
+    s32 cz;
+    s32 fb;
+    u16 ang;
+    u16 ang2;
+    u16 fc;
+    u16 fc2;
+    Ovl61HeroBox *base;
+
+    if (Heroes[arg0].hero_status & 0xF800) {
+        return 0;
+    }
+    me = Heroes[arg0].hero_eng;
+    if (me == NULL) {
+        return 0;
+    }
+    speed = Heroes[arg0].hero_move->forward_speed;
+    if (arg0 == D_800C2720) {
+        speed = -speed;
+    }
+    if (arg0 == D_800C271C) {
+        speed = Heroes[arg0].hero_move->forward_speed;
+    }
+    if (arg0 == D_800C2724) {
+        speed = -Heroes[arg0].hero_move->forward_speed;
+    }
+    if (func_80015780(me, me->sub, 1, &pos) == NULL) {
+        *(SLONG_XYZ *)&pos = me->unk10;
+    }
+    fr = func_80025A48(me, 2);
+    if (fr != NULL) {
+        if (me->unk5E != 0) {
+            func_800142D4(&me->unk1C);
+        }
+        func_8001CD04(me->sub, me->unk3C, &me->unk10);
+        grab = fr;
+    } else {
+        grab = NULL;
+    }
+    base = D_800C1A88;
+    box = &base[arg0];
+    top = box->b;
+    bot = box->a;
+    rnear = box->c;
+    rfar = box->d;
+    nearp.x = Heroes[arg0].hero_eng->unk10.x + box->x0;
+    nearp.y = Heroes[arg0].hero_eng->unk10.y + box->y0;
+    nearp.z = Heroes[arg0].hero_eng->unk10.z + box->z0;
+    farp.x = Heroes[arg0].hero_eng->unk10.x + box->x1;
+    hero = &Heroes[arg0];
+    farp.y = hero->hero_eng->unk10.y + box->y1;
+    farp.z = hero->hero_eng->unk10.z + box->z1;
+    tbl = D_80068BD4;
+    for (nas = D_8005AA2C;; nas = nas->Solid.Child) {
+        if (nas == NULL) {
+            return 0;
+        }
+        eng = nas->Engine;
+        if (eng == NULL || eng == me) {
+            continue;
+        }
+        rec = func_80025A48(eng, 0x40);
+        if (rec == NULL) {
+            continue;
+        }
+        dz = rec->unk2;
+        y = eng->unk10.y;
+        x1 = rec->height;
+        if (!(top < y + dz)) {
+            continue;
+        }
+        y += x1;
+        if (!(y < bot)) {
+            continue;
+        }
+        rad = rec->radius;
+        if (func_80015480(hero->hero_move->forward_angle,
+                          get_angle(-eng->OldXYZ.x + pos.vx, -eng->OldXYZ.z + pos.vz)) >= 0x38F) {
+            r = rnear;
+            tgt = nearp;
+            back = 0;
+        } else {
+            r = rfar;
+            tgt = farp;
+            back = 1;
+            if (hero->hero_mode == 0x21) {
+                r += 0x80;
+            }
+        }
+        get_angle(eng->unk10.x - pos.vx, eng->unk10.z - pos.vz);
+        obj = FindExtension(nas, 0x1000);
+        if (obj == NULL) {
+            continue;
+        }
+        if (obj->status == 2) {
+            if (arg0 == obj->player) {
+                puck = FindExtension(nas, 0x800);
+                if (puck != NULL && grab != NULL) {
+                    rad += rfar;
+                    r = func_800154A0(me->unk1E, puck->dir);
+                    if (r > 0x220) {
+                        r = 0x220;
+                    }
+                    if (r < -0x220) {
+                        r = -0x220;
+                    }
+                    r &= 0xFFF;
+                    spot.vx = ((Ovl61Spot *)grab)->x - (rad * tbl[(r - 0x400) & 0xFFF].unk2 >> 12);
+                    z1 = rad * tbl[r].unk2 >> 12;
+                    spot.vz = ((Ovl61Spot *)grab)->z - z1;
+                    spot.vy = 0;
+                    func_80015758(&spot, (VECTOR *)&eng->unk10);
+                }
+            }
+            continue;
+        }
+        y = eng->unk10.x - tgt.x;
+        dist = y * y;
+        y = eng->unk10.z - tgt.z;
+        rad += r;
+        dist += y * y;
+        if (!(dist < rad * rad)) {
+            continue;
+        }
+        dist = csqrt(dist) >> 6;
+        if (!(dist < rad)) {
+            continue;
+        }
+        puck = FindExtension(nas, 0x800);
+        if (puck != NULL) {
+            r = puck->dir;
+        } else {
+            r = get_angle(eng->OldXYZ.x - eng->unk10.x, eng->OldXYZ.z - eng->unk10.z);
+        }
+        func_800BE1C4(&eng->unk10, r, &tgt, rad + 8);
+        r = get_angle(-eng->unk10.x + tgt.x, -eng->unk10.z + tgt.z) & 0xFFF;
+        puck = FindExtension(nas, 0x800);
+        if (puck == NULL) {
+            continue;
+        }
+        obj->player = arg0;
+        if (hero->hero_mode != 0x21) {
+            back = 0;
+        }
+        if (back) {
+            r = get_angle(-eng->unk10.x + farp.x, -eng->unk10.z + farp.z) & 0xFFF;
+            puck->dir = r;
+            puck->speed = 0;
+            puck->max = 0;
+            obj->status = 2;
+            PlaySfx(D_800C18E8[arg0 + 4], NULL, &me->unk10, 0x1000, 0x1E00, 0);
+            continue;
+        }
+        rad = puck->dir;
+        rad += 0x800;
+        rad &= 0xFFF;
+        if (obj->whatami == 2) {
+            if (!(hero->hero_status & 0xFA00) &&
+                (arg0 == 0 || (D_8005A680[0] != 0 && arg0 == 1))) {
+                hero->hero_score = 0;
+                if (arg0 == D_800C2728) {
+                    idx = 0;
+                } else if (arg0 == D_800C2724) {
+                    idx = 1;
+                } else if (arg0 == D_800C2720) {
+                    idx = 3;
+                } else {
+                    idx = (arg0 == D_800C271C) * 2;
+                }
+                if (D_800C1D88[idx].flags != NULL) {
+                    *D_800C1D88[idx].flags |= 0x8000;
+                }
+                if (D_800C1C84 == 0) {
+                    PlaySfx(0x591, &D_800C1C60, NULL, 0x1000, 0x1E00, 0);
+                    D_800C1C84 = 1;
+                }
+                if (arg0 == D_800C2728) {
+                    D_800C1F14 |= 1;
+                }
+                if (arg0 == D_800C2724) {
+                    D_800C1F14 |= 2;
+                }
+                if (arg0 == D_800C2720) {
+                    D_800C1F14 |= 4;
+                }
+                if (arg0 == D_800C271C) {
+                    D_800C1F14 |= 8;
+                }
+                ((void (*)(s32, s32, s32))func_80027F7C)(arg0, 0xC, 0xFF);
+                SetHeroAction((HeroInfo *)arg0, 0x25);
+                return 0;
+            }
+        } else {
+            PlaySfx(D_800C1380[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+            fa = hero->hero_move->forward_angle & 0xFFF;
+            ang = r;
+            fc = fa;
+            sp = abs(speed);
+            x1 = puck->speed * tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
+            z2 = puck->speed * tbl[(u16)r].unk2 >> 12;
+            dz = sp * tbl[(fc - 0x400) & 0xFFF].unk2 >> 12;
+            cz = sp * tbl[fa].unk2 >> 12;
+            r = (u16)get_angle(x1 + dz, z2 + cz);
+        }
+        r &= 0xFFF;
+        d = func_800154A0(rad, r);
+        if (abs(d) > 0x400) {
+            func_800154A0(rad ^ 0x800, r);
+            fb = hero->hero_move->forward_angle & 0xFFF;
+            ang2 = r;
+            fc2 = fb;
+            sp = abs(speed);
+            x1 = puck->speed * tbl[(ang2 - 0x400) & 0xFFF].unk2 >> 12;
+            z2 = puck->speed * tbl[r].unk2 >> 12;
+            dz = sp * tbl[(fc2 - 0x400) & 0xFFF].unk2 >> 12;
+            x2 = sp * tbl[fb].unk2 >> 12;
+            r = get_angle(x1 + dz, z2 + x2) & 0xFFF;
+        } else {
+            if (abs(d) > 0x3F0) {
+                if (d >= 0) {
+                    d = 0x3F0;
+                } else {
+                    d = -0x3F0;
+                }
+            }
+            r += d;
+            r &= 0xFFF;
+        }
+        puck->dir = r;
+        if (speed != 0) {
+            puck->speed += abs(speed);
+            if (puck->speed > puck->max + 0x40) {
+                puck->speed = puck->max + 0x40;
+            }
+        }
+        if (puck->unk32 == 0 && puck->max < 0x90) {
+            puck->max += 4;
+        }
+    }
+    return 0;
+}
 
 bool ArkHeroRad2ObjectCollision(u32 arg0, s32 arg1, bool arg2) {
     EXTengine *hero;

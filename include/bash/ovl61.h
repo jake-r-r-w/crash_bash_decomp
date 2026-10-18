@@ -544,4 +544,26 @@ void func_800BC564(void);
 
 s32 func_800BF640(EXTengine *eng, Ovl61FuxF *self);
 
+/* Extension 0x800 of a ball (func_800BE4D4). */
+typedef struct Ovl61Puck {
+    u8 pad0[0xE];
+    s16 speed;
+    u8 pad10[4];
+    s16 max;
+    s16 dir;
+    u8 pad18[0x32 - 0x18];
+    u16 unk32;
+} Ovl61Puck;
+
+/* The spot a grabbed ball is held at (func_800BE4D4). */
+typedef struct Ovl61Spot {
+    s16 x;
+    s16 pad2;
+    s16 z;
+} Ovl61Spot;
+
+extern u16 D_800C1380[];
+
+s32 func_800BE4D4(s32 arg0, EXTengine *unused);
+
 #endif /* BASH_OVL61_H */
