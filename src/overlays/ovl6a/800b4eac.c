@@ -1718,7 +1718,34 @@ void func_800BB584(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BB5F0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BBC64);
+void func_800BBC64(s16 *a, void *b, s32 c, s32 d) {
+    RECT *r;
+    RECT *rc;
+    u32 *p;
+    u32 *q;
+    s32 off2;
+    s32 off;
+
+    r = D_8005B698;
+    if (D_8005B68C == D_8005B790) {
+        r += 1;
+    }
+    SetDrawArea((DRAWENV *)((u8 *)b + (D_8005B690 & 1) * 12), r);
+    rc = (RECT *)a;
+    rc->x += r->x;
+    rc->y += r->y;
+    SetDrawArea((DRAWENV *)((u8 *)b + ((D_8005B690 & 1) * 12 + 0x18)), rc);
+    off = (D_8005B690 & 1) * 12;
+    off2 = off + 0x18;
+    p = (u32 *)(off + (s32)b);
+    ((Ovl6aPTag *)&p[6])->addr = ((Ovl6aPTag *)&D_80056998.ot[0x136])->addr;
+    ((Ovl6aPTag *)&D_80056998.ot[0x136])->addr = (u32)((u8 *)b + off2);
+    ((Ovl6aPTag *)&p[0])->addr = ((Ovl6aPTag *)&D_80056998.ot[2])->addr;
+    ((Ovl6aPTag *)&D_80056998.ot[2])->addr = (u32)p;
+    q = ((u32 *)D_8005B68C) - (-c);
+    ((Ovl6aPTag *)&D_80056998.ot[0])->addr = ((Ovl6aPTag *)q)->addr;
+    ((Ovl6aPTag *)q)->addr = (u32)(D_80056998.ot + 0x137);
+}
 
 void func_800BBE1C(void) {
 }

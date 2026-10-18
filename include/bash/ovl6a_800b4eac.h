@@ -501,6 +501,10 @@ typedef struct Ovl6aSelEntry {
 } Ovl6aSelEntry;
 extern u8 D_800BCEDC;
 extern s32 D_800BCEE4;
+typedef struct {
+    unsigned addr : 24;
+    unsigned len : 8;
+} Ovl6aPTag;
 
 void func_800B6A3C(void);
 
