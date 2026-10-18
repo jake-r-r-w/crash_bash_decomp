@@ -76,8 +76,11 @@ All commands run through `tools/dk` (Docker).
    [classify the diff and work through its list](#classify-the-diff-then-work-through-the-list).
    For register differences, also read the [cc1 dump](#why-does-a-register-differ).
    Note in your reasoning which items you tried.
-5. **Stuck?** Run the permuter only at the `registers` stage, after the
-   evidence step, the checklist for that kind of diff and the cc1 dump:
+5. **Stuck?** If the diff is a tie in instruction order, register choice or
+   a merged tail, [read the compiler's rules](#reading-the-compilers-rules)
+   for the pass that decides it first. Run the permuter only at the
+   `registers` stage, after the evidence step, the checklist for that kind
+   of diff, the cc1 dump and that reading:
    `tools/dk make permute FUNC=NAME MINUTES=10`. When it finds something,
    port it by hand and add the general rule to [Diff patterns](#diff-patterns).
    Still stuck: restore the `INCLUDE_ASM` line, keep the best attempt under
@@ -768,7 +771,8 @@ order. Note which ones you tried.
 5. Declaration order of locals.
 6. A cast on an intermediate value.
 7. Operand order of a commutative operator.
-8. Then read the [cc1 dump](#why-does-a-register-differ).
+8. Then read the [cc1 dump](#why-does-a-register-differ) and the rule that
+   picked the register ([Reading the compiler's rules](#reading-the-compilers-rules)).
 
 **Instruction order** (same instructions, different order):
 1. Statement order.
@@ -777,6 +781,8 @@ order. Note which ones you tried.
 4. `if (a && b)` vs nested ifs.
 5. The declared type of the globals involved.
 6. `TRUE` vs `1`: no codegen effect, so rule it out quickly.
+7. Then read sched1's and sched2's traces (`-dS`, `-dR`) and the scheduling
+   rules ([Reading the compiler's rules](#reading-the-compilers-rules)).
 
 **Opcode or length** (different instructions or count):
 1. Loop form (see [Diff patterns](#diff-patterns)).
@@ -823,9 +829,86 @@ layout. Add `-fno-schedule-insns2` to tell register choice apart from sched2's
 reordering.
 
 For a gcc 2.7.2 unit (`CC_VER = 2.7.2-psx`), run `/opt/gcc/2.7.2-psx/cc1` instead (with the
-unit's `EXTRA_CC1FLAGS`). Its source is in `tools/reference/gcc-2.7.2.3/` (FSF 2.7.2.3; its
-`README.decomp.md` says which file holds which pass): read the pass a dump points at before
-guessing at C. It also notes the one known way Sony's 2.7.2 differs from it.
+unit's `EXTRA_CC1FLAGS`). For why a pass made its choice, in either compiler, read its source:
+[Reading the compiler's rules](#reading-the-compilers-rules).
+
+## Reading the compiler's rules
+
+Some diffs are a tie inside one pass: two instructions in the other order,
+two values in each other's registers, or a shared tail merged into the wrong
+copy. For these, read the rule that breaks the tie instead of guessing at C:
+
+1. Dump the pass that decides it (table below), using the cc1 command above.
+2. Find the tie in the dump's trace.
+3. Read the function that decides it in `tools/reference/gcc-2.7.2.3/`. That is FSF 2.7.2.3; for
+   these passes its code behaves like our 2.8.1 cc1 in every case checked so far. Its
+   `README.decomp.md` says which file holds which pass and lists the known differences.
+4. Work through the rule by hand, and change the C so the tie goes the target's way.
+
+Do this before the permuter. It matched `func_8007B330` (7/307 off) after six swarm sessions and
+a permuter run had made no progress.
+
+| Flag | File | Shows |
+|---|---|---|
+| `-dS` | `.sched` | sched1's trace per block: each insn's priority, then `ready list at T-n` cycle by cycle from the block end (`7f000001` is launch priority; "launching X with N stalls"; "greater potential hazard") |
+| `-dR` | `.sched2` | the same for sched2, after register allocation |
+| `-dl` | `.lreg` | local-alloc: refs, lifetime and deaths per pseudo, then `Register N in M` |
+| `-dg` | `.greg` | the RTL after reload, the order sched2 starts from |
+| `-dJ` | `.jump2` | the RTL after jump2's cross-jumping |
+| `-dd` | `.dbr` | the RTL after delay-slot filling |
+
+The rules found so far, each one checked against a trace:
+
+- **Scheduling (`sched.c`, both passes).** It schedules backwards from the
+  end of the block.
+  - `priority` is the longest chain of predecessors, adding latency minus 1
+    per link, so most insns get 1 to 3.
+  - `rank_for_schedule` picks the ready insn with, in order: the higher
+    priority; the better class against the insn just scheduled (independent,
+    or latency 1, wins); the later position in the RTL. A tie therefore keeps
+    the original order.
+  - `schedule_select`: among equal priority, the insn with the larger
+    potential hazard (a load) goes first.
+  - An insn that is ready while a load waits out its latency fills that slot.
+  - In sched1 only, `adjust_priority` and `birthing_insn_p` give launch
+    priority to an insn that sets a register set only once and still live.
+    It then lands right before its first use. A register set twice doesn't
+    get this (Diff patterns: `func_8007B330`, `func_800926CC`).
+  - Loop notes from `do { } while (0)` are a barrier: nothing moves across them.
+- **Memory dependences (`true_dependence`, `memrefs_conflict_p` in `sched.c`).**
+  - A register set once to a symbol stands for that symbol (`canon_rtx`).
+    Two different symbols never conflict, so stores through such pointers
+    don't keep a load of another global below them.
+  - A pointer set twice is unknown, so its stores do keep the load below them.
+  - A struct field at a varying address can't conflict with a scalar at a
+    fixed address. An array element counts as a struct field.
+- **Local register allocation (`local-alloc.c`).**
+  - It only handles pseudos used in one block that die once. `REG_DEAD` and
+    `REG_UNUSED` both count as deaths; the rest go to `global.c`.
+  - `qty_compare` gives each one priority refs × floor_log2(refs) / life.
+    Refs are flow's counts weighted by loop depth; life is measured in half-insns.
+  - Equal priorities go to the pseudo born first. Each takes the first
+    register in `REG_ALLOC_ORDER` (v0, v1, a0, ...) that is free over its whole life.
+  - `combine_regs` ties an insn's output to a register operand that dies
+    there, so they share a register. The operand must not be inside a
+    memory address, and the output must be local and not yet placed.
+- **Cross-jumping (`find_cross_jump`, `do_cross_jump` in `jump.c`, jump2).**
+  - The pass walks forward. A jump hands its tail to the first matching
+    copy it finds among the jumps to the same label, most recently threaded
+    first.
+  - That needs the matched insns to follow a label, or a branch around the
+    jump. A tail that follows a call never hands itself over.
+  - Jumps to a label made during jump2 itself are not searched (`INSN_UID < max_uid`).
+  - Before reload, threading stops at a loop's start note (`follow_jumps`).
+    An empty loop after a switch therefore makes jump2 thread the `break`s
+    one at a time, which keeps the first copy (`func_8007F314`, parked).
+- **Delay slots (`reorg.c`).**
+  - `fill_simple_delay_slots` fills from before the branch first, then
+    fills an unconditional jump from its target.
+  - `steal_delay_list_from_fallthrough` moves a filled jump's slot into the
+    branch just before it.
+  - `redundant_insn` lets a branch skip a target insn that its delay slot
+    already executes.
 
 ## The validation gate (`done`)
 

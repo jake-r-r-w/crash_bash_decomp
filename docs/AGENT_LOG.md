@@ -179,18 +179,11 @@ misses with big-mode checkpoints: `func_8007BFA8` (instructions 5/114),
     jump2) and the listing scripts.
 - **Reading the gcc source beats guessing for tie-breaks.** `func_8007B330`
   matched (2026-10-18) once the rules in `tools/reference/gcc-2.7.2.3` were
-  read and simulated by hand against the `-dS`/`-dR`/`-dl` dumps. The rules:
-  - **sched.c:** `rank_for_schedule` sorts by priority, then the class
-    relative to the last insn scheduled, then RTL order. `adjust_priority`
-    and `birthing_insn_p` give a single-set register launch priority.
-  - **sched.c alias:** `memrefs_conflict_p` and `true_dependence` treat a
-    pointer set once to a symbol as that symbol, so its stores don't block
-    loads of other globals.
-  - **local-alloc.c:** `qty_compare` is refs times log2(refs) over life
-    length, and ties go to the register born first. `combine_regs` ties a
-    dying input only to a local output that dies once.
-  - Two Diff patterns rows record the C shapes that came out of this; try
-    the same method on `func_8007F314`'s tail-merge question.
+  read and worked through by hand against the dumps. The method and every
+  rule found so far are in MATCHING.md, "Reading the compiler's rules"; the
+  skill, CLAUDE.md and the reference README now point at it. Use it next on
+  `func_8007F314`'s tail-merge question (jump.c) and on `func_8008C824`
+  (registers 25/155).
 - **Tooling ideas not done** (from the 2026-10-16 plan):
   - Pilots, no code: model tiers (`--model haiku --escalate-model sonnet
     --big-workers 0` on ~40 functions under 128 B, check the first matches'

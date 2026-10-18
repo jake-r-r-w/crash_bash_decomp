@@ -48,6 +48,13 @@ the host has no Python. In Git Bash loops, pass `</dev/null` to `tools/dk`.
      swap; it points to `decomp.py splitvars NAME VAR` when one variable wants
      different registers in different blocks), then the cc1 dump ("Why does a
      register differ?").
+   - for a tie (two instructions in the other order, two values in each
+     other's registers, a tail merged into the wrong copy): the deciding
+     pass's trace (`-dS`, `-dR`, `-dl`, `-dJ`) and that pass's source in
+     `tools/reference/gcc-2.7.2.3/` ("Reading the compiler's rules" in
+     docs/MATCHING.md). Find the tie in the trace, read the function that
+     decides it, work it through by hand, and change the C so the tie goes the
+     target's way.
    - the `registers` stage: the permuter doesn't fix structure.
    Then run `tools/dk make permute FUNC=NAME MINUTES=10` (for a big function add
    `ARGS=--differing`: only the C of the blocks that differ). When it finds

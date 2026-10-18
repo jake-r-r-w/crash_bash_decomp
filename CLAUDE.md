@@ -31,7 +31,11 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
 - `make diff` / `decomp.py try` end with `STAGE NAME structure|instructions|registers n/total`:
   fix the stages in that order. Check the asm's style fits the file's compiler
   first (gcc 2.7.2 units: `main/8002d488`, `main/8002e0f0`; per-unit settings
-  in the Makefile; FSF gcc 2.7.2.3 source in `tools/reference/` to read).
+  in the Makefile). For a tie in instruction order, register choice or a
+  merged tail, read the deciding pass in `tools/reference/gcc-2.7.2.3/` before
+  the permuter. That's FSF source; its scheduler, local-alloc, jump and reorg
+  rules hold for our 2.8.1 too. Work the rule through by hand against the
+  `-dS`/`-dR`/`-dl`/`-dJ` dumps (MATCHING.md, Reading the compiler's rules).
   For a big function, `decomp.py regions NAME` aligns the code and scores it
   block by block with C lines (MATCHING.md, Big functions); the swarm's big
   mode works and ranks checkpoints by it. Also: `similar NAME` (matched

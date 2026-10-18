@@ -17,21 +17,37 @@ Makefile `CC_VER = 2.7.2-psx`) are matched by reading what this compiler does. T
 (docs/MATCHING.md) show what a pass did; the source says why. 2.7.2.1-2.7.2.3 are bug-fix
 releases over 2.7.2 (`NEWS`), so for this project they are the same compiler.
 
+It is also the reference for the gcc 2.8.1 units (everything else). For the passes in the
+table, its code behaved like our 2.8.1 cc1 in every case checked: the sched1/sched2 traces,
+local-alloc's choices and jump2's cross-jumps in `func_8007B330` and `func_8007F314`. When a
+2.8.1 diff is a tie inside a pass, read the deciding function here and work it through by hand
+before reaching for the permuter (docs/MATCHING.md, "Reading the compiler's rules", which also
+lists the rules found so far).
+
 The passes that decide most of a match, in the order cc1 runs them (`toplev.c`,
 `rest_of_compilation`):
 
 | File | Pass | Matching questions it answers |
 |---|---|---|
-| `cse.c` | cse, cse2 (`-frerun-cse-after-loop`) | folding of addresses and constants (`find_best_addr`, `fold_rtx`) |
+| `cse.c` | cse, cse2 (`-frerun-cse-after-loop`) | folding of addresses and constants (`find_best_addr`, `fold_rtx`); which blocks one pass covers (`cse_end_of_basic_block`) |
 | `loop.c` | loop | invariant hoisting |
-| `flow.c` | flow | basic blocks, liveness, `REG_DEAD` notes |
+| `flow.c` | flow | basic blocks, liveness, `REG_DEAD`/`REG_UNUSED` notes, refs weighted by loop depth |
 | `combine.c` | combine | merged instructions |
-| `sched.c` | sched1, sched2 | instruction order (`rank_for_schedule`, `adjust_priority`, birthing insns) |
-| `local-alloc.c`, `global.c` | register allocation | which register a value gets (priorities, preferences) |
-| `reload1.c` | reload, `reload_cse_regs` | late register substitutions |
-| `jump.c` | jump, jump2 | cross-jumping, threading |
-| `reorg.c` | dbr | delay-slot filling (`fill_simple_delay_slots`, `fill_eager_delay_slots`) |
+| `sched.c` | sched1, sched2 | instruction order (`priority`, `rank_for_schedule`, `schedule_select`, `adjust_priority`, `birthing_insn_p`); which loads may move above which stores (`true_dependence`, `memrefs_conflict_p`) |
+| `local-alloc.c`, `global.c` | register allocation | which register a value gets (`qty_compare`, `combine_regs`, `find_free_reg`, `update_equiv_regs`; global.c's preferences) |
+| `reload1.c` | reload | late register substitutions |
+| `jump.c` | jump, jump2 | cross-jumping (`find_cross_jump`, `do_cross_jump`), threading (`follow_jumps`) |
+| `reorg.c` | dbr | delay-slot filling (`fill_simple_delay_slots`, `fill_eager_delay_slots`, `steal_delay_list_from_fallthrough`, `redundant_insn`, `relax_delay_slots`) |
 | `config/mips/mips.md`, `mips.h`, `mips.c` | target | patterns, costs, `REG_ALLOC_ORDER`, delay-slot rules |
+
+## Known differences from our gcc 2.8.1
+
+2.8.1 adds post-reload CSE (`reload_cse_regs`), which this tree doesn't have, so there is no
+source here for it. It deletes a store of a value memory already holds, and turns a constant
+load or operand into a register that already holds it. In `func_8007F314` (parked) it gives
+`and v0,v0,a1` and `sllv ...,s5`, where a constant was set in the same block. It works only
+within a block, from the last label on. The Diff patterns rows for `func_800926CC` and
+`func_8008A924` use it.
 
 `invoke.texi` documents the flags, `rtl.texi` the RTL in the dumps.
 
