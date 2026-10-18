@@ -14,9 +14,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1194/2551 game functions matched: **main.exe is complete (575/575)**;
+- 1225/2551 game functions matched: **main.exe is complete (575/575)**;
   engine overlay 2 left, both parked (`func_8007F314`, `PlotScriptFX`),
-  ovl61 55 of 90 (2026-10-18 swarm run),
+  ovl61 92/97 (two 2026-10-18 swarm runs; 5 big ones left),
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Dashboard (2026-10-18): `docs/index.html` is `tools/scripts/dashboard.html` plus
@@ -42,14 +42,14 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**ovl61 (2026-10-18, run 20261018104310):** stopped by hand after 80 min,
-$35.51: 55 matched, 1 parked (`func_800B60FC`, registers 14/126), 35
-left. Resume with the same line (`run --branch main --seg overlays/ovl61
---max-minutes 240 --max-run-usd 80 --max-functions 500`). The permuter
-matched `func_800B7518` just as the stop landed, so it needs a worker to
-port it (its checkpoint is in the swarm dir). Checkpoints near registers:
-`CalcArkInfluence` 4/150, `func_800BFA24` 5/60, `func_800BD510` 11/151;
-run `permute --near` on them. Then `swarm.mjs fold` for the run's pattern rows.
+**ovl61 (2026-10-18):** two runs, 83 matched; 92/97 functions, 5 left, all
+big and checkpointed: `CalcArkInfluence` (600 B, registers 4/150),
+`func_800B85DC` (904 B, registers 44/226), `func_800BE4D4` (2816 B),
+`func_800B8A68` (3264 B), `PlotBall` (5576 B, paired 1366/1394). Next:
+`swarm.mjs permute --near` for the two at registers, then a big-only run on
+ovl61 (`--workers 1 --big-workers 3`), or a new overlay with the big-heavy
+mix (`--workers 1 --big-workers 4 --permuters 2`). Run `swarm.mjs fold` for
+run 20261018125240's pattern rows (not done yet).
 
 **Tooling: the 2026-10-16 tooling plan is done and removed** (it is in git
 history, `git show 94f04c7:docs/TOOLING_PLAN.md`; what it left is under
@@ -456,6 +456,12 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-18 (swarm):** ovl61 run 20261018125240, `--workers 1
+  --big-workers 4 --permuters 2` (31 of the 34 left were >= 600 B), 128 min,
+  $88.97 (in-flight sessions run past the $80 cap): 28 matched ($3.18 each),
+  0 parked; ended by the spend cap. Before it, `func_800B7518` by hand from
+  the last run's dropped permuter match (worker patch + `permute-apply`).
+  `bigPermuteMinutes` default 60 -> 30.
 - **2026-10-18 (dashboard):** `decomp.py progress` 10.8 s -> 2.4 s (every
   `done` and each swarm batch paid it): the typed scan (a regex per matched
   function, ~8 s) is cached per source file in `build/cache/typed.json`, and
