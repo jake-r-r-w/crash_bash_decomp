@@ -218,7 +218,20 @@ typedef struct Box2 {
     BoxHalf hi;
 } Box2;
 
+typedef struct AngObj {
+    /* 0x00 */ char pad0[0x10];
+    /* 0x10 */ u16 ax;
+    /* 0x12 */ u16 ay;
+    /* 0x14 */ char pad14[0x3D];
+    /* 0x51 */ u8 unk51;
+    /* 0x52 */ s16 unk52;
+    /* 0x54 */ char pad54[0x20];
+    /* 0x74 */ u16 state;
+} AngObj;
+
 extern char D_800B336C[];
+
+void func_800BD584(AngObj *o);
 
 void InitNitroMissile(MissileHolder *arg0);
 

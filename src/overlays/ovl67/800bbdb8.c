@@ -38,7 +38,38 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BC7E0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BC9B4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BD584);
+void func_800BD584(AngObj *o) {
+    if (o->state == 0x5003) {
+        o->unk52 = 1;
+        o->unk51 = 0;
+        o->ax -= (s32)((0x400 - (s16)o->ax) << 20) >> 23;
+    }
+    if (o->state == 0x500B) {
+        o->unk52 = 1;
+        o->unk51 = 0;
+        o->ax -= (s32)((0xC00 - (s16)o->ax) << 20) >> 23;
+    }
+    if (o->state == 0x5019) {
+        o->unk52 = 1;
+        o->unk51 = 0;
+        o->ax -= (s32)((0x400 - (s16)o->ax) << 20) >> 23;
+    }
+    if (o->state == 0x500C) {
+        o->unk52 = 1;
+        o->unk51 = 0;
+        o->ay -= (s32)((0x400 - (s16)o->ax) << 20) >> 23;
+    }
+    if (o->state == 0x501A) {
+        o->unk52 = 1;
+        o->unk51 = 0;
+        o->ay -= (s32)((0x400 - (s16)o->ax) << 20) >> 23;
+    }
+    if (o->state == 0x5004) {
+        o->unk52 = 1;
+        o->unk51 = 0;
+        o->ay -= (s32)((0xC00 - (s16)o->ax) << 20) >> 23;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BD6E8);
 
