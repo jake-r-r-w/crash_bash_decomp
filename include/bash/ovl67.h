@@ -20,4 +20,9 @@ extern u16 D_800C417A;
 void func_800BBA4C(s32 arg0);
 extern HeroInfo Heroes[4];
 
+void func_800B59A8(s32 arg0);
+extern char D_80053EE4[];
+NAS *func_8007A524(s32 arg0, s32 *arg1, s32 arg2);
+void func_800898EC(s32 arg0);
+
 #endif /* BASH_OVL67_H */

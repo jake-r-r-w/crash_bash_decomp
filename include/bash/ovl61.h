@@ -10,6 +10,7 @@
 #include "bash/engine.h"
 
 extern HeroInfo Heroes[4];
+extern char D_80054504[];
 
 typedef struct Ovl61Vel {
     u8 pad0[0x10];
@@ -95,6 +96,8 @@ extern char func_800B40AC[];
 extern char func_800B9728[];
 
 void func_800B69E8(s32 arg0);
+
+void func_800B79F4(s32 arg0);
 
 s32 func_800BFD14(Ovl61Vel *v);
 

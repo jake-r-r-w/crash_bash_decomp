@@ -50,7 +50,51 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B5774);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B5838);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B59A8);
+void func_800B59A8(s32 arg0) {
+    SLONG_XYZ sp18;
+    EXTengine *temp_v0;
+    HeroInfo *base;
+    HeroInfo *base2;
+    HeroInfo *temp_s0;
+    HeroInfo *temp_s0_2;
+    _sfx_handler *temp_a0;
+    subengine *temp_v1;
+
+    base = Heroes;
+    temp_s0 = &base[arg0];
+    temp_s0->hero_hit = 0;
+    temp_s0->hero_immunity = 0;
+    temp_s0->hero_move->velocity_enable = 0;
+    temp_s0->hero_move->jump_max = 0;
+    temp_s0->hero_health = 0;
+    temp_s0->hero_frozen = 2;
+    temp_s0->hero_powerup->flags = 0;
+    temp_s0->hero_fx->flags = 0;
+    temp_s0->hero_pu = 0;
+    temp_s0->hero_pu_timer = 0;
+    temp_s0->hero_anim->sub = NULL;
+    temp_a0 = temp_s0->hero_powerup->sfx;
+    if (temp_a0 != NULL) {
+        StopSfx(temp_a0);
+    }
+    temp_s0->hero_status |= 0x2000;
+    temp_v1 = temp_s0->hero_sub;
+    temp_v1 = temp_v1->next;
+    if (temp_v1 != NULL) {
+        temp_v1->flags = 0;
+        temp_v1 = temp_v1->next;
+        if (temp_v1 != NULL) {
+            temp_v1->flags = 0;
+        }
+    }
+    base2 = Heroes;
+    temp_s0_2 = &base2[arg0];
+    temp_v0 = temp_s0_2->hero_eng;
+    sp18 = temp_v0->unk10;
+    func_8007A524(0, (s32 *)&sp18, (s32) &D_80053EE4);
+    PlaySfx(0x586, NULL, &temp_s0_2->hero_eng->unk10, 0x1000, 0x1E00, 0);
+    func_800898EC(arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B5B14);
 
