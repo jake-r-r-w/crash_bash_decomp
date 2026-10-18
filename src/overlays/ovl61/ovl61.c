@@ -114,7 +114,79 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B58E8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B5C30);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B5EC8);
+void func_800B5EC8(s32 arg0) {
+    HeroInfo *h;
+    HeroInfo *g;
+    HeroInfo *b;
+    HeroInfo *c;
+    EXTengine *e;
+    s32 a0;
+    s32 a1;
+    s32 sp;
+    s32 y;
+    s32 r;
+
+    r =((s32 (*)(EXTengine *))func_80025F44)(Heroes[arg0].hero_eng);
+    e = Heroes[arg0].hero_eng;
+    y = e->unk10.y - r;
+    if (!(Heroes[arg0].hero_status & 0xFA00)) {
+        s32 t;
+        s32 d;
+        a0 = ((D_8004E0D8 + arg0) << 6) & 0xFFF;
+        t = D_80068BD4[(a0 - 0x400) & 0xFFF].unk2;
+        a1 = t * 17 >> 10;
+        d = (t * 15 >> 11) - 0x80;
+        e->unk10.y = y + d;
+    } else {
+        e->unk10.y = y - 0x80;
+        a1 = 0;
+    }
+    c = Heroes;
+    g = c + arg0;
+    sp = g->hero_move->forward_speed;
+    a0 = g->hero_eng->unk1E;
+    if (sp != 0) {
+        if (arg0 == D_800C2724) {
+            a0 += sp;
+            a1 = sp;
+        }
+        if (arg0 == D_800C2728) {
+            a0 -= sp;
+            a1 = -sp;
+        }
+        if (arg0 == D_800C2720) {
+            a0 += sp;
+            a1 = sp;
+        }
+        if (arg0 == D_800C271C) {
+            a0 -= sp;
+            a1 = -sp;
+        }
+    }
+    b = Heroes;
+    h = b + arg0;
+    a0 &= 0xFFF;
+    h->hero_eng->unk1E = a0;
+    h->hero_move->forward_angle = a0;
+    sp = func_800154A0(h->hero_eng->unk20, a1);
+    {
+        EXTengine *e2 = h->hero_eng;
+        e2->unk20 = (u16)e2->unk20 + (sp >> 2);
+        func_800BE4D4(arg0, e2);
+    }
+    h->hero_eng->unk5E = 1;
+    if (!(h->hero_status & 0xF800)) {
+        if (h->hero_mode == 0x21) {
+            h->hero_sub->unk74 = 0x2006;
+            return;
+        }
+        if (h->hero_attack_timer != 0) {
+            h->hero_sub->unk74 = 0x2006;
+            return;
+        }
+        h->hero_sub->unk74 = 0x2004;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B60FC);
 
