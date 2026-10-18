@@ -566,4 +566,32 @@ extern u16 D_800C1380[];
 
 s32 func_800BE4D4(s32 arg0, EXTengine *unused);
 
+/* func_800B8A68: the object lists (D_8005AA38 by next, D_8005AA24 by child). */
+typedef struct Ovl61AiFux {
+    u8 pad0[0x1A];
+    u16 unk1A;
+    u8 pad1C[0x24 - 0x1C];
+    s16 unk24;
+} Ovl61AiFux;
+
+typedef struct Ovl61AiExt {
+    u8 pad0[0x16];
+    u16 unk16;
+    u16 unk18;
+    u16 unk1A;
+} Ovl61AiExt;
+
+typedef struct Ovl61AiNode {
+    u8 pad0[0x20];
+    struct Ovl61AiNode *next;
+    u8 pad24[0x2C - 0x24];
+    struct Ovl61AiNode *child;
+    u8 pad30[0x54 - 0x30];
+    EXTengine *eng;
+    Ovl61AiFux *fux;
+} Ovl61AiNode;
+
+extern u32 D_80051244[];
+extern s16 D_800C19F0[];
+
 #endif /* BASH_OVL61_H */
