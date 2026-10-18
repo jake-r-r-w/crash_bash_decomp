@@ -9829,7 +9829,8 @@
   "status": "matched"
  },
  "ovl6a:800BA374": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-18T19:33:07Z",
+  "status": "matched"
  },
  "ovl6a:800BA7BC": {
   "auto_diff": 12,

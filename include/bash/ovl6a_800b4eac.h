@@ -179,7 +179,9 @@ typedef struct Ovl6aSparkSet {
 } Ovl6aSparkSet;
 
 typedef struct Ovl6aSparks {
-    /* 0x00 */ u8 pad0[0x6C];
+    /* 0x00 */ u8 pad0[0x5C];
+    /* 0x5C */ struct Ovl6aSparks *next;
+    /* 0x60 */ u8 pad60[0xC];
     /* 0x6C */ Ovl6aSparkSet set;
 } Ovl6aSparks;
 
@@ -517,6 +519,8 @@ void func_800B9B0C(void);
 void func_800B9D1C(NAS *arg0);
 
 void func_800BA1B4(Ovl6aTrailDst *d, Ovl6aTrail *t, s32 idx);
+
+void func_800BA374(Ovl6aSparks *arg0, MATRIX *m);
 
 void func_800BA9C8(s32 arg0, Ovl6aSpawnEnt *arg1);
 

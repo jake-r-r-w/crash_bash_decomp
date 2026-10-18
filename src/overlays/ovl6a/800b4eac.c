@@ -1473,7 +1473,103 @@ void func_800BA1B4(Ovl6aTrailDst *d, Ovl6aTrail *t, s32 idx) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BA374);
+void func_800BA374(Ovl6aSparks *arg0, MATRIX *m) {
+    Ovl6aSparkRow *row;
+    Ovl6aFt4 *prim;
+    Ovl6aSparkSet *set;
+    SVECTOR *p;
+    s32 i;
+    s32 c;
+    s32 r;
+
+    set = &arg0->set;
+    row = set->rows;
+    set = (Ovl6aSparkSet *)((u8 *)set + (D_8005B690 & 1) * 4);
+    prim = set->src;
+    gte_SetRotMatrix(m);
+    gte_SetTransMatrix(m);
+    arg0 = arg0->next;
+    while (1) {
+        if (arg0 == NULL) {
+            break;
+        }
+        if (D_8005A624 == 0) {
+            row->unk134++;
+        }
+        i = 0;
+        if (row->unk134 == 0x14) {
+            row->unk138 = 1;
+        }
+        while (1) {
+            SVECTOR v;
+
+            if (i >= 8) {
+                break;
+            }
+            func_800BA1B4((Ovl6aTrailDst *)arg0, (Ovl6aTrail *)row, i);
+            if (row->unk138 != 0) {
+                row->unk13C = row->unk13C * 220 >> 8;
+            } else {
+                row->unk13C = 255 - i * 255 / 8;
+            }
+            c = func_8002A2EC(row->unk13C, row->unk13C, row->unk13C) | 0x2E000000;
+            if (i == 0) {
+                v.vx = row->rot[0].vx - 0x80;
+                v.vy = row->rot[0].vy - 0x80;
+                v.vz = row->rot[0].vz;
+                p = &v;
+                gte_ldv0(p);
+                gte_rtps();
+                *(s32 *)&prim->r0 = c;
+                gte_stsxy(&prim->x0);
+                prim->y1 = prim->y0;
+                prim->x2 = prim->x0;
+            } else {
+                *(s32 *)&prim->r0 = c;
+                prim->x0 = prim[-1].x1;
+                prim->y0 = prim[-1].y1;
+                prim->x2 = prim[-1].x3;
+                prim->y2 = prim[-1].y3;
+            }
+            if (i == 0) {
+                v.vx = row->rot[0].vx + 0x80;
+                v.vy = row->rot[0].vy + 0x80;
+                v.vz = row->rot[0].vz;
+                p = &v;
+                gte_ldv0(p);
+                gte_rtps();
+                gte_stsxy(&prim->x3);
+                prim->x1 = prim->x3;
+                prim->y2 = prim->y3;
+            } else {
+                r = 0x80 - i * 16;
+                v.vx = row->rot[i].vx + (r * D_80068BD4[row->unkE0[i].vz & 0xFFF].unk2 >> 12);
+                v.vy = row->rot[i].vy + (r * D_80068BD4[(row->unkE0[i].vz + 0x400) & 0xFFF].unk2 >> 12);
+                v.vz = row->rot[i].vz;
+                p = &v;
+                gte_ldv0(p);
+                gte_rtps();
+                gte_stsxy(&prim->x3);
+                v.vx = row->rot[i].vx + (r * D_80068BD4[(((row->unkE0[i].vz - 0x400) & 0xFFF) - 0x400) & 0xFFF].unk2 >> 12);
+                v.vy = row->rot[i].vy + (r * D_80068BD4[(row->unkE0[i].vz - 0x400) & 0xFFF].unk2 >> 12);
+                v.vz = row->rot[i].vz;
+                p = &v;
+                gte_ldv0(p);
+                gte_rtps();
+                gte_stsxy(&prim->x1);
+            }
+            if (row->unk40[i] != 0) {
+                prim->tag = (prim->tag & 0xFF000000) | (D_80056998.ot[700] & 0xFFFFFF);
+                p = (SVECTOR *)0xFF000000;
+                D_80056998.ot[700] = (D_80056998.ot[700] & (u32)p) | ((u32)prim & 0xFFFFFF);
+            }
+            prim++;
+            i++;
+        }
+        arg0 = arg0->next;
+        row++;
+    }
+}
 
 void func_800BA7BC(NAS *arg0) {
     if (D_8005A624 == 0) {
