@@ -34,6 +34,7 @@ extern u8 D_80055A74[];
 extern u8 D_80055AAC[];
 void func_800B8AA4(void);
 extern s32 D_800BD5B4;
+extern s32 D_800BD598[];
 extern u8 D_800BD5B8[];
 extern u8 D_800BDB14[];
 extern u8 D_800BF1A8[];

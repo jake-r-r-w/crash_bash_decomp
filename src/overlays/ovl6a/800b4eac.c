@@ -797,7 +797,41 @@ void func_800B875C(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B88B8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B8AA4);
+void func_800B8AA4(void) {
+    s32 mask = 0;
+    s32 i;
+    s32 j;
+    s32 best;
+    u8 *p;
+    u8 *q;
+
+    for (i = 0; i < 4; i++) {
+        best = -1;
+        for (j = 0; j < 4; j++) {
+            if (!((mask >> j) & 1)) {
+                if (D_8005A614[0x9F + j] > D_8005A614[0x9F + best] || best == -1) {
+                    best = j;
+                }
+            }
+        }
+        D_8005A614[0xA7 + i] = best;
+        mask |= 1 << best;
+    }
+    for (i = 0; i < 4; i++) {
+        s32 k;
+        k = 4;
+        q = D_8005A614 + i;
+        if (i == 0) {
+            D_800BD598[0] = k;
+        } else {
+            if (D_8005A614[q[0xA7] + 0x9F] == D_8005A614[(p = D_8005A614 + (j = i - 1))[0xA7] + 0x9F]) {
+                D_800BD598[i] = D_800BD598[i - 1];
+            } else {
+                D_800BD598[i] = D_800BD598[j] - 1;
+            }
+        }
+    }
+}
 
 void func_800B8BC8(void) {
     u8 *g = D_8005A614;
