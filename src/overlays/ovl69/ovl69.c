@@ -491,7 +491,25 @@ int func_800B6B88(int a0, int a1, int a2, int a3, int a4) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B6C04);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B6CF4);
+void func_800B6CF4(void) {
+    subengine *sub;
+
+    D_800BA744 = 0;
+    func_80095BEC(0, &D_800BA4D4);
+    func_80095BEC(2, &D_800BA35C);
+    func_80095BEC(3, &D_800BA3A4);
+    func_80095BEC(4, &D_800BA3EC);
+    func_80095BEC(5, &D_800BA434);
+    func_80095BEC(6, &D_800BA47C);
+    GetEngineSlot(1)->sub[4].flags |= 0x8000;
+    GetEngineSlot(1)->sub[5].flags |= 0x8000;
+    GetEngineSlot(1)->sub[6].flags |= 0x8000;
+    GetEngineSlot(1)->sub[7].flags |= 0x8000;
+    sub = GetEngineSlot(1)->sub;
+    D_800BA740 = 0;
+    sub[3].flags |= 0x8000;
+    func_800B7BE0(0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B6E0C);
 

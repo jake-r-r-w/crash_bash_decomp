@@ -77,6 +77,14 @@ typedef struct {
 extern Ovl69Rec D_800B9B44[];
 extern s32 D_800B9634;
 extern s32 D_800B9A00;
+extern s32 D_800BA35C;
+extern s32 D_800BA3A4;
+extern s32 D_800BA3EC;
+extern s32 D_800BA434;
+extern s32 D_800BA47C;
+extern s32 D_800BA4D4;
+extern s32 D_800BA740;
+extern s32 D_800BA744;
 void func_800B5B10(s32 arg0);
 void func_800B64B8(void);
 
@@ -149,6 +157,8 @@ void func_800B57BC(void);
 void func_800B58E4(void);
 
 s8 func_800B6ACC(s32 a0);
+
+void func_800B6CF4(void);
 
 void func_800B7B30(void);
 
