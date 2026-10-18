@@ -223,7 +223,17 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B838C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B83D4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B8474);
+void func_800B8474(s32 arg0) {
+    u8 *o;
+
+    func_800B83D4();
+    o = (u8 *)func_8001E48C(2);
+    if (o != NULL) {
+        D_8009EE9C.unkC = *(s32 *)(o + 0x58);
+        D_8009EE9C.unk10 = *(s32 *)(o + 0x74);
+    }
+    func_800B5710(arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B84CC);
 

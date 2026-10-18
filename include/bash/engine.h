@@ -246,7 +246,7 @@ extern u8 D_8009EB3C[];
 extern s32 D_8009EB98;
 typedef struct { u16 a, b, c, flags; } EngEntry;
 typedef struct { s32 unk0; EngEntry *entries; s32 unk8, unkC, unk10; } EngTable;
-typedef struct { u16 unk0; s32 unk4; s32 unk8; } EngState;
+typedef struct { u16 unk0; s32 unk4; s32 unk8; s32 unkC; s32 unk10; } EngState;
 extern EngState D_8009EE9C;
 extern s32 D_8009E5DC;
 extern u8 D_8005A676;
