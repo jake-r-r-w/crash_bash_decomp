@@ -77,7 +77,23 @@ void func_800B7B7C(void) {
     func_80095A04(2);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B7BA4);
+void func_800B7BA4(void) {
+    EXTengine *e;
+
+    func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
+    D_800569AC = *(s32 *)D_8009F644;
+    if (D_800BCED4 >= 0) {
+        if (!(D_8005A624 & 1)) {
+            e = GetEngineSlot(1);
+            e->flags |= 0x8000;
+            e->unk10.y = 0x1D6 - (D_800BF260 >> 5);
+            func_8001C2C0((u8 *)GetEngineSlot(1));
+        }
+    }
+    if (D_800BF260 != 0 && !(D_8005A624 & 1)) {
+        func_8001C2C0((u8 *)GetEngineSlot(2));
+    }
+}
 
 void func_800B7C78(void) {
     func_800B64C8();
@@ -87,7 +103,23 @@ void func_800B7C98(void) {
     D_800BCED4 = -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B7CA8);
+void func_800B7CA8(void) {
+    EXTengine *e;
+
+    func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
+    D_800569AC = *(s32 *)D_8009F644;
+    if (D_800BCED4 >= 0) {
+        if (!(D_8005A624 & 1)) {
+            e = GetEngineSlot(1);
+            e->flags |= 0x8000;
+            e->unk10.y = 0x1D6 - (D_800BF260 >> 5);
+            func_8001C2C0((u8 *)GetEngineSlot(1));
+        }
+    }
+    if (D_800BF260 != 0 && !(D_8005A624 & 1)) {
+        func_8001C2C0((u8 *)GetEngineSlot(2));
+    }
+}
 
 void func_800B7D7C(void) {
     D_800BCED4 = -1;

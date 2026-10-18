@@ -8,6 +8,8 @@
 #include "common.h"
 #include "bash/ovl6a.h"
 
+extern s32 D_800BF260;
+
 void func_800B7874(void);
 
 void func_800B7988(s32 *arg0, s32 flag, s32 *out);
@@ -16,9 +18,13 @@ void func_800B7A78(void);
 
 void func_800B7B7C(void);
 
+void func_800B7BA4(void);
+
 void func_800B7C78(void);
 
 void func_800B7C98(void);
+
+void func_800B7CA8(void);
 
 void func_800B7D7C(void);
 
