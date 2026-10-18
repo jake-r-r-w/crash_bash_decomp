@@ -123,7 +123,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C2F78);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", PlotDummyCamera);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", InitDummyCamera);
+void InitDummyCamera(NAS *nas) {
+    *(s32 *)((u8 *)nas->Engine + 0x14) = -0x480;
+}
 
 void func_800C3184(void) {
 }

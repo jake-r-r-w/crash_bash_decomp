@@ -14,6 +14,8 @@ void func_800C2E58(void);
 
 s32 func_800C2F70(void);
 
+void InitDummyCamera(NAS *nas);
+
 void func_800C3184(void);
 
 void func_800C3234(void);
