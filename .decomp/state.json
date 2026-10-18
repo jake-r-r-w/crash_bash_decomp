@@ -6493,7 +6493,8 @@
   "status": "matched"
  },
  "ovl61:800C0804": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-18T11:08:52Z",
+  "status": "matched"
  },
  "ovl61:800C08C8": {
   "auto_diff": 40,
@@ -8582,7 +8583,9 @@
   "auto_failed": "compile"
  },
  "ovl67:800BBBB4": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-18T11:09:12Z",
+  "status": "matched",
+  "via": "copy"
  },
  "ovl67:800BBC78": {
   "auto_diff": 20,

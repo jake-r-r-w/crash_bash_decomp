@@ -605,7 +605,17 @@ void func_800C0760(s32 arg0) {
     s->sub->unk68 = -0x10;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C0804);
+s32 func_800C0804(s32 arg0, s16 arg1, s32 arg2, s16 arg3) {
+    s32 a = arg1 * D_80068BD4[((arg0 & 0xFFFF) - 0x400) & 0xFFF].unk2;
+    s32 b = arg1 * D_80068BD4[arg0 & 0xFFF].unk2;
+    s32 c = arg3 * D_80068BD4[((arg2 & 0xFFFF) - 0x400) & 0xFFF].unk2;
+    s32 d = arg3 * D_80068BD4[arg2 & 0xFFF].unk2;
+    s32 x = a >> 12;
+    s32 z = b >> 12;
+    x += c >> 12;
+    z += d >> 12;
+    return get_angle(x, z) & 0xFFFF;
+}
 
 s32 func_800C08C8(Ovl61Obj *arg0) {
     Ovl61Circle *base = D_800C1A7C;

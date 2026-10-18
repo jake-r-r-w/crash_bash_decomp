@@ -231,7 +231,17 @@ void func_800BBA4C(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BBB10);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BBBB4);
+s32 func_800BBBB4(s32 arg0, s16 arg1, s32 arg2, s16 arg3) {
+    s32 a = arg1 * D_80068BD4[((arg0 & 0xFFFF) - 0x400) & 0xFFF].unk2;
+    s32 b = arg1 * D_80068BD4[arg0 & 0xFFF].unk2;
+    s32 c = arg3 * D_80068BD4[((arg2 & 0xFFFF) - 0x400) & 0xFFF].unk2;
+    s32 d = arg3 * D_80068BD4[arg2 & 0xFFF].unk2;
+    s32 x = a >> 12;
+    s32 z = b >> 12;
+    x += c >> 12;
+    z += d >> 12;
+    return get_angle(x, z) & 0xFFFF;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BBC78);
 

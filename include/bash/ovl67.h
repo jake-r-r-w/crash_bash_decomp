@@ -25,4 +25,6 @@ extern char D_80053EE4[];
 NAS *func_8007A524(s32 arg0, s32 *arg1, s32 arg2);
 void func_800898EC(s32 arg0);
 
+s32 func_800BBBB4(s32 arg0, s16 arg1, s32 arg2, s16 arg3);
+
 #endif /* BASH_OVL67_H */
