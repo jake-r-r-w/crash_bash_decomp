@@ -2792,7 +2792,6 @@ void AlignGrabBall(EXTengine *arg0, EXTmotion *arg1, EXTobject *arg2) {
 }
 
 void Plot_N_Gin(NAS *arg0) {
-    static const void *const tbl[6] = {&&l0, &&l1, &&l2, &&l3, &&l4, &&l5};
     EXTengine *eng;
     Ovl61Gin *gin;
     s32 i;
@@ -2813,11 +2812,8 @@ void Plot_N_Gin(NAS *arg0) {
             func_800250B0(arg0);
         }
         s = (u16)gin->unk1A;
-        if (s < 6) {
-            goto *tbl[s];
-        }
-        goto l0;
-    l1:
+        switch (s) {
+        case 1:
             eng->unk10.y = D_8005A5D8;
             gin->unk1A = 2;
             gin->unk22 = 0xA;
@@ -2825,8 +2821,8 @@ void Plot_N_Gin(NAS *arg0) {
             PlaySfx(0x5BE, NULL, NULL, 0x1000, 0x1E00, 0);
             func_8007A524(0, &eng->unk10.x, (s32)D_80054574);
             eng->sub->unk74 = 0x2001;
-            goto end;
-    l2:
+            break;
+        case 2:
             eng->unk1E += 0x20;
             if (gin->unk22 != 0) {
                 gin->unk22--;
@@ -2841,13 +2837,13 @@ void Plot_N_Gin(NAS *arg0) {
             func_800250B0(arg0);
             eng->unk5E = 1;
             return;
-    l3:
+        case 3:
             eng->unk1E += gin->unk20;
             gin->unk20 += 4;
             func_800250B0(arg0);
             if (gin->unk22 != 0) {
                 gin->unk22--;
-                goto end;
+                break;
             }
             eng->sub->unk74 = 0x2006;
             gin->unk1A = 4;
@@ -2860,8 +2856,8 @@ void Plot_N_Gin(NAS *arg0) {
             if (((Ovl61GinView *)D_8005A614)->unk6C != 0) {
                 gin->unk22 = 0xD2;
             }
-            goto end;
-    l4:
+            break;
+        case 4:
             eng->unk1E += 0x1C7;
             if (((Ovl61GinView *)D_8005A614)->unk32 & 0x80) {
                 if (gin->unk20 != 0) {
@@ -2891,8 +2887,8 @@ void Plot_N_Gin(NAS *arg0) {
             } else {
                 gin->unk1A = 5;
             }
-            goto end;
-    l5:
+            break;
+        case 5:
             if (eng->sfx != NULL) {
                 StopSfx(eng->sfx);
             }
@@ -2905,8 +2901,9 @@ void Plot_N_Gin(NAS *arg0) {
             arg0->Class &= 0xFDFF;
             gin->unk1A = 0;
             gin->unk22 = (Random(0xF) + 8) * 0x1E;
-            goto end;
-    l0:
+            break;
+        case 0:
+        default:
             gin->unk1C = 0;
             eng->unk10.y = -0x1000;
             arg0->Class &= 0xFDFF;
@@ -2920,6 +2917,7 @@ void Plot_N_Gin(NAS *arg0) {
             } else {
                 gin->unk1A = 1;
             }
+        }
     }
 end:
     eng->unk5E = 1;
