@@ -2497,7 +2497,55 @@ void InitBall(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", PlotBall);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", CalcArkInfluence);
+void CalcArkInfluence(EXTmotion *m) {
+    s32 sx;
+    s32 sz;
+    s32 ax;
+    s32 az;
+    s32 speed;
+    s32 angle;
+    s32 t;
+    s32 x1;
+    s32 z1;
+    s16 vel;
+    s32 scale;
+
+    if (D_8005A648 == 0x11) {
+        sx = abs((D_80068BD4[(D_800C1C68 - 0x400) & 0xFFF].unk2 * 5) >> 3);
+        sz = abs((D_80068BD4[(D_800C1C6C - 0x400) & 0xFFF].unk2 * 5) >> 3);
+        az = 0;
+        ax = (D_800C1C68 < 0) ? 0x800 : 0;
+        if (D_800C1C68 > 0) {
+            ax = 0;
+        }
+        if (D_800C1C6C < 0) {
+            az = 0x400;
+        }
+        if (D_800C1C6C > 0) {
+            az = 0xC00;
+        }
+        scale = (s16)sx;
+        x1 = (scale * D_80068BD4[(ax - 0x400) & 0xFFF].unk2) >> 12;
+        z1 = (scale * D_80068BD4[ax].unk2) >> 12;
+        scale = (s16)sz;
+        t = (scale * D_80068BD4[(az - 0x400) & 0xFFF].unk2) >> 12;
+        x1 += t;
+        t = (scale * D_80068BD4[az].unk2) >> 12;
+        angle = get_angle(x1, z1 + t);
+        m->Zvel = (sx + sz) >> 6;
+        m->Za = angle;
+    }
+    speed = m->Zvel;
+    if (speed != 0) {
+        vel = m->Xvel;
+        x1 = (vel * D_80068BD4[((u16)m->Xa - 0x400) & 0xFFF].unk2) >> 12;
+        z1 = (vel * D_80068BD4[(u16)m->Xa & 0xFFF].unk2) >> 12;
+        t = (speed * D_80068BD4[((u16)m->Za - 0x400) & 0xFFF].unk2) >> 12;
+        x1 += t;
+        t = (speed * D_80068BD4[(u16)m->Za & 0xFFF].unk2) >> 12;
+        m->Xa = get_angle(x1, z1 + t) & 0xFFF;
+    }
+}
 
 void FreeGrabbedObject(u32 arg0, bool arg1) {
     VECTOR sp18;
