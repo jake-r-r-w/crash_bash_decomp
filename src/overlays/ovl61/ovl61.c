@@ -1669,7 +1669,81 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", CalcArkInfluence);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", FreeGrabbedObject);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", AlignGrabBall);
+void AlignGrabBall(EXTengine *arg0, EXTmotion *arg1, EXTobject *arg2) {
+    SLONG_XYZ v;
+    VECTOR target;
+    HeroInfo *hero;
+    EXTengine *o;
+    NAS *n;
+    void *t;
+    s32 i;
+    s32 dx;
+    s32 dz;
+    s32 r;
+    s32 rr;
+    HeroInfo *base;
+    s32 a1;
+    s32 a2;
+    s32 d;
+
+    base = Heroes;
+    hero = &base[arg2->player];
+    if (func_80015780(hero->hero_eng, hero->hero_sub, 4, &target) == NULL) {
+        *(SLONG_XYZ *)&target = hero->hero_eng->unk10;
+    }
+    for (i = 0; i < 4; i++) {
+        if (arg0->collision_box.flags & 0x40) {
+            r = D_800C1A7C[i].r + arg0->collision_box.radius;
+        } else {
+            r = D_800C1A7C[i].r + 0x80;
+        }
+        dx = arg0->unk10.x - D_800C1A7C[i].x;
+        dz = arg0->unk10.z - D_800C1A7C[i].z;
+        if (dx * dx + dz * dz < r * r) {
+            a1 = get_angle(-dx, -dz);
+            v.x = D_800C1A7C[i].x;
+            v.y = 0;
+            v.z = D_800C1A7C[i].z;
+            func_800BE1C4(&arg0->unk10, a1, &v, r);
+            dx = -arg0->unk10.x;
+            arg1->Xa = get_angle(dx + target.vx, (dz = -arg0->unk10.z) + target.vz);
+        }
+    }
+    r = 0x80;
+    if (arg0->collision_box.flags & 0x40) {
+        r = arg0->collision_box.radius;
+    }
+    r *= 2;
+    rr = r * r;
+    for (n = D_8005AA2C; n != NULL; n = n->Solid.Child) {
+        o = n->Engine;
+        if (o != NULL && o != arg0) {
+            t = FindExtension(n, 0x1000);
+            if (t != NULL && *(u16 *)((u8 *)t + 0x1A) == 2) {
+                dx = o->unk10.x - arg0->unk10.x;
+                dz = o->unk10.z - arg0->unk10.z;
+                if (dx * dx + dz * dz < rr) {
+                    a1 = get_angle(target.vx - arg0->unk10.x, target.vz - arg0->unk10.z);
+                    dx = -o->unk10.x;
+                    a2 = get_angle(dx + target.vx, (dz = -o->unk10.z) + target.vz);
+                    d = (0xE3 - func_80015480(a1, a2)) >> 1;
+                    if (func_800154A0(a1, a2) < 0) {
+                        a1 += d;
+                        a2 -= d;
+                    } else {
+                        a2 += d;
+                        a1 -= d;
+                    }
+                    arg1->Xa = a1;
+                    t = FindExtension(n, 0x800);
+                    if (t != NULL) {
+                        *(s16 *)((u8 *)t + 0x16) = a2;
+                    }
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Plot_N_Gin);
 
