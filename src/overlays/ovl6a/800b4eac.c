@@ -95,7 +95,22 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/ovl6a/800b4eac", D_800B3618);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B6FD4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B77B0);
+void func_800B77B0(NAS *nas) {
+    ScriptExt40 *ext = AddExtension(nas, 0x40, 0x10000000);
+
+    if (ext != NULL) {
+        ext->cursor = func_80024E30(nas, &D_800BCCE8);
+        nas->Engine->sub->unk6C = *(void **)D_80058AD0;
+        nas->Engine->sub->unk74 = 0x2018;
+        nas->Engine->sub->flags &= 0xFEFFFFFF;
+        nas->Engine->unk5D = 2;
+        ext->unk18 = 0;
+        ext->unk24 = 0xC;
+        ext->unk14 = 0;
+        ext->unk38 = 0;
+        ext->unk3C = 0;
+    }
+}
 
 void func_800B7874(void) {
 }
