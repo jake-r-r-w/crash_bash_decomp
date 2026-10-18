@@ -421,7 +421,13 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B7458);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B79A8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B7B30);
+void func_800B7B30(void) {
+    GetEngineSlot(1)->sub[4].flags &= ~0x8000;
+    GetEngineSlot(1)->sub[5].flags &= ~0x8000;
+    GetEngineSlot(1)->sub[6].flags &= ~0x8000;
+    GetEngineSlot(1)->sub[7].flags &= ~0x8000;
+    GetEngineSlot(1)->sub[3].flags &= ~0x8000;
+}
 
 void func_800B7BE0(s32 arg0) {
     u8 *p = (u8 *)GetEngineSlot(0)->sub + 0xA8;
