@@ -24,7 +24,7 @@
   "bigBudgetUsd": 20,
   "bigSessions": 6,
   "bigStale": 2,
-  "bigPermuteMinutes": 60,
+  "bigPermuteMinutes": 30,
   "escalateBig": true,
   "seedFamilies": true,
   "chain": 0,

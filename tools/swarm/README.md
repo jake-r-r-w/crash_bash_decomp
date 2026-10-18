@@ -35,7 +35,7 @@ Needs Docker and `claude` on `PATH` (logged in once with `claude auth login`). W
   doesn't match gets one more attempt with the second.
 - Big mode: `--big-workers` (1), `--big-bytes` (600), `--big-model` (`opus`), `--big-minutes`
   (150), `--big-budget-usd` (20), `--big-sessions` (6), `--big-stale` (2),
-  `--big-permute-minutes` (60), `--escalate-big` (`true`).
+  `--big-permute-minutes` (30), `--escalate-big` (`true`).
 - `--permuters` (2), `--permute-minutes` (10); `--permuters 0` turns the pool off.
 - `--branch` (`swarm/integration`), `--remote` (`origin`): each match is pushed as soon as the gate
   passes. `--branch main` commits straight to `main`, like a hand session.
