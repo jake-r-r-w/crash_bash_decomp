@@ -58,7 +58,7 @@ extern Ovl61Circle *D_800C1A7C;
 
 s32 func_800B4EFC(Ovl61Obj *arg0);
 
-void func_800B84B8(void);
+s32 func_800B84B8(s32 arg0);
 void func_800BDD30(s32 arg0);
 
 void func_800C0448(s32 arg0);
