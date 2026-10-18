@@ -11,6 +11,8 @@
 s32 func_800BB05C(u8 *arg0);
 u8 *func_800BB624(void);
 void func_800BBD18(void);
+void func_800B34A4(void);
+void func_800B361C(void);
 
 extern u16 D_800C417A;
 extern u16 D_800C438A;
@@ -73,5 +75,7 @@ void PlotN2ODeadWall(NAS *arg0);
 void func_800BB5F0(void);
 
 void func_800BB788(s32 arg0);
+
+void func_800BBD68(void);
 
 #endif /* BASH_OVL67_H */
