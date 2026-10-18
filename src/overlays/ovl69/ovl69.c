@@ -335,7 +335,9 @@ s32 func_800B7D98(s32 arg0, s32 arg1) {
     return *(s32 *)(D_800BA324[arg0].unk0 + (arg1 << 4) + 8);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B7DC0);
+s32 func_800B7DC0(s32 a, s32 b) {
+    return *(s32 *)(D_800BA324[a].unk0 + (b << 4) + 0xC);
+}
 
 s32 func_800B7DE8(s32 arg0) {
     return D_800BA324[arg0].unk4;
