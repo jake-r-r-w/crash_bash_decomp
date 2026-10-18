@@ -8,6 +8,7 @@
 #include "common.h"
 #include "bash/ovl6a.h"
 
+extern s32 D_800BD5A8;
 extern s32 D_800BF260;
 extern EXTengine D_800BF100;
 extern s32 D_800BF19C;
@@ -245,6 +246,8 @@ typedef struct ScriptExt40 {
 extern ScriptInit D_800BCCE8;
 
 void func_800B77B0(NAS *nas);
+
+void func_800B8BC8(void);
 
 void func_800BAAFC(void);
 
