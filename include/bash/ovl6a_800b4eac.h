@@ -58,6 +58,17 @@ typedef struct Ovl6aEntry12 {
     s32 unk8;
 } Ovl6aEntry12;
 extern Ovl6aEntry12 D_800BD7E0[];
+/* name-entry key, 0x10 bytes, at D_800BD7E0[].unk0 */
+typedef struct Ovl6aKey {
+    /* 0x0 */ s32 unk0;
+    /* 0x4 */ u8 *unk4;
+    /* 0x8 */ s16 unk8;
+    /* 0xA */ s8 unkA;
+    /* 0xB */ s8 unkB;
+    /* 0xC */ s8 unkC;
+    /* 0xD */ s8 unkD;
+    /* 0xE */ s16 unkE;
+} Ovl6aKey;
 typedef struct PodiumFx {
     /* 0x00 */ u8 pad0[4];
     /* 0x04 */ s32 unk4;
@@ -523,5 +534,7 @@ void func_800BA1B4(Ovl6aTrailDst *d, Ovl6aTrail *t, s32 idx);
 void func_800BA374(Ovl6aSparks *arg0, MATRIX *m);
 
 void func_800BA9C8(s32 arg0, Ovl6aSpawnEnt *arg1);
+
+void func_800BABEC(void);
 
 #endif /* BASH_OVL6A_800B4EAC_H */

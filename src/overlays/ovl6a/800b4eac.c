@@ -1720,7 +1720,98 @@ void func_800BAB40(void) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl6a/800b4eac", D_800B3894);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BABEC);
+void func_800BABEC(void) {
+    Ovl6aKey *k;
+    PadButtons *pad;
+    Ovl6aEntry12 *e;
+    Ovl6aEntry12 *e4;
+    subengine *s;
+    subengine *cur;
+    s32 i;
+    s32 j;
+    u8 c;
+
+    if ((u32)(D_800BDB50 - 1) >= 2U) {
+        s = D_800BDB58;
+        i = D_800BF19C;
+        cur = s + i;
+        j = D_800BF1A0 * sizeof(Ovl6aEntry12);
+        cur->unk7C = 0;
+        k = (Ovl6aKey *)((Ovl6aEntry12 *)((u8 *)D_800BD7E0 + j))->unk0 + i;
+        pad = (PadButtons *)D_80051338;
+        if (pad->pressed & 0x80) {
+            D_800BF19C += k->unkA;
+            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (pad->pressed & 0x20) {
+            D_800BF19C += k->unkB;
+            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (pad->pressed & 0x10) {
+            D_800BF19C += k->unkC;
+            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (pad->pressed & 0x40) {
+            D_800BF19C += k->unkD;
+            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (pad->pressed & 0x4000) {
+            switch (k->unk8) {
+            case 4:
+                e4 = &D_800BD7E0[D_800BF1A0];
+                if (D_800BF1A4 < 8) {
+                    D_8005A614[D_800BF1A4 + 0x18] = 0x20;
+                    PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+                    if (D_800BF1A4 < 7) {
+                        D_800BF1A4 += 1;
+                    }
+                    if (D_800BF1A4 == 8) {
+                        D_800BF19C = e4->unk8;
+                    }
+                } else {
+                    PlaySfx(0x38D, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                break;
+            case 0:
+                e = &D_800BD7E0[D_800BF1A0];
+                c = *k->unk4;
+                if (D_800BF1A4 < 8) {
+                    D_8005A614[D_800BF1A4 + 0x18] = c;
+                    PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+                    if (D_800BF1A4 < 7) {
+                        D_800BF1A4 += 1;
+                    }
+                    if (D_800BF1A4 == 8) {
+                        D_800BF19C = e->unk8;
+                    }
+                } else {
+                    PlaySfx(0x38D, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                break;
+            case 3:
+                if (D_8005A614[D_800BF1A4 + 0x18] == 0x20) {
+                    if (D_800BF1A4 > 0) {
+                        D_800BF1A4 -= 1;
+                        PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
+                    } else {
+                        PlaySfx(0x38D, NULL, NULL, 0x1000, 0x1E00, 0);
+                    }
+                }
+                D_8005A614[D_800BF1A4 + 0x18] = 0x20;
+                break;
+            case 1:
+                PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+                D_800BDB50 = 1;
+                break;
+            case 2:
+                PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
+                D_800BDB50 = 2;
+                break;
+            }
+        }
+        D_800BDB58[D_800BF19C].unk7C = 2;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BB038);
 
