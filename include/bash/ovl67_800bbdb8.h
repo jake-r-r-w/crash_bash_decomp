@@ -68,4 +68,6 @@ extern s32 D_800C447C;
 
 void func_800C2BB0(void);
 
+void func_800C2EF8(s32 arg0);
+
 #endif /* BASH_OVL67_800BBDB8_H */

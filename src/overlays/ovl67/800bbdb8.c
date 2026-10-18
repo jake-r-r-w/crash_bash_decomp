@@ -167,7 +167,13 @@ void func_800C2E58(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C2E60);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C2EF8);
+void func_800C2EF8(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = &base[arg0];
+
+    h->hero_eng->unk1E += func_800154A0(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
+    h->hero_eng->unk5E = 1;
+}
 
 s32 func_800C2F70(void) {
     return 0;
