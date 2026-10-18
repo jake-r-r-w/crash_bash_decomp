@@ -10,12 +10,13 @@ At the end of a session, update **Current state**, **Next** and **Open
 leads**, add any new gotcha, and add one short entry at the top of the
 **Session log**.
 
-## Current state (2026-10-16)
+## Current state (2026-10-18)
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1136/2551 game functions matched: **main.exe is complete (575/575)**;
+- 1194/2551 game functions matched: **main.exe is complete (575/575)**;
   engine overlay 2 left, both parked (`func_8007F314`, `PlotScriptFX`),
+  ovl61 55 of 90 (2026-10-18 swarm run),
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - The engine overlay is six files and `ovl5d` three, `ovl5e`, `ovl66`,
@@ -37,6 +38,15 @@ leads**, add any new gotcha, and add one short entry at the top of the
   identical (docs/ASSETS.md). ROADMAP's asset extraction box is ticked.
 
 ## Next
+
+**ovl61 (2026-10-18, run 20261018104310):** stopped by hand after 80 min,
+$35.51: 55 matched, 1 parked (`func_800B60FC`, registers 14/126), 35
+left. Resume with the same line (`run --branch main --seg overlays/ovl61
+--max-minutes 240 --max-run-usd 80 --max-functions 500`). The permuter
+matched `func_800B7518` just as the stop landed, so it needs a worker to
+port it (its checkpoint is in the swarm dir). Checkpoints near registers:
+`CalcArkInfluence` 4/150, `func_800BFA24` 5/60, `func_800BD510` 11/151;
+run `permute --near` on them. Then `swarm.mjs fold` for the run's pattern rows.
 
 **Tooling: the 2026-10-16 tooling plan is done and removed** (it is in git
 history, `git show 94f04c7:docs/TOOLING_PLAN.md`; what it left is under
@@ -275,6 +285,10 @@ Other:
   (`func_80085890`: two `func_80085890()` calls in ovl63/ovl65). Fix the
   calls (`grep -rn NAME src`), not the prototype; the full build proves the
   callers' bytes. The gate's message shows cc1's error since 2026-10-16.
+- **Don't use `swarm.mjs run --dry-run` to preview a queue.** It records its
+  fake parks in the swarm dir's `history.json`, which counts them as attempts
+  and moves functions to big mode. If you ran one, delete the entries whose
+  only notes say `dry run`.
 - **Smoke-test swarm changes end to end** before a real run: a scripted
   `--worker-cmd` run against a local bare remote (`--remote <bare clone>
   --branch smoke --only KEY`) catches what the unit tests can't (clone setup,
@@ -436,6 +450,11 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-18 (swarm):** ovl61 run 20261018104310, 80 min, $35.51: 55
+  matched (about $0.65 each), 1 parked, stopped by hand with 35 left (see
+  Next). Gotcha: `run --dry-run` writes its fake "parked: dry run" results
+  to `history.json` and charges attempts; I deleted its 89 entries before
+  the real run (backup `history.json.bak-dryrun` in the swarm dir).
 - **2026-10-18 (hand):** `PlotScriptFX` parked at regions 95/112 blocks,
   484/520 exact, no hack or permuter (the swarm had 87/112 with a dead
   store and volatile casts). C under `#ifdef NON_MATCHING`; the
