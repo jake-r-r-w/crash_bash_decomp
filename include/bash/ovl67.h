@@ -17,8 +17,8 @@ void func_800B361C(void);
 extern u16 *D_8009D6EC;
 
 extern u8 D_80053EAC[];
+extern EXTengine *D_8009D530;
 extern u16 D_800C39A0[];
-extern s32 *D_8009D530;
 extern s16 D_800C4150[][3];
 extern u16 D_800C417A;
 extern u16 D_800C438A;
@@ -228,6 +228,8 @@ s32 func_800B817C(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5);
 void PlotN2OmissileExplode(NAS *nas);
 
 void func_800BB3A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
+
+void InitN2Ofirstmissile(NAS *nas);
 
 void InitN2Omissile(NAS *nas);
 
