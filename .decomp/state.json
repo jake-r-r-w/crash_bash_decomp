@@ -6288,7 +6288,8 @@
   "status": "matched"
  },
  "ovl61:800B7518": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-18T12:52:14Z",
+  "status": "matched"
  },
  "ovl61:800B7688": {
   "matched_at": "2026-10-18T11:30:45Z",

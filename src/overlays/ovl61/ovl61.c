@@ -690,7 +690,51 @@ void func_800B7450(s32 arg0) {
     PlaySfx(D_800C18E0[arg0], NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B7518);
+void func_800B7518(s32 arg0) {
+    HeroInfo *base;
+    HeroInfo *base2;
+    HeroInfo *h;
+    subengine *s;
+    subengine *sub;
+    u16 cnt;
+    s32 scale;
+    s32 ang;
+
+    s = 0;
+    base = Heroes;
+    h = &base[arg0];
+    cnt = h->hero_attack_counter;
+    sub = h->hero_sub;
+    scale = (cnt * 0x600) + 0x1000;
+    ang = (cnt << 9) + 0x800;
+    sub = sub->next;
+    if (sub != 0) {
+        s = sub->next;
+        if (s != 0) {
+            s->unk74 = 0x2001;
+            s->unk20.x = scale & 0xFFFF;
+            s->unk20.y = scale & 0xFFFF;
+            s->unk20.z = scale & 0xFFFF;
+            s->unk76 = ang;
+            s->unk52 = 1;
+            s->flags |= 0x40008021;
+        }
+    }
+    if (ArkHeroRad2ObjectCollision(arg0, (scale & 0xFFFF) >> 3, 0)) {
+        Heroes[arg0].hero_attack_timer = 0;
+    }
+    base2 = Heroes;
+    base2[arg0].hero_attack_counter++;
+    if (base2[arg0].hero_attack_counter >= 4) {
+        SetHeroAction((HeroInfo *)arg0, 0x1C);
+        if (s != 0) {
+            s->flags &= 0xFFFF7FFF;
+        }
+    }
+    if (func_800B649C(arg0) != 0) {
+        func_8008502C(arg0);
+    }
+}
 
 void func_800B7688(s32 arg0) {
     HeroInfo *base;
