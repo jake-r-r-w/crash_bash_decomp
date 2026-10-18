@@ -413,7 +413,46 @@ void func_800B66D0(s32 arg0) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl61/ovl61", D_800B32B4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B68C8);
+void func_800B68C8(s32 arg0) {
+    s32 id;
+    SLONG_XYZ *pos;
+    HeroInfo *base;
+
+    SetHeroSeq((HeroInfo *)arg0, 0x1C);
+    if (Random(3) == 0 || D_8005A614[arg0 + 0x5C] == 0) {
+        static const void *const tbl[] = {&&l1, &&l2, &&l3, &&l4, &&l5, &&l6, &&l7, &&l8};
+        u32 c;
+
+        c = Heroes[arg0].hero_name - 1;
+        if (c < 8) {
+            goto *tbl[c];
+        }
+        return;
+    l1:
+        PlaySfx(7, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        return;
+    l2:
+        PlaySfx(0x39, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        return;
+    l3:
+        PlaySfx(0x6B, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        return;
+    l4:
+        PlaySfx(0x9D, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        return;
+    l5:
+        PlaySfx(0x133, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        return;
+    l6:
+        PlaySfx(0x165, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        return;
+    l7:
+        PlaySfx(0x101, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        return;
+    l8:
+        PlaySfx(0xCF, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+    }
+}
 
 void func_800B69E8(s32 arg0) {
     HeroInfo *base;
