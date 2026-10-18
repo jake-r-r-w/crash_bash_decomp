@@ -124,7 +124,18 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C2C08);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C2C8C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C2D10);
+s32 func_800C2D10(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *hero = &base[arg0];
+
+    if (hero->hero_status & 0x200) {
+        if (hero->hero_mode != 0x32) {
+            SetHeroAction((HeroInfo *)arg0, 0x32);
+        }
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C2D80);
 
