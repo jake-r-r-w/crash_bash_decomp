@@ -49,6 +49,8 @@ typedef struct {
 
 extern Ovl69Entry D_800BA324[];
 
+void func_800B5A94(void);
+
 s32 func_800B7DE8(s32 arg0);
 
 void func_800B7E04(void);
