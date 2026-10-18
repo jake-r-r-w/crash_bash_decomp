@@ -110,6 +110,17 @@ extern Ovl61Circle *D_800C1A7C;
 extern Ovl61Circle D_800C1A44[];
 extern ScriptInit D_800C1554;
 
+typedef struct {
+    u8 pad0[0x12];
+    s16 state;
+} Ovl61Slot;
+
+extern Ovl61Slot D_800C1E28[];
+
+void func_800BE1C4(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r);
+
+s32 func_800B4880(Ovl61Obj *arg0, s32 arg1);
+
 s32 func_800B4EFC(Ovl61Obj *arg0);
 
 s32 func_800B84B8(s32 arg0);

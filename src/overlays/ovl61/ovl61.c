@@ -15,7 +15,80 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B42F4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B453C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B4880);
+s32 func_800B4880(Ovl61Obj *arg0, s32 arg1) {
+    Ovl61Circle *c;
+    Ovl61Circle *base;
+    SLONG_XYZ v;
+    s32 i;
+    s32 dx;
+    s32 dz;
+    s32 r;
+    s32 x;
+    s32 z;
+    s32 ret;
+    s32 cx;
+    s32 cz;
+
+    for (i = 0; i < 4; i++) {
+        if (arg0->flags & 0x40) {
+            r = D_800C1A7C[i].r + arg0->radius;
+        } else {
+            r = D_800C1A7C[i].r + 0x80;
+        }
+        base = D_800C1A7C;
+        c = &base[i];
+        cx = c->x;
+        x = arg0->x;
+        dx = x - cx;
+        cz = c->z;
+        z = arg0->z;
+        dz = z - cz;
+        if (dx * dx + dz * dz < r * r) {
+            goto found;
+        }
+    }
+    ret = -1;
+    if (D_800C1F14 == 0) {
+        goto fail;
+    }
+    dx = x;
+    dz = z;
+    if (arg0->flags & 0x40) {
+        r = 0x800 - arg0->radius;
+    } else {
+        r = 0x800;
+    }
+    if (dx > r && (D_800C1F14 & 0x88)) {
+        arg0->x = r;
+        ret = 0x400;
+    }
+    if (dx < -r && (D_800C1F14 & 0x44)) {
+        arg0->x = -r;
+        ret = 0xC00;
+    }
+    if (dz > r && (D_800C1F14 & 0x22)) {
+        arg0->z = r;
+        ret = 0;
+    }
+    if (dz < -r && (D_800C1F14 & 0x11)) {
+        arg0->z = -r;
+        ret = 0x800;
+    }
+    if (ret != -1) {
+        PlaySfx(0x592, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    return ret;
+found:
+    v.x = cx;
+    v.y = 0;
+    v.z = base[i].z;
+    func_800BE1C4((SLONG_XYZ *)&arg0->x, arg1, &v, r);
+    ret = get_angle(D_800C1A7C[i].x - arg0->x, D_800C1A7C[i].z - arg0->z);
+    D_800C1E28[i].state = 3;
+    return ret;
+fail:
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B4AE8);
 
