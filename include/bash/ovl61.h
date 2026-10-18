@@ -60,6 +60,7 @@ typedef struct {
 } Ovl61Obj;
 
 extern Ovl61Circle *D_800C1A7C;
+extern Ovl61Circle D_800C1A44[];
 
 s32 func_800B4EFC(Ovl61Obj *arg0);
 

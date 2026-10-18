@@ -359,7 +359,31 @@ void Plot_ArkDeadWall(NAS *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Plot_ArkCameraFlash);
+void Plot_ArkCameraFlash(NAS *arg0)
+{
+  long new_var;
+  EXTengine *eng = arg0->Engine;
+  if (eng != 0)
+  {
+    Ovl61Circle *base = D_800C1A44;
+    subengine *sub = eng->sub;
+    Ovl61Circle *c = &base[arg0->UserInfo.user1];
+    if (c->x != 0)
+    {
+      sub->unk20.x = c->x;
+      sub->unk20.y = c->z;
+      new_var = c->r;
+      sub->flags |= 0x8000;
+      sub->unk52 = 1;
+      sub->unk20.x = new_var;
+      arg0->UserInfo.user1 += 1;
+    }
+    else
+    {
+      KillNAS(arg0);
+    }
+  }
+}
 
 void Init_ArkCameraFlash(NAS *arg0) {
     u8 *eng = (u8*)(*(s32*)((u8*)(arg0) + 84));
