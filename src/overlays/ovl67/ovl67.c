@@ -802,7 +802,20 @@ s32 func_800BB8EC(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BB944);
+s32 func_800BB944(s32 arg0) {
+    s32 act;
+    u16 st = Heroes[arg0].hero_status;
+
+    act = 0x2C;
+    if (!(st & 0x200)) {
+        act = 0x2D;
+        if (!(st & 0x2000)) {
+            return 0;
+        }
+    }
+    SetHeroAction((HeroInfo *)arg0, act);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BB9B0);
 

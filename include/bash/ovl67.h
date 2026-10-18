@@ -190,6 +190,8 @@ s32 func_800B817C(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5);
 
 void func_800BB6BC(s32 arg0);
 
+s32 func_800BB944(s32 arg0);
+
 s32 func_800BBC78(Ovl67Vel *arg0, Ovl67Out *arg1, s32 arg2);
 
 #endif /* BASH_OVL67_H */
