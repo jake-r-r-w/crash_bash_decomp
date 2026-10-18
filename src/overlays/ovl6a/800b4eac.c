@@ -235,7 +235,29 @@ void func_800B8474(s32 arg0) {
     func_800B5710(arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B84CC);
+s32 func_800B84CC(void) {
+    EngRec90248 *p;
+    s32 i;
+    s32 best;
+    s32 bestDist;
+    s32 d;
+
+    best = -1;
+    bestDist = 0x1000;
+    for (i = 0; i < 12; i++) {
+        p = &D_800BCCF4[i];
+        if (p->unk14 != NULL && (p->unk14->unk6 & 2)) {
+            d = func_80015480(p->unk10, D_8009EE9C.unk4);
+            if (d < bestDist) {
+                bestDist = d;
+                if ((u32)d < 0x81U) {
+                    best = i;
+                }
+            }
+        }
+    }
+    return best;
+}
 
 void func_800B8588(void) {
     func_8009440C();
