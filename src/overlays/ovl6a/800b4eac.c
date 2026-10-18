@@ -283,7 +283,30 @@ void func_800B7FD0(u8 *cam, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B8098);
+void func_800B8098(u8 *arg0, s32 arg1) {
+    CamView *cam = (CamView *)arg0;
+    struct {
+        CamView v;
+        u8 pad[0xB8 - sizeof(CamView)];
+    } buf;
+    s32 n;
+#define v buf.v
+
+    n = 1;
+    cam->dist = 0x200;
+    if (D_800BCEF4 != 0) {
+        n = 3;
+    }
+    func_800B7FD0((u8 *)&v, n);
+    v.at = *(CamXYZ *)&D_8009D530->unk10;
+    v.rot.vy = -D_8009EEA0;
+    if (arg1 != 0) {
+        func_80013F44(cam, &v, NULL);
+    } else {
+        func_80013F44(cam, &v, &D_800BCBAC);
+    }
+}
+#undef v
 
 void func_800B8148(s32 arg0) {
     Heroes[arg0].hero_idle_count = 0xF;

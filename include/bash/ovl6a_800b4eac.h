@@ -46,6 +46,9 @@ extern KeyedPair D_800BCB54[];
 extern s32 D_800BD390;
 extern s32 D_800BD394;
 extern s32 D_800BCEF4;
+extern u16 D_8009EEA0;
+extern EXTengine *D_8009D530;
+extern CamEase D_800BCBAC;
 
 typedef struct DistPos {
     u8 pad0[0x10];
