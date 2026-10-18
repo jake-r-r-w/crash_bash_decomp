@@ -198,7 +198,13 @@ void func_800C2D80(s32 arg0) {
     SetHeroAction((HeroInfo *)arg0, act);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C2DD8);
+void func_800C2DD8(s32 arg0) {
+    EXTengine *e = Heroes[arg0].hero_eng;
+
+    SpawnNASById(e->unk10.x, e->unk10.y, e->unk10.z + 0x400, 0x1C09, 0x11);
+    func_80028018(arg0, 0xA);
+    ((void (*)(s32, s32, s32))func_80027F7C)(arg0, 0xA, 0xFF);
+}
 
 void func_800C2E58(void) {
 }
