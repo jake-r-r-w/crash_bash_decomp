@@ -95,4 +95,6 @@ void func_800C2BB0(void);
 
 void func_800C2EF8(s32 arg0);
 
+s32 func_800C365C(void);
+
 #endif /* BASH_OVL67_800BBDB8_H */

@@ -238,7 +238,20 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C349C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C3544);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C365C);
+s32 func_800C365C(void) {
+    u8 *g = D_8005A614;
+
+    s32 r;
+
+    if (g[0xCA] < 10) {
+        r = 230;
+    } else if (g[0xCA] < 30) {
+        return 230 - (g[0xCA] - 10) * 179 / 20;
+    } else {
+        r = 51;
+    }
+    return r;
+}
 
 void func_800C36D4(void) {
 }
