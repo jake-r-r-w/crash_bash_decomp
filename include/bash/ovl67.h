@@ -27,6 +27,7 @@ extern u16 *D_8009D6EC;
 
 extern u8 D_80053EAC[];
 extern EXTengine *D_8009D530;
+extern u16 D_800AD12C;
 extern u16 D_800C39A0[];
 extern s16 D_800C4150[][3];
 extern u16 D_800C417A;
@@ -301,6 +302,8 @@ extern s8 D_8005A689;
 s32 func_800B3888(Ovl67Obj *arg0);
 
 void func_800B5440(s32 arg0);
+
+void func_800B5550(s32 arg0);
 
 s32 func_800B8058(s32 arg0);
 

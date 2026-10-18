@@ -332,7 +332,43 @@ void func_800B5440(s32 arg0) {
     D_8005A689 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B5550);
+void func_800B5550(s32 arg0) {
+    EXTengine *e;
+    s32 flag;
+    s32 t;
+
+    e = Heroes[arg0].hero_eng;
+    t = e->unk10.z;
+    flag = 0;
+    if (t < -0x500) {
+        e->unk10.z = t + 0x20;
+    } else {
+        flag = 1;
+    }
+    if (D_8005A680[0] != 0) {
+        if (arg0 == 0) {
+            e = D_8009D530;
+            t = e->unk10.x;
+            if (t >= -0x27F) {
+                e->unk10.x = t - 0x40;
+            }
+        } else {
+            e = Heroes[arg0].hero_eng;
+            t = e->unk10.x;
+            if (t < 0x280) {
+                e->unk10.x = t + 0x40;
+            }
+        }
+    }
+    if (flag != 0) {
+        D_800AD12C = 1;
+    }
+    func_80085890(arg0, flag);
+    if (func_8008A200(arg0) != 0) {
+        func_8008A810();
+    }
+    func_8008502C(arg0);
+}
 
 void func_800B5674(s32 arg0) {
     HeroInfo *base = Heroes;
