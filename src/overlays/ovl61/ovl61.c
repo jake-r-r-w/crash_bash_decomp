@@ -341,7 +341,75 @@ s32 arg0;
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B649C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B66D0);
+static inline s32 HeroCheckPad54(s32 arg0) {
+    s32 ret;
+
+    if (Heroes[arg0].hero_status & 0xFA00) {
+        return 0;
+    }
+    if (((PadButtons *)D_80051338)[arg0].unk54 & 0x1000) {
+        SetHeroAction((HeroInfo *)arg0, 0x1E);
+        ret = 1;
+    } else {
+        ret = 0;
+    }
+    return ret;
+}
+
+static inline s32 HeroCheckStatus2600(s32 arg0) {
+    u16 st;
+    s32 ret;
+
+    st = Heroes[arg0].hero_status;
+    if (st & 0x200) {
+        SetHeroAction((HeroInfo *)arg0, 0x22);
+        ret = 1;
+    } else if (st & 0x2000) {
+        SetHeroAction((HeroInfo *)arg0, 0x24);
+        ret = 1;
+    } else if (st & 0x400) {
+        SetHeroAction((HeroInfo *)arg0, 0x23);
+        ret = 1;
+    } else {
+        ret = 0;
+    }
+    return ret;
+}
+
+void func_800B66D0(s32 arg0) {
+    HeroInfo *base;
+    HeroInfo *h;
+    HeroInfo *base2;
+    HeroInfo *h2;
+    u16 mode;
+
+    if (HeroCheckPad54(arg0) == 0) {
+        base = Heroes;
+        h = base + arg0;
+        if (h->hero_aseq == 0x19) {
+            if (h->hero_idle_count != 0) {
+                h->hero_idle_count = h->hero_idle_count - 1;
+            } else {
+                h->hero_idle_count = Random(0x258) + 0x12C;
+                SetHeroSeq((HeroInfo *)arg0, 0x1B);
+            }
+        }
+        if (func_800B649C(arg0) != 0) {
+            func_8008502C(arg0);
+        }
+        if (HeroCheckStatus2600(arg0) == 0) {
+            func_800B60FC(arg0);
+            base2 = Heroes;
+            h2 = base2 + arg0;
+            if (h2->hero_move->forward_speed != 0) {
+                mode = h2->hero_mode;
+                if (mode != 0x1F && mode != 0x21) {
+                    SetHeroAction((HeroInfo *)arg0, 0x1D);
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl61/ovl61", D_800B32B4);
 
