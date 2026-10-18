@@ -340,7 +340,20 @@ void func_800C04FC(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C052C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C05B8);
+s32 func_800C05B8(s32 arg0) {
+    s32 act;
+    u16 st = Heroes[arg0].hero_status;
+
+    act = 0x22;
+    if (!(st & 0x200)) {
+        act = 0x23;
+        if (!(st & 0x400)) {
+            return 0;
+        }
+    }
+    SetHeroAction((HeroInfo *)arg0, act);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C0624);
 
