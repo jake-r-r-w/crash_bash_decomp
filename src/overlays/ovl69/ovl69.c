@@ -98,7 +98,12 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B58E4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B5978);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B5A40);
+void func_800B5A40(u8 *cam, s32 arg1) {
+    if (arg1 != 0) {
+        func_800B5978(cam, 1);
+    }
+    D_8009F708 = 0xF0;
+}
 
 void func_800B5A6C(void) {
 }
