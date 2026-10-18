@@ -1254,7 +1254,42 @@ void func_800B9E90(Ovl6aSparks *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BA1B4);
+void func_800BA1B4(Ovl6aTrailDst *d, Ovl6aTrail *t, s32 idx) {
+    Ovl6aPt *p;
+    s32 px, py;
+
+    if (idx == 0) {
+        if (t->unk138 != 0) {
+            d->flags |= 0x40000000;
+            d->unk76 += 0x200;
+        }
+        t->prev[0].x = t->pos[0].x;
+        t->prev[0].y = t->pos[0].y;
+        d->flags |= 0x8000;
+        t->unk120 = ((t->unk120 + t->unk128) * 0xE6) >> 8;
+        t->unk12C = (t->unk12C * 0xE6) >> 8;
+        t->pos[0].y += *(u16 *)&t->unk120;
+        t->pos[0].x += *(u16 *)&t->unk12C;
+        d->x = (s16)t->pos[0].x;
+        d->y = (s16)t->pos[0].y;
+        d->z = t->pos[0].z;
+        px = (s16)t->prev[0].x;
+        py = (s16)t->prev[0].y;
+        t->ang[0].z = get_angle(py - (s16)t->pos[0].y,
+                                px - (s16)t->pos[0].x) & 0xFFF;
+        return;
+    }
+    p = &t->pos[idx];
+    t->prev[idx].x = p->x;
+    t->prev[idx].y = p->y;
+    p->x = t->prev[idx - 1].x;
+    p->y = t->prev[idx - 1].y;
+    t->ang[idx].z = get_angle((s16)t->prev[idx].x - (s16)p->x,
+                              (s16)t->prev[idx].y - (s16)p->y) & 0xFFF;
+    if (idx != 1) {
+        t->flag[idx] = 1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BA374);
 

@@ -17,6 +17,35 @@ typedef struct Ovl6aSpawnExt {
 extern s32 D_800BD5A8;
 void func_800BBE24();
 
+typedef struct Ovl6aPt {
+    /* 0x0 */ u16 x;
+    /* 0x2 */ u16 y;
+    /* 0x4 */ s16 z;
+    /* 0x6 */ s16 w;
+} Ovl6aPt;
+typedef struct Ovl6aTrail {
+    /* 0x000 */ Ovl6aPt pos[8];
+    /* 0x040 */ s32 flag[8];
+    /* 0x060 */ Ovl6aPt prev[8];
+    /* 0x0A0 */ u8 padA0[0xE0 - 0xA0];
+    /* 0x0E0 */ Ovl6aPt ang[8];
+    /* 0x120 */ s32 unk120;
+    /* 0x124 */ s32 unk124;
+    /* 0x128 */ s32 unk128;
+    /* 0x12C */ s32 unk12C;
+    /* 0x130 */ s32 unk130;
+    /* 0x134 */ s32 unk134;
+    /* 0x138 */ s32 unk138;
+} Ovl6aTrail;
+typedef struct Ovl6aTrailDst {
+    /* 0x00 */ u32 flags;
+    /* 0x04 */ s32 x;
+    /* 0x08 */ s32 y;
+    /* 0x0C */ s32 z;
+    /* 0x10 */ u8 pad10[0x76 - 0x10];
+    /* 0x76 */ u16 unk76;
+} Ovl6aTrailDst;
+
 extern s32 D_800BF260;
 extern s32 D_800BCEF0;
 extern EXTengine D_800BF100;
@@ -469,6 +498,8 @@ void func_800B6A3C(void);
 void func_800B6E20(void);
 
 void PlotPodiumTrophy(PodiumTrophy *arg0);
+
+void func_800BA1B4(Ovl6aTrailDst *d, Ovl6aTrail *t, s32 idx);
 
 void func_800BA9C8(s32 arg0, Ovl6aSpawnEnt *arg1);
 
