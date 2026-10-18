@@ -235,7 +235,76 @@ fail:
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B4AE8);
+s32 func_800B4AE8(Ovl61Obj *arg0, s32 arg1) {
+    SLONG_XYZ v;
+    s32 i;
+    s32 dx;
+    s32 dz;
+    s32 r;
+    s32 cx;
+    s32 ret;
+    s32 a;
+    s32 t;
+
+    a = ret = -1;
+    for (i = 0; i < 4; i++) {
+        if (arg0->flags & 0x40) {
+            r = D_800C1A7C[i].r + arg0->radius;
+        } else {
+            r = D_800C1A7C[i].r + 0x80;
+        }
+        cx = D_800C1A7C[i].x;
+        dx = arg0->x - cx;
+        dz = arg0->z - D_800C1A7C[i].z;
+        if (dx * dx + dz * dz < r * r) {
+            v.x = cx;
+            v.y = 0;
+            v.z = D_800C1A7C[i].z;
+            func_800BE1C4((SLONG_XYZ *)&arg0->x, arg1, &v, r);
+            a = get_angle(D_800C1A7C[i].x - arg0->x, D_800C1A7C[i].z - arg0->z);
+            D_800C1E28[i].state = 3;
+            ret = a;
+        }
+        if (D_800C1F14 != 0) {
+            dx = arg0->x;
+            dz = arg0->z;
+            if (arg0->flags & 0x40) {
+                r = 0x800 - arg0->radius;
+            } else {
+                r = 0x800;
+            }
+            if (dx > r && (D_800C1F14 & 0x88)) {
+                arg0->x = r;
+                a = 0x400;
+            }
+            if (dx < -r && (D_800C1F14 & 0x44)) {
+                arg0->x = -r;
+                a = 0xC00;
+            }
+            if (dz > r && (D_800C1F14 & 0x22)) {
+                arg0->z = r;
+                a = 0;
+            }
+            if (dz < -r && (D_800C1F14 & 0x11)) {
+                arg0->z = -r;
+                a = 0x800;
+            }
+            if (a != -1) {
+                if (D_800C1EFE != 0) {
+                    t = D_800C1EFE - 1;
+                } else {
+                    PlaySfx(0x592, NULL, NULL, 0x1000, 0x1E00, 0);
+                    t = 3;
+                }
+                D_800C1EFE = t;
+                do {
+                    ret = a;
+                } while (0);
+            }
+        }
+    }
+    return ret;
+}
 
 s32 func_800B4D9C(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2) {
     s32 lim = 0x980;

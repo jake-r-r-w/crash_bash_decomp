@@ -141,6 +141,8 @@ void func_800BE1C4(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r);
 
 s32 func_800B4880(Ovl61Obj *arg0, s32 arg1);
 
+extern u16 D_800C1EFE;
+
 s32 func_800B4EFC(Ovl61Obj *arg0);
 
 s32 func_800B84B8(s32 arg0);
@@ -255,6 +257,8 @@ typedef struct Ovl61Mot {
 void func_800B3528(s32 arg0);
 
 s32 func_800B42F4(Ovl61Obj *arg0);
+
+s32 func_800B4AE8(Ovl61Obj *arg0, s32 arg1);
 
 s32 func_800B4D9C(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2);
 
