@@ -265,6 +265,31 @@ void func_800BD584(AngObj *o);
 void InitNitroMissile(MissileHolder *arg0);
 
 s32 func_800C323C(LaserPos p, s32 r);
+typedef struct BossScene {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ u8 pad04[0x28];
+    /* 0x2C */ u8 *unk2C;
+} BossScene;
+
+typedef struct BossExt {
+    /* 0x00 */ u8 pad00[0xC];
+    /* 0x0C */ ScriptCursor *cursor;
+    /* 0x10 */ KeyBlock *keys;
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ s32 unk1C;
+    /* 0x20 */ s32 unk20;
+    /* 0x24 */ u8 pad24[0xC];
+    /* 0x30 */ s32 unk30;
+    /* 0x34 */ s32 unk34;
+    /* 0x38 */ s32 unk38;
+} BossExt;
+
+extern s16 D_8009D6E2;
+extern ScriptInit D_800C446C;
+extern s32 D_800C4530;
+
+void InitNitroBoss(NAS *nas);
 
 s32 func_800C3544(s32 *arg0, s32 *arg1);
 

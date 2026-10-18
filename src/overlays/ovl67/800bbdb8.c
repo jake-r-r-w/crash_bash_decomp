@@ -99,7 +99,37 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", PlotNitroMissile);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C0C28);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", InitNitroBoss);
+void InitNitroBoss(NAS *nas) {
+    BossExt *ext = AddExtension(nas, 0x3C, 0x10000000);
+    BossScene *scene;
+    u8 *p;
+
+    if (ext != NULL) {
+        nas->Engine->sub->unk6C = *(void **)D_80058AD0;
+        nas->Engine->unk2C.x = 0x1830;
+        nas->Engine->unk2C.y = 0x1830;
+        nas->Engine->unk2C.z = 0x1830;
+        func_80086868();
+        D_8009D6E2 = 0xFF;
+        D_800C4530 = 0;
+        ext->cursor = func_80024E30(nas, &D_800C446C);
+        nas->Engine->unk5D = 2;
+        nas->Engine->unk5C = 1;
+        func_800250B0(nas);
+        nas->UserInfo.user1 = 0;
+        ext->unk14 = 0x3200;
+        scene = D_80058AD0;
+        p = scene->unk2C;
+        ext->keys = (KeyBlock *)(p + (*(s32 *)(p + 4) + 4));
+        func_8001E21C(ext->keys, ext->unk14, &nas->Engine->unk10);
+        ext->unk18 = 0;
+        ext->unk1C = 0;
+        ext->unk20 = 0;
+        ext->unk38 = 0;
+        ext->unk30 = 0;
+        ext->unk34 = 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", PlotNitroBoss);
 
