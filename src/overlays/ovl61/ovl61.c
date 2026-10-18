@@ -829,7 +829,74 @@ void Plot_RepulseRing(NAS *arg0) {
     KillNAS(arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Init_ArkLaserWall);
+void Init_ArkLaserWall(NAS *nas)
+{
+    EXTengine *eng;
+    subengine *sub;
+    s32 dir;
+    s32 off;
+
+    if (D_8005A644 & 0x801) {
+        D_800C1F14 &= ~nas->UserInfo.flags;
+        KillNAS(nas);
+        return;
+    }
+    eng = nas->Engine;
+    if (eng != 0) {
+        dir = eng->unk10.x;
+        if (dir == D_800C2724) {
+            eng->unk10.x = -0x600;
+            eng->unk10.z = 0x880;
+            eng->unk1C = 0x71;
+            eng->unk1E = 0;
+            nas->UserInfo.flags = 0x20;
+            D_800C1F14 |= 0x20;
+        }
+        if (dir == D_800C2728) {
+            eng->unk10.x = -0x600;
+            eng->unk10.z = -0x880;
+            eng->unk1C = 0x200;
+            eng->unk1E = 0;
+            nas->UserInfo.flags = 0x10;
+            D_800C1F14 |= 0x10;
+        }
+        if (dir == D_800C2720) {
+            eng->unk10.x = -0x880;
+            eng->unk10.z = -0x600;
+            eng->unk1E = 0xC00;
+            eng->unk20 = 0;
+            nas->UserInfo.flags = 0x40;
+            D_800C1F14 |= 0x40;
+        }
+        if (dir == D_800C271C) {
+            eng->unk10.x = 0x880;
+            eng->unk10.z = -0x600;
+            eng->unk1E = 0xC00;
+            eng->unk20 = 0;
+            nas->UserInfo.flags = 0x80;
+            D_800C1F14 |= 0x80;
+        }
+        eng->unk5D = 2;
+        eng->unk5E = 1;
+        PlaySfx(0x5B7, &eng->sfx, 0, 0x1000, 0x1E00, 0);
+        func_80018F3C(eng, 5);
+        sub = eng->sub;
+        off = 0;
+        if (sub != 0) {
+            do {
+                sub->unk6C = *(s32 *)D_80058AD0;
+                sub->flags |= 0x21;
+                sub->unk74 = 0x2019;
+                sub->unk04 = off;
+                sub = sub->next;
+                off += 0x200;
+            } while (sub != 0);
+        }
+    }
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BE1C4);
 
