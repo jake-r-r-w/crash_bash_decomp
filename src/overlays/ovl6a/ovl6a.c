@@ -29,7 +29,30 @@ void func_800B4694(void) {
     func_800798A4();
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/ovl6a", func_800B478C);
+void func_800B478C(void) {
+    s32 one;
+    D_80098714 = 0;
+    ((EngMenuGame *)D_8005A614)->flags &= 0xFDC07013;
+    *(s32 *)&D_800BC2BC = (s16)((Ovl6aCam *)D_80051640)->h;
+    *(s32 *)&D_800BC2C0 = D_800AD12C;
+    D_800BC2C4 = ((Ovl6aCam *)D_80051640)->x;
+    D_800BC2C8 = ((Ovl6aCam *)D_80051640)->y;
+    D_800BC2CC = ((Ovl6aCam *)D_80051640)->z;
+    if (*(u16 *)&((EngMenuGame *)D_8005A614)->unk74 == 0) {
+        func_8002C284(2);
+        ((EngMenuGame *)D_8005A614)->unk74 = 1;
+        one = 1;
+        D_8009870E = one;
+        D_80098710 = 0;
+        D_800BC2B4 = 0;
+        D_80098714 = one;
+        D_800AD12C = 0;
+        D_800BC2B8 = D_8005A608;
+        func_80095A60(0, 0x1E);
+        return;
+    }
+    func_800B4C94();
+}
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl6a/ovl6a", D_800B32B4);
 

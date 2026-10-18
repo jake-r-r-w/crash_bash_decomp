@@ -26,6 +26,10 @@ typedef struct {
     /* 0x18 */ u8 pad18[0x56 - 0x18];
     /* 0x56 */ u16 h;
 } Ovl6aCam;
+extern s16 D_8009870E;
+extern s16 D_80098710;
+extern s32 D_800BC2B4;
+extern s32 D_800BC2B8;
 extern u16 D_800BC2BC;
 extern u16 D_800BC2C0;
 extern s32 D_800BC2C4;
