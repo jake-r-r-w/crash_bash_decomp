@@ -161,7 +161,15 @@ void func_800C2C08(s32 arg0) {
     func_8008502C(arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C2C8C);
+void func_800C2C8C(s32 arg0) {
+    func_80089FA4(arg0);
+    func_80085718(arg0, 0);
+    Heroes[arg0].hero_eng->unk20 = 0;
+    D_800C4478 = 0;
+    Heroes[arg0].hero_eng->unk1C = 0;
+    Heroes[arg0].hero_eng->unk1E = 0x800;
+    Heroes[arg0].hero_eng->unk5E = 1;
+}
 
 s32 func_800C2D10(s32 arg0) {
     HeroInfo *base = Heroes;

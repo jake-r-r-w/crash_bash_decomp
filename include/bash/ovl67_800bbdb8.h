@@ -58,6 +58,7 @@ typedef struct LaserShoot {
     /* 0x60 */ s32 unk60;
 } LaserShoot;
 extern u8 *D_800C449C;
+extern s32 D_800C4478;
 extern s32 D_800C4480;
 extern s32 D_800C4488;
 extern s32 D_800C448C;
@@ -109,6 +110,8 @@ void func_800C27D4(void);
 void func_800C2BB0(void);
 
 void func_800C2C08(s32 arg0);
+
+void func_800C2C8C(s32 arg0);
 
 void func_800C2EF8(s32 arg0);
 
