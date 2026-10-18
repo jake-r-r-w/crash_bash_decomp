@@ -63,4 +63,6 @@ void PlotN2ODeadWall(NAS *arg0);
 
 void func_800BB5F0(void);
 
+void func_800BB788(s32 arg0);
+
 #endif /* BASH_OVL67_H */
