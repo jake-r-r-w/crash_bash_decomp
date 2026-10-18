@@ -1,15 +1,8 @@
 {
- "blocked": [
-  {
-   "name": "func_800926CC",
-   "note": "instructions 1/134 with s8 j (kept under #ifdef NON_MATCHING): only the compare's li a1,1 comes out as move a1,a0. Root cause of the old 4/134: sched1 gives a single-set REG-dest pseudo 'birthing' launch priority (sched.c adjust_priority/birthing_insn_p), so s16 j's li a0,1 lands next to sh 0x38; the target's li sits 2nd like a no-dependency constant. s8 j fixes that: unk38 = j sign-extends via extendqihi2, cse folds it to (set (subreg:SI (reg:HI)) 1), a SUBREG dest (not birthing). But post-reload CSE (gcc 2.8 reload_cse_regs) then sees a0 holding SImode 1 and rewrites the compare's later li a1,1 to move a1,a0 (a narrower-or-equal mode request matches). Target therefore had a HI/QI-recorded a0 that was still non-birthing: j set twice with the extra set costing no code. Proven: s16 j as the loop1 counter gives the right li placement (rest identical) but adds sll/move to the loop; a then-block set via (s8)j survives cse but becomes move v1,a1 and swaps j/t regs; an asm volatile barrier after j = 1 places it right but swaps j/compare to a1/a0. Failed: j = arg0->unk38, j = 1 in else/after the if (cse deletes self-copies), j = volatile load, s32 i for the 1 (cse merges the compare's 1), u8 j (same as s16), j += t >> 6. Next: find a second set of a HI/QI j that cse keeps and combine or reload_cse removes without decrementing reg_n_sets (MATCHING row func_8001795C: a self-referencing set absorbed by combine), or accept the barrier with --hack after fixing the a0/a1 swap",
-   "seg": "overlays/engine/8008e27c",
-   "size": 540
-  }
- ],
- "commit": "b7fe784",
+ "blocked": [],
+ "commit": "36717cb",
  "game": "SCUS_945.70",
- "generated": "2026-10-18T05:52:00Z",
+ "generated": "2026-10-18T05:57:55Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -64276,9 +64269,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "36717cb",
+   "data_b": 2080,
+   "data_tb": 606943,
+   "game_all_f": 2551,
+   "game_b": 252756,
+   "game_c_f": 1131,
+   "game_f": 1131,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 945,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-18T05:57:55Z",
+   "units": {
+    "engine": [
+     118316,
+     350
+    ],
+    "main exe": [
+     124840,
+     575
+    ],
+    "ovl5d": [
+     328,
+     4
+    ],
+    "ovl5e": [
+     504,
+     6
+    ],
+    "ovl5f": [
+     1564,
+     36
+    ],
+    "ovl60": [
+     708,
+     14
+    ],
+    "ovl61": [
+     292,
+     7
+    ],
+    "ovl62": [
+     916,
+     30
+    ],
+    "ovl63": [
+     636,
+     16
+    ],
+    "ovl64": [
+     156,
+     7
+    ],
+    "ovl65": [
+     1096,
+     11
+    ],
+    "ovl66": [
+     528,
+     13
+    ],
+    "ovl67": [
+     836,
+     12
+    ],
+    "ovl68": [
+     180,
+     10
+    ],
+    "ovl69": [
+     920,
+     16
+    ],
+    "ovl6a": [
+     936,
+     24
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-18T05:57:45Z",
+   "auto": true,
+   "name": "func_800926CC",
+   "seg": "overlays/engine/8008e27c",
+   "size": 540,
+   "tries": 0
+  },
   {
    "at": "2026-10-18T05:51:50Z",
    "auto": true,
@@ -64390,18 +64477,10 @@
    "seg": "overlays/engine/8007ee2c",
    "size": 1564,
    "tries": 0
-  },
-  {
-   "at": "2026-10-17T11:18:33Z",
-   "auto": true,
-   "name": "func_80081F64",
-   "seg": "overlays/engine/8007ee2c",
-   "size": 1580,
-   "tries": 0
   }
  ],
  "summary": {
-  "blocked": 1,
+  "blocked": 0,
   "copies_b": 36276,
   "data": {
    "done_b": 2080,
@@ -64412,12 +64491,12 @@
    "all_f": 2551,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 1,
-   "c_f": 1130,
-   "done_b": 252216,
-   "done_f": 1130,
+   "blocked": 0,
+   "c_f": 1131,
+   "done_b": 252756,
+   "done_f": 1131,
    "named_f": 345,
-   "pct": 24.750450425696442,
+   "pct": 24.803441684101443,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2551,
@@ -64443,15 +64522,15 @@
     "all_f": 357,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 1,
-    "c_f": 349,
-    "done_b": 117776,
-    "done_f": 349,
+    "blocked": 0,
+    "c_f": 350,
+    "done_b": 118316,
+    "done_f": 350,
     "file": "engine.bin",
     "files": 6,
     "lib": false,
     "named_f": 18,
-    "pct": 91.11276148038124,
+    "pct": 91.53051120188142,
     "phase": 3,
     "sony_b": 0,
     "title": "Engine",

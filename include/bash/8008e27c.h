@@ -596,4 +596,6 @@ void func_8008E27C(s32 *arg0, HitInfo *arg1, s32 arg2);
 
 void func_8008F554(void);
 
+void func_800926CC(GameState *arg0);
+
 #endif /* BASH_8008E27C_H */

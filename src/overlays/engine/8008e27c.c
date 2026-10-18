@@ -1577,12 +1577,11 @@ void func_800925F0(s32 arg0) {
     } while (i < 5);
 }
 
-#ifdef NON_MATCHING
 void func_800926CC(GameState *arg0) {
     s32 i;
     u8 t;
     u8 *p;
-    s8 j;
+    s16 j;
     s16 k;
 
     arg0->unk34 = 0x28;
@@ -1597,7 +1596,9 @@ void func_800926CC(GameState *arg0) {
         p[0x18] = k;
     }
     t = 0x3C;
-    j = 1;
+    do {
+        j = 1;
+    } while (0);
     arg0->unk32 = 0x14;
     arg0->unk3E = 0x200;
     arg0->unk20 = 0;
@@ -1677,9 +1678,6 @@ void func_800926CC(GameState *arg0) {
     arg0->unk2C = D_8004E0D4;
     arg0->unkD0 = *(Blk12p4 *)D_8005A604;
 }
-#else
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8008e27c", func_800926CC);
-#endif
 
 void func_800928E8(void) {
     EngineCfg *cfg = &D_8009F96C;
