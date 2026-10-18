@@ -106,7 +106,17 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B5734);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B57BC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B5880);
+void func_800B5880(void) {
+    PlaceSub *s = (PlaceSub *)GetEngineSlot(1)->sub;
+
+    s->unk14 = D_8005B690 * 20;
+    s->unk12 = 0x293;
+    s->unk50 = 1;
+    s->sz = 0x2800;
+    s->sx = 0x2800;
+    s->unk51 = 0;
+    s->unk52 = 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B58E4);
 
