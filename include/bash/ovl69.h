@@ -127,6 +127,10 @@ extern void (*D_8009E594)(void);
 
 extern void (*D_8009E590)(void);
 
+extern s8 D_8005A64B;
+
+void func_800B7BE0(s32 arg0);
+
 s32 func_800B7DC0(s32 a, s32 b);
 
 s32 func_800B7E54(s32 a, s32 b);
