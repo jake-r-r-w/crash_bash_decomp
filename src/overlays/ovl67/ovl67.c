@@ -281,7 +281,49 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B4954);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B4AD8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B4CE0);
+void func_800B4CE0(s32 arg0) {
+    HeroInfo *base;
+    HeroInfo *h;
+    s32 z;
+    s32 s;
+    s32 n;
+
+    if (func_800B4AD8() != 0) {
+        func_8008502C(arg0);
+    }
+    base = Heroes;
+    h = &base[arg0];
+    if (h->hero_eng->unk10.z < -0xA00) {
+        h->hero_eng->unk10.z += 0x20;
+        z = h->hero_eng->unk10.z;
+        s = z + 0xA00;
+        n = -(s >> 6);
+        s >>= 3;
+        if (s > 0x40) {
+            s = 0x40;
+        }
+        if (s != 0) {
+            h->hero_eng->unk10.z = z - s;
+        } else {
+            h->hero_eng->unk10.z = -0xA00;
+        }
+        n = 0x1E - n;
+        if (n <= 0) {
+            n = 1;
+        }
+        if (n > 0x1E) {
+            n = 0x1E;
+        }
+        Heroes[arg0].hero_sub->unk74 = n + 0x3FFF;
+    } else {
+        if (D_800C43D8 != NULL) {
+            *D_800C43D8 &= 0xFFFF7FFF;
+        }
+        h->hero_eng->unk10.z = -0xA00;
+        SetHeroAction((HeroInfo *)arg0, 0x27);
+        h->hero_sub->unk74 = 0x2003;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B4E30);
 

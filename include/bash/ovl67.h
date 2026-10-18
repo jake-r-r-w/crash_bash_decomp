@@ -310,6 +310,9 @@ s32 func_800BBC78(Ovl67Vel *arg0, Ovl67Out *arg1, s32 arg2);
 
 extern s8 D_8005A689;
 
+s32 func_800B4AD8();
+extern u32 *D_800C43D8;
+
 s32 func_800B3888(Ovl67Obj *arg0);
 
 void func_800B5168(s32 arg0);
@@ -368,6 +371,8 @@ extern u8 D_800C3E30[];
 extern u8 D_800C3E70[];
 void func_800B3E74(void);
 void func_800B46DC(void);
+void func_800B4CE0(s32 arg0);
+
 void func_800BEB68(void);
 void func_800BF0AC(void);
 
