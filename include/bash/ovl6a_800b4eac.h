@@ -143,7 +143,8 @@ typedef struct Ovl6aGameView {
     /* 0x062 */ u8 unk62;
     /* 0x063 */ s8 unk63;
     /* 0x064 */ s32 unk64;
-    /* 0x068 */ u8 pad68[0x75 - 0x68];
+    /* 0x068 */ u8 pad68[0x74 - 0x68];
+    /* 0x074 */ u8 unk74;
     /* 0x075 */ u8 unk75;
     /* 0x076 */ u8 pad76[0xE0 - 0x76];
     /* 0x0E0 */ s32 unkE0;
@@ -233,6 +234,14 @@ extern s32 D_800BCEF4;
 extern u16 D_8009EEA0;
 extern EXTengine *D_8009D530;
 extern CamEase D_800BCBAC;
+extern EXTengine *D_8009D538[];
+extern s32 D_8009EEA4;
+/* PadState (D_80051338) as func_800B5710 reads it: held/pressed buttons at 0x50/0x54. */
+typedef struct Ovl6aPad {
+    /* 0x00 */ u8 pad0[0x50];
+    /* 0x50 */ s32 unk50;
+    /* 0x54 */ s32 unk54;
+} Ovl6aPad;
 
 typedef struct DistPos {
     u8 pad0[0x10];
@@ -306,7 +315,7 @@ typedef struct {
 #define CAMTBL6A ((Ovl6aCamEntry *)D_800BCCF4)
 
 extern s32 D_8009F71C;
-extern s32 D_800BCEEC;
+extern _sfx_handler *D_800BCEEC;
 extern u16 D_800BCBDC[];
 extern u8 D_800BCC04[];
 

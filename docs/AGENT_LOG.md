@@ -17,8 +17,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
 - 1433/2551 game functions matched: **main.exe is complete (575/575)**;
   engine overlay 2 left, both parked (`func_8007F314`, `PlotScriptFX`),
   ovl61 95/97 (two 2026-10-18 swarm runs and three hand matches; 2 big ones left),
-  ovl67 101/135, ovl69 68/77, ovl6a 92/94 (2026-10-18 swarm runs and hand fixes),
-  all 564 PsyQ functions (Sony objects), 5 parked.
+  ovl67 101/135, ovl69 68/77, ovl6a 92/94 (2026-10-18 swarm runs and hand fixes;
+  `func_800B5710` parked at 120/121 blocks), all 564 PsyQ functions (Sony
+  objects). 3 parked (`decomp.py status`).
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Dashboard (2026-10-18): `docs/index.html` is `tools/scripts/dashboard.html` plus
   the data; a live Swarm card from the git-ignored `docs/swarm.js` the swarm
@@ -46,9 +47,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
 **ovl6a (2026-10-18, run 20261018184703):** stopped by hand after 87 min,
 $47.98: 64 matched, 2 failed at the gate (`func_800B4EAC`: compile error, a
 field another match removed; `func_800B488C`: matches alone but the full
-build is +4 bytes, two jump tables' alignment), 3 left: `func_800B5710`,
-`func_800B551C` (one insn short, notes in history) and `func_800B488C`.
-Next: hand-match these and the failed ones from ovl67/ovl69.
+build is +4 bytes, two jump tables' alignment). Since then `func_800B4EAC`
+and `func_800B551C` are matched and `func_800B5710` is parked (Open
+leads). Next: `func_800B488C` (the jump-table alignment), then ovl61's
+`func_800B8A68`/`PlotBall` and ovl67's parked `func_800B39C0`.
 
 **ovl69 (2026-10-18, run 20261018173050):** stopped by hand after 75 min,
 $33.21: 48 matched, 1 failed at the gate on a compile error (`func_800B7CE8`,
@@ -175,6 +177,23 @@ misses with big-mode checkpoints: `func_8007BFA8` (instructions 5/114),
 
 ## Open leads
 
+- **`func_800B5710` (ovl6a, 2836 B), parked 2026-10-18 at regions 120/121
+  blocks, 706/710 insns** (C under `#ifdef NON_MATCHING`). Only the 0x80
+  button block differs (target 0x37c-0x394): the target puts
+  `mv->forward_speed = speed` in the delay slot of the `% 0x1000` `bgez`,
+  after `lui v0; lw t1,0x18(sp); addiu a0,v0,%lo(D_8009EE9C)`; ours issues
+  `lw t1; nop; sw` first (710 against 709). Worked through against cc1's
+  `-dS`/`-dR` traces: sched2 keeps sched1's order on ties (no hazard for
+  stores), so the store must leave sched1 last in its block. sched1 only does
+  that if the store comes after the modulo's `t = step` copy (expand_divmod
+  emits it right before the `bgez`) and the address isn't a birthing insn.
+  No ordering, spelling, twice-set `cam` pointer or `do { } while (0)` got
+  there; something before reload must differ (an extra insn, or the copy
+  emitted before the `if`). Everything else matched by rules now in Diff
+  patterns: the case 5 fallthrough, `PlaySfx(0x38D)` written in each failing
+  branch (lengthens `mv`'s life so it spills and the hoist gets `fp`),
+  `Heroes[arg0].field` / `D_800BCCF4[x].field`, `G->unk63 = best`, the
+  `mode` local and the case order 3/4, 2, 1, default.
 - **Hack matches to revisit:** `decomp.py hacks` lists them (one on
   2026-10-18: `func_800193A8`, register pins that are probably the original
   source). Parks are `decomp.py status` / the dashboard. Before reaching for a
@@ -486,6 +505,11 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-18 (hand):** `func_800B5710` (ovl6a, 2836 B) taken from the
+  swarm checkpoint (529/721 differing) to 120/121 blocks and parked on one
+  delay-slot fill in the 0x80 block (Open leads). Four Diff patterns rows
+  (constant held across two calls, a spill decided by live length, base-first
+  `ARR[i].field`, a switch on a global read once) and three examples added.
 - **2026-10-18 (hand):** the swarm's three other gate refusals fixed and
   committed: `func_800BA43C` (ovl67, 067bc83b: a third, unused bool parameter
   like ovl61's ArkHeroRad2ObjectCollision), `func_800B3E74` (ovl67, c079de93:

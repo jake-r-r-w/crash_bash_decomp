@@ -11,11 +11,17 @@
    "note": "parked by hand at regions 95/112, 484/520 exact; C under #ifdef NON_MATCHING. Block 21 (2026-10-18 pm): the target's lw start,0(v0) is reorg (fill_slots_from_thread rewrites the insn after a reg-reg copy to use the copy's source), so its RTL loads start via cur; but it also needs p = p + 80 on the temp (cur not cse-canonical: cur's last use <= the temp's, make_regs_eqv) and end = mem(next) (next canonical: next's last use > the temp's), with no insn pair swap (cse.c REG0/REG1 copy swap needs p++ and next = p adjacent). In RTL order cur's last use (fade) comes after next's, so one temp can't satisfy both; 14 statement orders, 6 dispatch shapes and a late use of p tried. f/cur s1/s2 likely follows from it (cur would lose ~6 refs). Next: a source where the A and A+80 temps are different pseudos, or cur/next's last uses ordered next-last",
    "seg": "overlays/engine/8007ee2c",
    "size": 2080
+  },
+  {
+   "name": "func_800B5710",
+   "note": "STAGE structure 492/710 (regions 120/121 blocks, 706/710 insns): only the 0x80 button block differs; target puts mv->forward_speed = speed in the delay slot of the % 0x1000 bgez (sched2 input must have the store last, so sched1 must leave it after the modulo's t=step copy, which expand_divmod emits right before the bgez); tried 6 orders/spellings, a twice-set cam pointer, do{}while(0). Next: find a construct that emits the store after the copy, or reconsider the 0x80 block's source shape",
+   "seg": "overlays/ovl6a/800b4eac",
+   "size": 2836
   }
  ],
- "commit": "c079de93",
+ "commit": "c60e8b16",
  "game": "SCUS_945.70",
- "generated": "2026-10-18T20:28:30Z",
+ "generated": "2026-10-18T21:40:44Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -89310,7 +89316,7 @@
    }
   },
   {
-   "commit": "c079de93",
+   "commit": "c60e8b16",
    "data_b": 3136,
    "data_tb": 606943,
    "game_all_f": 2551,
@@ -89323,7 +89329,7 @@
    "lib_b": 122112,
    "lib_f": 564,
    "lib_tb": 122112,
-   "ts": "2026-10-18T20:28:30Z",
+   "ts": "2026-10-18T21:40:43Z",
    "units": {
     "engine": [
      121412,
@@ -89519,7 +89525,7 @@
   }
  ],
  "summary": {
-  "blocked": 2,
+  "blocked": 3,
   "copies_b": 30732,
   "data": {
    "done_b": 3136,
@@ -89530,7 +89536,7 @@
    "all_f": 2551,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 2,
+   "blocked": 3,
    "c_f": 1433,
    "done_b": 362772,
    "done_f": 1433,
@@ -89876,7 +89882,7 @@
     "all_f": 94,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 0,
+    "blocked": 1,
     "c_f": 92,
     "done_b": 27192,
     "done_f": 92,

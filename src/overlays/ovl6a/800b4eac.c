@@ -220,7 +220,260 @@ void func_800B551C(void) {
     }
 }
 
+/* Parked: 120/121 blocks. Only the 0x80 button block differs: the target puts the
+ * mv->forward_speed store in the delay slot of the % 0x1000 bgez, so sched1 must
+ * leave it after the modulo copy, which no statement order emits (AGENT_LOG). */
+#ifdef NON_MATCHING
+void func_800B5710(s32 arg0) {
+    Ovl6aGameView *g;
+    Ovl6aGameView *gv;
+    EXTengine *eng;
+    EXTheromove *mv;
+    EngRec90248 *p;
+    s32 ang;
+    s32 step;
+    s32 stop;
+    s32 i;
+    s32 best;
+    s32 bestd;
+    s32 d;
+    s32 lim;
+    s32 t;
+    s32 old;
+    s32 n;
+    s32 j;
+    u32 rate;
+    s32 speed;
+    s32 sel;
+    s32 mode;
+    u16 v;
+
+    eng = Heroes[arg0].hero_eng;
+    mv = Heroes[arg0].hero_move;
+    speed = D_8009D6F4[Heroes[arg0].hero_name * 3 + 1];
+    rate = (u32)(D_8009EEA4 * 0x648) >> 8;
+    if (rate != 0) {
+        step = (s32)(speed << 12) / (s32)rate;
+    } else {
+        step = 0;
+    }
+    stop = 0;
+    ang = eng->unk1E;
+    if (((Ovl6aGameView *)D_8005A614)->unk74 != 0) {
+        eng->flags &= ~0x8000;
+        if (D_8009D538[0] != NULL) {
+            D_8009D538[0]->flags &= ~0x8000;
+        }
+        return;
+    }
+    mv->forward_speed = 0;
+    D_800BCEF4 = 0;
+    if (((Ovl6aGameView *)D_8005A614)->unk30 & 0x8008) {
+        return;
+    }
+    if (Heroes[arg0].hero_frozen != 0) {
+        return;
+    }
+    if (((Ovl6aGameView *)D_8005A614)->unk63 == -1) {
+        if (((Ovl6aPad *)D_80051338)[arg0].unk50 & 0x10) {
+            mv->forward_speed = speed;
+            ang = D_8009EE9C.unk4 + 0x800;
+            D_8009EE9C.unk8 += speed;
+            if ((u32)D_8009EE9C.unk10 < (u32)D_8009EE9C.unk8) {
+                best = -1;
+                bestd = 0x1000;
+                for (i = 0; i < 12; i++) {
+                    if (D_800BCCF4[i].unk14 != NULL && (D_800BCCF4[i].unk14->unk6 & 2)) {
+                        d = func_80015480(D_800BCCF4[i].unk10, D_8009EE9C.unk4);
+                        if (d < bestd) {
+                            bestd = d;
+                            if ((u32)d < 0x81) {
+                                best = i;
+                            }
+                        }
+                    }
+                }
+                if (best != -1) {
+                    D_8009EE9C.unk4 = D_800BCCF4[best].unk10;
+                    ((Ovl6aGameView *)D_8005A614)->unk63 = best;
+                    D_800BCCF4[best].unk1C = 1;
+                } else {
+                    D_8009EE9C.unk8 = D_8009EE9C.unk10;
+                    stop++;
+                    mv->forward_speed = 0;
+                }
+            }
+        }
+        if (((Ovl6aPad *)D_80051338)[arg0].unk50 & 0x40) {
+            ang = D_8009EE9C.unk4;
+            mv->forward_speed = speed;
+            D_8009EE9C.unk8 -= speed;
+            if ((u32)D_8009EE9C.unk8 < (u32)D_8009EE9C.unkC) {
+                stop++;
+                D_8009EE9C.unk8 = D_8009EE9C.unkC;
+                mv->forward_speed = 0;
+            }
+        }
+        if (stop == 0) {
+            if (((Ovl6aPad *)D_80051338)[arg0].unk50 & 0x80) {
+                mv->forward_speed = speed;
+                ang = (D_8009EE9C.unk4 -= step % 0x1000) + 0x400;
+            }
+            if (((Ovl6aPad *)D_80051338)[arg0].unk50 & 0x20) {
+                mv->forward_speed = speed;
+                ang = (D_8009EE9C.unk4 += step) - 0x400;
+            }
+            D_8009EE9C.unk4 &= 0xFFF;
+        }
+    } else {
+        if (((Ovl6aPad *)D_80051338)[arg0].unk50 & 0x10) {
+            mv->forward_speed = speed;
+            t = D_8009EE9C.unk8 + speed;
+            D_8009EE9C.unk8 = t;
+            lim = D_800BCCF4[((Ovl6aGameView *)D_8005A614)->unk63].unkC;
+            ang = D_8009EE9C.unk4 + 0x800;
+            if ((u32)lim < (u32)t) {
+                D_8009EE9C.unk8 = lim;
+                mv->forward_speed = 0;
+            }
+        }
+        if (((Ovl6aPad *)D_80051338)[arg0].unk50 & 0x40) {
+            ang = D_8009EE9C.unk4;
+            mv->forward_speed = speed;
+            D_8009EE9C.unk8 -= speed;
+            if ((u32)D_8009EE9C.unk8 < (u32)D_8009EE9C.unk10) {
+                D_8005A677 = -1;
+            }
+        }
+        if ((u8)D_8005A677 >= 12) {
+            goto done;
+        }
+        old = D_800BCCF4[D_8005A677].unk20;
+        if ((u32)(D_800BCCF4[D_8005A677].unkC - D_8009EEA4) < 0x100) {
+            D_800BCCF4[D_8005A677].unk20 = 1;
+        } else {
+            D_800BCCF4[D_8005A677].unk20 = 0;
+        }
+        if (D_800BCCF4[D_8005A677].unk20 != old) {
+            if (D_800BCCF4[D_8005A677].unk20 != 0) {
+                switch (((s32(*)(void))func_800B7B38)()) {
+                case 2:
+                    PlaySfx(0x399, NULL, NULL, 0x1000, 0x1E00, 0);
+                    break;
+                case 5:
+                    PlaySfx(((s32(*)(void))func_800900CC)() >= 0 ? 0x39E : 0x39D, &D_800BCEEC, NULL, 0x1000, 0x1E00, 0);
+                case 4:
+                    PlaySfx(0x194, NULL, NULL, 0x1000, 0x1E00, 0);
+                    break;
+                }
+            } else {
+                switch (((s32(*)(void))func_800B7B38)()) {
+                case 2:
+                    PlaySfx(0x39A, NULL, NULL, 0x1000, 0x1E00, 0);
+                    break;
+                case 5:
+                    if (D_800BCEEC != NULL) {
+                        StopSfx(D_800BCEEC);
+                    }
+                case 4:
+                    PlaySfx(0x194, NULL, NULL, 0x1000, 0x1E00, 0);
+                    break;
+                }
+            }
+        }
+        if (!(((Ovl6aPad *)D_80051338)[arg0].unk54 & 0x4000)) {
+            goto done;
+        }
+        p = D_800BCCF4;
+        g = (Ovl6aGameView *)D_8005A614;
+        if ((u32)(p[g->unk63].unkC - D_8009EEA4) >= 0x100) {
+            goto done;
+        }
+        switch (((s32(*)(void))func_800B7B38)()) {
+        case 5:
+            n = func_800B694C();
+            if (n >= 0 && ((s32(*)(s32))func_8007A6D0)(n & 0xFFFF) == 1) {
+                func_800B7FAC(n);
+                SetHeroAction(NULL, 1);
+                if (Heroes[0].hero_shadow != NULL) {
+                    Heroes[0].hero_shadow->flags &= ~0x8000;
+                }
+                func_800B7E14(&Heroes[0].hero_eng->unk10.x, 9);
+            } else {
+                PlaySfx(0x38D, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            break;
+        case 2:
+            sel = p[g->unk63].unk14->unk4;
+            if ((g->unk4 & 0x2000) || ((g->unkE4[sel] != 0 || D_800BCED4 <= 0) && ((s32(*)(s32))func_8007A6D0)(sel) == 1)) {
+            mode = D_800BCED4;
+            if (mode != 4 || ((Ovl6aGameView *)D_8005A614)->unk105[sel] != 0) {
+            gv = (Ovl6aGameView *)D_8005A614;
+            v = gv->unk32 & 0xFF07;
+            gv->unk32 = v;
+            switch (mode) {
+            case 3:
+            case 4:
+                gv->unk32 = v | 0x20;
+                if (mode == 4) {
+                    gv->unk32 = v | 0x28;
+                }
+                break;
+            case 2:
+                gv->unk32 = v | 0x80;
+                break;
+            case 1:
+                gv->unk32 = v | 0x40;
+                break;
+            default:
+                ((Ovl6aGameView *)D_8005A614)->unk32 |= 0x10;
+                break;
+            }
+            func_800B7E14(&Heroes[0].hero_eng->unk10.x, 9);
+            func_800B7FAC(D_800BCCF4[D_8005A677].unk14->unk4);
+            SetHeroAction(NULL, 1);
+            if (Heroes[0].hero_shadow != NULL) {
+                Heroes[0].hero_shadow->flags &= ~0x8000;
+            }
+            } else {
+                PlaySfx(0x38D, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            } else {
+                PlaySfx(0x38D, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            break;
+        case 4:
+            func_800B7E14(&Heroes[0].hero_eng->unk10.x, 9);
+            SetHeroAction(NULL, 1);
+            if (Heroes[0].hero_shadow != NULL) {
+                Heroes[0].hero_shadow->flags &= ~0x8000;
+            }
+            g->unk30 |= 0x200;
+            func_80092AF4((s32)D_8009F46C, 0x200);
+            break;
+        default:
+            func_800B7E14(&D_8009D530->unk10.x, 9);
+            break;
+        }
+    }
+done:
+    for (j = 11; j >= 0; j--) {
+        D_800BCCF4[j].unk1C = 0;
+    }
+    if (D_8005A677 != -1) {
+        D_800BCCF4[D_8005A677].unk1C = 1;
+    }
+    mv->forward_angle = ang;
+    if (Heroes[arg0].hero_aseq != 10 && D_800BCEF0 != 0) {
+        D_800BCEF0 = 0;
+        Heroes[arg0].hero_eng->unk1E = ang;
+        mv->facing_angle = ang;
+    }
+    func_800B8284();
+}
+#else
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B5710);
+#endif
 
 void func_800B6224(s32 arg0) {
     EXTengine *e;

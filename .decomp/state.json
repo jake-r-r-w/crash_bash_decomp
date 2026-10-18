@@ -9586,7 +9586,11 @@
   "status": "matched"
  },
  "ovl6a:800B5710": {
-  "auto_failed": "types"
+  "auto_failed": "types",
+  "blocked_at": "2026-10-18T21:40:42Z",
+  "note": "STAGE structure 492/710 (regions 120/121 blocks, 706/710 insns): only the 0x80 button block differs; target puts mv->forward_speed = speed in the delay slot of the % 0x1000 bgez (sched2 input must have the store last, so sched1 must leave it after the modulo's t=step copy, which expand_divmod emits right before the bgez); tried 6 orders/spellings, a twice-set cam pointer, do{}while(0). Next: find a construct that emits the store after the copy, or reconsider the 0x80 block's source shape",
+  "started": "2026-10-18T20:36:49Z",
+  "status": "blocked"
  },
  "ovl6a:800B6224": {
   "matched_at": "2026-10-18T18:57:37Z",
