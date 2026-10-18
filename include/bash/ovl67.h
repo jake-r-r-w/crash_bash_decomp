@@ -318,6 +318,8 @@ void func_800B5440(s32 arg0);
 
 void func_800B5550(s32 arg0);
 
+void func_800B5838(s32 arg0);
+
 void InitN2OBall(NAS *nas);
 
 void func_800B6E6C(Ovl67Blend *p);
