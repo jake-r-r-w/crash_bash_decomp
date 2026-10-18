@@ -118,7 +118,32 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B5EC8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B60FC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B62F4);
+void func_800B62F4(arg0)
+s32 arg0;
+{
+    u16 *p;
+    u16 *b;
+    s32 v;
+    u16 t;
+
+    v = D_800C1EF0[arg0];
+    if (arg0 == D_800C2724 || arg0 == D_800C2720) {
+        v = ~v + 1;
+    }
+    if (v < 0) {
+        t = D_800C13AC[Heroes[arg0].hero_name][2];
+    } else {
+        t = D_800C13AC[Heroes[arg0].hero_name][3];
+    }
+    b = D_800C1EE8;
+    p = b + arg0;
+    if ((u32)(abs(*p - D_800C13AC[Heroes[arg0].hero_name][2]) - 2) >= 0x19U) {
+        *p = t;
+    }
+    if ((u32)(abs(*p - D_800C13AC[Heroes[arg0].hero_name][3]) - 2) >= 0x19U) {
+        *p = t;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B649C);
 

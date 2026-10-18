@@ -49,6 +49,9 @@ extern u16 D_800C1C88;
 extern u16 D_800C1F14;
 extern HeroInfo Heroes[4];
 extern s32 D_800C1C70;
+extern u16 D_800C13AC[][5];
+extern u16 D_800C1EE8[];
+extern s16 D_800C1EF0[];
 extern u16 D_800C1F14;
 
 extern u16 D_8009D754;
