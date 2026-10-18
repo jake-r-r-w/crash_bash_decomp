@@ -116,6 +116,8 @@ s32 func_800B8224(void);
 
 void func_800B822C(s32 arg0);
 
+void func_800B8324(s32 arg0);
+
 void func_800B838C(s32 arg0);
 
 void func_800B8474(s32 arg0);

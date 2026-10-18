@@ -296,7 +296,23 @@ void func_800B822C(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B8284);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B8324);
+void func_800B8324(s32 arg0) {
+    HeroInfo *hero;
+    EXTengine *shadow;
+
+    HeroInfo *base = Heroes;
+
+    hero = &base[arg0];
+    shadow = hero->hero_shadow;
+
+    if (shadow != NULL) {
+        EXTengine *eng;
+
+        shadow->flags |= 0x8000;
+        eng = hero->hero_eng;
+        shadow->unk10 = eng->unk10;
+    }
+}
 
 void func_800B838C(s32 arg0) {
     EXTengine *s = Heroes[arg0].hero_shadow;
