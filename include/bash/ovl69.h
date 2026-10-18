@@ -14,6 +14,7 @@ void func_800B5360(s32 *arg0);
 void func_800B5390(s32 arg0);
 void func_800B544C(void);
 void func_800B5454(void);
+void func_800B37BC(void);
 void func_800B5A6C(void);
 void func_800B5A74(void);
 void func_800B7D20(void);
@@ -82,6 +83,8 @@ void func_800B51EC(void);
 void func_800B5218(void);
 
 void func_800B5484(void);
+
+void func_800B5AC0(void);
 
 s32 func_800B7D98(s32 arg0, s32 arg1);
 
