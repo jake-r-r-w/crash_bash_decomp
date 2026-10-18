@@ -74,4 +74,6 @@ extern GfxViewport D_800B8E00;
 
 void func_800B4F1C(void);
 
+s32 func_800B7D98(s32 arg0, s32 arg1);
+
 #endif /* BASH_OVL69_H */
