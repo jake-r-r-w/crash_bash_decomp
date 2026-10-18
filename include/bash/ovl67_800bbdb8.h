@@ -59,6 +59,29 @@ typedef struct LaserShoot {
 } LaserShoot;
 extern u8 *D_800C449C;
 extern s32 D_800C4478;
+
+typedef struct MineModel {
+    /* 0x00 */ u8 pad00[0x6C];
+    /* 0x6C */ s32 unk6C;
+    /* 0x70 */ u8 pad70[4];
+    /* 0x74 */ s16 unk74;
+} MineModel;
+
+typedef struct MineObj {
+    /* 0x00 */ u8 pad00[0x1C];
+    /* 0x1C */ s16 unk1C;
+    /* 0x1E */ s16 unk1E;
+    /* 0x20 */ s16 unk20;
+    /* 0x22 */ u8 pad22[0x3C];
+    /* 0x5E */ s16 unk5E;
+    /* 0x60 */ u8 pad60[0xC];
+    /* 0x6C */ MineModel *model;
+} MineObj;
+
+typedef struct MineHolder {
+    /* 0x00 */ u8 pad00[0x54];
+    /* 0x54 */ MineObj *obj;
+} MineHolder;
 extern s32 D_800C4480;
 extern s32 D_800C4488;
 extern s32 D_800C448C;
@@ -106,6 +129,8 @@ void InitNitroSmokeBoost(NAS *nas);
 extern s32 D_800C447C;
 
 void func_800C27D4(void);
+
+void InitNitroMine(MineHolder *arg0);
 
 void func_800C2BB0(void);
 

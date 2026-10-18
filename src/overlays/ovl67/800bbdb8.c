@@ -141,7 +141,14 @@ void func_800C2904(s32 *arg0, s32 flag, s32 *out) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", InitNitroMissile);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", InitNitroMine);
+void InitNitroMine(MineHolder *arg0) {
+    arg0->obj->model->unk6C = *(s32 *)D_80058AD0;
+    arg0->obj->model->unk74 = 0x2012;
+    arg0->obj->unk1C = Random(0x1000);
+    arg0->obj->unk1E = Random(0x1000);
+    arg0->obj->unk20 = Random(0x1000);
+    arg0->obj->unk5E = 1;
+}
 
 void func_800C2BB0(void) {
     if (D_800C447C-- < 0) {
