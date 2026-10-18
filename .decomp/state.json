@@ -9349,7 +9349,8 @@
   "auto_failed": "diff"
  },
  "ovl69:800B5978": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-18T17:44:53Z",
+  "status": "matched"
  },
  "ovl69:800B5A40": {
   "auto_diff": 2,
@@ -9647,7 +9648,9 @@
   "auto_failed": "diff"
  },
  "ovl6a:800B7FD0": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-18T17:45:09Z",
+  "status": "matched",
+  "via": "copy"
  },
  "ovl6a:800B8098": {
   "auto_diff": 42,

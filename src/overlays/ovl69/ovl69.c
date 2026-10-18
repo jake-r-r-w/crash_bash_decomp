@@ -232,7 +232,30 @@ void func_800B5880(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B58E4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B5978);
+void func_800B5978(u8 *cam, s32 arg1) {
+    u8 *o = (u8 *)func_8001E48C(arg1);
+    s32 *p;
+    s32 t;
+
+    if (o != NULL) {
+        *(s16 *)(cam + 0x54) = (get_angle(*(s32 *)(o + 0x58) - *(s32 *)(o + 0x3C),
+                                          *(s32 *)(o + 0x50) - *(s32 *)(o + 0x34)) - 0x400) & 0xFFF;
+        *(s16 *)(cam + 0x56) = 0;
+        *(s16 *)(cam + 0x58) = 0;
+        *(s32 *)(cam + 0x18) = (((s32)(*(u16 *)(o + 0x40) << 16)) >> 18) + 0x200;
+        do {
+            *(s32 *)(cam + 0xC) = *(s32 *)(o + 0x30);
+        } while (0);
+        p = (s32 *)(o + 0x30);
+        t = p[1];
+        *(s32 *)(cam + 0x10) = t;
+        t = p[2];
+        *(s32 *)(cam + 0x14) = t;
+        *(s32 *)(cam + 4) = -p[1];
+        *(s32 *)cam = 0;
+        *(s32 *)(cam + 8) = *(s32 *)(o + 0x58);
+    }
+}
 
 void func_800B5A40(u8 *cam, s32 arg1) {
     if (arg1 != 0) {
