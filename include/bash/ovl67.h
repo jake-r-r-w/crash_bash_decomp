@@ -314,6 +314,8 @@ s32 func_800B3888(Ovl67Obj *arg0);
 
 void func_800B5168(s32 arg0);
 
+void func_800B52CC(s32 arg0);
+
 void func_800B5440(s32 arg0);
 
 void func_800B5550(s32 arg0);
