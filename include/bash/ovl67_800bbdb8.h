@@ -21,6 +21,33 @@ typedef struct FollowCam {
     /* 0x58 */ s16 unk58;
 } FollowCam;
 
+typedef struct SetupCam {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ s32 x;
+    /* 0x10 */ s32 y;
+    /* 0x14 */ s32 z;
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ u8 pad1C[0x1C];
+    /* 0x38 */ s32 unk38;
+    /* 0x3C */ s32 unk3C;
+    /* 0x40 */ s32 unk40;
+    /* 0x44 */ u8 pad44[0x10];
+    /* 0x54 */ s16 unk54;
+    /* 0x56 */ s16 unk56;
+    /* 0x58 */ s16 unk58;
+    /* 0x5A */ u8 pad5A[0xA];
+    /* 0x64 */ s32 sx, sy, sz;
+    /* 0x70 */ u8 pad70[0x24];
+    /* 0x94 */ u8 unk94;
+    /* 0x95 */ u8 unk95;
+} SetupCam;
+
+extern SetupCam D_800C7614;
+extern u8 D_8009F644[];
+extern u8 D_8009F6F4[];
+
 typedef struct MineSrc {
     /* 0x00 */ u8 pad00[0x18];
     /* 0x18 */ s32 unk18;

@@ -256,7 +256,31 @@ void InitDummyCamera(NAS *nas) {
 void func_800C3184(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C318C);
+void func_800C318C(s32 arg0) {
+    D_800C7614.sx = 0x1000;
+    D_800C7614.sy = 0x1000;
+    D_800C7614.sz = 0x1000;
+    D_800C7614.unk8 = 0x8000;
+    D_800C7614.unk18 = 0x140;
+    D_800C7614.unk54 = 0;
+    D_800C7614.unk56 = 0;
+    D_800C7614.unk58 = 0;
+    D_800C7614.x = 0;
+    D_800C7614.y = 0;
+    D_800C7614.z = 0;
+    D_800C7614.unk95 = 0;
+    D_800C7614.unk94 = 1;
+    D_800C7614.unk0 = 0;
+    D_800C7614.unk4 = 0;
+    D_800C7614.unk8 = 0;
+    D_800C7614.unk3C = 0;
+    D_800C7614.unk38 = 0;
+    D_800C7614.unk40 = 0;
+    func_80093038();
+    func_80018B08((GfxViewport *)D_8009F6F4, (GfxCamera *)&D_800C7614);
+    D_800569AC = *(s32 *)D_8009F644;
+    func_8009440C();
+}
 
 void func_800C3234(void) {
 }
