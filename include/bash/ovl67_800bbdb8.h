@@ -8,7 +8,24 @@
 #include "common.h"
 #include "bash/ovl67.h"
 
+typedef struct MineSrc {
+    /* 0x00 */ u8 pad00[0x18];
+    /* 0x18 */ s32 unk18;
+} MineSrc;
+
+typedef struct MineSFX {
+    /* 0x00 */ u8 pad00[0x54];
+    /* 0x54 */ MineSrc *src;
+    /* 0x58 */ u8 pad58[4];
+    /* 0x5C */ s16 unk5C;
+    /* 0x5E */ u8 pad5E[2];
+    /* 0x60 */ s32 unk60;
+    /* 0x64 */ s32 unk64;
+} MineSFX;
+
 void func_800BC6B8(void);
+
+void InitMineSFX(MineSFX *arg0);
 
 void func_800C2904(s32 *arg0, s32 flag, s32 *out);
 

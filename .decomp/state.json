@@ -8771,7 +8771,8 @@
   "auto_failed": "compile"
  },
  "ovl67:800C28BC": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-18T16:36:43Z",
+  "status": "matched"
  },
  "ovl67:800C2904": {
   "auto_diff": 3,
