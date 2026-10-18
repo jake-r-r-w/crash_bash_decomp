@@ -121,7 +121,20 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BD770);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Plot_Ark_Pickup);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BDD30);
+void func_800BDD30(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = &base[arg0];
+
+    if (h->hero_pu_timer != 0) {
+        h->hero_pu_timer--;
+    }
+    if (h->hero_pu_action_timer != 0) {
+        h->hero_pu_action_timer--;
+    }
+    if (h->hero_pu_lock != 0) {
+        h->hero_pu_lock--;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Plot_RepulseRing);
 

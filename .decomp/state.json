@@ -6363,7 +6363,8 @@
  },
  "ovl61:800BDD30": {
   "auto_diff": 5,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-18T10:45:46Z",
+  "status": "matched"
  },
  "ovl61:800BDD94": {
   "auto_failed": "types"

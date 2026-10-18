@@ -26,8 +26,11 @@ extern s32 D_800C2724;
 extern s32 D_800C2728;
 extern u16 D_800C1C88;
 extern u16 D_800C1F14;
+extern HeroInfo Heroes[4];
 
 void func_800B84B8(void);
+void func_800BDD30(s32 arg0);
+
 s32 func_800C096C(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2);
 
 s32 func_800BFD9C(u8 *arg0);
