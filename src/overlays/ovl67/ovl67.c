@@ -860,7 +860,36 @@ s32 func_800BB05C(u8 *arg0) {
     return (*(s32*)((u8*)(arg0) + 20)) - D_8005A5D8;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BB070);
+void func_800BB070(u16 arg0) {
+    Ovl67FlagNode *n = ((Ovl67SceneRef *)D_80058AD0)->unk1C;
+    s16 *p;
+
+    if (arg0) {
+        while (n != NULL) {
+            p = (s16 *)func_80015870(n->unk6C, n->unk74);
+            if (p[1] == 0x63) {
+                if (p[0] != 0x62) {
+                    n->flags |= 0x8000;
+                } else {
+                    n->flags &= ~0x8000;
+                }
+            } else {
+                n->flags &= ~0x8000;
+            }
+            n = n->next;
+        }
+    } else {
+        while (n != NULL) {
+            p = (s16 *)func_80015870(n->unk6C, n->unk74);
+            if (p[1] == 0x63) {
+                n->flags &= ~0x8000;
+            } else {
+                n->flags |= 0x8000;
+            }
+            n = n->next;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BB184);
 

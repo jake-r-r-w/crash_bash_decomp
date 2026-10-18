@@ -137,9 +137,21 @@ typedef struct Ovl67Scene {
     u8 unk27;
 } Ovl67Scene;
 
+typedef struct Ovl67FlagNode {
+    u32 flags;
+    u8 pad4[0x58];
+    struct Ovl67FlagNode *next;
+    u8 pad60[0xC];
+    u8 *unk6C;
+    u8 pad70[4];
+    u16 unk74;
+} Ovl67FlagNode;
+
 typedef struct Ovl67SceneRef {
     u8 pad0[0x10];
     Ovl67Scene *unk10;
+    u8 pad14[8];
+    Ovl67FlagNode *unk1C;
 } Ovl67SceneRef;
 
 extern Ovl67Round D_800C4398;
