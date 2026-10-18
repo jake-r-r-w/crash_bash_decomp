@@ -144,6 +144,8 @@ extern void (*D_8009E590)(void);
 
 extern s8 D_8005A64B;
 
+void func_800B4770(void);
+
 void func_800B4848(void);
 
 void func_800B5244(void);
