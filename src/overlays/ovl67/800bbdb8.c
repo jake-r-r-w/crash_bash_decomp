@@ -84,7 +84,21 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C2218);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C237C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C27D4);
+void func_800C27D4(void) {
+    FollowCam *cam;
+    EXTengine *e = Heroes->hero_eng;
+    s32 y;
+
+    cam = (FollowCam *)D_80051640;
+    cam->x += (((e->unk10.x + Heroes[1].hero_eng->unk10.x) >> 1) - cam->x) >> 3;
+    cam->z = e->unk10.z;
+    y = e->unk10.y;
+    cam->unk8 = 0x990;
+    cam->unk0 = 0;
+    cam->unk54 = 0x1A8;
+    cam->y = y;
+    cam->unk58 = e->unk20 >> 3;
+}
 
 void InitLaserShoot(LaserShoot *arg0) {
     arg0->obj->sub->unk6C = *(s32 *)D_80058AD0;

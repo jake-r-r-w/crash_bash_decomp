@@ -8,6 +8,19 @@
 #include "common.h"
 #include "bash/ovl67.h"
 
+typedef struct FollowCam {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ s32 x;
+    /* 0x10 */ s32 y;
+    /* 0x14 */ s32 z;
+    /* 0x18 */ u8 pad18[0x3C];
+    /* 0x54 */ s16 unk54;
+    /* 0x56 */ s16 pad56;
+    /* 0x58 */ s16 unk58;
+} FollowCam;
+
 typedef struct MineSrc {
     /* 0x00 */ u8 pad00[0x18];
     /* 0x18 */ s32 unk18;
@@ -90,6 +103,8 @@ void func_800C318C(s32 arg0);
 
 void InitNitroSmokeBoost(NAS *nas);
 extern s32 D_800C447C;
+
+void func_800C27D4(void);
 
 void func_800C2BB0(void);
 
