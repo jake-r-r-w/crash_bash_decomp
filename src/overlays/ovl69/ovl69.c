@@ -72,7 +72,93 @@ void func_800B39C8(void) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl69/ovl69", D_800B32B4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B3A9C);
+void func_800B3A9C(void) {
+    static const struct {
+        SLONG_XYZ pos;
+        char text[796];
+    } D_800B3494 = {
+        { -0x17C, 0x190, -0x64 },
+        "EASY\0\0\0\0"
+        "MEDIUM\0\0"
+        "HARD\0\0\0\0"
+        "PRESS \xFC BUTTON TO START\0"
+        "EXIT\0\0\0\0"
+        "SOUND\0\0\0"
+        "AUDIO MODE\0\0"
+        "<STEREO>\0\0\0\0"
+        "< MONO >\0\0\0\0"
+        "MUSIC VOLUME\0\0\0\0"
+        "FX VOLUME\0\0\0"
+        "CONTROLLER\0\0"
+        "VIBRATION\0\0\0"
+        "ON\0\0"
+        "OFF\0"
+        "PRESS \xFF BUTTON TO CHANGE\0\0\0\0"
+        "PRESS \xFC BUTTON TO ACCEPT\0\0\0\0"
+        "<100%>\0\0"
+        "<090%>\0\0"
+        "P1\0\0"
+        "P2\0\0"
+        "P3\0\0"
+        "P4\0\0"
+        "CHARACTER SELECT\0\x14\0\0"
+        "PRESS \xFD BUTTON\r14TO UNLOCK LEVELS\0\0\0"
+        "THERE ARE NO MORE\nUNLOCKED LEVELS\nON THIS MEMORY CARD\n\0\0"
+        "INSERT MEMORY CARD\nWITH CRASH BASH DATA\nTO CHECK FOR\nUNLOCKED LEVELS\0\0\0\0"
+        "LOCKED\0\0"
+        "PRESS LEFT - RIGHT TO CHANGE ARENA\0\0"
+        "PRESS UP - DOWN TO CHANGE LEVEL\0"
+        "PRESS \xFC BUTTON TO SELECT\0\0\0\0"
+        "CHOOSE LEVEL\0\0\0\0"
+        "PRESS \xFF TO\nCHECK MEMORY CARD\nFOR SAVED GAME\0"
+        "CHECKING MEMORY CARD\nIN MEMORY CARD SLOT 1\nFOR UNLOCKED\nLEVELS\0\x14"
+        "SELECT BATTLE TYPE\0\0"
+        "PRESS LEFT - RIGHT TO CHANGE BATTLE TYPE\0\0\0\0"
+        "PRESS \xFC BUTTON TO START BATTLE\0\0"
+        "VS\0\0"
+        "VS BATTLE\0\0\0"
+        "TEAM BATTLE\0"
+        "SELECT SLOT\0"
+    };
+    SLONG_XYZ pos;
+    subengine *sub;
+    subengine *p2;
+    TrigEntry *tbl;
+    EXTengine *eng;
+    s16 ang;
+    s32 d;
+
+    sub = GetEngineSlot(1)->sub;
+    sub->unk14 = D_8005B690 * 0x14;
+    sub->unk12 = 0x293;
+    sub->unk50 = 1;
+    sub->unk51 = 0;
+    sub->unk20.z = 0x2800;
+    sub->unk20.x = 0x2800;
+    sub->unk52 = 1;
+    eng = GetEngineSlot(1);
+    tbl = D_80068BD4;
+    pos = D_800B3494.pos;
+    d = D_8004E0D8;
+    pos.x += (tbl[(((d * 0x14) & 0xFFF) - 0x400) & 0xFFF].unk2 * 0x8F) >> 0xF;
+    pos.y += (tbl[(((d * 0x2F) & 0xFFF) - 0x400) & 0xFFF].unk2 * 0x17) >> 0xC;
+    ang = (tbl[(((d * 0x13) & 0xFFF) - 0x400) & 0xFFF].unk2 * 0x333) >> 0x10;
+    p2 = &eng->sub[1];
+    *(SLONG_XYZ *)&p2->unk04 = pos;
+    p2->unk12 = -0x1C7;
+    p2->unk51 = 0;
+    p2->unk14 = ang;
+    p2->unk52 = 1;
+    func_800251A8(NULL, eng, p2, &D_800B95F4);
+    p2 = &eng->sub[2];
+    *(SLONG_XYZ *)&p2->unk04 = pos;
+    p2->unk51 = 0;
+    p2->unk12 = -0x155;
+    p2->unk14 = ang;
+    p2->flags |= 0x02000000;
+    p2->unk68 = 0x80;
+    p2->unk52 = 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B3CA8);
 
