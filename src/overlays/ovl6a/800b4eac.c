@@ -345,7 +345,24 @@ void func_800BAAFC(void) {
     func_8001C2C0(GetEngineSlot(6));
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BAB40);
+void func_800BAB40(void) {
+    s32 i;
+    s32 any = 0;
+
+    for (i = 0; i < 4; i++) {
+        if (((PadButtons *)D_80051338)[i].unk54 & 0x4000) {
+            any = 1;
+        }
+    }
+    if (any != 0 && D_800BD5B4 != 0 && D_800BD5B0 < 4U) {
+        D_800BD5B0 = 4;
+    }
+    if (D_800BD5B0 == 0x64) {
+        ((Ovl6aGameView *)D_8005A614)->unk24 = 0;
+        ((Ovl6aGameView *)D_8005A614)->unk30 = 0x8002;
+    }
+    func_800B8F50();
+}
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl6a/800b4eac", D_800B3894);
 

@@ -9,6 +9,15 @@
 #include "bash/ovl6a.h"
 
 extern s32 D_800BF260;
+extern u32 D_800BD5B0;
+extern s32 D_800BD5B4;
+
+typedef struct Ovl6aGameView {
+    /* 0x00 */ u8 pad0[0x24];
+    /* 0x24 */ s16 unk24;
+    /* 0x26 */ u8 pad26[0x30 - 0x26];
+    /* 0x30 */ u16 unk30;
+} Ovl6aGameView;
 
 void func_800B7874(void);
 
@@ -63,6 +72,8 @@ void func_800BA848(void);
 void InitPodiumOdo(u8 *arg0);
 
 void func_800BAAFC(void);
+
+void func_800BAB40(void);
 
 void func_800BB364(void);
 
