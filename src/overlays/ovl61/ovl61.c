@@ -388,7 +388,19 @@ void func_800C02F8(s32 arg0) {
     PlaySfx(D_800C18E8[arg0], &h->hero_eng->sfx, NULL, 0x1000, 0x1E00, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C039C);
+void func_800C039C(s32 arg0) {
+    HeroInfo *base;
+    HeroInfo *h;
+
+    func_800B62F4();
+    base = Heroes;
+    h = &base[arg0];
+    h->hero_move->velocity_enable = 1;
+    SetHeroSeq((HeroInfo *)arg0, 0x1D);
+    D_800C1F0C = Random(0x3C) + 0x3C;
+    h->hero_attack_counter = 0;
+    PlaySfx(D_800C18E0[arg0], NULL, NULL, 0x1000, 0x1E00, 0);
+}
 
 void func_800C0448(s32 arg0) {
     HeroInfo *base = Heroes;

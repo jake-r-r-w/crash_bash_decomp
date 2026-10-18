@@ -6451,7 +6451,8 @@
   "status": "matched"
  },
  "ovl61:800C039C": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-18T11:00:27Z",
+  "status": "matched"
  },
  "ovl61:800C0448": {
   "auto_diff": 23,

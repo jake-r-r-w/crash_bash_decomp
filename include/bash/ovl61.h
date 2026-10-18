@@ -26,6 +26,8 @@ typedef struct Ovl61Dir {
 extern s32 D_800C1C68;
 extern s32 D_800C1C6C;
 extern u16 D_800C18E8[];
+extern u16 D_800C18E0[];
+extern s16 D_800C1F0C;
 extern s32 D_800C271C;
 extern s32 D_800C2720;
 extern s32 D_800C2724;
@@ -96,6 +98,8 @@ void func_800B69E8(s32 arg0);
 s32 func_800BFD14(Ovl61Vel *v);
 
 void func_800C02F8(s32 arg0);
+
+void func_800C039C(s32 arg0);
 
 void func_800C052C(s32 arg0);
 
