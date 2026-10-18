@@ -571,7 +571,33 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B6E0C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B7458);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B79A8);
+void func_800B79A8(void) {
+    s32 *cam = (s32 *)&D_800B9538;
+    s8 *m;
+
+    func_80018B08(&D_800BA664, &D_800B9538);
+    D_80056998.modelDp = *(s32 *)D_8009F644;
+    func_8001C2C0((u8 *)GetEngineSlot(2));
+    func_800B566C();
+    m = (s8 *)D_8005A614;
+    cam[2] = (m[0x37] != 0) ? 0x400 : 0x578;
+    func_80018B08(&D_800BA68C, &D_800B9538);
+    D_80056998.modelDp = *(s32 *)D_8009F644;
+    func_8001C2C0((u8 *)GetEngineSlot(3));
+    cam[2] = (m[0x37] != 1) ? 0x400 : 0x578;
+    func_80018B08(&D_800BA6B4, &D_800B9538);
+    D_80056998.modelDp = *(s32 *)D_8009F644;
+    func_8001C2C0((u8 *)GetEngineSlot(4));
+    cam[2] = (m[0x37] != 2) ? 0x400 : 0x578;
+    func_80018B08(&D_800BA6DC, &D_800B9538);
+    D_80056998.modelDp = *(s32 *)D_8009F644;
+    func_8001C2C0((u8 *)GetEngineSlot(5));
+    cam[2] = (m[0x37] != 3) ? 0x400 : 0x578;
+    func_80018B08(&D_800BA704, &D_800B9538);
+    D_80056998.modelDp = *(s32 *)D_8009F644;
+    func_8001C2C0((u8 *)GetEngineSlot(6));
+    cam[2] = 0x400;
+}
 
 void func_800B7B30(void) {
     GetEngineSlot(1)->sub[4].flags &= ~0x8000;

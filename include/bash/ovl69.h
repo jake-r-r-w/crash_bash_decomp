@@ -115,6 +115,11 @@ void func_8008D488(u8 *arg0, s32 arg1);
 extern GfxCamera D_800B9538;
 extern GfxViewport D_800B8DD8;
 extern GfxViewport D_800B8E00;
+extern GfxViewport D_800BA664;
+extern GfxViewport D_800BA68C;
+extern GfxViewport D_800BA6B4;
+extern GfxViewport D_800BA6DC;
+extern GfxViewport D_800BA704;
 
 void func_800B4F1C(void);
 
@@ -169,6 +174,8 @@ void func_800B58E4(void);
 s8 func_800B6ACC(s32 a0);
 
 void func_800B6CF4(void);
+
+void func_800B79A8(void);
 
 void func_800B7B30(void);
 
