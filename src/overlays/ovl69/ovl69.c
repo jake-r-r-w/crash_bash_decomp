@@ -297,7 +297,17 @@ void func_800B83A4(void) {
     D_800BAACC = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B83D8);
+void func_800B83D8(s32 arg0, s32 arg1) {
+    EXTengine *eng = GetEngineSlot(0);
+    s32 off = arg0 * 0xA8;
+    u8 *p = (u8 *)eng->sub + (off + 0x2A0);
+    s16 v;
+
+    v = func_80015284(*(s16 *)(p + 0x70), arg1, 0x800);
+    *(s16 *)(p + 0x70) = v;
+    *(s16 *)(p + 0x76) = v + 0x78;
+    *(s32 *)((u8 *)eng->sub + off + 4) = *(s16 *)(p + 0x70) + 0x1A;
+}
 
 void func_800B8470(void) {
     func_800917B4();

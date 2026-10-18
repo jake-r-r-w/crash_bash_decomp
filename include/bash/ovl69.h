@@ -59,4 +59,6 @@ s32 func_800B7DE8(s32 arg0);
 
 void func_800B7E04(void);
 
+void func_800B83D8(s32 arg0, s32 arg1);
+
 #endif /* BASH_OVL69_H */
