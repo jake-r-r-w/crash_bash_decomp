@@ -220,7 +220,10 @@ void Plot_ArkLaserWall(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Init_RepulseRing);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BFD14);
+s32 func_800BFD14(Ovl61Vel *v) {
+    return v->pad14 - ((D_8005A5D8 - (v->z * D_80068BD4[(D_800C1C68 - 0x400) & 0xFFF].unk2 >> 12)) +
+                       (v->x * D_80068BD4[(D_800C1C6C - 0x400) & 0xFFF].unk2 >> 12));
+}
 
 s32 func_800BFD9C(u8 *arg0) {
     return (*(s32*)((u8*)(arg0) + 20)) - D_8005A5D8;
