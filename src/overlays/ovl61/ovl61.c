@@ -158,7 +158,51 @@ s32 func_800B42F4(Ovl61Obj *arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B453C);
+s32 func_800B453C(Ovl61Obj *arg0) {
+    s32 i;
+    s32 dx;
+    s32 dz;
+    s32 r;
+    s32 a;
+
+    if (D_8005A644 & 0x801) {
+        return 0;
+    }
+    for (i = 0; i < 4; i++) {
+        if ((Heroes[i].hero_status & 0xFA00) && (void *)Heroes[i].hero_eng == (void *)arg0) {
+            return 0;
+        }
+    }
+    a = arg0->dir;
+    arg0->x = D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 9 >> 4;
+    arg0->z = D_80068BD4[a & 0xFFF].unk2 * 9 >> 4;
+    for (i = 0; i < 4; i++) {
+        dx = arg0->x - D_800C1A7C[i].x;
+        dz = arg0->z - D_800C1A7C[i].z;
+        if (arg0->flags & 0x40) {
+            r = D_800C1A7C[i].r + arg0->radius;
+        } else {
+            r = D_800C1A7C[i].r + 0x80;
+        }
+        if (dx * dx + dz * dz < r * r) {
+            a = get_angle(-dx, -dz);
+            if ((void *)arg0 != (void *)Heroes[D_800C2720].hero_eng &&
+                (void *)arg0 != (void *)Heroes[D_800C271C].hero_eng) {
+                arg0->x = D_800C1A7C[i].x - (r * D_80068BD4[(a - 0x400) & 0xFFF].unk2 >> 12);
+            }
+            if ((void *)arg0 != (void *)Heroes[D_800C2724].hero_eng &&
+                (void *)arg0 != (void *)Heroes[D_800C2728].hero_eng) {
+                arg0->z = D_800C1A7C[i].z - (r * D_80068BD4[a & 0xFFF].unk2 >> 12);
+            }
+            a = get_angle(arg0->x, arg0->z);
+            arg0->dir = a;
+            arg0->x = D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 9 >> 4;
+            arg0->z = D_80068BD4[a & 0xFFF].unk2 * 9 >> 4;
+            return 1;
+        }
+    }
+    return 0;
+}
 
 s32 func_800B4880(Ovl61Obj *arg0, s32 arg1) {
     Ovl61Circle *c;

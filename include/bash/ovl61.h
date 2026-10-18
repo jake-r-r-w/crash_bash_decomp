@@ -94,7 +94,9 @@ typedef struct {
     s32 x;
     u8 pad14[4];
     s32 z;
-    u8 pad1C[0x6E];
+    u8 pad1C[2];
+    s16 dir;
+    u8 pad20[0x6A];
     s16 radius;
     u8 pad8C[4];
     u32 flags;
@@ -257,6 +259,8 @@ typedef struct Ovl61Mot {
 void func_800B3528(s32 arg0);
 
 s32 func_800B42F4(Ovl61Obj *arg0);
+
+s32 func_800B453C(Ovl61Obj *arg0);
 
 s32 func_800B4AE8(Ovl61Obj *arg0, s32 arg1);
 
