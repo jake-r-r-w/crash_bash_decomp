@@ -294,6 +294,8 @@ void func_800B77B0(NAS *nas);
 
 void func_800B787C(FxObj *arg0);
 
+void func_800B7E14(s32 *arg0, s32 arg1);
+
 s32 func_800B8174(s32 arg0);
 
 void func_800B8BC8(void);

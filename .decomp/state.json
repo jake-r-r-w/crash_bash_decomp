@@ -9668,7 +9668,8 @@
   "via": "auto"
  },
  "ovl6a:800B7E14": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-18T19:07:43Z",
+  "status": "matched"
  },
  "ovl6a:800B7F24": {
   "auto_diff": 20,

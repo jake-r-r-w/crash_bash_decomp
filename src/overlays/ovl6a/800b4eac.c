@@ -290,7 +290,41 @@ void PlotGatewayTrophy(void) {
 void InitGatewayTrophy(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B7E14);
+void func_800B7E14(s32 *arg0, s32 arg1) {
+    NAS *nas;
+    NAS *r;
+    s32 *ext;
+    EXTengine *eng;
+    u8 *p;
+
+    p = D_800558EC;
+    nas = SpawnNASById(arg0[0], arg0[1], arg0[2], 0x1605, 0x11);
+    if (nas != NULL) {
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL) {
+            ext[3] = arg1;
+            ext[6] = 0x100;
+            if (p != NULL) {
+                ext[8] = 5;
+                ((s32 *)nas->Engine->sub)[0x6C / 4] = (s32)p;
+            } else {
+                ext[8] = 1;
+            }
+            ext[10] = 0;
+            nas->InitDelete(nas);
+        }
+        r = nas;
+    } else {
+        r = NULL;
+    }
+    if (r != NULL) {
+        eng = r->Engine;
+        if (eng != NULL) {
+            eng->flags |= 0x20000000;
+        }
+    }
+    PlaySfx(0x398, NULL, NULL, 0x1000, 0x1E00, 0);
+}
 
 s32 func_800B7F24(DistPos *a, DistPos *b) {
     s32 dx = b->x - a->x;
