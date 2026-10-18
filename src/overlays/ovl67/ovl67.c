@@ -323,7 +323,69 @@ void func_800B447C(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B46DC);
+void func_800B46DC(s32 arg0) {
+    HeroInfo *h;
+    HeroInfo *g;
+    HeroInfo *f;
+    s32 a1;
+    s32 sp;
+    s32 t;
+
+    HeroInfo *c;
+    HeroInfo *b;
+    HeroInfo *e;
+
+    c = Heroes;
+    g = c + arg0;
+    a1 = 0;
+    if (!(g->hero_status & 0xFA00)) {
+        s32 y;
+        s32 d;
+        t = ((D_8004E0D8 + arg0) << 6) & 0xFFF;
+        a1 = D_80068BD4[(t - 0x400) & 0xFFF].unk2 * 17 >> 10;
+        y = D_8005A5D8;
+        d = (D_80068BD4[(t * 2 - 0x400) & 0xFFF].unk2 * 15 >> 11) - 0x80;
+        g->hero_eng->unk10.y = y + d;
+    } else {
+        g->hero_eng->unk10.y = D_8005A5D8 - 0x80;
+    }
+    ((void (*)(s32))D_8009D6E8.unk2C)(arg0);
+    b = Heroes;
+    f = b + arg0;
+    sp = f->hero_move->forward_speed;
+    if (sp != 0) {
+        a1 = -sp;
+        f->hero_eng->unk10.x += sp;
+    }
+    sp = func_800154A0(f->hero_eng->unk20, a1);
+    {
+        EXTengine *e2 = f->hero_eng;
+        e2->unk20 = (u16)e2->unk20 + (sp >> 2);
+        func_800B9CB8(arg0, e2);
+    }
+    if (func_800B9B10(arg0) != 0) {
+        if ((u16)D_800C4394 == 0) {
+            PlaySfx(0x28A, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        D_800C4394 = 4;
+    } else if ((u16)D_800C4394 != 0) {
+        D_800C4394 = (u16)D_800C4394 - 1;
+    }
+    e = Heroes;
+    h = e + arg0;
+    h->hero_eng->unk5E = 1;
+    if (h->hero_mode == 0x26) {
+        h->hero_eng->unk10.y = D_8005A5D8 - 0x80;
+        return;
+    }
+    if (!(h->hero_status & 0xF800)) {
+        if (h->hero_attack_timer != 0) {
+            h->hero_sub->unk74 = 0x2001;
+            return;
+        }
+        h->hero_sub->unk74 = 0x2003;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B4954);
 

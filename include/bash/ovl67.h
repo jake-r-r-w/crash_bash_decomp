@@ -231,7 +231,7 @@ extern s16 D_800C4382;
 extern s16 D_800C4384;
 extern s32 D_800C438C;
 extern s32 D_800C4390;
-extern s16 D_800C4394;
+extern u16 D_800C4394;
 extern s16 D_800C43DC;
 void func_800B6F4C(void);
 void func_800B90F4(void);
@@ -373,13 +373,14 @@ extern u8 D_800C3E70[];
 void func_800B3CD0(s32 arg0);
 
 void func_800B3E74(void);
-void func_800B46DC(void);
+void func_800B46DC(s32 arg0);
 void func_800B4CE0(s32 arg0);
 
 void func_800B4E30(s32 arg0);
 
 NAS *func_800BAAA8(void);
 
+s32 func_800B9B10(s32 arg0);
 void func_800BEB68(void);
 void func_800BF0AC(void);
 
