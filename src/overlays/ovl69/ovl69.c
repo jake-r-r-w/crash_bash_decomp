@@ -481,7 +481,52 @@ void func_800B63F4(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B64B8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B65D0);
+s32 func_800B65D0(s32 a0) {
+    u8 *g = D_8005A614;
+    s32 r;
+    s32 i;
+    s8 *t;
+    s32 v;
+    s32 w;
+    Ovl69Rec *rec;
+
+    if (*(u16 *)(g + 0x32) & 4) {
+        if (g[0x26] == 1) {
+            s8 *t = D_800B9CC4;
+            s32 v = Random(2) + (a0 - 1) * 2;
+            s32 w = (g[0x4C] - 1) * 6;
+            r = t[v + w];
+        } else {
+            s8 *t = D_800B9CF4;
+            s32 v = Random(2) + (a0 - 2) * 2 + (g[0x4D] - 1) * 4;
+            s32 w = (g[0x4C] - 1) << 5;
+            r = t[v + w];
+        }
+        i = 0;
+        rec = D_800B9B44;
+        do {
+            if (*(s32 *)rec->unk4 == r) {
+                return i;
+            }
+            i++;
+            rec++;
+        } while (i < 8);
+        return -1;
+    }
+    {
+        Ovl69Rec *p = D_800B9B44;
+        s32 k;
+        s32 j;
+        do {
+            k = Random(4) * 2;
+            if (p[k].unk0 & 1) {
+                continue;
+            }
+            j = k + 1;
+        } while ((p[k].unk0 & 1) || (p[j].unk0 & 1));
+        return k + Random(2);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B6734);
 

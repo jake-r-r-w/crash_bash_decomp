@@ -171,6 +171,8 @@ void func_800B57BC(void);
 
 void func_800B58E4(void);
 
+s32 func_800B65D0(s32 a0);
+
 s8 func_800B6ACC(s32 a0);
 
 void func_800B6CF4(void);
