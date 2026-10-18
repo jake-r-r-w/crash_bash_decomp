@@ -163,7 +163,17 @@ void func_800B53D4(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B5410);
+void func_800B5410(void) {
+    s32 *temp_v0;
+    s32 temp_a1;
+
+    temp_v0 = D_800B9620;
+    temp_a1 = temp_v0[1];
+    D_800B9620 = temp_v0 + 1;
+    if (temp_a1 != 0) {
+        func_8001E848(&D_8009F8A4, temp_a1);
+    }
+}
 
 void func_800B544C(void) {
 }
