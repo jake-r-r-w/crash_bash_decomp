@@ -6429,7 +6429,8 @@
  },
  "ovl61:800BFA24": {
   "auto_diff": 17,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-18T13:02:34Z",
+  "status": "matched"
  },
  "ovl61:800BFB14": {
   "auto_diff": 7,
@@ -8543,7 +8544,9 @@
  },
  "ovl67:800BAEA8": {
   "auto_diff": 17,
-  "auto_failed": "diff"
+  "auto_failed": "diff",
+  "copy_failed": "ovl61:800BFA24",
+  "copy_failed_stage": "in-file"
  },
  "ovl67:800BAF98": {
   "auto_diff": 3,

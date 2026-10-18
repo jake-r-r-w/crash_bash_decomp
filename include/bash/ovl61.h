@@ -296,6 +296,8 @@ void func_800B99E0(void);
 
 void func_800BD43C(u32 arg0);
 
+s32 func_800BFA24(Ovl61Vel *arg0, s32 arg1);
+
 s32 func_800C0804(s32 arg0, s16 arg1, s32 arg2, s16 arg3);
 
 #endif /* BASH_OVL61_H */
