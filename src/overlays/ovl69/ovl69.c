@@ -445,7 +445,46 @@ void func_800B5AC0(void) {
     D_8009F8B4 = func_800B5A6C;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B5B10);
+void func_800B5B10(s32 arg0) {
+    EXTengine *e0;
+    EXTengine *e2;
+    Ovl69Obj *o;
+    subengine *s;
+    subengine *t;
+    u8 *g;
+
+    e0 = GetEngineSlot(0);
+    e2 = GetEngineSlot(2);
+    o = (Ovl69Obj *)&D_800B9FD4[arg0];
+    s = e2->sub + arg0;
+    o->unk8 = s;
+    t = e0->sub + arg0;
+    o->unkC = t;
+    o->unk10 = e2->sub + (arg0 + 4);
+    o->ext = D_8005A9A0;
+    o->unk0 = 0;
+    o->unk4 = arg0;
+    o->unk2C = 0;
+    o->unk28 = Random(0x1E) + 0x1E;
+    o->unk14 = Random(0x200) - 0x100;
+    o->unk18 = Random(0x200) - 0x100;
+    s->unk50 = 1;
+    s->unk68 = -0x64;
+    s->unk51 = 0;
+    s->unk20.x = 0;
+    s->unk20.y = 0;
+    s->flags |= 0x02000000;
+    g = &D_8005A63A;
+    o->unk30 = arg0;
+    do {
+    } while (0);
+    o->unk24 = 0;
+    if (arg0 < *g) {
+        t->flags |= 0x8000;
+    } else {
+        t->flags &= 0xFFFF7FFF;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B5CA8);
 

@@ -93,6 +93,23 @@ extern s32 D_800BA47C;
 extern s32 D_800BA4D4;
 extern s32 D_800BA740;
 extern s32 D_800BA744;
+typedef struct Ovl69Obj {
+    s32 unk0;
+    s32 unk4;
+    subengine *unk8;
+    subengine *unkC;
+    subengine *unk10;
+    s32 unk14;
+    s32 unk18;
+    s32 unk1C;
+    s32 unk20;
+    s32 unk24;
+    s32 unk28;
+    s32 unk2C;
+    s32 unk30;
+    Ext400 ext;
+} Ovl69Obj;
+
 void func_800B5B10(s32 arg0);
 void func_800B64B8(void);
 typedef struct {
