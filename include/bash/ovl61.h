@@ -133,6 +133,8 @@ extern Ovl61Wall D_800C1E78[];
 extern u16 D_800C139C[];
 extern _sfx_handler *D_800C1BC4;
 
+void func_800B7450(s32 arg0);
+
 void func_800BD43C(u32 arg0);
 
 s32 func_800C0804(s32 arg0, s16 arg1, s32 arg2, s16 arg3);
