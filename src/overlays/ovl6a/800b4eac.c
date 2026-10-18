@@ -494,7 +494,11 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BB3D0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BB4AC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BB584);
+void func_800BB584(void) {
+    D_800BF100 = EngineTemplate;
+    D_800BF19C = 0;
+    D_800BF1A0 = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BB5F0);
 

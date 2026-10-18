@@ -9,6 +9,9 @@
 #include "bash/ovl6a.h"
 
 extern s32 D_800BF260;
+extern EXTengine D_800BF100;
+extern s32 D_800BF19C;
+extern s32 D_800BF1A0;
 extern u32 D_800BD5B0;
 extern s32 D_800BD5B4;
 
@@ -124,6 +127,8 @@ void func_800BAB40(void);
 void func_800BB364(void);
 
 void func_800BB38C(void);
+
+void func_800BB584(void);
 
 void func_800BBE1C(void);
 
