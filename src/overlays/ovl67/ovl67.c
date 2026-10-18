@@ -603,7 +603,11 @@ u8 *func_800BB624(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BB6BC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BB72C);
+void func_800BB72C(s32 arg0) {
+    Heroes[arg0].hero_move->velocity_enable = 1;
+    func_800B4954();
+    SetHeroSeq((HeroInfo *)arg0, 0x22);
+}
 
 void func_800BB788(s32 arg0) {
     Heroes[arg0].hero_move->velocity_enable = 1;

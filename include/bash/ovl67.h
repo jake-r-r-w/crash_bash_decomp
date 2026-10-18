@@ -86,6 +86,8 @@ void PlotN2ODeadWall(NAS *arg0);
 
 void func_800BB5F0(void);
 
+void func_800BB72C(s32 arg0);
+
 void func_800BB788(s32 arg0);
 
 s32 func_800BB8EC(s32 arg0);
