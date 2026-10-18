@@ -768,6 +768,24 @@ void func_800BBE1C(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BBE24);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BBF44);
+void func_800BBF44(SVECTOR *v, s16 *b) {
+    s16 xy[2];
+
+    gte_ldv0(v);
+    gte_rtps();
+    gte_stsxy(xy);
+    if (xy[0] < b[0]) {
+        b[0] = xy[0];
+    }
+    if (xy[0] > b[2]) {
+        b[2] = xy[0];
+    }
+    if (xy[1] < b[1]) {
+        b[1] = xy[1];
+    }
+    if (b[3] < xy[1]) {
+        b[3] = xy[1];
+    }
+}
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl6a/800b4eac", D_800B3928);

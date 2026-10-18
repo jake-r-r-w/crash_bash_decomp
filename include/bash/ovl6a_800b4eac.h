@@ -176,4 +176,6 @@ void func_800BB584(void);
 
 void func_800BBE1C(void);
 
+void func_800BBF44(SVECTOR *v, s16 *b);
+
 #endif /* BASH_OVL6A_800B4EAC_H */
