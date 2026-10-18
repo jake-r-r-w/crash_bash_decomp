@@ -14,9 +14,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1434/2551 game functions matched: **main.exe is complete (575/575)**;
+- 1435/2551 game functions matched: **main.exe is complete (575/575)**;
   engine overlay 2 left, both parked (`func_8007F314`, `PlotScriptFX`),
-  ovl61 95/97 (two 2026-10-18 swarm runs and three hand matches; 2 big ones left),
+  ovl61 96/97 (two 2026-10-18 swarm runs and four hand matches; `PlotBall` left),
   ovl67 101/135, ovl69 68/77, ovl6a 93/94 (2026-10-18 swarm runs and hand fixes;
   `func_800B5710` parked at 120/121 blocks). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`, all 564 PsyQ functions (Sony
@@ -50,7 +50,7 @@ $47.98: 64 matched, 2 failed at the gate (`func_800B4EAC`: compile error, a
 field another match removed; `func_800B488C`: matches alone but the full
 build is +4 bytes, two jump tables' alignment). Since then
 `func_800B4EAC`, `func_800B551C` and `func_800B488C` are matched and
-`func_800B5710` is parked (Open leads). Next: ovl61's `func_800B8A68`/`PlotBall`, ovl67's
+`func_800B5710` is parked (Open leads). Next: ovl61's `PlotBall`, ovl67's
 parked `func_800B39C0`.
 
 **ovl69 (2026-10-18, run 20261018173050):** stopped by hand after 75 min,
@@ -66,12 +66,11 @@ worker's C was right against an older tip, so retry them (`swarm.mjs forget
 pattern rows are folded.
 
 **ovl61 (2026-10-18):** two runs, 83 matched, and `CalcArkInfluence`,
-`func_800B85DC` and `func_800BE4D4` by hand; 95/97 functions, 2 left, both big
-and checkpointed:
-`func_800B8A68` (3264 B; its best C has a `- k + k` hack to drop),
-`PlotBall` (5576 B, paired 1366/1394). Next: a big-only run on
-ovl61 (`--workers 1 --big-workers 3`), or a new overlay with the big-heavy
-mix (`--workers 1 --big-workers 4 --permuters 2`). (The fold for run 20261018125240 is done.)
+`func_800B85DC`, `func_800BE4D4` and (2026-10-19) `func_800B8A68` by hand;
+96/97 functions, 1 left, big and checkpointed: `PlotBall` (5576 B, paired
+1366/1394). Next: hand-match it from the checkpoint, or a new overlay with the
+big-heavy mix (`--workers 1 --big-workers 4 --permuters 2`). (The fold for run
+20261018125240 is done.)
 
 **Tooling: the 2026-10-16 tooling plan is done and removed** (it is in git
 history, `git show 94f04c7:docs/TOOLING_PLAN.md`; what it left is under
@@ -506,6 +505,13 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-19 (hand):** `func_800B8A68` (ovl61, 3264 B) matched (fc3176ef)
+  from the swarm checkpoint (144/150 blocks), without its `min + k - k`: the
+  dead skill value needs a use that combine cancels after flow, now
+  `(e->unk10.x + k) - (pos.x + k)` (user's choice; still a no-op term). The
+  register spots fell to field-form bases, repeated case-3 bodies instead of
+  gotos, `abs()` in both arms, and single-set locals. Five Diff patterns
+  rows added, one extended.
 - **2026-10-19 (hand):** the id word is its own rodata unit in the other 13
   slot overlays too (95e2fa09, byte-identical), and ovl61's two `&&label`
   tables are `switch` statements again through the gate: `func_800B68C8`
