@@ -289,6 +289,8 @@ s32 func_800BBC78(Ovl67Vel *arg0, Ovl67Out *arg1, s32 arg2);
 
 extern s8 D_8005A689;
 
+s32 func_800B3888(Ovl67Obj *arg0);
+
 void func_800B5440(s32 arg0);
 
 #endif /* BASH_OVL67_H */

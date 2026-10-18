@@ -81,7 +81,29 @@ void func_800B361C(void) {
     func_800B90F4();
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B3888);
+s32 func_800B3888(Ovl67Obj *arg0) {
+    s32 i;
+    s32 dx;
+    s32 dz;
+    s32 r;
+    Ovl67Circle *c;
+
+    for (i = 0; i < 4; i++) {
+        c = (Ovl67Circle *)(i * 6 + (s32)D_800C418C);
+        dx = arg0->x - c->x;
+        dz = arg0->z - c->z;
+        if (arg0->flags & 0x40) {
+            r = c->r + arg0->radius;
+        } else {
+            r = c->r + 0x80;
+        }
+        if (dx * dx + dz * dz < r * r) {
+            arg0->x = D_800C418C[i].x - ((r * D_80068BD4[(get_angle(-dx, -dz) - 0x400) & 0xFFF].unk2) >> 12);
+            return 1;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B39C0);
 
