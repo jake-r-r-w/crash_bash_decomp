@@ -24,7 +24,6 @@ typedef struct Ovl6aEntry12 {
 } Ovl6aEntry12;
 extern Ovl6aEntry12 D_800BD7E0[];
 extern u32 D_800BD5B0;
-extern s32 D_800BD584[4];
 extern u8 D_80055924[];
 extern u8 D_8005595C[];
 extern u8 D_80055994[];
@@ -170,6 +169,16 @@ typedef struct PodiumObj {
 
 extern PodiumObj *D_800BD594;
 extern char D_8005572C;
+
+typedef struct Ovl6aSpawnEnt {
+    /* 0x0 */ s32 x;
+    /* 0x4 */ s32 z;
+    /* 0x8 */ u8 kind;
+    /* 0x9 */ u8 flags;
+} Ovl6aSpawnEnt;
+extern NAS *D_800BD584[];
+extern u16 D_800BD1F0[];
+extern s32 D_800BD200[];
 
 void func_800B7874(void);
 
@@ -421,5 +430,7 @@ extern u8 D_800BCEDC;
 extern s32 D_800BCEE4;
 
 void func_800B6A3C(void);
+
+void func_800BA9C8(s32 arg0, Ovl6aSpawnEnt *arg1);
 
 #endif /* BASH_OVL6A_800B4EAC_H */

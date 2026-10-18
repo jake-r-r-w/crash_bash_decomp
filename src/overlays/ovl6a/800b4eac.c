@@ -1220,7 +1220,44 @@ void InitPodiumOdo(u8 *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BA9C8);
+void func_800BA9C8(s32 arg0, Ovl6aSpawnEnt *arg1) {
+    NAS *nas;
+    EXTengine *e;
+    subengine *s;
+    s32 k;
+    s32 t;
+    u8 *p;
+
+    nas = SpawnNASById(arg1->x, D_8005A5D8, arg1->z, 0x1F01, 0x11);
+    if (nas != NULL) {
+        D_800BD584[arg0] = nas;
+        nas->UserInfo.user1 = arg0 + 1;
+        nas->UserInfo.flags = arg1->flags;
+        k = arg1->kind;
+        if (k <= 0) {
+            k = 1;
+        }
+        if (k >= 5) {
+            k = 4;
+        }
+        if (k >= 2) {
+            e = nas->Engine;
+            if (e != NULL) {
+                func_80018F3C(e, 1);
+                s = e->sub;
+                if (s != NULL && (s = s->next, s != NULL)) {
+                    s->unk6C = &D_8005572C;
+                    p = (u8 *)D_800BD1F0;
+                    t = (k - 1) * 4;
+                    s->unk74 = *(u16 *)(p + t);
+                    s->flags |= 0x8000;
+                    s = e->sub;
+                    s->unk08 = -*(s32 *)((u8 *)D_800BD200 + t);
+                }
+            }
+        }
+    }
+}
 
 void func_800BAAFC(void) {
     func_8009440C();
