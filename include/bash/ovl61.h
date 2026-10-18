@@ -34,6 +34,7 @@ typedef struct Ovl61Spawn {
 } Ovl61Spawn;
 
 extern s32 *D_800C19C0[][3];
+extern u16 *D_8009D6EC;
 extern s32 D_800C1C68;
 extern s32 D_800C1C6C;
 extern u16 D_800C18E8[];
@@ -219,6 +220,8 @@ void func_800B7450(s32 arg0);
 void func_800B7688(s32 arg0);
 
 void func_800B77F8(s32 arg0);
+
+void func_800B7B60(s32 arg0);
 
 s32 func_800B8964(s32 arg0);
 
