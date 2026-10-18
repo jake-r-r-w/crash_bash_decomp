@@ -23,4 +23,6 @@ extern subengine *D_800BCEE8;
 
 void func_800B4694(void);
 
+int func_800B4D98(unsigned char *s);
+
 #endif /* BASH_OVL6A_H */

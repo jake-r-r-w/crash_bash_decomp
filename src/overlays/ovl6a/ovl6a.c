@@ -41,7 +41,28 @@ s32 *func_800B4D8C(void) {
     return D_800C7294;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/ovl6a", func_800B4D98);
+int func_800B4D98(unsigned char *s) {
+    int n = 1;
+
+    if (s == 0) {
+        return 0;
+    }
+    if (*s != 0) {
+        unsigned char c;
+        int k;
+
+        k = 0xD;
+        c = *(volatile unsigned char *)s;
+        do {
+            if (c == k) {
+                n++;
+            }
+            s++;
+            c = *s;
+        } while (c != 0);
+    }
+    return n;
+}
 
 void func_800B4DE8(void) {
     if (D_8005A688 != 0) {
