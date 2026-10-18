@@ -14,8 +14,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1128/2551 game functions matched: **main.exe is complete (575/575)**;
-  engine overlay 10 left; parked by hand: `func_800926CC` (1/134, 2026-10-17)
+- 1129/2551 game functions matched: **main.exe is complete (575/575)**;
+  engine overlay 9 left; parked by hand: `func_800926CC` (1/134, 2026-10-17)
   and `func_8008A924` (registers 1/30, 2026-10-18),
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
@@ -98,10 +98,7 @@ killed early). Repeat it; 10 engine functions are left. Near
 misses with big-mode checkpoints: `func_8007BFA8` (instructions 5/114),
 `func_8007C170` (17/114), `func_8007CC80` (structure 77/116),
 `func_800926CC` (instructions 1/134 by hand with `s8 j`, parked: its block note has the full analysis), `func_8008C824` (registers 25/155, parked: 2 stale sessions),
-`func_80079260` (4/98), `func_80094A28` (5/68), `func_800939FC`
-(registers 11/123: its checkpoint is the session the patch-check bug
-refused, restored by hand; the session log says the block-0 a0/a1 swap is
-left, for the permuter). `--max-functions 500` leaves time and cost as the limits (40 stopped
+`func_80079260` (4/98), `func_80094A28` (5/68), `func_800939FC` (matched by the permuter 2026-10-18). `--max-functions 500` leaves time and cost as the limits (40 stopped
    leasing after about 30 min). Sizes left per overlay: run the size loop over
    `nonmatching NAME, 0xSIZE` headers (the `next --count` listing is slow).
 2. After each swarm run, the "After a run" checklist in
@@ -390,7 +387,9 @@ Newest first, a few lines each. Details are in the commits.
   registers 1/30. Its dead read of `run_walk` must be volatile and lands in
   `v0` (the dying base) where the target has `v1`; the block note lists what
   was tried. The permuter ran in parallel on the three register-only engine
-  near misses.
+  near misses: `func_800939FC` matched in 5 min (c7cf408); `func_8007B330`
+  (registers 7/307) and `func_8008C824` (25/155) made no progress in 20 min
+  before it was stopped.
 - **2026-10-18:** `decomp.py hacks`: matched functions that need a register
   pin or asm barrier, with their match commit's `Hack:` reason (read from
   the source, so it can't go stale). CONVENTIONS points at it.
