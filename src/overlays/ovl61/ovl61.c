@@ -153,7 +153,30 @@ void func_800B6AE0(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B6BE8);
+void func_800B6BE8(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = &base[arg0];
+
+    h->hero_move->velocity_enable = 0;
+    h->hero_move->jump_max = 0;
+    h->hero_frozen = 1;
+    h->hero_powerup->flags = 0;
+    h->hero_ctrl |= 1;
+    h->hero_eng->flags &= ~0x21;
+    h->hero_status &= 0xDFFF;
+    if (h->hero_powerup->sfx != NULL) {
+        StopSfx(h->hero_powerup->sfx);
+    }
+    if (h->hero_eng->sfx != NULL) {
+        StopSfx(h->hero_eng->sfx);
+    }
+    func_80026A04((u8 *)h->hero);
+    h->hero_sub->unk08 = 0;
+    h->hero_pu = 0;
+    h->hero_pu_timer = 0;
+    func_80085718(arg0, 0);
+    func_80089FA4(arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B6CF0);
 
