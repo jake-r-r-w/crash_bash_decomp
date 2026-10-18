@@ -718,7 +718,46 @@ void func_800BDD30(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Plot_RepulseRing);
+void Plot_RepulseRing(NAS *arg0) {
+    EXTengine *e;
+    HeroInfo *h;
+    subengine *s;
+    s32 t;
+    HeroInfo *base;
+
+    base = Heroes;
+    h = &base[arg0->UserInfo.user1];
+    if (h->hero_status & 0xFA00) {
+        KillNAS(arg0);
+        return;
+    }
+    e = arg0->Engine;
+    if (e == NULL) {
+        return;
+    }
+    e->unk10 = h->hero_eng->unk10;
+    e->unk1E = base[arg0->UserInfo.user1].hero_eng->unk1E;
+    e->unk1C = base[arg0->UserInfo.user1].hero_eng->unk1C;
+    e->unk20 = base[arg0->UserInfo.user1].hero_eng->unk20;
+    s = e->sub;
+    s->flags |= 0x40008000;
+    t = D_80068BD4[(((D_8004E0D8 << 7) & 0xFFF) - 0x400) & 0xFFF].unk2 * 1024 >> 12;
+    s->unk52 = 1;
+    s->unk20.x = t + 0x1200;
+    s->unk20.y = t + 0x1200;
+    s->unk20.z = t + 0x1200;
+    s->unk76 = t + 0x600;
+    e->unk5E = 1;
+    ArkHeroRad2ObjectRepel(arg0->UserInfo.user1, 0x800);
+    D_8009E25C.n += 1;
+    if (arg0->UserInfo.user2 != 0) {
+        arg0->UserInfo.user2 = arg0->UserInfo.user2 - 1;
+        return;
+    }
+    base[arg0->UserInfo.user1].hero_pu = 0;
+    PlaySfx(0x5D8, NULL, NULL, 0x1000, 0x1E00, 0);
+    KillNAS(arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Init_ArkLaserWall);
 
