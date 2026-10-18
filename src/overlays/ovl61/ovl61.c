@@ -1385,7 +1385,98 @@ void func_800B99E0(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", InitBall);
+void InitBall(NAS *nas) {
+    EXTengine *eng;
+    EXTengine *e;
+    EXTengine *e1;
+    EXTobject *obj;
+    EXTmotion *mot;
+    subengine *sub;
+    u8 *ext;
+    s32 i;
+
+    eng = nas->Engine;
+    if (eng != NULL) {
+    eng->sub->flags |= 0x02000000;
+    eng->flags &= 0xFFFF7FFF;
+    nas->Class |= 0x2000;
+    obj = (EXTobject *)AddObject(nas);
+    if (obj != NULL) {
+        mot = AddMotion(nas);
+        if (mot != NULL) {
+            func_80026AD8((u8 *)nas);
+            func_8002694C(nas, 0x300);
+            nas->FUX = (EXT *)obj;
+            obj->whatami = 1;
+            obj->owner = 0x63;
+            obj->status = 0;
+            mot->Mass = 0x100;
+            mot->Za = 0;
+            mot->Zvel = 0;
+            mot->Zmax = 0;
+            mot->Zacc = 3;
+            mot->Zdec = 3;
+            mot->Ftime = 0;
+        }
+    }
+    eng->unk10.y = D_8005A5D8 - 0x80;
+    eng->unk5D = 2;
+    eng->sub->unk6C = D_80054504;
+    if (D_8005A648 == 0xF) {
+        eng->sub->unk74 = 0x2017;
+    } else {
+        eng->sub->unk74 = 0x2009;
+    }
+    func_80026B70((u8 **)&D_8005AA38, (u8 *)nas);
+    e1 = AddEngine(nas, 1);
+    if (e1 != NULL) {
+        sub = e1->sub;
+        sub->unk6C = D_80054504;
+        if (D_8005A648 == 0xF) {
+            sub->unk74 = 0x2016;
+        } else {
+            sub->unk74 = 0x200B;
+        }
+        e1->flags |= 0x22000021;
+        sub->flags |= 0x22000021;
+        e1->flags &= 0xFFFF7FFF;
+    }
+    e = AddEngine(nas, 1);
+    if (e != NULL) {
+        sub = e->sub;
+        e->unk5D = 0;
+        e->unk5C = 0;
+        e->flags &= 0xFFFF7FFF;
+        sub->unk6C = D_80054504;
+        if (D_8005A648 == 0xE) {
+            sub->unk74 = 0x200C;
+            sub->unk76 = 0xB00;
+            sub->flags |= 0x42000021;
+            ext = AddExtension(nas, 0x74, 0x10000000);
+            if (ext != NULL) {
+                i = 7;
+                ext += i;
+                do {
+                    ext[0x6C] = 0;
+                    i--;
+                    ext--;
+                } while (i >= 0);
+                func_8001D390(e, 6);
+                for (sub = sub->next; sub != NULL; sub = sub->next) {
+                    sub->unk51 = 0;
+                    sub->unk50 = 1;
+                    sub->unk6C = D_80054504;
+                    sub->unk74 = 0x200D;
+                    sub->flags = (sub->flags & 0xFFFF7FFF) | 0x42000021;
+                    sub->unk76 = 0xC00;
+                }
+            }
+        } else {
+            sub->unk74 = 0;
+        }
+    }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", PlotBall);
 
