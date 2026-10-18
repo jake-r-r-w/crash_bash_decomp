@@ -504,7 +504,91 @@ s32 func_800B4FC8(s32 *p0, s32 *p1, s32 *q) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B5238);
+void func_800B5238(s32 arg0) {
+    HeroInfo *h;
+    HeroInfo *c;
+    HeroInfo *g;
+    HeroInfo *b;
+    EXTengine *e;
+    subengine *s;
+    subengine *n;
+    s32 sp;
+    s32 y;
+    s32 d;
+    s32 a;
+
+    c = Heroes;
+    h = c + arg0;
+    e = h->hero_eng;
+    if (arg0 == D_800C2728) {
+        h->hero_eng->unk10.x = D_800C18A8[0][0];
+        h->hero_eng->unk10.z = D_800C18A8[0][2];
+    }
+    if (arg0 == D_800C2724) {
+        h->hero_eng->unk10.x = D_800C18A8[1][0];
+        h->hero_eng->unk10.z = D_800C18A8[1][2];
+    }
+    if (arg0 == D_800C271C) {
+        h->hero_eng->unk10.x = D_800C18A8[2][0];
+        h->hero_eng->unk10.z = D_800C18A8[2][2];
+    }
+    if (arg0 == D_800C2720) {
+        h->hero_eng->unk10.x = D_800C18A8[3][0];
+        h->hero_eng->unk10.z = D_800C18A8[3][2];
+    }
+    e->unk5D = 0;
+    s = h->hero_sub;
+    func_8001D390(e, 2);
+    n = s->next;
+    if (n != NULL) {
+        n->unk6C = s->unk6C;
+        n->flags |= 0x8000;
+        h->hero_anim->sub = n;
+        n = n->next;
+        if (n != NULL) {
+            n->unk6C = D_8005453C;
+            n->unk74 = 0x2001;
+            n->unk50 = 1;
+            n->unk51 = 0;
+            n->flags &= ~0x8000;
+        }
+    }
+    s->unk6C = D_8005453C;
+    if (arg0 == D_800C2728) {
+        switch (Heroes[arg0].hero_name) {
+        case 5:
+        case 6:
+        case 8:
+            s->unk68 = -0x10;
+            s->flags |= 0x02000000;
+            break;
+        }
+    }
+    D_800C1EE8[arg0] = 0xF;
+    s->unk74 = 0x2004;
+    func_80025B10(e, 0x50);
+    if (e->unk10.x > 0x880) {
+        e->unk10.x = 0x880;
+    }
+    if (e->unk10.x < -0x880) {
+        e->unk10.x = -0x880;
+    }
+    if (e->unk10.z > 0x880) {
+        e->unk10.z = 0x880;
+    }
+    if (e->unk10.z < -0x880) {
+        e->unk10.z = -0x880;
+    }
+    SetHeroAction((HeroInfo *)arg0, 0x1C);
+    b = Heroes;
+    g = b + arg0;
+    a = D_8004E0D8;
+    g->hero_weapon_count = 1;
+    sp = ((((((a + arg0) << 6) & 0xFFF) - 0x400) & 0xFFF) + D_80068BD4)->unk2;
+    y = D_8005A5D8;
+    d = (sp * 15 >> 11) - 0x80;
+    g->hero_eng->unk10.y = y + d;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B558C);
 

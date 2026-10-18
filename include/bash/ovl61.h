@@ -61,6 +61,8 @@ extern s32 D_800C1C70;
 extern u16 D_800C13AC[][5];
 extern u16 D_800C1EE8[];
 extern s16 D_800C1EF0[];
+extern s32 D_800C18A8[4][3];
+extern char D_8005453C[];
 extern u16 D_800C1F14;
 
 extern u16 D_8009D754;
@@ -267,6 +269,8 @@ s32 func_800B4AE8(Ovl61Obj *arg0, s32 arg1);
 s32 func_800B4D9C(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2);
 
 s32 func_800B4FC8(s32 *p0, s32 *p1, s32 *q);
+
+void func_800B5238(s32 arg0);
 
 void func_800B5C30(s32 arg0);
 
