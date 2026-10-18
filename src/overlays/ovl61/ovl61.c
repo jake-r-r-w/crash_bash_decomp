@@ -450,7 +450,62 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BE4D4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", ArkHeroRad2ObjectCollision);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", ArkHeroRad2ObjectRepel);
+void ArkHeroRad2ObjectRepel(u32 arg0, s32 arg1) {
+    SLONG_XYZ sp10;
+    EXTengine *eng;
+    FlagRecord *rec;
+    u8 *n;
+    u8 *t;
+    u8 *o;
+    u8 *e;
+    s32 dx;
+    s32 dz;
+    s32 d;
+    s32 q;
+    s32 r;
+    s32 lim;
+    s32 ang;
+
+    eng = Heroes[arg0].hero_eng;
+    if (eng != NULL) {
+        rec = func_80025A48(eng, 1);
+        if (rec != NULL) {
+            if (eng->unk5E != 0) {
+                func_800142D4(&eng->unk1C);
+            }
+            func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
+            func_80015758((SVECTOR *)rec, (VECTOR *)&sp10);
+        } else {
+            sp10 = eng->unk10;
+        }
+        r = arg1 + 0x59;
+        lim = r * r;
+        n = D_8005AA38;
+        if (n != NULL) {
+            do {
+                t = *(u8 **)(n + 0x58);
+                if (t != NULL && *(u16 *)(t + 0x1A) == 1) {
+                    o = *(u8 **)(n + 0x54);
+                    if (o != NULL) {
+                        dx = *(s32 *)(o + 0x10) - sp10.x;
+                        dz = *(s32 *)(o + 0x18) - sp10.z;
+                        d = dx * dx + dz * dz;
+                        if (d < lim) {
+                            d = csqrt(d) >> 6;
+                            ang = get_angle(-dx, -dz) & 0xFFF;
+                            d = r - d;                            e = FindExtension((NAS *)n, 0x800);
+                            if (e != NULL) {
+                                *(s16 *)(e + 0x2A) = ang;
+                                *(s16 *)(e + 0x22) = d >> 4;
+                            }
+                        }
+                    }
+                }
+                n = *(u8 **)(n + 0x20);
+            } while (n != NULL);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", ArkHeroRad2ObjectAttract);
 
