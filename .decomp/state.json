@@ -9829,7 +9829,8 @@
  },
  "ovl6a:800BA8EC": {
   "auto_diff": 35,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-18T18:59:27Z",
+  "status": "matched"
  },
  "ovl6a:800BA978": {
   "matched_at": "2026-10-10T10:36:02Z",

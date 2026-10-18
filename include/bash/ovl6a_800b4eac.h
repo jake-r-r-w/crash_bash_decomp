@@ -71,6 +71,7 @@ typedef struct PodiumObj {
 } PodiumObj;
 
 extern PodiumObj *D_800BD594;
+extern char D_8005572C;
 
 void func_800B7874(void);
 
@@ -145,6 +146,8 @@ void func_800BA804(void);
 void func_800BA848(void);
 
 void func_800BA88C(void);
+
+void InitPodiumTrophy(NAS *arg0);
 
 void InitPodiumOdo(u8 *arg0);
 

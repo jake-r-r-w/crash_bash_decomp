@@ -631,7 +631,25 @@ void func_800BA88C(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", InitPodiumTrophy);
+void InitPodiumTrophy(NAS *arg0) {
+    EXTengine *e;
+    subengine *s;
+
+    e = arg0->Engine;
+    arg0->UserInfo.status = 0;
+    if (e != NULL && (e->flags &= ~0x8000, s = e->sub, s != NULL)) {
+        s->unk6C = &D_8005572C;
+        s->unk74 = 0x200A;
+        s->unk51 = 0;
+    } else {
+        arg0->Failure = 1;
+    }
+    if (arg0->Failure != 0) {
+        KillNAS(arg0);
+        return;
+    }
+    D_800BD594 = (PodiumObj *)arg0;
+}
 
 void InitPodiumOdo(u8 *arg0) {
     if ((*(s32*)((u8*)(arg0) + 84)) != 0) {
