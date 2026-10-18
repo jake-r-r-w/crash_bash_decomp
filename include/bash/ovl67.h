@@ -14,6 +14,8 @@ void func_800BBD18(void);
 void func_800B34A4(void);
 void func_800B361C(void);
 
+extern u16 *D_8009D6EC;
+
 extern u8 D_80053EAC[];
 extern u16 D_800C39A0[];
 extern s32 *D_8009D530;
@@ -216,6 +218,8 @@ s32 func_800B3C04(Ovl67Obj *arg0);
 void func_800B4FA4(s32 arg0);
 
 void func_800B5774(s32 arg0);
+
+void func_800B5B14(s32 arg0);
 
 s32 func_800B7C58(s32 arg0, Ovl67Pos *from, Ovl67Pos *to, s32 angle);
 
