@@ -256,6 +256,8 @@ typedef struct ScriptExt40 {
 
 extern ScriptInit D_800BCCE8;
 
+s32 func_800B694C(void);
+
 void func_800B77B0(NAS *nas);
 
 s32 func_800B8174(s32 arg0);
