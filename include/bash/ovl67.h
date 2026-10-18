@@ -165,6 +165,16 @@ typedef struct {
 
 extern Ovl67Circle *D_800C418C;
 extern u8 D_800C37DC[];
+
+typedef struct Ovl67Slot {
+    struct { u8 pad0[8]; s32 y; } *src;
+    u8 pad4[4];
+    NAS *nas;
+    u8 padC[0xE];
+    u16 kind;
+    u8 pad1C[0xC];
+} Ovl67Slot;
+extern Ovl67Slot D_800C42D0[];
 extern char D_80054504[];
 extern s16 D_800C4370;
 extern s16 D_800C4372;
@@ -226,6 +236,8 @@ void func_800B5BFC(void);
 s32 func_800B7C58(s32 arg0, Ovl67Pos *from, Ovl67Pos *to, s32 angle);
 
 s32 func_800B817C(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5);
+
+void func_800B8968(s32 a);
 
 void PlotN2OmissileExplode(NAS *nas);
 

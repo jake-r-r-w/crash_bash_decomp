@@ -483,7 +483,41 @@ ret0:
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B83EC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B8968);
+void func_800B8968(s32 a) {
+    s16 (*tab)[3] = (s16 (*)[3])D_800C37DC;
+    s32 arg0 = a & 0xFFFF;
+    NAS *n;
+    Ovl67Slot *base;
+    s32 x = tab[arg0][0];
+    s32 z = tab[arg0][1];
+    Ovl67Slot *s;
+    s32 y;
+
+    base = D_800C42D0;
+    s = &base[arg0];
+    y = s->src->y;
+
+    if (s->kind != 3) {
+        n = s->nas;
+        if (n != NULL) {
+            return;
+        }
+        n = SpawnNASById(x, y, z, 0x1B03, 0x11);
+    } else {
+        n = s->nas;
+        if (n != NULL) {
+            n->UserInfo.flags = 1;
+            return;
+        }
+        n = SpawnNASById(x, y, z, 0x1B02, 0x11);
+    }
+    if (n != NULL) {
+        if (n->Failure == 0) {
+            s->nas = n;
+        }
+        n->UserInfo.user1 = arg0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", PlotN2Omissile);
 
