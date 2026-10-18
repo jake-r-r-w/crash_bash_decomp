@@ -15,6 +15,7 @@ void func_800B34A4(void);
 void func_800B361C(void);
 
 extern u8 D_80053EAC[];
+extern s16 D_800C4150[][3];
 extern u16 D_800C417A;
 extern u16 D_800C438A;
 extern s16 D_800C4184[];
@@ -194,6 +195,8 @@ typedef struct Ovl67Pos {
 s32 func_800B7C58(s32 arg0, Ovl67Pos *from, Ovl67Pos *to, s32 angle);
 
 s32 func_800B817C(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5);
+
+void PlotN2OmissileExplode(NAS *nas);
 
 void func_800BB3A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 

@@ -707,7 +707,28 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BB070);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BB184);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", PlotN2OmissileExplode);
+void PlotN2OmissileExplode(NAS *nas) {
+    EXTengine *eng;
+    subengine *sub;
+    s16 *p;
+    s16 (*tab)[3];
+
+    eng = nas->Engine;
+    if (eng != NULL) {
+        tab = D_800C4150;
+        p = tab[nas->UserInfo.flags];
+        sub = eng->sub;
+        if (p[0] != 0) {
+            sub->unk20.x = p[0];
+            sub->unk20.y = p[1];
+            sub->unk20.x = p[2];
+            sub->unk52 = 1;
+            nas->UserInfo.flags++;
+            return;
+        }
+        KillNAS(nas);
+    }
+}
 
 void InitN2OmissileExplode(NAS *nas) {
     EXTengine *eng;

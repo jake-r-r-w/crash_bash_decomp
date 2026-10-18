@@ -8602,7 +8602,8 @@
  },
  "ovl67:800BB29C": {
   "auto_diff": 36,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-18T16:47:37Z",
+  "status": "matched"
  },
  "ovl67:800BB32C": {
   "auto_diff": 29,
