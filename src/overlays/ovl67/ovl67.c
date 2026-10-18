@@ -1485,7 +1485,68 @@ s32 func_800B9CB8(s32 arg0, EXTengine *unused) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BA43C);
+s32 func_800BA43C(u32 arg0, s32 arg1, bool arg2) {
+    EXTengine *hero;
+    EXTengine *o;
+    FlagRecord *rec;
+    u8 *n;
+    u8 *t;
+    u8 *e;
+    s32 dx;
+    s32 dz;
+    s32 d;
+    s32 r;
+    s32 ang;
+    s32 hit;
+
+    hero = Heroes[arg0].hero_eng;
+    hit = 0;
+    if (hero != NULL) {
+        n = D_8005AA38;
+        if (n != NULL) {
+            do {
+                o = *(EXTengine **)(n + 0x54);
+                if (o != NULL && o != hero) {
+                    rec = func_80025A48(o, 0x40);
+                    if (rec != NULL) {
+                        dx = o->unk10.x - hero->unk10.x;
+                        dz = o->unk10.z - hero->unk10.z;
+                        r = rec->radius;
+                        r += arg1;
+                        d = dx * dx + dz * dz;
+                        if (d < r * r) {
+                            d = csqrt(d) >> 6;
+                            if (d < r) {
+                                t = FindExtension((NAS *)n, 0x1000);
+                                if (t != NULL
+                                    && (*(u16 *)(t + 0x1A) == 1 || *(u16 *)(t + 0x1A) == 8)
+                                    && *(u16 *)(t + 0x14) == 1 && *(s16 *)(t + 0x20) == 0) {
+                                    *(u16 *)(t + 0x1C) |= 8;
+                                    ang = get_angle(-dx, -dz) & 0xFFF;
+                                    d = r - d + 1;
+                                    o->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                    o->unk10.z -= (d * D_80068BD4[ang].unk2) >> 12;
+                                    *(u16 *)(t + 0x16) = arg0;
+                                    e = FindExtension((NAS *)n, 0x800);
+                                    if (e != NULL) {
+                                        hit = 1;
+                                        PlaySfx(0x585, NULL, NULL, 0x1000, 0x1E00, 0);
+                                        *(s16 *)(t + 0x20) = 4;
+                                        *(s16 *)(e + 0x16) = ang;
+                                        *(s16 *)(e + 0xE) = *(u16 *)(e + 0x14) + 0x40;
+                                        *(u16 *)(e + 0x14) = 0x90;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                n = *(u8 **)(n + 0x34);
+            } while (n != NULL);
+        }
+    }
+    return hit;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BA6C4);
 
