@@ -254,7 +254,16 @@ void func_800B5880(void) {
     s->unk52 = 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B58E4);
+void func_800B58E4(void) {
+    if (((PadButtons *)D_80051338)->pressed & 0x4000) {
+        PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+        func_800B5410();
+    }
+    if (((PadButtons *)D_80051338)->pressed & 0x1000) {
+        PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
+        func_800B53D4();
+    }
+}
 
 void func_800B5978(u8 *cam, s32 arg1) {
     u8 *o = (u8 *)func_8001E48C(arg1);
