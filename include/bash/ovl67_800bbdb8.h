@@ -29,6 +29,7 @@ extern s32 D_800C44FC;
 extern s32 D_800C4500;
 extern s32 D_800C4504;
 extern s32 D_800C4508;
+extern ScriptInit D_800C44F0;
 
 void func_800BC6B8(void);
 
@@ -61,5 +62,7 @@ void func_800C36DC(void);
 void PlotNitroSmokeBoost(NAS *nas);
 
 void func_800C318C(s32 arg0);
+
+void InitNitroSmokeBoost(NAS *nas);
 
 #endif /* BASH_OVL67_800BBDB8_H */

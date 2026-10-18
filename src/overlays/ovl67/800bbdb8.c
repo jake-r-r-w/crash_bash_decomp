@@ -232,4 +232,15 @@ void PlotNitroSmokeBoost(NAS *nas) {
     func_800250B0(nas);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", InitNitroSmokeBoost);
+void InitNitroSmokeBoost(NAS *nas) {
+    ScriptCursor *cur;
+
+    cur = func_80024E30(nas, &D_800C44F0);
+    if (D_8005A648 == 0x1F) {
+        if (cur != NULL) {
+            cur->unk1E = 4;
+        }
+    }
+    nas->Engine->sub->unk6C = *(GfxModel **)D_80058AD0;
+    nas->UserInfo.user1 = 0;
+}
