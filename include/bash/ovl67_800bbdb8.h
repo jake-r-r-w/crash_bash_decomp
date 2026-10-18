@@ -329,4 +329,24 @@ void InitNitroBoss(NAS *nas);
 
 s32 func_800C3544(s32 *arg0, s32 *arg1);
 
+/* Moves one EXTheromove velocity toward its max by acc (max != 0) or dec,
+ * clamping at max. Uses the caller's s32 locals step and v. */
+#define HERO_ACCEL(m, vel, max, acc, dec)        \
+    if (m->vel != m->max) {                      \
+        step = m->max != 0 ? m->acc : m->dec;    \
+        if (m->vel < m->max) {                   \
+            v = m->vel + step;                   \
+            m->vel = v;                          \
+            if (v > m->max) {                    \
+                m->vel = m->max;                 \
+            }                                    \
+        } else {                                 \
+            v = m->vel - step;                   \
+            m->vel = v;                          \
+            if (v < m->max) {                    \
+                m->vel = m->max;                 \
+            }                                    \
+        }                                        \
+    }
+
 #endif /* BASH_OVL67_800BBDB8_H */

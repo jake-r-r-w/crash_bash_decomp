@@ -420,6 +420,6 @@ NAS *func_800BAAA8(void);
 
 s32 func_800B9B10(s32 arg0);
 void func_800BEB68(void);
-void func_800BF0AC(void);
+void func_800BF0AC(s32 arg0);
 
 #endif /* BASH_OVL67_H */

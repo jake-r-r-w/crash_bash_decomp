@@ -172,7 +172,47 @@ void func_800BE8C0(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BEB68);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BF0AC);
+void func_800BF0AC(s32 arg0) {
+    EXTheromove *m;
+    EXTengine *eng;
+    HeroInfo *h;
+    HeroInfo *hb;
+    s32 v;
+    s32 step;
+
+    m = Heroes[arg0].hero_move;
+    eng = Heroes[arg0].hero_eng;
+    HERO_ACCEL(m, x_vel, x_max, x_acc, x_dec);
+    HERO_ACCEL(m, z_vel, z_max, z_acc, z_dec);
+    HERO_ACCEL(m, jump_vel, jump_max, jump_acc, jump_dec);
+    hb = Heroes;
+    h = hb + arg0;
+    if (!(h->hero_status & 0x200)) {
+        eng->unk10.x += m->x_vel;
+        eng->unk10.z += m->z_vel;
+        eng->unk10.y += m->jump_vel;
+    }
+    if (h->hero_eng->unk10.y < -0xB00) {
+        h->hero_eng->unk10.y = -0xB00;
+        m->jump_vel = 0;
+    }
+    if (h->hero_eng->unk10.y > 0) {
+        h->hero_eng->unk10.y = 0;
+        m->jump_vel = 0;
+    }
+    if (h->hero_eng->unk10.x < -0xA00) {
+        h->hero_eng->unk10.x = -0xA00;
+        m->x_vel = 0;
+    }
+    if (h->hero_eng->unk10.x > 0xA00) {
+        h->hero_eng->unk10.x = 0xA00;
+        m->x_vel = 0;
+    }
+    D_800C4184[arg0] = m->x_vel;
+    if (D_800C4488 == 0 && (D_8005A680[0] & 1)) {
+        func_800BE8C0(arg0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BF37C);
 
