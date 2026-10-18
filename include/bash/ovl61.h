@@ -138,6 +138,10 @@ typedef struct Ovl61Node {
     struct Ovl61Node *next;
     u8 pad24[0x30];
     struct Ovl61Node *target;
+    struct {
+        u8 pad0[0x14];
+        u16 unk14;
+    } *unk58;
 } Ovl61Node;
 
 extern Ovl61Circle *D_800C1A7C;
@@ -533,6 +537,8 @@ extern u16 D_800C1410[];
 extern u16 D_800C1420[];
 extern u16 D_800C1430[];
 extern u16 D_800C1464[][3];
+
+s32 func_800B85DC(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5);
 
 void func_800BC564(void);
 

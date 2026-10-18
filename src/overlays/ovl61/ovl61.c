@@ -2234,7 +2234,115 @@ s32 func_800B84B8(s32 arg0) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B85DC);
+s32 func_800B85DC(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
+    Ovl61Pos buf;
+    Ovl61Node *n;
+    Ovl61Node *t;
+    Ovl61Node *best;
+    HeroInfo *h;
+    HeroInfo *h1;
+    HeroInfo *h2;
+    s32 dx;
+    s32 dz;
+    s32 a;
+    s32 d;
+    s32 r;
+
+    arg2 *= arg2;
+    if (MODEV->unk34 < 0xE) {
+        goto ret0;
+    }
+    if (MODEV->unk34 >= 0x11) {
+        if (MODEV->unk34 != 0x11) {
+            return 0;
+        }
+        if (MODEV->unk32 & 0x80) {
+            n = D_8005AA38;
+            if (n != NULL) {
+                HeroInfo *base = Heroes;
+
+                h1 = &base[arg0];
+                do {
+                    t = n->target;
+                    if (t != NULL) {
+                        dx = h1->hero_eng->unk10.x - t->x;
+                        dz = h1->hero_eng->unk10.z - t->z;
+                        if (dx * dx + dz * dz < arg2 && n->unk58 != NULL && n->unk58->unk14 == 2) {
+                            goto set_ai;
+                        }
+                    }
+                    n = n->next;
+                } while (n != NULL);
+            }
+        }
+    }
+    if (Heroes[arg0].hero_attack_timer != 0) {
+        return 0;
+    }
+    best = NULL;
+    n = D_8005AA38;
+    if (n != NULL) {
+        h = &Heroes[arg0];
+    loop:
+        /* the loop notes weight these refs for global-alloc as a loop's would, without loop.c
+           hoisting the (s16) casts out as it does from a real loop */
+        do {
+            t = n->target;
+            if (t != NULL) {
+                dx = h->hero_eng->unk10.x - t->x;
+                dz = h->hero_eng->unk10.z - t->z;
+                if (dx * dx + dz * dz < arg2 && n->unk58 != NULL && n->unk58->unk14 != 2) {
+                    a = get_angle(dx, dz);
+                    d = func_800154A0(a, h->hero_move->forward_angle);
+                    if (arg1 == -1) {
+                        if ((s16)arg3 < d) {
+                            if (d < (s16)arg4) {
+                                best = n;
+                            }
+                        }
+                    } else if (FindExtension((NAS *)n, 0x800) != NULL) {
+                        r = func_800B808C(arg1, (Ovl61Pos *)&t->x, &buf, (u16)a);
+                        best = n;
+                        if (r != 0) {
+                            goto found;
+                        }
+                    }
+                }
+            }
+        } while (0);
+        n = n->next;
+        if (n != NULL) {
+            goto loop;
+        }
+    }
+    if (best == NULL) {
+        return 0;
+    }
+    if (arg5 == 0) {
+        goto ret0;
+    }
+    if (D_8005A680[0] != 0) {
+        HeroInfo *base = Heroes;
+
+        h2 = &base[arg0];
+        arg1 = h2->hero_teammate;
+        t = best->target;
+        a = get_angle(h2->hero_eng->unk10.x - t->x, h2->hero_eng->unk10.z - t->z);
+        if (FindExtension((NAS *)best, 0x800) == NULL) {
+            goto ret0;
+        }
+        if ((func_800B808C(arg1, (Ovl61Pos *)&t->x, &buf, (u16)a) ^ 1) == 0) {
+            goto ret0;
+        }
+    }
+found:
+    return 1;
+set_ai:
+    h1->hero_ai->AIpad |= 0x2000;
+    return 0;
+ret0:
+    return 0;
+}
 
 s32 func_800B8964(s32 arg0) {
     Ovl61Node *n;
