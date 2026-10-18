@@ -35,6 +35,27 @@ extern u16 D_800C1F14;
 
 void Plot_ArkLaserWall(NAS *nas);
 
+typedef struct {
+    s16 x;
+    s16 z;
+    s16 r;
+} Ovl61Circle;
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 x;
+    u8 pad14[4];
+    s32 z;
+    u8 pad1C[0x6E];
+    s16 radius;
+    u8 pad8C[4];
+    u32 flags;
+} Ovl61Obj;
+
+extern Ovl61Circle *D_800C1A7C;
+
+s32 func_800B4EFC(Ovl61Obj *arg0);
+
 void func_800B84B8(void);
 void func_800BDD30(s32 arg0);
 
