@@ -204,7 +204,17 @@ void func_800C3370(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C3440);
+void func_800C3440(void) {
+    D_800C4480 = 0;
+    D_800C4488 = 0;
+    D_800C44FC = 0;
+    D_800C4500 = 0;
+    D_800C4504 = 0;
+    D_800C4508 = 0;
+    Heroes->hero_eng->unk10.y = -0x480;
+    D_800C448C = 1;
+    Heroes[1].hero_eng->unk10.y = -0x480;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C349C);
 

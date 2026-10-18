@@ -22,6 +22,13 @@ typedef struct MineSFX {
     /* 0x60 */ s32 unk60;
     /* 0x64 */ s32 unk64;
 } MineSFX;
+extern s32 D_800C4480;
+extern s32 D_800C4488;
+extern s32 D_800C448C;
+extern s32 D_800C44FC;
+extern s32 D_800C4500;
+extern s32 D_800C4504;
+extern s32 D_800C4508;
 
 void func_800BC6B8(void);
 
@@ -44,6 +51,8 @@ void func_800C3184(void);
 void func_800C3234(void);
 
 void func_800C3370(void);
+
+void func_800C3440(void);
 
 void func_800C36D4(void);
 
