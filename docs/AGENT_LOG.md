@@ -157,7 +157,12 @@ misses with big-mode checkpoints: `func_8007BFA8` (instructions 5/114),
     `cur + 80` and swaps the `next` copy (cse.c, the REG0/REG1 swap after
     insn 7455). Eight statement orders gave the same RTL. Post-reload CSE
     (`reload_cse_regs`) can turn an operand into an equal register, which
-    may explain the v0 uses.
+    may explain the v0 uses. Update (2026-10-18 pm): the v0 load is reorg's
+    copy rewrite (Diff patterns row), so the RTL loads `start` via `cur`.
+    What is left is the `p + 80` on the temp plus `end` via `next`: the temp
+    must outlive `cur` but not `next` (`make_regs_eqv`), which the fade
+    statement's use order rules out for a single temp. 14 statement orders,
+    6 dispatch shapes and a late use of `p` were tried (block note).
   - `f` and `cur` sit in each other's registers (target `f` s1, `cur` s2).
     global.c gives `cur` 13533 against `f`'s 9719, too far apart for lives
     to explain. If block 21's fix moves uses from `cur` to the temp, it may

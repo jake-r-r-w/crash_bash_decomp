@@ -3600,8 +3600,8 @@
  },
  "engine:8008BB48": {
   "auto_failed": "types",
-  "blocked_at": "2026-10-18T10:08:35Z",
-  "note": "parked by hand at regions 95/112 blocks, 484/520 exact (length 520 = target); C under #ifdef NON_MATCHING. Done: switch with case 1 first (an SI 1 movable comes first, so loop.c merges all the 1s into s7), per-loop free counters j/k, two extra sub->unk52 = 1 stores that reload_cse deletes (refs 13 -> 17, so the 1 outranks i: s7/fp/t0 as target), mode read as EngineGameView.mode (in-struct, keeps stores before the lh), store-after-statement placement, fl/alpha temps, -next->r + cur->r angle diffs. Left: block 21 (target keeps the keyframe temp canonical: lw start via v0, addiu v0,v0,0x50, move s4; ours cse makes cur canonical and swaps next) and f/cur in s2/s1 (target s1/s2; global.c 9719 vs 13533, too far for lives). Next: find the source shape for block 21 (cse make_regs_eqv / reload_cse operand reuse), which likely also lowers cur's refs",
+  "blocked_at": "2026-10-18T10:26:21Z",
+  "note": "parked by hand at regions 95/112, 484/520 exact; C under #ifdef NON_MATCHING. Block 21 (2026-10-18 pm): the target's lw start,0(v0) is reorg (fill_slots_from_thread rewrites the insn after a reg-reg copy to use the copy's source), so its RTL loads start via cur; but it also needs p = p + 80 on the temp (cur not cse-canonical: cur's last use <= the temp's, make_regs_eqv) and end = mem(next) (next canonical: next's last use > the temp's), with no insn pair swap (cse.c REG0/REG1 copy swap needs p++ and next = p adjacent). In RTL order cur's last use (fade) comes after next's, so one temp can't satisfy both; 14 statement orders, 6 dispatch shapes and a late use of p tried. f/cur s1/s2 likely follows from it (cur would lose ~6 refs). Next: a source where the A and A+80 temps are different pseudos, or cur/next's last uses ordered next-last",
   "started": "2026-10-18T09:39:07Z",
   "status": "blocked",
   "tries": 1
