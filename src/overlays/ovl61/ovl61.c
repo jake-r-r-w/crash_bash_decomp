@@ -341,7 +341,19 @@ u8 *func_800C01B8(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C0250);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C02F8);
+void func_800C02F8(s32 arg0) {
+    HeroInfo *base;
+    HeroInfo *h;
+
+    func_800B62F4();
+    base = Heroes;
+    h = &base[arg0];
+    h->hero_move->velocity_enable = 1;
+    SetHeroSeq((HeroInfo *)arg0, 0x1D);
+    h->hero_weapon_timer = 0x96;
+    h->hero_attack_counter = 0;
+    PlaySfx(D_800C18E8[arg0], &h->hero_eng->sfx, NULL, 0x1000, 0x1E00, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C039C);
 
