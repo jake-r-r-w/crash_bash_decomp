@@ -770,7 +770,84 @@ int func_800B6B88(int a0, int a1, int a2, int a3, int a4) {
     return a2;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B6C04);
+s32 func_800B6C04(s32 arg0) {
+    s32 *p;
+    s32 *q;
+    s32 j;
+    Ovl69Entry *e;
+    s32 count;
+    u8 *g;
+    s32 i;
+    s32 found;
+    u8 *tbl;
+
+    e = D_800BA324;
+    count = 0;
+    i = count;
+    tbl = D_800657D0;
+outer:
+    if (i < 7) {
+        j = 0;
+        p = (s32 *)e->unk0;
+        q = p + 1;
+        g = D_8005A614;
+    inner:
+        if (j < e->unk4) {
+            if (p[0] == 2) {
+                s32 n;
+                s32 idx = q[0];
+                u8 *gg;
+                do { do { do { do {
+                    gg = (u8 *)(idx + (s32)g);
+                } while (0); } while (0); } while (0); } while (0);
+                if (gg[0xE4] == 0) {
+                    s32 k;
+                    u8 *b;
+                    do {
+                        n = idx;
+                    } while (0);
+                    k = 0;
+                    b = tbl;
+                    while (1) {
+                        if (k >= 4) {
+                            break;
+                        }
+                        if ((b + n)[0xE4] != 0) {
+                            goto hit;
+                        }
+                        b += 0x194;
+                        k++;
+                    }
+                    found = 0;
+                ktest:
+                    if (found) {
+                        do {
+                            count++;
+                        } while (0);
+                        if (arg0 != 0) {
+                            g[q[0] + 0xE4] = 1;
+                        }
+                    }
+                }
+            }
+            do {
+                q += 4;
+                p += 4;
+                j++;
+            } while (0);
+            goto inner;
+        hit:
+            found = 1;
+            goto ktest;
+        }
+        do {
+            e++;
+        } while (0);
+        i++;
+        goto outer;
+    }
+    return count;
+}
 
 void func_800B6CF4(void) {
     subengine *sub;
