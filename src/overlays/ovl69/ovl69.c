@@ -123,7 +123,28 @@ void func_800B5218(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B5244);
+void func_800B5244(void) {
+    void func_8008EC00();
+    func_8001E984(0x20, 0x20);
+    if (D_8009E58C != NULL) {
+        D_8009E58C();
+    }
+    func_800222FC();
+    func_800229FC(D_8005A648);
+    while (func_80012FFC() != 0) {
+        func_8001231C();
+        func_80010AE8(&D_8004E0F0);
+        func_8002BAE8();
+    }
+    func_8008EC00(D_8004E568);
+    func_8002BBB4();
+    func_8002BD0C((s32)(D_8004E568 + 0x438));
+    while (func_80012FFC() != 0) {
+        func_8001231C();
+        func_80010AE8(&D_8004E0F0);
+        func_8002BAE8();
+    }
+}
 
 void func_800B5324(void) {
 }
