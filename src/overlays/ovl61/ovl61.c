@@ -322,7 +322,74 @@ s32 func_800B4EFC(Ovl61Obj *arg0) {
     return z < -lim;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B4FC8);
+s32 func_800B4FC8(s32 *p0, s32 *p1, s32 *q) {
+    s32 denom, num, u, t;
+    s32 dqz;
+    s32 dpx;
+    s32 dpz, dqx, ez, ex;
+    s32 a, b, c;
+
+    a = p0[0];
+    if (a < 0 && (c = p1[0]) < 0 && a < (b = q[0]) && c < b) {
+        return 0;
+    }
+    if ((a = p0[0]) > 0 && (c = p1[0]) > 0 && (b = q[0]) < a && b < c) {
+        return 0;
+    }
+    a = p0[2];
+    if (a < 0 && (c = p1[2]) < 0 && a < (b = q[2]) && c < b) {
+        return 0;
+    }
+    if ((a = p0[2]) > 0 && (c = p1[2]) > 0 && (b = q[2]) < a && b < c) {
+        return 0;
+    }
+    dqz = -q[2] >> 4;
+    dpx = p0[0] >> 4;
+    dqx = -q[0] >> 4;
+    dpz = p0[2] >> 4;
+    ez = (p1[2] - p0[2]) >> 4;
+    ex = (p1[0] - p0[0]) >> 4;
+    num = dqz * dpx - dqx * dpz;
+    denom = ez * dqx - ex * dqz;
+    if (denom > 0) {
+        if (denom < num) {
+            return 0;
+        }
+        if (num < 0) {
+            return 0;
+        }
+    } else {
+        if (num < denom) {
+            return 0;
+        }
+        if (num > 0) {
+            return 0;
+        }
+    }
+    u = ex * dpz - ez * dpx;
+    if (denom > 0) {
+        if (denom < u) {
+            return 0;
+        }
+        if (u < 0) {
+            return 0;
+        }
+    } else {
+        if (u < denom) {
+            return 0;
+        }
+        if (u > 0) {
+            return 0;
+        }
+    }
+    if (denom == 0) {
+        return 0;
+    }
+    t = (num << 8) / denom;
+    q[0] = p0[0] + (((p1[0] - p0[0]) * t) >> 8);
+    q[2] = p0[2] + (((p1[2] - p0[2]) * t) >> 8);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B5238);
 

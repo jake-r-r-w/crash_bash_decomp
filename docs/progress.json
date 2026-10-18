@@ -13,9 +13,9 @@
    "size": 2080
   }
  ],
- "commit": "cb5c8ff6",
+ "commit": "6b1b2b15aa",
  "game": "SCUS_945.70",
- "generated": "2026-10-18T12:52:15Z",
+ "generated": "2026-10-18T12:54:52Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -69614,9 +69614,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "6b1b2b15aa",
+   "data_b": 2112,
+   "data_tb": 606943,
+   "game_all_f": 2551,
+   "game_b": 273888,
+   "game_c_f": 1196,
+   "game_f": 1196,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 1007,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-18T12:54:52Z",
+   "units": {
+    "engine": [
+     121412,
+     355
+    ],
+    "main exe": [
+     124840,
+     575
+    ],
+    "ovl5d": [
+     328,
+     4
+    ],
+    "ovl5e": [
+     504,
+     6
+    ],
+    "ovl5f": [
+     1564,
+     36
+    ],
+    "ovl60": [
+     708,
+     14
+    ],
+    "ovl61": [
+     17572,
+     64
+    ],
+    "ovl62": [
+     916,
+     30
+    ],
+    "ovl63": [
+     636,
+     16
+    ],
+    "ovl64": [
+     156,
+     7
+    ],
+    "ovl65": [
+     1096,
+     11
+    ],
+    "ovl66": [
+     528,
+     13
+    ],
+    "ovl67": [
+     1592,
+     15
+    ],
+    "ovl68": [
+     180,
+     10
+    ],
+    "ovl69": [
+     920,
+     16
+    ],
+    "ovl6a": [
+     936,
+     24
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-18T12:54:45Z",
+   "auto": true,
+   "name": "func_800B4FC8",
+   "seg": "overlays/ovl61/ovl61",
+   "size": 624,
+   "tries": 0
+  },
   {
    "at": "2026-10-18T12:52:14Z",
    "auto": true,
@@ -69728,14 +69822,6 @@
    "seg": "overlays/ovl61/ovl61",
    "size": 528,
    "tries": 0
-  },
-  {
-   "at": "2026-10-18T11:27:35Z",
-   "auto": true,
-   "name": "Init_ArkDeadWall",
-   "seg": "overlays/ovl61/ovl61",
-   "size": 540,
-   "tries": 0
   }
  ],
  "summary": {
@@ -69751,15 +69837,15 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 2,
-   "c_f": 1195,
-   "done_b": 273264,
-   "done_f": 1195,
+   "c_f": 1196,
+   "done_b": 273888,
+   "done_f": 1196,
    "named_f": 345,
-   "pct": 26.815931919971423,
+   "pct": 26.877166263017205,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2551,
-   "typed_f": 1006
+   "typed_f": 1007
   },
   "lib": {
    "all_f": 566,
@@ -69908,20 +69994,20 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
-    "c_f": 63,
-    "done_b": 16948,
-    "done_f": 63,
+    "c_f": 64,
+    "done_b": 17572,
+    "done_f": 64,
     "file": "ovl61.bin",
     "files": 1,
     "lib": false,
     "named_f": 22,
-    "pct": 30.814545454545456,
+    "pct": 31.94909090909091,
     "phase": 4,
     "sony_b": 0,
     "title": "Arkenoid",
     "total_b": 55000,
     "total_f": 97,
-    "typed_f": 57,
+    "typed_f": 58,
     "unit": "ovl61"
    },
    {

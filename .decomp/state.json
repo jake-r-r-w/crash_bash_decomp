@@ -6225,7 +6225,8 @@
  },
  "ovl61:800B4FC8": {
   "auto_diff": 145,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-18T12:54:45Z",
+  "status": "matched"
  },
  "ovl61:800B5238": {
   "auto_failed": "types"

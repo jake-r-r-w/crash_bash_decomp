@@ -241,6 +241,8 @@ s32 func_800B42F4(Ovl61Obj *arg0);
 
 s32 func_800B4D9C(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2);
 
+s32 func_800B4FC8(s32 *p0, s32 *p1, s32 *q);
+
 void func_800B5EC8(s32 arg0);
 
 void func_800B66D0(s32 arg0);
