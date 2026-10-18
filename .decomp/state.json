@@ -9311,7 +9311,8 @@
   "status": "matched"
  },
  "ovl69:800B54B0": {
-  "auto_failed": "in-file"
+  "matched_at": "2026-10-18T17:47:34Z",
+  "status": "matched"
  },
  "ovl69:800B54F0": {
   "auto_diff": 12,

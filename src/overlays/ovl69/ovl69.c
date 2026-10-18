@@ -189,7 +189,10 @@ void func_800B5484(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B54B0);
+void func_800B54B0(void) {
+    func_8001E588(D_8009F644, 0x200, 0);
+    func_80094D88((s32)D_800A0840, (s32)D_8009E5C8);
+}
 
 void func_800B54F0(void) {
     u8 *g;
