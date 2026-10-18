@@ -161,6 +161,8 @@ extern _sfx_handler *D_800C1BC4;
 
 void func_800B6AE0(s32 arg0);
 
+void func_800B6FE0(s32 arg0);
+
 void func_800B7450(s32 arg0);
 
 s32 func_800B8964(s32 arg0);
