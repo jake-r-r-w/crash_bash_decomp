@@ -193,6 +193,11 @@ test (Phase 4). A box below is ticked on the same terms.
 **Done when** every test in [The final test](#the-final-test) passes.
 
 - [ ] No `INCLUDE_ASM` or `INCLUDE_RODATA` anywhere, and no parked functions.
+- [ ] Review every hack match (`decomp.py hacks`: register pins and empty
+  `asm("")` barriers). Retry each without its hack with the tools of the
+  day; keep a pin only where the evidence says it's the original source (a
+  register choice normal allocation never makes), and say so in its commit.
+  A hack that is only a workaround gets matched properly or parked.
 - [ ] Every remaining disc file (music, movies, anything not covered above)
   extracts, and the formats are documented.
 - [ ] Shift everything at once: pad `main.exe` and the engine too, and relink
