@@ -214,27 +214,28 @@ void func_8007B120(void) {
     D_80099174 |= 0x1000;
 }
 
-#ifdef NON_MATCHING
 void func_8007B330(void) {
     s32 lim;
     s32 i;
     EXTengine *e;
+    EXTengine *f;
     s32 v;
-    s32 n;
+    s32 n = 0;
     s32 m;
     s32 q;
     s32 d;
     s32 c2;
     HeroInfo *a;
     HeroInfo *b;
+    HeroInfo *hb;
     s32 h;
+    s32 h2;
     s32 tm;
     s32 s1;
     s32 s2;
     s32 cur;
     s32 diff;
 
-    n = 0;
     if (D_8009AE70 != 0) {
         lim = 0xA00;
         if (D_8009A97C.unk10.y > 0x5A) {
@@ -263,23 +264,28 @@ void func_8007B330(void) {
             D_8009AE7C = lim;
         }
     }
-    v = (u16)D_8009AE7C;
     e = &D_8009A97C;
-    e->unk2C.x = v;
-    e->unk2C.y = v;
-    e->unk2C.z = v;
-    e = &D_8009AA18;
-    e->unk2C.x = v;
-    e->unk2C.y = v;
-    e->unk2C.z = v;
+    v = (u16)D_8009AE7C;
+    do {
+        e->unk2C.x = v;
+        e->unk2C.y = v;
+        e->unk2C.z = v;
+    } while (0);
+    do {
+        f = &D_8009AA18;
+        f->unk2C.x = v;
+        f->unk2C.y = v;
+        f->unk2C.z = v;
+    } while (0);
 
+    hb = Heroes;
     h = D_8005A65C[0];
-    a = &Heroes[h];
+    a = &hb[h];
     tm = a->hero_teammate;
     if (tm == -1) {
         tm = h;
     }
-    b = &Heroes[tm];
+    b = &hb[tm];
     s1 = a->hero_score;
     s2 = b->hero_score;
     cur = (u16)D_8009AE7E;
@@ -311,13 +317,14 @@ void func_8007B330(void) {
         b->hero_score_displayed = 0;
     }
 
-    h = D_8005A65C[1];
-    a = &Heroes[h];
+    hb = Heroes;
+    h2 = D_8005A65C[1];
+    a = &hb[h2];
     tm = a->hero_teammate;
     if (tm == -1) {
-        tm = h;
+        tm = h2;
     }
-    b = &Heroes[tm];
+    b = &hb[tm];
     s1 = a->hero_score;
     s2 = b->hero_score;
     cur = (u16)D_8009AE80;
@@ -382,9 +389,6 @@ void func_8007B330(void) {
     D_8009A97C.unk5E = 1;
     D_8009AA18.unk5E = 1;
 }
-#else
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ac20", func_8007B330);
-#endif
 
 void func_8007B7FC(u32 a, u32 b) {
     u32 v = a;
@@ -425,7 +429,7 @@ void func_8007B8D4(void) {
     s32 sec;
     s32 f;
     s32 min;
-    s32 n;
+    s32 n = 0;
     s32 i;
     s32 d;
     s32 fl;
@@ -583,7 +587,7 @@ join:
 void func_8007BE84(void) {
     DigitEnt *e;
     s32 v;
-    s32 n;
+    s32 n = 0;
     s32 i;
 
     v = D_8004E0D0;
@@ -1511,6 +1515,7 @@ void func_8007D4D0(void) {
 void func_8007D5EC(void) {
     EngineGameView *g = (EngineGameView *)D_8005A614;
     EXTengine *e;
+    EXTengine *f;
 
     if (!(g->unk30 & 0x8801) && *(s32 *)(D_8005A614 + 0x68) == 0 && D_8009D908 != 0) {
         if (D_8009AE78 != 0) {
@@ -1528,6 +1533,7 @@ void func_8007D5EC(void) {
 
 void func_8007D6D0(void) {
     EXTengine *e;
+    EXTengine *f;
     s32 i;
     EngineGameView *g;
 
@@ -1618,7 +1624,7 @@ void func_8007D9DC(void) {
     s32 mode;
     s32 i;
     s32 k;
-    s32 n;
+    s32 n = 0;
     s32 used;
     s32 slot;
     s16 r;
@@ -2223,6 +2229,7 @@ void func_8007EC48(void) {
 
 void func_8007ED0C(void) {
     EXTengine *e;
+    EXTengine *f;
 
     e = &D_8009959C;
     func_8001D3B0(e, 1, &D_8009AC04);

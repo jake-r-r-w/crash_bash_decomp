@@ -1,21 +1,15 @@
 {
  "blocked": [
   {
-   "name": "func_8007B330",
-   "note": "registers 7/307 (swarm checkpoint C, kept under #ifdef NON_MATCHING). Both diffs are compiler tie-breaks. (1) Clamp join: local-alloc gives %hi(D_8009AE7C) v0 and %hi(D_8009A97C) a0 (target v1/v0): with sched1's order (t, e_hi, lhu, lo_sum) the two highs tie on priority and t, born first, wins v0; the target needs e's lo_sum before the lhu in sched1's output (then e_hi wins). e-first, v = D_8009AE7C, chained store all fail; f++ fixes it but makes AA18 f+156. (2) lui Heroes before lui D_8005A65C: sched1 gives both highs birthing priority (placed right before their uses, so 65C's comes first), and sched2 then breaks the priority-2 tie by luid; Heroes-first, a = Heroes + h, base local all fail. Next: a source shape where the Heroes base is not a single-set pseudo, and one where e's lo_sum is scheduled before the lhu.",
-   "seg": "overlays/engine/8007ac20",
-   "size": 1228
-  },
-  {
    "name": "func_8007F314",
    "note": "structure 1147/1443 (length 1443 vs 1431), from the swarm's 1263. Best C under #ifdef NON_MATCHING. Fixed: return 1 (not ret) for 0x101/0x2B; max = 4 and n = 1 set after the early returns/goto so reload_cse turns andi 4 / sll 1 into and a1 / sllv s5; case 0 unk32&4 case 3 stores D_8009AEEC = 1 in both arms (a1/a2 reuse); case 0 and case 8 as if (func) {...PlaySfx} ret = 0; break; empty do-while(0) after the switch delays break threading to jump2 so all ret = 0 tails merge into case 0's first copy (target L704). Still differs: L704's j delay (target keeps s3=0 outside, needs a label at the j, i.e. L704 must be an old label so jumps to it can be cross-jumped: case 0's PlaySfx(0x192) tail should merge into case 8's); 0x40/0x80 0x1000 tails must not merge; HPADS base lui scheduled before the index lui in target (p = &HPADS[..] order); kind loop i wants a1. Next: find natural C giving an old label at case 0's ret = 0 block, then 0x40/0x80, 0x100, 0x200, 0x20.",
    "seg": "overlays/engine/8007ee2c",
    "size": 5772
   }
  ],
- "commit": "61e86cc",
+ "commit": "f3fd73e",
  "game": "SCUS_945.70",
- "generated": "2026-10-18T07:19:35Z",
+ "generated": "2026-10-18T07:49:54Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -64368,9 +64362,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "f3fd73e",
+   "data_b": 2080,
+   "data_tb": 606943,
+   "game_all_f": 2551,
+   "game_b": 253984,
+   "game_c_f": 1132,
+   "game_f": 1132,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 946,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-18T07:49:54Z",
+   "units": {
+    "engine": [
+     119544,
+     351
+    ],
+    "main exe": [
+     124840,
+     575
+    ],
+    "ovl5d": [
+     328,
+     4
+    ],
+    "ovl5e": [
+     504,
+     6
+    ],
+    "ovl5f": [
+     1564,
+     36
+    ],
+    "ovl60": [
+     708,
+     14
+    ],
+    "ovl61": [
+     292,
+     7
+    ],
+    "ovl62": [
+     916,
+     30
+    ],
+    "ovl63": [
+     636,
+     16
+    ],
+    "ovl64": [
+     156,
+     7
+    ],
+    "ovl65": [
+     1096,
+     11
+    ],
+    "ovl66": [
+     528,
+     13
+    ],
+    "ovl67": [
+     836,
+     12
+    ],
+    "ovl68": [
+     180,
+     10
+    ],
+    "ovl69": [
+     920,
+     16
+    ],
+    "ovl6a": [
+     936,
+     24
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-18T07:49:44Z",
+   "auto": true,
+   "name": "func_8007B330",
+   "seg": "overlays/engine/8007ac20",
+   "size": 1228,
+   "tries": 0
+  },
   {
    "at": "2026-10-18T05:57:45Z",
    "auto": true,
@@ -64482,18 +64570,10 @@
    "seg": "overlays/engine/8009608c",
    "size": 1616,
    "tries": 0
-  },
-  {
-   "at": "2026-10-17T11:44:24Z",
-   "auto": true,
-   "name": "func_800809A0",
-   "seg": "overlays/engine/8007ee2c",
-   "size": 1564,
-   "tries": 0
   }
  ],
  "summary": {
-  "blocked": 2,
+  "blocked": 1,
   "copies_b": 36276,
   "data": {
    "done_b": 2080,
@@ -64504,16 +64584,16 @@
    "all_f": 2551,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 2,
-   "c_f": 1131,
-   "done_b": 252756,
-   "done_f": 1131,
+   "blocked": 1,
+   "c_f": 1132,
+   "done_b": 253984,
+   "done_f": 1132,
    "named_f": 345,
-   "pct": 24.803441684101443,
+   "pct": 24.923947730992822,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2551,
-   "typed_f": 945
+   "typed_f": 946
   },
   "lib": {
    "all_f": 566,
@@ -64535,21 +64615,21 @@
     "all_f": 357,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 2,
-    "c_f": 350,
-    "done_b": 118316,
-    "done_f": 350,
+    "blocked": 1,
+    "c_f": 351,
+    "done_b": 119544,
+    "done_f": 351,
     "file": "engine.bin",
     "files": 6,
     "lib": false,
     "named_f": 18,
-    "pct": 91.53051120188142,
+    "pct": 92.48050501299666,
     "phase": 3,
     "sony_b": 0,
     "title": "Engine",
     "total_b": 129264,
     "total_f": 357,
-    "typed_f": 325,
+    "typed_f": 326,
     "unit": "engine"
    },
    {
