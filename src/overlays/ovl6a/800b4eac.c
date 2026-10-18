@@ -1121,7 +1121,43 @@ void func_800B93B4(s32 arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", PlotPodiumTrophy);
+void PlotPodiumTrophy(PodiumTrophy *arg0) {
+    TrophyInner *in;
+    PodiumFx *fx;
+    TrigEntry *tb;
+    s32 t;
+    u16 st;
+    s32 v;
+
+    in = arg0->inner;
+    if (in != NULL) {
+        st = arg0->state;
+        if (st == 1) {
+            in->unk2C += (0x1000 - in->unk2C) >> 5;
+            if (in->unk2C >= 0xF00) {
+                in->unk2C = 0x1000;
+                arg0->state = 2;
+            }
+            v = in->unk2C;
+            in->unk5E = st;
+            in->unk34 = v;
+            in->unk30 = v;
+        }
+        fx = in->fx;
+        if (fx != NULL) {
+            tb = D_80068BD4;
+            t = D_8005B690;
+#define TSIN(k) tb[((((t * (k)) & 0xFFF) - 0x400) & 0xFFF)].unk2
+            fx->unk10 = *(s32 *)&tb[(((t * 0x46) & 0xFFF) - 0x400) & 0xFFF] >> 20;
+            fx->unk12 = (TSIN(0x8C) + 0x800) >> 5;
+            fx->unk14 = (TSIN(0x46) + TSIN(0x64)) >> 5;
+            fx->unk4 = tb[((t * 0x28) - 0x400) & 0xFFF].unk2 * 0x118 / 4096;
+            fx->unk8 = (TSIN(0x2D) + TSIN(0x50)) >> 6;
+#undef TSIN
+            fx->unk52 = 1;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B96F4);
 

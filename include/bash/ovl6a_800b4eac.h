@@ -29,6 +29,34 @@ typedef struct Ovl6aEntry12 {
     s32 unk8;
 } Ovl6aEntry12;
 extern Ovl6aEntry12 D_800BD7E0[];
+typedef struct PodiumFx {
+    /* 0x00 */ u8 pad0[4];
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ u8 padC[4];
+    /* 0x10 */ s16 unk10;
+    /* 0x12 */ s16 unk12;
+    /* 0x14 */ s16 unk14;
+    /* 0x16 */ u8 pad16[0x52 - 0x16];
+    /* 0x52 */ s16 unk52;
+} PodiumFx;
+typedef struct TrophyInner {
+    /* 0x00 */ u8 pad0[0x2C];
+    /* 0x2C */ s32 unk2C;
+    /* 0x30 */ s32 unk30;
+    /* 0x34 */ s32 unk34;
+    /* 0x38 */ u8 pad38[0x5E - 0x38];
+    /* 0x5E */ u16 unk5E;
+    /* 0x60 */ u8 pad60[0x6C - 0x60];
+    /* 0x6C */ PodiumFx *fx;
+} TrophyInner;
+typedef struct PodiumTrophy {
+    /* 0x00 */ u8 pad0[0x54];
+    /* 0x54 */ TrophyInner *inner;
+    /* 0x58 */ u8 pad58[4];
+    /* 0x5C */ u16 state;
+} PodiumTrophy;
+#define PODIUM_SIN(k) D_80068BD4[((((D_8005B690 * (k)) & 0xFFF) - 0x400) & 0xFFF)].unk2
 extern u32 D_800BD5B0;
 extern u8 D_80055924[];
 extern u8 D_8005595C[];
@@ -439,6 +467,8 @@ extern s32 D_800BCEE4;
 void func_800B6A3C(void);
 
 void func_800B6E20(void);
+
+void PlotPodiumTrophy(PodiumTrophy *arg0);
 
 void func_800BA9C8(s32 arg0, Ovl6aSpawnEnt *arg1);
 
