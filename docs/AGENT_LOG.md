@@ -14,9 +14,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1226/2551 game functions matched: **main.exe is complete (575/575)**;
+- 1227/2551 game functions matched: **main.exe is complete (575/575)**;
   engine overlay 2 left, both parked (`func_8007F314`, `PlotScriptFX`),
-  ovl61 93/97 (two 2026-10-18 swarm runs and a hand match; 4 big ones left),
+  ovl61 94/97 (two 2026-10-18 swarm runs and two hand matches; 3 big ones left),
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Dashboard (2026-10-18): `docs/index.html` is `tools/scripts/dashboard.html` plus
@@ -42,9 +42,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**ovl61 (2026-10-18):** two runs, 83 matched, and `CalcArkInfluence` by
-hand; 93/97 functions, 4 left, all big and checkpointed:
-`func_800B85DC` (904 B, registers 44/226), `func_800BE4D4` (2816 B),
+**ovl61 (2026-10-18):** two runs, 83 matched, and `CalcArkInfluence` and
+`func_800B85DC` by hand; 94/97 functions, 3 left, all big and checkpointed:
+`func_800BE4D4` (2816 B),
 `func_800B8A68` (3264 B; its best C has a `- k + k` hack to drop),
 `PlotBall` (5576 B, paired 1366/1394). Next: a big-only run on
 ovl61 (`--workers 1 --big-workers 3`), or a new overlay with the big-heavy
@@ -455,6 +455,14 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-18 (hand):** `func_800B85DC` matched (5b63fbe1), no register pin
+  or permuter, from the swarm's 182/226 (s-reg rotation only). Worked through
+  global.c's priority (floor_log2(refs) * refs / live) per pseudo from -dl:
+  the target's order lim > h > arg0 > arg1 needs `arg2 *= arg2` (7 refs, not
+  4) and loop 2's refs loop-weighted, i.e. its goto-loop body in
+  `do { } while (0)` (a real while/for/do loop lets loop.c hoist the (s16)
+  casts: 135 diffs). Plus a3 for loop 1's own hero pointer, block-scoped
+  Heroes bases, and `goto ret0` for the xori test. MATCHING.md: two rows.
 - **2026-10-18 (hand):** `CalcArkInfluence` matched (b46ab0f8), no hack or
   permuter, from the swarm's 146/150 (z2 in v1, three big sessions and a
   permuter run stuck there). From the -dl/-dg dumps and global.c: x2/z2
