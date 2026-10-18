@@ -867,7 +867,19 @@ s32 func_800BB944(s32 arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BB9B0);
+s32 func_800BB9B0(s32 arg0) {
+    PadStick *base = (PadStick *)D_80051338;
+    PadStick *pad = &base[arg0];
+
+    if (pad->dirPressed & 0x8000) {
+        if (Heroes[arg0].hero_attack_timer == 0) {
+            SetHeroAction((HeroInfo *)arg0, 0x2B);
+            return 1;
+        }
+        pad->dirHeld &= 0xFFFF7FFF;
+    }
+    return 0;
+}
 
 void func_800BBA4C(s32 arg0) {
     HeroInfo *base = Heroes;
