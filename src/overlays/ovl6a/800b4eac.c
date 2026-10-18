@@ -164,7 +164,13 @@ s32 func_800B7F74(u8 *arg0, u8 *arg1) {
     return (temp_v0 * temp_v0) + (temp_v0_2 * temp_v0_2);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B7FAC);
+void func_800B7FAC(s32 arg0) {
+    u8 *p;
+    D_8009E5DC = arg0;
+    p = D_8005A614;
+    *(u16 *)(p + 0x30) = 0x8008;
+    *(u16 *)(p + 0x24) = 0xA;
+}
 
 void func_800B7FD0(u8 *cam, s32 arg1) {
     u8 *o = (u8 *)func_8001E48C(arg1);

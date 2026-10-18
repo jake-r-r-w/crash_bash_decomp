@@ -38,6 +38,8 @@ void InitGatewayTrophy(void);
 
 s32 func_800B7F74(u8 *arg0, u8 *arg1);
 
+void func_800B7FAC(s32 arg0);
+
 void func_800B7FD0(u8 *cam, s32 arg1);
 
 s32 func_800B821C(void);
