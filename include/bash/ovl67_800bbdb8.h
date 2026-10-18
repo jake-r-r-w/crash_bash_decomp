@@ -117,6 +117,26 @@ typedef struct MineObj {
     /* 0x6C */ MineModel *model;
 } MineObj;
 
+typedef struct MissileObj {
+    /* 0x00 */ u8 pad00[0x5D];
+    /* 0x5D */ u8 unk5D;
+    /* 0x5E */ u8 pad5E[0xE];
+    /* 0x6C */ MineModel *model;
+} MissileObj;
+
+typedef struct MissileHolder {
+    /* 0x00 */ u8 pad00[0x54];
+    /* 0x54 */ MissileObj *obj;
+} MissileHolder;
+
+typedef struct MissileExt {
+    /* 0x00 */ u8 pad00[0xC];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ s32 unk18;
+} MissileExt;
+
 typedef struct MineHolder {
     /* 0x00 */ u8 pad00[0x54];
     /* 0x54 */ MineObj *obj;
@@ -199,6 +219,8 @@ typedef struct Box2 {
 } Box2;
 
 extern char D_800B336C[];
+
+void InitNitroMissile(MissileHolder *arg0);
 
 s32 func_800C3544(s32 *arg0, s32 *arg1);
 

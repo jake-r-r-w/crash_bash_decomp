@@ -139,7 +139,33 @@ void func_800C2904(s32 *arg0, s32 flag, s32 *out) {
     out[0] = -get_angle(dy, dist);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", InitNitroMissile);
+void InitNitroMissile(MissileHolder *arg0) {
+    MissileExt *ext = AddExtension(arg0, 0x1C, 0x10000000);
+    s32 r;
+
+    if (ext != NULL) {
+        arg0->obj->model->unk6C = *(s32 *)D_80058AD0;
+        arg0->obj->model->unk74 = 0x2019;
+        arg0->obj->unk5D = 2;
+        ext->unk10 = 0;
+        ext->unkC = 0;
+        ext->unk14 = 0;
+        ext->unk18 = 0;
+        r = Random(4);
+        if (r == 0) {
+            PlaySfx(0x2A3, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (r == 1) {
+            PlaySfx(0x2A4, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (r == 2) {
+            PlaySfx(0x2A5, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (r == 3) {
+            PlaySfx(0x2A6, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+    }
+}
 
 void InitNitroMine(MineHolder *arg0) {
     arg0->obj->model->unk6C = *(s32 *)D_80058AD0;
