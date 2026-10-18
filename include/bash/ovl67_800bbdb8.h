@@ -44,6 +44,15 @@ typedef struct SetupCam {
     /* 0x95 */ u8 unk95;
 } SetupCam;
 
+typedef struct MixObj {
+    /* 0x00 */ u8 pad00[0x20];
+    /* 0x20 */ s32 a;
+    /* 0x24 */ u8 pad24[0xC];
+    /* 0x30 */ s32 b;
+    /* 0x34 */ u8 pad34[0x1A];
+    /* 0x4E */ s16 w;
+} MixObj;
+
 extern SetupCam D_800C7614;
 extern u8 D_8009F644[];
 extern u8 D_8009F6F4[];
@@ -173,6 +182,8 @@ void func_800C2DD8(s32 arg0);
 void func_800C2E60(s32 arg0);
 
 void func_800C2EF8(s32 arg0);
+
+void func_800C2F78(MixObj *arg0, MixObj *arg1);
 
 void PlotDummyCamera(NAS *nas);
 

@@ -8854,7 +8854,8 @@
  },
  "ovl67:800C2F78": {
   "auto_diff": 63,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-18T16:59:35Z",
+  "status": "matched"
  },
  "ovl67:800C3080": {
   "matched_at": "2026-10-18T16:55:42Z",

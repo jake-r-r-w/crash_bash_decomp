@@ -245,7 +245,36 @@ s32 func_800C2F70(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C2F78);
+void func_800C2F78(MixObj *arg0, MixObj *arg1)
+{
+  MixObj *p = arg0;
+  MixObj *q = arg1;
+  s32 d;
+  s32 s;
+  int new_var;
+  s32 t;
+  s32 u;
+  s32 n;
+  q->w = 0x100;
+  p->w = 0x100;
+  if (q->w > 0)
+  {
+    d = -((p->a - q->a) << 7);
+    s = (q->a + p->a) << 16;
+    new_var = (d << 8) + s;
+    n = 0x200;
+    t = new_var / n;
+    u = t - d;
+    p->a = t >> 8;
+    q->a = u >> 8;
+    d = -((p->b - q->b) << 7);
+    s = (q->b + p->b) << 16;
+    t = ((d << 8) + s) / n;
+    u = t - d;
+    p->b = t >> 8;
+    q->b = u >> 8;
+  }
+}
 
 void PlotDummyCamera(NAS *nas) {
     nas->Camera.width = Heroes[nas->UserInfo.user1].hero->Camera.width;
