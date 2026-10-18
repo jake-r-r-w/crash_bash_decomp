@@ -59,6 +59,15 @@ extern s32 D_8005A680[];
 
 s32 func_800B9CB8(s32 arg0, EXTengine *unused);
 
+typedef struct Ovl67Vel {
+    u8 pad0[0x10];
+    s32 x;
+    s32 pad14;
+    s32 z;
+} Ovl67Vel;
+
+s32 func_800BAEA8(Ovl67Vel *arg0, s32 arg1);
+
 void PlotN2ODeadWall(NAS *arg0);
 
 void func_800BB5F0(void);

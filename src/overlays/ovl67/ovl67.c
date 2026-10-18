@@ -398,7 +398,42 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BAAA8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BAC30);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BAEA8);
+s32 func_800BAEA8(Ovl67Vel *arg0, s32 arg1) {
+    s32 i;
+    FlagRecord *rec;
+    s32 r;
+    s32 dz;
+    s32 dx;
+    EXTengine *eng;
+    HeroInfo *hero;
+    HeroInfo *base = Heroes;
+
+    for (i = 0; i < 4; i++) {
+        hero = &base[i];
+        if (hero->hero_status & 0xF800) {
+            continue;
+        }
+        eng = hero->hero_eng;
+        if (eng == NULL) {
+            continue;
+        }
+        do {
+            rec = func_80025A48(eng, 0x40);
+            if (rec == NULL) {
+                goto next;
+            }
+        } while (0);
+        dx = eng->unk10.x - arg0->x;
+        dz = eng->unk10.z - arg0->z;
+        r = rec->radius + (arg1 & 0xFFFF);
+        r = r * r;
+        if ((dx * dx) + (dz * dz) < r) {
+            return i;
+        }
+    next:;
+    }
+    return -1;
+}
 
 void PlotN2ODeadWall(NAS *arg0) {
     EXTengine *eng;
