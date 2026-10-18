@@ -88,6 +88,8 @@ void func_800BB5F0(void);
 
 void func_800BB788(s32 arg0);
 
+s32 func_800BB8EC(s32 arg0);
+
 void func_800BBD68(void);
 
 #endif /* BASH_OVL67_H */
