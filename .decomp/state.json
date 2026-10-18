@@ -8441,7 +8441,9 @@
   "status": "matched"
  },
  "ovl67:800B3E74": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-18T20:26:31Z",
+  "status": "matched",
+  "tries": 1
  },
  "ovl67:800B4138": {
   "auto_failed": "types"

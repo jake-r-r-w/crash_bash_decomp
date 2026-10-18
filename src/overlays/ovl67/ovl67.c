@@ -227,7 +227,86 @@ next:
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B3E74);
+void func_800B3E74(s32 i) {
+    HeroInfo *h;
+    HeroInfo *hb;
+    HeroInfo *hb2;
+    HeroInfo *h2;
+    s32 one;
+    EXTengine *eng = Heroes[i].hero_eng;
+    subengine *sub;
+    subengine *n;
+    s32 k;
+    void *scene;
+
+    Heroes[i].hero_health = 0xFF;
+    switch (i) {
+    case 0:
+        if (D_8005A680[0] != 0) {
+            Heroes[0].hero_eng->unk10.x = D_800C4050[1][0];
+            Heroes[0].hero_eng->unk10.z = D_800C4050[1][2];
+        } else {
+            Heroes[0].hero_eng->unk10.x = D_800C4050[0][0];
+            Heroes[0].hero_eng->unk10.z = D_800C4050[0][2];
+        }
+        break;
+    case 1:
+        Heroes[i].hero_eng->unk10.x = D_800C4050[2][0];
+        Heroes[i].hero_eng->unk10.z = D_800C4050[2][2];
+        break;
+    }
+    k = 2;
+    hb = Heroes;
+    h = hb + i;
+    eng->unk5D = 0;
+    sub = h->hero_sub;
+    func_8001D390(eng, k);
+    n = sub->next;
+    if (n != NULL) {
+        n->unk6C = sub->unk6C;
+        n->flags |= 0x8000;
+        h->hero_anim->sub = n;
+        n = n->next;
+        if (n != NULL) {
+            n->unk6C = D_80053EE4;
+            n->unk74 = 0x2005;
+            n->unk50 = 1;
+            n->unk51 = 0;
+            n->flags &= ~0x8000;
+        }
+    }
+    k = 1;
+    if (D_800C417A == k) {
+        ((void (*)(s32, s32))func_800B4138)(i, k);
+        return;
+    }
+    D_800C417C[i] = 0xF;
+    sub->unk6C = *(void **)D_80058AD0;
+    sub->unk74 = 0x4000;
+    if ((u32)(i - 2) < 2) {
+        sub->flags &= ~0x8000;
+    }
+    if (D_8005A680[0] == 0 && i == k) {
+        sub->flags &= ~0x8000;
+    }
+    sub->unk50 = 1;
+    sub->unk51 = 0;
+    sub->unk20.x = 0x1201;
+    sub->unk20.y = 0x1201;
+    sub->unk20.z = 0x1201;
+    one = 1;
+    sub->unk52 = one;
+    func_80025B10(eng, 0x50);
+    hb2 = Heroes;
+    h2 = hb2 + i;
+    func_80026B70((u8 **)&D_800C4080, (u8 *)h2->hero);
+    SetHeroAction((HeroInfo *)i, 0x2F);
+    h2->hero_eng->unk10.y = -0x480;
+    h2->hero_weapon_count = one;
+    if (i == 0) {
+        func_800C3440();
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B4138);
 

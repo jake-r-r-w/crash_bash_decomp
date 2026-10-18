@@ -32,6 +32,9 @@ extern u16 D_800AD12C;
 extern u16 D_800C39A0[];
 extern s16 D_800C4150[][3];
 extern u16 D_800C417A;
+extern s16 D_800C417C[];
+extern s32 D_800C4050[][3];
+void func_800C3440(void);
 extern u16 D_800C438A;
 extern s16 D_800C4184[];
 extern s32 (*D_8009D750)(EXTengine *);
@@ -408,7 +411,7 @@ extern u8 D_800C3E30[];
 extern u8 D_800C3E70[];
 void func_800B3CD0(s32 arg0);
 
-void func_800B3E74(void);
+void func_800B3E74(s32 i);
 void func_800B46DC(s32 arg0);
 void func_800B4CE0(s32 arg0);
 
