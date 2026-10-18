@@ -18,6 +18,8 @@ typedef struct Ovl6aGameView {
     /* 0x26 */ u8 pad26[0x30 - 0x26];
     /* 0x30 */ u16 unk30;
 } Ovl6aGameView;
+extern s32 D_800BD390;
+extern s32 D_800BD394;
 
 void func_800B7874(void);
 
@@ -62,6 +64,8 @@ void func_800B8474(s32 arg0);
 void func_800B8588(void);
 
 void func_800B85A8(void);
+
+void func_800B8CA0(void);
 
 void func_800BA7BC(NAS *arg0);
 

@@ -265,7 +265,55 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B8AA4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B8BC8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B8CA0);
+void func_800B8CA0(void) {
+    s32 r;
+    s32 x;
+
+    if (D_8005A624 == 0 && D_800BD390-- < 0) {
+        D_800BD394 = Random(4);
+        r = Random(6);
+        if (r == 0) {
+            PlaySfx(0x355, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (r == 1) {
+            PlaySfx(0x356, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (r == 2) {
+            PlaySfx(0x357, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (r == 3) {
+            PlaySfx(0x358, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (r == 4) {
+            PlaySfx(0x359, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (r == 5) {
+            PlaySfx(0x35A, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        r = Random(6);
+        if (r == 0) {
+            PlaySfx(0x35B, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (r == 1) {
+            PlaySfx(0x35C, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (r == 2) {
+            PlaySfx(0x35D, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (r == 3) {
+            PlaySfx(0x35E, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (r == 4) {
+            PlaySfx(0x35F, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (r == 5) {
+            PlaySfx(0x360, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        x = Random(10000) - 5000;
+        SpawnNASById(x, Random(10000) - 5000, 0xE10, 0x1628, 0x11);
+        D_800BD390 = Random(10) + 5;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B8F50);
 
