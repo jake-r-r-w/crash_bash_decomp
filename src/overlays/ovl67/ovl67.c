@@ -517,7 +517,50 @@ void func_800B5BFC(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", InitN2OBall);
+void InitN2OBall(NAS *nas) {
+    EXTengine *eng;
+    EXTengine *e1;
+    EXTobject *obj;
+    EXTmotion *mot;
+    subengine *sub;
+
+    eng = nas->Engine;
+    if (eng != NULL) {
+        eng->sub->flags |= 0x02000000;
+        eng->flags &= 0xFFFF7FFF;
+        obj = (EXTobject *)AddObject(nas);
+        if (obj != NULL) {
+            mot = AddMotion(nas);
+            if (mot != NULL) {
+                func_80026AD8((u8 *)nas);
+                func_8002694C(nas, 0x300);
+                nas->FUX = (EXT *)obj;
+                obj->whatami = 1;
+                obj->owner = 0x63;
+                obj->status = 0;
+                mot->Mass = 0x100;
+                mot->Za = 0;
+                mot->Zvel = 0;
+                mot->Zmax = 0;
+                mot->Zacc = 3;
+                mot->Zdec = 3;
+            }
+        }
+        eng->unk5D = 2;
+        eng->sub->unk6C = D_80054504;
+        eng->sub->unk74 = 0x2009;
+        func_80026B70((u8 **)&D_8005AA38, (u8 *)nas);
+        e1 = AddEngine(nas, 1);
+        if (e1 != NULL) {
+            sub = e1->sub;
+            sub->unk6C = D_80054504;
+            sub->unk74 = 0x200B;
+            e1->flags |= 0x22000021;
+            sub->flags |= 0x22000021;
+            e1->flags &= 0xFFFF7FFF;
+        }
+    }
+}
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl67/ovl67", D_800B32B4);
 
