@@ -83,4 +83,11 @@ void func_800C0B84(void);
 
 void func_800C0B8C(void);
 
+extern char func_800B36CC[];
+extern char func_800B3B20[];
+extern char func_800B40AC[];
+extern char func_800B9728[];
+
+void func_800C0B94(void);
+
 #endif /* BASH_OVL61_H */
