@@ -2485,7 +2485,139 @@ void AlignGrabBall(EXTengine *arg0, EXTmotion *arg1, EXTobject *arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Plot_N_Gin);
+void Plot_N_Gin(NAS *arg0) {
+    static const void *const tbl[6] = {&&l0, &&l1, &&l2, &&l3, &&l4, &&l5};
+    EXTengine *eng;
+    Ovl61Gin *gin;
+    s32 i;
+    u32 s;
+
+    eng = arg0->Engine;
+    if (eng == NULL) {
+        return;
+    }
+    if (FindExtension(arg0, 0x400) != NULL && (gin = D_800C1B2C) != NULL) {
+        if (D_8005A644 & 0x801) {
+            if ((u16)gin->unk1A != 0) {
+                gin->unk1A = 5;
+                if (eng->sfx != NULL) {
+                    StopSfx(eng->sfx);
+                }
+            }
+            func_800250B0(arg0);
+        }
+        s = (u16)gin->unk1A;
+        if (s < 6) {
+            goto *tbl[s];
+        }
+        goto l0;
+    l1:
+            eng->unk10.y = D_8005A5D8;
+            gin->unk1A = 2;
+            gin->unk22 = 0xA;
+            gin->unk1C |= 0x90;
+            PlaySfx(0x5BE, NULL, NULL, 0x1000, 0x1E00, 0);
+            func_8007A524(0, &eng->unk10.x, (s32)D_80054574);
+            eng->sub->unk74 = 0x2001;
+            goto end;
+    l2:
+            eng->unk1E += 0x20;
+            if (gin->unk22 != 0) {
+                gin->unk22--;
+            } else {
+                arg0->Class |= 0x200;
+                eng->flags |= 0x8000;
+                gin->unk1A = 3;
+                PlaySfx(0x5BF, &eng->sfx, NULL, 0x1000, 0x1E00, 0);
+                gin->unk22 = 0x5A;
+                gin->unk20 = 0x10;
+            }
+            func_800250B0(arg0);
+            eng->unk5E = 1;
+            return;
+    l3:
+            eng->unk1E += gin->unk20;
+            gin->unk20 += 4;
+            func_800250B0(arg0);
+            if (gin->unk22 != 0) {
+                gin->unk22--;
+                goto end;
+            }
+            eng->sub->unk74 = 0x2006;
+            gin->unk1A = 4;
+            gin->unk22 = 0x96;
+            gin->unk20 = Random(0xA) + 0xA;
+            if (((Ovl61GinView *)D_8005A614)->unk32 == 0) {
+                eng->unk5E = 1;
+                return;
+            }
+            if (((Ovl61GinView *)D_8005A614)->unk6C != 0) {
+                gin->unk22 = 0xD2;
+            }
+            goto end;
+    l4:
+            eng->unk1E += 0x1C7;
+            if (((Ovl61GinView *)D_8005A614)->unk32 & 0x80) {
+                if (gin->unk20 != 0) {
+                    gin->unk20--;
+                } else {
+                    for (i = 0; i < 4; i++) {
+                        if ((i == 0 || (((Ovl61GinView *)D_8005A614)->unk6C != 0 && i == 1)) && !(Heroes[i].hero_status & 0xFA00)) {
+                            if (func_80015480(eng->unk1E, Heroes[i].hero_move->facing_angle & 0xFFF) < 0xE3) {
+                                func_800B99E0();
+                                gin->unk20 = Random(0xB) + 6;
+                            } else {
+                                gin->unk20 = Random(5);
+                            }
+                        }
+                    }
+                }
+            } else {
+                if (gin->unk20 != 0) {
+                    gin->unk20--;
+                } else {
+                    func_800B99E0();
+                    gin->unk20 = 0xF;
+                }
+            }
+            if (gin->unk22 != 0) {
+                gin->unk22--;
+            } else {
+                gin->unk1A = 5;
+            }
+            goto end;
+    l5:
+            if (eng->sfx != NULL) {
+                StopSfx(eng->sfx);
+            }
+            PlaySfx(0x5C0, NULL, NULL, 0x1000, 0x1E00, 0);
+            func_8007A524(0, &eng->unk10.x, (s32)D_80054574);
+            gin->unk1C = 0;
+            eng->unk10.y = -0x1000;
+            eng->flags &= 0xFFFF7FFF;
+            D_800C1EFC = 0x19;
+            arg0->Class &= 0xFDFF;
+            gin->unk1A = 0;
+            gin->unk22 = (Random(0xF) + 8) * 0x1E;
+            goto end;
+    l0:
+            gin->unk1C = 0;
+            eng->unk10.y = -0x1000;
+            arg0->Class &= 0xFDFF;
+            eng->flags &= 0xFFFF7FFF;
+            if (((Ovl61ModeView *)D_8005A614)->unk30 & 0x801) {
+                eng->unk5E = 1;
+                return;
+            }
+            if (gin->unk22 != 0) {
+                gin->unk22--;
+            } else {
+                gin->unk1A = 1;
+            }
+    }
+end:
+    eng->unk5E = 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BC0D8);
 

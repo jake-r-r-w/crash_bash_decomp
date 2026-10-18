@@ -111,9 +111,20 @@ typedef struct Ovl61Gin {
     u8 pad16[4];
     s16 unk1A;
     s16 unk1C;
-    u8 pad1E[4];
+    u8 pad1E[2];
+    s16 unk20;
     s16 unk22;
 } Ovl61Gin;
+
+/* D_8005A614 as seen by Plot_N_Gin. */
+typedef struct {
+    u8 pad0[0x32];
+    u16 unk32;
+    u8 pad34[0x6C - 0x34];
+    s32 unk6C;
+} Ovl61GinView;
+
+extern s16 D_800C1EFC;
 
 extern char D_80054574[];
 extern ScriptInit D_800C14A8;
