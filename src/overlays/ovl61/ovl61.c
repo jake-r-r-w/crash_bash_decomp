@@ -592,7 +592,105 @@ void func_800B5238(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B558C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B58E8);
+void func_800B58E8(s32 arg0) {
+    EXTheromove *mv;
+    HeroInfo *h;
+    PadButtons *p;
+    s32 mask;
+    s32 d;
+    s32 hit;
+    s32 step;
+    s32 max;
+    s32 t;
+
+    hit = 0;
+    max = 0x28;
+    {
+        HeroInfo *hb = Heroes;
+        h = &hb[arg0];
+    }
+    mv = h->hero_move;
+    step = 0xD;
+    if (h->hero_frozen != 0) {
+        HPADS[arg0].unk50 = 0;
+        HPADS[arg0].unk54 = 0;
+    }
+    if ((*(s32 *)HPADS[arg0].unk0 & 1) || h->hero_ai->AImode != 0) {
+        if (arg0 == D_800C2724) {
+            step = 0x15;
+        }
+        if (HPADS[arg0].unk50 & 0xF00) {
+            max = 0x48;
+            step = 0x12;
+        }
+        mask = (arg0 == D_800C2724 || arg0 == D_800C2728) ? 0xA0 : 0x50;
+        {
+            PadButtons *b = HPADS;
+            p = &b[arg0];
+        }
+        if (p->unk50 & mask) {
+            if (mv->velocity_enable != 0) {
+                d = 0;
+                if (D_8009D750(Heroes[arg0].hero_eng) != 0) {
+                    hit = 1;
+                }
+                if (arg0 == D_800C2724 || arg0 == D_800C2728) {
+                    if (p->unk50 & 0x80) {
+                        d = -step;
+                    }
+                    if (p->unk50 & 0x20) {
+                        d += step;
+                    }
+                } else {
+                    if (p->unk50 & 0x40) {
+                        d = -step;
+                    }
+                    if (p->unk50 & 0x10) {
+                        d += step;
+                    }
+                }
+                if (hit != 0) {
+                    do {
+                        if (d < 0) {
+                            d -= max >> 1;
+                        }
+                        if (d > 0) {
+                            d += max >> 1;
+                        }
+                    } while (0);
+                }
+                mv->forward_speed += d;
+                if (mv->forward_speed > max) {
+                    mv->forward_speed = max;
+                }
+                if (mv->forward_speed < -max) {
+                    mv->forward_speed = -max;
+                }
+                if (mv->forward_speed == 0) {
+                    mv->forward_speed = (d < 0) ? -1 : 1;
+                }
+            }
+            D_800C1EF0[arg0] = mv->forward_speed;
+        } else {
+            D_800C1EF0[arg0] = 0;
+            if (D_8009D750(Heroes[arg0].hero_eng) != 0) {
+                mv->forward_speed = 0;
+            }
+            if (mv->forward_speed > 0) {
+                mv->forward_speed -= 6;
+                if (mv->forward_speed < 0) {
+                    mv->forward_speed = 0;
+                }
+            }
+            if (mv->forward_speed < 0) {
+                mv->forward_speed += 6;
+                if (mv->forward_speed > 0) {
+                    mv->forward_speed = 0;
+                }
+            }
+        }
+    }
+}
 
 void func_800B5C30(s32 arg0) {
     HeroInfo *h;

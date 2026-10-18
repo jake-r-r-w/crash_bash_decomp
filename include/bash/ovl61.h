@@ -117,6 +117,7 @@ typedef struct Ovl61Gin {
 extern char D_80054574[];
 extern ScriptInit D_800C14A8;
 extern EXTengine *D_800C1B28;
+extern s32 (*D_8009D750)(EXTengine *);
 extern Ovl61Gin *D_800C1B2C;
 typedef struct Ovl61Node {
     u8 pad0[0x10];
@@ -271,6 +272,8 @@ s32 func_800B4D9C(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2);
 s32 func_800B4FC8(s32 *p0, s32 *p1, s32 *q);
 
 void func_800B5238(s32 arg0);
+
+void func_800B58E8(s32 arg0);
 
 void func_800B5C30(s32 arg0);
 
