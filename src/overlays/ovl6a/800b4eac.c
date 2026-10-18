@@ -696,7 +696,34 @@ s32 func_800B8708(s32 arg0) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl6a/800b4eac", D_800B37EC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B875C);
+void func_800B875C(void) {
+    s32 i;
+
+    D_800BD594 = NULL;
+    for (i = 0; i < 4; i++) {
+        D_800BD584[i] = 0;
+        switch (D_8005A614[i + 0x4C]) {
+        case 1: func_80016D44(D_80055924); break;
+        case 2: func_80016D44(D_8005595C); break;
+        case 3: func_80016D44(D_80055994); break;
+        case 4: func_80016D44(D_800559CC); break;
+        case 5: func_80016D44(D_80055A04); break;
+        case 6: func_80016D44(D_80055A3C); break;
+        case 7: func_80016D44(D_80055A74); break;
+        case 8: func_80016D44(D_80055AAC); break;
+        }
+    }
+    ((Ovl6aGameView *)D_8005A614)->unk50 = 9;
+    ((Ovl6aGameView *)D_8005A614)->unk51 = 9;
+    ((Ovl6aGameView *)D_8005A614)->unk52 = 9;
+    ((Ovl6aGameView *)D_8005A614)->unk53 = 9;
+    D_800BD5B0 = 0;
+    ((Ovl6aGameView *)D_8005A614)->unk32 |= 0x200;
+    func_800B8AA4();
+    func_800B8BC8();
+    *(s32 *)&D_8005A5E8[((Ovl6aGameView *)D_8005A614)->unk8] = 0xCD;
+    ((Ovl6aGameView *)D_8005A614)->unk3C = 0xCD;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B88B8);
 
