@@ -19,7 +19,53 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B4880);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B4AE8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B4D9C);
+s32 func_800B4D9C(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2) {
+    s32 lim = 0x980;
+    s32 x, z;
+    s32 a;
+
+    if (arg2 != 0) {
+        lim = 0xC00;
+    }
+    x = arg0->x;
+    z = arg0->z;
+    if (x * x + z * z > lim * lim) {
+        a = get_angle(-x, -z) + 0x200;
+        a &= 0xC00;
+        if (a == 0x400) {
+            arg1->dir = D_800C2720;
+            return 1;
+        } else if (a == 0x800) {
+            arg1->dir = D_800C2724;
+            return 1;
+        } else if (a == 0xC00) {
+            arg1->dir = D_800C271C;
+            return 1;
+        } else {
+            arg1->dir = D_800C2728;
+            return 1;
+        }
+    }
+    if (arg2 != 0) {
+        s16 d = arg1->dir;
+        if (d == D_800C2724 || d == D_800C2728) {
+            if (x >= 0x601) {
+                arg0->x = 0x600;
+            }
+            if (arg0->x < -0x600) {
+                arg0->x = -0x600;
+            }
+        } else {
+            if (z >= 0x601) {
+                arg0->z = 0x600;
+            }
+            if (arg0->z < -0x600) {
+                arg0->z = -0x600;
+            }
+        }
+    }
+    return 0;
+}
 
 s32 func_800B4EFC(Ovl61Obj *arg0) {
     Ovl61Circle *base = D_800C1A7C;
