@@ -1847,7 +1847,54 @@ void func_800BABEC(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BB038);
+void func_800BB038(void) {
+    subengine *s;
+    s32 i;
+    SubInit *p;
+    SubInitList *list;
+    Ovl6aEntry12 *new_var;
+
+    D_800BF100 = EngineTemplate;
+    D_800BF19C = 0;
+    D_800BF1A0 = 0;
+    D_800BF19C = 0;
+    D_800BF1A0 = 0;
+    i = 0;
+    func_8001D334(D_800BF100.sub);
+    func_8001D3B0(&D_800BF100, 0x21, D_800BDB58);
+    s = D_800BDB58;
+    list = (SubInitList *)D_800BD7E0;
+    p = list->items;
+    D_800BF100.unk10.x = 0xC4;
+    D_800BF100.unk10.y = 0xBE;
+    D_800BF100.flags |= 0x10000000;
+    if (i < list->count) {
+        do {
+            func_80095F48((s32 *)s, p->a, p->b, p->c, 0);
+            p++;
+            s++;
+            i++;
+        } while (i < list->count);
+    }
+    D_800BDB50 = 0;
+    for (D_800BF1A4 = 7; D_800BF1A4 > 0; D_800BF1A4--) {
+        if (D_8005A614[D_800BF1A4 + 0x18] != 0x20) {
+            break;
+        }
+    }
+    if (D_800BF1A4 > 0) {
+        new_var = &D_800BD7E0[D_800BF1A0];
+        D_800BF19C = (*new_var).unk8;
+    }
+    func_8001E588(D_8009F644, -0x300, 0);
+    func_80014388(D_800BF1A8);
+    func_80095BEC(0, D_800BD8B0);
+    GetEngineSlot(0)->unk10.x = 0xC8;
+    GetEngineSlot(0)->unk10.y = 0x6E;
+    func_80095BEC(1, D_800BD7FC);
+    GetEngineSlot(1)->unk10.x = 0;
+    GetEngineSlot(1)->unk10.y = 0;
+}
 
 void func_800BB280(void) {
     s32 i;

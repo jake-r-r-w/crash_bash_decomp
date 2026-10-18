@@ -439,6 +439,9 @@ extern subengine D_800BDB58[];
 
 void func_800BB4AC(SubInitList *list);
 
+extern s32 D_800BD8B0[];
+extern s32 D_800BD7FC[];
+
 void func_800BB584(void);
 
 void func_800BBE1C(void);
@@ -538,5 +541,7 @@ void func_800BA374(Ovl6aSparks *arg0, MATRIX *m);
 void func_800BA9C8(s32 arg0, Ovl6aSpawnEnt *arg1);
 
 void func_800BABEC(void);
+
+void func_800BB038(void);
 
 #endif /* BASH_OVL6A_800B4EAC_H */
