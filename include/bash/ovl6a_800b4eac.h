@@ -42,6 +42,8 @@ void func_800B7FAC(s32 arg0);
 
 void func_800B7FD0(u8 *cam, s32 arg1);
 
+void func_800B8148(s32 arg0);
+
 s32 func_800B821C(void);
 
 s32 func_800B8224(void);

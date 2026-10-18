@@ -199,7 +199,9 @@ void func_800B7FD0(u8 *cam, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B8098);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B8148);
+void func_800B8148(s32 arg0) {
+    Heroes[arg0].hero_idle_count = 0xF;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B8174);
 
