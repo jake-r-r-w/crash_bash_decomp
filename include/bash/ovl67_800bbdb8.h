@@ -10,6 +10,8 @@
 
 void func_800BC6B8(void);
 
+void func_800C2904(s32 *arg0, s32 flag, s32 *out);
+
 void func_800C2E58(void);
 
 s32 func_800C2F70(void);

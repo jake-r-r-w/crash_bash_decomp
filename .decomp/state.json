@@ -8770,7 +8770,8 @@
  },
  "ovl67:800C2904": {
   "auto_diff": 3,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-18T16:32:43Z",
+  "status": "matched"
  },
  "ovl67:800C29F4": {
   "auto_failed": "compile"
@@ -9468,7 +9469,9 @@
  },
  "ovl6a:800B7988": {
   "auto_diff": 3,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-18T16:32:59Z",
+  "status": "matched",
+  "via": "copy"
  },
  "ovl6a:800B7A78": {
   "matched_at": "2026-10-10T10:16:46Z",

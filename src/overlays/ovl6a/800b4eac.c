@@ -4,6 +4,7 @@
 #include "bash/ovl6a.h"
 #include "bash/ovl6a_800b4eac.h"
 #include "bash/hub.h"
+#include "bash/n2o.h"
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B4EAC);
 
@@ -36,7 +37,29 @@ void func_800B7874(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B787C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B7988);
+void func_800B7988(s32 *arg0, s32 flag, s32 *out) {
+    s32 *p = arg0;
+    s32 dx;
+    s32 dy;
+    s32 dz;
+    s32 dist;
+    s32 *q;
+
+    if (p[5] & 0x2000) {
+        p -= 7;
+    }
+    dx = p[0] - p[7];
+    q = p + 7;
+    dz = p[2] - q[2];
+    dy = p[1] - q[1];
+    dist = csqrt(dx * dx + dz * dz) >> 6;
+    out[1] = get_angle(dx, dz) + (flag << 11);
+    if (flag != 0) {
+        out[0] = get_angle(dy, dist);
+        return;
+    }
+    out[0] = -get_angle(dy, dist);
+}
 
 void func_800B7A78(void) {
     D_800BCEE8 = func_8001DCD4(1, 0x14);

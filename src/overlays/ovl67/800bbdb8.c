@@ -90,7 +90,29 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", InitLaserShoot);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", InitMineSFX);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C2904);
+void func_800C2904(s32 *arg0, s32 flag, s32 *out) {
+    s32 *p = arg0;
+    s32 dx;
+    s32 dy;
+    s32 dz;
+    s32 dist;
+    s32 *q;
+
+    if (p[5] & 0x2000) {
+        p -= 7;
+    }
+    dx = p[0] - p[7];
+    q = p + 7;
+    dz = p[2] - q[2];
+    dy = p[1] - q[1];
+    dist = csqrt(dx * dx + dz * dz) >> 6;
+    out[1] = get_angle(dx, dz) + (flag << 11);
+    if (flag != 0) {
+        out[0] = get_angle(dy, dist);
+        return;
+    }
+    out[0] = -get_angle(dy, dist);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", InitNitroMissile);
 
