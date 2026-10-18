@@ -404,5 +404,39 @@ s32 func_800B7C60(s32 arg0, Ovl61Pos *from, Ovl61Pos *to, s32 angle);
 
 s32 func_800B808C(s32 arg0, Ovl61Pos *from, Ovl61Pos *to, s32 angle);
 extern Ovl61Edge D_800C1940[4];
+/* A scene object as func_800BC564 sorts it (list at GfxScene.objs). */
+typedef struct Ovl61ScnObj {
+    u32 flags;
+    u8 pad4[0x5C - 0x4];
+    struct Ovl61ScnObj *next; /* 0x5C */
+    u8 pad60[0x68 - 0x60];
+    s16 unk68;
+    u8 pad6A[2];
+    u8 *unk6C;
+    u8 pad70[4];
+    u16 unk74;
+} Ovl61ScnObj;
+
+/* The 0x14-byte link slots func_800BC564 fills (D_800C1CE8, D_800C1D38...). */
+typedef struct {
+    Ovl61ScnObj *a;
+    Ovl61ScnObj *b;
+    u16 unk8;
+    u16 unkA;
+    u16 unkC;
+    u16 unkE;
+    u16 unk10;
+    u16 unk12;
+} Ovl61Link;
+
+extern Ovl61ScnObj *D_800C1C98[10];
+extern Ovl61ScnObj *D_800C1CC0[10];
+extern Ovl61Link D_800C1CE8[4];
+extern u16 D_800C1410[];
+extern u16 D_800C1420[];
+extern u16 D_800C1430[];
+extern u16 D_800C1464[][3];
+
+void func_800BC564(void);
 
 #endif /* BASH_OVL61_H */

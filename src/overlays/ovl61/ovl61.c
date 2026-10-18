@@ -2621,7 +2621,135 @@ end:
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BC0D8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BC564);
+#define LINK(x) ((Ovl61Link *)(x))
+
+void func_800BC564(void) {
+    s32 i;
+    Ovl61ScnObj *obj;
+    s16 *p;
+    s32 t;
+    s32 t60;
+    u32 k;
+
+    for (i = 9; i >= 0; i--) {
+        D_800C1C98[i] = 0;
+    }
+    for (i = 9; i >= 0; i--) {
+        D_800C1CC0[i] = 0;
+    }
+    for (i = 0; i < 4; i++) {
+        D_800C1CE8[i].a = 0;
+        D_800C1CE8[i].unkA = 0;
+        D_800C1CE8[i].unk12 = 0;
+        D_800C1CE8[i].unk10 = 0;
+        LINK(D_800C1E28)[i].a = 0;
+        LINK(D_800C1E28)[i].b = 0;
+        LINK(D_800C1E28)[i].unkE = 0;
+        LINK(D_800C1E28)[i].unk8 = 0;
+        LINK(D_800C1E28)[i].unkE = 0;
+        LINK(D_800C1E28)[i].unk8 = 0;
+        LINK(D_800C1E28)[i].unk12 = 0;
+        LINK(D_800C1D38)[i].a = 0;
+        LINK(D_800C1D38)[i].b = 0;
+        LINK(D_800C1D38)[i].unkE = 0;
+        LINK(D_800C1D38)[i].unk8 = 0;
+        LINK(D_800C1D38)[i].unkE = 0;
+        LINK(D_800C1D38)[i].unk8 = 0;
+        LINK(D_800C1D38)[i].unk12 = 0;
+        LINK(D_800C1D88)[i].a = 0;
+        LINK(D_800C1D88)[i].b = 0;
+        LINK(D_800C1D88)[i].unkE = 0;
+        LINK(D_800C1D88)[i].unk8 = 0;
+        LINK(D_800C1D88)[i].unkE = 0;
+        LINK(D_800C1D88)[i].unk8 = 0;
+        LINK(D_800C1D88)[i].unk12 = 0;
+        LINK(D_800C1DD8)[i].a = 0;
+        LINK(D_800C1DD8)[i].b = 0;
+        LINK(D_800C1DD8)[i].unkE = 0;
+        LINK(D_800C1DD8)[i].unk8 = 0;
+        LINK(D_800C1DD8)[i].unkE = 0;
+        LINK(D_800C1DD8)[i].unk8 = 0;
+        LINK(D_800C1DD8)[i].unk12 = 0;
+        D_800C1E78[i].pad0 = 0;
+        D_800C1E78[i].f4 = 0;
+        D_800C1E78[i].f8 = 0x60;
+        D_800C1E78[i].fC = 0;
+        D_800C1E78[i].f10 = 0;
+        D_800C1E78[i].f14 = 0;
+        D_800C1E78[i].f18 = 0;
+        D_800C1E78[i].f1A = 0;
+    }
+    for (obj = (Ovl61ScnObj *)((GfxScene *)D_80058AD0)->objs; obj != 0; obj = obj->next) {
+        p = (s16 *)func_80015870(obj->unk6C, obj->unk74);
+        k = *p;
+        if (k - 1 < 9) {
+            D_800C1C98[k] = obj;
+        }
+        k = *p - 10;
+        if (k < 4) {
+            D_800C1CE8[k].a = obj;
+            D_800C1CE8[k].unkA = obj->unk74;
+            obj->unk68 = 0x44;
+            obj->flags |= 0x2000000;
+        }
+        k = *p - 20;
+        if (k < 4) {
+            LINK(D_800C1E28)[k].a = obj;
+            LINK(D_800C1E28)[k].unk8 = obj->unk74;
+            switch (((Ovl61ModeView *)D_8005A614)->unk34) {
+            case 14:
+                LINK(D_800C1E28)[k].unkA = D_800C1410[k];
+                break;
+            case 16:
+                LINK(D_800C1E28)[k].unkA = D_800C1430[k];
+                break;
+            }
+        }
+        t = *p;
+        k = t - 30;
+        if (k < 4) {
+            LINK(D_800C1E28)[k].b = obj;
+            LINK(D_800C1E28)[k].unkC = obj->unk74;
+            switch (((Ovl61ModeView *)D_8005A614)->unk34) {
+            case 14:
+                LINK(D_800C1E28)[k].unkE = D_800C1410[t - 26];
+                break;
+            case 16:
+                LINK(D_800C1E28)[k].unkE = D_800C1430[t - 26];
+                break;
+            }
+        }
+        k = *p - 50;
+        if (k < 4) {
+            LINK(D_800C1D38)[k].a = obj;
+            LINK(D_800C1D38)[k].unk8 = obj->unk74;
+            LINK(D_800C1D38)[k].unkA = D_800C1420[k];
+        }
+        t60 = *p;
+        k = t60 - 60;
+        if (k < 4) {
+            LINK(D_800C1D38)[k].b = obj;
+            LINK(D_800C1D38)[k].unkC = obj->unk74;
+            LINK(D_800C1D38)[k].unkE = D_800C1420[t60 - 56];
+        }
+        k = *p - 80;
+        if (k < 4) {
+            LINK(D_800C1DD8)[k].a = obj;
+            LINK(D_800C1DD8)[k].unkA = obj->unk74;
+            LINK(D_800C1DD8)[k].unkE = D_800C1464[k][0];
+        }
+        k = *p - 90;
+        if (k < 4) {
+            LINK(D_800C1D88)[k].a = obj;
+            LINK(D_800C1D88)[k].unkA = obj->unk74;
+            obj->flags &= ~0x8000;
+        }
+        k = *p - 100;
+        if (k < 10) {
+            D_800C1CC0[k] = obj;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BCA30);
 
