@@ -234,7 +234,13 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B8284);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B8324);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B838C);
+void func_800B838C(s32 arg0) {
+    EXTengine *s = Heroes[arg0].hero_shadow;
+
+    if (s != NULL) {
+        s->flags &= 0xFFFF7FFF;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B83D4);
 
