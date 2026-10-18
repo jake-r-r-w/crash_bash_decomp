@@ -1091,7 +1091,79 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B90F4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B92D4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", InitN2ODeadWall);
+void InitN2ODeadWall(NAS *nas)
+{
+    EXTengine *eng;
+    subengine *sub;
+    u32 dir;
+    s32 off;
+
+    if (D_8005A644 & 0x801) {
+        D_800C438A &= ~nas->UserInfo.flags;
+        KillNAS(nas);
+        return;
+    }
+    eng = nas->Engine;
+    if (eng != 0) {
+        dir = eng->unk10.x;
+        eng->flags &= 0xFFFF7FFF;
+        if (dir == 3) {
+            eng->unk10.x = -0x600;
+            eng->unk10.z = 0x880;
+            eng->unk1C = 0x38E;
+            eng->unk1E = 0;
+            nas->UserInfo.flags = 2;
+            D_800C438A |= 2;
+        }
+        if (dir < 2) {
+            eng->unk10.x = -0x600;
+            eng->unk10.z = -0x880;
+            eng->unk1C = 0x200;
+            eng->unk1E = 0;
+            nas->UserInfo.flags = 1;
+            D_800C438A |= 1;
+        }
+        if (dir == 4) {
+            eng->unk10.x = -0x880;
+            eng->unk10.z = -0x600;
+            eng->unk1E = 0xC00;
+            eng->unk20 = 0;
+            nas->UserInfo.flags = dir;
+            D_800C438A |= 4;
+        }
+        if (dir == 5) {
+            eng->unk10.x = 0x880;
+            eng->unk10.z = -0x600;
+            eng->unk1E = 0xC00;
+            eng->unk20 = 0;
+            nas->UserInfo.flags = 8;
+            D_800C438A |= 8;
+        }
+        eng->unk5D = 2;
+        eng->unk5E = 1;
+        if (D_800C438C == 0) {
+            PlaySfx(0x591, &eng->sfx, 0, 0x1000, 0x1E00, 0);
+        }
+        D_800C438C = 1;
+        func_80018F3C(eng, 5);
+        sub = eng->sub;
+        off = 0;
+        if (sub != 0) {
+            do {
+                sub->unk6C = D_80054504;
+                sub->unk74 = 0;
+                sub->unk04 = off;
+                sub->flags |= 0x21;
+                sub = sub->next;
+                off += 0x200;
+            } while (sub != 0);
+        }
+    }
+    nas->UserInfo.user1 = 4;
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 void func_800B9800(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r) {
     SLONG_XYZ start;

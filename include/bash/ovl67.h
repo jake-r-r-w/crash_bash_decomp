@@ -378,6 +378,8 @@ void func_800B4CE0(s32 arg0);
 
 void func_800B4E30(s32 arg0);
 
+void InitN2ODeadWall(NAS *nas);
+
 NAS *func_800BAAA8(void);
 
 s32 func_800B9B10(s32 arg0);
