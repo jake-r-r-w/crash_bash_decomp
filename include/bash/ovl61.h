@@ -7,6 +7,7 @@
 
 #include "common.h"
 #include "bash/nas.h"
+#include "bash/engine.h"
 
 typedef struct Ovl61Vel {
     u8 pad0[0x10];
@@ -34,6 +35,8 @@ void Plot_ArkLaserWall(NAS *nas);
 
 void func_800B84B8(void);
 void func_800BDD30(s32 arg0);
+
+void func_800C04B8(s32 arg0);
 
 s32 func_800C096C(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2);
 

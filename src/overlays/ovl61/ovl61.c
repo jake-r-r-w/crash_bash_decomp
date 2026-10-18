@@ -266,7 +266,10 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C039C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C0448);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C04B8);
+void func_800C04B8(s32 arg0) {
+    Heroes[arg0].hero_frozen = 5;
+    func_8008502C();
+}
 
 void func_800C04FC(s32 arg0) {
     func_800B62F4();
