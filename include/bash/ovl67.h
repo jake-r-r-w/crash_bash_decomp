@@ -328,4 +328,47 @@ void func_800B6E6C(Ovl67Blend *p);
 
 s32 func_800B8058(s32 arg0);
 
+/* D_8005A614 as seen by func_800B34A4. */
+typedef struct Ovl67Game {
+    /* 0x00 */ u8 pad0[0x32];
+    /* 0x32 */ u16 unk32;
+    /* 0x34 */ u8 pad34[0x1D];
+    /* 0x51 */ u8 unk51;
+    /* 0x52 */ u8 unk52;
+    /* 0x53 */ u8 unk53;
+    /* 0x54 */ u8 pad54[0x18];
+    /* 0x6C */ s32 unk6C;
+} Ovl67Game;
+#define OVG ((Ovl67Game *)D_8005A614)
+
+/* D_8009D6E8 (EngineHooks in bash/engine.h, which this unit does not include). */
+typedef struct Ovl67Hooks {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ void *unk4;
+    /* 0x08 */ u8 pad8[0xC];
+    /* 0x14 */ void *unk14;
+    /* 0x18 */ void *unk18;
+    /* 0x1C */ void *unk1C;
+    /* 0x20 */ void *unk20;
+    /* 0x24 */ void *unk24;
+    /* 0x28 */ u8 pad28[4];
+    /* 0x2C */ void *unk2C;
+    /* 0x30 */ u8 pad30[0x38];
+    /* 0x68 */ void *unk68;
+} Ovl67Hooks;
+extern Ovl67Hooks D_8009D6E8;
+extern void *D_8009D8FC;
+extern s16 D_8009E0D8;
+extern s16 D_8009E0E2;
+extern s32 D_800C4498;
+extern s32 D_800C45F0;
+extern u8 D_800C403C[];
+extern u8 D_800C3774[];
+extern u8 D_800C3E30[];
+extern u8 D_800C3E70[];
+void func_800B3E74(void);
+void func_800B46DC(void);
+void func_800BEB68(void);
+void func_800BF0AC(void);
+
 #endif /* BASH_OVL67_H */

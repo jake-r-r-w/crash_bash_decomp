@@ -4,7 +4,40 @@
 #include "bash/n2o.h"
 #include "bash/arkenoid.h"
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B34A4);
+void func_800B34A4(void) {
+    D_800C45F0 = 0;
+    if (!(D_8005A644 & 0x200)) {
+        D_800C417A = 0;
+    }
+    if (D_800C417A == 1) {
+        D_8009D6E8.unk20 = (void *)func_800B447C;
+        D_8009D6E8.unk68 = (void *)func_800B3888;
+        D_8009D6E8.unk24 = (void *)func_800B46DC;
+        D_8009D6E8.unk18 = (void *)func_800BBB10;
+        D_8009D6E8.unk1C = (void *)func_800BBA4C;
+    } else {
+        D_8009D6E8.unk20 = (void *)func_800BEB68;
+        D_8009D6E8.unk24 = (void *)func_800BF0AC;
+        D_8009D6E8.unk68 = (void *)func_800C2F70;
+        D_8009D6E8.unk2C = (void *)func_800C2EF8;
+        D_8009D6E8.unk18 = (void *)func_800C36DC;
+        D_8009D6E8.unk1C = (void *)func_800C36D4;
+        D_800C4498 = 0;
+    }
+    D_8009D6E8.unk0 = (s32)func_800B3E74;
+    D_8009D6E8.unk4 = D_800C403C;
+    D_8009D6E8.unk14 = D_800C3774;
+    D_8009E0D8 = 0x2A;
+    D_8009E0E2 = 0x2E;
+    D_8005AA94 = (void *)func_800BB05C;
+    OVG->unk32 |= 0x100;
+    if (OVG->unk6C == 0) {
+        OVG->unk51 = 9;
+    }
+    OVG->unk52 = 9;
+    OVG->unk53 = 9;
+    D_8009D8FC = OVG->unk6C != 0 ? D_800C3E70 : D_800C3E30;
+}
 
 void func_800B361C(void) {
     HeroInfo *h;
