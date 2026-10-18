@@ -12,6 +12,14 @@
 extern HeroInfo Heroes[4];
 extern char D_80054504[];
 
+typedef struct Ovl61HeroBox {
+    s32 a, b, c, d;
+    s32 x0, y0, z0;
+    s32 x1, y1, z1;
+} Ovl61HeroBox;
+
+extern Ovl61HeroBox D_800C1A88[];
+
 typedef struct Ovl61Vel {
     u8 pad0[0x10];
     s32 x;
@@ -215,6 +223,8 @@ typedef struct Ovl61Mot {
     s16 lim;
     s16 dir;
 } Ovl61Mot;
+
+void func_800B3528(s32 arg0);
 
 s32 func_800B4D9C(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2);
 

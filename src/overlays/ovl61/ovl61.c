@@ -3,7 +3,56 @@
 #include "bash/ovl61.h"
 #include "bash/arkenoid.h"
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B3528);
+void func_800B3528(s32 arg0) {
+    VECTOR sp10;
+    VECTOR *v;
+    HeroInfo *h;
+    EXTengine *e = (&Heroes[arg0])->hero_eng;
+    FlagRecord *r;
+    Ovl61HeroBox *b;
+    Ovl61HeroBox *base;
+    s32 t;
+
+    if (e->unk5E != 0) {
+        func_800142D4(&e->unk1C);
+    }
+    func_8001CD04(e->sub, e->unk3C, &e->unk10);
+    do {
+        r = func_80025A48(e, 1);
+        if (r == NULL) goto next;
+    } while (0);
+    {
+        base = D_800C1A88;
+        b = (Ovl61HeroBox *)(arg0 << 2);
+        b = (Ovl61HeroBox *)((s32)b + arg0);
+        b = (Ovl61HeroBox *)((s32)b << 3);
+        b = (Ovl61HeroBox *)((s32)base + (s32)b);
+        t = r->unk2;
+        b->a = t;
+        b->b = r->height;
+        b->c = r->radius;
+        func_80015758((SVECTOR *)r, &sp10);
+        b->x0 = sp10.vx - (&Heroes[arg0])->hero_eng->unk10.x;
+        b->y0 = sp10.vy - (&Heroes[arg0])->hero_eng->unk10.y;
+        b->z0 = sp10.vz - (&Heroes[arg0])->hero_eng->unk10.z;
+    }
+next:
+    r = func_80025A48(e, 2);
+    v = &sp10;
+    if (r != NULL) {
+        base = D_800C1A88;
+        b = (Ovl61HeroBox *)(arg0 << 2);
+        b = (Ovl61HeroBox *)((s32)b + arg0);
+        b = (Ovl61HeroBox *)((s32)b << 3);
+        t = r->radius;
+        b = (Ovl61HeroBox *)((s32)base + (s32)b);
+        b->d = t;
+        func_80015758((SVECTOR *)r, v);
+        b->x1 = sp10.vx - (&Heroes[arg0])->hero_eng->unk10.x;
+        b->y1 = sp10.vy - (&Heroes[arg0])->hero_eng->unk10.y;
+        b->z1 = sp10.vz - (&Heroes[arg0])->hero_eng->unk10.z;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B36CC);
 

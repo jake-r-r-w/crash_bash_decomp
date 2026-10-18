@@ -6185,7 +6185,8 @@
   "auto_failed": "m2c"
  },
  "ovl61:800B3528": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-18T11:47:05Z",
+  "status": "matched"
  },
  "ovl61:800B36CC": {
   "auto_failed": "compile"
@@ -8392,7 +8393,9 @@
   "copy_failed_stage": "in-file"
  },
  "ovl67:800B3CD0": {
-  "auto_failed": "types"
+  "auto_failed": "types",
+  "copy_failed": "ovl61:800B3528",
+  "copy_failed_stage": "in-file"
  },
  "ovl67:800B3E74": {
   "auto_failed": "types"
