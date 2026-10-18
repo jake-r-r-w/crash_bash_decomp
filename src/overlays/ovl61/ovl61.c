@@ -58,7 +58,74 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B36CC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B3B20);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B40AC);
+void func_800B40AC(void) {
+    s32 i;
+    s32 best;
+    s32 k;
+    u8 *ao;
+    u16 *c2;
+    NAS *n;
+    Ovl61FuxType *f;
+    u16 *cnt;
+
+    func_80086F78();
+    if ((D_8005A644 & 0x801) && D_800C1C88 != 0) {
+        D_800C1C88 = D_800C1C88 - 1;
+    }
+    i = 12;
+    if (D_8009D908 != 0) {
+        if (D_800C1C80 == -1) {
+            best = 99;
+            for (i = 0; i < 4; i++) {
+                D_8009D87C[i].unk4 = 4;
+                D_8009D87C[i].unk0 = 32;
+                if (!(Heroes[i].hero_status & 0xFA00) && Heroes[i].hero_score < best) {
+                    best = Heroes[i].hero_score;
+                    D_800C1C80 = i;
+                }
+            }
+            if (D_800C1C80 != -1 && D_800C1C80 < 4) {
+                D_8009D87C[D_800C1C80].unk4 = 32;
+                D_8009D87C[D_800C1C80].unk0 = 0;
+            }
+            i = 12;
+        }
+    }
+    {
+        u16 *p = (u16 *)&D_8009E25C;
+        p += 12;
+        do {
+            *p = 0;
+            i--;
+            p--;
+        } while (i >= 0);
+    }
+    for (n = D_8005AA24; n != NULL; n = n->Object.Child) {
+        f = (Ovl61FuxType *)n->FUX;
+        if (f != NULL && (u16)(f->type - 0x11) < 0xC) {
+            D_8009E25C.n++;
+            k = f->type - 0x10;
+            cnt = (u16 *)&D_8009E25C;
+            cnt[k]++;
+            if ((u16)(f->type - 0x12) < 4) {
+                c2 = D_8009E46C;
+                c2[1]++;
+            }
+        }
+    }
+    func_800BC0D8();
+    func_800BCA30();
+    if (D_8005A648 != 0x10) {
+        if (D_8005A648 >= 0x11) {
+            if (D_8005A648 == 0x11) {
+                func_800BD510();
+            }
+        }
+    }
+    ao = (u8 *)D_80054504;
+    ao += 0x10;
+    func_80029100((AnimOwner *)ao);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B42F4);
 

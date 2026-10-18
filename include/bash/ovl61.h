@@ -69,6 +69,17 @@ typedef struct Ovl61Cnt {
 } Ovl61Cnt;
 
 extern Ovl61Cnt D_8009E25C;
+extern s32 D_800C1C80;
+extern u16 D_8009E46C[];
+
+typedef struct Ovl61FuxType {
+    u8 pad0[0x14];
+    u16 type;
+} Ovl61FuxType;
+
+void func_800BC0D8(void);
+void func_800BCA30(void);
+void func_800BD510(void);
 
 void Plot_ArkLaserWall(NAS *nas);
 
@@ -160,7 +171,7 @@ void func_800C0B8C(void);
 
 extern char func_800B36CC[];
 extern char func_800B3B20[];
-extern char func_800B40AC[];
+void func_800B40AC(void);
 void func_800B9728(void);
 
 void func_800B69E8(s32 arg0);
