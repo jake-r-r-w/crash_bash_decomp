@@ -253,8 +253,8 @@ extern u8 D_8005A676;
 extern s32 D_8009EDD4[][5];
 extern u16 D_800986FC[];
 extern u16 D_800986BC[];
-typedef struct { u8 pad0[2]; u16 unk2; u16 unk4; u16 unk6; } EngSub90248;
-typedef struct { u8 pad0[0x10]; s32 unk10; EngSub90248 *unk14; u8 pad18[8]; s32 unk20; u8 pad24[4]; } EngRec90248;
+typedef struct { u16 unk0; u16 unk2; u16 unk4; u16 unk6; } EngSub90248;
+typedef struct { s32 *unk0; s32 *unk4; s32 unk8; s32 unkC; s32 unk10; EngSub90248 *unk14; u8 *unk18; s32 unk1C; s32 unk20; s32 unk24; } EngRec90248;
 extern s8 D_8005A677;
 extern EngRec90248 D_800BCCF4[];
 

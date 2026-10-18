@@ -11,7 +11,108 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B4EAC);
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl6a/800b4eac", D_800B330C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B5158);
+void func_800B5158(void) {
+    s32 i;
+    EngRec90248 *p;
+    u8 *o;
+    u8 *obj;
+    EngSub90248 *e;
+    Vec3W ref;
+    Vec3W d;
+
+    for (i = 0; i < 12; i++) {
+        D_800BCCF4[i].unk0 = NULL;
+        D_800BCCF4[i].unk4 = NULL;
+        D_800BCCF4[i].unk18 = NULL;
+        D_800BCCF4[i].unk8 = 0;
+        D_800BCCF4[i].unkC = 0;
+        D_800BCCF4[i].unk10 = 0;
+        D_800BCCF4[i].unk14 = NULL;
+        D_800BCCF4[i].unk1C = 0;
+        D_800BCCF4[i].unk20 = 0;
+        D_800BCCF4[i].unk24 = 0;
+    }
+    o = *(u8 **)((u8 *)D_80058AD0 + 0x1C);
+    for (;;) {
+        s32 k;
+        void *g;
+        EngRec90248 *q;
+
+        if (o == NULL) {
+            break;
+        }
+        i = o[0x65] - 1;
+        if ((u32)i < 12) {
+            switch (o[0x64]) {
+            case 1:
+                D_800BCCF4[i].unk0 = (s32 *)o;
+                break;
+            case 2:
+                D_800BCCF4[i].unk4 = (s32 *)o;
+                break;
+            case 3:
+                break;
+            case 5:
+                break;
+            case 4:
+                q = &D_800BCCF4[i];
+                q->unk18 = o;
+                k = *(s32 *)o;
+                g = D_80058AD0;
+                *(void **)(o + 0x54) = func_800BBE24;
+                *(s32 *)o = k & ~0x8000;
+                q->unk24 = func_80015984(*(u16 *)(o + 0x74), *(EntryBlock **)(*(u8 **)g + 0xC));
+                break;
+            }
+        }
+        o = *(u8 **)(o + 0x5C);
+    }
+    for (e = (EngSub90248 *)D_8009EDD4[D_8005A676][1]; e->unk0 != 0; e++) {
+        i = e->unk0 - 1;
+        p = &D_800BCCF4[i];
+        p->unk14 = e;
+        if (e->unk6 & 1) {
+            if (p->unk0 != NULL) {
+                *p->unk0 |= 0x8000;
+            }
+            if (p->unk4 != NULL) {
+                *p->unk4 |= 0x8000;
+            }
+        } else {
+            if (p->unk0 != NULL) {
+                *p->unk0 &= ~0x8000;
+            }
+            if (p->unk4 != NULL) {
+                *p->unk4 &= ~0x8000;
+            }
+        }
+    }
+    ref = *(Vec3W *)((u8 *)func_8001E48C(2) + 0x30);
+    i = 0;
+    for (;;) {
+        s32 k;
+
+        if (i >= 12) {
+            break;
+        }
+        p = &D_800BCCF4[i];
+        if (p->unk14 != NULL) {
+            obj = (u8 *)func_8001E48C(i + 0x65);
+            if (obj != NULL) {
+                d = *(Vec3W *)(obj + 0x30);
+                d.a -= ref.a;
+                d.c -= ref.c;
+                p->unk8 = csqrt(d.a * d.a + d.c * d.c) >> 6;
+                p->unk10 = get_angle(d.a, d.c);
+                d = *(Vec3W *)(obj + 0x4C);
+                d.a -= ref.a;
+                d.c -= ref.c;
+                p->unkC = csqrt(d.a * d.a + d.c * d.c) >> 6;
+            }
+        }
+        i++;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B551C);
 

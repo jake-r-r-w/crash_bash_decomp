@@ -9,6 +9,8 @@
 #include "bash/ovl6a.h"
 
 extern s32 D_800BD5A8;
+void func_800BBE24();
+
 extern s32 D_800BF260;
 extern s32 D_800BCEF0;
 extern EXTengine D_800BF100;
@@ -348,6 +350,8 @@ typedef struct Ovl6aRenderObj {
 
 extern u8 D_800BF264[];
 extern u8 D_800C7264[];
+void func_800B5158(void);
+
 void func_800BB5F0(Ovl6aRenderObj *obj, s16 *out);
 void func_800BBC64(s16 *a, void *b, s32 c, s32 d);
 void func_800BBE24(Ovl6aRenderObj *obj, void *arg1);
