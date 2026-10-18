@@ -432,7 +432,177 @@ void func_800B6E20(void) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl6a/800b4eac", D_800B3618);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B6FD4);
+static inline void PathFace(KeyEntry *k, s32 dir, PathRot *ang) {
+    s32 dx;
+    s32 dy;
+    s32 dz;
+    s32 dist;
+    KeyEntry *n;
+
+    if (k->flags & 0x2000) {
+        k--;
+    }
+    n = k + 1;
+    dx = k->pos.x - n->pos.x;
+    dz = k->pos.z - n->pos.z;
+    dy = k->pos.y - n->pos.y;
+    dist = csqrt(dx * dx + dz * dz) >> 6;
+    ang->y = get_angle(dx, dz) + (dir << 11);
+    if (dir != 0) {
+        ang->x = get_angle(dy, dist);
+    } else {
+        ang->x = -get_angle(dy, dist);
+    }
+}
+
+void func_800B6FD4(NAS *nas) {
+    PathExt *ext;
+    KeyEntry *k;
+    KeyEntry *old;
+    u32 flags;
+    s32 type;
+    s32 angle;
+    PathRot rot;
+
+    ext = FindExtension(nas, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    angle = ((-(get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF) - D_80051696) << 20) >> 20;
+    if (ext->kind < 4) {
+        if (abs(angle) > 0x400) {
+            nas->Engine->sub->flags &= 0xFFFF7FFF;
+        } else {
+            nas->Engine->sub->flags |= 0x8000;
+        }
+    }
+    nas->Engine->unk5E = 1;
+    switch (ext->state) {
+    case 0:
+        func_8001E21C(ext->path, ext->pos, &nas->Engine->unk10);
+        old = func_8001E41C(ext->path, 0);
+        ext->key = old;
+        if (ext->kind < 3) {
+            ext->keyFlags = old->flags;
+            ext->dir = 0;
+            PathFace(old, 0, &rot);
+            nas->Engine->unk1E = rot.y;
+            nas->Engine->unk1C = rot.x;
+            ext->state = 2;
+            ((void (*)(EXTanimator *, s32))func_80025FAC)(ext->anim, ext->kind * 2);
+            func_800250B0(nas);
+        }
+        if ((u32)(ext->kind - 3) < 2) {
+            ext->fx = SpawnNASById(nas->Engine->unk10.x, nas->Engine->unk10.y, nas->Engine->unk10.z, 0x1627, 0x11);
+            ext->state = 5;
+            nas->Engine->flags &= 0xFFFF7FFF;
+        }
+        break;
+    case 2:
+        if (ext->pos >= ext->path->count) {
+            ext->dir = 1;
+        }
+        if (ext->pos <= 0) {
+            ext->dir = 0;
+        }
+        flags = ext->key->flags;
+        if (ext->dir == 0) {
+            ext->pos = ext->pos + ext->speed;
+        } else {
+            ext->pos = ext->pos - ext->speed;
+        }
+        func_8001E21C(ext->path, ext->pos, &nas->Engine->unk10);
+        k = func_8001E41C(ext->path, ext->pos);
+        if (ext->dir == 0) {
+            type = ((u16 *)&k->flags)[1];
+            ext->key = k;
+        } else {
+            type = ((u16 *)&ext->key->flags)[1];
+            ext->key = k;
+        }
+        if (flags != k->flags) {
+            switch (type) {
+            case 1:
+                ext->timer = 0x5A;
+                ext->state = 3;
+                ((void (*)(EXTanimator *, s32))func_80025FAC)(ext->anim, (ext->kind * 2) | 1);
+                return;
+            case 2:
+                ext->timer = -1;
+                ext->state = 4;
+                return;
+            }
+        }
+        PathFace(k, ext->dir, &rot);
+        nas->Engine->unk1E = rot.y;
+        nas->Engine->unk1C = rot.x;
+        func_800250B0(nas);
+        return;
+    case 3:
+        if (ext->anim->Aindex != 0) {
+            func_800250B0(nas);
+        }
+        if (ext->timer-- < 0) {
+            ((void (*)(EXTanimator *, s32))func_80025FAC)(ext->anim, ext->kind * 2);
+            ext->state = 2;
+        }
+        break;
+    case 4:
+        func_800250B0(nas);
+        if (ext->timer-- < 0) {
+            if (Random(2) == 0) {
+                ext->dir = 0;
+            } else {
+                ext->dir = 1;
+            }
+            ext->state = 2;
+        }
+        break;
+    case 5:
+        if (ext->fx != NULL) {
+            if (ext->kind == 3) {
+                if ((u32)(angle - 0x101) < 0xFF) {
+                    if (ext->fx->UserInfo.user1 == 1) {
+                        s32 s = 0x1000 - Random(0x800);
+                        ext->fx->Engine->sub->unk20.x = s;
+                        ext->fx->Engine->sub->unk20.y = s;
+                        ext->fx->Engine->sub->unk20.z = s;
+                        ext->fx->UserInfo.user1 = 0;
+                        ext->fx->Engine->sub->unk52 = 1;
+                    }
+                    ext->fx->Engine->sub->unk76 = abs(0x180 - abs(angle)) << 5;
+                    ext->fx->Engine->sub->flags |= 0x8000;
+                } else {
+                    ext->fx->Engine->sub->flags &= 0xFFFF7FFF;
+                    ext->fx->UserInfo.user1 = 1;
+                }
+            }
+            if (ext->kind == 4) {
+                if (angle < -0x1FF) {
+                    goto off;
+                }
+                if (angle < -0x100) {
+                    if (ext->fx->UserInfo.user1 == 1) {
+                        s32 s = 0x1000 - Random(0x800);
+                        ext->fx->Engine->sub->unk20.x = s;
+                        ext->fx->Engine->sub->unk20.y = s;
+                        ext->fx->Engine->sub->unk20.z = s;
+                        ext->fx->UserInfo.user1 = 0;
+                        ext->fx->Engine->sub->unk52 = 1;
+                    }
+                    ext->fx->Engine->sub->unk76 = abs(0x180 - abs(angle)) << 5;
+                    ext->fx->Engine->sub->flags |= 0x8000;
+                } else {
+                off:
+                    ext->fx->Engine->sub->flags &= 0xFFFF7FFF;
+                    ext->fx->UserInfo.user1 = 1;
+                }
+            }
+        }
+        ext->absAngle = abs(angle);
+        break;
+    }
+}
 
 void func_800B77B0(NAS *nas) {
     ScriptExt40 *ext = AddExtension(nas, 0x40, 0x10000000);

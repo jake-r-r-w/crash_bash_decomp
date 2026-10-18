@@ -9603,7 +9603,8 @@
   "status": "matched"
  },
  "ovl6a:800B6FD4": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-18T19:50:54Z",
+  "status": "matched"
  },
  "ovl6a:800B77B0": {
   "matched_at": "2026-10-18T19:02:20Z",

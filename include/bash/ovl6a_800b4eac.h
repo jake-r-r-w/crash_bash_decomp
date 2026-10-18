@@ -577,5 +577,32 @@ void func_800BA9C8(s32 arg0, Ovl6aSpawnEnt *arg1);
 void func_800BABEC(void);
 
 void func_800BB038(void);
+/* Extension 0x10000000 of the path-following objects func_800B6E20 spawns
+ * (0x1626); func_800B6FD4 is their Plot. */
+typedef struct PathExt {
+    /* 0x00 */ u8 pad00[0xC];
+    /* 0x0C */ KeyBlock *path;
+    /* 0x10 */ u8 pad10[4];
+    /* 0x14 */ s32 state;
+    /* 0x18 */ s32 pos;
+    /* 0x1C */ u32 keyFlags;
+    /* 0x20 */ s32 dir;
+    /* 0x24 */ s32 speed;
+    /* 0x28 */ KeyEntry *key;
+    /* 0x2C */ EXTanimator *anim;
+    /* 0x30 */ s32 timer;
+    /* 0x34 */ s32 kind;
+    /* 0x38 */ NAS *fx;
+    /* 0x3C */ s32 absAngle;
+} PathExt;
+
+/* func_800B6FD4's rotation buffer (x pitch, y yaw). */
+typedef struct PathRot {
+    s32 x, y, z, pad;
+} PathRot;
+
+extern s16 D_80051696;
+
+void func_800B6FD4(NAS *nas);
 
 #endif /* BASH_OVL6A_800B4EAC_H */
