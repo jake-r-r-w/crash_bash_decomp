@@ -19,6 +19,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
   ovl61 55 of 90 (2026-10-18 swarm run),
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
+- Dashboard (2026-10-18): `docs/index.html` is `tools/scripts/dashboard.html` plus
+  the data; a live Swarm card from the git-ignored `docs/swarm.js` the swarm
+  writes (tools/swarm/README.md, Live status). `progress` takes ~2.5 s warm.
 - The engine overlay is six files and `ovl5d` three, `ovl5e`, `ovl66`,
   `ovl67`, `ovl6a` two each since 2026-10-15 (ARCHITECTURE.md, Files inside
   the engine / the slot overlays); main.c is still one file.
@@ -289,6 +292,9 @@ Other:
   fake parks in the swarm dir's `history.json`, which counts them as attempts
   and moves functions to big mode. If you ran one, delete the entries whose
   only notes say `dry run`.
+- **`dashboard.html` holds the data placeholder once.** `progress` puts the
+  data in place of every `/*DATA*/null` in the template (Python's
+  `str.replace`): one in a comment doubled the page. Name it some other way.
 - **Smoke-test swarm changes end to end** before a real run: a scripted
   `--worker-cmd` run against a local bare remote (`--remote <bare clone>
   --branch smoke --only KEY`) catches what the unit tests can't (clone setup,
@@ -450,6 +456,17 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-18 (dashboard):** `decomp.py progress` 10.8 s -> 2.4 s (every
+  `done` and each swarm batch paid it): the typed scan (a regex per matched
+  function, ~8 s) is cached per source file in `build/cache/typed.json`, and
+  the rodata cache key's mtimes are read once, not per segment. Same summary.
+  The page moved to `tools/scripts/dashboard.html`; it gets the history packed
+  (columns, per-unit changes only) and the code map: 474 KB -> 136 KB, ~160 ms
+  to load. New: per-day bars, a table view, a treemap of every game function
+  (click a unit to zoom), units with stacked bars and sparklines, largest left,
+  recent and parked lists. The swarm writes `docs/swarm.js` (`--page`), and
+  the page polls it as a script (works from `file://`). Smoke run (scripted
+  worker, bare remote) showed the card follow a run live; 2 new swarm tests.
 - **2026-10-18 (swarm):** ovl61 run 20261018104310, 80 min, $35.51: 55
   matched (about $0.65 each), 1 parked, stopped by hand with 35 left (see
   Next). Gotcha: `run --dry-run` writes its fake "parked: dry run" results

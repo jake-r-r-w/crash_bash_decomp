@@ -37,3 +37,6 @@ objdiff.json
 
 # Local working notes
 *.local.md
+
+# The dashboard's live swarm card, written by tools/swarm during a run
+docs/swarm.js

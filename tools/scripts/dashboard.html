@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Decomp Progress</title>
+<!-- decomp.py progress writes this page to docs/index.html with its data in place of the null after `const D=`.
+     docs/swarm.js (git-ignored, written by tools/swarm/swarm.mjs during a run) feeds the live swarm card. -->
+<style>
+:root{--page:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#898781;--grid:#e1e0d9;--axis:#c3c2b7;
+--s1:#2a78d6;--s2:#eb6834;--s3:#1f9e74;--s4:#8a63d2;--track:#ecebe7;--todo:#e1e0d9;--hover:#0b0b0b;--goodtx:#006300;
+--good:#0ca30c;--warn:#fab219;--serious:#ec835a;--bad:#d03b3b;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--page:#0d0d0d;--surface:#1a1a19;--ink:#f0efec;--ink2:#c3c2b7;
+--muted:#898781;--grid:#2c2c2a;--axis:#383835;--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#9d7be0;--track:#2c2c2a;--todo:#353533;
+--hover:#f0efec;--goodtx:#0ca30c;color-scheme:dark}}
+:root[data-theme="dark"]{--page:#0d0d0d;--surface:#1a1a19;--ink:#f0efec;--ink2:#c3c2b7;--muted:#898781;--grid:#2c2c2a;
+--axis:#383835;--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#9d7be0;--track:#2c2c2a;--todo:#353533;--hover:#f0efec;--goodtx:#0ca30c;
+color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1080px;margin:0 auto;padding:28px 16px 48px}
+h1{font-size:22px;margin:0}
+.sub{color:var(--ink2);font-size:13px;margin:4px 0 20px}
+h2{font-size:15px;margin:0 0 4px}
+.sub2{color:var(--ink2);font-size:12px;font-weight:600;margin:16px 0 8px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px}
+.card{background:var(--surface);border:1px solid var(--grid);border-radius:10px;padding:16px;min-width:0}
+.section{margin-top:16px}
+.label{color:var(--ink2);font-size:13px}
+.big{font-size:32px;font-weight:650;letter-spacing:-.01em}
+.small{color:var(--muted);font-size:12px}
+.delta{font-size:12px;margin-top:4px;color:var(--goodtx)}
+.delta.none{color:var(--muted)}
+.bar{height:8px;background:var(--track);border-radius:4px;overflow:hidden;margin-top:10px}
+.bar>span{display:block;height:100%;border-radius:4px}
+svg text{fill:var(--muted);font-size:11px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--ink2);margin:8px 0 6px}
+.legend i{display:inline-block;width:12px;height:2px;vertical-align:middle;margin-right:6px}
+.legend i.sw{width:10px;height:10px;border-radius:2px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;color:var(--ink2);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--axis);white-space:nowrap}
+th[data-k]{cursor:pointer}
+td{padding:6px 8px;border-bottom:1px solid var(--grid);font-variant-numeric:tabular-nums;vertical-align:top}
+td.num,th.num{text-align:right}
+tr.grp td{color:var(--ink2);font-weight:600;font-size:12px;padding-top:14px;border-bottom:1px solid var(--axis)}
+tr.idle td{color:var(--muted)}
+.stack{display:inline-flex;gap:2px;width:140px;height:8px;vertical-align:middle;margin-right:6px}
+.stack>span{display:block;height:100%}
+.stack>span:first-child{border-radius:4px 0 0 4px}.stack>span:last-child{border-radius:0 4px 4px 0}
+.stack>span:only-child{border-radius:4px}
+.spark{vertical-align:middle;margin-right:6px}
+.gain{display:inline-block;min-width:64px;text-align:right}
+.tag{font-size:11px;color:var(--ink2);border:1px solid var(--axis);border-radius:4px;padding:0 4px;margin-left:6px;white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.two>.card{margin-top:0}
+.tip{position:fixed;pointer-events:none;background:var(--surface);border:1px solid var(--axis);border-radius:6px;padding:6px 8px;
+font-size:12px;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.15);display:none;max-width:340px;z-index:5}
+.tip .key{display:inline-block;width:10px;height:2px;vertical-align:middle;margin-right:6px}
+.empty{color:var(--muted);font-size:13px}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.ctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
+.ctlrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:20px 0 12px}
+.scale{display:inline-flex;border:1px solid var(--axis);border-radius:6px;overflow:hidden}
+.scale button{font:inherit;font-size:12px;background:transparent;color:var(--ink2);border:0;padding:4px 10px;cursor:pointer}
+.scale button+button{border-left:1px solid var(--axis)}
+.scale button[aria-pressed="true"]{background:var(--track);color:var(--ink);font-weight:600}
+.wrap{overflow-x:auto}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.chips button{font:inherit;font-size:12px;border:1px solid var(--grid);background:transparent;color:var(--ink2);border-radius:999px;padding:2px 10px;cursor:pointer}
+.chips button[aria-pressed="true"]{color:var(--ink);font-weight:600;border-color:var(--axis);background:var(--track)}
+details summary{cursor:pointer;color:var(--ink2);font-size:12px;font-weight:600;margin:16px 0 8px}
+code{font-size:12px}
+#map svg{display:block;touch-action:manipulation}
+#map rect.m{fill:var(--s1)}#map rect.p{fill:var(--warn)}#map rect.t{fill:var(--todo)}
+#map .cl{font-size:11px;pointer-events:none}#map .cl.m{fill:#fff}#map .cl.p{fill:#0b0b0b}#map .cl.t{fill:var(--ink2)}
+#map .ul{fill:var(--ink2);font-weight:600;cursor:pointer}
+#map .ul.z{cursor:default}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;border:1px solid var(--grid);border-radius:999px;padding:2px 10px}
+.pill i,.dot{display:inline-block;width:8px;height:8px;border-radius:50%}
+.dot{margin-right:6px;vertical-align:middle}
+.meters{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px 20px;margin:14px 0 4px}
+.mv{font-size:18px;font-weight:600}
+.counts{display:flex;flex-wrap:wrap;gap:8px 28px;margin:14px 0 6px}
+.cv{font-size:20px;font-weight:600}
+.notice{margin:12px 0 0;padding:8px 10px;border:1px solid var(--axis);border-radius:8px;font-size:13px;color:var(--ink2);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.notice button{font:inherit;font-size:12px;border:1px solid var(--axis);background:var(--track);color:var(--ink);border-radius:6px;padding:2px 10px;cursor:pointer}
+.gate{margin-top:8px}
+.log{font:12px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--ink2);overflow-wrap:anywhere}
+.log .lt{color:var(--muted);margin-right:8px}
+.park summary{margin:8px 0}
+.park .note{font-size:13px;color:var(--ink2);margin:0 0 10px;white-space:pre-wrap}
+@media (max-width:760px){.two{grid-template-columns:1fr}.opt{display:none}.stack{width:70px}.spark{display:none}}
+</style>
+</head>
+<body>
+<main>
+<div class="head"><div><h1 id="title">Decomp progress</h1><div class="sub" id="sub"></div></div>
+<div class="scale" id="theme" role="group" aria-label="Theme"></div></div>
+<div class="tiles" id="tiles"></div>
+<section class="card section" id="swarm" hidden aria-label="Swarm status"></section>
+<div class="ctlrow"><span class="label">Show</span><div class="scale" id="measure" role="group" aria-label="Measure"></div>
+<span class="label">by</span><div class="scale" id="scale" role="group" aria-label="Time scale"></div></div>
+<section class="card"><h2>Progress over time</h2><div class="legend" id="legend"></div><div id="chart"></div>
+<div class="sub2" id="pace-title">Matched per day</div><div id="pace"></div>
+<details id="tbl"><summary>Show as a table</summary><div class="wrap"><table id="htable"></table></div></details></section>
+<section class="card section"><div class="head"><h2>Code map</h2><div class="legend" id="mlegend" style="margin:0"></div></div>
+<div class="small" id="mcap"></div><div class="chips" id="mchips" role="group" aria-label="Unit shown in the map"></div>
+<div id="map"></div><div class="sub2" id="left-title">Largest functions left</div><div class="wrap"><table id="left"></table></div></section>
+<section class="card section"><h2>Units</h2><div class="small" id="ucap"></div><div class="wrap"><table id="units"></table></div></section>
+<div class="two section"><section class="card"><h2>Recent matches</h2><div class="wrap"><table id="recent"></table></div></section>
+<section class="card"><h2>Parked</h2><div id="parked"></div></section></div>
+</main>
+<div class="tip" id="tip" role="tooltip"></div>
+<script>
+const D=/*DATA*/null;
+// theme: Auto follows the OS; Light/Dark set data-theme on <html> (the CSS handles both)
+(function(){
+ const el=document.getElementById("theme"),root=document.documentElement;
+ let t=null;try{t=localStorage.getItem("decomp-theme")}catch(e){}
+ function set(v){t=v;if(v=="auto")root.removeAttribute("data-theme");else root.setAttribute("data-theme",v);
+  try{localStorage.setItem("decomp-theme",v)}catch(e){}
+  el.innerHTML=[["auto","Auto"],["light","Light"],["dark","Dark"]].map(([k,l])=>`<button data-t="${k}" aria-pressed="${k==t}">${l}</button>`).join("");
+  el.querySelectorAll("button").forEach(b=>b.onclick=()=>set(b.dataset.t))}
+ set(["light","dark"].includes(t)?t:"auto");
+})();
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pct=(a,b)=>b?100*a/b:0, f2=x=>x.toFixed(2)+"%", f1=x=>x.toFixed(1)+"%", n=x=>Math.round(x).toLocaleString();
+const kb=b=>b>=1e6?(b/1e6).toFixed(2)+" MB":b>=1e4?(b/1e3).toFixed(1)+" KB":n(b)+" B";
+const compact=v=>v>=1e6?(v/1e6).toFixed(v>=1e7?0:1)+"M":v>=1e3?(v/1e3).toFixed(v>=1e4?0:1)+"K":Number.isInteger(v)?String(v):v.toFixed(1);
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const when=s=>{const d=new Date(s);return isNaN(d)?"":d.toLocaleString(undefined,{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})};
+const hm=s=>{const d=new Date(s);return isNaN(d)?"":d.toLocaleTimeString(undefined,{hour:"2-digit",minute:"2-digit"})};
+const dur=m=>m<1?"<1 min":m<60?Math.round(m)+" min":Math.floor(m/60)+" h"+(Math.round(m%60)?" "+Math.round(m%60)+" min":"");
+const ago=ms=>ms<10e3?"just now":ms<60e3?Math.round(ms/1e3)+" s ago":ms<36e5?Math.round(ms/6e4)+" min ago":ms<864e5?dur(ms/6e4)+" ago":Math.round(ms/864e5)+" days ago";
+const S=D.summary, GEN=Date.parse(D.generated);
+$("title").textContent=(D.game||"Game")+" decomp progress";
+$("sub").textContent="Updated "+D.generated.replace("T"," ").replace("Z"," UTC")+(D.commit?" · commit "+D.commit:"");
+
+const tip=$("tip");
+function showTip(html,ev){tip.innerHTML=html;tip.style.display="block";
+ const r=tip.getBoundingClientRect();let x=ev.clientX+14,y=ev.clientY+14;
+ if(x+r.width>innerWidth-8)x=Math.max(8,ev.clientX-14-r.width);
+ if(y+r.height>innerHeight-8)y=Math.max(8,ev.clientY-14-r.height);
+ tip.style.left=x+"px";tip.style.top=y+"px"}
+const hideTip=()=>{tip.style.display="none"};
+
+// ---------------------------------------------------------------- data
+// history: columns (t: seconds since the point before) and each unit's [point, bytes, functions]
+// where it changes, made dense here
+const P=[],UH={};
+(function(){
+ const h=D.hist||{t:[]};let t=0;
+ for(let i=0;i<h.t.length;i++){t+=h.t[i];P.push({t:t*1e3,game_b:h.game_b[i],game_f:h.game_f[i],named_f:h.named_f[i],data_b:h.data_b[i]})}
+ for(const [u,ch] of Object.entries(h.units||{})){
+  const b=new Float64Array(P.length),f=new Float64Array(P.length);let k=0,cb=0,cf=0;
+  for(let i=0;i<P.length;i++){while(k<ch.length&&ch[k][0]<=i){cb=ch[k][1];cf=ch[k][2];k++}b[i]=cb;f[i]=cf}
+  UH[u]={b,f}}
+})();
+const at=(i,k)=>i<0?0:P[i][k];
+// code map: every game function with its file, unit, size and status (m matched, p parked, t to do)
+const M={fn:[],units:{}};
+(function(){
+ const m=D.map||{segs:[],n:[],s:[],t:""};let i=0;
+ for(const [seg,unit,count] of m.segs)for(let k=0;k<count;k++,i++){
+  const f={i,name:m.n[i],size:m.s[i],st:m.t[i],seg,unit};M.fn.push(f);
+  const u=M.units[unit]||(M.units[unit]={unit,fns:[],b:0,m:0,p:0,segs:[]});
+  u.fns.push(f);u.b+=f.size;if(f.st=="m")u.m+=f.size;else if(f.st=="p")u.p+=f.size;
+  if(u.segs[u.segs.length-1]!=seg)u.segs.push(seg)}
+})();
+const SEGU=new Map((D.map&&D.map.segs||[]).map(([s,u])=>[s,u]));
+const unitOfSeg=s=>SEGU.get(s)||(String(s).split("/")[1]||s);
+const TITLE=Object.fromEntries((S.units||[]).map(u=>[u.unit,u.title||""]));
+const uname=u=>u+(TITLE[u]&&TITLE[u]!=u?` (${TITLE[u]})`:"");
+
+// ---------------------------------------------------------------- tiles
+(function(){
+ const tile=(label,big,small,p,color,extra)=>`<div class="card"><div class="label">${label}</div><div class="big">${big}</div>
+<div class="small">${small}</div>${extra||""}${p==null?"":`<div class="bar"><span style="width:${Math.min(100,p)}%;background:${color}"></span></div>`}</div>`;
+ // what the last 7 days to this page's data added
+ let wk="";
+ if(P.length){
+  const ref=GEN-7*864e5;let j=-1;for(let i=0;i<P.length&&P[i].t<=ref;i++)j=i;
+  const L=P.length-1,df=P[L].game_f-at(j,"game_f"),db=P[L].game_b-at(j,"game_b");
+  const span=j<0?`since ${new Date(P[0].t).toLocaleDateString(undefined,{month:"short",day:"numeric"})}`:"in the last 7 days";
+  wk=df>0?`<div class="delta">▲ ${n(df)} functions, ${kb(db)} ${span}</div>`:`<div class="delta none">No new matches ${span}</div>`;
+ }
+ const G=S.game,named=G.named_f,all=G.all_f,DA=S.data||{done_b:0,total_b:0,pct:0};
+ $("tiles").innerHTML=tile("Game code matched",f2(G.pct),`${n(G.done_b)} / ${n(G.total_b)} bytes<br>${n(G.done_f)} / ${n(G.total_f)} functions · ${f2(pct(G.done_f,G.total_f))}`,G.pct,"var(--s1)",wk)+
+  tile("Game functions named",f2(pct(named,all)),`${n(named)} / ${n(all)} with a real name`,pct(named,all),"var(--s3)")+
+  tile("Data in C",f2(DA.pct),`${n(DA.done_b)} / ${n(DA.total_b)} bytes of data and rodata`,DA.pct,"var(--s4)")+
+  tile("Parked",`${S.blocked}`,"functions waiting for another attempt",null);
+})();
+
+// ---------------------------------------------------------------- time scale and measure
+const MEASURES={bytes:"Bytes",functions:"Functions"};
+const UNITS={minute:{label:"Minutes",per:"minute",win:120},hour:{label:"Hours",per:"hour",win:48},day:{label:"Days",per:"day",win:60},
+ week:{label:"Weeks",per:"week",win:52},month:{label:"Months",per:"month",win:0}};
+let measure=store.get("decomp-measure");if(!MEASURES[measure])measure="bytes";
+const fnMode=()=>measure=="functions";
+const floor=(t,u)=>{const d=new Date(t);d.setSeconds(0,0);if(u!="minute"){d.setMinutes(0);if(u!="hour"){d.setHours(0);
+ if(u=="week")d.setDate(d.getDate()-((d.getDay()+6)%7));if(u=="month")d.setDate(1)}}return d.getTime()};
+const step=(t,u,k=1)=>{const d=new Date(t);if(u=="minute")d.setMinutes(d.getMinutes()+k);else if(u=="hour")d.setHours(d.getHours()+k);
+ else if(u=="day")d.setDate(d.getDate()+k);else if(u=="week")d.setDate(d.getDate()+7*k);else d.setMonth(d.getMonth()+k);return d.getTime()};
+const lab=(t,u)=>{const d=new Date(t);return u=="minute"?d.toLocaleTimeString(undefined,{hour:"2-digit",minute:"2-digit"})
+ :u=="hour"?d.toLocaleString(undefined,{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})
+ :u=="month"?d.toLocaleDateString(undefined,{month:"short",year:"numeric"})
+ :(u=="week"?"w/c ":"")+d.toLocaleDateString(undefined,{month:"short",day:"numeric"})};
+const autoUnit=()=>{const sp=P.length?Date.now()-P[0].t:0,HR=36e5,DAY=864e5;
+ return sp<3*HR?"minute":sp<2*DAY?"hour":sp<60*DAY?"day":sp<365*DAY?"week":"month"};
+let unit=store.get("decomp-scale");if(!UNITS[unit])unit=autoUnit();
+// buckets of the chosen unit up to now: each holds the index of the last point before its end
+// (-1: none yet); before is the state at the window's start, for the first bucket's gain
+function buckets(u){
+ const last=floor(Date.now(),u),out=[];
+ let start=P.length?floor(P[0].t,u):last;
+ if(UNITS[u].win)start=Math.max(start,step(last,u,1-UNITS[u].win));
+ let j=0,prev=-1;
+ while(j<P.length&&P[j].t<start){prev=j;j++}
+ const before=prev;
+ for(let b=start;b<=last;b=step(b,u)){const end=step(b,u);while(j<P.length&&P[j].t<end){prev=j;j++}out.push({t:b,i:prev})}
+ return {out,before};
+}
+const SERIES=[
+ {k:"game",name:"Game code",col:"var(--s1)",v:i=>fnMode()?pct(at(i,"game_f"),S.game.total_f):pct(at(i,"game_b"),S.game.total_b)},
+ {k:"named",name:"Game functions named",col:"var(--s3)",v:i=>pct(at(i,"named_f"),S.game.all_f)},
+ {k:"data",name:"Data in C",col:"var(--s4)",v:i=>pct(at(i,"data_b"),(S.data||{}).total_b)}];
+// every point against today's totals: the code known to exist grew (overlays were indexed later),
+// and a percentage of a smaller total would make a line fall when nothing was lost
+const pctTick=v=>(v<1?v.toFixed(2):v<10?v.toFixed(1):v.toFixed(0))+"%";
+const niceMax=v=>{const p=Math.pow(10,Math.floor(Math.log10(v))),m=v/p;return (m<=1?1:m<=2?2:m<=2.5?2.5:m<=5?5:10)*p};
+function yAxis(x0,x1,T,ih,ymax,ticks,fmt){let g="";
+ for(let i=0;i<=ticks;i++){const v=ymax*i/ticks,yy=(T+ih*(1-i/ticks)).toFixed(1);
+  g+=`<line x1="${x0}" x2="${x1}" y1="${yy}" y2="${yy}" stroke="${i?"var(--grid)":"var(--axis)"}" stroke-width="1"/>`+
+     `<text x="${x0-6}" y="${+yy+4}" text-anchor="end">${fmt(v)}</text>`}
+ return g}
+function xAxis(Bk,x,y,iw){let g="";const N=Bk.length,nl=Math.max(1,Math.min(N,Math.floor(iw/110)));
+ for(let k=0;k<nl;k++){const i=nl==1?N-1:Math.round(k*(N-1)/(nl-1));
+  g+=`<text x="${x(i).toFixed(1)}" y="${y}" text-anchor="${k==0&&nl>1?"start":k==nl-1?"end":"middle"}">${esc(lab(Bk[i].t,unit))}</text>`}
+ return g}
+const idxAt=(ev,svg,W,L,bw,N)=>{const r=svg.getBoundingClientRect(),mx=(ev.clientX-r.left)*W/r.width;return Math.max(0,Math.min(N-1,Math.floor((mx-L)/bw)))};
+const colPath=(x,y,w,h)=>{const r=Math.min(4,w/2,h),f=v=>v.toFixed(1);
+ return `M${f(x)},${f(y+h)}V${f(y+r)}Q${f(x)},${f(y)} ${f(x+r)},${f(y)}H${f(x+w-r)}Q${f(x+w)},${f(y)} ${f(x+w)},${f(y+r)}V${f(y+h)}Z`};
+
+// ---------------------------------------------------------------- progress over time
+function drawMain(B){
+ const el=$("chart"),Bk=B.out,N=Bk.length;
+ $("legend").innerHTML=SERIES.map(s=>`<span><i style="background:${s.col}"></i>${s.name}`+
+  (s.k=="game"?` (${fnMode()?"functions":"bytes"})`:s.k=="data"?` (bytes${fnMode()?"; data has no functions":""})`:"")+`</span>`).join("");
+ if(!P.length){el.innerHTML='<div class="empty">The chart fills in as functions are matched.</div>';return}
+ const W=Math.max(300,el.clientWidth||900),Ht=240,L=44,R=16,T=10,iw=W-L-R,ih=Ht-T-28;
+ let hi=0;for(const b of Bk)for(const s of SERIES)hi=Math.max(hi,s.v(b.i));
+ const ymax=Math.min(100,Math.max(1,hi*1.15)),bw=iw/Math.max(1,N),x=k=>L+bw*(k+.5),y=v=>T+ih*(1-v/ymax);
+ let g=yAxis(L,W-R,T,ih,ymax,4,pctTick)+xAxis(Bk,x,Ht-8,iw);
+ for(const s of SERIES){
+  let d="";Bk.forEach((b,k)=>{d+=(k?"L":"M")+x(k).toFixed(1)+","+y(s.v(b.i)).toFixed(1)});
+  g+=`<path d="${d}" fill="none" stroke="${s.col}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+  if(N<=90)Bk.forEach((b,k)=>{const e=k==N-1;g+=`<circle cx="${x(k).toFixed(1)}" cy="${y(s.v(b.i)).toFixed(1)}" r="${e?4:2.5}" fill="${s.col}" stroke="var(--surface)" stroke-width="${e?2:1}"/>`});
+ }
+ g+=`<line class="xh" y1="${T}" y2="${T+ih}" stroke="var(--axis)" stroke-width="1" visibility="hidden"/><rect class="hit" x="${L}" y="${T}" width="${iw}" height="${ih}" fill="transparent"/>`;
+ el.innerHTML=`<svg width="100%" viewBox="0 0 ${W} ${Ht}" role="img" aria-label="Matched ${fnMode()?"functions":"code bytes"}, names and data in C by ${UNITS[unit].per}">${g}</svg>`;
+ const svg=el.querySelector("svg"),xh=svg.querySelector(".xh"),hit=svg.querySelector(".hit");
+ hit.addEventListener("pointermove",ev=>{
+  const k=idxAt(ev,svg,W,L,bw,N),b=Bk[k],p=k?Bk[k-1].i:B.before;
+  xh.setAttribute("x1",x(k));xh.setAttribute("x2",x(k));xh.setAttribute("visibility","visible");
+  const gf=at(b.i,"game_f")-at(p,"game_f"),gb=at(b.i,"game_b")-at(p,"game_b");
+  showTip(`<b>${esc(lab(b.t,unit))}</b>`+SERIES.map(s=>`<br><i class="key" style="background:${s.col}"></i><b>${f2(s.v(b.i))}</b> ${s.name}`+
+   (s.k=="game"?` · ${n(at(b.i,"game_f"))} functions${gf||gb?` <span class="small">(+${n(gf)} fn, +${n(gb)} B)</span>`:""}`:"")).join(""),ev)});
+ hit.addEventListener("pointerleave",()=>{hideTip();xh.setAttribute("visibility","hidden")});
+}
+// matched per bucket: the gain between buckets, on the same x positions as the chart above
+function drawPace(B){
+ const el=$("pace"),Bk=B.out,N=Bk.length,k=fnMode()?"game_f":"game_b";
+ $("pace-title").textContent=`${fnMode()?"Functions":"Bytes"} matched per ${UNITS[unit].per}`;
+ if(!P.length){el.innerHTML="";return}
+ const gains=Bk.map((b,j)=>at(b.i,k)-at(j?Bk[j-1].i:B.before,k));
+ const W=Math.max(300,el.clientWidth||900),Ht=130,L=44,R=16,T=8,iw=W-L-R,ih=Ht-T-24,bw=iw/Math.max(1,N);
+ const ymax=niceMax(Math.max(1,...gains)),x=j=>L+bw*(j+.5),cw=Math.max(1,Math.min(24,bw*.7));
+ let g=yAxis(L,W-R,T,ih,ymax,2,compact)+xAxis(Bk,x,Ht-6,iw)+`<rect class="band" x="0" y="${T}" width="${bw.toFixed(1)}" height="${ih}" fill="var(--track)" visibility="hidden"/>`;
+ gains.forEach((v,j)=>{if(v<=0)return;const h=Math.max(1,ih*v/ymax);g+=`<path d="${colPath(x(j)-cw/2,T+ih-h,cw,h)}" fill="var(--s1)"/>`});
+ g+=`<rect class="hit" x="${L}" y="${T}" width="${iw}" height="${ih}" fill="transparent"/>`;
+ el.innerHTML=`<svg width="100%" viewBox="0 0 ${W} ${Ht}" role="img" aria-label="${fnMode()?"Functions":"Bytes"} matched per ${UNITS[unit].per}">${g}</svg>`;
+ const svg=el.querySelector("svg"),band=svg.querySelector(".band"),hit=svg.querySelector(".hit");
+ hit.addEventListener("pointermove",ev=>{
+  const j=idxAt(ev,svg,W,L,bw,N),b=Bk[j],p=j?Bk[j-1].i:B.before;
+  band.setAttribute("x",(L+bw*j).toFixed(1));band.setAttribute("visibility","visible");
+  const gf=at(b.i,"game_f")-at(p,"game_f"),gb=at(b.i,"game_b")-at(p,"game_b");
+  showTip(`<b>${esc(lab(b.t,unit))}</b><br><b>${gf>0?"+":""}${n(gf)}</b> functions · <b>${gb>0?"+":""}${n(gb)}</b> bytes`,ev)});
+ hit.addEventListener("pointerleave",()=>{hideTip();band.setAttribute("visibility","hidden")});
+}
+// the charts' table view, built only while it is open
+let curB=null;
+function drawHTable(){
+ if(!$("tbl").open||!curB)return;
+ const Bk=curB.out;
+ const rows=Bk.map((b,j)=>({b,p:j?Bk[j-1].i:curB.before})).reverse();
+ $("htable").innerHTML=`<tr><th>${UNITS[unit].label.replace(/s$/,"")}</th><th class="num">Game code</th><th class="num">Functions</th><th class="num">Gained</th><th class="num">Named</th><th class="num">Data in C</th></tr>`+
+  rows.map(({b,p})=>{const gf=at(b.i,"game_f")-at(p,"game_f"),gb=at(b.i,"game_b")-at(p,"game_b");
+   return `<tr><td>${esc(lab(b.t,unit))}</td><td class="num">${f2(SERIES[0].v(b.i))}</td><td class="num">${n(at(b.i,"game_f"))}</td>`+
+    `<td class="num">${gf||gb?`+${n(gf)} fn, +${kb(gb)}`:""}</td><td class="num">${f2(SERIES[1].v(b.i))}</td><td class="num">${f2(SERIES[2].v(b.i))}</td></tr>`}).join("");
+}
+$("tbl").addEventListener("toggle",drawHTable);
+
+// ---------------------------------------------------------------- units
+let ukey=store.get("decomp-ukey")||"unit",udir=+store.get("decomp-udir")||1;
+const seg=(w,c)=>w>0?`<span style="flex:${w.toFixed(3)} 0 0;background:${c}"></span>`:"";
+function spark(v,title){
+ const W=88,H=22,lo=Math.min(...v),hi=Math.max(...v),flat=hi-lo<.05,N=v.length;
+ const x=k=>N<2?W/2:2+(W-6)*k/(N-1),y=val=>flat?H/2:H-3-(H-6)*(val-lo)/(hi-lo);
+ const d=v.map((val,k)=>(k?"L":"M")+x(k).toFixed(1)+","+y(val).toFixed(1)).join("");
+ const c=flat?"var(--axis)":"var(--s1)";
+ return `<svg class="spark" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)}"><title>${esc(title)}</title>`+
+  `<path d="${d}" fill="none" stroke="${c}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>`+
+  `<circle cx="${x(N-1).toFixed(1)}" cy="${y(v[N-1]).toFixed(1)}" r="2.5" fill="${c}"/></svg>`;
+}
+function drawUnits(B){
+ const Bk=B.out,N=Bk.length,last=N?Bk[N-1].i:-1,fm=fnMode(),win=N?lab(Bk[0].t,unit):"";
+ $("ucap").textContent=`Bytes matched (parked in amber) and the trend in ${fm?"functions":"bytes"} matched since ${win}. PsyQ is Sony's own objects, linked in place.`;
+ const rows=(S.units||[]).map(u=>{
+  const U=UH[u.unit],mu=M.units[u.unit],tot=fm?u.total_f:u.total_b,arr=U?(fm?U.f:U.b):null;
+  const series=arr&&N?Bk.map(b=>b.i<0?0:pct(arr[b.i],tot)):null;
+  const gain=arr?(last<0?0:arr[last])-(B.before<0?0:arr[B.before]):0;
+  return Object.assign({},u,{parked_b:mu?mu.p:0,series,gain})});
+ const cols=[["unit","Unit"],["pct","Bytes matched",1],["done_f","Functions",1],["named_f","Named",1,1],["blocked","Parked",1,1],["gain","Change",1]];
+ const cmp=(a,b)=>((a[ukey]>b[ukey]?1:a[ukey]<b[ukey]?-1:0)||(a.unit>b.unit?1:-1))*udir;
+ const row=u=>{const c=u.total_b>0,m=pct(u.done_b,u.total_b),p=pct(u.parked_b,u.total_b);
+  const sp=u.series?spark(u.series,`${u.unit}: ${f2(u.series[0])} to ${f2(u.series[u.series.length-1])} of its ${fm?"functions":"bytes"} since ${win}`):"";
+  return `<tr><td>${esc(u.unit)}${u.title&&u.title!=u.unit?`<div class="small">${esc(u.title)}</div>`:""}</td>
+<td class="num">${c?`<span class="stack" aria-hidden="true">${seg(m,u.lib?"var(--s2)":"var(--s1)")}${seg(p,"var(--warn)")}${seg(100-m-p,"var(--track)")}</span>${f2(m)}`:"—"}</td>
+<td class="num">${c?`${n(u.done_f)} / ${n(u.total_f)} <span class="small">${f1(pct(u.done_f,u.total_f))}</span>`:"—"}</td>
+<td class="num opt">${n(u.named_f)} / ${n(u.all_f)}</td><td class="num opt">${u.blocked||""}</td>
+<td class="num">${sp}<span class="gain">${u.gain>0?"+"+(fm?n(u.gain):kb(u.gain)):"—"}</span></td></tr>`};
+ const game=rows.filter(u=>!u.lib).sort(cmp),lib=rows.filter(u=>u.lib).sort(cmp);
+ const head=t=>`<tr class="grp"><td colspan="6">${t}</td></tr>`;
+ $("units").innerHTML="<tr>"+cols.map(c=>`<th class="${c[2]?"num":""} ${c[3]?"opt":""}" data-k="${c[0]}" aria-sort="${ukey==c[0]?(udir>0?"ascending":"descending"):"none"}">${c[1]}${ukey==c[0]?(udir>0?" ▲":" ▼"):""}</th>`).join("")+"</tr>"+
+  (rows.length?(lib.length?head("Game code"):"")+game.map(row).join("")+(lib.length?head("PsyQ library: Sony's objects, linked in place")+lib.map(row).join(""):"")
+   :'<tr><td class="empty" colspan="6">Nothing indexed yet.</td></tr>');
+ $("units").querySelectorAll("th[data-k]").forEach(th=>th.onclick=()=>{const k=th.dataset.k;udir=ukey==k?-udir:(k=="unit"?1:-1);ukey=k;
+  store.set("decomp-ukey",ukey);store.set("decomp-udir",udir);drawUnits(curB)});
+}
+
+// ---------------------------------------------------------------- controls
+function drawTime(){
+ curB=buckets(unit);
+ $("scale").innerHTML=Object.entries(UNITS).map(([k,v])=>`<button data-u="${k}" aria-pressed="${k==unit}">${v.label}</button>`).join("");
+ $("scale").querySelectorAll("button").forEach(b=>b.onclick=()=>{unit=b.dataset.u;store.set("decomp-scale",unit);drawTime()});
+ $("measure").innerHTML=Object.entries(MEASURES).map(([k,v])=>`<button data-m="${k}" aria-pressed="${k==measure}">${v}</button>`).join("");
+ $("measure").querySelectorAll("button").forEach(b=>b.onclick=()=>{measure=b.dataset.m;store.set("decomp-measure",measure);drawTime()});
+ hideTip();drawMain(curB);drawPace(curB);drawUnits(curB);drawHTable();
+}
+
+// ---------------------------------------------------------------- code map
+// squarified treemap (Bruls, Huizing and van Wijk): vals largest first; [x, y, w, h] per value
+function squarify(vals,x,y,w,h){
+ const out=new Array(vals.length),total=vals.reduce((a,b)=>a+b,0);
+ if(!total||w<=0||h<=0){out.fill([x,y,0,0]);return out}
+ const scale=w*h/total;let i=0;
+ while(i<vals.length){
+  const side=Math.min(w,h);let j=i,sum=0,best=Infinity,lo=Infinity,hi=0;
+  while(j<vals.length){const a=vals[j]*scale,s=sum+a,l=Math.min(lo,a),m=Math.max(hi,a);
+   const worst=Math.max(side*side*m/(s*s),s*s/(side*side*l));if(worst>best)break;
+   best=worst;sum=s;lo=l;hi=m;j++}
+  const thick=sum/side;
+  if(w>=h){let yy=y;for(let k=i;k<j;k++){const len=vals[k]*scale/thick;out[k]=[x,yy,thick,len];yy+=len}x+=thick;w-=thick}
+  else{let xx=x;for(let k=i;k<j;k++){const len=vals[k]*scale/thick;out[k]=[xx,y,len,thick];xx+=len}y+=thick;h-=thick}
+  i=j}
+ return out}
+const CW=6.3;   // average width of an 11px character, for "does this label fit"
+const STATUS={m:"Matched",p:"Parked",t:"Not matched yet"};
+let mapSel=store.get("decomp-map");
+function mapGroup(fns,x,y,w,h,labels,attr){
+ // a 3px surface gap around each group, and a header band when its label fits
+ const G=1.5;x+=G;y+=G;w-=2*G;h-=2*G;if(w<=1||h<=1)return "";
+ let out="",head=0;
+ const label=labels&&h>34?labels.find(l=>l.length*CW+6<=w):null;
+ if(label){head=16;out+=`<text class="ul${attr?"":" z"}" x="${(x+2).toFixed(1)}" y="${(y+12).toFixed(1)}"${attr||""}>${esc(label)}</text>`}
+ const fs=fns.slice().sort((a,b)=>b.size-a.size),rs=squarify(fs.map(f=>f.size),x,y+head,w,h-head);
+ for(let k=0;k<fs.length;k++){const [cx,cy,cw,ch]=rs[k],f=fs[k],ins=cw>2&&ch>2?.5:0;
+  // a 1px surface gap between cells (the cell drawn half a pixel in on each side)
+  out+=`<rect class="${f.st}" x="${(cx+ins).toFixed(1)}" y="${(cy+ins).toFixed(1)}" width="${Math.max(.5,cw-2*ins).toFixed(1)}" height="${Math.max(.5,ch-2*ins).toFixed(1)}" data-i="${f.i}"/>`;
+  if(cw>=56&&ch>=16&&f.name.length*CW+8<=cw)out+=`<text class="cl ${f.st}" x="${(cx+4).toFixed(1)}" y="${(cy+12).toFixed(1)}">${esc(f.name)}</text>`}
+ return out}
+function drawMap(){
+ const box=$("map"),units=Object.values(M.units);
+ if(!units.length){box.innerHTML='<div class="empty">No functions indexed yet.</div>';return}
+ if(mapSel&&!M.units[mapSel])mapSel=null;
+ const order=units.slice().sort((a,b)=>a.unit=="main exe"?-1:b.unit=="main exe"?1:a.unit<b.unit?-1:1);
+ $("mchips").innerHTML=[`<button data-u="" aria-pressed="${!mapSel}">All units</button>`].concat(order.map(u=>
+  `<button data-u="${esc(u.unit)}" aria-pressed="${u.unit==mapSel}">${esc(uname(u.unit))}</button>`)).join("");
+ $("mchips").querySelectorAll("button").forEach(b=>b.onclick=()=>{mapSel=b.dataset.u||null;store.set("decomp-map",mapSel||"");drawMap()});
+ $("mlegend").innerHTML=[["m","var(--s1)"],["p","var(--warn)"],["t","var(--todo)"]].map(([k,c])=>`<span><i class="sw" style="background:${c}"></i>${STATUS[k]}</span>`).join("");
+ const W=Math.max(300,box.clientWidth||900),Ht=Math.round(Math.min(520,Math.max(300,W*.52)));
+ let g="";
+ if(!mapSel){
+  const us=units.slice().sort((a,b)=>b.b-a.b),rs=squarify(us.map(u=>u.b),0,0,W,Ht);
+  us.forEach((u,k)=>{const [x,y,w,h]=rs[k],p=f1(pct(u.m,u.b));
+   g+=mapGroup(u.fns,x,y,w,h,[`${uname(u.unit)} · ${p}`,`${u.unit} · ${p}`,u.unit],` data-u="${esc(u.unit)}"`)});
+  $("mcap").textContent=`Every game function as a cell sized by its bytes; PsyQ (Sony's objects) is left out. Click a unit to zoom in.`;
+ }else{
+  const u=M.units[mapSel],files=u.segs.map(s=>({s,fns:u.fns.filter(f=>f.seg==s)})).map(f=>Object.assign(f,{b:f.fns.reduce((a,x)=>a+x.size,0)}))
+   .sort((a,b)=>b.b-a.b),rs=squarify(files.map(f=>f.b),0,0,W,Ht);
+  files.forEach((f,k)=>{const [x,y,w,h]=rs[k],tail=f.s.split("/").pop();
+   g+=mapGroup(f.fns,x,y,w,h,files.length>1?[`${f.s} · ${f1(pct(f.fns.filter(z=>z.st=="m").reduce((a,z)=>a+z.size,0),f.b))}`,tail]:null,"")});
+  $("mcap").textContent=`${uname(u.unit)}: ${n(u.fns.length)} functions in ${u.segs.length} file${u.segs.length==1?"":"s"}, ${f2(pct(u.m,u.b))} of ${n(u.b)} bytes matched.`;
+ }
+ g+=`<rect class="mh" fill="none" stroke="var(--hover)" stroke-width="1.5" pointer-events="none" visibility="hidden"/>`;
+ box.innerHTML=`<svg width="100%" viewBox="0 0 ${W} ${Ht}" role="img" aria-label="Code map: game functions sized by bytes, coloured by status">${g}</svg>`;
+ const svg=box.querySelector("svg"),mh=svg.querySelector(".mh");
+ svg.addEventListener("pointermove",ev=>{
+  const t=ev.target;
+  if(t.dataset.i!=null){const f=M.fn[+t.dataset.i];
+   for(const a of ["x","y","width","height"])mh.setAttribute(a,t.getAttribute(a));mh.setAttribute("visibility","visible");
+   showTip(`<b>${esc(f.name)}</b><br><b>${n(f.size)}</b> bytes · ${STATUS[f.st]}<br><span class="small">${esc(uname(f.unit))} · ${esc(f.seg)}</span>`,ev)}
+  else if(t.dataset.u){const u=M.units[t.dataset.u];mh.setAttribute("visibility","hidden");
+   showTip(`<b>${esc(uname(u.unit))}</b><br><b>${f2(pct(u.m,u.b))}</b> of ${n(u.b)} bytes · ${n(u.fns.filter(f=>f.st=="m").length)} / ${n(u.fns.length)} functions<br><span class="small">Click to zoom in</span>`,ev)}});
+ svg.addEventListener("pointerleave",()=>{hideTip();mh.setAttribute("visibility","hidden")});
+ svg.addEventListener("click",ev=>{if(mapSel)return;const t=ev.target,u=t.dataset.u||(t.dataset.i!=null?M.fn[+t.dataset.i].unit:null);
+  if(u){mapSel=u;store.set("decomp-map",u);hideTip();drawMap()}});
+ // the largest functions still to match where the map is looking: the map's text twin
+ const left=(mapSel?M.units[mapSel].fns:M.fn).filter(f=>f.st!="m").sort((a,b)=>b.size-a.size).slice(0,10);
+ $("left-title").textContent=`Largest functions left${mapSel?" in "+mapSel:""}`;
+ $("left").innerHTML=left.length?`<tr><th>Function</th><th>Unit</th><th class="opt">File</th><th class="num">Bytes</th></tr>`+left.map(f=>
+  `<tr><td><code>${esc(f.name)}</code>${f.st=="p"?'<span class="tag">parked</span>':""}</td><td>${esc(f.unit)}</td><td class="opt small">${esc(f.seg)}</td><td class="num">${n(f.size)}</td></tr>`).join("")
+  :'<tr><td class="empty">Nothing left to match here.</td></tr>';
+}
+
+// ---------------------------------------------------------------- recent matches, parked
+(function(){
+ const R=D.recent||[];
+ $("recent").innerHTML=R.length?`<tr><th>Function</th><th>Unit</th><th class="num">Bytes</th><th class="num">When</th></tr>`+R.map(r=>
+  `<tr><td><code>${esc(r.name)}</code></td><td>${esc(unitOfSeg(r.seg))}</td><td class="num">${n(r.size)}</td><td class="num" title="${esc(r.at)}">${esc(when(r.at))}</td></tr>`).join("")
+  :'<tr><td class="empty">No matches recorded yet.</td></tr>';
+ const Bl=D.blocked||[];
+ $("parked").innerHTML=Bl.length?Bl.map(b=>`<details class="park"><summary><code>${esc(b.name)}</code> <span class="small">${esc(unitOfSeg(b.seg))} · ${n(b.size)} bytes</span></summary>`+
+  `<div class="note">${esc(b.note||"No note.")}</div></details>`).join(""):'<div class="empty">Nothing parked.</div>';
+})();
+
+drawTime();drawMap();
+let rt,lastW=document.documentElement.clientWidth;
+addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{const w=document.documentElement.clientWidth;if(w!=lastW){lastW=w;drawTime();drawMap()}},150)});
+
+// ---------------------------------------------------------------- swarm (live)
+// docs/swarm.js is written by tools/swarm/swarm.mjs during a run and is git-ignored, so GitHub
+// Pages has none and the card stays hidden. A file:// page can't fetch JSON, so it comes as a
+// script that calls swarmStatus(): every 5 s while a run is on, every minute otherwise.
+const SW={last:null,timer:null,misses:0};
+const MIDX=new Map(M.fn.map(f=>[f.seg+"|"+f.name,f.st]));
+const OUT={matched:["Matched","var(--good)"],failed:["Failed","var(--bad)"],infra:["Environment error","var(--bad)"],error:["Error","var(--bad)"],
+ conflict:["Conflict","var(--serious)"],"gate-refused":["Refused by the gate","var(--serious)"],parked:["Parked","var(--axis)"],
+ progress:["Closer (checkpoint)","var(--axis)"],permuted:["Permuter improved it","var(--axis)"],stopped:["Cut short by the stop","var(--axis)"]};
+function renderSwarm(st){
+ const el=$("swarm"),r=st&&st.run;
+ if(!r){el.hidden=true;return}
+ el.hidden=false;
+ const now=Date.now(),age=now-Date.parse(st.updated),live=r.state=="running",stale=live&&age>120e3;
+ const [label,col]=stale?["Not responding","var(--serious)"]:live?(r.stopping?[r.stopping=="now"?"Stopping now":"Stopping after current work","var(--warn)"]:["Running","var(--good)"])
+  :r.state=="killed"?["Killed","var(--bad)"]:["Finished","var(--muted)"];
+ const t0=Date.parse(r.started),t1=live&&!stale?now:Date.parse(r.ended||st.updated),mins=Math.max(0,(t1-t0)/6e4);
+ const pl=r.pool||{},plural=(k,w)=>`${k} ${w}${k==1?"":"s"}`;
+ const pool=[plural(pl.workers,"worker"),`${pl.big} big`,plural(pl.permuters,"permuter")].join(", ");
+ // matched by the swarm but not matched in this page's data: the page is older than the commits
+ const fresh=(st.results||[]).filter(x=>x.outcome=="matched"&&MIDX.has(x.seg+"|"+x.name)&&MIDX.get(x.seg+"|"+x.name)!="m").length;
+ const lim=r.limits||{};
+ const meter=(name,val,of,p)=>`<div><div class="label">${name}</div><div class="mv">${val}<span class="small"> of ${of}${p>=90?" · near the limit":""}</span></div>`+
+  `<div class="bar"><span style="width:${Math.min(100,p).toFixed(1)}%;background:${p>=90?"var(--warn)":"var(--s1)"}"></span></div></div>`;
+ const counts=[["Matched",r.stats.matched],["Parked",r.stats.parked],["Failed",r.stats.failed],["Conflicts",r.stats.conflicts],["In the queue",r.queued]]
+  .map(([k,v])=>`<div><div class="label">${k}</div><div class="cv">${n(v||0)}</div></div>`).join("");
+ const mins1=(m,l)=>m!=null?`${m.toFixed(1)} min${l?`<span class="small"> of ${l}</span>`:""}`:"";
+ const slots=(st.slots||[]).map(s=>s.func?`<tr><td>${esc(s.slot)}</td><td><code>${esc(s.func)}</code><div class="small">${esc(s.seg||"")}${s.from?` · from ${esc(s.from)}`:""}</div></td>`+
+   `<td class="num">${n(s.size||0)}</td><td class="opt">${esc(s.model||"")}</td><td class="opt">${s.big?`big session ${s.session||1}`:`attempt ${s.attempt||1}`}</td><td class="num">${mins1(s.minutes,s.limit)}</td></tr>`
+   :`<tr class="idle"><td>${esc(s.slot)}</td><td colspan="5">idle</td></tr>`).join("")+
+  (st.permuters||[]).map(p=>p.func?`<tr><td>${esc(p.slot)}</td><td><code>${esc(p.func)}</code><div class="small">permuter</div></td><td class="num">${p.size?n(p.size):""}</td><td class="opt"></td><td class="opt"></td><td class="num">${mins1(p.minutes,p.limit)}</td></tr>`
+   :`<tr class="idle"><td>${esc(p.slot)}</td><td colspan="5">permuter idle</td></tr>`).join("");
+ const busy=(st.slots||[]).some(s=>s.func)||(st.permuters||[]).some(p=>p.func);
+ const g=st.gate||{},names=a=>a.map(x=>`<code>${esc(x)}</code>`).join(", ");
+ const gate=[g.checking&&g.checking.length?`Gate: checking ${names(g.checking)}`:"",g.waiting&&g.waiting.length?`waiting for the gate: ${names(g.waiting)}`:"",
+  st.permuteWaiting&&st.permuteWaiting.length?`waiting for a permuter: ${names(st.permuteWaiting)}`:""].filter(Boolean).join(" · ");
+ const res=(st.results||[]).slice(0,10).map(x=>{const [l,c]=OUT[x.outcome]||[x.outcome,"var(--axis)"];
+  return `<tr><td class="num">${esc(hm(x.at))}</td><td><code>${esc(x.name)}</code> <span class="small">${n(x.size||0)} B</span></td>`+
+   `<td><i class="dot" style="background:${c}"></i>${esc(l)} <span class="small">${esc(x.model||"")}</span></td><td class="num">${x.usd!=null?"$"+x.usd.toFixed(2):""}</td></tr>`}).join("");
+ const log=(st.log||[]).slice(-8).map(l=>{const m=String(l).match(/^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d) (.*)$/);
+  return `<div><span class="lt">${m?esc(hm(m[1].replace(" ","T")+"Z")):""}</span>${esc(m?m[2]:l)}</div>`}).join("");
+ const runs=(st.runs||[]).slice(0,6).map(x=>{const d=x.ended?(Date.parse(x.ended)-Date.parse(x.started))/6e4:x.id==r.id?mins:null;
+  return `<tr><td>${esc(when(x.started))}${x.id==r.id?'<span class="tag">this run</span>':""}</td><td>${esc(x.target)}</td><td class="num">${d!=null?dur(d):"—"}</td>`+
+   `<td class="num">${n(x.matched||0)}</td><td class="num opt">${n(x.parked||0)}</td><td class="num">$${(x.usd||0).toFixed(2)}</td><td class="num opt">${x.matched?"$"+(x.usd/x.matched).toFixed(2):"—"}</td></tr>`}).join("");
+ el.innerHTML=`<div class="head"><div><h2>Swarm</h2><div class="small">Run ${esc(r.id)}${r.dryRun?" (dry run)":""} · ${esc(r.target)} · ${esc(pool)} · started ${esc(when(r.started))}</div></div>`+
+  `<div class="ctl"><span class="pill"><i style="background:${col}"></i>${label}</span><span class="small">${stale?"last update":"updated"} ${ago(age)}</span></div></div>`+
+  (fresh?`<div class="notice">${n(fresh)} matched since this page was generated <button type="button" id="reload">Reload</button></div>`:"")+
+  `<div class="meters">${meter("Time",dur(mins),dur(lim.minutes||0),pct(mins,lim.minutes))}${meter("Spend","$"+(r.costUsd||0).toFixed(2),"$"+(lim.usd||0),pct(r.costUsd,lim.usd))}`+
+  `${meter("Functions leased",n(r.leases||0),n(lim.functions||0),pct(r.leases,lim.functions))}</div><div class="counts">${counts}</div>`+
+  (live||busy?`<div class="wrap"><table><tr><th>Slot</th><th>Function</th><th class="num">Bytes</th><th class="opt">Model</th><th class="opt">Session</th><th class="num">Running for</th></tr>${slots}</table></div>`:"")+
+  (gate?`<div class="small gate">${gate}</div>`:"")+
+  `<div class="two"><div><div class="sub2">This run</div>${res?`<table>${res}</table>`:'<div class="empty">No results yet.</div>'}</div>`+
+  `<div><div class="sub2">Log</div><div class="log">${log||'<span class="empty">Nothing logged yet.</span>'}</div></div></div>`+
+  (runs?`<div class="sub2">Recent runs</div><div class="wrap"><table><tr><th>Started</th><th>Target</th><th class="num">Took</th><th class="num">Matched</th><th class="num opt">Parked</th><th class="num">Spend</th><th class="num opt">$/match</th></tr>${runs}</table></div>`:"");
+ const rb=$("reload");if(rb)rb.onclick=()=>location.reload();
+}
+window.swarmStatus=st=>{SW.last=st;try{renderSwarm(st)}catch(e){console.error("swarm card:",e)}};
+function pollSwarm(){
+ const s=document.createElement("script");
+ s.src="swarm.js?"+Date.now();
+ s.onload=()=>{s.remove();SW.misses=0;nextPoll()};
+ s.onerror=()=>{s.remove();SW.misses++;if(!SW.last)$("swarm").hidden=true;nextPoll()};
+ document.head.appendChild(s);
+}
+function nextPoll(){
+ clearTimeout(SW.timer);
+ // served over http(s) with no swarm.js (GitHub Pages): stop asking
+ if(!SW.last&&SW.misses&&location.protocol!="file:")return;
+ const live=SW.last&&SW.last.run&&SW.last.run.state=="running";
+ SW.timer=setTimeout(pollSwarm,!document.hidden&&live?5e3:60e3);
+}
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&(SW.last||location.protocol=="file:"))pollSwarm()});
+pollSwarm();
+</script>
+</body>
+</html>

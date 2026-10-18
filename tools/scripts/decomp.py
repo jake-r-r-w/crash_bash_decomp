@@ -2374,16 +2374,24 @@ ROM_COMMENT = re.compile(r"/\*\s*([0-9A-Fa-f]+)\s+[0-9A-Fa-f]{8}\s")
 RODATA_CACHE = "build/cache/rodata_syms.json"
 
 
-def rodata_syms(seg):
+def split_inputs():
+    """[(path, mtime)] of what a re-split depends on: the splat configs and the symbol files."""
+    inputs = sorted(glob.glob(f"{CFG}/**/*.yaml", recursive=True) + glob.glob(f"{CFG}/sym.*.txt"))
+    return [(p, os.path.getmtime(p)) for p in inputs]
+
+
+def rodata_syms(seg, inputs=None, cache=None):
     """[(rom, symbol, owners)] for the rodata splat put under asm/nonmatchings/<seg>/: owners is
     the function it was migrated into, else every function that refers to it.
     Cached in build/: parsing ~2800 .s files over Docker's Windows bind mount takes ~11 s, and the
     dashboard (so every `done`) needs it. The .s files only change when splat runs, which depends
-    on the configs and symbol files, so those mtimes and the file list are the cache key."""
+    on the configs and symbol files, so those mtimes and the file list are the cache key.
+    A caller looking up many segments passes split_inputs() and the loaded cache once: each mtime
+    is ~1 ms over the bind mount, and 29 segments x 33 files was ~1 s of every `done`."""
     files = sorted(glob.glob(f"asm/nonmatchings/{seg}/*.s"))
-    inputs = sorted(glob.glob(f"{CFG}/**/*.yaml", recursive=True) + glob.glob(f"{CFG}/sym.*.txt"))
-    key = hashlib.sha1(json.dumps([files, [(p, os.path.getmtime(p)) for p in inputs]]).encode()).hexdigest()
-    cache = jload(RODATA_CACHE, {})
+    key = hashlib.sha1(json.dumps([files, split_inputs() if inputs is None else inputs]).encode()).hexdigest()
+    if cache is None:
+        cache = jload(RODATA_CACHE, {})
     if cache.get(seg, {}).get("key") == key:
         return [(rom, sym, owners) for rom, sym, owners in cache[seg]["syms"]]
     out = _rodata_syms(seg, files)
@@ -4100,23 +4108,50 @@ def unit_of(e, proj):
     return os.path.splitext(os.path.basename(e.get("bin") or proj["exe"]))[0] if e.get("bin") else "main exe"
 
 
+TYPED_CACHE = "build/cache/typed.json"
+
+
+def typed_matched(funcs, stat, proj, syms):
+    """{key: whether its C is free of raw offsets} for the matched game functions; a function with
+    no C of its own is left out. Cached in build/ per source file version (mtime, size): finding
+    ~1200 bodies by regex took ~8 s of every `done`, and a match changes one file."""
+    cache, out, dirty = jload(TYPED_CACHE, {}), {}, False
+    by_src = defaultdict(list)
+    for k, e in funcs.items():
+        if stat[k] == "matched" and e.get("src") and not is_lib(e, proj):
+            by_src[e["src"]].append(k)
+    for src, keys in by_src.items():
+        try:
+            st = os.stat(src)
+        except FileNotFoundError:
+            continue
+        ver = [st.st_mtime_ns, st.st_size, UNTYPED.pattern]
+        ent = cache.get(src)
+        if not ent or ent["ver"] != ver:
+            ent = cache[src] = {"ver": ver, "names": {}}
+            dirty = True
+        text = None
+        for k in keys:
+            name = cur_name(k, funcs[k], syms)
+            if name not in ent["names"]:
+                text = read(src) if text is None else text
+                body = extract_function(text, name)
+                ent["names"][name] = None if body is None else not UNTYPED.search(body)
+                dirty = True
+            if ent["names"][name] is not None:
+                out[k] = ent["names"][name]
+    if dirty:
+        jsave(TYPED_CACHE, cache)
+    return out
+
+
 def summary(funcs, stat, proj):
     """Bytes matched per group and per unit. Functions written in assembly originally (kind asm)
     are recovered as .s and counted apart from the C totals; names and copies are tracked too."""
     syms = sym_names()
     blank = lambda: {"done_b": 0, "total_b": 0, "done_f": 0, "total_f": 0, "asm_b": 0, "asm_f": 0,
                      "named_f": 0, "all_f": 0, "blocked": 0, "sony_b": 0, "c_f": 0, "typed_f": 0}
-    texts = {}
-
-    def typed(k, e):
-        """None if the function has no C of its own, else whether its C is free of raw offsets."""
-        src = e.get("src")
-        if not src or not os.path.exists(src):
-            return None
-        if src not in texts:
-            texts[src] = read(src)
-        body = extract_function(texts[src], cur_name(k, e, syms))
-        return None if body is None else not UNTYPED.search(body)
+    typed = typed_matched(funcs, stat, proj, syms)
     grp = {g: blank() for g in ("game", "lib")}
     units = {}
     twins = defaultdict(list)
@@ -4133,7 +4168,7 @@ def summary(funcs, stat, proj):
             title, phase = unit_meta(un, proj) if g == "game" else ("", None)
             u = units[un] = dict(blank(), unit=un, lib=g == "lib", files=set(), title=title, phase=phase,
                                  file=os.path.basename(e.get("bin") or proj["exe"]))
-        ty = typed(k, e) if stat[k] == "matched" and g == "game" else None
+        ty = typed.get(k)
         u["files"].add(e["seg"])
         for t in (grp[g], u):
             t["all_f"] += 1
@@ -4194,6 +4229,7 @@ def data_summary(funcs, stat, proj):
     syms = sym_names()  # once: inside the comprehension it re-read every symbol file per function
     matched = {cur_name(k, e, syms) for k, e in funcs.items() if stat.get(k) == "matched"}
     total = done = 0
+    inputs, cache = split_inputs(), jload(RODATA_CACHE, {})
     yamls = [yaml_of(proj['name'])] + [yaml_of(o['name']) for o in proj.get("overlays", [])]
     for y in yamls:
         if not os.path.exists(y):
@@ -4203,7 +4239,7 @@ def data_summary(funcs, stat, proj):
                 continue
             total += end - start
             if typ == ".rodata":
-                syms = [s for s in rodata_syms(name) if start <= s[0] < end]
+                syms = [s for s in rodata_syms(name, inputs, cache) if start <= s[0] < end]
                 for i, (rom, sym, owners) in enumerate(syms):
                     nxt = syms[i + 1][0] if i + 1 < len(syms) else end
                     if len(owners) == 1 and owners[0] in matched and not os.path.exists(
@@ -4299,6 +4335,48 @@ def backfill_units(hist, funcs, stat, st, proj):
         h["units"] = dict(u)
 
 
+def page_history(hist):
+    """The history as the page draws it: one column per figure (t: seconds since the point
+    before), and each unit's [point, bytes, functions] only where it changes. A match moves one
+    unit, so this is ~10x smaller than the points themselves."""
+    pts = [h for h in hist if h.get("game_tb")]
+    out = {"t": [], "game_b": [], "game_f": [], "named_f": [], "data_b": [], "units": {}}
+    prev, last = 0, {}
+    for i, h in enumerate(pts):
+        ts = int(datetime.datetime.strptime(h["ts"], "%Y-%m-%dT%H:%M:%SZ")
+                 .replace(tzinfo=datetime.timezone.utc).timestamp())
+        out["t"].append(ts - prev)
+        prev = ts
+        for col, k in (("game_b", "game_b"), ("game_f", "game_f"), ("named_f", "game_named_f"), ("data_b", "data_b")):
+            out[col].append(h.get(k, 0))
+        for un, v in sorted((h.get("units") or {}).items()):
+            if last.get(un) != list(v):
+                out["units"].setdefault(un, []).append([i, *v])
+                last[un] = list(v)
+    return out
+
+
+MAP_STATUS = {"matched": "m", "blocked": "p"}   # anything else still to match: "t"
+
+
+def page_map(funcs, stat, proj, syms):
+    """Every game function for the page's code map, in unit, file and address order: [seg, unit,
+    count] per file, then per function its name, size and status letter (m matched, p parked,
+    t to do). The same functions as the game totals."""
+    rows = sorted((unit_of(e, proj), e["seg"], e.get("rom", 0), cur_name(k, e, syms), e["size"],
+                   MAP_STATUS.get(stat[k], "t"))
+                  for k, e in funcs.items() if not is_lib(e, proj) and stat[k] not in ("asm", "sony", "unsplit"))
+    out = {"segs": [], "n": [], "s": [], "t": ""}
+    for un, seg, _, name, size, st in rows:
+        if not out["segs"] or out["segs"][-1][0] != seg:
+            out["segs"].append([seg, un, 0])
+        out["segs"][-1][2] += 1
+        out["n"].append(name)
+        out["s"].append(size)
+    out["t"] = "".join(r[5] for r in rows)
+    return out
+
+
 def cmd_progress(a):
     proj, funcs = need_proj(), need_funcs()
     stat, st = statuses(funcs)
@@ -4332,8 +4410,11 @@ def cmd_progress(a):
     }
     os.makedirs("docs", exist_ok=True)
     jsave("docs/progress.json", data)
-    write("docs/index.html", DASHBOARD.replace("/*DATA*/null", json.dumps(data, separators=(",", ":"))
-                                               .replace("</", "<\\/")))
+    # the page gets the history packed and the code map; progress.json keeps the plain points
+    page = {k: v for k, v in data.items() if k != "history"}
+    page.update(hist=page_history(hist), map=page_map(funcs, stat, proj, syms))
+    write("docs/index.html", read(DASHBOARD).replace("/*DATA*/null", json.dumps(page, separators=(",", ":"))
+                                                     .replace("</", "<\\/")))
     g, l = s["game"], s["lib"]
     write_badges(g, l)
     fmt = lambda t: f"{t['pct']:.2f}% ({t['done_b']}/{t['total_b']} bytes, {t['done_f']}/{t['total_f']} functions)"
@@ -4343,288 +4424,8 @@ def cmd_progress(a):
           f"parked {s['blocked']} -> docs/index.html")
 
 
-DASHBOARD = r"""<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Decomp Progress</title>
-<style>
-:root{--page:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#898781;--grid:#e1e0d9;--axis:#c3c2b7;
---s1:#2a78d6;--s2:#eb6834;--s3:#1f9e74;--s4:#8a63d2;--u3:#1baf7a;--track:#ecebe7;--warn:#fab219}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--page:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;
---muted:#898781;--grid:#2c2c2a;--axis:#383835;--s1:#3987e5;--s2:#d95926;--s3:#2bb487;--s4:#9d7be0;--u3:#199e70;--track:#2c2c2a}}
-:root[data-theme="dark"]{--page:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--muted:#898781;--grid:#2c2c2a;
---axis:#383835;--s1:#3987e5;--s2:#d95926;--s3:#2bb487;--s4:#9d7be0;--u3:#199e70;--track:#2c2c2a}
-*{box-sizing:border-box}
-body{margin:0;background:var(--page);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
-main{max-width:1040px;margin:0 auto;padding:28px 16px 48px}
-h1{font-size:22px;margin:0}
-.sub{color:var(--ink2);font-size:13px;margin:4px 0 20px}
-h2{font-size:15px;margin:0 0 12px}
-.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
-.card{background:var(--surface);border:1px solid var(--grid);border-radius:10px;padding:16px}
-.label{color:var(--ink2);font-size:13px}
-.big{font-size:32px;font-weight:650;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
-.small{color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
-.bar{height:8px;background:var(--track);border-radius:4px;overflow:hidden;margin-top:10px}
-.bar>span{display:block;height:100%;border-radius:4px}
-.card+.card,.section{margin-top:16px}
-.tiles .card{margin-top:0}
-svg text{fill:var(--muted);font-size:11px}
-.legend{display:flex;gap:16px;font-size:13px;color:var(--ink2);margin-bottom:6px}
-.legend i{display:inline-block;width:12px;height:2px;vertical-align:middle;margin-right:6px}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;color:var(--ink2);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--axis);cursor:pointer;white-space:nowrap}
-td{padding:6px 8px;border-bottom:1px solid var(--grid);font-variant-numeric:tabular-nums;vertical-align:top}
-td.num,th.num{text-align:right}
-.mini{width:120px;height:6px;background:var(--track);border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle}
-.mini>span{display:block;height:100%;background:var(--s1);border-radius:3px}
-.tag{font-size:11px;color:var(--ink2);border:1px solid var(--axis);border-radius:4px;padding:0 4px;margin-left:6px}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-tr.grp td{color:var(--ink2);font-weight:600;font-size:12px;padding-top:14px;border-bottom:1px solid var(--axis)}
-@media (max-width:760px){.two{grid-template-columns:1fr}.mini{width:70px}.opt{display:none}}
-.tip{position:fixed;pointer-events:none;background:var(--surface);border:1px solid var(--axis);border-radius:6px;padding:6px 8px;
-font-size:12px;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.15);display:none;white-space:nowrap}
-.empty{color:var(--muted);font-size:13px}
-.head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
-details.card>summary{cursor:pointer;list-style-position:inside}
-details.card>summary h2{display:inline;margin:0}
-.ctl{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-.scale{display:inline-flex;border:1px solid var(--axis);border-radius:6px;overflow:hidden}
-.scale button{font:inherit;font-size:12px;background:transparent;color:var(--ink2);border:0;padding:4px 10px;cursor:pointer}
-.scale button+button{border-left:1px solid var(--axis)}
-.scale button[aria-pressed="true"]{background:var(--track);color:var(--ink);font-weight:600}
-.wrap{overflow-x:auto}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.chips button{font:inherit;font-size:12px;border:1px solid var(--grid);background:transparent;color:var(--ink2);border-radius:999px;padding:2px 10px;cursor:pointer}
-.chips button[aria-pressed="true"]{color:var(--ink);font-weight:600;border-color:var(--axis)}
-.chips i{display:inline-block;width:12px;height:2px;margin-right:6px;vertical-align:middle;background:var(--axis);border-radius:1px}
-#multi svg .ctx{cursor:pointer}
-.sub2{color:var(--ink2);font-size:12px;font-weight:600;margin:16px 0 8px}
-details summary{cursor:pointer;color:var(--ink2);font-size:12px;font-weight:600;margin:16px 0 8px}
-code{font-size:12px}
-</style>
-</head>
-<body>
-<main>
-<div class="head"><div><h1 id="title">Decomp progress</h1><div class="sub" id="sub"></div></div>
-<div class="scale" id="theme" role="group" aria-label="Theme"></div></div>
-<div class="tiles" id="tiles"></div>
-<div class="card section"><div class="head"><h2>Progress over time</h2><div class="ctl"><div class="scale" id="measure" role="group" aria-label="Measure"></div><div class="scale" id="scale" role="group" aria-label="Time scale"></div></div></div>
-<div class="legend" id="legend"></div><div id="chart"></div></div>
-<div class="card section"><h2>Progress per unit</h2>
-<div class="small" style="margin-bottom:6px"><span id="multi-what">C bytes matched</span> in each unit, on the time scale and measure above. main.exe and the engine are highlighted; click a unit to highlight it too. PsyQ (Sony's objects, ~99%) is left out.</div>
-<div id="multi"></div><div class="chips" id="uchips" role="group" aria-label="Highlight a unit"></div></div>
-<div class="card section"><h2>By binary</h2><div class="wrap"><table id="segs"></table></div></div>
-
-</main>
-<div class="tip" id="tip"></div>
-<script>
-const D=/*DATA*/null;
-// theme: Auto follows the OS; Light/Dark set data-theme on <html> (the CSS handles both)
-(function(){
- const el=document.getElementById("theme"),root=document.documentElement;
- let t=null;try{t=localStorage.getItem("decomp-theme")}catch(e){}
- function set(v){t=v;if(v=="auto")root.removeAttribute("data-theme");else root.setAttribute("data-theme",v);
-  try{localStorage.setItem("decomp-theme",v)}catch(e){}
-  el.innerHTML=[["auto","Auto"],["light","Light"],["dark","Dark"]].map(([k,l])=>`<button data-t="${k}" aria-pressed="${k==t}">${l}</button>`).join("");
-  el.querySelectorAll("button").forEach(b=>b.onclick=()=>set(b.dataset.t))}
- set(["light","dark"].includes(t)?t:"auto");
-})();
-const $=id=>document.getElementById(id);
-const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const pct=(a,b)=>b?100*a/b:0, f2=x=>x.toFixed(2)+"%", n=x=>x.toLocaleString();
-const S=D.summary, hasLib=S.lib.total_f>0;
-$("title").textContent=(D.game||"Game")+" decomp progress";
-$("sub").textContent="Updated "+D.generated.replace("T"," ").replace("Z"," UTC")+(D.commit?" · commit "+D.commit:"");
-const tile=(label,big,small,p,color)=>`<div class="card"><div class="label">${label}</div><div class="big">${big}</div>
-<div class="small">${small}</div>${p==null?"":`<div class="bar"><span style="width:${Math.min(100,p)}%;background:${color}"></span></div>`}</div>`;
-// one tile per code group, same layout for both: bytes % (headline + bar), bytes and functions below
-const grpTile=(label,G,color,extra)=>tile(label,f2(G.pct),
- `${n(G.done_b)} / ${n(G.total_b)} bytes<br>${n(G.done_f)} / ${n(G.total_f)} functions · ${f2(pct(G.done_f,G.total_f))}`+(extra||""),G.pct,color);
-const named=S.game.named_f, all=S.game.all_f, DA=S.data||{done_b:0,total_b:0,pct:0};
-$("tiles").innerHTML=grpTile("Game code matched",S.game,"var(--s1)")+
- tile("Game functions named",f2(pct(named,all)),`${n(named)} / ${n(all)} with a real name`,pct(named,all),"var(--s3)")+
- tile("Data in C",f2(DA.pct),`${n(DA.done_b)} / ${n(DA.total_b)} bytes of data and rodata`,DA.pct,"var(--s4)")+
- tile("Parked",`${S.blocked}`,"functions waiting for another attempt",null);
-
-// history chart: % of bytes matched per group, bucketed by a selectable time unit
-(function(){
- const el=$("chart"), ctl=$("scale"), mctl=$("measure");
- const MEASURES={bytes:"Bytes",functions:"Functions"};
- let measure=null;try{measure=localStorage.getItem("decomp-measure")}catch(e){}
- if(!MEASURES[measure])measure="bytes";
- const fnMode=()=>measure=="functions";
- const H=(D.history||[]).filter(h=>h.game_tb>0);
- const series=[{k:"game",name:"Game code",col:"var(--s1)",G:S.game}];
- // the library is linked whole from Sony's objects: charting it would only flatten the game lines
- series.push({k:"named",name:"Game functions named",col:"var(--s3)",num:"game_named_f",den:"game_all_f"});
- // data has no functions: its line stays in bytes in both measures, and says so
- series.push({k:"data",name:"Data in C",col:"var(--s4)",num:"data_b",den:"data_tb",bytesOnly:1});
- const legend=()=>{$("legend").innerHTML=series.map(s=>`<span><i style="background:${s.col}"></i>${s.name}`+
-  (s.G?` (${fnMode()?"functions":"bytes"})`:s.bytesOnly?` (bytes${fnMode()?"; data has no functions":""})`:"")+`</span>`).join("")};
- const UNITS={minute:{label:"Minutes",win:120},hour:{label:"Hours",win:48},day:{label:"Days",win:60},
-  week:{label:"Weeks",win:52},month:{label:"Months",win:0}};
- const floor=(t,u)=>{const d=new Date(t);d.setSeconds(0,0);if(u!="minute"){d.setMinutes(0);if(u!="hour"){d.setHours(0);
-  if(u=="week")d.setDate(d.getDate()-((d.getDay()+6)%7));if(u=="month")d.setDate(1)}}return d.getTime()};
- const step=(t,u,n=1)=>{const d=new Date(t);if(u=="minute")d.setMinutes(d.getMinutes()+n);else if(u=="hour")d.setHours(d.getHours()+n);
-  else if(u=="day")d.setDate(d.getDate()+n);else if(u=="week")d.setDate(d.getDate()+7*n);else d.setMonth(d.getMonth()+n);return d.getTime()};
- const lab=(t,u)=>{const d=new Date(t);return u=="minute"?d.toLocaleTimeString(undefined,{hour:"2-digit",minute:"2-digit"})
-  :u=="hour"?d.toLocaleString(undefined,{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})
-  :u=="month"?d.toLocaleDateString(undefined,{month:"short",year:"numeric"})
-  :(u=="week"?"w/c ":"")+d.toLocaleDateString(undefined,{month:"short",day:"numeric"})};
- const auto=()=>{const sp=H.length?Date.now()-Date.parse(H[0].ts):0,HR=36e5,DAY=864e5;
-  return sp<3*HR?"minute":sp<2*DAY?"hour":sp<60*DAY?"day":sp<365*DAY?"week":"month"};
- let unit=null;try{unit=localStorage.getItem("decomp-scale")}catch(e){}
- if(!UNITS[unit])unit=auto();
- function buckets(u){
-  const now=Date.now(),last=floor(now,u),out=[];
-  let start=H.length?floor(Date.parse(H[0].ts),u):last;
-  if(UNITS[u].win)start=Math.max(start,step(last,u,1-UNITS[u].win));
-  let j=0,prev=null;
-  for(let b=start;b<=last;b=step(b,u)){
-   const end=step(b,u);
-   while(j<H.length&&Date.parse(H[j].ts)<end){prev=H[j];j++}
-   out.push({t:b,h:prev});
-  }
-  // the state at the start of the window, to compute the first bucket's gain
-  let before=null;for(const h of H)if(Date.parse(h.ts)<start)before=h;
-  return {out,before};
- }
- function draw(){
-  ctl.innerHTML=Object.entries(UNITS).map(([k,v])=>`<button data-u="${k}" aria-pressed="${k==unit}">${v.label}</button>`).join("");
-  ctl.querySelectorAll("button").forEach(b=>b.onclick=()=>{unit=b.dataset.u;try{localStorage.setItem("decomp-scale",unit)}catch(e){}draw()});
-  mctl.innerHTML=Object.entries(MEASURES).map(([k,v])=>`<button data-m="${k}" aria-pressed="${k==measure}">${v}</button>`).join("");
-  mctl.querySelectorAll("button").forEach(b=>b.onclick=()=>{measure=b.dataset.m;try{localStorage.setItem("decomp-measure",measure)}catch(e){}draw()});
-  legend();$("multi-what").textContent=fnMode()?"Functions matched":"C bytes matched";
-  if(!H.length){el.innerHTML='<div class="empty">The chart fills in as functions are matched.</div>';$("multi").innerHTML="";return}
-  const {out:Bk,before}=buckets(unit), N=Bk.length;
-  multi(Bk,before);
-  // every point against today's totals: the code known to exist grew (overlays were added
-  // later), and a percentage of a smaller total would make the line fall when nothing was lost
-  const v=(s,h)=>!h?0:s.num?pct(h[s.num]||0,s.den=="game_all_f"?S.game.all_f:(S.data||{}).total_b)
-   :fnMode()?pct(h[s.k+"_f"],s.G.total_f):pct(h[s.k+"_b"],s.G.total_b);
-  const W=Math.max(320,el.clientWidth||900),Ht=240,L=44,R=16,T=10,B=28,iw=W-L-R,ih=Ht-T-B;
-  const hi=Math.max(...Bk.map(b=>Math.max(...series.map(s=>v(s,b.h)))));
-  const ymax=Math.min(100,Math.max(1,hi*1.15)), bw=iw/Math.max(1,N);
-  const x=i=>L+bw*(i+.5), y=val=>T+ih*(1-val/ymax);
-  let g="";
-  for(let i=0;i<=4;i++){const val=ymax*i/4,yy=y(val).toFixed(1);
-   g+=`<line x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}" stroke="${i?"var(--grid)":"var(--axis)"}" stroke-width="1"/>`+
-      `<text x="${L-6}" y="${+yy+4}" text-anchor="end">${val<1?val.toFixed(2):val<10?val.toFixed(1):val.toFixed(0)}%</text>`}
-  const nl=Math.max(1,Math.min(N,Math.floor(iw/110)));
-  for(let k=0;k<nl;k++){const i=nl==1?N-1:Math.round(k*(N-1)/(nl-1));
-   g+=`<text x="${x(i).toFixed(1)}" y="${Ht-8}" text-anchor="${k==0&&nl>1?"start":k==nl-1?"end":"middle"}">${esc(lab(Bk[i].t,unit))}</text>`}
-  for(const s of series){
-   let d="";Bk.forEach((b,i)=>{const px=x(i).toFixed(1),py=y(v(s,b.h)).toFixed(1);d+=(i?"L":"M")+px+","+py});
-   g+=`<path d="${d}" fill="none" stroke="${s.col}" stroke-width="2" stroke-linejoin="round"/>`;
-   if(N<=90)Bk.forEach((b,i)=>{g+=`<circle cx="${x(i).toFixed(1)}" cy="${y(v(s,b.h)).toFixed(1)}" r="${i==N-1?4:2.5}" fill="${s.col}" stroke="var(--surface)" stroke-width="${i==N-1?2:1}"/>`});
-  }
-  g+=`<line id="xh" y1="${T}" y2="${T+ih}" stroke="var(--axis)" stroke-width="1" visibility="hidden"/>`;
-  g+=`<rect x="${L}" y="${T}" width="${iw}" height="${ih}" fill="transparent" id="hit"/>`;
-  el.innerHTML=`<svg width="100%" viewBox="0 0 ${W} ${Ht}" role="img" aria-label="Matched ${fnMode()?"functions":"code bytes"} percentage by ${unit}">${g}</svg>`;
-  const tip=$("tip"),xh=el.querySelector("#xh"),svg=el.querySelector("svg");
-  el.querySelector("#hit").addEventListener("mousemove",ev=>{
-   const r=svg.getBoundingClientRect(),mx=(ev.clientX-r.left)*W/r.width;
-   const i=Math.max(0,Math.min(N-1,Math.floor((mx-L)/bw))),b=Bk[i],p=i?Bk[i-1].h:before;
-   xh.setAttribute("x1",x(i));xh.setAttribute("x2",x(i));xh.setAttribute("visibility","visible");
-   tip.innerHTML=`<b>${esc(lab(b.t,unit))}</b>`+series.map(s=>{
-    if(s.num)return `<br>${s.name}: ${f2(v(s,b.h))}`;
-    const gb=(b.h?b.h[s.k+"_b"]:0)-(p?p[s.k+"_b"]:0),gf=(b.h?b.h[s.k+"_f"]:0)-(p?p[s.k+"_f"]:0);
-    return `<br>${s.name}: ${f2(v(s,b.h))} · ${n(b.h?b.h[s.k+"_f"]:0)} functions`+(gf||gb?` <span class="small">(+${n(gf)} fn, +${n(gb)} B)</span>`:"")}).join("");
-   tip.style.display="block";tip.style.left=Math.min(ev.clientX+12,innerWidth-300)+"px";tip.style.top=(ev.clientY+12)+"px";});
-  el.querySelector("#hit").addEventListener("mouseleave",()=>{tip.style.display="none";xh.setAttribute("visibility","hidden")});
- }
- // all game units on one chart: every unit a thin grey line, main.exe and the engine in
- // colour, plus one unit the viewer picks (palette slots 1-3; more hues would not stay apart)
- let pick=null;try{pick=localStorage.getItem("decomp-unit")}catch(e){}
- function multi(Bk,before){
-  $("tip").style.display="none";
-  const box=$("multi"), N=Bk.length, units=(S.units||[]).filter(u=>!u.lib&&u.total_b>0);
-  const FIX={"main exe":"var(--s1)","engine":"var(--s2)"};
-  if(!units.some(u=>u.unit==pick&&!FIX[u.unit]))pick=null;
-  const col=u=>FIX[u.unit]||(u.unit==pick?"var(--u3)":null);
-  const at=(h,u)=>h&&h.units&&h.units[u.unit]||[0,0];
-  const val=(h,u)=>fnMode()?pct(at(h,u)[1],u.total_f):pct(at(h,u)[0],u.total_b);
-  const name=u=>u.unit+(u.title&&u.title!=u.unit?` (${u.title})`:"");
-  const W=Math.max(320,box.clientWidth||900),Ht=280,L=44,R=Math.min(150,W*.28),T=10,B=28,iw=W-L-R,ih=Ht-T-B,bw=iw/Math.max(1,N);
-  const hi=Math.max(...units.flatMap(u=>Bk.map(b=>val(b.h,u))));
-  const ymax=Math.min(100,Math.max(1,hi*1.1)), x=i=>L+bw*(i+.5), y=v=>T+ih*(1-v/ymax);
-  let g="";
-  for(let i=0;i<=4;i++){const v=ymax*i/4,yy=y(v).toFixed(1);
-   g+=`<line x1="${L}" x2="${L+iw}" y1="${yy}" y2="${yy}" stroke="${i?"var(--grid)":"var(--axis)"}" stroke-width="1"/>`+
-      `<text x="${L-6}" y="${+yy+4}" text-anchor="end">${v<1?v.toFixed(2):v<10?v.toFixed(1):v.toFixed(0)}%</text>`}
-  const nl=Math.max(1,Math.min(N,Math.floor(iw/110)));
-  for(let k=0;k<nl;k++){const i=nl==1?N-1:Math.round(k*(N-1)/(nl-1));
-   g+=`<text x="${x(i).toFixed(1)}" y="${Ht-8}" text-anchor="${k==0&&nl>1?"start":k==nl-1?"end":"middle"}">${esc(lab(Bk[i].t,unit))}</text>`}
-  const path=u=>Bk.map((b,i)=>(i?"L":"M")+x(i).toFixed(1)+","+y(val(b.h,u)).toFixed(1)).join("");
-  // context lines first, highlighted ones on top; a wide transparent stroke is the click target
-  const ctx=units.filter(u=>!col(u)), hl=units.filter(u=>col(u));
-  for(const u of ctx)g+=`<g class="ctx" data-u="${esc(u.unit)}"><path d="${path(u)}" fill="none" stroke="var(--axis)" stroke-width="1.25" stroke-linejoin="round"/>`+
-   `<path d="${path(u)}" fill="none" stroke="transparent" stroke-width="10"><title>${esc(name(u))}</title></path></g>`;
-  for(const u of hl){g+=`<path d="${path(u)}" fill="none" stroke="${col(u)}" stroke-width="2" stroke-linejoin="round"/>`+
-   `<circle cx="${x(N-1).toFixed(1)}" cy="${y(val(Bk[N-1].h,u)).toFixed(1)}" r="4" fill="${col(u)}" stroke="var(--surface)" stroke-width="2"/>`}
-  // direct labels for the highlighted lines, nudged apart so they never overlap
-  const labs=hl.map(u=>({u,v:val(Bk[N-1].h,u),yy:y(val(Bk[N-1].h,u))})).sort((a,b)=>a.yy-b.yy);
-  for(let i=1;i<labs.length;i++)labs[i].yy=Math.max(labs[i].yy,labs[i-1].yy+14);
-  for(const l of labs)g+=`<text x="${(x(N-1)+8).toFixed(1)}" y="${(l.yy+4).toFixed(1)}" style="fill:var(--ink2)">${esc(l.u.unit)} ${f2(l.v)}</text>`;
-  g+=`<line class="xh" y1="${T}" y2="${T+ih}" stroke="var(--axis)" stroke-width="1" visibility="hidden"/>`;
-  g+=`<rect class="hit" x="${L}" y="${T}" width="${iw}" height="${ih}" fill="transparent" pointer-events="none"/>`;
-  box.innerHTML=`<svg width="100%" viewBox="0 0 ${W} ${Ht}" role="img" aria-label="${fnMode()?"Functions":"C bytes"} matched per unit by ${unit}">${g}</svg>`;
-  $("uchips").innerHTML=units.map(u=>`<button data-u="${esc(u.unit)}" aria-pressed="${!!col(u)}"${FIX[u.unit]?" disabled":""}>`+
-   `<i style="background:${col(u)||"var(--axis)"}"></i>${esc(name(u))}</button>`).join("");
-  const choose=un=>{pick=pick==un?null:un;try{localStorage.setItem("decomp-unit",pick||"")}catch(e){}multi(Bk,before)};
-  $("uchips").querySelectorAll("button:not([disabled])").forEach(b=>b.onclick=()=>choose(b.dataset.u));
-  box.querySelectorAll(".ctx").forEach(e=>{e.onclick=()=>choose(e.dataset.u);
-   e.onmouseenter=()=>e.firstChild.setAttribute("stroke","var(--ink2)");e.onmouseleave=()=>e.firstChild.setAttribute("stroke","var(--axis)")});
-  // hover anywhere: every unit's value at that time, highest first
-  const svg=box.querySelector("svg"), xh=box.querySelector(".xh"), tip=$("tip");
-  svg.addEventListener("mousemove",ev=>{
-   const r=svg.getBoundingClientRect(),mx=(ev.clientX-r.left)*W/r.width;
-   if(mx<L||mx>L+iw){tip.style.display="none";xh.setAttribute("visibility","hidden");return}
-   const i=Math.max(0,Math.min(N-1,Math.floor((mx-L)/bw))),b=Bk[i];
-   xh.setAttribute("x1",x(i));xh.setAttribute("x2",x(i));xh.setAttribute("visibility","visible");
-   tip.innerHTML=`<b>${esc(lab(b.t,unit))}</b> · ${fnMode()?"functions":"bytes"}`+units.map(u=>({u,v:val(b.h,u)})).sort((a,c)=>c.v-a.v)
-    .map(o=>`<br><i style="display:inline-block;width:10px;height:2px;vertical-align:middle;margin-right:6px;background:${col(o.u)||"var(--axis)"}"></i>`+
-     `${col(o.u)?"<b>":""}${esc(o.u.unit)} ${f2(o.v)}${col(o.u)?"</b>":""}`).join("");
-   tip.style.display="block";tip.style.left=Math.min(ev.clientX+12,innerWidth-220)+"px";tip.style.top=Math.max(8,Math.min(ev.clientY+12,innerHeight-tip.offsetHeight-8))+"px"});
-  svg.addEventListener("mouseleave",()=>{tip.style.display="none";xh.setAttribute("visibility","hidden")});
- }
- draw();
- let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(draw,150)});
-})();
-
-// segment table, sortable
-(function(){
- // [key, label, numeric, hidden on narrow screens]
- const cols=[["unit","Unit",0],["pct","C bytes matched",1],["done_f","Functions matched",1],["named_f","Named",1,1],["blocked","Parked",1,1]];
- let key="unit",dir=1;
- function draw(){
-  const cmp=(a,b)=>((a[key]>b[key]?1:a[key]<b[key]?-1:0)||(a.unit>b.unit?1:-1))*dir;
-  const cls=c=>[c[2]?"num":"",c[3]?"opt":""].join(" ");
-  const row=s=>{const c=s.total_b>0;   // no C (all hand-written): a dash, not 0.00%
-   return `<tr><td>${esc(s.unit)}${s.title&&s.title!=s.unit?`<div class="small">${esc(s.title)}</div>`:""}</td>
-   <td class="num">${c?`${f2(s.pct)} <span class="mini"><span style="width:${s.pct}%;${s.lib?"background:var(--s2)":""}"></span></span>`:"—"}</td>
-   <td class="num">${c?`${n(s.done_f)} / ${n(s.total_f)} <span class="small">${f2(pct(s.done_f,s.total_f))}</span>`:"—"}</td>
-   <td class="num opt">${n(s.named_f)} / ${n(s.all_f)}</td><td class="num opt">${s.blocked||""}</td></tr>`};
-  const all=S.units||[], game=all.filter(s=>!s.lib), lib=all.filter(s=>s.lib).sort(cmp);
-  const head=t=>`<tr class="grp"><td colspan="5">${t}</td></tr>`;
-  const gameRows=(lib.length?head("Game code"):"")+game.sort(cmp).map(row).join("");
-  $("segs").innerHTML="<tr>"+cols.map(c=>`<th class="${cls(c)}" data-k="${c[0]}">${c[1]}${key==c[0]?(dir>0?" ▲":" ▼"):""}</th>`).join("")+"</tr>"+
-   (all.length?gameRows+
-    (lib.length?head("PsyQ library: Sony's objects, linked in place")+lib.map(row).join(""):"")
-   :'<tr><td class="empty" colspan="5">Nothing indexed yet.</td></tr>');
-  $("segs").querySelectorAll("th").forEach(th=>th.onclick=()=>{const k=th.dataset.k;dir=key==k?-dir:(k=="unit"?1:-1);key=k;draw()});
- }
- draw();
-})();
-
-
-</script>
-</body>
-</html>
-"""
+# the page: tools/scripts/dashboard.html with the data in place of its /*DATA*/null
+DASHBOARD = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dashboard.html")
 
 
 # ---------------------------------------------------------------- CLI

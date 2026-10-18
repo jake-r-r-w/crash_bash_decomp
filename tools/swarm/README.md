@@ -43,7 +43,23 @@ Needs Docker and `claude` on `PATH` (logged in once with `claude auth login`). W
   and cost are the limits), `--worker-budget-usd` (5), `--worker-minutes` (45).
 - `--resume RUN[,RUN...]`: gate the matches a stopped run verified but never committed.
 - `--dir` (`<repo>-swarm`): clones, logs, results and checkpoints.
-- `--dry-run`; `--worker-cmd CMD` runs CMD instead of Claude (for tests).
+- `--page` (`docs/swarm.js`): the dashboard's live status file, relative to the repo; `--page ''`
+  turns it off.
+- `--dry-run`; `--worker-cmd CMD` runs CMD instead of Claude (for tests). A dry run still records
+  its fake parks in `history.json` as attempts: don't use one to preview a queue.
+
+## Live status on the dashboard
+
+While a run is on, the orchestrator writes `docs/swarm.js` in your checkout (git-ignored) and
+`docs/index.html` shows it as a Swarm card: the state, time and spend against the limits, what
+each slot and permuter is on, the gate's queue, this run's outcomes, the log's last lines and the
+recent runs (from `swarm.log` and `ledger.jsonl`, read once per run). It's written from what the
+run holds in memory (no Docker, no git) when something changes, and every 15 s as a heartbeat; a
+card that hasn't heard from its run for 2 minutes says "Not responding". The page loads it as a
+script, which works from `file://`: every 5 s while the run is on, every minute otherwise. When
+the swarm has committed matches the page doesn't have yet, the card says so with a Reload button
+(your checkout follows the branch while it's clean). GitHub Pages has no `swarm.js`, so the card
+stays hidden there.
 
 ## Big mode
 

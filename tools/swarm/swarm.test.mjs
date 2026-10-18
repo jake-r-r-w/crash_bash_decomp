@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 
 process.env.SWARM_IMPORT = '1';
 const { Swarm, reapply, parseArgs, INCLUDE_LINE, sessionUsage: sessionUsageFn, readTranscript: readTranscriptFn,
-        ledgerStats: ledgerStatsFn } = await import('./swarm.mjs');
+        ledgerStats: ledgerStatsFn, readRuns: readRunsFn } = await import('./swarm.mjs');
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DECOMP = fs.readFileSync(path.join(REPO, 'tools/scripts/decomp.py'), 'utf8');
@@ -694,4 +694,57 @@ test('chaining: a chained prompt says the clone was reset', () => {
   const s = swarm();
   assert.match(s.prompt({ f: fn('func_80010000'), model: 'sonnet', attempt: 1, notes: [], chained: true }),
                /^Next function, in the same session/);
+});
+
+// ---------------------------------------------------------------- the dashboard's swarm card
+
+test('page: swarm.js is written when something changes, else on the 15 s heartbeat; --page "" turns it off', () => {
+  const file = path.join(tmpDir(), 'swarm.js');
+  const s = swarm('--page', file);
+  const read = () => {
+    const t = fs.readFileSync(file, 'utf8');
+    assert.match(t, /^swarmStatus\(\{.*\}\);\n$/s);
+    return JSON.parse(t.slice('swarmStatus('.length, t.lastIndexOf(')')));
+  };
+  s.slots[0].job = { f: fn('func_80010000'), model: 'sonnet', attempt: 1, started: Date.now() - 60e3 };
+  s.writePage('running');
+  const a = read();
+  assert.equal(a.run.state, 'running');
+  assert.deepEqual([a.slots[0].func, a.slots[0].minutes, a.slots[0].limit], ['func_80010000', 1, s.o.workerMinutes]);
+  fs.writeFileSync(file, 'untouched');
+  s.writePage('running');                        // only the clocks moved: no write
+  assert.equal(fs.readFileSync(file, 'utf8'), 'untouched');
+  s.record({ f: fn('func_80010100'), model: 'sonnet', attempt: 1, notes: [], usage: { usd: 0.421 } }, 'parked', 'no idea');
+  s.writePage('running');                        // an outcome: at once
+  assert.deepEqual(read().results.map(r => [r.name, r.outcome, r.usd]), [['func_80010100', 'parked', 0.42]]);
+  fs.writeFileSync(file, 'untouched');
+  s.pageAt -= 16e3;                              // the heartbeat
+  s.writePage('running');
+  assert.notEqual(fs.readFileSync(file, 'utf8'), 'untouched');
+  fs.writeFileSync(file, 'untouched');
+  s.writePage('finished');                       // the end, always
+  assert.equal(read().run.state, 'finished');
+  const off = swarm('--page', '');
+  off.writePage('running');
+  assert.equal(off.pageAt, undefined);
+});
+
+test('page: the runs before this one from swarm.log and ledger.jsonl, newest first, no dry or scripted runs', () => {
+  const dir = tmpDir();
+  fs.writeFileSync(path.join(dir, 'swarm.log'), [
+    '2026-10-17 10:15:01 run 20261017101444: 1 workers, 4 big, 2 permuters, 45 candidates (43 big: >= 400 B or escalated) in overlays/engine',
+    '2026-10-17 10:20:00 w1 start func_80010000 (100 bytes, sonnet, attempt 1)',
+    '2026-10-17 11:26:45 run 20261017101444 finished: 23 matched, 1 parked, 0 failed, 0 conflicts. Commits are on main; notes in x',
+    '2026-10-18 05:32:34 run 20261018053219: 3 workers, 1 big, 0 permuters, 1 candidates (1 big: >= 600 B or escalated) (--only func_800939FC)',
+    '2026-10-18 05:33:11 run 20261018053219 finished: 1 matched, 0 parked, 0 failed, 0 conflicts. Commits are on main; notes in x',
+    '2026-10-18 10:37:48 run 20261018103739: 3 workers, 1 big, 2 permuters, 90 candidates (32 big: >= 600 B or escalated) in overlays/ovl61, DRY RUN',
+    '2026-10-18 10:42:16 run 20261018103739 finished: 0 matched, 89 parked, 0 failed, 0 conflicts. Commits are on main; notes in x',
+    '2026-10-18 10:43:16 run 20261018104310: 3 workers, 1 big, 2 permuters, 90 candidates (32 big: >= 600 B or escalated) in overlays/ovl61',
+  ].join('\n') + '\n');
+  fs.writeFileSync(path.join(dir, 'ledger.jsonl'), [{ run: '20261017101444', usd: 2.5 }, { run: '20261017101444', usd: 1.25 },
+                                                    { run: '20261018104310', usd: 9 }].map(r => JSON.stringify(r)).join('\n') + '\nnot json\n');
+  assert.deepEqual(readRunsFn(dir, '20261018104310').map(r => [r.id, r.target, r.matched, r.parked, r.sessions, r.usd, r.ended]), [
+    ['20261018053219', '--only func_800939FC', 1, 0, 0, 0, '2026-10-18T05:33:11Z'],
+    ['20261017101444', 'overlays/engine', 23, 1, 2, 3.75, '2026-10-17T11:26:45Z'],
+  ]);
 });

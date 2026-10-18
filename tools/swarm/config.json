@@ -29,6 +29,7 @@
   "seedFamilies": true,
   "chain": 0,
   "regions": "all",
+  "page": "docs/swarm.js",
   "claudeBin": "claude",
   "prices": {"claude-sonnet-5-5": [2, 10, 0.1, 4], "claude-opus-5-5": [4, 20, 0.2, 8]},
   "claudeArgs": ["-p", "--output-format", "json", "--max-turns", "250",

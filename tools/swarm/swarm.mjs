@@ -207,6 +207,55 @@ function writeJson(p, obj) {
   fs.renameSync(p + '.tmp', p);
 }
 
+// a file's last max bytes, from the first whole line
+function readTail(p, max) {
+  let fd;
+  try {
+    fd = fs.openSync(p, 'r');
+    const size = fs.fstatSync(fd).size, len = Math.min(size, max), buf = Buffer.alloc(len);
+    fs.readSync(fd, buf, 0, len, size - len);
+    const s = buf.toString('utf8');
+    return len < size ? s.slice(s.indexOf('\n') + 1) : s;
+  } catch {
+    return '';
+  } finally {
+    if (fd !== undefined) fs.closeSync(fd);
+  }
+}
+
+// the runs before this one, newest first (dry and scripted runs left out): when and what from
+// swarm.log's start and finish lines (its last 512 KB), sessions and spend from ledger.jsonl
+function readRuns(dir, skip) {
+  const runs = new Map(), utc = s => s.replace(' ', 'T') + 'Z';
+  for (const line of readTail(path.join(dir, 'swarm.log'), 512 << 10).split('\n')) {
+    const fin = line.match(/^(\S+ \S+) run (\d{14}) finished: (\d+) matched, (\d+) parked, (\d+) failed/);
+    if (fin) {
+      if (runs.has(fin[2])) Object.assign(runs.get(fin[2]), { ended: utc(fin[1]), matched: +fin[3], parked: +fin[4], failed: +fin[5] });
+      continue;
+    }
+    const st = line.match(/^(\S+ \S+) run (\d{14}): (.*)$/);
+    if (!st) continue;
+    const only = st[3].match(/\(--only ([^)]*)\)/), seg = st[3].match(/ in ([^,]+)/);
+    runs.set(st[2], { id: st[2], started: utc(st[1]), ended: null, target: only ? `--only ${only[1]}` : seg ? seg[1] : '?',
+                      matched: 0, parked: 0, failed: 0, sessions: 0, usd: 0,
+                      scripted: /, DRY RUN|, worker command:/.test(st[3]) });
+  }
+  const ledger = path.join(dir, 'ledger.jsonl');
+  if (fs.existsSync(ledger))
+    for (const l of fs.readFileSync(ledger, 'utf8').split('\n')) {
+      if (!l) continue;
+      let r;
+      try { r = JSON.parse(l); } catch { continue; }
+      const run = runs.get(r.run);
+      if (run) {
+        run.sessions++;
+        run.usd += r.usd || 0;
+      }
+    }
+  return [...runs.values()].filter(r => r.id !== skip && !r.scripted).reverse()
+    .map(({ scripted, ...r }) => ({ ...r, usd: +r.usd.toFixed(2) }));
+}
+
 // ---------------------------------------------------------------- clones
 
 // A clone (not a worktree: its .git must be a real directory for git inside the container),
@@ -521,6 +570,10 @@ class Swarm {
     this.consecutiveFailures = 0;
     this.stopping = null;
     this.history = readJson(this.paths.history, {});
+    // for the dashboard's swarm card (writePage): the log's last lines, this run's outcomes
+    this.logTail = [];
+    this.results = [];
+    this.sessions = 0;
     // half the cores for workers' builds, half for the permuters (all to workers without a pool)
     const ncpu = os.cpus().length, share = o.permuters ? ncpu / 2 : ncpu;
     this.cpus = Math.max(1, Math.floor(share / o.workers));
@@ -531,6 +584,8 @@ class Swarm {
     const line = `${stamp()} ${msg}`;
     console.log(line);
     fs.appendFileSync(this.paths.log, line + '\n');
+    this.logTail.push(line.length > 400 ? line.slice(0, 400) + ' ...' : line);
+    if (this.logTail.length > 12) this.logTail.shift();
   }
 
   // ---- safeguards before anything starts
@@ -1481,6 +1536,8 @@ Fix that, keep it matching, and report "matched".
       gitOk(ps.dir, 'apply', '--3way', '--whitespace=nowarn', job.bestPatch);
       fs.rmSync(path.join(ps.dir, 'build', 'permuter', f.name), { recursive: true, force: true });
       const mins = job.big ? this.o.bigPermuteMinutes : this.o.permuteMinutes;
+      job.permStarted = Date.now();
+      job.permMinutes = mins;
       this.log(`${ps.id} permuting ${f.name} for ${mins} min (${this.permCpus} cpus)`);
       // a big function: only the C of the blocks that differ (decomp.py permute --differing)
       const r = await this.dk(ps.dir, ['make', 'permute', `FUNC=${ref(f)}`, `MINUTES=${mins}`, ...(job.big ? ['ARGS=--differing'] : [])], ps.id,
@@ -1561,6 +1618,9 @@ Fix that, keep it matching, and report "matched".
     writeJson(this.paths.history, this.history);
     fs.appendFileSync(this.paths.report, `- ${stamp()} **${job.f.name}** (${job.f.seg}, ${job.f.size} B, ${job.model}): ${status}. ${note}\n`);
     this.ledger(job, status);
+    this.results.unshift({ at: new Date().toISOString(), name: job.f.name, seg: job.f.seg, size: job.f.size, outcome: status,
+                           model: job.model, usd: job.usage?.usd != null ? +job.usage.usd.toFixed(2) : null });
+    if (this.results.length > 100) this.results.length = 100;
   }
 
   // one line per worker session in ledger.jsonl, written when its outcome is first known (`stats`
@@ -1568,6 +1628,7 @@ Fix that, keep it matching, and report "matched".
   ledger(job, outcome) {
     if (!job.usage || job.ledgered) return;
     job.ledgered = true;
+    this.sessions++;
     const { f } = job, u = job.usage;
     const kind = `${job.big ? 'big' : 'normal'}${job.gateFix ? '-gatefix' : job.permuterDiff ? '-permuted' : job.startPatch ? '-port' : job.chained ? '-chained' : ''}`;
     fs.appendFileSync(this.paths.ledger, JSON.stringify({
@@ -1920,6 +1981,61 @@ Fix that, keep it matching, and report "matched".
       permuteWaiting: this.permQueue.map(j => j.f.name),
       integrating: this.integrating ? this.integrating.map(j => j.f.name).join(', ') : null, waiting: this.integQueue.map(j => j.f.name),
     });
+    this.writePage(state);
+  }
+
+  // the dashboard's swarm card: what the run holds in memory, nothing that needs Docker or git
+  pageStatus(state) {
+    const o = this.o, now = Date.now(), mins = t => +((now - t) / 60e3).toFixed(1);
+    const run = {
+      id: this.id, pid: process.pid, state, stopping: this.stopping, started: new Date(this.started).toISOString(),
+      ended: state === 'running' ? null : new Date(now).toISOString(), branch: o.branch,
+      target: o.only ? `--only ${o.only.join(',')}` : o.seg || 'all game code', dryRun: !!o.dryRun,
+      limits: { minutes: o.maxMinutes, usd: o.maxRunUsd, functions: o.maxFunctions },
+      pool: { workers: o.workers, big: o.bigWorkers, permuters: o.permuters, bigBytes: o.bigBytes },
+      costUsd: +this.costUsd.toFixed(2), stats: this.stats, leases: this.leases, queued: this.queue.length,
+    };
+    const fields = f => ({ func: f.name, seg: f.seg, size: f.size });
+    return {
+      v: 1, updated: new Date(now).toISOString(), run,
+      slots: [...this.slots, ...this.bslots].map(s => !s.job ? { slot: s.id, big: !!s.big, func: null } : {
+        slot: s.id, big: !!s.big, ...fields(s.job.f), model: s.job.model, attempt: s.job.attempt,
+        session: s.big ? (this.history[s.job.f.key]?.bigSessions || 0) + 1 : null,
+        minutes: mins(s.job.started), limit: s.big ? o.bigMinutes : o.workerMinutes,
+        from: s.job.resumed ? Swarm.describe(s.job.resumed) : null }),
+      permuters: this.pslots.map(s => !s.job ? { slot: s.id, func: null } : {
+        slot: s.id, ...fields(s.job.f), minutes: s.job.permStarted ? mins(s.job.permStarted) : null, limit: s.job.permMinutes ?? null }),
+      permuteWaiting: this.permQueue.map(j => j.f.name),
+      gate: { checking: (this.integrating || []).map(j => j.f.name), waiting: this.integQueue.map(j => j.f.name) },
+      results: this.results,
+      log: this.logTail.slice(-10),
+      runs: [{ id: this.id, started: run.started, ended: run.ended, target: run.target, matched: this.stats.matched,
+               parked: this.stats.parked, failed: this.stats.failed, sessions: this.sessions, usd: run.costUsd },
+             ...(this.pastRuns ||= readRuns(o.dir, this.id))].slice(0, 8),
+    };
+  }
+
+  // docs/swarm.js in your checkout (git-ignored), which docs/index.html loads as a script: a file://
+  // page can't fetch JSON. Written when something changed, else every 15 s, so the card can tell a
+  // run that stopped answering; the clocks alone don't count as a change
+  writePage(state) {
+    if (!this.o.page) return;
+    // never a reason for the run to stop: a failed write (a browser reading the file at that
+    // moment, on Windows) is retried with the next change or heartbeat
+    try {
+      const st = this.pageStatus(state), now = Date.now();
+      const sig = JSON.stringify([st.run, st.slots.map(s => s.func), st.permuters.map(p => p.func), st.permuteWaiting,
+                                  st.gate, st.results.length, st.log.at(-1)]);
+      if (state === 'running' && sig === this.pageSig && now - this.pageAt < 15e3) return;
+      const file = path.resolve(REPO, this.o.page);
+      fs.writeFileSync(file + '.tmp', `swarmStatus(${JSON.stringify(st)});\n`);
+      fs.renameSync(file + '.tmp', file);
+      this.pageSig = sig;
+      this.pageAt = now;
+    } catch (e) {
+      if (!this.pageWarned) this.log(`note: the dashboard's swarm card (${this.o.page}) wasn't written: ${e.message}`);
+      this.pageWarned = true;
+    }
   }
 
   async run() {
@@ -2231,7 +2347,7 @@ function clean(o) {
 
 // for tools/swarm/swarm.test.mjs, which imports this file with SWARM_IMPORT=1 (an env guard: a
 // path comparison with argv[1] can misfire on Windows path case and keep `run` from starting)
-export { Swarm, reapply, parseArgs, INCLUDE_LINE, infraError, workerMounts, sessionUsage, readTranscript, ledgerStats };
+export { Swarm, reapply, parseArgs, INCLUDE_LINE, infraError, workerMounts, sessionUsage, readTranscript, ledgerStats, readRuns };
 
 if (process.env.SWARM_IMPORT !== '1') {
   const [cmd, o] = parseArgs(process.argv.slice(2));
