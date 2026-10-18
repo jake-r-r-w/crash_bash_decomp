@@ -746,5 +746,50 @@ typedef struct HeroSetupView {
 void func_80083708(void);
 
 void func_8008A924(s32 arg0);
+/* A particle func_8008C824 scatters (0x18 bytes). */
+typedef struct {
+    s16 x, y, z;
+    s16 pad6;
+    s16 x2, y2, z2;
+    s16 padE;
+    s32 ang;
+    s32 base_x;
+} Spark;
+
+/* A POLY_FT4 (0x28 bytes). */
+typedef struct {
+    u32 tag;
+    u8 r0, g0, b0, code;
+    s16 x0, y0;
+    u16 uv0, clut;
+    s16 x1, y1;
+    u16 uv1, tpage;
+    s16 x2, y2;
+    u16 uv2, pad1;
+    s16 x3, y3;
+    u16 uv3, pad2;
+} SparkPoly;
+
+/* The texture func_8008C824 puts on its polys. */
+typedef struct {
+    u8 pad[0x24];
+    u16 tpage, clut, uv0, uv1, uv2, uv3;
+} SparkTex;
+
+typedef struct {
+    Spark *sparks;
+    SparkPoly *polys0;
+    SparkPoly *polys1;
+    s32 count;
+} SparkSet;
+
+typedef struct {
+    u8 pad[0x6C];
+    SparkSet set;
+} SparkObj;
+
+extern u8 *D_80054944;
+
+void func_8008C824(SparkObj *obj);
 
 #endif /* BASH_8007EE2C_H */

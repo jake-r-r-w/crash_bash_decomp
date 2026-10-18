@@ -1470,6 +1470,7 @@ void func_80082AC4(void) {
 
 void func_80082C34(void) {
     s32 t;
+    s32 r;
     s32 u;
 
     switch (D_8009BD44) {
@@ -1513,6 +1514,7 @@ void func_80082D90(s32 arg0) {
     SLONG_XYZ pos;
     s32 d;
     s32 t;
+    s32 r;
 
     if (!(D_8009AD94.flags & 0x8000)) {
         switch (D_8009BD40) {
@@ -2740,6 +2742,7 @@ void func_80085650(void) {
     s32 *p;
     s32 *q;
     s32 t;
+    s32 r;
 
     i = 0;
     tab = (s32)D_8009D764;
@@ -4985,6 +4988,7 @@ s32 func_8008ADA4(u8 *arg0, u8 *arg1, u8 *arg2, s32 *arg3) {
     s32 n;
     s32 i;
     s32 t;
+    s32 r;
 
     obj = arg1;
     i = 0;
@@ -5087,6 +5091,7 @@ s32 func_8008ADA4(u8 *arg0, u8 *arg1, u8 *arg2, s32 *arg3) {
         obj = arg1;
         while (obj != NULL) {
             s32 t;
+    s32 r;
 
             *(s32 *)obj &= ~0x8000;
             *(s32 *)(obj + 0x20) = 0x1000;
@@ -5575,7 +5580,65 @@ s32 func_8008C5C4(s32 *from, s32 *to, Arc *arc, s32 *pos) {
     return hit;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8008C824);
+void func_8008C824(SparkObj *obj) {
+    SparkPoly *p0;
+    Spark *s;
+    SparkPoly *p1;
+    SparkTex *tex;
+    s32 n;
+    s16 a;
+    s32 t;
+    s32 r;
+    SparkSet *ss;
+
+    ss = &obj->set;
+    n = ss->count;
+    p0 = ss->polys0;
+    p1 = ss->polys1;
+    s = obj->set.sparks;
+    tex = (SparkTex *)(D_80054944 + 0xAF0);
+    if (D_8005A648 == 0x22) {
+        tex = (SparkTex *)(*(u8 **)((u8 *)*(void **)D_80058AD0 + 0x18) + 0x2BF8);
+    }
+    if (D_8005A648 == 0x13) {
+        tex = (SparkTex *)(*(u8 **)((u8 *)*(void **)D_80058AD0 + 0x18) + 0x6C8);
+    }
+    if (D_8005A648 == 0x1D) {
+        tex = (SparkTex *)(*(u8 **)((u8 *)*(void **)D_80058AD0 + 0x18) + 0xA10);
+    }
+    for (; n != 0; n--) {
+        do {
+        do {
+        a = Random(0x2000);
+        a -= Random(0x2000);
+        s->x = a;
+        s->y = -Random(0x1B58);
+        a = Random(0x2000);
+        r = Random(0x2000);
+        } while (0);
+        } while (0);
+        a -= r;
+        s->z = a;
+        s->y2 = s->y + 0x40;
+        s->z2 = s->z;
+        t = Random(0xFFF);
+        s->ang = t;
+        s->base_x = s->x;
+        s->x = s->base_x + ((D_80068BD4[(t - 0x400) & 0xFFF].unk2 * 512 >> 12));
+        s->x2 = s->x + 0x40;
+        s++;
+        *(u32 *)&p0->r0 = 0xA0A0A0;
+        p0->tpage = (tex->tpage & 0xFF9F) | 0x20;
+        p0->clut = tex->clut;
+        p0->uv0 = tex->uv0;
+        p0->uv1 = tex->uv1;
+        p0->uv2 = tex->uv2;
+        p0->uv3 = tex->uv3;
+        ((u8 *)&p0->tag)[3] = 9;
+        p0->code = 0x2E;
+        *p1++ = *p0++;
+    }
+}
 
 void func_8008CA90(u8 *arg0, MATRIX *m) {
     FallParticles *fp = (FallParticles *)(arg0 + 0x6C);
@@ -5587,6 +5650,7 @@ void func_8008CA90(u8 *arg0, MATRIX *m) {
     s16 *sxy;
     s32 tag;
     s32 t;
+    s32 r;
     SVECTOR *v;
 
     p = fp->parts;
@@ -5749,6 +5813,7 @@ void func_8008CFBC(EXTengine *eng) {
 void func_8008D088(u8 *arg0, u8 *arg1, EmitPart *arg2, s32 *arg3, u8 *arg4) {
     s32 life;
     s32 t;
+    s32 r;
     s32 u;
 
     func_8001F604(arg0, arg2, arg1);

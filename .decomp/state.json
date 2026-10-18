@@ -3612,7 +3612,9 @@
   "status": "matched"
  },
  "engine:8008C824": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-18T08:13:12Z",
+  "started": "2026-10-18T07:57:50Z",
+  "status": "matched"
  },
  "engine:8008CA90": {
   "matched_at": "2026-10-17T10:47:52Z",
