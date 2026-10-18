@@ -46,6 +46,8 @@ u8 *func_800C01B8(void);
 
 void func_800C04FC(s32 arg0);
 
+s32 func_800C0A74(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2);
+
 void func_800C0B7C(void);
 
 void func_800C0B84(void);
