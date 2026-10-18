@@ -317,7 +317,9 @@ typedef struct Vec3W {
 
 /* 32-byte records of D_8005A5E8, indexed by D_8005A61C (func_8008688C). */
 typedef struct {
-    /* 0x00 */ u8 unk0[0xC];
+    /* 0x00 */ u8 unk0[4];
+    /* 0x04 */ s32 unk4; /* passed to func_800129D0 by func_80093854 */
+    /* 0x08 */ u8 unk8[4];
     /* 0x0C */ u16 unkC;
     /* 0x0E */ u8 unkE[0x12];
 } EngineRec32;
