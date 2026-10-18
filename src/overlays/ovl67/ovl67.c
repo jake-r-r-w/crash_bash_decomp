@@ -444,7 +444,10 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", InitN2Ofirstmissile);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", InitN2Omissile);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BB5F0);
+void func_800BB5F0(void) {
+    volatile s32 x, y, z;
+    SpawnNASById(x, y, z, 0x1B01, 0x11);
+}
 
 u8 *func_800BB624(void) {
     s32 var_v0;

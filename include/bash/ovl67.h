@@ -61,4 +61,6 @@ s32 func_800B9CB8(s32 arg0, EXTengine *unused);
 
 void PlotN2ODeadWall(NAS *arg0);
 
+void func_800BB5F0(void);
+
 #endif /* BASH_OVL67_H */
