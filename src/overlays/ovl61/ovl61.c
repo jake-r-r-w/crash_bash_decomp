@@ -3891,7 +3891,108 @@ void ArkHeroRad2ObjectAttract(u32 arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BF640);
+s32 func_800BF640(EXTengine *eng, Ovl61FuxF *self) {
+    FlagRecord *box;
+    FlagRecord *rec;
+    EXTengine *other;
+    NAS *it;
+    Ovl61Mot *mine;
+    Ovl61Mot *m;
+    Ovl61FuxF *fux;
+    s32 hit;
+    s32 rad;
+    s32 bot;
+    s32 top;
+    s32 lo;
+    s32 hi;
+    s32 dx;
+    s32 dz;
+    s32 r;
+    s32 d;
+    s32 ang;
+    s32 avg;
+
+    hit = 0;
+    box = func_80025A48(eng, 0x40);
+    if (box != NULL) {
+        top = eng->unk10.y + box->unk2;
+        bot = eng->unk10.y + box->height;
+        rad = box->radius;
+        mine = FindExtension(((NAS **)eng)[-1], 0x800);
+        it = D_8005AA2C;
+        if (it != NULL) {
+            do {
+                if (it->Class & 0x200) {
+                    other = it->Engine;
+                    if (other != NULL && other != eng) {
+                        rec = func_80025A48(other, 0x40);
+                        if (rec != NULL) {
+                            lo = other->unk10.y + rec->unk2;
+                            hi = other->unk10.y + rec->height;
+                            if (bot < lo && hi < top) {
+                                dx = other->unk10.x - eng->unk10.x;
+                                dz = other->unk10.z - eng->unk10.z;
+                                r = rec->radius;
+                                r += rad;
+                                if ((d = dx * dx + dz * dz) < r * r) {
+                                    d = csqrt(d) >> 6;
+                                    do {
+                                    if (d < r) {
+                                        ang = get_angle(-dx, -dz) & 0xFFF;
+                                        d = r - d + 1;
+                                        fux = (Ovl61FuxF *)it->FUX;
+                                        if (fux != NULL) {
+                                            if (self->flags & 0x80) {
+                                                m = FindExtension(it, 0x800);
+                                                if (m != NULL) {
+                                                    other->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                                    other->unk10.z -= (d * D_80068BD4[ang].unk2) >> 12;
+                                                    ang += 0x800;
+                                                    ang &= 0xFFF;
+                                                    ang += func_800154A0((m->dir + 0x800) & 0xFFF, ang);
+                                                    ang &= 0xFFF;
+                                                    m->dir = ang;
+                                                    PlaySfx(0x580, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                                                }
+                                            } else {
+                                                if (r / 2 < d) {
+                                                    d = r;
+                                                }
+                                                eng->unk10.x += (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                                eng->unk10.z += (d * D_80068BD4[ang].unk2) >> 12;
+                                                if (mine != NULL) {
+                                                    m = FindExtension(it, 0x800);
+                                                    if (m != NULL) {
+                                                        if (!(fux->flags & 0x80)) {
+                                                            m->dir = ang;
+                                                            dx = (mine->a + m->a) / 2;
+                                                            m->a = dx;
+                                                            mine->a = dx;
+                                                        }
+                                                        PlaySfx(0x580, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                                                    }
+                                                    ang += 0x800;
+                                                    ang &= 0xFFF;
+                                                    ang += func_800154A0((mine->dir + 0x800) & 0xFFF, ang);
+                                                    ang &= 0xFFF;
+                                                    mine->dir = ang;
+                                                }
+                                            }
+                                            hit = 1;
+                                        }
+                                    }
+                                    } while (0);
+                                }
+                            }
+                        }
+                    }
+                }
+                it = it->Solid.Child;
+            } while (it != NULL);
+        }
+    }
+    return hit;
+}
 
 s32 func_800BFA24(Ovl61Vel *arg0, s32 arg1) {
     s32 i;

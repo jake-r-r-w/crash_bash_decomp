@@ -6447,7 +6447,8 @@
   "status": "matched"
  },
  "ovl61:800BF640": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-18T14:36:42Z",
+  "status": "matched"
  },
  "ovl61:800BFA24": {
   "auto_diff": 17,
@@ -8558,7 +8559,9 @@
   "auto_failed": "types"
  },
  "ovl67:800BA6C4": {
-  "auto_failed": "types"
+  "auto_failed": "types",
+  "copy_failed": "ovl61:800BF640",
+  "copy_failed_stage": "in-file"
  },
  "ovl67:800BAAA8": {
   "auto_failed": "compile"

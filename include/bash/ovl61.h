@@ -384,6 +384,12 @@ typedef struct Ovl61Mot {
     s16 dir;
 } Ovl61Mot;
 
+/* A FUX viewed for its flags word (0x80 tested by func_800BF640). */
+typedef struct Ovl61FuxF {
+    u8 pad0[0x1C];
+    u16 flags;
+} Ovl61FuxF;
+
 void func_800B3528(s32 arg0);
 
 s32 func_800B42F4(Ovl61Obj *arg0);
@@ -518,5 +524,7 @@ extern u16 D_800C1430[];
 extern u16 D_800C1464[][3];
 
 void func_800BC564(void);
+
+s32 func_800BF640(EXTengine *eng, Ovl61FuxF *self);
 
 #endif /* BASH_OVL61_H */
