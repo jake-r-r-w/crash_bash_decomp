@@ -14,6 +14,7 @@ void func_800BBD18(void);
 void func_800B34A4(void);
 void func_800B361C(void);
 
+extern u8 D_80053EAC[];
 extern u16 D_800C417A;
 extern u16 D_800C438A;
 extern s16 D_800C4184[];
@@ -149,6 +150,8 @@ extern s16 D_800C43DC;
 void func_800B6F4C(void);
 void func_800B90F4(void);
 void func_800BB070(u16 arg0);
+void InitN2OmissileExplode(NAS *nas);
+
 void func_800C349C(void);
 
 s32 func_800BB8EC(s32 arg0);
