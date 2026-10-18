@@ -56,7 +56,136 @@ void func_800B478C(void) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl6a/ovl6a", D_800B32B8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/ovl6a", func_800B488C);
+s32 func_800B488C(void) {
+    OvlTextView *view;
+    OvlTextLine *line;
+    OvlTextLine *lines;
+    subengine *sub;
+    s32 n;
+    s32 i;
+    s32 y;
+    s32 done;
+    s32 ypos;
+
+    view = (OvlTextView *)D_80051640;
+    view->unk54 = 0xF0;
+    view->unk56 = 0;
+    view->unkC = 0;
+    view->unk10 = 0;
+    view->unk14 = 0x3AE;
+    func_800B8CA0();
+    switch (D_8009870E) {
+    case 1:
+        i = 0;
+        y = 0;
+        lines = (OvlTextLine *)D_800C7294;
+        sub = GetEngineSlot(0)->sub;
+        done = 0;
+        line = lines;
+        while (1) {
+            if (y >= D_800BC2B4) {
+                break;
+            }
+            if (done) {
+                goto end;
+            }
+            line = &lines[i];
+            OVL_TEXT_LINE_COUNT(n, line->text);
+            switch (line->kind) {
+            case 0:
+            case 1:
+                y += n * 40;
+                break;
+            case 2:
+                y += n * 20;
+                break;
+            case 3:
+                y += line->height;
+                break;
+            case 4:
+                done = 1;
+                break;
+            }
+            i++;
+        }
+        if (done) {
+            goto end;
+        }
+        while (1) {
+            if (done) {
+                break;
+            }
+            if (sub == NULL) {
+                done = 1;
+                continue;
+            }
+            line = &lines[i];
+            OVL_TEXT_LINE_COUNT(n, line->text);
+            sub->flags |= 0x8000;
+            ypos = y - D_800BC2B4 - 50;
+            switch (line->kind) {
+            case 1:
+                func_80095F48((s32 *)sub, 0x8000, ypos, (s32)line->text, 7);
+                y += n * 40;
+                break;
+            case 0:
+                func_80095F48((s32 *)sub, 0x8000, ypos, (s32)line->text, 0);
+                y += n * 40;
+                break;
+            case 2:
+                func_80095F48((s32 *)sub, 0x8000, ypos, (s32)line->text, 4);
+                y += n * 20;
+                break;
+            case 3:
+                y += line->height;
+                sub->flags &= ~0x8000;
+                break;
+            case 4:
+                done = 1;
+                sub->flags &= ~0x8000;
+                break;
+            }
+            sub = sub->next;
+            i++;
+            if (y - D_800BC2B4 > 500) {
+                done = 1;
+            }
+        }
+        D_800BC2B4 += 2;
+        goto clear;
+    end:
+        D_8009870E = 3;
+    clear:
+        while (sub != NULL) {
+            sub->flags &= ~0x8000;
+            sub = sub->next;
+        }
+        return 0;
+    case 3:
+        D_800BC2B8 = D_8005A608;
+        func_80095A04(0);
+        D_8009870E = 2;
+        D_80098710 = 45;
+        func_8002C248(45);
+        func_8001E588(D_8009F644, 0x200, 0);
+        return 0;
+    case 2:
+        if (D_80098710 == 0) {
+            D_8005A608 = D_800BC2B8;
+            func_800B4C94();
+            return 1;
+        }
+        D_80098710--;
+        {
+            s32 *opt = (s32 *)D_8005A604;
+            if (opt[1] > 0) {
+                opt[1] -= opt[1] >> 2;
+            }
+        }
+        return 0;
+    }
+    return 0;
+}
 
 void func_800B4C94(void)
 {
