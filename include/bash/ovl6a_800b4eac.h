@@ -13,6 +13,13 @@ extern s32 D_800BF260;
 extern EXTengine D_800BF100;
 extern s32 D_800BF19C;
 extern s32 D_800BF1A0;
+extern s32 D_800BF1A4;
+typedef struct Ovl6aEntry12 {
+    s32 unk0;
+    s32 unk4;
+    s32 unk8;
+} Ovl6aEntry12;
+extern Ovl6aEntry12 D_800BD7E0[];
 extern u32 D_800BD5B0;
 extern s32 D_800BD5B4;
 
@@ -256,6 +263,8 @@ void func_800BAB40(void);
 void func_800BB364(void);
 
 void func_800BB38C(void);
+
+void func_800BB3D0(s8 arg0);
 
 void func_800BB584(void);
 
