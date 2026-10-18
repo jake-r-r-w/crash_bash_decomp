@@ -10,6 +10,7 @@
 
 extern s32 D_800BD5A8;
 extern s32 D_800BF260;
+extern s32 D_800BCEF0;
 extern EXTengine D_800BF100;
 extern s32 D_800BF19C;
 extern s32 D_800BF1A0;
@@ -253,6 +254,8 @@ typedef struct ScriptExt40 {
 extern ScriptInit D_800BCCE8;
 
 void func_800B77B0(NAS *nas);
+
+s32 func_800B8174(s32 arg0);
 
 void func_800B8BC8(void);
 

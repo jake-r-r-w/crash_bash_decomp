@@ -327,7 +327,21 @@ void func_800B8148(s32 arg0) {
     Heroes[arg0].hero_idle_count = 0xF;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B8174);
+s32 func_800B8174(s32 arg0) {
+    if (D_8005A688 != 0) {
+        return 1;
+    }
+    if (((PadButtons *)D_80051338)[arg0].unk54 & 0x8000) {
+        if ((u32)(Heroes[arg0].hero_name - 1) >= 2U) {
+            if (Heroes[arg0].hero_frozen == 0) {
+                Heroes[arg0].hero_frozen = 0xF;
+            }
+        } else {
+            D_800BCEF0 = 1;
+        }
+    }
+    return 0;
+}
 
 s32 func_800B821C(void) {
     return 0;
