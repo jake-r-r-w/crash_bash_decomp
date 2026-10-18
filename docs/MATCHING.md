@@ -912,6 +912,7 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | range test `a >= -0x1FF && a < -0x100` folds into addiu+sltiu but target has two slti branches | split it: `if (a < -0x1FF) goto off; if (a < -0x100) {...} else { off: ... }` | `func_800B6FD4` |
 | giv init built in two steps (`lui/addiu v0,D` then `addiu s1,v0,0x24`), ours folds it to one `lui/addiu s1,D+0x24` | make the element pointer a biv walked next to the counter (`for (i = 0, p = D; i < n; i++, p++) { q = &p->f; ...}`): the reduced giv's init is p's init register plus the offset; `&D[i].f` gets cse-folded to the constant D+off | `func_800B551C` |
 | An extra `andi v0,v0,0xffff` (or `0xff`) after an `lhu`/`lbu` into a temp assigned in an if/else or compared | Declare the temp `s32`, not `u16`/`u8`: the load already zero-extends, and a narrow temp re-extends at each use | `func_800B7AB4`, `func_800B8BC8` |
+| A call's result is used with `move v1,v0` where yours zero- or sign-extends it (`andi v1,v0,0xffff`): the callee's matched definition returns `u16`/`s16` | Call it through an `int`-returning cast, `((s32(*)(void))fn)()`, as for the s8 parameter row: the original callers saw an `int` declaration | `func_800B4EAC` |
 
 ## Classify the diff, then work through the list
 

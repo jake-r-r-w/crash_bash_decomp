@@ -14,10 +14,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1429/2551 game functions matched: **main.exe is complete (575/575)**;
+- 1430/2551 game functions matched: **main.exe is complete (575/575)**;
   engine overlay 2 left, both parked (`func_8007F314`, `PlotScriptFX`),
   ovl61 95/97 (two 2026-10-18 swarm runs and three hand matches; 2 big ones left),
-  ovl67 99/135 (2026-10-18 swarm run), ovl69 67/77, ovl6a 91/94 (2026-10-18 swarm runs),
+  ovl67 99/135 (2026-10-18 swarm run), ovl69 67/77, ovl6a 92/94 (2026-10-18 swarm runs),
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Dashboard (2026-10-18): `docs/index.html` is `tools/scripts/dashboard.html` plus
@@ -475,6 +475,14 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-18 (hand):** `func_800B4EAC` (ovl6a) matched (36eb852e) from the
+  swarm's big-mode C, which matched but failed the gate on compile errors: its
+  D_8005A614 view (a second `Ovl6aGameView`) merged into the file's own, stale
+  prototypes dropped, and `func_800B7B38` (u16 return) called through an s32
+  cast as the file's other caller does. `func_800B551C` turned out matched by
+  the swarm (9c5b1dd8). The swarm's other gate failures (ovl67
+  `func_800BA43C`, `func_800B3E74`; ovl69 `func_800B7CE8`) are likely the
+  same: apply results/<key>/*gatefix*/patch.diff and fix the headers.
 - **2026-10-18 (swarm):** ovl6a run 20261018184703, `--workers 3 --big-workers 2
   --permuters 2`, 87 min, $47.98: 64 matched ($0.75 each), 2 failed at the
   gate. Fold: 37 rows (a volatile and a frame-padding workaround dropped).
