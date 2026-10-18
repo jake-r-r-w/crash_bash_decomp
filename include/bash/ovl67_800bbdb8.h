@@ -313,6 +313,11 @@ typedef struct BossExt {
 extern s16 D_8009D6E2;
 extern ScriptInit D_800C446C;
 extern s32 D_800C4530;
+extern s8 D_8005A6DE;
+void func_80093038(void);
+void func_800B4138(s32 arg0);
+
+void func_800BDB00(void);
 
 void func_800BE8C0(s32 arg0);
 

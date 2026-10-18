@@ -73,7 +73,35 @@ void func_800BD584(AngObj *o) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BD6E8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BDB00);
+void func_800BDB00(void)
+{
+  unsigned char one = 1;
+  void (*new_var)(s32 arg0);
+  D_800C417A = one;
+  D_8005A6DE = 0;
+  func_800BB070(one);
+  Heroes[0].hero_eng->unk2C.x = 0x1000;
+  Heroes[0].hero_eng->unk2C.y = 0x1000;
+  Heroes[0].hero_eng->unk2C.z = 0x1000;
+  Heroes[1].hero_eng->unk2C.x = 0x1000;
+  (&(*(Heroes + 1)).hero_eng->unk2C)->y = 0x1000;
+  Heroes[1].hero_eng->unk2C.z = 0x1000;
+  Heroes[0].hero_eng->unk5E = 1;
+  Heroes[1].hero_eng->unk5E = 1;
+  func_80026F48();
+  func_800B4138(0);
+  func_800B4138(1);
+  func_800B4138(3);
+  D_8009D6E8.unk20 = func_800B447C;
+  D_8009D6E8.unk68 = func_800B3888;
+  new_var = (void (*)(s32))func_800B46DC;
+  D_8009D6E8.unk24 = new_var;
+  D_8009D6E8.unk18 = func_800BBB10;
+  D_8009D6E8.unk1C = func_800BBA4C;
+ ;
+  D_8009F8B4 = func_80093038;
+  func_800B6F4C();
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BDC0C);
 
