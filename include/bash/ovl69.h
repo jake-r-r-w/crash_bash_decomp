@@ -42,6 +42,14 @@ extern s32 D_800BAACC;
 void func_800B556C(void);
 
 void func_800B6A64(void);
+typedef struct {
+    s32 unk0;
+    s32 unk4;
+} Ovl69Entry;
+
+extern Ovl69Entry D_800BA324[];
+
+s32 func_800B7DE8(s32 arg0);
 
 void func_800B7E04(void);
 
