@@ -270,7 +270,52 @@ void func_800B7450(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B7518);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B7688);
+void func_800B7688(s32 arg0) {
+    HeroInfo *base;
+    HeroInfo *base2;
+    HeroInfo *h;
+    subengine *a;
+    subengine *s;
+    u16 cnt;
+    s32 v;
+    s32 r;
+
+    s = NULL;
+    base = Heroes;
+    cnt = base[arg0].hero_attack_counter;
+    a = base[arg0].hero_sub;
+    v = cnt * 0x600 + 0x1000;
+    r = (cnt << 9) + 0x800;
+    a = a->next;
+    if (a != NULL) {
+        s = a->next;
+        if (s != NULL) {
+            s->unk74 = 0x2007;
+            s->unk20.x = v & 0xFFFF;
+            s->unk20.y = v & 0xFFFF;
+            s->unk20.z = v & 0xFFFF;
+            s->unk76 = r;
+            s->unk52 = 1;
+            s->flags |= 0x40008021;
+        }
+    }
+    if (ArkHeroRad2ObjectCollision(arg0, (v & 0xFFFF) >> 3, 1) != 0) {
+        Heroes[arg0].hero_attack_timer = 0;
+    }
+    base2 = Heroes;
+    h = &base2[arg0];
+    cnt = h->hero_attack_counter + 1;
+    h->hero_attack_counter = cnt;
+    if (cnt >= 4) {
+        SetHeroAction((HeroInfo *)arg0, 0x1C);
+        if (s != NULL) {
+            s->flags &= 0xFFFF7FFF;
+        }
+    }
+    if (func_800B649C(arg0) != 0) {
+        func_8008502C(arg0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B77F8);
 
