@@ -14,9 +14,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1225/2551 game functions matched: **main.exe is complete (575/575)**;
+- 1226/2551 game functions matched: **main.exe is complete (575/575)**;
   engine overlay 2 left, both parked (`func_8007F314`, `PlotScriptFX`),
-  ovl61 92/97 (two 2026-10-18 swarm runs; 5 big ones left),
+  ovl61 93/97 (two 2026-10-18 swarm runs and a hand match; 4 big ones left),
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Dashboard (2026-10-18): `docs/index.html` is `tools/scripts/dashboard.html` plus
@@ -42,14 +42,13 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**ovl61 (2026-10-18):** two runs, 83 matched; 92/97 functions, 5 left, all
-big and checkpointed: `CalcArkInfluence` (600 B, registers 4/150),
+**ovl61 (2026-10-18):** two runs, 83 matched, and `CalcArkInfluence` by
+hand; 93/97 functions, 4 left, all big and checkpointed:
 `func_800B85DC` (904 B, registers 44/226), `func_800BE4D4` (2816 B),
-`func_800B8A68` (3264 B), `PlotBall` (5576 B, paired 1366/1394). Next:
-`swarm.mjs permute --near` for the two at registers, then a big-only run on
+`func_800B8A68` (3264 B; its best C has a `- k + k` hack to drop),
+`PlotBall` (5576 B, paired 1366/1394). Next: a big-only run on
 ovl61 (`--workers 1 --big-workers 3`), or a new overlay with the big-heavy
-mix (`--workers 1 --big-workers 4 --permuters 2`). Run `swarm.mjs fold` for
-run 20261018125240's pattern rows (not done yet).
+mix (`--workers 1 --big-workers 4 --permuters 2`). (The fold for run 20261018125240 is done.)
 
 **Tooling: the 2026-10-16 tooling plan is done and removed** (it is in git
 history, `git show 94f04c7:docs/TOOLING_PLAN.md`; what it left is under
@@ -456,6 +455,15 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-18 (hand):** `CalcArkInfluence` matched (b46ab0f8), no hack or
+  permuter, from the swarm's 146/150 (z2 in v1, three big sessions and a
+  permuter run stuck there). From the -dl/-dg dumps and global.c: x2/z2
+  overlapped (all shifts before the adds) and z2 inherited a v1 preference
+  from its product, whose mult operand was the block-local `(s16)sz` in v1
+  (set_preference, then expand_preferences). One temp `t` reused with
+  `x1 += t` fixed the order; an `s32 scale` assigned `(s16)sx` then
+  `(s16)sz` (dies twice: global, so no inherited preference) put t in v0.
+  MATCHING.md: two rows.
 - **2026-10-18 (swarm):** ovl61 run 20261018125240, `--workers 1
   --big-workers 4 --permuters 2` (31 of the 34 left were >= 600 B), 128 min,
   $88.97 (in-flight sessions run past the $80 cap): 28 matched ($3.18 each),
