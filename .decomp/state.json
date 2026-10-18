@@ -9577,7 +9577,8 @@
   "status": "matched"
  },
  "ovl6a:800B551C": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-18T19:56:07Z",
+  "status": "matched"
  },
  "ovl6a:800B5710": {
   "auto_failed": "types"

@@ -603,6 +603,8 @@ typedef struct PathRot {
 
 extern s16 D_80051696;
 
+void func_800B551C(void);
+
 void func_800B6FD4(NAS *nas);
 
 #endif /* BASH_OVL6A_800B4EAC_H */
