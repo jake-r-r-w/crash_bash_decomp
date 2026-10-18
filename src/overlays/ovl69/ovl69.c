@@ -404,7 +404,21 @@ void func_800B6A64(void) {
     func_8001C2C0((u8 *)GetEngineSlot(2));
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B6ACC);
+s8 func_800B6ACC(s32 a0) {
+    u8 *g = D_8005A614;
+
+    if (g[0x26] == 1) {
+        s8 *t = D_800B9CC4;
+        s32 v = Random(2) + (a0 - 1) * 2;
+        s32 w = (g[0x4C] - 1) * 6;
+        return t[v + w];
+    } else {
+        s8 *t = D_800B9CF4;
+        s32 v = Random(2) + (a0 - 2) * 2 + (g[0x4D] - 1) * 4;
+        s32 w = (g[0x4C] - 1) << 5;
+        return t[v + w];
+    }
+}
 
 int func_800B6B88(int a0, int a1, int a2, int a3, int a4) {
     int v;

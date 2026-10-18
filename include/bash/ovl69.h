@@ -33,6 +33,8 @@ extern s32 D_800B95F0;
 extern s32 D_800B9628;
 extern s32 D_800B889C[];
 extern s32 D_800B9624;
+extern s8 D_800B9CC4[];
+extern s8 D_800B9CF4[];
 extern s32 D_800B8518[];
 extern u8 D_800A0840[];
 extern u8 D_8009E5C8[];
@@ -139,6 +141,8 @@ void func_800B55B8(void);
 void func_800B57BC(void);
 
 void func_800B58E4(void);
+
+s8 func_800B6ACC(s32 a0);
 
 void func_800B7B30(void);
 
