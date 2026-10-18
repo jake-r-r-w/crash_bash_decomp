@@ -1541,7 +1541,67 @@ loop:
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BD770);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Plot_Ark_Pickup);
+void Plot_Ark_Pickup(NAS *arg0) {
+    EXTobject *fux;
+    EXTengine *e;
+    HeroInfo *h;
+    s32 i;
+    s32 dx;
+    s32 dz;
+    s32 r;
+
+    if (arg0->Engine != NULL && (fux = (EXTobject *)arg0->FUX) != NULL) {
+        switch (fux->status) {
+        case 0:
+            fux->status = 1;
+            fux->can_do = (fux->can_do & 0xFFD0) | 0x12;
+            func_80026AD8((u8 *)arg0);
+            fux->player = -1;
+            break;
+        case 7:
+            fux->status = 0;
+            break;
+        default:
+            for (i = 0; i < 4; i++) {
+                h = &Heroes[i];
+                e = h->hero_eng;
+                dx = e->unk10.x - D_800C1A7C[arg0->UserInfo.user1].x;
+                dz = e->unk10.z - D_800C1A7C[arg0->UserInfo.user1].z;
+                if (e->collision_box.flags & 0x40) {
+                    r = D_800C1A7C[arg0->UserInfo.user1].r + e->collision_box.radius;
+                } else {
+                    r = D_800C1A7C[arg0->UserInfo.user1].r + 0x80;
+                }
+                r += 0x40;
+                if (dx * dx + dz * dz < r * r) {
+                    D_8009D754 = i;
+                    h->hero_pu = fux->contains;
+                    if (fux->contains == 0x12 || fux->contains == 0x17) {
+                        SpawnNASById(h->hero_eng->unk10.x, h->hero_eng->unk10.y, h->hero_eng->unk10.z, 0x1503, 0x11);
+                    }
+                    D_800C1E28[arg0->UserInfo.user1].unk10 = 0;
+                    PlaySfx(0x5DA, NULL, NULL, 0x1000, 0x1E00, 0);
+                    goto kill;
+                }
+            }
+            break;
+        }
+    }
+    if ((u16)D_800C1B2C->unk1A != 0) {
+        arg0->UserInfo.user2 = 0;
+    }
+    if (arg0->UserInfo.user2 != 0) {
+        arg0->UserInfo.user2--;
+        return;
+    }
+    PlaySfx(0x5D8, NULL, NULL, 0x1000, 0x1E00, 0);
+    D_800C1E28[arg0->UserInfo.user1].unk10 = 0;
+kill:
+    if (arg0->Family.Child != NULL) {
+        KillNAS(arg0->Family.Child);
+    }
+    KillNAS(arg0);
+}
 
 void func_800BDD30(s32 arg0) {
     HeroInfo *base = Heroes;

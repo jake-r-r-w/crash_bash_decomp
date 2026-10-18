@@ -130,7 +130,8 @@ extern Ovl61Circle D_800C1A44[];
 extern ScriptInit D_800C1554;
 
 typedef struct {
-    u8 pad0[0x12];
+    u8 pad0[0x10];
+    s16 unk10;
     s16 state;
 } Ovl61Slot;
 
