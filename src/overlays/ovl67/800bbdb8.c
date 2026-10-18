@@ -122,7 +122,12 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", InitNitroMissile);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", InitNitroMine);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C2BB0);
+void func_800C2BB0(void) {
+    if (D_800C447C-- < 0) {
+        SpawnNASById(0, 0, 0, 0x1C01, 0x11);
+        D_800C447C = 0xF;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C2C08);
 
