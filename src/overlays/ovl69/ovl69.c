@@ -105,11 +105,23 @@ void func_800B4F1C(void) {
     func_8001C2C0((u8 *)GetEngineSlot(1));
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B51C0);
+void func_800B51C0(void) {
+    if (D_8009E598 != NULL) {
+        D_8009E598();
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B51EC);
+void func_800B51EC(void) {
+    if (D_8009E594 != NULL) {
+        D_8009E594();
+    }
+}
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B5218);
+void func_800B5218(void) {
+    if (D_8009E590 != NULL) {
+        D_8009E590();
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B5244);
 
@@ -161,7 +173,11 @@ void func_800B5454(void) {
     D_800B962C = 2;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B5484);
+void func_800B5484(void) {
+    if (D_800B9DFC != NULL) {
+        D_800B9DFC();
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B54B0);
 

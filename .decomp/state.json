@@ -9261,13 +9261,19 @@
   "status": "matched"
  },
  "ovl69:800B51C0": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-18T17:40:03Z",
+  "status": "matched",
+  "via": "copy"
  },
  "ovl69:800B51EC": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-18T17:40:03Z",
+  "status": "matched",
+  "via": "copy"
  },
  "ovl69:800B5218": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-18T17:40:03Z",
+  "status": "matched",
+  "via": "copy"
  },
  "ovl69:800B5244": {
   "auto_failed": "types"
@@ -9300,7 +9306,8 @@
   "via": "auto"
  },
  "ovl69:800B5484": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-18T17:39:49Z",
+  "status": "matched"
  },
  "ovl69:800B54B0": {
   "auto_failed": "in-file"

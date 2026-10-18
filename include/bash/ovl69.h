@@ -41,6 +41,7 @@ extern s32 D_800B950C;
 extern u8 D_800BA754[];
 extern s32 D_800BAAC8;
 extern s32 D_800BAACC;
+extern void (*D_800B9DFC)(void);
 
 void func_800B556C(void);
 
@@ -74,6 +75,20 @@ extern GfxViewport D_800B8E00;
 
 void func_800B4F1C(void);
 
+void func_800B51C0(void);
+
+void func_800B51EC(void);
+
+void func_800B5218(void);
+
+void func_800B5484(void);
+
 s32 func_800B7D98(s32 arg0, s32 arg1);
+
+extern void (*D_8009E598)(void);
+
+extern void (*D_8009E594)(void);
+
+extern void (*D_8009E590)(void);
 
 #endif /* BASH_OVL69_H */
