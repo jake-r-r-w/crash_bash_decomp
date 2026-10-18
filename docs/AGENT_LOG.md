@@ -14,8 +14,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1132/2551 game functions matched: **main.exe is complete (575/575)**;
-  engine overlay 6 left, 1 parked (`func_8007F314`),
+- 1133/2551 game functions matched: **main.exe is complete (575/575)**;
+  engine overlay 5 left, 1 parked (`func_8007F314`),
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - The engine overlay is six files and `ovl5d` three, `ovl5e`, `ovl66`,
@@ -47,7 +47,7 @@ fell for 250-399 B normal ($0.79 -> $0.66, first-session matches 54% ->
 70%) and 400-599 B big ($4.58 -> $3.52); small samples, and what is left
 is the harder remainder. The closest-C carry-over did the work: three
 functions parked close then matched on the retry from their C. **Next:
-repeat the engine hour** (6 left: `func_8007F314` 5772 B (parked),
+repeat the engine hour** (5 left: `func_8007F314` 5772 B (parked),
 `PlotScriptFX` 2080 B, then
 parks and near misses under 700 B) with the big-heavy recipe below; `permute --near` first if there is CPU
 time. After each swarm run, compare `stats --run ID` with the ledger's
@@ -96,7 +96,7 @@ matched 2 more (`func_80083708` 1924 B, `func_8007D9DC` 3528 B; $6.37,
 killed early). Repeat it; 10 engine functions are left. Near
 misses with big-mode checkpoints: `func_8007BFA8` (instructions 5/114),
 `func_8007C170` (17/114), `func_8007CC80` (structure 77/116),
-`func_800926CC` (matched by hand 2026-10-18), `func_8008C824` (registers 25/155, parked: 2 stale sessions),
+`func_800926CC` (matched by hand 2026-10-18), `func_8008C824` (matched by hand 2026-10-18),
 `func_80079260` (4/98), `func_80094A28` (5/68), `func_800939FC` (matched by the permuter 2026-10-18). `--max-functions 500` leaves time and cost as the limits (40 stopped
    leasing after about 30 min). Sizes left per overlay: run the size loop over
    `nonmatching NAME, 0xSIZE` headers (the `next --count` listing is slow).
@@ -182,8 +182,8 @@ misses with big-mode checkpoints: `func_8007BFA8` (instructions 5/114),
   read and worked through by hand against the dumps. The method and every
   rule found so far are in MATCHING.md, "Reading the compiler's rules"; the
   skill, CLAUDE.md and the reference README now point at it. Use it next on
-  `func_8007F314`'s tail-merge question (jump.c) and on `func_8008C824`
-  (registers 25/155).
+  `func_8007F314`'s tail-merge question (jump.c). It also matched
+  `func_8008C824` (registers 25/155, global.c priorities) the same day.
 - **Tooling ideas not done** (from the 2026-10-16 plan):
   - Pilots, no code: model tiers (`--model haiku --escalate-model sonnet
     --big-workers 0` on ~40 functions under 128 B, check the first matches'
@@ -417,6 +417,14 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-18 (hand):** `func_8008C824` matched (d3e79ab) from the swarm's
+  25/155, no hack, no permuter. global.c ranked the two loop givs 27/77
+  against 25/76. A doubly nested `do { } while (0)` around the loop's first
+  five statements gives the spark giv's store depth 4. Splitting
+  `a -= Random()` makes the first insn after the notes a cost-1 `subu`.
+  Diff patterns row; global.c and loop-note rules added to "Reading the
+  compiler's rules".
 
 - **2026-10-18 (hand):** `func_8007B330` matched (7233c73) from 7/307, no
   hack, no permuter. sched.c's birthing and tie rules gave per-block index

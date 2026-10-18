@@ -446,6 +446,7 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | The target loads a field and never uses the value (a lone `lbu`/`lw` whose register is dead), and a volatile read of it puts the load in the base register that dies there (`lbu v0,K(v0)`) instead of the target's other register | It's half of a self-assignment `p->f = p->f;` (or via a temp `x = p->f; p->f = x;`): the store keeps the loaded value live through allocation, then gcc 2.8's post-reload CSE deletes the store as a no-op and nothing removes the load. A volatile dead read can't give the same register: a pseudo dead at allocation takes the lowest free register | `func_8008A924` |
 | Two pseudos in one block get each other's registers (local-alloc priority is refs / life, and the shorter-lived one wins) | Wrap the statement that sets and uses the one that should win in `do { ... } while (0)`: flow weights references inside loop notes by loop depth, which raises its priority; the loop notes also stop sched1/sched2 moving insns across them | `func_8008A924` |
 | `lui` of an index global comes before the target's `lui Heroes` for `&Heroes[D_x]` (both at the block start; sched2 breaks their priority tie by RTL order) | sched1 gives every single-set register birthing priority, which puts each `%hi` right before its first use, so the index's comes first. Give each block's index its own variable (`h` / `h2`, set once, so its `lh` is launched too), and assign a base pointer (`hb = Heroes;`) before reading the index in each block (set twice, so not birthing): the base then lands ahead of the index, as `rank_for_schedule` and `adjust_priority` in sched.c work out | `func_8007B330` |
+| Two loop induction pointers (givs) in callee-saved registers are swapped (`s1`/`s2`), and the `-dl` dump shows them close on global.c's priority (`floor_log2(refs) * refs / live`, here 27/77 against 25/76) | Raise the losing giv's refs with loop weighting: wrap a stretch of the loop body that uses it in `do { } while (0)`, nested twice if one level is short (each level adds one per ref inside). Pick the stretch so its loop notes don't disturb the schedule. The first insn after the notes depends on everything before it, and everything after depends on it; it must come first in the target's order and should cost 1 (a load passes its latency on to every later insn and ties them). Splitting `a -= f();` into `r = f();` inside and `a -= r;` after made the barrier a `subu` | `func_8008C824` |
 | A struct pointer's `%hi` gets a third register (`lui a0`) at a join where the target has it in `v0` and the other `%hi` in `v1` | One pointer reused for two structs dies twice, so local-alloc leaves it to global and can't tie the dying `%hi` to it. Use a separate pointer per struct (each dies once and is tied). If that lets later loads move above the stores (alias analysis now knows both bases), put each struct's stores in `do { } while (0)`: the loop notes are a sched1 barrier | `func_8007B330` |
 | gcc 2.7.2 unit: a test of a loaded byte computes `andi` into another register (`andi v0,v1,0x10`) where the target masks in place (`andi v1,v1`) | load into the variable and mask it in place inside the condition: `(t = buf[0], t &= 0x10, !t)` (an `(x = buf[0]) & 0x10` temp gets its own register) | `func_8002DE2C` |
 | gcc 2.7.2 unit: a branch whose target is `j X` with a filled slot keeps a `nop` in its own slot, where the target branches straight to X with that instruction | ASPSX does it, not cc1: `aspsx_fill.py` (`steal_jump_slot`) does it now | `func_8002DE2C` |
@@ -874,7 +875,11 @@ The rules found so far, each one checked against a trace:
     priority to an insn that sets a register set only once and still live.
     It then lands right before its first use. A register set twice doesn't
     get this (Diff patterns: `func_8007B330`, `func_800926CC`).
-  - Loop notes from `do { } while (0)` are a barrier: nothing moves across them.
+  - Loop notes from `do { } while (0)` are a barrier: nothing moves across
+    them. In `sched_analyze_insn` the first insn after the notes depends on
+    every insn before it, and every later insn depends on it, with that
+    insn's cost. A load there raises every later insn's priority by one,
+    which can turn their order into a tie.
 - **Memory dependences (`true_dependence`, `memrefs_conflict_p` in `sched.c`).**
   - A register set once to a symbol stands for that symbol (`canon_rtx`).
     Two different symbols never conflict, so stores through such pointers
@@ -892,6 +897,12 @@ The rules found so far, each one checked against a trace:
   - `combine_regs` ties an insn's output to a register operand that dies
     there, so they share a register. The operand must not be inside a
     memory address, and the output must be local and not yet placed.
+- **Global register allocation (`global.c`).** `allocno_compare` uses the
+  same priority, refs × floor_log2(refs) / live length, from the `-dl`
+  dump's "used N times across M insns". Equal priorities go to the lower
+  pseudo number. In that order each one takes the first free register, so
+  for two pseudos that cross calls, the first takes the lower `s`
+  register (`func_8008C824`).
 - **Cross-jumping (`find_cross_jump`, `do_cross_jump` in `jump.c`, jump2).**
   - The pass walks forward. A jump hands its tail to the first matching
     copy it finds among the jumps to the same label, most recently threaded
