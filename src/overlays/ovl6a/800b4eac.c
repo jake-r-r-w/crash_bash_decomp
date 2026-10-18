@@ -218,7 +218,13 @@ s32 func_800B8224(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B822C);
+void func_800B822C(s32 arg0) {
+    if (Heroes[arg0].hero->UserInfo.user1 != 0) {
+        D_800BCEF4 += 1;
+        return;
+    }
+    D_800BCEF4 = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B8284);
 

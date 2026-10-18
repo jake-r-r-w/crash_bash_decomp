@@ -20,6 +20,7 @@ typedef struct Ovl6aGameView {
 } Ovl6aGameView;
 extern s32 D_800BD390;
 extern s32 D_800BD394;
+extern s32 D_800BCEF4;
 
 void func_800B7874(void);
 
@@ -60,6 +61,8 @@ void func_800B8148(s32 arg0);
 s32 func_800B821C(void);
 
 s32 func_800B8224(void);
+
+void func_800B822C(s32 arg0);
 
 void func_800B8474(s32 arg0);
 
