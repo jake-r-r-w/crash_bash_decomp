@@ -25,6 +25,7 @@ void func_800B8498(void);
 void func_800B84B8(void);
 void func_800B84E0(void);
 
+extern GfxViewport D_800B8DD8;
 extern u8 D_800BAAD0[];
 extern s32 *D_800B9620;
 extern u8 D_800B8974[];
@@ -35,6 +36,8 @@ extern s32 D_800B950C;
 extern u8 D_800BA754[];
 extern s32 D_800BAAC8;
 extern s32 D_800BAACC;
+
+void func_800B556C(void);
 
 void func_800B7E04(void);
 
