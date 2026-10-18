@@ -8,7 +8,25 @@
 #include "common.h"
 #include "bash/nas.h"
 
+typedef struct Ovl61Vel {
+    u8 pad0[0x10];
+    s32 x;
+    s32 pad14;
+    s32 z;
+} Ovl61Vel;
+
+typedef struct Ovl61Dir {
+    u8 pad0[0x16];
+    s16 dir;
+} Ovl61Dir;
+
+extern s32 D_800C271C;
+extern s32 D_800C2720;
+extern s32 D_800C2724;
+extern s32 D_800C2728;
+
 void func_800B84B8(void);
+s32 func_800C096C(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2);
 
 s32 func_800BFD9C(u8 *arg0);
 

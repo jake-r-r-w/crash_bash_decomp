@@ -223,7 +223,54 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C0804);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C08C8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C096C);
+s32 func_800C096C(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2) {
+    s32 lim;
+    s32 x;
+    s32 z;
+    s32 d;
+
+    lim = 0xA00;
+    if (arg2 != 0) {
+        lim = 0x1000;
+    }
+    x = arg0->x;
+    if (x > lim) {
+        arg1->dir = D_800C271C;
+        return 1;
+    }
+    if (x < -lim) {
+        arg1->dir = D_800C2720;
+        return 1;
+    }
+    z = arg0->z;
+    if (z > lim) {
+        arg1->dir = D_800C2724;
+        return 1;
+    }
+    if (z < -lim) {
+        arg1->dir = D_800C2728;
+        return 1;
+    }
+    if (arg2 != 0) {
+        d = arg1->dir;
+        if (d == D_800C2724 || d == D_800C2728) {
+            if (x > 0x680) {
+                arg0->x = 0x680;
+            }
+            if (arg0->x < -0x680) {
+                arg0->x = -0x680;
+            }
+        } else {
+            if (z > 0x680) {
+                arg0->z = 0x680;
+            }
+            if (arg0->z < -0x680) {
+                arg0->z = -0x680;
+            }
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C0A74);
 
