@@ -17,7 +17,71 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B551C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B5710);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B6224);
+void func_800B6224(s32 arg0) {
+    EXTengine *e;
+    subengine *sub;
+    subengine *p;
+    s32 w;
+    s32 n;
+
+    D_800BCA20[5].unk1E = 4;
+    D_800BCA20[6].unk1E = 4;
+    if (((Ovl6aGameView *)D_8005A614)->unk105[arg0] != 0) {
+        D_800BCA20[5].unk1E = 3;
+        if (((Ovl6aGameView *)D_8005A614)->unk105[arg0] >= 2) {
+            D_800BCA20[6].unk1E = 2;
+        }
+    }
+    n = ((Ovl6aGameView *)D_8005A614)->unkE0;
+    if (n >= 2 && ((Ovl6aGameView *)D_8005A614)->unk105[arg0] == 0) {
+        D_800BCEFC = 4;
+    } else {
+        D_800BCEFC = n + 3;
+    }
+    if (((Ovl6aGameView *)D_8005A614)->unk4 & 0x2000) {
+        D_800BCEFC = ((Ovl6aGameView *)D_8005A614)->unkE0 + 3;
+    }
+    D_800BCA20[4].unk1E = ((Ovl6aGameView *)D_8005A614)->unk147[arg0] ? 7 : 8;
+    D_800BCA20[3].unk1E = ((Ovl6aGameView *)D_8005A614)->unk126[arg0] ? 5 : 6;
+    e = GetEngineSlot(1);
+    func_80095BEC(1, (s32 *)D_800BCA20);
+    e->unk10.y = 200;
+    e->unk10.x = 0;
+    D_800BCED4 = 0;
+    e->flags = (e->flags & ~0x8000) | 0x10000000;
+    if (((Ovl6aGameView *)D_8005A614)->unkE4[arg0] != 0) {
+        D_800BCED4 = 1;
+    }
+    if (((Ovl6aGameView *)D_8005A614)->unk126[arg0] != 0) {
+        D_800BCED4 = 2;
+    }
+    if (((Ovl6aGameView *)D_8005A614)->unk147[arg0] != 0 && ((Ovl6aGameView *)D_8005A614)->unkE0 > 0) {
+        D_800BCED4 = 3;
+    }
+    if (((Ovl6aGameView *)D_8005A614)->unk105[arg0] != 0 && ((Ovl6aGameView *)D_8005A614)->unkE0 >= 2) {
+        D_800BCED4 = 4;
+        n = 1;
+    } else {
+        n = 1;
+    }
+    p = e->sub;
+    w = (((D_800BCEFC << n) + D_800BCEFC) * 15) << n;
+    p[1].unk76 = w;
+    e->unk10.x = 320 - (w >> n);
+    sub = GetEngineSlot(n)->sub;
+    p = &sub[5];
+    switch (D_800BCEFC - 3) {
+    case 0:
+        sub[5].flags &= ~0x8000;
+        p[1].flags &= ~0x8000;
+        break;
+    case 1:
+        p[1].flags &= ~0x8000;
+        break;
+    case 2:
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B64C8);
 

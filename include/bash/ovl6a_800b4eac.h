@@ -15,11 +15,20 @@ extern s32 D_800BF1A0;
 extern u32 D_800BD5B0;
 extern s32 D_800BD5B4;
 
+/* D_8005A614 as this file sees it: per-player byte flags at 0xE4.. */
 typedef struct Ovl6aGameView {
-    /* 0x00 */ u8 pad0[0x24];
-    /* 0x24 */ s16 unk24;
-    /* 0x26 */ u8 pad26[0x30 - 0x26];
-    /* 0x30 */ u16 unk30;
+    /* 0x000 */ u8 pad0[4];
+    /* 0x004 */ s32 unk4;
+    /* 0x008 */ u8 pad8[0x24 - 0x8];
+    /* 0x024 */ s16 unk24;
+    /* 0x026 */ u8 pad26[0x30 - 0x26];
+    /* 0x030 */ u16 unk30;
+    /* 0x032 */ u8 pad32[0xE0 - 0x32];
+    /* 0x0E0 */ s32 unkE0;
+    /* 0x0E4 */ u8 unkE4[0x21];
+    /* 0x105 */ u8 unk105[0x21];
+    /* 0x126 */ u8 unk126[0x21];
+    /* 0x147 */ u8 unk147[0x21];
 } Ovl6aGameView;
 typedef struct KeyedPair {
     s32 key;
@@ -36,6 +45,10 @@ typedef struct DistPos {
     u8 pad14[4];
     s32 z;
 } DistPos;
+extern EngRec24 D_800BCA20[];
+extern s32 D_800BCEFC;
+
+void func_800B6224(s32 arg0);
 
 typedef struct PodiumChild {
     u8 pad0[0xC];
