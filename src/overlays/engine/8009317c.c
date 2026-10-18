@@ -825,7 +825,41 @@ s32 func_800951D0(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009317c", func_80095258);
+void func_80095258(u8 *arg0) {
+    MarkObj *o = (MarkObj *)arg0;
+    MarkSrc *s;
+    EngineMarker *m;
+    EngineMarker *b;
+    MarkSrcEnt *e;
+    s32 i;
+    s32 n;
+    s32 v;
+
+    D_800A0C70 = 0;
+    if (o != NULL) {
+        s = o->src;
+        if (s != NULL) {
+            do {
+            i = 0;
+            if (s->count > 0) {
+                do {
+                    e = s->ent;
+                    if (((s16 *)&e[i])[-1] == 0x64) {
+                        b = D_800A0C10;
+                        n = D_800A0C70;
+                        m = &b[n];
+                        m->unk8 = o;
+                        *(s32 *)m = i + 0x2001;
+                        v = e[i].val;
+                        D_800A0C70 = n + 1;
+                        m->idx = v;
+                    }
+                } while (++i < s->count);
+            }
+            } while (0);
+        }
+    }
+}
 
 void func_800952F8(subengine *sub, s32 *recs) {
     PlaceSub *s;
