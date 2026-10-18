@@ -127,7 +127,36 @@ void func_800B40AC(void) {
     func_80029100((AnimOwner *)ao);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B42F4);
+s32 func_800B42F4(Ovl61Obj *arg0) {
+    s32 i;
+    s32 dx;
+    s32 dz;
+    s32 r;
+    s32 a;
+
+    for (i = 0; i < 4; i++) {
+        dx = arg0->x - D_800C1A7C[i].x;
+        dz = arg0->z - D_800C1A7C[i].z;
+        if (arg0->flags & 0x40) {
+            r = D_800C1A7C[i].r + arg0->radius;
+        } else {
+            r = D_800C1A7C[i].r + 0x80;
+        }
+        if (dx * dx + dz * dz < r * r) {
+            a = get_angle(-dx, -dz);
+            if ((void *)arg0 != (void *)Heroes[D_800C2720].hero_eng &&
+                (void *)arg0 != (void *)Heroes[D_800C271C].hero_eng) {
+                arg0->x = D_800C1A7C[i].x - (r * D_80068BD4[(a - 0x400) & 0xFFF].unk2 >> 12);
+            }
+            if ((void *)arg0 != (void *)Heroes[D_800C2724].hero_eng &&
+                (void *)arg0 != (void *)Heroes[D_800C2728].hero_eng) {
+                arg0->z = D_800C1A7C[i].z - (r * D_80068BD4[a & 0xFFF].unk2 >> 12);
+            }
+            return 1;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B453C);
 

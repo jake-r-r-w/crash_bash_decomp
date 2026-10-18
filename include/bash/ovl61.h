@@ -237,6 +237,8 @@ typedef struct Ovl61Mot {
 
 void func_800B3528(s32 arg0);
 
+s32 func_800B42F4(Ovl61Obj *arg0);
+
 s32 func_800B4D9C(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2);
 
 void func_800B5EC8(s32 arg0);
