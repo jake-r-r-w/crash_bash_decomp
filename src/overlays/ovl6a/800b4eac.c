@@ -358,7 +358,69 @@ void func_800B8CA0(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B8F50);
+void func_800B8F50(void) {
+    s32 r;
+    s32 x;
+
+    switch (D_8005A614[D_8005A614[0xA7] + 0x4C]) {
+    case 3:
+    case 4:
+    case 6:
+    case 8:
+        if (D_8005A624 == 0 && D_800BD390-- < 0) {
+            D_800BD394 = Random(2) + 2;
+            goto spawn;
+        }
+        break;
+    default:
+        if (D_8005A624 == 0 && D_800BD390-- < 0) {
+            D_800BD394 = Random(2);
+        spawn:
+            r = Random(6);
+            if (r == 0) {
+                PlaySfx(0x355, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (r == 1) {
+                PlaySfx(0x356, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (r == 2) {
+                PlaySfx(0x357, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (r == 3) {
+                PlaySfx(0x358, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (r == 4) {
+                PlaySfx(0x359, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (r == 5) {
+                PlaySfx(0x35A, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            r = Random(6);
+            if (r == 0) {
+                PlaySfx(0x35B, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (r == 1) {
+                PlaySfx(0x35C, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (r == 2) {
+                PlaySfx(0x35D, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (r == 3) {
+                PlaySfx(0x35E, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (r == 4) {
+                PlaySfx(0x35F, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (r == 5) {
+                PlaySfx(0x360, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            x = -Random(0x2000) + Random(0x2000);
+            SpawnNASById(x, Random(0x400) - 0xC00, 0x1000, 0x1628, 0x11);
+            D_800BD390 = Random(0x14) + 0xA;
+        }
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", PlotPodiumOdo);
 
