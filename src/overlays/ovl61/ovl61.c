@@ -1667,7 +1667,70 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", PlotBall);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", CalcArkInfluence);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", FreeGrabbedObject);
+void FreeGrabbedObject(u32 arg0, bool arg1) {
+    VECTOR sp18;
+    HeroInfo *hs;
+    HeroInfo *h;
+    EXTengine *hero;
+    EXTmotion *mot;
+    EXTengine *eng;
+    NAS *nas;
+    EXTobject *obj;
+    s32 dir;
+    s32 a;
+    s32 spd;
+
+    hs = Heroes;
+    h = &hs[arg0];
+    if (h->hero_eng->sfx != NULL) {
+        StopSfx(h->hero_eng->sfx);
+    }
+    hero = h->hero_eng;
+    if (hero != NULL) {
+        nas = D_8005AA2C;
+        if (nas != NULL) {
+            do {
+                eng = nas->Engine;
+                if (eng != NULL) {
+                    if (eng != hero) {
+                        obj = FindExtension(nas, 0x1000);
+                        if (obj != NULL && obj->status == 2 && arg0 == obj->player) {
+                            mot = FindExtension(nas, 0x800);
+                            if (mot != NULL) {
+                                spd = 0x30;
+                                if (arg1) {
+                                    PlaySfx(D_800C18E8[arg0 + 8], NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                                    spd = 0xE0;
+                                }
+                                mot->Xvel = spd;
+                                mot->Xmax = spd;
+                                if (func_80015780(hero, hero->sub, 4, &sp18) != NULL) {
+                                    dir = get_angle(-eng->unk10.x + sp18.vx, -eng->unk10.z + sp18.vz);
+                                } else {
+                                    dir = get_angle(-eng->unk10.x + hero->unk10.x, -eng->unk10.z + hero->unk10.z);
+                                }
+                                a = func_800154A0(hero->unk1E, dir);
+                                if (a > 0x220) {
+                                    a = 0x220;
+                                }
+                                if (a < -0x220) {
+                                    a = -0x220;
+                                }
+                                a += hero->unk1E;
+                                a &= 0xFFF;
+                                *(volatile s16 *)&mot->Xa = a;
+                                eng->unk10.x -= mot->Xvel * D_80068BD4[(mot->Xa - 0x400) & 0xFFF].unk2 >> 12;
+                                eng->unk10.z -= mot->Xvel * D_80068BD4[(u16)mot->Xa & 0xFFF].unk2 >> 12;
+                                obj->status = 1;
+                            }
+                        }
+                    }
+                    nas = nas->Solid.Child;
+                }
+            } while (nas != NULL);
+        }
+    }
+}
 
 void AlignGrabBall(EXTengine *arg0, EXTmotion *arg1, EXTobject *arg2) {
     SLONG_XYZ v;
