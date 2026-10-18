@@ -8593,7 +8593,8 @@
   "copy_failed_stage": "in-file"
  },
  "ovl67:800BAAA8": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-18T17:18:14Z",
+  "status": "matched"
  },
  "ovl67:800BAC30": {
   "auto_failed": "types"

@@ -27,6 +27,7 @@ extern u16 *D_8009D6EC;
 
 extern u8 D_80053EAC[];
 extern EXTengine *D_8009D530;
+extern EXTengine *D_800C439C;
 extern u16 D_800AD12C;
 extern u16 D_800C39A0[];
 extern s16 D_800C4150[][3];
@@ -376,6 +377,8 @@ void func_800B46DC(void);
 void func_800B4CE0(s32 arg0);
 
 void func_800B4E30(s32 arg0);
+
+NAS *func_800BAAA8(void);
 
 void func_800BEB68(void);
 void func_800BF0AC(void);

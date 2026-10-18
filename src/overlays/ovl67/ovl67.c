@@ -1291,7 +1291,54 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BA43C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BA6C4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BAAA8);
+NAS *func_800BAAA8(void) {
+    SLONG_XYZ sp10;
+    s32 r;
+    EXTengine *me;
+    EXTengine *eng;
+    FlagRecord *rec;
+    NAS *nas;
+    EXTengine *ext;
+    s32 r0;
+    s32 dx;
+    s32 dz;
+
+    me = D_800C439C;
+    if (me != NULL) {
+        rec = func_80025A48(me, 0x40);
+        if (rec != NULL) {
+            if (me->unk5E != 0) {
+                func_800142D4(&me->unk1C);
+            }
+            func_8001CD04(me->sub, me->unk3C, &me->unk10);
+            r0 = rec->radius;
+            func_80015758((SVECTOR *)rec, (VECTOR *)&sp10);
+            for (nas = D_8005AA2C; nas != NULL; nas = nas->Solid.Child) {
+                eng = nas->Engine;
+                if (eng != NULL && eng != me) {
+                    FlagRecord *rec2;
+                    do { rec2 = func_80025A48(eng, 0x40); } while (0);
+                    if (rec2 != NULL) {
+                        r = rec2->radius;
+                        ext = FindExtension(nas, 0x1000);
+                        if (ext != NULL) {
+                            r += r0;
+                            if (ext->unk1C & 8) {
+                                dx = eng->unk10.x - sp10.x;
+                                dz = eng->unk10.z - sp10.z;
+                                if (r * r > dx * dx + dz * dz && FindExtension(nas, 0x800) != NULL) {
+                                    ext->unk1E = 0x100;
+                                    return nas;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return NULL;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BAC30);
 
