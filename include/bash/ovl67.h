@@ -31,4 +31,31 @@ void func_800B9800(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r);
 
 s32 func_800BBBB4(s32 arg0, s16 arg1, s32 arg2, s16 arg3);
 
+/* Each player's reach box for hitting the ball (func_800B9CB8): the y range
+ * relative to the hero, the near and far radii, and the near and far points. */
+typedef struct Ovl67HeroBox {
+    s32 a, b, c, d;
+    s32 x0, y0, z0;
+    s32 x1, y1, z1;
+} Ovl67HeroBox;
+
+extern Ovl67HeroBox D_800C4190[];
+
+/* Extension 0x800 of a ball (func_800B9CB8), as in ovl61's Ovl61Puck. */
+typedef struct Ovl67Puck {
+    u8 pad0[0xE];
+    s16 speed;
+    u8 pad10[4];
+    s16 max;
+    s16 dir;
+    u8 pad18[0x32 - 0x18];
+    u16 unk32;
+} Ovl67Puck;
+
+extern u16 D_800C39B0[];
+extern s32 D_8005A618;
+extern s32 D_8005A680[];
+
+s32 func_800B9CB8(s32 arg0, EXTengine *unused);
+
 #endif /* BASH_OVL67_H */

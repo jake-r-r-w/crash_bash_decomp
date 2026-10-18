@@ -194,7 +194,201 @@ void func_800B9800(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B9B10);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B9CB8);
+s32 func_800B9CB8(s32 arg0, EXTengine *unused) {
+    SLONG_XYZ tgt;
+    SLONG_XYZ nearp;
+    SLONG_XYZ farp;
+    VECTOR pos;
+    EXTengine *me;
+    s32 speed;
+    s32 top;
+    s32 bot;
+    s32 rnear;
+    s32 rfar;
+    HeroInfo *hero;
+    Ovl67HeroBox *box;
+    NAS *nas;
+    EXTengine *eng;
+    FlagRecord *rec;
+    EXTobject *obj;
+    Ovl67Puck *puck;
+    s32 r;
+    s32 rad;
+    s32 d;
+    s32 dist;
+    s32 y;
+    s32 hy;
+    s32 x1;
+    s32 x2;
+    s32 z2;
+    s32 dz;
+    s32 fa;
+    s16 sp;
+    TrigEntry *tbl;
+    s32 cz;
+    s32 fb;
+    u16 ang;
+    u16 ang2;
+    u16 fc;
+    u16 fc2;
+    Ovl67HeroBox *base;
+
+    if (Heroes[arg0].hero_status & 0xF800) {
+        return 0;
+    }
+    me = Heroes[arg0].hero_eng;
+    if (me == NULL) {
+        return 0;
+    }
+    speed = Heroes[arg0].hero_move->forward_speed;
+    if (arg0 == 3) {
+        speed = -Heroes[3].hero_move->forward_speed;
+    }
+    if (func_80015780(me, me->sub, 1, &pos) == NULL) {
+        *(SLONG_XYZ *)&pos = me->unk10;
+    }
+    if (func_80025A48(me, 2) != NULL) {
+        if (me->unk5E != 0) {
+            func_800142D4(&me->unk1C);
+        }
+        func_8001CD04(me->sub, me->unk3C, &me->unk10);
+    }
+    hy = Heroes[arg0].hero_eng->unk10.y;
+    base = D_800C4190;
+    box = &base[arg0];
+    top = hy + box->b;
+    bot = hy + box->a;
+    rnear = box->c;
+    rfar = box->d;
+    nearp.x = Heroes[arg0].hero_eng->unk10.x + box->x0;
+    nearp.y = Heroes[arg0].hero_eng->unk10.y + box->y0;
+    nearp.z = Heroes[arg0].hero_eng->unk10.z + box->z0;
+    hero = &Heroes[arg0];
+    farp.x = hero->hero_eng->unk10.x + box->x1;
+    farp.y = hero->hero_eng->unk10.y + box->y1;
+    farp.z = hero->hero_eng->unk10.z + box->z1;
+    tbl = D_80068BD4;
+    for (nas = D_8005AA2C;; nas = nas->Solid.Child) {
+        if (nas == NULL) {
+            return 0;
+        }
+        eng = nas->Engine;
+        if (eng == NULL || eng == me) {
+            continue;
+        }
+        rec = func_80025A48(eng, 0x40);
+        if (rec == NULL) {
+            continue;
+        }
+        dz = rec->unk2;
+        y = eng->unk10.y;
+        x1 = rec->height;
+        if (!(top < y + dz)) {
+            continue;
+        }
+        y += x1;
+        if (!(y < bot)) {
+            continue;
+        }
+        rad = rec->radius;
+        if (func_80015480(hero->hero_move->forward_angle,
+                          get_angle(-eng->OldXYZ.x + pos.vx, -eng->OldXYZ.z + pos.vz)) >= 0x38F) {
+            r = rnear;
+            tgt = nearp;
+        } else {
+            r = rfar;
+            tgt = farp;
+        }
+        get_angle(eng->unk10.x - pos.vx, eng->unk10.z - pos.vz);
+        obj = FindExtension(nas, 0x1000);
+        if (obj == NULL) {
+            continue;
+        }
+        rad += r;
+        y = eng->unk10.x - tgt.x;
+        dist = y * y;
+        y = eng->unk10.z - tgt.z;
+        dist += y * y;
+        if (!(dist < rad * rad)) {
+            continue;
+        }
+        dist = csqrt(dist) >> 6;
+        if (!(dist < rad)) {
+            continue;
+        }
+        puck = FindExtension(nas, 0x800);
+        if (puck != NULL) {
+            r = puck->dir;
+        } else {
+            r = get_angle(eng->OldXYZ.x - eng->unk10.x, eng->OldXYZ.z - eng->unk10.z);
+        }
+        func_800B9800(&eng->unk10, r, &tgt, rad + 8);
+        r = get_angle(-eng->unk10.x + tgt.x, -eng->unk10.z + tgt.z) & 0xFFF;
+        puck = FindExtension(nas, 0x800);
+        if (puck == NULL) {
+            continue;
+        }
+        obj->player = arg0;
+        rad = puck->dir;
+        rad += 0x800;
+        rad &= 0xFFF;
+        if (obj->whatami == 2 && !(hero->hero_status & 0xFA00) &&
+            (arg0 == 0 || (D_8005A680[0] != 0 && arg0 == 1))) {
+            if (!(D_8005A618 & 1)) {
+                hero->hero_score = 0;
+                hero->hero_health = 0;
+                ((void (*)(s32, s32, s32))func_80027F7C)(arg0, 0xC, 0xFF);
+                SetHeroAction((HeroInfo *)arg0, 0x2E);
+            }
+            KillNAS(nas);
+            return 0;
+        }
+        PlaySfx(D_800C39B0[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+        fa = hero->hero_move->forward_angle & 0xFFF;
+        ang = r;
+        fc = fa;
+        sp = abs(speed);
+        x1 = puck->speed * tbl[(ang - 0x400) & 0xFFF].unk2 >> 12;
+        z2 = puck->speed * tbl[r & 0xFFF].unk2 >> 12;
+        dz = sp * tbl[(fc - 0x400) & 0xFFF].unk2 >> 12;
+        cz = sp * tbl[fa].unk2 >> 12;
+        r = get_angle(x1 + dz, z2 + cz) & 0xFFF;
+        d = func_800154A0(rad, r);
+        if (abs(d) > 0x400) {
+            func_800154A0(rad ^ 0x800, r);
+            fb = hero->hero_move->forward_angle & 0xFFF;
+            ang2 = r;
+            fc2 = fb;
+            sp = abs(speed);
+            x1 = puck->speed * tbl[(ang2 - 0x400) & 0xFFF].unk2 >> 12;
+            z2 = puck->speed * tbl[r].unk2 >> 12;
+            dz = sp * tbl[(fc2 - 0x400) & 0xFFF].unk2 >> 12;
+            x2 = sp * tbl[fb].unk2 >> 12;
+            r = get_angle(x1 + dz, z2 + x2) & 0xFFF;
+        } else {
+            if (abs(d) > 0x3F0) {
+                if (d >= 0) {
+                    d = 0x3F0;
+                } else {
+                    d = -0x3F0;
+                }
+            }
+            r += d;
+            r &= 0xFFF;
+        }
+        puck->dir = r;
+        if (speed != 0) {
+            puck->speed += abs(speed);
+            if (puck->speed > puck->max + 0x40) {
+                puck->speed = puck->max + 0x40;
+            }
+        }
+        if (puck->unk32 == 0 && puck->max < 0x90) {
+            puck->max += 4;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BA43C);
 
