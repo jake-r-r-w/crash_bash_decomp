@@ -232,6 +232,25 @@ typedef struct {
 } Ovl61WallObj;
 
 extern Ovl61WallObj D_800C1DD8[];
+
+typedef struct {
+    u32 *flags;
+    Ovl61WallSub *sub;
+    u8 pad8[0xE - 0x8];
+    u16 unkE;
+    u8 pad10[0x14 - 0x10];
+} Ovl61Door;
+
+extern Ovl61Door D_800C1D38[];
+extern Ovl61Door D_800C1D88[];
+extern _sfx_handler *D_800C1C60;
+
+typedef struct {
+    u8 pad0[0x30];
+    u16 unk30;
+    u8 pad32[2];
+    s16 unk34;
+} Ovl61ModeView;
 extern u16 D_800C139C[];
 extern _sfx_handler *D_800C1BC4;
 
@@ -294,6 +313,8 @@ void func_800B6BE8(s32 arg0);
 void func_800B6CF0(s32 arg0);
 
 void func_800B6FE0(s32 arg0);
+
+void func_800B70CC(s32 arg0);
 
 void func_800B7450(s32 arg0);
 

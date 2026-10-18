@@ -1418,7 +1418,89 @@ void func_800B6FE0(s32 arg0) {
     SetHeroSeq(arg0, 0x19);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B70CC);
+void func_800B70CC(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = &base[arg0];
+    subengine *s;
+    Ovl61ModeView *m;
+    s32 i;
+
+    h->hero_move->velocity_enable = 0;
+    h->hero_move->jump_max = 0;
+    h->hero_frozen = 5;
+    h->hero_powerup->flags = 0;
+    h->hero_ctrl |= 1;
+    h->hero_eng->flags &= ~0x21;
+    if (h->hero_powerup->sfx != NULL) {
+        StopSfx(h->hero_powerup->sfx);
+    }
+    if (h->hero_eng->sfx != NULL) {
+        StopSfx(h->hero_eng->sfx);
+    }
+    func_80026980(h->hero);
+    h->hero_sub->unk08 = 0;
+    h->hero_pu = 0;
+    h->hero_pu_timer = 0;
+    SetHeroSeq(arg0, 0x20);
+    func_80028018(arg0, 0x3C);
+    s = h->hero_sub->next;
+    if (s != NULL) {
+        s = s->next;
+        if (s != NULL) {
+            s->flags = 0;
+        }
+    }
+    if (arg0 == D_800C2728) {
+        i = 0;
+    } else if (arg0 == D_800C2724) {
+        i = 1;
+    } else if (arg0 == D_800C2720) {
+        i = 3;
+    } else {
+        i = (arg0 == D_800C271C) * 2;
+    }
+    if (D_800C1D38[i].sub != NULL) {
+        D_800C1D38[i].sub->unk74 = D_800C1D38[i].unkE;
+    }
+    m = (Ovl61ModeView *)D_8005A614;
+    switch (m->unk34) {
+    case 16:
+        SpawnNASById(arg0, D_8005A5D8 - 0x50, -0x20, 0x1506, 0x11);
+        break;
+    case 17:
+        if (m->unk30 & 0x801) {
+            D_800C1F14 = 0;
+            if (D_800C1C60 != NULL) {
+                StopSfx(D_800C1C60);
+            }
+        } else {
+            if (D_800C1D88[i].flags != NULL) {
+                *D_800C1D88[i].flags |= 0x8000;
+            }
+            if (D_800C1C84 == 0) {
+                PlaySfx(0x591, &D_800C1C60, NULL, 0x1000, 0x1E00, 0);
+                D_800C1C84 = 1;
+            }
+            if (arg0 == D_800C2728) {
+                D_800C1F14 |= 1;
+            }
+            if (arg0 == D_800C2724) {
+                D_800C1F14 |= 2;
+            }
+            if (arg0 == D_800C2720) {
+                D_800C1F14 |= 4;
+            }
+            if (arg0 == D_800C271C) {
+                D_800C1F14 |= 8;
+            }
+        }
+        break;
+    default:
+        SpawnNASById(arg0, D_8005A5D8 - 0x50, 0, 0x1505, 0x11);
+        break;
+    }
+    Heroes[arg0].hero_hit = 0x3C;
+}
 
 void func_800B7450(s32 arg0) {
     HeroInfo *base;
