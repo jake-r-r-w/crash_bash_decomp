@@ -148,7 +148,9 @@ misses with big-mode checkpoints: `func_8007BFA8` (instructions 5/114),
 - **Hack matches to revisit:** `decomp.py hacks` lists them (one on
   2026-10-18: `func_800193A8`, register pins that are probably the original
   source). Parks are `decomp.py status` / the dashboard; `func_800926CC` was
-  left parked rather than matched with an `asm("")` barrier.
+  left parked rather than matched with an `asm("")` barrier, and so was
+  `func_8008A924`, though a `register u8 dummy asm("$3")` pin matches it (its
+  block note has the form).
 - **Tooling ideas not done** (from the 2026-10-16 plan):
   - Pilots, no code: model tiers (`--model haiku --escalate-model sonnet
     --big-workers 0` on ~40 functions under 128 B, check the first matches'
@@ -383,6 +385,10 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-18 (hand, second try):** `func_8008A924` still parked. A `$3` pin
+  matches (not committed: a workaround). A dead read gets the dying base's
+  register, so the original's value was live at allocation; an if/else whose
+  arms merge in jump2 drops the read too (delete_computation).
 - **2026-10-18 (hand, no permuter):** `func_8008A924` (120 B) parked at
   registers 1/30. Its dead read of `run_walk` must be volatile and lands in
   `v0` (the dying base) where the target has `v1`; the block note lists what

@@ -2,7 +2,7 @@
  "blocked": [
   {
    "name": "func_8008A924",
-   "note": "registers 1/30 (kept under #ifdef NON_MATCHING): only the dead volatile read's register differs, lbu v0,0x1A(v0) vs the target's lbu v1. The target's lbu reads run_walk and discards it, so the read must be volatile; the do { read; h = (HeroInfo *)arg0; } while (0) block (from the 2026-10-15 permuter run) fixes the order (li v1,1 between lw a0 and sb; lbu before move a0,s0). Why v0: local-alloc gives the read's pseudo top priority (life of one insn) and v0 is free there, because the reloaded hero_move pointer dies at that lbu. Tried: one u8 v for the 1 and the read (v dies twice so it goes to global alloc, and the first hero_move pointer, local, takes v1: v=a0 and pointer=v1, the exact swap), s32/register dummy, a volatile pointer local, the volatile store too, a hero_move local, if/else identical arms and empty ifs (the load disappears), inline helpers (worse). Next: a C form where the read's value is live past the lbu at allocation time but costs no code (a use removed only after reload), or make the first hero_move pointer global so global alloc's priority can give v1 to the 1/read variable",
+   "note": "registers 1/30 (kept under #ifdef NON_MATCHING): only the dead volatile read's register differs (lbu v0,0x1A(v0) vs the target's v1). A register pin, register u8 dummy asm(\"$3\") in the same do { } while (0) form, MATCHES (verified 2026-10-18), but it's a workaround, so it isn't committed (ROADMAP Phase 6, CONVENTIONS). Why v0: a pseudo that is dead at allocation time gets the lowest free register, and the reloaded hero_move pointer frees v0 at that very lbu, so the original's value must have been live past the lbu during allocation and removed only afterwards. Ruled out: if/else arms that only become identical in RTL survive to jump2 (after reload), which merges them, but delete_computation then also deletes the lbu and the reload. One u8 v for the 1 and the read dies twice, so it goes to global alloc while the first hero_move pointer (local) takes v1 (v=a0, pointer=v1, the exact swap). Also tried: s32/register dummy, a volatile pointer local, the volatile store too, a hero_move local, empty ifs, inline helpers. Next: a use of the read that survives flow and allocation and is removed afterwards without delete_computation (a no-op move reload deletes, or a reload_cse no-op set)",
    "seg": "overlays/engine/8007ee2c",
    "size": 120
   },
@@ -13,9 +13,9 @@
    "size": 540
   }
  ],
- "commit": "fe10a1512",
+ "commit": "b31b619",
  "game": "SCUS_945.70",
- "generated": "2026-10-18T05:33:00Z",
+ "generated": "2026-10-18T05:39:50Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -64112,7 +64112,7 @@
    }
   },
   {
-   "commit": "fe10a1512",
+   "commit": "b31b619",
    "data_b": 2080,
    "data_tb": 606943,
    "game_all_f": 2551,
@@ -64125,7 +64125,7 @@
    "lib_b": 122112,
    "lib_f": 564,
    "lib_tb": 122112,
-   "ts": "2026-10-18T05:33:00Z",
+   "ts": "2026-10-18T05:39:50Z",
    "units": {
     "engine": [
      117656,
