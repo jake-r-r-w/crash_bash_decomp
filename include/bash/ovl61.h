@@ -95,6 +95,8 @@ s32 func_800BFD14(Ovl61Vel *v);
 
 void func_800C02F8(s32 arg0);
 
+void func_800C052C(s32 arg0);
+
 s32 func_800C0624(s32 arg0);
 
 s32 func_800C08C8(Ovl61Obj *arg0);

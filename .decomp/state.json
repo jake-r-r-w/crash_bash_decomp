@@ -6467,7 +6467,8 @@
   "via": "auto"
  },
  "ovl61:800C052C": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-18T10:57:28Z",
+  "status": "matched"
  },
  "ovl61:800C05B8": {
   "matched_at": "2026-10-18T10:52:21Z",

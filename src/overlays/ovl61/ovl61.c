@@ -380,7 +380,17 @@ void func_800C04FC(s32 arg0) {
     SetHeroSeq(arg0, 0x1A);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C052C);
+void func_800C052C(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = &base[arg0];
+
+    if (h->hero_eng->sfx != NULL) {
+        StopSfx(h->hero_eng->sfx);
+    }
+    func_800B62F4(arg0);
+    SetHeroSeq((HeroInfo *)arg0, 0x19);
+    h->hero_idle_count = Random(0x96) + 0xB4;
+}
 
 s32 func_800C05B8(s32 arg0) {
     s32 act;
