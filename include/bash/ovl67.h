@@ -375,6 +375,8 @@ void func_800B3E74(void);
 void func_800B46DC(void);
 void func_800B4CE0(s32 arg0);
 
+void func_800B4E30(s32 arg0);
+
 void func_800BEB68(void);
 void func_800BF0AC(void);
 
