@@ -14,9 +14,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1227/2551 game functions matched: **main.exe is complete (575/575)**;
+- 1228/2551 game functions matched: **main.exe is complete (575/575)**;
   engine overlay 2 left, both parked (`func_8007F314`, `PlotScriptFX`),
-  ovl61 94/97 (two 2026-10-18 swarm runs and two hand matches; 3 big ones left),
+  ovl61 95/97 (two 2026-10-18 swarm runs and three hand matches; 2 big ones left),
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Dashboard (2026-10-18): `docs/index.html` is `tools/scripts/dashboard.html` plus
@@ -42,9 +42,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**ovl61 (2026-10-18):** two runs, 83 matched, and `CalcArkInfluence` and
-`func_800B85DC` by hand; 94/97 functions, 3 left, all big and checkpointed:
-`func_800BE4D4` (2816 B),
+**ovl61 (2026-10-18):** two runs, 83 matched, and `CalcArkInfluence`,
+`func_800B85DC` and `func_800BE4D4` by hand; 95/97 functions, 2 left, both big
+and checkpointed:
 `func_800B8A68` (3264 B; its best C has a `- k + k` hack to drop),
 `PlotBall` (5576 B, paired 1366/1394). Next: a big-only run on
 ovl61 (`--workers 1 --big-workers 3`), or a new overlay with the big-heavy
@@ -455,6 +455,15 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-18 (hand):** `func_800BE4D4` (2816 B) matched (9fd67e11), no hack
+  or permuter, from the swarm's 699/704 paired. The sin indexes' register copies
+  (only here and in ovl67's `func_800B9CB8` in the whole game) are `u16` copies
+  of the angles made before `abs()`, one pair per block: combine.c refuses to
+  merge across the call and sched.c moves block-local copies after it. Then the
+  second sin/cos copy's roles filled with the variables global.c had already
+  put in the target's registers, and dz/x1 for the height test. Takes a second,
+  unused parameter (its matched callers pass two). MATCHING.md: two rows.
+  Lead: `func_800B9CB8` (ovl67) has the same code; port this C.
 - **2026-10-18 (hand):** `func_800B85DC` matched (5b63fbe1), no register pin
   or permuter, from the swarm's 182/226 (s-reg rotation only). Worked through
   global.c's priority (floor_log2(refs) * refs / live) per pseudo from -dl:
