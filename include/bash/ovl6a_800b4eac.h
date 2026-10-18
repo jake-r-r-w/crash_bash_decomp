@@ -144,6 +144,8 @@ void func_800B8588(void);
 
 void func_800B85A8(void);
 
+void func_800B85E4(void);
+
 s32 func_800B8708(s32 arg0);
 
 void func_800B8CA0(void);

@@ -9751,7 +9751,8 @@
  },
  "ovl6a:800B85E4": {
   "auto_diff": 43,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-18T19:01:25Z",
+  "status": "matched"
  },
  "ovl6a:800B86AC": {
   "matched_at": "2026-10-18T18:59:58Z",

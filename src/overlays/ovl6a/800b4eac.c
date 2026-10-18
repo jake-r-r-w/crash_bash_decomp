@@ -415,7 +415,30 @@ void func_800B85A8(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B85E4);
+void func_800B85E4(void) {
+    u8 *o;
+    u8 *cam;
+    s32 a;
+
+    o = *(u8 **)((u8 *)D_80058AD0 + 0x1C);
+    cam = D_80051640;
+    for (;;) {
+        if (o == 0) {
+            return;
+        }
+        if (o[0x64] == 0) {
+            a = (-(get_angle(*(s32 *)(o + 4), *(s32 *)(o + 0xC)) & 0xFFF) - *(s16 *)(cam + 0x56)) << 20 >> 20;
+            *(s32 *)o &= 0xFFFF7FFF;
+            if (a >= 0x301) {
+                *(s32 *)o |= 0x8000;
+            }
+            if (a < -0x300) {
+                *(s32 *)o |= 0x8000;
+            }
+        }
+        o = *(u8 **)(o + 0x5C);
+    }
+}
 
 void func_800B86AC(void) {
     ((Ovl6aGameView *)D_8005A614)->unk51 = 9;
