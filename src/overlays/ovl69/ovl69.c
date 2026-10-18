@@ -273,7 +273,35 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B5B10);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B5CA8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B63F4);
+void func_800B63F4(void) {
+    EXTengine *eng;
+    Ovl69Rec *rec;
+    s32 i;
+    s32 off;
+
+    func_80014388((u8 *)&D_800B9F1C);
+    *(s32 *)((u8 *)&D_800B9F1C + 8) = 0x400;
+    *(s32 *)((u8 *)&D_800B9F1C + 0x18) = 0x190;
+    eng = GetEngineSlot(0);
+    func_80095BEC(0, &D_800B9634);
+    func_80095BEC(2, &D_800B9A00);
+    i = 0;
+    do {
+        func_800B5B10(i);
+        i++;
+    } while (i < 4);
+    i = 0;
+    rec = D_800B9B44;
+    off = 0x7E0;
+    do {
+        i++;
+        rec->unk24 = (u8 *)eng->sub + off;
+        rec->unk0 = 0;
+        rec++;
+        off += 0xA8;
+    } while (i < 8);
+    func_800B64B8();
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B64B8);
 

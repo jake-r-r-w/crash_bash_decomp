@@ -59,6 +59,18 @@ extern Ovl69Entry D_800BA324[];
 
 void func_800B39C8(void);
 
+typedef struct {
+    s32 unk0;
+    u8 unk4[0x20];
+    u8 *unk24;
+} Ovl69Rec;
+
+extern Ovl69Rec D_800B9B44[];
+extern s32 D_800B9634;
+extern s32 D_800B9A00;
+void func_800B5B10(s32 arg0);
+void func_800B64B8(void);
+
 void func_800B5880(void);
 
 void func_800B5A94(void);
@@ -90,6 +102,8 @@ void func_800B5484(void);
 void func_800B5614(void);
 
 void func_800B5AC0(void);
+
+void func_800B63F4(void);
 
 s32 func_800B7D28(s32 arg0, s32 arg1);
 
