@@ -32,7 +32,84 @@ void func_80078CA4(void) {
     D_8005AAB0 = D_800986A4[v->unk2C];
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/engine", func_80078DD4);
+void func_80078DD4(void) {
+    NAS *nas;
+    EXTengine *eng;
+    EngineGameView *g;
+    s32 ang;
+    s32 dx;
+    s32 dz;
+    s32 w;
+    s32 l;
+    s32 r;
+    s32 t;
+
+    nas = (NAS *)D_8005AA34;
+    D_800AD1E8 = 0;
+    if (nas != NULL) {
+        g = (EngineGameView *)D_8005A614;
+        do {
+            eng = nas->Engine;
+            if (eng != NULL && (nas->Camera.flags & 0x8000)) {
+                w = nas->Camera.width;
+                r = w;
+                if (!(g->unk30 & 0x801)) {
+                    ang = eng->unk1E & 0xFFF;
+                    dx = -D_80068BD4[(ang - 0x400) & 0xFFF].unk2 * nas->Camera.look_ahead >> 12;
+                    dz = -D_80068BD4[ang].unk2 * nas->Camera.look_ahead >> 12;
+                    if (dx < 0) {
+                        dx = -dx;
+                        l = w;
+                        if (w < dx) {
+                            l = dx;
+                        }
+                    } else {
+                        l = w;
+                        if (w < dx) {
+                            r = dx;
+                        }
+                    }
+                    if (dz < 0) {
+                        dx = w;
+                        dz = -dz;
+                        if (dx < dz) {
+                            dx = dz;
+                        }
+                        t = w;
+                    } else {
+                        t = w;
+                        if (w < dz) {
+                            t = dz;
+                        }
+                        dx = w;
+                    }
+                    func_8009749C((s32)&eng->unk10, l, r, dx >> 1, t >> 1, nas->Camera.height);
+                } else {
+                    dx = nas->Camera.height;
+                    dx -= (u32)dx >> 2;
+                    func_8009749C((s32)&eng->unk10, w >> 1, w >> 1, 0, 0, dx);
+                }
+            }
+            nas = nas->Camera.Child;
+        } while (nas != NULL);
+    }
+    {
+        EngineGameView *g1 = (EngineGameView *)D_8005A614;
+        if ((g1->unk4 & 0x200) && !(g1->unk30 & 0x801)) {
+            func_8009749C((s32)D_8005B3A8, 0x80, 0x80, 0, 0, 0x80);
+            func_8009749C((s32)(D_8005B3A8 + 0x18), 0x80, 0x80, 0, 0, 0x80);
+        }
+    }
+    {
+        EngineGameView *g2 = (EngineGameView *)D_8005A614;
+        if (g2->flags & 0x800) {
+            if (!(g2->unk30 & 0x800)) {
+                func_8009749C((s32)D_8005B3D8, 0x80, 0x80, 0, 0, 0x80);
+                func_8009749C((s32)(D_8005B3D8 + 0x18), 0x80, 0x80, 0, 0, 0x80);
+            }
+        }
+    }
+}
 
 void func_8007906C(void) {
     s32 i;

@@ -203,7 +203,9 @@ extern s32 D_800A0D38;
 extern u8 D_8009E498[];
 /* D_8005A614 as seen by func_80092CAC. */
 typedef struct EngineGameView {
-    /* 0x00 */ u8 unk0[0x30];
+    /* 0x00 */ u8 unk0[4];
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ u8 unk8[0x28];
     /* 0x30 */ u16 unk30;
     /* 0x32 */ u16 flags;
     /* 0x34 */ s16 mode;
@@ -554,5 +556,8 @@ typedef struct EngHudGame {
 #define HUDPLAYERS ((EXTengine **)&D_8009970C)
 extern s32 D_8009AEF4;
 void func_800798A4(void);
+
+extern u8 D_8005B3A8[];
+extern u8 D_8005B3D8[];
 
 #endif /* BASH_ENGINE_H */
