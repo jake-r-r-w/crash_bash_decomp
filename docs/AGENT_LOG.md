@@ -14,8 +14,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1130/2551 game functions matched: **main.exe is complete (575/575)**;
-  engine overlay 8 left; parked by hand: `func_800926CC` (1/134, 2026-10-17),
+- 1131/2551 game functions matched: **main.exe is complete (575/575)**;
+  engine overlay 7 left, none parked,
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - The engine overlay is six files and `ovl5d` three, `ovl5e`, `ovl66`,
@@ -96,7 +96,7 @@ matched 2 more (`func_80083708` 1924 B, `func_8007D9DC` 3528 B; $6.37,
 killed early). Repeat it; 10 engine functions are left. Near
 misses with big-mode checkpoints: `func_8007BFA8` (instructions 5/114),
 `func_8007C170` (17/114), `func_8007CC80` (structure 77/116),
-`func_800926CC` (instructions 1/134 by hand with `s8 j`, parked: its block note has the full analysis), `func_8008C824` (registers 25/155, parked: 2 stale sessions),
+`func_800926CC` (matched by hand 2026-10-18), `func_8008C824` (registers 25/155, parked: 2 stale sessions),
 `func_80079260` (4/98), `func_80094A28` (5/68), `func_800939FC` (matched by the permuter 2026-10-18). `--max-functions 500` leaves time and cost as the limits (40 stopped
    leasing after about 30 min). Sizes left per overlay: run the size loop over
    `nonmatching NAME, 0xSIZE` headers (the `next --count` listing is slow).
@@ -146,8 +146,9 @@ misses with big-mode checkpoints: `func_8007BFA8` (instructions 5/114),
 
 - **Hack matches to revisit:** `decomp.py hacks` lists them (one on
   2026-10-18: `func_800193A8`, register pins that are probably the original
-  source). Parks are `decomp.py status` / the dashboard; `func_800926CC` was
-  left parked rather than matched with an `asm("")` barrier.
+  source). Parks are `decomp.py status` / the dashboard. Before reaching for a
+  barrier or pin, try `do { } while (0)` (Diff patterns): it matched
+  `func_800926CC` and `func_8008A924` without one.
 - **Tooling ideas not done** (from the 2026-10-16 plan):
   - Pilots, no code: model tiers (`--model haiku --escalate-model sonnet
     --big-workers 0` on ~40 functions under 128 B, check the first matches'
@@ -382,6 +383,9 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-18 (hand):** `func_800926CC` matched (01be8b2): `j = 1` inside
+  `do { } while (0)` beats sched1's birthing priority and wins `j` a0. No
+  parks left in the engine; 7 functions to go.
 - **2026-10-18 (hand, third try):** `func_8008A924` matched without a hack
   (9787456). The target's unused `lbu` is half of `run_walk = run_walk`;
   post-reload CSE deletes the store. A `do { } while (0)` around the read
