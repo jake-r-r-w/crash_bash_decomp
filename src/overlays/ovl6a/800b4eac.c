@@ -143,7 +143,21 @@ void func_800B77B0(NAS *nas) {
 void func_800B7874(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B787C);
+void func_800B787C(FxObj *arg0) {
+    arg0->mid->inner->unk6C = **(s32 **)&D_80058AD0;
+    arg0->mid->inner->unk74 = 0x200E;
+    arg0->mid->inner->unk51 = 0;
+    arg0->mid->inner->unk50 = 1;
+    arg0->mid->inner->unk20 = 0x1000;
+    arg0->mid->inner->unk24 = 0x1000;
+    arg0->mid->inner->unk28 = 0x1000;
+    arg0->mid->inner->unk10 = 0;
+    arg0->mid->inner->unk12 = 0;
+    arg0->mid->inner->unk14 = 0;
+    arg0->mid->inner->unk52 = 1;
+    arg0->mid->inner->flags |= 0x60000000;
+    arg0->unk60 = 0;
+}
 
 void func_800B7988(s32 *arg0, s32 flag, s32 *out) {
     s32 *p = arg0;

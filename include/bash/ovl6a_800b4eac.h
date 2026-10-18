@@ -158,6 +158,38 @@ extern char D_8005572C;
 
 void func_800B7874(void);
 
+typedef struct FxInner {
+    /* 0x00 */ u32 flags;
+    /* 0x04 */ u8 pad4[0xC];
+    /* 0x10 */ s16 unk10;
+    /* 0x12 */ s16 unk12;
+    /* 0x14 */ s16 unk14;
+    /* 0x16 */ u8 pad16[0xA];
+    /* 0x20 */ s32 unk20;
+    /* 0x24 */ s32 unk24;
+    /* 0x28 */ s32 unk28;
+    /* 0x2C */ u8 pad2C[0x24];
+    /* 0x50 */ u8 unk50;
+    /* 0x51 */ u8 unk51;
+    /* 0x52 */ s16 unk52;
+    /* 0x54 */ u8 pad54[0x18];
+    /* 0x6C */ s32 unk6C;
+    /* 0x70 */ u8 pad70[4];
+    /* 0x74 */ s16 unk74;
+} FxInner;
+
+typedef struct FxMid {
+    u8 pad0[0x6C];
+    FxInner *inner;
+} FxMid;
+
+typedef struct FxObj {
+    u8 pad0[0x54];
+    FxMid *mid;
+    u8 pad58[8];
+    s32 unk60;
+} FxObj;
+
 void func_800B7988(s32 *arg0, s32 flag, s32 *out);
 
 void func_800B7A78(void);
@@ -259,6 +291,8 @@ extern ScriptInit D_800BCCE8;
 s32 func_800B694C(void);
 
 void func_800B77B0(NAS *nas);
+
+void func_800B787C(FxObj *arg0);
 
 s32 func_800B8174(s32 arg0);
 
