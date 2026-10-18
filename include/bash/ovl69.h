@@ -30,6 +30,14 @@ void func_800B8498(void);
 void func_800B84B8(void);
 void func_800B84E0(void);
 
+typedef struct Ovl69Sub {
+    /* 0x000 */ u8 pad0[0x274];
+    /* 0x274 */ s32 a;
+    /* 0x278 */ u8 pad278[0x31C - 0x278];
+    /* 0x31C */ s32 b;
+} Ovl69Sub;
+
+extern u8 D_8009F480[];
 extern GfxViewport D_800B8DD8;
 extern s32 D_800B95F0;
 extern s32 D_800B9628;
@@ -202,6 +210,8 @@ extern void (*D_8009E594)(void);
 extern void (*D_8009E590)(void);
 
 extern s8 D_8005A64B;
+
+void func_800B42B0(void);
 
 void func_800B4770(void);
 

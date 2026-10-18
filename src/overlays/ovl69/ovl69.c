@@ -164,7 +164,42 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B3CA8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B3F7C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B42B0);
+void func_800B42B0(void) {
+    Ovl69Sub *s;
+    s32 *g;
+
+    func_800B3A9C();
+    do {
+        s = (Ovl69Sub *)GetEngineSlot(0)->sub;
+        s->a = (D_800B9628 == 0) * 2;
+        s->b = (D_800B9628 == 1) * 2;
+        g = &D_80051380;
+    } while (0);
+    if ((*g & 0x10) && (D_800B9628 > 0)) {
+        D_800B9628 -= 1;
+        PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    if ((D_80051380 & 0x40) && (D_800B9628 <= 0)) {
+        D_800B9628 += 1;
+        PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    if (D_80051380 & 0x4000) {
+        switch (D_800B9628) {
+        case 0:
+            PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+            func_800B5410();
+            break;
+        case 1:
+            PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+            func_80092AF4((s32)D_8009F480, 0x200);
+            break;
+        }
+    }
+    if (D_80051380 & 0x1000) {
+        PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
+        func_800B53D4();
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B4464);
 
