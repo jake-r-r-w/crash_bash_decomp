@@ -527,7 +527,42 @@ void func_800B8F50(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", PlotPodiumOdo);
+void PlotPodiumOdo(NAS *arg0) {
+    EXTengine *eng;
+    EXTanimator *anim;
+    s16 idx;
+
+    eng = arg0->Engine;
+    if (eng != NULL) {
+        anim = FindExtension(arg0, 0x400);
+        if (anim != NULL && ((idx = anim->ALindex) == 0 || idx == 4)) {
+            if (arg0->UserInfo.status == 0) {
+                if (arg0->UserInfo.flags != 0) {
+                    func_80025FAC(anim, 5);
+                    arg0->UserInfo.status = Random(0x28);
+                } else {
+                    func_80025FAC(anim, 1);
+                    switch (arg0->UserInfo.user2) {
+                    case 3:
+                        arg0->UserInfo.status = Random(0x1E) + 0x14;
+                        break;
+                    case 4:
+                        arg0->UserInfo.status = Random(0x3C) + 0x3C;
+                        break;
+                    default:
+                        arg0->UserInfo.status = Random(0x28) + 0xA;
+                        break;
+                    }
+                }
+            } else {
+                arg0->UserInfo.status = arg0->UserInfo.status - 1;
+            }
+        }
+        if (eng->flags & 0x8000) {
+            func_800250B0(arg0);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B93B4);
 

@@ -136,6 +136,8 @@ void func_800B8CA0(void);
 
 void func_800B8F50(void);
 
+void PlotPodiumOdo(NAS *arg0);
+
 void func_800BA7BC(NAS *arg0);
 
 void func_800BA804(void);
