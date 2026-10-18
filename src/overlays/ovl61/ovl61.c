@@ -224,7 +224,30 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/ovl61/ovl61", D_800B3300);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B8A68);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B9728);
+void func_800B9728(void) {
+    s32 best = 0;
+    s32 idx = -1;
+    s32 i;
+    HeroInfo *h;
+
+    for (i = 0; i < 4; i++) {
+        h = &Heroes[i];
+        if ((h->hero_status & 0xFA00) == 0 && best < h->hero_health) {
+            best = h->hero_score;
+            idx = i;
+        }
+    }
+    if (idx != -1) {
+        for (i = 0; i < 4; i++) {
+            h = &Heroes[i];
+            if ((h->hero_status & 0xFA00) == 0 && i != idx) {
+                h->hero_score = 0;
+                h->hero_health = 0;
+                h->hero_status |= 0x2000;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B97D8);
 
