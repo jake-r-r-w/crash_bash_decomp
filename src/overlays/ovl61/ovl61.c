@@ -299,7 +299,18 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C02F8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C039C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C0448);
+void func_800C0448(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = &base[arg0];
+
+    h->hero_frozen = 5;
+    if (h->hero_hit != 0) {
+        h->hero_hit--;
+    } else {
+        SetHeroAction((HeroInfo *)arg0, 0x25);
+    }
+    func_8008502C(arg0);
+}
 
 void func_800C04B8(s32 arg0) {
     Heroes[arg0].hero_frozen = 5;
