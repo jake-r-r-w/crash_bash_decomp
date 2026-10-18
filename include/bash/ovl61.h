@@ -91,6 +91,8 @@ extern char func_800B3B20[];
 extern char func_800B40AC[];
 extern char func_800B9728[];
 
+void func_800B69E8(s32 arg0);
+
 s32 func_800BFD14(Ovl61Vel *v);
 
 void func_800C02F8(s32 arg0);

@@ -82,7 +82,40 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/ovl61/ovl61", D_800B32B4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B68C8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B69E8);
+void func_800B69E8(s32 arg0) {
+    HeroInfo *base;
+    HeroInfo *h;
+    u16 st;
+    u16 mode;
+    s32 act;
+    s32 ret;
+
+    st = Heroes[arg0].hero_status;
+    if (st & 0x200) {
+        SetHeroAction((HeroInfo *)arg0, 0x22);
+        ret = 1;
+    } else if (st & 0x2000) {
+        SetHeroAction((HeroInfo *)arg0, 0x24);
+        ret = 1;
+    } else if (st & 0x400) {
+        SetHeroAction((HeroInfo *)arg0, 0x23);
+        ret = 1;
+    } else {
+        ret = 0;
+    }
+    if (ret == 0) {
+        func_800B60FC(arg0);
+        base = Heroes;
+        h = &base[arg0];
+        if (h->hero_move->forward_speed != 0) {
+            mode = h->hero_mode;
+            if (mode != 0x1F && mode != 0x21) {
+                SetHeroAction((HeroInfo *)arg0, 0x1D);
+            }
+        }
+        func_8008502C(arg0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B6AE0);
 
