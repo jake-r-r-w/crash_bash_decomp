@@ -118,4 +118,21 @@ s32 func_800C08C8(Ovl61Obj *arg0);
 
 void func_800C0B94(void);
 
+typedef struct {
+    s32 pad0;
+    s32 f4;
+    s32 f8;
+    s32 fC;
+    s32 f10;
+    s32 f14;
+    s16 f18;
+    s16 f1A;
+} Ovl61Wall;
+
+extern Ovl61Wall D_800C1E78[];
+extern u16 D_800C139C[];
+extern _sfx_handler *D_800C1BC4;
+
+void func_800BD43C(u32 arg0);
+
 #endif /* BASH_OVL61_H */

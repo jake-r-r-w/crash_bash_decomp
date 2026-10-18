@@ -252,7 +252,23 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Init_ArkDeadWall);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Init_NGArkDeadWall);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BD43C);
+void func_800BD43C(u32 arg0) {
+    Ovl61Wall *base;
+    Ovl61Wall *w;
+    s32 r = Random(0x1E);
+
+    base = D_800C1E78;
+    w = &base[arg0 & 0xFFFF];
+    w->f1A = r + 0x3C;
+    w->f18 = 1;
+    w->f10 = 0xA0;
+    w->f8 = 0x300;
+    w->f4 = 0;
+    w->fC = 0;
+    w->f14 = -1;
+    PlaySfx(0x5C9, &D_800C1BC4, NULL, 0x1000, 0x1E00, 0);
+    PlaySfx(D_800C139C[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BD510);
 
