@@ -237,7 +237,14 @@ code finds 15 code files; nothing else on the disc holds code.
   function has the gcc 2.7.2 `lui $at` stores. So the remaining files inside
   each unit can't be placed yet.
 - **Slot overlays** are named by their first word, an id (`0x5D`..`0x6A`).
-  Layout: `.rodata` (id, strings, jump tables), `.text`, `.data`.
+  Layout: `.rodata` (id, strings, jump tables), `.text`, `.data`. The id
+  word is its own unit: in every slot overlay the first file's jump tables
+  are 8-aligned (`.align 3` from an 8-aligned rodata start) while the id sits
+  at `0x800B32B4`, 4 mod 8, so it can't be in their object; the first C
+  file's `.rodata` starts at `0x800B32B8`. Only `ovl6a` is split this way so
+  far (`ovl6a_id`, 2026-10-19); in the others a real `switch` in the first
+  file links 4 bytes off, which is why their matched switches are `&&label`
+  tables.
 - **Which game is which**: the engine's AST table at `0x80098720`
   (`{id, Init, Plot}` x 0xAE) points into the slot. Groups by id high byte:
   `0x13` -> `ovl5f`, `0x14` -> `ovl60` (Pogo), `0x15` -> `ovl61` (Arkenoid),

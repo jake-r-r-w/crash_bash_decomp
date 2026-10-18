@@ -54,7 +54,7 @@ void func_800B478C(void) {
     func_800B4C94();
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/ovl6a/ovl6a", D_800B32B4);
+INCLUDE_RODATA("asm/nonmatchings/overlays/ovl6a/ovl6a", D_800B32B8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/ovl6a", func_800B488C);
 
