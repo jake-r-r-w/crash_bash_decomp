@@ -800,7 +800,17 @@ void func_800BB788(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BB7D4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BB86C);
+void func_800BB86C(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = base + arg0;
+
+    h->hero_move->velocity_enable = 0;
+    if (h->hero_eng->sfx != NULL) {
+        StopSfx(h->hero_eng->sfx);
+    }
+    func_800B4954(arg0);
+    SetHeroSeq((HeroInfo *)arg0, 0x21);
+}
 
 s32 func_800BB8EC(s32 arg0) {
     if (Heroes[arg0].hero_status & 0x200) {
