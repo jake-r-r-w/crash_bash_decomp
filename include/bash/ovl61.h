@@ -327,6 +327,37 @@ extern Ovl61Circle D_800C11CC[];
 extern Ovl61Circle D_800C11E4[];
 void func_800BC564(void);
 extern u16 D_800C139C[];
+
+/* Blinking light slots (D_800C1E28, D_800C1D38) as Ovl61Link (declared
+ * below), as seen by func_800BCA30. */
+#define BLINK_E28 ((Ovl61Link *)D_800C1E28)
+#define BLINK_D38 ((Ovl61Link *)D_800C1D38)
+
+typedef struct {
+    u32 flags;
+    u8 pad4[4];
+    s32 unk8;
+    u8 padC[4];
+    u16 unk10;
+    u8 pad12[2];
+    u16 unk14;
+    u8 pad16[0x51 - 0x16];
+    u8 unk51;
+    s16 unk52;
+} Ovl61Spr;
+
+typedef struct {
+    u8 pad0[4];
+    s32 unk4;
+} Ovl61Rise;
+
+typedef struct {
+    s16 step;
+    s16 reset;
+    s16 max;
+} Ovl61RiseCfg;
+
+extern Ovl61RiseCfg D_800C1348[];
 extern _sfx_handler *D_800C1BC4;
 
 typedef struct Ovl61Eng {

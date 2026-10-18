@@ -3021,7 +3021,146 @@ void func_800BC564(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BCA30);
+void func_800BCA30(void)
+{
+    s32 a;
+    s32 i;
+    s32 j;
+    Ovl61ScnObj *o;
+    Ovl61ScnObj *p;
+    Ovl61Spr **sp;
+    Ovl61Spr *s;
+
+    a = (D_8004E0D8 << 5) & 0xFFF;
+    if (D_8005A648 == 0x11) {
+        D_800C1C6C = ((D_80068BD4[(a * 2 - 0x400) & 0xFFF].unk2 + D_80068BD4[a].unk2) * 11) >> 12;
+        D_800C1C68 = (D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 5) >> 10;
+        D_8005A5D8 = (D_80068BD4[a].unk2 * 3) >> 7;
+    }
+    i = 0;
+    do {
+        if (D_800C1E78[i].pad0 != 0) {
+            a = get_angle(0xA00, D_800C1E78[i].pad0 >> 4) - 0x400;
+            switch (i) {
+            case 1:
+                D_800C1C6C += a;
+                D_800C1C68 += a;
+                break;
+            case 2:
+                D_800C1C6C -= a;
+                D_800C1C68 += a;
+                break;
+            case 3:
+                D_800C1C6C -= a;
+                D_800C1C68 -= a;
+                break;
+            default:
+                D_800C1C6C += a;
+                D_800C1C68 -= a;
+                break;
+            }
+        }
+        i++;
+    } while (i < 4);
+
+    for (j = 0; j < 4; j++) {
+        if (D_800C1CE8[j].unk12 != 0) {
+            D_800C1CE8[j].unk12--;
+        }
+        if (BLINK_E28[j].unk12 != 0) {
+            BLINK_E28[j].unk12--;
+        }
+        if (BLINK_D38[j].unk12 != 0) {
+            BLINK_D38[j].unk12--;
+        }
+        if ((p = D_800C1CE8[j].a) != NULL && ((Ovl61ModeView *)D_8005A614)->unk34 == 14) {
+            if (D_800C1CE8[j].unk12 != 0) {
+                D_800C1CE8[j].unk10++;
+                p->unk74 = D_800C1CE8[j].unkA + (u16)(((D_800C1CE8[j].unk10 >> 2) & 3) + 1);
+            } else {
+                p->unk74 = D_800C1CE8[j].unkA;
+                D_800C1CE8[j].unk10 = 0;
+            }
+        }
+        if ((p = BLINK_E28[j].a) != NULL) {
+            switch (((Ovl61ModeView *)D_8005A614)->unk34) {
+            case 14:
+                if (BLINK_E28[j].unk12 != 0) {
+                    p->unk74 = BLINK_E28[j].unkA;
+                    if (BLINK_E28[j].b != NULL) {
+                        BLINK_E28[j].b->unk74 = BLINK_E28[j].unkE;
+                    }
+                } else {
+                    p->unk74 = BLINK_E28[j].unk8;
+                    if (BLINK_E28[j].b != NULL) {
+                        BLINK_E28[j].b->unk74 = BLINK_E28[j].unkC;
+                    }
+                }
+                break;
+            case 16:
+                if (BLINK_E28[j].unk10 == 1) {
+                    p->unk74 = BLINK_E28[j].unkA;
+                    BLINK_E28[j].b->unk74 = BLINK_E28[j].unkE;
+                } else {
+                    p->unk74 = BLINK_E28[j].unk8;
+                    BLINK_E28[j].b->unk74 = BLINK_E28[j].unkC;
+                }
+                break;
+            }
+        }
+        if ((o = BLINK_D38[j].a) != NULL && BLINK_D38[j].unk12 == 0) {
+            if (BLINK_D38[j].unk10 != 0 && (--BLINK_D38[j].unk10 & 4)) {
+                o->unk74 = BLINK_D38[j].unkA;
+            } else {
+                BLINK_D38[j].a->unk74 = BLINK_D38[j].unk8;
+            }
+        }
+    }
+
+    if (D_8005A648 == 0x11) {
+        if (D_800C1C88 == 0) {
+            D_800C1F14 = 0;
+        }
+        for (i = 1; i < 10; i++) {
+            sp = (Ovl61Spr **)&D_800C1C98[i];
+            if (*sp != NULL) {
+                (*sp)->unk51 = 2;
+                (*sp)->unk10 = D_800C1C68;
+                (*sp)->unk14 = D_800C1C6C;
+                (*sp)->unk8 = D_8005A5D8;
+                (*sp)->unk52 = 1;
+            }
+        }
+        for (i = 0; i < 10; i++) {
+            if (D_800C1CC0[i] != NULL) {
+                ((Ovl61Rise *)D_800C1CC0[i])->unk4 += D_800C1348[i].step;
+                if (D_800C1348[i].max < ((Ovl61Rise *)D_800C1CC0[i])->unk4) {
+                    ((Ovl61Rise *)D_800C1CC0[i])->unk4 = D_800C1348[i].reset;
+                }
+            }
+        }
+        for (i = 0; i < 4; i++) {
+            s = (Ovl61Spr *)D_800C1D88[i].flags;
+            if (s != NULL) {
+                if (D_800C1C88 == 0) {
+                    s->flags &= ~0x8000;
+                }
+                ((Ovl61Spr *)D_800C1D88[i].flags)->unk51 = 2;
+                ((Ovl61Spr *)D_800C1D88[i].flags)->unk10 = D_800C1C68;
+                ((Ovl61Spr *)D_800C1D88[i].flags)->unk14 = D_800C1C6C;
+                ((Ovl61Spr *)D_800C1D88[i].flags)->unk8 = D_8005A5D8;
+                ((Ovl61Spr *)D_800C1D88[i].flags)->unk52 = 1;
+            }
+            if (D_800C1DD8[i].sub != NULL) {
+                ((Ovl61Spr *)D_800C1DD8[i].sub)->unk51 = 2;
+                ((Ovl61Spr *)D_800C1DD8[i].sub)->unk10 = D_800C1C68;
+                ((Ovl61Spr *)D_800C1DD8[i].sub)->unk14 = D_800C1C6C;
+                ((Ovl61Spr *)D_800C1DD8[i].sub)->unk8 = D_8005A5D8;
+                ((Ovl61Spr *)D_800C1DD8[i].sub)->unk52 = 1;
+            }
+        }
+    }
+}
 
 void Init_ArkDeadWall(NAS *nas)
 {
