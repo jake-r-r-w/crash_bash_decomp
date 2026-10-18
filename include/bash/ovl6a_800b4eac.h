@@ -15,6 +15,8 @@ typedef struct Ovl6aSpawnExt {
     s32 unk34;
 } Ovl6aSpawnExt;
 extern s32 D_800BD5A8;
+extern u8 *D_800BD398;
+extern u8 D_800BD210[];
 void func_800BBE24();
 
 typedef struct Ovl6aPt {

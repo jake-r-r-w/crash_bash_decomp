@@ -846,7 +846,41 @@ void func_800B875C(void) {
     ((Ovl6aGameView *)D_8005A614)->unk3C = 0xCD;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B88B8);
+void func_800B88B8(void) {
+    s32 i;
+    s32 k;
+    s32 j;
+    s32 name;
+    s32 h;
+
+    D_8005A5D8 = 0;
+    D_800AD12C = 4;
+    D_800BD5B4 = 0;
+    D_800BD390 = 0x5A;
+    for (i = 0; i < 4; i++) {
+        h = D_8005A614[i + 0xA7];
+        name = D_8005A614[h + 0x4C];
+        Heroes[h].hero_name = name;
+        switch (name) {
+        case 2: k = 0xD7; break;
+        case 3: k = 0xD8; break;
+        case 4: k = 0xD9; break;
+        case 5: k = 0xDA; break;
+        case 6: k = 0xDB; break;
+        case 7: k = 0xDC; break;
+        case 8: k = 0xDD; break;
+        case 1:
+        default: k = 0xD6; break;
+        }
+        for (j = 0; (&D_800BD398)[j] != NULL;) {
+            func_800165F8(D_80052A54 + k * 0x38, (&D_800BD398)[j++]);
+        }
+        func_800BA9C8(i, &((Ovl6aSpawnEnt (*)[4])D_800BD210)[D_800BD5A8][i]);
+        func_800B93B4(i, name);
+    }
+    func_800B9B0C();
+    func_80095258(*(u8 **)D_80058AD0);
+}
 
 void func_800B8AA4(void) {
     s32 mask = 0;
