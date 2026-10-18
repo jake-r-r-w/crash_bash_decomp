@@ -14,8 +14,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1133/2551 game functions matched: **main.exe is complete (575/575)**;
-  engine overlay 5 left, 1 parked (`func_8007F314`),
+- 1134/2551 game functions matched: **main.exe is complete (575/575)**;
+  engine overlay 4 left, 1 parked (`func_8007F314`),
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - The engine overlay is six files and `ovl5d` three, `ovl5e`, `ovl66`,
@@ -47,9 +47,8 @@ fell for 250-399 B normal ($0.79 -> $0.66, first-session matches 54% ->
 70%) and 400-599 B big ($4.58 -> $3.52); small samples, and what is left
 is the harder remainder. The closest-C carry-over did the work: three
 functions parked close then matched on the retry from their C. **Next:
-repeat the engine hour** (5 left: `func_8007F314` 5772 B (parked),
-`PlotScriptFX` 2080 B, then
-parks and near misses under 700 B) with the big-heavy recipe below; `permute --near` first if there is CPU
+repeat the engine hour** (4 left: `func_8007F314` 5772 B (parked),
+`PlotScriptFX` 2080 B, `func_80078DD4` 664 B, `func_80093854` 424 B) with the big-heavy recipe below; `permute --near` first if there is CPU
 time. After each swarm run, compare `stats --run ID` with the ledger's
 earlier runs.
 
@@ -418,6 +417,14 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-18 (hand):** `func_80095258` matched (99f2fe3), no hack or
+  permuter. The sibling `func_80094A28`'s C was right but for a t0/t1 swap
+  of the parameter and the loop's hoisted `%hi(D_800A0C70)` copy. From
+  global.c, flow.c, sched.c and local-alloc.c: the copy's life is doubled
+  (`update_equiv_regs`, a constant), so it ranked 5/42 against the
+  parameter's 5/32. A `do { } while (0)` around the counted loop (not the
+  NULL test) keeps the hoisted insns at depth 2: 8 refs against 6, matched
+  on the first compile. MATCHING.md: global.c rules and a Diff patterns row.
 - **2026-10-18 (hand):** `func_8008C824` matched (d3e79ab) from the swarm's
   25/155, no hack, no permuter. global.c ranked the two loop givs 27/77
   against 25/76. A doubly nested `do { } while (0)` around the loop's first
