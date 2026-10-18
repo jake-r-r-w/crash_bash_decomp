@@ -473,7 +473,64 @@ void func_800B5EC8(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B60FC);
+s32 func_800B60FC(s32 arg0) {
+    PadButtons *p;
+    s32 act;
+    s32 t;
+    s32 f;
+
+    switch (MODEV->unk34) {
+    break;
+    case 14:
+        if (MODEV->unk32 & 0x80) {
+            if (arg0 == 0 || (MODEV->unk6C != 0 && arg0 == 1)) {
+                Heroes[arg0].hero_attack_timer = 10;
+            }
+            goto l17;
+        }
+    case 17:
+l17:
+        if (MODEV->unk32 & 0x80) {
+            if (arg0 != 0 && (MODEV->unk6C == 0 || arg0 != 1)) {
+                if (HPADS[arg0].unk54 & 0x2000) {
+                    act = 0x20;
+                    goto call;
+                }
+            }
+        }
+    case 16:
+        {
+            PadButtons *b = HPADS;
+            p = &b[arg0];
+        }
+        f = p->unk54 & 0x8000;
+        goto chk;
+    case 15:
+        {
+            PadButtons *b = HPADS;
+            p = &b[arg0];
+        }
+        t = p->unk54;
+        if (t & 0x4000) {
+            act = 0x21;
+            goto call;
+        }
+        f = t & 0x8000;
+chk:
+        if (f) {
+            if (Heroes[arg0].hero_attack_timer == 0) {
+                act = 0x1F;
+call:
+                SetHeroAction((HeroInfo *)arg0, act);
+                return 1;
+            }
+            p->unk4C &= ~0x8000;
+        }
+        return 0;
+    default:
+        return 0;
+    }
+}
 
 void func_800B62F4(arg0)
 s32 arg0;
