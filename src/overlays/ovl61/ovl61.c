@@ -524,7 +524,36 @@ void Init_seaweed(NAS *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Init_N_Gin);
+void Init_N_Gin(NAS *nas) {
+    EXTengine *eng;
+    Ovl61Gin *obj;
+
+    eng = nas->Engine;
+    if (eng != NULL) {
+        func_80024E30(nas, &D_800C14A8);
+        D_800C1B28 = eng;
+        eng->sub->unk6C = D_80054574;
+        eng->sub->unk74 = 0x2001;
+        D_800C1B2C = obj = (Ovl61Gin *)AddObject(nas);
+        if (obj != NULL) {
+            func_80026AD8((u8 *)nas);
+            func_8002694C(nas, 0x200);
+            nas->FUX = (EXT *)obj;
+            obj->unk14 = 0xE;
+            obj->unk1A = 0;
+            obj->unk22 = 0x186;
+            obj->unk1C = 0;
+        }
+        eng->unk10.y = -0x1000;
+        nas->Class &= 0xFDFF;
+        eng->unk5D = 1;
+        eng->flags &= 0xFFFF7FFF;
+        func_80025B10(eng, 0x50);
+    }
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 u8 *func_800C01B8(void) {
     s32 var_v0;

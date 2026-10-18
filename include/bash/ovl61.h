@@ -59,6 +59,21 @@ typedef struct {
     u32 flags;
 } Ovl61Obj;
 
+typedef struct Ovl61Gin {
+    u8 pad0[0x14];
+    s16 unk14;
+    u8 pad16[4];
+    s16 unk1A;
+    s16 unk1C;
+    u8 pad1E[4];
+    s16 unk22;
+} Ovl61Gin;
+
+extern char D_80054574[];
+extern ScriptInit D_800C14A8;
+extern EXTengine *D_800C1B28;
+extern Ovl61Gin *D_800C1B2C;
+
 extern Ovl61Circle *D_800C1A7C;
 extern Ovl61Circle D_800C1A44[];
 extern ScriptInit D_800C1554;
