@@ -831,7 +831,37 @@ void func_800BB3A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", InitN2Ofirstmissile);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", InitN2Omissile);
+void InitN2Omissile(NAS *nas) {
+    EXTengine *eng;
+    subengine *sub;
+    EXTmotion *mot;
+    s32 ang;
+
+    eng = nas->Engine;
+    if (eng != NULL) {
+        sub = eng->sub;
+        eng->unk5D = 0;
+        sub->unk6C = &D_80053EAC;
+        sub->unk74 = 0x2004;
+        sub->unk51 = 0;
+        sub->flags |= 0x02000000;
+        mot = AddMotion(nas);
+        if (mot != NULL) {
+            mot->Xvel = -0x28;
+            mot->Xmax = 0x100;
+            mot->Xacc = 8;
+            mot->Xdec = 0;
+        }
+        ang = get_angle(eng->unk10.x - D_8009D530[4], eng->unk10.z - D_8009D530[4]);
+        nas->UserInfo.user2 = ang;
+        eng->unk1E = ang - 0x400;
+        eng->boomshanka = 1;
+        eng->unk10.y += 0x200;
+    }
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 void func_800BB5F0(void) {
     volatile s32 x, y, z;
