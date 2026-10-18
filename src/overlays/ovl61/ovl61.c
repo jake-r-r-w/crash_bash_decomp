@@ -254,7 +254,23 @@ void Plot_ArkDeadWall(NAS *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Plot_ArkCameraFlash);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Init_ArkCameraFlash);
+void Init_ArkCameraFlash(NAS *arg0) {
+    u8 *eng = (u8*)(*(s32*)((u8*)(arg0) + 84));
+    u8 *sub;
+    if (eng != NULL) {
+        s32 val;
+        sub = (u8*)(*(s32*)(eng + 108));
+        val = *(s32*)D_80058AD0;
+        (*(u16*)(sub + 116)) = 0x2017;
+        (*(u8*)(sub + 80)) = 1;
+        (*(u8*)(sub + 81)) = 0;
+        (*(s32*)(sub + 108)) = val;
+        (*(s32*)((u8*)(arg0) + 96)) = 0;
+    }
+    if ((*(u16*)((u8*)(arg0) + 106)) != 0) {
+        KillNAS(arg0);
+    }
+}
 
 void Plot_seaweed(NAS *arg0) {
     if ((*(s32*)((u8*)(arg0) + 84)) != 0) {
