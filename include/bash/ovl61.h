@@ -40,6 +40,13 @@ extern HeroInfo Heroes[4];
 extern s32 D_800C1C70;
 extern u16 D_800C1F14;
 
+extern u16 D_8009D754;
+typedef struct Ovl61Cnt {
+    u16 n;
+} Ovl61Cnt;
+
+extern Ovl61Cnt D_8009E25C;
+
 void Plot_ArkLaserWall(NAS *nas);
 
 typedef struct {

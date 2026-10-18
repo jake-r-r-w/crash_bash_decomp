@@ -542,7 +542,35 @@ void Plot_ArkLaserWall(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Init_RepulseRing);
+void Init_RepulseRing(NAS *nas)
+{
+  EXTengine *eng;
+  char new_var;
+  subengine *sub;
+  eng = nas->Engine;
+  if (eng != 0)
+  {
+    nas->UserInfo.user1 = D_8009D754;
+    eng->unk5D = 0;
+    eng->unk5C = 1;
+    sub = eng->sub;
+    eng->flags |= 0x21;
+    sub->unk51 = (new_var = 0);
+    sub->unk6C = &D_80054504;
+    sub->unk74 = 0x2014;
+    sub->unk50 = 1;
+    sub->unk08 = 0x80;
+    sub->flags = (sub->flags & 0xFFFF7FFF) | 0x21;
+    PlaySfx(0x5D6, 0, 0, 0x1000, 0x1E00, new_var);
+    PlaySfx(0x5D7, &eng->sfx, 0, 0x1000, 0x1E00, 0);
+    nas->UserInfo.user2 = 0xF0;
+    D_8009E25C.n += 1;
+  }
+  if (nas->Failure != 0)
+  {
+    KillNAS(nas);
+  }
+}
 
 s32 func_800BFD14(Ovl61Vel *v) {
     return v->pad14 - ((D_8005A5D8 - (v->z * D_80068BD4[(D_800C1C68 - 0x400) & 0xFFF].unk2 >> 12)) +
