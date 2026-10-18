@@ -12,6 +12,7 @@ s32 *func_800B4D8C(void);
 void func_800B4DE8(void);
 
 extern u8 D_800C7294[];
+extern s32 D_80098714;
 extern s32 D_800BCED4;
 extern s32 D_800BCED8;
 extern s32 D_800BCEE0;
@@ -19,5 +20,7 @@ extern subengine *D_800BCEE8;
 
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
 #include "bash/ovl6a_800b4eac.h"
+
+void func_800B4694(void);
 
 #endif /* BASH_OVL6A_H */
