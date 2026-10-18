@@ -132,7 +132,20 @@ void func_800B7A78(void) {
     D_800BCEE0 = -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B7AB4);
+s32 func_800B7AB4(s32 arg0) {
+    s32 r = 0;
+    s32 v;
+
+    if (D_8005A677 >= 0) {
+        v = D_800BCCF4[D_8005A677].unk14->unk2;
+    } else {
+        v = 0;
+    }
+    if (v == arg0 && D_800BCCF4[D_8005A677].unk20 != 0) {
+        r = 1;
+    }
+    return r;
+}
 
 u16 func_800B7B38(void) {
     if (D_8005A677 >= 0) {

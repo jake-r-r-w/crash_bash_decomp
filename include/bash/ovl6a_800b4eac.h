@@ -78,6 +78,8 @@ void func_800B7988(s32 *arg0, s32 flag, s32 *out);
 
 void func_800B7A78(void);
 
+s32 func_800B7AB4(s32 arg0);
+
 u16 func_800B7B38(void);
 
 void func_800B7B7C(void);
