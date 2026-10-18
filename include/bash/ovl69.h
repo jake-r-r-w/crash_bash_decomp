@@ -91,6 +91,8 @@ void func_800B5614(void);
 
 void func_800B5AC0(void);
 
+s32 func_800B7D28(s32 arg0, s32 arg1);
+
 s32 func_800B7D98(s32 arg0, s32 arg1);
 
 extern void (*D_8009E598)(void);
