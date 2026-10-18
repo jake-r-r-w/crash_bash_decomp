@@ -510,7 +510,75 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B558C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B58E8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B5C30);
+void func_800B5C30(s32 arg0) {
+    HeroInfo *h;
+    HeroInfo *g;
+    HeroInfo *c;
+    HeroInfo *f;
+    HeroInfo *b;
+    EngineHooks *hooks;
+    s32 a1;
+    s32 sp;
+
+    c = Heroes;
+    g = c + arg0;
+    a1 = 0;
+    if (!(g->hero_status & 0xFA00)) {
+        s32 d;
+        s32 y;
+        sp = ((((((D_8004E0D8 + arg0) << 6) & 0xFFF) - 0x400) & 0xFFF) + D_80068BD4)->unk2;
+        a1 = sp * 17 >> 10;
+        y = D_8005A5D8;
+        d = (sp * 15 >> 11) - 0x80;
+        g->hero_eng->unk10.y = y + d;
+    } else {
+        g->hero_eng->unk10.y = -0x80;
+    }
+    hooks = &D_8009D6E8;
+    ((void (*)(s32))hooks->unk2C)(arg0);
+    f = Heroes;
+    g = f + arg0;
+    sp = g->hero_move->forward_speed;
+    if (sp != 0) {
+        if (arg0 == D_800C2724) {
+            a1 = sp;
+            g->hero_eng->unk10.x += sp;
+        }
+        if (arg0 == D_800C2728) {
+            a1 = -sp;
+            g->hero_eng->unk10.x += sp;
+        }
+        if (arg0 == D_800C2720) {
+            a1 = sp;
+            g->hero_eng->unk10.z += sp;
+        }
+        if (arg0 == D_800C271C) {
+            a1 = -sp;
+            g->hero_eng->unk10.z += sp;
+        }
+        ((void (*)(EXTengine *))hooks->unk68)(g->hero_eng);
+    }
+    b = Heroes;
+    h = b + arg0;
+    sp = func_800154A0(h->hero_eng->unk20, a1);
+    {
+        EXTengine *e2 = h->hero_eng;
+        e2->unk20 = (u16)e2->unk20 + (sp >> 2);
+        func_800BE4D4(arg0, e2);
+    }
+    h->hero_eng->unk5E = 1;
+    if (!(h->hero_status & 0xF800)) {
+        if (h->hero_mode == 0x21) {
+            h->hero_sub->unk74 = 0x2006;
+            return;
+        }
+        if (h->hero_attack_timer != 0) {
+            h->hero_sub->unk74 = 0x2006;
+            return;
+        }
+        h->hero_sub->unk74 = 0x2004;
+    }
+}
 
 void func_800B5EC8(s32 arg0) {
     HeroInfo *h;
