@@ -400,7 +400,31 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BAC30);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BAEA8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", PlotN2ODeadWall);
+void PlotN2ODeadWall(NAS *arg0) {
+    EXTengine *eng;
+    subengine *sub;
+
+    if (D_8005A644 & 0x801) {
+        D_800C438A &= ~arg0->UserInfo.flags;
+        KillNAS(arg0);
+        return;
+    }
+    eng = arg0->Engine;
+    if (eng != NULL) {
+        if (arg0->UserInfo.user1 != 0) {
+            arg0->UserInfo.user1 = arg0->UserInfo.user1 - 1;
+        } else {
+            eng->flags |= 0x8000;
+        }
+        sub = eng->sub;
+        if (sub != NULL) {
+            do {
+                sub->unk74 = (D_8004E0D8 & 7) + 0x2001;
+                sub = sub->next;
+            } while (sub != NULL);
+        }
+    }
+}
 
 s32 func_800BB05C(u8 *arg0) {
     return (*(s32*)((u8*)(arg0) + 20)) - D_8005A5D8;

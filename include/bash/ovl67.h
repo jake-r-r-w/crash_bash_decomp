@@ -13,6 +13,7 @@ u8 *func_800BB624(void);
 void func_800BBD18(void);
 
 extern u16 D_800C417A;
+extern u16 D_800C438A;
 
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
 #include "bash/ovl67_800bbdb8.h"
@@ -57,5 +58,7 @@ extern s32 D_8005A618;
 extern s32 D_8005A680[];
 
 s32 func_800B9CB8(s32 arg0, EXTengine *unused);
+
+void PlotN2ODeadWall(NAS *arg0);
 
 #endif /* BASH_OVL67_H */
