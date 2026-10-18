@@ -86,6 +86,9 @@ typedef struct LaserShoot {
 } LaserShoot;
 extern u8 *D_800C449C;
 extern s32 D_800C4478;
+extern void (*D_8009F8B4)(void);
+extern s32 D_800C4498;
+extern s32 D_800C45F0;
 
 typedef struct MineModel {
     /* 0x00 */ u8 pad00[0x6C];

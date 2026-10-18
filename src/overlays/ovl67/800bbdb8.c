@@ -317,7 +317,25 @@ void func_800C3440(void) {
     Heroes[1].hero_eng->unk10.y = -0x480;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C349C);
+void func_800C349C(void) {
+    NAS *nas;
+    u8 *arg;
+
+    func_8001E0A8((u8 *)D_80058AD0);
+    func_800BC3A4();
+    func_800BDC0C();
+    nas = SpawnNASById(0, 0, 0, 0x1625, 0x11);
+    if (nas != NULL) {
+        nas->UserInfo.user2 = 1;
+    }
+    D_800C4478 = 0x100;
+    D_800C4498 = 0;
+    D_800C45F0 = 0;
+    D_8009F8B4 = (void (*)(void))func_800C318C;
+    arg = *(u8 **)D_80058AD0;
+    D_800C449C = NULL;
+    func_80095258(arg);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C3544);
 
