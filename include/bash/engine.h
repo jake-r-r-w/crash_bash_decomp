@@ -94,7 +94,7 @@ typedef struct EngineBox {
     s16 unk68, pad6A, unk6C, unk6E, unk70, pad72, unk74, unk76, unk78, pad7A, unk7C, unk7E, unk80, pad82, unk84, unk86, unk88, pad8A;
     s32 unk8C, unk90, unk94, unk98;
 } EngineBox;
-extern s16 D_8009AE70;
+extern u16 D_8009AE70;
 extern s32 D_8009AE3C;
 extern u16 D_8009AE74;
 extern s32 D_8009F708;

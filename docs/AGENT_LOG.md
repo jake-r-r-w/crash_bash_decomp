@@ -15,7 +15,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
 - 1131/2551 game functions matched: **main.exe is complete (575/575)**;
-  engine overlay 7 left, 1 parked (`func_8007F314`),
+  engine overlay 7 left, 2 parked (`func_8007F314`, `func_8007B330`),
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - The engine overlay is six files and `ovl5d` three, `ovl5e`, `ovl66`,
@@ -177,6 +177,18 @@ misses with big-mode checkpoints: `func_8007BFA8` (instructions 5/114),
   - Tools: `scratch/f314/` (ignored) has `rtl.js` (compact RTL from a cc1
     dump), `copies.js` (lists the `s3 = 0; j` tails before and after
     jump2) and the listing scripts.
+- **`func_8007B330` (engine score panel, 1228 B), parked 2026-10-18 at
+  registers 7/307** (swarm checkpoint C under `#ifdef NON_MATCHING`). Both
+  differences are tie-breaks, read from the `-dS`/`-dR` traces and `-dl`:
+  - **Clamp join:** local-alloc gives both `%hi`s priority 1. The one born
+    first (`%hi(D_8009AE7C)`) takes `v0`; the target has `%hi(D_8009A97C)`
+    in `v0`. That needs `e`'s lo_sum ahead of the `lhu` in sched1's output.
+  - **`lui Heroes` / `lui D_8005A65C` order:** in sched1 both highs are
+    single-set "birthing" pseudos, so each lands right before its use and
+    `D_8005A65C`'s comes first. sched2 then breaks the priority-2 tie by
+    RTL order.
+  - A fix needs a source shape where the Heroes base is not a single-set
+    pseudo. Variants tried are in the `block` note.
 - **Tooling ideas not done** (from the 2026-10-16 plan):
   - Pilots, no code: model tiers (`--model haiku --escalate-model sonnet
     --big-workers 0` on ~40 functions under 128 B, check the first matches'
@@ -411,6 +423,9 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-18 (hand):** `func_8007B330` still at registers 7/307 after a
+  hand session from the swarm's C; parked with the cause of both register
+  ties (Open leads).
 - **2026-10-18 (hand):** `func_8007F314` (5772 B) taken from the swarm's
   1263/1443 to 1147/1443 and parked (Open leads). How jump2 merges the
   shared `ret = 0` tails is now worked out; still missing is the C that

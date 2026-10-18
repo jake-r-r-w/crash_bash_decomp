@@ -155,6 +155,7 @@ extern s16 D_8009AE7E;
 extern s16 D_8009AE80;
 extern s16 D_8009AE82;
 extern s16 D_8009AE84;
+extern s16 D_8005A65C[2];
 
 void func_8007B120(void);
 

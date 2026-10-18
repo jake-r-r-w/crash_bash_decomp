@@ -2998,7 +2998,11 @@
   "status": "matched"
  },
  "engine:8007B330": {
-  "auto_failed": "types"
+  "auto_failed": "types",
+  "blocked_at": "2026-10-18T07:19:25Z",
+  "note": "registers 7/307 (swarm checkpoint C, kept under #ifdef NON_MATCHING). Both diffs are compiler tie-breaks. (1) Clamp join: local-alloc gives %hi(D_8009AE7C) v0 and %hi(D_8009A97C) a0 (target v1/v0): with sched1's order (t, e_hi, lhu, lo_sum) the two highs tie on priority and t, born first, wins v0; the target needs e's lo_sum before the lhu in sched1's output (then e_hi wins). e-first, v = D_8009AE7C, chained store all fail; f++ fixes it but makes AA18 f+156. (2) lui Heroes before lui D_8005A65C: sched1 gives both highs birthing priority (placed right before their uses, so 65C's comes first), and sched2 then breaks the priority-2 tie by luid; Heroes-first, a = Heroes + h, base local all fail. Next: a source shape where the Heroes base is not a single-set pseudo, and one where e's lo_sum is scheduled before the lhu.",
+  "started": "2026-10-18T07:04:39Z",
+  "status": "blocked"
  },
  "engine:8007B7FC": {
   "auto_diff": 46,
