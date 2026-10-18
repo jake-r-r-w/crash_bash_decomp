@@ -198,6 +198,7 @@ void func_800B9E90(Ovl6aSparks *arg0);
 
 extern s32 D_800BD390;
 extern s32 D_800BD394;
+extern u8 D_800BD570[];
 extern s32 D_800BCEF4;
 extern u16 D_8009EEA0;
 extern EXTengine *D_8009D530;
@@ -508,6 +509,8 @@ void func_800B6E20(void);
 void PlotPodiumTrophy(PodiumTrophy *arg0);
 
 void func_800B9B0C(void);
+
+void func_800B9D1C(NAS *arg0);
 
 void func_800BA1B4(Ovl6aTrailDst *d, Ovl6aTrail *t, s32 idx);
 

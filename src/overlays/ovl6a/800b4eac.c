@@ -1297,7 +1297,55 @@ void func_800B9B0C(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B9D1C);
+void func_800B9D1C(NAS *arg0) {
+    u8 *nv;
+    subengine *s;
+
+    arg0->Engine->sub->flags = 0x8000;
+    arg0->UserInfo.user1 = 0;
+    arg0->Engine->unk5D = 0;
+    arg0->Engine->unk5C = 1;
+    if (func_80018F3C(arg0->Engine, 12) != 12 || func_80015D70(D_800BD570, (u8 *)arg0->Engine->sub) == 0) {
+        KillNAS(arg0);
+        return;
+    }
+    s = arg0->Engine->sub;
+    s = s->next;
+    if (s != NULL) {
+        u32 fl;
+        do {
+            s->unk51 = 0;
+            nv = D_800558EC;
+            s->unk50 = 1;
+            s->unk6C = nv;
+            if (D_800BD394 == 0) {
+                s->unk74 = 0x2021;
+            }
+            if (D_800BD394 == 1) {
+                s->unk74 = 0x2025;
+            }
+            if (D_800BD394 == 2) {
+                s->unk74 = 0x2022;
+            }
+            if (D_800BD394 == 3) {
+                s->unk74 = 0x2024;
+            }
+            if (D_800BD394 == 4) {
+                s->unk74 = 0x2027;
+            }
+            if (D_800BD394 == 5) {
+                s->unk74 = 0x2026;
+            }
+            s->unk20.x = 0x1000;
+            fl = 0x20000000;
+            s->unk20.y = 0x1000;
+            s->unk20.z = 0x1000;
+            s->flags = fl;
+            s->unk76 = 0;
+            s = s->next;
+        } while (s != NULL);
+    }
+}
 
 void func_800B9E90(Ovl6aSparks *arg0) {
     s32 n;
