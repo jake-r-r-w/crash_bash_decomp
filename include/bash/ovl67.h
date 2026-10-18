@@ -103,6 +103,17 @@ typedef struct Ovl67Vel {
     s32 z;
 } Ovl67Vel;
 
+typedef struct Ovl67Blend {
+    u8 pad0[0xE];
+    s16 speed_a;
+    u8 pad10[6];
+    u16 dir;
+    u8 pad18[0xA];
+    s16 speed_b;
+    u8 pad24[6];
+    u16 dir_b;
+} Ovl67Blend;
+
 typedef struct Ovl67Out {
     u8 pad0[0x16];
     s16 dir;
@@ -304,6 +315,8 @@ s32 func_800B3888(Ovl67Obj *arg0);
 void func_800B5440(s32 arg0);
 
 void func_800B5550(s32 arg0);
+
+void func_800B6E6C(Ovl67Blend *p);
 
 s32 func_800B8058(s32 arg0);
 

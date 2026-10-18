@@ -523,7 +523,29 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/ovl67/ovl67", D_800B32B4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", PlotN2OBall);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B6E6C);
+void func_800B6E6C(Ovl67Blend *p) {
+    s32 x1;
+    s32 z1;
+    s16 vel;
+    s32 speed;
+
+    speed = p->speed_b;
+    if (speed != 0) {
+        u32 da = p->dir;
+        u32 db = p->dir_b;
+        s32 a, b, c, d;
+        vel = p->speed_a;
+        a = vel * D_80068BD4[(da - 0x400) & 0xFFF].unk2;
+        b = vel * D_80068BD4[da & 0xFFF].unk2;
+        c = speed * D_80068BD4[(db - 0x400) & 0xFFF].unk2;
+        d = speed * D_80068BD4[db & 0xFFF].unk2;
+        x1 = a >> 12;
+        z1 = b >> 12;
+        x1 += c >> 12;
+        z1 += d >> 12;
+        p->dir = get_angle(x1, z1) & 0xFFF;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B6F4C);
 
