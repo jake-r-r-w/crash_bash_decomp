@@ -35,7 +35,37 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/ovl6a/ovl6a", D_800B32B4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/ovl6a", func_800B488C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/ovl6a", func_800B4C94);
+void func_800B4C94(void)
+{
+  int new_var;
+  u8 *g;
+  s32 i;
+  func_8002C284(1);
+  g = D_8005A614;
+  ((EngMenuGame *) g)->unk74 = 0;
+  func_800B8324(0);
+  D_80098714 = 0;
+  func_8001E588(D_8009F644, -0x200, 0);
+  new_var = 0x1628;
+  *((u8 *) (g + 0x75)) = 1;
+  for (i = 0; i < ASTCount; i++)
+  {
+    if (ASTTable[i].id == new_var)
+    {
+      goto found;
+    }
+  }
+
+  i = 0;
+  found:
+  func_80027040(i);
+
+  ((Ovl6aCam *) D_80051640)->h = D_800BC2BC;
+  D_800AD12C = D_800BC2C0;
+  ((Ovl6aCam *) D_80051640)->x = D_800BC2C4;
+  ((Ovl6aCam *) D_80051640)->y = D_800BC2C8;
+  ((Ovl6aCam *) D_80051640)->z = D_800BC2CC;
+}
 
 s32 *func_800B4D8C(void) {
     return D_800C7294;
