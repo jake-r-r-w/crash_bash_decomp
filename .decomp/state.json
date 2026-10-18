@@ -8888,7 +8888,8 @@
   "status": "matched"
  },
  "ovl67:800C3544": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-18T17:00:37Z",
+  "status": "matched"
  },
  "ovl67:800C365C": {
   "auto_diff": 30,

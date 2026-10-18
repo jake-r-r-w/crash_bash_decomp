@@ -189,4 +189,17 @@ void PlotDummyCamera(NAS *nas);
 
 s32 func_800C365C(void);
 
+typedef struct BoxHalf {
+    s16 v[3];
+} BoxHalf;
+
+typedef struct Box2 {
+    BoxHalf lo;
+    BoxHalf hi;
+} Box2;
+
+extern char D_800B336C[];
+
+s32 func_800C3544(s32 *arg0, s32 *arg1);
+
 #endif /* BASH_OVL67_800BBDB8_H */

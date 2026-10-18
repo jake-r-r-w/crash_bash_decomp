@@ -374,7 +374,35 @@ void func_800C349C(void) {
     func_80095258(arg);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C3544);
+s32 func_800C3544(s32 *arg0, s32 *arg1) {
+    Box2 *src;
+    s32 d[3];
+    BoxHalf lo;
+    BoxHalf hi;
+
+    src = (Box2 *)func_8008CE20((subengine *)arg0, 0, 0);
+    if (src == NULL) {
+        printf(D_800B336C);
+        return 0;
+    }
+    lo = src->lo;
+    hi = src->hi;
+    d[0] = arg1[0] - arg0[1];
+    d[1] = arg1[1] - arg0[2];
+    d[2] = arg1[2] - arg0[3];
+    if (lo.v[0] < d[0]) {
+        if (d[0] < hi.v[0]) {
+            if (hi.v[1] < d[1]) {
+                if (d[1] < lo.v[1]) {
+                    if (lo.v[2] < d[2] + 0x400) {
+                        return 1;
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+}
 
 s32 func_800C365C(void) {
     u8 *g = D_8005A614;
