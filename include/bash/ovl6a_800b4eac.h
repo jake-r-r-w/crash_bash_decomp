@@ -43,6 +43,66 @@ typedef struct KeyedPair {
     s32 val[1];
 } KeyedPair;
 extern KeyedPair D_800BCB54[];
+/* A POLY_FT4 as func_800B9E90 fills it. */
+typedef struct Ovl6aFt4 {
+    /* 0x00 */ u32 tag;
+    /* 0x04 */ u8 r0, g0, b0, code;
+    /* 0x08 */ s16 x0, y0;
+    /* 0x0C */ u16 uv0;
+    /* 0x0E */ u16 clut;
+    /* 0x10 */ s16 x1, y1;
+    /* 0x14 */ u16 uv1;
+    /* 0x16 */ u16 tpage;
+    /* 0x18 */ s16 x2, y2;
+    /* 0x1C */ u16 uv2;
+    /* 0x1E */ u16 pad2;
+    /* 0x20 */ s16 x3, y3;
+    /* 0x24 */ u16 uv3;
+    /* 0x26 */ u16 pad3;
+} Ovl6aFt4;
+
+/* One row of 8 particles func_800B9E90 sets up (0x140 bytes). */
+typedef struct Ovl6aSparkRow {
+    /* 0x000 */ SVECTOR rot[8];
+    /* 0x040 */ s32 unk40[8];
+    /* 0x060 */ u8 pad60[0x40];
+    /* 0x0A0 */ SVECTOR unkA0[8];
+    /* 0x0E0 */ SVECTOR unkE0[8];
+    /* 0x120 */ s32 unk120;
+    /* 0x124 */ s32 unk124;
+    /* 0x128 */ s32 unk128;
+    /* 0x12C */ s32 unk12C;
+    /* 0x130 */ s32 unk130;
+    /* 0x134 */ s32 unk134;
+    /* 0x138 */ s32 unk138;
+    /* 0x13C */ s32 unk13C;
+} Ovl6aSparkRow;
+
+typedef struct Ovl6aSparkSet {
+    /* 0x0 */ Ovl6aSparkRow *rows;
+    /* 0x4 */ Ovl6aFt4 *src;
+    /* 0x8 */ Ovl6aFt4 *dst;
+    /* 0xC */ s32 count;
+} Ovl6aSparkSet;
+
+typedef struct Ovl6aSparks {
+    /* 0x00 */ u8 pad0[0x6C];
+    /* 0x6C */ Ovl6aSparkSet set;
+} Ovl6aSparks;
+
+/* A texture entry: the POLY_FT4 fields func_800B9E90 copies. */
+typedef struct Ovl6aTex {
+    /* 0x00 */ u8 pad0[0x24];
+    /* 0x24 */ u16 tpage;
+    /* 0x26 */ u16 clut;
+    /* 0x28 */ u16 uv0;
+    /* 0x2A */ u16 uv1;
+    /* 0x2C */ u16 uv2;
+    /* 0x2E */ u16 uv3;
+} Ovl6aTex;
+
+void func_800B9E90(Ovl6aSparks *arg0);
+
 extern s32 D_800BD390;
 extern s32 D_800BD394;
 extern s32 D_800BCEF4;

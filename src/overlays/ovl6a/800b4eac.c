@@ -674,7 +674,94 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B9B0C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B9D1C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B9E90);
+void func_800B9E90(Ovl6aSparks *arg0) {
+    s32 n;
+    Ovl6aFt4 *src;
+    Ovl6aFt4 *dst;
+    Ovl6aSparkRow *row;
+    Ovl6aTex *tex;
+    TrigEntry *a;
+    TrigEntry *b;
+    s32 ang;
+    s32 k;
+    Ovl6aSparkSet *set;
+    u8 *g;
+    s32 sel;
+
+    set = &arg0->set;
+    tex = NULL;
+    n = set->count;
+    src = set->src;
+    dst = set->dst;
+    row = arg0->set.rows;
+    g = D_800558EC;
+    sel = D_800BD394;
+    if (sel == 0) {
+        tex = (Ovl6aTex *)(*(u8 **)(g + 0x18) + 0x188);
+    }
+    if (sel == 1) {
+        tex = (Ovl6aTex *)(*(u8 **)(g + 0x18) + 0x268);
+    }
+    if (sel == 2) {
+        tex = (Ovl6aTex *)(*(u8 **)(g + 0x18) + 0x1C0);
+    }
+    if (sel == 3) {
+        tex = (Ovl6aTex *)(*(u8 **)(g + 0x18) + 0x230);
+    }
+    if (sel == 4) {
+        tex = (Ovl6aTex *)(*(u8 **)(g + 0x18) + 0x1F8);
+    }
+    if (sel == 5) {
+        tex = (Ovl6aTex *)(*(u8 **)(g + 0x18) + 0x2A0);
+    }
+    k = 4;
+    for (;;) {
+        s32 i;
+
+        i = 0;
+        if (n == 0) {
+            break;
+        }
+        row->unk134 = 0;
+        ang = n << 9;
+        a = &D_80068BD4[ang & 0xFFF];
+        for (;;) {
+            s32 r;
+
+            if (i >= 8) {
+                break;
+            }
+            row->rot[i].vx = D_80068BD4[(ang - 0x400) & 0xFFF].unk2 * 64 >> 12;
+            row->rot[i].vy = (a->unk2 * 64 >> 12) - 0x400;
+            row->rot[i].vz = 0x2000;
+            row->unk120 = (a->unk2 * 256 >> 12) + Random(0x40) - Random(0x40);
+            row->unk12C = (D_80068BD4[(ang - 0x400) & 0xFFF].unk2 >> k) + Random(0x40) - Random(0x40);
+            row->unkE0[i].vz = 0;
+            row->unkA0[i].vz = 0;
+            row->unk40[i] = 0;
+            row->unk128 = 6;
+            row->unk130 = Random(k) - Random(k);
+            row->unk124 = 0;
+            row->unk138 = 0;
+            row->unk13C = 0;
+            *(u32 *)&src->r0 = 0xA0A0A0;
+            src->tpage = (tex->tpage & ~0x60) | 0x20;
+            src->clut = tex->clut;
+            src->uv0 = tex->uv0;
+            src->uv1 = tex->uv1;
+            src->uv2 = tex->uv2;
+            src->uv3 = tex->uv3;
+            ((u8 *)src)[3] = 9;
+            src->code = 0x2E;
+            *dst = *src;
+            src++;
+            dst++;
+            i++;
+        }
+        row++;
+        n--;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BA1B4);
 
