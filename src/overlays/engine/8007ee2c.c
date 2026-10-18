@@ -4302,7 +4302,22 @@ void func_8008A8F0(s32 arg0) {
     func_8008502C(arg0);
 }
 
+#ifdef NON_MATCHING
+void func_8008A924(s32 arg0) {
+    HeroInfo *h;
+    u8 dummy;
+
+    Heroes[arg0].hero_move->velocity_enable = 1;
+    do {
+        dummy = ((volatile EXTheromove *)Heroes[arg0].hero_move)->run_walk;
+        h = (HeroInfo *)arg0;
+    } while (0);
+    SetHeroSeq(h, 5);
+    D_8009D73C(arg0);
+}
+#else
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8008A924);
+#endif
 
 void func_8008A99C(s32 arg0) {
     HeroInfo *base = Heroes;

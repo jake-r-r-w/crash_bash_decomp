@@ -1,15 +1,21 @@
 {
  "blocked": [
   {
+   "name": "func_8008A924",
+   "note": "registers 1/30 (kept under #ifdef NON_MATCHING): only the dead volatile read's register differs, lbu v0,0x1A(v0) vs the target's lbu v1. The target's lbu reads run_walk and discards it, so the read must be volatile; the do { read; h = (HeroInfo *)arg0; } while (0) block (from the 2026-10-15 permuter run) fixes the order (li v1,1 between lw a0 and sb; lbu before move a0,s0). Why v0: local-alloc gives the read's pseudo top priority (life of one insn) and v0 is free there, because the reloaded hero_move pointer dies at that lbu. Tried: one u8 v for the 1 and the read (v dies twice so it goes to global alloc, and the first hero_move pointer, local, takes v1: v=a0 and pointer=v1, the exact swap), s32/register dummy, a volatile pointer local, the volatile store too, a hero_move local, if/else identical arms and empty ifs (the load disappears), inline helpers (worse). Next: a C form where the read's value is live past the lbu at allocation time but costs no code (a use removed only after reload), or make the first hero_move pointer global so global alloc's priority can give v1 to the 1/read variable",
+   "seg": "overlays/engine/8007ee2c",
+   "size": 120
+  },
+  {
    "name": "func_800926CC",
    "note": "instructions 1/134 with s8 j (kept under #ifdef NON_MATCHING): only the compare's li a1,1 comes out as move a1,a0. Root cause of the old 4/134: sched1 gives a single-set REG-dest pseudo 'birthing' launch priority (sched.c adjust_priority/birthing_insn_p), so s16 j's li a0,1 lands next to sh 0x38; the target's li sits 2nd like a no-dependency constant. s8 j fixes that: unk38 = j sign-extends via extendqihi2, cse folds it to (set (subreg:SI (reg:HI)) 1), a SUBREG dest (not birthing). But post-reload CSE (gcc 2.8 reload_cse_regs) then sees a0 holding SImode 1 and rewrites the compare's later li a1,1 to move a1,a0 (a narrower-or-equal mode request matches). Target therefore had a HI/QI-recorded a0 that was still non-birthing: j set twice with the extra set costing no code. Proven: s16 j as the loop1 counter gives the right li placement (rest identical) but adds sll/move to the loop; a then-block set via (s8)j survives cse but becomes move v1,a1 and swaps j/t regs; an asm volatile barrier after j = 1 places it right but swaps j/compare to a1/a0. Failed: j = arg0->unk38, j = 1 in else/after the if (cse deletes self-copies), j = volatile load, s32 i for the 1 (cse merges the compare's 1), u8 j (same as s16), j += t >> 6. Next: find a second set of a HI/QI j that cse keeps and combine or reload_cse removes without decrementing reg_n_sets (MATCHING row func_8001795C: a self-referencing set absorbed by combine), or accept the barrier with --hack after fixing the a0/a1 swap",
    "seg": "overlays/engine/8008e27c",
    "size": 540
   }
  ],
- "commit": "081f67e",
+ "commit": "5a6b8dc",
  "game": "SCUS_945.70",
- "generated": "2026-10-18T05:01:41Z",
+ "generated": "2026-10-18T05:30:03Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -64020,7 +64026,7 @@
    }
   },
   {
-   "commit": "081f67e",
+   "commit": "5a6b8dc",
    "data_b": 2080,
    "data_tb": 606943,
    "game_all_f": 2551,
@@ -64033,7 +64039,7 @@
    "lib_b": 122112,
    "lib_f": 564,
    "lib_tb": 122112,
-   "ts": "2026-10-18T05:01:41Z",
+   "ts": "2026-10-18T05:30:03Z",
    "units": {
     "engine": [
      117164,
@@ -64229,7 +64235,7 @@
   }
  ],
  "summary": {
-  "blocked": 1,
+  "blocked": 2,
   "copies_b": 36276,
   "data": {
    "done_b": 2080,
@@ -64240,7 +64246,7 @@
    "all_f": 2551,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 1,
+   "blocked": 2,
    "c_f": 1128,
    "done_b": 251604,
    "done_f": 1128,
@@ -64271,7 +64277,7 @@
     "all_f": 357,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 1,
+    "blocked": 2,
     "c_f": 347,
     "done_b": 117164,
     "done_f": 347,

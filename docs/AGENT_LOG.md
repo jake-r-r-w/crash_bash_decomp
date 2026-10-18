@@ -15,7 +15,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
 - 1128/2551 game functions matched: **main.exe is complete (575/575)**;
-  engine overlay 10 left; `func_800926CC` parked (1/134, hand session 2026-10-17),
+  engine overlay 10 left; parked by hand: `func_800926CC` (1/134, 2026-10-17)
+  and `func_8008A924` (registers 1/30, 2026-10-18),
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - The engine overlay is six files and `ovl5d` three, `ovl5e`, `ovl66`,
@@ -385,6 +386,11 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-18 (hand, no permuter):** `func_8008A924` (120 B) parked at
+  registers 1/30. Its dead read of `run_walk` must be volatile and lands in
+  `v0` (the dying base) where the target has `v1`; the block note lists what
+  was tried. The permuter ran in parallel on the three register-only engine
+  near misses.
 - **2026-10-18:** `decomp.py hacks`: matched functions that need a register
   pin or asm barrier, with their match commit's `Hack:` reason (read from
   the source, so it can't go stale). CONVENTIONS points at it.
