@@ -95,6 +95,35 @@ extern s32 D_800BA740;
 extern s32 D_800BA744;
 void func_800B5B10(s32 arg0);
 void func_800B64B8(void);
+typedef struct {
+    s32 pad0[2];
+    s32 x;
+    s32 y;
+    s32 pad10[6];
+} Ovl69Pt;
+typedef struct {
+    s32 pad0[1];
+    s32 unk4;
+    s32 unk8;
+} Ovl69Dst;
+typedef struct {
+    s32 pad0[3];
+    Ovl69Dst *dst;
+    s32 pad10[8];
+    s32 idx;
+    s32 pad34[11];
+} Ovl69Slot;
+typedef struct {
+    s32 x;
+    s32 y;
+} Ovl69Off;
+extern Ovl69Slot D_800B9FD4[];
+extern Ovl69Off D_800B9C84[];
+/* D_8005A614 as seen by func_800B64B8 (unk26 is D_8005A63A). */
+typedef struct {
+    u8 pad0[0x26];
+    u8 unk26;
+} Ovl69ModeView;
 
 void func_800B5880(void);
 

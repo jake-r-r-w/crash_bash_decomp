@@ -479,7 +479,27 @@ void func_800B63F4(void) {
     func_800B64B8();
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B64B8);
+void func_800B64B8(void) {
+    s32 i;
+    s32 j;
+
+    i = 0;
+    if (D_8005A63A != 0) {
+        do {
+            do {
+                D_800B9FD4[i].idx = Random(8);
+                for (j = 0; j < i; j++) {
+                    if (D_800B9FD4[j].idx == D_800B9FD4[i].idx) {
+                        break;
+                    }
+                }
+            } while (j != i);
+            D_800B9FD4[i].dst->unk4 = ((Ovl69Pt *)D_800B9B44)[D_800B9FD4[i].idx].x + D_800B9C84[i].x;
+            D_800B9FD4[i].dst->unk8 = ((Ovl69Pt *)D_800B9B44)[D_800B9FD4[i].idx].y + D_800B9C84[i].y;
+            i++;
+        } while (i < ((Ovl69ModeView *)D_8005A614)->unk26);
+    }
+}
 
 s32 func_800B65D0(s32 a0) {
     u8 *g = D_8005A614;
