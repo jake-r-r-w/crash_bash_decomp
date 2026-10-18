@@ -98,4 +98,6 @@ s32 func_800B7DC0(s32 a, s32 b);
 
 s32 func_800B7E7C(s32 a, s32 b);
 
+s32 func_800B7EA4(s32 idx);
+
 #endif /* BASH_OVL69_H */
