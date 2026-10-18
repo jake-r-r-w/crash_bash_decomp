@@ -249,4 +249,8 @@ s32 func_800B7E7C(s32 a, s32 b);
 
 s32 func_800B7EA4(s32 idx);
 
+extern s8 D_8005A64A;
+
+s32 func_800B7CE8(s32 arg0);
+
 #endif /* BASH_OVL69_H */

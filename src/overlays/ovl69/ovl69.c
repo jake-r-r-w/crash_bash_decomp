@@ -935,7 +935,11 @@ s32 func_800B7C68(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B7CE8);
+s32 func_800B7CE8(s32 arg0) {
+    s32 i = D_8005A64A;
+    u8 *s = (u8 *)D_800BA324[i].unk0;
+    return *(s32 *)(s + (arg0 << 4)) == 2;
+}
 
 void func_800B7D20(void) {
 }
@@ -1068,9 +1072,9 @@ void func_800B8498(void) {
 }
 
 void func_800B84B8(void) {
-    func_8001C2C0(GetEngineSlot(2));
+    func_8001C2C0((u8 *)GetEngineSlot(2));
 }
 
 void func_800B84E0(void) {
-    func_80095BEC(2, D_800BAAD0);
+    func_80095BEC(2, (s32 *)D_800BAAD0);
 }
