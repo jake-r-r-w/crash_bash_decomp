@@ -2,6 +2,7 @@
 #include "bash/main.h"
 #include "bash/ovl67.h"
 #include "bash/n2o.h"
+#include "bash/arkenoid.h"
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B34A4);
 
@@ -170,7 +171,19 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BB944);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BB9B0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BBA4C);
+void func_800BBA4C(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = &base[arg0];
+    EXTengine *shadow = h->hero_shadow;
+
+    shadow->unk10 = h->hero_eng->unk10;
+    shadow->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(shadow);
+    shadow->unk1E = h->hero_eng->unk1E;
+    shadow->unk5E = 1;
+    if (h->hero_status & 0xF800) {
+        shadow->sub->flags &= ~0x8000;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BBB10);
 

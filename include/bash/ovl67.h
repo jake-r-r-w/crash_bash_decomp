@@ -17,4 +17,7 @@ extern u16 D_800C417A;
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
 #include "bash/ovl67_800bbdb8.h"
 
+void func_800BBA4C(s32 arg0);
+extern HeroInfo Heroes[4];
+
 #endif /* BASH_OVL67_H */
