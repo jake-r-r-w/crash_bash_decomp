@@ -371,4 +371,34 @@ void func_800BBE24(Ovl6aRenderObj *obj, void *arg1);
 
 void func_800BBF44(SVECTOR *v, s16 *b);
 
+typedef struct PodiumInner {
+    u8 pad0[0x6C];
+    u8 *script;
+} PodiumInner;
+
+typedef struct PodiumMid {
+    u8 pad0[0xC];
+    u32 flags;
+    u8 pad10[0x5C];
+    PodiumInner *inner;
+} PodiumMid;
+
+typedef struct PodiumScriptObj {
+    u8 pad0[0x54];
+    PodiumMid *mid;
+    u8 pad58[0xC];
+    s32 unk64;
+} PodiumScriptObj;
+
+extern ScriptInit D_800BCF68;
+extern ScriptInit D_800BCFB8;
+extern ScriptInit D_800BD008;
+extern ScriptInit D_800BD070;
+extern ScriptInit D_800BD0D8;
+extern ScriptInit D_800BD134;
+extern ScriptInit D_800BD18C;
+extern ScriptInit D_800BD1E4;
+
+void func_800B93B4(s32 arg0, s32 arg1);
+
 #endif /* BASH_OVL6A_800B4EAC_H */

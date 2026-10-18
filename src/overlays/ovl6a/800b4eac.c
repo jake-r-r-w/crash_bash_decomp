@@ -917,7 +917,54 @@ void PlotPodiumOdo(NAS *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B93B4);
+void func_800B93B4(s32 arg0, s32 arg1) {
+    PodiumScriptObj *obj;
+    PodiumMid *mid;
+
+    obj = (PodiumScriptObj *)D_800BD584[arg0];
+    if (obj != NULL) {
+        mid = obj->mid;
+        if (mid != NULL) {
+            switch (arg1) {
+            case 1:
+                mid->inner->script = D_80055924;
+                func_80024E30((NAS *)obj, &D_800BD008);
+                break;
+            case 2:
+                mid->inner->script = D_8005595C;
+                func_80024E30((NAS *)obj, &D_800BCFB8);
+                break;
+            case 3:
+                mid->inner->script = D_80055994;
+                func_80024E30((NAS *)obj, &D_800BD070);
+                break;
+            case 4:
+                mid->inner->script = D_800559CC;
+                func_80024E30((NAS *)obj, &D_800BCF68);
+                break;
+            case 5:
+                mid->inner->script = D_80055A04;
+                func_80024E30((NAS *)obj, &D_800BD18C);
+                break;
+            case 6:
+                mid->inner->script = D_80055A3C;
+                func_80024E30((NAS *)obj, &D_800BD1E4);
+                break;
+            case 7:
+                mid->inner->script = D_80055A74;
+                func_80024E30((NAS *)obj, &D_800BD0D8);
+                break;
+            case 8:
+                mid->inner->script = D_80055AAC;
+                func_80024E30((NAS *)obj, &D_800BD134);
+                break;
+            }
+            obj->unk64 = arg1;
+            func_800250B0((NAS *)obj);
+            mid->flags |= 0x8000;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", PlotPodiumTrophy);
 
