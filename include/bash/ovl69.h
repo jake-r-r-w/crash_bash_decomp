@@ -107,6 +107,8 @@ void func_800B54F0(void);
 
 void func_800B5614(void);
 
+void func_800B5734(void);
+
 void func_800B5978(u8 *cam, s32 arg1);
 
 void func_800B5AC0(void);
