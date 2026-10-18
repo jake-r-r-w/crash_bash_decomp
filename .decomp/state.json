@@ -3515,11 +3515,12 @@
   "status": "matched"
  },
  "engine:8008A924": {
-  "auto_failed": "types",
   "blocked_at": "2026-10-18T05:39:40Z",
-  "note": "registers 1/30 (kept under #ifdef NON_MATCHING): only the dead volatile read's register differs (lbu v0,0x1A(v0) vs the target's v1). A register pin, register u8 dummy asm(\"$3\") in the same do { } while (0) form, MATCHES (verified 2026-10-18), but it's a workaround, so it isn't committed (ROADMAP Phase 6, CONVENTIONS). Why v0: a pseudo that is dead at allocation time gets the lowest free register, and the reloaded hero_move pointer frees v0 at that very lbu, so the original's value must have been live past the lbu during allocation and removed only afterwards. Ruled out: if/else arms that only become identical in RTL survive to jump2 (after reload), which merges them, but delete_computation then also deletes the lbu and the reload. One u8 v for the 1 and the read dies twice, so it goes to global alloc while the first hero_move pointer (local) takes v1 (v=a0, pointer=v1, the exact swap). Also tried: s32/register dummy, a volatile pointer local, the volatile store too, a hero_move local, empty ifs, inline helpers. Next: a use of the read that survives flow and allocation and is removed afterwards without delete_computation (a no-op move reload deletes, or a reload_cse no-op set)",
+  "matched_at": "2026-10-18T05:51:50Z",
   "started": "2026-10-18T05:11:31Z",
-  "status": "blocked"
+  "status": "matched",
+  "unblocked_at": "2026-10-18T05:51:20Z",
+  "why_unblocked": "matched by hand: self-assignment of run_walk with the read in a do-while(0)"
  },
  "engine:8008A99C": {
   "matched_at": "2026-10-15T12:28:17Z",

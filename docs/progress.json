@@ -1,21 +1,15 @@
 {
  "blocked": [
   {
-   "name": "func_8008A924",
-   "note": "registers 1/30 (kept under #ifdef NON_MATCHING): only the dead volatile read's register differs (lbu v0,0x1A(v0) vs the target's v1). A register pin, register u8 dummy asm(\"$3\") in the same do { } while (0) form, MATCHES (verified 2026-10-18), but it's a workaround, so it isn't committed (ROADMAP Phase 6, CONVENTIONS). Why v0: a pseudo that is dead at allocation time gets the lowest free register, and the reloaded hero_move pointer frees v0 at that very lbu, so the original's value must have been live past the lbu during allocation and removed only afterwards. Ruled out: if/else arms that only become identical in RTL survive to jump2 (after reload), which merges them, but delete_computation then also deletes the lbu and the reload. One u8 v for the 1 and the read dies twice, so it goes to global alloc while the first hero_move pointer (local) takes v1 (v=a0, pointer=v1, the exact swap). Also tried: s32/register dummy, a volatile pointer local, the volatile store too, a hero_move local, empty ifs, inline helpers. Next: a use of the read that survives flow and allocation and is removed afterwards without delete_computation (a no-op move reload deletes, or a reload_cse no-op set)",
-   "seg": "overlays/engine/8007ee2c",
-   "size": 120
-  },
-  {
    "name": "func_800926CC",
    "note": "instructions 1/134 with s8 j (kept under #ifdef NON_MATCHING): only the compare's li a1,1 comes out as move a1,a0. Root cause of the old 4/134: sched1 gives a single-set REG-dest pseudo 'birthing' launch priority (sched.c adjust_priority/birthing_insn_p), so s16 j's li a0,1 lands next to sh 0x38; the target's li sits 2nd like a no-dependency constant. s8 j fixes that: unk38 = j sign-extends via extendqihi2, cse folds it to (set (subreg:SI (reg:HI)) 1), a SUBREG dest (not birthing). But post-reload CSE (gcc 2.8 reload_cse_regs) then sees a0 holding SImode 1 and rewrites the compare's later li a1,1 to move a1,a0 (a narrower-or-equal mode request matches). Target therefore had a HI/QI-recorded a0 that was still non-birthing: j set twice with the extra set costing no code. Proven: s16 j as the loop1 counter gives the right li placement (rest identical) but adds sll/move to the loop; a then-block set via (s8)j survives cse but becomes move v1,a1 and swaps j/t regs; an asm volatile barrier after j = 1 places it right but swaps j/compare to a1/a0. Failed: j = arg0->unk38, j = 1 in else/after the if (cse deletes self-copies), j = volatile load, s32 i for the 1 (cse merges the compare's 1), u8 j (same as s16), j += t >> 6. Next: find a second set of a HI/QI j that cse keeps and combine or reload_cse removes without decrementing reg_n_sets (MATCHING row func_8001795C: a self-referencing set absorbed by combine), or accept the barrier with --hack after fixing the a0/a1 swap",
    "seg": "overlays/engine/8008e27c",
    "size": 540
   }
  ],
- "commit": "b31b619",
+ "commit": "b7fe784",
  "game": "SCUS_945.70",
- "generated": "2026-10-18T05:39:50Z",
+ "generated": "2026-10-18T05:52:00Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -64196,9 +64190,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "b7fe784",
+   "data_b": 2080,
+   "data_tb": 606943,
+   "game_all_f": 2551,
+   "game_b": 252216,
+   "game_c_f": 1130,
+   "game_f": 1130,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 945,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-18T05:52:00Z",
+   "units": {
+    "engine": [
+     117776,
+     349
+    ],
+    "main exe": [
+     124840,
+     575
+    ],
+    "ovl5d": [
+     328,
+     4
+    ],
+    "ovl5e": [
+     504,
+     6
+    ],
+    "ovl5f": [
+     1564,
+     36
+    ],
+    "ovl60": [
+     708,
+     14
+    ],
+    "ovl61": [
+     292,
+     7
+    ],
+    "ovl62": [
+     916,
+     30
+    ],
+    "ovl63": [
+     636,
+     16
+    ],
+    "ovl64": [
+     156,
+     7
+    ],
+    "ovl65": [
+     1096,
+     11
+    ],
+    "ovl66": [
+     528,
+     13
+    ],
+    "ovl67": [
+     836,
+     12
+    ],
+    "ovl68": [
+     180,
+     10
+    ],
+    "ovl69": [
+     920,
+     16
+    ],
+    "ovl6a": [
+     936,
+     24
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-18T05:51:50Z",
+   "auto": true,
+   "name": "func_8008A924",
+   "seg": "overlays/engine/8007ee2c",
+   "size": 120,
+   "tries": 0
+  },
   {
    "at": "2026-10-18T05:32:50Z",
    "auto": true,
@@ -64310,18 +64398,10 @@
    "seg": "overlays/engine/8007ee2c",
    "size": 1580,
    "tries": 0
-  },
-  {
-   "at": "2026-10-17T11:12:02Z",
-   "auto": true,
-   "name": "func_8008A200",
-   "seg": "overlays/engine/8007ee2c",
-   "size": 1552,
-   "tries": 0
   }
  ],
  "summary": {
-  "blocked": 2,
+  "blocked": 1,
   "copies_b": 36276,
   "data": {
    "done_b": 2080,
@@ -64332,16 +64412,16 @@
    "all_f": 2551,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 2,
-   "c_f": 1129,
-   "done_b": 252096,
-   "done_f": 1129,
+   "blocked": 1,
+   "c_f": 1130,
+   "done_b": 252216,
+   "done_f": 1130,
    "named_f": 345,
-   "pct": 24.738674590495332,
+   "pct": 24.750450425696442,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2551,
-   "typed_f": 944
+   "typed_f": 945
   },
   "lib": {
    "all_f": 566,
@@ -64363,21 +64443,21 @@
     "all_f": 357,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 2,
-    "c_f": 348,
-    "done_b": 117656,
-    "done_f": 348,
+    "blocked": 1,
+    "c_f": 349,
+    "done_b": 117776,
+    "done_f": 349,
     "file": "engine.bin",
     "files": 6,
     "lib": false,
     "named_f": 18,
-    "pct": 91.01992820893675,
+    "pct": 91.11276148038124,
     "phase": 3,
     "sony_b": 0,
     "title": "Engine",
     "total_b": 129264,
     "total_f": 357,
-    "typed_f": 324,
+    "typed_f": 325,
     "unit": "engine"
    },
    {

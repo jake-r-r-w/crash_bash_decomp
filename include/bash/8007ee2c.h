@@ -725,4 +725,6 @@ typedef struct HeroSetupView {
 
 void func_80083708(void);
 
+void func_8008A924(s32 arg0);
+
 #endif /* BASH_8007EE2C_H */
