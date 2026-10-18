@@ -87,7 +87,538 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8007ee2c", D_800ADE20);
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8007ee2c", D_800ADE38);
 
+#ifdef NON_MATCHING
+s32 func_8007F314(void) {
+    s32 ret;
+    s32 kind;
+    s32 max;
+    s32 i;
+    s32 n;
+    s32 v;
+    s32 s;
+    s32 r;
+    s32 hi;
+    s32 on;
+    s32 fl;
+    PadButtons *p;
+    u8 *g;
+
+    ret = 1;
+    if (PSV->flags & 0x10) {
+        return 0;
+    }
+    if ((PSV->unk30 & 0x8008) && D_8004DDD0[PSV->mode * 3] != 0x102) {
+        return 0;
+    }
+    if (D_8004DDD0[PSV->mode * 3] == 0x101 || PSV->mode == 0x2B) {
+        return 1;
+    }
+    if (PSV->unk74 != 0) {
+        return 1;
+    }
+    if (PSV->unk68 != 0) {
+        if (PSV->unk14 != 0) {
+            PSV->unk14--;
+        } else {
+            func_8008F068();
+            PSV->unk68 = 0;
+            PSV->flags &= ~0x02000000;
+        }
+    }
+    kind = 7;
+    if (!(D_8005A646 & 0x100)) {
+        for (i = 0; i < 7; i++) {
+            kind = i;
+            if ((D_8005A646 & 0xFF) == D_8009AF38[i]) {
+                goto found;
+            }
+        }
+        kind = 0;
+    }
+found:
+    if (!(D_8005A624 & 0x660)) {
+        s32 bit = D_8005A624 & 1;
+        s32 toggle;
+
+        if (D_8005A624 & 0x01000000) {
+            toggle = bit ^ 1;
+        } else {
+            toggle = bit != 0;
+        }
+        if (toggle) {
+            if (D_8005A624 & 1) {
+                func_80028158();
+                func_8002AC40();
+                PlaySfx(0x193, NULL, NULL, 0x1000, 0x1E00, 0);
+            } else {
+                func_8002AC18();
+            }
+        }
+        PSV->flags &= ~0x01000000;
+    }
+    if (PSV->flags & 1) {
+        PSV->flags |= 0x01000000;
+    }
+    if (PSV->flags & 0x08000000) {
+        return 0;
+    }
+    max = 4;
+    if (PSV->unk32 & max) {
+        max = 3;
+    }
+    if (PSV->state < 0 && (PSV->state & 0x10000)) {
+        max++;
+    }
+    if (PSV->flags & 0x02007001) {
+        switch ((u32)PSV->flags & 0x023F8FEC) {
+        case 0:
+            if (PSV->flags & 0x7000) {
+                ret = 0;
+                break;
+            }
+            if (func_8007EFC0(D_8009AEF0, max) != 0) {
+            PSV->flags &= 0xFFC070D3;
+            if (PSV->unk32 & 4) {
+                switch (D_8009AEEC) {
+                case 0:
+                    PSV->flags &= 0x04000010;
+                    D_8009AEF0 = 0;
+                    D_8009AEEC = 0;
+                    func_8002AC18();
+                    break;
+                case 1:
+                    func_80083334(PSV->mode, kind, 0);
+                    PSV->flags |= 0x80;
+                    break;
+                case 2:
+                    PSV->flags |= 0x100;
+                    D_8009AEEC = 0;
+                    D_8009AEE8 = 0;
+                    break;
+                case 3:
+                    if (PSV->mode == 0x20) {
+                        PSV->flags |= 4;
+                        D_8009AEEC = 1;
+                    } else {
+                        PSV->flags |= 0x8000;
+                        D_8009AEEC = 1;
+                    }
+                    break;
+                }
+            } else {
+                switch (D_8009AEEC) {
+                case 0:
+                    D_8009AEF0 = 0;
+                    D_8009AEEC = 0;
+                    PSV->flags &= 0x04000010;
+                    func_8002AC18();
+                    break;
+                case 1:
+                    func_80083334(PSV->mode, kind, 0);
+                    PSV->flags |= 0x80;
+                    break;
+                case 2:
+                    D_8009AEEC = 0;
+                    D_8009AEE8 = 0;
+                    PSV->flags |= 0x100;
+                    break;
+                case 3:
+                    D_8009AEEC = 1;
+                    PSV->flags |= 0x8000;
+                    break;
+                case 4:
+                    D_8009AEEC = 1;
+                    PSV->flags |= 4;
+                    break;
+                }
+            }
+            PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            ret = 0;
+            break;
+        case 8:
+            if (func_8007EFC0(D_8009AEF0, max - 1) != 0) {
+            switch (D_8009AEEC) {
+            case 0:
+                D_8009AEF0 = 0;
+                D_8009AEEC = 0;
+                PSV->flags &= 0x04000010;
+                func_8002AC18();
+                break;
+            case 1:
+                D_8009AEE8 = 0;
+                D_8009AEEC = 0;
+                PSV->flags |= 0x100;
+                break;
+            case 2:
+                D_8009AEEC = 1;
+                PSV->flags |= 4;
+                break;
+            case 3:
+                D_8009AEEC = 0;
+                PSV->flags |= 0x10000;
+                break;
+            }
+            PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            ret = 0;
+            break;
+        case 0x8000:
+            if (func_8007EE2C(D_8009AEF0) != 0) {
+                switch (D_8009AEEC) {
+                case 0:
+                    hi = 0;
+                    if (PSV->unk32 & 0x10) {
+                        for (i = 0; i < 4; i++) {
+                            if (hi < D_8005A614[i + 0xCC]) {
+                                hi = D_8005A614[i + 0xCC];
+                            }
+                        }
+                        if (hi >= 2) {
+                            g = &D_8005A614[PSV->mode];
+                            if (g[0xE4] == 0) {
+                                g[0xAB]++;
+                                g = &D_8005A614[PSV->mode];
+                                if (g[0xAB] >= 4) {
+                                    g[0xAB] = 3;
+                                }
+                            }
+                        }
+                    }
+                    PSV->flags |= 0x10;
+                    PSV->unk30 |= 0x8002;
+                    break;
+                case 1:
+                    D_8009AEEC = 0;
+                    PSV->flags &= ~0x8000;
+                    break;
+                }
+            }
+            if (HPADS[D_8009AEF0].pressed & 0x1000) {
+                D_8009AEEC = 0;
+                PSV->flags &= ~0x8000;
+            }
+            ret = 0;
+            break;
+        case 4:
+        case 0xC:
+            if (func_8007EE2C(D_8009AEF0) != 0) {
+                switch (D_8009AEEC) {
+                case 0:
+                    func_8008F068();
+                    break;
+                case 1:
+                    D_8009AEEC = 0;
+                    PSV->flags &= ~4;
+                    break;
+                }
+            }
+            if (HPADS[D_8009AEF0].pressed & 0x1000) {
+                D_8009AEEC = 0;
+                PSV->flags &= ~4;
+            }
+            ret = 0;
+            break;
+        case 0x40:
+        case 0x240:
+            if (PSV->mode != 0x25) {
+                p = &HPADS[D_8009AEF0];
+                if ((p->held & 9) == 9) {
+                    ret = 0;
+                    break;
+                }
+                if (p->pressed & 0x4000) {
+                    r = func_800832BC();
+                    r ^= 1;
+                    if (r) {
+                        PlaySfx(0x191, NULL, NULL, 0x1000, 0x1E00, 0);
+                        func_80095A04(0);
+                        ret = 1;
+                        fl = PSV->flags;
+                        if (fl & 0x200) {
+                            PSV->flags = fl & ~0x40;
+                            D_8009AEEC = 0;
+                        } else {
+                            PSV->flags = fl & ~0x40 & 0x04000010;
+                            D_8009AEF0 = 0;
+                            D_8009AEEC = 0;
+                            func_8002AC18();
+                            ret = 1;
+                            D_8009AEEC = 0;
+                        }
+                        break;
+                    }
+                    PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                ret = 0;
+                if (HPADS[D_8009AEF0].pressed & 0x1000) {
+                    func_80083244();
+                }
+            }
+            break;
+        case 0x80:
+            p = &HPADS[D_8009AEF0];
+            if ((p->held & 9) == 9) {
+                ret = 0;
+                break;
+            }
+            if (p->pressed & 0x4000) {
+                r = func_800832BC();
+                r ^= 1;
+                if (r) {
+                    PlaySfx(0x191, NULL, NULL, 0x1000, 0x1E00, 0);
+                    func_80095A04(0);
+                    D_8009AF00 = 1;
+                    D_8009AEEC = 0;
+                    PSV->flags &= ~0x80;
+                } else {
+                    PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+            }
+            ret = 0;
+            if (HPADS[D_8009AEF0].pressed & 0x1000) {
+                func_80083244();
+            }
+            break;
+        case 0x02000000:
+            if (D_80051604 <= 0) {
+                PSV->unk14 = 0;
+            }
+            ret = 1;
+            func_80080FBC();
+            break;
+        case 0x100:
+        case 0x108:
+            s = D_8009AEE8;
+            switch (s) {
+            case 1:
+                {
+                    switch (D_8009AEEC) {
+                    case 0:
+                        on = OPTV->unk8 != 0;
+                        D_8009BD1C[0] = on;
+                        if (HPADS[D_8009AEF0].pressed & 0xA0) {
+                            D_8009BD1C[0] = on ^ 1;
+                            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+                            if ((u16)D_8009BD1C[0] != 0) {
+                                OPTV->unk8 = s;
+                                func_800222BC();
+                            } else {
+                                OPTV->unk8 = 0;
+                                func_800222DC();
+                            }
+                        }
+                        break;
+                    case 1:
+                        v = OPTV->unk0;
+                        if (v > 0 && (HPADS[D_8009AEF0].pressed & 0x80)) {
+                            v -= 5;
+                        }
+                        if (v < 100 && (HPADS[D_8009AEF0].pressed & 0x20)) {
+                            v += 5;
+                        }
+                        OPTV->unk0 = v;
+                        break;
+                    case 2:
+                        v = D_8005A608;
+                        if (v > 0 && (HPADS[D_8009AEF0].pressed & 0x80)) {
+                            v -= 5;
+                            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+                        }
+                        if (v < 100 && (HPADS[D_8009AEF0].pressed & 0x20)) {
+                            v += 5;
+                            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+                        }
+                        D_8005A608 = v;
+                        break;
+                    }
+                }
+                if (func_8007EFC0(D_8009AEF0, 3) != 0 || (HPADS[D_8009AEF0].pressed & 0x1000)) {
+                    D_8009AEEC = 0;
+                    D_8009AEE8 = 0;
+                    func_8002C11C();
+                    PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                ret = 0;
+                break;
+            case 2:
+                for (i = 0; i < PSV->numPlayers; i++) {
+                    if ((HPADS[i].pressed & 0x8000) && (((PadStick *)D_80051338)[i].flags & 8)) {
+                        OPTV->unkC[i] = OPTV->unkC[i] == 0;
+                        func_80028018(i, 10);
+                        PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
+                    }
+                }
+                if (func_8007EFC0(D_8009AEF0, 0) != 0 || (HPADS[D_8009AEF0].pressed & 0x1000)) {
+                    D_8009AEEC = 1;
+                    D_8009AEE8 = 0;
+                    PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                ret = 0;
+                break;
+            default:
+                if (func_8007EFC0(D_8009AEF0, 2) != 0) {
+                    if (D_8009AEEC == 2) {
+                        D_8009AEE8 = 0;
+                        PSV->flags &= ~0x100;
+                    } else {
+                        D_8009AEE8 = D_8009AEEC + 1;
+                    }
+                    if (D_8009AEEC == 0) {
+                        func_8002C0E0();
+                    }
+                    D_8009AEEC = 0;
+                    PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (HPADS[D_8009AEF0].pressed & 0x1000) {
+                    D_8009AEEC = 0;
+                    PSV->flags &= ~0x100;
+                }
+                ret = 0;
+                break;
+            }
+            break;
+        case 0x20000:
+        case 0x20008:
+            if (HPADS[D_8009AEF0].pressed & 8) {
+                D_8009AEEC = 0;
+                PSV->flags = (PSV->flags & ~0x20000) | 0x10000;
+            }
+            ret = 0;
+            break;
+        case 0x40000:
+        case 0x40008:
+            if (HPADS[D_8009AEF0].pressed & 1) {
+                PSV->unk30 = 0x8008;
+                D_8009AEF0 = 2;
+                D_8009E5DC = PSV->mode;
+                PSV->flags &= 0xFFFBFFFE;
+            }
+            if (HPADS[D_8009AEF0].pressed & 0x1008) {
+                D_8009AEEC = 2;
+                PSV->flags = (PSV->flags & ~0x40000) | 0x10000;
+            }
+            ret = 0;
+            break;
+        case 0x200:
+            if (func_8007F1A8(0, 3) == 0) {
+                ret = 1;
+                func_80080FBC();
+                break;
+            }
+            PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
+            switch (D_8009AEEC) {
+            case 1:
+                func_80083334(PSV->mode, kind, 0);
+                ret = 1;
+                func_800831C4(D_8009BD18);
+                PSV->flags |= 0x40;
+                break;
+            case 2:
+                D_8009AEF0 = 0;
+                D_8009AEEC = 0;
+                PSV->flags = (PSV->flags & ~0x200) | 0x10;
+                PSV->unk30 |= 0x8002;
+                PSV->flags &= 0x04000010;
+                func_8002AC18();
+                break;
+            case 3:
+                PSV->flags &= ~0x200;
+                func_8008F068();
+                D_8009AEF0 = 0;
+                D_8009AEEC = 0;
+                PSV->flags &= 0x04000010;
+                func_8002AC18();
+                break;
+            default:
+                ret = 1;
+                D_8009AEF0 = 0;
+                D_8009AEEC = 0;
+                PSV->flags &= 0x04000010;
+                func_8002AC18();
+                D_8009AE3C = 0;
+                break;
+            }
+            break;
+        case 0x20:
+        case 0x400:
+            if (HPADS[0].pressed & 0x10) {
+                PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+                D_8009AEEC--;
+            }
+            if (HPADS[0].pressed & 0x40) {
+                PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+                D_8009AEEC++;
+            }
+            if (D_8009AEEC < 0) {
+                D_8009AEEC = 0;
+            }
+            if (D_8009AEEC >= 2) {
+                D_8009AEEC = 1;
+            }
+            if (HPADS[0].pressed & 0x4008) {
+                PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+                ret = 1;
+                D_8009AE3C = 0;
+                D_8009AEF0 = 0;
+                PSV->flags &= ~0x21;
+            } else {
+                ret = 1;
+                func_80080FBC();
+            }
+            break;
+        default:
+            ret = 0;
+            D_8009AEF0 = 0;
+            D_8009AEEC = 0;
+            PSV->flags |= 1;
+            break;
+        }
+        /* Empty loop (a compiled-out debug macro?): its LOOP_BEG note stops
+           jump threading of the breaks until jump2, so the ret = 0 tails
+           merge into case 0's first copy as in the target. */
+        do {
+        } while (0);
+    } else {
+        if ((PSV->flags & 0x04000000) && !(PSV->unk30 & 0x1000)) {
+            goto skip;
+        }
+        n = 1;
+        D_8009AEF0 = 0;
+        D_8009AEF4 = -1;
+        if (D_8004DDD0[PSV->mode * 3] != 0x102) {
+            n = PSV->numPlayers;
+        }
+        for (i = 0; i < n; i++) {
+            if ((HPADS[i].held & 9) != 9 && (HPADS[i].pressed & 8)) {
+                if (!(Heroes[i].hero_status & 0xF800) || D_8004DDD0[PSV->mode * 3] == 0x102 || i == 0) {
+                    D_8009AEF0 = i;
+                    D_8009AEF4 = i;
+                    D_8009AEEC = 0;
+                    PSV->flags |= 1;
+                    i = 99;
+                    if (D_8004DDD0[PSV->mode * 3] == 0x102) {
+                        PSV->flags |= 9;
+                    }
+                    D_8009BD00 = 1;
+                    func_80081470(1);
+                    ret = 0;
+                }
+            }
+        }
+    }
+    if (D_8005A644 & 0x1000) {
+        func_80082D90(ret);
+    }
+skip:
+    if (ret == 0) {
+        func_80080FBC();
+    }
+    return ret;
+}
+#else
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", func_8007F314);
+#endif
 
 void func_800809A0(HudEntry *e, s32 arg1) {
     s32 n;

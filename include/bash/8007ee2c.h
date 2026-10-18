@@ -683,6 +683,26 @@ extern s32 D_8009D75C;
 extern u16 D_8009D760;
 extern u16 D_8009D6E0;
 extern u16 D_8009D524[4];
+/* D_8005A614 as seen by func_8007F314 (the pause menu). */
+typedef struct PauseView {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 state;
+    /* 0x08 */ u8 unk8[0x10 - 0x8];
+    /* 0x10 */ s32 flags;
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ u8 unk18[0x26 - 0x18];
+    /* 0x26 */ u8 numPlayers;
+    /* 0x27 */ u8 unk27[0x30 - 0x27];
+    /* 0x30 */ u16 unk30;
+    /* 0x32 */ u16 unk32;
+    /* 0x34 */ s16 mode;
+    /* 0x36 */ u8 unk36[0x68 - 0x36];
+    /* 0x68 */ s32 unk68;
+    /* 0x6C */ u8 unk6C[0x74 - 0x6C];
+    /* 0x74 */ u8 unk74;
+} PauseView;
+#define PSV ((PauseView *)D_8005A614)
+extern u16 D_8009AF38[];
 #define HUDBOX ((HudBox *)D_8009BCE0)
 #define HUDENG ((HudEngView *)D_80099290)
 extern s32 D_8009AF00;

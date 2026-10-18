@@ -15,7 +15,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
 - 1131/2551 game functions matched: **main.exe is complete (575/575)**;
-  engine overlay 7 left, none parked,
+  engine overlay 7 left, 1 parked (`func_8007F314`),
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - The engine overlay is six files and `ovl5d` three, `ovl5e`, `ovl66`,
@@ -149,6 +149,34 @@ misses with big-mode checkpoints: `func_8007BFA8` (instructions 5/114),
   source). Parks are `decomp.py status` / the dashboard. Before reaching for a
   barrier or pin, try `do { } while (0)` (Diff patterns): it matched
   `func_800926CC` and `func_8008A924` without one.
+- **`func_8007F314` (engine pause menu, 5772 B), parked 2026-10-18 at
+  structure 1147/1443** (swarm checkpoint was 1263; C under
+  `#ifdef NON_MATCHING`, the `block` note lists what's left). Most of the
+  diff comes from jump2's cross-jumping of the ~20 `ret = 0; break;` tails:
+  the target keeps the copy in case 0 (`.L8007F704`) and every other tail
+  jumps there. What I found, from `jump.c` (`find_cross_jump`) and dumps
+  (`-dg -dJ`):
+  - jump2 walks the code forward. The jump it is looking at gives up its
+    tail to a matching copy, and the search starts with the jump most
+    recently added to the target label's chain.
+  - A tail can give itself up when `s3 = 0` follows a label or a branch
+    around it. A tail that follows a call never can, so it is kept and
+    collects the later ones.
+  - Jumps to a label made during jump2 itself are never cross-jumped with
+    each other (`INSN_UID < max_uid`).
+  - An empty `do {} while (0)` after the switch stops the `break`s being
+    threaded before reload (its LOOP_BEG note), so the first copy is the
+    one kept. That gives the target's merge pattern.
+  - Still to find: the C that puts an *existing* label on case 0's
+    `ret = 0` block. Then case 0's `PlaySfx(0x192)` tail could merge into
+    case 8's, and that block's `j` would get its delay slot from the target
+    (the target keeps `s3 = 0` outside it).
+  - Also verified here: a constant set in the same basic block as its use
+    stays in a register (reload_cse makes `and v0,a1` / `sllv ...,s5`), so
+    move `max = 4` / `n = 1` past the label in front of them.
+  - Tools: `scratch/f314/` (ignored) has `rtl.js` (compact RTL from a cc1
+    dump), `copies.js` (lists the `s3 = 0; j` tails before and after
+    jump2) and the listing scripts.
 - **Tooling ideas not done** (from the 2026-10-16 plan):
   - Pilots, no code: model tiers (`--model haiku --escalate-model sonnet
     --big-workers 0` on ~40 functions under 128 B, check the first matches'
@@ -383,6 +411,10 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-18 (hand):** `func_8007F314` (5772 B) taken from the swarm's
+  1263/1443 to 1147/1443 and parked (Open leads). How jump2 merges the
+  shared `ret = 0` tails is now worked out; still missing is the C that
+  gives case 0's copy an existing label.
 - **2026-10-18 (hand):** `func_800926CC` matched (01be8b2): `j = 1` inside
   `do { } while (0)` beats sched1's birthing priority and wins `j` a0. No
   parks left in the engine; 7 functions to go.

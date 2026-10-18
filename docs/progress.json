@@ -1,8 +1,15 @@
 {
- "blocked": [],
- "commit": "36717cb",
+ "blocked": [
+  {
+   "name": "func_8007F314",
+   "note": "structure 1147/1443 (length 1443 vs 1431), from the swarm's 1263. Best C under #ifdef NON_MATCHING. Fixed: return 1 (not ret) for 0x101/0x2B; max = 4 and n = 1 set after the early returns/goto so reload_cse turns andi 4 / sll 1 into and a1 / sllv s5; case 0 unk32&4 case 3 stores D_8009AEEC = 1 in both arms (a1/a2 reuse); case 0 and case 8 as if (func) {...PlaySfx} ret = 0; break; empty do-while(0) after the switch delays break threading to jump2 so all ret = 0 tails merge into case 0's first copy (target L704). Still differs: L704's j delay (target keeps s3=0 outside, needs a label at the j, i.e. L704 must be an old label so jumps to it can be cross-jumped: case 0's PlaySfx(0x192) tail should merge into case 8's); 0x40/0x80 0x1000 tails must not merge; HPADS base lui scheduled before the index lui in target (p = &HPADS[..] order); kind loop i wants a1. Next: find natural C giving an old label at case 0's ret = 0 block, then 0x40/0x80, 0x100, 0x200, 0x20.",
+   "seg": "overlays/engine/8007ee2c",
+   "size": 5772
+  }
+ ],
+ "commit": "d066798",
  "game": "SCUS_945.70",
- "generated": "2026-10-18T05:57:55Z",
+ "generated": "2026-10-18T07:01:09Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -64271,7 +64278,7 @@
    }
   },
   {
-   "commit": "36717cb",
+   "commit": "d066798",
    "data_b": 2080,
    "data_tb": 606943,
    "game_all_f": 2551,
@@ -64284,7 +64291,7 @@
    "lib_b": 122112,
    "lib_f": 564,
    "lib_tb": 122112,
-   "ts": "2026-10-18T05:57:55Z",
+   "ts": "2026-10-18T07:01:09Z",
    "units": {
     "engine": [
      118316,
@@ -64480,7 +64487,7 @@
   }
  ],
  "summary": {
-  "blocked": 0,
+  "blocked": 1,
   "copies_b": 36276,
   "data": {
    "done_b": 2080,
@@ -64491,7 +64498,7 @@
    "all_f": 2551,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 0,
+   "blocked": 1,
    "c_f": 1131,
    "done_b": 252756,
    "done_f": 1131,
@@ -64522,7 +64529,7 @@
     "all_f": 357,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 0,
+    "blocked": 1,
     "c_f": 350,
     "done_b": 118316,
     "done_f": 350,
