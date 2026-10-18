@@ -33,6 +33,14 @@ typedef struct Ovl67Pad {
     /* 0x54 */ u8 pad54[0x58 - 0x54];
 } Ovl67Pad;
 
+/* PadState as func_800B5064 reads it: flags at 0x4C and 0x54. */
+typedef struct Ovl67PadFlags {
+    /* 0x00 */ u8 pad0[0x4C];
+    /* 0x4C */ s32 unk4C;
+    /* 0x50 */ s32 unk50;
+    /* 0x54 */ s32 unk54;
+} Ovl67PadFlags;
+
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
 #include "bash/ovl67_800bbdb8.h"
 
@@ -238,6 +246,8 @@ typedef struct Ovl67Pos {
 s32 func_800B3C04(Ovl67Obj *arg0);
 
 void func_800B4FA4(s32 arg0);
+
+void func_800B5064(s32 arg0);
 
 void func_800B5774(s32 arg0);
 

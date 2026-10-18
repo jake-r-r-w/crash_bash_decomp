@@ -251,7 +251,34 @@ void func_800B4FA4(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B5064);
+void func_800B5064(s32 arg0) {
+    s32 r;
+    u16 st;
+    Ovl67PadFlags *pad;
+
+    st = Heroes[arg0].hero_status;
+    if (st & 0x200) {
+        SetHeroAction((HeroInfo *)arg0, 0x2C);
+        r = 1;
+    } else if (st & 0x2000) {
+        SetHeroAction((HeroInfo *)arg0, 0x2D);
+        r = 1;
+    } else {
+        r = 0;
+    }
+    if (r == 0) {
+        Ovl67PadFlags *base = (Ovl67PadFlags *)D_80051338;
+        pad = &base[arg0];
+        if (pad->unk54 & 0x8000) {
+            if (Heroes[arg0].hero_attack_timer != 0) {
+                pad->unk4C &= ~0x8000;
+            } else {
+                SetHeroAction((HeroInfo *)arg0, 0x2B);
+            }
+        }
+        func_8008502C(arg0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B5168);
 
