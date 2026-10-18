@@ -8527,7 +8527,8 @@
   "copy_failed_stage": "in-file"
  },
  "ovl67:800B817C": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-18T16:39:55Z",
+  "status": "matched"
  },
  "ovl67:800B83EC": {
   "auto_failed": "types"

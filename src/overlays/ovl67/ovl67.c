@@ -281,7 +281,82 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B7C58);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B8058);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B817C);
+s32 func_800B817C(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
+    Ovl67Pos buf;
+    s32 a;
+    Ovl67Node *t;
+    Ovl67Node *n;
+    Ovl67Node *best;
+    HeroInfo *h;
+    HeroInfo *h2;
+    s32 dx;
+    s32 dz;
+    s32 d;
+    s32 r;
+
+    arg2 *= arg2;
+    if (Heroes[arg0].hero_attack_timer != 0) {
+        goto ret0;
+    }
+    best = NULL;
+    n = D_8005AA38;
+    if (n != NULL) {
+        h = &Heroes[arg0];
+    loop:
+        do {
+            t = n->target;
+            if (t != NULL) {
+                dx = h->hero_eng->unk10.x - t->x;
+                dz = h->hero_eng->unk10.z - t->z;
+                if (dx * dx + dz * dz < arg2 && n->unk58 != NULL && n->unk58->unk14 != 2) {
+                    a = get_angle(dx, dz);
+                    d = func_800154A0(a, h->hero_move->forward_angle);
+                    if (arg1 == -1) {
+                        if ((s16)arg3 < d && d < (s16)arg4) {
+                            best = n;
+                        }
+                    } else if (FindExtension((NAS *)n, 0x800) != NULL) {
+                        r = func_800B7C58(arg1, (Ovl67Pos *)&t->x, &buf, (u16)a);
+                        best = n;
+                        if (r != 0) {
+                            goto found;
+                        }
+                    }
+                }
+            }
+        } while (0);
+        do {
+            n = n->next;
+        } while (0);
+        if (n != NULL) {
+            goto loop;
+        }
+    }
+    if (best == NULL) {
+        return 0;
+    }
+    if (arg5 == 0) {
+        goto ret0;
+    }
+    if (D_8005A680[0] != 0) {
+        HeroInfo *base = Heroes;
+
+        h2 = &base[arg0];
+        arg1 = h2->hero_teammate;
+        t = best->target;
+        a = get_angle(h2->hero_eng->unk10.x - t->x, h2->hero_eng->unk10.z - t->z);
+        if (FindExtension((NAS *)best, 0x800) == NULL) {
+            goto ret0;
+        }
+        if ((func_800B7C58(arg1, (Ovl67Pos *)&t->x, &buf, (u16)a) ^ 1) == 0) {
+            goto ret0;
+        }
+    }
+found:
+    return 1;
+ret0:
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B83EC);
 

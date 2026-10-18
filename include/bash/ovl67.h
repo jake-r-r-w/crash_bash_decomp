@@ -157,5 +157,30 @@ void func_800C349C(void);
 s32 func_800BB8EC(s32 arg0);
 
 void func_800BBD68(void);
+/* A ball in the D_8005AA38 list (func_800B817C), as in ovl61's Ovl61Node. */
+typedef struct Ovl67Node {
+    u8 pad0[0x10];
+    s32 x;
+    u8 pad14[4];
+    s32 z;
+    u8 pad1C[4];
+    struct Ovl67Node *next;
+    u8 pad24[0x30];
+    struct Ovl67Node *target;
+    struct {
+        u8 pad0[0x14];
+        u16 unk14;
+    } *unk58;
+} Ovl67Node;
+
+typedef struct Ovl67Pos {
+    s32 x;
+    s32 y;
+    s32 z;
+} Ovl67Pos;
+
+s32 func_800B7C58(s32 arg0, Ovl67Pos *from, Ovl67Pos *to, s32 angle);
+
+s32 func_800B817C(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5);
 
 #endif /* BASH_OVL67_H */
