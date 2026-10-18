@@ -93,6 +93,35 @@ typedef struct LaserShoot {
     /* 0x58 */ u8 pad58[8];
     /* 0x60 */ s32 unk60;
 } LaserShoot;
+typedef struct LaserPos {
+    s32 x;
+    s32 y;
+    s32 z;
+} LaserPos;
+
+typedef struct LaserTgt {
+    /* 0x00 */ u8 pad00[0x10];
+    /* 0x10 */ LaserPos pos;
+} LaserTgt;
+
+typedef struct LaserNode {
+    /* 0x00 */ u8 pad00[0x20];
+    /* 0x20 */ struct LaserNode *next;
+    /* 0x24 */ u8 pad24[0x30];
+    /* 0x54 */ LaserTgt *tgt;
+} LaserNode;
+
+typedef struct LaserExt {
+    /* 0x00 */ u8 pad00[0xC];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ u8 pad10[8];
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ u8 pad1C[4];
+    /* 0x20 */ s32 unk20;
+    /* 0x24 */ u8 pad24[4];
+    /* 0x28 */ s32 unk28;
+} LaserExt;
+
 extern u8 *D_800C449C;
 extern s32 D_800C4478;
 extern void (*D_8009F8B4)(void);
@@ -234,6 +263,8 @@ extern char D_800B336C[];
 void func_800BD584(AngObj *o);
 
 void InitNitroMissile(MissileHolder *arg0);
+
+s32 func_800C323C(LaserPos p, s32 r);
 
 s32 func_800C3544(s32 *arg0, s32 *arg1);
 

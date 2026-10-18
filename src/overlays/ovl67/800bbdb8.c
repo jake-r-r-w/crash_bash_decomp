@@ -379,7 +379,49 @@ void func_800C318C(s32 arg0) {
 void func_800C3234(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C323C);
+s32 func_800C323C(LaserPos p, s32 r) {
+    LaserNode *n;
+    LaserTgt *t;
+    LaserExt *ext;
+    NAS *nas;
+    s32 dx, dy, dz;
+
+    LaserPos *tp;
+    s32 mode;
+
+    n = (LaserNode *)D_800C449C;
+loop:
+    if (n != NULL) {
+        t = n->tgt;
+        if (t != NULL) {
+            dx = t->pos.x - p.x;
+            dy = t->pos.y - p.y;
+            dz = t->pos.z - p.z;
+            if (dx * dx + dy * dy + dz * dz < r) {
+                tp = &t->pos;
+                nas = SpawnNASById(t->pos.x, tp->y, tp->z, 0x1605, 0x11);
+                mode = 3;
+                do {
+                    if (nas != NULL) {
+                        ext = FindExtension(nas, 0x10000000);
+                        if (ext != NULL) {
+                            ext->unk18 = 0x100;
+                            ext->unkC = mode;
+                            ext->unk20 = 1;
+                            ext->unk28 = 0;
+                            nas->InitDelete(nas);
+                        }
+                    }
+                } while (0);
+                KillNAS((NAS *)n);
+                return 1;
+            }
+        }
+        n = n->next;
+        goto loop;
+    }
+    return 0;
+}
 
 void func_800C3370(void) {
     s32 temp_v0;
