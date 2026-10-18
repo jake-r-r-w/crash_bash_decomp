@@ -8,6 +8,7 @@
 #include "common.h"
 #include "bash/nas.h"
 #include "bash/engine.h"
+#include "bash/8007ee2c.h"
 
 extern HeroInfo Heroes[4];
 extern char D_80054504[];
@@ -367,5 +368,30 @@ void func_800BD43C(u32 arg0);
 s32 func_800BFA24(Ovl61Vel *arg0, s32 arg1);
 
 s32 func_800C0804(s32 arg0, s16 arg1, s32 arg2, s16 arg3);
+
+/* func_800B7C60: a player's edge segment (x0,z0)-(x1,z1) and aim spread. */
+typedef struct Ovl61Pos {
+    s32 x;
+    s32 y;
+    s32 z;
+} Ovl61Pos;
+typedef struct Ovl61Edge {
+    s16 x0;
+    s16 pad2;
+    s16 z0;
+    s16 pad6;
+    s16 x1;
+    s16 padA;
+    s16 z1;
+    s16 padE;
+} Ovl61Edge;
+extern Ovl61Edge D_800C1900[4];
+extern u16 D_800C1980[];
+extern s16 D_800C1F00;
+
+s32 func_800B7C60(s32 arg0, Ovl61Pos *from, Ovl61Pos *to, s32 angle);
+
+s32 func_800B808C(s32 arg0, Ovl61Pos *from, Ovl61Pos *to, s32 angle);
+extern Ovl61Edge D_800C1940[4];
 
 #endif /* BASH_OVL61_H */
