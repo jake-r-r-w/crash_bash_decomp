@@ -73,6 +73,16 @@ extern char D_80054574[];
 extern ScriptInit D_800C14A8;
 extern EXTengine *D_800C1B28;
 extern Ovl61Gin *D_800C1B2C;
+typedef struct Ovl61Node {
+    u8 pad0[0x10];
+    s32 x;
+    u8 pad14[4];
+    s32 z;
+    u8 pad1C[4];
+    struct Ovl61Node *next;
+    u8 pad24[0x30];
+    struct Ovl61Node *target;
+} Ovl61Node;
 
 extern Ovl61Circle *D_800C1A7C;
 extern Ovl61Circle D_800C1A44[];
@@ -152,6 +162,8 @@ extern _sfx_handler *D_800C1BC4;
 void func_800B6AE0(s32 arg0);
 
 void func_800B7450(s32 arg0);
+
+s32 func_800B8964(s32 arg0);
 
 void func_800BD43C(u32 arg0);
 

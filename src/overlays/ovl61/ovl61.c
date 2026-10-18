@@ -268,7 +268,40 @@ s32 func_800B84B8(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B85DC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B8964);
+s32 func_800B8964(s32 arg0) {
+    Ovl61Node *n;
+    Ovl61Node *t;
+    Ovl61Node *e;
+    HeroInfo *h;
+    s32 dx;
+    s32 dz;
+    s32 lim;
+    HeroInfo *base;
+
+    if (D_8005A648 == 0xF) {
+        lim = 0x64000;
+        n = D_8005AA38;
+        if (n != NULL) {
+            base = Heroes;
+            h = &base[arg0];
+            do {
+                t = n->target;
+                if (t != NULL) {
+                    e = (Ovl61Node *)h->hero_eng;
+                    dx = e->x - t->x;
+                    dz = e->z - t->z;
+                    if (dx * dx + dz * dz < lim) {
+                        if (func_80015480(get_angle(dx, dz), h->hero_move->forward_angle) < 0x2AA) {
+                            return 1;
+                        }
+                    }
+                }
+                n = n->next;
+            } while (n != NULL);
+        }
+    }
+    return 0;
+}
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl61/ovl61", D_800B3300);
 
