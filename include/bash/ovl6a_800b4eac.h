@@ -139,9 +139,13 @@ typedef struct Ovl6aGameView {
     /* 0x051 */ u8 unk51;
     /* 0x052 */ u8 unk52;
     /* 0x053 */ u8 unk53;
-    /* 0x054 */ u8 pad54[0x63 - 0x54];
+    /* 0x054 */ u8 pad54[0x62 - 0x54];
+    /* 0x062 */ u8 unk62;
     /* 0x063 */ s8 unk63;
-    /* 0x064 */ u8 pad64[0xE0 - 0x64];
+    /* 0x064 */ s32 unk64;
+    /* 0x068 */ u8 pad68[0x75 - 0x68];
+    /* 0x075 */ u8 unk75;
+    /* 0x076 */ u8 pad76[0xE0 - 0x76];
     /* 0x0E0 */ s32 unkE0;
     /* 0x0E4 */ u8 unkE4[0x21];
     /* 0x105 */ u8 unk105[0x21];
@@ -278,6 +282,33 @@ typedef struct Ovl6aSpawnEnt {
 extern NAS *D_800BD584[];
 extern u16 D_800BD1F0[];
 extern s32 D_800BD200[];
+
+#define G6A ((Ovl6aGameView *)D_8005A614)
+
+/* D_8009EE9C as seen by func_800B4EAC. */
+typedef struct {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ u32 unk8;
+    /* 0x0C */ u32 unkC;
+    /* 0x10 */ u32 unk10;
+} Ovl6aCamState;
+#define CAM6A ((Ovl6aCamState *)&D_8009EE9C)
+
+/* D_800BCCF4 entries (0x28 bytes) as seen by func_800B4EAC. */
+typedef struct {
+    /* 0x00 */ u8 pad0[8];
+    /* 0x08 */ u32 unk8;
+    /* 0x0C */ u32 unkC;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ u8 pad14[0x14];
+} Ovl6aCamEntry;
+#define CAMTBL6A ((Ovl6aCamEntry *)D_800BCCF4)
+
+extern s32 D_8009F71C;
+extern s32 D_800BCEEC;
+extern u16 D_800BCBDC[];
+extern u8 D_800BCC04[];
 
 void func_800B7874(void);
 

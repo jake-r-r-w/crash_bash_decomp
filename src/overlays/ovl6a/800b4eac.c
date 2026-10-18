@@ -7,7 +7,65 @@
 #include "bash/n2o.h"
 #include "bash/titles.h"
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B4EAC);
+void func_800B4EAC(void) {
+    HeroInfo *hero;
+    EXTengine *eng;
+    u16 size;
+
+    D_800BCEF0 = 0;
+    D_8009F71C = 0;
+    D_800BCEF4 = 0;
+    hero = Heroes;
+    D_8005A5D8 = 0;
+    eng = hero->hero_eng;
+    G6A->unk32 |= 0x200;
+    eng->flags |= 0x8000;
+    D_8009D6E8.unk44 = func_800B821C;
+    D_8009D6E8.unk48 = func_800B8224;
+    D_8009D6E8.unk3C = func_800B8174;
+    D_8009D6E8.unk30 = func_800B8148;
+    func_800B8474(0);
+    if (G6A->unk34 == 0x22) {
+        func_800B6E20();
+    }
+    SetHeroAction(NULL, 0);
+    size = D_800BCBDC[hero->hero_name];
+    eng->unk2C.z = size;
+    eng->unk2C.y = size;
+    eng->unk2C.x = size;
+    G6A->unk62 = func_8009020C(G6A->unk34);
+    func_800B5158();
+    func_80095258(*(u8 **)D_80058AD0);
+    func_800B7A78();
+    D_800BF260 = 0;
+    if (G6A->unk34 == 0x25 && G6A->unk75 == 0) {
+        CAM6A->unk4 = 0xEBC;
+        G6A->unk63 = -1;
+        CAM6A->unk8 = (CAM6A->unkC + CAM6A->unk10) >> 1;
+    } else if (G6A->unk64 != 0) {
+        G6A->unk64 = 0;
+        CAM6A->unk4 = CAMTBL6A[G6A->unk63].unk10;
+        CAM6A->unk8 = (CAMTBL6A[G6A->unk63].unkC + CAMTBL6A[G6A->unk63].unk8) >> 1;
+    } else {
+        switch (((s32(*)(void))func_800B7B38)()) {
+        case 5:
+            G6A->unk63 = -1;
+            CAM6A->unk8 = (CAM6A->unkC + CAM6A->unk10) >> 1;
+            CAM6A->unk4 = CAMTBL6A[0].unk10;
+            break;
+        case 2:
+            CAM6A->unk8 = (CAMTBL6A[G6A->unk63].unkC + CAMTBL6A[G6A->unk63].unk8) >> 1;
+            break;
+        default:
+            G6A->unk63 = -1;
+            CAM6A->unk8 = (CAM6A->unkC + CAM6A->unk10) >> 1;
+            break;
+        }
+    }
+    func_800B8284();
+    D_800BCEEC = 0;
+    func_8001E934(&D_8009F8A4, (s32)D_800BCC04);
+}
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl6a/800b4eac", D_800B330C);
 
