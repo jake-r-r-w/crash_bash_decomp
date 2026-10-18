@@ -181,7 +181,30 @@ extern s32 D_800C4504;
 extern s32 D_800C4508;
 extern ScriptInit D_800C44F0;
 
-void func_800BC6B8(void);
+/* Path follower of func_800C0C28: a key table and a position along it. */
+typedef struct BossPath {
+    /* 0x00 */ u8 pad00[0x10];
+    /* 0x10 */ KeyBlock *keys;
+    /* 0x14 */ s32 pos;
+} BossPath;
+
+typedef struct BossObj {
+    /* 0x00 */ u8 pad00[0x54];
+    /* 0x54 */ EXTengine *eng;
+} BossObj;
+
+/* D_8005A614 as seen by func_800C0C28. */
+typedef struct BossGameView {
+    /* 0x00 */ u8 pad00[0x10];
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ u8 pad14[0x6C - 0x14];
+    /* 0x6C */ s32 unk6C;
+} BossGameView;
+
+extern EXTengine *D_8009D530;
+extern s32 D_800C4478;
+
+void func_800C0C28(BossPath *arg0, BossObj *arg1);void func_800BC6B8(void);
 
 void InitMineSFX(MineSFX *arg0);
 
@@ -294,6 +317,8 @@ extern s32 D_800C4530;
 void func_800BE8C0(s32 arg0);
 
 void func_800BF7C8(s32 arg0);
+
+void func_800C0C28(BossPath *arg0, BossObj *obj);
 
 void InitNitroBoss(NAS *nas);
 

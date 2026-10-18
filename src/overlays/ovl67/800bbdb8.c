@@ -202,7 +202,64 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", PlotNitroMine);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", PlotNitroMissile);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C0C28);
+void func_800C0C28(BossPath *arg0, BossObj *obj) {
+    BossObj *arg1 = obj;
+    BossGameView *g = (BossGameView *)D_8005A614;
+    s32 d;
+    EXTengine *target;
+    EXTengine *e;
+    s32 tz;
+    s32 dist;
+    s32 ang[3];
+    SLONG_XYZ pt;
+    s32 *p;
+    s32 *q;
+    s32 dx;
+    s32 dy;
+    s32 dz;
+    s32 *out;
+
+    if (g->unk10 != 0) {
+        return;
+    }
+    do {
+        if (g->unk6C == 0) {
+            target = D_8009D530;
+        } else if (!(Heroes[0].hero_status & 0x2000)) {
+            target = Heroes[0].hero_eng;
+        } else {
+            target = Heroes[1].hero_eng;
+        }
+        e = arg1->eng;
+        do {
+            tz = target->unk10.z;
+        } while (0);
+        d = abs(tz - e->unk10.z);
+    } while (0);
+    if ((Heroes[0].hero_status & 0x2000) && (Heroes[1].hero_status & 0x2000)) {
+        arg0->pos += D_800C4478;
+    } else if (d < 0x2000) {
+        arg0->pos += 0x400;
+    }
+    func_8001E21C(arg0->keys, arg0->pos, &pt);
+    arg1->eng->unk10.x += (pt.x - arg1->eng->unk10.x) >> 4;
+    arg1->eng->unk10.z += (pt.z - arg1->eng->unk10.z) >> 4;
+    arg1->eng->unk10.y += (pt.y - arg1->eng->unk10.y) >> 4;
+    p = (s32 *)func_8001E41C(arg0->keys, arg0->pos);
+    out = ang;
+    if (p[5] & 0x2000) {
+        p -= 7;
+    }
+    dx = p[0] - p[7];
+    q = p + 7;
+    dz = p[2] - q[2];
+    dy = p[1] - q[1];
+    dist = csqrt(dx * dx + dz * dz) >> 6;
+    out[1] = get_angle(dx, dz);
+    ang[0] = -get_angle(dy, dist);
+    arg1->eng->unk1E += ((ang[1] - arg1->eng->unk1E) << 20) >> 23;
+    arg1->eng->unk1C += ((ang[0] - arg1->eng->unk1C) << 20) >> 23;
+}
 
 void InitNitroBoss(NAS *nas) {
     BossExt *ext = AddExtension(nas, 0x3C, 0x10000000);
