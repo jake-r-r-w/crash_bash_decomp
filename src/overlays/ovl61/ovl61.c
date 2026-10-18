@@ -1415,7 +1415,129 @@ void func_800BD43C(u32 arg0) {
     PlaySfx(D_800C139C[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BD510);
+void func_800BD510(void) {
+    Ovl61Wall *base;
+    Ovl61Wall *w;
+    Ovl61WallObj *o;
+    s32 t;
+    s32 lim;
+    Ovl61WallObj *ob;
+    s32 two;
+    s32 three;
+    s32 neg;
+    s32 s;
+    s32 phase;
+
+    two = 2;
+    three = 3;
+    neg = -1;
+    base = D_800C1E78;
+    ob = D_800C1DD8;
+    w = base;
+    phase = (D_8004E0D8 >> 1) & 7;
+    o = ob;
+loop:
+    {
+        if (w->f1A != 0) {
+            w->f1A = w->f1A - 1;
+        }
+        s = w->f18;
+        if (s == two) {
+            goto c2;
+        }
+        if (s < 3) {
+            if (s == 1) {
+                goto c1;
+            }
+            goto end;
+        }
+        if (s == three) {
+            goto c3;
+        }
+        goto end;
+        {
+        c1:
+            if (o->sub != NULL) {
+                o->sub->unk74 = o->unkE + phase;
+            }
+            if (w->f1A == 0) {
+                do { do { w->f18 = two; } while (0); } while (0);
+            }
+            if (w->f14 == neg) {
+                if (w->pad0 < -0x1500) {
+                    w->f14 = 0;
+                    w->fC = 0x60;
+                    w->f10 = 0;
+                }
+            } else {
+                if (w->f4 > 0) {
+                    w->fC = 0x10;
+                }
+                if (w->pad0 >= -0x12FF) {
+                    do { w->f14 = neg; } while (0);
+                    w->fC = 0;
+                    w->f10 = 0x40;
+                }
+            }
+            goto end;
+        c2:
+            w->f8 = 0x300;
+            w->f14 = 0;
+            w->fC = 4;
+            w->f10 = 0;
+            do { do { w->f18 = three; } while (0); } while (0);
+            if (o->sub != NULL) {
+                o->sub->unk74 = o->unkA;
+            }
+            goto end;
+        c3:
+            if (w->f14 == 0) {
+                w->fC += 2;
+                if (w->pad0 > 0) {
+                    w->f10 = w->fC;
+                    w->fC = 0;
+                    w->f14 = neg;
+                    w->f8 = w->f8 >> 1;
+                }
+            } else {
+                w->f10 += 2;
+                if (w->pad0 < 0) {
+                    if (w->f8 > 0x40) {
+                        w->fC = w->f10;
+                        w->f10 = 0;
+                        w->f14 = 0;
+                        w->f8 = w->f8 >> 1;
+                    } else {
+                        w->pad0 = 0;
+                        w->f4 = 0;
+                        w->fC = 0;
+                        w->f10 = 0;
+                        w->f18 = 0;
+                    }
+                }
+            }
+        }
+    end:
+        w->f4 += w->fC;
+        w->f4 -= w->f10;
+        lim = w->f8;
+        if (lim < w->f4) {
+            w->f4 = lim;
+        }
+        t = -w->f8;
+        if (w->f4 < t) {
+            w->f4 = t;
+        }
+        w->pad0 += w->f4;
+        w++;
+        o++;
+    }
+    do {
+        if ((s32)w < (s32)(base + 4)) {
+            goto loop;
+        }
+    } while (0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BD770);
 

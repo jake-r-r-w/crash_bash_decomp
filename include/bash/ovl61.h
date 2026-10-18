@@ -203,11 +203,27 @@ typedef struct {
     s32 fC;
     s32 f10;
     s32 f14;
-    s16 f18;
-    s16 f1A;
+    u16 f18;
+    u16 f1A;
 } Ovl61Wall;
 
 extern Ovl61Wall D_800C1E78[];
+
+typedef struct {
+    u8 pad0[0x74];
+    u16 unk74;
+} Ovl61WallSub;
+
+typedef struct {
+    Ovl61WallSub *sub;
+    u8 pad4[0xA - 0x4];
+    u16 unkA;
+    u8 padC[0xE - 0xC];
+    u16 unkE;
+    u8 pad10[0x14 - 0x10];
+} Ovl61WallObj;
+
+extern Ovl61WallObj D_800C1DD8[];
 extern u16 D_800C139C[];
 extern _sfx_handler *D_800C1BC4;
 

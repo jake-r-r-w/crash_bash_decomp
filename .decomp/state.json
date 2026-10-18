@@ -6383,7 +6383,8 @@
  },
  "ovl61:800BD510": {
   "auto_diff": 128,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-18T12:58:15Z",
+  "status": "matched"
  },
  "ovl61:800BD770": {
   "auto_failed": "types"
