@@ -50,7 +50,10 @@ segments:
     start: 0x0
     vram: 0x800B32B4
     subsegments:
-      - [0x0, .rodata, overlays/ovl67/ovl67]
+      # the id word is its own unit: every slot overlay's first-file jump tables are 8-aligned
+      # but the id sits at 0x800B32B4 (4 mod 8), so it can't share their object (ARCHITECTURE.md)
+      - [0x0, rodata, overlays/ovl67/ovl67_id]
+      - [0x4, .rodata, overlays/ovl67/ovl67]
       - [0xB8, .rodata, overlays/ovl67/800bbdb8]
       - [0x1F0, c, overlays/ovl67/ovl67]
       # later files: starts proven by switch-table parity (ARCHITECTURE.md, Files inside the slot overlays)

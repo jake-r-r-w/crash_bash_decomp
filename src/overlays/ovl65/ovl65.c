@@ -21,7 +21,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B3D90);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B3FDC);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/ovl65/ovl65", D_800B32B4);
+INCLUDE_RODATA("asm/nonmatchings/overlays/ovl65/ovl65", D_800B32B8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B4268);
 

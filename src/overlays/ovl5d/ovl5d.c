@@ -5,7 +5,7 @@
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B3A38);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/ovl5d/ovl5d", D_800B32B4);
+INCLUDE_RODATA("asm/nonmatchings/overlays/ovl5d/ovl5d", D_800B32B8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B3DD8);
 

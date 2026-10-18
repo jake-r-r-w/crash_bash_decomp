@@ -70,7 +70,7 @@ void func_800B39C8(void) {
     }
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/ovl69/ovl69", D_800B32B4);
+INCLUDE_RODATA("asm/nonmatchings/overlays/ovl69/ovl69", D_800B32B8);
 
 void func_800B3A9C(void) {
     static const struct {

@@ -20,7 +20,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B4144);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B4970);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/ovl64/ovl64", D_800B32B4);
+INCLUDE_RODATA("asm/nonmatchings/overlays/ovl64/ovl64", D_800B32B8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B4BA4);
 

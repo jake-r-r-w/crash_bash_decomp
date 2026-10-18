@@ -1443,7 +1443,7 @@ void func_800B66D0(s32 arg0) {
     }
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/ovl61/ovl61", D_800B32B4);
+INCLUDE_RODATA("asm/nonmatchings/overlays/ovl61/ovl61", D_800B32B8);
 
 void func_800B68C8(s32 arg0) {
     s32 id;

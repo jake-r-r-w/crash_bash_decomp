@@ -9,7 +9,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B347C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B34F8);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/ovl66/ovl66", D_800B32B4);
+INCLUDE_RODATA("asm/nonmatchings/overlays/ovl66/ovl66", D_800B32B8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", PlotBonkStool);
 

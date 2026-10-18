@@ -982,7 +982,7 @@ void InitN2OBall(NAS *nas) {
     }
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/ovl67/ovl67", D_800B32B4);
+INCLUDE_RODATA("asm/nonmatchings/overlays/ovl67/ovl67", D_800B32B8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", PlotN2OBall);
 
