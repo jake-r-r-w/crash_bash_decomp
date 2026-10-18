@@ -5470,7 +5470,175 @@ void InitScriptFX(NAS *nas)
 
 }
 
+#ifdef NON_MATCHING
+void PlotScriptFX(NAS *nas) {
+    volatile s32 t0 = 0;
+    volatile s32 t1 = 0;
+    EXTscriptdata *sd;
+    subengine *sub;
+    threaddata *t;
+    threaddata *u;
+    ScriptKey *kf;
+    ScriptKey *cur;
+    ScriptKey *next;
+    ScriptKey *p;
+    u8 *r;
+    s32 i;
+    s32 j;
+    s32 k;
+    s32 state;
+    s32 f;
+    s32 d;
+    s32 start;
+    s32 nf;
+    s32 alpha;
+    u32 fl;
+
+    t0 = VSync(1);
+    if (((EngineGameView *)D_8005A614)->mode == 0x2C && D_8009E194 != 0) {
+        return;
+    }
+    sd = (EXTscriptdata *)nas->FUX;
+    i = 0;
+    if (sd != NULL) {
+        sub = nas->Engine->sub;
+        sd->timer += sd->speed;
+        while (1) {
+            if (i >= sd->threadcount) {
+                break;
+            }
+            t = &sd->threads[i];
+            switch (t->threadtype) {
+            case 1:
+                state = 0;
+                if (sd->timer >= sd->totalframes << 8) {
+                    state = 1;
+                }
+                sub = (subengine *)func_8008ADA4((u8 *)sd, (u8 *)sub, (u8 *)t, &state);
+                if (nas->trigger == NULL && state == 2) {
+                    j = 0;
+                    while (1) {
+                        if (j >= sd->threadcount) {
+                            break;
+                        }
+                        u = &sd->threads[j];
+                        if (u->threadinfo != NULL) {
+                            func_800110A8(u->threadinfo, &D_8004E0F0);
+                        }
+                        if (u->threadcontrol != NULL) {
+                            func_800110A8(u->threadcontrol, &D_8004E0F0);
+                        }
+                        j++;
+                    }
+                    func_800270B0(nas);
+                    return;
+                }
+                break;
+            case 0:
+                r = func_80021DD4((u8 *)sd->dbase, t->scriptnumber, t->threadnumber);
+                kf = NULL;
+                if (r != NULL) {
+                    kf = (ScriptKey *)(r + 0x24);
+                }
+                if (kf != NULL) {
+                    t->fdata = kf;
+                    p = &kf[t->keyindex];
+                    start = p->frame;
+                    cur = p;
+                    p++;
+                    next = p;
+                    nf = next->frame;
+                    d = nf - start;
+                    p = &kf[t->keycount - 1];
+                    if (p->frame < sd->timer >> 8 || sd->timer >> 8 < kf->frame) {
+                        sub->flags &= ~0x8000;
+                    } else {
+                        sub->flags |= 0x8000;
+                    }
+                    f = 0;
+                    if (sd->timer - start > 0) {
+                        f = sd->timer - (start << 8);
+                    }
+                    if (sub != NULL && (sub->flags & 0x8000)) {
+                        sub->unk52 = 1;
+                        if (sub->unk51 == 3) {
+                            func_80020344(&cur->quat, &next->quat, (f << 12) / d >> 8, (Quat *)&sub->unk10);
+                        } else {
+                            sub->unk12 = *(u16 *)&cur->ry - ((-next->ry + cur->ry) << 20 >> 20) * f / (d << 8);
+                            sub->unk52 = 1;
+                            sub->unk10 = *(u16 *)&cur->rx - ((-next->rx + cur->rx) << 20 >> 20) * f / (d << 8);
+                            sub->unk52 = 1;
+                            sub->unk14 = *(u16 *)&cur->rz + ((next->rz - cur->rz) << 20 >> 20) * f / (d << 8);
+                            sub->unk52 = 1;
+                        }
+                        sub->unk04 = cur->x + (next->x - cur->x) * f / (d << 8);
+                        sub->unk0C = cur->z + (next->z - cur->z) * f / (d << 8);
+                        sub->unk08 = cur->y + (next->y - cur->y) * f / (d << 8);
+                        sub->unk20.x = cur->sx + (next->sx - cur->sx) * f / (d << 8);
+                        sub->unk52 = 1;
+                        sub->unk20.y = cur->sy + (next->sy - cur->sy) * f / (d << 8);
+                        sub->unk20.z = cur->sz + (next->sz - cur->sz) * f / (d << 8);
+                        fl = sub->flags & ~0x40000000;
+                        sub->flags = fl;
+                        alpha = cur->fade + (next->fade - cur->fade) * f / (d << 8);
+                        sub->unk76 = 0x1000 - alpha;
+                        sub->flags = fl | 0x40000000;
+                    }
+                    if (sd->timer >= nf << 8) {
+                        t->keyindex++;
+                    }
+                    if (sd->timer >= t->framecount << 8) {
+                        if (sd->flags & 1) {
+                            sd->times++;
+                            if (sd->maxloops < sd->times) {
+                                k = 0;
+                                while (1) {
+                                    if (k >= sd->threadcount) {
+                                        break;
+                                    }
+                                    u = &sd->threads[k];
+                                    if (u->threadinfo != NULL) {
+                                        func_800110A8(u->threadinfo, &D_8004E0F0);
+                                    }
+                                    if (u->threadcontrol != NULL) {
+                                        func_800110A8(u->threadcontrol, &D_8004E0F0);
+                                    }
+                                    k++;
+                                }
+                                func_800270B0(nas);
+                                return;
+                            }
+                        }
+                        sub->unk20.x = 0x1000;
+                        sub->unk20.z = 0x1000;
+                        sub->unk20.y = 0x1000;
+                        sub->unk76 = 0;
+                        sub->unk52 = 1;
+                        if (((EngineGameView *)D_8005A614)->mode == 0x2C) {
+                            sub->flags &= ~0x8000;
+                        }
+                        t->keyindex = 0;
+                    }
+                }
+                sub = sub->next;
+                break;
+            }
+            i++;
+        }
+        if (sd->timer >= sd->totalframes << 8) {
+            sd->timer = 0;
+            if (((EngineGameView *)D_8005A614)->mode == 0x2C) {
+                D_8009E194 = 1;
+            }
+        }
+    }
+    t1 = VSync(1);
+    t1;
+    t0;
+}
+#else
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", PlotScriptFX);
+#endif
 
 void PlotSmokePoof(NAS *m) {
     s32 w = m->UserInfo.user1;

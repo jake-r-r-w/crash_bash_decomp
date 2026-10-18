@@ -452,6 +452,9 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | Two copies of one inner scan (pointer `p`, counter `j`) get `p` in `s0` and `j` in `s1` | Make `j` and the compared value one function-level variable shared by both scans, with a block-local `p` in each. The shared counter's refs double (14 over 28 = 15000), tying the second scan's `p`, and it wins on its lower pseudo number | `func_80093854` |
 | A block-local address of a global and a record-index chain swap `a0`/`a1` (local-alloc: both 6 refs, life 18 against 17) | Compute the index first (`n = tab[k]; b = GLOBAL; t = &b[n];`), so the address local is born later and its shorter life ranks it first | `func_80093854` |
 | `addu rd,base,prod` where the target has `addu rd,prod,base` for `e = tab[c] * 0x38 + base` | Write it on integers: `tab[c] * 0x38 + (s32)base` | `func_80093854` |
+| A constant hoisted out of a loop (here 1, used by HImode `sh` stores and SImode compares) gets two registers, or the wrong one | `combine_movables` merges a narrower movable only into an earlier, wider one. Put an SImode use first in the loop: here the `switch` with `case 1:` (the `== 1` test) before `case 0:` (the `unk52 = 1` stores) | `PlotScriptFX` (parked) |
+| A hoisted constant ranks below a loop counter in global.c although the target gives it the earlier `s` register (its life is doubled as a constant: 13 refs over 472 against 11 over 238) | Add uses that vanish after reload: a repeat of an earlier `p->f = 1` later in the same block, with loads between, survives flow's dead-store check and counts as refs, then `reload_cse_regs` deletes it as storing what memory holds. Two of them took 13 refs to 17 | `PlotScriptFX` (parked) |
+| A store (`sd->timer = 0`, `sub->unk76 = 0`) is scheduled after the load of a global where the target keeps it before | The global is really a field of a global struct (`D_8005A648` is `EngineGameView.mode` at `D_8005A614 + 0x34`). Read it through the struct: an in-struct reference may conflict with the store, so the load stays below it | `PlotScriptFX` (parked) |
 | Two clamp results swap `a3`/`v1` (target: the one passed as arg 4 in `v1`, the other in `a3`), and the `-dg` dump shows arg 4's variable with `preferences: 7` from `sll a3,x,15`, allocated first | Give arg 4's value to a variable that is live while `a3` is set as a hard register elsewhere: here `dx`, which the other branch already uses for the height while that call sets `a3 = 0`. `prune_preferences` then drops the `a3` preference, the variable keeps `v1`, and the other one, now conflicting with `v1`, takes `a3` | `func_80078DD4` |
 | A struct pointer's `%hi` gets a third register (`lui a0`) at a join where the target has it in `v0` and the other `%hi` in `v1` | One pointer reused for two structs dies twice, so local-alloc leaves it to global and can't tie the dying `%hi` to it. Use a separate pointer per struct (each dies once and is tied). If that lets later loads move above the stores (alias analysis now knows both bases), put each struct's stores in `do { } while (0)`: the loop notes are a sched1 barrier | `func_8007B330` |
 | gcc 2.7.2 unit: a test of a loaded byte computes `andi` into another register (`andi v0,v1,0x10`) where the target masks in place (`andi v1,v1`) | load into the variable and mask it in place inside the condition: `(t = buf[0], t &= 0x10, !t)` (an `(x = buf[0]) & 0x10` temp gets its own register) | `func_8002DE2C` |
@@ -890,13 +893,13 @@ The rules found so far, each one checked against a trace:
     into a variable used only later) keeps priority 1 and lands at the top
     of the block. A loop note after it gives it a consumer, the barrier insn,
     so it moves down to the barrier (`func_80093854`).
-- **Loop rotation (`expand_end_loop` in `stmt.c`).** A `for` or `while` test
-  at the top moves to the bottom, and jump copies it in front of the loop
-  (folded away after `i = 0`). The scan for that test stops at a call, a
-  label or a block note (a block that declares something), so a test after
-  one of those stays at the top. The target's test-at-top shape with a `j`
-  back is a `goto` loop, or a `for (;;)` whose body declares a variable
-  before `if (...) break;`.
+- **Loop rotation (`expand_end_loop` in `stmt.c`, then jump).** A `for` or
+  `while` test at the top moves to the bottom, and jump copies it in front of
+  the loop (folded away after `i = 0`). The target's test-at-top shape with
+  a `j` back is `while (1) { if (...) break; ... }` (still a loop to loop.c,
+  `func_8008CFBC`, `PlotScriptFX`), a `for (;;)` whose body declares a
+  variable before the test (`stmt.c`'s scan stops at the block note), or a
+  `goto` loop (no loop notes, so no hoisting and no weighting).
 - **Loop invariants (`loop.c`).**
   - `scan_loop` skips a "phony" loop, one whose first insn after the start
     note isn't a label. A `do { } while (0)` that starts with a statement is

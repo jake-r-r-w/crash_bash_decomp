@@ -792,4 +792,18 @@ extern u8 *D_80054944;
 
 void func_8008C824(SparkObj *obj);
 
+/* A script keyframe (0x50 bytes): func_80021DD4 + 0x24 starts the array (InitScriptFX, PlotScriptFX). */
+typedef struct ScriptKey {
+    /* 0x00 */ s32 frame;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ s32 x, y, z;
+    /* 0x18 */ s32 rx, ry, rz;
+    /* 0x24 */ Quat quat;
+    /* 0x34 */ u8 pad34[0xC];
+    /* 0x40 */ s32 sx, sy, sz;
+    /* 0x4C */ s32 fade;
+} ScriptKey;
+extern s32 D_8009E194;
+
 #endif /* BASH_8007EE2C_H */

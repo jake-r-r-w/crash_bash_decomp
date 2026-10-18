@@ -15,7 +15,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
 - 1136/2551 game functions matched: **main.exe is complete (575/575)**;
-  engine overlay 2 left, 1 parked (`func_8007F314`),
+  engine overlay 2 left, both parked (`func_8007F314`, `PlotScriptFX`),
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - The engine overlay is six files and `ovl5d` three, `ovl5e`, `ovl66`,
@@ -47,7 +47,7 @@ fell for 250-399 B normal ($0.79 -> $0.66, first-session matches 54% ->
 70%) and 400-599 B big ($4.58 -> $3.52); small samples, and what is left
 is the harder remainder. The closest-C carry-over did the work: three
 functions parked close then matched on the retry from their C. **Next:
-repeat the engine hour** (2 left: `func_8007F314` 5772 B (parked),
+repeat the engine hour** (2 left, both parked: `func_8007F314` 5772 B,
 `PlotScriptFX` 2080 B) with the big-heavy recipe below; `permute --near` first if there is CPU
 time. After each swarm run, compare `stats --run ID` with the ledger's
 earlier runs.
@@ -148,6 +148,20 @@ misses with big-mode checkpoints: `func_8007BFA8` (instructions 5/114),
   source). Parks are `decomp.py status` / the dashboard. Before reaching for a
   barrier or pin, try `do { } while (0)` (Diff patterns): it matched
   `func_800926CC` and `func_8008A924` without one.
+- **`PlotScriptFX` (engine script keyframes, 2080 B), parked 2026-10-18 at
+  regions 95/112, 484/520 exact** (C under `#ifdef NON_MATCHING`). Left:
+  - Block 21: the target computes `p = &kf[keyindex]` into v0, copies it to
+    `cur` (s2), reads `start` through v0, does `addiu v0,v0,0x50` and
+    copies that to `next` (s4). In ours, cse makes `cur` the canonical
+    register (`make_regs_eqv`: it outlives `p`), rewrites `p + 80` to
+    `cur + 80` and swaps the `next` copy (cse.c, the REG0/REG1 swap after
+    insn 7455). Eight statement orders gave the same RTL. Post-reload CSE
+    (`reload_cse_regs`) can turn an operand into an equal register, which
+    may explain the v0 uses.
+  - `f` and `cur` sit in each other's registers (target `f` s1, `cur` s2).
+    global.c gives `cur` 13533 against `f`'s 9719, too far apart for lives
+    to explain. If block 21's fix moves uses from `cur` to the temp, it may
+    fix this too.
 - **`func_8007F314` (engine pause menu, 5772 B), parked 2026-10-18 at
   structure 1147/1443** (swarm checkpoint was 1263; C under
   `#ifdef NON_MATCHING`, the `block` note lists what's left). Most of the
@@ -417,6 +431,15 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-18 (hand):** `PlotScriptFX` parked at regions 95/112 blocks,
+  484/520 exact, no hack or permuter (the swarm had 87/112 with a dead
+  store and volatile casts). C under `#ifdef NON_MATCHING`; the
+  `decomp.py block` note lists what was solved (the hoisted 1 via `case 1`
+  first and two `unk52 = 1` stores that reload_cse deletes, `mode` read
+  through `EngineGameView`) and what is left (block 21's keyframe copies,
+  `f`/`cur` in s1/s2). New `ScriptKey` struct. MATCHING.md: three rows, and
+  the loop-rotation rule corrected (`while (1) { if (..) break; }` stays
+  top-tested).
 - **2026-10-18 (hand):** `func_80078DD4` matched (308bf0e), no hack or
   permuter, from the swarm's 156/166 checkpoint (stuck on a b/t `a3`/`v1`
   swap). global.c's `set_preference` gives arg 4's variable `a3`, and t can
