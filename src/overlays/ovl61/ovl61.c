@@ -377,7 +377,52 @@ void func_800B9728(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B97D8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B99E0);
+void func_800B99E0(void) {
+    NAS *nas;
+    EXTengine *eng;
+    EXTobject *fux;
+    EXTmotion *mot;
+    s32 dir;
+    s32 n;
+
+    nas = D_8005AA38;
+    n = 0;
+    if (nas != NULL) {
+        do {
+            nas = *(NAS **)((u8 *)nas + 0x20);
+            n++;
+        } while (nas != NULL);
+    }
+    if (n < 8) {
+        nas = SpawnNASById(((Ovl61Spawn *)D_800C1B28)->x, ((Ovl61Spawn *)D_800C1B28)->y, ((Ovl61Spawn *)D_800C1B28)->z, 0x1501, 0x11);
+        if (nas != NULL) {
+            eng = nas->Engine;
+            if (eng != NULL) {
+                eng->flags |= 0x8000;
+                if (eng->Engine != NULL) {
+                    eng->Engine->flags |= 0x8000;
+                }
+                fux = (EXTobject *)nas->FUX;
+                if (fux != NULL) {
+                    fux->status = 1;
+                    fux->can_do = 0x40;
+                    mot = FindExtension(nas, 0x800);
+                    if (mot != NULL) {
+                        mot->Xacc = 4;
+                        mot->Xdec = 1;
+                        mot->Xvel = 0x80;
+                        mot->Xmax = 0x80;
+                        dir = ((Ovl61Spawn *)D_800C1B28)->dir;
+                        mot->Xa = dir;
+                        eng->unk10.x = D_80068BD4[(dir - 0x400) & 0xFFF].unk2 * 13 >> 7;
+                        eng->unk10.z = D_80068BD4[dir & 0xFFF].unk2 * 13 >> 7;
+                    }
+                }
+                PlaySfx(0x5C1, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", InitBall);
 
