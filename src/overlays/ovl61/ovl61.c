@@ -839,7 +839,82 @@ void func_800B6BE8(s32 arg0) {
     func_80089FA4(arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B6CF0);
+void func_800B6CF0(s32 arg0) {
+    EXTengine *e;
+    EXTengine *f;
+    s32 v;
+    s32 done;
+
+    done = 0;
+    if (arg0 == D_800C2724) {
+        e = Heroes[arg0].hero_eng;
+        v = e->unk10.z;
+        if (v > 0x500) {
+            e->unk10.z = v - 0x20;
+        } else {
+            done = 1;
+        }
+        if (D_8005A680[0] != 0) {
+            f = Heroes[arg0].hero_eng;
+            if (f->unk10.x < 0) {
+                f->unk10.x += 0x20;
+            }
+        }
+    }
+    if (arg0 == D_800C2728) {
+        e = Heroes[arg0].hero_eng;
+        v = e->unk10.z;
+        if (v < -0x500) {
+            e->unk10.z = v + 0x20;
+        } else {
+            done = 1;
+        }
+        if (D_8005A680[0] != 0) {
+            f = Heroes[arg0].hero_eng;
+            if (f->unk10.x > 0) {
+                f->unk10.x -= 0x20;
+            }
+        }
+    }
+    if (arg0 == D_800C271C) {
+        e = Heroes[arg0].hero_eng;
+        v = e->unk10.x;
+        if (v > 0x500) {
+            e->unk10.x = v - 0x20;
+        } else {
+            done = 1;
+        }
+        if (D_8005A680[0] != 0) {
+            f = Heroes[arg0].hero_eng;
+            if (f->unk10.z < 0) {
+                f->unk10.z += 0x20;
+            }
+        }
+    }
+    if (arg0 == D_800C2720) {
+        e = Heroes[arg0].hero_eng;
+        v = e->unk10.x;
+        if (v < -0x500) {
+            e->unk10.x = v + 0x20;
+        } else {
+            done = 1;
+        }
+        if (D_8005A680[0] != 0) {
+            f = Heroes[arg0].hero_eng;
+            if (f->unk10.z > 0) {
+                f->unk10.z -= 0x20;
+            }
+        }
+    }
+    if (done != 0) {
+        D_800AD12C = 1;
+    }
+    func_80085890(arg0);
+    if (func_8008A200(arg0) != 0) {
+        func_8008A810();
+    }
+    func_8008502C(arg0);
+}
 
 void func_800B6FE0(s32 arg0) {
     HeroInfo *base = Heroes;
