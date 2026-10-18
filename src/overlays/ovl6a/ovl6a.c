@@ -71,4 +71,19 @@ void func_800B4DE8(void) {
     func_800B85A8();
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/ovl6a", func_800B4E1C);
+void func_800B4E1C(void) {
+    if (D_8005A648 == 0x2B) {
+        D_8005AA70[0] = (s32)func_800B875C;
+        D_8005AA70[1] = (s32)func_800B88B8;
+        D_8005AA70[2] = (s32)func_800B88B8;
+        D_8005AA70[3] = (s32)func_800BAB40;
+    } else {
+        D_8005AA70[0] = (s32)func_800B86AC;
+        D_8005AA70[1] = (s32)func_800B4EAC;
+        D_8005AA70[2] = (s32)func_800B4EAC;
+        D_8005AA70[3] = (s32)func_800B4DE8;
+    }
+    D_8005AA70[7] = 0;
+    D_8005AA70[8] = 0;
+    D_8009F8B4 = func_800B4694;
+}

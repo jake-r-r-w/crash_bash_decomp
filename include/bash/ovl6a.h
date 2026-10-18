@@ -10,6 +10,10 @@
 
 s32 *func_800B4D8C(void);
 void func_800B4DE8(void);
+void func_800B4EAC(void);
+void func_800B86AC(void);
+void func_800B875C(void);
+void func_800B88B8(void);
 
 extern u8 D_800C7294[];
 extern s32 D_80098714;
@@ -24,5 +28,7 @@ extern subengine *D_800BCEE8;
 void func_800B4694(void);
 
 int func_800B4D98(unsigned char *s);
+
+void func_800B4E1C(void);
 
 #endif /* BASH_OVL6A_H */
