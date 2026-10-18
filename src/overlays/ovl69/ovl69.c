@@ -4,7 +4,49 @@
 #include "bash/ovl69.h"
 #include "bash/titles.h"
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B37BC);
+void func_800B37BC(void) {
+    u8 *g;
+    s32 *p;
+    u8 *a1;
+
+    func_8009029C();
+    g = D_8005A614;
+    g[0x62] = 0;
+    func_80014388((u8 *)&D_800B9538);
+    *(s32 *)((u8 *)&D_800B9538 + 8) = 0x400;
+    *(s32 *)((u8 *)&D_800B9538 + 0x18) = 0x190;
+    func_80095BEC(1, &D_800B8C84);
+    GetEngineSlot(1)->sub[4].flags &= ~0x8000;
+    GetEngineSlot(1)->sub[5].flags &= ~0x8000;
+    GetEngineSlot(1)->sub[6].flags &= ~0x8000;
+    GetEngineSlot(1)->sub[7].flags &= ~0x8000;
+    GetEngineSlot(1)->sub[3].flags &= ~0x8000;
+    D_80051604 = 0;
+    switch (*(s16 *)(g + 0x34)) {
+    case 0x28:
+        D_8004E0CC = 0;
+        func_80092C54();
+        *(u16 *)(g + 0x32) |= 0x200;
+        func_8001E934(&D_8009F8A4, (s32)D_800B8E28);
+        break;
+    case 0x29:
+        p = D_800B8EB8;
+        g[0x27] = 4;
+        a1 = (u8 *)*p;
+        D_800B9620 = p;
+        func_8001E934(&D_8009F8A4, (s32)a1);
+        break;
+    case 0x2A:
+        p = D_800B8EE4;
+        g[0x27] = 4;
+        a1 = (u8 *)*p;
+        D_800B9620 = p;
+        func_8001E934(&D_8009F8A4, (s32)a1);
+        break;
+    }
+    D_800B95F4 = D_8005A9A0;
+    D_800B9600 = &D_800B8C2C;
+}
 
 void func_800B39C8(void) {
     s32 f;
