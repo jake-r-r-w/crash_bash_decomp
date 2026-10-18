@@ -15,6 +15,7 @@ void func_800B34A4(void);
 void func_800B361C(void);
 
 extern u8 D_80053EAC[];
+extern u16 D_800C39A0[];
 extern s16 D_800C4150[][3];
 extern u16 D_800C417A;
 extern u16 D_800C438A;
@@ -193,6 +194,8 @@ typedef struct Ovl67Pos {
 } Ovl67Pos;
 
 void func_800B4FA4(s32 arg0);
+
+void func_800B5774(s32 arg0);
 
 s32 func_800B7C58(s32 arg0, Ovl67Pos *from, Ovl67Pos *to, s32 angle);
 
