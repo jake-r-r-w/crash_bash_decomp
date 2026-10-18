@@ -1161,7 +1161,30 @@ void PlotPodiumTrophy(PodiumTrophy *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B96F4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B9B0C);
+void func_800B9B0C(void) {
+    EXTengine *e;
+    s32 n;
+
+    e = GetEngineSlot(6);
+    if (e != NULL) {
+        n = D_8005A614[0x9F];
+        D_800BD3AC[1] = n % 10 + 0x30;
+        D_800BD3AC[0] = n / 10 % 10 + 0x30;
+        n = D_8005A614[0xA0];
+        D_800BD3B0[1] = n % 10 + 0x30;
+        D_800BD3B0[0] = n / 10 % 10 + 0x30;
+        n = D_8005A614[0xA1];
+        D_800BD3B4[1] = n % 10 + 0x30;
+        D_800BD3B4[0] = n / 10 % 10 + 0x30;
+        n = D_8005A614[0xA2];
+        D_800BD3B8[1] = n % 10 + 0x30;
+        D_800BD3B8[0] = n / 10 % 10 + 0x30;
+        func_80095BEC(6, &D_800BD3C4);
+        e->unk10.x = 0x28;
+        e->unk10.y = 0x21C;
+        e->flags |= 0x10008000;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B9D1C);
 

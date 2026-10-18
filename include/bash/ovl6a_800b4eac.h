@@ -208,6 +208,11 @@ typedef struct DistPos {
 } DistPos;
 extern EngRec24 D_800BCA20[];
 extern s32 D_800BCEFC;
+extern u8 D_800BD3AC[];
+extern u8 D_800BD3B0[];
+extern u8 D_800BD3B4[];
+extern u8 D_800BD3B8[];
+extern s32 D_800BD3C4;
 
 void func_800B6224(s32 arg0);
 
@@ -498,6 +503,8 @@ void func_800B6A3C(void);
 void func_800B6E20(void);
 
 void PlotPodiumTrophy(PodiumTrophy *arg0);
+
+void func_800B9B0C(void);
 
 void func_800BA1B4(Ovl6aTrailDst *d, Ovl6aTrail *t, s32 idx);
 
