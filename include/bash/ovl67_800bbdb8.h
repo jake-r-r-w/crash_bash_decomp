@@ -289,6 +289,8 @@ extern s16 D_8009D6E2;
 extern ScriptInit D_800C446C;
 extern s32 D_800C4530;
 
+void func_800BE8C0(s32 arg0);
+
 void InitNitroBoss(NAS *nas);
 
 s32 func_800C3544(s32 *arg0, s32 *arg1);

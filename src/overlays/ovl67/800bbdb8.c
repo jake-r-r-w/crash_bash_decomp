@@ -79,7 +79,68 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BDC0C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BE70C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BE8C0);
+void func_800BE8C0(s32 arg0) {
+    HeroInfo *h;
+    HeroInfo *me;
+    EXTheromove *om;
+    EXTheromove *mm;
+    s32 i;
+    s32 total;
+    s32 dx;
+    s32 dz;
+    s32 dy;
+    s32 dist;
+    s32 ang;
+    s32 push;
+    s32 d;
+    s32 q;
+    s32 r;
+    TrigEntry *trig;
+    HeroInfo *base;
+
+    base = Heroes;
+    i = 0;
+    total = 0x200;
+    trig = D_80068BD4;
+    while (1) {
+        if (i >= 4) {
+            break;
+        }
+        h = &base[i];
+        if (i != arg0 && !(h->hero_status & 0xFA00)) {
+            me = (HeroInfo *)(arg0 * sizeof(HeroInfo) + (u32)base);
+            dx = h->hero_eng->unk10.x - me->hero_eng->unk10.x;
+            dz = h->hero_eng->unk10.y - me->hero_eng->unk10.y;
+            dy = h->hero_eng->unk10.z - me->hero_eng->unk10.z;
+            dist = csqrt(dx * dx + dz * dz + dy * dy) >> 6;
+            if (dist < 0x300) {
+                om = h->hero_move;
+                mm = me->hero_move;
+                mm->mass = 0x100;
+                om->mass = 0x100;
+                if (mm->mass > 0) {
+                    d = -((om->x_vel - mm->x_vel) << 7);
+                    q = (mm->x_vel + om->x_vel) << 16;
+                    q = ((d << 8) + q) / total;
+                    r = q - d;
+                    om->x_vel = q >> 8;
+                    mm->x_vel = r >> 8;
+                    d = -((om->jump_vel - mm->jump_vel) << 7);
+                    q = (mm->jump_vel + om->jump_vel) << 16;
+                    q = ((d << 8) + q) / total;
+                    r = q - d;
+                    om->jump_vel = q >> 8;
+                    mm->jump_vel = r >> 8;
+                }
+                ang = (u16)get_angle(dx, dz) & 0xFFF;
+                push = 0x304 - dist;
+                me->hero_eng->unk10.x -= push * trig[(u16)(ang - 0x400) & 0xFFF].unk2 >> 12;
+                me->hero_eng->unk10.y -= push * trig[ang].unk2 >> 12;
+            }
+        }
+        i++;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BEB68);
 
