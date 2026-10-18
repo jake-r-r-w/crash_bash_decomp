@@ -23,6 +23,9 @@ typedef struct Ovl6aEntry12 {
 extern Ovl6aEntry12 D_800BD7E0[];
 extern u32 D_800BD5B0;
 extern s32 D_800BD5B4;
+extern u8 D_800BD5B8[];
+extern u8 D_800BDB14[];
+extern u8 D_800BF1A8[];
 
 /* D_8005A614 as this file sees it: per-player byte flags at 0xE4.. */
 typedef struct Ovl6aGameView {
@@ -262,6 +265,8 @@ void func_800B8BC8(void);
 void func_800BAAFC(void);
 
 void func_800BAB40(void);
+
+void func_800BB280(void);
 
 void func_800BB364(void);
 

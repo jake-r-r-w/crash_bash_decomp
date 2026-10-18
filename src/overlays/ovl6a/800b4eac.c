@@ -932,7 +932,32 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BABEC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BB038);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BB280);
+void func_800BB280(void) {
+    s32 i;
+    u8 *g;
+    s32 *p;
+    EXTengine *e;
+
+    func_80018B08((GfxViewport *)D_800BDB14, (GfxCamera *)D_800BF1A8);
+    D_800569AC = *(s32 *)D_8009F644;
+    e = GetEngineSlot(0);
+    i = 0;
+    g = D_8005A614;
+    p = (s32 *)((u8 *)e->sub + 0x540);
+    do {
+        D_800BD5B8[i * 2] = g[i + 0x18];
+        if (D_800BD5B8[i * 2] == 0x20) {
+            *p |= 0x8000;
+        } else {
+            *p &= ~0x8000;
+        }
+        p += 0x2A;
+        i++;
+    } while (i < 8);
+    func_8001C2C0((u8 *)GetEngineSlot(0));
+    func_8001C2C0((u8 *)GetEngineSlot(1));
+    func_8001C2C0((u8 *)&D_800BF100);
+}
 
 void func_800BB364(void) {
     func_80095A04(0);
