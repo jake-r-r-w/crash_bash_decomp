@@ -331,6 +331,27 @@ void func_800BB584(void);
 
 void func_800BBE1C(void);
 
+typedef struct Ovl6aRenderSub {
+    u8 padC[0xC];
+    s32 unkC;
+} Ovl6aRenderSub;
+
+typedef struct Ovl6aRenderObj {
+    /* 0x00 */ u32 flags;
+    /* 0x04 */ u8 pad4[0x68 - 0x4];
+    /* 0x68 */ s16 unk68;
+    /* 0x6A */ u8 pad6A[2];
+    /* 0x6C */ Ovl6aRenderSub *sub;
+    /* 0x70 */ u8 pad70[4];
+    /* 0x74 */ u16 unk74;
+} Ovl6aRenderObj;
+
+extern u8 D_800BF264[];
+extern u8 D_800C7264[];
+void func_800BB5F0(Ovl6aRenderObj *obj, s16 *out);
+void func_800BBC64(s16 *a, void *b, s32 c, s32 d);
+void func_800BBE24(Ovl6aRenderObj *obj, void *arg1);
+
 void func_800BBF44(SVECTOR *v, s16 *b);
 
 #endif /* BASH_OVL6A_800B4EAC_H */

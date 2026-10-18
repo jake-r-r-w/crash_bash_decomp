@@ -1103,7 +1103,36 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BBC64);
 void func_800BBE1C(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BBE24);
+void func_800BBE24(Ovl6aRenderObj *obj, void *arg1) {
+    s16 sp10[4];
+    s16 sp18[4];
+    s32 c;
+    s32 h;
+    s32 y;
+    s32 d;
+    u32 *saved;
+
+    c = obj->sub->unkC;
+    if ((obj->flags & 0x8000) && c != 0) {
+        saved = D_80056998.ot;
+        func_8001D894(obj, arg1, obj->flags, c);
+        D_80056998.ot = (u32 *)(D_800BF264 + ((D_8005B690 & 1) << 14));
+        ClearOTagR(D_80056998.ot, 0x138);
+        obj->flags |= 0x2000000;
+        obj->unk68 = -0x170;
+        func_80019A60(obj->unk74, (u8 *)c, obj->flags, obj);
+        func_800BB5F0(obj, sp10);
+        d = sp10[3];
+        y = sp10[1];
+        h = (D_800BF260 * (d - y)) / 4096;
+        sp18[2] = 0x200;
+        sp18[0] = 0;
+        sp18[1] = 0;
+        sp18[3] = h + y;
+        func_800BBC64(sp18, D_800C7264, 0x400, y);
+        D_80056998.ot = saved;
+    }
+}
 
 void func_800BBF44(SVECTOR *v, s16 *b) {
     s16 xy[2];
