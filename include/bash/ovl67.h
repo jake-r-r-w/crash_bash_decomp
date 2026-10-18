@@ -192,6 +192,8 @@ typedef struct Ovl67Pos {
     s32 z;
 } Ovl67Pos;
 
+void func_800B4FA4(s32 arg0);
+
 s32 func_800B7C58(s32 arg0, Ovl67Pos *from, Ovl67Pos *to, s32 angle);
 
 s32 func_800B817C(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5);

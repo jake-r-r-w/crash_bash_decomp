@@ -195,7 +195,26 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B4CE0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B4E30);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B4FA4);
+void func_800B4FA4(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = &base[arg0];
+    subengine *s;
+
+    if (h->hero_eng->sfx != NULL) {
+        StopSfx(h->hero_eng->sfx);
+    }
+    func_800B4954(arg0);
+    SetHeroAction((HeroInfo *)arg0, 0x27);
+    h->hero_idle_count = Random(0x96) + 0xB4;
+    s = h->hero_sub;
+    s = s->next;
+    if (s != NULL) {
+        s = s->next;
+        if (s != NULL) {
+            s->flags &= 0xFFFF7FFF;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B5064);
 
