@@ -307,7 +307,24 @@ void func_800B822C(s32 arg0) {
     D_800BCEF4 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B8284);
+void func_800B8284(void) {
+    volatile s32 v[2];
+
+    s32 a, b;
+
+    a = D_80068BD4[(D_8009EE9C.unk4 - 0x400) & 0xFFF].unk2 * D_8009EE9C.unk8;
+    v[0] = D_80068BD4[(D_8009EE9C.unk4 - 0x400) & 0xFFF].unk2;
+    b = D_80068BD4[D_8009EE9C.unk4 & 0xFFF].unk2 * D_8009EE9C.unk8;
+    v[1] = D_80068BD4[D_8009EE9C.unk4 & 0xFFF].unk2;
+    v[0] = a;
+    a >>= 12;
+    v[0] = a;
+    v[1] = b;
+    b >>= 12;
+    v[1] = b;
+    Heroes->hero_eng->unk10.x = a;
+    Heroes->hero_eng->unk10.z = v[1];
+}
 
 void func_800B8324(s32 arg0) {
     HeroInfo *hero;

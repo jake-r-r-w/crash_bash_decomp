@@ -9713,7 +9713,8 @@
   "status": "matched"
  },
  "ovl6a:800B8284": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-18T19:00:29Z",
+  "status": "matched"
  },
  "ovl6a:800B8324": {
   "auto_diff": 21,
