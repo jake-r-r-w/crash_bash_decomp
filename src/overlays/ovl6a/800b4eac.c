@@ -158,7 +158,11 @@ void InitGatewayTrophy(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B7E14);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B7F24);
+s32 func_800B7F24(DistPos *a, DistPos *b) {
+    s32 dx = b->x - a->x;
+    s32 dz = b->z - a->z;
+    return csqrt(dx * dx + dz * dz) >> 6;
+}
 
 s32 func_800B7F74(u8 *arg0, u8 *arg1) {
     s32 temp_v0;

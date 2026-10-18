@@ -22,6 +22,13 @@ extern s32 D_800BD390;
 extern s32 D_800BD394;
 extern s32 D_800BCEF4;
 
+typedef struct DistPos {
+    u8 pad0[0x10];
+    s32 x;
+    u8 pad14[4];
+    s32 z;
+} DistPos;
+
 void func_800B7874(void);
 
 void func_800B7988(s32 *arg0, s32 flag, s32 *out);
@@ -49,6 +56,8 @@ void func_800B7DB4(u8 *arg0, s32 arg1);
 void PlotGatewayTrophy(void);
 
 void InitGatewayTrophy(void);
+
+s32 func_800B7F24(DistPos *a, DistPos *b);
 
 s32 func_800B7F74(u8 *arg0, u8 *arg1);
 
