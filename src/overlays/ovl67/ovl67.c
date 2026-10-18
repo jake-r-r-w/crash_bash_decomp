@@ -766,7 +766,18 @@ u8 *func_800BB624(void) {
     return temp_v0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BB6BC);
+void func_800BB6BC(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = &base[arg0];
+
+    h->hero_frozen = 5;
+    if (h->hero_hit != 0) {
+        h->hero_hit--;
+    } else {
+        SetHeroAction((HeroInfo *)arg0, 0x2E);
+    }
+    func_8008502C(arg0);
+}
 
 void func_800BB72C(s32 arg0) {
     Heroes[arg0].hero_move->velocity_enable = 1;
