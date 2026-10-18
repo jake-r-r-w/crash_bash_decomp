@@ -8,6 +8,15 @@
 #include "common.h"
 #include "bash/nas.h"
 
+/* D_8009D87C (declared in bash/8007ee2c.h, which this unit does not include). */
+typedef struct Ovl67Odds {
+    s16 unk0;
+    s16 unk2;
+    s16 unk4;
+} Ovl67Odds;
+
+extern Ovl67Odds D_8009D87C[];
+
 s32 func_800BB05C(u8 *arg0);
 u8 *func_800BB624(void);
 void func_800BBD18(void);
@@ -292,5 +301,7 @@ extern s8 D_8005A689;
 s32 func_800B3888(Ovl67Obj *arg0);
 
 void func_800B5440(s32 arg0);
+
+s32 func_800B8058(s32 arg0);
 
 #endif /* BASH_OVL67_H */

@@ -8531,9 +8531,10 @@
   "auto_failed": "types"
  },
  "ovl67:800B8058": {
-  "auto_failed": "compile",
   "copy_failed": "ovl61:800B84B8",
-  "copy_failed_stage": "in-file"
+  "copy_failed_stage": "in-file",
+  "matched_at": "2026-10-18T17:03:42Z",
+  "status": "matched"
  },
  "ovl67:800B817C": {
   "matched_at": "2026-10-18T16:39:55Z",
