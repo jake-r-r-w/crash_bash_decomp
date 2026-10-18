@@ -123,6 +123,8 @@ void func_800B8324(s32 arg0);
 
 void func_800B838C(s32 arg0);
 
+void func_800B83D4(s32 arg0);
+
 void func_800B8474(s32 arg0);
 
 s32 func_800B84CC(void);

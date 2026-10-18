@@ -335,12 +335,25 @@ void func_800B838C(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B83D4);
+void func_800B83D4(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = &base[arg0];
+    EXTengine *s = h->hero_shadow;
+
+    if (s != NULL) {
+        s->sub->unk6C = D_800558EC;
+        s->sub->unk74 = 0x2020;
+        s->unk10 = h->hero_eng->unk10;
+        s->flags |= 0x8041;
+        s->sub->unk76 = 0x800;
+        s->sub->flags |= 0x40000000;
+    }
+}
 
 void func_800B8474(s32 arg0) {
     u8 *o;
 
-    func_800B83D4();
+    func_800B83D4(arg0);
     o = (u8 *)func_8001E48C(2);
     if (o != NULL) {
         D_8009EE9C.unkC = *(s32 *)(o + 0x58);
