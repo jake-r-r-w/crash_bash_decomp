@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 
 process.env.SWARM_IMPORT = '1';
 const { Swarm, reapply, parseArgs, INCLUDE_LINE, sessionUsage: sessionUsageFn, readTranscript: readTranscriptFn,
-        ledgerStats: ledgerStatsFn, readRuns: readRunsFn } = await import('./swarm.mjs');
+        ledgerStats: ledgerStatsFn, readRuns: readRunsFn, gateReason: gateReasonFn } = await import('./swarm.mjs');
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DECOMP = fs.readFileSync(path.join(REPO, 'tools/scripts/decomp.py'), 'utf8');
@@ -747,4 +747,34 @@ test('page: the runs before this one from swarm.log and ledger.jsonl, newest fir
     ['20261018053219', '--only func_800939FC', 1, 0, 0, 0, '2026-10-18T05:33:11Z'],
     ['20261017101444', 'overlays/engine', 23, 1, 2, 3.75, '2026-10-17T11:26:45Z'],
   ]);
+});
+
+// ---------------------------------------------------------------- gate refusals
+
+test('gate: a refusal reports cc1\'s error lines, not the warnings after them, and a clash gets the hint', () => {
+  const out = [
+    'func_800BA43C: scope ok, lint ok, function MATCH',
+    'BUILD FAILED',
+    'stdin: In function `func_800B3528\':',
+    'stdin:7272: too many arguments to function `func_800BA43C\'',
+    'stdin:6428: conflicting types for `D_800BA324\'',
+    'stdin:6411: previous declaration of `D_800BA324\'',
+    ...Array.from({ length: 12 }, (_, i) => `stdin:${8000 + i}: warning: assignment makes pointer from integer without a cast`),
+    'make: *** [Makefile:94: build/src/overlays/ovl67/ovl67.c.o] Error 33',
+    '  line 6754 of preprocessed src/overlays/ovl67/ovl67.c: D_800C418C = D_800C37DC;',
+    'func_800BA43C does not match: nothing recorded or committed',
+  ].join('\n');
+  const why = gateReasonFn(out);
+  assert.match(why, /too many arguments to function/);
+  assert.match(why, /conflicting types for `D_800BA324'/);
+  assert.match(why, /previous declaration/);
+  assert.match(why, /does not match: nothing recorded/);
+  assert.doesNotMatch(why, /warning:/);
+  assert.equal(gateReasonFn('just\nsome\nlines\n'), 'just\nsome\nlines');   // nothing recognisable: the tail
+  const s = swarm();
+  const p = s.prompt({ f: fn('func_800BA43C'), model: 'sonnet', attempt: 1, notes: [], gateFix: why });
+  assert.match(p, /most likely a declaration clash/);
+  assert.match(p, /too many arguments to function/);
+  assert.doesNotMatch(s.prompt({ f: fn('func_800BA43C'), model: 'sonnet', attempt: 1, notes: [], gateFix: 'lint: M2C_FIELD' }),
+                      /declaration clash/);
 });

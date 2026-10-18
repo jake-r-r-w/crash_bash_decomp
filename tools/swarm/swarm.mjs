@@ -43,6 +43,28 @@ const INFRA_ERRORS = [
   /TIMEOUT: tools\/dk killed after \d+ min/,           // a hung container (Swarm.dk's minutes)
 ];
 
+// why the gate refused a match, for the log and the worker that fixes it: cc1's error lines (and
+// their "previous declaration" partners) and the gate's verdict. They come before a screenful of
+// warnings, so the output's last lines alone said only "Error 33", and gate-fix workers took that
+// for a flaky build and changed nothing (2026-10-18: four refusals lost that way)
+function gateReason(out) {
+  const errs = out.split('\n').filter(l => /^\S+:\d+: (?!warning:)/.test(l) ||
+                                           /\b(does not match|MISMATCH|BUILD FAILED)\b/.test(l));
+  const uniq = [...new Set(errs)].slice(0, 14);
+  return uniq.length ? uniq.join('\n') : out.trim().split('\n').slice(-6).join('\n');
+}
+
+// headers are union-merged (makeClone), so two matches that each added a declaration can leave
+// both in the header: the usual reason a match that built in its worker fails at the gate
+const DECL_CLASH = /conflicting types|redefinition|redeclar|has no member named|too (many|few) arguments|previous declaration/;
+const DECL_HINT = `Other matches were committed while it waited, and headers are merged by keeping both
+sides' lines, so the error above is most likely a declaration clash: a struct or typedef now defined
+twice, or a prototype whose parameters differ from a caller or from another declaration. Keep one
+declaration (merge a duplicate struct's fields into the existing one and use its field names), and
+call a function whose callers pass other arguments than its definition takes through a cast
+(MATCHING.md, Diff patterns). The whole file's build (make diff) shows every error.
+`;
+
 // an environment error in a tools/dk call's output, or its exit code: 125 docker run failed,
 // 126 the command can't run, 127 not found (tools/dk's own checks exit 127 too)
 function infraError(out, code) {
@@ -1053,7 +1075,7 @@ gate (decomp.py done: scope, lint, full build) refused it with:
 \`\`\`
 ${job.gateFix}
 \`\`\`
-Fix that (often a type declared in the .c instead of the owned header, or a lint finding), keep the
+${DECL_CLASH.test(job.gateFix) ? DECL_HINT : ''}Fix that (often a type declared in the .c instead of the owned header, or a lint finding), keep the
 function matching (make diff), and report "matched". A build error in another file is real, not a
 fluke: usually a caller there that no longer fits the prototype you added (\`grep -rn ${f.name} src\`);
 build that object (\`tools/dk make build/src/...c.o\`) to see it, and fix the call.
@@ -1187,7 +1209,7 @@ Your C matches the bytes, but the validation gate (decomp.py done) refused it wi
 \`\`\`
 ${job.gateFix}
 \`\`\`
-Fix that, keep it matching, and report "matched".
+${DECL_CLASH.test(job.gateFix) ? DECL_HINT : ''}Fix that, keep it matching, and report "matched".
 ` : ''}${f.note ? `\nNote recorded for this function earlier: ${f.note}\n` : ''}${job.notes.length ? `\nEarlier swarm attempts at it:\n${job.notes.map(n => '- ' + n).join('\n')}\n` : ''}${patterns ? `\nDiff patterns other workers found in this run (not yet in MATCHING.md):\n${patterns}\n` : ''}`;
   }
 
@@ -1770,7 +1792,7 @@ Fix that, keep it matching, and report "matched".
     if (this.stopping === 'now') return false;
     if (r.code !== 0 || after === before) {
       resetClone(this.integ, before);
-      const why = r.out.trim().split('\n').slice(-6).join('\n');
+      const why = gateReason(r.out);
       const infra = infraError(r.out, r.code);
       if (infra) {
         this.log(`${f.name}: the gate hit an environment error, not a problem with the function: ` +
@@ -2347,7 +2369,7 @@ function clean(o) {
 
 // for tools/swarm/swarm.test.mjs, which imports this file with SWARM_IMPORT=1 (an env guard: a
 // path comparison with argv[1] can misfire on Windows path case and keep `run` from starting)
-export { Swarm, reapply, parseArgs, INCLUDE_LINE, infraError, workerMounts, sessionUsage, readTranscript, ledgerStats, readRuns };
+export { Swarm, reapply, parseArgs, INCLUDE_LINE, infraError, workerMounts, sessionUsage, readTranscript, ledgerStats, readRuns, gateReason };
 
 if (process.env.SWARM_IMPORT !== '1') {
   const [cmd, o] = parseArgs(process.argv.slice(2));

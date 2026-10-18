@@ -315,6 +315,9 @@ Other:
   data in place of every `/*DATA*/null` in the template (Python's
   `str.replace`): one in a comment doubled the page. Name it some other way.
 - **A swarm match the gate refused on a compile error is usually still good.**
+  (Fixed 2026-10-18: the gate-fix worker used to get only the output's last six lines,
+  warnings and "Error 33", and called the build flaky; it now gets the error lines
+  and a hint about union-merged headers, so this should be rarer.)
   Its C matched against an older tip, and other matches in the run changed the
   same header (a second typedef of one struct, a prototype with other
   parameters). Apply `results/<key>/*gatefix*/patch.diff` (or the big1 one) with
