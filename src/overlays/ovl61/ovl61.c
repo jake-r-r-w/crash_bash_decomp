@@ -439,7 +439,22 @@ void func_800C069C(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C0760);
+extern char D_8005453C[];
+
+void func_800C0760(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = &base[arg0];
+    EXTengine *s = h->hero_shadow;
+
+    s->sub->unk6C = D_8005453C;
+    s->sub->unk74 = 0x2002;
+    s->unk10 = h->hero_eng->unk10;
+    s->unk5D = 0;
+    s->flags |= 0x8041;
+    s->sub->unk76 = 0x200;
+    s->sub->flags |= 0x42000000;
+    s->sub->unk68 = -0x10;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C0804);
 

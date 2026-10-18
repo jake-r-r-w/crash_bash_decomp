@@ -99,6 +99,8 @@ void func_800C052C(s32 arg0);
 
 s32 func_800C0624(s32 arg0);
 
+void func_800C0760(s32 arg0);
+
 s32 func_800C08C8(Ovl61Obj *arg0);
 
 void func_800C0B94(void);
