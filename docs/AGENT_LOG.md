@@ -14,11 +14,11 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1433/2551 game functions matched: **main.exe is complete (575/575)**;
+- 1434/2551 game functions matched: **main.exe is complete (575/575)**;
   engine overlay 2 left, both parked (`func_8007F314`, `PlotScriptFX`),
   ovl61 95/97 (two 2026-10-18 swarm runs and three hand matches; 2 big ones left),
-  ovl67 101/135, ovl69 68/77, ovl6a 92/94 (2026-10-18 swarm runs and hand fixes;
-  `func_800B5710` parked at 120/121 blocks), all 564 PsyQ functions (Sony
+  ovl67 101/135, ovl69 68/77, ovl6a 93/94 (2026-10-18 swarm runs and hand fixes;
+  `func_800B5710` parked at 120/121 blocks; the id word is its own unit), all 564 PsyQ functions (Sony
   objects). 3 parked (`decomp.py status`).
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Dashboard (2026-10-18): `docs/index.html` is `tools/scripts/dashboard.html` plus
@@ -47,10 +47,11 @@ leads**, add any new gotcha, and add one short entry at the top of the
 **ovl6a (2026-10-18, run 20261018184703):** stopped by hand after 87 min,
 $47.98: 64 matched, 2 failed at the gate (`func_800B4EAC`: compile error, a
 field another match removed; `func_800B488C`: matches alone but the full
-build is +4 bytes, two jump tables' alignment). Since then `func_800B4EAC`
-and `func_800B551C` are matched and `func_800B5710` is parked (Open
-leads). Next: `func_800B488C` (the jump-table alignment), then ovl61's
-`func_800B8A68`/`PlotBall` and ovl67's parked `func_800B39C0`.
+build is +4 bytes, two jump tables' alignment). Since then
+`func_800B4EAC`, `func_800B551C` and `func_800B488C` are matched and
+`func_800B5710` is parked (Open leads). Next: ovl61's `func_800B8A68`/`PlotBall`, ovl67's
+parked `func_800B39C0`, and the id-word split for the other slot overlays
+(Open leads).
 
 **ovl69 (2026-10-18, run 20261018173050):** stopped by hand after 75 min,
 $33.21: 48 matched, 1 failed at the gate on a compile error (`func_800B7CE8`,
@@ -177,6 +178,14 @@ misses with big-mode checkpoints: `func_8007BFA8` (instructions 5/114),
 
 ## Open leads
 
+- **Slot-overlay id words (2026-10-19):** `ovl6a`'s id word is now its own
+  rodata unit (`ovl6a_id`, 815cad97), so a real `switch` in its first file
+  links (`func_800B488C`). The same evidence holds for every slot overlay
+  (all first-file jump tables are 8-aligned, the id is 4 mod 8), so split the
+  others the same way (yaml `[0x0, rodata, overlays/<ovl>/<ovl>_id]`,
+  `[0x4, .rodata, ...]`, rename the C file's first `INCLUDE_RODATA`) and
+  check `make check` per overlay. Their `&&label` switch tables (e.g.
+  ovl61's `func_800B68C8`, `Plot_N_Gin`) can then go back to `switch`.
 - **`func_800B5710` (ovl6a, 2836 B), parked 2026-10-18 at regions 120/121
   blocks, 706/710 insns** (C under `#ifdef NON_MATCHING`). Only the 0x80
   button block differs (target 0x37c-0x394): the target puts
@@ -505,6 +514,11 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-19 (hand):** `func_800B488C` (ovl6a, 1032 B) matched (ee24f281)
+  with the swarm's real-switch C. The +4-byte link failure was the overlay id
+  word sharing `ovl6a.c`'s rodata: split into its own unit (815cad97),
+  byte-identical. ARCHITECTURE.md's slot-overlay layout says why; one Diff
+  patterns row extended, one added.
 - **2026-10-18 (hand):** `func_800B5710` (ovl6a, 2836 B) taken from the
   swarm checkpoint (529/721 differing) to 120/121 blocks and parked on one
   delay-slot fill in the 0x80 block (Open leads). Four Diff patterns rows
