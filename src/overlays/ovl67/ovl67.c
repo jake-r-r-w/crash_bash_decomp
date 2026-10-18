@@ -355,7 +355,36 @@ void func_800B5B14(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B5BFC);
+void func_800B5BFC(void) {
+    s32 n;
+    Ovl67Node *p;
+
+    if (D_8005A644 & 0x801) {
+        return;
+    }
+    if (D_800C4374 != 0) {
+        D_800C4374--;
+        return;
+    }
+    D_800C4370++;
+    n = (u16)((u16)D_800C4370 / 240);
+    n++;
+    if (n >= 5) {
+        n = 4;
+    }
+    p = D_8005AA38;
+    D_800C4372 = 0;
+    if (p != NULL) {
+        do {
+            p = p->next;
+            D_800C4372++;
+        } while (p != NULL);
+    }
+    if ((u16)D_800C4372 < n) {
+        func_800BB624();
+        D_800C4374 = 30;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", InitN2OBall);
 
