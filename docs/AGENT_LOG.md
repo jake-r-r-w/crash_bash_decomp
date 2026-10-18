@@ -14,9 +14,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1229/2551 game functions matched: **main.exe is complete (575/575)**;
+- 1312/2551 game functions matched: **main.exe is complete (575/575)**;
   engine overlay 2 left, both parked (`func_8007F314`, `PlotScriptFX`),
   ovl61 95/97 (two 2026-10-18 swarm runs and three hand matches; 2 big ones left),
+  ovl67 99/135 (2026-10-18 swarm run),
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Dashboard (2026-10-18): `docs/index.html` is `tools/scripts/dashboard.html` plus
@@ -41,6 +42,14 @@ leads**, add any new gotcha, and add one short entry at the top of the
   identical (docs/ASSETS.md). ROADMAP's asset extraction box is ticked.
 
 ## Next
+
+**ovl67 (2026-10-18, run 20261018163029):** stopped by hand after 58 min,
+$39.26: 82 matched ($0.48 each), 1 parked (`func_800B39C0`, registers 29/145,
+an s0/s1 swap), 2 failed at the gate on compile errors from declarations
+other matches in the run added (`func_800BA43C`, `func_800B3E74`): the
+worker's C was right against an older tip, so retry them (`swarm.mjs forget
+--only ...` resets their attempt if needed). 36 left in the queue; the
+pattern rows are folded.
 
 **ovl61 (2026-10-18):** two runs, 83 matched, and `CalcArkInfluence`,
 `func_800B85DC` and `func_800BE4D4` by hand; 95/97 functions, 2 left, both big
@@ -455,6 +464,11 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-18 (swarm):** ovl67 run 20261018163029, `--workers 3 --big-workers 2
+  --permuters 2`, 58 min, $39.26: 82 matched, 1 parked, 2 failed at the gate
+  (compile errors against the run's newer headers; see Next). Fold: 32 rows,
+  3 more examples on existing rows; a volatile workaround and a shared
+  prototype change dropped.
 - **2026-10-18 (hand):** `func_800B9CB8` (ovl67, 1924 B) matched (e4529709) by
   porting ovl61's `func_800BE4D4`: no grab path, its own reach boxes
   (`D_800C4190`; the hero's y read once into a separate `hy` for top/bot) and
