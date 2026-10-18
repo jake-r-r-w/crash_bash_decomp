@@ -14,10 +14,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1312/2551 game functions matched: **main.exe is complete (575/575)**;
+- 1364/2551 game functions matched: **main.exe is complete (575/575)**;
   engine overlay 2 left, both parked (`func_8007F314`, `PlotScriptFX`),
   ovl61 95/97 (two 2026-10-18 swarm runs and three hand matches; 2 big ones left),
-  ovl67 99/135 (2026-10-18 swarm run),
+  ovl67 99/135 (2026-10-18 swarm run), ovl69 67/77 (2026-10-18 swarm run),
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Dashboard (2026-10-18): `docs/index.html` is `tools/scripts/dashboard.html` plus
@@ -42,6 +42,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
   identical (docs/ASSETS.md). ROADMAP's asset extraction box is ticked.
 
 ## Next
+
+**ovl69 (2026-10-18, run 20261018173050):** stopped by hand after 75 min,
+$33.21: 48 matched, 1 failed at the gate on a compile error (`func_800B7CE8`,
+same cause as ovl67's two), 10 left in the queue. Folded.
 
 **ovl67 (2026-10-18, run 20261018163029):** stopped by hand after 58 min,
 $39.26: 82 matched ($0.48 each), 1 parked (`func_800B39C0`, registers 29/145,
@@ -464,6 +468,9 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-18 (swarm):** ovl69 run 20261018173050, `--workers 3 --big-workers 1
+  --permuters 2`, 75 min, $33.21: 48 matched ($0.69 each), 1 failed at the gate
+  (compile error against the run's newer headers). Fold: 20 rows. Then ovl6a.
 - **2026-10-18 (swarm):** ovl67 run 20261018163029, `--workers 3 --big-workers 2
   --permuters 2`, 58 min, $39.26: 82 matched, 1 parked, 2 failed at the gate
   (compile errors against the run's newer headers; see Next). Fold: 32 rows,
