@@ -14,9 +14,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1129/2551 game functions matched: **main.exe is complete (575/575)**;
-  engine overlay 9 left; parked by hand: `func_800926CC` (1/134, 2026-10-17)
-  and `func_8008A924` (registers 1/30, 2026-10-18),
+- 1130/2551 game functions matched: **main.exe is complete (575/575)**;
+  engine overlay 8 left; parked by hand: `func_800926CC` (1/134, 2026-10-17),
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - The engine overlay is six files and `ovl5d` three, `ovl5e`, `ovl66`,
@@ -148,9 +147,7 @@ misses with big-mode checkpoints: `func_8007BFA8` (instructions 5/114),
 - **Hack matches to revisit:** `decomp.py hacks` lists them (one on
   2026-10-18: `func_800193A8`, register pins that are probably the original
   source). Parks are `decomp.py status` / the dashboard; `func_800926CC` was
-  left parked rather than matched with an `asm("")` barrier, and so was
-  `func_8008A924`, though a `register u8 dummy asm("$3")` pin matches it (its
-  block note has the form).
+  left parked rather than matched with an `asm("")` barrier.
 - **Tooling ideas not done** (from the 2026-10-16 plan):
   - Pilots, no code: model tiers (`--model haiku --escalate-model sonnet
     --big-workers 0` on ~40 functions under 128 B, check the first matches'
@@ -385,6 +382,11 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-18 (hand, third try):** `func_8008A924` matched without a hack
+  (9787456). The target's unused `lbu` is half of `run_walk = run_walk`;
+  post-reload CSE deletes the store. A `do { } while (0)` around the read
+  gives the reloaded pointer loop-weighted refs, so it keeps `v0`. Two new
+  Diff patterns rows.
 - **2026-10-18 (hand, second try):** `func_8008A924` still parked. A `$3` pin
   matches (not committed: a workaround). A dead read gets the dying base's
   register, so the original's value was live at allocation; an if/else whose
