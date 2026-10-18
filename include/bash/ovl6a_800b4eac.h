@@ -21,6 +21,11 @@ typedef struct Ovl6aGameView {
     /* 0x26 */ u8 pad26[0x30 - 0x26];
     /* 0x30 */ u16 unk30;
 } Ovl6aGameView;
+typedef struct KeyedPair {
+    s32 key;
+    s32 val[1];
+} KeyedPair;
+extern KeyedPair D_800BCB54[];
 extern s32 D_800BD390;
 extern s32 D_800BD394;
 extern s32 D_800BCEF4;
@@ -107,6 +112,8 @@ s32 func_800B84CC(void);
 void func_800B8588(void);
 
 void func_800B85A8(void);
+
+s32 func_800B8708(s32 arg0);
 
 void func_800B8CA0(void);
 

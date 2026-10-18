@@ -296,7 +296,19 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B85E4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B86AC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B8708);
+s32 func_800B8708(s32 arg0) {
+    KeyedPair *p = D_800BCB54;
+    s32 i = 10;
+    u8 *g = D_8005A614;
+
+    for (; i != -1; i--) {
+        if (p->key == arg0) {
+            return p->val[*(s32 *)(g + 0x2C)];
+        }
+        p++;
+    }
+    return 0;
+}
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl6a/800b4eac", D_800B37EC);
 
