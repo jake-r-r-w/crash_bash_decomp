@@ -140,6 +140,8 @@ void func_800C2C8C(s32 arg0);
 
 void func_800C2DD8(s32 arg0);
 
+void func_800C2E60(s32 arg0);
+
 void func_800C2EF8(s32 arg0);
 
 s32 func_800C365C(void);

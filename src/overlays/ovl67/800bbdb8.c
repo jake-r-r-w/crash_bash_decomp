@@ -216,7 +216,22 @@ void func_800C2DD8(s32 arg0) {
 void func_800C2E58(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C2E60);
+void func_800C2E60(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = &base[arg0];
+    EXTheromove *m = h->hero_move;
+
+    SetHeroSeq((HeroInfo *)arg0, 0x22);
+    func_800B4954(arg0);
+    m->x_acc = 0x10;
+    m->z_acc = 0x10;
+    m->jump_acc = 0x10;
+    m->mass = 0x100;
+    m->z_dec = 1;
+    m->x_dec = 1;
+    m->jump_dec = 1;
+    h->hero->UserInfo.user1 = 0;
+}
 
 void func_800C2EF8(s32 arg0) {
     HeroInfo *base = Heroes;
