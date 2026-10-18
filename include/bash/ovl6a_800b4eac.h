@@ -400,5 +400,26 @@ extern ScriptInit D_800BD18C;
 extern ScriptInit D_800BD1E4;
 
 void func_800B93B4(s32 arg0, s32 arg1);
+/* D_8005A614 as seen by func_800B6A3C. */
+typedef struct Ovl6aSelView {
+    /* 0x00 */ u8 pad0[0x30];
+    /* 0x30 */ u16 unk30;
+    /* 0x32 */ u16 unk32;
+    /* 0x34 */ u16 unk34;
+    /* 0x36 */ u8 pad36[0x62 - 0x36];
+    /* 0x62 */ u8 unk62;
+    /* 0x63 */ s8 unk63;
+} Ovl6aSelView;
+/* 8-byte entries of D_8009EDD4[i][3]. */
+typedef struct Ovl6aSelEntry {
+    /* 0x0 */ u16 unk0;
+    /* 0x2 */ u16 unk2;
+    /* 0x4 */ u16 unk4;
+    /* 0x6 */ u16 unk6;
+} Ovl6aSelEntry;
+extern u8 D_800BCEDC;
+extern s32 D_800BCEE4;
+
+void func_800B6A3C(void);
 
 #endif /* BASH_OVL6A_800B4EAC_H */
