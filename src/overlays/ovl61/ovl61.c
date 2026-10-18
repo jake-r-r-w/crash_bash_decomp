@@ -372,7 +372,27 @@ u8 *func_800C01B8(void) {
     return temp_v0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800C0250);
+s32 func_800C0250(s32 arg0, s32 arg1) {
+    s32 row;
+
+    row = arg0 == D_800C2728;
+    if (arg0 == D_800C2720) {
+        row = 2;
+    }
+    if (arg0 == D_800C271C) {
+        row = 3;
+    }
+    if (arg1 == *D_800C19C0[row][0]) {
+        return 0;
+    }
+    if (arg1 == *D_800C19C0[row][1]) {
+        return 1;
+    }
+    if (arg1 == *D_800C19C0[row][2]) {
+        return 2;
+    }
+    return 3;
+}
 
 void func_800C02F8(s32 arg0) {
     HeroInfo *base;
