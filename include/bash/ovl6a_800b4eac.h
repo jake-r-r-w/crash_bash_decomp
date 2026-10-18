@@ -125,10 +125,12 @@ typedef struct Ovl6aGameView {
     /* 0x008 */ s32 unk8;
     /* 0x00C */ u8 padC[0x24 - 0xC];
     /* 0x024 */ s16 unk24;
-    /* 0x026 */ u8 pad26[0x30 - 0x26];
+    /* 0x026 */ u8 pad26[0x2C - 0x26];
+    /* 0x02C */ s32 unk2C;
     /* 0x030 */ u16 unk30;
     /* 0x032 */ u16 unk32;
-    /* 0x034 */ u8 pad34[0x3C - 0x34];
+    /* 0x034 */ s16 unk34;
+    /* 0x036 */ u8 pad36[0x3C - 0x36];
     /* 0x03C */ u16 unk3C;
     /* 0x03E */ u8 pad3E[0x4C - 0x3E];
     /* 0x04C */ u8 unk4C;
@@ -137,7 +139,9 @@ typedef struct Ovl6aGameView {
     /* 0x051 */ u8 unk51;
     /* 0x052 */ u8 unk52;
     /* 0x053 */ u8 unk53;
-    /* 0x054 */ u8 pad54[0xE0 - 0x54];
+    /* 0x054 */ u8 pad54[0x63 - 0x54];
+    /* 0x063 */ s8 unk63;
+    /* 0x064 */ u8 pad64[0xE0 - 0x64];
     /* 0x0E0 */ s32 unkE0;
     /* 0x0E4 */ u8 unkE4[0x21];
     /* 0x105 */ u8 unk105[0x21];
@@ -149,6 +153,13 @@ typedef struct KeyedPair {
     s32 val[1];
 } KeyedPair;
 extern KeyedPair D_800BCB54[];
+/* Per-mode record tables for func_80095BEC, indexed by language/player. */
+extern s32 *D_800BC810[];
+extern s32 *D_800BC884[];
+extern s32 *D_800BC918[];
+extern s32 *D_800BC9AC[];
+extern s32 *D_800BCA1C[];
+extern s32 D_800BCB40[];
 /* A POLY_FT4 as func_800B9E90 fills it. */
 typedef struct Ovl6aFt4 {
     /* 0x00 */ u32 tag;
@@ -544,6 +555,8 @@ typedef struct {
     unsigned addr : 24;
     unsigned len : 8;
 } Ovl6aPTag;
+
+void func_800B64C8(void);
 
 void func_800B6A3C(void);
 

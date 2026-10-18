@@ -184,7 +184,96 @@ void func_800B6224(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B64C8);
+void func_800B64C8(void) {
+    Ovl6aGameView *g = (Ovl6aGameView *)D_8005A614;
+    Ovl6aGameView *g2;
+    Ovl6aGameView *g3;
+    EngSub90248 *rec;
+    subengine *sub;
+    s32 *recs;
+    s32 i;
+    KeyedPair *p;
+    s32 key;
+    s16 v;
+    u16 n;
+
+    if (g->unk63 < 0 || D_800BF260 <= 0
+        || (rec = D_800BCCF4[g->unk63].unk14, rec->unk2 != 2)
+        || (!(g->unk4 & 0x2000) && g->unkE4[rec->unk4] == 0)) {
+        if (D_800BCED4 >= 0) {
+            D_800BCED4 = -1;
+            func_80095A04(1);
+            func_80095A04(2);
+        }
+    } else {
+        if (D_800BCED4 == -1) {
+            func_800B6224(D_800BCCF4[D_8005A677].unk14->unk4);
+        }
+        sub = GetEngineSlot(1)->sub;
+        if ((D_80051380 & 0x80) && D_8005A644 != 0x8008 && D_800BCED4 > 0) {
+            PlaySfx(0x385, NULL, NULL, 0x1000, 0x1E00, 0);
+            D_800BCED4--;
+        }
+        if ((D_80051380 & 0x20) && D_8005A644 != 0x8008 && D_800BCED4 < D_800BCEFC - 1) {
+            PlaySfx(0x385, NULL, NULL, 0x1000, 0x1E00, 0);
+            D_800BCED4++;
+        }
+        v = func_80015284(*(s16 *)&sub->unk70, D_800BCB40[D_800BCED4], 2000);
+        *(s16 *)&sub->unk70 = v;
+        sub->unk76 = v + 90;
+    }
+    if (D_800BF260 != 0) {
+        switch (((s32(*)(void))func_800B7B38)()) {
+        case 2:
+            if (!(GetEngineSlot(2)->flags & 0x8000)) {
+                n = D_800BCCF4[((Ovl6aGameView *)D_8005A614)->unk63].unk14->unk4;
+                g2 = (Ovl6aGameView *)D_8005A614;
+                if (((s32(*)(s32))func_8007A6D0)(n) == 1) {
+                    if (g2->unkE4[n] != 0) {
+                        func_80095BEC(2, D_800BC918[g2->unk2C]);
+                    } else {
+                        func_80095BEC(2, D_800BC884[g2->unk2C]);
+                    }
+                } else {
+                    key = func_80090248();
+                    p = D_800BCB54;
+                    for (i = 10; i != -1; i--) {
+                        if (p->key == key) {
+                            recs = (s32 *)p->val[D_8005A640];
+                            goto found;
+                        }
+                        p++;
+                    }
+                    recs = NULL;
+                found:
+                    func_80095BEC(2, recs);
+                }
+            }
+            GetEngineSlot(2)->unk10.y = (D_800BF260 >> 4) - 200;
+            break;
+        case 5:
+            if (!(GetEngineSlot(2)->flags & 0x8000)) {
+                g3 = (Ovl6aGameView *)D_8005A614;
+                if (g3->unk34 == 0x21 && ((s32(*)(s32))func_8007A6D0)(0x22) == 0) {
+                    recs = D_800BCA1C[g3->unk2C];
+                } else {
+                    recs = D_800BC9AC[g3->unk2C];
+                }
+                func_80095BEC(2, recs);
+            }
+            GetEngineSlot(2)->unk10.y = 0x280 - (D_800BF260 >> 4);
+            break;
+        case 4:
+            if (!(GetEngineSlot(2)->flags & 0x8000)) {
+                func_80095BEC(2, D_800BC810[D_8005A640]);
+            }
+            GetEngineSlot(2)->unk10.y = (D_800BF260 >> 4) - 200;
+            break;
+        }
+    } else {
+        func_80095A04(2);
+    }
+}
 
 s32 func_800B694C(void) {
     s32 r = 0;
