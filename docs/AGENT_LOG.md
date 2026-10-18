@@ -147,6 +147,10 @@ left, for the permuter). `--max-functions 500` leaves time and cost as the limit
 
 ## Open leads
 
+- **Hack matches to revisit:** `decomp.py hacks` lists them (one on
+  2026-10-18: `func_800193A8`, register pins that are probably the original
+  source). Parks are `decomp.py status` / the dashboard; `func_800926CC` was
+  left parked rather than matched with an `asm("")` barrier.
 - **Tooling ideas not done** (from the 2026-10-16 plan):
   - Pilots, no code: model tiers (`--model haiku --escalate-model sonnet
     --big-workers 0` on ~40 functions under 128 B, check the first matches'
@@ -381,6 +385,9 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-18:** `decomp.py hacks`: matched functions that need a register
+  pin or asm barrier, with their match commit's `Hack:` reason (read from
+  the source, so it can't go stale). CONVENTIONS points at it.
 - **2026-10-17 (hand, no permuter):** `func_800926CC` from the swarm's 4/134 to
   1/134 and parked. The misplaced `li a0,1` was sched1's birthing priority on a
   single-set pseudo; `s8 j` avoids it, but post-reload CSE then turns the

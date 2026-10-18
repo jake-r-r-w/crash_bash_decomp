@@ -85,7 +85,10 @@ A file is finished when every function in it reaches level 4.
   `asm()` bodies.
 - Register pins and empty `asm("")` barriers are a last resort: `decomp.py done`
   refuses them without `--hack "why"`, which goes in the commit message. Remove
-  them when the function matches without.
+  them when the function matches without; `decomp.py hacks` lists every hack match
+  with its commit's reason, to retry them after tool upgrades. A hack that
+  isn't likely to be the original source (a barrier around a scheduler quirk)
+  is worse than a park.
 - One function per match commit, through `decomp.py done NAME --commit`
   ([MATCHING.md](MATCHING.md)).
 - A function that will not match after a bounded effort is parked
