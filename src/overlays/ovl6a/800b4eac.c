@@ -1065,7 +1065,30 @@ void func_800BB3D0(s8 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BB4AC);
+void func_800BB4AC(SubInitList *list) {
+    s32 i;
+    subengine *s;
+    SubInit *p;
+
+    func_8001D334(D_800BF100.sub);
+    do {
+        i = 0;
+        func_8001D3B0(&D_800BF100, 0x21, D_800BDB58);
+    } while (0);
+    s = D_800BDB58;
+    D_800BF100.unk10.x = 0xC4;
+    D_800BF100.unk10.y = 0xBE;
+    D_800BF100.flags |= 0x10000000;
+    p = list->items;
+    if (list->count > 0) {
+        do {
+            func_80095F48((s32 *)s, p->a, p->b, p->c, 0);
+            p++;
+            s++;
+            i++;
+        } while (i < list->count);
+    }
+}
 
 void func_800BB584(void) {
     D_800BF100 = EngineTemplate;

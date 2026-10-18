@@ -311,6 +311,21 @@ void func_800BB364(void);
 void func_800BB38C(void);
 
 void func_800BB3D0(s8 arg0);
+typedef struct SubInit {
+    s16 a;
+    s16 b;
+    s32 c;
+    s32 pad[2];
+} SubInit;
+
+typedef struct SubInitList {
+    SubInit *items;
+    s32 count;
+} SubInitList;
+
+extern subengine D_800BDB58[];
+
+void func_800BB4AC(SubInitList *list);
 
 void func_800BB584(void);
 
