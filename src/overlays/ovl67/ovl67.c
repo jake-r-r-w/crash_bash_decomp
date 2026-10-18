@@ -728,7 +728,15 @@ void InitN2OmissileExplode(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BB3A0);
+void func_800BB3A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    NAS *nas;
+
+    nas = SpawnNASById(arg0, arg1 - 0x80, arg2, 0x1B04, 0x11);
+    if (nas != NULL) {
+        nas->UserInfo.user1 = arg3;
+        PlaySfx(D_800C39DC[Random(4)], NULL, &nas->Engine->unk10, 0x1000, 0x1E00, 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", InitN2Ofirstmissile);
 
