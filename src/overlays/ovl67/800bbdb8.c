@@ -363,7 +363,58 @@ void InitNitroBoss(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", PlotNitroBoss);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", InitSpiralSat);
+void InitSpiralSat(NAS *nas) {
+    SpiralExt *ext = AddExtension(nas, 0x54, 0x10000000);
+    EXTengine *e;
+    NAS *s;
+    LaserExt *le;
+    NAS *ret;
+    SLONG_XYZ *q;
+    s32 i, mode;
+
+    if (ext != NULL) {
+        ext->c = nas->Engine->unk10;
+        ext->unk3C = 0;
+        ext->unk40 = Random(0x1000);
+        i = 0;
+        for (;; i++) {
+            if (i >= 4) {
+                goto done;
+            }
+            ext->sat[i] = NULL;
+            e = AddEngine(nas, i + 2);
+            if (e != NULL) {
+                ext->ang[i] = i << 10;
+                ext->eng[i] = e;
+                ext->radius = 0x800;
+                e->unk10.x = ext->c.x + ((ext->radius * D_80068BD4[(ext->ang[i] - 0x400) & 0xFFF].unk2) >> 12);
+                e->unk10.y = ext->c.y + ((ext->radius * D_80068BD4[ext->ang[i] & 0xFFF].unk2) >> 12);
+                e->unk10.z = ext->c.z;
+                e->sub->unk6C = *(s32 *)D_80058AD0;
+                e->sub->unk74 = 0x201A;
+                e->sub->flags = 0x8000;
+                q =&e->unk10;
+                s = SpawnNASById(q->x, q->y, q->z, 0x1605, 0x11);
+                mode = 2;
+                if (s != NULL) {
+                    le = FindExtension(s, 0x10000000);
+                    if (le != NULL) {
+                        le->unkC = mode;
+                        le->unk18 = 0x100;
+                        le->unk20 = 0;
+                        le->unk28 = 0;
+                        s->InitDelete(s);
+                    }
+                    ret = s;
+                } else {
+                    ret = NULL;
+                }
+                ext->sat[i] = ret;
+            }
+        }
+    }
+done:;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", PlotSpiralSat);
 

@@ -122,6 +122,17 @@ typedef struct LaserExt {
     /* 0x28 */ s32 unk28;
 } LaserExt;
 
+typedef struct SpiralExt {
+    /* 0x00 */ u8 pad00[0xC];
+    /* 0x0C */ EXTengine *eng[4];
+    /* 0x1C */ s32 radius;
+    /* 0x20 */ s32 ang[4];
+    /* 0x30 */ SLONG_XYZ c;
+    /* 0x3C */ s32 unk3C;
+    /* 0x40 */ s32 unk40;
+    /* 0x44 */ NAS *sat[4];
+} SpiralExt;
+
 extern u8 *D_800C449C;
 extern NAS *D_800C4490;
 extern NAS *D_800C4494;
@@ -348,5 +359,7 @@ s32 func_800C3544(s32 *arg0, s32 *arg1);
             }                                    \
         }                                        \
     }
+
+void InitSpiralSat(NAS *nas);
 
 #endif /* BASH_OVL67_800BBDB8_H */
