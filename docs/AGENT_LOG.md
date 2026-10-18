@@ -14,10 +14,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1430/2551 game functions matched: **main.exe is complete (575/575)**;
+- 1433/2551 game functions matched: **main.exe is complete (575/575)**;
   engine overlay 2 left, both parked (`func_8007F314`, `PlotScriptFX`),
   ovl61 95/97 (two 2026-10-18 swarm runs and three hand matches; 2 big ones left),
-  ovl67 99/135 (2026-10-18 swarm run), ovl69 67/77, ovl6a 92/94 (2026-10-18 swarm runs),
+  ovl67 101/135, ovl69 68/77, ovl6a 92/94 (2026-10-18 swarm runs and hand fixes),
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Dashboard (2026-10-18): `docs/index.html` is `tools/scripts/dashboard.html` plus
@@ -314,6 +314,14 @@ Other:
 - **`dashboard.html` holds the data placeholder once.** `progress` puts the
   data in place of every `/*DATA*/null` in the template (Python's
   `str.replace`): one in a comment doubled the page. Name it some other way.
+- **A swarm match the gate refused on a compile error is usually still good.**
+  Its C matched against an older tip, and other matches in the run changed the
+  same header (a second typedef of one struct, a prototype with other
+  parameters). Apply `results/<key>/*gatefix*/patch.diff` (or the big1 one) with
+  `git apply --3way`, keep both sides of a header conflict, merge duplicate
+  structs into the existing one, and call a function whose callers pass other
+  arguments than its definition takes through a cast (MATCHING.md). Run
+  `git update-index --refresh` first if `apply` says "does not match index".
 - **Smoke-test swarm changes end to end** before a real run: a scripted
   `--worker-cmd` run against a local bare remote (`--remote <bare clone>
   --branch smoke --only KEY`) catches what the unit tests can't (clone setup,
@@ -475,6 +483,12 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-18 (hand):** the swarm's three other gate refusals fixed and
+  committed: `func_800BA43C` (ovl67, 067bc83b: a third, unused bool parameter
+  like ovl61's ArkHeroRad2ObjectCollision), `func_800B3E74` (ovl67, c079de93:
+  conflicting prototypes merged; `func_800B4138` takes one argument but this
+  caller passes two, so a cast call), `func_800B7CE8` (ovl69, 3ba0a413: its own
+  types dropped for the header's `Ovl69Entry`). New gotcha on the recipe.
 - **2026-10-18 (hand):** `func_800B4EAC` (ovl6a) matched (36eb852e) from the
   swarm's big-mode C, which matched but failed the gate on compile errors: its
   D_8005A614 view (a second `Ovl6aGameView`) merged into the file's own, stale
