@@ -288,7 +288,58 @@ void func_800B6A3C(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B6E20);
+void func_800B6E20(void) {
+    s32 *tbl;
+    s32 n;
+    s32 i;
+    s32 *p;
+    s32 *e;
+    NAS *nas;
+    Ovl6aSpawnExt *ext;
+
+    tbl = NULL;
+    if (*(s32 *)D_80058AD0 != 0) {
+        tbl = *(s32 **)((u8 *)D_80058AD0 + 0x28);
+    }
+    i = 0;
+    n = tbl[0];
+    p = tbl + 1;
+    while (1) {
+        if (!(i < n)) {
+            break;
+        }
+        e = (s32 *)((u8 *)p + *p);
+        if ((u32)(e[3] - 0xC8) < 5) {
+            nas = SpawnNASById(0, 0, 0, 0x1626, 0x11);
+            if (nas != NULL) {
+                ext = FindExtension(nas, 0x10000000);
+                if (ext != NULL) {
+                    s32 *q = (s32 *)(*(u8 **)((u8 *)D_80058AD0 + 0x2C) + i * 4);
+                    ext->unkC = (s32 *)((u8 *)q + *q);
+                    if (e[3] == 0xC8) {
+                        ext->unk34 = 0;
+                    }
+                    if (e[3] == 0xC9) {
+                        ext->unk34 = 1;
+                    }
+                    if (e[3] == 0xCA) {
+                        ext->unk34 = 2;
+                    }
+                    if (e[3] == 0xCB) {
+                        ext->unk34 = 3;
+                        nas->Engine->sub->flags &= 0xFFFF7FFF;
+                    }
+                    if (e[3] == 0xCC) {
+                        ext->unk34 = 4;
+                        nas->Engine->sub->flags &= 0xFFFF7FFF;
+                    }
+                }
+            }
+        }
+        i++;
+        p++;
+    }
+}
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl6a/800b4eac", D_800B3618);
 

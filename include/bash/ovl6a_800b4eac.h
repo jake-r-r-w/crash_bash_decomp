@@ -8,6 +8,12 @@
 #include "common.h"
 #include "bash/ovl6a.h"
 
+typedef struct Ovl6aSpawnExt {
+    u8 unk0[0xC];
+    s32 *unkC;
+    u8 unk10[0x34 - 0x10];
+    s32 unk34;
+} Ovl6aSpawnExt;
 extern s32 D_800BD5A8;
 void func_800BBE24();
 
@@ -431,6 +437,8 @@ extern u8 D_800BCEDC;
 extern s32 D_800BCEE4;
 
 void func_800B6A3C(void);
+
+void func_800B6E20(void);
 
 void func_800BA9C8(s32 arg0, Ovl6aSpawnEnt *arg1);
 
