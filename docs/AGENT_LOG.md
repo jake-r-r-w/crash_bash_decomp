@@ -14,8 +14,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1134/2551 game functions matched: **main.exe is complete (575/575)**;
-  engine overlay 4 left, 1 parked (`func_8007F314`),
+- 1135/2551 game functions matched: **main.exe is complete (575/575)**;
+  engine overlay 3 left, 1 parked (`func_8007F314`),
   all 564 PsyQ functions (Sony objects), 5 parked.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - The engine overlay is six files and `ovl5d` three, `ovl5e`, `ovl66`,
@@ -47,8 +47,8 @@ fell for 250-399 B normal ($0.79 -> $0.66, first-session matches 54% ->
 70%) and 400-599 B big ($4.58 -> $3.52); small samples, and what is left
 is the harder remainder. The closest-C carry-over did the work: three
 functions parked close then matched on the retry from their C. **Next:
-repeat the engine hour** (4 left: `func_8007F314` 5772 B (parked),
-`PlotScriptFX` 2080 B, `func_80078DD4` 664 B, `func_80093854` 424 B) with the big-heavy recipe below; `permute --near` first if there is CPU
+repeat the engine hour** (3 left: `func_8007F314` 5772 B (parked),
+`PlotScriptFX` 2080 B, `func_80078DD4` 664 B) with the big-heavy recipe below; `permute --near` first if there is CPU
 time. After each swarm run, compare `stats --run ID` with the ledger's
 earlier runs.
 
@@ -417,6 +417,14 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-18 (hand):** `func_80093854` matched (8ef8052), no hack or
+  permuter, from the swarm's 66/106 checkpoint. Worked through by hand from
+  global.c, loop.c, stmt.c, sched.c and local-alloc.c: its nine `s` registers
+  need the outer loop's refs weighted, but a real loop hoists `%hi(D_8009FA14)`
+  into a tenth. A `goto` loop with its body in `do { } while (0)` gives both
+  (loop.c skips the region as phony). Then a shared scan counter (it ties `p`
+  and wins on pseudo number), and block 0's `D_80052A54` index before its
+  local. `EngineRec32` names `unk4`. MATCHING.md: four rules, four rows.
 - **2026-10-18 (hand):** `func_80095258` matched (99f2fe3), no hack or
   permuter. The sibling `func_80094A28`'s C was right but for a t0/t1 swap
   of the parameter and the loop's hoisted `%hi(D_800A0C70)` copy. From

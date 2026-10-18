@@ -448,6 +448,10 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | `lui` of an index global comes before the target's `lui Heroes` for `&Heroes[D_x]` (both at the block start; sched2 breaks their priority tie by RTL order) | sched1 gives every single-set register birthing priority, which puts each `%hi` right before its first use, so the index's comes first. Give each block's index its own variable (`h` / `h2`, set once, so its `lh` is launched too), and assign a base pointer (`hb = Heroes;`) before reading the index in each block (set twice, so not birthing): the base then lands ahead of the index, as `rank_for_schedule` and `adjust_priority` in sched.c work out | `func_8007B330` |
 | Two loop induction pointers (givs) in callee-saved registers are swapped (`s1`/`s2`), and the `-dl` dump shows them close on global.c's priority (`floor_log2(refs) * refs / live`, here 27/77 against 25/76) | Raise the losing giv's refs with loop weighting: wrap a stretch of the loop body that uses it in `do { } while (0)`, nested twice if one level is short (each level adds one per ref inside). Pick the stretch so its loop notes don't disturb the schedule. The first insn after the notes depends on everything before it, and everything after depends on it; it must come first in the target's order and should cost 1 (a load passes its latency on to every later insn and ties them). Splitting `a -= f();` into `r = f();` inside and `a -= r;` after made the barrier a `subu` | `func_8008C824` |
 | A loop's hoisted `%hi` copy (`addu t0,v1,zero` before the loop) and a parameter used in the loop are swapped (`t0`/`t1`), and the `-dl` dump puts the parameter first (5 refs/32 against 5/42: the constant's life is doubled) | Wrap the counted loop and its `i = 0; if (n > 0)` guard, not the parameter's NULL test, in `do { } while (0)`. The hoisted insns then sit at depth 2 and the global's two loop uses at depth 3: 8 refs against the parameter's 6 (5714 against 3750). It must still rank below `s` (9310), which takes the register before it. Work the three priorities through before compiling | `func_80095258` |
+| An outer loop with its test at the top and a `j` back (increment in the slot) has its `s` registers in the wrong order: as a `goto` loop its refs are unweighted, and as a real loop loop.c hoists an invariant into one more `s` register | Keep the `goto` loop and put its body, including `i++`, in `do { } while (0)`. The region starts with a statement, so loop.c skips it as phony, but flow weights it. Its first insn falls in the exit branch's delay slot, so block 0 keeps its schedule | `func_80093854` |
+| Two copies of one inner scan (pointer `p`, counter `j`) get `p` in `s0` and `j` in `s1` | Make `j` and the compared value one function-level variable shared by both scans, with a block-local `p` in each. The shared counter's refs double (14 over 28 = 15000), tying the second scan's `p`, and it wins on its lower pseudo number | `func_80093854` |
+| A block-local address of a global and a record-index chain swap `a0`/`a1` (local-alloc: both 6 refs, life 18 against 17) | Compute the index first (`n = tab[k]; b = GLOBAL; t = &b[n];`), so the address local is born later and its shorter life ranks it first | `func_80093854` |
+| `addu rd,base,prod` where the target has `addu rd,prod,base` for `e = tab[c] * 0x38 + base` | Write it on integers: `tab[c] * 0x38 + (s32)base` | `func_80093854` |
 | A struct pointer's `%hi` gets a third register (`lui a0`) at a join where the target has it in `v0` and the other `%hi` in `v1` | One pointer reused for two structs dies twice, so local-alloc leaves it to global and can't tie the dying `%hi` to it. Use a separate pointer per struct (each dies once and is tied). If that lets later loads move above the stores (alias analysis now knows both bases), put each struct's stores in `do { } while (0)`: the loop notes are a sched1 barrier | `func_8007B330` |
 | gcc 2.7.2 unit: a test of a loaded byte computes `andi` into another register (`andi v0,v1,0x10`) where the target masks in place (`andi v1,v1`) | load into the variable and mask it in place inside the condition: `(t = buf[0], t &= 0x10, !t)` (an `(x = buf[0]) & 0x10` temp gets its own register) | `func_8002DE2C` |
 | gcc 2.7.2 unit: a branch whose target is `j X` with a filled slot keeps a `nop` in its own slot, where the target branches straight to X with that instruction | ASPSX does it, not cc1: `aspsx_fill.py` (`steal_jump_slot`) does it now | `func_8002DE2C` |
@@ -881,6 +885,29 @@ The rules found so far, each one checked against a trace:
     every insn before it, and every later insn depends on it, with that
     insn's cost. A load there raises every later insn's priority by one,
     which can turn their order into a tie.
+  - An insn with no consumer in its block (`i = 0` before a loop, a copy
+    into a variable used only later) keeps priority 1 and lands at the top
+    of the block. A loop note after it gives it a consumer, the barrier insn,
+    so it moves down to the barrier (`func_80093854`).
+- **Loop rotation (`expand_end_loop` in `stmt.c`).** A `for` or `while` test
+  at the top moves to the bottom, and jump copies it in front of the loop
+  (folded away after `i = 0`). The scan for that test stops at a call, a
+  label or a block note (a block that declares something), so a test after
+  one of those stays at the top. The target's test-at-top shape with a `j`
+  back is a `goto` loop, or a `for (;;)` whose body declares a variable
+  before `if (...) break;`.
+- **Loop invariants (`loop.c`).**
+  - `scan_loop` skips a "phony" loop, one whose first insn after the start
+    note isn't a label. A `do { } while (0)` that starts with a statement is
+    one, since jump deletes its unused start label. flow still weights its
+    refs by depth (`func_80093854`).
+  - It also skips registers that loop optimization made for an inner loop.
+  - `combine_movables` merges identical invariants (two `lui %hi(X)`),
+    adding their savings and lifetimes. `move_movables` moves one when
+    threshold × savings × lifetime is at least the loop's insn count. The
+    threshold is near the register count, so nearly every invariant moves.
+  - A hoisted constant that gets no register (more call-crossing pseudos than
+    `s` registers) is rematerialized by reload at each use.
 - **Memory dependences (`true_dependence`, `memrefs_conflict_p` in `sched.c`).**
   - A register set once to a symbol stands for that symbol (`canon_rtx`).
     Two different symbols never conflict, so stores through such pointers
@@ -898,6 +925,10 @@ The rules found so far, each one checked against a trace:
   - `combine_regs` ties an insn's output to a register operand that dies
     there, so they share a register. The operand must not be inside a
     memory address, and the output must be local and not yet placed.
+  - `optimize_reg_copy_1` (in `update_equiv_regs`): for a copy `dest = src`
+    where src lives on, it rewrites src's later uses in the block to dest, up
+    to src's death. Only uses after the copy in sched1's order count
+    (`func_80093854`: the loads use `g` because sched1 puts `g = a` at the top).
 - **Global register allocation (`global.c`).**
   - `allocno_compare` uses the same priority, refs × floor_log2(refs) / live
     length, from the `-dl` dump's "used N times across M insns". Equal

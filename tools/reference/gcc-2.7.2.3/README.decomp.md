@@ -29,12 +29,13 @@ The passes that decide most of a match, in the order cc1 runs them (`toplev.c`,
 
 | File | Pass | Matching questions it answers |
 |---|---|---|
+| `stmt.c` | expand | loop rotation: whether a loop test stays at the top (`expand_end_loop`) |
 | `cse.c` | cse, cse2 (`-frerun-cse-after-loop`) | folding of addresses and constants (`find_best_addr`, `fold_rtx`); which blocks one pass covers (`cse_end_of_basic_block`) |
-| `loop.c` | loop | invariant hoisting |
+| `loop.c` | loop | invariant hoisting (`scan_loop`, `combine_movables`, `move_movables`), which loops it skips ("phony"), strength reduction |
 | `flow.c` | flow | basic blocks, liveness, `REG_DEAD`/`REG_UNUSED` notes, refs weighted by loop depth |
 | `combine.c` | combine | merged instructions |
 | `sched.c` | sched1, sched2 | instruction order (`priority`, `rank_for_schedule`, `schedule_select`, `adjust_priority`, `birthing_insn_p`); which loads may move above which stores (`true_dependence`, `memrefs_conflict_p`) |
-| `local-alloc.c`, `global.c` | register allocation | which register a value gets (`qty_compare`, `combine_regs`, `find_free_reg`, `update_equiv_regs`; global.c's preferences) |
+| `local-alloc.c`, `global.c` | register allocation | which register a value gets (`qty_compare`, `combine_regs`, `find_free_reg`, `update_equiv_regs`, `optimize_reg_copy_1`; global.c's `allocno_compare` and preferences) |
 | `reload1.c` | reload | late register substitutions |
 | `jump.c` | jump, jump2 | cross-jumping (`find_cross_jump`, `do_cross_jump`), threading (`follow_jumps`) |
 | `reorg.c` | dbr | delay-slot filling (`fill_simple_delay_slots`, `fill_eager_delay_slots`, `steal_delay_list_from_fallthrough`, `redundant_insn`, `relax_delay_slots`) |
