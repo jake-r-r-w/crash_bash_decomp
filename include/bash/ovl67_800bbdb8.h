@@ -22,6 +22,29 @@ typedef struct MineSFX {
     /* 0x60 */ s32 unk60;
     /* 0x64 */ s32 unk64;
 } MineSFX;
+typedef struct LaserSub {
+    /* 0x00 */ u8 pad00[0x6C];
+    /* 0x6C */ s32 unk6C;
+    /* 0x70 */ u8 pad70[4];
+    /* 0x74 */ s16 unk74;
+} LaserSub;
+
+typedef struct LaserObj {
+    /* 0x00 */ u8 pad00[0x1E];
+    /* 0x1E */ s16 unk1E;
+    /* 0x20 */ u8 pad20[0x3D];
+    /* 0x5D */ u8 unk5D;
+    /* 0x5E */ u8 pad5E[0x0E];
+    /* 0x6C */ LaserSub *sub;
+} LaserObj;
+
+typedef struct LaserShoot {
+    /* 0x00 */ u8 pad00[0x54];
+    /* 0x54 */ LaserObj *obj;
+    /* 0x58 */ u8 pad58[8];
+    /* 0x60 */ s32 unk60;
+} LaserShoot;
+extern u8 *D_800C449C;
 extern s32 D_800C4480;
 extern s32 D_800C4488;
 extern s32 D_800C448C;
@@ -34,6 +57,8 @@ extern ScriptInit D_800C44F0;
 void func_800BC6B8(void);
 
 void InitMineSFX(MineSFX *arg0);
+
+void InitLaserShoot(LaserShoot *arg0);
 
 void func_800C2904(s32 *arg0, s32 flag, s32 *out);
 

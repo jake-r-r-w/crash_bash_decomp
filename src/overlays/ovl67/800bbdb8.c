@@ -86,7 +86,14 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C237C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C27D4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", InitLaserShoot);
+void InitLaserShoot(LaserShoot *arg0) {
+    arg0->obj->sub->unk6C = *(s32 *)D_80058AD0;
+    arg0->obj->sub->unk74 = 0x201D;
+    arg0->obj->unk1E = 0;
+    arg0->obj->unk5D = 2;
+    arg0->unk60 = 0;
+    func_80026B70(&D_800C449C, (u8 *)arg0);
+}
 
 void InitMineSFX(MineSFX *arg0) {
     arg0->unk5C = Random(4);
