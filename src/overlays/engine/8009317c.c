@@ -160,7 +160,76 @@ void func_800936C4(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009317c", func_80093854);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8009317c", func_800939FC);
+void func_800939FC(void)
+{
+  s32 i;
+  View939FC *g;
+  s32 arg;
+  u8 *b;
+  u8 *t;
+  u8 *tg;
+  s32 idx;
+  s32 *src;
+  s16 *p;
+  s32 v;
+  EngineHooks *h;
+  u16 *new_var;
+  u32 k;
+
+  new_var = D_800A00D0;
+  i = 0;
+  tg = D_8005A614;
+  idx = ((View939FC *) tg)->unk8;
+  g = (View939FC *) tg;
+  tg = (u8 *) D_8005A5E8;
+  arg = *((s32 *) (((u8 *) (&((EngineRec32 *) tg)[idx])) + 4));
+  t = D_80052A54;
+  h = &D_8009D6E8;
+  src = (s32 *) (&((Blk38 *) t)[new_var[g->unk2C]]);
+  ((Blk38 *) t)[28].head.w0 = src[0];
+  b = t;
+  ((Blk38 *) b)[28].head.w4 = src[1];
+  do
+  {
+    k = ((u8 *) g)[i + 0x50];
+    if ((k - 1) < 8)
+    {
+      func_8001612C((u8 *) ((((u16 *) h->unk4)[k] * 0x38) + ((s32) b)), arg);
+      if (h->unk8 != 0)
+      {
+        func_8001612C((u8 *) ((((u16 *) h->unk8)[k] * 0x38) + ((s32) b)), arg);
+      }
+    }
+    i++;
+  }
+  while (i < 4);
+
+  p = *((s16 **) D_8005A5E0);
+  v = *p;
+  if (v >= 0)
+  {
+    do
+    {
+      func_8001612C(D_80052A54 + (v * 0x38), 0);
+      p++;
+      v = *p;
+    }
+    while (v >= 0);
+  }
+  p = *((s16 **) (((u8 *) (&D_8005A5E8[D_8005A61C])) + 8));
+  v = *p;
+  if (v >= 0)
+  {
+    do
+    {
+      func_8001612C(D_80052A54 + (v * 0x38), 0);
+      p++;
+      v = *p;
+    }
+    while (v >= 0);
+  }
+}
+
 
 void func_80093BE8(void) {
     EngStateView *g0;

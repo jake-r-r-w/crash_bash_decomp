@@ -10,6 +10,26 @@
 
 extern u16 D_8009F994[];
 
+/* 0x38-byte records at D_80052A54 (func_800939FC). */
+/* D_8005A614 as seen by func_800939FC. */
+typedef struct View939FC {
+    /* 0x00 */ u8 pad0[8];
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ u8 padC[0x20];
+    /* 0x2C */ s32 unk2C;
+    /* 0x30 */ u8 pad30[0x20];
+    /* 0x50 */ u8 unk50[4];
+} View939FC;
+
+typedef struct Blk8 {
+    s32 w0;
+    s32 w4;
+} Blk8;
+typedef struct Blk38 {
+    Blk8 head;
+    u8 pad8[0x30];
+} Blk38;
+
 typedef struct Tmpl1C {
     s32 f0;
     s32 f4;
