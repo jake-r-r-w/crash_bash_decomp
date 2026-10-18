@@ -199,6 +199,8 @@ void func_800BB3A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
 void func_800BB6BC(s32 arg0);
 
+void func_800BB7D4(s32 arg0);
+
 void func_800BB86C(s32 arg0);
 
 s32 func_800BB944(s32 arg0);
