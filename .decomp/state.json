@@ -9914,7 +9914,8 @@
   "status": "matched"
  },
  "ovl6a:800BB5F0": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-18T19:42:43Z",
+  "status": "matched"
  },
  "ovl6a:800BBC64": {
   "matched_at": "2026-10-18T19:30:24Z",

@@ -466,6 +466,27 @@ extern u8 D_800C7264[];
 void func_800B5158(void);
 
 void func_800BB5F0(Ovl6aRenderObj *obj, s16 *out);
+
+/* func_800BBF44's body, inlined into func_800BB5F0 */
+#define OVL6A_BOUND_XY(v, b, p, xy)     \
+    {                                   \
+        s16 *q_ = (p);                  \
+        gte_ldv0(v);                    \
+        gte_rtps();                     \
+        gte_stsxy(q_);                  \
+        if ((xy)[0] < (b)[0]) {         \
+            (b)[0] = (xy)[0];           \
+        }                               \
+        if ((xy)[0] > (b)[2]) {         \
+            (b)[2] = (xy)[0];           \
+        }                               \
+        if ((xy)[1] < (b)[1]) {         \
+            (b)[1] = (xy)[1];           \
+        }                               \
+        if ((xy)[1] > (b)[3]) {         \
+            (b)[3] = (xy)[1];           \
+        }                               \
+    }
 void func_800BBC64(s16 *a, void *b, s32 c, s32 d);
 void func_800BBE24(Ovl6aRenderObj *obj, void *arg1);
 

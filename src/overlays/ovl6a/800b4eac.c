@@ -1984,7 +1984,69 @@ void func_800BB584(void) {
     D_800BF1A0 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BB5F0);
+void func_800BB5F0(Ovl6aRenderObj *obj, s16 *out) {
+    SVECTOR v[8];
+    s16 xy[2];
+    u8 *m;
+    s16 *bb;
+    s32 off;
+    s16 *p;
+
+    m =(u8 *)func_800159C4(obj->unk74, (u8 *)obj->sub->unkC);
+    off = *(s32 *)(m + 0x10);
+    out[0] = 0x7FFF;
+    out[1] = 0x7FFF;
+    out[2] = -0x8000;
+    out[3] = -0x8000;
+    bb = (s16 *)(m + (off + 0x10));
+    p = xy;
+    v[0].vx = bb[0];
+    v[0].vy = bb[1];
+    v[0].vz = bb[2];
+    v[1].vx = bb[3];
+    v[1].vy = bb[1];
+    v[1].vz = bb[2];
+    v[2].vx = bb[0];
+    v[2].vy = bb[4];
+    v[2].vz = bb[2];
+    v[3].vx = bb[3];
+    v[3].vy = bb[4];
+    v[3].vz = bb[2];
+    v[4].vx = bb[0];
+    v[4].vy = bb[1];
+    v[4].vz = bb[5];
+    v[5].vx = bb[3];
+    v[5].vy = bb[1];
+    v[5].vz = bb[5];
+    v[6].vx = bb[0];
+    v[6].vy = bb[4];
+    v[6].vz = bb[5];
+    v[7].vx = bb[3];
+    v[7].vy = bb[4];
+    v[7].vz = bb[5];
+    gte_ldv0(&v[0]);
+    gte_rtps();
+    gte_stsxy(p);
+    if (xy[0] < out[0]) {
+        out[0] = xy[0];
+    }
+    if (xy[0] > out[2]) {
+        out[2] = xy[0];
+    }
+    if (xy[1] < out[1]) {
+        out[1] = xy[1];
+    }
+    if (xy[1] > out[3]) {
+        out[3] = xy[1];
+    }
+    OVL6A_BOUND_XY(&v[1], out, p, xy);
+    OVL6A_BOUND_XY(&v[2], out, p, xy);
+    OVL6A_BOUND_XY(&v[3], out, p, xy);
+    OVL6A_BOUND_XY(&v[4], out, p, xy);
+    OVL6A_BOUND_XY(&v[5], out, p, xy);
+    OVL6A_BOUND_XY(&v[6], out, p, xy);
+    OVL6A_BOUND_XY(&v[7], out, p, xy);
+}
 
 void func_800BBC64(s16 *a, void *b, s32 c, s32 d) {
     RECT *r;
