@@ -50,6 +50,8 @@ void func_800B8588(void);
 
 void func_800B85A8(void);
 
+void func_800BA7BC(NAS *arg0);
+
 void func_800BA804(void);
 
 void func_800BA848(void);

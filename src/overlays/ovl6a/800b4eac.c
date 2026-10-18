@@ -275,7 +275,13 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BA1B4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BA374);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BA7BC);
+void func_800BA7BC(NAS *arg0) {
+    if (D_8005A624 == 0) {
+        if (arg0->UserInfo.user1++ >= 0x1D) {
+            KillNAS(arg0);
+        }
+    }
+}
 
 void func_800BA804(void) {
     s32 temp_a0;
