@@ -590,7 +590,120 @@ void func_800B5238(s32 arg0) {
     g->hero_eng->unk10.y = y + d;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B558C);
+void func_800B558C(s32 arg0) {
+    EXTheromove *m;
+    HeroInfo *h;
+    HeroInfo *c;
+    PadButtons *p;
+    PadButtons *pads;
+    s32 mask;
+    s32 d;
+    s32 max;
+    s32 acc;
+    s32 fast;
+    s32 b;
+    s32 v;
+
+    max = 0x68;
+    acc = 0x22;
+    c = Heroes;
+    h = c + arg0;
+    m = h->hero_move;
+    fast = 0;
+    if (h->hero_frozen != 0) {
+        ((PadButtons *)D_80051338)[arg0].unk50 = 0;
+        ((PadButtons *)D_80051338)[arg0].unk54 = 0;
+    }
+    if ((D_80051338[arg0].unk0 & 1) || h->hero_ai->AImode != 0) {
+        if (arg0 == D_800C2724) {
+            acc = 0x2A;
+        }
+        if (((PadButtons *)D_80051338)[arg0].unk50 & 0xF00) {
+            max = 0xA0;
+            acc = 0x38;
+        }
+        if (arg0 == D_800C2724 || arg0 == D_800C2728) {
+            mask = 0xA0;
+        } else {
+            mask = 0x50;
+        }
+        pads = (PadButtons *)D_80051338;
+        p = pads + arg0;
+        if (p->unk50 & mask) {
+            if (m->velocity_enable != 0) {
+                d = 0;
+                if (((s32 (*)(EXTengine *))D_8009D6E8.unk68)(Heroes[arg0].hero_eng) != 0) {
+                    fast = 1;
+                }
+                if (arg0 == D_800C2724 || arg0 == D_800C2728) {
+                    b = p->unk50;
+                    if (b & 0x80) {
+                        d = -acc;
+                    }
+                    v = b & 0x20;
+                } else {
+                    b = p->unk50;
+                    if (b & 0x40) {
+                        d = -acc;
+                    }
+                    v = b & 0x10;
+                }
+                if (v != 0) {
+                    d += acc;
+                }
+                if (fast != 0) {
+                    if (d < 0) {
+                        d -= max >> 1;
+                    }
+                    if (d > 0) {
+                        d += max >> 1;
+                    }
+                }
+                m->forward_speed += d;
+                do {
+                    if (m->forward_speed > max) {
+                        m->forward_speed = max;
+                    }
+                    if (m->forward_speed < -max) {
+                        m->forward_speed = -max;
+                    }
+                } while (0);
+                if (m->forward_speed == 0) {
+                    if (d != 0) {
+                        v = 1;
+                        if (d < 0) {
+                            v = -1;
+                        }
+                        m->forward_speed = v;
+                    }
+                }
+            }
+            D_800C1EF0[arg0] = m->forward_speed;
+        } else {
+            D_800C1EF0[arg0] = 0;
+            if (((s32 (*)(EXTengine *))D_8009D6E8.unk68)(Heroes[arg0].hero_eng) != 0) {
+                m->forward_speed = 0;
+            }
+            if (m->forward_speed > 0) {
+                v = m->forward_speed - 0x12;
+                m->forward_speed = v;
+                if (v >= 0) {
+                    goto end;
+                }
+                m->forward_speed = 0;
+            }
+            if (m->forward_speed < 0) {
+                v = m->forward_speed + 0x12;
+                m->forward_speed = v;
+                if (v > 0) {
+                    m->forward_speed = 0;
+                }
+            }
+        }
+    end:
+        m->forward_angle = m->facing_angle;
+    }
+}
 
 void func_800B58E8(s32 arg0) {
     EXTheromove *mv;

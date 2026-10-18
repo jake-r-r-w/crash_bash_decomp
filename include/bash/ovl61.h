@@ -273,6 +273,8 @@ s32 func_800B4FC8(s32 *p0, s32 *p1, s32 *q);
 
 void func_800B5238(s32 arg0);
 
+void func_800B558C(s32 arg0);
+
 void func_800B58E8(s32 arg0);
 
 void func_800B5C30(s32 arg0);
