@@ -93,6 +93,8 @@ extern s32 D_800C447C;
 
 void func_800C2BB0(void);
 
+void func_800C2C08(s32 arg0);
+
 void func_800C2EF8(s32 arg0);
 
 s32 func_800C365C(void);
