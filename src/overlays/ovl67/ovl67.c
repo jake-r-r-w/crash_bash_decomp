@@ -940,7 +940,35 @@ void func_800BB070(u16 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BB184);
+void func_800BB184(void) {
+    s32 *t;
+    s32 z;
+    CamState *cam;
+    EXTengine *eng;
+    s32 d;
+
+    t = func_8001E48C(0x63);
+    eng = Heroes[0].hero_eng;
+    z = eng->unk10.z;
+    if (D_8005A680[0] != 0) {
+        if (Heroes[0].hero_status & 0xFA00) {
+            z = Heroes[1].hero_eng->unk10.z;
+        }
+        if (Heroes[1].hero_status & 0xFA00) {
+            z = eng->unk10.z;
+        }
+    }
+    if ((!(Heroes[0].hero_status & 0xFA00) || !(Heroes[1].hero_status & 0xFA00)) && t != NULL) {
+        cam = (CamState *)D_80051640;
+        cam->unk0 = 0;
+        cam->unk4 = 0;
+        cam->unk8 = func_800153B4(t + 0x13, t + 0xC, cam->rot);
+        cam->pos = *(CamVec3 *)(t + 0xC);
+        cam->unk18 = 0x200;
+        d = -0xA00 - cam->pos.v[2];
+        cam->pos.v[2] = z - d;
+    }
+}
 
 void PlotN2OmissileExplode(NAS *nas) {
     EXTengine *eng;

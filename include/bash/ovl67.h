@@ -263,6 +263,8 @@ s32 func_800B817C(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5);
 
 void func_800B8968(s32 a);
 
+void func_800BB184(void);
+
 void PlotN2OmissileExplode(NAS *nas);
 
 void func_800BB3A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
