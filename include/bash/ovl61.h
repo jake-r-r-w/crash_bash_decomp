@@ -42,6 +42,7 @@ extern s16 D_800C1F0C;
 extern s32 D_800C271C;
 extern s32 D_800C2720;
 extern s32 D_800C2724;
+extern s32 D_800C1C84;
 extern s32 D_800C2728;
 extern u16 D_800C1C88;
 extern u16 D_800C1F14;

@@ -543,7 +543,73 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BCA30);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Init_ArkDeadWall);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Init_NGArkDeadWall);
+void Init_NGArkDeadWall(NAS *arg0) {
+    EXTengine *eng;
+    subengine *sub;
+    s32 x;
+    s32 off;
+
+    eng = arg0->Engine;
+    if (eng != NULL) {
+        eng->flags &= 0xFFFF7FFF;
+        x = eng->unk10.x;
+        if (x == D_800C2724) {
+            eng->unk10.x = -0x700;
+            eng->unk10.z = 0x880;
+            eng->unk1C = 0x38E;
+            eng->unk1E = 0;
+            arg0->UserInfo.flags = 2;
+            D_800C1F14 |= 2;
+        }
+        if (x == D_800C2728) {
+            eng->unk10.x = -0x700;
+            eng->unk10.z = -0x880;
+            eng->unk1C = 0x200;
+            eng->unk1E = 0;
+            arg0->UserInfo.flags = 1;
+            D_800C1F14 |= 1;
+        }
+        if (x == D_800C2720) {
+            eng->unk10.x = -0x880;
+            eng->unk10.z = -0x700;
+            eng->unk1E = 0xC00;
+            eng->unk20 = 0;
+            arg0->UserInfo.flags = 4;
+            D_800C1F14 |= 4;
+        }
+        if (x == D_800C271C) {
+            eng->unk10.x = 0x880;
+            eng->unk10.z = -0x700;
+            eng->unk1E = 0xC00;
+            eng->unk20 = 0;
+            arg0->UserInfo.flags = 8;
+            D_800C1F14 |= 8;
+        }
+        eng->unk5D = 2;
+        eng->unk5E = 1;
+        if (D_800C1C84 == 0) {
+            PlaySfx(0x591, &eng->sfx, NULL, 0x1000, 0x1E00, 0);
+        }
+        D_800C1C84 = 1;
+        func_80018F3C(eng, 6);
+        sub = eng->sub;
+        off = 0;
+        if (sub != NULL) {
+            do {
+                sub->unk6C = D_80054504;
+                sub->unk74 = 0;
+                sub->unk04 = off;
+                sub->flags |= 0x21;
+                sub = sub->next;
+                off += 0x200;
+            } while (sub != NULL);
+        }
+    }
+    arg0->UserInfo.user1 = 4;
+    if (arg0->Failure != 0) {
+        KillNAS(arg0);
+    }
+}
 
 void func_800BD43C(u32 arg0) {
     Ovl61Wall *base;
