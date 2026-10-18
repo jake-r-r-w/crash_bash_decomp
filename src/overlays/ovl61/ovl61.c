@@ -342,7 +342,63 @@ void func_800B7688(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B77F8);
+void func_800B77F8(s32 arg0) {
+    subengine *a;
+    subengine *s;
+    HeroInfo *h;
+    HeroInfo *b;
+    s32 t;
+    s32 f;
+    s16 w;
+
+    s = NULL;
+    a = Heroes[arg0].hero_sub;
+    a = a->next;
+    if (a != NULL) {
+        s = a->next;
+        if (s != NULL) {
+            s->unk74 = 0x2003;
+            s->flags |= 0x40008021;
+            t = D_80068BD4[(((D_8004E0D8 << 7) & 0xFFF) - 0x400) & 0xFFF].unk2 * 1024 >> 13;
+            s->unk52 = 1;
+            s->unk20.x = t + 0x1000;
+            s->unk20.y = t + 0x1000;
+            s->unk20.z = t + 0x1000;
+            s->unk76 = 0xA00 - t;
+        }
+    }
+    b = Heroes;
+    h = b + arg0;
+    h->hero_attack_counter += 1;
+    if (h->hero_weapon_timer != 0) {
+        w = h->hero_weapon_timer - 1;
+        h->hero_weapon_timer = w;
+        if (w < 0x91) {
+            if (!(HPADS[arg0].unk50 & 0x4000)) {
+                f = 1;
+                if (HLV->out[arg0] != 0) {
+                    f = h->hero_ai->AItimer3 < 1U;
+                }
+                if (f != 0) {
+                    FreeGrabbedObject(arg0, 1);
+                    goto act;
+                }
+            } else {
+                h->hero_ai->AItimer3 = 2;
+            }
+        }
+    } else {
+        FreeGrabbedObject(arg0, 0);
+act:
+        SetHeroAction((HeroInfo *)arg0, 0x1C);
+        if (s != NULL) {
+            s->flags &= 0xFFFF7FFF;
+        }
+    }
+    if (func_800B649C(arg0) != 0) {
+        func_8008502C(arg0);
+    }
+}
 
 void func_800B79F4(s32 arg0) {
     SLONG_XYZ sp18;

@@ -216,6 +216,8 @@ void func_800B7450(s32 arg0);
 
 void func_800B7688(s32 arg0);
 
+void func_800B77F8(s32 arg0);
+
 s32 func_800B8964(s32 arg0);
 
 NAS *func_800B97D8(NAS *arg0);
