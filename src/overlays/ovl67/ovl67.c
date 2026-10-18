@@ -1087,7 +1087,71 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", PlotN2Omissile);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", PlotN2Ofirstmissile);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B90F4);
+void func_800B90F4(void) {
+    s32 i;
+    Ovl67Slot *s;
+    Ovl67Ent *e;
+    s16 *t;
+    u32 k;
+
+    for (i = 0; i < 4; i++) {
+        D_800C4230[i].ent = NULL;
+        D_800C4230[i].f4 = 0;
+        D_800C4230[i].f8 = 0;
+        D_800C4230[i].f12 = 0;
+        D_800C4230[i].fC = 0;
+        D_800C4230[i].f12 = 0;
+        D_800C4230[i].fC = 0;
+        D_800C4230[i].f16 = 0;
+        D_800C4230[i].f18 = 0;
+        D_800C4230[i].f1A = 0;
+        D_800C4230[i].f1C = 0;
+        D_800C4230[i].f20 = 0;
+        D_800C4230[i].f24 = 0;
+        D_800C42D0[i].src = NULL;
+        D_800C42D0[i].unk4 = 0;
+        D_800C42D0[i].nas = NULL;
+        D_800C42D0[i].f12 = 0;
+        D_800C42D0[i].f0C = 0;
+        D_800C42D0[i].f12 = 0;
+        D_800C42D0[i].f0C = 0;
+        D_800C42D0[i].f16 = 0;
+        D_800C42D0[i].f18 = 0;
+        D_800C42D0[i].kind = 3;
+        D_800C42D0[i].f1C = 0;
+        D_800C42D0[i].f20 = 0;
+        D_800C42D0[i].f24 = 0;
+    }
+    e = (Ovl67Ent *)((GfxScene *)D_80058AD0)->objs;
+    D_800C43D8 = NULL;
+    for (; e != NULL; e = e->next) {
+        t = (s16 *)func_80015870(e->key, e->id);
+        if (t[1] == 0x63) {
+            k = t[0] - 10;
+            if (k < 4) {
+                D_800C4230[k].ent = e;
+                D_800C4230[k].fC = e->id;
+            }
+            k = t[0] - 10;
+            if (k < 4) {
+                s = &D_800C42D0[k];
+                s->src = (void *)e;
+                s->f1C = e->y;
+                if (!(k & 1)) {
+                    e->y += 0x200;
+                    s->kind = 0;
+                }
+                s->f20 = e->y;
+            }
+            if (t[0] == 0x61) {
+                D_800C43D8 = (u32 *)e;
+            }
+            if (t[0] == 0x62) {
+                e->flags = 0;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B92D4);
 

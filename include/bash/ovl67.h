@@ -210,13 +210,49 @@ extern u8 D_800C37DC[];
 
 typedef struct Ovl67Slot {
     struct { u8 pad0[8]; s32 y; } *src;
-    u8 pad4[4];
+    s32 unk4;
     NAS *nas;
-    u8 padC[0xE];
+    u16 f0C;
+    u8 pad0E[4];
+    u16 f12;
+    u8 pad14[2];
+    u16 f16;
+    u16 f18;
     u16 kind;
-    u8 pad1C[0xC];
+    s32 f1C;
+    s32 f20;
+    s32 f24;
 } Ovl67Slot;
 extern Ovl67Slot D_800C42D0[];
+
+typedef struct Ovl67Ent {
+    s32 flags;
+    u8 pad4[4];
+    s32 y;
+    u8 pad0C[0x50];
+    struct Ovl67Ent *next;
+    u8 pad60[0xC];
+    u8 *key;
+    u8 pad70[4];
+    u16 id;
+} Ovl67Ent;
+
+typedef struct Ovl67Rec {
+    Ovl67Ent *ent;
+    s32 f4;
+    s32 f8;
+    u16 fC;
+    u8 pad0E[4];
+    u16 f12;
+    u8 pad14[2];
+    u16 f16;
+    u16 f18;
+    u16 f1A;
+    s32 f1C;
+    s32 f20;
+    s32 f24;
+} Ovl67Rec;
+extern Ovl67Rec D_800C4230[];
 extern char D_80054504[];
 extern s16 D_800C4370;
 extern s16 D_800C4372;
