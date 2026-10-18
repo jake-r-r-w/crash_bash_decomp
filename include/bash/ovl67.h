@@ -249,6 +249,8 @@ void func_800B4FA4(s32 arg0);
 
 void func_800B5064(s32 arg0);
 
+void func_800B5674(s32 arg0);
+
 void func_800B5774(s32 arg0);
 
 void func_800B5B14(s32 arg0);
