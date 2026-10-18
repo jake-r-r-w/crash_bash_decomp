@@ -148,7 +148,51 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BF0AC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BF37C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BF7C8);
+void func_800BF7C8(s32 arg0) {
+    HeroInfo *h;
+    NAS *nas;
+    NAS *ret;
+    LaserExt *ext;
+    subengine *s;
+    SLONG_XYZ *p;
+    HeroInfo *base;
+
+    func_80028018(arg0, 0xA);
+    ((void (*)(s32, s32, s32))func_80027F7C)(arg0, 0xA, 0xFF);
+    base = Heroes;
+    h = &base[arg0];
+    h->hero_status |= 0xA000;
+    if (arg0 == 0) {
+        func_80026980(D_800C4490);
+    }
+    if (arg0 == 1) {
+        func_80026980(D_800C4494);
+    }
+    ret = NULL;
+    p = &h->hero_eng->unk10;
+    nas = SpawnNASById(p->x, p->y, p->z, 0x1605, 0x11);
+    if (nas != NULL) {
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL) {
+            ext->unkC = 5;
+            ext->unk18 = 0x100;
+            ext->unk20 = 1;
+            ext->unk28 = 0;
+            nas->InitDelete(nas);
+        }
+        ret = nas;
+    }
+    if (ret != NULL) {
+        s = ret->Engine->sub;
+        if (s != NULL) {
+            do {
+                s->flags = 0x02000000;
+                s->unk68 = -0x200;
+                s = s->next;
+            } while (s != NULL);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", InitAsteroidRoll);
 

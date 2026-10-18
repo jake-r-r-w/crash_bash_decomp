@@ -123,6 +123,8 @@ typedef struct LaserExt {
 } LaserExt;
 
 extern u8 *D_800C449C;
+extern NAS *D_800C4490;
+extern NAS *D_800C4494;
 extern s32 D_800C4478;
 extern void (*D_8009F8B4)(void);
 extern s32 D_800C4498;
@@ -290,6 +292,8 @@ extern ScriptInit D_800C446C;
 extern s32 D_800C4530;
 
 void func_800BE8C0(s32 arg0);
+
+void func_800BF7C8(s32 arg0);
 
 void InitNitroBoss(NAS *nas);
 
