@@ -498,7 +498,31 @@ void Plot_seaweed(NAS *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Init_seaweed);
+void Init_seaweed(NAS *arg0) {
+    EXTengine *eng = arg0->Engine;
+    if (eng != NULL) {
+        ScriptCursor *cur;
+        eng->sub->unk6C = *(s32*)D_80058AD0;
+        cur = func_80024E30(arg0, &D_800C1554);
+        if (cur != NULL) {
+            u8 *trig = (u8*)arg0->trigger;
+            if (trig != NULL) {
+                u8 *info = (u8*)*(s32*)(trig + 16);
+                s32 n = *(s32*)(info + 4);
+                ((void (*)(EXTanimator*, s32))func_80025FAC)((EXTanimator*)cur, n);
+                if (n < 2) {
+                    func_800250B0(arg0);
+                    *(u16*)((u8*)cur + 30) += Random(8);
+                }
+                eng->sub->flags |= 0x02000000;
+                eng->sub->unk68 = *(u16*)(info + 8);
+            }
+        }
+    }
+    if (arg0->Failure != 0) {
+        KillNAS(arg0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", Init_N_Gin);
 
