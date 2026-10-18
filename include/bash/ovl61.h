@@ -175,6 +175,30 @@ extern Ovl61Wall D_800C1E78[];
 extern u16 D_800C139C[];
 extern _sfx_handler *D_800C1BC4;
 
+typedef struct Ovl61Eng {
+    u8 pad0[0xC];
+    u32 flags;
+    s32 x;
+    s32 pad14;
+    s32 z;
+    u8 pad1C[0x7C - 0x1C];
+    struct Ovl61Eng *sub;
+} Ovl61Eng;
+
+typedef struct Ovl61Fux {
+    u8 pad0[0x1A];
+    s16 flag;
+} Ovl61Fux;
+
+typedef struct Ovl61Mot {
+    u8 pad0[0xE];
+    s16 a;
+    s16 b;
+    s16 c;
+    s16 lim;
+    s16 dir;
+} Ovl61Mot;
+
 void func_800B6AE0(s32 arg0);
 
 void func_800B6BE8(s32 arg0);
@@ -184,6 +208,8 @@ void func_800B6FE0(s32 arg0);
 void func_800B7450(s32 arg0);
 
 s32 func_800B8964(s32 arg0);
+
+NAS *func_800B97D8(NAS *arg0);
 
 void func_800B99E0(void);
 

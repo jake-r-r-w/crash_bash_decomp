@@ -375,7 +375,60 @@ void func_800B9728(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800B97D8);
+NAS *func_800B97D8(NAS *arg0) {
+    NAS *nas;
+    Ovl61Eng *src;
+    Ovl61Eng *eng;
+    Ovl61Fux *fux;
+    Ovl61Mot *dst;
+    Ovl61Mot *srcm;
+    s32 dir;
+
+    nas = NULL;
+    if (arg0 != NULL) {
+        src = (Ovl61Eng *)arg0->Engine;
+        if (src != NULL) {
+            nas = SpawnNASById(src->x, src->pad14, src->z, 0x1501, 0x11);
+            if (nas != NULL) {
+                eng = (Ovl61Eng *)nas->Engine;
+                if (eng != NULL) {
+                    eng->flags |= 0x8000;
+                    if (eng->sub != NULL) {
+                        eng->sub->flags |= 0x8000;
+                    }
+                    fux = (Ovl61Fux *)nas->FUX;
+                    if (fux != NULL) {
+                        fux->flag = 1;
+                        dst = FindExtension(nas, 0x800);
+                        if (dst != NULL) {
+                            srcm = FindExtension(arg0, 0x800);
+                            if (srcm != NULL) {
+                                dst->b = 4;
+                                dst->c = 1;
+                                dst->a = srcm->a;
+                                dst->lim = srcm->lim;
+                                dir = srcm->dir;
+                                srcm->dir = (dir + 0x2AA) & 0xFFF;
+                                src->x -= D_80068BD4[(srcm->dir - 0x400) & 0xFFF].unk2 * 128 >> 12;
+                                src->z -= D_80068BD4[srcm->dir & 0xFFF].unk2 * 128 >> 12;
+                                if (dst->lim < 0x50) {
+                                    dst->lim = 0x50;
+                                }
+                                if (dst->a < dst->lim) {
+                                    dst->a = dst->lim;
+                                }
+                                dst->dir = (dir - 0x2AA) & 0xFFF;
+                                eng->x -= D_80068BD4[(dst->dir - 0x400) & 0xFFF].unk2 * 128 >> 12;
+                                eng->z -= D_80068BD4[dst->dir & 0xFFF].unk2 * 128 >> 12;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return nas;
+}
 
 void func_800B99E0(void) {
     NAS *nas;
