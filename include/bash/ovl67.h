@@ -89,6 +89,67 @@ void func_800BB5F0(void);
 void func_800BB72C(s32 arg0);
 
 void func_800BB788(s32 arg0);
+/* Round state cleared by func_800B361C. */
+typedef struct Ovl67Round {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ s32 unk1C;
+    /* 0x20 */ s16 unk20;
+    /* 0x22 */ s16 unk22;
+    /* 0x24 */ s16 unk24;
+    /* 0x26 */ s16 unk26;
+    /* 0x28 */ s16 unk28;
+    /* 0x2A */ s16 unk2A;
+    /* 0x2C */ s16 unk2C;
+    /* 0x2E */ s16 unk2E;
+    /* 0x30 */ s16 unk30;
+    /* 0x32 */ s16 unk32;
+    /* 0x34 */ s32 unk34;
+    /* 0x38 */ s32 unk38;
+    /* 0x3C */ s32 unk3C;
+} Ovl67Round;
+
+typedef struct Ovl67Scene {
+    u8 pad0[0x27];
+    u8 unk27;
+} Ovl67Scene;
+
+typedef struct Ovl67SceneRef {
+    u8 pad0[0x10];
+    Ovl67Scene *unk10;
+} Ovl67SceneRef;
+
+extern Ovl67Round D_800C4398;
+extern s32 D_8005AA3C;
+extern s32 D_800C4080;
+extern NAS *D_800C4084;
+extern void *D_800C418C;
+extern u8 D_800C37DC[];
+extern char D_80054504[];
+extern s16 D_800C4370;
+extern s16 D_800C4372;
+extern s16 D_800C4374;
+extern s16 D_800C4376;
+extern s16 D_800C4378;
+extern s16 D_800C437A;
+extern s16 D_800C437C;
+extern s16 D_800C437E;
+extern s16 D_800C4380;
+extern s16 D_800C4382;
+extern s16 D_800C4384;
+extern s32 D_800C438C;
+extern s32 D_800C4390;
+extern s16 D_800C4394;
+extern s16 D_800C43DC;
+void func_800B6F4C(void);
+void func_800B90F4(void);
+void func_800BB070(u16 arg0);
+void func_800C349C(void);
 
 s32 func_800BB8EC(s32 arg0);
 

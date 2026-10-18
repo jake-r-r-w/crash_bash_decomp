@@ -6,7 +6,80 @@
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B34A4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B361C);
+void func_800B361C(void) {
+    HeroInfo *h;
+    EXTheromove *mv;
+    s32 i;
+
+    i = 0;
+    D_8005A5D8 = 0x2800;
+    D_8005AA38 = NULL;
+    D_8005AA3C = 0;
+    D_800C4370 = 0;
+    D_800C4372 = 0;
+    D_800C4374 = 50;
+    D_800C4080 = 0;
+    D_800C4376 = 0;
+    D_800C437A = 0;
+    D_800C4378 = 0;
+    D_800C4380 = 0;
+    D_800C4382 = 50;
+    D_800C437C = 0;
+    D_800C437E = 0;
+    D_800C43DC = 0;
+    D_800C438A = 0;
+    D_800C438C = 0;
+    D_800C4390 = 0;
+    D_800C4394 = 0;
+    D_800C4384 = 6;
+    ((Ovl67SceneRef *)D_80058AD0)->unk10->unk27 = 1;
+    ((Ovl67Puck *)D_8005A614)->unk32 &= ~0x800;
+    for (i = 0; i < 4; i++) {
+        h = &Heroes[i];
+        mv = h->hero_move;
+        h->hero_eng->unk1E = 0x800;
+        mv->facing_angle = 0x800;
+        mv->forward_angle = 0x800;
+        if (D_800C417A == 1) {
+            func_80026980(h->hero);
+        }
+        D_800C418C = D_800C37DC;
+    }
+    func_8001682C((s32 *)D_80054504);
+    func_8001682C((s32 *)(D_80054504 - 0x1500));
+    func_8001682C((s32 *)(D_80054504 - 0x658));
+    func_8001682C((s32 *)(D_80054504 - 0x620));
+    func_8007E9FC(0x5C, 0x3088);
+    D_800C4398.unk0 = 0;
+    D_800C4398.unk22 = i + 10;
+    D_800C4398.unk4 = 0;
+    D_800C4398.unk8 = 0;
+    D_800C4398.unkC = 0;
+    D_800C4398.unk10 = 0;
+    D_800C4398.unk14 = 0;
+    D_800C4398.unk18 = 0;
+    D_800C4398.unk1C = 0;
+    D_800C4398.unk20 = 0;
+    D_800C4398.unk24 = 0;
+    D_800C4398.unk26 = 0xFF;
+    D_800C4398.unk28 = 0;
+    D_800C4398.unk2A = 0;
+    D_800C4398.unk2C = 0;
+    D_800C4398.unk2E = 0;
+    D_800C4398.unk30 = 0;
+    D_800C4398.unk32 = 0;
+    D_800C4398.unk34 = 0;
+    D_800C4398.unk38 = 0;
+    D_800C4398.unk3C = 0;
+    func_800BB070(D_800C417A);
+    if (D_800C417A != 1) {
+        D_800C4084 = SpawnNASById(0, -0x200, 0xA00, 0x1C02, 0x11);
+        func_800C349C();
+    } else {
+        func_800B6F4C();
+    }
+    func_800B90F4();
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B3888);
 
