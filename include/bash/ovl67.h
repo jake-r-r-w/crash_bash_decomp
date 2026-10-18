@@ -66,18 +66,23 @@ typedef struct Ovl67Puck {
     u16 unk32;
 } Ovl67Puck;
 
+typedef struct Ovl67Vel {
+    u8 pad0[0x10];
+    s32 x;
+    u8 pad14[4];
+    s32 z;
+} Ovl67Vel;
+
+typedef struct Ovl67Out {
+    u8 pad0[0x16];
+    s16 dir;
+} Ovl67Out;
+
 extern u16 D_800C39B0[];
 extern s32 D_8005A618;
 extern s32 D_8005A680[];
 
 s32 func_800B9CB8(s32 arg0, EXTengine *unused);
-
-typedef struct Ovl67Vel {
-    u8 pad0[0x10];
-    s32 x;
-    s32 pad14;
-    s32 z;
-} Ovl67Vel;
 
 void func_800B447C(s32 arg0);
 
@@ -184,5 +189,7 @@ s32 func_800B7C58(s32 arg0, Ovl67Pos *from, Ovl67Pos *to, s32 angle);
 s32 func_800B817C(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5);
 
 void func_800BB6BC(s32 arg0);
+
+s32 func_800BBC78(Ovl67Vel *arg0, Ovl67Out *arg1, s32 arg2);
 
 #endif /* BASH_OVL67_H */

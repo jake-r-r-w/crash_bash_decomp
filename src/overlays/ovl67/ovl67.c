@@ -834,7 +834,44 @@ s32 func_800BBBB4(s32 arg0, s16 arg1, s32 arg2, s16 arg3) {
     return get_angle(x, z) & 0xFFFF;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800BBC78);
+s32 func_800BBC78(Ovl67Vel *arg0, Ovl67Out *arg1, s32 arg2) {
+    s32 lim;
+    s32 x;
+    s32 z;
+
+    if (arg2 != 0) {
+        lim = 0x1200;
+    } else {
+        lim = 0xB00;
+    }
+    x = arg0->x;
+    if (x > lim) {
+        arg1->dir = -1;
+        return 1;
+    }
+    if (x < -lim) {
+        arg1->dir = -1;
+        return 1;
+    }
+    z = arg0->z;
+    if (z > lim) {
+        arg1->dir = 3;
+        return 1;
+    }
+    if (z < -lim) {
+        arg1->dir = 0;
+        return 1;
+    }
+    if (arg2 != 0 && z < -0xA00) {
+        if (x > 0x600) {
+            arg0->x = 0x600;
+        }
+        if (arg0->x < -0x600) {
+            arg0->x = -0x600;
+        }
+    }
+    return 0;
+}
 
 void func_800BBD18(void) {
     if (D_800C417A == 1) {
