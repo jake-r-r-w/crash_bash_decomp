@@ -48,7 +48,7 @@ extern s32 D_800C1C68;
 extern s32 D_800C1C6C;
 extern u16 D_800C18E8[];
 extern u16 D_800C18E0[];
-extern s16 D_800C1F0C;
+extern u16 D_800C1F0C;
 extern s32 D_800C271C;
 extern s32 D_800C2720;
 extern s32 D_800C2724;
@@ -123,8 +123,6 @@ typedef struct {
     u8 pad34[0x6C - 0x34];
     s32 unk6C;
 } Ovl61GinView;
-
-extern s16 D_800C1EFC;
 
 extern char D_80054574[];
 extern ScriptInit D_800C14A8;
@@ -302,15 +300,15 @@ extern s16 D_800C1F02;
 extern s16 D_800C1F04;
 extern s16 D_800C1F06;
 extern s16 D_800C1F08;
-extern s16 D_800C1F0A;
+extern u16 D_800C1F0A;
 extern s16 D_800C1F16;
 extern s16 D_800C2718;
 extern s32 D_800C1C74;
 extern s32 D_800C1C78;
 extern s32 D_800C1C7C;
-extern s16 D_800C1EF8;
-extern s16 D_800C1EFA;
-extern s16 D_800C1EFC;
+extern u16 D_800C1EF8;
+extern u16 D_800C1EFA;
+extern u16 D_800C1EFC;
 extern EXTengine D_800C1B30;
 extern EXTengine D_800C1BCC;
 extern Ovl61Circle *D_800C1A80;
@@ -410,6 +408,22 @@ NAS *func_800B97D8(NAS *arg0);
 void func_800B99E0(void);
 
 void func_800BD43C(u32 arg0);
+
+/* D_8005A614 as seen by func_800BC0D8. */
+typedef struct Ovl61GameView {
+    u8 pad0[0x30];
+    u16 flags;
+    u16 pad_buttons;
+    s16 mode;
+    u8 pad36[0x6C - 0x36];
+    s32 unk6C;
+} Ovl61GameView;
+#define O61GV ((Ovl61GameView *)D_8005A614)
+
+void func_800BD770(void);
+extern u16 D_800C1328[];
+extern u16 D_800C19FC[];
+extern u16 D_800C1A20[];
 
 s32 func_800BFA24(Ovl61Vel *arg0, s32 arg1);
 

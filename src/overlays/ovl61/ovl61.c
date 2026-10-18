@@ -2774,7 +2774,122 @@ end:
     eng->unk5E = 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", func_800BC0D8);
+void func_800BC0D8(void) {
+    Ovl61GameView *g;
+    Ovl61Node *n;
+    NAS *nas;
+    s32 gin;
+    s32 cnt;
+    s32 i;
+    s32 lim;
+    s32 x;
+    s32 y;
+    s32 hero;
+    s32 total;
+
+    g = (Ovl61GameView *)D_8005A614;
+    if (g->flags & 0x801) {
+        return;
+    }
+    gin = 0;
+    if (D_800C1B2C != NULL) {
+        gin = (u16)D_800C1B2C->unk1A != 0;
+    }
+    if (g->mode == 0x10 && D_8009E25C.n == 0) {
+        if (D_800C1F0A != 0) {
+            D_800C1F0A--;
+        } else {
+            for (i = cnt = 0; i < 4; i++) {
+                if (Heroes[i].hero_pu != 0) {
+                    cnt++;
+                }
+            }
+            if (cnt == 0) {
+                func_800BD770();
+                D_800C1F0A = Random(0x5A) + 0x1E;
+            }
+        }
+    }
+    if (D_8005A648 == 0xE && Random(0xF) == 0) {
+        x = Random(0x1800) - 0xC00;
+        y = -(Random(0x200) + 0x80);
+        SpawnNASById(x, y, Random(0x800) + 0x1000, 0x1504, 0x11);
+    }
+    if (D_800C1EFC != 0) {
+        D_800C1EFC--;
+    } else {
+        D_800C1EF8++;
+        lim = (u16)(D_800C1EF8 / 300);
+        lim++;
+        if (D_8005A648 == 0xF) {
+            if (lim >= 5) {
+                lim = 4;
+            }
+        } else if (lim >= 6) {
+            lim = 5;
+        }
+        if (gin) {
+            lim = 0;
+        }
+        n = D_8005AA38;
+        D_800C1EFA = 0;
+        while (n != NULL) {
+            n = n->next;
+            D_800C1EFA++;
+        }
+        if (D_800C1EFA < lim) {
+            total = 0;
+            for (n = D_8005AA38; n != NULL; n = n->next) {
+                total++;
+            }
+            if (total < 9) {
+                nas = SpawnNASById(0x1000, 0x1000, 0x1000, 0x1501, 0x11);
+                if (nas != NULL && nas->Engine != NULL && nas->FUX != NULL) {
+                    ((Ovl61Fux *)nas->FUX)->flag = 0;
+                }
+            }
+            D_800C1EFC = 0x1E;
+        }
+    }
+    D_800C1F00 = D_800C1328[D_800C1EFA];
+    if (O61GV->mode == 0xF && (O61GV->pad_buttons & 0x80)) {
+        if (D_800C1C70 != 0) {
+            D_800C1C70--;
+        } else {
+            if (++D_800C1C74 >= 0x12) {
+                D_800C1C74 = 0;
+            }
+            if (O61GV->unk6C != 0) {
+                hero = D_800C1A20[D_800C1C74];
+            } else {
+                hero = D_800C19FC[D_800C1C74];
+            }
+            if (!(Heroes[hero].hero_status & 0xFA00)) {
+                SpawnNASById(hero, 0, 0, 0x1509, 0x11);
+            }
+            D_800C1C70 = Random(6) * 0x1E + 0x5A;
+        }
+    }
+    if (O61GV->mode == 0x11) {
+        if (D_800C1F0C != 0) {
+            D_800C1F0C--;
+        }
+        if (D_800C1C78 != 0) {
+            D_800C1C78--;
+        } else {
+            if (++D_800C1C7C >= 0x12) {
+                D_800C1C7C = 0;
+            }
+            if (O61GV->unk6C != 0) {
+                i = D_800C1A20[D_800C1C7C];
+            } else {
+                i = D_800C19FC[D_800C1C7C];
+            }
+            func_800BD43C((u16)i);
+            D_800C1C78 = Random(9) * 0x1E + 0x10E;
+        }
+    }
+}
 
 #define LINK(x) ((Ovl61Link *)(x))
 
