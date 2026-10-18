@@ -13,9 +13,9 @@
    "size": 2080
   }
  ],
- "commit": "4814d9c4b2",
+ "commit": "2ba201aa72",
  "game": "SCUS_945.70",
- "generated": "2026-10-18T18:54:13Z",
+ "generated": "2026-10-18T18:55:29Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -84578,9 +84578,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "2ba201aa72",
+   "data_b": 2944,
+   "data_tb": 606943,
+   "game_all_f": 2551,
+   "game_b": 337836,
+   "game_c_f": 1378,
+   "game_f": 1378,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 1185,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-18T18:55:29Z",
+   "units": {
+    "engine": [
+     121412,
+     355
+    ],
+    "main exe": [
+     124840,
+     575
+    ],
+    "ovl5d": [
+     328,
+     4
+    ],
+    "ovl5e": [
+     504,
+     6
+    ],
+    "ovl5f": [
+     1564,
+     36
+    ],
+    "ovl60": [
+     708,
+     14
+    ],
+    "ovl61": [
+     46160,
+     95
+    ],
+    "ovl62": [
+     916,
+     30
+    ],
+    "ovl63": [
+     636,
+     16
+    ],
+    "ovl64": [
+     156,
+     7
+    ],
+    "ovl65": [
+     1096,
+     11
+    ],
+    "ovl66": [
+     528,
+     13
+    ],
+    "ovl67": [
+     25700,
+     99
+    ],
+    "ovl68": [
+     180,
+     10
+    ],
+    "ovl69": [
+     9440,
+     67
+    ],
+    "ovl6a": [
+     3668,
+     40
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-18T18:55:15Z",
+   "auto": true,
+   "name": "func_800BA88C",
+   "seg": "overlays/ovl6a/800b4eac",
+   "size": 96,
+   "tries": 0
+  },
   {
    "at": "2026-10-18T18:54:11Z",
    "auto": true,
@@ -84692,14 +84786,6 @@
    "seg": "overlays/ovl69/ovl69",
    "size": 240,
    "tries": 0
-  },
-  {
-   "at": "2026-10-18T18:15:59Z",
-   "auto": true,
-   "name": "func_800B42B0",
-   "seg": "overlays/ovl69/ovl69",
-   "size": 436,
-   "tries": 0
   }
  ],
  "summary": {
@@ -84715,15 +84801,15 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 2,
-   "c_f": 1377,
-   "done_b": 337740,
-   "done_f": 1377,
+   "c_f": 1378,
+   "done_b": 337836,
+   "done_f": 1378,
    "named_f": 345,
-   "pct": 33.14308817352871,
+   "pct": 33.152508841689595,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2551,
-   "typed_f": 1184
+   "typed_f": 1185
   },
   "lib": {
    "all_f": 566,
@@ -85061,20 +85147,20 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
-    "c_f": 39,
-    "done_b": 3572,
-    "done_f": 39,
+    "c_f": 40,
+    "done_b": 3668,
+    "done_f": 40,
     "file": "ovl6a.bin",
     "files": 2,
     "lib": false,
     "named_f": 6,
-    "pct": 11.50032195750161,
+    "pct": 11.809401159047006,
     "phase": 5,
     "sony_b": 0,
     "title": "Hub",
     "total_b": 31060,
     "total_f": 94,
-    "typed_f": 36,
+    "typed_f": 37,
     "unit": "ovl6a"
    },
    {

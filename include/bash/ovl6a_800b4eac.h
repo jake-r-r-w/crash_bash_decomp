@@ -29,6 +29,28 @@ typedef struct DistPos {
     s32 z;
 } DistPos;
 
+typedef struct PodiumChild {
+    u8 pad0[0xC];
+    s32 flags;
+    u8 pad10[0x1C];
+    s32 f2C;
+    s32 f30;
+    s32 f34;
+    u8 pad38[0x24];
+    u8 f5C;
+    u8 pad5D;
+    s16 f5E;
+} PodiumChild;
+
+typedef struct PodiumObj {
+    u8 pad0[0x54];
+    PodiumChild *child;
+    u8 pad58[4];
+    u16 f5C;
+} PodiumObj;
+
+extern PodiumObj *D_800BD594;
+
 void func_800B7874(void);
 
 void func_800B7988(s32 *arg0, s32 flag, s32 *out);
@@ -88,6 +110,8 @@ void func_800BA7BC(NAS *arg0);
 void func_800BA804(void);
 
 void func_800BA848(void);
+
+void func_800BA88C(void);
 
 void InitPodiumOdo(u8 *arg0);
 

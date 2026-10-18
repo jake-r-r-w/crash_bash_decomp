@@ -406,7 +406,22 @@ void func_800BA848(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800BA88C);
+void func_800BA88C(void) {
+    PodiumChild *c;
+
+    if (D_800BD594 != NULL) {
+        c = D_800BD594->child;
+        if (c != NULL && D_800BD594->f5C == 0) {
+            D_800BD594->f5C = 1;
+            c->f5C = 1;
+            c->f34 = 0;
+            c->f30 = 0;
+            c->f2C = 0;
+            c->f5E = 1;
+            c->flags |= 0x8000;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", InitPodiumTrophy);
 
