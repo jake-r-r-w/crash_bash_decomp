@@ -9326,7 +9326,8 @@
  },
  "ovl69:800B55B8": {
   "auto_diff": 18,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-18T17:49:15Z",
+  "status": "matched"
  },
  "ovl69:800B5614": {
   "auto_diff": 7,

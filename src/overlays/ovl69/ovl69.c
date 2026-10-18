@@ -217,7 +217,16 @@ void func_800B556C(void) {
     func_8001C2C0((u8 *)GetEngineSlot(0));
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B55B8);
+extern u8 D_8005A63A;
+
+void func_800B55B8(void) {
+    if (D_8005A646 & 4) {
+        func_80095BEC(0, D_800B877C);
+    } else {
+        func_80095BEC(0, D_800B865C);
+    }
+    D_8005A63A = D_80051600 != 0;
+}
 
 void func_800B5614(void) {
     u8 *g;
