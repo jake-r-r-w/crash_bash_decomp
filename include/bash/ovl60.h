@@ -408,6 +408,8 @@ void func_800B3A38(void);
 
 void func_800B6AE0(s32 arg0);
 
+void func_800B6DF4(s32 arg0);
+
 void func_800B7B1C(s32 arg0, s32 arg1, s32 arg2);
 
 void func_800BA3E0(s32 arg0, s32 arg1, s32 arg2);

@@ -455,7 +455,35 @@ s32 func_800B6C14(s32 arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B6DF4);
+void func_800B6DF4(s32 arg0) {
+    s32 x;
+    s32 z;
+    Ovl60Cell *c;
+    HeroInfo *h;
+    HeroInfo *base;
+
+    func_800C2810(arg0);
+    if (D_800C535C[arg0].nas != NULL) {
+        func_800C2B98(arg0);
+    }
+    func_800C1CF0(arg0);
+    func_80028018(arg0, 0x1E);
+    func_800C159C(arg0);
+    x = (Heroes[arg0].hero_eng->unk10.x + 0x800) >> 9;
+    z = (Heroes[arg0].hero_eng->unk10.z + 0x800) >> 9;
+    if ((u32)x < 8 && z >= 0 && z < 8) {
+        Ovl60Cell *cb = D_800C53DC[0];
+        c = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(D_800C53DC[0]) + (u32)cb);
+        c->unkE = arg0 + 1;
+        c->unk10 = arg0 + 1;
+    }
+    base = Heroes;
+    h = (HeroInfo *)(arg0 * sizeof(HeroInfo) + (u32)base);
+    h->hero_move->velocity_enable = 0;
+    h->hero_frozen = 10;
+    D_800C535C[arg0].unk8[1] = 0;
+    SetHeroSeq((HeroInfo *)arg0, 0x31);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B6F34);
 
