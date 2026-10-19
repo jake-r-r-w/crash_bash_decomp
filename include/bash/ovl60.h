@@ -143,6 +143,9 @@ extern s32 D_800C5BB8;
 extern u16 D_800C3998[][2];
 extern s32 D_800C5BBC;
 extern u16 D_800C3A38[][2];
+extern s32 D_800C5074[];
+extern s32 D_800C5050[];
+extern s32 D_800C502C[];
 extern s32 D_800C5300;
 extern s32 D_800C5BC0;
 extern s32 D_800C5BC4;
@@ -306,6 +309,8 @@ s32 func_800BBF00(s32 *arg0, s32 *arg1);
 s32 func_800BEB6C(s32 arg0, s32 arg1, s32 arg2);
 
 s32 func_800C0F08(s32 arg0, EXTbotai *ai);
+
+s32 func_800C14BC(s32 arg0, s32 arg1);
 
 s32 func_800C178C(void);
 

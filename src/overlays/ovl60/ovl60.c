@@ -1285,7 +1285,25 @@ s32 func_800C1460(s32 arg0) {
     return count;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C14BC);
+s32 func_800C14BC(s32 arg0, s32 arg1)
+{
+    s32 h;
+    s32 n;
+    s32 r;
+    s32 *a = D_800C5074;
+
+    h = Heroes[arg0].hero_name;
+    n = a[h] - D_800C5050[h] - D_800C502C[h];
+    r = 0x200 / n;
+    if (arg1 != 0) {
+        if (n & 1) {
+            r = (0x200 / (n + 1)) * 2;
+        } else {
+            r *= 2;
+        }
+    }
+    return r;
+}
 
 void func_800C159C(s32 arg0) {
     Heroes[arg0].hero_eng->unk10.x = (((Heroes[arg0].hero_eng->unk10.x + 0x800) >> 9) << 9) - 0x700;

@@ -5992,7 +5992,8 @@
   "via": "copy"
  },
  "ovl60:800C14BC": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-19T08:51:45Z",
+  "status": "matched"
  },
  "ovl60:800C159C": {
   "auto_diff": 5,
