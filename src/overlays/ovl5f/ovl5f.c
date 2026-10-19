@@ -77,7 +77,33 @@ void func_800B5788(void) {
     D_8009D900 = D_800C9FAC;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B57FC);
+void func_800B57FC(void) {
+    void **p;
+    void *t;
+    Ovl5fGameView *g;
+
+    D_8009D8F4 = D_800CA120;
+    D_8009D8F8 = D_800CA134;
+    D_8009D904 = D_800CA148;
+    p = &D_8009D8FC;
+    if (D_8005A680[0] != 0) {
+        t = D_800CA08C;
+    } else {
+        t = D_800C9FF8;
+    }
+    *p = t;
+    D_8009D900 = D_800C9FAC;
+    Heroes[2].hero_name = 9;
+    Heroes[3].hero_name = 9;
+    g = (Ovl5fGameView *)D_8005A614;
+    g->flags |= 0x100;
+    if (g->w6C == 0) {
+        Heroes[1].hero_name = 9;
+        g->b51 = 9;
+    }
+    g->b52 = 9;
+    g->b53 = 9;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B58B0);
 

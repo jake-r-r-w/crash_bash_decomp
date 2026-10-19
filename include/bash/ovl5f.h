@@ -262,6 +262,22 @@ extern u8 D_800C9FB8[];
 extern u8 D_800C9F98[];
 extern u8 D_800C9F84[];
 extern u8 D_800C9FAC[];
+extern u8 D_800CA120[];
+extern u8 D_800CA134[];
+extern u8 D_800CA148[];
+extern u8 D_800CA08C[];
+extern u8 D_800C9FF8[];
+/* D_8005A614 as seen by func_800B57FC. */
+typedef struct Ovl5fGameView {
+    /* 0x00 */ u8 pad0[0x32];
+    /* 0x32 */ u16 flags;
+    /* 0x34 */ u8 pad34[0x51 - 0x34];
+    /* 0x51 */ u8 b51;
+    /* 0x52 */ u8 b52;
+    /* 0x53 */ u8 b53;
+    /* 0x54 */ u8 pad54[0x6C - 0x54];
+    /* 0x6C */ s32 w6C;
+} Ovl5fGameView;
 
 void func_800BADB8(s32 arg0);
 typedef struct OvlClampPos {
@@ -273,6 +289,8 @@ typedef struct OvlClampPos {
 
 extern s32 D_800CB100;
 extern s32 D_800CB104;
+
+void func_800B57FC(void);
 
 void func_800B8EC4(s32 player);
 
