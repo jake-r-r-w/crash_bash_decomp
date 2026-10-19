@@ -21,6 +21,8 @@ typedef struct Ovl5dCell {
 } Ovl5dCell;
 
 extern Ovl5dCell D_800C3BAC[8][8];
+extern u8 D_8005A614[];
+extern s32 D_8005A5D8;
 
 extern HeroInfo Heroes[4];
 extern u8 D_8005A614[];
@@ -116,6 +118,8 @@ u16 func_800BAD0C(s32 arg0, s32 arg1);
 void func_800BAD70(void);
 
 void func_800BAE08(s32 arg0);
+
+void func_800BAE98(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 
 void func_800BAF68(void);
 

@@ -440,7 +440,24 @@ void func_800BAE08(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BAE98);
+void func_800BAE98(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    Ovl5dCell *c;
+    s32 x;
+    u8 *g = D_8005A614;
+
+    if (!(*(u16 *)(g + 0x30) & 0x801) && !(*(s32 *)(g + 4) & 0x1000) &&
+        arg1 == D_8005A5D8 && arg5 < 8 && arg5 >= 5) {
+        arg0 = (arg0 + 0x800) >> 9;
+        arg2 = (arg2 + 0x800) >> 9;
+        if ((u32)arg0 < 8 && (u32)arg2 < 8) {
+            if (((Ovl5dCell *)((char *)D_800C3BAC + arg2 * 12 + arg0 * 0x60))->obj != NULL) {
+                *(s32 *)((Ovl5dCell *)((char *)D_800C3BAC + arg2 * 12 + arg0 * 0x60))->obj &= 0xFFFF7FFF;
+                ((Ovl5dCell *)((char *)D_800C3BAC + arg2 * 12 + arg0 * 0x60))->unkA = 0;
+                ((Ovl5dCell *)((char *)D_800C3BAC + arg2 * 12 + arg0 * 0x60))->unk8 |= 0x100;
+            }
+        }
+    }
+}
 
 void func_800BAF68(void) {
     s32 i;
