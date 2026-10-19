@@ -475,7 +475,35 @@ void func_800B8F04(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B8FD8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B96B0);
+s32 func_800B96B0(s32 arg0, s32 arg1) {
+    EXTengine *eng;
+    s32 dist;
+
+    eng = Heroes[arg0].hero_eng;
+    if (eng != NULL) {
+        dist = csqrt(eng->unk10.x * eng->unk10.x + eng->unk10.z * eng->unk10.z) >> 6;
+        if (arg1 == 0) {
+            if (dist > 0xB00) {
+                s32 ang = get_angle(eng->unk10.x, eng->unk10.z) & 0xFFF;
+                s32 c = D_80068BD4[(ang - 0x400) & 0xFFF].unk2;
+                s32 d = dist - 0xAFC;
+                eng->unk10.x -= d * c >> 12;
+                eng->unk10.z -= d * D_80068BD4[ang].unk2 >> 12;
+                return 1;
+            }
+        } else {
+            if (dist < 0x464) {
+                s32 ang = get_angle(eng->unk10.x, eng->unk10.z) & 0xFFF;
+                s32 c = D_80068BD4[(ang - 0x400) & 0xFFF].unk2;
+                s32 d = dist - 0x460;
+                eng->unk10.x -= d * c >> 12;
+                eng->unk10.z -= d * D_80068BD4[ang].unk2 >> 12;
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B980C);
 
