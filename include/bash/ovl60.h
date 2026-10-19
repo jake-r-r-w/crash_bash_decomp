@@ -70,5 +70,8 @@ void func_800C159C(s32 arg0);
 void func_800C2810(s32 arg0);
 
 void func_800C2B98(s32 arg0);
+extern s16 D_8009D87C[][3];
+
+void func_800C2EE0(void);
 
 #endif /* BASH_OVL60_H */
