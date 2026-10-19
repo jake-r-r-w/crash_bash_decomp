@@ -442,7 +442,17 @@ void func_800C0FAC(s32 i)
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1004);
+void func_800C1004(s32 i)
+{
+    EXTbotai *ai;
+
+    ai = Heroes[i].hero_ai;
+    if (ai != NULL) {
+        ai->AImode = 1;
+        ai->AItimer1 = 0;
+        ai->AItimer2 = Random(3) + 3;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1068);
 
