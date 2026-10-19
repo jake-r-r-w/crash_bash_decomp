@@ -4533,7 +4533,8 @@
   "status": "matched"
  },
  "ovl5d:800BAA1C": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-19T14:06:44Z",
+  "status": "matched"
  },
  "ovl5d:800BAB04": {
   "matched_at": "2026-10-19T14:03:05Z",

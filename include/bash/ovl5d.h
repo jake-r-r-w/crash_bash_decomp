@@ -42,6 +42,11 @@ void func_800B6F0C(void);
 
 extern u16 D_800C3B88;
 extern ScriptInit D_800C3AFC;
+extern ScriptInit D_800C3668;
+extern EXTengine *D_800C46B0;
+extern EXTobject *D_800C46B4;
+extern u8 D_8005303C[];
+void func_800B8B00(void);
 
 void func_800B7D20(u16 arg0);
 
@@ -99,6 +104,8 @@ void InitMissileExplode(NAS *nas);
 void func_800BA8A4(s32 x, s32 y, s32 z, s32 arg3, s32 arg4);
 
 void InitBoing(NAS *nas);
+
+void InitBashPenguin(NAS *nas);
 
 void InitSnowGlint(NAS *nas);
 

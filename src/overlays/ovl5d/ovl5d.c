@@ -320,7 +320,33 @@ void InitBoing(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitBashPenguin);
+void InitBashPenguin(NAS *nas) {
+    EXTengine *eng;
+    EXTobject *obj;
+
+    eng = nas->Engine;
+    if (eng != NULL) {
+        D_800C46B0 = eng;
+        func_80024E30(nas, &D_800C3668);
+        eng->sub->unk6C = (s32)D_8005303C;
+        eng->sub->unk74 = 0x2001;
+        obj = (EXTobject *)AddObject(nas);
+        if (obj != NULL) {
+            func_80026AD8((u8 *)nas);
+            func_8002694C(nas, 0x200);
+            D_800C46B4 = obj;
+            nas->FUX = (EXT *)obj;
+            obj->whatami = 0xE;
+            obj->can_do |= 2;
+        }
+        eng->unk5D = 1;
+        func_80025B10(eng, 0x50);
+        func_800B8B00();
+    }
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 void InitSnowGlint(NAS *nas) {
     EXTengine *eng;
