@@ -792,7 +792,22 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1A18);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Init_PogoMushroom);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Init_PogoBanker);
+void Init_PogoBanker(NAS *nas) {
+    EXTengine *e = nas->Engine;
+
+    if (e != NULL) {
+        e->sub->unk6C = D_80053B9C;
+        e->sub->unk74 = 0x200B;
+        e->flags &= ~0x8000;
+    }
+    nas->UserInfo.flags = 10;
+    nas->UserInfo.status = 0;
+    nas->UserInfo.user1 = Random(60) + 60;
+    nas->UserInfo.user2 = 0;
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 void Init_PogoPickup(NAS *nas) {
     EXTengine *e = nas->Engine;
