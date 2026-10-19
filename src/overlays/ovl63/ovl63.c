@@ -615,7 +615,25 @@ void PlotInnerRipple(NAS *m) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitInnerRipple);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotRippled);
+void PlotRippled(NAS *m) {
+    EXTripple *ext;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext != NULL) {
+        ext->scale += ext->step;
+        if (ext->max < ext->scale) {
+            ext->scale = ext->max;
+        }
+        m->Engine->unk2C.x = ext->scale + 0x400;
+        m->Engine->unk2C.y = ext->scale + 0x400;
+        m->Engine->unk2C.z = ext->scale + 0x400;
+        m->Engine->sub->unk76 += ext->fade;
+        m->Engine->unk5E = 1;
+        if ((s16)m->Engine->sub->unk76 >= 0xFFF) {
+            func_800270B0(m);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRippled);
 

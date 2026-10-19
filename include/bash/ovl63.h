@@ -339,4 +339,13 @@ void func_800C5154(s32 player);
 
 s32 func_800C5978(s32 player);
 
+/* Ripple extension (id 0x10000000) as PlotRippled reads it. */
+typedef struct EXTripple {
+    /* 0x00 */ s32 unk0[3];
+    /* 0x0C */ s32 scale;
+    /* 0x10 */ s32 step;
+    /* 0x14 */ s32 max;
+    /* 0x18 */ u16 fade;
+} EXTripple;
+
 #endif /* BASH_OVL63_H */
