@@ -16,13 +16,13 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `main.exe` function matches; Phase 2's naming, data and `main.c` split
   are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 1977/2537 game functions matched (49.8% of game code bytes):
+- 2024/2537 game functions matched (50.5% of game code bytes):
   **main.exe is complete (575/575)**; engine 355/357 (both left parked:
   `func_8007F314`, `PlotScriptFX`); ovl61 96/97 (`PlotBall` left), ovl6a
   93/94 (`func_800B5710` parked), ovl69 68/77, ovl67 101/135, ovl60
   131/180, ovl5f 127/179, ovl62 151/216, ovl63 97/139, ovl5d 70/104,
-  ovl65 64/80 (swarm runs 2026-10-18/19); ovl5e, ovl64, ovl66 and ovl68
-  are barely started. All 564 PsyQ functions (Sony objects). 3 parked (`decomp.py
+  ovl65 64/80, ovl68 60/93 (swarm runs 2026-10-18/19); ovl5e, ovl64 and
+  ovl66 are barely started. All 564 PsyQ functions (Sony objects). 3 parked (`decomp.py
   status`). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
@@ -50,17 +50,17 @@ leads**, add any new gotcha, and add one short entry at the top of the
 ## Next
 
 **Matching the slot overlays with the swarm.** Left per overlay (2026-10-19,
-`INCLUDE_ASM` count per file): ovl68 82, ovl5e 67, ovl62 65, ovl66 65,
+`INCLUDE_ASM` count per file): ovl5e 67, ovl62 65, ovl66 65, ovl68 33,
 ovl5f 52, ovl64 50, ovl60 49, ovl63 42, ovl5d 34, ovl67 34, ovl65 16,
 ovl69 9, ovl61 1, ovl6a 1, engine 2. main.exe is complete. **Next session:
-swarm ovl68, then ovl5e/ovl66/ovl64**, on the low-cost recipe; after each run, the
+swarm ovl5e, then ovl66/ovl64**, on the low-cost recipe; after each run, the
 "After a run" checklist in tools/swarm/README.md (`stats --run ID`, parks,
 gate failures, `fold`, this log).
 
 Recipes (`--seg overlays/NAME --branch main --max-minutes 60`):
 - **Low cost** (2026-10-19, ovl5f: 78 matched for $15.96, ~$0.20 a match;
   ovl5d: 64 for $31.79, ~$0.50, its 250-599 B functions cost more; ovl65:
-  50 in 38 min for $16.70, ~$0.33):
+  50 in 38 min for $16.70, ~$0.33; ovl68: 46 in 26 min for $11.71, ~$0.25):
   `--model sonnet --escalate-model opus --big-workers 1 --big-budget-usd 8
   --max-run-usd 30`. Use it for fresh overlays.
 - **Opus** (the `config.json` defaults, 5 normal + 1 big; ovl62/ovl60/ovl63
@@ -443,6 +443,13 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-19 (ovl68, low cost):** run 20261019171842, stopped by hand
+  after 26 min: 46 matched for $11.71, no gate failures; game code passes
+  50% of bytes (2024/2537 functions). Four left unmatched: two cut off by
+  the stop before their C built (`func_800B5CD0`, `func_800B65B0`, retry
+  next run), `func_800B6C84` (instructions 12/128, checkpoint kept) and
+  `func_800B4444` (cc1 deletes its empty first loop). Fold: 19 rows, 3
+  repeats dropped.
 - **2026-10-19 (hand, ovl5d):** `func_800BB64C` (364 B) matched by hand
   from the swarm park (registers 2/91), no permuter: `z` masked in place
   (one death, so local) and `x` its own local loaded before the two

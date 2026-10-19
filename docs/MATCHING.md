@@ -1135,6 +1135,22 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | a flag or result variable takes the register the target gives a short-lived copy (and vice versa) | the target reuses one variable for two roles (here `best`, then the done flag): its longer life lowers its global.c priority (`decomp.py sched`), so the copy is allocated first | `func_800B4D6C` |
 | a mask-and-add comes out through a temp (`and v0,a1,v0; addiu a1,v0,K`) where the target works in place (`and a1,a1,v0`) | `v = (v & M) + K` makes `v` die twice (`.lreg`: "dies in 2 places"), so local-alloc skips it and the `and` ties to the dying constant: write `v &= M; v += K;` (one death, a local) | `func_800BB64C` |
 | two block-local values in each other's registers (ours a lower one, `x` in v1 where the target has a0) | local-alloc gives registers by `floor_log2(refs) * refs / life`: start the variable's life earlier (load it before the preceding computations) so its longer life lowers its priority below the short temps | `func_800BB64C` |
+| address lui hoisted above index math | split index into named locals (xi, yi, idx) | `func_800BB3F0` |
+| address lui/addiu of a global array hoisted above the index math | assign the array to a local pointer first, then hero = base + idx | `func_800BAC98` |
+| Two `addiu` then two `sra` expected, ours interleaves addiu/sra per coordinate | Load both coords into locals, then separate statements `x += k; z += k; x >>= 7; z >>= 7;` and a named index local | `func_800BB488` |
+| negu of a loop-invariant hoisted before the other constants (target: after the li) | write -range inline at each use instead of a local nr = -range | `func_800BB5A0` |
+| strength-reduced pointer base off by +4 / negu hoisted too early | use h = &Heroes[i] inside for(i), and inline -range rather than a local | `func_800BB4F8` |
+| li order of two constants swapped in a run of stores | swap the order of the two stores in C | `InitBarrelCH` |
+| nop after lhu where target fills the delay slot with next loads; load hoisted above a store | reorder the source stores (dependent store first) and read the global into a local early | `InitEgg` |
+| D_ global load scheduled before the other loads in a compare | compute the other side into a local first, then compare | `func_800BAD1C` |
+| three lw then three sw expected, ours interleaves lw/sw | struct-assign the vec member (p->unk10 = e->unk10) | `func_800BA70C` |
+| a0 not reloaded before jal (hero pointer computed but arg passed raw) | pass the raw s32 arg with a (HeroInfo *) cast instead of &Heroes[i] | `func_800BAF58` |
+| compiler fills nop slot with later constant stores, target keeps nop | move those constant stores after the dependent store | `InitCircleFire` |
+| loop test at top with `j` back but invariants hoisted (not rotated) | declare locals inside the loop body block before the exit test: the BLOCK_BEG note stops expand_end_loop rotating it | `PlotCircleFire` |
+| lui/addiu of a global loaded once but ours re-adds offset, or ternary-style arg select gives beqz/li order mismatch | assign the global to a local with a comma expr inside the condition; write if/else with the call in both branches (x==0 first) instead of var_a1 | `func_800B68B8` |
+| local expected in callee-saved reg though assigned after the call; sltiu range merge | set the local (sub = NULL) before the call so it lives across it; nest the two compares in separate ifs to avoid sltiu | `func_800BA784` |
+| dist-squared: mflo regs swapped, pos pointer in wrong arg reg | square in place into the same local (dx = dx * dx; dz = dz * dz;) then sum | `func_800BB7E0` |
+| sh of a constant hoisted before a later load of the same struct (target: after the lhu) | write that constant store after the statement that reloads the field | `PlotCircleFire` |
 
 ## Classify the diff, then work through the list
 
