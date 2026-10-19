@@ -672,7 +672,53 @@ void Init_PogoProjectile(NAS *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C11C4);
+void func_800C11C4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+    NAS *nas;
+    EXTengine *e;
+    subengine *sub;
+    subengine *s;
+
+    nas = SpawnNASById(arg1, D_8005A5D8 - arg3, arg2, 0x1404, 0x11);
+    if (nas != NULL) {
+        e = nas->Engine;
+        if (e != NULL) {
+            sub = e->sub;
+            if (sub != NULL) {
+                nas->UserInfo.user1 = 0;
+                nas->UserInfo.user2 = arg0;
+                nas->UserInfo.status = arg5;
+                nas->UserInfo.flags = ((arg4 & 7) << 8) | 2;
+                sub->unk6C = D_80053B9C;
+                sub->unk74 = 0x200D;
+                func_80018F3C(e, 8);
+                for (s = sub->next; s != NULL; s = s->next) {
+                    s->unk6C = D_80053B9C;
+                    s->flags = (s->flags & ~0x8000) | 0x20000041;
+                    s->unk20.z = 0x1000;
+                    s->unk20.y = 0x1000;
+                    s->unk20.x = 0x1000;
+                    s->unk50 = 1;
+                    s->unk51 = 0;
+                    s->unk04 = 0x90;
+                }
+                switch (arg0) {
+                case 1:
+                    sub->unk74 = 0x200D;
+                    break;
+                case 2:
+                    sub->unk74 = 0x201B;
+                    break;
+                case 3:
+                    sub->unk74 = 0x2040;
+                    break;
+                }
+                e->unk1E = (arg5 + 0xC00) % 0x1000;
+                e->unk5E = 1;
+                nas->UserInfo.flags |= 1;
+            }
+        }
+    }
+}
 
 void func_800C1384(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     EXTengine *eng;
