@@ -6122,7 +6122,8 @@
  },
  "ovl60:800C2E50": {
   "auto_diff": 33,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-19T08:20:42Z",
+  "status": "matched"
  },
  "ovl60:800C2EE0": {
   "auto_diff": 6,
@@ -8331,7 +8332,9 @@
  },
  "ovl66:800B6238": {
   "auto_diff": 33,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-19T08:20:59Z",
+  "status": "matched",
+  "via": "copy"
  },
  "ovl66:800B62C8": {
   "matched_at": "2026-10-10T10:11:53Z",
@@ -9202,7 +9205,9 @@
  },
  "ovl68:800BA5A0": {
   "auto_diff": 33,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-19T08:20:59Z",
+  "status": "matched",
+  "via": "copy"
  },
  "ovl68:800BA630": {
   "auto_diff": 18,

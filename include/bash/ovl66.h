@@ -25,4 +25,10 @@ extern s32 D_800B9EEC;
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
 #include "bash/ovl66_800b6efc.h"
 
+void func_800B6238(s32 arg0, s32 arg1);
+void func_800B4BC8(s32 arg0, u16 arg1);
+void func_800B5050(s32 arg0, u16 arg1);
+void func_800B54D8(s32 arg0, u16 arg1);
+void func_800B5820(s32 arg0, u16 arg1);
+
 #endif /* BASH_OVL66_H */

@@ -1,6 +1,7 @@
 #include "common.h"
 #include "bash/ovl68.h"
 #include "bash/chase.h"
+#include "bash/pogo.h"
 
 void func_800B3330(void) {
 }
@@ -101,7 +102,23 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B9ED8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BA220);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BA5A0);
+void func_800BA5A0(s32 arg0, s32 arg1) {
+    u8 *g = D_8005A614;
+
+    if (!(*(u16 *)(g + 0x30) & 0x801)) {
+        u16 f = *(u16 *)(g + 0x32);
+
+        if (f & 0x80) {
+            func_800B94FC(arg0, (u16)arg1);
+        } else if (f & 0x20) {
+            func_800B9A50(arg0, (u16)arg1);
+        } else if (f & 0x40) {
+            func_800B9ED8(arg0, (u16)arg1);
+        } else {
+            func_800BA220(arg0, (u16)arg1);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BA630);
 

@@ -21,4 +21,11 @@ void func_800BB640(s32 arg0);
 
 extern u8 D_800BC210[];
 
+void func_800BA5A0(s32 arg0, s32 arg1);
+void func_800B94FC(s32 arg0, u16 arg1);
+void func_800B9A50(s32 arg0, u16 arg1);
+void func_800B9ED8(s32 arg0, u16 arg1);
+void func_800BA220(s32 arg0, u16 arg1);
+extern u8 D_8005A614[];
+
 #endif /* BASH_OVL68_H */
