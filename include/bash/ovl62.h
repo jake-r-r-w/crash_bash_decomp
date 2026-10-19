@@ -385,6 +385,7 @@ void func_800D2CB8(s32 arg0);
 /* Per-hero speed table (declared in bash/8007ee2c.h, not included here). */
 extern u16 *D_8009D6F4;
 extern s32 D_800D6924[];
+extern s32 D_800D6934[];
 
 s32 func_800CAC20(s32 i);
 
@@ -401,5 +402,7 @@ typedef struct Ovl62TeamView {
 s32 func_800B9B6C(s32 hero);
 
 void func_800CAD60(s32 player);
+
+void func_800D2E00(s32 player);
 
 #endif /* BASH_OVL62_H */

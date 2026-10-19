@@ -1827,7 +1827,22 @@ void func_800D2D9C(s32 player) {
     func_800C0888(&Heroes[player].hero_eng->unk10, player);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2E00);
+void func_800D2E00(s32 player) {
+    HeroInfo *base;
+    HeroInfo *hero;
+
+    base = Heroes;
+    hero = base + player;
+    if (hero->hero_eng->sfx != NULL) {
+        StopSfx(hero->hero_eng->sfx);
+    }
+    if (hero->hero_move != NULL) {
+        hero->hero_move->z_dir = 0;
+    }
+    SetHeroSeq((HeroInfo *)player, 0x43);
+    D_800D6934[player] = 0x4100;
+    hero->hero_eng->sub->unk68 = 0;
+}
 
 void func_800D2EB0(s32 player) {
     s32 *ext = FindExtension(Heroes[player].hero, 0x20000000);
