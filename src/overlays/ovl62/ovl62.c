@@ -555,7 +555,19 @@ s32 func_800CB284(void) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB2C8);
+s32 func_800CB2C8(s32 arg0) {
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        if (i == arg0 || (D_800D5FEC[i] & 4)) {
+            return 0;
+        }
+        if (D_800D5FEC[i] & 2) {
+            return 0;
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB314);
 
