@@ -296,7 +296,77 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", InitDinoGem);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", PlotDinoGem);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", PlotDinoScratch);
+void PlotDinoScratch(NAS *m) {
+    subengine *s;
+    EXTengine *e;
+    s32 dx;
+    s32 v;
+    u16 ang;
+
+    s = m->Engine->sub;
+    while (s != NULL) {
+        if (!(s->flags & 0x8000)) {
+            break;
+        }
+        s = s->next;
+    }
+    e = Heroes[m->UserInfo.user1].hero_shadow;
+    if (e != NULL) {
+        if ((e->unk10.x - e->OldXYZ.x) * (e->unk10.x - e->OldXYZ.x)
+            + (e->unk10.z - e->OldXYZ.z) * (e->unk10.z - e->OldXYZ.z) > 0 && s != NULL
+            && Heroes[m->UserInfo.user1].hero_mode == 0x66
+            && Heroes[m->UserInfo.user1].hero_anim->Aindex >= 0xE) {
+            if (Heroes[m->UserInfo.user1].hero_anim->Aindex == 0xE) {
+                if (m->UserInfo.user1 == 0) {
+                    PlaySfx(0x6AC, &Heroes[0].hero_eng->sfx, &Heroes[0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                }
+                if (m->UserInfo.user1 == 1) {
+                    PlaySfx(0x6AD, &Heroes[1].hero_eng->sfx, &Heroes[1].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                }
+                if (m->UserInfo.user1 == 2) {
+                    PlaySfx(0x6AE, &Heroes[2].hero_eng->sfx, &Heroes[2].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                }
+                if (m->UserInfo.user1 == 3) {
+                    PlaySfx(0x6AF, &Heroes[3].hero_eng->sfx, &Heroes[3].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                }
+            }
+            m->UserInfo.user2++;
+            if (!(s->flags & 0x8000)) {
+                *(SLONG_XYZ *)&s->unk04 = Heroes[m->UserInfo.user1].hero_eng->unk10;
+                if (Heroes[m->UserInfo.user1].hero_eng->unk2C.x > 0x1000) {
+                    s->unk50 = 1;
+                    dx = Heroes[m->UserInfo.user1].hero_eng->unk2C.x;
+                    s->unk20.z = dx;
+                    s->unk20.y = dx;
+                    s->unk20.x = dx;
+                }
+                if (Heroes[m->UserInfo.user1].hero_eng->unk2C.x < 0x1000) {
+                    s->unk50 = 1;
+                    v = Heroes[m->UserInfo.user1].hero_eng->unk2C.x;
+                    s->unk20.z = v;
+                    s->unk20.y = v;
+                    s->unk20.x = v;
+                }
+                s->flags = 0x40008041;
+                ang = Heroes[m->UserInfo.user1].hero_eng->unk1E;
+                s->unk52 = 1;
+                s->unk76 = 0x400;
+                s->unk12 = ang + 0x800;
+            }
+        }
+    }
+    for (s = m->Engine->sub; s != NULL; s = s->next) {
+        if (s->flags & 0x8000) {
+            s->unk76 += 0x40;
+            if ((s16)s->unk76 > 0xC00) {
+                s->flags = 0;
+                s->unk20.z = 0x1000;
+                s->unk20.y = 0x1000;
+                s->unk20.x = 0x1000;
+            }
+        }
+    }
+}
 
 void func_800BC5B0(void) {
     D_800BDA08[0] = D_800BD9FC;

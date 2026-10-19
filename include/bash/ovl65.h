@@ -106,6 +106,8 @@ s32 func_800BD258(s32 arg0);
 s32 func_800BD320(s32 arg0, s32 arg1);
 extern ScriptInit D_800BDC08;
 
+void PlotDinoScratch(NAS *m);
+
 s32 func_800BCCE8(s32 arg0);
 
 void InitDinoSmoke(NAS *arg0);
