@@ -412,7 +412,10 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitPillarCover);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitPillar);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitPillarControl);
+void InitPillarControl(NAS *nas) {
+    nas->Engine->flags = 0;
+    nas->UserInfo.flags = 0x5A;
+}
 
 void InitBoatField(NAS *nas) {
     nas->UserInfo.user2 = 0;
