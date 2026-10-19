@@ -8488,7 +8488,8 @@
  },
  "ovl65:800BA468": {
   "auto_diff": 41,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-19T15:56:59Z",
+  "status": "matched"
  },
  "ovl65:800BA574": {
   "auto_failed": "types"

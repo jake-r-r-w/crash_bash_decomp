@@ -251,7 +251,25 @@ void func_800B9C10(s32 id) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B9E68);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BA468);
+void func_800BA468(s32 id) {
+    Ovl65Ext *ext;
+
+    ext = FindExtension(Heroes[id].hero, 0x10000000);
+    if (ext != NULL) {
+        Heroes[id].hero_eng->unk1E += 0x80;
+        func_800BA960(id);
+        Heroes[id].hero_frozen = 2;
+        ((PadButtons *)D_80051338)[id].unk50 = 0;
+        ((PadButtons *)D_80051338)[id].unk54 = 0;
+        if (ext->unkC-- < 0) {
+            SetHeroAction((HeroInfo *)id, 0x63);
+        }
+        func_8008502C(id);
+        if ((Heroes[id].hero_status & 0x200) && Heroes[id].hero_mode != 0x68) {
+            SetHeroAction((HeroInfo *)id, 0x68);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BA574);
 
