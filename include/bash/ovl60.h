@@ -210,6 +210,8 @@ void func_800C2018(s32 arg0, s32 arg1, s32 arg2);
 
 void func_800C2BE8(s32 arg0);
 
+void func_800C2FB8(void);
+
 void func_800C3048(void);
 
 void func_800C3148(void);

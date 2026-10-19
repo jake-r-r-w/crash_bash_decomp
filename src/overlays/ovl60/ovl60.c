@@ -1173,7 +1173,20 @@ void func_800C2F84(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C2FB8);
+void func_800C2FB8(void) {
+    u8 *g = D_8005A614;
+    s32 i;
+
+    if (*(u16 *)(g + 0x32) & 0x80) {
+        if (*(s16 *)(g + 0x34) == 10) {
+            D_800C52F4 = 0;
+            for (i = 0; i < 2; i++) {
+                SpawnNASById(0, 0, 0, 0x1407, 0x11);
+            }
+        }
+        func_8007B7FC(0x130, 0x81D0);
+    }
+}
 
 void func_800C3048(void) {
     s32 i;
