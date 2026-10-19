@@ -2902,7 +2902,30 @@ void func_800D034C(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D0470);
+void func_800D0470(s32 player) {
+    HeroInfo *base;
+    HeroInfo *h;
+
+    base = Heroes;
+    h = &base[player];
+    if (h->hero_shadow != NULL) {
+        h->hero_shadow->sub->flags &= ~0x8000;
+    }
+    if (D_800D4D08 == 0) {
+        PlaySfx(0x45D, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    func_80026980(h->hero);
+    h->hero_eng->sub->flags &= ~0x8000;
+    if (!(h->hero_status & 0x200)) {
+        h->hero_status |= 0x8000;
+        if (!(h->hero_status & 0x200)) {
+            h->hero_status |= 0x2000;
+        }
+    }
+    if (D_8005A648 == 0x15) {
+        FindExtension(Heroes[player].hero, 0x20000000);
+    }
+}
 
 s32 func_800D05A8(s32 player) {
     HeroInfo *base = Heroes;
