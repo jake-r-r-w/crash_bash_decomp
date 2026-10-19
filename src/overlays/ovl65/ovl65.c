@@ -575,7 +575,44 @@ void func_800BD08C(void) {
     func_800B5424();
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BD0AC);
+s32 func_800BD0AC(s32 self, s32 *dist) {
+    SLONG_XYZ pos;
+    s32 best;
+    HeroInfo *h;
+    HeroInfo *me;
+    HeroInfo *base;
+    s32 i;
+    s32 d;
+    s32 min;
+    u16 st;
+
+    best = -1;
+    min = 0x07FFFFFF;
+    i = 0;
+    base = Heroes;
+    me = &base[self];
+    h = base;
+loop:
+    if (i < 4) {
+        if (i != self &&!((st = h->hero_status) & 0x2000) && !(st & 0x8000)) {
+            pos = h->hero_eng->unk10;
+            d = func_8008CEB0((u8 *)&pos, (u8 *)&me->hero_eng->unk10);
+            if (d < min) {
+                min = d;
+                do {
+                    best = i;
+                } while (0);
+            }
+        }
+        do {
+            h++;
+        } while (0);
+        i++;
+        goto loop;
+    }
+    *dist = min;
+    return best;
+}
 
 s32 func_800BD1B8(s32 *arg0, s32 arg1) {
     s32 v = func_800B3760(arg1);

@@ -8616,9 +8616,10 @@
   "via": "auto"
  },
  "ovl65:800BD0AC": {
-  "auto_failed": "compile",
   "copy_failed": "ovl62:800CB178",
-  "copy_failed_stage": "in-file"
+  "copy_failed_stage": "in-file",
+  "matched_at": "2026-10-19T15:56:49Z",
+  "status": "matched"
  },
  "ovl65:800BD1B8": {
   "auto_diff": 3,
