@@ -323,7 +323,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1384);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1400);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C142C);
+void func_800C142C(s32 arg0) {
+    Heroes[arg0].hero_status |= 0x800;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1460);
 
