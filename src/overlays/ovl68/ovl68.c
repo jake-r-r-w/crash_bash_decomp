@@ -114,7 +114,27 @@ void func_800B627C(s32 arg0) {
     SetHeroSeq((HeroInfo *)arg0, 0x66);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B6350);
+void func_800B6350(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = &base[arg0];
+    EXTengine *e;
+
+    if (func_80025BBC(h->hero_eng) != 0) {
+        SetHeroAction((HeroInfo *)arg0, 0x7B);
+    } else if (!(h->hero_ctrl & 8)) {
+        e = h->hero_eng;
+        if (D_8005A5D8 < e->unk10.y + h->hero_sub->unk08) {
+            if (D_8005B5B8 == 0x7FFFFFFF) {
+                SetHeroAction((HeroInfo *)arg0, 0x79);
+            } else {
+                e->unk10.y = D_8005A5D8;
+                h->hero_sub->unk08 = 0;
+            }
+        }
+    }
+    func_800B52C8(arg0);
+    func_8008502C(arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B643C);
 
