@@ -77,6 +77,7 @@ extern s32 D_800C4484[];
 void func_800C1004(s32 arg0);
 void func_800C02AC(EXTengine *eng, s32 angle);
 extern u8 D_80053B9C[];
+extern u8 D_80053ABC[];
 extern s32 D_8005A680[];
 extern u8 D_8005A614[];
 extern NAS *D_800C5BB0;
