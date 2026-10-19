@@ -625,7 +625,8 @@ typedef struct PadState {
     /* 0x22 */ s16 unk22;
     /* 0x24 */ u8 unk24[4];
     /* 0x28 */ s16 unk28;
-    /* 0x2A */ u8 unk2A[0x58 - 0x2A];
+    /* 0x2A */ u8 unk2A[0x54 - 0x2A];
+    /* 0x54 */ s32 unk54;
 } PadState;
 
 /* Analog/edge view of a PadState (func_800136BC). */

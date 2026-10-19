@@ -2192,7 +2192,28 @@ s32 func_800C2C70(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C2CBC);
+s32 func_800C2CBC(s32 arg0) {
+    if (D_80051338[arg0].unk54 & 0x8000) {
+        switch (D_800C535C[arg0].unk4) {
+        case 1:
+            func_800BC184(arg0, 0);
+            break;
+        case 2:
+            func_800BC314(arg0, 0);
+            break;
+        case 4:
+            func_800BC184(arg0, 1);
+            break;
+        case 3:
+            if (func_800BA51C(arg0, 0) != 0) {
+                SetHeroAction((HeroInfo *)arg0, 0x3F);
+                return 1;
+            }
+            break;
+        }
+    }
+    return 0;
+}
 
 void func_800C2DCC(s32 arg0) {
     Ovl60Slot *slot;
