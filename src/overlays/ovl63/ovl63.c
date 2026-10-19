@@ -482,7 +482,13 @@ s32 func_800C5400(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5470);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C554C);
+s32 func_800C554C(s32 arg0) {
+    if (((Ovl63Pad *)D_80051338)[arg0].unk50 & 0xF0) {
+        return 0;
+    }
+    SetHeroAction((HeroInfo *)arg0, 0x5B);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C55A4);
 

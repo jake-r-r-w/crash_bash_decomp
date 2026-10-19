@@ -113,6 +113,12 @@ void func_800B5D14(void);
 void func_800B6474(void);
 void func_800C04EC(void);
 void func_800C0CB4(void);
+/* PadState (D_80051338) as func_800C554C reads it: d-pad bits 0xF0 at 0x50. */
+typedef struct Ovl63Pad {
+    /* 0x00 */ u8 unk0[0x50];
+    /* 0x50 */ s32 unk50;
+    /* 0x54 */ s32 unk54;
+} Ovl63Pad;
 /* Race missile extension (0x78 bytes, id 0x10000000). */
 typedef struct RaceMissileExt {
     /* 0x00 */ u8 pad0[0x10];
@@ -152,6 +158,8 @@ void InitRaceSmokePoof(NAS *nas);
 void InitTNTCrate(NAS *m);
 
 s32 func_800C5400(s32 arg0);
+
+s32 func_800C554C(s32 arg0);
 
 void func_800C55FC(s32 player);
 
