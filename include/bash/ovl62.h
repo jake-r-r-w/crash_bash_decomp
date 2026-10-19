@@ -262,6 +262,7 @@ void func_800B7520();
 void func_800B767C();
 void func_800B7F70();
 void func_800B6FEC();
+void func_800B6D74();
 extern s32 D_800D5FEC[];
 
 /* Inlined into func_800B9994. */
@@ -692,6 +693,8 @@ void func_800B5684(s32 player);
 void func_800B6258(s32 player);
 
 void func_800B782C(s32 player);
+
+s32 func_800B9600(s32 player);
 
 s32 func_800B98AC(s32 player);
 
