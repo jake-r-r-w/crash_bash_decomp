@@ -1321,7 +1321,19 @@ void func_800C8360(void) {
 void func_800C83D0(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C83D8);
+void func_800C83D8(void) {
+    D_8005AA70[0] = (s32)func_800B5588;
+    D_8005AA70[1] = (s32)func_800B58B0;
+    D_8005AA70[2] = (s32)func_800B58B0;
+    D_8005AA70[3] = (s32)func_800B5FC4;
+    D_8005AA70[4] = (s32)func_800C8360;
+    D_8005AA70[6] = (s32)func_800C8324;
+    D_8005AA70[5] = (s32)func_800C832C;
+    D_8005AA70[7] = 0;
+    D_8005AA70[8] = 0;
+    D_8005AA70[10] = (s32)func_800B62A4;
+    D_800CB25C = 1;
+}
 
 void func_800C8450(s32 x, s32 z, s32 dist) {
     EXTengine *eng;

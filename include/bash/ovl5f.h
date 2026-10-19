@@ -30,6 +30,11 @@ void func_800C831C(void);
 void func_800C8324(void);
 void func_800C832C(void);
 void func_800C83D0(void);
+extern s32 D_800CB25C;
+void func_800B5588(void);
+void func_800B58B0(void);
+void func_800B5FC4(void);
+void func_800B62A4(void);
 u8 func_800C891C(s32 arg0, s32 arg1);
 u8 func_800C8950(s32 arg0, s32 arg1);
 void func_800C8984(s32 arg0, s32 arg1);
@@ -281,6 +286,8 @@ s32 func_800C8294(OvlClampPos *p);
 void func_800C8334(s32 arg0);
 
 void func_800C8360(void);
+
+void func_800C83D8(void);
 
 void func_800C85F8(Ovl5fHolder *h, s16 v);
 
