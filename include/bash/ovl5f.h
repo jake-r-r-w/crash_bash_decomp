@@ -192,6 +192,8 @@ extern s32 D_800CB104;
 
 void func_800B8EC4(s32 player);
 
+void func_800C68C8(s32 arg0);
+
 s32 func_800C8294(OvlClampPos *p);
 
 #endif /* BASH_OVL5F_H */
