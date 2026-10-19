@@ -261,6 +261,8 @@ void func_800C7298(NAS *nas);
 
 void func_800C7F18(NAS *nas, s32 player);
 
+void func_800C7F80(s32 player, s32 unused, s32 ReqdSFX);
+
 s32 func_800C8120(s32 arg0);
 
 s32 func_800C8294(OvlClampPos *p);

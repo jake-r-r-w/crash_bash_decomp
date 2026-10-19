@@ -1147,7 +1147,16 @@ void func_800C7F18(NAS *nas, s32 player) {
     KillNAS(nas);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7F80);
+void func_800C7F80(s32 player, s32 unused, s32 ReqdSFX) {
+    if (D_800CAD50[player].FireBreatherSFX != ReqdSFX) {
+        D_800CAD50[player].FireBreatherSFX = ReqdSFX;
+        if (ReqdSFX == 0) {
+            StopSfx(D_800CAD50[player].FireBreatherSFXHandler);
+        } else {
+            PlaySfx(ReqdSFX, &D_800CAD50[player].FireBreatherSFXHandler, NULL, 0x1000, 0x1E00, 0);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8008);
 
