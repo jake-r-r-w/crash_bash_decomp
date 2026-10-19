@@ -698,7 +698,43 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotRaceShield);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotRaceTag);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRaceVolcano);
+void InitRaceVolcano(NAS *nas) {
+    s32 i;
+    RaceVolcanoExt *v;
+    RaceVolcanoExt *ext;
+    EXTengine *eng;
+
+    v = AddExtension(nas, 0x15C, 0x10000000);
+    i = 0;
+    if (v != NULL) {
+        ext = v;
+        ext->unk10 = 0x1C2;
+        ext->unkC = 0;
+    loop:
+        if (i < 3) {
+            eng = AddEngine(nas, i + 2);
+            if (eng != NULL) {
+                ext->eng[0] = eng;
+                eng->sub->flags &= ~0x8000;
+                eng->unk5C = 1;
+                eng->unk5D = 2;
+                eng->sub->unk74 = 0x2019;
+                eng->sub->unk6C = *(void **)D_80058AD0;
+                ext->eng[0]->unk1E = Random(0x1000);
+                ext->eng[0]->unk20 = 0;
+                ext->unk144[0] = 0;
+                ext->unk150[0] = 0;
+            }
+            ext = (RaceVolcanoExt *)((s32 *)ext + 1);
+            i++;
+            goto loop;
+        }
+        i = 2;
+    loop2:
+        i--;
+        if (i >= 0) goto loop2;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotRaceVolcano);
 

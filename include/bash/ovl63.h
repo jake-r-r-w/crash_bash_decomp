@@ -251,6 +251,17 @@ typedef struct RacePickUpExt {
     /* 0x48 */ s32 unk48;
     /* 0x4C */ s32 unk4C;
 } RacePickUpExt;
+/* Race volcano extension (0x15C bytes, id 0x10000000). */
+typedef struct RaceVolcanoExt {
+    /* 0x000 */ u8 pad0[0xC];
+    /* 0x00C */ s32 unkC;
+    /* 0x010 */ s32 unk10;
+    /* 0x014 */ u8 pad14[0x18 - 0x14];
+    /* 0x018 */ EXTengine *eng[3];
+    /* 0x024 */ u8 pad24[0x144 - 0x24];
+    /* 0x144 */ s32 unk144[3];
+    /* 0x150 */ s32 unk150[3];
+} RaceVolcanoExt;
 
 extern u8 D_80052F5C[];
 
@@ -486,6 +497,8 @@ typedef struct EXTtrackglob {
 extern ScriptInit D_800C6EA4;
 extern u8 *D_800C66EC;
 extern s32 D_800C6EB0;
+
+void InitRaceVolcano(NAS *nas);
 
 void InitTrackGlob(NAS *m);
 
