@@ -6934,7 +6934,8 @@
   "status": "matched"
  },
  "ovl62:800CA514": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-19T07:45:39Z",
+  "status": "matched"
  },
  "ovl62:800CA628": {
   "matched_at": "2026-10-19T07:33:57Z",

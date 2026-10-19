@@ -1501,7 +1501,29 @@ void InitSmokeTrail(NAS *m) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBearDeath);
+void PlotBearDeath(NAS *m) {
+    BearDeathExt *ext;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext != NULL) {
+        func_800250B0(m);
+        m->Engine->unk1C += 0x100;
+        m->Engine->unk5E = 1;
+        if (ext->unk40 > 0) {
+            m->Engine->sub->unk68 = 0x200;
+        }
+        if (++ext->unk80 == 0x1F) {
+            func_80026980(m);
+        }
+        if (--ext->unk84 < 0) {
+            SpawnNASById(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1612, 0x11);
+            ext->unk84 = Random(7) + 1;
+        }
+        if (func_8008C5C4(&ext->from.x, &ext->to.x, &ext->unk2C, &m->Engine->unk10.x) != 0) {
+            KillNAS(m);
+        }
+    }
+}
 
 void InitBearDeath(NAS *m) {
     BearDeathExt *ext;

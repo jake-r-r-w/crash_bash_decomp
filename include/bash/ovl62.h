@@ -632,10 +632,13 @@ typedef struct SniperAim {
 
 /* Bear death extension (0x88 bytes, id 0x10000000). */
 typedef struct BearDeathExt {
-    /* 0x00 */ u8 pad0[0x2C];
-    /* 0x2C */ s32 unk2C;
+    /* 0x00 */ u8 pad0[0x14];
+    /* 0x14 */ SLONG_XYZ to;
+    /* 0x20 */ SLONG_XYZ from;
+    /* 0x2C */ s32 unk2C; /* start of the arc passed to func_8008C5C4 */
     /* 0x30 */ s32 unk30;
-    /* 0x34 */ u8 pad34[0x10];
+    /* 0x34 */ u8 pad34[0xC];
+    /* 0x40 */ s32 unk40;
     /* 0x44 */ s32 unk44;
     /* 0x48 */ u8 pad48[0x28];
     /* 0x70 */ s32 unk70;
