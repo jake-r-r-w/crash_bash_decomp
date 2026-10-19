@@ -461,7 +461,31 @@ void InitCoalFlame(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotCoal);
+void PlotCoal(CoalNAS *nas) {
+    CoalEng *eng = nas->eng;
+
+    if (nas->unk5E == 5) {
+        eng->unk5E = 1;
+        eng->unk1C += 0x44;
+        nas->unk60 += 0xC;
+        eng->y += nas->unk60;
+        if (eng->y > 0) {
+            eng->y = 0;
+            eng->sub->unk74 = 0x2002;
+            eng->unk1C = 0;
+            eng->unk5E = 1;
+            nas->unk5E = 0;
+        }
+    }
+    nas->unk5C--;
+    if (nas->unk5C == 0) {
+        s32 xi = (eng->x + 0xA00) >> 7;
+        s32 zi = (eng->z + 0xA00) >> 7;
+        s32 idx = zi * 40 + xi;
+        D_800BC4E8[idx] = 0;
+        KillNAS((NAS *)nas);
+    }
+}
 
 void InitCoal(NAS *nas) {
     EXTengine *eng;

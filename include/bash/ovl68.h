@@ -88,6 +88,34 @@ extern s32 D_800BB9FC[];
 void PlotCoalFlameSFX(CoalSfxObj *obj);
 
 void func_800BB6FC(s32 arg0, s32 arg1, s32 arg2, EXTengine *arg3, Ovl68Out *arg4);
+
+typedef struct CoalSub {
+    u8 pad0[0x74];
+    u16 unk74;
+} CoalSub;
+
+typedef struct CoalEng {
+    u8 pad0[0x10];
+    s32 x;
+    s32 y;
+    s32 z;
+    u16 unk1C;
+    u8 pad1E[0x5E - 0x1E];
+    u16 unk5E;
+    u8 pad60[0x6C - 0x60];
+    CoalSub *sub;
+} CoalEng;
+
+typedef struct CoalNAS {
+    u8 pad0[0x54];
+    CoalEng *eng;
+    u8 pad58[4];
+    u16 unk5C;
+    u16 unk5E;
+    s32 unk60;
+} CoalNAS;
+
+void PlotCoal(CoalNAS *nas);
 void func_800BB488(CoalGridObj *obj);
 void func_800B3330(void);
 void func_800BADA8(s32 arg0);
