@@ -547,7 +547,15 @@ s32 func_800BAF58(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BAFB4);
+s32 func_800BAFB4(s32 arg0)
+{
+  if (Heroes[arg0].hero_move->forward_speed != 0)
+  {
+    SetHeroAction((HeroInfo *)arg0, 0x72);
+    return 1;
+  }
+  return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BB010);
 
