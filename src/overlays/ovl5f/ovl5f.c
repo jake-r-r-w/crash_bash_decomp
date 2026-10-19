@@ -633,7 +633,18 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7F80);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8008);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8090);
+void func_800C8090(s32 player, EXTengine *pEngine, s32 ReqdSFX) {
+    if (D_800CAD50[player].HullSFX != ReqdSFX) {
+        D_800CAD50[player].HullSFX = ReqdSFX;
+        if (ReqdSFX == 0) {
+            if (pEngine->sfx != NULL) {
+                StopSfx(pEngine->sfx);
+            }
+        } else {
+            PlaySfx(ReqdSFX, &pEngine->sfx, &pEngine->unk10, 0x1000, 0x1E00, 0);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8120);
 

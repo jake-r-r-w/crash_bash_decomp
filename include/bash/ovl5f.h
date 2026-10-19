@@ -125,6 +125,8 @@ void func_800C7EB0(HeroInfo *hero, Ovl5fActState *state, s32 arg2);
 
 void func_800C7EF8(HeroInfo *hero);
 
+void func_800C8090(s32 player, EXTengine *pEngine, s32 ReqdSFX);
+
 void func_800C81C8(s32 x, s32 z, s32 range, s32 arg3);
 
 void func_800C8450(s32 x, s32 z, s32 dist);
