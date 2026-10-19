@@ -139,7 +139,44 @@ void func_800B8314(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B8578);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotSnowGlint);
+void PlotSnowGlint(NAS *nas) {
+    EXTengine *eng;
+    subengine *sub;
+    SnowGlint *g;
+    s32 i;
+
+    eng = nas->Engine;
+    if (eng != NULL) {
+        sub = eng->sub;
+        g = FindExtension(nas, 0x20000002);
+        if (g != NULL && sub != NULL) {
+            i = 0;
+            do {
+                if (g->on[i] == 0) {
+                    if (g->timer[i] != 0) {
+                        g->timer[i]--;
+                        sub->flags &= 0xFFFF7FFF;
+                    } else {
+                        sub->unk04 = Random(0xF00) - 0x780;
+                        sub->unk0C = Random(0xF00) - 0x780;
+                        sub->flags |= 0x8000;
+                        g->timer[i] = Random(3);
+                        g->on[i] = 1;
+                    }
+                } else {
+                    if (g->timer[i] != 0) {
+                        g->timer[i]--;
+                    } else {
+                        g->timer[i] = Random(0xF);
+                        g->on[i] = 0;
+                    }
+                }
+                sub = sub->next;
+                i++;
+            } while (sub != NULL);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotBashPenguin);
 

@@ -62,6 +62,13 @@ void PlotBoing(u8 *arg0);
 
 s32 func_800BB1B4(u8 *arg0);
 
+/* Extension 0x20000002: one entry every 2 bytes, one per subengine. */
+typedef struct SnowGlint {
+    /* 0x00 */ u8 pad00[0xC];
+    /* 0x0C */ u16 on[10];
+    /* 0x20 */ u16 timer[10];
+} SnowGlint;
+
 void func_800BB360(void);
 
 void func_800B3A38(void);
@@ -78,6 +85,8 @@ extern u8 D_80052F5C[];
 #include "bash/ovl5d_800bff1c.h"
 
 void func_800B8314(void);
+
+void PlotSnowGlint(NAS *nas);
 
 void InitMissileExplode(NAS *nas);
 
