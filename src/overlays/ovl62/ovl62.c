@@ -1377,7 +1377,19 @@ void func_800D2C38(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2CB8);
+void func_800D2CB8(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = base + arg0;
+    u16 status;
+
+    if (FindExtension(h->hero, 0x20000000) != NULL) {
+        h->hero_eng->unk5D = 2;
+        status = h->hero_status;
+        if (!(status & 0x200)) {
+            h->hero_status = status | 0x2000;
+        }
+    }
+}
 
 s32 func_800D2D2C(arg0)
 s32 arg0;

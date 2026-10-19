@@ -341,4 +341,6 @@ typedef struct WalrusFishExt {
 
 s32 func_8008C5C4(s32 *from, s32 *to, void *arc, s32 *pos);
 
+void func_800D2CB8(s32 arg0);
+
 #endif /* BASH_OVL62_H */
