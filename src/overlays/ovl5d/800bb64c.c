@@ -64,7 +64,13 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bb64c", func_800BF708);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bb64c", func_800BF928);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bb64c", func_800BFAC0);
+void func_800BFAC0(EXTengine *eng) {
+    PlaySfx(((HitSfxTable *)D_8009E424)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+    func_8007A524(2, (s32 *)((u8 *)eng + 0x10), (s32)D_80052F94);
+    if ((D_8009D750(eng) ^ 1) != 0) {
+        SpawnNASById(((s32 *)eng)[4], ((s32 *)eng)[5], ((s32 *)eng)[6], 0x206, 0x11);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bb64c", func_800BFB6C);
 

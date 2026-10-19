@@ -15,6 +15,9 @@ extern s32 D_8009E464;
 
 
 void func_800BEDE8(s32 arg0, s32 arg1);
+extern s32 (*D_8009D750)(EXTengine *);
+
+void func_800BFAC0(EXTengine *eng);
 
 void func_800BFC30(EXTengine *eng);
 
