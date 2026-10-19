@@ -59,4 +59,6 @@ void func_800BCB4C(s32 arg0);
 
 void func_800BCEFC(void);
 
+s32 func_800BD320(s32 arg0, s32 arg1);
+
 #endif /* BASH_OVL65_H */
