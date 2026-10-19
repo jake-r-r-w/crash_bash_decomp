@@ -317,7 +317,22 @@ void func_800BB134(s32 arg0)
   }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BB1C0);
+s32 func_800BB1C0(s32 x, s32 z, s32 range) {
+    s32 i;
+    s32 d;
+    HeroInfo *h;
+
+    for (i = 0; i < 4; i++) {
+        h = &Heroes[i];
+        if (h->hero_name == 9) continue;
+        if (h->hero_status & 0xC000) continue;
+        d = x - h->hero_eng->unk10.x;
+        if (d < -range || range < d) continue;
+        d = z - h->hero_eng->unk10.z;
+        if (-range < d && d < range) return i;
+    }
+    return -1;
+}
 
 s32 func_800BB260(s32 arg0) {
     u32 m = D_80051338[arg0].unk54 & 0x2000;
@@ -380,7 +395,22 @@ void func_800BB488(CoalGridObj *obj) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BB4F8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BB5A0);
+s32 func_800BB5A0(s32 x, s32 z, s32 range) {
+    s32 i;
+    s32 d;
+    HeroInfo *h;
+
+    for (i = 0; i < 4; i++) {
+        h = &Heroes[i];
+        if (h->hero_name == 9) continue;
+        if (h->hero_status & 0xC000) continue;
+        d = x - h->hero_eng->unk10.x;
+        if (d < -range || range < d) continue;
+        d = z - h->hero_eng->unk10.z;
+        if (-range < d && d < range) return i;
+    }
+    return -1;
+}
 
 void func_800BB640(s32 arg0) {
     u8 *temp_v0;

@@ -106,10 +106,14 @@ void func_800BAE30(s32 arg0);
 
 void func_800BB134(s32 arg0);
 
+s32 func_800BB1C0(s32 x, s32 z, s32 range);
+
 s32 func_800BB260(s32 arg0);
 
 void func_800BB3F0(s32 x, s32 y);
 
 s32 func_800BB428(s32 x, s32 z);
+
+s32 func_800BB5A0(s32 x, s32 z, s32 range);
 
 #endif /* BASH_OVL68_H */
