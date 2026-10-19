@@ -415,7 +415,12 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7D44);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7DB8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7E68);
+void func_800C7E68(HeroInfo *hero, Ovl5fActObj *obj, s32 arg2) {
+    SetHeroAction(hero, 0x6F);
+    obj->unk54 = -0x80;
+    obj->unk50 = 8;
+    obj->unk8 = arg2;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7EB0);
 

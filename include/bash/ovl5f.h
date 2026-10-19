@@ -27,6 +27,15 @@ void func_800C8984(s32 arg0, s32 arg1);
 void func_800C89D8(s32 arg0, s32 arg1);
 void func_800C8A40(s32 arg0);
 
+/* Object func_800C7E68/func_800C7EB0 set up alongside a hero action. */
+typedef struct Ovl5fActObj {
+    /* 0x00 */ u8 pad0[0x8];
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ u8 padC[0x50 - 0xC];
+    /* 0x50 */ s32 unk50;
+    /* 0x54 */ s32 unk54;
+} Ovl5fActObj;
+
 extern s32 D_800CA34C[];
 extern u8 D_800CACFC[];
 extern s32 D_800CAFF4;
@@ -52,6 +61,8 @@ extern NAS *D_800CB264[8];    /* objects func_800C8598 adds and func_800C8560 re
 void func_800C69C4(s32 arg0, s32 *arg1);
 
 void func_800C7D24(HeroInfo *hero);
+
+void func_800C7E68(HeroInfo *hero, Ovl5fActObj *obj, s32 arg2);
 
 void func_800C7EF8(HeroInfo *hero);
 
