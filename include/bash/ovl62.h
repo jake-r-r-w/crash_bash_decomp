@@ -655,6 +655,8 @@ extern ScriptInit D_800D5DB8;
 
 s32 func_800B4094(s32 *arg0, s32 arg1);
 
+void func_800B5570(s32 player);
+
 void func_800B5684(s32 player);
 
 void func_800B782C(s32 player);

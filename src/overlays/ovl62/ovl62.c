@@ -150,7 +150,24 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotPolarBomb);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBombGFX);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B5570);
+void func_800B5570(s32 player) {
+    HeroInfo *base;
+    HeroInfo *h;
+
+    base = Heroes;
+    h = &base[player];
+    if (h->hero_frozen == 0) {
+        if (!(h->hero_ctrl & 1)) {
+            if (h->hero_mode != 0x52) {
+                h->hero_eng->unk1E += func_800154A0(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
+            } else {
+                h->hero_eng->unk1E += func_800154A0(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 5;
+            }
+        }
+        Heroes[player].hero_ctrl &= ~1;
+        Heroes[player].hero_eng->unk5E = 1;
+    }
+}
 
 void func_800B5684(s32 player) {
     EXTheromove *move = Heroes[player].hero_move;
