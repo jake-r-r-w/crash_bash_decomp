@@ -806,7 +806,38 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B7664);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B7AA0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B85DC);
+void func_800B85DC(void) {
+    s32 i;
+    Ovl65Ext *ext;
+    HeroInfo *hero;
+
+    func_800B7AA0();
+    i = 0;
+    func_800B7300();
+    hero = Heroes;
+loop:
+    if (i < 4) {
+        ext = FindExtension(hero->hero, 0x10000000);
+        if (ext != NULL && ext->unk10 > 0) {
+            ext->unk10--;
+        }
+        hero++;
+        i++;
+        goto loop;
+    }
+    if (D_8005A624 == 0) {
+        D_800BDBA8++;
+    }
+    if (D_800BDBA8 == 0x1C2) {
+        FindExtension(D_800BDA00, 0x10000000);
+    }
+    if (D_800BDBA8 == 0x546) {
+        ext = FindExtension(D_800BDA04, 0x10000000);
+        if (ext != NULL) {
+            ext->unkC = 7;
+        }
+    }
+}
 
 s32 func_800B86C8(s32 arg0) {
     s32 dist;

@@ -160,8 +160,12 @@ s32 func_800BD408(s32 arg0);
 s32 func_800BD488(u8 *arg0, u8 *arg1);
 
 extern s32 D_800BD9FC;
-extern s32 D_800BDA00;
-extern s32 D_800BDA04;
+extern NAS *D_800BDA00;
+extern NAS *D_800BDA04;
+extern s32 D_800BDBA8;
+
+void func_800B7300(void);
+void func_800B7AA0(void);
 
 s32 func_800B475C(s32 a, s32 b);
 
