@@ -813,7 +813,20 @@ void func_800C7D24(HeroInfo *hero) {
     SetHeroSeq(hero, 0x58);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7D44);
+s32 func_800C7D44(s32 flags, Ovl5fHolder *a, Ovl5fPos *b) {
+    s32 dx = a->pos->x - b->x;
+    s32 dz = a->pos->z - b->z;
+
+    if (dx < -0x15D) {
+        return flags;
+    }
+    if (dx >= 0x15E || dz < -0x15D || dz >= 0x15E) {
+        return flags;
+    }
+    flags &= (dx < 0) ? -0x81 : -0x21;
+    flags &= (dz > 0) ? -0x11 : -0x41;
+    return flags;
+}
 
 void func_800C7DB8(s32 arg0) {
     s32 ok;

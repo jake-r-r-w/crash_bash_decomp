@@ -138,6 +138,19 @@ void func_800C7C70(s32 arg0);
 void func_800C7D24(HeroInfo *hero);
 
 void func_800C7DB8(s32 arg0);
+typedef struct {
+    u8 pad0[0x10];
+    s32 x;
+    u8 pad14[4];
+    s32 z;
+} Ovl5fPos;
+
+typedef struct {
+    u8 pad0[0x54];
+    Ovl5fPos *pos;
+} Ovl5fHolder;
+
+s32 func_800C7D44(s32 flags, Ovl5fHolder *a, Ovl5fPos *b);
 
 void func_800C7E68(HeroInfo *hero, Ovl5fActObj *obj, s32 arg2);
 
