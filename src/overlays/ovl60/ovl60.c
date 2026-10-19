@@ -767,7 +767,47 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BA110);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BA25C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BA3E0);
+void func_800BA3E0(s32 arg0, s32 arg1, s32 arg2) {
+    Ovl60Cell *c;
+    Ovl60CellPos *pos;
+    NAS *nas;
+    EXTengine *e;
+    Ovl60Cell *base;
+
+    base = D_800C53DC[0];
+    c = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
+    if (c->hero != NULL || func_800C0AFC(arg0, arg1) != 0) {
+        return;
+    }
+    pos = c->unk4;
+    if (pos == NULL) {
+        return;
+    }
+    nas = SpawnNASById(pos->x, D_8005A5D8, pos->z, 0x1401, 0x11);
+    if (nas == NULL) {
+        return;
+    }
+    c->hero = (HeroInfo *)nas;
+    e = nas->Engine;
+    nas->UserInfo.flags = arg2;
+    if (e != NULL) {
+        switch (arg2) {
+        case 7:
+            e->sub->unk6C = D_80053B9C;
+            e->sub->unk74 = 0x2001;
+            nas->UserInfo.user1 = Random(4);
+            nas->UserInfo.user2 = 0;
+            break;
+        case 8:
+            e->sub->unk6C = D_80053B9C;
+            e->sub->unk74 = 0x200E;
+            nas->UserInfo.user1 = Random(4);
+            nas->UserInfo.user2 = 0;
+            break;
+        }
+    }
+    D_800C52EC++;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BA51C);
 
