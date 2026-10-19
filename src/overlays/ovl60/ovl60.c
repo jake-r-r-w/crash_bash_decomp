@@ -373,7 +373,34 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B8660);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B87DC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B8AF8);
+void func_800B8AF8(s32 arg0) {
+    switch (Heroes[arg0].hero_name) {
+    case 4:
+        PlaySfx(0x561, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 3:
+        PlaySfx(0x560, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 5:
+        PlaySfx(0x562, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 6:
+        PlaySfx(0x563, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 1:
+        PlaySfx(0x55E, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 2:
+        PlaySfx(0x55F, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 7:
+        PlaySfx(0x564, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 8:
+        PlaySfx(0x565, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B8BE4);
 
