@@ -116,7 +116,30 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotPickupTA);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BF548);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotRock_TA);
+void PlotRock_TA(NAS *nas) {
+    EXTengine *e;
+
+    if (nas->UserInfo.status == 1) {
+        e = nas->Engine;
+        nas->UserInfo.status = 0;
+        {
+            s32 z = e->unk10.z >> 9;
+            s32 x = e->unk10.x >> 9;
+            u8 v = ((x << 5) | 0x10) + ((z * 2) + 1);
+            D_800CACB4[(z * D_800CAFF4) + x] = v;
+            D_800CACFC[(z * D_800CAFF4) + x] = v;
+        }
+        {
+            s32 z = nas->Engine->unk10.z >> 9;
+            s32 x = nas->Engine->unk10.x >> 9;
+            u8 v = ((x << 5) | 0x10) + ((z * 2) + 1);
+            s32 i = (z * D_800CAFF4) + x;
+            D_800CACB4[i] = v;
+            D_800CACFC[i] = v;
+            D_800CA34C[i] = (s32)nas;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotPeriscope);
 
