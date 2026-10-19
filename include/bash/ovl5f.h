@@ -32,6 +32,15 @@ extern u8 D_800CACFC[];
 extern s32 D_800CAFF4;
 extern u8 D_800CACB4[];
 extern u8 D_800CAFFC[];
+typedef struct {
+    u8 pad0[0x74];
+    s16 unk74;
+} Ovl5fUnk74;
+
+extern Ovl5fUnk74 *D_8009D60C;
+extern Ovl5fUnk74 *D_8009D678;
+extern s32 *D_800CB24C;
+extern s32 *D_800CB250;
 extern NAS *D_800CB264[8];    /* objects func_800C8598 adds and func_800C8560 removes; func_800C84D8 tests their distance */
 
 
@@ -39,6 +48,8 @@ extern NAS *D_800CB264[8];    /* objects func_800C8598 adds and func_800C8560 re
 
 
 
+
+void func_800C69C4(s32 arg0, s32 *arg1);
 
 void func_800C7D24(HeroInfo *hero);
 

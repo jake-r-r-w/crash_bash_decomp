@@ -238,7 +238,22 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6914);
 void func_800C69BC(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C69C4);
+void func_800C69C4(s32 arg0, s32 *arg1) {
+    s32 val;
+
+    if (arg0 == 3) {
+        D_800CB24C = arg1;
+    } else {
+        D_800CB250 = arg1;
+    }
+    if (arg0 == 3) {
+        val = *D_800CB24C++;
+        D_8009D678->unk74 = val;
+    } else {
+        val = *D_800CB250++;
+        D_8009D60C->unk74 = val;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6A30);
 
