@@ -83,9 +83,17 @@ typedef struct Ovl60Cam {
     /* 0x56 */ s16 rotY;
     /* 0x58 */ s16 rotZ;
 } Ovl60Cam;
+/* What a board cell's unk4 points to (Plot_PogoBanker reads its x and z). */
+typedef struct {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 x;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ s32 z;
+} Ovl60CellPos;
 typedef struct {
     HeroInfo *hero;
-    u8 unk4[6];
+    Ovl60CellPos *unk4;
+    u8 unk8[2];
     s16 unkA;
     u8 unkC[2];
     u16 unkE;

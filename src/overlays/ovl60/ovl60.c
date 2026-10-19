@@ -460,7 +460,69 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Init_PogoPowerup);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoPowerup);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoBanker);
+void Plot_PogoBanker(NAS *nas) {
+    s32 x;
+    s32 z;
+    EXTengine *eng;
+    Ovl60CellPos *pos;
+    Ovl60Cell *c;
+    s32 scale;
+
+    eng = nas->Engine;
+    if (eng == NULL) {
+        return;
+    }
+    switch (nas->UserInfo.status) {
+    case 0:
+        if (--nas->UserInfo.user1 <= 0) {
+            nas->UserInfo.status = 1;
+        }
+        break;
+    case 1:
+        if (func_800C165C(&x, &z) != 0) {
+            Ovl60Cell *cb = D_800C53DC[0];
+            c = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(D_800C53DC[0]) + (u32)cb);
+            pos = c->unk4;
+            c->hero = (HeroInfo *)nas;
+            if (pos != NULL) {
+                eng->unk10.x = pos->x;
+                eng->unk10.y = D_8005A5D8;
+                eng->unk10.z = pos->z;
+                eng->unk2C.x = 0;
+                eng->unk2C.y = 0;
+                eng->unk2C.z = 0;
+                eng->flags |= 0x8021;
+                eng->unk5E = 1;
+                nas->UserInfo.status = 2;
+                nas->UserInfo.user2 = D_800C38F8[D_800C5BB8];
+                PlaySfx(0x3FA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            }
+        }
+        break;
+    case 2:
+        scale = eng->unk2C.x + 0x100;
+        if (scale >= 0x1000) {
+            scale = 0x1000;
+            eng->flags &= ~0x21;
+            nas->UserInfo.status = 3;
+        }
+        eng->unk2C.z = scale;
+        eng->unk2C.y = scale;
+        eng->unk2C.x = scale;
+        eng->unk5E = 1;
+        break;
+    case 3:
+        if (nas->UserInfo.user2 != 0) {
+            nas->UserInfo.user2--;
+        }
+        break;
+    case 4:
+        eng->flags &= ~0x8000;
+        nas->UserInfo.status = 0;
+        nas->UserInfo.user1 = Random(0x28) + 0x28;
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoMushroom);
 
