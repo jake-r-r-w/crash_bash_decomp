@@ -63,6 +63,20 @@ typedef struct ExtSpawn5910 {
     /* 0x28 */ s32 unk28;
 } ExtSpawn5910;
 
+/* Extension 0x10000000 of the smoke trail PlotSmokeTrail moves. */
+typedef struct ExtSmokeTrail {
+    /* 0x00 */ u8 pad[0xC];
+    /* 0x0C */ s32 fadeIn;
+    /* 0x10 */ s32 fadeOut;
+    /* 0x14 */ s32 shrink;
+    /* 0x18 */ s32 flags;
+    /* 0x1C */ s32 rise;
+    /* 0x20 */ s32 baseX;
+    /* 0x24 */ s32 amp;
+    /* 0x28 */ s32 ampDecay;
+    /* 0x2C */ s32 angle;
+} ExtSmokeTrail;
+
 extern s32 D_800D4D08;
 
 typedef struct Ext20 {

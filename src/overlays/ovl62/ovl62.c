@@ -491,7 +491,44 @@ void PlotWalrusFish(NAS *m) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotSmokeTrail);
+void PlotSmokeTrail(NAS *m) {
+    ExtSmokeTrail *ext;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    if (ext->flags & 1) {
+        m->Engine->unk10.y -= ext->rise;
+        m->Engine->unk10.x = ext->baseX + ((ext->amp * D_80068BD4[(ext->angle - 0x400) & 0xFFF].unk2) >> 12);
+        ext->amp -= ext->ampDecay;
+        if (ext->amp < 0) {
+            ext->amp = 0;
+        }
+        m->Engine->sub->unk74 = 0x202E;
+        ext->angle += 0x80;
+    }
+    switch (m->UserInfo.status) {
+    case 0:
+        m->Engine->sub->unk76 -= ext->fadeIn;
+        if ((s16)m->Engine->sub->unk76 < 0) {
+            m->Engine->sub->unk76 = 0;
+            m->UserInfo.status = 1;
+        }
+        break;
+    case 1:
+        m->Engine->sub->unk76 += ext->fadeOut;
+        m->Engine->unk2C.x -= ext->shrink;
+        m->Engine->unk2C.y -= ext->shrink;
+        m->Engine->unk2C.z -= ext->shrink;
+        if ((s16)m->Engine->sub->unk76 >= 0xDAD) {
+            KillNAS(m);
+            return;
+        }
+        break;
+    }
+    m->Engine->unk5E = 1;
+}
 
 void InitSimpleExplosion(NAS *m) {
     ExtSimpleExplosion *ext;
