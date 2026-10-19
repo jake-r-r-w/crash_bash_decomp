@@ -1332,7 +1332,46 @@ void func_800C2018(s32 arg0, s32 arg1, s32 arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C20C0);
+void func_800C20C0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    NAS *nas = (NAS *)D_800C53DC[arg0][arg1].hero;
+    s32 dir;
+    s32 i;
+    s32 dx;
+    s32 dz;
+
+    if (nas != NULL) {
+        if (nas->Engine != NULL) {
+            PlaySfx(0x515, NULL, &nas->Engine->unk10, 0x1000, 0x1E00, 0);
+        }
+        dir = nas->UserInfo.user1 & 3;
+        for (i = 0; i < arg3; i++) {
+            switch (dir) {
+            case 0:
+                dx = 0;
+                dz = 1;
+                break;
+            case 1:
+                dx = 1;
+                dz = 0;
+                break;
+            case 2:
+                dx = 0;
+                dz = -1;
+                break;
+            case 3:
+                dx = -1;
+                dz = 0;
+                break;
+            default:
+                dx = 0;
+                dz = 0;
+                break;
+            }
+            func_800B8660(arg0, arg1, dx, dz, arg2);
+            dir ^= 2;
+        }
+    }
+}
 
 void func_800C2204(void) {
     s32 i;
