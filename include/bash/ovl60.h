@@ -102,6 +102,7 @@ extern s32 D_800C5B2C[8];
 extern s32 D_800C5B4C[8];
 extern s32 D_800C5B6C[8];
 extern s32 D_800C5B8C[8];
+extern u8 D_800C3C14[][4][8];
 
 void func_800C1068();
 

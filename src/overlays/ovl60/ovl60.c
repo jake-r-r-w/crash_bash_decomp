@@ -645,7 +645,17 @@ void func_800C1004(s32 i)
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1068);
+void func_800C1068(void) {
+    s32 i;
+    u8 (*p)[8] = D_800C3C14[D_800C5BC0];
+
+    for (i = 0; i < 8; i++) {
+        D_800C5B2C[i] = p[0][i];
+        D_800C5B6C[i] = p[1][i];
+        D_800C5B4C[7 - i] = p[2][i];
+        D_800C5B8C[7 - i] = p[3][i];
+    }
+}
 
 void func_800C10F8(void) {
     D_800C5BC0 = 0;
