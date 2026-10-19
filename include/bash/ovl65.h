@@ -106,6 +106,8 @@ s32 func_800BD258(s32 arg0);
 s32 func_800BD320(s32 arg0, s32 arg1);
 extern ScriptInit D_800BDC08;
 
+s32 func_800B33D8(s32 arg0);
+
 void func_800B96A0(s32 arg0);
 
 void func_800BA468(s32 id);
