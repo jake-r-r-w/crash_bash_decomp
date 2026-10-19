@@ -939,7 +939,29 @@ void PlotIceBerg(NAS *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitScratchMaster);
+void InitScratchMaster(NAS *m) {
+    EXTengine *eng;
+    subengine *sub;
+
+    if (func_80018F3C(m->Engine, 0x10) != 0) {
+        eng = m->Engine;
+        sub = eng->sub;
+        eng->flags |= 0x200000;
+        m->UserInfo.user1 = 0;
+        m->UserInfo.user2 = 0;
+        while (sub != NULL) {
+            sub->flags = 0x40000000;
+            sub->unk6C = D_800546C4;
+            sub->unk74 = 0x2002;
+            sub->unk51 = 2;
+            sub->unk14 = 0;
+            sub->unk12 = 0;
+            sub->unk10 = 0;
+            sub->unk76 = 0x800;
+            sub = sub->next;
+        }
+    }
+}
 
 void func_800CA930(EXTheromove *a, EXTheromove *b) {
     s32 ma;
