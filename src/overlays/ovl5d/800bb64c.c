@@ -6,7 +6,17 @@
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bb64c", func_800BB64C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bb64c", func_800BB7B8);
+s32 func_800BB7B8(T_BB7B8 *p) {
+    s32 a, b, c, d;
+    b = (p->x >> 8) + 8;
+    a = 7 - (p->y >> 8);
+    c = (s8)(p->h >> 8);
+    d = c << 16;
+    if (!(((u16)p->h) >> 16)) {
+        return c;
+    }
+    return a + b + d;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bb64c", func_800BB7E8);
 

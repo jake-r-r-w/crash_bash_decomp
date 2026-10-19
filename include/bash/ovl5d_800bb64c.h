@@ -11,6 +11,15 @@
 #include "bash/engine.h"
 
 extern s32 D_8009E464;
+typedef struct {
+    s32 pad0[4];
+    s32 x;
+    s32 pad14;
+    s32 y;
+    s16 pad1C;
+    s16 h;
+} T_BB7B8;
+
 
 typedef struct {
     /* 0x00 */ u8 pad0[0xC];
@@ -29,6 +38,8 @@ typedef struct {
     /* 0x30 */ s16 unk30;
     /* 0x32 */ s16 unk32;
 } ExtCurve;
+
+s32 func_800BB7B8(T_BB7B8 *p);
 
 s32 func_800BFB6C(s32 pos, ExtCurve *c);
 
