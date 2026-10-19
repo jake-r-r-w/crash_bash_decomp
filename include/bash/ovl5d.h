@@ -32,7 +32,8 @@ extern u8 D_8005A614[];
 typedef struct {
     /* 0x00 */ u8 pad0[0x32];
     /* 0x32 */ u16 flags;
-    /* 0x34 */ u8 pad34[0x6C - 0x34];
+    /* 0x34 */ s16 mode;
+    /* 0x36 */ u8 pad36[0x6C - 0x36];
     /* 0x6C */ s32 p2_active;
 } Ovl5dGameView;
 #define OVLG ((Ovl5dGameView *)D_8005A614)
@@ -74,6 +75,20 @@ extern u8 D_8005303C[];
 void func_800B8B00(void);
 
 void func_800B7D20(u16 arg0);
+
+typedef struct {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+} Ovl5dPair;
+
+extern u8 D_800C3B44[];
+extern u16 D_800C3B84;
+extern u8 D_800C3B86[];
+extern u16 D_800C3B94[];
+extern u16 D_8009E46C[];
+extern s32 D_8009D758;
+Ovl5dPair *func_800B8040(u8 *arg0);
+void func_800BBA14(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4);
 
 /* A scene object in the list at D_80058AD0 + 0x1C (func_800B8314). */
 typedef struct Ovl5dObj {

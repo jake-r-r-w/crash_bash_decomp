@@ -122,7 +122,39 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B710C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B7358);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B7D20);
+void func_800B7D20(u16 arg0) {
+    s32 i;
+    Ovl5dPair *p;
+    s32 t;
+    s32 c;
+    s32 a;
+    s32 b;
+
+    for (i = 0;; i++) {
+        if (i >= arg0) {
+            return;
+        }
+        p = func_800B8040(D_800C3B86);
+        if (p != NULL) {
+            a = p->unk0;
+            b = p->unk4;
+            c = D_800C3B44[D_800C3B84];
+            D_800C3B84 = (D_800C3B84 + 1) & 0x3F;
+            t = c;
+            if (t == 6) {
+                if (!(OVLG->flags & 0x80) || OVLG->mode != 1) {
+                    if (D_8009E46C[6] >= D_800C3B94[D_8009D758 - 1]) {
+                        t = 4;
+                    }
+                }
+            }
+            if (OVLG->mode == 3 && t == 4) {
+                t = 3;
+            }
+            func_800BBA14(a, 0, b, t, -1);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B7E74);
 
