@@ -87,6 +87,8 @@ extern u8 D_80052F5C[];
 
 void func_800B8314(void);
 
+void func_800B8578(void);
+
 void PlotSnowGlint(NAS *nas);
 
 void InitMissileExplode(NAS *nas);

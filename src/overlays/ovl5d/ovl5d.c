@@ -137,7 +137,31 @@ void func_800B8314(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B8578);
+void func_800B8578(void) {
+    s32 i;
+    s32 j;
+    Ovl5dObj *obj;
+
+    for (i = 0; i < 8; i++) {
+        for (j = 0; j < 8; j++) {
+            obj = D_800C3BAC[i][j].obj2;
+            if (obj != NULL) {
+                obj->flags &= ~0x8000;
+                if (D_800C3BAC[i][j].unkA != 0) {
+                    if (i > 0 && D_800C3BAC[i - 1][j].unkA == 0) {
+                        obj->flags |= 0x01008000;
+                    }
+                    if (i < 7 && D_800C3BAC[i + 1][j].unkA == 0) {
+                        obj->flags |= 0x01008000;
+                    }
+                    if (j > 0 && D_800C3BAC[i][j - 1].unkA == 0) {
+                        obj->flags |= 0x01008000;
+                    }
+                }
+            }
+        }
+    }
+}
 
 void PlotSnowGlint(NAS *nas) {
     EXTengine *eng;
