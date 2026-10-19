@@ -341,7 +341,25 @@ s32 func_800BB428(s32 x, s32 z) {
     return D_800BC4E8[idx];
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BB488);
+void func_800BB488(CoalGridObj *obj) {
+    CoalPosInner *p = obj->pos;
+    s32 x = p->x;
+    s32 z = p->z;
+    s32 idx;
+    CoalGridObj *old;
+
+    x += 0xA00;
+    z += 0xA00;
+    x >>= 7;
+    z >>= 7;
+    idx = z * 40 + x;
+    old = D_800BC4E8[idx];
+
+    D_800BC4E8[idx] = obj;
+    if (old != NULL) {
+        KillNAS((NAS *)old);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BB4F8);
 

@@ -33,6 +33,20 @@ typedef struct Ovl68Pad {
 } Ovl68Pad;
 extern Ovl68Pad D_80051338[];
 
+typedef struct CoalPosInner {
+    s32 pad0[4];
+    s32 x;
+    s32 pad14;
+    s32 z;
+} CoalPosInner;
+
+typedef struct CoalGridObj {
+    u8 pad0[0x54];
+    CoalPosInner *pos;
+} CoalGridObj;
+
+
+void func_800BB488(CoalGridObj *obj);
 void func_800B3330(void);
 void func_800BADA8(s32 arg0);
 void func_800BAE20(void);
