@@ -58,6 +58,8 @@ void func_800BAC10(void);
 
 void func_800BAF68(void);
 
+s32 func_800BB100(s32 arg0);
+
 void func_800BB2BC(void);
 
 #endif /* BASH_OVL5D_H */

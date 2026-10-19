@@ -41,4 +41,6 @@ s32 func_80085890();
 s32 func_8008A200(s32 arg0);
 void func_8008A810(void);
 
+s32 func_800B8D98(s32 arg0);
+
 #endif /* BASH_OVL64_H */

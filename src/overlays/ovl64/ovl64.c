@@ -60,7 +60,42 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B8B5C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B8C74);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B8D98);
+s32 func_800B8D98(s32 arg0) {
+    EXTbotai *ai = Heroes[arg0].hero_ai;
+    s32 i;
+    s32 l;
+    s32 r;
+
+    for (i = 0; i < 3; i++) {
+        l = ai->AIforward_left[i] & 0x3F;
+        r = ai->AIforward_right[i] & 0x3F;
+        if (ai->AIforward_left[i] == 0xFF || ai->AIforward_right[i] == 0xFF) {
+        ret1:
+            return 1;
+        }
+        if (l >= 6) {
+            if (l < 8) {
+                goto ret1;
+            }
+            if (l < 0x16) {
+                if (l >= 0x14) {
+                    goto ret1;
+                }
+            }
+        }
+        if (r >= 6) {
+            if (r < 8) {
+                goto ret1;
+            }
+            if (r < 0x16) {
+                if (r >= 0x14) {
+                    goto ret1;
+                }
+            }
+        }
+    }
+    return 0;
+}
 
 s32 func_800B8E4C(void) {
     return 0;
