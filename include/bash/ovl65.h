@@ -25,7 +25,7 @@ typedef struct Ovl65Ext {
 
 typedef struct Ovl65Chase {
     u8 pad[0xC];
-    void (*fn)(void); /* 0xC */
+    void (*fn)(); /* 0xC */
     SLONG_XYZ pos;    /* 0x10 */
     SLONG_XYZ tgt;    /* 0x1C */
     s32 unk28;
@@ -138,6 +138,7 @@ extern Ovl65Obj *D_800BDB84;
 extern Ovl65Obj *D_800BDC6C[3];
 extern Ovl65Obj *D_800BDC78[3];
 
+void func_800B5424();
 void func_800B6FE4();
 void func_800B7664();
 void func_800B85DC();
@@ -196,6 +197,11 @@ void func_800B3C1C(s32 id);
 void func_800B3D90(s32 id);
 
 void func_800B4B14(s32 id);
+void func_800B3A38(s32 id);
+void func_800B3C1C(s32 id);
+void func_800B3D90(s32 id);
+void func_800B3FDC(s32 id);
+void func_800B4D6C(s32 id);
 
 void func_800B714C(void);
 

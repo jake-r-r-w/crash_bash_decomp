@@ -460,7 +460,69 @@ s32 func_800B4C70(s32 *arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B4D6C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B5424);
+void func_800B5424(id)
+s32 id;
+{
+    Ovl65Chase *c;
+    Ovl65Ext *e;
+    s32 near;
+    s32 r;
+    s32 r2;
+    HeroInfo *h;
+    HeroInfo *hb;
+
+    hb = Heroes;
+    h = &hb[id];
+    c = FindExtension(h->hero, 0x20000000);
+    if (c != NULL) {
+        h->hero_ai->AIpad = 0;
+        h->hero_ai->AImode = 1;
+        if (c->fn != func_800B3D90) {
+            e = FindExtension(h->hero, 0x10000000);
+            near = 0;
+            if (e != NULL) {
+                near = (u32)e->unk14 > 0;
+            }
+            if (near != 0) {
+                if (c->state == 0) {
+                    if (Random(0x1000) < 0x800) {
+                        r = 2;
+                    } else {
+                        c->timer = 0x3C;
+                        r = 4;
+                    }
+                    c->state = r;
+                }
+                if (c->state == 2) {
+                    c->fn = func_800B4B14;
+                }
+                if (c->state == 1) {
+                    c->fn = func_800B3D90;
+                }
+                if (c->state == 4) {
+                    c->fn = func_800B4D6C;
+                }
+                if (c->state == 3) {
+                    c->fn = func_800B3FDC;
+                }
+            }
+        }
+        if (c->fn == func_800BD1FC) {
+            c->state = 0;
+            r = func_800B3760(id);
+            if (r != -1) {
+                c->unk28 = r;
+                c->fn = func_800B3A38;
+            }
+            r2 = func_800B38BC(id);
+            if (r2 != -1) {
+                c->unk28 = r2;
+                c->fn = func_800B3C1C;
+            }
+        }
+        c->fn(id);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B55E8);
 
