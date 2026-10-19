@@ -129,7 +129,8 @@ typedef struct {
     /* 0x06 */ s16 unk6; /* timer */
     /* 0x08 */ s32 unk8[2];
     /* 0x10 */ NAS *nas;
-    /* 0x14 */ s32 unk14;
+    /* 0x14 */ s16 unk14;
+    /* 0x16 */ s16 unk16;
     /* 0x18 */ s32 unk18;
 } Ovl60Slot;
 
@@ -408,6 +409,8 @@ typedef struct Ovl60ScoreView {
 void func_8007B7FC(u32 a, u32 b);
 void func_8007D144(void);
 extern s32 D_80099174;
+
+void func_800B3808(void);
 
 void func_800B3A38(void);
 

@@ -5,7 +5,111 @@
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B3534);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B3808);
+void func_800B3808(void) {
+    s32 i;
+    s16 a;
+    HeroInfo *h;
+    EXTengine *e;
+    subengine *sub;
+    Ovl60Slot *slot;
+    Ovl60Move *mv;
+    EXTheromove *m;
+
+    i = 0;
+    h = Heroes;
+    mv = D_800C5ADC;
+    slot = D_800C535C;
+loop:
+    if (i < 4) {
+        h->hero->Camera.width = 0x500;
+        switch (h->hero_name) {
+        case 5:
+        case 6:
+        case 7:
+            h->hero->Camera.height = 0x700;
+            break;
+        case 8:
+            h->hero->Camera.height = 0x800;
+            break;
+        default:
+            h->hero->Camera.height = 0x500;
+            break;
+        }
+        func_800C159C(i);
+        func_800B8BE4(i, 0);
+        slot->unk14 = func_800C14BC(i, 0);
+        mv->unk4 = 0;
+        e = h->hero_eng;
+        if (e != NULL) {
+            if (D_8005A680[0] != 0) {
+                switch (i) {
+                case 0:
+                case 1:
+                    a = 0xC00;
+                    break;
+                case 2:
+                case 3:
+                    a = 0x400;
+                    break;
+                default:
+                    a = 0;
+                    break;
+                }
+            } else {
+                switch (i) {
+                case 0:
+                    a = 0x800;
+                    break;
+                case 1:
+                    a = 0xC00;
+                    break;
+                case 2:
+                    a = 0;
+                    break;
+                case 3:
+                    a = 0x400;
+                    break;
+                default:
+                    a = 0;
+                    break;
+                }
+            }
+            e->unk1E = a;
+            m = h->hero_move;
+            if (m != NULL) {
+                m->forward_angle = a;
+                m->facing_angle = a;
+            }
+            e->unk5E = 1;
+        }
+        e = h->hero_powerup;
+        if (e != NULL) {
+            sub = e->sub;
+            if (sub != NULL) {
+                u32 f = sub->flags;
+
+                f &= ~0x8000;
+                sub->unk6C = D_80053B9C;
+                sub->unk74 = 0x200D;
+                sub->flags = f;
+                e->flags &= ~0x8000;
+            }
+        }
+        e = h->hero_shadow;
+        if (e != NULL) {
+            e->unk2C.z = 0x1A00;
+            e->unk2C.y = 0x1A00;
+            e->unk2C.x = 0x1A00;
+            e->unk5E = 1;
+        }
+        func_800C1004(i);
+        h++;
+        mv++;
+        slot++;
+        i++;
+        goto loop;
+    }
+}
 
 void func_800B3A38(void) {
     s32 i;
