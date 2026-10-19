@@ -240,6 +240,19 @@ s32 func_800B4A1C(NAS *nas);
 
 void func_800B5910(void);
 
+/* Read by func_800CB0A4. */
+typedef struct Ovl62Link {
+    /* 0x00 */ u8 pad0[0x10];
+    /* 0x10 */ s32 unk10;
+} Ovl62Link;
+
+typedef struct Ovl62Owner {
+    /* 0x00 */ u8 pad0[0x58];
+    /* 0x58 */ Ovl62Link *unk58;
+} Ovl62Owner;
+
+extern Ovl62Owner *D_800D5254;
+
 void func_800B60B8(s32 player);
 
 void func_800B767C(s32 player);
@@ -253,6 +266,8 @@ s32 func_800C9F70(void);
 void func_800CACC0(void);
 
 s32 func_800CAF94(s32 state);
+
+void func_800CB0A4(void);
 
 void func_800CB134(s32 player);
 

@@ -780,7 +780,21 @@ s32 func_800CAFF0(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAFF8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB0A4);
+void func_800CB0A4(void) {
+    Ovl62Link *l;
+
+    if (D_800D5254 != NULL) {
+        l = D_800D5254->unk58;
+        if (l != NULL) {
+            if (D_800D5FEC[6] == 0 && l->unk10 != -1) {
+                D_800D5FEC[6] = 1;
+            }
+            if (D_800D5FEC[6] == -1 && l->unk10 == D_800D5FEC[6]) {
+                D_800D5FEC[6] = 0;
+            }
+        }
+    }
+}
 
 void func_800CB124(void) {
 }
