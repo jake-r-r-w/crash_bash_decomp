@@ -518,7 +518,34 @@ void InitFlamerBitTA(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitLaserBitTA);
+void InitLaserBitTA(NAS *nas) {
+    FlamerBitExt *ext;
+    EXTengine *eng;
+    subengine *sub;
+
+    ext = AddExtension(nas, 0x38, 0x10000000);
+    if (ext == NULL) {
+        KillNAS(nas);
+        return;
+    }
+    nas->FUX = &ext->ext;
+    ext->timer = 0x5A;
+    eng = nas->Engine;
+    sub = eng->sub;
+    eng->unk5D = 0;
+    sub->unk6C = D_8005365C;
+    sub->unk74 = 0x2021;
+    eng->flags |= 0x21;
+    if (func_80018F3C(eng, 1) != 0) {
+        sub = sub->next;
+        sub->unk6C = D_8005365C;
+        sub->unk74 = 0x2023;
+        eng->flags |= 0x21;
+    }
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 void func_800C7C08(u8 *arg0) {
     u32 temp_v0;
