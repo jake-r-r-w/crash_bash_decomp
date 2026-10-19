@@ -9,6 +9,7 @@
   "maxMinutes": 240,
   "workerMinutes": 45,
   "maxConsecutiveFailures": 3,
+  "startGapSeconds": 10,
   "workerBudgetUsd": 5,
   "maxRunUsd": 50,
   "maxAttempts": 2,

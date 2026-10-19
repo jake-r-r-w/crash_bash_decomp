@@ -42,6 +42,8 @@ Needs Docker and `claude` on `PATH` (logged in once with `claude auth login`). W
 - Limits: `--max-minutes` (240), `--max-run-usd` (50), `--max-functions` (20; set it high so time
   and cost are the limits), `--worker-budget-usd` (5), `--worker-minutes` (45).
 - `--resume RUN[,RUN...]`: gate the matches a stopped run verified but never committed.
+- `--start-gap-seconds` (10): the least time between two worker starts; workers that start
+  together all refresh the login token at once and fail.
 - `--dir` (`<repo>-swarm`): clones, logs, results and checkpoints.
 - `--page` (`docs/swarm.js`): the dashboard's live status file, relative to the repo; `--page ''`
   turns it off.

@@ -1213,8 +1213,16 @@ ${DECL_CLASH.test(job.gateFix) ? DECL_HINT : ''}Fix that, keep it matching, and 
 ` : ''}${f.note ? `\nNote recorded for this function earlier: ${f.note}\n` : ''}${job.notes.length ? `\nEarlier swarm attempts at it:\n${job.notes.map(n => '- ' + n).join('\n')}\n` : ''}${patterns ? `\nDiff patterns other workers found in this run (not yet in MATCHING.md):\n${patterns}\n` : ''}`;
   }
 
+  // --start-gap-seconds between worker starts: sessions that start together all refresh the
+  // OAuth token at once and fail (2026-10-19: 6 of 7 at the start of an ovl62 run). Not for
+  // --worker-cmd, which starts no Claude.
+  startGapWait() {
+    return !this.o.workerCmd && Date.now() - (this.lastStart || 0) < (this.o.startGapSeconds || 0) * 1000;
+  }
+
   startJob(slot, job) {
     const { f } = job;
+    this.lastStart = Date.now();
     // the last pushed tip, not the integration clone's HEAD: while a batch is in the gate HEAD has
     // its unpushed commits, which a failed batch throws away (and a permuter could then not find)
     job.base = this.tip || gitOk(this.integ, 'rev-parse', 'HEAD');
@@ -2117,6 +2125,7 @@ ${DECL_CLASH.test(job.gateFix) ? DECL_HINT : ''}Fix that, keep it matching, and 
         if (!this.stopping && this.integQueue.length <= this.o.maxQueued)
           for (const slot of this.slots) {
             if (slot.job || (this.leases >= this.o.maxFunctions && !this.retry.length)) continue;
+            if (this.startGapWait()) break;
             const job = this.nextJob();
             if (!job) break;
             job.conflicts ||= 0;
@@ -2130,6 +2139,7 @@ ${DECL_CLASH.test(job.gateFix) ? DECL_HINT : ''}Fix that, keep it matching, and 
         if (!this.stopping && this.integQueue.length <= this.o.maxQueued)
           for (const slot of this.bslots) {
             if (slot.job || (this.leases >= this.o.maxFunctions && !this.retry.some(j => j.big))) continue;
+            if (this.startGapWait()) break;
             const job = this.nextJob(false, true);
             if (!job) break;
             job.conflicts ||= 0;
