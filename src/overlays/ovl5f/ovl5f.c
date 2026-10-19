@@ -668,7 +668,72 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotWaterMine);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotTorpedo);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BD654);
+void func_800BD654(NAS *nas) {
+    EXTengine *eng;
+    EXTengine *he;
+    NAS *n;
+    NAS *m;
+    SLONG_XYZ *pos;
+    u8 *p;
+    Ovl5fExt1605 *ext;
+    s32 i;
+    s32 dx;
+    s32 dz;
+    s32 x;
+    s32 z;
+
+    eng = nas->Engine;
+    switch ((s16)(D_8005A648 - 5)) {
+    default:
+    case 1:
+    case 3:
+        for (i = 0; i < 4; i++) {
+            dx = D_800C935C[i].x;
+            dz = D_800C935C[i].z;
+            m = SpawnNASById(eng->unk10.x + dx, eng->unk10.y, eng->unk10.z + dz, 0x1304, 0x11);
+            if (m != NULL) {
+                m->UserInfo.user1 = dx;
+                m->UserInfo.user2 = dz;
+            }
+        }
+        break;
+    case 0:
+    case 2:
+    case 4:
+        pos = &eng->unk10;
+        p = D_8005365C;
+        n = SpawnNASById(pos->x, pos->y, pos->z, 0x1605, 0x11);
+        if (n != NULL) {
+            ext = FindExtension(n, 0x10000000);
+            if (ext != NULL) {
+                ext->unkC = 0x10;
+                ext->unk18 = 0x100;
+                if (p != NULL) {
+                    ext->unk20 = 5;
+                    n->Engine->sub->unk6C = p;
+                } else {
+                    ext->unk20 = 1;
+                }
+                ext->unk28 = 0;
+                n->InitDelete(n);
+            }
+        }
+        x = eng->unk10.x;
+        z = eng->unk10.z;
+        if (D_8005A648 == 9) {
+            func_800C18F0(x, eng->unk10.y, z);
+        }
+        for (i = 0; i < 4; i++) {
+            if (!(Heroes[i].hero_status & 0xFA00)) {
+                he = Heroes[i].hero_eng;
+                if ((u32)(x - he->unk10.x + 0x300) <= 0x600 && (u32)(z - he->unk10.z + 0x2FF) < 0x5FF) {
+                    func_800B6354(i, 0x3C);
+                }
+            }
+        }
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotShrapnelBit);
 

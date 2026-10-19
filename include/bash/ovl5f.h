@@ -138,6 +138,12 @@ typedef struct Ovl5fExt1605 {
     /* 0x24 */ u8 pad24[0x28 - 0x24];
     /* 0x28 */ s32 unk28;
 } Ovl5fExt1605;
+typedef struct MineOffset {
+    /* 0x00 */ s32 x;
+    /* 0x04 */ s32 z;
+    /* 0x08 */ s32 unk8;
+} MineOffset;
+extern MineOffset D_800C935C[4];
 void func_800C4D04(s32 hero, s32 last_mode);
 s32 func_8008502C();
 extern s32 *D_800CB24C;
@@ -349,6 +355,8 @@ void func_800BABCC(s32 arg0);
 void func_800BACD4(s32 arg0);
 
 void func_800BAF64(s32 arg0);
+
+void func_800BD654(NAS *nas);
 
 s32 func_800BF548(EXTengine *eng);
 
