@@ -41,6 +41,8 @@ typedef struct {
 
 s32 func_800BB7B8(T_BB7B8 *p);
 
+void InitShieldPickup(NAS *arg0);
+
 s32 func_800BFB6C(s32 pos, ExtCurve *c);
 
 
