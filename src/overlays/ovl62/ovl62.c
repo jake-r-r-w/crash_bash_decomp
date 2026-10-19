@@ -726,7 +726,64 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/ovl62/ovl62", D_800B3498);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C0E94);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C0FE8);
+#define UKA_SEG_SET(j, st, a) \
+    { m->seg[j].state = (st); m->seg[j].angle = (a); m->seg[j].t = 0; m->seg[j].count++; }
+
+void func_800C0FE8(s32 i, UkaMaskSet *m) {
+    s32 next;
+    s32 prev;
+
+    next = (i + 1) & 0xF;
+    prev = (i - 1) & 0xF;
+    if (m->seg[i].count == 0) {
+        UKA_SEG_SET(i, 1, 0x4000);
+        switch (m->seg[next].state) {
+        case 0:
+            UKA_SEG_SET(next, 2, 0x4300);
+            break;
+        case 3:
+            UKA_SEG_SET(next, 4, 0x4200);
+            break;
+        }
+        switch (m->seg[prev].state) {
+        case 0:
+            UKA_SEG_SET(prev, 3, 0x4380);
+            break;
+        case 2:
+            UKA_SEG_SET(prev, 4, 0x4100);
+            break;
+        }
+    } else if (m->seg[i].count == 1) {
+        switch (m->seg[i].state) {
+        case 3:
+            UKA_SEG_SET(i, 1, 0x4280);
+            break;
+        case 2:
+            UKA_SEG_SET(i, 1, 0x4180);
+            break;
+        }
+        switch (m->seg[prev].state) {
+        case 0:
+            UKA_SEG_SET(prev, 3, 0x4380);
+            break;
+        case 2:
+            UKA_SEG_SET(prev, 4, 0x4100);
+            break;
+        }
+        switch (m->seg[next].state) {
+        case 0:
+            UKA_SEG_SET(next, 2, 0x4300);
+            break;
+        case 3:
+            UKA_SEG_SET(next, 4, 0x4200);
+            break;
+        }
+    } else if (m->seg[i].count == 2) {
+        if (m->seg[i].state == 4) {
+            UKA_SEG_SET(i, 1, 0x4080);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitUkaPolarMask);
 

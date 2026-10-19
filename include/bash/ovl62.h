@@ -435,6 +435,21 @@ typedef struct Ovl62RiserSet {
     /* 0xB8 */ Ovl62Riser slot[16];
 } Ovl62RiserSet;
 
+/* func_800C0FE8's ring of 16 mask segments at +0xB8 of the Uka polar ext. */
+typedef struct UkaMaskSeg {
+    /* 0x0 */ s32 count;
+    /* 0x4 */ s32 state;
+    /* 0x8 */ s32 t;
+    /* 0xC */ s32 angle;
+} UkaMaskSeg;
+
+typedef struct UkaMaskSet {
+    /* 0x00 */ u8 pad0[0xB8];
+    /* 0xB8 */ UkaMaskSeg seg[16];
+} UkaMaskSet;
+
+void func_800C0FE8(s32 i, UkaMaskSet *m);
+
 typedef struct Ovl62RiserObj {
     /* 0x00 */ u8 pad0[0x74];
     /* 0x74 */ s16 y;
