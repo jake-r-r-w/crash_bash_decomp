@@ -725,7 +725,17 @@ void func_800C31B0(void) {
     func_800C2F50();
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C327C);
+void func_800C327C(s32 arg0) {
+    Ovl60Slot *base = D_800C535C;
+    Ovl60Slot *p = (Ovl60Slot *)(arg0 * sizeof(Ovl60Slot) + (u32)base);
+
+    p->flags = 0;
+    p->unk4 = 0;
+    p->nas = NULL;
+    D_800C53CC[arg0] = 5;
+    SetHeroAction((HeroInfo *)arg0, 0x39);
+    func_800C1004(arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C32E8);
 

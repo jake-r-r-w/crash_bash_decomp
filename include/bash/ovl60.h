@@ -52,13 +52,17 @@ extern HeroInfo Heroes[4];
 /* 0x1C-byte entries of D_800C535C */
 typedef struct {
     /* 0x00 */ s32 flags;
-    /* 0x04 */ s32 unk4[3];
+    /* 0x04 */ s16 unk4;
+    /* 0x06 */ s16 unk6;
+    /* 0x08 */ s32 unk8[2];
     /* 0x10 */ NAS *nas;
     /* 0x14 */ s32 unk14;
     /* 0x18 */ s32 unk18;
 } Ovl60Slot;
 
 extern Ovl60Slot D_800C535C[];
+extern s32 D_800C53CC[];
+void func_800C1004(s32 arg0);
 void func_800C02AC(EXTengine *eng, s32 angle);
 extern u8 D_80053B9C[];
 extern s32 D_8005A680[];
@@ -142,5 +146,7 @@ void func_800B53CC(s32 arg0, u16 arg1);
 void func_800C3148(void);
 
 s32 func_800BC04C(s32 arg0, s32 arg1);
+
+void func_800C327C(s32 arg0);
 
 #endif /* BASH_OVL60_H */
