@@ -897,7 +897,16 @@ s32 func_800C2C70(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C2CBC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C2DCC);
+void func_800C2DCC(s32 arg0) {
+    Ovl60Slot *slot;
+
+    Heroes[arg0].hero_move->velocity_enable = 0;
+    Heroes[arg0].hero_move->jump_ctrl &= 0xFE;
+    slot = &D_800C535C[arg0];
+    *(s16 *)((u8 *)slot + 0x16) = 0;
+    slot->unk18 = (u16)slot->unk4 == 5;
+    func_800B8BE4(arg0, 0);
+}
 
 void func_800C2E50(s32 arg0, s32 arg1) {
     u8 *g = D_8005A614;
