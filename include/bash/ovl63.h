@@ -95,6 +95,12 @@ typedef struct Ovl63Fux40 {
     /* 0x40 */ s32 unk40;
 } Ovl63Fux40;
 
+/* A hero's FUX as func_800BC2D0 clears it: a word at 0x138. */
+typedef struct Ovl63Fux138 {
+    /* 0x000 */ u8 unk0[0x138];
+    /* 0x138 */ s32 unk138;
+} Ovl63Fux138;
+
 /* Per-hero run speed rows: 3 u16 per hero_name. */
 extern u16 *D_8009D6F4;
 
@@ -519,6 +525,8 @@ extern s32 D_800C6EB0;
 void func_800B48EC(s32 player);
 
 s32 func_800B6108(Ovl63Barrel *b);
+
+void func_800BC2D0(s32 player);
 
 void func_800BC6C8(s32 arg0);
 

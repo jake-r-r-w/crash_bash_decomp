@@ -453,7 +453,43 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BBA04);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BC0A4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BC2D0);
+void func_800BC2D0(s32 player) {
+    HeroInfo *h;
+    Ovl63Fux138 *f;
+    EXTheromove *m;
+    SLONG_XYZ pos;
+    HeroInfo *base;
+
+    base = Heroes;
+    h = &base[player];
+    f = (Ovl63Fux138 *)h->hero->FUX;
+    if (f != NULL) {
+        f->unk138 = 0;
+        m = h->hero_move;
+        if (m != NULL) {
+            pos.x = h->hero_eng->unk10.x + (D_80068BD4[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2 * 25 >> 9);
+            pos.z = h->hero_eng->unk10.z + (D_80068BD4[h->hero_eng->unk1E & 0xFFF].unk2 * 25 >> 9);
+            pos.y = h->hero_eng->unk10.y;
+            m->jump_acc = 5;
+            m->jump_dec = 10;
+            m->jump_vel = -0x44;
+            if (D_8005A648 == 0x19) {
+                if (player == 0) {
+                    PlaySfx(0x68D, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (player == 1) {
+                    PlaySfx(0x68E, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (player == 2) {
+                    PlaySfx(0x68F, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (player == 3) {
+                    PlaySfx(0x690, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BC4B0);
 
