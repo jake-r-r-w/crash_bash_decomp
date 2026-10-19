@@ -38,6 +38,16 @@ typedef struct {
 
 extern HeroInfo Heroes[4];
 
+/* The AI state func_800B4848 writes its chosen target into. */
+typedef struct {
+    /* 0x00 */ u8 pad0[0x10];
+    /* 0x10 */ s32 target;
+    /* 0x14 */ u8 pad14[0x20 - 0x14];
+    /* 0x20 */ s16 unk20;
+    /* 0x22 */ u8 pad22[0x2C - 0x22];
+    /* 0x2C */ s32 flags;
+} Ovl5dAiState;
+
 void func_800B62EC(void);
 
 void func_800B6F0C(void);
@@ -93,6 +103,8 @@ extern u16 D_8009D754;
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
 #include "bash/ovl5d_800bb64c.h"
 #include "bash/ovl5d_800bff1c.h"
+
+void func_800B4848(s32 arg0, s32 arg1, s32 arg2, Ovl5dAiState *ai, s32 prev);
 
 void func_800B8314(void);
 

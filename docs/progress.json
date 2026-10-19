@@ -19,9 +19,9 @@
    "size": 2836
   }
  ],
- "commit": "25b31a9f2",
+ "commit": "bc71b4007",
  "game": "SCUS_945.70",
- "generated": "2026-10-19T14:08:49Z",
+ "generated": "2026-10-19T14:09:05Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -127756,9 +127756,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "bc71b4007",
+   "data_b": 3844,
+   "data_tb": 606943,
+   "game_all_f": 2537,
+   "game_b": 478064,
+   "game_c_f": 1897,
+   "game_f": 1897,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 1683,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-19T14:09:05Z",
+   "units": {
+    "engine": [
+     121412,
+     355
+    ],
+    "main exe": [
+     124840,
+     575
+    ],
+    "ovl5d": [
+     8640,
+     44
+    ],
+    "ovl5e": [
+     1432,
+     10
+    ],
+    "ovl5f": [
+     20972,
+     127
+    ],
+    "ovl60": [
+     28208,
+     131
+    ],
+    "ovl61": [
+     49424,
+     96
+    ],
+    "ovl62": [
+     32228,
+     151
+    ],
+    "ovl63": [
+     22884,
+     97
+    ],
+    "ovl64": [
+     640,
+     10
+    ],
+    "ovl65": [
+     1096,
+     11
+    ],
+    "ovl66": [
+     744,
+     15
+    ],
+    "ovl67": [
+     27056,
+     101
+    ],
+    "ovl68": [
+     768,
+     13
+    ],
+    "ovl69": [
+     9496,
+     68
+    ],
+    "ovl6a": [
+     28224,
+     93
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-19T14:09:02Z",
+   "auto": true,
+   "name": "func_800B4848",
+   "seg": "overlays/ovl5d/ovl5d",
+   "size": 616,
+   "tries": 0
+  },
   {
    "at": "2026-10-19T14:08:47Z",
    "auto": true,
@@ -127870,14 +127964,6 @@
    "seg": "overlays/ovl5d/800bff1c",
    "size": 272,
    "tries": 0
-  },
-  {
-   "at": "2026-10-19T14:00:54Z",
-   "auto": true,
-   "name": "func_800C2E58",
-   "seg": "overlays/ovl5d/800bff1c",
-   "size": 112,
-   "tries": 0
   }
  ],
  "summary": {
@@ -127893,15 +127979,15 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 3,
-   "c_f": 1896,
-   "done_b": 477448,
-   "done_f": 1896,
+   "c_f": 1897,
+   "done_b": 478064,
+   "done_f": 1897,
    "named_f": 345,
-   "pct": 46.85290804250292,
+   "pct": 46.913357329868624,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2537,
-   "typed_f": 1682
+   "typed_f": 1683
   },
   "lib": {
    "all_f": 566,
@@ -127966,20 +128052,20 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
-    "c_f": 43,
-    "done_b": 8024,
-    "done_f": 43,
+    "c_f": 44,
+    "done_b": 8640,
+    "done_f": 44,
     "file": "ovl5d.bin",
     "files": 3,
     "lib": false,
     "named_f": 21,
-    "pct": 12.75189117030068,
+    "pct": 13.730849914182189,
     "phase": 5,
     "sony_b": 0,
     "title": "Bash",
     "total_b": 62924,
     "total_f": 104,
-    "typed_f": 37,
+    "typed_f": 38,
     "unit": "ovl5d"
    },
    {

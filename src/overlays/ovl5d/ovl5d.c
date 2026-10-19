@@ -15,7 +15,69 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B44B0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B46B8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B4848);
+void func_800B4848(s32 arg0, s32 arg1, s32 arg2, Ovl5dAiState *ai, s32 prev) {
+    HeroInfo *base;
+    HeroInfo *h;
+    HeroInfo *o;
+    s32 i;
+    s32 best;
+    s32 min;
+    s32 dx;
+    s32 dz;
+    s32 d;
+
+    base = Heroes;
+    h = base + arg0;
+    if (h->hero_weapon_count == 0 || h->hero_attack_timer != 0) {
+        return;
+    }
+    best = -1;
+    switch (h->hero_pu) {
+    case 0x1C:
+        min = 0x51000;
+        for (i = 0; i < 4; i++) {
+            o = &Heroes[i];
+            if (arg0 != i && i != arg1 && !(o->hero_status & 0xFA00)) {
+                dx = base[arg0].hero_eng->unk10.x - o->hero_eng->unk10.x;
+                dz = dx * dx;
+                dx = base[arg0].hero_eng->unk10.z - o->hero_eng->unk10.z;
+                d = dz + dx * dx;
+                if (d < min) {
+                    best = i;
+                    min = d;
+                }
+            }
+        }
+        break;
+    case 0x1B:
+        min = 0x800;
+        goto loop2;
+    case 0 ... 0x1A:
+    default:
+        min = 0x800;
+    loop2:
+        for (i = 0; i < 4; i++) {
+            if (i != arg0 && i != arg1) {
+                d = func_80015480(arg2, get_angle(Heroes[i].hero_eng->unk10.x - Heroes[arg0].hero_eng->unk10.x,
+                                                  Heroes[i].hero_eng->unk10.z - Heroes[arg0].hero_eng->unk10.z));
+                if (d < min) {
+                    min = d;
+                    best = i;
+                }
+            }
+        }
+        break;
+    }
+    if (best == prev && prev != -1) {
+        ai->target = -1;
+        ai->unk20 = 1;
+        ai->flags |= 0x8000;
+    } else if (best != -1 && (D_8005A680[0] == 0 || best != arg1)) {
+        ai->target = -1;
+        ai->unk20 = 1;
+        ai->flags |= 0x8000;
+    }
+}
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl5d/ovl5d", D_800B3424);
 
