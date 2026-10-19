@@ -61,8 +61,8 @@ extern HeroInfo Heroes[4];
 /* 0x1C-byte entries of D_800C535C */
 typedef struct {
     /* 0x00 */ s32 flags;
-    /* 0x04 */ s16 unk4;
-    /* 0x06 */ s16 unk6;
+    /* 0x04 */ u16 unk4; /* state */
+    /* 0x06 */ s16 unk6; /* timer */
     /* 0x08 */ s32 unk8[2];
     /* 0x10 */ NAS *nas;
     /* 0x14 */ s32 unk14;
@@ -180,6 +180,22 @@ void func_800C2E50(s32 arg0, s32 arg1);
 
 void func_800C2EE0(void);
 void func_800C1CF0();
+void func_800B4230();
+void func_800B87DC();
+void func_800B9C10();
+void func_800B9D64();
+void func_800BCB4C();
+extern s32 D_800C52F4;
+extern s32 D_80099178;
+
+/* D_8005A614+0x34 as func_800B3E34 switches on it: an enum, so gcc's
+ * switch tree skips its text cost table. */
+typedef enum Ovl60Mode {
+    OVL60_MODE_NONE = -1,
+    OVL60_MODE_10 = 10,
+    OVL60_MODE_11 = 11,
+    OVL60_MODE_12 = 12
+} Ovl60Mode;
 s32 func_8008502C();
 
 void func_800B4374(s32 arg0, u16 arg1);

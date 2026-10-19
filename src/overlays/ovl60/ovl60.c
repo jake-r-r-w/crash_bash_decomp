@@ -11,7 +11,72 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B3A38);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B3C44);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B3E34);
+void func_800B3E34(void) {
+    Ovl60Slot *slot;
+    s32 i;
+    s32 ok;
+    u8 *g;
+
+    func_800C2EE0();
+    func_800B4230();
+    func_800B87DC();
+    if (D_8005A644 & 0x801) {
+        return;
+    }
+    i = 0;
+    slot = D_800C535C;
+loop:
+    if (slot->unk4 == 5) {
+        goto tick;
+    }
+    if (slot->unk4 == 6) {
+    tick:
+        if (--slot->unk6 < 2) {
+            func_800C1CF0(i);
+        }
+    }
+    i++;
+    slot++;
+    if (i < 4) {
+        goto loop;
+    }
+    func_800B9C10();
+    func_800B9D64();
+    g = D_8005A614;
+    switch ((Ovl60Mode)*(s16 *)(g + 0x34)) {
+    case OVL60_MODE_12:
+        break;
+    case OVL60_MODE_10:
+        if (*(u16 *)(g + 0x32) & 0x80) {
+            switch ((u32)D_80099178 >> 8) {
+            case 0x115:
+                ok = D_800C52F4 < 3;
+                break;
+            case 0x50:
+                ok = D_800C52F4 < 4;
+                break;
+            case 0x30:
+                ok = D_800C52F4 < 5;
+                break;
+            case 0x20:
+                ok = D_800C52F4 < 6;
+                break;
+            case 0x10:
+                ok = D_800C52F4 < 7;
+                break;
+            default:
+                return;
+            }
+            if (ok) {
+                SpawnNASById(0, 0, 0, 0x1407, 0x11);
+            }
+        }
+        break;
+    case OVL60_MODE_11:
+        func_800BCB4C(g);
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B3FF0);
 
