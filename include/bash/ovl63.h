@@ -230,6 +230,19 @@ extern s32 D_800C69BC;
 extern s32 D_800C6BB0;
 extern u16 D_800AD12C;
 
+/* Spinning object func_800B5D14 updates: rotation at 0x10, its matrix at 0x30. */
+typedef struct Ovl63SpinObj {
+    /* 0x00 */ u8 unk0[0x10];
+    /* 0x10 */ SVECTOR rot;
+    /* 0x18 */ u8 unk18[0x30 - 0x18];
+    /* 0x30 */ MATRIX mat;
+} Ovl63SpinObj;
+extern Ovl63SpinObj *D_800C69A4;
+extern s32 D_800CA608;
+extern s32 D_800C69AC;
+extern u8 D_800C6B70[];
+s32 func_800B5A70();
+
 void func_800B5D14(void);
 void func_800B6474(void);
 void func_800C04EC(void);

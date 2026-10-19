@@ -263,7 +263,57 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B5778);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B5A70);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B5D14);
+void func_800B5D14(void) {
+    MATRIX m;
+    SVECTOR v;
+    Ovl63SpinObj **pp;
+    Ovl63SpinObj *o;
+    s32 i;
+    s32 spd;
+
+    spd = 4;
+    if ((u32)(D_800C69AC - 1) < 2) {
+        spd = -4;
+    }
+    if (D_8005A646 & 0x80) {
+        spd = -0x20;
+    }
+    if (D_800C69A4 != NULL) {
+        D_800C69A4->rot.vy -= spd;
+        v.vx = D_800C69A4->rot.vx;
+        v.vy = D_800C69A4->rot.vy;
+        v.vz = D_800C69A4->rot.vz;
+        RotMatrix(&v, &m);
+        D_800C69A4->mat = m;
+    }
+    i = 0;
+    pp = (Ovl63SpinObj **)D_800CA544;
+loop:
+    if (i < 6) {
+        o = *pp;
+        if (o != NULL) {
+            o->rot.vy -= spd;
+            v.vx = o->rot.vx;
+            v.vy = o->rot.vy;
+            v.vz = o->rot.vz;
+            RotMatrix(&v, &m);
+            o->mat = m;
+        }
+        pp++;
+        i++;
+        goto loop;
+    }
+    if (D_800CA608 < 0) {
+        if (D_800C695C != 0) {
+            D_800C69AC = 5;
+        }
+        if (func_800B5A70(D_800C6B70, D_800C69AC) != 0) {
+            D_800C69AC = Random(5);
+        }
+    } else {
+        D_800CA608--;
+    }
+}
 
 void func_800B5F04(void) {
     Ovl63Barrel *b;
