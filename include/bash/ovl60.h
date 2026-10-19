@@ -105,6 +105,8 @@ typedef struct {
 } Ovl60Cell; /* size 0x1C */
 
 extern Ovl60Cell D_800C53DC[8][8];
+/* The position a board cell's unk4 points to, as PlaySfx takes it. */
+#define CELL_POS(cx, cz) ((SLONG_XYZ *)&((Ovl60Cell *)((cx) * sizeof(D_800C53DC[0]) + (cz) * sizeof(Ovl60Cell) + (u32)D_800C53DC))->unk4->x)
 
 /* A scene object in the list at D_80058AD0 + 0x1C (func_800B3C44). */
 typedef struct Ovl60Obj {

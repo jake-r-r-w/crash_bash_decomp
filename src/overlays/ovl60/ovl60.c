@@ -678,7 +678,60 @@ void func_800B7B1C(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B7C3C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B8180);
+void func_800B8180(s32 arg0, s32 arg1) {
+    HeroInfo *h;
+    Ovl60Cell *c;
+    Ovl60Cell *base;
+    s32 *pos;
+    NAS *nas;
+    s32 *ext;
+    s32 i;
+    s32 near;
+    s32 one;
+
+    for (i = 0; i < 4; i++) {
+        h = &Heroes[i];
+        near = 0;
+        if (abs((arg0 << 9) - (((h->hero_eng->unk10.x + 0x800) >> 9) << 9)) < 0x300) {
+            near = abs((arg1 << 9) - (((h->hero_eng->unk10.z + 0x800) >> 9) << 9)) < 0x300;
+        }
+        if (near && !(h->hero_status & 0x800)) {
+            func_800C142C(i);
+        }
+    }
+    base = D_800C53DC[0];
+    c = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
+    c->unk12 = 1;
+    c->unkA = -1;
+    c->unk14 = 0;
+    pos = &c->unk4->x;
+    nas = SpawnNASById(pos[0], pos[1], pos[2], 0x1605, 0x11);
+    one = 1;
+    if (nas != NULL) {
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL) {
+            ext[3] = one;
+            ext[6] = 0x100;
+            ext[8] = one;
+            ext[10] = 0;
+            nas->InitDelete(nas);
+        }
+    }
+    switch ((u32)Random(4)) {
+    case 0:
+        PlaySfx(0x3EC, NULL, CELL_POS(arg0, arg1), 0x1000, 0x1E00, 0);
+        break;
+    case 1:
+        PlaySfx(0x3ED, NULL, CELL_POS(arg0, arg1), 0x1000, 0x1E00, 0);
+        break;
+    case 2:
+        PlaySfx(0x3EE, NULL, CELL_POS(arg0, arg1), 0x1000, 0x1E00, 0);
+        break;
+    case 3:
+        PlaySfx(0x3EF, NULL, CELL_POS(arg0, arg1), 0x1000, 0x1E00, 0);
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B83AC);
 
