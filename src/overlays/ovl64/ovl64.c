@@ -3,6 +3,8 @@
 #include "bash/spin.h"
 #include "bash/hero.h"
 #include "bash/shell.h"
+#include "bash/race.h"
+#include "bash/polar.h"
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B3428);
 
@@ -89,7 +91,15 @@ void func_800B9048(void) {
     func_800B3A3C();
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B9088);
+void func_800B9088(void) {
+    D_8005AA70[0] = (s32)func_800B3428;
+    D_8005AA70[1] = (s32)func_800B359C;
+    D_8005AA70[2] = (s32)func_800B359C;
+    D_8005AA70[3] = (s32)func_800B9048;
+    D_8005AA70[5] = (s32)func_800B9038;
+    D_8005AA70[7] = 0;
+    D_8005AA70[8] = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B90D0);
 

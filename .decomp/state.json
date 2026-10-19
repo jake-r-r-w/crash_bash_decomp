@@ -7938,7 +7938,8 @@
   "copy_failed_stage": "in-file"
  },
  "ovl63:800C5F54": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-19T09:50:40Z",
+  "status": "matched"
  },
  "ovl64:800B3428": {
   "auto_failed": "compile"
@@ -8046,7 +8047,9 @@
   "via": "auto"
  },
  "ovl64:800B9088": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-19T09:51:13Z",
+  "status": "matched",
+  "via": "copy"
  },
  "ovl64:800B90D0": {
   "auto_failed": "types"
@@ -8335,7 +8338,9 @@
   "auto_failed": "diff"
  },
  "ovl65:800BCEFC": {
-  "auto_failed": "types"
+  "auto_failed": "types",
+  "copy_failed": "ovl64:800B9088",
+  "copy_failed_stage": "in-file"
  },
  "ovl65:800BCF44": {
   "matched_at": "2026-10-10T10:17:24Z",
@@ -8531,7 +8536,9 @@
   "via": "auto"
  },
  "ovl66:800B6AAC": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-19T09:51:13Z",
+  "status": "matched",
+  "via": "copy"
  },
  "ovl66:800B6B04": {
   "auto_failed": "compile"

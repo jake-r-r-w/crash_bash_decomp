@@ -8,6 +8,10 @@
 #include "common.h"
 #include "bash/nas.h"
 
+void func_800B3428();
+
+void func_800B359C();
+
 s32 func_800B8E4C(void);
 
 s32 func_800B8E54(void);
@@ -20,9 +24,13 @@ void func_800B9040(void);
 
 void func_800B9048(void);
 
+void func_800B9088(void);
+
 void func_800BB37C(void);
 
 void func_800BB52C(s32 arg0);
 extern void (*D_8009D73C)();
+
+extern s32 D_8005AA70[11];
 
 #endif /* BASH_OVL64_H */

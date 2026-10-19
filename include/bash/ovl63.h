@@ -31,6 +31,10 @@ void func_800B5360(s32 *arg0);
 
 void func_800B7D94(void);
 
+void func_800B4A4C();
+void func_800B8890();
+void func_800B8D68();
+
 void PlotRaceFire(NAS *nas);
 
 /* Shield extension, AddExtension(nas, 0x20, 0x10000000). */
@@ -51,5 +55,7 @@ void SetHeroAction(HeroInfo *hero, s32 action);
 s32 func_8008CEB0(u8 *arg0, u8 *arg1);
 
 s32 func_800C4F30(u8 *arg0);
+
+void func_800C5F54(void);
 
 #endif /* BASH_OVL63_H */

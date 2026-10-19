@@ -3,6 +3,10 @@
 #include "bash/ovl66.h"
 #include "bash/bonk.h"
 #include "bash/pogo.h"
+#include "bash/race.h"
+#include "bash/polar.h"
+#include "bash/hero.h"
+#include "bash/shell.h"
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B33A4);
 
@@ -142,7 +146,15 @@ void func_800B6A1C(void) {
     func_800B6568();
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B6AAC);
+void func_800B6AAC(void) {
+    D_8005AA70[0] = (s32)func_800B33A4;
+    D_8005AA70[1] = (s32)func_800B6A1C;
+    D_8005AA70[2] = (s32)func_800B6A1C;
+    D_8005AA70[3] = (s32)func_800B67C4;
+    D_8005AA70[5] = (s32)func_800B6AFC;
+    D_8005AA70[7] = 0;
+    D_8005AA70[8] = 0;
+}
 
 void func_800B6AF4(void) {
 }
