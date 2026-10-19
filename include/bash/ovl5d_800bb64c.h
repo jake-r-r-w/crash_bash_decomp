@@ -63,4 +63,8 @@ void func_800BFAC0(EXTengine *eng);
 
 void func_800BFC30(EXTengine *eng);
 
+extern u16 D_8009E080[][4];
+
+void func_800BFD2C(s32 arg0);
+
 #endif /* BASH_OVL5D_800BB64C_H */

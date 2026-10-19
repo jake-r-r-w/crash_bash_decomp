@@ -314,4 +314,41 @@ void func_800BFC30(EXTengine *eng) {
     } while (again);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bb64c", func_800BFD2C);
+void func_800BFD2C(s32 arg0) {
+    HeroInfo *b = Heroes;
+    HeroInfo *h = &b[arg0];
+    HeroInfo *b2;
+    HeroInfo *b3;
+    HeroInfo *h2;
+    HeroInfo *h3;
+
+    if (h->hero_pu != 0x12) {
+        h->hero_hit = 0x1E;
+    }
+    h->hero_move->velocity_enable = 0;
+    switch (h->hero_pu) {
+    case 0x13:
+        h->hero_pu_timer = 0;
+    case 0x19:
+    case 0x1B:
+    case 0x1C:
+        Heroes[arg0].hero_weapon_count = 0;
+    }
+    b2 = Heroes;
+    h2 = &b2[arg0];
+    if (h2->hero_object != NULL) {
+        h2->hero_object->player = h2->hero_harm_player;
+        h2->hero_object->status = 4;
+        h2->hero_object = NULL;
+    }
+    if (h2->hero_health <= 0 && !(D_8005A618 & 2)) {
+        h2->hero_status |= 0x2000;
+    }
+    b3 = Heroes;
+    h3 = &b3[arg0];
+    if (h3->hero_eng->sfx != NULL) {
+        StopSfx(h3->hero_eng->sfx);
+    }
+    PlaySfx(D_8009E080[h3->hero_name][Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+    SetHeroSeq((HeroInfo *)arg0, 9);
+}
