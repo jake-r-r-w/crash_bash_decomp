@@ -77,5 +77,32 @@ s32 func_800C467C(Ovl63BounceObj *obj, Ovl63Bouncer *b);
 s32 func_800C4F30(u8 *arg0);
 
 void func_800C5F54(void);
+/* D_8005A614 as seen by func_800B8D68. */
+typedef struct Ovl63GameView {
+    /* 0x00 */ u8 unk0[0x10];
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ u8 unk14[0x30 - 0x14];
+    /* 0x30 */ u16 unk30;
+    /* 0x32 */ u16 unk32;
+    /* 0x34 */ s16 unk34;
+} Ovl63GameView;
+#define G63 ((Ovl63GameView *)D_8005A614)
+
+extern s32 D_800C692C;
+extern s32 D_800C695C;
+typedef struct Ovl63Obj74 {
+    /* 0x00 */ u8 unk0[0x74];
+    /* 0x74 */ s16 unk74;
+} Ovl63Obj74;
+extern Ovl63Obj74 *D_800C69B4;
+extern s32 D_800C69B8;
+extern s32 D_800C69BC;
+extern s32 D_800C6BB0;
+extern u16 D_800AD12C;
+
+void func_800B5D14(void);
+void func_800B6474(void);
+void func_800C04EC(void);
+void func_800C0CB4(void);
 
 #endif /* BASH_OVL63_H */
