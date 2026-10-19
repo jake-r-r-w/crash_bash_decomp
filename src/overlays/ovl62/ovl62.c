@@ -890,7 +890,17 @@ s32 func_800CBAA4(s32 arg0, s32 arg1) {
     return result;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CBB8C);
+void func_800CBB8C(void) {
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        if (Heroes[i].hero_ai->AImode != 0) {
+            D_800D5FB0[i] = 0x1000;
+        } else {
+            D_800D5FB0[i] = 0x2000;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CBBE8);
 

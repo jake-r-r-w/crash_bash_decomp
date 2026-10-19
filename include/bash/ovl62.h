@@ -220,6 +220,7 @@ void func_800D2F48(s32 player);
 void func_800D3018(s32 player);
 
 extern s32 D_800D5FEC[4];
+extern s32 D_800D5FB0[4];
 
 void func_800B60B8(s32 player);
 
@@ -249,6 +250,8 @@ void func_800CB650(s32 player);
 void func_800CBA64(void);
 
 s32 func_800CBAA4(s32 arg0, s32 arg1);
+
+void func_800CBB8C(void);
 
 s32 func_800CD560(s32 arg0);
 
