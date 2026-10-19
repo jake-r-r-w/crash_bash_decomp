@@ -240,7 +240,24 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotCircleFire);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotEgg);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotCoalFlameSFX);
+void PlotCoalFlameSFX(CoalSfxObj *obj) {
+    CoalSfxInner *in = obj->unk54;
+
+    if (D_800BC46C[obj->idx] > 0) {
+        if (D_800BC47C[obj->idx] == 0) {
+            PlaySfx(D_800BB9FC[Random(4)], &in->voice, &in->pos, 0x1000, 0x1E00, 0);
+        } else {
+            D_800BC46C[obj->idx]--;
+            if (D_800BC46C[obj->idx] <= 0) {
+                if (in->voice != 0) {
+                    StopSfx(in->voice);
+                }
+                D_800BC48C[obj->idx] = 0;
+            }
+        }
+    }
+    D_800BC47C[obj->idx] = D_800BC46C[obj->idx];
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotPUGenerator_CH);
 

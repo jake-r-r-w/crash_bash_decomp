@@ -64,6 +64,25 @@ typedef struct Ovl68Out {
     s32 unk4;
     s32 unk8;
 } Ovl68Out;
+typedef struct CoalSfxInner {
+    u8 pad0[0x10];
+    SLONG_XYZ pos;
+    u8 pad1C[0x94 - 0x10 - sizeof(SLONG_XYZ)];
+    _sfx_handler *voice;
+} CoalSfxInner;
+
+typedef struct CoalSfxObj {
+    u8 pad0[0x54];
+    CoalSfxInner *unk54;
+    u8 pad58[0xC];
+    s32 idx;
+} CoalSfxObj;
+
+extern s32 D_800BC46C[];
+extern s32 D_800BC47C[];
+extern s32 D_800BC48C[];
+extern s32 D_800BB9FC[];
+void PlotCoalFlameSFX(CoalSfxObj *obj);
 
 void func_800BB6FC(s32 arg0, s32 arg1, s32 arg2, EXTengine *arg3, Ovl68Out *arg4);
 void func_800BB488(CoalGridObj *obj);
