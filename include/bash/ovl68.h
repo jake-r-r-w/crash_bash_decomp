@@ -57,6 +57,10 @@ void func_800BB36C(void);
 void func_800BB374(void);
 void func_800BB37C(void);
 void func_800BB640(s32 arg0);
+extern s32 D_8005AA70[11];
+void func_800B3EFC(void);
+void func_800B4048(void);
+void func_800B4444(void);
 
 extern u8 D_800BC210[];
 extern s32 D_800BC4E8[];
@@ -109,6 +113,8 @@ void func_800BB134(s32 arg0);
 s32 func_800BB1C0(s32 x, s32 z, s32 range);
 
 s32 func_800BB260(s32 arg0);
+
+void func_800BB384(void);
 
 void func_800BB3F0(s32 x, s32 y);
 

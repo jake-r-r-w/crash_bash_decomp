@@ -350,7 +350,18 @@ void func_800BB374(void) {
 void func_800BB37C(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BB384);
+void func_800BB384(void) {
+    D_8005AA70[0] = (s32)func_800B3EFC;
+    D_8005AA70[1] = (s32)func_800B4048;
+    D_8005AA70[2] = (s32)func_800B4048;
+    D_8005AA70[3] = (s32)func_800B4444;
+    D_8005AA70[4] = (s32)func_800BB37C;
+    D_8005AA70[6] = (s32)func_800BB374;
+    D_8005AA70[5] = (s32)func_800BB36C;
+    D_8005AA70[7] = 0;
+    D_8005AA70[8] = 0;
+    D_8005AA70[10] = (s32)func_800B44C8;
+}
 
 void func_800BB3F0(s32 x, s32 y) {
     s32 xi = (x + 0xA00) >> 7;
