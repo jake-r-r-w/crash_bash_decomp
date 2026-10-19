@@ -101,6 +101,13 @@ and current tools).
 
 ## Open leads
 
+- **`func_800B39C0` (ovl67, 580 B): swarm checkpoint at registers 3/145**
+  (blocks 31/32) since 2026-10-19, from 29/145. A permuter find, ported
+  by hand: `do { ret = 0xC00; } while (0);` in the `dx < -r` branch fixed
+  the s0/s1 swap. Left: block 29 (0x208-0x210), where the `D_800C418C + s0`
+  element pointer whose `lh`s feed `get_angle` is a2 in ours and v0 in the
+  target. Next: `swarm.mjs permute --only ovl67:800B39C0` (it starts from
+  the checkpoint) or the `-dl` dump for why the pointer gets a2.
 - **`func_800B7458` (ovl69, 1360 B), parked 2026-10-19 at registers 4/340**
   (blocks 18/20; C under `#ifdef NON_MATCHING`, `block` note has the tries).
   Only `v` differs: one variable for the `D_800BA740` test and the
@@ -115,6 +122,10 @@ and current tools).
   chain (6 over ~9; the target ties the address in too, 8+ refs), so they
   swap a1/a2. Computing the row before `w` reshuffles sched1 (29 differ).
   Next: more refs or a shorter sched1 life for `w`'s chain with `h` global.
+  Its swarm checkpoint no longer applies (it edits a line of
+  `include/bash/ovl69.h` that has changed since), so `swarm.mjs permute`
+  skips it. Permute from the `NON_MATCHING` C in `src/` instead (`make
+  permute FUNC=func_800B7458 ARGS=--differing` with that C in place).
 - **`func_800B345C` (ovl63, 30735f0c) still matches only with a hack** (no-op
   `h++; h--;` and `p++; p++; p--;` in its goto loop; `done` now refuses such runs
   without --hack). Reworked 2026-10-19, not finished. Without the no-ops it is
@@ -377,6 +388,11 @@ Other:
   `PermissionError`; retry.
 - `make permute` runs in its own container: stopping the background task
   doesn't stop it. `docker stop` it before running `done`.
+- Stopping `swarm.mjs permute` early (a STOP file or Ctrl+C) saves nothing,
+  and its STOP file then blocks the next run until deleted. Copy the best
+  `output-SCORE-N/` from `<swarm>/permuters/hN/build/permuter/NAME/` first,
+  apply its `diff.txt` in that clone, measure it, and write `best.diff` and
+  `best.json` (`git diff` in the clone, against its HEAD).
 
 **decomp.py**
 - `done` refuses when another function in the file is also un-`INCLUDE_ASM`ed.
@@ -443,6 +459,13 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-19 (permuter, near misses):** `swarm.mjs permute --only
+  ovl67:800B39C0,ovl69:800B7458`, stopped by hand after 32 of 60 min.
+  `func_800B39C0` went from registers 29/145 to 3/145 (a `do { } while
+  (0)` around one assignment, found in the first minute). It was saved by
+  hand as its checkpoint, because a stopped run saves nothing.
+  `func_800B7458` was skipped: its checkpoint no longer applies (Open
+  leads).
 - **2026-10-19 (ovl68, low cost):** run 20261019171842, stopped by hand
   after 26 min: 46 matched for $11.71, no gate failures; game code passes
   50% of bytes (2024/2537 functions). Four left unmatched: two cut off by
