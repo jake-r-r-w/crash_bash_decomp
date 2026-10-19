@@ -569,7 +569,13 @@ void Init_PogoProjectile(NAS *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C11C4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1384);
+void func_800C1384(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    EXTengine *eng;
+
+    eng = Heroes[arg0].hero_eng;
+    func_800C11C4(arg1, (((eng->unk10.x + 0x800) >> 9) << 9) - 0x700,
+                  (((eng->unk10.z + 0x800) >> 9) << 9) - 0x700, arg3, arg0 & 7, arg2);
+}
 
 void func_800C1400(s32 arg0) {
     D_800C535C[arg0].flags |= 1;

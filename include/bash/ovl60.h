@@ -102,6 +102,8 @@ void func_800C1068();
 
 void func_800C10F8(void);
 
+void func_800C11C4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
+
 void func_800C159C(s32 arg0);
 
 void func_800C2810(s32 arg0);
@@ -128,6 +130,8 @@ s32 func_800C0DE4(s32 arg0);
 s32 func_800C0E40(s32 arg0, u32 arg1, u32 arg2);
 
 void func_800C0FAC(s32 i);
+
+void func_800C1384(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
 void func_800C1400(s32 arg0);
 
