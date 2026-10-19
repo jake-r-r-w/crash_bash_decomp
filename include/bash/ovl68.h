@@ -87,6 +87,8 @@ void func_800B44C8(void);
 
 void func_800BA630(NAS *nas);
 
+void InitPUGenerator_CH(NAS *nas);
+
 void InitCoalFlameSFX(CoalFlameObj *arg0);
 
 void InitCoalFlame(NAS *nas);

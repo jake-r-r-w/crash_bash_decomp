@@ -179,7 +179,10 @@ void func_800BA630(NAS *nas) {
     KillNAS(nas);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", InitPUGenerator_CH);
+void InitPUGenerator_CH(NAS *nas) {
+    nas->Engine->flags = 0;
+    nas->UserInfo.flags = 0x258;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BA694);
 
