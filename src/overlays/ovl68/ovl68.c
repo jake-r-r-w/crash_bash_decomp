@@ -55,7 +55,32 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B48E4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B4B34);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B51C8);
+s32 func_800B51C8(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = &base[arg0];
+
+    if (h->hero_move->jump_max != 0) {
+        if (func_80025BBC(h->hero_eng) != 0) {
+            h->hero_move->jump_max = 0;
+            h->hero_sub->unk08 = 0;
+        } else {
+            if (h->hero_ctrl & 8) {
+                return 0;
+            }
+            if (D_8005A5D8 < h->hero_eng->unk10.y + h->hero_sub->unk08) {
+                if (D_8005B5B8 == 0x7FFFFFFF) {
+                    SetHeroAction((HeroInfo *)arg0, 0x79);
+                    return 1;
+                }
+                h->hero_eng->unk10.y = D_8005A5D8;
+                h->hero_sub->unk08 = 0;
+            }
+        }
+    } else {
+        func_800863D0(arg0);
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B52C8);
 
