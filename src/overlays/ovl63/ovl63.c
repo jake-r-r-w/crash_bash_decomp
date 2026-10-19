@@ -528,7 +528,13 @@ s32 func_800C554C(s32 arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C55A4);
+s32 func_800C55A4(s32 arg0) {
+    if (!(((Ovl63Pad *)D_80051338)[arg0].unk54 & 0x8000)) {
+        return 0;
+    }
+    SetHeroAction((HeroInfo *)arg0, 0x5C);
+    return 1;
+}
 
 void func_800C55FC(s32 player) {
     EXTraceshield *ext;

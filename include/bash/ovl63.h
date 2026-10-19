@@ -214,4 +214,6 @@ extern ScriptInit D_800C6E80;
 
 void InitGlob(NAS *m);
 
+s32 func_800C55A4(s32 arg0);
+
 #endif /* BASH_OVL63_H */
