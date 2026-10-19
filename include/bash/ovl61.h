@@ -543,7 +543,7 @@ s32 func_800B85DC(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5);
 void func_800BC564(void);
 
 s32 func_800BF640(EXTengine *eng, Ovl61FuxF *self);
-/* PlotBall */
+/* D_8005A614 as seen by PlotBall (unk34 is D_8005A648, the mode). */
 typedef struct {
     u8 pad0[4];
     u32 unk4;

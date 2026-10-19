@@ -3420,6 +3420,7 @@ void PlotBall(NAS *nas) {
     }
     e2->unk10 = eng->unk10;
     e2->sub->unk68 = shade;
+    /* D_8005AA70 is the level's LevSpec: [9] is GetContour */
     y = eng->unk10.y - ((s32 (*)(EXTengine *))D_8005AA70[9])(eng);
     e2 = e2->Engine;
     if (e2 == NULL) {

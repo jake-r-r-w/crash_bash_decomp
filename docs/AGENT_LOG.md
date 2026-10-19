@@ -16,13 +16,13 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `main.exe` function matches; Phase 2's naming, data and `main.c` split
   are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2025/2537 game functions matched (50.6% of game code bytes):
-  **main.exe is complete (575/575)**; engine 355/357 (both left parked:
-  `func_8007F314`, `PlotScriptFX`); ovl61 96/97 (`PlotBall` left), ovl6a
+- 2026/2537 game functions matched (51.1% of game code bytes):
+  **main.exe and ovl61 are complete (575/575, 97/97)**; engine 355/357
+  (both left parked: `func_8007F314`, `PlotScriptFX`); ovl6a
   93/94 (`func_800B5710` parked), ovl69 68/77, ovl67 102/135, ovl60
   131/180, ovl5f 127/179, ovl62 151/216, ovl63 97/139, ovl5d 70/104,
   ovl65 64/80, ovl68 60/93 (swarm runs 2026-10-18/19); ovl5e, ovl64 and
-  ovl66 are barely started. All 564 PsyQ functions (Sony objects). 3 parked (`decomp.py
+  ovl66 are barely started. All 564 PsyQ functions (Sony objects). 4 parked (`decomp.py
   status`). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
@@ -52,7 +52,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 **Matching the slot overlays with the swarm.** Left per overlay (2026-10-19,
 `INCLUDE_ASM` count per file): ovl5e 67, ovl62 65, ovl66 65, ovl68 33,
 ovl5f 52, ovl64 50, ovl60 49, ovl63 42, ovl5d 34, ovl67 33, ovl65 16,
-ovl69 9, ovl61 1, ovl6a 1, engine 2. main.exe is complete. **Next session:
+ovl69 9, ovl6a 1, engine 2 (ovl61 is done). main.exe is complete. **Next session:
 swarm ovl5e, then ovl66/ovl64**, on the low-cost recipe; after each run, the
 "After a run" checklist in tools/swarm/README.md (`stats --run ID`, parks,
 gate failures, `fold`, this log).
@@ -78,9 +78,8 @@ rest are fixed by hand from the worker's patch (Gotchas). A park whose
 `jtbl_` names functions is a bad split (Gotchas).
 
 Hand work, between runs:
-1. The parks: `PlotBall` (ovl61, 5576 B, checkpointed), `func_800B5710`
-   (ovl6a), `func_8007F314` and `PlotScriptFX` (engine), and
-   `func_800B345C`'s hack (Open leads for each).
+1. The parks: `func_800B5710` (ovl6a), `func_8007F314` and `PlotScriptFX`
+   (engine), and `func_800B345C`'s hack (Open leads for each).
 2. Name each function as it's matched when the evidence allows.
 3. Split `main.c` into its translation units: on hold since 2026-10-15. Its
    one proven boundary (jump-table parity, 95..370) has three possible
@@ -260,6 +259,9 @@ Other:
 ## Gotchas
 
 **Tooling**
+- **`tools/dk python3 - <<'EOF' </dev/null` runs nothing:** the `</dev/null`
+  replaces the heredoc as stdin, and Python exits quietly on an empty
+  script. Write the script to a file in `scratch/` and run that.
 - **After a resplit or rename, run `decomp.py index`.** Since 2026-10-19 it
   checks every entry against the symbol files and `src/`: a renamed
   function gets its symbol's name (before, 51 entries kept their old
@@ -452,6 +454,16 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-19 (PlotBall by hand):** matched (f0a4117d, 5576 B), from the
+  swarm checkpoint at structure 777/1394; ovl61 is complete. No hacks, no
+  permuter: each step came from the cc1 dumps (CSE's canonical register,
+  local-alloc ties, global priorities) and small test files compiled with
+  cc1. The keys were `s16` locals (gcc 2.8 extends a short when it's
+  read, not set), splitting `done` into an `s32` flag and an `s16`, a
+  `static inline` for the player-to-side chain, and reading `D_8005A648`
+  and the `GetContour` hook as aggregate members so stores stay ordered
+  (that removed the checkpoint's pointer temps and gotos). Eight Diff
+  patterns rows; `D_8005AA70` is the level's `LevSpec` (ARCHITECTURE.md).
 - **2026-10-19 (permuter + hand, near misses):** `swarm.mjs permute --only
   ovl67:800B39C0,ovl69:800B7458`, stopped by hand after 32 of 60 min.
   `func_800B39C0` went from registers 29/145 to 3/145 (a `do { } while

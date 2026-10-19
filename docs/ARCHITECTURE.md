@@ -434,6 +434,13 @@ signature alone is not enough.
     `EXTmotion`), `FreeGrabbedObject(player, bool)` (`0x800BB674`) and
     `AlignGrabBall(eng, motion, object)` (`0x800BB924`, called by `PlotBall`
     with `nas->Engine`, the 0x800 extension and `nas->FUX`).
+  - `PlotBall` calls three hooks that `func_800B36CC` sets per mode:
+    `D_800C1C8C` (`func_800B4880` or `func_800B4AE8`: an `s16` angle or -1,
+    like the leak's `s16 AR_*_BounceOnBounds(EXTengine *, s32)`; the
+    match needs the `s16` return), `D_800C1C90` (`func_800C0A74`,
+    `func_800C096C`, `func_800B4D9C`: `AR_*_TestOutOfBounds(EXTengine *,
+    EXTobject *, bool)`) and `D_800C1C94` (`func_800B4EFC`, `func_800C08C8`:
+    `AR_*_TestLaunchBounds(EXTengine *, EXTobject *)`).
 - **Ambiguous, left unnamed:**
   - Both of the leak's `Roo_FireRocket` declarations match real functions:
     `func_800BFFF4(eng)` and `func_800C02AC(eng, dir)` both spawn
@@ -499,6 +506,7 @@ Descriptive names (the leak doesn't name these), with types in `bash/main.h`,
 | `RandomSeedA` / `RandomSeedB` | `0x800517B8` / `0x800517BC` | `s32` | `Random`'s state; `SetRandomSeed(a, b)` (`0x800155E8`) sets both. |
 | `AtanTable` | `0x800517C0` | `s16[]` | `get_angle`'s lookup table. |
 | `SfxTable` | `0x80064508` | not typed yet | 2-byte entries per sound id, read by `PlaySfx`. |
+| `LevelSpec` | `0x8005AA70` | the leak's `LevSpec` (declared `s32[11]`) | 11 words of level hooks, the size and order of `LevSpec`: main.exe calls `[3]` (`D_8005AA7C`), `[5]` (`D_8005AA84`) and `[6]` (`D_8005AA88`), the engine `[10]` (`FinishQuick`), and `func_80025F44` calls `[9]` (`D_8005AA94`, `GetContour`) when it's set. Arkenoid's `func_800B36CC` sets `[9]` to `func_800BFD9C` and `PlotBall` calls it. |
 | `SfxVoicePool` / `SfxActiveVoices` | `0x800590D0` / `0x80059614` | not typed yet | The voice pool: free list at `+0x540`, active list at `+0x544` (`SfxActiveVoices`). |
 
 ## Engine types
