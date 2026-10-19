@@ -16,10 +16,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `main.exe` function matches; Phase 2's naming, data and `main.c` split
   are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2024/2537 game functions matched (50.5% of game code bytes):
+- 2025/2537 game functions matched (50.6% of game code bytes):
   **main.exe is complete (575/575)**; engine 355/357 (both left parked:
   `func_8007F314`, `PlotScriptFX`); ovl61 96/97 (`PlotBall` left), ovl6a
-  93/94 (`func_800B5710` parked), ovl69 68/77, ovl67 101/135, ovl60
+  93/94 (`func_800B5710` parked), ovl69 68/77, ovl67 102/135, ovl60
   131/180, ovl5f 127/179, ovl62 151/216, ovl63 97/139, ovl5d 70/104,
   ovl65 64/80, ovl68 60/93 (swarm runs 2026-10-18/19); ovl5e, ovl64 and
   ovl66 are barely started. All 564 PsyQ functions (Sony objects). 3 parked (`decomp.py
@@ -51,7 +51,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 **Matching the slot overlays with the swarm.** Left per overlay (2026-10-19,
 `INCLUDE_ASM` count per file): ovl5e 67, ovl62 65, ovl66 65, ovl68 33,
-ovl5f 52, ovl64 50, ovl60 49, ovl63 42, ovl5d 34, ovl67 34, ovl65 16,
+ovl5f 52, ovl64 50, ovl60 49, ovl63 42, ovl5d 34, ovl67 33, ovl65 16,
 ovl69 9, ovl61 1, ovl6a 1, engine 2. main.exe is complete. **Next session:
 swarm ovl5e, then ovl66/ovl64**, on the low-cost recipe; after each run, the
 "After a run" checklist in tools/swarm/README.md (`stats --run ID`, parks,
@@ -79,8 +79,8 @@ rest are fixed by hand from the worker's patch (Gotchas). A park whose
 
 Hand work, between runs:
 1. The parks: `PlotBall` (ovl61, 5576 B, checkpointed), `func_800B5710`
-   (ovl6a), `func_8007F314` and `PlotScriptFX` (engine), `func_800B39C0`
-   (ovl67), and `func_800B345C`'s hack (Open leads for each).
+   (ovl6a), `func_8007F314` and `PlotScriptFX` (engine), and
+   `func_800B345C`'s hack (Open leads for each).
 2. Name each function as it's matched when the evidence allows.
 3. Split `main.c` into its translation units: on hold since 2026-10-15. Its
    one proven boundary (jump-table parity, 95..370) has three possible
@@ -101,13 +101,6 @@ and current tools).
 
 ## Open leads
 
-- **`func_800B39C0` (ovl67, 580 B): swarm checkpoint at registers 3/145**
-  (blocks 31/32) since 2026-10-19, from 29/145. A permuter find, ported
-  by hand: `do { ret = 0xC00; } while (0);` in the `dx < -r` branch fixed
-  the s0/s1 swap. Left: block 29 (0x208-0x210), where the `D_800C418C + s0`
-  element pointer whose `lh`s feed `get_angle` is a2 in ours and v0 in the
-  target. Next: `swarm.mjs permute --only ovl67:800B39C0` (it starts from
-  the checkpoint) or the `-dl` dump for why the pointer gets a2.
 - **`func_800B7458` (ovl69, 1360 B), parked 2026-10-19 at registers 4/340**
   (blocks 18/20; C under `#ifdef NON_MATCHING`, `block` note has the tries).
   Only `v` differs: one variable for the `D_800BA740` test and the
@@ -459,11 +452,13 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
-- **2026-10-19 (permuter, near misses):** `swarm.mjs permute --only
+- **2026-10-19 (permuter + hand, near misses):** `swarm.mjs permute --only
   ovl67:800B39C0,ovl69:800B7458`, stopped by hand after 32 of 60 min.
   `func_800B39C0` went from registers 29/145 to 3/145 (a `do { } while
-  (0)` around one assignment, found in the first minute). It was saved by
-  hand as its checkpoint, because a stopped run saves nothing.
+  (0)` around one assignment, found in the first minute), then matched
+  by hand (ca3a674c): `D_800C418C[i]` indexed in place in the tail, not
+  through the loop's pointer (Diff patterns). Gated in the swarm's `h1`
+  clone because the main checkout had another session's edits.
   `func_800B7458` was skipped: its checkpoint no longer applies (Open
   leads).
 - **2026-10-19 (ovl68, low cost):** run 20261019171842, stopped by hand
