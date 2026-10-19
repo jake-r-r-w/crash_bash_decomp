@@ -380,8 +380,12 @@ def locate_def(name):
     return None
 
 
-def extract_function(text, name):
-    m = func_def_regex(name).search(text)
+def extract_function(text, name, top=False):
+    """NAME's definition with its body. TOP: only one starting at column 0 (the regex also takes an
+    indented `if (name(x) != 0) {` call line, which comes first when a caller precedes the
+    definition)."""
+    m = next((m for m in func_def_regex(name).finditer(text)
+              if not top or not text[m.start()].isspace()), None)
     if not m:
         return None
     depth, i = 0, m.end() - 1
@@ -1759,6 +1763,38 @@ def matched_in_worktree(path="src"):
     return gone - back
 
 
+DEF_CANDIDATE = re.compile(r"^[A-Za-z_][^;#{}\n]*?\b(\w+)\s*\)?\s*\(", re.M)
+
+
+def stray_edits(old, new, names):
+    """C functions defined in both OLD and NEW (one file's text) whose bodies change on a line that
+    doesn't mention any of NAMES. A match's commit may touch other functions only to fix calls to
+    it; any other edit (2026-10-19: `goto done` -> `return 1` in a matched neighbour) is out of
+    scope, and the full build would only report it as a size or data difference."""
+    out = []
+    for fn in sorted({m.group(1) for m in DEF_CANDIDATE.finditer(new)} - set(names)):
+        a, b = extract_function(old, fn, top=True), extract_function(new, fn, top=True)
+        if a is None or b is None or a == b:
+            continue
+        changed = [l[1:] for l in difflib.unified_diff(a.splitlines(), b.splitlines(), lineterm="", n=0)
+                   if l[:1] in "+-" and not l.startswith(("+++", "---"))]
+        if any(not any(re.search(rf"\b{re.escape(n)}\b", l) for n in names) for l in changed if l.strip()):
+            out.append(fn)
+    return out
+
+
+def edited_in_worktree(names, path="src"):
+    """stray_edits over every C file the working tree changes under PATH compared with HEAD."""
+    out = []
+    for p in run(["git", "diff", "HEAD", "--name-only", "--", path]).stdout.split():
+        if not p.endswith(".c") or not os.path.exists(p):
+            continue
+        old = run(["git", "show", f"HEAD:{p}"])
+        if old.returncode == 0:
+            out += [f"{fn} ({p})" for fn in stray_edits(old.stdout, read(p), names)]
+    return out
+
+
 def cmd_done(a):
     """Validation gate for one hand-matched function: scope, lint, function match, full build.
     Only after all four pass is it recorded (and committed with --commit)."""
@@ -1774,6 +1810,11 @@ def cmd_done(a):
     if others:
         die(f"the working tree also replaces INCLUDE_ASM for {', '.join(others)}: one function per "
             "commit. Restore those INCLUDE_ASM lines (keep the C elsewhere) and match them separately.")
+    # ... and other functions' C changes only where it calls this one
+    stray = edited_in_worktree({name, e["name"], e["orig"]})
+    if stray:
+        die(f"the working tree also edits {', '.join(stray)} on lines that don't call {name}: "
+            "one function per commit. Restore that C (git diff HEAD -- src) and commit it separately.")
     # its INCLUDE_ASM must be gone: with it still there the asm "matches" itself
     if still_asm(src, name, e["name"], e["orig"]):
         die(f"{src} still has the INCLUDE_ASM line for {name}: replace it with the C first "

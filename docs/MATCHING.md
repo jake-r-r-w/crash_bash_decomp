@@ -20,7 +20,7 @@ flowchart TD
 
     subgraph gate ["decomp.py done gate"]
         direction TB
-        g1["Scope: only this function's INCLUDE_ASM replaced"] --> g2["Lint: no m2c leftovers; register pins / asm barriers need --hack"]
+        g1["Scope: only this function's INCLUDE_ASM replaced; other C edited only at its calls"] --> g2["Lint: no m2c leftovers; register pins / asm barriers need --hack"]
         g2 --> g3["Function: compiled words equal the target"]
         g3 --> g4["Full build: clean rebuild of the exe and all 15 overlays is byte-identical"]
     end
@@ -1218,7 +1218,7 @@ The rules found so far, each one checked against a trace:
 
 | Check | Fails when |
 |---|---|
-| Scope | the working tree replaces any other function's `INCLUDE_ASM` (one function per commit) |
+| Scope | the working tree replaces any other function's `INCLUDE_ASM` (one function per commit), or changes another function's C on a line that doesn't call this one (fixing calls to it is allowed; 2026-10-19) |
 | Still asm | the function's own `INCLUDE_ASM` line is still in its file (its asm would "match" itself; `try` prints `STILL-ASM`) |
 | Lint | the function still contains `M2C_*` macros, m2c's `?` type, or inline asm with instructions |
 | Hacks | a register pin or an `asm("")` barrier is used without `--hack "why"` |

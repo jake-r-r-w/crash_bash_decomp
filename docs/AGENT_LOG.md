@@ -333,12 +333,6 @@ Other:
 ## Gotchas
 
 **Tooling**
-- **A worker patch can edit other functions' C, and the gate's scope
-  check doesn't see it.** `Roo_ChangeDirOnEdge`'s patch also turned
-  `goto done` into `return 1` in the matched `func_800BE864`, which made the
-  overlay 84 bytes short; the worker called the mismatch pre-existing. When
-  `done` says the function matches but the full build is off, read the
-  patch for hunks outside the function first.
 - **Removing a function symbol leaves it in the index.** `decomp.py index`
   adds and updates entries but never drops them, so after a resplit that
   removes functions their `.decomp/functions.json` and `state.json` keys
@@ -533,6 +527,10 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-19 (gate):** `done` now refuses other functions' C edited on
+  lines that don't call the match (`stray_edits`; caught the ovl60 case,
+  0 hits over the last 150 match commits), and `extract_function(top=True)`
+  skips an indented call line it used to take for the definition.
 - **2026-10-19 (hand):** ovl60's two gate failures matched from the
   workers' C: `func_800BC184` (6ff3b7da; the header already had the slot
   field, plus a pad view) and `Roo_ChangeDirOnEdge` (b0e170e0; without its
