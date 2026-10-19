@@ -1002,7 +1002,56 @@ kill:
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C0DA0);
+void func_800C0DA0(EXTengine *arg0) {
+    NAS *nas;
+    Ovl5fExt1605 *ext;
+    SLONG_XYZ *pos;
+    u8 *p;
+    s32 saved;
+    s32 x;
+    s32 z;
+    s32 d;
+    s32 i;
+    s32 lim;
+    HeroInfo *h;
+
+    saved = arg0->unk10.y;
+    arg0->unk10.y = 0x12C;
+    pos = &arg0->unk10;
+    p = D_800537AC;
+    nas = SpawnNASById(pos->x, pos->y, pos->z, 0x1605, 0x11);
+    if (nas != NULL) {
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL) {
+            ext->unkC = 0;
+            ext->unk18 = 0x100;
+            if (p != NULL) {
+                ext->unk20 = 5;
+                nas->Engine->sub->unk6C = p;
+            } else {
+                ext->unk20 = 1;
+            }
+            ext->unk28 = 0;
+            nas->InitDelete(nas);
+        }
+    }
+    lim = 0x300;
+    i = 0;
+    h = Heroes;
+    x = arg0->unk10.x;
+    z = arg0->unk10.z;
+    for (; i < 4; i++, h++) {
+        d = x - h->hero_eng->unk10.x;
+        if (d >= -0x300 && d <= lim) {
+            d = z - h->hero_eng->unk10.z;
+            if (d >= -0x300 && d <= lim) {
+                func_800B6354(i, 0x3C);
+            }
+        }
+    }
+    arg0->unk10.y = saved;
+    PlaySfx(0x505, NULL, NULL, 0x1000, 0x1E00, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C0F24);
 

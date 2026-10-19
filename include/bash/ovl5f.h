@@ -352,6 +352,8 @@ void func_800BAF64(s32 arg0);
 
 s32 func_800BF548(EXTengine *eng);
 
+void func_800C0DA0(EXTengine *arg0);
+
 void func_800C1F44(void);
 
 void func_800C4320(NAS *nas, s32 id);
