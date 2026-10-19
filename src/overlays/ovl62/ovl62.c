@@ -707,7 +707,23 @@ void func_800D2EB0(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2F48);
+void func_800D2F48(s32 player) {
+    HeroInfo *base = Heroes;
+    HeroInfo *info = base + player;
+    s32 *ext = FindExtension(info->hero, 0x20000000);
+
+    if (ext != NULL && func_800D2D2C(player) == 0 && info->hero_move != NULL) {
+        func_800BBF2C(player);
+        func_800D0A6C(player);
+        ext[4] -= 0xF;
+        if (ext[4] < 0) {
+            ext[4] = 0;
+        }
+        func_8008502C(player);
+        func_800CD214(player);
+        func_800C0888(&info->hero_eng->unk10, player);
+    }
+}
 
 void func_800D3018(s32 player) {
     HeroInfo *base = Heroes;

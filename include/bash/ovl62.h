@@ -97,6 +97,8 @@ NAS *func_800CB5F4(void);
 
 void func_800D2C38(s32 player);
 
+void func_800D2F48(s32 player);
+
 void func_800D3018(s32 player);
 
 #endif /* BASH_OVL62_H */
