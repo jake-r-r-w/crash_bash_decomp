@@ -351,7 +351,46 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BE914);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BEBC0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BF0F8);
+s32 func_800BF0F8(u8 *arg0, u32 arg1) {
+    u32 i;
+    s32 d;
+    s32 j;
+    u16 f;
+
+    for (i = 0; ; i++) {
+        if (i >= 4) {
+            return -1;
+        }
+        if (i != arg1 && Heroes[i].hero_mode != 0x61) {
+            d = func_8008CEB0(arg0, (u8 *)Heroes[i].hero_eng + 0x10);
+            if (abs(*(s32 *)(arg0 + 4) - *(s32 *)((u8 *)Heroes[i].hero_eng + 0x14)) > 0x180) {
+                break;
+            }
+            if (d < 0x24000) {
+                if (Heroes[i].hero_mode != 0x5D) {
+                    SetHeroAction((HeroInfo *)i, 0x5D);
+                }
+                if (G63B->unk34 == 0x17 && (G63B->unk32 & 0x80) && G63B->unk5C[i] == 0 && !(G63B->unk30 & 0x801)) {
+                    f = 1;
+                    if (G63B->unk4 & 0x800) {
+                        f = 0x201;
+                    }
+                    G63B->unk30 |= f;
+                    G63B->unk60 = 0;
+                    for (j = 0; j < 4; j++) {
+                        Heroes[j].hero_status |= 0x100;
+                        if (G63B->unk5C[j] != 0) {
+                            func_80026980(Heroes[j].hero);
+                        }
+                    }
+                    D_800AD12C = 1;
+                }
+                return i;
+            }
+        }
+    }
+    return -1;
+}
 
 void InitRaceMissile(NAS *m) {
     RaceMissileExt *ext;

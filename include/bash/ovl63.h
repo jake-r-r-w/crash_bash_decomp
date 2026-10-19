@@ -121,6 +121,19 @@ typedef struct Ovl63GameView {
     /* 0x34 */ s16 unk34;
 } Ovl63GameView;
 #define G63 ((Ovl63GameView *)D_8005A614)
+/* D_8005A614 as seen by func_800BF0F8. */
+typedef struct Ovl63GameView2 {
+    /* 0x00 */ u8 unk0[4];
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ u8 unk8[0x30 - 0x8];
+    /* 0x30 */ u16 unk30;
+    /* 0x32 */ u16 unk32;
+    /* 0x34 */ s16 unk34;
+    /* 0x36 */ u8 unk36[0x5C - 0x36];
+    /* 0x5C */ u8 unk5C[4];
+    /* 0x60 */ u8 unk60;
+} Ovl63GameView2;
+#define G63B ((Ovl63GameView2 *)D_8005A614)
 
 extern s32 D_800C692C;
 extern s32 D_800C695C;
@@ -317,6 +330,8 @@ extern s32 D_800C66E8;
 s32 func_800B35CC(s32 arg0);
 
 void func_800B8F04(s32 arg0);
+
+s32 func_800BF0F8(u8 *arg0, u32 arg1);
 
 s32 func_800C5978(s32 player);
 
