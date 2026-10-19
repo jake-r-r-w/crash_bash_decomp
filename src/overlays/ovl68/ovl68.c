@@ -266,7 +266,11 @@ void func_800BAE20(void) {
 void func_800BAE28(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BAE30);
+void func_800BAE30(s32 arg0) {
+    Heroes[arg0].hero_move->jump_max = 0;
+    Heroes[arg0].hero_move->velocity_enable = 1;
+    SetHeroSeq((HeroInfo *)arg0, 0x61);
+}
 
 s32 func_800BAE84(void) {
     return 0;

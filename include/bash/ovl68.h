@@ -99,6 +99,8 @@ void func_800BAC98(s32 arg0);
 
 void func_800BADD4(s32 arg0);
 
+void func_800BAE30(s32 arg0);
+
 void func_800BB134(s32 arg0);
 
 s32 func_800BB260(s32 arg0);
