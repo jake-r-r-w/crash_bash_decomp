@@ -9,6 +9,8 @@
 #include "bash/nas.h"
 
 extern u32 D_800CA48C[];
+typedef struct { u16 v, pad; } RockTblEnt;
+extern RockTblEnt D_800CA6D4[];
 extern u8 D_80053774[];
 extern u8 D_800C9EE8[];
 extern u8 D_800C9EFC[];

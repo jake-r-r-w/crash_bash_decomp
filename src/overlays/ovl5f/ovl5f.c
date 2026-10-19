@@ -1015,7 +1015,29 @@ void InitPeriscopeGun(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitPeriscope);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitRock_TA);
+void InitRock_TA(NAS *nas) {
+    MapTriggerInfo *info;
+    EXT *ext;
+    subengine *sub;
+    u32 val;
+
+    info = nas->trigger->InfoStruct;
+    val = info->val1;
+    nas->UserInfo.status = 1;
+    nas->UserInfo.user2 = val;
+    ext = AddExtension(nas, 0x38, 0x10000000);
+    if (ext == NULL) {
+        KillNAS(nas);
+        return;
+    }
+    nas->FUX = ext;
+    sub = nas->Engine->sub;
+    sub->unk6C = *(void **)D_80058AD0;
+    sub->unk74 = D_800CA6D4[info->val1].v;
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 void PlotBigApple(NAS *nas) {
 }
