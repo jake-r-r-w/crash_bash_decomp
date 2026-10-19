@@ -599,7 +599,35 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C0F5C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotTNTCrate);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitDinoEgg);
+void InitDinoEgg(NAS *m) {
+    EXTdinoegg *ext;
+    EXTengine *e;
+
+    ext = AddExtension(m, 0x34, 0x10000000);
+    if (ext != NULL) {
+        ext->anim = (EXTanimator *)func_80024E30(m, &D_800C6D14);
+        m->Engine->unk5D = 0;
+        m->Engine->unk5C = 1;
+        m->Engine->sub->unk74 = 0x2005;
+        m->Engine->sub->unk6C = *(s32 *)D_80058AD0;
+        ext->NasStatus = 0;
+        ext->angcounter = 0;
+        ext->yang = 0;
+        ext->shadow = NULL;
+        e = AddEngine(m, 2);
+        if (e != NULL) {
+            ext->shadow = e;
+            e->sub->unk6C = D_80052F5C;
+            e->sub->unk74 = 0x2001;
+            e->unk5C = 1;
+            e->unk5D = 0;
+            e->unk10 = m->Engine->unk10;
+            e->sub->unk76 = 0x800;
+            e->sub->flags |= 0x40008041;
+        }
+        D_800C6924++;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotDinoEgg);
 

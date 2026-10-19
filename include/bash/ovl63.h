@@ -258,6 +258,9 @@ NAS *func_800C5C64(s32 arg0);
 
 void InitRaceMissile(NAS *m);
 
+extern ScriptInit D_800C6D14;
+extern s32 D_800C6924;
+
 void InitRaceSmokeBoostWater(NAS *nas);
 
 void InitRaceGreenSmokeBoost(NAS *nas);
@@ -427,6 +430,8 @@ void func_800B5FFC(Ovl63EaseCam *c, s32 *pos);
 void func_800BB794(s32 player);
 
 s32 func_800BCC20(s32 arg0);
+
+void InitDinoEgg(NAS *m);
 
 s32 func_800C4E54(s32 a, s32 b);
 
