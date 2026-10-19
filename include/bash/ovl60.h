@@ -38,7 +38,8 @@ typedef struct {
     HeroInfo *hero;
     u8 unk4[6];
     s16 unkA;
-    u8 unkC[4];
+    u8 unkC[2];
+    u16 unkE;
     u16 unk10;
     s16 unk12;
     s16 unk14;

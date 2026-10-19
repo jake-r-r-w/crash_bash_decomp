@@ -360,7 +360,26 @@ void func_800C0C34(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     func_8008D5D4((arg1 << 9) - 0x700, D_8005A5D8 - 0x100, (arg2 << 9) - 0x800, arg3, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", SquareIsFreeForRoo);
+bool SquareIsFreeForRoo(s32 arg0, s32 arg1) {
+    Ovl60Cell *p;
+    u16 t;
+
+    if ((u32)arg0 >= 8 || (u32)arg1 >= 8) {
+        return 1;
+    }
+    p = &D_800C53DC[arg0][arg1];
+    if (p == NULL) {
+        return 0;
+    }
+    if (p->unkE != 0) {
+        return 0;
+    }
+    t = p->unk10;
+    if (t != 0 && t != 5) {
+        return 0;
+    }
+    return 1;
+}
 
 bool Roo_Bounce(NAS *nas) {
     if (++D_800C5304 < 14) {
