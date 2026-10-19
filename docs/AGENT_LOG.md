@@ -14,10 +14,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1674/2541 game functions matched: **main.exe is complete (575/575)**;
+- 1676/2541 game functions matched: **main.exe is complete (575/575)**;
   engine overlay 2 left, both parked (`func_8007F314`, `PlotScriptFX`),
   ovl61 96/97 (two 2026-10-18 swarm runs and four hand matches; `PlotBall` left),
-  ovl60 115/166, ovl62 121/186 (2026-10-19 swarm runs), ovl67 101/135, ovl69 68/77, ovl6a 93/94 (2026-10-18 swarm runs and hand fixes;
+  ovl60 117/166, ovl62 121/186 (2026-10-19 swarm runs), ovl67 101/135, ovl69 68/77, ovl6a 93/94 (2026-10-18 swarm runs and hand fixes;
   `func_800B5710` parked at 120/121 blocks); all 564 PsyQ functions (Sony
   objects). 3 parked (`decomp.py status`). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
@@ -51,8 +51,8 @@ a match, 400-599 B big $0.97. Failed: `func_800BC184` (a struct got
 duplicate members `unk4`/`unk6` from another match's header edit; retry)
 and `Roo_ChangeDirOnEdge` (matches alone, full build 84 bytes short:
 rodata/data, like ovl6a's `func_800B488C`). Fold: 40 rows (10 repeats
-dropped). Next: ovl5f/ovl63 with the same recipe; the two failures by
-hand.
+dropped). Both failures matched by hand the same day (6ff3b7da, b0e170e0).
+Next: ovl5f/ovl63 with the same recipe.
 
 **ovl62 (2026-10-19, run 20261019065611, all workers on opus):** 60 min,
 $46.59: 117 matched ($0.40 each), 0 parked, 0 failed; 65 left (about 40 at
@@ -114,7 +114,7 @@ parked. **Retry parks with this recipe after tool upgrades.**
 
 **Start of next session: matching.** Left per overlay (2026-10-19): ovl5f
 147, ovl63 123, ovl5d 100, ovl68 83, ovl65 69,
-ovl5e 67, ovl66 67, ovl62 65, ovl60 51, ovl64 51, ovl67 34, ovl69 9, ovl61 1, ovl6a 1, engine
+ovl5e 67, ovl66 67, ovl62 65, ovl60 49, ovl64 51, ovl67 34, ovl69 9, ovl61 1, ovl6a 1, engine
 2 (count `INCLUDE_ASM` per file). The untouched overlays suit the swarm
 (item 1b's recipe, `--seg overlays/NAME`), then the post-run checklist.
 main.exe is fully matched. The file splits are done as far as the evidence
@@ -333,6 +333,12 @@ Other:
 ## Gotchas
 
 **Tooling**
+- **A worker patch can edit other functions' C, and the gate's scope
+  check doesn't see it.** `Roo_ChangeDirOnEdge`'s patch also turned
+  `goto done` into `return 1` in the matched `func_800BE864`, which made the
+  overlay 84 bytes short; the worker called the mismatch pre-existing. When
+  `done` says the function matches but the full build is off, read the
+  patch for hunks outside the function first.
 - **Removing a function symbol leaves it in the index.** `decomp.py index`
   adds and updates entries but never drops them, so after a resplit that
   removes functions their `.decomp/functions.json` and `state.json` keys
@@ -527,6 +533,10 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-19 (hand):** ovl60's two gate failures matched from the
+  workers' C: `func_800BC184` (6ff3b7da; the header already had the slot
+  field, plus a pad view) and `Roo_ChangeDirOnEdge` (b0e170e0; without its
+  patch's stray edit to `func_800BE864`).
 - **2026-10-19 (ovl60 swarm):** 113 matched in 60 min ($46.61, 0 parked,
   2 gate failures to retry); 40 Diff pattern rows folded.
 - **2026-10-19 (ovl62 swarm):** 117 matched in 60 min ($46.59, 0 parked) on
