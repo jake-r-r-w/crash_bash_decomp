@@ -315,7 +315,15 @@ void func_800BCA18(HeroInfo *hero) {
     SetHeroSeq(hero, 0x4E);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BCA38);
+void func_800BCA38(s32 arg0) {
+    func_800BA960(arg0);
+    func_800BC878(arg0);
+    func_800BA810(arg0);
+    func_8008502C(arg0);
+    if ((Heroes[arg0].hero_status & 0x200) && Heroes[arg0].hero_mode != 0x68) {
+        SetHeroAction((HeroInfo *)arg0, 0x68);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BCAC0);
 
