@@ -109,10 +109,12 @@ and current tools).
   local `w * 4` is tied to it) where the target has v1. It has no a1
   conflict, and `prune_preferences` keeps a preference the allocno holds
   itself, so only removing the preference helps: an address through a
-  multi-set pointer (`h`) does that and gets both `v` uses right, but then
-  local-alloc puts the `D_8004DDBC` base in a1 and `w` in a2 (target: the
-  reverse). Next: keep the address global but tied to `w`, or find the
-  local-alloc priority (refs/life) that allocates `w` before the base.
+  multi-set pointer (`h = (u8 *)(w * 4 + (u32)row); v = *(s32 *)h;`) does
+  that and gets both `v` uses right, but then local-alloc ranks the
+  `D_8004DDBC` base (4 refs over ~3 insns) above `w`'s lhu/-0x101/<<2
+  chain (6 over ~9; the target ties the address in too, 8+ refs), so they
+  swap a1/a2. Computing the row before `w` reshuffles sched1 (29 differ).
+  Next: more refs or a shorter sched1 life for `w`'s chain with `h` global.
 - **`func_800B345C` (ovl63, 30735f0c) still matches only with a hack** (no-op
   `h++; h--;` and `p++; p++; p--;` in its goto loop; `done` now refuses such runs
   without --hack). Reworked 2026-10-19, not finished. Without the no-ops it is

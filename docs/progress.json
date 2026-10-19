@@ -14,7 +14,7 @@
   },
   {
    "name": "func_800B7458",
-   "note": "STAGE registers 4/340 (blocks 18/20, from the swarm checkpoint). Only v (D_800BA740 test + D_8004DDBC row[w] value, one multi-block pseudo) is a1, target v1: global.c set_preference gives it a1 from the row[w] load's dying a1 address (local w*4 tied to the address); no conflict with a1 and its own preference can't be masked (prune_preferences). Tried: splitting v (region 1 then local -> v0), merging v with val/type/c, three spellings of row[w], address through h (kills the preference, v1 right, but w/base swap a1/a2 in local-alloc). Next: an address that is a global pseudo yet tied to w's a1, or what local-alloc priority puts w before the D_8004DDBC base. C under #ifdef NON_MATCHING.",
+   "note": "STAGE registers 4/340 (blocks 18/20). Only v (D_800BA740 test + row[w] value, one global pseudo) is a1, target v1: set_preference (global.c, every SET) gives it a1 from the row[w] load whose address dies in a1. Removing that preference needs the address in a global pseudo: h = (u8 *)(w * 4 + (u32)row); v = *(s32 *)h; (2026-10-19) gives v v1 in both places and h a1, but local-alloc then ranks the D_8004DDBC base quantity (4 refs over ~3 insns) above w's lhu/-0x101/<<2 chain (6 refs over ~9; in the target the address is tied in, so w has 8+ refs) and swaps them a1/a2; h = D_8005A614 at the end also schedules differently. A row local computed before w reshuffles sched1 (29 differ). Next: raise w's quantity priority (refs or a shorter sched1 life) with h global, or another way v loses its a1 preference.",
    "seg": "overlays/ovl69/ovl69",
    "size": 1360
   },
@@ -25,9 +25,9 @@
    "size": 2836
   }
  ],
- "commit": "5ddf52be",
+ "commit": "29d64e81",
  "game": "SCUS_945.70",
- "generated": "2026-10-19T17:07:14Z",
+ "generated": "2026-10-19T17:11:50Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -134558,7 +134558,7 @@
    }
   },
   {
-   "commit": "5ddf52be",
+   "commit": "29d64e81",
    "data_b": 4004,
    "data_tb": 606943,
    "game_all_f": 2537,
@@ -134571,7 +134571,7 @@
    "lib_b": 122112,
    "lib_f": 564,
    "lib_tb": 122112,
-   "ts": "2026-10-19T17:07:14Z",
+   "ts": "2026-10-19T17:11:50Z",
    "units": {
     "engine": [
      121412,
