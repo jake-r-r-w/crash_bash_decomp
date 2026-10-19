@@ -671,6 +671,11 @@ def unit_cfg(cfg, src):
     """project.mk's settings with the Makefile's per-unit overrides for `src` applied
     (lines `build/<src>.o: VAR = value`)."""
     out = dict(cfg)
+    if os.path.exists("Makefile"):
+        # the Makefile's default post-maspsx filter (not in project.mk, which write_mk rewrites)
+        m = re.search(r"^ASPSX_FILL\s*\?=\s*(.*?)\s*$", read("Makefile"), re.M)
+        if m and "ASPSX_FILL" not in out:
+            out["ASPSX_FILL"] = m.group(1).replace("$(PYTHON)", "python3")
     if src and os.path.exists("Makefile"):
         pat = re.compile(rf"^build/{re.escape(src)}\.o:\s*([A-Z_0-9]+)\s*:?=\s*(.*?)\s*$")
         for line in read("Makefile").splitlines():

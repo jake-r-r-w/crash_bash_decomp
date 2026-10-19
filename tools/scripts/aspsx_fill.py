@@ -28,7 +28,13 @@ matched function of the two units.
 `j` from the `j`'s slot, where FSF 2.7.2's reorg (our cc1) takes the `beq` target's first
 instruction. Redone for the one shape func_8002D4F4 shows.
 
-Only units built with gcc 2.7.2 use this (Makefile: ASPSX_FILL)."""
+Units built with gcc 2.7.2 use all of it (Makefile: ASPSX_FILL). gcc 2.8.1 units use step 1
+without stores (--jumps-only, the Makefile's default). 2.8.1's reorg fills nearly every slot
+itself; of the ten `j` slots it leaves to the assembler in the matched 2.8.1 code (2026-10-19),
+nine follow a store (sw, swr, swc2) and keep their nop in retail, and one is the text epilogue's
+`j $31` in a function with a frame but no saved registers (mips_epilogue_delay_slots gives it no
+delay slot), which ASPSX fills with the stack restore before it (func_800C0F5C:
+`addiu sp,-24; jr ra; addiu sp,24`). maspsx writes a nop in all ten."""
 import re
 import sys
 
@@ -37,6 +43,7 @@ BRANCHES = {"j", "jal", "jr", "jalr", "b", "bal", "beq", "bne", "beqz", "bnez", 
 NO_MOVE = BRANCHES | {"nop", "mult", "multu", "div", "divu", "mflo", "mfhi", "mtlo", "mthi", "la",
                       "lw", "lh", "lhu", "lb", "lbu", "lwl", "lwr", "lwc2", "break", "syscall"}
 STORES = {"sw", "sh", "sb"}
+MEM_WRITES = STORES | {"swl", "swr", "swc2"}
 INSN = re.compile(r"^\s*([a-z][a-z0-9.]*)\s*(.*?)\s*(#.*)?$")
 
 
@@ -84,7 +91,8 @@ def load_via_dest(lines):
     return out
 
 
-def fill(lines):
+def fill(lines, stores=True):
+    """Step 1. STORES=False (gcc 2.8.1 units): leave a slot whose candidate writes memory."""
     out = []
     i = 0
     while i < len(lines):
@@ -103,6 +111,7 @@ def fill(lines):
             before = insn(out[q]) if q >= 0 else None
             target = ins[1].strip()
             ok = (prev and prev[0] not in NO_MOVE and not (before and before[0] in BRANCHES)
+                  and (stores or prev[0] not in MEM_WRITES)
                   and target not in regs_written(*prev)
                   and not (prev[0] == "li" and not fits16(prev[1].split(",")[1].strip())))
             if ok:
@@ -430,4 +439,7 @@ def fill_all_branches(lines):
 
 if __name__ == "__main__":
     text = sys.stdin.read().split("\n")
-    sys.stdout.write("\n".join(fill_all_branches(fill(load_via_dest(refill_from_jump(text))))))
+    if "--jumps-only" in sys.argv[1:]:
+        sys.stdout.write("\n".join(fill(text, stores=False)))
+    else:
+        sys.stdout.write("\n".join(fill_all_branches(fill(load_via_dest(refill_from_jump(text))))))

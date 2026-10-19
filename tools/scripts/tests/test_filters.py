@@ -91,6 +91,22 @@ class FillJumpSlots(unittest.TestCase):
             nop  # DEBUG: branch/jump""")
         self.assertEqual(aspsx_fill.fill(src), src)
 
+    def test_281_frame_only_epilogue_is_filled(self):  # func_800C0F5C (gcc 2.8.1, --jumps-only)
+        out = aspsx_fill.fill(lines("""
+            subu $sp,$sp,24
+            addu $sp,$sp,24
+            j $31
+            nop  # DEBUG: branch/jump"""), stores=False)
+        self.assertEqual(norm(out), ["subu $sp,$sp,24", "j $31", "addu $sp,$sp,24"])
+
+    def test_281_store_before_jump_keeps_nop(self):  # nine such slots keep their nop in retail
+        for st in ("sw $3,184($4)", "swr $8,24($sp)", "swc2 $22, 0( $2 )"):
+            src = lines(f"""
+                {st}
+                j $L5
+                nop  # DEBUG: branch/jump""")
+            self.assertEqual(aspsx_fill.fill(src, stores=False), src)
+
     def test_jump_target_register_not_overwritten(self):
         src = lines("""
             move $31,$2
