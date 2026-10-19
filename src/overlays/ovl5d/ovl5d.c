@@ -66,7 +66,76 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B7E74);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B8040);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B8314);
+void func_800B8314(void) {
+    s32 j;
+    s32 i;
+    Ovl5dCell *p;
+    Ovl5dObj *obj;
+    u16 *id;
+    s16 v;
+    Ovl5dCell *base;
+    Ovl5dCell *base2;
+    s32 x;
+    s32 z;
+    s32 off;
+    s32 colOff;
+
+    z = 0;
+    x = 0;
+    obj = (Ovl5dObj *)((GfxScene *)D_80058AD0)->objs;
+    func_80018430(200);
+    if (obj != NULL) {
+        base = D_800C3BAC[0];
+        do {
+            id = (u16 *)func_80015870(obj->model, obj->index);
+            if ((u16)(*id - 10) < 78) {
+                v = *id;
+                i = 7 - (s16)(v % 10);
+                j = (s16)(v / 10) - 1;
+                p = (Ovl5dCell *)(i * sizeof(Ovl5dCell) + j * sizeof(D_800C3BAC[0]) + (u32)base);
+                p->obj = obj;
+                func_8001C3D0((u8 *)obj);
+                obj->flags |= 0x1000000;
+            }
+            if (*(s16 *)id == 10) {
+                x = obj->x;
+                z = obj->z;
+            }
+            obj = obj->next;
+        } while (obj != NULL);
+    }
+    if (x | z) {
+        obj = (Ovl5dObj *)((GfxScene *)D_80058AD0)->objs;
+        if (obj != NULL) {
+            do {
+                if (*(s16 *)func_80015870(obj->model, obj->index) == 5) {
+                    j = obj->x - x;
+                    i = obj->z - z;
+                    j = (j + 0x80) >> 9;
+                    i = ((i + 0x80) >> 9) + 7;
+                    obj->flags = (obj->flags | 0x1000000) & ~0x8000;
+                    D_800C3BAC[j][i].obj2 = obj;
+                }
+                obj = obj->next;
+            } while (obj != NULL);
+        }
+    }
+    i = 0;
+    base2 = D_800C3BAC[0];
+    for (colOff = 0; i < 8; i++, colOff += sizeof(Ovl5dCell)) {
+        for (j = 0, off = colOff; j < 8; j++, off += sizeof(D_800C3BAC[0])) {
+            p = (Ovl5dCell *)(off + (u32)base2);
+            obj = p->obj;
+            if (obj != NULL) {
+                p->unkA = obj->index;
+                p->unk8 = 0;
+            } else {
+                p->unkA = 0;
+                p->unk8 |= 0x100;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B8578);
 

@@ -10,10 +10,14 @@
 #include "bash/main.h"
 #include "bash/engine.h"
 
+struct Ovl5dObj;
+
+/* A board cell of D_800C3BAC (0xC bytes, 8x8). */
 typedef struct Ovl5dCell {
-    s16 unk0[4];
-    s16 unk8;
-    s16 unkA;
+    /* 0x00 */ struct Ovl5dObj *obj;
+    /* 0x04 */ struct Ovl5dObj *obj2;
+    /* 0x08 */ u16 unk8; /* flags */
+    /* 0x0A */ u16 unkA; /* object index */
 } Ovl5dCell;
 
 extern Ovl5dCell D_800C3BAC[8][8];
@@ -40,6 +44,20 @@ extern u16 D_800C3B88;
 
 void func_800B7D20(u16 arg0);
 
+/* A scene object in the list at D_80058AD0 + 0x1C (func_800B8314). */
+typedef struct Ovl5dObj {
+    /* 0x00 */ u32 flags;
+    /* 0x04 */ s32 x;
+    /* 0x08 */ s32 y;
+    /* 0x0C */ s32 z;
+    /* 0x10 */ u8 pad10[0x5C - 0x10];
+    /* 0x5C */ struct Ovl5dObj *next;
+    /* 0x60 */ u8 pad60[0x6C - 0x60];
+    /* 0x6C */ u8 *model;
+    /* 0x70 */ u8 pad70[0x74 - 0x70];
+    /* 0x74 */ u16 index;
+} Ovl5dObj;
+
 void PlotBoing(u8 *arg0);
 
 s32 func_800BB1B4(u8 *arg0);
@@ -58,6 +76,8 @@ extern u8 D_80052F5C[];
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
 #include "bash/ovl5d_800bb64c.h"
 #include "bash/ovl5d_800bff1c.h"
+
+void func_800B8314(void);
 
 void InitMissileExplode(NAS *nas);
 
