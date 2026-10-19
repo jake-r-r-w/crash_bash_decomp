@@ -1177,7 +1177,32 @@ s32 func_800C9B5C(void) {
     return n;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitPolarMissile);
+void InitPolarMissile(NAS *m) {
+    PolarMissileExt *ext;
+
+    ext = AddExtension(m, 0x70, 0x10000000);
+    if (ext != NULL) {
+        m->Engine->sub->unk74 = 0x2006;
+        m->Engine->sub->unk6C = D_80054A0C;
+        m->Engine->unk5D = 2;
+        m->Engine->unk5C = 1;
+        m->Engine->sub->unk51 = 2;
+        m->Engine->sub->flags |= 0x02000000;
+        ext->unk5C = 0x8C;
+        ext->unk2C = 0x3000;
+        ext->unk38 = 0x700;
+        ext->unk4C = 4;
+        ext->unk10 = 0;
+        ext->unk18 = 0;
+        ext->unk58 = 0;
+        ext->unk44 = 0;
+        ext->unk48 = 0x100;
+        ext->unk54 = 0;
+        ext->unk60 = 0;
+        ext->unk50 = ext->unk2C;
+        PlaySfx(0x522, &m->Engine->sfx, &m->Engine->unk10, 0x1000, 0x1E00, 0);
+    }
+}
 
 s32 func_800C9C98(u8 *arg0) {
     HeroInfo *hero;

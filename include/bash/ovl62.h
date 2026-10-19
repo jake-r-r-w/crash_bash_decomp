@@ -548,6 +548,28 @@ typedef struct SniperMissileExt {
     /* 0x34 */ s32 unk34;
 } SniperMissileExt;
 
+/* Polar missile extension (0x70 bytes, id 0x10000000). */
+typedef struct PolarMissileExt {
+    /* 0x00 */ u8 pad0[0x10];
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ u8 pad14[4];
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ u8 pad1C[0x2C - 0x1C];
+    /* 0x2C */ s32 unk2C;
+    /* 0x30 */ u8 pad30[0x38 - 0x30];
+    /* 0x38 */ s32 unk38;
+    /* 0x3C */ u8 pad3C[0x44 - 0x3C];
+    /* 0x44 */ s32 unk44;
+    /* 0x48 */ s32 unk48;
+    /* 0x4C */ s32 unk4C;
+    /* 0x50 */ s32 unk50;
+    /* 0x54 */ s32 unk54;
+    /* 0x58 */ s32 unk58;
+    /* 0x5C */ s32 unk5C;
+    /* 0x60 */ s32 unk60;
+    /* 0x64 */ u8 pad64[0x70 - 0x64];
+} PolarMissileExt;
+
 extern u8 D_80054A0C[];
 
 /* Value easing towards a target by a step (func_800C7ED4). */
