@@ -202,7 +202,56 @@ void func_800B7D20(u16 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B7E74);
+void func_800B7E74(void) {
+    s32 i;
+    s32 j;
+    s32 x;
+    s32 z;
+    s32 n;
+    s32 tx;
+    s32 tz;
+
+    if (D_8005A648 == 3) {
+        for (i = 0; i < 16; i++) {
+            z = i * 256 - 0x780;
+            for (j = 0; j < 16; j++) {
+                x = j * 256 - 0x780;
+                if ((u32)(i - 2) >= 12) {
+                    z = Random(11) * 256 - 0x580;
+                }
+                if ((u32)(j - 2) >= 12) {
+                    x = Random(11) * 256 - 0x580;
+                }
+                D_800C3EAC[i][j].x = x;
+                D_800C3EAC[i][j].z = z;
+            }
+        }
+        n = 0;
+    } else {
+        for (i = 0; i < 16; i++) {
+            z = i * 256 - 0x780;
+            for (j = 0; j < 16; j++) {
+                x = j * 256 - 0x780;
+                D_800C3EAC[i][j].x = x;
+                D_800C3EAC[i][j].z = z;
+            }
+        }
+        n = 0;
+    }
+    do {
+        i = Random(16);
+        j = Random(16);
+        tx = Random(16);
+        tz = Random(16);
+        x = D_800C3EAC[i][j].x;
+        z = D_800C3EAC[i][j].z;
+        D_800C3EAC[i][j].x = D_800C3EAC[tx][tz].x;
+        D_800C3EAC[i][j].z = D_800C3EAC[tx][tz].z;
+        D_800C3EAC[tx][tz].x = x;
+        D_800C3EAC[tx][tz].z = z;
+        n++;
+    } while (n < 0x258);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B8040);
 

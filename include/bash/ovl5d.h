@@ -231,4 +231,13 @@ void func_800BB3D0(void);
 
 void func_800BB4AC(Ovl5dTumbler *arg0, Ovl5dTumbleMove *arg1, s32 arg2);
 
+typedef struct Ovl5dGridCell {
+    s32 x;
+    s32 z;
+} Ovl5dGridCell;
+
+extern Ovl5dGridCell D_800C3EAC[16][16];
+
+void func_800B7E74(void);
+
 #endif /* BASH_OVL5D_H */
