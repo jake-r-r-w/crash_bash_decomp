@@ -56,7 +56,65 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B38A0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B3AA0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B4094);
+s32 func_800B4094(s32 *arg0, s32 arg1) {
+    MATRIX m;
+    SVECTOR rot;
+    VECTOR v;
+    VECTOR *vp;
+    u8 *base;
+    s32 off;
+    u8 *p;
+    u8 *a2;
+    u8 *a3;
+    TrigEntry *t;
+    s32 n;
+    s32 i;
+    s32 cnt;
+    s32 ry;
+
+    base = *(u8 **)((u8 *)D_80058AD0 + 0x10);
+    off = *(s32 *)(base + 0x14);
+    p = (u8 *)&((s32 *)(base + 0x14 + off))[arg1 + 1] + ((s32 *)(base + 0x14 + off))[arg1 + 1];
+    if (p != NULL) {
+        i = 0;
+        cnt = 0;
+        vp = &v;
+        a2 = p + 0x50;
+        a3 = p;
+        ry = ((((get_angle(arg0[0], arg0[2]) - 0x7D) & 0xFFF) >> 8) + 1 & 0xF) << 8;
+        t = D_80068BD4;
+        n = *(s32 *)(p + 0x38);
+        for (;;) {
+            s32 ang;
+
+            if (i >= n) {
+                break;
+            }
+            ang = *(s32 *)(a3 + 0x64) - ry;
+            v.vx = *(s32 *)(a2 - 8);
+            v.vz = *(s32 *)a2;
+            v.vy = 0;
+            rot.vx = 0;
+            rot.vy = ry;
+            rot.vz = 0;
+            RotMatrix(&rot, &m);
+            ApplyMatrixLV(&m, vp, vp);
+            v.vx = arg0[0] - v.vx;
+            v.vz = arg0[2] - v.vz;
+            ang = -ang;
+            if (((v.vx * t[ang & 0xFFF].unk2) >> 12) - ((v.vz * t[(ang - 0x400) & 0xFFF].unk2) >> 12) < 0) {
+                cnt++;
+            }
+            a3 += 0x38;
+            i++;
+            a2 += 0x38;
+        }
+        if (cnt == n) {
+            return 0;
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B4260);
 
