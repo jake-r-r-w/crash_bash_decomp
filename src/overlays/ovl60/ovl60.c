@@ -1575,7 +1575,19 @@ void func_800C3388(void) {
 void func_800C3390(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C3398);
+void func_800C3398(void) {
+    D_8009D6E8.unk0 = (s32)func_800C327C;
+    D_8009D6E8.unk44 = &D_8008AB04;
+    D_8009D6E8.unk4 = &D_800C52CC;
+    D_8009D6E8.unkC = &D_800C44A8;
+    D_8009D6E8.unk20 = func_800B574C;
+    D_8009D6E8.unk28 = func_800B5B1C;
+    D_8009D6E8.unk64 = func_800C2E50;
+    D_8009D6E8.unk5C = func_800B76CC;
+    D_8009D6E8.unk18 = func_800C32E8;
+    D_8009D6E8.unk38 = func_800BD10C;
+    func_800B3534();
+}
 
 void func_800C3434(void) {
     D_8005AA70[0] = (s32)func_800C3398;
