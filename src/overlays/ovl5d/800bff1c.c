@@ -16,7 +16,53 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C07F4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C09F4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C0BAC);
+void func_800C0BAC(s32 arg0) {
+    HeroInfo *h;
+    HeroInfo *base;
+    EXTengine *pu;
+    s32 y;
+
+    if (func_8008ABF8(arg0) == 0) {
+        base = Heroes;
+        h = base + arg0;
+        pu = h->hero_powerup;
+        if ((u16)h->hero_frozen >= 3) {
+            y = pu->unk10.y;
+            if (y < D_8005A5D8) {
+                pu->unk10.y = y + 0x100;
+                if (y + 0x100 >= D_8005A5D8) {
+                    pu->unk10.y = D_8005A5D8;
+                    if (h->hero_powerup->sfx != NULL) {
+                        StopSfx(h->hero_powerup->sfx);
+                    }
+                    if (D_800C4780 != NULL) {
+                        StopSfx(D_800C4780);
+                    }
+                    PlaySfx(0x455, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                Heroes[arg0].hero_frozen = 0x1E;
+            }
+            if (abs(D_8005A5D8 - pu->unk10.y) < 0x100) {
+                Heroes[arg0].hero_eng->unk2C.y = 0x100;
+                Heroes[arg0].hero_eng->unk10.y = D_8005A5D8;
+            }
+        } else {
+            SetHeroAction((HeroInfo *)arg0, (u16)D_8009E0E2);
+            if (h->hero_powerup->sfx != NULL) {
+                StopSfx(h->hero_powerup->sfx);
+            }
+            if (D_800C4780 != NULL) {
+                StopSfx(D_800C4780);
+            }
+            pu->flags &= 0xFFFF7FFF;
+            h->hero_eng->unk2C.y = 0x1000;
+        }
+        pu->unk10.x = Heroes[arg0].hero_eng->unk10.x;
+        pu->unk10.z = Heroes[arg0].hero_eng->unk10.z;
+        Heroes[arg0].hero_eng->unk5E = 1;
+        func_8008502C(arg0);
+    }
+}
 
 void func_800C0DE4(s32 arg0) {
     HeroInfo *h;
