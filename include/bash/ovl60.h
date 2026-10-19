@@ -112,6 +112,8 @@ void func_800C244C(s32 arg0, s32 arg1);
 
 void func_800C24E4(s32 arg0, s32 arg1);
 
+void func_800C2524(s32 arg0, s32 arg1, s32 arg2);
+
 void func_800C286C(s32 arg0);
 
 void func_800C2E50(s32 arg0, s32 arg1);
