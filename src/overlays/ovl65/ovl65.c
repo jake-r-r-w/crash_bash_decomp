@@ -431,7 +431,20 @@ void func_800BCA38(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BCAC0);
+void func_800BCAC0(s32 arg0) {
+    EXTheromove *mv;
+
+    mv = Heroes[arg0].hero_move;
+    SetHeroSeq((HeroInfo *)arg0, 0x4D);
+    if (Heroes[arg0].hero_eng->sfx != NULL) {
+        StopSfx(Heroes[arg0].hero_eng->sfx);
+    }
+    mv->x_acc = 9;
+    mv->z_acc = 9;
+    mv->z_dec = 9;
+    mv->x_dec = 9;
+    mv->mass = 0x100;
+}
 
 void func_800BCB4C(s32 arg0) {
     SetHeroAction((HeroInfo *)arg0, 0x63);
