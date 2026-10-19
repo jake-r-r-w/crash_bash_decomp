@@ -367,7 +367,24 @@ void InitTankBossCortexTurret(NAS *nas) {
     nas->UserInfo.status = 0x11;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitTankBossCrashTurret);
+void InitTankBossCrashTurret(NAS *nas) {
+    EXTengine *eng;
+    subengine *sub;
+    s32 v;
+
+    eng = nas->Engine;
+    sub = eng->sub;
+    eng->unk10.z += 0x100;
+    v = 0x100;
+    nas->UserInfo.flags = v;
+    nas->UserInfo.user2 = 0x168;
+    nas->UserInfo.status = 4;
+    sub->unk6C = D_800536CC;
+    sub->unk74 = 0x2003;
+    sub->unk68 = v;
+    sub->unk51 = 0;
+    sub->flags |= 0x02000000;
+}
 
 s32 func_800C6B9C(s32 id, s32 x, s32 z, s32 angle) {
     s32 d;
