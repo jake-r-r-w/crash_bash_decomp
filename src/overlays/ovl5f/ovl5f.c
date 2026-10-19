@@ -277,7 +277,59 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotFlamerBitTA);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotFlubberTA);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotSwirlyTA);
+void PlotSwirlyTA(NAS *nas) {
+    EXTengine *eng;
+    LaserBitFux *fux;
+    subengine *sub;
+    s32 sfx;
+    s32 i;
+
+    eng = nas->Engine;
+    eng->unk5E = 1;
+    eng->unk1C += 0x17C;
+    eng->unk1E += 0x118;
+    eng->unk20 += 0xB4;
+    sub = eng->sub->next;
+    sub->unk52 = 1;
+    sub->unk10 += 0x46;
+    sub->unk12 += 0x8C;
+    sub->unk14 += 0xD2;
+    fux = (LaserBitFux *)nas->FUX;
+    if (func_800BAFFC(nas, 0x14, 0x1306, 0xD) != 0) {
+        if (eng->sfx != NULL) {
+            StopSfx(eng->sfx);
+        }
+        PlaySfx(0x4E6, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        for (i = 0; i < 3; i++) {
+            if (D_800CAD50[fux->player].MainWeaponNas[i] == nas) {
+                D_800CAD50[fux->player].MainWeaponNas[i] = NULL;
+                break;
+            }
+        }
+        KillNAS(nas);
+        return;
+    }
+    if (D_800CB0FC != 0) {
+        switch ((u32)Random(3)) {
+        case 0:
+            sfx = 0x4DB;
+            break;
+        case 1:
+            sfx = 0x4DC;
+            break;
+        case 2:
+            sfx = 0x4DD;
+            break;
+        default:
+            goto skip;
+        }
+        PlaySfx(sfx, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+    skip:;
+    }
+    if (fux->unk30 == 1) {
+        fux->unk30 = 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotShell);
 
