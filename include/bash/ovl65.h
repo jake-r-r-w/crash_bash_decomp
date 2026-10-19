@@ -71,6 +71,8 @@ void func_800B9C10(s32 id);
 
 void func_800BC5B0(void);
 
+void func_800BC8D0(s32 arg0);
+
 void func_800BCB4C(s32 arg0);
 
 void func_800BCE7C(s32 arg0, s32 arg1);

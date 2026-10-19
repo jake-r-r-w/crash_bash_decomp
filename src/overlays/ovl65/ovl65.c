@@ -287,7 +287,13 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BC820);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BC878);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BC8D0);
+void func_800BC8D0(s32 arg0) {
+    func_800BA960(arg0);
+    func_8008502C(arg0);
+    if ((Heroes[arg0].hero_status & 0x200) && Heroes[arg0].hero_mode != 0x68) {
+        SetHeroAction((HeroInfo *)arg0, 0x68);
+    }
+}
 
 void func_800BC948(HeroInfo *hero) {
     SetHeroSeq(hero, 0x4F);
