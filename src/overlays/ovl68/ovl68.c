@@ -195,7 +195,28 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", InitEgg);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", InitCircleFire);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", InitCoalFlame);
+void InitCoalFlame(NAS *nas) {
+    EXTengine *eng;
+    subengine *sub;
+    CoalFlameExt *ext;
+
+    eng = nas->Engine;
+    nas->UserInfo.user2 = 0xF;
+    ext = AddExtension(nas, 0x44, 0x10000003);
+    nas->FUX = &ext->ext;
+    ext->unk1C = -0xD;
+    sub = eng->sub;
+    sub->unk6C = D_80053F8C;
+    sub->unk74 = 0x200E;
+    eng->unk5C = 1;
+    eng->unk2C.x = 0x1000;
+    eng->unk2C.y = 0x1000;
+    eng->unk2C.z = 0x1000;
+    eng->unk5E = 1;
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotCoal);
 

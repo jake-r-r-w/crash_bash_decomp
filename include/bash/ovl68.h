@@ -18,6 +18,15 @@ typedef struct CoalFlameObj {
     CoalFlameInner *unk54;
 } CoalFlameObj;
 
+typedef struct CoalFlameExt {
+    EXT ext;
+    u8 pad0C[0x10];
+    s32 unk1C;
+    u8 pad20[0x24];
+} CoalFlameExt;
+
+extern u8 D_80053F8C[];
+
 void func_800B3330(void);
 void func_800BADA8(s32 arg0);
 void func_800BAE20(void);
@@ -58,6 +67,8 @@ void func_800B44C8(void);
 void func_800BA630(NAS *nas);
 
 void InitCoalFlameSFX(CoalFlameObj *arg0);
+
+void InitCoalFlame(NAS *nas);
 
 void InitBarrelGenerator(NAS *nas);
 
