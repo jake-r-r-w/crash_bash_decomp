@@ -73,6 +73,8 @@ void func_800BC5B0(void);
 
 void func_800BCB4C(s32 arg0);
 
+void func_800BCE7C(s32 arg0, s32 arg1);
+
 void func_800BCEFC(void);
 
 void func_800BCF88(s32 arg0);
