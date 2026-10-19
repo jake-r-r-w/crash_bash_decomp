@@ -759,6 +759,8 @@ s32 func_800B9600(s32 player);
 
 s32 func_800B98AC(s32 player);
 
+void func_800BD058(s32 arg0, s32 arg1, s32 arg2);
+
 s32 func_800C5CD0(s32 *arg0, s32 arg1);
 
 s32 func_800C5DCC(NAS *m);

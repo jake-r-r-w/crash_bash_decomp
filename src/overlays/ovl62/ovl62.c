@@ -903,7 +903,44 @@ s32 func_800BCF08(s32 arg0, s32 arg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BD058);
+void func_800BD058(s32 arg0, s32 arg1, s32 arg2) {
+    HeroInfo *base;
+    HeroInfo *h;
+    EXTengine *eng;
+    EXTengine *shadow;
+
+    switch (arg1) {
+    case 0:
+        if (arg2 == 0) {
+            break;
+        }
+        goto common;
+    case 1:
+        if (arg2 != arg1) {
+        common:
+            base = Heroes;
+            h = &base[arg0];
+            eng = h->hero_eng;
+            shadow = h->hero_shadow;
+            if (eng != NULL && shadow != NULL) {
+                eng->unk2C.x = 0x1000;
+                eng->unk2C.y = 0x1000;
+                eng->unk2C.z = 0x1000;
+                shadow->unk2C.x = 0x1000;
+                shadow->unk2C.y = 0x1000;
+                shadow->unk2C.z = 0x1000;
+                func_800B5684(arg0);
+                D_800D6924[arg0] = D_8009D6F4[h->hero_name * 3];
+            }
+        }
+        break;
+    case 2:
+        if (arg2 != arg1 && Heroes[arg0].hero_mode != 0x49) {
+            SetHeroAction((HeroInfo *)arg0, 0x49);
+        }
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitTransmuterBeam);
 
