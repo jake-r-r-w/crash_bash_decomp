@@ -207,12 +207,22 @@ killed early). The near misses it left were all matched by
 
 ## Open leads
 
-- **`func_800B345C` (ovl63, 30735f0c) matched with a hack:** no-op pointer
-  moves (`h++; h--;` and `p++; p++; p--;` in its goto loop) that only shift
-  allocation priority. The gate's lint doesn't catch no-op pairs, so it
-  went in without `--hack`. Redo it without them (MATCHING.md, Reading the
-  compiler's rules: the -dl ref counts behind the s-reg swap), and consider
-  a lint rule for `x++; x--;`. Its Diff patterns row was dropped.
+- **`func_800B345C` (ovl63, 30735f0c) still matches only with a hack** (no-op
+  `h++; h--;` and `p++; p++; p--;` in its goto loop; `done` now refuses such runs
+  without --hack). Reworked 2026-10-19, not finished. Without the no-ops it is
+  instructions 19/92: `h`/`i` swap s1/s2 and `i = 0` sits at 0x48, not 0x10.
+  - Registers: global.c priority (-dl) is i 4 refs/30 = 0.267 against h 6/46 =
+    0.261, so i takes s1. `do { } while (0)` around only the first
+    `h->hero_ai->AIpad &= ~0x20;` (one weighted ref, h 0.304) fixes all of
+    them: 11/92 left. Wrapping any other statement or the whole branch breaks
+    the structure; a real `while (1)` loop too.
+  - Left: `i = 0` fills the load-delay stall after `lw a0,4(v1)`, where the
+    target has `addiu a1,%lo(D_80068BD4)`. In sched1 (scheduling backwards)
+    the table address insn 29 loses every launch-priority tie to the index
+    insns on INSN_LUID, so it goes to the top and `i = 0` (priority 1,
+    initially ready) takes the stall. No statement order, `pos.x` spelling or
+    index temp moved it. Next: find C whose RTL emits the table address after
+    the index arithmetic (or makes `i = 0` depend on something late).
 - **`func_800B5710` (ovl6a, 2836 B), parked 2026-10-18 at regions 120/121
   blocks, 706/710 insns** (C under `#ifdef NON_MATCHING`). Only the 0x80
   button block differs (target 0x37c-0x394): the target puts
@@ -546,6 +556,10 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-19 (lint):** `done` refuses a run of `x++; x--;` statements
+  (no-op pair) without --hack; only `func_800B345C` has one. Its rework got
+  the registers with one natural `do { } while (0)` but not a sched1 tie
+  (Open leads); the committed hack stays.
 - **2026-10-19 (hand + toolchain):** `func_800C0F5C` matched with plain C
   after the build learned ASPSX's jump-slot fill for gcc 2.8.1 units
   (f8824b13: `aspsx_fill.py --jumps-only` by default; of the ten slots gcc

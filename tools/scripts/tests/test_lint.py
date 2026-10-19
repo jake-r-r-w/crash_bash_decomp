@@ -41,6 +41,18 @@ class AsmSpellings(unittest.TestCase):
         self.assertEqual(lint("g = 1; /* asm(\"nop\") in a comment */"), ([], []))
 
 
+class NoopSteps(unittest.TestCase):
+    """func_800B345C (2026-10-19) matched with `h++; h--;` and `p++; p++; p--;`."""
+
+    def test_pairs_are_hacks(self):
+        for s in ("int *h; h++; h--;", "int *h; h--;\n    h++;", "int *p; p++; p++; p--;"):
+            self.assertIn("no-op ++/-- pair", lint(s)[1], s)
+
+    def test_real_steps_are_clean(self):
+        for s in ("int *p, i; p++; i++;", "int *p; p++; p++;", "int i; i--; g = i; i++;"):
+            self.assertEqual(lint(s), ([], []), s)
+
+
 class KandR(unittest.TestCase):
     def test_definition_found(self):
         text = "void f(void);\nvoid f(a, b)\n    u8 *a;\n    s32 b;\n{\n    *a = b;\n}\n"

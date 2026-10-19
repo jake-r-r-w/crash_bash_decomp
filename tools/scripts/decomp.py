@@ -1745,6 +1745,14 @@ LINT_HACKS = [
     (re.compile(ASM_CALL + r"\s*\"\""), "empty asm barrier"),
 ]
 INCLUDE_ASM_LINE = re.compile(r'^\s*INCLUDE_ASM\(\s*"[^"]+"\s*,\s*(\w+)\s*\)')
+# consecutive `x++;` / `x--;` statements on one variable; a run with both directions is a no-op
+# that only moves refs or schedule ties (2026-10-19: `h++; h--;` in func_800B345C)
+NOOP_STEPS = re.compile(r"\b(\w+)\s*(?:\+\+|--)\s*;(?:\s*\b\1\s*(?:\+\+|--)\s*;)+")
+
+
+def noop_steps(body):
+    """True if BODY has a run of x++/x-- statements on one variable that goes both ways."""
+    return any("++" in m.group(0) and "--" in m.group(0) for m in NOOP_STEPS.finditer(body))
 
 
 def lint_function(src, name):
@@ -1754,8 +1762,10 @@ def lint_function(src, name):
     # a register pin's asm("$20") names a register, not instructions: it's a hack, not an error
     unpinned = re.sub(r"(\bregister\b[^;]*?)" + ASM_CALL + r"\s*\"[^\"]*\"\s*\)", r"\1", body)
     errs = sorted({why for rx, why in LINT_ERRORS if rx.search(unpinned)})
-    hacks = sorted({why for rx, why in LINT_HACKS if rx.search(body)})
-    return errs, hacks
+    hacks = {why for rx, why in LINT_HACKS if rx.search(body)}
+    if noop_steps(body):
+        hacks.add("no-op ++/-- pair")
+    return errs, sorted(hacks)
 
 
 def matched_in_worktree(path="src"):
