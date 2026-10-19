@@ -285,7 +285,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBearBoss);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotPackEffect);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotCortexPack);
+void PlotCortexPack(NAS *m) {
+    m->Engine->unk5E = 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitCortexPack);
 
