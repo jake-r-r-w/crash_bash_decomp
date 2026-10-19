@@ -4623,7 +4623,8 @@
   "status": "matched"
  },
  "ovl5d:800BB64C": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-19T17:07:03Z",
+  "status": "matched"
  },
  "ovl5d:800BB7B8": {
   "auto_diff": 12,
@@ -4936,7 +4937,9 @@
   "auto_failed": "diff"
  },
  "ovl5e:800B7F14": {
-  "auto_failed": "types"
+  "auto_failed": "types",
+  "copy_failed": "ovl5d:800BB64C",
+  "copy_failed_stage": "in-file"
  },
  "ovl5e:800B8080": {
   "auto_diff": 12,

@@ -4,7 +4,50 @@
 #include "bash/bash.h"
 #include "bash/xtras.h"
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bb64c", func_800BB64C);
+void func_800BB64C(T_BB64C_A *a, T_BB64C_B *b) {
+    s32 z;
+    s32 x;
+    s32 sum = 0;
+    s32 v = b->unkE;
+    s32 d = b->unk10 - b->unk12;
+    s32 mx, mz;
+
+    if (v != 0) {
+        do {
+            v += d;
+            if (v < 0) {
+                v = 0;
+            }
+            sum += v;
+        } while (v != 0);
+    }
+    x = a->x;
+    mx = sum * D_80068BD4[(a->ang - 0x400) & 0xFFF].unk2;
+    mz = sum * D_80068BD4[(u16)a->ang & 0xFFF].unk2;
+    z = a->z;
+    x -= mx >> 12;
+    z -= mz >> 12;
+    x &= ~0xFF;
+    x += 0x80;
+    z &= ~0xFF;
+    z += 0x80;
+    b->unk16 = x;
+    b->unk2A = z;
+    b->dir = D_80051244[((u16)a->ang >> 7) & 0x1C];
+    x -= a->x;
+    z -= a->z;
+    sum = csqrt(x * x + z * z) >> 6;
+    if (sum > 0) {
+        v -= d;
+        do {
+            sum -= v;
+            v -= d;
+        } while (sum > 0);
+        v += d;
+    }
+    v -= d >> 1;
+    b->unkE = v;
+}
 
 s32 func_800BB7B8(T_BB7B8 *p) {
     s32 a, b, c, d;

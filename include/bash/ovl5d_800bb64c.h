@@ -85,4 +85,29 @@ s32 func_800BF928(EXTengine *eng, HitFlags *flags, u32 mask);
 
 void func_800BFD2C(s32 arg0);
 
+extern u8 D_80051244[];
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 x;
+    s32 pad14;
+    s32 z;
+    s16 pad1C;
+    s16 ang;
+} T_BB64C_A;
+
+typedef struct {
+    u8 pad0[0xD];
+    u8 dir;
+    s16 unkE;
+    s16 unk10;
+    s16 unk12;
+    s16 pad14;
+    s16 unk16;
+    u8 pad18[0x12];
+    s16 unk2A;
+} T_BB64C_B;
+
+void func_800BB64C(T_BB64C_A *a, T_BB64C_B *b);
+
 #endif /* BASH_OVL5D_800BB64C_H */
