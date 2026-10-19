@@ -543,7 +543,19 @@ void PlotRockProjectile(NAS *m) {
 void InitRockProjectile(NAS *m) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9F70);
+s32 func_800C9F70(void) {
+    u8 *g = D_8005A614;
+    s32 k;
+
+    if (g[0xC1] < 10) {
+        return 0;
+    }
+    k = 0xB8;
+    if (g[0xC1] >= 30) {
+        return 0xE66;
+    }
+    return (g[0xC1] - 9) * k;
+}
 
 void PlotBearBoss(NAS *m) {
     if (FindExtension(m, 0x10000000) != NULL) {
