@@ -561,7 +561,40 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BB878);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BBA04);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BC0A4);
+void func_800BC0A4(s32 arg0) {
+    HeroInfo *hero;
+    EXTraceshield *fux;
+    Ovl63Pad *pad;
+    Ovl63Pad *pb;
+    HeroInfo *base;
+
+    func_800C5400(arg0);
+    base = Heroes;
+    hero = &base[arg0];
+    fux = (EXTraceshield *)hero->hero->FUX;
+    if (fux == NULL) {
+        return;
+    }
+    pb = (Ovl63Pad *)D_80051338;
+    pad = &pb[arg0];
+    pad->unk50 = 0;
+    pad->unk54 = 0;
+    if (D_8005A648 != 0x19) {
+        func_8008502C(arg0);
+    }
+    hero->hero_frozen = 2;
+    hero->hero_eng->unk5E = 1;
+    if (Ovl63JumpAbove(arg0)) {
+        Heroes[arg0].hero_eng->unk10.y -= abs(D_800C6930 - Heroes[arg0].hero_eng->unk10.y);
+        Heroes[arg0].hero_eng->unk1C -= Heroes[arg0].hero_eng->unk1C >> 1;
+        Heroes[arg0].hero_eng->unk1E += 0x100;
+    } else {
+        Heroes[arg0].hero_eng->unk1C += 0x80;
+    }
+    if (fux->unkC-- < 0) {
+        SetHeroAction((HeroInfo *)arg0, 0x5B);
+    }
+}
 
 void func_800BC2D0(s32 player) {
     HeroInfo *h;

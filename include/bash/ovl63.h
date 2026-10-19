@@ -563,6 +563,8 @@ typedef struct Ovl63JumpFux {
 } Ovl63JumpFux;
 
 /* Inline copy of func_800C5A50: steps the jump, true once above D_800C6930. */
+/* Inline copy of func_800C5A50: steps a hero's jump and reports a landing
+ * above the floor (D_800C6930), as func_800BC0A4 inlines it. */
 static inline s32 Ovl63JumpAbove(s32 player) {
     EXTheromove *move;
     EXTengine *eng;
@@ -585,6 +587,8 @@ static inline s32 Ovl63JumpAbove(s32 player) {
 }
 
 s32 func_800B96B0(s32 arg0, s32 arg1);
+
+void func_800BC0A4(s32 arg0);
 
 void func_800BC4B0(s32 player);
 
