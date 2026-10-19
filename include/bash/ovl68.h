@@ -90,6 +90,8 @@ void func_8008A810(void);
 
 void func_800B44C8(void);
 
+void func_800B627C(s32 arg0);
+
 void func_800BA630(NAS *nas);
 
 void InitPUGenerator_CH(NAS *nas);
