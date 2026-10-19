@@ -979,7 +979,40 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitPolarWalrus);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotPolarWalrus);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitWalrusFish);
+void InitWalrusFish(NAS *m) {
+    WalrusFishExt *ext;
+
+    ext = AddExtension(m, 0x88, 0x10000000);
+    if (ext != NULL) {
+        ext->cursor = func_80024E30(m, &D_800D5690);
+        m->Engine->flags |= 0x200000;
+        m->Engine->unk10.x = (D_80068BD4[(D_800D563C - 0x400) & 0xFFF].unk2 * 0x307) >> 10;
+        m->Engine->unk10.z = (D_80068BD4[D_800D563C & 0xFFF].unk2 * 0x307) >> 10;
+        m->Engine->unk10.y = 0x400;
+        m->Engine->sub->unk6C = D_8005476C;
+        m->Engine->sub->unk74 = 0x2002;
+        m->Engine->unk5C = 1;
+        m->Engine->unk5D = 0;
+        m->Engine->unk2C.x = 0x1F40;
+        m->Engine->unk2C.y = 0x1F40;
+        m->Engine->unk2C.z = 0x1F40;
+        ext->state = 0;
+        m->Engine->sub->unk68 = 0x200;
+        ext->arc[0] = 0x10;
+        ext->unk54 = 0x28;
+        ext->arc[1] = 0;
+        ext->arc[6] = 0;
+        ext->from = *(SLONG_XYZ *)&m->Engine->unk10;
+        ext->to.x = (D_80068BD4[(D_800D563C - 0x400) & 0xFFF].unk2 * 0x7D) >> 8;
+        ext->to.y = 0;
+        ext->to.z = (D_80068BD4[D_800D563C & 0xFFF].unk2 * 0x7D) >> 8;
+        m->Engine->sub->flags |= 0x02000000;
+        ext->spin = 0x80;
+        ext->timer = 0;
+        PlaySfx(0x478, NULL, NULL, 0x1000, 0x1E00, 0);
+        m->Engine->unk5E = 1;
+    }
+}
 
 void PlotWalrusFish(NAS *m) {
     WalrusFishExt *ext;

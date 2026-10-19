@@ -567,12 +567,19 @@ typedef struct WalrusFishExt {
     /* 0x10 */ s32 arc[0xD];
     /* 0x44 */ s32 vx; /* arc vx */
     /* 0x48 */ s32 vz; /* arc vz */
-    /* 0x4C */ u8 pad4C[0x64 - 0x4C];
+    /* 0x4C */ u8 pad4C[0x54 - 0x4C];
+    /* 0x54 */ s32 unk54;
+    /* 0x58 */ u8 pad58[0x64 - 0x58];
     /* 0x64 */ SLONG_XYZ to;
     /* 0x70 */ SLONG_XYZ from;
     /* 0x7C */ s32 timer;
     /* 0x80 */ s32 spin;
+    /* 0x84 */ ScriptCursor *cursor;
 } WalrusFishExt;
+
+extern ScriptInit D_800D5690;
+extern s32 D_800D563C;
+extern u8 D_8005476C[];
 
 s32 func_8008C5C4(s32 *from, s32 *to, void *arc, s32 *pos);
 
