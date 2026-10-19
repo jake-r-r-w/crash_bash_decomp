@@ -1422,7 +1422,33 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Init_PogoRipperRoo);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoRipperRoo);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Roo_UpdatePosition);
+void Roo_UpdatePosition(EXTengine *eng) {
+    u32 x;
+    u32 z;
+    s32 i;
+    s32 j;
+    s32 a;
+
+    x = D_800C5BD8;
+    z = D_800C5BDC;
+    if (x < 8 && z < 8) {
+        for (i = 0; i < 8; i++) {
+            for (j = 0; j < 8; j++) {
+                if (D_800C53DC[i][j].unk10 == 5) {
+                    D_800C53DC[i][j].unk10 = 0;
+                }
+            }
+        }
+        D_800C53DC[x][z].unk10 = 5;
+    }
+    if ((u32)(D_800C5304 - 2) < 10) {
+        eng->unk10.x += D_800C5BE0;
+        eng->unk10.z += D_800C5BE4;
+    }
+    a = func_800154A0(D_800C5BE8, eng->unk1E);
+    eng->unk5E = 1;
+    eng->unk1E -= a >> 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Roo_ChangeDirOnEdge);
 
