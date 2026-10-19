@@ -216,6 +216,7 @@ typedef struct {
 extern Ovl5fU16Pad D_800CA944[];
 extern s32 D_800CB0F0;
 extern s32 D_800C94E8[];
+extern s32 D_800C9428[][4];
 extern NAS *D_800CAD44[];
 /* PlotPillarControl's waves: delay, then {x, z, angle} until x < 0. */
 extern s32 *D_800CA8C4[];
@@ -333,6 +334,8 @@ void func_800B57FC(void);
 void func_800B8EC4(s32 player);
 
 void func_800B906C(s32 player);
+
+void func_800BA95C(s32 player);
 
 void func_800BAAB0(s32 arg0);
 
