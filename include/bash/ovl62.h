@@ -50,6 +50,21 @@ typedef struct GravityObject {
 } GravityObject;
 
 void PlotGravityObject(GravityObject *obj);
+/* A hero's FUX extension as func_800B9714 sets it up. */
+typedef struct Ovl62Fux {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ SLONG_XYZ vel;
+    /* 0x18 */ SLONG_XYZ pos;
+    /* 0x24 */ s32 unk24;
+    /* 0x28 */ u8 pad28[0x30 - 0x28];
+    /* 0x30 */ s32 state;
+    /* 0x34 */ u8 pad34[0x44 - 0x34];
+    /* 0x44 */ void *func;
+} Ovl62Fux;
+
+extern s32 D_800D4E0C[];
+void func_800B7520();
+s32 func_800B9714(s32 player);
 
 s32 func_800CD118(s32 *arg0, s32 arg1);
 

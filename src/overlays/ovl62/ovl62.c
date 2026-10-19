@@ -81,7 +81,40 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B94B8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B9600);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B9714);
+s32 func_800B9714(s32 player) {
+    Ovl62Fux *fux;
+    Ovl62Fux *ext;
+    Ovl62Fux *f;
+    HeroInfo *h;
+    SLONG_XYZ v;
+    s32 r;
+    s32 spd;
+
+    fux = (Ovl62Fux *)Heroes[player].hero->FUX;
+    if (fux == NULL) {
+        return 0;
+    }
+    ext = FindExtension(Heroes[player].hero, 0x20000000);
+    if (ext != NULL && ext->unk24 == 1) {
+        return 0;
+    }
+    if (Random(0x1000) >= D_800D4E0C[Heroes[player].hero_name + 0x2F]) {
+        return 0;
+    }
+    h = &Heroes[player];
+    r = Random(0x1000);
+    f = (Ovl62Fux *)h->hero->FUX;
+    spd = 0x708;
+    if (f != NULL) {
+        v.x = (D_80068BD4[r & 0xFFF].unk2 * spd) >> 12;
+        v.z = (D_80068BD4[(r - 0x400) & 0xFFF].unk2 * spd) >> 12;
+        f->vel = v;
+        f->pos = h->hero_eng->unk10;
+    }
+    fux->state = 9;
+    fux->func = func_800B7520;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B98AC);
 
