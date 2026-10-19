@@ -622,7 +622,49 @@ s32 func_800C310C(SLONG_XYZ *pos) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitBarrelRoll);
+void InitBarrelRoll(NAS *m) {
+    BarrelRollExt *ext;
+    EXTengine *e;
+    s32 r;
+
+    ext = AddExtension(m, 0x80, 0x10000000);
+    if (ext != NULL) {
+        m->Engine->sub->unk6C = *(s32 *)D_80058AD0;
+        m->Engine->sub->unk74 = 0x2037;
+        m->Engine->unk5D = 1;
+        ext->unkC = 0xC;
+        ext->unk78 = 0;
+        ext->unk50 = 0xA0;
+        ext->unk10 = 0;
+        ext->unk24 = 0;
+        r = Random(0x400);
+        ext->vel.x = (D_80068BD4[(r + 0xA00) & 0xFFF].unk2 * 9) >> 4;
+        r += 0xE00;
+        ext->vel.z = (D_80068BD4[r & 0xFFF].unk2 * 9) >> 4;
+        m->Engine->unk1E = -r;
+        ext->pos.z = 0x1B00;
+        ext->vel.y = 0;
+        ext->pos.x = 0;
+        ext->pos.y = -0x100;
+        m->Engine->unk10 = ext->pos;
+        m->Engine->unk5E = 1;
+        e = AddEngine(m, 2);
+        if (e != NULL) {
+            ext->shadow = e;
+            e->sub->unk6C = D_80052F5C;
+            e->sub->unk74 = 0x2001;
+            e->unk5C = 1;
+            e->unk5D = 0;
+            e->unk10 = m->Engine->unk10;
+            e->sub->unk76 = 0x800;
+            e->sub->flags |= 0x40008041;
+            e->unk2C.z = 0x4000;
+            e->unk2C.y = 0x4000;
+            e->unk2C.x = 0x4000;
+            ext->shadow->unk5E = 1;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotBarrelRoll);
 

@@ -226,6 +226,24 @@ typedef struct RaceMissileExt {
 
 extern u8 D_80052F5C[];
 
+/* Barrel roll extension (0x80 bytes, id 0x10000000). */
+typedef struct BarrelRollExt {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ u8 pad14[0x24 - 0x14];
+    /* 0x24 */ s32 unk24;
+    /* 0x28 */ u8 pad28[0x50 - 0x28];
+    /* 0x50 */ s32 unk50;
+    /* 0x54 */ u8 pad54[0x60 - 0x54];
+    /* 0x60 */ SLONG_XYZ pos;
+    /* 0x6C */ SLONG_XYZ vel;
+    /* 0x78 */ s32 unk78;
+    /* 0x7C */ EXTengine *shadow;
+} BarrelRollExt;
+
+void InitBarrelRoll(NAS *m);
+
 extern NAS *D_800C6920;
 NAS *func_800C5C64(s32 arg0);
 
