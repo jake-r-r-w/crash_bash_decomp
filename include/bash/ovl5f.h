@@ -300,6 +300,8 @@ void func_800BACD4(s32 arg0);
 
 void func_800BAF64(s32 arg0);
 
+s32 func_800BF548(EXTengine *eng);
+
 void func_800C44E8(s32 arg0);
 
 void func_800C4B60(s32 arg0);

@@ -503,7 +503,69 @@ void InitPickupTA(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotPickupTA);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BF548);
+static inline void SpawnPuff1605(SLONG_XYZ *pos, s32 kind) {
+    u8 *p;
+    NAS *nas;
+    Ovl5fExt1605 *ext;
+
+    p = D_8005365C;
+    nas = SpawnNASById(pos->x, pos->y, pos->z, 0x1605, 0x11);
+    if (nas != NULL) {
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL) {
+            ext->unkC = kind;
+            ext->unk18 = 0x100;
+            if (p != NULL) {
+                ext->unk20 = 5;
+                nas->Engine->sub->unk6C = p;
+            } else {
+                ext->unk20 = 1;
+            }
+            ext->unk28 = 0;
+            nas->InitDelete(nas);
+        }
+    }
+}
+
+s32 func_800BF548(EXTengine *eng) {
+    s32 i;
+    s32 j;
+    NAS *pickup;
+    EXTengine *pe;
+    NAS **pp;
+    NAS **tbl;
+    s32 x;
+    s32 y;
+    s32 z;
+
+    x = eng->unk10.x;
+    y = eng->unk10.y;
+    z = eng->unk10.z;
+    for (i = 0;; i++) {
+        if (i >= 3) {
+            return 0;
+        }
+        pickup = D_800CAD44[i];
+        if (pickup == NULL) {
+            continue;
+        }
+        pe = pickup->Engine;
+        if ((u32)(pe->unk10.x - x + 0xFF) < 0x1FF
+            && (u32)(pe->unk10.z - z + 0xFF) < 0x1FF
+            && (u32)(pe->unk10.y - y + 0xFF) < 0x1FF) {
+            SpawnPuff1605(&pe->unk10, 0x10);
+            PlaySfx(0x4B8, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            for (j = 0; j < 3; j++) {
+                if (D_800CAD44[j] == pickup) {
+                    D_800CAD44[j] = NULL;
+                    break;
+                }
+            }
+            KillNAS(pickup);
+            return 1;
+        }
+    }
+}
 
 void PlotRock_TA(NAS *nas) {
     EXTengine *e;
