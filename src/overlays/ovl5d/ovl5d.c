@@ -280,7 +280,19 @@ u16 func_800BAD0C(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BAD70);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BAE08);
+void func_800BAE08(s32 arg0) {
+    EXTengine *eng = Heroes[arg0].hero_eng;
+    Ovl5dCell *base = D_800C3BAC[0];
+    s32 xi = (eng->unk10.x + 0x800) >> 9;
+    s32 zi = (eng->unk10.z + 0x800) >> 9;
+    Ovl5dCell *cell = (Ovl5dCell *)((char *)base + (zi * 12 + xi * 0x60));
+    Ovl5dObj *obj = cell->obj;
+
+    if (obj != NULL) {
+        obj->flags &= 0xFFFF7FFF;
+        cell->unkA = 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BAE98);
 
