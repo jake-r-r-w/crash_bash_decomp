@@ -75,7 +75,7 @@ void func_800BB360(void);
 void func_800B3A38(void);
 void func_800B3DD8(void);
 void func_800B432C(void);
-void func_800BAC5C(void);
+s32 func_800BAC5C(EXTengine *eng);
 
 void func_800BB368(void);
 

@@ -263,7 +263,19 @@ void func_800BAC10(void) {
     func_8009440C();
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BAC5C);
+s32 func_800BAC5C(EXTengine *eng) {
+    s32 x = (eng->unk10.x + 0x800) >> 9;
+    s32 z = (eng->unk10.z + 0x800) >> 9;
+    s32 dy = eng->unk10.y - D_8005A5D8;
+
+    if ((u32)x >= 8 || (u32)z >= 8) {
+        return dy;
+    }
+    if (D_800C3BAC[x][z].unk8 & 0x100) {
+        return 0x7FFFFFFF;
+    }
+    return func_80025E00(eng, dy);
+}
 
 u16 func_800BAD0C(s32 arg0, s32 arg1) {
     s32 x = (arg0 + 0x800) >> 9;
