@@ -38,7 +38,17 @@ typedef struct Ext10000000 {
 typedef struct Ext20 {
     /* 0x00 */ u8 pad[0x20];
     /* 0x20 */ s32 val;
+    /* 0x24 */ s32 state;
 } Ext20;
+
+/* PadState (D_80051338) as func_800D1C14 reads it: the buttons at 0x50. */
+typedef struct Ovl62Pad {
+    /* 0x00 */ u8 pad0[0x50];
+    /* 0x50 */ s32 unk50;
+    /* 0x54 */ u8 pad54[0x58 - 0x54];
+} Ovl62Pad;
+
+void func_800D1C14(s32 player);
 
 extern HeroInfo Heroes[4];
 
