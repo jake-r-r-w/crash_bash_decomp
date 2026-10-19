@@ -802,7 +802,24 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotSniperMissile);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9230);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitSniperMissile);
+void InitSniperMissile(NAS *m) {
+    SniperMissileExt *ext;
+
+    ext = AddExtension(m, 0x38, 0x10000000);
+    if (ext != NULL) {
+        m->Engine->sub->unk74 = 0x2006;
+        m->Engine->sub->unk6C = D_80054A0C;
+        ext->unkC = 0;
+        m->Engine->unk5C = 1;
+        m->Engine->unk2C.x = 0x2AF8;
+        m->Engine->unk2C.y = 0x2AF8;
+        m->Engine->unk2C.z = 0x2AF8;
+        m->Engine->unk5D = 2;
+        ext->unk30 = 0;
+        ext->unk34 = 0;
+        PlaySfx(0x522, &m->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBigMissile);
 

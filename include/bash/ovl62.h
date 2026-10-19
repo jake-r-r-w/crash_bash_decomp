@@ -406,6 +406,17 @@ typedef struct WeightDeathExt {
     /* 0x24 */ s32 unk24;
 } WeightDeathExt;
 
+/* Sniper missile extension (0x38 bytes, id 0x10000000). */
+typedef struct SniperMissileExt {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ u8 pad10[0x30 - 0x10];
+    /* 0x30 */ s32 unk30;
+    /* 0x34 */ s32 unk34;
+} SniperMissileExt;
+
+extern u8 D_80054A0C[];
+
 void func_800CA930(EXTheromove *a, EXTheromove *b);
 
 void func_800CAE10(s32 player, s32 target);
