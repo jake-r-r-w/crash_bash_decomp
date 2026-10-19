@@ -201,7 +201,40 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotPeriscopeGun);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotBoatField);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotPillarControl);
+void PlotPillarControl(NAS *nas) {
+    s32 *p;
+    s32 delay;
+    s32 x;
+    s32 z;
+    s32 v;
+    NAS *obj;
+
+    if (D_800CB0F0 == 0 && --nas->UserInfo.flags == 0) {
+        PlaySfx(0x501, NULL, NULL, 0x1000, 0x1E00, 0);
+        p = D_800CA8C4[D_800CB204++];
+        delay = *p++;
+        while ((v = *p++) >= 0) {
+            x = (v << 9) + 0x100;
+            z = (*p++ << 9) + 0x100;
+            obj = SpawnNASById(x, 0, z, 0x1311, 0x11);
+            if (obj != NULL) {
+                obj->Engine->sub->unk74 = *p++;
+                obj->UserInfo.user2 = delay;
+                obj = SpawnNASById(x, 0, z, 0x1312, 0x11);
+                if (obj != NULL) {
+                    obj->Engine->sub->unk74 = 0x4000;
+                    obj->UserInfo.user1 = 6;
+                    obj->UserInfo.status = 0;
+                }
+            }
+        }
+        if (D_800CB204 < 0x20) {
+            nas->UserInfo.flags = delay + 0x46;
+        } else {
+            KillNAS(nas);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotPillar);
 
