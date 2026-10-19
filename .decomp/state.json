@@ -6723,7 +6723,8 @@
   "auto_failed": "compile"
  },
  "ovl62:800BCF08": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-19T07:27:53Z",
+  "status": "matched"
  },
  "ovl62:800BD058": {
   "auto_failed": "types"
@@ -7964,7 +7965,9 @@
   "auto_failed": "types"
  },
  "ovl65:800B485C": {
-  "auto_failed": "compile"
+  "auto_failed": "compile",
+  "copy_failed": "ovl62:800BCF08",
+  "copy_failed_stage": "in-file"
  },
  "ovl65:800B49AC": {
   "auto_failed": "compile"

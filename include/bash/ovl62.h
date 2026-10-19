@@ -10,6 +10,7 @@
 
 extern u8 D_800546C4[];
 extern u8 D_80052EEC[];
+extern s16 D_8005A65C[2];
 
 void func_800B5AC4();
 void func_800BAFA0();
