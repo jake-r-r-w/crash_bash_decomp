@@ -367,7 +367,15 @@ void func_800BD1FC(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BD204);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BD258);
+s32 func_800BD258(s32 arg0) {
+    Ovl65Ext *ext;
+
+    ext = FindExtension(Heroes[arg0].hero, 0x10000000);
+    if (ext != NULL && ext->unk14 != 0) {
+        return 1;
+    }
+    return 0;
+}
 
 s32 func_800BD2B8(s32 arg0) {
     Ovl65Ext *ext;

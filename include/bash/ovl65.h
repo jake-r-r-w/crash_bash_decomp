@@ -15,6 +15,8 @@ s32 func_800B4C70(s32 *arg0, s32 arg1);
 typedef struct Ovl65Ext {
     u8 pad[0xC];
     s32 unkC;
+    s32 unk10;
+    s32 unk14;
 } Ovl65Ext;
 
 /* Hero NAS extension 0x10000000 func_800B9C10 ticks: a 26-frame timer. */
@@ -74,6 +76,8 @@ void func_800BCB4C(s32 arg0);
 void func_800BCEFC(void);
 
 void func_800BCF88(s32 arg0);
+
+s32 func_800BD258(s32 arg0);
 
 s32 func_800BD320(s32 arg0, s32 arg1);
 
