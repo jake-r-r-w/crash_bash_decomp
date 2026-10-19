@@ -235,7 +235,21 @@ void PlotBoing(u8 *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitBoing);
+void InitBoing(NAS *nas) {
+    EXTengine *eng;
+
+    eng = nas->Engine;
+    if (eng != NULL) {
+        eng->unk10.y -= 0x100;
+        eng->sub->unk6C = *(void **)D_80058AD0;
+        eng->unk5D = 1;
+        eng->unk5C = 1;
+        func_80024E30(nas, &D_800C3AFC);
+    }
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitBashPenguin);
 

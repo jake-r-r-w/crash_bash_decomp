@@ -41,6 +41,7 @@ void func_800B62EC(void);
 void func_800B6F0C(void);
 
 extern u16 D_800C3B88;
+extern ScriptInit D_800C3AFC;
 
 void func_800B7D20(u16 arg0);
 
@@ -89,6 +90,8 @@ void func_800B8314(void);
 void PlotSnowGlint(NAS *nas);
 
 void InitMissileExplode(NAS *nas);
+
+void InitBoing(NAS *nas);
 
 void func_800BAC10(void);
 
