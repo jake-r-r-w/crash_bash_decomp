@@ -951,7 +951,34 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BC184);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BC314);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BC490);
+void func_800BC490(s32 arg0) {
+    switch (Heroes[arg0].hero_name) {
+    case 1:
+        PlaySfx(0x10, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 3:
+        PlaySfx(0x74, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 2:
+        PlaySfx(0x42, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 5:
+        PlaySfx(0x13C, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 6:
+        PlaySfx(0x16E, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 7:
+        PlaySfx(0x10A, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 4:
+        PlaySfx(0xA6, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 8:
+        PlaySfx(0xD8, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoProjectile);
 
