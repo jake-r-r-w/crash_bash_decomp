@@ -546,7 +546,18 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C2FB8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C3048);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C3148);
+void func_800C3148(void) {
+    ((Ovl60Cam *)D_80051640)->eyeX = 0;
+    ((Ovl60Cam *)D_80051640)->eyeZ = 0xE98;
+    ((Ovl60Cam *)D_80051640)->rotX = 0x1BE;
+    ((Ovl60Cam *)D_80051640)->dist = 0x200;
+    ((Ovl60Cam *)D_80051640)->eyeY = 0;
+    ((Ovl60Cam *)D_80051640)->rotY = 0;
+    ((Ovl60Cam *)D_80051640)->rotZ = 0;
+    ((Ovl60Cam *)D_80051640)->atX = 0;
+    ((Ovl60Cam *)D_80051640)->atY = 0;
+    ((Ovl60Cam *)D_80051640)->atZ = -0x650;
+}
 
 void func_800C318C(s32 arg0) {
     func_8007B7FC(arg0 & 0xFFFF, 0x81D0);

@@ -23,6 +23,17 @@ void func_800C34F0(s32 arg0);
 void func_800C3510(u8 *arg0);
 
 void func_800C353C();
+
+/* D_80051640 as the camera func_800C3148 sets up. */
+typedef struct Ovl60Cam {
+    /* 0x00 */ s32 eyeX, eyeY, eyeZ;
+    /* 0x0C */ s32 atX, atY, atZ;
+    /* 0x18 */ s32 dist;
+    /* 0x1C */ u8 pad1C[0x54 - 0x1C];
+    /* 0x54 */ s16 rotX;
+    /* 0x56 */ s16 rotY;
+    /* 0x58 */ s16 rotZ;
+} Ovl60Cam;
 typedef struct {
     u8 unk0[0xA];
     s16 unkA;
@@ -107,5 +118,7 @@ void func_800B4374(s32 arg0, u16 arg1);
 void func_800B4A70(s32 arg0, u16 arg1);
 void func_800B4E50(s32 arg0, u16 arg1);
 void func_800B53CC(s32 arg0, u16 arg1);
+
+void func_800C3148(void);
 
 #endif /* BASH_OVL60_H */
