@@ -130,7 +130,9 @@ typedef struct ExtSmokeTrail {
 extern s32 D_800D4D08;
 
 typedef struct Ext20 {
-    /* 0x00 */ u8 pad[0x20];
+    /* 0x00 */ u8 pad[0x14];
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ u8 pad18[0x8];
     /* 0x20 */ s32 val;
     /* 0x24 */ s32 state;
 } Ext20;
@@ -381,6 +383,31 @@ typedef struct Ovl62Odds {
 
 extern Ovl62Odds D_8009D87C[];
 extern s32 D_800D52E0[];
+extern s32 D_800D5364[];
+extern s32 D_8009D908;
+
+s32 func_800B7A58(s32 player, s32 target);
+
+/* Roll the odds in D_800D5364 (by D_8009D87C[player].unk0) and set ext->unk14. */
+static inline void Ovl62RollOdds(s32 player, Ext20 *ext) {
+    s32 r;
+    s32 limit;
+
+    r = Random(0x1000);
+    if (D_8009D87C[player].unk0 > 0x30) {
+        D_8009D87C[player].unk0 = 0x30;
+    }
+    limit = D_800D5364[D_8009D87C[player].unk0] << 7;
+    if (D_8005A648 == 0x12) {
+        limit += 0x400;
+    }
+    if (r < limit) {
+        ext->unk14 = 8;
+    }
+    if (D_8009D908 != 0) {
+        ext->unk14 = 0;
+    }
+}
 
 s32 func_8008CEB0(u8 *arg0, u8 *arg1);
 s32 func_800B7B88(s32 arg0);
@@ -658,6 +685,8 @@ s32 func_800B4094(s32 *arg0, s32 arg1);
 void func_800B5570(s32 player);
 
 void func_800B5684(s32 player);
+
+void func_800B6258(s32 player);
 
 void func_800B782C(s32 player);
 

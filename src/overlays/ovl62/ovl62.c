@@ -377,7 +377,34 @@ void func_800B60B8(s32 player) {
     fux->timer = 0x40 - t;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B6258);
+void func_800B6258(s32 player) {
+    s32 dist;
+    HeroInfo *base;
+    HeroInfo *h;
+    Ext20 *ext;
+    s32 target;
+
+    base = Heroes;
+    h = base + player;
+    ext = FindExtension(h->hero, 0x20000000);
+    if (ext == NULL) {
+        return;
+    }
+    if (h->hero_mode != 0x4E) {
+        return;
+    }
+    target = func_800CB178(player, &dist);
+    if (target == -1 && h->hero_anim->Aindex == 0x1E) {
+        ext->unk14 = 8;
+        return;
+    }
+    if (dist <= 0x3FFFF && func_800B7A58(player, target) != 0) {
+        Ovl62RollOdds(player, ext);
+    }
+    if (Heroes[player].hero_anim->Aindex == 0x1E) {
+        Ovl62RollOdds(player, ext);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B649C);
 
