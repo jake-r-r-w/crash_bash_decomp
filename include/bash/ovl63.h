@@ -57,6 +57,13 @@ typedef struct EXTraceshield {
     /* 0x1C */ s32 unk1C;
 } EXTraceshield;
 
+/* A hero's FUX as func_800C57B4 clears it. */
+typedef struct Ovl63HeroFux {
+    /* 0x00 */ u8 unk0[0x8C];
+    /* 0x8C */ s32 unk8C;
+    /* 0x90 */ s32 unk90;
+} Ovl63HeroFux;
+
 void InitRaceShield(NAS *nas);
 typedef struct EXTracefire {
     /* 0x00 */ s32 unk0[4];
@@ -263,5 +270,7 @@ extern s32 D_800C66F0;
 void func_800B5F04(void);
 
 s32 func_800BCD1C(s32 arg0);
+
+void func_800C57B4(s32 player);
 
 #endif /* BASH_OVL63_H */

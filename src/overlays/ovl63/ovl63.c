@@ -609,7 +609,25 @@ loop:
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C56D4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C57B4);
+void func_800C57B4(s32 player) {
+    EXTheromove *move;
+    Ovl63HeroFux *fux;
+
+    SetHeroSeq((HeroInfo *)player, 0x48);
+    if (D_8005A648 == 0x19) {
+        SetHeroSeq((HeroInfo *)player, 0x52);
+    }
+    move = Heroes[player].hero_move;
+    if (move != NULL) {
+        move->z_max = 0;
+        move->x_max = 0;
+    }
+    fux = (Ovl63HeroFux *)Heroes[player].hero->FUX;
+    if (fux != NULL) {
+        fux->unk8C = 0;
+        fux->unk90 = 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5854);
 
