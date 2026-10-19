@@ -409,7 +409,13 @@ s32 func_800BC774(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BC820);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BC878);
+s32 func_800BC878(s32 arg0) {
+    if (!(((PadButtons *)D_80051338)[arg0].unk50 & 0xF0)) {
+        return 0;
+    }
+    SetHeroAction((HeroInfo *)arg0, 0x64);
+    return 1;
+}
 
 void func_800BC8D0(s32 arg0) {
     func_800BA960(arg0);
