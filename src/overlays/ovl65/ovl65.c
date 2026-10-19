@@ -9,7 +9,49 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B33D8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B3538);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B3760);
+s32 func_800B3760(s32 arg0) {
+    s32 best = -1;
+    s32 bestd = 0x7FFFFFFF;
+    s32 start = Random(3);
+    s32 i = start;
+    s32 off;
+    s32 idx;
+    s32 dx;
+    s32 dz;
+    s32 d;
+    Ovl65Ext *ext;
+    EXTengine *a;
+    EXTengine *b;
+
+    for (;;) {
+        if (i >= start + 3) {
+            goto done;
+        }
+        off = 0;
+        if (i >= 3) {
+            off = 3;
+        }
+        ext = FindExtension(D_800BDA08[i - off], 0x10000000);
+        if (ext != NULL) {
+            s32 v = ext->unkC;
+            if (v == 0 || v == 3 || v == 4) {
+                idx = i - off;
+                b = Heroes[arg0].hero_eng;
+                a = D_800BDA08[idx]->Engine;
+                dx = a->unk10.x - b->unk10.x;
+                dz = a->unk10.z - b->unk10.z;
+                d = dx * dx + dz * dz;
+                if (d < bestd) {
+                    bestd = d;
+                    best = idx;
+                }
+            }
+        }
+        i++;
+    }
+done:
+    return best;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B38BC);
 
