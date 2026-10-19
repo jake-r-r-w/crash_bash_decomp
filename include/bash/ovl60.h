@@ -243,6 +243,8 @@ void func_800B53CC(s32 arg0, u16 arg1);
 
 s32 func_800BBF00(s32 *arg0, s32 *arg1);
 
+s32 func_800BEB6C(s32 arg0, s32 arg1, s32 arg2);
+
 s32 func_800C178C(void);
 
 void func_800C2018(s32 arg0, s32 arg1, s32 arg2);

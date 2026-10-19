@@ -588,7 +588,37 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BE864);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BEA34);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BEB6C);
+s32 func_800BEB6C(s32 arg0, s32 arg1, s32 arg2) {
+    s32 n;
+
+    n = 0;
+    if (arg0 > 0) {
+        s32 v = D_800C53DC[arg0 - 1][arg1].unkA;
+        n = v == arg2;
+    }
+    if (arg0 < 7 && D_800C53DC[arg0 + 1][arg1].unkA == arg2) {
+        n++;
+    }
+    if (arg1 > 0 && D_800C53DC[arg0][arg1 - 1].unkA == arg2) {
+        n++;
+    }
+    if (arg1 < 7 && D_800C53DC[arg0][arg1 + 1].unkA == arg2) {
+        n++;
+    }
+    if (arg0 == 0 && D_800C5B2C[arg1] == arg2) {
+        n++;
+    }
+    if (arg0 == 7 && D_800C5B4C[arg1] == arg2) {
+        n++;
+    }
+    if (arg1 == 0 && D_800C5B8C[arg0] == arg2) {
+        n++;
+    }
+    if (arg1 == 7 && D_800C5B6C[arg0] == arg2) {
+        n++;
+    }
+    return n;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Init_PogoRipperRoo);
 
