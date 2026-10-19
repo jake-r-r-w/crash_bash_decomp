@@ -221,7 +221,28 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BA95C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BAAB0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BABCC);
+void func_800BABCC(s32 arg0) {
+    u32 i;
+    subengine *sub;
+
+    if (D_8005A680[0] == 0) {
+        D_800AD12C = 1;
+        for (i = 0; i < 4; i++) {
+            if (i != arg0 && !(Heroes[i].hero_status & 0x200)) {
+                func_80026980(Heroes[i].hero);
+            }
+        }
+    }
+    Heroes[arg0].hero_ctrl |= 2;
+    SetHeroSeq((HeroInfo *)arg0, 0x5A);
+    func_80089FA4(arg0);
+    func_80085718(arg0, 0);
+    Heroes[arg0].hero_eng->unk10.y = 0;
+    sub = Heroes[arg0].hero_eng->sub;
+    sub = sub->next;
+    sub = sub->next;
+    sub->unk08 = 0;
+}
 
 void func_800BACD4(s32 arg0) {
     EXTengine *eng;
