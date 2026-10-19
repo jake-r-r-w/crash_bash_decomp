@@ -2601,7 +2601,31 @@ void func_800CFF44(s32 player) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D0060);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D034C);
+void func_800D034C(s32 player) {
+    Ext20 *ext;
+    EXTheromove *m;
+
+    Heroes[player].hero_eng->sub->flags &= 0xFFBFFFFF;
+    ext = FindExtension(Heroes[player].hero, 0x20000000);
+    if (ext != NULL) {
+        if (ext->state == 0) {
+            SetHeroAction((HeroInfo *)player, 0x49);
+        }
+        if (ext->state == 1) {
+            SetHeroAction((HeroInfo *)player, 0x54);
+        }
+    }
+    D_800D6934[player] = 0x4000;
+    Heroes[player].hero_eng->sub->unk68 = 0;
+    m = Heroes[player].hero_move;
+    if (m != NULL) {
+        m->z_dir = 0;
+        m->x_max = 0;
+        m->z_max = 0;
+        m->x_vel = 0;
+        m->z_vel = 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D0470);
 
