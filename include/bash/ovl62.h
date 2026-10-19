@@ -80,6 +80,22 @@ typedef struct Ovl62Cam {
     /* 0x58 */ s16 rotZ;
 } Ovl62Cam;
 
+/* A value func_800C5EEC eases toward its target by a fixed step. */
+typedef struct Ovl62Ease {
+    /* 0x00 */ s32 cur;
+    /* 0x04 */ s32 target;
+    /* 0x08 */ s16 step;     /* used while target != 0 */
+    /* 0x0A */ s16 stepZero; /* used while target == 0 */
+    /* 0x0C */ u8 padC[0x20 - 0xC];
+} Ovl62Ease;
+
+/* The camera offsets func_800C5EEC eases and subtracts from a position. */
+typedef struct Ovl62EaseCam {
+    /* 0x00 */ u8 pad0[0x20];
+    /* 0x20 */ Ovl62Ease x;
+    /* 0x40 */ Ovl62Ease z;
+} Ovl62EaseCam;
+
 typedef struct Ext10000000 {
     /* 0x00 */ u8 pad[0xC];
     /* 0x0C */ s32 unkC;
@@ -646,6 +662,8 @@ void func_800B782C(s32 player);
 s32 func_800B98AC(s32 player);
 
 s32 func_800C5CD0(s32 *arg0, s32 arg1);
+
+void func_800C5EEC(Ovl62EaseCam *c, s32 *pos);
 
 void func_800C7ED4(SniperAim *a, s32 *out);
 

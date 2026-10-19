@@ -1078,7 +1078,48 @@ s32 func_800C5CD0(s32 *arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C5DCC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C5EEC);
+void func_800C5EEC(Ovl62EaseCam *c, s32 *pos) {
+    s32 step;
+
+    if (c->x.cur != c->x.target) {
+        if (c->x.target != 0) {
+            step = c->x.step;
+        } else {
+            step = c->x.stepZero;
+        }
+        if (c->x.cur < c->x.target) {
+            c->x.cur += step;
+            if (c->x.cur > c->x.target) {
+                c->x.cur = c->x.target;
+            }
+        } else {
+            c->x.cur -= step;
+            if (c->x.cur < c->x.target) {
+                c->x.cur = c->x.target;
+            }
+        }
+    }
+    if (c->z.cur != c->z.target) {
+        if (c->z.target != 0) {
+            step = c->z.step;
+        } else {
+            step = c->z.stepZero;
+        }
+        if (c->z.cur < c->z.target) {
+            c->z.cur += step;
+            if (c->z.cur > c->z.target) {
+                c->z.cur = c->z.target;
+            }
+        } else {
+            c->z.cur -= step;
+            if (c->z.cur < c->z.target) {
+                c->z.cur = c->z.target;
+            }
+        }
+    }
+    pos[0] -= c->x.cur;
+    pos[2] -= c->z.cur;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBearminator);
 
