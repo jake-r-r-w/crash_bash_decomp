@@ -53,7 +53,69 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B5684);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B5788);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B5910);
+void func_800B5910(void) {
+    SLONG_XYZ pos;
+    HeroInfo *hero;
+    NAS *nas;
+    ExtSpawn5910 *ext;
+    u8 *tex;
+    s32 i;
+    s32 start;
+    SLONG_XYZ *p;
+    s32 n;
+    u16 status;
+
+    i = Random(4);
+    start = i;
+    while (1) {
+        if (i >= start + 4) {
+            break;
+        }
+        hero = &Heroes[i & 3];
+        status = hero->hero_status;
+        if (status & 0x2000) {
+            goto next;
+        }
+        if (status & 0x200) {
+            goto next;
+        }
+        if (D_800D4D08 != 0) {
+            hero->hero_status = status | 0x2000;
+            pos.x = hero->hero_eng->unk10.x;
+            pos.y = hero->hero_eng->unk10.y - 0x80;
+            pos.z = hero->hero_eng->unk10.z;
+            tex = D_800546C4;
+            p = &pos;
+            nas = SpawnNASById(pos.x, p->y, p->z, 0x1605, 0x11);
+            n = 5;
+            if (nas != NULL) {
+                ext = FindExtension(nas, 0x10000000);
+                if (ext != NULL) {
+                    ext->unkC = n;
+                    ext->unk18 = 0x100;
+                    if (tex != NULL) {
+                        ext->unk20 = n;
+                        nas->Engine->sub->unk6C = tex;
+                    } else {
+                        ext->unk20 = 1;
+                    }
+                    ext->unk28 = 0;
+                    nas->InitDelete(nas);
+                }
+            }
+            do {
+                SetHeroAction((HeroInfo *)(i & 3), 0x50);
+            } while (0);
+        } else {
+            D_800D4D08 = 1;
+            do {
+                SetHeroAction((HeroInfo *)(i & 3), 0x58);
+            } while (0);
+        }
+    next:
+        i++;
+    }
+}
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl62/ovl62", D_800B3358);
 

@@ -51,6 +51,20 @@ typedef struct Ext10000000 {
     /* 0x0C */ s32 unkC;
 } Ext10000000;
 
+/* Extension 0x10000000 of the object func_800B5910 spawns (NAS 0x1605). */
+typedef struct ExtSpawn5910 {
+    /* 0x00 */ u8 pad[0xC];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ u8 pad10[0x18 - 0x10];
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ u8 pad1C[0x20 - 0x1C];
+    /* 0x20 */ s32 unk20;
+    /* 0x24 */ u8 pad24[0x28 - 0x24];
+    /* 0x28 */ s32 unk28;
+} ExtSpawn5910;
+
+extern s32 D_800D4D08;
+
 typedef struct Ext20 {
     /* 0x00 */ u8 pad[0x20];
     /* 0x20 */ s32 val;
@@ -223,6 +237,8 @@ extern s32 D_800D5FEC[4];
 extern s32 D_800D5FB0[4];
 
 s32 func_800B4A1C(NAS *nas);
+
+void func_800B5910(void);
 
 void func_800B60B8(s32 player);
 
