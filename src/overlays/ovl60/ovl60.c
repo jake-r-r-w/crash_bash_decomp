@@ -9,7 +9,68 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B3808);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B3A38);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B3C44);
+void func_800B3C44(void) {
+    s32 i;
+    s32 j;
+    Ovl60Cell *p;
+    Ovl60Obj *obj;
+    u16 *id;
+    s16 v;
+    Ovl60Cell *base;
+    Ovl60Cell *base2;
+    u8 *g;
+    s32 rowOff;
+    s32 off;
+
+    j = 0;
+    base = D_800C53DC[0];
+    for (rowOff = 0; j < 8; j++) {
+        i = 0;
+        off = rowOff;
+        do {
+            Ovl60Cell *c;
+
+            func_800C2620(i, j);
+            c = (Ovl60Cell *)(off + (u32)base);
+            c->unk4 = NULL;
+            *(s16 *)c->unk8 = 0;
+            *(s16 *)c->unkC = 0;
+            c->hero = NULL;
+            c->unkE = 0;
+            c->unk10 = 0;
+            c->unk18[0] = 0;
+            off += sizeof(D_800C53DC[0]);
+        } while (++i < 8);
+        rowOff += sizeof(Ovl60Cell);
+    }
+    obj = (Ovl60Obj *)((GfxScene *)D_80058AD0)->objs;
+    D_800C5BB4 = NULL;
+    if (obj != NULL) {
+    base2 = D_800C53DC[0];
+    g = D_8005A614;
+    do {
+        id = (u16 *)func_80015870(obj->model, obj->index);
+        if ((u16)(*id - 10) < 78) {
+            v = *id;
+            j = 7 - (s16)(v % 10);
+            i = (s16)(v / 10) - 1;
+            p = (Ovl60Cell *)(j * sizeof(Ovl60Cell) + i * sizeof(D_800C53DC[0]) + (u32)base2);
+            p->unk4 = (Ovl60CellPos *)obj;
+            obj->flags |= 0x20000;
+            func_800C3510((u8 *)obj);
+        }
+        if (*(s16 *)(g + 0x34) == 11 && *(s16 *)id == 100) {
+            D_800C5BB4 = obj;
+        }
+        obj = obj->next;
+    } while (obj != NULL);
+    }
+    for (i = 0; i < 8; i++) {
+        for (j = 0; j < 8; j++) {
+            func_800B7C3C(i, j);
+        }
+    }
+}
 
 void func_800B3E34(void) {
     Ovl60Slot *slot;

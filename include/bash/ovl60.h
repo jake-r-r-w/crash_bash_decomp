@@ -105,6 +105,18 @@ typedef struct {
 } Ovl60Cell; /* size 0x1C */
 
 extern Ovl60Cell D_800C53DC[8][8];
+
+/* A scene object in the list at D_80058AD0 + 0x1C (func_800B3C44). */
+typedef struct Ovl60Obj {
+    /* 0x00 */ u32 flags;
+    /* 0x04 */ u8 pad4[0x5C - 0x4];
+    /* 0x5C */ struct Ovl60Obj *next;
+    /* 0x60 */ u8 pad60[0x6C - 0x60];
+    /* 0x6C */ u8 *model;
+    /* 0x70 */ u8 pad70[0x74 - 0x70];
+    /* 0x74 */ u16 index;
+} Ovl60Obj;
+extern Ovl60Obj *D_800C5BB4;
 extern HeroInfo Heroes[4];
 void func_800B83AC(s32, s32);
 
@@ -288,6 +300,8 @@ typedef enum Ovl60Mode {
     OVL60_MODE_12 = 12
 } Ovl60Mode;
 s32 func_8008502C();
+void func_800B3C44(void);
+
 void func_800B6370(s32 arg0);
 
 void func_800B6438(s32 arg0);
