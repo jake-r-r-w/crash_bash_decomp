@@ -869,7 +869,26 @@ void func_800CBA64(void) {
     D_8005AA70[6] = (s32)func_800CAD14;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CBAA4);
+s32 func_800CBAA4(s32 arg0, s32 arg1) {
+    s32 total;
+    s32 result;
+    s32 i;
+
+    result = 0;
+    total = 0;
+    if (Heroes[arg1].hero_status & 0x2000) {
+        return -1;
+    }
+    for (i = 0; i < 4; i++) {
+        if (i != arg0 && !(Heroes[i].hero_status & 0x2000)) {
+            total += D_8009D87C[i].unk4 << 7;
+        }
+    }
+    if (total != 0) {
+        result = (D_8009D87C[arg1].unk4 << 19) / total;
+    }
+    return result;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CBB8C);
 
