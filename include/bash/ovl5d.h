@@ -44,6 +44,11 @@ s32 func_800BB1B4(u8 *arg0);
 
 void func_800BB360(void);
 
+void func_800B3A38(void);
+void func_800B3DD8(void);
+void func_800B432C(void);
+void func_800BAC5C(void);
+
 void func_800BB368(void);
 
 extern u8 D_80052F5C[];
@@ -61,5 +66,7 @@ void func_800BAF68(void);
 s32 func_800BB100(s32 arg0);
 
 void func_800BB2BC(void);
+
+void func_800BB370(void);
 
 #endif /* BASH_OVL5D_H */
