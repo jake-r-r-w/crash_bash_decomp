@@ -1199,7 +1199,12 @@ s32 arg0;
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2D9C);
+void func_800D2D9C(s32 player) {
+    func_8008502C(player);
+    func_800CD214(player);
+    func_800BBF2C(player);
+    func_800C0888(&Heroes[player].hero_eng->unk10, player);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2E00);
 
