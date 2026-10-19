@@ -52,6 +52,13 @@ typedef struct Ovl65DinoGem {
     u8 padD8[0xA];
     s16 unkE2;
 } Ovl65DinoGem;
+typedef struct Ovl65PadAng {
+    u8 pad0[0x38];
+    s32 angle;
+    u8 pad3C[0x50 - 0x3C];
+    s32 buttons;
+    u8 pad54[4];
+} Ovl65PadAng;
 
 s32 func_800B49AC(s32 id);
 void func_800B3538(s32 id);

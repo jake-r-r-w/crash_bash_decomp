@@ -52,7 +52,85 @@ s32 func_800B33D8(s32 arg0) {
     return neg;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B3538);
+void func_800B3538(id)
+s32 id;
+{
+    HeroInfo *h;
+    HeroInfo *h2;
+    Ovl65Chase *c;
+    EXTbotai *ai;
+    u32 pad;
+    u32 dir;
+    u16 ang;
+    u16 t;
+    s32 a;
+    s32 b;
+    SLONG_XYZ *p;
+    SLONG_XYZ *q;
+    HeroInfo *base;
+    s32 off;
+
+    base = Heroes;
+    off = id * sizeof(HeroInfo);
+    h = (HeroInfo *)(off + (u8 *)base);
+    c = FindExtension(h->hero, 0x20000000);
+    if (c != NULL) {
+        p = &c->pos;
+        q = &c->tgt;
+        dir = (p->x > q->x) << 7;
+        if (p->x < q->x) {
+            dir |= 0x20;
+        }
+        a = p->z;
+        b = q->z;
+        if (b < a) {
+            dir |= 0x40;
+        }
+        if (a < b) {
+            dir |= 0x10;
+        }
+        h->hero_ai->AIpad |= dir;
+        if (h->hero_frozen == 0) {
+            ((Ovl65PadAng *)D_80051338)[id].buttons = h->hero_ai->AIpad;
+        }
+        ai = h->hero_ai;
+        t = ai->AItimer1--;
+        if (t == 0) {
+            pad = h->hero_ai->AIpad;
+            ang = 0;
+            if (pad & 0x80) {
+                ang = 0xC00;
+            }
+            if (pad & 0x20) {
+                ang = 0x400;
+            }
+            if (pad & 0x10) {
+                ang = 0;
+            }
+            if (pad & 0x40) {
+                ang = 0x800;
+            }
+            if ((pad & 0x90) == 0x90) {
+                ang = 0xE00;
+            }
+            if ((pad & 0xC0) == 0xC0) {
+                ang = 0xA00;
+            }
+            if ((pad & 0x30) == 0x30) {
+                ang = 0x200;
+            }
+            if ((pad & 0x60) == 0x60) {
+                ang = 0x600;
+            }
+            h2 = (HeroInfo *)(off + (s32)base);
+            h2->hero_ai->AIang = ang;
+            h2->hero_ai->AItimer1 = 0;
+        }
+        if (Heroes[id].hero_frozen == 0) {
+            ((Ovl65PadAng *)D_80051338)[id].angle = Heroes[id].hero_ai->AIang;
+        }
+    }
+}
 
 s32 func_800B3760(s32 arg0) {
     s32 best = -1;
