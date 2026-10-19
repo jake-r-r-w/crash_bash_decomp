@@ -6052,7 +6052,8 @@
   "auto_failed": "diff"
  },
  "ovl60:800C2204": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-19T08:40:26Z",
+  "status": "matched"
  },
  "ovl60:800C2294": {
   "auto_diff": 10,

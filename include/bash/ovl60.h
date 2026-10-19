@@ -57,6 +57,7 @@ typedef struct {
 
 extern Ovl60Cell D_800C53DC[8][8];
 extern HeroInfo Heroes[4];
+void func_800B83AC(s32, s32);
 
 /* 0x1C-byte entries of D_800C535C */
 typedef struct {
@@ -207,6 +208,8 @@ void func_800B53CC(s32 arg0, u16 arg1);
 s32 func_800BBF00(s32 *arg0, s32 *arg1);
 
 void func_800C2018(s32 arg0, s32 arg1, s32 arg2);
+
+void func_800C2204(void);
 
 void func_800C2BE8(s32 arg0);
 

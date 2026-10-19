@@ -919,7 +919,18 @@ void func_800C2018(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C20C0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C2204);
+void func_800C2204(void) {
+    s32 i;
+    s32 j;
+
+    for (i = 0; i < 8; i++) {
+        for (j = 0; j < 8; j++) {
+            if ((u16)D_800C53DC[i][j].unk12 == 6) {
+                func_800B83AC(i, j);
+            }
+        }
+    }
+}
 
 void func_800C2294(s32 arg0, s32 arg1, s16 arg2, s16 arg3) {
     Ovl60Cell *base = D_800C53DC[0];
