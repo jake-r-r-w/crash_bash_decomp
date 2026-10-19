@@ -28,6 +28,7 @@ extern s32 D_800C6930;
 extern s32 D_800C6D20;
 extern ScriptInit D_800C6E2C;
 extern s32 D_80054F84;
+extern HeroInfo Heroes[4];
 
 void func_800B5360(s32 *arg0);
 
@@ -137,5 +138,7 @@ void InitRaceSmokeBoostWater(NAS *nas);
 void InitRaceGreenSmokeBoost(NAS *nas);
 
 extern ScriptInit D_800C6F28;
+
+s32 func_800C5400(s32 arg0);
 
 #endif /* BASH_OVL63_H */

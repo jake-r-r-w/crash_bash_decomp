@@ -434,7 +434,18 @@ void func_800C53BC(s32 arg0) {
     func_8008502C(arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5400);
+s32 func_800C5400(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *hero = &base[arg0];
+
+    if (hero->hero_status & 0x200) {
+        if (hero->hero_mode != 0x62) {
+            SetHeroAction((HeroInfo *)arg0, 0x62);
+        }
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5470);
 
