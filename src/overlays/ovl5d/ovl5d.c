@@ -162,7 +162,50 @@ void func_800B6F0C(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B6FE0);
+s32 func_800B6FE0(s32 arg0) {
+    HeroInfo *base;
+    HeroInfo *o;
+    HeroInfo *h;
+    EXTengine *a;
+    EXTengine *b;
+    s32 i;
+    s32 dx;
+    s32 dz;
+    s32 d;
+    s32 min;
+
+    u8 *g;
+    s32 mate;
+    s32 r;
+
+    mate = Heroes[arg0].hero_teammate;
+    min = 0x7FFFFF;
+    i = 0;
+    g = D_8005A614;
+    base = Heroes;
+    h = &Heroes[arg0];
+    for (i = 0; (u16)i < 4; i++) {
+        if ((u16)i != arg0 && (*(s32 *)(g + 0x6C) == 0 || (u16)i != mate)) {
+            o = (HeroInfo *)((u16)i * sizeof(HeroInfo) + (u32)base);
+            if (!(o->hero_status & 0xFA00)) {
+                a = h->hero_eng;
+                b = o->hero_eng;
+                dx = a->unk10.x - b->unk10.x;
+                dz = a->unk10.z - b->unk10.z;
+                d = dx * dx + dz * dz;
+                if (d < min) {
+                    min = d;
+                }
+            }
+        }
+    }
+    if (min != 0x7FFFFF) {
+        r = csqrt(min) >> 6;
+    } else {
+        r = 0;
+    }
+    return r;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B710C);
 

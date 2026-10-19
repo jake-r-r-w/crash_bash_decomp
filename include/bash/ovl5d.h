@@ -238,6 +238,8 @@ typedef struct Ovl5dGridCell {
 
 extern Ovl5dGridCell D_800C3EAC[16][16];
 
+s32 func_800B6FE0(s32 arg0);
+
 void func_800B7E74(void);
 
 #endif /* BASH_OVL5D_H */
