@@ -700,7 +700,34 @@ void PlotBearBoss(NAS *m) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBearBoss);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotPackEffect);
+void PlotPackEffect(NAS *m) {
+    ExtSimpleExplosion *ext;
+    subengine *sub;
+    s32 i;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext != NULL) {
+        sub = m->Engine->sub;
+        ext->unk104++;
+        if (sub != NULL) {
+            i = 0;
+            do {
+                sub->unk04 += ext->vel[i].x;
+                sub->unk08 += ext->vel[i].z;
+                sub->unk0C += ext->vel[i].y;
+                sub->unk76 += 0x100;
+                sub->unk20.x -= 0x80;
+                sub->unk20.y -= 0x80;
+                sub->unk20.z -= 0x80;
+                sub = sub->next;
+                i++;
+            } while (sub != NULL);
+        }
+        if (ext->unk104 == 0x2D) {
+            KillNAS(m);
+        }
+    }
+}
 
 void PlotCortexPack(NAS *m) {
     m->Engine->unk5E = 1;
@@ -712,7 +739,34 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBrioPack);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitDingoTail);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotSimpleExplosion);
+void PlotSimpleExplosion(NAS *m) {
+    ExtSimpleExplosion *ext;
+    subengine *sub;
+    s32 i;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext != NULL) {
+        sub = m->Engine->sub;
+        ext->unk104++;
+        if (sub != NULL) {
+            i = 0;
+            do {
+                sub->unk04 += ext->vel[i].x;
+                sub->unk08 += ext->vel[i].z;
+                sub->unk0C += ext->vel[i].y;
+                sub->unk76 += 0x100;
+                sub->unk20.x -= 0x80;
+                sub->unk20.y -= 0x80;
+                sub->unk20.z -= 0x80;
+                sub = sub->next;
+                i++;
+            } while (sub != NULL);
+        }
+        if (ext->unk104 == 0x2D) {
+            KillNAS(m);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitSmokeTrail);
 
