@@ -669,7 +669,28 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAE10);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAEB0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAF94);
+s32 func_800CAF94(s32 state) {
+    Ovl62Fux *f;
+    s32 i;
+    s32 n;
+
+    HeroInfo *h;
+
+    n = 0;
+    i = 0;
+    h = Heroes;
+loop:
+    if (i < 4) {
+        f = (Ovl62Fux *)h->hero->FUX;
+        if (f != NULL && f->state == state) {
+            n++;
+        }
+        h++;
+        i++;
+        goto loop;
+    }
+    return n;
+}
 
 s32 func_800CAFF0(void) {
     return 0;

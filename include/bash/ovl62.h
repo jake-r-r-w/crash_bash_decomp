@@ -234,6 +234,8 @@ s32 func_800C9F70(void);
 
 void func_800CACC0(void);
 
+s32 func_800CAF94(s32 state);
+
 void func_800CB134(s32 player);
 
 s32 func_800CB284(void);
