@@ -197,4 +197,12 @@ void func_800C2F60(s32 arg0) {
     h->hero_weapon_timer = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C2FB0);
+s32 func_800C2FB0(s32 arg0) {
+    u32 m;
+
+    if (D_8005A614[arg0 + 0x5C] != 0) {
+        return 0;
+    }
+    m = D_80051338[arg0].unk54 & 0x2000;
+    return m != 0;
+}
