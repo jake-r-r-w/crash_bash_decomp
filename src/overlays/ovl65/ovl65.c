@@ -374,7 +374,71 @@ void func_800B3D90(s32 id) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B3FDC);
+void func_800B3FDC(s32 id) {
+    Ovl65Chase *c;
+    Ovl65Ext *e;
+    s32 near;
+    s32 hit;
+    s32 yaw;
+    s32 sc;
+    s32 r;
+    Ovl65PosH *p;
+    s32 v1[3];
+    s32 v2[3];
+    s16 d[8];
+
+    c = FindExtension(Heroes[id].hero, 0x20000000);
+    if (c != NULL) {
+        hit = 0;
+        e = FindExtension(Heroes[id].hero, 0x10000000);
+        near = 0;
+        if (e != NULL) {
+            near = (u32)e->unk14 > 0;
+        }
+        if ((near ^ 1) != 0) {
+            c->unk28 = -1;
+            c->fn = func_800BD1FC;
+            return;
+        }
+        r = func_800BCCE8(id);
+        if (r != 1) {
+            c->timer = 0x3C;
+            c->state = 4;
+            c->fn = func_800B4D6C;
+            return;
+        }
+        c->pos = Heroes[id].hero_eng->unk10;
+        c->tgt = ((Ovl65Pos *)D_800BDB54)->pos;
+        if (c->unk30-- > 0) {
+            func_800B3538(id);
+        }
+        if (c->unk30 < -2) {
+            c->unk30 = 8;
+        }
+        yaw = Heroes[id].hero_eng->unk1E;
+        sc = D_800BDB50 * 4;
+        v1[0] = (sc * D_80068BD4[(yaw - 0x400) & 0xFFF].unk2) >> 12;
+        v1[2] = (sc * D_80068BD4[yaw & 0xFFF].unk2) >> 12;
+        v2[0] = 0;
+        v2[2] = 0;
+        p = (Ovl65PosH *)D_800BDB54;
+        d[0] = p->x - ((Ovl65EngH *)Heroes[id].hero_eng)->x;
+        d[2] = p->z - ((Ovl65EngH *)Heroes[id].hero_eng)->z;
+        d[1] = 0;
+        d[3] = 0x300;
+        if (func_800B4268(v2, v1, d) == r) {
+            hit = 1;
+        }
+        if (hit != 0) {
+            Heroes[id].hero_ai->AIpad |= 0x8000;
+            ((Ovl65Pad *)D_80051338)[id].unk50 = Heroes[id].hero_ai->AIpad;
+            c->unk28 = -1;
+            c->unk30 = 8;
+            c->fn = func_800BD1FC;
+            c->state = 0;
+        }
+    }
+}
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl65/ovl65", D_800B32B8);
 
