@@ -462,4 +462,31 @@ s32 func_800C5470(s32 arg0);
 
 void func_800C56D4(s32 player);
 
+/* Track glob extension, AddExtension(nas, 0x8C, 0x10000000). */
+typedef struct EXTtrackglob {
+    /* 0x00 */ s32 unk0[3];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ u8 pad18[0x28 - 0x18];
+    /* 0x28 */ s32 unk28;
+    /* 0x2C */ u8 pad2C[0x54 - 0x2C];
+    /* 0x54 */ s32 unk54;
+    /* 0x58 */ u8 pad58[0x64 - 0x58];
+    /* 0x64 */ s32 unk64;
+    /* 0x68 */ s32 unk68;
+    /* 0x6C */ s32 unk6C;
+    /* 0x70 */ SLONG_XYZ pos;
+    /* 0x7C */ ScriptCursor *cursor;
+    /* 0x80 */ EXTengine *eng;
+    /* 0x84 */ s32 unk84;
+    /* 0x88 */ s32 unk88;
+} EXTtrackglob;
+
+extern ScriptInit D_800C6EA4;
+extern u8 *D_800C66EC;
+extern s32 D_800C6EB0;
+
+void InitTrackGlob(NAS *m);
+
 #endif /* BASH_OVL63_H */

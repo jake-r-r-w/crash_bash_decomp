@@ -19,9 +19,9 @@
    "size": 2836
   }
  ],
- "commit": "ee7d104dc",
+ "commit": "a110a9a78",
  "game": "SCUS_945.70",
- "generated": "2026-10-19T10:12:07Z",
+ "generated": "2026-10-19T10:13:01Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -115458,9 +115458,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "a110a9a78",
+   "data_b": 3620,
+   "data_tb": 606943,
+   "game_all_f": 2541,
+   "game_b": 440912,
+   "game_c_f": 1746,
+   "game_f": 1746,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 1538,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-19T10:13:01Z",
+   "units": {
+    "engine": [
+     121412,
+     355
+    ],
+    "main exe": [
+     124840,
+     575
+    ],
+    "ovl5d": [
+     328,
+     4
+    ],
+    "ovl5e": [
+     504,
+     6
+    ],
+    "ovl5f": [
+     3172,
+     46
+    ],
+    "ovl60": [
+     28208,
+     131
+    ],
+    "ovl61": [
+     49424,
+     96
+    ],
+    "ovl62": [
+     32228,
+     151
+    ],
+    "ovl63": [
+     13628,
+     75
+    ],
+    "ovl64": [
+     228,
+     8
+    ],
+    "ovl65": [
+     1096,
+     11
+    ],
+    "ovl66": [
+     744,
+     15
+    ],
+    "ovl67": [
+     27056,
+     101
+    ],
+    "ovl68": [
+     324,
+     11
+    ],
+    "ovl69": [
+     9496,
+     68
+    ],
+    "ovl6a": [
+     28224,
+     93
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-19T10:12:59Z",
+   "auto": true,
+   "name": "InitTrackGlob",
+   "seg": "overlays/ovl63/ovl63",
+   "size": 508,
+   "tries": 0
+  },
   {
    "at": "2026-10-19T10:12:06Z",
    "auto": true,
@@ -115572,14 +115666,6 @@
    "seg": "overlays/ovl63/ovl63",
    "size": 220,
    "tries": 0
-  },
-  {
-   "at": "2026-10-19T10:06:05Z",
-   "auto": true,
-   "name": "PlotRippled",
-   "seg": "overlays/ovl63/ovl63",
-   "size": 224,
-   "tries": 0
   }
  ],
  "summary": {
@@ -115595,15 +115681,15 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 3,
-   "c_f": 1745,
-   "done_b": 440404,
-   "done_f": 1745,
+   "c_f": 1746,
+   "done_b": 440912,
+   "done_f": 1746,
    "named_f": 345,
-   "pct": 43.21770771591975,
+   "pct": 43.267558751604454,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2541,
-   "typed_f": 1537
+   "typed_f": 1538
   },
   "lib": {
    "all_f": 566,
@@ -115794,20 +115880,20 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
-    "c_f": 74,
-    "done_b": 13120,
-    "done_f": 74,
+    "c_f": 75,
+    "done_b": 13628,
+    "done_f": 75,
     "file": "ovl63.bin",
     "files": 1,
     "lib": false,
     "named_f": 38,
-    "pct": 17.126148705096075,
+    "pct": 17.789264828738514,
     "phase": 5,
     "sony_b": 0,
     "title": "Race",
     "total_b": 76608,
     "total_f": 139,
-    "typed_f": 72,
+    "typed_f": 73,
     "unit": "ovl63"
    },
    {

@@ -797,7 +797,48 @@ void InitBarrelRoll(NAS *m) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotBarrelRoll);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitTrackGlob);
+void InitTrackGlob(NAS *m) {
+    EXTtrackglob *ext;
+    EXTengine *e;
+    s32 angle;
+
+    ext = AddExtension(m, 0x8C, 0x10000000);
+    if (ext != NULL) {
+        ext->cursor = func_80024E30(m, &D_800C6EA4);
+        func_80026B70(&D_800C66EC, (u8 *)m);
+        m->Engine->sub->unk6C = *(s32 *)D_80058AD0;
+        m->Engine->sub->unk74 = 0x4100;
+        m->Engine->unk5D = 1;
+        ext->unk10 = 0x10;
+        ext->unk54 = 0x40;
+        ext->unkC = 0;
+        ext->unk14 = 0;
+        ext->unk28 = 0;
+        angle = 0xA00 - (D_800C6EB0 << 9);
+        if (++D_800C6EB0 == 3) {
+            D_800C6EB0 = 0;
+        }
+        ext->unk64 = (D_80068BD4[(angle - 0x400) & 0xFFF].unk2 * 7) >> 4;
+        ext->unk6C = (D_80068BD4[angle & 0xFFF].unk2 * 7) >> 4;
+        ext->unk68 = 0;
+        ext->unk84 = 0x5A;
+        m->Engine->unk1E = 0;
+        ext->pos = m->Engine->unk10;
+        m->Engine->unk5E = 1;
+        e = AddEngine(m, 2);
+        if (e != NULL) {
+            ext->eng = e;
+            e->sub->unk6C = D_80052F5C;
+            e->sub->unk74 = 0x2001;
+            e->unk5C = 1;
+            e->unk5D = 0;
+            e->unk10 = m->Engine->unk10;
+            e->sub->unk76 = 0x800;
+            e->sub->flags |= 0x40008041;
+            ext->eng->unk5E = 1;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotTrackGlob);
 
