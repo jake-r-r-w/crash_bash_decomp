@@ -181,7 +181,31 @@ void *func_800C2B60(s32 idx, s32 mask) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C2C70);
+void func_800C2C70(s32 *a, s32 *b, s16 ma, s32 *c, s32 *d, s16 mb) {
+    s32 total;
+    s32 r;
+    s32 q;
+    s32 dd;
+    s32 x;
+    s32 y;
+
+    if (ma > 0 && mb > 0) {
+        x = *a;
+        y = *c;
+        dd = -((x - y) << 8);
+        q = (dd * mb + ((ma * x + mb * y) << 8)) / (total = mb + ma);
+        r = q - dd;
+        *a = q >> 8;
+        *c = r >> 8;
+        x = *b;
+        y = *d;
+        dd = -((x - y) << 8);
+        q = (dd * mb + ((ma * x + mb * y) << 8)) / total;
+        r = q - dd;
+        *b = q >> 8;
+        *d = r >> 8;
+    }
+}
 
 void func_800C2DAC(s32 arg0) {
     HeroInfo *h;

@@ -4735,7 +4735,8 @@
  },
  "ovl5d:800C2C70": {
   "auto_diff": 79,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-19T14:08:47Z",
+  "status": "matched"
  },
  "ovl5d:800C2DAC": {
   "matched_at": "2026-10-19T13:53:24Z",
