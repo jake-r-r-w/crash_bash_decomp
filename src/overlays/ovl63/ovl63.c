@@ -263,7 +263,11 @@ void PlotRaceSmokeBoostWater(NAS *nas) {
     func_800250B0(nas);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRaceSmokeBoostWater);
+void InitRaceSmokeBoostWater(NAS *nas) {
+    func_80024E30(nas, &D_800C6F28);
+    nas->Engine->sub->unk6C = &D_80054F84;
+    nas->UserInfo.user1 = 0;
+}
 
 s32 func_800C467C(Ovl63BounceObj *obj, Ovl63Bouncer *b) {
     s32 pos;
@@ -300,7 +304,11 @@ void PlotRaceGreenSmokeBoost(NAS *nas) {
     func_800250B0(nas);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRaceGreenSmokeBoost);
+void InitRaceGreenSmokeBoost(NAS *nas) {
+    func_80024E30(nas, &D_800C6E2C);
+    nas->Engine->sub->unk6C = &D_80054F84;
+    nas->UserInfo.user1 = 0;
+}
 
 void PlotRaceGreenSmokePoof(NAS *nas) {
     func_800250B0(nas);
