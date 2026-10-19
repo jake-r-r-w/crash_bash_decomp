@@ -36,11 +36,17 @@ extern s32 D_8005AA70[11];
 void func_800B9BF8(s32 arg0);
 extern s32 D_8005A5D8;
 extern HeroInfo Heroes[4];
+FlagRecord *func_80025A48(EXTengine *eng, u32 flag);
+
 void func_80025F44(EXTengine *eng);
+void *FindExtension(NAS *nas, s32 id);
+
 s32 func_80085890();
 s32 func_8008A200(s32 arg0);
 void func_8008A810(void);
 
 s32 func_800B8D98(s32 arg0);
+
+extern NAS *D_8005AA2C;
 
 #endif /* BASH_OVL64_H */

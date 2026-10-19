@@ -278,7 +278,92 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B94C4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B95F0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B97A8);
+s32 func_800B97A8(x, y, z, size, skip, mask)
+    s32 x;
+    s32 y;
+    s32 z;
+    u16 size;
+    s32 skip;
+    u16 mask;
+{
+    s32 ret;
+    u32 i;
+    EXTengine *eng;
+    NAS *nas;
+    EXTobject *obj;
+    FlagRecord *rec;
+    s32 top;
+    s32 bot;
+    s32 dx;
+    s32 dz;
+    s32 rr;
+    s32 dist;
+
+    ret = -1;
+    for (i = 0; i < 4; i++) {
+        if (skip == i) {
+            continue;
+        }
+        if (Heroes[i].hero_status & 0xFA00) {
+            continue;
+        }
+        eng = Heroes[i].hero_eng;
+        if (eng == NULL) {
+            continue;
+        }
+        rec = func_80025A48(eng, 0x40);
+        if (rec == NULL) {
+            continue;
+        }
+        top = eng->unk10.y + rec->unk2 + size;
+        bot = eng->unk10.y + rec->height - size;
+        if (y < top && bot < y) {
+            dx = eng->unk10.x - x;
+            dist = dx * dx;
+            dz = eng->unk10.z - z;
+            dist += dz * dz;
+            rr = rec->radius + size;
+            rr *= rr;
+            if (dist < rr) {
+                ret = i;
+            }
+        }
+    }
+    for (nas = D_8005AA2C; nas != NULL; nas = nas->Solid.Child) {
+        if (!(nas->Class & 0x200)) {
+            continue;
+        }
+        eng = nas->Engine;
+        if (eng == NULL) {
+            continue;
+        }
+        rec = func_80025A48(eng, 0x40);
+        if (rec == NULL) {
+            continue;
+        }
+        top = eng->unk10.y + rec->unk2 + size;
+        bot = eng->unk10.y + rec->height - size;
+        if (y < top && bot < y) {
+            dx = eng->unk10.x - x;
+            dist = dx * dx;
+            dz = eng->unk10.z - z;
+            dist += dz * dz;
+            rr = rec->radius + size;
+            rr *= rr;
+            if (dist < rr) {
+                obj = FindExtension(nas, 0x1000);
+                if (obj != NULL && (obj->can_do & mask)) {
+                    obj->player = skip;
+                    obj->will_do |= mask;
+                }
+                if (ret != -1) {
+                    ret = -1;
+                }
+            }
+        }
+    }
+    return ret;
+}
 
 void InitBash8way(NAS *nas) {
     EXTengine *eng;
