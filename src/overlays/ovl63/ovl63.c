@@ -81,7 +81,29 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B4D64);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B4EDC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B5360);
+void func_800B5360(s32 player) {
+    Ovl63VelFux *fux;
+    SLONG_XYZ pos;
+    s32 d;
+
+    if (FindExtension(Heroes[player].hero, 0x20000000) != NULL) {
+        fux = (Ovl63VelFux *)Heroes[player].hero->FUX;
+        if (fux != NULL) {
+            d = (((csqrt((fux->vx * fux->vx >> 8) + (fux->vz * fux->vz >> 8)) >> 14) - 0x50) << 10) / 80;
+            if (d < 0) {
+                d = 0;
+            }
+            d += 0xBE8;
+            pos.x = Heroes[player].hero_eng->unk10.x - (d * D_80068BD4[(Heroes[player].hero_eng->unk1E - 0x400) & 0xFFF].unk2 >> 12);
+            pos.y = 0;
+            pos.z = Heroes[player].hero_eng->unk10.z - (d * D_80068BD4[Heroes[player].hero_eng->unk1E & 0xFFF].unk2 >> 12);
+            Heroes[player].hero_ai->AIpad |= 0x8000;
+            Heroes[player].hero_ai->AIpad |= func_800B4EDC(player);
+            Heroes[player].hero_ai->AIpad |= 0x800;
+            ((Ovl63Pad *)D_80051338)[player].unk50 = Heroes[player].hero_ai->AIpad;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B5528);
 

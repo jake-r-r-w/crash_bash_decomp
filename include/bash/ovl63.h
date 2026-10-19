@@ -38,7 +38,15 @@ extern s32 D_800C6BAC;
 extern u8 D_80052F94[];
 extern char D_800B3400[];
 
-void func_800B5360(s32 *arg0);
+void func_800B5360(s32 player);
+u32 func_800B4EDC(s32 player);
+
+/* A hero's FUX as func_800B5360 reads it: a 2D velocity at 0x13C. */
+typedef struct Ovl63VelFux {
+    /* 0x000 */ u8 pad0[0x13C];
+    /* 0x13C */ s32 vx;
+    /* 0x140 */ s32 vz;
+} Ovl63VelFux;
 
 void func_800B7D94(void);
 
