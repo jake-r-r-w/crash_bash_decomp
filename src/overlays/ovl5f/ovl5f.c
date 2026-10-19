@@ -1164,7 +1164,40 @@ void func_800C44E8(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C4548);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C49F8);
+void func_800C49F8(s32 arg0) {
+    EXTengine *eng;
+    s32 pad[2];
+
+    Heroes[arg0].hero_move->jump_max = 0;
+    Heroes[arg0].hero_move->velocity_enable = 1;
+    Heroes[arg0].hero_idle_count = Random(0x96) + 0x5A;
+    eng = Heroes[arg0].hero_eng;
+    if (D_800CAD50[arg0].HullSFX != 0) {
+        D_800CAD50[arg0].HullSFX = 0;
+        if (eng->sfx != NULL) {
+            StopSfx(eng->sfx);
+        }
+    }
+    if (D_800CAD50[arg0].TurretSFX != 0) {
+        D_800CAD50[arg0].TurretSFX = 0;
+        StopSfx(D_800CAD50[arg0].TurretSFXHandler);
+    }
+    if (D_800CAD50[arg0].FireBreatherSFX != 0) {
+        D_800CAD50[arg0].FireBreatherSFX = 0;
+        StopSfx(D_800CAD50[arg0].FireBreatherSFXHandler);
+    }
+    if (arg0 == 3) {
+        s32 v;
+        D_800CB24C = D_800CAA0C;
+        v = *D_800CB24C++;
+        D_8009D678->unk74 = v;
+    } else {
+        s32 v;
+        D_800CB250 = D_800CAB58;
+        v = *D_800CB250++;
+        D_8009D60C->unk74 = v;
+    }
+}
 
 void func_800C4B60(s32 arg0) {
     if (arg0 == 3) {
@@ -1292,7 +1325,7 @@ void func_800C6914(s32 hero, s32 mode) {
     Heroes[hero].hero_last_mode = last;
     switch (mode) {
     case 0x6C:
-        func_800C49F8();
+        ((void (*)())func_800C49F8)();
         break;
     case 0x6E:
         ((void (*)())func_800C4B60)();

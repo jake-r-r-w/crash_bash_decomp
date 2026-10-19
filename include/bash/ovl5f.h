@@ -360,6 +360,8 @@ void func_800C4320(NAS *nas, s32 id);
 
 void func_800C44E8(s32 arg0);
 
+void func_800C49F8(s32 arg0);
+
 void func_800C4B60(s32 arg0);
 
 void func_800C68C8(s32 arg0);
