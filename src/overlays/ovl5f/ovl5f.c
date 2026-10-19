@@ -566,7 +566,17 @@ void InitBoatField(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotBoatWake);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitBoatWake);
+void InitBoatWake(NAS *nas) {
+    subengine *sub;
+
+    nas->UserInfo.status = 0;
+    sub = nas->Engine->sub;
+    sub->unk6C = D_80053774;
+    sub->unk74 = 0x2007;
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitPeriscopeGun);
 

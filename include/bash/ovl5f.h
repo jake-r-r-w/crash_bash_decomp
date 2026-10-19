@@ -8,6 +8,7 @@
 #include "common.h"
 #include "bash/nas.h"
 
+extern u8 D_80053774[];
 extern u8 D_800C9EE8[];
 extern u8 D_800C9EFC[];
 extern u8 D_800C9ED0[];
