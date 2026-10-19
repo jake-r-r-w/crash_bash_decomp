@@ -8,6 +8,13 @@
 #include "common.h"
 #include "bash/nas.h"
 
+extern u8 D_800C9EE8[];
+extern u8 D_800C9EFC[];
+extern u8 D_800C9ED0[];
+extern u8 D_800C9EB0[];
+extern u8 D_800C9E9C[];
+extern u8 D_800C9EC4[];
+
 void func_800C0C68(NAS *nas, s32 id);
 void func_800C0F24(NAS *nas, s32 id);
 
@@ -112,6 +119,10 @@ extern NAS *D_800CB0C0[8];
 
 
 
+void func_800B56A0(void);
+
+void func_800B5714(void);
+
 void func_800C5620(s32 arg0);
 
 void func_800C69C4(s32 arg0, s32 *arg1);
@@ -149,5 +160,20 @@ s32 func_800C8870(s32 arg0, s32 arg1);
 void func_800C88A8(NAS *nas);
 
 void func_800C8BA0(void);
+
+extern u8 D_800C9F5C[];
+extern u8 D_800C9F70[];
+extern u8 D_800C9F44[];
+extern u8 D_800C9F24[];
+extern u8 D_800C9F10[];
+extern u8 D_800C9F38[];
+
+void func_800B5788(void);
+extern u8 D_800C9FD0[];
+extern u8 D_800C9FE4[];
+extern u8 D_800C9FB8[];
+extern u8 D_800C9F98[];
+extern u8 D_800C9F84[];
+extern u8 D_800C9FAC[];
 
 #endif /* BASH_OVL5F_H */
