@@ -30,6 +30,7 @@ void func_800BB37C(void);
 void func_800BB640(s32 arg0);
 
 extern u8 D_800BC210[];
+extern NAS *D_800BC420[];
 
 void func_800BA5A0(s32 arg0, s32 arg1);
 void func_800B94FC(s32 arg0, u16 arg1);
@@ -49,6 +50,8 @@ s32 func_8008A200(s32 arg0);
 void func_8008A810(void);
 
 void func_800B44C8(void);
+
+void func_800BA630(NAS *nas);
 
 void InitCoalFlameSFX(CoalFlameObj *arg0);
 

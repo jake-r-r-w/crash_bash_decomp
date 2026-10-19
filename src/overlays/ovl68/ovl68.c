@@ -167,7 +167,17 @@ void func_800BA5A0(s32 arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BA630);
+void func_800BA630(NAS *nas) {
+    s32 i;
+
+    for (i = 0; i < 1; i++) {
+        if (D_800BC420[i] == nas) {
+            D_800BC420[i] = NULL;
+            break;
+        }
+    }
+    KillNAS(nas);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", InitPUGenerator_CH);
 
