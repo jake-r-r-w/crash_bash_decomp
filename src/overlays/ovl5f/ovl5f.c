@@ -628,7 +628,29 @@ s32 func_800C6C30(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6C90);
+s32 func_800C6C90(OvlClampPos *p, s32 x, s32 y, s32 z) {
+    s32 d;
+
+    d = p->x - x;
+    if (d > 0x250) {
+        return 0;
+    }
+    if (d < -0x250) {
+        return 0;
+    }
+    d = p->pad14 - y;
+    if (d > 0x200) {
+        return 0;
+    }
+    if (d < -0x200) {
+        return 0;
+    }
+    d = p->z - z;
+    if (d > 0x500) {
+        return 0;
+    }
+    return d >= -0x500;
+}
 
 void PlotTotemBot(NAS *nas) {
     func_800C0F24(nas, 0x131C);

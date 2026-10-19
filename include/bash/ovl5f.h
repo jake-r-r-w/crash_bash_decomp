@@ -218,6 +218,8 @@ s32 func_800C6A30(s32 arg0);
 
 s32 func_800C6C30(void);
 
+s32 func_800C6C90(OvlClampPos *p, s32 x, s32 y, s32 z);
+
 void func_800C7298(NAS *nas);
 
 s32 func_800C8120(s32 arg0);
