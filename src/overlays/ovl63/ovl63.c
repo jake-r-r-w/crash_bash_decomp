@@ -105,7 +105,26 @@ void func_800B5360(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B5528);
+void func_800B5528(s32 player, SLONG_XYZ *pos) {
+    HeroInfo *base;
+    HeroInfo *hero;
+    s32 d;
+
+    base = Heroes;
+    hero = base + player;
+    d = (((get_angle(hero->hero_eng->unk10.x - pos->x, hero->hero_eng->unk10.z - pos->z) & 0xFFF) -
+          hero->hero_eng->unk1E) << 20) >> 20;
+    if (d > 500) {
+        hero->hero_ai->AIpad |= 0x20;
+        hero->hero_ai->AIpad &= ~0x80;
+    }
+    if (d < -500) {
+        hero->hero_ai->AIpad |= 0x80;
+        hero->hero_ai->AIpad &= ~0x20;
+    }
+    hero->hero_ai->AIpad |= 0x800;
+    ((Ovl63Pad *)D_80051338)[player].unk50 = hero->hero_ai->AIpad;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B5660);
 

@@ -420,6 +420,8 @@ typedef struct EXTripple {
     /* 0x18 */ u16 fade;
 } EXTripple;
 
+void func_800B5528(s32 player, SLONG_XYZ *pos);
+
 void func_800B5FFC(Ovl63EaseCam *c, s32 *pos);
 
 void func_800BB794(s32 player);
