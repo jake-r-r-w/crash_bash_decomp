@@ -441,6 +441,7 @@ extern s32 D_800C66DC;
 extern s32 D_800C66E0;
 extern s32 D_800C66E4;
 extern s32 D_800C66E8;
+extern s32 D_800CA534[];
 
 s32 func_800B35CC(s32 arg0);
 
@@ -507,6 +508,8 @@ typedef struct EXTtrackglob {
 extern ScriptInit D_800C6EA4;
 extern u8 *D_800C66EC;
 extern s32 D_800C6EB0;
+
+void func_800B48EC(s32 player);
 
 s32 func_800B6108(Ovl63Barrel *b);
 

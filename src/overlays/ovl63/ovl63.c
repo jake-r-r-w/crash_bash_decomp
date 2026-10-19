@@ -73,7 +73,25 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B442C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B4708);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B48EC);
+void func_800B48EC(s32 player) {
+    HeroInfo *base;
+    HeroInfo *h;
+
+    base = Heroes;
+    h = &base[player];
+    if (h->hero_frozen == 0) {
+        if (!(h->hero_ctrl & 1)) {
+            h->hero_eng->unk1E += func_800154A0(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
+            if (D_8005A614[player + 0x5C] != 0) {
+                h->hero_eng->unk20 += func_800154A0(h->hero_eng->unk20, D_800CA534[player]) >> 3;
+            } else {
+                h->hero_eng->unk20 += func_800154A0(h->hero_eng->unk20, D_800CA534[player]) >> 2;
+            }
+        }
+        Heroes[player].hero_ctrl &= ~1;
+        Heroes[player].hero_eng->unk5E = 1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B4A4C);
 
