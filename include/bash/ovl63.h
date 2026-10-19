@@ -444,7 +444,7 @@ typedef struct Ovl63Barrel {
     /* 0x54 */ Ovl63SceneObj *obj;
     /* 0x58 */ s32 unk58;
     /* 0x5C */ SLONG_XYZ pos;
-    /* 0x68 */ u8 pad68[4];
+    /* 0x68 */ s32 unk68;
 } Ovl63Barrel;
 
 extern Ovl63Barrel D_800C6F34[128];
@@ -635,5 +635,28 @@ void func_800BB878(s32 player);
 void func_800BC0A4(s32 arg0);
 
 void func_800BC4B0(s32 player);
+
+/* Spawns the 0x1605 puff at v (func_800B6474). */
+static inline void Ovl63SpawnPuff(SLONG_XYZ *v, s32 kind, void *anim) {
+    NAS *nas;
+    s32 *ext;
+
+    nas = SpawnNASById(v->x, v->y, v->z, 0x1605, 0x11);
+    if (nas != NULL) {
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL) {
+            ext[3] = kind;
+            ext[6] = 0x100;
+            if (anim != NULL) {
+                ext[8] = 5;
+                nas->Engine->sub->unk6C = anim;
+            } else {
+                ext[8] = 1;
+            }
+            ext[10] = 0;
+            nas->InitDelete(nas);
+        }
+    }
+}
 
 #endif /* BASH_OVL63_H */

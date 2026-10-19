@@ -437,7 +437,46 @@ s32 func_800B6108(Ovl63Barrel *b) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B62F4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B6474);
+void func_800B6474(void) {
+    Ovl63Barrel *b;
+    SLONG_XYZ pos;
+    s32 i;
+
+    b = D_800C6F34;
+    for (i = 0;; b++, i++) {
+        Ovl63SceneObj *obj;
+
+        if (i >= D_800C66F0) {
+            break;
+        }
+        obj = b->obj;
+        switch (b->unk58) {
+        case 1:
+            b->unk24 = 0;
+            b->unk44 = 0;
+            if (func_800B6108(b) != 0) {
+                pos = obj->pos;
+                pos.y = -0xD2;
+                b->unk58 = 0;
+                b->unk68 = Random(0x3C) + 0xB4;
+                obj->flags &= ~0x8000;
+                Ovl63SpawnPuff(&pos, 1, &D_80054F84);
+            }
+            break;
+        case 2:
+            pos = obj->pos;
+            pos.y = 0;
+            if (b->unk68 == 4) {
+                Ovl63SpawnPuff(&pos, 9, NULL);
+            }
+            if (b->unk68-- < 0) {
+                obj->flags |= 0x8000;
+                b->unk58 = 1;
+            }
+            break;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B66C4);
 
