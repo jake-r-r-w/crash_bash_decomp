@@ -544,7 +544,25 @@ void PlotRaceSmokeBoost(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRaceSmokeBoost);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C50B0);
+s32 func_800C50B0(u8 *arg0, s32 arg1) {
+    HeroInfo *hero;
+    u32 i;
+
+    i = 0;
+    hero = Heroes;
+loop:
+    if (i < 4) {
+        if (func_8008CEB0(arg0, (u8 *)hero->hero_eng + 0x10) < arg1 * arg1) {
+            if (abs(((s32 *)arg0)[1] - hero->hero_eng->unk10.y) < 0x200) {
+                return i;
+            }
+        }
+        hero++;
+        i++;
+        goto loop;
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5154);
 
