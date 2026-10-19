@@ -64,6 +64,7 @@ typedef struct {
 
 extern Ovl60Slot D_800C535C[];
 extern s32 D_800C53CC[];
+extern s32 D_800C4484[];
 void func_800C1004(s32 arg0);
 void func_800C02AC(EXTengine *eng, s32 angle);
 extern u8 D_80053B9C[];
@@ -104,6 +105,8 @@ void func_800C2810(s32 arg0);
 
 void func_800C2B98(s32 arg0);
 extern s16 D_8009D87C[][3];
+
+void func_800B76CC(s32 arg0);
 
 void func_800BC0EC(s32 arg0);
 

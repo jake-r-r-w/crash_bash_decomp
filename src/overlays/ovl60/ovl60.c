@@ -61,7 +61,48 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B741C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B7574);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B76CC);
+void func_800B76CC(s32 arg0) {
+    VECTOR pos;
+    HeroInfo *h;
+    EXTengine *pu;
+    subengine *sub;
+    s32 state;
+    s32 dy;
+    HeroInfo *base = Heroes;
+
+    h = (HeroInfo *)(arg0 * sizeof(HeroInfo) + (u32)base);
+    pu = h->hero_powerup;
+    if (pu != NULL) {
+        sub = pu->sub;
+        if (sub != NULL) {
+            state = (u16)D_800C535C[arg0].unk4;
+            if (state >= 7) {
+                goto clear;
+            }
+            if (state != 0) {
+                if (func_80015780(h->hero_eng, h->hero_sub, 0x80, &pos) != NULL) {
+                    pu->unk10 = *(SLONG_XYZ *)&pos;
+                    dy = D_800C4484[h->hero_name];
+                } else {
+                    dy = 0x280;
+                    pu->unk10 = h->hero_eng->unk10;
+                }
+                pu->unk5E = 1;
+                pu->unk10.y -= dy;
+                pu->unk1E += 0x71;
+                if ((u16)D_800C535C[arg0].unk4 != 6 || D_800C535C[arg0].unk6 >= 0x5B ||
+                    !((D_8004E0D8 >> 2) & 1)) {
+                    sub->flags |= 0x8000;
+                    pu->flags |= 0x8000;
+                    return;
+                }
+            }
+        clear:
+            sub->flags &= ~0x8000;
+            pu->flags &= ~0x8000;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B788C);
 
