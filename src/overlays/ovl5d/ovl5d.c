@@ -107,7 +107,17 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BAE08);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BAE98);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BAF68);
+void func_800BAF68(void) {
+    s32 i;
+    s32 j;
+
+    for (i = 0; i < 8; i++) {
+        for (j = 0; j < 8; j++) {
+            D_800C3BAC[j][i].unkA = 0;
+            D_800C3BAC[j][i].unk8 = 0;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BAFB4);
 

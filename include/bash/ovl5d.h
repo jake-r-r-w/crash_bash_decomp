@@ -8,6 +8,14 @@
 #include "common.h"
 #include "bash/nas.h"
 
+typedef struct Ovl5dCell {
+    s16 unk0[4];
+    s16 unk8;
+    s16 unkA;
+} Ovl5dCell;
+
+extern Ovl5dCell D_800C3BAC[8][8];
+
 void func_800B62EC(void);
 
 void func_800B7D20(void);
@@ -23,5 +31,7 @@ void func_800BB368(void);
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
 #include "bash/ovl5d_800bb64c.h"
 #include "bash/ovl5d_800bff1c.h"
+
+void func_800BAF68(void);
 
 #endif /* BASH_OVL5D_H */
