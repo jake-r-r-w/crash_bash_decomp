@@ -10,4 +10,10 @@
 
 
 
+void func_800BB308(s32 arg0);
+extern HeroInfo Heroes[4];
+s32 func_80085890();
+s32 func_8008A200(s32 arg0);
+void func_8008A810(void);
+
 #endif /* BASH_OVL5E_800B87A0_H */

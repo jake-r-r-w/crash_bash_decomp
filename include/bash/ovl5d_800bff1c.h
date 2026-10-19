@@ -7,6 +7,10 @@
 
 #include "common.h"
 #include "bash/ovl5d.h"
+#include "bash/main.h"
+#include "bash/8007ee2c.h"
+
+void func_800C1190(s32 arg0);
 
 void func_800C2E58(void);
 

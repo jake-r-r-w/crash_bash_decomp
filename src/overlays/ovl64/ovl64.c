@@ -5,6 +5,8 @@
 #include "bash/shell.h"
 #include "bash/race.h"
 #include "bash/polar.h"
+#include "bash/bash.h"
+#include "bash/xtras.h"
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B3428);
 
@@ -117,7 +119,29 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B98B8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B9A04);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B9BF8);
+void func_800B9BF8(s32 arg0) {
+    HeroInfo *h;
+    s32 dy;
+
+    HeroInfo *base = Heroes;
+
+    h = base + arg0;
+    if (h->hero_health < 2) {
+        h->hero_health = 2;
+    }
+    h->hero_eng->unk10.y = D_8005A5D8 - 0x200;
+    dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
+    if (dy != 0x7FFFFFFF) {
+        h->hero_eng->unk10.y -= dy;
+    } else {
+        h->hero_eng->unk10.y = D_8005A5D8;
+    }
+    func_80085890(arg0);
+    if (func_8008A200(arg0) != 0) {
+        func_8008A810();
+    }
+    func_8008502C(arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B9CE0);
 

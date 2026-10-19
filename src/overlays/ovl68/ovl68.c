@@ -2,6 +2,8 @@
 #include "bash/ovl68.h"
 #include "bash/chase.h"
 #include "bash/pogo.h"
+#include "bash/bash.h"
+#include "bash/xtras.h"
 
 void func_800B3330(void) {
 }
@@ -62,7 +64,29 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B6B84);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B6C84);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B6E84);
+void func_800B6E84(s32 arg0) {
+    HeroInfo *h;
+    s32 dy;
+
+    HeroInfo *base = Heroes;
+
+    h = base + arg0;
+    if (h->hero_health < 2) {
+        h->hero_health = 2;
+    }
+    h->hero_eng->unk10.y = D_8005A5D8 - 0x200;
+    dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
+    if (dy != 0x7FFFFFFF) {
+        h->hero_eng->unk10.y -= dy;
+    } else {
+        h->hero_eng->unk10.y = D_8005A5D8;
+    }
+    func_80085890(arg0);
+    if (func_8008A200(arg0) != 0) {
+        func_8008A810();
+    }
+    func_8008502C(arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B6F6C);
 

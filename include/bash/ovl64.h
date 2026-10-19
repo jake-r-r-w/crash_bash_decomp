@@ -33,4 +33,12 @@ extern void (*D_8009D73C)();
 
 extern s32 D_8005AA70[11];
 
+void func_800B9BF8(s32 arg0);
+extern s32 D_8005A5D8;
+extern HeroInfo Heroes[4];
+void func_80025F44(EXTengine *eng);
+s32 func_80085890();
+s32 func_8008A200(s32 arg0);
+void func_8008A810(void);
+
 #endif /* BASH_OVL64_H */

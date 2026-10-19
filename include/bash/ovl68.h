@@ -28,4 +28,12 @@ void func_800B9ED8(s32 arg0, u16 arg1);
 void func_800BA220(s32 arg0, u16 arg1);
 extern u8 D_8005A614[];
 
+void func_800B6E84(s32 arg0);
+extern s32 D_8005A5D8;
+extern HeroInfo Heroes[4];
+void func_80025F44(EXTengine *eng);
+s32 func_80085890();
+s32 func_8008A200(s32 arg0);
+void func_8008A810(void);
+
 #endif /* BASH_OVL68_H */

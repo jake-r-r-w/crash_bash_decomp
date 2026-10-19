@@ -4680,7 +4680,8 @@
   "auto_failed": "types"
  },
  "ovl5d:800C1190": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-19T13:46:51Z",
+  "status": "matched"
  },
  "ovl5d:800C1278": {
   "auto_failed": "types"
@@ -4924,7 +4925,9 @@
   "auto_failed": "types"
  },
  "ovl5e:800BB308": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-19T13:47:19Z",
+  "status": "matched",
+  "via": "copy"
  },
  "ovl5e:800BB3F0": {
   "auto_failed": "types"
@@ -8229,7 +8232,9 @@
   "auto_failed": "types"
  },
  "ovl64:800B9BF8": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-19T13:47:19Z",
+  "status": "matched",
+  "via": "copy"
  },
  "ovl64:800B9CE0": {
   "auto_failed": "types"
@@ -9420,7 +9425,9 @@
   "auto_failed": "types"
  },
  "ovl68:800B6E84": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-19T13:47:19Z",
+  "status": "matched",
+  "via": "copy"
  },
  "ovl68:800B6F6C": {
   "auto_failed": "types"
