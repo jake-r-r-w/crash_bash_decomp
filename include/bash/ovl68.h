@@ -8,6 +8,16 @@
 #include "common.h"
 #include "bash/nas.h"
 
+typedef struct CoalFlameInner {
+    s32 pad0[3];
+    s32 unkC;
+} CoalFlameInner;
+
+typedef struct CoalFlameObj {
+    u8 pad0[0x54];
+    CoalFlameInner *unk54;
+} CoalFlameObj;
+
 void func_800B3330(void);
 void func_800BADA8(s32 arg0);
 void func_800BAE20(void);
@@ -39,5 +49,7 @@ s32 func_8008A200(s32 arg0);
 void func_8008A810(void);
 
 void func_800B44C8(void);
+
+void InitCoalFlameSFX(CoalFlameObj *arg0);
 
 #endif /* BASH_OVL68_H */

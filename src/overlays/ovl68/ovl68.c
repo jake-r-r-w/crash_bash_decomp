@@ -177,7 +177,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BA70C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BA784);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", InitCoalFlameSFX);
+void InitCoalFlameSFX(CoalFlameObj *arg0) {
+    arg0->unk54->unkC = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", InitEgg);
 
