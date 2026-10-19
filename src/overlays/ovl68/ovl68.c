@@ -288,7 +288,10 @@ void func_800BB134(s32 arg0)
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BB1C0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BB260);
+s32 func_800BB260(s32 arg0) {
+    u32 m = D_80051338[arg0].unk54 & 0x2000;
+    return m != 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BB294);
 

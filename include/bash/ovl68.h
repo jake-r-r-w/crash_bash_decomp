@@ -26,6 +26,12 @@ typedef struct CoalFlameExt {
 } CoalFlameExt;
 
 extern u8 D_80053F8C[];
+/* PadState (D_80051338) as func_800BB260 reads it: flags at 0x54. */
+typedef struct Ovl68Pad {
+    /* 0x00 */ u8 pad0[0x54];
+    /* 0x54 */ s32 unk54;
+} Ovl68Pad;
+extern Ovl68Pad D_80051338[];
 
 void func_800B3330(void);
 void func_800BADA8(s32 arg0);
@@ -75,6 +81,8 @@ void InitBarrelGenerator(NAS *nas);
 void func_800BADD4(s32 arg0);
 
 void func_800BB134(s32 arg0);
+
+s32 func_800BB260(s32 arg0);
 
 void func_800BB3F0(s32 x, s32 y);
 
