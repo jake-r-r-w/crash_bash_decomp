@@ -35,6 +35,17 @@ void func_800D3508(void);
 
 extern NAS *D_800D5294;
 
+/* D_80051640 as the camera func_800CACC0 sets up. */
+typedef struct Ovl62Cam {
+    /* 0x00 */ CamXYZ eye;
+    /* 0x0C */ CamXYZ at;
+    /* 0x18 */ s32 dist;
+    /* 0x1C */ u8 pad1C[0x54 - 0x1C];
+    /* 0x54 */ s16 rotX;
+    /* 0x56 */ s16 rotY;
+    /* 0x58 */ s16 rotZ;
+} Ovl62Cam;
+
 typedef struct Ext10000000 {
     /* 0x00 */ u8 pad[0xC];
     /* 0x0C */ s32 unkC;
@@ -216,6 +227,8 @@ void func_800B767C(s32 player);
 s32 func_800B9994(s32 player);
 
 s32 func_800C9EC4(EXTengine *eng, s32 player);
+
+void func_800CACC0(void);
 
 void func_800CB134(s32 player);
 
