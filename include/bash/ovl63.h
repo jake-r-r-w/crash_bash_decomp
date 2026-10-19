@@ -88,6 +88,15 @@ typedef struct Ovl63HeroFux {
     /* 0x90 */ s32 unk90;
 } Ovl63HeroFux;
 
+/* A hero's FUX as func_800BB794 clears it: a word at 0x40. */
+typedef struct Ovl63Fux40 {
+    /* 0x00 */ u8 unk0[0x40];
+    /* 0x40 */ s32 unk40;
+} Ovl63Fux40;
+
+/* Per-hero run speed rows: 3 u16 per hero_name. */
+extern u16 *D_8009D6F4;
+
 /* A hero's FUX as func_800C5470 reads it: a count at 0x3C. */
 typedef struct Ovl63FuxCount {
     /* 0x00 */ u8 unk0[0x3C];
@@ -412,6 +421,8 @@ typedef struct EXTripple {
 } EXTripple;
 
 void func_800B5FFC(Ovl63EaseCam *c, s32 *pos);
+
+void func_800BB794(s32 player);
 
 s32 func_800BCC20(s32 arg0);
 

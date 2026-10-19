@@ -315,7 +315,26 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BAD54);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BAFC8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BB794);
+void func_800BB794(s32 player) {
+    HeroInfo *h;
+    Ovl63Fux40 *f;
+    EXTheromove *m;
+    HeroInfo *base;
+    u16 spd;
+
+    base = Heroes;
+    h = &base[player];
+    f = (Ovl63Fux40 *)h->hero->FUX;
+    if (f != NULL) {
+        m = h->hero_move;
+        if (m != NULL) {
+            spd = D_8009D6F4[h->hero_name * 3];
+            m->x_vel = (spd * D_80068BD4[(h->hero_eng->unk1E + 0x400) & 0xFFF].unk2) >> 12;
+            m->z_vel = (spd * D_80068BD4[(h->hero_eng->unk1E + 0x800) & 0xFFF].unk2) >> 12;
+        }
+        f->unk40 = 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BB878);
 
