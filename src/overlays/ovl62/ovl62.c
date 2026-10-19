@@ -1304,7 +1304,28 @@ void func_800CB314(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB368);
+void func_800CB368(s32 player) {
+    Ovl62Fux *f;
+    s32 j;
+    s32 n;
+
+    f = (Ovl62Fux *)Heroes[player].hero->FUX;
+    if (f == NULL) {
+        return;
+    }
+    for (n = j = 0; j < 4; j++) {
+        if (Heroes[j].hero_status & 0x2000) {
+            n++;
+        }
+        f->state = 4;
+        f->func = func_800CB12C;
+        if (n >= 3) {
+            return;
+        }
+    }
+    f->unk3C = 1;
+    f->unk24 = Random(0x3C) + 5;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB41C);
 

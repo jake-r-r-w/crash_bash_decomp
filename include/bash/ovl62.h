@@ -403,6 +403,8 @@ s32 func_800B9B6C(s32 hero);
 
 void func_800CAD60(s32 player);
 
+void func_800CB368(s32 player);
+
 void func_800D2E00(s32 player);
 
 #endif /* BASH_OVL62_H */
