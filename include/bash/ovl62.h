@@ -47,6 +47,13 @@ void func_800D3508(void);
 
 extern NAS *D_800D5294;
 
+/* InitBombGFX's extension (0x1C bytes). */
+typedef struct BombGFXExt {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ u8 pad10[0x1C - 0x10];
+} BombGFXExt;
+
 /* A scene's model object as func_800CA770 walks the list at D_80058AD0 + 0x1C. */
 typedef struct SceneObj {
     /* 0x00 */ u32 flags; /* 0x8000 visible */
