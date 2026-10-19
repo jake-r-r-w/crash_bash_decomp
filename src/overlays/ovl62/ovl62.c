@@ -605,7 +605,42 @@ void func_800B782C(s32 player) {
     } while (0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B7A58);
+s32 func_800B7A58(s32 player, s32 target) {
+    VECTOR vel;
+    VECTOR out;
+    VECTOR pos;
+    SVECTOR d;
+    SVECTOR pad;
+    HeroInfo *base;
+    HeroInfo *h;
+    EXTengine *a;
+    EXTengine *b;
+    s32 ang;
+    s32 ret;
+
+    base = Heroes;
+    h = &base[player];
+    if (h->hero->FUX == NULL) {
+        goto ret0;
+    }
+    a = h->hero_eng;
+    ang = a->unk1E;
+    b = base[target].hero_eng;
+    vel.vx = D_800D4E04 * D_80068BD4[(ang - 0x400) & 0xFFF].unk2 >> 12;
+    vel.vz = D_800D4E04 * D_80068BD4[ang & 0xFFF].unk2 >> 12;
+    pos.vx = 0;
+    pos.vz = 0;
+    d.vx = b->unk10.x - a->unk10.x;
+    d.vz = b->unk10.z - a->unk10.z;
+    d.vy = 0;
+    d.pad = 200;
+    ret = 1;
+    if (func_800BFEE0(&pos, &vel, &d, &out) == ret) {
+        return ret;
+    }
+ret0:
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B7B88);
 

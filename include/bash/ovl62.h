@@ -414,6 +414,9 @@ extern s32 D_800D52E0[];
 extern s32 D_800D5364[];
 extern s32 D_8009D908;
 
+extern s32 D_800D4E04;
+s32 func_800BFEE0(VECTOR *a, VECTOR *b, SVECTOR *c, VECTOR *out);
+
 s32 func_800B7A58(s32 player, s32 target);
 
 /* Roll the odds in D_800D5364 (by D_8009D87C[player].unk0) and set ext->unk14. */
