@@ -663,7 +663,17 @@ void PlotBigApple(NAS *nas) {
 void InitBigApple(NAS *nas) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7298);
+void func_800C7298(NAS *nas) {
+    s32 i;
+
+    for (i = 0; i < 3; i++) {
+        if (D_800CAD44[i] == nas) {
+            D_800CAD44[i] = NULL;
+            break;
+        }
+    }
+    KillNAS(nas);
+}
 
 void InitPickupGenerator_TA(NAS *nas) {
     nas->Engine->flags = 0;

@@ -108,6 +108,7 @@ typedef struct {
 
 extern Ovl5fPoint D_800CA9E4[];
 extern s32 D_800CB0F0;
+extern NAS *D_800CAD44[];
 /* PlotPillarControl's waves: delay, then {x, z, angle} until x < 0. */
 extern s32 *D_800CA8C4[];
 extern s32 D_800CB204;      /* next wave */
@@ -197,6 +198,8 @@ void func_800C68C8(s32 arg0);
 s32 func_800C6A30(s32 arg0);
 
 s32 func_800C6C30(void);
+
+void func_800C7298(NAS *nas);
 
 s32 func_800C8294(OvlClampPos *p);
 
