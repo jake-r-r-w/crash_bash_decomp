@@ -1362,7 +1362,17 @@ void func_800C2A8C(s32 arg0) {
     D_800AD12C = 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C2B00);
+s32 func_800C2B00(s32 arg0) {
+    if (Heroes[arg0].hero_status & 0x200) {
+        if (D_800C535C[arg0].nas != NULL) {
+            func_800C2B98(arg0);
+        }
+        SetHeroAction((HeroInfo *)arg0, 0x3C);
+        SetHeroSeq((HeroInfo *)arg0, 0x32);
+        return 1;
+    }
+    return 0;
+}
 
 void func_800C2B98(s32 arg0) {
     Ovl60Slot *base = D_800C535C;
