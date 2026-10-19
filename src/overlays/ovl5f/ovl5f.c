@@ -4,7 +4,36 @@
 #include "bash/engine.h"
 #include "bash/tank.h"
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B3B24);
+s32 func_800B3B24(arg0)
+s32 arg0;
+{
+    s32 sum;
+    s32 i;
+    s32 r;
+    s32 mate;
+
+    mate = Heroes[arg0].hero_teammate;
+    sum = 0;
+    for (i = 0; i < 4; i++) {
+        if (i != arg0 && i != mate && !(Heroes[i].hero_status & 0xFA00) && D_800CAD50[i].Energy > 0) {
+            sum += D_8009D87C[i].unk4;
+        }
+    }
+    if (sum == 0) {
+        return -1;
+    }
+    r = Random(sum);
+    sum = 0;
+    for (i = 0; i < 4; i++) {
+        if (i != arg0 && i != mate && !(Heroes[i].hero_status & 0xFA00) && D_800CAD50[i].Energy > 0) {
+            sum += D_8009D87C[i].unk4;
+            if (r < sum) {
+                return i;
+            }
+        }
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B3C7C);
 
