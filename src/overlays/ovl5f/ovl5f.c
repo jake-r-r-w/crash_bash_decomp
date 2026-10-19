@@ -369,7 +369,20 @@ void InitTankBossCortexTurret(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitTankBossCrashTurret);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6B9C);
+s32 func_800C6B9C(s32 id, s32 x, s32 z, s32 angle) {
+    s32 d;
+
+    if (D_800CB0F0 == 0) {
+        if (D_800CA9E4[id].z >= 0) {
+            d = (angle - get_angle(x - D_800CA9E4[id].x, z - D_800CA9E4[id].z)) & 0xFFF;
+            if (d < 0x15 || d > 0xFEB) {
+                D_800CB260 = id;
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6C30);
 

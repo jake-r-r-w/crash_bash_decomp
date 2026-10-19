@@ -92,9 +92,16 @@ typedef struct LaserBitFux {
 
 s32 func_800BAFFC(NAS *nas, s32 arg1, s32 arg2, s32 arg3);
 
+typedef struct {
+    s32 x;
+    s32 z;  /* negative: unused */
+} Ovl5fPoint;
+
+extern Ovl5fPoint D_800CA9E4[];
+extern s32 D_800CB0F0;
+extern s32 D_800CB260;
 extern NAS *D_800CB264[8];    /* objects func_800C8598 adds and func_800C8560 removes; func_800C84D8 tests their distance */
 extern NAS *D_800CB0C0[8];
-extern NAS *D_800CB264[8];   /* objects func_800C8598 adds and func_800C8560 removes; func_800C84D8 tests their distance */
 
 
 
@@ -105,6 +112,8 @@ extern NAS *D_800CB264[8];   /* objects func_800C8598 adds and func_800C8560 rem
 void func_800C5620(s32 arg0);
 
 void func_800C69C4(s32 arg0, s32 *arg1);
+
+s32 func_800C6B9C(s32 id, s32 x, s32 z, s32 angle);
 
 void func_800C7D24(HeroInfo *hero);
 
