@@ -583,7 +583,39 @@ void InitRaceMissile(NAS *m) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotRaceMissile);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRacePickUp);
+void InitRacePickUp(NAS *m) {
+    RacePickUpExt *ext;
+    EXTengine *e;
+
+    ext = AddExtension(m, 0x50, 0x10000000);
+    if (ext != NULL) {
+        func_80026B70((u8 **)&D_800C6920, (u8 *)m);
+        m->Engine->sub->unk74 = 0x2006;
+        m->Engine->sub->unk6C = &D_80054F84;
+        m->Engine->unk5D = 2;
+        m->Engine->unk5C = 1;
+        ext->unk10 = -0x2000;
+        ext->unk1C = 0x200;
+        ext->unk40 = 0;
+        ext->unk48 = 0;
+        ext->unk4C = 0;
+        ext->unk30 = 1;
+        ext->unk28 = 0;
+        ext->unk2C = 0x100;
+        ext->unk3C = NULL;
+        e = AddEngine(m, 2);
+        if (e != NULL) {
+            ext->unk3C = e;
+            e->sub->unk6C = (u8 *)&D_80054F84 - 0x2028;
+            e->sub->unk74 = 0x2001;
+            e->unk5C = 1;
+            e->unk5D = 0;
+            e->unk10 = m->Engine->unk10;
+            e->sub->unk76 = 0x800;
+            e->sub->flags |= 0x40008041;
+        }
+    }
+}
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl63/ovl63", D_800B3400);
 

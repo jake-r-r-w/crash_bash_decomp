@@ -233,6 +233,24 @@ typedef struct RaceMissileExt {
     /* 0x6C */ u8 pad6C[0x78 - 0x6C];
 } RaceMissileExt;
 
+/* Race pick-up extension (0x50 bytes, id 0x10000000). */
+typedef struct RacePickUpExt {
+    /* 0x00 */ u8 pad0[0x10];
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ u8 pad14[0x1C - 0x14];
+    /* 0x1C */ s32 unk1C;
+    /* 0x20 */ u8 pad20[0x28 - 0x20];
+    /* 0x28 */ s32 unk28;
+    /* 0x2C */ s32 unk2C;
+    /* 0x30 */ s32 unk30;
+    /* 0x34 */ u8 pad34[0x3C - 0x34];
+    /* 0x3C */ EXTengine *unk3C;
+    /* 0x40 */ s32 unk40;
+    /* 0x44 */ u8 pad44[0x48 - 0x44];
+    /* 0x48 */ s32 unk48;
+    /* 0x4C */ s32 unk4C;
+} RacePickUpExt;
+
 extern u8 D_80052F5C[];
 
 /* Barrel roll extension (0x80 bytes, id 0x10000000). */
@@ -430,6 +448,8 @@ void func_800B5FFC(Ovl63EaseCam *c, s32 *pos);
 void func_800BB794(s32 player);
 
 s32 func_800BCC20(s32 arg0);
+
+void InitRacePickUp(NAS *m);
 
 void InitDinoEgg(NAS *m);
 
