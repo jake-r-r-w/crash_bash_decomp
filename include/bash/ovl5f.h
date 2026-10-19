@@ -51,6 +51,17 @@ void func_800B6FF4(s32 player);
 extern s32 D_800CB254;
 extern s32 D_800CB258;
 extern s32 D_800CB210;
+extern u8 D_800C8EA0[];
+extern u8 D_800C8EB4[];
+extern u8 D_800C9E74[];
+extern u8 D_800C9E88[];
+extern u8 D_800C9E5C[];
+extern u8 D_800C9E3C[];
+extern u8 D_800C9E28[];
+extern u8 D_800C9E50[];
+void func_800B5228(void);
+void func_800B6658(void);
+void func_800B6C24(void);
 void func_800B5588(void);
 void func_800B58B0(void);
 void func_800B5FC4(void);
@@ -256,9 +267,7 @@ extern u8 D_80053704[];
 
 
 
-void func_800B56A0(void);
 
-void func_800B5714(void);
 
 void func_800C5620(s32 arg0);
 
@@ -306,7 +315,6 @@ extern u8 D_800C9F24[];
 extern u8 D_800C9F10[];
 extern u8 D_800C9F38[];
 
-void func_800B5788(void);
 extern u8 D_800C9FD0[];
 extern u8 D_800C9FE4[];
 extern u8 D_800C9FB8[];
@@ -318,7 +326,7 @@ extern u8 D_800CA134[];
 extern u8 D_800CA148[];
 extern u8 D_800CA08C[];
 extern u8 D_800C9FF8[];
-/* D_8005A614 as seen by func_800B57FC. */
+/* D_8005A614 as seen by func_800B5588. */
 typedef struct Ovl5fGameView {
     /* 0x00 */ u8 pad0[0x32];
     /* 0x32 */ u16 flags;
@@ -343,7 +351,6 @@ typedef struct OvlClampPos {
 extern s32 D_800CB100;
 extern s32 D_800CB104;
 
-void func_800B57FC(void);
 
 void func_800B8EC4(s32 player);
 

@@ -67,3 +67,4 @@ InitBoatField = 0x800C6F88; // type:func
 PlotBoatField = 0x800C0200; // type:func
 InitTorpedo = 0x800C74F4; // type:func
 PlotTorpedo = 0x800BD384; // type:func
+func_800B5588 = 0x800B5588; // type:func size:0x328
