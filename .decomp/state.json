@@ -5516,7 +5516,8 @@
  },
  "ovl5f:800C8008": {
   "auto_diff": 32,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-19T12:18:20Z",
+  "status": "matched"
  },
  "ovl5f:800C8090": {
   "auto_diff": 8,

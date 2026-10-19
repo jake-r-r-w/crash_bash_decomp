@@ -1216,7 +1216,16 @@ void func_800C7F80(s32 player, s32 unused, s32 ReqdSFX) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8008);
+void func_800C8008(s32 player, s32 unused, s32 ReqdSFX) {
+    if (D_800CAD50[player].TurretSFX != ReqdSFX) {
+        D_800CAD50[player].TurretSFX = ReqdSFX;
+        if (ReqdSFX == 0) {
+            StopSfx(D_800CAD50[player].TurretSFXHandler);
+        } else {
+            PlaySfx(ReqdSFX, &D_800CAD50[player].TurretSFXHandler, NULL, 0x1000, 0x1E00, 0);
+        }
+    }
+}
 
 void func_800C8090(s32 player, EXTengine *pEngine, s32 ReqdSFX) {
     if (D_800CAD50[player].HullSFX != ReqdSFX) {
