@@ -529,7 +529,20 @@ s32 func_800BAE8C(void) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BAE94);
+s32 func_800BAE94(s32 arg0) {
+    s32 act;
+    u16 st = Heroes[arg0].hero_status;
+
+    act = 0x75;
+    if (!(st & 0x200)) {
+        act = 0x74;
+        if (!(st & 0x400)) {
+            return 0;
+        }
+    }
+    SetHeroAction((HeroInfo *)arg0, act);
+    return 1;
+}
 
 s32 func_800BAF00(s32 arg0) {
     if (!(D_80051338[arg0].unk54 & 0x4000)) {
