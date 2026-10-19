@@ -145,6 +145,8 @@ void InitRaceGreenSmokeBoost(NAS *nas);
 
 extern ScriptInit D_800C6F28;
 
+void func_800B9E50(Quat *q);
+
 void InitRaceSmokePoof(NAS *nas);
 
 void InitTNTCrate(NAS *m);

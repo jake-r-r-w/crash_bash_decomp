@@ -7592,7 +7592,8 @@
  },
  "ovl63:800B9E50": {
   "auto_diff": 68,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-19T09:55:44Z",
+  "status": "matched"
  },
  "ovl63:800BA004": {
   "auto_failed": "compile"

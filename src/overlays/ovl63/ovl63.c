@@ -126,7 +126,26 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B96B0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B980C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B9E50);
+void func_800B9E50(Quat *q) {
+    s32 n;
+    s32 sw;
+    s32 sz;
+    s32 sx;
+    s32 sy;
+
+    sw = q->v[3] * q->v[3];
+    sz = q->v[2] * q->v[2];
+    sx = q->v[0] * q->v[0];
+    sy = q->v[1] * q->v[1];
+    n = ((sx >= 0 ? sx + 0x800 : sx - 0x800) >> 12)
+      + ((q->v[1] * q->v[1] >= 0 ? sy + 0x800 : sy - 0x800) >> 12)
+      + ((q->v[2] * q->v[2] >= 0 ? sz + 0x800 : sz - 0x800) >> 12)
+      + ((q->v[3] * q->v[3] >= 0 ? sw + 0x800 : sw - 0x800) >> 12);
+    q->v[0] = (q->v[0] << 12) / n;
+    q->v[1] = (q->v[1] << 12) / n;
+    q->v[2] = (q->v[2] << 12) / n;
+    q->v[3] = (q->v[3] << 12) / n;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BA004);
 
