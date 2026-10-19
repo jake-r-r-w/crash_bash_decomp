@@ -138,7 +138,77 @@ s32 func_800B3888(Ovl67Obj *arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B39C0);
+s32 func_800B39C0(Ovl67Obj *arg0, s32 arg1) {
+    Ovl67Circle *base;
+    SLONG_XYZ v;
+    s32 i;
+    s32 dx;
+    s32 dz;
+    s32 r;
+    s32 x;
+    s32 z;
+    s32 ret;
+    s32 cx;
+    s32 cz;
+
+    base = D_800C418C;
+    ret = 0;
+    for (i = 0; i < 4; i++) {
+        if (arg0->flags & 0x40) {
+            r = base[i].r + arg0->radius;
+        } else {
+            r = base[i].r + 0x80;
+        }
+        cx = D_800C418C[i].x;
+        x = arg0->x;
+        dx = x - cx;
+        cz = D_800C418C[i].z;
+        z = arg0->z;
+        dz = z - cz;
+        if (dx * dx + dz * dz < r * r) {
+            goto found;
+        }
+    }
+    ret = -1;
+    if (D_800C438A == 0) {
+        goto fail;
+    }
+    dx = x;
+    dz = z;
+    if (arg0->flags & 0x40) {
+        r = 0x800 - arg0->radius;
+    } else {
+        r = 0x800;
+    }
+    if (dx > r && (D_800C438A & 0x88)) {
+        arg0->x = r;
+        ret = 0x400;
+    }
+    if (dx < -r && (D_800C438A & 0x44)) {
+        arg0->x = -r;
+        do { ret = 0xC00; } while (0);
+    }
+    if (dz > r && (D_800C438A & 0x22)) {
+        arg0->z = r;
+        ret = 0;
+    }
+    if (dz < -r && (D_800C438A & 0x11)) {
+        arg0->z = -r;
+        ret = 0x800;
+    }
+    if (ret != -1) {
+        PlaySfx(0x592, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    return ret;
+found:
+    v.x = cx;
+    v.y = 0;
+    v.z = D_800C418C[i].z;
+    func_800B9800((SLONG_XYZ *)&arg0->x, arg1, &v, r);
+    return get_angle(D_800C418C[i].x - arg0->x, D_800C418C[i].z - arg0->z);
+fail:
+    return -1;
+}
 
 s32 func_800B3C04(Ovl67Obj *arg0) {
     Ovl67Circle *base = D_800C418C;

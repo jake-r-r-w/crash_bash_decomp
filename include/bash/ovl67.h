@@ -409,6 +409,8 @@ extern u8 D_800C403C[];
 extern u8 D_800C3774[];
 extern u8 D_800C3E30[];
 extern u8 D_800C3E70[];
+s32 func_800B39C0(Ovl67Obj *arg0, s32 arg1);
+
 void func_800B3CD0(s32 arg0);
 
 void func_800B3E74(s32 i);
