@@ -19,4 +19,6 @@ void func_800C2E58(void);
 
 void func_800C2EC8(s32 arg0);
 
+void func_800C2F14(s32 arg0);
+
 #endif /* BASH_OVL5D_800BFF1C_H */
