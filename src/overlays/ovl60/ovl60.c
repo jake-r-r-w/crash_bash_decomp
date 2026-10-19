@@ -1756,7 +1756,36 @@ s32 func_800C2660(u8 *arg0) {
     return (*(s32*)((u8*)(arg0) + 20)) - D_8005A5D8;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C2674);
+void func_800C2674(s32 arg0) {
+    s32 *pos;
+    NAS *nas;
+    NAS *r;
+    s32 *ext;
+    u8 *p;
+
+    pos = (s32 *)&Heroes[arg0].hero_eng->unk10;
+    p = D_80053B9C;
+    nas = SpawnNASById(pos[0], pos[1], pos[2], 0x1605, 0x11);
+    if (nas != NULL) {
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL) {
+            ext[3] = 7;
+            ext[6] = 0x100;
+            if (p != NULL) {
+                ext[8] = 5;
+                ((s32 *)nas->Engine->sub)[0x6C / 4] = (s32)p;
+            } else {
+                ext[8] = 1;
+            }
+            ext[10] = 0;
+            nas->InitDelete(nas);
+        }
+        r = nas;
+    } else {
+        r = NULL;
+    }
+    r->Engine->unk10.y -= 0x40;
+}
 
 void func_800C2770(s32 arg0, u32 arg1, u32 arg2) {
     s32 i;
