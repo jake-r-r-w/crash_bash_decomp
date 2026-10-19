@@ -1133,6 +1133,8 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | a walked `HeroInfo *h` (`h++`) comes out biased (`addiu s1,s1,4` before the loop, offsets 4 lower) where the target keeps the base and its real offsets | index the array (`Heroes[i].field`) instead of walking a pointer: loop.c's reduced giv starts at the base | `func_800B4D6C` |
 | two loops' counters, pointers or flags sit in different registers in the target | they are different C variables: give each loop its own (and share one with a later loop when the target's register matches) | `func_800B4D6C` |
 | a flag or result variable takes the register the target gives a short-lived copy (and vice versa) | the target reuses one variable for two roles (here `best`, then the done flag): its longer life lowers its global.c priority (`decomp.py sched`), so the copy is allocated first | `func_800B4D6C` |
+| a mask-and-add comes out through a temp (`and v0,a1,v0; addiu a1,v0,K`) where the target works in place (`and a1,a1,v0`) | `v = (v & M) + K` makes `v` die twice (`.lreg`: "dies in 2 places"), so local-alloc skips it and the `and` ties to the dying constant: write `v &= M; v += K;` (one death, a local) | `func_800BB64C` |
+| two block-local values in each other's registers (ours a lower one, `x` in v1 where the target has a0) | local-alloc gives registers by `floor_log2(refs) * refs / life`: start the variable's life earlier (load it before the preceding computations) so its longer life lowers its priority below the short temps | `func_800BB64C` |
 
 ## Classify the diff, then work through the list
 
