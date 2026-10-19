@@ -444,7 +444,40 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitTumbler);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotTumbler);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B94C4);
+void func_800B94C4(s32 arg0, u16 arg1) {
+    HeroInfo *h2;
+    HeroInfo *base2;
+    (&Heroes[arg0])->hero_pu = arg1;
+    (&Heroes[arg0])->hero_weapon_count = 1;
+    (&Heroes[arg0])->hero_status |= 0x10;
+    switch (arg1) {
+    case 25:
+        (&Heroes[arg0])->hero_powerup->sub->unk74 = 0x200B;
+        (&Heroes[arg0])->hero_weapon_count = 2;
+        break;
+    case 27:
+        (&Heroes[arg0])->hero_powerup->sub->unk74 = 0x200F;
+        (&Heroes[arg0])->hero_weapon_count = 3;
+        break;
+    default:
+        base2 = Heroes;
+        h2 = base2 + arg0;
+        h2->hero_powerup->sub->unk74 = 0x200C;
+        h2->hero_weapon_count = 1;
+        break;
+    }
+    switch (arg1) {
+    case 25:
+        PlaySfx(0x438, NULL, NULL, 0x1000, 0x1E00, 0);
+        break;
+    case 27:
+        PlaySfx(0x437, NULL, NULL, 0x1000, 0x1E00, 0);
+        break;
+    default:
+        PlaySfx(0x439, NULL, NULL, 0x1000, 0x1E00, 0);
+        break;
+    }
+}
 
 s32 func_800B95F0(s32 arg0)
 {
