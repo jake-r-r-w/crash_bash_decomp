@@ -88,6 +88,7 @@ void func_800C5204(EXTheromove *a, EXTheromove *b);
 
 extern HeroInfo Heroes[4];
 void SetHeroAction(HeroInfo *hero, s32 action);
+s32 func_8008C4C8(s32 *arg0, s32 arg1);
 s32 func_8008CEB0(u8 *arg0, u8 *arg1);
 
 s32 func_800C467C(Ovl63BounceObj *obj, Ovl63Bouncer *b);
@@ -260,5 +261,7 @@ extern Ovl63Barrel D_800C6F34[128];
 extern s32 D_800C66F0;
 
 void func_800B5F04(void);
+
+s32 func_800BCD1C(s32 arg0);
 
 #endif /* BASH_OVL63_H */

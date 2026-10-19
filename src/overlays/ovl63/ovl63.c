@@ -205,7 +205,19 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BC984);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BCC20);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BCD1C);
+s32 func_800BCD1C(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *hero = base + arg0;
+
+    if (func_8008C4C8((s32 *)&hero->hero_eng->unk10, 2) == 0 &&
+        func_8008C4C8((s32 *)&hero->hero_eng->unk10, 3) == 0) {
+        return 0;
+    }
+    if (hero->hero_mode != 0x60) {
+        SetHeroAction((HeroInfo *)arg0, 0x60);
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BCDAC);
 
