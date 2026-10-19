@@ -812,7 +812,31 @@ void func_800C81C8(s32 x, s32 z, s32 range, s32 arg3) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8294);
+s32 func_800C8294(OvlClampPos *p) {
+    s32 r;
+    s32 lim;
+
+    r = 0;
+    if (p->x > D_800CB100) {
+        lim = D_800CB100;
+        p->x = lim;
+        r = 1;
+    }
+    if (p->x < 0x100) {
+        p->x = 0x100;
+        r = 1;
+    }
+    if (p->z > D_800CB104) {
+        lim = D_800CB104;
+        p->z = lim;
+        r = 1;
+    }
+    if (p->z < 0x100) {
+        p->z = 0x100;
+        r = 1;
+    }
+    return r;
+}
 
 void func_800C831C(void) {
 }

@@ -179,5 +179,16 @@ extern u8 D_800C9F84[];
 extern u8 D_800C9FAC[];
 
 void func_800BADB8(s32 arg0);
+typedef struct OvlClampPos {
+    /* 0x00 */ u8 pad0[0x10];
+    /* 0x10 */ s32 x;
+    /* 0x14 */ s32 pad14;
+    /* 0x18 */ s32 z;
+} OvlClampPos;
+
+extern s32 D_800CB100;
+extern s32 D_800CB104;
+
+s32 func_800C8294(OvlClampPos *p);
 
 #endif /* BASH_OVL5F_H */
