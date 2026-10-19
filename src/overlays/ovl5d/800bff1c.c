@@ -66,7 +66,10 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C2DAC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C2E58);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C2EC8);
+void func_800C2EC8(s32 arg0) {
+    Heroes[arg0].hero_move->velocity_enable = 1;
+    SetHeroSeq((HeroInfo *)arg0, 0x11);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C2F14);
 
