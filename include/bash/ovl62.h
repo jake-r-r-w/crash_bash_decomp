@@ -97,6 +97,36 @@ typedef struct Ovl62Pad {
 
 void func_800D1C14(s32 player);
 
+/* PadState (D_80051338) as func_800B5EBC writes it: stick angle at 0x38,
+ * buttons at 0x50. */
+typedef struct Ovl62PadAng {
+    /* 0x00 */ u8 pad0[0x38];
+    /* 0x38 */ s32 angle;
+    /* 0x3C */ u8 pad3C[0x50 - 0x3C];
+    /* 0x50 */ s32 buttons;
+    /* 0x54 */ u8 pad54[0x58 - 0x54];
+} Ovl62PadAng;
+
+/* Inlined into func_800B5EBC: the d-pad bits that steer from v toward p. */
+static inline u32 Ovl62PadToward(SLONG_XYZ *p, SLONG_XYZ *v) {
+    u32 flags;
+
+    flags = 0;
+    if (p->x > v->x) {
+        flags = 0x80;
+    }
+    if (p->x < v->x) {
+        flags |= 0x20;
+    }
+    if (p->z > v->z) {
+        flags |= 0x40;
+    }
+    if (p->z < v->z) {
+        flags |= 0x10;
+    }
+    return flags;
+}
+
 extern HeroInfo Heroes[4];
 
 /* Extension 0x10000000 made by InitSimpleExplosion: a velocity per sub-engine. */

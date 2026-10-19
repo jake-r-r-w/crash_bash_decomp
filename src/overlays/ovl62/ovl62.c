@@ -166,7 +166,67 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/ovl62/ovl62", D_800B3358);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B5AC4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B5EBC);
+void func_800B5EBC(player)
+s32 player;
+{
+    HeroInfo *h;
+    HeroInfo *h2;
+    Ovl62Fux *fux;
+    u32 pad;
+    u16 ang;
+    u16 t;
+    EXTbotai *ai;
+    s32 off;
+    HeroInfo *base;
+
+    base = Heroes;
+    off = player * sizeof(HeroInfo);
+    h = (HeroInfo *)(off + (u8 *)base);
+    fux = (Ovl62Fux *)h->hero->FUX;
+    if (fux == NULL) {
+        return;
+    }
+    h->hero_ai->AIpad |= Ovl62PadToward(&fux->pos, &fux->vel);
+    if (h->hero_frozen == 0) {
+        ((Ovl62PadAng *)D_80051338)[player].buttons = h->hero_ai->AIpad;
+    }
+    ai = h->hero_ai;
+    t = ai->AItimer1--;
+    if (t == 0) {
+        pad = h->hero_ai->AIpad;
+        ang = 0;
+        if (pad & 0x80) {
+            ang = 0xC00;
+        }
+        if (pad & 0x20) {
+            ang = 0x400;
+        }
+        if (pad & 0x10) {
+            ang = 0;
+        }
+        if (pad & 0x40) {
+            ang = 0x800;
+        }
+        if ((pad & 0x90) == 0x90) {
+            ang = 0xE00;
+        }
+        if ((pad & 0xC0) == 0xC0) {
+            ang = 0xA00;
+        }
+        if ((pad & 0x30) == 0x30) {
+            ang = 0x200;
+        }
+        if ((pad & 0x60) == 0x60) {
+            ang = 0x600;
+        }
+        h2 = (HeroInfo *)(off + (s32)base);
+        h2->hero_ai->AIang = ang;
+        h2->hero_ai->AItimer1 = fux->unk3C;
+    }
+    if (Heroes[player].hero_frozen == 0) {
+        ((Ovl62PadAng *)D_80051338)[player].angle = Heroes[player].hero_ai->AIang;
+    }
+}
 
 void func_800B60B8(s32 player) {
     HeroInfo *base;
