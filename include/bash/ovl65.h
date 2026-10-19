@@ -120,6 +120,8 @@ s32 func_800BC878(s32 arg0);
 
 void func_800BCAC0(s32 arg0);
 
+void func_800BCBB8(EXTheromove *a, EXTheromove *b);
+
 s32 func_800BCCE8(s32 arg0);
 
 void InitDinoSmoke(NAS *arg0);

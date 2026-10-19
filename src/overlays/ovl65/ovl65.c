@@ -552,7 +552,33 @@ void func_800BCB4C(s32 arg0) {
     Heroes[arg0].hero->Camera.height = 0x600;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BCBB8);
+void func_800BCBB8(EXTheromove *a, EXTheromove *b) {
+    s32 ma;
+    s32 mb;
+    s32 d;
+    s32 q;
+    s32 r;
+    s32 total;
+
+    ma = a->mass;
+    mb = b->mass;
+    if (ma > 0 && mb > 0) {
+        s32 av = a->x_vel;
+        s32 bv = b->x_vel;
+        d = -((av - bv) << 8);
+        q = (d * mb + ((ma * av + mb * bv) << 8)) / (total = mb + ma);
+        r = q - d;
+        a->x_vel = q >> 8;
+        b->x_vel = r >> 8;
+        av = a->z_vel;
+        bv = b->z_vel;
+        d = -((av - bv) << 8);
+        q = (d * mb + ((ma * av + mb * bv) << 8)) / total;
+        r = q - d;
+        a->z_vel = q >> 8;
+        b->z_vel = r >> 8;
+    }
+}
 
 s32 func_800BCCE8(s32 arg0) {
     s32 i;
