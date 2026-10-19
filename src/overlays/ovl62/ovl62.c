@@ -908,7 +908,20 @@ void PlotBearBoss(NAS *m) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBearBoss);
+void InitBearBoss(NAS *m) {
+    Ext10000000 *ext;
+
+    ext = AddExtension(m, 0x10, 0x10000000);
+    if (ext != NULL) {
+        m->Engine->unk5D = 0;
+        m->Engine->sub->unk68 = 0x300;
+        m->Engine->sub->flags |= 0x02000000;
+        m->Engine->sub->unk6C = *(void **)D_80058AD0;
+        ext->unkC = (s32)func_80024E30(m, &D_800D5DB8);
+        func_80025FAC((EXTanimator *)ext->unkC, 0);
+        func_800250B0(m);
+    }
+}
 
 void PlotPackEffect(NAS *m) {
     ExtSimpleExplosion *ext;

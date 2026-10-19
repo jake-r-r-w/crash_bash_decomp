@@ -437,4 +437,6 @@ void func_800CB368(s32 player);
 
 void func_800D2E00(s32 player);
 
+extern ScriptInit D_800D5DB8;
+
 #endif /* BASH_OVL62_H */
