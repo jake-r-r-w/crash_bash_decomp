@@ -58,6 +58,14 @@ void InitBootsPickup(NAS *arg0);
 
 s32 func_800BFB6C(s32 pos, ExtCurve *c);
 
+typedef struct {
+    /* 0x00 */ u8 pad0[0x16];
+    /* 0x16 */ s16 unk16;
+    /* 0x18 */ u8 pad18[4];
+    /* 0x1C */ u16 unk1C;
+    /* 0x1E */ u16 unk1E;
+} HitFlags;
+
 
 
 void func_800BEDE8(s32 arg0, s32 arg1);
@@ -72,6 +80,8 @@ extern u16 D_8009E080[][4];
 void InitAnvilPickup(NAS *arg0);
 
 void InitSlowmoPickup(NAS *arg0);
+
+s32 func_800BF928(EXTengine *eng, HitFlags *flags, u32 mask);
 
 void func_800BFD2C(s32 arg0);
 
