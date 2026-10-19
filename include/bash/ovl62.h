@@ -36,6 +36,7 @@ extern HeroInfo Heroes[4];
 /* Head of a list linked through +0x20 (counted by func_800C9B5C). */
 extern u8 *D_800D5454;
 extern HeroInfo Heroes[4];
+extern s32 D_8005A680[];
 
 s32 func_800C9B5C(void);
 
@@ -65,5 +66,7 @@ typedef struct BombMakerExt {
 
 /* The NAS that owns the bomb maker. */
 extern NAS *D_800D52B4;
+
+s32 func_800C9C98(u8 *arg0);
 
 #endif /* BASH_OVL62_H */
