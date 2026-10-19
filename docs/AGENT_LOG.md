@@ -10,14 +10,14 @@ At the end of a session, update **Current state**, **Next** and **Open
 leads**, add any new gotcha, and add one short entry at the top of the
 **Session log**.
 
-## Current state (2026-10-18)
+## Current state (2026-10-19)
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1435/2551 game functions matched: **main.exe is complete (575/575)**;
+- 1557/2541 game functions matched: **main.exe is complete (575/575)**;
   engine overlay 2 left, both parked (`func_8007F314`, `PlotScriptFX`),
   ovl61 96/97 (two 2026-10-18 swarm runs and four hand matches; `PlotBall` left),
-  ovl67 101/135, ovl69 68/77, ovl6a 93/94 (2026-10-18 swarm runs and hand fixes;
+  ovl62 121/186 (2026-10-19 swarm run), ovl67 101/135, ovl69 68/77, ovl6a 93/94 (2026-10-18 swarm runs and hand fixes;
   `func_800B5710` parked at 120/121 blocks); all 564 PsyQ functions (Sony
   objects). 3 parked (`decomp.py status`). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
@@ -44,6 +44,15 @@ leads**, add any new gotcha, and add one short entry at the top of the
   identical (docs/ASSETS.md). ROADMAP's asset extraction box is ticked.
 
 ## Next
+
+**ovl62 (2026-10-19, run 20261019065611, all workers on opus):** 60 min,
+$46.59: 117 matched ($0.40 each), 0 parked, 0 failed; 65 left (about 40 at
+>= 400 B; the hour ran out before the queue was done). Normal workers (opus now, `config.json`) matched 90/90 under
+400 B, 89 in the first session, at $0.19-0.35 a match against sonnet's
+~$0.48. Before it: ten AST names moved out of ovl62 (ARCHITECTURE.md), a
+`--start-gap-seconds` start stagger (an OAuth race stopped the first run)
+and a by-name pre-commit check. Next: another ovl62 hour with the same mixed
+recipe, then ovl60/ovl5f/ovl63.
 
 **ovl6a (2026-10-18, run 20261018184703):** stopped by hand after 87 min,
 $47.98: 64 matched, 2 failed at the gate (`func_800B4EAC`: compile error, a
@@ -94,9 +103,9 @@ one session of 1-16 min. The day's tool upgrades (closest-C checkpoints,
 `regions`, the fixed patch check and gate) cracked what hand sessions had
 parked. **Retry parks with this recipe after tool upgrades.**
 
-**Start of next session: matching.** Left per overlay (2026-10-19): ovl62
-186, ovl60 166, ovl5f 147, ovl63 123, ovl5d 100, ovl68 83, ovl65 69,
-ovl5e 67, ovl66 67, ovl64 51, ovl67 34, ovl69 9, ovl61 1, ovl6a 1, engine
+**Start of next session: matching.** Left per overlay (2026-10-19): ovl60
+166, ovl5f 147, ovl63 123, ovl5d 100, ovl68 83, ovl65 69,
+ovl5e 67, ovl66 67, ovl62 65, ovl64 51, ovl67 34, ovl69 9, ovl61 1, ovl6a 1, engine
 2 (count `INCLUDE_ASM` per file). The untouched overlays suit the swarm
 (item 1b's recipe, `--seg overlays/NAME`), then the post-run checklist.
 main.exe is fully matched. The file splits are done as far as the evidence
@@ -509,6 +518,9 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-19 (ovl62 swarm):** 117 matched in 60 min ($46.59, 0 parked) on
+  opus workers after the resplit; fold added 39 Diff pattern rows (10
+  repeats of existing rows dropped).
 - **2026-10-19 (ovl62 splits):** the first ovl62 swarm run stopped after a
   minute (5 workers hit an OAuth refresh race at once), but its one park
   found ten AST names that `5bf518f2` put in `ovl62`, each cutting a real
