@@ -166,6 +166,16 @@ extern s32 D_8009E464;
 extern s32 D_8009E468;
 extern u8 D_8009E3B4[];
 extern u8 D_8009E3DC[];
+extern s16 D_800C3B40;
+s16 func_800B6DA4(s32 arg0);
+void func_800B7358(void);
+void func_800BB7E8(void);
+void func_8007A91C(void);
+void func_80086D88(void);
+void func_80086F78(void);
+void func_800B8578(void);
+void func_800B8B00(void);
+void func_800BAD70(void);
 
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
 #include "bash/ovl5d_800bb64c.h"

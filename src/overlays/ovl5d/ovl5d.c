@@ -9,7 +9,53 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/ovl5d/ovl5d", D_800B32B8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B3DD8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B432C);
+void func_800B432C(void) {
+    s32 i;
+    s16 id;
+    s16 *p;
+
+    func_80086F78();
+    func_800BB7E8();
+    func_80086D88();
+    if (D_8009D908 != 0) {
+        if (D_800C3B40 == -1) {
+            for (i = 0; i < 4; i++) {
+                D_8009D87C[i].unk4 = 0x10;
+                D_8009D87C[i].unk0 = 0x1A;
+            }
+            p = &D_800C3B40;
+            *p = func_800B6DA4(0x63);
+            id = *p;
+            if (id != -1 && id < 4) {
+                D_8009D87C[id].unk4 = 0x30;
+                D_8009D87C[id].unk0 = 8;
+            } else {
+                D_800C3B40 = -1;
+            }
+        } else if (Heroes[D_800C3B40].hero_status & 0xFA00) {
+            D_800C3B40 = -1;
+        }
+    }
+    switch (D_8005A648) {
+    case 0:
+    case 3:
+        func_8007A91C();
+        func_800B7358();
+        break;
+    case 1:
+        func_800BAD70();
+        func_800B8578();
+        func_800B7358();
+        break;
+    case 2:
+        func_800B8B00();
+        func_800B7358();
+        break;
+    case 32:
+        func_800B7358();
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B44B0);
 
