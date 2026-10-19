@@ -910,7 +910,32 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D0808);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D0A6C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D10A0);
+s32 func_800D10A0(s32 player) {
+    HeroInfo *base = Heroes;
+    HeroInfo *info = base + player;
+    s32 *ext = FindExtension(info->hero, 0x20000000);
+    Ovl62Pad *pads;
+    Ovl62Pad *pad;
+
+    if (ext != NULL) {
+        if (ext[10] == 0) {
+            return 0;
+        }
+        if (info->hero_move != NULL) {
+            pads = (Ovl62Pad *)D_80051338;
+            pad = pads + player;
+            if (pad->unk54 & 0x2000) {
+                if (info->hero_mode != 0x53) {
+                    SetHeroAction((HeroInfo *)player, 0x53);
+                }
+                return 1;
+            }
+            pad->unk50 &= ~0x2000;
+            return 0;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D1188);
 
