@@ -55,14 +55,14 @@ parked `func_800B39C0`.
 
 **ovl69 (2026-10-18, run 20261018173050):** stopped by hand after 75 min,
 $33.21: 48 matched, 1 failed at the gate on a compile error (`func_800B7CE8`,
-same cause as ovl67's two), 10 left in the queue. Folded.
+same cause as ovl67's two; matched by hand 2026-10-18, 3ba0a413), 10 left
+in the queue. Folded.
 
 **ovl67 (2026-10-18, run 20261018163029):** stopped by hand after 58 min,
 $39.26: 82 matched ($0.48 each), 1 parked (`func_800B39C0`, registers 29/145,
 an s0/s1 swap), 2 failed at the gate on compile errors from declarations
-other matches in the run added (`func_800BA43C`, `func_800B3E74`): the
-worker's C was right against an older tip, so retry them (`swarm.mjs forget
---only ...` resets their attempt if needed). 36 left in the queue; the
+other matches in the run added (`func_800BA43C`, `func_800B3E74`; both
+matched by hand 2026-10-18, 067bc83b and c079de93). 36 left in the queue; the
 pattern rows are folded.
 
 **ovl61 (2026-10-18):** two runs, 83 matched, and `CalcArkInfluence`,
@@ -505,6 +505,9 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-19 (log):** the three gate failures listed under Next
+  (`func_800BA43C`, `func_800B3E74`, `func_800B7CE8`) were already matched
+  on 2026-10-18; Next now says so.
 - **2026-10-19 (hand):** `func_800B8A68` (ovl61, 3264 B) matched (fc3176ef)
   from the swarm checkpoint (144/150 blocks), without its `min + k - k`: the
   dead skill value needs a use that combine cancels after flow, now
