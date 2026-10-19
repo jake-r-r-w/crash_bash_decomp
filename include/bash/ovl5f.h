@@ -8,6 +8,12 @@
 #include "common.h"
 #include "bash/nas.h"
 
+typedef struct Ovl5fModeView {
+    /* 0x00 */ u8 pad0[0x34];
+    /* 0x34 */ s16 mode;
+} Ovl5fModeView;
+
+extern s32 D_800CB210;
 extern u32 D_800CA48C[];
 typedef struct { u16 v, pad; } RockTblEnt;
 extern RockTblEnt D_800CA6D4[];
@@ -309,6 +315,8 @@ void func_800C8360(void);
 void func_800C83D8(void);
 
 void func_800C85F8(Ovl5fHolder *h, s16 v);
+
+s32 func_800C872C(s32 arg0, s32 arg1, s32 arg2);
 
 void func_800C8800(s32 arg0, s32 arg1);
 
