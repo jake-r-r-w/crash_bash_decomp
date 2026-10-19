@@ -776,7 +776,13 @@ void InitShellExplosion(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitShrapnelBit);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotMineBall);
+void PlotMineBall(NAS *nas) {
+    if (++nas->UserInfo.status >= 8) {
+        KillNAS(nas);
+        return;
+    }
+    nas->Engine->sub->unk74 = D_800CA48C[nas->UserInfo.status];
+}
 
 void InitMineBall(NAS *nas) {
     EXTengine *eng;
