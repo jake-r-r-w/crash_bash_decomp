@@ -77,6 +77,7 @@ extern s32 D_800C52FC;
 extern s32 D_800C5304;
 extern s32 D_800C5BAC;
 extern s32 D_800C5BB8;
+extern u16 D_800C3998[][2];
 extern s32 D_800C5BBC;
 extern s32 D_800C5300;
 extern s32 D_800C5BC0;
@@ -125,6 +126,8 @@ void func_800C22E8(s32 arg0, s32 arg1, s16 arg2, s16 arg3);
 void func_800C2338(s32 arg0, s32 arg1, s16 arg2, s16 arg3);
 
 void func_800C244C(s32 arg0, s32 arg1);
+
+void func_800C2488(s32 arg0, s32 arg1);
 
 void func_800C24E4(s32 arg0, s32 arg1);
 
