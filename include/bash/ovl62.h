@@ -58,7 +58,9 @@ typedef struct BombGFXExt {
 /* A scene's model object as func_800CA770 walks the list at D_80058AD0 + 0x1C. */
 typedef struct SceneObj {
     /* 0x00 */ u32 flags; /* 0x8000 visible */
-    /* 0x04 */ u8 pad4[0x5C - 0x4];
+    /* 0x04 */ u8 pad4[0x8 - 0x4];
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ u8 padC[0x5C - 0xC];
     /* 0x5C */ struct SceneObj *next;
     /* 0x60 */ u8 pad60[0x6C - 0x60];
     /* 0x6C */ GfxModel *model;
@@ -69,6 +71,27 @@ typedef struct SceneObj {
 /* Visible scene objects func_800CA770 collects. */
 extern SceneObj *D_800D6010[80];
 extern char D_800B3498[];
+
+/* Scene objects func_800B38A0 picks out by index. */
+extern s32 D_8009E1F4;
+extern s32 D_8009E1F8;
+extern SceneObj *D_800D529C;
+extern SceneObj *D_800D52A0;
+extern s32 D_800D5FC4;
+extern s32 D_800D5FC8;
+
+/* D_80058AD0 as seen by func_800B38A0. */
+typedef struct Ovl62Scene {
+    /* 0x00 */ u8 pad0[0x1C];
+    /* 0x1C */ SceneObj *objs;
+} Ovl62Scene;
+
+/* D_8005A614 as seen by func_800B38A0. */
+typedef struct Ovl62ModeView {
+    /* 0x00 */ u8 pad0[0x32];
+    /* 0x32 */ u16 flags;
+    /* 0x34 */ s16 mode;
+} Ovl62ModeView;
 
 /* D_80051640 as the camera func_800CACC0 sets up. */
 typedef struct Ovl62Cam {
@@ -697,6 +720,8 @@ void func_800CB368(s32 player);
 void func_800D2E00(s32 player);
 
 extern ScriptInit D_800D5DB8;
+
+void func_800B38A0(void);
 
 s32 func_800B4094(s32 *arg0, s32 arg1);
 

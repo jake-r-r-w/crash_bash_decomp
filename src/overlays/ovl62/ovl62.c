@@ -52,7 +52,59 @@ s32 func_800B3740(s32 arg0) {
     return neg;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B38A0);
+void func_800B38A0(void) {
+    s32 i;
+    SceneObj *obj;
+
+    i = 0;
+    D_8009E1F8 = 0;
+    D_8009E1F4 = 0;
+    D_800D5298 = NULL;
+    D_800D529C = NULL;
+    D_800D5FC8 = 0;
+    obj =((const Ovl62Scene *)D_80058AD0)->objs;
+    D_800D529C = NULL;
+    D_800D52A0 = NULL;
+    D_80058AF4.vx = 0;
+    D_80058AF4.vz = 0;
+    do {
+        Heroes[i].hero_eng->flags |= 0x200000;
+        i++;
+    } while (i < 4);
+    while (1) {
+        if (obj == NULL) {
+            break;
+        }
+        if (obj->flags & 0x8000) {
+            if (obj->model->colors != NULL) {
+                func_80015A18(obj->index, (u8 *)obj->model->colors);
+                if (((Ovl62ModeView *)D_8005A614)->mode == 0x12) {
+                    if (!(((Ovl62ModeView *)D_8005A614)->flags & 0x80)) {
+                        if (obj->index == 0x5001 || obj->index == 0x5004) {
+                            obj->flags |= 0x200000;
+                        }
+                    } else {
+                        if (obj->index == 0x5001 || obj->index == 0x5004) {
+                            obj->flags |= 0x200000;
+                        }
+                        if (obj->index == 0x5005) {
+                            D_800D529C = obj;
+                        }
+                        if (obj->index == 0x5003) {
+                            D_800D52A0 = obj;
+                            D_800D5FC4 = obj->unk8;
+                        }
+                    }
+                }
+                if (((Ovl62ModeView *)D_8005A614)->mode == 0x16 &&obj->index == 0x5003) {
+                    D_800D5298 = (subengine *)obj;
+                    obj->flags |= 0x200000;
+                }
+            }
+        }
+        obj = obj->next;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B3AA0);
 
