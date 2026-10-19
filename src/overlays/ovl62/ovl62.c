@@ -826,7 +826,15 @@ void InitCortexPack(NAS *m) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBrioPack);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitDingoTail);
+void InitDingoTail(NAS *m) {
+    m->Engine->flags |= 0x200000;
+    m->Engine->sub->unk6C = (s32)D_80052EEC;
+    m->Engine->sub->unk74 = 0x2003;
+    m->Engine->unk5D = 2;
+    m->Engine->unk5C = 1;
+    m->Engine->sub->flags |= 0x40000021;
+    m->Engine->sub->unk76 = 0;
+}
 
 void PlotSimpleExplosion(NAS *m) {
     ExtSimpleExplosion *ext;
