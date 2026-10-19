@@ -787,7 +787,50 @@ void PlotPeriscopeGun(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotBoatField);
+void PlotBoatField(NAS *nas) {
+    EXTengine *src;
+    EXTengine *dst;
+    s32 *pos;
+    u8 *p;
+    NAS *n;
+    Ovl5fExt1605 *ext;
+    u32 t;
+
+    src = Heroes[nas->UserInfo.user1].hero_eng;
+    dst = nas->Engine;
+    dst->unk10.x = src->unk10.x;
+    dst->unk10.z = src->unk10.z;
+    t = nas->UserInfo.user2;
+    nas->UserInfo.user2 = t + 1;
+    switch (t) {
+    case 0:
+    case 4:
+    case 9:
+    case 14:
+        pos = (s32 *)&dst->unk10;
+        p = D_80053774;
+        n = SpawnNASById(pos[0], pos[1], pos[2], 0x1605, 0x11);
+        if (n != NULL) {
+            ext = FindExtension(n, 0x10000000);
+            if (ext != NULL) {
+                ext->unkC = 4;
+                ext->unk18 = 0x100;
+                if (p != NULL) {
+                    ext->unk20 = 5;
+                    n->Engine->sub->unk6C = p;
+                } else {
+                    ext->unk20 = 1;
+                }
+                ext->unk28 = 0;
+                n->InitDelete(n);
+            }
+        }
+        break;
+    case 29:
+        KillNAS(nas);
+        break;
+    }
+}
 
 void PlotPillarControl(NAS *nas) {
     s32 *p;
