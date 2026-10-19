@@ -122,6 +122,8 @@ void func_800BB3F0(s32 x, s32 y);
 
 s32 func_800BB428(s32 x, s32 z);
 
+s32 func_800BB4F8(s32 x, s32 z, s32 range, s32 skip);
+
 s32 func_800BB5A0(s32 x, s32 z, s32 range);
 
 #endif /* BASH_OVL68_H */

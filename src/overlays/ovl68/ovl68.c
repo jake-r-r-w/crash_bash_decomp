@@ -426,7 +426,31 @@ void func_800BB488(CoalGridObj *obj) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BB4F8);
+s32 func_800BB4F8(s32 x, s32 z, s32 range, s32 skip) {
+    s32 i;
+    s32 neg;
+    s32 dx;
+    s32 dz;
+    HeroInfo *h;
+    EXTengine *eng;
+
+    for (i = 0; i < 4; i++) {
+        h = &Heroes[i];
+        if (i == skip || h->hero_name == 9 || (h->hero_status & 0xC000)) {
+            continue;
+        }
+        eng = h->hero_eng;
+        dx = x - eng->unk10.x;
+        if (dx < -range || range < dx) {
+            continue;
+        }
+        dz = z - eng->unk10.z;
+        if (-range < dz && dz < range) {
+            return i;
+        }
+    }
+    return -1;
+}
 
 s32 func_800BB5A0(s32 x, s32 z, s32 range) {
     s32 i;
