@@ -231,7 +231,30 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B9E20);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BA95C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BAAB0);
+void func_800BAAB0(s32 arg0) {
+    EXTengine *eng;
+    HeroInfo *h;
+    TA_player *p;
+
+    eng = Heroes[arg0].hero_eng;
+    h = &Heroes[arg0];
+    D_800CAD50[arg0].SpeedY += 0xC;
+    p = &D_800CAD50[arg0];
+    eng->unk10.y += p->SpeedY;
+    if (eng->unk10.y > 0) {
+        p->SpeedY = -p->SpeedY / 2;
+        eng->unk10.y = 0;
+    }
+    eng->sub->next->next->unk08 = -eng->unk10.y / 2;
+    if (func_8008502C(arg0) != 0) {
+        if (h->hero_status & 0x2000) {
+            SetHeroAction((HeroInfo *)arg0, 0x6A);
+        } else {
+            SetHeroAction((HeroInfo *)arg0, h->hero_last_mode);
+            SetHeroSeq((HeroInfo *)arg0, 0x59);
+        }
+    }
+}
 
 void func_800BABCC(s32 arg0) {
     u32 i;

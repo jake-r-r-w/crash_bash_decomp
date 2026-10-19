@@ -326,6 +326,8 @@ void func_800B8EC4(s32 player);
 
 void func_800B906C(s32 player);
 
+void func_800BAAB0(s32 arg0);
+
 void func_800BABCC(s32 arg0);
 
 void func_800BACD4(s32 arg0);
