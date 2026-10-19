@@ -1186,7 +1186,34 @@ void PlotSnowMaster(NAS *m) {
 void InitSnowMaster(NAS *m) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA770);
+void func_800CA770(void) {
+    s32 i;
+    SceneObj *obj;
+    SceneObj **out;
+
+    obj = *(SceneObj **)((u8 *)D_80058AD0 + 0x1C);
+    for (i = 79; i >= 0; i--) {
+        D_800D6010[i] = NULL;
+    }
+    i = 0;
+    out = D_800D6010;
+    while (1) {
+        if (obj == NULL) {
+            break;
+        }
+        if (obj->flags & 0x8000) {
+            if (obj->model->colors != NULL) {
+                u8 *p = func_80015A18(obj->index, (u8 *)obj->model->colors);
+                if (p != NULL && *(s32 *)(p + 0x28) != 0) {
+                    *out++ = obj;
+                    i++;
+                }
+            }
+            obj = obj->next;
+        }
+    }
+    printf(D_800B3498, i - 1);
+}
 
 void PlotIceBerg(NAS *arg0) {
     u8 *temp_a1;

@@ -37,6 +37,21 @@ void func_800D3508(void);
 
 extern NAS *D_800D5294;
 
+/* A scene's model object as func_800CA770 walks the list at D_80058AD0 + 0x1C. */
+typedef struct SceneObj {
+    /* 0x00 */ u32 flags; /* 0x8000 visible */
+    /* 0x04 */ u8 pad4[0x5C - 0x4];
+    /* 0x5C */ struct SceneObj *next;
+    /* 0x60 */ u8 pad60[0x6C - 0x60];
+    /* 0x6C */ GfxModel *model;
+    /* 0x70 */ u8 pad70[0x74 - 0x70];
+    /* 0x74 */ u16 index;
+} SceneObj;
+
+/* Visible scene objects func_800CA770 collects. */
+extern SceneObj *D_800D6010[80];
+extern char D_800B3498[];
+
 /* D_80051640 as the camera func_800CACC0 sets up. */
 typedef struct Ovl62Cam {
     /* 0x00 */ CamXYZ eye;
@@ -512,6 +527,8 @@ extern ScriptInit D_800D5DB8;
 s32 func_800B4094(s32 *arg0, s32 arg1);
 
 void func_800B782C(s32 player);
+
+void func_800CA770(void);
 
 void func_800CAEB0(s32 player, s32 idx);
 
