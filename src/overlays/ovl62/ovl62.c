@@ -984,7 +984,16 @@ void func_800D3018(s32 player) {
     func_800D2D2C();
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D307C);
+void func_800D307C(s32 player) {
+    PadState *base;
+    Ovl62Pad *pad;
+
+    base = D_80051338;
+    pad = (Ovl62Pad *)(base + player);
+    pad->unk50 = 0;
+    pad->unk54 = 0;
+    func_8008502C(player);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D30C0);
 

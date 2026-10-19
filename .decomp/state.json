@@ -7213,7 +7213,8 @@
  },
  "ovl62:800D307C": {
   "auto_diff": 7,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-19T07:07:21Z",
+  "status": "matched"
  },
  "ovl62:800D30C0": {
   "auto_failed": "compile"

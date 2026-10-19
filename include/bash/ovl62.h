@@ -41,11 +41,12 @@ typedef struct Ext20 {
     /* 0x24 */ s32 state;
 } Ext20;
 
-/* PadState (D_80051338) as func_800D1C14 reads it: the buttons at 0x50. */
+/* PadState (D_80051338) as func_800D1C14 and func_800D307C use it: the
+ * buttons at 0x50, a word at 0x54. */
 typedef struct Ovl62Pad {
     /* 0x00 */ u8 pad0[0x50];
     /* 0x50 */ s32 unk50;
-    /* 0x54 */ u8 pad54[0x58 - 0x54];
+    /* 0x54 */ s32 unk54;
 } Ovl62Pad;
 
 void func_800D1C14(s32 player);
@@ -165,9 +166,12 @@ void func_800B60B8(s32 player);
 void func_800B767C(s32 player);
 
 s32 func_800CB284(void);
+s32 func_8008502C();
 
 s32 func_800CB2C8(s32 arg0);
 
 s32 func_800D0750(s32 player);
+
+void func_800D307C(s32 player);
 
 #endif /* BASH_OVL62_H */
