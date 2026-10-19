@@ -48,6 +48,10 @@ typedef struct {
 s32 func_800BB7B8(T_BB7B8 *p);
 void func_800BB7E8(void);
 
+extern u16 D_800C46E4[];
+
+void InitCratePickup(NAS *arg0);
+
 void InitShieldPickup(NAS *arg0);
 
 void InitBootsPickup(NAS *arg0);
