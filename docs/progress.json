@@ -19,9 +19,9 @@
    "size": 2836
   }
  ],
- "commit": "a15539b8e",
+ "commit": "23ae4e327",
  "game": "SCUS_945.70",
- "generated": "2026-10-19T09:03:13Z",
+ "generated": "2026-10-19T09:04:22Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -108492,9 +108492,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "23ae4e327",
+   "data_b": 3580,
+   "data_tb": 606943,
+   "game_all_f": 2541,
+   "game_b": 420452,
+   "game_c_f": 1662,
+   "game_f": 1662,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 1454,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-19T09:04:21Z",
+   "units": {
+    "engine": [
+     121412,
+     355
+    ],
+    "main exe": [
+     124840,
+     575
+    ],
+    "ovl5d": [
+     328,
+     4
+    ],
+    "ovl5e": [
+     504,
+     6
+    ],
+    "ovl5f": [
+     1564,
+     36
+    ],
+    "ovl60": [
+     22188,
+     117
+    ],
+    "ovl61": [
+     49424,
+     96
+    ],
+    "ovl62": [
+     32228,
+     151
+    ],
+    "ovl63": [
+     940,
+     17
+    ],
+    "ovl64": [
+     156,
+     7
+    ],
+    "ovl65": [
+     1096,
+     11
+    ],
+    "ovl66": [
+     672,
+     14
+    ],
+    "ovl67": [
+     27056,
+     101
+    ],
+    "ovl68": [
+     324,
+     11
+    ],
+    "ovl69": [
+     9496,
+     68
+    ],
+    "ovl6a": [
+     28224,
+     93
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-19T09:04:19Z",
+   "auto": true,
+   "name": "func_800B6AE0",
+   "seg": "overlays/ovl60/ovl60",
+   "size": 308,
+   "tries": 0
+  },
   {
    "at": "2026-10-19T09:03:11Z",
    "auto": true,
@@ -108606,14 +108700,6 @@
    "seg": "overlays/ovl60/ovl60",
    "size": 236,
    "tries": 0
-  },
-  {
-   "at": "2026-10-19T08:53:41Z",
-   "auto": true,
-   "name": "func_800C2674",
-   "seg": "overlays/ovl60/ovl60",
-   "size": 252,
-   "tries": 0
   }
  ],
  "summary": {
@@ -108629,15 +108715,15 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 3,
-   "c_f": 1661,
-   "done_b": 420144,
-   "done_f": 1661,
+   "c_f": 1662,
+   "done_b": 420452,
+   "done_f": 1662,
    "named_f": 345,
-   "pct": 41.22955420613207,
+   "pct": 41.25977884981492,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2541,
-   "typed_f": 1453
+   "typed_f": 1454
   },
   "lib": {
    "all_f": 566,
@@ -108765,20 +108851,20 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
-    "c_f": 116,
-    "done_b": 21880,
-    "done_f": 116,
+    "c_f": 117,
+    "done_b": 22188,
+    "done_f": 117,
     "file": "ovl60.bin",
     "files": 1,
     "lib": false,
     "named_f": 24,
-    "pct": 33.24823729637734,
+    "pct": 33.716265499635306,
     "phase": 4,
     "sony_b": 0,
     "title": "Pogo",
     "total_b": 65808,
     "total_f": 180,
-    "typed_f": 112,
+    "typed_f": 113,
     "unit": "ovl60"
    },
    {
