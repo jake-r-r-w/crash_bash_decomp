@@ -824,7 +824,17 @@ void InitCortexPack(NAS *m) {
     m->Engine->sub->unk76 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBrioPack);
+void InitBrioPack(NAS *m) {
+    m->Engine->flags |= 0x200000;
+    m->Engine->sub->unk6C = D_800546C4;
+    m->Engine->sub->unk74 = 0x2031;
+    m->Engine->unk5D = 2;
+    m->Engine->unk5C = 1;
+    m->Engine->sub->flags |= 0x40000021;
+    m->Engine->sub->unk76 = 0;
+    m->UserInfo.user2 = 0;
+    m->UserInfo.user1 = 0;
+}
 
 void InitDingoTail(NAS *m) {
     m->Engine->flags |= 0x200000;
