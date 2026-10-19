@@ -223,7 +223,42 @@ done:
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B3A38);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B3C1C);
+void func_800B3C1C(s32 id) {
+    HeroInfo *h;
+    HeroInfo *hb;
+    Ovl65Chase *c;
+    Ovl65Ext *e;
+    EXTengine *b;
+    EXTengine *a;
+    s32 near;
+    s32 far;
+
+    hb = Heroes;
+    h = &hb[id];
+    c = FindExtension(h->hero, 0x20000000);
+    if (c != NULL) {
+        e = FindExtension(D_800BDA08[c->unk28], 0x10000000);
+        near = 0;
+        if (e != NULL) {
+            near = e->unkC == 1;
+        }
+        far = near ^ 1;
+        if (far != 0) {
+            c->unk28 = -1;
+            c->fn = func_800BD1FC;
+            return;
+        }
+        b = h->hero_eng;
+        c->pos = b->unk10;
+        a = D_800BDA08[c->unk28]->Engine;
+        c->tgt = a->unk10;
+        if (func_800B49AC(id) != 0) {
+            h->hero_ai->AIpad |= 0x8000;
+        }
+        ((PadButtons *)D_80051338)[id].unk50 = h->hero_ai->AIpad;
+        func_800B3538(id);
+    }
+}
 
 s32 func_800B4268();
 
