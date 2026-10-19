@@ -29,7 +29,30 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B62EC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B6DA4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B6F0C);
+void func_800B6F0C(void) {
+    HeroInfo *h;
+    s32 i;
+    s32 best;
+    s32 max;
+
+    max = 0;
+    best = -1;
+    for (i = 0; i < 4; i++) {
+        h = &Heroes[i];
+        if (!(h->hero_status & 0xFA00) && max < h->hero_health) {
+            max = h->hero_health;
+            best = i;
+        }
+    }
+    if (best != -1) {
+        for (i = 0; i < 4; i++) {
+            h = &Heroes[i];
+            if (!(h->hero_status & 0xFA00) && i != best) {
+                func_80084E04(i, 0, -1, 0x1000, 0);
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B6FE0);
 

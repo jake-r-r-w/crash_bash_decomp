@@ -30,7 +30,11 @@ typedef struct {
 } Ovl5dGameView;
 #define OVLG ((Ovl5dGameView *)D_8005A614)
 
+extern HeroInfo Heroes[4];
+
 void func_800B62EC(void);
+
+void func_800B6F0C(void);
 
 void func_800B7D20(void);
 

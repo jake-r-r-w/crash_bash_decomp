@@ -22,7 +22,30 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B4048);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B4444);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B44C8);
+void func_800B44C8(void) {
+    HeroInfo *h;
+    s32 i;
+    s32 best;
+    s32 max;
+
+    max = 0;
+    best = -1;
+    for (i = 0; i < 4; i++) {
+        h = &Heroes[i];
+        if (!(h->hero_status & 0xFA00) && max < h->hero_health) {
+            max = h->hero_health;
+            best = i;
+        }
+    }
+    if (best != -1) {
+        for (i = 0; i < 4; i++) {
+            h = &Heroes[i];
+            if (!(h->hero_status & 0xFA00) && i != best) {
+                func_80084E04(i, 0, -1, 0x1000, 0);
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B459C);
 

@@ -32,8 +32,12 @@ void func_800B6E84(s32 arg0);
 extern s32 D_8005A5D8;
 extern HeroInfo Heroes[4];
 void func_80025F44(EXTengine *eng);
+void func_80084E04(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx);
+
 s32 func_80085890();
 s32 func_8008A200(s32 arg0);
 void func_8008A810(void);
+
+void func_800B44C8(void);
 
 #endif /* BASH_OVL68_H */
