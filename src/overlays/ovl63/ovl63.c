@@ -473,7 +473,10 @@ s32 func_800C5AF8(void) {
     return D_800C6930;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5B08);
+void func_800C5B08(s32 *pos, s32 *polar) {
+    polar[0] = csqrt(pos[0] * pos[0] + pos[2] * pos[2]) >> 6;
+    polar[1] = get_angle(pos[0], pos[2]) & 0xFFF;
+}
 
 s32 func_800C5B7C(void) {
     return 0;

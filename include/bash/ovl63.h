@@ -141,4 +141,6 @@ extern ScriptInit D_800C6F28;
 
 s32 func_800C5400(s32 arg0);
 
+void func_800C5B08(s32 *pos, s32 *polar);
+
 #endif /* BASH_OVL63_H */
