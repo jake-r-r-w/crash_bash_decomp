@@ -197,7 +197,15 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B9020);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B9534);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B96A0);
+void func_800B96A0(s32 arg0) {
+    if (Heroes[arg0].hero_frozen == 0) {
+        if (!(Heroes[arg0].hero_ctrl & 1)) {
+            Heroes[arg0].hero_eng->unk1E += func_800154A0(Heroes[arg0].hero_eng->unk1E, Heroes[arg0].hero_move->forward_angle) >> 2;
+        }
+        Heroes[arg0].hero_ctrl &= 0xFFFE;
+    }
+    Heroes[arg0].hero_eng->unk5E = 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B9778);
 
