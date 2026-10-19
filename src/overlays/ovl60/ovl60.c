@@ -878,7 +878,94 @@ void func_800BA3E0(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BA51C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoTazer);
+void Plot_PogoTazer(NAS *nas) {
+    EXTengine *eng;
+    EXTengine *he;
+    subengine *sub;
+    Ovl60Slot *slot;
+    HeroInfo *h;
+    s32 n;
+    s32 i;
+    s32 x;
+    s32 z;
+    s32 hx;
+    s32 hz;
+    s32 dir;
+    s32 hit;
+    Ovl60Slot *slots;
+    HeroInfo *heroes;
+
+    eng = nas->Engine;
+    n = 0;
+    if (eng == NULL) {
+        return;
+    }
+    slots = D_800C535C;
+    heroes = Heroes;
+    sub = eng->sub;
+next_sub:
+    i = 0;
+    if (sub != NULL) {
+        slot = slots;
+        h = heroes;
+        sub->unk74 = ((D_8004E0D8 + n++) & 7) + 0x2003;
+        x = (eng->unk10.x + 0x800) >> 9;
+        z = (eng->unk10.z + 0x800) >> 9;
+    next_hero:
+        if (i < 4) {
+            if (slot->nas == nas) {
+                goto skip;
+            }
+            hit = 0;
+            if (h->hero_mode == 0x3B) {
+                goto skip;
+            }
+            he = h->hero_eng;
+            hx = (he->unk10.x + 0x800) >> 9;
+            hz = (he->unk10.z + 0x800) >> 9;
+            dir = eng->unk1E >> 10;
+            switch (dir) {
+            case 0:
+                if (hz == z && !(hx < x)) {
+                    hit = 1;
+                }
+                break;
+            case 1:
+                if (hx == x && !(z < hz)) {
+                    hit = 1;
+                }
+                break;
+            case 2:
+                if (hz == z && !(x < hx)) {
+                    hit = 1;
+                }
+                break;
+            case 3:
+                if (hx == x && !(hz < z)) {
+                    hit = 1;
+                }
+                break;
+            }
+            if (hit) {
+                func_800C142C(i);
+                if (slot->unk4 == 5 && h->hero_aseq == 0x2F) {
+                    SetHeroAction((HeroInfo *)i, 0x39);
+                }
+                if (slot->unk4 == 6) {
+                    func_800B91E8(i);
+                }
+                slot->unk4 = 0;
+            }
+        skip:
+            slot++;
+            h++;
+            i++;
+            goto next_hero;
+        }
+        sub = sub->next;
+        goto next_sub;
+    }
+}
 
 void Plot_PogoPickup(NAS *nas) {
     EXTengine *eng;
