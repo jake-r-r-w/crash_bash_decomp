@@ -296,7 +296,106 @@ void func_800B7E74(void) {
     } while (n < 0x258);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B8040);
+Ovl5dPair *func_800B8040(u8 *arg0) {
+    Ovl5dGridCell *best;
+    Ovl5dGridCell *cell;
+    u16 bestn;
+    u16 tries;
+    u16 besti;
+    s32 i;
+    s32 x;
+    s32 z;
+    s32 xlo;
+    s32 xhi;
+    s32 zlo;
+    s32 zhi;
+    u16 n;
+
+    cell = D_800C3EAC[0];
+    bestn = 9;
+    tries = 9;
+    i = *(u16 *)arg0;
+    best = cell = &cell[i];
+    besti = i;
+    i++;
+    i &= 0xFF;
+    x = (cell->x >> 8) + 10;
+    z = 9 - (cell->z >> 8);
+    do {
+        while (D_8009D90C[z * 20 + x].unk0 != 0) {
+            if (i == *(u16 *)arg0) {
+                return NULL;
+            }
+            cell = D_800C3EAC[0];
+            cell = &cell[i];
+            i++;
+            i &= 0xFF;
+            x = (cell->x >> 8) + 10;
+            z = 9 - (cell->z >> 8);
+        }
+        xhi = x;
+        xlo = x;
+        zhi = z;
+        zlo = z;
+        if (x > 0) {
+            xlo = x - 1;
+        }
+        if (x < 19) {
+            xhi = x + 1;
+        }
+        if (z > 0) {
+            zlo = z - 1;
+        }
+        if (z < 19) {
+            zhi = z + 1;
+        }
+        n = D_8009D90C[zlo * 20 + xlo].unk0 != 0;
+        if (D_8009D90C[zlo * 20 + x].unk0 != 0) {
+            n++;
+        }
+        if (D_8009D90C[zlo * 20 + xhi].unk0 != 0) {
+            n++;
+        }
+        if (D_8009D90C[z * 20 + xlo].unk0 != 0) {
+            n++;
+        }
+        if (D_8009D90C[z * 20 + xhi].unk0 != 0) {
+            n++;
+        }
+        if (D_8009D90C[zhi * 20 + xlo].unk0 != 0) {
+            n++;
+        }
+        if (D_8009D90C[zhi * 20 + x].unk0 != 0) {
+            n++;
+        }
+        if (D_8009D90C[zhi * 20 + xhi].unk0 != 0) {
+            n++;
+        }
+        if (n == 0) {
+            *(u16 *)arg0 = i;
+            return (Ovl5dPair *)cell;
+        }
+        if (n < bestn) {
+            bestn = n;
+            best = cell;
+            besti = i;
+        }
+        if (i == *(u16 *)arg0) {
+            return NULL;
+        }
+        cell = D_800C3EAC[0];
+        cell = &cell[i];
+        i++;
+        i &= 0xFF;
+        x = (cell->x >> 8) + 10;
+        z = 9 - (cell->z >> 8);
+        if (--tries == 0xFFFF) {
+            break;
+        }
+    } while (1);
+    *(u16 *)arg0 = besti;
+    return (Ovl5dPair *)best;
+}
 
 void func_800B8314(void) {
     s32 j;
