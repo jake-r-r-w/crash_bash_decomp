@@ -268,6 +268,11 @@ void func_800B9D64();
 void func_800BCB4C();
 extern s32 D_800C52F4;
 extern s32 D_80099178;
+extern s32 D_800C5BD8;
+extern s32 D_800C5BDC;
+extern s32 D_800C5BE0;
+extern s32 D_800C5BE4;
+extern s32 D_800C5BE8;
 
 /* D_8005A614+0x34 as func_800B3E34 switches on it: an enum, so gcc's
  * switch tree skips its text cost table. */

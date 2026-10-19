@@ -1081,7 +1081,16 @@ bool Roo_Bounce(NAS *nas) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Roo_UpdateVelocities);
+void Roo_UpdateVelocities(EXTengine *eng) {
+    s32 dx;
+    s32 dz;
+
+    dx = (D_800C5BD8 << 9) - eng->unk10.x - 0x700;
+    dz = (D_800C5BDC << 9) - eng->unk10.z - 0x700;
+    D_800C5BE0 = dx / 10;
+    D_800C5BE4 = dz / 10;
+    D_800C5BE8 = get_angle(dx, dz) + 0x800;
+}
 
 s32 func_800C0DE4(s32 arg0) {
     s32 i;
