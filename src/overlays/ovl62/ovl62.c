@@ -970,7 +970,25 @@ void InitWeightDeath(NAS *m) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAC20);
+s32 func_800CAC20(s32 i) {
+    u8 *p;
+    EXTengine *eng;
+    EXTengine *e;
+    HeroInfo *base;
+
+    p = D_800D5454;
+    base = Heroes;
+    eng = base[i].hero_eng;
+    for (; p != NULL; p = *(u8 **)(p + 0x20)) {
+        e = *(EXTengine **)(p + 0x54);
+        if (e != NULL && e != eng) {
+            if (func_800C2ECC(e, 1, base[i].hero_eng, 0) != 0) {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
 
 void func_800CACC0(void) {
     ((Ovl62Cam *)D_80051640)->at.x = -0x40;

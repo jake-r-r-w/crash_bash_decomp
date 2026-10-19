@@ -6955,7 +6955,8 @@
  },
  "ovl62:800CAC20": {
   "auto_diff": 41,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-19T07:27:25Z",
+  "status": "matched"
  },
  "ovl62:800CACC0": {
   "matched_at": "2026-10-19T07:12:53Z",

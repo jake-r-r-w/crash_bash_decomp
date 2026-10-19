@@ -128,6 +128,7 @@ extern HeroInfo Heroes[4];
 extern s32 D_8005A680[];
 
 s32 func_800C9B5C(void);
+s32 func_800C2ECC(EXTengine *a, s32 b, EXTengine *c, s32 d);
 
 void func_800BFD38();
 
@@ -380,6 +381,8 @@ void func_800D2CB8(s32 arg0);
 /* Per-hero speed table (declared in bash/8007ee2c.h, not included here). */
 extern u16 *D_8009D6F4;
 extern s32 D_800D6924[];
+
+s32 func_800CAC20(s32 i);
 
 void func_800D3460(s32 arg0);
 
