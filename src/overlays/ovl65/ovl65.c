@@ -491,7 +491,69 @@ s32 func_800B485C(s32 arg0, s32 arg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B49AC);
+s32 func_800B49AC(s32 id)
+{
+  Vec3W pos;
+  s32 best;
+  s32 bestd;
+  s32 i;
+  s32 d;
+  u16 st;
+  s32 dist;
+  s32 sel;
+  s32 *pd = &dist;
+  best = -1;
+  bestd = 0x07FFFFFF;
+  i = 0;
+  for (;;)
+  {
+    if (i >= 4)
+    {
+      goto done;
+    }
+    if (i != id)
+    {
+      st = Heroes[i].hero_status;
+      sel = st & 0x2000;
+      if (!sel)
+      {
+        if (!(st & 0x8000))
+        {
+          pos = *((Vec3W *) (&Heroes[i].hero_eng->unk10));
+          d = func_8008CEB0((u8 *) (&pos), (u8 *) (&Heroes[id].hero_eng->unk10));
+          if (d < bestd)
+          {
+            bestd = d;
+            best = i;
+          }
+        }
+      }
+    }
+    i++;
+  }
+
+  done:
+  *pd = bestd;
+
+  sel = best;
+  if (sel != (-1))
+  {
+    if (func_800B33D8(id) == sel)
+    {
+      if (func_800B485C(id, sel) == 0)
+      {
+        if (dist <= 0xFFFFF)
+        {
+          if (func_800B475C(id, sel) != 0)
+          {
+            return 1;
+          }
+        }
+      }
+    }
+  }
+  return 0;
+}
 
 void func_800B4B14(s32 id) {
     Ovl65Chase *c;

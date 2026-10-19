@@ -8411,7 +8411,8 @@
   "status": "matched"
  },
  "ovl65:800B49AC": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-19T16:15:42Z",
+  "status": "matched"
  },
  "ovl65:800B4B14": {
   "auto_diff": 79,
