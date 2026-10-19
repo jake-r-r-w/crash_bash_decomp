@@ -601,6 +601,8 @@ static inline s32 Ovl63JumpAbove(s32 player) {
 
 s32 func_800B96B0(s32 arg0, s32 arg1);
 
+void func_800BB878(s32 player);
+
 void func_800BC0A4(s32 arg0);
 
 void func_800BC4B0(s32 player);
