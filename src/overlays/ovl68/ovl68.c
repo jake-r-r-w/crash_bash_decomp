@@ -193,7 +193,10 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", InitCoal);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BAC30);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", InitBarrelGenerator);
+void InitBarrelGenerator(NAS *nas) {
+    nas->Engine->flags = 0;
+    nas->UserInfo.flags = 0x3C;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BAC98);
 

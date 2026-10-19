@@ -9677,7 +9677,8 @@
   "auto_failed": "diff"
  },
  "ovl68:800BAC80": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-19T17:20:42Z",
+  "status": "matched"
  },
  "ovl68:800BAC98": {
   "auto_diff": 9,

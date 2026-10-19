@@ -52,4 +52,6 @@ void func_800B44C8(void);
 
 void InitCoalFlameSFX(CoalFlameObj *arg0);
 
+void InitBarrelGenerator(NAS *nas);
+
 #endif /* BASH_OVL68_H */
