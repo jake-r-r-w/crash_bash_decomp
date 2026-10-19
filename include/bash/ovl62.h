@@ -570,6 +570,8 @@ s32 func_800C5CD0(s32 *arg0, s32 arg1);
 
 void func_800CA770(void);
 
+void InitGravityObject(NAS *m);
+
 void func_800CAEB0(s32 player, s32 idx);
 
 void func_800CB41C(s32 player);

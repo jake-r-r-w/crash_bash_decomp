@@ -6962,7 +6962,8 @@
   "status": "matched"
  },
  "ovl62:800CAA90": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-19T07:42:30Z",
+  "status": "matched"
  },
  "ovl62:800CAB8C": {
   "matched_at": "2026-10-19T07:23:18Z",

@@ -1450,7 +1450,27 @@ void PlotGravityObject(GravityObject *obj) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitGravityObject);
+void InitGravityObject(NAS *m) {
+    GravityMotion *g;
+    s32 t;
+
+    g = AddExtension(m, 0x34, 0x10000000);
+    if (g != NULL) {
+        m->Engine->sub->unk74 = 0x200C;
+        m->Engine->sub->unk6C = D_800546C4;
+        m->Engine->sub->flags |= 0x02000000;
+        g->vx = (D_80068BD4[0xE00].unk2 * 27) >> 11;
+        t = D_80068BD4[0x200].unk2;
+        g->vy = -0x54;
+        g->ax = 0;
+        g->az = 0;
+        g->ay = 2;
+        g->flags = 0;
+        g->vz = (t * 27) >> 11;
+        g->floor = *(u16 *)&m->Engine->unk10.y + 0x400;
+        m->FUX = (EXT *)g;
+    }
+}
 
 void InitWeightDeath(NAS *m) {
     WeightDeathExt *ext;
