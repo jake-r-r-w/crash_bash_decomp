@@ -271,6 +271,8 @@ typedef enum Ovl60Mode {
 s32 func_8008502C();
 void func_800B6790(s32 arg0);
 
+s32 func_800B6C14(s32 arg0);
+
 void func_800B72B0(s32 arg0);
 void func_800B741C(s32 arg0);
 void func_800B7574(s32 arg0);

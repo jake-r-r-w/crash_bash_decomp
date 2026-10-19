@@ -157,7 +157,56 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B6960);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B6AE0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B6C14);
+s32 func_800B6C14(s32 arg0) {
+    HeroInfo *h;
+    s32 x;
+    s32 z;
+    Ovl60Cell *c;
+    HeroInfo *base = Heroes;
+
+    h = (HeroInfo *)(arg0 * sizeof(HeroInfo) + (u32)base);
+    if (!(h->hero_status & 0x800) && !(D_800C535C[arg0].flags & 1)) {
+        return 0;
+    }
+    x = (h->hero_eng->unk10.x + 0x800) >> 9;
+    z = (h->hero_eng->unk10.z + 0x800) >> 9;
+    if (h->hero_mode != 0x3B && h->hero_last_mode != 0x3B) {
+        switch (h->hero_name) {
+        case 1:
+            PlaySfx(3, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            break;
+        case 3:
+            PlaySfx(0x67, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            break;
+        case 2:
+            PlaySfx(0x35, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            break;
+        case 5:
+            PlaySfx(0x12F, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            break;
+        case 6:
+            PlaySfx(0x161, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            break;
+        case 7:
+            PlaySfx(0xFD, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            break;
+        case 4:
+            PlaySfx(0x99, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            break;
+        case 8:
+            PlaySfx(0xCB, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            break;
+        }
+    }
+    SetHeroAction((HeroInfo *)arg0, 0x3B);
+    if ((u32)x < 8 && z >= 0 && z < 8) {
+        Ovl60Cell *cb = D_800C53DC[0];
+        c = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(D_800C53DC[0]) + (u32)cb);
+        c->unkE = arg0 + 1;
+        c->unk10 = arg0 + 1;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B6DF4);
 
