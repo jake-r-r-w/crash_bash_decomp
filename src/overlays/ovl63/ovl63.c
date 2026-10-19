@@ -712,7 +712,25 @@ void InitRaceFire(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4E54);
+static inline s32 DotXZ(s32 *u, s32 *v) {
+    return (u[0] * v[0] >> 12) + (u[2] * v[2] >> 12);
+}
+
+s32 func_800C4E54(s32 a, s32 b) {
+    s32 n[4];
+    s32 d[4];
+    s32 r[4];
+    s32 dot;
+
+    n[0] = D_80068BD4[b & 0xFFF].unk2;
+    n[2] = D_80068BD4[(b - 0x400) & 0xFFF].unk2;
+    d[0] = -D_80068BD4[(a - 0x400) & 0xFFF].unk2;
+    d[2] = -D_80068BD4[a & 0xFFF].unk2;
+    dot = DotXZ(d, n);
+    r[0] = d[0] - (dot * n[0] >> 11);
+    r[2] = d[2] - (dot * n[2] >> 11);
+    return get_angle(r[0], r[2]) + 0x800;
+}
 
 s32 func_800C4F30(u8 *arg0) {
     HeroInfo *hero;

@@ -348,4 +348,6 @@ typedef struct EXTripple {
     /* 0x18 */ u16 fade;
 } EXTripple;
 
+s32 func_800C4E54(s32 a, s32 b);
+
 #endif /* BASH_OVL63_H */
