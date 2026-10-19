@@ -2853,7 +2853,96 @@ s32 func_800D0750(s32 player) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D0808);
+void func_800D0808(s32 player) {
+    HeroInfo *h;
+    HeroInfo *h2;
+    EXTheromove *move;
+    Ext20 *ext;
+    HeroInfo *base;
+    HeroInfo *base2;
+
+    base = Heroes;
+    h = &base[player];
+    if (h->hero_eng->sfx != NULL) {
+        StopSfx(h->hero_eng->sfx);
+    }
+    ext = FindExtension(h->hero, 0x20000000);
+    if (ext != NULL && func_800D2D2C(player) == 0) {
+        if (ext->state == 1) {
+            switch (h->hero_name) {
+            case 1:
+                PlaySfx(0x1A, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 2:
+                PlaySfx(0x4C, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 3:
+                PlaySfx(0x80, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 4:
+                PlaySfx(0xB0, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 7:
+                PlaySfx(0x114, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 8:
+                PlaySfx(0xE2, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 5:
+                PlaySfx(0x146, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 6:
+                PlaySfx(0x178, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            }
+        } else {
+            switch (h->hero_name) {
+            case 1:
+                PlaySfx(0x16, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 2:
+                PlaySfx(0x48, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 3:
+                PlaySfx(0x7A, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 4:
+                PlaySfx(0xAC, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 7:
+                PlaySfx(0x110, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 8:
+                PlaySfx(0xDE, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 5:
+                PlaySfx(0x142, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 6:
+                PlaySfx(0x174, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            }
+        }
+        base2 = Heroes;
+        h2 = base2 + player;
+        move = h2->hero_move;
+        if (move != NULL) {
+            if (ext->state == 0) {
+                SetHeroSeq((HeroInfo *)player, 0x3E);
+            }
+            if (ext->state == 1) {
+                SetHeroSeq((HeroInfo *)player, 0x45);
+            }
+            D_800D6934[player] = 0x4080;
+            h2->hero_eng->sub->unk68 = 0;
+            ext->val -= func_800D05A8(player);
+            move->x_vel = 0;
+            move->z_vel = 0;
+            move->x_max = 0;
+            move->z_max = 0;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D0A6C);
 
