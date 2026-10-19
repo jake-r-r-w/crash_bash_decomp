@@ -145,7 +145,18 @@ void func_800BAC10(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BAC5C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BAD0C);
+u16 func_800BAD0C(s32 arg0, s32 arg1) {
+    s32 x = (arg0 + 0x800) >> 9;
+    s32 y = (arg1 + 0x800) >> 9;
+
+    if ((u32)x >= 8) {
+        return 0;
+    }
+    if ((u32)y >= 8) {
+        return 0;
+    }
+    return D_800C3BAC[x][y].unkA;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BAD70);
 

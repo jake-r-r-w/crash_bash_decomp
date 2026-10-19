@@ -61,6 +61,8 @@ void InitMissileExplode(NAS *nas);
 
 void func_800BAC10(void);
 
+u16 func_800BAD0C(s32 arg0, s32 arg1);
+
 void func_800BAF68(void);
 
 s32 func_800BB100(s32 arg0);
