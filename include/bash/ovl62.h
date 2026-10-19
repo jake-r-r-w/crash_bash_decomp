@@ -222,6 +222,8 @@ void func_800D3018(s32 player);
 extern s32 D_800D5FEC[4];
 extern s32 D_800D5FB0[4];
 
+s32 func_800B4A1C(NAS *nas);
+
 void func_800B60B8(s32 player);
 
 void func_800B767C(s32 player);

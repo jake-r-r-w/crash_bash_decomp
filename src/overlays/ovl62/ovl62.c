@@ -19,7 +19,27 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/ovl62/ovl62", D_800B32B8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B44B4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B4A1C);
+s32 func_800B4A1C(NAS *nas)
+{
+  s32 *ext;
+  HeroInfo *hero;
+  u32 i;
+  ext = FindExtension(nas, 0x10000000);
+  i = 0;
+  if (ext == 0)
+  {
+    return 0;
+  }
+  hero = Heroes;
+  loop:
+  if (i < 4)
+  {
+ do { if (!(hero->hero_status & 0x2000)) { s32 dx; s32 dz; EXTengine *a; EXTengine *b; a = nas->Engine; b = hero->hero_eng; dx = a->unk10.x - b->unk10.x; dz = a->unk10.z - b->unk10.z; if (((dx * dx) + (dz * dz)) > 0x15F8F) { goto next; } if (FindExtension(hero->hero, 0x20000000) != 0) { ext[5] = i; } return 1; } next: hero++; i++; } while (0);
+    goto loop;
+  }
+
+  return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitPolarBomb);
 
