@@ -49,6 +49,7 @@ extern s32 D_800C9B44[];
 void func_800B6FF4(s32 player);
 extern s32 D_800CB254;
 extern s32 D_800CB258;
+extern s32 D_800CB210;
 void func_800B5588(void);
 void func_800B58B0(void);
 void func_800B5FC4(void);
@@ -401,6 +402,8 @@ void func_800C8360(void);
 void func_800C83D8(void);
 
 void func_800C85F8(Ovl5fHolder *h, s16 v);
+
+s32 func_800C8650(s32 x, s32 z, s32 r, s32 skip);
 
 s32 func_800C872C(s32 arg0, s32 arg1, s32 arg2);
 

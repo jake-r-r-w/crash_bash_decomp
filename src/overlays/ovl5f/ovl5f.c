@@ -2382,7 +2382,41 @@ void func_800C85F8(Ovl5fHolder *h, s16 v) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8650);
+s32 func_800C8650(s32 x, s32 z, s32 r, s32 skip) {
+    s32 i;
+    s32 dx;
+    s32 dz;
+    EXTengine *eng;
+    u16 name;
+    u8 *g;
+
+    s32 nine;
+
+    for (i = 0, nine = 9, g = D_8005A614; i < 4; i++) {
+        if (i == skip) {
+            continue;
+        }
+        name = Heroes[i].hero_name;
+        if (name == nine &&
+            (((Ovl5fModeView *)g)->mode != name ||D_800CB210 != 0 || (u32)(i - 2) >= 2U)) {
+            continue;
+        }
+        if (Heroes[i].hero_status & 0xC000) {
+            continue;
+        }
+        eng = Heroes[i].hero_eng;
+        dx = x - eng->unk10.x;
+        if (dx < -r || r < dx) {
+            continue;
+        }
+        dz = z - eng->unk10.z;
+        if (dz <= -r || dz >= r) {
+            continue;
+        }
+        return i;
+    }
+    return -1;
+}
 
 s32 func_800C872C(s32 arg0, s32 arg1, s32 arg2) {
     s32 i;
