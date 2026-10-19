@@ -83,6 +83,7 @@ extern NAS *D_800C5BB0;
 extern s32 D_800C52E0;
 extern s32 D_800C52E4;
 extern s32 D_800C52EC;
+extern s32 D_800C38F8[];
 extern s32 D_800C52F0;
 extern s32 D_800C52F8;
 extern s32 D_800C52FC;

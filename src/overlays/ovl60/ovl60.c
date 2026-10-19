@@ -217,7 +217,70 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BA51C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoTazer);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoPickup);
+void Plot_PogoPickup(NAS *nas) {
+    EXTengine *eng;
+    s32 dir;
+    s32 scale;
+    s32 d;
+    s32 state;
+
+    eng = nas->Engine;
+    if (eng == NULL) {
+        return;
+    }
+    state = nas->UserInfo.flags;
+    if (state >= 9) {
+        return;
+    }
+    if (state < 7) {
+        return;
+    }
+    dir = nas->UserInfo.user1 & 3;
+    switch (nas->UserInfo.status) {
+    case 0:
+    case 1:
+        PlaySfx(0x3FA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        eng->unk2C.x = 0x100;
+        eng->unk2C.y = 0x100;
+        eng->unk2C.z = 0x100;
+        eng->flags |= 0x21;
+        eng->sub->unk76 = 0x100;
+        nas->UserInfo.status = 2;
+        eng->unk1E = dir << 10;
+        eng->unk5E = 1;
+        break;
+    case 2:
+        scale = eng->unk2C.x;
+        scale += 0x100;
+        if (scale >= 0x1000) {
+            nas->UserInfo.status = 3;
+            scale = 0x1000;
+            nas->UserInfo.user2 = D_800C38F8[D_800C5BB8];
+            eng->flags &= ~0x21;
+        }
+        eng->unk2C.x = scale;
+        eng->unk2C.y = scale;
+        eng->unk2C.z = scale;
+        eng->sub->unk76 = scale;
+        eng->unk5E = 1;
+        break;
+    case 3:
+        if (nas->UserInfo.user2 != 0) {
+            nas->UserInfo.user2--;
+        }
+        d = func_80015480(dir << 10, eng->unk1E) >> 3;
+        eng->unk5E = 1;
+        eng->unk1E += d;
+        if (d < 2) {
+            nas->UserInfo.user1 = (nas->UserInfo.user1 + 1) & 3;
+        }
+        break;
+    case 6:
+        KillNAS(nas);
+        D_800C52EC--;
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Init_PogoPowerup);
 
