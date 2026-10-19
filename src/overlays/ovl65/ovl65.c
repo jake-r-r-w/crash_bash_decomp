@@ -568,7 +568,43 @@ s32 func_800BA810(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BA960);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BAD18);
+s32 func_800BAD18(NAS *m) {
+    Ovl65ExtB *me;
+    Ovl65ExtB *he;
+    s32 i;
+    s32 dx;
+    s32 dz;
+
+    me = FindExtension(m, 0x10000000);
+    if (me == NULL) {
+        return 0;
+    }
+    i = 0;
+    for (;;) {
+        if (i >= 4) {
+            goto done;
+        }
+        he =FindExtension(Heroes[i].hero, 0x10000000);
+        if (he != NULL && he->unk14 == 0 && Heroes[i].hero_mode != 0x65 && me->unkC != 1
+            && abs(m->Engine->unk10.y - Heroes[i].hero_eng->unk10.y) < 0x201
+            && (me->unkC == 0 || me->unkC == 3 || me->unkC == 4)) {
+            dx = Heroes[i].hero_eng->unk10.x - m->Engine->unk10.x;
+            dz = Heroes[i].hero_eng->unk10.z - m->Engine->unk10.z;
+            if (dx * dx + dz * dz <= 0x3FFFF) {
+                me->unk10 = i;
+                he = FindExtension(Heroes[i].hero, 0x10000000);
+                if (he != NULL) {
+                    he->unk14 = 1;
+                    he->unk18 = m;
+                }
+                return 1;
+            }
+        }
+        i++;
+    }
+done:
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BAE94);
 

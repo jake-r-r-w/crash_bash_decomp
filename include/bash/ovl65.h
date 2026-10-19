@@ -138,6 +138,8 @@ void func_800BA468(s32 id);
 
 void func_800BA724(s32 id);
 
+s32 func_800BAD18(NAS *m);
+
 void PlotDinoScratch(NAS *m);
 
 void InitDinoScratch(NAS *m);
