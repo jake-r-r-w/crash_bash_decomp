@@ -487,7 +487,20 @@ s32 func_800C8870(s32 arg0, s32 arg1) {
     return D_800CA34C[((arg1 >> 9) * D_800CAFF4) + (arg0 >> 9)];
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C88A8);
+void func_800C88A8(NAS *nas) {
+    s32 temp_a0;
+    s32 temp_a1;
+    s32 idx;
+    u8 temp_a2;
+
+    temp_a1 = nas->Engine->unk10.z >> 9;
+    temp_a0 = nas->Engine->unk10.x >> 9;
+    temp_a2 = ((temp_a0 << 5) | 0x10) + ((temp_a1 * 2) + 1);
+    idx = (temp_a1 * D_800CAFF4) + temp_a0;
+    D_800CACB4[idx] = temp_a2;
+    D_800CACFC[idx] = temp_a2;
+    D_800CA34C[idx] = (s32)nas;
+}
 
 u8 func_800C891C(s32 arg0, s32 arg1) {
     return *(((arg1 >> 9) * D_800CAFF4) + (arg0 >> 9) + D_800CACFC);
