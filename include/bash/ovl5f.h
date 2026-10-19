@@ -95,6 +95,33 @@ extern s32 D_800CAA0C[];
 extern s32 D_800CAB58[];
 extern s32 D_800CB0FC;
 
+typedef struct Ovl5fLink {
+    /* 0x00 */ u32 flags;
+    /* 0x04 */ u8 pad4[0x5C - 0x4];
+    /* 0x5C */ struct Ovl5fLink *next;
+} Ovl5fLink;
+
+typedef struct {
+    /* 0x00 */ u8 pad0[0x1E];
+    /* 0x1E */ s16 unk1E;
+    /* 0x20 */ u8 pad20[0x5E - 0x20];
+    /* 0x5E */ s16 unk5E;
+    /* 0x60 */ u8 pad60[0x6C - 0x60];
+    /* 0x6C */ Ovl5fLink *list;
+} Ovl5fObj;
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 x;
+    u8 pad14[4];
+    s32 z;
+} Ovl5fPos;
+
+typedef struct {
+    /* 0x00 */ u8 pad0[0x54];
+    /* 0x54 */ Ovl5fPos *pos;
+} Ovl5fHolder;
+
 /* PlotLaserBitTA's NAS.FUX. */
 typedef struct LaserBitFux {
     /* 0x00 */ u8 unk0[0x2C];
@@ -148,18 +175,6 @@ void func_800C7C70(s32 arg0);
 void func_800C7D24(HeroInfo *hero);
 
 void func_800C7DB8(s32 arg0);
-typedef struct {
-    u8 pad0[0x10];
-    s32 x;
-    u8 pad14[4];
-    s32 z;
-} Ovl5fPos;
-
-typedef struct {
-    u8 pad0[0x54];
-    Ovl5fPos *pos;
-} Ovl5fHolder;
-
 s32 func_800C7D44(s32 flags, Ovl5fHolder *a, Ovl5fPos *b);
 
 void func_800C7E68(HeroInfo *hero, Ovl5fActObj *obj, s32 arg2);
@@ -239,6 +254,8 @@ s32 func_800C8294(OvlClampPos *p);
 void func_800C8334(s32 arg0);
 
 void func_800C8360(void);
+
+void func_800C85F8(Ovl5fHolder *h, s16 v);
 
 void func_800C8800(s32 arg0, s32 arg1);
 

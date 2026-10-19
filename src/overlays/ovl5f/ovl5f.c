@@ -1266,7 +1266,19 @@ void func_800C85D0(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C85F8);
+void func_800C85F8(Ovl5fHolder *h, s16 v) {
+    Ovl5fLink *l;
+
+    ((Ovl5fObj *)h->pos)->unk1E = v;
+    ((Ovl5fObj *)h->pos)->unk5E = 1;
+    l = ((Ovl5fObj *)h->pos)->list;
+    if (l != NULL) {
+        do {
+            l->flags |= 0x20000000;
+            l = l->next;
+        } while (l != NULL);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8650);
 
