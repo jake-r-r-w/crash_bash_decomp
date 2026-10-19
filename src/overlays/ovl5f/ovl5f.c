@@ -699,7 +699,14 @@ void InitPickupGenerator_TA(NAS *nas) {
     nas->UserInfo.flags = 0xF0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotShellExplosion);
+void PlotShellExplosion(NAS *nas) {
+    subengine *sub = nas->Engine->sub;
+
+    sub->unk74++;
+    if ((u16)sub->unk74 >= 0x2022) {
+        KillNAS(nas);
+    }
+}
 
 void InitShellExplosion(NAS *nas) {
     EXTengine *eng;

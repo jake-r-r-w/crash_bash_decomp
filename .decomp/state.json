@@ -5388,7 +5388,8 @@
   "status": "matched"
  },
  "ovl5f:800C7300": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-19T12:07:29Z",
+  "status": "matched"
  },
  "ovl5f:800C7350": {
   "matched_at": "2026-10-10T10:36:02Z",
