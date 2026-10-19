@@ -572,7 +572,18 @@ s32 func_800C6B9C(s32 id, s32 x, s32 z, s32 angle) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6C30);
+s32 func_800C6C30(void) {
+    if (D_8005A680[0] != 0) {
+        if (Heroes[0].hero_health == 0) {
+            return 1;
+        }
+        if (Heroes[1].hero_health == 0) {
+            return 0;
+        }
+        return Random(2);
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6C90);
 
