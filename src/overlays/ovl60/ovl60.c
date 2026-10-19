@@ -283,7 +283,28 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Roo_ChangeDirOnEdge);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Roo_FindNewSquare);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Roo_GoBoing);
+void Roo_GoBoing(EXTengine *eng) {
+    switch (Random(6)) {
+    case 0:
+        PlaySfx(0x53C, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 1:
+        PlaySfx(0x53D, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 2:
+        PlaySfx(0x53E, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 3:
+        PlaySfx(0x53F, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 4:
+        PlaySfx(0x540, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 5:
+        PlaySfx(0x541, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BFFF4);
 
