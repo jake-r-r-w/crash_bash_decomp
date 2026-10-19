@@ -78,7 +78,10 @@ All commands run through `tools/dk` (Docker).
    Note in your reasoning which items you tried.
 5. **Stuck?** If the diff is a tie in instruction order, register choice or
    a merged tail, [read the compiler's rules](#reading-the-compilers-rules)
-   for the pass that decides it first. Run the permuter only at the
+   for the pass that decides it first. [Use the compiler
+   directly](#using-the-compiler-directly): dump the passes for the
+   function, find the first pass that goes wrong, and try C shapes in a
+   small test file compiled with cc1. Run the permuter only at the
    `registers` stage, after the evidence step, the checklist for that kind
    of diff, the cc1 dump and that reading:
    `tools/dk make permute FUNC=NAME MINUTES=10`. When it finds something,
@@ -1176,6 +1179,8 @@ order. Note which ones you tried.
 7. Operand order of a commutative operator.
 8. Then read the [cc1 dump](#why-does-a-register-differ) and the rule that
    picked the register ([Reading the compiler's rules](#reading-the-compilers-rules)).
+   Try the candidate shapes in a [test file](#using-the-compiler-directly)
+   before rebuilding the function for each one.
 
 **Instruction order** (same instructions, different order):
 1. Statement order.
@@ -1185,7 +1190,9 @@ order. Note which ones you tried.
 5. The declared type of the globals involved.
 6. `TRUE` vs `1`: no codegen effect, so rule it out quickly.
 7. Then read sched1's and sched2's traces (`-dS`, `-dR`) and the scheduling
-   rules ([Reading the compiler's rules](#reading-the-compilers-rules)).
+   rules ([Reading the compiler's rules](#reading-the-compilers-rules)). A
+   load moved across a store is often [aliasing](#reading-the-compilers-rules)
+   (Memory dependences), not priority.
 
 **Opcode or length** (different instructions or count):
 1. Loop form (see [Diff patterns](#diff-patterns)).
@@ -1194,6 +1201,11 @@ order. Note which ones you tried.
 4. Unsigned vs signed compares.
 5. Early return vs if/else.
 6. Macros (Sony's, or a repo macro in `include/`).
+7. `s16`/`u16` locals vs `s32` with casts: a short is extended where it's read,
+   not where it's set (Short locals in [Reading the compiler's
+   rules](#reading-the-compilers-rules)).
+8. Then compile the candidate shapes in a [test file](#using-the-compiler-directly)
+   and dump `.rtl` for the one that comes closest.
 
 ## Why does a register differ?
 
@@ -1209,7 +1221,7 @@ For the reason behind a choice, dump the compiler's register allocation for
 the file:
 
 ```sh
-tools/dk sh -c 'mipsel-linux-gnu-cpp -P -nostdinc -undef -Iinclude -Iext/psyq47/include -D__GNUC__=2 -D_LANGUAGE_C -DPSX -DGVAL=0 src/main/main.c > build/x.i && /opt/gcc/2.8.1-psx/cc1 -quiet -O2 -G0 -dl -dg -o build/x.s build/x.i'
+tools/dk sh -c 'mipsel-linux-gnu-cpp -P -nostdinc -undef -Iinclude -Iext/psyq47/include -D__GNUC__=2 -D_LANGUAGE_C -DPSX -DGVAL=0 src/main/main.c > build/x.i && /opt/gcc/2.8.1-psx/cc1 -quiet -O2 -G0 -fno-builtin -dl -dg -o build/x.s build/x.i'
 ```
 
 Run it with the function's C in place of its `INCLUDE_ASM` line (swap in the
@@ -1235,13 +1247,99 @@ For a gcc 2.7.2 unit (`CC_VER = 2.7.2-psx`), run `/opt/gcc/2.7.2-psx/cc1` instea
 unit's `EXTRA_CC1FLAGS`). For why a pass made its choice, in either compiler, read its source:
 [Reading the compiler's rules](#reading-the-compilers-rules).
 
+## Using the compiler directly
+
+The container has the real compilers (`/opt/gcc/2.8.1-psx/cc1`, `/opt/gcc/2.7.2-psx/cc1`).
+Use them for more than the final diff:
+- dump any pass for the function;
+- follow one value through the passes;
+- compile small test files to see what a C shape becomes.
+
+This is how `PlotBall` (5576 B) went from 777 differing instructions to a match with no permuter
+and no hack. Do it before guessing at C, and before the permuter.
+
+The flags are the unit's: `-O2 -G0 -fno-builtin` for gcc 2.8.1 code (`configs/USA/project.mk`).
+Units with their own settings set `CC_VER` and `EXTRA_CC1FLAGS` in the Makefile. Leaving out
+`-fno-builtin` inlines `abs` and changes the code.
+
+**1. Dump every pass of the function.** `decomp.py sched NAME` writes the file's preprocessed
+source, with the C as it is now, to `build/sched/NAME.i`. Run cc1 on it with the dump flags,
+then cut the function's section out of each dump (each holds the whole file). The loop runs in
+Git Bash on the host:
+
+```sh
+tools/dk python3 tools/scripts/decomp.py sched NAME >/dev/null
+tools/dk sh -c 'cd build/sched && /opt/gcc/2.8.1-psx/cc1 -quiet -O2 -G0 -fno-builtin -dr -ds -dc -dl -dg -dS -dR -dJ -o NAME.s NAME.i'
+for k in rtl cse combine lreg greg sched sched2 jump2; do
+  awk -v f=NAME '$0 == ";; Function " f {p = 1} p && /^;; Function / && $0 != ";; Function " f {exit} p' build/sched/NAME.i.$k > build/sched/NAME.$k
+done
+```
+
+The flags and their files are in the [table below](#reading-the-compilers-rules).
+
+**2. Find the pass that decides it.** Look up one instruction of the differing block (a call, a
+field offset) in each dump, in pass order:
+- `.rtl` (expand): the pseudos the C itself makes, before any optimisation;
+- `.cse`, then `.combine`: what got substituted or merged;
+- `.lreg`, then `.greg`: which register each pseudo got.
+
+The first pass where your RTL can't give the target's code is the one to change the C for. No
+dumps exist for the target, so reason backwards from its asm to the RTL it needs. For example,
+`move s3,v0` then `sll v0,v0,16` means the shift reads a temporary that holds the call's result
+and dies in v0, not the variable in s3. If `.rtl` has no such temp (`var = v0` straight from
+the call), the C has to create one: the rules below say what does.
+
+Besides RTL, the dumps print:
+- `.cse`: `;; Processing block from A to B, N sets.` for each pass over an extended block (A is
+  its first insn's uid, B the insn it stops at). One block shows up once per branch path it
+  follows. The last pass over an insn sets its operands.
+- `.lreg`: `Register N used R times across L insns in block B; crosses C call` per pseudo, the
+  refs and life behind both allocators' priorities. "in block B" means it is local-alloc's to
+  place.
+- `.greg`: `;; N regs to allocate:` in priority order, then `;; N conflicts: ...` and
+  `;; N preferences: ...` per pseudo, then `Register dispositions`. Numbers below 32 in a
+  conflict list are hard registers live during that pseudo's life (16 is s0, taken by a pseudo
+  local-alloc placed). `decomp.py sched NAME` prints the same allocation order with each
+  pseudo's priority and the C variables in its register.
+
+**3. Try C shapes in a test file.** Rebuilding the overlay takes about 30 s for every try, and
+the rest of the function hides the effect. Put the snippet in a small file instead, with only
+what affects it: the calls around it, the branch it sits in, its struct offsets. Then compile
+several shapes at once and compare the instructions in question:
+
+```sh
+mkdir -p scratch/t    # scratch/ is git-ignored
+# scratch/t/head.h: the externs and structs (or #include project headers; see below)
+# scratch/t/v1.c, v2.c, ...: #include "head.h" and one shape each
+for v in v1 v2 v3; do
+  tools/dk sh -c "cd scratch/t && mipsel-linux-gnu-cpp -P $v.c > $v.i && /opt/gcc/2.8.1-psx/cc1 -quiet -O2 -G0 -fno-builtin -o $v.s $v.i" </dev/null
+  echo "== $v"; grep -A8 "jal.*func_800154A0" scratch/t/$v.s
+done
+```
+
+To use project headers, run cpp with the Makefile's `CPPFLAGS` (`-P -nostdinc -undef -Iinclude
+-Iext/psyq47/include -D__GNUC__=2 -D_LANGUAGE_C -DPSX -DGVAL=0`) from the repo root. Compare
+patterns, not register numbers: which register an instruction reads, whether a `move` exists,
+the order. Add `-dr -ds` to a test compile to see why.
+
+Then port the winning shape and check it in the function. Allocation priorities depend on the
+whole function (each variable's refs and live range), so a shape that fixes the snippet can
+move other variables. In `PlotBall`, an `s16` fixed the snippet but shifted every s-register,
+until splitting `done` into the target's two variables put them back. When that happens,
+compare the `.greg` allocation order with yours: the target's registers tell you which pseudo
+must come first.
+
+Writing scripts: `tools/dk python3 - <<'EOF' </dev/null` runs nothing, because the
+`</dev/null` replaces the heredoc. Write the script to a file in `scratch/` and run that.
+
 ## Reading the compiler's rules
 
 Some diffs are a tie inside one pass: two instructions in the other order,
 two values in each other's registers, or a shared tail merged into the wrong
 copy. For these, read the rule that breaks the tie instead of guessing at C:
 
-1. Dump the pass that decides it (table below), using the cc1 command above.
+1. Dump the pass that decides it (table below), as in [Using the compiler
+   directly](#using-the-compiler-directly).
 2. Find the tie in the dump's trace. For register allocation and scheduling,
    `decomp.py sched NAME [--pass sched|sched2] [--block N] [--insn UIDS]` does steps 1-2:
    global.c's allocation order with each pseudo's refs, live length, priority, register and
@@ -1258,6 +1356,13 @@ a permuter run had made no progress.
 
 | Flag | File | Shows |
 |---|---|---|
+| `-dr` | `.rtl` | expand: the RTL straight from the C, so which pseudos and copies the C itself makes |
+| `-dj` | `.jump` | the first jump pass |
+| `-ds` | `.cse` | after cse, with a `Processing block` line per pass over each extended block |
+| `-dL` | `.loop` | after loop.c (hoisted invariants) |
+| `-dt` | `.cse2` | after the second cse |
+| `-df` | `.flow` | after flow: liveness, `REG_DEAD` notes |
+| `-dc` | `.combine` | after combine: merged insns, copies folded away |
 | `-dS` | `.sched` | sched1's trace per block: each insn's priority, then `ready list at T-n` cycle by cycle from the block end (`7f000001` is launch priority; "launching X with N stalls"; "greater potential hazard") |
 | `-dR` | `.sched2` | the same for sched2, after register allocation |
 | `-dl` | `.lreg` | local-alloc: refs, lifetime and deaths per pseudo, then `Register N in M` |
@@ -1267,6 +1372,49 @@ a permuter run had made no progress.
 
 The rules found so far, each one checked against a trace:
 
+- **Expansion (`expand_call` in `calls.c`, `store_expr` in `expr.c`).**
+  - `var = f(...)`, with `var` in the call's mode, copies v0 straight into
+    `var`. There's no temp in between (`.rtl`: `(set (reg/v var) (reg v0))`).
+  - A temp of the call's value (`copy_to_reg (valreg)`) appears when the
+    result is converted: an `int` result into an `s16` variable. It also
+    appears when the call is an operand of an expression or an argument of
+    an inlined function.
+  - `integrate.c` copies each argument of an inlined function into a new
+    pseudo for the parameter, unless the parameter is `const`. That copy is
+    the extra `move a0,v1` an inline leaves behind (`PlotBall`).
+- **Short locals (gcc 2.8.1).** An `s16`/`u16` local is a 16-bit pseudo that
+  isn't extended when it's set, only when it's read.
+  - The marks of one in the target: a raw `addiu` increment, `sll`/`sra 16`
+    before each use, and `sll 16; bgtz` or `sll 16; beqz` tests.
+  - An `s32` local with `(s16)` casts gives the same shifts, but its refs and
+    live range differ, so allocation differs.
+- **16-bit arithmetic (`convert_to_integer` in `convert.c`, `fold` in
+  `fold-const.c`).** When a result is stored to a 16-bit field or masked, the
+  front end does the `+`/`-` in 16 bits.
+  - A constant becomes its 16-bit unsigned value: `(u16)x - 0xE3` is
+    `+ 0xFF1D`, loaded with `ori`.
+  - fold then moves constants outward through the sum. A cast is the only
+    way to keep the constant with one operand.
+- **CSE's canonical register (`make_regs_eqv` in `cse.c`).**
+  - After `b = a`, every later use of either is rewritten to the class's
+    first register.
+  - The new register `b` becomes first when it lives beyond the extended
+    block being processed and its last use is later than the current first's.
+    "Beyond the block" means its first use is before the block or its last use
+    after it (`cse_basic_block_start`/`_end`).
+  - So a variable that lives on makes the uses read the variable, and a temp
+    used only nearby stays first. With follow-jumps, the pass over one branch
+    path can end before a join that the variable is used after (`.cse`'s
+    `Processing block` lines).
+  - `PlotBall`'s `abs((s16)k)` reads the call's temp in v0, not `k`'s s3,
+    because `k` is an `s16` (the temp exists) and only the temp is first.
+- **Combine (`combine.c`).** `+` becomes `|` when combine can prove the two
+  operands share no set bits (`nonzero_bits`). For a register set in several
+  places, that's the union over all its sets (`set_nonzero_bits_and_sign_copies`).
+  - `i * 5` scaled as `(i << 2) | i` rather than `addu` means combine knew
+    `i`'s bits.
+  - `PlotBall`'s side index used `or` with an `i = 0 / 1 / 3 / ...` chain and
+    `addu` with an inline that `return`s each value.
 - **Scheduling (`sched.c`, both passes).** It schedules backwards from the
   end of the block.
   - `priority` is the longest chain of predecessors, adding latency minus 1
@@ -1316,7 +1464,12 @@ The rules found so far, each one checked against a trace:
     don't keep a load of another global below them.
   - A pointer set twice is unknown, so its stores do keep the load below them.
   - A struct field at a varying address can't conflict with a scalar at a
-    fixed address. An array element counts as a struct field.
+    fixed address. An array element counts as a struct field. So when the
+    target keeps a global's load below a field store, the original read the
+    global as an aggregate member: a field of its struct or an array element
+    (`PlotBall`: `D_8005A648` as `D_8005A614`'s field `0x34`, the hook
+    `D_8005AA94` as `D_8005AA70[9]`). That's instead of a pointer temp to
+    the field.
 - **Local register allocation (`local-alloc.c`).**
   - It only handles pseudos used in one block that die once. `REG_DEAD` and
     `REG_UNUSED` both count as deaths; the rest go to `global.c`.
@@ -1345,6 +1498,11 @@ The rules found so far, each one checked against a trace:
     conflict, i.e. live as a hard register during the pseudo's life. A
     lower-priority neighbour's preference keeps a register out of pass 0
     only if the pseudo doesn't prefer it too (`func_80078DD4`).
+  - A pseudo conflicts with every hard register that local-alloc gave a
+    pseudo live during its life (the low numbers in `.greg`'s `;; N
+    conflicts:` list). A local tie therefore changes which `s` register a
+    global pseudo can take: in `PlotBall`, `dz` tied into s0 kept `dx` out of
+    s0 (Diff patterns: delta loads).
   - Refs are flow's counts, taken before combine (`flow.c`, one per register
     occurrence in an insn, times the loop depth between the notes); combine
     doesn't lower them.

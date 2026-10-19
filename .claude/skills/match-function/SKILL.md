@@ -55,6 +55,13 @@ the host has no Python. In Git Bash loops, pass `</dev/null` to `tools/dk`.
      docs/MATCHING.md). Find the tie in the trace, read the function that
      decides it, work it through by hand, and change the C so the tie goes the
      target's way.
+   - the compiler itself ("Using the compiler directly" in docs/MATCHING.md):
+     dump every pass for the function (`-dr -ds -dc` too, for expand, cse and
+     combine), follow the differing instruction from pass to pass to the
+     first one that can't give the target's code, and try C shapes in a small
+     test file compiled with `/opt/gcc/2.8.1-psx/cc1 -quiet -O2 -G0
+     -fno-builtin` (seconds per shape). Then port the winner and re-check it
+     in the function.
    - the `registers` stage: the permuter doesn't fix structure.
    Then run `tools/dk make permute FUNC=NAME MINUTES=10` (for a big function add
    `ARGS=--differing`: only the C of the blocks that differ). When it finds

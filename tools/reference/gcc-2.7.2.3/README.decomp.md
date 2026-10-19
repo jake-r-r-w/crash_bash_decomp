@@ -29,11 +29,14 @@ The passes that decide most of a match, in the order cc1 runs them (`toplev.c`,
 
 | File | Pass | Matching questions it answers |
 |---|---|---|
+| `convert.c`, `fold-const.c` | front end | 16-bit arithmetic for a result stored to a short or masked (`convert_to_integer`); constants moved outward through a sum (`fold`) |
 | `stmt.c` | expand | loop rotation: whether a loop test stays at the top (`expand_end_loop`) |
-| `cse.c` | cse, cse2 (`-frerun-cse-after-loop`) | folding of addresses and constants (`find_best_addr`, `fold_rtx`); which blocks one pass covers (`cse_end_of_basic_block`) |
+| `calls.c`, `expr.c` | expand | whether a call's result gets a temp of its own or goes straight into the variable (`expand_call`, `store_expr`) |
+| `integrate.c` | expand (inline) | an inlined function's argument copied into a new pseudo per parameter (`expand_inline_function`) |
+| `cse.c` | cse, cse2 (`-frerun-cse-after-loop`) | folding of addresses and constants (`find_best_addr`, `fold_rtx`); which blocks one pass covers (`cse_end_of_basic_block`); which register of a copy later uses read (`make_regs_eqv`) |
 | `loop.c` | loop | invariant hoisting (`scan_loop`, `combine_movables`, `move_movables`), which loops it skips ("phony"), strength reduction |
 | `flow.c` | flow | basic blocks, liveness, `REG_DEAD`/`REG_UNUSED` notes, refs weighted by loop depth |
-| `combine.c` | combine | merged instructions |
+| `combine.c` | combine | merged instructions; `+` as `or` when the operands' bits can't overlap (`nonzero_bits`) |
 | `sched.c` | sched1, sched2 | instruction order (`priority`, `rank_for_schedule`, `schedule_select`, `adjust_priority`, `birthing_insn_p`); which loads may move above which stores (`true_dependence`, `memrefs_conflict_p`) |
 | `local-alloc.c`, `global.c` | register allocation | which register a value gets (`qty_compare`, `combine_regs`, `find_free_reg`, `update_equiv_regs`, `optimize_reg_copy_1`; global.c's `allocno_compare` and preferences) |
 | `reload1.c` | reload | late register substitutions |

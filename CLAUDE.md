@@ -36,6 +36,9 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   the permuter. That's FSF source; its scheduler, local-alloc, jump and reorg
   rules hold for our 2.8.1 too. Work the rule through by hand against the
   `-dS`/`-dR`/`-dl`/`-dJ` dumps (MATCHING.md, Reading the compiler's rules).
+  The real cc1 is in the container: dump any pass (`-dr`/`-ds`/`-dc` too) and
+  try C shapes in small test files before rebuilding the function
+  (MATCHING.md, Using the compiler directly).
   For a big function, `decomp.py regions NAME` aligns the code and scores it
   block by block with C lines (MATCHING.md, Big functions); the swarm's big
   mode works and ranks checkpoints by it. Also: `similar NAME` (matched
