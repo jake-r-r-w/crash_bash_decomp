@@ -10,6 +10,9 @@
 #include "bash/main.h"
 
 s32 func_800B3760(s32 arg0);
+s32 func_800B38BC(s32 arg0);
+s32 func_800B33D8(s32 arg0);
+s32 func_800B485C(s32 arg0, s32 arg1);
 
 s32 func_800B4C70(s32 *arg0, s32 arg1);
 
