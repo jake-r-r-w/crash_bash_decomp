@@ -453,7 +453,22 @@ void func_800BA468(s32 id) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BA574);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BA724);
+void func_800BA724(s32 id) {
+    NAS *nas;
+
+    if (Heroes[id].hero_anim->Aindex == 2) {
+        nas = SpawnNASById(Heroes[id].hero_eng->unk10.x, Heroes[id].hero_eng->unk10.y, Heroes[id].hero_eng->unk10.z, 0x1903, 0x11);
+        if (nas != NULL) {
+            nas->UserInfo.user1 = (s32)&Heroes[id];
+        }
+    }
+    func_800BA960(id);
+    func_800BC774(id);
+    func_8008502C(id);
+    if ((Heroes[id].hero_status & 0x200) && Heroes[id].hero_mode != 0x68) {
+        SetHeroAction((HeroInfo *)id, 0x68);
+    }
+}
 
 s32 func_800BA810(s32 arg0) {
     Ovl65ExtB *a;
