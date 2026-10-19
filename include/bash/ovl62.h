@@ -39,6 +39,15 @@ extern HeroInfo Heroes[4];
 
 s32 func_800C9B5C(void);
 
+void func_800BFD38();
+
+typedef struct GravityObject {
+    /* 0x00 */ u8 pad0[0x58];
+    /* 0x58 */ s32 target;
+} GravityObject;
+
+void PlotGravityObject(GravityObject *obj);
+
 s32 func_800CD118(s32 *arg0, s32 arg1);
 
 void func_800D2EB0(s32 player);

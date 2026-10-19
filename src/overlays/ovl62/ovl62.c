@@ -274,7 +274,13 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitScratchMaster);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA930);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotGravityObject);
+void PlotGravityObject(GravityObject *obj) {
+    s32 target = obj->target;
+
+    if (target != 0) {
+        func_800BFD38(obj, target);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitGravityObject);
 
