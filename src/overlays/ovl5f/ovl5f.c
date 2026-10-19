@@ -886,9 +886,53 @@ void InitMine(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitRocketTA);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitLobber_TA);
+void InitLobber_TA(NAS *nas) {
+    EXTengine *eng;
+    EXTengine *e2;
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitShell);
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+        return;
+    }
+    eng = nas->Engine;
+    eng->sub->unk6C = D_8005365C;
+    eng->sub->unk74 = 0x200C;
+    eng->unk5D = 1;
+    e2 = AddEngine(nas, 1);
+    if (e2 != NULL) {
+        e2->unk10.x = eng->unk10.x;
+        e2->unk10.y = 0;
+        e2->unk10.z = eng->unk10.z;
+        e2->sub->unk6C = D_8005365C - 0x700;
+        e2->sub->unk74 = 0x2001;
+        e2->sub->flags |= 0x40000041;
+        e2->sub->unk76 = 0x800;
+    }
+}
+
+void InitShell(NAS *nas) {
+    EXTengine *eng;
+    EXTengine *e2;
+
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+        return;
+    }
+    eng = nas->Engine;
+    eng->sub->unk6C = D_8005365C;
+    eng->sub->unk74 = 0x200C;
+    eng->unk5D = 1;
+    e2 = AddEngine(nas, 1);
+    if (e2 != NULL) {
+        e2->unk10.x = eng->unk10.x;
+        e2->unk10.y = 0;
+        e2->unk10.z = eng->unk10.z;
+        e2->sub->unk6C = D_8005365C - 0x700;
+        e2->sub->unk74 = 0x2001;
+        e2->sub->flags |= 0x40000041;
+        e2->sub->unk76 = 0x800;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitSwirlyTA);
 
