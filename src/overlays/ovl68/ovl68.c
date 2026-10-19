@@ -276,7 +276,35 @@ void InitCoalFlameSFX(CoalFlameObj *arg0) {
     arg0->unk54->unkC = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", InitEgg);
+void InitEgg(NAS *nas) {
+    EggExt *ext;
+    EXTengine *eng;
+    subengine *sub;
+    s32 scene;
+
+    ext = AddExtension(nas, 0x44, 0x10000005);
+    nas->FUX = &ext->ext;
+    ext->unk30 = 8;
+    ext->unk10 = -0x55;
+    ext->unk14 = -0xA0;
+    eng = nas->Engine;
+    nas->UserInfo.user2 = 0x78;
+    sub = eng->sub;
+    nas->UserInfo.status = eng->unk10.x;
+    eng->unk10.x = 0x600;
+    eng->unk10.y = 0x12C;
+    eng->unk10.z = 0xA60;
+    eng->unk1E = (nas->UserInfo.status - 0x400) & 0xFFF;
+    eng->unk5E = 1;
+    scene = *D_80058AD0;
+    sub->unk74 = 0x4080;
+    sub->unk68 = 0x3E7;
+    sub->unk6C = (void *)scene;
+    sub->flags |= 0x2000000;
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", InitCircleFire);
 

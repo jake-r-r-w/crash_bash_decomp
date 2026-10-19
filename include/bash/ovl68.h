@@ -26,6 +26,17 @@ typedef struct CoalFlameExt {
 } CoalFlameExt;
 
 extern u8 D_80053F8C[];
+extern s32 *D_80058AD0;
+
+typedef struct EggExt {
+    EXT ext;
+    u8 pad0C[4];
+    s32 unk10;
+    s32 unk14;
+    u8 pad18[0x18];
+    s32 unk30;
+    u8 pad34[0x10];
+} EggExt;
 /* PadState (D_80051338) as func_800BB260 reads it: flags at 0x54. */
 typedef struct Ovl68Pad {
     /* 0x00 */ u8 pad0[0x54];
@@ -104,6 +115,8 @@ void func_800BA630(NAS *nas);
 void InitPUGenerator_CH(NAS *nas);
 
 void InitCoalFlameSFX(CoalFlameObj *arg0);
+
+void InitEgg(NAS *nas);
 
 void InitCoalFlame(NAS *nas);
 
