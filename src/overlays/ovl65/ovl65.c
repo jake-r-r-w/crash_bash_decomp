@@ -416,7 +416,15 @@ void func_800BCF88(s32 arg0) {
     func_80085718(arg0, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BD01C);
+s32 func_800BD01C(s32 id) {
+    if (Heroes[id].hero_status & 0x200) {
+        if (Heroes[id].hero_mode != 0x68) {
+            SetHeroAction((HeroInfo *)id, 0x68);
+        }
+        return 1;
+    }
+    return 0;
+}
 
 void func_800BD08C(void) {
     func_800B5424();
