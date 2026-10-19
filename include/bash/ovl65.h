@@ -91,6 +91,26 @@ s32 func_800BCDF0(u8 *arg0);
 
 void func_800BCE6C(void);
 
+/* A scene object in the list at D_80058AD0 + 0x1C (func_800B714C). */
+typedef struct Ovl65Obj {
+    u8 pad0[0x5C];
+    struct Ovl65Obj *next; /* 0x5C */
+    u8 pad60[0x14];
+    u16 index;             /* 0x74 */
+} Ovl65Obj;
+
+typedef struct Ovl65Game {
+    u8 pad0[0x32];
+    u16 flags; /* 0x32 */
+} Ovl65Game;
+
+extern Ovl65Obj *D_800BDB54;
+extern Ovl65Obj *D_800BDB7C;
+extern Ovl65Obj *D_800BDB80;
+extern Ovl65Obj *D_800BDB84;
+extern Ovl65Obj *D_800BDC6C[3];
+extern Ovl65Obj *D_800BDC78[3];
+
 void func_800B6FE4();
 void func_800B7664();
 void func_800B85DC();
@@ -146,6 +166,8 @@ s32 func_800B33D8(s32 arg0);
 
 void func_800B4B14(s32 id);
 
+void func_800B714C(void);
+
 s32 func_800B86C8(s32 arg0);
 
 void func_800B9534(s32 arg0, s32 arg1);
@@ -186,8 +208,7 @@ s32 func_800BD204(s32 arg0);
 
 extern u8 D_800BDA7C[], D_800BDA5C[], D_8008B29C[], D_8008B418[];
 extern u8 D_800BD948[], D_800BD95C[], D_800BD970[], D_800BD97C[], D_800BD994[], D_800BD9A8[];
-extern s32 D_800BDB88, D_800BDB8C, D_800BDB7C, D_800BDB80, D_800BDB84, D_800BDB54;
-extern s32 D_800BDC6C[], D_800BDC78[];
+extern s32 D_800BDB88, D_800BDB8C;
 void func_800B69F4();
 void func_800B9930();
 void func_800B9778();

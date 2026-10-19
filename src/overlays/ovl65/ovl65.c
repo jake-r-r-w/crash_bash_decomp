@@ -344,7 +344,48 @@ void func_800B6FE4(void) {
     D_800BDB54 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B714C);
+void func_800B714C(void) {
+    Ovl65Obj *o;
+
+    for (o = *(Ovl65Obj **)((u8 *)D_80058AD0 + 0x1C); o != NULL; o = o->next) {
+        if (((Ovl65Game *)D_8005A614)->flags & 0x80) {
+            if (o->index == 0x5002) {
+                D_800BDB54 = o;
+                printf("found target\n");
+            }
+            if (o->index == 0x5009) {
+                D_800BDB7C = o;
+                printf("found target\n");
+            }
+            if (o->index == 0x500B) {
+                D_800BDB80 = o;
+                printf("found target\n");
+            }
+            if (o->index == 0x500A) {
+                D_800BDB84 = o;
+                printf("found target\n");
+            }
+            if (o->index == 0x500C) {
+                D_800BDC78[0] = o;
+                printf("1\n");
+            }
+            if (o->index == 0x500D) {
+                D_800BDC78[1] = o;
+                printf("2\n");
+            }
+            if (o->index == 0x500E) {
+                D_800BDC78[2] = o;
+                printf("3\n");
+            }
+        } else if (o->index == 0x5002) {
+            D_800BDB54 = o;
+            printf("found target\n");
+        }
+    }
+    D_800BDC6C[0] = D_800BDB7C;
+    D_800BDC6C[1] = D_800BDB80;
+    D_800BDC6C[2] = D_800BDB84;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B7300);
 
