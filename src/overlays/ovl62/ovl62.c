@@ -906,7 +906,20 @@ void func_800D2C38(s32 player) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2CB8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2D2C);
+s32 func_800D2D2C(arg0)
+s32 arg0;
+{
+    HeroInfo *base = Heroes;
+    HeroInfo *hero = &base[arg0];
+
+    if (hero->hero_status & 0x200) {
+        if (hero->hero_mode != 0x58) {
+            SetHeroAction((HeroInfo *)arg0, 0x58);
+        }
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2D9C);
 
