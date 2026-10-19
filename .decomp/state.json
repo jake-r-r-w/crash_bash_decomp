@@ -7194,7 +7194,8 @@
  },
  "ovl62:800D3018": {
   "auto_diff": 5,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-19T06:59:20Z",
+  "status": "matched"
  },
  "ovl62:800D307C": {
   "auto_diff": 7,

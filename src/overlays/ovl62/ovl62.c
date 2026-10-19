@@ -647,7 +647,20 @@ void func_800D2EB0(s32 player) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2F48);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D3018);
+void func_800D3018(s32 player) {
+    HeroInfo *base = Heroes;
+    HeroInfo *info = base + player;
+    EXTheromove *move = info->hero_move;
+
+    if (move != NULL) {
+        move->x_max = 0;
+        move->z_max = 0;
+        move->x_vel = 0;
+        move->z_vel = 0;
+    }
+    info->hero_frozen = 4;
+    func_800D2D2C();
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D307C);
 

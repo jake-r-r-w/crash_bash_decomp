@@ -71,4 +71,6 @@ extern NAS *D_800D52B4;
 
 s32 func_800C9C98(u8 *arg0);
 
+void func_800D3018(s32 player);
+
 #endif /* BASH_OVL62_H */
