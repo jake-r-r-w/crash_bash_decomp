@@ -23,6 +23,13 @@ void func_800C34F0(s32 arg0);
 void func_800C3510(u8 *arg0);
 
 void func_800C353C();
+typedef struct {
+    u8 unk0[0x10];
+    u16 unk10;
+    u8 unk12[0xA];
+} Ovl60Cell; /* size 0x1C */
+
+extern Ovl60Cell D_800C53DC[8][8];
 extern NAS *D_800C5BB0;
 extern s32 D_800C52E0;
 extern s32 D_800C52E4;
@@ -33,5 +40,7 @@ extern s32 D_800C52FC;
 extern s32 D_800C5BAC;
 extern s32 D_800C5BB8;
 extern s32 D_800C5BBC;
+
+void func_800C2810(s32 arg0);
 
 #endif /* BASH_OVL60_H */
