@@ -1105,6 +1105,30 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | constant arg built in t0 (li t0,0x19; sw t0,16(sp)) where ours uses v0, in a function using every s-reg | hold the constant in a local set once before the loop (kind = 0x19): it gets no hard reg and reload rematerializes it in the spill reg t0 | `PlotBash8way` |
 | index step compiled as addiu into a new reg + andi into another (i = (i + 1) & 0xFF), target does addiu/andi in place | split it into `i++; i &= 0xFF;` | `func_800B8040` |
 | x/z chain registers wrong after two mults (temps everywhere, a param copied to a different reg) | reuse one local for the loop accumulator, the x value and the later count, load the other coord into its own local first (`pz = a->z; sum = a->x; sum -= mx >> 12; pz -= mz >> 12;`) and do the delta in place (`sum -= a->x`) | `func_800BB64C` |
+| bne over a `j` to a return-0 tail, store after the jump | write the success arm first (if (v != -1) {...return 1;} return 0;) | `func_800BD1B8` |
+| Heroes base lui/addiu hoisted before the index multiply in target, temp pointer gives it after | drop the temp pointer, repeat Heroes[i].field each use | `func_800BCF88` |
+| `a \|\| b` arms with the same call compile to one andi (0xa0), target tests each bit separately | write two else-if arms with the same call body | `func_800BCE7C` |
+| Top-tested loop rotated to bottom bnez, or exit as `j` + separate return | `for (;;) { if (i >= n) goto done; ...; i++; } done: return best;` (plain `return` in the loop gave a duplicate return block) | `func_800B3760` |
+| lui of a global scheduled after a preceding store, target has lui, sw, lh | take `p = &GLOBAL;` before the store and test `*p` (moves the lui earlier in source order); wrap the store in `do { } while (0)` if it then falls into the branch delay slot | `InitDinoSmoke` |
+| copy of the pointer in v1 and the constant 1 in a reg compared against a load, beqz in front | `if (p != NULL) { ret = 1; if (p->f == ret) return ret; } return 0;` | `func_800BD204` |
+| target reads vector elements back via addiu v1,sp,16 / lw 4(v1) with 0 stored | take qp = q and use qp[1], qp[2] in the sums (and p[2]*qp[2]); declare q before p | `func_800B4268` |
+| a0/v1 swapped between loaded b->field and mult result, total in wrong reg | load a->f and b->f into locals av/bv first, use them in all uses | `func_800BCBB8` |
+| lui of a function addr scheduled after the a1 base lui / lhu uses wrong reg | take `f = func;` store first, then assign `g = GLOBAL` right before the test (not at top) | `func_800B6FE4` |
+| `sltu; xori v0,v1,1; beqz v0` on a 0/1 flag, ours gives `li v0,1; beq` or `bnez` | put the inverse in its own variable: `far = near ^ 1; if (far != 0)` | `func_800B4B14` |
+| `bnez` over a `j` + `li v0,-1` early return (error return first in target) | write the success path inside `if (cond) {...return x;}` and `return -1;` after it; split `d -= K; d += arg;` before the call so the adds fill delay slots | `func_800BC684` |
+| last `bne` before a shared return fills its delay slot with the target's `move v0,sN` (one insn too many), target has the fallthrough's `li a0` there | wrap that last `if` in `do { } while (0)`: a jump out of a loop is predicted not taken (reorg mostly_true_jump) | `func_800B86C8` |
+| extra h+4 induction reg and bottom-tested loop with h++ pointer | index Heroes[i].field at each use, write loop as for(;;){ if (i>=4) goto done; ...; i++; } done: return 0; | `func_800BAD18` |
+| lhu of a u8[] global's halfword flag came out as lbu / changed reg alloc with u16 casts | add a small view struct with `u16 flags` at the offset and read `((View *)D_8005A614)->flags` | `func_800B714C` |
+| store sunk below a following global load into the branch delay slot (target stores first) | wrap the first store in `do { } while (0)` | `InitDinoGem` |
+| lw order of two struct x loads swapped (q->x loaded before p->x) | write the compare as `p->x > q->x` instead of `q->x < p->x` | `func_800B3538` |
+| sh of s16 array elems scheduled in wrong order / base reg a2 vs a1 | read the u16 operands through small view structs and write the stores in the target's order (d[0], d[2], d[1], d[3]); set the flag inside the if so it fills the beqz delay slot | `func_800B3D90` |
+| value held in saved reg across a call, target keeps it in v0 and sets it in a delay slot | `if (call() < K) r = 2; else { ...; r = 4; }` instead of preset r = 2 then override | `func_800B5424` |
+| lui of Heroes scheduled after the index sll chain | `hb = Heroes; h = &hb[id];` | `func_800B5424` |
+| caller passes no args to a function that now takes one (edit to caller refused) | K&R definition `void f(id) s32 id; {` plus `void f();` in the owned header; leave the caller untouched | `func_800B5424` |
+| xori flag in v0 with li 1 in delay slot / no preset-0 (ours has li a0,1; move a0,zero and flag in a0) | set flag in both branches of if/else, test `(flag ^ 1) != 0` inline, copy e->field into a local first | `func_800B3A38` |
+| post-decrement: lw v0; addu v1,v0,0; addiu v0,-1; sw; blez v1 (ours loads into v1, no copy) | write `if (c->f-- > 0)` instead of temp t = c->f; c->f = t-1; if (t > 0) | `func_800B3FDC` |
+| m2c d[1]=0; d[3]=K; d[2]=.. store order wrong (sh 0x42/0x46 before 0x40) | write the two computed halves first: d[0]=..; d[2]=..; d[1]=0; d[3]=K; | `func_800B4D6C` |
+| bltz delay slot holds the target's `move v0,zero` and the fallthrough `slt` comes again (ours: nop, single slt hoisted into the earlier bgez slot) | reorg's redundant_insn deletes the fallthrough copy and mostly_true_jump predicts `lt 0` not taken. A LOOP_BEG note just before the branch target's label makes it predicted taken: `goto zero;` ... `do { zero: return 0; } while (0);` | `func_800B4268 (partial)` |
 
 ## Classify the diff, then work through the list
 
