@@ -88,7 +88,32 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B5CD0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B5E84);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B6168);
+void func_800B6168(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h;
+    EXTengine *e;
+    EXTengine *p;
+    s32 idx;
+
+    h = base + arg0;
+    h->hero_move->velocity_enable = 1;
+    e = h->hero_eng;
+    p = e->platform;
+    if (p != NULL) {
+        p->platform = NULL;
+    }
+    e->platform = NULL;
+    SetHeroSeq((HeroInfo *)arg0, 0x65);
+    idx = 0;
+    if (D_8005A614[arg0 + 0x5C] == 0) {
+        idx = h->hero_name;
+    }
+    h->hero_move->jump_vel = D_8009D6E8.unk10[idx].vel;
+    h->hero_move->jump_max = D_8009D6E8.unk10[idx].max;
+    h->hero_move->jump_acc = D_8009D6E8.unk10[idx].acc;
+    h->hero_move->jump_dec = D_8009D6E8.unk10[idx].dec;
+    h->hero_move->jump_dir = -1;
+}
 
 void func_800B627C(s32 arg0) {
     HeroInfo *base = Heroes;

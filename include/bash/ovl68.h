@@ -154,6 +154,19 @@ void func_800B9ED8(s32 arg0, u16 arg1);
 void func_800BA220(s32 arg0, u16 arg1);
 extern u8 D_8005A614[];
 
+/* Hero jump parameters, 8 bytes per hero (D_8009D6E8.unk10). */
+typedef struct Ovl68JumpEnt {
+    u16 vel, max, acc, dec;
+} Ovl68JumpEnt;
+
+/* D_8009D6E8 (EngineHooks in bash/engine.h, which this unit does not include). */
+typedef struct Ovl68Hooks {
+    /* 0x00 */ u8 pad0[0x10];
+    /* 0x10 */ Ovl68JumpEnt *unk10;
+    /* 0x14 */ u8 pad14[0x58];
+} Ovl68Hooks;
+extern Ovl68Hooks D_8009D6E8;
+
 void func_800B6E84(s32 arg0);
 extern s32 D_8005A5D8;
 extern s32 D_8005B5B8;
@@ -168,6 +181,8 @@ void func_8008A810(void);
 void func_800B44C8(void);
 
 s32 func_800B51C8(s32 arg0);
+
+void func_800B6168(s32 arg0);
 
 void func_800B627C(s32 arg0);
 
