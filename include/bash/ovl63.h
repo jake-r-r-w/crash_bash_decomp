@@ -189,5 +189,15 @@ void func_800C5B94(void);
 void func_800C5BEC(void);
 
 NAS *func_800C5DAC(s32 arg0);
+/* D_8009D87C (declared in bash/8007ee2c.h, which this unit does not include). */
+typedef struct Ovl63Odds {
+    s16 unk0;
+    s16 unk2;
+    s16 unk4;
+} Ovl63Odds;
+
+extern Ovl63Odds D_8009D87C[];
+
+s32 func_800C5E6C(s32 arg0, s32 arg1);
 
 #endif /* BASH_OVL63_H */
