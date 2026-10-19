@@ -24,6 +24,8 @@ void func_800C1278(s32 arg0);
 
 void func_800C14D4(s32 arg0);
 
+void *func_800C2B60(s32 idx, s32 mask);
+
 void func_800C2E58(s32 arg0);
 
 void func_800C2EC8(s32 arg0);

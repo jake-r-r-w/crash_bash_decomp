@@ -155,7 +155,31 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C1A30);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C284C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C2B60);
+void *func_800C2B60(s32 idx, s32 mask) {
+    NAS *n;
+    EXTengine *he;
+    EXTengine *e;
+    EXT *fux;
+    s32 hx, hz, dx, dz, lim, m;
+
+    n = D_8005AA24;
+    m = mask;
+    lim = 0x10000;
+    he = Heroes[idx].hero_eng;
+    hx = he->unk10.x - (D_80068BD4[(he->unk1E - 0x400) & 0xFFF].unk2 * 1024 >> 14);
+    hz = he->unk10.z - (D_80068BD4[he->unk1E & 0xFFF].unk2 * 1024 >> 14);
+    for (; n != NULL; n = n->Object.Child) {
+        fux = n->FUX;
+        if (fux == NULL) continue;
+        if (!(*(u16 *)((u8 *)fux + 0x1C) & m)) continue;
+        e = n->Engine;
+        if (e == NULL) continue;
+        dx = e->unk10.x - hx;
+        dz = e->unk10.z - hz;
+        if (dx * dx + dz * dz < lim) return fux;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C2C70);
 

@@ -23,4 +23,6 @@ void func_800BC698(s32 arg0);
 extern u16 *D_8009D6EC;
 s32 func_8008ABF8(s32 arg0);
 
+void *func_800BC588(s32 idx, s32 mask);
+
 #endif /* BASH_OVL5E_800B87A0_H */

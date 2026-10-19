@@ -87,7 +87,31 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BB86C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BC274);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BC588);
+void *func_800BC588(s32 idx, s32 mask) {
+    NAS *n;
+    EXTengine *he;
+    EXTengine *e;
+    EXT *fux;
+    s32 hx, hz, dx, dz, lim, m;
+
+    n = D_8005AA24;
+    m = mask;
+    lim = 0x10000;
+    he = Heroes[idx].hero_eng;
+    hx = he->unk10.x - (D_80068BD4[(he->unk1E - 0x400) & 0xFFF].unk2 * 1024 >> 14);
+    hz = he->unk10.z - (D_80068BD4[he->unk1E & 0xFFF].unk2 * 1024 >> 14);
+    for (; n != NULL; n = n->Object.Child) {
+        fux = n->FUX;
+        if (fux == NULL) continue;
+        if (!(*(u16 *)((u8 *)fux + 0x1C) & m)) continue;
+        e = n->Engine;
+        if (e == NULL) continue;
+        dx = e->unk10.x - hx;
+        dz = e->unk10.z - hz;
+        if (dx * dx + dz * dz < lim) return fux;
+    }
+    return 0;
+}
 
 void func_800BC698(s32 arg0) {
     HeroInfo *h;

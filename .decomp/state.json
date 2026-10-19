@@ -4719,7 +4719,8 @@
   "auto_failed": "compile"
  },
  "ovl5d:800C2B60": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-19T14:01:29Z",
+  "status": "matched"
  },
  "ovl5d:800C2C70": {
   "auto_diff": 79,
@@ -4967,7 +4968,9 @@
   "auto_failed": "compile"
  },
  "ovl5e:800BC588": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-19T14:01:52Z",
+  "status": "matched",
+  "via": "copy"
  },
  "ovl5e:800BC698": {
   "matched_at": "2026-10-19T13:54:12Z",
