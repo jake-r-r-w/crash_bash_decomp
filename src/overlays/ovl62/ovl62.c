@@ -101,7 +101,46 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B7224);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B7520);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B767C);
+void func_800B767C(s32 player) {
+    Ovl62Fux *fux;
+    HeroInfo *h;
+    s32 i;
+    s32 n;
+
+    fux = (Ovl62Fux *)Heroes[player].hero->FUX;
+    if (fux == NULL) {
+        return;
+    }
+    i = 0;
+    n = 0;
+    for (; i < 4; i++) {
+        if (Heroes[i].hero_status & 0x2000) {
+            n++;
+        }
+        fux->state = 5;
+        fux->func = func_800CB6B4;
+        if (n >= 3) {
+            return;
+        }
+    }
+    if (Heroes[fux->target].hero_status & 0x2000) {
+        fux->state = 4;
+        fux->func = func_800CB12C;
+    }
+    if (fux->unk24-- < 0) {
+        fux->state = 5;
+        fux->func = func_800CB6B4;
+    }
+    h = &Heroes[fux->target];
+    if (h->hero_mode == 0x4E) {
+        fux->state = 5;
+        fux->func = func_800CB6B4;
+        return;
+    }
+    fux->vel = h->hero_eng->unk10;
+    fux->pos = Heroes[player].hero_eng->unk10;
+    func_800B5EBC();
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B782C);
 

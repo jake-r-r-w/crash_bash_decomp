@@ -162,6 +162,8 @@ extern s32 D_800D5FEC[4];
 
 void func_800B60B8(s32 player);
 
+void func_800B767C(s32 player);
+
 s32 func_800CB284(void);
 
 #endif /* BASH_OVL62_H */
