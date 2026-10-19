@@ -395,6 +395,8 @@ typedef struct EXTripple {
 
 void func_800B5FFC(Ovl63EaseCam *c, s32 *pos);
 
+s32 func_800BCC20(s32 arg0);
+
 s32 func_800C4E54(s32 a, s32 b);
 
 s32 func_800C5470(s32 arg0);

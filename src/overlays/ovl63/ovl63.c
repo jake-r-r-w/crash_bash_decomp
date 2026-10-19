@@ -386,7 +386,36 @@ loop:
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BC984);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BCC20);
+s32 func_800BCC20(s32 arg0) {
+    Ovl63Pad *base;
+    Ovl63Pad *pad;
+    Ovl63Pad *b1;
+    Ovl63Pad *p1;
+    s32 st;
+
+    if (Heroes[arg0].hero->FUX != NULL) {
+        if (D_8005A614[arg0 + 0x5C] != 0) {
+            b1 = (Ovl63Pad *)D_80051338;
+            p1 = &b1[arg0];
+            st = p1->unk50;
+            if (!(st & 0x4000)) {
+                p1->unk50 = st & ~0x4000;
+                return 0;
+            }
+            goto act;
+        }
+        base = (Ovl63Pad *)D_80051338;
+        pad = &base[arg0];
+        if (pad->unk54 & 0x4000) {
+act:
+            SetHeroAction((HeroInfo *)arg0, 0x5E);
+            return 1;
+        }
+        pad->unk50 &= ~0x4000;
+        return 0;
+    }
+    return 0;
+}
 
 s32 func_800BCD1C(s32 arg0) {
     HeroInfo *base = Heroes;
