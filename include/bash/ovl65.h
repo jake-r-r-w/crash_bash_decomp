@@ -45,4 +45,10 @@ s32 func_800BD408(s32 arg0);
 
 s32 func_800BD488(u8 *arg0, u8 *arg1);
 
+extern s32 D_800BD9FC;
+extern s32 D_800BDA00;
+extern s32 D_800BDA04;
+
+void func_800BC5B0(void);
+
 #endif /* BASH_OVL65_H */

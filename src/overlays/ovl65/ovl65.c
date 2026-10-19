@@ -165,7 +165,11 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", PlotDinoGem);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", PlotDinoScratch);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BC5B0);
+void func_800BC5B0(void) {
+    D_800BDA08[0] = D_800BD9FC;
+    D_800BDA08[1] = D_800BDA00;
+    D_800BDA08[2] = D_800BDA04;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", InitDinoScratch);
 
