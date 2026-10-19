@@ -90,6 +90,8 @@ void func_800C4D04(s32 hero, s32 last_mode);
 s32 func_8008502C();
 extern s32 *D_800CB24C;
 extern s32 *D_800CB250;
+extern s32 D_800CAA0C[];
+extern s32 D_800CAB58[];
 extern s32 D_800CB0FC;
 
 /* PlotLaserBitTA's NAS.FUX. */
@@ -205,6 +207,10 @@ extern s32 D_800CB100;
 extern s32 D_800CB104;
 
 void func_800B8EC4(s32 player);
+
+void func_800C44E8(s32 arg0);
+
+void func_800C4B60(s32 arg0);
 
 void func_800C68C8(s32 arg0);
 

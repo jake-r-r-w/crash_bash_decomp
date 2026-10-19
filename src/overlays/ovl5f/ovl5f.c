@@ -394,13 +394,37 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotTankBossRocketTurret);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C4320);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C44E8);
+void func_800C44E8(s32 arg0) {
+    if (arg0 == 3) {
+        s32 val;
+        D_800CB24C = D_800CAA0C;
+        val = *D_800CB24C++;
+        D_8009D678->unk74 = val;
+    } else {
+        s32 val;
+        D_800CB250 = D_800CAB58;
+        val = *D_800CB250++;
+        D_8009D60C->unk74 = val;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C4548);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C49F8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C4B60);
+void func_800C4B60(s32 arg0) {
+    if (arg0 == 3) {
+        s32 val;
+        D_800CB24C = D_800CAA0C;
+        val = *D_800CB24C++;
+        D_8009D678->unk74 = val;
+    } else {
+        s32 val;
+        D_800CB250 = D_800CAB58;
+        val = *D_800CB250++;
+        D_8009D60C->unk74 = val;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C4BC0);
 
