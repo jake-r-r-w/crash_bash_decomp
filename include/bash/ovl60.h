@@ -24,9 +24,13 @@ void func_800C3510(u8 *arg0);
 
 void func_800C353C();
 typedef struct {
-    u8 unk0[0x10];
+    u8 unk0[0xA];
+    s16 unkA;
+    u8 unkC[4];
     u16 unk10;
-    u8 unk12[0xA];
+    s16 unk12;
+    s16 unk14;
+    u8 unk16[6];
 } Ovl60Cell; /* size 0x1C */
 
 extern Ovl60Cell D_800C53DC[8][8];
@@ -79,6 +83,8 @@ extern s16 D_8009D87C[][3];
 void func_800C0C34(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
 s32 func_800C0E40(s32 arg0, u32 arg1, u32 arg2);
+
+void func_800C24E4(s32 arg0, s32 arg1);
 
 void func_800C286C(s32 arg0);
 
