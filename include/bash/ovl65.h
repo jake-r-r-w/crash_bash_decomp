@@ -97,4 +97,6 @@ s32 func_800BCCE8(s32 arg0);
 
 void InitDinoSmoke(NAS *arg0);
 
+s32 func_800BD204(s32 arg0);
+
 #endif /* BASH_OVL65_H */
