@@ -18,6 +18,18 @@ typedef struct Ovl5dCell {
 
 extern Ovl5dCell D_800C3BAC[8][8];
 
+extern HeroInfo Heroes[4];
+extern u8 D_8005A614[];
+
+/* D_8005A614 as seen by func_800BB2BC. */
+typedef struct {
+    /* 0x00 */ u8 pad0[0x32];
+    /* 0x32 */ u16 flags;
+    /* 0x34 */ u8 pad34[0x6C - 0x34];
+    /* 0x6C */ s32 p2_active;
+} Ovl5dGameView;
+#define OVLG ((Ovl5dGameView *)D_8005A614)
+
 void func_800B62EC(void);
 
 void func_800B7D20(void);
@@ -41,5 +53,7 @@ void InitMissileExplode(NAS *nas);
 void func_800BAC10(void);
 
 void func_800BAF68(void);
+
+void func_800BB2BC(void);
 
 #endif /* BASH_OVL5D_H */

@@ -195,7 +195,26 @@ block_17:
     return var_a2;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BB2BC);
+void func_800BB2BC(void) {
+    s32 i;
+    EXTheromove *m;
+    for (i = 0; i < 4; i++) {
+        m = Heroes[i].hero_move;
+        if (m != NULL) {
+            m->z_acc = 8;
+            m->x_acc = 8;
+            m->z_dec = 4;
+            m->x_dec = 4;
+            if ((OVLG->flags & 0x80) && (i == 0 || (OVLG->p2_active != 0 && i == 1))) {
+                m->z_acc = 4;
+                m->x_acc = 4;
+                m->z_dec = 1;
+                m->x_dec = 1;
+            }
+            m->velocity_calc = 3;
+        }
+    }
+}
 
 void func_800BB360(void) {
 }

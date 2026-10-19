@@ -4575,7 +4575,8 @@
  },
  "ovl5d:800BB2BC": {
   "auto_diff": 18,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-19T13:48:46Z",
+  "status": "matched"
  },
  "ovl5d:800BB370": {
   "auto_failed": "types"
