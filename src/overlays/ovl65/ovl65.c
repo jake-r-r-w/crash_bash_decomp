@@ -347,7 +347,20 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BCBB8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BCCE8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", InitDinoSmoke);
+void InitDinoSmoke(NAS *arg0) {
+    s16 *p;
+
+    func_80024E30(arg0, &D_800BDC08);
+    arg0->Engine->sub->unk6C = D_80055534;
+    arg0->Engine->sub->flags |= 0x40000041;
+    p = &D_8005A648;
+    do {
+        arg0->UserInfo.user1 = 0;
+    } while (0);
+    if (*p == 0x1C) {
+        arg0->Engine->sub->flags = 0x40008021;
+    }
+}
 
 s32 func_800BCDF0(u8 *arg0) {
     s32 var_v1;

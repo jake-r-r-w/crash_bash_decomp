@@ -7,6 +7,7 @@
 
 #include "common.h"
 #include "bash/nas.h"
+#include "bash/main.h"
 
 s32 func_800B3760(s32 arg0);
 
@@ -90,5 +91,8 @@ s32 func_800BD01C(s32 id);
 s32 func_800BD258(s32 arg0);
 
 s32 func_800BD320(s32 arg0, s32 arg1);
+extern ScriptInit D_800BDC08;
+
+void InitDinoSmoke(NAS *arg0);
 
 #endif /* BASH_OVL65_H */
