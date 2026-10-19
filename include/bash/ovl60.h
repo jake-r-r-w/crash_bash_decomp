@@ -18,6 +18,10 @@ void func_800C318C(s32 arg0);
 void func_800C31B0(void);
 void func_800C3388(void);
 void func_800C3390(void);
+void func_800B3E34();
+void func_800C3398();
+extern u8 D_800C52B8[];
+extern u8 D_8009F8A4;
 void func_800C34B0(void);
 void func_800C34D0(void);
 void func_800C34F0(s32 arg0);
@@ -187,5 +191,7 @@ void func_800C3148(void);
 s32 func_800BC04C(s32 arg0, s32 arg1);
 
 void func_800C327C(s32 arg0);
+
+void func_800C3434(void);
 
 #endif /* BASH_OVL60_H */
