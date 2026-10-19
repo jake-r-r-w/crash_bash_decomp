@@ -570,7 +570,23 @@ loop:
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C16FC);
+s32 func_800C16FC(x0, y0, x1, y1)
+s32 x0;
+s32 y0;
+s32 x1;
+s32 y1;
+{
+    s32 dx;
+    s32 dy;
+    s32 a;
+    s32 b;
+
+    a = (y0 << 9) - 0x800;
+    b = (y1 << 9) - 0x800;
+    dx = abs((x0 - x1) << 9);
+    dy = abs(a - b);
+    return dx * dx + dy * dy;
+}
 
 s32 func_800C1764(void) {
     return csqrt(func_800C16FC()) >> 6;

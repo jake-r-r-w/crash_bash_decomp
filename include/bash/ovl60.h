@@ -9,6 +9,7 @@
 #include "bash/nas.h"
 
 void func_800C0BF0(s32 arg0, s32 arg1);
+s32 func_800C16FC();
 s32 func_800C1764(void);
 s32 func_800C2660(u8 *arg0);
 void func_800C2F50(void);
