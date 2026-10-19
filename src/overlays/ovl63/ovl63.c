@@ -745,7 +745,22 @@ void func_800C57B4(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5854);
+void func_800C5854(s32 *arg0, s32 *arg1)
+{
+    s32 a;
+    s32 c;
+    s32 t;
+
+    a = arg0[3] >> 1;
+    arg1[3] = D_80068BD4[a & 0xFFF].unk2;
+    c = D_80068BD4[(a - 0x400) & 0xFFF].unk2;
+    t = c * arg0[0];
+    arg1[0] = (t >= 0 ? t + 0x800 : t - 0x800) >> 12;
+    t = c * arg0[1];
+    arg1[1] = (t >= 0 ? t + 0x800 : t - 0x800) >> 12;
+    t = c * arg0[2];
+    arg1[2] = (t >= 0 ? t + 0x800 : t - 0x800) >> 12;
+}
 
 void func_800C5918(s32 arg0) {
     SetHeroAction((HeroInfo *)arg0, 0x5B);

@@ -295,4 +295,6 @@ s32 func_800C310C(SLONG_XYZ *pos);
 
 s32 func_800C50B0(u8 *arg0, s32 arg1);
 
+void func_800C5854(s32 *arg0, s32 *arg1);
+
 #endif /* BASH_OVL63_H */
