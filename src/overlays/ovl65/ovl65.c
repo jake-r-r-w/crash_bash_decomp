@@ -445,7 +445,29 @@ void func_800BC5B0(void) {
     D_800BDA08[2] = D_800BDA04;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", InitDinoScratch);
+void InitDinoScratch(NAS *m) {
+    EXTengine *eng;
+    subengine *sub;
+
+    if (func_80018F3C(m->Engine, 0x10) != 0) {
+        eng = m->Engine;
+        sub = eng->sub;
+        eng->flags |= 0x200000;
+        m->UserInfo.user1 = 0;
+        m->UserInfo.user2 = 0;
+        if (sub != NULL) do {
+            sub->flags = 0x40000000;
+            sub->unk6C = *(void **)D_80058AD0;
+            sub->unk74 = 0x2003;
+            sub->unk51 = 2;
+            sub->unk14 = 0;
+            sub->unk12 = 0;
+            sub->unk10 = 0;
+            sub->unk76 = 0x800;
+            sub = sub->next;
+        } while (sub != NULL);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BC684);
 
