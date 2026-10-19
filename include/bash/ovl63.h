@@ -35,6 +35,7 @@ extern ScriptInit D_800C6D74;
 extern u8 D_800546C4[];
 extern s32 D_800C6BAC;
 extern u8 D_80052F94[];
+extern char D_800B3400[];
 
 void func_800B5360(s32 *arg0);
 
@@ -158,6 +159,8 @@ void func_800B9E50(Quat *q);
 void InitRaceSmokePoof(NAS *nas);
 
 void InitTNTCrate(NAS *m);
+
+s32 func_800C5334(s32 arg0);
 
 s32 func_800C5400(s32 arg0);
 

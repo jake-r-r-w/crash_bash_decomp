@@ -457,7 +457,17 @@ void func_800C5204(EXTheromove *a, EXTheromove *b) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5334);
+s32 func_800C5334(s32 arg0) {
+    EXTengine *eng;
+    s32 angle;
+
+    eng = Heroes[arg0].hero_eng;
+    angle = get_angle(eng->unk10.x, eng->unk10.z) & 0xFFF;
+    angle = 0x152C - angle;
+    angle &= 0xFFF;
+    printf(D_800B3400, arg0, angle);
+    return angle;
+}
 
 void func_800C53BC(s32 arg0) {
     func_80085890(arg0);
