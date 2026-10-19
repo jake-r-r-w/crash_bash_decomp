@@ -394,6 +394,8 @@ typedef struct Ovl63Barrel {
 extern Ovl63Barrel D_800C6F34[128];
 extern s32 D_800C66F0;
 
+void func_800BE7B4(s32 player, Ovl63Barrel *b);
+
 void func_800B5F04(void);
 
 s32 func_800BCD1C(s32 arg0);
@@ -497,6 +499,8 @@ typedef struct EXTtrackglob {
 extern ScriptInit D_800C6EA4;
 extern u8 *D_800C66EC;
 extern s32 D_800C6EB0;
+
+s32 func_800B6108(Ovl63Barrel *b);
 
 void InitRaceVolcano(NAS *nas);
 

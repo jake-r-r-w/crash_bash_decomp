@@ -240,7 +240,50 @@ void func_800B5FFC(Ovl63EaseCam *c, s32 *pos) {
     pos[3] += c->z.cur >> 8;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B6108);
+s32 func_800B6108(Ovl63Barrel *b) {
+    EXTengine *e;
+    Ovl63SceneObj *obj;
+    s32 hit;
+    s32 i;
+    s32 dx;
+    s32 dz;
+    s32 d;
+    s32 angle;
+    s32 r;
+
+    hit = 0;
+    obj = b->obj;
+    for (i = 0;; i++) {
+        if (i >= 4) {
+            return hit;
+        }
+        e = Heroes[i].hero_eng;
+        dx = e->unk10.x - obj->pos.x;
+        dz = e->unk10.z - obj->pos.z;
+        d = dx * dx + dz * dz;
+        if (d < 0x24000) {
+            d = csqrt(d) >> 6;
+            angle = get_angle(dx, dz) & 0xFFF;
+            d = 0x180 - d;
+            e->unk10.x += d * D_80068BD4[(angle - 0x400) & 0xFFF].unk2 >> 12;
+            e->unk10.z += d * D_80068BD4[angle].unk2 >> 12;
+            func_800BE7B4(i, b);
+            if (Heroes[i].hero_mode != 0x61) {
+                r = Random(2);
+                if (r == 0) {
+                    PlaySfx(0x663, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (r == 1) {
+                    PlaySfx(0x664, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (Heroes[i].hero_mode != 0x5D) {
+                    SetHeroAction((HeroInfo *)i, 0x5D);
+                }
+            }
+            hit = 1;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B62F4);
 
