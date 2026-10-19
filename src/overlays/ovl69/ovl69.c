@@ -871,7 +871,116 @@ void func_800B6CF4(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B6E0C);
 
+/* Parked: registers 4/340, every block but two exact. Only v (the D_800BA740 test and
+ * the D_8004DDBC row[w] value) differs: global.c gives it a1, its preference from
+ * the row[w] load's dying a1 address, where the target has v1 (AGENT_LOG). */
+#ifdef NON_MATCHING
+void func_800B7458(void) {
+    Ovl69ListSlot *slot;
+    subengine *q;
+    s32 val;
+    u8 *a;
+    subengine *s;
+    subengine *t;
+    EXTengine *e0;
+    subengine *p;
+    s32 i;
+    s32 off;
+    u8 *g;
+    s32 boff;
+    s32 w;
+    s32 c;
+    u8 *h;
+    s32 v;
+    Ovl69Entry *tbl;
+    TrigEntry *trig;
+
+    if (D_800BA744 != 0) {
+        func_80017640();
+        func_80011D28((u8 *)&D_8004E0F0);
+        D_800BA744--;
+    }
+    func_800B3A9C();
+    a = D_800555DC;
+    func_80029100((AnimOwner *)(a + 0x10));
+    func_80029100((AnimOwner *)(a + 0x48));
+    v = D_800BA740;
+    if (v == 0) {
+        func_800B6E0C();
+    }
+    e0 = GetEngineSlot(0);
+    boff = ((Ovl69ListSlot *)((u8 *)D_800BA324[(s8)D_8005A614[0x36]].unk0 + ((s8)D_8005A614[0x37] << 4)))->idx;
+    p = e0->sub;
+    w = D_8004DDD0[boff * 3] - 0x101;
+    v = ((s32 **)D_8004DDBC)[*(s32 *)(D_8005A614 + 0x2C)][w];
+    p[6].unk6C = (void *)v;
+    t = &GetEngineSlot(0)->sub[1];
+    t->unk08 = func_80015284(t->unk08,
+        *(s16 *)((u8 *)&GetEngineSlot(1)->sub[(s8)D_8005A614[0x37] + 4] + 0x72) + 0x32, 0x800);
+    i = 0;
+    off = 0;
+    for (;;) {
+        s32 type;
+        s32 idx;
+        s32 on;
+        s32 fl;
+        EXTengine *e;
+
+        if (i >= (D_800BA324 + (s8)D_8005A614[0x36])->unk4) {
+            break;
+        }
+        GetEngineSlot(1)->sub[off + 4].flags |= 0x8000;
+        e = GetEngineSlot(i + 3);
+        fl = *(s32 *)(D_8005A614 + 4) & 0x2000;
+        slot = &((Ovl69ListSlot *)D_800BA324[(s8)D_8005A614[0x36]].unk0)[off];
+        idx = slot->idx;
+        type = slot->type;
+        s = e->sub;
+        if (fl || type == 1
+            || (type == 2 && ((g = D_8005A614 + idx), g[0xE4] != 0 || g[0x168] != 0))) {
+            on = 1;
+        } else {
+            on = 0;
+        }
+        if (on) {
+            s->unk6C = ((Ovl69ListSlot *)((u8 *)D_800BA324[(s8)D_8005A614[0x36]].unk0 + (off << 4)))->model;
+            c = ((Ovl69ListSlot *)((u8 *)D_800BA324[(s8)D_8005A614[0x36]].unk0 + (off << 4)))->unkC;
+            s->unk74 = c;
+            s->unk10 = 0x7D;
+            s->unk12 = 0;
+            s->unk14 = 0;
+            s->unk04 = D_80068BD4[(((D_8004E0D8 * 20 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;
+            s->unk08 = (D_80068BD4[(((D_8004E0D8 * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
+        } else {
+            s->unk6C = D_800555DC;
+            s->unk74 = 0x2006;
+            s->unk10 = 0;
+            s->unk12 = D_8005B690 * 50 + (i << 10);
+            val = D_80068BD4[(((D_8004E0D8 * 100 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2;
+            s->unk04 = 0;
+            s->unk08 = 0;
+            s->unk14 = (val * 25) >> 9;
+        }
+        off++;
+        i++;
+        s->unk51 = 0;
+        s->unk52 = 1;
+    }
+    for (i = (D_8005A64A + D_800BA324)->unk4; i < 4; i++) {
+        GetEngineSlot(1)->sub[i + 4].flags &= ~0x8000;
+        GetEngineSlot(i + 3)->sub->unk74 = 0;
+    }
+    h = D_8005A614;
+    D_8009E5DC = ((Ovl69ListSlot *)((u8 *)D_800BA324[(s8)h[0x36]].unk0 + ((s8)h[0x37] << 4)))->idx;
+    q = GetEngineSlot(2)->sub;
+    q->unk10 = 0x7D;
+    q->unk51 = 0;
+    q->unk04 = D_80068BD4[(((D_8004E0D8 * 20 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;    q->unk08 = (D_80068BD4[(((D_8004E0D8 * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
+    q->unk52 = 1;
+}
+#else
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B7458);
+#endif
 
 void func_800B79A8(void) {
     s32 *cam = (s32 *)&D_800B9538;

@@ -101,6 +101,18 @@ and current tools).
 
 ## Open leads
 
+- **`func_800B7458` (ovl69, 1360 B), parked 2026-10-19 at registers 4/340**
+  (blocks 18/20; C under `#ifdef NON_MATCHING`, `block` note has the tries).
+  Only `v` differs: one variable for the `D_800BA740` test and the
+  `D_8004DDBC` row[w] value, a global pseudo that global.c gives a1 (its
+  `set_preference` from the row[w] load, whose address dies in a1: the
+  local `w * 4` is tied to it) where the target has v1. It has no a1
+  conflict, and `prune_preferences` keeps a preference the allocno holds
+  itself, so only removing the preference helps: an address through a
+  multi-set pointer (`h`) does that and gets both `v` uses right, but then
+  local-alloc puts the `D_8004DDBC` base in a1 and `w` in a2 (target: the
+  reverse). Next: keep the address global but tied to `w`, or find the
+  local-alloc priority (refs/life) that allocates `w` before the base.
 - **`func_800B345C` (ovl63, 30735f0c) still matches only with a hack** (no-op
   `h++; h--;` and `p++; p++; p--;` in its goto loop; `done` now refuses such runs
   without --hack). Reworked 2026-10-19, not finished. Without the no-ops it is
@@ -429,6 +441,10 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-19 (hand, ovl69):** `func_800B7458` from its checkpoint
+  (registers 4/340), parked at the same score: the last swap is a global.c
+  register preference (Open leads). The checkpoint's header retype of
+  `Ovl69Entry.unk0` broke four integer users; it stays `s32` with a cast.
 - **2026-10-19 (hand, ovl65):** `func_800B4D6C` (1720 B) matched by hand
   from the swarm's checkpoint (structure 314/430), no permuter: loop 3
   as a real loop, `Heroes[i]` indexing, separate loop variables, and

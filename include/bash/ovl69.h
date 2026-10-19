@@ -67,10 +67,20 @@ extern void (*D_800B9DFC)(void);
 void func_800B556C(void);
 
 void func_800B6A64(void);
+/* 16-byte slot record of an Ovl69Entry list (func_800B7458). */
+typedef struct {
+    s32 type;  /* 0x0: 1, or 2 = gated by D_8005A614[0xE4/0x168 + idx] */
+    s32 idx;   /* 0x4 */
+    void *model; /* 0x8 */
+    s32 unkC;  /* 0xC */
+} Ovl69ListSlot;
+
 typedef struct {
     s32 unk0;
     s32 unk4;
 } Ovl69Entry;
+
+void func_800B6E0C(void);
 
 extern Ovl69Entry D_800BA324[];
 

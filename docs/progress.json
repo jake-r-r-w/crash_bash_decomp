@@ -13,15 +13,21 @@
    "size": 2080
   },
   {
+   "name": "func_800B7458",
+   "note": "STAGE registers 4/340 (blocks 18/20, from the swarm checkpoint). Only v (D_800BA740 test + D_8004DDBC row[w] value, one multi-block pseudo) is a1, target v1: global.c set_preference gives it a1 from the row[w] load's dying a1 address (local w*4 tied to the address); no conflict with a1 and its own preference can't be masked (prune_preferences). Tried: splitting v (region 1 then local -> v0), merging v with val/type/c, three spellings of row[w], address through h (kills the preference, v1 right, but w/base swap a1/a2 in local-alloc). Next: an address that is a global pseudo yet tied to w's a1, or what local-alloc priority puts w before the D_8004DDBC base. C under #ifdef NON_MATCHING.",
+   "seg": "overlays/ovl69/ovl69",
+   "size": 1360
+  },
+  {
    "name": "func_800B5710",
    "note": "STAGE structure 492/710 (regions 120/121 blocks, 706/710 insns): only the 0x80 button block differs; target puts mv->forward_speed = speed in the delay slot of the % 0x1000 bgez (sched2 input must have the store last, so sched1 must leave it after the modulo's t=step copy, which expand_divmod emits right before the bgez); tried 6 orders/spellings, a twice-set cam pointer, do{}while(0). Next: find a construct that emits the store after the copy, or reconsider the 0x80 block's source shape",
    "seg": "overlays/ovl6a/800b4eac",
    "size": 2836
   }
  ],
- "commit": "55238895",
+ "commit": "97a8d399",
  "game": "SCUS_945.70",
- "generated": "2026-10-19T16:39:27Z",
+ "generated": "2026-10-19T16:57:59Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -134466,7 +134472,7 @@
    }
   },
   {
-   "commit": "55238895",
+   "commit": "97a8d399",
    "data_b": 4004,
    "data_tb": 606943,
    "game_all_f": 2537,
@@ -134479,7 +134485,7 @@
    "lib_b": 122112,
    "lib_f": 564,
    "lib_tb": 122112,
-   "ts": "2026-10-19T16:39:27Z",
+   "ts": "2026-10-19T16:57:59Z",
    "units": {
     "engine": [
      121412,
@@ -134675,7 +134681,7 @@
   }
  ],
  "summary": {
-  "blocked": 3,
+  "blocked": 4,
   "copies_b": 22516,
   "data": {
    "done_b": 4004,
@@ -134686,7 +134692,7 @@
    "all_f": 2537,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 3,
+   "blocked": 4,
    "c_f": 1976,
    "done_b": 506716,
    "done_f": 1976,
@@ -135011,7 +135017,7 @@
     "all_f": 77,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 0,
+    "blocked": 1,
     "c_f": 68,
     "done_b": 9496,
     "done_f": 68,

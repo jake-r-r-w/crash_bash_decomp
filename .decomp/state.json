@@ -9984,7 +9984,11 @@
   "auto_failed": "compile"
  },
  "ovl69:800B7458": {
-  "auto_failed": "types"
+  "auto_failed": "types",
+  "blocked_at": "2026-10-19T16:57:58Z",
+  "note": "STAGE registers 4/340 (blocks 18/20, from the swarm checkpoint). Only v (D_800BA740 test + D_8004DDBC row[w] value, one multi-block pseudo) is a1, target v1: global.c set_preference gives it a1 from the row[w] load's dying a1 address (local w*4 tied to the address); no conflict with a1 and its own preference can't be masked (prune_preferences). Tried: splitting v (region 1 then local -> v0), merging v with val/type/c, three spellings of row[w], address through h (kills the preference, v1 right, but w/base swap a1/a2 in local-alloc). Next: an address that is a global pseudo yet tied to w's a1, or what local-alloc priority puts w before the D_8004DDBC base. C under #ifdef NON_MATCHING.",
+  "status": "blocked",
+  "tries": 2
  },
  "ovl69:800B79A8": {
   "auto_diff": 85,
