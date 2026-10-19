@@ -293,7 +293,20 @@ void InitPUGenerator_CH(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BA694);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BA70C);
+void func_800BA70C(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = &base[arg0];
+    EXTengine *p = h->hero_powerup;
+    EXTengine *e;
+
+    if (p != NULL) {
+        e = h->hero_eng;
+        p->unk10 = e->unk10;
+        p->unk5E = 1;
+        p->unk10.y -= 0x300;
+        p->unk1E = p->unk1E + 0x38;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BA784);
 

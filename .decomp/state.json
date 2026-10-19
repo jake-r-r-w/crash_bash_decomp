@@ -9652,7 +9652,8 @@
  },
  "ovl68:800BA70C": {
   "auto_diff": 25,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-19T17:32:29Z",
+  "status": "matched"
  },
  "ovl68:800BA784": {
   "auto_failed": "compile"

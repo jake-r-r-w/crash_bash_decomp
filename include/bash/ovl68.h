@@ -117,6 +117,8 @@ void func_800BA630(NAS *nas);
 
 void InitPUGenerator_CH(NAS *nas);
 
+void func_800BA70C(s32 arg0);
+
 void InitCoalFlameSFX(CoalFlameObj *arg0);
 
 void InitEgg(NAS *nas);
