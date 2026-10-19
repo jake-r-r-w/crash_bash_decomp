@@ -16,12 +16,12 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `main.exe` function matches; Phase 2's naming, data and `main.c` split
   are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 1975/2537 game functions matched (49.6% of game code bytes):
+- 1976/2537 game functions matched (49.7% of game code bytes):
   **main.exe is complete (575/575)**; engine 355/357 (both left parked:
   `func_8007F314`, `PlotScriptFX`); ovl61 96/97 (`PlotBall` left), ovl6a
   93/94 (`func_800B5710` parked), ovl69 68/77, ovl67 101/135, ovl60
   131/180, ovl5f 127/179, ovl62 151/216, ovl63 97/139, ovl5d 69/104,
-  ovl65 63/80 (swarm runs 2026-10-18/19); ovl5e, ovl64, ovl66 and ovl68
+  ovl65 64/80 (swarm runs 2026-10-18/19); ovl5e, ovl64, ovl66 and ovl68
   are barely started. All 564 PsyQ functions (Sony objects). 3 parked (`decomp.py
   status`). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
@@ -51,7 +51,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 **Matching the slot overlays with the swarm.** Left per overlay (2026-10-19,
 `INCLUDE_ASM` count per file): ovl68 82, ovl5e 67, ovl62 65, ovl66 65,
-ovl5f 52, ovl64 50, ovl60 49, ovl63 42, ovl5d 35, ovl67 34, ovl65 17,
+ovl5f 52, ovl64 50, ovl60 49, ovl63 42, ovl5d 35, ovl67 34, ovl65 16,
 ovl69 9, ovl61 1, ovl6a 1, engine 2. main.exe is complete. **Next session:
 swarm ovl68, then ovl5e/ovl66/ovl64**, on the low-cost recipe; after each run, the
 "After a run" checklist in tools/swarm/README.md (`stats --run ID`, parks,
@@ -429,6 +429,11 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-19 (hand, ovl65):** `func_800B4D6C` (1720 B) matched by hand
+  from the swarm's checkpoint (structure 314/430), no permuter: loop 3
+  as a real loop, `Heroes[i]` indexing, separate loop variables, and
+  `best` reused as the done flag (four Diff patterns rows). `decomp.py
+  sched` misread hex ready-list priorities (>= 0x10); fixed.
 - **2026-10-19 (ovl65, low cost):** run 20261019154152, stopped by hand
   after 38 min: 50 matched for $16.70, 0 parked. The first start failed on
   "Docker is not reachable" (Docker Desktop had quit; start it and rerun).

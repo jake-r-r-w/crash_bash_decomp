@@ -1129,6 +1129,10 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | post-decrement: lw v0; addu v1,v0,0; addiu v0,-1; sw; blez v1 (ours loads into v1, no copy) | write `if (c->f-- > 0)` instead of temp t = c->f; c->f = t-1; if (t > 0) | `func_800B3FDC` |
 | m2c d[1]=0; d[3]=K; d[2]=.. store order wrong (sh 0x42/0x46 before 0x40) | write the two computed halves first: d[0]=..; d[2]=..; d[1]=0; d[3]=K; | `func_800B4D6C` |
 | bltz delay slot holds the target's `move v0,zero` and the fallthrough `slt` comes again (ours: nop, single slt hoisted into the earlier bgez slot) | reorg's redundant_insn deletes the fallthrough copy and mostly_true_jump predicts `lt 0` not taken. A LOOP_BEG note just before the branch target's label makes it predicted taken: `goto zero;` ... `do { zero: return 0; } while (0);` | `func_800B4268 (partial)` |
+| a loop rebuilds its table addresses (`lui`/`addiu` into t-registers) at every use, two copies of the same symbol in one block | loop.c hoisted the invariant addresses but they got no hard register (every s-reg is taken), so reload rematerializes them per use: the loop must be a real `for`/`while` loop, not a `goto` loop (no loop notes, no hoisting) | `func_800B4D6C` |
+| a walked `HeroInfo *h` (`h++`) comes out biased (`addiu s1,s1,4` before the loop, offsets 4 lower) where the target keeps the base and its real offsets | index the array (`Heroes[i].field`) instead of walking a pointer: loop.c's reduced giv starts at the base | `func_800B4D6C` |
+| two loops' counters, pointers or flags sit in different registers in the target | they are different C variables: give each loop its own (and share one with a later loop when the target's register matches) | `func_800B4D6C` |
+| a flag or result variable takes the register the target gives a short-lived copy (and vice versa) | the target reuses one variable for two roles (here `best`, then the done flag): its longer life lowers its global.c priority (`decomp.py sched`), so the copy is allocated first | `func_800B4D6C` |
 
 ## Classify the diff, then work through the list
 
