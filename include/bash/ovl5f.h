@@ -104,6 +104,13 @@ typedef struct LaserBitFux {
 
 s32 func_800BAFFC(NAS *nas, s32 arg1, s32 arg2, s32 arg3);
 
+/* InitPickupTA's extension 0x10000000 (0x38 bytes), its NAS.FUX. */
+typedef struct PickupTAExt {
+    /* 0x00 */ u8 unk0[0x14];
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ u8 unk18[0x38 - 0x18];
+} PickupTAExt;
+
 typedef struct {
     s32 x;
     s32 z;  /* negative: unused */

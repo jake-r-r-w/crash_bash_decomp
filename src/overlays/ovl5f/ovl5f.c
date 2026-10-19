@@ -288,7 +288,64 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitHelicopterTA);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotHelicopterTA);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitPickupTA);
+void InitPickupTA(NAS *nas) {
+    EXTengine *eng;
+    EXTengine *e;
+    PickupTAExt *ext;
+    subengine *sub;
+    u8 *p;
+    s32 y;
+
+    eng = nas->Engine;
+    switch ((u32)Random(4)) {
+    default:
+    case 0:
+        PlaySfx(0x4B0, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 1:
+        PlaySfx(0x4B1, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 2:
+        PlaySfx(0x4B2, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 3:
+        PlaySfx(0x4B3, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    }
+    nas->UserInfo.user2 = 0;
+    nas->UserInfo.user1 = 5;
+    ext = AddExtension(nas, 0x38, 0x10000000);
+    if (ext != NULL) {
+        ext->unk14 = 0;
+        nas->FUX = ext;
+        p = D_8005365C;
+        eng = nas->Engine;
+        sub = eng->sub;
+        sub->unk6C = p;
+        sub->unk74 = 0x202B;
+        eng->unk5D = 1;
+        e = AddEngine(nas, 1);
+        if (e != NULL) {
+            e->unk10.x = eng->unk10.x;
+            e->unk10.y = 0;
+            e->unk10.z = eng->unk10.z;
+            e->sub->unk51 = 2;
+            e->sub->unk6C = p;
+            e->sub->unk74 = 0x202A;
+            e->sub->flags |= 0x40000041;
+            e->sub->unk76 = 0x800;
+            e->sub->unk50 = 1;
+            y = eng->unk10.y + 0x1000;
+            e->sub->unk20.x = y;
+            e->sub->unk20.z = y;
+            e->sub->unk52 = 1;
+        }
+        if (nas->Failure == 0) {
+            return;
+        }
+    }
+    KillNAS(nas);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotPickupTA);
 
