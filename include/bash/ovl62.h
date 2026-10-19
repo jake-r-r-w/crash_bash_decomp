@@ -324,5 +324,21 @@ extern Ovl62RiserObj *D_800D6150[16];
 void func_800CA6E8(Ovl62RiserSet *arg0);
 
 s32 func_800CB56C(s32 arg0);
+/* Walrus fish extension (id 0x10000000): a ballistic arc (func_8008C5C4's
+ * Arc, declared in bash/8007ee2c.h) at 0x10. */
+typedef struct WalrusFishExt {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ s32 state;
+    /* 0x10 */ s32 arc[0xD];
+    /* 0x44 */ s32 vx; /* arc vx */
+    /* 0x48 */ s32 vz; /* arc vz */
+    /* 0x4C */ u8 pad4C[0x64 - 0x4C];
+    /* 0x64 */ SLONG_XYZ to;
+    /* 0x70 */ SLONG_XYZ from;
+    /* 0x7C */ s32 timer;
+    /* 0x80 */ s32 spin;
+} WalrusFishExt;
+
+s32 func_8008C5C4(s32 *from, s32 *to, void *arc, s32 *pos);
 
 #endif /* BASH_OVL62_H */

@@ -437,7 +437,59 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotPolarWalrus);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitWalrusFish);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotWalrusFish);
+void PlotWalrusFish(NAS *m) {
+    WalrusFishExt *ext;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    m->Engine->unk1E += ext->spin;
+    m->Engine->unk1C += 0x100;
+    m->Engine->unk5E = 1;
+    switch (ext->state) {
+    case 0:
+        if (++ext->timer == 0xF) {
+            m->Engine->sub->unk68 = 0;
+        }
+        if (func_8008C5C4(&ext->from.x, &ext->to.x, ext->arc, &m->Engine->unk10.x) != 0) {
+            ext->state = 2;
+            PlaySfx(0x479, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        break;
+    case 2:
+        func_800250B0(m);
+        m->Engine->unk10.x += ext->vx;
+        m->Engine->unk10.z += ext->vz;
+        ext->spin >>= 1;
+        m->Engine->unk1C >>= 1;
+        if (ext->vx < 0) {
+            if (++ext->vx <= 0) {
+                goto skip_x;
+            }
+            ext->vx = 0;
+        }
+        if (ext->vx > 0) {
+            if (--ext->vx < 0) {
+                ext->vx = 0;
+            }
+        }
+    skip_x:
+        if (ext->vz < 0) {
+            if (++ext->vz <= 0) {
+                goto skip_z;
+            }
+            ext->vz = 0;
+        }
+        if (ext->vz > 0) {
+            if (--ext->vz < 0) {
+                ext->vz = 0;
+            }
+        }
+    skip_z:
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotSmokeTrail);
 
