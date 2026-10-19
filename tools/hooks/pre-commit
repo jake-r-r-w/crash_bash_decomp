@@ -23,16 +23,29 @@ fi
 
 # A match (an INCLUDE_ASM line replaced by C) is committed only through the validation gate,
 # `decomp.py done NAME --commit`, which checks scope, lint, the function and the full build.
-# Counted, not compared by name: renames and file splits rewrite INCLUDE_ASM lines without
-# removing any. A PsyQ gap file deleted whole (decomp.py link-psyq linked Sony's object in its
-# place, after a full build check) isn't a match: library code isn't a matching target.
+# Compared by name, per file: an INCLUDE_ASM the commit removes counts as a match when that file
+# (as staged) has no INCLUDE_ASM of the name left and defines it in C, newly or in a parked
+# function's NON_MATCHING block. Renames and file splits rewrite or move INCLUDE_ASM lines and
+# a resplit drops functions that no longer exist; none of those leaves a C definition in the
+# file. (Per file because slot overlays share addresses, so a name can be C in another one.)
+# A PsyQ gap file deleted whole (decomp.py link-psyq linked Sony's object in its place, after a
+# full build check) isn't a match: library code isn't a matching target.
 if [ -z "${DECOMP_VALIDATED:-}" ]; then
   gone=$(git diff --cached --name-only --diff-filter=D -- 'src/main/psyq/' | sed 's/^/:(exclude)/')
-  diff=$(git diff --cached -U0 -- src $gone)
-  removed=$(printf '%s\n' "$diff" | grep -cE '^-[[:space:]]*INCLUDE_ASM\(' || true)
-  added=$(printf '%s\n' "$diff" | grep -cE '^\+[[:space:]]*INCLUDE_ASM\(' || true)
-  if [ "$removed" -gt "$added" ]; then
-    echo "pre-commit: this commit replaces $((removed - added)) INCLUDE_ASM line(s) with C outside the validation gate." >&2
+  pairs=$(git diff --cached -U0 -- src $gone | awk '
+    /^\+\+\+ / { f = substr($2, 3) }
+    /^-[ \t]*INCLUDE_ASM\(/ && f != "dev/null" {
+      n = $0; sub(/\);.*/, "", n); sub(/.*,[ \t]*/, "", n); print f, n }' | sort -u)
+  matched=""
+  while read -r f n; do
+    [ -n "$n" ] || continue
+    git grep --cached -qE "INCLUDE_ASM\(.*[ ,]$n\)" -- "$f" && continue
+    if git grep --cached -qE "^[A-Za-z_][^;]*[^A-Za-z0-9_]$n[[:space:]]*\([^;]*$" -- "$f"; then
+      matched="$matched $n"
+    fi
+  done <<< "$pairs"
+  if [ -n "$matched" ]; then
+    echo "pre-commit: this commit replaces INCLUDE_ASM with C outside the validation gate:$matched" >&2
     echo "Commit each match with: tools/dk python3 tools/scripts/decomp.py done NAME --commit" >&2
     exit 1
   fi
