@@ -724,7 +724,16 @@ s32 func_800CB2C8(s32 arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB314);
+void func_800CB314(s32 player) {
+    Ovl62Fux *fux;
+
+    fux = (Ovl62Fux *)Heroes[player].hero->FUX;
+    if (fux != NULL) {
+        fux->unk2C = 0;
+        fux->unk3C = 0;
+        fux->unk34 |= 1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB368);
 

@@ -135,9 +135,10 @@ typedef struct Ovl62Fux {
     /* 0x18 */ SLONG_XYZ pos;
     /* 0x24 */ s32 unk24;
     /* 0x28 */ s32 target;
-    /* 0x2C */ u8 pad2C[0x30 - 0x2C];
+    /* 0x2C */ s32 unk2C;
     /* 0x30 */ s32 state;
-    /* 0x34 */ u8 pad34[0x3C - 0x34];
+    /* 0x34 */ s32 unk34;
+    /* 0x38 */ u8 pad38[0x3C - 0x38];
     /* 0x3C */ s32 unk3C;
     /* 0x40 */ u8 pad40[0x44 - 0x40];
     /* 0x44 */ void *func;
@@ -238,6 +239,8 @@ s32 func_800CB284(void);
 s32 func_8008502C();
 
 s32 func_800CB2C8(s32 arg0);
+
+void func_800CB314(s32 player);
 
 void func_800CB508(s32 player);
 
