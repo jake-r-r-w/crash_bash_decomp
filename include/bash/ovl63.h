@@ -717,6 +717,8 @@ typedef struct Ovl63TagExt {
 
 extern s32 D_800C6928;
 
+void func_800C0F5C(void);
+
 void PlotRaceTag(NAS *m);
 
 #endif /* BASH_OVL63_H */

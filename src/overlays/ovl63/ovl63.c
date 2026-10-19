@@ -1229,7 +1229,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C04EC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C0CB4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C0F5C);
+void func_800C0F5C(void) {
+    u8 unused[24];
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotTNTCrate);
 
