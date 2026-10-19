@@ -254,7 +254,9 @@ typedef struct Ovl62Fux {
     /* 0x3C */ s32 unk3C;
     /* 0x40 */ u8 pad40[0x44 - 0x40];
     /* 0x44 */ void *func;
-    /* 0x48 */ u8 pad48[0x5C - 0x48];
+    /* 0x48 */ u8 pad48[0x4C - 0x48];
+    /* 0x4C */ s32 flags;
+    /* 0x50 */ u8 pad50[0x5C - 0x50];
     /* 0x5C */ s32 timer;
 } Ovl62Fux;
 
@@ -442,6 +444,8 @@ void func_800B5910(void);
 typedef struct Ovl62Link {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ s32 unk10;
+    /* 0x14 */ u8 pad14[0x6C - 0x14];
+    /* 0x6C */ s32 unk6C;
 } Ovl62Link;
 
 typedef struct Ovl62Owner {
@@ -452,6 +456,7 @@ typedef struct Ovl62Owner {
 
 extern Ovl62Owner *D_800D5254;
 extern s32 D_800D5FFC;
+extern s32 D_8009D908;
 s32 func_800B7CDC();
 
 /* Read by func_800CAEB0. */
@@ -695,6 +700,8 @@ void func_800B5684(s32 player);
 void func_800B6258(s32 player);
 
 void func_800B782C(s32 player);
+
+s32 func_800B9398(s32 player);
 
 s32 func_800B9600(s32 player);
 

@@ -565,7 +565,46 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B889C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B90C0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B9398);
+s32 func_800B9398(s32 player) {
+    s32 mode;
+    Ovl62Fux *fux;
+    HeroInfo *h;
+    Ovl62Link *l;
+    s32 r;
+    HeroInfo *base;
+
+    if (D_8005A648 != 0x14) {
+        if ((mode = D_800D5FFC) != 2) {
+            return 0;
+        }
+        base = Heroes;
+        h = &base[player];
+        fux = (Ovl62Fux *)h->hero->FUX;
+        if (fux != NULL && D_800D5254 != NULL) {
+            if (D_8009D908 != 0) {
+                fux->state = mode;
+                fux->func = func_800B782C;
+                return 1;
+            }
+            l = D_800D5254->unk58;
+            if (l == NULL) {
+                goto fail;
+            }
+            if (l->unk6C == player) {
+                return 0;
+            }
+            r = Random(0x1000);
+            fux->flags |= 1;
+            if (r < D_800D4E0C[h->hero_name + 0x17]) {
+                fux->state = mode;
+                fux->func = func_800B782C;
+                return 1;
+            }
+        }
+    }
+fail:
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B94B8);
 
