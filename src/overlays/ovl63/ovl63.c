@@ -304,7 +304,52 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotRaceVolcano);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotGlob);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C310C);
+s32 func_800C310C(SLONG_XYZ *pos) {
+    s32 hit;
+    s32 i;
+    s32 j;
+    s32 dx;
+    s32 dy;
+    s32 dz;
+    u16 bits;
+
+    hit = 0;
+    for (i = 0;; i++) {
+        if (i >= 4) {
+            return hit;
+        }
+        dx = Heroes[i].hero_eng->unk10.x - pos->x;
+        dz = Heroes[i].hero_eng->unk10.z - pos->z;
+        dy = Heroes[i].hero_eng->unk10.y - pos->y;
+        if (dx * dx + dz * dz + dy * dy < 0x90000) {
+            if (Heroes[i].hero_mode != 0x61) {
+                if (Heroes[i].hero_mode != 0x5D) {
+                    SetHeroAction((HeroInfo *)i, 0x5D);
+                }
+                if (MODE63->flags & 0x80) {
+                    if (MODE63->unk5C[i] != 0) {
+                        hit = 1;
+                        continue;
+                    }
+                    bits = 1;
+                    if (MODE63->unk4 & 0x800) {
+                        bits = 0x201;
+                    }
+                    MODE63->unk60 = 0;
+                    MODE63->unk30 |= bits;
+                    for (j = 0; j < 4; j++) {
+                        Heroes[j].hero_status |= 0x100;
+                        if (MODE63->unk5C[j] != 0) {
+                            func_80026980(Heroes[j].hero);
+                        }
+                    }
+                    D_800AD12C = 1;
+                }
+            }
+            hit = 1;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitBarrelRoll);
 

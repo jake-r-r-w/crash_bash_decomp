@@ -272,5 +272,22 @@ void func_800B5F04(void);
 s32 func_800BCD1C(s32 arg0);
 
 void func_800C57B4(s32 player);
+/* D_8005A614 as seen by func_800C310C. */
+typedef struct D5A614View63 {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ u8 unk8[0x30 - 0x8];
+    /* 0x30 */ u16 unk30;
+    /* 0x32 */ u16 flags;
+    /* 0x34 */ u8 unk34[0x5C - 0x34];
+    /* 0x5C */ u8 unk5C[4];
+    /* 0x60 */ u8 unk60;
+} D5A614View63;
+#define MODE63 ((D5A614View63 *)D_8005A614)
+
+extern u16 D_800AD12C;
+extern HeroInfo Heroes[4];
+
+s32 func_800C310C(SLONG_XYZ *pos);
 
 #endif /* BASH_OVL63_H */
