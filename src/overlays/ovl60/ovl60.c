@@ -1889,7 +1889,47 @@ void Roo_GoBoing(EXTengine *eng) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BFFF4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Roo_ShootAtHumans);
+void Roo_ShootAtHumans(NAS *nas) {
+    EXTengine *eng;
+    EXTengine *he;
+    s32 x, z, hx, hz;
+    s32 i;
+
+    eng = nas->Engine;
+    i = 0;
+    if (eng == NULL) {
+        return;
+    }
+    x = (eng->unk10.x + 0x800) >> 9;
+    z = (eng->unk10.z + 0x800) >> 9;
+    for (; i < 4; i++) {
+        if (D_8005A614[i + 0x5C] != 0 || Heroes[i].hero_mode == 0x3B) {
+            continue;
+        }
+        he = Heroes[i].hero_eng;
+        hx = (he->unk10.x + 0x800) >> 9;
+        hz = (he->unk10.z + 0x800) >> 9;
+        if (x != hx && z != hz) {
+            continue;
+        }
+        if (x == hx) {
+            if (z < hz) {
+                func_800C02AC(eng, 0x800);
+            }
+            if (hz < z) {
+                func_800C02AC(eng, 0);
+            }
+        }
+        if (z == hz) {
+            if (x < hx) {
+                func_800C02AC(eng, 0xC00);
+            }
+            if (hx < x) {
+                func_800C02AC(eng, 0x400);
+            }
+        }
+    }
+}
 
 void func_800C02AC(EXTengine *eng, s32 angle) {
     NAS *nas;
