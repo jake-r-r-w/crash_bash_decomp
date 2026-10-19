@@ -140,6 +140,13 @@ void func_800C2F14(s32 arg0) {
     SetHeroSeq((HeroInfo *)arg0, 0x10);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C2F60);
+void func_800C2F60(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = base + arg0;
+
+    h->hero_move->velocity_enable = 0;
+    SetHeroSeq((HeroInfo *)arg0, 0xF);
+    h->hero_weapon_timer = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C2FB0);
