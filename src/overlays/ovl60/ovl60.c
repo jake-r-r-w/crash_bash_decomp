@@ -102,7 +102,21 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/ovl60/ovl60", D_800B32B8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B5EE4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B6370);
+void func_800B6370(s32 arg0) {
+    s32 seq;
+
+    func_800C2810(arg0);
+    Heroes[arg0].hero_move->jump_max = 0;
+    Heroes[arg0].hero_move->velocity_enable = 1;
+    Heroes[arg0].hero_move->jump_ctrl |= 0x22;
+    Heroes[arg0].hero_move->jump_ctrl &= 0xEF;
+    func_800C159C(arg0);
+    if (D_800C535C[arg0].unk4 == 5) {
+        SetHeroSeq((HeroInfo *)arg0, 0x2F);
+    } else {
+        SetHeroSeq((HeroInfo *)arg0, 0x2E);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B6438);
 
