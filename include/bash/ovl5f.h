@@ -53,6 +53,19 @@ typedef struct FlamerBitExt {
 } FlamerBitExt;
 
 extern u8 D_8005365C[];
+extern u8 D_800537AC[];
+extern s32 D_800C9B94[][2];
+
+/* Extension 0x10000000 of the totem NAS func_800C0C68 sets up. */
+typedef struct TotemExt {
+    /* 0x00 */ u8 pad0[0x1C];
+    /* 0x1C */ s32 unk1C;
+    /* 0x20 */ s32 unk20;
+    /* 0x24 */ s32 unk24;
+    /* 0x28 */ u8 pad28[0x8];
+    /* 0x30 */ s32 unk30;
+} TotemExt;
+
 /* State block func_800C7E68/func_800C7EB0 set up alongside a hero action. */
 typedef struct Ovl5fActState {
     /* 0x00 */ s32 unk0;

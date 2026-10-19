@@ -421,7 +421,49 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotPillar);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotTotemPole);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C0C68);
+void func_800C0C68(NAS *nas, s32 id) {
+    TotemExt *ext;
+    EXTengine *eng;
+    subengine *sub;
+    s32 i;
+    NAS **p;
+
+    nas->UserInfo.user1 = 1;
+    ext = AddExtension(nas, 0x38, 0x10000000);
+    if (ext == NULL) {
+        goto kill;
+    }
+    nas->FUX = (EXT *)ext;
+    ext->unk30 = 1;
+    eng = nas->Engine;
+    sub = eng->sub;
+    eng->unk5D = 0;
+    eng->unk1E = 0;
+    sub->unk6C = D_800537AC;
+    if (id == 0x131B) {
+        sub->unk74 = 0x4180;
+        ext->unk1C = 0;
+    } else {
+        sub->unk74 = 0x4180;
+        ext->unk1C = 0xD;
+    }
+    ext->unk20 = D_800C9B94[ext->unk1C][0];
+    ext->unk24 = *(s32 *)((u8 *)D_800C9B94 + ((ext->unk1C * 8) | 4));
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+        return;
+    }
+    for (i = 0; i < 8; i++) {
+        if (D_800CB264[i] == NULL) {
+            D_800CB264[i] = nas;
+            break;
+        }
+    }
+    if (nas->Failure != 0) {
+kill:
+        KillNAS(nas);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C0DA0);
 
