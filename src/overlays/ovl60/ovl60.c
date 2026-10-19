@@ -377,7 +377,22 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B8AF8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B8BE4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B8DFC);
+void func_800B8DFC(u32 arg0) {
+    switch (arg0) {
+    case 0:
+        PlaySfx(0x55A, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 1:
+        PlaySfx(0x55B, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 2:
+        PlaySfx(0x55C, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 3:
+        PlaySfx(0x55D, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B8EC8);
 
