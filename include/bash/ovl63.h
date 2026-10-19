@@ -201,5 +201,17 @@ extern Ovl63Odds D_8009D87C[];
 s32 func_800C5640(u8 *arg0, u32 arg1, s32 arg2);
 
 s32 func_800C5E6C(s32 arg0, s32 arg1);
+/* Glob extension, AddExtension(nas, 0x1C, 0x10000000). */
+typedef struct EXTglob {
+    /* 0x00 */ s32 unk0[3];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ ScriptCursor *unk10;
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ s32 unk18;
+} EXTglob;
+
+extern ScriptInit D_800C6E80;
+
+void InitGlob(NAS *m);
 
 #endif /* BASH_OVL63_H */

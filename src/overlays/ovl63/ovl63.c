@@ -309,7 +309,20 @@ s32 func_800C467C(Ovl63BounceObj *obj, Ovl63Bouncer *b) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitGlob);
+void InitGlob(NAS *m) {
+    EXTglob *ext;
+
+    ext = AddExtension(m, 0x1C, 0x10000000);
+    if (ext != NULL) {
+        ext->unk10 = func_80024E30(m, &D_800C6E80);
+        m->Engine->sub->unk6C = *(s32 *)D_80058AD0;
+        func_80025FAC((EXTanimator *)ext->unk10, 2);
+        func_800250B0(m);
+        ext->unkC = 3;
+        ext->unk14 = Random(0x5A) + 0xF0;
+        ext->unk18 = 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotInnerRipple);
 
