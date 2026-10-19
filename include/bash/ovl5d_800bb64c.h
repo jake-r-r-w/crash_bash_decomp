@@ -8,10 +8,13 @@
 #include "common.h"
 #include "bash/ovl5d.h"
 #include "bash/main.h"
+#include "bash/engine.h"
 
 extern s32 D_8009E464;
 
 
+
+void func_800BEDE8(s32 arg0, s32 arg1);
 
 void func_800BFC30(EXTengine *eng);
 

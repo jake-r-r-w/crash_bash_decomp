@@ -28,7 +28,33 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bb64c", InitSlowmoPickup);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bb64c", func_800BE9D0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bb64c", func_800BEDE8);
+void func_800BEDE8(s32 arg0, s32 arg1) {
+    HeroInfo *base = Heroes;
+    HeroInfo *b = base + arg1;
+    HeroInfo *a;
+
+    if ((b->hero_immunity | b->hero_hit) == 0) {
+        a = base + arg0;
+        if (!(a->hero_status & 0xFA00) && !(b->hero_status & 0xFA00)) {
+            switch (a->hero_pu) {
+            case 0x19:
+            case 0x1E:
+                break;
+            case 0x14:
+                if (a->hero_pu_lock == 0) {
+                    b->hero_pu_timer = a->hero_pu_timer + 10;
+                    b->hero_pu = a->hero_pu;
+                    b->hero_pu_lock = 0x1E;
+                    a->hero_pu = 0x1E;
+                    a->hero_pu_timer = 0;
+                    b->hero_powerup->sub->unk74 = a->hero_powerup->sub->unk74;
+                    PlaySfx(0x454, 0, 0, 0x1000, 0x1E00, 0);
+                }
+                break;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bb64c", func_800BEF00);
 
