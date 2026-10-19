@@ -198,6 +198,8 @@ typedef struct Ovl63Odds {
 
 extern Ovl63Odds D_8009D87C[];
 
+s32 func_800C5640(u8 *arg0, u32 arg1, s32 arg2);
+
 s32 func_800C5E6C(s32 arg0, s32 arg1);
 
 #endif /* BASH_OVL63_H */

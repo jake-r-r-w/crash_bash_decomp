@@ -526,7 +526,25 @@ void func_800C55FC(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5640);
+s32 func_800C5640(u8 *arg0, u32 arg1, s32 arg2) {
+    HeroInfo *hero;
+    u32 i;
+
+    i = 0;
+    hero = Heroes;
+loop:
+    if (i < 4) {
+        if (i != arg1) {
+            if (func_8008CEB0(arg0, (u8 *)hero->hero_eng + 0x10) < arg2 * arg2) {
+                return i;
+            }
+        }
+        hero++;
+        i++;
+        goto loop;
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C56D4);
 
