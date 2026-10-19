@@ -8,7 +8,52 @@
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B345C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B35CC);
+s32 func_800B35CC(s32 arg0) {
+    s32 start;
+    s32 r;
+    s32 i;
+    s32 j;
+    s32 k;
+    s32 total;
+    s32 result;
+    s32 v;
+    s32 neg;
+
+    start = Random(4);
+    r = Random(0x1000);
+    neg = -1;
+    i = start;
+    while (1) {
+        if (i >= start + 4) {
+            break;
+        }
+        if ((i & 3) == arg0) {
+            goto next;
+        }
+        j = i & 3;
+        result = 0;
+        total = 0;
+        if (Heroes[j].hero_status & 0x2000) {
+            v = -1;
+        } else {
+            for (k = 0; k < 4; k++) {
+                if (k != arg0 && !(Heroes[k].hero_status & 0x2000)) {
+                    total += D_8009D87C[k].unk4 << 7;
+                }
+            }
+            if (total != 0) {
+                result = (D_8009D87C[j].unk4 << 19) / total;
+            }
+            v = result;
+        }
+        if (r < v) {
+            return neg = i & 3;
+        }
+    next:
+        i++;
+    }
+    return neg;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B372C);
 

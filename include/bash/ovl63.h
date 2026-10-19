@@ -314,6 +314,8 @@ extern s32 D_800C66E0;
 extern s32 D_800C66E4;
 extern s32 D_800C66E8;
 
+s32 func_800B35CC(s32 arg0);
+
 void func_800B8F04(s32 arg0);
 
 s32 func_800C5978(s32 player);
