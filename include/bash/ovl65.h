@@ -91,7 +91,7 @@ typedef struct Ovl65HeroExt {
 
 s32 func_800BA810(s32 hero);
 void func_800BA960(s32 hero);
-void func_800BC820(s32 hero);
+s32 func_800BC820(s32 hero);
 typedef struct Ovl65ExtB {
     u8 pad[0xC];
     s32 unkC;
