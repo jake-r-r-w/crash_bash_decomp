@@ -145,7 +145,41 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoProjectile);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BCB4C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BD008);
+void func_800BD008(s32 arg0) {
+    D_800C5BD0 = arg0;
+    switch (arg0) {
+    case 1:
+        D_800C5300 = 0;
+        D_800C5BCC = 8;
+        D_800C5BC4 = 8;
+        D_800C5BC8 = 8;
+        break;
+    case 2:
+        D_800C5300 = 0;
+        D_800C5BCC = 8;
+        D_800C5BC4 = 8;
+        D_800C5BC8 = 0x10;
+        break;
+    case 3:
+        D_800C5300 = 1;
+        D_800C5BCC = 8;
+        D_800C5BC4 = 8;
+        D_800C5BC8 = 8;
+        break;
+    case 4:
+        D_800C5300 = 1;
+        D_800C5BCC = 8;
+        D_800C5BC4 = 8;
+        D_800C5BC8 = 0x10;
+        break;
+    case 6:
+        D_800C5BCC = 0x18;
+        D_800C5BC4 = 0x18;
+        D_800C5300 = D_8004E0D8 & 1;
+        D_800C5BC8 = (Random(2) + 2) * 8;
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BD10C);
 

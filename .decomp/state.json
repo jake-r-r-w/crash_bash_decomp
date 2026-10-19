@@ -5800,7 +5800,8 @@
  },
  "ovl60:800BD008": {
   "auto_diff": 22,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-19T08:29:06Z",
+  "status": "matched"
  },
  "ovl60:800BD10C": {
   "auto_failed": "types"
