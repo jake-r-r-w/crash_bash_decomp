@@ -55,7 +55,40 @@ s32 func_800B35CC(s32 arg0) {
     return neg;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B372C);
+void func_800B372C(s32 player) {
+    SLONG_XYZ pos;
+    s32 *p;
+    s32 i;
+    s32 r;
+    HeroInfo *h;
+
+    pos.x = Heroes[player].hero_eng->unk10.x - (0x40 * D_80068BD4[(Heroes[player].hero_eng->unk1E - 0x400) & 0xFFF].unk2 >> 12);
+    pos.y = 0;
+    pos.z = Heroes[player].hero_eng->unk10.z - (0x40 * D_80068BD4[Heroes[player].hero_eng->unk1E & 0xFFF].unk2 >> 12);
+    i = 0;
+    if (Heroes[player].hero->FUX != NULL) {
+        do {
+            h = &Heroes[player];
+        } while (0);
+        p = D_800CA544;
+    loop:
+        if (i < 6) {
+            r = func_800B82FC(*p, &pos, 1, &pos);
+            if (r != -1) {
+                p++;
+                if (!(r & 4)) {
+                    h->hero_ai->AIpad |= 0x4000;
+                    ((Ovl63Pad *)D_80051338)[player].unk50 = h->hero_ai->AIpad;
+                    return;
+                }
+            } else {
+                p++;
+            }
+            i++;
+            goto loop;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B3890);
 

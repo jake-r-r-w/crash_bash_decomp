@@ -480,6 +480,10 @@ typedef struct EXTripple {
 void func_800B5528(s32 player, SLONG_XYZ *pos);
 
 void func_800B5660(s32 arg0);
+/* Six object pointers walked by func_800B372C and others. */
+extern s32 D_800CA544[];
+
+s32 func_800B82FC(s32 obj, SLONG_XYZ *a, s32 b, SLONG_XYZ *c);
 
 void func_800B5FFC(Ovl63EaseCam *c, s32 *pos);
 
@@ -521,6 +525,8 @@ typedef struct EXTtrackglob {
 extern ScriptInit D_800C6EA4;
 extern u8 *D_800C66EC;
 extern s32 D_800C6EB0;
+
+void func_800B372C(s32 player);
 
 void func_800B48EC(s32 player);
 
