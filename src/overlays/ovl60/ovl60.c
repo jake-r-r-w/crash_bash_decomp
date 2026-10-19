@@ -1420,7 +1420,40 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BD790);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BDCB8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BDE24);
+s32 func_800BDE24(s32 arg0) {
+    s32 x;
+    s32 z;
+    EXTbotai *ai;
+
+    if ((u16)D_8005A648 - 0xB < 2U) {
+        ai = Heroes[arg0].hero_ai;
+        if (ai != NULL && ai->AItimer2 == 0) {
+            ai->AItimer2 = Random(3) + 3;
+            if (func_800C0F08(arg0, ai) != 0) {
+                return 1;
+            }
+            if (func_800BE864(arg0, (Ovl60Goal *)ai) != 0) {
+                return 1;
+            }
+            if (func_800BE6C4(arg0, (Ovl60Goal *)ai) != 0) {
+                return 1;
+            }
+        }
+    }
+    x = -1;
+    z = -1;
+    func_800BDF60(arg0, &x, &z);
+    if (x != -1) {
+        EXTbotai *ai2 = Heroes[arg0].hero_ai;
+        if (ai2 != NULL) {
+            ai2->TargetXYZ.x = x;
+            ai2->AImode = 4;
+            ai2->TargetXYZ.z = z;
+            return 1;
+        }
+    }
+    return 0;
+}
 
 void func_800BDF60(s32 arg0, s32 *arg1, s32 *arg2) {
     s32 hx;
