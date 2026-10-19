@@ -12,6 +12,16 @@ extern u8 D_800546C4[];
 extern u8 D_80052EEC[];
 extern s16 D_8005A65C[2];
 
+/* Per-character tables func_800D2044 hangs on hero_eng->sub->unk6C. */
+extern u8 D_800547DC[];
+extern u8 D_80054814[];
+extern u8 D_8005484C[];
+extern u8 D_80054884[];
+extern u8 D_800548BC[];
+extern u8 D_800548F4[];
+extern u8 D_80054AB4[];
+extern u8 D_80054AEC[];
+
 void func_800B5AC4();
 void func_800BAFA0();
 void func_800BB810();
@@ -536,6 +546,8 @@ void func_800CA770(void);
 void func_800CAEB0(s32 player, s32 idx);
 
 void func_800CFB7C(s32 player);
+
+void func_800D2044(s32 player);
 
 void func_800D2B58(s32 player);
 

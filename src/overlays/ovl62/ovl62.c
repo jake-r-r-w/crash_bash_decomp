@@ -2128,7 +2128,49 @@ void func_800D1C14(s32 player) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D1DB4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2044);
+void func_800D2044(s32 player) {
+    HeroInfo *h;
+    Ext20 *ext;
+    HeroInfo *base = Heroes;
+
+    h = &base[player];
+    if (h->hero_name == 1) {
+        h->hero_eng->sub->unk6C = D_800547DC;
+    }
+    if (h->hero_name == 2) {
+        h->hero_eng->sub->unk6C = D_80054814;
+    }
+    if (h->hero_name == 5) {
+        h->hero_eng->sub->unk6C = D_80054884;
+    }
+    if (h->hero_name == 3) {
+        h->hero_eng->sub->unk6C = D_8005484C;
+    }
+    if (h->hero_name == 7) {
+        h->hero_eng->sub->unk6C = D_800548BC;
+    }
+    if (h->hero_name == 4) {
+        h->hero_eng->sub->unk6C = D_800548F4;
+    }
+    if (h->hero_name == 6) {
+        h->hero_eng->sub->unk6C = D_80054AEC;
+    }
+    if (h->hero_name == 8) {
+        h->hero_eng->sub->unk6C = D_80054AB4;
+    }
+    h->hero_eng->sub->flags &= 0xFFBFFFFF;
+    ext = FindExtension(h->hero, 0x20000000);
+    if (ext != NULL) {
+        if (ext->state == 0) {
+            ext->state = 1;
+        } else if (!(h->hero_status & 0x200)) {
+            h->hero_status |= 0x2000;
+        }
+        SetHeroSeq((HeroInfo *)player, 0x3F);
+        func_80028018(player, 0xA);
+        ((void (*)(s32, s32, s32))func_80027F7C)(player, 0xA, 0xFF);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2248);
 
