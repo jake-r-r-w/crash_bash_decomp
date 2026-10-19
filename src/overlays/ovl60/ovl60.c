@@ -379,7 +379,15 @@ void func_800C159C(s32 arg0) {
     Heroes[arg0].hero_eng->unk10.z = (((Heroes[arg0].hero_eng->unk10.z + 0x800) >> 9) << 9) - 0x700;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1608);
+s32 func_800C1608(s32 arg0, s32 arg1) {
+    Ovl60Cell *base = D_800C53DC[0];
+    HeroInfo *hero = ((Ovl60Cell *)(arg0 * sizeof(D_800C53DC[0]) + arg1 * sizeof(Ovl60Cell) + (u32)base))->hero;
+
+    if (hero != NULL && hero->hero_pu_action == 0xB) {
+        return 1;
+    }
+    return 0;
+}
 
 s32 func_800C165C(s32 *arg0, s32 *arg1) {
     s32 x;

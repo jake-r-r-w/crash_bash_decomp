@@ -35,7 +35,8 @@ typedef struct Ovl60Cam {
     /* 0x58 */ s16 rotZ;
 } Ovl60Cam;
 typedef struct {
-    u8 unk0[0xA];
+    HeroInfo *hero;
+    u8 unk4[6];
     s16 unkA;
     u8 unkC[4];
     u16 unk10;
@@ -105,6 +106,8 @@ void func_800C1400(s32 arg0);
 void func_800C142C(s32 arg0);
 
 s32 func_800C1460(s32 arg0);
+
+s32 func_800C1608(s32 arg0, s32 arg1);
 
 s32 func_800C165C(s32 *arg0, s32 *arg1);
 
