@@ -613,7 +613,17 @@ void InitPillarCover(NAS *nas) {
     e->sub->unk6C = *(void **)D_80058AD0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitPillar);
+void InitPillar(NAS *nas) {
+    EXTengine *e = nas->Engine;
+    subengine *s;
+    nas->UserInfo.user1 = 1;
+    nas->UserInfo.status = 6;
+    e->unk10.y = 0xB8;
+    s = e->sub;
+    s->unk6C = *(void **)D_80058AD0;
+    s->unk68 = 0x20;
+    s->flags |= 0x02000000;
+}
 
 void InitPillarControl(NAS *nas) {
     nas->Engine->flags = 0;
