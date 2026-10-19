@@ -1455,7 +1455,29 @@ void InitSniperMissile(NAS *m) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBigMissile);
+void InitBigMissile(NAS *m) {
+    BigMissileExt *ext;
+
+    ext = AddExtension(m, 0x7C, 0x10000000);
+    if (ext != NULL) {
+        m->Engine->unk5D = 2;
+        m->Engine->unk5C = 1;
+        m->Engine->sub->unk74 = 0x201A;
+        m->Engine->sub->unk6C = D_800546C4;
+        m->Engine->unk2C.x = 0x2000;
+        m->Engine->unk2C.y = 0x2000;
+        m->Engine->unk2C.z = 0x2000;
+        m->Engine->unk5E = 1;
+        ext->unkC = 0x10;
+        ext->unk50 = 0x96;
+        ext->unk10 = 0;
+        ext->unk24 = D_8009D530[0]->unk10.y;
+        ext->unk78 = 0;
+        ext->pos = m->Engine->unk10;
+        PlaySfx(0x22D, NULL, NULL, 0x1000, 0x1E00, 0);
+        PlaySfx(0x22B, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+}
 
 void PlotBossTransmuter(NAS *m) {
 }

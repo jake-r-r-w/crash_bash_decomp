@@ -6872,7 +6872,8 @@
   "status": "matched"
  },
  "ovl62:800C9A2C": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-19T07:54:20Z",
+  "status": "matched"
  },
  "ovl62:800C9B5C": {
   "auto_diff": 6,

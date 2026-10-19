@@ -653,6 +653,23 @@ typedef struct PolarMissileExt {
 
 extern u8 D_80054A0C[];
 
+/* Big missile extension (0x7C bytes, id 0x10000000). */
+typedef struct BigMissileExt {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ u8 pad14[0x24 - 0x14];
+    /* 0x24 */ s32 unk24;
+    /* 0x28 */ u8 pad28[0x50 - 0x28];
+    /* 0x50 */ s32 unk50;
+    /* 0x54 */ u8 pad54[0x60 - 0x54];
+    /* 0x60 */ SLONG_XYZ pos;
+    /* 0x6C */ u8 pad6C[0x78 - 0x6C];
+    /* 0x78 */ s32 unk78;
+} BigMissileExt;
+
+extern EXTengine *D_8009D530[];
+
 /* Value easing towards a target by a step (func_800C7ED4). */
 typedef struct SniperEase {
     /* 0x00 */ s32 cur;
