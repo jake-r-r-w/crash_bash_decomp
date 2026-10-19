@@ -133,7 +133,14 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BBF00);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BC04C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BC0EC);
+void func_800BC0EC(s32 arg0) {
+    s32 x = Heroes[arg0].hero_eng->unk10.x;
+    s32 tx = (((x + 0x800) >> 9) << 9) - 0x700;
+    s32 tz = (((Heroes[arg0].hero_eng->unk10.z + 0x800) >> 9) << 9) - 0x700;
+
+    Heroes[arg0].hero_eng->unk10.x = x - (x - tx) / 4;
+    Heroes[arg0].hero_eng->unk10.z -= (Heroes[arg0].hero_eng->unk10.z - tz) / 4;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BC184);
 

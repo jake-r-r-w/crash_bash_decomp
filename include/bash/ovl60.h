@@ -105,6 +105,8 @@ void func_800C2810(s32 arg0);
 void func_800C2B98(s32 arg0);
 extern s16 D_8009D87C[][3];
 
+void func_800BC0EC(s32 arg0);
+
 void func_800BD008(s32 arg0);
 
 s32 func_800BD378(s32 hero);
