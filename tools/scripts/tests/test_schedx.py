@@ -63,6 +63,11 @@ class Sched(unittest.TestCase):
         self.assertEqual(why[90], "tie with 11: source order (the later insn goes first)")
         self.assertIn("only insn ready (blocked on latency: 66)", why[11])
 
+    def test_priorities_are_hex(self):  # sched.c: fprintf (" %d (%x)", uid, priority)
+        sched = SCHED.replace("121 (7) 90 (1)", "121 (1c) 90 (1)")
+        why = {u: w for u, _, w in schedx.schedule(sched)[0][1]}
+        self.assertEqual(why[121], "priority 28 > 1 of 90")
+
     def test_allocation(self):
         out = schedx.allocation(LREG, GREG)
         self.assertEqual([p for p, *_ in out], [81, 82, 80])

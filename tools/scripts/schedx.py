@@ -131,7 +131,7 @@ def schedule(sec):
         for m in re.finditer(r";; ready list at T-(\d+): (.*?), now ([\d ]+)", trace):
             t, step = int(m.group(1)), trace[last:m.start()]
             last = m.end()
-            pr = {int(u): int(p, 16) if p.startswith("7f") else int(p)
+            pr = {int(u): int(p, 16)              # sched.c prints them with %x
                   for u, p in re.findall(r"(\d+) \(([0-9a-f]+)\)", m.group(2))}
             now = [int(x) for x in m.group(3).split()]
             blocked = re.findall(r"blocking insn (\d+)", step)
