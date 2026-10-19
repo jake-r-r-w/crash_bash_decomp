@@ -922,7 +922,21 @@ void PlotGravityObject(GravityObject *obj) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitGravityObject);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitWeightDeath);
+void InitWeightDeath(NAS *m) {
+    WeightDeathExt *ext;
+
+    ext = AddExtension(m, 0x28, 0x10000000);
+    if (ext != NULL) {
+        m->Engine->sub->unk6C = D_800546C4;
+        m->Engine->sub->unk74 = 0x2003;
+        ext->unk10 = 0x40;
+        ext->unk14 = 8;
+        ext->unk18 = 0;
+        ext->unk20 = 0;
+        ext->unk24 = 0;
+        PlaySfx(0x453, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAC20);
 
