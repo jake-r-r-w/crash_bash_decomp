@@ -226,6 +226,7 @@ extern s32 D_800D4E0C[];
 void func_800B7520();
 void func_800B767C();
 void func_800B7F70();
+void func_800B6FEC();
 extern s32 D_800D5FEC[];
 
 /* Inlined into func_800B9994. */
@@ -527,6 +528,8 @@ extern ScriptInit D_800D5DB8;
 s32 func_800B4094(s32 *arg0, s32 arg1);
 
 void func_800B782C(s32 player);
+
+s32 func_800B98AC(s32 player);
 
 void func_800CA770(void);
 
