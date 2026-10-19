@@ -1810,6 +1810,28 @@ def edited_in_worktree(names, path="src"):
     return out
 
 
+def cmd_reconcile(a):
+    """Put declarations the working tree's headers re-declare back to HEAD's form (headers.py)."""
+    import headers
+    changed = [p for p in run(["git", "diff", "HEAD", "--name-only", "--", "include"]).stdout.split()
+               if p.endswith(".h") and os.path.exists(p)]
+    heads = {}
+    for p in run(["git", "ls-tree", "-r", "--name-only", "HEAD", "--", "include"]).stdout.split():
+        if p.endswith(".h"):
+            heads[p] = run(["git", "show", f"HEAD:{p}"]).stdout
+    total = 0
+    for p in changed:
+        base = heads.get(p, "")
+        known = headers.declared(t for q, t in heads.items() if q != p)
+        text, dropped = headers.reconcile(base, read(p), known)
+        if dropped:
+            write(p, text)
+            total += len(dropped)
+            for d in dropped:
+                print(f"{p}: kept the existing declaration over: {' '.join(d.split())[:100]}")
+    print(f"reconciled {total} declaration(s) in {len(changed)} changed header(s)")
+
+
 def cmd_done(a):
     """Validation gate for one hand-matched function: scope, lint, function match, full build.
     Only after all four pass is it recorded (and committed with --commit)."""
@@ -4660,6 +4682,8 @@ def main():
                    help="batch mode (tools/swarm): skip the full build; run `decomp.py verify` after the "
                         "batch and publish none of its commits unless it passes")
     p.set_defaults(fn=cmd_done)
+    sub.add_parser("reconcile", help="headers: keep HEAD's declaration where the working tree "
+                   "declares a name again (swarm gate clashes)").set_defaults(fn=cmd_reconcile)
     sub.add_parser("verify", help="clean rebuild and byte compare").set_defaults(fn=cmd_verify)
     sub.add_parser("progress", help="refresh docs/ dashboard and history").set_defaults(fn=cmd_progress)
     a = ap.parse_args()

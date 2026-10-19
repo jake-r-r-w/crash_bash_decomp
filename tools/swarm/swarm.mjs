@@ -1789,6 +1789,12 @@ ${DECL_CLASH.test(job.gateFix) ? DECL_HINT : ''}Fix that, keep it matching, and 
       } else this.fail(null, job, 'patch conflicts twice');
       return false;
     }
+    if (job.reconcile) {
+      // a declaration clash: keep the tree's declarations over the patch's (decomp.py reconcile)
+      const rc = await this.dk(this.integ, ['python3', 'tools/scripts/decomp.py', 'reconcile'], 'integ',
+                               { minutes: TOOL_MINUTES });
+      this.log(`${f.name}: ${rc.out.trim().split('\n').pop()}`);
+    }
     const trailers = [...this.o.trailers, `Swarm-Run: ${this.id} (${job.model})`];
     const args = ['python3', 'tools/scripts/decomp.py', 'done', ref(f), '--commit',
                   '--note', job.note || 'matched by a swarm worker', ...trailers.flatMap(t => ['--trailer', t]),
@@ -1808,6 +1814,15 @@ ${DECL_CLASH.test(job.gateFix) ? DECL_HINT : ''}Fix that, keep it matching, and 
                  'verified matches without matching them again');
         if (!this.stopping) this.stopping = 'graceful';
         return false;
+      }
+      // a declaration clash with matches committed meanwhile: the worker's C was right every time
+      // (2026-10-19), so keep the tree's declarations and gate once more before paying a worker
+      if (DECL_CLASH.test(why) && !job.reconcile && !this.stopping) {
+        this.log(`${f.name}: done refused it on a declaration clash; reconciling the headers`);
+        job.reconcile = true;
+        const ok = await this.gateOne(job, defer);
+        if (ok) this.stats.reconciled = (this.stats.reconciled || 0) + 1;
+        return ok;
       }
       // the bytes matched (try said so): what's left is usually fixable (a header, lint), once
       if (!job.gateFix && !this.stopping) {

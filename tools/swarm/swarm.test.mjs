@@ -245,7 +245,7 @@ test('big mode: functions with a checkpoint first, then the smallest; stale ones
 });
 
 test('escalation: sonnet -> opus -> big mode -> parked', () => {
-  const s = swarm('--big-workers', '1', '--max-attempts', '2');
+  const s = swarm('--model', 'sonnet', '--big-workers', '1', '--max-attempts', '2');
   const f = fn('func_80010000');
   s.notMatched({ job: 1 }, { f, model: s.o.model, attempt: 1, notes: [] }, 'first');
   const opus = s.retry.shift();
@@ -670,7 +670,7 @@ test('a permuter match that try confirms goes to the gate; anything else to the 
 // ---------------------------------------------------------------- session chaining (off by default)
 
 test('chaining: the next function of the same file resumes the session, at most --chain in a row', () => {
-  const s = swarm('--chain', '2');
+  const s = swarm('--model', 'sonnet', '--chain', '2');
   const a = fn('func_80010000', { line: 10 }), near = fn('func_80010100', { line: 14 }),
         other = fn('func_80020000', { line: 10, src: 'src/main/other.c' }), b = fn('func_80030000', { line: 200 });
   s.queue = [a, near, other, b];

@@ -145,7 +145,7 @@ per session, not shorter docs.
   are batched (`--batch-max` 6) under one full build before pushing.
 - **Generated files:** clones get `asm/`, `linkers/`, `assets/` and `ext/` from your checkout,
   refreshed when `configs/USA` changes. Run `make split` here after a symbol or yaml change.
-- **Conflicts:** headers merge with `merge=union` (both sides kept, so two matches can leave a duplicate declaration: the gate refuses it, and the worker that fixes it gets cc1's error lines and a hint to merge the duplicate); neighbouring functions aren't leased together;
+- **Conflicts:** headers merge with `merge=union` (both sides kept, so two matches can leave a duplicate declaration). When the gate refuses one on a declaration clash, the orchestrator first runs `decomp.py reconcile` (tools/scripts/headers.py: the tree's declaration wins over the patch's re-declaration of the same name, a patch-added duplicate goes) and gates once more; only if that fails does a worker fix it, with cc1's error lines and a hint to merge the duplicate (2026-10-19: the four clashes that day were all fixed this way by hand); neighbouring functions aren't leased together;
   a conflicting patch is re-applied mechanically, else it goes back to a worker.
 - **Stops:** after `--max-consecutive-failures` (3) failures in a row, an environment error, a
   failed push, or any limit above. A function is tried at most `--max-attempts` (2) times across
