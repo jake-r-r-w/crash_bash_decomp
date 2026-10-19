@@ -257,7 +257,34 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BA574);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BA724);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BA810);
+s32 func_800BA810(s32 arg0) {
+    Ovl65ExtB *a;
+    Ovl65ExtB *b;
+
+    a = FindExtension(Heroes[arg0].hero, 0x10000000);
+    if (a != NULL) {
+        if (a->unk14 != 0) {
+            b = FindExtension(a->unk18, 0x10000000);
+            if (b != NULL && b->unk10 == arg0) {
+                if (((Ovl65Pad *)D_80051338)[arg0].unk50 & 0x8000) {
+                    SetHeroAction((HeroInfo *)arg0, 0x65);
+                    b->unkC = 2;
+                    a->unk14 = 0;
+                    return 1;
+                }
+            }
+            return 0;
+        }
+        if (a->unk10 <= 0) {
+            if (((Ovl65Pad *)D_80051338)[arg0].unk50 & 0x8000) {
+                a->unk10 = 0x1E;
+                SetHeroAction((HeroInfo *)arg0, 0x66);
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BA960);
 

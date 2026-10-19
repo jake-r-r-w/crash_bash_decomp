@@ -26,9 +26,22 @@ typedef struct Ovl65HeroExt {
     s32 timer; /* 0x1C */
 } Ovl65HeroExt;
 
-void func_800BA810(s32 hero);
+s32 func_800BA810(s32 hero);
 void func_800BA960(s32 hero);
 void func_800BC820(s32 hero);
+typedef struct Ovl65ExtB {
+    u8 pad[0xC];
+    s32 unkC;
+    s32 unk10;
+    s32 unk14;
+    NAS *unk18;
+} Ovl65ExtB;
+
+typedef struct Ovl65Pad {
+    u8 pad[0x50];
+    s32 unk50;
+    u8 pad2[4];
+} Ovl65Pad;
 
 extern NAS *D_800BDA08[];
 
