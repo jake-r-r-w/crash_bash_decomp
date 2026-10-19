@@ -542,6 +542,8 @@ void func_800B782C(s32 player);
 
 s32 func_800B98AC(s32 player);
 
+s32 func_800C5CD0(s32 *arg0, s32 arg1);
+
 void func_800CA770(void);
 
 void func_800CAEB0(s32 player, s32 idx);
