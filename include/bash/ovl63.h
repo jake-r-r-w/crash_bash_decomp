@@ -77,6 +77,13 @@ typedef struct Ovl63FuxCount {
     /* 0x00 */ u8 unk0[0x3C];
     /* 0x3C */ s32 unk3C;
 } Ovl63FuxCount;
+/* A hero's FUX as func_800C56D4 fills it. */
+typedef struct Ovl63SpinFux {
+    /* 0x00 */ u8 unk0[0x20];
+    /* 0x20 */ s32 unk20;
+    /* 0x24 */ s32 unk24;
+    /* 0x28 */ s32 unk28;
+} Ovl63SpinFux;
 
 void InitRaceShield(NAS *nas);
 typedef struct EXTracefire {
@@ -365,5 +372,7 @@ typedef struct EXTripple {
 s32 func_800C4E54(s32 a, s32 b);
 
 s32 func_800C5470(s32 arg0);
+
+void func_800C56D4(s32 player);
 
 #endif /* BASH_OVL63_H */

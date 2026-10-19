@@ -967,7 +967,28 @@ loop:
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C56D4);
+void func_800C56D4(s32 player) {
+    HeroInfo *hero;
+    Ovl63SpinFux *fux;
+    EXTheromove *move;
+    s32 a;
+    s32 b;
+    HeroInfo *base = Heroes;
+
+    hero = &base[player];
+    fux = (Ovl63SpinFux *)hero->hero->FUX;
+    if (fux != NULL) {
+        move = hero->hero_move;
+        if (move != NULL) {
+            a = Random(0x300);
+            b = Random(0x300);
+            b = hero->hero_eng->unk1E + a - b;
+            fux->unk24 = 0x2D;
+            fux->unk20 = b;
+            fux->unk28 = csqrt(move->x_vel * move->x_vel + move->z_vel * move->z_vel) >> 6;
+        }
+    }
+}
 
 void func_800C57B4(s32 player) {
     EXTheromove *move;
