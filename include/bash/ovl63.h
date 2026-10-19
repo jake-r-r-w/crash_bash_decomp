@@ -29,6 +29,7 @@ void func_800C5D8C(void);
 extern s32 D_800C6930;
 extern s32 D_800C6D20;
 extern ScriptInit D_800C6E2C;
+extern ScriptInit D_800C6C8C;
 extern s32 D_80054F84;
 extern HeroInfo Heroes[4];
 extern ScriptInit D_800C6D74;
@@ -720,5 +721,7 @@ extern s32 D_800C6928;
 void func_800C0F5C(void);
 
 void PlotRaceTag(NAS *m);
+
+void InitRaceSmokeBoost(NAS *nas);
 
 #endif /* BASH_OVL63_H */

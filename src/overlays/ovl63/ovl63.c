@@ -1863,7 +1863,18 @@ void PlotRaceSmokeBoost(NAS *nas) {
     func_800250B0(nas);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRaceSmokeBoost);
+void InitRaceSmokeBoost(NAS *nas) {
+    ScriptCursor *cur;
+
+    cur = func_80024E30(nas, &D_800C6C8C);
+    if (D_8005A648 == 0x1F) {
+        if (cur != NULL) {
+            cur->unk1E = 4;
+        }
+    }
+    nas->Engine->sub->unk6C = &D_80054F84;
+    nas->UserInfo.user1 = 0;
+}
 
 s32 func_800C50B0(u8 *arg0, s32 arg1) {
     HeroInfo *hero;
