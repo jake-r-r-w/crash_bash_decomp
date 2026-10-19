@@ -176,7 +176,9 @@ void func_800BAF68(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BAFB4);
+void func_800BAFB4(void) {
+    func_800B7D20(D_800C3B88);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BAFDC);
 

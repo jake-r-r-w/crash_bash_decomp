@@ -36,7 +36,9 @@ void func_800B62EC(void);
 
 void func_800B6F0C(void);
 
-void func_800B7D20(void);
+extern u16 D_800C3B88;
+
+void func_800B7D20(u16 arg0);
 
 void PlotBoing(u8 *arg0);
 
@@ -64,6 +66,8 @@ void func_800BAC10(void);
 u16 func_800BAD0C(s32 arg0, s32 arg1);
 
 void func_800BAF68(void);
+
+void func_800BAFB4(void);
 
 s32 func_800BB100(s32 arg0);
 
