@@ -172,7 +172,44 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BEBC0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BF0F8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRaceMissile);
+void InitRaceMissile(NAS *m) {
+    RaceMissileExt *ext;
+    EXTengine *e;
+
+    ext = AddExtension(m, 0x78, 0x10000000);
+    if (ext != NULL) {
+        m->Engine->sub->unk74 = 0x2011;
+        m->Engine->sub->unk6C = D_80052F5C + 0x2028;
+        m->Engine->unk5D = 2;
+        m->Engine->unk5C = 1;
+        m->Engine->sub->unk51 = 2;
+        m->Engine->sub->flags |= 0x02000000;
+        ext->unk64 = 0x8C;
+        ext->unk34 = 0x3000;
+        ext->unk40 = 0x700;
+        ext->unk54 = 4;
+        ext->unk10 = 0;
+        ext->unk20 = 0;
+        ext->unk60 = 0;
+        ext->unk4C = 0;
+        ext->unk50 = 0x100;
+        ext->unk5C = NULL;
+        ext->unk68 = 0;
+        ext->unk58 = ext->unk34;
+        e = AddEngine(m, 2);
+        if (e != NULL) {
+            ext->unk5C = e;
+            e->sub->unk6C = D_80052F5C;
+            e->sub->unk74 = 0x2001;
+            e->unk5C = 1;
+            e->unk5D = 0;
+            e->unk10 = m->Engine->unk10;
+            e->sub->unk76 = 0x800;
+            e->sub->flags |= 0x40008041;
+        }
+        PlaySfx(0x522, &m->Engine->sfx, &m->Engine->unk10, 0x1000, 0x1E00, 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotRaceMissile);
 

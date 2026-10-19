@@ -104,5 +104,30 @@ void func_800B5D14(void);
 void func_800B6474(void);
 void func_800C04EC(void);
 void func_800C0CB4(void);
+/* Race missile extension (0x78 bytes, id 0x10000000). */
+typedef struct RaceMissileExt {
+    /* 0x00 */ u8 pad0[0x10];
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ u8 pad14[0x20 - 0x14];
+    /* 0x20 */ s32 unk20;
+    /* 0x24 */ u8 pad24[0x34 - 0x24];
+    /* 0x34 */ s32 unk34;
+    /* 0x38 */ u8 pad38[0x40 - 0x38];
+    /* 0x40 */ s32 unk40;
+    /* 0x44 */ u8 pad44[0x4C - 0x44];
+    /* 0x4C */ s32 unk4C;
+    /* 0x50 */ s32 unk50;
+    /* 0x54 */ s32 unk54;
+    /* 0x58 */ s32 unk58;
+    /* 0x5C */ EXTengine *unk5C;
+    /* 0x60 */ s32 unk60;
+    /* 0x64 */ s32 unk64;
+    /* 0x68 */ s32 unk68;
+    /* 0x6C */ u8 pad6C[0x78 - 0x6C];
+} RaceMissileExt;
+
+extern u8 D_80052F5C[];
+
+void InitRaceMissile(NAS *m);
 
 #endif /* BASH_OVL63_H */
