@@ -631,7 +631,73 @@ void InitBash8way(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotBash8way);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitBashHomer);
+void InitBashHomer(NAS *nas) {
+    EXTengine *eng;
+    EXTmotion *mot;
+    subengine *sub;
+    HeroInfo *h;
+    s32 i, best, bestd, d, u1;
+
+    eng = nas->Engine;
+    if (eng != NULL) {
+        h = Heroes;
+        nas->UserInfo.user1 = D_8009D754;
+        nas->UserInfo.user2 = Heroes[D_8009D754].hero_move->facing_angle;
+        eng->sub->unk6C = D_80052F5C;
+        eng->sub->unk74 = 0x200F;
+        func_8001D390(eng, 1);
+        eng->unk5D = 0;
+        eng->unk5C = 1;
+        eng->flags |= 0x21;
+        sub = eng->sub;
+        sub = sub->next;
+        if (sub != NULL) {
+            sub->unk20.x = 0x4000;
+            sub->unk20.y = 0x4000;
+            sub->unk20.z = 0x4000;
+            sub->unk50 = 1;
+            sub->unk51 = 0;
+            sub->unk6C = D_80052F5C;
+            sub->unk74 = 0x2010;
+            sub->flags |= 0x21;
+            sub = sub->next;
+            sub->unk52 = 1;
+        }
+        mot = AddMotion(nas);
+        if (mot != NULL) {
+            mot->Xvel = 0x20;
+            mot->Xmax = 0xA0;
+            mot->Xacc = 8;
+            mot->Ymax = 0x80;
+            mot->Xdec = 0;
+            mot->Yvel = 0;
+            mot->Yacc = 1;
+            mot->Ydec = 0;
+            mot->Ydir = 0;
+        }
+        PlaySfx(0x43B, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+        best = -1;
+        bestd = 0x800;
+        for (i = 0; i < 4; i++) {
+            u1 = nas->UserInfo.user1;
+            if (i != u1 && (OVLG->p2_active == 0 || Heroes[i].hero_teammate != u1)) {
+                d = func_80015480(nas->UserInfo.user2,
+                                  get_angle(eng->unk10.x - Heroes[i].hero_eng->unk10.x,
+                                            eng->unk10.z - Heroes[i].hero_eng->unk10.z));
+                if (d < bestd) {
+                    bestd = d;
+                    best = i;
+                }
+            }
+        }
+        nas->UserInfo.status = best;
+        nas->UserInfo.flags = 0x64;
+        eng->unk10.y -= 0x180;
+    }
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotBashHomer);
 

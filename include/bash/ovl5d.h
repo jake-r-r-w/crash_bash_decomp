@@ -242,4 +242,6 @@ s32 func_800B6FE0(s32 arg0);
 
 void func_800B7E74(void);
 
+void InitBashHomer(NAS *nas);
+
 #endif /* BASH_OVL5D_H */
