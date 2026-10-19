@@ -30,6 +30,7 @@ typedef struct {
 } Ovl60Cell; /* size 0x1C */
 
 extern Ovl60Cell D_800C53DC[8][8];
+extern HeroInfo Heroes[4];
 extern NAS *D_800C5BB0;
 extern s32 D_800C52E0;
 extern s32 D_800C52E4;
@@ -41,6 +42,8 @@ extern s32 D_800C5304;
 extern s32 D_800C5BAC;
 extern s32 D_800C5BB8;
 extern s32 D_800C5BBC;
+
+void func_800C159C(s32 arg0);
 
 void func_800C2810(s32 arg0);
 

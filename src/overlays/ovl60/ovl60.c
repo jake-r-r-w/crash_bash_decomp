@@ -258,7 +258,10 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1460);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C14BC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C159C);
+void func_800C159C(s32 arg0) {
+    Heroes[arg0].hero_eng->unk10.x = (((Heroes[arg0].hero_eng->unk10.x + 0x800) >> 9) << 9) - 0x700;
+    Heroes[arg0].hero_eng->unk10.z = (((Heroes[arg0].hero_eng->unk10.z + 0x800) >> 9) << 9) - 0x700;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1608);
 
