@@ -235,7 +235,20 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Init_PogoPadlock);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoPadlock);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C0AFC);
+s32 func_800C0AFC(s32 arg0, s32 arg1) {
+    EXTengine *e;
+
+    if (D_800C5BB0 != NULL) {
+        e = D_800C5BB0->Engine;
+        if (e != NULL) {
+            if ((u16)D_800C5BB0->UserInfo.status >= 3 && (e->unk10.x + 0x800) >> 9 == arg0
+                && (e->unk10.z + 0x800) >> 9 == arg1) {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C0B70);
 
