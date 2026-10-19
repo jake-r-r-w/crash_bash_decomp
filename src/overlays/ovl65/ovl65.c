@@ -221,7 +221,61 @@ done:
     return best;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B3A38);
+void func_800B3A38(s32 id) {
+    HeroInfo *h;
+    HeroInfo *hb;
+    Ovl65Chase *c;
+    Ovl65Ext *e;
+    EXTengine *b;
+    EXTengine *a;
+    s32 near;
+    s32 far;
+    s32 ok;
+    s32 t;
+
+    hb = Heroes;
+    h = &hb[id];
+    c = FindExtension(h->hero, 0x20000000);
+    if (c != NULL) {
+        t = func_800B3760(id);
+        if (t != -1) {
+            c->unk28 = t;
+        }
+        e = FindExtension(D_800BDA08[c->unk28], 0x10000000);
+        if (e != NULL) {
+            t = e->unkC;
+            if (t == 0 || t == 3 || t == 4) {
+                near = 1;
+            } else {
+                near = 0;
+            }
+        } else {
+            near = 0;
+        }
+        if ((near ^ 1) != 0) {
+            t = func_800B3760(id);
+            if (t != -1) {
+                ok = 1;
+                c->unk28 = t;
+            } else {
+                ok = 0;
+            }
+            if ((ok ^ 1) != 0) {
+                c->unk28 = -1;
+                c->fn = func_800BD1FC;
+                return;
+            }
+        }
+        if (func_800B49AC(id) != 0) {
+            Heroes[id].hero_ai->AIpad |= 0x8000;
+        }
+        b = Heroes[id].hero_eng;
+        c->pos = b->unk10;
+        a = D_800BDA08[c->unk28]->Engine;
+        c->tgt = a->unk10;
+        func_800B3538(id);
+    }
+}
 
 void func_800B3C1C(s32 id) {
     HeroInfo *h;
