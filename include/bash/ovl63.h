@@ -316,4 +316,6 @@ extern s32 D_800C66E8;
 
 void func_800B8F04(s32 arg0);
 
+s32 func_800C5978(s32 player);
+
 #endif /* BASH_OVL63_H */

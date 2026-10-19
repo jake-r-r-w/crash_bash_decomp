@@ -811,7 +811,27 @@ void func_800C5918(s32 arg0) {
     Heroes[arg0].hero_eng->unk5E = 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5978);
+s32 func_800C5978(s32 player) {
+    EXTheromove *move;
+    EXTengine *eng;
+    s32 y;
+
+    move = Heroes[player].hero_move;
+    eng = Heroes[player].hero_eng;
+    if (move != NULL && eng != NULL) {
+        if (move->jump_vel < 0) {
+            move->jump_vel += move->jump_acc;
+        } else {
+            move->jump_vel += move->jump_dec;
+        }
+        y = eng->unk10.y += move->jump_vel;
+        if (move->jump_vel < 0 && y < D_800C6930) {
+            eng->unk10.y += abs(D_800C6930 - y);
+            return 1;
+        }
+    }
+    return 0;
+}
 
 s32 func_800C5A50(s32 player) {
     EXTheromove *move;
