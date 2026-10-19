@@ -246,6 +246,8 @@ void func_800B7E74(void);
 
 void func_800B94C4(s32 arg0, u16 arg1);
 
+void PlotBash8way(NAS *nas);
+
 void InitBashHomer(NAS *nas);
 
 u8 *func_800BAFDC(s32 x, s32 unused, s32 z, u16 flag);

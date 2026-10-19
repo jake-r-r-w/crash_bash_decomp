@@ -662,7 +662,64 @@ void InitBash8way(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotBash8way);
+void PlotBash8way(NAS *nas) {
+    EXTengine *eng;
+    EXTmotion *mot;
+    subengine *sub;
+    s32 dead;
+    s32 ang;
+    s32 a;
+    s32 speed;
+    s32 t;
+    s32 x, y, z;
+    s32 kind;
+
+    eng = nas->Engine;
+    if (eng != NULL) {
+        dead = 1;
+        kind = 0x19;
+        mot = FindExtension(nas, 0x800);
+        if (mot != NULL) {
+            mot->Xvel += mot->Xacc;
+            if (mot->Xvel > mot->Xmax) {
+                mot->Xvel = mot->Xmax;
+            }
+            mot->Yvel += mot->Yacc;
+            if (mot->Yvel > mot->Ymax) {
+                mot->Yvel = mot->Ymax;
+            }
+            ang = nas->UserInfo.user2;
+            sub = eng->sub;
+            speed = mot->Xvel;
+            for (; sub != NULL; ang += 0x200, sub = sub->next, ang &= 0xFFF) {
+                if (sub->flags != 0) {
+                    a = (ang - 0x400) & 0xFFF;
+                    sub->unk04 -= (speed * D_80068BD4[a].unk2) >> 12;
+                    sub->unk0C -= (speed * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+                    t = sub->unk08 + mot->Yvel;
+                    sub->unk08 = t;
+                    x = eng->unk10.x + sub->unk04;
+                    y = eng->unk10.y + t;
+                    z = eng->unk10.z + sub->unk0C;
+                    dead = 0;
+                    sub->unk12 = a;
+                    if (y >= D_8005A5D8) {
+                        func_800BA8A4(x, D_8005A5D8, z, nas->UserInfo.user1, kind);
+                        sub->flags = 0;
+                    }
+                    if (func_800B97A8(x, y, z, 0x20, nas->UserInfo.user1, 0xA) != -1) {
+                        func_800BA8A4(x, D_8005A5D8, z, nas->UserInfo.user1, kind);
+                        sub->flags = 0;
+                    }
+                    sub->unk52 = 1;
+                }
+            }
+        }
+        if (dead) {
+            KillNAS(nas);
+        }
+    }
+}
 
 void InitBashHomer(NAS *nas) {
     EXTengine *eng;
