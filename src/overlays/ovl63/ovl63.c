@@ -578,7 +578,47 @@ void func_800B9E50(Quat *q) {
     q->v[3] = (q->v[3] << 12) / n;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BA004);
+void func_800BA004(VECTOR *ang, Quat *q) {
+    s32 x, y, z;
+    s32 sx, cx, sy, cy, sz, cz;
+    s32 p, a, b, c, d;
+    s32 m0, m1, m2, m3;
+    s32 t;
+
+    x = ang->vx >> 1;
+    y = ang->vy >> 1;
+    z = ang->vz >> 1;
+    sx = D_80068BD4[x & 0xFFF].unk2;
+    cx = D_80068BD4[(x - 0x400) & 0xFFF].unk2;
+    sy = D_80068BD4[y & 0xFFF].unk2;
+    cy = D_80068BD4[(y - 0x400) & 0xFFF].unk2;
+    sz = D_80068BD4[z & 0xFFF].unk2;
+    cz = D_80068BD4[(z - 0x400) & 0xFFF].unk2;
+    a = Ovl63FixMul(sx, sz);
+    b = Ovl63FixMul(sx, cz);
+    c = Ovl63FixMul(cx, sz);
+    d = Ovl63FixMul(cx, cz);
+    p = sy * c;
+    m0 = cy * b;
+    t = (p >= 0 ? p + 0x800 : p - 0x800) >> 12;
+    t -= (cy * b >= 0 ? m0 + 0x800 : m0 - 0x800) >> 12;
+    q->v[0] = t;
+    p = sy * d;
+    m1 = cy * a;
+    t = (p >= 0 ? p + 0x800 : p - 0x800) >> 12;
+    t += (cy * a >= 0 ? m1 + 0x800 : m1 - 0x800) >> 12;
+    q->v[1] = t;
+    p = sy * b;
+    m2 = cy * c;
+    t = (p >= 0 ? p + 0x800 : p - 0x800) >> 12;
+    t -= (cy * c >= 0 ? m2 + 0x800 : m2 - 0x800) >> 12;
+    q->v[2] = t;
+    p = sy * a;
+    m3 = cy * d;
+    p = ((p >= 0 ? p + 0x800 : p - 0x800) >> 12) + ((cy * d >= 0 ? m3 + 0x800 : m3 - 0x800) >> 12);
+    q->v[3] = p;
+    func_800B9E50(q);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BA278);
 

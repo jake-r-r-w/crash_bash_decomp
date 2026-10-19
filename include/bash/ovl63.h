@@ -590,6 +590,11 @@ typedef struct Ovl63JumpFux {
     /* 0x138 */ s32 phase;
 } Ovl63JumpFux;
 
+/* 4.12 fixed-point product rounded to nearest (func_800BA004). */
+static inline s32 Ovl63FixMul(s32 a, s32 b) {
+    return ((a * b) >= 0 ? (a * b) + 0x800 : (a * b) - 0x800) >> 12;
+}
+
 /* Inline copy of func_800C5A50: steps the jump, true once above D_800C6930. */
 /* Inline copy of func_800C5A50: steps a hero's jump and reports a landing
  * above the floor (D_800C6930), as func_800BC0A4 inlines it. */
@@ -615,6 +620,8 @@ static inline s32 Ovl63JumpAbove(s32 player) {
 }
 
 s32 func_800B96B0(s32 arg0, s32 arg1);
+
+void func_800BA004(VECTOR *ang, Quat *q);
 
 void func_800BB878(s32 player);
 
