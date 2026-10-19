@@ -229,7 +229,21 @@ void InitBarrelGenerator(NAS *nas) {
     nas->UserInfo.flags = 0x3C;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BAC98);
+void func_800BAC98(s32 arg0) {
+    HeroInfo *hero;
+    HeroInfo *base;
+
+    base = Heroes;
+    hero = base + arg0;
+    hero->hero_frozen = 5;
+    SetHeroAction((HeroInfo *)arg0, 0x77);
+    if (hero->hero_hit != 0) {
+        hero->hero_hit--;
+    } else {
+        SetHeroAction((HeroInfo *)arg0, 0x77);
+    }
+    func_8008502C(arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BAD1C);
 
