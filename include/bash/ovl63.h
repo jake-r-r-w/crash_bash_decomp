@@ -46,4 +46,10 @@ void InitRaceShield(NAS *nas);
 
 void func_800C5204(EXTheromove *a, EXTheromove *b);
 
+extern HeroInfo Heroes[4];
+void SetHeroAction(HeroInfo *hero, s32 action);
+s32 func_8008CEB0(u8 *arg0, u8 *arg1);
+
+s32 func_800C4F30(u8 *arg0);
+
 #endif /* BASH_OVL63_H */

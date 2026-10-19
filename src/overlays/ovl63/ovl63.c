@@ -251,7 +251,26 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRaceFire);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4E54);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4F30);
+s32 func_800C4F30(u8 *arg0) {
+    HeroInfo *hero;
+    u32 i;
+
+    i = 0;
+    hero = Heroes;
+loop:
+    if (i < 4) {
+        if (func_8008CEB0(arg0, (u8 *)hero->hero_eng + 0x10) < 0x6184) {
+            if (hero->hero_mode != 0x5D) {
+                SetHeroAction((HeroInfo *)i, 0x5D);
+            }
+            return i;
+        }
+        hero++;
+        i++;
+        goto loop;
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitTNTCrate);
 
