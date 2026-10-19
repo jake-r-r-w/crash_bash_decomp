@@ -95,7 +95,13 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitBashPenguin);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitSnowGlint);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BAC10);
+void func_800BAC10(void) {
+    u8 *vp = D_8009F6F4;
+    func_80093038();
+    func_80018B08((GfxViewport *)vp, (GfxCamera *)D_80051640);
+    D_800569AC = *(s32 *)D_8009F644;
+    func_8009440C();
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BAC5C);
 
