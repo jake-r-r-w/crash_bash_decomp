@@ -306,6 +306,7 @@ extern s32 D_800C5BDC;
 extern s32 D_800C5BE0;
 extern s32 D_800C5BE4;
 extern s32 D_800C5BE8;
+extern s32 D_800C5BEC;
 
 /* D_8005A614+0x34 as func_800B3E34 switches on it: an enum, so gcc's
  * switch tree skips its text cost table. */

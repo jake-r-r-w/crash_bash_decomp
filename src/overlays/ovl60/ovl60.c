@@ -2128,7 +2128,65 @@ void Roo_UpdatePosition(EXTengine *eng) {
     eng->unk1E -= a >> 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Roo_ChangeDirOnEdge);
+bool Roo_ChangeDirOnEdge(void) {
+    if ((u32)(D_800C5BDC + 1) >= 10) {
+        if (D_800C5BDC < -1) {
+            D_800C5BDC = -1;
+        }
+        if (D_800C5BDC > 8) {
+            D_800C5BDC = 8;
+        }
+        if (D_800C5BD8 == 8) {
+            D_800C5BD8 = 7;
+            D_800C5BEC = 1;
+        } else if (D_800C5BD8 == -1) {
+            D_800C5BD8 = 0;
+            D_800C5BEC = 3;
+        }
+        return 1;
+    }
+    if (D_800C5BDC == 8 || D_800C5BDC == -1) {
+        if (D_800C5BD8 == 8) {
+            D_800C5BEC = (D_800C5BDC == 8) ? (D_800C5BEC == 2)
+                                           : (D_800C5BEC == 0 ? 1 : 2);
+            return 1;
+        }
+        if (D_800C5BD8 == -1) {
+            D_800C5BEC = (D_800C5BDC == 8) ? (D_800C5BEC == 2 ? 3 : 0)
+                                           : (D_800C5BEC == 0 ? 3 : 2);
+            return 1;
+        }
+    }
+    if ((u32)(D_800C5BD8 + 1) >= 10) {
+        if (D_800C5BD8 < -1) {
+            D_800C5BD8 = -1;
+        }
+        if (D_800C5BD8 > 8) {
+            D_800C5BD8 = 8;
+        }
+        if (D_800C5BDC == 8) {
+            D_800C5BDC = 7;
+            D_800C5BEC = 0;
+        } else if (D_800C5BDC == -1) {
+            D_800C5BDC = 0;
+            D_800C5BEC = 2;
+        }
+        return 1;
+    }
+    if (D_800C5BD8 == -1 || D_800C5BD8 == 8) {
+        if (D_800C5BDC == 8) {
+            D_800C5BEC = (D_800C5BD8 == 8) ? (D_800C5BEC == 2 ? 3 : 0)
+                                           : (D_800C5BEC != 3);
+            return 1;
+        }
+        if (D_800C5BDC == -1) {
+            D_800C5BEC = (D_800C5BD8 == 8) ? ((D_800C5BEC == 1) * 2)
+                                           : (D_800C5BEC == 3 ? 2 : 1);
+            return 1;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Roo_FindNewSquare);
 
