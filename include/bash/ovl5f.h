@@ -20,6 +20,7 @@ extern NAS *D_800CB240[2];
 extern u32 D_800CA48C[];
 typedef struct { u16 v, pad; } RockTblEnt;
 extern RockTblEnt D_800CA6D4[];
+
 extern u8 D_80053774[];
 extern u8 D_800C9EE8[];
 extern u8 D_800C9EFC[];
@@ -59,6 +60,7 @@ u8 func_800C8950(s32 arg0, s32 arg1);
 void func_800C8984(s32 arg0, s32 arg1);
 void func_800C89D8(s32 arg0, s32 arg1);
 void func_800C8A40(s32 arg0);
+NAS *func_800C8A80(s32 x, s32 z, s32 range);
 
 /* Object func_800C7E68/func_800C7EB0 set up alongside a hero action. */
 typedef struct Ovl5fActObj {

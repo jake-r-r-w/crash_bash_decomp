@@ -2571,7 +2571,27 @@ void func_800C8A40(s32 arg0) {
     (*(s16*)((u8*)(temp_v0) + 40)) = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8A80);
+NAS *func_800C8A80(s32 x, s32 z, s32 range) {
+    s32 i;
+    s32 d;
+    NAS *nas;
+    EXTengine *eng;
+
+    for (i = 0; i < 3; i++) {
+        nas = D_800CAD44[i];
+        if (nas != NULL) {
+            eng = nas->Engine;
+            d = x - eng->unk10.x;
+            if (d < 0) {
+                d = -d;
+            }
+            if (d + (z - eng->unk10.z) < range) {
+                return nas;
+            }
+        }
+    }
+    return NULL;
+}
 
 void func_800C8AF8(s32 player, EXTengine *eng, s32 *arg2) {
     s32 hero;
