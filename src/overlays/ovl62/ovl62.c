@@ -973,7 +973,25 @@ void func_800CAD1C(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAD60);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAE10);
+void func_800CAE10(s32 player, s32 target) {
+    Ovl62Fux *fux;
+    s32 r;
+
+    fux = (Ovl62Fux *)Heroes[player].hero->FUX;
+    if (fux == NULL) {
+        return;
+    }
+    if (func_800BCF08(player, target) == 0) {
+        return;
+    }
+    r = func_800B9B6C(player);
+    if (r == -1) {
+        fux->state = 5;
+        fux->func = func_800CB6B4;
+        return;
+    }
+    fux->target = r;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAEB0);
 

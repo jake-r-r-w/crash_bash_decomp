@@ -233,6 +233,7 @@ extern s32 D_800D52E0[];
 s32 func_8008CEB0(u8 *arg0, u8 *arg1);
 s32 func_800B7B88(s32 arg0);
 s32 func_800BCF08(s32 arg0, s32 arg1);
+s32 func_800B9B6C(s32 player);
 s32 func_800D05A8(s32 arg0);
 
 /* The NAS that owns the bomb maker. */
@@ -369,6 +370,8 @@ typedef struct WeightDeathExt {
     /* 0x20 */ s32 unk20;
     /* 0x24 */ s32 unk24;
 } WeightDeathExt;
+
+void func_800CAE10(s32 player, s32 target);
 
 void func_800D2CB8(s32 arg0);
 
