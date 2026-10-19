@@ -962,7 +962,23 @@ void func_800C2B98(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C2BE8);
+void func_800C2BE8(s32 arg0) {
+    HeroInfo *base;
+    HeroInfo *h;
+    EXTheromove *move;
+
+    func_800C2810(arg0);
+    SetHeroSeq((HeroInfo *)arg0, 0x30);
+    base = Heroes;
+    h = (HeroInfo *)(arg0 * sizeof(HeroInfo) + (u32)base);
+    move = h->hero_move;
+    if (move != NULL) {
+        move->velocity_enable = 0;
+        move->forward_angle = move->facing_angle;
+    }
+    h->hero_frozen = 0xA;
+    D_800C535C[arg0].unk6 = 0x14;
+}
 
 s32 func_800C2C70(s32 arg0) {
     Ovl60Slot *base = D_800C535C;

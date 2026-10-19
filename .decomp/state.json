@@ -6140,7 +6140,8 @@
   "status": "matched"
  },
  "ovl60:800C2BE8": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-19T08:37:37Z",
+  "status": "matched"
  },
  "ovl60:800C2C70": {
   "matched_at": "2026-10-19T08:25:03Z",
