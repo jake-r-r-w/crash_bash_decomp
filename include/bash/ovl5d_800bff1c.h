@@ -20,6 +20,8 @@ void func_800C2DAC(s32 arg0);
 extern _sfx_handler *D_800C4780;
 void func_800C1278(s32 arg0);
 
+void func_800C14D4(s32 arg0);
+
 void func_800C2E58(void);
 
 void func_800C2EC8(s32 arg0);

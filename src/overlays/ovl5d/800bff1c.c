@@ -97,7 +97,25 @@ void func_800C1278(s32 arg0) {
     func_80026980(h2->hero);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C14D4);
+void func_800C14D4(s32 arg0) {
+    HeroInfo *h;
+    s32 dy;
+
+    HeroInfo *base = Heroes;
+
+    h = base + arg0;
+    if (h->hero_health < 2) {
+        h->hero_health = 2;
+    }
+    h->hero_eng->unk10.y = D_8005A5D8 - 0x200;
+    dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
+    if (dy != 0x7FFFFFFF) {
+        h->hero_eng->unk10.y -= dy;
+    } else {
+        h->hero_eng->unk10.y = D_8005A5D8;
+    }
+    func_8008502C(arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C159C);
 
