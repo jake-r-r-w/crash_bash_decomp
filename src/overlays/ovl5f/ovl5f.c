@@ -1178,7 +1178,36 @@ void InitPeriscopeGun(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitPeriscope);
+void InitPeriscope(NAS *nas) {
+    EXTengine *eng;
+    subengine *s;
+    s32 one;
+    void *p;
+    PeriscopeShellExt *ext = AddExtension(nas, 0x38, 0x10000000);
+    if (ext != NULL) {
+        nas->FUX = (EXT *)ext;
+        ext->unk28 = 0x12C;
+        one = 1;
+        ext->unk30 = one;
+        eng = nas->Engine;
+        eng->unk5D = 0;
+        p = *(void **)D_80058AD0;
+        s = eng->sub;
+        s->flags = 0;
+        s->unk6C = p;
+        if (func_80018F3C(eng, one) != 0) {
+            s = s->next;
+            s->flags = 0;
+            s->unk6C = *(void **)D_80058AD0;
+            s->unk74 = 0x2001;
+        }
+        if (nas->Failure != 0) {
+            KillNAS(nas);
+        }
+    } else {
+        KillNAS(nas);
+    }
+}
 
 void InitRock_TA(NAS *nas) {
     MapTriggerInfo *info;

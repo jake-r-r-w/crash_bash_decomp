@@ -172,7 +172,8 @@ typedef struct PeriscopeShellExt {
     /* 0x10 */ s32 vx;
     /* 0x14 */ s32 vy;
     /* 0x18 */ s32 vz;
-    /* 0x1C */ u8 pad1C[0x2C - 0x1C];
+    /* 0x1C */ u8 pad1C[0x28 - 0x1C];
+    /* 0x28 */ s32 unk28;
     /* 0x2C */ s32 unk2C;
     /* 0x30 */ s32 unk30;
     /* 0x34 */ u8 pad34[4];
