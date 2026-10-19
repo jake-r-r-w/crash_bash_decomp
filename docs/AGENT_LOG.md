@@ -18,9 +18,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
   engine overlay 2 left, both parked (`func_8007F314`, `PlotScriptFX`),
   ovl61 96/97 (two 2026-10-18 swarm runs and four hand matches; `PlotBall` left),
   ovl67 101/135, ovl69 68/77, ovl6a 93/94 (2026-10-18 swarm runs and hand fixes;
-  `func_800B5710` parked at 120/121 blocks). Every slot overlay's id word is
-  its own rodata unit (2026-10-19), so first-file switches link as `switch`, all 564 PsyQ functions (Sony
-  objects). 3 parked (`decomp.py status`).
+  `func_800B5710` parked at 120/121 blocks); all 564 PsyQ functions (Sony
+  objects). 3 parked (`decomp.py status`). Every slot overlay's id word is
+  its own rodata unit (2026-10-19), so first-file switches link as `switch`.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Dashboard (2026-10-18): `docs/index.html` is `tools/scripts/dashboard.html` plus
   the data; a live Swarm card from the git-ignored `docs/swarm.js` the swarm
@@ -94,12 +94,13 @@ one session of 1-16 min. The day's tool upgrades (closest-C checkpoints,
 `regions`, the fixed patch check and gate) cracked what hand sessions had
 parked. **Retry parks with this recipe after tool upgrades.**
 
-**Start of next session: matching.** Run the engine swarm hour (item 1b,
-`--max-functions 500`), then the post-run checklist (`fold` was done
-2026-10-16 after the main.exe retry; `permute --near` not yet: it covers
-the three main.exe parks, all register-only; all three were matched by
-hand since). main.exe is fully matched. The file splits are done as far as the evidence goes
-(item 3).
+**Start of next session: matching.** Left per overlay (2026-10-19): ovl62
+196, ovl60 166, ovl5f 147, ovl63 123, ovl5d 100, ovl68 83, ovl65 69,
+ovl5e 67, ovl66 67, ovl64 51, ovl67 34, ovl69 9, ovl61 1, ovl6a 1, engine
+2 (count `INCLUDE_ASM` per file). The untouched overlays suit the swarm
+(item 1b's recipe, `--seg overlays/NAME`), then the post-run checklist.
+main.exe is fully matched. The file splits are done as far as the evidence
+goes (item 3).
 
 0. Current focus (ROADMAP.md, Current focus): `make disc` works and the
    matching build is the retail image. The user tests builds by playing
@@ -126,11 +127,8 @@ from now on. 2026-10-17: 9 in 38 min ($28.30; stopped when the internet dropped)
 2026-10-17 morning: 23 in 60 min ($65.81, $2.86 a match; 900-1399 B big $2.50,
 13/16 first-session). 2026-10-17 midday: 10 in 60 min ($63.10, 1456-2804 B), then a 15-min run
 matched 2 more (`func_80083708` 1924 B, `func_8007D9DC` 3528 B; $6.37,
-killed early). Repeat it; 10 engine functions are left. Near
-misses with big-mode checkpoints: `func_8007BFA8` (instructions 5/114),
-`func_8007C170` (17/114), `func_8007CC80` (structure 77/116),
-`func_800926CC` (matched by hand 2026-10-18), `func_8008C824` (matched by hand 2026-10-18),
-`func_80079260` (4/98), `func_80094A28` (5/68), `func_800939FC` (matched by the permuter 2026-10-18). `--max-functions 500` leaves time and cost as the limits (40 stopped
+killed early). The near misses it left were all matched by
+2026-10-18; 2 engine functions are left, both parked (Open leads). `--max-functions 500` leaves time and cost as the limits (40 stopped
    leasing after about 30 min). Sizes left per overlay: run the size loop over
    `nonmatching NAME, 0xSIZE` headers (the `next --count` listing is slow).
 2. After each swarm run, the "After a run" checklist in
@@ -164,10 +162,9 @@ misses with big-mode checkpoints: `func_8007BFA8` (instructions 5/114),
    fall between clusters. Code in the wrong unit
    can't match, and the rodata batch failures came from `main.c`'s single
    rodata block.
-4. By hand: `decomp.py next --seg main/`, the MATCHING.md process (check
-   the unit, evidence, STAGE by STAGE, Diff patterns, cc1 dump, then
-   permuter); for a big function, `decomp.py regions` block by block. No
-   `main.exe` function left has an identical copy (`decomp.py dups`). A
+4. By hand: `decomp.py next --seg overlays/NAME`, the MATCHING.md process
+   (check the unit, evidence, STAGE by STAGE, Diff patterns, cc1 dump, then
+   permuter); for a big function, `decomp.py regions` block by block. A
    function that parks still gets its prototype in its owned header (an
    ordinary commit after `make check`).
 5. Name each function as it's matched when the evidence allows. Unpark
@@ -296,8 +293,8 @@ Other:
   need `--seg main/8002` (or `--only`).
 - Heap: `D_8004E0F0` is a `Heap` now. Its +0x10 is the deferred-free list
   (`func_80011578` pushes, `func_80011DB4` counts down); `MemBlock.unk2` is
-  the countdown. The heap functions still in asm (`func_800107C8`,
-  `func_800115D8`) need prototypes taking `Heap *`.
+  the countdown. `func_800115D8`'s prototype still takes `void **`, not
+  `Heap *`; retype it when its callers allow.
 - `func_800C8BA0` (ovl5f) matches alone but adds 4 bytes of data/rodata to
   the overlay (offset 0x4C): its literal belongs in another file's rodata.
 - Prototype debug types (ARCHITECTURE.md, Prototype debug types): every type
@@ -307,11 +304,9 @@ Other:
   Inits (`InitMineBall`, ...) now are. 34 fields of 15 types
   whose bodies were on lost pages are word or byte arrays; retype them if code
   shows their fields.
-- `func_8001A0D8` (blocks `func_8001C7FC`) stores SXY at +0x10/+0x18/+0x20
-  too: use `gte_stsxy3_10`.
 - Sound voices: the C walkers use `SfxVoicePool.active`; the symbol
-  `SfxActiveVoices` stays only for the asm (`func_800228C4` and data). Drop it
-  from `sym.main.txt` once nothing in asm uses it. `func_80022504` is "stop all" (`StopSfx` inlined in a loop),
+  `SfxActiveVoices` stays only for the data asm (`asm/data/3E4BC.data.s`).
+  Drop it from `sym.main.txt` once data goes to C. `func_80022504` is "stop all" (`StopSfx` inlined in a loop),
   `func_800228C4` unlinks without stopping, `func_80022924` allocates,
   `func_80022984` inits the pool.
 - Ambiguous naming leads are listed in ARCHITECTURE.md ("Functions reached
