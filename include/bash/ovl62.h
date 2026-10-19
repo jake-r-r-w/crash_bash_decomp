@@ -9,6 +9,7 @@
 #include "bash/nas.h"
 
 extern u8 D_800546C4[];
+extern u8 D_80052EEC[];
 
 void func_800B5AC4();
 void func_800BAFA0();

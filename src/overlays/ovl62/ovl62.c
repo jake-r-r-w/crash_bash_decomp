@@ -770,7 +770,14 @@ void PlotCortexPack(NAS *m) {
     m->Engine->unk5E = 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitCortexPack);
+void InitCortexPack(NAS *m) {
+    m->Engine->sub->unk6C = D_80052EEC;
+    m->Engine->sub->unk74 = 0x2003;
+    m->Engine->unk5D = 2;
+    m->Engine->unk5C = 1;
+    m->Engine->sub->flags |= 0x40000021;
+    m->Engine->sub->unk76 = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBrioPack);
 
