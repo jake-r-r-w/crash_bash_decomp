@@ -28,6 +28,13 @@ void func_800D34F8(void);
 void func_800D3500(void);
 void func_800D3508(void);
 
+extern NAS *D_800D5294;
+
+typedef struct Ext10000000 {
+    /* 0x00 */ u8 pad[0xC];
+    /* 0x0C */ s32 unkC;
+} Ext10000000;
+
 typedef struct Ext20 {
     /* 0x00 */ u8 pad[0x20];
     /* 0x20 */ s32 val;
@@ -85,6 +92,8 @@ typedef struct BombMakerExt {
 extern NAS *D_800D52B4;
 
 s32 func_800C9C98(u8 *arg0);
+
+NAS *func_800CB5F4(void);
 
 void func_800D3018(s32 player);
 

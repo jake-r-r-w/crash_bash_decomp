@@ -407,7 +407,22 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB508);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB56C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB5F4);
+NAS *func_800CB5F4(void) {
+    NAS *nas;
+    Ext10000000 *ext;
+
+    nas = D_800D5294;
+loop:
+    if (nas != NULL) {
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL && ext->unkC == 0) {
+            return nas;
+        }
+        nas = nas->Group.Child;
+        goto loop;
+    }
+    return NULL;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB650);
 

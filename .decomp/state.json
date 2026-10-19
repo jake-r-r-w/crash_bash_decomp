@@ -6996,7 +6996,8 @@
  },
  "ovl62:800CB5F4": {
   "auto_diff": 5,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-19T07:00:16Z",
+  "status": "matched"
  },
  "ovl62:800CB650": {
   "auto_failed": "compile"
