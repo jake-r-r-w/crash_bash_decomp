@@ -195,7 +195,37 @@ void func_800B6E84(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B6F6C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B722C);
+void func_800B722C(s32 arg0) {
+    HeroInfo *h;
+    EXTengine *eng;
+    s32 dy;
+
+    HeroInfo *base = Heroes;
+
+    h = base + arg0;
+    if (h->hero_health < 2) {
+        h->hero_health = 2;
+    }
+    h->hero_eng->unk10.y = D_8005A5D8 - 0x200;
+    dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
+    if (dy != 0x7FFFFFFF) {
+        h->hero_eng->unk10.y -= dy;
+    } else {
+        h->hero_eng->unk10.y = D_8005A5D8;
+    }
+    func_8008502C(arg0);
+    eng = Heroes[arg0].hero_eng;
+    eng->unk5C = 1;
+    if (eng->unk2C.x > 0x12C) {
+        eng->unk2C.x -= 0x12C;
+        eng->unk2C.y -= 0x12C;
+        eng->unk2C.z -= 0x12C;
+    } else {
+        eng->unk2C.x = 3;
+        eng->unk2C.y = 3;
+        eng->unk2C.z = 3;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotBarrelGenerator);
 
