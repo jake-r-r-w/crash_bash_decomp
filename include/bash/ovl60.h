@@ -405,6 +405,8 @@ void func_800B3A38(void);
 
 void func_800B7B1C(s32 arg0, s32 arg1, s32 arg2);
 
+void func_800BB724(s32 arg0, s32 arg1);
+
 void func_800BC490(s32 arg0);
 
 s32 func_800BD520(s32 hero);

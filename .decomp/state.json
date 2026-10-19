@@ -5779,7 +5779,8 @@
   "auto_failed": "compile"
  },
  "ovl60:800BB724": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-19T09:02:42Z",
+  "status": "matched"
  },
  "ovl60:800BB840": {
   "auto_diff": 47,

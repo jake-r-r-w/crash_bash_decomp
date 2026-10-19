@@ -870,7 +870,44 @@ void Plot_PogoBanker(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoMushroom);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BB724);
+void func_800BB724(s32 arg0, s32 arg1) {
+    s32 i;
+    s32 j;
+    Ovl60Cell *c;
+    s16 old;
+    s16 k;
+
+    for (i = 0;; i++) {
+        if (i >= 8) goto done;
+        for (j = 0, k = 10;; j++) {
+            if (j >= 8) goto next;
+            c = (Ovl60Cell *)(i * sizeof(D_800C53DC[0]) + j * sizeof(Ovl60Cell) + (u32)D_800C53DC);
+            if (c->unkA == arg1) {
+                old = c->unkA;
+                c->unk16 = old;
+                c->unkA = arg0;
+                c->unk14 = k;
+                c->unk12 = 0;
+                if (D_8005A648 == 0xB) {
+                    if (i > 0) {
+                        func_800B7C3C(i - 1, j);
+                    }
+                    if (i < 7) {
+                        func_800B7C3C(i + 1, j);
+                    }
+                    if (j > 0) {
+                        func_800B7C3C(i, j - 1);
+                    }
+                    if (j < 7) {
+                        func_800B7C3C(i, j + 1);
+                    }
+                }
+            }
+        }
+    next:;
+    }
+done:;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BB840);
 
