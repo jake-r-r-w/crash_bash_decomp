@@ -1658,7 +1658,35 @@ s32 arg0;
     slot->unk4 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1DA4);
+s32 func_800C1DA4(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    u8 *g = D_8005A614;
+    Ovl60Cell *base;
+    Ovl60Cell *p;
+
+    if (((D5A614View *)g)->mode != 13) {
+        return 0;
+    }
+    if ((((D5A614View *)g)->flags & 0x80) && g[arg0 + 0x5C] == 0) {
+        return 1;
+    }
+    base = D_800C53DC[0];
+    p = (Ovl60Cell *)(arg2 * sizeof(Ovl60Cell) + arg1 * sizeof(D_800C53DC[0]) + (u32)base);
+    if ((u16)p->unk12 == 10) {
+        if (arg3 != 0) {
+            func_800B8EC8(arg0);
+        }
+        return 1;
+    }
+    if (p->unkA != arg0) {
+        return 0;
+    }
+    if (*(u16 *)p->unkC & 0x10) {
+        return 0;
+    }
+    func_800B8F94(arg0);
+    func_800B7C3C(arg1, arg2);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1EA8);
 
