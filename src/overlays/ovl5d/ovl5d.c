@@ -251,7 +251,24 @@ void InitMissileExplode(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BA8A4);
+void func_800BA8A4(s32 x, s32 y, s32 z, s32 arg3, s32 arg4) {
+    NAS *n;
+
+    n = SpawnNASById(x, y - 0x80, z, 0x1106, 0x11);
+    if (n != NULL) {
+        n->UserInfo.user1 = arg3;
+        if (arg4 != 0x19) {
+            if (arg4 != 0x1B) {
+                return;
+            }
+        } else if (Random(4) != 0) {
+            goto set;
+        }
+        PlaySfx(D_8009E424[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+set:
+        n->UserInfo.user2 = 0x208;
+    }
+}
 
 void PlotBoing(u8 *arg0) {
     if ((*(s32*)((u8*)(arg0) + 84)) != 0) {

@@ -93,6 +93,8 @@ void PlotSnowGlint(NAS *nas);
 
 void InitMissileExplode(NAS *nas);
 
+void func_800BA8A4(s32 x, s32 y, s32 z, s32 arg3, s32 arg4);
+
 void InitBoing(NAS *nas);
 
 void InitSnowGlint(NAS *nas);
