@@ -207,7 +207,12 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BCA38);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BCAC0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BCB4C);
+void func_800BCB4C(s32 arg0) {
+    SetHeroAction((HeroInfo *)arg0, 0x63);
+    Heroes[arg0].hero_eng->unk1E = 0;
+    Heroes[arg0].hero_eng->unk5E = 1;
+    Heroes[arg0].hero->Camera.height = 0x600;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BCBB8);
 

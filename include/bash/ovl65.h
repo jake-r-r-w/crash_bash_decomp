@@ -51,4 +51,6 @@ extern s32 D_800BDA04;
 
 void func_800BC5B0(void);
 
+void func_800BCB4C(s32 arg0);
+
 #endif /* BASH_OVL65_H */
