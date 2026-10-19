@@ -214,6 +214,8 @@ s32 func_800C6C30(void);
 
 void func_800C7298(NAS *nas);
 
+s32 func_800C8120(s32 arg0);
+
 s32 func_800C8294(OvlClampPos *p);
 
 #endif /* BASH_OVL5F_H */

@@ -883,7 +883,17 @@ void func_800C8090(s32 player, EXTengine *pEngine, s32 ReqdSFX) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8120);
+s32 func_800C8120(s32 arg0) {
+    if (D_8005A644 & 0x801) {
+        D_800CB0F0 = -1;
+    }
+    if ((Heroes[arg0].hero_status & 0x200) && Heroes[arg0].hero_mode != 0x70) {
+        SetHeroAction((HeroInfo *)arg0, 0x70);
+        D_800CB0F0 = arg0 + 1;
+        return 1;
+    }
+    return 0;
+}
 
 void func_800C81C0(void) {
 }
