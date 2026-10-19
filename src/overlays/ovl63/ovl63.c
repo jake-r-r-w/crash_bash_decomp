@@ -6,7 +6,37 @@
 #include "bash/hero.h"
 #include "bash/shell.h"
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B345C);
+s32 func_800B345C(s32 player) {
+    s32 i;
+    HeroInfo *h;
+    s32 *p;
+    SLONG_XYZ pos;
+
+    i = 0;
+    pos.x = Heroes[player].hero_eng->unk10.x - (0x40 * D_80068BD4[(Heroes[player].hero_eng->unk1E - 0x400) & 0xFFF].unk2 >> 12);
+    h = &Heroes[player];
+    pos.y = 0;
+    p = D_800CA544;
+    pos.z = h->hero_eng->unk10.z - (0x40 * D_80068BD4[h->hero_eng->unk1E & 0xFFF].unk2 >> 12);
+loop:
+    if (i < 6) {
+        if (func_800B82FC(*p, &pos, 1, &pos) != -1) {
+            h->hero_ai->AIpad &= ~0x20;
+            h->hero_ai->AIpad |= 0x2000;
+            h->hero_ai->AIpad |= 0x80;
+            ((Ovl63Pad *)D_80051338)[player].unk50 = h->hero_ai->AIpad;
+            return 1;
+        }
+        h++;
+        h--;
+        p++;
+        p++;
+        p--;
+        i++;
+        goto loop;
+    }
+    return 0;
+}
 
 s32 func_800B35CC(s32 arg0) {
     s32 start;

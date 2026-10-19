@@ -635,6 +635,8 @@ void func_800BB878(s32 player);
 void func_800BC0A4(s32 arg0);
 
 void func_800BC4B0(s32 player);
+extern s32 D_800CA544[];
+s32 func_800B82FC(s32 arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3);
 
 /* Spawns the 0x1605 puff at v (func_800B6474). */
 static inline void Ovl63SpawnPuff(SLONG_XYZ *v, s32 kind, void *anim) {
@@ -658,5 +660,7 @@ static inline void Ovl63SpawnPuff(SLONG_XYZ *v, s32 kind, void *anim) {
         }
     }
 }
+
+s32 func_800B345C(s32 player);
 
 #endif /* BASH_OVL63_H */
