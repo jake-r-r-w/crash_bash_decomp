@@ -164,7 +164,24 @@ void func_800B8EC4(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B906C);
+void func_800B906C(s32 player) {
+    s32 done;
+
+    if (D_8005A644 & 0x801) {
+        D_800CB0F0 = -1;
+    }
+    if ((Heroes[player].hero_status & 0x200) && Heroes[player].hero_mode != 0x70) {
+        SetHeroAction((HeroInfo *)player, 0x70);
+        D_800CB0F0 = player + 1;
+        done = 1;
+    } else {
+        done = 0;
+    }
+    if (done == 0) {
+        SetHeroSeq((HeroInfo *)player, 0x59);
+        PlaySfx(D_800C94E8[player], NULL, &Heroes[player].hero_eng->unk10, 0x1000, 0x1E00, 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B9170);
 
