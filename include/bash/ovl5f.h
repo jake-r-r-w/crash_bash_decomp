@@ -68,6 +68,17 @@ extern Ovl5fUnk74 *D_8009D60C;
 extern Ovl5fUnk74 *D_8009D678;
 extern s32 *D_800CB24C;
 extern s32 *D_800CB250;
+extern s32 D_800CB0FC;
+
+/* PlotLaserBitTA's NAS.FUX. */
+typedef struct LaserBitFux {
+    /* 0x00 */ u8 unk0[0x2C];
+    /* 0x2C */ s32 player;
+    /* 0x30 */ s32 unk30;
+} LaserBitFux;
+
+s32 func_800BAFFC(NAS *nas, s32 arg1, s32 arg2, s32 arg3);
+
 extern NAS *D_800CB264[8];    /* objects func_800C8598 adds and func_800C8560 removes; func_800C84D8 tests their distance */
 extern NAS *D_800CB0C0[8];
 extern NAS *D_800CB264[8];   /* objects func_800C8598 adds and func_800C8560 removes; func_800C84D8 tests their distance */

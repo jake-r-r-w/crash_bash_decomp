@@ -258,6 +258,7 @@ extern LevSpec TANKSpecifics;
 extern shell_setup tank_shell_info;
 extern NAS *PU_TA_list[3];
 extern TA_player TA_players[4];
+extern TA_player D_800CAD50[4]; /* ovl5f's copy: PlotLaserBitTA clears MainWeaponNas[] */
 
 extern file_group_load_info file_group_TANKLAST;
 extern file_group_load_info file_group_TANKDESERT;
