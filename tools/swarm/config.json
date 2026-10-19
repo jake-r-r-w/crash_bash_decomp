@@ -16,7 +16,7 @@
   "remote": "origin",
   "branch": "swarm/integration",
   "base": "main",
-  "model": "sonnet",
+  "model": "opus",
   "escalateModel": "opus",
   "bigBytes": 600,
   "bigWorkers": 1,
