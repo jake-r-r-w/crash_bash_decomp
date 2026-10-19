@@ -99,7 +99,45 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B71F8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B77E8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B8EC4);
+void func_800B8EC4(s32 player) {
+    s32 done;
+    u8 unused[8];
+
+    if (D_8005A644 & 0x801) {
+        D_800CB0F0 = -1;
+    }
+    if ((Heroes[player].hero_status & 0x200) && Heroes[player].hero_mode != 0x70) {
+        SetHeroAction((HeroInfo *)player, 0x70);
+        D_800CB0F0 = player + 1;
+        done = 1;
+    } else {
+        done = 0;
+    }
+    if (done == 0) {
+        EXTengine *eng;
+
+        Heroes[player].hero_move->jump_max = 0;
+        Heroes[player].hero_move->velocity_enable = 1;
+        Heroes[player].hero_idle_count = Random(0x96) + 0x5A;
+        SetHeroSeq((HeroInfo *)player, 0x59);
+        eng = Heroes[player].hero_eng;
+        if (D_800CAD50[player].HullSFX != 0) {
+            D_800CAD50[player].HullSFX = 0;
+            if (eng->sfx != NULL) {
+                StopSfx(eng->sfx);
+            }
+        }
+        if (D_800CAD50[player].TurretSFX != 0) {
+            D_800CAD50[player].TurretSFX = 0;
+            StopSfx(D_800CAD50[player].TurretSFXHandler);
+        }
+        if (D_800CAD50[player].FireBreatherSFX != 0) {
+            D_800CAD50[player].FireBreatherSFX = 0;
+            StopSfx(D_800CAD50[player].FireBreatherSFXHandler);
+        }
+        func_800B6ED8(player);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B906C);
 
