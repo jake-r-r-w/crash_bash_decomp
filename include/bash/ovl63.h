@@ -332,6 +332,21 @@ void InitRaceMissile(NAS *m);
 extern ScriptInit D_800C6D14;
 extern s32 D_800C6924;
 
+/* Dac extension (0x28 bytes, id 0x10000000). */
+typedef struct DacExt {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ u8 pad14[0x18 - 0x14];
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ s32 unk1C;
+    /* 0x20 */ EXTengine *shadow;
+    /* 0x24 */ s32 unk24;
+} DacExt;
+
+extern ScriptInit D_800C6ECC;
+void InitDac(NAS *m);
+
 void InitRaceSmokeBoostWater(NAS *nas);
 
 void InitRaceGreenSmokeBoost(NAS *nas);

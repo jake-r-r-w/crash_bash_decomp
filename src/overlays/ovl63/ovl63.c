@@ -1256,7 +1256,51 @@ void InitTrackGlob(NAS *m) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotTrackGlob);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitDac);
+void InitDac(NAS *m) {
+    DacExt *ext;
+    EXTengine *e;
+
+    ext = AddExtension(m, 0x28, 0x10000000);
+    if (ext != NULL) {
+        m->Engine->sub->unk6C = *(s32 *)D_80058AD0;
+        m->Engine->unk5C = 1;
+        m->Engine->unk5D = 2;
+        m->Engine->unk2C.x = 0x2000;
+        m->Engine->unk2C.y = 0x2000;
+        m->Engine->unk2C.z = 0x2000;
+        m->Engine->unk10.x = (D_80068BD4[0x800].unk2 * 7) >> 4;
+        m->Engine->unk10.z = (D_80068BD4[0xC00].unk2 * 7) >> 4;
+        m->Engine->sub->unk68 = -0x300;
+        m->Engine->sub->flags |= 0x02000000;
+        ext->unk10 = (s32)func_80024E30(m, &D_800C6ECC);
+        func_800250B0(m);
+        m->Engine->unk1E = 0x800;
+        m->Engine->unk5E = 1;
+        ext->unkC = 0;
+        ext->unk18 = 0xF0;
+        m->Engine->unk10.y = -0x600;
+        ext->unk1C = -0x600;
+        ext->unk24 = 0;
+        ext->shadow = NULL;
+        e = AddEngine(m, 2);
+        if (e != NULL) {
+            ext->shadow = e;
+            e->sub->unk6C = D_80052F5C;
+            e->sub->unk74 = 0x2001;
+            e->unk5C = 1;
+            e->unk2C.x = 0x2000;
+            e->unk2C.y = 0x2000;
+            e->unk2C.z = 0x2000;
+            e->sub->unk68 = -0x300;
+            e->sub->flags |= 0x02000000;
+            e->unk5D = 0;
+            e->unk10 = m->Engine->unk10;
+            e->sub->unk76 = 0x800;
+            e->sub->flags |= 0x40008041;
+            ext->shadow->unk5E = 1;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotDac);
 
