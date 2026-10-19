@@ -308,6 +308,7 @@ typedef struct BombMakerExt {
 } BombMakerExt;
 
 extern s32 D_800D4DEC;
+extern VECTOR D_800D4DD4;
 /* func_800CB56C, inlined into func_800B782C. */
 static inline s32 Ovl62HasBomb(s32 player) {
     NAS *nas;
@@ -715,6 +716,8 @@ void func_800CB41C(s32 player);
 void func_800CC2BC(s32 player);
 
 void func_800CFB7C(s32 player);
+
+void func_800CFF44(s32 player);
 
 void func_800D2044(s32 player);
 

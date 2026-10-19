@@ -2447,7 +2447,27 @@ void func_800CFB7C(s32 player) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CFC58);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CFF44);
+void func_800CFF44(s32 player) {
+    HeroInfo *hero;
+    EXTheromove *move;
+    HeroInfo *base;
+    s32 angle;
+
+    base = Heroes;
+    hero = &base[player];
+    move = hero->hero_move;
+    if (move != NULL) {
+        angle = (get_angle(hero->hero_eng->unk10.x - D_800D4DD4.vx,
+                           hero->hero_eng->unk10.z - D_800D4DD4.vz) + 0x800) & 0xFFF;
+        move->forward_angle = angle + 0x800;
+        move->x_max = 0;
+        move->z_max = 0;
+        move->x_vel = (D_80068BD4[(angle - 0x400) & 0xFFF].unk2 * 0x25) >> 11;
+        move->z_vel = (D_80068BD4[angle].unk2 * 0x25) >> 11;
+        hero->hero_eng->unk10.x += move->x_vel;
+        hero->hero_eng->unk10.z += move->z_vel;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D0060);
 
