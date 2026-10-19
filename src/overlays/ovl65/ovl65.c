@@ -257,7 +257,19 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BD204);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BD258);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BD2B8);
+s32 func_800BD2B8(s32 arg0) {
+    Ovl65Ext *ext;
+
+    ext = FindExtension(D_800BDA08[arg0], 0x10000000);
+    if (ext != NULL) {
+        s32 v = ext->unkC;
+        if (v == 0 || v == 3 || v == 4) {
+            return 1;
+        }
+        return 0;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BD320);
 

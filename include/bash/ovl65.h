@@ -10,6 +10,13 @@
 
 s32 func_800B4C70(s32 *arg0, s32 arg1);
 
+typedef struct Ovl65Ext {
+    u8 pad[0xC];
+    s32 unkC;
+} Ovl65Ext;
+
+extern NAS *D_800BDA08[];
+
 void PlotDinoSmoke(NAS *m);
 
 void func_800BCA18(HeroInfo *hero);
@@ -25,6 +32,8 @@ void func_800BCF44(s32 arg0);
 void func_800BD08C(void);
 
 void func_800BD1FC(void);
+
+s32 func_800BD2B8(s32 arg0);
 
 s32 func_800BD408(s32 arg0);
 
