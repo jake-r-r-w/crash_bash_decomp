@@ -559,7 +559,19 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Init_PogoBanker);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Init_PogoPickup);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Init_PogoTazer);
+void Init_PogoTazer(NAS *nas) {
+    EXTengine *e = nas->Engine;
+
+    if (e != NULL) {
+        e->sub->unk6C = D_80053B9C;
+        e->sub->unk74 = 0x2005;
+        e->unk5D = 2;
+    }
+    nas->UserInfo.flags = 0;
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1CF0);
 
