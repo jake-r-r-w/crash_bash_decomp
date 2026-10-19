@@ -200,7 +200,20 @@ void func_800BADB8(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BAF64);
+void func_800BAF64(s32 arg0) {
+    subengine *s;
+
+    Heroes[arg0].hero_hit = 0;
+    Heroes[arg0].hero_immunity = 0;
+    Heroes[arg0].hero_health = 0;
+    Heroes[arg0].hero_status |= 0x6000;
+    func_800898EC(arg0);
+    s = Heroes[arg0].hero_eng->sub;
+    s = s->next;
+    s->flags &= 0xFFFF7FFF;
+    s = s->next;
+    s->flags &= 0xFFFF7FFF;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BAFFC);
 
