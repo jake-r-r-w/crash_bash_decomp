@@ -446,7 +446,25 @@ loop:
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9D74);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9EC4);
+s32 func_800C9EC4(EXTengine *eng, s32 player) {
+    HeroInfo *base;
+    HeroInfo *h;
+    EXTengine *e;
+    s32 dx;
+    s32 dz;
+
+    base = Heroes;
+    h = base + player;
+    if (h->hero_mode != 0x4E) {
+        e = h->hero_eng;
+        dx = eng->unk10.x - e->unk10.x;
+        dz = eng->unk10.z - e->unk10.z;
+        if (dx * dx + dz * dz < 0x40000) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 void PlotBearCam(NAS *m) {
 }
