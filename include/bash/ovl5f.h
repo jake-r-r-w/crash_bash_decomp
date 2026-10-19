@@ -64,6 +64,7 @@ typedef struct Ovl5fActState {
 } Ovl5fActState;
 
 extern s32 D_800CA34C[];
+extern struct { u16 v, pad; } D_800CA4AC[];
 extern u8 D_800CACFC[];
 extern s32 D_800CAFF4;
 extern u8 D_800CACB4[];
