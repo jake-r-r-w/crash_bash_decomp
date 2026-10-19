@@ -333,7 +333,42 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B7AA0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B85DC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B86C8);
+s32 func_800B86C8(s32 arg0) {
+    s32 dist;
+    s32 ang;
+    s32 d;
+    s32 r;
+
+    dist = csqrt(Heroes[arg0].hero_eng->unk10.x * Heroes[arg0].hero_eng->unk10.x +
+                 Heroes[arg0].hero_eng->unk10.z * Heroes[arg0].hero_eng->unk10.z) >> 6;
+    if (dist < 0xB01) {
+        return 0;
+    }
+    ang = get_angle(Heroes[arg0].hero_eng->unk10.x, Heroes[arg0].hero_eng->unk10.z) & 0xFFF;
+    d = dist - 0xAFE;
+    Heroes[arg0].hero_eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+    Heroes[arg0].hero_eng->unk10.z -= (d * D_80068BD4[ang].unk2) >> 12;
+    if (Heroes[arg0].hero_move->x_vel * Heroes[arg0].hero_move->x_vel +
+            Heroes[arg0].hero_move->z_vel * Heroes[arg0].hero_move->z_vel > 0x1000 &&
+        Heroes[arg0].hero_mode == 0x66) {
+        r = Random(4);
+        if (r == 0) {
+            PlaySfx(0x6D0, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (r == 1) {
+            PlaySfx(0x6D1, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (r == 2) {
+            PlaySfx(0x6D2, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        do {
+            if (r == 3) {
+                PlaySfx(0x6D3, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+        } while (0);
+    }
+    return ang;
+}
 
 void PlotDinoSmoke(NAS *m) {
     s32 w = m->UserInfo.user1;
