@@ -12,6 +12,26 @@
 
 extern s32 D_8009E464;
 
+typedef struct {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ u8 unkC;
+    /* 0x0D */ u8 padD;
+    /* 0x0E */ s16 unkE;
+    /* 0x10 */ s16 unk10;
+    /* 0x12 */ s16 unk12;
+    /* 0x14 */ s16 unk14;
+    /* 0x16 */ s16 unk16;
+    /* 0x18 */ s16 unk18;
+    /* 0x1A */ s16 unk1A;
+    /* 0x1C */ s16 unk1C;
+    /* 0x1E */ s16 unk1E;
+    /* 0x20 */ u8 pad20[0x10];
+    /* 0x30 */ s16 unk30;
+    /* 0x32 */ s16 unk32;
+} ExtCurve;
+
+s32 func_800BFB6C(s32 pos, ExtCurve *c);
+
 
 
 void func_800BEDE8(s32 arg0, s32 arg1);

@@ -72,7 +72,50 @@ void func_800BFAC0(EXTengine *eng) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bb64c", func_800BFB6C);
+s32 func_800BFB6C(s32 pos, ExtCurve *c) {
+    s32 sum = 0;
+    s32 a = c->unkE;
+    s32 b = c->unk18;
+    s32 delta = c->unk1A - c->unk1C;
+    s32 dir = c->unkC;
+    s32 step = c->unk10 - c->unk12;
+    s32 max1 = c->unk14;
+    s32 max2 = c->unk1E;
+    s32 n = 0;
+
+    if (pos < D_8005A5D8) {
+        do {
+            a += step;
+            if (a < 0) {
+                a = 0;
+            }
+            if (a > max1) {
+                a = max1;
+            }
+            sum += a;
+            b += delta;
+            if (b < 0) {
+                b = 0;
+            }
+            if (b > max2) {
+                b = max2;
+            }
+            if (dir != 0) {
+                pos -= b;
+            } else {
+                pos += b;
+            }
+            if (b == 0) {
+                delta = c->unk1C;
+                dir = 0;
+            }
+            n++;
+        } while (pos < D_8005A5D8);
+    }
+    c->unk30 = sum;
+    c->unk32 = n;
+    return sum;
+}
 
 void func_800BFC30(EXTengine *eng) {
     NAS *nas;
