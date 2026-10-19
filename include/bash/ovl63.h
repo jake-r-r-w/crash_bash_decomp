@@ -31,6 +31,7 @@ extern s32 D_80054F84;
 extern HeroInfo Heroes[4];
 extern ScriptInit D_800C6D74;
 extern u8 D_800546C4[];
+extern s32 D_800C6BAC;
 
 void func_800B5360(s32 *arg0);
 
@@ -146,5 +147,7 @@ void InitRaceSmokePoof(NAS *nas);
 s32 func_800C5400(s32 arg0);
 
 void func_800C5B08(s32 *pos, s32 *polar);
+
+void func_800C5B94(void);
 
 #endif /* BASH_OVL63_H */

@@ -493,7 +493,12 @@ void func_800C5B84(void) {
 void func_800C5B8C(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5B94);
+void func_800C5B94(void) {
+    if (D_800C6BAC-- < 0) {
+        SpawnNASById(0, 0, 0, 0x170C, 0x11);
+        D_800C6BAC = 0xB4;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5BEC);
 
