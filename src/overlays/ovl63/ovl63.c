@@ -126,7 +126,38 @@ void func_800B5528(s32 player, SLONG_XYZ *pos) {
     ((Ovl63Pad *)D_80051338)[player].unk50 = hero->hero_ai->AIpad;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B5660);
+static inline NAS *func_800B5660_near(s32 arg0) {
+    NAS *nas;
+    HeroInfo *hero;
+    s32 angle;
+
+    nas = func_800C5C64(arg0);
+    if (nas != NULL) {
+        hero = &Heroes[arg0];
+        if (func_8008CEB0((u8 *)&nas->Engine->unk10, (u8 *)&hero->hero_eng->unk10) <= 0x270FFF) {
+            angle = get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF;
+            if ((get_angle(hero->hero_eng->unk10.x, hero->hero_eng->unk10.z) & 0xFFF) < angle) {
+                return nas;
+            }
+        }
+    }
+    return NULL;
+}
+
+void func_800B5660(s32 arg0) {
+    s32 *ext;
+    NAS *nas;
+
+    ext = FindExtension(Heroes[arg0].hero, 0x20000000);
+    if (ext != NULL) {
+        nas = func_800B5660_near(arg0);
+        if (nas != NULL) {
+            func_800B5528(arg0, &nas->Engine->unk10);
+            return;
+        }
+        ext[6] = (s32)func_800B5360;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B5778);
 

@@ -47,6 +47,7 @@ typedef struct Ovl63VelFux {
     /* 0x13C */ s32 vx;
     /* 0x140 */ s32 vz;
 } Ovl63VelFux;
+void func_800B5528(s32 arg0, SLONG_XYZ *arg1);
 
 void func_800B7D94(void);
 
@@ -442,6 +443,8 @@ typedef struct EXTripple {
 } EXTripple;
 
 void func_800B5528(s32 player, SLONG_XYZ *pos);
+
+void func_800B5660(s32 arg0);
 
 void func_800B5FFC(Ovl63EaseCam *c, s32 *pos);
 
