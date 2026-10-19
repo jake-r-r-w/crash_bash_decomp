@@ -687,7 +687,74 @@ void func_800B8AF8(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B8BE4);
+void func_800B8BE4(s32 arg0, s32 arg1) {
+    EXTengine *eng;
+    Ovl60Cell *c;
+    Ovl60Cell *p;
+    s32 x;
+    s32 z;
+    s32 owner;
+
+    eng = Heroes[arg0].hero_eng;
+    x = (eng->unk10.x + 0x800) >> 9;
+    z = (eng->unk10.z + 0x800) >> 9;
+    if ((u32)x >= 8) {
+        return;
+    }
+    if ((u32)z >= 8) {
+        return;
+    }
+    {
+        Ovl60Cell *cb = D_800C53DC[0];
+        c = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(D_800C53DC[0]) + (u32)cb);
+    }
+    c->unk10 = 0;
+    if (arg1 != 0) {
+        D_800C5ADC[arg0].unk4 = 1;
+    }
+    if (c->unkA != arg0) {
+        if (arg1 != 0) {
+            func_800B8DFC(arg0);
+        }
+        *(u16 *)c->unkC |= 0x10;
+    }
+    if (func_800C1EA8(arg0, x, z, arg1) != 0) {
+        return;
+    }
+    if (func_800C1DA4(arg0, x, z, arg1) != 0) {
+        return;
+    }
+    {
+        Ovl60Cell *cb = D_800C53DC[0];
+        p = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(D_800C53DC[0]) + (u32)cb);
+    }
+    owner = p->unkA;
+    if (owner == -1) {
+        func_800B7B1C(x, z, arg0);
+        func_800B7C3C(x, z);
+        func_800C1A18(arg0);
+        return;
+    }
+    if (owner == arg0) {
+        return;
+    }
+    switch ((u16)p->unk12) {
+    case 1:
+    case 3:
+        func_800B7B1C(x, z, arg0);
+        func_800B7C3C(x, z);
+        func_800C1A18(arg0);
+        break;
+    case 5:
+        func_800B8180(x, z);
+        func_800B7C3C(x, z);
+        break;
+    case 6:
+        func_800B83AC(x, z);
+        func_800B7C3C(x, z);
+        break;
+    }
+}
 
 void func_800B8DFC(u32 arg0) {
     switch (arg0) {

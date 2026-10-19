@@ -134,6 +134,9 @@ typedef struct {
 extern Ovl60Slot D_800C535C[];
 s32 func_800BA110(s32 arg0, s32 arg1, s32 arg2);
 void func_800B8BE4(s32 arg0, s32 arg1);
+void func_800B7B1C(s32 x, s32 z, s32 hero);
+void func_800B8180(s32 x, s32 z);
+s32 func_800C1EA8(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 extern s32 D_800C53CC[];
 extern s32 D_800C4484[];
 void func_800C1004(s32 arg0);
