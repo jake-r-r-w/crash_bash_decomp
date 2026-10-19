@@ -7,7 +7,12 @@
 
 #include "common.h"
 #include "bash/ovl5d.h"
+#include "bash/main.h"
+
+extern s32 D_8009E464;
 
 
+
+void func_800BFC30(EXTengine *eng);
 
 #endif /* BASH_OVL5D_800BB64C_H */

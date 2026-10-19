@@ -12,7 +12,32 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800B9E74);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BA22C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BA3C4);
+void func_800BA3C4(EXTengine *eng) {
+    NAS *nas;
+    EXTengine *other;
+    s32 again;
+
+    do {
+        again = 0;
+        nas = D_8005AA2C;
+        eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
+        eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
+        while (nas != NULL) {
+            if (nas->Type == D_8009E464) {
+                other = nas->Engine;
+                if (other != NULL && other->unk10.x == eng->unk10.x && other->unk10.z == eng->unk10.z) {
+                    eng->unk10.x = Random(0xC00) - 0x600;
+                    eng->unk10.z = Random(0xC00) - 0x600;
+                    nas = NULL;
+                    again = 1;
+                }
+            }
+            if (nas != NULL) {
+                nas = nas->Solid.Child;
+            }
+        }
+    } while (again);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BA4C0);
 
