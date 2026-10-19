@@ -230,6 +230,8 @@ s32 func_800C8294(OvlClampPos *p);
 
 void func_800C8334(s32 arg0);
 
+void func_800C8360(void);
+
 void func_800C8800(s32 arg0, s32 arg1);
 
 #endif /* BASH_OVL5F_H */

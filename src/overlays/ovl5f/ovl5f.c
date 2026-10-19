@@ -1067,7 +1067,18 @@ void func_800C8334(s32 arg0) {
     Heroes[arg0].hero_shadow->flags = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8360);
+void func_800C8360(void) {
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        if (D_800CAD50[i].TurretSFXHandler != NULL) {
+            StopSfx(D_800CAD50[i].TurretSFXHandler);
+        }
+        if (D_800CAD50[i].FireBreatherSFXHandler != NULL) {
+            StopSfx(D_800CAD50[i].FireBreatherSFXHandler);
+        }
+    }
+}
 
 void func_800C83D0(void) {
 }
