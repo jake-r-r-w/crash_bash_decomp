@@ -378,7 +378,49 @@ void PlotRock_TA(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotPeriscope);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotPeriscopeGun);
+void PlotPeriscopeGun(NAS *nas) {
+    EXTengine *e;
+    EXTengine *se;
+    NAS *shell;
+    PeriscopeShellExt *ext;
+    s32 dx;
+    s32 dz;
+
+    if (D_800CB0F0 != 0) {
+        KillNAS(nas);
+        return;
+    }
+    e = nas->Engine;
+    e->sub->unk74++;
+    switch (nas->Engine->sub->unk74) {
+    case 0x4081:
+        shell = SpawnNASById(e->unk10.x, e->unk10.y - 200, e->unk10.z, 0x130B, 0x11);
+        if (shell == NULL) {
+            return;
+        }
+        PlaySfx(0x4F3, &shell->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
+        ext = AddExtension(shell, 0x38, 0x10000000);
+        if (ext == NULL) {
+            KillNAS(shell);
+            return;
+        }
+        shell->FUX = (EXT *)ext;
+        se = shell->Engine;
+        dx = -(D_80068BD4[(e->unk1E - 0x400) & 0xFFF].unk2 * 620);
+        se->unk10.x += dx >> 12;
+        dz = -(D_80068BD4[(u16)e->unk1E & 0xFFF].unk2 * 620);
+        se->unk10.z += dz >> 12;
+        ext->vy = -150;
+        ext->unk2C = -1;
+        ext->vx = dx >> 16;
+        ext->vz = dz >> 16;
+        ext->unk30 = 1;
+        break;
+    case 0x4087:
+        KillNAS(nas);
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotBoatField);
 

@@ -151,6 +151,17 @@ typedef struct PickupTAExt {
     /* 0x14 */ s32 unk14;
     /* 0x18 */ u8 unk18[0x38 - 0x18];
 } PickupTAExt;
+/* The 0x38-byte extension (id 0x10000000) of the shell PlotPeriscopeGun fires. */
+typedef struct PeriscopeShellExt {
+    /* 0x00 */ u8 pad0[0x10];
+    /* 0x10 */ s32 vx;
+    /* 0x14 */ s32 vy;
+    /* 0x18 */ s32 vz;
+    /* 0x1C */ u8 pad1C[0x2C - 0x1C];
+    /* 0x2C */ s32 unk2C;
+    /* 0x30 */ s32 unk30;
+    /* 0x34 */ u8 pad34[4];
+} PeriscopeShellExt;
 
 typedef struct {
     s32 x;
