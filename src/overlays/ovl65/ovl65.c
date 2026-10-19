@@ -141,7 +141,51 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B9778);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B9930);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B9C10);
+void func_800B9C10(s32 id) {
+    Ovl65HeroExt *ext;
+
+    ext = FindExtension(Heroes[id].hero, 0x10000000);
+    if (ext != NULL) {
+        if (++ext->timer == 6) {
+            if (id == 0) {
+                PlaySfx(0x6A4, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (id == 1) {
+                PlaySfx(0x6A6, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (id == 2) {
+                PlaySfx(0x6A8, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (id == 3) {
+                PlaySfx(0x6AA, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+        }
+        if (ext->timer == 0x13) {
+            if (id == 0) {
+                PlaySfx(0x6A5, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (id == 1) {
+                PlaySfx(0x6A7, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (id == 2) {
+                PlaySfx(0x6A9, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (id == 3) {
+                PlaySfx(0x6AB, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+        }
+        if (ext->timer >= 0x1A) {
+            ext->timer = 0;
+        }
+        func_800BA960(id);
+        func_800BC820(id);
+        func_800BA810(id);
+        func_8008502C(id);
+        if ((Heroes[id].hero_status & 0x200) && Heroes[id].hero_mode != 0x68) {
+            SetHeroAction((HeroInfo *)id, 0x68);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B9E68);
 
