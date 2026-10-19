@@ -262,7 +262,15 @@ void func_800BD08C(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BD0AC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BD1B8);
+s32 func_800BD1B8(s32 *arg0, s32 arg1) {
+    s32 v = func_800B3760(arg1);
+
+    if (v != -1) {
+        arg0[10] = v;
+        return 1;
+    }
+    return 0;
+}
 
 void func_800BD1FC(void) {
 }

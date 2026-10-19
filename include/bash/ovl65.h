@@ -8,6 +8,8 @@
 #include "common.h"
 #include "bash/nas.h"
 
+s32 func_800B3760(s32 arg0);
+
 s32 func_800B4C70(s32 *arg0, s32 arg1);
 
 typedef struct Ovl65Ext {
@@ -32,6 +34,8 @@ void func_800BCE74(void);
 void func_800BCF44(s32 arg0);
 
 void func_800BD08C(void);
+
+s32 func_800BD1B8(s32 *arg0, s32 arg1);
 
 void func_800BD1FC(void);
 

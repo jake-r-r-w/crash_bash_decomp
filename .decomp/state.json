@@ -8605,7 +8605,8 @@
  },
  "ovl65:800BD1B8": {
   "auto_diff": 3,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-19T15:44:21Z",
+  "status": "matched"
  },
  "ovl65:800BD204": {
   "auto_diff": 13,
