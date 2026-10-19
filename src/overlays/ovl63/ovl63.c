@@ -744,7 +744,23 @@ loop:
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5154);
+void func_800C5154(s32 player) {
+    HeroInfo *base = Heroes;
+    HeroInfo *hero = base + player;
+    SLONG_XYZ pos;
+    NAS *nas;
+    s32 *ext;
+
+    pos = hero->hero_eng->unk10;
+    nas = SpawnNASById(pos.x, pos.y - 0x80, pos.z, 0x1701, 0x11);
+    if (nas != NULL) {
+        nas->Engine->unk1E = hero->hero_eng->unk1E;
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL) {
+            ext[3] = player;
+        }
+    }
+}
 
 void func_800C5204(EXTheromove *a, EXTheromove *b) {
     s32 ma;
