@@ -484,7 +484,14 @@ void func_800C2524(s32 arg0, s32 arg1, s32 arg2) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C2564);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C2620);
+void func_800C2620(s32 arg0, s32 arg1) {
+    Ovl60Cell *base = D_800C53DC[0];
+    Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
+
+    p->unk12 = 1;
+    p->unkA = -1;
+    p->unk14 = 0;
+}
 
 s32 func_800C2660(u8 *arg0) {
     return (*(s32*)((u8*)(arg0) + 20)) - D_8005A5D8;
