@@ -384,7 +384,21 @@ void func_800BAC98(s32 arg0) {
     func_8008502C(arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BAD1C);
+void func_800BAD1C(s32 arg0) {
+    HeroInfo *hero;
+    HeroInfo *base;
+    s32 y;
+
+    base = Heroes;
+    hero = base + arg0;
+    hero->hero_frozen = 2;
+    y = hero->hero_eng->unk10.y + hero->hero_sub->unk08;
+    if (D_8005A5D8 + 0x180 < y) {
+        SetHeroAction((HeroInfo *)arg0, 0x77);
+    }
+    func_800B52C8(arg0);
+    func_8008502C(arg0);
+}
 
 void func_800BADA8(s32 arg0) {
     func_800B52C8();
