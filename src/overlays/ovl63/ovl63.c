@@ -148,7 +148,29 @@ void func_800B8D68(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B8F04);
+void func_800B8F04(s32 arg0) {
+    EXTheromove *m;
+
+    m = Heroes[arg0].hero_move;
+    if (m != NULL) {
+        if (D_8005A648 == 0x19) {
+            D_800C66CC = 0x258;
+            D_800C66D0 = 0x640;
+            D_800C66D4 = 0xC80;
+            D_800C66D8 = 0x7D;
+            D_800C66DC = 0x190;
+            D_800C66E0 = 0x64;
+            D_800C66E4 = 0x3E;
+            D_800C66E8 = 0x7D;
+        }
+        m->mass = 0x100;
+        m->x_acc = D_800C66CC;
+        m->z_acc = D_800C66CC;
+        m->z_dec = D_800C66D8;
+        m->x_dec = D_800C66D8;
+        m->velocity_calc = 3;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B8FD8);
 

@@ -305,4 +305,15 @@ s32 func_800C50B0(u8 *arg0, s32 arg1);
 
 void func_800C5854(s32 *arg0, s32 *arg1);
 
+extern s32 D_800C66CC;
+extern s32 D_800C66D0;
+extern s32 D_800C66D4;
+extern s32 D_800C66D8;
+extern s32 D_800C66DC;
+extern s32 D_800C66E0;
+extern s32 D_800C66E4;
+extern s32 D_800C66E8;
+
+void func_800B8F04(s32 arg0);
+
 #endif /* BASH_OVL63_H */
