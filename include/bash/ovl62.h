@@ -512,6 +512,7 @@ void func_800D2CB8(s32 arg0);
 extern u16 *D_8009D6F4;
 extern s32 D_800D6924[];
 extern s32 D_800D6934[];
+extern u8 D_80054654[];
 
 s32 func_800CAC20(s32 i);
 
@@ -546,6 +547,8 @@ void func_800CA770(void);
 void func_800CAEB0(s32 player, s32 idx);
 
 void func_800CB41C(s32 player);
+
+void func_800CC2BC(s32 player);
 
 void func_800CFB7C(s32 player);
 
