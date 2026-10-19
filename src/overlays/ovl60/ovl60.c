@@ -962,7 +962,23 @@ s32 func_800C0E40(s32 arg0, u32 arg1, u32 arg2) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C0F08);
+s32 func_800C0F08(s32 arg0, EXTbotai *ai)
+{
+    s32 x;
+    s32 z;
+
+    EXTengine *e = Heroes[arg0].hero_eng;
+    s32 a = Heroes[arg0].hero_move->facing_angle >> 10;
+
+    if (func_800BE158(arg0, (e->unk10.x + 0x800) >> 9, (e->unk10.z + 0x800) >> 9,
+                      a, &x, &z) != 0) {
+        ai->AImode = 7;
+        ai->TargetXYZ.x = x;
+        ai->TargetXYZ.z = z;
+        return 1;
+    }
+    return 0;
+}
 
 void func_800C0FAC(s32 i)
 {

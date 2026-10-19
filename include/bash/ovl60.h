@@ -9,6 +9,7 @@
 #include "bash/nas.h"
 
 void func_800C0BF0(s32 arg0, s32 arg1);
+s32 func_800BE158(s32 i, s32 x, s32 z, s32 angle, s32 *outX, s32 *outZ);
 s32 func_800C16FC();
 s32 func_800C1764(void);
 s32 func_800C2660(u8 *arg0);
@@ -286,6 +287,8 @@ void func_800B53CC(s32 arg0, u16 arg1);
 s32 func_800BBF00(s32 *arg0, s32 *arg1);
 
 s32 func_800BEB6C(s32 arg0, s32 arg1, s32 arg2);
+
+s32 func_800C0F08(s32 arg0, EXTbotai *ai);
 
 s32 func_800C178C(void);
 
