@@ -86,6 +86,7 @@ typedef struct Ovl5fExt1605 {
     /* 0x28 */ s32 unk28;
 } Ovl5fExt1605;
 void func_800C4D04(s32 hero, s32 last_mode);
+s32 func_8008502C();
 extern s32 *D_800CB24C;
 extern s32 *D_800CB250;
 extern s32 D_800CB0FC;
@@ -175,5 +176,7 @@ extern u8 D_800C9FB8[];
 extern u8 D_800C9F98[];
 extern u8 D_800C9F84[];
 extern u8 D_800C9FAC[];
+
+void func_800BADB8(s32 arg0);
 
 #endif /* BASH_OVL5F_H */
