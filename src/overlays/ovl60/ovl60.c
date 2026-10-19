@@ -1306,7 +1306,17 @@ s32 func_800C295C(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C29F4);
+s32 func_800C29F4(s32 arg0) {
+    if (Heroes[arg0].hero_status & 0x400) {
+        if (D_800C535C[arg0].nas != NULL) {
+            func_800C2B98(arg0);
+        }
+        SetHeroAction((HeroInfo *)arg0, 0x3D);
+        SetHeroSeq((HeroInfo *)arg0, 0x2E);
+        return 1;
+    }
+    return 0;
+}
 
 void func_800C2A8C(s32 arg0) {
     HeroInfo *base;
