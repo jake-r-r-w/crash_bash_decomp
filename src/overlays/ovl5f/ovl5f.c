@@ -770,7 +770,66 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C3D48);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotTankBossRocketTurret);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C4320);
+void func_800C4320(NAS *nas, s32 id) {
+    EXTengine *eng;
+    subengine *sub;
+    subengine *s;
+    subengine *s2;
+    JoeExt *ext;
+
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+        return;
+    }
+    eng = nas->Engine;
+    nas->UserInfo.flags = 0;
+    sub = eng->sub;
+    sub->unk6C = D_80053704;
+    if (id == 0x131F) {
+        sub->unk74 = 0x4180;
+    } else {
+        sub->unk74 = 0x4080;
+    }
+    sub->unk68 = 0x100;
+    sub->flags |= 0x02000000;
+    ext = AddExtension(nas, 0x38, 0x10000000);
+    nas->FUX = (EXT *)ext;
+    ext->unk28 = 3;
+    func_80018F3C(eng, 2);
+    sub = eng->sub;
+    s = sub->next;
+    sub->unk51 = 1;
+    s2 = s->next;
+    s->unk51 = 1;
+    s->unk6C = D_80053694;
+    s->unk74 = 0x2011;
+    s->unk68 = 0x100;
+    s->flags = (s->flags & 0xFFFF7FFF) | 0x02000000;
+    s2->unk51 = 1;
+    s2->unk6C = D_80053694;
+    s2->unk74 = 0x4300;
+    s2->unk68 = 0x100;
+    s2->flags = (s2->flags & 0xFFFF7FFF) | 0x02000000;
+    switch (D_800CB25C) {
+    case 1:
+        ext->unk30 = D_800CB25C;
+        break;
+    case 0x2C:
+        eng->unk10.y = 0x1001;
+        eng->unk10.z = 0x1001;
+        sub->unk68 = 0x100;
+        sub->flags |= 0x02000000;
+        ext->unk30 = 5;
+        break;
+    case 0x3A:
+        ext->unk30 = D_800CB25C;
+        eng->unk10.y = 0x480;
+        eng->unk10.z = 0x1001;
+        sub->unk68 = 0x100;
+        sub->flags |= 0x02000000;
+        break;
+    }
+}
 
 void func_800C44E8(s32 arg0) {
     if (arg0 == 3) {

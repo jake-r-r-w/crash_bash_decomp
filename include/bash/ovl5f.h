@@ -200,6 +200,16 @@ extern s32 D_800CB260;
 extern NAS *D_800CB264[8];    /* objects func_800C8598 adds and func_800C8560 removes; func_800C84D8 tests their distance */
 extern NAS *D_800CB0C0[8];
 
+/* InitJoe/InitMoe's 0x38-byte extension (id 0x10000000), their NAS.FUX. */
+typedef struct JoeExt {
+    /* 0x00 */ u8 pad0[0x28];
+    /* 0x28 */ s32 unk28;
+    /* 0x2C */ u8 pad2C[4];
+    /* 0x30 */ s32 unk30;
+    /* 0x34 */ u8 pad34[4];
+} JoeExt;
+extern u8 D_80053704[];
+
 
 
 
@@ -304,6 +314,8 @@ void func_800BACD4(s32 arg0);
 void func_800BAF64(s32 arg0);
 
 s32 func_800BF548(EXTengine *eng);
+
+void func_800C4320(NAS *nas, s32 id);
 
 void func_800C44E8(s32 arg0);
 
