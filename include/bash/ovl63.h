@@ -216,4 +216,6 @@ void InitGlob(NAS *m);
 
 s32 func_800C55A4(s32 arg0);
 
+s32 func_800C5A50(s32 player);
+
 #endif /* BASH_OVL63_H */
