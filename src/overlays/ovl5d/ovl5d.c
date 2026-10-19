@@ -832,4 +832,69 @@ void func_800BB3D0(void) {
     D_8009E488.unk0 = D_8009E3DC;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BB4AC);
+void func_800BB4AC(Ovl5dTumbler *arg0, Ovl5dTumbleMove *arg1, s32 arg2) {
+    s32 y;
+    s32 vel;
+    s32 v2;
+    s32 sum;
+    s32 d1;
+    s32 d2;
+    s32 max;
+    s32 max2;
+    s32 steps;
+    s32 dir;
+    s32 dx;
+    s32 dz;
+    s32 ang;
+    s32 dist;
+
+    dist = arg0->y;
+    if (dist >= D_8005A5D8) {
+        dist = D_8005A5D8 - 1;
+    }
+    y = dist;
+    sum = 0;
+    vel = arg1->vel;
+    v2 = arg1->v2;
+    dir = arg1->dir;
+    d1 = arg1->acc - arg1->dec;
+    d2 = arg1->acc2 - arg1->dec2;
+    max = arg1->max;
+    max2 = arg1->max2;
+    steps = 0;
+    while (y < D_8005A5D8) {
+        vel += d1;
+        if (vel < 0) {
+            vel = 0;
+        }
+        if (vel > max) {
+            vel = max;
+        }
+        v2 += d2;
+        sum += vel;
+        if (v2 < 0) {
+            v2 = 0;
+        }
+        if (v2 > max2) {
+            v2 = max2;
+        }
+        if (dir != 0) {
+            y -= v2;
+        } else {
+            y += v2;
+        }
+        if (v2 == 0) {
+            d2 = arg1->dec2;
+            dir = 0;
+        }
+        steps++;
+    }
+    arg1->sum = sum;
+    arg1->steps = steps;
+    dx = arg0->x - Heroes[arg2].hero_eng->unk10.x;
+    dz = arg0->z - Heroes[arg2].hero_eng->unk10.z;
+    ang = get_angle(dx, dz);
+    dist = csqrt(dx * dx + dz * dz);
+    arg0->angle = ang;
+    arg1->vel = (u32)(dist >> 6) / arg1->steps;
+}

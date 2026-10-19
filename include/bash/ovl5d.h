@@ -89,6 +89,33 @@ typedef struct Ovl5dObj {
     /* 0x74 */ u16 index;
 } Ovl5dObj;
 
+typedef struct Ovl5dTumbler {
+    /* 0x00 */ u8 pad00[0x10];
+    /* 0x10 */ s32 x;
+    /* 0x14 */ s32 y;
+    /* 0x18 */ s32 z;
+    /* 0x1C */ u8 pad1C[2];
+    /* 0x1E */ s16 angle;
+} Ovl5dTumbler;
+
+typedef struct Ovl5dTumbleMove {
+    /* 0x00 */ u8 pad00[0xC];
+    /* 0x0C */ u8 dir;
+    /* 0x0D */ u8 pad0D;
+    /* 0x0E */ s16 vel;
+    /* 0x10 */ s16 acc;
+    /* 0x12 */ s16 dec;
+    /* 0x14 */ s16 max;
+    /* 0x16 */ u8 pad16[2];
+    /* 0x18 */ s16 v2;
+    /* 0x1A */ s16 acc2;
+    /* 0x1C */ s16 dec2;
+    /* 0x1E */ s16 max2;
+    /* 0x20 */ u8 pad20[0x10];
+    /* 0x30 */ s16 sum;
+    /* 0x32 */ u16 steps;
+} Ovl5dTumbleMove;
+
 void PlotBoing(u8 *arg0);
 
 s32 func_800BB1B4(u8 *arg0);
@@ -174,5 +201,7 @@ void func_800BB2BC(void);
 void func_800BB370(void);
 
 void func_800BB3D0(void);
+
+void func_800BB4AC(Ovl5dTumbler *arg0, Ovl5dTumbleMove *arg1, s32 arg2);
 
 #endif /* BASH_OVL5D_H */
