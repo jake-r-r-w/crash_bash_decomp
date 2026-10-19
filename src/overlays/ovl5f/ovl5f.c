@@ -990,7 +990,23 @@ void InitMine(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitRocketTA);
+void InitRocketTA(NAS *nas) {
+    FlamerBitExt *ext;
+    subengine *sub;
+
+    ext = AddExtension(nas, 0x38, 0x10000000);
+    if (ext == NULL) {
+        KillNAS(nas);
+        return;
+    }
+    nas->FUX = &ext->ext;
+    sub = nas->Engine->sub;
+    sub->unk6C = D_80053694;
+    sub->unk74 = 0x2007;
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 void InitLobber_TA(NAS *nas) {
     EXTengine *eng;
