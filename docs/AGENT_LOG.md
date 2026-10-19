@@ -14,10 +14,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1852/2541 game functions matched: **main.exe is complete (575/575)**;
+- 1849/2537 game functions matched: **main.exe is complete (575/575)**;
   engine overlay 2 left, both parked (`func_8007F314`, `PlotScriptFX`),
   ovl61 96/97 (two 2026-10-18 swarm runs and four hand matches; `PlotBall` left),
-  ovl5f 94 (53 left), ovl63 81 (42 left), ovl60 117/166, ovl62 121/186 (2026-10-19 swarm runs), ovl67 101/135, ovl69 68/77, ovl6a 93/94 (2026-10-18 swarm runs and hand fixes;
+  ovl5f 91/144 (53 left), ovl63 81 (42 left), ovl60 117/166, ovl62 121/186 (2026-10-19 swarm runs), ovl67 101/135, ovl69 68/77, ovl6a 93/94 (2026-10-18 swarm runs and hand fixes;
   `func_800B5710` parked at 120/121 blocks); all 564 PsyQ functions (Sony
   objects). 3 parked (`decomp.py status`). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
@@ -50,12 +50,12 @@ Sonnet normal workers (escalating to opus), 1 big worker at `--big-budget-usd
 8`, $30 cap: 78 matched in ~56 min for $15.96, about $0.20 a match (half
 the opus runs). The internet dropped after 11 min (push failed); `run
 --resume` gated the 11 verified matches. The header reconcile ran on two
-clashes (one committed straight away). Parked: `func_800B5588` (the worker
-says `jtbl_800B3370` targets `func_800B56A0`, `func_800B5714`,
-`func_800B5788`, `func_800B57FC`: its own switch cases, split off as
-functions; check with `decomp.py splitcheck` and fix the split like ovl62's).
-**Next session:** that split, then the reconcile lead (Open leads), then
-swarm ovl5d/ovl68 on the same low-cost recipe.
+clashes (one committed straight away). Its park, `func_800B5588`, was a
+bad split: splat had cut its four switch cases off as functions (the swarm
+matched them as such). Fixed and matched by hand the same day (7d960a8f,
+9e8fa3e0; Gotchas, "A switch whose cases each return").
+**Next session:** the reconcile lead (Open leads), then swarm ovl5d/ovl68
+on the same low-cost recipe.
 
 **ovl63 (2026-10-19, run 20261019094644, 5+2 workers):** stopped by hand
 after 51 min, $34.41: 77 matched, 1 parked, 1 failed; 44 left, nearly all
@@ -389,6 +389,13 @@ Other:
   on 2026-10-19 with the error hidden ("BUILD FAILED") when the same rename
   by hand built and matched; rename by hand (symbol file, sed, `make split`,
   `make check`) if it does.
+- **A switch whose cases each return is cut into functions.** In a leaf
+  function without a frame, every case's `return`/`break` becomes its own
+  `jr $ra`, and splat starts a new function at each jump-table target after
+  one (`func_800B5588`, 2026-10-19). Sign: a `jtbl_` whose words name
+  functions instead of `.L` labels. Fix: give the function its full extent
+  in the overlay's symbol file (`func_X = 0x...; // type:func size:0x...`,
+  up to the next real function), resplit, then drop the stale keys as above.
 - **A new prototype can break callers in other files.** The gate adds the
   matched function's prototype to the owned header; an already matched
   caller elsewhere that calls it with other arguments then fails to compile
@@ -574,6 +581,10 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-19 (ovl5f split):** `func_800B5588`'s four switch cases had
+  been split off (and swarm-matched) as functions; a `size:` in
+  sym.ovl5f.txt rejoins them and the whole function matches by hand (a
+  pointer per case, like ovl61's sibling).
 - **2026-10-19 (ovl5f, low cost):** 78 matched for $15.96 with Sonnet
   workers; survived an internet drop via --resume; 33 pattern rows folded
   (7 repeats dropped); one park points at a bad split in ovl5f.
