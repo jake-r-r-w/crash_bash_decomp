@@ -301,4 +301,6 @@ void func_800C85F8(Ovl5fHolder *h, s16 v);
 
 void func_800C8800(s32 arg0, s32 arg1);
 
+void func_800C8AF8(s32 player, EXTengine *eng, s32 *arg2);
+
 #endif /* BASH_OVL5F_H */

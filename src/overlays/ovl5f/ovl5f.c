@@ -1661,7 +1661,19 @@ void func_800C8A40(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8A80);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8AF8);
+void func_800C8AF8(s32 player, EXTengine *eng, s32 *arg2) {
+    s32 hero;
+    EXTengine *target;
+
+    if (D_8005A648 != 5) {
+        hero = arg2[2];
+        if (hero >= 0) {
+            target = Heroes[hero].hero_eng;
+            D_800CAD50[player].TurretReqdDir =
+                (get_angle(target->unk10.x - eng->unk10.x, target->unk10.z - eng->unk10.z) + 0x800) & 0xFFF;
+        }
+    }
+}
 
 void func_800C8BA0(void) {
     switch ((s16)(D_8005A648 - 5)) {
