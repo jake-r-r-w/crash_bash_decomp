@@ -638,7 +638,177 @@ s32 func_800B4C70(s32 *arg0, s32 arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B4D6C);
+void func_800B4D6C(s32 arg0) {
+    s32 v1[4];
+    s32 sp20[4];
+    s32 v2[4];
+    s16 d[8];
+    struct {
+        SLONG_XYZ v;
+        s32 pad;
+    } pos;
+    s16 d2[8];
+    s16 d3[8];
+    s32 rnd;
+    s32 best;
+    s32 bestd;
+    s32 i;
+    s32 j;
+    s32 found;
+    s32 found2;
+    s32 ang;
+    s32 dx;
+    s32 dz;
+    HeroInfo *h;
+    EXTheromove *mv;
+    EXTengine *my;
+    EXTengine *ve;
+    Ovl65AiExt *ext;
+    Ovl65Ext *ext2;
+    u32 ok;
+    u32 bad;
+
+    bestd = 0x7FFFFFFF;
+    best = 0;
+    ext = FindExtension(Heroes[arg0].hero, 0x20000000);
+    if (ext == NULL) {
+        return;
+    }
+    ext2 = FindExtension(Heroes[arg0].hero, 0x10000000);
+    ok = 0;
+    if (ext2 != NULL) {
+        ok = 0 < (u32)ext2->unk14;
+    }
+    bad = ok ^ 1;
+    if (bad != 0) {
+        ext->unk28 = -1;
+        ext->func = func_800BD1FC;
+        return;
+    }
+    i = 0;
+    mv = Heroes[arg0].hero_move;
+    ext->timer--;
+    for (;;) {
+        s32 dist;
+        if (i >= 4) {
+            break;
+        }
+        if (i != arg0 && !(Heroes[i].hero_status & 0x2000)) {
+            pos.v = Heroes[i].hero_eng->unk10;
+            dist = func_8008CEB0((u8 *)&pos.v, (u8 *)&Heroes[arg0].hero_eng->unk10);
+            if (dist < bestd) {
+                bestd = dist;
+                best = i;
+            }
+        }
+        i++;
+    }
+    ext->victim = best;
+    if (mv != NULL) {
+        mv->forward_angle = get_angle(Heroes[arg0].hero_eng->unk10.x - Heroes[best].hero_eng->unk10.x,
+                                      Heroes[arg0].hero_eng->unk10.z - Heroes[best].hero_eng->unk10.z) & 0xFFF;
+    }
+    my = Heroes[arg0].hero_eng;
+    ve = Heroes[ext->victim].hero_eng;
+    d[0] = *(u16 *)&ve->unk10.x - *(u16 *)&my->unk10.x;
+    d[2] = *(u16 *)&ve->unk10.z - *(u16 *)&my->unk10.z;
+    d[1] = 0;
+    d[3] = D_800BDB78;
+    dx = ve->unk10.x - my->unk10.x;
+    dz = ve->unk10.z - my->unk10.z;
+    if (dx * dx + dz * dz > 0x283E3F) {
+        goto chase;
+    }
+    rnd = Random(8);
+    v1[0] = (D_800BDB50 * D_80068BD4[(ext->angle - 0x400) & 0xFFF].unk2) >> 12;
+    v1[2] = (D_800BDB50 * D_80068BD4[ext->angle & 0xFFF].unk2) >> 12;
+    best = 0;
+    v2[0] = 0;
+    v2[2] = 0;
+    if (func_800B4474(v2, v1, d, sp20) == 0) {
+        found2 = 0;
+        j = 0;
+        for (;;) {
+            EXTengine *e2;
+            if (j >= 4) {
+                break;
+            }
+            e2 = Heroes[j].hero_eng;
+            if (j != arg0 && j != ext->victim && !(Heroes[j].hero_status & 0x2000)) {
+                d2[0] = *(u16 *)&e2->unk10.x - *(u16 *)&my->unk10.x;
+                d2[2] = *(u16 *)&e2->unk10.z - *(u16 *)&my->unk10.z;
+                d2[1] = 0;
+                d2[3] = D_800BDB78;
+                if (func_800B4474(v2, v1, d2, sp20) == 1) {
+                    found2 = 1;
+                }
+            }
+            j++;
+        }
+        if (!found2) {
+            pos.v.x = Heroes[arg0].hero_eng->unk10.x - v1[0];
+            pos.v.z = Heroes[arg0].hero_eng->unk10.z - v1[2];
+            if (func_800B4C70(&pos.v.x, 0) != 0) {
+                ext->target = pos.v;
+                ext->pos = Heroes[arg0].hero_eng->unk10;
+                func_800B3538(arg0);
+                best = 1;
+            }
+        }
+    }
+    if (best != 1) {
+        for (j = rnd; ; j++) {
+            if (j >= rnd + 8) {
+                goto end;
+            }
+            ang = D_800BDB58[j & 7];
+            v1[0] = (D_800BDB50 * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+            v1[2] = (D_800BDB50 * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+            v2[0] = 0;
+            v2[2] = 0;
+            if (func_800B4474(v2, v1, d, sp20) != 0) {
+                continue;
+            }
+            found = 0;
+            i = 0;
+            pos.v.x = Heroes[arg0].hero_eng->unk10.x - v1[0];
+            h = Heroes;
+            pos.v.z = Heroes[arg0].hero_eng->unk10.z - v1[2];
+            for (;;) {
+                EXTengine *e3;
+                if (i >= 4) {
+                    break;
+                }
+                e3 = h->hero_eng;
+                if (i != arg0 && i != ext->victim) {
+                    d3[0] = *(u16 *)&e3->unk10.x - *(u16 *)&my->unk10.x;
+                    d3[2] = *(u16 *)&e3->unk10.z - *(u16 *)&my->unk10.z;
+                    d3[1] = 0;
+                    d3[3] = D_800BDB78;
+                    if (func_800B4474(v2, v1, d3, sp20) == 1) {
+                        found = 1;
+                    }
+                }
+                h++;
+                i++;
+            }
+            if (!found && func_800B4C70(&pos.v.x, 0) != 0) {
+                break;
+            }
+        }
+        ext->target = pos.v;
+        ext->pos = Heroes[arg0].hero_eng->unk10;
+        func_800B3538(arg0);
+        ext->angle = ang;
+    }
+end:
+    if (ext->timer > 0) {
+        return;
+    }
+chase:
+    ext->func = func_800B3D90;
+    ext->unk38 = 1;
+}
 
 void func_800B5424(id)
 s32 id;

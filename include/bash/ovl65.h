@@ -200,6 +200,8 @@ void func_800B3C1C(s32 id);
 
 void func_800B3D90(s32 id);
 
+s32 func_800B4474(s32 *a, s32 *b, s16 *c, s32 *d);
+
 void func_800B4B14(s32 id);
 void func_800B3A38(s32 id);
 void func_800B3C1C(s32 id);
@@ -244,6 +246,24 @@ void InitDinoSmoke(NAS *arg0);
 s32 func_800BD0AC(s32 self, s32 *dist);
 
 s32 func_800BD204(s32 arg0);
+
+extern s32 D_800BDB58[];
+extern u16 D_800BDB78;
+
+/* Hero NAS extension 0x20000000: the AI chase state func_800B4D6C runs. */
+typedef struct Ovl65AiExt {
+    u8 pad[0xC];
+    void (*func)(); /* 0x0C */
+    SLONG_XYZ pos;    /* 0x10 */
+    SLONG_XYZ target; /* 0x1C */
+    s32 unk28;        /* 0x28 */
+    s32 victim;       /* 0x2C: nearest other hero */
+    s32 unk30;
+    s32 unk34;
+    s32 unk38;        /* 0x38 */
+    s32 angle;        /* 0x3C */
+    s32 timer;        /* 0x40 */
+} Ovl65AiExt;
 
 #endif /* BASH_OVL65_H */
 
