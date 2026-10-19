@@ -897,7 +897,30 @@ s32 func_800C5400(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5470);
+s32 func_800C5470(s32 arg0) {
+    HeroInfo *hero;
+    Ovl63FuxCount *fux;
+    EXTraceshield *ext;
+    NAS *nas;
+    HeroInfo *base;
+
+    base = Heroes;
+    hero = &base[arg0];
+    fux = (Ovl63FuxCount *)hero->hero->FUX;
+    if (fux != NULL && fux->unk3C > 0 &&
+        (((Ovl63Pad *)D_80051338)[arg0].unk54 & 0x8000)) {
+        nas = SpawnNASById(hero->hero_eng->unk10.x, hero->hero_eng->unk10.y,
+                           hero->hero_eng->unk10.z, 0x1705, 0x11);
+        if (nas != NULL) {
+            ext = FindExtension(nas, 0x10000000);
+            if (ext != NULL) {
+                ext->unkC = arg0;
+            }
+        }
+        return 1;
+    }
+    return 0;
+}
 
 s32 func_800C554C(s32 arg0) {
     if (((Ovl63Pad *)D_80051338)[arg0].unk50 & 0xF0) {
