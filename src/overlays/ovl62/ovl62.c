@@ -668,7 +668,16 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBearDeath);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBearDeath);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA6E8);
+void func_800CA6E8(Ovl62RiserSet *arg0) {
+    s32 i;
+
+    for (i = 0; i < 16; i++) {
+        if (arg0->slot[i].active != 0 && arg0->slot[i].height < 0x74) {
+            arg0->slot[i].height += 4;
+            D_800D6150[i]->y = arg0->slot[i].base + arg0->slot[i].height;
+        }
+    }
+}
 
 void PlotBreathMaster(NAS *m) {
 }

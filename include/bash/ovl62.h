@@ -300,4 +300,27 @@ void func_800D2D9C(s32 player);
 
 void func_800D307C(s32 player);
 
+/* A rising slot as func_800CA6E8 steps it: 16 of them at +0xB8. */
+typedef struct Ovl62Riser {
+    /* 0x0 */ s32 active;
+    /* 0x4 */ s32 unk4;
+    /* 0x8 */ s32 height;
+    /* 0xC */ s16 base;
+    /* 0xE */ s16 padE;
+} Ovl62Riser;
+
+typedef struct Ovl62RiserSet {
+    /* 0x00 */ u8 pad0[0xB8];
+    /* 0xB8 */ Ovl62Riser slot[16];
+} Ovl62RiserSet;
+
+typedef struct Ovl62RiserObj {
+    /* 0x00 */ u8 pad0[0x74];
+    /* 0x74 */ s16 y;
+} Ovl62RiserObj;
+
+extern Ovl62RiserObj *D_800D6150[16];
+
+void func_800CA6E8(Ovl62RiserSet *arg0);
+
 #endif /* BASH_OVL62_H */
