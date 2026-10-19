@@ -852,7 +852,39 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B91E8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B935C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B9C10);
+void func_800B9C10(void) {
+    D5A614View *g = (D5A614View *)D_8005A614;
+    s32 idx = g->mode - 10;
+    s32 x, z;
+
+    if (D_800C52E8 == -1) {
+        if (D_800C52EC < D_800C38D8[idx]) {
+            D_800C52E8 = Random(70) + 40;
+        }
+    } else {
+        D_800C52E8--;
+        if (D_800C52E8 < 5) {
+            if (func_800C165C(&x, &z) != 0) {
+                if (g->mode == 10) {
+                    goto seven;
+                }
+                if (g->mode == 11) {
+                    if (Random(3) == 0) {
+                        func_800BA3E0(x, z, 8);
+                    } else {
+                    seven:
+                        func_800BA3E0(x, z, 7);
+                    }
+                }
+            }
+            if (D_800C52EC > D_800C38E8[idx]) {
+                D_800C52E8 = -1;
+            } else {
+                D_800C52E8 = Random(70) + 40;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B9D64);
 
