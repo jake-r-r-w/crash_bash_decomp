@@ -8536,7 +8536,8 @@
   "status": "matched"
  },
  "ovl65:800BC684": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-19T16:02:32Z",
+  "status": "matched"
  },
  "ovl65:800BC774": {
   "auto_diff": 5,

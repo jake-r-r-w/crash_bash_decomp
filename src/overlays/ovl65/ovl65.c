@@ -643,7 +643,22 @@ void InitDinoScratch(NAS *m) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BC684);
+s32 func_800BC684(s32 *p, s32 arg1) {
+    s32 d;
+    s32 ang;
+
+    d = csqrt(p[0] * p[0] + p[2] * p[2]) >> 6;
+    if (0xB00 - arg1 < d) {
+        d -= 0xB00;
+        d += arg1;
+        ang = get_angle(p[0], p[2]) & 0xFFF;
+        d += 4;
+        p[0] -= d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2 >> 12;
+        p[2] -= d * D_80068BD4[ang].unk2 >> 12;
+        return ang;
+    }
+    return -1;
+}
 
 s32 func_800BC774(s32 arg0) {
     if ((csqrt(Heroes[arg0].hero_move->x_vel * Heroes[arg0].hero_move->x_vel +
