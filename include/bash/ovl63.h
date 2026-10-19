@@ -8,6 +8,8 @@
 #include "common.h"
 #include "bash/nas.h"
 
+extern HeroInfo Heroes[4];
+
 void PlotRaceSmokeBoostWater(NAS *nas);
 void PlotRaceGreenSmokeBoost(NAS *nas);
 void PlotRaceGreenSmokePoof(NAS *nas);
@@ -145,6 +147,8 @@ extern ScriptInit D_800C6F28;
 void InitRaceSmokePoof(NAS *nas);
 
 s32 func_800C5400(s32 arg0);
+
+void func_800C55FC(s32 player);
 
 void func_800C5B08(s32 *pos, s32 *polar);
 

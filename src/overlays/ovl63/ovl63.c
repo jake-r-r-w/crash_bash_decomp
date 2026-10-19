@@ -458,7 +458,14 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C554C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C55A4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C55FC);
+void func_800C55FC(s32 player) {
+    EXTraceshield *ext;
+
+    ext = (EXTraceshield *)Heroes[player].hero->FUX;
+    if (ext != NULL) {
+        ext->unk14[0] = 8;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5640);
 
