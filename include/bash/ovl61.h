@@ -543,6 +543,38 @@ s32 func_800B85DC(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5);
 void func_800BC564(void);
 
 s32 func_800BF640(EXTengine *eng, Ovl61FuxF *self);
+/* PlotBall */
+typedef struct {
+    u8 pad0[4];
+    u32 unk4;
+    u8 pad8[8];
+    u32 unk10;
+    u8 pad14[0x30 - 0x14];
+    u16 unk30;
+    u16 unk32;
+    s16 unk34;
+    u8 pad36[0x48 - 0x36];
+    s16 unk48;
+    s16 unk4A;
+    u8 pad4C[0x5C - 0x4C];
+    u8 unk5C[4];
+    u8 pad60[0x6C - 0x60];
+    s32 unk6C;
+} Ovl61BallView;
+
+/* Extension 0x10000000: the ball's trail positions. */
+typedef struct {
+    s32 EXTid;
+    EXTnode Extend;
+    SLONG_XYZ pos[8];
+    u8 on[8];
+} Ovl61Trail;
+
+extern u16 D_800C1214[][2];
+extern u16 D_800C1224[10][10];
+extern u16 D_800C1378[];
+extern u16 D_800C1388[];
+extern u16 D_800C13A4[];
 
 /* Extension 0x800 of a ball (func_800BE4D4). */
 typedef struct Ovl61Puck {

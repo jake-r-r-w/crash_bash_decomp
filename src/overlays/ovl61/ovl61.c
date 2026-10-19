@@ -2928,7 +2928,551 @@ void InitBall(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl61/ovl61", PlotBall);
+/* The side (0-3) a player defends. */
+static inline s32 ArkPlayerSide(s32 player) {
+    if (player == D_800C2728) {
+        return 0;
+    }
+    if (player == D_800C2724) {
+        return 1;
+    }
+    if (player == D_800C2720) {
+        return 3;
+    }
+    return (player == D_800C271C) * 2;
+}
+
+void PlotBall(NAS *nas) {
+    EXTengine *eng;
+    EXTobject *obj;
+    EXTmotion *mot;
+    EXTengine *e2;
+    subengine *sub;
+    Ovl61Trail *trail;
+    s32 hide;
+    s32 done;
+    s16 k;
+    s32 ang;
+    s16 d;
+    s32 dx;
+    s32 dz;
+    s32 y;
+    s32 dist;
+    s32 sc;
+    s32 i;
+    s32 idx;
+    s32 yv;
+    s16 shade;
+    s16 pl;
+
+    hide = 0;
+    eng = nas->Engine;
+    done = 0;
+    if (eng == NULL) {
+        return;
+    }
+    eng->OldXYZ = eng->unk10;
+    obj = (EXTobject *)nas->FUX;
+    if (obj == NULL) {
+        return;
+    }
+    mot = FindExtension(nas, 0x800);
+    if (mot != NULL) {
+        if (mot->Ftime != 0) {
+            mot->Ftime--;
+        }
+        if (mot->Xvel < mot->Xmax) {
+            mot->Xvel += mot->Xacc;
+            if (mot->Xvel > mot->Xmax) {
+                mot->Xvel = mot->Xmax;
+            }
+        }
+        if (mot->Xvel > mot->Xmax) {
+            mot->Xvel -= mot->Xdec;
+            if (mot->Xvel < mot->Xmax) {
+                mot->Xvel = mot->Xmax;
+            }
+        }
+        eng->unk10.x -= (mot->Xvel * D_80068BD4[(mot->Xa - 0x400) & 0xFFF].unk2) >> 12;
+        eng->unk10.z -= (mot->Xvel * D_80068BD4[mot->Xa & 0xFFF].unk2) >> 12;
+        if (obj->timer != 0) {
+            obj->timer--;
+        }
+        switch (obj->status) {
+        case 0:
+            hide = 1;
+            if ((((Ovl61BallView *)D_8005A614)->unk10 & 0x04000000) ||
+                (((Ovl61BallView *)D_8005A614)->unk30 & 0x1000)) {
+                mot->Xvel = 0;
+                mot->Xacc = 0;
+                mot->Xdec = 0;
+                eng->unk10.x = 0x2000;
+                eng->unk10.y = 0x2000;
+                eng->unk10.z = 0x2000;
+                eng->flags &= ~0x8000;
+                break;
+            }
+            if ((u16)D_800C1F16 < 4) {
+                idx = D_800C1214[D_800C1F16][Random(2)];
+            } else {
+                idx = Random(4);
+            }
+            if (D_800C1CE8[idx].unk12 == 0) {
+                D_800C1F16 = -1;
+                eng->unk10 = ((SLONG_XYZ *)D_800C1A84)[idx];
+                D_800C1CE8[idx].unk12 = 0x1F;
+                obj->countdown = 0xF;
+                obj->status = 12;
+            }
+            break;
+        case 12:
+            hide = 1;
+            if (obj->countdown != 0) {
+                obj->countdown--;
+                break;
+            }
+            e2 = eng->Engine;
+            eng->flags |= 0x8000;
+            if (e2 != NULL) {
+                e2->flags |= 0x8000;
+            }
+            ang = get_angle(eng->unk10.x, eng->unk10.z);
+            mot->Xa = ang;
+            mot->Za = ang;
+            ang = Random(0x1C7);
+            mot->Xacc = 4;
+            mot->Zvel = 0;
+            mot->Xdec = hide;
+            mot->Za = (mot->Za + ((u16)ang - 0xE3)) & 0xFFF;
+            obj->timer = 0x14;
+            PlaySfx(0x5A0, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+            switch (((Ovl61BallView *)D_8005A614)->unk34) {
+            case 17:
+                mot->Yvel = 0x40;
+                mot->Ymax = 0x50;
+                mot->Yacc = 6;
+                mot->Ydec = 0;
+                mot->Ydir = 0;
+                mot->Xvel = 0x50;
+                obj->status = 6;
+                mot->Xmax = 0x50;
+                break;
+            case 16:
+                mot->Ymax = 0x60;
+                mot->Yacc = 3;
+                mot->Xvel = 0x20;
+                mot->Yvel = 0x10;
+                mot->Ydec = 0;
+                mot->Ydir = 0;
+                obj->status = 6;
+                mot->Xmax = 0x50;
+                break;
+            case 15:
+                eng->unk10.y = D_8005A5D8 - 0x100;
+                mot->Ymax = 0x60;
+                mot->Ydir = 0xFF;
+                mot->Yvel = 0x30;
+                mot->Yacc = 0;
+                mot->Ydec = 6;
+                mot->Xvel = 0x20;
+                obj->status = 6;
+                mot->Xmax = 0x30;
+                break;
+            default:
+                eng->unk10.y = D_8005A5D8 - 0x100;
+                mot->Yvel = 0x30;
+                mot->Ymax = 0x60;
+                mot->Ydir = 0xFF;
+                mot->Yacc = 0;
+                mot->Ydec = 6;
+                mot->Xvel = 0x20;
+                obj->status = 6;
+                mot->Xmax = 0x50;
+                break;
+            }
+            obj->player = -1;
+            obj->owner = -1;
+            break;
+        case 6:
+            if (((s32 (*)(EXTengine *, EXTobject *))D_800C1C94)(eng, obj) != 0) {
+                hide = 1;
+            } else {
+                mot->Xa = mot->Za;
+                mot->Za = 0;
+                obj->status = 8;
+            }
+        case 8:
+            mot->Yvel += mot->Yacc - mot->Ydec;
+            if (mot->Yvel < 0) {
+                mot->Yvel = 0;
+            }
+            if (mot->Yvel > mot->Ymax) {
+                mot->Yvel = mot->Ymax;
+            }
+            if (mot->Ydir != 0) {
+                eng->unk10.y -= mot->Yvel;
+            } else {
+                eng->unk10.y += mot->Yvel;
+            }
+            if (mot->Yvel == 0) {
+                mot->Yacc = mot->Ydec;
+                mot->Ydec = 0;
+                mot->Ydir = 0;
+            }
+            if (mot->Ydir != 0) {
+                break;
+            }
+            eng->unk10.y += 0x60;
+            if (func_80025BBC(eng) != 0) {
+                obj->can_do |= 0x400;
+                if (nas->UserInfo.flags == 0) {
+                    PlaySfx(D_800C1378[Random(4)], &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+                    nas->UserInfo.flags |= 1;
+                }
+                if (((Ovl61BallView *)D_8005A614)->unk34 == 0x10) {
+                    mot->Yvel = mot->Yvel >> 2;
+                } else {
+                    mot->Yvel = mot->Yvel >> 1;
+                }
+                mot->Ydec = mot->Yacc;
+                mot->Yacc = 0;
+                mot->Ydir = 0xFF;
+                if (mot->Yvel < 8) {
+                    obj->status = 1;
+                    obj->can_do |= 0x400;
+                }
+            }
+            if (obj->can_do & 0x400) {
+                d = ((s16 (*)(EXTengine *, s32))D_800C1C8C)(eng, mot->Xa);
+                if (d != -1) {
+                    k = func_800154A0(((u16)mot->Xa + 0x800) & 0xFFF, d);
+                    if (abs(k) < 8) {
+                        k = Random(0x10) + 8;
+                    }
+                    mot->Xa = (d + k) & 0xFFF;
+                    mot->Zmax = 0;
+                    PlaySfx(D_800C1388[Random(6)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                }
+                if (((s32 (*)(EXTengine *, EXTobject *, s32))D_800C1C90)(eng, obj, 0) != 0) {
+                    obj->countdown = 4;
+                    switch (((Ovl61BallView *)D_8005A614)->unk34) {
+                    case 17:
+                        obj->status = 0x63;
+                        break;
+                    case 15:
+                    case 16:
+                        obj->status = 4;
+                        mot->Yvel = 0x80;
+                        mot->Ymax = 0x60;
+                        mot->Yacc = 8;
+                        mot->Ydec = 0;
+                        break;
+                    default:
+                        obj->status = 0x11;
+                        break;
+                    }
+                    i = ArkPlayerSide(obj->player);
+                    BLINK_D38[i].unk12 = 4;
+                    BLINK_D38[i].unk10 = 0x20;
+                    break;
+                }
+            }
+            eng->unk10.y -= 0x60;
+            break;
+        case 3:
+            if (((s32 (*)(EXTengine *, EXTobject *))D_800C1C94)(eng, obj) != 0) {
+                hide = 1;
+            } else {
+                mot->Xa = mot->Za;
+                mot->Za = 0;
+                PlaySfx(D_800C1378[Random(4)], &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+                obj->status = 1;
+            }
+            eng->unk10.y = eng->unk10.y - ((s32 (*)(EXTengine *))func_80025F44)(eng) - 0x60;
+            break;
+        case 1:
+            d = ((s16 (*)(EXTengine *, s32))D_800C1C8C)(eng, mot->Xa);
+            if (d != -1) {
+                k = func_800154A0(((u16)mot->Xa + 0x800) & 0xFFF, d);
+                if (abs(k) < 8) {
+                    k = Random(0x10) + 8;
+                }
+                mot->Xa = (d + k) & 0xFFF;
+                mot->Zmax = 0;
+                PlaySfx(D_800C1388[Random(6)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            }
+            if (((s32 (*)(EXTengine *, EXTobject *, s32))D_800C1C90)(eng, obj, 0) != 0) {
+                obj->countdown = 8;
+                switch (((Ovl61BallView *)D_8005A614)->unk34) {
+                case 17:
+                    obj->countdown = 0x10;
+                    obj->status = 0x63;
+                    break;
+                case 15:
+                case 16:
+                    obj->status = 4;
+                    mot->Yvel = 0x80;
+                    mot->Ymax = 0x60;
+                    mot->Yacc = 8;
+                    mot->Ydec = 0;
+                    break;
+                default:
+                    obj->status = 0x11;
+                    break;
+                }
+                i = ArkPlayerSide(obj->player);
+                BLINK_D38[i].unk12 = 4;
+                BLINK_D38[i].unk10 = 0x20;
+                break;
+            }
+            CalcArkInfluence(mot);
+            eng->unk10.y = eng->unk10.y - ((s32 (*)(EXTengine *))func_80025F44)(eng) - 0x60;
+            break;
+        case 0x63:
+            if (obj->countdown != 0) {
+                obj->countdown--;
+            } else {
+                done = 1;
+            }
+            if ((((s32 (*)(EXTengine *, EXTobject *, s32))D_800C1C90)(eng, obj, 0) ^ 1) != 0) {
+                obj->status = 1;
+                break;
+            }
+            mot->Xa = get_angle(-eng->unk10.x, -eng->unk10.z);
+            if (((s32 (*)(EXTengine *, EXTobject *, s32))D_800C1C90)(eng, obj, 1) != 0 || done != 0) {
+                obj->status = 4;
+                mot->Yvel = 0x20;
+                mot->Ymax = 0x60;
+                mot->Yacc = 6;
+                mot->Ydec = 0;
+            }
+            eng->unk10.y = eng->unk10.y - ((s32 (*)(EXTengine *))func_80025F44)(eng) - 0x60;
+            break;
+        case 0x11:
+            if (obj->countdown != 0) {
+                if (--obj->countdown == 0) {
+                    eng->flags |= 0x40000021;
+                    eng->sub->flags |= 0x40000021;
+                    eng->sub->unk76 = 0x400;
+                    e2 = eng->Engine;
+                    if (e2 != NULL) {
+                        e2->flags |= 0x40000000;
+                        e2->sub->flags |= 0x40000000;
+                        e2->sub->unk76 = 0x400;
+                    }
+                }
+            } else {
+                eng->sub->unk76 += 0x200;
+                e2 = eng->Engine;
+                hide = 1;
+                if (e2 != NULL) {
+                    e2->sub->unk76 += 0x200;
+                    if ((s16)e2->sub->unk76 >= 0x1000) {
+                        e2->sub->unk76 = 0xFFF;
+                        done = hide;
+                    }
+                }
+            }
+            if (((s32 (*)(EXTengine *, EXTobject *, s32))D_800C1C90)(eng, obj, 1) != 0 || done != 0) {
+                obj->status = 0x12;
+            }
+            eng->unk10.y = eng->unk10.y - ((s32 (*)(EXTengine *))func_80025F44)(eng) - 0x60;
+            break;
+        case 4:
+            if (obj->countdown != 0) {
+                if (--obj->countdown == 0) {
+                    eng->flags |= 0x40000021;
+                    eng->sub->flags |= 0x40000021;
+                    eng->sub->unk76 = 0x400;
+                    eng->sub->unk68 = 0x100;
+                    e2 = eng->Engine;
+                    if (e2 != NULL) {
+                        e2->flags |= 0x40000000;
+                        e2->sub->flags |= 0x40000000;
+                        e2->sub->unk76 = 0x400;
+                    }
+                }
+            } else {
+                eng->sub->unk76 += 0x200;
+                e2 = eng->Engine;
+                hide = 1;
+                if (e2 != NULL) {
+                    e2->sub->unk76 += 0x200;
+                    if ((s16)e2->sub->unk76 >= 0x1000) {
+                        e2->sub->unk76 = 0xFFF;
+                        done = hide;
+                    }
+                }
+            }
+            if (((Ovl61BallView *)D_8005A614)->unk34 != 17) {
+                mot->Xvel >>= 1;
+                mot->Xmax >>= 1;
+            }
+            mot->Yvel += mot->Yacc - mot->Ydec;
+            if (mot->Yvel < 0) {
+                mot->Yvel = 0;
+            }
+            if (mot->Yvel > mot->Ymax) {
+                mot->Yvel = mot->Ymax;
+            }
+            yv = mot->Yvel;
+            eng->unk10.y += yv;
+            if (((s32 (*)(EXTengine *, EXTobject *, s32, s32))D_800C1C90)(eng, obj, 1, yv) != 0 ||
+                done != 0) {
+                obj->status = 0x12;
+            }
+            break;
+        case 2:
+            obj->can_do |= 0x80;
+            if ((u16)obj->player >= 4) {
+                mot->Xvel = 0x30;
+                mot->Xmax = 0x30;
+                obj->status = 1;
+                break;
+            }
+            AlignGrabBall(eng, mot, obj);
+            break;
+        case 0x12:
+            if (obj->whatami != 2) {
+                obj->can_do &= 0xFF7F;
+                pl = obj->player;
+                if (!(Heroes[pl].hero_status & 0xFA00)) {
+                    PlaySfx(D_800C13A4[pl], NULL, NULL, 0x1000, 0x1E00, 0);
+                    pl = obj->player;
+                    if (pl != -1) {
+                        D_800C1F16 = ArkPlayerSide(pl);
+                    }
+                    if ((((Ovl61BallView *)D_8005A614)->unk4 & 0x80000001) != 0x80000001) {
+                        if ((((Ovl61BallView *)D_8005A614)->unk32 & 0x40) &&
+                            ((Ovl61BallView *)D_8005A614)->unk6C != 0) {
+                            if (((Ovl61BallView *)D_8005A614)->unk5C[obj->player] != 0) {
+                                obj->player = ((Ovl61BallView *)D_8005A614)->unk4A;
+                            } else {
+                                obj->player = ((Ovl61BallView *)D_8005A614)->unk48;
+                            }
+                            if (Heroes[obj->player].hero_score != 0) {
+                                Heroes[obj->player].hero_score--;
+                                Heroes[obj->player].hero_score_displayed = Heroes[obj->player].hero_score;
+                            }
+                        } else if (Heroes[obj->player].hero_score != 0) {
+                            Heroes[obj->player].hero_score--;
+                            Heroes[obj->player].hero_health--;
+                            Heroes[obj->player].hero_score_displayed = Heroes[obj->player].hero_score;
+                        }
+                        if ((((Ovl61BallView *)D_8005A614)->unk4 & 0x80000002) != 0x80000002 &&
+                            Heroes[obj->player].hero_score == 0) {
+                            if (obj->player == D_800C1C80) {
+                                D_800C1C80 = -1;
+                            }
+                            Heroes[obj->player].hero_status |= 0x2000;
+                            if (((Ovl61BallView *)D_8005A614)->unk32 & 0x40) {
+                                pl = Heroes[obj->player].hero_teammate;
+                                if (pl != -1) {
+                                    Heroes[pl].hero_status |= 0x2000;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            KillNAS(nas);
+            return;
+        }
+        mot->Zvel = 0;
+    }
+    dx = eng->unk10.x - eng->OldXYZ.x;
+    dz = eng->unk10.z - eng->OldXYZ.z;
+    eng->unk1E += (((get_angle(dx, dz) & 0xFFF) - eng->unk1E) << 20) >> 21;
+    dist = csqrt(dx * dx + dz * dz) >> 5;
+    eng->unk5E = 1;
+    dx = ((eng->unk10.x + 0x800) >> 9) + 1;
+    dz = ((eng->unk10.z + 0x800) >> 9) + 1;
+    eng->unk1C -= dist;
+    if (dx >= 10) {
+        dx = 9;
+    }
+    if (dx < 0) {
+        dx = 0;
+    }
+    if (dz >= 10) {
+        dz = 9;
+    }
+    if (dz < 0) {
+        dz = 0;
+    }
+    shade = D_800C1224[9 - dz][dx];
+    switch (obj->status) {
+    case 4:
+    case 0x12:
+        shade = 0x200;
+        break;
+    case 0x63:
+    case 2:
+        break;
+    default:
+        func_800BF640(eng, (Ovl61FuxF *)obj);
+        break;
+    }
+    eng->sub->unk68 = shade;
+    e2 = eng->Engine;
+    if (e2 == NULL) {
+        return;
+    }
+    e2->unk10 = eng->unk10;
+    e2->sub->unk68 = shade;
+    y = eng->unk10.y - ((s32 (*)(EXTengine *))D_8005AA70[9])(eng);
+    e2 = e2->Engine;
+    if (e2 == NULL) {
+        return;
+    }
+    e2->unk10 = eng->unk10;
+    e2->unk10.y = y;
+    e2->sub->unk68 = shade;
+    sub = e2->sub;
+    if (hide != 0) {
+        e2->flags &= ~0x8000;
+    } else {
+        e2->flags |= 0x8000;
+    }
+    sub->unk08 = y - eng->unk10.y;
+    trail = FindExtension(nas, 0x10000000);
+    if (trail == NULL) {
+        return;
+    }
+    k = 0;
+    sub = sub->next;
+    sc = 0x1000;
+    while (sub != NULL) {
+        if (trail->on[k] != 0) {
+            sub->flags |= 0x8000;
+        } else {
+            sub->flags &= ~0x8000;
+        }
+        sub->unk04 = trail->pos[k].x - e2->unk10.x;
+        sub->unk08 = trail->pos[k].y - (e2->unk10.y + e2->sub->unk08);
+        sub->unk0C = trail->pos[k].z - e2->unk10.z;
+        sub->unk20.z = sc;
+        sub->unk20.x = sc;
+        sc -= 0x180;
+        sub->unk52 = 1;
+        if (sc < 0x100) {
+            sc = 0x100;
+        }
+        sub->unk76 = 0x1000 - (sc >> 1);
+        sub = sub->next;
+        k++;
+    }
+    for (k = 7; k > 0; k--) {
+        trail->pos[k].x = trail->pos[k - 1].x;
+        trail->pos[k].y = trail->pos[k - 1].y;
+        trail->pos[k].z = trail->pos[k - 1].z;
+        trail->on[k] = trail->on[k - 1];
+    }
+    if (hide == 0 && (nas->UserInfo.flags & 1)) {
+        trail->on[0] = 1;
+        trail->pos[0] = e2->unk10;
+    }
+}
 
 void CalcArkInfluence(EXTmotion *m) {
     s32 sx;

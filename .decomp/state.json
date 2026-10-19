@@ -6648,7 +6648,9 @@
   "status": "matched"
  },
  "ovl61:800B9E54": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-19T20:58:42Z",
+  "started": "2026-10-19T20:11:22Z",
+  "status": "matched"
  },
  "ovl61:800BB41C": {
   "matched_at": "2026-10-18T15:29:45Z",
