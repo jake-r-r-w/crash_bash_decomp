@@ -83,7 +83,32 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B58B0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B5FC4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B62A4);
+void func_800B62A4(void) {
+    s32 i;
+    s32 best;
+    s32 bestHealth;
+    s32 h;
+
+    bestHealth = 0;
+    best = -1;
+    i = bestHealth;
+    for (; i < 4; i++) {
+        if (!(Heroes[i].hero_status & 0xFA00)) {
+            h = Heroes[i].hero_health;
+            if (bestHealth < h) {
+                bestHealth = h;
+                best = i;
+            }
+        }
+    }
+    if (best != -1) {
+        for (i = 0; i < 4; i++) {
+            if (!(Heroes[i].hero_status & 0xFA00) && i != best) {
+                D_800CAD50[i].RequestQuickFinish = 1;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B6354);
 
