@@ -443,6 +443,13 @@ extern s32 D_800C66E4;
 extern s32 D_800C66E8;
 extern s32 D_800CA534[];
 
+typedef struct {
+    s16 a;
+    s16 b;
+    s16 c;
+} Ovl63Short3;
+extern Ovl63Short3 D_800C6BB4[8];
+
 s32 func_800B35CC(s32 arg0);
 
 void func_800B8F04(s32 arg0);
@@ -518,5 +525,7 @@ void func_800BC6C8(s32 arg0);
 void InitRaceVolcano(NAS *nas);
 
 void InitTrackGlob(NAS *m);
+
+void func_800C44B0(void);
 
 #endif /* BASH_OVL63_H */

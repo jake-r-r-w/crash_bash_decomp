@@ -977,7 +977,16 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitDac);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotDac);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C44B0);
+void func_800C44B0(void) {
+    D_800C6BB4[0] = (Ovl63Short3){ D_800C66E4, 0x28, 0x38 };
+    D_800C6BB4[1] = (Ovl63Short3){ D_800C66E4, 0x28, 0x38 };
+    D_800C6BB4[2] = (Ovl63Short3){ D_800C66E4, 0x28, 0x38 };
+    D_800C6BB4[3] = (Ovl63Short3){ D_800C66E4, 0x28, 0x38 };
+    D_800C6BB4[4] = (Ovl63Short3){ D_800C66E4, 0x28, 0x38 };
+    D_800C6BB4[5] = (Ovl63Short3){ D_800C66E4, 0x28, 0x38 };
+    D_800C6BB4[6] = (Ovl63Short3){ D_800C66E4, 0x28, 0x38 };
+    D_800C6BB4[7] = (Ovl63Short3){ D_800C66E4, 0x28, 0x38 };
+}
 
 void PlotRaceSmokeBoostWater(NAS *nas) {
     func_800250B0(nas);
