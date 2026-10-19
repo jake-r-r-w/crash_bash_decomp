@@ -228,6 +228,12 @@ typedef enum Ovl60Mode {
     OVL60_MODE_12 = 12
 } Ovl60Mode;
 s32 func_8008502C();
+void func_800B6790(s32 arg0);
+
+void func_800B72B0(s32 arg0);
+void func_800B741C(s32 arg0);
+void func_800B7574(s32 arg0);
+void func_800B8AF8(s32 arg0);
 
 void func_800B4374(s32 arg0, u16 arg1);
 void func_800B4A70(s32 arg0, u16 arg1);

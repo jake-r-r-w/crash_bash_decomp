@@ -108,7 +108,50 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B6438);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B662C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B6790);
+void func_800B6790(s32 arg0) {
+    EXTengine *eng;
+    u8 *g;
+
+    Heroes[arg0].hero_frozen = 2;
+    func_800C1CF0();
+    if (func_8008A200(arg0) != 0) {
+        g = D_8005A614;
+        if (*(s32 *)(g + 4) & 0x800) {
+            *(u16 *)(g + 0x30) |= 0x201;
+        } else {
+            *(u16 *)(g + 0x30) |= 1;
+        }
+    }
+    switch (func_8008502C(arg0)) {
+    case 0x12:
+        func_800B8AF8(arg0);
+        func_800B8BE4(arg0, 1);
+        break;
+    case 0x11:
+        func_800B72B0(arg0);
+        break;
+    case 0x14:
+        func_800B741C(arg0);
+        break;
+    case 0x13:
+        func_800B7574(arg0);
+        break;
+    }
+    switch (Heroes[arg0].hero_name) {
+    case 4:
+        D_800C52E0 = Random(0x10);
+        break;
+    case 3:
+        D_800C52E4 = Random(0x10);
+        break;
+    }
+    eng = Heroes[arg0].hero_eng;
+    if (eng != NULL) {
+        s32 r = func_80015480(0, eng->unk1E);
+        eng->unk5E = 1;
+        eng->unk1E += r >> 3;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B6960);
 
