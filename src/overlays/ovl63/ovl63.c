@@ -657,7 +657,28 @@ void PlotRippled(NAS *m) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRippled);
+void InitRippled(NAS *m) {
+    EXTrippled *ext;
+
+    ext = AddExtension(m, 0x1C, 0x10000000);
+    if (ext != NULL) {
+        ext->speed = 0x480;
+        ext->max = 0x4000;
+        ext->scale = 0;
+        ext->unk18 = 0x190;
+        m->Engine->sub->unk6C = &D_80054F84;
+        m->Engine->unk5C = 1;
+        m->Engine->unk2C.x = 0x400;
+        m->Engine->unk2C.y = 0x400;
+        m->Engine->unk2C.z = 0x400;
+        m->Engine->sub->unk74 = 0x2018;
+        m->Engine->sub->flags = 0x40008000;
+        m->Engine->unk5D = 0;
+        m->Engine->unk5C = 1;
+        m->Engine->unk5E = 1;
+        m->Engine->sub->unk76 = 0;
+    }
+}
 
 void PlotRaceGreenSmokeBoost(NAS *nas) {
     func_800250B0(nas);

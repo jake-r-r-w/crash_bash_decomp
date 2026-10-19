@@ -101,6 +101,14 @@ typedef struct EXTinnerripple {
     /* 0x14 */ s32 max;
     /* 0x18 */ s16 unk18;
 } EXTinnerripple;
+/* Rippled extension, AddExtension(nas, 0x1C, 0x10000000). */
+typedef struct EXTrippled {
+    /* 0x00 */ s32 unk0[3];
+    /* 0x0C */ s32 scale;
+    /* 0x10 */ s32 speed;
+    /* 0x14 */ s32 max;
+    /* 0x18 */ s32 unk18;
+} EXTrippled;
 typedef struct Ovl63Bouncer {
     s32 unk0;
     s32 vel;      /* 0x04 */
