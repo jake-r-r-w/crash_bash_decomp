@@ -80,7 +80,57 @@ void InitShieldPickup(NAS *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bb64c", InitBootsPickup);
+void InitBootsPickup(NAS *arg0) {
+    EXTengine *eng;
+    EXTobject *obj;
+    SLONG_XYZ *pos;
+    u16 id;
+    s32 x, z;
+
+    eng = arg0->Engine;
+    if (eng != NULL) {
+        eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
+        eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
+        eng->sub->unk6C = D_80052F5C;
+        eng->sub->unk74 = 0x200A;
+        obj = (EXTobject *)AddObject(arg0);
+        if (obj != NULL) {
+            func_80026AD8((u8 *)arg0);
+            func_8002694C(arg0, 0x200);
+            arg0->FUX = (EXT *)obj;
+            obj->whatami = 0x13;
+            obj->countdown = 0x78;
+            if (eng->unk10.y == D_8005A5D8) {
+                obj->status = 0;
+            } else {
+                obj->status = 4;
+                func_8008DDC0(arg0);
+            }
+        }
+        func_80025B10(eng, 0x50);
+        pos = &eng->unk10;
+        x = (pos->x >> 8) + 10;
+        z = 9 - (pos->z >> 8);
+        id = obj->whatami;
+        if (x >= 0x14) {
+            x = 0x13;
+        }
+        if (x < 0) {
+            x = 0;
+        }
+        if (z >= 0x14) {
+            z = 0x13;
+        }
+        if (z < 0) {
+            z = 0;
+        }
+        D_8009D90C[z * 0x14 + x].unk0 = id;
+        PlaySfx(0x41F, NULL, pos, 0x1000, 0x1E00, 0);
+    }
+    if (arg0->Failure != 0) {
+        KillNAS(arg0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bb64c", InitAnvilPickup);
 
