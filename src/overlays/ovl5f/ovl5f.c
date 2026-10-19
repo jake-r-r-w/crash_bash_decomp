@@ -745,7 +745,29 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitTorpedo);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitWaterMine);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitMine);
+void InitMine(NAS *nas) {
+    EXTengine *eng;
+    subengine *sub;
+    s32 i;
+
+    eng = nas->Engine;
+    eng->unk10.y = -0x14;
+    sub = eng->sub;
+    sub->unk6C = D_80053694;
+    sub->unk74 = 0x2005;
+    nas->UserInfo.status = 0x78;
+    nas->UserInfo.user1 = -1;
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    } else {
+        for (i = 0; i < 8; i++) {
+            if (D_800CB0C0[i] == NULL) {
+                D_800CB0C0[i] = nas;
+                break;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitRocketTA);
 
