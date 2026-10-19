@@ -389,5 +389,13 @@ s32 func_800CAC20(s32 i);
 s32 func_800CAFF8(s32 player);
 
 void func_800D3460(s32 arg0);
+/* D_8005A614 as seen by func_800B9B6C: the two team leaders. */
+typedef struct Ovl62TeamView {
+    /* 0x00 */ u8 pad0[0x48];
+    /* 0x48 */ s16 team0;
+    /* 0x4A */ s16 team1;
+} Ovl62TeamView;
+
+s32 func_800B9B6C(s32 hero);
 
 #endif /* BASH_OVL62_H */

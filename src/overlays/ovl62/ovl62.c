@@ -360,7 +360,54 @@ s32 func_800B9994(s32 player) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B9B6C);
+s32 func_800B9B6C(s32 hero) {
+    s16 lead;
+    s16 other;
+    s32 mate;
+    s32 r;
+
+    r = Random(0x1000);
+    lead = ((Ovl62TeamView *)D_8005A614)->team0;
+    if (hero == lead || (mate = Heroes[lead].hero_teammate, hero == mate)) {
+        if (r < 0x800) {
+            other = ((Ovl62TeamView *)D_8005A614)->team1;
+            if (!(Heroes[other].hero_status & 0x2000)) {
+                return other;
+            }
+            mate = Heroes[other].hero_teammate;
+            if (Heroes[mate].hero_status & 0x2000) {
+                return -1;
+            }
+            return mate;
+        } else {
+            lead = ((Ovl62TeamView *)D_8005A614)->team1;
+            mate = Heroes[lead].hero_teammate;
+            if (!(Heroes[mate].hero_status & 0x2000)) {
+                return mate;
+            }
+            if (!(Heroes[lead].hero_status & 0x2000)) {
+                return lead;
+            }
+            return -1;
+        }
+    } else if (r < 0x800) {
+        if (!(Heroes[lead].hero_status & 0x2000)) {
+            return lead;
+        }
+        if (Heroes[mate].hero_status & 0x2000) {
+            return -1;
+        }
+        return mate;
+    } else {
+        if (!(Heroes[mate].hero_status & 0x2000)) {
+            return mate;
+        }
+        if (!(Heroes[lead].hero_status & 0x2000)) {
+            return lead;
+        }
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B9D48);
 
