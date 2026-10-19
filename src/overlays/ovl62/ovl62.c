@@ -152,7 +152,37 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBombGFX);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B5570);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B5684);
+void func_800B5684(s32 player) {
+    EXTheromove *move = Heroes[player].hero_move;
+    s32 *ext;
+
+    if (move != NULL) {
+        switch (D_8005A614[player + 0x50]) {
+        case 1:
+            move->mass = 0x100;
+            break;
+        case 2:
+            move->mass = 0x100;
+            break;
+        case 3:
+            move->mass = 0x100;
+            break;
+        case 4:
+            move->mass = 0x100;
+            break;
+        case 5:
+        case 6:
+        case 7:
+        case 8:
+            move->mass = 0x180;
+            break;
+        }
+        ext = FindExtension(Heroes[player].hero, 0x20000000);
+        if (ext != NULL && ext[9] == 1) {
+            move->mass -= 0x46;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B5788);
 
