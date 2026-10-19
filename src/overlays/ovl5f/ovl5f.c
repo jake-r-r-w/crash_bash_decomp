@@ -951,7 +951,25 @@ void InitBoatField(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotBoatWake);
+void PlotBoatWake(NAS *nas) {
+    EXTengine *src;
+    EXTengine *dst;
+    u16 t;
+
+    src = Heroes[nas->UserInfo.user1].hero_eng;
+    dst = nas->Engine;
+    t = src->unk1E;
+    dst->unk5E = 1;
+    dst->unk1E = t;
+    dst->unk10.x = src->unk10.x;
+    dst->unk10.z = src->unk10.z;
+    if (nas->UserInfo.status == 0) {
+        nas->UserInfo.status = 0;
+    }
+    if (Heroes[nas->UserInfo.user1].hero_health <= 0) {
+        KillNAS(nas);
+    }
+}
 
 void InitBoatWake(NAS *nas) {
     subengine *sub;
