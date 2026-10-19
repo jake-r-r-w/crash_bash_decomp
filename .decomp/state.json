@@ -7223,7 +7223,8 @@
   "status": "matched"
  },
  "ovl62:800D2248": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-19T07:40:20Z",
+  "status": "matched"
  },
  "ovl62:800D2334": {
   "auto_diff": 5,

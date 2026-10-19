@@ -2191,7 +2191,29 @@ void func_800D2044(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2248);
+void func_800D2248(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = base + arg0;
+    s32 *ext;
+    u16 status;
+    EXTengine *eng;
+
+    ext = FindExtension(h->hero, 0x20000000);
+    if (ext != NULL) {
+        ext[0x9C / 4] = 0;
+        ext[0x98 / 4] = 0;
+        h->hero_eng->unk5D = 2;
+        status = h->hero_status;
+        if (!(status & 0x200)) {
+            h->hero_status = status | 0x2000;
+        }
+        h->hero_eng->sub->flags |= 0x8000;
+        h->hero_eng->sub->unk6C = D_800546C4;
+        h->hero_eng->sub->unk74 = 0x202D;
+        eng = h->hero_eng;
+        SpawnNASById(eng->unk10.x + 0x80, eng->unk10.y - 0x200, eng->unk10.z, 0x1613, 0x11);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2334);
 
