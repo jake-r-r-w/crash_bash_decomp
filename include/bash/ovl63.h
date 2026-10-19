@@ -160,6 +160,7 @@ typedef struct RaceMissileExt {
 
 extern u8 D_80052F5C[];
 
+extern NAS *D_800C6920;
 NAS *func_800C5C64(s32 arg0);
 
 void InitRaceMissile(NAS *m);

@@ -766,7 +766,33 @@ void func_800C5BEC(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5C64);
+NAS *func_800C5C64(s32 arg0) {
+    HeroInfo *base;
+    HeroInfo *hero;
+    NAS *nas;
+    NAS *best;
+    s32 dist;
+    s32 min;
+
+    best = NULL;
+    min = 0x7FFFFFFF;
+    nas = D_800C6920;
+    base = Heroes;
+    hero = base + arg0;
+loop:
+    if (nas != NULL) {
+        dist = func_8008CEB0((u8 *)&nas->Engine->unk10, (u8 *)&hero->hero_eng->unk10);
+        do {
+            if (dist < min) {
+                min = dist;
+                best = nas;
+            }
+        } while (0);
+        nas = nas->Group.Child;
+        goto loop;
+    }
+    return best;
+}
 
 s32 func_800C5D0C(s32 arg0) {
     s32 var_a1;
