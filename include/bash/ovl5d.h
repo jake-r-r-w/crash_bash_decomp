@@ -97,6 +97,8 @@ void func_800BAC10(void);
 
 u16 func_800BAD0C(s32 arg0, s32 arg1);
 
+void func_800BAD70(void);
+
 void func_800BAE08(s32 arg0);
 
 void func_800BAF68(void);

@@ -278,7 +278,17 @@ u16 func_800BAD0C(s32 arg0, s32 arg1) {
     return D_800C3BAC[x][y].unkA;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BAD70);
+void func_800BAD70(void) {
+    s32 i, j;
+
+    for (j = 2; j < 18; j++) {
+        for (i = 2; i < 18; i++) {
+            if (D_800C3BAC[(j - 2) >> 1][7 - ((i - 2) >> 1)].unkA == 0) {
+                D_8009D90C[i * 20 + j].unk0 = 0xFF;
+            }
+        }
+    }
+}
 
 void func_800BAE08(s32 arg0) {
     EXTengine *eng = Heroes[arg0].hero_eng;
