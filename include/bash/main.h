@@ -318,12 +318,15 @@ typedef struct {
     u16 tpage; /* 0x0C */
     u16 clut;  /* 0x0E */
     u16 uv;    /* 0x10: ORed into each vertex's uv */
+    u16 uv1;   /* 0x12: uv of vertices 1-3 (func_800C353C) */
+    u16 uv2;   /* 0x14 */
+    u16 uv3;   /* 0x16 */
 } GfxTexInfo;
 
 typedef struct {
     u8 unk0[0x18];
     GfxTexInfo info; /* 0x18 */
-    u8 unk2A[0xE];
+    u8 unk30[0x8];
 } GfxTexEntry;
 
 typedef struct {
@@ -376,8 +379,10 @@ typedef struct {
     struct GfxModel *model;  /* 0x6C */
     u8 unk70[4];
     u16 index;               /* 0x74: passed to func_80015A18 */
-    u8 unk76[0x1A];
-    ModelObjSlot slots[2];   /* 0x90: indexed by D_8005B690 & 1 */
+    u8 unk76[0x16];
+    u16 unk8C;               /* 0x8C: clut to set on the next draw */
+    u16 unk8E;               /* 0x8E: texture index to set on the next draw */
+    ModelObjSlot slots[2];  /* 0x90: indexed by D_8005B690 & 1 */
 } ModelObj;
 
 /* At +0x54 of GfxCamera; func_8001ACC0 takes a pointer to it. */

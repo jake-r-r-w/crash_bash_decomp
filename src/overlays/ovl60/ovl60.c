@@ -2411,4 +2411,33 @@ void func_800C3510(u8 *arg0) {
     (*(s32*)((u8*)(arg0) + 0)) = (s32) ((*(s32*)((u8*)(arg0) + 0)) | 0x01000000);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C353C);
+void func_800C353C(ModelObj *obj, void *arg1, s32 flags) {
+    POLY_GT4 *p0;
+    POLY_GT4 *p1;
+    GfxTexInfo *ti;
+
+    func_8001AA48(obj, arg1, flags);
+    p0 = obj->slots[0].prim;
+    p1 = obj->slots[1].prim;
+    if (p0 != NULL && p1 != NULL) {
+        if (obj->unk8E != 0) {
+            ti = &obj->model->texs.tex[obj->unk8E & 0xFFF].info;
+            *(u16 *)&p0->u0 = ti->uv;
+            *(u16 *)&p0->u1 = ti->uv1;
+            *(u16 *)&p0->u2 = ti->uv2;
+            *(u16 *)&p0->u3 = ti->uv3;
+            p0->tpage = ti->tpage;
+            *(u16 *)&p1->u0 = ti->uv;
+            *(u16 *)&p1->u1 = ti->uv1;
+            *(u16 *)&p1->u2 = ti->uv2;
+            *(u16 *)&p1->u3 = ti->uv3;
+            p1->tpage = ti->tpage;
+            obj->unk8E = 0;
+        }
+        if (obj->unk8C != 0) {
+            p0->clut = obj->unk8C;
+            p1->clut = obj->unk8C;
+            obj->unk8C = 0;
+        }
+    }
+}
