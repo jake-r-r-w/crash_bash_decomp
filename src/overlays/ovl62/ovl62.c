@@ -799,7 +799,31 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D05A8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D0650);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D0750);
+s32 func_800D0750(s32 player) {
+    HeroInfo *base = Heroes;
+    HeroInfo *info = base + player;
+    s32 *ext = FindExtension(info->hero, 0x20000000);
+
+    if (ext != NULL) {
+        if (ext[9] != 0) {
+            return 0x46;
+        }
+        switch (info->hero_name) {
+        case 7:
+        case 8:
+            return 0x4B;
+        case 5:
+        case 6:
+            return 0x69;
+        case 3:
+        case 4:
+            return 0x82;
+        default:
+            return 0x5A;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D0808);
 
