@@ -458,7 +458,11 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitTotemPole);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotPillarCover);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitPillarCover);
+void InitPillarCover(NAS *nas) {
+    EXTengine *e = nas->Engine;
+    e->unk10.y = 0;
+    e->sub->unk6C = *(void **)D_80058AD0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitPillar);
 
