@@ -2107,7 +2107,24 @@ s32 func_800D32CC(s32 player) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D3394);
+s32 func_800D3394(s32 player) {
+    Ext20 *ext;
+
+    ext = FindExtension(Heroes[player].hero, 0x20000000);
+    if (ext != NULL) {
+        if (!(((Ovl62Pad *)D_80051338)[player].unk50 & 0xF0)) {
+            return 0;
+        }
+        if (ext->state == 0) {
+            SetHeroAction((HeroInfo *)player, 0x4A);
+        }
+        if (ext->state == 1) {
+            SetHeroAction((HeroInfo *)player, 0x55);
+        }
+        return 1;
+    }
+    return 0;
+}
 
 void func_800D3460(s32 arg0) {
     HeroInfo *base = Heroes;
