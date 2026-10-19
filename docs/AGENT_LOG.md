@@ -14,7 +14,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1676/2541 game functions matched: **main.exe is complete (575/575)**;
+- 1687/2541 game functions matched: **main.exe is complete (575/575)**;
   engine overlay 2 left, both parked (`func_8007F314`, `PlotScriptFX`),
   ovl61 96/97 (two 2026-10-18 swarm runs and four hand matches; `PlotBall` left),
   ovl60 117/166, ovl62 121/186 (2026-10-19 swarm runs), ovl67 101/135, ovl69 68/77, ovl6a 93/94 (2026-10-18 swarm runs and hand fixes;
@@ -44,6 +44,13 @@ leads**, add any new gotcha, and add one short entry at the top of the
   identical (docs/ASSETS.md). ROADMAP's asset extraction box is ticked.
 
 ## Next
+
+**ovl5f (2026-10-19, run 20261019093701):** hard-stopped after 9 min to
+start ovl63 with more workers: 9 matched, 0 failed; its verified
+leftovers resumed into the ovl63 run. Worker count trial: ovl63 runs with
+`--workers 5 --big-workers 2` (was 3+2; CPU was 62% on 16 threads);
+compare its `stats --run` with ovl62/ovl60 (matches/hour, $/match, gate
+failures) before going higher.
 
 **ovl60 (2026-10-19, run 20261019081134, opus):** 60 min, $46.61: 113
 matched, 0 parked, 2 failed at the gate, 51 left. Normal workers $0.17-0.45
@@ -113,7 +120,7 @@ one session of 1-16 min. The day's tool upgrades (closest-C checkpoints,
 parked. **Retry parks with this recipe after tool upgrades.**
 
 **Start of next session: matching.** Left per overlay (2026-10-19): ovl5f
-147, ovl63 123, ovl5d 100, ovl68 83, ovl65 69,
+137, ovl63 123, ovl5d 100, ovl68 83, ovl65 69,
 ovl5e 67, ovl66 67, ovl62 65, ovl60 49, ovl64 51, ovl67 34, ovl69 9, ovl61 1, ovl6a 1, engine
 2 (count `INCLUDE_ASM` per file). The untouched overlays suit the swarm
 (item 1b's recipe, `--seg overlays/NAME`), then the post-run checklist.
@@ -525,6 +532,8 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-19 (ovl5f swarm):** 9 matched in a 9-min run, stopped for the
+  ovl63 7-worker trial; 6 pattern rows folded.
 - **2026-10-19 (hand):** `func_800C8BA0` (ovl5f, 567ce2fb): its "+4 bytes
   of rodata" lead is gone (the id-word split fixed it); it needed all five
   cases listed so gcc builds the 0..4 table.

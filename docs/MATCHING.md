@@ -1002,6 +1002,12 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | A global's lhu is hoisted above the sh/sw stores to a struct in ours, but the target keeps it after them | declare the global as an array (`extern u16 D[]`, read `D[0]`): the array access is MEM_IN_STRUCT, so it may alias the struct stores and sched keeps it in place | `Init_PogoPadlock` |
 | Two u16 field loads into locals come out in the wrong order (lock before action) before a compare on the first | declare both locals `s32` rather than u16 (the s32 one also gives `slti` instead of `sltiu` on its later compare) | `func_800BA110` |
 | An inner if/else's two arms store the same global through a shared `sw rX,0(a2)` (address set with `addiu a2,v0,%lo(G)` before the branch), but ours stores in each arm | write the store once with a ternary: `G = (c) ? (G == 2) : (G == 0 ? 1 : 2);` | `Roo_ChangeDirOnEdge` |
+| prologue: loop-pointer init (lui/addiu) scheduled before/after a hoisted negu wrongly | write the statements in target order as separate statements (`i = 0; neg = -range; for (h = Heroes; ...)`) | `func_800C81C8` |
+| Repeated inline-helper body gets wrong registers / one extra insn when its temps are shared function-scope locals | Put each copy in its own `{ }` block with fresh locals (like a macro expansion) | `PlotRock_TA (ovl5f)` |
+| `lhu` where target has `lw` before an `sh` of the loaded value | load into an `s32` temp first, then store the temp to the s16 field | `func_800C69C4` |
+| if/else pops a global pointer then a shared `sh` stores through a per-branch object; registers swapped (%hi(ptr) not in a0, obj not in v1) | write the store inside each branch as one expression `G->f = val = *P++;` (no obj temp); jump/cross-jump still merges the sh | `func_800C5620` |
+| chained load p->a->b lands in two regs (v0 then t0) where target reuses one (v1 twice) | split into `x = p->a; x = x->b;` so it's one pseudo | `PlotLaserBitTA` |
+| shared constant `li` scheduled later than target (target loads it before earlier-looking stores) | move the store that first uses the constant earlier in the source; the scheduler keeps the other same-base stores' order | `InitTankBossCrashTurret (ovl5f)` |
 
 ## Classify the diff, then work through the list
 
