@@ -372,7 +372,18 @@ void InitPUGenerator_CH(NAS *nas) {
     nas->UserInfo.flags = 0x258;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BA694);
+void func_800BA694(s32 arg0) {
+    EXTengine *p = Heroes[arg0].hero_powerup;
+    subengine *s = NULL;
+
+    if (p != NULL) {
+        s = p->sub;
+    }
+    if (s != NULL) {
+        p->flags &= 0xFFFF7FFF;
+    }
+    D_800BC2D0[arg0][0x14] = 0;
+}
 
 void func_800BA70C(s32 arg0) {
     HeroInfo *base = Heroes;
