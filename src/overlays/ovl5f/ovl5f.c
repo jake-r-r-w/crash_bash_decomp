@@ -1205,7 +1205,38 @@ void InitShell(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitSwirlyTA);
+void InitSwirlyTA(NAS *nas) {
+    Ovl5fExt1605 *ext;
+    EXTengine *eng;
+    subengine *sub;
+    void *p;
+
+    ext = AddExtension(nas, 0x38, 0x10000000);
+    if (ext != NULL) {
+        nas->FUX = (EXT *)ext;
+        p = D_8005365C;
+        ext->unk28 = 0x87;
+        eng = nas->Engine;
+        sub = eng->sub;
+        eng->unk5D = 0;
+        sub->unk6C = p;
+        sub->unk74 = 0x2038;
+        sub->flags |= 0x20000000;
+        eng->flags |= 0x21;
+        if (func_80018F3C(eng, 2) == 2) {
+            sub = sub->next;
+            sub->unk6C = D_8005365C;
+            sub->unk74 = 0x2030;
+            sub = sub->next;
+            sub->unk6C = D_8005365C;
+            sub->unk74 = 0x2030;
+        }
+        if (nas->Failure == 0) {
+            return;
+        }
+    }
+    KillNAS(nas);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitFlubberTA);
 
