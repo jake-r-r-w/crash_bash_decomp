@@ -1529,7 +1529,39 @@ done:
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BEA34);
+s32 func_800BEA34(s32 x, s32 z, s32 hero) {
+    s32 grid[64];
+    s32 *g;
+    Ovl60Cell *base;
+    Ovl60Cell *c;
+    s32 i;
+    s32 j;
+
+    if (func_800BEB6C(x, z, hero) < 2) {
+        return 0;
+    }
+    base = D_800C53DC[0];
+    c = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(D_800C53DC[0]) + (u32)base);
+    if (c->unkE != 0) {
+        return 0;
+    }
+    if (c->unkA == hero) {
+        return 0;
+    }
+    g = grid;
+    for (j = 0; j < 8; j++) {
+        for (i = 0; i < 8; i++) {
+            s32 *p = (s32 *)((j * 8 + i) * 4 + (u32)g);
+            *p = 0;
+            if (D_800C53DC[i][j].unkA == hero) {
+                *p = 1;
+            }
+        }
+    }
+    grid[z * 8 + x] = 1;
+    func_800BB840(grid, hero);
+    return func_800BBB08(grid, hero, 0) != 0;
+}
 
 s32 func_800BEB6C(s32 arg0, s32 arg1, s32 arg2) {
     s32 n;
