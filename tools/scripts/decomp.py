@@ -1810,6 +1810,31 @@ def edited_in_worktree(names, path="src"):
     return out
 
 
+def cmd_sched(a):
+    """Why cc1 allocated and scheduled NAME as it did (tools/scripts/schedx.py)."""
+    import schedx
+    proj, funcs = need_proj(), need_funcs()
+    key, e = find_func(funcs, a.func)
+    name = cur_name(key, e, sym_names())
+    src = e.get("src") or locate_def(name)
+    if not src or still_asm(src, name, e["name"], e["orig"]):
+        die(f"{name}: no C for it yet (still INCLUDE_ASM?)")
+    cfg = unit_cfg(mk_config(), src)
+    d = "build/sched"
+    os.makedirs(d, exist_ok=True)
+    i = f"{d}/{name}.i"
+    run(f"{X}cpp {' '.join(make_flags('CPPFLAGS'))} {src} > {i}")
+    r = run(f"cd {d} && {GCC_ROOT}/{cfg['CC_VER']}/cc1 -quiet {cfg['OPT_FLAGS']} "
+            f"{cfg.get('EXTRA_CC1FLAGS', '')} -G{cfg.get('GVAL', '0')} -dl -dg -dS -dR "
+            f"-o {name}.s {name}.i")
+    if r.returncode:
+        die(f"cc1 failed: {r.stderr.strip()[-300:]}")
+    dumps = {k: read(f"{i}.{k}") for k in ("lreg", "greg", "sched", "sched2") if os.path.exists(f"{i}.{k}")}
+    homes = var_homes(src, name, mk_config())
+    insn = {int(x) for x in a.insn.split(",")} if a.insn else None
+    print(schedx.report(dumps, name, homes, a.passname, a.block, insn))
+
+
 def cmd_reconcile(a):
     """Put declarations the working tree's headers re-declare back to HEAD's form (headers.py)."""
     import headers
@@ -4682,6 +4707,13 @@ def main():
                    help="batch mode (tools/swarm): skip the full build; run `decomp.py verify` after the "
                         "batch and publish none of its commits unless it passes")
     p.set_defaults(fn=cmd_done)
+    p = sub.add_parser("sched", help="why cc1 allocated and scheduled a function so: global.c "
+                       "priorities and each sched pass's choices")
+    p.add_argument("func")
+    p.add_argument("--pass", dest="passname", choices=["sched", "sched2"], help="one pass only")
+    p.add_argument("--block", type=int, help="one basic block only")
+    p.add_argument("--insn", help="only these insn uids (comma-separated)")
+    p.set_defaults(fn=cmd_sched)
     sub.add_parser("reconcile", help="headers: keep HEAD's declaration where the working tree "
                    "declares a name again (swarm gate clashes)").set_defaults(fn=cmd_reconcile)
     sub.add_parser("verify", help="clean rebuild and byte compare").set_defaults(fn=cmd_verify)

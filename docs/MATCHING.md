@@ -1118,7 +1118,12 @@ two values in each other's registers, or a shared tail merged into the wrong
 copy. For these, read the rule that breaks the tie instead of guessing at C:
 
 1. Dump the pass that decides it (table below), using the cc1 command above.
-2. Find the tie in the dump's trace.
+2. Find the tie in the dump's trace. For register allocation and scheduling,
+   `decomp.py sched NAME [--pass sched|sched2] [--block N] [--insn UIDS]` does steps 1-2:
+   global.c's allocation order with each pseudo's refs, live length, priority, register and
+   C variables, then each block in final order with the rule that placed every insn (higher
+   priority, the only one ready, or a tie broken by source order or dependence). The tie
+   attribution is inferred from the trace; check it in sched.c before acting on it.
 3. Read the function that decides it in `tools/reference/gcc-2.7.2.3/`. That is FSF 2.7.2.3; for
    these passes its code behaves like our 2.8.1 cc1 in every case checked so far. Its
    `README.decomp.md` says which file holds which pass and lists the known differences.

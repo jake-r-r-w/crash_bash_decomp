@@ -556,6 +556,15 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-19 (tools):** three matching aids. (1) `decomp.py reconcile`
+  (headers.py): on a declaration-clash gate refusal the swarm keeps the
+  tree's declarations and gates again before paying a worker. (2)
+  `aspsx_compare.py` runs Sony's real ASPSX (2.56-2.86, `ext/aspsx/`) on
+  every file's matched C: identical to our pipeline on all ~1,700 gcc 2.8.1
+  functions; the slot fills `aspsx_fill.py` adds (frame-only epilogue, the
+  2.7.2 units) are Sony's compilers', not ASPSX's (ARCHITECTURE.md,
+  Toolchain). (3) `decomp.py sched NAME` prints global.c's allocation
+  order and priorities and the rule that placed each insn in sched1/sched2.
 - **2026-10-19 (lint):** `done` refuses a run of `x++; x--;` statements
   (no-op pair) without --hack; only `func_800B345C` has one. Its rework got
   the registers with one natural `do { } while (0)` but not a sched1 tie
