@@ -1361,7 +1361,34 @@ void func_800CAE10(s32 player, s32 target) {
     fux->target = r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAEB0);
+void func_800CAEB0(s32 player, s32 idx) {
+    Ovl62Prox *p;
+    Ovl62Mode *m;
+    EXTengine *a;
+    EXTengine *b;
+    s32 dx;
+    s32 dz;
+    s32 mode;
+
+    if (D_8005A648 == 0x12) {
+        p = D_800D5494;
+        if (p != NULL) {
+            m = p->unk58;
+            if (m != NULL) {
+                a = p->eng;
+                b = Heroes[player].hero_eng;
+                dx = a->unk10.x - b->unk10.x;
+                dz = a->unk10.z - b->unk10.z;
+                if (dx * dx + dz * dz <= 0xB0643) {
+                    mode = m->mode;
+                    if (mode == 1 || mode == 5) {
+                        D_800D5FEC[idx] |= 0x100;
+                    }
+                }
+            }
+        }
+    }
+}
 
 s32 func_800CAF94(s32 state) {
     Ovl62Fux *f;

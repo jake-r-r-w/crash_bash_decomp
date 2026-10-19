@@ -334,6 +334,20 @@ extern Ovl62Owner *D_800D5254;
 extern s32 D_800D5FFC;
 s32 func_800B7CDC();
 
+/* Read by func_800CAEB0. */
+typedef struct Ovl62Mode {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ s32 mode;
+} Ovl62Mode;
+
+typedef struct Ovl62Prox {
+    /* 0x00 */ u8 pad0[0x54];
+    /* 0x54 */ EXTengine *eng;
+    /* 0x58 */ Ovl62Mode *unk58;
+} Ovl62Prox;
+
+extern Ovl62Prox *D_800D5494;
+
 void func_800B60B8(s32 player);
 
 void func_800B767C(s32 player);
@@ -498,6 +512,8 @@ extern ScriptInit D_800D5DB8;
 s32 func_800B4094(s32 *arg0, s32 arg1);
 
 void func_800B782C(s32 player);
+
+void func_800CAEB0(s32 player, s32 idx);
 
 void func_800CFB7C(s32 player);
 
