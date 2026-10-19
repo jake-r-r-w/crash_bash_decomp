@@ -1725,7 +1725,29 @@ void func_800CF9EC(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CFB7C);
+void func_800CFB7C(s32 player) {
+    HeroInfo *base;
+    HeroInfo *hero;
+    EXTheromove *move;
+
+    if (func_800D2D2C() == 0) {
+        base = Heroes;
+        hero = &base[player];
+        move = hero->hero_move;
+        if (move != NULL) {
+            ((Ovl62Pad *)D_80051338)[player].unk50 = 0;
+            ((Ovl62Pad *)D_80051338)[player].unk54 = 0;
+            func_800BBF2C(player);
+            func_800CD214(player);
+            func_800C0888(&hero->hero_eng->unk10, player);
+            hero->hero_frozen = 2;
+            hero->hero_eng->unk1E += 0x10;
+            hero->hero_eng->unk5E = 1;
+            move->x_max = 0;
+            move->z_max = 0;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CFC58);
 
