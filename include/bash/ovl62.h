@@ -20,6 +20,8 @@ s32 func_800CB6C4(s32 arg0);
 s32 func_800CB744(u8 *arg0, u8 *arg1);
 u32 func_800CBA28(u8 *arg0);
 s32 func_800CBA5C(void);
+void func_800CF9EC(s32 player);
+s32 func_800D2D2C();
 void func_800D3170(void);
 void func_800D34F0(void);
 void func_800D34F8(void);
