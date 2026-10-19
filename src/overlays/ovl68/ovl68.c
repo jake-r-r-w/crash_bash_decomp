@@ -980,4 +980,12 @@ void func_800BB6FC(s32 arg0, s32 arg1, s32 arg2, EXTengine *arg3, Ovl68Out *arg4
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BB7E0);
+s32 func_800BB7E0(Ovl68Obj *a, Ovl68Pos *b) {
+    Ovl68Pos *p = a->pos;
+    s32 dx = b->x - p->x;
+    s32 dz;
+    dx = dx * dx;
+    dz = b->z - p->z;
+    dz = dz * dz;
+    return csqrt(dx + dz) >> 6;
+}
