@@ -47,7 +47,20 @@ void func_800B44C8(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B459C);
+s32 func_800B459C(s32 *p) {
+    s32 d;
+    s32 a;
+    if (p[4] < -D_800BC44C || D_800BC44C < p[4] || p[6] < -D_800BC44C || D_800BC44C < p[6]) {
+        d = (csqrt(p[4] * p[4] + p[6] * p[6]) >> 6) - D_800BC448;
+        if (d > 0) {
+            a = get_angle(p[4], p[6]);
+            p[4] -= (d * D_80068BD4[(a - 0x400) & 0xFFF].unk2) >> 12;
+            p[6] -= (d * D_80068BD4[a & 0xFFF].unk2) >> 12;
+            return 0;
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B46BC);
 
