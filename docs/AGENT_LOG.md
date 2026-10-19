@@ -95,7 +95,7 @@ one session of 1-16 min. The day's tool upgrades (closest-C checkpoints,
 parked. **Retry parks with this recipe after tool upgrades.**
 
 **Start of next session: matching.** Left per overlay (2026-10-19): ovl62
-196, ovl60 166, ovl5f 147, ovl63 123, ovl5d 100, ovl68 83, ovl65 69,
+186, ovl60 166, ovl5f 147, ovl63 123, ovl5d 100, ovl68 83, ovl65 69,
 ovl5e 67, ovl66 67, ovl64 51, ovl67 34, ovl69 9, ovl61 1, ovl6a 1, engine
 2 (count `INCLUDE_ASM` per file). The untouched overlays suit the swarm
 (item 1b's recipe, `--seg overlays/NAME`), then the post-run checklist.
@@ -315,6 +315,15 @@ Other:
 ## Gotchas
 
 **Tooling**
+- **Removing a function symbol leaves it in the index.** `decomp.py index`
+  adds and updates entries but never drops them, so after a resplit that
+  removes functions their `.decomp/functions.json` and `state.json` keys
+  stay, and `progress` counts them as matched (no `INCLUDE_ASM`). Drop the
+  keys by hand (`jload`/`jsave` from `decomp.py`) and delete the stale
+  `asm/nonmatchings` files. `decomp.py rename` also failed its build check
+  on 2026-10-19 with the error hidden ("BUILD FAILED") when the same rename
+  by hand built and matched; rename by hand (symbol file, sed, `make split`,
+  `make check`) if it does.
 - **A new prototype can break callers in other files.** The gate adds the
   matched function's prototype to the owned header; an already matched
   caller elsewhere that calls it with other arguments then fails to compile
@@ -500,6 +509,14 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-19 (ovl62 splits):** the first ovl62 swarm run stopped after a
+  minute (5 workers hit an OAuth refresh race at once), but its one park
+  found ten AST names that `5bf518f2` put in `ovl62`, each cutting a real
+  function mid-code. They belong in `ovl63` (Rippled, InnerRipple) and
+  `ovl6a` (PathEffect, CrystalFlash, SparkGFX); moved, ovl62 resplit (now
+  186 functions), `make check` OK (ARCHITECTURE.md, Which game is which). A
+  sweep for any function whose predecessor doesn't end in a jump finds no
+  others.
 - **2026-10-19 (log):** the three gate failures listed under Next
   (`func_800BA43C`, `func_800B3E74`, `func_800B7CE8`) were already matched
   on 2026-10-18; Next now says so.

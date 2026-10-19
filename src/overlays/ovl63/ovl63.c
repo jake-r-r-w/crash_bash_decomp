@@ -187,13 +187,13 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C467C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitGlob);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4810);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotInnerRipple);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C48E8);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitInnerRipple);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C49DC);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotRippled);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4ABC);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRippled);
 
 void PlotRaceGreenSmokeBoost(NAS *nas) {
     func_800250B0(nas);

@@ -228,6 +228,7 @@ void InitPolarMissile(NAS *m);
 void PlotPolarMissile(NAS *m);
 void InitBearminator(NAS *m);
 void PlotBearminator(NAS *m);
+/* InnerRipple and Rippled are defined in ovl63. */
 void InitInnerRipple(NAS *m);
 void PlotInnerRipple(NAS *m);
 void InitRippled(NAS *m);
@@ -246,6 +247,8 @@ void InitSniperMissile(NAS *m);
 void PlotSniperMissile(NAS *m);
 void InitWeatherNas(NAS *m);
 void PlotWeatherNas(NAS *m);
+/* PathEffect, CrystalFlash and SparkGFX are defined in ovl6a (800b4eac.c),
+ * where CrystalFlash takes other types. */
 void InitPathEffect(NAS *m);
 void PlotPathEffect(NAS *m);
 void InitCrystalFlash(NAS *m);

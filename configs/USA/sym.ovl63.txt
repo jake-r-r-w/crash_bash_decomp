@@ -33,3 +33,7 @@ InitRaceGreenSmokeBoost = 0x800C4BD0; // type:func
 PlotRaceGreenSmokeBoost = 0x800C4BB0; // type:func
 InitRaceSmokeBoostWater = 0x800C4638; // type:func
 PlotRaceSmokeBoostWater = 0x800C4618; // type:func
+InitRippled = 0x800C4ABC; // type:func
+PlotRippled = 0x800C49DC; // type:func
+InitInnerRipple = 0x800C48E8; // type:func
+PlotInnerRipple = 0x800C4810; // type:func

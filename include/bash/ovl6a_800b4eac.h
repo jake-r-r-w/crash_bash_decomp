@@ -319,7 +319,7 @@ extern _sfx_handler *D_800BCEEC;
 extern u16 D_800BCBDC[];
 extern u8 D_800BCC04[];
 
-void func_800B7874(void);
+void PlotCrystalFlash(void);
 
 typedef struct FxInner {
     /* 0x00 */ u32 flags;
@@ -424,7 +424,7 @@ void func_800B8F50(void);
 
 void PlotPodiumOdo(NAS *arg0);
 
-void func_800BA7BC(NAS *arg0);
+void PlotSparkGFX(NAS *arg0);
 
 void func_800BA804(void);
 
@@ -453,9 +453,9 @@ extern ScriptInit D_800BCCE8;
 
 s32 func_800B694C(void);
 
-void func_800B77B0(NAS *nas);
+void InitPathEffect(NAS *nas);
 
-void func_800B787C(FxObj *arg0);
+void InitCrystalFlash(FxObj *arg0);
 
 void func_800B7E14(s32 *arg0, s32 arg1);
 
@@ -606,7 +606,7 @@ void PlotPodiumTrophy(PodiumTrophy *arg0);
 
 void func_800B9B0C(void);
 
-void func_800B9D1C(NAS *arg0);
+void InitSparkGFX(NAS *arg0);
 
 void func_800BA1B4(Ovl6aTrailDst *d, Ovl6aTrail *t, s32 idx);
 
@@ -618,7 +618,7 @@ void func_800BABEC(void);
 
 void func_800BB038(void);
 /* Extension 0x10000000 of the path-following objects func_800B6E20 spawns
- * (0x1626); func_800B6FD4 is their Plot. */
+ * (0x1626); PlotPathEffect is their Plot. */
 typedef struct PathExt {
     /* 0x00 */ u8 pad00[0xC];
     /* 0x0C */ KeyBlock *path;
@@ -636,7 +636,7 @@ typedef struct PathExt {
     /* 0x3C */ s32 absAngle;
 } PathExt;
 
-/* func_800B6FD4's rotation buffer (x pitch, y yaw). */
+/* PlotPathEffect's rotation buffer (x pitch, y yaw). */
 typedef struct PathRot {
     s32 x, y, z, pad;
 } PathRot;
@@ -645,6 +645,6 @@ extern s16 D_80051696;
 
 void func_800B551C(void);
 
-void func_800B6FD4(NAS *nas);
+void PlotPathEffect(NAS *nas);
 
 #endif /* BASH_OVL6A_800B4EAC_H */

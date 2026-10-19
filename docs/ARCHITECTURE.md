@@ -253,7 +253,13 @@ code finds 15 code files; nothing else on the disc holds code.
   `0x12` -> `ovl5e`, `0x18`..`0x1D` -> `ovl64`..`ovl68` (`0x1B`, `0x1C` both
   `ovl67`), `0x1F` -> `ovl6a`. The Pogo/Arkenoid/Polar ids match the leaked
   enums (`POGO_AST_zero = 0x1400`, ...); `ovl5f` is Tank (`TANK_AST_zero = 0x1300` in
-  the Oct 9 prototype). Leaf functions reached only through this table are
+  the Oct 9 prototype). The id group does not always name the overlay: five
+  Polar ids point elsewhere, and splitting `ovl62` at them cut real functions
+  mid-code (fixed 2026-10-19). `Rippled` and `InnerRipple` (0x161D, 0x161E)
+  are in `ovl63`; `PathEffect`, `CrystalFlash` and `SparkGFX` (0x1626-0x1628)
+  are in `ovl6a`, which spawns them. Before naming from the table, check that
+  the address starts a function in the overlay (the one before it ends in
+  `jr $ra`). Leaf functions reached only through this table are
   declared in `configs/USA/sym.<ovl>.txt` so splat splits them.
 - **AST names**: the field order is fixed by the engine's spawn code
   (`SpawnNASFromRecord`): it stores `+4` at `nas+0x48` and calls it at once

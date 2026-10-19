@@ -812,7 +812,7 @@ static inline void PathFace(KeyEntry *k, s32 dir, PathRot *ang) {
     }
 }
 
-void func_800B6FD4(NAS *nas) {
+void PlotPathEffect(NAS *nas) {
     PathExt *ext;
     KeyEntry *k;
     KeyEntry *old;
@@ -961,7 +961,7 @@ void func_800B6FD4(NAS *nas) {
     }
 }
 
-void func_800B77B0(NAS *nas) {
+void InitPathEffect(NAS *nas) {
     ScriptExt40 *ext = AddExtension(nas, 0x40, 0x10000000);
 
     if (ext != NULL) {
@@ -978,10 +978,10 @@ void func_800B77B0(NAS *nas) {
     }
 }
 
-void func_800B7874(void) {
+void PlotCrystalFlash(void) {
 }
 
-void func_800B787C(FxObj *arg0) {
+void InitCrystalFlash(FxObj *arg0) {
     arg0->mid->inner->unk6C = **(s32 **)&D_80058AD0;
     arg0->mid->inner->unk74 = 0x200E;
     arg0->mid->inner->unk51 = 0;
@@ -1947,7 +1947,7 @@ void func_800B9B0C(void) {
     }
 }
 
-void func_800B9D1C(NAS *arg0) {
+void InitSparkGFX(NAS *arg0) {
     u8 *nv;
     subengine *s;
 
@@ -2221,7 +2221,7 @@ void func_800BA374(Ovl6aSparks *arg0, MATRIX *m) {
     }
 }
 
-void func_800BA7BC(NAS *arg0) {
+void PlotSparkGFX(NAS *arg0) {
     if (D_8005A624 == 0) {
         if (arg0->UserInfo.user1++ >= 0x1D) {
             KillNAS(arg0);

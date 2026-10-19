@@ -6646,10 +6646,6 @@
  "ovl62:800B6EB4": {
   "auto_failed": "compile"
  },
- "ovl62:800B6FD4": {
-  "auto_diff": 6,
-  "auto_failed": "diff"
- },
  "ovl62:800B6FEC": {
   "auto_failed": "compile"
  },
@@ -6662,18 +6658,8 @@
  "ovl62:800B767C": {
   "auto_failed": "m2c"
  },
- "ovl62:800B77B0": {
-  "auto_failed": "types"
- },
  "ovl62:800B782C": {
   "auto_failed": "m2c"
- },
- "ovl62:800B7874": {
-  "auto_diff": 2,
-  "auto_failed": "diff"
- },
- "ovl62:800B787C": {
-  "auto_failed": "types"
  },
  "ovl62:800B7A58": {
   "auto_failed": "types"
@@ -6714,14 +6700,8 @@
  "ovl62:800B9B6C": {
   "auto_failed": "m2c"
  },
- "ovl62:800B9D1C": {
-  "auto_failed": "types"
- },
  "ovl62:800B9D48": {
   "auto_failed": "m2c"
- },
- "ovl62:800BA7BC": {
-  "auto_failed": "types"
  },
  "ovl62:800BAFA0": {
   "auto_failed": "types"
@@ -6806,23 +6786,11 @@
  "ovl62:800C4748": {
   "auto_failed": "m2c"
  },
- "ovl62:800C4810": {
-  "auto_failed": "m2c"
- },
- "ovl62:800C48E8": {
-  "auto_failed": "types"
- },
  "ovl62:800C4918": {
-  "auto_failed": "m2c"
- },
- "ovl62:800C49DC": {
   "auto_failed": "m2c"
  },
  "ovl62:800C4A3C": {
   "auto_failed": "m2c"
- },
- "ovl62:800C4ABC": {
-  "auto_failed": "types"
  },
  "ovl62:800C4CB8": {
   "auto_failed": "types"

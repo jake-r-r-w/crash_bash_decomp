@@ -53,8 +53,6 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B6D74);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B6EB4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotPathEffect);
-
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B6FEC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B7224);
@@ -63,13 +61,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B7520);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B767C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitPathEffect);
-
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B782C);
-
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotCrystalFlash);
-
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitCrystalFlash);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B7A58);
 
@@ -97,11 +89,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B9994);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B9B6C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitSparkGFX);
-
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B9D48);
-
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotSparkGFX);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BAFA0);
 
@@ -159,17 +147,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotDingoTail);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBrioPack);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotInnerRipple);
-
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitInnerRipple);
-
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitPackEffect);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotRippled);
-
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitPolarBoss);
-
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitRippled);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotPolarBoss);
 
