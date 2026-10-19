@@ -6580,7 +6580,8 @@
   "status": "matched"
  },
  "ovl62:800B3740": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-19T07:21:05Z",
+  "status": "matched"
  },
  "ovl62:800B38A0": {
   "auto_failed": "types"
@@ -7277,7 +7278,9 @@
   "auto_failed": "compile"
  },
  "ovl63:800B35CC": {
-  "auto_failed": "compile"
+  "auto_failed": "compile",
+  "copy_failed": "ovl62:800B3740",
+  "copy_failed_stage": "in-file"
  },
  "ovl63:800B372C": {
   "auto_failed": "compile"
@@ -7915,7 +7918,9 @@
   "auto_failed": "compile"
  },
  "ovl65:800B33D8": {
-  "auto_failed": "compile"
+  "auto_failed": "compile",
+  "copy_failed": "ovl62:800B3740",
+  "copy_failed_stage": "in-file"
  },
  "ovl65:800B3538": {
   "auto_failed": "compile"
