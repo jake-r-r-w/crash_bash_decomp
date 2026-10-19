@@ -365,7 +365,15 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C2A8C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C2B00);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C2B98);
+void func_800C2B98(s32 arg0) {
+    Ovl60Slot *base = D_800C535C;
+    Ovl60Slot *slot = (Ovl60Slot *)(arg0 * sizeof(Ovl60Slot) + (u32)base);
+
+    if (slot->nas != NULL) {
+        KillNAS(slot->nas);
+        slot->nas = NULL;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C2BE8);
 
