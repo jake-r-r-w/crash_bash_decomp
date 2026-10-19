@@ -235,7 +235,47 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BBB08);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BBC94);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BBF00);
+s32 func_800BBF00(s32 *arg0, s32 *arg1) {
+    s32 x;
+    s32 y;
+    s32 i;
+    s32 found;
+    s32 ok;
+
+    i = 0;
+loop:
+    x = Random(8);
+    y = Random(8);
+    found = func_800BC04C(x, y) ^ 1;
+    i++;
+    if (found && i < 10) {
+        goto loop;
+    }
+    if (i >= 10) {
+        found = 0;
+    } else {
+        *arg0 = x;
+        *arg1 = y;
+        found = 1;
+    }
+    if (!found) {
+        return 0;
+    }
+    ok = 1;
+    if (*arg0 > 0) {
+        ok = func_800C1608(*arg0 - 1, *arg1) == 0;
+    }
+    if (*arg0 < 7 && func_800C1608(*arg0 + 1, *arg1)) {
+        ok = 0;
+    }
+    if (*arg1 > 0 && func_800C1608(*arg0, *arg1 - 1)) {
+        ok = 0;
+    }
+    if (*arg1 < 7 && func_800C1608(*arg0, *arg1 + 1)) {
+        ok = 0;
+    }
+    return ok;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BC04C);
 
