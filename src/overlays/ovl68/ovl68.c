@@ -160,7 +160,46 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B722C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotBarrelGenerator);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", InitBarrelCH);
+void InitBarrelCH(NAS *nas) {
+    EXTengine *eng;
+    subengine *sub;
+    CoalFlameExt *ext;
+    s32 i;
+    s32 n;
+
+    ext = AddExtension(nas, 0x44, 0x10000001);
+    nas->FUX = &ext->ext;
+    ((s32 *)ext)[0x30 / 4] = 1;
+    ((s32 *)ext)[0x40 / 4] = -0x17;
+    ext->unk1C = 0x3E8;
+    eng = nas->Engine;
+    sub = eng->sub;
+    eng->unk2C.x = 0x3E8;
+    eng->unk2C.y = 0x3E8;
+    eng->unk2C.z = 0x3E8;
+    eng->unk5C = 1;
+    eng->unk10.y = 0;
+    sub->unk6C = D_80053F8C;
+    n = ++D_800BC450;
+    if ((n & 0x1F) == 0) {
+        sub->unk74 = 0x2016;
+    } else if ((n & 7) == 0) {
+        sub->unk74 = 0x2017;
+    } else {
+        sub->unk74 = 0x2001;
+    }
+    nas->UserInfo.status = 0;
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    } else {
+        for (i = 0; i < 8; i++) {
+            if (D_800BC424[i] == NULL) {
+                D_800BC424[i] = nas;
+                break;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotBarrelCH);
 

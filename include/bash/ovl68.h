@@ -67,6 +67,8 @@ extern s32 D_800BC2D0[][21];
 extern s32 D_800BC4E8[];
 extern NAS *D_800BC420[];
 extern NAS *D_800BC424[8];
+extern NAS *D_800BC424[];
+extern s32 D_800BC450;
 NAS *func_800BB688(s32 x, s32 z, s32 range);
 extern s32 D_800BC4E8[];
 extern s32 D_800BC444;
@@ -94,6 +96,8 @@ void func_800B44C8(void);
 void func_800B627C(s32 arg0);
 
 void func_800B6AAC(s32 arg0);
+
+void InitBarrelCH(NAS *nas);
 
 void func_800BA630(NAS *nas);
 
