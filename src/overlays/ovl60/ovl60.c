@@ -1280,7 +1280,21 @@ s32 func_800C2660(u8 *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C2674);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C2770);
+void func_800C2770(s32 arg0, u32 arg1, u32 arg2) {
+    s32 i;
+    s32 j;
+
+    if (arg1 < 8 && arg2 < 8) {
+        for (i = 0; i < 8; i++) {
+            for (j = 0; j < 8; j++) {
+                if (D_800C53DC[i][j].unk10 == arg0 + 1) {
+                    D_800C53DC[i][j].unk10 = 0;
+                }
+            }
+        }
+        D_800C53DC[arg1][arg2].unk10 = arg0 + 1;
+    }
+}
 
 void func_800C2810(s32 arg0) {
     s32 i;
