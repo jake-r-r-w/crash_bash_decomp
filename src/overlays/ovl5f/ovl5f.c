@@ -579,7 +579,15 @@ void func_800C7C08(u8 *arg0) {
 void func_800C7C68(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7C70);
+void func_800C7C70(s32 arg0) {
+    if (D_8005A644 & 0x801) {
+        D_800CB0F0 = -1;
+    }
+    if ((Heroes[arg0].hero_status & 0x200) && Heroes[arg0].hero_mode != 0x70) {
+        SetHeroAction((HeroInfo *)arg0, 0x70);
+        D_800CB0F0 = arg0 + 1;
+    }
+}
 
 void func_800C7D04(void) {
     func_80089BE8();

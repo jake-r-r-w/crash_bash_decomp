@@ -115,6 +115,8 @@ void func_800C69C4(s32 arg0, s32 *arg1);
 
 s32 func_800C6B9C(s32 id, s32 x, s32 z, s32 angle);
 
+void func_800C7C70(s32 arg0);
+
 void func_800C7D24(HeroInfo *hero);
 
 void func_800C7DB8(s32 arg0);
