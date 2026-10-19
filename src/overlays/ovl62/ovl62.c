@@ -264,7 +264,44 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BFEE0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotScratchMaster);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitIceBerg);
+void InitIceBerg(NAS *m) {
+    MapTriggerInfo *info;
+
+    if (m->trigger != NULL) {
+        info = m->trigger->InfoStruct;
+        m->UserInfo.user1 = info->val1;
+        m->UserInfo.user2 = info->val2;
+        m->Engine->sub->unk6C = D_800546C4;
+        if (D_8005A648 == 0x12) {
+            if (m->UserInfo.user1 == 0) {
+                m->Engine->sub->unk74 = 0x200D;
+            }
+            if (m->UserInfo.user1 == 1) {
+                m->Engine->sub->unk74 = 0x200E;
+            }
+            if (m->UserInfo.user1 == 2) {
+                m->Engine->sub->unk74 = 0x200F;
+            }
+        } else {
+            if (m->UserInfo.user1 == 0) {
+                m->Engine->sub->unk74 = 0x2010;
+            }
+            if (m->UserInfo.user1 == 1) {
+                m->Engine->sub->unk74 = 0x2011;
+            }
+            if (m->UserInfo.user1 == 2) {
+                m->Engine->sub->unk74 = 0x2012;
+            }
+        }
+        m->Engine->sub->flags |= 0x02000000;
+        m->Engine->sub->unk51 = 0;
+        if (m->UserInfo.user1 == 1) {
+            m->Engine->sub->unk12 = 0x800;
+            m->Engine->sub->unk68 = 0x200;
+        }
+        m->Engine->sub->unk68 = 0x200;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C0888);
 

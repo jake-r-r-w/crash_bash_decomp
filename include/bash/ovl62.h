@@ -8,6 +8,8 @@
 #include "common.h"
 #include "bash/nas.h"
 
+extern u8 D_800546C4[];
+
 void func_800CAD0C(void);
 void func_800CAD14(void);
 void func_800CAD1C(void);
