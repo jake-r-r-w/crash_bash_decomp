@@ -953,7 +953,9 @@ void func_800C8324(void) {
 void func_800C832C(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8334);
+void func_800C8334(s32 arg0) {
+    Heroes[arg0].hero_shadow->flags = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8360);
 
