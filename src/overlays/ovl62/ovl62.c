@@ -2794,7 +2794,30 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D1188);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D14CC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D17E8);
+void func_800D17E8(s32 player) {
+    HeroInfo *base = Heroes;
+    HeroInfo *info = base + player;
+    EXTheromove *move;
+    Ext20 *ext;
+    s32 speed;
+
+    move = info->hero_move;
+    if (move != NULL && func_800D2D2C() == 0) {
+        speed = csqrt(move->x_vel * move->x_vel + move->z_vel * move->z_vel) >> 6;
+        ext = FindExtension(info->hero, 0x20000000);
+        if (ext != NULL) {
+            ext->val += 4;
+            if (ext->val > 0x100) {
+                ext->val = 0x100;
+            }
+        }
+        func_800BBF2C(player);
+        Heroes[player].hero_eng->unk1C += speed;
+        func_800CD214(player);
+        func_800C0888(&Heroes[player].hero_eng->unk10, player);
+        Heroes[player].hero_eng->unk5E = 1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D191C);
 
