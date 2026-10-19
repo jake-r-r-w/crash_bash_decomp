@@ -8591,7 +8591,8 @@
   "via": "copy"
  },
  "ovl65:800BCF88": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-19T15:47:51Z",
+  "status": "matched"
  },
  "ovl65:800BD01C": {
   "auto_diff": 9,

@@ -313,7 +313,16 @@ void func_800BCF44(s32 arg0) {
     func_8008502C(arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BCF88);
+void func_800BCF88(s32 arg0) {
+    func_80089FA4(arg0);
+    SetHeroSeq((HeroInfo *)arg0, 0x4D);
+    Heroes[arg0].hero_eng->unk20 = 0;
+    Heroes[arg0].hero_eng->unk5E = 1;
+    if (Heroes[arg0].hero_eng->sfx != NULL) {
+        StopSfx(Heroes[arg0].hero_eng->sfx);
+    }
+    func_80085718(arg0, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BD01C);
 
