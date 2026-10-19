@@ -2727,7 +2727,74 @@ void func_800D2248(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2334);
+void func_800D2334(s32 player) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = base + player;
+    s32 *ext;
+    s32 *p;
+    EXTheromove *move;
+    EXTengine *eng;
+    NAS *nas;
+    s32 z;
+    s32 y;
+    s32 x;
+    s32 t;
+
+    ext = FindExtension(h->hero, 0x20000000);
+    if (ext != NULL) {
+        move = h->hero_move;
+        if (move != NULL) {
+            move->z_vel = 0;
+            move->x_vel = 0;
+            move->z_max = 0;
+        }
+        eng = h->hero_eng;
+        t = ext[0x9C / 4] + 1;
+        x = eng->unk10.x;
+        y = eng->unk10.y;
+        z = eng->unk10.z;
+        ext[0x9C / 4] = t;
+        if (t == 4) {
+            SpawnNASById(x - 0x80, y - 0x100, z, 0x1613, 0x11);
+            SpawnNASById(x, y - 0x100, z, 0x1614, 0x11);
+        }
+        if (ext[0x9C / 4] == 2) {
+            SpawnNASById(x + 0x80, y - 0x180, z, 0x1613, 0x11);
+        }
+        if (ext[0x9C / 4] == 0x3C) {
+            SetHeroAction((HeroInfo *)player, 0x50);
+        }
+        if (--ext[0x98 / 4] < 0) {
+            ext[0x98 / 4] = Random(7) + 1;
+            nas = SpawnNASById(x + 0x40, y - 0x40, z, 0x1612, 0x11);
+            if (nas != NULL) {
+                p = FindExtension(nas, 0x10000000);
+                if (p != NULL) {
+                    p[0x1C / 4] = 0xA;
+                    p[0xC / 4] = 0x400;
+                    p[0x10 / 4] = 0x50;
+                    p[0x14 / 4] = -0x40;
+                    p[0x24 / 4] = 0x20;
+                    p[0x28 / 4] = 1;
+                    p[0x18 / 4] |= 1;
+                }
+            }
+            nas = SpawnNASById(x - 0x40, y - 0x40, z, 0x1612, 0x11);
+            if (nas != NULL) {
+                p = FindExtension(nas, 0x10000000);
+                if (p != NULL) {
+                    p[0x1C / 4] = 0xA;
+                    p[0xC / 4] = 0x258;
+                    p[0x10 / 4] = 0x50;
+                    p[0x14 / 4] = -0x40;
+                    p[0x24 / 4] = 0x20;
+                    p[0x28 / 4] = 1;
+                    p[0x18 / 4] |= 1;
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D257C);
 
