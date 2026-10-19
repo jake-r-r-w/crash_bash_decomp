@@ -108,7 +108,9 @@ typedef struct Ovl62Fux {
     /* 0x28 */ s32 target;
     /* 0x2C */ u8 pad2C[0x30 - 0x2C];
     /* 0x30 */ s32 state;
-    /* 0x34 */ u8 pad34[0x44 - 0x34];
+    /* 0x34 */ u8 pad34[0x3C - 0x34];
+    /* 0x3C */ s32 unk3C;
+    /* 0x40 */ u8 pad40[0x44 - 0x40];
     /* 0x44 */ void *func;
     /* 0x48 */ u8 pad48[0x5C - 0x48];
     /* 0x5C */ s32 timer;
@@ -116,6 +118,32 @@ typedef struct Ovl62Fux {
 
 extern s32 D_800D4E0C[];
 void func_800B7520();
+void func_800B767C();
+extern s32 D_800D5FEC[];
+
+/* Inlined into func_800B9994. */
+static inline void Ovl62StartChase(s32 player) {
+    Ovl62Fux *f;
+    s32 j;
+    s32 n;
+
+    f = (Ovl62Fux *)Heroes[player].hero->FUX;
+    if (f == NULL) {
+        return;
+    }
+    for (n = j = 0; j < 4; j++) {
+        if (Heroes[j].hero_status & 0x2000) {
+            n++;
+        }
+        f->state = 4;
+        f->func = func_800CB12C;
+        if (n >= 3) {
+            return;
+        }
+    }
+    f->unk3C = 1;
+    f->unk24 = Random(0x3C) + 5;
+}
 s32 func_800B9714(s32 player);
 
 s32 func_800CD118(s32 *arg0, s32 arg1);
@@ -166,6 +194,8 @@ extern s32 D_800D5FEC[4];
 void func_800B60B8(s32 player);
 
 void func_800B767C(s32 player);
+
+s32 func_800B9994(s32 player);
 
 s32 func_800C9EC4(EXTengine *eng, s32 player);
 
