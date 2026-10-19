@@ -1547,7 +1547,42 @@ void InitSwirlyTA(NAS *nas) {
     KillNAS(nas);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitFlubberTA);
+void InitFlubberTA(NAS *nas) {
+    Ovl5fExt1605 *ext;
+    EXTengine *eng;
+    EXTengine *e2;
+    subengine *sub;
+    void *p;
+
+    ext = AddExtension(nas, 0x38, 0x10000000);
+    if (ext != NULL) {
+        nas->FUX = (EXT *)ext;
+        ext->unk28 = 0x4B;
+        ext->unk14 = -0x1E;
+        p = D_8005365C;
+        eng = nas->Engine;
+        sub = eng->sub;
+        sub->unk6C = p;
+        sub->unk74 = 0x2016;
+        eng->unk5D = 1;
+        e2 = AddEngine(nas, 1);
+        if (e2 != NULL) {
+            e2->unk10.x = eng->unk10.x;
+            e2->unk10.y = 0;
+            e2->unk10.z = eng->unk10.z;
+            e2->sub->unk51 = 2;
+            e2->sub->unk6C = D_8005365C - 0x700;
+            e2->sub->unk74 = 0x2001;
+            e2->sub->flags |= 0x40000041;
+            e2->sub->unk76 = 0x800;
+            e2->sub->unk50 = 1;
+        }
+        if (nas->Failure == 0) {
+            return;
+        }
+    }
+    KillNAS(nas);
+}
 
 void InitFlamerBitTA(NAS *nas) {
     FlamerBitExt *ext;

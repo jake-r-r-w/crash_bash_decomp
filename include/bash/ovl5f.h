@@ -109,7 +109,8 @@ extern Ovl5fUnk74 *D_8009D678;
 typedef struct Ovl5fExt1605 {
     /* 0x00 */ u8 pad[0xC];
     /* 0x0C */ s32 unkC;
-    /* 0x10 */ u8 pad10[0x18 - 0x10];
+    /* 0x10 */ u8 pad10[0x14 - 0x10];
+    /* 0x14 */ s32 unk14;
     /* 0x18 */ s32 unk18;
     /* 0x1C */ u8 pad1C[0x20 - 0x1C];
     /* 0x20 */ s32 unk20;
