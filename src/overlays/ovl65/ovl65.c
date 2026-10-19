@@ -367,7 +367,39 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B8A40);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B9020);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B9534);
+void func_800B9534(s32 arg0, s32 arg1) {
+    EXTheromove *a;
+    EXTheromove *b;
+    s32 ma;
+    s32 mb;
+    s32 d;
+    s32 q;
+    s32 r;
+    s32 total;
+    s32 av;
+    s32 bv;
+
+    a = Heroes[arg0].hero_move;
+    b = Heroes[arg1].hero_move;
+    ma = a->mass;
+    mb = b->mass;
+    if (ma > 0 && mb > 0) {
+        av = a->x_vel;
+        bv = b->x_vel;
+        d = -((av - bv) << 8);
+        q = (d * mb + ((ma * av + mb * bv) << 8)) / (total = mb + ma);
+        r = q - d;
+        a->x_vel = q >> 8;
+        b->x_vel = r >> 8;
+        av = a->z_vel;
+        bv = b->z_vel;
+        d = -((av - bv) << 8);
+        q = (d * mb + ((ma * av + mb * bv) << 8)) / total;
+        r = q - d;
+        a->z_vel = q >> 8;
+        b->z_vel = r >> 8;
+    }
+}
 
 void func_800B96A0(s32 arg0) {
     if (Heroes[arg0].hero_frozen == 0) {

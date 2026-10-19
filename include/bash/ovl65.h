@@ -128,6 +128,8 @@ s32 func_800B33D8(s32 arg0);
 
 void func_800B4B14(s32 id);
 
+void func_800B9534(s32 arg0, s32 arg1);
+
 void func_800B96A0(s32 arg0);
 
 void func_800BA468(s32 id);
