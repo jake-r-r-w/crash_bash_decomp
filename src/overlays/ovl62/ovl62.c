@@ -1111,7 +1111,21 @@ void func_800CAD1C(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAD60);
+void func_800CAD60(s32 player) {
+    Ovl62Fux *fux;
+    HeroInfo *base;
+    HeroInfo *h;
+
+    base = Heroes;
+    h = base + player;
+    fux = (Ovl62Fux *)h->hero->FUX;
+    if (fux != NULL) {
+        h->hero_ai->AIpad = 0;
+        func_800B9D48(player);
+        ((void (*)(s32))fux->func)(player);
+        func_80013C94((u8 *)&D_80051338[player], h->hero_ai->AIpad);
+    }
+}
 
 void func_800CAE10(s32 player, s32 target) {
     Ovl62Fux *fux;

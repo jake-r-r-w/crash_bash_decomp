@@ -210,6 +210,8 @@ s32 func_800B9714(s32 player);
 
 s32 func_800CD118(s32 *arg0, s32 arg1);
 
+void func_800B9D48(s32 player);
+
 void func_800D2EB0(s32 player);
 
 void func_800D325C(s32 arg0);
@@ -397,5 +399,7 @@ typedef struct Ovl62TeamView {
 } Ovl62TeamView;
 
 s32 func_800B9B6C(s32 hero);
+
+void func_800CAD60(s32 player);
 
 #endif /* BASH_OVL62_H */
