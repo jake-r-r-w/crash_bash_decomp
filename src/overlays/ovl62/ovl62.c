@@ -1115,7 +1115,24 @@ s32 func_800CAFF0(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CAFF8);
+s32 func_800CAFF8(s32 player) {
+    Ovl62Fux *fux;
+    HeroInfo *h;
+    HeroInfo *base;
+
+    base = Heroes;
+    h = base + player;
+    fux = (Ovl62Fux *)h->hero->FUX;
+    if (fux == NULL) {
+        return 0;
+    }
+    if (Random(0x1000) >= D_800D4E0C[h->hero_name + 7]) {
+        return 0;
+    }
+    fux->state = 6;
+    fux->func = func_800B7F70;
+    return 1;
+}
 
 void func_800CB0A4(void) {
     Ovl62Link *l;

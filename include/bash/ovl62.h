@@ -180,6 +180,7 @@ typedef struct Ovl62Fux {
 extern s32 D_800D4E0C[];
 void func_800B7520();
 void func_800B767C();
+void func_800B7F70();
 extern s32 D_800D5FEC[];
 
 /* Inlined into func_800B9994. */
@@ -384,6 +385,8 @@ extern u16 *D_8009D6F4;
 extern s32 D_800D6924[];
 
 s32 func_800CAC20(s32 i);
+
+s32 func_800CAFF8(s32 player);
 
 void func_800D3460(s32 arg0);
 
