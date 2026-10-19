@@ -944,7 +944,38 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BCE88);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BD99C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BE7B4);
+void func_800BE7B4(s32 player, Ovl63Barrel *b) {
+    Ovl63Fux *f;
+    s32 ma;
+    s32 mb;
+    s32 xa;
+    s32 xb;
+    s32 d;
+    s32 q;
+    s32 r;
+    s32 total;
+
+    ma = Heroes[player].hero_move->mass;
+    mb = b->unk4E;
+    if (ma > 0 && mb > 0) {
+        f = (Ovl63Fux *)Heroes[player].hero->FUX;
+        if (f != NULL) {
+            xa = f->unk13C >> 8;
+            xb = b->unk20 >> 8;
+            d = -((xa - xb) << 8);
+            xb = (ma * xa + mb * xb) << 8;
+            q = (d * mb + xb) / (total = mb + ma);
+            xa = f->unk140 >> 8;
+            xb = b->unk40 >> 8;
+            d = -((xa - xb) << 8);
+            r = (d * mb + ((ma * xa + mb * xb) << 8)) / total;
+            f->unk13C = q;
+            b->unk20 = q;
+            f->unk140 = r;
+            b->unk40 = r - d;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BE914);
 

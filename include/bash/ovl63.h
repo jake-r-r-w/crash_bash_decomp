@@ -450,6 +450,13 @@ typedef struct Ovl63Barrel {
 extern Ovl63Barrel D_800C6F34[128];
 extern s32 D_800C66F0;
 
+/* A hero's NAS.FUX as func_800BE7B4 sees it (velocities). */
+typedef struct Ovl63Fux {
+    /* 0x000 */ u8 pad0[0x13C];
+    /* 0x13C */ s32 unk13C;
+    /* 0x140 */ s32 unk140;
+} Ovl63Fux;
+
 void func_800BE7B4(s32 player, Ovl63Barrel *b);
 
 void func_800B5F04(void);
