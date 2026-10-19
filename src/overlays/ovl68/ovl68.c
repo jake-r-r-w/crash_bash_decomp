@@ -225,7 +225,17 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotCoal);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", InitCoal);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BAC30);
+void func_800BAC30(NAS *nas) {
+    s32 i;
+
+    for (i = 0; i < 8; i++) {
+        if (D_800BC424[i] == nas) {
+            D_800BC424[i] = NULL;
+            break;
+        }
+    }
+    KillNAS(nas);
+}
 
 void InitBarrelGenerator(NAS *nas) {
     nas->Engine->flags = 0;
