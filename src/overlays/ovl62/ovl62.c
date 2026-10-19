@@ -1088,7 +1088,48 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotPolarMissile);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBigMissile);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C7ED4);
+void func_800C7ED4(SniperAim *a, s32 *out) {
+    s32 step;
+
+    if (a->x.cur != a->x.target) {
+        if (a->x.target != 0) {
+            step = a->x.step;
+        } else {
+            step = a->x.stepZero;
+        }
+        if (a->x.cur < a->x.target) {
+            a->x.cur += step;
+            if (a->x.target < a->x.cur) {
+                a->x.cur = a->x.target;
+            }
+        } else {
+            a->x.cur -= step;
+            if (a->x.cur < a->x.target) {
+                a->x.cur = a->x.target;
+            }
+        }
+    }
+    if (a->y.cur != a->y.target) {
+        if (a->y.target != 0) {
+            step = a->y.step;
+        } else {
+            step = a->y.stepZero;
+        }
+        if (a->y.cur < a->y.target) {
+            a->y.cur += step;
+            if (a->y.target < a->y.cur) {
+                a->y.cur = a->y.target;
+            }
+        } else {
+            a->y.cur -= step;
+            if (a->y.cur < a->y.target) {
+                a->y.cur = a->y.target;
+            }
+        }
+    }
+    out[0] -= a->x.cur;
+    out[1] -= a->y.cur;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitSniper);
 

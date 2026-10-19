@@ -549,6 +549,22 @@ typedef struct SniperMissileExt {
 } SniperMissileExt;
 
 extern u8 D_80054A0C[];
+
+/* Value easing towards a target by a step (func_800C7ED4). */
+typedef struct SniperEase {
+    /* 0x00 */ s32 cur;
+    /* 0x04 */ s32 target;
+    /* 0x08 */ s16 step;
+    /* 0x0A */ s16 stepZero;
+    /* 0x0C */ u8 padC[0x20 - 0xC];
+} SniperEase;
+
+typedef struct SniperAim {
+    /* 0x00 */ u8 pad0[0x20];
+    /* 0x20 */ SniperEase x;
+    /* 0x40 */ SniperEase y;
+} SniperAim;
+
 /* Bear death extension (0x88 bytes, id 0x10000000). */
 typedef struct BearDeathExt {
     /* 0x00 */ u8 pad0[0x2C];
@@ -608,6 +624,8 @@ void func_800B782C(s32 player);
 s32 func_800B98AC(s32 player);
 
 s32 func_800C5CD0(s32 *arg0, s32 arg1);
+
+void func_800C7ED4(SniperAim *a, s32 *out);
 
 void func_800CA770(void);
 
