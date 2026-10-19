@@ -1844,10 +1844,11 @@ def cmd_reconcile(a):
     for p in run(["git", "ls-tree", "-r", "--name-only", "HEAD", "--", "include"]).stdout.split():
         if p.endswith(".h"):
             heads[p] = run(["git", "show", f"HEAD:{p}"]).stdout
+    sources = [read(f) for f in glob.glob("src/**/*.c", recursive=True)]
     total = 0
     for p in changed:
         base = heads.get(p, "")
-        known = headers.declared(t for q, t in heads.items() if q != p)
+        known = headers.declared(heads[q] for q in sorted(headers.visible(p, sources, heads)))
         text, dropped = headers.reconcile(base, read(p), known)
         if dropped:
             write(p, text)

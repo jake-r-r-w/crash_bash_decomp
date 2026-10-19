@@ -79,5 +79,28 @@ class Reconcile(unittest.TestCase):
         self.assertEqual(self.check(BASE + ext), (BASE + ext, []))
 
 
+class Visible(unittest.TestCase):
+    HEADS = {
+        "include/bash/ovl5f.h": '#include "common.h"\n#include "bash/nas.h"\n',
+        "include/bash/nas.h": "typedef struct NAS NAS;\n",
+        "include/bash/engine.h": "typedef struct EngineHooks EngineHooks;\n",
+        "include/bash/ovl60.h": "typedef struct Ovl60Hooks Ovl60Hooks;\n",
+    }
+    OVL5F = '#include "common.h"\n#include "bash/ovl5f.h"\n#include "bash/engine.h"\n'
+    OVL60 = '#include "bash/ovl60.h"\n'
+
+    def test_only_headers_its_files_include(self):  # func_800C8A80: a type ovl5f.c never sees
+        self.assertEqual(headers.visible("include/bash/ovl5f.h", [self.OVL5F, self.OVL60], self.HEADS),
+                         {"include/bash/nas.h", "include/bash/engine.h"})
+
+    def test_every_including_file_must_see_it(self):
+        other = '#include "bash/ovl5f.h"\n'
+        self.assertEqual(headers.visible("include/bash/ovl5f.h", [self.OVL5F, other], self.HEADS),
+                         {"include/bash/nas.h"})
+
+    def test_header_nobody_includes_sees_nothing(self):
+        self.assertEqual(headers.visible("include/bash/ovl60.h", [self.OVL5F], self.HEADS), set())
+
+
 if __name__ == "__main__":
     unittest.main()

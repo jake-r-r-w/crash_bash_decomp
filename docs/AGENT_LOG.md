@@ -54,7 +54,7 @@ clashes (one committed straight away). Its park, `func_800B5588`, was a
 bad split: splat had cut its four switch cases off as functions (the swarm
 matched them as such). Fixed and matched by hand the same day (7d960a8f,
 9e8fa3e0; Gotchas, "A switch whose cases each return").
-**Next session:** the reconcile lead (Open leads), then swarm ovl5d/ovl68
+**Next session:** swarm ovl5d/ovl68
 on the same low-cost recipe.
 
 **ovl63 (2026-10-19, run 20261019094644, 5+2 workers):** stopped by hand
@@ -219,12 +219,6 @@ killed early). The near misses it left were all matched by
 
 ## Open leads
 
-- **`decomp.py reconcile` may drop a declaration a file needs.** It treats a
-  name declared in any header as known, including headers the function's
-  file doesn't include. On 2026-10-19 `func_800C8A80` failed after it (`parse
-  error before *`: a type left undeclared), then matched on a retry without
-  the clash. Fix: count only the headers the file includes (directly or
-  through its owned header) as known.
 - **`func_800B345C` (ovl63, 30735f0c) still matches only with a hack** (no-op
   `h++; h--;` and `p++; p++; p--;` in its goto loop; `done` now refuses such runs
   without --hack). Reworked 2026-10-19, not finished. Without the no-ops it is
@@ -580,6 +574,11 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-19 (reconcile):** `decomp.py reconcile` now keeps the tree's
+  declaration over a patch's only when every C file including the patched
+  header also sees the other header (`headers.visible`); before, any header
+  counted, which broke `func_800C8A80` once.
 
 - **2026-10-19 (ovl5f split):** `func_800B5588`'s four switch cases had
   been split off (and swarm-matched) as functions; a `size:` in

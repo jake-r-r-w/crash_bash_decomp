@@ -145,3 +145,31 @@ def reconcile(base, new, known):
             added |= ns
             out.append(s)
     return "".join(out), dropped
+
+
+INCLUDE = re.compile(r'^\s*#\s*include\s+"([^"]+)"', re.M)
+
+
+def closure(text, heads):
+    """The headers (paths as in HEADS: include/...) a file with TEXT includes, directly or through
+    other headers in HEADS."""
+    seen, todo = set(), ["include/" + p for p in INCLUDE.findall(text)]
+    while todo:
+        p = todo.pop()
+        if p in seen or p not in heads:
+            continue
+        seen.add(p)
+        todo += ["include/" + q for q in INCLUDE.findall(heads[p])]
+    return seen
+
+
+def visible(header, sources, heads):
+    """The other headers every one of SOURCES (C file texts) that includes HEADER also includes:
+    only their declarations are safe to keep over the patch's, since each file that sees HEADER
+    sees them too."""
+    out = None
+    for text in sources:
+        seen = closure(text, heads)
+        if header in seen:
+            out = seen if out is None else out & seen
+    return (out or set()) - {header}
