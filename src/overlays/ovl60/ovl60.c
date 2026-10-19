@@ -7,7 +7,81 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B3534);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B3808);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B3A38);
+void func_800B3A38(void) {
+    s32 i;
+    s16 v;
+    u32 snd;
+
+    if (SCORE60V->flags & 0x40) {
+        switch (SCORE60V->mode) {
+        case 10:
+            for (i = 0; i < 4; i++) {
+                v = 60;
+                if (SCORE60V->out[i] == 0) {
+                    v = 80;
+                    if (SCORE60V->teams != 0) {
+                        v = 90;
+                    }
+                }
+                Heroes[i].hero_score_displayed = v;
+                Heroes[i].hero_score = v;
+            }
+            snd = 0x100;
+            if (D_8005A680[0] != 0) {
+                snd = 0x120;
+            }
+            break;
+        case 11:
+            for (i = 0; i < 4; i++) {
+                v = 150;
+                if (SCORE60V->out[i] != 0) {
+                    v = 90;
+                }
+                Heroes[i].hero_score_displayed = v;
+                Heroes[i].hero_score = v;
+            }
+            snd = 0x130;
+            break;
+        case 12:
+            for (i = 0; i < 4; i++) {
+                if (SCORE60V->out[i] != 0) {
+                    v = 80;
+                    if (SCORE60V->teams != 0) {
+                        v = 90;
+                    }
+                } else {
+                    v = 120;
+                    if (SCORE60V->teams != 0) {
+                        v = 135;
+                    }
+                }
+                Heroes[i].hero_score_displayed = v;
+                Heroes[i].hero_score = v;
+            }
+            snd = 0x130;
+            break;
+        case 13:
+            for (i = 0; i < 4; i++) {
+                v = 120;
+                if (SCORE60V->out[i] != 0) {
+                    v = 90;
+                }
+                Heroes[i].hero_score_displayed = v;
+                Heroes[i].hero_score = v;
+            }
+            snd = 0x130;
+            break;
+        default:
+            goto skip;
+        }
+        func_8007B7FC(snd, 0x81D0);
+    skip:
+        func_8007D144();
+        if (D_8005A680[0] != 0) {
+            D_80099174 |= 0x2000;
+        }
+    }
+}
 
 void func_800B3C44(void) {
     s32 i;

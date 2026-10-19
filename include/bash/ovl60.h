@@ -386,4 +386,21 @@ s32 func_800BBB08(s32 *arg0, s32 arg1, s32 arg2);
 s32 func_800BEA34(s32 x, s32 z, s32 hero);
 s32 func_800BE864(s32 hero, Ovl60Goal *goal);
 
+/* D_8005A614 as seen by func_800B3A38. */
+typedef struct Ovl60ScoreView {
+    /* 0x00 */ u8 unk0[0x32];
+    /* 0x32 */ u16 flags;
+    /* 0x34 */ s16 mode;
+    /* 0x36 */ u8 unk36[0x5C - 0x36];
+    /* 0x5C */ u8 out[4];
+    /* 0x60 */ u8 unk60[0x6C - 0x60];
+    /* 0x6C */ s32 teams;
+} Ovl60ScoreView;
+#define SCORE60V ((Ovl60ScoreView *)D_8005A614)
+void func_8007B7FC(u32 a, u32 b);
+void func_8007D144(void);
+extern s32 D_80099174;
+
+void func_800B3A38(void);
+
 #endif /* BASH_OVL60_H */
