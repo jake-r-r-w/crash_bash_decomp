@@ -372,6 +372,15 @@ def func_def_regex(name):
                       r"(?:\s*[^;{}()#]+;)*\s*\{", re.M)
 
 
+DEFS = re.compile(r"^[A-Za-z_][^\n;#{}=]*?(?:\(\s*)?\b([A-Za-z_]\w*)\b(?:\s*\))?\s*\([^;{]*\)"
+                  r"(?:\s*[^;{}()#]+;)*\s*\{", re.M)
+
+
+def defined_names(text):
+    """The names of every function TEXT defines (func_def_regex's rule, in one pass)."""
+    return {m.group(1) for m in DEFS.finditer(text)}
+
+
 def locate_def(name):
     rx = func_def_regex(name)
     for p in glob.glob("src/**/*.c", recursive=True):
@@ -833,6 +842,7 @@ def cmd_index(a):
     ovl = overlay_segs()
     src_text = {}
     added = gp_funcs = 0
+    syms = sym_names()
     files = sorted(glob.glob("asm/nonmatchings/**/*.s", recursive=True))
     if not files:
         die("no asm/nonmatchings/**/*.s - run `make split` with code segments of type c")
@@ -852,6 +862,7 @@ def cmd_index(a):
         name = os.path.splitext(os.path.basename(p))[0]
         seg = os.path.dirname(os.path.relpath(p, "asm/nonmatchings")).replace("\\", "/")
         key = func_key(vram, seg, ovl)
+        name = syms.get(key, name)     # a .s left from before a rename
         e = funcs.get(key)
         if e is None:
             added += 1
@@ -881,6 +892,30 @@ def cmd_index(a):
                 if func_def_regex(name).search(src_text[p]):
                     e["src"] = p
         gp_funcs += gp
+    # every entry against the symbols and src/: a symbol rename gives the name (splat writes no .s
+    # for matched C, and a .s from before the rename keeps the old one); an entry that no symbol,
+    # INCLUDE_ASM or C definition names any more (a resplit merged it away; its old .s may linger)
+    # is dropped
+    dropped, defs = [], {}
+    for key, e in list(funcs.items()):
+        if "psyq" in e.get("seg", ""):
+            continue
+        name = syms.get(key, e["name"])
+        p = f"src/{e['seg']}.c"
+        if p not in defs and os.path.exists(p):
+            defs[p] = defined_names(src_text.get(p) or read(p))
+        if (e["seg"], name) in inc:
+            e.update(name=name, src=inc[(e["seg"], name)][0])
+        elif name in defs.get(p, ()):
+            e.update(name=name, src=p)
+        elif key not in syms and p in defs:
+            dropped.append(key)
+    for key in dropped:
+        funcs.pop(key)
+        st.pop(key, None)
+    if dropped:
+        jsave(P_STATE, st)
+        print(f"dropped {len(dropped)} entries no symbol, INCLUDE_ASM or C names: {' '.join(dropped)}")
     jsave(P_FUNCS, funcs)
     proj["gp_funcs"] = gp_funcs
     jsave(P_PROJ, proj)
