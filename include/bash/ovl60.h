@@ -42,6 +42,16 @@ extern s32 D_800C5304;
 extern s32 D_800C5BAC;
 extern s32 D_800C5BB8;
 extern s32 D_800C5BBC;
+extern s32 D_800C5300;
+extern s32 D_800C5BC0;
+extern s32 D_800C5BC4;
+extern s32 D_800C5BCC;
+extern s32 D_800C5BD0;
+extern s32 D_800C5BD4;
+
+void func_800C1068();
+
+void func_800C10F8(void);
 
 void func_800C159C(s32 arg0);
 

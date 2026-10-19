@@ -232,7 +232,18 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1004);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1068);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C10F8);
+void func_800C10F8(void) {
+    D_800C5BC0 = 0;
+    D_800C5BC4 = Random(0xC8) + 0xC8;
+    D_800C5BD0 = 0;
+    D_800C5BCC = 8;
+    D_800C5BD4 = 0;
+    D_800C5300 = 0;
+    if (D_8005A646 & 0x80) {
+        D_800C5BC4 = 0x78;
+    }
+    func_800C1068();
+}
 
 void Init_PogoProjectile(NAS *arg0) {
     if ((*(s32*)((u8*)(arg0) + 84)) != 0) {
