@@ -554,9 +554,10 @@ void func_800928E8(void);
 void func_80092EDC(void);
 
 typedef struct {
-    s32 unk0;
-    s32 unk4;
+    void *unk0;
+    void *unk4;
     void (*unk8)(s32, s32, s32, s32, s32, s32);
+    s32 unkC;
 } HitCallbacks;
 extern HitCallbacks D_8009E488;
 

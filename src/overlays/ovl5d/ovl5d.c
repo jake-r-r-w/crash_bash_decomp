@@ -823,6 +823,13 @@ void func_800BB370(void) {
     D_8005AA70[10] = (s32)func_800B6F0C;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BB3D0);
+void func_800BB3D0(void) {
+    D_8009E464 = Ovl5dASTIndex(0x201);
+    D_8009E468 = Ovl5dASTIndex(0x202);
+    D_8009E488.unk4 = D_8009E3B4;
+    D_8009E488.unk8 = NULL;
+    D_8009E488.unkC = 0;
+    D_8009E488.unk0 = D_8009E3DC;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BB4AC);

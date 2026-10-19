@@ -9,6 +9,7 @@
 #include "bash/nas.h"
 #include "bash/main.h"
 #include "bash/engine.h"
+#include "bash/8008e27c.h"
 
 struct Ovl5dObj;
 
@@ -35,6 +36,18 @@ typedef struct {
     /* 0x6C */ s32 p2_active;
 } Ovl5dGameView;
 #define OVLG ((Ovl5dGameView *)D_8005A614)
+
+/* Index of the ASTTable entry with this id, or 0. */
+static inline s32 Ovl5dASTIndex(s32 id) {
+    s32 i;
+
+    for (i = 0; i < ASTCount; i++) {
+        if (ASTTable[i].id == id) {
+            return i;
+        }
+    }
+    return 0;
+}
 
 extern HeroInfo Heroes[4];
 
@@ -107,6 +120,10 @@ void func_800BB368(void);
 extern u8 D_80052F5C[];
 extern s16 D_800C3B08[][3];
 extern u16 D_8009D754;
+extern s32 D_8009E464;
+extern s32 D_8009E468;
+extern u8 D_8009E3B4[];
+extern u8 D_8009E3DC[];
 
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
 #include "bash/ovl5d_800bb64c.h"
@@ -155,5 +172,7 @@ s32 func_800BB100(s32 arg0);
 void func_800BB2BC(void);
 
 void func_800BB370(void);
+
+void func_800BB3D0(void);
 
 #endif /* BASH_OVL5D_H */
