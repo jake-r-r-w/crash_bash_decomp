@@ -289,6 +289,8 @@ typedef struct D5A614View63 {
 extern u16 D_800AD12C;
 extern HeroInfo Heroes[4];
 
+void func_800BC7C4(s32 arg0);
+
 s32 func_800C310C(SLONG_XYZ *pos);
 
 s32 func_800C50B0(u8 *arg0, s32 arg1);

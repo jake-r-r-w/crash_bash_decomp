@@ -199,7 +199,60 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BC4B0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BC6C8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BC7C4);
+void func_800BC7C4(s32 arg0) {
+    HeroInfo *hero;
+    EXTraceshield *ext;
+    s32 lim;
+    EXTengine *eng;
+    EXTengine *eng2;
+    EXTheromove *move;
+    HeroInfo *other;
+    u32 i;
+    s32 found;
+    s32 t;
+    s32 angle;
+    HeroInfo *base;
+    SLONG_XYZ *pos;
+
+    base = Heroes;
+    hero = &base[arg0];
+    ext = (EXTraceshield *)hero->hero->FUX;
+    if (ext == NULL) {
+        return;
+    }
+    eng = hero->hero_eng;
+    t = ext->unk14[0]--;
+    if (t < 0) {
+        SetHeroAction((HeroInfo *)arg0, 0x5B);
+        return;
+    }
+    pos = &eng->unk10;
+    i = 0;
+    lim = 0x27100;
+    other = base;
+loop:
+    found = -1;
+    if (i < 4) {
+        if (i == arg0 || func_8008CEB0((u8 *)pos, (u8 *)&other->hero_eng->unk10) >= lim) {
+            other++;
+            i++;
+            goto loop;
+        }
+        found = i;
+    }
+    if (found != -1) {
+        move = Heroes[found].hero_move;
+        if (move != NULL) {
+            eng2 = Heroes[found].hero_eng;
+            angle = get_angle(eng->unk10.x - eng2->unk10.x, eng->unk10.z - eng2->unk10.z) & 0xFFF;
+            if ((u32)(angle - 0x201) < 0xBFF) {
+                move->x_vel = -((D_80068BD4[(angle - 0x400) & 0xFFF].unk2 * 3) >> 7);
+                move->z_vel = -((D_80068BD4[angle].unk2 * 3) >> 7);
+            }
+        }
+    }
+    func_8008502C(arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BC984);
 
