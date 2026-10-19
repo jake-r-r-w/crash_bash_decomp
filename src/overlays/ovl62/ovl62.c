@@ -387,7 +387,56 @@ void func_800B767C(s32 player) {
     func_800B5EBC();
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B782C);
+void func_800B782C(s32 player) {
+    s32 dist;
+    HeroInfo *base;
+    Ovl62Fux *fux;
+    EXTengine *eng;
+    EXTengine *e;
+    s32 r;
+    s32 dx;
+    s32 dz;
+
+    if (func_800B7CDC() != 0) {
+        return;
+    }
+    base = Heroes;
+    fux = (Ovl62Fux *)base[player].hero->FUX;
+    if (fux == NULL) {
+        return;
+    }
+    eng = base[player].hero_eng;
+    if (eng == NULL) {
+        return;
+    }
+    if (D_8005A648 == 0x15) {
+        if (Ovl62HasBomb(player)) {
+            r = func_800CB178(player, &dist);
+            if (r != -1) {
+                func_800B6EB4(player, r);
+            }
+        }
+    }
+    fux->unk3C = 1;
+    if (D_800D5254 != NULL) {
+        fux->vel = D_800D5254->unk54->unk10;
+    }
+    fux->pos = Heroes[player].hero_eng->unk10;
+    e = D_800D5254->unk54;
+    dx = eng->unk10.x - e->unk10.x;
+    dz = eng->unk10.z - e->unk10.z;
+    if (dx * dx + dz * dz < 0x19000) {
+        fux->state = 5;
+        fux->func = func_800CB6B4;
+    }
+    if (D_800D5FFC == 1) {
+        fux->state = 5;
+        fux->func = func_800CB6B4;
+    }
+    do {
+        func_800B5EBC(player);
+    } while (0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B7A58);
 

@@ -256,6 +256,31 @@ typedef struct BombMakerExt {
 } BombMakerExt;
 
 extern s32 D_800D4DEC;
+/* func_800CB56C, inlined into func_800B782C. */
+static inline s32 Ovl62HasBomb(s32 player) {
+    NAS *nas;
+    BombMakerExt *ext;
+    s32 one;
+    s32 found;
+
+    nas = D_800D5294;
+    one = 1;
+    found = 1;
+loop:
+    if (nas != NULL) {
+        ext = FindExtension(nas, 0x10000000);
+        do {
+            if (ext != NULL && ext->unkC == one && ext->unk14 == player) {
+                goto done;
+            }
+        } while (0);
+        nas = nas->Group.Child;
+        goto loop;
+    }
+    found = 0;
+done:
+    return found;
+}
 
 /* D_8009D87C (declared in bash/8007ee2c.h, which this unit does not include). */
 typedef struct Ovl62Odds {
@@ -300,11 +325,14 @@ typedef struct Ovl62Link {
 } Ovl62Link;
 
 typedef struct Ovl62Owner {
-    /* 0x00 */ u8 pad0[0x58];
+    /* 0x00 */ u8 pad0[0x54];
+    /* 0x54 */ EXTengine *unk54;
     /* 0x58 */ Ovl62Link *unk58;
 } Ovl62Owner;
 
 extern Ovl62Owner *D_800D5254;
+extern s32 D_800D5FFC;
+s32 func_800B7CDC();
 
 void func_800B60B8(s32 player);
 
@@ -468,6 +496,8 @@ void func_800D2E00(s32 player);
 extern ScriptInit D_800D5DB8;
 
 s32 func_800B4094(s32 *arg0, s32 arg1);
+
+void func_800B782C(s32 player);
 
 void func_800CFB7C(s32 player);
 
