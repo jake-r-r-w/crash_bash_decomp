@@ -1251,7 +1251,83 @@ void Plot_PogoPickup(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Init_PogoPowerup);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoPowerup);
+void Plot_PogoPowerup(NAS *nas) {
+    EXTengine *eng;
+    EXTengine *e2;
+    subengine *sub;
+    EXTmotion *mot;
+    s32 scale;
+
+    eng = nas->Engine;
+    if (eng == NULL) {
+        return;
+    }
+    switch (nas->UserInfo.flags) {
+    case 1:
+    case 2:
+    case 4:
+        eng->unk5E = 1;
+        eng->unk1E += 0x38;
+        break;
+    case 5:
+        break;
+    }
+    switch (nas->UserInfo.flags) {
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+        break;
+    default:
+        return;
+    }
+    e2 = eng->Engine;
+    if (e2 != NULL) {
+        sub = e2->sub;
+        e2->unk10.x = eng->unk10.x;
+        e2->unk10.z = eng->unk10.z;
+        e2->unk10.y = D_8005A5D8;
+        if (sub != NULL) {
+            scale = 0;
+            if (abs(eng->unk10.y - D_8005A5D8) < 0x200) {
+                scale = 0x1000 - abs(eng->unk10.y - D_8005A5D8) * 6;
+            }
+            sub->unk20.z = scale;
+            sub->unk20.y = scale;
+            sub->unk20.x = scale;
+            sub->unk52 = 1;
+        }
+    }
+    switch (nas->UserInfo.status) {
+    case 0:
+    case 3:
+        if (nas->UserInfo.user2 != 0) {
+            nas->UserInfo.user2--;
+        }
+        if (func_8007A26C(nas) == 0) {
+            break;
+        }
+        if (nas->UserInfo.status == 0) {
+            nas->UserInfo.user2 = D_800C38F8[D_800C5BB8];
+            nas->UserInfo.status = 3;
+            PlaySfx(0x420, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        }
+        mot = FindExtension(nas, 0x800);
+        if (mot != NULL) {
+            mot->Ymax = 0x200;
+            mot->Ydec = 8;
+            mot->Ydir = 0xFF;
+            mot->Yacc = 0;
+            mot->Yvel = 0x40;
+        }
+        break;
+    case 6:
+        KillNAS(nas);
+        D_800C52F0--;
+        break;
+    }
+}
 
 void Plot_PogoBanker(NAS *nas) {
     s32 x;
