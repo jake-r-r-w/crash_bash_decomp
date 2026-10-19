@@ -744,7 +744,29 @@ void func_800C68C8(s32 arg0) {
     func_800C4B60(arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6914);
+void func_800C6914(s32 hero, s32 mode) {
+    u16 last = Heroes[hero].hero_mode;
+
+    Heroes[hero].hero_mode = mode;
+    Heroes[hero].hero_last_mode = last;
+    switch (mode) {
+    case 0x6C:
+        func_800C49F8();
+        break;
+    case 0x6E:
+        ((void (*)())func_800C4B60)();
+        break;
+    case 0x69:
+        func_800C4BC0();
+        break;
+    case 0x6B:
+        func_800C4D04(hero, mode);
+        break;
+    case 0x6A:
+    case 0x6D:
+        break;
+    }
+}
 
 void func_800C69BC(void) {
 }
