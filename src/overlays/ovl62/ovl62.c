@@ -1470,7 +1470,30 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D034C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D0470);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D05A8);
+s32 func_800D05A8(s32 player) {
+    HeroInfo *base = Heroes;
+    HeroInfo *info = base + player;
+    s32 *ext = FindExtension(info->hero, 0x20000000);
+
+    if (ext != NULL) {
+        if (ext[9] != 0) {
+            return 0x80;
+        }
+        switch (info->hero_name) {
+        case 3:
+        case 4:
+            return 0x100;
+        case 5:
+        case 6:
+            return 0xB4;
+        case 7:
+        case 8:
+        default:
+            return 0x80;
+        }
+    }
+    return 0x80;
+}
 
 s32 func_800D0650(s32 player) {
     HeroInfo *base;
