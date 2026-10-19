@@ -571,7 +571,16 @@ void func_800D3170(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D31A0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D325C);
+void func_800D325C(s32 arg0) {
+    Ext20 *ext = FindExtension(Heroes[arg0].hero, 0x20000000);
+
+    if (ext != NULL) {
+        ext->val += 4;
+        if (ext->val > 0x100) {
+            ext->val = 0x100;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D32CC);
 

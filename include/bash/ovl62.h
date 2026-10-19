@@ -26,11 +26,20 @@ void func_800D34F8(void);
 void func_800D3500(void);
 void func_800D3508(void);
 
+typedef struct Ext20 {
+    /* 0x00 */ u8 pad[0x20];
+    /* 0x20 */ s32 val;
+} Ext20;
+
+extern HeroInfo Heroes[4];
+
 /* Head of a list linked through +0x20 (counted by func_800C9B5C). */
 extern u8 *D_800D5454;
 
 s32 func_800C9B5C(void);
 
 s32 func_800CD118(s32 *arg0, s32 arg1);
+
+void func_800D325C(s32 arg0);
 
 #endif /* BASH_OVL62_H */
