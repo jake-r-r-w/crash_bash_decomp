@@ -10,6 +10,9 @@
 
 extern u8 D_800546C4[];
 
+void func_800B5AC4();
+void func_800BAFA0();
+void func_800BB810();
 void func_800CAD0C(void);
 void func_800CAD14(void);
 void func_800CAD1C(void);
@@ -207,6 +210,8 @@ s32 func_800CB2C8(s32 arg0);
 void func_800CB508(s32 player);
 
 void func_800CB650(s32 player);
+
+void func_800CBA64(void);
 
 s32 func_800CD560(s32 arg0);
 

@@ -789,7 +789,13 @@ s32 func_800CBA5C(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CBA64);
+void func_800CBA64(void) {
+    D_8005AA70[0] = (s32)func_800B5AC4;
+    D_8005AA70[1] = (s32)func_800BAFA0;
+    D_8005AA70[2] = (s32)func_800BAFA0;
+    D_8005AA70[3] = (s32)func_800BB810;
+    D_8005AA70[6] = (s32)func_800CAD14;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CBAA4);
 
