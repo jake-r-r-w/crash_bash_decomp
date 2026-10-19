@@ -33,6 +33,8 @@ void func_800C8324(void);
 void func_800C832C(void);
 void func_800C83D0(void);
 extern s32 D_800CB25C;
+extern s32 D_800CB254;
+extern s32 D_800CB258;
 void func_800B5588(void);
 void func_800B58B0(void);
 void func_800B5FC4(void);

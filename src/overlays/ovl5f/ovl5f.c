@@ -697,7 +697,25 @@ void func_800C4B60(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C4BC0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C4D04);
+void func_800C4D04(s32 hero, s32 last_mode) {
+    subengine *s;
+
+    Heroes[hero].hero_hit = 0;
+    Heroes[hero].hero_immunity = 0;
+    Heroes[hero].hero_health = 0;
+    Heroes[hero].hero_status |= 0x6000;
+    func_800898EC(hero);
+    s = Heroes[hero].hero_eng->sub;
+    s = s->next;
+    s->flags &= 0xFFFF7FFF;
+    s = s->next;
+    s->flags &= 0xFFFF7FFF;
+    if (hero == 3) {
+        D_800CB254 = 0x26;
+    } else {
+        D_800CB258 = 0x26;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C4DCC);
 
