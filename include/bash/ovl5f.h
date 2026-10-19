@@ -44,6 +44,8 @@ void func_800C7D24(HeroInfo *hero);
 
 void func_800C7EF8(HeroInfo *hero);
 
+void func_800C81C8(s32 x, s32 z, s32 range, s32 arg3);
+
 NAS *func_800C84D8(s32 x, s32 z, s32 dist);
 
 void func_800C8560(NAS *nas);

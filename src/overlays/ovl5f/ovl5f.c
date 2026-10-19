@@ -398,7 +398,25 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8120);
 void func_800C81C0(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C81C8);
+void func_800C81C8(s32 x, s32 z, s32 range, s32 arg3) {
+    HeroInfo *h;
+    s32 d;
+    s32 i;
+
+    s32 neg;
+
+    i = 0;
+    neg = -range;
+    for (h = Heroes; i < 4; i++, h++) {
+        d = x - h->hero_eng->unk10.x;
+        if (d >= neg && d <= range) {
+            d = z - h->hero_eng->unk10.z;
+            if (d >= neg && d <= range) {
+                func_800B6354(i, arg3);
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8294);
 
