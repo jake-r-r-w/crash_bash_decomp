@@ -6974,7 +6974,8 @@
  },
  "ovl62:800CB284": {
   "auto_diff": 8,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-19T07:04:01Z",
+  "status": "matched"
  },
  "ovl62:800CB2C8": {
   "auto_diff": 9,
