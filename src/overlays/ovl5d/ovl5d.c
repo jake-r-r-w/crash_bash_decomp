@@ -354,7 +354,64 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotTumbler);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B94C4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B95F0);
+s32 func_800B95F0(s32 arg0)
+{
+    HeroInfo *h;
+    PadButtons *p;
+    NAS *n;
+    u16 pu;
+
+    HeroInfo *ht;
+    PadButtons *pt;
+
+    ht = Heroes;
+    h = &ht[arg0];
+    if (h->hero_weapon_count != 0) {
+        pt = (PadButtons *)D_80051338;
+        p = &pt[arg0];
+        if (p->unk50 & 0x8000) {
+            if (h->hero_attack_timer != 0) {
+                p->unk4C &= ~0x8000;
+            } else {
+            D_8009D754 = arg0;
+            switch (h->hero_pu) {
+            case 0x19:
+                n = SpawnNASById(h->hero_eng->unk10.x, h->hero_eng->unk10.y, h->hero_eng->unk10.z, 0x1103, 0x11);
+                if (n != NULL) {
+                    n->UserInfo.user1 = arg0;
+                    h->hero_attack_timer = 0x14;
+                    h->hero_weapon_timer = 0x1E;
+                    h->hero_weapon_count -= 1;
+                }
+                break;
+            case 0x1B:
+                n = SpawnNASById(h->hero_eng->unk10.x, h->hero_eng->unk10.y, h->hero_eng->unk10.z, 0x1104, 0x11);
+                if (n != NULL) {
+                    n->UserInfo.user1 = arg0;
+                    h->hero_attack_timer = 0x14;
+                    h->hero_weapon_timer = 0x1E;
+                    h->hero_weapon_count -= 1;
+                }
+                break;
+            case 0x1C:
+                n = SpawnNASById(h->hero_eng->unk10.x, h->hero_eng->unk10.y, h->hero_eng->unk10.z, 0x1105, 0x11);
+                if (n != NULL) {
+                    n->UserInfo.user1 = arg0;
+                    h->hero_attack_timer = 0x28;
+                    h->hero_weapon_timer = 0x3C;
+                    h->hero_weapon_count -= 1;
+                }
+                break;
+            default:
+                return 0;
+            }
+            }
+        } else {
+            return 0;
+        }
+    }
+    return 0;
+}
 
 s32 func_800B97A8(x, y, z, size, skip, mask)
     s32 x;

@@ -189,6 +189,8 @@ void func_800B8578(void);
 
 void PlotSnowGlint(NAS *nas);
 
+s32 func_800B95F0(s32 arg0);
+
 void InitBash8way(NAS *nas);
 
 void InitBashShox(NAS *nas);
