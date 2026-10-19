@@ -142,7 +142,42 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotTransmuterBeam);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotWeightDeath);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BFD38);
+void func_800BFD38(NAS *nas, GravityMotion *m) {
+    EXTengine *eng;
+    s32 y;
+    s32 floor;
+
+    eng = nas->Engine;
+    if (eng != NULL) {
+        eng->unk10.x += m->vx;
+        eng->unk10.y += m->vy;
+        eng->unk10.z += m->vz;
+        m->vx += m->ax;
+        m->vy += m->ay;
+        m->vz += m->az;
+        if (m->flags & 4) {
+            nas->Engine->unk1C += m->rx;
+        }
+        if (m->flags & 8) {
+            nas->Engine->unk1E += m->ry;
+        }
+        if (m->flags & 0x10) {
+            nas->Engine->unk20 += m->rz;
+        }
+        nas->Engine->unk5E = 1;
+        floor = m->floor;
+        y = eng->unk10.y;
+        if (y >= floor) {
+            eng->unk10.y -= abs(y - floor);
+            if (m->flags & 1) {
+                m->vy = -m->vy >> 1;
+            }
+            if (m->flags & 2) {
+                func_800270B0(nas);
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BFEE0);
 
