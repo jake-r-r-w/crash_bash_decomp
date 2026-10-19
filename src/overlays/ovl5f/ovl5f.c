@@ -442,7 +442,10 @@ void InitBigApple(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7298);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitPickupGenerator_TA);
+void InitPickupGenerator_TA(NAS *nas) {
+    nas->Engine->flags = 0;
+    nas->UserInfo.flags = 0xF0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotShellExplosion);
 
