@@ -111,6 +111,14 @@ typedef struct Ovl63SpinFux {
     /* 0x28 */ s32 unk28;
 } Ovl63SpinFux;
 
+/* A hero's FUX as func_800BC6C8 counts it down: a timer at 0x24. */
+typedef struct Ovl63FuxTimer {
+    /* 0x00 */ u8 unk0[0x24];
+    /* 0x24 */ s32 unk24;
+} Ovl63FuxTimer;
+
+void func_800BC984(s32 player);
+
 void InitRaceShield(NAS *nas);
 typedef struct EXTracefire {
     /* 0x00 */ s32 unk0[4];
@@ -501,6 +509,8 @@ extern u8 *D_800C66EC;
 extern s32 D_800C6EB0;
 
 s32 func_800B6108(Ovl63Barrel *b);
+
+void func_800BC6C8(s32 arg0);
 
 void InitRaceVolcano(NAS *nas);
 

@@ -439,7 +439,41 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BC2D0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BC4B0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BC6C8);
+void func_800BC6C8(s32 arg0) {
+    Ovl63FuxTimer *fux;
+    HeroInfo *hero;
+    EXTheromove *move;
+    HeroInfo *base;
+
+    base = Heroes;
+    hero = &base[arg0];
+    fux = (Ovl63FuxTimer *)hero->hero->FUX;
+    if (fux == NULL) {
+        return;
+    }
+    func_8008502C();
+    func_800BC984(arg0);
+    move = hero->hero_move;
+    if (move == NULL) {
+        return;
+    }
+    hero->hero_frozen = 1000;
+    hero->hero_eng->unk5E = 1;
+    if (fux->unk24-- < 0) {
+        move->x_max = 0;
+        move->z_max = 0;
+        move->x_vel = 0;
+        move->z_vel = 0;
+        if (fux->unk24 < -0xF) {
+            SetHeroAction((HeroInfo *)arg0, 0x5B);
+            hero->hero_frozen = 0;
+        }
+    } else {
+        do {
+            hero->hero_eng->unk1E += 0x100;
+        } while (0);
+    }
+}
 
 void func_800BC7C4(s32 arg0) {
     HeroInfo *hero;
