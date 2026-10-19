@@ -719,7 +719,33 @@ void func_800C2F84(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C2FB8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C3048);
+void func_800C3048(void) {
+    s32 i;
+    s32 n;
+
+    n = 0;
+    switch (D_8005A648) {
+    case 10:
+        n = 2;
+        break;
+    case 11:
+        func_800C10F8();
+        break;
+    case 12:
+        n = 3;
+        SpawnNASById(0, 0, 0, 0x1406, 0x11);
+        break;
+    case 13:
+        n = 2;
+        func_800C0BF0(4, 4);
+        break;
+    }
+    if (n != 0) {
+        for (i = 0; i < n; i++) {
+            SpawnNASById(0, 0, 0, 0x1403, 0x11);
+        }
+    }
+}
 
 void func_800C3148(void) {
     ((Ovl60Cam *)D_80051640)->eyeX = 0;
