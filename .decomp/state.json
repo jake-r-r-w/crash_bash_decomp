@@ -4427,7 +4427,8 @@
   "auto_failed": "types"
  },
  "ovl5d:800B6DA4": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-19T14:48:55Z",
+  "status": "matched"
  },
  "ovl5d:800B6F0C": {
   "auto_diff": 50,

@@ -166,7 +166,7 @@ extern s32 D_8009E468;
 extern u8 D_8009E3B4[];
 extern u8 D_8009E3DC[];
 extern s16 D_800C3B40;
-s16 func_800B6DA4(s32 arg0);
+s32 func_800B6DA4(s32 arg0);
 void func_800B7358(void);
 void func_800BB7E8(void);
 void func_8007A91C(void);
