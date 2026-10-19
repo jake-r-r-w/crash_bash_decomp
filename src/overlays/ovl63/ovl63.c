@@ -186,7 +186,26 @@ void PlotRaceSmokeBoostWater(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRaceSmokeBoostWater);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C467C);
+s32 func_800C467C(Ovl63BounceObj *obj, Ovl63Bouncer *b) {
+    s32 pos;
+
+    b->vel += b->accel;
+    pos = obj->pos += b->vel >> 8;
+    if (b->limit < pos) {
+        obj->pos -= abs(pos - b->limit);
+        if (b->flags & 1) {
+            b->vel = -b->vel;
+        }
+        if (b->flags & 2) {
+            b->vel = -((b->vel * b->damp) >> 8);
+        }
+        if (b->flags & 4) {
+            b->vel = -b->rebound;
+        }
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitGlob);
 

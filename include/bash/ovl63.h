@@ -47,12 +47,32 @@ typedef struct EXTraceshield {
 } EXTraceshield;
 
 void InitRaceShield(NAS *nas);
+typedef struct Ovl63Bouncer {
+    s32 unk0;
+    s32 vel;      /* 0x04 */
+    s32 unk8;
+    s32 unkC;
+    s32 accel;    /* 0x10 */
+    s32 unk14;
+    s32 unk18;
+    s32 limit;    /* 0x1C */
+    s32 damp;     /* 0x20 */
+    s32 flags;    /* 0x24 */
+    s32 rebound;  /* 0x28 */
+} Ovl63Bouncer;
+
+typedef struct Ovl63BounceObj {
+    s32 unk0[5];
+    s32 pos;      /* 0x14 */
+} Ovl63BounceObj;
 
 void func_800C5204(EXTheromove *a, EXTheromove *b);
 
 extern HeroInfo Heroes[4];
 void SetHeroAction(HeroInfo *hero, s32 action);
 s32 func_8008CEB0(u8 *arg0, u8 *arg1);
+
+s32 func_800C467C(Ovl63BounceObj *obj, Ovl63Bouncer *b);
 
 s32 func_800C4F30(u8 *arg0);
 
