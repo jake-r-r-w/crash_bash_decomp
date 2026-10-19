@@ -1,5 +1,5 @@
 {
-  "workers": 3,
+  "workers": 5,
   "permuters": 2,
   "permuteMinutes": 10,
   "batchMax": 6,

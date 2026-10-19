@@ -14,10 +14,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1687/2541 game functions matched: **main.exe is complete (575/575)**;
+- 1766/2541 game functions matched: **main.exe is complete (575/575)**;
   engine overlay 2 left, both parked (`func_8007F314`, `PlotScriptFX`),
   ovl61 96/97 (two 2026-10-18 swarm runs and four hand matches; `PlotBall` left),
-  ovl60 117/166, ovl62 121/186 (2026-10-19 swarm runs), ovl67 101/135, ovl69 68/77, ovl6a 93/94 (2026-10-18 swarm runs and hand fixes;
+  ovl5f 10 (short run), ovl63 79 (44 left), ovl60 117/166, ovl62 121/186 (2026-10-19 swarm runs), ovl67 101/135, ovl69 68/77, ovl6a 93/94 (2026-10-18 swarm runs and hand fixes;
   `func_800B5710` parked at 120/121 blocks); all 564 PsyQ functions (Sony
   objects). 3 parked (`decomp.py status`). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
@@ -44,6 +44,17 @@ leads**, add any new gotcha, and add one short entry at the top of the
   identical (docs/ASSETS.md). ROADMAP's asset extraction box is ticked.
 
 ## Next
+
+**ovl63 (2026-10-19, run 20261019094644, 5+2 workers):** stopped by hand
+after 51 min, $34.41: 77 matched, 1 parked, 1 failed; 44 left, nearly all
+big. The normal workers ran out of small functions first; the user judged
+5+2 better than 3+2, so `--workers` defaults to 5 now. Parked:
+`func_800C0F5C` (a leaf with only a stack frame: gcc 2.8.1 gives the
+reorder-mode epilogue `addiu sp; addiu sp; jr ra; nop`; the worker thinks
+only an assembler slot fill makes the target, so check the unit's compiler
+first). Failed at the gate: `InitRaceSmokeBoost` (`D_80054F84` declared
+twice with different types by two matches; retry). One match is a hack,
+see Open leads.
 
 **ovl5f (2026-10-19, run 20261019093701):** hard-stopped after 9 min to
 start ovl63 with more workers: 9 matched, 0 failed; its verified
@@ -120,7 +131,7 @@ one session of 1-16 min. The day's tool upgrades (closest-C checkpoints,
 parked. **Retry parks with this recipe after tool upgrades.**
 
 **Start of next session: matching.** Left per overlay (2026-10-19): ovl5f
-137, ovl63 123, ovl5d 100, ovl68 83, ovl65 69,
+137, ovl63 44, ovl5d 100, ovl68 83, ovl65 69,
 ovl5e 67, ovl66 67, ovl62 65, ovl60 49, ovl64 51, ovl67 34, ovl69 9, ovl61 1, ovl6a 1, engine
 2 (count `INCLUDE_ASM` per file). The untouched overlays suit the swarm
 (item 1b's recipe, `--seg overlays/NAME`), then the post-run checklist.
@@ -199,6 +210,12 @@ killed early). The near misses it left were all matched by
 
 ## Open leads
 
+- **`func_800B345C` (ovl63, 30735f0c) matched with a hack:** no-op pointer
+  moves (`h++; h--;` and `p++; p++; p--;` in its goto loop) that only shift
+  allocation priority. The gate's lint doesn't catch no-op pairs, so it
+  went in without `--hack`. Redo it without them (MATCHING.md, Reading the
+  compiler's rules: the -dl ref counts behind the s-reg swap), and consider
+  a lint rule for `x++; x--;`. Its Diff patterns row was dropped.
 - **`func_800B5710` (ovl6a, 2836 B), parked 2026-10-18 at regions 120/121
   blocks, 706/710 insns** (C under `#ifdef NON_MATCHING`). Only the 0x80
   button block differs (target 0x37c-0x394): the target puts
@@ -532,6 +549,10 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-19 (ovl63 swarm):** 77 matched in 51 min ($34.41) with 5+2
+  workers (now the default); 1 park, 1 gate failure, 1 hack to redo
+  (`func_800B345C`); 28 pattern rows folded (3 repeats and the hack
+  dropped).
 - **2026-10-19 (ovl5f swarm):** 9 matched in a 9-min run, stopped for the
   ovl63 7-worker trial; 6 pattern rows folded.
 - **2026-10-19 (hand):** `func_800C8BA0` (ovl5f, 567ce2fb): its "+4 bytes

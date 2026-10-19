@@ -31,7 +31,7 @@ Needs Docker and `claude` on `PATH` (logged in once with `claude auth login`). W
 
 - `--seg` (`main/main`): a prefix of the segment (`main/` is every unit of `main.exe`,
   `overlays/engine` every engine file); `--only f1,f2` for exactly these functions.
-- `--workers` (3), `--model` (`opus`, since 2026-10-19; was `sonnet`), `--escalate-model` (`opus`): a function the first model
+- `--workers` (5, since 2026-10-19; was 3), `--model` (`opus`, since 2026-10-19; was `sonnet`), `--escalate-model` (`opus`): a function the first model
   doesn't match gets one more attempt with the second.
 - Big mode: `--big-workers` (1), `--big-bytes` (600), `--big-model` (`opus`), `--big-minutes`
   (150), `--big-budget-usd` (20), `--big-sessions` (6), `--big-stale` (2),
