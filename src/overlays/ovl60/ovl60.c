@@ -381,7 +381,28 @@ void func_800C159C(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1608);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C165C);
+s32 func_800C165C(s32 *arg0, s32 *arg1) {
+    s32 x;
+    s32 y;
+    s32 i;
+    s32 ok;
+
+    i = 0;
+loop:
+    x = Random(8);
+    y = Random(8);
+    ok = func_800BC04C(x, y) != 1;
+    i++;
+    if (ok && i < 10) {
+        goto loop;
+    }
+    if (i >= 10) {
+        return 0;
+    }
+    *arg0 = x;
+    *arg1 = y;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C16FC);
 

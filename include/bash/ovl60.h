@@ -106,6 +106,8 @@ void func_800C142C(s32 arg0);
 
 s32 func_800C1460(s32 arg0);
 
+s32 func_800C165C(s32 *arg0, s32 *arg1);
+
 void func_800C24E4(s32 arg0, s32 arg1);
 
 void func_800C286C(s32 arg0);
@@ -122,5 +124,7 @@ void func_800B4E50(s32 arg0, u16 arg1);
 void func_800B53CC(s32 arg0, u16 arg1);
 
 void func_800C3148(void);
+
+s32 func_800BC04C(s32 arg0, s32 arg1);
 
 #endif /* BASH_OVL60_H */
