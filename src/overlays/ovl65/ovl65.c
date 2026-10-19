@@ -27,7 +27,27 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B4268);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B4474);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B475C);
+s32 func_800B475C(s32 a, s32 b) {
+    s32 v1[3];
+    s32 v2[3];
+    s16 d[8];
+    EXTengine *ea;
+    EXTengine *eb;
+    s32 yaw;
+
+    ea = Heroes[a].hero_eng;
+    yaw = ea->unk1E;
+    eb = Heroes[b].hero_eng;
+    v1[0] = (D_800BDB50 * D_80068BD4[(yaw - 0x400) & 0xFFF].unk2) >> 12;
+    v1[2] = (D_800BDB50 * D_80068BD4[yaw & 0xFFF].unk2) >> 12;
+    v2[0] = 0;
+    v2[2] = 0;
+    d[0] = *(u16 *)((u8 *)eb + 0x10) - *(u16 *)((u8 *)ea + 0x10);
+    d[2] = *(u16 *)((u8 *)eb + 0x18) - *(u16 *)((u8 *)ea + 0x18);
+    d[1] = 0;
+    d[3] = 0xC8;
+    return func_800B4268(v2, v1, d, ea) == 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B485C);
 

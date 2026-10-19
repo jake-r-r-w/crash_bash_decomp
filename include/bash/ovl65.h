@@ -63,6 +63,8 @@ extern s32 D_800BD9FC;
 extern s32 D_800BDA00;
 extern s32 D_800BDA04;
 
+s32 func_800B475C(s32 a, s32 b);
+
 void func_800B9C10(s32 id);
 
 void func_800BC5B0(void);
