@@ -136,6 +136,8 @@ void func_800B96A0(s32 arg0);
 
 void func_800BA468(s32 id);
 
+void func_800BA574(s32 id);
+
 void func_800BA724(s32 id);
 
 s32 func_800BAD18(NAS *m);

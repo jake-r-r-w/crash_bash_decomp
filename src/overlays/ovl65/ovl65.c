@@ -589,7 +589,36 @@ void func_800BA468(s32 id) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BA574);
+void func_800BA574(s32 id) {
+    EXTheromove *m;
+    s32 v;
+
+    m = Heroes[id].hero_move;
+    if (id == 0) {
+        PlaySfx(0x6C4, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    if (id == 1) {
+        PlaySfx(0x6C5, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    if (id == 2) {
+        PlaySfx(0x6C6, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    if (id == 3) {
+        PlaySfx(0x6C7, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    m->x_acc = 0xA;
+    m->z_acc = 0xA;
+    m->z_dec = 6;
+    m->x_dec = 6;
+    m->forward_angle = Heroes[id].hero_eng->unk1E;
+    v = (D_80068BD4[(m->forward_angle + 0x400) & 0xFFF].unk2 * 0x59) >> 0xB;
+    m->x_vel = v;
+    m->x_max = v;
+    v = (D_80068BD4[(m->forward_angle + 0x800) & 0xFFF].unk2 * 0x59) >> 0xB;
+    m->z_vel = v;
+    m->z_max = v;
+    SetHeroSeq((HeroInfo *)id, 0x50);
+}
 
 void func_800BA724(s32 id) {
     NAS *nas;

@@ -8501,7 +8501,8 @@
   "status": "matched"
  },
  "ovl65:800BA574": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-19T16:05:28Z",
+  "status": "matched"
  },
  "ovl65:800BA724": {
   "matched_at": "2026-10-19T16:01:36Z",
