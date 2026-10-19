@@ -32,6 +32,7 @@ extern ScriptInit D_800C6E2C;
 extern s32 D_80054F84;
 extern HeroInfo Heroes[4];
 extern ScriptInit D_800C6D74;
+extern ScriptInit D_800C6DD0;
 extern u8 D_800546C4[];
 extern s32 D_800C6BAC;
 extern u8 D_80052F94[];
@@ -162,6 +163,8 @@ void InitRaceGreenSmokeBoost(NAS *nas);
 extern ScriptInit D_800C6F28;
 
 void func_800B9E50(Quat *q);
+
+void InitRaceGreenSmokePoof(NAS *nas);
 
 void InitRaceSmokePoof(NAS *nas);
 

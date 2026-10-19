@@ -333,7 +333,12 @@ void PlotRaceGreenSmokePoof(NAS *nas) {
     func_800250B0(nas);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRaceGreenSmokePoof);
+void InitRaceGreenSmokePoof(NAS *nas) {
+    func_80024E30(nas, &D_800C6DD0);
+    nas->Engine->sub->unk6C = &D_80054F84;
+    nas->Engine->sub->flags |= 0x21;
+    nas->UserInfo.user1 = 0;
+}
 
 void PlotRaceSmokePoof(NAS *nas) {
     func_800250B0(nas);
