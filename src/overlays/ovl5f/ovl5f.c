@@ -670,7 +670,13 @@ void InitBoatWake(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitPeriscopeGun);
+void InitPeriscopeGun(NAS *nas) {
+    nas->Engine->sub->unk6C = *(void **)D_80058AD0;
+    nas->Engine->sub->unk74 = 0x4080;
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitPeriscope);
 
