@@ -1267,7 +1267,85 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotDinoEgg);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotRaceShield);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotRaceTag);
+void PlotRaceTag(NAS *m) {
+    s32 i;
+    HeroInfo *h1;
+    HeroInfo *h;
+    Ovl63TagFux *fux1;
+    Ovl63TagFux *fux;
+    SLONG_XYZ pos;
+    u8 *tex;
+    SLONG_XYZ *pp;
+    NAS *tag;
+    Ovl63TagExt *ext;
+
+    D_800C6D20--;
+    i = 0;
+    h1 = Heroes;
+loop1:
+    if (i < 4) {
+        fux1 = (Ovl63TagFux *)h1->hero->FUX;
+        if (fux1 != NULL && fux1->unk2C > 0) {
+            fux1->unk2C--;
+        }
+        h1++;
+        i++;
+        goto loop1;
+    }
+    if (m->Engine->sfx != NULL) {
+        func_800228A4(m->Engine->sfx, (0x12C - D_800C6D20) * 0xF00 / 300 + 0x1E00);
+    }
+    i = 0;
+    if (D_800C6D20 == 0) {
+        pp = &pos;
+        h = Heroes;
+loop2:
+        if (i < 4) {
+            fux = (Ovl63TagFux *)h->hero->FUX;
+            if (fux == NULL) {
+                goto next;
+            }
+            if (fux->unk18 == 0x10) {
+                goto clear;
+            }
+            pos = h->hero_eng->unk10;
+            tex = D_800546C4;
+            tag = SpawnNASById(pos.x, pp->y, pp->z, 0x1605, 0x11);
+            if (tag != NULL) {
+                ext = FindExtension(tag, 0x10000000);
+                if (ext != NULL) {
+                    ext->unkC = 0;
+                    ext->unk18 = 0x100;
+                    if (tex != NULL) {
+                        ext->unk20 = 5;
+                        tag->Engine->sub->unk6C = tex;
+                    } else {
+                        ext->unk20 = 1;
+                    }
+                    ext->unk28 = 0;
+                    tag->InitDelete(tag);
+                }
+            }
+            if (h->hero_mode != 0x5D) {
+                SetHeroAction((HeroInfo *)i, 0x5D);
+            }
+            fux->unkC = 0x78;
+            PlaySfx(0x466, NULL, NULL, 0x1000, 0x1E00, 0);
+            if (m->Engine->sfx != NULL) {
+                StopSfx(m->Engine->sfx);
+            }
+            goto next;
+        clear:
+            fux->unk18 = 0;
+        next:
+            h++;
+            i++;
+            goto loop2;
+        }
+        D_800C6928 = 0x12C;
+        KillNAS(m);
+    }
+}
 
 void InitRaceVolcano(NAS *nas) {
     s32 i;

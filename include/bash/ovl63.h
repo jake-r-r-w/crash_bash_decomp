@@ -693,4 +693,30 @@ s32 func_800B345C(s32 player);
 
 void func_800BAD54(s32 player);
 
+/* A hero's FUX as PlotRaceTag counts it down. */
+typedef struct Ovl63TagFux {
+    /* 0x00 */ u8 unk0[0xC];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ u8 unk10[0x8];
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ u8 unk1C[0x10];
+    /* 0x2C */ s32 unk2C;
+} Ovl63TagFux;
+
+/* The 0x10000000 extension of the 0x1605 tag spawned by PlotRaceTag. */
+typedef struct Ovl63TagExt {
+    /* 0x00 */ u8 unk0[0xC];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ u8 unk10[0x8];
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ u8 unk1C[0x4];
+    /* 0x20 */ s32 unk20;
+    /* 0x24 */ u8 unk24[0x4];
+    /* 0x28 */ s32 unk28;
+} Ovl63TagExt;
+
+extern s32 D_800C6928;
+
+void PlotRaceTag(NAS *m);
+
 #endif /* BASH_OVL63_H */
