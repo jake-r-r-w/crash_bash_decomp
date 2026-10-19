@@ -371,6 +371,8 @@ typedef struct WeightDeathExt {
     /* 0x24 */ s32 unk24;
 } WeightDeathExt;
 
+void func_800CA930(EXTheromove *a, EXTheromove *b);
+
 void func_800CAE10(s32 player, s32 target);
 
 void func_800D2CB8(s32 arg0);

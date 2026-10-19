@@ -910,7 +910,29 @@ void PlotIceBerg(NAS *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitScratchMaster);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CA930);
+void func_800CA930(EXTheromove *a, EXTheromove *b) {
+    s32 ma;
+    s32 mb;
+    s32 d;
+    s32 q;
+    s32 r;
+    s32 total;
+
+    ma = a->mass;
+    mb = b->mass;
+    if (ma > 0 && mb > 0) {
+        d = -((a->x_vel - b->x_vel) << 8);
+        q = (d * mb + ((ma * a->x_vel + mb * b->x_vel) << 8)) / (total = mb + ma);
+        r = q - d;
+        a->x_vel = q >> 8;
+        b->x_vel = r >> 8;
+        d = -((a->z_vel - b->z_vel) << 8);
+        q = (d * mb + ((ma * a->z_vel + mb * b->z_vel) << 8)) / total;
+        r = q - d;
+        a->z_vel = q >> 8;
+        b->z_vel = r >> 8;
+    }
+}
 
 void PlotGravityObject(GravityObject *obj) {
     s32 target = obj->target;

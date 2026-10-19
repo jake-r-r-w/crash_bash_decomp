@@ -6937,7 +6937,8 @@
  },
  "ovl62:800CA930": {
   "auto_diff": 76,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-19T07:24:35Z",
+  "status": "matched"
  },
  "ovl62:800CAA60": {
   "auto_diff": 2,
@@ -7645,7 +7646,9 @@
  },
  "ovl63:800C5204": {
   "auto_diff": 76,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-19T07:24:52Z",
+  "status": "matched",
+  "via": "copy"
  },
  "ovl63:800C5334": {
   "auto_failed": "compile"

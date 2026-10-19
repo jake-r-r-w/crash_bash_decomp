@@ -33,4 +33,6 @@ void func_800B7D94(void);
 
 void PlotRaceFire(NAS *nas);
 
+void func_800C5204(EXTheromove *a, EXTheromove *b);
+
 #endif /* BASH_OVL63_H */
