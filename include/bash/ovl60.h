@@ -306,6 +306,8 @@ void func_800C20C0(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
 void func_800C2204(void);
 
+void func_800C2388(s32 arg0, s32 arg1, s16 arg2, s16 arg3);
+
 void func_800C2564(s32 arg0, s32 arg1, s16 arg2);
 
 void func_800C2770(s32 arg0, u32 arg1, u32 arg2);
