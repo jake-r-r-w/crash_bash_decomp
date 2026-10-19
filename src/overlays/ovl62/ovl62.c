@@ -1037,7 +1037,24 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitSmokeTrail);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBearDeath);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBearDeath);
+void InitBearDeath(NAS *m) {
+    BearDeathExt *ext;
+
+    ext = AddExtension(m, 0x88, 0x10000000);
+    if (ext != NULL) {
+        func_80024E30(m, &D_800D56D4);
+        m->Engine->sub->unk6C = *(s32 *)D_80058AD0;
+        m->Engine->unk5D = 2;
+        m->Engine->sub->flags |= 0x02000000;
+        ext->unk2C = 2;
+        ext->unk70 = 0x32;
+        ext->unk44 = 0x100;
+        ext->unk30 = 0;
+        ext->unk80 = 0;
+        ext->unk84 = 5;
+        func_80026A04((u8 *)m);
+    }
+}
 
 void func_800CA6E8(Ovl62RiserSet *arg0) {
     s32 i;

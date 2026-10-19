@@ -416,6 +416,21 @@ typedef struct SniperMissileExt {
 } SniperMissileExt;
 
 extern u8 D_80054A0C[];
+/* Bear death extension (0x88 bytes, id 0x10000000). */
+typedef struct BearDeathExt {
+    /* 0x00 */ u8 pad0[0x2C];
+    /* 0x2C */ s32 unk2C;
+    /* 0x30 */ s32 unk30;
+    /* 0x34 */ u8 pad34[0x10];
+    /* 0x44 */ s32 unk44;
+    /* 0x48 */ u8 pad48[0x28];
+    /* 0x70 */ s32 unk70;
+    /* 0x74 */ u8 pad74[0xC];
+    /* 0x80 */ s32 unk80;
+    /* 0x84 */ s32 unk84;
+} BearDeathExt;
+
+extern ScriptInit D_800D56D4;
 
 void func_800CA930(EXTheromove *a, EXTheromove *b);
 
