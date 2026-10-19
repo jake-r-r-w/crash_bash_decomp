@@ -512,7 +512,12 @@ void InitRockProjectile(NAS *m) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9F70);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBearBoss);
+void PlotBearBoss(NAS *m) {
+    if (FindExtension(m, 0x10000000) != NULL) {
+        m->Engine->unk5E = 1;
+        func_800250B0(m);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBearBoss);
 
