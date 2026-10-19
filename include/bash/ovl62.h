@@ -377,4 +377,10 @@ void func_800CAE10(s32 player, s32 target);
 
 void func_800D2CB8(s32 arg0);
 
+/* Per-hero speed table (declared in bash/8007ee2c.h, not included here). */
+extern u16 *D_8009D6F4;
+extern s32 D_800D6924[];
+
+void func_800D3460(s32 arg0);
+
 #endif /* BASH_OVL62_H */

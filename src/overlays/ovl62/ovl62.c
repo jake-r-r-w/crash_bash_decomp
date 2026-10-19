@@ -1740,7 +1740,26 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D32CC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D3394);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D3460);
+void func_800D3460(s32 arg0) {
+    HeroInfo *base = Heroes;
+    s16 two;
+    HeroInfo *h;
+    EXTheromove *m;
+
+    h = base + arg0;
+    if ((m = h->hero_move) != NULL) {
+        do {
+            two = 2;
+        } while (0);
+        m->x_dec = 1;
+        m->z_dec = 1;
+        m->HitBy = -1;
+        m->x_acc = two;
+        m->z_acc = two;
+        m->velocity_calc = 3;
+        D_800D6924[arg0] = D_8009D6F4[h->hero_name * 3];
+    }
+}
 
 void func_800D34F0(void) {
 }
