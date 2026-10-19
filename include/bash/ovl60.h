@@ -193,6 +193,8 @@ void func_800C24E4(s32 arg0, s32 arg1);
 
 void func_800C2524(s32 arg0, s32 arg1, s32 arg2);
 
+void func_800B7C3C(s32 arg0, s32 arg1);
+
 void func_800C2620(s32 arg0, s32 arg1);
 
 void func_800C286C(s32 arg0);
@@ -239,6 +241,8 @@ s32 func_800C178C(void);
 void func_800C2018(s32 arg0, s32 arg1, s32 arg2);
 
 void func_800C2204(void);
+
+void func_800C2564(s32 arg0, s32 arg1, s16 arg2);
 
 void func_800C2BE8(s32 arg0);
 
