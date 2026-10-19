@@ -383,7 +383,16 @@ loop:
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitTNTCrate);
+void InitTNTCrate(NAS *m) {
+    m->Engine->unk5D = 2;
+    m->Engine->unk5C = 1;
+    m->Engine->sub->unk74 = 0x2009;
+    m->Engine->sub->unk6C = (s32)D_80052F94;
+    m->UserInfo.status = 0;
+    m->UserInfo.user1 = 0;
+    m->UserInfo.user2 = 0;
+    m->UserInfo.flags = 0;
+}
 
 s32 func_800C5014(s32 arg0) {
     s32 var_a0;
