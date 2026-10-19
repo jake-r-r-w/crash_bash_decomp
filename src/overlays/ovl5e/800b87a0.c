@@ -89,7 +89,22 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BC274);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BC588);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BC698);
+void func_800BC698(s32 arg0) {
+    HeroInfo *h;
+    HeroInfo *base;
+
+    if (func_8008ABF8(arg0) != 0) {
+        base = Heroes;
+        h = base + arg0;
+        if ((u16)(h->hero_name - 1) < 8) {
+            h->hero_sub->unk6C = D_80052A54 + D_8009D6EC[h->hero_name] * 0x38;
+        } else {
+            h->hero_sub->unk6C = NULL;
+        }
+    } else {
+        func_80089BE8(arg0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BC744);
 
