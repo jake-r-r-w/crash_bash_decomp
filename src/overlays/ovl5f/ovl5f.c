@@ -522,7 +522,26 @@ s32 func_800C6A30(s32 arg0) {
     return val;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitTankBossRocketTurret);
+void InitTankBossRocketTurret(NAS *nas) {
+    EXTengine *eng;
+    subengine *sub;
+
+    eng = nas->Engine;
+    sub = eng->sub;
+    eng->unk5D = 0;
+    eng->unk10.z += 0x258;
+    eng->unk10.y += 0xC8;
+    sub->unk6C = D_800536CC;
+    if (nas->UserInfo.flags == 0) {
+        sub->unk74 = 0x2024;
+    } else {
+        sub->unk74 = 0x2025;
+    }
+    sub->unk68 = 0x100;
+    sub->flags |= 0x02000000;
+    nas->UserInfo.status = 0x11;
+    eng->flags = 0;
+}
 
 void InitTankBossCortexTurret(NAS *nas) {
     EXTengine *eng;
