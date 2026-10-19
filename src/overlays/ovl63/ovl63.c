@@ -573,7 +573,28 @@ void func_800BC2D0(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BC4B0);
+void func_800BC4B0(s32 player) {
+    Ovl63JumpFux *fux;
+    EXTheromove *move;
+
+    func_8008502C();
+    move = Heroes[player].hero_move;
+    if (move == NULL) {
+        return;
+    }
+    fux = (Ovl63JumpFux *)Heroes[player].hero->FUX;
+    if (fux == NULL) {
+        return;
+    }
+    if (fux->phase == 0 && Ovl63JumpAbove(player)) {
+        move->jump_vel = -0x20;
+        fux->phase = 1;
+    }
+    if (fux->phase == 1 && Ovl63JumpAbove(player)) {
+        Heroes[player].hero_eng->unk10.y -= abs(D_800C6930 - Heroes[player].hero_eng->unk10.y);
+        SetHeroAction((HeroInfo *)player, 0x5B);
+    }
+}
 
 void func_800BC6C8(s32 arg0) {
     Ovl63FuxTimer *fux;

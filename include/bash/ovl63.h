@@ -556,4 +556,34 @@ void InitTrackGlob(NAS *m);
 
 void func_800C44B0(void);
 
+/* A hero's FUX as func_800BC4B0 reads it: a jump phase at 0x138. */
+typedef struct Ovl63JumpFux {
+    /* 0x000 */ u8 pad0[0x138];
+    /* 0x138 */ s32 phase;
+} Ovl63JumpFux;
+
+/* Inline copy of func_800C5A50: steps the jump, true once above D_800C6930. */
+static inline s32 Ovl63JumpAbove(s32 player) {
+    EXTheromove *move;
+    EXTengine *eng;
+    s32 y;
+
+    move = Heroes[player].hero_move;
+    eng = Heroes[player].hero_eng;
+    if (move != NULL && eng != NULL) {
+        if (move->jump_vel < 0) {
+            move->jump_vel += move->jump_acc;
+        } else {
+            move->jump_vel += move->jump_dec;
+        }
+        y = eng->unk10.y += move->jump_vel;
+        if (move->jump_vel > 0 && y > D_800C6930) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void func_800BC4B0(s32 player);
+
 #endif /* BASH_OVL63_H */
