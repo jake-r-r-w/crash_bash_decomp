@@ -158,7 +158,25 @@ void func_800B67D8(s32 arg0) {
     PlaySfx(D_800BB95C[h->hero_name - 1][Random(4)], 0, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B68B8);
+void func_800B68B8(s32 arg0) {
+    u8 *g;
+
+    if (func_8008502C() == 8 && ((g = D_8005A614), (*(u16 *)(g + 0x32) & 0x80)) && g[arg0 + 0x5C] == 0 &&
+        !(*(s32 *)(g + 4) & 2)) {
+        HeroInfo *base = Heroes;
+        HeroInfo *h = &base[arg0];
+
+        h->hero_immunity = 0;
+        h->hero_hit += 0x28;
+        SetHeroSeq((HeroInfo *)arg0, 0x61);
+        if (D_800BC2D0[arg0][0] == 0) {
+            SetHeroAction((HeroInfo *)arg0, 0x76);
+        } else {
+            SetHeroAction((HeroInfo *)arg0, 0x71);
+        }
+    }
+    func_800B51C8(arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B69AC);
 
