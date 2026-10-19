@@ -88,7 +88,6 @@ extern u16 D_800C3B94[];
 extern u16 D_8009E46C[];
 extern s32 D_8009D758;
 Ovl5dPair *func_800B8040(u8 *arg0);
-void func_800BBA14(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4);
 
 /* A scene object in the list at D_80058AD0 + 0x1C (func_800B8314). */
 typedef struct Ovl5dObj {
@@ -225,6 +224,9 @@ s32 func_800BB100(s32 arg0);
 
 void func_800BB2BC(void);
 
+u8 *func_800BBA14(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
+extern u8 *D_800C478C;
+
 void func_800BB370(void);
 
 void func_800BB3D0(void);
@@ -245,5 +247,7 @@ void func_800B7E74(void);
 void func_800B94C4(s32 arg0, u16 arg1);
 
 void InitBashHomer(NAS *nas);
+
+u8 *func_800BAFDC(s32 x, s32 unused, s32 z, u16 flag);
 
 #endif /* BASH_OVL5D_H */

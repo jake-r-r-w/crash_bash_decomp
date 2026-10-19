@@ -1024,7 +1024,57 @@ void func_800BAFB4(void) {
     func_800B7D20(D_800C3B88);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BAFDC);
+u8 *func_800BAFDC(s32 x, s32 unused, s32 z, u16 flag) {
+    s32 step;
+    s32 neg;
+    s32 nx;
+    s32 nz;
+    s32 zi;
+    s32 xi;
+    u8 *res;
+
+    step = 1;
+    xi = (x >> 8) + 10;
+    zi = 9 - (z >> 8);
+
+    do {
+        if (D_8009D90C[zi * 20 + xi].unk0 != 0) {
+            xi = (x >> 8) + 10;
+            zi = 9 - (z >> 8);
+            if (flag != 0) {
+                zi += step;
+            } else {
+                xi += step;
+            }
+            neg = ~step;
+            step = neg + 1;
+            if (step > 0) {
+                step = neg + 2;
+            }
+            if (step >= 9) {
+                step = 0;
+            }
+        } else {
+            step = 0;
+        }
+    } while (step != 0);
+    xi = xi - 10;
+    xi <<= 8;
+    zi = 19 - zi;
+    zi = zi - 10;
+    nz = zi << 8;
+    if ((u32)(xi + 0x700) > 0xE00U) {
+        xi = x;
+    }
+    if ((u32)(nz + 0x700) > 0xE00U) {
+        nz = z;
+    }
+    res = func_800BBA14(xi, 0, nz, 2, -1);
+    if (res != NULL) {
+        func_80026B70(&D_800C478C, res);
+    }
+    return res;
+}
 
 s32 func_800BB100(s32 arg0) {
     EXTbotai *ai = Heroes[arg0].hero_ai;
