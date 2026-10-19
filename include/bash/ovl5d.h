@@ -88,6 +88,7 @@ void func_800BB368(void);
 
 extern u8 D_80052F5C[];
 extern s16 D_800C3B08[][3];
+extern u16 D_8009D754;
 
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
 #include "bash/ovl5d_800bb64c.h"
@@ -98,6 +99,8 @@ void func_800B8314(void);
 void func_800B8578(void);
 
 void PlotSnowGlint(NAS *nas);
+
+void InitBash8way(NAS *nas);
 
 void PlotMissileExplode(NAS *nas);
 

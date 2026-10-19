@@ -218,7 +218,42 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B95F0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B97A8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitBash8way);
+void InitBash8way(NAS *nas) {
+    EXTengine *eng;
+    EXTmotion *mot;
+    subengine *sub;
+
+    eng = nas->Engine;
+    if (eng != NULL) {
+        nas->UserInfo.user1 = D_8009D754;
+        nas->UserInfo.user2 = Heroes[D_8009D754].hero_move->facing_angle;
+        func_8001D390(eng, 7);
+        sub = eng->sub;
+        eng->unk5D = 0;
+        for (; sub != NULL; sub = sub->next) {
+            sub->unk51 = 0;
+            sub->unk6C = D_80052F5C;
+            sub->unk74 = 0x200E;
+        }
+        mot = AddMotion(nas);
+        if (mot != NULL) {
+            mot->Xvel = 0x20;
+            mot->Xmax = 0xA0;
+            mot->Xacc = 8;
+            mot->Ymax = 0x80;
+            mot->Xdec = 0;
+            mot->Yvel = 0;
+            mot->Yacc = 1;
+            mot->Ydec = 0;
+            mot->Ydir = 0;
+        }
+        eng->unk10.y -= 0xE0;
+        PlaySfx(0x43C, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+    }
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotBash8way);
 
