@@ -2089,7 +2089,23 @@ void func_800D325C(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D32CC);
+s32 func_800D32CC(s32 player) {
+    Ext20 *ext;
+
+    if (((Ovl62Pad *)D_80051338)[player].unk50 & 0xF0) {
+        return 0;
+    }
+    ext = FindExtension(Heroes[player].hero, 0x20000000);
+    if (ext != NULL) {
+        if (ext->state == 0) {
+            SetHeroAction((HeroInfo *)player, 0x49);
+        }
+        if (ext->state == 1) {
+            SetHeroAction((HeroInfo *)player, 0x54);
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D3394);
 
