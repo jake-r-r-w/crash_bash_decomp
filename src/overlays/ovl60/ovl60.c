@@ -1280,7 +1280,22 @@ void Init_PogoTazer(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1CF0);
+void func_800C1CF0(arg0)
+s32 arg0;
+{
+    Ovl60Slot *base;
+    Ovl60Slot *slot;
+
+    if (D_800C535C[arg0].unk4 == 5 && Heroes[arg0].hero_aseq == 0x2F) {
+        SetHeroAction((HeroInfo *)arg0, 0x39);
+    }
+    base = D_800C535C;
+    slot = &base[arg0];
+    if (slot->unk4 == 6) {
+        func_800B91E8(arg0);
+    }
+    slot->unk4 = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1DA4);
 
