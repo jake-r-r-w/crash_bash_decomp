@@ -102,10 +102,13 @@ typedef struct Ovl62Fux {
     /* 0x0C */ SLONG_XYZ vel;
     /* 0x18 */ SLONG_XYZ pos;
     /* 0x24 */ s32 unk24;
-    /* 0x28 */ u8 pad28[0x30 - 0x28];
+    /* 0x28 */ s32 target;
+    /* 0x2C */ u8 pad2C[0x30 - 0x2C];
     /* 0x30 */ s32 state;
     /* 0x34 */ u8 pad34[0x44 - 0x34];
     /* 0x44 */ void *func;
+    /* 0x48 */ u8 pad48[0x5C - 0x48];
+    /* 0x5C */ s32 timer;
 } Ovl62Fux;
 
 extern s32 D_800D4E0C[];
@@ -127,6 +130,21 @@ typedef struct BombMakerExt {
     /* 0x18 */ s32 unk18;
 } BombMakerExt;
 
+/* D_8009D87C (declared in bash/8007ee2c.h, which this unit does not include). */
+typedef struct Ovl62Odds {
+    s16 unk0;
+    s16 unk2;
+    s16 unk4;
+} Ovl62Odds;
+
+extern Ovl62Odds D_8009D87C[];
+extern s32 D_800D52E0[];
+
+s32 func_8008CEB0(u8 *arg0, u8 *arg1);
+s32 func_800B7B88(s32 arg0);
+s32 func_800BCF08(s32 arg0, s32 arg1);
+s32 func_800D05A8(s32 arg0);
+
 /* The NAS that owns the bomb maker. */
 extern NAS *D_800D52B4;
 
@@ -141,6 +159,8 @@ void func_800D2F48(s32 player);
 void func_800D3018(s32 player);
 
 extern s32 D_800D5FEC[4];
+
+void func_800B60B8(s32 player);
 
 s32 func_800CB284(void);
 

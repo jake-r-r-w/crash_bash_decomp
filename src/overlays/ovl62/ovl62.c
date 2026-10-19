@@ -41,7 +41,49 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B5AC4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B5EBC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B60B8);
+void func_800B60B8(s32 player) {
+    HeroInfo *base;
+    HeroInfo *h;
+    Ovl62Fux *fux;
+    Ext20 *ext;
+    s32 t;
+
+    base = Heroes;
+    h = base + player;
+    fux = (Ovl62Fux *)h->hero->FUX;
+    if (fux == NULL) {
+        return;
+    }
+    if (func_800BCF08(player, fux->target) != 0) {
+        return;
+    }
+    func_8008CEB0((u8 *)&base[fux->target].hero_eng->unk10, (u8 *)&h->hero_eng->unk10);
+    if (func_800B7B88(player) == 0) {
+        return;
+    }
+    ext = FindExtension(h->hero, 0x20000000);
+    if (ext == NULL) {
+        return;
+    }
+    if (ext->val < func_800D05A8(player)) {
+        return;
+    }
+    if (h->hero_move == NULL) {
+        return;
+    }
+    if (fux->timer-- > 0) {
+        return;
+    }
+    if (h->hero_ai->AIpad & 0x8000) {
+        return;
+    }
+    if (D_8009D87C[player].unk0 > 0x20) {
+        D_8009D87C[player].unk0 = 0x20;
+    }
+    t = D_800D52E0[D_8009D87C[player].unk0];
+    h->hero_ai->AIpad |= 0x8000;
+    fux->timer = 0x40 - t;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B6258);
 
