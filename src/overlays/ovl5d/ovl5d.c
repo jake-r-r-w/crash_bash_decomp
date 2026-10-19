@@ -323,7 +323,48 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitBashHomer);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotBashHomer);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitBashShox);
+extern u16 D_8009D754;
+
+void InitBashShox(NAS *nas) {
+    EXTengine *eng;
+    BashShoxExt *x;
+    subengine *sub;
+    s32 i;
+
+    eng = nas->Engine;
+    if (eng != NULL) {
+        nas->UserInfo.user1 = D_8009D754;
+        x = AddExtension(nas, 0x68, 0x20000000);
+        if (x != NULL) {
+            nas->FUX = (void *)x;
+            func_8001D390(eng, 6);
+            sub = eng->sub;
+            eng->unk5D = 0;
+            eng->unk5C = 1;
+            eng->flags |= 0x21;
+            if (sub != NULL) {
+                i = 0;
+                do {
+                    sub->unk51 = 0;
+                    sub->unk50 = 1;
+                    sub->unk6C = D_80052F94;
+                    sub->unk74 = 0x2015;
+                    sub->flags = (sub->flags & 0xFFFF7FFF) | 0x21;
+                    sub->unk08 = -0x100;
+                    x->a[i] = i * 5;
+                    x->b[i] = 0xC;
+                    x->c[i] = 0x1000;
+                    sub = sub->next;
+                    i++;
+                } while (sub != NULL);
+            }
+            PlaySfx(0x43A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        }
+    }
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotBashShox);
 

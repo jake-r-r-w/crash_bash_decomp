@@ -87,6 +87,14 @@ typedef struct SnowGlint {
     /* 0x20 */ u16 timer[10];
 } SnowGlint;
 
+/* Extension 0x20000000 (BashShox): u16 per subengine. */
+typedef struct BashShoxExt {
+    /* 0x00 */ u8 pad00[0x18];
+    /* 0x18 */ u16 a[8];
+    /* 0x28 */ u16 b[16];
+    /* 0x48 */ u16 c[16];
+} BashShoxExt;
+
 void func_800BB360(void);
 
 void func_800B3A38(void);
@@ -113,6 +121,8 @@ void func_800B8578(void);
 void PlotSnowGlint(NAS *nas);
 
 void InitBash8way(NAS *nas);
+
+void InitBashShox(NAS *nas);
 
 void PlotMissileExplode(NAS *nas);
 
