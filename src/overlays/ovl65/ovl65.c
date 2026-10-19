@@ -345,7 +345,20 @@ void func_800BCB4C(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BCBB8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BCCE8);
+s32 func_800BCCE8(s32 arg0) {
+    s32 i;
+    s32 best;
+
+    best = -1;
+    i = 3;
+    do {
+        if (func_8008C4C8((s32 *)&Heroes[arg0].hero_eng->unk10, i) != 0) {
+            best = i;
+        }
+        i--;
+    } while (i > 0);
+    return best;
+}
 
 void InitDinoSmoke(NAS *arg0) {
     s16 *p;
