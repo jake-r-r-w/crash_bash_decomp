@@ -134,3 +134,12 @@ s32 func_800BD0AC(s32 self, s32 *dist);
 s32 func_800BD204(s32 arg0);
 
 #endif /* BASH_OVL65_H */
+
+extern u8 D_800BDA7C[], D_800BDA5C[], D_8008B29C[], D_8008B418[];
+extern u8 D_800BD948[], D_800BD95C[], D_800BD970[], D_800BD97C[], D_800BD994[], D_800BD9A8[];
+extern s32 D_800BDB88, D_800BDB8C, D_800BDB7C, D_800BDB80, D_800BDB84, D_800BDB54;
+extern s32 D_800BDC6C[], D_800BDC78[];
+void func_800B69F4();
+void func_800B9930();
+void func_800B9778();
+void func_800B96A0();
