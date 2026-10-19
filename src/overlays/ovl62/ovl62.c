@@ -417,7 +417,17 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBombGFX);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBombMaker);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBombMaker);
+void InitBombMaker(NAS *m) {
+    BombMakerExt *ext;
+
+    ext = AddExtension(m, 0x1C, 0x10000000);
+    if (ext != NULL) {
+        ext->timer = 0xB4;
+        ext->unkC = 0;
+        ext->unk18 = 0;
+        D_800D52B4 = m;
+    }
+}
 
 u32 func_800CBA28(u8 *arg0) {
     return (u32) ((get_angle((*(s32*)((u8*)(arg0) + 0)), (*(s32*)((u8*)(arg0) + 8))) - 0x7D) & 0xFFF) >> 8;

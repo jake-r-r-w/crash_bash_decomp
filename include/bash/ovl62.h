@@ -54,4 +54,16 @@ void func_800D2EB0(s32 player);
 
 void func_800D325C(s32 arg0);
 
+/* Bomb maker extension (0x1C bytes, id 0x10000000). */
+typedef struct BombMakerExt {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s32 timer;
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ s32 unk18;
+} BombMakerExt;
+
+/* The NAS that owns the bomb maker. */
+extern NAS *D_800D52B4;
+
 #endif /* BASH_OVL62_H */
