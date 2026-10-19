@@ -93,6 +93,8 @@ void InitMissileExplode(NAS *nas);
 
 void InitBoing(NAS *nas);
 
+void InitSnowGlint(NAS *nas);
+
 void func_800BAC10(void);
 
 u16 func_800BAD0C(s32 arg0, s32 arg1);
