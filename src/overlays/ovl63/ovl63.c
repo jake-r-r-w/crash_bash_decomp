@@ -232,7 +232,16 @@ void InitRaceTag(u8 *arg0) {
     PlaySfx(0x452, (*(s32*)((u8*)(arg0) + 84)) + 0x94, 0, 0x1000, 0x1E00, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRaceShield);
+void InitRaceShield(NAS *nas) {
+    EXTraceshield *ext;
+
+    ext = AddExtension(nas, 0x20, 0x10000000);
+    if (ext != NULL) {
+        ext->unk10 = 0xE;
+        ext->unkC = 0;
+        ext->unk1C = 0x100;
+    }
+}
 
 void PlotRaceFire(NAS *nas) {
     FindExtension(nas, 0x10000000);

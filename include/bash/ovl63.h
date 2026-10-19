@@ -33,6 +33,17 @@ void func_800B7D94(void);
 
 void PlotRaceFire(NAS *nas);
 
+/* Shield extension, AddExtension(nas, 0x20, 0x10000000). */
+typedef struct EXTraceshield {
+    /* 0x00 */ s32 unk0[3];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 unk14[2];
+    /* 0x1C */ s32 unk1C;
+} EXTraceshield;
+
+void InitRaceShield(NAS *nas);
+
 void func_800C5204(EXTheromove *a, EXTheromove *b);
 
 #endif /* BASH_OVL63_H */
