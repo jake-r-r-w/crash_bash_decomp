@@ -183,7 +183,48 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B485C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B49AC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B4B14);
+void func_800B4B14(s32 id) {
+    Ovl65Chase *c;
+    Ovl65Ext *e;
+    s32 near;
+    s32 dist;
+    s32 far;
+    SLONG_XYZ sp;
+    s32 dx;
+    s32 dz;
+
+    c = FindExtension(Heroes[id].hero, 0x20000000);
+    if (c != NULL) {
+        sp.x = 0;
+        sp.y = 0;
+        sp.z = -0xB00;
+        if (func_800B49AC(id) != 0) {
+            c->timer = 0x5A;
+            c->state = 4;
+            return;
+        }
+        e = FindExtension(Heroes[id].hero, 0x10000000);
+        near = 0;
+        if (e != NULL) {
+            near = (u32)e->unk14 > 0;
+        }
+        far = near ^ 1;
+        if (far != 0) {
+            c->unk28 = -1;
+            c->fn = func_800BD1FC;
+            return;
+        }
+        c->pos = Heroes[id].hero_eng->unk10;
+        c->tgt = sp;
+        dx = c->pos.x - c->tgt.x;
+        dz = c->pos.z - c->tgt.z;
+        dist = dx * dx + dz * dz;
+        func_800B3538(id);
+        if (dist <= 0x3FFFF) {
+            c->state = 3;
+        }
+    }
+}
 
 s32 func_800B4C70(s32 *arg0, s32 arg1) {
     s32 v[3];

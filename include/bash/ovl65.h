@@ -23,6 +23,21 @@ typedef struct Ovl65Ext {
     s32 unk14;
 } Ovl65Ext;
 
+typedef struct Ovl65Chase {
+    u8 pad[0xC];
+    void (*fn)(void); /* 0xC */
+    SLONG_XYZ pos;    /* 0x10 */
+    SLONG_XYZ tgt;    /* 0x1C */
+    s32 unk28;
+    u8 pad2[0xC];
+    s32 state; /* 0x38 */
+    u8 pad3[4];
+    s32 timer; /* 0x40 */
+} Ovl65Chase;
+
+s32 func_800B49AC(s32 id);
+void func_800B3538(s32 id);
+
 /* Hero NAS extension 0x10000000 func_800B9C10 ticks: a 26-frame timer. */
 typedef struct Ovl65HeroExt {
     u8 pad[0x1C];
@@ -110,6 +125,8 @@ s32 func_800BD320(s32 arg0, s32 arg1);
 extern ScriptInit D_800BDC08;
 
 s32 func_800B33D8(s32 arg0);
+
+void func_800B4B14(s32 id);
 
 void func_800B96A0(s32 arg0);
 
