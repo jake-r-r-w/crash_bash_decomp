@@ -708,7 +708,47 @@ done:
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BAE94);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", InitDinoGem);
+void InitDinoGem(NAS *m) {
+    Ovl65DinoGem *ext;
+    EXTengine *e;
+
+    ext = AddExtension(m, 0xE8, 0x10000000);
+    if (ext != NULL) {
+        do {
+            m->Engine->sub->unk74 = 0x2001;
+        } while (0);
+        if (D_8005A646 & 0x80) {
+            m->Engine->sub->unk74 = 0x2001;
+        }
+        m->Engine->sub->unk6C = D_80055534;
+        ext->unkC = 6;
+        ext->unk10 = 5;
+        ext->unk80 = 0;
+        ext->unk88 = 0;
+        ext->unk8C = 0;
+        ext->unk90 = 1;
+        ext->unkE2 = 0x100;
+        ext->unkB4 = 0;
+        ext->unkD4 = 0;
+        func_80026A04((u8 *)m);
+        m->Engine->sub->flags &= 0xFFFF7FFF;
+        e = AddEngine(m, 2);
+        if (e != NULL) {
+            ext->unk84 = e;
+            e->sub->unk6C = D_80055534;
+            e->sub->unk74 = 0x2014;
+            e->unk5C = 1;
+            e->unk2C.x = 0x23E8;
+            e->unk2C.y = 0x23E8;
+            e->unk2C.z = 0x23E8;
+            e->unk5D = 0;
+            e->unk10 = m->Engine->unk10;
+            e->sub->unk76 = 0x800;
+            e->sub->flags |= 0x40008041;
+            ext->unk84->sub->flags &= 0xFFFF7FFF;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", PlotDinoGem);
 

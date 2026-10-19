@@ -35,6 +35,24 @@ typedef struct Ovl65Chase {
     s32 timer; /* 0x40 */
 } Ovl65Chase;
 
+typedef struct Ovl65DinoGem {
+    u8 pad0[0xC];
+    s32 unkC;
+    s32 unk10;
+    u8 pad14[0x6C];
+    s32 unk80;
+    EXTengine *unk84;
+    s32 unk88;
+    s32 unk8C;
+    s32 unk90;
+    u8 pad94[0x20];
+    s32 unkB4;
+    u8 padB8[0x1C];
+    s32 unkD4;
+    u8 padD8[0xA];
+    s16 unkE2;
+} Ovl65DinoGem;
+
 s32 func_800B49AC(s32 id);
 void func_800B3538(s32 id);
 
@@ -141,6 +159,8 @@ void func_800BA574(s32 id);
 void func_800BA724(s32 id);
 
 s32 func_800BAD18(NAS *m);
+
+void InitDinoGem(NAS *m);
 
 void PlotDinoScratch(NAS *m);
 
