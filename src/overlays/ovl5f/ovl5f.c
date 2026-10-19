@@ -185,7 +185,74 @@ void func_800B6ED8(s32 player) {
     SetHeroSeq((HeroInfo *)player, 0x59);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B6FF4);
+void func_800B6FF4(s32 player) {
+    TA_player *ta;
+    subengine *sub;
+
+    ta = &D_800CAD50[player];
+    ta->MainWeaponRounds = 999;
+    ta->MainWeaponFireDelay = 30;
+    sub = Heroes[player].hero_sub->next;
+    switch (Heroes[player].hero_name) {
+    case 1:
+    case 2:
+        ta->MainWeaponType = 9;
+        if (D_8005A648 == 5) {
+            ta->TurretAnimPtr = D_800C9A54;
+            sub->next->unk74 = 0x4300;
+        } else {
+            sub->unk74 = 0x2010;
+        }
+        break;
+    case 7:
+    case 8:
+        ta->MainWeaponType = 8;
+        if (D_8005A648 == 5) {
+            ta->TurretAnimPtr = D_800C9B44;
+            sub->next->unk74 = 0x4100;
+        } else {
+            sub->unk74 = 0x2009;
+        }
+        break;
+    default:
+        ta->MainWeaponType = 11;
+        if (D_8005A648 == 5) {
+            ta->TurretAnimPtr = D_800C9AA4;
+            sub->next->unk74 = 0x4200;
+        } else {
+            sub->unk74 = 0x2011;
+        }
+        break;
+    case 5:
+    case 6:
+        ta->MainWeaponType = 10;
+        if (D_8005A648 == 5) {
+            ta->TurretAnimPtr = D_800C9AF4;
+            sub->next->unk74 = 0x4000;
+        } else {
+            sub->unk74 = 0x2012;
+        }
+        break;
+    }
+    if (((Ovl5fModeView *)D_8005A614)->mode == 5) {
+        sub->unk74 = 0x2005;
+    }
+    if (((Ovl5fModeView *)D_8005A614)->mode == 9) {
+        ta->MainWeaponRounds = 99999;
+        if (D_8005A614[player + 0x5C] != 0) {
+            ta->MainWeaponType = 11;
+            sub->unk74 = 0x2011;
+            return;
+        }
+        if (D_800CB25C == 0x3A) {
+            ta->MainWeaponType = 2;
+            sub->unk74 = 0x200B;
+            return;
+        }
+        ta->MainWeaponType = 3;
+        sub->unk74 = 0x2008;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B71F8);
 
