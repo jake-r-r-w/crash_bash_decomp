@@ -29,7 +29,9 @@ typedef struct Ovl65Chase {
     SLONG_XYZ pos;    /* 0x10 */
     SLONG_XYZ tgt;    /* 0x1C */
     s32 unk28;
-    u8 pad2[0xC];
+    u8 pad2[4];
+    s32 unk30;
+    u8 pad2b[4];
     s32 state; /* 0x38 */
     u8 pad3[4];
     s32 timer; /* 0x40 */
@@ -59,6 +61,24 @@ typedef struct Ovl65PadAng {
     s32 buttons;
     u8 pad54[4];
 } Ovl65PadAng;
+typedef struct Ovl65Pos {
+    u8 pad[4];
+    SLONG_XYZ pos; /* 0x4 */
+} Ovl65Pos;
+
+typedef struct Ovl65PosH {
+    u8 pad[4];
+    u16 x;
+    u8 pad2[6];
+    u16 z;
+} Ovl65PosH;
+
+typedef struct Ovl65EngH {
+    u8 pad[0x10];
+    u16 x;
+    u8 pad2[6];
+    u16 z;
+} Ovl65EngH;
 
 s32 func_800B49AC(s32 id);
 void func_800B3538(s32 id);
@@ -170,6 +190,8 @@ s32 func_800BD320(s32 arg0, s32 arg1);
 extern ScriptInit D_800BDC08;
 
 s32 func_800B33D8(s32 arg0);
+
+void func_800B3D90(s32 id);
 
 void func_800B4B14(s32 id);
 
