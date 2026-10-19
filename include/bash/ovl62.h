@@ -620,6 +620,28 @@ extern u8 D_8005476C[];
 
 s32 func_8008C5C4(s32 *from, s32 *to, void *arc, s32 *pos);
 
+/* Big missile extension (id 0x10000000) as PlotBigMissile reads it: a ballistic
+ * arc at 0xC (the same block as BigMissileExt, InitBigMissile's view). */
+typedef struct BigMissileArcExt {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ s32 arc[0x15];
+    /* 0x60 */ SLONG_XYZ from;
+    /* 0x6C */ SLONG_XYZ to;
+    /* 0x78 */ s32 state;
+} BigMissileArcExt;
+
+/* Polar boss extension (id 0x10000000), as PlotBigMissile uses it. */
+typedef struct PolarBossExt {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ s32 state;
+    /* 0x10 */ u8 pad10[0x70 - 0x10];
+    /* 0x70 */ s32 unk70;
+    /* 0x74 */ u8 pad74[4];
+    /* 0x78 */ s32 phase;
+} PolarBossExt;
+
+extern NAS *D_800D5448;
+
 s32 func_800B3740(s32 arg0);
 
 s32 func_800CB178(s32 self, s32 *dist);

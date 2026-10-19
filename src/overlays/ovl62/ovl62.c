@@ -1584,7 +1584,69 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBearminator);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotPolarMissile);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBigMissile);
+void PlotBigMissile(NAS *m) {
+    BigMissileArcExt *ext;
+    PolarBossExt *boss;
+    ExtSpawn5910 *sext;
+    NAS *nas;
+    NAS *res;
+    SLONG_XYZ *pos;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    if (ext->state != 0) {
+        return;
+    }
+    if (func_8008C5C4(&ext->from.x, &ext->to.x, ext->arc, &m->Engine->unk10.x) == 0) {
+        return;
+    }
+    m->Engine->unk10.y = 0x20;
+    pos = &m->Engine->unk10;
+    nas = SpawnNASById(pos->x, pos->y, pos->z, 0x1605, 0x11);
+    if (nas != NULL) {
+        sext = FindExtension(nas, 0x10000000);
+        if (sext != NULL) {
+            sext->unk18 = 0x100;
+            sext->unkC = 0;
+            sext->unk20 = 1;
+            sext->unk28 = 0;
+            nas->InitDelete(nas);
+        }
+        res = nas;
+    } else {
+        res = NULL;
+    }
+    if (res != NULL) {
+        res->Engine->flags |= 0x200000;
+    }
+    boss = FindExtension(D_800D5448, 0x10000000);
+    if (boss != NULL) {
+        boss->unk70 = 1;
+        if (boss->phase == 2 && D_800D5298 != NULL) {
+            D_800D5298->unk74 = 0x2008;
+        }
+        if (boss->phase == 4 && D_800D5298 != NULL) {
+            D_800D5298->unk74 = 0x2009;
+        }
+        if (boss->phase == 6 && D_800D5298 != NULL) {
+            D_800D5298->unk74 = 0x200A;
+        }
+        if (boss->phase == 8 && D_800D5298 != NULL) {
+            D_800D5298->flags &= ~0x8000;
+            if (!(Heroes[0].hero_mode & 0x2000)) {
+                SetHeroAction((HeroInfo *)0, 0x4E);
+            }
+            if (D_8005A680[0] != 0 && !(Heroes[1].hero_mode & 0x2000)) {
+                SetHeroAction((HeroInfo *)1, 0x4E);
+            }
+        }
+        boss->state = 5;
+    }
+    PlaySfx(0x22F, NULL, NULL, 0x1000, 0x1E00, 0);
+    KillNAS(m);
+}
 
 void func_800C7ED4(SniperAim *a, s32 *out) {
     s32 step;
