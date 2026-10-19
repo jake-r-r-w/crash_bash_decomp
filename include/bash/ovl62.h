@@ -172,6 +172,10 @@ s32 func_8008502C();
 
 s32 func_800CB2C8(s32 arg0);
 
+void func_800CB508(s32 player);
+
+void func_800CB650(s32 player);
+
 s32 func_800D0750(s32 player);
 
 void func_800D307C(s32 player);
