@@ -289,7 +289,27 @@ void func_800BB640(s32 arg0) {
     (*(s32*)((u8*)(temp_v0) + 44)) = 0x8000;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BB688);
+NAS *func_800BB688(s32 x, s32 z, s32 range) {
+    s32 i;
+    s32 d;
+    NAS *nas;
+    EXTengine *eng;
+
+    for (i = 0; i < 1; i++) {
+        nas = D_800BC420[i];
+        if (nas != NULL) {
+            eng = nas->Engine;
+            d = x - eng->unk10.x;
+            if (d < 0) {
+                d = -d;
+            }
+            if (d + (z - eng->unk10.z) < range) {
+                return nas;
+            }
+        }
+    }
+    return NULL;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BB6FC);
 
