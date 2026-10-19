@@ -141,6 +141,8 @@ void func_800BAE30(s32 arg0);
 
 s32 func_800BAF00(s32 arg0);
 
+s32 func_800BAF58(s32 arg0);
+
 void func_800BB134(s32 arg0);
 
 s32 func_800BB1C0(s32 x, s32 z, s32 range);
