@@ -105,6 +105,32 @@ extern s32 D_800C5B6C[8];
 extern s32 D_800C5B8C[8];
 extern u8 D_800C3C14[][4][8];
 
+typedef struct {
+    s32 unk0;
+    s32 unk4;
+    s32 unk8;
+    s32 unkC;
+    s32 unk10;
+} Ovl60Move; /* size 0x14 */
+
+typedef struct {
+    s32 x;
+    s32 z;
+} Ovl60Offset;
+
+typedef struct {
+    u8 pad0[0x14];
+    s32 unk14;
+    s32 unk18;
+    s32 unk1C;
+    s16 unk20;
+} Ovl60Goal;
+
+extern Ovl60Move D_800C5ADC[];
+extern Ovl60Offset D_800C457C[];
+extern Ovl60Offset D_800C45BC[];
+s32 func_800C0DE4(s32 arg0);
+s32 func_800BE6C4(s32 arg0, Ovl60Goal *arg1);
 void func_800C1068();
 
 void func_800C10F8(void);

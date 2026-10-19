@@ -418,7 +418,65 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BDF60);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BE158);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BE6C4);
+s32 func_800BE6C4(s32 arg0, Ovl60Goal *arg1) {
+    Ovl60Move *m2;
+    EXTengine *eng;
+    Ovl60Move *m;
+    Ovl60Move *base;
+    Ovl60Move *base2;
+    s32 x;
+    s32 z;
+    s32 odd;
+    s32 dir;
+
+    if ((u16)D_8005A648 - 0xB >= 2U) {
+        return 0;
+    }
+    if (func_800C0DE4(arg0) < 9) {
+        return 0;
+    }
+    {
+        eng = Heroes[arg0].hero_eng;
+        if (eng != NULL) {
+            base = D_800C5ADC;
+            m = (Ovl60Move *)(arg0 * sizeof(Ovl60Move) + (u32)base);
+            x = (eng->unk10.x + 0x800) >> 9;
+            z = (eng->unk10.z + 0x800) >> 9;
+            odd = D_8004E0D8 & 1;
+            m->unkC = 0;
+            m->unk10 = 8;
+            m->unk0 = odd;
+            if (x & 4) {
+                if (z & 4) {
+                    dir = odd * 2;
+                } else if (odd != 0) {
+                    dir = 4;
+                } else {
+                    dir = 6;
+                }
+            } else if (z & 4) {
+                dir = (odd == 0) * 2;
+            } else if (odd != 0) {
+                dir = 6;
+            } else {
+                dir = 4;
+            }
+            m->unk8 = dir;
+            base2 = D_800C5ADC;
+            m2 = (Ovl60Move *)(arg0 * sizeof(Ovl60Move) + (u32)base2);
+            if (m2->unk0 != 0) {
+                arg1->unk14 = x + D_800C457C[m2->unk8].x;
+                arg1->unk1C = z + D_800C457C[m2->unk8].z;
+            } else {
+                arg1->unk14 = x + D_800C45BC[m2->unk8].x;
+                arg1->unk1C = z + D_800C45BC[m2->unk8].z;
+            }
+            arg1->unk20 = 5;
+            return 1;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BE864);
 
