@@ -60,6 +60,8 @@ extern Ovl5fUnk74 *D_8009D678;
 extern s32 *D_800CB24C;
 extern s32 *D_800CB250;
 extern NAS *D_800CB264[8];    /* objects func_800C8598 adds and func_800C8560 removes; func_800C84D8 tests their distance */
+extern NAS *D_800CB0C0[8];
+extern NAS *D_800CB264[8];   /* objects func_800C8598 adds and func_800C8560 removes; func_800C84D8 tests their distance */
 
 
 
@@ -76,6 +78,8 @@ void func_800C7E68(HeroInfo *hero, Ovl5fActObj *obj, s32 arg2);
 void func_800C7EF8(HeroInfo *hero);
 
 void func_800C81C8(s32 x, s32 z, s32 range, s32 arg3);
+
+void func_800C8450(s32 x, s32 z, s32 dist);
 
 NAS *func_800C84D8(s32 x, s32 z, s32 dist);
 
