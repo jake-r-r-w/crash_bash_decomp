@@ -44,6 +44,15 @@ typedef struct FlamerBitExt {
 } FlamerBitExt;
 
 extern u8 D_8005365C[];
+/* State block func_800C7E68/func_800C7EB0 set up alongside a hero action. */
+typedef struct Ovl5fActState {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ s32 unkC[17];
+    /* 0x50 */ s32 unk50;
+    /* 0x54 */ s32 unk54;
+} Ovl5fActState;
 
 extern s32 D_800CA34C[];
 extern u8 D_800CACFC[];
@@ -74,6 +83,8 @@ void func_800C69C4(s32 arg0, s32 *arg1);
 void func_800C7D24(HeroInfo *hero);
 
 void func_800C7E68(HeroInfo *hero, Ovl5fActObj *obj, s32 arg2);
+
+void func_800C7EB0(HeroInfo *hero, Ovl5fActState *state, s32 arg2);
 
 void func_800C7EF8(HeroInfo *hero);
 

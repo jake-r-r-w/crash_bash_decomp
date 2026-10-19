@@ -443,7 +443,12 @@ void func_800C7E68(HeroInfo *hero, Ovl5fActObj *obj, s32 arg2) {
     obj->unk8 = arg2;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7EB0);
+void func_800C7EB0(HeroInfo *hero, Ovl5fActState *state, s32 arg2) {
+    SetHeroAction(hero, 0x6F);
+    state->unk54 = 0x80;
+    state->unk50 = 8;
+    state->unk8 = arg2;
+}
 
 void func_800C7EF8(HeroInfo *hero) {
     SetHeroAction(hero, 0x6E);
