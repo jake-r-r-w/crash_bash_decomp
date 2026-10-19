@@ -822,7 +822,73 @@ s32 func_800BE6C4(s32 arg0, Ovl60Goal *arg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BE864);
+s32 func_800BE864(s32 hero, Ovl60Goal *goal) {
+    EXTengine *eng;
+    s32 ox;
+    s32 oz;
+    s32 best;
+    s32 px;
+    s32 pz;
+    s32 bx;
+    s32 bz;
+    s32 i;
+    s32 j;
+    s32 ax;
+    s32 cx;
+    s32 az;
+    s32 cz;
+    s32 dx;
+    s32 dy;
+    s32 d;
+
+    if (D_8005A648 == 0xC) {
+        return 0;
+    }
+    eng = Heroes[hero].hero_eng;
+    if (eng == NULL) {
+        return 0;
+    }
+    best = 0x0FFFFFFF;
+    ox = (eng->unk10.x + 0x800) >> 9;
+    oz = (eng->unk10.z + 0x800) >> 9;
+    bx = ox;
+    bz = oz;
+    px = ox << 9;
+    pz = oz << 9;
+    for (i = 0; ; i++) {
+        if (i >= 8) {
+            goto done;
+        }
+        for (j = 0; ; j++) {
+            if (j >= 8) {
+                goto next;
+            }
+            if (func_800BEA34(i, j, hero) != 0) {
+                ax = px - 0x800;
+                az = pz - 0x800;
+                cx = (i << 9) - 0x800;
+                cz = (j << 9) - 0x800;
+                dx = abs(ax - cx);
+                dy = abs(az - cz);
+                d = dx * dx + dy * dy;
+                if (d < best) {
+                    best = d;
+                    bx = i;
+                    bz = j;
+                }
+            }
+        }
+    next:;
+    }
+done:
+    if (bx != ox || bz != oz) {
+        goal->unk14 = bx;
+        goal->unk1C = bz;
+        goal->unk20 = 6;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BEA34);
 

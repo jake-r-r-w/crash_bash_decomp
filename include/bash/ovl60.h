@@ -337,4 +337,7 @@ void func_800C327C(s32 arg0);
 void func_800C3434(void);
 void func_800B8660(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 
+s32 func_800BEA34(s32 x, s32 z, s32 hero);
+s32 func_800BE864(s32 hero, Ovl60Goal *goal);
+
 #endif /* BASH_OVL60_H */
