@@ -67,6 +67,19 @@ typedef struct FlamerBitExt {
     /* 0x2C */ u8 pad2C[0xC];
 } FlamerBitExt;
 
+/* InitTotemPole's 0x38-byte extension (id 0x10000000). */
+typedef struct TotemPoleExt {
+    /* 0x00 */ EXT ext;
+    /* 0x0C */ u8 pad0C[0x1C];
+    /* 0x28 */ s32 timer;
+    /* 0x2C */ u8 pad2C[0x4];
+    /* 0x30 */ s32 unk30;
+    /* 0x34 */ u8 pad34[0x4];
+} TotemPoleExt;
+extern NAS *D_800CB218;
+extern NAS *D_800CB21C;
+extern NAS *D_800CB220;
+
 extern u8 D_8005365C[];
 extern u8 D_800537AC[];
 extern s32 D_800C9B94[][2];

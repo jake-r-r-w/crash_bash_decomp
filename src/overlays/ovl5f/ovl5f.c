@@ -1157,7 +1157,30 @@ void InitTotemTop(NAS *nas) {
     func_800C0C68(nas, 0x131B);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitTotemPole);
+void InitTotemPole(NAS *nas) {
+    TotemPoleExt *ext;
+    EXTengine *e;
+
+    D_800CB218 = nas;
+    ext = AddExtension(nas, 0x38, 0x10000000);
+    if (ext != NULL) {
+        nas->FUX = &ext->ext;
+        if (!(((u16 *)&D_8005A644)[1] & 0x80)) {
+            ext->timer = 0x384;
+        } else {
+            ext->timer = 0x96;
+        }
+        ext->unk30 = 1;
+        e = nas->Engine;
+        e->flags = 0;
+        D_800CB21C = SpawnNASById(e->unk10.x, e->unk10.y - 0x294, e->unk10.z, 0x131B, 0x11);
+        D_800CB220 = SpawnNASById(e->unk10.x, e->unk10.y - 0x14A, e->unk10.z, 0x131C, 0x11);
+        if (nas->Failure == 0) {
+            return;
+        }
+    }
+    KillNAS(nas);
+}
 
 void PlotPillarCover(NAS *nas) {
     switch (nas->UserInfo.user1) {
