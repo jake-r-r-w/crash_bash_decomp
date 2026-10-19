@@ -45,6 +45,7 @@ void func_800BB37C(void);
 void func_800BB640(s32 arg0);
 
 extern u8 D_800BC210[];
+extern s32 D_800BC4E8[];
 extern NAS *D_800BC420[];
 NAS *func_800BB688(s32 x, s32 z, s32 range);
 extern s32 D_800BC4E8[];
@@ -85,5 +86,7 @@ void func_800BB134(s32 arg0);
 s32 func_800BB260(s32 arg0);
 
 void func_800BB3F0(s32 x, s32 y);
+
+s32 func_800BB428(s32 x, s32 z);
 
 #endif /* BASH_OVL68_H */

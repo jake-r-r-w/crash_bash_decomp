@@ -9753,7 +9753,8 @@
  },
  "ovl68:800BB428": {
   "auto_diff": 5,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-19T17:24:39Z",
+  "status": "matched"
  },
  "ovl68:800BB488": {
   "auto_diff": 9,
