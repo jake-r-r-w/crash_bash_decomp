@@ -63,6 +63,7 @@ void func_800B4048(void);
 void func_800B4444(void);
 
 extern u8 D_800BC210[];
+extern s32 D_800BC2D0[][21];
 extern s32 D_800BC4E8[];
 extern NAS *D_800BC420[];
 extern NAS *D_800BC424[8];
@@ -91,6 +92,8 @@ void func_8008A810(void);
 void func_800B44C8(void);
 
 void func_800B627C(s32 arg0);
+
+void func_800B6AAC(s32 arg0);
 
 void func_800BA630(NAS *nas);
 
