@@ -5580,7 +5580,8 @@
   "auto_failed": "compile"
  },
  "ovl5f:800C8BA0": {
-  "auto_failed": "full-build"
+  "matched_at": "2026-10-19T09:36:44Z",
+  "status": "matched"
  },
  "ovl60:800B3534": {
   "auto_failed": "compile"

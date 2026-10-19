@@ -536,4 +536,17 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8A80);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8AF8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C8BA0);
+void func_800C8BA0(void) {
+    switch ((s16)(D_8005A648 - 5)) {
+    case 1:
+    case 3:
+        func_800B3C7C();
+        break;
+    case 0:
+    case 2:
+    case 4:
+    default:
+        func_800B3B24();
+        break;
+    }
+}
