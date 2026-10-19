@@ -505,7 +505,71 @@ void PlotSwirlyTA(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotShell);
+void PlotShell(NAS *nas) {
+    ShellFux *fux;
+    EXTengine *eng;
+    EXTengine *e2;
+    SLONG_XYZ *pos;
+    u8 *p;
+    NAS *puff;
+    Ovl5fExt1605 *ext;
+    s32 sfx;
+
+    fux = (ShellFux *)nas->FUX;
+    eng = nas->Engine;
+    fux->vy += 0xC;
+    eng->unk10.y += fux->vy;
+    if (eng->unk10.y > 0) {
+        eng->unk10.y = 0;
+        fux->vy = -0x54;
+        eng->unk10.y -= 0x54;
+        pos = &eng->unk10;
+        p = D_8005365C;
+        puff = SpawnNASById(pos->x, pos->y, pos->z, 0x1605, 0x11);
+        if (puff != NULL) {
+            ext = FindExtension(puff, 0x10000000);
+            if (ext != NULL) {
+                ext->unkC = 9;
+                ext->unk18 = 0x100;
+                if (p != NULL) {
+                    ext->unk20 = 5;
+                    puff->Engine->sub->unk6C = p;
+                } else {
+                    ext->unk20 = 1;
+                }
+                ext->unk28 = 0;
+                puff->InitDelete(puff);
+            }
+        }
+    }
+    if (func_800BAFFC(nas, 0x3C, 0x1306, 4) != 0) {
+        switch ((u32)Random(4)) {
+        case 0:
+        case 1:
+            sfx = 0x490;
+            break;
+        case 2:
+        case 3:
+            sfx = 0x491;
+            break;
+        default:
+            goto skip;
+        }
+        PlaySfx(sfx, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+    skip:
+        KillNAS(nas);
+        return;
+    }
+    if (fux->unk30 == 1) {
+        fux->unk30 = 0;
+    }
+    e2 = eng->Engine;
+    if (e2 != NULL) {
+        e2->unk1E = eng->unk1E;
+        e2->unk10 = eng->unk10;
+        e2->unk10.y = 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotLobber_TA);
 

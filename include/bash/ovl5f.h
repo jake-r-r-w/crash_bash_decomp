@@ -177,6 +177,14 @@ typedef struct LaserBitFux {
 
 s32 func_800BAFFC(NAS *nas, s32 arg1, s32 arg2, s32 arg3);
 
+/* PlotShell's NAS.FUX. */
+typedef struct ShellFux {
+    /* 0x00 */ u8 unk0[0x14];
+    /* 0x14 */ s32 vy;
+    /* 0x18 */ u8 unk18[0x30 - 0x18];
+    /* 0x30 */ s32 unk30;
+} ShellFux;
+
 /* InitPickupTA's extension 0x10000000 (0x38 bytes), its NAS.FUX. */
 typedef struct PickupTAExt {
     /* 0x00 */ u8 unk0[0x14];
