@@ -118,7 +118,67 @@ void func_800B6370(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B6438);
+void func_800B6438(s32 arg0) {
+    HeroInfo *base;
+    HeroInfo *h;
+    s32 v;
+
+    if (func_800C2B00(arg0) != 0) {
+        return;
+    }
+    if (func_800C29F4(arg0) != 0) {
+        return;
+    }
+    if (func_800C295C(arg0) != 0) {
+        return;
+    }
+    if (func_800B6C14(arg0) != 0) {
+        return;
+    }
+    if (func_800C2CBC(arg0) != 0) {
+        return;
+    }
+    if (func_800B5D90(arg0) != 0) {
+        return;
+    }
+    switch (func_8008502C(arg0)) {
+    case 0x12:
+        func_800B8AF8(arg0);
+        func_800B8BE4(arg0, 1);
+        if (D_800C535C[arg0].unk4 != 5 && Heroes[arg0].hero_aseq == 0x2F) {
+            SetHeroSeq((HeroInfo *)arg0, 0x2E);
+        }
+        break;
+    case 0x11:
+        func_800B72B0(arg0);
+        break;
+    case 0x14:
+        func_800B741C(arg0);
+        break;
+    case 0x13:
+        func_800B7574(arg0);
+        break;
+    }
+    base = Heroes;
+    h = &base[arg0];
+    switch (h->hero_name) {
+    case 4:
+        v = h->hero_sub->unk74 - 0x4080;
+        D_800C52E0 = v;
+        if (v > 0x10) {
+            D_800C52E0 = 0;
+        }
+        break;
+    case 3:
+        v = h->hero_sub->unk74 - 0x4000;
+        D_800C52E4 = v;
+        if (v > 0x10) {
+            D_800C52E4 = 0;
+        }
+        break;
+    }
+    func_800871E4(arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B662C);
 
