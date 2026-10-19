@@ -371,7 +371,24 @@ s32 func_800C0AFC(s32 arg0, s32 arg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C0B70);
+s32 func_800C0B70(s32 arg0, s32 arg1, s32 arg2) {
+    Ovl60Cell *p;
+
+    if ((u32)arg1 >= 8 || (u32)arg2 >= 8) {
+        return 0;
+    }
+    if (D_800C53DC[arg1][arg2].hero != NULL) {
+        return 0;
+    }
+    p = &D_800C53DC[arg1][arg2];
+    if (p == NULL) {
+        return 0;
+    }
+    if (p->unkE != 0) {
+        return 0;
+    }
+    return p->unk10 == 0;
+}
 
 void func_800C0BF0(s32 arg0, s32 arg1) {
     D_800C5BB0 = SpawnNASById((arg0 << 9) - 0x700, D_8005A5D8, (arg1 << 9) - 0x700, 0x1408, 0x11);
