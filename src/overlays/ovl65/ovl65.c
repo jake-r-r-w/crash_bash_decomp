@@ -281,7 +281,16 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", InitDinoScratch);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BC684);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BC774);
+s32 func_800BC774(s32 arg0) {
+    if ((csqrt(Heroes[arg0].hero_move->x_vel * Heroes[arg0].hero_move->x_vel +
+               Heroes[arg0].hero_move->z_vel * Heroes[arg0].hero_move->z_vel) >> 6) < 0x20) {
+        if (Heroes[arg0].hero_mode != 0x63) {
+            SetHeroAction((HeroInfo *)arg0, 0x63);
+        }
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BC820);
 
