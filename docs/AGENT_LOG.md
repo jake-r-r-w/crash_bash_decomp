@@ -14,10 +14,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 - Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
   and names) is done.
-- 1770/2541 game functions matched: **main.exe is complete (575/575)**;
+- 1852/2541 game functions matched: **main.exe is complete (575/575)**;
   engine overlay 2 left, both parked (`func_8007F314`, `PlotScriptFX`),
   ovl61 96/97 (two 2026-10-18 swarm runs and four hand matches; `PlotBall` left),
-  ovl5f 10 (short run), ovl63 81 (42 left), ovl60 117/166, ovl62 121/186 (2026-10-19 swarm runs), ovl67 101/135, ovl69 68/77, ovl6a 93/94 (2026-10-18 swarm runs and hand fixes;
+  ovl5f 94 (53 left), ovl63 81 (42 left), ovl60 117/166, ovl62 121/186 (2026-10-19 swarm runs), ovl67 101/135, ovl69 68/77, ovl6a 93/94 (2026-10-18 swarm runs and hand fixes;
   `func_800B5710` parked at 120/121 blocks); all 564 PsyQ functions (Sony
   objects). 3 parked (`decomp.py status`). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
@@ -44,6 +44,18 @@ leads**, add any new gotcha, and add one short entry at the top of the
   identical (docs/ASSETS.md). ROADMAP's asset extraction box is ticked.
 
 ## Next
+
+**ovl5f (2026-10-19, runs 20261019115106 + 20261019120240, low cost):**
+Sonnet normal workers (escalating to opus), 1 big worker at `--big-budget-usd
+8`, $30 cap: 78 matched in ~56 min for $15.96, about $0.20 a match (half
+the opus runs). The internet dropped after 11 min (push failed); `run
+--resume` gated the 11 verified matches. The header reconcile ran on two
+clashes (one committed straight away). Parked: `func_800B5588` (the worker
+says `jtbl_800B3370` targets `func_800B56A0`, `func_800B5714`,
+`func_800B5788`, `func_800B57FC`: its own switch cases, split off as
+functions; check with `decomp.py splitcheck` and fix the split like ovl62's).
+**Next session:** that split, then the reconcile lead (Open leads), then
+swarm ovl5d/ovl68 on the same low-cost recipe.
 
 **ovl63 (2026-10-19, run 20261019094644, 5+2 workers):** stopped by hand
 after 51 min, $34.41: 77 matched, 1 parked, 1 failed; 44 left, nearly all
@@ -127,8 +139,8 @@ one session of 1-16 min. The day's tool upgrades (closest-C checkpoints,
 `regions`, the fixed patch check and gate) cracked what hand sessions had
 parked. **Retry parks with this recipe after tool upgrades.**
 
-**Start of next session: matching.** Left per overlay (2026-10-19): ovl5f
-137, ovl63 42, ovl5d 100, ovl68 83, ovl65 69,
+**Start of next session: matching.** Left per overlay (2026-10-19, evening): ovl5f
+53, ovl63 42, ovl5d 100, ovl68 83, ovl65 69,
 ovl5e 67, ovl66 67, ovl62 65, ovl60 49, ovl64 51, ovl67 34, ovl69 9, ovl61 1, ovl6a 1, engine
 2 (count `INCLUDE_ASM` per file). The untouched overlays suit the swarm
 (item 1b's recipe, `--seg overlays/NAME`), then the post-run checklist.
@@ -207,6 +219,12 @@ killed early). The near misses it left were all matched by
 
 ## Open leads
 
+- **`decomp.py reconcile` may drop a declaration a file needs.** It treats a
+  name declared in any header as known, including headers the function's
+  file doesn't include. On 2026-10-19 `func_800C8A80` failed after it (`parse
+  error before *`: a type left undeclared), then matched on a retry without
+  the clash. Fix: count only the headers the file includes (directly or
+  through its owned header) as known.
 - **`func_800B345C` (ovl63, 30735f0c) still matches only with a hack** (no-op
   `h++; h--;` and `p++; p++; p--;` in its goto loop; `done` now refuses such runs
   without --hack). Reworked 2026-10-19, not finished. Without the no-ops it is
@@ -556,6 +574,9 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-19 (ovl5f, low cost):** 78 matched for $15.96 with Sonnet
+  workers; survived an internet drop via --resume; 33 pattern rows folded
+  (7 repeats dropped); one park points at a bad split in ovl5f.
 - **2026-10-19 (tools):** three matching aids. (1) `decomp.py reconcile`
   (headers.py): on a declaration-clash gate refusal the swarm keeps the
   tree's declarations and gates again before paying a worker. (2)

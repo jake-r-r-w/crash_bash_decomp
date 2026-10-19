@@ -1036,6 +1036,39 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | A sum of products then `sll` lands in the reg of the mflo (v1) instead of a fresh v0, and the next product's mflo takes the wrong reg | store the shifted sum back into the dying operand variable first (`xb = (ma*xa + mb*xb) << 8; q = (d*mb + xb) / total;`); which variable you reuse picks the reg | `func_800BE7B4` |
 | Loop test stays at the top (`j` back to the test, no rotation) yet loop.c still hoists constants and strength-reduces a second pointer | write `for (i = 0;; b++, i++) { T local; if (i >= n) break; ... }`: the block-local decl's BLOCK_BEG note stops expand_end_loop rolling the exit test; the increment order sets the giv/biv add order | `func_800B6474` |
 | A struct local's address held in an s-reg (`addiu s5,sp,0x18` before the loop) and only some field reads go through it (`lw a1,4(s5)`) while the copy and field 0 use sp | set `pp = &pos;` before the loop, copy with `pos = ...`, pass `pos.x, pp->y, pp->z` | `PlotRaceTag` |
+| `li 0x100` shared by two halfword stores scheduled before the other `li`s | Local `v = 0x100;` assigned after the `+=`, and store the shared field first | `InitTankBossCrashTurret` |
+| Engine->field store and Engine->sub load recomputed (extra lw of Engine) | keep a local EXTengine *e = nas->Engine | `InitPillarCover` |
+| Result flag in v1 / global temp in a1, and global lw hoisted above the field lw (target: lui, lw field, lw global) | Write the compare as `p->x > GLOBAL` and assign `lim = GLOBAL` inside the if body; declare `r;` then `r = 0;` | `func_800C8294` |
+| Gate build fails 'parse error before *' on the added prototype | put the struct typedefs the prototype uses at the top of the owned header, before the function list | `func_800C8A80` |
+| Global ptr set then post-incremented; dead store folded or lui hoisted early | `G = arr; val = *G++; p->f = val;` with a local val per branch (not `p->f = val = *G++`) | `func_800C44E8` |
+| Range check `d > hi \|\| d < -hi` merged into addiu/sltiu | write each bound as its own `if (...) return 0;` (upper first) | `func_800C6C90` |
+| li 0x1E00 (stack arg) scheduled before li a3,0x1000 after a switch that picks a PlaySfx id into a variable | call PlaySfx with the literal id in every case; cross-jumping merges the calls and leaves only the a0 li in the delay slots | `InitPickupTA` |
+| Constant 0 store scheduled before the lw/sw pair of a neighbouring field | write the copied field's assignment first, the `= 0` store after it | `InitLobber_TA` |
+| lhu from table indexed with sll 2 but u16 array gives sll 1 | declare table as struct {u16 v, pad;}[] and read .v | `InitShrapnelBit` |
+| Compiler threads a failure check to the later identical check, missing `j kill; nop` | write the first check as its own `if (x) { Kill(); return; }` and keep the trailing `if (x) Kill();` | `func_800C0C68` |
+| Jump table entries point to wrong code blocks / table has holes | order the case bodies as the target's code layout and add empty cases for the hole values | `func_800C6914` |
+| Intermediate pointer load in v0 instead of v1 (lw v0,0x6C(v0); lw v1,0x5C(v0)) | split chain: `s = a->b; s = s->next;` reusing one local | `func_800BAF64` |
+| Two-way ==6/==7 check compiles to bne chain instead of beq/beq then fallthrough to shared tail | write as switch with case 6 / case 7 and break | `PlotPillarCover` |
+| Extra sll/sra + second lh when comparing a running s16 max against field | keep running max as s32 and load the field into an s32 temp once | `func_800B62A4` |
+| lhu of a field scheduled before preceding li/store (target loads it early into a1) | read the field into a u16 local first, then store | `PlotBoatWake` |
+| lui/addiu of a global scheduled late (after sh) with a nop after lw | put the `sub->unk6C = p` store between the other two stores (source order drives hoist) | `InitSwirlyTA` |
+| lw of a field scheduled after preceding li/sh store (target loads early into v1 before the call) | read the field into a local before the first store | `InitRock_TA` |
+| Extra `li a1,1` and moved `move a0` before a call whose target passes only a0 | the prototype is `()`; drop the extra argument so the constant is not rematerialised | `func_800BACD4` |
+| negu hoisted to function start when a `neg = -x` local is used in the loop | drop the local and write -x inline at each use | `func_800C872C` |
+| Constant stored once (li 0x10 set after a call, sw later) sits in a saved reg in the target; ours emits li just before the sw, and the loop test is not rotated (j back to a top test) | pass the constant as a param of a static inline helper and write the loop as `for (i = 0;; i++) { if (i >= 3) return 0; ... }`: inside a real loop the refs are weighted by loop depth, so local-alloc doesn't fold the single-use pseudo | `func_800BF548` |
+| slti v0,s1,4 where target has sltiu | declare the loop counter u32 | `func_800BABCC` |
+| extra li a1,1 and loads scheduled in wrong order around call | share a `one = 1` local between the store and the call arg, load the global into a local before the sub pointer | `InitPeriscope` |
+| Chain walk sub->next->next reuses one reg; target keeps both links live (lw a1,0x5C(v1) early, before stores to the first) | use two locals: s = sub->next; s2 = s->next; right after loading s, then fill s and s2 | `func_800C4320` |
+| A struct store scheduled after the lhu of a scalar global (target: store before the load, then a nop), plus an extra j/delay-slot difference | read the global as an array element, e.g. ((u16 *)&D_8005A644)[1]: MEM_IN_STRUCT_P makes the store and the load possibly alias, so the store stays before the load | `InitTotemPole` |
+| lui/addiu of a second global scheduled late (after the index multiply) while a pointer local to it is used | do the first access through the direct global[idx] expression, then assign the pointer local and use it after | `func_800BAAB0` |
+| 'too few arguments' when caller passes none to a function that reads a0 | define with K&R params (`f(arg0) s32 arg0;`) and declare `s32 f();` in the header | `func_800B3B24` |
+| SpawnNASById args: target forms addiu v0,s1,0x10 then lw 4/8(v0), ours loads 20/24(s1) directly | take a `SLONG_XYZ *pos = &eng->unk10` local and pass pos->x/y/z | `PlotShell` |
+| Shared tail `sh v0,0x74(a2)` with the constant loaded in each branch's bne delay slot; ours keeps a `seq` local in a saved reg | drop the local, write the constant store in each else branch: jump cross-jumps the identical stores and the li lands in the delay slot | `func_800B6FF4` |
+| 0x300 held in a saved reg for upper-bound compares only (lower uses slti imm) | `lim = 0x300` local used for `d <= lim`, literal -0x300 for the lower bound | `func_800C0DA0` |
+| Constant call arg (li 0x11) hoisted out of a short loop into a saved reg; target loads it in the body | index the table as Arr[i].field instead of a walking pointer: the extra multiply grows the loop body so loop.c won't hoist the constant, and strength reduction still yields the pointer walk | `func_800BD654` |
+| li const emitted after the loop-init move, or in the wrong order against a lui/addiu of a global pointer | put the constant in a local assigned in the for-init clause, in the order the target emits them, and compare against the local | `func_800C8650` |
+| subu result tied to the wrong operand's reg (ours subu v0,v0,v1 with a in v0; target loads a into v1, d lands in b's reg) | assign the first operand to one local shared across blocks (`Near(ex = eng->x, te->x)` in each path): a multi-block pseudo goes to global-alloc, so local-alloc can't tie d to it | `func_800B4490` |
+| val load hoisted above the stores to the anim pointer global, and the lui of the global's hi before the array's | declare val per branch (local-alloc) and copy the array into a `s32 *p = arr;` local before `Glob = p;` | `func_800C4BC0` |
 
 ## Classify the diff, then work through the list
 
