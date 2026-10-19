@@ -418,7 +418,28 @@ void func_800BA70C(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BA784);
+void func_800BA784(s32 arg0, s32 arg1) {
+    EXTengine *p;
+    subengine *sub;
+
+    sub = NULL;
+    func_800BA694(arg0);
+    p = Heroes[arg0].hero_powerup;
+    if (p != NULL) {
+        sub = p->sub;
+    }
+    if (arg1 < 3) {
+        if (arg1 > 0) {
+            if (sub != NULL) {
+                sub->unk6C = D_80052F5C;
+                sub->unk74 = 0x200C;
+                sub->flags |= 0x8000;
+                p->flags |= 0x8000;
+            }
+            D_800BC2D0[arg0][0x14] = arg1;
+        }
+    }
+}
 
 void InitCoalFlameSFX(CoalFlameObj *arg0) {
     arg0->unk54->unkC = 0;
