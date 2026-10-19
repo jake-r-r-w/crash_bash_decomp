@@ -48,7 +48,37 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B5A70);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B5D14);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B5F04);
+void func_800B5F04(void) {
+    Ovl63Barrel *b;
+    Ovl63SceneObj *obj;
+    s32 n;
+
+    n = 0;
+    obj = ((Ovl63Scene *)D_80058AD0)->objs;
+    memset(D_800C6F34, 0x3600, 0);
+    while (obj != NULL) {
+        if (obj->index == 0x5006) {
+            b = &D_800C6F34[n];
+            b->obj = obj;
+            obj->unk51 = 2;
+            b->unk4E = 0x80;
+            b->unk20 = 0;
+            b->unk40 = 0;
+            b->unk48 = 0x500;
+            b->unk28 = 0x500;
+            b->unk4A = 0x500;
+            b->unk2A = 0x500;
+            b->unk24 = 0;
+            b->unk44 = 0;
+            b->pos = obj->pos;
+            b->unk58 = 1;
+            n++;
+        }
+        obj = obj->next;
+    }
+    D_800C66F0 = n;
+    printf("%d  barrels found\n", n);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B5FFC);
 

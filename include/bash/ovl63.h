@@ -217,5 +217,48 @@ void InitGlob(NAS *m);
 s32 func_800C55A4(s32 arg0);
 
 s32 func_800C5A50(s32 player);
+/* A scene object in the list at D_80058AD0 + 0x1C (func_800B5F04). */
+typedef struct Ovl63SceneObj {
+    /* 0x00 */ u32 flags;
+    /* 0x04 */ SLONG_XYZ pos;
+    /* 0x10 */ u8 pad10[0x51 - 0x10];
+    /* 0x51 */ u8 unk51;
+    /* 0x52 */ u8 pad52[0x5C - 0x52];
+    /* 0x5C */ struct Ovl63SceneObj *next;
+    /* 0x60 */ u8 pad60[0x74 - 0x60];
+    /* 0x74 */ u16 index;
+} Ovl63SceneObj;
+
+/* D_80058AD0 as seen by func_800B5F04. */
+typedef struct Ovl63Scene {
+    /* 0x00 */ u8 pad0[0x1C];
+    /* 0x1C */ Ovl63SceneObj *objs;
+} Ovl63Scene;
+
+/* A barrel (0x6C bytes, 128 in D_800C6F34). */
+typedef struct Ovl63Barrel {
+    /* 0x00 */ u8 pad0[0x20];
+    /* 0x20 */ s32 unk20;
+    /* 0x24 */ s32 unk24;
+    /* 0x28 */ s16 unk28;
+    /* 0x2A */ s16 unk2A;
+    /* 0x2C */ u8 pad2C[0x40 - 0x2C];
+    /* 0x40 */ s32 unk40;
+    /* 0x44 */ s32 unk44;
+    /* 0x48 */ s16 unk48;
+    /* 0x4A */ s16 unk4A;
+    /* 0x4C */ u8 pad4C[2];
+    /* 0x4E */ s16 unk4E;
+    /* 0x50 */ u8 pad50[4];
+    /* 0x54 */ Ovl63SceneObj *obj;
+    /* 0x58 */ s32 unk58;
+    /* 0x5C */ SLONG_XYZ pos;
+    /* 0x68 */ u8 pad68[4];
+} Ovl63Barrel;
+
+extern Ovl63Barrel D_800C6F34[128];
+extern s32 D_800C66F0;
+
+void func_800B5F04(void);
 
 #endif /* BASH_OVL63_H */
