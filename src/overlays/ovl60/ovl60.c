@@ -262,7 +262,21 @@ bool Roo_Bounce(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Roo_UpdateVelocities);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C0DE4);
+s32 func_800C0DE4(s32 arg0) {
+    s32 i;
+    s32 j;
+    s32 count;
+
+    count = 0;
+    for (i = 0; i < 8; i++) {
+        for (j = 0; j < 8; j++) {
+            if (D_800C53DC[i][j].unkA == arg0) {
+                count++;
+            }
+        }
+    }
+    return count;
+}
 
 s32 func_800C0E40(s32 arg0, u32 arg1, u32 arg2) {
     if (arg2 < 8) {
@@ -329,7 +343,21 @@ void func_800C142C(s32 arg0) {
     Heroes[arg0].hero_status |= 0x800;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1460);
+s32 func_800C1460(s32 arg0) {
+    s32 i;
+    s32 j;
+    s32 count;
+
+    count = 0;
+    for (i = 0; i < 8; i++) {
+        for (j = 0; j < 8; j++) {
+            if (D_800C53DC[i][j].unkA == arg0) {
+                count++;
+            }
+        }
+    }
+    return count;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C14BC);
 

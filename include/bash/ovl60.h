@@ -83,11 +83,15 @@ extern s16 D_8009D87C[][3];
 
 void func_800C0C34(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
+s32 func_800C0DE4(s32 arg0);
+
 s32 func_800C0E40(s32 arg0, u32 arg1, u32 arg2);
 
 void func_800C1400(s32 arg0);
 
 void func_800C142C(s32 arg0);
+
+s32 func_800C1460(s32 arg0);
 
 void func_800C24E4(s32 arg0, s32 arg1);
 

@@ -5910,7 +5910,8 @@
   "auto_failed": "diff"
  },
  "ovl60:800C0DE4": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-19T08:21:30Z",
+  "status": "matched"
  },
  "ovl60:800C0E40": {
   "auto_diff": 7,
@@ -5956,7 +5957,9 @@
   "status": "matched"
  },
  "ovl60:800C1460": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-19T08:21:45Z",
+  "status": "matched",
+  "via": "copy"
  },
  "ovl60:800C14BC": {
   "auto_failed": "compile"
