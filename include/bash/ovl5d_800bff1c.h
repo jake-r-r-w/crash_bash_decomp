@@ -18,6 +18,8 @@ s32 SetHeroSeq(HeroInfo *hero, s32 seq);
 extern u16 *D_8009D6EC;
 void func_800C2DAC(s32 arg0);
 extern _sfx_handler *D_800C4780;
+void func_800C0DE4(s32 arg0);
+
 void func_800C1278(s32 arg0);
 
 void func_800C14D4(s32 arg0);
