@@ -29,6 +29,10 @@ s32 func_800BCDF0(u8 *arg0);
 
 void func_800BCE6C(void);
 
+void func_800B6FE4();
+void func_800B7664();
+void func_800B85DC();
+
 void func_800BCE74(void);
 
 void func_800BCF44(s32 arg0);
@@ -52,5 +56,7 @@ extern s32 D_800BDA04;
 void func_800BC5B0(void);
 
 void func_800BCB4C(s32 arg0);
+
+void func_800BCEFC(void);
 
 #endif /* BASH_OVL65_H */

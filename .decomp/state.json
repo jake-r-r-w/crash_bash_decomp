@@ -8579,9 +8579,10 @@
   "auto_failed": "diff"
  },
  "ovl65:800BCEFC": {
-  "auto_failed": "types",
   "copy_failed": "ovl64:800B9088",
-  "copy_failed_stage": "in-file"
+  "copy_failed_stage": "in-file",
+  "matched_at": "2026-10-19T15:46:25Z",
+  "status": "matched"
  },
  "ovl65:800BCF44": {
   "matched_at": "2026-10-10T10:17:24Z",
