@@ -25,6 +25,9 @@ void func_800C3510(u8 *arg0);
 
 void func_800C353C();
 
+void func_80089FA4(s32 arg0);
+extern u16 D_800AD12C;
+
 /* D_80051640 as the camera func_800C3148 sets up. */
 typedef struct Ovl60Cam {
     /* 0x00 */ s32 eyeX, eyeY, eyeZ;
@@ -155,6 +158,8 @@ void func_800C2620(s32 arg0, s32 arg1);
 void func_800C286C(s32 arg0);
 
 void func_800C28FC(s32 arg0);
+
+void func_800C2A8C(s32 arg0);
 
 s32 func_800C2C70(s32 arg0);
 

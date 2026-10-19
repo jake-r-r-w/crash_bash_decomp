@@ -836,7 +836,19 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C295C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C29F4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C2A8C);
+void func_800C2A8C(s32 arg0) {
+    HeroInfo *base;
+    HeroInfo *h;
+
+    func_800C2810(arg0);
+    func_80089FA4(arg0);
+    func_800C1CF0(arg0);
+    base = Heroes;
+    h = (HeroInfo *)(arg0 * sizeof(HeroInfo) + (u32)base);
+    h->hero_move->velocity_enable = 0;
+    h->hero_frozen = 2;
+    D_800AD12C = 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C2B00);
 
