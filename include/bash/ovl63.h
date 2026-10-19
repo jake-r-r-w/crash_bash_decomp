@@ -163,6 +163,8 @@ s32 func_800C554C(s32 arg0);
 
 void func_800C55FC(s32 player);
 
+void func_800C5918(s32 arg0);
+
 void func_800C5B08(s32 *pos, s32 *polar);
 
 void func_800C5B94(void);

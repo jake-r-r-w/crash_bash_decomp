@@ -509,7 +509,11 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C57B4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5854);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5918);
+void func_800C5918(s32 arg0) {
+    SetHeroAction((HeroInfo *)arg0, 0x5B);
+    Heroes[arg0].hero_eng->unk1E = 0;
+    Heroes[arg0].hero_eng->unk5E = 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5978);
 
