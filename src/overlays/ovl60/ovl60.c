@@ -1031,7 +1031,60 @@ next:
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BD520);
+s32 func_800BD520(s32 hero) {
+    u8 *g;
+    HeroInfo *p;
+    EXTengine *eng;
+    s32 mate;
+    u32 i;
+    s32 x, z, ox, oz;
+
+    if (D_8005A680[0] != 0) {
+        mate = Heroes[hero].hero_teammate;
+        i = 0;
+    } else {
+        mate = 1000;
+        i = 0;
+    }
+    eng = Heroes[hero].hero_eng;
+    g = D_8005A614;
+    x = (eng->unk10.x + 0x800) >> 9;
+    z = (eng->unk10.z + 0x800) >> 9;
+    p = Heroes;
+loop:
+    if (i == hero) {
+        goto next;
+    }
+    do {
+        if (i == mate) {
+            goto next;
+        }
+    } while (0);
+    ox = (p->hero_eng->unk10.x + 0x800) >> 9;
+    oz = (p->hero_eng->unk10.z + 0x800) >> 9;
+    if (x != ox) {
+        do {
+            if (z != oz) {
+                goto next;
+            }
+        } while (0);
+    }
+    if (*(u16 *)(g + 0x32) & 0x20) {
+        do {
+            if (g[i + 0x5C] != 0) {
+                return 0;
+            }
+        } while (0);
+    }
+    return 1;
+next:
+    i++;
+    p++;
+    if (i < 4) {
+        goto loop;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BD630);
 

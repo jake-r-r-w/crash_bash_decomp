@@ -403,4 +403,6 @@ extern s32 D_80099174;
 
 void func_800B3A38(void);
 
+s32 func_800BD520(s32 hero);
+
 #endif /* BASH_OVL60_H */
