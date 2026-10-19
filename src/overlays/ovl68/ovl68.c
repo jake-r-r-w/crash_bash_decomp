@@ -305,7 +305,23 @@ void InitCoalFlame(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotCoal);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", InitCoal);
+void InitCoal(NAS *nas) {
+    EXTengine *eng;
+    subengine *sub;
+
+    nas->FUX = AddExtension(nas, 0x44, 0x10000002);
+    eng = nas->Engine;
+    eng->unk5D = 1;
+    nas->UserInfo.flags = 5;
+    nas->UserInfo.user1 = 0;
+    sub = eng->sub;
+    sub->unk6C = D_80053F8C;
+    sub->unk74 = 0x200F;
+    nas->UserInfo.status = 0x3C;
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 void func_800BAC30(NAS *nas) {
     s32 i;

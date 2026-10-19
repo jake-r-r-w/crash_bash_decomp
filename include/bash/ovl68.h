@@ -107,6 +107,8 @@ void InitCoalFlameSFX(CoalFlameObj *arg0);
 
 void InitCoalFlame(NAS *nas);
 
+void InitCoal(NAS *nas);
+
 void func_800BAC30(NAS *nas);
 
 void InitBarrelGenerator(NAS *nas);

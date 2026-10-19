@@ -9676,7 +9676,8 @@
  },
  "ovl68:800BABB4": {
   "auto_diff": 33,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-19T17:31:06Z",
+  "status": "matched"
  },
  "ovl68:800BAC30": {
   "auto_diff": 19,
