@@ -874,7 +874,24 @@ void func_800CB508(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB56C);
+s32 func_800CB56C(s32 arg0) {
+    NAS *nas;
+    BombMakerExt *ext;
+    s32 one;
+
+    nas = D_800D5294;
+    one = 1;
+loop:
+    if (nas != NULL) {
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL && ext->unkC == one && ext->unk14 == arg0) {
+            return 1;
+        }
+        nas = nas->Group.Child;
+        goto loop;
+    }
+    return 0;
+}
 
 NAS *func_800CB5F4(void) {
     NAS *nas;

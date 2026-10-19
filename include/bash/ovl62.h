@@ -323,4 +323,6 @@ extern Ovl62RiserObj *D_800D6150[16];
 
 void func_800CA6E8(Ovl62RiserSet *arg0);
 
+s32 func_800CB56C(s32 arg0);
+
 #endif /* BASH_OVL62_H */
