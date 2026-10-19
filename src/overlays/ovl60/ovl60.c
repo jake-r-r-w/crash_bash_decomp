@@ -149,7 +149,73 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BD008);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BD10C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BD378);
+s32 func_800BD378(s32 hero) {
+    u8 *g;
+    HeroInfo *p;
+    EXTengine *eng;
+    s32 mate;
+    u32 i;
+    s32 x, z, ox, oz;
+    s32 dir;
+    s32 hit;
+
+    if (D_8005A680[0] != 0) {
+        mate = Heroes[hero].hero_teammate;
+    } else {
+        mate = 1000;
+    }
+    i = 0;
+    eng = Heroes[hero].hero_eng;
+    g = D_8005A614;
+    x = (eng->unk10.x + 0x800) >> 9;
+    z = (eng->unk10.z + 0x800) >> 9;
+    dir = Heroes[hero].hero_move->facing_angle >> 10;
+    p = Heroes;
+loop:
+    {
+        hit = 0;
+        if (i == hero || i == mate) {
+            goto next;
+        }
+        ox = (p->hero_eng->unk10.x + 0x800) >> 9;
+        oz = (p->hero_eng->unk10.z + 0x800) >> 9;
+        switch (dir) {
+        case 0:
+            if (oz < z && x == ox) {
+                hit = 1;
+            }
+            break;
+        case 1:
+            if (ox < x && z == oz) {
+                hit = 1;
+            }
+            break;
+        case 2:
+            if (z < oz && x == ox) {
+                hit = 1;
+            }
+            break;
+        case 3:
+            if (x < ox && z == oz) {
+                hit = 1;
+            }
+            break;
+        }
+        if (hit) {
+            if ((*(u16 *)(g + 0x32) & 0x20) && g[i + 0x5C] != 0) {
+                return 0;
+            }
+            return 1;
+        }
+    }
+next:
+    i++;
+    p++;
+    if (i < 4) {
+        goto loop;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BD520);
 

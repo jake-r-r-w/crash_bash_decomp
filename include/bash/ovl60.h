@@ -61,6 +61,8 @@ typedef struct {
 extern Ovl60Slot D_800C535C[];
 void func_800C02AC(EXTengine *eng, s32 angle);
 extern u8 D_80053B9C[];
+extern s32 D_8005A680[];
+extern u8 D_8005A614[];
 extern NAS *D_800C5BB0;
 extern s32 D_800C52E0;
 extern s32 D_800C52E4;
@@ -93,6 +95,8 @@ void func_800C2810(s32 arg0);
 
 void func_800C2B98(s32 arg0);
 extern s16 D_8009D87C[][3];
+
+s32 func_800BD378(s32 hero);
 
 s32 func_800C0AFC(s32 arg0, s32 arg1);
 
