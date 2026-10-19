@@ -255,6 +255,8 @@ typedef struct BombMakerExt {
     /* 0x18 */ s32 unk18;
 } BombMakerExt;
 
+extern s32 D_800D4DEC;
+
 /* D_8009D87C (declared in bash/8007ee2c.h, which this unit does not include). */
 typedef struct Ovl62Odds {
     s16 unk0;

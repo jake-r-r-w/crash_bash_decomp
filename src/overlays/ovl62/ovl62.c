@@ -1553,7 +1553,36 @@ s32 func_800CB744(u8 *arg0, u8 *arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBombGFX);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBombMaker);
+void PlotBombMaker(NAS *m) {
+    BombMakerExt *ext;
+    s32 x;
+    s32 z;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext != NULL) {
+        if (ext->unk18 < 0) {
+            ext->unk18 = 0;
+        }
+        switch (ext->unkC) {
+        case 0:
+            if (ext->unk18 <= 0) {
+                if (ext->timer-- < 0 && D_800D4DEC == 0) {
+                    ext->unkC = 2;
+                    ext->timer = 0x5A;
+                    ext->unk18++;
+                }
+            }
+            break;
+        case 2:
+            x = Random(0x800) - Random(0x800);
+            z = Random(0x800);
+            SpawnNASById(x, 0, z - Random(0x800), 0x160F, 0x11);
+            PlaySfx(0x3FA, NULL, NULL, 0x1000, 0x1E00, 0);
+            ext->unkC = 0;
+            break;
+        }
+    }
+}
 
 void InitBombMaker(NAS *m) {
     BombMakerExt *ext;
