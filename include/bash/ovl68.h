@@ -33,6 +33,8 @@ extern u8 D_800BC210[];
 extern NAS *D_800BC420[];
 NAS *func_800BB688(s32 x, s32 z, s32 range);
 extern s32 D_800BC4E8[];
+extern s32 D_800BC444;
+extern s16 D_8009E0D8;
 
 void func_800BA5A0(s32 arg0, s32 arg1);
 void func_800B94FC(s32 arg0, u16 arg1);
@@ -60,6 +62,8 @@ void InitCoalFlameSFX(CoalFlameObj *arg0);
 void InitBarrelGenerator(NAS *nas);
 
 void func_800BADD4(s32 arg0);
+
+void func_800BB134(s32 arg0);
 
 void func_800BB3F0(s32 x, s32 y);
 

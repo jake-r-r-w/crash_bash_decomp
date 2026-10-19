@@ -248,7 +248,22 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BAFB4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BB010);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BB134);
+void func_800BB134(s32 arg0)
+{
+  HeroInfo *h;
+  HeroInfo *new_var;
+  if (D_800BC444 == 0)
+  {
+    new_var = Heroes;
+    h = new_var;
+    h += arg0;
+    if ((h->hero_immunity == 0) && (!(h->hero_status & 0xFA00)))
+    {
+      SetHeroAction((HeroInfo *) arg0, (u16) D_8009E0D8);
+      func_80027F7C(arg0, 0xA, 0xF0);
+    }
+  }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BB1C0);
 
