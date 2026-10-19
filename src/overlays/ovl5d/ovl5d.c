@@ -230,7 +230,35 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitBashShox);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotBashShox);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotMissileExplode);
+void PlotMissileExplode(NAS *nas) {
+    EXTengine *eng;
+    subengine *sub;
+    s16 *row;
+    s16 (*tbl)[3];
+    s32 z;
+    u16 idx;
+
+    eng = nas->Engine;
+    if (eng != NULL) {
+        idx = nas->UserInfo.flags;
+        tbl = D_800C3B08;
+        row = tbl[idx];
+        sub = eng->sub;
+        if (row[0] != 0) {
+            sub->unk20.x = row[0];
+            sub->unk20.y = row[1];
+            z = row[2];
+            sub->unk52 = 1;
+            sub->unk20.x = z;
+            nas->UserInfo.flags++;
+            if (idx == 1) {
+                func_8008DEC8((s32)nas, 0x280, nas->UserInfo.user1, nas->UserInfo.user2, 0);
+            }
+        } else {
+            KillNAS(nas);
+        }
+    }
+}
 
 void InitMissileExplode(NAS *nas) {
     EXTengine *eng;

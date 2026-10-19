@@ -19,9 +19,9 @@
    "size": 2836
   }
  ],
- "commit": "80cdc32ee",
+ "commit": "f15b943e4",
  "game": "SCUS_945.70",
- "generated": "2026-10-19T14:04:36Z",
+ "generated": "2026-10-19T14:04:48Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -127240,9 +127240,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "f15b943e4",
+   "data_b": 3844,
+   "data_tb": 606943,
+   "game_all_f": 2537,
+   "game_b": 476328,
+   "game_c_f": 1891,
+   "game_f": 1891,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 1678,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-19T14:04:48Z",
+   "units": {
+    "engine": [
+     121412,
+     355
+    ],
+    "main exe": [
+     124840,
+     575
+    ],
+    "ovl5d": [
+     6904,
+     38
+    ],
+    "ovl5e": [
+     1432,
+     10
+    ],
+    "ovl5f": [
+     20972,
+     127
+    ],
+    "ovl60": [
+     28208,
+     131
+    ],
+    "ovl61": [
+     49424,
+     96
+    ],
+    "ovl62": [
+     32228,
+     151
+    ],
+    "ovl63": [
+     22884,
+     97
+    ],
+    "ovl64": [
+     640,
+     10
+    ],
+    "ovl65": [
+     1096,
+     11
+    ],
+    "ovl66": [
+     744,
+     15
+    ],
+    "ovl67": [
+     27056,
+     101
+    ],
+    "ovl68": [
+     768,
+     13
+    ],
+    "ovl69": [
+     9496,
+     68
+    ],
+    "ovl6a": [
+     28224,
+     93
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-19T14:04:46Z",
+   "auto": true,
+   "name": "PlotMissileExplode",
+   "seg": "overlays/ovl5d/ovl5d",
+   "size": 176,
+   "tries": 0
+  },
   {
    "at": "2026-10-19T14:04:34Z",
    "auto": true,
@@ -127354,14 +127448,6 @@
    "seg": "overlays/ovl5d/800bff1c",
    "size": 200,
    "tries": 0
-  },
-  {
-   "at": "2026-10-19T13:57:03Z",
-   "auto": true,
-   "name": "func_800C2F60",
-   "seg": "overlays/ovl5d/800bff1c",
-   "size": 80,
-   "tries": 0
   }
  ],
  "summary": {
@@ -127377,15 +127463,15 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 3,
-   "c_f": 1890,
-   "done_b": 476152,
-   "done_f": 1890,
+   "c_f": 1891,
+   "done_b": 476328,
+   "done_f": 1891,
    "named_f": 345,
-   "pct": 46.72572902233091,
+   "pct": 46.74300024729254,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2537,
-   "typed_f": 1677
+   "typed_f": 1678
   },
   "lib": {
    "all_f": 566,
@@ -127450,20 +127536,20 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
-    "c_f": 37,
-    "done_b": 6728,
-    "done_f": 37,
+    "c_f": 38,
+    "done_b": 6904,
+    "done_f": 38,
     "file": "ovl5d.bin",
     "files": 3,
     "lib": false,
     "named_f": 21,
-    "pct": 10.692263683173351,
+    "pct": 10.971966181425211,
     "phase": 5,
     "sony_b": 0,
     "title": "Bash",
     "total_b": 62924,
     "total_f": 104,
-    "typed_f": 32,
+    "typed_f": 33,
     "unit": "ovl5d"
    },
    {
