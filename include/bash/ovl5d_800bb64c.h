@@ -39,7 +39,14 @@ typedef struct {
     /* 0x32 */ s16 unk32;
 } ExtCurve;
 
+extern u16 D_8009E25C[13];
+typedef struct {
+    u8 pad0[0x14];
+    u16 type;
+} T_BB7E8Fux;
+
 s32 func_800BB7B8(T_BB7B8 *p);
+void func_800BB7E8(void);
 
 void InitShieldPickup(NAS *arg0);
 
