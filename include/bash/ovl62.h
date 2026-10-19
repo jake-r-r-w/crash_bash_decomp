@@ -358,6 +358,8 @@ s32 func_8008C5C4(s32 *from, s32 *to, void *arc, s32 *pos);
 
 s32 func_800B3740(s32 arg0);
 
+s32 func_800CB178(s32 self, s32 *dist);
+
 void func_800D2CB8(s32 arg0);
 
 #endif /* BASH_OVL62_H */

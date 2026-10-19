@@ -1023,7 +1023,44 @@ void func_800CB134(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CB178);
+s32 func_800CB178(s32 self, s32 *dist) {
+    SLONG_XYZ pos;
+    s32 best;
+    HeroInfo *h;
+    HeroInfo *me;
+    HeroInfo *base;
+    s32 i;
+    s32 d;
+    s32 min;
+    u16 st;
+
+    best = -1;
+    min = 0x07FFFFFF;
+    i = 0;
+    base = Heroes;
+    me = &base[self];
+    h = base;
+loop:
+    if (i < 4) {
+        if (i != self &&!((st = h->hero_status) & 0x2000) && !(st & 0x8000)) {
+            pos = h->hero_eng->unk10;
+            d = func_8008CEB0((u8 *)&pos, (u8 *)&me->hero_eng->unk10);
+            if (d < min) {
+                min = d;
+                do {
+                    best = i;
+                } while (0);
+            }
+        }
+        do {
+            h++;
+        } while (0);
+        i++;
+        goto loop;
+    }
+    *dist = min;
+    return best;
+}
 
 s32 func_800CB284(void) {
     s32 i;

@@ -6994,7 +6994,8 @@
   "status": "matched"
  },
  "ovl62:800CB178": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-19T07:22:45Z",
+  "status": "matched"
  },
  "ovl62:800CB284": {
   "auto_diff": 8,
@@ -8152,7 +8153,9 @@
   "via": "auto"
  },
  "ovl65:800BD0AC": {
-  "auto_failed": "compile"
+  "auto_failed": "compile",
+  "copy_failed": "ovl62:800CB178",
+  "copy_failed_stage": "in-file"
  },
  "ovl65:800BD1B8": {
   "auto_diff": 3,
