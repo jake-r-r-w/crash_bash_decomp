@@ -267,6 +267,8 @@ extern s32 D_800CB104;
 
 void func_800B8EC4(s32 player);
 
+void func_800BACD4(s32 arg0);
+
 void func_800BAF64(s32 arg0);
 
 void func_800C44E8(s32 arg0);

@@ -180,7 +180,28 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BAAB0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BABCC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BACD4);
+void func_800BACD4(s32 arg0) {
+    EXTengine *eng;
+    subengine *sub;
+
+    eng = Heroes[arg0].hero_eng;
+    sub = Heroes[arg0].hero_sub->next->next;
+    eng->unk1E += 0x15;
+    eng->unk5E = 1;
+    if (HLV->mode != 5) {
+        sub->unk52 = 1;
+        sub->unk12 -= 0x15;
+    }
+    func_8008502C(arg0);
+    func_80085890(arg0);
+    if (func_8008A200(arg0) != 0) {
+        if (HLV->state & 0x800) {
+            HLV->unk30 |= 0x201;
+        } else {
+            HLV->unk30 |= 1;
+        }
+    }
+}
 
 void func_800BADB8(s32 arg0) {
     s32 ok;
