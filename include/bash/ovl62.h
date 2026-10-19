@@ -208,6 +208,8 @@ void func_800CB508(s32 player);
 
 void func_800CB650(s32 player);
 
+s32 func_800CD560(s32 arg0);
+
 s32 func_800D0750(s32 player);
 
 s32 func_800D10A0(s32 player);

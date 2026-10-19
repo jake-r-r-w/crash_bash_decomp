@@ -842,7 +842,10 @@ s32 func_800CD118(s32 *arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CD214);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CD560);
+s32 func_800CD560(s32 arg0) {
+    Heroes[arg0].hero_move->HitBy = -1;
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CD594);
 
