@@ -824,7 +824,25 @@ void InitTotemTop(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitTotemPole);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotPillarCover);
+void PlotPillarCover(NAS *nas) {
+    switch (nas->UserInfo.user1) {
+    case 6:
+        nas->UserInfo.status++;
+        if (nas->UserInfo.status >= 4) {
+            KillNAS(nas);
+            return;
+        }
+        break;
+    case 7:
+        if (nas->UserInfo.status == 0) {
+            KillNAS(nas);
+            return;
+        }
+        nas->UserInfo.status--;
+        break;
+    }
+    nas->Engine->sub->unk74 = D_800CA944[nas->UserInfo.status].v;
+}
 
 void InitPillarCover(NAS *nas) {
     EXTengine *e = nas->Engine;
