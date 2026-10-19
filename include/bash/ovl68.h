@@ -28,6 +28,13 @@ typedef struct CoalFlameExt {
     u8 pad20[0x24];
 } CoalFlameExt;
 
+typedef struct CircleFireExt {
+    EXT ext;
+    u8 pad0C[0x24];
+    s32 unk30;
+    u8 pad34[0x10];
+} CircleFireExt;
+
 extern u8 D_80053F8C[];
 extern s32 *D_80058AD0;
 
@@ -211,6 +218,8 @@ void func_800BA784(s32 arg0, s32 arg1);
 void InitCoalFlameSFX(CoalFlameObj *arg0);
 
 void InitEgg(NAS *nas);
+
+void InitCircleFire(NAS *nas);
 
 void InitCoalFlame(NAS *nas);
 

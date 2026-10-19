@@ -9676,7 +9676,8 @@
   "status": "matched"
  },
  "ovl68:800BA944": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-19T17:38:11Z",
+  "status": "matched"
  },
  "ovl68:800BAA34": {
   "auto_diff": 4,

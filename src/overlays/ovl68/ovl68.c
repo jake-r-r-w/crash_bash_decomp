@@ -522,7 +522,28 @@ void InitEgg(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", InitCircleFire);
+void InitCircleFire(NAS *nas) {
+    EXTengine *eng;
+    subengine *sub;
+    CircleFireExt *ext;
+
+    ext = AddExtension(nas, 0x44, 0x10000004);
+    nas->FUX = &ext->ext;
+    ext->unk30 = 1;
+    eng = nas->Engine;
+    nas->UserInfo.status = eng->unk10.x;
+    eng->unk10.x = (D_80068BD4[((u16)nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 9) >> 4;
+    eng->unk10.z = (D_80068BD4[nas->UserInfo.status & 0xFFF].unk2 * 9) >> 4;
+    sub = eng->sub;
+    eng->unk1E = (nas->UserInfo.status - 0x400) & 0xFFF;
+    eng->unk5E = 1;
+    eng->unk10.y = 0;
+    sub->unk6C = D_80053F8C;
+    sub->unk74 = 0x4000;
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 void InitCoalFlame(NAS *nas) {
     EXTengine *eng;
