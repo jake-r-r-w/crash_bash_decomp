@@ -104,7 +104,56 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B41DC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B442C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B4708);
+void func_800B4708(arg0)
+s32 arg0;
+{
+    HeroInfo *hero;
+    EXTovl63ai *ext;
+    NAS *nas;
+    NAS *found;
+    s32 angle;
+    HeroInfo *base;
+
+    base = Heroes;
+    hero = base + arg0;
+    ext = FindExtension(hero->hero, 0x20000000);
+    if (ext != NULL) {
+        hero->hero_ai->AIpad = 0;
+        hero->hero_ai->AImode = 1;
+        ext->unk18 = func_800B5360;
+        nas = func_800C5C64(arg0);
+        found = NULL;
+        if (nas != NULL) {
+            if (func_8008CEB0((u8 *)&nas->Engine->unk10, (u8 *)&hero->hero_eng->unk10) <= 0x270FFF) {
+                angle = get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF;
+                if ((get_angle(hero->hero_eng->unk10.x, hero->hero_eng->unk10.z) & 0xFFF) < angle) {
+                    found = nas;
+                    goto done;
+                }
+            }
+            found = NULL;
+        }
+    done:
+        if (found != NULL) {
+            ext->unk18 = func_800B5660;
+            ext->unk14 = D_800C6980[Heroes[arg0].hero_name];
+        }
+        if (G63->unk34 != 0x17) {
+            func_800B442C(arg0);
+        }
+        ext->unk18(arg0);
+        if (G63->unk34 == 0x19) {
+            func_800B372C(arg0);
+        } else {
+            func_800B41DC(arg0);
+        }
+        if (D_8005A648 == 0x18) {
+            func_800B3890(arg0);
+            func_800B3BC0(arg0);
+            func_800B406C(arg0);
+        }
+    }
+}
 
 void func_800B48EC(s32 player) {
     HeroInfo *base;

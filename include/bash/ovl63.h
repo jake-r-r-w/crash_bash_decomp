@@ -47,7 +47,21 @@ typedef struct Ovl63VelFux {
     /* 0x13C */ s32 vx;
     /* 0x140 */ s32 vz;
 } Ovl63VelFux;
-void func_800B5528(s32 arg0, SLONG_XYZ *arg1);
+
+/* Extension 0x20000000 as func_800B4708 drives it. */
+typedef struct EXTovl63ai {
+    /* 0x00 */ s32 unk0[5];
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ void (*unk18)(s32 player);
+} EXTovl63ai;
+extern s32 D_800C6980[];
+void func_800B4708();
+void func_800B372C(s32 arg0);
+void func_800B3890(s32 arg0);
+void func_800B3BC0(s32 arg0);
+void func_800B406C(s32 arg0);
+void func_800B41DC(s32 arg0);
+void func_800B442C(s32 arg0);
 
 void func_800B7D94(void);
 
