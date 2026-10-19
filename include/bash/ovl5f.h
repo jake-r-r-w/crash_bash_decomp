@@ -290,6 +290,8 @@ typedef struct Ovl5fGameView {
     /* 0x6C */ s32 w6C;
 } Ovl5fGameView;
 
+extern s32 D_800C94A8[];
+
 void func_800BADB8(s32 arg0);
 typedef struct OvlClampPos {
     /* 0x00 */ u8 pad0[0x10];

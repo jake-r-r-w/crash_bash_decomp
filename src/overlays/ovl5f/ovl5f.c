@@ -142,7 +142,19 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B6658);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B6C24);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B6ED8);
+void func_800B6ED8(s32 player) {
+    if (D_8005A614[player + 0x5C] != 0) {
+        if (++D_800CAD50[player].IdleAnimCt >= 0x50 && D_800CB0F0 == 0) {
+            D_800CAD50[player].IdleAnimCt = Random(0x1E);
+            SetHeroSeq((HeroInfo *)player, 0x5A);
+            D_800CAD50[player].IdleAnimCt = 0;
+            PlaySfx(D_800C94A8[Heroes[player].hero_name - 1], NULL, &Heroes[player].hero_eng->unk10, 0x1000, 0x1E00,
+                    0);
+            return;
+        }
+    }
+    SetHeroSeq((HeroInfo *)player, 0x59);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B6FF4);
 
