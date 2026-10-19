@@ -179,7 +179,21 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BC878);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BC8D0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BC948);
+void func_800BC948(HeroInfo *hero) {
+    SetHeroSeq(hero, 0x4F);
+    if ((s32)hero == 0) {
+        PlaySfx(0x6B3, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    if ((s32)hero == 1) {
+        PlaySfx(0x6B4, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    if ((s32)hero == 2) {
+        PlaySfx(0x6B5, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    if ((s32)hero == 3) {
+        PlaySfx(0x6B6, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+}
 
 void func_800BCA18(HeroInfo *hero) {
     SetHeroSeq(hero, 0x4E);

@@ -19,6 +19,8 @@ extern NAS *D_800BDA08[];
 
 void PlotDinoSmoke(NAS *m);
 
+void func_800BC948(HeroInfo *hero);
+
 void func_800BCA18(HeroInfo *hero);
 
 s32 func_800BCDF0(u8 *arg0);
