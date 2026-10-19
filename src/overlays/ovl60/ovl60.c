@@ -207,7 +207,16 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C0C34);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", SquareIsFreeForRoo);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Roo_Bounce);
+bool Roo_Bounce(NAS *nas) {
+    if (++D_800C5304 < 14) {
+        return 0;
+    }
+    D_800C5304 = 0;
+    if (nas->Engine != NULL) {
+        Roo_GoBoing(nas->Engine);
+    }
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Roo_UpdateVelocities);
 

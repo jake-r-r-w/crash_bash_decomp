@@ -37,6 +37,7 @@ extern s32 D_800C52EC;
 extern s32 D_800C52F0;
 extern s32 D_800C52F8;
 extern s32 D_800C52FC;
+extern s32 D_800C5304;
 extern s32 D_800C5BAC;
 extern s32 D_800C5BB8;
 extern s32 D_800C5BBC;
