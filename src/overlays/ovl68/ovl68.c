@@ -457,7 +457,13 @@ s32 func_800BAE8C(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BAE94);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BAF00);
+s32 func_800BAF00(s32 arg0) {
+    if (!(D_80051338[arg0].unk54 & 0x4000)) {
+        return 0;
+    }
+    SetHeroAction((HeroInfo *)arg0, 0x78);
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BAF58);
 
