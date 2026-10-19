@@ -370,7 +370,48 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B6D74);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B6EB4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B6FEC);
+void func_800B6FEC(s32 player) {
+    Ovl62Fux *fux;
+    NAS *nas;
+    s32 r;
+
+    if (func_800B7CDC() != 0) {
+        return;
+    }
+    fux = (Ovl62Fux *)Heroes[player].hero->FUX;
+    if (fux == NULL) {
+        return;
+    }
+    if (Ovl62HasBomb2(player)) {
+        func_800B649C(player);
+        fux->unk24 = Random(0x78) + 0x3C;
+        r = func_800B3740(player);
+        if (r == -1) {
+            fux->unk34 |= 2;
+        } else {
+            fux->target = r;
+            fux->unk34 &= ~2;
+        }
+        fux->state = 1;
+        fux->func = func_800B6708;
+        return;
+    }
+    nas = Ovl62FreeBomb();
+    if (nas != NULL) {
+        fux->unk3C = 1;
+        fux->vel = nas->Engine->unk10;
+        fux->pos = Heroes[player].hero_eng->unk10;
+        if (fux->unk24-- < 0) {
+            fux->state = 5;
+            fux->func = func_800CB6B4;
+        }
+        func_800B60B8(player);
+        func_800B5EBC(player);
+        return;
+    }
+    fux->state = 5;
+    fux->func = func_800CB6B4;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B7224);
 

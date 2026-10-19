@@ -315,6 +315,47 @@ done:
     return found;
 }
 
+/* func_800CB56C as inlined into func_800B6FEC. */
+static inline s32 Ovl62HasBomb2(s32 player) {
+    NAS *nas;
+    BombMakerExt *ext;
+    s32 one;
+
+    nas = D_800D5294;
+    one = 1;
+loop:
+    if (nas != NULL) {
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL && ext->unkC == one && ext->unk14 == player) {
+            return 1;
+        }
+        nas = nas->Group.Child;
+        goto loop;
+    }
+    return 0;
+}
+
+/* func_800CB5F4, inlined into func_800B6FEC. */
+static inline NAS *Ovl62FreeBomb(void) {
+    NAS *nas;
+    BombMakerExt *ext;
+
+    nas = D_800D5294;
+loop:
+    if (nas != NULL) {
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL && ext->unkC == 0) {
+            return nas;
+        }
+        nas = nas->Group.Child;
+        goto loop;
+    }
+    return NULL;
+}
+
+void func_800B649C(s32 player);
+void func_800B6708(void);
+
 /* D_8009D87C (declared in bash/8007ee2c.h, which this unit does not include). */
 typedef struct Ovl62Odds {
     s16 unk0;
