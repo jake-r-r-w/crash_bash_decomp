@@ -143,6 +143,8 @@ typedef struct RaceMissileExt {
 
 extern u8 D_80052F5C[];
 
+NAS *func_800C5C64(s32 arg0);
+
 void InitRaceMissile(NAS *m);
 
 void InitRaceSmokeBoostWater(NAS *nas);
@@ -170,5 +172,7 @@ void func_800C5B08(s32 *pos, s32 *polar);
 void func_800C5B94(void);
 
 void func_800C5BEC(void);
+
+NAS *func_800C5DAC(s32 arg0);
 
 #endif /* BASH_OVL63_H */

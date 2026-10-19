@@ -599,7 +599,25 @@ void func_800C5D8C(void) {
     func_800B4708();
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5DAC);
+NAS *func_800C5DAC(s32 arg0) {
+    NAS *nas;
+    HeroInfo *base;
+    HeroInfo *hero;
+    s32 angle;
+
+    nas = func_800C5C64(arg0);
+    if (nas != NULL) {
+        base = Heroes;
+        hero = base + arg0;
+        if (func_8008CEB0((u8 *)&nas->Engine->unk10, (u8 *)&hero->hero_eng->unk10) <= 0x270FFF) {
+            angle = get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF;
+            if ((get_angle(hero->hero_eng->unk10.x, hero->hero_eng->unk10.z) & 0xFFF) < angle) {
+                return nas;
+            }
+        }
+    }
+    return NULL;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5E6C);
 

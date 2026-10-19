@@ -7948,7 +7948,8 @@
  },
  "ovl63:800C5DAC": {
   "auto_diff": 20,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-19T09:56:44Z",
+  "status": "matched"
  },
  "ovl63:800C5E6C": {
   "auto_failed": "compile",
