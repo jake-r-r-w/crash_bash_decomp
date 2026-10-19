@@ -865,7 +865,22 @@ void InitMineBall(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitTorpedo);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitWaterMine);
+void InitWaterMine(NAS *nas) {
+    EXTengine *e;
+    subengine *s;
+    nas->UserInfo.flags = 1;
+    nas->UserInfo.user1 = -1;
+    nas->UserInfo.status = D_8004E0D8;
+    e = nas->Engine;
+    nas->UserInfo.user2 = 0;
+    e->unk10.y = -0x14;
+    s = e->sub;
+    s->unk6C = *(void **)D_80058AD0;
+    s->unk74 = 0x2001;
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 void InitMine(NAS *nas) {
     EXTengine *eng;
