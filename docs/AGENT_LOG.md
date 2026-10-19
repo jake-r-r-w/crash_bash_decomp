@@ -313,8 +313,6 @@ Other:
   (`func_80011578` pushes, `func_80011DB4` counts down); `MemBlock.unk2` is
   the countdown. `func_800115D8`'s prototype still takes `void **`, not
   `Heap *`; retype it when its callers allow.
-- `func_800C8BA0` (ovl5f) matches alone but adds 4 bytes of data/rodata to
-  the overlay (offset 0x4C): its literal belongs in another file's rodata.
 - Prototype debug types (ARCHITECTURE.md, Prototype debug types): every type
   in the Oct 9 fragment is in a header now, and every single-id AST
   Init/Plot is named. Use them while matching: type `NAS` fields, `FUX`
@@ -527,6 +525,9 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-19 (hand):** `func_800C8BA0` (ovl5f, 567ce2fb): its "+4 bytes
+  of rodata" lead is gone (the id-word split fixed it); it needed all five
+  cases listed so gcc builds the 0..4 table.
 - **2026-10-19 (gate):** `done` now refuses other functions' C edited on
   lines that don't call the match (`stray_edits`; caught the ovl60 case,
   0 hits over the last 150 match commits), and `extract_function(top=True)`
