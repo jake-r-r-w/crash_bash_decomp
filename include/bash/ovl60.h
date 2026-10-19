@@ -60,6 +60,10 @@ extern s32 D_800C5BC4;
 extern s32 D_800C5BCC;
 extern s32 D_800C5BD0;
 extern s32 D_800C5BD4;
+extern s32 D_800C5B2C[8];
+extern s32 D_800C5B4C[8];
+extern s32 D_800C5B6C[8];
+extern s32 D_800C5B8C[8];
 
 void func_800C1068();
 
@@ -73,6 +77,8 @@ void func_800C2B98(s32 arg0);
 extern s16 D_8009D87C[][3];
 
 void func_800C0C34(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
+
+s32 func_800C0E40(s32 arg0, u32 arg1, u32 arg2);
 
 void func_800C286C(s32 arg0);
 

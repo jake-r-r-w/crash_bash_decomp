@@ -264,7 +264,25 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Roo_UpdateVelocities);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C0DE4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C0E40);
+s32 func_800C0E40(s32 arg0, u32 arg1, u32 arg2) {
+    if (arg2 < 8) {
+        if (arg1 == -1 && D_800C5B2C[arg2] == arg0) {
+            return 1;
+        }
+        if (arg1 == 8 && D_800C5B4C[arg2] == arg0) {
+            return 1;
+        }
+    }
+    if (arg1 < 8) {
+        if (arg2 == -1 && D_800C5B8C[arg1] == arg0) {
+            return 1;
+        }
+        if (arg2 == 8 && D_800C5B6C[arg1] == arg0) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C0F08);
 
