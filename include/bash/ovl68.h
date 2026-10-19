@@ -35,6 +35,8 @@ typedef struct CircleFireExt {
     u8 pad34[0x10];
 } CircleFireExt;
 
+extern u16 *D_8009D6EC;
+extern u8 D_80052A54[];
 extern u8 D_80053F8C[];
 extern s32 *D_80058AD0;
 
@@ -202,6 +204,8 @@ void func_800B68B8(s32 arg0);
 void func_800B69AC(s32 arg0);
 
 void func_800B6AAC(s32 arg0);
+
+void func_800B6B84(s32 arg0);
 
 void func_800B722C(s32 arg0);
 
