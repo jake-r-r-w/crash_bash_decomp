@@ -1412,7 +1412,20 @@ void func_800C19A8(s32 *arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1A18);
+void func_800C1A18(s32 arg0) {
+    s32 grid[64];
+
+    if (((D5A614View *)D_8005A614)->mode != 10 && ((D5A614View *)D_8005A614)->mode != 13) {
+        func_800C19A8(grid, arg0);
+        func_800BB840(grid, arg0);
+        if (func_800BBB08(grid, arg0, 1) != 0) {
+            PlaySfx(0x51D, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            if (((D5A614View *)D_8005A614)->mode == 11) {
+                func_800B788C(arg0);
+            }
+        }
+    }
+}
 
 void Init_PogoMushroom(NAS *nas) {
     EXTengine *e = nas->Engine;

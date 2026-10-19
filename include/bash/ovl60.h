@@ -314,6 +314,8 @@ s32 func_800C14BC(s32 arg0, s32 arg1);
 
 s32 func_800C178C(void);
 
+void func_800C1A18(s32 arg0);
+
 void func_800C2018(s32 arg0, s32 arg1, s32 arg2);
 
 void func_800C20C0(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
@@ -346,6 +348,9 @@ void func_800C327C(s32 arg0);
 
 void func_800C3434(void);
 void func_800B8660(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
+void func_800B788C(s32 arg0);
+void func_800BB840(s32 *arg0, s32 arg1);
+s32 func_800BBB08(s32 *arg0, s32 arg1, s32 arg2);
 
 s32 func_800BEA34(s32 x, s32 z, s32 hero);
 s32 func_800BE864(s32 hero, Ovl60Goal *goal);
