@@ -2025,7 +2025,24 @@ void func_800D3170(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D31A0);
+void func_800D31A0(s32 player) {
+    HeroInfo *base;
+    HeroInfo *hero;
+
+    if (func_800D2D2C() == 0) {
+        base = Heroes;
+        hero = base + player;
+        if (hero->hero_move != NULL) {
+            hero->hero_move->z_dir = 0;
+        }
+        if (hero->hero_eng->sfx != NULL) {
+            StopSfx(hero->hero_eng->sfx);
+        }
+        SetHeroSeq((HeroInfo *)player, 0x3B);
+        D_800D6934[player] = 0x4100;
+        hero->hero_eng->sub->unk68 = 0;
+    }
+}
 
 void func_800D325C(s32 arg0) {
     Ext20 *ext = FindExtension(Heroes[arg0].hero, 0x20000000);
