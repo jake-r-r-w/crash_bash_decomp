@@ -1047,7 +1047,54 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B9D64);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BA018);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BA110);
+s32 func_800BA110(s32 arg0, s32 arg1, s32 arg2) {
+    Ovl60Cell *c;
+    Ovl60Cell *base;
+    HeroInfo *h;
+    s32 action;
+    s32 lock;
+    s32 t;
+
+    if ((u32)arg1 >= 8 || (u32)arg2 >= 8) {
+        return 0;
+    }
+    if (func_800C0AFC(arg1, arg2) != 0) {
+        return 1;
+    }
+    base = D_800C53DC[0];
+    c = (Ovl60Cell *)(arg2 * sizeof(Ovl60Cell) + arg1 * sizeof(D_800C53DC[0]) + (u32)base);
+    if (c->unkE != 0) {
+        return 0;
+    }
+    if (c->unk10 != 0 && c->unk10 != arg0 + 1) {
+        return 0;
+    }
+    {
+        Ovl60Cell *b2 = D_800C53DC[0];
+        c = (Ovl60Cell *)(arg2 * sizeof(Ovl60Cell) + arg1 * sizeof(D_800C53DC[0]) + (u32)b2);
+    }
+    h = c->hero;
+    if (h != NULL) {
+        action = h->hero_pu_action;
+        lock = h->hero_pu_lock;
+        t = *(s32 *)&h->hero_weapon_timer;
+        if (action == 11) {
+            return 0;
+        }
+        if (t != 0) {
+            return 0;
+        }
+        if (action == 10) {
+            if (lock < 3) {
+                return 0;
+            }
+        } else if (lock < 3) {
+            return 0;
+        }
+        return 1;
+    }
+    return (u16)c->unk12 == 7;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BA25C);
 
