@@ -14,6 +14,9 @@ typedef struct Ovl5fModeView {
 } Ovl5fModeView;
 
 extern s32 D_800CB210;
+extern NAS *D_800CB224[3];
+extern NAS *D_800CB230[4];
+extern NAS *D_800CB240[2];
 extern u32 D_800CA48C[];
 typedef struct { u16 v, pad; } RockTblEnt;
 extern RockTblEnt D_800CA6D4[];
@@ -330,6 +333,8 @@ void func_800BACD4(s32 arg0);
 void func_800BAF64(s32 arg0);
 
 s32 func_800BF548(EXTengine *eng);
+
+void func_800C1F44(void);
 
 void func_800C4320(NAS *nas, s32 id);
 

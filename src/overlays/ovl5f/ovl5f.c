@@ -762,7 +762,17 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C0F24);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C18F0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C1F44);
+void func_800C1F44(void) {
+    D_800CB224[0] = SpawnNASById(0x369, 0x7D0, 0x10E0, 0x1315, 0x11);
+    D_800CB224[1] = SpawnNASById(0x900, 0x7D0, 0x10E0, 0x1315, 0x11);
+    D_800CB224[2] = SpawnNASById(0xE97, 0x7D0, 0x10E0, 0x1315, 0x11);
+    D_800CB230[0] = SpawnNASById(0x300, 0x7D0, 0x10E0, 0x1316, 0x11);
+    D_800CB230[1] = SpawnNASById(0x700, 0x7D0, 0x10E0, 0x1316, 0x11);
+    D_800CB230[2] = SpawnNASById(0xB00, 0x7D0, 0x10E0, 0x1316, 0x11);
+    D_800CB230[3] = SpawnNASById(0xF00, 0x7D0, 0x10E0, 0x1316, 0x11);
+    D_800CB240[0] = SpawnNASById(0x300, 0x7D0, 0x1200, 0x1317, 0x11);
+    D_800CB240[1] = SpawnNASById(0xF00, 0x7D0, 0x1200, 0x1317, 0x11);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitTankBoss);
 
