@@ -339,7 +339,27 @@ s32 func_800BCD1C(s32 arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BCDAC);
+void func_800BCDAC(s32 player) {
+    HeroInfo *hero;
+    HeroInfo *base;
+
+    D_800C695C = 1;
+    func_80089FA4(player);
+    SetHeroSeq((HeroInfo *)player, 0x48);
+    base = Heroes;
+    hero = base + player;
+    hero->hero_eng->unk20 = 0;
+    hero->hero_eng->unk1C = 0;
+    hero->hero_eng->unk10.y = D_800C6930;
+    hero->hero_eng->unk5E = 1;
+    if (D_8005A648 != 0x19) {
+        func_80085718(player, 0);
+        return;
+    }
+    func_80085718(player, 1);
+    func_80017640();
+    func_80011D28((u8 *)&D_8004E0F0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BCE88);
 
