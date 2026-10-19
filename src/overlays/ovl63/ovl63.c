@@ -541,7 +541,22 @@ void func_800C5B94(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5BEC);
+void func_800C5BEC(void) {
+    D_800C69B4->unk74 = (D_800C69B8 >> 8) + 0x4000;
+    if (D_800C69BC == 0) {
+        D_800C69B8 += 0x80;
+        if (D_800C69B8 >= 0x6000) {
+            D_800C69B8 = 0;
+        }
+    }
+    if (D_800C69BC == 1) {
+        D_800C69B8 -= 0x19C;
+        if (D_800C69B8 <= 0) {
+            D_800C69B8 = 0;
+            D_800C69BC = 0;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C5C64);
 

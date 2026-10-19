@@ -167,4 +167,6 @@ void func_800C5B08(s32 *pos, s32 *polar);
 
 void func_800C5B94(void);
 
+void func_800C5BEC(void);
+
 #endif /* BASH_OVL63_H */
