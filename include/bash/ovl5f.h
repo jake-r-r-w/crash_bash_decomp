@@ -117,6 +117,8 @@ s32 func_800C6B9C(s32 id, s32 x, s32 z, s32 angle);
 
 void func_800C7D24(HeroInfo *hero);
 
+void func_800C7DB8(s32 arg0);
+
 void func_800C7E68(HeroInfo *hero, Ovl5fActObj *obj, s32 arg2);
 
 void func_800C7EB0(HeroInfo *hero, Ovl5fActState *state, s32 arg2);

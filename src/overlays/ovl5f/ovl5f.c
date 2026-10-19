@@ -591,7 +591,23 @@ void func_800C7D24(HeroInfo *hero) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7D44);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C7DB8);
+void func_800C7DB8(s32 arg0) {
+    s32 ok;
+
+    if (D_8005A644 & 0x801) {
+        D_800CB0F0 = -1;
+    }
+    if ((Heroes[arg0].hero_status & 0x200) && Heroes[arg0].hero_mode != 0x70) {
+        SetHeroAction((HeroInfo *)arg0, 0x70);
+        D_800CB0F0 = arg0 + 1;
+        ok = 1;
+    } else {
+        ok = 0;
+    }
+    if (ok == 0) {
+        SetHeroSeq((HeroInfo *)arg0, 0x59);
+    }
+}
 
 void func_800C7E68(HeroInfo *hero, Ovl5fActObj *obj, s32 arg2) {
     SetHeroAction(hero, 0x6F);
