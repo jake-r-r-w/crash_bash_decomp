@@ -5817,7 +5817,9 @@
   "status": "matched"
  },
  "ovl60:800BC184": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-19T09:20:20Z",
+  "started": "2026-10-19T09:19:17Z",
+  "status": "matched"
  },
  "ovl60:800BC314": {
   "auto_failed": "types"

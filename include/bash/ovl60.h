@@ -135,6 +135,12 @@ typedef struct {
 } Ovl60Slot;
 
 extern Ovl60Slot D_800C535C[];
+/* PadState (D_80051338) as func_800BC184 reads it: d-pad bits 0xF0 at 0x50. */
+typedef struct Ovl60Pad {
+    /* 0x00 */ u8 unk0[0x50];
+    /* 0x50 */ s32 unk50;
+    /* 0x54 */ s32 unk54;
+} Ovl60Pad;
 s32 func_800BA110(s32 arg0, s32 arg1, s32 arg2);
 void func_800B8BE4(s32 arg0, s32 arg1);
 void func_800B7B1C(s32 x, s32 z, s32 hero);
@@ -423,6 +429,8 @@ void func_800B7B1C(s32 arg0, s32 arg1, s32 arg2);
 void func_800BA3E0(s32 arg0, s32 arg1, s32 arg2);
 
 void func_800BB724(s32 arg0, s32 arg1);
+
+void func_800BC184(s32 arg0, s32 arg1);
 
 void func_800BC490(s32 arg0);
 

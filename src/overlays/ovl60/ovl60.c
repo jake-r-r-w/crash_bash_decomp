@@ -1556,7 +1556,48 @@ void func_800BC0EC(s32 arg0) {
     Heroes[arg0].hero_eng->unk10.z -= (Heroes[arg0].hero_eng->unk10.z - tz) / 4;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BC184);
+void func_800BC184(s32 arg0, s32 arg1) {
+    EXTheromove *move;
+    EXTengine *eng;
+    s32 buttons;
+    s32 angle;
+    s32 mode;
+
+    func_800BC490(arg0);
+    move = Heroes[arg0].hero_move;
+    if (move != NULL) {
+        buttons = ((Ovl60Pad *)D_80051338)[arg0].unk50;
+        angle = move->facing_angle;
+        if (buttons & 0xF0) {
+            if (buttons & 0x80) {
+                angle = 0x400;
+            }
+            if (buttons & 0x40) {
+                angle = 0;
+            }
+            if (buttons & 0x20) {
+                angle = 0xC00;
+            }
+            if (buttons & 0x10) {
+                angle = 0x800;
+            }
+        }
+        mode = 1;
+        if (arg1 != 0) {
+            mode = 3;
+        }
+        func_800C1384(arg0, mode, angle, 0x180);
+        eng = Heroes[arg0].hero_eng;
+        PlaySfx(0x522, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+        if (D_800C535C[arg0].unk4 == 5 && Heroes[arg0].hero_aseq == 0x2F) {
+            SetHeroAction((HeroInfo *)arg0, 0x39);
+        }
+        if (D_800C535C[arg0].unk4 == 6) {
+            func_800B91E8(arg0);
+        }
+        D_800C535C[arg0].unk4 = 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BC314);
 
