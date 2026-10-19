@@ -35,6 +35,15 @@ typedef struct Ovl5fActObj {
     /* 0x50 */ s32 unk50;
     /* 0x54 */ s32 unk54;
 } Ovl5fActObj;
+/* InitFlamerBitTA's 0x38-byte extension (id 0x10000000). */
+typedef struct FlamerBitExt {
+    /* 0x00 */ EXT ext;
+    /* 0x0C */ u8 pad0C[0x1C];
+    /* 0x28 */ s32 timer;
+    /* 0x2C */ u8 pad2C[0xC];
+} FlamerBitExt;
+
+extern u8 D_8005365C[];
 
 extern s32 D_800CA34C[];
 extern u8 D_800CACFC[];

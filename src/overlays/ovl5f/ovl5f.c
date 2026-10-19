@@ -385,7 +385,28 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitSwirlyTA);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitFlubberTA);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitFlamerBitTA);
+void InitFlamerBitTA(NAS *nas) {
+    FlamerBitExt *ext;
+    EXTengine *eng;
+    subengine *sub;
+
+    ext = AddExtension(nas, 0x38, 0x10000000);
+    if (ext == NULL) {
+        KillNAS(nas);
+        return;
+    }
+    nas->FUX = &ext->ext;
+    ext->timer = 0x3F;
+    eng = nas->Engine;
+    eng->unk5D = 1;
+    sub = eng->sub;
+    eng->flags |= 0x21;
+    sub->unk6C = D_8005365C;
+    sub->unk74 = 0x202F;
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitLaserBitTA);
 
