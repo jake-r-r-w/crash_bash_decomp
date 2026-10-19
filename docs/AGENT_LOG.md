@@ -12,14 +12,18 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Current state (2026-10-19)
 
-- Phase 2 of [ROADMAP.md](ROADMAP.md): matching `main.exe`. Phase 1 (types
-  and names) is done.
-- 1849/2537 game functions matched: **main.exe is complete (575/575)**;
-  engine overlay 2 left, both parked (`func_8007F314`, `PlotScriptFX`),
-  ovl61 96/97 (two 2026-10-18 swarm runs and four hand matches; `PlotBall` left),
-  ovl5f 91/144 (53 left), ovl63 81 (42 left), ovl60 117/166, ovl62 121/186 (2026-10-19 swarm runs), ovl67 101/135, ovl69 68/77, ovl6a 93/94 (2026-10-18 swarm runs and hand fixes;
-  `func_800B5710` parked at 120/121 blocks); all 564 PsyQ functions (Sony
-  objects). 3 parked (`decomp.py status`). Every slot overlay's id word is
+- [ROADMAP.md](ROADMAP.md): Phase 1 (types and names) is done, and every
+  `main.exe` function matches; Phase 2's naming, data and `main.c` split
+  are left. The work now is matching the overlays (Phases 3-5) with the
+  swarm.
+- 1849/2537 game functions matched (45.9% of game code bytes):
+  **main.exe is complete (575/575)**; engine 355/357 (both left parked:
+  `func_8007F314`, `PlotScriptFX`); ovl61 96/97 (`PlotBall` left), ovl6a
+  93/94 (`func_800B5710` parked), ovl69 68/77, ovl67 101/135, ovl60
+  131/180, ovl5f 127/179, ovl62 151/216, ovl63 97/139 (swarm runs
+  2026-10-18/19); ovl5d, ovl5e, ovl64, ovl65, ovl66 and ovl68 are barely
+  started. All 564 PsyQ functions (Sony objects). 3 parked (`decomp.py
+  status`). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Dashboard (2026-10-18): `docs/index.html` is `tools/scripts/dashboard.html` plus
@@ -45,177 +49,53 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**ovl5f (2026-10-19, runs 20261019115106 + 20261019120240, low cost):**
-Sonnet normal workers (escalating to opus), 1 big worker at `--big-budget-usd
-8`, $30 cap: 78 matched in ~56 min for $15.96, about $0.20 a match (half
-the opus runs). The internet dropped after 11 min (push failed); `run
---resume` gated the 11 verified matches. The header reconcile ran on two
-clashes (one committed straight away). Its park, `func_800B5588`, was a
-bad split: splat had cut its four switch cases off as functions (the swarm
-matched them as such). Fixed and matched by hand the same day (7d960a8f,
-9e8fa3e0; Gotchas, "A switch whose cases each return").
-**Next session:** swarm ovl5d/ovl68
-on the same low-cost recipe.
+**Matching the slot overlays with the swarm.** Left per overlay (2026-10-19,
+`INCLUDE_ASM` count per file): ovl5d 100, ovl68 82, ovl65 69, ovl5e 67,
+ovl62 65, ovl66 65, ovl5f 52, ovl64 50, ovl60 49, ovl63 42, ovl67 34,
+ovl69 9, ovl61 1, ovl6a 1, engine 2. main.exe is complete. **Next session:
+swarm ovl5d, then ovl68**, on the low-cost recipe; after each run, the
+"After a run" checklist in tools/swarm/README.md (`stats --run ID`, parks,
+gate failures, `fold`, this log).
 
-**ovl63 (2026-10-19, run 20261019094644, 5+2 workers):** stopped by hand
-after 51 min, $34.41: 77 matched, 1 parked, 1 failed; 44 left, nearly all
-big. The normal workers ran out of small functions first; the user judged
-5+2 better than 3+2, so `--workers` defaults to 5 now. Its park (`func_800C0F5C`) and gate failure (`InitRaceSmokeBoost`) were
-matched by hand the same day, as were ovl5f's two (`func_800C5620`,
-`func_800C6B9C`): all four were header clashes or the toolchain, the
-workers' C was right. One match is a hack, see Open leads.
+Recipes (`--seg overlays/NAME --branch main --max-minutes 60`):
+- **Low cost** (2026-10-19, ovl5f: 78 matched for $15.96, ~$0.20 a match):
+  `--model sonnet --escalate-model opus --big-workers 1 --big-budget-usd 8
+  --max-run-usd 30`. Use it for fresh overlays.
+- **Opus** (the `config.json` defaults, 5 normal + 1 big; ovl62/ovl60/ovl63
+  matched 77-117 an hour for $34-47): add `--big-workers 2` while big
+  functions are queued. The normal workers finish the small functions first,
+  then idle.
+- **Big-heavy** for an overlay's leftovers, mostly >= 600 B: `--workers 1
+  --big-workers 4 --big-bytes 400`. Retry parks with it after tool upgrades
+  (`decomp.py unblock`, `--retry-failed`): on 2026-10-16 it matched 12 of
+  main.exe's 15 parks.
 
-**ovl5f (2026-10-19, run 20261019093701):** hard-stopped after 9 min to
-start ovl63 with more workers: 9 matched, 0 failed; its verified
-leftovers resumed into the ovl63 run. Worker count trial: ovl63 runs with
-`--workers 5 --big-workers 2` (was 3+2; CPU was 62% on 16 threads);
-compare its `stats --run` with ovl62/ovl60 (matches/hour, $/match, gate
-failures) before going higher.
+Gate failures are usually header clashes or the toolchain, not the worker's
+C: the swarm now reconciles headers itself (`decomp.py reconcile`), and the
+rest are fixed by hand from the worker's patch (Gotchas). A park whose
+`jtbl_` names functions is a bad split (Gotchas).
 
-**ovl60 (2026-10-19, run 20261019081134, opus):** 60 min, $46.61: 113
-matched, 0 parked, 2 failed at the gate, 51 left. Normal workers $0.17-0.45
-a match, 400-599 B big $0.97. Failed: `func_800BC184` (a struct got
-duplicate members `unk4`/`unk6` from another match's header edit; retry)
-and `Roo_ChangeDirOnEdge` (matches alone, full build 84 bytes short:
-rodata/data, like ovl6a's `func_800B488C`). Fold: 40 rows (10 repeats
-dropped). Both failures matched by hand the same day (6ff3b7da, b0e170e0).
-Next: ovl5f/ovl63 with the same recipe.
+Hand work, between runs:
+1. The parks: `PlotBall` (ovl61, 5576 B, checkpointed), `func_800B5710`
+   (ovl6a), `func_8007F314` and `PlotScriptFX` (engine), `func_800B39C0`
+   (ovl67), and `func_800B345C`'s hack (Open leads for each).
+2. Name each function as it's matched when the evidence allows.
+3. Split `main.c` into its translation units: on hold since 2026-10-15. Its
+   one proven boundary (jump-table parity, 95..370) has three possible
+   places and no overlay shows another positive sign; more cuts need new
+   evidence (a leak, a symbol file of a game on this engine). The evidence
+   so far is in ARCHITECTURE.md, Files inside `main/main`; `decomp.py units
+   [--data] [--clusters]` collects it. A split moves functions, so workers'
+   patches and checkpoints for them stop applying.
+4. Later Phase 2 items: data to C (after the split), naming and typing
+   passes.
 
-**ovl62 (2026-10-19, run 20261019065611, all workers on opus):** 60 min,
-$46.59: 117 matched ($0.40 each), 0 parked, 0 failed; 65 left (about 40 at
->= 400 B; the hour ran out before the queue was done). Normal workers (opus now, `config.json`) matched 90/90 under
-400 B, 89 in the first session, at $0.19-0.35 a match against sonnet's
-~$0.48. Before it: ten AST names moved out of ovl62 (ARCHITECTURE.md), a
-`--start-gap-seconds` start stagger (an OAuth race stopped the first run)
-and a by-name pre-commit check. Next: another ovl62 hour with the same mixed
-recipe, then ovl60/ovl5f/ovl63.
-
-**ovl6a (2026-10-18, run 20261018184703):** stopped by hand after 87 min,
-$47.98: 64 matched, 2 failed at the gate (`func_800B4EAC`: compile error, a
-field another match removed; `func_800B488C`: matches alone but the full
-build is +4 bytes, two jump tables' alignment). Since then
-`func_800B4EAC`, `func_800B551C` and `func_800B488C` are matched and
-`func_800B5710` is parked (Open leads). Next: ovl61's `PlotBall`, ovl67's
-parked `func_800B39C0`.
-
-**ovl69 (2026-10-18, run 20261018173050):** stopped by hand after 75 min,
-$33.21: 48 matched, 1 failed at the gate on a compile error (`func_800B7CE8`,
-same cause as ovl67's two; matched by hand 2026-10-18, 3ba0a413), 10 left
-in the queue. Folded.
-
-**ovl67 (2026-10-18, run 20261018163029):** stopped by hand after 58 min,
-$39.26: 82 matched ($0.48 each), 1 parked (`func_800B39C0`, registers 29/145,
-an s0/s1 swap), 2 failed at the gate on compile errors from declarations
-other matches in the run added (`func_800BA43C`, `func_800B3E74`; both
-matched by hand 2026-10-18, 067bc83b and c079de93). 36 left in the queue; the
-pattern rows are folded.
-
-**ovl61 (2026-10-18):** two runs, 83 matched, and `CalcArkInfluence`,
-`func_800B85DC`, `func_800BE4D4` and (2026-10-19) `func_800B8A68` by hand;
-96/97 functions, 1 left, big and checkpointed: `PlotBall` (5576 B, paired
-1366/1394). Next: hand-match it from the checkpoint, or a new overlay with the
-big-heavy mix (`--workers 1 --big-workers 4 --permuters 2`). (The fold for run
-20261018125240 is done.)
-
-**Tooling: the 2026-10-16 tooling plan is done and removed** (it is in git
-history, `git show 94f04c7:docs/TOOLING_PLAN.md`; what it left is under
-Open leads, Tooling ideas). `swarm.mjs stats` shows $/match by size from
-`ledger.jsonl`. The first supervised run on it (engine, 2026-10-16, 60 min, $41.11)
-matched 28 (27 + one fixed by hand), parked 1. Against earlier runs, $/match
-fell for 250-399 B normal ($0.79 -> $0.66, first-session matches 54% ->
-70%) and 400-599 B big ($4.58 -> $3.52); small samples, and what is left
-is the harder remainder. The closest-C carry-over did the work: three
-functions parked close then matched on the retry from their C. **Next:
-repeat the engine hour** (2 left, both parked: `func_8007F314` 5772 B,
-`PlotScriptFX` 2080 B) with the big-heavy recipe below; `permute --near` first if there is CPU
-time. After each swarm run, compare `stats --run ID` with the ledger's
-earlier runs.
-
-**main.exe retry (2026-10-16, run 20261016133425):** the 15 parked
-main.exe functions, unparked with `decomp.py unblock` and run in big mode
-only (`--big-bytes 1 --big-workers 5 --permuters 0 --retry-failed`), plus
-`func_8002D4F4`: 12 matched in 75 min for $53.46 ($4.46 a match), most in
-one session of 1-16 min. The day's tool upgrades (closest-C checkpoints,
-`regions`, the fixed patch check and gate) cracked what hand sessions had
-parked. **Retry parks with this recipe after tool upgrades.**
-
-**Start of next session: matching.** Left per overlay (2026-10-19, evening): ovl5f
-53, ovl63 42, ovl5d 100, ovl68 83, ovl65 69,
-ovl5e 67, ovl66 67, ovl62 65, ovl60 49, ovl64 51, ovl67 34, ovl69 9, ovl61 1, ovl6a 1, engine
-2 (count `INCLUDE_ASM` per file). The untouched overlays suit the swarm
-(item 1b's recipe, `--seg overlays/NAME`), then the post-run checklist.
-main.exe is fully matched. The file splits are done as far as the evidence
-goes (item 3).
-
-0. Current focus (ROADMAP.md, Current focus): `make disc` works and the
-   matching build is the retail image. The user tests builds by playing
-   them; no recordings are kept up.
-1. Big functions. Big mode works block by block with `decomp.py regions`
-   and ranks checkpoints by region score (tools/swarm/README.md, Big mode).
-   2026-10-14: 13 of 15 fresh 828-1212 B functions matched in the A/B
-   runs, `func_80019A60` went 37/59 -> 55/59 blocks then matched by hand,
-   and a 60-min `main/` run matched 10 of 16 functions leased.
-   main.exe's big functions are all matched (the last four by hand on
-   2026-10-16); the engine's are next (1b).
-1b. Overlays with the swarm, engine first (shared by every minigame):
-   `swarm.mjs run --branch main --seg overlays/engine --max-minutes 60
-   --max-run-usd 80 --max-functions 500 --workers 3 --big-workers 2
-   --big-bytes 400 --big-minutes 27` matched 45 in 60 min for $21.72 on
-   2026-10-15 (mostly under 150 B; $21.72 / 45 = $0.48 a match, a floor: big
-   sessions killed at their deadline cost $0 in the logs). A second hour matched 38 for $16.46, a third 59 in 43 min for
-   $27.60 (stopped early). Evening: 20 in 24 min ($18.34) and 29 in 20 min
-(both stopped early). 2026-10-16: 28 in 60 min ($41.11, mostly 250-600 B
-now). 2026-10-16 night: 19 in 60 min ($56.63, $2.98 a match, 0 parked) with
-`--workers 1 --big-workers 4`: 71 of the 73 left were big (>= 400 B or
-escalated), so 3 normal workers would idle; use that split for the engine
-from now on. 2026-10-17: 9 in 38 min ($28.30; stopped when the internet dropped), 600-1399 B now.
-2026-10-17 morning: 23 in 60 min ($65.81, $2.86 a match; 900-1399 B big $2.50,
-13/16 first-session). 2026-10-17 midday: 10 in 60 min ($63.10, 1456-2804 B), then a 15-min run
-matched 2 more (`func_80083708` 1924 B, `func_8007D9DC` 3528 B; $6.37,
-killed early). The near misses it left were all matched by
-2026-10-18; 2 engine functions are left, both parked (Open leads). `--max-functions 500` leaves time and cost as the limits (40 stopped
-   leasing after about 30 min). Sizes left per overlay: run the size loop over
-   `nonmatching NAME, 0xSIZE` headers (the `next --count` listing is slow).
-2. After each swarm run, the "After a run" checklist in
-   tools/swarm/README.md (`stats`, parks, `fold`, `permute --near`, this
-   log). main.exe has no functions left; its swarm recipe (`--seg main/`,
-   `--big-bytes 400 --workers 1 --big-workers 4`) carries over to overlays.
-3. Split `main.c` into its translation units, between swarm runs (on hold
-   since 2026-10-15: the evidence so far groups functions but places no
-   boundary; see ARCHITECTURE.md, Files inside `main/main`). `decomp.py units
-   --data` now shows the data blocks (regions of files); and, last, the
-   inversions: eight probable one-file regions, boundaries in the gaps
-   between (ARCHITECTURE.md). With the call graph, 17 possible cut zones
-   remain, none proven (no positive signal). Positive sign found: jump-table parity
-   (`decomp.py units SEG`, any segment) proves file starts; main/main has
-   one (95..370), the engine five, five slot overlays some. The engine is split
-   (2026-10-15). The slot overlays with parity
-   flips are split too. Keep main.c whole: its one proven boundary
-   (95..370) has three possible places (ARCHITECTURE.md), and no overlay
-   shows another positive sign (no string stored twice, no 2.7.2 style).
-   More cuts need new evidence (a leak, a symbol file of a game on this
-   engine) (a split
-   moves functions, so workers' patches and big-mode checkpoints for them
-   stop applying). Find the boundaries first and write the evidence in
-   ARCHITECTURE.md: rodata order, alignment padding, file-local statics,
-   changes of compiler style (as at `0x8002D488`). `decomp.py units
-   [--clusters]` collects that evidence: for `main/main` (2026-10-14) style
-   and strings give nothing (all 2.8.1, no duplicate literals), two places
-   where rodata goes back (after `func_80013488`, after `func_8002D178`),
-   and 25 clusters of functions sharing file-local data (183 of 566
-   functions: random, SFX voices, CD, pad, SEQ sound, ...), so boundaries
-   fall between clusters. Code in the wrong unit
-   can't match, and the rodata batch failures came from `main.c`'s single
-   rodata block.
-4. By hand: `decomp.py next --seg overlays/NAME`, the MATCHING.md process
-   (check the unit, evidence, STAGE by STAGE, Diff patterns, cc1 dump, then
-   permuter); for a big function, `decomp.py regions` block by block. A
-   function that parks still gets its prototype in its owned header (an
-   ordinary commit after `make check`).
-5. Name each function as it's matched when the evidence allows. Unpark
-   when a new idea comes up (see Open leads).
-6. Later Phase 2 items: data to C (after the split), naming and typing
-   passes. (The `CRASHBSH.DAT` extractor is done: docs/ASSETS.md.)
+Swarm history in short (details: `swarm.mjs stats`, the ledger, the commits):
+engine 2026-10-15..17 (big-heavy from 2026-10-16), main.exe parks
+2026-10-16, ovl61/ovl67/ovl69/ovl6a 2026-10-18, ovl62/ovl60/ovl63/ovl5f
+2026-10-19 (opus normal workers since then, $0.19-0.45 a match under
+400 B against sonnet's ~$0.48 before; low cost ~$0.20 with the reconcile
+and current tools).
 
 ## Open leads
 
@@ -252,9 +132,9 @@ killed early). The near misses it left were all matched by
   branch (lengthens `mv`'s life so it spills and the hoist gets `fp`),
   `Heroes[arg0].field` / `D_800BCCF4[x].field`, `G->unk63 = best`, the
   `mode` local and the case order 3/4, 2, 1, default.
-- **Hack matches to revisit:** `decomp.py hacks` lists them (one on
-  2026-10-18: `func_800193A8`, register pins that are probably the original
-  source). Parks are `decomp.py status` / the dashboard. Before reaching for a
+- **Hack matches to revisit:** `decomp.py hacks` lists them (two on
+  2026-10-19: `func_800193A8`, register pins that are probably the original
+  source, and `func_800B345C` above). Parks are `decomp.py status` / the dashboard. Before reaching for a
   barrier or pin, try `do { } while (0)` (Diff patterns): it matched
   `func_800926CC` and `func_8008A924` without one.
 - **`PlotScriptFX` (engine script keyframes, 2080 B), parked 2026-10-18 at
@@ -304,13 +184,6 @@ killed early). The near misses it left were all matched by
   - Tools: `scratch/f314/` (ignored) has `rtl.js` (compact RTL from a cc1
     dump), `copies.js` (lists the `s3 = 0; j` tails before and after
     jump2) and the listing scripts.
-- **Reading the gcc source beats guessing for tie-breaks.** `func_8007B330`
-  matched (2026-10-18) once the rules in `tools/reference/gcc-2.7.2.3` were
-  read and worked through by hand against the dumps. The method and every
-  rule found so far are in MATCHING.md, "Reading the compiler's rules"; the
-  skill, CLAUDE.md and the reference README now point at it. Use it next on
-  `func_8007F314`'s tail-merge question (jump.c). It also matched
-  `func_8008C824` (registers 25/155, global.c priorities) the same day.
 - **Tooling ideas not done** (from the 2026-10-16 plan):
   - Pilots, no code: model tiers (`--model haiku --escalate-model sonnet
     --big-workers 0` on ~40 functions under 128 B, check the first matches'
@@ -326,11 +199,6 @@ killed early). The near misses it left were all matched by
     turns); a long-lived container per slot (`tools/dk` overhead measured
     1.2 s, under the 1.5 s that would justify it).
 
-- **main.exe parks (2026-10-16 retry run: 12 of 15 matched).** The three
-  left parked (`func_800177F4`, `func_8001795C`, `func_800248A0`) were
-  matched by hand the same evening, each from a clean form plus a
-  `-dl`/`-dg`/`-dR` dump, none from the permuter's C. Read the dumps
-  before permuting a register-only park.
 - **Checkpoint ranking (decided 2026-10-14): stays paired, then blocks,
   then exact.** A sum of the three fractions would have kept a closer
   `func_8002E3D0` version (11/12 blocks, registers right, paired 106/109
@@ -350,8 +218,6 @@ Other:
 - `main/8002e0f0` with `-fno-rerun-cse-after-loop`: `func_8002E25C` stops
   matching (structure 44/95), the other four still match. Whether both
   units had the flag (and E25C's C leans on cse2) is open.
-- Swarm: `--seg` is a prefix and defaults to `main/main`, so the new units
-  need `--seg main/8002` (or `--only`).
 - Heap: `D_8004E0F0` is a `Heap` now. Its +0x10 is the deferred-free list
   (`func_80011578` pushes, `func_80011DB4` counts down); `MemBlock.unk2` is
   the countdown. `func_800115D8`'s prototype still takes `void **`, not
@@ -374,12 +240,12 @@ Other:
 ## Gotchas
 
 **Tooling**
-- **Removing a function symbol leaves it in the index.** `decomp.py index`
-  adds and updates entries but never drops them, so after a resplit that
-  removes functions their `.decomp/functions.json` and `state.json` keys
-  stay, and `progress` counts them as matched (no `INCLUDE_ASM`). Drop the
-  keys by hand (`jload`/`jsave` from `decomp.py`) and delete the stale
-  `asm/nonmatchings` files. `decomp.py rename` also failed its build check
+- **After a resplit or rename, run `decomp.py index`.** Since 2026-10-19 it
+  checks every entry against the symbol files and `src/`: a renamed
+  function gets its symbol's name (before, 51 entries kept their old
+  `func_` names and no `src`), and an entry no symbol, `INCLUDE_ASM` or C
+  definition names any more (a function a resplit merged away) is dropped
+  from `functions.json` and `state.json`. `decomp.py rename` also failed its build check
   on 2026-10-19 with the error hidden ("BUILD FAILED") when the same rename
   by hand built and matched; rename by hand (symbol file, sed, `make split`,
   `make check`) if it does.
@@ -389,7 +255,7 @@ Other:
   one (`func_800B5588`, 2026-10-19). Sign: a `jtbl_` whose words name
   functions instead of `.L` labels. Fix: give the function its full extent
   in the overlay's symbol file (`func_X = 0x...; // type:func size:0x...`,
-  up to the next real function), resplit, then drop the stale keys as above.
+  up to the next real function), resplit, then `index` (above).
 - **A new prototype can break callers in other files.** The gate adds the
   matched function's prototype to the owned header; an already matched
   caller elsewhere that calls it with other arguments then fails to compile
@@ -404,10 +270,9 @@ Other:
   data in place of every `/*DATA*/null` in the template (Python's
   `str.replace`): one in a comment doubled the page. Name it some other way.
 - **A swarm match the gate refused on a compile error is usually still good.**
-  (Fixed 2026-10-18: the gate-fix worker used to get only the output's last six lines,
-  warnings and "Error 33", and called the build flaky; it now gets the error lines
-  and a hint about union-merged headers, so this should be rarer.)
-  Its C matched against an older tip, and other matches in the run changed the
+  The swarm runs `decomp.py reconcile` on a declaration clash first
+  (2026-10-19), then a gate-fix worker with cc1's error lines; what still
+  fails is left for a hand fix. Its C matched against an older tip, and other matches in the run changed the
   same header (a second typedef of one struct, a prototype with other
   parameters). Apply `results/<key>/*gatefix*/patch.diff` (or the big1 one) with
   `git apply --3way`, keep both sides of a header conflict, merge duplicate
@@ -457,11 +322,6 @@ Other:
 - **Toolchain image tag.** `tools/dk` and `tools/dk.ps1` tag the image
   `psx-decomp:<git hash-object of the Dockerfile, 12 chars>`, so a Dockerfile
   change builds a new image by itself; nothing to bump.
-- Splitting a function by adding a symbol (`name = 0x...; // type:func` in
-  `sym.main.txt`, no `;` in the comment): run `decomp.py index`, which adds
-  the new function but keeps the old one's `size` in
-  `.decomp/functions.json`. Fix that by hand, or `make diff` compares
-  against the old length.
 - A unit whose last function ends in padding `nop`s (and rodata ending in
   zero padding) comes out short once that function is C: add a splat
   `[offset, pad]` subsegment after it (`configs/USA/main.yaml` has the two
@@ -497,8 +357,6 @@ Other:
   warnings.
 - `tryf.sh` replaces only the function, so a comment line above it in the
   draft file is added again on every run. Keep comments out of drafts.
-- `make clean`/`make verify` wipe `build/` (including `build/objdiff/asm`; rerun
-  `make objdiff-config`). Keep scratch scripts in `disc/scratch/`.
 - `tools/dk` right after `git checkout` sometimes hits a Windows
   `PermissionError`; retry.
 - `make permute` runs in its own container: stopping the background task
@@ -527,10 +385,6 @@ Other:
   declaration; re-add it by hand.
 - `rename` prints `ERROR: unknown function OVL:ADDR` for data symbols; the
   rename still works.
-- **Near-misses at the registers stage:** `swarm.mjs permute --only ...`
-  before another Opus session. Checkpoints now: `func_8001795C` registers
-  12/107, `func_800248A0` 5/142 (the permuter didn't move it in 25 min),
-  `func_80015F60` 2/89.
 - `functions.json` names can lag `sym.*.txt` renames; don't trust them for
   file paths.
 
@@ -544,8 +398,6 @@ Other:
   `funcEvSpError`/`funcEvSpErrorx` are harmless.
 
 **Matching and types**
-- 185-odd `D_` globals used by unmatched exe code are still undeclared: the
-  match that first uses one declares and types it in the owned header.
 - Matched-but-mistyped functions (`void f(void)` from the old `auto`) are the
   likeliest type stalls: retype them when a caller needs it.
 - splat marks functions with cop2 moves as `/* Handwritten function */`; they
@@ -575,11 +427,16 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-19 (tidy):** `decomp.py index` repairs the index itself: 51
+  renamed functions had kept their old names and no `src`; merged-away
+  entries are dropped. This log's Next is current counts and recipes
+  instead of run reports; dead leads and gotchas (main.exe's, now matched)
+  removed; session entries before 2026-10-16 moved to git history. Swarm
+  README example is the low-cost recipe; `--big-minutes` default is 27.
 - **2026-10-19 (reconcile):** `decomp.py reconcile` now keeps the tree's
   declaration over a patch's only when every C file including the patched
   header also sees the other header (`headers.visible`); before, any header
   counted, which broke `func_800C8A80` once.
-
 - **2026-10-19 (ovl5f split):** `func_800B5588`'s four switch cases had
   been split off (and swarm-matched) as functions; a `size:` in
   sym.ovl5f.txt rejoins them and the whole function matches by hand (a
@@ -1029,518 +886,6 @@ Newest first, a few lines each. Details are in the commits.
   ambiguous to `find_func`, checkpoints keyed by name, `reapply` drops
   header lines (reproduced), Docker loss not detected, killed big sessions
   uncosted, workers can rewrite `tools/dk` on the host.
-- **2026-10-15 (evening, swarm):** two engine runs, both stopped early by
-  the user: 20 + 29 matched (1020/2551 now, engine 101 left), 1 parked
-  (`func_80095258`, then retried). Stopped permuter runs kept their C in
-  the swarm `results/` (`func_8007976C`, `func_80094A28`, `func_8007D208`).
-- **2026-10-15 (tidy):** removed the replay harness (`replay.py`, recordings,
-  `make replay`, the emulator core, ffmpeg and numpy in the image) and
-  `make report` (decomp.dev's format); play instructions moved to
-  `docs/PLAYING.md`. The user tests builds by playing them.
-- **2026-10-15 (by hand, wrap-up):** no other positive split signal: no
-  overlay or engine string stored twice, no 2.7.2 style in any overlay;
-  main.c's proven boundary has three possible places. Docs brought up to
-  date; next session is matching.
-- **2026-10-15 (by hand, slot overlay splits):** `ovl5d` (two cuts), `ovl5e`,
-  `ovl66`, `ovl67`, `ovl6a` split at their proven starts like the engine;
-  headers `bash/<ovl>_<unit>.h`; `make check` byte-identical.
-- **2026-10-15 (by hand, engine split):** the engine overlay is six files
-  at its five proven starts (functions 33, 74, 208, 282, 330), each with
-  its rodata block and owned header; `make check` byte-identical. Swarm
-  checkpoints for engine functions were made against `engine.c` and may not
-  apply any more.
-- **2026-10-15 (by hand, file boundaries 4):** positive evidence at last:
-  switch tables keep one address parity per file (`.align 3` relative to
-  the object, objects 4-aligned), so a parity change proves a new file.
-  `decomp.py units SEG` prints them for any segment: the engine has five,
-  main/main one, `ovl5d` two, `ovl5e`/`ovl66`/`ovl67`/`ovl6a` one each.
-- **2026-10-15 (by hand, file boundaries 3):** `units --data` adds the call
-  graph (84 probably-static functions tie their callers' file): 17 possible
-  cut zones, eight one or two functions wide, none proven. No byte-identical
-  copies apart from neighbours, so no positive evidence; the split stays on
-  hold.
-- **2026-10-15 (by hand, file boundaries 2):** mapped every game `.data`
-  label to its code users (overlays too) and table pointers. Private data out
-  of code order proves shared files: `units --data` now lists eight
-  probable one-file regions; the boundaries lie in the gaps between. The
-  first data object is a shared tables file; the trig table is a data-only
-  object linked among the libraries.
-- **2026-10-15 (by hand, file boundaries):** `decomp.py units --data`
-  groups the data each run of functions uses alone into address blocks;
-  they climb along the code in one sequence (ARCHITECTURE.md, Files inside
-  `main/main`), which maps regions but no exact edge. The prototype exes
-  hold no source names, and Oct 9 has retail's link order.
-- **2026-10-15 (swarm, engine overlay, run 20261015132721):** `--max-functions
-  500`, stopped by hand after 43 min: 59 matched, $27.60, 1 failed
-  (`func_8008A924`, patch refused for inline asm). Big-mode checkpoints for
-  `func_8007BFA8` (28/114) and `func_8007C170` (17/114). Folded 37 Diff
-  patterns rows (dropped a register-pin row).
-- **2026-10-15 (swarm, engine overlay, run 20261015121127):** 38 matched,
-  $16.46; leasing stopped at the 40-lease cap after about 30 min.
-  `func_80093854` parked in big mode (instructions 53/106; checkpoint
-  kept). Folded 25 Diff patterns rows.
-- **2026-10-15 (swarm, engine overlay, run 20261015110034):** first swarm
-  run on an overlay: 45 matched in 60 min, $21.72, no parks; gate
-  refusals went back to workers as usual. `func_80093854` has a big-mode
-  checkpoint (instructions 53/106). Folded 26 Diff patterns rows. The
-  `main.c` split is on hold: the evidence (ARCHITECTURE.md, Files inside
-  `main/main`) groups functions but places no boundary.
-- **2026-10-15 (swarm, run 20261015090944):** `--only` the 8 untried big
-  functions, `--big-workers 8 --big-minutes 27`, 60 min, $40.28: 7
-  matched (`func_8001492C`, `func_8002926C`, `func_8001B6D4`,
-  `func_80019094`, `func_8002C97C`, `func_8001AF2C`, `func_80023A90`), most
-  in one or two sessions. `func_8002D4F4` reached structure 495/598. Folded
-  12 of the workers' 15 Diff patterns rows (dropped an empty-`asm` hack,
-  an unverified `volatile` row and a duplicate jump-table row).
-- **2026-10-15 (by hand, the seven untried small main/ functions):** 5
-  matched: `func_8001E21C` (key interpolation; `func_8001E41C`'s search as
-  a static inline), `func_8001231C` (loader tick; three buffer variables by
-  role), `func_800235BC` (arena setup; rodata kept via
-  `force_not_migration`), `func_8001E610` (mode switcher; new `ModeMgr`,
-  `GameModeDef`), `func_8001F604` (emitter spawn). 2 parked:
-  `func_80010000`, `func_80017164` (Open leads). Only 8 big functions are
-  left untried in main.exe.
-- **2026-10-14 (by hand, main/, no permuter):** 6 matched: `func_800274FC`
-  (returns a value; `OtBuf` type for `D_8005B790`), `func_8001C7FC` (void),
-  `func_8001EAA4` (checkpoint plus `k = Find(); key = k;`), `func_80029560`,
-  `func_8002854C`, `func_80028774` (sibling bodies as static inlines). 4 new
-  parks within 2-18 insns (Open leads). `similar --all` on every main function:
-  the overlays share no code with it; the matched siblings in main are the
-  leads.
-- **2026-10-14 (by hand, parks):** ported the stale checkpoints of
-  `func_800248A0` (5/142) and `func_8001795C` (12/107) to today's types
-  and parked both (Open leads); neither moved by hand.
-- **2026-10-14 (by hand, `func_80028D40`, 488 B, no permuter):** matched
-  from the checkpoint (17/122). The uv low byte is a `u16 : 8` bitfield
-  (`TexUV.f`), the 8-bit tpage is `getTPage(1, 1, x >> 7 << 7, y)`, and the
-  clut id goes through `cl = &set->cluts[i]`.
-- **2026-10-14 (by hand, `func_80013D54`, 496 B, no permuter):** matched
-  from the swarm checkpoint (6/124, a yz/zz register swap). The nine
-  rounded products share one temp: `t = FIX12_MUL(..); var = t;`. Found
-  from the greg dump: zz (two sets, short life) was allocated first and
-  took the free `a0`. The checkpoint's `Fix12Mul`/`Fix12Round` inline
-  helpers are gone from `main.h`.
-- **2026-10-14 (by hand, `func_8002E3D0`, 436 B, gcc 2.7.2 unit, no
-  permuter):** matched. `bits` is two `u16` halves: `lo = bits;` then
-  `hi = bits >> 16;` (copy first, so `bits` dies at the `srl` in `a3`;
-  `u16 hi` moves the `srl` early through sched2's hazard tie-break), the
-  swarm's `bg = (u16)b; bg >>= 16;` split, and the plain `b = lo; b >= hi`
-  loop. Got there with `vars` (register homes) and the cc1 `-dS -dR`
-  dumps. `func_8002D4F4` not started.
-- **2026-10-14 (by hand, `func_8002DE2C`, 468 B, gcc 2.7.2 unit):** matched
-  from the checkpoint (2/116; 60 permuter minutes had found nothing).
-  `vars`: a temporary, `splitvars`: no gain; ~16 rewrites, then the
-  in-place mask `(t = buf[0], t &= 0x10, !t)`; the last slot was ASPSX
-  retargeting a branch to a filled `j`, now in `aspsx_fill.py`
-  (`steal_jump_slot`, all 16 binaries still match). Worth re-trying the
-  other 2.7.2-unit functions (`func_8002E3D0`, `func_8002D4F4`) with it.
-- **2026-10-14 (permute --near, 60 min, CPU only):** `func_8002DE2C`
-  unchanged; `func_800248A0` and `func_8001795C` skipped: their
-  checkpoints no longer build after the day's matches (the skip message
-  now says so). A planned permuter A/B was cancelled.
-- **2026-10-14 (swarm, main/, 60 min, $54.29):** 10 matched (`func_800243A0`,
-  `func_8002BEA8`, `FreeExtension`, `func_80012678`, `func_800180BC`,
-  `func_80028F28`, `func_8001DAF8`, `func_8001D6B4`, `func_8001FE80`,
-  `func_80017EE8`), 0 parked. Workers used `vars` in 11 of 22 sessions,
-  `splitvars` in 6, `similar` once; old checkpoints were measured; no
-  patch refused. Fixed after: `regions` exit code, cc1 dumps in build/.
-  Folded 41 pattern rows (dropped 2 asm-alias / macro-wrapper rows).
-- **2026-10-14 (swarm check, 5 min, $2.9):** 3 big functions with the new
-  tools. No errors or refused commands; workers used `regions` (no `make
-  diff`); sessions too short for similar/vars/splitvars. Fixed after it:
-  workers stopped with minutes left ("only 5 min"): the prompt now says a
-  kill at the deadline is normal and the result file is kept current;
-  `--retry-failed` ignored the stale rule (now a fresh allowance per run);
-  old checkpoints without a region score were compared by STAGE and
-  dropped `func_80010488`'s better session (now measured once; that
-  session saved by hand: 22/37 blocks); session numbers in the log agree.
-- **2026-10-14 (tooling):** five new `decomp.py` commands, each tested on
-  `func_80019A60`: `similar` (matched functions by opcode 4-grams; ranks
-  `func_8001EAA4`'s sibling first), `splitvars` (all groupings of a
-  variable's assignments, scored by regions: found the 3-way split in 10 s),
-  `permute --differing` (PERM_RANDOMIZE on the differing blocks' C: block 0
-  matched in 2 of 4 runs of 2-3 min), `vars` (the variable behind each
-  register swap), `units` (split evidence; see Next). Fixed the regions C
-  line map (cpp -P squeezed blank lines). Swarm: `permute --near`.
-- **2026-10-14 (by hand, `func_80019A60`, 1212 B):** matched from the
-  swarm checkpoint (55/59 blocks). The s32 first parameter declared
-  directly (no macro wrapper; both callers still match); the permuter,
-  now able to run on it, found the 0x8A field read into a local first
-  (56/59); the last 3 blocks needed three index variables instead of one
-  (gcc 2.8.1 gives a pseudo one register for its life, and the target had
-  a1/a1/v1). Two Diff patterns rows.
-- **2026-10-14 (hard-function test, ~45 min, $10.82):** `func_80019A60`
-  (1212 B, parked at 37/59 blocks by the old STAGE ranking) with the new
-  defaults: 5 sessions, each a new best: 37 -> 37 -> 38 -> 46 -> 48 -> 55/59
-  blocks, paired 280 -> 303/303, STAGE structure 291 -> registers 17/303.
-  Sessions 1-2 raised STAGE's count (291 -> 301) and would have been
-  dropped, and the function parked, under the old ranking. The jump to 46
-  blocks came from a `static inline` draw helper shared by two paths.
-  Stopped by hand during session 6. Loose ends fixed after: the permuter
-  never ran (`func_def_regex` missed the parenthesized `void (name)(...)`
-  definition; now matched, permute starts); sessions ended early because
-  the fix they needed (the function's own u16 prototype) was outside the
-  prompt's scope, so workers may now fix their function's declarations
-  and are told to move on to the next block when blocked; a `#define`
-  named after the function is refused; the STOP file is cleared.
-- **2026-10-14 (swarm A/B round 2, 60 min):** 4 pairs of fresh 908-1212 B
-  main functions, 27-min sessions, $29.56: 7/8 matched (regions arm 4/4,
-  control 3/4). Both rounds: regions 6/7 in ~66 session-min/$17, control
-  5/7 in ~85 min/$20; n too small to call. Control workers found `regions`
-  in the docs and used it on `func_80019A60` (parked: STAGE 291/305, best
-  37/59 blocks); its session 4 lost 10 blocks at the same STAGE count, so
-  STAGE can't rank checkpoints there. Sessions still end early (1-19 of
-  27 min). Next: regions as the big-mode default, checkpoints ranked by
-  paired/blocks too, then an A/B on 1400+ B and parked functions.
-- **2026-10-14 (swarm A/B, 30 min):** `--regions` arm vs control, 3
-  size-matched pairs of fresh 828-868 B main functions, one 25-min big
-  session each, $7.78. 4/6 matched (2 per arm: `func_80020344`,
-  `func_80024AD8` regions; `func_8001A0D8`, `func_80029F9C` control).
-  Left: `func_8001EAA4` (regions arm, paired 213/214, one missing move after
-  the key-search loop; checkpoint kept) and `func_80010488` (control, paired
-  187/208). Inconclusive: too easy, n too small, and every session quit
-  after 2-9 min of its 25. Next round: harder functions (900+ B or parked),
-  several sessions each, and tell big workers to use their time.
-- **2026-10-14 (tooling: regions):** new `decomp.py regions NAME`
-  (tools/scripts/regions.py, tests in tools/scripts/tests): aligned,
-  block-by-block score with C lines. Re-scored 22 saved swarm patches:
-  it localises (`func_80028F28`: 6/7 blocks ok, STAGE said structure
-  59/118) and `paired` spotted a near-structure version STAGE called a
-  regression (`func_800248A0` 110/144 -> paired 140/144); register
-  cascades still mislead both. Not yet in the swarm; next: an A/B of big
-  sessions with and without it.
-- **2026-10-14 (by hand, roadmap order):** `func_80020C04` (main) parked
-  at `structure` 18 vs 19 after compiler experiments (Open leads); the
-  permuter was stopped early when the session ended.
-- **2026-10-14 (by hand, 1 function):** `func_800C8870` (ovl5f) matched first
-  try: an `s32` grid lookup `D_800CA34C[(y >> 9) * D_800CAFF4 + (x >> 9)]`,
-  the same shape as its `u8` neighbours `func_800C891C`/`func_800C8950`.
-- **2026-10-14 (permuter only, ~25 min):** two parallel `decomp.py permute`
-  runs (7 jobs each) from the swarm checkpoints. `func_8001795C`: registers
-  17 -> 14/107 (`ti = ti & 0x1FF` inside the index; `r0 = r0 | 0x02000000`
-  instead of `|=`), saved as its checkpoint. `func_800248A0` (5/142): no
-  improvement. Now one command: `swarm.mjs permute --only f1,f2
-  --minutes 30` (tools/swarm/README.md); its first test took
-  `func_8001795C` from 14 to 12/107 in 3 minutes on 15 cores.
-- **2026-10-14 (swarm, 10 min):** no match. `func_8001795C` reached the
-  registers stage (17/107, checkpoint); `func_800248A0` stayed at registers
-  5/142 (2 stale sessions: big mode won't lease it again; it wants a long
-  permuter run or `forget`). `func_8002E3D0`'s session was hard-stopped at
-  19 min and lost. Big sessions run 13-20 min, so a run shorter than ~20
-  min mostly ends in a graceful wait or a hard stop that loses work.
-- **2026-10-14 (swarm, 15 min):** `--big-bytes 400 --workers 1
-  --big-workers 3` (with 400, 52 of 54 candidates are big: give big mode
-  the workers). `func_8002E000` matched in 3.5 min after 4 earlier fails
-  (the 2.7.2 load fix). Checkpoints: `func_8002E3D0` 107/111 and
-  `func_8001795C` 106/108 (structure). $9.68. A first start died on
-  `tools/dk`'s image tag (`git -C` with a /c/ path under Windows git.exe;
-  fixed in `6dda356`).
-- **2026-10-14 (tooling):** Make deps on the pipeline scripts and overlay
-  sym files; `try` prints `STILL-ASM`; flags from the Makefile; image
-  tagged by the Dockerfile's hash (old images deleted); `make clean` keeps
-  `build/scratch`, `emu`, `disc-cache`; disc cache. Swarm: stops at the
-  first environment error without charging the function; `fold` (after-run
-  step 3) and `forget` (reset functions a fix unblocked: done for
-  `func_8002E000`, `func_8002E3D0`, `func_8002DE2C`). `make test-tools`:
-  12 unit tests of `dmpsx.py` and `aspsx_fill.py`.
-- **2026-10-14 (tool fix):** `aspsx_fill.py` now expands indexed symbol
-  loads through the load's own register, as ASPSX does (maspsx used `$at`),
-  in the gcc 2.7.2 units. First win: `func_8002E0F0` matched by hand. The
-  other functions those units blocked on it (`func_8002E000`,
-  `func_8002E3D0`, `func_8002DE2C`, `func_8002D4F4`) are ordinary matching
-  now; their swarm notes predate the fix. `done` now refuses a function
-  whose INCLUDE_ASM is still in place (it "matched" itself: a bogus
-  metadata-only commit, and the swarm's duplicate resumes).
-- **2026-10-14 (swarm):** Two runs failed every gate: the clones' `asm/`
-  predated the `func_800274FC` symbol split (fixed in `ed7dc7a`, Gotchas).
-  Rerun with `--resume` of both: 9 matched in ~30 min (stopped early), $16;
-  `--resume` gated three functions twice (metadata-only commits), now one
-  attempt per function. 400-599 B matches only 57% in normal mode (12/21):
-  consider `--big-bytes 400`. Parks: `func_80010000` (registers 11/86),
-  `func_8002E3D0` (needed loads expanded through the dest reg in 2.7.2
-  units: fixed the same day), `func_80020C04` (inline asm refused).
-- **2026-10-14 (play and test docs):** `tools/replay/README.md` (packer,
-  playing in RetroArch, harness, recordings, limits), linked from README,
-  CONTRIBUTING (when to run `make replay`) and CLAUDE.md. RetroArch + the
-  PCSX-ReARMed core installed on the host at `C:\RetroArch-Win64`.
-  `replay.py --video` (MP4 with sound); memory cards pinned in `OPTIONS`.
-- **2026-10-14 (replay harness):** `make replay`: `tools/replay/replay.py`
-  drives the PCSX-ReARMed libretro core through ctypes (pinned in the
-  toolchain image, now `psx-decomp:2`), traces each frame's image hash and
-  `values.txt` (seeds, `Heroes` mode/health/score), compares two discs.
-  Retail vs build: 7512 identical frames; a patched `Random` is caught at
-  frame 1294. Deterministic run to run.
-- **2026-10-14 (disc packer):** `make disc` / `make disc-check`
-  (`tools/scripts/pack_disc.py`): dumpsxiso the retail image into
-  `build/disc/`, put the built exe and overlays back, mkpsxiso it. The
-  matching build packs to the retail image byte for byte (~20 s). Roadmap:
-  packer ticked, a playable, testable build is now the current focus.
-- **2026-10-14 (by hand):** Split `func_80027408` at `0x800274FC` (a
-  `// type:func` line in `sym.main.txt`; it never returns) and matched it.
-  After a split, `decomp.py index` keeps the old size: fix `size` in
-  `.decomp/functions.json`. Parked `func_800274FC` and `func_8002E25C`.
-- **2026-10-14:** 1-hour swarm run: 20 committed, $41. Its parks showed
-  `main/8002e0f0` is gcc 2.7.2 (Makefile changed; `func_8002E618` then
-  matched by hand, with `pad` subsegments for the unit's end padding).
-  `func_80027408` needs a symbol split (Open leads).
-- **2026-10-13 (night):** 1-hour swarm run: 28 committed, plus 2 by hand
-  (`func_80017D90`: the gate's m2c `?` lint flagged a ternary, now fixed;
-  `func_8001AA48`: refused for its GTE macro, see Gotchas), 1 real park
-  (`func_8002E0F0`, Open leads), $34. Biggest swarm match yet:
-  `func_8002B210` (680 B). `tools/dk` names containers
-  (`swarm-w1-diff-func_X-n`, `DK_NAME`); patterns folded.
-- **2026-10-13 (evening):** Committed `func_80025534` (600 B) from the
-  swarm's gate-fix patch. `ScriptCursor` (`func_80024FA4`) is a partial
-  view of `EXTanimator` (both 0x2C), so the call casts; merge the two types.
-  Roadmap: a final test (clean rebuild, shifted build plays, frame-for-frame
-  replay vs retail, modern GCC), with its tools placed where first needed
-  (packer + replay harness Phase 2, shift build Phase 4).
-
-- **2026-10-13:** First real big-mode run (stopped early, ~18 min): 10
-  matches incl. `func_8001D894` (612 B) by the big worker in one session,
-  0 conflicts, $9. `func_80025534` matched alone but failed the gate on
-  rodata (Open leads). Fixed: workers based on the integration clone's HEAD
-  during a batch, so a failed batch dropped the base a permuter needed (now
-  the last pushed tip); `stats` counts first-session big matches as big.
-
-- **2026-10-13:** PsyQ gaps closed. The 27 gap functions were Sony's own tiny
-  4.7 objects that signatures can't tell apart (identical bytes, different
-  call or global): `psyq_gaps.py` compares every object with each gap and
-  checks the relocations against the exe's symbol and data addresses, and
-  found one object for each. The three multi-object gap files were split per
-  object, then `link-psyq` (now incremental) linked them all. `--data` cut
-  the data blob around 32 objects' `.data` (bios_1's differs, kept from the
-  exe). `func_80032F3C` is `abs`; the rename only matches with
-  `-fno-builtin`, so the game was built with it (the whole build matches).
-  The pre-commit hook ignores whole PsyQ gap files deleted by link-psyq.
-
-- **2026-10-13:** Big functions. `try` prints a `STAGE` line (structure /
-  instructions / registers + diff count). Swarm big mode: functions >=
-  `--big-bytes` (600) or parked in normal mode go to big workers (opus,
-  150-min sessions, $20 each) that resume from a per-function checkpoint
-  (`checkpoints/<func>`), kept only when the `try` stage/score improves; parks
-  after 6 sessions or 2 without progress; the permuter (60 min) only at the
-  registers stage. `swarm.mjs stats`: outcomes by size (normal mode 93-97%
-  under 400 B, nothing bigger tried yet). Tested with fake workers (resume,
-  stale park, escalation). Docs: MATCHING.md loop refreshed (unit check,
-  stages) + Big functions section; swarm README, CONTRIBUTING, README,
-  CLAUDE.md and the skill updated.
-
-- **2026-10-13:** Swarm 1 h: 58 matches, 2 parked, 0 conflicts, $25.
-  Two batch builds came out 8/32 bytes long: rodata, not code (a string
-  literal duplicating an `INCLUDE_RODATA` one; gcc's `.align 3` jump table);
-  the gate sent both back and they matched (Diff patterns rows). Folded 54
-  rows (46 after merging). Split `0x8002D488..0x8002E0F0` into
-  `main/8002d488` (text and rodata), built with gcc 2.7.2-psx plus
-  `aspsx_fill.py` for ASPSX's delay-slot filling; per-unit Makefile
-  settings, read by `decomp.py` (`unit_cfg`). `func_8002D488` matched.
-
-- **2026-10-13:** Swarm, 30 min, 3 workers: 43 matches, 0 conflicts (the
-  ordered prototypes worked), 1 failed, $11.16. The failure,
-  `func_8001251C`, "matched alone" because `try` masked the in-function `j`
-  targets. `compare` now checks them (91 functions with local jumps
-  re-checked, only that one was wrong), and it matched by hand with a
-  top-tested `goto` loop. 29 more Diff patterns rows folded in.
-
-- **2026-10-13:** Improvements, no swarm run. Folded 36 swarm rows into
-  MATCHING.md (the swarm's `patterns.md` was renamed to
-  `patterns.folded-2026-10-13.md`). `declare()` now inserts prototypes in
-  address order into the run of prototypes at the end of each owned header
-  (`sort_protos.py` sorted the existing runs once), so parallel matches
-  conflict less. `D_8004E0F0` is typed `Heap` (21 fewer warnings), and the
-  Sfx walkers are typed. The build pads PsyQ gap objects to 16 bytes, and the
-  three gap files that held several objects are split, so `func_80033530`
-  and `func_8003E0EC` are matched.
-
-- **2026-10-12:** Built the swarm orchestrator on branch `swarm-orchestrator`
-  (`tools/swarm/`, README there): parallel Claude workers in clones, one
-  serial integrator through `done --commit`, stop switch (`stop`, `stop
-  --now`, STOP file), patch checks, its own `try`, circuit breakers. Added
-  `decomp.py queue` and `DK_DOCKER_ARGS` in `tools/dk`. Tested end to end
-  with fake workers (replayed two past matches, hard and graceful stop,
-  timeout, escalation, a cheating patch, a false match claim). Then: CLI
-  installed (npm), workers use `dontAsk` and `--max-budget-usd`, run cost
-  cap; `done`'s full build now runs `make -j` (149 s to 30 s, same bytes),
-  so a swarm commit takes ~1 min. First real runs (1 worker, Sonnet,
-  `func_80012FFC`): run 1 parked at once because `sed -i` was refused
-  (the prompt now says to edit with Edit/Write and not chain commands);
-  run 2 worked properly but parked after 11 min, 10 of them waiting on the
-  permuter (score 805 to 300). So the permuter moved to its own pool:
-  workers hand off `needs_permute`, a follow-up worker ports the result.
-  `func_80012FFC` has used its 2 attempts (`--retry-failed` to retry).
-  First full run (2 workers, 1 permuter, 4 functions, $0.74 notional):
-  3 matched on `swarm/integration` (`func_800135E4`, `func_80013650`, and
-  `func_80011878` by Opus after Sonnet + permuter: it returns the split
-  block). `func_800263D8` matched but `done` refused it (struct declared in
-  main.c, prototype in main.h): workers are now told types go in the owned
-  header, and a gate refusal goes back to a worker once. Two Diff patterns
-  rows are waiting in `crash_bash_decomp-swarm/patterns.md`.
-  Swarm on main (`--branch main`, 3 workers): 14 commits in ~25 min, and
-  workers verified matches far faster than the one-at-a-time gate could
-  commit them. Added the batched gate (`done --defer-build` + one
-  `decomp.py verify` per batch), permuter pause during gate builds,
-  back-pressure (`--max-queued`) and `--resume RUN`. First batch: 5 of 6
-  committed in ~4 min (~50 s each, not 6x: per-function `done` overhead
-  dominates; next, skip `cmd_progress` per function in batch mode). The
-  batch re-check caught `func_80015A18`, which matched on an older main but
-  not today's. 11 verified matches are waiting:
-  `swarm.mjs run --branch main --resume 20261012120212`.
-  Then profiled the gate: `done` spent ~36 s on the dashboard
-  (`sym_names()` called per matched function; `rodata_syms` re-parsing
-  2800 .s files): now ~5 s (hoisted, cached in build/cache). And every
-  build re-ran all 16 splat splits (splat leaves an unchanged .ld alone, so
-  it stayed older than sym.main.txt); under `make -j` those ran
-  concurrently and sometimes produced a short exe. The splat pass is now
-  serial and touches the .ld: full build 149 s -> 8 s, 11 verifies in a
-  row OK. A flaky build could only refuse a good match, never pass a bad one.
-  Then: 10-min run 15 commits, 20-min run 29 commits (~85/hour), mostly
-  limited by conflicts on the end of `bash/main.h`. Fixed in the swarm:
-  union merge for headers in its clones, neighbours (within 8 lines) never
-  leased together, and a conflicting patch is re-applied mechanically
-  instead of going back to Claude. Next swarm idea, not done: `done` could
-  insert prototypes in address order instead of appending (fewer header
-  clashes, also for hand sessions); long term, split `main.c` into units.
-
-- **2026-10-12:** Short follow-on run: matched `func_80013688` (wrapper of
-  `func_80013034`) and `func_80011BC0` (tail-recursive walk to the next free
-  heap block; the NULL return goes last). `func_80012FFC` (sum of
-  `D_80050628` fields) is next in the queue, untried: start from the m2c
-  draft with a local for `unkC != 0`.
-- **2026-10-12:** One-hour run: 21 matches in `main.exe` (`func_8001361C`, `func_80012E28`,
-  `func_8001C34C`, `func_80028158`, `func_80026FCC`, `func_80026D9C`,
-  `func_8002120C`, `func_8001D5D0`, `func_8002D094`, `func_80021E60`,
-  `func_80022984`, `func_8002B8F4`, `func_80016E5C`, `func_8001DD20`,
-  `func_8002C060`, `func_80021E98`, `func_80011828`, `func_800138A4`,
-  `func_800133C8`, `func_8002D360`, `func_8001316C`); parked
-  `func_80011E80`. `GfxState.unk8C` is a `MATRIX`. Six new Diff patterns
-  rows (an inlined pop helper again, increment and constant order, operand
-  order, early global loads).
-- **2026-10-12:** Parked `func_80026D08` (free-list rebuild, not a spawner;
-  declared the pool globals `D_8005AA10/12/1C`). Matched `func_8001636C`
-  by copying its matched sibling `func_800163E0`, then `func_80016450` (same
-  record; the pointer must be a local or gcc folds the offsets).
-  Then `func_8001C270` (`eng->kill(eng)`, called from `KillNAS`) and its
-  twin `func_8001C298` (`eng->render(eng)`).
-- **2026-10-12:** Matched `SpawnNASFromRecord` (504 bytes) and unparked
-  `SpawnNASById` (512 bytes): both pop the free list through a
-  `static inline AllocNAS()` with an early `return NULL` (an earlier inline
-  attempt without the early return had failed). `decomp.py try` now takes
-  `DIFF_ROWS` for longer diffs. The ternary `?:` trips the `?` lint: use an `if`.
-- **2026-10-12:** Matched the rest of Tank's `D_800CB264` table:
-  `func_800C8598` (add), `func_800C85D0` (clear, descending loop) and
-  `func_800C84D8` (returns the slot within `dist` of x/z; local declaration
-  order fixed a t0/a3 swap).
-- **2026-10-12:** Matched `func_800C8560` (Tank, 56 bytes): removes a `NAS *`
-  from the 8-slot table `D_800CB264` (siblings `func_800C8598` add,
-  `func_800C85D0` clear, `func_800C84D8` distance test: next candidates).
-- **2026-10-12:** Matched `func_8008EF9C` (engine, 56 bytes): sets `D_8009E5DC`
-  from `func_8008EF70()` (a word from `D_8009EDD4` by `D_8005A676`), then the
-  same `D_8005A644 = 0x8008` as `func_8008F068`, then `func_8008ECE4()`.
-- **2026-10-12:** Matched `func_80095D88` (engine, 52 bytes): counts 0x24-byte
-  records while the first word is >= 2; m2c's stride was in bytes. Diff
-  patterns row.
-- **2026-10-12:** Matched `PlotRaceFire` (ovl63, 32 bytes): `FindExtension(nas,
-  0x10000000)` with `nas` passed through; `ovl63.c` now includes `main.h`.
-- **2026-10-12:** Matched `func_8008F068` (engine, 28 bytes): two global
-  stores; `D_8005A644` is `u16` (its 0x8008 loads with `ori`). Diff patterns row.
-- **2026-10-12:** Rewrote the four m2c Tank Inits (`InitTankBossCortexTurret`,
-  `InitBoatField`, `InitShellExplosion`, `InitMineBall`) with `NAS`,
-  `EXTengine` and `subengine` fields; typed 383 -> 387.
-- **2026-10-12:** Added the rest of the Oct 9 types: new headers `core.h`,
-  `hero.h`, `shell.h` and one per game (`hub.h`, `race.h`, `chase.h`, ...),
-  plus Polar's missing structs in `polar.h`; each overlay includes its game's
-  header. About 100 size checks; all binaries still match.
-- **2026-10-12:** Named 201 AST Init/Plot functions from the Oct 9 enums
-  (game functions named: 144 -> 345). Tank's 68 match the leaked Tank
-  prototypes exactly; 14 matched Tank wrappers were retyped to `NAS *` first.
-- **2026-10-11:** Integrated the Oct 9 prototype types: `nas.h` now uses the
-  original names (`NAStype`, `EXTengtype`, `HeroInfo`, `EXTanimator`,
-  `NASTrigger` for `NASSpawn`, `_sfx_handler` for `SfxVoice`) and defines
-  `EXTheromove`, `EXTbotai`, `PreMap`, `LevSpec`; `tank.h` gains the Tank enums,
-  `TA_player`, `TA_Bot`, `EXTobject_TA`. All binaries still match.
-- **2026-10-11:** Searched the three Hidden Palace prototypes (`protos/`,
-  git-ignored). No `.SYM`/`.MAP` files or text leaks, but the Aug 23 and
-  Oct 9 DATs end in SN debug type records: engine structs with offsets and all
-  AST enums, which name every overlay's game. New `leak_scan.py`,
-  `sym_scan.py`.
-
-- **2026-10-11:** Copied `func_80026A28` to `func_800C9B5C` (ovl62). The two
-  PsyQ-gap copies don't fit in the build (function padding, see Open leads).
-- **2026-10-11:** Matched `func_8001534C` (string hash) with a 10-minute
-  permuter run after the loop rewrites stalled at 9 operands: the product goes
-  through a reused `s32` temp. Diff patterns row added.
-- **2026-10-11:** Third hour of `next`: 18 main.exe functions (16 matches,
-  two identical copies), one via the permuter (`func_80015518`). New types:
-  `SeqSlot` (`D_8006557C`, was an `s32`), `OffsetTable`, `PadState`,
-  `MusicEntry`, `LoaderState`; `NAS.prev30`/`next30`. Two Diff patterns.
-  Left `func_8001534C` unmatched (Open leads).
-- **2026-10-11:** Second hour of `next`: 14 main.exe matches (`func_800280C0`
-  to `func_8001682C`), one with the permuter (`func_8001828C`). New types:
-  `NodePool`/`PoolNode` (`D_80056844`), `NAS.prev14`/`next14`.
-  `func_80016EF4` takes a second argument (passed to `func_8002A5A4`).
-  Four Diff patterns.
-- **2026-10-11:** Matched `func_80016274` (112 bytes, first diff): first entry
-  of a NULL-terminated array whose `func_8001534C` value equals `arg1`+0x10.
-- **2026-10-11:** One hour of `next`: 17 main.exe matches (`func_8002C488` to
-  `func_8001DCD4`), most on the first diff. `func_800101E0` launches the
-  Spyro 3 demo (unused local for the frame). Subengine +0x54 is `hook`,
-  `VabSlot.handle`, heap free-stats globals, ovl6a `D_800BCEE8` is a
-  `subengine *`. Three Diff patterns.
-- **2026-10-11:** Matched `func_80016AD4` (116 bytes, first diff): unloads
-  what `func_80016C18` loads; `func_80012F04` takes one argument. Unparked
-  `FindExtension`: a label inside the first `return` block, `goto` from the
-  second (Diff patterns row updated).
-- **2026-10-11:** Matched nine 32-byte wrappers like `func_800C6828` (eight
-  in ovl5f, `func_800BCA18` in ovl65): pass `a0` through with a constant.
-  `SetHeroSeq`/`SetHeroAction` prototypes (`Hero *`) in `bash/engine.h`.
-- **2026-10-11:** Matched `func_800110A8` (508 bytes): the heap's free
-  (merge with free neighbours, sorted insert). New `MemBlock`/`Heap` types.
-  Finishes the core API list. Two new Diff patterns.
-- **2026-10-11:** Matched `func_80025FAC` (156 bytes, first diff): selects
-  sequence `n` of an `EXTanim` (`seq = seqs[n]`) and resets its state by kind.
-- **2026-10-11:** Matched `func_8002C44C` (60 bytes) with `func_8001D604`'s
-  C; `D_8006557C` is an `s32`, not an array.
-- **2026-10-11:** Matched `func_800250B0` (248 bytes): runs a NAS's id-0x400
-  `EXTanim` (new type) with `func_800251A8`/`func_80025534` by kind. Callees
-  take `nas` through; ten overlay callers now pass `nas` (headers too).
-- **2026-10-11:** Matched `func_80026A54` (132 bytes) with `func_80026980`'s C
-  on the +0x28 list (`D_8005AA24`), first diff.
-- **2026-10-11:** Matched `func_80026980` (132 bytes): unlinks a NAS from the
-  list at +0x38/+0x3C headed by `D_8005AA34`. `NAS` gains `prev28`/`next28`
-  and `prev38`/`next38`. Two new Diff patterns (head pointer local, `a || b`
-  outer test).
-- **2026-10-11:** Matched `func_80025A48` (156 bytes): finds the engine's
-  `FlagRecord` with a flag (its own at +0x84, then the ones after a
-  `PointList`'s points). New `FlagRecord` type, `PointList.nRecs`. Block
-  layout came from joining the NULL checks with `&&` (Diff patterns).
-- **2026-10-11:** Matched `get_angle` (752 bytes, `s32 get_angle(s32 x, s32 z)`,
-  0x1000 per turn) on the second diff: the draft only had one quadrant's
-  branch inverted; writing the `x >= z` case first there fixed it.
-- **2026-10-11:** Started the core API (most-called unmatched functions,
-  ~3,000 call sites; plan in Next): matched `Random` on the first diff,
-  parked `FindExtension` (branch layout) but added its prototype; matched
-  `StopSfx` on the first diff with new `SfxVoice`/`SfxPool` types, and
-  `PlaySfx` (352 bytes; allocation written out in place, one final return),
-  and `KillNAS` (388 bytes; `NASSpawn` typed, six callers fixed). Parked
-  `SpawnNASById` at 4 operands with its prototype. Dashboard now shows
-  function % beside byte %; new `check_progress.py`.
-- **2026-10-11:** Matched `func_800193A8` (692 bytes, GTE triangle strips;
-  register pins, `--hack`) through the new process; six Diff patterns rows.
-  Fixed the gate lint so pins count as hacks.
-- **2026-10-11:** MATCHING.md gained the evidence step, the Diff patterns
-  table, per-kind checklists and the cc1 dump recipe; the skill's step 4 now
-  requires them before the permuter. Parked `func_800155FC`. Matched
-  `func_8002AABC` (sound init) on the first diff.
-- **2026-10-11:** Matched 10 small exe functions (pool free-lists, bit
-  set/clear loops, `AddExtension`, list length, ...). Root-caused
-  `func_8001C7FC` with cc1 dumps (still parked). Dashboard: progress over time
-  per unit. Unparked `func_80015780`; GTE batch (5 functions).
-- **2026-10-10:** Phase 2 started: Sony's GTE macros in the sources
-  (`dmpsx.py`), first GTE matches. Phase 1 finished: engine types (`NAS`,
-  `EXTengine`, `Hero`, ...), core names and globals, owned headers per source
-  file, PsyQ headers, leaked headers in `include/bash/`, AST Init/Plot names,
-  objdiff config fixed.
-- **2026-10-10:** Hand matching only (`done` gate, pre-commit hook; `auto`
-  retired) after an auto pass to 391 functions. Overlays found and split
-  (`engine` + 14 slot overlays at `0x800B32B4`). Project set up from the
-  `psx-matching-decomp` skill.
+- **2026-10-10 .. 2026-10-15:** project setup, the overlay splits, the swarm
+  and the first matching runs. Those entries are in git history:
+  `git show 9c6e0800:docs/AGENT_LOG.md`.

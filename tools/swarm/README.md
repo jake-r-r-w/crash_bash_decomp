@@ -19,12 +19,15 @@ function back to the front of the queue with the permuter's diff
 ## Running
 
 ```
-node tools/swarm/swarm.mjs run --branch main --seg overlays/engine --max-minutes 60 --max-run-usd 80 \
-  --max-functions 500 --workers 3 --big-workers 2 --big-bytes 400 --big-minutes 27
+node tools/swarm/swarm.mjs run --branch main --seg overlays/ovl5d --max-minutes 60 --max-run-usd 30 \
+  --max-functions 500 --model sonnet --escalate-model opus --big-budget-usd 8
 node tools/swarm/swarm.mjs status
 node tools/swarm/swarm.mjs stats      # outcomes and $ per match by size (--run ID: one run), checkpoints
 node tools/swarm/swarm.mjs stop       # graceful; --now kills (then `run --clear-stop` to start again)
 ```
+
+The run above is the low-cost recipe (sonnet first, about $0.20 a match on ovl5f). The other
+recipes, all-opus and big-heavy, are in docs/AGENT_LOG.md, Next.
 
 Needs Docker and `claude` on `PATH` (logged in once with `claude auth login`). Workers run with
 `--permission-mode dontAsk`. Options (defaults in `config.json`, override with `--kebab-case value`):
@@ -34,7 +37,7 @@ Needs Docker and `claude` on `PATH` (logged in once with `claude auth login`). W
 - `--workers` (5, since 2026-10-19; was 3), `--model` (`opus`, since 2026-10-19; was `sonnet`), `--escalate-model` (`opus`): a function the first model
   doesn't match gets one more attempt with the second.
 - Big mode: `--big-workers` (1), `--big-bytes` (600), `--big-model` (`opus`), `--big-minutes`
-  (150), `--big-budget-usd` (20), `--big-sessions` (6), `--big-stale` (2),
+  (27), `--big-budget-usd` (20), `--big-sessions` (6), `--big-stale` (2),
   `--big-permute-minutes` (30), `--escalate-big` (`true`).
 - `--permuters` (2), `--permute-minutes` (10); `--permuters 0` turns the pool off.
 - `--branch` (`swarm/integration`), `--remote` (`origin`): each match is pushed as soon as the gate

@@ -122,6 +122,7 @@ typed, `build/engine.bin` still matches, and the formats the engine loads
 extract and are documented.
 
 - [ ] Match every function in `engine`.
+  Status: two left, both parked (docs/AGENT_LOG.md, Open leads).
 - [ ] Split it into its original translation units.
   Status: split at every start the binary proves (switch-table parity;
   ARCHITECTURE.md, Files inside the engine); more files may hide inside
