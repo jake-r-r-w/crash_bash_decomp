@@ -546,7 +546,15 @@ s32 func_800BB260(s32 arg0) {
     return m != 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BB294);
+void func_800BB294(s32 *p, s32 arg1) {
+    s32 d = (csqrt(p[4] * p[4] + p[6] * p[6]) >> 6) - arg1;
+    s32 a;
+    if (d > 0) {
+        a = get_angle(p[4], p[6]);
+        p[4] -= (d * D_80068BD4[(a - 0x400) & 0xFFF].unk2) >> 12;
+        p[6] -= (d * D_80068BD4[a & 0xFFF].unk2) >> 12;
+    }
+}
 
 void func_800BB36C(void) {
 }

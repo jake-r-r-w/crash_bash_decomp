@@ -8,6 +8,9 @@
 #include "common.h"
 #include "bash/nas.h"
 
+typedef struct { s16 unk0; s16 unk2; } Ovl68Trig;
+extern Ovl68Trig D_80068BD4[];
+
 typedef struct CoalFlameInner {
     s32 pad0[3];
     s32 unkC;
@@ -176,6 +179,8 @@ void func_800BB134(s32 arg0);
 s32 func_800BB1C0(s32 x, s32 z, s32 range);
 
 s32 func_800BB260(s32 arg0);
+
+void func_800BB294(s32 *p, s32 arg1);
 
 void func_800BB384(void);
 
