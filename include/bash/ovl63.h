@@ -218,6 +218,34 @@ typedef struct Ovl63GameView2 {
 } Ovl63GameView2;
 #define G63B ((Ovl63GameView2 *)D_8005A614)
 
+/* hero->FUX as reset by func_800BAD54. */
+typedef struct Ovl63ResetFux {
+    /* 0x000 */ u8 unk0[0x18];
+    /* 0x018 */ s32 unk18;
+    /* 0x01C */ u8 unk1C[0x24 - 0x1C];
+    /* 0x024 */ s32 unk24;
+    /* 0x028 */ u8 unk28[0x54 - 0x28];
+    /* 0x054 */ s32 unk54;
+    /* 0x058 */ u8 unk58[0x60 - 0x58];
+    /* 0x060 */ s32 unk60;
+    /* 0x064 */ u8 unk64[0x6C - 0x64];
+    /* 0x06C */ s32 unk6C;
+    /* 0x070 */ u8 unk70[0x78 - 0x70];
+    /* 0x078 */ s32 unk78;
+    /* 0x07C */ s32 unk7C;
+    /* 0x080 */ s32 unk80;
+    /* 0x084 */ u8 unk84[0x88 - 0x84];
+    /* 0x088 */ s32 unk88;
+    /* 0x08C */ u8 unk8C[0x90 - 0x8C];
+    /* 0x090 */ s32 unk90;
+    /* 0x094 */ u8 unk94[0x128 - 0x94];
+    /* 0x128 */ _sfx_handler *unk128;
+    /* 0x12C */ u8 unk12C[0x144 - 0x12C];
+    /* 0x144 */ s32 unk144;
+    /* 0x148 */ u8 unk148[0x168 - 0x148];
+    /* 0x168 */ s32 unk168;
+} Ovl63ResetFux;
+
 extern s32 D_800C692C;
 extern s32 D_800C695C;
 typedef struct Ovl63Obj74 {
@@ -662,5 +690,7 @@ static inline void Ovl63SpawnPuff(SLONG_XYZ *v, s32 kind, void *anim) {
 }
 
 s32 func_800B345C(s32 player);
+
+void func_800BAD54(s32 player);
 
 #endif /* BASH_OVL63_H */

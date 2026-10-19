@@ -691,7 +691,60 @@ void func_800BA004(VECTOR *ang, Quat *q) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BA278);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BAD54);
+void func_800BAD54(s32 player) {
+    HeroInfo *h;
+    Ovl63ResetFux *f;
+    HeroInfo *base;
+
+    base = Heroes;
+    h = &base[player];
+    h->hero_eng->unk1C = 0;
+    h->hero_eng->unk5E = 1;
+    func_800C5400(player);
+    f = (Ovl63ResetFux *)h->hero->FUX;
+    if (f != NULL) {
+        f->unk54 = get_angle(h->hero_eng->unk10.x, h->hero_eng->unk10.z) & 0xFFF;
+        f->unk6C = 0x300;
+        f->unk60 = 0;
+        f->unk80 = 2;
+        f->unk7C = 100;
+        f->unk88 = 0;
+        f->unk24 = 0;
+        f->unk90 = 0;
+        f->unk144 = 0;
+        f->unk78 = D_800C6930;
+        if (h->hero_eng->sfx != NULL) {
+            StopSfx(h->hero_eng->sfx);
+        }
+        if (f->unk128 != NULL) {
+            StopSfx(f->unk128);
+        }
+        f->unk18 = 0;
+        if (player == 0) {
+            PlaySfx(0x650, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (player == 1) {
+            PlaySfx(0x651, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (player == 2) {
+            PlaySfx(0x652, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (player == 3) {
+            PlaySfx(0x653, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        h->hero_eng->unk5E = 1;
+        SetHeroSeq((HeroInfo *)player, 0x4B);
+        if (G63->unk34 == 0x19) {
+            SetHeroSeq((HeroInfo *)player, 0x54);
+        }
+        h->hero_shadow->sub->flags &= ~0x8000;
+        h->hero_eng->sub->unk68 = 0x200;
+        h->hero_eng->sub->flags |= 0x02000000;
+        if (G63->unk34 == 0x18 && (G63->unk32 & 0x80)) {
+            f->unk168 = 150;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BAFC8);
 
