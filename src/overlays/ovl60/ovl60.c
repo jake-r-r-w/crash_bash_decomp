@@ -967,7 +967,69 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BDCB8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BDE24);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BDF60);
+void func_800BDF60(s32 arg0, s32 *arg1, s32 *arg2) {
+    s32 hx;
+    s32 hz;
+    u32 best;
+    EXTengine *eng;
+    Ovl60Cell *c;
+    s32 i;
+    s32 j;
+    s32 ok;
+    s32 dx;
+    s32 dz;
+    s32 cx;
+    s32 cz;
+    s32 px;
+    s32 pz;
+    u32 d;
+
+    best = -1;
+    eng = Heroes[arg0].hero_eng;
+    hx = (eng->unk10.x + 0x800) >> 9;
+    hz = (eng->unk10.z + 0x800) >> 9;
+    i = 0;
+    while (1) {
+        if (i >= 8) {
+            break;
+        }
+        j = 0;
+        while (1) {
+            if (j >= 8) {
+                break;
+            }
+            if (func_800BA110(arg0, i, j) != 0) {
+                HeroInfo *h;
+                c = (Ovl60Cell *)(j * sizeof(Ovl60Cell) + i * sizeof(D_800C53DC[0]) + (u32)D_800C53DC);
+                h = c->hero;
+                ok = 0;
+                if (h != NULL) {
+                    do {
+                        ok = D_800C535C[arg0].unk4 < h->hero_pu_action;
+                    } while (0);
+                } else if ((u16)c->unk12 != 7 || D_800C535C[arg0].unk4 < 9) {
+                    ok = 1;
+                }
+                if (ok) {
+                    cx = (i << 9) - 0x800;
+                    px = (hx << 9) - 0x800;
+                    cz = (j << 9) - 0x800;
+                    pz = (hz << 9) - 0x800;
+                    dx = abs(cx - px);
+                    dz = abs(cz - pz);
+                    d = dx * dx + dz * dz;
+                    if (d < best) {
+                        best = d;
+                        *arg1 = i;
+                        *arg2 = j;
+                    }
+                }
+            }
+            j++;
+        }
+        i++;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BE158);
 
