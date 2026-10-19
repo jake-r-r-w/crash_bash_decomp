@@ -67,6 +67,21 @@ typedef struct ExtSimpleExplosion {
 
 extern u8 D_800546C4[];
 
+/* The object PlotBrioPack follows (its NAS.UserInfo.user1). */
+typedef struct BrioAnim {
+    /* 0x00 */ u8 pad0[0x1E];
+    /* 0x1E */ s16 frame;
+} BrioAnim;
+
+typedef struct BrioOwner {
+    /* 0x00 */ u8 pad0[0x4];
+    /* 0x04 */ EXTengine *engine;
+    /* 0x08 */ u8 pad8[0x1C - 0x8];
+    /* 0x1C */ BrioAnim *anim;
+    /* 0x20 */ u8 pad20[0x2C - 0x20];
+    /* 0x2C */ u16 type;
+} BrioOwner;
+
 /* Head of a list linked through +0x20 (counted by func_800C9B5C). */
 extern u8 *D_800D5454;
 extern HeroInfo Heroes[4];

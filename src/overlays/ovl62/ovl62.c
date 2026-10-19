@@ -393,7 +393,40 @@ void InitSimpleExplosion(NAS *m) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotDingoTail);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBrioPack);
+void PlotBrioPack(NAS *m) {
+    BrioOwner *owner;
+    NAS *nas;
+    s32 user;
+
+    user = m->UserInfo.user1;
+    if (user != 0) {
+        owner = (BrioOwner *)user;
+        if (owner->type != 0x51) {
+            KillNAS(m);
+            return;
+        }
+        if (owner->anim->frame == 0xC) {
+            nas = SpawnNASById(owner->engine->unk10.x,
+                               owner->engine->unk10.y - ((owner->engine->unk2C.x * 0x1A4) >> 12),
+                               owner->engine->unk10.z + 0x40, 0x1613, 0x11);
+            if (nas != NULL) {
+                nas->UserInfo.user1 = (s32)owner;
+            }
+        }
+        if (owner->anim->frame >= 0xA) {
+            m->Engine->unk10 = owner->engine->unk10;
+            m->Engine->unk1E = owner->engine->unk1E;
+            m->Engine->unk2C.x = owner->engine->unk2C.x;
+            m->Engine->unk2C.y = owner->engine->unk2C.y;
+            m->Engine->unk2C.z = owner->engine->unk2C.z;
+            m->Engine->unk10.y = owner->engine->unk10.y - ((owner->engine->unk2C.x * 0x1A4) >> 12);
+        }
+        if (owner->anim->frame >= 0x18) {
+            m->Engine->sub->unk76 += 0x400;
+        }
+    }
+    m->Engine->unk5E = 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitPackEffect);
 
