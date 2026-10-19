@@ -8400,9 +8400,10 @@
   "status": "matched"
  },
  "ovl65:800B485C": {
-  "auto_failed": "compile",
   "copy_failed": "ovl62:800BCF08",
-  "copy_failed_stage": "in-file"
+  "copy_failed_stage": "in-file",
+  "matched_at": "2026-10-19T16:04:09Z",
+  "status": "matched"
  },
  "ovl65:800B49AC": {
   "auto_failed": "compile"

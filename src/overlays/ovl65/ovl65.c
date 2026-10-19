@@ -179,7 +179,28 @@ s32 func_800B475C(s32 a, s32 b) {
     return func_800B4268(v2, v1, d, ea) == 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B485C);
+s32 func_800B485C(s32 arg0, s32 arg1) {
+    u8 *g = D_8005A614;
+
+    if (*(s32 *)(g + 0x6C) != 0) {
+        if (Heroes[arg1].hero_status & 0x2000) {
+            return 0;
+        }
+        if (arg0 == *(s16 *)(g + 0x48) && arg1 == Heroes[arg0].hero_teammate) {
+            return 1;
+        }
+        if (arg1 == D_8005A65C[0] && arg0 == Heroes[arg1].hero_teammate) {
+            return 1;
+        }
+        if (arg0 == D_8005A65C[1] && arg1 == Heroes[arg0].hero_teammate) {
+            return 1;
+        }
+        if (arg1 == D_8005A65C[1] && arg0 == Heroes[arg1].hero_teammate) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B49AC);
 
