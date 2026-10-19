@@ -79,7 +79,24 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotBashShox);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotMissileExplode);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitMissileExplode);
+void InitMissileExplode(NAS *nas) {
+    EXTengine *eng;
+    subengine *sub;
+
+    eng = nas->Engine;
+    if (eng != NULL) {
+        sub = eng->sub;
+        sub->unk6C = &D_80052F5C;
+        sub->unk74 = 0x2010;
+        sub->unk50 = 1;
+        sub->unk51 = 0;
+        eng->flags |= 0x21;
+        nas->UserInfo.flags = 0;
+    }
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800BA8A4);
 

@@ -30,9 +30,13 @@ void func_800BB360(void);
 
 void func_800BB368(void);
 
+extern u8 D_80052F5C[];
+
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
 #include "bash/ovl5d_800bb64c.h"
 #include "bash/ovl5d_800bff1c.h"
+
+void InitMissileExplode(NAS *nas);
 
 void func_800BAC10(void);
 
