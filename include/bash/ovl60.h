@@ -244,6 +244,8 @@ void func_800C2204(void);
 
 void func_800C2564(s32 arg0, s32 arg1, s16 arg2);
 
+s32 func_800C295C(s32 arg0);
+
 void func_800C2BE8(s32 arg0);
 
 void func_800C2FB8(void);

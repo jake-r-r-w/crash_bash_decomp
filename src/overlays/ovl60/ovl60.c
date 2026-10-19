@@ -1235,7 +1235,17 @@ void func_800C28FC(s32 arg0) {
     h->hero_frozen = 2;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C295C);
+s32 func_800C295C(s32 arg0) {
+    if (Heroes[arg0].hero_status & 0x100) {
+        if (D_800C535C[arg0].nas != NULL) {
+            func_800C2B98(arg0);
+        }
+        SetHeroAction((HeroInfo *)arg0, 0x3E);
+        SetHeroSeq((HeroInfo *)arg0, 0x2E);
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C29F4);
 
