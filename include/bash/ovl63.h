@@ -56,6 +56,22 @@ void func_800B8D68();
 
 void PlotRaceFire(NAS *nas);
 
+/* A value func_800B5FFC eases toward its target by a fixed step. */
+typedef struct Ovl63Ease {
+    /* 0x00 */ s32 cur;
+    /* 0x04 */ s32 target;
+    /* 0x08 */ s16 step;     /* used while target != 0 */
+    /* 0x0A */ s16 stepZero; /* used while target == 0 */
+    /* 0x0C */ u8 padC[0x20 - 0xC];
+} Ovl63Ease;
+
+/* The offsets func_800B5FFC eases and adds (>> 8) to a position. */
+typedef struct Ovl63EaseCam {
+    /* 0x00 */ u8 pad0[0x20];
+    /* 0x20 */ Ovl63Ease x;
+    /* 0x40 */ Ovl63Ease z;
+} Ovl63EaseCam;
+
 /* Shield extension, AddExtension(nas, 0x20, 0x10000000). */
 typedef struct EXTraceshield {
     /* 0x00 */ s32 unk0[3];
@@ -376,6 +392,8 @@ typedef struct EXTripple {
     /* 0x14 */ s32 max;
     /* 0x18 */ u16 fade;
 } EXTripple;
+
+void func_800B5FFC(Ovl63EaseCam *c, s32 *pos);
 
 s32 func_800C4E54(s32 a, s32 b);
 

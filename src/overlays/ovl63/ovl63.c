@@ -147,7 +147,48 @@ void func_800B5F04(void) {
     printf("%d  barrels found\n", n);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B5FFC);
+void func_800B5FFC(Ovl63EaseCam *c, s32 *pos) {
+    s32 step;
+
+    if (c->x.cur != c->x.target) {
+        if (c->x.target != 0) {
+            step = c->x.step;
+        } else {
+            step = c->x.stepZero;
+        }
+        if (c->x.cur < c->x.target) {
+            c->x.cur += step;
+            if (c->x.cur > c->x.target) {
+                c->x.cur = c->x.target;
+            }
+        } else {
+            c->x.cur -= step;
+            if (c->x.cur < c->x.target) {
+                c->x.cur = c->x.target;
+            }
+        }
+    }
+    if (c->z.cur != c->z.target) {
+        if (c->z.target != 0) {
+            step = c->z.step;
+        } else {
+            step = c->z.stepZero;
+        }
+        if (c->z.cur < c->z.target) {
+            c->z.cur += step;
+            if (c->z.cur > c->z.target) {
+                c->z.cur = c->z.target;
+            }
+        } else {
+            c->z.cur -= step;
+            if (c->z.cur < c->z.target) {
+                c->z.cur = c->z.target;
+            }
+        }
+    }
+    pos[1] += c->x.cur >> 8;
+    pos[3] += c->z.cur >> 8;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B6108);
 
