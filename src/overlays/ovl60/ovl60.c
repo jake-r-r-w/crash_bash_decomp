@@ -243,7 +243,9 @@ void func_800C0BF0(s32 arg0, s32 arg1) {
     D_800C5BB0 = SpawnNASById((arg0 << 9) - 0x700, D_8005A5D8, (arg1 << 9) - 0x700, 0x1408, 0x11);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C0C34);
+void func_800C0C34(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    func_8008D5D4((arg1 << 9) - 0x700, D_8005A5D8 - 0x100, (arg2 << 9) - 0x800, arg3, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", SquareIsFreeForRoo);
 
