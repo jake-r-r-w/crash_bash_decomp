@@ -413,4 +413,32 @@ void func_800C8AF8(s32 player, EXTengine *eng, s32 *arg2);
 
 s32 func_800B3B24();
 
+/* AI target state func_800B4490 fills (target NAS, scan cursor). */
+typedef struct Ovl5fAITarget {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ NAS *target;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 scan;
+} Ovl5fAITarget;
+static inline s32 Ovl5fASTIndex(s32 id) {
+    s32 i;
+
+    for (i = 0; i < ASTCount; i++) {
+        if (ASTTable[i].id == id) {
+            return i;
+        }
+    }
+    return 0;
+}
+static inline s32 Ovl5fNear(s32 a, s32 b) {
+    s32 d;
+
+    d = a - b;
+    return d >= -999 && d <= 999;
+}
+void func_800B4240(s32 player, s32 x, s32 z, EXTengine *eng, Ovl5fAITarget *ai);
+s32 func_800B4490(s32 player, EXTengine *eng, Ovl5fAITarget *ai);
+
 #endif /* BASH_OVL5F_H */

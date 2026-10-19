@@ -41,7 +41,54 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B3F44);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B4240);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B4490);
+s32 func_800B4490(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
+    NAS *nas;
+    EXTengine *te;
+    s32 i;
+    s32 r;
+    u16 type;
+    NAS *cur;
+    s32 ex;
+
+    if (D_8009D908 != 0) {
+        return 0;
+    }
+    if ((u32)Random(D_8009D87C[player].unk0 + 1) < 8) {
+        return 0;
+    }
+    if (ai->unk0 == 2) {
+        return 0;
+    }
+    cur = ai->target;
+    if (cur != NULL) {
+        nas = cur;
+        type = nas->Type;
+        if ((type != Ovl5fASTIndex(0x1303)) | (nas->NASid == 0)) {
+            ai->target = NULL;
+            return 0;
+        }
+        te = nas->Engine;
+        if (Ovl5fNear(ex = eng->unk10.x, te->unk10.x) || Ovl5fNear(ex = eng->unk10.z, te->unk10.z)) {
+            goto hit;
+        }
+        return 0;
+    }
+    if (++ai->scan >= 8) {
+        ai->scan = 0;
+    }
+    nas = D_800CB0C0[ai->scan];
+    if (nas == NULL) {
+        return 0;
+    }
+    te = nas->Engine;
+    if (Ovl5fNear(ex = eng->unk10.x, te->unk10.x) || Ovl5fNear(ex = eng->unk10.z, te->unk10.z)) {
+    hit:
+        ai->target = nas;
+        func_800B4240(player, te->unk10.x, te->unk10.z, eng, ai);
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl5f/ovl5f", D_800B32B8);
 
