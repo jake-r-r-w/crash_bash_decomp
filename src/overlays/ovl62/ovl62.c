@@ -209,7 +209,37 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotWalrusFish);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotSmokeTrail);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitSimpleExplosion);
+void InitSimpleExplosion(NAS *m) {
+    ExtSimpleExplosion *ext;
+    subengine *sub;
+    s32 i;
+
+    ext = AddExtension(m, 0x108, 0x10000000);
+    if (ext != NULL) {
+        sub = m->Engine->sub;
+        func_80018F3C(m->Engine, 0x10);
+        if (sub != NULL) {
+            i = 0;
+            do {
+                sub->unk74 = 0x2034;
+                sub->unk6C = D_800546C4;
+                ext->vel[i].x = Random(0x4C) - Random(0x4C);
+                ext->vel[i].z = Random(0x4C) - Random(0x4C);
+                ext->vel[i].y = Random(0x4C) - Random(0x4C);
+                sub->flags = 0x40008041;
+                sub->unk50 = 1;
+                sub->unk51 = 0;
+                sub->unk20.z = 0x1000;
+                sub->unk20.y = 0x1000;
+                sub->unk20.x = 0x1000;
+                ext->unk104 = 0;
+                sub->unk76 = 0;
+                sub = sub->next;
+                i++;
+            } while (sub != NULL);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotDingoTail);
 

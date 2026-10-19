@@ -52,6 +52,15 @@ void func_800D1C14(s32 player);
 
 extern HeroInfo Heroes[4];
 
+/* Extension 0x10000000 made by InitSimpleExplosion: a velocity per sub-engine. */
+typedef struct ExtSimpleExplosion {
+    /* 0x000 */ u8 pad0[0x14];
+    /* 0x014 */ SLONG_XYZ vel[20];
+    /* 0x104 */ s32 unk104;
+} ExtSimpleExplosion;
+
+extern u8 D_800546C4[];
+
 /* Head of a list linked through +0x20 (counted by func_800C9B5C). */
 extern u8 *D_800D5454;
 extern HeroInfo Heroes[4];
