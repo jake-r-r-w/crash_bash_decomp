@@ -882,7 +882,34 @@ s32 func_800C1764(void) {
     return csqrt(func_800C16FC()) >> 6;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C178C);
+s32 func_800C178C(void) {
+    D5A614View *g = (D5A614View *)D_8005A614;
+    s32 v;
+
+    switch (g->mode) {
+    case 10:
+        v = 0x303C;
+        if (g->flags & 0x80) {
+            v = 0x3033;
+        }
+        return v;
+    case 11:
+        v = 0x3052;
+        if (g->flags & 0x80) {
+            v = 0x301B;
+        }
+        return v;
+    case 12:
+        v = 0x3035;
+        if (g->flags & 0x80) {
+            v = 0x303F;
+        }
+        return v;
+    case 13:
+        return 0x3000;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1840);
 
