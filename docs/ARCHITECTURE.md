@@ -584,6 +584,34 @@ keep code-derived names (`unkXX` where only offset and width are known).
   `_sfx_handler` (the fragment names them but does not define them), and of
   the shell types (`shell_setup`, `file_group_load_info`).
 
+## Toolchain: the assembler checked against Sony's ASPSX
+
+The build never runs Sony's assembler: maspsx (`--aspsx-version=2.86`) rewrites
+cc1's output to read like ASPSX's, GNU as assembles it, and `aspsx_fill.py`
+adds slot fills retail has. On 2026-10-19 the real ASPSX (mkst/maspsx's
+`aspsx` release, versions 2.56-2.86; the 16-bit ones before 2.56 don't run on
+64-bit Windows) assembled the same cc1 text as our pipeline for every file's
+matched C (`tools/scripts/aspsx_compare.py`; binaries in the ignored
+`ext/aspsx/`):
+
+- **gcc 2.8.1 files: identical.** Every matched function in `main.c`, the
+  engine and the slot overlays (about 1,700) assembles to the same words,
+  with every ASPSX version from 2.56 to 2.86, except one.
+- **The exception is not ASPSX.** `func_800C0F5C`'s frame-only epilogue
+  (`addiu sp,-24; jr ra; addiu sp,24` in retail): no ASPSX version fills the
+  `j $31` slot; all write `addu sp; jr ra; nop`, as maspsx does. So retail's
+  form comes from the game's compiler, presumably Sony's build of gcc 2.8.1
+  writing this epilogue in noreorder mode, which our FSF-based cc1 doesn't.
+  `aspsx_fill.py --jumps-only` gives retail's bytes and stays; only its name
+  for the cause was wrong.
+- **gcc 2.7.2 files (`main/8002d488`, `main/8002e0f0`): ASPSX fills fewer
+  slots than retail** (32 and 16 bytes longer, every version). The fills
+  `aspsx_fill.py` makes there, derived from retail, are likewise the game's
+  gcc 2.7.2 build, not its assembler.
+- **Consequence for matching:** where retail's code can't come from our cc1,
+  suspect Sony's compiler builds (their reorg and epilogue), not the
+  assembler model. maspsx's 2.86 model is right for everything we have.
+
 ## PsyQ
 
 Version 4.7 (signature scan: 262 objects, best of all versions; `$Id` strings

@@ -88,8 +88,9 @@ linkers/%.ld: $(CFG)/overlays/%.yaml $(CFG)/sym.main.txt $(CFG)/sym.engine.txt $
 # Headers aren't tracked per file: any change under include/ rebuilds the C objects.
 # The pipeline's own inputs count too: a change to a filter script, the compiler settings or this
 # Makefile (per-unit settings below) rebuilds the objects instead of leaving stale ones.
-# Sony's ASPSX fills a `j` slot gcc left to the assembler; for gcc 2.8.1 only the frame-only
-# epilogue needs it (aspsx_fill.py --jumps-only). The gcc 2.7.2 units below use the whole filler.
+# Retail fills a `j` slot our cc1 leaves to the assembler: for gcc 2.8.1 only the frame-only
+# epilogue (aspsx_fill.py --jumps-only); the gcc 2.7.2 units below use the whole filler. Not
+# ASPSX's doing, though the script is named for it (docs/ARCHITECTURE.md, Toolchain).
 ASPSX_FILL ?= | $(PYTHON) tools/scripts/aspsx_fill.py --jumps-only
 PIPELINE_DEPS := tools/scripts/dmpsx.py tools/scripts/aspsx_fill.py $(CFG)/project.mk Makefile
 build/%.c.o: %.c $(shell find include -name '*.h' 2>/dev/null) $(PIPELINE_DEPS)

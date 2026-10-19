@@ -33,8 +33,13 @@ without stores (--jumps-only, the Makefile's default). 2.8.1's reorg fills nearl
 itself; of the ten `j` slots it leaves to the assembler in the matched 2.8.1 code (2026-10-19),
 nine follow a store (sw, swr, swc2) and keep their nop in retail, and one is the text epilogue's
 `j $31` in a function with a frame but no saved registers (mips_epilogue_delay_slots gives it no
-delay slot), which ASPSX fills with the stack restore before it (func_800C0F5C:
-`addiu sp,-24; jr ra; addiu sp,24`). maspsx writes a nop in all ten."""
+delay slot), filled in retail with the stack restore before it (func_800C0F5C:
+`addiu sp,-24; jr ra; addiu sp,24`). maspsx writes a nop in all ten.
+
+Despite the name, these fills are not ASPSX's: the real ASPSX (2.56-2.86, run on the same cc1 text
+by tools/scripts/aspsx_compare.py, 2026-10-19) fills none of them, in the 2.8.1 epilogue or in the
+2.7.2 units. They come from the game's own compiler builds; this script puts retail's bytes back
+after maspsx all the same (docs/ARCHITECTURE.md, Toolchain)."""
 import re
 import sys
 
