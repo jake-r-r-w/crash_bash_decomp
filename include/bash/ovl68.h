@@ -56,7 +56,16 @@ typedef struct CoalGridObj {
     CoalPosInner *pos;
 } CoalGridObj;
 
+extern u32 D_80051244[];
+extern s32 D_8009D908;
 
+typedef struct Ovl68Out {
+    s32 unk0;
+    s32 unk4;
+    s32 unk8;
+} Ovl68Out;
+
+void func_800BB6FC(s32 arg0, s32 arg1, s32 arg2, EXTengine *arg3, Ovl68Out *arg4);
 void func_800BB488(CoalGridObj *obj);
 void func_800B3330(void);
 void func_800BADA8(s32 arg0);

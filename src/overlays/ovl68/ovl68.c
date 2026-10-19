@@ -674,6 +674,18 @@ NAS *func_800BB688(s32 x, s32 z, s32 range) {
     return NULL;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BB6FC);
+void func_800BB6FC(s32 arg0, s32 arg1, s32 arg2, EXTengine *arg3, Ovl68Out *arg4) {
+    s32 ang;
+    s32 n;
+
+    ang = get_angle(arg3->unk10.x - arg1, arg3->unk10.z - arg2);
+    arg4->unk0 = 2;
+    n = D_800BC2D0[arg0][17];
+    arg4->unk4 = (n / 2 + 0x400) / n;
+    arg4->unk8 = *(u32 *)((u8 *)D_80051244 + ((ang >> 7) & 0x1C));
+    if (D_8009D908 == 0) {
+        Random(4);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BB7E0);
