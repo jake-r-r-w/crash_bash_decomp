@@ -511,7 +511,16 @@ void func_800C69C4(s32 arg0, s32 *arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C6A30);
+s32 func_800C6A30(s32 arg0) {
+    s32 val;
+
+    if (arg0 == 3) {
+        D_8009D678->unk74 = val = *D_800CB24C++;
+    } else {
+        D_8009D60C->unk74 = val = *D_800CB250++;
+    }
+    return val;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitTankBossRocketTurret);
 
