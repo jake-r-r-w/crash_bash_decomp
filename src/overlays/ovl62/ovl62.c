@@ -1996,7 +1996,28 @@ void func_800D307C(s32 player) {
     func_8008502C(player);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D30C0);
+void func_800D30C0(s32 player) {
+    u8 *g = D_8005A614;
+    EXTheromove *mv;
+
+    if (*(s16 *)(g + 0x34) != 0x16) {
+        PadState *b = D_80051338;
+        PadState *p = &b[player];
+        *(s32 *)((u8 *)p + 0x50) = 0;
+        *(s32 *)((u8 *)p + 0x54) = 0;
+    }
+    mv = Heroes[player].hero_move;
+    if (mv != NULL) {
+        mv->z_dir = 0;
+        mv->x_max = 0;
+        mv->z_max = 0;
+        mv->x_vel = 0;
+        mv->z_vel = 0;
+    }
+    if (*(s16 *)(g + 0x34) != 0x16) {
+        func_800D2D2C(player);
+    }
+}
 
 void func_800D3170(void) {
     if (D_8005A648 != 0x16) {
