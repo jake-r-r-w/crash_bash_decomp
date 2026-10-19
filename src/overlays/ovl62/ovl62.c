@@ -1163,7 +1163,26 @@ void PlotSimpleExplosion(NAS *m) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitSmokeTrail);
+void InitSmokeTrail(NAS *m) {
+    ExtSmokeTrail *ext;
+
+    ext = AddExtension(m, 0x30, 0x10000000);
+    if (ext != NULL) {
+        m->Engine->sub->unk6C = D_800546C4;
+        m->Engine->sub->unk74 = 0x2020;
+        m->Engine->sub->flags |= 0x40000041;
+        m->Engine->sub->unk76 = 0x1000;
+        m->UserInfo.status = 0;
+        ext->fadeIn = 0x400;
+        ext->fadeOut = 0xC8;
+        ext->shrink = 0x60;
+        ext->flags = 0;
+        ext->baseX = m->Engine->unk10.x;
+        m->Engine->unk5C = 1;
+        m->Engine->unk5D = 0;
+        ext->angle = Random(0x1000);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBearDeath);
 
