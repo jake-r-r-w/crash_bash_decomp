@@ -669,7 +669,21 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D257C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2B58);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2C38);
+void func_800D2C38(s32 player) {
+    HeroInfo *base = Heroes;
+    HeroInfo *hero = base + player;
+    EXTheromove *move;
+
+    if (FindExtension(hero->hero, 0x20000000) != NULL) {
+        move = hero->hero_move;
+        if (move != NULL) {
+            move->z_vel = 0;
+            move->x_vel = 0;
+            move->z_max = 0;
+        }
+        SetHeroAction((HeroInfo *)player, 0x50);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D2CB8);
 
