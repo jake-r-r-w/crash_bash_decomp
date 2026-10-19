@@ -100,7 +100,102 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B4FAC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B5228);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B5588);
+void func_800B5588(void) {
+    void **p;
+    void **p2;
+    void **p3;
+    void **p4;
+    void **p5;
+    void *t;
+    Ovl5fGameView *g;
+
+    D_8009D6E8.unk4 = D_800C8EA0;
+    D_8009D6E8.unk38 = func_800B5228;
+    D_8009D6E8.unk0 = (s32)func_800B6658;
+    D_8009D6E8.unk68 = func_800C8294;
+    D_8009D6E8.unk14 = D_800C8EB4;
+    D_8009D6E8.unk18 = func_800C8334;
+    D_8009D6E8.unk20 = func_800C81C0;
+    D_8009D6E8.unk24 = func_800B6C24;
+    switch (D_8005A648) {
+    case 6:
+    default:
+        D_8009D8F4 = D_800C9E74;
+        D_8009D8F8 = D_800C9E88;
+        D_8009D904 = D_800C9E5C;
+        p = &D_8009D8FC;
+        if (D_8005A680[0] != 0) {
+            t = D_800C9E3C;
+        } else {
+            t = D_800C9E28;
+        }
+        *p = t;
+        D_8009D900 = D_800C9E50;
+        return;
+    case 8:
+        D_8009D8F4 = D_800C9EE8;
+        D_8009D8F8 = D_800C9EFC;
+        D_8009D904 = D_800C9ED0;
+        p2 = &D_8009D8FC;
+        if (D_8005A680[0] != 0) {
+            t = D_800C9EB0;
+        } else {
+            t = D_800C9E9C;
+        }
+        *p2 = t;
+        D_8009D900 = D_800C9EC4;
+        return;
+    case 7:
+        D_8009D8F4 = D_800C9F5C;
+        D_8009D8F8 = D_800C9F70;
+        D_8009D904 = D_800C9F44;
+        p3 = &D_8009D8FC;
+        if (D_8005A680[0] != 0) {
+            t = D_800C9F24;
+        } else {
+            t = D_800C9F10;
+        }
+        *p3 = t;
+        D_8009D900 = D_800C9F38;
+        return;
+    case 5:
+        D_8009D8F4 = D_800C9FD0;
+        D_8009D8F8 = D_800C9FE4;
+        D_8009D904 = D_800C9FB8;
+        p4 = &D_8009D8FC;
+        if (D_8005A680[0] != 0) {
+            t = D_800C9F98;
+        } else {
+            t = D_800C9F84;
+        }
+        *p4 = t;
+        D_8009D900 = D_800C9FAC;
+        return;
+    case 9:
+        D_8009D8F4 = D_800CA120;
+        D_8009D8F8 = D_800CA134;
+        D_8009D904 = D_800CA148;
+        p5 = &D_8009D8FC;
+        if (D_8005A680[0] != 0) {
+            t = D_800CA08C;
+        } else {
+            t = D_800C9FF8;
+        }
+        *p5 = t;
+        D_8009D900 = D_800C9FAC;
+        Heroes[2].hero_name = 9;
+        Heroes[3].hero_name = 9;
+        g = (Ovl5fGameView *)D_8005A614;
+        g->flags |= 0x100;
+        if (g->w6C == 0) {
+            Heroes[1].hero_name = 9;
+            g->b51 = 9;
+        }
+        g->b52 = 9;
+        g->b53 = 9;
+        return;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B58B0);
 
