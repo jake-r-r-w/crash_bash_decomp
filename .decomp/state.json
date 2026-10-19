@@ -6826,7 +6826,8 @@
  },
  "ovl62:800C5DCC": {
   "auto_diff": 72,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-19T07:47:35Z",
+  "status": "matched"
  },
  "ovl62:800C5EEC": {
   "auto_diff": 68,

@@ -46,6 +46,7 @@ void func_800D3500(void);
 void func_800D3508(void);
 
 extern NAS *D_800D5294;
+extern subengine *D_800D5298;
 
 /* InitBombGFX's extension (0x1C bytes). */
 typedef struct BombGFXExt {
@@ -700,6 +701,8 @@ s32 func_800B9600(s32 player);
 s32 func_800B98AC(s32 player);
 
 s32 func_800C5CD0(s32 *arg0, s32 arg1);
+
+s32 func_800C5DCC(NAS *m);
 
 void func_800C5EEC(Ovl62EaseCam *c, s32 *pos);
 

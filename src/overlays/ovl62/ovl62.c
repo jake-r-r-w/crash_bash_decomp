@@ -1150,7 +1150,35 @@ s32 func_800C5CD0(s32 *arg0, s32 arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C5DCC);
+s32 func_800C5DCC(NAS *m) {
+    if (D_800D5298->unk74 == 0x2008) {
+        if (func_800C5CD0((s32 *)&m->Engine->unk10, 1)) {
+            return 1;
+        }
+        if (func_800C5CD0((s32 *)&m->Engine->unk10, 0)) {
+            return 0;
+        }
+    }
+    if (D_800D5298->unk74 == 0x2009) {
+        if (func_800C5CD0((s32 *)&m->Engine->unk10, 2)) {
+            return 1;
+        }
+        if (func_800C5CD0((s32 *)&m->Engine->unk10, 0)) {
+            return 0;
+        }
+    }
+    if (D_800D5298->unk74 == 0x200A) {
+        if (func_800C5CD0((s32 *)&m->Engine->unk10, 3)) {
+            return 0;
+        }
+    }
+    if (D_800D5298->unk74 == 0x5003) {
+        if (func_800C5CD0((s32 *)&m->Engine->unk10, 0)) {
+            return 0;
+        }
+    }
+    return 1;
+}
 
 void func_800C5EEC(Ovl62EaseCam *c, s32 *pos) {
     s32 step;
