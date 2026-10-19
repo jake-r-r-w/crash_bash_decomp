@@ -7780,7 +7780,9 @@
   "via": "auto"
  },
  "ovl63:800C4C34": {
-  "auto_failed": "compile"
+  "auto_failed": "compile",
+  "copy_failed": "ovl63:800C4CB8",
+  "copy_failed_stage": "in-file"
  },
  "ovl63:800C4C98": {
   "matched_at": "2026-10-10T10:11:53Z",
@@ -7788,7 +7790,8 @@
   "via": "auto"
  },
  "ovl63:800C4CB8": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-19T09:53:25Z",
+  "status": "matched"
  },
  "ovl63:800C4D1C": {
   "matched_at": "2026-10-10T10:36:02Z",

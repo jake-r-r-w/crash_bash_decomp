@@ -320,7 +320,12 @@ void PlotRaceSmokePoof(NAS *nas) {
     func_800250B0(nas);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRaceSmokePoof);
+void InitRaceSmokePoof(NAS *nas) {
+    func_80024E30(nas, &D_800C6D74);
+    nas->Engine->sub->unk6C = D_800546C4;
+    nas->Engine->sub->flags |= 0x21;
+    nas->UserInfo.user1 = 0;
+}
 
 s32 func_800C4D1C(u8 *arg0, u8 *arg1) {
     s32 temp_v0;
