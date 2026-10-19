@@ -377,7 +377,17 @@ void PlotRaceFire(NAS *nas) {
     FindExtension(nas, 0x10000000);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", InitRaceFire);
+void InitRaceFire(NAS *nas) {
+    EXTracefire *ext;
+
+    ext = AddExtension(nas, 0x20, 0x10000000);
+    if (ext != NULL) {
+        ext->unk10 = 0;
+        ext->unk18 = 0;
+        ext->unk1C = 0;
+        ext->unk14 = 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C4E54);
 

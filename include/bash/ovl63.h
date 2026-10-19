@@ -57,6 +57,13 @@ typedef struct EXTraceshield {
 } EXTraceshield;
 
 void InitRaceShield(NAS *nas);
+typedef struct EXTracefire {
+    /* 0x00 */ s32 unk0[4];
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ s32 unk1C;
+} EXTracefire;
 typedef struct Ovl63Bouncer {
     s32 unk0;
     s32 vel;      /* 0x04 */
@@ -157,6 +164,8 @@ extern ScriptInit D_800C6F28;
 void func_800B9E50(Quat *q);
 
 void InitRaceSmokePoof(NAS *nas);
+
+void InitRaceFire(NAS *nas);
 
 void InitTNTCrate(NAS *m);
 
