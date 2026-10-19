@@ -66,6 +66,19 @@ typedef struct {
 
 extern Ovl5fUnk74 *D_8009D60C;
 extern Ovl5fUnk74 *D_8009D678;
+
+/* Extension 0x10000000 of the NAS 0x1605 object func_800C5620 spawns. */
+typedef struct Ovl5fExt1605 {
+    /* 0x00 */ u8 pad[0xC];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ u8 pad10[0x18 - 0x10];
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ u8 pad1C[0x20 - 0x1C];
+    /* 0x20 */ s32 unk20;
+    /* 0x24 */ u8 pad24[0x28 - 0x24];
+    /* 0x28 */ s32 unk28;
+} Ovl5fExt1605;
+void func_800C4D04(s32 hero, s32 last_mode);
 extern s32 *D_800CB24C;
 extern s32 *D_800CB250;
 extern s32 D_800CB0FC;
@@ -88,6 +101,8 @@ extern NAS *D_800CB264[8];   /* objects func_800C8598 adds and func_800C8560 rem
 
 
 
+
+void func_800C5620(s32 arg0);
 
 void func_800C69C4(s32 arg0, s32 *arg1);
 
