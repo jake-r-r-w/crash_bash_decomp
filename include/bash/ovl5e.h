@@ -218,6 +218,11 @@ s32 func_800B77D8(void);
 void PlotPapuColumn(NAS *nas);
 
 void func_800B7E38(void);
+extern u16 D_8009E25C[13];
+typedef struct {
+    u8 pad0[0x14];
+    u16 type;
+} T_B80B0Fux;
 extern u16 D_8009E46C[];
 extern u16 D_800BD8E0;
 extern u16 D_800BD8E4;
@@ -270,5 +275,7 @@ NAS *func_800B668C(EXTengine *eng, s32 mask);
 void func_800B6FF8(void);
 
 void func_800B7F14(T_B7F14_A *a, T_B7F14_B *b);
+
+void func_800B80B0(void);
 
 #endif /* BASH_OVL5E_H */

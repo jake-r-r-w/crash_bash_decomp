@@ -820,7 +820,67 @@ s32 func_800B8080(T_B8080 *p) {
     return a + b + d;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B80B0);
+void func_800B80B0(void) {
+    s32 i;
+    s32 x, z;
+    u16 t;
+    u8 c;
+    u16 *p;
+    s32 j;
+    NAS *n;
+    EXTengine *e;
+    T_B80B0Fux *f;
+
+    i = 12;
+    p = D_8009E46C;
+    p += 12;
+    do {
+        *p = 0;
+        i--;
+        p--;
+    } while (i >= 0);
+    for (j = 12; j >= 0; j--) {
+        D_8009E25C[j] = 0;
+    }
+    n = D_8005AA24;
+    for (;;) {
+        if (n == NULL) return;
+        e = n->Engine;
+        if (e != NULL) {
+        f = (T_B80B0Fux *)n->FUX;
+        if (f != NULL) {
+            t = f->type;
+            x = (e->unk10.x >> 8) + 10;
+            z = 9 - (e->unk10.z >> 8);
+            if (x >= 20) x = 19;
+            if (x < 0) x = 0;
+            if (z >= 20) z = 19;
+            if (z < 0) z = 0;
+            D_8009D90C[z * 20 + x].unk0 = t;
+            if ((u16)(f->type - 1) < 12) {
+                D_8009E46C[0]++;
+                D_8009E46C[f->type]++;
+            } else if ((u16)(f->type - 0x11) < 12) {
+                D_8009E25C[0]++;
+                D_8009E25C[f->type - 0x10]++;
+                if ((u16)(f->type - 0x12) < 4) {
+                    D_8009E46C[1]++;
+                }
+            }
+        } else {
+            c = 0xFF;
+            x = (e->unk10.x >> 8) + 10;
+            z = 9 - (e->unk10.z >> 8);
+            if (x >= 20) x = 19;
+            if (x < 0) x = 0;
+            if (z >= 20) z = 19;
+            if (z < 0) z = 0;
+            D_8009D90C[z * 20 + x].unk0 = c;
+        }
+        }
+        n = n->Object.Child;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B82DC);
 
