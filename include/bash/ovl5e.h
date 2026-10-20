@@ -13,9 +13,13 @@ typedef struct PapuEntry {
     /* 0x0 */ s32 unk0;
     /* 0x4 */ s16 unk4;
     /* 0x6 */ s16 unk6;
-    /* 0x8 */ s32 unk8;
-    /* 0xC */ s32 unkC;
+    /* 0x8 */ s16 unk8;
+    /* 0xA */ s16 unkA;
+    /* 0xC */ s16 unkC;
+    /* 0xE */ s16 unkE;
 } PapuEntry;
+
+extern s16 *D_800BD6F0[];
 
 extern PapuEntry D_800BE648[20];
 typedef struct Ovl5eTile {
@@ -126,6 +130,8 @@ s32 func_800B8080(T_B8080 *p);
 
 extern s32 D_8005B2EC;
 extern s16 D_8009D6DC[];
+
+void func_800B4154(u16 arg0);
 
 void PlotPapuColumn(NAS *nas);
 

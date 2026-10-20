@@ -15,7 +15,23 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B3D18);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B3E80);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B4154);
+void func_800B4154(u16 arg0) {
+    s32 i;
+    PapuEntry *p;
+
+    for (i = 0; i < 20; i++) {
+        p = &D_800BE648[i];
+        if (p->unk0 != 0) {
+            s16 v = D_800BD6F0[arg0][i];
+            p->unkE = 4;
+            p->unkA = v;
+            p->unkC = 0x60;
+            if (abs(p->unkA) >= p->unkC) {
+                p->unkE = 0;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B4204);
 
