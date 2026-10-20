@@ -21,8 +21,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
   (both left parked: `func_8007F314`, `PlotScriptFX`); ovl6a
   93/94 (`func_800B5710` parked), ovl69 68/77, ovl67 102/135, ovl60
   131/180, ovl5f 127/179, ovl62 151/216, ovl63 97/139, ovl5d 70/104,
-  ovl65 64/80, ovl68 60/93 (swarm runs 2026-10-18/19); ovl5e, ovl64 and
-  ovl66 are barely started. All 564 PsyQ functions (Sony objects). 4 parked (`decomp.py
+  ovl65 64/80, ovl68 60/93 (swarm runs 2026-10-18/19), ovl66 49/65 left
+  16 (swarm 2026-10-20); ovl5e and ovl64 are barely started. All 564 PsyQ functions (Sony objects). 4 parked (`decomp.py
   status`). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
@@ -50,10 +50,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
 ## Next
 
 **Matching the slot overlays with the swarm.** Left per overlay (2026-10-19,
-`INCLUDE_ASM` count per file): ovl5e 67, ovl62 65, ovl66 65, ovl68 33,
+`INCLUDE_ASM` count per file): ovl5e 67, ovl62 65, ovl66 16 (2026-10-20), ovl68 33,
 ovl5f 52, ovl64 50, ovl60 49, ovl63 42, ovl5d 34, ovl67 33, ovl65 16,
 ovl69 9, ovl6a 1, engine 2 (ovl61 is done). main.exe is complete. **Next session:
-swarm ovl5e, then ovl66/ovl64**, on the low-cost recipe; after each run, the
+swarm ovl5e, then ovl64, then ovl66's leftovers (big-heavy)**, on the low-cost recipe; after each run, the
 "After a run" checklist in tools/swarm/README.md (`stats --run ID`, parks,
 gate failures, `fold`, this log).
 
@@ -453,6 +453,14 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-20 (swarm ovl66):** low-cost recipe, run 20261020061838,
+  49 matched, 1 parked (`func_800B34F8`, registers 8/92, checkpoint kept)
+  in 39 min for $7.10 (~$0.15 a match); stopped early by request (`stop`,
+  then `--now`, so the big session on `func_800B7B48` and two permuters were
+  killed). Its first run (20261020061709) died at start on an OAuth refresh
+  clash even with the 10 s start gap; `--start-gap-seconds 30` worked.
+  `fold` and the parks review are not done yet.
 
 - **2026-10-19 (PlotBall by hand):** matched (f0a4117d, 5576 B), from the
   swarm checkpoint at structure 777/1394; ovl61 is complete. No hacks, no
