@@ -89,7 +89,19 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B8F64);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B9054);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B9144);
+void func_800B9144(s32 player) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h;
+    EXTengine *shadow;
+
+    h = base + player;
+
+    ((void (*)(EXTengine *))func_800B9054)(h->hero_eng);
+    shadow = h->hero_shadow;
+    if (shadow != NULL) {
+        shadow->unk10 = h->hero_eng->unk10;
+    }
+}
 
 void func_800B91BC(s32 arg0) {
     EXTmotion *m;
