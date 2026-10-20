@@ -233,7 +233,27 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B9608);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B971C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B9804);
+void func_800B9804(s32 arg0) {
+    HeroInfo *h;
+    HeroInfo *base = Heroes;
+
+    h = base + arg0;
+    h->hero_hit = 0;
+    h->hero_immunity = 0;
+    h->hero_move->velocity_enable = 0;
+    h->hero_move->jump_max = 0;
+    h->hero_frozen = 2;
+    h->hero_health = 0;
+    h->hero_status |= 0x2000;
+    h->hero_powerup->flags = 0;
+    h->hero_fx->flags = 0;
+    h->hero_pu = 0;
+    h->hero_pu_timer = 0;
+    if (h->hero_powerup->sfx != NULL) {
+        StopSfx(h->hero_powerup->sfx);
+    }
+    func_800898EC(arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B98B8);
 

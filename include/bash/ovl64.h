@@ -49,6 +49,8 @@ s32 func_800B8D98(s32 arg0);
 
 extern NAS *D_8005AA2C;
 
+void func_800B9804(s32 arg0);
+
 void func_800BB4FC(s32 arg0);
 
 s32 func_800BB648(s32 arg0);
