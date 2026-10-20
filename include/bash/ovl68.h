@@ -196,11 +196,51 @@ typedef struct Ovl68JumpEnt {
 
 /* D_8009D6E8 (EngineHooks in bash/engine.h, which this unit does not include). */
 typedef struct Ovl68Hooks {
-    /* 0x00 */ u8 pad0[0x10];
+    /* 0x00 */ void *unk0;
+    /* 0x04 */ void *unk4;
+    /* 0x08 */ u8 pad8[8];
     /* 0x10 */ Ovl68JumpEnt *unk10;
-    /* 0x14 */ u8 pad14[0x58];
+    /* 0x14 */ void *unk14;
+    /* 0x18 */ u8 pad18[8];
+    /* 0x20 */ void *unk20;
+    /* 0x24 */ void *unk24;
+    /* 0x28 */ u8 pad28[0x10];
+    /* 0x38 */ void *unk38;
+    /* 0x3C */ u8 pad3C[4];
+    /* 0x40 */ void *unk40;
+    /* 0x44 */ void *unk44;
+    /* 0x48 */ void *unk48;
+    /* 0x4C */ u8 pad4C[8];
+    /* 0x54 */ void *unk54;
+    /* 0x58 */ u8 pad58[4];
+    /* 0x5C */ void *unk5C;
+    /* 0x60 */ u8 pad60[4];
+    /* 0x64 */ void *unk64;
+    /* 0x68 */ void *unk68;
 } Ovl68Hooks;
 extern Ovl68Hooks D_8009D6E8;
+extern void *D_8009D8F4;
+extern void *D_8009D8F8;
+extern void *D_8009D8FC;
+extern void *D_8009D900;
+extern void *D_8009D904;
+extern s16 D_8009E0E2;
+extern s16 D_8009E0E4;
+extern s16 D_8009E0E6;
+extern s32 D_8005A680;
+extern u8 D_800BB928[];
+extern u8 D_800BB93C[];
+extern u8 D_800BC098[];
+extern u8 D_800BC0AC[];
+extern u8 D_800BC0C0[];
+extern u8 D_800BC0CC[];
+extern u8 D_800BC0E4[];
+extern u8 D_800BC0F8[];
+s32 func_800B37C8();
+s32 func_800B46BC();
+s32 func_800B48E4();
+s32 func_800B4B34();
+s32 func_800B52C8();
 
 void func_800B6E84(s32 arg0);
 extern s32 D_8005A5D8;

@@ -16,7 +16,31 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/ovl68/ovl68", D_800B32B8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B37C8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B3EFC);
+void func_800B3EFC(void) {
+    D_8009D6E8.unk4 = D_800BB928;
+    D_8009D6E8.unk38 = (void *)func_800B37C8;
+    D_8009D6E8.unk40 = (void *)func_800BAFB4;
+    D_8009D6E8.unk0 = (void *)func_800B46BC;
+    D_8009D6E8.unk68 = (void *)func_800B459C;
+    D_8009D6E8.unk14 = D_800BB93C;
+    D_8009D6E8.unk20 = (void *)func_800B48E4;
+    D_8009D6E8.unk24 = (void *)func_800B4B34;
+    D_8009D6E8.unk54 = (void *)func_800B52C8;
+    D_8009D6E8.unk44 = (void *)func_800BAF00;
+    D_8009D6E8.unk48 = (void *)func_800BAE84;
+    D_8009D6E8.unk40 = (void *)func_800BAFB4;
+    D_8009D6E8.unk5C = (void *)func_800BA70C;
+    D_8009E0E2 = 0x77;
+    D_8009E0E4 = 0x75;
+    D_8009E0E6 = 0x74;
+    D_8009E0D8 = 0x73;
+    D_8009D6E8.unk64 = (void *)func_800BA5A0;
+    D_8009D8F4 = D_800BC0E4;
+    D_8009D8F8 = D_800BC0F8;
+    D_8009D904 = D_800BC0CC;
+    D_8009D8FC = D_8005A680 != 0 ? D_800BC0AC : D_800BC098;
+    D_8009D900 = D_800BC0C0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B4048);
 
