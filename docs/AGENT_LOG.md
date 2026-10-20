@@ -131,8 +131,11 @@ and current tools).
   - `func_800BC274` instructions 2/197, parked by hand 2026-10-20 (block
     note): only `addiu a1` / `lw a0` before `jal func_8001CD04` are swapped.
     sched1 ties them and luid puts a0 first; the target's order needs a
-    second load/store in that block (potential hazard) or the a1 precompute
-    left unfolded by combine. The same code is unmatched in `func_800C284C`
+    second load/store in that block (potential hazard; every matched
+    a1-first caller has one), so the original's was deleted after sched1.
+    A second pass (2026-10-20) ruled out cross-jumped tails, local-alloc
+    and reload equivalences, reload_cse and an unfolded a1 precompute (the
+    block note has why). The same code is unmatched in `func_800C284C`
     (ovl5d) and `func_800BAF1C` (ovl64): solve the three together.
   - `func_800B9E74` registers 12/238: a `subu` takes the second operand's
     register; split `d = a->x; d -= b->x;`. Its permuter run was cut short.
