@@ -79,7 +79,28 @@ void PlotBonkFlag(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", InitBonkFlag);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", PlotBonkShockwave);
+void PlotBonkShockwave(NAS *nas) {
+    EXTengine *e = nas->Engine;
+    s32 v;
+
+    if (e != NULL) {
+        s32 a = nas->UserInfo.user1;
+        s32 b = nas->UserInfo.user2;
+
+        if (a >= b) {
+            KillNAS(nas);
+        } else {
+            s32 t = a - 0x800;
+
+            nas->UserInfo.user1 = a + ((b - t) >> 1);
+        }
+        e->unk1E += 0x71;
+        v = nas->UserInfo.user1;
+        e->unk5E = 1;
+        e->unk2C.z = v;
+        e->unk2C.x = v;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", InitBonkShockwave);
 

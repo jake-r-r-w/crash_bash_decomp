@@ -33,6 +33,8 @@ void func_800B5050(s32 arg0, u16 arg1);
 void func_800B54D8(s32 arg0, u16 arg1);
 void func_800B5820(s32 arg0, u16 arg1);
 
+void PlotBonkShockwave(NAS *nas);
+
 void func_800B6AAC(void);
 
 #endif /* BASH_OVL66_H */
