@@ -109,6 +109,22 @@ void func_800B7D9C(void);
 
 void func_800B7DA4(void);
 
+extern s32 D_8009E468;
+extern u8 D_8009E3B4[];
+extern u8 D_8009E3DC[];
+
+/* Index of the ASTTable entry with this id, or 0. */
+static inline s32 Ovl5eASTIndex(s32 id) {
+    s32 i;
+
+    for (i = 0; i < ASTCount; i++) {
+        if (ASTTable[i].id == id) {
+            return i;
+        }
+    }
+    return 0;
+}
+
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
 #include "bash/ovl5e_800b87a0.h"
 
@@ -138,5 +154,7 @@ void func_800B4204(void);
 s32 func_800B77D8(void);
 
 void PlotPapuColumn(NAS *nas);
+
+void func_800B7E38(void);
 
 #endif /* BASH_OVL5E_H */
