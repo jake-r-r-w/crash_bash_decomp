@@ -19,7 +19,35 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B4154);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B4204);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B42C0);
+void func_800B42C0(void) {
+    s32 i;
+    Slot40 *p;
+
+    for (i = 0; i < 6; i++) {
+        p = &D_800BD70C[i];
+        p->unk0 = 0;
+        p->pad4[0] = 0;
+        p->pad4[1] = 0;
+        p->pad4[2] = 0;
+        p->pad4[3] = 0;
+        p->pad4[4] = 0;
+        p->pad4[5] = 0;
+        p->pad4[6] = 0;
+        p->unk20 = 0;
+        p->unk22 = i + 0x14;
+        p->unk24 = 0;
+        p->unk26 = 0x14;
+        p->unk28 = 0;
+        p->unk2A = 0;
+        p->unk2C = 0;
+        p->unk2E = 0;
+        p->unk30 = 0;
+        p->unk32 = 0;
+        p->unk34[0] = 0;
+        p->unk34[1] = 0;
+        p->unk34[2] = 0;
+    }
+}
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl5e/ovl5e", D_800B32B8);
 

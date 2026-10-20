@@ -40,7 +40,18 @@ typedef struct {
 
 typedef struct Slot40 {
     /* 0x00 */ s32 unk0;
-    /* 0x04 */ s32 pad4[15];
+    /* 0x04 */ s32 pad4[7];
+    /* 0x20 */ s16 unk20;
+    /* 0x22 */ s16 unk22;
+    /* 0x24 */ s16 unk24;
+    /* 0x26 */ s16 unk26;
+    /* 0x28 */ s16 unk28;
+    /* 0x2A */ s16 unk2A;
+    /* 0x2C */ s16 unk2C;
+    /* 0x2E */ s16 unk2E;
+    /* 0x30 */ s16 unk30;
+    /* 0x32 */ s16 unk32;
+    /* 0x34 */ s32 unk34[3];
 } Slot40;
 
 extern Slot40 D_800BD70C[6];
@@ -91,6 +102,8 @@ void func_800B7DA4(void);
 
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
 #include "bash/ovl5e_800b87a0.h"
+
+void func_800B42C0(void);
 
 s32 func_800B7558(EXTengine *eng);
 
