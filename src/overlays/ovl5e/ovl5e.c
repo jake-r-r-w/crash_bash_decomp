@@ -1084,7 +1084,7 @@ void func_800B6D14(void) {
                 D_800BD948[j][i].unkE = 0;
                 dx = obj->x;
                 dz = obj->z - 0x600;
-                D_800BD948[j][i].padC = csqrt(dx * dx + dz * dz) >> 6;
+                D_800BD948[j][i].unkC = csqrt(dx * dx + dz * dz) >> 6;
             }
         }
     }
@@ -1129,7 +1129,92 @@ void func_800B6FF8(void) {
     }
 }
 
+#ifdef NON_MATCHING
+void func_800B7134(void) {
+    s32 i;
+    s32 j;
+    s32 m;
+    u32 t;
+    u32 a;
+    s32 w;
+    u32 u;
+    u32 k;
+    Ovl5eCell *c;
+    Ovl5eTile *tile;
+
+    if (D_800BE824 != NULL) {
+        if (D_800BD8D4 == 0) {
+            if (D_800BE828 != 0) {
+                D_800BE828 -= 0x140;
+                if (D_800BE828 < 0) {
+                    D_800BE828 = 0;
+                }
+                if (D_800BE828 < 0x200 && D_800BE81C != NULL) {
+                    StopSfx(D_800BE81C);
+                }
+                D_800BE824->unk24 = D_800BE828;
+            } else {
+                D_800BE824->flags &= ~0x8000;
+            }
+        } else {
+            if (D_800BE828 == 0) {
+                PlaySfx(0x20D, &D_800BE81C, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (D_800BE828 < 0x1000) {
+                D_800BE828 += 0x80;
+                if (D_800BE828 > 0x1000) {
+                    D_800BE828 = 0x1000;
+                }
+                D_800BE824->unk24 = D_800BE828;
+            }
+            D_800BE824->flags |= 0x8000;
+        }
+        D_800BE824->unk52 = 1;
+    }
+    func_800B6FF8();
+    func_800B4204();
+    m = (u16)D_800BE894;
+    if (m < 3 && m != 0) {
+        if (D_800BE838[0] != 0) {
+            D_800BE838[0] -= 2;
+        }
+        j = 0x27;
+        do {
+            D_800BE838[j] = D_800BE838[j - 1];
+            j--;
+        } while (j > 0);
+        D_800BE888 += 0x20;
+        t = D_800BE888;
+        for (i = 1; i < 8; i++) {
+            for (j = 0; j < 7; j++) {
+                tile = D_800BD948[j][i].tile;
+                if (tile != NULL) {
+                    a = D_800BD948[j][i].unkC;
+                    u = t + a;
+                    a >>= 7;
+                    w = D_800BE838[a];
+                    tile->unk8 = D_800BD948[j][i].unk12;
+                    k = ((u & 0xFFF) - 0x400) & 0xFFF;
+                    tile->unk8 += (w * D_80068BD4[k].unk2) >> 12;
+                    if (D_800BD948[j][i].unkE != 0) {
+                        D_800BD948[j][i].unkA |= 0x100;
+                        tile->unk74 = D_800BD1B0[D_800BD948[j][i].unkE];
+                        D_800BD948[j][i].unkE++;
+                        if (D_800BD1B0[D_800BD948[j][i].unkE] == 0) {
+                            D_800BD948[j][i].unkE = 0;
+                        }
+                    } else {
+                        tile->unk74 = D_800BD948[j][i].unk10;
+                        D_800BD948[j][i].unkA &= ~0x100;
+                    }
+                }
+            }
+        }
+    }
+}
+#else
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B7134);
+#endif
 
 s32 func_800B744C(s32 arg0) {
     EXTengine *eng;

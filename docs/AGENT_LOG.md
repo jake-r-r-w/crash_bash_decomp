@@ -22,7 +22,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   complete (94/94, 2026-10-20)**, ovl69 69/77, ovl67 102/135, ovl60
   131/180, ovl5f 127/179, ovl62 151/216, ovl63 97/139, ovl5d 70/104,
   ovl65 64/80, ovl68 60/93 (swarm runs 2026-10-18/19), ovl66 49/65 left
-  16 (swarm 2026-10-20); ovl5e 9 left (53 matched 2026-10-20); ovl64 24 left (22 matched 2026-10-20). All 564 PsyQ functions (Sony objects). 2 parked (`decomp.py
+  16 (swarm 2026-10-20); ovl5e 9 left (53 matched 2026-10-20); ovl64 24 left (22 matched 2026-10-20). All 564 PsyQ functions (Sony objects). 4 parked (`decomp.py
   status`). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
@@ -78,7 +78,7 @@ rest are fixed by hand from the worker's patch (Gotchas). A park whose
 `jtbl_` names functions is a bad split (Gotchas).
 
 Hand work, between runs:
-1. The parks: `func_8007F314` and `PlotScriptFX` (engine), and `func_800B345C`'s hack (Open leads for each).
+1. The parks: `func_8007F314` and `PlotScriptFX` (engine), `func_800BC274` and `func_800B7134` (ovl5e), and `func_800B345C`'s hack (Open leads for each).
 2. Name each function as it's matched when the evidence allows.
 3. Split `main.c` into its translation units: on hold since 2026-10-15. Its
    one proven boundary (jump-table parity, 95..370) has three possible
@@ -127,11 +127,13 @@ and current tools).
     the index arithmetic (or makes `i = 0` depend on something late).
 - **ovl5e big-mode checkpoints (2026-10-20), hints the workers left** (their
   Diff-patterns rows, not folded: the functions aren't matched yet). Closest
-  first; the first two are good hand sessions:
-  - `func_800BC274` instructions 2/197 (parked by the swarm): an `lh` +
-    `addiu` temp used in a `mult` lands in v0 where the target loads
-    straight into the saved reg; splitting `r = rec->radius; r += 0x78;`
-    got it here.
+  first; the first two were worked by hand on 2026-10-20 and parked:
+  - `func_800BC274` instructions 2/197, parked by hand 2026-10-20 (block
+    note): only `addiu a1` / `lw a0` before `jal func_8001CD04` are swapped.
+    sched1 ties them and luid puts a0 first; the target's order needs a
+    second load/store in that block (potential hazard) or the a1 precompute
+    left unfolded by combine. The same code is unmatched in `func_800C284C`
+    (ovl5d) and `func_800BAF1C` (ovl64): solve the three together.
   - `func_800B9E74` registers 12/238: a `subu` takes the second operand's
     register; split `d = a->x; d -= b->x;`. Its permuter run was cut short.
   - `PlotPapuBoss` structure 242/455: two adjacent u16 stores, chain them
@@ -139,12 +141,15 @@ and current tools).
     `Table[slot].f` at each use, not through a pointer. `func_800BB86C`
     structure 439/644: `x < 4 && x >= 2` as nested ifs (fold-const makes a
     range check of the `&&`).
-  - `func_800B7134` instructions 5/198: load the multiplier table entry
-    into a local before the preceding store (`w = T[a >> 7]; x += (w * cos)
-    >> 12`); loop.c hoists a global base out of the outer loop where the
-    target reloads it per inner loop. The worker's fix sets the base local
-    twice (NULL at the bottom, a dead store flow deletes): a hack, find the
-    real shape.
+  - `func_800B7134` parked by hand 2026-10-20 at 10/198 (2 insns), inner loop
+    exact. Left: the `D_800BE838` lui/addiu is hoisted out of the outer
+    loop. `move_movables` doubles `insn_count` per inner-moved reg, so the
+    3rd+ candidate always moves; a user variable's set escapes only with
+    `maybe_never` (outer scan past a label/jump, e.g. a loop entered at its
+    exit test) or a second set. With locals `tb/trig/seq` set at the outer
+    top and NULLed at the bottom it matches (dead-store hack). Tried and
+    failed: for/while/do/goto outer loops, block-scope locals, cell pointers.
+    Scripts: `scratch/b7134/` (`brute2.py`, `full.py`).
   - `func_800BB3F0` instructions 26/171: loop.c hoists a loop-invariant
     multiply the target recomputes. A user variable set twice in the loop
     isn't moved (index through `r = player; arr[r]`); a `goto` into the
@@ -459,6 +464,19 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-20 (hand: ovl5e parks `func_800BC274`, `func_800B7134`):** both
+  parked, C under `NON_MATCHING`. BC274 (2/197): the a0/a1 order before
+  `jal func_8001CD04` is a sched1 tie that `schedule_select`'s potential
+  hazard or luid decides; the target's order needs a 2nd memory insn in that
+  block, which its final code doesn't have. 47k permuter iterations and every
+  shape tried fail. B7134: the inner loop now matches exactly
+  (`a >>= 7` in place, the angle index in its own `k`), found by compiling a
+  statement-order x form grid with cc1 directly; the outer loop still hoists
+  one table base (2 insns) unless the worker's dead NULL stores stay, which
+  match 198/198. Added FSF gcc 2.8.1 source to `tools/reference/gcc-2.8.1/`
+  (sha256 in its README.decomp.md); the passes used here have the same rules
+  as 2.7.2.3. Four Diff patterns rows.
 
 - **2026-10-20 (swarm ovl5e, run 3, 30 min big-heavy):** run
   20261020123536, `--workers 1 --big-workers 4 --big-bytes 400

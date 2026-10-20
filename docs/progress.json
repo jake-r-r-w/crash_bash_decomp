@@ -11,11 +11,23 @@
    "note": "parked by hand at regions 95/112, 484/520 exact; C under #ifdef NON_MATCHING. Block 21 (2026-10-18 pm): the target's lw start,0(v0) is reorg (fill_slots_from_thread rewrites the insn after a reg-reg copy to use the copy's source), so its RTL loads start via cur; but it also needs p = p + 80 on the temp (cur not cse-canonical: cur's last use <= the temp's, make_regs_eqv) and end = mem(next) (next canonical: next's last use > the temp's), with no insn pair swap (cse.c REG0/REG1 copy swap needs p++ and next = p adjacent). In RTL order cur's last use (fade) comes after next's, so one temp can't satisfy both; 14 statement orders, 6 dispatch shapes and a late use of p tried. f/cur s1/s2 likely follows from it (cur would lose ~6 refs). Next: a source where the A and A+80 temps are different pseudos, or cur/next's last uses ordered next-last",
    "seg": "overlays/engine/8007ee2c",
    "size": 2080
+  },
+  {
+   "name": "func_800B7134",
+   "note": "STAGE instructions 10/198 (C under NON_MATCHING; really 2 insns: the D_800BE838 base lui/addiu sits before the outer loop, the target rebuilds it per outer iteration). Inner body now matches exactly: k = ((u & 0xFFF) - 0x400) & 0xFFF as its own variable and a >>= 7 in place before w = D_800BE838[a]. Outer loop: loop.c's move_movables doubles insn_count per already-moved reg, so the 3rd+ inner-hoisted base always moves (threshold*life ~50*82 > 85*8); for/while/do/goto/block-scope/cell-pointer shapes all fail. The worker's locals tb/trig/seq set at the outer top and NULLed at its bottom (set twice, not movable) give 198/198 but that is a dead-store hack. Next: a legit reason for the bases to be unmovable at the outer level (user vars with maybe_never, i.e. the outer loop entered at its exit test)",
+   "seg": "overlays/ovl5e/ovl5e",
+   "size": 792
+  },
+  {
+   "name": "func_800BC274",
+   "note": "STAGE instructions 2/197 (C under NON_MATCHING). Only diff: before jal func_8001CD04 the target has addiu a1,s4,0x3C ahead of lw a0,0x6C(s4). sched1 (-dS) ties the two (priority 1, class 3) and breaks it by luid, so a0 goes first; the target's order needs either a 2nd load/store in that block (schedule_select's potential_hazard then prefers the lw: proven by adding one, and how func_800BAAA8 gets it) or the a1 precompute (insn 94) left unmerged by combine so it stays above the load. Neither is in the final code; arg locals, inline helper, do-while(0), volatile, register pin, dup'd join code and 47k permuter iterations (L552-607) all fail. Same code unmatched in func_800C284C (ovl5d) and func_800BAF1C (ovl64): solve all three together. Next: find what the original had in that block",
+   "seg": "overlays/ovl5e/800b87a0",
+   "size": 788
   }
  ],
- "commit": "5f0216a769",
+ "commit": "6eebb012",
  "game": "SCUS_945.70",
- "generated": "2026-10-20T12:58:11Z",
+ "generated": "2026-10-20T14:50:54Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -149510,7 +149522,7 @@
    }
   },
   {
-   "commit": "5f0216a769",
+   "commit": "6eebb012",
    "data_b": 4584,
    "data_tb": 606943,
    "game_all_f": 2537,
@@ -149523,7 +149535,7 @@
    "lib_b": 122112,
    "lib_f": 564,
    "lib_tb": 122112,
-   "ts": "2026-10-20T12:58:11Z",
+   "ts": "2026-10-20T14:50:54Z",
    "units": {
     "engine": [
      121412,
@@ -149719,7 +149731,7 @@
   }
  ],
  "summary": {
-  "blocked": 2,
+  "blocked": 4,
   "copies_b": 20596,
   "data": {
    "done_b": 4584,
@@ -149730,7 +149742,7 @@
    "all_f": 2537,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 2,
+   "blocked": 4,
    "c_f": 2154,
    "done_b": 559288,
    "done_f": 2154,
@@ -149824,7 +149836,7 @@
     "all_f": 73,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 0,
+    "blocked": 2,
     "c_f": 64,
     "done_b": 20136,
     "done_f": 64,

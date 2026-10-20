@@ -524,7 +524,94 @@ NAS *func_800BB69C(idx, arg1)
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BB86C);
 
+#ifdef NON_MATCHING
+s32 func_800BC274(s32 idx) {
+    VECTOR v;
+    s32 hit;
+    s32 top;
+    s32 bot;
+    EXTengine *eng;
+    EXTengine *other;
+    FlagRecord *box;
+    FlagRecord *rec;
+    NAS *nas;
+    NAS *self;
+    Ovl5ePushExt *ext;
+    s32 dx;
+    s32 dz;
+    s32 r;
+    s32 d;
+    s32 ang;
+    s32 y;
+    s32 lo;
+    s32 hi;
+
+    eng = Heroes[idx].hero_eng;
+    hit = 0;
+    if (eng != NULL) {
+        box = func_80025A48(eng, 0x40);
+        if (box != NULL) {
+            bot = eng->unk10.y + box->unk2;
+            top = eng->unk10.y + box->height;
+            box = func_80025A48(eng, 1);
+            if (box != NULL) {
+                if (eng->unk5E != 0) {
+                    func_800142D4(&eng->unk1C);
+                }
+                func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
+                func_80015758((SVECTOR *)box, &v);
+            }
+            nas = D_8005AA2C;
+            self = NULL;
+            if (Heroes[idx].hero_object != NULL) {
+                self = ((NAS **)Heroes[idx].hero_object)[-1];
+            }
+            if (nas != NULL) {
+                do {
+                    if ((nas->Class & 0x200) && nas != self) {
+                        other = nas->Engine;
+                        if (other != NULL && other != eng) {
+                            ext = FindExtension(nas, 0x1000);
+                            if (ext != NULL && (ext->unk1A == 1 || ext->unk1A == 0xB)) {
+                                rec = func_80025A48(other, 0x40);
+                                if (rec != NULL) {
+                                    lo = other->unk10.y + rec->unk2;
+                                    hi = other->unk10.y + rec->height;
+                                    if (top < lo && hi < bot) {
+                                        dx = other->unk10.x - eng->unk10.x;
+                                        dz = other->unk10.z - eng->unk10.z;
+                                        r = rec->radius;
+                                        r += 0x78;
+                                        d = dx * dx + dz * dz;
+                                        if (d < r * r) {
+                                            d = csqrt(d) >> 6;
+                                            if (d < r) {
+                                                ang = get_angle(dx, dz) & 0xFFF;
+                                                d = r - d + 1;
+                                                eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                                eng->unk10.z -= (d * D_80068BD4[ang].unk2) >> 12;
+                                                hit = 1;
+                                                if (ext->unk1C & 8) {
+                                                    ext->unk16 = idx;
+                                                    ext->unk1E |= 8;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    nas = nas->Solid.Child;
+                } while (nas != NULL);
+            }
+        }
+    }
+    return hit;
+}
+#else
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BC274);
+#endif
 
 void *func_800BC588(s32 idx, s32 mask) {
     NAS *n;

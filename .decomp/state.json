@@ -4888,7 +4888,10 @@
   "status": "matched"
  },
  "ovl5e:800B7134": {
-  "auto_failed": "types"
+  "auto_failed": "types",
+  "blocked_at": "2026-10-20T14:50:53Z",
+  "note": "STAGE instructions 10/198 (C under NON_MATCHING; really 2 insns: the D_800BE838 base lui/addiu sits before the outer loop, the target rebuilds it per outer iteration). Inner body now matches exactly: k = ((u & 0xFFF) - 0x400) & 0xFFF as its own variable and a >>= 7 in place before w = D_800BE838[a]. Outer loop: loop.c's move_movables doubles insn_count per already-moved reg, so the 3rd+ inner-hoisted base always moves (threshold*life ~50*82 > 85*8); for/while/do/goto/block-scope/cell-pointer shapes all fail. The worker's locals tb/trig/seq set at the outer top and NULLed at its bottom (set twice, not movable) give 198/198 but that is a dead-store hack. Next: a legit reason for the bases to be unmovable at the outer level (user vars with maybe_never, i.e. the outer loop entered at its exit test)",
+  "status": "blocked"
  },
  "ovl5e:800B744C": {
   "matched_at": "2026-10-20T11:30:43Z",
@@ -5065,7 +5068,10 @@
   "auto_failed": "types"
  },
  "ovl5e:800BC274": {
-  "auto_failed": "compile"
+  "auto_failed": "compile",
+  "blocked_at": "2026-10-20T14:00:23Z",
+  "note": "STAGE instructions 2/197 (C under NON_MATCHING). Only diff: before jal func_8001CD04 the target has addiu a1,s4,0x3C ahead of lw a0,0x6C(s4). sched1 (-dS) ties the two (priority 1, class 3) and breaks it by luid, so a0 goes first; the target's order needs either a 2nd load/store in that block (schedule_select's potential_hazard then prefers the lw: proven by adding one, and how func_800BAAA8 gets it) or the a1 precompute (insn 94) left unmerged by combine so it stays above the load. Neither is in the final code; arg locals, inline helper, do-while(0), volatile, register pin, dup'd join code and 47k permuter iterations (L552-607) all fail. Same code unmatched in func_800C284C (ovl5d) and func_800BAF1C (ovl64): solve all three together. Next: find what the original had in that block",
+  "status": "blocked"
  },
  "ovl5e:800BC588": {
   "matched_at": "2026-10-19T14:01:52Z",

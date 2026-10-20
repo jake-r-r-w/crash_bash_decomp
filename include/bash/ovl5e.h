@@ -55,6 +55,8 @@ typedef struct Ovl5eTile {
     s32 unk0;
     s32 unk4;
     s32 unk8;
+    u8 padC[0x74 - 0xC];
+    u16 unk74;
 } Ovl5eTile;
 
 typedef struct Ovl5eCell {
@@ -62,10 +64,10 @@ typedef struct Ovl5eCell {
     s32 pad4;
     s16 pad8;
     u16 unkA;
-    s16 padC;
+    u16 unkC;
     u16 unkE;
     u16 unk10;
-    u16 unk12;
+    s16 unk12;
 } Ovl5eCell;
 
 extern Ovl5eCell D_800BD948[8][8];
@@ -77,10 +79,13 @@ typedef struct Ovl5eSceneObj {
     /* 0x08 */ s16 unk8;
     /* 0x0A */ s16 padA;
     /* 0x0C */ s32 z;
-    /* 0x10 */ u8 pad10[0x50 - 0x10];
+    /* 0x10 */ u8 pad10[0x24 - 0x10];
+    /* 0x24 */ s32 unk24;
+    /* 0x28 */ u8 pad28[0x50 - 0x28];
     /* 0x50 */ u8 unk50;
     /* 0x51 */ u8 unk51;
-    /* 0x52 */ u8 pad52[0x5C - 0x52];
+    /* 0x52 */ s16 unk52;
+    /* 0x54 */ u8 pad54[0x5C - 0x54];
     /* 0x5C */ struct Ovl5eSceneObj *next;
     /* 0x60 */ u8 pad60[0x6C - 0x60];
     /* 0x6C */ u8 *model;
@@ -88,8 +93,8 @@ typedef struct Ovl5eSceneObj {
     /* 0x74 */ u16 index;
 } Ovl5eSceneObj;
 extern Ovl5eSceneObj *D_800BE824;
-extern s16 D_800BE838[40];
-extern s16 D_800BE888;
+extern u16 D_800BE838[40];
+extern u16 D_800BE888;
 extern s16 D_800BE88A;
 extern s16 D_800BE88C;
 typedef struct Ovl5eGridPos {
@@ -343,7 +348,7 @@ void func_800B8508(NAS *arg0);
 void func_800BB3F0(void);
 NAS *func_800BB69C(s32 idx, s32 arg1);
 void func_800BB86C(void);
-void func_800BC274(void);
+s32 func_800BC274(s32 idx);
 extern u8 D_800BC89C[];
 extern u8 D_800BC8DC[];
 
@@ -412,5 +417,8 @@ void func_800B38FC(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6,
                    s32 a7, s32 a8);
 
 s32 func_800B6860(u32 idx);
+
+extern _sfx_handler *D_800BE81C;
+extern u16 D_800BD1B0[];
 
 #endif /* BASH_OVL5E_H */
