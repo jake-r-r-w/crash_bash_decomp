@@ -16,6 +16,7 @@ s32 func_80085890();
 s32 func_8008A200(s32 arg0);
 void func_8008A810(void);
 
+extern u16 D_8009E080[][4];
 void func_800BA3C4(EXTengine *eng);
 extern s32 D_8009E464;
 
@@ -24,6 +25,8 @@ void func_800898EC(s32 arg0);
 void func_800BC698(s32 arg0);
 extern u16 *D_8009D6EC;
 s32 func_8008ABF8(s32 arg0);
+
+void func_800BA4C0(s32 arg0);
 
 void func_800BAFD4(s32 arg0);
 

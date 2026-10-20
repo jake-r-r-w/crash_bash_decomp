@@ -39,7 +39,25 @@ void func_800BA3C4(EXTengine *eng) {
     } while (again);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BA4C0);
+void func_800BA4C0(s32 arg0) {
+    HeroInfo *b = Heroes;
+    HeroInfo *h = &b[arg0];
+
+    if (h->hero_pu != 0x12) {
+        h->hero_hit = 0x1E;
+    }
+    h->hero_move->velocity_enable = 0;
+    if (h->hero_object != NULL) {
+        h->hero_object->player = h->hero_harm_player;
+        h->hero_object->status = 4;
+        h->hero_object = NULL;
+    }
+    if (h->hero_eng->sfx != NULL) {
+        StopSfx(h->hero_eng->sfx);
+    }
+    PlaySfx(D_8009E080[h->hero_name][Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+    SetHeroSeq((HeroInfo *)arg0, 9);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BA5CC);
 
