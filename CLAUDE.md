@@ -32,9 +32,8 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   fix the stages in that order. Check the asm's style fits the file's compiler
   first (gcc 2.7.2 units: `main/8002d488`, `main/8002e0f0`; per-unit settings
   in the Makefile). For a tie in instruction order, register choice or a
-  merged tail, read the deciding pass in `tools/reference/gcc-2.7.2.3/` before
-  the permuter. That's FSF source; its scheduler, local-alloc, jump and reorg
-  rules hold for our 2.8.1 too. Work the rule through by hand against the
+  merged tail, read the deciding pass in `tools/reference/gcc-2.8.1/` (FSF base of our
+  2.8.1-psx; `gcc-2.7.2.3/` for the 2.7.2 units) before the permuter. Work the rule through by hand against the
   `-dS`/`-dR`/`-dl`/`-dJ` dumps (MATCHING.md, Reading the compiler's rules).
   The real cc1 is in the container: dump any pass (`-dr`/`-ds`/`-dc` too) and
   try C shapes in small test files before rebuilding the function

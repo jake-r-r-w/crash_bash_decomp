@@ -116,8 +116,8 @@ Spyro 3 demo) come from the disc as they are. As functions are matched they move
   data tools: `dat.py` (the archive), `tex.py`, `mdl.py` + `gltf.py`,
   `sfx.py`, `tga.py`, `txt.py` (one per format) and `pack_disc.py`;
   `tools/swarm/`, `tools/docker/`, `tools/hooks/`.
-- `tools/reference/` - third-party source kept to read, not built: GCC 2.7.2.3
-  (the C compiler and its MIPS target, GPL).
+- `tools/reference/` - third-party source kept to read, not built: GCC 2.8.1 and
+  2.7.2.3 (the C compiler and its MIPS target, GPL).
 - `.claude/skills/match-function/` - the agent's matching loop.
 - `.decomp/` - matching state; `docs/` - dashboard, badges and documentation.
 
@@ -155,7 +155,7 @@ maspsx `--aspsx-version=2.86`); change it with `decomp.py config`. Two units of
 the executable (`src/main/8002d488.c`, `8002e0f0.c`) were built with GCC 2.7.2
 and Sony's assembler: their settings are per unit in the Makefile, and
 `tools/scripts/aspsx_fill.py` reproduces what that assembler (and Sony's build
-of the compiler) did to the code. The source of GCC 2.7.2.3 is kept in
+of the compiler) did to the code. The source of GCC 2.8.1 and 2.7.2.3 is kept in
 `tools/reference/` to read when a match depends on what a compiler pass does. Sony's SDK
 goes in the ignored `ext/psyq47/` (`psyq-4.7-converted-full.7z` from
 [psx.arthus.net](http://psx.arthus.net/sdk/Psy-Q/)).

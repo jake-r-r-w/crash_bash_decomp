@@ -1407,9 +1407,10 @@ copy. For these, read the rule that breaks the tie instead of guessing at C:
    C variables, then each block in final order with the rule that placed every insn (higher
    priority, the only one ready, or a tie broken by source order or dependence). The tie
    attribution is inferred from the trace; check it in sched.c before acting on it.
-3. Read the function that decides it in `tools/reference/gcc-2.7.2.3/`. That is FSF 2.7.2.3; for
-   these passes its code behaves like our 2.8.1 cc1 in every case checked so far. Its
-   `README.decomp.md` says which file holds which pass and lists the known differences.
+3. Read the function that decides it in `tools/reference/gcc-2.8.1/` (FSF 2.8.1, the base of
+   our `2.8.1-psx` cc1) or, for the two gcc 2.7.2 units, `tools/reference/gcc-2.7.2.3/`. The
+   2.7.2.3 `README.decomp.md` says which file holds which pass; the 2.8.1 one lists what was
+   checked to be the same.
 4. Work through the rule by hand, and change the C so the tie goes the target's way.
 
 Do this before the permuter. It matched `func_8007B330` (7/307 off) after six swarm sessions and
