@@ -160,4 +160,6 @@ void func_800B68EC(void);
 
 void func_800B69D0(void);
 
+void func_800B6B04(s32 arg0, EXTengine *p, s32 arg2);
+
 #endif /* BASH_OVL66_H */

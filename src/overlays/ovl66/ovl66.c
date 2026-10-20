@@ -404,7 +404,54 @@ void func_800B6AF4(void) {
 void func_800B6AFC(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B6B04);
+void func_800B6B04(s32 arg0, EXTengine *p, s32 arg2) {
+    HeroInfo *h;
+    HeroInfo *t;
+    HeroInfo *base, *b2, *b3, *h2;
+    s32 v;
+    s32 s;
+    s32 x, y, z;
+    u8 *g;
+
+    if (p != NULL) {
+        x = p->unk10.x;
+    } else {
+        x = Heroes[arg0].hero_eng->unk10.x;
+    }
+    if (p != NULL) {
+        y = p->unk10.y;
+    } else {
+        y = Heroes[arg0].hero_eng->unk10.y;
+    }
+    if (p != NULL) {
+        z = p->unk10.z;
+    } else {
+        z = Heroes[arg0].hero_eng->unk10.z;
+    }
+    func_8008D5D4(x, y, z, arg2, 0);
+    g = D_8005A614;
+    if (*(u16 *)(g + 0x32) & 0x40) {
+        if (*(s32 *)(g + 0x6C) != 0) {
+            base = Heroes;
+            h = base + arg0;
+            s = h->hero_score;
+            if (s < arg2) {
+                h->hero_score = 0;
+                t = base + h->hero_teammate;
+                t->hero_score = t->hero_score - (arg2 - s);
+                return;
+            }
+        }
+        b2 = Heroes;
+        h2 = arg0 + b2;
+        v = (u16)h2->hero_score - arg2;
+    } else {
+        b3 = Heroes;
+        h2 = arg0 + b3;
+        v = (u16)h2->hero_score + arg2;
+    }
+    h2->hero_score = v;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B6CD8);
 
