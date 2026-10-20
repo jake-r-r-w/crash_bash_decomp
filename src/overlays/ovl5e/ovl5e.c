@@ -201,7 +201,44 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B6860);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B6D14);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B6FF8);
+void func_800B6FF8(void) {
+    Ovl5eKey *k;
+    s32 first;
+    s32 v;
+    s32 t;
+
+    first = 1;
+    if (D_800BE82C != NULL && D_800BE82C->b != 0) {
+        k = D_800BE82C;
+        do {
+            if (k->g != 0) {
+                t = k->f;
+                if (t != 0) {
+                    v = t - 1;
+                } else {
+                    if (first) {
+                        PlaySfx(0x1F6, NULL, NULL, 0x1000, 0x1E00, 0);
+                    }
+                    first = 0;
+                    if (k->g != 0) {
+                        D_800BD948[(s16)k->d][(s16)k->e].unkE = 1;
+                    }
+                    k->d += k->pad8[0];
+                    k->e += k->pad8[1];
+                    if (k->d >= 7U) {
+                        k->g = 0;
+                    }
+                    if ((u16)(k->e - 1) >= 7U) {
+                        k->g = 0;
+                    }
+                    v = k->pad4;
+                }
+                k->f = v;
+            }
+            k++;
+        } while (k->b != 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B7134);
 

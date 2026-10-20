@@ -62,7 +62,8 @@ typedef struct Ovl5eCell {
     s32 pad4;
     s16 pad8;
     u16 unkA;
-    s32 padC;
+    s16 padC;
+    u16 unkE;
     s32 pad10;
 } Ovl5eCell;
 
@@ -227,6 +228,8 @@ typedef struct {
     u8 pad18[0x12];
     s16 unk2A;
 } T_B7F14_B;
+
+void func_800B6FF8(void);
 
 void func_800B7F14(T_B7F14_A *a, T_B7F14_B *b);
 
