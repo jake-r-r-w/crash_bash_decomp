@@ -543,7 +543,46 @@ void func_800B5E44(B5E44Owner *arg0, s32 arg1, s32 arg2)
   }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B6008);
+void *func_800B6008(s32 arg0, s32 arg1) {
+    s32 ang;
+    u8 *n = D_8005AA24;
+    s32 lim = 0x10000;
+    Slot40 *b = D_800BD70C;
+    Slot40 *s = &b[arg0];
+    u8 *o = (u8*)s->pad4[0];
+    u8 *a = (u8*)s->pad4[4];
+    s32 px = *(s32*)(o + 0x10) - (D_80068BD4[(*(s16*)(a + 0x16) - 0x400) & 0xFFF].unk2 * 256 >> 12);
+    s32 pz = *(s32*)(o + 0x18) - (D_80068BD4[*(u16*)(a + 0x16) & 0xFFF].unk2 * 256 >> 12);
+    Slot40 *q;
+
+    if (n != NULL) {
+        ang = arg1 & 0xFFFF;
+        q = s;
+        do {
+            u8 *f = *(u8**)(n + 0x58);
+            if (f != NULL && (*(u16*)(f + 0x1C) & 1)) {
+                u8 *e = *(u8**)(n + 0x54);
+                if (e != NULL && *(s32*)(e + 0x80) == 0) {
+                    s32 ex = *(s32*)(e + 0x10);
+                    s32 ez = *(s32*)(e + 0x18);
+                    s32 dx = ex - px;
+                    s32 dz = ez - pz;
+                    if (dx * dx + dz * dz < lim) {
+                        if (ang == 0) {
+                            return n;
+                        }
+                        if (func_80015480(*(s16*)((u8*)q->pad4[4] + 0x16),
+                                          get_angle(ex - *(s32*)(o + 0x10), ez - *(s32*)(o + 0x18)) ^ 0x800) < ang) {
+                            return n;
+                        }
+                    }
+                }
+            }
+            n = *(u8**)(n + 0x2C);
+        } while (n != NULL);
+    }
+    return NULL;
+}
 
 s32 func_800B61A0(EXTengine *eng) {
     VECTOR pos;

@@ -348,6 +348,8 @@ NAS *func_800B4B9C(s32 arg0);
 
 void func_800B5E44(B5E44Owner *arg0, s32 arg1, s32 arg2);
 
+void *func_800B6008(s32 arg0, s32 arg1);
+
 s32 func_800B61A0(EXTengine *eng);
 
 s32 func_800B6334(EXTengine *eng, u32 flag);
