@@ -335,7 +335,19 @@ void func_800BB52C(s32 arg0) {
     func_8008502C(arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800BB560);
+void func_800BB560(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = base + arg0;
+    EXTengine *shadow = h->hero_shadow;
+    EXTengine *eng;
+
+    shadow->sub->unk6C = &D_80052FCC;
+    shadow->sub->unk74 = D_800BC04C[arg0];
+    eng = h->hero_eng;
+    shadow->unk10 = eng->unk10;
+    shadow->flags |= 0x8021;
+    shadow->sub->unk76 = 0xE00;
+}
 
 s32 func_800BB5F0(s32 arg0) {
     if (!(D_80051338[arg0].unk54 & 0x4000)) {
