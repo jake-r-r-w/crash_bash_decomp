@@ -45,6 +45,11 @@ extern s16 D_800BC01C;
 extern Ovl64Obj *D_800BC020[10];
 extern Ovl64Slot D_800BBCB0[10];
 
+#include "bash/main.h"
+
+extern s32 D_800BC048;
+extern s32 D_8009E488[];
+
 void func_800B3428();
 
 void func_800B359C();

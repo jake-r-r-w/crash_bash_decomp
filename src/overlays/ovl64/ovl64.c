@@ -437,7 +437,24 @@ void func_800B8E64(u16 arg0, u16 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B8EE0);
+void func_800B8EE0(void) {
+    s32 key;
+    s32 i;
+    s32 r;
+
+    key = 0x1801;
+    for (i = 0; i < ASTCount; i++) {
+        if (ASTTable[i].id == key) {
+            r = i;
+            goto found;
+        }
+    }
+    r = 0;
+found:
+    D_800BC048 = r;
+    D_8009E488[2] = 0;
+    D_8009E488[3] = 0;
+}
 
 s32 func_800B8F48(EXTengine *eng) {
     s32 x = eng->unk10.x;
