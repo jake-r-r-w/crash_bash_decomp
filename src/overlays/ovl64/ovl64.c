@@ -447,7 +447,27 @@ void func_800B937C(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B9608);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B971C);
+void func_800B971C(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = base + arg0;
+    EXTengine *eng;
+
+    if (func_80025BBC(h->hero_eng) != 0) {
+        SetHeroAction((HeroInfo *)arg0, 7);
+    } else {
+        eng = h->hero_eng;
+        if (D_8005A5D8 < eng->unk10.y + h->hero_sub->unk08) {
+            if (D_8005B5B8 == 0x7FFFFFFF) {
+                SetHeroAction((HeroInfo *)arg0, 6);
+            } else {
+                eng->unk10.y = D_8005A5D8;
+                h->hero_sub->unk08 = 0;
+            }
+        }
+    }
+    D_8009D73C(arg0);
+    func_8008502C(arg0);
+}
 
 void func_800B9804(s32 arg0) {
     HeroInfo *h;

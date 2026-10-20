@@ -13,9 +13,9 @@
    "size": 2080
   }
  ],
- "commit": "7bbf43ec8f",
+ "commit": "b7ffbc6b39",
  "game": "SCUS_945.70",
- "generated": "2026-10-20T08:53:21Z",
+ "generated": "2026-10-20T08:53:30Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -145638,9 +145638,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "b7ffbc6b39",
+   "data_b": 4528,
+   "data_tb": 606943,
+   "game_all_f": 2537,
+   "game_b": 539572,
+   "game_c_f": 2108,
+   "game_f": 2108,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 1891,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-20T08:53:30Z",
+   "units": {
+    "engine": [
+     121412,
+     355
+    ],
+    "main exe": [
+     124840,
+     575
+    ],
+    "ovl5d": [
+     20128,
+     70
+    ],
+    "ovl5e": [
+     3276,
+     26
+    ],
+    "ovl5f": [
+     20972,
+     127
+    ],
+    "ovl60": [
+     28208,
+     131
+    ],
+    "ovl61": [
+     55000,
+     97
+    ],
+    "ovl62": [
+     32228,
+     151
+    ],
+    "ovl63": [
+     22884,
+     97
+    ],
+    "ovl64": [
+     5092,
+     26
+    ],
+    "ovl65": [
+     17972,
+     64
+    ],
+    "ovl66": [
+     9768,
+     64
+    ],
+    "ovl67": [
+     27636,
+     102
+    ],
+    "ovl68": [
+     8240,
+     60
+    ],
+    "ovl69": [
+     10856,
+     69
+    ],
+    "ovl6a": [
+     31060,
+     94
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-20T08:53:29Z",
+   "auto": true,
+   "name": "func_800B971C",
+   "seg": "overlays/ovl64/ovl64",
+   "size": 232,
+   "tries": 0
+  },
   {
    "at": "2026-10-20T08:53:04Z",
    "auto": true,
@@ -145752,14 +145846,6 @@
    "seg": "overlays/ovl64/ovl64",
    "size": 48,
    "tries": 0
-  },
-  {
-   "at": "2026-10-20T08:15:25Z",
-   "auto": false,
-   "name": "func_800B7458",
-   "seg": "overlays/ovl69/ovl69",
-   "size": 1360,
-   "tries": 2
   }
  ],
  "summary": {
@@ -145775,15 +145861,15 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 2,
-   "c_f": 2107,
-   "done_b": 539340,
-   "done_f": 2107,
+   "c_f": 2108,
+   "done_b": 539572,
+   "done_f": 2108,
    "named_f": 345,
-   "pct": 52.92649131139626,
+   "pct": 52.94925792611841,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2537,
-   "typed_f": 1890
+   "typed_f": 1891
   },
   "lib": {
    "all_f": 566,
@@ -145995,20 +146081,20 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
-    "c_f": 25,
-    "done_b": 4860,
-    "done_f": 25,
+    "c_f": 26,
+    "done_b": 5092,
+    "done_f": 26,
     "file": "ovl64.bin",
     "files": 1,
     "lib": false,
     "named_f": 2,
-    "pct": 14.495347172512528,
+    "pct": 15.187306132188022,
     "phase": 5,
     "sony_b": 0,
     "title": "Spin",
     "total_b": 33528,
     "total_f": 58,
-    "typed_f": 25,
+    "typed_f": 26,
     "unit": "ovl64"
    },
    {

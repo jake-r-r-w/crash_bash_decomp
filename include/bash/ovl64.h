@@ -69,6 +69,7 @@ extern u16 D_800BC04C[];
 void func_800B9BF8(s32 arg0);
 extern u16 D_800BB89C[];
 extern s32 D_8005A5D8;
+extern s32 D_8005B5B8;
 extern HeroInfo Heroes[4];
 extern s32 D_8005A680;
 extern s16 D_8009D87C[][3];
@@ -130,5 +131,7 @@ s32 SetHeroSeq(HeroInfo *hero, s32 seq);
 void func_800B92BC(s32 arg0);
 
 void func_800B937C(s32 arg0);
+
+void func_800B971C(s32 arg0);
 
 #endif /* BASH_OVL64_H */
