@@ -220,7 +220,64 @@ void InitPapuBoss(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", PlotPapuBoss);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B4B9C);
+NAS *func_800B4B9C(s32 arg0) {
+    NAS *best;
+    NAS *n;
+    s32 bestScore;
+    s32 px;
+    s32 pz;
+    s32 r;
+    s32 h;
+    EXTengine *e;
+    s32 dx;
+    s32 dz;
+    s32 score;
+    s32 mul;
+    s32 cnt;
+    s32 i;
+    T_B4B9CFux *f;
+    NAS *o;
+
+    best = NULL;
+    bestScore = 0x7FFFFF;
+    n = D_8005AA24;
+    h = D_8009D88E;
+    px = D_800BD70C[arg0].unk34[0];
+    pz = px;
+    if (n != NULL) {
+        r = (0x20 - h) * 16;
+        do {
+            e = n->Engine;
+            if (e != NULL && e->platform == NULL) {
+                f = (T_B4B9CFux *)n->FUX;
+                if (f != NULL && ((mul = 1, f->type == 4) || (f->type == 5 && (mul = 5))) && f->status == 1) {
+                    dx = pz - e->unk10.x;
+                    dz = px - e->unk10.z;
+                    dx += Random(r);
+                    dz += Random(r);
+                    score = csqrt(dx * dx + dz * dz) >> 6;
+                    score *= mul;
+                    cnt = 0;
+                    for (i = 0; i < 6; i++) {
+                        o = (NAS *)D_800BD70C[i].unk0;
+                        if (o != NULL && o->FUX != NULL && ((T_B4B9CFux *)o->FUX)->owner == n) {
+                            cnt += 2;
+                        }
+                    }
+                    if (cnt != 0) {
+                        score <<= cnt;
+                    }
+                    if (score < bestScore) {
+                        best = n;
+                        bestScore = score;
+                    }
+                }
+            }
+            n = n->Object.Child;
+        } while (n != NULL);
+    }
+    return best;
+}
 
 s32 func_800B4D70(Ovl5ePos *arg0) {
     s32 best;

@@ -239,6 +239,15 @@ typedef struct {
     u8 pad0[0x14];
     u16 type;
 } T_B80B0Fux;
+
+typedef struct {
+    u8 pad0[0xC];
+    NAS *owner;
+    u8 pad10[4];
+    u16 type;
+    u8 pad16[4];
+    u16 status;
+} T_B4B9CFux;
 extern u16 D_8009E46C[];
 extern u16 D_800BD8E0;
 extern u16 D_800BD8E4;
@@ -283,6 +292,8 @@ typedef struct {
 void func_800B3D18(void);
 
 void InitPapuBoss(NAS *nas);
+
+NAS *func_800B4B9C(s32 arg0);
 
 s32 func_800B61A0(EXTengine *eng);
 
