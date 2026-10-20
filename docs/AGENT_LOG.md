@@ -22,7 +22,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   complete (94/94, 2026-10-20)**, ovl69 69/77, ovl67 102/135, ovl60
   131/180, ovl5f 127/179, ovl62 151/216, ovl63 97/139, ovl5d 70/104,
   ovl65 64/80, ovl68 60/93 (swarm runs 2026-10-18/19), ovl66 49/65 left
-  16 (swarm 2026-10-20); ovl5e 47 left (16 matched 2026-10-20); ovl64 is barely started. All 564 PsyQ functions (Sony objects). 2 parked (`decomp.py
+  16 (swarm 2026-10-20); ovl5e 47 left (16 matched 2026-10-20); ovl64 24 left (22 matched 2026-10-20). All 564 PsyQ functions (Sony objects). 2 parked (`decomp.py
   status`). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
@@ -51,9 +51,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 **Matching the slot overlays with the swarm.** Left per overlay (2026-10-19,
 `INCLUDE_ASM` count per file): ovl5e 47 (2026-10-20), ovl62 65, ovl66 16 (2026-10-20), ovl68 33,
-ovl5f 52, ovl64 50, ovl60 49, ovl63 42, ovl5d 34, ovl67 33, ovl65 16,
+ovl5f 52, ovl64 24 (2026-10-20), ovl60 49, ovl63 42, ovl5d 34, ovl67 33, ovl65 16,
 ovl69 8, engine 2 (ovl61 and ovl6a are done). main.exe is complete. **Next session:
-swarm the rest of ovl5e, then ovl64, then ovl66's leftovers (big-heavy)**, on the low-cost recipe; after each run, the
+swarm the rest of ovl5e and ovl64 (ovl64's left are mostly >= 600 B: big-heavy), then ovl66's leftovers**, on the low-cost recipe; after each run, the
 "After a run" checklist in tools/swarm/README.md (`stats --run ID`, parks,
 gate failures, `fold`, this log).
 
@@ -432,6 +432,13 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-20 (swarm ovl64):** run 20261020083954, `--model sonnet
+  --escalate-model opus --workers 4 --big-workers 2 --big-budget-usd 8
+  --max-run-usd 40`: 22 matched in 22 min for $8.26 (~$0.38 a match), no
+  parks; stopped with `--now` (network going down), which killed 2 big
+  sessions and 2 permuter runs in flight. 24 left, mostly big. `fold`: 16
+  rows, the six `Heroes[arg0]` lookup rows merged into one.
 
 - **2026-10-20 (two parks, permuter then hand):** `func_800B5710` (ovl6a,
   2836 B, c1cb924c; ovl6a complete) matched with the permuter's change
