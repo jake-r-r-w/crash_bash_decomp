@@ -45,6 +45,10 @@ void func_800BA5CC(s32 arg0);
 
 void func_800BA7D8(s32 arg0);
 
+void func_800BA958(s32 arg0);
+
+void func_800BABA0(s32 arg0);
+
 void func_800BADE8(s32 arg0);
 
 void func_800BAFD4(s32 arg0);
