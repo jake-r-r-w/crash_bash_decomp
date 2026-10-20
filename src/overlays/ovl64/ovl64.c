@@ -505,7 +505,32 @@ void func_800B937C(s32 arg0) {
     func_800871E4(arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B9608);
+void func_800B9608(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h;
+    EXTengine *e;
+    EXTengine *p;
+    s32 idx;
+
+    h = base + arg0;
+    h->hero_move->velocity_enable = 1;
+    e = h->hero_eng;
+    p = e->platform;
+    if (p != NULL) {
+        p->platform = NULL;
+    }
+    e->platform = NULL;
+    SetHeroSeq((HeroInfo *)arg0, 0x2C);
+    idx = 0;
+    if (D_8005A614[arg0 + 0x5C] == 0) {
+        idx = h->hero_name;
+    }
+    h->hero_move->jump_vel = D_8009D6E8.unk10[idx].vel;
+    h->hero_move->jump_max = D_8009D6E8.unk10[idx].max;
+    h->hero_move->jump_acc = D_8009D6E8.unk10[idx].acc;
+    h->hero_move->jump_dec = D_8009D6E8.unk10[idx].dec;
+    h->hero_move->jump_dir = -1;
+}
 
 void func_800B971C(s32 arg0) {
     HeroInfo *base = Heroes;

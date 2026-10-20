@@ -154,5 +154,20 @@ void func_800B971C(s32 arg0);
 void func_800B9A04(s32 arg0);
 
 void func_800B9CE0(s32 arg0);
+extern u8 D_8005A614[];
+
+/* Hero jump parameters, 8 bytes per hero (D_8009D6E8.unk10). */
+typedef struct Ovl64JumpEnt {
+    u16 vel, max, acc, dec;
+} Ovl64JumpEnt;
+
+typedef struct Ovl64Hooks {
+    /* 0x00 */ u8 pad0[0x10];
+    /* 0x10 */ Ovl64JumpEnt *unk10;
+    /* 0x14 */ u8 pad14[0x58];
+} Ovl64Hooks;
+extern Ovl64Hooks D_8009D6E8;
+
+void func_800B9608(s32 arg0);
 
 #endif /* BASH_OVL64_H */
