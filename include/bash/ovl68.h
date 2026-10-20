@@ -51,6 +51,7 @@ typedef struct EggExt {
     s32 unk30;
     u8 pad34[0x10];
 } EggExt;
+
 /* PadState (D_80051338) as func_800BB260 reads it: flags at 0x54. */
 typedef struct Ovl68Pad {
     /* 0x00 */ u8 pad0[0x54];
@@ -141,6 +142,8 @@ typedef struct Ovl68Obj {
 } Ovl68Obj;
 
 void func_800B3330(void);
+extern s32 D_800BC240[];
+void func_80029100(void *arg0);
 void func_800BADA8(s32 arg0);
 void func_800BAE20(void);
 void func_800BAE28(void);

@@ -20,7 +20,39 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B3EFC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B4048);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B4444);
+void func_800B4444(void) {
+    s32 i;
+    s32 j;
+    s32 k;
+    s32 n;
+    u8 *g;
+    u8 *h;
+    NAS **p;
+
+    i = 0;
+    p = D_800BC424;
+loop:
+    if (i < 8) {
+        if (*p != 0) {
+            j = k + 1;
+            k = j;
+        }
+        p++;
+        i++;
+        goto loop;
+    }
+    g = D_80052A54;
+    if (*(s32 *)(g + 0x1544) != 0) {
+        func_80029100(g + 0x1548);
+    }
+    n = 3;
+    do {
+        n--;
+    } while (n >= 0);
+    h = D_80053F8C;
+    func_80029100(h + 0x10);
+    ((void (*)(s32 *))func_800B3330)(D_800BC240);
+}
 
 void func_800B44C8(void) {
     HeroInfo *h;
