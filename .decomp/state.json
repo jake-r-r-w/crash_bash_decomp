@@ -8202,7 +8202,8 @@
  },
  "ovl64:800B382C": {
   "auto_diff": 63,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-20T08:54:26Z",
+  "status": "matched"
  },
  "ovl64:800B3938": {
   "auto_diff": 63,

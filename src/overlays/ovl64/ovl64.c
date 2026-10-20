@@ -12,7 +12,48 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B3428);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B359C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B382C);
+void func_800B382C(void) {
+    s32 i;
+    s32 j;
+    s32 k;
+    s32 y;
+    s32 a;
+    s32 b;
+    s32 c;
+    s32 d;
+    Ovl64Cell *p;
+    Ovl64Cell *base;
+    s32 t0;
+    s32 t1;
+
+    i = 0;
+    base = D_800BBE10[0];
+    y = 0x500;
+    for (; i < 4; i++) {
+        j = 0;
+        d = i << 7;
+        for (; j < 16; j++) {
+            t0 = j << 8;
+            p = (Ovl64Cell *)(d + (s32)base);
+            p->x = t0;
+            p->y = y;
+            d += 8;
+        }
+        y += 0x140;
+    }
+    for (k = 0; k < 300; k++) {
+        i = Random(4);
+        j = Random(16);
+        c = Random(4);
+        d = Random(16);
+        t0 = D_800BBE10[i][j].x;
+        t1 = D_800BBE10[i][j].y;
+        D_800BBE10[i][j].x = D_800BBE10[c][d].x;
+        D_800BBE10[i][j].y = D_800BBE10[c][d].y;
+        D_800BBE10[c][d].x = t0;
+        D_800BBE10[c][d].y = t1;
+    }
+}
 
 void func_800B3938(void) {
     s32 i;

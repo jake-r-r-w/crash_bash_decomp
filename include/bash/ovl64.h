@@ -31,6 +31,12 @@ typedef struct Ovl64Slot {
     s32 pad[3];
 } Ovl64Slot;
 
+typedef struct Ovl64Cell {
+    s32 x;
+    s32 y;
+} Ovl64Cell;
+
+extern Ovl64Cell D_800BBE10[4][16];
 extern s32 D_800BC010;
 extern s32 D_800BC014;
 extern s16 D_800BC018;
@@ -127,6 +133,8 @@ extern void (*D_8009D740)(s32);
 s32 func_8008502C();
 s32 func_800871E4(s32 arg0);
 s32 SetHeroSeq(HeroInfo *hero, s32 seq);
+
+void func_800B382C(void);
 
 void func_800B92BC(s32 arg0);
 
