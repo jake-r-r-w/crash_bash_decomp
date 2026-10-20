@@ -279,7 +279,9 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800BB230);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800BB37C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800BB4FC);
+void func_800BB4FC(s32 arg0) {
+    Heroes[arg0].hero_move->velocity_enable = 1;
+}
 
 void func_800BB52C(s32 arg0) {
     D_8009D73C(arg0);

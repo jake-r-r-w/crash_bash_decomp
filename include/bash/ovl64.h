@@ -49,4 +49,6 @@ s32 func_800B8D98(s32 arg0);
 
 extern NAS *D_8005AA2C;
 
+void func_800BB4FC(s32 arg0);
+
 #endif /* BASH_OVL64_H */
