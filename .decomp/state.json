@@ -10105,10 +10105,9 @@
   "auto_failed": "compile"
  },
  "ovl69:800B7458": {
-  "auto_failed": "types",
   "blocked_at": "2026-10-19T17:11:49Z",
-  "note": "STAGE registers 4/340 (blocks 18/20). Only v (D_800BA740 test + row[w] value, one global pseudo) is a1, target v1: set_preference (global.c, every SET) gives it a1 from the row[w] load whose address dies in a1. Removing that preference needs the address in a global pseudo: h = (u8 *)(w * 4 + (u32)row); v = *(s32 *)h; (2026-10-19) gives v v1 in both places and h a1, but local-alloc then ranks the D_8004DDBC base quantity (4 refs over ~3 insns) above w's lhu/-0x101/<<2 chain (6 refs over ~9; in the target the address is tied in, so w has 8+ refs) and swaps them a1/a2; h = D_8005A614 at the end also schedules differently. A row local computed before w reshuffles sched1 (29 differ). Next: raise w's quantity priority (refs or a shorter sched1 life) with h global, or another way v loses its a1 preference.",
-  "status": "blocked",
+  "matched_at": "2026-10-20T08:15:25Z",
+  "status": "matched",
   "tries": 2
  },
  "ovl69:800B79A8": {

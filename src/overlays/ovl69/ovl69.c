@@ -871,10 +871,6 @@ void func_800B6CF4(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B6E0C);
 
-/* Parked: registers 4/340, every block but two exact. Only v (the D_800BA740 test and
- * the D_8004DDBC row[w] value) differs: global.c gives it a1, its preference from
- * the row[w] load's dying a1 address, where the target has v1 (AGENT_LOG). */
-#ifdef NON_MATCHING
 void func_800B7458(void) {
     Ovl69ListSlot *slot;
     subengine *q;
@@ -883,7 +879,6 @@ void func_800B7458(void) {
     subengine *s;
     subengine *t;
     EXTengine *e0;
-    subengine *p;
     s32 i;
     s32 off;
     u8 *g;
@@ -891,7 +886,6 @@ void func_800B7458(void) {
     s32 w;
     s32 c;
     u8 *h;
-    s32 v;
     Ovl69Entry *tbl;
     TrigEntry *trig;
 
@@ -904,16 +898,15 @@ void func_800B7458(void) {
     a = D_800555DC;
     func_80029100((AnimOwner *)(a + 0x10));
     func_80029100((AnimOwner *)(a + 0x48));
-    v = D_800BA740;
-    if (v == 0) {
+    val = D_800BA740;
+    if (val == 0) {
         func_800B6E0C();
     }
     e0 = GetEngineSlot(0);
     boff = ((Ovl69ListSlot *)((u8 *)D_800BA324[(s8)D_8005A614[0x36]].unk0 + ((s8)D_8005A614[0x37] << 4)))->idx;
-    p = e0->sub;
     w = D_8004DDD0[boff * 3] - 0x101;
-    v = ((s32 **)D_8004DDBC)[*(s32 *)(D_8005A614 + 0x2C)][w];
-    p[6].unk6C = (void *)v;
+    off = ((s32 **)D_8004DDBC)[*(s32 *)(D_8005A614 + 0x2C)][w];
+    e0->sub[6].unk6C = (void *)off;
     t = &GetEngineSlot(0)->sub[1];
     t->unk08 = func_80015284(t->unk08,
         *(s16 *)((u8 *)&GetEngineSlot(1)->sub[(s8)D_8005A614[0x37] + 4] + 0x72) + 0x32, 0x800);
@@ -978,9 +971,6 @@ void func_800B7458(void) {
     q->unk04 = D_80068BD4[(((D_8004E0D8 * 20 + (i << 11)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 128 >> 12;    q->unk08 = (D_80068BD4[(((D_8004E0D8 * 70 + (i << 9)) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10;
     q->unk52 = 1;
 }
-#else
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B7458);
-#endif
 
 void func_800B79A8(void) {
     s32 *cam = (s32 *)&D_800B9538;
