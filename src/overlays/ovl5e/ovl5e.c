@@ -76,7 +76,25 @@ s32 func_800B7558(EXTengine *eng) {
     return func_80025E00(eng, y);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B7600);
+void func_800B7600(s32 arg0) {
+    Ovl5eKey *src;
+    Ovl5eKey *dst;
+
+    src = D_800BD008[arg0];
+    D_800BE82C = src;
+    if (src->b != 0) {
+        dst = src;
+        do {
+            dst->d = src->a;
+            dst->e = dst->b;
+            dst->f = dst->c;
+            dst->g = 1;
+            dst++;
+            src++;
+        } while (dst->b != 0);
+    }
+    D_800BE894 = 2;
+}
 
 s32 func_800B7670(u8 *arg0) {
     s32 temp_a0;

@@ -45,6 +45,24 @@ typedef struct Slot40 {
 
 extern Slot40 D_800BD70C[6];
 
+typedef struct Ovl5eKey {
+    /* 0x00 */ u16 a;
+    /* 0x02 */ u16 b;
+    /* 0x04 */ u16 pad4;
+    /* 0x06 */ u16 c;
+    /* 0x08 */ u16 pad8[2];
+    /* 0x0C */ u16 d;
+    /* 0x0E */ u16 e;
+    /* 0x10 */ u16 f;
+    /* 0x12 */ u16 g;
+} Ovl5eKey;
+
+extern Ovl5eKey *D_800BD008[];
+extern Ovl5eKey *D_800BE82C;
+extern s16 D_800BE894;
+
+void func_800B7600(s32 arg0);
+
 s32 func_800B7670(u8 *arg0);
 
 void func_800B7778(void);
