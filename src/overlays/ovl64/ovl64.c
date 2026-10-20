@@ -314,7 +314,17 @@ s32 func_800B8E54(void) {
 void func_800B8E5C(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B8E64);
+void func_800B8E64(u16 arg0, u16 arg1) {
+    s32 i;
+    Ovl64Pair *p;
+
+    for (i = 0; i < arg0; i++) {
+        p = func_800B4F7C(&D_800BBD5E);
+        if (p != NULL) {
+            func_800B51A0(p->a, p->b, arg1, -1);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B8EE0);
 

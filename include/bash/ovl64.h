@@ -106,4 +106,15 @@ s32 func_800BB648(s32 arg0);
 
 s32 func_800BB6B4(s32 arg0);
 
+typedef struct Ovl64Pair {
+    s32 a;
+    s32 b;
+} Ovl64Pair;
+
+extern u8 D_800BBD5E;
+Ovl64Pair *func_800B4F7C(void *arg0);
+void func_800B51A0(s32 a, s32 b, s32 c, s32 d);
+
+void func_800B8E64(u16 arg0, u16 arg1);
+
 #endif /* BASH_OVL64_H */
