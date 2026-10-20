@@ -23,6 +23,8 @@ extern HeroInfo Heroes[4];
 
 extern s32 D_800B9F1C[];
 
+extern void (*D_8009D73C)();
+
 s32 func_800B8714(s32 arg0);
 
 s32 func_800B8814(s32 arg0);
@@ -36,6 +38,8 @@ void func_800B8AF4(s32 arg0);
 void func_800B8B3C(s32 arg0);
 
 void func_800B8BA0(s32 arg0);
+
+void func_800B8C3C(s32 arg0);
 
 void func_800B8D3C(s32 arg0);
 
