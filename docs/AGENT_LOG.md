@@ -22,7 +22,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   complete (94/94, 2026-10-20)**, ovl69 69/77, ovl67 102/135, ovl60
   131/180, ovl5f 127/179, ovl62 151/216, ovl63 97/139, ovl5d 70/104,
   ovl65 64/80, ovl68 60/93 (swarm runs 2026-10-18/19), ovl66 49/65 left
-  16 (swarm 2026-10-20); ovl5e 47 left (16 matched 2026-10-20); ovl64 24 left (22 matched 2026-10-20). All 564 PsyQ functions (Sony objects). 2 parked (`decomp.py
+  16 (swarm 2026-10-20); ovl5e 12 left (50 matched 2026-10-20); ovl64 24 left (22 matched 2026-10-20). All 564 PsyQ functions (Sony objects). 2 parked (`decomp.py
   status`). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
@@ -50,10 +50,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
 ## Next
 
 **Matching the slot overlays with the swarm.** Left per overlay (2026-10-19,
-`INCLUDE_ASM` count per file): ovl5e 47 (2026-10-20), ovl62 65, ovl66 16 (2026-10-20), ovl68 33,
+`INCLUDE_ASM` count per file): ovl5e 12 (2026-10-20), ovl62 65, ovl66 16 (2026-10-20), ovl68 33,
 ovl5f 52, ovl64 24 (2026-10-20), ovl60 49, ovl63 42, ovl5d 34, ovl67 33, ovl65 16,
 ovl69 8, engine 2 (ovl61 and ovl6a are done). main.exe is complete. **Next session:
-swarm the rest of ovl5e and ovl64 (ovl64's left are mostly >= 600 B: big-heavy), then ovl66's leftovers**, on the low-cost recipe; after each run, the
+ovl5e's 12 and ovl64's 24 are mostly >= 600 B: big-heavy recipe (`--workers 1 --big-workers 4 --big-bytes 400`), then ovl66's leftovers**, on the low-cost recipe; after each run, the
 "After a run" checklist in tools/swarm/README.md (`stats --run ID`, parks,
 gate failures, `fold`, this log).
 
@@ -125,6 +125,21 @@ and current tools).
     initially ready) takes the stall. No statement order, `pos.x` spelling or
     index temp moved it. Next: find C whose RTL emits the table address after
     the index arithmetic (or makes `i = 0` depend on something late).
+- **ovl5e big-mode checkpoints (2026-10-20), hints the workers left** (their
+  Diff-patterns rows, not folded: the functions aren't matched yet):
+  - `func_800B7134` instructions 5/198: load the multiplier table entry
+    into a local before the preceding store (`w = T[a >> 7]; x += (w * cos)
+    >> 12`); loop.c hoists a global base out of the outer loop where the
+    target reloads it per inner loop. The worker's fix sets the base local
+    twice (NULL at the bottom, a dead store flow deletes): a hack, find the
+    real shape.
+  - `func_800BB3F0` instructions 26/171: loop.c hoists a loop-invariant
+    multiply the target recomputes. A user variable set twice in the loop
+    isn't moved (index through `r = player; arr[r]`); a `goto` into the
+    loop body also stops the hoists.
+  - `func_800B38FC` instructions 32/131: stack `u16` args get `andi` +
+    `sll` after a branch; declare the params `u16` and scale them in place
+    (`n4 *= 4;`).
 - **Hack matches to revisit:** `decomp.py hacks` lists them (two on
   2026-10-19: `func_800193A8`, register pins that are probably the original
   source, and `func_800B345C` above). Parks are `decomp.py status` / the dashboard. Before reaching for a
@@ -432,6 +447,17 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-20 (swarm ovl5e, run 2):** run 20261020112410, `--model sonnet
+  --escalate-model opus --workers 5 --big-workers 2 --big-budget-usd 8
+  --max-run-usd 40`: 34 matched in 63 min for $41.68 (stopped at the
+  budget), no parks; 12 left (3 with checkpoints, 9 big ones not reached).
+  $/match: 150-399 B ~$0.28, 400-599 B $0.90, big mode $20.82 for one.
+  Permuter pool (first live record): 10 runs, 9 improved, 4 matched
+  (`func_800B7BE4`, `func_800B4EE8`, `func_800B64AC`, `func_800B5E44`; 3
+  went to the gate without a port session), helped by scoring by address.
+  `fold`: 29 rows -> 15 new, 4 into existing rows, 3 rows on unmatched
+  functions kept as leads (Open leads), duplicates merged.
 
 - **2026-10-20 (swarm ovl64):** run 20261020083954, `--model sonnet
   --escalate-model opus --workers 4 --big-workers 2 --big-budget-usd 8
