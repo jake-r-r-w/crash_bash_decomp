@@ -8,6 +8,10 @@
 #include "common.h"
 #include "bash/ovl66.h"
 
+extern HeroInfo Heroes[4];
+
+void func_800B8A30(s32 arg0);
+
 void func_800B8EF0(void);
 
 void func_800B9264(void);

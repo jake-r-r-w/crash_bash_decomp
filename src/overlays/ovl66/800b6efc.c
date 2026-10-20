@@ -38,7 +38,19 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B8918);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B89D8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B8A30);
+void func_800B8A30(s32 arg0) {
+    HeroInfo *hero;
+
+    if (func_800B8714() == 0 && func_800B8814(arg0) == 0 && func_800B89D8(arg0) == 0) {
+        HeroInfo *base = Heroes;
+        hero = base + arg0;
+        hero->hero_frozen = 10;
+        if (func_8008502C(arg0) == 9) {
+            SetHeroAction((HeroInfo *)arg0, 0x40);
+            hero->hero_frozen = 0;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B8AC8);
 
