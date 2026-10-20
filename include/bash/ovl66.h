@@ -71,7 +71,7 @@ extern u8 D_8008AB48[];
 extern u8 D_800B9DF8[];
 extern u8 D_8008AB04[];
 void func_800B70C4(void);
-void func_800B9054(void);
+s32 func_800B9054(EXTengine *eng);
 void func_800B717C(void);
 void func_800B7B48(void);
 void func_800B8E64(void);

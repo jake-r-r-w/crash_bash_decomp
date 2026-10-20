@@ -8280,7 +8280,9 @@
   "auto_failed": "diff"
  },
  "ovl64:800B8F48": {
-  "auto_failed": "compile"
+  "auto_failed": "compile",
+  "copy_failed": "ovl66:800B9054",
+  "copy_failed_stage": "in-file"
  },
  "ovl64:800B9048": {
   "matched_at": "2026-10-10T10:16:46Z",
@@ -8960,7 +8962,8 @@
   "auto_failed": "compile"
  },
  "ovl66:800B9054": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-20T06:31:41Z",
+  "status": "matched"
  },
  "ovl66:800B9144": {
   "auto_diff": 21,

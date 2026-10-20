@@ -141,7 +141,26 @@ void func_800B8EF8(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B8F64);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B9054);
+s32 func_800B9054(EXTengine *eng) {
+    s32 x = eng->unk10.x;
+    s32 z = eng->unk10.z;
+    s32 limit;
+    s32 ret = 0;
+    s32 ang;
+
+    if (eng->collision_box.flags & 0x40) {
+        limit = 0x980 - eng->collision_box.radius;
+    } else {
+        limit = 0x980;
+    }
+    if (x * x + z * z >= limit * limit) {
+        ang = get_angle(x, z);
+        eng->unk10.x = limit * D_80068BD4[(ang - 0x400) & 0xFFF].unk2 >> 12;
+        eng->unk10.z = limit * D_80068BD4[ang & 0xFFF].unk2 >> 12;
+        ret = 1;
+    }
+    return ret;
+}
 
 void func_800B9144(s32 player) {
     HeroInfo *base = Heroes;
