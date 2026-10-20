@@ -356,7 +356,26 @@ void func_800B9088(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B90D0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B92BC);
+void func_800B92BC(s32 arg0) {
+    HeroInfo *h;
+    HeroInfo *base;
+
+    D_800BC05C[arg0] = 0;
+    base = Heroes;
+    h = base + arg0;
+    h->hero_hit = 0x1E;
+    h->hero_pu_timer = 0;
+    h->hero_move->velocity_enable = 0;
+    if (h->hero_object != NULL) {
+        h->hero_object->player = h->hero_harm_player;
+        h->hero_object->status = 4;
+        h->hero_object = NULL;
+    }
+    if (h->hero_eng->sfx != NULL) {
+        StopSfx(h->hero_eng->sfx);
+    }
+    SetHeroSeq((HeroInfo *)arg0, 0x2B);
+}
 
 void func_800B937C(s32 arg0) {
     HeroInfo *h;

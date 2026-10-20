@@ -127,6 +127,8 @@ s32 func_8008502C();
 s32 func_800871E4(s32 arg0);
 s32 SetHeroSeq(HeroInfo *hero, s32 seq);
 
+void func_800B92BC(s32 arg0);
+
 void func_800B937C(s32 arg0);
 
 #endif /* BASH_OVL64_H */
