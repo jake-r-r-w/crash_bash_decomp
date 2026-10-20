@@ -38,6 +38,8 @@ s32 func_800BA22C(EXTengine *eng, Ovl5eHitFlags *flags, u32 mask);
 
 void func_800BA4C0(s32 arg0);
 
+void func_800BA5CC(s32 arg0);
+
 void func_800BAFD4(s32 arg0);
 
 void *func_800BC588(s32 idx, s32 mask);
