@@ -107,7 +107,25 @@ void func_800B886C(s32 idx) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B8918);
+void func_800B8918(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = base + arg0;
+    EXTengine *p = h->hero_powerup;
+    subengine *s = NULL;
+
+    if (p != NULL) {
+        s = p->sub;
+    }
+    if (s != NULL) {
+        p->flags &= 0xFFFF7FFF;
+    }
+    D_800B9F4C[arg0].f8 = 3;
+    func_80089FA4(arg0);
+    SetHeroSeq((HeroInfo *)arg0, 0x39);
+    h->hero_move->velocity_enable = 0;
+    h->hero_frozen = 2;
+    D_800AD12C = 1;
+}
 
 s32 func_800B89D8(s32 arg0) {
     if (Heroes[arg0].hero_status & 0x200) {
