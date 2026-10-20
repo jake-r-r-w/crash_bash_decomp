@@ -27,4 +27,6 @@ void *func_800BC588(s32 idx, s32 mask);
 
 void func_800BC7B4(s32 arg0);
 
+void func_800BC800(s32 arg0);
+
 #endif /* BASH_OVL5E_800B87A0_H */

@@ -137,6 +137,9 @@ void func_800BC7B4(s32 arg0) {
     SetHeroSeq((HeroInfo *)arg0, 0x16);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BC800);
+void func_800BC800(s32 arg0) {
+    Heroes[arg0].hero_move->velocity_enable = 1;
+    SetHeroSeq((HeroInfo *)arg0, 0x15);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BC84C);
