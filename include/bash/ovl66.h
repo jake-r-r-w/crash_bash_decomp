@@ -28,6 +28,44 @@ extern s32 D_800B9EEC;
 void func_800B33A4();
 
 int func_800B61B0(int a0, int *out);
+/* D_8009D6E8 (EngineHooks in bash/engine.h, which this unit does not include). */
+typedef struct Ovl66Hooks {
+    /* 0x00 */ u8 pad0[4];
+    /* 0x04 */ void *unk4;
+    /* 0x08 */ u8 pad8[0x18];
+    /* 0x20 */ void *unk20;
+    /* 0x24 */ u8 pad24[4];
+    /* 0x28 */ void *unk28;
+    /* 0x2C */ void *unk2C;
+    /* 0x30 */ u8 pad30[8];
+    /* 0x38 */ void *unk38;
+    /* 0x3C */ void *unk3C;
+    /* 0x40 */ u8 pad40[4];
+    /* 0x44 */ void *unk44;
+    /* 0x48 */ void *unk48;
+    /* 0x4C */ u8 pad4C[8];
+    /* 0x54 */ void *unk54;
+    /* 0x58 */ u8 pad58[4];
+    /* 0x5C */ void *unk5C;
+    /* 0x60 */ u8 pad60[4];
+    /* 0x64 */ void *unk64;
+    /* 0x68 */ void *unk68;
+} Ovl66Hooks;
+extern Ovl66Hooks D_8009D6E8;
+extern s16 D_8009E0D8;
+extern s16 D_8009E0E4;
+extern s16 D_8009E0E6;
+extern u8 D_8008AB48[];
+extern u8 D_800B9DF8[];
+extern u8 D_8008AB04[];
+void func_800B70C4(void);
+void func_800B9054(void);
+void func_800B717C(void);
+void func_800B7B48(void);
+void func_800B8E64(void);
+void func_800B6E1C(void);
+void func_800B5BA0(void);
+void func_800B67F4(void);
 
 void func_800B6238(s32 arg0, s32 arg1);
 void func_800B4BC8(s32 arg0, u16 arg1);

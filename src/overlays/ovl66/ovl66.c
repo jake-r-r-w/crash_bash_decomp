@@ -8,7 +8,24 @@
 #include "bash/hero.h"
 #include "bash/shell.h"
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B33A4);
+void func_800B33A4() {
+    D_8009D6E8.unk4 = D_800B9DF8;
+    D_8009D6E8.unk2C = func_800B70C4;
+    D_8009D6E8.unk68 = func_800B9054;
+    D_8009D6E8.unk20 = func_800B717C;
+    D_8009D6E8.unk28 = func_800B8EF0;
+    D_8009D6E8.unk54 = func_800B7B48;
+    D_8009D6E8.unk3C = func_800B8E64;
+    D_8009D6E8.unk48 = D_8008AB48;
+    D_8009D6E8.unk44 = D_8008AB04;
+    D_8009D6E8.unk5C = func_800B6E1C;
+    D_8009D6E8.unk64 = func_800B6238;
+    D_8009D6E8.unk38 = func_800B5BA0;
+    D_8009E0D8 = 0x42;
+    D_8009E0E4 = 0x47;
+    D_8009E0E6 = 0x48;
+    func_800B67F4();
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B347C);
 
