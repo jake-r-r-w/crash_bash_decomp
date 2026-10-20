@@ -8410,9 +8410,10 @@
   "status": "matched"
  },
  "ovl64:800BA098": {
-  "auto_failed": "types",
   "copy_failed": "ovl5d:800C159C",
-  "copy_failed_stage": "in-file"
+  "copy_failed_stage": "in-file",
+  "matched_at": "2026-10-20T21:00:26Z",
+  "status": "matched"
  },
  "ovl64:800BA344": {
   "auto_failed": "types",

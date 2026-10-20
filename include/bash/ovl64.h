@@ -208,7 +208,7 @@ void func_800B4144();
 void func_800B7508();
 void func_800B8EE0();
 void func_800B90D0();
-void func_800BA098();
+NAS *func_800BA098(s32 player, s32 mask, s32 unused, s32 cone);
 void func_800BA344();
 void func_800BA514();
 void func_800BAF1C();

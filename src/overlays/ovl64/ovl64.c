@@ -845,7 +845,98 @@ void func_800B9EEC(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800BA098);
+/* The D_8009D6E8.unk4C hook: claim the first object in reach of player's
+ * cylinder that can take mask (within cone of the hero's heading, 0: any).
+ * Each arm claims in its own do-while (0); jump2 merges the copies. */
+NAS *func_800BA098(player, mask, unused, cone)
+    s32 player;
+    s32 mask;
+    s32 unused;
+    u16 cone;
+{
+    VECTOR pos;
+    s32 top;
+    s32 bot;
+    HeroInfo *heroes;
+    HeroInfo *h;
+    EXTengine *me;
+    EXTengine *eng;
+    FlagRecord *rec;
+    FlagRecord *rec2;
+    EXTobject *obj;
+    NAS *nas;
+    NAS *self;
+    s32 rad;
+    s32 lo;
+    s32 hi;
+    s32 dx;
+    s32 dz;
+    s32 r;
+
+    heroes = Heroes;
+    h = &heroes[player];
+    me = h->hero_eng;
+    if (me == NULL) {
+        return NULL;
+    }
+    rec = func_80025A48(me, 0x400);
+    if (rec == NULL) {
+        return NULL;
+    }
+    if (me->unk5E != 0) {
+        func_800142D4(&me->unk1C);
+    }
+    func_8001CD04(me->sub, me->unk3C, &me->unk10);
+    bot = me->unk10.y + rec->unk2;
+    top = me->unk10.y + rec->height;
+    rad = rec->radius;
+    func_80015758((SVECTOR *)rec, &pos);
+    nas = D_8005AA2C;
+    self = NULL;
+    if (h->hero_object != NULL) {
+        self = ((NAS **)h->hero_object)[-1];
+    }
+    for (; nas != NULL; nas = nas->Solid.Child) {
+        if (!(nas->Class & 0x200) || nas == self) {
+            continue;
+        }
+        eng = nas->Engine;
+        if (eng == NULL || eng == me) {
+            continue;
+        }
+        rec2 = func_80025A48(eng, 0x40);
+        if (rec2 == NULL) {
+            continue;
+        }
+        lo = eng->unk10.y + rec2->unk2;
+        hi = eng->unk10.y + rec2->height;
+        if (top < lo && hi < bot) {
+            dx = eng->unk10.x - pos.vx;
+            dz = eng->unk10.z - pos.vz;
+            r = rec2->radius + rad;
+            if (dx * dx + dz * dz < r * r) {
+                obj = FindExtension(nas, 0x1000);
+                if (obj != NULL && (obj->can_do & mask)) {
+                    if (cone == 0) {
+                        do {
+                            obj->player = player;
+                            obj->will_do |= mask;
+                            return nas;
+                        } while (0);
+                    } else if (func_80015480(Heroes[player].hero_move->forward_angle,
+                                             get_angle(eng->unk10.x - me->unk10.x, eng->unk10.z - me->unk10.z) ^ 0x800) < cone) {
+                        do {
+                            obj->player = player;
+                            obj->will_do |= mask;
+                            return nas;
+                        } while (0);
+                    }
+                }
+            }
+        }
+    }
+    return NULL;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800BA344);
 
