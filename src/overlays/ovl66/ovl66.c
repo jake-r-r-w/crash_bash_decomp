@@ -211,7 +211,40 @@ void func_800B6568(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", InitBonkStool);
+void InitBonkStool(NAS *nas) {
+    EXTengine *e = nas->Engine;
+
+    if (e != NULL) {
+        subengine *s;
+
+        e->unk5C = 1;
+        e->unk2C.z = 0xC00;
+        e->unk2C.y = 0xC00;
+        e->unk2C.x = 0xC00;
+        e->unk5E = 1;
+        nas->UserInfo.status = 0;
+        nas->UserInfo.user1 = 0;
+        s = e->sub;
+        e->flags &= 0xFFFF7FFF;
+        if (s != NULL) {
+            s->unk6C = D_80053C7C;
+            s->unk74 = 0x2002;
+        } else {
+            nas->Failure = 1;
+        }
+        if (AddObject(nas) != NULL) {
+            func_80026AD8((u8 *)nas);
+            func_8002694C(nas, 0x200);
+        } else {
+            nas->Failure = 1;
+        }
+    } else {
+        nas->Failure = 1;
+    }
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 void func_800B66C8(void) {
     NAS *n;

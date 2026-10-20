@@ -147,6 +147,8 @@ void func_800B64B4(s32 arg0, s32 arg1, Ovl66Obj *obj);
 
 void func_800B6568(void);
 
+void InitBonkStool(NAS *nas);
+
 void func_800B66C8(void);
 
 void func_800B6774(void);
