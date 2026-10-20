@@ -463,7 +463,37 @@ void PlotCoalFlameSFX(CoalSfxObj *obj) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotPUGenerator_CH);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", InitPickupCH);
+void InitPickupCH(NAS *nas) {
+    EXTengine *eng;
+    EXTengine *e;
+    PickupCHExt *ext;
+
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+        return;
+    }
+    nas->UserInfo.user2 = 0;
+    nas->UserInfo.user1 = 5;
+    ext = AddExtension(nas, 0x44, 0x10000006);
+    ext->unk14 = 0;
+    eng = nas->Engine;
+    nas->FUX = (EXT *)ext;
+    eng->unk5D = 1;
+    e = AddEngine(nas, 1);
+    if (e != NULL) {
+        e->unk10.x = eng->unk10.x;
+        e->unk10.y = 0;
+        e->unk10.z = eng->unk10.z;
+        e->sub->unk51 = 2;
+        e->sub->unk6C = D_80052F5C;
+        e->sub->unk74 = 0x2001;
+        e->sub->flags |= 0x40000041;
+        e->sub->unk76 = 0x800;
+        e->sub->unk50 = 1;
+        e->sub->unk52 = 1;
+    }
+    PlaySfx(0x3FA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotPickupCH);
 

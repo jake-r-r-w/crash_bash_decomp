@@ -155,6 +155,13 @@ void func_800B3EFC(void);
 void func_800B4048(void);
 void func_800B4444(void);
 
+/* InitPickupCH's extension 0x10000006 (0x44 bytes), its NAS.FUX. */
+typedef struct PickupCHExt {
+    /* 0x00 */ u8 unk0[0x14];
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ u8 unk18[0x44 - 0x18];
+} PickupCHExt;
+
 extern u8 D_800BC210[];
 extern s32 D_800BC2D0[][21];
 extern u8 D_80052F5C[];
@@ -230,6 +237,8 @@ void func_800B6B84(s32 arg0);
 void func_800B722C(s32 arg0);
 
 void InitBarrelCH(NAS *nas);
+
+void InitPickupCH(NAS *nas);
 
 void func_800BA630(NAS *nas);
 
