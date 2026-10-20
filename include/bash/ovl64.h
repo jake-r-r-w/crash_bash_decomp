@@ -136,6 +136,8 @@ s32 SetHeroSeq(HeroInfo *hero, s32 seq);
 
 void func_800B382C(void);
 
+s32 func_800B8F48(EXTengine *eng);
+
 void func_800B92BC(s32 arg0);
 
 void func_800B937C(s32 arg0);
