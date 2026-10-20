@@ -67,6 +67,7 @@ extern u8 D_80052FCC[];
 extern u16 D_800BC04C[];
 
 void func_800B9BF8(s32 arg0);
+extern u16 D_800BB89C[];
 extern s32 D_8005A5D8;
 extern HeroInfo Heroes[4];
 extern s32 D_8005A680;
@@ -116,5 +117,7 @@ Ovl64Pair *func_800B4F7C(void *arg0);
 void func_800B51A0(s32 a, s32 b, s32 c, s32 d);
 
 void func_800B8E64(u16 arg0, u16 arg1);
+
+void func_800B9EEC(s32 arg0);
 
 #endif /* BASH_OVL64_H */

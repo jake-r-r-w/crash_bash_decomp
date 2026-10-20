@@ -453,7 +453,47 @@ void func_800B9BF8(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B9CE0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B9EEC);
+void func_800B9EEC(s32 arg0) {
+    HeroInfo *h;
+    HeroInfo *base = Heroes;
+    s32 dy;
+
+    h = base + arg0;
+    if (h->hero_health < 2) {
+        h->hero_health = 2;
+    }
+    h->hero_eng->unk10.y = D_8005A5D8 - 0x200;
+    dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
+    if (dy != 0x7FFFFFFF) {
+        h->hero_eng->unk10.y -= dy;
+    } else {
+        h->hero_eng->unk10.y = D_8005A5D8;
+    }
+    func_8008502C(arg0);
+    {
+        HeroInfo *b2 = Heroes;
+        h = b2 + arg0;
+    }
+    if (h->hero_powerup->sfx != NULL) {
+        StopSfx(h->hero_powerup->sfx);
+    }
+    if (h->hero_eng->sfx != NULL) {
+        StopSfx(h->hero_eng->sfx);
+    }
+    if (D_8005A644 & 0x800) {
+        EXTengine *e = h->hero_eng;
+        s32 v = e->unk2C.x;
+        v -= 0x60;
+        if (v > 0x300) {
+            e->unk2C.x = v;
+            h->hero_eng->unk2C.y = v;
+            h->hero_eng->unk2C.z = v;
+        } else {
+            func_8007A524(D_800BB89C[arg0], &e->unk10.x, (s32)&D_80052FCC);
+            h->hero_status |= 0x8000;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800BA098);
 
