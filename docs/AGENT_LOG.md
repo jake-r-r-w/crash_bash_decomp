@@ -22,7 +22,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   complete (94/94, 2026-10-20)**, ovl69 69/77, ovl67 102/135, ovl60
   131/180, ovl5f 127/179, ovl62 151/216, ovl63 97/139, ovl5d 70/104,
   ovl65 64/80, ovl68 60/93 (swarm runs 2026-10-18/19), ovl66 49/65 left
-  16 (swarm 2026-10-20); ovl5e 9 left (53 matched 2026-10-20); ovl64 24 left (22 matched 2026-10-20). All 564 PsyQ functions (Sony objects). 4 parked (`decomp.py
+  16 (swarm 2026-10-20); ovl5e 8 left (54 matched 2026-10-20); ovl64 24 left (22 matched 2026-10-20). All 564 PsyQ functions (Sony objects). 3 parked (`decomp.py
   status`). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
@@ -78,7 +78,7 @@ rest are fixed by hand from the worker's patch (Gotchas). A park whose
 `jtbl_` names functions is a bad split (Gotchas).
 
 Hand work, between runs:
-1. The parks: `func_8007F314` and `PlotScriptFX` (engine), `func_800BC274` and `func_800B7134` (ovl5e), and `func_800B345C`'s hack (Open leads for each).
+1. The parks: `func_8007F314` and `PlotScriptFX` (engine), `func_800BC274` (ovl5e), and the hacks in `func_800B345C` and `func_800B7134` (Open leads for each).
 2. Name each function as it's matched when the evidence allows.
 3. Split `main.c` into its translation units: on hold since 2026-10-15. Its
    one proven boundary (jump-table parity, 95..370) has three possible
@@ -141,14 +141,14 @@ and current tools).
     `Table[slot].f` at each use, not through a pointer. `func_800BB86C`
     structure 439/644: `x < 4 && x >= 2` as nested ifs (fold-const makes a
     range check of the `&&`).
-  - `func_800B7134` parked by hand 2026-10-20 at 10/198 (2 insns), inner loop
-    exact. Left: the `D_800BE838` lui/addiu is hoisted out of the outer
+  - `func_800B7134` matched with a dead-store hack 2026-10-20 (ba1244e6):
+    locals `tb/trig/seq` set at the outer loop's top and NULLed at its
+    bottom. Without them (globals used directly) it is 2 insns off, the
+    inner loop exact: the `D_800BE838` lui/addiu is hoisted out of the outer
     loop. `move_movables` doubles `insn_count` per inner-moved reg, so the
     3rd+ candidate always moves; a user variable's set escapes only with
     `maybe_never` (outer scan past a label/jump, e.g. a loop entered at its
-    exit test) or a second set. With locals `tb/trig/seq` set at the outer
-    top and NULLed at the bottom it matches (dead-store hack). Tried and
-    failed: for/while/do/goto outer loops, block-scope locals, cell pointers.
+    exit test) or a second set. Tried and failed: for/while/do/goto outer loops, block-scope locals, cell pointers.
     Scripts: `scratch/b7134/` (`brute2.py`, `full.py`).
   - `func_800BB3F0` instructions 26/171: loop.c hoists a loop-invariant
     multiply the target recomputes. A user variable set twice in the loop
@@ -157,9 +157,11 @@ and current tools).
   - `func_800B38FC` instructions 32/131: stack `u16` args get `andi` +
     `sll` after a branch; declare the params `u16` and scale them in place
     (`n4 *= 4;`).
-- **Hack matches to revisit:** `decomp.py hacks` lists them (two on
-  2026-10-19: `func_800193A8`, register pins that are probably the original
-  source, and `func_800B345C` above). Parks are `decomp.py status` / the dashboard. Before reaching for a
+- **Hack matches to revisit:** `decomp.py hacks` lists them (three on
+  2026-10-20: `func_800193A8`, register pins that are probably the original
+  source, `func_800B345C` and `func_800B7134` above). Since 2026-10-20 the
+  `done` lint also flags dead stores, and `hacks` lints every matched
+  function (its old file prefilter hid no-op pairs). Parks are `decomp.py status` / the dashboard. Before reaching for a
   barrier or pin, try `do { } while (0)` (Diff patterns): it matched
   `func_800926CC` and `func_8008A924` without one.
 - **`PlotScriptFX` (engine script keyframes, 2080 B), parked 2026-10-18 at
@@ -464,6 +466,13 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-20 (hand: `func_800B7134` as a hack match):** on the user's go,
+  committed the dead-store version (ba1244e6, `Hack:` line in the commit):
+  198/198, the `j = 0;` before the three sets is needed (sets first, then
+  `for (j = 0; ...)`: 7/198). `done`'s lint now flags a local whose last
+  store in a loop body is dead (63b06bf4); no other matched function hits
+  it. `decomp.py hacks` now finds `func_800B345C` too.
 
 - **2026-10-20 (hand: ovl5e parks `func_800BC274`, `func_800B7134`):** both
   parked, C under `NON_MATCHING`. BC274 (2/197): the a0/a1 order before
