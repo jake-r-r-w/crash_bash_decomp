@@ -153,4 +153,6 @@ void func_800B971C(s32 arg0);
 
 void func_800B9A04(s32 arg0);
 
+void func_800B9CE0(s32 arg0);
+
 #endif /* BASH_OVL64_H */
