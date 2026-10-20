@@ -4913,7 +4913,8 @@
  },
  "ovl5e:800B7B10": {
   "auto_diff": 4,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-20T07:39:20Z",
+  "status": "matched"
  },
  "ovl5e:800B7B4C": {
   "auto_failed": "compile"

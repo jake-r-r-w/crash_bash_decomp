@@ -144,7 +144,19 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", PlotPapuColumn);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", InitPapuColumn);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B7B10);
+void func_800B7B10(void) {
+    s32 i;
+    PapuEntry *p;
+    s16 one;
+
+    i = 0;
+    one = 1;
+    for (p = D_800BE648; i < 20; i++, p++) {
+        if (p->unk0 != 0) {
+            p->unk6 = one;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B7B4C);
 

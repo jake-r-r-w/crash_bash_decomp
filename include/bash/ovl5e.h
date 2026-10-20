@@ -8,6 +8,16 @@
 #include "common.h"
 #include "bash/nas.h"
 
+typedef struct PapuEntry {
+    /* 0x0 */ s32 unk0;
+    /* 0x4 */ s16 unk4;
+    /* 0x6 */ s16 unk6;
+    /* 0x8 */ s32 unk8;
+    /* 0xC */ s32 unkC;
+} PapuEntry;
+
+extern PapuEntry D_800BE648[20];
+
 s32 func_800B7670(u8 *arg0);
 
 void func_800B7778(void);
@@ -22,5 +32,7 @@ void func_800B7DA4(void);
 
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
 #include "bash/ovl5e_800b87a0.h"
+
+void func_800B7B10(void);
 
 #endif /* BASH_OVL5E_H */
