@@ -68,6 +68,11 @@ typedef struct Ovl5eCell {
 } Ovl5eCell;
 
 extern Ovl5eCell D_800BD948[8][8];
+typedef struct Ovl5eGridPos {
+    s32 x;
+    s32 y;
+} Ovl5eGridPos;
+extern Ovl5eGridPos D_800BDE48[16][16];
 typedef struct {
     s32 pad0[4];
     s32 x;
@@ -263,6 +268,8 @@ typedef struct {
     u8 pad18[0x12];
     s16 unk2A;
 } T_B7F14_B;
+
+void func_800B3D18(void);
 
 void InitPapuBoss(NAS *nas);
 

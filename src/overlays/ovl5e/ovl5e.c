@@ -45,7 +45,42 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B38FC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B3B08);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B3D18);
+void func_800B3D18(void) {
+    s32 in, x, y;
+    s32 j, i, n, k;
+    Ovl5eGridPos *a, *b;
+
+    i = 0;
+    do {
+        y = (i << 8) - 0x780;
+        j = 0;
+        do {
+            x = (j << 8) - 0x780;
+            if ((u32)(i - 3) >= 8U) {
+                y = (Random(9) << 8) - 0x480;
+            }
+            if ((u32)(j - 4) >= 8U) {
+                x = (Random(9) << 8) - 0x380;
+            }
+            D_800BDE48[i][j].x = x;
+            D_800BDE48[i][j].y = y;
+        } while (++j < 16);
+    } while (++i < 16);
+    for (n = 0; n < 600; n++) {
+        i = Random(16);
+        j = Random(16);
+        in = Random(16);
+        k = Random(16);
+        a = (Ovl5eGridPos *)((u8 *)D_800BDE48 + (j * 8 + i * 128));
+        b = (Ovl5eGridPos *)((u8 *)D_800BDE48 + (k * 8 + in * 128));
+        x = a->x;
+        y = a->y;
+        a->x = b->x;
+        a->y = b->y;
+        b->x = x;
+        b->y = y;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B3E80);
 
