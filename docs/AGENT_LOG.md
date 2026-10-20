@@ -22,7 +22,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   93/94 (`func_800B5710` parked), ovl69 68/77, ovl67 102/135, ovl60
   131/180, ovl5f 127/179, ovl62 151/216, ovl63 97/139, ovl5d 70/104,
   ovl65 64/80, ovl68 60/93 (swarm runs 2026-10-18/19), ovl66 49/65 left
-  16 (swarm 2026-10-20); ovl5e and ovl64 are barely started. All 564 PsyQ functions (Sony objects). 4 parked (`decomp.py
+  16 (swarm 2026-10-20); ovl5e 47 left (16 matched 2026-10-20); ovl64 is barely started. All 564 PsyQ functions (Sony objects). 4 parked (`decomp.py
   status`). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
@@ -50,10 +50,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
 ## Next
 
 **Matching the slot overlays with the swarm.** Left per overlay (2026-10-19,
-`INCLUDE_ASM` count per file): ovl5e 67, ovl62 65, ovl66 16 (2026-10-20), ovl68 33,
+`INCLUDE_ASM` count per file): ovl5e 47 (2026-10-20), ovl62 65, ovl66 16 (2026-10-20), ovl68 33,
 ovl5f 52, ovl64 50, ovl60 49, ovl63 42, ovl5d 34, ovl67 33, ovl65 16,
 ovl69 9, ovl6a 1, engine 2 (ovl61 is done). main.exe is complete. **Next session:
-swarm ovl5e, then ovl64, then ovl66's leftovers (big-heavy)**, on the low-cost recipe; after each run, the
+swarm the rest of ovl5e, then ovl64, then ovl66's leftovers (big-heavy)**, on the low-cost recipe; after each run, the
 "After a run" checklist in tools/swarm/README.md (`stats --run ID`, parks,
 gate failures, `fold`, this log).
 
@@ -119,7 +119,10 @@ and current tools).
   skips it. Permute from the `NON_MATCHING` C in `src/` instead (`make
   permute FUNC=func_800B7458 ARGS=--differing` with that C in place).
   On 2026-10-20 `--differing` said "no statements to randomize" for it;
-  use `--lines A-B` on the `v` statements.
+  `--lines 905-916` got the permuter from 20 to 10 within 2 min with real
+  C: `w = D_8004DDD0[boff * 3]; w = w - 0x101;`, the row value through a
+  new temp (`off = ...[w]; v = off;`), and `e0->sub[6].unk6C = (void *)v`
+  with `p = e0->sub` dropped. Port it and `try`.
 - **Tune the permuter from its record.** Runs are logged since 2026-10-20
   (`decomp.py permstats`, `swarm.mjs stats`). Two ideas to try once there
   are a few dozen runs, compared on that record:
@@ -163,11 +166,11 @@ and current tools).
   branch (lengthens `mv`'s life so it spills and the hoist gets `fp`),
   `Heroes[arg0].field` / `D_800BCCF4[x].field`, `G->unk63 = best`, the
   `mode` local and the case order 3/4, 2, 1, default.
-  2026-10-20: the permuter (`permute --lines 255-261 --jobs 4`, 1 min) took
-  its score from 300 to 20 by wrapping `ang = (D_8009EE9C.unk4 -= step %
-  0x1000) + 0x400;` in `if (1) { }`. That's a hack, but a block boundary
-  there gives sched1 the order; look for the real construct (an inline
-  helper, or a nested block with its own temp).
+  2026-10-20, permuter: 300 -> 20 within 2 min on lines 318-321 (the 0x80
+  block) with the constant in a local: `ang = 0x400; ang =
+  (D_8009EE9C.unk4 -= step % 0x1000) + ang;`. Real C (an earlier run got
+  20 with an `if (1) { }` hack). Next: put it in the NON_MATCHING C and
+  `try` it for the register diffs left.
 - **Hack matches to revisit:** `decomp.py hacks` lists them (two on
   2026-10-19: `func_800193A8`, register pins that are probably the original
   source, and `func_800B345C` above). Parks are `decomp.py status` / the dashboard. Before reaching for a
@@ -276,6 +279,11 @@ Other:
 ## Gotchas
 
 **Tooling**
+- **`permute --lines A-B` widens to whole statements.** A range starting
+  on `if (...) {` takes the whole if/else chain (`func_800B5710` 317-324
+  became 277-458). Start inside the block. A `decomp.py permute` stopped
+  early records no PERMUTE-STATS line, and a `stop` of `swarm.mjs
+  permute` saves nothing: copy `output-*/diff.txt` first.
 - **`tools/dk python3 - <<'EOF' </dev/null` runs nothing:** the `</dev/null`
   replaces the heredoc as stdin, and Python exits quietly on an empty
   script. Write the script to a file in `scratch/` and run that.
@@ -470,6 +478,17 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-20 (swarm ovl5e, then a permuter pass):** low-cost recipe, run
+  20261020073721: 16 matched in 10 min for $1.43, stopped by request (47
+  left). `fold`: 6 rows down to 2 new, 3 merged into existing rows.
+  Then 4 permuter runs (stopped at ~15 of 30 min), all gains in the first
+  2 min but one: `func_800B5710` 300 -> 20 and `func_800B7458` 20 -> 10
+  with real C (their leads); `func_800B34F8` (ovl66) -> 15 only with a
+  no-op `D_800B9EF8++; D_800B9EF8--;` (that global's reference count is
+  the lever); `func_800C159C` (ovl5d, registers 45/171) 295 -> 235 at
+  13 min with `(*(new_var = &h))->hero_object`, a hack that says `h`'s
+  allocation is the lever.
 
 - **2026-10-20 (permuter speed and record):** `decomp.py permute` now
   prunes `base.c` to the declarations the function uses and compiles

@@ -255,7 +255,7 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | Two temps of a small sequence (a free-list pop) swap registers, and no reordering, fresh temp or reused variable fixes it | It was a `static inline` helper with its own early `return` (`AllocNAS()`: `if (free == NULL) return NULL; ...; return free;`). Inlining changes the pseudos and their priorities; the same block written in place never matches. Look for one when the same sequence appears in several functions | `SpawnNASFromRecord`, `SpawnNASById` |
 | The same NULL test appears twice in a row (`beqz v1` after a pop, then `beqz v1` again); ours merges them | The first half is an inlined helper (a `static inline` copy of an existing pop function such as `func_80021EEC`), called as `p = Pop(); if (p != NULL) {...}` | `func_80021E98` |
 | A loop's two `addiu` increments in the other order | Swap them in the `for` increment (`pad++, i++`) | `func_800138A4` |
-| Two `li` constants before a loop in the other order | Put the stored constant in a local assigned before the loop (`v = 1; for (...) a[i].x = v;`) | `func_80028158` |
+| Two `li` constants before a loop in the other order | Put the stored constant in a local assigned before the loop (`v = 1; for (...) a[i].x = v;`) | `func_80028158`, `func_800B7B10` |
 | `addu v0,a0,v0` where the target has `addu v0,v0,a0` (offset + base) | Add the offset as an integer: `(s32 *)(off + (s32)base)` | `func_8001DD20` |
 | A global loaded early, so a parameter moves out of a0 into another register | Read the global into a local at the top (`head = D_80050F3C;`) | `func_8001316C` |
 | A heap/pointer local set too early (its `lui` sits before the first call) | Assign it after the call: `n = f(x); heap = (Heap *)D_8004E0F0;` | `func_80016E5C` |
@@ -895,7 +895,7 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | inner search loop's found block merged into bnez delay slot (li v0,1) where target has a separate out-of-line `j test; li v0,1` with the fall-through insn in the slot | make the search a real loop with the exit test at the top (`while (1) { if (k >= 4) break; if (x) goto hit; ... }`): its loop notes make reorg predict the exit branch not taken; keep `hit: found = 1; goto test;` after the enclosing goto-loop's back jump | `func_800B6C04` |
 | lui of a global lands between two stores in target, we put both stores before it | wrap GetEngineSlot/stores in do {} while (0) and assign `g = &GLOBAL;` after the stores, read *g in the next test | `func_800B42B0` |
 | several loop-wide t-regs rotated, -dl shows two of them tied and a third (REG_EQUIV global base, live doubled) far below | list every pseudo's priority floor_log2(refs)*refs/live from the .lreg dump, then raise chosen ones with do{}while(0) (each nesting level adds 1 per ref inside) until the order matches the target's register order; recheck the dump after each change | `func_800B6C04` |
-| compiled loads off s0 with offsets shifted (4(s0) vs 0x14(s0)) and lacks addiu base | index the array in the loop (p = &arr[i]) instead of p++ | `func_800B84CC` |
+| compiled loads off s0 with offsets shifted (4(s0) vs 0x14(s0)) and lacks addiu base | index the array in the loop (p = &arr[i]) instead of p++; with a table value stored too, load it into a local before the first store | `func_800B84CC`, `func_800B42C0`, `func_800B4154` |
 | early `return 0` for negative index emits bltz + duplicate epilogue (length +1) | test `>= 0` and return the value inside, `return 0` last | `func_800B7B38` |
 | sllv/srav by a register that holds 1, sharing the GetEngineSlot(1) argument register | a local n = 1 used as the shift count and as the call argument; set it in both arms of the preceding if so CSE doesn't replace a later constant 1 with n | `func_800B6224` |
 | switch on 2 cases tests ==1 first, then slti <2 to default, then bnez | add an empty `case 2: break;`: 3 nodes split at the middle one (balance_case_nodes) | `func_800B6224` |
@@ -1188,6 +1188,8 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | call through function-pointer global compiled as jal | declare the global as extern void (*G)() in a header the unit includes | `func_800B8C3C` |
 | sub pointer set NULL after call in target but s0 saved (live across call) | assign s = NULL before the first call | `func_800B6CD8` |
 | beqz delay slot has li v0,3 instead of move v0,0 (null-guarded load) | use explicit `sub = NULL; if (p) sub = p->sub; if (sub)` | `func_800B6EFC` |
+| An address built as separate `sll`/`addu` terms (`z*20 + x*160`), not folded | Declare the table as a 2-D array of 20-byte structs and index `[x][z].ptr` | `func_800B7558` |
+| A store lands too early: before the zero stores instead of in the `jr` delay slot, or above the loads in a loop body | Write that store last in the C | `func_800B7DE4`, `func_800B7600` |
 
 ## Classify the diff, then work through the list
 
