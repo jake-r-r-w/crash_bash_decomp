@@ -827,7 +827,31 @@ void func_800B7BE4(void)
   ;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B7CBC);
+void func_800B7CBC(u16 arg0) {
+    s32 i;
+    Ovl5eMsg *m;
+    s32 v;
+    short t;
+    int a;
+    s32 b;
+
+    for (i = 0;; i++) {
+        if (i >= (arg0 & 0xFFFF)) {
+            return;
+        }
+        m = func_800B3E80(D_800BD8E2);
+        if (m != NULL) {
+            a = m->unk0;
+            b = m->unk4;
+            t = D_800BD908[D_800BD8E0];
+            D_800BD8E0 = (D_800BD8E0 + 1) & 0x3F;
+            v = t;
+            if (v == 6 && D_8009E46C[6] >= 4) {
+                v = 4;
+            }
+            func_800B82DC(a, 0, b, v, -1);        }
+    }
+}
 
 void func_800B7D94(void) {
 }

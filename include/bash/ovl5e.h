@@ -147,6 +147,15 @@ extern s16 D_800BE88E;
 extern s16 D_800BE890;
 
 void func_800B7600(s32 arg0);
+
+typedef struct Ovl5eMsg {
+    s32 unk0;
+    s32 unk4;
+} Ovl5eMsg;
+
+Ovl5eMsg *func_800B3E80(char *arg0);
+void func_800B82DC(s32 a, s32 b, s32 c, u8 d, s32 e);
+void func_800B7CBC(u16 arg0);
 typedef struct Ovl5eStep {
     s32 a;
     s32 b;
