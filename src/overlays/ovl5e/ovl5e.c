@@ -288,7 +288,60 @@ s32 func_800B6334(EXTengine *eng, u32 flag) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B64AC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B668C);
+NAS *func_800B668C(EXTengine *eng, s32 mask) {
+    VECTOR pos;
+    FlagRecord *box;
+    FlagRecord *rec;
+    EXTengine *e;
+    EXTobject *obj;
+    NAS *nas;
+    s32 r;
+    s32 top;
+    s32 bot;
+    s32 dx;
+    s32 dz;
+    s32 rr;
+    s32 lo;
+    s32 hi;
+
+    box = func_80025A48(eng, 0x40);
+    if (box != NULL) {
+    if (eng->unk5E != 0) {
+        func_800142D4(&eng->unk1C);
+    }
+    func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
+    r = box->radius;
+    top = eng->unk10.y + box->unk2;
+    bot = eng->unk10.y + box->height;
+    func_80015758((SVECTOR *)box, &pos);
+    for (nas = D_8005AA2C; nas != NULL; nas = nas->Solid.Child) {
+        if (nas->Class & 0x200) {
+            e = nas->Engine;
+            if (e != NULL && e != eng) {
+                rec = func_80025A48(e, 0x40);
+                if (rec != NULL) {
+                    lo = e->unk10.y + rec->unk2;
+                    hi = e->unk10.y + rec->height;
+                    if (bot < lo && hi < top) {
+                        dx = e->unk10.x - pos.vx;
+                        dz = e->unk10.z - pos.vz;
+                        rr = rec->radius + r;
+                        if (dx * dx + dz * dz < rr * rr) {
+                            obj = FindExtension(nas, 0x1000);
+                            if (obj != NULL && (obj->can_do & mask)) {
+                                obj->player = 3;
+                                obj->will_do |= mask;
+                                return nas;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    }
+    return NULL;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B6860);
 

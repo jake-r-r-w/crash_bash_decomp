@@ -263,6 +263,8 @@ void InitPapuBoss(NAS *nas);
 
 s32 func_800B6334(EXTengine *eng, u32 flag);
 
+NAS *func_800B668C(EXTengine *eng, s32 mask);
+
 void func_800B6FF8(void);
 
 void func_800B7F14(T_B7F14_A *a, T_B7F14_B *b);
