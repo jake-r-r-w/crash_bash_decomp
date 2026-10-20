@@ -21,6 +21,8 @@ void func_800B6AF4(void);
 void func_800B6AFC(void);
 
 extern s32 D_800B9EEC;
+extern ScriptInit D_800B9CE4;
+extern u8 D_80053C0C[];
 extern s16 D_8009D87C[][3];
 
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
@@ -92,6 +94,8 @@ typedef struct Ovl66Cam {
     /* 0x56 */ s16 unk56;
     /* 0x58 */ s16 unk58;
 } Ovl66Cam;
+
+void InitBonkFlag(NAS *nas);
 
 void func_800B6774(void);
 

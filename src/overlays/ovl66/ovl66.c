@@ -110,7 +110,19 @@ void PlotBonkFlag(NAS *nas) {
     func_800250B0(nas);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", InitBonkFlag);
+void InitBonkFlag(NAS *nas) {
+    EXTengine *e = nas->Engine;
+
+    if (e != NULL) {
+        func_80024E30(nas, &D_800B9CE4);
+        e->sub->unk6C = D_80053C0C;
+    } else {
+        nas->Failure = 1;
+    }
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 void PlotBonkShockwave(NAS *nas) {
     EXTengine *e = nas->Engine;
