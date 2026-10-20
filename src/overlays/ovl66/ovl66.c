@@ -53,7 +53,14 @@ int func_800B61B0(int a0, int *out)
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B61F8);
+void func_800B61F8(s32 arg0) {
+    EXTbotai *ai = Heroes[arg0].hero_ai;
+
+    if (ai != NULL) {
+        ai->AImode = 1;
+        ai->AItimer1 = 0;
+    }
+}
 
 void func_800B6238(s32 arg0, s32 arg1) {
     u8 *g = D_8005A614;
