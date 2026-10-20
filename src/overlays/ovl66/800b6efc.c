@@ -117,7 +117,25 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B7908);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B7B48);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B8550);
+void func_800B8550(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = base + arg0;
+
+    if (h->hero_eng->unk2C.x != 0) {
+        h->hero_eng->unk2C.x -= 0x80;
+        h->hero_eng->unk2C.y -= 0x80;
+        h->hero_eng->unk2C.z -= 0x80;
+        h->hero_eng->unk5E = 1;
+        if (h->hero_eng->unk2C.x <= 0) {
+            Ovl66SpawnPuff(&h->hero_eng->unk10, 1, D_80053C7C);
+            if (Heroes[arg0].hero_shadow != NULL) {
+                Heroes[arg0].hero_shadow->flags &= 0xFFFF7FFF;
+            }
+        }
+    }
+    Heroes[arg0].hero_frozen = 2;
+    func_8008502C(arg0);
+}
 
 s32 func_800B8714(s32 arg0) {
     if (Heroes[arg0].hero_status & 0x100) {

@@ -102,4 +102,29 @@ void func_800B91BC(s32 arg0);
 
 void func_800B9264(void);
 
+/* Spawns the 0x1605 puff at v. */
+static inline void Ovl66SpawnPuff(SLONG_XYZ *v, s32 kind, void *anim) {
+    NAS *nas;
+    s32 *ext;
+
+    nas = SpawnNASById(v->x, v->y, v->z, 0x1605, 0x11);
+    if (nas != NULL) {
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL) {
+            ext[3] = kind;
+            ext[6] = 0x100;
+            if (anim != NULL) {
+                ext[8] = 5;
+                nas->Engine->sub->unk6C = anim;
+            } else {
+                ext[8] = 1;
+            }
+            ext[10] = 0;
+            nas->InitDelete(nas);
+        }
+    }
+}
+
+void func_800B8550(s32 arg0);
+
 #endif /* BASH_OVL66_800B6EFC_H */
