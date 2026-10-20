@@ -73,7 +73,11 @@ void func_800B8AF4(s32 arg0) {
     SetHeroSeq((HeroInfo *)arg0, 0x37);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B8B3C);
+void func_800B8B3C(s32 arg0) {
+    SetHeroSeq((HeroInfo *)arg0, 0x36);
+    Heroes[arg0].hero_frozen = 10;
+    D_800B9F4C[arg0].f4 = 0;
+}
 
 void func_800B8BA0(s32 arg0) {
     HeroInfo *hero;
