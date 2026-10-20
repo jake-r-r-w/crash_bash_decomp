@@ -893,7 +893,131 @@ NAS *func_800B668C(EXTengine *eng, s32 mask) {
     return NULL;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B6860);
+s32 func_800B6860(u32 idx) {
+    s32 hit;
+    s32 bot;
+    s32 top;
+    EXTengine *eng;
+    EXTengine *e;
+    FlagRecord *box;
+    FlagRecord *rec;
+    HeroInfo *h;
+    NAS *nas;
+    NAS *self;
+    EXTobject *obj;
+    s32 r;
+    s32 can;
+    s32 rr;
+    s32 rr2;
+    s32 dx;
+    s32 dz;
+    s32 d2;
+    s32 d;
+    s32 ang;
+    s32 lo;
+    s32 hi;
+    s32 *p;
+    s32 i;
+    Slot40 *slot;
+
+    hit = 0;
+    if (idx >= 6) {
+        return 0;
+    }
+    eng = (EXTengine *)D_800BD70C[idx].pad4[0];
+    if (eng != NULL && (box = func_80025A48(eng, 0x40)) != NULL) {
+    r = box->radius;
+    top = eng->unk10.y + box->unk2;
+    bot = eng->unk10.y + box->height;
+    for (i = 0; i < 4; i++) {
+        if (!(Heroes[i].hero_status & 0xF800)) {
+            if (((s16 *)D_800BD70C[idx].pad4[4])[7] == 0) {
+                can = Heroes[i].hero_move->forward_speed == 0;
+            } else {
+                can = 1;
+            }
+            e = Heroes[i].hero_eng;
+            if (e != NULL) {
+                rec = func_80025A48(e, 0x40);
+                if (rec != NULL) {
+                    lo = e->unk10.y + rec->unk2;
+                    hi = e->unk10.y + rec->height;
+                    if (can) {
+                        rr = rec->radius;
+                        rr += r;
+                        rr2 = rr * rr;
+                        if (bot < lo && hi < top) {
+                            dx = e->unk10.x - eng->unk10.x;
+                            dz = e->unk10.z - eng->unk10.z;
+                            d2 = dx * dx + dz * dz;
+                            if (d2 < rr2) {
+                                d2 = csqrt(d2) >> 6;
+                                if (d2 < rr) {
+                                    ang = get_angle(dx, dz) & 0xFFF;
+                                    d2 = rr - d2 + 1;
+                                    eng->unk10.x -= d2 * D_80068BD4[(ang - 0x400) & 0xFFF].unk2 >> 12;
+                                    hit = 1;
+                                    eng->unk10.z -= d2 * D_80068BD4[ang].unk2 >> 12;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    nas = D_8005AA2C;
+    p = (s32 *)D_800BD70C[idx].pad4[6];
+    slot = &D_800BD70C[idx];
+    self = NULL;
+    if (p != NULL) {
+        self = (NAS *)p[-1];
+    }
+    can = ((s16 *)slot->pad4[4])[7] != 0;
+    r = 0x78;
+    for (; nas != NULL; nas = nas->Solid.Child) {
+        if ((nas->Class & 0x200) && nas != self) {
+            e = nas->Engine;
+            if (e != NULL && e != eng) {
+                rec = func_80025A48(e, 0x40);
+                if (rec != NULL) {
+                    lo = e->unk10.y + rec->unk2;
+                    hi = e->unk10.y + rec->height;
+                    if (bot < lo && hi < top) {
+                        dx = e->unk10.x - eng->unk10.x;
+                        dz = e->unk10.z - eng->unk10.z;
+                        rr = rec->radius;
+                        rr += r;
+                        d2 = dx * dx + dz * dz;
+                        rr2 = rr * rr;
+                        if (d2 < rr2) {
+                            d2 = csqrt(d2) >> 6;
+                            if (d2 < rr) {
+                                hit = 1;
+                                ang = get_angle(dx, dz) & 0xFFF;
+                                if (!(ang & 0xFF)) {
+                                    ang += Random(0x10) - 8;
+                                }
+                                d2 = rr - d2 + 1;
+                                if (can) {
+                                    eng->unk10.x -= d2 * D_80068BD4[(ang - 0x400) & 0xFFF].unk2 >> 12;
+                                    eng->unk10.z -= d2 * D_80068BD4[ang & 0xFFF].unk2 >> 12;
+                                }
+                                obj = FindExtension(nas, 0x1000);
+                                if (obj != NULL && (obj->can_do & 8)) {
+                                    obj->player = idx;
+                                    obj->will_do |= 8;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    }
+    return hit;
+}
 
 void func_800B6D14(void) {
     Ovl5eSceneObj *obj;

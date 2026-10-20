@@ -411,4 +411,6 @@ extern s16 D_800BE832;
 void func_800B38FC(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6,
                    s32 a7, s32 a8);
 
+s32 func_800B6860(u32 idx);
+
 #endif /* BASH_OVL5E_H */
