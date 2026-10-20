@@ -7,6 +7,7 @@
 
 #include "common.h"
 #include "bash/nas.h"
+#include "bash/engine.h"
 
 typedef struct PapuEntry {
     /* 0x0 */ s32 unk0;
@@ -25,7 +26,11 @@ typedef struct Ovl5eTile {
 
 typedef struct Ovl5eCell {
     Ovl5eTile *tile;
-    s32 pad[4];
+    s32 pad4;
+    s16 pad8;
+    u16 unkA;
+    s32 padC;
+    s32 pad10;
 } Ovl5eCell;
 
 extern Ovl5eCell D_800BD948[8][8];
@@ -112,6 +117,8 @@ void func_800B7894(u16 arg0);
 void InitPapuColumn(NAS *nas);
 
 void func_800B7B10(void);
+
+void func_800B7B4C(void);
 
 void func_800B7DE4(void);
 

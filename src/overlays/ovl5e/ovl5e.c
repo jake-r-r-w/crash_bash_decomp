@@ -250,7 +250,17 @@ void func_800B7B10(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B7B4C);
+void func_800B7B4C(void) {
+    s32 i, j;
+
+    for (j = 2; j < 18; j++) {
+        for (i = 2; i < 18; i++) {
+            if (D_800BD948[(j - 2) >> 1][7 - ((i - 2) >> 1)].unkA == 0) {
+                D_8009D90C[i * 20 + j].unk0 = 0xFF;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B7BE4);
 
