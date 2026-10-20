@@ -21,6 +21,7 @@ void func_800B6AF4(void);
 void func_800B6AFC(void);
 
 extern s32 D_800B9EEC;
+extern s16 D_8009D87C[][3];
 
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
 #include "bash/ovl66_800b6efc.h"
@@ -91,6 +92,8 @@ typedef struct Ovl66Cam {
     /* 0x56 */ s16 unk56;
     /* 0x58 */ s16 unk58;
 } Ovl66Cam;
+
+void func_800B6774(void);
 
 void func_800B69D0(void);
 

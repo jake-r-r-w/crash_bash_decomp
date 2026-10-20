@@ -148,7 +148,15 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", InitBonkStool);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B66C8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B6774);
+void func_800B6774(void) {
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+        if (D_8005A614[i + 0x5C] != 0) {
+            D_800B9EEC = D_8009D87C[i][0];
+        }
+    }
+}
 
 void func_800B67C4(void) {
     func_800B34F8();
