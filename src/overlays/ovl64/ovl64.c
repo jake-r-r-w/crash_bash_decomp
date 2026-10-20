@@ -69,7 +69,71 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", PlotBalloon);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B697C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B6C50);
+void func_800B6C50(s32 arg0) {
+    HeroInfo *base;
+    HeroInfo *h;
+    EXTengine *pu;
+    subengine *sub;
+    VECTOR pos;
+    s32 y;
+    s32 top;
+
+    base = Heroes;
+    h = base + arg0;
+    if (h->hero_pu_timer != 0) {
+        h->hero_pu_timer--;
+    }
+    if (h->hero_pu_lock != 0) {
+        h->hero_pu_lock--;
+    }
+    if (h->hero_pu != 0) {
+        pu = h->hero_powerup;
+        sub = pu->sub;
+        if (func_80015780(h->hero_eng, h->hero_sub, 0x80, &pos) != NULL) {
+            top = pos.vy - 0x40;
+            y = top - h->hero_eng->unk10.y;
+        } else {
+            switch (h->hero_name) {
+            case 1:
+            case 2:
+                y = -0x180;
+                break;
+            case 3:
+            case 4:
+                y = -0x200;
+                break;
+            case 5:
+            case 6:
+            case 7:
+            default:
+                y = -0x280;
+                break;
+            }
+        }
+        pu->unk10 = Heroes[arg0].hero_eng->unk10;
+        sub->unk08 = y;
+        if (Heroes[arg0].hero_pu != 0x13) {
+            if (Heroes[arg0].hero_pu == 0x17 && D_800BBD58 > 30) {
+                D_800BBD58 = 30;
+            }
+        }
+        if (Heroes[arg0].hero_weapon_count == 0) {
+            Heroes[arg0].hero_status &= 0xFFEF;
+        }
+        if (Heroes[arg0].hero_pu_timer != 0) {
+            sub->flags |= 0x8000;
+        } else {
+            Heroes[arg0].hero_pu = 0;
+            sub->flags &= ~0x8000;
+            if (pu->sfx != NULL) {
+                StopSfx(pu->sfx);
+            }
+        }
+        pu->unk10 = Heroes[arg0].hero_eng->unk10;
+        pu->unk5E = 1;
+        pu->unk1E += 0xAA;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B6EC0);
 

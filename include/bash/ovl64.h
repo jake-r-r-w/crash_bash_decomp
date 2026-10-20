@@ -90,6 +90,9 @@ s32 func_800B8B5C(s32 arg0);
 
 void func_800B9804(s32 arg0);
 
+extern u16 D_800BBD58;
+void func_800B6C50(s32 arg0);
+
 void func_800BB4FC(s32 arg0);
 
 void func_800BB560(s32 arg0);
