@@ -24,6 +24,23 @@ typedef struct Ovl66Slot {
     /* 0xC */ s32 fC;
 } Ovl66Slot;
 
+typedef struct Ovl66Pos {
+    /* 0x00 */ u8 pad0[0x10];
+    /* 0x10 */ s32 x;
+    /* 0x14 */ s32 y;
+    /* 0x18 */ s32 z;
+} Ovl66Pos;
+
+typedef struct Ovl66Inner {
+    /* 0x00 */ u8 pad0[0x54];
+    /* 0x54 */ Ovl66Pos *unk54;
+} Ovl66Inner;
+
+typedef struct Ovl66Target {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ Ovl66Inner *unk4;
+} Ovl66Target;
+
 extern Ovl66Slot D_800B9F4C[];
 extern u16 D_800AD12C;
 extern HeroInfo Heroes[4];
@@ -37,6 +54,8 @@ extern u16 D_800AD12C;
 void func_800B72FC(s32 idx);
 
 void func_800B738C(s32 arg0);
+
+void func_800B76CC(s32 arg0);
 
 void func_800B77FC(s32 arg0);
 
