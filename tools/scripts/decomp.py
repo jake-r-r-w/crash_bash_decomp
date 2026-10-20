@@ -1958,9 +1958,74 @@ def noop_steps(body):
     return any("++" in m.group(0) and "--" in m.group(0) for m in NOOP_STEPS.finditer(body))
 
 
+# a block-scope local declaration without initializers: `u16 *tb;`, `s32 i, j;`
+LOCAL_DECL = re.compile(r"^[ \t]*(?!(?:return|goto|else|case|do|static|extern)\b)(?:\w+[ \t]+)+"
+                        r"(\**[ \t]*\w+(?:[ \t]*,[ \t]*\**[ \t]*\w+)*)[ \t]*;", re.M)
+def loop_body(body, o):
+    """True if the { at O in BODY opens a for, while or do body."""
+    head = body[:o].rstrip()
+    if re.search(r"\bdo$", head):
+        return True
+    if not head.endswith(")"):
+        return False
+    depth, i = 0, len(head) - 1
+    while i >= 0:
+        depth += {")": 1, "(": -1}.get(head[i], 0)
+        if depth == 0:
+            break
+        i -= 1
+    return bool(re.search(r"\b(?:for|while)\s*$", head[:i]))
+
+
+def blocks(body):
+    """(open, close, is_loop) for every {...} in BODY; is_loop for a for/while/do body."""
+    out, stack = [], []
+    for i, ch in enumerate(body):
+        if ch == "{":
+            stack.append(i)
+        elif ch == "}" and stack:
+            o = stack.pop()
+            out.append((o, i, loop_body(body, o)))
+    return out
+
+
+def dead_stores(body):
+    """Locals whose last store is dead: every use is in one loop's body, which assigns the local
+    first thing and ends with a store that nothing reads (the next pass overwrites it). flow
+    deletes the store, but setting the local twice stops loop.c hoisting it out of the loop
+    (2026-10-20: tb/trig/seq = NULL at the bottom of func_800B7134's outer loop)."""
+    found, bl = [], blocks(body)
+
+    def depth0(lo, pos):
+        return all(not (lo < o < pos) or c < pos for o, c, _ in bl)
+
+    def store_at(pos):
+        prev = body[:pos].rstrip()
+        return prev[-1:] in (";", "{", "}") and re.match(r"\w+\s*=(?!=)", body[pos:])
+
+    for d in LOCAL_DECL.finditer(body):
+        for v in re.findall(r"\w+", d.group(1)):
+            if re.search(rf"&\s*{v}\b", body):
+                continue
+            uses = [u.start() for u in re.finditer(rf"(?<![.>])\b{v}\b", body) if u.start() >= d.end()]
+            loops = [(o, c) for o, c, lp in bl if lp and uses and o < uses[0] and uses[-1] < c]
+            if len(uses) < 2 or not loops:
+                continue
+            o, c = max(loops)
+            first, last = uses[0], uses[-1]
+            if (depth0(o, first) and depth0(o, last) and store_at(first) and store_at(last)
+                    and not re.search(rf"\b{v}\b", body[first:body.index(";", first)].split("=", 1)[1])):
+                found.append(v)
+    return found
+
+
 def lint_function(src, name):
     """(errors, hacks) found in NAME's definition in SRC."""
-    body = extract_function(read(src), name) or ""
+    return lint_body(extract_function(read(src), name) or "")
+
+
+def lint_body(body):
+    """(errors, hacks) found in a function's definition BODY."""
     body = re.sub(r"/\*.*?\*/", "", body, flags=re.S)
     # a register pin's asm("$20") names a register, not instructions: it's a hack, not an error
     unpinned = re.sub(r"(\bregister\b[^;]*?)" + ASM_CALL + r"\s*\"[^\"]*\"\s*\)", r"\1", body)
@@ -1968,6 +2033,8 @@ def lint_function(src, name):
     hacks = {why for rx, why in LINT_HACKS if rx.search(body)}
     if noop_steps(body):
         hacks.add("no-op ++/-- pair")
+    if dead_stores(body):
+        hacks.add("dead store")
     return errs, sorted(hacks)
 
 
@@ -4157,9 +4224,10 @@ def cmd_block(a):
 
 
 def cmd_hacks(a):
-    """Matched functions that need a hack (a register pin or an empty asm barrier), with the reason
-    their match commit gives, so they can be retried without it (docs/CONVENTIONS.md, Matching
-    rules). Read from the source, so the list can't go stale."""
+    """Matched functions that need a hack (a register pin, an empty asm barrier, a no-op ++/--
+    pair or a dead store), with the reason their match commit gives, so they can be retried
+    without it (docs/CONVENTIONS.md, Matching rules). Read from the source, so the list can't go
+    stale."""
     funcs, syms = need_funcs(), sym_names()
     stat, _ = statuses(funcs)
     texts, rows = {}, []
@@ -4167,15 +4235,13 @@ def cmd_hacks(a):
         if stat.get(k) != "matched":
             continue
         if e["src"] not in texts:
-            t = read(e["src"])
-            texts[e["src"]] = t if any(rx.search(t) for rx, _ in LINT_HACKS) else None
-        if texts[e["src"]] is None:
-            continue
+            texts[e["src"]] = read(e["src"])
         names = list(dict.fromkeys([cur_name(k, e, syms), e["name"], e["orig"]]))
-        name = next((nm for nm in names if extract_function(texts[e["src"]], nm)), None)
+        name, body = next(((nm, b) for nm in names if (b := extract_function(texts[e["src"]], nm))),
+                          (None, None))
         if not name:
             continue
-        _, hacks = lint_function(e["src"], name)
+        _, hacks = lint_body(body)
         if not hacks:
             continue
         commit, why = "?", "(no Hack: line in its match commit)"
@@ -4997,8 +5063,8 @@ def main():
     p.add_argument("func")
     p.add_argument("--note", required=True)
     p.set_defaults(fn=cmd_block)
-    sub.add_parser("hacks", help="matched functions that need a register pin or asm barrier, with "
-                   "their commit's reason").set_defaults(fn=cmd_hacks)
+    sub.add_parser("hacks", help="matched functions that need a hack (register pin, asm barrier, "
+                   "no-op pair, dead store), with their commit's reason").set_defaults(fn=cmd_hacks)
     p = sub.add_parser("unblock", help="unpark functions (their park notes stay) so they are offered again")
     p.add_argument("funcs", nargs="+")
     p.add_argument("--why", required=True, help="what changed since they were parked")
@@ -5008,7 +5074,8 @@ def main():
     p.add_argument("--commit", action="store_true",
                    help="after every check passes, commit src/ include/ configs/ .decomp/ docs/")
     p.add_argument("--note", help="what made it match (types, statement order, ...): goes in the commit body")
-    p.add_argument("--hack", help="why a register pin / asm(\"\") barrier is needed (required if used)")
+    p.add_argument("--hack", help="why a hack (register pin, asm(\"\") barrier, no-op pair, dead "
+                   "store) is needed (required if used)")
     p.add_argument("--trailer", action="append", help="line appended to the commit message (repeatable)")
     p.add_argument("--defer-build", action="store_true",
                    help="batch mode (tools/swarm): skip the full build; run `decomp.py verify` after the "

@@ -83,7 +83,9 @@ A file is finished when every function in it reaches level 4.
 - Matching C must compile with the stock pipeline in `configs/USA/project.mk`.
   No compiler or maspsx patches, no post-build rewriting, no whole-function
   `asm()` bodies.
-- Register pins and empty `asm("")` barriers are a last resort: `decomp.py done`
+- Register pins, empty `asm("")` barriers, no-op `x++; x--;` pairs and dead
+  stores (a local set again at the bottom of a loop that its next pass
+  overwrites, so loop.c can't hoist it) are a last resort: `decomp.py done`
   refuses them without `--hack "why"`, which goes in the commit message. Remove
   them when the function matches without; `decomp.py hacks` lists every hack match
   with its commit's reason, to retry them after tool upgrades. A hack that
