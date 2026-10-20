@@ -4,7 +4,45 @@
 #include "bash/ovl66_800b6efc.h"
 #include "bash/bonk.h"
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B6EFC);
+void func_800B6EFC(s32 arg0) {
+    VECTOR sp18;
+    HeroInfo *h;
+    HeroInfo *base;
+    EXTengine *pu;
+    subengine *sub;
+    Ovl66Slot *sbase;
+    NAS *nas;
+    Ovl66Slot *slot;
+
+    base = Heroes;
+    h = base + arg0;
+    if (func_80015780(h->hero_eng, h->hero_sub, 1, &sp18) == NULL) {
+        *(SLONG_XYZ *)&sp18 = h->hero_eng->unk10;
+    }
+    nas = SpawnNASById(sp18.vx, D_8005A5D8 - 0x80, sp18.vz, 0x1A03, 0x11);
+    sbase = D_800B9F4C;
+    slot = sbase + arg0;
+    if (slot->f8 == 1) {
+        PlaySfx(0x72D, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+        if (nas != NULL) {
+            func_80028018(arg0, 5);
+            nas->UserInfo.user2 = 0x8000;
+            func_800B4910(&sp18, 0x600, arg0, 0x100);
+            pu = h->hero_powerup;
+            sub = NULL;
+            if (pu != NULL) {
+                sub = pu->sub;
+            }
+            if (sub != NULL) {
+                pu->flags &= 0xFFFF7FFF;
+            }
+            slot->f8 = 3;
+        }
+    } else {
+        func_800B4910(&sp18, 0x380, arg0, 0);
+    }
+    PlaySfx(D_800B9F0C[arg0], NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+}
 
 void func_800B70C4(s32 arg0) {
     HeroInfo *base = Heroes;

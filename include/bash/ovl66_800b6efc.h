@@ -46,6 +46,8 @@ extern u16 D_800AD12C;
 extern HeroInfo Heroes[4];
 
 extern s32 D_800B9F1C[];
+extern s32 D_800B9F0C[];
+void func_800B4910(VECTOR *pos, s32 a, s32 b, s32 c);
 
 extern void (*D_8009D73C)();
 extern s32 (*D_8009D728)(s32);
@@ -124,6 +126,8 @@ static inline void Ovl66SpawnPuff(SLONG_XYZ *v, s32 kind, void *anim) {
         }
     }
 }
+
+void func_800B6EFC(s32 arg0);
 
 void func_800B8550(s32 arg0);
 
