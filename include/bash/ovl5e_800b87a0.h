@@ -38,7 +38,12 @@ s32 func_800BA22C(EXTengine *eng, Ovl5eHitFlags *flags, u32 mask);
 
 void func_800BA4C0(s32 arg0);
 
+typedef struct { s16 a; s16 b; s16 c; } Ovl5eWeaponVec;
+extern Ovl5eWeaponVec D_800BE8AC[];
+
 void func_800BA5CC(s32 arg0);
+
+void func_800BA7D8(s32 arg0);
 
 void func_800BAFD4(s32 arg0);
 

@@ -169,7 +169,47 @@ done:
     func_800871E4(arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BA7D8);
+void func_800BA7D8(s32 arg0) {
+    VECTOR pos;
+    HeroInfo *h;
+    subengine *s;
+    Ovl5eWeaponVec *w;
+    HeroInfo *b;
+    s16 t;
+    Ovl5eWeaponVec *tbl;
+
+    func_8008502C();
+    b = Heroes;
+    h = &b[arg0];
+    s = h->hero_fx->sub;
+    if (s != NULL && func_80015780(h->hero_eng, h->hero_sub, 0x40, &pos) != NULL) {
+        h->hero_fx->unk10 = h->hero_eng->unk10;
+        t = h->hero_weapon_timer;
+        if (t >= 0) {
+            tbl = D_800BE8AC;
+            w = &tbl[t];
+            if (w->a == 0) {
+                goto clear;
+            }
+            s->unk20.x = w->a;
+            s->unk20.y = w->b;
+            s->unk20.x = w->c;
+            s->unk04 = pos.vx - h->hero_eng->unk10.x;
+            s->unk08 = pos.vy - h->hero_eng->unk10.y;
+            s->unk0C = pos.vz - h->hero_eng->unk10.z;
+            s->flags |= 0x8000;
+            s->unk52 = 1;
+            h->hero_weapon_timer++;
+        } else {
+            h->hero_weapon_timer++;
+        }
+        goto done;
+clear:
+        s->flags &= ~0x8000;
+    }
+done:
+    func_800871E4(arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BA958);
 
