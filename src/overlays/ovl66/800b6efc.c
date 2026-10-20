@@ -83,7 +83,23 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B9054);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B9144);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B91BC);
+void func_800B91BC(s32 arg0) {
+    EXTmotion *m;
+
+    SetHeroAction((HeroInfo *)arg0, 0x40);
+    D_800B9F4C[arg0].f8 = 3;
+    D_800B9F4C[arg0].f0 = 0;
+    m = AddMotion(Heroes[arg0].hero);
+    if (m != NULL) {
+        m->Ymax = 0xA0;
+        m->Ydec = 0xE;
+        m->Yacc = 0;
+        m->Ydir = 0xFF;
+        m->Yvel = 0;
+    }
+    func_800B9144(arg0);
+    func_800B61F8(arg0);
+}
 
 void func_800B9264(void) {
     s32 var_s0;
