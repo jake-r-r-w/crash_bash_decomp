@@ -151,6 +151,8 @@ void func_800B4154(u16 arg0);
 
 void func_800B4204(void);
 
+s32 func_800B744C(s32 arg0);
+
 s32 func_800B77D8(void);
 
 void PlotPapuColumn(NAS *nas);

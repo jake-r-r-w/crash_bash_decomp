@@ -136,7 +136,28 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B6FF8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B7134);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B744C);
+s32 func_800B744C(s32 arg0) {
+    EXTengine *eng;
+    s32 ix;
+    s32 iz;
+    s32 y;
+    Ovl5eTile *t;
+
+    eng = Heroes[arg0].hero_eng;
+    ix = (eng->unk10.x + 0x700) >> 9;
+    iz = (eng->unk10.z + 0x700) >> 9;
+    if ((u32)ix < 7U && (u32)iz < 7U) {
+        y = eng->unk10.y - D_8005A5D8;
+        t = D_800BD948[ix][iz].tile;
+        if (t != NULL) {
+            y -= t->unk8;
+        }
+        if (abs(y) < 0x20 && (D_800BD948[ix][iz + 1].unkA & 0x100)) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 s32 func_800B7558(EXTengine *eng) {
     s32 y;
@@ -274,7 +295,7 @@ void func_800B7894(u16 arg0) {
 }
 
 void func_800B790C(s32 arg0) {
-    if (func_800B744C() != 0) {
+    if (func_800B744C(arg0) != 0) {
         func_80084E04(arg0, 0, -1, 3, 0);
     }
 }
