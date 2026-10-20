@@ -64,10 +64,34 @@ typedef struct Ovl5eCell {
     u16 unkA;
     s16 padC;
     u16 unkE;
-    s32 pad10;
+    u16 unk10;
+    u16 unk12;
 } Ovl5eCell;
 
 extern Ovl5eCell D_800BD948[8][8];
+
+/* A scene object in the list at D_80058AD0 + 0x1C (func_800B6D14). */
+typedef struct Ovl5eSceneObj {
+    /* 0x00 */ u32 flags;
+    /* 0x04 */ s32 x;
+    /* 0x08 */ s16 unk8;
+    /* 0x0A */ s16 padA;
+    /* 0x0C */ s32 z;
+    /* 0x10 */ u8 pad10[0x50 - 0x10];
+    /* 0x50 */ u8 unk50;
+    /* 0x51 */ u8 unk51;
+    /* 0x52 */ u8 pad52[0x5C - 0x52];
+    /* 0x5C */ struct Ovl5eSceneObj *next;
+    /* 0x60 */ u8 pad60[0x6C - 0x60];
+    /* 0x6C */ u8 *model;
+    /* 0x70 */ u8 pad70[0x74 - 0x70];
+    /* 0x74 */ u16 index;
+} Ovl5eSceneObj;
+extern Ovl5eSceneObj *D_800BE824;
+extern s16 D_800BE838[40];
+extern s16 D_800BE888;
+extern s16 D_800BE88A;
+extern s16 D_800BE88C;
 typedef struct Ovl5eGridPos {
     s32 x;
     s32 y;
@@ -366,6 +390,8 @@ s32 func_800B6334(EXTengine *eng, u32 flag);
 NAS *func_800B64AC(EXTengine *eng, u32 mask, s32 unused, s32 add);
 
 NAS *func_800B668C(EXTengine *eng, s32 mask);
+
+void func_800B6D14(void);
 
 void func_800B6FF8(void);
 

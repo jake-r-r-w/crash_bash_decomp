@@ -852,7 +852,76 @@ NAS *func_800B668C(EXTengine *eng, s32 mask) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B6860);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B6D14);
+void func_800B6D14(void) {
+    Ovl5eSceneObj *obj;
+    u16 *id;
+    PapuEntry *p;
+    s32 i;
+    s32 j;
+    s32 dx;
+    s32 dz;
+
+    obj = *(Ovl5eSceneObj **)((u8 *)D_80058AD0 + 0x1C);
+    func_80018430(0xC8);
+    for (i = 0; i < 8; i++) {
+        for (j = 0; j < 8; j++) {
+            D_800BD948[j][i].tile = NULL;
+        }
+    }
+    for (j = 0; j < 6; j++) {
+        D_800BE648[j].unk0 = 0;
+        D_800BE648[j].unk6 = 0;
+        D_800BE648[j].unkA = 0;
+        D_800BE648[j].unkC = 0;
+        D_800BE648[j].unkE = 0;
+        D_800BE648[j].unk8 = 0;
+    }
+    D_800BE824 = NULL;
+    while (obj != NULL) {
+        id = (u16 *)func_80015870(obj->model, obj->index);
+        if ((u32)(*id - 10) < 78) {
+            i = 7 - (s16)((s16)*id % 10);
+            j = (s16)((s16)*id / 10) - 1;
+            D_800BD948[j][i].tile = (Ovl5eTile *)obj;
+            func_8001C3D0((u8 *)obj);
+            obj->flags |= 0x1000000;
+        }
+        j = *(s16 *)id - 100;
+        if ((u32)j < 20) {
+            p = &D_800BE648[j];
+            p->unk0 = (s32)obj;
+            p->unk8 = obj->unk8;
+        }
+        if (j == 50) {
+            D_800BE824 = obj;
+            obj->unk50 = 1;
+            obj->unk51 = 0;
+            obj->flags &= ~0x8000;
+        }
+        obj = obj->next;
+    }
+    for (j = 39; j >= 0; j--) {
+        D_800BE838[j] = 0;
+    }
+    D_800BE888 = 0;
+    D_800BE88A = 0;
+    D_800BE88C = 0;
+    for (i = 0; i < 8; i++) {
+        for (j = 0; j < 8; j++) {
+            obj = (Ovl5eSceneObj *)D_800BD948[j][i].tile;
+            if (obj != NULL) {
+                D_800BD948[j][i].unkA = 0;
+                D_800BD948[j][i].unk10 = obj->index;
+                D_800BD948[j][i].pad8 = 0;
+                D_800BD948[j][i].unk12 = obj->unk8;
+                D_800BD948[j][i].unkE = 0;
+                dx = obj->x;
+                dz = obj->z - 0x600;
+                D_800BD948[j][i].padC = csqrt(dx * dx + dz * dz) >> 6;
+            }
+        }
+    }
+}
 
 void func_800B6FF8(void) {
     Ovl5eKey *k;
