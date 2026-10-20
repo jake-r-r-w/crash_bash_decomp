@@ -1195,6 +1195,8 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | beqz delay slot has li v0,3 instead of move v0,0 (null-guarded load) | use explicit `sub = NULL; if (p) sub = p->sub; if (sub)` | `func_800B6EFC` |
 | An address built as separate `sll`/`addu` terms (`z*20 + x*160`), not folded | Declare the table as a 2-D array of 20-byte structs and index `[x][z].ptr` | `func_800B7558` |
 | A store lands too early: before the zero stores instead of in the `jr` delay slot, or above the loads in a loop body | Write that store last in the C | `func_800B7DE4`, `func_800B7600` |
+| A store the target puts in the delay slot of a `% N` `bgez` (after the modulo's copy) is issued first in ours, and no statement order moves it | Hold the added constant in the result variable first: `ang = 0x400; ang = (x -= step % 0x1000) + ang;` (permuter find) | `func_800B5710` |
+| One value in `v1` in two blocks (a test early on, then a load through an address that dies in `a1`); one variable gets `a1` from global.c's preference for the load's address (set_preference follows a MEM to its address), two variables leave the local one in `v0` | Use the function's other variables that the target keeps in that register (`vars --all`, "homes"): one for the test, another for the loaded value (`val = G; if (val == 0)`, `off = row[w]`); their other lives keep `a1` busy | `func_800B7458` |
 
 ## Classify the diff, then work through the list
 

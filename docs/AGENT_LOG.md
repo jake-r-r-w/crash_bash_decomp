@@ -18,11 +18,11 @@ leads**, add any new gotcha, and add one short entry at the top of the
   swarm.
 - 2026/2537 game functions matched (51.1% of game code bytes):
   **main.exe and ovl61 are complete (575/575, 97/97)**; engine 355/357
-  (both left parked: `func_8007F314`, `PlotScriptFX`); ovl6a
-  93/94 (`func_800B5710` parked), ovl69 68/77, ovl67 102/135, ovl60
+  (both left parked: `func_8007F314`, `PlotScriptFX`); **ovl6a
+  complete (94/94, 2026-10-20)**, ovl69 69/77, ovl67 102/135, ovl60
   131/180, ovl5f 127/179, ovl62 151/216, ovl63 97/139, ovl5d 70/104,
   ovl65 64/80, ovl68 60/93 (swarm runs 2026-10-18/19), ovl66 49/65 left
-  16 (swarm 2026-10-20); ovl5e 47 left (16 matched 2026-10-20); ovl64 is barely started. All 564 PsyQ functions (Sony objects). 4 parked (`decomp.py
+  16 (swarm 2026-10-20); ovl5e 47 left (16 matched 2026-10-20); ovl64 is barely started. All 564 PsyQ functions (Sony objects). 2 parked (`decomp.py
   status`). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
@@ -52,7 +52,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 **Matching the slot overlays with the swarm.** Left per overlay (2026-10-19,
 `INCLUDE_ASM` count per file): ovl5e 47 (2026-10-20), ovl62 65, ovl66 16 (2026-10-20), ovl68 33,
 ovl5f 52, ovl64 50, ovl60 49, ovl63 42, ovl5d 34, ovl67 33, ovl65 16,
-ovl69 9, ovl6a 1, engine 2 (ovl61 is done). main.exe is complete. **Next session:
+ovl69 8, engine 2 (ovl61 and ovl6a are done). main.exe is complete. **Next session:
 swarm the rest of ovl5e, then ovl64, then ovl66's leftovers (big-heavy)**, on the low-cost recipe; after each run, the
 "After a run" checklist in tools/swarm/README.md (`stats --run ID`, parks,
 gate failures, `fold`, this log).
@@ -78,8 +78,7 @@ rest are fixed by hand from the worker's patch (Gotchas). A park whose
 `jtbl_` names functions is a bad split (Gotchas).
 
 Hand work, between runs:
-1. The parks: `func_800B5710` (ovl6a), `func_8007F314` and `PlotScriptFX`
-   (engine), and `func_800B345C`'s hack (Open leads for each).
+1. The parks: `func_8007F314` and `PlotScriptFX` (engine), and `func_800B345C`'s hack (Open leads for each).
 2. Name each function as it's matched when the evidence allows.
 3. Split `main.c` into its translation units: on hold since 2026-10-15. Its
    one proven boundary (jump-table parity, 95..370) has three possible
@@ -100,29 +99,6 @@ and current tools).
 
 ## Open leads
 
-- **`func_800B7458` (ovl69, 1360 B), parked 2026-10-19 at registers 4/340**
-  (blocks 18/20; C under `#ifdef NON_MATCHING`, `block` note has the tries).
-  Only `v` differs: one variable for the `D_800BA740` test and the
-  `D_8004DDBC` row[w] value, a global pseudo that global.c gives a1 (its
-  `set_preference` from the row[w] load, whose address dies in a1: the
-  local `w * 4` is tied to it) where the target has v1. It has no a1
-  conflict, and `prune_preferences` keeps a preference the allocno holds
-  itself, so only removing the preference helps: an address through a
-  multi-set pointer (`h = (u8 *)(w * 4 + (u32)row); v = *(s32 *)h;`) does
-  that and gets both `v` uses right, but then local-alloc ranks the
-  `D_8004DDBC` base (4 refs over ~3 insns) above `w`'s lhu/-0x101/<<2
-  chain (6 over ~9; the target ties the address in too, 8+ refs), so they
-  swap a1/a2. Computing the row before `w` reshuffles sched1 (29 differ).
-  Next: more refs or a shorter sched1 life for `w`'s chain with `h` global.
-  Its swarm checkpoint no longer applies (it edits a line of
-  `include/bash/ovl69.h` that has changed since), so `swarm.mjs permute`
-  skips it. Permute from the `NON_MATCHING` C in `src/` instead (`make
-  permute FUNC=func_800B7458 ARGS=--differing` with that C in place).
-  On 2026-10-20 `--differing` said "no statements to randomize" for it;
-  `--lines 905-916` got the permuter from 20 to 10 within 2 min with real
-  C: `w = D_8004DDD0[boff * 3]; w = w - 0x101;`, the row value through a
-  new temp (`off = ...[w]; v = off;`), and `e0->sub[6].unk6C = (void *)v`
-  with `p = e0->sub` dropped. Port it and `try`.
 - **Tune the permuter from its record.** Runs are logged since 2026-10-20
   (`decomp.py permstats`, `swarm.mjs stats`). Two ideas to try once there
   are a few dozen runs, compared on that record:
@@ -149,28 +125,6 @@ and current tools).
     initially ready) takes the stall. No statement order, `pos.x` spelling or
     index temp moved it. Next: find C whose RTL emits the table address after
     the index arithmetic (or makes `i = 0` depend on something late).
-- **`func_800B5710` (ovl6a, 2836 B), parked 2026-10-18 at regions 120/121
-  blocks, 706/710 insns** (C under `#ifdef NON_MATCHING`). Only the 0x80
-  button block differs (target 0x37c-0x394): the target puts
-  `mv->forward_speed = speed` in the delay slot of the `% 0x1000` `bgez`,
-  after `lui v0; lw t1,0x18(sp); addiu a0,v0,%lo(D_8009EE9C)`; ours issues
-  `lw t1; nop; sw` first (710 against 709). Worked through against cc1's
-  `-dS`/`-dR` traces: sched2 keeps sched1's order on ties (no hazard for
-  stores), so the store must leave sched1 last in its block. sched1 only does
-  that if the store comes after the modulo's `t = step` copy (expand_divmod
-  emits it right before the `bgez`) and the address isn't a birthing insn.
-  No ordering, spelling, twice-set `cam` pointer or `do { } while (0)` got
-  there; something before reload must differ (an extra insn, or the copy
-  emitted before the `if`). Everything else matched by rules now in Diff
-  patterns: the case 5 fallthrough, `PlaySfx(0x38D)` written in each failing
-  branch (lengthens `mv`'s life so it spills and the hoist gets `fp`),
-  `Heroes[arg0].field` / `D_800BCCF4[x].field`, `G->unk63 = best`, the
-  `mode` local and the case order 3/4, 2, 1, default.
-  2026-10-20, permuter: 300 -> 20 within 2 min on lines 318-321 (the 0x80
-  block) with the constant in a local: `ang = 0x400; ang =
-  (D_8009EE9C.unk4 -= step % 0x1000) + ang;`. Real C (an earlier run got
-  20 with an `if (1) { }` hack). Next: put it in the NON_MATCHING C and
-  `try` it for the register diffs left.
 - **Hack matches to revisit:** `decomp.py hacks` lists them (two on
   2026-10-19: `func_800193A8`, register pins that are probably the original
   source, and `func_800B345C` above). Parks are `decomp.py status` / the dashboard. Before reaching for a
@@ -478,6 +432,16 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-20 (two parks, permuter then hand):** `func_800B5710` (ovl6a,
+  2836 B, c1cb924c; ovl6a complete) matched with the permuter's change
+  alone: `ang = 0x400; ang = (... % 0x1000) + ang;`. The permuter scored
+  that C 20, not 0: the target names fields by their own address
+  (`D_8005A677`), ours `D_8005A614+0x63`, and its scorer compared names, so
+  it never reported the match. Fixed (a5ac14a0: relocations compared by
+  address). `func_800B7458` (ovl69, 1360 B, 2cb2b9c4): the permuter's `off`
+  temp fixed the row block; the test then needed `val`, another variable
+  the target keeps in v1 (global.c's a1 preference, Diff patterns).
 
 - **2026-10-20 (swarm ovl5e, then a permuter pass):** low-cost recipe, run
   20261020073721: 16 matched in 10 min for $1.43, stopped by request (47
