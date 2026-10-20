@@ -8,6 +8,12 @@
 #include "common.h"
 #include "bash/ovl66.h"
 
+typedef struct Ovl66PadButtons {
+    /* 0x00 */ u8 unk0[0x50];
+    /* 0x50 */ s32 unk50;
+    /* 0x54 */ s32 unk54;
+} Ovl66PadButtons;
+
 extern HeroInfo Heroes[4];
 
 void func_800B8A30(s32 arg0);

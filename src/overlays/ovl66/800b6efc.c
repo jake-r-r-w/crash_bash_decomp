@@ -139,7 +139,13 @@ s32 func_800B8E08(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B8E64);
+s32 func_800B8E64(s32 arg0) {
+    if ((((Ovl66PadButtons *)D_80051338)[arg0].unk50 & 0x8000) && Heroes[arg0].hero_mode != 0x43) {
+        SetHeroAction((HeroInfo *)arg0, 0x43);
+        return 1;
+    }
+    return 0;
+}
 
 void func_800B8EF0(void) {
 }
