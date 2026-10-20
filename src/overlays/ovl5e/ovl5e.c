@@ -33,7 +33,44 @@ void func_800B4154(u16 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B4204);
+void func_800B4204(void) {
+    PapuEntry *e;
+    Ovl5eTile *t;
+    s32 i;
+    s32 v;
+    s32 a;
+    s32 c;
+
+    e = D_800BE648;
+    i = 0;
+    do {
+        e = &D_800BE648[i];
+        if ((u16)e->unk6 != 0) {
+            t = (Ovl5eTile *)e->unk0;
+            v = e->unkA;
+            c = e->unkC;
+            v += e->unkE;
+            if (c < v) {
+                v = c;
+            }
+            e->unkA = v;
+            a = t->unk8 + v;
+            if (a < -0xE00) {
+                e->unk6 = 0;
+                t->unk0 &= 0xFFFF7FFF;
+            }
+            if (e->unk8 < a) {
+                a = e->unk8;
+                e->unkA = 0;
+                e->unkC = 0;
+                e->unkE = 0;
+                e->unk6 = 0;
+            }
+            t->unk8 = a;
+        }
+        i++;
+    } while (i < 20);
+}
 
 void func_800B42C0(void) {
     s32 i;

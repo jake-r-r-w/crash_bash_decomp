@@ -133,6 +133,8 @@ extern s16 D_8009D6DC[];
 
 void func_800B4154(u16 arg0);
 
+void func_800B4204(void);
+
 s32 func_800B77D8(void);
 
 void PlotPapuColumn(NAS *nas);
