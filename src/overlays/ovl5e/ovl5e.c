@@ -480,4 +480,82 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B80B0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B82DC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B8508);
+void func_800B8508(NAS *arg0) {
+    EXTengine *eng;
+    Ovl5eObj *obj;
+    NAS *nas;
+    EXTengine *other;
+    s32 again;
+    s32 x, z;
+
+    eng = arg0->Engine;
+    if (eng != NULL) {
+        obj = (Ovl5eObj *)AddObject(arg0);
+        if (obj != NULL) {
+            arg0->FUX = (EXT *)obj;
+            do {
+                again = 0;
+                nas = D_8005AA2C;
+                eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
+                eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
+                while (nas != NULL) {
+                    if (nas->Type == D_8009E464) {
+                        other = nas->Engine;
+                        if (other != NULL && other->unk10.x == eng->unk10.x && other->unk10.z == eng->unk10.z) {
+                            eng->unk10.x = Random(0xC00) - 0x600;
+                            eng->unk10.z = Random(0xC00) - 0x600;
+                            nas = NULL;
+                            again = 1;
+                        }
+                    }
+                    if (nas != NULL) {
+                        nas = nas->Solid.Child;
+                    }
+                }
+            } while (again);
+            eng->unk10.y = D_8005A5D8;
+            eng->sub->unk6C = D_80052F94;
+            eng->unk5D = 1;
+            eng->unk5C = 1;
+            obj->unk1A = 3;
+            if (arg0->trigger != NULL) {
+                obj->unk14 = arg0->trigger->InfoStruct->val1;
+            }
+            D_8009E46C[obj->unk14]++;
+            switch (obj->unk14) {
+            case 4:
+                eng->sub->unk74 = 0x2013;
+                break;
+            case 5:
+                eng->sub->unk74 = 0x2009;
+                obj->unk22 = 0x5A;
+                obj->unk1C |= 0x100;
+                break;
+            default:
+                eng->sub->unk74 = 0x2013;
+                break;
+            }
+            x = (eng->unk10.x >> 8) + 10;
+            z = 9 - (eng->unk10.z >> 8);
+            if (x >= 20) {
+                x = 19;
+            }
+            if (x < 0) {
+                x = 0;
+            }
+            if (z >= 20) {
+                z = 19;
+            }
+            if (z < 0) {
+                z = 0;
+            }
+            D_8009D90C[z * 20 + x].unk0 = obj->unk14;
+            AddMotion(arg0);
+            func_80026AD8((u8 *)arg0);
+            func_8002694C(arg0, 0x300);
+        }
+    }
+    if (arg0->Failure != 0) {
+        KillNAS(arg0);
+    }
+}

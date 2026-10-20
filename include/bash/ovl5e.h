@@ -22,6 +22,19 @@ typedef struct PapuEntry {
 extern s16 *D_800BD6F0[];
 
 extern PapuEntry D_800BE648[20];
+
+/* The object extension (AddObject) func_800B8508 fills. */
+typedef struct Ovl5eObj {
+    /* 0x00 */ u8 pad0[0x14];
+    /* 0x14 */ u16 unk14;
+    /* 0x16 */ u8 pad16[0x1A - 0x16];
+    /* 0x1A */ s16 unk1A;
+    /* 0x1C */ u16 unk1C;
+    /* 0x1E */ u8 pad1E[0x22 - 0x1E];
+    /* 0x22 */ s16 unk22;
+} Ovl5eObj;
+extern s32 D_8009E464;
+extern u16 D_8009E46C[];
 typedef struct Ovl5eTile {
     s32 unk0;
     s32 unk4;
@@ -165,5 +178,7 @@ extern char D_800BD8E2[];
 extern u8 D_800BD908[];
 
 void func_800B7BE4(void);
+
+void func_800B8508(NAS *arg0);
 
 #endif /* BASH_OVL5E_H */
