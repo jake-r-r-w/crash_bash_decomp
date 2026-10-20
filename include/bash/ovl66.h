@@ -8,6 +8,19 @@
 #include "common.h"
 #include "bash/nas.h"
 
+typedef struct Ovl66Pad {
+    /* 0x00 */ u8 pad0[0x5C];
+    /* 0x5C */ s16 mode;
+} Ovl66Pad;
+
+typedef struct Ovl66Obj {
+    /* 0x00 */ u8 pad0[4];
+    /* 0x04 */ Ovl66Pad *pad;
+} Ovl66Obj;
+
+extern s32 D_800B9E40[];
+void func_800B6CD8(s32 arg0, s32 arg1);
+
 s32 func_800B62C8(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 void PlotBonkFlag(NAS *nas);
 void func_800B6560(void);
@@ -128,6 +141,8 @@ void func_800B347C(void);
 void InitBonkFlag(NAS *nas);
 
 void InitBonkShockwave(NAS *nas);
+
+void func_800B64B4(s32 arg0, s32 arg1, Ovl66Obj *obj);
 
 void func_800B6568(void);
 

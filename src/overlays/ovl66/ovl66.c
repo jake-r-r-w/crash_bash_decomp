@@ -184,7 +184,15 @@ void InitBonkShockwave(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B64B4);
+void func_800B64B4(s32 arg0, s32 arg1, Ovl66Obj *obj) {
+    Ovl66Pad *p = obj->pad;
+
+    if (p != NULL) {
+        func_800B6CD8(arg0, Random(2));
+        p->mode = 4;
+        PlaySfx(D_800B9E40[Random(4)], NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+    }
+}
 
 void func_800B6560(void) {
 }
