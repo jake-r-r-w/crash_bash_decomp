@@ -207,7 +207,25 @@ void func_800B7778(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B77D8);
+s32 func_800B77D8(void) {
+    s32 a;
+
+    if (*D_8005A680 != 0) {
+        a = Random(2);
+        if (Heroes[a].hero_status & 0xFA00) {
+            a = Heroes[a].hero_teammate;
+        }
+        if (a == -1) {
+            return -1;
+        }
+    } else {
+        a = 0;
+    }
+    if (Heroes[a].hero_status & 0xFA00) {
+        a = -1;
+    }
+    return a;
+}
 
 void func_800B7894(u16 arg0) {
     Ovl5eStep *s = D_800BD118[arg0];
