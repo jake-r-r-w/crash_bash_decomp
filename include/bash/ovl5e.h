@@ -261,6 +261,8 @@ typedef struct {
 
 void InitPapuBoss(NAS *nas);
 
+s32 func_800B61A0(EXTengine *eng);
+
 s32 func_800B6334(EXTengine *eng, u32 flag);
 
 NAS *func_800B668C(EXTengine *eng, s32 mask);
