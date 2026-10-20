@@ -11,6 +11,8 @@
 typedef struct { s16 unk0; s16 unk2; } Ovl68Trig;
 extern Ovl68Trig D_80068BD4[];
 
+extern NAS *D_8005AA9C;
+
 typedef struct CoalFlameInner {
     s32 pad0[3];
     s32 unkC;
@@ -212,6 +214,8 @@ void func_800B6168(s32 arg0);
 void func_800B627C(s32 arg0);
 
 void func_800B6350(s32 arg0);
+
+void func_800B65B0(s32 arg0);
 
 void func_800B67D8(s32 arg0);
 
