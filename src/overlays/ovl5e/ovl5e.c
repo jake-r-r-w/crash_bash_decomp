@@ -3,7 +3,41 @@
 #include "bash/ovl5e.h"
 #include "bash/papu.h"
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B35AC);
+void func_800B35AC(void) {
+    EngineGameView *g;
+    u8 *v;
+    void **p;
+
+    D_8009D6E8.unk68 = func_800B7670;
+    D_8009D6E8.unk4C = func_800BB3F0;
+    D_8009D6E8.unk50 = func_800BB69C;
+    D_8009D6E8.unk54 = func_800BB86C;
+    D_8009D6E8.unk58 = func_800BC274;
+    func_800B7E38();
+    D_8005AA94 = func_800B7558;
+    D_8009D6E8.unk28 = func_800B790C;
+    g = (EngineGameView *)D_8005A614;
+    g->flags |= 0x900;
+    if (*(s32 *)(D_8005A614 + 0x6C) == 0) {
+        D_8005A614[0x51] = 9;
+    }
+    D_8005A614[0x52] = 9;
+    D_8005A614[0x53] = 9;
+    D_8009E0D8 = 0x15;
+    D_8009E0DA = 0x16;
+    D_8009E0DC = 0x17;
+    D_8009E0DE = 0x18;
+    D_8009E0E0 = 0x19;
+    D_8009E0E2 = 0x1A;
+    D_8009E0E4 = 0x1B;
+    p = &D_8009D8FC;
+    if (*(s32 *)(D_8005A614 + 0x6C) != 0) {
+        v = D_800BC8DC;
+    } else {
+        v = D_800BC89C;
+    }
+    *p = v;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B36D4);
 
