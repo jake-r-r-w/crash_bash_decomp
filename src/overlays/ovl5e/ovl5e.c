@@ -165,7 +165,14 @@ void func_800B7778(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B77D8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B7894);
+void func_800B7894(u16 arg0) {
+    Ovl5eStep *s = D_800BD118[arg0];
+
+    while (s->d >= 0) {
+        func_800B4EE8(s->a, s->b, s->c, s->d);
+        s++;
+    }
+}
 
 void func_800B790C(s32 arg0) {
     if (func_800B744C() != 0) {

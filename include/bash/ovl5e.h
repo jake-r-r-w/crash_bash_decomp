@@ -62,6 +62,16 @@ extern Ovl5eKey *D_800BE82C;
 extern s16 D_800BE894;
 
 void func_800B7600(s32 arg0);
+typedef struct Ovl5eStep {
+    s32 a;
+    s32 b;
+    s32 c;
+    s16 d;
+    s16 pad;
+} Ovl5eStep;
+
+extern Ovl5eStep *D_800BD118[];
+void func_800B4EE8(s32 a, s32 b, s32 c, u16 d);
 
 s32 func_800B7670(u8 *arg0);
 
@@ -83,6 +93,8 @@ void func_800B7DA4(void);
 #include "bash/ovl5e_800b87a0.h"
 
 s32 func_800B7558(EXTengine *eng);
+
+void func_800B7894(u16 arg0);
 
 void InitPapuColumn(NAS *nas);
 
