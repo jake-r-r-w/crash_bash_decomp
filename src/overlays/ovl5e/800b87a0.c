@@ -130,7 +130,17 @@ void func_800BC698(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BC744);
+void func_800BC744(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = base + arg0;
+
+    h->hero_move->velocity_enable = 0;
+    SetHeroSeq((HeroInfo *)arg0, 0x17);
+    if (h->hero_object != NULL) {
+        h->hero_object->can_do |= 0x20;
+    }
+    h->hero_weapon_timer = 0;
+}
 
 void func_800BC7B4(s32 arg0) {
     Heroes[arg0].hero_move->velocity_enable = 1;
