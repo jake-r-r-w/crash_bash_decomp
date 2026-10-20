@@ -63,6 +63,7 @@ typedef struct Ovl66Entry {
     s32 unk8;
 } Ovl66Entry;
 extern s32 D_800B9634;
+extern s32 D_800B95A8;
 extern s32 D_800B9E0C;
 extern Ovl66Entry D_800B9E50[10];
 extern s32 D_800B9EF0;
@@ -139,6 +140,8 @@ typedef struct Ovl66Cam {
 } Ovl66Cam;
 
 void func_800B347C(void);
+
+void func_800B34F8(void);
 
 s32 func_800B60FC(s32 arg0);
 

@@ -43,7 +43,38 @@ void func_800B347C(void) {
     D_800B9EF8 = D_800B9634 * 30;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B34F8);
+void func_800B34F8(void) {
+    s32 i;
+    s32 *new_var;
+
+    if (D_800B9EFC > 0) {
+        D_800B9EFC -= 1;
+    }
+    if (D_800B9F00 > 0 && D_800B9F04 < 4) {
+        D_800B9F00 -= 1;
+    }
+    if (D_800B9EF0 != 0) {
+        for (i = 0; i < 10; i++) {
+            NAS *n = (NAS *)D_800B9E50[i].unk4;
+            if (n != 0 && n->UserInfo.status == 1) {
+                KillNAS(n);
+                D_800B9E50[i].unk4 = 0;
+            }
+        }
+    }
+    if (D_800B9EF4 < 4) {
+        if (D_800B9EF8 != 0) {
+            D_800B9EF8--;
+        } else {
+            D_800B9EF4++;
+            D_800B9EF8 = (&D_800B9634)[D_800B9EF4] * 30;
+        }
+    }
+    if (D_800B9EF0 < (new_var = &D_800B95A8)[D_800B9EF4] && D_800B9EFC == 0) {
+        func_800B66C8();
+        D_800B9EFC = 0x14;
+    }
+}
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl66/ovl66", D_800B32B8);
 
