@@ -6,7 +6,18 @@
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B6EFC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B70C4);
+void func_800B70C4(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = base + arg0;
+
+    if (h->hero_frozen == 0 || h->hero_mode == 0x43) {
+        if (!(h->hero_ctrl & 1)) {
+            h->hero_eng->unk1E += func_800154A0(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
+        }
+        h->hero_ctrl &= 0xFFFE;
+        h->hero_eng->unk5E = 1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B717C);
 
