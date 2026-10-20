@@ -9,6 +9,22 @@
 #include "bash/nas.h"
 #include "bash/engine.h"
 
+typedef struct Ovl5eSpot {
+    s32 x;
+    s32 y;
+    s32 z;
+} Ovl5eSpot;
+
+extern Ovl5eSpot D_800BD500[];
+extern s16 D_8009D88E;
+
+typedef struct Ovl5ePos {
+    s32 pad0[4];
+    s32 x;
+    s32 pad14;
+    s32 z;
+} Ovl5ePos;
+
 typedef struct PapuEntry {
     /* 0x0 */ s32 unk0;
     /* 0x4 */ s16 unk4;
@@ -187,5 +203,7 @@ void func_800BB86C(void);
 void func_800BC274(void);
 extern u8 D_800BC89C[];
 extern u8 D_800BC8DC[];
+
+s32 func_800B4D70(Ovl5ePos *arg0);
 
 #endif /* BASH_OVL5E_H */

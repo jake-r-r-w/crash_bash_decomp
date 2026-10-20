@@ -144,7 +144,42 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", PlotPapuBoss);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B4B9C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B4D70);
+s32 func_800B4D70(Ovl5ePos *arg0) {
+    s32 best;
+    s32 bestScore;
+    s32 i;
+    s32 j;
+    s32 r;
+    s32 dx;
+    s32 dz;
+    s32 score;
+
+    best = Random(5);
+    bestScore = 0x90000;
+    r = (0x20 - D_8009D88E) * 16;
+    for (i = 0; i < 5; i++) {
+        dx = D_800BD500[i].x - arg0->x;
+        dz = D_800BD500[i].z - arg0->z;
+        dx += Random(r);
+        dz += Random(r);
+        score = dx * dx + dz * dz;
+        for (j = 0; j < 4; j++) {
+            if (!(Heroes[i].hero_status & 0xFA00)) {
+                EXTengine *e = Heroes[i].hero_eng;
+                dx = D_800BD500[i].x - e->unk10.x;
+                dz = D_800BD500[i].x - e->unk10.z;
+                if (dx * dx + dz * dz <= 0x8FFFF) {
+                    score = 0;
+                }
+            }
+        }
+        if (bestScore < score) {
+            bestScore = score;
+            best = i;
+        }
+    }
+    return best;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B4EE8);
 
