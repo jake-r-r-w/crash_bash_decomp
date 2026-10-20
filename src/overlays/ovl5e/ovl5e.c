@@ -39,7 +39,50 @@ void func_800B35AC(void) {
     *p = v;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B36D4);
+void func_800B36D4(void) {
+    EXTheromove *move;
+    s32 i;
+    s16 angle;
+
+    D_8005A5D8 = 0;
+    D_800BD8DC = 0;
+    D_800BD8DE = 0;
+    *(s16 *)D_800BD8E2 = 0;
+    D_800BD708 = 0;
+    D_800BD8D4 = 0;
+    D_800BD8D8 = 0;
+    D_800BE828 = 0;
+    D_800BE82A = 0;
+    D_800BD8CC = 0;
+    D_800BD8CE = 0;
+    D_800BD8D0 = (Random(10) + 10) * 30;
+    D_800BE788 = EngineTemplate;
+    func_800B3D18();
+    func_80086D88();
+    for (i = 0; i < 4; i++) {
+        angle = get_angle(Heroes[i].hero_eng->unk10.x, Heroes[i].hero_eng->unk10.z);
+        move = Heroes[i].hero_move;
+        Heroes[i].hero_eng->unk1E = angle;
+        move->facing_angle = angle;
+        move->forward_angle = angle;
+        Heroes[i].hero_ctrl |= 8;
+        if (D_8005A614[0x51] == 9) {
+            Heroes[i].hero_shadow->flags = 0;
+        }
+    }
+    func_8007EB04();
+    func_8007E9FC(0x2C, 0x300A);
+    func_8007C6EC();
+    func_800B42C0();
+    func_800B6D14();
+    SpawnNASById(D_8005B2B8[2].pos.x, D_8005B2B8[2].pos.y, D_8005B2B8[2].pos.z,
+                 0x1201, 0x11);
+    func_800B38FC(0, 0, 0, 0, 0xC, 4, 0, 0, 0);
+    func_800B7BE4();
+    D_8009E494 = (void (*)(s32, s32, s32, s32))func_800B5E44;
+    D_800BE830 = 0;
+    D_800BE832 = 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B38FC);
 

@@ -399,4 +399,16 @@ void func_800B7F14(T_B7F14_A *a, T_B7F14_B *b);
 
 void func_800B80B0(void);
 
+extern s16 D_800BD8DE;
+extern s32 D_800BD708;
+extern s32 D_800BD8D4;
+extern s32 D_800BD8D8;
+extern EXTengine D_800BE788;
+extern s16 D_800BE828;
+extern s16 D_800BE82A;
+extern s16 D_800BE830;
+extern s16 D_800BE832;
+void func_800B38FC(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6,
+                   s32 a7, s32 a8);
+
 #endif /* BASH_OVL5E_H */
