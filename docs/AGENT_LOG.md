@@ -460,7 +460,7 @@ Newest first, a few lines each. Details are in the commits.
   then `--now`, so the big session on `func_800B7B48` and two permuters were
   killed). Its first run (20261020061709) died at start on an OAuth refresh
   clash even with the 10 s start gap; `--start-gap-seconds 30` worked.
-  `fold` and the parks review are not done yet.
+  `fold`: 14 rows down to 8 (merged duplicates, dropped two hacky ones).
 
 - **2026-10-19 (PlotBall by hand):** matched (f0a4117d, 5576 B), from the
   swarm checkpoint at structure 777/1394; ovl61 is complete. No hacks, no

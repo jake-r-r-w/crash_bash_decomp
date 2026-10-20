@@ -1163,6 +1163,14 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 | Delta loads into scratch regs (`lw a0,..; lw v0,..; subu s0,a0,v0`) where yours loads straight into the s-reg (`lw s0,..; subu s0,s0,v0`) | local-alloc ties a dying input to a block-local output. Make the result a variable that lives past the block (reuse the next value's variable: `dz = z - oz; ...; dz = grid row`) | `PlotBall` |
 | `ori t0,zero,0xFF1D` + `addu` (a negative constant as 16 bits) applied to a value before it is added in | 16-bit unsigned math inside the narrowed expression: `(mot->Za + ((u16)ang - 0xE3)) & 0xFFF`. A `u16` variable assigned `x - 0xE3` widens back to `addiu -0xE3`; `(u16)(ang - 0xE3)` lets fold move the constant to `Za` | `PlotBall` |
 | A hook's result `move s0,v0`, then `sll v0,s0,16; sra a1,v0,16` for `!= -1` and an argument | The hook returns `s16` into an `s16` variable (the leak's `s16 AR_*_BounceOnBounds`): cast the `void *` hook to `s16 (*)(...)`, not `s32 (*)(...)` with `(s16)` casts | `PlotBall` (`d`) |
+| subu/addiu order wrong: gcc folds b - (a - 0x800) into b + 0x800 - a | put a - 0x800 in a block-scoped local temp, then b - t | `PlotBonkShockwave` |
+| A global array base (`lui/addiu Heroes`) scheduled on the wrong side of the index multiply | Load the base into its own local first (`base = Heroes;`), then `base + idx` | `func_800B8A30`, `func_800B738C`, `func_800B77FC` |
+| A loop walks one pointer with the stride in the branch delay slot; a pointer-walk C (`p++`) splits it into two registers or adds an `addiu` | Index the global struct array with the counter (`D[i].f`), no pointer local | `func_800B6568`, `func_800B347C` |
+| An extra `li a3,...` before a call whose callee never reads a3 | The callee takes fewer parameters: declare it with three and drop the fourth argument | `func_800B7908` |
+| A spawn block hoists a global's `lui/addiu` and saves extra registers (s2, s3) | It was a `static inline` helper taking the pointer (`&eng->unk10`, kind, anim) | `func_800B8550` |
+| call through function-pointer global compiled as jal | declare the global as extern void (*G)() in a header the unit includes | `func_800B8C3C` |
+| sub pointer set NULL after call in target but s0 saved (live across call) | assign s = NULL before the first call | `func_800B6CD8` |
+| beqz delay slot has li v0,3 instead of move v0,0 (null-guarded load) | use explicit `sub = NULL; if (p) sub = p->sub; if (sub)` | `func_800B6EFC` |
 
 ## Classify the diff, then work through the list
 
