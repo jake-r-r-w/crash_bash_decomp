@@ -376,7 +376,44 @@ void func_800B9804(s32 arg0) {
     func_800898EC(arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B98B8);
+void func_800B98B8(s32 arg0) {
+    HeroInfo *base;
+    HeroInfo *h;
+    HeroInfo *base2;
+    HeroInfo *h2;
+    u16 st;
+    s32 ret;
+
+    base = Heroes;
+    h = &base[arg0];
+    if (h->hero_powerup->sfx != NULL) {
+        StopSfx(h->hero_powerup->sfx);
+    }
+    if (h->hero_eng->sfx != NULL) {
+        StopSfx(h->hero_eng->sfx);
+    }
+    st = h->hero_status;
+    if (st & 0x200) {
+        SetHeroAction((HeroInfo *)arg0, 0x36);
+        ret = 1;
+    } else if (st & 0x400) {
+        SetHeroAction((HeroInfo *)arg0, 0x37);
+        ret = 1;
+    } else {
+        ret = 0;
+    }
+    if (ret != 0) {
+        base2 = Heroes;
+        h2 = &base2[arg0];
+        if ((u32)(h2->hero_name - 1) < 8) {
+            h2->hero_sub->unk6C = D_80052A54 + D_8009D6EC[*(volatile u16 *)&h2->hero_name] * 0x38;
+        } else {
+            h2->hero_sub->unk6C = 0;
+        }
+    } else {
+        func_80089BE8(arg0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B9A04);
 
