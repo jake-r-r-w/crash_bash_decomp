@@ -17,6 +17,14 @@ still gets cpp for their #defines.
 The first compile of each compile.sh is also run through bash, and the two objects must be
 byte-identical; otherwise (or for a compile.sh it can't read) it says so and falls back to bash.
 
+Scoring compares relocations by address, not by name. The target's asm names a field of a
+global by its own address (`D_8005A677`), and our C writes it as `D_8005A614+0x63`. Both link to
+the same bytes, but the stock scorer counted each such pair as a difference, so a matching
+function could never score 0. Each `%hi(SYM+off)` and `%lo(SYM+off)` becomes the address's half,
+with the address read from the name (`D_8005A677`) or from PERMUTER_SYMBOLS, a file of
+`name 0xADDRESS` lines that decomp.py permute writes. `try`'s comparison makes the same
+assumption: equal after linking means equal.
+
     python3 tools/scripts/permuter_fast.py DIR [permuter args...]
 """
 import atexit
@@ -33,6 +41,7 @@ import tempfile
 PERMUTER = os.environ.get("PERMUTER_PY", "/opt/permuter/permuter.py")
 sys.path.insert(0, os.path.dirname(PERMUTER))
 from src import compiler as _compiler  # noqa: E402
+from src import objdump as _objdump  # noqa: E402
 from src.helpers import try_remove  # noqa: E402
 
 SHELL_SYNTAX = {";", "&&", "||", ">", ">>", "<", "&", "2>", "2>&1"}
@@ -248,6 +257,55 @@ def fast_compile(self, source, *, show_errors=False):
     return o_name
 
 
+ADDR_NAME = re.compile(r"^\w+?_([0-9A-Fa-f]{8})$")
+RELOC_ARG = re.compile(r"^%(hi|lo)\(([A-Za-z_.$][\w.$]*)(?:\s*([+-])\s*(\w+))?\)$")
+_symbols = {}
+_mips_reloc = _objdump.process_mips_reloc
+
+
+def load_symbols(path):
+    """name -> address from a file of `name 0xADDRESS` lines."""
+    out = {}
+    try:
+        with open(path) as f:
+            for line in f:
+                parts = line.split()
+                if len(parts) == 2:
+                    out[parts[0]] = int(parts[1], 0)
+    except (OSError, ValueError):
+        pass
+    return out
+
+
+def sym_addr(name):
+    if name in _symbols:
+        return _symbols[name]
+    m = ADDR_NAME.match(name)
+    return int(m.group(1), 16) if m else None
+
+
+def mips_reloc(reloc_row, prev, repl, imm):
+    """The permuter's %hi/%lo(SYM+off) as the address's half, when SYM's address is known."""
+    out = _mips_reloc(reloc_row, prev, repl, imm)
+    m = RELOC_ARG.match(out)
+    addr = sym_addr(m.group(2)) if m else None
+    if addr is None:
+        return out
+    if m.group(4):
+        try:
+            off = int(m.group(4), 0)
+        except ValueError:
+            return out
+        off = -off if m.group(3) == "-" else off
+        addr += off << 16 if m.group(1) == "hi" else off     # REL: a lui holds the addend's high half
+    if m.group(1) == "lo":
+        return f"%lo(0x{addr & 0xFFFF:04x})"
+    return f"%hi(0x{((addr + 0x8000) >> 16) & 0xFFFF:04x})"
+
+
+if os.environ.get("PERMUTER_SYMBOLS"):
+    _symbols = load_symbols(os.environ["PERMUTER_SYMBOLS"])
+_objdump.process_mips_reloc = mips_reloc
 _compiler.Compiler.compile = fast_compile
 
 if __name__ == "__main__":

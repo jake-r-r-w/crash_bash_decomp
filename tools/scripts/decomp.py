@@ -4241,7 +4241,8 @@ def permute_run(d, name, e, base_c, cfg, jobs, seconds, plain_c=None, mode="whol
         real = shutil.which(X + "objdump")
         if real:
             os.symlink(real, f"{shim}/mips-linux-gnu-objdump")
-    env = dict(os.environ, PATH=shim + os.pathsep + os.environ.get("PATH", ""))
+    env = dict(os.environ, PATH=shim + os.pathsep + os.environ.get("PATH", ""),
+               PERMUTER_SYMBOLS=os.path.abspath(write_permuter_symbols(d, e)))
     plain = os.environ.get("PERMUTER_PLAIN") == "1"
     context = f"full {len(base_c) // 1024} KB"
     if not plain:
@@ -4280,6 +4281,28 @@ def permute_run(d, name, e, base_c, cfg, jobs, seconds, plain_c=None, mode="whol
                     "best": best if best is not None else base, "matched": best == 0,
                     "pipeline": "stock" if plain else "fast", "context": context})
     return best, path, base, log
+
+
+def write_permuter_symbols(d, e):
+    """d/symbols.txt: `name 0xADDRESS` for every symbol the function can reach (main, the engine
+    and its own overlay; the slot overlays share addresses), for permuter_fast's scoring by
+    address. A name with two addresses there is left out."""
+    seg = e.get("seg") or ""
+    ovl = seg.split("/")[1] if seg.startswith("overlays/") else None
+    addrs, clash = {}, set()
+    for b in ["main", "engine"] + ([ovl] if ovl and ovl != "engine" else []):
+        p = f"{CFG}/sym.{b}.txt"
+        if not os.path.exists(p):
+            continue
+        for line in read(p).splitlines():
+            m = SYM_LINE.match(line)
+            if m:
+                a = int(m.group(2), 16)
+                if addrs.setdefault(m.group(1), a) != a:
+                    clash.add(m.group(1))
+    path = f"{d}/symbols.txt"
+    write(path, "".join(f"{n} 0x{a:08X}\n" for n, a in sorted(addrs.items()) if n not in clash))
+    return path
 
 
 def record_permute(rec):

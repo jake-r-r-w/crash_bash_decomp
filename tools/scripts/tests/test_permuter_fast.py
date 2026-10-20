@@ -156,6 +156,28 @@ class Fast(unittest.TestCase):
         self.assertFalse(permuter_fast.cpp_noop("int f(void) { return __LINE__; }\n", names))
         self.assertFalse(permuter_fast.cpp_noop("int f(void) { /* c */ return 1; }\n", names))
 
+    def test_relocs_compare_by_address(self):
+        # the target's D_8005A677 and our D_8005A614 + 0x63 (a struct field) link the same
+        lo, hi = "R_MIPS_LO16\tD_8005A614", "R_MIPS_HI16\tD_8005A614"
+        r = permuter_fast.mips_reloc
+        self.assertEqual(r(lo, "", "D_8005A614", "0x63"), r("R_MIPS_LO16\tD_8005A677", "", "D_8005A677", "0"))
+        self.assertEqual(r(hi, "", "D_8005A614", "0"), r("R_MIPS_HI16\tD_8005A677", "", "D_8005A677", "0"))
+        self.assertEqual(r(lo, "", "D_8005A614", "0x63"), "%lo(0xa677)")
+        self.assertEqual(r(hi, "", "D_8005A614", "0"), "%hi(0x8006)")
+        self.assertNotEqual(r(lo, "", "D_8005A614", "0x64"), "%lo(0xa677)")
+
+    def test_relocs_by_name_need_the_symbol_file(self):
+        r = permuter_fast.mips_reloc
+        old = dict(permuter_fast._symbols)
+        try:
+            permuter_fast._symbols.clear()
+            self.assertEqual(r("R_MIPS_LO16\tHeroes", "", "Heroes", "4"), "%lo(Heroes+4)")
+            permuter_fast._symbols["Heroes"] = 0x80051000
+            self.assertEqual(r("R_MIPS_LO16\tHeroes", "", "Heroes", "4"), "%lo(0x1004)")
+        finally:
+            permuter_fast._symbols.clear()
+            permuter_fast._symbols.update(old)
+
     def test_in_process_filter_matches_the_script(self):
         script = os.path.join(HERE, "..", "dmpsx.py")
         asm = "\t#APP\n\t.word 0x0000007f\n\t#NO_APP\n\tjr $31\n"

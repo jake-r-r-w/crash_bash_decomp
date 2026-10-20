@@ -164,7 +164,12 @@ block by block over several sessions, keeping the best C between them:
     `compile.sh` pipeline with dmpsx, maspsx and aspsx_fill inside the worker, reads the
     include dirs from `/tmp`, and skips cpp when it would change nothing. Its first compile
     must equal bash's byte for byte, or it uses bash.
-  - `PERMUTER_PLAIN=1` runs the stock permuter on the full context instead.
+  - Its score compares relocations by address (2026-10-20). The target asm names a field by
+    its own address (`D_8005A677`); our C writes `D_8005A614+0x63`. Both link the same, but the
+    stock scorer charged each pair, so `func_800B5710` scored 20 with C that `try` called a
+    match, and `--stop-on-zero` never fired. Addresses come from the name or from the
+    run's `symbols.txt` (main, engine and the function's overlay).
+  - `PERMUTER_PLAIN=1` runs the stock permuter on the full context instead (old scoring too).
   - Every run is recorded: a `PERMUTE-STATS` line, `.decomp/permuter.jsonl` here and
     `<swarm dir>/permuter.jsonl` in the swarm. `decomp.py permstats [FILE...]` and
     `swarm.mjs stats` sum them by size and mode: runs, CPU minutes, improved, matched and
