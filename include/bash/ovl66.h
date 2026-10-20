@@ -27,6 +27,8 @@ extern s32 D_800B9EEC;
 
 void func_800B33A4();
 
+int func_800B61B0(int a0, int *out);
+
 void func_800B6238(s32 arg0, s32 arg1);
 void func_800B4BC8(s32 arg0, u16 arg1);
 void func_800B5050(s32 arg0, u16 arg1);

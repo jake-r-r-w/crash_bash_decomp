@@ -42,7 +42,16 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B5BA0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B60FC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B61B0);
+int func_800B61B0(int a0, int *out)
+{
+    int v;
+
+    if (func_800B4454(a0, &v, 0x301) != 0) {
+        *out = v;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B61F8);
 
