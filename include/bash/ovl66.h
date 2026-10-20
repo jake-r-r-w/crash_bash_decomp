@@ -131,6 +131,8 @@ void InitBonkShockwave(NAS *nas);
 
 void func_800B6568(void);
 
+void func_800B66C8(void);
+
 void func_800B6774(void);
 
 void func_800B69D0(void);

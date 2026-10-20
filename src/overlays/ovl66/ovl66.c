@@ -205,7 +205,19 @@ void func_800B6568(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", InitBonkStool);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B66C8);
+void func_800B66C8(void) {
+    NAS *n;
+
+    if (D_800B9EF0 < 10) {
+        n = SpawnNASById(0, D_8005A5D8 - 0x2000, 0, 0x1A01, 0x11);
+        if (n != NULL) {
+            n->UserInfo.user1 = Random(10) + D_800B9EF0 * 5;
+            n->UserInfo.user2 = D_800B9EF0;
+            D_800B9E50[D_800B9EF0].unk4 = (s32)n;
+            D_800B9EF0 += 1;
+        }
+    }
+}
 
 void func_800B6774(void) {
     s32 i;
