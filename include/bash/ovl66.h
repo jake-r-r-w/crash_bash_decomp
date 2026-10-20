@@ -41,6 +41,7 @@ extern ScriptInit D_800B9CE4;
 extern u8 D_80053C0C[];
 extern u8 D_80053C7C[];
 extern s32 D_8005A680[];
+extern s32 D_80099174;
 extern void *D_8009D8FC;
 extern void *D_8009D900;
 extern void *D_8009D904;
@@ -149,6 +150,8 @@ void func_800B6568(void);
 void func_800B66C8(void);
 
 void func_800B6774(void);
+
+void func_800B68EC(void);
 
 void func_800B69D0(void);
 

@@ -265,7 +265,34 @@ void func_800B68BC(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B68EC);
+void func_800B68EC(void) {
+    s32 i;
+    s16 v;
+    u8 *g = D_8005A614;
+
+    u8 *h;
+
+    if (*(u16 *)(g + 0x32) & 0x40) {
+        i = 0;
+        h = g;
+        for (; i < 4; i++) {
+            v = 0x3C;
+            if (h[i + 0x5C] == 0) {
+                v = 0x50;
+                if (*(s32 *)(h + 0x6C) != 0) {
+                    v = 0x5A;
+                }
+            }
+            Heroes[i].hero_score_displayed = v;
+            Heroes[i].hero_score = v;
+        }
+        func_800B6868(0x130);
+        func_8007D144();
+        if (D_8005A680[0] != 0) {
+            D_80099174 |= 0x2000;
+        }
+    }
+}
 
 void func_800B69A0(void) {
     if (D_8005A646 & 0x80) {
