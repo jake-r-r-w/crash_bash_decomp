@@ -97,7 +97,13 @@ void func_800B8D3C(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B8D88);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B8E08);
+s32 func_800B8E08(s32 arg0) {
+    if (Heroes[arg0].hero_move->forward_speed == 0) {
+        SetHeroAction((HeroInfo *)arg0, 0x40);
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B8E64);
 
