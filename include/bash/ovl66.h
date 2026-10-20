@@ -42,6 +42,21 @@ extern s16 D_8009D87C[][3];
 
 void func_800B33A4();
 
+typedef struct Ovl66Entry {
+    s32 unk0;
+    s32 unk4;
+    s32 unk8;
+} Ovl66Entry;
+extern s32 D_800B9634;
+extern s32 D_800B9E0C;
+extern Ovl66Entry D_800B9E50[10];
+extern s32 D_800B9EF0;
+extern s32 D_800B9EF4;
+extern s32 D_800B9EF8;
+extern s32 D_800B9EFC;
+extern s32 D_800B9F00;
+extern s32 D_800B9F04;
+
 int func_800B61B0(int a0, int *out);
 /* D_8009D6E8 (EngineHooks in bash/engine.h, which this unit does not include). */
 typedef struct Ovl66Hooks {
@@ -106,6 +121,8 @@ typedef struct Ovl66Cam {
     /* 0x56 */ s16 unk56;
     /* 0x58 */ s16 unk58;
 } Ovl66Cam;
+
+void func_800B347C(void);
 
 void InitBonkFlag(NAS *nas);
 

@@ -27,7 +27,21 @@ void func_800B33A4() {
     func_800B67F4();
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B347C);
+void func_800B347C(void) {
+    s32 i;
+
+    D_800B9EF0 = 0;
+    D_800B9EFC = 0;
+    D_800B9F04 = 0;
+    D_800B9F00 = D_800B9E0C;
+    for (i = 0; i < 10; i++) {
+        D_800B9E50[i].unk0 = 0x100;
+        D_800B9E50[i].unk4 = 0;
+        D_800B9E50[i].unk8 = 0;
+    }
+    D_800B9EF4 = 0;
+    D_800B9EF8 = D_800B9634 * 30;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B34F8);
 
