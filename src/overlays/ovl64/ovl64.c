@@ -310,7 +310,13 @@ void func_800BB52C(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800BB560);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800BB5F0);
+s32 func_800BB5F0(s32 arg0) {
+    if (!(D_80051338[arg0].unk54 & 0x4000)) {
+        return 0;
+    }
+    SetHeroAction((HeroInfo *)arg0, 0x34);
+    return 1;
+}
 
 s32 func_800BB648(s32 arg0) {
     s32 act;

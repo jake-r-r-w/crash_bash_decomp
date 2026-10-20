@@ -7,6 +7,7 @@
 
 #include "common.h"
 #include "bash/nas.h"
+#include "bash/main.h"
 
 void func_800B3428();
 
@@ -52,6 +53,8 @@ extern NAS *D_8005AA2C;
 void func_800B9804(s32 arg0);
 
 void func_800BB4FC(s32 arg0);
+
+s32 func_800BB5F0(s32 arg0);
 
 s32 func_800BB648(s32 arg0);
 
