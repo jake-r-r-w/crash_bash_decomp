@@ -715,7 +715,41 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800BAF1C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800BB230);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800BB37C);
+void func_800BB37C(EXTengine *eng, Ovl64HitMask *m, u32 flag, s32 hero) {
+    FlagRecord *r;
+    FlagRecord *r2;
+    HeroInfo *h;
+    EXTengine *e2;
+    s32 top, bot, dx, dz, rr, y, lo, hi;
+    s32 rad;
+
+    r = func_80025A48(eng, 0x40);
+    if (r != NULL) {
+        top = eng->unk10.y + r->unk2;
+        rad = r->radius;
+        h = &Heroes[hero];
+        bot = eng->unk10.y + r->height;
+        if (!(h->hero_status & 0xF800)) {
+            e2 = h->hero_eng;
+            if (e2 != NULL) {
+                r2 = func_80025A48(e2, 0x40);
+                if (r2 != NULL) {
+                    lo = e2->unk10.y + r2->unk2;
+                    hi = e2->unk10.y + r2->height;
+                    if (bot < lo && hi < top) {
+                        dx = e2->unk10.x - eng->unk10.x;
+                        dz = e2->unk10.z - eng->unk10.z;
+                        rr = r2->radius + rad;
+                        rr *= rr;
+                        if (dx * dx + dz * dz < rr && m != NULL && (m->mask & flag)) {
+                            m->hit |= flag;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 
 void func_800BB4FC(s32 arg0) {
     Heroes[arg0].hero_move->velocity_enable = 1;

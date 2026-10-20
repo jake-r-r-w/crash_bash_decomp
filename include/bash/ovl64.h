@@ -63,7 +63,13 @@ void func_800B9048(void);
 
 void func_800B9088(void);
 
-void func_800BB37C(void);
+typedef struct {
+    /* 0x00 */ u8 unk0[0x1C];
+    /* 0x1C */ u16 mask;
+    /* 0x1E */ u16 hit;
+} Ovl64HitMask;
+
+void func_800BB37C(EXTengine *eng, Ovl64HitMask *m, u32 flag, s32 hero);
 
 void func_800BB52C(s32 arg0);
 extern void (*D_8009D73C)();
