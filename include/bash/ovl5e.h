@@ -156,7 +156,9 @@ typedef struct Ovl5eStep {
 } Ovl5eStep;
 
 extern Ovl5eStep *D_800BD118[];
-void func_800B4EE8(s32 a, s32 b, s32 c, u16 d);
+extern u8 D_8005342C[];
+extern ScriptInit D_800BD4F4;
+NAS *func_800B4EE8(s32 a, s32 b, s32 c, u16 d);
 
 s32 func_800B7670(u8 *arg0);
 

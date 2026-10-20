@@ -259,7 +259,72 @@ s32 func_800B4D70(Ovl5ePos *arg0) {
     return best;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B4EE8);
+NAS *func_800B4EE8(s32 a, s32 b, s32 c, u16 d)
+{
+  NAS *nas;
+  u8 *new_var;
+  EXTengine *eng;
+  Ovl5eObj *obj;
+  Slot40 *s;
+  s32 i;
+  nas = SpawnNASById(a, b, c, 0x1202, 0x11);
+  if (nas != 0)
+  {
+    eng = nas->Engine;
+    if (eng != 0)
+    {
+      eng->sub->unk6C = &D_8005342C;
+      eng->unk5D = 0;
+      eng->sub->unk74 = 0x2001;
+      eng->flags &= 0xFFFF7FFF;
+      func_80025B10(eng, 0x50);
+      for (i = 0; i < 6; i++)
+      {
+        if (D_800BD70C[i].unk0 == 0)
+        {
+          goto found;
+        }
+      }
+
+      i = -1;
+      found:
+      if (i != (-1))
+      {
+        nas->UserInfo.user1 = i;
+        new_var = (u8 *) D_800BD70C;
+        s = (Slot40 *) (new_var + (i << 6));
+        s->unk0 = (s32) nas;
+        s->pad4[0] = (s32) eng;
+        s->pad4[1] = (s32) eng->sub;
+        s->pad4[4] = (s32) AddMotion(nas);
+        *((SLONG_XYZ *) s->unk34) = eng->unk10;
+        s->unk26 = 0xA;
+        obj = (Ovl5eObj *) AddObject(nas);
+        if (obj != 0)
+        {
+          nas->FUX = (EXT *) obj;
+          obj->unk1A = 1;
+          obj->unk22 = d;
+          obj->unk14 = s->unk22;
+          func_80026AD8((u8 *) nas);
+          func_8002694C(nas, 0x200);
+        }
+        s->pad4[5] = (s32) func_80024E30(nas, &D_800BD4F4);
+      }
+      else
+      {
+        KillNAS(nas);
+        return 0;
+      }
+
+    }
+    if (nas->Failure != 0)
+    {
+      KillNAS(nas);
+    }
+  }
+  return nas;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", PlotPapuMinion);
 
