@@ -111,6 +111,36 @@ extern Ovl5eKey *D_800BD008[];
 extern Ovl5eKey *D_800BE82C;
 extern s16 D_800BE894;
 
+typedef struct PapuBossState {
+    /* 0x00 */ NAS *nas;
+    /* 0x04 */ EXTengine *eng;
+    /* 0x08 */ subengine *sub;
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ ScriptCursor *cursor;
+    /* 0x1C */ s32 unk1C;
+    /* 0x20 */ s16 unk20;
+    /* 0x22 */ s16 unk22;
+    /* 0x24 */ s16 unk24;
+    /* 0x26 */ s16 unk26;
+    /* 0x28 */ s16 unk28;
+    /* 0x2A */ s16 unk2A;
+    /* 0x2C */ s16 unk2C;
+    /* 0x2E */ s16 unk2E;
+    /* 0x30 */ s16 unk30;
+    /* 0x32 */ s16 unk32;
+    /* 0x34 */ s32 unk34;
+    /* 0x38 */ s32 unk38;
+    /* 0x3C */ s32 unk3C;
+} PapuBossState;
+
+extern PapuBossState D_800BD88C;
+extern u8 D_800533F4[];
+extern ScriptInit D_800BD3AC;
+extern s16 D_800BE88E;
+extern s16 D_800BE890;
+
 void func_800B7600(s32 arg0);
 typedef struct Ovl5eStep {
     s32 a;
@@ -228,6 +258,8 @@ typedef struct {
     u8 pad18[0x12];
     s16 unk2A;
 } T_B7F14_B;
+
+void InitPapuBoss(NAS *nas);
 
 s32 func_800B6334(EXTengine *eng, u32 flag);
 

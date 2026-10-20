@@ -138,7 +138,50 @@ void func_800B42C0(void) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl5e/ovl5e", D_800B32B8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", InitPapuBoss);
+void InitPapuBoss(NAS *nas) {
+    EXTengine *eng;
+    ScriptCursor *cur;
+
+    eng = nas->Engine;
+    if (eng != NULL) {
+        func_80086868();
+        eng->sub->unk6C = D_800533F4;
+        eng->sub->unk74 = 0x2001;
+        eng->unk5C = 1;
+        eng->unk5E = 1;
+        func_80025B10(eng, 0x40);
+        cur = func_80024E30(nas, &D_800BD3AC);
+        func_800250B0(nas);
+        D_800BE88E = 0;
+        D_800BE890 = 0;
+        D_800BE894 = 0;
+        func_80026A04((u8 *)nas);
+        D_800BD88C.nas = nas;
+        D_800BD88C.eng = eng;
+        D_800BD88C.sub = eng->sub;
+        D_800BD88C.unk22 = 3;
+        D_800BD88C.cursor = cur;
+        D_800BD88C.unkC = 0;
+        D_800BD88C.unk10 = 0;
+        D_800BD88C.unk14 = 0;
+        D_800BD88C.unk1C = 0;
+        D_800BD88C.unk20 = 0;
+        D_800BD88C.unk24 = 0;
+        D_800BD88C.unk26 = 0x14;
+        D_800BD88C.unk28 = 0;
+        D_800BD88C.unk2A = 0;
+        D_800BD88C.unk2C = 0;
+        D_800BD88C.unk2E = 0;
+        D_800BD88C.unk30 = 0;
+        D_800BD88C.unk32 = 0;
+        D_800BD88C.unk34 = 0;
+        D_800BD88C.unk38 = 0;
+        D_800BD88C.unk3C = 0;
+    }
+    if (nas->Failure != 0) {
+        printf("boss failure!!!\n");
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", PlotPapuBoss);
 
