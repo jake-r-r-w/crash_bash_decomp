@@ -8,7 +8,42 @@
 #include "bash/bash.h"
 #include "bash/xtras.h"
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B3428);
+void func_800B3428() {
+    void *p;
+    void **q;
+
+    D_8009D6E8.unk20 = func_800B90D0;
+    D_8009D6E8.unk68 = func_800B8F48;
+    D_8009D6E8.unk44 = func_800BB5F0;
+    D_8009D6E8.unk3C = func_800B8E54;
+    D_8009D6E8.unkC = D_800BB80C;
+    D_8009D6E8.unk38 = func_800B7508;
+    D_8009D6E8.unk64 = func_800B4144;
+    D_8009D6E8.unk4C = func_800BA098;
+    D_8009D6E8.unk50 = func_800BA344;
+    D_8009D6E8.unk54 = func_800BA514;
+    D_8009D6E8.unk58 = func_800BAF1C;
+    D_8009D6E8.unk5C = func_800B6C50;
+    D_8009D6E8.unk60 = func_800B8E5C;
+    D_8009D6E8.unk18 = func_800BB560;
+    D_8009D6E8.unk10 = (Ovl64JumpEnt *)D_800BB7BC;
+    D_8009E0E2 = 0x38;
+    D_8009E0E4 = 0x36;
+    D_8009E0E6 = 0x37;
+    D_8009E0D8 = 0x33;
+    func_800B8EE0();
+    D_8009D8F4 = D_800BB76C;
+    D_8009D8F8 = D_800BB780;
+    D_8009D904 = D_800BB754;
+    q = &D_8009D8FC;
+    if (D_8005A680 != 0) {
+        p = D_800BB734;
+    } else {
+        p = D_800BB720;
+    }
+    *q = p;
+    D_8009D900 = D_800BB748;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B359C);
 

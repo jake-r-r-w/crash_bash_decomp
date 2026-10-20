@@ -162,13 +162,56 @@ typedef struct Ovl64JumpEnt {
 } Ovl64JumpEnt;
 
 typedef struct Ovl64Hooks {
-    /* 0x00 */ u8 pad0[0x10];
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ void *unkC;
     /* 0x10 */ Ovl64JumpEnt *unk10;
-    /* 0x14 */ u8 pad14[0x58];
+    /* 0x14 */ u8 pad14[4];
+    /* 0x18 */ void *unk18;
+    /* 0x1C */ u8 pad1C[4];
+    /* 0x20 */ void *unk20;
+    /* 0x24 */ u8 pad24[0x14];
+    /* 0x38 */ void *unk38;
+    /* 0x3C */ void *unk3C;
+    /* 0x40 */ u8 pad40[4];
+    /* 0x44 */ void *unk44;
+    /* 0x48 */ u8 pad48[4];
+    /* 0x4C */ void *unk4C;
+    /* 0x50 */ void *unk50;
+    /* 0x54 */ void *unk54;
+    /* 0x58 */ void *unk58;
+    /* 0x5C */ void *unk5C;
+    /* 0x60 */ void *unk60;
+    /* 0x64 */ void *unk64;
+    /* 0x68 */ void *unk68;
 } Ovl64Hooks;
 extern Ovl64Hooks D_8009D6E8;
 
 s32 func_800B8C74(s32 arg0);
+extern void *D_8009D8F4;
+extern void *D_8009D8F8;
+extern void *D_8009D8FC;
+extern void *D_8009D900;
+extern void *D_8009D904;
+extern s16 D_8009E0D8;
+extern s16 D_8009E0E2;
+extern s16 D_8009E0E4;
+extern s16 D_8009E0E6;
+extern u8 D_800BB720[];
+extern u8 D_800BB734[];
+extern u8 D_800BB748[];
+extern u8 D_800BB754[];
+extern u8 D_800BB76C[];
+extern u8 D_800BB780[];
+extern u8 D_800BB7BC[];
+extern u8 D_800BB80C[];
+void func_800B4144();
+void func_800B7508();
+void func_800B8EE0();
+void func_800B90D0();
+void func_800BA098();
+void func_800BA344();
+void func_800BA514();
+void func_800BAF1C();
 
 void func_800B9608(s32 arg0);
 
