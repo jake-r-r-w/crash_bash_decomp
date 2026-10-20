@@ -174,6 +174,25 @@ and current tools).
   - `func_800B38FC` instructions 32/131: stack `u16` args get `andi` +
     `sll` after a branch; declare the params `u16` and scale them in place
     (`n4 *= 4;`).
+- **Overlay run 2026-10-20 (run 20261020211358), to fix by hand:**
+  - `func_800B4268` (ovl65): the gate refused the worker's match because the
+    full build failed. It gave the function an extra parameter, and its
+    callers still pass fewer arguments. Fix the callers' prototype use from
+    the worker's patch (`<swarm dir>/results/ovl65_800B4268/`). Its hint:
+    end with `r2 = r1 < 0x100; if (r2) goto one; t0 = 0; return t0;` so the
+    early `return 0` isn't cross-jumped onto the final one.
+  - `func_800B4444` (ovl68) matched with two workarounds that
+    `decomp.py hacks` doesn't catch. It keeps a dead pointer increment
+    alive with an unused `j`/`k` cycle (`if (*p != 0) { j = k + 1; k = j; }`,
+    which cse keeps and flow deletes), and it calls `func_800B3330` through a
+    function-pointer cast instead of fixing that stub's `void (void)`
+    prototype. Fix the prototype, find the real loop shape, and extend the
+    dead-store lint to variable cycles.
+  - Hints on still-unmatched functions: `func_800B47C8` (ovl60) lays out
+    0xD/0xE/else as E, D, else (`goto case_d` into an `else if (0)`
+    block got it there); `PlotCircleFire` structure 133/155: index the
+    table by the loop counter (`T[i].x`), not a walking pointer;
+    `func_800B5D90`: `lh` + `sra 3` as `.unk2 * 1024 >> 13`.
 - **Hack matches to revisit:** `decomp.py hacks` lists them (three on
   2026-10-20: `func_800193A8`, register pins that are probably the original
   source, `func_800B345C` and `func_800B7134` above). Since 2026-10-20 the
@@ -497,6 +516,17 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-20 (swarm all overlays):** run 20261020211358, `--seg overlays/
+  --model sonnet --escalate-model opus --workers 5 --big-workers 2
+  --big-budget-usd 8 --big-minutes 12 --max-run-usd 40`, stopped
+  gracefully by request after 18 min: 10 matched for $10.26 (ovl68 5,
+  ovl62 2, ovl66 2 incl. the morning's park `func_800B34F8`, ovl64 1), 2
+  failed (an OAuth refresh clash at start; `func_800B4268` refused at the
+  gate, Open leads). 85 functions under 600 B had never been tried (runs
+  ended on budget before them); most are still queued. `fold`: 12 rows, 4
+  new, 1 example added, 2 hack rows and 4 on unmatched functions to Open
+  leads, 1 duplicate dropped.
 
 - **2026-10-20 (cleanup):** merged the sched tooling (260a4660); removed
   the two side-session worktrees and their merged branches (the BB3F0
