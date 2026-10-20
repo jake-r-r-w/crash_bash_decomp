@@ -37,6 +37,10 @@ GCC_ROOT = os.environ.get("GCC_ROOT", "/opt/gcc")
 MASPSX = os.environ.get("MASPSX_PY", "/opt/maspsx/maspsx.py")
 M2C = os.environ.get("M2C_PY", "/opt/m2c/m2c.py")
 PERMUTER = os.environ.get("PERMUTER_PY", "/opt/permuter/permuter.py")
+# the permuter with the pipeline's Python filters in-process (PERMUTER_PLAIN=1: the stock one on
+# the full context)
+PERMUTER_FAST = os.path.join(os.path.dirname(os.path.abspath(__file__)), "permuter_fast.py")
+P_PERMLOG = os.path.join(DEC, "permuter.jsonl")   # one line per permuter run (permstats)
 X = os.environ.get("CROSS", "mipsel-linux-gnu-")
 DEFAULT_MASPSX = "--macro-inc --expand-div"
 
@@ -747,6 +751,170 @@ def permuter_import():
     sys.path.insert(0, os.path.dirname(PERMUTER))
     spec.loader.exec_module(mod)
     return mod
+
+
+def file_decls(text, name):
+    """The file's own text before NAME's definition, for the permuter's base (its externs, macros
+    and types; a base of the #includes alone doesn't compile a function using them). Other
+    functions' definitions become prototypes, but inline ones stay whole (they inline into it);
+    #include lines (permuter_base adds them) and #if lines still open at NAME go."""
+    m = next((m for m in func_def_regex(name).finditer(text) if not text[m.start()].isspace()), None)
+    head = text[:m.start()] if m else ""
+    out, i = [], 0
+    for d in DEFS.finditer(head):
+        if d.start() < i:
+            continue
+        depth, j = 0, d.end() - 1
+        while j < len(head):
+            depth += (head[j] == "{") - (head[j] == "}")
+            if depth == 0:
+                break
+            j += 1
+        sig = head[d.start():d.end() - 1].rstrip()
+        k = re.match(r"(.*?\b" + re.escape(d.group(1)) + r"\b(?:\s*\))?\s*)\((.*?)\)([^()]*)$", sig, re.S)
+        if k and ";" in k.group(3):              # K&R: void f(a) u8 *a; {
+            sig = k.group(1) + "()"
+        out += [head[i:d.start()], head[d.start():j + 1] if re.search(r"\binline\b", sig) else sig + ";"]
+        i = j + 1
+    lines = ("".join(out) + head[i:]).split("\n")
+    open_ifs = []
+    for k, line in enumerate(lines):
+        s = line.strip()
+        if re.match(r"#\s*include\b", s):
+            lines[k] = ""
+        elif re.match(r"#\s*if", s):
+            open_ifs.append([k])
+        elif re.match(r"#\s*(else|elif)\b", s) and open_ifs:
+            open_ifs[-1].append(k)
+        elif re.match(r"#\s*endif\b", s) and open_ifs:
+            open_ifs.pop()
+    for ks in open_ifs:
+        for k in ks:
+            lines[k] = ""
+    return "\n".join(lines)
+
+
+def permuter_file_base(src, name, body, tag):
+    """permuter_base with the file's own declarations (file_decls), or without them if they
+    don't parse for the permuter."""
+    base_c = permuter_base(src, [file_decls(read(src), name)], body, tag)
+    if base_c is None or prune_context(base_c, name) is None:
+        base_c = permuter_base(src, [], body, tag)
+    return base_c
+
+
+IDENT = re.compile(r"[A-Za-z_]\w*")
+
+
+def prune_context(base_c, name):
+    """base_c keeping only the declarations NAME needs, as (text, context), or None if the
+    context doesn't parse. The permuter parses and prints the whole file for every candidate, so
+    100+ KB of headers cost more than the compile. Kept: the closure over identifiers, from the
+    function's text, of the typedefs, tags, enum constants, globals, prototypes and inline helpers
+    that define them. The latedefine block and the function stay as they are; the kept
+    declarations are printed by pycparser, as the permuter prints them anyway."""
+    func = extract_function(base_c, name, top=True)
+    at = base_c.find(func.rstrip("\n")) if func else -1
+    if at < 0:
+        return None
+    func = func.rstrip("\n")
+    head, rest = base_c[:at], base_c[at + len(func):]
+    m = re.search(r"^#pragma _permuter latedefine end[^\n]*\n", head, re.M)
+    keep_head, ctx = (head[:m.end()], head[m.end():]) if m else ("", head)
+    permuter_path()
+    try:
+        from perm_pycparser import c_ast as ca, c_generator
+        from perm_pycparser.c_parser import CParser
+        ast = CParser().parse(ctx, "<context>")
+    except Exception:
+        return None
+    gen = c_generator.CGenerator()
+
+    def defines(node):
+        out = set()
+        if isinstance(node, ca.FuncDef):
+            node = node.decl
+        if getattr(node, "name", None):
+            out.add(node.name)
+        stack = [node.type] if getattr(node, "type", None) else []
+        forward = isinstance(node, ca.Decl) and node.name is None    # `struct X;`
+        while stack:
+            n = stack.pop()
+            if isinstance(n, (ca.Struct, ca.Union)) and n.name and (n.decls is not None or forward):
+                out.add(n.name)
+            elif isinstance(n, ca.Enum) and n.name:
+                out.add(n.name)
+            elif isinstance(n, ca.Enumerator):
+                out.add(n.name)
+            stack.extend(c for _, c in n.children())
+        return out
+
+    items = ast.ext
+    by_name, uses, keep = {}, [], set()
+    for i, node in enumerate(items):
+        if isinstance(node, ca.Pragma):
+            keep.add(i)
+        for n in defines(node):
+            by_name.setdefault(n, []).append(i)
+        uses.append(IDENT.findall(gen.visit(node)))
+    todo, seen = IDENT.findall(func + rest), set()
+    while todo:
+        n = todo.pop()
+        if n in seen:
+            continue
+        seen.add(n)
+        for i in by_name.get(n, ()):
+            if i not in keep:
+                keep.add(i)
+                todo.extend(uses[i])
+    context = gen.visit(ca.FileAST([items[i] for i in sorted(keep)]))
+    # the latedefine block's macros (#pragma _permuter define NAME(...) and `void NAME();`) that
+    # are used; none: no block, so a candidate needs no cpp (tools/scripts/permuter_fast.py)
+    lines, inside, used = keep_head.split("\n"), False, False
+    for k, line in enumerate(lines):
+        s = line.strip()
+        if s.startswith("#pragma _permuter latedefine"):
+            inside = s.endswith("start")
+            continue
+        if inside:
+            mm = re.match(r"(?:#pragma _permuter define\s+|void\s+)(\w+)", s)
+            if mm and mm.group(1) not in seen:
+                lines[k] = None
+            else:
+                used = True
+    keep_head = "\n".join(line for line in lines if line is not None and
+                          (used or not line.strip().startswith("#pragma _permuter latedefine")))
+    return keep_head + context + "\n" + func + rest, context
+
+
+def same_code(d, a_c, b_c):
+    """True if a_c and b_c build (d's compile.sh, the permuter's pragmas applied as it applies
+    them) to the same .text, relocations included."""
+    permuter_path()
+    try:
+        from src.ast_util import process_pragmas
+    except Exception:
+        return False
+    dumps = []
+    for tag, text in (("a", a_c), ("b", b_c)):
+        c, o = os.path.abspath(f"{d}/check_{tag}.c"), os.path.abspath(f"{d}/check_{tag}.o")
+        write(c, process_pragmas(text))
+        ok = run(["bash", f"{d}/compile.sh", c, "-o", o]).returncode == 0
+        r = run([X + "objdump", "-drz", "-j", ".text", o]) if ok else None
+        for f in (c, o):
+            if os.path.exists(f):
+                os.remove(f)
+        if not r or r.returncode:
+            return False
+        dumps.append(r.stdout.replace(o, ""))
+    return dumps[0] == dumps[1]
+
+
+def permuter_path():
+    """decomp-permuter's directory on sys.path (its perm_pycparser and src packages)."""
+    d = os.path.dirname(PERMUTER)
+    if d not in sys.path:
+        sys.path.insert(0, d)
 
 
 # ---------------------------------------------------------------- commands: setup
@@ -2323,7 +2491,7 @@ def auto_permute(a, funcs, stat, st, proj, syms, cfg, jobs, skip):
             st.setdefault(k, {})["permuted"] = -1
             continue
         best, path, base_score, log = permute_run(f"build/permuter/auto_{name}", name, e, base, cfg, jobs,
-                                                  a.permute_seconds)
+                                                  a.permute_seconds, mode="auto", unit=src)
         if base_score is None and best is None:
             # the permuter didn't start (toolchain or setup problem): say so once, don't mark anything
             print(f"  permute: the permuter failed to run on {name}, stopping:\n{tail(log, 4)}")
@@ -4043,9 +4211,20 @@ def cmd_unblock(a):
     cmd_progress(a)
 
 
-def permute_run(d, name, e, base_c, cfg, jobs, seconds):
-    """Set up and run decomp-permuter in `d` on base_c for `seconds`.
-    Returns (best score or None, best output dir or None, base score or None, log)."""
+def write_compile_sh(d, cfg):
+    """d/compile.sh for the permuter: the unit's pipeline, `compile.sh IN.c -o OUT.o`."""
+    g = int(cfg.get("GVAL", "0"))
+    cmd = pipeline('"$1"', '"$3"', cfg["CC_VER"], f"{cfg['OPT_FLAGS']} {cfg.get('EXTRA_CC1FLAGS', '')}".strip(), g,
+                   re.sub(r"\s*-G\d+", "", cfg.get("MASPSX_ARGS", DEFAULT_MASPSX)), post_filters(cfg))
+    cmd = cmd.replace("-Iinclude", "-I/work/include").replace("-Iext/", "-I/work/ext/")
+    write(f"{d}/compile.sh", f"#!/bin/bash\nset -eo pipefail\ncd /work\n{cmd}\n")
+    os.chmod(f"{d}/compile.sh", 0o755)
+
+
+def permute_run(d, name, e, base_c, cfg, jobs, seconds, plain_c=None, mode="whole", unit=None):
+    """Set up and run decomp-permuter in `d` on base_c for `seconds`. plain_c: base_c without its
+    PERM_ macros, if it has any (the pruned context is checked by compiling it). Records the run
+    (record_permute). Returns (best score or None, best output dir or None, base score or None, log)."""
     shutil.rmtree(d, ignore_errors=True)
     os.makedirs(d)
     write(f"{d}/base.c", base_c)
@@ -4053,12 +4232,7 @@ def permute_run(d, name, e, base_c, cfg, jobs, seconds):
     r = run([X + "as", *make_flags("ASFLAGS"), "-o", f"{d}/target.o", f"{d}/target.s"])
     if r.returncode:
         return None, None, None, "could not assemble target:\n" + tail(r.stderr)
-    g = int(cfg.get("GVAL", "0"))
-    cmd = pipeline('"$1"', '"$3"', cfg["CC_VER"], f"{cfg['OPT_FLAGS']} {cfg.get('EXTRA_CC1FLAGS', '')}".strip(), g,
-                   re.sub(r"\s*-G\d+", "", cfg.get("MASPSX_ARGS", DEFAULT_MASPSX)), post_filters(cfg))
-    cmd = cmd.replace("-Iinclude", "-I/work/include").replace("-Iext/", "-I/work/ext/")
-    write(f"{d}/compile.sh", f"#!/bin/bash\nset -eo pipefail\ncd /work\n{cmd}\n")
-    os.chmod(f"{d}/compile.sh", 0o755)
+    write_compile_sh(d, cfg)
     write(f"{d}/settings.toml", f'func_name = "{name}"\ncompiler_type = "gcc"\n')
     # The permuter looks for mips-linux-gnu-objdump; the image has the mipsel- build of the same tool.
     shim = os.path.abspath("build/permuter/bin")
@@ -4068,14 +4242,28 @@ def permute_run(d, name, e, base_c, cfg, jobs, seconds):
         if real:
             os.symlink(real, f"{shim}/mips-linux-gnu-objdump")
     env = dict(os.environ, PATH=shim + os.pathsep + os.environ.get("PATH", ""))
+    plain = os.environ.get("PERMUTER_PLAIN") == "1"
+    context = f"full {len(base_c) // 1024} KB"
+    if not plain:
+        # only the declarations the function needs, if they compile it to the same code
+        pruned = prune_context(base_c, name)
+        pruned_plain = prune_context(plain_c, name) if pruned and plain_c is not None else pruned
+        if (pruned and pruned_plain and pruned[1] == pruned_plain[1]
+                and same_code(d, plain_c if plain_c is not None else base_c, pruned_plain[0])):
+            write(f"{d}/base.c", pruned[0])
+            context = f"pruned {len(base_c) // 1024} -> {len(pruned[0]) // 1024} KB"
+        else:
+            print("(permuter: the pruned context doesn't parse or compiles differently; using the full one)")
     # own process group, so a timeout also stops the permuter's worker processes
-    p = subprocess.Popen(["python3", PERMUTER, d, f"-j{jobs}", "--stop-on-zero"], stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT, text=True, start_new_session=True, env=env)
+    t0 = time.time()
+    p = subprocess.Popen(["python3", PERMUTER if plain else PERMUTER_FAST, d, f"-j{jobs}", "--stop-on-zero"],
+                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, start_new_session=True, env=env)
     try:
         log = p.communicate(timeout=seconds)[0]
     except subprocess.TimeoutExpired:
         os.killpg(p.pid, 9)
         log = p.communicate()[0] or ""
+    elapsed = time.time() - t0
     write(f"{d}/log.txt", log)
     m = re.search(r"base score\D*(\d+)", log, re.I)
     outs = []
@@ -4084,7 +4272,61 @@ def permute_run(d, name, e, base_c, cfg, jobs, seconds):
         if mm:
             outs.append((int(mm.group(1)), q))
     best, path = min(outs) if outs else (None, None)
-    return best, path, (int(m.group(1)) if m else None), log
+    base = int(m.group(1)) if m else None
+    its = re.findall(r"iteration (\d+)", log)
+    record_permute({"at": now(), "name": name, "seg": e.get("seg"), "size": e.get("size"), "unit": unit,
+                    "mode": mode, "seconds": round(elapsed), "jobs": jobs, "iterations": int(its[-1]) if its else None,
+                    "per_s": round(int(its[-1]) / elapsed, 1) if its and elapsed else None, "base": base,
+                    "best": best if best is not None else base, "matched": best == 0,
+                    "pipeline": "stock" if plain else "fast", "context": context})
+    return best, path, base, log
+
+
+def record_permute(rec):
+    """One permuter run: a PERMUTE-STATS line (tools/swarm keeps them) and a line in P_PERMLOG."""
+    line = json.dumps(rec)
+    print(f"PERMUTE-STATS {line}")
+    try:
+        with open(P_PERMLOG, "a") as f:
+            f.write(line + "\n")
+    except OSError:
+        pass
+
+
+def cmd_permstats(a):
+    """The permuter's record (record_permute lines) by function size and mode: how often a run
+    improves the score or matches, for how much CPU, and its speed per job."""
+    rows = []
+    for path in a.files or [P_PERMLOG]:
+        if os.path.exists(path):
+            rows += [json.loads(line) for line in read(path).splitlines() if line.strip()]
+    if not rows:
+        die(f"no permuter runs recorded in {', '.join(a.files or [P_PERMLOG])}")
+    edges = [0, 150, 250, 400, 600, 900, 1400, float("inf")]
+
+    def med(xs):
+        xs = sorted(x for x in xs if x is not None)
+        return xs[len(xs) // 2] if xs else None
+
+    print(f"{len(rows)} permuter runs, {sum(r.get('seconds') or 0 for r in rows) / 3600:.1f} h")
+    print("  bytes        mode        runs  cpu-min  improved  matched  med it/s/job  med base -> best")
+    for lo, hi in zip(edges, edges[1:]):
+        for mode in sorted({r.get("mode") or "?" for r in rows}):
+            b = [r for r in rows if lo <= (r.get("size") or 0) < hi and (r.get("mode") or "?") == mode]
+            if not b:
+                continue
+            cpu = sum((r.get("seconds") or 0) * (r.get("jobs") or 1) for r in b) / 60
+            imp = sum(1 for r in b if r.get("base") is not None and r.get("best") is not None and r["best"] < r["base"])
+            won = sum(1 for r in b if r.get("matched"))
+            speed = med([r["per_s"] / (r.get("jobs") or 1) for r in b if r.get("per_s")])
+            label = f"{lo}-{'' if hi == float('inf') else hi - 1}"
+            print(f"  {label:<11}  {mode:<10} {len(b):>5}  {cpu:>7.0f}  {imp:>8}  {won:>7}  "
+                  f"{'-' if speed is None else f'{speed:.1f}':>12}  {med([r.get('base') for r in b])} -> "
+                  f"{med([r.get('best') for r in b])}")
+    for pipe in sorted({r.get("pipeline") or "?" for r in rows}):
+        b = [r for r in rows if (r.get("pipeline") or "?") == pipe]
+        speed = med([r["per_s"] / (r.get("jobs") or 1) for r in b if r.get("per_s")])
+        print(f"  pipeline {pipe}: {len(b)} runs, median {'-' if speed is None else f'{speed:.1f}'} it/s per job")
 
 
 def cmd_permute_apply(a):
@@ -4182,6 +4424,7 @@ def cmd_permute(a):
         die(f"no C definition of {name} found - write a first attempt in its source file")
     if not os.path.exists(e.get("asm", "")):
         die("function asm missing - run `make split`")
+    plain = body
     if a.block or a.lines or a.differing:
         # only edit the C of the blocks that differ (or the given lines): PERM_RANDOMIZE regions
         text = read(src)
@@ -4200,11 +4443,13 @@ def cmd_permute(a):
         print("randomizing only " + ", ".join(f"L{lo + line0}-{hi + line0}" for lo, hi in wrapped))
     d = f"build/permuter/{name}"
     jobs = a.jobs or max(1, (os.cpu_count() or 2) - 1)
-    base_c = permuter_base(src, [], body, name)
+    base_c = permuter_file_base(src, name, body, name)
     if base_c is None:
         die(f"could not preprocess {name} for the permuter - does `try {name}` build?")
+    plain_c = permuter_file_base(src, name, plain, f"{name}_plain") if plain != body else None
     n0 = check_function(key, e, proj, name, quiet=True)[1] if a.apply_best else None
-    best, path, base, log = permute_run(d, name, e, base_c, unit_cfg(cfg, src), jobs, a.minutes * 60)
+    best, path, base, log = permute_run(d, name, e, base_c, unit_cfg(cfg, src), jobs, a.minutes * 60, plain_c,
+                                        "region" if plain != body else "whole", src)
     if path is None:
         print(f"permuter found no improvement{f' (base score {base})' if base is not None else ''}; log {d}/log.txt")
         if base is None:
@@ -4722,6 +4967,9 @@ def main():
     p.add_argument("func")
     p.add_argument("dir", help="the output directory (with source.c)")
     p.set_defaults(fn=cmd_permute_apply)
+    p = sub.add_parser("permstats", help="permuter runs by function size and mode: speed, improvements, matches")
+    p.add_argument("files", nargs="*", help=f"run logs (default {P_PERMLOG}; the swarm's is <swarm dir>/permuter.jsonl)")
+    p.set_defaults(fn=cmd_permstats)
     p = sub.add_parser("block", help="park a function with a note")
     p.add_argument("func")
     p.add_argument("--note", required=True)

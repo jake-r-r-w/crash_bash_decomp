@@ -22,7 +22,7 @@ function back to the front of the queue with the permuter's diff
 node tools/swarm/swarm.mjs run --branch main --seg overlays/ovl5d --max-minutes 60 --max-run-usd 30 \
   --max-functions 500 --model sonnet --escalate-model opus --big-budget-usd 8
 node tools/swarm/swarm.mjs status
-node tools/swarm/swarm.mjs stats      # outcomes and $ per match by size (--run ID: one run), checkpoints
+node tools/swarm/swarm.mjs stats      # outcomes and $ per match by size (--run ID: one run), permuter runs, checkpoints
 node tools/swarm/swarm.mjs stop       # graceful; --now kills (then `run --clear-stop` to start again)
 ```
 
@@ -159,7 +159,9 @@ per session, not shorter docs.
 
 Parks are not committed. Then:
 
-1. `swarm.mjs stats`: check match rates by size; move `--big-bytes` if needed.
+1. `swarm.mjs stats`: check match rates by size; move `--big-bytes` if needed. Its permuter
+   table (from `permuter.jsonl`, one line per permuter run) shows how often a run improves
+   or matches for its CPU; `decomp.py permstats <swarm dir>/permuter.jsonl` splits it by mode.
 2. Review `report.md` and the parks (big-mode best C in `checkpoints/`).
 3. `swarm.mjs fold`: appends the workers' proposed rows (`patterns.md`) to the Diff patterns table
    in `docs/MATCHING.md`. Review the diff, drop weak rows (hacks, duplicates), commit.

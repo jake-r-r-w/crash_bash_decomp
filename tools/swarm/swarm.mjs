@@ -570,7 +570,7 @@ class Swarm {
       log: path.join(o.dir, 'swarm.log'), history: path.join(o.dir, 'history.json'),
       report: path.join(o.dir, 'report.md'), patterns: path.join(o.dir, 'patterns.md'),
       results: path.join(o.dir, 'results'), checkpoints: path.join(o.dir, 'checkpoints'),
-      ledger: path.join(o.dir, 'ledger.jsonl'),
+      ledger: path.join(o.dir, 'ledger.jsonl'), permuter: path.join(o.dir, 'permuter.jsonl'),
     };
     this.slots = Array.from({ length: o.workers }, (_, i) => ({ id: `w${i + 1}`, dir: path.join(o.dir, 'workers', `w${i + 1}`), job: null }));
     // big mode: long resumable sessions on big functions (>= --big-bytes, or parked in normal mode)
@@ -1573,6 +1573,7 @@ ${DECL_CLASH.test(job.gateFix) ? DECL_HINT : ''}Fix that, keep it matching, and 
       const r = await this.dk(ps.dir, ['make', 'permute', `FUNC=${ref(f)}`, `MINUTES=${mins}`, ...(job.big ? ['ARGS=--differing'] : [])], ps.id,
                               { cpus: this.permCpus, minutes: mins + 20 });
       fs.writeFileSync(path.join(job.dir, 'permute.txt'), r.out);
+      this.permStats(r.out, job.big ? 'pool-big' : 'pool');
       if (this.stopping) {          // a stop cuts permuter runs short: no worker would port the result
         this.finished.add(f.key);
         this.ledger(job, 'stopped');
@@ -1651,6 +1652,18 @@ ${DECL_CLASH.test(job.gateFix) ? DECL_HINT : ''}Fix that, keep it matching, and 
     this.results.unshift({ at: new Date().toISOString(), name: job.f.name, seg: job.f.seg, size: job.f.size, outcome: status,
                            model: job.model, usd: job.usage?.usd != null ? +job.usage.usd.toFixed(2) : null });
     if (this.results.length > 100) this.results.length = 100;
+  }
+
+  // decomp.py permute's PERMUTE-STATS line (speed, base and best score) to permuter.jsonl, for
+  // `stats` (and `decomp.py permstats <swarm dir>/permuter.jsonl`)
+  permStats(out, kind) {
+    const m = out.match(/^PERMUTE-STATS (\{.*\})\s*$/m);
+    if (!m) return;
+    try {
+      fs.appendFileSync(this.paths.permuter, JSON.stringify({ run: this.id, kind, ...JSON.parse(m[1]) }) + '\n');
+    } catch (e) {
+      this.log(`permuter stats not recorded: ${e.message}`);
+    }
   }
 
   // one line per worker session in ledger.jsonl, written when its outcome is first known (`stats`
@@ -1986,6 +1999,7 @@ ${DECL_CLASH.test(job.gateFix) ? DECL_HINT : ''}Fix that, keep it matching, and 
       this.log(`${name}: starting from ${Swarm.describe(before)}${cp ? ' (checkpoint)' : ''}`);
       const r = await this.dk(dir, ['python3', 'tools/scripts/decomp.py', 'permute', ref(f), '--minutes', String(minutes), '--differing',
                                     '--jobs', String(jobs), '--apply-best'], slot, { cpus: jobs, minutes: minutes + 10 });
+      this.permStats(r.out, 'permute-only');
       const res = r.out.match(/^PERMUTE-RESULT \S+ (\w+) before (\S+)(?: after (\S+))?/m);
       if (!res) return this.log(`${name}: the permuter didn't finish (${r.timedOut ? 'killed' : r.out.trim().split('\n').pop()})`);
       if (res[1] !== 'kept') return this.log(`${name}: no improvement (${res[1]}${res[3] ? `, best ${res[3]}` : ''})`);
@@ -2262,6 +2276,7 @@ function stats(o) {
                 `  ${big.length ? (big.reduce((s, e) => s + (e.bigSessions || 0), 0) / big.length).toFixed(1) : '-'}`.padStart(14));
   }
   ledgerStats(path.join(o.dir, 'ledger.jsonl'), edges, o.run ? String(o.run) : null);
+  permuterStats(path.join(o.dir, 'permuter.jsonl'), edges, o.run ? String(o.run) : null);
   const cps = fs.existsSync(path.join(o.dir, 'checkpoints')) ? fs.readdirSync(path.join(o.dir, 'checkpoints')) : [];
   if (cps.length) {
     console.log('big-mode checkpoints (best C so far):');
@@ -2298,6 +2313,27 @@ function ledgerStats(file, edges, run = null) {
                 `  ${(first.length ? `${first.filter(r => r.outcome === 'matched').length}/${first.length}` : '-').padStart(11)}` +
                 `  ${String(med(b.map(r => r.turns))).padStart(9)}` +
                 `  ${docs.length ? `${(sum(docs, r => r.docReads) / docs.length).toFixed(1)}/${(sum(docs, r => r.docGreps) / docs.length).toFixed(1)}` : '-'}`);
+  }
+}
+
+// permuter runs from permuter.jsonl by size: how often one improves the score or matches, and
+// its speed per job (the CPU side of --permuters / --permute-minutes)
+function permuterStats(file, edges, run = null) {
+  if (!fs.existsSync(file)) return console.log('\nno permuter.jsonl yet: permuter runs are recorded from the next run');
+  const rows = fs.readFileSync(file, 'utf8').split('\n').filter(Boolean).map(l => JSON.parse(l))
+    .filter(r => !run || r.run === run);
+  const med = a => { const s = a.filter(x => x != null).sort((x, y) => x - y); return s.length ? s[s.length >> 1] : null; };
+  console.log(`\npermuter runs by size (${rows.length}${run ? ` in run ${run}` : ''}; decomp.py permstats for more)`);
+  console.log('  bytes        runs  cpu-min  improved  matched  med it/s/job');
+  for (let i = 0; i + 1 < edges.length; i++) {
+    const b = rows.filter(r => (r.size ?? 0) >= edges[i] && (r.size ?? 0) < edges[i + 1]);
+    if (!b.length) continue;
+    const cpu = b.reduce((s, r) => s + (r.seconds || 0) * (r.jobs || 1), 0) / 60;
+    const imp = b.filter(r => r.base != null && r.best != null && r.best < r.base).length;
+    const speed = med(b.filter(r => r.per_s).map(r => r.per_s / (r.jobs || 1)));
+    console.log(`  ${`${edges[i]}-${edges[i + 1] === Infinity ? '' : edges[i + 1] - 1}`.padEnd(11)}  ${String(b.length).padStart(4)}` +
+                `  ${cpu.toFixed(0).padStart(7)}  ${String(imp).padStart(8)}  ${String(b.filter(r => r.matched).length).padStart(7)}` +
+                `  ${(speed == null ? '-' : speed.toFixed(1)).padStart(12)}`);
   }
 }
 

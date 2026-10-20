@@ -442,9 +442,13 @@ def fill_all_branches(lines):
         lines = new
 
 
-if __name__ == "__main__":
+def main():
     text = sys.stdin.read().split("\n")
     if "--jumps-only" in sys.argv[1:]:
         sys.stdout.write("\n".join(fill(text, stores=False)))
     else:
         sys.stdout.write("\n".join(fill_all_branches(fill(load_via_dest(refill_from_jump(text))))))
+
+
+if __name__ == "__main__":
+    main()

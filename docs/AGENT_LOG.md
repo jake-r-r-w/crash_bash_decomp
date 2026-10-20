@@ -118,6 +118,18 @@ and current tools).
   `include/bash/ovl69.h` that has changed since), so `swarm.mjs permute`
   skips it. Permute from the `NON_MATCHING` C in `src/` instead (`make
   permute FUNC=func_800B7458 ARGS=--differing` with that C in place).
+  On 2026-10-20 `--differing` said "no statements to randomize" for it;
+  use `--lines A-B` on the `v` statements.
+- **Tune the permuter from its record.** Runs are logged since 2026-10-20
+  (`decomp.py permstats`, `swarm.mjs stats`). Two ideas to try once there
+  are a few dozen runs, compared on that record:
+  - Registers-stage pass weights in `settings.toml` (`weight_overrides`):
+    favour temp_for_expr, split_assignment, randomize_internal_type,
+    reorder_decls and duplicate_assignment, the edits behind the
+    permuter finds in Diff patterns.
+  - A deterministic search over the Diff patterns' common fixes (copy a
+    parameter to a local, s16 -> s32, split a statement, a constant in a
+    local, a goto loop), generalising `splitvars`.
 - **`func_800B345C` (ovl63, 30735f0c) still matches only with a hack** (no-op
   `h++; h--;` and `p++; p++; p--;` in its goto loop; `done` now refuses such runs
   without --hack). Reworked 2026-10-19, not finished. Without the no-ops it is
@@ -151,6 +163,11 @@ and current tools).
   branch (lengthens `mv`'s life so it spills and the hoist gets `fp`),
   `Heroes[arg0].field` / `D_800BCCF4[x].field`, `G->unk63 = best`, the
   `mode` local and the case order 3/4, 2, 1, default.
+  2026-10-20: the permuter (`permute --lines 255-261 --jobs 4`, 1 min) took
+  its score from 300 to 20 by wrapping `ang = (D_8009EE9C.unk4 -= step %
+  0x1000) + 0x400;` in `if (1) { }`. That's a hack, but a block boundary
+  there gives sched1 the order; look for the real construct (an inline
+  helper, or a nested block with its own temp).
 - **Hack matches to revisit:** `decomp.py hacks` lists them (two on
   2026-10-19: `func_800193A8`, register pins that are probably the original
   source, and `func_800B345C` above). Parks are `decomp.py status` / the dashboard. Before reaching for a
@@ -453,6 +470,17 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-20 (permuter speed and record):** `decomp.py permute` now
+  prunes `base.c` to the declarations the function uses and compiles
+  candidates through `tools/scripts/permuter_fast.py`, which runs the
+  Python filters in-process, reads includes from /tmp and skips a no-op
+  cpp. Throughput went up 1.7x to 7x. Identical code on 58 sampled
+  functions across every unit (bash, fast, pruned). `base.c` also gained
+  the file's own declarations; before, a function using the file's own
+  externs failed to compile there (3 of 58). Every run is recorded
+  (`permstats`, the swarm's `permuter.jsonl` and `stats`). MATCHING.md, Big
+  functions.
 
 - **2026-10-20 (swarm ovl66):** low-cost recipe, run 20261020061838,
   49 matched, 1 parked (`func_800B34F8`, registers 8/92, checkpoint kept)

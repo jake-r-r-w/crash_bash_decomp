@@ -152,6 +152,23 @@ block by block over several sessions, keeping the best C between them:
   On `func_80019A60`'s block 0 it found the match in 2 of 4 runs of 2-3
   minutes; the whole-function run needed 15 minutes to get part of the way.
   It is random, so rerun a miss. The swarm uses it for big functions.
+- **The permuter's speed.** `decomp.py permute` gives decomp-permuter less to do per candidate
+  (2026-10-20). Measured 2x to 7x as many candidates a second, more on small functions:
+  `func_8002E584` went from 10.5 to 73 a second, `func_8007F314` (5772 B) from 3.5 to 6.1.
+  - Its `base.c` holds the file's own text before the function: externs, macros, other
+    functions as prototypes and inline helpers whole. A base of the `#include`s alone didn't
+    compile a function using the file's own externs.
+  - It's then pruned to the declarations the function uses (e.g. 137 KB to 5 KB). The
+    pruning is kept only if it compiles to the same `.text`.
+  - Each candidate compiles through `tools/scripts/permuter_fast.py`. It runs the
+    `compile.sh` pipeline with dmpsx, maspsx and aspsx_fill inside the worker, reads the
+    include dirs from `/tmp`, and skips cpp when it would change nothing. Its first compile
+    must equal bash's byte for byte, or it uses bash.
+  - `PERMUTER_PLAIN=1` runs the stock permuter on the full context instead.
+  - Every run is recorded: a `PERMUTE-STATS` line, `.decomp/permuter.jsonl` here and
+    `<swarm dir>/permuter.jsonl` in the swarm. `decomp.py permstats [FILE...]` and
+    `swarm.mjs stats` sum them by size and mode: runs, CPU minutes, improved, matched and
+    speed per job. Check them before changing how the permuter is used.
 - **Keep the best C between sessions.** By hand: `decomp.py block NAME
   --note "<REGIONS line>; next: ..."` with the C under `#ifndef
   NON_MATCHING`, so the next session starts from it. In the swarm, big mode

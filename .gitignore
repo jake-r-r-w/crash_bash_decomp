@@ -40,3 +40,6 @@ objdiff.json
 
 # The dashboard's live swarm card, written by tools/swarm during a run
 docs/swarm.js
+
+# The permuter run log (decomp.py permstats), per machine
+.decomp/permuter.jsonl

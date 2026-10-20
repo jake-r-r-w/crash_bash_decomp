@@ -45,7 +45,8 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   functions with the same code), `vars NAME` (the variable behind a register
   swap), `sched NAME` (why cc1 allocated and scheduled it so: priorities and each insn's rule), `splitvars NAME VAR` (search splits of a variable), `hacks` (hack matches to
   revisit, with their reasons), `permute NAME
-  --differing` (permute only the differing blocks' C), `units [SEG]` (evidence
+  --differing` (permute only the differing blocks' C), `permstats` (every
+  permuter run: speed, improvements, matches), `units [SEG]` (evidence
   for file boundaries: switch-table parity proves a file start in any
   segment; `--data` adds data blocks, inversions and call ties for `main.c`).
 - At the end of every session, update `docs/AGENT_LOG.md`: Current state,
