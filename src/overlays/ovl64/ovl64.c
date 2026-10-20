@@ -358,7 +358,73 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B90D0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B92BC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B937C);
+void func_800B937C(s32 arg0) {
+    HeroInfo *h;
+    HeroInfo *h2;
+    u16 *flag;
+    u16 *fbase;
+    s32 r;
+    HeroInfo *base = Heroes;
+
+    h = base + arg0;
+    if (h->hero_move->reactive_speed != 0) {
+        D_8009D73C();
+    }
+    r = func_8008502C(arg0);
+    if (r != 8) {
+        if (r == 9) {
+            PlaySfx(D_800BC054[arg0], NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+        }
+    } else {
+        D_800BC05C[arg0] = 1;
+        if (h->hero_health <= 0 && !(D_8005A618 & 2)) {
+            h->hero_immunity = 0;
+            h->hero_hit += 0x28;
+            SetHeroSeq((HeroInfo *)arg0, 0x2D);
+        }
+        Heroes[arg0].hero_health = 0x14;
+    }
+    fbase = D_800BC05C;
+    flag = fbase + arg0;
+    if (*flag != 0) {
+        HeroInfo *base2 = Heroes;
+
+        h2 = base2 + arg0;
+        if (abs(((s32 (*)(EXTengine *))func_80025F44)(h2->hero_eng)) < 0x20) {
+            *flag = 0;
+            switch (h2->hero_name) {
+            case 1:
+                PlaySfx(0x11, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                break;
+            case 2:
+                PlaySfx(0x43, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                break;
+            case 3:
+                PlaySfx(0x75, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                break;
+            case 4:
+                PlaySfx(0xA7, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                break;
+            case 7:
+                PlaySfx(0x10B, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                break;
+            case 8:
+                PlaySfx(0xD9, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                break;
+            case 5:
+                PlaySfx(0x13D, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                break;
+            case 6:
+                PlaySfx(0x16F, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                break;
+            }
+        }
+    }
+    if (D_8009D740 != NULL) {
+        D_8009D740(arg0);
+    }
+    func_800871E4(arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B9608);
 
