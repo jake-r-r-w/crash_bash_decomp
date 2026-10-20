@@ -201,7 +201,17 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B7E38);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B7F14);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B8080);
+s32 func_800B8080(T_B8080 *p) {
+    s32 a, b, c, d;
+    b = (p->x >> 8) + 8;
+    a = 7 - (p->y >> 8);
+    c = (s8)(p->h >> 8);
+    d = c << 16;
+    if (!(((u16)p->h) >> 16)) {
+        return c;
+    }
+    return a + b + d;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B80B0);
 

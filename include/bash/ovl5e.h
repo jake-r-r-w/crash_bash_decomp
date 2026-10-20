@@ -29,6 +29,14 @@ typedef struct Ovl5eCell {
 } Ovl5eCell;
 
 extern Ovl5eCell D_800BD948[8][8];
+typedef struct {
+    s32 pad0[4];
+    s32 x;
+    s32 pad14;
+    s32 y;
+    s16 pad1C;
+    s16 h;
+} T_B8080;
 
 s32 func_800B7670(u8 *arg0);
 
@@ -48,5 +56,7 @@ void func_800B7DA4(void);
 s32 func_800B7558(EXTengine *eng);
 
 void func_800B7B10(void);
+
+s32 func_800B8080(T_B8080 *p);
 
 #endif /* BASH_OVL5E_H */
