@@ -51,7 +51,33 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BABA0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BADE8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BAFD4);
+void func_800BAFD4(s32 arg0) {
+    HeroInfo *h;
+    HeroInfo *base2;
+
+    if (Heroes[arg0].hero_pu == 0x14) {
+        if (D_800C4780 != NULL) {
+            StopSfx(D_800C4780);
+        }
+    }
+    base2 = Heroes;
+    h = base2 + arg0;
+    h->hero_hit = 0;
+    h->hero_immunity = 0;
+    h->hero_move->velocity_enable = 0;
+    h->hero_move->jump_max = 0;
+    h->hero_frozen = 2;
+    h->hero_health = 0;
+    h->hero_status |= 0x2000;
+    h->hero_powerup->flags = 0;
+    h->hero_fx->flags = 0;
+    h->hero_pu = 0;
+    h->hero_pu_timer = 0;
+    if (h->hero_powerup->sfx != NULL) {
+        StopSfx(h->hero_powerup->sfx);
+    }
+    func_800898EC(arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BB0D4);
 
