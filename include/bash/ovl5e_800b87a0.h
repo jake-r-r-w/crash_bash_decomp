@@ -10,6 +10,14 @@
 
 
 
+typedef struct {
+    /* 0x00 */ u8 pad0[0x16];
+    /* 0x16 */ s16 unk16;
+    /* 0x18 */ u8 pad18[4];
+    /* 0x1C */ u16 unk1C;
+    /* 0x1E */ u16 unk1E;
+} Ovl5eHitFlags;
+
 void func_800BB308(s32 arg0);
 extern HeroInfo Heroes[4];
 s32 func_80085890();
@@ -25,6 +33,8 @@ void func_800898EC(s32 arg0);
 void func_800BC698(s32 arg0);
 extern u16 *D_8009D6EC;
 s32 func_8008ABF8(s32 arg0);
+
+s32 func_800BA22C(EXTengine *eng, Ovl5eHitFlags *flags, u32 mask);
 
 void func_800BA4C0(s32 arg0);
 

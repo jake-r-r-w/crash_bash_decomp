@@ -4988,9 +4988,10 @@
   "auto_failed": "types"
  },
  "ovl5e:800BA22C": {
-  "auto_failed": "types",
   "copy_failed": "ovl5d:800BF928",
-  "copy_failed_stage": "in-file"
+  "copy_failed_stage": "in-file",
+  "matched_at": "2026-10-20T11:35:55Z",
+  "status": "matched"
  },
  "ovl5e:800BA3C4": {
   "auto_diff": 61,

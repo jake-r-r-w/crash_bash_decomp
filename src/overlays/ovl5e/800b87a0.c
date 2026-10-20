@@ -10,7 +10,61 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800B87A0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800B9E74);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BA22C);
+s32 func_800BA22C(EXTengine *eng, Ovl5eHitFlags *flags, u32 mask) {
+    s32 sum;
+    FlagRecord *rec;
+    FlagRecord *rec2;
+    EXTengine *other;
+    HeroInfo *h;
+    s32 i;
+    s32 top;
+    s32 bottom;
+    s32 dx;
+    s32 dz;
+    s32 r;
+    s32 lo;
+    s32 hi;
+
+    rec = func_80025A48(eng, 0x40);
+    i = 0;
+    if (rec != NULL) {
+        r = rec->radius;
+        bottom = eng->unk10.y + rec->unk2;
+        top = eng->unk10.y + rec->height;
+        for (; i < 4; i++) {
+            h = &Heroes[i];
+            if (h->hero_status & 0xF800) {
+                continue;
+            }
+            other = h->hero_eng;
+            if (other == NULL) {
+                continue;
+            }
+            rec2 = func_80025A48(other, 0x40);
+            if (rec2 == NULL) {
+                continue;
+            }
+            lo = other->unk10.y + rec2->unk2;
+            hi = other->unk10.y + rec2->height;
+            if (top < lo && hi < bottom) {
+                dx = other->unk10.x - eng->unk10.x;
+                dz = other->unk10.z - eng->unk10.z;
+                sum = rec2->radius + r;
+                sum = sum * sum;
+                if (dx * dx + dz * dz < sum) {
+                    if (flags != NULL) {
+                        if (flags->unk1C & mask) {
+                            flags->unk16 = i;
+                            flags->unk1E |= mask;
+                        }
+                    }
+                    return i;
+                }
+            }
+        }
+    }
+    return -1;
+}
 
 void func_800BA3C4(EXTengine *eng) {
     NAS *nas;
