@@ -9,6 +9,36 @@
 #include "bash/nas.h"
 #include "bash/main.h"
 
+/* A scene object in the list at D_80058AD0 + 0x1C (func_800B3938). */
+typedef struct Ovl64Obj {
+    /* 0x00 */ u8 pad0[0x51];
+    /* 0x51 */ u8 unk51;
+    /* 0x52 */ u8 pad52[0x5C - 0x52];
+    /* 0x5C */ struct Ovl64Obj *next;
+    /* 0x60 */ u8 pad60[0x6C - 0x60];
+    /* 0x6C */ u8 *model;
+    /* 0x70 */ u8 pad70[0x74 - 0x70];
+    /* 0x74 */ u16 index;
+} Ovl64Obj;
+
+typedef struct Ovl64Scene {
+    /* 0x00 */ u8 pad0[0x1C];
+    /* 0x1C */ Ovl64Obj *objs;
+} Ovl64Scene;
+
+typedef struct Ovl64Slot {
+    Ovl64Obj *obj;
+    s32 pad[3];
+} Ovl64Slot;
+
+extern s32 D_800BC010;
+extern s32 D_800BC014;
+extern s16 D_800BC018;
+extern s16 D_800BC01A;
+extern s16 D_800BC01C;
+extern Ovl64Obj *D_800BC020[10];
+extern Ovl64Slot D_800BBCB0[10];
+
 void func_800B3428();
 
 void func_800B359C();
@@ -49,6 +79,8 @@ void func_8008A810(void);
 s32 func_800B8D98(s32 arg0);
 
 extern NAS *D_8005AA2C;
+
+void func_800B3938(void);
 
 void func_800B9804(s32 arg0);
 

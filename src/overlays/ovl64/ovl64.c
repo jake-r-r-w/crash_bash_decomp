@@ -14,7 +14,34 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B359C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B382C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B3938);
+void func_800B3938(void) {
+    s32 i;
+    Ovl64Obj *obj;
+    s16 *p;
+
+    D_800BC010 = 0;
+    D_800BC014 = 0;
+    D_800BC01C = 1;
+    D_800BC018 = 0;
+    D_800BC01A = 0;
+    obj = ((Ovl64Scene *)D_80058AD0)->objs;
+    for (i = 9; i >= 0; i--) {
+        D_800BC020[i] = NULL;
+    }
+    for (; obj != NULL; obj = obj->next) {
+        p = (s16 *)func_80015870(obj->model, obj->index);
+        i = *p - 10;
+        if ((u32)i < 10) {
+            D_800BC020[i] = obj;
+            obj->unk51 = 0;
+        }
+        i = *p - 20;
+        if ((u32)i < 10) {
+            D_800BBCB0[i].obj = obj;
+            obj->unk51 = 0;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B3A3C);
 
