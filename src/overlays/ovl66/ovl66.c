@@ -182,7 +182,19 @@ void func_800B69A0(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B69D0);
+void func_800B69D0(void) {
+    Ovl66Cam *cam = (Ovl66Cam *)D_80051640;
+    cam->unk0 = 0;
+    cam->unk8 = 0xE98;
+    cam->unk54 = 0x192;
+    cam->unk18 = 0x200;
+    cam->unkC = 0x60;
+    cam->unk10 = 0x20;
+    cam->unk4 = 0;
+    cam->unk56 = 0;
+    cam->unk58 = 0;
+    cam->unk14 = -0x660;
+}
 
 void func_800B6A1C(void) {
     D_8005A5D8 = -0x10;
