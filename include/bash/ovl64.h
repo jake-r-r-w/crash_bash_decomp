@@ -69,6 +69,8 @@ extern u16 D_800BC04C[];
 void func_800B9BF8(s32 arg0);
 extern s32 D_8005A5D8;
 extern HeroInfo Heroes[4];
+extern s32 D_8005A680;
+extern s16 D_8009D87C[][3];
 FlagRecord *func_80025A48(EXTengine *eng, u32 flag);
 
 void func_80025F44(EXTengine *eng);
@@ -83,6 +85,8 @@ s32 func_800B8D98(s32 arg0);
 extern NAS *D_8005AA2C;
 
 void func_800B3938(void);
+
+s32 func_800B8B5C(s32 arg0);
 
 void func_800B9804(s32 arg0);
 

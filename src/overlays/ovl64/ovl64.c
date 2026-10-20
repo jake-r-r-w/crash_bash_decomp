@@ -168,7 +168,37 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B8294);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B85A4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B8B5C);
+s32 func_800B8B5C(s32 arg0) {
+    s32 other;
+    s32 sum;
+    s32 i;
+    s32 r;
+
+    other = -1;
+    if (D_8005A680 != 0) {
+        other = arg0 ^ 1;
+    }
+    sum = 0;
+    for (i = 0; i < 4; i++) {
+        if (i != arg0 && i != other && !(Heroes[i].hero_status & 0xFA00)) {
+            sum += D_8009D87C[i][2];
+        }
+    }
+    if (sum == 0) {
+        return -1;
+    }
+    r = Random(sum);
+    sum = 0;
+    for (i = 0; i < 4; i++) {
+        if (i != arg0 && i != other && !(Heroes[i].hero_status & 0xFA00)) {
+            sum += D_8009D87C[i][2];
+            if (r < sum) {
+                return i;
+            }
+        }
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B8C74);
 
