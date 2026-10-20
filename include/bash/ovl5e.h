@@ -73,6 +73,13 @@ typedef struct Ovl5eGridPos {
     s32 y;
 } Ovl5eGridPos;
 extern Ovl5eGridPos D_800BDE48[16][16];
+extern u8 D_8005A6C3;
+extern s16 D_800BC95C[];
+extern u16 D_800BD8CC;
+extern u16 D_800BD8CE;
+extern u16 D_800BD8D0;
+extern u16 D_800BD8DC;
+extern u16 D_800BD8E8;
 typedef struct {
     s32 pad0[4];
     s32 x;
@@ -339,6 +346,8 @@ typedef struct {
     u8 pad18[0x12];
     s16 unk2A;
 } T_B7F14_B;
+
+void func_800B3B08(void);
 
 void func_800B3D18(void);
 
