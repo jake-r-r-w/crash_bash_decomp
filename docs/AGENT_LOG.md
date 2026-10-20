@@ -135,7 +135,9 @@ and current tools).
     a1-first caller has one), so the original's was deleted after sched1.
     A second pass (2026-10-20) ruled out cross-jumped tails, local-alloc
     and reload equivalences, reload_cse and an unfolded a1 precompute (the
-    block note has why). The same code is unmatched in `func_800C284C`
+    block note has why), and a third ruled out single -f flags and inserted
+    reads; the function is absent from the Aug/Sep prototypes and identical
+    in Oct 9. The same code is unmatched in `func_800C284C`
     (ovl5d) and `func_800BAF1C` (ovl64): solve the three together.
   - `func_800B9E74` registers 12/238: a `subu` takes the second operand's
     register; split `d = a->x; d -= b->x;`. Its permuter run was cut short.
