@@ -590,7 +590,52 @@ void func_800B98B8(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B9A04);
+void func_800B9A04(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h;
+    HeroInfo *b2;
+    s32 dy;
+
+    h = base + arg0;
+    h->hero_move->velocity_enable = 0;
+    h->hero_move->jump_max = 0;
+    h->hero_frozen = 1;
+    h->hero_powerup->flags = 0;
+    h->hero_ctrl |= 1;
+    h->hero_eng->flags &= ~0x21;
+    h->hero_status &= 0xDFFF;
+    if (h->hero_object != NULL) {
+        h->hero_object->player = h->hero_harm_player;
+        h->hero_object->status = 4;
+        h->hero_object = NULL;
+    }
+    if (h->hero_powerup->sfx != NULL) {
+        StopSfx(h->hero_powerup->sfx);
+    }
+    if (h->hero_eng->sfx != NULL) {
+        StopSfx(h->hero_eng->sfx);
+    }
+    h->hero_sub->unk6C = D_80052A54 + D_8009D6EC[h->hero_name] * 0x38;
+    h->hero_eng->unk10.y = D_8005A5D8 - 0x200;
+    dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
+    if (dy != 0x7FFFFFFF) {
+        h->hero_eng->unk10.y -= dy;
+    } else {
+        h->hero_eng->unk10.y = D_8005A5D8;
+    }
+    {
+        HeroInfo *h2;
+        b2 = Heroes;
+        h2 = b2 + arg0;
+        h2->hero_sub->unk08 = 0;
+        h2->hero_pu = 0;
+        h2->hero_pu_timer = 0;
+    }
+    func_80085718(arg0, 0);
+    SetHeroSeq((HeroInfo *)arg0, 0xC);
+    func_80089FA4(arg0);
+    D_800AD12C = 1;
+}
 
 void func_800B9BF8(s32 arg0) {
     HeroInfo *h;

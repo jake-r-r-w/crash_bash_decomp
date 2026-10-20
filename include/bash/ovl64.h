@@ -80,6 +80,7 @@ extern HeroInfo Heroes[4];
 extern s32 D_8005A680;
 extern s16 D_8009D87C[][3];
 extern u16 *D_8009D6EC;
+extern u16 D_800AD12C;
 FlagRecord *func_80025A48(EXTengine *eng, u32 flag);
 
 void func_80025F44(EXTengine *eng);
@@ -143,5 +144,7 @@ void func_800B92BC(s32 arg0);
 void func_800B937C(s32 arg0);
 
 void func_800B971C(s32 arg0);
+
+void func_800B9A04(s32 arg0);
 
 #endif /* BASH_OVL64_H */
