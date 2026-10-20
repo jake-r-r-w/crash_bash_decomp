@@ -42,12 +42,16 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   block by block with C lines (MATCHING.md, Big functions); the swarm's big
   mode works and ranks checkpoints by it. Also: `similar NAME` (matched
   functions with the same code), `vars NAME` (the variable behind a register
-  swap), `sched NAME` (why cc1 allocated and scheduled it so: priorities and each insn's rule), `splitvars NAME VAR` (search splits of a variable), `hacks` (hack matches to
+  swap), `sched NAME` (why cc1 allocated and scheduled it so: priorities, each
+  block's memory-insn count, and the rule that took each insn off the ready
+  list: priority, birthing, class, potential hazard or luid), `splitvars NAME VAR` (search splits of a variable), `hacks` (hack matches to
   revisit, with their reasons), `permute NAME
   --differing` (permute only the differing blocks' C), `permstats` (every
   permuter run: speed, improvements, matches), `units [SEG]` (evidence
   for file boundaries: switch-table parity proves a file start in any
   segment; `--data` adds data blocks, inversions and call ties for `main.c`).
+  `sched`, `regions` and `vars` read a parked function's C under
+  `#ifdef NON_MATCHING` (built apart, with `-DNON_MATCHING`).
 - At the end of every session, update `docs/AGENT_LOG.md`: Current state,
   Next and Open leads, any new gotcha, and one short entry at the top of its
   Session log. Matching idioms go in the Diff patterns table in

@@ -472,6 +472,18 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-20 (tools: `sched` on parked C, tie rules):** `sched`,
+  `regions` and `vars` now compile a parked function's C under
+  `#ifdef NON_MATCHING` (`-DNON_MATCHING`, into `build/regions/` and
+  `build/sched/`, never the build's object). `sched`'s report counts each
+  block's memory insns and names the rule behind every pick: priority,
+  birthing, class, potential hazard or luid, following sched.c's lazy
+  re-sort (`order from T-n`). The potential-hazard model (store > load >
+  ALU at 2+ memory insns) predicted all 16.9k tie groups of five units'
+  dumps. `sched func_800BC274` shows block 5's 100-over-98 luid tie with
+  one memory insn. A worktree needs `asm/`, `linkers/`, `ext/` and the
+  small `disc/` files copied in (git-ignored) before cpp or make work.
+
 - **2026-10-20 (hand: `func_800B7134` as a hack match):** on the user's go,
   committed the dead-store version (ba1244e6, `Hack:` line in the commit):
   198/198, the `j = 0;` before the three sets is needed (sets first, then
