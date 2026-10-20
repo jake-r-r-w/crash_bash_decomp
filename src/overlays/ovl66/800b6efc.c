@@ -10,7 +10,21 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B70C4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B717C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B72FC);
+void func_800B72FC(s32 idx) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = base + idx;
+
+    h->hero_move->jump_max = 0;
+    h->hero_move->velocity_enable = 1;
+    SetHeroSeq((HeroInfo *)idx, 0x33);
+    if (h->hero_ctrl & 4) {
+        EXTengine *e = h->hero_eng;
+        e->unk2C.z = 0x1000;
+        e->unk2C.y = 0x1000;
+        e->unk2C.x = 0x1000;
+        h->hero_ctrl &= 0xFFFB;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B738C);
 
