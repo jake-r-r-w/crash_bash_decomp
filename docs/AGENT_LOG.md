@@ -10,13 +10,13 @@ At the end of a session, update **Current state**, **Next** and **Open
 leads**, add any new gotcha, and add one short entry at the top of the
 **Session log**.
 
-## Current state (2026-10-19)
+## Current state (2026-10-20)
 
 - [ROADMAP.md](ROADMAP.md): Phase 1 (types and names) is done, and every
   `main.exe` function matches; Phase 2's naming, data and `main.c` split
   are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2026/2537 game functions matched (51.1% of game code bytes):
+- 2158/2537 game functions matched (55.2% of game code bytes, 2026-10-20):
   **main.exe and ovl61 are complete (575/575, 97/97)**; engine 355/357
   (both left parked: `func_8007F314`, `PlotScriptFX`); **ovl6a
   complete (94/94, 2026-10-20)**, ovl69 69/77, ovl67 102/135, ovl60
@@ -128,7 +128,8 @@ and current tools).
     the index arithmetic (or makes `i = 0` depend on something late).
 - **ovl5e big-mode checkpoints (2026-10-20), hints the workers left** (their
   Diff-patterns rows, not folded: the functions aren't matched yet). Closest
-  first; the first two were worked by hand on 2026-10-20 and parked:
+  first; the first two were worked by hand on 2026-10-20 (BC274 parked,
+  B7134 matched with a hack):
   - `func_800BC274` instructions 2/197, parked by hand 2026-10-20 (block
     note): only `addiu a1` / `lw a0` before `jal func_8001CD04` are swapped.
     sched1 ties them and luid puts a0 first; the target's order needs a
@@ -496,6 +497,11 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-20 (cleanup):** merged the sched tooling (260a4660); removed
+  the two side-session worktrees and their merged branches (the BB3F0
+  session's scratch kept in `scratch/bb3f0/`). BC274's third pass (flags,
+  810 inserted reads, prototypes, do-while(0) copies) is in its block note.
 
 - **2026-10-20 (hand: `func_800BB3F0`, ovl5e, 684 B):** matched with no hack
   (08aa8ff7; its copies too: `func_800C159C` in it, `func_800BA098`

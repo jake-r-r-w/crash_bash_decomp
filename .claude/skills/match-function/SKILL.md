@@ -54,7 +54,9 @@ the host has no Python. In Git Bash loops, pass `</dev/null` to `tools/dk`.
      `tools/reference/gcc-2.8.1/` ("Reading the compiler's rules" in
      docs/MATCHING.md). Find the tie in the trace, read the function that
      decides it, work it through by hand, and change the C so the tie goes the
-     target's way.
+     target's way. For an instruction-order tie, start with
+     `decomp.py sched NAME`: it names the rule behind each scheduling pick and
+     counts each block's loads and stores (it also works on parked C).
    - the compiler itself ("Using the compiler directly" in docs/MATCHING.md):
      dump every pass for the function (`-dr -ds -dc` too, for expand, cse and
      combine), follow the differing instruction from pass to pass to the
