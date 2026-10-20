@@ -1313,7 +1313,71 @@ void func_800B80B0(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B82DC);
+NAS *func_800B82DC(s32 a, s32 b, s32 c, s32 d, s32 e) {
+    NAS *nas;
+    Ovl5eObj *obj;
+    EXTengine *eng;
+    s32 x, z;
+
+    u16 k;
+    SLONG_XYZ *p;
+    s32 t;
+
+    nas = SpawnNASById(a, b, c, 0x204, 0x11);
+    k = d;
+    if (nas != NULL) {
+        eng = nas->Engine;
+        if (eng != NULL) {
+            obj = (Ovl5eObj *)AddObject(nas);
+            if (obj != NULL && AddMotion(nas) != NULL) {
+                func_80026AD8((u8 *)nas);
+                func_8002694C(nas, 0x300);
+                nas->FUX = (EXT *)obj;
+                eng->sub->unk6C = D_80052F94;
+                eng->unk5D = 1;
+                obj->unk14 = d;
+                D_8009E46C[obj->unk14]++;
+                obj->unk1A = 7;
+                switch (k) {
+                case 4:
+                    eng->sub->unk74 = 0x2013;
+                    break;
+                case 5:
+                    eng->sub->unk74 = 0x2009;
+                    obj->unk22 = 0x5A;
+                    obj->unk1C |= 0x100;
+                    break;
+                default:
+                    eng->sub->unk74 = 0x2013;
+                    break;
+                }
+                eng->unk2C.x = 0x40;
+                eng->unk2C.y = 0x40;
+                eng->unk2C.z = 0x40;
+                eng->unk5D = 1;
+                eng->unk5C = 1;
+                eng->unk5E = 1;
+                eng->flags |= 1;
+                eng->unk10.y = D_8005A5D8;
+                p = &eng->unk10;
+                PlaySfx(0x3FA, NULL, p, 0x1000, 0x1E00, 0);
+                t = k;
+                x = (eng->unk10.x >> 8) + 10;
+                z = 9 - (p->z >> 8);
+                if (x >= 20) x = 19;
+                if (x < 0) x = 0;
+                if (z >= 20) z = 19;
+                if (z < 0) z = 0;
+                D_8009D90C[z * 20 + x].unk0 = t;
+            }
+        }
+        if (nas->Failure != 0) {
+            KillNAS(nas);
+            return NULL;
+        }
+    }
+    return nas;
+}
 
 void func_800B8508(NAS *arg0) {
     EXTengine *eng;

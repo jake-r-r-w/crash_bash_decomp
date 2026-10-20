@@ -205,7 +205,7 @@ typedef struct Ovl5eMsg {
 } Ovl5eMsg;
 
 Ovl5eMsg *func_800B3E80(char *arg0);
-void func_800B82DC(s32 a, s32 b, s32 c, u8 d, s32 e);
+NAS *func_800B82DC(s32 a, s32 b, s32 c, s32 d, s32 e);
 void func_800B7CBC(u16 arg0);
 typedef struct Ovl5eStep {
     s32 a;
