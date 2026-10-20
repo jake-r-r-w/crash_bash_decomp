@@ -142,4 +142,11 @@ void func_800BC800(s32 arg0) {
     SetHeroSeq((HeroInfo *)arg0, 0x15);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BC84C);
+void func_800BC84C(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = base + arg0;
+
+    h->hero_move->velocity_enable = 0;
+    SetHeroSeq((HeroInfo *)arg0, 0x14);
+    h->hero_weapon_timer = 0;
+}
