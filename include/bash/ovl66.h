@@ -23,6 +23,15 @@ void func_800B6AFC(void);
 extern s32 D_800B9EEC;
 extern ScriptInit D_800B9CE4;
 extern u8 D_80053C0C[];
+extern s32 D_8005A680[];
+extern void *D_8009D8FC;
+extern void *D_8009D900;
+extern void *D_8009D904;
+extern u8 D_800B929C[];
+extern u8 D_800B92B0[];
+extern u8 D_800B92C4[];
+extern u8 D_800B92D0[];
+extern u8 D_800B92E8[];
 extern s16 D_8009D87C[][3];
 
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */

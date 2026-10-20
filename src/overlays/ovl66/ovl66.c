@@ -176,7 +176,11 @@ void func_800B67C4(void) {
     func_800B6774();
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B67F4);
+void func_800B67F4(void) {
+    D_8009D904 = D_8005A680[0] != 0 ? D_800B92E8 : D_800B92D0;
+    D_8009D8FC = D_8005A680[0] != 0 ? D_800B92B0 : D_800B929C;
+    D_8009D900 = D_800B92C4;
+}
 
 void func_800B6868(s32 arg0) {
     func_8007B7FC(arg0 & 0xFFFF, 0x81D0);
