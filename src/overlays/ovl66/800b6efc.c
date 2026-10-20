@@ -65,7 +65,29 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B747C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B76CC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B77FC);
+void func_800B77FC(s32 arg0) {
+    Ovl66Slot *s;
+    Ovl66Slot *sb;
+
+    if (func_800B8714(arg0) == 0 && func_800B8814(arg0) == 0 && func_800B89D8(arg0) == 0) {
+        HeroInfo *base = Heroes;
+        (base + arg0)->hero_frozen = 10;
+        sb = D_800B9F4C;
+        s = sb + arg0;
+        if (s->f4 == 0) {
+            if (func_8008502C(arg0) == 8) {
+                s->f4 = 1;
+            }
+            if (s->f4 == 0) {
+                return;
+            }
+        }
+        if (!(((Ovl66PadButtons *)D_80051338)[arg0].unk50 & 0x8000)) {
+            SetHeroAction((HeroInfo *)arg0, 0x45);
+            D_800B9F4C[arg0].f4 = 0;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B7908);
 
