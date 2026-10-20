@@ -22,7 +22,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   complete (94/94, 2026-10-20)**, ovl69 69/77, ovl67 102/135, ovl60
   131/180, ovl5f 127/179, ovl62 151/216, ovl63 97/139, ovl5d 70/104,
   ovl65 64/80, ovl68 60/93 (swarm runs 2026-10-18/19), ovl66 49/65 left
-  16 (swarm 2026-10-20); ovl5e 12 left (50 matched 2026-10-20); ovl64 24 left (22 matched 2026-10-20). All 564 PsyQ functions (Sony objects). 2 parked (`decomp.py
+  16 (swarm 2026-10-20); ovl5e 9 left (53 matched 2026-10-20); ovl64 24 left (22 matched 2026-10-20). All 564 PsyQ functions (Sony objects). 2 parked (`decomp.py
   status`). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
@@ -50,10 +50,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
 ## Next
 
 **Matching the slot overlays with the swarm.** Left per overlay (2026-10-19,
-`INCLUDE_ASM` count per file): ovl5e 12 (2026-10-20), ovl62 65, ovl66 16 (2026-10-20), ovl68 33,
+`INCLUDE_ASM` count per file): ovl5e 9 (2026-10-20), ovl62 65, ovl66 16 (2026-10-20), ovl68 33,
 ovl5f 52, ovl64 24 (2026-10-20), ovl60 49, ovl63 42, ovl5d 34, ovl67 33, ovl65 16,
 ovl69 8, engine 2 (ovl61 and ovl6a are done). main.exe is complete. **Next session:
-ovl5e's 12 and ovl64's 24 are mostly >= 600 B: big-heavy recipe (`--workers 1 --big-workers 4 --big-bytes 400`), then ovl66's leftovers**, on the low-cost recipe; after each run, the
+ovl5e's 9 and ovl64's 24 are mostly >= 600 B: big-heavy recipe (`--workers 1 --big-workers 4 --big-bytes 400`), then ovl66's leftovers**, on the low-cost recipe; after each run, the
 "After a run" checklist in tools/swarm/README.md (`stats --run ID`, parks,
 gate failures, `fold`, this log).
 
@@ -126,7 +126,19 @@ and current tools).
     index temp moved it. Next: find C whose RTL emits the table address after
     the index arithmetic (or makes `i = 0` depend on something late).
 - **ovl5e big-mode checkpoints (2026-10-20), hints the workers left** (their
-  Diff-patterns rows, not folded: the functions aren't matched yet):
+  Diff-patterns rows, not folded: the functions aren't matched yet). Closest
+  first; the first two are good hand sessions:
+  - `func_800BC274` instructions 2/197 (parked by the swarm): an `lh` +
+    `addiu` temp used in a `mult` lands in v0 where the target loads
+    straight into the saved reg; splitting `r = rec->radius; r += 0x78;`
+    got it here.
+  - `func_800B9E74` registers 12/238: a `subu` takes the second operand's
+    register; split `d = a->x; d -= b->x;`. Its permuter run was cut short.
+  - `PlotPapuBoss` structure 242/455: two adjacent u16 stores, chain them
+    (`a = (&a)[1] = X;`). `PlotPapuMinion` structure 854/877: index
+    `Table[slot].f` at each use, not through a pointer. `func_800BB86C`
+    structure 439/644: `x < 4 && x >= 2` as nested ifs (fold-const makes a
+    range check of the `&&`).
   - `func_800B7134` instructions 5/198: load the multiplier table entry
     into a local before the preceding store (`w = T[a >> 7]; x += (w * cos)
     >> 12`); loop.c hoists a global base out of the outer loop where the
@@ -447,6 +459,16 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-20 (swarm ovl5e, run 3, 30 min big-heavy):** run
+  20261020123536, `--workers 1 --big-workers 4 --big-bytes 400
+  --max-minutes 20 --big-minutes 12 --worker-minutes 12 --permute-minutes 8
+  --big-permute-minutes 8 --max-run-usd 30`: 3 big matched (`func_800B6D14`
+  740 B, `func_800B36D4` 552 B, `func_800B6860` 1204 B) in 27 min for
+  $19.01, ~$6 a match (run 2's big mode: $20.82 for one); 4 parked after
+  two big sessions without progress (`func_800BC274` 2/197, `func_800B7134`
+  5/198, `func_800BB3F0`, `func_800B38FC`). 9 left. `fold`: 8 rows, 1 new,
+  2 into the pointer-local row, 5 on unmatched functions to Open leads.
 
 - **2026-10-20 (swarm ovl5e, run 2):** run 20261020112410, `--model sonnet
   --escalate-model opus --workers 5 --big-workers 2 --big-budget-usd 8
