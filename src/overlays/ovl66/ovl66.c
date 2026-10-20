@@ -154,7 +154,19 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B64B4);
 void func_800B6560(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B6568);
+void func_800B6568(void) {
+    s32 i;
+
+    D_800B9F08 = 0;
+    for (i = 0; i < 3; i++) {
+        D_800B9EC8[i].a = 0x200;
+        D_800B9EC8[i].b = 0;
+        D_800B9EC8[i].c = 0;
+    }
+    for (i = 0; i < 2; i++) {
+        SpawnNASById(0, 0, 0, 0x1A04, 0x11);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", InitBonkStool);
 

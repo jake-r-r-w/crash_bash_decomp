@@ -21,6 +21,9 @@ void func_800B6AF4(void);
 void func_800B6AFC(void);
 
 extern s32 D_800B9EEC;
+typedef struct { s32 a, b, c; } Ovl66Ent;
+extern Ovl66Ent D_800B9EC8[];
+extern s32 D_800B9F08;
 extern ScriptInit D_800B9CE4;
 extern u8 D_80053C0C[];
 extern s32 D_8005A680[];
@@ -105,6 +108,8 @@ typedef struct Ovl66Cam {
 } Ovl66Cam;
 
 void InitBonkFlag(NAS *nas);
+
+void func_800B6568(void);
 
 void func_800B6774(void);
 
