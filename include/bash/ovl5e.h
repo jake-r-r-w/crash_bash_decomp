@@ -17,6 +17,18 @@ typedef struct PapuEntry {
 } PapuEntry;
 
 extern PapuEntry D_800BE648[20];
+typedef struct Ovl5eTile {
+    s32 unk0;
+    s32 unk4;
+    s32 unk8;
+} Ovl5eTile;
+
+typedef struct Ovl5eCell {
+    Ovl5eTile *tile;
+    s32 pad[4];
+} Ovl5eCell;
+
+extern Ovl5eCell D_800BD948[8][8];
 
 s32 func_800B7670(u8 *arg0);
 
@@ -32,6 +44,8 @@ void func_800B7DA4(void);
 
 /* The overlay's other files (ARCHITECTURE.md, Files inside the slot overlays). */
 #include "bash/ovl5e_800b87a0.h"
+
+s32 func_800B7558(EXTengine *eng);
 
 void func_800B7B10(void);
 

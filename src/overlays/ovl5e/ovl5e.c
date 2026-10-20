@@ -57,7 +57,24 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B7134);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B744C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B7558);
+s32 func_800B7558(EXTengine *eng) {
+    s32 y;
+    s32 ix;
+    s32 iz;
+    Ovl5eTile *t;
+
+    y = eng->unk10.y - D_8005A5D8;
+    ix = (eng->unk10.x + 0x700) >> 9;
+    iz = (eng->unk10.z + 0x700) >> 9;
+    if ((u32)ix >= 7U || (u32)iz >= 7U) {
+        return y - 0x800;
+    }
+    t = D_800BD948[ix][iz].tile;
+    if (t != NULL) {
+        y -= t->unk8;
+    }
+    return func_80025E00(eng, y);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B7600);
 
