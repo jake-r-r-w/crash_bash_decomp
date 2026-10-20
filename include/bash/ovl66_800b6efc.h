@@ -32,8 +32,11 @@ extern s32 D_800B9F1C[];
 
 extern void (*D_8009D73C)();
 extern s32 (*D_8009D728)(s32);
+extern u16 D_800AD12C;
 
 void func_800B72FC(s32 idx);
+
+void func_800B738C(s32 arg0);
 
 s32 func_800B8714(s32 arg0);
 

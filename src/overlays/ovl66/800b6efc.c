@@ -37,7 +37,29 @@ void func_800B72FC(s32 idx) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B738C);
+void func_800B738C(s32 arg0) {
+    HeroInfo *h;
+    HeroInfo *base;
+
+    if (func_8008ABF8() == 0 && func_80086FCC(arg0) == 0 && func_800B8D88(arg0) == 0) {
+        func_8008502C(arg0);
+        if (D_8005A5DC < 4) {
+            if (D_8005A5DC >= 2) {
+                D_8009D73C(arg0);
+            }
+        }
+        base = Heroes;
+        h = base + arg0;
+        if (h->hero_status & 0x100) {
+            if (h->hero_move != NULL) {
+                h->hero_move->forward_angle = 0;
+                h->hero_move->facing_angle = 0;
+            }
+            D_800AD12C = 1;
+        }
+        func_800871E4(arg0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B747C);
 
