@@ -99,7 +99,61 @@ void func_800B738C(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B747C);
+void func_800B747C(s32 arg0) {
+    HeroInfo *h;
+    HeroInfo *base;
+    s32 id;
+    s32 a0;
+
+    if (func_8008ABF8() == 0 && func_80086FCC(arg0) == 0) {
+        if (Ovl66StopInline(arg0) == 0) {
+            base = Heroes;
+            h = base + arg0;
+            h->hero_move->velocity_enable = 1;
+            D_8009D73C(arg0);
+            id = func_8008502C(arg0);
+            switch (id) {
+            case 8:
+                a0 = 0x41E;
+                if (h->hero_pu != 0x15) {
+                    switch (h->hero_name) {
+                    case 1: a0 = 0xA; break;
+                    case 2: a0 = 0x3C; break;
+                    case 3: a0 = 0x6E; break;
+                    case 4: a0 = 0xA0; break;
+                    case 7: a0 = 0x104; break;
+                    case 8: a0 = 0xD2; break;
+                    case 5: a0 = 0x136; break;
+                    case 6: a0 = 0x168; break;
+                    default: goto done;
+                    }
+                    PlaySfx(a0, NULL, (SLONG_XYZ *)((u8 *)Heroes[arg0].hero_eng + 0x10), 0x1000, 0x1E00, 0);
+                } else {
+                    PlaySfx(a0, NULL, (SLONG_XYZ *)((u8 *)h->hero_eng + 0x10), 0x1000, 0x1E00, 0);
+                }
+                break;
+            case 9:
+                if (h->hero_pu != 0x15) {
+                    switch (h->hero_name) {
+                    case 1: a0 = 0xB; break;
+                    case 2: a0 = 0x3D; break;
+                    case 3: a0 = 0x6F; break;
+                    case 4: a0 = 0xA1; break;
+                    case 7: a0 = 0x105; break;
+                    case 8: a0 = 0xD3; break;
+                    case 5: a0 = 0x137; break;
+                    case 6: a0 = 0x169; break;
+                    default: goto done;
+                    }
+                    PlaySfx(a0, NULL, (SLONG_XYZ *)((u8 *)Heroes[arg0].hero_eng + 0x10), 0x1000, 0x1E00, 0);
+                }
+                break;
+            }
+done:
+            func_800871E4(arg0);
+        }
+    }
+}
 
 void func_800B76CC(s32 arg0) {
     Ovl66Target *t;

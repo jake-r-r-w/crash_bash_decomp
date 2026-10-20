@@ -142,4 +142,15 @@ void func_800B6EFC(s32 arg0);
 
 void func_800B8550(s32 arg0);
 
+/* Inline copy of func_800B8E08. */
+static inline s32 Ovl66StopInline(s32 arg0) {
+    if (Heroes[arg0].hero_move->forward_speed == 0) {
+        SetHeroAction((HeroInfo *)arg0, 0x40);
+        return 1;
+    }
+    return 0;
+}
+
+void func_800B747C(s32 arg0);
+
 #endif /* BASH_OVL66_800B6EFC_H */
