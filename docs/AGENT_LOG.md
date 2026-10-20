@@ -22,7 +22,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
   complete (94/94, 2026-10-20)**, ovl69 69/77, ovl67 102/135, ovl60
   131/180, ovl5f 127/179, ovl62 151/216, ovl63 97/139, ovl5d 70/104,
   ovl65 64/80, ovl68 60/93 (swarm runs 2026-10-18/19), ovl66 49/65 left
-  16 (swarm 2026-10-20); ovl5e 8 left (54 matched 2026-10-20); ovl64 24 left (22 matched 2026-10-20). All 564 PsyQ functions (Sony objects). 3 parked (`decomp.py
+  16 (swarm 2026-10-20); ovl5e 7 left (54 matched 2026-10-20, `func_800BB3F0` by
+  hand); ovl64 23 left (22 matched 2026-10-20, plus BB3F0's copy). All 564 PsyQ functions (Sony objects). 3 parked (`decomp.py
   status`). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
@@ -50,10 +51,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
 ## Next
 
 **Matching the slot overlays with the swarm.** Left per overlay (2026-10-19,
-`INCLUDE_ASM` count per file): ovl5e 9 (2026-10-20), ovl62 65, ovl66 16 (2026-10-20), ovl68 33,
-ovl5f 52, ovl64 24 (2026-10-20), ovl60 49, ovl63 42, ovl5d 34, ovl67 33, ovl65 16,
+`INCLUDE_ASM` count per file): ovl5e 7 (2026-10-20), ovl62 65, ovl66 16 (2026-10-20), ovl68 33,
+ovl5f 52, ovl64 23 (2026-10-20), ovl60 49, ovl63 42, ovl5d 33, ovl67 33, ovl65 16,
 ovl69 8, engine 2 (ovl61 and ovl6a are done). main.exe is complete. **Next session:
-ovl5e's 9 and ovl64's 24 are mostly >= 600 B: big-heavy recipe (`--workers 1 --big-workers 4 --big-bytes 400`), then ovl66's leftovers**, on the low-cost recipe; after each run, the
+ovl5e's 7 and ovl64's 23 are mostly >= 600 B: big-heavy recipe (`--workers 1 --big-workers 4 --big-bytes 400`), then ovl66's leftovers**, on the low-cost recipe; after each run, the
 "After a run" checklist in tools/swarm/README.md (`stats --run ID`, parks,
 gate failures, `fold`, this log).
 
@@ -139,6 +140,12 @@ and current tools).
     reads; the function is absent from the Aug/Sep prototypes and identical
     in Oct 9. The same code is unmatched in `func_800C284C`
     (ovl5d) and `func_800BAF1C` (ovl64): solve the three together.
+    Untried mechanism from `func_800BB3F0` (same file, same
+    `func_8001CD04` block shape, a1 first there): duplicated code wrapped
+    in `do { } while (0)` lives until jump2's cross-jump (after sched1 and
+    allocation), while plain duplicates merge before flow. A wrapped copy
+    of a join load in the then-arm could be sched1's second memory insn
+    (the loop notes are also a sched1 barrier: check -dS).
   - `func_800B9E74` registers 12/238: a `subu` takes the second operand's
     register; split `d = a->x; d -= b->x;`. Its permuter run was cut short.
   - `PlotPapuBoss` structure 242/455: two adjacent u16 stores, chain them
@@ -155,10 +162,14 @@ and current tools).
     `maybe_never` (outer scan past a label/jump, e.g. a loop entered at its
     exit test) or a second set. Tried and failed: for/while/do/goto outer loops, block-scope locals, cell pointers.
     Scripts: `scratch/b7134/` (`brute2.py`, `full.py`).
-  - `func_800BB3F0` instructions 26/171: loop.c hoists a loop-invariant
-    multiply the target recomputes. A user variable set twice in the loop
-    isn't moved (index through `r = player; arr[r]`); a `goto` into the
-    loop body also stops the hoists.
+  - `func_800BB3F0` matched by hand 2026-10-20 (08aa8ff7, no hack; copies
+    `func_800C159C` and `func_800BA098` too). Diff patterns has the three
+    fixes: read `Heroes[player]` directly in the loop, so loop.c moves its
+    la first and lowers its threshold, which keeps the multiply in the
+    loop; K&R `u16 cone`; and the claim written once per arm, each in
+    `do { } while (0)`. For `func_800B7134`'s outer-loop hoist (a hack
+    match), wrapped duplicates also add to loop.c's `insn_count` without
+    changing the final code: untried there.
   - `func_800B38FC` instructions 32/131: stack `u16` args get `andi` +
     `sll` after a branch; declare the params `u16` and scale them in place
     (`n4 *= 4;`).
@@ -272,6 +283,20 @@ Other:
 ## Gotchas
 
 **Tooling**
+- **`done --commit` in a git worktree (`.claude/worktrees/...`) fails at
+  `git add`** ("not a git repository: /work/C:/..."): the worktree's `.git`
+  file names a Windows path the container can't see. A worktree also lacks
+  `asm/`, `linkers/`, `ext/` and `disc/`: copy them from the main checkout
+  first. Re-run the gate with the main `.git` mounted (one line, from the
+  worktree): `DK_DOCKER_ARGS="-v <main>\.git:/maingit -e
+  GIT_DIR=/maingit/worktrees/<name> -e GIT_WORK_TREE=/work -e
+  GIT_CONFIG_COUNT=2 -e GIT_CONFIG_KEY_0=core.hooksPath -e
+  GIT_CONFIG_VALUE_0=/work/tools/hooks -e GIT_CONFIG_KEY_1=safe.directory -e
+  GIT_CONFIG_VALUE_1=*" tools/dk python3 tools/scripts/decomp.py done ...`.
+  If the failed run already matched and propagated copies, `git checkout`
+  everything but your own edits first: the scope check refuses the copies.
+  Propagation also skips a copy whose header still declares a stale
+  prototype (`void f();` against `NAS *`): fix it and `done` that copy alone.
 - **`permute --lines A-B` widens to whole statements.** A range starting
   on `if (...) {` takes the whole if/else chain (`func_800B5710` 317-324
   became 277-458). Start inside the block. A `decomp.py permute` stopped
@@ -471,6 +496,15 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-20 (hand: `func_800BB3F0`, ovl5e, 684 B):** matched with no hack
+  (08aa8ff7; its copies too: `func_800C159C` in it, `func_800BA098`
+  8e6f2255). From the swarm's 26/171: `-dL` showed the `player*108` chain
+  moving at 85 insns (29*2*2 >= insn_count). Reading `Heroes[player]`
+  directly in the loop moves its la first (threshold -3 per move), which
+  keeps the chain in the loop. The last `s0/s1`, `s6/s7` swaps were global.c
+  priorities (`mask` 5 refs/222 can't beat `self` 4/86). The claim in a
+  do-while (0) in each arm fixed them. Worktree git gotcha added.
 
 - **2026-10-20 (hand: `func_800B7134` as a hack match):** on the user's go,
   committed the dead-store version (ba1244e6, `Hack:` line in the commit):
