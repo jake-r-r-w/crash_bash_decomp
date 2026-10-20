@@ -53,6 +53,8 @@ void func_800B790C(s32 arg0);
 
 s32 func_800B794C(void);
 
+void func_800B35AC(void);
+void func_800B36D4(void);
 void func_800B7D94(void);
 
 void func_800B7D9C(void);
@@ -65,6 +67,8 @@ void func_800B7DA4(void);
 s32 func_800B7558(EXTengine *eng);
 
 void func_800B7B10(void);
+
+void func_800B7DE4(void);
 
 s32 func_800B8080(T_B8080 *p);
 
