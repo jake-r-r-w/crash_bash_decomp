@@ -1411,9 +1411,21 @@ copy. For these, read the rule that breaks the tie instead of guessing at C:
 2. Find the tie in the dump's trace. For register allocation and scheduling,
    `decomp.py sched NAME [--pass sched|sched2] [--block N] [--insn UIDS]` does steps 1-2:
    global.c's allocation order with each pseudo's refs, live length, priority, register and
-   C variables, then each block in final order with the rule that placed every insn (higher
-   priority, the only one ready, or a tie broken by source order or dependence). The tie
-   attribution is inferred from the trace; check it in sched.c before acting on it.
+   C variables, then each block in final order. A block's header counts its memory-unit
+   insns (loads and stores; `potential hazard on` at 2+), each insn is tagged `ld`/`st`/`mul`,
+   and its line names the rule that took it off the ready list ahead of the runner-up, in
+   sched.c's order: `block end` (tail priority), `only insn ready`, `priority`, `birthing
+   priority` (`7f000001`, from `adjust_priority`), `class` (the insn scheduled just before uses
+   the runner-up's load), `greater potential hazard` (`schedule_select` overriding the rank
+   order), or a `tie ... luid` (the later insn in the RTL stays later, with why the hazard
+   didn't decide). `order from T-n` means no insn joined the list since that step, so sched.c
+   didn't re-sort and the pair keeps that step's order. For func_800BC274's
+   `jal func_8001CD04` block it prints `100 ... tie with 98 at priority 1: luid ... (only 1
+   memory insn in the block: no potential hazard)`. The rules are read from the dump's ready
+   lists, RTL and LOG_LINKS; the potential-hazard model (a store over a load over an ALU insn,
+   at 2+ memory insns) predicted every tie of five units' dumps, but mult/div against memory
+   insns isn't modelled. A parked function's C under `#ifdef NON_MATCHING` is compiled with
+   `-DNON_MATCHING` (`regions` and `vars` do the same).
 3. Read the function that decides it in `tools/reference/gcc-2.8.1/` (FSF 2.8.1, the base of
    our `2.8.1-psx` cc1) or, for the two gcc 2.7.2 units, `tools/reference/gcc-2.7.2.3/`. The
    2.7.2.3 `README.decomp.md` says which file holds which pass; the 2.8.1 one lists what was
@@ -1432,7 +1444,7 @@ a permuter run had made no progress.
 | `-dt` | `.cse2` | after the second cse |
 | `-df` | `.flow` | after flow: liveness, `REG_DEAD` notes |
 | `-dc` | `.combine` | after combine: merged insns, copies folded away |
-| `-dS` | `.sched` | sched1's trace per block: each insn's priority, then `ready list at T-n` cycle by cycle from the block end (`7f000001` is launch priority; "launching X with N stalls"; "greater potential hazard") |
+| `-dS` | `.sched` | sched1's trace per block: each insn's priority, then `ready list at T-n` cycle by cycle from the block end (`7f000001` is birthing priority; "launching X with N stalls"; "greater potential hazard") |
 | `-dR` | `.sched2` | the same for sched2, after register allocation |
 | `-dl` | `.lreg` | local-alloc: refs, lifetime and deaths per pseudo, then `Register N in M` |
 | `-dg` | `.greg` | the RTL after reload, the order sched2 starts from |
@@ -1492,8 +1504,10 @@ The rules found so far, each one checked against a trace:
     priority; the better class against the insn just scheduled (independent,
     or latency 1, wins); the later position in the RTL. A tie therefore keeps
     the original order.
-  - `schedule_select`: among equal priority, the insn with the larger
-    potential hazard (a load) goes first.
+  - `schedule_select`: among equal priority, the first insn with the largest
+    potential hazard goes first. It is 0 for every memory insn unless the
+    block has 2+ loads and stores; then a store beats a load and either beats
+    an ALU insn. A mult/div insn always beats an ALU insn.
   - An insn that is ready while a load waits out its latency fills that slot.
   - In sched1 only, `adjust_priority` and `birthing_insn_p` give launch
     priority to an insn that sets a register set only once and still live.

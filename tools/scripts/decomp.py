@@ -600,6 +600,56 @@ def still_asm(src, *names):
     return bool(set(names) & {m.group(2) for m in INC_ASM.finditer(read(src))})
 
 
+PP_LINE = re.compile(r"\s*#\s*(if\w*|else|elif|endif)\b\s*(\w*)")
+
+
+def non_matching_blocks(text):
+    """(C side, #else side) of each `#ifdef NON_MATCHING` block in TEXT, nested #ifs kept whole."""
+    out, cur, side, depth = [], None, 0, 0
+    for line in text.splitlines(keepends=True):
+        m = PP_LINE.match(line)
+        d = m.group(1) if m else None
+        if cur is None:
+            if d == "ifdef" and m.group(2) == "NON_MATCHING":
+                cur, side, depth = ["", ""], 0, 0
+            continue
+        if d and d.startswith("if"):
+            depth += 1
+        elif d == "endif" and depth == 0:
+            out.append(tuple(cur))
+            cur = None
+            continue
+        elif d == "endif":
+            depth -= 1
+        elif d in ("else", "elif") and depth == 0:
+            side = 1
+            continue
+        cur[side] += line
+    return out
+
+
+def parked_c(src, *names):
+    """True when src keeps one of names' C under `#ifdef NON_MATCHING` with its INCLUDE_ASM line in
+    the `#else` (a parked function, CONVENTIONS.md): built with -DNON_MATCHING it compiles that C."""
+    for c, asm in non_matching_blocks(read(src)):
+        inc = {m.group(2) for m in INC_ASM.finditer(asm)}
+        if any(n in inc and func_def_regex(n).search(c) for n in names):
+            return True
+    return False
+
+
+def c_defines(src, name, e):
+    """The cpp flags that give NAME's C in src: none, or -DNON_MATCHING for a parked function's C
+    (sched, regions and vars analyse that). Dies when src has no C for it."""
+    names = (name, e["name"], e["orig"])
+    if src and not still_asm(src, *names):
+        return []
+    if src and parked_c(src, *names):
+        print(f"({name} is parked: reading its C under #ifdef NON_MATCHING)")
+        return ["-DNON_MATCHING"]
+    die(f"{name}: no C for it yet (still INCLUDE_ASM?)")
+
+
 LAST_SCORE = {}     # key -> (paired, ok blocks, exact, len, blocks) of the last diff check_function showed
 
 
@@ -673,9 +723,10 @@ def check_function(key, e, proj, name, quiet=False):
     return False, len(diffs)
 
 
-def pipeline(c_path, o_path, cc, opt, g, maspsx, post=""):
+def pipeline(c_path, o_path, cc, opt, g, maspsx, post="", defs=()):
     gflag = f"-G{g}"
-    return (f"{X}cpp {' '.join(make_flags('CPPFLAGS'))} {c_path} | {GCC_ROOT}/{cc}/cc1 -quiet {opt} {gflag} "
+    cpp = " ".join([*make_flags("CPPFLAGS"), *defs])
+    return (f"{X}cpp {cpp} {c_path} | {GCC_ROOT}/{cc}/cc1 -quiet {opt} {gflag} "
             f"| python3 tools/scripts/dmpsx.py | python3 {MASPSX} {maspsx}{' ' + gflag if g else ''} "
             f"{post + ' ' if post else ''}| {X}as {' '.join(make_flags('ASFLAGS'))} -o {o_path}")
 
@@ -1619,17 +1670,22 @@ def asm_labels(path, vram):
     return [(int(m.group(1), 16) - vram) // 4 for m in map(LABEL_LINE.match, read(path).splitlines()) if m]
 
 
-def c_lines(src, name, cfg):
+def unit_pipeline(src, o, cfg, opt="", defs=()):
+    """pipeline() for src with its unit's settings, extra cc1 flags OPT and cpp flags DEFS."""
+    cfg = unit_cfg(cfg, src)
+    return pipeline(src, o, cfg["CC_VER"], f"{cfg['OPT_FLAGS']} {cfg.get('EXTRA_CC1FLAGS', '')} {opt}".strip(),
+                    int(cfg.get("GVAL", "0")), re.sub(r"\s*-G\d+", "", cfg.get("MASPSX_ARGS", DEFAULT_MASPSX)),
+                    post_filters(cfg), defs)
+
+
+def c_lines(src, name, cfg, defs=()):
     """Compiled instruction index -> source line, from a -g build of `src` (None if the build
     fails). cpp runs without -P here, so its line markers give cc1 the real file and lines (-P
     squeezes blank lines, so an offset from the function's first line drifts). Code inlined from
     a header maps to None."""
     os.makedirs("build/regions", exist_ok=True)
-    cfg = unit_cfg(cfg, src)
-    g = int(cfg.get("GVAL", "0"))
     o = f"build/regions/{name}.o"
-    cmd = pipeline(src, o, cfg["CC_VER"], f"{cfg['OPT_FLAGS']} {cfg.get('EXTRA_CC1FLAGS', '')} -g".strip(), g,
-                   re.sub(r"\s*-G\d+", "", cfg.get("MASPSX_ARGS", DEFAULT_MASPSX)), post_filters(cfg))
+    cmd = unit_pipeline(src, o, cfg, "-g", defs)
     cmd = re.sub(r"^(\S*cpp\b[^|]*?)\s-P\b", r"\1", cmd, count=1)
     if run("set -o pipefail; " + cmd).returncode:
         return None
@@ -1649,17 +1705,22 @@ def c_lines(src, name, cfg):
     return out
 
 
-def region_score(key, e, proj, name, src, want_lines=True):
+def region_score(key, e, proj, name, src, want_lines=True, defs=()):
     """Build src and score NAME block by block: (res, lines, tw, ttext, cw, ctext) with lines the
-    compiled index -> source line map (None without want_lines or when -g changes the code)."""
+    compiled index -> source line map (None without want_lines or when -g changes the code).
+    DEFS (c_defines) compile a parked function's C, into its own object: the build's keeps the asm."""
     import regions
-    obj = f"build/{src}.o"
+    obj = f"build/regions/{name}.nm.o" if defs else f"build/{src}.o"
     if os.path.exists(obj):
         os.remove(obj)
     # the -g build for the C lines runs alongside the normal one (two compiles of the same file)
     pool = ThreadPoolExecutor(1) if want_lines else None
-    lines_job = pool.submit(c_lines, src, name, mk_config()) if pool else None
-    r = run(["make", "-s", obj])
+    lines_job = pool.submit(c_lines, src, name, mk_config(), defs) if pool else None
+    if defs:
+        os.makedirs("build/regions", exist_ok=True)
+        r = run("set -o pipefail; " + unit_pipeline(src, obj, mk_config(), defs=defs))
+    else:
+        r = run(["make", "-s", obj])
     if r.returncode:
         print("BUILD FAILED")
         print(compile_error(src, r.stderr + r.stdout))
@@ -1691,11 +1752,11 @@ REG_NAMES = ["zero", "at", "v0", "v1", "a0", "a1", "a2", "a3", "t0", "t1", "t2",
              "s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "t8", "t9", "k0", "k1", "gp", "sp", "fp", "ra"]
 
 
-def var_homes(src, name, cfg):
+def var_homes(src, name, cfg, defs=()):
     """{variable: home} for NAME's parameters and locals, from cc1 -g's ECOFF .def lines: a
     register name, or "sp+N" for a stack slot. Block-scoped locals are included."""
     cfg = unit_cfg(cfg, src)
-    cmd = (f"{X}cpp {' '.join(make_flags('CPPFLAGS'))} {src} | {GCC_ROOT}/{cfg['CC_VER']}/cc1 -quiet "
+    cmd = (f"{X}cpp {' '.join([*make_flags('CPPFLAGS'), *defs])} {src} | {GCC_ROOT}/{cfg['CC_VER']}/cc1 -quiet "
            f"{cfg['OPT_FLAGS']} {cfg.get('EXTRA_CC1FLAGS', '')} -G{cfg.get('GVAL', '0')} -g")
     out = run(cmd).stdout
     m = re.search(rf"^{re.escape(name)}:\s*$(.*?)^\s*\.end\s+{re.escape(name)}\b", out, re.M | re.S)
@@ -1726,10 +1787,9 @@ def cmd_vars(a):
     key, e = find_func(funcs, a.func)
     name = cur_name(key, e, sym_names())
     src = e.get("src") or locate_def(name)
-    if not src or still_asm(src, name, e["name"], e["orig"]):
-        die(f"{name}: no C for it yet (still INCLUDE_ASM?)")
-    res, lines, tw, _, cw, _ = region_score(key, e, proj, name, src)
-    homes = var_homes(src, name, mk_config())
+    defs = c_defines(src, name, e)
+    res, lines, tw, _, cw, _ = region_score(key, e, proj, name, src, defs=defs)
+    homes = var_homes(src, name, mk_config(), defs)
     if not homes:
         die("no variable homes from cc1 -g (no .def lines for this function)")
     if a.all:
@@ -1786,9 +1846,8 @@ def cmd_regions(a):
     key, e = find_func(funcs, a.func)
     name = cur_name(key, e, sym_names())
     src = e.get("src") or locate_def(name)
-    if not src or still_asm(src, name, e["name"], e["orig"]):
-        die(f"{name}: no C for it yet (still INCLUDE_ASM?)")
-    res, lines, tw, ttext, cw, ctext = region_score(key, e, proj, name, src, not a.no_lines)
+    defs = c_defines(src, name, e)
+    res, lines, tw, ttext, cw, ctext = region_score(key, e, proj, name, src, not a.no_lines, defs)
     nt, nc = len(tw), len(cw)
 
     def span(b):
@@ -2087,20 +2146,21 @@ def cmd_sched(a):
     key, e = find_func(funcs, a.func)
     name = cur_name(key, e, sym_names())
     src = e.get("src") or locate_def(name)
-    if not src or still_asm(src, name, e["name"], e["orig"]):
-        die(f"{name}: no C for it yet (still INCLUDE_ASM?)")
+    defs = c_defines(src, name, e)
     cfg = unit_cfg(mk_config(), src)
     d = "build/sched"
     os.makedirs(d, exist_ok=True)
     i = f"{d}/{name}.i"
-    run(f"{X}cpp {' '.join(make_flags('CPPFLAGS'))} {src} > {i}")
+    r = run(f"{X}cpp {' '.join([*make_flags('CPPFLAGS'), *defs])} {src} > {i}")
+    if r.returncode:                    # e.g. ext/ missing: cc1 would dump an empty file
+        die(f"cpp failed: {r.stderr.strip()[-300:]}")
     r = run(f"cd {d} && {GCC_ROOT}/{cfg['CC_VER']}/cc1 -quiet {cfg['OPT_FLAGS']} "
             f"{cfg.get('EXTRA_CC1FLAGS', '')} -G{cfg.get('GVAL', '0')} -dl -dg -dS -dR "
             f"-o {name}.s {name}.i")
     if r.returncode:
         die(f"cc1 failed: {r.stderr.strip()[-300:]}")
     dumps = {k: read(f"{i}.{k}") for k in ("lreg", "greg", "sched", "sched2") if os.path.exists(f"{i}.{k}")}
-    homes = var_homes(src, name, mk_config())
+    homes = var_homes(src, name, mk_config(), defs)
     insn = {int(x) for x in a.insn.split(",")} if a.insn else None
     print(schedx.report(dumps, name, homes, a.passname, a.block, insn))
 
