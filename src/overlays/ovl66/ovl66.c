@@ -71,7 +71,32 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B5820);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B5BA0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B60FC);
+s32 func_800B60FC(s32 arg0)
+{
+  s32 new_var2;
+  EXTengine *b;
+  EXTengine *a;
+  s32 dx;
+  s32 dz;
+  s32 new_var;
+  s32 r;
+  if ((*D_8005A680) != 0)
+  {
+    HeroInfo *t = &Heroes[Heroes[arg0].hero_teammate];
+    a = Heroes[arg0].hero_eng;
+    b = t->hero_eng;
+    new_var = a->unk10.z;
+    new_var2 = a->unk10.x;
+    dx = b->unk10.x - new_var2;
+    dz = b->unk10.z - new_var;
+    r = (csqrt((dx * dx) + (dz * dz)) >> 6) < 0x501;
+  }
+  else
+  {
+    r = 0;
+  }
+  return r;
+}
 
 int func_800B61B0(int a0, int *out)
 {

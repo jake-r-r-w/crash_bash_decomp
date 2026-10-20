@@ -140,6 +140,8 @@ typedef struct Ovl66Cam {
 
 void func_800B347C(void);
 
+s32 func_800B60FC(s32 arg0);
+
 void InitBonkFlag(NAS *nas);
 
 void InitBonkShockwave(NAS *nas);
