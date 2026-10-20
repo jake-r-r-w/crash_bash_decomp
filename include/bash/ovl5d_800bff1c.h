@@ -28,6 +28,8 @@ void func_800C1278(s32 arg0);
 
 void func_800C14D4(s32 arg0);
 
+NAS *func_800C159C(s32 player, s32 mask, s32 unused, s32 cone);
+
 void *func_800C2B60(s32 idx, s32 mask);
 
 void func_800C2C70(s32 *a, s32 *b, s16 ma, s32 *c, s32 *d, s16 mb);

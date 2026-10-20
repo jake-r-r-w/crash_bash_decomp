@@ -4745,7 +4745,9 @@
   "status": "matched"
  },
  "ovl5d:800C159C": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-20T20:59:11Z",
+  "status": "matched",
+  "via": "copy"
  },
  "ovl5d:800C1848": {
   "auto_failed": "types"
@@ -5057,7 +5059,8 @@
   "via": "copy"
  },
  "ovl5e:800BB3F0": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-20T20:58:55Z",
+  "status": "matched"
  },
  "ovl5e:800BB69C": {
   "matched_at": "2026-10-20T12:03:09Z",
@@ -8407,7 +8410,9 @@
   "status": "matched"
  },
  "ovl64:800BA098": {
-  "auto_failed": "types"
+  "auto_failed": "types",
+  "copy_failed": "ovl5d:800C159C",
+  "copy_failed_stage": "in-file"
  },
  "ovl64:800BA344": {
   "auto_failed": "types",
