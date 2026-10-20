@@ -82,7 +82,44 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", PlotBonkStool);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B3D28);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", InitBonkCrate);
+void InitBonkCrate(NAS *nas) {
+    EXTengine *e = nas->Engine;
+
+    if (e != NULL) {
+        subengine *s;
+
+        e->unk5C = 1;
+        e->unk2C.z = 0;
+        e->unk2C.y = 0;
+        e->unk2C.x = 0;
+        e->unk5E = 1;
+        nas->UserInfo.status = 0;
+        nas->UserInfo.user1 = D_800B9F08 * 0x5A + 0x1E;
+        s = e->sub;
+        e->flags &= 0xFFFF7FFF;
+        if (s != NULL) {
+            s->unk6C = D_80053C7C;
+            s->unk74 = 0x200F;
+        } else {
+            nas->Failure = 1;
+        }
+        if (AddObject(nas) != NULL) {
+            func_80026AD8((u8 *)nas);
+            func_8002694C(nas, 0x200);
+        } else {
+            nas->Failure = 1;
+        }
+    } else {
+        nas->Failure = 1;
+    }
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    } else {
+        nas->UserInfo.user2 = D_800B9F08;
+        D_800B9EC8[D_800B9F08].b = (s32)nas;
+        D_800B9F08 += 1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", PlotBonkCrate);
 
