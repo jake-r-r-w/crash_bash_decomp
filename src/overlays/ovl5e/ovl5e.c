@@ -435,7 +435,62 @@ s32 func_800B6334(EXTengine *eng, u32 flag) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B64AC);
+NAS *func_800B64AC(EXTengine *eng, u32 mask, s32 unused, s32 add) {
+    VECTOR pos;
+    FlagRecord *new_var;
+    FlagRecord *box;
+    FlagRecord *rec;
+    NAS *n;
+    u8 *x;
+    s32 r;
+    s32 top;
+    s32 bot;
+    s32 dx;
+    s32 lo;
+    EXTengine *o;
+    s32 hi;
+
+    box = func_80025A48(eng, 0x400);
+    if (box != NULL) {
+        if (eng->unk5E != 0) {
+            func_800142D4(&eng->unk1C);
+        }
+        func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
+        r = box->radius;
+        new_var = box;
+        top = eng->unk10.y + new_var->unk2;
+        bot = eng->unk10.y + new_var->height;
+        func_80015758((SVECTOR *)new_var, &pos);
+        for (n = D_8005AA2C; n != NULL; n = n->Solid.Child) {
+            if (!(n->Class & 0x200)) {
+                continue;
+            }
+            o = n->Engine;
+            if (o == NULL || o == eng) {
+                continue;
+            }
+            rec = func_80025A48(o, 0x40);
+            if (rec == NULL) {
+                continue;
+            }
+            lo = o->unk10.y + rec->unk2;
+            hi = o->unk10.y + rec->height;
+            if (bot < lo && hi < top) {
+                dx = o->unk10.x - pos.vx;
+                unused = o->unk10.z - pos.vz;
+                if (dx * dx + unused * unused < (rec->radius + r) * (rec->radius + r)) {
+                    x = FindExtension(n, 0x1000);
+                    if (x != NULL && (*(u16 *)(x + 0x1C) & mask)) {
+                        *(s16 *)(x + 0x16) = add + 0x14;
+                        *(u16 *)(x + 0x1E) |= mask;
+                        return n;
+                    }
+                }
+            }
+        }
+    }
+    return NULL;
+}
 
 NAS *func_800B668C(EXTengine *eng, s32 mask) {
     VECTOR pos;
