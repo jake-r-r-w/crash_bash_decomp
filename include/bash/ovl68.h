@@ -224,6 +224,8 @@ void func_800B6350(s32 arg0);
 
 void func_800B65B0(s32 arg0);
 
+void func_800B66A4(s32 arg0);
+
 void func_800B67D8(s32 arg0);
 
 void func_800B68B8(s32 arg0);
