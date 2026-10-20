@@ -48,6 +48,17 @@ extern HeroInfo Heroes[4];
 extern s32 D_800B9F1C[];
 extern s32 D_800B9F0C[];
 void func_800B4910(VECTOR *pos, s32 a, s32 b, s32 c);
+extern s32 D_800B9F2C[];
+extern s32 D_800B9F3C[];
+
+typedef struct Ovl66Tgt2 {
+    /* 0x0 */ s32 kind;
+    /* 0x4 */ Ovl66Pad *obj;
+} Ovl66Tgt2;
+
+s32 func_800B47C8(s32 arg0, s32 arg1, Ovl66Tgt2 *t);
+void func_800B6EFC();
+void func_800B7908(s32 arg0);
 
 extern void (*D_8009D73C)();
 extern s32 (*D_8009D728)(s32);

@@ -151,7 +151,45 @@ void func_800B77FC(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B7908);
+void func_800B7908(s32 arg0) {
+    HeroInfo *h;
+    HeroInfo *base;
+    s32 act;
+    Ovl66Tgt2 *t;
+
+    if (func_800B8714(arg0) == 0 && func_800B8814(arg0) == 0 && func_800B89D8(arg0) == 0) {
+        base = Heroes;
+        h = base + arg0;
+        h->hero_frozen = 10;
+        act = func_8008502C(arg0);
+        if (act == 0xC) {
+            PlaySfx(D_800B9F2C[arg0], NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+        }
+        if (act == 8) {
+            if (h->hero_last_mode == 0x44 || D_800B9F4C[arg0].f8 == 1 ||
+                (D_8005A614[arg0 + 0x5C] != 0 && (((D5A614View *)D_8005A614)->flags & 0x80))) {
+                func_800B6EFC(arg0);
+            }
+            t = (Ovl66Tgt2 *)D_800B9F4C[arg0].f0;
+            if (t != NULL) {
+                switch (t->kind) {
+                case 0x100:
+                    if (t->obj != NULL && (u16)t->obj->mode >= 0xB) {
+                        func_800B47C8(arg0, 1, t);
+                    }
+                    break;
+                case 0x200:
+                    if (t->obj != NULL && (u16)t->obj->mode >= 0xB) {
+                        func_800B64B4(arg0, 1, (Ovl66Obj *)t);
+                    }
+                    break;
+                }
+            }
+            PlaySfx(D_800B9F3C[arg0], NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            SetHeroAction((HeroInfo *)arg0, 0x46);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B7B48);
 
