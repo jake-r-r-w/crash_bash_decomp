@@ -66,6 +66,8 @@ void func_800B7DA4(void);
 
 s32 func_800B7558(EXTengine *eng);
 
+void InitPapuColumn(NAS *nas);
+
 void func_800B7B10(void);
 
 void func_800B7DE4(void);

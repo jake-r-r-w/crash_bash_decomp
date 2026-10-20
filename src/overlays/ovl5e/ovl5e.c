@@ -168,7 +168,20 @@ s32 func_800B794C(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", PlotPapuColumn);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", InitPapuColumn);
+void InitPapuColumn(NAS *nas) {
+    EXTengine *e = nas->Engine;
+
+    if (e != NULL) {
+        e->sub->unk6C = *(GfxModel **)D_80058AD0;
+        e->sub->unk74 = 0x200C;
+        e->unk5D = 0;
+        e->unk5C = 1;
+    }
+    nas->UserInfo.user1 = 1;
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 void func_800B7B10(void) {
     s32 i;
