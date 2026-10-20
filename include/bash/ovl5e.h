@@ -124,4 +124,9 @@ void func_800B7DE4(void);
 
 s32 func_800B8080(T_B8080 *p);
 
+extern s32 D_8005B2EC;
+extern s16 D_8009D6DC[];
+
+void PlotPapuColumn(NAS *nas);
+
 #endif /* BASH_OVL5E_H */

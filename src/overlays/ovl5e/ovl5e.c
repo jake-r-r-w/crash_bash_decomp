@@ -219,7 +219,41 @@ s32 func_800B794C(void) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", PlotPapuColumn);
+void PlotPapuColumn(NAS *nas) {
+    EXTengine *e = nas->Engine;
+    EXTengine *other;
+    s32 lim;
+    s32 d;
+    s32 cur;
+
+    if (e != NULL && nas->UserInfo.user1 != 0) {
+        cur = e->unk10.y + 0x140;
+        e->unk10.y = cur;
+        lim = D_8005B2EC;
+        if (nas->Family.Parent != NULL) {
+            other = nas->Family.Parent->Engine;
+            if (other != NULL) {
+                lim = other->unk10.y;
+                d = lim - cur;
+                if (d < 0) {
+                    d = 0;
+                }
+                if (d < 0x200) {
+                    other->unk2C.y = d * 8;
+                    D_8009D6DC[2] |= 0x2000;
+                }
+            }
+        }
+        if (lim < e->unk10.y) {
+            PlaySfx(0x20C, NULL, NULL, 0x1000, 0x1E00, 0);
+            D_8009D6DC[3] = 0;
+            D_8009D6DC[2] |= 0x8000;
+            e->unk10.y = lim;
+            nas->UserInfo.user1 = 0;
+        }
+        e->unk5E = 1;
+    }
+}
 
 void InitPapuColumn(NAS *nas) {
     EXTengine *e = nas->Engine;
