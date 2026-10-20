@@ -292,6 +292,32 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800BB560);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800BB5F0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800BB648);
+s32 func_800BB648(s32 arg0) {
+    s32 act;
+    u16 st = Heroes[arg0].hero_status;
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800BB6B4);
+    act = 0x36;
+    if (!(st & 0x200)) {
+        act = 0x37;
+        if (!(st & 0x400)) {
+            return 0;
+        }
+    }
+    SetHeroAction((HeroInfo *)arg0, act);
+    return 1;
+}
+
+s32 func_800BB6B4(s32 arg0) {
+    s32 act;
+    u16 st = Heroes[arg0].hero_status;
+
+    act = 0x36;
+    if (!(st & 0x200)) {
+        act = 0x37;
+        if (!(st & 0x400)) {
+            return 0;
+        }
+    }
+    SetHeroAction((HeroInfo *)arg0, act);
+    return 1;
+}
