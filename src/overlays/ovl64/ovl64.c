@@ -305,7 +305,42 @@ s32 func_800B8B5C(s32 arg0) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B8C74);
+s32 func_800B8C74(s32 arg0) {
+    s32 flip = arg0 ^ 1;
+    s32 best = 0x7FFFFF;
+    u16 i = 0;
+    u8 *g = D_8005A614;
+    HeroInfo *base = Heroes;
+    HeroInfo *me = base + arg0;
+    HeroInfo *h;
+    s32 dx;
+    s32 dz;
+    s32 d;
+    EXTengine *a;
+    EXTengine *b;
+
+    for (; i < 4; i++) {
+        if (i == arg0) {
+            continue;
+        }
+        if (*(volatile s32 *)(g + 0x6C) != 0 && i == flip) {
+            continue;
+        }
+        h = (HeroInfo *)(i * sizeof(HeroInfo) + (s32)base);
+        if (h->hero_status & 0xFA00) {
+            continue;
+        }
+        a = me->hero_eng;
+        b = h->hero_eng;
+        dx = a->unk10.x - b->unk10.x;
+        dz = a->unk10.z - b->unk10.z;
+        d = dx * dx + dz * dz;
+        if (d < best) {
+            best = d;
+        }
+    }
+    return best != 0x7FFFFF ? csqrt(best) >> 6 : 0;
+}
 
 s32 func_800B8D98(s32 arg0) {
     EXTbotai *ai = Heroes[arg0].hero_ai;

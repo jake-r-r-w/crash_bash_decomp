@@ -168,6 +168,8 @@ typedef struct Ovl64Hooks {
 } Ovl64Hooks;
 extern Ovl64Hooks D_8009D6E8;
 
+s32 func_800B8C74(s32 arg0);
+
 void func_800B9608(s32 arg0);
 
 #endif /* BASH_OVL64_H */
