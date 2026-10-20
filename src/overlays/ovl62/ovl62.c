@@ -772,7 +772,55 @@ ret0:
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B7B88);
+s32 func_800B7B88(s32 self) {
+    SLONG_XYZ pos;
+    s32 dist;
+    s32 *dp;
+    s32 best;
+    HeroInfo *h;
+    HeroInfo *me;
+    HeroInfo *base;
+    s32 i;
+    s32 d;
+    s32 min;
+    u16 st;
+
+    dp = &dist;
+    best = -1;
+    min = 0x07FFFFFF;
+    i = 0;
+    base = Heroes;
+    me = &base[self];
+    h = base;
+loop:
+    if (i < 4) {
+        if (i != self && !((st = h->hero_status) & 0x2000) && !(st & 0x8000)) {
+            pos = h->hero_eng->unk10;
+            d = func_8008CEB0((u8 *)&pos, (u8 *)&me->hero_eng->unk10);
+            if (d < min) {
+                min = d;
+                best = i;
+            }
+        }
+        h++;
+        i++;
+        goto loop;
+    }
+    *dp = min;
+    if (best != -1) {
+        st = 0;
+        if (func_800BCF08(self, best) == 0) {
+            if (dist <= 0x3FFFF) {
+                st = 1;
+                d = func_800B7A58(self, best);
+                if (d != 0) {
+                    return st;
+                }
+            }
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B7CDC);
 
