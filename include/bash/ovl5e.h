@@ -205,5 +205,29 @@ extern u8 D_800BC89C[];
 extern u8 D_800BC8DC[];
 
 s32 func_800B4D70(Ovl5ePos *arg0);
+extern u8 D_80051244[];
+
+typedef struct {
+    u8 pad0[0x10];
+    s32 x;
+    s32 pad14;
+    s32 z;
+    s16 pad1C;
+    s16 ang;
+} T_B7F14_A;
+
+typedef struct {
+    u8 pad0[0xD];
+    u8 dir;
+    s16 unkE;
+    s16 unk10;
+    s16 unk12;
+    s16 pad14;
+    s16 unk16;
+    u8 pad18[0x12];
+    s16 unk2A;
+} T_B7F14_B;
+
+void func_800B7F14(T_B7F14_A *a, T_B7F14_B *b);
 
 #endif /* BASH_OVL5E_H */
