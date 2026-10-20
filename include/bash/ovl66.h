@@ -26,6 +26,7 @@ extern Ovl66Ent D_800B9EC8[];
 extern s32 D_800B9F08;
 extern ScriptInit D_800B9CE4;
 extern u8 D_80053C0C[];
+extern u8 D_80053C7C[];
 extern s32 D_8005A680[];
 extern void *D_8009D8FC;
 extern void *D_8009D900;
@@ -125,6 +126,8 @@ typedef struct Ovl66Cam {
 void func_800B347C(void);
 
 void InitBonkFlag(NAS *nas);
+
+void InitBonkShockwave(NAS *nas);
 
 void func_800B6568(void);
 

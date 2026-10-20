@@ -161,7 +161,28 @@ void PlotBonkShockwave(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", InitBonkShockwave);
+void InitBonkShockwave(NAS *nas) {
+    EXTengine *e = nas->Engine;
+
+    if (e != NULL) {
+        e->sub->unk6C = D_80053C7C;
+        e->sub->unk74 = 0x2014;
+        e->unk5C = 1;
+        e->unk2C.y = 0x1000;
+        e->unk5D = 0;
+        e->unk2C.z = 0;
+        e->unk2C.x = 0;
+        e->unk5E = 1;
+        e->flags |= 0x8021;
+        nas->UserInfo.user1 = 0;
+        nas->UserInfo.user2 = 0x4000;
+    } else {
+        nas->Failure = 1;
+    }
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B64B4);
 
