@@ -104,7 +104,17 @@ void func_800B8C3C(s32 arg0) {
     func_800871E4(arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B8CB4);
+void func_800B8CB4(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = &base[arg0];
+
+    h->hero_move->velocity_enable = 0;
+    if (h->hero_eng->sfx != NULL) {
+        StopSfx(h->hero_eng->sfx);
+    }
+    SetHeroSeq((HeroInfo *)arg0, 0x38);
+    h->hero_hit = 0x1E;
+}
 
 void func_800B8D3C(s32 arg0) {
     Heroes[arg0].hero_move->velocity_enable = 1;
