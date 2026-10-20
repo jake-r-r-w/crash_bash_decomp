@@ -155,7 +155,16 @@ void func_800B790C(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B794C);
+s32 func_800B794C(void) {
+    s32 i;
+
+    for (i = 0; i < 6; i++) {
+        if (D_800BD70C[i].unk0 == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", PlotPapuColumn);
 

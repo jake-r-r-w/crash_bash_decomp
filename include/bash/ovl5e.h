@@ -38,11 +38,20 @@ typedef struct {
     s16 h;
 } T_B8080;
 
+typedef struct Slot40 {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 pad4[15];
+} Slot40;
+
+extern Slot40 D_800BD70C[6];
+
 s32 func_800B7670(u8 *arg0);
 
 void func_800B7778(void);
 
 void func_800B790C(s32 arg0);
+
+s32 func_800B794C(void);
 
 void func_800B7D94(void);
 
