@@ -220,10 +220,6 @@ void func_800B551C(void) {
     }
 }
 
-/* Parked: 120/121 blocks. Only the 0x80 button block differs: the target puts the
- * mv->forward_speed store in the delay slot of the % 0x1000 bgez, so sched1 must
- * leave it after the modulo copy, which no statement order emits (AGENT_LOG). */
-#ifdef NON_MATCHING
 void func_800B5710(s32 arg0) {
     Ovl6aGameView *g;
     Ovl6aGameView *gv;
@@ -317,7 +313,8 @@ void func_800B5710(s32 arg0) {
         if (stop == 0) {
             if (((Ovl6aPad *)D_80051338)[arg0].unk50 & 0x80) {
                 mv->forward_speed = speed;
-                ang = (D_8009EE9C.unk4 -= step % 0x1000) + 0x400;
+                ang = 0x400;
+                ang = (D_8009EE9C.unk4 -= step % 0x1000) + ang;
             }
             if (((Ovl6aPad *)D_80051338)[arg0].unk50 & 0x20) {
                 mv->forward_speed = speed;
@@ -471,9 +468,6 @@ done:
     }
     func_800B8284();
 }
-#else
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl6a/800b4eac", func_800B5710);
-#endif
 
 void func_800B6224(s32 arg0) {
     EXTengine *e;

@@ -17,17 +17,11 @@
    "note": "STAGE registers 4/340 (blocks 18/20). Only v (D_800BA740 test + row[w] value, one global pseudo) is a1, target v1: set_preference (global.c, every SET) gives it a1 from the row[w] load whose address dies in a1. Removing that preference needs the address in a global pseudo: h = (u8 *)(w * 4 + (u32)row); v = *(s32 *)h; (2026-10-19) gives v v1 in both places and h a1, but local-alloc then ranks the D_8004DDBC base quantity (4 refs over ~3 insns) above w's lhu/-0x101/<<2 chain (6 refs over ~9; in the target the address is tied in, so w has 8+ refs) and swaps them a1/a2; h = D_8005A614 at the end also schedules differently. A row local computed before w reshuffles sched1 (29 differ). Next: raise w's quantity priority (refs or a shorter sched1 life) with h global, or another way v loses its a1 preference.",
    "seg": "overlays/ovl69/ovl69",
    "size": 1360
-  },
-  {
-   "name": "func_800B5710",
-   "note": "STAGE structure 492/710 (regions 120/121 blocks, 706/710 insns): only the 0x80 button block differs; target puts mv->forward_speed = speed in the delay slot of the % 0x1000 bgez (sched2 input must have the store last, so sched1 must leave it after the modulo's t=step copy, which expand_divmod emits right before the bgez); tried 6 orders/spellings, a twice-set cam pointer, do{}while(0). Next: find a construct that emits the store after the copy, or reconsider the 0x80 block's source shape",
-   "seg": "overlays/ovl6a/800b4eac",
-   "size": 2836
   }
  ],
- "commit": "4ac9819a19",
+ "commit": "1595f5c8",
  "game": "SCUS_945.70",
- "generated": "2026-10-20T07:46:56Z",
+ "generated": "2026-10-20T08:06:36Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -144360,9 +144354,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "1595f5c8",
+   "data_b": 4468,
+   "data_tb": 606943,
+   "game_all_f": 2537,
+   "game_b": 534412,
+   "game_c_f": 2092,
+   "game_f": 2092,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 1875,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-20T08:06:35Z",
+   "units": {
+    "engine": [
+     121412,
+     355
+    ],
+    "main exe": [
+     124840,
+     575
+    ],
+    "ovl5d": [
+     20128,
+     70
+    ],
+    "ovl5e": [
+     3276,
+     26
+    ],
+    "ovl5f": [
+     20972,
+     127
+    ],
+    "ovl60": [
+     28208,
+     131
+    ],
+    "ovl61": [
+     55000,
+     97
+    ],
+    "ovl62": [
+     32228,
+     151
+    ],
+    "ovl63": [
+     22884,
+     97
+    ],
+    "ovl64": [
+     1292,
+     11
+    ],
+    "ovl65": [
+     17972,
+     64
+    ],
+    "ovl66": [
+     9768,
+     64
+    ],
+    "ovl67": [
+     27636,
+     102
+    ],
+    "ovl68": [
+     8240,
+     60
+    ],
+    "ovl69": [
+     9496,
+     68
+    ],
+    "ovl6a": [
+     31060,
+     94
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-20T08:06:34Z",
+   "auto": true,
+   "name": "func_800B5710",
+   "seg": "overlays/ovl6a/800b4eac",
+   "size": 2836,
+   "tries": 0
+  },
   {
    "at": "2026-10-20T07:46:54Z",
    "auto": true,
@@ -144474,18 +144562,10 @@
    "seg": "overlays/ovl5e/ovl5e",
    "size": 48,
    "tries": 0
-  },
-  {
-   "at": "2026-10-20T07:40:03Z",
-   "auto": true,
-   "name": "func_800B7558",
-   "seg": "overlays/ovl5e/ovl5e",
-   "size": 168,
-   "tries": 0
   }
  ],
  "summary": {
-  "blocked": 4,
+  "blocked": 3,
   "copies_b": 21752,
   "data": {
    "done_b": 4468,
@@ -144496,16 +144576,16 @@
    "all_f": 2537,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 4,
-   "c_f": 2091,
-   "done_b": 531576,
-   "done_f": 2091,
+   "blocked": 3,
+   "c_f": 2092,
+   "done_b": 534412,
+   "done_f": 2092,
    "named_f": 345,
-   "pct": 52.16459477388434,
+   "pct": 52.44289701247061,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2537,
-   "typed_f": 1874
+   "typed_f": 1875
   },
   "lib": {
    "all_f": 566,
@@ -144842,21 +144922,21 @@
     "all_f": 94,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 1,
-    "c_f": 93,
-    "done_b": 28224,
-    "done_f": 93,
+    "blocked": 0,
+    "c_f": 94,
+    "done_b": 31060,
+    "done_f": 94,
     "file": "ovl6a.bin",
     "files": 2,
     "lib": false,
     "named_f": 12,
-    "pct": 90.86928525434642,
+    "pct": 100.0,
     "phase": 5,
     "sony_b": 0,
     "title": "Hub",
     "total_b": 31060,
     "total_f": 94,
-    "typed_f": 82,
+    "typed_f": 83,
     "unit": "ovl6a"
    },
    {
