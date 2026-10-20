@@ -63,7 +63,16 @@ void func_800B8AF4(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B8B3C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B8BA0);
+void func_800B8BA0(s32 arg0) {
+    HeroInfo *hero;
+    HeroInfo *base = Heroes;
+
+    D_800B9F4C[arg0].f0 = 0;
+    hero = base + arg0;
+    hero->hero_frozen = 10;
+    PlaySfx(D_800B9F1C[arg0], NULL, &hero->hero_eng->unk10, 0x1000, 0x1E00, 0);
+    SetHeroSeq((HeroInfo *)arg0, 0x35);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B8C3C);
 

@@ -21,9 +21,13 @@ typedef struct Ovl66Slot {
 extern Ovl66Slot D_800B9F4C[];
 extern HeroInfo Heroes[4];
 
+extern s32 D_800B9F1C[];
+
 void func_800B8AC8(s32 arg0);
 
 void func_800B8AF4(s32 arg0);
+
+void func_800B8BA0(s32 arg0);
 
 void func_800B8D3C(s32 arg0);
 
