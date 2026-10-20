@@ -310,7 +310,7 @@ void func_800B7BE4(void);
 void func_800B8508(NAS *arg0);
 
 void func_800BB3F0(void);
-void func_800BB69C(void);
+NAS *func_800BB69C(s32 idx, s32 arg1);
 void func_800BB86C(void);
 void func_800BC274(void);
 extern u8 D_800BC89C[];

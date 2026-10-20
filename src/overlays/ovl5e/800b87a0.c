@@ -481,7 +481,46 @@ void func_800BB308(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BB3F0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BB69C);
+NAS *func_800BB69C(idx, arg1)
+    s32 idx;
+    u16 arg1;
+{
+    NAS *n;
+    s32 idx2 = idx;
+    s32 lim = 0x10000;
+    EXTengine *he;
+    EXTengine *e;
+    u8 *fux;
+    u16 ang;
+    s32 hx, hz, dx, dz;
+
+    n = D_8005AA24;
+    ang = Heroes[idx2].hero_move->facing_angle;
+    he = Heroes[idx2].hero_eng;
+    hx = he->unk10.x - (D_80068BD4[(ang - 0x400) & 0xFFF].unk2 * 1024 >> 14);
+    hz = he->unk10.z - (D_80068BD4[ang & 0xFFF].unk2 * 1024 >> 14);
+    for (; n != NULL; n = n->Object.Child) {
+        fux = (u8 *)n->FUX;
+        if (fux == NULL) continue;
+        if (!(*(u16 *)(fux + 0x1C) & 1)) continue;
+        e = n->Engine;
+        if (e == NULL) continue;
+        if (e->platform != NULL) continue;
+        dx = e->unk10.x - hx;
+        dz = e->unk10.z - hz;
+        if (dx * dx + dz * dz >= lim) continue;
+        if (arg1 == 0 ||
+            func_80015480(Heroes[idx2].hero_move->forward_angle,
+                          get_angle(e->unk10.x - he->unk10.x, e->unk10.z - he->unk10.z) ^ 0x800) < arg1) {
+            do {
+                *(s16 *)(fux + 0x16) = idx;
+                *(u16 *)(fux + 0x1E) |= 1;
+                return n;
+            } while (0);
+        }
+    }
+    return NULL;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BB86C);
 
