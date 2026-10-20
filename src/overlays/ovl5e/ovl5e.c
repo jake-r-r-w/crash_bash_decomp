@@ -388,7 +388,43 @@ void func_800B7B4C(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B7BE4);
+void func_800B7BE4(void)
+{
+  s32 i;
+  s32 *p;
+  s32 a;
+  s32 b;
+  s32 type;
+  s32 n;
+  short t;
+  n = D_800BD8E4;
+  for (i = 0;; i++)
+  {
+    if (i >= n)
+    {
+      goto done;
+    }
+    p = (s32 *) func_800B3E80(D_800BD8E2);
+    if (p != 0)
+    {
+      a = p[0];
+      b = p[1];
+      t = D_800BD908[D_800BD8E0];
+      D_800BD8E0 = (D_800BD8E0 + 1) & 0x3F;
+      type = t;
+      if ((type == 6) && (D_8009E46C[6] >= 4))
+      {
+        type = 4;
+      }
+      func_800B82DC(a, 0, b, type, -1);
+    }
+  }
+
+  done:
+  ;
+
+  ;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B7CBC);
 

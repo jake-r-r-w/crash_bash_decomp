@@ -158,5 +158,12 @@ s32 func_800B77D8(void);
 void PlotPapuColumn(NAS *nas);
 
 void func_800B7E38(void);
+extern u16 D_8009E46C[];
+extern u16 D_800BD8E0;
+extern u16 D_800BD8E4;
+extern char D_800BD8E2[];
+extern u8 D_800BD908[];
+
+void func_800B7BE4(void);
 
 #endif /* BASH_OVL5E_H */
