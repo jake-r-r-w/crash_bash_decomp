@@ -52,7 +52,9 @@ void func_800B8A30(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B8AC8);
+void func_800B8AC8(s32 arg0) {
+    Heroes[arg0].hero_frozen = 0xA;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B8AF4);
 
