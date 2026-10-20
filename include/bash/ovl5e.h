@@ -421,4 +421,6 @@ s32 func_800B6860(u32 idx);
 extern _sfx_handler *D_800BE81C;
 extern u16 D_800BD1B0[];
 
+void func_800B7134(void);
+
 #endif /* BASH_OVL5E_H */

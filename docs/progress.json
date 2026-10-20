@@ -13,21 +13,15 @@
    "size": 2080
   },
   {
-   "name": "func_800B7134",
-   "note": "STAGE instructions 10/198 (C under NON_MATCHING; really 2 insns: the D_800BE838 base lui/addiu sits before the outer loop, the target rebuilds it per outer iteration). Inner body now matches exactly: k = ((u & 0xFFF) - 0x400) & 0xFFF as its own variable and a >>= 7 in place before w = D_800BE838[a]. Outer loop: loop.c's move_movables doubles insn_count per already-moved reg, so the 3rd+ inner-hoisted base always moves (threshold*life ~50*82 > 85*8); for/while/do/goto/block-scope/cell-pointer shapes all fail. The worker's locals tb/trig/seq set at the outer top and NULLed at its bottom (set twice, not movable) give 198/198 but that is a dead-store hack. Next: a legit reason for the bases to be unmovable at the outer level (user vars with maybe_never, i.e. the outer loop entered at its exit test)",
-   "seg": "overlays/ovl5e/ovl5e",
-   "size": 792
-  },
-  {
    "name": "func_800BC274",
    "note": "STAGE instructions 2/197 (C under NON_MATCHING). Only diff: before jal func_8001CD04 the target has addiu a1,s4,0x3C ahead of lw a0,0x6C(s4). sched1 (-dS) ties the two (priority 1, class 3) and breaks it by luid, so a0 goes first; the target's order needs either a 2nd load/store in that block (schedule_select's potential_hazard then prefers the lw: proven by adding one, and how func_800BAAA8 gets it) or the a1 precompute (insn 94) left unmerged by combine so it stays above the load. Neither is in the final code; arg locals, inline helper, do-while(0), volatile, register pin, dup'd join code and 47k permuter iterations (L552-607) all fail. Same code unmatched in func_800C284C (ovl5d) and func_800BAF1C (ovl64): solve all three together. Next: find what the original had in that block",
    "seg": "overlays/ovl5e/800b87a0",
    "size": 788
   }
  ],
- "commit": "6eebb012",
+ "commit": "63b06bf4",
  "game": "SCUS_945.70",
- "generated": "2026-10-20T14:50:54Z",
+ "generated": "2026-10-20T17:06:01Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -149606,9 +149600,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "63b06bf4",
+   "data_b": 4584,
+   "data_tb": 606943,
+   "game_all_f": 2537,
+   "game_b": 560080,
+   "game_c_f": 2155,
+   "game_f": 2155,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 1936,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-20T17:06:01Z",
+   "units": {
+    "engine": [
+     121412,
+     355
+    ],
+    "main exe": [
+     124840,
+     575
+    ],
+    "ovl5d": [
+     20128,
+     70
+    ],
+    "ovl5e": [
+     20928,
+     65
+    ],
+    "ovl5f": [
+     20972,
+     127
+    ],
+    "ovl60": [
+     28208,
+     131
+    ],
+    "ovl61": [
+     55000,
+     97
+    ],
+    "ovl62": [
+     32228,
+     151
+    ],
+    "ovl63": [
+     22884,
+     97
+    ],
+    "ovl64": [
+     7948,
+     34
+    ],
+    "ovl65": [
+     17972,
+     64
+    ],
+    "ovl66": [
+     9768,
+     64
+    ],
+    "ovl67": [
+     27636,
+     102
+    ],
+    "ovl68": [
+     8240,
+     60
+    ],
+    "ovl69": [
+     10856,
+     69
+    ],
+    "ovl6a": [
+     31060,
+     94
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-20T17:05:59Z",
+   "auto": true,
+   "name": "func_800B7134",
+   "seg": "overlays/ovl5e/ovl5e",
+   "size": 792,
+   "tries": 0
+  },
   {
    "at": "2026-10-20T12:58:10Z",
    "auto": true,
@@ -149720,18 +149808,10 @@
    "seg": "overlays/ovl5e/800b87a0",
    "size": 384,
    "tries": 0
-  },
-  {
-   "at": "2026-10-20T11:46:14Z",
-   "auto": true,
-   "name": "func_800B64AC",
-   "seg": "overlays/ovl5e/ovl5e",
-   "size": 480,
-   "tries": 0
   }
  ],
  "summary": {
-  "blocked": 4,
+  "blocked": 3,
   "copies_b": 20596,
   "data": {
    "done_b": 4584,
@@ -149742,16 +149822,16 @@
    "all_f": 2537,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 4,
-   "c_f": 2154,
-   "done_b": 559288,
-   "done_f": 2154,
+   "blocked": 3,
+   "c_f": 2155,
+   "done_b": 560080,
+   "done_f": 2155,
    "named_f": 345,
-   "pct": 54.88402764966105,
+   "pct": 54.96174816198839,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2537,
-   "typed_f": 1935
+   "typed_f": 1936
   },
   "lib": {
    "all_f": 566,
@@ -149836,21 +149916,21 @@
     "all_f": 73,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 2,
-    "c_f": 64,
-    "done_b": 20136,
-    "done_f": 64,
+    "blocked": 1,
+    "c_f": 65,
+    "done_b": 20928,
+    "done_f": 65,
     "file": "ovl5e.bin",
     "files": 2,
     "lib": false,
     "named_f": 5,
-    "pct": 53.53041259038707,
+    "pct": 55.63589961718418,
     "phase": 5,
     "sony_b": 0,
     "title": "Papu",
     "total_b": 37616,
     "total_f": 73,
-    "typed_f": 59,
+    "typed_f": 60,
     "unit": "ovl5e"
    },
    {
