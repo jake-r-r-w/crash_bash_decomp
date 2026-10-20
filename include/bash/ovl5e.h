@@ -100,6 +100,57 @@ typedef struct Slot40 {
 
 extern Slot40 D_800BD70C[6];
 
+typedef struct B5E44Flag {
+    /* 0x00 */ s32 pad0[6];
+    /* 0x18 */ s16 pad18;
+    /* 0x1A */ s16 unk1A;
+    /* 0x1C */ u16 flags;
+} B5E44Flag;
+
+typedef struct B5E44Obj {
+    /* 0x00 */ s32 pad0[4];
+    /* 0x10 */ s32 x;
+    /* 0x14 */ s32 pad14;
+    /* 0x18 */ s32 z;
+    /* 0x1C */ s32 pad1C[10];
+    /* 0x44 */ s32 pad44[5];
+    /* 0x58 */ B5E44Flag *flag;
+} B5E44Obj;
+
+typedef struct B5E44Pos {
+    /* 0x00 */ s32 pad0[4];
+    /* 0x10 */ s32 x;
+    /* 0x14 */ s32 pad14;
+    /* 0x18 */ s32 z;
+} B5E44Pos;
+
+typedef struct B5E44Dyn {
+    /* 0x00 */ s32 pad0[5];
+    /* 0x14 */ s16 pad14;
+    /* 0x16 */ s16 unk16;
+    /* 0x18 */ s32 pad18;
+    /* 0x1C */ s32 pad1C;
+    /* 0x20 */ s16 pad20;
+    /* 0x22 */ s16 unk22;
+    /* 0x24 */ s16 pad24[3];
+    /* 0x2A */ s16 unk2A;
+} B5E44Dyn;
+
+typedef struct B5E44Owner {
+    /* 0x00 */ s32 pad0[21];
+    /* 0x54 */ B5E44Pos *pos;
+} B5E44Owner;
+
+typedef struct B5E44Slot {
+    /* 0x00 */ B5E44Obj *obj;
+    /* 0x04 */ B5E44Pos *pos;
+    /* 0x08 */ s32 pad8[3];
+    /* 0x14 */ B5E44Dyn *dyn;
+    /* 0x18 */ s32 pad18[10];
+} B5E44Slot;
+
+extern u16 D_800BD700[];
+
 typedef struct Ovl5eKey {
     /* 0x00 */ u16 a;
     /* 0x02 */ u16 b;
@@ -294,6 +345,8 @@ void func_800B3D18(void);
 void InitPapuBoss(NAS *nas);
 
 NAS *func_800B4B9C(s32 arg0);
+
+void func_800B5E44(B5E44Owner *arg0, s32 arg1, s32 arg2);
 
 s32 func_800B61A0(EXTengine *eng);
 

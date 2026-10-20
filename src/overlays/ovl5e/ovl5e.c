@@ -484,7 +484,64 @@ NAS *func_800B4EE8(s32 a, s32 b, s32 c, u16 d)
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", PlotPapuMinion);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B5E44);
+void func_800B5E44(B5E44Owner *arg0, s32 arg1, s32 arg2)
+{
+  B5E44Pos *me;
+  s32 i;
+  s32 px;
+  s32 pz;
+  s32 dx;
+  s32 dz;
+  s32 d;
+  B5E44Pos *new_var;
+  s32 ang;
+  B5E44Slot *s;
+  B5E44Flag *f;
+  arg2 -= 0x14;
+  if (((u32) arg2) >= 7U)
+  {
+    arg2 = -1;
+  }
+  me = arg0->pos;
+  if (me != 0)
+  {
+    px = me->x;
+    pz = me->z;
+    for (i = 0; i < 4; i++)
+    {
+      s = &((B5E44Slot *) D_800BD70C)[i];
+      if ((arg2 != i) && ((&((B5E44Slot *) D_800BD70C)[i])->obj != 0))
+      {
+        f = s->obj->flag;
+        if ((f != 0) && (f->flags & 2))
+        {
+          dx = s->pos->x - px;
+          new_var = s->pos;
+          dz = new_var->z - pz;
+          d = csqrt((dx * dx) + (dz * dz)) >> 6;
+          if (d < arg1)
+          {
+            if (d < 0x80)
+            {
+              ang = s->dyn->unk16;
+            }
+            else
+            {
+              ang = get_angle(dx, dz);
+            }
+            s->dyn->unk2A = ang ^ 0x800;
+            d = (arg1 - d) >> 3;
+            (&((B5E44Slot *) D_800BD70C)[i])->dyn->unk22 = d;
+            (&((B5E44Slot *) D_800BD70C)[i])->dyn->unk16 = (&((B5E44Slot *) D_800BD70C)[i])->dyn->unk2A + 0x800;
+            PlaySfx(D_800BD700[Random(4)], 0, (SLONG_XYZ *) (&me->x), 0x1000, 0x1E00, 0);
+            f->unk1A = 0xC;
+          }
+        }
+      }
+    }
+
+  }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B6008);
 
