@@ -108,7 +108,8 @@ s32 func_800B9054(EXTengine *eng);
 void func_800B717C(void);
 void func_800B7B48(void);
 s32 func_800B8E64(s32 arg0);
-void func_800B6E1C(void);
+void func_800B6E1C(s32 player);
+extern u16 D_800B9594[];
 void func_800B5BA0(void);
 void func_800B67F4(void);
 

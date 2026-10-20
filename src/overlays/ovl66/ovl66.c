@@ -383,4 +383,21 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B6B04);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B6CD8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B6E1C);
+void func_800B6E1C(s32 player) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = base + player;
+    EXTengine *p = h->hero_powerup;
+
+    if (p != NULL) {
+        EXTengine *e = h->hero_eng;
+        p->unk10 = e->unk10;
+        p->unk10.y -= D_800B9594[h->hero_name];
+        p->unk1E += 0x38;
+        p->unk5E = 1;
+    }
+    if (D_800B9F4C[player].f8 == 0) {
+        if (--D_800B9F4C[player].fC <= 0) {
+            func_800B8EF8(player);
+        }
+    }
+}
