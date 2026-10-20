@@ -75,7 +75,26 @@ s32 func_800B8814(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B886C);
+void func_800B886C(s32 idx) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = base + idx;
+    D5A614View *g;
+
+    h->hero_frozen = 2;
+    if (h->hero_move != NULL) {
+        h->hero_move->forward_angle = 0;
+        h->hero_move->facing_angle = 0;
+    }
+    func_8008502C(idx);
+    if (func_8008A200(idx) != 0) {
+        g = (D5A614View *)D_8005A614;
+        if (g->unk4 & 0x800) {
+            g->unk30 = g->unk30 | 0x201;
+        } else {
+            g->unk30 = g->unk30 | 1;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B8918);
 
