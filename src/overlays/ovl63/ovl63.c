@@ -1424,7 +1424,162 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B7D94);
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl63/ovl63", D_800B3310);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B82FC);
+s32 func_800B82FC(s32 arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3) {
+    VECTOR d;
+    VECTOR n;
+    MATRIX m;
+    SVECTOR ang;
+    SVECTOR sv[2];
+    Ovl63BoxHalf lo;
+    Ovl63BoxHalf hi;
+    Ovl63Box *src;
+    SVECTOR *p;
+    s32 dist;
+    s32 side;
+    s32 *ap;
+
+    ap = (s32 *)arg0;
+    dist = 0x7FFFFFF;
+    side = 0;
+    src = (Ovl63Box *)func_8008CE20((subengine *)arg0, side, side);
+    p = sv;
+    if (src == NULL) {
+        printf("No Coll box on subengine in XZBoxToSphere\n");
+        return side;
+    }
+    p->pad = 0x100;
+    if (arg2 == 2) {
+        p->pad = 0x200;
+    }
+    sv[0].vx = 0;
+    p->vy = 0;
+    p->vz = 0;
+    lo = src->lo;
+    hi = src->hi;
+    d.vx = arg1->x - ap[1];
+    d.vy = arg1->y - ap[2];
+    d.vz = arg1->z - ap[3];
+    ang.vx = -((u16 *)arg0)[8];
+    ang.vy = -((u16 *)arg0)[9];
+    ang.vz = -((u16 *)arg0)[10];
+    RotMatrixZYX(&ang, &m);
+    ApplyMatrixLV(&m, &d, &d);
+    if (d.vx < lo.v[0]) {
+        side = 2;
+    }
+    if (d.vy < hi.v[1]) {
+        side |= 0x10;
+    }
+    if (d.vz < lo.v[2]) {
+        side |= 4;
+    }
+    if (hi.v[0] < d.vx) {
+        side |= 1;
+    }
+    if (hi.v[2] < d.vz) {
+        side |= 8;
+    }
+    n.vy = 0;
+    switch (side) {
+    case 20:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 22:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 21:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 4:
+        dist = abs(d.vz - lo.v[2]);
+        n.vx = 0;
+        n.vz = -0x1000;
+        break;
+    case 6:
+        dist = csqrt((d.vx - lo.v[0]) * (d.vx - lo.v[0]) + (d.vz - lo.v[2]) * (d.vz - lo.v[2])) >> 6;
+        n.vx = -0x1000;
+        n.vz = -0x1000;
+        break;
+    case 5:
+        dist = csqrt((d.vx - hi.v[0]) * (d.vx - hi.v[0]) + (d.vz - lo.v[2]) * (d.vz - lo.v[2])) >> 6;
+        n.vx = 0x1000;
+        n.vz = -0x1000;
+        break;
+    case 24:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 26:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 25:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 8:
+        dist = abs(d.vz - hi.v[2]);
+        n.vx = 0;
+        n.vz = 0x1000;
+        break;
+    case 10:
+        dist = csqrt((d.vx - lo.v[0]) * (d.vx - lo.v[0]) + (d.vz - hi.v[2]) * (d.vz - hi.v[2])) >> 6;
+        n.vx = -0x1000;
+        n.vz = 0x1000;
+        break;
+    case 9:
+        dist = csqrt((d.vx - hi.v[0]) * (d.vx - hi.v[0]) + (d.vz - hi.v[2]) * (d.vz - hi.v[2])) >> 6;
+        n.vx = 0x1000;
+        n.vz = 0x1000;
+        break;
+    case 2:
+        dist = abs(d.vx - lo.v[0]);
+        n.vx = -0x1000;
+        n.vz = 0;
+        break;
+    case 16:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 1:
+        dist = abs(d.vx - hi.v[0]);
+        n.vx = 0x1000;
+        n.vz = 0;
+        break;
+    }
+    if (dist < p->pad) {
+        if (arg2 == 0) {
+            s32 push;
+
+            push = p->pad - dist;
+            push = Ovl63BoxPushRot(&ang, (u16 *)arg0, abs(push));
+            RotMatrix(&ang, &m);
+            ApplyMatrixLV(&m, &n, &n);
+            arg3->x += (push * n.vx) >> 12;
+            arg3->y += (push * n.vy) >> 12;
+            arg3->z += (push * n.vz) >> 12;
+        }
+        return side;
+    }
+    return -1;
+}
 
 void func_800B8890(void) {
     s32 i;

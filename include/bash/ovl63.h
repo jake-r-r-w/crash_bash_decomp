@@ -841,6 +841,24 @@ void func_800BC0A4(s32 arg0);
 
 void func_800BC4B0(s32 player);
 extern s32 D_800CA544[];
+
+typedef struct Ovl63BoxHalf {
+    s16 v[3];
+} Ovl63BoxHalf;
+
+typedef struct Ovl63Box {
+    Ovl63BoxHalf lo;
+    Ovl63BoxHalf hi;
+} Ovl63Box;
+
+/* Sets ang to a's rotation and passes v through (func_800B82FC). */
+static inline s32 Ovl63BoxPushRot(SVECTOR *ang, u16 *a, s32 v) {
+    ang->vx = a[8];
+    ang->vy = a[9];
+    ang->vz = a[10];
+    return v;
+}
+
 s32 func_800B82FC(s32 arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3);
 
 /* Spawns the 0x1605 puff at v (func_800B6474). */
