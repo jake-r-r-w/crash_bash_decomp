@@ -138,7 +138,23 @@ typedef struct Ovl63FuxTimer {
     /* 0x24 */ s32 unk24;
 } Ovl63FuxTimer;
 
-void func_800BC984(s32 player);
+/* Hero FUX pending-spawn flags, as seen by func_800BC984. */
+typedef struct Ovl63SpawnFux {
+    /* 0x000 */ u8 pad0[0x18];
+    /* 0x018 */ s32 unk18;
+    /* 0x01C */ u8 pad1C[0x130 - 0x1C];
+    /* 0x130 */ s32 unk130;
+} Ovl63SpawnFux;
+
+/* Extension 0x10000000 of the NAS spawned by func_800BC984. */
+typedef struct Ovl63SpawnExt {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 unk14;
+} Ovl63SpawnExt;
+
+s32 func_800BC984(s32 player);
 
 void InitRaceShield(NAS *nas);
 typedef struct EXTracefire {

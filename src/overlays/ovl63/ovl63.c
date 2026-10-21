@@ -1145,7 +1145,91 @@ loop:
     func_8008502C(arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BC984);
+s32 func_800BC984(s32 player) {
+    HeroInfo *base;
+    HeroInfo *hero;
+    HeroInfo *other;
+    Ovl63SpawnFux *fux;
+    Ovl63Pad *pb;
+    Ovl63Pad *pad;
+    EXTengine *eng;
+    NAS *nas;
+    Ovl63SpawnExt *ext;
+    SLONG_XYZ pos;
+    SLONG_XYZ *pp;
+    s32 st;
+    s32 lim;
+    u32 i;
+    s32 found;
+    s32 t;
+
+    base = Heroes;
+    hero = &base[player];
+    fux = (Ovl63SpawnFux *)hero->hero->FUX;
+    if (fux != NULL) {
+        pb = (Ovl63Pad *)D_80051338;
+        pad = &pb[player];
+        st = pad->unk50;
+        eng = hero->hero_eng;
+        if (st & 0x2200) {
+            t = fux->unk18;
+            if (t == 1) {
+                func_800C5154(player);
+                fux->unk18 &= ~1;
+                return 1;
+            } else if (t == 0x20) {
+                nas = SpawnNASById(eng->unk10.x, eng->unk10.y + 0x60, eng->unk10.z, 0x1708, 0x11);
+                if (nas != NULL) {
+                    ext = FindExtension(nas, 0x10000000);
+                    if (ext != NULL) {
+                        fux->unk130 = 1;
+                        ext->unk14 = player;
+                    }
+                }
+                fux->unk18 &= ~0x20;
+                return 1;
+            } else if (t == 2) {
+                pp = &pos;
+                pos.y = 0;
+                pos.x = eng->unk10.x + ((D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 75) >> 11);
+                pos.z = eng->unk10.z + ((D_80068BD4[eng->unk1E & 0xFFF].unk2 * 75) >> 11);
+                i = 0;
+                lim = 0x1DE84;
+                other = base;
+            loop:
+                found = -1;
+                if (i < 4) {
+                    if (i == player || func_8008CEB0((u8 *)pp, (u8 *)&other->hero_eng->unk10) >= lim) {
+                        other++;
+                        i++;
+                        goto loop;
+                    }
+                    do {
+                        found = i;
+                    } while (0);
+                }
+                if (found == -1) {
+                    SpawnNASById(pos.x, 0, pos.z, 0x1703, 0x11);
+                    fux->unk18 &= ~2;
+                    return 1;
+                }
+            } else if (t == 4) {
+                nas = SpawnNASById(eng->unk10.x, -0x20, eng->unk10.z, 0x1704, 0x11);
+                if (nas != NULL) {
+                    ext = FindExtension(nas, 0x10000000);
+                    if (ext != NULL) {
+                        ext->unkC = player;
+                    }
+                }
+                fux->unk18 &= ~4;
+                return 1;
+            }
+        } else {
+            pad->unk50 = st & ~0x2000;
+        }
+    }
+    return 0;
+}
 
 s32 func_800BCC20(s32 arg0) {
     Ovl63Pad *base;
