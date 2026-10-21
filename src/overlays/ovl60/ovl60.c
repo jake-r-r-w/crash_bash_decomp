@@ -317,7 +317,76 @@ loop:
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B3FF0);
+void func_800B3FF0(void) {
+    Ovl60ModeView *g;
+    Ovl60ModeView *h;
+    Ovl60ModeEntry *e;
+    s32 i;
+
+    e = NULL;
+    switch (((Ovl60ModeView *)D_8005A614)->mode) {
+    case 10:
+        if (((Ovl60ModeView *)D_8005A614)->teams != 0) {
+            e = &D_800C36C8;
+        } else {
+            e = &D_800C36B4;
+        }
+        break;
+    case 11:
+        if (((Ovl60ModeView *)D_8005A614)->teams != 0) {
+            e = &D_800C3774;
+        } else {
+            e = &D_800C3760;
+        }
+        break;
+    case 12:
+        if (((Ovl60ModeView *)D_8005A614)->teams != 0) {
+            e = &D_800C380C;
+        } else {
+            e = &D_800C37F8;
+        }
+        break;
+    case 13:
+        if (((Ovl60ModeView *)D_8005A614)->teams != 0) {
+            e = &D_800C38A4;
+        } else {
+            e = &D_800C3890;
+        }
+        break;
+    }
+    if (e != NULL) {
+        g = (Ovl60ModeView *)D_8005A614;
+        switch (g->mode) {
+        case 10:
+            e->unkE = D_800C3678[g->unk38];
+            e->unk10 = D_800C3678[g->unk38 + 3];
+            break;
+        case 11:
+            e->unkE = D_800C3724[g->unk38];
+            e->unk10 = D_800C3724[g->unk38 + 3];
+            break;
+        case 12:
+            e->unkE = D_800C37BC[g->unk38];
+            e->unk10 = D_800C37BC[g->unk38 + 3];
+            break;
+        case 13:
+            e->unkE = D_800C3854[g->unk38];
+            e->unk10 = D_800C3854[g->unk38 + 3];
+            break;
+        }
+        g = (Ovl60ModeView *)D_8005A614;
+        if ((g->flags & 1) || (g->flags & 2)) {
+            i = 0;
+            h = g;
+            for (; i < 4; i++) {
+                if (((u8 *)h)[i + 0x5C] == 0) {
+                    D_8009D87C[i][2] = *((h->flags & 2) ? &e->unk10 : &e->unkE);
+                }
+            }
+        }
+    }
+    func_800C2EE0();
+}
 
 void func_800B4230(void) {
     s32 x;

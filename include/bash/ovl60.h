@@ -420,6 +420,38 @@ typedef struct Ovl60ScoreView {
     /* 0x6C */ s32 teams;
 } Ovl60ScoreView;
 #define SCORE60V ((Ovl60ScoreView *)D_8005A614)
+
+/* func_800B3FF0: per-mode entries picked by teams, with two values at 0xE/0x10. */
+typedef struct Ovl60ModeEntry {
+    /* 0x00 */ u8 unk0[0xE];
+    /* 0x0E */ u16 unkE;
+    /* 0x10 */ u16 unk10;
+    /* 0x12 */ u8 unk12[2];
+} Ovl60ModeEntry;
+extern Ovl60ModeEntry D_800C36B4;
+extern Ovl60ModeEntry D_800C36C8;
+extern Ovl60ModeEntry D_800C3760;
+extern Ovl60ModeEntry D_800C3774;
+extern Ovl60ModeEntry D_800C37F8;
+extern Ovl60ModeEntry D_800C380C;
+extern Ovl60ModeEntry D_800C3890;
+extern Ovl60ModeEntry D_800C38A4;
+extern u16 D_800C3678[];
+extern u16 D_800C3724[];
+extern u16 D_800C37BC[];
+extern u16 D_800C3854[];
+/* D_8005A614 as seen by func_800B3FF0. */
+typedef struct Ovl60ModeView {
+    /* 0x00 */ u8 unk0[0x32];
+    /* 0x32 */ u16 flags;
+    /* 0x34 */ s16 mode;
+    /* 0x36 */ u8 unk36[2];
+    /* 0x38 */ s16 unk38;
+    /* 0x3A */ u8 unk3A[0x5C - 0x3A];
+    /* 0x5C */ u8 out[4];
+    /* 0x60 */ u8 unk60[0x6C - 0x60];
+    /* 0x6C */ s32 teams;
+} Ovl60ModeView;
 void func_8007B7FC(u32 a, u32 b);
 void func_8007D144(void);
 extern s32 D_80099174;
@@ -427,6 +459,8 @@ extern s32 D_80099174;
 void func_800B3808(void);
 
 void func_800B3A38(void);
+
+void func_800B3FF0(void);
 
 void func_800B662C(s32 arg0);
 
