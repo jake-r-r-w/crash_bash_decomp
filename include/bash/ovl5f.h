@@ -358,6 +358,10 @@ extern s32 D_800C94C8[]; /* func_800B6C24: hull sfx while moving, by player */
 extern s32 D_800C94D8[]; /* turret sfx, by player */
 extern s32 D_800C9408[]; /* hull sfx in mode 5, by player */
 extern s32 D_800CB0F8;    /* delay before the next hangabout spawn */
+extern s32 D_800CB0E0;    /* func_800B5FC4: countdown, plays sfx 0x4B9 when negative */
+extern s32 D_800CB0E4;    /* func_800B5FC4: sfx id to play once */
+extern EXTengine *D_800CB0E8;
+extern s32 D_800CB0EC;    /* func_800B5FC4: countdown to sfx 0x501 */
 void func_800B71F8(s32 player);
 
 void func_800BADB8(s32 arg0);

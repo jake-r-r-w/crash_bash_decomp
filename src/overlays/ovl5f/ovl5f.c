@@ -382,7 +382,78 @@ void func_800B5588(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B58B0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B5FC4);
+void func_800B5FC4(void) {
+    s32 i;
+    TA_player *ta;
+    HeroInfo *hero;
+    EXTengine *eng;
+    u8 *base;
+    u8 *b2;
+    s32 e;
+    s32 j;
+
+    if (D_8005A648 == 8) {
+        D_800CB0F8--;
+    }
+    for (i = 0; i < 4; i++) {
+        ta = &D_800CAD50[i];
+        eng = Heroes[i].hero_eng;
+        e = ta->Energy;
+        ta->PosX = eng->unk10.x;
+        ta->PosZ = eng->unk10.z;
+        if (e <= 0) {
+            func_800C8090(i, eng, 0);
+            func_800C8008(i, (s32)eng, 0);
+            func_800C7F80(i, (s32)eng, 0);
+        }
+    }
+    if (D_800CB0E0 <= 0) {
+        if (D_800CB0E0 != 0) {
+            PlaySfx(0x4B9, NULL, &D_800CB0E8->unk10, 0x1000, 0x1E00, 0);
+            D_800CB0E0 = 60;
+        }
+    } else {
+        D_800CB0E0--;
+    }
+    if (D_800CB0EC > 0) {
+        if (--D_800CB0EC == 0) {
+            PlaySfx(0x501, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+    }
+    if (D_800CB0E4 != 0) {
+        PlaySfx(D_800CB0E4, NULL, NULL, 0x1000, 0x1E00, 0);
+        D_800CB0E4 = 0;
+    }
+    base = D_80052A54;
+    if (TANK_MODEL_ON(base, 56)) {
+        func_80029100((AnimOwner *)(TANK_MODEL(56) + 0x10));
+    }
+    if (D_8005A648 == 5 && TANK_MODEL_ON(base, 60)) {
+        func_80029100((AnimOwner *)(TANK_MODEL(60) + 0x10));
+    }
+    if (D_8005A648 == 9 && TANK_MODEL_ON(b2 = D_80052A54, 57)) {
+        func_80029100((AnimOwner *)(b2 + 57 * 0x38 + 0x10));
+    }
+    if (D_8009D908 == 0) {
+        D_8009D908 = 1;
+        for (j = 0; j < 4; j++) {
+            if (!(Heroes[j].hero_status & 0xFA00)) {
+                if (D_8005A614[j + 0x5C] == 0) {
+                    D_8009D908 = 0;
+                }
+                if (((Ovl5fGameView *)D_8005A614)->w6C != 0 && D_8005A614[Heroes[j].hero_teammate + 0x5C] == 0) {
+                    D_8009D908 = 0;
+                }
+            }
+        }
+        if (D_8009D908 != 0) {
+            for (j = 0; j < 4; j++) {
+                D_8009D87C[j].unk4 = 0x10;
+                D_8009D87C[j].unk0 = 0x1E;
+            }
+        }
+    }
+}
 
 void func_800B62A4(void) {
     s32 i;
