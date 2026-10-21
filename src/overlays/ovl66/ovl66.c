@@ -213,7 +213,74 @@ void func_800B47C8(s32 arg0, s32 arg1, Ovl66Tgt2 *t) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B4910);
+void func_800B4910(VECTOR *pos, s32 a, s32 b, s32 c) {
+    s32 x;
+    s32 z;
+    s32 ex;
+    s32 ez;
+    s32 ang;
+    s32 i;
+    HeroInfo *h;
+    Ovl66Entry *e;
+    EXTengine *eng;
+    EXTheromove *mv;
+    s32 vc;
+
+    x = pos->vx;
+    z = pos->vz;
+    if (D_8005A644 & 0x801) {
+        return;
+    }
+    i = 0;
+    do {
+        h = &Heroes[i];
+        if (i == b) {
+            goto next;
+        }
+        ex = h->hero_eng->unk10.x;
+        ez = h->hero_eng->unk10.z;
+        if ((csqrt(func_800B62C8(x, z, ex, ez)) >> 6) > a) {
+            goto next;
+        }
+        if ((h->hero_immunity | h->hero_hit) != 0) {
+            goto next;
+        }
+        ang = get_angle(x - ex, z - ez);
+        mv = h->hero_move;
+        vc = mv->velocity_calc;
+        if (vc != 1) {
+            if (vc != 0) {
+                if (vc < 4) {
+                    mv->x_vel -= (D_80068BD4[(ang - 0x400) & 0xFFF].unk2 * 5) >> 8;
+                    h->hero_move->z_vel -= (D_80068BD4[ang & 0xFFF].unk2 * 5) >> 8;
+                }
+            }
+        }
+        h->hero_move->reactive_angle = ang;
+        h->hero_move->reactive_speed = 0x50;
+        func_80084E04(i, NULL, -1, 0x8001, 0x446);
+        h->hero_health = 0x14;
+        func_80028018(i, 0xF);
+        func_800B8EF8(i);
+        PlaySfx(D_8009E080[h->hero_name][Random(4)], NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+    next:
+        i++;
+    } while (i < 4);
+    if ((c & 0x100) && D_800B9EF0 != 0) {
+        i = 0;
+        do {
+            e = &D_800B9E50[i];
+            if (e->unk4 != 0) {
+                eng = ((NAS *)e->unk4)->Engine;
+                if ((csqrt(func_800B62C8(x, z, eng->unk10.x, eng->unk10.z)) >> 6) <= a
+                    && ((Ovl66Pad *)e->unk4)->mode >= 0xB) {
+                    func_800B47C8(b, 1, (Ovl66Tgt2 *)e);
+                }
+            }
+            i++;
+        } while (i < 10);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B4BC8);
 

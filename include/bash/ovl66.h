@@ -179,4 +179,7 @@ void func_800B69D0(void);
 
 void func_800B6B04(s32 arg0, EXTengine *p, s32 arg2);
 
+extern u16 D_8009E080[][4];
+void func_80084E04(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx);
+
 #endif /* BASH_OVL66_H */
