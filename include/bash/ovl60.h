@@ -539,4 +539,20 @@ void func_800BFFF4(EXTengine *eng);
 void func_800C1840(u32 x, u32 z, s32 id, s32 *seen);
 s32 func_800BDCB8(s32 hero, s32 x, s32 z, s32 arg3, s32 arg4, s32 arg5);
 
+/* func_800B6F34: a status bit sends the hero to an action and seq. */
+static inline s32 Ovl60_StatusAction(s32 arg0, s32 bit, s32 action, s32 seq)
+{
+    if (Heroes[arg0].hero_status & bit) {
+        if (D_800C535C[arg0].nas != NULL) {
+            func_800C2B98(arg0);
+        }
+        SetHeroAction((HeroInfo *)arg0, action);
+        SetHeroSeq((HeroInfo *)arg0, seq);
+        return 1;
+    }
+    return 0;
+}
+
+void func_800B6F34(s32 arg0);
+
 #endif /* BASH_OVL60_H */

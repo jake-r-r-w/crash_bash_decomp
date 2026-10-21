@@ -931,7 +931,70 @@ void func_800B6DF4(s32 arg0) {
     SetHeroSeq((HeroInfo *)arg0, 0x31);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B6F34);
+void func_800B6F34(s32 arg0) {
+    s32 x;
+    s32 z;
+    Ovl60Cell *c;
+    HeroInfo *h;
+    HeroInfo *base;
+    Ovl60Slot *s;
+    EXTengine *eng;
+
+    x = (Heroes[arg0].hero_eng->unk10.x + 0x800) >> 9;
+    z = (Heroes[arg0].hero_eng->unk10.z + 0x800) >> 9;
+    if ((u32)x < 8 && z >= 0 && z < 8) {
+        Ovl60Cell *cb = D_800C53DC[0];
+        c = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(D_800C53DC[0]) + (u32)cb);
+        c->unkE = arg0 + 1;
+        c->unk10 = arg0 + 1;
+    }
+    if (Ovl60_StatusAction(arg0, 0x200, 0x3C, 0x32)) {
+        return;
+    }
+    if (Ovl60_StatusAction(arg0, 0x400, 0x3D, 0x2E)) {
+        return;
+    }
+    if (Ovl60_StatusAction(arg0, 0x100, 0x3E, 0x2E)) {
+        return;
+    }
+    base = Heroes;
+    h = &base[arg0];
+    h->hero_frozen = 10;
+    s = &D_800C535C[arg0];
+    if (!(s->flags & 1)) {
+        s->unk8[1]++;
+    }
+    if ((u32)s->unk8[1] > 0x32) {
+        h->hero_status &= ~0x800;
+        SetHeroAction((HeroInfo *)arg0, 0x39);
+    }
+    if (s->flags & 1) {
+        eng = h->hero_eng;
+        if (eng != NULL) {
+            s32 r = func_80015480(0, eng->unk1E);
+            eng->unk5E = 1;
+            eng->unk1E += r >> 3;
+        }
+    }
+    func_800871E4(arg0);
+    func_8008502C(arg0);
+    switch (Heroes[arg0].hero_name) {
+    case 4:
+        if (D_800C52E0 == 0) {
+            D_800C52E0 = 0x14;
+        } else {
+            D_800C52E0 = 0;
+        }
+        break;
+    case 3:
+        if (D_800C52E4 == 0) {
+            D_800C52E4 = 0x14;
+        } else {
+            D_800C52E4 = 0;
+        }
+        break;
+    }
+}
 
 void func_800B72B0(s32 arg0) {
     s32 *pos;

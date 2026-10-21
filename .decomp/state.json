@@ -5950,7 +5950,8 @@
   "status": "matched"
  },
  "ovl60:800B6F34": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-21T11:32:32Z",
+  "status": "matched"
  },
  "ovl60:800B72B0": {
   "matched_at": "2026-10-21T06:33:11Z",
