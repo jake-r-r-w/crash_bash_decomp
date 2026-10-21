@@ -353,7 +353,47 @@ void func_800B4230(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B4374);
+void func_800B4374(s32 arg0, u16 arg1) {
+    u8 *g;
+    s32 i;
+    s32 found;
+
+    switch (D_8005A648) {
+    case 10:
+    case 12:
+        found = -1;
+        for (i = 0; i < 4; i++) {
+            if (Heroes[i].hero_mode == 0x3B && (D_800C535C[i].flags & 1)) {
+                found = i;
+            }
+        }
+        if (found == -1) {
+            break;
+        }
+        if (D_8005A614[found + 0x5C] != 0) {
+            return;
+        }
+        g = D_8005A614;
+        g[0x60] = 0;
+        ((D5A614View *)g)->unk30 |= arg1;
+        for (i = 0; i < 4; i++) {
+            if (g[i + 0x5C] != 0) {
+                func_80026980(Heroes[i].hero);
+                Heroes[i].hero_status |= 0x400;
+            } else if (i != found) {
+                Heroes[i].hero_status |= 0x100;
+            }
+        }
+        D_800AD12C = 1;
+        return;
+    case 11:
+    case 13:
+        break;
+    default:
+        return;
+    }
+    func_800B44F4(arg0, arg1);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B44F4);
 

@@ -343,6 +343,7 @@ void func_800B7574(s32 arg0);
 void func_800B8AF8(s32 arg0);
 
 void func_800B4374(s32 arg0, u16 arg1);
+void func_800B44F4(s32 arg0, u16 arg1);
 void func_800B4A70(s32 arg0, u16 arg1);
 void func_800B4E50(s32 arg0, u16 arg1);
 void func_800B53CC(s32 arg0, u16 arg1);
