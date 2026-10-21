@@ -106,6 +106,7 @@ typedef struct CoalSfxObj {
 extern s32 D_800BC46C[];
 extern s32 D_800BC47C[];
 extern s32 D_800BC48C[];
+extern s32 D_800BC49C[];
 extern s32 D_800BB9FC[];
 void PlotCoalFlameSFX(CoalSfxObj *obj);
 
@@ -248,7 +249,9 @@ typedef struct Ovl68Hooks {
     /* 0x18 */ u8 pad18[8];
     /* 0x20 */ void *unk20;
     /* 0x24 */ void *unk24;
-    /* 0x28 */ u8 pad28[0x10];
+    /* 0x28 */ u8 pad28[4];
+    /* 0x2C */ void *unk2C;
+    /* 0x30 */ u8 pad30[8];
     /* 0x38 */ void *unk38;
     /* 0x3C */ u8 pad3C[4];
     /* 0x40 */ void *unk40;
@@ -283,7 +286,7 @@ extern u8 D_800BC0F8[];
 s32 func_800B37C8();
 void func_800B46BC(s32 arg0);
 void func_800B48E4(s32 arg0);
-s32 func_800B4B34();
+void func_800B4B34(s32 arg0);
 s32 func_800B52C8();
 
 /* Extension 0x1000 flagged by func_800B52C8. */

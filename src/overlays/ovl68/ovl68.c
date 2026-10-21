@@ -353,7 +353,162 @@ void func_800B48E4(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B4B34);
+void func_800B4B34(s32 arg0) {
+    HeroInfo *h;
+    EXTengine *e;
+    EXTengine *e0;
+    EXTengine *ne;
+    s32 dx;
+    s32 dz;
+    EXTheromove *m;
+    s32 step;
+    HeroInfo *base;
+    s32 *st;
+    NAS *t;
+    SLONG_XYZ *v;
+    u8 *anim;
+    NAS *nas;
+    s32 *ext;
+
+    base = Heroes;
+    h = base + arg0;
+    e0 = h->hero_eng;
+    h->hero_immunity = 0;
+    m = h->hero_move;
+    e = e0;
+    if (D_80051338[arg0].unk50 & 0x8000) {
+        m->run_walk = 0;
+    } else {
+        m->run_walk = 1;
+    }
+    ((void (*)(s32))D_8009D6E8.unk2C)(arg0);
+    func_800860D4(arg0);
+    switch (m->velocity_calc) {
+    case 2:
+        m->x_vel += m->x_acc - m->x_dec;
+        if (m->x_vel < 0) {
+            m->x_vel = 0;
+        }
+        if (m->x_vel > m->x_max) {
+            m->x_vel = m->x_max;
+        }
+        if (m->x_dir != 0) {
+            e->unk10.x -= m->x_vel;
+        } else {
+            e->unk10.x += m->x_vel;
+        }
+        m->z_vel += m->z_acc - m->z_dec;
+        if (m->z_vel < 0) {
+            m->z_vel = 0;
+        }
+        if (m->z_vel > m->z_max) {
+            m->z_vel = m->z_max;
+        }
+        if (m->z_dir != 0) {
+            e->unk10.z -= m->z_vel;
+        } else {
+            e->unk10.z += m->z_vel;
+        }
+        break;
+    case 3:
+        if (m->x_vel != m->x_max) {
+            if (m->x_max != 0) {
+                step = m->x_acc;
+            } else {
+                step = m->x_dec;
+            }
+            if (m->x_vel < m->x_max) {
+                m->x_vel += step;
+                if (m->x_vel > m->x_max) {
+                    m->x_vel = m->x_max;
+                }
+            } else {
+                m->x_vel -= step;
+                if (m->x_vel < m->x_max) {
+                    m->x_vel = m->x_max;
+                }
+            }
+        }
+        if (m->z_vel != m->z_max) {
+            if (m->z_max != 0) {
+                step = m->z_acc;
+            } else {
+                step = m->z_dec;
+            }
+            if (m->z_vel < m->z_max) {
+                m->z_vel += step;
+                if (m->z_vel > m->z_max) {
+                    m->z_vel = m->z_max;
+                }
+            } else {
+                m->z_vel -= step;
+                if (m->z_vel < m->z_max) {
+                    m->z_vel = m->z_max;
+                }
+            }
+        }
+        e->unk10.z += m->z_vel;
+        e->unk10.x += m->x_vel;
+        break;
+    case 9:
+        break;
+    case 1:
+    default:
+        e->unk10.x -= (m->forward_speed * D_80068BD4[(m->forward_angle - 0x400) & 0xFFF].unk2) >> 12;
+        e->unk10.z -= (m->forward_speed * D_80068BD4[m->forward_angle & 0xFFF].unk2) >> 12;
+        if (m->reactive_speed != 0) {
+            e->unk10.x -= (m->reactive_speed * D_80068BD4[(m->reactive_angle - 0x400) & 0xFFF].unk2) >> 12;
+            e->unk10.z -= (m->reactive_speed * D_80068BD4[m->reactive_angle & 0xFFF].unk2) >> 12;
+            m->reactive_speed -= 4;
+            if (m->reactive_speed < 0) {
+                m->reactive_speed = 0;
+            }
+        }
+        break;
+    }
+    if ((D_80051338[arg0].unk50 & 0x8000) && e0->unk10.y >= -0x31) {
+        D_800BC49C[arg0] = 0xF;
+        e0 = Heroes[arg0].hero_eng;
+        st = D_800BC2D0[arg0];
+        t = NULL;
+        if ((NAS *)st[0x12] == NULL
+            || (ne = ((NAS *)st[0x12])->Engine, dx = e0->unk10.x - ne->unk10.x, dx = dx * dx,
+                dz = e0->unk10.z - ne->unk10.z, dz = dz * dz, dx + dz >= 0x400)) {
+            t = func_800B7948(arg0);
+        }
+        if (t != NULL) {
+            st[0x12] = (s32)t;
+        }
+    } else {
+        if (--D_800BC49C[arg0] <= 0) {
+            D_800BC48C[arg0] = 0;
+        }
+    }
+    if ((D_80051338[arg0].unk50 & 0x2A00) && e0->unk10.y >= -0x31 && D_800BC2D0[arg0][0x14] != 0) {
+        v = &e0->unk10;
+        PlaySfx(0x43A, NULL, v, 0x1000, 0x1E00, 0);
+        func_800BA694(arg0);
+        func_800B7DF0(e0->unk10.x, e0->unk10.z, arg0, 0, 0x380, 0);
+        func_800BB010(e0->unk10.x, e0->unk10.z, arg0, 0x380);
+        anim = D_80053F8C;
+        nas = SpawnNASById(e0->unk10.x, v->y, v->z, 0x1605, 0x11);
+        if (nas != NULL) {
+            ext = FindExtension(nas, 0x10000000);
+            if (ext != NULL) {
+                ext[3] = 3;
+                ext[6] = 0x100;
+                if (anim != NULL) {
+                    ext[8] = 5;
+                    nas->Engine->sub->unk6C = anim;
+                } else {
+                    ext[8] = 1;
+                }
+                ext[10] = 0;
+                nas->InitDelete(nas);
+            }
+        }
+    }
+}
 
 s32 func_800B51C8(s32 arg0) {
     HeroInfo *base = Heroes;
