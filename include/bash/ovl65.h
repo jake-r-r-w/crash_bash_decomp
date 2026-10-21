@@ -61,6 +61,15 @@ typedef struct Ovl65PadAng {
     s32 buttons;
     u8 pad54[4];
 } Ovl65PadAng;
+typedef struct Ovl65DinoPhys {
+    u8 pad0[0x20];
+    s32 unk20;
+    u8 pad24[0x1C];
+    s32 unk40;
+    u8 pad44[0xA];
+    s16 unk4E;
+} Ovl65DinoPhys;
+
 typedef struct Ovl65Pos {
     u8 pad[4];
     SLONG_XYZ pos; /* 0x4 */
@@ -274,6 +283,8 @@ typedef struct Ovl65AiExt {
     s32 angle;        /* 0x3C */
     s32 timer;        /* 0x40 */
 } Ovl65AiExt;
+
+void func_800BAE94(NAS *arg0);
 
 #endif /* BASH_OVL65_H */
 

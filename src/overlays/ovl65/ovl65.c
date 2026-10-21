@@ -1626,7 +1626,89 @@ done:
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BAE94);
+void func_800BAE94(NAS *arg0) {
+    Ovl65Ext *e;
+    Ovl65Ext *o;
+    EXTengine *a;
+    EXTengine *b;
+    Ovl65DinoPhys *pa;
+    Ovl65DinoPhys *pb;
+    s32 i;
+    s32 dx;
+    s32 dz;
+    s32 d;
+    s32 ang;
+    s32 ma;
+    s32 mb;
+    s32 sum;
+    s32 diff;
+    s32 q;
+
+    e = FindExtension(arg0, 0x10000000);
+    i = 0;
+    if (e != NULL) {
+        for (;;) {
+            s32 r;
+
+            if (i >= 3) {
+                break;
+            }
+            if (arg0 == D_800BDA08[i] || D_800BDA08[i] == NULL) {
+                goto next;
+            }
+            o = FindExtension(D_800BDA08[i], 0x10000000);
+            if (o == NULL || o->unkC == 6 || e->unkC == 6) {
+                goto next;
+            }
+            a = arg0->Engine;
+            b = D_800BDA08[i]->Engine;
+            dx = a->unk10.x - b->unk10.x;
+            dz = a->unk10.z - b->unk10.z;
+            if (abs(a->unk10.y - b->unk10.y) >= 0x200) {
+                goto next;
+            }
+            d = csqrt(dx * dx + dz * dz) >> 6;
+            if (d >= 0x200) {
+                goto next;
+            }
+            ang = get_angle(dx, dz) & 0xFFF;
+            d = 0x200 - d;
+            arg0->Engine->unk10.x += ((d + 8) * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+            arg0->Engine->unk10.z += ((d + 8) * D_80068BD4[ang].unk2) >> 12;
+            r = Random(4);
+            if (r == 0) {
+                PlaySfx(0x6C0, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (r == 1) {
+                PlaySfx(0x6C1, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (r == 2) {
+                PlaySfx(0x6C2, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (r == 3) {
+                PlaySfx(0x6C3, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            pa = (Ovl65DinoPhys *)((u8 *)e + 0x94);
+            pb = (Ovl65DinoPhys *)((u8 *)o + 0x94);
+            ma = pa->unk4E;
+            mb = pb->unk4E;
+            if (ma > 0 && mb > 0) {
+                diff = -((pa->unk20 - pb->unk20) << 8);
+                q = (diff * mb + ((ma * pa->unk20 + mb * pb->unk20) << 8)) / (mb + ma);
+                sum = q - diff;
+                pa->unk20 = q >> 8;
+                pb->unk20 = sum >> 8;
+                diff = -((pa->unk40 - pb->unk40) << 8);
+                q = (diff * mb + ((ma * pa->unk40 + mb * pb->unk40) << 8)) / (mb + ma);
+                sum = q - diff;
+                pa->unk40 = q >> 8;
+                pb->unk40 = sum >> 8;
+            }
+        next:
+            i++;
+        }
+    }
+}
 
 void InitDinoGem(NAS *m) {
     Ovl65DinoGem *ext;
