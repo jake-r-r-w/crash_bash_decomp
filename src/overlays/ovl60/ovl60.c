@@ -494,7 +494,70 @@ void func_800B4374(s32 arg0, u16 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B44F4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B4A70);
+void func_800B4A70(s32 arg0, u16 arg1) {
+    Ovl60TeamView *g;
+    Ovl60TeamView *p;
+    Ovl60TeamView *q;
+    s32 sa;
+    s32 sb;
+    s32 found;
+    s32 done;
+    s32 i;
+
+    found = -1;
+    done = 0;
+    g = (Ovl60TeamView *)D_8005A614;
+    if (g->teams != 0) {
+        sa = Ovl60TeamScore(g->team0);
+        sb = Ovl60TeamScore(g->team1);
+        if (sa == 0) {
+            do {
+                if (g->out[g->team0] != 0) {
+                    done = 1;
+                } else {
+                    OVL60_TEAM_LOST(g, g->team0, i, done);
+                }
+            } while (0);
+        } else if (sb == 0) {
+            if (g->out[g->team1] == 0) {
+                OVL60_TEAM_LOST_LATE(g, g->team1, i, 0);
+            } else {
+                done = 1;
+            }
+        }
+    } else {
+        for (i = 0; i < 4; i++) {
+            if (Heroes[i].hero_score == 0) {
+                found = i;
+            }
+        }
+        if (found != -1) {
+            p = (Ovl60TeamView *)D_8005A614;
+            if (p->out[found] == 0) {
+                OVL60_TEAM_LOST(p, found, i, 0);
+            } else {
+                done = 1;
+            }
+        }
+    }
+    if (done || arg0 == -1) {
+        i = 0;
+        q = (Ovl60TeamView *)D_8005A614;
+        p = q;
+        q->winner = 0;
+        q->unk30 |= arg1;
+        D_8009917C |= 0x200;
+        for (; i < 4; i++) {
+            if (D_8005A614[i + 0x5C] != 0) {
+                Heroes[i].hero_status |= 0x400;
+                func_80026980(Heroes[i].hero);
+            } else {
+                Heroes[i].hero_status |= 0x100;
+            }
+        }
+        D_800AD12C = 1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B4E50);
 

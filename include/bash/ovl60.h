@@ -507,6 +507,84 @@ typedef struct Ovl60ModeView {
     /* 0x60 */ u8 unk60[0x6C - 0x60];
     /* 0x6C */ s32 teams;
 } Ovl60ModeView;
+extern u16 D_8009917C;
+/* D_8005A614 as seen by func_800B4A70 (team end of round). */
+typedef struct Ovl60TeamView {
+    /* 0x00 */ u8 unk0[0x30];
+    /* 0x30 */ u16 unk30;
+    /* 0x32 */ u8 unk32[0x48 - 0x32];
+    /* 0x48 */ s16 team0;
+    /* 0x4A */ s16 team1;
+    /* 0x4C */ u8 unk4C[0x5C - 0x4C];
+    /* 0x5C */ u8 out[4];
+    /* 0x60 */ u8 winner;
+    /* 0x61 */ u8 unk61[0x6C - 0x61];
+    /* 0x6C */ s32 teams;
+} Ovl60TeamView;
+/* func_800B4A70: hero idx's team is out of points (i starts at i0). */
+#define OVL60_TEAM_LOST(g, idx, i, i0)                                   \
+    {                                                                    \
+        Ovl60TeamView *g_;                                               \
+                                                                         \
+        i = (i0);                                                        \
+        g_ = (g);                                                        \
+        g_->winner = Heroes[idx].hero_name;                              \
+        g_->unk30 |= 0x800;                                              \
+        D_8009917C |= 0x200;                                             \
+        for (; i < 4; i++) {                                             \
+            if (((u8 *)g_)[i + 0x5C] != 0) {                             \
+                Heroes[i].hero_status |= 0x400;                          \
+                func_80026980(Heroes[i].hero);                           \
+            } else {                                                     \
+                Heroes[i].hero_status |= 0x200;                          \
+            }                                                            \
+        }                                                                \
+    }
+/* func_800B4A70: OVL60_TEAM_LOST, g copied for the loop after the stores. */
+#define OVL60_TEAM_LOST_LATE(g, idx, i, i0)                              \
+    {                                                                    \
+        Ovl60TeamView *g_;                                               \
+                                                                         \
+        i = (i0);                                                        \
+        (g)->winner = Heroes[idx].hero_name;                             \
+        (g)->unk30 |= 0x800;                                             \
+        D_8009917C |= 0x200;                                             \
+        g_ = (g);                                                        \
+        for (; i < 4; i++) {                                             \
+            if (((u8 *)g_)[i + 0x5C] != 0) {                             \
+                Heroes[i].hero_status |= 0x400;                          \
+                func_80026980(Heroes[i].hero);                           \
+            } else {                                                     \
+                Heroes[i].hero_status |= 0x200;                          \
+            }                                                            \
+        }                                                                \
+    }
+/* func_800B4A70: the round ends with no winner. */
+#define OVL60_ROUND_OVER(g, flag, i)                                     \
+    do {                                                                 \
+        Ovl60TeamView *g_;                                               \
+                                                                         \
+        i = 0;                                                           \
+        g_ = (g);                                                        \
+        g_->winner = 0;                                                  \
+        g_->unk30 |= (flag);                                             \
+        D_8009917C |= 0x200;                                             \
+        for (; i < 4; i++) {                                             \
+            if (((u8 *)g_)[i + 0x5C] != 0) {                             \
+                Heroes[i].hero_status |= 0x400;                          \
+                func_80026980(Heroes[i].hero);                           \
+            } else {                                                     \
+                Heroes[i].hero_status |= 0x100;                          \
+            }                                                            \
+        }                                                                \
+    } while (0)
+/* func_800B4A70: a hero's score plus its teammate's. */
+static inline s32 Ovl60TeamScore(s32 idx) {
+    HeroInfo *hb = Heroes;
+    HeroInfo *h = &hb[idx];
+
+    return h->hero_score + hb[h->hero_teammate].hero_score;
+}
 /* func_800B3534: the engine's per-mode table pointers. */
 extern void *D_8009D8F4;
 extern void *D_8009D8F8;
