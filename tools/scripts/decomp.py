@@ -5006,7 +5006,13 @@ def cmd_progress(a):
         "hacks": hack_rows(funcs, syms, stat),
     }
     os.makedirs("docs", exist_ok=True)
-    jsave("docs/progress.json", data)
+    # one line per history point: indented, the points alone pass the 2 MB pre-commit limit
+    text = json.dumps({**data, "history": []}, indent=1, sort_keys=True)
+    points = ",\n  ".join(json.dumps(p, sort_keys=True) for p in hist)
+    text = text.replace('"history": []', '"history": [\n  ' + points + "\n ]" if hist else '"history": []', 1)
+    with open("docs/progress.json.tmp", "w", encoding="utf-8", newline="\n") as f:
+        f.write(text + "\n")
+    os.replace("docs/progress.json.tmp", "docs/progress.json")
     # the page gets the history packed and the code map; progress.json keeps the plain points
     page = {k: v for k, v in data.items() if k != "history"}
     page.update(hist=page_history(hist), map=page_map(funcs, stat, proj, syms))
