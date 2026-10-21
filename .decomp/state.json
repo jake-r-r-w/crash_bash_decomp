@@ -9756,9 +9756,10 @@
   "status": "matched"
  },
  "ovl68:800B52C8": {
-  "auto_failed": "types",
   "copy_failed": "ovl66:800B7B48",
-  "copy_failed_stage": "in-file"
+  "copy_failed_stage": "in-file",
+  "matched_at": "2026-10-21T07:40:54Z",
+  "status": "matched"
  },
  "ovl68:800B5CD0": {
   "matched_at": "2026-10-21T06:58:27Z",

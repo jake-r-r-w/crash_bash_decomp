@@ -271,6 +271,24 @@ void func_800B48E4(s32 arg0);
 s32 func_800B4B34();
 s32 func_800B52C8();
 
+/* Extension 0x1000 flagged by func_800B52C8. */
+typedef struct Ovl68HitFlags {
+    /* 0x00 */ u8 pad0[0x16];
+    /* 0x16 */ s16 unk16;
+    /* 0x18 */ u8 pad18[4];
+    /* 0x1C */ u16 unk1C;
+    /* 0x1E */ u16 unk1E;
+} Ovl68HitFlags;
+extern NAS *D_8005AA2C;
+void func_8001CD04(void *arg0, void *arg1, void *arg2);
+void func_800142D4(void *arg0);
+void func_80015758(SVECTOR *v, VECTOR *out);
+s32 Random(s32 n);
+void *FindExtension(NAS *nas, s32 id);
+s32 get_angle(s32 x, s32 z);
+FlagRecord *func_80025A48(EXTengine *eng, u32 flag);
+s32 csqrt(s32 x);
+
 void func_800B6E84(s32 arg0);
 extern s32 D_8005A5D8;
 extern s32 D_8005B5B8;
