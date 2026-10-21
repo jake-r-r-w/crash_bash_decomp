@@ -1200,7 +1200,81 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BB810);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BBF2C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BCC9C);
+s32 func_800BCC9C(s32 player) {
+    HeroInfo *h;
+    Ovl62Fux *ext;
+    Ovl62Fux *fux;
+    u16 name;
+    HeroInfo *base;
+    s32 state;
+
+    if (D_800D4E08 < 0xD2) {
+        goto fail;
+    }
+    name = Heroes[player].hero_name;
+    if (name != 4 && name != 1 && name != 7 && name != 3 && name != 2) {
+        return 0;
+    }
+    base = Heroes;
+    h = &base[player];
+    ext = (Ovl62Fux *)FindExtension(h->hero, 0x20000000);
+    if (ext == NULL) {
+        goto fail;
+    }
+    if (ext->unk24 != 0) {
+        return 0;
+    }
+    fux = (Ovl62Fux *)h->hero->FUX;
+    if (fux == NULL) {
+        goto fail;
+    }
+    state = 6;
+    if (fux->state != state && fux->state != 9) {
+        return 0;
+    }
+    if (h->hero_mode != 0x49) {
+        return 0;
+    }
+    if (fux->unk50 != 0) {
+        return 0;
+    }
+    if (h->hero_name == 1) {
+        h->hero_anim->Atable = D_800D3BB4;
+        h->hero_anim->Aindex = 1;
+    }
+    if (h->hero_name == 2) {
+        h->hero_anim->Atable = D_800D3C74;
+        h->hero_anim->Aindex = 1;
+    }
+    if (h->hero_name == 7) {
+        h->hero_anim->Atable = D_800D4174;
+        h->hero_anim->Aindex = 1;
+    }
+    if (h->hero_name == 8) {
+        h->hero_anim->Atable = D_800D4B64;
+        h->hero_anim->Aindex = 1;
+    }
+    if (h->hero_name == 5) {
+        h->hero_anim->Atable = D_800D4410;
+        h->hero_anim->Aindex = 1;
+    }
+    if (h->hero_name == state) {
+        h->hero_anim->Atable = D_800D4A50;
+        h->hero_anim->Aindex = 1;
+    }
+    if (h->hero_name == 3) {
+        h->hero_anim->Atable = D_800D3EDC;
+        h->hero_anim->Aindex = 1;
+    }
+    if (h->hero_name == 4) {
+        h->hero_anim->Atable = D_800D4820;
+        h->hero_anim->Aindex = 1;
+    }
+    fux->unk50 = 1;
+    return 1;
+fail:
+    return 0;
+}
 
 s32 func_800BCF08(s32 arg0, s32 arg1) {
     u8 *g = D_8005A614;
