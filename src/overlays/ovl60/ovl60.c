@@ -2267,7 +2267,61 @@ void func_800BB724(s32 arg0, s32 arg1) {
 done:;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BB840);
+void func_800BB840(s32 *seen, s32 id) {
+    s32 i;
+
+    if (D_8005A648 == 0xB) {
+        for (i = 0; i < 8; i++) {
+            if (D_800C5B2C[i] != id) {
+                func_800C1840(0, i, id, seen);
+            } else {
+                if (i > 0 && D_800C5B2C[i - 1] != id) {
+                    func_800C1840(0, i, id, seen);
+                }
+                if (i < 7 && D_800C5B2C[i + 1] != id) {
+                    func_800C1840(0, i, id, seen);
+                }
+            }
+            if (D_800C5B4C[i] != id) {
+                func_800C1840(7, i, id, seen);
+            } else {
+                if (i > 0 && D_800C5B4C[i - 1] != id) {
+                    func_800C1840(7, i, id, seen);
+                }
+                if (i < 7 && D_800C5B4C[i + 1] != id) {
+                    func_800C1840(7, i, id, seen);
+                }
+            }
+            if (D_800C5B6C[i] != id) {
+                func_800C1840(i, 7, id, seen);
+            } else {
+                if (i > 0 && D_800C5B6C[i - 1] != id) {
+                    func_800C1840(i, 7, id, seen);
+                }
+                if (i < 7 && D_800C5B6C[i + 1] != id) {
+                    func_800C1840(i, 7, id, seen);
+                }
+            }
+            if (D_800C5B8C[i] != id) {
+                func_800C1840(i, 0, id, seen);
+            } else {
+                if (i > 0 && D_800C5B8C[i - 1] != id) {
+                    func_800C1840(i, 0, id, seen);
+                }
+                if (i < 7 && D_800C5B8C[i + 1] != id) {
+                    func_800C1840(i, 0, id, seen);
+                }
+            }
+        }
+    } else {
+        for (i = 0; i < 8; i++) {
+            func_800C1840(0, i, id, seen);
+            func_800C1840(7, i, id, seen);
+            func_800C1840(i, 0, id, seen);
+            func_800C1840(i, 7, id, seen);
+        }
+    }
+}
 
 s32 func_800BBB08(s32 *arg0, const s32 arg1, s32 arg2) {
     s32 i;
