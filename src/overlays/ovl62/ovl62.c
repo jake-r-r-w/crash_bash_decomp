@@ -464,7 +464,130 @@ void func_800B5910(void) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl62/ovl62", D_800B3358);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B5AC4);
+void func_800B5AC4(void) {
+    Ovl62Hooks *h;
+    Ovl62InitView *g;
+    void **p;
+    void **p2;
+    void **p3;
+    void **p4;
+    void **p5;
+    void *t;
+    void *t4;
+    Ovl62InitView *g2;
+    Ovl62InitView *g3;
+
+    h = &D_8009D6E8;
+    h->unk8 = NULL;
+    h->unk4 = D_800D526C;
+    D_800D5254 = NULL;
+    D_800D52B4 = NULL;
+    D_800D4D0C = 0;
+    D_800D4DD0 = 0x400000;
+    if (((Ovl62InitView *)D_8005A614)->mode != 0x15) {
+        h->unk18 = func_800CC2BC;
+        h->unk1C = func_800CC3B4;
+    } else {
+        h->unk18 = D_8008B29C;
+        h->unk1C = D_8008B418;
+        h->unk8 = D_800D526C;
+        h->unk4 = D_800D5258;
+    }
+    g = (Ovl62InitView *)D_8005A614;
+    if (g->mode == 0x14) {
+        D_8009D6E8.unk4 = D_800D5280;
+    }
+    D_8009D6E8.unk68 = func_800CBA5C;
+    D_8009D6E8.unk0 = (s32)func_800D34F0;
+    D_8009D6E8.unk20 = func_800CCCB8;
+    D_8009D6E8.unk24 = func_800B5788;
+    D_8009D6E8.unk38 = func_800CAD60;
+    D_8009D6E8.unk3C = func_800D0650;
+    D_8009D6E8.unk2C = func_800B5570;
+    D_8009D6E8.unk14 = D_800D52B8;
+    D_8005AA70[10] = (s32)func_800B5910;
+    D_8009D908 = 0;
+    switch (g->mode) {
+    case 0x12:
+        D_8009D8F4 = D_800D3610;
+        D_8009D8F8 = D_800D3624;
+        D_8009D904 = D_800D35F8;
+        p = &D_8009D8FC;
+        if (D_8005A680[0] != 0) {
+            t = D_800D35D8;
+        } else {
+            t = D_800D35C4;
+        }
+        *p = t;
+        D_8009D900 = D_800D35EC;
+        return;
+    case 0x14:
+        D_8009D8F4 = D_800D36C4;
+        D_8009D8F8 = D_800D36D8;
+        D_8009D904 = D_800D36AC;
+        p2 = &D_8009D8FC;
+        if (D_8005A680[0] != 0) {
+            t = D_800D368C;
+        } else {
+            t = D_800D3678;
+        }
+        *p2 = t;
+        D_8009D900 = D_800D36A0;
+        return;
+    case 0x15:
+        D_8009D8F4 = D_800D3778;
+        D_8009D8F8 = D_800D378C;
+        D_8009D904 = D_800D3760;
+        p3 = &D_8009D8FC;
+        if (D_8005A680[0] != 0) {
+            t = D_800D3740;
+        } else {
+            t = D_800D372C;
+        }
+        *p3 = t;
+        D_8009D900 = D_800D3754;
+        return;
+    case 0x16:
+        D_8009D8F4 = D_800D3830;
+        D_8009D8F8 = D_800D3874;
+        D_8009D904 = D_800D388C;
+        p4 = &D_8009D8FC;
+        if (D_8005A680[0] != 0) {
+            t4 = D_800D38A4;
+        } else {
+            t4 = D_800D37E0;
+        }
+        *p4 = t4;
+        g2 = (Ovl62InitView *)D_8005A614;
+        g2->flags |= 0x100;
+        if (g2->w6C == 0) {
+            g2->b51 = 9;
+        }
+        g2->b52 = 9;
+        g2->b53 = 9;
+        return;
+    case 0x2C:
+        g3 = (Ovl62InitView *)D_8005A614;
+        g3->flags |= 0x100;
+        g3->b51 = 9;
+        g3->b52 = 9;
+        g3->b53 = 9;
+        return;
+    default:
+        D_8009D8F4 = D_800D355C;
+        D_8009D8F8 = D_800D3570;
+        D_8009D904 = D_800D3544;
+        p5 = &D_8009D8FC;
+        if (D_8005A680[0] != 0) {
+            t = D_800D3524;
+        } else {
+            t = D_800D3510;
+        }
+        *p5 = t;
+        D_8009D900 = D_800D3538;
+        return;
+    }
+}
 
 void func_800B5EBC(player)
 s32 player;

@@ -1164,5 +1164,65 @@ typedef struct BearminatorExt {
 } BearminatorExt;
 
 extern ScriptInit D_800D5FA4;
+/* D_8005A614 as seen by func_800B5AC4. */
+typedef struct Ovl62InitView {
+    /* 0x00 */ u8 pad0[0x32];
+    /* 0x32 */ u16 flags;
+    /* 0x34 */ s16 mode;
+    /* 0x36 */ u8 pad36[0x51 - 0x36];
+    /* 0x51 */ u8 b51;
+    /* 0x52 */ u8 b52;
+    /* 0x53 */ u8 b53;
+    /* 0x54 */ u8 pad54[0x6C - 0x54];
+    /* 0x6C */ s32 w6C;
+} Ovl62InitView;
+
+/* D_8009D6E8 (EngineHooks in bash/engine.h, which this unit does not include). */
+typedef struct Ovl62Hooks {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ void *unk4;
+    /* 0x08 */ void *unk8;
+    /* 0x0C */ void *unkC;
+    /* 0x10 */ void *unk10;
+    /* 0x14 */ void *unk14;
+    /* 0x18 */ void *unk18;
+    /* 0x1C */ void *unk1C;
+    /* 0x20 */ void *unk20;
+    /* 0x24 */ void *unk24;
+    /* 0x28 */ void *unk28;
+    /* 0x2C */ void *unk2C;
+    /* 0x30 */ void *unk30;
+    /* 0x34 */ void *unk34;
+    /* 0x38 */ void *unk38;
+    /* 0x3C */ void *unk3C;
+    /* 0x40 */ void *unk40;
+    /* 0x44 */ void *unk44;
+    /* 0x48 */ void *unk48;
+    /* 0x4C */ void *unk4C;
+    /* 0x50 */ void *unk50;
+    /* 0x54 */ void *unk54;
+    /* 0x58 */ void *unk58;
+    /* 0x5C */ void *unk5C;
+    /* 0x60 */ void *unk60;
+    /* 0x64 */ void *unk64;
+    /* 0x68 */ void *unk68;
+} Ovl62Hooks;
+extern Ovl62Hooks D_8009D6E8;
+extern void *D_8009D8F4;
+extern void *D_8009D8F8;
+extern void *D_8009D8FC;
+extern void *D_8009D900;
+extern void *D_8009D904;
+extern s32 D_800D4D0C;
+extern s32 D_800D4DD0;
+extern u8 D_8008B29C[], D_8008B418[];
+extern u8 D_800D5258[], D_800D526C[], D_800D5280[], D_800D52B8[];
+extern u8 D_800D3510[], D_800D3524[], D_800D3538[], D_800D3544[], D_800D355C[], D_800D3570[];
+extern u8 D_800D35C4[], D_800D35D8[], D_800D35EC[], D_800D35F8[], D_800D3610[], D_800D3624[];
+extern u8 D_800D3678[], D_800D368C[], D_800D36A0[], D_800D36AC[], D_800D36C4[], D_800D36D8[];
+extern u8 D_800D372C[], D_800D3740[], D_800D3754[], D_800D3760[], D_800D3778[], D_800D378C[];
+extern u8 D_800D37E0[], D_800D3830[], D_800D3874[], D_800D388C[], D_800D38A4[];
+void func_800CC3B4(void);
+void func_800CCCB8(void);
 
 #endif /* BASH_OVL62_H */
