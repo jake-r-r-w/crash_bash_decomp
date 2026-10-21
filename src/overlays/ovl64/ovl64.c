@@ -211,7 +211,55 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/ovl64/ovl64", D_800B32B8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B4BA4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B4DC4);
+void func_800B4DC4(u16 count, s16 arg1) {
+    Ovl64Pair *p;
+    s32 a;
+    s32 b;
+    s32 i;
+    s16 id;
+    u16 kind;
+    u16 idx;
+    s32 n;
+    s32 t;
+    s32 r;
+
+    id = arg1;
+    if (arg1 > 0) {
+        p = func_800B4F7C(&D_800BBD5E);
+        if (p != NULL) {
+            func_800B5D3C(p->a, p->b, id, -1);
+        }
+    } else if (count != 0) {
+        i = 0;
+        do {
+            p = func_800B4F7C(&D_800BBD5E);
+            if (p == NULL) {
+                continue;
+            }
+            a = p->a;
+            idx = Ovl64NextSlot();
+            t = D_800BB88C[idx];
+            b = p->b;
+            kind = D_8009E46C[t];
+            id = t;
+            if (kind >= 2) {
+                continue;
+            }
+            if (((Ovl64Game *)D_8005A614)->cpu[idx] == 0
+                && (n = D_8009D87C[idx][0], n++, (u32)D_80099178 >> 8 < 0x120)) {
+                if (kind == 0) {
+                    r = (u32)Random(n) < 9;
+                } else {
+                    r = (u32)Random(n) < 7;
+                }
+                if (!r) {
+                    break;
+                }
+            }
+            func_800B5D3C(a, b, id, -1);
+        } while (++i < count);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B4F7C);
 

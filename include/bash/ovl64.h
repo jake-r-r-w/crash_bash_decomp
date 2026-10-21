@@ -44,7 +44,9 @@ typedef struct Ovl64Game {
     /* 0x32 */ u16 flags;
     /* 0x34 */ u8 pad34[0x48 - 0x34];
     /* 0x48 */ s16 team[2];
-    /* 0x4C */ u8 pad4C[0x6C - 0x4C];
+    /* 0x4C */ u8 pad4C[0x5C - 0x4C];
+    /* 0x5C */ u8 cpu[4];
+    /* 0x60 */ u8 pad60[0x6C - 0x60];
     /* 0x6C */ s32 teams;
     /* 0x70 */ u8 pad70[0xA7 - 0x70];
     /* 0xA7 */ u8 rank[4];
@@ -159,6 +161,15 @@ typedef struct Ovl64Pair {
 
 extern u8 D_800BBD5E;
 Ovl64Pair *func_800B4F7C(void *arg0);
+void func_800B5D3C(s32 a, s32 b, u16 c, s32 d);
+extern u16 D_800BBD5A;
+static inline u16 Ovl64NextSlot(void) {
+    D_800BBD5A = (D_800BBD5A + 1) & 3;
+    return D_800BBD5A;
+}
+extern s16 D_800BB88C[];
+extern u16 D_8009E46C[];
+extern s32 D_80099178;
 void func_800B51A0(s32 a, s32 b, s32 c, s32 d);
 
 void func_800B8E64(u16 arg0, u16 arg1);
@@ -254,6 +265,8 @@ typedef struct {
 } Ovl64HitFlags;
 
 s32 func_800B3EDC(void);
+
+void func_800B4DC4(u16 count, s16 arg1);
 
 void func_800B9608(s32 arg0);
 
