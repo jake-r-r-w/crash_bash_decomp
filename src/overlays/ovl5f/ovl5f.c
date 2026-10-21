@@ -2087,7 +2087,145 @@ void InitHelicopterTA(NAS *nas) {
     KillNAS(nas);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotHelicopterTA);
+void PlotHelicopterTA(NAS *nas) {
+    NAS **slot;
+    Ovl5fModeView *g;
+    HeliFux *fux;
+    EXTengine *eng;
+    EXTengine *e2;
+    subengine *sub;
+    NAS *p;
+    s32 i;
+    s32 n;
+    s32 x;
+    u32 chance;
+    u16 st;
+    NAS **s;
+
+    fux = (HeliFux *)nas->FUX;
+    eng = nas->Engine;
+    sub = eng->sub;
+    if (D_800CB0F0 != 0) {
+        eng->unk10.y -= 0x32;
+    }
+    eng->unk10.x += fux->vx;
+    if (--nas->UserInfo.user2 < 0) {
+        nas->UserInfo.user2 = 7;
+    }
+    sub->unk74 = D_800CA650[nas->UserInfo.user2].v;
+    e2 = eng->Engine;
+    if (e2 != NULL) {
+        e2->unk1E = eng->unk1E;
+        e2->unk10 = eng->unk10;
+        e2->unk10.y = 0;
+    }
+    x = eng->unk10.x;
+    if ((u32)(x + 0x800) > 0x2000) {
+        KillNAS(nas);
+        return;
+    }
+    if (fux->unk30 != 3 || D_800CB0F0 != 0 || (x & 0x1FF) != 0x100) {
+        return;
+    }
+    for (i = 0, s = D_800CAD44; i < 3; i++, s++) {
+        p = *s;
+        if (p != NULL) {
+            if (i) {
+                if (p->Engine->unk10.x != eng->unk10.x || p->Engine->unk10.z != eng->unk10.z) {
+                    break;
+                }
+            } else {
+                if (p->Engine->unk10.x != eng->unk10.x || p->Engine->unk10.z != eng->unk10.z) {
+                    break;
+                }
+            }
+            return;
+        }
+    }
+    if ((u32)(eng->unk10.x - 2) >= 0xFFD) {
+        return;
+    }
+    if ((u32)Random(0x8000) >= 0x2800) {
+        return;
+    }
+    chance = 0;
+    for (i = 0; i < 4; i++) {
+        if (Heroes[i].hero_name != 9 && D_800CAD50[i].Energy <= 0) {
+            chance += 2000;
+        }
+    }
+    n = 0;
+    g = (Ovl5fModeView *)D_8005A614;
+    slot = D_800CAD44;
+loop:
+    if (n < 3) {
+        if (*slot == NULL) {
+            p = SpawnNASById(eng->unk10.x, eng->unk10.y - 0xC8, eng->unk10.z + 0x3C, 0x1308, 0x11);
+            if (p == NULL) {
+                return;
+            }
+            fux->unk30 = 0;
+            if (g->mode) {
+                *slot = p;
+            } else if (*slot) {
+                *slot = p;
+            } else {
+                *slot = p;
+            }
+            if (g->mode != 9 && (u32)Random(7000) < chance) {
+                st = 6;
+            } else {
+                switch (g->mode) {
+                case 5:
+                default:
+                    if ((u32)Random(1000) >= 0x1F5) {
+                        st = 5;
+                    } else {
+                        st = 4;
+                    }
+                    break;
+                case 7:
+                    switch ((u32)Random(3)) {
+                    case 0:
+                        st = 5;
+                        break;
+                    case 1:
+                        st = 4;
+                        break;
+                    case 2:
+                        st = 2;
+                        break;
+                    case 3:
+                        st = 2;
+                        break;
+                    default:
+                        st = 5;
+                        break;
+                    }
+                    break;
+                case 9:
+                    switch ((u32)Random(2)) {
+                    default:
+                        st = 5;
+                        break;
+                    case 0:
+                        st = 5;
+                        break;
+                    case 1:
+                        st = 3;
+                        break;
+                    }
+                    break;
+                }
+            }
+            p->UserInfo.status = st;
+            return;
+        }
+        slot++;
+        n++;
+        goto loop;
+    }
+}
 
 void InitPickupTA(NAS *nas) {
     EXTengine *eng;

@@ -273,6 +273,14 @@ extern s32 D_800C9428[][4];
 extern NAS *D_800CAD44[];
 /* func_800B4688's fallback roam points: {x, z}. */
 extern s32 D_800CA17C[][2];
+/* PlotHelicopterTA's NAS.FUX. */
+typedef struct HeliFux {
+    /* 0x00 */ u8 unk0[0x10];
+    /* 0x10 */ s32 vx;
+    /* 0x14 */ u8 unk14[0x30 - 0x14];
+    /* 0x30 */ s32 unk30;
+} HeliFux;
+extern Ovl5fU16Pad D_800CA650[];    /* PlotHelicopterTA's rotor frames, by UserInfo.user2 */
 /* PlotPillarControl's waves: delay, then {x, z, angle} until x < 0. */
 extern s32 *D_800CA8C4[];
 extern s32 D_800CB204;      /* next wave */
