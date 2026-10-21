@@ -1586,7 +1586,109 @@ s32 func_800BA810(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800BA960);
+s32 func_800BA960(s32 hero) {
+    s32 dx;
+    s32 dz;
+    HeroInfo *me;
+    HeroInfo *hb;
+    HeroInfo *o;
+    EXTengine *eng;
+    EXTengine *oe;
+    Ovl65ExtB *mx;
+    Ovl65ExtB *ox;
+    Ovl65ExtB *x;
+    Ovl65ExtB *x1;
+    u32 i;
+    s32 dist;
+    s32 ang;
+    s32 r;
+    s32 d;
+    s32 hit;
+    s32 lim;
+
+    lim = 0x19C;
+    hb = Heroes;
+    hit = 0;
+    eng = hb[hero].hero_eng;
+    i = 0;
+    if (eng != NULL) {
+        do {
+            me = &hb[hero];
+        } while (0);
+        o = hb;
+    loop:
+        if (i < 4) {
+            if (hero != i && !(o->hero_status & 0x2000)) {
+                oe = o->hero_eng;
+                if (oe != NULL) {
+                    do {
+                        dx = oe->unk10.x - eng->unk10.x;
+                        dz = oe->unk10.z - eng->unk10.z;
+                        dist = csqrt(dx * dx + dz * dz) >> 6;
+                    } while (0);
+                    if (dist < 0x19C) {
+                        if (me->hero_move->x_vel * me->hero_move->x_vel +
+                                me->hero_move->z_vel * me->hero_move->z_vel > 0x1000) {
+                            r = Random(4);
+                            if (r == 0) {
+                                PlaySfx(0x6D0, NULL, NULL, 0x1000, 0x1E00, 0);
+                            }
+                            if (r == 1) {
+                                PlaySfx(0x6D1, NULL, NULL, 0x1000, 0x1E00, 0);
+                            }
+                            if (r == 2) {
+                                PlaySfx(0x6D2, NULL, NULL, 0x1000, 0x1E00, 0);
+                            }
+                            if (r == 3) {
+                                PlaySfx(0x6D3, NULL, NULL, 0x1000, 0x1E00, 0);
+                            }
+                        }
+                        Random(4);
+                        hit = 1;
+                        ang = get_angle(dx, dz) & 0xFFF;
+                        dist = lim - dist;
+                        func_800B9534(hero, i);
+                        do {
+                            mx = FindExtension(me->hero, 0x10000000);
+                            ox = FindExtension(o->hero, 0x10000000);
+                        } while (0);
+                        if (me->hero_mode != 0x67 && o->hero_mode == 0x66) {
+                            if (mx->unk14 != 0) {
+                                x1 = FindExtension(mx->unk18, 0x10000000);
+                                if (x1 != NULL && x1->unkC == 1) {
+                                    x1->unkC = 5;
+                                }
+                            }
+                            SetHeroAction((HeroInfo *)hero, 0x67);
+                            do {
+                                SetHeroAction((HeroInfo *)i, 0x63);
+                            } while (0);
+                        }
+                        if (o->hero_mode != 0x67 && me->hero_mode == 0x66) {
+                            if (ox->unk14 != 0) {
+                                x = FindExtension(ox->unk18, 0x10000000);
+                                if (x != NULL && x->unkC == 1) {
+                                    x->unkC = 5;
+                                }
+                            }
+                            SetHeroAction((HeroInfo *)i, 0x67);
+                            SetHeroAction((HeroInfo *)hero, 0x63);
+                        }
+                        d = dist + 2;
+                        eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                        eng->unk10.z -= (d * D_80068BD4[ang].unk2) >> 12;
+                    }
+                }
+            }
+            do {
+                o++;
+                i++;
+            } while (0);
+            goto loop;
+        }
+    }
+    return hit;
+}
 
 s32 func_800BAD18(NAS *m) {
     Ovl65ExtB *me;

@@ -8786,7 +8786,8 @@
   "status": "matched"
  },
  "ovl65:800BA960": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-21T11:59:58Z",
+  "status": "matched"
  },
  "ovl65:800BAD18": {
   "matched_at": "2026-10-19T16:03:21Z",
