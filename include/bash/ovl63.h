@@ -355,6 +355,23 @@ typedef struct Ovl63ResetFux {
     /* 0x168 */ s32 unk168;
 } Ovl63ResetFux;
 
+/* hero->FUX as func_800BAFC8 (the dive) reads it. */
+typedef struct Ovl63DiveFux {
+    /* 0x000 */ u8 unk0[0x48];
+    /* 0x048 */ s32 unk48;
+    /* 0x04C */ u8 unk4C[0x54 - 0x4C];
+    /* 0x054 */ s32 unk54;
+    /* 0x058 */ s32 unk58;
+    /* 0x05C */ Ovl63Bouncer bounce;
+    /* 0x088 */ s32 unk88;
+    /* 0x08C */ s32 unk8C;
+    /* 0x090 */ s32 unk90;
+    /* 0x094 */ u8 unk94[0x13C - 0x94];
+    /* 0x13C */ s32 unk13C;
+    /* 0x140 */ s32 unk140;
+    /* 0x144 */ s32 unk144;
+} Ovl63DiveFux;
+
 extern s32 D_800C692C;
 extern s32 D_800C695C;
 
@@ -1036,6 +1053,8 @@ s32 func_800B6DBC(SLONG_XYZ *arg0, s32 *arg1);
 
 void func_800B8FD8();
 void func_800B980C();
+void func_800BAFC8(s32 player);
+
 void func_800BBA04(s32 player);
 
 void func_800BD99C();

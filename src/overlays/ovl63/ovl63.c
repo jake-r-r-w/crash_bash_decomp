@@ -2163,7 +2163,149 @@ void func_800BAD54(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BAFC8);
+/* The splash a dive leaves in the water (func_800BAFC8). */
+static inline void Ovl63DiveSplash(SLONG_XYZ *pos, s32 kind) {
+    NAS *fx;
+    Ovl63RaceFux *x;
+
+    fx = SpawnNASById(pos->x, pos->y, pos->z, 0x1605, 0x11);
+    if (fx != NULL) {
+        x = FindExtension(fx, 0x10000000);
+        if (x != NULL) {
+            x->unkC = kind;
+            x->unk18 = 0x100;
+            x->unk20 = 1;
+            x->unk28 = 0;
+            fx->InitDelete(fx);
+        }
+    }
+}
+
+void func_800BAFC8(s32 player) {
+    HeroInfo *h;
+    Ovl63DiveFux *f;
+    EXTheromove *m;
+    EXTengine *e;
+    SLONG_XYZ sp;
+    HeroInfo *base;
+    HeroInfo *hb;
+    HeroInfo *h2;
+
+    if (func_800C5400(player) != 0) {
+        return;
+    }
+    base = Heroes;
+    h = &base[player];
+    f = (Ovl63DiveFux *)h->hero->FUX;
+    if (f == NULL) {
+        return;
+    }
+    m = h->hero_move;
+    if (m != NULL) {
+        m->x_max = 0;
+        m->z_max = 0;
+        m->x_vel = 0;
+        m->z_vel = 0;
+        f->unk13C = 0;
+        f->unk140 = 0;
+    }
+    if (f->unk144 != 0) {
+        h->hero_shadow->sub->flags |= 0x8000;
+        h->hero_eng->sub->unk68 = 0;
+        func_8008502C(player);
+        h->hero_move->forward_angle = ((f->unk54 - 0x200) << 20) >> 20;
+        h->hero_eng->unk1E = ((f->unk54 - 0x200) << 20) >> 20;
+        h->hero_eng->unk20 = 0;
+        h->hero_frozen = 2;
+        h->hero_eng->unk1C -= h->hero_eng->unk1C >> 1;
+        m = h->hero_move;
+        if (m != NULL) {
+            m->x_max = 0;
+            m->z_max = 0;
+            m->x_vel = 0;
+            m->z_vel = 0;
+            f->unk13C = 0;
+            f->unk140 = 0;
+        }
+        if (func_800C467C((Ovl63BounceObj *)h->hero_eng, &f->bounce) != 0 && ++f->unk88 >= 2) {
+            SetHeroAction((HeroInfo *)player, 0x5B);
+            if (G63B->unk34 == 0x18 && G63B->unk5C[player] == 0 && (G63B->unk32 & 0x80)) {
+                PlaySfx(0x66A, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            return;
+        }
+        if (f->unk88 > 0) {
+            if (((Ovl63Pad *)D_80051338)[player].unk50 & 0x8000) {
+                if (f->unk90 == 0) {
+                    if (player == 0) {
+                        PlaySfx(0x644, &Heroes[0].hero_eng->sfx, &Heroes[0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                    }
+                    if (player == 1) {
+                        PlaySfx(0x645, &Heroes[1].hero_eng->sfx, &Heroes[1].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                    }
+                    if (player == 2) {
+                        PlaySfx(0x646, &Heroes[2].hero_eng->sfx, &Heroes[2].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                    }
+                    if (player == 3) {
+                        PlaySfx(0x647, &Heroes[3].hero_eng->sfx, &Heroes[3].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                    }
+                    f->unk90 = 1;
+                }
+                if (--f->unk48 == -1) {
+                    hb = Heroes;
+                    h2 = &hb[player];
+                    e = h2->hero_eng;
+                    sp.x = e->unk10.x + (D_80068BD4[(e->unk1E - 0x400) & 0xFFF].unk2 * 256 >> 12);
+                    e = h2->hero_eng;
+                    sp.z = e->unk10.z + (D_80068BD4[e->unk1E & 0xFFF].unk2 * 256 >> 12);
+                    sp.y = h2->hero_eng->unk10.y;
+                    SpawnNASById(sp.x, sp.y, sp.z, 0x1709, 0x11);
+                    f->unk48 = 4;
+                }
+            } else {
+                if (Heroes[player].hero_eng->sfx != NULL) {
+                    StopSfx(Heroes[player].hero_eng->sfx);
+                }
+                f->unk90 = 0;
+            }
+        }
+    } else {
+        m = h->hero_move;
+        if (m != NULL) {
+            m->x_max = 0;
+            m->z_max = 0;
+            m->x_vel = 0;
+            m->z_vel = 0;
+            f->unk13C = 0;
+            f->unk140 = 0;
+        }
+        if (func_8008502C(player) != 0) {
+            f->unk144 = 1;
+            SetHeroSeq((HeroInfo *)player, 0x48);
+            if (G63->unk34 == 0x19) {
+                SetHeroSeq((HeroInfo *)player, 0x52);
+            }
+            h->hero_eng->unk10.x -= D_80068BD4[(f->unk54 - 0x400) & 0xFFF].unk2 * 512 >> 12;
+            h->hero_eng->unk10.z -= D_80068BD4[f->unk54 & 0xFFF].unk2 * 512 >> 12;
+            h->hero_eng->unk10.y = -0x578;
+            h->hero_eng->unk20 = 0;
+            if (G63->unk34 == 0x17) {
+                Ovl63DiveSplash(&h->hero_eng->unk10, 9);
+            }
+            if (D_8005A648 == 0x18) {
+                Ovl63DiveSplash(&Heroes[player].hero_eng->unk10, 9);
+            }
+            if (D_8005A648 == 0x19) {
+                Ovl63DiveSplash(&Heroes[player].hero_eng->unk10, 5);
+            }
+            if (D_8005A648 == 0x1A) {
+                Ovl63DiveSplash(&Heroes[player].hero_eng->unk10, 9);
+            }
+            PlaySfx(0x655, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+    }
+    Heroes[player].hero_eng->unk5E = 1;
+}
 
 void func_800BB794(s32 player) {
     HeroInfo *h;
