@@ -311,7 +311,134 @@ s32 func_800B4490(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl5f/ovl5f", D_800B32B8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B4688);
+void func_800B4688(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
+    NAS **pp;
+    NAS *nas;
+    NAS *tgt;
+    EXTengine *te;
+    EXTengine *e;
+    s32 j;
+    s32 i;
+    s32 ax;
+    s32 az;
+    s32 n;
+    s32 sx;
+    s32 sz;
+    s32 ex;
+    s32 ez;
+    s32 d;
+    s32 r;
+
+    switch (D_8005A648) {
+    case 6:
+    case 8:
+        r = func_800B3C7C(player);
+        ai->unk8 = r;
+        break;
+    case 5:
+    case 7:
+    case 9:
+    default:
+        r = func_800B3B24(player);
+        ai->unk8 = r;
+        break;
+    }
+    if (r < 0) {
+        goto avg;
+    }
+    if (D_800CAD50[player].TurretFiring < 0) {
+        switch (Random(8)) {
+        case 0:
+        default:
+            if (D_8009D908 == 0 && (u32)Random(D_8009D87C[player].unk0 + 1) < 13) {
+                ai->unk4 = Random(30) + 15;
+                ai->flags = 0;
+                ai->unk0 = 0;
+                return;
+            }
+            goto retry;
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+            goto retry;
+        case 5:
+        case 6:
+            goto avg;
+        case 7:
+            break;
+        }
+    }
+find:
+    j = 0;
+    pp = D_800CAD44;
+    ex = eng->unk10.x;
+    ez = eng->unk10.z;
+    for (; j < 3; j++, pp++) {
+        nas = *pp;
+        if (nas != NULL) {
+            te = nas->Engine;
+            d = ex - te->unk10.x;
+            if (d < 0) {
+                d = -d;
+            }
+            if (d + (ez - te->unk10.z) < 0x600) {
+                tgt = nas;
+                goto found;
+            }
+        }
+    }
+    tgt = NULL;
+found:
+    if (tgt != NULL) {
+        e = tgt->Engine;
+        ai->x = e->unk10.x;
+        ai->z = e->unk10.z;
+    } else {
+        r = Random(9);
+        ai->x = D_800CA17C[r][0];
+        ai->z = D_800CA17C[r][1];
+    }
+    ai->unk0 = 4;
+    ai->unk4 = 0x5A;
+    return;
+
+avg:
+    n = 0;
+    sz = 0;
+    sx = 0;
+    for (i = 0; i < 4; i++) {
+        if (i != player && !(Heroes[player].hero_status & 0xB000)) {
+            n++;
+            sx += Heroes[i].hero_eng->unk10.x;
+            sz += Heroes[i].hero_eng->unk10.z;
+        }
+    }
+    if (n < 2) {
+        if ((u32)Random(100) < 30) {
+            goto find;
+        }
+        goto retry;
+    }
+    ax = sx / n;
+    az = sz / n;
+    ai->x = ax < 0x800 ? 0xE00 : 0x200;
+    ai->z = az < 0x800 ? 0xE00 : 0x200;
+    ai->unk0 = 7;
+    ai->unk4 = 0xB4;
+    return;
+
+retry:
+    if (ai->unk8 >= 0) {
+        ai->unk0 = 6;
+        ai->unk4 = 0x5A;
+        return;
+    }
+    if ((u32)Random(100) < 30) {
+        goto find;
+    }
+    goto avg;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B4A28);
 

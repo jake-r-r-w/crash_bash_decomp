@@ -252,6 +252,8 @@ extern s32 D_800CB0F0;
 extern s32 D_800C94E8[];
 extern s32 D_800C9428[][4];
 extern NAS *D_800CAD44[];
+/* func_800B4688's fallback roam points: {x, z}. */
+extern s32 D_800CA17C[][2];
 /* PlotPillarControl's waves: delay, then {x, z, angle} until x < 0. */
 extern s32 *D_800CA8C4[];
 extern s32 D_800CB204;      /* next wave */
