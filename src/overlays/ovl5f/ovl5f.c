@@ -35,7 +35,53 @@ s32 arg0;
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B3C7C);
+s32 func_800B3C7C(arg0)
+s32 arg0;
+{
+    s32 sum;
+    s32 i;
+    s32 j;
+    s32 r;
+    s32 start;
+    s32 mate;
+    HeroInfo *h;
+    EXTengine *me;
+    EXTengine *te;
+    s32 ex;
+
+    mate = Heroes[arg0].hero_teammate;
+    start = Random(4);
+    sum = 0;
+    for (i = start; i < start + 4; i++) {
+        j = D_800CA160[i];
+        if (j != arg0 && j != mate && !((h = &Heroes[j])->hero_status & 0xFA00) && D_800CAD50[j].Energy > 0) {
+            sum += D_8009D87C[j].unk4;
+            if (D_8005A614[j + 0x5C] != 0 && (u32)Random(0x100) < 0xD3) {
+                continue;
+            }
+            me = Heroes[arg0].hero_eng;
+            te = h->hero_eng;
+            if (Ovl5fNear(ex = me->unk10.x, te->unk10.x) || Ovl5fNear(ex = me->unk10.z, te->unk10.z)) {
+                return j;
+            }
+        }
+    }
+    if (sum == 0) {
+        return -1;
+    }
+    r = Random(sum);
+    sum = 0;
+    for (i = start; i < start + 4; i++) {
+        j = D_800CA160[i];
+        if (j != arg0 && j != mate && !(Heroes[j].hero_status & 0xFA00) && D_800CAD50[j].Energy > 0) {
+            sum += D_8009D87C[j].unk4;
+            if (r < sum) {
+                return j;
+            }
+        }
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B3F44);
 
