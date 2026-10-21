@@ -5906,14 +5906,17 @@
   "status": "matched"
  },
  "ovl60:800B44F4": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-21T13:01:08Z",
+  "status": "matched"
  },
  "ovl60:800B4A70": {
   "matched_at": "2026-10-21T12:42:58Z",
   "status": "matched"
  },
  "ovl60:800B4E50": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-21T13:01:23Z",
+  "status": "matched",
+  "via": "copy"
  },
  "ovl60:800B53CC": {
   "matched_at": "2026-10-21T11:39:56Z",
