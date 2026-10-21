@@ -4091,7 +4091,93 @@ void func_800CBB8C(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CBBE8);
+void func_800CBBE8(s32 p1, s32 p2) {
+    EXTheromove *move1 = Heroes[p1].hero_move;
+    EXTheromove *move2 = Heroes[p2].hero_move;
+    s32 m1 = move1->mass;
+    s32 m2 = move2->mass;
+    s32 k = 0x100;
+    s32 v1;
+    s32 v2;
+    s32 d;
+    s32 a;
+    s32 b;
+
+    if (m1 > 0 && m2 > 0) {
+        if (D_8005A614[p1 + 0x5C] != 0) {
+            if (D_8009D87C[p1].unk0 < 9) {
+                m1 -= (9 - D_8009D87C[p1].unk0) << 5;
+                if (m1 < 0x11) {
+                    m1 = 0x10;
+                }
+            }
+            if (D_8009D87C[p1].unk0 > 0x18) {
+                m1 += (D_8009D87C[p1].unk0 - 0x18) << 6;
+            }
+        }
+        if (D_8005A614[p2 + 0x5C] != 0) {
+            if (D_8009D87C[p2].unk0 < 9) {
+                m2 -= (9 - D_8009D87C[p2].unk0) << 5;
+                if (m2 < 0x11) {
+                    m2 = 0x10;
+                }
+            }
+            if (D_8009D87C[p2].unk0 > 0x18) {
+                m2 += (D_8009D87C[p2].unk0 - 0x18) << 6;
+            }
+        }
+        if (Heroes[p1].hero_mode == 0x51 && Heroes[p1].hero_eng->unk2C.x > 0xFA0) {
+            m1 += 0x220;
+        }
+        if (Heroes[p2].hero_mode == 0x51 && Heroes[p2].hero_eng->unk2C.x > 0xFA0) {
+            m2 += 0x220;
+        }
+        v1 = move1->x_vel;
+        v2 = move2->x_vel;
+        d = -(k * (v1 - v2));
+        a = d * m2 + ((m1 * v1 + m2 * v2) << 8);
+        a /= m2 + m1;
+        b = a - d;
+        if (a < 0) {
+            if (a < -0x9600) {
+                a = -0x9600;
+            }
+        } else if (a > 0x9600) {
+            a = 0x9600;
+        }
+        if (b < 0) {
+            if (b < -0x9600) {
+                b = -0x9600;
+            }
+        } else if (b > 0x9600) {
+            b = 0x9600;
+        }
+        move1->x_vel = a >> 8;
+        move2->x_vel = b >> 8;
+        v1 = move1->z_vel;
+        v2 = move2->z_vel;
+        d = -(k * (v1 - v2));
+        a = d * m2 + ((m1 * v1 + m2 * v2) << 8);
+        a /= m2 + m1;
+        b = a - d;
+        if (a < 0) {
+            if (a < -0x9600) {
+                a = -0x9600;
+            }
+        } else if (a > 0x9600) {
+            a = 0x9600;
+        }
+        if (b < 0) {
+            if (b < -0x9600) {
+                b = -0x9600;
+            }
+        } else if (b > 0x9600) {
+            b = 0x9600;
+        }
+        move1->z_vel = a >> 8;
+        move2->z_vel = b >> 8;
+    }
+}
 
 void func_800CC024(s32 player, EXTheromove *other) {
     HeroInfo *base = Heroes;
