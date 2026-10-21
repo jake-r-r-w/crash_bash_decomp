@@ -915,4 +915,6 @@ void func_800BCE88();
 
 void PlotTNTCrate(NAS *nas);
 
+void PlotTrackGlob(NAS *nas);
+
 #endif /* BASH_OVL63_H */

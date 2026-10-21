@@ -2941,7 +2941,107 @@ void InitTrackGlob(NAS *m) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotTrackGlob);
+void PlotTrackGlob(NAS *nas) {
+    EXTtrackglob *ext;
+    EXTengine *e;
+    s32 angle;
+    HeroInfo *h;
+    s32 i;
+    s32 dx;
+    s32 dz;
+
+    if (D_800C695C != 0) {
+        KillNAS(nas);
+        return;
+    }
+    ext = FindExtension(nas, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    switch (ext->unkC) {
+    case 0:
+        if (func_8008C5C4(&ext->pos.x, &ext->unk64, &ext->unk10, &nas->Engine->unk10.x) != 0) {
+            ext->unkC = 1;
+            func_80025FAC((EXTanimator *)ext->cursor, 0);
+            func_800250B0(nas);
+            nas->Engine->unk10.y = 0;
+        }
+        break;
+    case 1:
+        i = 0;
+        h = Heroes;
+    loop1:
+        if (i < 4) {
+            do {
+                dx = nas->Engine->unk10.x - h->hero_eng->unk10.x;
+                dz = nas->Engine->unk10.z - h->hero_eng->unk10.z;
+                if (dx * dx + dz * dz < 0x10000) {
+                    if (h->hero_mode != 0x5D) {
+                        SetHeroAction((HeroInfo *)i, 0x5D);
+                    }
+                    KillNAS(nas);
+                    return;
+                }
+            } while (0);
+            h++;
+            i++;
+            goto loop1;
+        }
+        func_800250B0(nas);
+        if (ext->unk84-- < 0) {
+            ext->unkC = 2;
+            ext->unk88 = Random(0x1000);
+        }
+        break;
+    case 2:
+        func_800250B0(nas);
+        angle = get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF;
+        angle += 0x400;
+        angle &= 0xFFF;
+        i = 0;
+        ext->unk88 = angle;
+        nas->Engine->unk10.x -= 0x20 * D_80068BD4[(angle - 0x400) & 0xFFF].unk2 >> 12;
+        h = Heroes;
+        nas->Engine->unk10.z -= 0x20 * D_80068BD4[ext->unk88 & 0xFFF].unk2 >> 12;
+    loop2:
+        if (i < 4) {
+            do {
+                if ((nas->Engine->unk10.x - h->hero_eng->unk10.x) * (nas->Engine->unk10.x - h->hero_eng->unk10.x) +
+                        (nas->Engine->unk10.z - h->hero_eng->unk10.z) * (nas->Engine->unk10.z - h->hero_eng->unk10.z) < 0x10000) {
+                    if (h->hero_mode != 0x5D) {
+                        SetHeroAction((HeroInfo *)i, 0x5D);
+                    }
+                    KillNAS(nas);
+                    return;
+                }
+            } while (0);
+            h++;
+            i++;
+            goto loop2;
+        }
+        e = nas->Engine;
+        e->unk1E -= (s32)((e->unk1E - ext->unk88) << 20) >> 22;
+        if (angle < 0x400) {
+            ext->unkC = 3;
+        }
+        break;
+    case 3:
+        func_800250B0(nas);
+        ext->unk88 = 0x800;
+        nas->Engine->unk10.x -= 0x20 * D_80068BD4[(ext->unk88 - 0x400) & 0xFFF].unk2 >> 12;
+        nas->Engine->unk10.z -= 0x20 * D_80068BD4[ext->unk88 & 0xFFF].unk2 >> 12;
+        e = nas->Engine;
+        e->unk1E -= (s32)((e->unk1E - ext->unk88) << 20) >> 22;
+        if (nas->Engine->unk10.x * nas->Engine->unk10.x + nas->Engine->unk10.z * nas->Engine->unk10.z > 0x790000) {
+            KillNAS(nas);
+            return;
+        }
+        break;
+    }
+    ext->eng->unk10 = nas->Engine->unk10;
+    ext->eng->unk10.y = 0x40;
+    nas->Engine->unk5E = 1;
+}
 
 void InitDac(NAS *m) {
     DacExt *ext;
