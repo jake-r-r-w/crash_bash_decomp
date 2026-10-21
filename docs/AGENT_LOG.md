@@ -517,6 +517,18 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-21 (swarm all overlays, retry in big mode):** run
+  20261021072703, `--seg overlays/ --retry-failed --big-bytes 1 --model opus
+  --workers 1 --big-workers 6 --big-budget-usd 20 --max-run-usd 250`
+  (default 27 min big sessions), stopped gracefully by request: 85 matched
+  in 2 h 9 min for $160.71 (ovl5f 18, ovl62 14, ovl63 12, ovl64 9, ovl68 7,
+  ovl67 7, ovl60 6, ovl5d 6, ovl69 2, ovl5e 2, ovl66 1, ovl65 1), 5 parked,
+  0 failed; game code 65.75% (2332/2537). The gate sent back a no-op
+  `++/--` match (`func_800B406C`) and one that didn't match; the workers
+  redid them. `fold`: 76 rows from matches folded unreviewed (dedup pass
+  pending, with the previous run's 56); 11 on unmatched functions in
+  `<swarm dir>/patterns.unmatched-2026-10-21b.md`.
+
 - **2026-10-21 (swarm all overlays, Opus):** run 20261021061703, `--seg
   overlays/ --model opus --workers 5 --big-workers 3 --big-budget-usd 20
   --big-minutes 15 --max-run-usd 250`: 77 matched in 67 min for $77.86
