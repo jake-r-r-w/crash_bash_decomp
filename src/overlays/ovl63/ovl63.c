@@ -197,7 +197,63 @@ one:
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B406C);
+s32 func_800B406C(s32 player)
+{
+  HeroInfo *h;
+  HeroInfo *o;
+  int new_var;
+  s32 i;
+  s32 dx;
+  s32 dz;
+  Ovl63Pad *pad;
+  HeroInfo *t;
+  HeroInfo *base;
+  base = Heroes;
+  t = &base[player];
+  if (t->hero->FUX == 0)
+  {
+    return 0;
+  }
+  if (((Ovl63Fux18 *) t->hero->FUX)->mode != 0x20)
+  {
+    return 0;
+  }
+  i = 0;
+  h = t;
+  pad = (Ovl63Pad *) D_80051338;
+  o = base;
+  loop:
+  if (i < 4)
+  {
+    if (((i == player) || (i == h->hero_teammate)) || (func_800B35CC(player) != i))
+    {
+      goto next;
+    }
+    do
+    {
+      dx = h->hero_eng->unk10.x - o->hero_eng->unk10.x;
+      dz = h->hero_eng->unk10.z - o->hero_eng->unk10.z;
+      new_var = (dx * dx) + (dz * dz);
+      if (new_var < 0x90000)
+      {
+        do
+        {
+          h->hero_ai->AIpad |= 0x2000;
+          pad[player].unk50 = h->hero_ai->AIpad;
+          return 1;
+        }
+        while (0);
+      }
+      next:
+      o++;
+      i++;
+    }
+    while (0);
+    goto loop;
+  }
+
+  return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B41DC);
 

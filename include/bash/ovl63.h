@@ -60,7 +60,7 @@ void func_800B4708();
 void func_800B372C(s32 arg0);
 void func_800B3890(s32 arg0);
 void func_800B3BC0(s32 arg0);
-void func_800B406C(s32 arg0);
+s32 func_800B406C(s32 arg0);
 void func_800B41DC(s32 arg0);
 void func_800B442C(s32 arg0);
 
@@ -96,6 +96,12 @@ typedef struct EXTraceshield {
     /* 0x14 */ s32 unk14[2];
     /* 0x1C */ s32 unk1C;
 } EXTraceshield;
+
+/* A hero's FUX as func_800B406C reads it: a mode word at 0x18. */
+typedef struct Ovl63Fux18 {
+    /* 0x00 */ u8 pad0[0x18];
+    /* 0x18 */ s32 mode;
+} Ovl63Fux18;
 
 /* A hero's FUX as func_800C57B4 clears it. */
 typedef struct Ovl63HeroFux {
