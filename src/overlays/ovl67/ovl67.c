@@ -1161,7 +1161,94 @@ void func_800B6E6C(Ovl67Blend *p) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B6F4C);
+void func_800B6F4C(void) {
+    EXTengine *eng;
+    subengine *sub;
+    subengine *sub2;
+    EXTheromove *mv;
+    u8 *anim;
+    s32 *pos;
+    s32 i;
+    s32 ang;
+    s32 t;
+
+    func_8007C6EC();
+    D_8009D8FC = D_8005A680[0] != 0 ? D_800C3EF0 : D_800C3EB0;
+    for (i = 0; i < 4; i++) {
+        if (OVT->unk32 & 0x100) {
+            t = OVT->unkAB[OVT->unk34];
+            OVT->unk9B[i] = t;
+            D_8009D87C[i].unk0 = ((u16 *)D_8009D8FC)[t];
+            D_8009D87C[i].unk4 = 0x10;
+        }
+    }
+    func_80086868();
+    sub = Heroes[3].hero_sub;
+    eng = Heroes[3].hero_eng;
+    pos = &eng->unk10.x;
+    *pos = D_800C4050[3][0];
+    eng->unk10.y = D_8005A5D8;
+    eng->unk10.z = *(s32 *)((u8 *)D_800C4050 + 0x2C);
+    ang = get_angle(Heroes[3].hero_eng->unk10.x, Heroes[3].hero_eng->unk10.z) + 0x7F;
+    ang &= 0xC00;
+    mv = Heroes[3].hero_move;
+    eng->unk1E = ang;
+    mv->facing_angle = ang;
+    mv->forward_angle = ang;
+    eng->unk5D = 0;
+    anim = D_80053EAC;
+    *(u8 **)&sub->unk6C = anim;
+    D_800C4182 = 0xF;
+    sub->unk74 = 0x2006;
+    sub->unk0C = 0;
+    sub->unk08 = 0;
+    sub->unk04 = 0;
+    sub->flags |= 0x8000;
+    func_80025B10(eng, 0x50);
+    func_800B3CD0(3);
+    if (eng->unk10.x > 0x880) {
+        eng->unk10.x = 0x880;
+    }
+    if (eng->unk10.x < -0x880) {
+        eng->unk10.x = -0x880;
+    }
+    if (eng->unk10.z > 0x880) {
+        eng->unk10.z = 0x880;
+    }
+    if (eng->unk10.z < -0x880) {
+        eng->unk10.z = -0x880;
+    }
+    D_800C43E0 = 0;
+    D_800C437C = 0;
+    D_800C4398.unk4 = (s32)eng;
+    D_800C4398.unk8 = (s32)sub;
+    D_800C4398.unk0 = (s32)Heroes[3].hero;
+    sub = sub->next;
+    D_800C437E = -1;
+    if (sub != NULL) {
+        sub->unk6C = anim;
+        sub->unk74 = 0x4000;
+        sub->unk0C = 0;
+        sub->unk08 = 0;
+        sub->unk04 = 0;
+        sub->flags |= 0x8000;
+    }
+    sub2 = sub->next;
+    if (sub2 != NULL) {
+        sub2->unk6C = anim + 0x38;
+        sub2->unk74 = 0x2005;
+        sub2->unk50 = 1;
+        sub2->unk51 = 0;
+        sub2->flags &= ~0x8000;
+        sub->unk0C = 0;
+        sub->unk08 = 0;
+        sub2->unk04 = 0;
+    }
+    D_8009D6E2 = 0xFF;
+    SpawnNASById(4, D_8005A5D8 - 0x20, 0, 0x1B05, 0x11);
+    SpawnNASById(5, D_8005A5D8 - 0x20, 0, 0x1B05, 0x11);
+    D_800AD12C = 8;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B7244);
 

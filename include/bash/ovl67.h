@@ -402,6 +402,24 @@ typedef struct Ovl67Game {
 } Ovl67Game;
 #define OVG ((Ovl67Game *)D_8005A614)
 
+/* D_8005A614 as seen by func_800B6F4C. */
+typedef struct Ovl67Teams {
+    /* 0x00 */ u8 pad0[0x32];
+    /* 0x32 */ u16 unk32;
+    /* 0x34 */ s16 unk34;
+    /* 0x36 */ u8 pad36[0x65];
+    /* 0x9B */ u8 unk9B[0x10];
+    /* 0xAB */ u8 unkAB[4];
+} Ovl67Teams;
+#define OVT ((Ovl67Teams *)D_8005A614)
+extern u16 D_800C3EB0[];
+extern u16 D_800C3EF0[];
+extern s16 D_800C4182;
+extern s32 D_800C43E0;
+extern s16 D_8009D6E2;
+void func_8007C6EC(void);
+void func_80086868(void);
+
 /* D_8009D6E8 (EngineHooks in bash/engine.h, which this unit does not include). */
 typedef struct Ovl67Hooks {
     /* 0x00 */ s32 unk0;
