@@ -1283,7 +1283,87 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotLobber_TA);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotRocketTA);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotMine);
+void PlotMine(NAS *nas) {
+    EXTengine *eng;
+    EXTengine *e;
+    s32 i;
+    s32 d;
+    s32 x;
+    s32 z;
+    s32 mode;
+    s32 t;
+    s32 r;
+    s32 n;
+    u16 name;
+    u8 *g;
+
+    g = D_8005A614;
+    eng = nas->Engine;
+    if ((((Ovl5fModeView *)g)->mode == 8 &&
+         D_800CACB4[((eng->unk10.z >> 9) * D_800CAFF4) + (eng->unk10.x >> 9)] != 0) ||
+        --nas->UserInfo.status == 0) {
+        PlaySfx(0x4EA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        func_800BD654(nas);
+        for (i = 0; i < 8; i++) {
+            if (D_800CB0C0[i] == nas) {
+                D_800CB0C0[i] = NULL;
+                break;
+            }
+        }
+        r = 250;
+        x = eng->unk10.x;
+        z = eng->unk10.z;
+        for (i = 0; i < 4; i++) {
+            name = Heroes[i].hero_name;
+            if (name == 9 &&
+                (((Ovl5fModeView *)D_8005A614)->mode != name || D_800CB210 != 0 ||
+                 (u32)(i - 2) >= 2)) {
+                continue;
+            }
+            if (Heroes[i].hero_status & 0xC000) {
+                continue;
+            }
+            e = Heroes[i].hero_eng;
+            d = x - e->unk10.x;
+            if (d < -250) {
+                continue;
+            }
+            if (r < d) {
+                continue;
+            }
+            d = z - e->unk10.z;
+            n = -250;
+            if (n < d && d < 250) {
+                goto found;
+            }
+        }
+        i = -1;
+    found:
+        if (i >= 0) {
+            if (((Ovl5fModeView *)D_8005A614)->mode == 8 && D_8005A614[i + 0x5C] == 0 &&
+                (((Ovl5fGameView *)D_8005A614)->flags & 0x80)) {
+                func_800B6354(i, 0x4B0);
+            } else {
+                func_800B6354(i, 0x3C);
+            }
+        }
+        KillNAS(nas);
+        return;
+    }
+    t = (u16)(nas->UserInfo.status / 30);
+    if (t >= 4) {
+        t = 3;
+    }
+    mode = ((Ovl5fModeView *)g)->mode;
+    if ((mode == 8 && (((Ovl5fGameView *)g)->flags & 0x80)) || mode == 9) {
+        nas->Engine->sub->unk74 = D_800C939C[t].v;
+    } else {
+        nas->Engine->sub->unk74 = D_800C938C[t].v;
+    }
+    if ((u16)(nas->UserInfo.status % 30) == 0) {
+        PlaySfx(0x4EB, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+    }
+}
 
 void PlotWaterMine(NAS *nas) {
     s32 i;

@@ -21,6 +21,8 @@ extern u32 D_800CA48C[];
 extern s32 D_800CA44C[];
 typedef struct { u16 v, pad; } RockTblEnt;
 extern RockTblEnt D_800CA6D4[];
+extern RockTblEnt D_800C938C[]; /* PlotMine: frame by countdown */
+extern RockTblEnt D_800C939C[]; /* PlotMine: frame by countdown, modes 8/9 */
 
 extern u8 D_80053774[];
 extern u8 D_800C9EE8[];
