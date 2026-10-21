@@ -1255,7 +1255,111 @@ void func_800B6474(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B66C4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B6DBC);
+s32 func_800B6DBC(SLONG_XYZ *arg0, s32 *arg1) {
+    Ovl63Norm out;
+    SLONG_XYZ pos;
+    Ovl63Norm n;
+    s32 hit;
+    Ovl63SceneObj *obj;
+    u8 *grp;
+    s16 *tri;
+    Ovl63Norm *nrm;
+    s32 rad;
+    s32 found;
+    s32 d;
+    s32 k;
+    s32 dx;
+    s32 dz;
+
+    rad = 0xDC;
+    found = 0;
+    obj = ((Ovl63Scene *)D_80058AD0)->objs;
+    hit = 0;
+    for (;;) {
+        u8 *r;
+
+        if (obj == NULL) {
+            break;
+        }
+        if (!(obj->flags & 0x8000) && obj->model->unkC != NULL) {
+            r = func_80015A18(obj->index, obj->model->unkC);
+            if (r != NULL && *(s32 *)(r + 0x28) != 0) {
+                pos = *arg0;
+                grp = r + (*(s32 *)(r + 0x14) + 0x14);
+                tri = (s16 *)(*(s32 *)(r + 0x10) + (s32)r + 0x24);
+                nrm = (Ovl63Norm *)(r + (*(s32 *)(r + 0x28) + 0x28));
+                for (;;) {
+                    s32 count;
+
+                    count = grp[1];
+                    if (count == 0xFF) {
+                        break;
+                    }
+                    for (;;) {
+                        s32 lim;
+
+                        count--;
+                        if (count == -1) {
+                            break;
+                        }
+                        lim = pos.z + rad;
+                        if (lim < tri[2] && lim < tri[6] && lim < tri[10]) {
+                            goto next;
+                        }
+                        lim = pos.x - rad;
+                        if (tri[0] < lim && tri[4] < lim && tri[8] < lim) {
+                            goto next;
+                        }
+                        lim = pos.z - rad;
+                        if (tri[2] < lim && tri[6] < lim && tri[10] < lim) {
+                            goto next;
+                        }
+                        lim = pos.x + rad;
+                        if (lim < tri[0] && lim < tri[4] && lim < tri[8]) {
+                            goto next;
+                        }
+                        d = func_800B66C4(&pos, tri);
+                        if (rad * rad < d) {
+                            goto next;
+                        }
+                        n = nrm[2];
+                        k = (rad << 6) - csqrt(d) + 2;
+                        dx = (k * n.x) >> 18;
+                        dz = (k * n.z) >> 18;
+                        arg0->x += dx;
+                        arg0->z += dz;
+                        hit = 1;
+                        pos.x += dx;
+                        pos.z += dz;
+                        out = n;
+                        if (!(G63->unk32 & 0x80)) {
+                            if (G63->unk34 == 0x17 && obj->index == 0x5003) {
+                                found = 1;
+                            }
+                        } else {
+                            if (G63->unk34 == 0x17 && obj->index == 0x5002) {
+                                found = 1;
+                            }
+                        }
+                    next:
+                        tri += 4;
+                        nrm++;
+                    }
+                    tri += 8;
+                    nrm += 2;
+                    grp += 2;
+                }
+            }
+        }
+        obj = obj->next;
+    }
+    if (found) {
+        *arg1 = get_angle(out.x, out.z) & 0xFFF;
+    } else {
+        *arg1 = -1;
+    }
+    return hit;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B7190);
 

@@ -529,6 +529,13 @@ typedef struct Ovl63SceneModel {
 } Ovl63SceneModel;
 extern s32 D_800CA604;
 
+/* A collision normal (8 bytes, copied whole) read by func_800B6DBC. */
+typedef struct Ovl63Norm {
+    s16 x, y, z, pad;
+} Ovl63Norm;
+
+s32 func_800B66C4(SLONG_XYZ *pos, s16 *tri);
+
 /* D_80058AD0 as seen by func_800B5F04. */
 typedef struct Ovl63Scene {
     /* 0x00 */ u8 pad0[0x1C];
@@ -899,6 +906,8 @@ extern u8 D_800C63FC[], D_800C6410[], D_800C6424[], D_800C6430[], D_800C6448[], 
 extern u8 D_800C64B0[], D_800C64C4[], D_800C64D8[], D_800C64E4[], D_800C64FC[], D_800C6510[];
 extern u8 D_800C6564[], D_800C6578[], D_800C658C[], D_800C6598[], D_800C65B0[], D_800C65C4[];
 extern u8 D_800C6618[], D_800C662C[], D_800C6640[], D_800C664C[], D_800C6664[], D_800C6678[];
+s32 func_800B6DBC(SLONG_XYZ *arg0, s32 *arg1);
+
 void func_800B8FD8();
 void func_800B980C();
 void func_800BD99C();
