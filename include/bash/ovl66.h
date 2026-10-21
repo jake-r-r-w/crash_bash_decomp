@@ -49,6 +49,7 @@ extern s32 D_800B9F08;
 extern ScriptInit D_800B9CE4;
 extern u8 D_80053C0C[];
 extern u8 D_80053C7C[];
+extern u8 D_80052F5C[];
 extern s32 D_8005A680[];
 extern s32 D_80099174;
 extern void *D_8009D8FC;

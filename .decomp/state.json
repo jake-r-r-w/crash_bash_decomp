@@ -8976,7 +8976,8 @@
   "status": "matched"
  },
  "ovl66:800B6CD8": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-21T06:35:17Z",
+  "status": "matched"
  },
  "ovl66:800B6E1C": {
   "auto_diff": 54,
