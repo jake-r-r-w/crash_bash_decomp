@@ -2956,7 +2956,177 @@ loop:
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotTankBossCrashTurret);
+void PlotTankBossCrashTurret(NAS *nas) {
+    EXTengine *eng;
+    s32 a;
+    s32 t;
+    s32 u;
+    s32 r;
+    s32 v;
+    s32 k;
+    u16 *tbl;
+
+    eng = nas->Engine;
+    eng->unk10.y = D_800CB20C->unk10.y - 0x46;
+    switch (nas->UserInfo.status) {
+    case 4:
+        nas->UserInfo.user2--;
+        if (D_800CB210 == 0x2E) {
+            nas->UserInfo.status = 1;
+        }
+        break;
+    case 1:
+        eng->unk10.z -= 0x30;
+        nas->UserInfo.flags -= 0x30;
+        if (nas->UserInfo.flags > 1000) {
+            nas->UserInfo.flags = 0;
+            nas->UserInfo.user2 = 0;
+            nas->UserInfo.status = 39;
+            nas->UserInfo.user1 = 0;
+        }
+        break;
+    case 39:
+        a = eng->unk10.x;
+        switch (a) {
+        case 0x300:
+        default:
+            a = 200;
+            break;
+        case 0xE97:
+            a = -200;
+            break;
+        case 0x900:
+            a = 0x200;
+            break;
+        }
+        a -= eng->unk1E;
+        a = (a << 20) >> 20;
+        if (a >= 0) {
+            if (a < 20) {
+                ((Ovl5fTurretFireFn)func_800C30C0)(eng, 10, -1);
+                nas->UserInfo.status = 13;
+                break;
+            }
+            eng->unk1E += 20;
+        } else {
+            if (a >= -19) {
+                ((Ovl5fTurretFireFn)func_800C30C0)(eng, 10, -1);
+                nas->UserInfo.status = 13;
+                break;
+            }
+            eng->unk1E -= 20;
+        }
+        eng->unk5E = 1;
+        break;
+    case 13:
+        k = nas->UserInfo.user2;
+        u = k + 1;
+        nas->UserInfo.user2 = u;
+        if (nas->UserInfo.flags != 0) {
+            tbl = D_800CA9BC;
+        } else {
+            tbl = D_800CA994;
+        }
+        u *= 2;
+        u += (s32)tbl;
+        v = *(u16 *)u;
+        nas->UserInfo.user2 = k + 2;
+        if (v == 0) {
+            if (nas->UserInfo.flags != 0) {
+                eng->sub->unk74 = 0x2006;
+            } else {
+                eng->sub->unk74 = 0x2003;
+            }
+            nas->UserInfo.user2 = 60;
+            nas->UserInfo.status = 0;
+            eng->unk1E &= 0xFFF;
+        } else {
+            eng->sub->unk74 = v;
+        }
+        break;
+    case 0:
+        if (nas->UserInfo.flags != 2) {
+            if (eng->unk1E <= 16) {
+                nas->UserInfo.user2 = 0;
+                nas->UserInfo.status = 14;
+            } else {
+                if (eng->unk1E < 0x800) {
+                    eng->unk1E -= 16;
+                } else {
+                    eng->unk1E += 16;
+                }
+                eng->unk5E = 1;
+                eng->unk1E &= 0xFFF;
+            }
+        }
+        break;
+    case 14:
+        if (nas->UserInfo.user1 & 1) {
+            eng->unk1E += 16;
+        } else {
+            eng->unk1E -= 16;
+        }
+        eng->unk5E = 1;
+        t = eng->unk1E &= 0xFFF;
+        if ((u32)(t - 900) < 0x8F9U) {
+            nas->UserInfo.user2 = 0;
+            if (nas->UserInfo.user1 & 1) {
+                nas->UserInfo.status = 15;
+            } else {
+                nas->UserInfo.status = 16;
+            }
+        }
+        break;
+    case 15:
+        do {
+            eng->unk1E = (eng->unk1E - 16) & 0xFFF;
+        } while (0);
+        u = eng->unk1E;
+        eng->unk5E = 1;
+        if ((u32)(u - 900) < 0x8F9U) {
+            eng->unk1E = u + 16;
+            nas->UserInfo.user2 = 0;
+            nas->UserInfo.status = 16;
+            break;
+        }
+        r = func_800C2940(eng);
+        if (r >= 0) {
+            nas->UserInfo.user1++;
+            if (nas->UserInfo.user1 & 1) {
+                ((Ovl5fTurretFireFn)func_800C30C0)(eng, 10, r);
+            } else {
+                ((Ovl5fTurretFireFn)func_800C30C0)(eng, 3, r);
+            }
+            nas->UserInfo.user2 = 0;
+            nas->UserInfo.status = 13;
+        }
+        break;
+    case 16:
+        do {
+            eng->unk1E = (eng->unk1E + 16) & 0xFFF;
+        } while (0);
+        t = eng->unk1E;
+        eng->unk5E = 1;
+        if ((u32)(t - 900) < 0x8F9U) {
+            eng->unk1E = t - 16;
+            nas->UserInfo.user2 = 0;
+            nas->UserInfo.status = 15;
+            break;
+        }
+        r = func_800C2940(eng);
+        if (r >= 0) {
+            nas->UserInfo.user1++;
+            if (nas->UserInfo.user1 & 1) {
+                ((Ovl5fTurretFireFn)func_800C30C0)(eng, 10, r);
+            } else {
+                ((Ovl5fTurretFireFn)func_800C30C0)(eng, 3, r);
+            }
+            nas->UserInfo.user2 = 0;
+            nas->UserInfo.status = 13;
+        }
+        break;
+    }
+}
 
 void func_800C3778(EXTengine *arg0) {
     NAS *shell;

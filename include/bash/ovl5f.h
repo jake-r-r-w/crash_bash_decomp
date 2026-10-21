@@ -267,6 +267,9 @@ typedef struct {
     u16 v, pad;
 } Ovl5fU16Pad;
 extern Ovl5fU16Pad D_800CA944[];
+extern u16 D_800CA994[]; /* crash turret anim frames (flags == 0) */
+extern u16 D_800CA9BC[]; /* crash turret anim frames (flags != 0) */
+typedef void (*Ovl5fTurretFireFn)(EXTengine *eng, s32 a, s32 b);
 extern s32 D_800CB0F0;
 extern s32 D_800C94E8[];
 extern s32 D_800C9428[][4];
