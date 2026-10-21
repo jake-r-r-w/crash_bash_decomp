@@ -323,4 +323,6 @@ void func_800B697C(Ovl64Fux *arg0);
 
 s32 func_800B6EC0(EXTengine *eng, EXTmotion *mot, Ovl64Fux *fux);
 
+s32 func_800B85A4(s32 player);
+
 #endif /* BASH_OVL64_H */

@@ -1150,7 +1150,178 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B7508);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B8294);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B85A4);
+s32 func_800B85A4(s32 player) {
+    NAS *bestNas;
+    s32 bestHeroScore;
+    s32 r;
+    s32 bestHero;
+    s32 px;
+    s32 pz;
+    s32 mate;
+    s16 heroW;
+    EXTbotai *ai;
+    EXTengine *e;
+    EXTengine *he;
+    NAS *n;
+    Ovl64Fux *f;
+    s32 lvl;
+    s32 inv;
+    s16 w0;
+    s16 w1;
+    s16 w2;
+    s32 dx;
+    s32 dz;
+    s32 d;
+    s32 d2;
+    s32 cnt;
+    s32 bestNasScore;
+    s32 i;
+    s32 k;
+
+    n = D_8005AA24;
+    bestNas = NULL;
+    bestHero = -1;
+    bestHeroScore = 0;
+    lvl = D_8009D87C[player][0];
+    inv = 0x21 - lvl;
+    mate = Heroes[player].hero_teammate;
+    he = Heroes[player].hero_eng;
+    ai = Heroes[player].hero_ai;
+    px = he->unk10.x;
+    pz = he->unk10.z;
+    Random(0x100);
+    bestNasScore = 0;
+    w1 = 0x1E;
+    w2 = w1;
+    r = Random(0x1000);
+    w0 = (lvl + 0x14) * 4;
+    heroW = lvl * 8;
+    if (D_800BBD64 != 0 && D_800BBD62 != player) {
+        w0 = 0;
+        heroW = lvl << 5;
+        w1 = lvl * 0x10;
+    }
+    if (Heroes[player].hero_pu != 0) {
+        if (Heroes[player].hero_pu == 0x17) {
+            if (D_800BBD64 != 0) {
+                if (D_800BBD62 == player) {
+                    w0 = lvl << 5;
+                    w1 = inv * 2;
+                    w2 = inv * 4;
+                } else {
+                    heroW = lvl * 8;
+                    w0 = inv * 4;
+                    w1 = inv * 2;
+                    w2 = lvl << 5;
+                }
+            } else {
+                w0 = lvl << 5;
+                w1 = inv * 4;
+                w2 = inv * 2;
+            }
+        } else if (D_800BBD64 != 0) {
+            if (D_800BBD62 == player) {
+                w0 = lvl << 5;
+                w1 = inv * 4;
+                w2 = lvl << 6;
+            } else {
+                heroW = lvl * 0x10;
+                d2 = inv * 4;
+                w0 = d2;
+                w1 = d2;
+                w2 = lvl << 5;
+            }
+        } else {
+            w0 = lvl << 5;
+            d2 = inv * 8;
+            w1 = d2;
+            w2 = d2;
+        }
+    }
+    for (; n != NULL; n = n->Object.Child) {
+        e = n->Engine;
+        if (e == NULL) continue;
+        f = (Ovl64Fux *)n->FUX;
+        if (f == NULL) continue;
+        switch (f->kind) {
+        case 8: case 9: case 10: case 11:
+            if (D_800BBD64 != 0 && D_800BBD62 != player) continue;
+            if (f->state != player) continue;
+            dx = px - e->unk10.x;
+            dz = pz - e->unk10.z;
+            d = csqrt(dx * dx + dz * dz) >> 6;
+            d = abs(d - r) * (s16)w0;
+            if (bestNasScore < d) {
+                bestNas = n;
+                bestNasScore = d;
+            }
+            continue;
+        case 2:
+            dx = px - e->unk10.x;
+            dz = pz - e->unk10.z;
+            d = csqrt(dx * dx + dz * dz) >> 6;
+            d = abs(d - r) * (s16)w1;
+            cnt = 0;
+            for (i = 0; i < 4; i++) {
+                if (ai->pTargetNas == n) cnt++;
+            }
+            if (cnt != 0) d >>= cnt;
+            if (bestNasScore < d) {
+                bestNas = n;
+                bestNasScore = d;
+            }
+            continue;
+        case 12:
+            dx = px - e->unk10.x;
+            dz = pz - e->unk10.z;
+            d = csqrt(dx * dx + dz * dz) >> 6;
+            d = abs(d - r) * (s16)w2;
+            cnt = 0;
+            for (i = 0; i < 4; i++) {
+                if (ai->pTargetNas == n) cnt++;
+            }
+            break;
+        default:
+            continue;
+        }
+        if (cnt != 0) d >>= cnt;
+        if (bestNasScore < d) {
+            bestNas = n;
+            bestNasScore = d;
+        }
+    }
+    for (i = 0; i < 4; i++) {
+        if (i == player) continue;
+        if (((Ovl64Game *)D_8005A614)->teams != 0 && i == mate) continue;
+        if (Heroes[i].hero_status & 0xFA00) continue;
+        dx = px - Heroes[i].hero_eng->unk10.x;
+        dz = pz - Heroes[i].hero_eng->unk10.z;
+        if (Heroes[i].hero_mode == 2 || Heroes[i].hero_pu != 0) {
+            d = csqrt(dx * dx + dz * dz) >> 6;
+            d = abs(d - r) * heroW;
+            cnt = 0;
+            for (k = 0; k < 4; k++) {
+                if (ai->TargetPlayer == k) cnt += 4;
+            }
+            if (cnt != 0) d >>= cnt;
+            if (bestHeroScore < d) {
+                bestHero = i;
+                bestHeroScore = d;
+            }
+        }
+    }
+    if (bestHeroScore < bestNasScore) {
+        ai->pTargetNas = bestNas;
+        ai->TargetPlayer = -1;
+        return 1;
+    }
+    if (bestHeroScore != 0) {
+        ai->TargetPlayer = bestHero;
+        ai->pTargetNas = NULL;
+        return 1;
+    }
+    return 0;
+}
 
 s32 func_800B8B5C(s32 arg0) {
     s32 other;
