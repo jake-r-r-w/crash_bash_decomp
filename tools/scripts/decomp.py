@@ -4283,22 +4283,33 @@ def cmd_block(a):
     cmd_progress(a)  # the dashboard counts parked functions
 
 
-def cmd_hacks(a):
+def split_functions(text):
+    """name -> definition with its body, for every function TEXT defines (one pass)."""
+    out = {}
+    for m in DEFS.finditer(text):
+        depth, i = 0, m.end() - 1
+        while i < len(text):
+            depth += (text[i] == "{") - (text[i] == "}")
+            if depth == 0:
+                break
+            i += 1
+        out.setdefault(m.group(1), text[m.start():i + 1])
+    return out
+
+
+def hack_rows(funcs, syms, stat):
     """Matched functions that need a hack (a register pin, an empty asm barrier, a no-op ++/--
-    pair or a dead store), with the reason their match commit gives, so they can be retried
-    without it (docs/CONVENTIONS.md, Matching rules). Read from the source, so the list can't go
-    stale."""
-    funcs, syms = need_funcs(), sym_names()
-    stat, _ = statuses(funcs)
-    texts, rows = {}, []
+    pair or a dead store), as dicts with the reason their match commit gives. Read from the
+    source, so the list can't go stale (each file split into its functions in one pass: the lint
+    is slow on a whole file)."""
+    bodies, rows = {}, []
     for k, e in funcs.items():
-        if stat.get(k) != "matched":
+        if stat.get(k) != "matched" or not e.get("src"):
             continue
-        if e["src"] not in texts:
-            texts[e["src"]] = read(e["src"])
+        if e["src"] not in bodies:
+            bodies[e["src"]] = split_functions(read(e["src"]))
         names = list(dict.fromkeys([cur_name(k, e, syms), e["name"], e["orig"]]))
-        name, body = next(((nm, b) for nm in names if (b := extract_function(texts[e["src"]], nm))),
-                          (None, None))
+        name, body = next(((nm, bodies[e["src"]][nm]) for nm in names if nm in bodies[e["src"]]), (None, None))
         if not name:
             continue
         _, hacks = lint_body(body)
@@ -4312,12 +4323,22 @@ def cmd_hacks(a):
                 commit = lines[0]
                 why = next((l.strip()[len("Hack:"):].strip() for l in lines if l.strip().startswith("Hack:")), why)
                 break
-        rows.append((e["seg"], name, ", ".join(hacks), commit, why))
+        rows.append({"name": name, "seg": e["seg"], "size": e["size"], "kinds": ", ".join(hacks),
+                     "commit": commit, "why": why})
+    return sorted(rows, key=lambda r: (r["seg"], r["name"]))
+
+
+def cmd_hacks(a):
+    """Matched functions that need a hack, with the reason their match commit gives, so they can
+    be retried without it (docs/CONVENTIONS.md, Matching rules)."""
+    funcs = need_funcs()
+    stat, _ = statuses(funcs)
+    rows = hack_rows(funcs, sym_names(), stat)
     if not rows:
         print("no matched function uses a hack")
         return
-    for seg, name, kinds, commit, why in sorted(rows):
-        print(f"{name} ({seg}): {kinds}; {commit}: {why}")
+    for r in rows:
+        print(f"{r['name']} ({r['seg']}): {r['kinds']}; {r['commit']}: {r['why']}")
     print(f"{len(rows)} function(s) match only with a hack; retry them without it after tool upgrades")
 
 
@@ -4940,6 +4961,7 @@ def cmd_progress(a):
                     "auto": st[k].get("via") == "auto" or not st[k].get("tries")} for t, k in recent],
         "blocked": [{"name": cur_name(k, funcs[k], syms), "seg": funcs[k]["seg"], "size": funcs[k]["size"],
                      "note": st.get(k, {}).get("note", "")} for k, v in sorted(stat.items()) if v == "blocked"],
+        "hacks": hack_rows(funcs, syms, stat),
     }
     os.makedirs("docs", exist_ok=True)
     jsave("docs/progress.json", data)

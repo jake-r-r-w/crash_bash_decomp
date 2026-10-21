@@ -71,8 +71,8 @@ font-size:12px;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.15);display:non
 details summary{cursor:pointer;color:var(--ink2);font-size:12px;font-weight:600;margin:16px 0 8px}
 code{font-size:12px}
 #map svg{display:block;touch-action:manipulation}
-#map rect.m{fill:var(--s1)}#map rect.p{fill:var(--warn)}#map rect.t{fill:var(--todo)}
-#map .cl{font-size:11px;pointer-events:none}#map .cl.m{fill:#fff}#map .cl.p{fill:#0b0b0b}#map .cl.t{fill:var(--ink2)}
+#map rect.m{fill:var(--s1)}#map rect.h{fill:var(--bad)}#map rect.p{fill:var(--warn)}#map rect.t{fill:var(--todo)}
+#map .cl{font-size:11px;pointer-events:none}#map .cl.m,#map .cl.h{fill:#fff}#map .cl.p{fill:#0b0b0b}#map .cl.t{fill:var(--ink2)}
 #map .ul{fill:var(--ink2);font-weight:600;cursor:pointer}
 #map .ul.z{cursor:default}
 .pill{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;border:1px solid var(--grid);border-radius:999px;padding:2px 10px}
@@ -108,7 +108,7 @@ code{font-size:12px}
 <div id="map"></div><div class="sub2" id="left-title">Largest functions left</div><div class="wrap"><table id="left"></table></div></section>
 <section class="card section"><h2>Units</h2><div class="small" id="ucap"></div><div class="wrap"><table id="units"></table></div></section>
 <div class="two section"><section class="card"><h2>Recent matches</h2><div class="wrap"><table id="recent"></table></div></section>
-<section class="card"><h2>Parked</h2><div id="parked"></div></section></div>
+<section class="card"><h2>Parked</h2><div id="parked"></div><div class="sub2">Matched with a hack</div><div id="hacks"></div></section></div>
 </main>
 <div class="tip" id="tip" role="tooltip"></div>
 <script>
@@ -168,6 +168,7 @@ const M={fn:[],units:{}};
   u.fns.push(f);u.b+=f.size;if(f.st=="m")u.m+=f.size;else if(f.st=="p")u.p+=f.size;
   if(u.segs[u.segs.length-1]!=seg)u.segs.push(seg)}
 })();
+(function(){const H=new Set((D.hacks||[]).map(h=>h.name));for(const f of M.fn)if(H.has(f.name))f.hack=true})();
 const SEGU=new Map((D.map&&D.map.segs||[]).map(([s,u])=>[s,u]));
 const unitOfSeg=s=>SEGU.get(s)||(String(s).split("/")[1]||s);
 const TITLE=Object.fromEntries((S.units||[]).map(u=>[u.unit,u.title||""]));
@@ -189,7 +190,8 @@ const uname=u=>u+(TITLE[u]&&TITLE[u]!=u?` (${TITLE[u]})`:"");
  $("tiles").innerHTML=tile("Game code matched",f2(G.pct),`${n(G.done_b)} / ${n(G.total_b)} bytes<br>${n(G.done_f)} / ${n(G.total_f)} functions · ${f2(pct(G.done_f,G.total_f))}`,G.pct,"var(--s1)",wk)+
   tile("Game functions named",f2(pct(named,all)),`${n(named)} / ${n(all)} with a real name`,pct(named,all),"var(--s3)")+
   tile("Data in C",f2(DA.pct),`${n(DA.done_b)} / ${n(DA.total_b)} bytes of data and rodata`,DA.pct,"var(--s4)")+
-  tile("Parked",`${S.blocked}`,"functions waiting for another attempt",null).replace('<div class="card">','<div class="card" id="parkTile">');
+  tile("Parked",`${S.blocked}`,"functions waiting for another attempt",null).replace('<div class="card">','<div class="card" id="parkTile">')+
+  tile("Hacks",`${(D.hacks||[]).length}`,"matched only with a hack: retry without it",null);
 })();
 
 // ---------------------------------------------------------------- time scale and measure
@@ -366,7 +368,7 @@ function squarify(vals,x,y,w,h){
   i=j}
  return out}
 const CW=6.3;   // average width of an 11px character, for "does this label fit"
-const STATUS={m:"Matched",p:"Parked",t:"Not matched yet"};
+const STATUS={m:"Matched",h:"Matched with a hack",p:"Parked",t:"Not matched yet"};
 let mapSel=store.get("decomp-map");
 function mapGroup(fns,x,y,w,h,labels,attr){
  // a 3px surface gap around each group, and a header band when its label fits
@@ -377,8 +379,8 @@ function mapGroup(fns,x,y,w,h,labels,attr){
  const fs=fns.slice().sort((a,b)=>b.size-a.size),rs=squarify(fs.map(f=>f.size),x,y+head,w,h-head);
  for(let k=0;k<fs.length;k++){const [cx,cy,cw,ch]=rs[k],f=fs[k],ins=cw>2&&ch>2?.5:0;
   // a 1px surface gap between cells (the cell drawn half a pixel in on each side)
-  out+=`<rect class="${f.st}" x="${(cx+ins).toFixed(1)}" y="${(cy+ins).toFixed(1)}" width="${Math.max(.5,cw-2*ins).toFixed(1)}" height="${Math.max(.5,ch-2*ins).toFixed(1)}" data-i="${f.i}"/>`;
-  if(cw>=56&&ch>=16&&f.name.length*CW+8<=cw)out+=`<text class="cl ${f.st}" x="${(cx+4).toFixed(1)}" y="${(cy+12).toFixed(1)}">${esc(f.name)}</text>`}
+  out+=`<rect class="${f.hack?"h":f.st}" x="${(cx+ins).toFixed(1)}" y="${(cy+ins).toFixed(1)}" width="${Math.max(.5,cw-2*ins).toFixed(1)}" height="${Math.max(.5,ch-2*ins).toFixed(1)}" data-i="${f.i}"/>`;
+  if(cw>=56&&ch>=16&&f.name.length*CW+8<=cw)out+=`<text class="cl ${f.hack?"h":f.st}" x="${(cx+4).toFixed(1)}" y="${(cy+12).toFixed(1)}">${esc(f.name)}</text>`}
  return out}
 function drawMap(){
  const box=$("map"),units=Object.values(M.units);
@@ -388,7 +390,7 @@ function drawMap(){
  $("mchips").innerHTML=[`<button data-u="" aria-pressed="${!mapSel}">All units</button>`].concat(order.map(u=>
   `<button data-u="${esc(u.unit)}" aria-pressed="${u.unit==mapSel}">${esc(uname(u.unit))}</button>`)).join("");
  $("mchips").querySelectorAll("button").forEach(b=>b.onclick=()=>{mapSel=b.dataset.u||null;store.set("decomp-map",mapSel||"");drawMap()});
- $("mlegend").innerHTML=[["m","var(--s1)"],["p","var(--warn)"],["t","var(--todo)"]].map(([k,c])=>`<span><i class="sw" style="background:${c}"></i>${STATUS[k]}</span>`).join("");
+ $("mlegend").innerHTML=[["m","var(--s1)"],["h","var(--bad)"],["p","var(--warn)"],["t","var(--todo)"]].map(([k,c])=>`<span><i class="sw" style="background:${c}"></i>${STATUS[k]}</span>`).join("");
  const W=Math.max(300,box.clientWidth||900),Ht=Math.round(Math.min(520,Math.max(300,W*.52)));
  let g="";
  if(!mapSel){
@@ -410,7 +412,7 @@ function drawMap(){
   const t=ev.target;
   if(t.dataset.i!=null){const f=M.fn[+t.dataset.i];
    for(const a of ["x","y","width","height"])mh.setAttribute(a,t.getAttribute(a));mh.setAttribute("visibility","visible");
-   showTip(`<b>${esc(f.name)}</b><br><b>${n(f.size)}</b> bytes · ${STATUS[f.st]}<br><span class="small">${esc(uname(f.unit))} · ${esc(f.seg)}</span>`,ev)}
+   showTip(`<b>${esc(f.name)}</b><br><b>${n(f.size)}</b> bytes · ${f.hack?STATUS.h:STATUS[f.st]}<br><span class="small">${esc(uname(f.unit))} · ${esc(f.seg)}</span>`,ev)}
   else if(t.dataset.u){const u=M.units[t.dataset.u];mh.setAttribute("visibility","hidden");
    showTip(`<b>${esc(uname(u.unit))}</b><br><b>${f2(pct(u.m,u.b))}</b> of ${n(u.b)} bytes · ${n(u.fns.filter(f=>f.st=="m").length)} / ${n(u.fns.length)} functions<br><span class="small">Click to zoom in</span>`,ev)}});
  svg.addEventListener("pointerleave",()=>{hideTip();mh.setAttribute("visibility","hidden")});
@@ -430,6 +432,12 @@ function drawMap(){
  $("recent").innerHTML=R.length?`<tr><th>Function</th><th>Unit</th><th class="num">Bytes</th><th class="num">When</th></tr>`+R.map(r=>
   `<tr><td><code>${esc(r.name)}</code></td><td>${esc(unitOfSeg(r.seg))}</td><td class="num">${n(r.size)}</td><td class="num" title="${esc(r.at)}">${esc(when(r.at))}</td></tr>`).join("")
   :'<tr><td class="empty">No matches recorded yet.</td></tr>';
+})();
+
+// hack matches (decomp.py hacks: a register pin, an asm barrier, a no-op ++/-- pair, a dead store)
+(function(){
+ const H=D.hacks||[];
+ $("hacks").innerHTML=H.length?H.map(h=>`<details class="park"><summary><code>${esc(h.name)}</code> <span class="tag">${esc(h.kinds)}</span> <span class="small">${esc(unitOfSeg(h.seg))} · ${n(h.size)} bytes</span></summary><div class="note">${esc(h.commit)}: ${esc(h.why)}</div></details>`).join(""):'<div class="empty">No hack matches.</div>';
 })();
 
 // parked: by hand (decomp.py block, in the page's data) and by the swarm (docs/swarm.js parks, minus

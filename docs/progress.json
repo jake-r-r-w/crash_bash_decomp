@@ -19,9 +19,35 @@
    "size": 788
   }
  ],
- "commit": "2a0979fd8c",
+ "commit": "8cc71253",
  "game": "SCUS_945.70",
- "generated": "2026-10-21T09:32:49Z",
+ "generated": "2026-10-21T10:06:16Z",
+ "hacks": [
+  {
+   "commit": "f69a346bb",
+   "kinds": "register pin",
+   "name": "func_800193A8",
+   "seg": "main/main",
+   "size": 692,
+   "why": "register pin - xy/z/flags pinned to s4/s3/s2: the target uses s2-s4 with s0/s1 unused in a leaf, which normal allocation never does; without the pins 171/173 differ"
+  },
+  {
+   "commit": "ba1244e6",
+   "kinds": "dead store",
+   "name": "func_800B7134",
+   "seg": "overlays/ovl5e/ovl5e",
+   "size": 792,
+   "why": "dead store - tb/trig/seq set at the top of the outer i loop and NULLed at its bottom: set twice, loop.c can't hoist the D_800BE838 base, which the target rebuilds per i. Natural C (globals direct) is 2 insns off: move_movables doubles insn_count per already-moved reg, so the 3rd+ base always moves (MATCHING.md Diff patterns)"
+  },
+  {
+   "commit": "30735f0c",
+   "kinds": "no-op ++/-- pair",
+   "name": "func_800B345C",
+   "seg": "overlays/ovl63/ovl63",
+   "size": 368,
+   "why": "(no Hack: line in its match commit)"
+  }
+ ],
  "history": [
   {
    "commit": "9d2e150",
@@ -164652,7 +164678,7 @@
    }
   },
   {
-   "commit": "2a0979fd8c",
+   "commit": "8cc71253",
    "data_b": 5548,
    "data_tb": 606943,
    "game_all_f": 2537,
@@ -164665,7 +164691,7 @@
    "lib_b": 122112,
    "lib_f": 564,
    "lib_tb": 122112,
-   "ts": "2026-10-21T09:32:49Z",
+   "ts": "2026-10-21T10:06:16Z",
    "units": {
     "engine": [
      121412,
