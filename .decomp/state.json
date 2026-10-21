@@ -10076,9 +10076,10 @@
   "via": "copy"
  },
  "ovl68:800BA220": {
-  "auto_failed": "types",
   "copy_failed": "ovl66:800B5820",
-  "copy_failed_stage": "in-file"
+  "copy_failed_stage": "in-file",
+  "matched_at": "2026-10-21T18:46:26Z",
+  "status": "matched"
  },
  "ovl68:800BA5A0": {
   "auto_diff": 33,

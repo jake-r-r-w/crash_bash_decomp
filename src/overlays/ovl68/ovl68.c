@@ -2229,7 +2229,96 @@ void func_800B9ED8(s32 arg0, u16 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BA220);
+void func_800BA220(s32 arg0, u16 arg1) {
+    Ovl68RankView *g;
+    Ovl68RankView *p;
+    HeroInfo *hb;
+    HeroInfo *h;
+    HeroInfo *top;
+    HeroInfo *ta;
+    HeroInfo *b;
+    HeroInfo *am;
+    HeroInfo *bm;
+    s32 used;
+    s32 i;
+    s32 k;
+    s32 n;
+    s32 j;
+    s32 best;
+    s32 sa;
+    s32 sb;
+
+    if (arg0 != -1) {
+        return;
+    }
+    used = 0;
+    for (i = 0; i < 4; i++) {
+        best = -1;
+        for (j = 0; j < 4; j++) {
+            if (!((used >> j) & 1) && (Heroes[j].hero_score > Heroes[best].hero_score || best == -1)) {
+                best = j;
+            }
+        }
+        RANK68V->order[i] = best;
+        used |= 1 << best;
+    }
+    g = RANK68V;
+    if (g->teams == 0) {
+        h = Heroes;
+        top = &h[g->order[0]];
+        if (top->hero_score == h[g->order[1]].hero_score) {
+            g->winner[0] = 0;
+            g->unk30 |= arg1;
+            for (k = 0; k < 4; k++) {
+                Heroes[k].hero_status |= 0x100;
+            }
+            return;
+        }
+        p = g;
+        p->winner[0] = top->hero_name;
+        p->unk30 |= 0x800;
+        for (n = 0; n < 4; n++) {
+            if (p->order[0] == n) {
+                h[n].hero_status |= 0x200;
+            } else {
+                h[n].hero_status |= 0x400;
+            }
+        }
+        return;
+    }
+    func_8007B120();
+    hb = Heroes;
+    ta = &hb[g->team[0]];
+    b = &hb[g->team[1]];
+    am = &hb[ta->hero_teammate];
+    bm = &hb[b->hero_teammate];
+    sa = ta->hero_score + am->hero_score;
+    sb = b->hero_score + bm->hero_score;
+    if (sa == sb) {
+        g->winner[0] = 0;
+        g->unk30 |= arg1;
+        for (k = 0; k < 4; k++) {
+            Heroes[k].hero_status |= 0x100;
+        }
+        return;
+    }
+    g->unk30 |= 0x800;
+    if (sb < sa) {
+        g->winner[0] = ta->hero_name;
+        g->winner[1] = am->hero_name;
+        ta->hero_status |= 0x200;
+        am->hero_status |= 0x200;
+        b->hero_status |= 0x400;
+        bm->hero_status |= 0x400;
+    } else {
+        RANK68V->winner[0] = b->hero_name;
+        RANK68V->winner[1] = bm->hero_name;
+        b->hero_status |= 0x200;
+        bm->hero_status |= 0x200;
+        ta->hero_status |= 0x400;
+        am->hero_status |= 0x400;
+    }
+}
 
 void func_800BA5A0(s32 arg0, s32 arg1) {
     u8 *g = D_8005A614;

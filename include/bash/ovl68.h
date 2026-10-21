@@ -218,6 +218,21 @@ void func_800B9ED8(s32 arg0, u16 arg1);
 void func_800BA220(s32 arg0, u16 arg1);
 extern u8 D_8005A614[];
 
+/* D_8005A614 as seen by func_800BA220 (the final ranking). */
+typedef struct Ovl68RankView {
+    /* 0x00 */ u8 unk0[0x30];
+    /* 0x30 */ u16 unk30;
+    /* 0x32 */ u8 unk32[0x48 - 0x32];
+    /* 0x48 */ s16 team[2];
+    /* 0x4C */ u8 unk4C[0x60 - 0x4C];
+    /* 0x60 */ u8 winner[2];
+    /* 0x62 */ u8 unk62[0x6C - 0x62];
+    /* 0x6C */ s32 teams;
+    /* 0x70 */ u8 unk70[0xA7 - 0x70];
+    /* 0xA7 */ u8 order[4];
+} Ovl68RankView;
+#define RANK68V ((Ovl68RankView *)D_8005A614)
+
 /* Hero jump parameters, 8 bytes per hero (D_8009D6E8.unk10). */
 typedef struct Ovl68JumpEnt {
     u16 vel, max, acc, dec;
