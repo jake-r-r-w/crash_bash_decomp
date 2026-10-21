@@ -1896,7 +1896,137 @@ found:
     KillNAS(nas);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B94FC);
+void func_800B94FC(s32 arg0, u16 arg1) {
+    s32 taken;
+    s32 j;
+    s32 i;
+    s32 best;
+    s32 k;
+    s32 free;
+    s32 m;
+    u8 *g;
+
+    free = -1;
+    for (i = 0; i < 4; i++) {
+        if (D_800BC2D0[i][0] == 0) {
+            free = i;
+        }
+    }
+    if (free != -1) {
+        D_8005A614[0x60] = 0;
+        *(u16 *)(D_8005A614 + 0x30) |= arg1;
+        for (i = 0; i < 4; i++) {
+            if (D_8005A614[i + 0x5C] != 0) {
+                func_80026980(Heroes[i].hero);
+                Heroes[i].hero_status |= 0x400;
+            } else if (i != free) {
+                Heroes[i].hero_status |= 0x100;
+            }
+        }
+        D_800AD12C = 1;
+    } else if (arg0 == -1) {
+        taken = 0;
+        for (j = 0; j < 4; j++) {
+            best = -1;
+            for (m = 0; m < 4; m++) {
+                if (!((taken >> m) & 1)) {
+                    if (Heroes[m].hero_score > Heroes[best].hero_score || best == -1) {
+                        best = m;
+                    }
+                }
+            }
+            D_8005A614[j + 0xA7] = best;
+            taken |= 1 << best;
+        }
+        g = D_8005A614;
+        if (*(s32 *)(g + 0x6C) == 0) {
+            HeroInfo *hb;
+            HeroInfo *a;
+            s32 n;
+
+            if (g[g[0xA7] + 0x5C] != 0
+                || (hb = Heroes, a = &hb[g[0xA7]], a->hero_score == hb[g[0xA8]].hero_score)) {
+                D_8005A614[0x60] = 0;
+                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                for (k = 0; k < 4; k++) {
+                    if (D_8005A614[k + 0x5C] != 0) {
+                        func_80026980(Heroes[k].hero);
+                        Heroes[k].hero_status |= 0x400;
+                    } else {
+                        Heroes[k].hero_status |= 0x100;
+                    }
+                }
+            } else {
+                D_8005A614[0x60] = a->hero_name;
+                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                for (n = 0; n < 4; n++) {
+                    if (D_8005A614[0xA7] == n) {
+                        hb[n].hero_status |= 0x200;
+                    } else {
+                        hb[n].hero_status |= 0x400;
+                    }
+                }
+            }
+        } else {
+            HeroInfo *a;
+            HeroInfo *b;
+            HeroInfo *ta;
+            HeroInfo *tb;
+            HeroInfo *hb;
+            s32 sa;
+            s32 sb;
+
+            func_8007B120();
+            hb = Heroes;
+            a = &hb[*(s16 *)(g + 0x48)];
+            b = &hb[*(s16 *)(g + 0x4A)];
+            ta = &hb[a->hero_teammate];
+            tb = &hb[b->hero_teammate];
+            sa = a->hero_score + ta->hero_score;
+            sb = b->hero_score + tb->hero_score;
+            if (sa == sb) {
+                D_8005A614[0x60] = 0;
+                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                for (k = 0; k < 4; k++) {
+                    if (D_8005A614[k + 0x5C] != 0) {
+                        func_80026980(Heroes[k].hero);
+                        Heroes[k].hero_status |= 0x400;
+                    } else {
+                        Heroes[k].hero_status |= 0x100;
+                    }
+                }
+            } else if (sb < sa) {
+                *(u16 *)(g + 0x30) |= 0x800;
+                if (g[*(s16 *)(g + 0x48) + 0x5C] == 0) {
+                    g[0x60] = a->hero_name;
+                    g[0x61] = ta->hero_name;
+                    a->hero_status |= 0x200;
+                    ta->hero_status |= 0x200;
+                    b->hero_status |= 0x400;
+                    tb->hero_status |= 0x400;
+                } else {
+                    g[0x60] = b->hero_name;
+                    g[0x61] = tb->hero_name;
+                    b->hero_status |= 0x200;
+                    tb->hero_status |= 0x200;
+                    a->hero_status |= 0x400;
+                    ta->hero_status |= 0x400;
+                }
+            } else {
+                D_8005A614[0x60] = 0;
+                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                for (k = 0; k < 4; k++) {
+                    if (D_8005A614[k + 0x5C] != 0) {
+                        func_80026980(Heroes[k].hero);
+                        Heroes[k].hero_status |= 0x400;
+                    } else {
+                        Heroes[k].hero_status |= 0x100;
+                    }
+                }
+            }
+        }
+    }
+}
 
 void func_800B9A50(s32 arg0, u16 arg1) {
     s32 taken;
