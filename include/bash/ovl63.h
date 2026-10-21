@@ -62,7 +62,7 @@ void func_800B3890(s32 arg0);
 void func_800B3BC0(s32 arg0);
 s32 func_800B406C(s32 arg0);
 void func_800B41DC(s32 arg0);
-void func_800B442C(s32 arg0);
+s32 func_800B442C(s32 arg0);
 
 void func_800B7D94(void);
 

@@ -322,7 +322,75 @@ s32 func_800B406C(s32 player)
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B41DC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B442C);
+s32 func_800B442C(s32 player)
+{
+    s32 i;
+    s32 b[4];
+    s32 a[4];
+    s16 c[8];
+    TrigEntry *trig;
+    HeroInfo *o;
+    HeroInfo *base;
+    HeroInfo *h;
+    Ovl63Pad *pad;
+    Ovl63Pad *pads;
+    s32 ang;
+    s32 x;
+    s32 z;
+
+    if (Heroes[player].hero->FUX != NULL) {
+        i = 0;
+        trig = D_80068BD4;
+        pads = (Ovl63Pad *)D_80051338;
+        base = Heroes;
+        pad = pads + player;
+        o = base;
+    loop:
+        if (i < 4) {
+            do {
+                if (i == player) {
+                    goto next;
+                }
+            } while (0);
+            ang = get_angle(o->hero_eng->unk10.x, o->hero_eng->unk10.z) & 0xFFF;
+            h = (HeroInfo *)(player * (s32)sizeof(HeroInfo) + (s32)base);
+            if ((((ang - (get_angle(h->hero_eng->unk10.x, h->hero_eng->unk10.z) & 0xFFF)) << 20) >> 20) < 100) {
+                goto next;
+            }
+            a[0] = 0;
+            a[2] = 0;
+            b[0] = trig[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2 * 0x17D >> 10;
+            b[1] = 0;
+            do {
+                b[2] = trig[h->hero_eng->unk1E & 0xFFF].unk2 * 0x17D >> 10;
+            } while (0);
+            c[0] = o->hero_eng->unk10.x - h->hero_eng->unk10.x;
+            c[2] = o->hero_eng->unk10.z - h->hero_eng->unk10.z;
+            c[3] = 0x180;
+            if (func_800B3E60(a, b, c) != 0 && o->hero->FUX != NULL) {
+                x = o->hero_eng->unk10.x;
+                z = o->hero_eng->unk10.z;
+                if (x * x + z * z > 0x310000) {
+                    h->hero_ai->AIpad |= 0x20;
+                    h->hero_ai->AIpad &= ~0x80;
+                } else {
+                    h->hero_ai->AIpad |= 0x80;
+                    h->hero_ai->AIpad &= ~0x20;
+                }
+                do {
+                    do {
+                        pad->unk50 = h->hero_ai->AIpad;
+                    } while (0);
+                } while (0);
+            }
+        next:
+            o++;
+            do { i++; } while (0);
+            goto loop;
+        }
+    }
+    return 0;
+}
 
 void func_800B4708(arg0)
 s32 arg0;
