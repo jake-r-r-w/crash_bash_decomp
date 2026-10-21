@@ -19,9 +19,9 @@
    "size": 788
   }
  ],
- "commit": "5263edffe3",
+ "commit": "a85178fdc3",
  "game": "SCUS_945.70",
- "generated": "2026-10-21T06:47:56Z",
+ "generated": "2026-10-21T06:48:28Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -153728,9 +153728,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "a85178fdc3",
+   "data_b": 4800,
+   "data_tb": 606943,
+   "game_all_f": 2537,
+   "game_b": 581948,
+   "game_c_f": 2204,
+   "game_f": 2204,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 1984,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-21T06:48:28Z",
+   "units": {
+    "engine": [
+     121412,
+     355
+    ],
+    "main exe": [
+     124840,
+     575
+    ],
+    "ovl5d": [
+     20812,
+     71
+    ],
+    "ovl5e": [
+     26000,
+     68
+    ],
+    "ovl5f": [
+     20972,
+     127
+    ],
+    "ovl60": [
+     34772,
+     149
+    ],
+    "ovl61": [
+     55000,
+     97
+    ],
+    "ovl62": [
+     35052,
+     159
+    ],
+    "ovl63": [
+     23268,
+     98
+    ],
+    "ovl64": [
+     9068,
+     37
+    ],
+    "ovl65": [
+     18496,
+     65
+    ],
+    "ovl66": [
+     11468,
+     69
+    ],
+    "ovl67": [
+     27992,
+     103
+    ],
+    "ovl68": [
+     10880,
+     68
+    ],
+    "ovl69": [
+     10856,
+     69
+    ],
+    "ovl6a": [
+     31060,
+     94
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-21T06:48:27Z",
+   "auto": true,
+   "name": "PlotPapuBoss",
+   "seg": "overlays/ovl5e/ovl5e",
+   "size": 1820,
+   "tries": 0
+  },
   {
    "at": "2026-10-21T06:47:53Z",
    "auto": true,
@@ -153842,22 +153936,14 @@
    "seg": "overlays/ovl68/ovl68",
    "size": 372,
    "tries": 0
-  },
-  {
-   "at": "2026-10-21T06:35:17Z",
-   "auto": true,
-   "name": "func_800B6CD8",
-   "seg": "overlays/ovl66/ovl66",
-   "size": 324,
-   "tries": 0
   }
  ],
  "summary": {
   "blocked": 3,
   "copies_b": 16136,
   "data": {
-   "done_b": 4640,
-   "pct": 0.7644869452320894,
+   "done_b": 4800,
+   "pct": 0.7908485640331959,
    "total_b": 606943
   },
   "game": {
@@ -153865,15 +153951,15 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 3,
-   "c_f": 2203,
-   "done_b": 580128,
-   "done_f": 2203,
+   "c_f": 2204,
+   "done_b": 581948,
+   "done_f": 2204,
    "named_f": 345,
-   "pct": 56.929097696254104,
+   "pct": 57.10769786347097,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2537,
-   "typed_f": 1983
+   "typed_f": 1984
   },
   "lib": {
    "all_f": 566,
@@ -153959,20 +154045,20 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 1,
-    "c_f": 67,
-    "done_b": 24180,
-    "done_f": 67,
+    "c_f": 68,
+    "done_b": 26000,
+    "done_f": 68,
     "file": "ovl5e.bin",
     "files": 2,
     "lib": false,
     "named_f": 5,
-    "pct": 64.28115695448746,
+    "pct": 69.11952360697576,
     "phase": 5,
     "sony_b": 0,
     "title": "Papu",
     "total_b": 37616,
     "total_f": 73,
-    "typed_f": 62,
+    "typed_f": 63,
     "unit": "ovl5e"
    },
    {

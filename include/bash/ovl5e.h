@@ -232,6 +232,15 @@ extern u8 D_800533F4[];
 extern ScriptInit D_800BD3AC;
 extern s16 D_800BE88E;
 extern s16 D_800BE890;
+extern u16 D_800BD130[];
+extern u16 D_800BD2F4[];
+extern s16 D_800BC91C[];
+extern s16 D_800BE82A;
+extern u16 D_800BE834;
+extern s32 D_800BD708;
+extern u16 D_800BD8B4;
+extern s32 D_800BD8D4;
+extern s32 D_800BD8D8;
 
 void func_800B7600(s32 arg0);
 
@@ -411,8 +420,8 @@ extern s32 D_800BD8D8;
 extern EXTengine D_800BE788;
 extern s16 D_800BE828;
 extern s16 D_800BE82A;
-extern s16 D_800BE830;
-extern s16 D_800BE832;
+extern u16 D_800BE830;
+extern u16 D_800BE832;
 void func_800B38FC(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6,
                    s32 a7, s32 a8);
 
@@ -420,6 +429,8 @@ s32 func_800B6860(u32 idx);
 
 extern _sfx_handler *D_800BE81C;
 extern u16 D_800BD1B0[];
+
+void PlotPapuBoss(NAS *nas);
 
 void func_800B7134(void);
 

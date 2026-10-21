@@ -411,7 +411,229 @@ void InitPapuBoss(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", PlotPapuBoss);
+void PlotPapuBoss(NAS *nas) {
+    s32 frame;
+    EXTanimator *anim;
+    EXTengine *eng;
+    s16 *p;
+    s32 v;
+    s32 i;
+    s32 j;
+    s32 empty;
+    NAS *o;
+
+    eng = nas->Engine;
+    if (eng == NULL) {
+        return;
+    }
+    anim = FindExtension(nas, 0x400);
+    frame = func_800250B0(nas);
+    if (D_8009D6E0 & 0x200) {
+        if (D_800BE88E != 0x1E) {
+            D_800BE88E = 0x1E;
+            func_80025FAC(anim, 0x1C);
+        }
+    }
+    switch (D_800BE88E) {
+    case 7:
+        if (frame == 8) {
+            D_800BE88E = 0;
+        } else if (frame == 0xC) {
+            PlaySfx(0x1F8, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        }
+        break;
+    case 8:
+        switch (frame) {
+        case 0xC:
+            PlaySfx(0x1F8, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        case 0xD:
+            func_800B7894(D_800BE834);
+            break;
+        case 8:
+            D_800BE88E = 0xB;
+            break;
+        }
+        break;
+    case 6:
+        func_800B61A0(eng);
+        if (frame == 8) {
+            goto f8;
+        }
+        if (frame == 0xC) {
+            PlaySfx(0x1F5, NULL, NULL, 0x1000, 0x1E00, 0);
+            v = 0xB0;
+            i = 0;
+            p = D_800BE838;
+            D_800BE894 = 1;
+            D_800BE838[0] = 0x80;
+            D_800BE888 = 0x300;
+            for (; i < 0x27; i++) {
+                if (v <= 0) {
+                    break;
+                }
+                *p = v;
+                v -= 0x10;
+                p++;
+            }
+            func_800B7778();
+            for (j = 0; j < 0x14; j++) {
+                if (D_800BE648[j].unk0 != 0) {
+                    D_800BE648[j].unk6 = 1;
+                }
+            }
+        }
+        break;
+    f8:
+        D_800BD8D8 = 1;
+        D_800BE88E = 0;
+        break;
+    case 10:
+        if (!(D_8005A624 & 0x04000000)) {
+            D_800BE88E = 0;
+        }
+        break;
+    case 12:
+        if (D_800BD8B4 != 0) {
+            D_800BE890 = D_800BE88E;
+            if (D_800BD708 != 0) {
+                D_800BE88E = 9;
+                D_8009D6DC[3] -= 5;
+                if (D_8009D6DC[3] < 0) {
+                    D_8009D6DC[3] = 0;
+                }
+                func_80025FAC(anim, 0x1E);
+            }
+        }
+        if (frame == 0xC) {
+            PlaySfx(0x1F8, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        }
+        if (D_800BE82A != 0) {
+            D_800BE82A--;
+        } else {
+            D_800BE88E = 0;
+        }
+        break;
+    case 11:
+        empty = 1;
+        for (i = 0; i < 6; i++) {
+            if (D_800BD70C[i].unk0 != 0) {
+                empty = 0;
+            }
+        }
+        if (empty) {
+            D_800BE88E = 0;
+        }
+        if (frame == 8) {
+            empty = D_800BD2F4[Random(8)];
+            ((void (*)(EXTanimator *, s32))func_80025FAC)(anim, empty);
+        }
+        break;
+    case 9:
+        D_800BD708 = 0;
+    case 1:
+        if (frame == 8) {
+            D_800BE88E = 0;
+        }
+        break;
+    case 20:
+        if (frame == 0xC) {
+            o = SpawnNASById(eng->unk10.x, eng->unk10.y - 0x800, eng->unk10.z, 0x1203, 0x11);
+            if (o != NULL) {
+                func_80026C38((u8 *)nas, (u8 *)o);
+            }
+        }
+        break;
+    case 30:
+        break;
+    default:
+        D_800BE832 = D_800BD130[D_800BE830];
+        D_800BE830++;
+        D_800BE834 = D_800BD130[D_800BE830];
+        D_800BE830++;
+        if (D_800BE832 == 4) {
+            if (D_800BD708 != 0) {
+                D_800BE830 = D_800BE834 * 2;
+                D_800BE832 = D_800BD130[D_800BE830];
+                D_800BE830++;
+                D_800BE834 = D_800BD130[D_800BE830];
+                D_800BE830++;
+            } else {
+                D_800BE832 = D_800BD130[D_800BE830];
+                D_800BE830++;
+                D_800BE834 = D_800BD130[D_800BE830];
+                D_800BE830++;
+            }
+        }
+        switch (D_800BE832) {
+        case 1:
+            D_800BE88E = 0xA;
+            func_80025FAC(anim, 0);
+            break;
+        case 9:
+            D_800BD8D4 = 0;
+            D_800BE88E = 0xC;
+            D_800BD708 = 1;
+            D_800BE82A = D_800BC91C[D_8005A6C3];
+            if (D_800BE824 != NULL) {
+                D_800BE824->flags |= 0x8000;
+            }
+            func_80025FAC(anim, 0x21);
+            break;
+        case 2:
+            D_800BD708 = 0;
+            if (D_800BE824 != NULL) {
+                D_800BE824->flags &= ~0x8000;
+            }
+            D_800BE88E = 6;
+            D_800BD8E8 = (&D_800BD8E8)[1] = 0;
+            func_80025FAC(anim, 3);
+            func_800B4154(D_800BE834);
+            break;
+        case 3:
+            func_800B7600(D_800BE834);
+            D_800BE88E = 1;
+            func_80025FAC(anim, 0xA);
+            break;
+        case 5:
+            D_800BD8DC = 0x1E;
+            D_800BD8E8 = (&D_800BD8E8)[1] = 6;
+            break;
+        case 6:
+            D_800BD8D4 = 1;
+            func_800B42C0();
+            D_800BE88E = 8;
+            func_80025FAC(anim, 0x16);
+            break;
+        case 7:
+            D_800BD8D4 = 1;
+            func_800B42C0();
+            D_800BE88E = 8;
+            func_80025FAC(anim, 0x16);
+            break;
+        case 8:
+            D_800BD8D4 = 1;
+            D_800BE88E = 0xB;
+            func_80025FAC(anim, 0);
+            break;
+        case 10:
+            if (D_8009D6E0 & 0x200) {
+                D_800BE88E = 0x1E;
+                func_80025FAC(anim, 0x1C);
+            } else {
+                D_800BE88E = 0x14;
+                func_80025FAC(anim, 0x19);
+            }
+            break;
+        default:
+            D_800BE88E = 1;
+            func_80025FAC(anim, 0);
+            break;
+        }
+        break;
+    }
+    eng->unk5E = 1;
+    D_800BD8B4 = 0;
+}
 
 NAS *func_800B4B9C(s32 arg0) {
     NAS *best;
