@@ -440,7 +440,178 @@ retry:
     goto avg;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B4A28);
+void func_800B4A28(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
+    EXTengine *te;
+    EXTengine *e;
+    NAS *nas;
+    NAS **pp;
+    NAS *tgt;
+    TA_player *ta;
+    TA_player *tab;
+    TA_player *tab2;
+    s32 j;
+    s32 ex;
+    s32 ez;
+    s32 d;
+    s32 x;
+    s32 z;
+    s32 delay;
+    s32 speed;
+    s32 aspeed;
+    s32 sspeed;
+    s32 a;
+    s32 r;
+
+    switch (D_8005A648) {
+    case 6:
+    case 8:
+        r = func_800B3C7C(player);
+        break;
+    case 5:
+    case 7:
+    case 9:
+    default:
+        r = func_800B3B24(player);
+        break;
+    }
+    ai->unk8 = r;
+    ai->unk4 = 30;
+    if (ai->target != NULL && func_800B4490(player, eng, ai) != 0) {
+        return;
+    }
+    switch (Random(8)) {
+    case 0:
+        if (D_8009D908 == 0 && (u32)Random(D_8009D87C[player].unk0 + 1) < 13) {
+            ai->unk4 = Random(30) + 15;
+            ai->flags = 0;
+            ai->unk0 = 0;
+            return;
+        }
+        goto chase;
+    case 1:
+    find:
+        j = 0;
+        pp = D_800CAD44;
+        ex = eng->unk10.x;
+        ez = eng->unk10.z;
+        for (; j < 3; j++, pp++) {
+            nas = *pp;
+            if (nas != NULL) {
+                te = nas->Engine;
+                d = ex - te->unk10.x;
+                if (d < 0) {
+                    d = -d;
+                }
+                if (d + (ez - te->unk10.z) < 0x600) {
+                    tgt = nas;
+                    goto found;
+                }
+            }
+        }
+        tgt = NULL;
+    found:
+        if (tgt != NULL) {
+            e = tgt->Engine;
+            d = e->unk10.x - ex;
+            if (d > 0x70) {
+                goto px;
+            }
+            if (d < -0x70) {
+                goto nx;
+            }
+            d = e->unk10.z - ez;
+            if (d > 0x70) {
+                goto pz;
+            }
+            if (d < -0x70) {
+                goto nz;
+            }
+        }
+        speed = D_800CAD50[player].Speed;
+        ai->unk0 = 5;
+        ai->unk4 = (speed / 2 + 0x200) / speed;
+        for (;;) {
+            switch (Random(4)) {
+            case 0:
+            px:
+                x = ex + 0x200;
+                if (D_800CB100 < x || ((s32 (*)(s32, s32))func_800C8950)(x, ez) != 0) {
+                    continue;
+                }
+                ai->flags = 0x20;
+                return;
+            case 1:
+            nx:
+                x = ex - 0x200;
+                if (x < 0 || ((s32 (*)(s32, s32))func_800C8950)(x, ez) != 0) {
+                    continue;
+                }
+                ai->flags = 0x80;
+                return;
+            case 2:
+            pz:
+                z = ez + 0x200;
+                if (D_800CB104 < z || ((s32 (*)(s32, s32))func_800C8950)(ex, z) != 0) {
+                    continue;
+                }
+                ai->flags = 0x10;
+                return;
+            case 3:
+            nz:
+                z = ez - 0x200;
+                if (z < 0 || ((s32 (*)(s32, s32))func_800C8950)(ex, z) != 0) {
+                    continue;
+                }
+                ai->flags = 0x40;
+                return;
+            }
+            return;
+        }
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+    chase:
+        if (ai->unk8 < 0) {
+            goto find;
+        }
+        tab = D_800CAD50;
+        ta = &tab[player];
+        delay = ta->MainWeaponFireDelay;
+        if (delay < 5) {
+        aim:
+            e = Heroes[ai->unk8].hero_eng;
+            a = get_angle(e->unk10.x - eng->unk10.x, e->unk10.z - eng->unk10.z);
+            ai->unk0 = 4;
+            aspeed = D_800CAD50[player].Speed;
+            ai->unk4 = (aspeed / 2 + 0x200) / aspeed;
+            ai->flags = D_80051244[(a >> 9) & 7];
+            return;
+        }
+        if (D_8009D908 != 0) {
+            if (delay != 0) {
+                ta->MainWeaponFireDelay = delay - 1;
+            }
+            if ((u32)Random(0x100) > 0x40) {
+                goto aim;
+            }
+        }
+        e = Heroes[ai->unk8].hero_eng;
+        func_800B4240(player, e->unk10.x, e->unk10.z, eng, ai);
+        return;
+    case 2:
+        tab2 = D_800CAD50;
+        ta = &tab2[player];
+        if (ta->SubWeaponRounds <= 0) {
+            goto chase;
+        }
+        sspeed = ta->Speed;
+        ai->flags |= 0x2000;
+        ai->unk4 = (sspeed / 2 + 0x200) / sspeed;
+        return;
+    }
+}
 
 void func_800B4FAC(s32 player) {
     Ovl5fAITarget *ai;
