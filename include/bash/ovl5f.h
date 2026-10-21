@@ -523,6 +523,82 @@ static inline s32 Ovl5fASTIndex(s32 id) {
     }
     return 0;
 }
+/* PlotRocketTA: func_800C84D8 inlined. */
+static inline NAS *Ovl5fRocketNear(s32 x, s32 z, s32 dist) {
+    EXTengine *eng;
+    s32 d;
+    s32 i;
+    NAS *nas;
+
+    for (i = 0; i < 8; i++) {
+        nas = D_800CB264[i];
+        if (nas != NULL) {
+            eng = nas->Engine;
+            d = x - eng->unk10.x;
+            if (d >= -dist && d <= dist) {
+                d = z - eng->unk10.z;
+                if (d >= -dist && d <= dist) {
+                    return nas;
+                }
+            }
+        }
+    }
+    return NULL;
+}
+extern HeroInfo Heroes[4];
+/* PlotRocketTA: func_800C872C inlined. */
+static inline s32 Ovl5fRocketFindHero(s32 arg0, s32 arg1, s32 arg2) {
+    s32 i;
+    s32 d;
+    u16 name;
+    EXTengine *e;
+
+    for (i = 0; i < 4; i++) {
+        name = Heroes[i].hero_name;
+        if (name == 9 &&
+            (((Ovl5fModeView *)D_8005A614)->mode != name || D_800CB210 != 0 ||
+             (u32)(i - 2) >= 2)) {
+            continue;
+        }
+        if (Heroes[i].hero_status & 0xC000) {
+            continue;
+        }
+        e = Heroes[i].hero_eng;
+        d = arg0 - e->unk10.x;
+        if (d < -arg2) {
+            continue;
+        }
+        if (arg2 < d) {
+            continue;
+        }
+        d = arg1 - e->unk10.z;
+        if (-arg2 < d && d < arg2) {
+            return i;
+        }
+    }
+    return -1;
+}
+/* PlotRocketTA: func_800C8800 inlined. */
+static inline void Ovl5fRocketKillCell(s32 arg0, s32 arg1) {
+    s32 idx;
+    NAS *nas;
+
+    idx = ((arg1 >> 9) * D_800CAFF4) + (arg0 >> 9);
+    nas = (NAS *)D_800CA34C[idx];
+    D_800CA34C[idx] = 0;
+    D_800CACB4[idx] = 0;
+    D_800CACFC[idx] = 0;
+    KillNAS(nas);
+}
+/* PlotRocketTA: the D_800CACFC tile under (x, z), 0 off the map in mode 9. */
+static inline s32 Ovl5fRocketTile(s32 x, s32 z) {
+    if (D_8005A648 == 9) {
+        if (z >= D_800CB104 || z < 0 || x >= D_800CB100 || x < 0) {
+            return 0;
+        }
+    }
+    return *(((z >> 9) * D_800CAFF4) + (x >> 9) + D_800CACFC);
+}
 static inline s32 Ovl5fNear(s32 a, s32 b) {
     s32 d;
 

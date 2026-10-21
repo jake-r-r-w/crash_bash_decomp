@@ -2321,7 +2321,97 @@ void PlotLobber_TA(NAS *nas)
 
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotRocketTA);
+void PlotRocketTA(NAS *nas)
+{
+    EXTengine *eng;
+    LobberFux *fux;
+    NAS *n;
+    NAS *puff;
+    Ovl5fExt1605 *ext;
+    void *p;
+    SLONG_XYZ *pos;
+    s32 x;
+    s32 z;
+    s32 hit;
+    s32 dmg;
+    s32 ok;
+
+    eng = nas->Engine;
+    fux = (LobberFux *) nas->FUX;
+    x = eng->unk10.x + fux->vx;
+    z = eng->unk10.z + fux->vz;
+    if (x < 0 || x >= D_800CB100 + 0x100) {
+        goto boom;
+    }
+    if (Ovl5fRocketNear(x, z, 0xE0) != NULL) {
+        goto boom;
+    }
+    if (D_8005A648 == 9) {
+        ok = (u32) z < 0x1280;
+    } else {
+        if (z < 0) {
+            goto boom;
+        }
+        ok = z < D_800CB104 + 0x100;
+    }
+    if (!ok) {
+        goto boom;
+    }
+    if (Ovl5fRocketTile(x, z) != 0) {
+        if (D_8005A648 == 7 || D_8005A648 == 9) {
+            if (z < D_800CB104) {
+                n = (NAS *) *(((z >> 9) * D_800CAFF4) + (x >> 9) + D_800CA34C);
+                if (n != NULL) {
+                    pos = &n->Engine->unk10;
+                    p = *(void **) D_80058AD0;
+                    puff = SpawnNASById(pos->x, pos->y, pos->z, 0x1605, 0x11);
+                    if (puff != NULL) {
+                        ext = FindExtension(puff, 0x10000000);
+                        if (ext != NULL) {
+                            ext->unkC = 0;
+                            ext->unk18 = 0x100;
+                            if (p != NULL) {
+                                ext->unk20 = 5;
+                                puff->Engine->sub->unk6C = p;
+                            } else {
+                                ext->unk20 = 1;
+                            }
+                            ext->unk28 = 0;
+                            puff->InitDelete(puff);
+                        }
+                    }
+                    Ovl5fRocketKillCell(x, z);
+                }
+            }
+        }
+        goto boom;
+    }
+    eng->unk10.x = x;
+    eng->unk10.z = z;
+    func_800BF548(eng);
+    hit = Ovl5fRocketFindHero(x, z, 0x10E);
+    if (hit < 0 || hit == fux->player) {
+        goto puff;
+    }
+    if (((Ovl5fModeView *) D_8005A614)->mode != 9 || fux->player == -1) {
+        dmg = 0x3C;
+    } else {
+        dmg = (((D_8005A614[0xB4] * 190) / 32 + 10) * 60) / 100;
+    }
+    func_800B6354(hit, dmg);
+boom:
+    SpawnNASById(x, eng->unk10.y, z, 0x1306, 0x11);
+    KillNAS(nas);
+    if (eng->sfx != NULL) {
+        StopSfx(eng->sfx);
+    }
+    PlaySfx(0x43D, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+    return;
+puff:
+    if (!(D_8004E0D8 & 1)) {
+        Ovl5fSpawnBit1605(&eng->unk10, 0x11);
+    }
+}
 
 void PlotMine(NAS *nas) {
     EXTengine *eng;
