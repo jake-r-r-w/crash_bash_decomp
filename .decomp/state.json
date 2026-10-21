@@ -9287,10 +9287,13 @@
   "auto_failed": "types"
  },
  "ovl67:800B7858": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-21T07:11:19Z",
+  "status": "matched"
  },
  "ovl67:800B7C58": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-21T07:11:36Z",
+  "status": "matched",
+  "via": "copy"
  },
  "ovl67:800B8058": {
   "copy_failed": "ovl61:800B84B8",

@@ -318,6 +318,22 @@ void func_800B5B14(s32 arg0);
 
 void func_800B5BFC(void);
 
+typedef struct Ovl67Edge {
+    s16 x0;
+    s16 pad2;
+    s16 z0;
+    s16 pad6;
+    s16 x1;
+    s16 padA;
+    s16 z1;
+    s16 padE;
+} Ovl67Edge;
+extern Ovl67Edge D_800C4090[];
+extern u16 D_800C4110[];
+extern u16 D_800C4386;
+
+s32 func_800B7858(s32 arg0, Ovl67Pos *from, Ovl67Pos *to, s32 angle);
+
 s32 func_800B7C58(s32 arg0, Ovl67Pos *from, Ovl67Pos *to, s32 angle);
 
 s32 func_800B817C(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5);
@@ -428,5 +444,7 @@ NAS *func_800BAAA8(void);
 s32 func_800B9B10(s32 arg0);
 void func_800BEB68(void);
 void func_800BF0AC(s32 arg0);
+
+extern Ovl67Edge D_800C40D0[];
 
 #endif /* BASH_OVL67_H */

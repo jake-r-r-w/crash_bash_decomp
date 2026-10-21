@@ -1084,9 +1084,205 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B6F4C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B7244);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B7858);
+s32 func_800B7858(s32 arg0, Ovl67Pos *from, Ovl67Pos *to, s32 angle) {
+    s32 i;
+    s32 n;
+    u16 ang;
+    s16 x0;
+    s16 z0;
+    s16 x1;
+    s16 z1;
+    s32 dz;
+    s32 ox;
+    s32 oz;
+    s32 dx;
+    s32 ez;
+    s32 ex;
+    s32 num;
+    s32 den;
+    s32 num2;
+    s32 t;
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B7C58);
+    if (arg0 == 0) {
+        i = 0;
+    } else if (arg0 == 1) {
+        i = 0;
+    } else {
+        i = 3;
+    }
+    n = D_8009D87C[arg0].unk0 + (u16)D_800C43DC;
+    x0 = D_800C4090[i].x0;
+    z0 = D_800C4090[i].z0;
+    x1 = D_800C4090[i].x1;
+    z1 = D_800C4090[i].z1;
+    if (n > 0x20) {
+        n = 0x20;
+    }
+    n = 0x20 - n;
+    n -= D_800C4386;
+    if (n < 0) {
+        n = 0;
+    }
+    n = D_800C4110[n];
+    /* The empty loops raise angle's ref count so it gets s1 (hack). */
+    do {
+        do {
+            do {
+                do {
+                    ang = angle + (Random(n) - n);
+                } while (0);
+            } while (0);
+        } while (0);
+    } while (0);
+    to->x = from->x - D_80068BD4[(ang - 0x400) & 0xFFF].unk2;
+    to->z = from->z - D_80068BD4[ang & 0xFFF].unk2;
+    if (x0 < from->x && x1 < from->x && x0 < to->x && x1 < to->x) {
+        return 0;
+    }
+    if (from->x < x0 && from->x < x1 && to->x < x0 && to->x < x1) {
+        return 0;
+    }
+    if (z0 < from->z && z1 < from->z && z0 < to->z && z1 < to->z) {
+        return 0;
+    }
+    if (from->z < z0 && from->z < z1 && to->z < z0 && to->z < z1) {
+        return 0;
+    }
+    dz = (from->z - to->z) >> 4;
+    ox = (x0 - from->x) >> 4;
+    oz = (z0 - from->z) >> 4;
+    dx = (from->x - to->x) >> 4;
+    ez = (z1 - z0) >> 4;
+    ex = (x1 - x0) >> 4;
+    num = dz * ox - dx * oz;
+    den = ez * dx - ex * dz;
+    if (den > 0) {
+        if (den < num || num < 0) {
+            return 0;
+        }
+    } else {
+        if (num < den || num > 0) {
+            return 0;
+        }
+    }
+    num2 = ex * oz - ez * ox;
+    if (den > 0) {
+        if (den < num2 || num2 < 0) {
+            return 0;
+        }
+    } else {
+        if (num2 < den || num2 > 0) {
+            return 0;
+        }
+    }
+    if (den == 0) {
+        return 0;
+    }
+    t = (num << 8) / den;
+    to->x = x0 + ((x1 - x0) * t >> 8);
+    to->z = z0 + ((z1 - z0) * t >> 8);
+    return 1;
+}
+
+s32 func_800B7C58(s32 arg0, Ovl67Pos *from, Ovl67Pos *to, s32 angle) {
+    s32 i;
+    s32 n;
+    u16 ang;
+    s16 x0;
+    s16 z0;
+    s16 x1;
+    s16 z1;
+    s32 dz;
+    s32 ox;
+    s32 oz;
+    s32 dx;
+    s32 ez;
+    s32 ex;
+    s32 num;
+    s32 den;
+    s32 num2;
+    s32 t;
+
+    if (arg0 == 0) {
+        i = 0;
+    } else if (arg0 == 1) {
+        i = 0;
+    } else {
+        i = 3;
+    }
+    n = D_8009D87C[arg0].unk0 + (u16)D_800C43DC;
+    x0 = D_800C40D0[i].x0;
+    z0 = D_800C40D0[i].z0;
+    x1 = D_800C40D0[i].x1;
+    z1 = D_800C40D0[i].z1;
+    if (n > 0x20) {
+        n = 0x20;
+    }
+    n = 0x20 - n;
+    n -= D_800C4386;
+    if (n < 0) {
+        n = 0;
+    }
+    n = D_800C4110[n];
+    /* The empty loops raise angle's ref count so it gets s1 (hack). */
+    do {
+        do {
+            do {
+                do {
+                    ang = angle + (Random(n) - n);
+                } while (0);
+            } while (0);
+        } while (0);
+    } while (0);
+    to->x = from->x - D_80068BD4[(ang - 0x400) & 0xFFF].unk2;
+    to->z = from->z - D_80068BD4[ang & 0xFFF].unk2;
+    if (x0 < from->x && x1 < from->x && x0 < to->x && x1 < to->x) {
+        return 0;
+    }
+    if (from->x < x0 && from->x < x1 && to->x < x0 && to->x < x1) {
+        return 0;
+    }
+    if (z0 < from->z && z1 < from->z && z0 < to->z && z1 < to->z) {
+        return 0;
+    }
+    if (from->z < z0 && from->z < z1 && to->z < z0 && to->z < z1) {
+        return 0;
+    }
+    dz = (from->z - to->z) >> 4;
+    ox = (x0 - from->x) >> 4;
+    oz = (z0 - from->z) >> 4;
+    dx = (from->x - to->x) >> 4;
+    ez = (z1 - z0) >> 4;
+    ex = (x1 - x0) >> 4;
+    num = dz * ox - dx * oz;
+    den = ez * dx - ex * dz;
+    if (den > 0) {
+        if (den < num || num < 0) {
+            return 0;
+        }
+    } else {
+        if (num < den || num > 0) {
+            return 0;
+        }
+    }
+    num2 = ex * oz - ez * ox;
+    if (den > 0) {
+        if (den < num2 || num2 < 0) {
+            return 0;
+        }
+    } else {
+        if (num2 < den || num2 > 0) {
+            return 0;
+        }
+    }
+    if (den == 0) {
+        return 0;
+    }
+    t = (num << 8) / den;
+    to->x = x0 + ((x1 - x0) * t >> 8);
+    to->z = z0 + ((z1 - z0) * t >> 8);
+    return 1;
+}
 
 s32 func_800B8058(s32 arg0) {
     s32 sum;
