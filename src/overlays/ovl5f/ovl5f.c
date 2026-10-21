@@ -96,7 +96,62 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B4688);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B4A28);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B4FAC);
+void func_800B4FAC(s32 player) {
+    Ovl5fAITarget *ai;
+    EXTengine *eng;
+    EXTengine *te;
+    s32 buttons;
+    s32 d;
+    s32 a;
+
+    eng = Heroes[player].hero_eng;
+    ai = (Ovl5fAITarget *)(D_800CAFFC + player * 0x2C);
+    if (ai->timer == 0) {
+        ai->timer = D_8009D87C[player].unk0 * 0x55 / 32 + 5;
+    }
+    if (--ai->unk4 <= 0) {
+        func_800B4688(player, eng, ai);
+    }
+    buttons = 0;
+    switch (ai->unk0) {
+    case 4:
+    case 7:
+        d = eng->unk10.x - ai->x;
+        if ((u32)(d + 99) < 199) {
+            ai->unk4 = 0;
+        }
+        a = get_angle(d, eng->unk10.z - ai->z) - eng->unk1E;
+        a = (a << 20) >> 20;
+        if (a > 40) {
+            buttons = 0x820;
+        }
+        if (a < -40) {
+            buttons = 0x880;
+        }
+        break;
+    case 6:
+        te = Heroes[ai->unk8].hero_eng;
+        a = get_angle(eng->unk10.x - te->unk10.x, eng->unk10.z - te->unk10.z) - eng->unk1E;
+        a = (a << 20) >> 20;
+        if (a > 70) {
+            buttons = 0x20;
+        }
+        if (a < -70) {
+            buttons = 0x80;
+        }
+        break;
+    }
+    ai->flags &= ~0x8000;
+    func_800B3F44(player, eng, ai);
+    if (ai->flags & 0x8000) {
+        buttons |= 0x8000;
+    }
+    if (D_800CB284[player] != 0) {
+        buttons |= 0x4000;
+        D_800CB284[player] = 0;
+    }
+    func_80013C94((u8 *)&D_80051338[player], buttons);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B5228);
 

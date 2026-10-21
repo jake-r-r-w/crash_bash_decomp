@@ -430,7 +430,16 @@ typedef struct Ovl5fAITarget {
     /* 0x0C */ NAS *target;
     /* 0x10 */ s32 unk10;
     /* 0x14 */ s32 scan;
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ s32 flags;
+    /* 0x20 */ s32 x;
+    /* 0x24 */ s32 z;
+    /* 0x28 */ u16 timer;
+    /* 0x2A */ u16 unk2A;
 } Ovl5fAITarget;
+extern s32 D_800CB284[];
+void func_800B3F44(s32 player, EXTengine *eng, Ovl5fAITarget *ai);
+void func_800B4688(s32 player, EXTengine *eng, Ovl5fAITarget *ai);
 static inline s32 Ovl5fASTIndex(s32 id) {
     s32 i;
 
@@ -449,5 +458,7 @@ static inline s32 Ovl5fNear(s32 a, s32 b) {
 }
 void func_800B4240(s32 player, s32 x, s32 z, EXTengine *eng, Ovl5fAITarget *ai);
 s32 func_800B4490(s32 player, EXTengine *eng, Ovl5fAITarget *ai);
+
+void func_800B4FAC(s32 player);
 
 #endif /* BASH_OVL5F_H */
