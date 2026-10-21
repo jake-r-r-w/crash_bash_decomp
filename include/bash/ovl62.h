@@ -692,6 +692,36 @@ typedef struct WalrusFishExt {
     /* 0x84 */ ScriptCursor *cursor;
 } WalrusFishExt;
 
+/* Polar walrus extension (0x94 bytes, id 0x10000000): arc at 0x14 like
+ * WalrusFishExt's at 0x10. */
+typedef struct PolarWalrusExt {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ s32 state;
+    /* 0x10 */ s32 timer;
+    /* 0x14 */ s32 arc[0xD];
+    /* 0x48 */ u8 pad48[0x58 - 0x48];
+    /* 0x58 */ s32 unk58;
+    /* 0x5C */ u8 pad5C[0x68 - 0x5C];
+    /* 0x68 */ SLONG_XYZ to;
+    /* 0x74 */ SLONG_XYZ from;
+    /* 0x80 */ ScriptCursor *cursor;
+    /* 0x84 */ u8 pad84[0x90 - 0x84];
+    /* 0x90 */ s32 unk90;
+} PolarWalrusExt;
+
+/* Polar walrus second extension (0x54 bytes, id 0x20000000). */
+typedef struct PolarWalrusExt2 {
+    /* 0x00 */ u8 pad0[0x20];
+    /* 0x20 */ s32 unk20;
+    /* 0x24 */ u8 pad24[0x40 - 0x24];
+    /* 0x40 */ s32 unk40;
+    /* 0x44 */ u8 pad44[0x4C - 0x44];
+    /* 0x4C */ s16 unk4C;
+    /* 0x4E */ s16 unk4E;
+    /* 0x50 */ u8 pad50[4];
+} PolarWalrusExt2;
+
+extern ScriptInit D_800D5630;
 extern ScriptInit D_800D5690;
 extern s32 D_800D563C;
 extern u8 D_8005476C[];

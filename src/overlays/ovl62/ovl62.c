@@ -1763,7 +1763,54 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotUkaPolarMask);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C2ECC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitPolarWalrus);
+void InitPolarWalrus(NAS *m) {
+    PolarWalrusExt *ext;
+    PolarWalrusExt2 *e2;
+
+    D_800D5494 = (Ovl62Prox *)m;
+    m->Engine->flags |= 0x200000;
+    ext = AddExtension(m, 0x94, 0x10000000);
+    if (ext != NULL) {
+        ext->cursor = func_80024E30(m, &D_800D5630);
+        m->FUX = (EXT *)ext;
+        m->Engine->sub->unk6C = D_8005476C;
+        m->Engine->sub->unk74 = 0x4000;
+        m->UserInfo.status = 0;
+        func_80026B70(&D_800D5454, (u8 *)m);
+        m->Engine->unk10.x = (D_80068BD4[(D_800D563C - 0x400) & 0xFFF].unk2 * 0x307) >> 10;
+        m->Engine->unk10.z = (D_80068BD4[D_800D563C & 0xFFF].unk2 * 0x307) >> 10;
+        m->Engine->unk10.y = 0x400;
+        m->Engine->unk1E = get_angle(m->Engine->unk10.x, m->Engine->unk10.z) & 0xFFF;
+        m->Engine->sub->flags &= ~0x8000;
+        ext->state = 0;
+        m->Engine->unk5C = 1;
+        m->Engine->unk5D = 0;
+        m->Engine->unk2C.x = 0x1F40;
+        m->Engine->unk2C.y = 0x1F40;
+        m->Engine->unk2C.z = 0x1F40;
+        m->Engine->unk5E = 1;
+        m->Engine->sub->unk68 = 0x200;
+        ext->arc[0] = 0x10;
+        ext->unk58 = 0x28;
+        ext->arc[1] = 0;
+        ext->arc[6] = 0;
+        ext->from = *(SLONG_XYZ *)&m->Engine->unk10;
+        ext->to.x = (D_80068BD4[(D_800D563C - 0x400) & 0xFFF].unk2 * 0x7D) >> 8;
+        ext->to.y = 0;
+        ext->to.z = (D_80068BD4[D_800D563C & 0xFFF].unk2 * 0x7D) >> 8;
+        m->Engine->sub->flags |= 0x02000000;
+        ext->timer = Random(8) * 0x1E + 0x10E;
+        ext->unk90 = 0;
+        m->UserInfo.user1 = 0;
+    }
+    e2 = AddExtension(m, 0x54, 0x20000000);
+    if (e2 != NULL) {
+        e2->unk4E = 0x400;
+        e2->unk20 = 0;
+        e2->unk40 = 0;
+        e2->unk4C = 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotPolarWalrus);
 
