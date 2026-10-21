@@ -1055,6 +1055,8 @@ typedef struct Ovl62HitExt {
     /* 0xAC */ s32 unkAC;
 } Ovl62HitExt;
 
+void func_800CF6F8(s32 player);
+
 void func_800CFC58(s32 player);
 
 void func_800D0060(s32 player);

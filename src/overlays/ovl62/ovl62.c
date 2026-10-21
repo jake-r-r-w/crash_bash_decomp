@@ -3762,7 +3762,82 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CE664);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CED58);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CF6F8);
+void func_800CF6F8(s32 player) {
+    EXTheromove *move;
+    s32 *ext;
+    s32 *ext2;
+    s32 *p;
+    NAS *nas;
+    EXTengine *eng;
+    s32 x;
+    s32 y;
+    s32 z;
+
+    if (func_800D2D2C() == 0) {
+        move = Heroes[player].hero_move;
+        ext = FindExtension(Heroes[player].hero, 0x20000000);
+        if (ext != NULL) {
+            eng = Heroes[player].hero_eng;
+            x = eng->unk10.x;
+            y = eng->unk10.y;
+            z = eng->unk10.z;
+            if (ext[0x98 / 4]-- < 0) {
+                ext[0x98 / 4] = Random(0x14) + 1;
+                nas = SpawnNASById(x + 0x60, y - 0x180, z, 0x1612, 0x11);
+                if (nas != NULL) {
+                    p = FindExtension(nas, 0x10000000);
+                    if (p != NULL) {
+                        p[0x1C / 4] = 0xA;
+                        p[0xC / 4] = 0x100;
+                        p[0x10 / 4] = 0x50;
+                        p[0x14 / 4] = -0x40;
+                        p[0x24 / 4] = 0x20;
+                        p[0x28 / 4] = 1;
+                        p[0x18 / 4] |= 1;
+                    }
+                }
+                nas = SpawnNASById(x - 0x60, y - 0x180, z, 0x1612, 0x11);
+                if (nas != NULL) {
+                    p = FindExtension(nas, 0x10000000);
+                    if (p != NULL) {
+                        p[0x1C / 4] = 0xA;
+                        p[0xC / 4] = 0x100;
+                        p[0x10 / 4] = 0x50;
+                        p[0x14 / 4] = -0x40;
+                        p[0x24 / 4] = 0x20;
+                        p[0x28 / 4] = 1;
+                        p[0x18 / 4] |= 1;
+                    }
+                }
+            }
+            if (move != NULL) {
+                ((Ovl62Pad *)D_80051338)[player].unk50 = 0;
+                ((Ovl62Pad *)D_80051338)[player].unk54 = 0;
+                func_800BBF2C(player);
+                func_800CD214(player);
+                func_800C0888(&Heroes[player].hero_eng->unk10, player);
+                Heroes[player].hero_frozen = 2;
+                if (ext[0x24 / 4] == 0) {
+                    Heroes[player].hero_eng->unk1E += 0x10;
+                }
+                Heroes[player].hero_eng->unk5E = 1;
+            }
+            if (ext[0x1C / 4]++ >= 0xB5) {
+                ext2 = FindExtension(Heroes[player].hero, 0x20000000);
+                if (ext2 != NULL) {
+                    func_800B5684(player);
+                    Heroes[player].hero_eng->sub->flags &= 0xFFBFFFFF;
+                    if (ext2[0x24 / 4] == 0) {
+                        SetHeroAction((HeroInfo *)player, 0x49);
+                    }
+                    if (ext2[0x24 / 4] == 1) {
+                        SetHeroAction((HeroInfo *)player, 0x54);
+                    }
+                }
+            }
+        }
+    }
+}
 
 void func_800CF9EC(s32 player) {
     HeroInfo *base;
