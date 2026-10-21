@@ -2217,7 +2217,164 @@ void func_800BE7B4(s32 player, Ovl63Barrel *b) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BE914);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BEBC0);
+s32 func_800BEBC0(s32 player)
+{
+  s32 other;
+  EXTengine *eng;
+  Ovl63BumpFux *a;
+  Ovl63BumpFux *b;
+  s32 dist;
+  s32 dz;
+  s32 dx;
+  s32 r;
+  s32 ang;
+  u32 i;
+  s32 hit;
+  s32 speed;
+  s32 done;
+  s32 lim;
+  s32 dy;
+  lim = 0x180;
+  eng = Heroes[player].hero_eng;
+  hit = 0;
+  if (eng != 0)
+  {
+    for (i = 0;; i++)
+    {
+      EXTengine *oeng;
+      if (i >= 4)
+      {
+        break;
+      }
+      if (player == i)
+      {
+        continue;
+      }
+      if (Heroes[i].hero_status & 0x2000)
+      {
+        continue;
+      }
+      oeng = Heroes[i].hero_eng;
+      if (oeng == 0)
+      {
+        continue;
+      }
+      dy = abs(oeng->unk10.y - eng->unk10.y);
+      if (dy > lim)
+      {
+        continue;
+      }
+      if (Heroes[player].hero_move == 0)
+      {
+        continue;
+      }
+      dx = oeng->unk10.x - eng->unk10.x;
+      dz = oeng->unk10.z - eng->unk10.z;
+      dist = csqrt((dx * dx) + (dz * dz)) >> 6;
+      if (dist >= 0x180)
+      {
+        continue;
+      }
+      r = Random(4);
+      ang = get_angle(dx, dz) & 0xFFF;
+      dist = (lim - dist) + 8;
+      eng->unk10.x -= (dist * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+      eng->unk10.z -= (dist * D_80068BD4[ang].unk2) >> 12;
+      func_800BE914(player, i);
+      a = (Ovl63BumpFux *) Heroes[player].hero->FUX;
+      hit = 1;
+      if (a == 0)
+      {
+        continue;
+      }
+      b = (Ovl63BumpFux *) Heroes[i].hero->FUX;
+      if (b == 0)
+      {
+        continue;
+      }
+      speed = ((a->vx * a->vx) >> 8) + ((a->vz * a->vz) >> 8);
+      if (D_8005A648 == 0x19)
+      {
+        if (speed > 0x10D2A4)
+        {
+          if (r == 0)
+          {
+            PlaySfx(0x675, 0, 0, 0x1000, 0x1E00, 0);
+          }
+          if (r == 1)
+          {
+            PlaySfx(0x676, 0, 0, 0x1000, 0x1E00, 0);
+          }
+          if (r == 2)
+          {
+            PlaySfx(0x677, 0, 0, 0x1000, 0x1E00, 0);
+          }
+          if (r == 3)
+          {
+            PlaySfx(0x678, 0, 0, 0x1000, 0x1E00, 0);
+          }
+        }
+      }
+      else
+        if (speed > 0x62E08)
+      {
+        if (r == 0)
+        {
+          PlaySfx(0x640, 0, 0, 0x1000, 0x1E00, 0);
+        }
+        if (r == 1)
+        {
+          PlaySfx(0x641, 0, 0, 0x1000, 0x1E00, 0);
+        }
+        if (r == 2)
+        {
+          PlaySfx(0x642, 0, 0, 0x1000, 0x1E00, 0);
+        }
+        if (r == 3)
+        {
+          PlaySfx(0x643, 0, 0, 0x1000, 0x1E00, 0);
+        }
+      }
+
+      speed = a->vx * a->vx;
+      speed >>= 8;
+      speed += (a->vz * a->vz) >> 8;
+      other = (b->vx * b->vx) >> 8;
+      other += (b->vz * b->vz) >> 8;
+      speed >>= 1;
+      if ((other < speed) && (speed > 0xC5C10))
+      {
+        u16 mode = Heroes[i].hero_mode;
+        if (((mode != 0x61) && (mode != 0x5D)) && (Heroes[player].hero_mode != 0x5D))
+        {
+          PlaySfx(0x654, 0, 0, 0x1000, 0x1E00, 0);
+          SetHeroAction((HeroInfo *) player, 0x5D);
+        }
+      }
+
+      done = 0;
+      if (((a->item == 0x10) && (D_800C6D20 > 0)) && (b->timer == 0))
+      {
+        b->item = a->item;
+        a->item = 0;
+        a->timer = 0xF;
+        b->timer = 0;
+        PlaySfx(0x454, 0, 0, 0x1000, 0x1E00, 0);
+        done = 1;
+      }
+      if ((((done == 0) && (b->item == 0x10)) && (D_800C6D20 > 0)) && (a->timer == 0))
+      {
+        a->item = b->item;
+        b->item = 0;
+        b->timer = 0xF;
+        PlaySfx(0x454, 0, 0, 0x1000, 0x1E00, 0);
+        a->timer = 0;
+      }
+    }
+
+  }
+  return hit;
+}
 
 s32 func_800BF0F8(u8 *arg0, u32 arg1) {
     u32 i;

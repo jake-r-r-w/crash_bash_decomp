@@ -49,6 +49,18 @@ typedef struct Ovl63VelFux {
     /* 0x140 */ s32 vz;
 } Ovl63VelFux;
 
+/* A hero's FUX as func_800BEBC0 reads it: held item, timer, velocity. */
+typedef struct Ovl63BumpFux {
+    /* 0x000 */ u8 pad0[0x18];
+    /* 0x018 */ s32 item;
+    /* 0x01C */ u8 pad1C[0x10];
+    /* 0x02C */ s32 timer;
+    /* 0x030 */ u8 pad30[0x10C];
+    /* 0x13C */ s32 vx;
+    /* 0x140 */ s32 vz;
+} Ovl63BumpFux;
+void func_800BE914(s32 a, s32 b);
+
 /* Extension 0x20000000 as func_800B4708 drives it. */
 typedef struct EXTovl63ai {
     /* 0x00 */ s32 unk0[5];
@@ -976,6 +988,8 @@ void func_800B8FD8();
 void func_800B980C();
 void func_800BD99C();
 void func_800BCE88();
+
+s32 func_800BEBC0(s32 player);
 
 void PlotRacePickUp(NAS *m);
 
