@@ -600,6 +600,10 @@ static inline s32 Ovl5fRocketTile(s32 x, s32 z) {
     }
     return *(((z >> 9) * D_800CAFF4) + (x >> 9) + D_800CACFC);
 }
+/* func_800C4DCC: the D_800CACB4 cell under (x, z). */
+static inline s32 Ovl5fMapCell(s32 x, s32 z) {
+    return *(((z >> 9) * D_800CAFF4) + (x >> 9) + D_800CACB4);
+}
 static inline s32 Ovl5fNear(s32 a, s32 b) {
     s32 d;
 
@@ -739,6 +743,8 @@ void func_800C57B0(NAS *nas, s32 id);
 void func_800B9430(s32 player);
 
 void func_800B993C(s32 player);
+
+void func_800C4DCC(s32 player);
 
 void func_800C5BCC(NAS *nas, s32 id);
 

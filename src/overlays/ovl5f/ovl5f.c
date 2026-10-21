@@ -4713,7 +4713,182 @@ void func_800C4D04(s32 hero, s32 last_mode) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C4DCC);
+void func_800C4DCC(s32 player) {
+    EXTengine *eng;
+    EXTengine *e;
+    subengine *sub;
+    HeroInfo *h;
+    Ovl5fAITarget *ai;
+    Ovl5fUnk74 *u;
+    TA_player *ta;
+    s32 ex;
+    s32 ez;
+    s32 v;
+    s32 pad;
+    s32 speed;
+    s32 dir;
+    s32 angle;
+    s32 a;
+    s32 sn;
+    s32 cs;
+    s32 x;
+    s32 z;
+    s32 fx;
+    s32 fz;
+    s32 lim;
+    s32 n;
+    s32 d;
+    s32 t;
+    s32 df;
+    s32 saved;
+    u16 name;
+    s32 hit;
+    s32 i;
+
+    func_800B77E8(player);
+    if (player == 3) {
+        v = *D_800CB24C++;
+        D_8009D678->unk74 = v;
+    } else {
+        v = *D_800CB250++;
+        D_8009D60C->unk74 = v;
+    }
+    if (v == 0) {
+        func_800C44E8(player);
+    }
+    if (D_800CB0F0 != 0) {
+        return;
+    }
+    ta = &D_800CAD50[player];
+    eng = Heroes[player].hero_eng;
+    speed = ta->Speed;
+    sub = eng->sub->next->next;
+    saved = ((Ovl5fGameView *)D_8005A614)->w6C;
+    ((Ovl5fGameView *)D_8005A614)->w6C = 1;
+    ai = (Ovl5fAITarget *)(D_800CAFFC + player * 0x2C);
+    func_800B5228(player);
+    ((Ovl5fGameView *)D_8005A614)->w6C = saved;
+    pad = ai->flags;
+    dir = pad & 0xF0;
+    if (dir == 0) {
+        return;
+    }
+    if ((pad & 0x20) && dir != 0x20) {
+        ex = eng->unk10.x;
+        if (D_800CB100 - speed < ex ||
+            Ovl5fMapCell(ex + speed + 0x100, eng->unk10.z) != 0) {
+            dir = pad & 0xD0;
+        }
+    }
+    if ((dir & 0x80) && dir != 0x80) {
+        ex = eng->unk10.x;
+        if (ex < speed + 0x100 ||
+            Ovl5fMapCell(ex - speed - 0x100, eng->unk10.z) != 0) {
+            dir &= ~0x80;
+        }
+    }
+    if ((dir & 0x10) && dir != 0x10) {
+        ez = eng->unk10.z;
+        if (D_800CB104 - speed < ez ||
+            Ovl5fMapCell(eng->unk10.x, ez + speed + 0x100) != 0) {
+            dir &= ~0x10;
+        }
+    }
+    if ((dir & 0x40) && dir != 0x40) {
+        ez = eng->unk10.z;
+        if (ez < speed + 0x100 ||
+            Ovl5fMapCell(eng->unk10.x, ez - speed - 0x100) != 0) {
+            dir &= ~0x40;
+        }
+    }
+    switch (dir) {
+    case 0x40:
+        angle = 0x800;
+        break;
+    case 0x80:
+        angle = 0xC00;
+        break;
+    case 0x20:
+        angle = 0x400;
+        break;
+    case 0x90:
+        angle = 0xE00;
+        break;
+    case 0x30:
+        angle = 0x200;
+        break;
+    case 0xC0:
+        angle = 0xA00;
+        break;
+    case 0x60:
+        angle = 0x600;
+        break;
+    case 0x10:
+    default:
+        angle = 0;
+        break;
+    }
+loop:
+    a = (eng->unk1E + sub->unk12) & 0xFFF;
+    df = ((angle - a) << 20) >> 20;
+    a = (u16)sub->unk12;
+    if ((u32)(df + 0x400) > 0x800) {
+        sub->unk12 = (a + 0x800) & 0xFFF;
+        goto loop;
+    }
+    df = df / 4;
+    sub->unk12 = (a + df) & 0xFFF;
+    sub->unk52 = 1;
+    a = (eng->unk1E + sub->unk12) & 0xFFF;
+    sn = D_80068BD4[(a - 0x400) & 0xFFF].unk2;
+    cs = D_80068BD4[a].unk2;
+    x = eng->unk10.x + ((speed * sn) >> 12);
+    fx = x + ((sn * 256) >> 12);
+    z = eng->unk10.z + ((speed * cs) >> 12);
+    fz = z + ((cs * 256) >> 12);
+    lim = 0x1C0;
+    for (i = 0; i < 4; i++) {
+        if (i == player) {
+            continue;
+        }
+        h = &Heroes[i];
+        name = h->hero_name;
+        if (name == 9 &&
+            (((Ovl5fModeView *)D_8005A614)->mode != name || D_800CB210 != 0 ||
+             (u32)(i - 2) >= 2)) {
+            continue;
+        }
+        if (h->hero_status & 0xC000) {
+            continue;
+        }
+        e = h->hero_eng;
+        d = x - e->unk10.x;
+        if (d < -0x1C0) {
+            continue;
+        }
+        if (lim < d) {
+            continue;
+        }
+        d = z - e->unk10.z;
+        n = -0x1C0;
+        if (n < d && d < 0x1C0) {
+            hit = i;
+            goto found;
+        }
+    }
+    hit = -1;
+found:
+    if (hit < 0) {
+        t = ((fz >> 9) * D_800CAFF4) + (fx >> 9);
+        if (D_800CACB4[t] == 0) {
+            eng->unk10.x = x;
+            eng->unk10.z = z;
+        }
+    } else if (D_800CB0E0 == 0) {
+        D_800CB0E8 = eng;
+        D_800CB0E0 = -1;
+    }
+}
 
 void func_800C53B0(s32 arg0) {
     EXTengine *eng;
