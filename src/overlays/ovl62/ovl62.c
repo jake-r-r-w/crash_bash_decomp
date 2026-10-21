@@ -1861,7 +1861,58 @@ void InitPackEffect(NAS *m) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitPolarBoss);
+void InitPolarBoss(NAS *nas) {
+    PolarBossExt *ext = AddExtension(nas, 0x94, 0x10000000);
+    NAS *s;
+    Ext20 *e;
+
+    if (ext != NULL) {
+        func_80026A04((u8 *)nas);
+        func_80086868();
+        D_800D5DC4 = nas;
+        ext->cursor = func_80024E30(nas, &D_800D5A34);
+        func_80025FAC((EXTanimator *)ext->cursor, 0);
+        func_800250B0(nas);
+        ext->unk84 = SpawnNASById(nas->Engine->unk10.x, nas->Engine->unk10.y, nas->Engine->unk10.z, 0x1622, 0x11);
+        s = SpawnNASById(nas->Engine->unk10.x, 0, nas->Engine->unk10.z, 0x1620, 0x11);
+        if (s != NULL) {
+            ext->unk88 = s;
+            func_80026A04((u8 *)s);
+        }
+        ext->unk90 = 0;
+        nas->Engine->sub->unk6C = *(void **)D_80058AD0;
+        nas->Engine->sub->unk68 = 0x300;
+        nas->Engine->sub->flags |= 0x02000000;
+        nas->Engine->unk5D = 0;
+        D_8009D6E2 = 0x14;
+        e = FindExtension(D_8009D670, 0x20000000);
+        if (e != NULL) {
+            e->val = 0xFF;
+        }
+        ext->state = 5;
+        ext->unk38 = 0x12;
+        ext->unk3C = 4;
+        ext->unk3E = 4;
+        ext->unk5C = 4;
+        ext->unk5E = 4;
+        ext->unk34 = 0;
+        ext->unk58 = 0;
+        ext->unk54 = 0;
+        ext->unk68 = 0;
+        ext->ang = 0;
+        ext->unk70 = 1;
+        ext->unk74 = 0;
+        ext->phase = 0;
+        ext->unk80 = 0;
+        ext->unk8C = 0xC;
+        PlaySfx(0x226, &nas->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
+        nas->Engine->OldXYZ.x = (D_80068BD4[(((ext->ang + 0x20) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3) >> 2;
+        nas->Engine->OldXYZ.z = ((D_80068BD4[(ext->ang + 0x20) & 0xFFF].unk2 * 0x400) >> 12) + 0x2000;
+        get_angle(nas->Engine->OldXYZ.x - nas->Engine->unk10.x, nas->Engine->OldXYZ.z - nas->Engine->unk10.z);
+        nas->Engine->unk1E = 0x800;
+        nas->Engine->unk5E = 1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotPolarBoss);
 

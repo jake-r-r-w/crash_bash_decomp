@@ -652,15 +652,40 @@ typedef struct BigMissileArcExt {
     /* 0x78 */ s32 state;
 } BigMissileArcExt;
 
-/* Polar boss extension (id 0x10000000), as PlotBigMissile uses it. */
+/* Polar boss extension (0x94 bytes, id 0x10000000; InitPolarBoss, PlotBigMissile). */
 typedef struct PolarBossExt {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 state;
-    /* 0x10 */ u8 pad10[0x70 - 0x10];
+    /* 0x10 */ ScriptCursor *cursor;
+    /* 0x14 */ u8 pad14[0x34 - 0x14];
+    /* 0x34 */ s32 unk34;
+    /* 0x38 */ s32 unk38;
+    /* 0x3C */ s16 unk3C;
+    /* 0x3E */ s16 unk3E;
+    /* 0x40 */ u8 pad40[0x54 - 0x40];
+    /* 0x54 */ s32 unk54;
+    /* 0x58 */ s32 unk58;
+    /* 0x5C */ s16 unk5C;
+    /* 0x5E */ s16 unk5E;
+    /* 0x60 */ u8 pad60[0x68 - 0x60];
+    /* 0x68 */ s32 unk68;
+    /* 0x6C */ s32 ang;
     /* 0x70 */ s32 unk70;
-    /* 0x74 */ u8 pad74[4];
+    /* 0x74 */ s32 unk74;
     /* 0x78 */ s32 phase;
+    /* 0x7C */ u8 pad7C[4];
+    /* 0x80 */ s32 unk80;
+    /* 0x84 */ NAS *unk84;
+    /* 0x88 */ NAS *unk88;
+    /* 0x8C */ s32 unk8C;
+    /* 0x90 */ s32 unk90;
 } PolarBossExt;
+
+extern NAS *D_800D5DC4;
+extern ScriptInit D_800D5A34;
+extern NAS *D_8009D670;
+extern s16 D_8009D6E2;
+void func_80086868(void);
 
 extern NAS *D_800D5448;
 
