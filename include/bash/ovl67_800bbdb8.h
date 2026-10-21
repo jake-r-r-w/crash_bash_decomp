@@ -216,7 +216,25 @@ typedef struct BossGameView {
     /* 0x6C */ s32 unk6C;
     /* 0x70 */ u8 pad70[5];
     /* 0x75 */ u8 unk75;
+    /* 0x76 */ u8 pad76[0xCA - 0x76];
+    /* 0xCA */ u8 unkCA;
 } BossGameView;
+
+s32 func_800BBDB8(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *d);
+
+/* Mine damage by game-view level, as func_800C365C. */
+static inline s32 MineDamage(BossGameView *g) {
+    s32 r;
+
+    if (g->unkCA < 10) {
+        r = 230;
+    } else if (g->unkCA >= 30) {
+        r = 51;
+    } else {
+        r = 230 - (g->unkCA - 10) * 179 / 20;
+    }
+    return r;
+}
 
 extern SLONG_XYZ D_800C76CC;
 extern SLONG_XYZ D_800C76D8;
@@ -544,5 +562,7 @@ extern AstSlot D_800C4614[];
 extern AstMineSlot D_800C6E14[];
 
 void func_800BC3A4(void);
+
+void func_800BD6E8(s32 *arg0, s32 arg1);
 
 #endif /* BASH_OVL67_800BBDB8_H */

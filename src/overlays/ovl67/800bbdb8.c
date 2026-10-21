@@ -192,7 +192,76 @@ void func_800BD584(AngObj *o) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BD6E8);
+void func_800BD6E8(s32 *arg0, s32 arg1) {
+    AstMineSlot *sb;
+    AstMineSlot *slot;
+    HeroInfo *h;
+    BossGameView *g;
+    HeroInfo *h2;
+    BossGameView *g2;
+    s32 r;
+    s32 dmg;
+
+    sb = D_800C6E14;
+    slot = &sb[arg1];
+    if (slot->unkC == 0) {
+        h = Heroes;
+        if (!(*(s32 *)&h->hero_teammate & 0x22000000) &&
+            func_800BBDB8((SLONG_XYZ *)arg0, &h->hero_eng->unk10, 1, &h->hero_eng->unk10) != -1) {
+            r = Random(4);
+            if (r == 0) {
+                PlaySfx(0x28B, 0, 0, 0x1000, 0x1E00, 0);
+            }
+            if (r == 1) {
+                PlaySfx(0x28C, 0, 0, 0x1000, 0x1E00, 0);
+            }
+            if (r == 2) {
+                PlaySfx(0x28D, 0, 0, 0x1000, 0x1E00, 0);
+            }
+            if (r == 3) {
+                PlaySfx(0x28E, 0, 0, 0x1000, 0x1E00, 0);
+            }
+            g = (BossGameView *)D_8005A614;
+            slot->unkC = 1;
+            if ((g->unk4 & 0x80000001) != 0x80000001 && h->hero_mode != 0x31) {
+                dmg = MineDamage(g);
+                Heroes[0].hero_health -= dmg;
+                SetHeroAction(0, 0x31);
+            }
+        }
+        g2 = (BossGameView *)D_8005A614;
+        if (g2->unk6C != 0) {
+            h2 = Heroes;
+            if (!(*(s32 *)&h2[1].hero_teammate & 0x22000000) &&
+            func_800BBDB8((SLONG_XYZ *)arg0, &h2[1].hero_eng->unk10, 1, &h2[1].hero_eng->unk10) != -1) {
+            r = Random(4);
+            if (r == 0) {
+                PlaySfx(0x28B, 0, 0, 0x1000, 0x1E00, 0);
+            }
+            if (r == 1) {
+                PlaySfx(0x28C, 0, 0, 0x1000, 0x1E00, 0);
+            }
+            if (r == 2) {
+                PlaySfx(0x28D, 0, 0, 0x1000, 0x1E00, 0);
+            }
+            if (r == 3) {
+                PlaySfx(0x28E, 0, 0, 0x1000, 0x1E00, 0);
+            }
+            D_800C6E14[arg1].unkC = 1;
+            if ((g2->unk4 & 0x80000001) != 0x80000001 && h2[1].hero_mode != 0x31) {
+                dmg = MineDamage(g2);
+                Heroes[1].hero_health -= dmg;
+                SetHeroAction((HeroInfo *)1, 0x31);
+            }
+            }
+        }
+        if (func_800BC7E0(arg0, *(LaserPos *)(arg0 + 1)) != 0) {
+            func_800BC6B8();
+        }
+    } else {
+        func_800BD584((AngObj *)arg0);
+    }
+}
 
 void func_800BDB00(void)
 {
