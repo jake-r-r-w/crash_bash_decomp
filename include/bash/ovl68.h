@@ -521,4 +521,6 @@ static inline NAS *Ovl68NearPickup(s32 x, s32 z) {
     return NULL;
 }
 
+extern u16 D_8009917C;
+
 #endif /* BASH_OVL68_H */

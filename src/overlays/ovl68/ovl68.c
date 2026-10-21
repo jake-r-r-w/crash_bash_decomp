@@ -4,6 +4,11 @@
 #include "bash/pogo.h"
 #include "bash/bash.h"
 #include "bash/xtras.h"
+#include "bash/bonk.h"
+#include "bash/race.h"
+#include "bash/polar.h"
+#include "bash/hero.h"
+#include "bash/shell.h"
 
 void func_800B3330(void) {
 }
@@ -1895,7 +1900,95 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B94FC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B9A50);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B9ED8);
+void func_800B9ED8(s32 arg0, u16 arg1) {
+    s32 found;
+    s32 fail;
+    u8 *g;
+    s32 i;
+
+    found = -1;
+    fail = 0;
+    g = D_8005A614;
+    if (*(s32 *)(g + 0x6C) != 0) {
+        HeroInfo *hb = Heroes;
+        HeroInfo *a;
+        HeroInfo *ta;
+        HeroInfo *b;
+        s32 sa;
+        s32 sb;
+
+        a = &hb[*(s16 *)(g + 0x48)];
+        ta = &hb[a->hero_teammate];
+        b = &hb[*(s16 *)(g + 0x4A)];
+        sa = a->hero_score + ta->hero_score;
+        sb = b->hero_score + hb[b->hero_teammate].hero_score;
+        if (sa == 0) {
+            if (g[*(s16 *)(g + 0x48) + 0x5C] == 0) {
+                D_8005A614[0x60] = a->hero_name;
+                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                D_8009917C |= 0x200;
+                for (i = 0; i < 4; i++) {
+                    if (D_8005A614[i + 0x5C] != 0) {
+                        hb[i].hero_status |= 0x400;
+                    } else {
+                        hb[i].hero_status |= 0x200;
+                    }
+                }
+            } else {
+                fail = 1;
+            }
+        } else if (sb == 0) {
+            if (g[*(s16 *)(g + 0x4A) + 0x5C] == 0) {
+                D_8005A614[0x60] = b->hero_name;
+                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                D_8009917C |= 0x200;
+                for (i = 0; i < 4; i++) {
+                    if (D_8005A614[i + 0x5C] != 0) {
+                        hb[i].hero_status |= 0x400;
+                    } else {
+                        hb[i].hero_status |= 0x200;
+                    }
+                }
+            } else {
+                fail = 1;
+            }
+        }
+    } else {
+        for (i = 0; i < 4; i++) {
+            if (!Heroes[i].hero_score) {
+                found = i;
+            }
+        }
+        if (found != -1) {
+            if (D_8005A614[found + 0x5C] == 0) {
+                D_8005A614[0x60] = Heroes[found].hero_name;
+                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                D_8009917C |= 0x200;
+                for (i = 0; i < 4; i++) {
+                    if (D_8005A614[i + 0x5C] != 0) {
+                        Heroes[i].hero_status |= 0x400;
+                    } else {
+                        Heroes[i].hero_status |= 0x200;
+                    }
+                }
+            } else {
+                fail = 1;
+            }
+        }
+    }
+    if (fail || arg0 == -1) {
+        D_8005A614[0x60] = 0;
+        *(u16 *)(D_8005A614 + 0x30) |= arg1;
+        D_8009917C |= 0x200;
+        for (i = 0; i < 4; i++) {
+            if (D_8005A614[i + 0x5C] != 0) {
+                Heroes[i].hero_status |= 0x400;
+            } else {
+                Heroes[i].hero_status |= 0x100;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BA220);
 
