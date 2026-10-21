@@ -1118,4 +1118,51 @@ void func_800D14CC(s32 player);
 
 void func_800D191C(s32 player);
 
+/* InitBearminator's second extension (0x54 bytes, id 0x20000000). */
+typedef struct BearminatorExt2 {
+    /* 0x00 */ u8 pad0[0x20];
+    /* 0x20 */ s32 unk20;
+    /* 0x24 */ u8 pad24[0x28 - 0x24];
+    /* 0x28 */ s16 unk28;
+    /* 0x2A */ s16 unk2A;
+    /* 0x2C */ u8 pad2C[0x40 - 0x2C];
+    /* 0x40 */ s32 unk40;
+    /* 0x44 */ u8 pad44[0x48 - 0x44];
+    /* 0x48 */ s16 unk48;
+    /* 0x4A */ s16 unk4A;
+    /* 0x4C */ s16 unk4C;
+    /* 0x4E */ s16 unk4E;
+    /* 0x50 */ u8 pad50[4];
+} BearminatorExt2;
+
+/* InitBearminator's extension (0xB8 bytes, id 0x10000000). */
+typedef struct BearminatorExt {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ ScriptCursor *cursor;
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ s32 unk1C;
+    /* 0x20 */ u8 pad20[0x38 - 0x20];
+    /* 0x38 */ s32 unk38;
+    /* 0x3C */ s32 unk3C;
+    /* 0x40 */ u8 pad40[0x50 - 0x40];
+    /* 0x50 */ s32 unk50;
+    /* 0x54 */ u8 pad54[0x7C - 0x54];
+    /* 0x7C */ s32 unk7C;
+    /* 0x80 */ u8 pad80[0x8C - 0x80];
+    /* 0x8C */ s32 unk8C;
+    /* 0x90 */ u8 pad90[0x98 - 0x90];
+    /* 0x98 */ NAS *unk98;
+    /* 0x9C */ EXTengine *unk9C;
+    /* 0xA0 */ s32 unkA0;
+    /* 0xA4 */ s32 unkA4;
+    /* 0xA8 */ s32 unkA8;
+    /* 0xAC */ BearminatorExt2 *unkAC;
+    /* 0xB0 */ s32 unkB0;
+    /* 0xB4 */ s32 unkB4;
+} BearminatorExt;
+
+extern ScriptInit D_800D5FA4;
+
 #endif /* BASH_OVL62_H */

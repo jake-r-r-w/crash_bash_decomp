@@ -2471,7 +2471,103 @@ void func_800C5EEC(Ovl62EaseCam *c, s32 *pos) {
     pos[2] -= c->z.cur;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitBearminator);
+void InitBearminator(NAS *m) {
+    BearminatorExt *ext;
+    BearminatorExt2 *e2;
+    NAS *n;
+    EXTengine *e;
+    EXTengine *f;
+    s32 r;
+    s16 v;
+
+    ext = AddExtension(m, 0xB8, 0x10000000);
+    if (ext != NULL) {
+        r = Random(2);
+        if (r == 0) {
+            PlaySfx(0x22B, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (r == 1) {
+            PlaySfx(0x22C, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        PlaySfx(0x22E, NULL, NULL, 0x1000, 0x1E00, 0);
+        e2 = AddExtension(m, 0x54, 0x20000000);
+        if (e2 != NULL) {
+            m->Engine->sub->unk6C = D_80054A0C;
+            n = SpawnNASById(m->Engine->unk10.x, 0, m->Engine->unk10.z, 0x1620, 0x11);
+            if (n != NULL) {
+                ext->unk98 = n;
+                func_80026A04((u8 *)n);
+            }
+            ext->unkAC = e2;
+            ext->unkB4 = 0;
+            m->Engine->unk5C = 1;
+            m->Engine->unk2C.x = 0x1F40;
+            m->Engine->unk2C.y = 0x1F40;
+            m->Engine->unk2C.z = 0x1F40;
+            m->Engine->unk5E = 1;
+            m->Engine->flags |= 0x200000;
+            func_80026B70(&D_800D5454, (u8 *)m);
+            ext->cursor = func_80024E30(m, &D_800D5FA4);
+            ext->unkC = 3;
+            e2->unk20 = 0;
+            e2->unk4E = v = ((u16)D_8009D87C[0].unk0 * 8) - 0x30;
+            if (v < 0x10) {
+                e2->unk4E = 0x10;
+            }
+            e2->unk40 = 0;
+            e2->unk28 = 4;
+            e2->unk2A = 1;
+            e2->unk48 = 4;
+            e2->unk4A = 1;
+            ext->unkA0 = 0;
+            ext->unk14 = 0;
+            ext->unkA4 = 0;
+            ext->unk18 = m->Engine->unk1E;
+            ext->unk38 = 0xB;
+            ext->unk7C = 0x96;
+            ext->unk3C = 0;
+            ext->unk50 = D_8009D530[0]->unk10.y;
+            ext->unk8C = 0;
+            ext->unk1C = 0x5A;
+            ext->unkA8 = 0;
+            ext->unkB0 = 0;
+            m->FUX = NULL;
+            e = AddEngine(m, 2);
+            if (e != NULL) {
+                e->sub->unk6C = D_80054A0C;
+                e->sub->unk74 = 0x4000;
+                e->sub->unk68 = 0x80;
+                e->sub->flags |= 0x02000000;
+                e->unk10 = m->Engine->unk10;
+                e->unk5D = 0;
+                e->flags |= 0x200000;
+                e->sub->flags = 0x40008021;
+                e->sub->flags &= ~0x8000;
+                e->unk1E = m->Engine->unk1E;
+                e->unk20 = -0x800;
+                m->FUX = (EXT *)e;
+                e->unk2C.x = 0x1F40;
+                e->unk2C.y = 0x1F40;
+                e->unk2C.z = 0x1F40;
+                e->sub->unk76 = 0xC00;
+                e->unk5E = 1;
+            }
+            ext->unk9C = NULL;
+            f = AddEngine(m, 3);
+            if (f != NULL) {
+                f->sub->unk6C = D_80054A0C;
+                f->sub->unk74 = 0x2006;
+                f->unk10 = m->Engine->unk10;
+                f->unk5D = 0;
+                f->flags |= 0x200000;
+                f->sub->flags &= ~0x8000;
+                f->unk1E = m->Engine->unk1E;
+                ext->unk9C = f;
+                f->unk5E = 1;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBearminator);
 
