@@ -320,7 +320,65 @@ s32 func_800B406C(s32 player)
   return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B41DC);
+s32 func_800B41DC(s32 player)
+{
+    TrigEntry *trig;
+    Ovl63Pad *pad;
+    HeroInfo *o;
+    HeroInfo *h;
+    HeroInfo *base;
+    s32 i;
+    s32 a;
+    s32 to[4];
+    s32 from[4];
+    s16 rel[8];
+
+    if (Heroes[player].hero->FUX == 0) {
+        return 0;
+    }
+    if (((Ovl63Fux18 *) Heroes[player].hero->FUX)->mode != 1) {
+        return 0;
+    }
+    i = 0;
+    trig = D_80068BD4;
+    base = Heroes;
+    pad = (Ovl63Pad *) D_80051338;
+    o = base;
+loop:
+    if (i < 4) {
+        if (i == player) {
+            goto next;
+        }
+        h = (HeroInfo *)(player * sizeof(HeroInfo) + (u32)base);
+        if (i == h->hero_teammate) {
+            goto next;
+        }
+        if (func_800B35CC(player) != i) {
+            goto next;
+        }
+        a = get_angle(o->hero_eng->unk10.x, o->hero_eng->unk10.z) & 0xFFF;
+        if ((((a - (get_angle(h->hero_eng->unk10.x, h->hero_eng->unk10.z) & 0xFFF)) << 20) >> 20) < 100) {
+            goto next;
+        }
+        from[0] = 0;
+        from[2] = 0;
+        to[0] = trig[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2 * 2048 >> 12;
+        to[1] = 0;
+        do { to[2] = trig[h->hero_eng->unk1E & 0xFFF].unk2 * 2048 >> 12; } while (0);
+        rel[0] = o->hero_eng->unk10.x - h->hero_eng->unk10.x;
+        rel[2] = o->hero_eng->unk10.z - h->hero_eng->unk10.z;
+        rel[3] = 0x180;
+        if (func_800B3E60(from, to, rel) != 0) {
+            h->hero_ai->AIpad |= 0x2000;
+            pad[player].unk50 = h->hero_ai->AIpad;
+            return 1;
+        }
+    next:
+        do { o++; i++; } while (0);
+        goto loop;
+    }
+    return 0;
+}
 
 s32 func_800B442C(s32 player)
 {
