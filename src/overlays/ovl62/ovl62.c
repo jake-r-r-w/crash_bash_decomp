@@ -1806,7 +1806,150 @@ void func_800BD058(s32 arg0, s32 arg1, s32 arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitTransmuterBeam);
+void InitTransmuterBeam(NAS *m) {
+    TransBeamExt *ext;
+    UkaBitExt *bx;
+    EXTengine *e;
+    subengine *sub;
+    subengine *s2;
+    NAS *n;
+    s32 i;
+
+    ext = AddExtension(m, 0x1E0, 0x40000000);
+    if (ext == NULL) {
+        return;
+    }
+    D_800D6008 = 0;
+    D_800D600C = 0;
+    D_800D5474 = 0;
+    D_800D547C = 0;
+    D_800D5478 = 0;
+    ext->unkC = 5;
+    D_800D5254 = (Ovl62Owner *)m;
+    m->FUX = (EXT *)ext;
+    for (i = 0; i < 4; i++) {
+        ext->unk18[i] = -1;
+        ext->unk28[i] = -1;
+        ext->unk38[i] = 0;
+        ext->unk48[i] = 0;
+        ext->engs[i] = 0;
+    }
+    ext->unk10 = -1;
+    ext->unk6C = 5;
+    ext->unk58 = 0;
+    ext->unk5C = 0;
+    ext->unk60 = 0x78;
+    ext->unk64 = Random(0x5A) + 0xD2;
+    ext->unk14 = 1;
+    ext->unk68 = -1;
+    ext->pos = *(SLONG_XYZ *)&m->Engine->unk10;
+    ext->unk98 = 0x5DC;
+    ext->unk94 = 0;
+    ext->unkA0 = 8;
+    ext->unk9C = 0;
+    ext->unk94 = Random(0x3C);
+    m->UserInfo.user1 = 0;
+    ext->unk1DC = 0x1E0;
+    ext->bit1 = n = SpawnNASById(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1605, 0x11);
+    if (n != NULL) {
+        bx = FindExtension(n, 0x10000000);
+        if (bx != NULL) {
+            if (((Ovl62ModeView *)D_8005A614)->mode == 0x12) {
+                bx->unkC = 1;
+                bx->unk20 = 4;
+                goto tex1;
+            }
+            if (((Ovl62ModeView *)D_8005A614)->flags & 0x80) {
+                if (((Ovl62ModeView *)D_8005A614)->mode == 0x13) {
+                    bx->unkC = 1;
+                }
+                if (((Ovl62ModeView *)D_8005A614)->mode != 0x15) {
+                    goto skip1;
+                }
+            }
+            bx->unk20 = 4;
+            bx->unkC = 4;
+        tex1:
+            ext->bit1->Engine->sub->unk6C = D_800546C4;
+        skip1:
+            bx->unk18 = 0x100;
+            bx->unk20 |= 8;
+            ext->bit1->Engine->flags |= 0x200000;
+            ext->bit1->InitDelete(ext->bit1);
+        }
+    }
+    ext->bit2 = n = SpawnNASById(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1605, 0x11);
+    if (n != NULL) {
+        n->Engine->flags |= 0x200000;
+        bx = FindExtension(ext->bit2, 0x10000000);
+        if (bx != NULL) {
+            if (((Ovl62ModeView *)D_8005A614)->mode == 0x12) {
+                bx->unkC = 2;
+                bx->unk20 = 4;
+                goto tex2;
+            }
+            if (((Ovl62ModeView *)D_8005A614)->flags & 0x80) {
+                if (((Ovl62ModeView *)D_8005A614)->mode == 0x13) {
+                    bx->unkC = 2;
+                }
+                if (((Ovl62ModeView *)D_8005A614)->mode != 0x15) {
+                    goto skip2;
+                }
+            }
+            bx->unk20 = 4;
+            bx->unkC = 3;
+        tex2:
+            ext->bit2->Engine->sub->unk6C = D_800546C4;
+        skip2:
+            bx->unk18 = 0x100;
+            ext->bit2->InitDelete(ext->bit2);
+            ext->unkAC = 0;
+        }
+    }
+    m->Engine->sub->unk6C = D_800546C4;
+    m->Engine->sub->unk74 = 0x2013;
+    m->Engine->unk5D = 2;
+    m->Engine->flags |= 0x200000;
+    ext->eng = NULL;
+    e = AddEngine(m, 2);
+    if (e != NULL) {
+        ext->eng = e;
+        e->sub->unk6C = D_800546C4;
+        e->sub->unk74 = 0x2003;
+        e->sub->unk51 = 0;
+        s2 = e->sub;
+        s2->unk14 = 0;
+        s2->unk12 = 0;
+        s2->unk10 = 0;
+        e->sub->unk50 = 1;
+        sub = e->sub;
+        sub->unk20.z = 0x200;
+        sub->unk20.y = 0x200;
+        sub->unk20.x = 0x200;
+        e->sub->flags &= ~0x8000;
+        e->flags |= 0x200000;
+    }
+    for (i = 0; i < 4; i++) {
+        e = AddEngine(m, i + 3);
+        if (e != NULL) {
+            ext->engs[i] = e;
+            e->sub->unk6C = D_800546C4;
+            e->sub->unk74 = 0x2019;
+            e->sub->unk51 = 0;
+            s2 = e->sub;
+            s2->unk14 = 0;
+            s2->unk12 = 0;
+            s2->unk10 = 0;
+            e->sub->unk50 = 1;
+            s2 = e->sub;
+            s2->unk20.z = 0x800;
+            s2->unk20.y = 0x800;
+            s2->unk20.x = 0x800;
+            e->sub->flags &= ~0x8000;
+            e->flags |= 0x200000;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotTransmuterBeam);
 

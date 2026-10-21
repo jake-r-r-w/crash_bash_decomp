@@ -732,6 +732,43 @@ typedef struct UkaBitExt {
     /* 0x20 */ s32 unk20;
 } UkaBitExt;
 
+/* InitTransmuterBeam's extension (id 0x40000000, 0x1E0 bytes). */
+typedef struct TransBeamExt {
+    /* 0x000 */ u8 pad0[0xC];
+    /* 0x00C */ s32 unkC;
+    /* 0x010 */ s32 unk10;
+    /* 0x014 */ s32 unk14;
+    /* 0x018 */ s32 unk18[4];
+    /* 0x028 */ s32 unk28[4];
+    /* 0x038 */ s32 unk38[4];
+    /* 0x048 */ s32 unk48[4];
+    /* 0x058 */ s32 unk58;
+    /* 0x05C */ s32 unk5C;
+    /* 0x060 */ s32 unk60;
+    /* 0x064 */ s32 unk64;
+    /* 0x068 */ s32 unk68;
+    /* 0x06C */ s32 unk6C;
+    /* 0x070 */ u8 pad70[4];
+    /* 0x074 */ EXTengine *eng;
+    /* 0x078 */ EXTengine *engs[4];
+    /* 0x088 */ SLONG_XYZ pos;
+    /* 0x094 */ s32 unk94;
+    /* 0x098 */ s32 unk98;
+    /* 0x09C */ s32 unk9C;
+    /* 0x0A0 */ s32 unkA0;
+    /* 0x0A4 */ NAS *bit1;
+    /* 0x0A8 */ NAS *bit2;
+    /* 0x0AC */ s32 unkAC;
+    /* 0x0B0 */ u8 padB0[0x1DC - 0xB0];
+    /* 0x1DC */ s32 unk1DC;
+} TransBeamExt;
+
+extern s32 D_800D5474;
+extern s32 D_800D5478;
+extern s32 D_800D547C;
+extern s32 D_800D6008;
+extern s32 D_800D600C;
+
 typedef struct Ovl62RiserObj {
     /* 0x00 */ u8 pad0[0x74];
     /* 0x74 */ s16 y;
