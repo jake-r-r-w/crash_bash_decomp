@@ -8853,7 +8853,8 @@
  },
  "ovl66:800B3D28": {
   "auto_diff": 115,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-21T07:00:39Z",
+  "status": "matched"
  },
  "ovl66:800B3F10": {
   "matched_at": "2026-10-20T21:20:07Z",

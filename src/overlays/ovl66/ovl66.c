@@ -80,7 +80,62 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/ovl66/ovl66", D_800B32B8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", PlotBonkStool);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B3D28);
+s32 func_800B3D28(s32 *arg0, s32 *arg1) {
+    s32 tries;
+    s32 ok;
+    s32 x;
+    s32 z;
+    s32 i;
+    HeroInfo *h;
+    Ovl66Entry *e;
+    Ovl66Ent *f;
+    EXTengine *eng;
+
+    HeroInfo *heroes;
+
+    tries = 0;
+    heroes = Heroes;
+    do {
+        ok = 1;
+        x = Random(0x1000) - 0x800;
+        z = Random(0x1000) - 0x800;
+        for (i = 0, h = heroes; i < 4; i++, h++) {
+            eng = h->hero_eng;
+            if ((csqrt(func_800B62C8(eng->unk10.x, eng->unk10.z, x, z)) >> 6) < 0x400) {
+                ok = 0;
+            }
+        }
+        if (ok) {
+            if (D_800B9EF0 != 0) {
+                for (i = 0, e = D_800B9E50; i < 10; i++, e++) {
+                    if (e->unk4 != 0) {
+                        eng = ((NAS *)e->unk4)->Engine;
+                        if ((csqrt(func_800B62C8(eng->unk10.x, eng->unk10.z, x, z)) >> 6) < 0x400) {
+                            ok = 0;
+                        }
+                    }
+                }
+            }
+            if (ok && D_800B9F08 != 0) {
+                for (i = 0, f = D_800B9EC8; i < 3; i++, f++) {
+                    if (f->b != 0) {
+                        eng = ((NAS *)f->b)->Engine;
+                        if ((csqrt(func_800B62C8(eng->unk10.x, eng->unk10.z, x, z)) >> 6) < 0x300) {
+                            ok = 0;
+                        }
+                    }
+                }
+            }
+        }
+        tries++;
+        if (ok) {
+            *arg0 = x;
+            *arg1 = z;
+            return 1;
+        }
+    } while (tries < 10);
+    return 0;
+}
 
 void InitBonkCrate(NAS *nas) {
     EXTengine *e = nas->Engine;

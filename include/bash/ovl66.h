@@ -153,6 +153,8 @@ void func_800B347C(void);
 
 void func_800B34F8(void);
 
+s32 func_800B3D28(s32 *arg0, s32 *arg1);
+
 void InitBonkCrate(NAS *nas);
 
 s32 func_800B60FC(s32 arg0);
