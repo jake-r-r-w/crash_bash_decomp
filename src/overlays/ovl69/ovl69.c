@@ -913,7 +913,63 @@ s32 func_800B65D0(s32 a0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B6734);
+void func_800B6734(void) {
+    EXTengine *eng;
+    subengine *s;
+    subengine *s2;
+    s32 min;
+    s32 i;
+
+    func_800B3A9C();
+    eng = GetEngineSlot(0);
+    s = &eng->sub[24];
+    s->unk08 = ((D_80068BD4[(((D_8004E0D8 * 50) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10) + 0x6E;
+    s->unk12 = (D_80068BD4[(((D_8004E0D8 * 25) & 0xFFF) - 0x400) & 0xFFF].unk2 * 75) >> 11;
+    s->unk14 = (D_80068BD4[(((D_8004E0D8 * 36) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 9;
+    s->unk52 = 1;
+    s2 = &GetEngineSlot(0)->sub[25];
+    s2->unk08 = ((D_80068BD4[(((D_8004E0D8 * 41) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 10) + 0xBE;
+    s2->unk12 = (D_80068BD4[(((D_8004E0D8 * 35) & 0xFFF) - 0x400) & 0xFFF].unk2 * 75) >> 11;
+    s2->unk14 = (D_80068BD4[(((D_8004E0D8 * 26) & 0xFFF) - 0x400) & 0xFFF].unk2 * 5) >> 9;
+    s2->unk52 = 1;
+    min = 0x7FFFFFFF;
+    for (i = 0; i < ((Ovl69ModeView *)D_8005A614)->unk26; i++) {
+        if (D_800B9FD4[i].pad10[5] < min) {
+            min = D_800B9FD4[i].pad10[5];
+        }
+    }
+    if (min >= 0x10) {
+        for (i = D_8005A63A; ; i++) {
+            s32 w;
+
+            if (i >= 4) {
+                break;
+            }
+            w = D_800B9FD4[i].pad10[5];
+            if (w > 0 && w < 15) {
+                min = 0;
+                break;
+            }
+            if (w == 0) {
+                D_800B9FD4[i].idx = func_800B65D0(i);
+                D_800B9FD4[i].pad10[7]++;
+                min = 0;
+                break;
+            }
+        }
+        if (min >= 0x79) {
+            func_800B4848();
+            func_800B5410();
+        }
+    }
+    if (D_80051380 & 0x1000) {
+        PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
+        func_800B53D4();
+    }
+    for (i = 0; i < 4; i++) {
+        func_800B5CA8(&D_800B9FD4[i]);
+    }
+}
 
 void func_800B6A64(void) {
     EXTengine *eng;

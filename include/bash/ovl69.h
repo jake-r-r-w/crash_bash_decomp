@@ -246,6 +246,7 @@ void func_800B57BC(void);
 void func_800B58E4(void);
 
 s32 func_800B65D0(s32 a0);
+void func_800B5CA8(Ovl69Slot *slot);
 
 s8 func_800B6ACC(s32 a0);
 
@@ -369,5 +370,7 @@ void func_800B3F7C(void);
 
 void func_800B53D4(void);
 void func_800B5410(void);
+
+void func_800B6734(void);
 
 #endif /* BASH_OVL69_H */
