@@ -500,4 +500,6 @@ void PlotAsteroidRoll(NAS *nas);
 
 void PlotMineSFX(NAS *nas);
 
+void PlotLaserShoot(NAS *nas);
+
 #endif /* BASH_OVL67_800BBDB8_H */

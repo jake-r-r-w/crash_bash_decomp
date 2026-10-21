@@ -583,7 +583,72 @@ void PlotMineSFX(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", PlotLaserShoot);
+void PlotLaserShoot(NAS *nas) {
+    EXTengine *e;
+    EXTengine *t;
+    SLONG_XYZ *p;
+    NAS *s;
+    LaserExt *ext;
+    s32 dx;
+    s32 dy;
+    s32 dz;
+    s32 r;
+
+    nas->Engine->unk10.x += D_80068BD4[(nas->Engine->unk1E - 0x400) & 0xFFF].unk2 * 1024 >> 12;
+    nas->Engine->unk10.z += D_80068BD4[nas->Engine->unk1E & 0xFFF].unk2 * 1024 >> 12;
+    nas->Engine->unk10.y -= D_80068BD4[(nas->Engine->unk1C - 0x400) & 0xFFF].unk2 * 1024 >> 12;
+    if (nas->UserInfo.user2 == 0) {
+        nas->Engine->sub->unk74 = 0x201D;
+    }
+    if (nas->UserInfo.user2 == 1) {
+        nas->Engine->sub->unk74 = 0x201E;
+    }
+    nas->Engine->unk5E = 1;
+    nas->UserInfo.user1++;
+    if (D_800C4084 != NULL) {
+        e = nas->Engine;
+        t = D_800C4084->Engine;
+        dx = e->unk10.x - t->unk10.x;
+        dy = e->unk10.y - t->unk10.y;
+        dz = e->unk10.z - t->unk10.z;
+        if (dx * dx + dy * dy + dz * dz <= 0x8FFFF) {
+            p = &e->unk10;
+            s = SpawnNASById(p->x, p->y, p->z, 0x1605, 0x11);
+            if (s != NULL) {
+                ext = FindExtension(s, 0x10000000);
+                if (ext != NULL) {
+                    ext->unkC = 3;
+                    ext->unk18 = 0x100;
+                    ext->unk20 = 1;
+                    ext->unk28 = 0;
+                    s->InitDelete(s);
+                }
+            }
+            r = Random(4);
+            if (r == 0) {
+                PlaySfx(0x2B3, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (r == 1) {
+                PlaySfx(0x2B4, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (r == 2) {
+                PlaySfx(0x2B5, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (r == 3) {
+                PlaySfx(0x2B6, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (D_8009D6DC[3] <= 0) {
+                D_8009D6DC[3] = 0;
+                D_8009D6DC[2] |= 0x8000;
+            }
+            goto kill;
+        }
+    }
+    if (nas->UserInfo.user1 >= 0x10) {
+kill:
+        KillNAS(nas);
+    }
+}
 
 void func_800C2218(SparkObj *arg0) {
     SparkSet *set = &arg0->set;
