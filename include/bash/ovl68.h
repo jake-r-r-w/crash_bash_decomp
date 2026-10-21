@@ -442,6 +442,8 @@ void func_800B5CD0(s32 arg0);
 
 void func_800B6C84(s32 arg0);
 
+void func_800B6F6C(s32 arg0);
+
 void PlotBarrelGenerator(NAS *nas);
 
 NAS *func_800B7948(s32 arg0);

@@ -965,7 +965,83 @@ void func_800B6E84(s32 arg0) {
     func_8008502C(arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B6F6C);
+void func_800B6F6C(s32 arg0) {
+    HeroInfo *h;
+    s32 dy;
+
+    HeroInfo *base = Heroes;
+
+    h = base + arg0;
+    h->hero_move->velocity_enable = 0;
+    h->hero_move->jump_max = 0;
+    h->hero_frozen = 8;
+    h->hero_powerup->flags = 0;
+    h->hero_ctrl |= 1;
+    h->hero_eng->flags &= ~0x21;
+    h->hero_status &= 0xDFFF;
+    if (h->hero_object != NULL) {
+        h->hero_object->player = h->hero_harm_player;
+        h->hero_object->status = 4;
+        h->hero_object = NULL;
+    }
+    if (h->hero_powerup->sfx != NULL) {
+        StopSfx(h->hero_powerup->sfx);
+    }
+    if (h->hero_eng->sfx != NULL) {
+        StopSfx(h->hero_eng->sfx);
+    }
+    h->hero_sub->unk6C = D_80052A54 + D_8009D6EC[h->hero_name] * 0x38;
+    h->hero_eng->unk10.y = D_8005A5D8 - 0x200;
+    dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
+    if (dy != 0x7FFFFFFF) {
+        h->hero_eng->unk10.y -= dy;
+    } else {
+        h->hero_eng->unk10.y = D_8005A5D8;
+    }
+    {
+        HeroInfo *b2 = Heroes;
+        HeroInfo *g = b2 + arg0;
+        SLONG_XYZ *v;
+        void *anim;
+        NAS *nas;
+        s32 *ext;
+
+        g->hero_sub->unk08 = 0;
+        g->hero_pu = 0;
+        g->hero_pu_timer = 0;
+        SetHeroSeq(arg0, 0x61);
+        v = &g->hero_eng->unk10;
+        anim = D_80053F8C;
+        nas = SpawnNASById(v->x, v->y, v->z, 0x1605, 0x11);
+        if (nas != NULL) {
+            ext = FindExtension(nas, 0x10000000);
+            if (ext != NULL) {
+                ext[3] = 0;
+                ext[6] = 0x100;
+                if (anim != NULL) {
+                    ext[8] = 5;
+                    nas->Engine->sub->unk6C = anim;
+                } else {
+                    ext[8] = 1;
+                }
+                ext[10] = 0;
+                nas->InitDelete(nas);
+            }
+        }
+    }
+    {
+        HeroInfo *b3 = Heroes;
+        HeroInfo *k = b3 + arg0;
+        EXTengine *eng = k->hero_eng;
+
+        eng->unk5C = 1;
+        eng->unk2C.x = 0x1000;
+        eng->unk2C.y = 0x1000;
+        eng->unk2C.z = 0x1000;
+        eng->Engine->sub->flags = 0;
+        func_80026980(k->hero);
+    }
+}
 
 void func_800B722C(s32 arg0) {
     HeroInfo *h;
