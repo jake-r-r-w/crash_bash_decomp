@@ -792,7 +792,84 @@ void func_800B6FEC(s32 player) {
     fux->func = func_800CB6B4;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B7224);
+void func_800B7224(s32 player) {
+    SLONG_XYZ pos;
+    s32 dist;
+    HeroInfo *h;
+    HeroInfo *me;
+    HeroInfo *o;
+    Ovl62Fux *fux;
+    EXTheromove *move;
+    EXTengine *a;
+    EXTengine *b;
+    s32 best;
+    s32 i;
+    s32 d;
+    s32 t;
+    HeroInfo *base;
+    HeroInfo *base2;
+
+    base = Heroes;
+    h = &base[player];
+    fux = (Ovl62Fux *)h->hero->FUX;
+    if (fux == NULL) {
+        return;
+    }
+    dist = 0x7FFFFFFF;
+    move = h->hero_move;
+    best = 0;
+    if (D_8005A648 == 0x15) {
+        if (Ovl62HasBomb(player)) {
+            t = func_800CB178(player, &dist);
+            if (t != -1) {
+                func_800B6EB4(player, t);
+            }
+        }
+    }
+    i = 0;
+    base2 = Heroes;
+    me = &base2[player];
+    o = base2;
+loop:
+    if (i < 4) {
+        do {
+            if (i != player && !(o->hero_status & 0x2000)) {
+                pos = o->hero_eng->unk10;
+                d = func_8008CEB0((u8 *)&pos, (u8 *)&me->hero_eng->unk10);
+                if (d < dist) {
+                    dist = d;
+                    best = i;
+                }
+            }
+            o++;
+        } while (0);
+        i++;
+        goto loop;
+    }
+    if (move != NULL) {
+        a = Heroes[player].hero_eng;
+        b = Heroes[best].hero_eng;
+        move->forward_angle = get_angle(a->unk10.x - b->unk10.x, a->unk10.z - b->unk10.z) & 0xFFF;
+    }
+    if (dist <= 0xFFFFF) {
+        fux->unk2C = best;
+        fux->unk24 = 0x5A;
+        func_800B60B8(player);
+        fux->state = 6;
+        fux->func = func_800B7F70;
+        fux->unk34 |= 1;
+    }
+    if (fux->unk24-- < 0) {
+        fux->state = 5;
+        fux->func = func_800CB6B4;
+        fux->unk34 &= ~1;
+    }
+    if (D_800D5FEC[player] & 1) {
+        fux->state = 0xB;
+        func_800CB134(player);
+        fux->func = func_800B90C0;
+    }
+}
 
 void func_800B7520(s32 player) {
     HeroInfo *h;
