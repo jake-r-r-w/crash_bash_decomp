@@ -1185,7 +1185,81 @@ void InitBarrelCH(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotBarrelCH);
+void PlotBarrelCH(NAS *nas) {
+    EXTengine *eng;
+    BarrelCHExt *fux;
+    EXTengine *he;
+    s32 i;
+    s32 j;
+    s32 bx, bz;
+    s32 dx, dz;
+    s32 d;
+    s32 a;
+    SLONG_XYZ *v;
+    void *anim;
+    NAS *n;
+    s32 *ext;
+
+    i = 0;
+    eng = nas->Engine;
+    fux = (BarrelCHExt *)nas->FUX;
+    bx = eng->unk10.x;
+    bz = eng->unk10.z;
+    do {
+        he = Heroes[i].hero_eng;
+        dx = he->unk10.x - bx;
+        dz = he->unk10.z - bz;
+        if ((u32)(dx + 0xFF) < 0x1FF && dz >= -0xFF && dz < 0x100) {
+            d = (csqrt(dx * dx + dz * dz) >> 6) - 0x70;
+            if (d < 0x70) {
+                a = get_angle(dx, dz);
+                he->unk10.x += (d * D_80068BD4[(a - 0x400) & 0xFFF].unk2) >> 12;
+                he->unk10.z += (d * D_80068BD4[a & 0xFFF].unk2) >> 12;
+            }
+        }
+        i++;
+    } while (i < 4);
+    if (fux->growing == 1) {
+        fux->scale += 0x3E8;
+        if (fux->scale >= 0x1770) {
+            fux->scale = 0x1770;
+            fux->growing = 0;
+        }
+        eng->unk2C.x = fux->scale;
+        eng->unk2C.y = fux->scale;
+        eng->unk2C.z = fux->scale;
+        eng->unk5E = 1;
+        return;
+    }
+    if (nas->UserInfo.status != 0) {
+        v = &eng->unk10;
+        PlaySfx(D_800BB9EC[Random(4)], 0, v, 0x1000, 0x1E00, 0);
+        anim = D_80053F8C;
+        n = SpawnNASById(eng->unk10.x, v->y, v->z, 0x1605, 0x11);
+        if (n != NULL) {
+            ext = FindExtension(n, 0x10000000);
+            if (ext != NULL) {
+                ext[3] = 0;
+                ext[6] = 0x100;
+                if (anim != NULL) {
+                    ext[8] = 5;
+                    n->Engine->sub->unk6C = anim;
+                } else {
+                    ext[8] = 1;
+                }
+                ext[10] = 0;
+                n->InitDelete(n);
+            }
+        }
+        for (j = 0; j < 8; j++) {
+            if (D_800BC424[j] == nas) {
+                D_800BC424[j] = NULL;
+                break;
+            }
+        }
+        KillNAS(nas);
+    }
+}
 
 NAS *func_800B7948(s32 arg0) {
     u8 *g = D_8005A614 + arg0;

@@ -332,6 +332,16 @@ void func_800B722C(s32 arg0);
 
 void InitBarrelCH(NAS *nas);
 
+/* InitBarrelCH's extension 0x10000001 (0x44 bytes), its NAS.FUX. */
+typedef struct BarrelCHExt {
+    /* 0x00 */ u8 pad0[0x1C];
+    /* 0x1C */ s32 scale;
+    /* 0x20 */ u8 pad20[0x10];
+    /* 0x30 */ s32 growing;
+} BarrelCHExt;
+extern s32 D_800BB9EC[];
+void PlotBarrelCH(NAS *nas);
+
 void InitPickupCH(NAS *nas);
 
 void func_800BA630(NAS *nas);
