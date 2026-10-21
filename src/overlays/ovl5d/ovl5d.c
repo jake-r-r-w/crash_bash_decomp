@@ -92,7 +92,126 @@ void func_800B3A38(void) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl5d/ovl5d", D_800B32B8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B3DD8);
+void func_800B3DD8(void) {
+    u8 *g;
+    s32 i;
+    s16 a;
+    EXTheromove *m;
+
+    func_8007EB1C(0x140, 0x28, 0);
+    g = D_8005A614;
+    if (*(u16 *)(g + 0x32) & 0x40) {
+        if (*(s32 *)(g + 0x6C) != 0) {
+            switch (*(s16 *)(g + 0x34)) {
+            case 0:
+                func_8007B7FC(0x30, 0x81D0);
+                break;
+            case 1:
+                func_8007B7FC(0x30, 0x81D0);
+                break;
+            case 2:
+                func_8007B7FC(0x30, 0x81D0);
+                break;
+            case 3:
+                func_8007B7FC(0x25, 0x81D0);
+                break;
+            }
+        } else {
+            switch (*(s16 *)(g + 0x34)) {
+            case 0:
+                func_8007B7FC(0x45, 0x81D0);
+                break;
+            case 1:
+                func_8007B7FC(0x40, 0x81D0);
+                break;
+            case 2:
+                func_8007B7FC(0x40, 0x81D0);
+                break;
+            case 3:
+                func_8007B7FC(0x30, 0x81D0);
+                break;
+            }
+        }
+    } else {
+        func_8007B7FC(0x130, 0x81D0);
+    }
+    D_800C3B32 = 0;
+    D_800C3B34 = 0;
+    D_800C478A = 0x1E;
+    *(s16 *)D_800C3B86 = 0;
+    D_800C3B38 = 0;
+    D_800C3B3A = 0;
+    D_800C3B3E = 0;
+    D_800C3B3C = (Random(0xA) + 0xA) * 0x1E;
+    D_800C3B40 = -1;
+    D_800C46B0 = NULL;
+    D_800C46B4 = NULL;
+    D_800C4788 = Random(0x12);
+    D_800C46AC = 0x96;
+    func_800B7E74();
+    func_800BAF68();
+    func_80086D88();
+    for (i = 0; i < 4; i++) {
+        a = get_angle(Heroes[i].hero_eng->unk10.x, Heroes[i].hero_eng->unk10.z);
+        m = Heroes[i].hero_move;
+        Heroes[i].hero_eng->unk1E = a;
+        m->facing_angle = a;
+        m->forward_angle = a;
+    }
+    D_800C3B9C[0] = D_800C3B9C[1] = D_800C3B9C[2] = D_800C3B9C[3] = 0;
+    switch (D_8005A648) {
+    case 0:
+        D_8005A5D8 = -0x10;
+        func_800B710C(8, 8, 0xA, 0xC, 0xA, 3, 3, 0, 0);
+        func_800BAFB4();
+        func_8007A9D0(D_800C39C0);
+        break;
+    case 1:
+        D_8005A5D8 = -0x10;
+        func_800B8314();
+        D_800C478A = (Random(0xA) + 0xA) * 0x1E;
+        D_8009E488.unk8 = func_800BAE98;
+        if (D_8005A646 & 0x80) {
+            func_800B710C(6, 7, 8, 8, 0, 0xE, 2, 0, 0);
+        } else {
+            func_800B710C(0xA, 0xA, 0xC, 0xE, 0xA, 4, 2, 0, 0);
+        }
+        func_800BAFB4();
+        break;
+    case 2:
+        D_8005A5D8 = -0x10;
+        D_8009E488.unk0 = D_800C395C;
+        D_8009D6F4 = D_800C3984;
+        D_800C478A = (Random(0xA) + 0xA) * 0x1E;
+        func_800B710C(8, 8, 0xA, 0xC, 0xA, 3, 3, 0, 0);
+        D_8005A5DC = 3;
+        for (i = 0; i < 4; i++) {
+            Heroes[i].hero_move->velocity_calc = D_8005A5DC;
+        }
+        func_800BB2BC();
+        SpawnNASById(0, D_8005A5D8, 0, 0x1101, 0x11);
+        SpawnNASById(0, D_8005A5D8, 0, 0x1102, 0x11);
+        func_800BAFB4();
+        break;
+    case 3:
+        D_8005A5D8 = 0;
+        D_800C478A = Random(0x1E) + 0x1E;
+        func_800B710C(6, 6, 6, 6, 0xE, 2, 0, 0, 0);
+        func_800BAFB4();
+        func_8007A9D0(D_800C39D8);
+        break;
+    case 0x20:
+        Heroes[2].hero_shadow->flags = 0;
+        D_8005A5D8 = -0x10;
+        Heroes[3].hero_shadow->flags = 0;
+        func_800B710C(8, 8, 0xA, 0xC, 0xA, 3, 3, 0, 0);
+        func_800BAFB4();
+        func_80095258(*(u8 **)D_80058AD0);
+        D_8009F8B4 = func_800BAC10;
+        D_8005A5D8 = 0;
+        break;
+    }
+}
 
 void func_800B432C(void) {
     s32 i;

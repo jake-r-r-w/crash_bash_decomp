@@ -353,4 +353,22 @@ extern u8 D_800C3194[];
 extern u8 D_800C31AC[];
 extern u8 D_800C31C0[];
 
+/* func_800B3DD8 */
+extern s16 D_800C3B32;
+extern s16 D_800C3B34;
+extern s16 D_800C478A;
+extern s16 D_800C3B3A;
+extern s16 D_800C3B3E;
+extern s16 D_800C4788;
+extern s32 D_800C46AC;
+extern s32 D_800C3B9C[4];
+extern u8 D_800C395C[];
+extern u16 D_800C3984[];
+extern u8 D_800C39C0[];
+extern u8 D_800C39D8[];
+extern u16 *D_8009D6F4;
+void func_8007EB1C(s32 arg0, s32 arg1, s32 arg2);
+void func_8007B7FC(u32 a, u32 b);
+void func_80095258(u8 *arg0);
+
 #endif /* BASH_OVL5D_H */
