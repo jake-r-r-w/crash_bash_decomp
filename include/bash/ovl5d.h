@@ -320,4 +320,37 @@ void func_800B8C9C(EXTengine *eng);
 
 void PlotBashPenguin(NAS *nas);
 
+/* func_800B3A38: the overlay's init hook. */
+extern EXTengine D_800C46EC;
+extern void (*D_8009D70C)(s32);
+void func_800B4AB0();
+void func_800BEF00();
+NAS *func_800C1848();
+void func_800C1A30();
+void func_800C284C();
+extern u8 D_800C3004[];
+extern u8 D_800C3018[];
+extern u8 D_800C302C[];
+extern u8 D_800C3038[];
+extern u8 D_800C3050[];
+extern u8 D_800C3064[];
+extern u8 D_800C3078[];
+extern u8 D_800C308C[];
+extern u8 D_800C30A0[];
+extern u8 D_800C30AC[];
+extern u8 D_800C30C4[];
+extern u8 D_800C30D8[];
+extern u8 D_800C30EC[];
+extern u8 D_800C3100[];
+extern u8 D_800C3114[];
+extern u8 D_800C3120[];
+extern u8 D_800C3138[];
+extern u8 D_800C314C[];
+extern u8 D_800C3160[];
+extern u8 D_800C3174[];
+extern u8 D_800C3188[];
+extern u8 D_800C3194[];
+extern u8 D_800C31AC[];
+extern u8 D_800C31C0[];
+
 #endif /* BASH_OVL5D_H */

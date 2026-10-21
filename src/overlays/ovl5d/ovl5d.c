@@ -3,7 +3,92 @@
 #include "bash/bash.h"
 #include "bash/xtras.h"
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B3A38);
+void func_800B3A38(void) {
+    u8 *g;
+    void **p;
+    void **p2;
+    void **p3;
+    void **p4;
+    void *t;
+
+    D_8009D6E8.unk68 = func_800BB1B4;
+    D_8009D6E8.unk38 = func_800B4AB0;
+    D_8009D6E8.unk5C = func_800BEF00;
+    D_8009D6E8.unk60 = func_800BEDE8;
+    D_8009D6E8.unk4C = func_800C159C;
+    D_8009D6E8.unk50 = func_800C1848;
+    D_8009D6E8.unk54 = func_800C1A30;
+    D_8009D6E8.unk58 = func_800C284C;
+    D_800C478C = NULL;
+    func_800BB3D0();
+    D_8009E298 = Ovl5dASTIndex(0x206);
+    D_800C46EC = EngineTemplate;
+    g = D_8005A614;
+    switch (*(s16 *)(g + 0x34)) {
+    case 1:
+        D_8009D8F4 = D_800C30C4;
+        D_8009D8F8 = D_800C30D8;
+        D_8009D904 = D_800C30AC;
+        p = &D_8009D8FC;
+        if (*(s32 *)(g + 0x6C) != 0) {
+            t = D_800C308C;
+        } else {
+            t = D_800C3078;
+        }
+        *p = t;
+        D_8009D900 = D_800C30A0;
+        if (D_8005A646 & 0x80) {
+            D_8009D724 = func_800C2FB0;
+        }
+        break;
+    case 2:
+        D_8009D8F4 = D_800C3138;
+        D_8009D8F8 = D_800C314C;
+        D_8009D904 = D_800C3120;
+        p2 = &D_8009D8FC;
+        if (*(s32 *)(g + 0x6C) != 0) {
+            t = D_800C3100;
+        } else {
+            t = D_800C30EC;
+        }
+        *p2 = t;
+        D_8009D900 = D_800C3114;
+        D_8009D70C = func_800B44B0;
+        break;
+    case 3:
+        D_8009D8F4 = D_800C31AC;
+        D_8009D8F8 = D_800C31C0;
+        D_8009D904 = D_800C3194;
+        p3 = &D_8009D8FC;
+        if (*(s32 *)(g + 0x6C) != 0) {
+            t = D_800C3174;
+        } else {
+            t = D_800C3160;
+        }
+        *p3 = t;
+        D_8009D900 = D_800C3188;
+        D_8009D724 = func_800B95F0;
+        break;
+    case 0x20:
+        D_8009D724 = func_800B95F0;
+        g[0x52] = 9;
+        g[0x53] = 9;
+        break;
+    default:
+        D_8009D8F4 = D_800C3050;
+        D_8009D8F8 = D_800C3064;
+        D_8009D904 = D_800C3038;
+        p4 = &D_8009D8FC;
+        if (D_8005A680[0] != 0) {
+            t = D_800C3018;
+        } else {
+            t = D_800C3004;
+        }
+        *p4 = t;
+        D_8009D900 = D_800C302C;
+        break;
+    }
+}
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl5d/ovl5d", D_800B32B8);
 
