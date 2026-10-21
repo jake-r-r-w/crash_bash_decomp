@@ -880,8 +880,10 @@ typedef struct PolarBombExt {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 unkC;
     /* 0x10 */ s32 unk10;
-    /* 0x14 */ u8 pad14[0x30 - 0x14];
-    /* 0x30 */ s32 unk30;
+    /* 0x14 */ u8 pad14[0x18 - 0x14];
+    /* 0x18 */ s32 to[3];   /* func_8008C5C4 target */
+    /* 0x24 */ s32 from[3]; /* func_8008C5C4 start */
+    /* 0x30 */ s32 unk30;   /* arc state from here */
     /* 0x34 */ s32 unk34;
     /* 0x38 */ u8 pad38[0x48 - 0x38];
     /* 0x48 */ s32 unk48;
@@ -889,6 +891,8 @@ typedef struct PolarBombExt {
     /* 0x74 */ s32 unk74;
     /* 0x78 */ u8 pad78[0x84 - 0x78];
 } PolarBombExt;
+
+s32 func_800B44B4(NAS *nas, s32 dist);
 
 extern u8 D_80054A0C[];
 

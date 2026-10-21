@@ -294,7 +294,92 @@ void InitPolarBomb(NAS *m) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotPolarBomb);
+void PlotPolarBomb(NAS *m) {
+    PolarBombExt *ext;
+    NAS *nas;
+    NAS *smoke;
+    ExtSpawn5910 *fx;
+    s32 *bx;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    switch (ext->unkC) {
+    case 0:
+        if ((func_800B4260(&m->Engine->unk10.x, 0) ^ 1) != 0) {
+            ext->unk48 = 0x100;
+            m->Engine->sub->unk68 = 0x200;
+            if (m->Engine->unk10.y >= ext->unk48) {
+                PlaySfx(0x494, NULL, NULL, 0x1000, 0x1E00, 0);
+                KillNAS(m);
+                break;
+            }
+        }
+        if (func_8008C5C4(ext->from, ext->to, &ext->unk30, &m->Engine->unk10.x) != 0) {
+            PlaySfx((func_800B4260(&m->Engine->unk10.x, 0) ^ 1) != 0 ? 0x494 : 0x48F, NULL, NULL, 0x1000, 0x1E00, 0);
+            nas = SpawnNASById(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1605, 0x11);
+            if (nas != NULL) {
+                nas->Engine->flags |= 0x200000;
+                fx = (ExtSpawn5910 *)nas->FUX;
+                if (fx != NULL) {
+                    fx->unkC = 1;
+                    fx->unk18 = 0x100;
+                    fx->unk20 = 1;
+                    fx->unk28 = 0;
+                }
+                nas->InitDelete(nas);
+            }
+            ext->unk10 = 0;
+            ext->unkC = 1;
+            break;
+        }
+        if (ext->unk10-- < 0) {
+            smoke = SpawnNASById(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1612, 0x11);
+            if (smoke != NULL) {
+                smoke->Engine->unk2C.x = 0x5DC;
+                smoke->Engine->unk2C.y = 0x5DC;
+                smoke->Engine->unk2C.z = 0x5DC;
+                bx = FindExtension(smoke, 0x10000000);
+                if (bx != NULL) {
+                    bx[3] = 0x400;
+                    bx[4] = 0xC8;
+                    bx[5] = 0x10;
+                }
+            }
+            ext->unk10 = Random(2);
+        }
+        if (m->FUX != NULL) {
+            ((EXTengine *)m->FUX)->unk10 = m->Engine->unk10;
+            ((EXTengine *)m->FUX)->unk10.y = 0;
+            ((EXTengine *)m->FUX)->unk2C.x = (0x100 - abs(m->Engine->unk10.y)) * 8 + 0xC00;
+            ((EXTengine *)m->FUX)->unk2C.y = (0x100 - abs(m->Engine->unk10.y)) * 8 + 0xC00;
+            ((EXTengine *)m->FUX)->unk2C.z = (0x100 - abs(m->Engine->unk10.y)) * 8 + 0xC00;
+            ((EXTengine *)m->FUX)->unk5E = 1;
+        }
+        m->Engine->unk1C += 0x100;
+        m->Engine->unk5E = 1;
+        if (func_800B44B4(m, 0x15F90) != 0) {
+            ext->unkC = 1;
+            ext->unk10 = 0;
+        }
+        break;
+    case 1:
+        m->Engine->sub->flags &= ~0x8000;
+        if (m->FUX != NULL) {
+            ((EXTengine *)m->FUX)->sub->flags &= ~0x8000;
+        }
+        if (ext->unk10 == 0) {
+            SpawnNASById(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1614, 0x11);
+            func_800B44B4(m, 0x35EE4);
+        }
+        ext->unk10++;
+        if (ext->unk10 >= 0x1F) {
+            KillNAS(m);
+        }
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBombGFX);
 
