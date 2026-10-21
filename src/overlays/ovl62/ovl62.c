@@ -4001,7 +4001,183 @@ void PlotSniperMissile(NAS *m) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9230);
+s32 func_800C9230(EXTengine *a, EXTengine *b, s32 c) {
+    VECTOR d;
+    VECTOR n;
+    MATRIX m;
+    SVECTOR ang;
+    SVECTOR sv[2];
+    Ovl62BoxHalf lo;
+    Ovl62BoxHalf hi;
+    Ovl62CollBox *src;
+    SVECTOR *p;
+    s32 dist;
+    s32 side;
+
+    dist = 0x7FFFFFF;
+    side = 0;
+    src = (Ovl62CollBox *)func_8008CE20(a->sub, c, side);
+    if (src == NULL) {
+        printf("No Coll box on subengine in XZBoxToSphere\n");
+        return 0;
+    }
+    p = (SVECTOR *)func_8008CE20(b->sub, c, 0x80000000);
+    if (p == NULL) {
+        p = sv;
+        p->pad = 0x100;
+        sv[0].vx = 0;
+        p->vy = 0;
+        p->vz = 0;
+    }
+    lo = src->lo;
+    hi = src->hi;
+    if (a->unk5C == 1) {
+        lo.v[0] = (lo.v[0] * a->unk2C.x) >> 12;
+        lo.v[1] = (lo.v[1] * a->unk2C.y) >> 12;
+        lo.v[2] = (lo.v[2] * a->unk2C.z) >> 12;
+        hi.v[0] = (hi.v[0] * a->unk2C.x) >> 12;
+        hi.v[1] = (hi.v[1] * a->unk2C.y) >> 12;
+        hi.v[2] = (hi.v[2] * a->unk2C.z) >> 12;
+    }
+    if (a->sub->unk50 == 1) {
+        lo.v[0] = (lo.v[0] * a->sub->unk20.x) >> 12;
+        lo.v[1] = (lo.v[1] * a->sub->unk20.y) >> 12;
+        lo.v[2] = (lo.v[2] * a->sub->unk20.z) >> 12;
+        hi.v[0] = (hi.v[0] * a->sub->unk20.x) >> 12;
+        hi.v[1] = (hi.v[1] * a->sub->unk20.y) >> 12;
+        hi.v[2] = (hi.v[2] * a->sub->unk20.z) >> 12;
+    }
+    d.vx = b->unk10.x - a->unk10.x;
+    d.vy = b->unk10.y - a->unk10.y;
+    d.vz = b->unk10.z - a->unk10.z;
+    ang.vx = -a->unk1C;
+    ang.vy = -a->unk1E;
+    ang.vz = -a->unk20;
+    RotMatrixZYX(&ang, &m);
+    ApplyMatrixLV(&m, &d, &d);
+    if (d.vx < lo.v[0]) {
+        side = 2;
+    }
+    if (d.vy < hi.v[1]) {
+        side |= 0x10;
+        if (D_8005A648 == 0x16) {
+            return 0;
+        }
+    }
+    if (lo.v[1] < d.vy && D_8005A648 == 0x16) {
+        return 0;
+    }
+    if (d.vz < lo.v[2]) {
+        side |= 4;
+    }
+    if (hi.v[0] < d.vx) {
+        side |= 1;
+    }
+    if (hi.v[2] < d.vz) {
+        side |= 8;
+    }
+    n.vy = 0;
+    switch (side) {
+    case 20:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 22:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 21:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 4:
+        dist = abs(d.vz - lo.v[2]);
+        n.vx = 0;
+        n.vz = -0x1000;
+        break;
+    case 6:
+        dist = csqrt((d.vx - lo.v[0]) * (d.vx - lo.v[0]) + (d.vz - lo.v[2]) * (d.vz - lo.v[2])) >> 6;
+        n.vx = -0x1000;
+        n.vz = -0x1000;
+        break;
+    case 5:
+        dist = csqrt((d.vx - hi.v[0]) * (d.vx - hi.v[0]) + (d.vz - lo.v[2]) * (d.vz - lo.v[2])) >> 6;
+        n.vx = 0x1000;
+        n.vz = -0x1000;
+        break;
+    case 24:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 26:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 25:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 8:
+        dist = abs(d.vz - hi.v[2]);
+        n.vx = 0;
+        n.vz = 0x1000;
+        break;
+    case 10:
+        dist = csqrt((d.vx - lo.v[0]) * (d.vx - lo.v[0]) + (d.vz - hi.v[2]) * (d.vz - hi.v[2])) >> 6;
+        n.vx = -0x1000;
+        n.vz = 0x1000;
+        break;
+    case 9:
+        dist = csqrt((d.vx - hi.v[0]) * (d.vx - hi.v[0]) + (d.vz - hi.v[2]) * (d.vz - hi.v[2])) >> 6;
+        n.vx = 0x1000;
+        n.vz = 0x1000;
+        break;
+    case 2:
+        dist = abs(d.vx - lo.v[0]);
+        n.vx = -0x1000;
+        n.vz = 0;
+        break;
+    case 16:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 1:
+        dist = abs(d.vx - hi.v[0]);
+        n.vx = 0x1000;
+        n.vz = 0;
+        break;
+    }
+    if (dist < p->pad) {
+        s32 push;
+
+        push = abs(p->pad - dist);
+        ang.vx = a->unk1C;
+        ang.vy = a->unk1E;
+        ang.vz = a->unk20;
+        RotMatrix(&ang, &m);
+        ApplyMatrixLV(&m, &n, &n);
+        if (c == 0) {
+            b->unk10.x += (push * n.vx) >> 12;
+            b->unk10.z += (push * n.vz) >> 12;
+        }
+        return 1;
+    }
+    return 0;
+}
 
 void InitSniperMissile(NAS *m) {
     SniperMissileExt *ext;

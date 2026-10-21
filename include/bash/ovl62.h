@@ -978,6 +978,16 @@ typedef struct SniperMissileExt {
     /* 0x34 */ s32 unk34;
 } SniperMissileExt;
 
+/* func_800C9230's collision box (func_8008CE20's FlagPoint data): two corners. */
+typedef struct Ovl62BoxHalf {
+    s16 v[3];
+} Ovl62BoxHalf;
+
+typedef struct Ovl62CollBox {
+    Ovl62BoxHalf lo;
+    Ovl62BoxHalf hi;
+} Ovl62CollBox;
+
 s32 func_800C9230(EXTengine *a, EXTengine *b, s32 c);
 extern s16 D_8009D6DC[];
 
