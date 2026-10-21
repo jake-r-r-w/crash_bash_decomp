@@ -123,6 +123,9 @@ extern u16 D_800BBD58;
 void func_800B6C50(s32 arg0);
 
 void func_800B98B8(s32 arg0);
+extern void *D_8005AA24;
+s32 get_angle(s32 x, s32 z);
+s32 func_80015480(s32 arg0, s32 arg1);
 
 void func_800BB4FC(s32 arg0);
 
@@ -222,7 +225,7 @@ void func_800B7508();
 void func_800B8EE0();
 void func_800B90D0();
 NAS *func_800BA098(s32 player, s32 mask, s32 unused, s32 cone);
-void func_800BA344();
+NAS *func_800BA344(s32 idx, s32 mask);
 s32 func_800BA514(s32 arg0);
 void func_800BAF1C();
 

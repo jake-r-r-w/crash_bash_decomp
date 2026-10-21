@@ -955,7 +955,46 @@ NAS *func_800BA098(player, mask, unused, cone)
     return NULL;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800BA344);
+NAS *func_800BA344(s32 idx, s32 mask) {
+    NAS *n;
+    EXTengine *he;
+    EXTengine *e;
+    EXT *fux;
+    HeroInfo *h;
+    HeroInfo *hb;
+    s32 hx, hz, dx, dz, m, lim;
+    u16 ang;
+    u16 um;
+
+    um = (u16)mask;
+    lim = 0x10000;
+    hb = Heroes;
+    n = D_8005AA24;
+    h = &hb[idx];
+    he = h->hero_eng;
+    ang = Heroes[idx].hero_move->facing_angle;
+    hx = he->unk10.x - (D_80068BD4[(ang - 0x400) & 0xFFF].unk2 * 1024 >> 14);
+    hz = he->unk10.z - (D_80068BD4[ang & 0xFFF].unk2 * 1024 >> 14);
+    for (; n != NULL; n = n->Object.Child) {
+        fux = n->FUX;
+        if (fux == NULL) continue;
+        if (!(*(u16 *)((u8 *)fux + 0x1C) & 1)) continue;
+        e = n->Engine;
+        if (e == NULL) continue;
+        if (*(s32 *)((u8 *)e + 0x80) != 0) continue;
+        dx = e->unk10.x - hx;
+        dz = e->unk10.z - hz;
+        if (dx * dx + dz * dz >= lim) continue;
+        if (um != 0 && func_80015480(Heroes[idx].hero_move->forward_angle,
+                get_angle(e->unk10.x - he->unk10.x, e->unk10.z - he->unk10.z) ^ 0x800) >= um) continue;
+        do {
+            *(s16 *)((u8 *)fux + 0x16) = idx;
+            *(u16 *)((u8 *)fux + 0x1E) |= 1;
+            return n;
+        } while (0);
+    }
+    return 0;
+}
 
 s32 func_800BA514(s32 arg0) {
     TrigEntry *tbl;
