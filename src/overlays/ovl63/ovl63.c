@@ -747,7 +747,62 @@ s32 func_800B4D64(s32 *arg0, s32 arg1, s32 *arg2)
   return found;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B4EDC);
+u32 func_800B4EDC(s32 player) {
+    HeroInfo *h;
+    s32 *ext;
+    Ovl63VelFux *fux;
+    s32 d;
+    SLONG_XYZ pos;
+    HeroInfo *base;
+
+    base = Heroes;
+    h = base + player;
+    ext = FindExtension(h->hero, 0x20000000);
+    if (ext != NULL) {
+        fux = (Ovl63VelFux *)h->hero->FUX;
+        if (fux != NULL) {
+            d = (((csqrt((fux->vx * fux->vx >> 8) + (fux->vz * fux->vz >> 8)) >> 14) - 0x50) * 0x180) / 80;
+            if (d < 0) {
+                d = 0;
+            }
+            d += 0x200;
+            pos.x = h->hero_eng->unk10.x - (d * D_80068BD4[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2 >> 12);
+            pos.y = 0;
+            pos.z = h->hero_eng->unk10.z - (d * D_80068BD4[h->hero_eng->unk1E & 0xFFF].unk2 >> 12);
+            if (func_8008C4C8(&pos.x, 0) != 0) {
+                h->hero_ai->AIpad |= 0x80;
+                h->hero_ai->AIpad &= ~0x8000;
+            }
+            pos.x = h->hero_eng->unk10.x - (D_80068BD4[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2 * 0x79 >> 8);
+            pos.y = 0;
+            pos.z = h->hero_eng->unk10.z - (D_80068BD4[h->hero_eng->unk1E & 0xFFF].unk2 * 0x79 >> 8);
+            if (D_8005A648 == 0x17 && (d = func_8008C4C8(&pos.x, 3) != 1)) {
+                h->hero_ai->AIpad |= 0x20;
+                h->hero_ai->AIpad &= ~0x8000;
+            }
+            if (D_8005A648 == 0x19) {
+                if (pos.x * pos.x + pos.z * pos.z > 0x640000) {
+                    Heroes[player].hero_ai->AIpad |= 0x20;
+                    Heroes[player].hero_ai->AIpad &= ~0x8000;
+                }
+            }
+            if (D_8005A648 == 0x18) {
+                if (pos.x * pos.x + pos.z * pos.z > 0x510000) {
+                    Heroes[player].hero_ai->AIpad |= 0x20;
+                    Heroes[player].hero_ai->AIpad &= ~0x8000;
+                }
+            }
+            if (D_8005A648 == 0x1A) {
+                if (pos.x * pos.x + pos.z * pos.z > 0x640000) {
+                    Heroes[player].hero_ai->AIpad |= 0x20;
+                    Heroes[player].hero_ai->AIpad &= ~0x8000;
+                }
+            }
+            ext[7] = 0x20 - D_8009D87C[player].unk0;
+        }
+    }
+    return 0x8000;
+}
 
 void func_800B5360(s32 player) {
     Ovl63VelFux *fux;
