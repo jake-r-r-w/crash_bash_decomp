@@ -3507,7 +3507,86 @@ void InitSniper(NAS *m) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotSniper);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotSniperMissile);
+void PlotSniperMissile(NAS *m) {
+    SniperMissileExt *ext;
+    PolarBossExt *boss;
+    s32 *anim;
+    s32 *gun;
+    s32 dx, dz, dy, dist;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    boss = FindExtension(D_800D5448, 0x10000000);
+    if (boss == NULL) {
+        return;
+    }
+    m->Engine->unk5E = 1;
+    switch (ext->unkC) {
+    case 0:
+        dx = ext->to.x - ext->from.x;
+        dz = ext->to.z - ext->from.z;
+        dy = ext->to.y - ext->from.y;
+        dist = csqrt(dx * dx + dz * dz) >> 6;
+        ext->yaw = get_angle(dx, dz) & 0xFFF;
+        ext->pitch = get_angle(dy, dist) & 0xFFF;
+        ext->unkC = 1;
+        m->Engine->unk1E = ext->yaw;
+        m->Engine->unk1C = -ext->pitch;
+        break;
+    case 1:
+        ext->unk34++;
+        m->Engine->unk10.x -= D_80068BD4[(ext->yaw - 0x400) & 0xFFF].unk2 * 0x100 >> 12;
+        m->Engine->unk10.z -= D_80068BD4[ext->yaw & 0xFFF].unk2 * 0x100 >> 12;
+        m->Engine->unk10.y -= D_80068BD4[(ext->pitch - 0x400) & 0xFFF].unk2 * 0x100 >> 12;
+        if (--ext->unk30 == -1) {
+            PolarMissileBlast(m, 0);
+            ext->unk30 = 1;
+        }
+        if (func_800C9230(D_800D5448->Engine, m->Engine, 0) != 0 || ext->unk34 == 0x3C) {
+            PolarMissileBlast(m, 1);
+            PlaySfx(0x22F, NULL, NULL, 0x1000, 0x1E00, 0);
+            boss->unk8C = 0xC;
+            anim = FindExtension(boss->unk84, 0x10000000);
+            if (anim != NULL) {
+                func_80025FAC((EXTanimator *)anim[3], 8);
+                PlaySfx(0x23B, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+        } else {
+            if (func_800C9230(boss->unk84->Engine, m->Engine, 1) == 0) {
+                return;
+            }
+            PolarMissileBlast(m, 1);
+            anim = FindExtension(boss->unk84, 0x10000000);
+            if (anim != NULL) {
+                func_80025FAC((EXTanimator *)anim[3], 3);
+            }
+            boss->unk80 = 1;
+            boss->unk8C = 0xC;
+            func_80025FAC((EXTanimator *)boss->cursor, 9);
+            PlaySfx(0x22F, NULL, NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(0x23A, NULL, NULL, 0x1000, 0x1E00, 0);
+            D_8009D6DC[3] -= 7;
+            gun = FindExtension(D_8009D670, 0x20000000);
+            if (gun != NULL) {
+                gun[8] -= 0x55;
+            }
+            if (D_8009D6DC[3] <= 0) {
+                D_8009D6DC[3] = 0;
+                D_8009D6DC[2] |= 0x8000;
+                anim = FindExtension(boss->unk84, 0x10000000);
+                if (anim != NULL) {
+                    func_80025FAC((EXTanimator *)anim[3], 5);
+                    boss->unk84->Engine->sub->unk68 = 0x238;
+                    boss->state = 8;
+                }
+            }
+        }
+        KillNAS(m);
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9230);
 

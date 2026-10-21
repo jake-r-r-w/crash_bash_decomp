@@ -933,10 +933,16 @@ typedef struct WeightDeathExt {
 typedef struct SniperMissileExt {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 unkC;
-    /* 0x10 */ u8 pad10[0x30 - 0x10];
+    /* 0x10 */ SLONG_XYZ from;
+    /* 0x1C */ SLONG_XYZ to;
+    /* 0x28 */ s32 pitch;
+    /* 0x2C */ s32 yaw;
     /* 0x30 */ s32 unk30;
     /* 0x34 */ s32 unk34;
 } SniperMissileExt;
+
+s32 func_800C9230(EXTengine *a, EXTengine *b, s32 c);
+extern s16 D_8009D6DC[];
 
 /* Polar missile extension (0x70 bytes, id 0x10000000). */
 typedef struct PolarMissileExt {
