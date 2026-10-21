@@ -828,4 +828,6 @@ void func_800B5778(void);
 
 void func_800C0218(s32 player);
 
+void PlotGlob(NAS *m);
+
 #endif /* BASH_OVL63_H */

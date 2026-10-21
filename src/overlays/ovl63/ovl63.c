@@ -2223,7 +2223,83 @@ void InitRaceVolcano(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotRaceVolcano);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotGlob);
+void PlotGlob(NAS *m) {
+    EXTglob *ext;
+    s32 state;
+    s32 i;
+    NAS *tag;
+    Ovl63TagExt *text;
+    SLONG_XYZ pos;
+    SLONG_XYZ *pp;
+    s32 x;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext != NULL) {
+        state = ext->unkC;
+        switch (state) {
+        case 0:
+            if (++ext->unk18 == 0x3C) {
+                PlaySfx(0x666, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (func_800250B0(m) != 0) {
+                func_80025FAC((EXTanimator *)ext->unk10, 1);
+                ext->unkC = 1;
+                PlaySfx(0x667, NULL, NULL, 0x1000, 0x1E00, 0);
+                ext->unk18 = 0;
+                func_800250B0(m);
+            }
+            break;
+        case 1:
+            x = 0x16;
+            if (++ext->unk18 == x) {
+                PlaySfx(0x668, NULL, NULL, 0x1000, 0x1E00, 0);
+                pp = &pos;
+                x = -0x200;
+                pos.y = -0x29C;
+                pos.x = x;
+                pos.z = x;
+                tag = SpawnNASById(pp->x, pp->y, pp->z, 0x1605, 0x11);
+                if (tag != NULL) {
+                    text = FindExtension(tag, 0x10000000);
+                    if (text != NULL) {
+                        text->unkC = 0xA;
+                        text->unk18 = 0x100;
+                        text->unk20 = state;
+                        text->unk28 = 0;
+                        tag->InitDelete(tag);
+                    }
+                }
+                for (i = 0; i < 3; i++) {
+                    SpawnNASById(pos.x, pos.y, pos.z, 0x170D, 0x11);
+                }
+            }
+            if (func_800250B0(m) != 0) {
+                func_80025FAC((EXTanimator *)ext->unk10, 3);
+                func_800250B0(m);
+                ext->unkC = 2;
+                PlaySfx(0x669, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            break;
+        case 2:
+            if (func_800250B0(m) != 0) {
+                func_80025FAC((EXTanimator *)ext->unk10, 2);
+                func_800250B0(m);
+                ext->unkC = 3;
+            }
+            break;
+        case 3:
+            if (ext->unk14-- < 0 && D_800C695C == 0) {
+                ext->unk14 = Random(0x96) + 0x1C2;
+                func_80025FAC((EXTanimator *)ext->unk10, 0);
+                func_800250B0(m);
+                PlaySfx(0x665, NULL, NULL, 0x1000, 0x1E00, 0);
+                ext->unkC = 0;
+                ext->unk18 = 0;
+            }
+            break;
+        }
+    }
+}
 
 s32 func_800C310C(SLONG_XYZ *pos) {
     s32 hit;
