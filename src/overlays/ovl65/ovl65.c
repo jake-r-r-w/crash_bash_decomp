@@ -1243,7 +1243,63 @@ void func_800B9778(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B9930);
+void func_800B9930(s32 id) {
+    HeroInfo *h;
+    Ovl65Ext *ext;
+    EXTheromove *m;
+    EXTheromove *m2;
+    s32 sc;
+
+    m = NULL;
+    ext = FindExtension(Heroes[id].hero, 0x10000000);
+    h = &Heroes[id];
+    if (ext != NULL) {
+        if (h->hero_frozen != 0) {
+            ((PadButtons *)D_80051338)[id].unk50 = 0;
+            ((PadButtons *)D_80051338)[id].unk54 = 0;
+        }
+        m = h->hero_move;
+        if (m != NULL) {
+            m->x_max = 0;
+            m->z_max = 0;
+            if ((D_80051338[id].unk0 & 1) || h->hero_ai->AImode != 0) {
+                if (h->hero_mode != 0x66 && (((PadButtons *)D_80051338)[id].unk50 & 0xF0)) {
+                    if (ext->unk14 == 0) {
+                        m->forward_angle = (((Ovl65PadAng *)D_80051338)[id].angle + 0x800) & 0xFFF;
+                        sc = D_800BDC14;
+                        if (D_8005A614[id + 0x5C] != 0) {
+                            sc = D_800BDC1C[(s16)(u16)D_8009D87C[id].unk0 >> 1];
+                        }
+                        m->x_max = (sc * D_80068BD4[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
+                        m->z_max = (sc * D_80068BD4[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
+                    } else {
+                        sc = D_800BDC18;
+                        m->forward_angle = (((Ovl65PadAng *)D_80051338)[id].angle + 0x800) & 0xFFF;
+                        m->x_max = (sc * D_80068BD4[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
+                        m->z_max = (sc * D_80068BD4[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
+                    }
+                }
+                if (Heroes[id].hero_mode == 0x65) {
+                    m->x_max = 0;
+                    m->z_max = 0;
+                }
+            }
+        }
+        if (Heroes[id].hero_status & 0x200) {
+            m2 = Heroes[id].hero_move;
+            if (m2 != NULL) {
+                m2->z_dir = 0;
+                m2->x_max = 0;
+                m2->z_max = 0;
+                m2->x_vel = 0;
+                m2->z_vel = 0;
+            }
+        }
+    }
+    if (abs(func_800154A0(m->forward_angle, m->facing_angle)) > 0x110) {
+        m->facing_angle = (m->forward_angle + 0x100) & 0xE00;
+    }
+}
 
 void func_800B9C10(s32 id) {
     Ovl65HeroExt *ext;

@@ -108,6 +108,11 @@ typedef struct Ovl65Pad {
 
 extern NAS *D_800BDA08[];
 
+/* func_800B9930: move speeds (normal, carrying, by D_8009D87C[id].unk0 / 2). */
+extern s32 D_800BDC14;
+extern s32 D_800BDC18;
+extern s32 D_800BDC1C[];
+
 void PlotDinoSmoke(NAS *m);
 
 void func_800BC948(HeroInfo *hero);
