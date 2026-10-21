@@ -265,4 +265,50 @@ void func_800B7458(void);
 
 s32 func_800B7CE8(s32 arg0);
 
+/* 0x4C-byte preset record of D_800BAA08, picked by D_800BAACC (func_800B7EF4). */
+typedef struct {
+    s32 hero[4];   /* 0x00: indices into D_8005A614 (byte at +0x4C) */
+    s32 flags[3];  /* 0x10: or-ed into sub[8/9/10].flags */
+    s32 val[4];    /* 0x1C: targets for sub[4..7] */
+    s32 *tbl;      /* 0x2C: indexed by D_8005A614+0x2C */
+    s32 unk30;
+    s32 unk34;
+    s32 unk38;
+    s32 unk3C;
+    s32 unk40;
+    s32 unk44;
+    s32 unk48;
+} Ovl69Preset;
+extern Ovl69Preset D_800BAA08[];
+/* func_800B83D8(i, val) inlined: ease sub[4 + i]'s +0x70 toward val. */
+#define OVL69_SETBAR(i, val)                                                  \
+    {                                                                         \
+        s32 v_ = (val);                                                       \
+        EXTengine *e_ = GetEngineSlot(0);                                     \
+        u8 *q_ = (u8 *)e_->sub + ((i) * 0xA8 + 0x2A0);                        \
+        s16 r_ = func_80015284(*(s16 *)(q_ + 0x70), v_, 0x800);               \
+        *(s16 *)(q_ + 0x70) = r_;                                             \
+        *(s16 *)(q_ + 0x76) = r_ + 0x78;                                      \
+        *(s32 *)((u8 *)e_->sub + (i) * 0xA8 + 4) = *(s16 *)(q_ + 0x70) + 0x1A; \
+    }
+/* D_8005A614 as seen by func_800B7EF4. */
+typedef struct {
+    u8 pad0[0x2C];
+    s32 unk2C;     /* 0x2C */
+    u8 pad30[0x48 - 0x30];
+    u16 unk48;     /* 0x48 */
+    u16 unk4A;     /* 0x4A */
+    u8 unk4C[8];   /* 0x4C: per player */
+    u8 unk54;
+    u8 unk55;
+    u8 unk56;
+    u8 unk57;
+    u8 pad58[0x6C - 0x58];
+    s32 unk6C;     /* 0x6C */
+} Ovl69PresetView;
+#define O69PV ((Ovl69PresetView *)D_8005A614)
+extern u16 D_800BAAA0[];
+
+void func_800B7EF4(void);
+
 #endif /* BASH_OVL69_H */

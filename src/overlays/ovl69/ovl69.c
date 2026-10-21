@@ -1099,7 +1099,37 @@ s32 func_800B7EE4(s32 idx, u8 *base) {
     return (base + idx)[0xE4] != 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B7EF4);
+void func_800B7EF4(void) {
+    Ovl69Preset *p;
+    u8 *s;
+
+    s = (u8 *)GetEngineSlot(0)->sub;
+    p = &D_800BAA08[D_800BAACC];
+    *(u16 *)(s + 0x74) = D_800BAAA0[O69PV->unk4C[p->hero[0]]];
+    *(u16 *)(s + 0x11C) = D_800BAAA0[O69PV->unk4C[p->hero[1]]];
+    *(u16 *)(s + 0x1C4) = D_800BAAA0[O69PV->unk4C[p->hero[2]]];
+    *(u16 *)(s + 0x26C) = D_800BAAA0[O69PV->unk4C[p->hero[3]]];
+    *(s32 *)(s + 0x540) &= ~0x8000;
+    *(s32 *)(s + 0x5E8) &= ~0x8000;
+    *(s32 *)(s + 0x690) &= ~0x8000;
+    *(s32 *)(s + 0x540) |= p->flags[0];
+    *(s32 *)(s + 0x5E8) |= p->flags[1];
+    *(s32 *)(s + 0x690) |= p->flags[2];
+
+    OVL69_SETBAR(0, p->val[0]);
+    OVL69_SETBAR(1, p->val[1]);
+    OVL69_SETBAR(2, p->val[2]);
+    OVL69_SETBAR(3, p->val[3]);
+
+    *(s32 *)(s + 0x8F4) = p->tbl[O69PV->unk2C];
+    O69PV->unk6C = p->unk30 != 0;
+    O69PV->unk48 = p->unk34;
+    O69PV->unk4A = p->unk38;
+    O69PV->unk54 = p->unk3C;
+    O69PV->unk55 = p->unk40;
+    O69PV->unk56 = p->unk44;
+    O69PV->unk57 = p->unk48;
+}
 
 void func_800B81F0(void) {
     s32 temp_v0;
