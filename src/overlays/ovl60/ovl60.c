@@ -319,7 +319,39 @@ loop:
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B3FF0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B4230);
+void func_800B4230(void) {
+    s32 x;
+    s32 z;
+    EXTengine *eng;
+    s32 k;
+    s32 hx;
+    s32 hz;
+    EXTengine *he;
+
+    for (hx = 0; hx < 8; hx++) {
+        for (hz = 0; hz < 8; hz++) {
+            D_800C53DC[hx][hz].unkE = 0;
+        }
+    }
+    for (k = 0; k < 4; k++) {
+        he = Heroes[k].hero_eng;
+        hx = (he->unk10.x + 0x800) >> 9;
+        hz = (he->unk10.z + 0x800) >> 9;
+        if ((u32)hx < 8 && (u32)hz < 8) {
+            D_800C53DC[hx][hz].unkE = k + 1;
+        }
+    }
+    if (D_800C5BAC != 0) {
+        eng = *(EXTengine **)(D_800C5BAC + 0x54);
+        if (eng != NULL) {
+            x = (eng->unk10.x + 0x800) >> 9;
+            z = (eng->unk10.z + 0x800) >> 9;
+            if ((u32)x < 8 && z >= 0 && z < 8) {
+                D_800C53DC[x][z].unkE = 5;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B4374);
 
