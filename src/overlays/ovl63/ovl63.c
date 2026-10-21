@@ -1779,7 +1779,109 @@ void func_800B8F04(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B8FD8);
+void func_800B8FD8(s32 player) {
+    HeroInfo *heroes;
+    HeroInfo *h;
+    Ovl63RaceFux *fux;
+    EXTheromove *m;
+    s32 *steers;
+    s32 *steer;
+    PadState *pad;
+    PadState *pads;
+    s32 speed;
+    s32 boost;
+
+    heroes = Heroes;
+    h = heroes + player;
+    fux = (Ovl63RaceFux *)h->hero->FUX;
+    if (fux != NULL) {
+        m = h->hero_move;
+        if (m != NULL) {
+            steers = D_800CA534;
+            steer = steers + player;
+            m->z_max = 0;
+            m->x_max = 0;
+            *steer = 0;
+            if (h->hero_mode != 0x60 && (m = h->hero_move) != NULL && h->hero_frozen == 0) {
+                pads = D_80051338;
+                pad = pads + player;
+                if ((pad->unk0 & 1) || h->hero_ai->AImode != 0) {
+                    if (((Ovl63Pad *)pad)->unk50 & 0xA0) {
+                        speed = ((csqrt(fux->unk13C * fux->unk13C + fux->unk140 * fux->unk140) * 4 >> 8) * 0x3C8) / 100 >> 8;
+                        if (speed > 0x3C8) {
+                            speed = 0x3C8;
+                        }
+                        if (((Ovl63Pad *)pad)->unk50 & 0x80) {
+                            m->forward_angle -= fux->unk160;
+                            *steer = speed;
+                        }
+                        if (((Ovl63Pad *)pad)->unk50 & 0x20) {
+                            m->forward_angle += fux->unk160;
+                            *steer = -speed;
+                        }
+                    }
+                    boost = 0;
+                    if ((((Ovl63Pad *)D_80051338)[player].unk50 & 0x8000) && fux->unk58 > 0) {
+                        if (G63B->unk34 == 0x18 && (G63B->unk32 & 0x80) && G63B->unk5C[player] == 0 && fux->unk16C == 0 && fux->unk168 > 0) {
+                            fux->unk13C >>= 3;
+                            fux->unk140 >>= 3;
+                        }
+                        m->x_acc = fux->unk158;
+                        m->z_acc = fux->unk158;
+                        m->x_max = fux->unk154 * D_80068BD4[(Heroes[player].hero_eng->unk1E + 0x400) & 0xFFF].unk2 >> 12;
+                        m->z_max = fux->unk154 * D_80068BD4[(Heroes[player].hero_eng->unk1E + 0x800) & 0xFFF].unk2 >> 12;
+                        if (D_8009D87C[player].unk0 >= 0x17 && G63B->unk5C[player] != 0) {
+                            fux->unk58 -= 0x180 - D_800C6C10[D_8009D87C[player].unk0 - 0x16];
+                        } else if (Heroes[player].hero_mode != 0x61) {
+                            fux->unk58 -= 0x180;
+                        }
+                        boost = 1;
+                        if (fux->unk58 < 0) {
+                            fux->unk58 = 0;
+                            boost = 0;
+                        }
+                    }
+                    if (boost == 0 && (((Ovl63Pad *)D_80051338)[player].unk50 & 0x800)) {
+                        m->x_acc = fux->unk15C;
+                        m->z_acc = fux->unk15C;
+                        if (G63B->unk5C[player] != 0) {
+                            if (D_8009D87C[player].unk0 < 0x16) {
+                                m->x_acc = D_800C66CC - ((0x10 - D_8009D87C[player].unk0) << 6);
+                                m->z_acc = D_800C66CC - ((0x10 - D_8009D87C[player].unk0) << 6);
+                                if (m->x_acc < 0x200) {
+                                    m->x_acc = 0x200;
+                                }
+                                if (m->z_acc < 0x200) {
+                                    m->z_acc = 0x200;
+                                }
+                            } else {
+                                m->x_acc = D_800C66CC + D_800C6BE4[D_8009D87C[player].unk0 - 0x16];
+                                m->z_acc = D_800C66CC + D_800C6BE4[D_8009D87C[player].unk0 - 0x16];
+                            }
+                        }
+                        if (G63B->unk34 == 0x18 && (G63B->unk32 & 0x80) && G63B->unk5C[player] == 0 && fux->unk16C == 0 && fux->unk168 > 0) {
+                            fux->unk13C >>= 3;
+                            fux->unk140 >>= 3;
+                        }
+                        m->x_max = fux->unk14C * D_80068BD4[(Heroes[player].hero_eng->unk1E + 0x400) & 0xFFF].unk2 >> 12;
+                        m->z_max = fux->unk14C * D_80068BD4[(Heroes[player].hero_eng->unk1E + 0x800) & 0xFFF].unk2 >> 12;
+                    }
+                }
+            }
+            func_800BEBC0(player);
+            if (Heroes[player].hero_status & 0x200) {
+                m->z_dir = 0;
+                m->x_max = 0;
+                m->z_max = 0;
+                fux->unk13C = 0;
+                fux->unk140 = 0;
+            }
+            func_800154A0(m->forward_angle, m->facing_angle);
+            m->facing_angle = m->forward_angle;
+        }
+    }
+    func_800B48EC(player);
+}
 
 s32 func_800B96B0(s32 arg0, s32 arg1) {
     EXTengine *eng;

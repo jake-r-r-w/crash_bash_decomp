@@ -718,6 +718,9 @@ extern s32 D_800C66E0;
 extern s32 D_800C66E4;
 extern s32 D_800C66E8;
 extern s32 D_800CA534[];
+/* boost tables indexed by odds - 0x16 (func_800B8FD8) */
+extern s32 D_800C6BE4[];
+extern s32 D_800C6C10[];
 
 typedef struct {
     s16 a;
