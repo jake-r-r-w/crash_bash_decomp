@@ -1426,7 +1426,135 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/ovl63/ovl63", D_800B3310);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B82FC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B8890);
+void func_800B8890(void) {
+    s32 i;
+    Ovl63AiExt *ai;
+    EXTengine *eng;
+    subengine *sub;
+    Ovl63GameView2 *g;
+    EXTheromove *move;
+    EXTengine *he;
+    s32 *scene;
+
+    D_800C6BB0 = 0x3C;
+    func_8007EB1C(0x140, 0x28, 0);
+    if (G63->unk34 == 0x18) {
+        func_8007B7FC((G63->unk32 & 0x40) ? 0x115 : 0x130, 0x81C0);
+    }
+    if (G63->unk34 == 0x17) {
+        func_8007B7FC((G63->unk32 & 0x40) ? 0x100 : 0x130, 0x81C0);
+    }
+    if (G63->unk34 == 0x19) {
+        func_8007B7FC((G63->unk32 & 0x40) ? 0x100 : 0x130, 0x81C0);
+    }
+    if (G63->unk34 == 0x1A) {
+        func_8007B7FC((G63->unk32 & 0x40) ? 0x100 : 0x130, 0x81C0);
+    }
+    D_800C66EC = NULL;
+    D_8005A5D8 = -0x10;
+    func_800C0F5C();
+    scene = *(s32 **)D_80058AD0;
+    D_800C6928 = 0;
+    func_8001682C(scene);
+    func_800B5778();
+    D_800C695C = 0;
+    g = G63B;
+    if (g->unk34 == 0x18) {
+        func_800B5F04();
+        SpawnNASById(0, 0xC4, 0, 0x170B, 0x11);
+        PlaySfx(0x42E, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    if (g->unk34 == 0x19) {
+        PlaySfx(0x672, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    D_800C6BAC = 0xB4;
+    i = 0;
+    for (;; i++) {
+        Ovl63RaceFux *fux;
+
+        if (i >= 4) {
+            break;
+        }
+        printf("hero status %d\n", Heroes[i].hero_status);
+        func_800B8F04(i);
+        Heroes[i].hero_eng->unk5D = 1;
+        fux = AddExtension(Heroes[i].hero, 0x174, 0x10000000);
+        if (fux == NULL) {
+            continue;
+        }
+        he = Heroes[i].hero_eng;
+        move = Heroes[i].hero_move;
+        he->unk1E = 0;
+        move->forward_angle = 0;
+        Heroes[i].hero_eng->unk5E = 1;
+        sub = Heroes[i].hero_eng->sub;
+        sub->flags |= 0x8000;
+        ai = AddExtension(Heroes[i].hero, 0x20, 0x20000000);
+        if (ai != NULL) {
+            ai->unkC = 0;
+            ai->unk10 = Heroes[i].hero_move->forward_angle;
+            ai->unk18 = func_800B5360;
+            ai->unk1C = 0;
+            ai->unk14 = D_800C6980[Heroes[i].hero_name];
+        }
+        Heroes[i].hero->FUX = (EXT *)fux;
+        fux->unkC = 0;
+        fux->unk14 = 0;
+        fux->unk18 = 0;
+        fux->unk1C = NULL;
+        fux->unk20 = 0;
+        fux->unk24 = 0;
+        fux->unk2C = 0;
+        fux->unk30 = 0;
+        fux->unk38 = 0;
+        fux->unk34 = 0;
+        fux->unk168 = 0;
+        if ((G63B->unk32 & 0x40) && G63B->unk5C[i] != 0) {
+            fux->unk34 = 2;
+        }
+        fux->unk170 = -1;
+        D_800C6BA4 = 0;
+        fux->unk3C = 1;
+        fux->unk40 = 0;
+        fux->unk44 = 0;
+        fux->unk48 = 0;
+        fux->unk4C = 0;
+        fux->unk50 = 0;
+        fux->unk58 = 0;
+        fux->unk130 = 0;
+        fux->unk134 = 0;
+        fux->unk13C = 0;
+        fux->unk140 = 0;
+        fux->unk148 = 0;
+        D_800C6BA8 = 0;
+        Heroes[i].hero_eng->unk10.y = D_800C6930;
+        fux->unk150 = D_800C66D8;
+        fux->unk154 = D_800C66E8;
+        fux->unk14C = D_800C66E4;
+        fux->unk158 = D_800C66D0;
+        fux->unk15C = D_800C66CC;
+        fux->unk160 = D_800C66E0;
+        fux->unk164 = 0x100;
+        D_800C692C = 0;
+        eng = AddEngine(Heroes[i].hero, 8);
+        if (eng != NULL) {
+            fux->unk1C = eng;
+            eng->sub->flags &= ~0x8000;
+            eng->unk5C = 1;
+            eng->unk5D = 0;
+            eng->unk2C.x = 0x800;
+            eng->unk2C.y = 0x800;
+            eng->unk2C.z = 0x800;
+        }
+    }
+    if (G63->unk34 == 0x1A) {
+        if (G63->unk32 & 0x80) {
+            SpawnNASById(0, -0x400, 0, 0x170E, 0x11);
+        } else {
+            SpawnNASById(0, 0, 0, 0x1707, 0x11);
+        }
+    }
+}
 
 void func_800B8D68(void) {
     D_800C692C++;

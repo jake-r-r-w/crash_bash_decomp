@@ -241,6 +241,64 @@ typedef struct Ovl63GameView2 {
 } Ovl63GameView2;
 #define G63B ((Ovl63GameView2 *)D_8005A614)
 
+void func_8007EB1C(s32 arg0, s32 arg1, s32 arg2);
+void func_8007B7FC(u32 a, u32 b);
+extern s32 D_800C6BA4;
+extern s32 D_800C6BA8;
+
+/* A hero's race FUX, AddExtension(nas, 0x174, 0x10000000) in func_800B8890. */
+typedef struct Ovl63RaceFux {
+    /* 0x000 */ s32 unk0[3];
+    /* 0x00C */ s32 unkC;
+    /* 0x010 */ s32 unk10;
+    /* 0x014 */ s32 unk14;
+    /* 0x018 */ s32 unk18;
+    /* 0x01C */ EXTengine *unk1C;
+    /* 0x020 */ s32 unk20;
+    /* 0x024 */ s32 unk24;
+    /* 0x028 */ s32 unk28;
+    /* 0x02C */ s32 unk2C;
+    /* 0x030 */ s32 unk30;
+    /* 0x034 */ s32 unk34;
+    /* 0x038 */ s32 unk38;
+    /* 0x03C */ s32 unk3C;
+    /* 0x040 */ s32 unk40;
+    /* 0x044 */ s32 unk44;
+    /* 0x048 */ s32 unk48;
+    /* 0x04C */ s32 unk4C;
+    /* 0x050 */ s32 unk50;
+    /* 0x054 */ s32 unk54;
+    /* 0x058 */ s32 unk58;
+    /* 0x05C */ u8 pad5C[0x130 - 0x5C];
+    /* 0x130 */ s32 unk130;
+    /* 0x134 */ s32 unk134;
+    /* 0x138 */ s32 unk138;
+    /* 0x13C */ s32 unk13C;
+    /* 0x140 */ s32 unk140;
+    /* 0x144 */ s32 unk144;
+    /* 0x148 */ s32 unk148;
+    /* 0x14C */ s32 unk14C;
+    /* 0x150 */ s32 unk150;
+    /* 0x154 */ s32 unk154;
+    /* 0x158 */ s32 unk158;
+    /* 0x15C */ s32 unk15C;
+    /* 0x160 */ s32 unk160;
+    /* 0x164 */ s32 unk164;
+    /* 0x168 */ s32 unk168;
+    /* 0x16C */ s32 unk16C;
+    /* 0x170 */ s32 unk170;
+} Ovl63RaceFux;
+
+/* Extension 0x20000000 as func_800B8890 sets it up. */
+typedef struct Ovl63AiExt {
+    /* 0x00 */ s32 unk0[3];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ void (*unk18)(s32 player);
+    /* 0x1C */ s32 unk1C;
+} Ovl63AiExt;
+
 /* hero->FUX as reset by func_800BAD54. */
 typedef struct Ovl63ResetFux {
     /* 0x000 */ u8 unk0[0x18];
