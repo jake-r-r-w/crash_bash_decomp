@@ -1274,7 +1274,40 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C0888);
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl62/ovl62", D_800B3498);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C0E94);
+void func_800C0E94(void) {
+    s32 i;
+    SceneObj *obj;
+    SceneObj *scan;
+    s32 n;
+    VECTOR v;
+    VECTOR *vp;
+
+    scan = *(SceneObj **)((u8 *)D_80058AD0 + 0x1C);
+    for (i = 15; i >= 0; i--) {
+        D_800D6190[i] = NULL;
+    }
+    n = 0;
+    while (scan != NULL) {
+        if ((scan->flags & 0x8000) && scan->index == 0x4000) {
+            D_800D6190[n++] = scan;
+        }
+        scan = scan->next;
+    }
+    i = 0;
+    while (1) {
+        static const VECTOR up = { 0, 0, 0x1000, 0 };
+
+        if (i >= 16) {
+            break;
+        }
+        v = up;
+        vp = &v;
+        obj = D_800D6190[i];
+        ApplyMatrixLV((MATRIX *)((u8 *)obj + 0x30), vp, vp);
+        i++;
+        D_800D6150[(((get_angle(v.vx, vp->vz) + 1) & 0xFFF) >> 8) - 1 & 0xF] = (Ovl62RiserObj *)obj;
+    }
+}
 
 #define UKA_SEG_SET(j, st, a) \
     { m->seg[j].state = (st); m->seg[j].angle = (a); m->seg[j].t = 0; m->seg[j].count++; }

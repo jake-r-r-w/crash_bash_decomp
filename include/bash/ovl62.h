@@ -595,6 +595,9 @@ typedef struct Ovl62RiserObj {
 
 extern Ovl62RiserObj *D_800D6150[16];
 
+/* Scene objects with index 0x4000, func_800C0E94 collects. */
+extern SceneObj *D_800D6190[16];
+
 void func_800CA6E8(Ovl62RiserSet *arg0);
 
 s32 func_800CB56C(s32 arg0);
@@ -801,6 +804,8 @@ s32 func_800B9600(s32 player);
 s32 func_800B98AC(s32 player);
 
 void func_800BD058(s32 arg0, s32 arg1, s32 arg2);
+
+void func_800C0E94(void);
 
 s32 func_800C5CD0(s32 *arg0, s32 arg1);
 
