@@ -1925,7 +1925,230 @@ void PlotShell(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotLobber_TA);
+void PlotLobber_TA(NAS *nas)
+{
+  EXTengine *eng;
+  LobberFux *fux;
+  EXTengine *e;
+  EXTengine *e2;
+  s32 x;
+  s32 z;
+  s32 d;
+  s32 n;
+  s32 lim;
+  s32 i;
+  s32 j;
+  s32 lo;
+  s32 fx;
+  s32 fz;
+  s32 flim;
+  s32 hit;
+  u16 name;
+
+  eng = nas->Engine;
+  fux = (LobberFux *) nas->FUX;
+  eng->unk10.x += fux->vx;
+  eng->unk10.z += fux->vz;
+  fux->vy += 0xC;
+  eng->unk10.y += fux->vy;
+  fx = eng->unk10.x;
+  fz = eng->unk10.z;
+  flim = 0x180;
+  for (j = 0; j < 4; j++)
+  {
+    if (j == fux->player)
+    {
+      continue;
+    }
+    name = (*(&Heroes[j])).hero_name;
+    if ((name == 9) && (((((Ovl5fModeView *) D_8005A614)->mode != name) || (D_800CB210 != 0)) || (((u32) (j - 2)) >= 2)))
+    {
+      continue;
+    }
+    if (Heroes[j].hero_status & 0xC000)
+    {
+      continue;
+    }
+    e = Heroes[j].hero_eng;
+    d = fx - e->unk10.x;
+    if (d < (-0x180))
+    {
+      continue;
+    }
+    if (flim < d)
+    {
+      continue;
+    }
+    d = fz - e->unk10.z;
+    lo = -0x180;
+    if ((lo < d) && (d < 0x180))
+    {
+      hit = j;
+      goto found;
+    }
+  }
+
+
+  hit = -1;
+  found:
+  if (hit >= 0)
+  {
+    s32 hx;
+    s32 hz;
+    s32 r;
+    s32 hd;
+    r = 0x180;
+
+    hx = eng->unk10.x;
+    hz = eng->unk10.z;
+    for (i = 0; i < 4; i++)
+    {
+      EXTengine *he;
+      he = Heroes[i].hero_eng;
+      hd = hx - he->unk10.x;
+      if (hd < (-0x180))
+      {
+        continue;
+      }
+      if (r < hd)
+      {
+        continue;
+      }
+      hd = hz - he->unk10.z;
+      if (hd < (-0x180))
+      {
+        continue;
+      }
+      if (r < hd)
+      {
+        continue;
+      }
+      func_800B6354(i, 0x3C);
+    }
+
+
+    goto boom;
+  }
+
+
+  if (((fux->vy > 0) && (eng->unk10.y >= (-0x103))) || ((D_8005A648 == 9) && (eng->unk10.z > 0x1000)))
+  {
+    eng->unk10.y = -0x104;
+    if ((D_8005A648 == 9) && (fux->player != (-1)))
+    {
+      func_800C18F0(eng->unk10.x, eng->unk10.y, eng->unk10.z);
+    }
+    x = eng->unk10.x;
+    z = eng->unk10.z;
+    lim = 0x180;
+    for (hit = 0; hit < 4; hit++)
+    {
+      name = Heroes[hit].hero_name;
+      if ((name == 9) && (((((Ovl5fModeView *) D_8005A614)->mode != name) || (D_800CB210 != 0)) || (((u32) (hit - 2)) >= 2)))
+      {
+        continue;
+      }
+      if (Heroes[hit].hero_status & 0xC000)
+      {
+        continue;
+      }
+      e = Heroes[hit].hero_eng;
+      d = x - e->unk10.x;
+      if (d < (-0x180))
+      {
+        continue;
+      }
+      if (lim < d)
+      {
+        continue;
+      }
+      d = z - e->unk10.z;
+      n = -0x180;
+      if ((n < d) && (d < 0x180))
+      {
+        goto found2;
+      }
+    }
+
+    hit = -1;
+    found2:
+    if (hit < 0)
+    {
+      goto puff;
+    }
+
+    func_800B6354(hit, 0x3C);
+    boom:
+    if (eng->sfx != 0)
+    {
+      StopSfx(eng->sfx);
+    }
+
+    switch ((u32) Random(4))
+    {
+      case 0:
+        PlaySfx(0x4BA, 0, &eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+
+      case 1:
+        PlaySfx(0x4BB, 0, &eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+
+      case 2:
+        PlaySfx(0x4BC, 0, &eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+
+      case 3:
+        PlaySfx(0x4BD, 0, &eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+
+    }
+
+    puff:
+    switch ((u32) Random(4))
+    {
+      case 0:
+
+      case 1:
+        PlaySfx(0x490, 0, &eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+
+      case 2:
+
+      case 3:
+        PlaySfx(0x491, 0, &eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+
+    }
+
+
+    Ovl5fSpawnBit1605(&eng->unk10, 1);
+
+    KillNAS(nas);
+    return;
+  }
+
+  if (fux->unk30 == 1)
+  {
+    fux->unk30 = 0;
+  }
+
+  e2 = eng->Engine;
+  if (e2 != 0)
+  {
+    e2->unk1E = eng->unk1E;
+    e2->unk10 = eng->unk10;
+    if (D_800CACFC[((eng->unk10.z >> 9) * D_800CAFF4) + (eng->unk10.x >> 9)] != 0)
+    {
+      e2->unk10.y = -0x100;
+    }
+    else
+    {
+      e2->unk10.y = 0;
+    }
+  }
+
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotRocketTA);
 

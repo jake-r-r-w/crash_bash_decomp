@@ -238,6 +238,17 @@ typedef struct FlubberFux {
     /* 0x30 */ s32 unk30;
 } FlubberFux;
 
+/* PlotLobber_TA's NAS.FUX. */
+typedef struct LobberFux {
+    /* 0x00 */ u8 unk0[0x10];
+    /* 0x10 */ s32 vx;
+    /* 0x14 */ s32 vy;
+    /* 0x18 */ s32 vz;
+    /* 0x1C */ u8 unk1C[0x2C - 0x1C];
+    /* 0x2C */ s32 player;
+    /* 0x30 */ s32 unk30;
+} LobberFux;
+
 /* InitPickupTA's extension 0x10000000 (0x38 bytes), its NAS.FUX. */
 typedef struct PickupTAExt {
     /* 0x00 */ u8 unk0[0x14];
