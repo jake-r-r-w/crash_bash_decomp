@@ -105,7 +105,63 @@ done:
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C02D4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C05A8);
+void func_800C05A8(s32 arg0) {
+    HeroInfo *base;
+    HeroInfo *h;
+    subengine *s;
+    HeroInfo *self;
+    HeroInfo *base2;
+    EXTobject *o;
+    s32 v;
+    VECTOR pos;
+    int new_var;
+
+    if (func_8008AB50(arg0) != 0) {
+        goto action;
+    }
+    base = Heroes;
+    h = &base[arg0];
+    o = h->hero_object;
+    if (o == NULL) {
+        goto none;
+    }
+    if (o->status != 2) {
+        h->hero_object = NULL;
+        if (h->hero_eng->sfx != NULL) {
+            StopSfx(h->hero_eng->sfx);
+        }
+        goto rest;
+    }
+    if ((o->can_do & 4) && (((PadButtons *)D_80051338)[arg0].unk50 & 0x2000)) {
+    action:
+        SetHeroAction((HeroInfo *)arg0, (u16)D_8009E0E0);
+        return;
+    }
+    goto rest;
+none:
+    SetHeroAction((HeroInfo *)arg0, 0);
+    return;
+rest:
+    if (func_8008AC74(arg0) == 0) {
+        D_8009D73C(arg0);
+        func_8008502C(arg0);
+        base2 = Heroes;
+        self = &base2[arg0];
+        s = self->hero_fx->sub;
+        if (s != NULL && func_80015780(self->hero_eng, self->hero_sub, 0x40, &pos) != NULL) {
+            self->hero_fx->unk10 = self->hero_eng->unk10;
+            v = (D_80068BD4[(((D_8004E0D8 << 8) & 0xFFF) - 0x400) & 0xFFF].unk2 * 512 >> 12) + 0x1000;
+            s->unk20.y = s->unk20.x = v;
+            s->unk04 = pos.vx - self->hero_eng->unk10.x;
+            s->unk08 = pos.vy - self->hero_eng->unk10.y;
+            new_var = pos.vz - self->hero_eng->unk10.z;
+            s->flags |= 0x8000;
+            s->unk52 = 1;
+            s->unk0C = new_var;
+        }
+        func_800871E4(arg0);
+    }
+}
 
 void func_800C07F4(s32 arg0) {
     VECTOR pos;
