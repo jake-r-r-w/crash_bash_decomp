@@ -3411,7 +3411,94 @@ bool Roo_ChangeDirOnEdge(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Roo_FindNewSquare);
+bool Roo_FindNewSquare(EXTengine *eng) {
+    s32 count;
+    s32 ok;
+    s32 x;
+    s32 z;
+    s32 v;
+    s32 *pz;
+    s32 *px;
+
+    count = 0;
+    do {
+        ok = 1;
+        count++;
+        D_800C5BD8 = (eng->unk10.x + 0x800) >> 9;
+        D_800C5BDC = (eng->unk10.z + 0x800) >> 9;
+        z = D_800C5BEC;
+        px = &D_800C5BD8;
+        if (count > 5) {
+            D_800C5BEC = Random(4);
+            count = 0;
+        }
+        switch (D_800C5BEC) {
+        case 0:
+            D_800C5BDC -= 2;
+            D_800C5BD8 -= 1 - Random(3);
+            break;
+        case 2:
+            D_800C5BDC += 2;
+            D_800C5BD8 -= 1 - Random(3);
+            break;
+        case 3:
+            D_800C5BD8 += 2;
+            D_800C5BDC -= 1 - Random(3);
+            break;
+        case 1:
+            D_800C5BD8 -= 2;
+            D_800C5BDC -= 1 - Random(3);
+            break;
+        }
+        x = D_800C5BD8;
+        if ((u32)x >= 8) {
+            D_800C5BEC = (D_8004E0D8 & 1) ? 0 : 2;
+            if ((u32)(x + 1) >= 10) {
+                pz = &D_800C5BDC;
+                v = *pz;
+                if (v < 4) {
+                    v++;
+                } else {
+                    v--;
+                }
+                *pz = v;
+                if (D_800C5BD8 < -1) {
+                    D_800C5BD8 = -1;
+                }
+                if (D_800C5BD8 > 8) {
+                    D_800C5BD8 = 8;
+                }
+            }
+            return 1;
+        }
+        z = D_800C5BDC;
+        if ((u32)z >= 8) {
+            D_800C5BEC = (D_8004E0D8 & 1) ? 1 : 3;
+            if ((u32)(z + 1) >= 10) {
+                if (x < 4) {
+                    x++;
+                } else {
+                    x--;
+                }
+                *px = x;
+                if (D_800C5BDC < -1) {
+                    D_800C5BDC = -1;
+                }
+                if (D_800C5BDC > 8) {
+                    D_800C5BDC = 8;
+                }
+            }
+            return 1;
+        }
+        if ((SquareIsFreeForRoo(x, z) ^ 1) != 0) {
+            ok = 0;
+        }
+        if (D_800C53DC[D_800C5BD8][D_800C5BDC].hero != NULL) {
+            ok = 0;
+        }
+    } while (!ok);
+    return 0;
+}
 
 void Roo_GoBoing(EXTengine *eng) {
     switch (Random(6)) {

@@ -6200,7 +6200,8 @@
  },
  "ovl60:800BFC6C": {
   "auto_diff": 183,
-  "auto_failed": "diff"
+  "matched_at": "2026-10-21T10:38:42Z",
+  "status": "matched"
  },
  "ovl60:800BFF58": {
   "auto_diff": 24,
