@@ -121,7 +121,87 @@ void func_800B3938(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B3A3C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B3EDC);
+s32 func_800B3EDC(void) {
+    Ovl64Game *g;
+    HeroInfo *h;
+    s32 j;
+    s32 i;
+    Ovl64Game *gt;
+    s32 a;
+    s32 b;
+    s32 mate;
+    s32 score;
+    s32 team0;
+    s32 team1;
+    s32 mate1;
+    s32 score1;
+    u8 *p;
+    s32 k;
+    s32 m;
+
+    j = 3;
+    p = D_8005A614 + j;
+    do {
+        p[0xA7] = j;
+        j--;
+        p--;
+    } while (j >= 0);
+    i = 0;
+    g = (Ovl64Game *)D_8005A614;
+    h = Heroes;
+    while (1) {
+        if (!(i < 4)) break;
+        j = 0;
+        while (1) {
+            if (!(j < 3)) break;
+            if (g->flags & 0x40) {
+                if (h[g->rank[j]].hero_score > h[((u8 *)((k = j + 1) + (s32)g))[0xA7]].hero_score) {
+                    a = g->rank[j];
+                    g->rank[j] = ((u8 *)(k + (s32)g))[0xA7];
+                    ((u8 *)(k + (s32)g))[0xA7] = a;
+                }
+            } else {
+                if (h[g->rank[j]].hero_score < h[((u8 *)((m = j + 1) + (s32)g))[0xA7]].hero_score) {
+                    a = g->rank[j];
+                    g->rank[j] = ((u8 *)(m + (s32)g))[0xA7];
+                    ((u8 *)(m + (s32)g))[0xA7] = a;
+                }
+            }
+            j++;
+        }
+        i++;
+    }
+    gt = (Ovl64Game *)D_8005A614;
+    if (gt->teams != 0) {
+        team0 = gt->team[0];
+        mate = Heroes[team0].hero_teammate;
+        score = Heroes[team0].hero_score;
+        D_800BBE08 = score;
+        if (mate != 0) {
+            D_800BBE08 = score + Heroes[mate].hero_score;
+        }
+        team1 = gt->team[1];
+        mate1 = Heroes[team1].hero_teammate;
+        score1 = Heroes[team1].hero_score;
+        D_800BBE0C = score1;
+        if (mate1 != 0) {
+            D_800BBE0C = score1 + Heroes[mate1].hero_score;
+        }
+        if (gt->flags & 0x40) {
+            if (D_800BBE08 < D_800BBE0C) {
+            ra:
+                return team0;
+            }
+        rb:
+            return team1;
+        }
+        if (D_800BBE08 > D_800BBE0C) {
+            goto ra;
+        }
+        goto rb;
+    }
+    return gt->rank[0];
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B4144);
 

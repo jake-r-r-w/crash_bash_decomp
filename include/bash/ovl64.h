@@ -37,6 +37,21 @@ typedef struct Ovl64Cell {
 } Ovl64Cell;
 
 extern Ovl64Cell D_800BBE10[4][16];
+
+/* D_8005A614 as seen by the ranking code (func_800B3EDC). */
+typedef struct Ovl64Game {
+    /* 0x00 */ u8 pad0[0x32];
+    /* 0x32 */ u16 flags;
+    /* 0x34 */ u8 pad34[0x48 - 0x34];
+    /* 0x48 */ s16 team[2];
+    /* 0x4C */ u8 pad4C[0x6C - 0x4C];
+    /* 0x6C */ s32 teams;
+    /* 0x70 */ u8 pad70[0xA7 - 0x70];
+    /* 0xA7 */ u8 rank[4];
+} Ovl64Game;
+
+extern s32 D_800BBE08;
+extern s32 D_800BBE0C;
 extern s32 D_800BC010;
 extern s32 D_800BC014;
 extern s16 D_800BC018;
@@ -237,6 +252,8 @@ typedef struct {
     /* 0x1C */ u16 unk1C;
     /* 0x1E */ u16 unk1E;
 } Ovl64HitFlags;
+
+s32 func_800B3EDC(void);
 
 void func_800B9608(s32 arg0);
 
