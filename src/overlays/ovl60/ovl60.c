@@ -3,7 +3,35 @@
 #include "bash/ovl60.h"
 #include "bash/pogo.h"
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B3534);
+void func_800B3534(void) {
+    D_8009D8F4 = &D_800C36DC;
+    switch (((Ovl60ModeView *)D_8005A614)->mode) {
+    case 10:
+        D_8009D8FC = ((Ovl60ModeView *)D_8005A614)->teams != 0 ? &D_800C3658 : &D_800C3644;
+        D_8009D904 = D_8005A680[0] != 0 ? &D_800C369C : &D_800C3684;
+        D_8009D8F8 = D_8005A680[0] != 0 ? &D_800C36C8 : &D_800C36B4;
+        D_8009D900 = &D_800C366C;
+        break;
+    case 11:
+        D_8009D8FC = ((Ovl60ModeView *)D_8005A614)->teams != 0 ? &D_800C3704 : &D_800C36F0;
+        D_8009D904 = D_8005A680[0] != 0 ? &D_800C3748 : &D_800C3730;
+        D_8009D8F8 = D_8005A680[0] != 0 ? &D_800C3774 : &D_800C3760;
+        D_8009D900 = &D_800C3718;
+        break;
+    case 12:
+        D_8009D8FC = ((Ovl60ModeView *)D_8005A614)->teams != 0 ? &D_800C379C : &D_800C3788;
+        D_8009D904 = D_8005A680[0] != 0 ? &D_800C37E0 : &D_800C37C8;
+        D_8009D8F8 = D_8005A680[0] != 0 ? &D_800C380C : &D_800C37F8;
+        D_8009D900 = &D_800C37B0;
+        break;
+    case 13:
+        D_8009D8FC = ((Ovl60ModeView *)D_8005A614)->teams != 0 ? &D_800C3834 : &D_800C3820;
+        D_8009D904 = D_8005A680[0] != 0 ? &D_800C3878 : &D_800C3860;
+        D_8009D8F8 = D_8005A680[0] != 0 ? &D_800C38A4 : &D_800C3890;
+        D_8009D900 = &D_800C3848;
+        break;
+    }
+}
 
 void func_800B3808(void) {
     s32 i;
