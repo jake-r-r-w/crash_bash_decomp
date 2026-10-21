@@ -122,7 +122,72 @@ void func_800B372C(s32 player) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B3890);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B3BC0);
+void func_800B3BC0(s32 player) {
+    s32 b[3];
+    s32 a[3];
+    s16 c[8];
+    NAS *n;
+    NAS *best;
+    EXTengine *e;
+    EXTengine *he;
+    s32 dx;
+    s32 dz;
+    s32 x;
+    s32 z;
+    s32 d;
+    s32 bestd;
+    HeroInfo *h;
+    HeroInfo *base;
+
+    n = (NAS *)D_800C66EC;
+    best = NULL;
+    bestd = 0x7FFFFFFF;
+    while (1) {
+        if (n == NULL) {
+            break;
+        }
+        e = n->Engine;
+        if (e != NULL) {
+            he = Heroes[player].hero_eng;
+            dx = he->unk10.x - e->unk10.x;
+            dz = he->unk10.z - e->unk10.z;
+            d = dx * dx + dz * dz;
+            if (d < bestd) {
+                best = n;
+                bestd = d;
+            }
+        }
+        n = n->Group.Child;
+    }
+    if (best != NULL) {
+        base = Heroes;
+        h = &base[player];
+        a[0] = 0;
+        a[2] = 0;
+        b[0] = D_80068BD4[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2;
+        b[1] = 0;
+        b[2] = D_80068BD4[h->hero_eng->unk1E & 0xFFF].unk2;
+        c[0] = best->Engine->unk10.x - h->hero_eng->unk10.x;
+        c[2] = best->Engine->unk10.z - h->hero_eng->unk10.z;
+        c[3] = 0x180;
+        if (func_800B3E60(a, b, c) != 0) {
+            d = best->Engine->unk10.x;
+            z = best->Engine->unk10.z;
+            x = d * d + z * z;
+            d = h->hero_eng->unk10.x;
+            z = h->hero_eng->unk10.z;
+            if (x < d * d + z * z) {
+                h->hero_ai->AIpad &= ~0x20;
+                h->hero_ai->AIpad |= 0x80;
+            } else {
+                h->hero_ai->AIpad &= ~0x80;
+                h->hero_ai->AIpad |= 0x20;
+            }
+            h->hero_ai->AIpad &= ~0x8000;
+            ((Ovl63Pad *)D_80051338)[player].unk50 = h->hero_ai->AIpad;
+        }
+    }
+}
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl63/ovl63", D_800B32B8);
 
