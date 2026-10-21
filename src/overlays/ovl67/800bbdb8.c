@@ -34,7 +34,25 @@ void func_800BC6B8(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BC7E0);
+s32 func_800BC7E0(s32 *arg0, LaserPos p) {
+    LaserNode *n;
+    LaserTgt *t;
+
+    n = (LaserNode *)D_800C449C;
+loop:
+    if (n != NULL) {
+        t = n->tgt;
+        if (t != NULL) {
+            if (LaserInBox(arg0, (s32 *)&t->pos)) {
+                LaserBurst(n);
+                return 1;
+            }
+        }
+        n = n->next;
+        goto loop;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BC9B4);
 

@@ -312,6 +312,66 @@ void func_800BD584(AngObj *o);
 void InitNitroMissile(MissileHolder *arg0);
 
 s32 func_800C323C(LaserPos p, s32 r);
+
+s32 func_800BC7E0(s32 *arg0, LaserPos p);
+
+/* Bursts a laser target: spawns 0x1605 at its position, kills the node. */
+static inline void LaserBurst(LaserNode *n) {
+    LaserExt *ext;
+    NAS *nas;
+    LaserPos *tp;
+    s32 mode;
+
+    do {
+        tp = &n->tgt->pos;
+        nas = SpawnNASById(n->tgt->pos.x, tp->y, tp->z, 0x1605, 0x11);
+        mode = 3;
+    } while (0);
+    do {
+        if (nas != NULL) {
+            ext = FindExtension(nas, 0x10000000);
+            if (ext != NULL) {
+                ext->unk18 = 0x100;
+                ext->unkC = mode;
+                ext->unk20 = 1;
+                ext->unk28 = 0;
+                nas->InitDelete(nas);
+            }
+        }
+    } while (0);
+    KillNAS((NAS *)n);
+}
+
+/* func_800C3544's box test, inlined into func_800BC7E0. */
+static inline s32 LaserInBox(s32 *arg0, s32 *arg1) {
+    Box2 *src;
+    s32 d[3];
+    BoxHalf lo;
+    BoxHalf hi;
+
+    src = (Box2 *)func_8008CE20((subengine *)arg0, 0, 0);
+    if (src == NULL) {
+        printf(D_800B336C);
+        return 0;
+    }
+    lo = src->lo;
+    hi = src->hi;
+    d[0] = arg1[0] - arg0[1];
+    d[1] = arg1[1] - arg0[2];
+    d[2] = arg1[2] - arg0[3];
+    if (lo.v[0] < d[0]) {
+        if (d[0] < hi.v[0]) {
+            if (hi.v[1] < d[1]) {
+                if (d[1] < lo.v[1]) {
+                    if (lo.v[2] < d[2] + 0x400) {
+                        return 1;
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+}
 typedef struct BossScene {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ u8 pad04[0x28];
