@@ -1420,7 +1420,92 @@ void func_800C4D04(s32 hero, s32 last_mode) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C4DCC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C53B0);
+void func_800C53B0(s32 arg0) {
+    EXTengine *eng;
+    TA_player *p;
+    HeroInfo *h;
+    HeroInfo *base;
+    s32 val;
+    s32 mode;
+    s32 last;
+
+    eng = Heroes[arg0].hero_eng;
+    D_800CAD50[arg0].SpeedY += 0xC;
+    p = &D_800CAD50[arg0];
+    eng->unk10.y += p->SpeedY;
+    if (eng->unk10.y > 0) {
+        p->SpeedY = -p->SpeedY / 2;
+        eng->unk10.y = 0;
+    }
+    eng->sub->next->next->unk08 = -eng->unk10.y / 2;
+    if (arg0 == 3) {
+        val = *D_800CB24C++;
+        Heroes[3].hero_sub->unk74 = val;
+    } else {
+        val = *D_800CB250++;
+        Heroes[2].hero_sub->unk74 = val;
+    }
+    if (val == 0) {
+        base = Heroes;
+        h = base + arg0;
+        if (h->hero_status & 0x2000) {
+            u16 old = h->hero_mode;
+
+            h->hero_mode = 0x6A;
+            h->hero_last_mode = old;
+            if (arg0 == 3) {
+                subengine *s;
+                s32 v;
+                v = D_800CAA60[0];
+                D_800CB24C = D_800CAA60;
+                s = Heroes[3].hero_sub;
+                D_800CB24C++;
+                s->unk74 = v;
+            } else {
+                subengine *s;
+                s32 v;
+                v = D_800CABAC[0];
+                D_800CB250 = D_800CABAC;
+                s = Heroes[2].hero_sub;
+                D_800CB250++;
+                s->unk74 = v;
+            }
+            return;
+        }
+        mode = h->hero_last_mode;
+        last = h->hero_mode;
+        h->hero_mode = mode;
+        h->hero_last_mode = last;
+        switch (mode) {
+        case 0x6C:
+            func_800C49F8(arg0);
+            break;
+        case 0x6E:
+            func_800C4B60(arg0);
+            break;
+        case 0x69:
+            func_800C4BC0(arg0);
+            break;
+        case 0x6B:
+            ((void (*)(s32))func_800C4D04)(arg0);
+            break;
+        case 0x6A:
+        case 0x6D:
+            break;
+        }
+        if (arg0 == 3) {
+            s32 v;
+            D_800CB24C = D_800CAA0C;
+            v = *D_800CB24C++;
+            D_8009D678->unk74 = v;
+        } else {
+            s32 v;
+            D_800CB250 = D_800CAB58;
+            v = *D_800CB250++;
+            D_8009D60C->unk74 = v;
+        }
+    }
+}
 
 void func_800C5620(s32 arg0) {
     s32 val;
