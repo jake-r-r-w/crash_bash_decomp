@@ -641,7 +641,37 @@ void func_800B6FEC(s32 player) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B7224);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B7520);
+void func_800B7520(s32 player) {
+    HeroInfo *h;
+    Ovl62Fux *fux;
+    s32 dx;
+    s32 dz;
+    HeroInfo *base;
+
+    base = Heroes;
+    h = &base[player];
+    fux = (Ovl62Fux *)h->hero->FUX;
+    if (fux != NULL) {
+        if (func_800B7CDC() != 0) {
+            return;
+        }
+        fux->pos = h->hero_eng->unk10;
+        dx = fux->vel.x - fux->pos.x;
+        dz = fux->vel.z - fux->pos.z;
+        if (dx * dx + dz * dz > 0x24000) {
+            func_800B5EBC(player);
+        } else {
+            fux->unk24 = Random(0x78);
+            fux->state = 0xA;
+            fux->func = func_800B7224;
+        }
+    }
+    if (D_8005A648 == 0x12 && (D_800D5FEC[player] & 1)) {
+        fux->state = 0xB;
+        func_800CB134(player);
+        fux->func = func_800B90C0;
+    }
+}
 
 void func_800B767C(s32 player) {
     Ovl62Fux *fux;
