@@ -343,7 +343,9 @@ extern u8 D_800CA08C[];
 extern u8 D_800C9FF8[];
 /* D_8005A614 as seen by func_800B5588. */
 typedef struct Ovl5fGameView {
-    /* 0x00 */ u8 pad0[0x32];
+    /* 0x00 */ u8 pad0[4];
+    /* 0x04 */ u32 w4;
+    /* 0x08 */ u8 pad8[0x32 - 8];
     /* 0x32 */ u16 flags;
     /* 0x34 */ u8 pad34[0x51 - 0x34];
     /* 0x51 */ u8 b51;
@@ -551,6 +553,8 @@ extern s32 D_800CA610[4];
 extern s32 D_800CA620[4];
 extern s32 D_800CA630[4];
 extern s32 D_800CA640[4];
+
+void func_800B6354(s32 player, s32 damage);
 
 void func_800B9170(s32 player);
 

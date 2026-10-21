@@ -573,7 +573,68 @@ void func_800B62A4(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B6354);
+void func_800B6354(s32 player, s32 damage) {
+    HeroInfo *h;
+    HeroInfo *hb;
+    EXTengine *eng;
+    TA_player *ta;
+    u8 *g;
+    s32 t;
+    s32 u;
+
+    if (D_800CB0F0 != 0) {
+        return;
+    }
+    if (Heroes[player].hero_immunity != 0) {
+        return;
+    }
+    if (Heroes[player].hero_status & 0xFA00) {
+        return;
+    }
+    g = D_8005A614;
+    if (((Ovl5fModeView *)g)->mode == 9 && (D_8009D6E0 & 0x8000)) {
+        return;
+    }
+    if (damage < 400) {
+        ((void (*)(s32, s32, s32))func_80027F7C)(player, 0xA, 0xF0);
+        if (D_8009D908 != 0) {
+            damage *= 3;
+        } else if (g[player + 0x5C] != 0) {
+            t = (0x20 - D_8009D87C[player].unk0) * 150;
+            u = t / 32; /* dead: keeps t live for the divide's copy */
+            t = t / 32 + 50;
+            damage = damage * t / 100;
+        }
+    }
+    hb = Heroes;
+    h = &hb[player];
+    eng = h->hero_eng;
+    if (h->hero_mode == 0x69) {
+        return;
+    }
+    h->hero->UserInfo.status = 0x20;
+    ta = &D_800CAD50[player];
+    if (D_8005A648 == 9 && (u32)(player - 2) < 2) {
+        func_800C6914(player, 0x69);
+    } else {
+        SetHeroAction((HeroInfo *)player, 0x69);
+    }
+    if (D_8005A614[player + 0x5C] != 0 || (((Ovl5fGameView *)D_8005A614)->w4 & 0x80000001) != 0x80000001) {
+        ta->Energy -= damage;
+    }
+    if (ta->Energy <= 0) {
+        func_800C8090(player, eng, 0);
+        func_800C8008(player, (s32)eng, 0);
+        func_800C7F80(player, (s32)eng, 0);
+        ta->Energy = 0;
+        if ((((Ovl5fGameView *)D_8005A614)->w4 & 0x80000002) == 0x80000002) {
+            ta->Energy = 2;
+        } else {
+            Heroes[player].hero_status |= 0x2000;
+        }
+    }
+    Heroes[player].hero_health = ta->Energy;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B6658);
 
