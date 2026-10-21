@@ -438,4 +438,6 @@ void InitAsteroidRoll(NAS *m);
 
 void PlotAsteroidRoll(NAS *nas);
 
+void PlotMineSFX(NAS *nas);
+
 #endif /* BASH_OVL67_800BBDB8_H */

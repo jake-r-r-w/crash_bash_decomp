@@ -520,7 +520,50 @@ done:;
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", PlotSpiralSat);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", PlotMineSFX);
+void PlotMineSFX(NAS *nas) {
+    s32 z;
+
+    nas->Engine->unk10.z = nas->UserInfo.user1;
+    if (D_8005A680[0] == 0) {
+        if (D_8009D530->unk10.z + 0x6000 < nas->Engine->unk10.z) {
+            nas->Engine->sub->flags &= ~0x8000;
+        } else {
+            nas->Engine->sub->flags |= 0x8000;
+        }
+    } else if (!(Heroes[0].hero_status & 0x2000)) {
+        if (Heroes[0].hero_eng->unk10.z + 0x6000 < nas->Engine->unk10.z) {
+            nas->Engine->sub->flags &= ~0x8000;
+        } else {
+            nas->Engine->sub->flags |= 0x8000;
+        }
+    } else {
+        if (Heroes[1].hero_eng->unk10.z + 0x6000 < nas->Engine->unk10.z) {
+            nas->Engine->sub->flags &= ~0x8000;
+        } else {
+            nas->Engine->sub->flags |= 0x8000;
+        }
+    }
+    nas->UserInfo.user2++;
+    if (nas->Engine->sub->flags & 0x8000) {
+        z = nas->Engine->unk10.z;
+        if (z < Heroes[0].hero_eng->unk10.z + 0xC00 ||
+            (D_8005A680[0] != 0 && z < Heroes[1].hero_eng->unk10.z + 0xC00)) {
+            if (nas->UserInfo.status == 0) {
+                PlaySfx(0x29B, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (nas->UserInfo.status == 1) {
+                PlaySfx(0x29C, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (nas->UserInfo.status == 2) {
+                PlaySfx(0x29D, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (nas->UserInfo.status == 3) {
+                PlaySfx(0x29E, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            KillNAS(nas);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", PlotLaserShoot);
 
