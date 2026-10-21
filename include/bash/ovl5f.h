@@ -166,6 +166,8 @@ extern s32 D_800CAA0C[];
 extern s32 D_800CAB58[];
 extern s32 D_800CAA60[];
 extern s32 D_800CABAC[];
+extern s32 D_800CAADC[];
+extern s32 D_800CAC38[];
 extern s32 D_800CB0FC;
 
 typedef struct Ovl5fLink {
@@ -462,6 +464,8 @@ void func_800B4240(s32 player, s32 x, s32 z, EXTengine *eng, Ovl5fAITarget *ai);
 s32 func_800B4490(s32 player, EXTengine *eng, Ovl5fAITarget *ai);
 
 void func_800B4FAC(s32 player);
+
+void func_800C4BC0(s32 arg0);
 
 void func_800C53B0(s32 arg0);
 

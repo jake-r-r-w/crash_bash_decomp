@@ -1396,7 +1396,38 @@ void func_800C4B60(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C4BC0);
+void func_800C4BC0(s32 arg0) {
+    s32 val;
+    s32 val2;
+    s32 *p;
+    s32 *p2;
+    s32 z;
+
+    if (D_800CB0F0 == 0) {
+        if (arg0 == 3) {
+        again:
+            p = D_800CAADC;
+            D_800CB24C = p;
+            val = *D_800CB24C++;
+            D_8009D678->unk74 = val;
+            PlaySfx(0x261, 0, (SLONG_XYZ *)((u8 *)Heroes[arg0].hero_eng + 0x10), 0x1000, 0x1E00, 0);
+        } else {
+            p2 = D_800CAC38;
+            D_800CB250 = p2;
+            val2 = *D_800CB250++;
+            ((Ovl5fUnk74 *)Heroes[2].hero_sub)->unk74 = val2;
+            PlaySfx(0x260, 0, (SLONG_XYZ *)((u8 *)Heroes[arg0].hero_eng + 0x10), 0x1000, 0x1E00, 0);
+        }
+        D_800CAD50[arg0].SpeedY = -0x64;
+        Heroes[arg0].hero_immunity = 0x3C;
+        do {
+            z = 0;
+        } while (0);
+        if (z) {
+            goto again;
+        }
+    }
+}
 
 void func_800C4D04(s32 hero, s32 last_mode) {
     subengine *s;
@@ -1599,7 +1630,7 @@ void func_800C6914(s32 hero, s32 mode) {
         ((void (*)())func_800C4B60)();
         break;
     case 0x69:
-        func_800C4BC0();
+        ((void (*)())func_800C4BC0)();
         break;
     case 0x6B:
         func_800C4D04(hero, mode);
