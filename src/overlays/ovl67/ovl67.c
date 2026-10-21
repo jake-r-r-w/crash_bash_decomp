@@ -1436,7 +1436,45 @@ void func_800B9800(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B9B10);
+s32 func_800B9B10(s32 arg0) {
+    HeroInfo *base;
+    HeroInfo *h;
+    HeroInfo *t;
+    EXTengine *eng;
+    EXTengine *teng;
+    s32 mate;
+    s32 dx;
+    s32 dz;
+    s32 r;
+
+    base = Heroes;
+    h = &base[arg0];
+    if (!(h->hero_status & 0xFA00) && D_8005A680[0] != 0) {
+        mate = h->hero_teammate;
+        t = &base[mate];
+        if (!(t->hero_status & 0xFA00)) {
+            eng = h->hero_eng;
+            if (eng != NULL && (r = h->hero_move->forward_speed) != 0) {
+                teng = t->hero_eng;
+                dx = eng->unk10.x - teng->unk10.x;
+                dz = eng->unk10.z - teng->unk10.z;
+                if (eng->collision_box.flags & 0x40) {
+                    r = eng->collision_box.radius;
+                } else {
+                    r = 0x100;
+                }
+                r *= 2;
+                r += 0x90;
+                if (dx * dx + dz * dz < r * r) {
+                    eng->unk10.x = Heroes[mate].hero_eng->unk10.x - ((r * D_80068BD4[(get_angle(-dx, -dz) - 0x400) & 0xFFF].unk2) >> 12);
+                    return 1;
+                }
+                return 0;
+            }
+        }
+    }
+    return 0;
+}
 
 s32 func_800B9CB8(s32 arg0, EXTengine *unused) {
     SLONG_XYZ tgt;
