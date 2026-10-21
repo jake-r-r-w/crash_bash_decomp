@@ -4642,7 +4642,73 @@ void func_800CC2BC(s32 player) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CC3B4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CCCB8);
+void func_800CCCB8(s32 player) {
+    HeroInfo *h;
+    HeroInfo *base;
+    EXTheromove *m;
+    EXTheromove *m2;
+    Ovl62PadMove *pad;
+    Ovl62PadMove *p2;
+    Ovl62ModeView *g;
+    s32 *spd;
+
+    base = Heroes;
+    h = base + player;
+    if (h->hero_frozen != 0) {
+        ((Ovl62PadMove *)D_80051338)[player].buttons = 0;
+        ((Ovl62PadMove *)D_80051338)[player].unk54 = 0;
+    }
+    m = h->hero_move;
+    if (m != NULL) {
+        if (h->hero_mode != 0x51) {
+            m->x_max = 0;
+            m->z_max = 0;
+        }
+        pad = (Ovl62PadMove *)D_80051338;
+        pad += player;
+        p2 = pad;
+        if ((p2->flags & 1) || h->hero_ai->AImode != 0) {
+            if (p2->buttons & 0xF0) {
+                m->forward_angle = (p2->angle + 0x800) & 0xFFF;
+                spd = &D_800D6924[player];
+                m->x_max = (*spd * D_80068BD4[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
+                m->z_max = (*spd * D_80068BD4[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
+            }
+        }
+        g = (Ovl62ModeView *)D_8005A614;
+        if (g->mode != 0x16) {
+            m->x_max += ((m->mass * 3) >> 3) * D_80068BD4[(D_8009E1F8 - 0x400) & 0xFFF].unk2 >> 12;
+            m->z_max -= ((m->mass * 3) >> 3) * D_80068BD4[(D_8009E1F4 - 0x400) & 0xFFF].unk2 >> 12;
+            if (g->mode == 0x12) {
+                if (g->flags & 0x80) {
+                    if (D_8005A614[player + 0x5C] != 0) {
+                        m->x_max += ((m->mass * 3) >> 4) * D_80068BD4[(D_80058AF4.vz - 0x400) & 0xFFF].unk2 >> 12;
+                        m->z_max -= ((m->mass * 3) >> 4) * D_80068BD4[(D_80058AF4.vx - 0x400) & 0xFFF].unk2 >> 12;
+                    } else {
+                        m->x_max += ((m->mass * 5) >> 3) * D_80068BD4[(D_80058AF4.vz - 0x400) & 0xFFF].unk2 >> 12;
+                        m->z_max -= ((m->mass * 5) >> 3) * D_80068BD4[(D_80058AF4.vx - 0x400) & 0xFFF].unk2 >> 12;
+                    }
+                }
+            }
+        } else {
+            m->x_max += ((m->mass * 25) >> 6) * D_80068BD4[(D_8009E1F8 - 0x400) & 0xFFF].unk2 >> 12;
+            m->z_max -= ((m->mass * 25) >> 6) * D_80068BD4[(D_8009E1F4 - 0x400) & 0xFFF].unk2 >> 12;
+        }
+    }
+    if (Heroes[player].hero_status & 0x200) {
+        m2 = Heroes[player].hero_move;
+        if (m2 != NULL) {
+            m2->z_dir = 0;
+            m2->x_max = 0;
+            m2->z_max = 0;
+            m2->x_vel = 0;
+            m2->z_vel = 0;
+        }
+    }
+    if (abs(func_800154A0(m->forward_angle, m->facing_angle)) > 0x110) {
+        m->facing_angle = (m->forward_angle + 0x100) & 0xE00;
+    }
+}
 
 s32 func_800CD118(s32 *arg0, s32 arg1) {
     s32 v[3];

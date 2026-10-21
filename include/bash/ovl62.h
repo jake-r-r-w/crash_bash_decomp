@@ -218,6 +218,16 @@ typedef struct Ovl62PadAng {
     /* 0x54 */ u8 pad54[0x58 - 0x54];
 } Ovl62PadAng;
 
+/* PadState (D_80051338) as func_800CCCB8 reads it. */
+typedef struct Ovl62PadMove {
+    /* 0x00 */ s32 flags;
+    /* 0x04 */ u8 pad4[0x38 - 0x04];
+    /* 0x38 */ u16 angle;
+    /* 0x3A */ u8 pad3A[0x50 - 0x3A];
+    /* 0x50 */ s32 buttons;
+    /* 0x54 */ s32 unk54;
+} Ovl62PadMove;
+
 /* Inlined into func_800B5EBC: the d-pad bits that steer from v toward p. */
 static inline u32 Ovl62PadToward(SLONG_XYZ *p, SLONG_XYZ *v) {
     u32 flags;
@@ -1341,7 +1351,7 @@ extern u8 D_800D37E0[], D_800D3830[], D_800D3874[], D_800D388C[], D_800D38A4[];
 void func_800CBBE8(s32 p1, s32 p2);
 
 void func_800CC3B4(void);
-void func_800CCCB8(void);
+void func_800CCCB8(s32 player);
 
 void func_800CD594(s32 player);
 
