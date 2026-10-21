@@ -50,7 +50,60 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C02D4);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C05A8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C07F4);
+void func_800C07F4(s32 arg0) {
+    VECTOR pos;
+    HeroInfo *h;
+    subengine *s;
+    s16 *w;
+    HeroInfo *b;
+    HeroInfo *h0;
+    HeroInfo *b0;
+    s16 (*tbl)[3];
+    s16 t;
+
+    if (func_8008502C() == 0x13) {
+        b0 = Heroes;
+        h0 = &b0[arg0];
+        if (h0->hero_object != NULL) {
+            h0->hero_object->will_do |= 4;
+            h0->hero_object = NULL;
+            if (h0->hero_eng->sfx != NULL) {
+                StopSfx(h0->hero_eng->sfx);
+            }
+        }
+    }
+    b = Heroes;
+    h = &b[arg0];
+    s = h->hero_fx->sub;
+    if (s != NULL && func_80015780(h->hero_eng, h->hero_sub, 0x40, &pos) != NULL) {
+        h->hero_fx->unk10 = h->hero_eng->unk10;
+        t = h->hero_weapon_timer;
+        if (t >= 0) {
+            tbl = D_8009DC68;
+            w = tbl[t];
+            if (w[0] == 0) {
+                goto clear;
+            }
+            s->unk20.x = w[0];
+            s->unk20.y = w[1];
+            s->unk20.x = w[2];
+            s->unk04 = pos.vx - h->hero_eng->unk10.x;
+            s->unk08 = pos.vy - h->hero_eng->unk10.y;
+            s->unk0C = pos.vz - h->hero_eng->unk10.z;
+            s->flags |= 0x8000;
+            s->unk52 = 1;
+            h->hero_weapon_timer++;
+        } else {
+            h->hero_weapon_timer++;
+        }
+        goto done;
+clear:
+        s->flags &= ~0x8000;
+    }
+done:
+    func_800871E4(arg0);
+    D_8009D73C(arg0);
+}
 
 void func_800C09F4(s32 arg0) {
     HeroInfo *h;
