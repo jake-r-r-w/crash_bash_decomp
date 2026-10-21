@@ -6008,7 +6008,8 @@
   "status": "matched"
  },
  "ovl60:800BAD74": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-21T06:38:51Z",
+  "status": "matched"
  },
  "ovl60:800BAEF0": {
   "matched_at": "2026-10-19T09:12:25Z",

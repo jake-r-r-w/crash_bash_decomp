@@ -1509,7 +1509,54 @@ void Plot_PogoPickup(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Init_PogoPowerup);
+void Init_PogoPowerup(NAS *nas) {
+    EXTengine *e;
+    EXTengine *e2;
+    EXTmotion *m;
+    subengine *sub;
+
+    e = nas->Engine;
+    if (e != NULL) {
+        e->sub->unk6C = D_80053B9C;
+        e->sub->unk74 = 0x200B;
+        e->sub->unk68 = -0x10;
+        e->sub->flags |= 0x02000000;
+        e->unk10.y -= 0x1000;
+        m = AddMotion(nas);
+        if (m != NULL) {
+            m->Ymax = 0xA0;
+            m->Ydec = 0xE;
+            m->Yacc = 0;
+            m->Ydir = 0xFF;
+            m->Yvel = 0;
+        } else {
+            nas->Failure = 1;
+        }
+        e2 = AddEngine(nas, 1);
+        if (e2 != NULL) {
+            sub = e2->sub;
+            e2->unk10.x = e->unk10.x;
+            e2->unk10.y = e->unk10.y;
+            e2->unk10.z = e->unk10.z;
+            if (sub != NULL) {
+                sub->unk6C = D_80053B9C;
+                sub->unk74 = 0x2029;
+                sub->unk51 = 2;
+                sub->unk50 = 1;
+                sub->unk76 = 0x800;
+                sub->flags |= 0x40008041;
+            }
+        }
+        PlaySfx(0x41F, NULL, &e->unk10, 0x1000, 0x1E00, 0);
+    }
+    nas->UserInfo.flags = 0;
+    nas->UserInfo.status = 0;
+    nas->UserInfo.user1 = 0xF0;
+    nas->UserInfo.user2 = 0;
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 void Plot_PogoPowerup(NAS *nas) {
     EXTengine *eng;
