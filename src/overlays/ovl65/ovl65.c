@@ -442,7 +442,76 @@ void func_800B3FDC(s32 id) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl65/ovl65", D_800B32B8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B4268);
+s32 func_800B4268(a, b, c, unused)
+    s32 *a;
+    s32 *b;
+    s16 *c;
+    void *unused;
+{
+    s32 q[3];
+    s32 p[3];
+    s32 *qp;
+    s32 A;
+    s32 B;
+    s32 C;
+    s32 disc;
+    s32 s;
+    s32 t1;
+    s32 nc;
+    s32 den;
+    s32 r1;
+    s32 r2;
+    s32 t0;
+
+    p[0] = b[0] - a[0];
+    p[1] = 0;
+    p[2] = b[2] - a[2];
+    A = (p[0] * p[0] + p[2] * p[2]) >> 12;
+    q[0] = c[0] - a[0];
+    q[1] = 0;
+    q[2] = c[2] - a[2];
+    qp = q;
+    t0 = p[0] * q[0];
+    B = (q[0] * q[0] + qp[1] * qp[1] + qp[2] * qp[2] - c[3] * c[3]) >> 12;
+    C = ((t0 + p[2] * qp[2]) * 2) >> 12;
+    s = C * C - A * B * 4;
+    if (C * C < 0) {
+        printf("error in b\n");
+    }
+    if (s < 0) {
+        return 0;
+    }
+    s = csqrt(s) >> 6;
+    nc = -C;
+    t1 = (nc + s) << 8;
+    den = A * 2;
+    r1 = t1 / den;
+    r2 = ((nc - s) << 8) / den;
+    if (r1 < 0) {
+        if (r2 < 0) {
+            return 0;
+        }
+    }
+    if (r1 < r2) {
+        if (r1 < 0) {
+            if (r2 < 0x100) {
+                return 1;
+            }
+        }
+    } else if (r2 > 0) {
+        if (r2 < 0x100) {
+            return 1;
+        }
+    }
+    r2 = r1 < 0x100;
+    if (r2) {
+        goto one;
+    }
+    t0 = 0;
+    return t0;
+one:
+    return 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B4474);
 

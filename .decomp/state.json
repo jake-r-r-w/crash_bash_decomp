@@ -7715,7 +7715,9 @@
   "auto_failed": "types"
  },
  "ovl63:800B3E60": {
-  "auto_failed": "types"
+  "auto_failed": "types",
+  "copy_failed": "ovl65:800B4268",
+  "copy_failed_stage": "in-file"
  },
  "ovl63:800B406C": {
   "auto_failed": "compile"
@@ -8497,7 +8499,8 @@
   "status": "matched"
  },
  "ovl65:800B4268": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-21T06:16:32Z",
+  "status": "matched"
  },
  "ovl65:800B4474": {
   "auto_failed": "types"
