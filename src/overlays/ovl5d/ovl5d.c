@@ -1332,7 +1332,84 @@ void InitBashShox(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotBashShox);
+void PlotBashShox(NAS *nas) {
+    EXTengine *eng;
+    EXTengine *he;
+    BashShoxExt *x;
+    subengine *sub;
+    HeroInfo *h;
+    HeroInfo *base;
+    EXTheromove *mv;
+    s32 dead;
+    s32 px, py, pz;
+    s32 size;
+    s32 r;
+    s32 hit;
+    s32 ang;
+    s32 vc;
+    s32 i;
+
+    eng = nas->Engine;
+    dead = 1;
+    if (eng != NULL) {
+        px = eng->unk10.x;
+        x = nas->FUX;
+        pz = eng->unk10.z;
+        py = eng->unk10.y - 0x100;
+        if (x != NULL) {
+            eng->unk10 = Heroes[nas->UserInfo.user1].hero_eng->unk10;
+            sub = eng->sub;
+            size = 0;
+            for (i = 0; sub != NULL; i++, sub = sub->next) {
+                if (sub->flags != 0) {
+                    dead = 0;
+                    if (x->a[i] != 0) {
+                        x->a[i]--;
+                    } else {
+                        sub->flags |= 0x40008000;
+                        x->c[i] += 0x500;
+                        sub->unk20.x = x->c[i];
+                        sub->unk20.z = x->c[i];
+                        sub->unk76 += 0x100;
+                        r = x->c[i] * 128 >> 12;
+                        if (size < r) {
+                            size = r;
+                        }
+                        if (x->b[i] != 0) {
+                            x->b[i]--;
+                        } else {
+                            sub->flags = 0;
+                        }
+                    }
+                }
+                sub->unk52 = 1;
+            }
+            hit = func_800B97A8(px, py, pz, (size + 0x40) & 0xFFFF, nas->UserInfo.user1, 0xA);
+            if (hit != -1 && hit < 4) {
+                base = Heroes;
+                h = &base[hit];
+                if ((h->hero_immunity | h->hero_hit) == 0) {
+                    he = h->hero_eng;
+                    ang = get_angle(px - he->unk10.x, pz - he->unk10.z);
+                    mv = h->hero_move;
+                    vc = mv->velocity_calc;
+                    if (vc == 1) {
+                    } else if (vc == 0) {
+                    } else if (vc < 4) {
+                        mv->x_vel -= (D_80068BD4[(ang - 0x400) & 0xFFF].unk2 * 3) >> 8;
+                        h->hero_move->z_vel -= (D_80068BD4[ang & 0xFFF].unk2 * 3) >> 8;
+                    }
+                    Heroes[hit].hero_move->reactive_angle = ang;
+                    Heroes[hit].hero_move->reactive_speed = 0x30;
+                    func_80084E04(hit, NULL, nas->UserInfo.user1, 0x8008, 0x446);
+                }
+            }
+        }
+        if (dead) {
+            KillNAS(nas);
+        }
+    }
+}
 
 void PlotMissileExplode(NAS *nas) {
     EXTengine *eng;

@@ -148,7 +148,7 @@ typedef struct BashShoxExt {
     /* 0x00 */ u8 pad00[0x18];
     /* 0x18 */ u16 a[8];
     /* 0x28 */ u16 b[16];
-    /* 0x48 */ u16 c[16];
+    /* 0x48 */ s16 c[16];
 } BashShoxExt;
 
 void func_800BB360(void);
@@ -296,5 +296,7 @@ static inline NAS *Ovl5dSpawnPuff(SLONG_XYZ *v) {
 void InitTumbler(NAS *nas);
 
 void PlotTumbler(NAS *nas);
+
+void PlotBashShox(NAS *nas);
 
 #endif /* BASH_OVL5D_H */
