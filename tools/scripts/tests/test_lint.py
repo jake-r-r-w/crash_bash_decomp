@@ -53,6 +53,26 @@ class NoopSteps(unittest.TestCase):
             self.assertEqual(lint(s), ([], []), s)
 
 
+class WriteOnlyLocals(unittest.TestCase):
+    """func_800B4444 (2026-10-21) matched with `if (*p != 0) { j = k + 1; k = j; }`: j and k are
+    only read to compute each other, so every store is dead."""
+
+    def test_a_cycle_is_a_hack(self):
+        s = "int *p, i, j, k;\n    for (i = 0; i < 8; i++) {\n        if (*p != 0) {\n            j = k + 1;\n            k = j;\n        }\n        p++;\n    }"
+        self.assertIn("dead store", lint(s)[1])
+
+    def test_used_or_effectful_values_are_clean(self):
+        for s in ("int j, k; j = g; k = j; g = k;",           # k reaches a global
+                  "int j, k; j = g + 1; k = j; if (k) g = 0;",  # k is tested
+                  "int j; j = g;",                             # a lone unused store
+                  "int j, k; j = f2(); k = j;"):              # a call: the store has an effect
+            self.assertNotIn("dead store", lint(s)[1], s)
+
+    def test_nested_declarations_dont_hide_earlier_reads(self):
+        s = "int *p, *q;\n    p = (int *)g;\n    q = p + 1;\n    if (p[0] == 2) { int k; k = 0; g = k; }\n    g = (int)q;"
+        self.assertNotIn("dead store", lint(s)[1])
+
+
 class KandR(unittest.TestCase):
     def test_definition_found(self):
         text = "void f(void);\nvoid f(a, b)\n    u8 *a;\n    s32 b;\n{\n    *a = b;\n}\n"

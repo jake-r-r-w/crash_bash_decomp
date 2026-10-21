@@ -2078,6 +2078,48 @@ def dead_stores(body):
     return found
 
 
+def write_only_locals(body):
+    """Locals that are only ever stored, from values with no call in them, and read only to
+    compute each other's stores: every store is dead and flow deletes it, but the code they
+    leave behind can steer cse and the scheduler first (2026-10-21: func_800B4444's
+    `if (*p != 0) { j = k + 1; k = j; }` keeps a pointer increment the loop needs). At least one
+    such read, so a lone unused assignment isn't counted."""
+    names, decls = set(), []
+    for d in LOCAL_DECL.finditer(body):
+        names.update(v.strip("* \t") for v in d.group(1).split(","))
+        decls.append((d.start(), d.end()))
+    stores, feeds, live = {}, {}, set()
+    for v in names:
+        if re.search(rf"&\s*{v}\b", body):
+            live.add(v)
+            continue
+        for u in re.finditer(rf"(?<![.>\w])\b{v}\b", body):
+            pos = u.start()
+            if any(a <= pos < b for a, b in decls):     # its own declaration
+                continue
+            s0 = max(body.rfind(c, 0, pos) for c in ";{}") + 1
+            s1 = body.find(";", pos)
+            stmt = body[s0:s1 if s1 >= 0 else len(body)]
+            m = re.match(r"\s*(\w+)\s*([-+*/&|^]?=)(?!=)(.*)$", stmt, re.S)
+            if m and m.group(1) == v and s0 + m.start(1) == pos:
+                if re.search(r"\w\s*\(", m.group(3)):      # a call: the store has an effect
+                    live.add(v)
+                stores[v] = stores.get(v, 0) + 1
+                if m.group(2) != "=":
+                    feeds.setdefault(v, set()).add(v)
+            elif m and m.group(1) in names and m.group(1) != v and s0 + m.end(2) <= pos:
+                feeds.setdefault(v, set()).add(m.group(1))
+            else:
+                live.add(v)
+    dead = {v for v in names if stores.get(v) and v not in live}
+    while True:
+        drop = {v for v in dead if feeds.get(v, set()) - dead}
+        if not drop:
+            break
+        dead -= drop
+    return sorted(dead) if any(feeds.get(v) for v in dead) else []
+
+
 def lint_function(src, name):
     """(errors, hacks) found in NAME's definition in SRC."""
     return lint_body(extract_function(read(src), name) or "")
@@ -2092,7 +2134,7 @@ def lint_body(body):
     hacks = {why for rx, why in LINT_HACKS if rx.search(body)}
     if noop_steps(body):
         hacks.add("no-op ++/-- pair")
-    if dead_stores(body):
+    if dead_stores(body) or write_only_locals(body):
         hacks.add("dead store")
     return errs, sorted(hacks)
 

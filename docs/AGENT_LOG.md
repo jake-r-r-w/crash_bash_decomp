@@ -181,13 +181,13 @@ and current tools).
     the worker's patch (`<swarm dir>/results/ovl65_800B4268/`). Its hint:
     end with `r2 = r1 < 0x100; if (r2) goto one; t0 = 0; return t0;` so the
     early `return 0` isn't cross-jumped onto the final one.
-  - `func_800B4444` (ovl68) matched with two workarounds that
-    `decomp.py hacks` doesn't catch. It keeps a dead pointer increment
-    alive with an unused `j`/`k` cycle (`if (*p != 0) { j = k + 1; k = j; }`,
-    which cse keeps and flow deletes), and it calls `func_800B3330` through a
-    function-pointer cast instead of fixing that stub's `void (void)`
-    prototype. Fix the prototype, find the real loop shape, and extend the
-    dead-store lint to variable cycles.
+  - `func_800B4444` (ovl68) matched with two workarounds. It keeps a dead
+    pointer increment alive with an unused `j`/`k` cycle (`if (*p != 0) {
+    j = k + 1; k = j; }`, which cse keeps and flow deletes; `decomp.py hacks`
+    lists it as a dead store since 2026-10-21, write_only_locals), and it
+    calls `func_800B3330` through a function-pointer cast instead of fixing
+    that stub's `void (void)` prototype. Fix the prototype and find the
+    real loop shape.
   - Hints on still-unmatched functions: `func_800B47C8` (ovl60) lays out
     0xD/0xE/else as E, D, else (`goto case_d` into an `else if (0)`
     block got it there); `PlotCircleFire` structure 133/155: index the
