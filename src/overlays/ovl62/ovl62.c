@@ -235,7 +235,150 @@ s32 func_800B4260(s32 *arg0, s32 arg1) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl62/ovl62", D_800B32B8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B44B4);
+s32 func_800B44B4(NAS *nas, s32 dist) {
+    Ovl62Thrown *self;
+    HeroInfo *h;
+    s32 *ext;
+    EXTheromove *move;
+    NAS *obj;
+    Ovl62Bomb *b;
+    s32 i;
+    s32 r;
+    s32 dx;
+    s32 dz;
+    s32 vol;
+    s32 spd;
+    TrigEntry *t;
+
+    self = FindExtension(nas, 0x10000000);
+    i = 0;
+    if (self == NULL) {
+        return 0;
+    }
+    vol = 0x1E00;
+    spd = 0xBB8;
+    t = D_80068BD4;
+    h = Heroes;
+    while (1) {
+    if ((u32)i < 4) {
+        ext = FindExtension(h->hero, 0x20000000);
+        if (ext == NULL || (h->hero_status & 0x2000) || i == self->owner
+            || h->hero_immunity != 0 || h->hero_mode == 0x4D || h->hero_mode == 0x50) {
+            goto next;
+        }
+        dx = nas->Engine->unk10.x - h->hero_eng->unk10.x;
+        dz = nas->Engine->unk10.z - h->hero_eng->unk10.z;
+        if (dist <= dx * dx + dz * dz) {
+            goto next;
+        }
+        if (ext[9] == 1) {
+            r = Random(4);
+            if (r == 0) {
+                PlaySfx(0x490, NULL, NULL, 0x1000, vol, 0);
+            }
+            if (r == 1) {
+                PlaySfx(0x491, NULL, NULL, 0x1000, vol, 0);
+            }
+            if (r == 2) {
+                PlaySfx(0x492, NULL, NULL, 0x1000, vol, 0);
+            }
+            if (r == 3) {
+                PlaySfx(0x493, NULL, NULL, 0x1000, vol, 0);
+            }
+            switch (h->hero_name) {
+            case 1:
+                PlaySfx(3, NULL, NULL, 0x1000, vol, 0);
+                break;
+            case 2:
+                PlaySfx(0x35, NULL, NULL, 0x1000, vol, 0);
+                break;
+            case 3:
+                PlaySfx(0x67, NULL, NULL, 0x1000, vol, 0);
+                break;
+            case 4:
+                PlaySfx(0x99, NULL, NULL, 0x1000, vol, 0);
+                break;
+            case 5:
+                PlaySfx(0x12F, NULL, NULL, 0x1000, vol, 0);
+                break;
+            case 7:
+            case 8:
+                PlaySfx(0xFD, NULL, NULL, 0x1000, vol, 0);
+                break;
+            }
+            h->hero_move->forward_angle = nas->Engine->unk1E;
+            h->hero_eng->unk5D = 2;
+            h->hero_move->forward_angle = 0x800;
+            h->hero_eng->unk1E = 0x800;
+            h->hero_eng->unk5E = 1;
+            if (h->hero_mode != 0x57) {
+                SetHeroAction(i, 0x57);
+            }
+        }
+        if (ext[9] == 0) {
+            r = Random(4);
+            if (r == 0) {
+                PlaySfx(0x490, NULL, NULL, 0x1000, vol, 0);
+            }
+            if (r == 1) {
+                PlaySfx(0x491, NULL, NULL, 0x1000, vol, 0);
+            }
+            if (r == 2) {
+                PlaySfx(0x492, NULL, NULL, 0x1000, vol, 0);
+            }
+            if (r == 3) {
+                PlaySfx(0x493, NULL, NULL, 0x1000, vol, 0);
+            }
+            switch (h->hero_name) {
+            case 1:
+                PlaySfx(3, NULL, NULL, 0x1000, vol, 0);
+                break;
+            case 2:
+                PlaySfx(0x35, NULL, NULL, 0x1000, vol, 0);
+                break;
+            case 3:
+                PlaySfx(0x67, NULL, NULL, 0x1000, vol, 0);
+                break;
+            case 4:
+                PlaySfx(0x99, NULL, NULL, 0x1000, vol, 0);
+                break;
+            case 5:
+                PlaySfx(0x12F, NULL, NULL, 0x1000, vol, 0);
+                break;
+            case 7:
+            case 8:
+                PlaySfx(0xFD, NULL, NULL, 0x1000, vol, 0);
+                break;
+            }
+            move = h->hero_move;
+            if (move != NULL) {
+                obj = SpawnNASById(h->hero_eng->unk10.x, h->hero_eng->unk10.y, h->hero_eng->unk10.z, 0x1611, 0x11);
+                if (obj != NULL) {
+                    b = FindExtension(obj, 0x10000000);
+                    if (b != NULL) {
+                        b->angle = nas->Engine->unk1E;
+                        obj->Engine->unk1E = nas->Engine->unk1E;
+                        h->hero_move->forward_angle = nas->Engine->unk1E + 0x800;
+                        b->start = h->hero_eng->unk10;
+                        b->pos.x = h->hero_eng->unk10.x - ((t[(nas->Engine->unk1E - 0x400) & 0xFFF].unk2 * spd) >> 12);
+                        b->pos.z = h->hero_eng->unk10.z - ((t[nas->Engine->unk1E & 0xFFF].unk2 * spd) >> 12);
+                        b->pos.y = 0;
+                        SetHeroAction(i, 0x56);
+                        h->hero_immunity = 0x3C;
+                        move->mass -= 0x46;
+                    }
+                }
+            }
+        }
+        return 1;
+    next:
+        h++;
+        i++;
+        continue;
+    }
+    return 0;
+    }
+}
 
 s32 func_800B4A1C(NAS *nas)
 {

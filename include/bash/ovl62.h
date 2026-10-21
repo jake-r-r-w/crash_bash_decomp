@@ -149,6 +149,14 @@ typedef struct Ext10000000 {
     /* 0x0C */ s32 unkC;
 } Ext10000000;
 
+/* The 0x10000000 extension of the object func_800B44B4 spawns (0x1611). */
+typedef struct Ovl62Bomb {
+    /* 0x00 */ u8 pad0[0x10];
+    /* 0x10 */ s32 angle;
+    /* 0x14 */ SLONG_XYZ pos;
+    /* 0x20 */ SLONG_XYZ start;
+} Ovl62Bomb;
+
 /* The 0x10000000 extension of the object func_800D1188 spawns (0x160D). */
 typedef struct Ovl62Thrown {
     /* 0x00 */ u8 pad0[0x14];
