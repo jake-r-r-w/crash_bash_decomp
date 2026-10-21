@@ -597,7 +597,79 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotBarrelCH);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B7948);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B7B80);
+void func_800B7B80(CoalFlameEng *eng, CoalFlameFux *fux, s32 id) {
+    s32 *grid;
+    s32 cx;
+    s32 cz;
+    s32 i;
+    CircleFireOfs *ofs;
+
+    if (D_800BC444 != 0) {
+        return;
+    }
+    i = 0;
+    grid = D_800BC4E8;
+    ofs = D_800BC1B0;
+    cx = eng->x;
+    cz = eng->z;
+    for (;;) {
+        CoalFlameCell *cell;
+        CoalFlamePos *pos;
+        CoalFlameFux *cf;
+        NAS *fire;
+        CoalFlameFux *ff;
+        s32 x;
+        s32 z;
+        s32 s;
+
+        if (i >= 8) {
+            break;
+        }
+        x = cx + ofs->x;
+        if (x >= -0x9FF) if (x < 0xA00) {
+            z = cz + ofs->z;
+            if (z >= -0x9FF) if (z < 0xA00) {
+                cell = (CoalFlameCell *)CircleFireGridCell(grid, x, z);
+                if (cell != NULL) {
+                    pos = cell->pos;
+                    cf = cell->fux;
+                    if (fux->unk1C < 0) {
+                        fux->unk1C = 0;
+                        fux->unk20 = pos->x;
+                        fux->unk24 = pos->z;
+                        fux->unk2C = cf->unk2C;
+                        s = ((cell->unk5C + 0xF) << 12) / 60;
+                        if (s > 0x1000) {
+                            s = 0x1000;
+                        } else if (s < 0x258) {
+                            s = 0x258;
+                        }
+                        eng->sx = s;
+                        eng->sy = s;
+                        eng->sz = s;
+                        eng->unk5E = 1;
+                        grid[CIRCLEFIRE_CELL(x, z)] = 0;
+                        KillNAS((NAS *)cell);
+                    } else {
+                        fire = SpawnNASById(cx, 0, cz, 0x1D05, 0x11);
+                        if (fire != NULL) {
+                            ff = (CoalFlameFux *)fire->FUX;
+                            ff->unk2C = cf->unk2C;
+                            ff->unk1C = -7;
+                            ff->unk20 = pos->x;
+                            ff->unk24 = pos->z;
+                            if (cf->unk2C == id) {
+                                ff->unk28 = fux->unk28;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        ofs++;
+        i++;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B7DF0);
 

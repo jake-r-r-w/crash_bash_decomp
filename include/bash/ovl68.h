@@ -375,6 +375,20 @@ static inline NAS *CircleFireGridCell(s32 *grid, s32 x, s32 z) {
 
 void func_800B643C(s32 arg0);
 
+/* func_800B7B80: coal flame spreading over the circle-fire grid. */
+typedef struct { u8 pad0[0x10]; s32 x; s32 pad14; s32 z; } CoalFlamePos;
+typedef struct {
+    u8 pad0[0x1C]; s32 unk1C; s32 unk20; s32 unk24; s32 unk28; s32 unk2C;
+} CoalFlameFux;
+typedef struct {
+    u8 pad0[0x54]; CoalFlamePos *pos; CoalFlameFux *fux; u16 unk5C;
+} CoalFlameCell;
+typedef struct {
+    u8 pad0[0x10]; s32 x; s32 pad14; s32 z; u8 pad1C[0x10];
+    s32 sx; s32 sy; s32 sz; u8 pad38[0x26]; s16 unk5E;
+} CoalFlameEng;
+void func_800B7B80(CoalFlameEng *eng, CoalFlameFux *fux, s32 id);
+
 s32 func_800BB7E0(Ovl68Obj *a, Ovl68Pos *b);
 
 #endif /* BASH_OVL68_H */
