@@ -855,4 +855,53 @@ typedef struct Ovl63ShieldFxExt {
 
 void PlotRaceShield(NAS *nas);
 
+/* D_8009D6E8 (EngineHooks in bash/engine.h, which this unit does not include). */
+typedef struct Ovl63Hooks {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ void *unk4;
+    /* 0x08 */ void *unk8;
+    /* 0x0C */ void *unkC;
+    /* 0x10 */ void *unk10;
+    /* 0x14 */ void *unk14;
+    /* 0x18 */ void *unk18;
+    /* 0x1C */ void *unk1C;
+    /* 0x20 */ void *unk20;
+    /* 0x24 */ void *unk24;
+    /* 0x28 */ void *unk28;
+    /* 0x2C */ void *unk2C;
+    /* 0x30 */ void *unk30;
+    /* 0x34 */ void *unk34;
+    /* 0x38 */ void *unk38;
+    /* 0x3C */ void *unk3C;
+    /* 0x40 */ void *unk40;
+    /* 0x44 */ void *unk44;
+    /* 0x48 */ void *unk48;
+    /* 0x4C */ void *unk4C;
+    /* 0x50 */ void *unk50;
+    /* 0x54 */ void *unk54;
+    /* 0x58 */ void *unk58;
+    /* 0x5C */ void *unk5C;
+    /* 0x60 */ void *unk60;
+    /* 0x64 */ void *unk64;
+    /* 0x68 */ void *unk68;
+} Ovl63Hooks;
+extern Ovl63Hooks D_8009D6E8;
+extern void *D_8009D8F4;
+extern void *D_8009D8F8;
+extern void *D_8009D8FC;
+extern void *D_8009D900;
+extern void *D_8009D904;
+extern s32 D_80051658;
+
+/* Tables func_800B4A4C hooks into the engine. */
+extern u8 D_800C68F8[], D_800C690C[], D_800C6960[], D_8008B29C[], D_8008B418[];
+extern u8 D_800C63FC[], D_800C6410[], D_800C6424[], D_800C6430[], D_800C6448[], D_800C645C[];
+extern u8 D_800C64B0[], D_800C64C4[], D_800C64D8[], D_800C64E4[], D_800C64FC[], D_800C6510[];
+extern u8 D_800C6564[], D_800C6578[], D_800C658C[], D_800C6598[], D_800C65B0[], D_800C65C4[];
+extern u8 D_800C6618[], D_800C662C[], D_800C6640[], D_800C664C[], D_800C6664[], D_800C6678[];
+void func_800B8FD8();
+void func_800B980C();
+void func_800BD99C();
+void func_800BCE88();
+
 #endif /* BASH_OVL63_H */
