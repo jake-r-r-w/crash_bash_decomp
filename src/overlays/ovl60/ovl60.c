@@ -2169,7 +2169,56 @@ s32 func_800BEB6C(s32 arg0, s32 arg1, s32 arg2) {
     return n;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Init_PogoRipperRoo);
+void Init_PogoRipperRoo(NAS *nas) {
+    EXTengine *e;
+    EXTengine *e2;
+    EXTmotion *m;
+    subengine *sub;
+
+    e = nas->Engine;
+    if (e != NULL) {
+        func_80024E30(nas, &D_800C4680);
+        func_8001682C((s32 *)D_80053BD4);
+        e->sub->unk6C = D_80053BD4;
+        e->sub->unk74 = 0x2001;
+        e->unk5D = 0;
+        nas->UserInfo.status = 0;
+        e->unk10.x = -0x100;
+        e->unk10.z = 0x900;
+        m = AddMotion(nas);
+        if (m != NULL) {
+            m->Ymax = 0xA0;
+            m->Ydec = 0xE;
+            m->Yacc = 0;
+            m->Ydir = 0xFF;
+            m->Yvel = 0;
+        } else {
+            nas->Failure = 1;
+        }
+        e2 = AddEngine(nas, 1);
+        if (e2 != NULL) {
+            sub = e2->sub;
+            e2->unk10.x = e->unk10.x;
+            e2->unk10.y = e->unk10.y;
+            e2->unk10.z = e->unk10.z;
+            if (sub != NULL) {
+                sub->unk6C = D_80053B9C;
+                sub->unk74 = 0x2029;
+                sub->unk51 = 2;
+                sub->unk50 = 1;
+                sub->unk76 = 0x800;
+                sub->flags |= 0x40000041;
+            }
+        }
+    }
+    D_800C5308 = 0;
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+        D_800C5BAC = 0;
+    } else {
+        D_800C5BAC = (s32)nas;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoRipperRoo);
 
