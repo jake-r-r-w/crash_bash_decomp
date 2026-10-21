@@ -858,4 +858,44 @@ void func_8007EB04(void);
 void func_8007EB1C(s32 arg0, s32 arg1, s32 arg2);
 void func_8007B7FC(u32 a, u32 b);
 
+/* func_800C60AC (PlotJoe/PlotMoe): the boss NAS's FUX extension. */
+typedef struct JoeMoeFux {
+    /* 0x00 */ u8 unk0[0x14];
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ u8 unk18[0x28 - 0x18];
+    /* 0x28 */ s32 unk28;
+    /* 0x2C */ s32 unk2C;
+    /* 0x30 */ s32 unk30;
+    /* 0x34 */ s32 *unk34; /* animation script: zero-terminated anim ids */
+} JoeMoeFux;
+
+/* A 0x38-byte model record of D_80052A54 (see TANK_MODEL). */
+typedef struct ModelRec {
+    /* 0x00 */ u8 unk0[0xC];
+    /* 0x0C */ s32 on;
+    /* 0x10 */ u8 unk10[0x38 - 0x10];
+} ModelRec;
+
+extern u8 D_8005373C[];
+extern NAS *D_800CB228;
+/* func_800C60AC: anim scripts, Moe (0x131E) and Joe */
+extern s32 D_800C8F54[];
+extern s32 D_800C8F68[];
+extern s32 D_800C8FA8[];
+extern s32 D_800C8FE8[];
+extern s32 D_800C9048[];
+extern s32 D_800C9080[];
+extern s32 D_800C90B8[];
+extern s32 D_800C911C[];
+extern s32 D_800C9140[];
+extern s32 D_800C9164[];
+extern s32 D_800C91A4[];
+extern s32 D_800C91E4[];
+extern s32 D_800C9244[];
+extern s32 D_800C927C[];
+extern s32 D_800C92B4[];
+extern s32 D_800C9318[];
+
+void func_800C60AC(NAS *nas, s32 id);
+
 #endif /* BASH_OVL5F_H */

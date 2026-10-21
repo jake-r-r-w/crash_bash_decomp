@@ -6001,7 +6001,300 @@ void func_800C5BCC(NAS *nas, s32 id) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C60AC);
+void func_800C60AC(NAS *nas, s32 id) {
+    JoeMoeFux *fux;
+    EXTengine *eng;
+    subengine *sub;
+    subengine *s;
+    s32 *p;
+    ModelRec *m;
+    s32 anim;
+    s32 next;
+    s32 z;
+
+    fux = (JoeMoeFux *)nas->FUX;
+    eng = nas->Engine;
+    sub = eng->sub;
+    if (fux->unk30 == 0x3B) {
+        func_800C5BCC(nas, id);
+        return;
+    }
+    if (D_800CB0F0 != 0) {
+        return;
+    }
+    if (D_800CB210 == 0) {
+        sub->unk6C = D_8005373C;
+        eng->unk2C.x = 0x1266;
+        eng->unk2C.y = 0x1266;
+        eng->unk2C.z = 0x1266;
+        sub->unk74++;
+        if (id == 0x131E) {
+            if ((u16)(sub->unk74 - 0x4180) >= 20) {
+                sub->unk74 = 0x4180;
+            }
+        } else if ((u16)(sub->unk74 - 0x4000) >= 20) {
+            sub->unk74 = 0x4000;
+        }
+        s = sub->next;
+        s->flags |= 0x8000;
+        s->next->flags |= 0x8000;
+        fux = (JoeMoeFux *)nas->FUX;
+        switch (fux->unk30) {
+        case 4:
+            eng->unk10.y -= 0x14;
+            if (eng->unk10.y < 0) {
+                fux->unk30 = 0x29;
+                fux->unk28 = 1;
+            }
+            break;
+        case 0x29:
+            eng->unk10.z -= 0x3C;
+            if ((u32)(Heroes[0].hero_eng->unk10.x - eng->unk10.x + 0x1FF) < 0x3FF) {
+                z = eng->unk10.z - 0x200;
+                if (z < Heroes[0].hero_eng->unk10.z) {
+                    Heroes[0].hero_eng->unk10.z = z;
+                }
+            }
+            if (D_8005A680[0] != 0 &&
+                (u32)(Heroes[1].hero_eng->unk10.x - eng->unk10.x + 0x1FF) < 0x3FF) {
+                z = eng->unk10.z - 0x200;
+                if (z < Heroes[1].hero_eng->unk10.z) {
+                    Heroes[1].hero_eng->unk10.z = z;
+                }
+            }
+            if (eng->unk10.z <= 0xF00) {
+                func_800C57B0(nas, id);
+                fux->unk30 = 0x3B;
+            }
+            break;
+        }
+        return;
+    }
+    if (D_800CB210 == 0x3A) {
+        fux->unk30 = 4;
+        sub->unk6C = D_8005373C;
+        eng->unk10.y = 0x480;
+        if (id == 0x131E) {
+            eng->unk10.x = 0xD00;
+            sub->unk74 = 0x4180;
+            D_800CB224[0] = nas;
+        } else {
+            eng->unk10.x = 0x400;
+            sub->unk74 = 0x400A;
+            D_800CB228 = nas;
+        }
+        return;
+    }
+    anim = sub->unk74 + 1;
+    next = 0;
+    switch (anim) {
+    case 0x419E:
+        anim = 0x4180;
+        next = anim;
+        break;
+    case 0x411E:
+        anim = 0x4100;
+        next = anim;
+        break;
+    case 0x4014:
+        anim = 0x4000;
+        next = anim;
+        break;
+    case 0x4214:
+        anim = 0x4200;
+        next = anim;
+        break;
+    case 0x40A3:
+        anim = 0x4080;
+        next = anim;
+        break;
+    }
+    switch (fux->unk30) {
+    case 1:
+        if (next != 0) {
+            anim = 0x4180;
+            if (id != 0x131F) {
+                anim = 0x4080;
+                if (fux->unk28 & 1) {
+                    anim = 0x4100;
+                }
+            }
+            if (--fux->unk28 <= 0) {
+                fux->unk30 = 0x24;
+                fux->unk28 = 0xD;
+                D_800CB0E4 = 0x25E;
+                anim = 0x4000;
+                if (id == 0x131F) {
+                    anim = 0x4200;
+                }
+            }
+        }
+        break;
+    case 0x24:
+        if (id == 0x131E) {
+            eng->unk1E += 0x96;
+        } else {
+            eng->unk1E -= 0x96;
+        }
+        eng->unk5E = 1;
+        if (--fux->unk28 <= 0) {
+            fux->unk30 = 9;
+            if (id == 0x131F) {
+                sub->unk74 = 0x4200;
+            } else {
+                sub->unk74 = 0x4000;
+            }
+        }
+        break;
+    case 9:
+        eng->unk10.z += 0x46;
+        if (id == 0x131E) {
+            eng->unk10.x -= 0xD;
+        } else {
+            eng->unk10.x += 0xD;
+        }
+        if (eng->unk10.z > 0x1100) {
+            fux->unk30 = 5;
+            fux->unk14 = -0x46;
+            sub->unk68 = 0x100;
+            sub->flags |= 0x02000000;
+        }
+        break;
+    case 5:
+        fux->unk14 += 0xC;
+        eng->unk10.y += fux->unk14;
+        if (eng->unk10.y > 0x1000) {
+            eng->unk1E = 0;
+            eng->unk5E = 1;
+            eng->unk10.z = D_800CB20C->unk10.z + 0x100;
+            fux->unk30 = 0;
+            fux->unk28 = Random(0x5A) + 0x1E;
+            eng->unk2C.x = 0x14CC;
+            eng->unk2C.y = 0x14CC;
+            eng->unk2C.z = 0x14CC;
+            eng->unk5C = 1;
+            if (id == 0x131E) {
+                anim = 0x2028;
+                fux->unk34 = D_800C8F54;
+                eng->unk10.x = 0xA00;
+            } else {
+                anim = 0x2027;
+                fux->unk34 = D_800C9140;
+                eng->unk10.x = 0x810;
+            }
+            m = (ModelRec *)D_800536CC;
+            sub->unk6C = m;
+            sub->unk74 = anim;
+            if (m[1].on == 0) {
+                return;
+            }
+            func_80016F54((u8 *)&m[1]);
+        }
+        break;
+    case 0:
+        eng->unk10.y = D_800CB20C->unk10.y - 0x528;
+        if (--fux->unk28 <= 0) {
+            fux->unk30 = 0x27;
+            switch (Random(8)) {
+            default:
+            case 0:
+                if (id == 0x131E) {
+                    fux->unk34 = D_800C8F54;
+                    anim = 0x2028;
+                } else {
+                    fux->unk34 = D_800C9140;
+                    anim = 0x2027;
+                }
+                break;
+            case 1:
+                if (id == 0x131E) {
+                    fux->unk34 = D_800C8F68;
+                    anim = 0x2028;
+                } else {
+                    fux->unk34 = D_800C9164;
+                    anim = 0x2027;
+                }
+                break;
+            case 2:
+                if (id == 0x131E) {
+                    fux->unk34 = D_800C8FA8;
+                    anim = 0x2028;
+                } else {
+                    fux->unk34 = D_800C91A4;
+                    anim = 0x2027;
+                }
+                break;
+            case 3:
+                if (id == 0x131E) {
+                    fux->unk34 = D_800C8FE8;
+                    anim = 0x2028;
+                } else {
+                    fux->unk34 = D_800C91E4;
+                    anim = 0x2027;
+                }
+                break;
+            case 4:
+                if (id == 0x131E) {
+                    fux->unk34 = D_800C9048;
+                    anim = 0x2028;
+                } else {
+                    fux->unk34 = D_800C9244;
+                    anim = 0x2027;
+                }
+                break;
+            case 5:
+                if (id == 0x131E) {
+                    fux->unk34 = D_800C9080;
+                    anim = 0x2028;
+                } else {
+                    fux->unk34 = D_800C927C;
+                    anim = 0x2027;
+                }
+                break;
+            case 6:
+                if (id == 0x131E) {
+                    fux->unk34 = D_800C90B8;
+                    anim = 0x2028;
+                } else {
+                    fux->unk34 = D_800C92B4;
+                    anim = 0x2027;
+                }
+                break;
+            case 7:
+                if (id == 0x131E) {
+                    fux->unk34 = D_800C911C;
+                    anim = 0x2028;
+                } else {
+                    fux->unk34 = D_800C9318;
+                    anim = 0x2027;
+                }
+                break;
+            }
+        } else {
+            anim = sub->unk74;
+        }
+        break;
+    case 0x27:
+        eng->unk10.y = D_800CB20C->unk10.y - 0x528;
+        p = fux->unk34;
+        anim = *p;
+        if (D_8004E0D8 & 1) {
+            fux->unk34 = p + 1;
+        }
+        if (anim == 0) {
+            anim = 0x2027;
+            if (id == 0x131E) {
+                anim = 0x2028;
+            }
+            fux->unk30 = 0;
+            fux->unk28 = Random(0x1E) + 0xF;
+        }
+        break;
+    case 0x3A:
+        break;
+    }
+    sub->unk74 = anim;
+}
 
 void func_800C60AC(NAS *nas, s32 id);
 
