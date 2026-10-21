@@ -1634,7 +1634,40 @@ void InitBarrelRoll(NAS *m) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotBarrelRoll);
+void PlotBarrelRoll(NAS *nas) {
+    BarrelRollExt *ext;
+    s32 n;
+
+    ext = FindExtension(nas, 0x10000000);
+    if (ext != NULL) {
+        if (func_800C310C(&nas->Engine->unk10) != 0) {
+            Ovl63SpawnPuff(&nas->Engine->unk10, 1, &D_80054F84);
+            KillNAS(nas);
+            return;
+        }
+        nas->Engine->unk1C += 0x200;
+        if (func_8008C5C4(&ext->pos.x, &ext->vel.x, &ext->unkC,&nas->Engine->unk10.x) != 0) {
+            ext->unk20 = -((ext->unk20 * 200) >> 8);
+            nas->Engine->unk10.y = ext->unk24;
+            n = ext->unk78 + 1;
+            ext->unk40 *= 200;
+            ext->unk44 *= 200;
+            ext->unk78 = n;
+            ext->unk40 >>= 8;
+            ext->unk44 >>= 8;
+            if (nas->Engine->unk10.x * nas->Engine->unk10.x +
+                    nas->Engine->unk10.z * nas->Engine->unk10.z > 0x900000) {
+                Ovl63SpawnPuff(&nas->Engine->unk10, 1, &D_80054F84);
+                KillNAS(nas);
+                return;
+            }
+        }
+        ext->shadow->unk10 = nas->Engine->unk10;
+        ext->shadow->unk10.y = 0x100;
+    }
+    nas->Engine->unk5E = 1;
+    ext->shadow->unk5E = 1;
+}
 
 void InitTrackGlob(NAS *m) {
     EXTtrackglob *ext;

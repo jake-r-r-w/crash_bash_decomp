@@ -340,9 +340,13 @@ typedef struct BarrelRollExt {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 unkC;
     /* 0x10 */ s32 unk10;
-    /* 0x14 */ u8 pad14[0x24 - 0x14];
+    /* 0x14 */ u8 pad14[0x20 - 0x14];
+    /* 0x20 */ s32 unk20;
     /* 0x24 */ s32 unk24;
-    /* 0x28 */ u8 pad28[0x50 - 0x28];
+    /* 0x28 */ u8 pad28[0x40 - 0x28];
+    /* 0x40 */ s32 unk40;
+    /* 0x44 */ s32 unk44;
+    /* 0x48 */ u8 pad48[0x50 - 0x48];
     /* 0x50 */ s32 unk50;
     /* 0x54 */ u8 pad54[0x60 - 0x54];
     /* 0x60 */ SLONG_XYZ pos;
@@ -352,6 +356,7 @@ typedef struct BarrelRollExt {
 } BarrelRollExt;
 
 void InitBarrelRoll(NAS *m);
+s32 func_8008C5C4(s32 *from, s32 *to, void *arc, s32 *pos);
 
 extern NAS *D_800C6920;
 NAS *func_800C5C64(s32 arg0);
@@ -725,6 +730,8 @@ s32 func_800B62F4(Ovl63Barrel *self);
 void func_800C0F5C(void);
 
 void PlotRaceTag(NAS *m);
+
+void PlotBarrelRoll(NAS *nas);
 
 void InitRaceSmokeBoost(NAS *nas);
 
