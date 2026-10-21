@@ -6423,7 +6423,143 @@ void func_800D2334(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D257C);
+void func_800D257C(s32 player) {
+    HeroInfo *tab;
+    HeroInfo *first;
+    HeroInfo *h;
+    HeroInfo *base;
+    EXTengine *shadow;
+    Ovl62GameExt *game;
+    Ext20 *ext;
+    s32 i;
+    s32 lost;
+
+    tab = Heroes;
+    first = &tab[player];
+    first->hero_eng->unk1C = 0;
+    first->hero_eng->unk5E = 1;
+    first->hero_eng->unk5E = 1;
+    first->hero_eng->unk2C.x = 0x1000;
+    first->hero_eng->unk2C.y = 0x1000;
+    first->hero_eng->unk2C.z = 0x1000;
+    shadow = first->hero_shadow;
+    if (shadow != NULL) {
+        shadow->unk2C.x = 0x1000;
+        shadow->unk2C.y = 0x1000;
+        shadow->unk2C.z = 0x1000;
+        shadow->unk5E = 1;
+    }
+    first->hero_eng->sub->flags &= 0xFFBFFFFF;
+    if (D_800D4D08 != 0 && D_800D5254 != NULL) {
+        game = FindExtension((NAS *)D_800D5254, 0x40000000);
+        i = 0;
+        if (game != NULL) {
+            for (; i < 4; i++) {
+                game->unk78[i]->flags &= 0xFFFF7FFF;
+            }
+            game->unk74->flags &= 0xFFFF7FFF;
+        }
+    }
+    base = Heroes;
+    h = &base[player];
+    ext = FindExtension(h->hero, 0x20000000);
+    if (ext == NULL) {
+        return;
+    }
+    if (ext->state == 0) {
+        if (D_8005A648 != 0x14) {
+            if (h->hero_name == 1) {
+                h->hero_eng->sub->unk6C = D_80052E0C;
+            }
+            if (h->hero_name == 2) {
+                h->hero_eng->sub->unk6C = D_80052E44;
+            }
+            if (h->hero_name == 5) {
+                h->hero_eng->sub->unk6C = D_80052EB4;
+            }
+            if (h->hero_name == 3) {
+                h->hero_eng->sub->unk6C = D_80052E7C;
+            }
+            if (h->hero_name == 7) {
+                h->hero_eng->sub->unk6C = D_80052EEC;
+            }
+            if (h->hero_name == 8) {
+                h->hero_eng->sub->unk6C = D_80054A44;
+            }
+            if (h->hero_name == 4) {
+                h->hero_eng->sub->unk6C = D_80052F24;
+            }
+            if (h->hero_name == 6) {
+                h->hero_eng->sub->unk6C = D_800549D4;
+            }
+        } else {
+            if (h->hero_name == 1) {
+                h->hero_eng->sub->unk6C = D_80054BCC;
+            }
+            if (h->hero_name == 2) {
+                h->hero_eng->sub->unk6C = D_80054C04;
+            }
+            if (h->hero_name == 5) {
+                h->hero_eng->sub->unk6C = D_80054C74;
+            }
+            if (h->hero_name == 3) {
+                h->hero_eng->sub->unk6C = D_80054C3C;
+            }
+            if (h->hero_name == 7) {
+                h->hero_eng->sub->unk6C = D_80054CAC;
+            }
+            if (h->hero_name == 8) {
+                h->hero_eng->sub->unk6C = D_80054D1C;
+            }
+            if (h->hero_name == 4) {
+                h->hero_eng->sub->unk6C = D_80054CE4;
+            }
+            if (h->hero_name == 6) {
+                h->hero_eng->sub->unk6C = D_80054D54;
+            }
+        }
+    } else {
+        if (h->hero_name == 1) {
+            h->hero_eng->sub->unk6C = D_800547DC;
+        }
+        if (h->hero_name == 2) {
+            h->hero_eng->sub->unk6C = D_80054814;
+        }
+        if (h->hero_name == 5) {
+            h->hero_eng->sub->unk6C = D_80054884;
+        }
+        if (h->hero_name == 3) {
+            h->hero_eng->sub->unk6C = D_8005484C;
+        }
+        if (h->hero_name == 7) {
+            h->hero_eng->sub->unk6C = D_800548BC;
+        }
+        if (h->hero_name == 4) {
+            h->hero_eng->sub->unk6C = D_800548F4;
+        }
+        if (h->hero_name == 6) {
+            h->hero_eng->sub->unk6C = D_80054AEC;
+        }
+        if (h->hero_name == 8) {
+            h->hero_eng->sub->unk6C = D_80054AB4;
+        }
+    }
+    lost = func_800CD214(player) ^ 1;
+    if (lost) {
+        func_80026980(Heroes[player].hero);
+    }
+    if (Heroes[player].hero_eng->unk10.y > 0x60) {
+        func_80026980(Heroes[player].hero);
+    }
+    if (ext->state == 0) {
+        SetHeroSeq((HeroInfo *)player, 0x3A);
+        func_80085718(player, 0);
+    } else {
+        SetHeroSeq((HeroInfo *)player, 0x42);
+        func_80085718(player, 1);
+    }
+    func_80089FA4(player);
+}
 
 void func_800D2B58(s32 player) {
     HeroInfo *base = Heroes;

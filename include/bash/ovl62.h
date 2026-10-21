@@ -195,6 +195,14 @@ typedef struct ExtSmokeTrail {
 
 extern s32 D_800D4D08;
 
+/* D_800D5254's 0x40000000 extension as func_800D257C uses it: engines at
+ * 0x74 and four at 0x78. */
+typedef struct Ovl62GameExt {
+    /* 0x00 */ u8 pad[0x74];
+    /* 0x74 */ EXTengine *unk74;
+    /* 0x78 */ EXTengine *unk78[4];
+} Ovl62GameExt;
+
 typedef struct Ext20 {
     /* 0x00 */ u8 pad[0x14];
     /* 0x14 */ s32 unk14;
@@ -1391,5 +1399,7 @@ void func_800CCCB8(s32 player);
 s32 func_800CD214(s32 player);
 
 void func_800CD594(s32 player);
+
+void func_800D257C(s32 player);
 
 #endif /* BASH_OVL62_H */
