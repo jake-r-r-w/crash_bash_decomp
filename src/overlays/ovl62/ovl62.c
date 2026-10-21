@@ -3044,7 +3044,34 @@ s32 func_800CD560(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CD594);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CDA54);
+void func_800CDA54(s32 player) {
+    Ext20 *ext;
+    Ext20 *ext2;
+
+    ext = FindExtension(Heroes[player].hero, 0x20000000);
+    if (ext != NULL) {
+        ext->val += 4;
+        if (ext->val > 0x100) {
+            ext->val = 0x100;
+        }
+    }
+    func_800BBF2C(player);
+    func_8008502C(player);
+    ext2 = FindExtension(Heroes[player].hero, 0x20000000);
+    if (ext2 != NULL && (((Ovl62Pad *)D_80051338)[player].unk50 & 0xF0)) {
+        if (ext2->state == 0) {
+            SetHeroAction((HeroInfo *)player, 0x4A);
+        }
+        if (ext2->state == 1) {
+            SetHeroAction((HeroInfo *)player, 0x55);
+        }
+    }
+    func_800D0650(player);
+    func_800D10A0(player);
+    func_800CD214(player);
+    func_800C0888(&Heroes[player].hero_eng->unk10, player);
+    func_800D2D2C(player);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CDBD0);
 
