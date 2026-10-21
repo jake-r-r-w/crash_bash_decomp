@@ -147,7 +147,7 @@ s32 func_800B7B48(s32 arg0);
 s32 func_800B8E64(s32 arg0);
 void func_800B6E1C(s32 player);
 extern u16 D_800B9594[];
-void func_800B5BA0(void);
+void func_800B5BA0(s32 arg0);
 void func_800B67F4(void);
 
 void func_800B6238(s32 arg0, s32 arg1);
@@ -228,5 +228,21 @@ void func_80084E04(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx);
 void PlotBonkCrate(NAS *nas);
 
 s32 func_800B4454(s32 arg0, s32 *arg1, s32 arg2);
+
+/* Target found by func_800B61B0 (func_800B5BA0 reads it). */
+typedef struct Ovl66Hit {
+    /* 0x00 */ s32 kind;
+    /* 0x04 */ NAS *nas;
+} Ovl66Hit;
+extern u32 D_80051244[]; /* pad flags by angle octant */
+
+/* Squared ground distance from (x0,z0) to (x1,z1), as func_800B5BA0 uses it. */
+static inline s32 ovl66_sq(s32 x0, s32 z0, s32 x1, s32 z1)
+{
+    s32 dx = x1 - x0;
+    s32 dz = z1 - z0;
+
+    return dx * dx + dz * dz;
+}
 
 #endif /* BASH_OVL66_H */

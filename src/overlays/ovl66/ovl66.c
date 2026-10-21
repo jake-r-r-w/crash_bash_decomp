@@ -854,7 +854,121 @@ void func_800B5820(s32 arg0, u16 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B5BA0);
+void func_800B5BA0(s32 arg0)
+{
+    u8 *g = D_8005A614;
+    HeroInfo *h;
+    HeroInfo *heroes;
+    EXTbotai *ai;
+    s32 sx;
+    s32 sz;
+    HeroInfo *me;
+    u32 i;
+    Ovl66Hit *hit;
+    u16 mode;
+    u16 ang;
+
+    if (*(u32 *)(g + 0x10) & 0x04000000) {
+        return;
+    }
+    heroes = Heroes;
+    h = &heroes[arg0];
+    ai = h->hero_ai;
+    if (ai == NULL) {
+        return;
+    }
+    if (ai->AItimer1 != 0) {
+        ai->AItimer1--;
+    }
+    ai->AIpad = 0;
+    if (func_800B61B0(arg0, (int *)&hit) != 0) {
+        if (hit->nas != ai->pTargetNas && ai->AItimer1 == 0) {
+            ai->pTargetNas = hit->nas;
+            ai->TargetXYZ = hit->nas->Engine->unk10;
+            ai->AItimer1 = 10;
+            if (hit->kind == 0x100) {
+                if (D_800B9F4C[arg0].f8 == 1 || (*(u16 *)(g + 0x32) & 0x80) ||
+                    func_800B60FC(arg0) != 0) {
+                    ai->AImode = 2;
+                } else {
+                    mode = 3;
+                    if (D_8004E0D8 & 1) {
+                        mode = 2;
+                    }
+                    ai->AImode = mode;
+                }
+            } else {
+                if (D_800B9F4C[arg0].f8 == 1 || (*(u16 *)(g + 0x32) & 0x80) ||
+                    func_800B60FC(arg0) != 0) {
+                    ai->AImode = 4;
+                } else {
+                    mode = 5;
+                    if (D_8004E0D8 & 1) {
+                        mode = 4;
+                    }
+                    ai->AImode = mode;
+                }
+            }
+        }
+    } else {
+        sz = 0;
+        sx = 0;
+        i = 0;
+        me = h;
+        while (1) {
+            if (i < 4) {
+                if (i != arg0) {
+                    if ((csqrt(ovl66_sq(me->hero_eng->unk10.x, me->hero_eng->unk10.z,
+                                        heroes[i].hero_eng->unk10.x, heroes[i].hero_eng->unk10.z)) >> 6) < 0x1000) {
+                        sx += me->hero_eng->unk10.x - heroes[i].hero_eng->unk10.x;
+                        sz += me->hero_eng->unk10.z - heroes[i].hero_eng->unk10.z;
+                    }
+                }
+                i++;
+                continue;
+            }
+            break;
+        }
+        if (sx != 0 || sz != 0) {
+            ang = get_angle(sx, sz);
+            ai->AIang = ang;
+            ai->AIpad |= D_80051244[(ang >> 9) & 7];
+            ai->AImode = 1;
+        }
+    }
+    switch (ai->AImode) {
+    case 1:
+        break;
+    case 2:
+    case 3:
+        if ((csqrt(ovl66_sq(ai->pTargetNas->Engine->unk10.x, ai->pTargetNas->Engine->unk10.z,
+                            Heroes[arg0].hero_eng->unk10.x, Heroes[arg0].hero_eng->unk10.z)) >> 6) <
+            D_800B9580[Heroes[arg0].hero_name]) {
+            if ((ai->AImode == 3 && Heroes[arg0].hero_mode != 0x44) ||
+                (ai->AImode == 2 && Heroes[arg0].hero_mode != 0x43)) {
+                ai->AIpad |= 0x8000;
+            }
+        }
+        goto face;
+    case 4:
+    case 5:
+        if ((csqrt(ovl66_sq(ai->pTargetNas->Engine->unk10.x, ai->pTargetNas->Engine->unk10.z,
+                            Heroes[arg0].hero_eng->unk10.x, Heroes[arg0].hero_eng->unk10.z)) >> 6) <
+            D_800B9580[Heroes[arg0].hero_name]) {
+            if ((ai->AImode == 5 && Heroes[arg0].hero_mode != 0x44) ||
+                (ai->AImode == 4 && Heroes[arg0].hero_mode != 0x43)) {
+                ai->AIpad |= 0x8000;
+            }
+        }
+    face:
+        ang = get_angle(ai->pTargetNas->Engine->unk10.x - Heroes[arg0].hero_eng->unk10.x,
+                        ai->pTargetNas->Engine->unk10.z - Heroes[arg0].hero_eng->unk10.z);
+        ai->AIang = ang;
+        ai->AIpad |= D_80051244[(ang >> 9) & 7];
+        break;
+    }
+    func_80013C94((u8 *)&D_80051338[arg0], ai->AIpad);
+}
 
 s32 func_800B60FC(s32 arg0)
 {
