@@ -38,7 +38,91 @@ void func_800B3338(s32 arg0, EXTengine *arg1) {
     *(s32 *)(p + 0x14) = get_angle(*(s32 *)(p + 0xC) - hx, *(s32 *)(p + 0x10) - hz);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B3488);
+void func_800B3488(s32 arg0, EXTengine *arg1, Ovl68AiState *arg2) {
+    NAS *nas;
+    NAS *best;
+    EXTengine *eng;
+    s32 x, z;
+    s32 i;
+    s32 d, dx, dz;
+    s32 bestd;
+    u32 r;
+    Ovl68CoalFux *fux;
+
+    if (Random(0x40) <= D_8009D87C[arg0].unk0 + 0x20) {
+        x = arg1->unk10.x;
+        z = arg1->unk10.z;
+        if ((arg2->pickup = Ovl68NearPickup(x, z)) != NULL) {
+            arg2->state = 5;
+            arg2->timer = 0x96;
+            ((void (*)(s32, EXTengine *, s32))func_800B3338)(arg0, arg2->pickup->Engine, 0);
+            return;
+        }
+        bestd = 0x8000;
+        if (arg2->unk20 <= 0) {
+            arg2->state = 7;
+            arg2->timer = 0x3C;
+            arg2->angle = get_angle(arg1->unk10.x, arg1->unk10.z);
+            return;
+        }
+        best = NULL;
+        for (i = 0; i < 8; i++) {
+            nas = D_800BC424[i];
+            if (nas != NULL) {
+                eng = nas->Engine;
+                dx = eng->unk10.x - x;
+                dz = eng->unk10.z - z;
+                dx *= dx;
+                dz *= dz;
+                d = csqrt(dx + dz) >> 6;
+                fux = (Ovl68CoalFux *)nas->FUX;
+                if (fux->owner >= 0 && fux->owner != arg0) {
+                    d *= 2;
+                }
+                if (eng->sub->unk74 == 0x2017) {
+                    d = d * 2 / 3;
+                } else if (eng->sub->unk74 == 0x2016) {
+                    d /= 2;
+                }
+                if (d < bestd) {
+                    bestd = d;
+                    best = nas;
+                }
+            }
+        }
+        if (best != NULL) {
+            arg2->state = 6;
+            arg2->target = best;
+            arg2->timer = 0x3C;
+            ((void (*)(s32, EXTengine *, s32))func_800B3338)(arg0, best->Engine, 0x100);
+            fux = (Ovl68CoalFux *)best->FUX;
+            fux->owner = arg0;
+            return;
+        }
+    }
+    arg2->timer = 0x1E;
+    r = Random(8);
+    switch (r) {
+    case 0:
+    case 1:
+    case 2:
+    default:
+        arg2->timer = Random(0x1E) + 0xF;
+        arg2->unk8 = 0;
+        arg2->state = 1;
+        return;
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    case 7:
+        break;
+    }
+    arg2->state = 4;
+    arg2->x = Random(0x1100) - 0x880;
+    arg2->z = Random(0x1100) - 0x880;
+    arg2->angle = get_angle(arg2->x - arg1->unk10.x, arg2->z - arg1->unk10.z);
+}
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl68/ovl68", D_800B32B8);
 

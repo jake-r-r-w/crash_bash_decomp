@@ -483,4 +483,42 @@ void func_800BB010(s32 x, s32 z, s32 skip, s32 range);
 
 s32 func_800BB7E0(Ovl68Obj *a, Ovl68Pos *b);
 
+/* func_800B3488: a CPU player's target choice (its third argument). */
+typedef struct Ovl68AiState {
+    /* 0x00 */ s32 state;
+    /* 0x04 */ s32 timer;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ s32 x;
+    /* 0x10 */ s32 z;
+    /* 0x14 */ s32 angle;
+    /* 0x18 */ NAS *target;
+    /* 0x1C */ NAS *pickup;
+    /* 0x20 */ s32 unk20;
+} Ovl68AiState;
+typedef struct { u8 pad0[0x40]; s32 owner; } Ovl68CoalFux;
+void func_800B3488(s32 arg0, EXTengine *arg1, Ovl68AiState *arg2);
+
+/* func_800B3488: the first pickup in D_800BC420 near (x, z), or NULL. */
+static inline NAS *Ovl68NearPickup(s32 x, s32 z) {
+    s32 i;
+    s32 d;
+    NAS *nas;
+    EXTengine *eng;
+
+    for (i = 0; i < 1; i++) {
+        nas = D_800BC420[i];
+        if (nas != NULL) {
+            eng = nas->Engine;
+            d = x - eng->unk10.x;
+            if (d < 0) {
+                d = -d;
+            }
+            if (d + (z - eng->unk10.z) < 0xF00) {
+                return nas;
+            }
+        }
+    }
+    return NULL;
+}
+
 #endif /* BASH_OVL68_H */
