@@ -589,7 +589,84 @@ void func_800B53CC(s32 arg0, u16 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B574C);
+void func_800B574C(s32 arg0) {
+    HeroInfo *hb;
+    HeroInfo *h;
+    EXTheromove *move;
+    PadState *pb;
+    PadState *pad;
+    s32 x;
+    s32 z;
+    s32 bits;
+    s32 speed;
+
+    hb = Heroes;
+    h = &hb[arg0];
+    x = (h->hero_eng->unk10.x + 0x800) >> 9;
+    z = (h->hero_eng->unk10.z + 0x800) >> 9;
+    if (func_800BA018(arg0, x, z) != 0) {
+        func_800B935C(x, z, arg0);
+    }
+    move = h->hero_move;
+    move->forward_speed = 0;
+    if (h->hero_frozen == 0) {
+    pb = D_80051338;
+    pad = &pb[arg0];
+    if ((pad->unk0 & 1) || D_8005A614[arg0 + 0x5C] != 0) {
+        bits = ((Ovl60Pad *)pad)->unk50;
+        if (D_800C535C[arg0].unk4 == 5 && !(bits & 0xF0)) {
+            switch ((u16)move->forward_angle >> 10) {
+            case 0:
+                bits |= 0x40;
+                break;
+            case 1:
+                bits |= 0x80;
+                break;
+            case 2:
+                bits |= 0x10;
+                break;
+            case 3:
+                bits |= 0x20;
+                break;
+            }
+        }
+        if ((bits & 0xF0) && move->velocity_enable != 0) {
+            speed = func_800C14BC(arg0, D_800C535C[arg0].unk4 == 5);
+            func_800C2810(arg0);
+            if (((bits & 0x80) && x > 0) || ((bits & 0x20) && x < 7)
+                || ((bits & 0x10) && z < 7) || ((bits & 0x40) && z > 0)) {
+                if ((bits & 0x80) && func_800BDCB8(arg0, x, z, -1, 0, 0) != 0) {
+                    func_800C2770(arg0, x - 1, z);
+                    move->forward_angle = 0x400;
+                    move->forward_speed = speed;
+                    D_800C535C[arg0].unk8[1] = 0;
+                }
+                if ((bits & 0x20) && func_800BDCB8(arg0, x, z, 1, 0, 0) != 0) {
+                    func_800C2770(arg0, x + 1, z);
+                    move->forward_angle = 0xC00;
+                    move->forward_speed = speed;
+                    D_800C535C[arg0].unk8[1] = 0;
+                }
+                if ((bits & 0x10) && func_800BDCB8(arg0, x, z, 0, 1, 0) != 0) {
+                    func_800C2770(arg0, x, z + 1);
+                    move->forward_angle = 0x800;
+                    move->forward_speed = speed;
+                    D_800C535C[arg0].unk8[1] = 0;
+                }
+                if ((bits & 0x40) && func_800BDCB8(arg0, x, z, 0, -1, 0) != 0) {
+                    func_800C2770(arg0, x, z - 1);
+                    move->forward_angle = 0;
+                    move->forward_speed = speed;
+                    D_800C535C[arg0].unk8[1] = 0;
+                }
+            }
+        }
+    }
+    move->facing_angle = move->forward_angle;
+    } else {
+        func_800C2810(arg0);
+    }
+}
 
 void func_800B5B1C(s32 i) {
     VECTOR v;

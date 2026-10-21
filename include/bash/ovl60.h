@@ -144,6 +144,7 @@ typedef struct Ovl60Pad {
     /* 0x54 */ s32 unk54;
 } Ovl60Pad;
 s32 func_800BA110(s32 arg0, s32 arg1, s32 arg2);
+void func_800B935C(s32 x, s32 z, s32 hero);
 void func_800B8BE4(s32 arg0, s32 arg1);
 void func_800B7B1C(s32 x, s32 z, s32 hero);
 void func_800B8180(s32 x, s32 z);
