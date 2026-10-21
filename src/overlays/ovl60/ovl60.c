@@ -1432,7 +1432,55 @@ s32 func_800BA110(s32 arg0, s32 arg1, s32 arg2) {
     return (u16)c->unk12 == 7;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BA25C);
+void func_800BA25C(s32 arg0, s32 arg1, s32 arg2) {
+    Ovl60Cell *c;
+    Ovl60CellPos *pos;
+    NAS *nas;
+    EXTengine *e;
+    Ovl60Cell *base;
+
+    base = D_800C53DC[0];
+    c = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
+    if (c->hero != NULL || func_800C0AFC(arg0, arg1) != 0) {
+        return;
+    }
+    pos = c->unk4;
+    if (pos == NULL) {
+        return;
+    }
+    nas = SpawnNASById(pos->x, D_8005A5D8, pos->z, 0x1402, 0x11);
+    if (nas == NULL) {
+        return;
+    }
+    c->hero = (HeroInfo *)nas;
+    e = nas->Engine;
+    if (e != NULL) {
+        nas->UserInfo.flags = arg2;
+        switch (arg2) {
+        case 1:
+            e->sub->unk6C = D_80053B9C;
+            e->sub->unk74 = 0x200D;
+            break;
+        case 2:
+            e->sub->unk6C = D_80053B9C;
+            e->sub->unk74 = 0x201B;
+            break;
+        case 4:
+            e->sub->unk6C = D_80053B9C;
+            e->sub->unk74 = 0x2040;
+            break;
+        case 5:
+            e->sub->unk6C = D_80053B9C;
+            e->sub->unk74 = 0x200C;
+            break;
+        case 3:
+            e->sub->unk6C = D_80053B9C;
+            e->sub->unk74 = 0x2002;
+            break;
+        }
+    }
+    D_800C52F0++;
+}
 
 void func_800BA3E0(s32 arg0, s32 arg1, s32 arg2) {
     Ovl60Cell *c;

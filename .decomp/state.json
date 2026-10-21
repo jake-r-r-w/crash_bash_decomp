@@ -5993,7 +5993,8 @@
   "status": "matched"
  },
  "ovl60:800BA25C": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-21T06:45:55Z",
+  "status": "matched"
  },
  "ovl60:800BA3E0": {
   "matched_at": "2026-10-19T09:04:57Z",
