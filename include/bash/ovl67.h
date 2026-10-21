@@ -294,6 +294,28 @@ extern s16 D_800C4382;
 extern s16 D_800C4384;
 extern s32 D_800C438C;
 extern s32 D_800C4390;
+
+/* func_800B7244's script: kind (99 = jump to step), slot kind, time/step. */
+typedef struct Ovl67Step {
+    u16 kind;
+    u16 slot;
+    u16 time;
+} Ovl67Step;
+extern Ovl67Step D_800C391C[];
+typedef struct Ovl67Half {
+    s16 v;
+} Ovl67Half;
+typedef struct Ovl67PanRef {
+    struct Ovl67Pan *p;
+} Ovl67PanRef;
+extern u16 D_800C39A6;
+extern s16 D_8009D6D6;
+extern u16 D_8009D6E0;
+typedef struct Ovl67Pan {
+    u8 pad0[0xC];
+    s32 unkC;
+} Ovl67Pan;
+extern Ovl67Pan *D_8009D688;
 extern u16 D_800C4394;
 extern s16 D_800C43DC;
 void func_800B6F4C(void);
@@ -522,6 +544,8 @@ typedef struct Ovl67FuxF {
     u8 pad0[0x1C];
     u16 flags;
 } Ovl67FuxF;
+
+void func_800B7244(void);
 
 void func_800B83EC(u16 *arg0);
 
