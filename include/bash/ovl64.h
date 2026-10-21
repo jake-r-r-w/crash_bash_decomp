@@ -223,8 +223,17 @@ void func_800B8EE0();
 void func_800B90D0();
 NAS *func_800BA098(s32 player, s32 mask, s32 unused, s32 cone);
 void func_800BA344();
-void func_800BA514();
+s32 func_800BA514(s32 arg0);
 void func_800BAF1C();
+
+/* Extension 0x1000 flags set by func_800BA514. */
+typedef struct {
+    /* 0x00 */ u8 pad0[0x16];
+    /* 0x16 */ s16 unk16;
+    /* 0x18 */ u8 pad18[4];
+    /* 0x1C */ u16 unk1C;
+    /* 0x1E */ u16 unk1E;
+} Ovl64HitFlags;
 
 void func_800B9608(s32 arg0);
 

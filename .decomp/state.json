@@ -8455,9 +8455,10 @@
   "copy_failed_stage": "in-file"
  },
  "ovl64:800BA514": {
-  "auto_failed": "types",
   "copy_failed": "ovl5e:800BB86C",
-  "copy_failed_stage": "in-file"
+  "copy_failed_stage": "in-file",
+  "matched_at": "2026-10-21T06:50:11Z",
+  "status": "matched"
  },
  "ovl64:800BAF1C": {
   "auto_failed": "compile"
@@ -9039,7 +9040,7 @@
  },
  "ovl66:800B7B48": {
   "auto_failed": "types",
-  "copy_failed": "ovl5e:800BB86C",
+  "copy_failed": "ovl64:800BA514",
   "copy_failed_stage": "in-file"
  },
  "ovl66:800B8550": {
@@ -9717,7 +9718,7 @@
  },
  "ovl68:800B52C8": {
   "auto_failed": "types",
-  "copy_failed": "ovl5e:800BB86C",
+  "copy_failed": "ovl64:800BA514",
   "copy_failed_stage": "in-file"
  },
  "ovl68:800B5CD0": {
