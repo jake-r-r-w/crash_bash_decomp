@@ -3407,7 +3407,62 @@ void func_800CDA54(s32 player) {
     func_800D2D2C(player);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CDBD0);
+void func_800CDBD0(s32 player) {
+    HeroInfo *h;
+    HeroInfo *base;
+    Ext20 *ext;
+    Ext20 *ext1;
+
+    ext1 = FindExtension(Heroes[player].hero, 0x20000000);
+    if (ext1 != NULL) {
+        ext1->val += 4;
+        if (ext1->val > 0x100) {
+            ext1->val = 0x100;
+        }
+    }
+    func_800BBF2C(player);
+    base = Heroes;
+    h = &base[player];
+    if (h->hero_anim->Aindex == 4) {
+        if (h->hero_move->mass > 0x50) {
+            if (player == 0) {
+                PlaySfx(0x49C, &base[0].hero_eng->sfx, &base[0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            }
+            if (player == 1) {
+                PlaySfx(0x49D, &base[1].hero_eng->sfx, &base[1].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            }
+            if (player == 2) {
+                PlaySfx(0x49E, &base[2].hero_eng->sfx, &base[2].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            }
+            if (player == 3) {
+                PlaySfx(0x49F, &base[3].hero_eng->sfx, &base[3].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            }
+        } else {
+            PlaySfx(0x4A0, &h->hero_eng->sfx, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+        }
+    }
+    func_8008502C(player);
+    if (!(((Ovl62Pad *)D_80051338)[player].unk50 & 0xF0)) {
+        ext = FindExtension(Heroes[player].hero, 0x20000000);
+        if (ext != NULL) {
+            if (ext->state == 0) {
+                SetHeroAction((HeroInfo *)player, 0x49);
+            }
+            if (ext->state == 1) {
+                SetHeroAction((HeroInfo *)player, 0x54);
+            }
+        }
+    }
+    func_800D0650(player);
+    func_800D10A0(player);
+    func_800CD214(player);
+    func_800C0888(&Heroes[player].hero_eng->unk10, player);
+    if (func_800D2D2C(player) != 0) {
+        if (Heroes[player].hero_eng->sfx != NULL) {
+            StopSfx(Heroes[player].hero_eng->sfx);
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CDE8C);
 
