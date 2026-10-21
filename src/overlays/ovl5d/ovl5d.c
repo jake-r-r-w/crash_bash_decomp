@@ -589,7 +589,39 @@ void PlotSnowGlint(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotBashPenguin);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B8B00);
+void func_800B8B00(void) {
+    s32 lo, hi;
+    u32 x, z;
+    u32 xhi, zhi;
+
+    lo = 8;
+    hi = 12;
+    for (x = lo; (s32)x < hi; x++) {
+        for (z = lo; (s32)z < hi; z++) {
+            D_8009D90C[z * 20 + x].unk0 = 0xF0;
+        }
+    }
+    x = ((D_800C46B0->unk10.x - 0x80) >> 8) + 10;
+    z = 9 - ((D_800C46B0->unk10.z - 0x80) >> 8);
+    xhi = ((D_800C46B0->unk10.x + 0x80) >> 8) + 10;
+    zhi = 9 - ((D_800C46B0->unk10.z + 0x80) >> 8);
+    if (x < 20) {
+        if (z < 20) {
+            D_8009D90C[z * 20 + x].unk0 |= 0x40;
+        }
+        if (zhi < 20) {
+            D_8009D90C[zhi * 20 + x].unk0 |= 0x40;
+        }
+    }
+    if (xhi < 20) {
+        if (z < 20) {
+            D_8009D90C[z * 20 + xhi].unk0 |= 0x40;
+        }
+        if (zhi < 20) {
+            D_8009D90C[zhi * 20 + xhi].unk0 |= 0x40;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B8C9C);
 
