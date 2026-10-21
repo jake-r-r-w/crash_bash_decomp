@@ -408,14 +408,20 @@ typedef struct AsteroidExt {
     /* 0x28 */ s32 arc28[6];
     /* 0x40 */ s32 vx;    /* arc vx */
     /* 0x44 */ s32 vz;    /* arc vz */
-    /* 0x48 */ u8 pad48[0x60 - 0x48];
+    /* 0x48 */ u8 pad48[0x50 - 0x48];
+    /* 0x50 */ s32 unk50;
+    /* 0x54 */ u8 pad54[0x60 - 0x54];
     /* 0x60 */ SLONG_XYZ from;
     /* 0x6C */ SLONG_XYZ to;
     /* 0x78 */ s32 bounces;
     /* 0x7C */ EXTengine *shadow;
 } AsteroidExt;
 
+extern u8 D_80052F5C[];
+
 s32 func_8008C5C4(s32 *from, s32 *to, void *arc, s32 *pos);
+
+void InitAsteroidRoll(NAS *m);
 
 void PlotAsteroidRoll(NAS *nas);
 

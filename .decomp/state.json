@@ -9519,7 +9519,8 @@
   "status": "matched"
  },
  "ovl67:800BF920": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-21T06:55:58Z",
+  "status": "matched"
  },
  "ovl67:800BFACC": {
   "matched_at": "2026-10-21T06:52:43Z",

@@ -262,7 +262,45 @@ void func_800BF7C8(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", InitAsteroidRoll);
+void InitAsteroidRoll(NAS *m) {
+    AsteroidExt *ext;
+    EXTengine *e;
+
+    ext = AddExtension(m, 0x80, 0x10000000);
+    if (ext != NULL) {
+        m->Engine->sub->unk6C = *(void **)D_80058AD0;
+        m->Engine->unk5D = 1;
+        ext->arc[0] = 0xC;
+        ext->bounces = 0;
+        ext->unk50 = 0xA0;
+        ext->arc[1] = 0;
+        ext->floor = 0;
+        ext->to.x = Heroes->hero_eng->unk10.x;
+        ext->to.z = (D_80068BD4[0].unk2 * 9) >> 4;
+        m->Engine->unk1E = 0;
+        ext->to.y = 0;
+        ext->from.x = Heroes->hero_eng->unk10.x;
+        ext->from.z = 0x1B00;
+        ext->from.y = -0x100;
+        m->Engine->unk10 = ext->from;
+        m->Engine->unk5E = 1;
+        e = AddEngine(m, 2);
+        if (e != NULL) {
+            ext->shadow = e;
+            e->sub->unk6C = D_80052F5C;
+            e->sub->unk74 = 0x2001;
+            e->unk5C = 1;
+            e->unk5D = 0;
+            e->unk10 = m->Engine->unk10;
+            e->sub->unk76 = 0x800;
+            e->sub->flags |= 0x40008041;
+            e->unk2C.z = 0x4000;
+            e->unk2C.y = 0x4000;
+            e->unk2C.x = 0x4000;
+            ext->shadow->unk5E = 1;
+        }
+    }
+}
 
 void PlotAsteroidRoll(NAS *nas) {
     AsteroidExt *ext;
