@@ -440,7 +440,87 @@ void func_800BF0AC(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BF37C);
+void func_800BF37C(s32 arg0) {
+    HeroInfo *hb;
+    HeroInfo *hb2;
+    HeroInfo *h;
+    subengine *sub;
+    NAS *nas;
+    s32 r;
+    s16 ang;
+    s32 x1;
+    s32 z1;
+    s32 x2;
+    s32 z2;
+
+    hb = Heroes;
+    h = &hb[arg0];
+    h->hero_eng->unk5E = 1;
+    if (func_800B4AD8() != 0) {
+        func_8008502C(arg0);
+    }
+    ang = h->hero_eng->unk1E;
+    x1 = (D_80068BD4[ang & 0xFFF].unk2 * 0x67) >> 10;
+    z1 = (D_80068BD4[(ang + 0x400) & 0xFFF].unk2 * 0x67) >> 10;
+    x2 = (D_80068BD4[(ang - 0x800) & 0xFFF].unk2 * 0x67) >> 10;
+    z2 = (D_80068BD4[(ang - 0x400) & 0xFFF].unk2 * 0x67) >> 10;
+    sub = h->hero_sub;
+    if (sub->unk74 < 0x401D) {
+        sub->unk74++;
+    }
+    if (sub->unk74 == 0x4007) {
+        PlaySfx(0x2B7, 0, 0, 0x1000, 0x1E00, 0);
+    }
+    if ((D_80051338[arg0].unk54 & 0x8000) && D_800C4498 == 0) {
+        nas = SpawnNASById(h->hero_eng->unk10.x + x1, h->hero_eng->unk10.y + 0x80,
+                           h->hero_eng->unk10.z + z1, 0x1C07, 0x11);
+        if (nas != NULL) {
+            nas->Engine->unk1E = h->hero_eng->unk1E + 0x810;
+            nas->Engine->unk1C = h->hero_eng->unk1C;
+            if (arg0 == 0) {
+                r = Random(4);
+                if (r == 0) {
+                    PlaySfx(0x2AB, 0, 0, 0x1000, 0x1E00, 0);
+                }
+                if (r == 1) {
+                    PlaySfx(0x2AC, 0, 0, 0x1000, 0x1E00, 0);
+                }
+                if (r == 2) {
+                    PlaySfx(0x2AD, 0, 0, 0x1000, 0x1E00, 0);
+                }
+                if (r == 3) {
+                    PlaySfx(0x2AE, 0, 0, 0x1000, 0x1E00, 0);
+                }
+            }
+            nas->UserInfo.user2 = arg0;
+        }
+        hb2 = Heroes;
+        h = &hb2[arg0];
+        nas = SpawnNASById(h->hero_eng->unk10.x + x2, h->hero_eng->unk10.y + 0x80,
+                           h->hero_eng->unk10.z + z2, 0x1C07, 0x11);
+        if (nas != NULL) {
+            nas->Engine->unk1E = h->hero_eng->unk1E + 0x7F0;
+            nas->Engine->unk1C = h->hero_eng->unk1C;
+            if (arg0 == 1) {
+                r = Random(4);
+                if (r == 0) {
+                    PlaySfx(0x2AF, 0, 0, 0x1000, 0x1E00, 0);
+                }
+                if (r == 1) {
+                    PlaySfx(0x2B0, 0, 0, 0x1000, 0x1E00, 0);
+                }
+                if (r == 2) {
+                    PlaySfx(0x2B1, 0, 0, 0x1000, 0x1E00, 0);
+                }
+                if (r == 3) {
+                    PlaySfx(0x2B2, 0, 0, 0x1000, 0x1E00, 0);
+                }
+            }
+            nas->UserInfo.user2 = arg0;
+        }
+    }
+    func_800C2D10(arg0);
+}
 
 void func_800BF7C8(s32 arg0) {
     HeroInfo *h;

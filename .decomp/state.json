@@ -9665,7 +9665,8 @@
   "status": "matched"
  },
  "ovl67:800BF37C": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-21T12:19:34Z",
+  "status": "matched"
  },
  "ovl67:800BF7C8": {
   "matched_at": "2026-10-18T17:10:01Z",
