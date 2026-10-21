@@ -369,6 +369,14 @@ static inline void LaserBurst(LaserNode *n) {
     KillNAS((NAS *)n);
 }
 
+/* func_800BBDB8's push: sets up the object's rotation and passes v through. */
+static inline s32 BoxPushRot(SVECTOR *ang, u16 *a, s32 v) {
+    ang->vx = a[8];
+    ang->vy = a[9];
+    ang->vz = a[10];
+    return v;
+}
+
 /* func_800C3544's box test, inlined into func_800BC7E0. */
 static inline s32 LaserInBox(s32 *arg0, s32 *arg1) {
     Box2 *src;
