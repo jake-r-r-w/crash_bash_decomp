@@ -1453,7 +1453,66 @@ void func_800B7B80(CoalFlameEng *eng, CoalFlameFux *fux, s32 id) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B7DF0);
+s32 func_800B7DF0(s32 x, s32 z, s32 id, s32 cur, s32 range, s32 delay) {
+    CoalChainNAS *nas;
+    CoalEng *eng;
+    HeroInfo *h;
+    s32 total;
+    s32 i;
+    s32 d;
+    s32 pts;
+    u16 kind;
+
+    total = 0;
+    for (i = 0; i < 8; i++) {
+        nas = (CoalChainNAS *)D_800BC424[i];
+        if (nas == NULL || nas->unk5C == 1) {
+            continue;
+        }
+        eng = nas->eng;
+        d = eng->x - x;
+        if (-range < d && d < range) {
+            d = eng->z - z;
+            if (-range < d && d < range && nas->fux->unk30 != 1) {
+                nas->unk5C = 1;
+                kind = eng->sub->unk74;
+                total += 2;
+                if (kind == 0x2016) {
+                    pts = 20;
+                    PlaySfx(0x755, NULL, (SLONG_XYZ *)&eng->x, 0x1000, 0x1E00, 0);
+                } else if (kind == 0x2017) {
+                    pts = 10;
+                    PlaySfx(0x754, NULL, (SLONG_XYZ *)&eng->x, 0x1000, 0x1E00, 0);
+                } else {
+                    pts = cur + total;
+                    if (pts > 10) {
+                        pts = 10;
+                    }
+                    PlaySfx(D_800BBA0C[id], NULL, (SLONG_XYZ *)&eng->x, 0x1000, 0x1E00, 0);
+                }
+                if (((CoalChainGame *)D_8005A614)->flags & 0x40) {
+                    if (((CoalChainGame *)D_8005A614)->unk6C != 0) {
+                        h = &Ovl68Heroes()[id];
+                        if (h->hero_score >= pts) {
+                            h->hero_score -= pts;
+                        } else {
+                            Heroes[h->hero_teammate].hero_score -= pts - (u16)h->hero_score;
+                            h->hero_score = 0;
+                        }
+                    } else {
+                        Ovl68Heroes()[id].hero_score -= pts;
+                    }
+                } else {
+                    Ovl68Heroes()[id].hero_score += pts;
+                }
+                func_8008D5D4(eng->x, -300, eng->z, pts, delay);
+                delay += 10;
+                total += func_800B7DF0(eng->x, eng->z, id, pts, 0x120, delay);
+            }
+        }
+    }
+    return total;
+}
 
 void PlotCoalFlame(NAS *nas) {
     CoalFlameFux *fux;

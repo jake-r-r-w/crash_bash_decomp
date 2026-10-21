@@ -446,6 +446,17 @@ typedef struct {
     u8 pad60[0x34]; _sfx_handler *sfx;
 } CoalFlameEng;
 s32 func_800B7DF0(s32 x, s32 z, s32 id, s32 cur, s32 arg4, s32 arg5);
+/* func_800B7DF0: the coal NASes in D_800BC424 it ignites. */
+typedef struct { u8 pad0[0x30]; s32 unk30; } CoalChainFux;
+typedef struct {
+    u8 pad0[0x54]; CoalEng *eng; CoalChainFux *fux; u16 unk5C;
+} CoalChainNAS;
+typedef struct { u8 pad0[0x32]; u16 flags; u8 pad34[0x6C - 0x34]; s32 unk6C; } CoalChainGame;
+extern s32 D_800BBA0C[];
+static inline HeroInfo *Ovl68Heroes(void) {
+    return Heroes;
+}
+void func_8008D5D4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 /* D_800BC210: one 0x30-byte record per player (id). */
 typedef struct { u8 pad0[0x20]; s32 unk20; u8 pad24[0xC]; } CoalPlayerRec;
 void func_800B5CD0(s32 arg0);
