@@ -517,6 +517,21 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-21 (swarm all overlays, Opus):** run 20261021061703, `--seg
+  overlays/ --model opus --workers 5 --big-workers 3 --big-budget-usd 20
+  --big-minutes 15 --max-run-usd 250`: 77 matched in 67 min for $77.86
+  (ovl60 24, ovl5d 12, ovl68 11, ovl62 9, ovl67 7, ovl66 5, ovl64 3,
+  ovl63 3, ovl5e 2, ovl5f 1); game code 59.7% (2247/2537). It ran out of
+  takeable work before its 3 h cap (attempts and big-mode staleness
+  limits). Failed: 2 OAuth clashes at start; `func_800B4240` refused at
+  the gate (its C uses a struct field, `unk1C`, the header lacks). Before
+  it, `func_800B4268` (aacb5037) matched from the swarm's refused C with a
+  K&R definition (its callers pass 3 or 4 args: the original had no
+  prototype). `fold`: 70 rows; 56 from matches folded (3 merged into the
+  global-array row), 14 on unmatched functions kept in
+  `<swarm dir>/patterns.unmatched-2026-10-21.md`. The 56 still want a
+  dedup pass against older rows.
+
 - **2026-10-20 (swarm all overlays):** run 20261020211358, `--seg overlays/
   --model sonnet --escalate-model opus --workers 5 --big-workers 2
   --big-budget-usd 8 --big-minutes 12 --max-run-usd 40`, stopped
