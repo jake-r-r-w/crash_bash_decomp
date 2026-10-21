@@ -439,6 +439,10 @@ function renderParked(){
  const byName=new Map(M.fn.map(f=>[f.name,f]));
  const Sp=((SW.last&&SW.last.parks)||[]).map(p=>Object.assign({},p,{f:byName.get(p.name)}))
   .filter(p=>p.f&&p.f.st!="m"&&!hand.has(p.name));
+ // the code map shows them parked too (amber), not just the hand parks the page's data marks
+ let marked=0;
+ for(const p of Sp)if(p.f.st=="t"){p.f.st="p";M.units[p.f.unit].p+=p.f.size;marked++}
+ if(marked)drawMap();
  const pt=document.getElementById("parkTile");
  if(pt)pt.innerHTML=`<div class="label">Parked</div><div class="big">${Bl.length+Sp.length}</div><div class="small">${Bl.length} by hand, ${Sp.length} by the swarm${SW.last?"":" (swarm.js not loaded)"}</div>`;
  const row=(name,seg,size,tag,note)=>`<details class="park"><summary><code>${esc(name)}</code> <span class="tag">${tag}</span> <span class="small">${esc(unitOfSeg(seg))} · ${n(size)} bytes</span></summary><div class="note">${esc(note||"No note.")}</div></details>`;
