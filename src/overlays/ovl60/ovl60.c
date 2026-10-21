@@ -464,7 +464,46 @@ void func_800B5B1C(s32 i) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B5D90);
+s32 func_800B5D90(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = &base[arg0];
+    EXTheromove *m = h->hero_move;
+    EXTengine *e;
+    s32 angle;
+    s32 t;
+    s32 u;
+    s16 sx;
+    s16 sz;
+    s32 x;
+    s32 z;
+
+    if (m->jump_ctrl & 2) {
+        if (m->forward_speed != 0) {
+            angle = m->forward_angle;
+            e = h->hero_eng;
+            sx = D_80068BD4[(angle - 0x400) & 0xFFF].unk2;
+            sz = D_80068BD4[angle & 0xFFF].unk2;
+            t = e->unk10.x;
+            t -= sx * 512 >> 12;
+            t += 0x800;
+            x = t >> 9;
+            u = e->unk10.z - (sz * 512 >> 12);
+            u += 0x800;
+            z = u >> 9;
+            if ((u32)x >= 8 || z < 0 || z >= 8) {
+                Heroes[arg0].hero_move->forward_speed = 0;
+                return 0;
+            }
+            if (func_800BDCB8(arg0, x, z, 0, 0, 0) != 0) {
+                SetHeroAction((HeroInfo *)arg0, 0x3A);
+                h->hero_move->forward_speed = 0;
+                return 1;
+            }
+            h->hero_move->forward_speed = 0;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl60/ovl60", D_800B32B8);
 

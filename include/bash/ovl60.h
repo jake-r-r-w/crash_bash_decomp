@@ -466,5 +466,6 @@ s32 func_800BDE24(s32 arg0);
 void func_800BFFF4(EXTengine *eng);
 
 void func_800C1840(u32 x, u32 z, s32 id, s32 *seen);
+s32 func_800BDCB8(s32 hero, s32 x, s32 z, s32 arg3, s32 arg4, s32 arg5);
 
 #endif /* BASH_OVL60_H */
