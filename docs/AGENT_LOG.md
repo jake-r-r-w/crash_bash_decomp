@@ -10,21 +10,20 @@ At the end of a session, update **Current state**, **Next** and **Open
 leads**, add any new gotcha, and add one short entry at the top of the
 **Session log**.
 
-## Current state (2026-10-20)
+## Current state (2026-10-21)
 
 - [ROADMAP.md](ROADMAP.md): Phase 1 (types and names) is done, and every
   `main.exe` function matches; Phase 2's naming, data and `main.c` split
   are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2158/2537 game functions matched (55.2% of game code bytes, 2026-10-20):
-  **main.exe and ovl61 are complete (575/575, 97/97)**; engine 355/357
-  (both left parked: `func_8007F314`, `PlotScriptFX`); **ovl6a
-  complete (94/94, 2026-10-20)**, ovl69 69/77, ovl67 102/135, ovl60
-  131/180, ovl5f 127/179, ovl62 151/216, ovl63 97/139, ovl5d 70/104,
-  ovl65 64/80, ovl68 60/93 (swarm runs 2026-10-18/19), ovl66 49/65 left
-  16 (swarm 2026-10-20); ovl5e 7 left (54 matched 2026-10-20, `func_800BB3F0` by
-  hand); ovl64 23 left (22 matched 2026-10-20, plus BB3F0's copy). All 564 PsyQ functions (Sony objects). 3 parked (`decomp.py
-  status`). Every slot overlay's id word is
+- 2423/2537 game functions matched (74.86% of game code bytes, 2026-10-21,
+  after two big-mode retry runs over every overlay: 170 matched):
+  **main.exe, ovl61 and ovl6a are complete**; 114 left: ovl62 26, ovl5f 18,
+  ovl63 17, ovl67 9, ovl65 8, ovl5d 7, ovl60 7, ovl64 7, ovl68 5, ovl66 3,
+  ovl69 3, engine 2, ovl5e 2. All 564 PsyQ functions (Sony objects). 4
+  parked by hand (`decomp.py status`), 14 matched with a hack (`decomp.py
+  hacks`; the lint flags dead stores and identical if/else arms since
+  2026-10-21). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Dashboard (2026-10-18): `docs/index.html` is `tools/scripts/dashboard.html` plus
@@ -50,11 +49,12 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**Matching the slot overlays with the swarm.** Left per overlay (2026-10-19,
-`INCLUDE_ASM` count per file): ovl5e 7 (2026-10-20), ovl62 65, ovl66 16 (2026-10-20), ovl68 33,
-ovl5f 52, ovl64 23 (2026-10-20), ovl60 49, ovl63 42, ovl5d 33, ovl67 33, ovl65 16,
-ovl69 8, engine 2 (ovl61 and ovl6a are done). main.exe is complete. **Next session:
-ovl5e's 7 and ovl64's 23 are mostly >= 600 B: big-heavy recipe (`--workers 1 --big-workers 4 --big-bytes 400`), then ovl66's leftovers**, on the low-cost recipe; after each run, the
+**The overlays' last 114 functions**, almost all >= 600 B. The second
+big-mode retry (`--seg overlays/ --retry-failed --big-bytes 1 --workers 1
+--big-workers 6`) still matched 85 in 3 h, at $2.70 a match (the first:
+$1.90). Next: `swarm.mjs permute --near --minutes 60` on the checkpoints at
+the registers stage (CPU only), then one more big-mode retry if it still
+pays; rework the 14 hacks by hand between runs. After each run, the
 "After a run" checklist in tools/swarm/README.md (`stats --run ID`, parks,
 gate failures, `fold`, this log).
 
@@ -79,7 +79,7 @@ rest are fixed by hand from the worker's patch (Gotchas). A park whose
 `jtbl_` names functions is a bad split (Gotchas).
 
 Hand work, between runs:
-1. The parks: `func_8007F314` and `PlotScriptFX` (engine), `func_800BC274` (ovl5e), and the hacks in `func_800B345C` and `func_800B7134` (Open leads for each).
+1. The parks: `func_8007F314` and `PlotScriptFX` (engine), `func_800BC274` (ovl5e), and the 14 hack matches (`decomp.py hacks`; Open leads for `func_800B345C`, `func_800B7134`, `func_800B4444`).
 2. Name each function as it's matched when the evidence allows.
 3. Split `main.c` into its translation units: on hold since 2026-10-15. Its
    one proven boundary (jump-table parity, 95..370) has three possible
@@ -530,6 +530,11 @@ Newest first, a few lines each. Details are in the commits.
   `progress` now writes one line per history point (1.3 MB, bc39f123),
   and `run --resume 20261021103227 --only ...` committed the saved
   matches with no new sessions.
+  `fold`: 111 rows, 84 kept (2 described hacks, the rest duplicates of
+  each other or of older rows). Those 2 matches, Roo_FindNewSquare (a dead
+  load overwritten before any read) and PlotHelicopterTA (`if (i) {S} else
+  {S}`), had passed the lint: it now flags both shapes (`overwritten_stores`,
+  `same_branches`), which found 8 older ones; 14 hacks in all.
 
 - **2026-10-21 (hand: MATCHING.md cleanup, three swarm parks):** merged
   21 duplicate Diff patterns rows from the last two folds (e8ba0e20).

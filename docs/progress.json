@@ -25,10 +25,26 @@
    "size": 744
   }
  ],
- "commit": "b9d0aaf3",
+ "commit": "6e1c1722",
  "game": "SCUS_945.70",
- "generated": "2026-10-21T13:48:55Z",
+ "generated": "2026-10-21T14:18:58Z",
  "hacks": [
+  {
+   "commit": "934369ad2",
+   "kinds": "dead store",
+   "name": "func_80010000",
+   "seg": "main/main",
+   "size": 344,
+   "why": "(no Hack: line in its match commit)"
+  },
+  {
+   "commit": "7337d1b97",
+   "kinds": "identical if/else arms",
+   "name": "func_8001097C",
+   "seg": "main/main",
+   "size": 364,
+   "why": "(no Hack: line in its match commit)"
+  },
   {
    "commit": "f69a346bb",
    "kinds": "register pin",
@@ -36,6 +52,30 @@
    "seg": "main/main",
    "size": 692,
    "why": "register pin - xy/z/flags pinned to s4/s3/s2: the target uses s2-s4 with s0/s1 unused in a leaf, which normal allocation never does; without the pins 171/173 differ"
+  },
+  {
+   "commit": "7bdceec69",
+   "kinds": "identical if/else arms",
+   "name": "func_8001A6D4",
+   "seg": "main/main",
+   "size": 344,
+   "why": "(no Hack: line in its match commit)"
+  },
+  {
+   "commit": "73f30d9d5",
+   "kinds": "identical if/else arms",
+   "name": "func_8001CE00",
+   "seg": "main/main",
+   "size": 180,
+   "why": "(no Hack: line in its match commit)"
+  },
+  {
+   "commit": "60f7c77ca",
+   "kinds": "identical if/else arms",
+   "name": "func_800272AC",
+   "seg": "main/main",
+   "size": 348,
+   "why": "(no Hack: line in its match commit)"
   },
   {
    "commit": "ba1244e6",
@@ -46,11 +86,51 @@
    "why": "dead store - tb/trig/seq set at the top of the outer i loop and NULLed at its bottom: set twice, loop.c can't hoist the D_800BE838 base, which the target rebuilds per i. Natural C (globals direct) is 2 insns off: move_movables doubles insn_count per already-moved reg, so the 3rd+ base always moves (MATCHING.md Diff patterns)"
   },
   {
+   "commit": "a74c23f1",
+   "kinds": "identical if/else arms",
+   "name": "PlotHelicopterTA",
+   "seg": "overlays/ovl5f/ovl5f",
+   "size": 864,
+   "why": "(no Hack: line in its match commit)"
+  },
+  {
+   "commit": "2b221d32",
+   "kinds": "dead store",
+   "name": "Roo_FindNewSquare",
+   "seg": "overlays/ovl60/ovl60",
+   "size": 748,
+   "why": "(no Hack: line in its match commit)"
+  },
+  {
+   "commit": "cd6c7d87",
+   "kinds": "identical if/else arms",
+   "name": "func_800B649C",
+   "seg": "overlays/ovl61/ovl61",
+   "size": 564,
+   "why": "(no Hack: line in its match commit)"
+  },
+  {
    "commit": "30735f0c",
    "kinds": "no-op ++/-- pair",
    "name": "func_800B345C",
    "seg": "overlays/ovl63/ovl63",
    "size": 368,
+   "why": "(no Hack: line in its match commit)"
+  },
+  {
+   "commit": "a9f1f2e7",
+   "kinds": "identical if/else arms",
+   "name": "func_800B6CD8",
+   "seg": "overlays/ovl66/ovl66",
+   "size": 324,
+   "why": "(no Hack: line in its match commit)"
+  },
+  {
+   "commit": "97d468e7",
+   "kinds": "identical if/else arms",
+   "name": "func_800B4AD8",
+   "seg": "overlays/ovl67/ovl67",
+   "size": 520,
    "why": "(no Hack: line in its match commit)"
   },
   {
@@ -2066,7 +2146,7 @@
   {"commit": "82307926d8", "data_b": 6748, "data_tb": 606943, "game_all_f": 2537, "game_b": 759132, "game_c_f": 2420, "game_f": 2420, "game_named_f": 345, "game_tb": 1019036, "game_typed_f": 2194, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-21T13:47:21Z", "units": {"engine": [121412, 355], "main exe": [124840, 575], "ovl5d": [38908, 97], "ovl5e": [30984, 71], "ovl5f": [48936, 161], "ovl60": [54076, 173], "ovl61": [55000, 97], "ovl62": [60464, 189], "ovl63": [41676, 121], "ovl64": [20412, 51], "ovl65": [25108, 72], "ovl66": [20316, 77], "ovl67": [44684, 125], "ovl68": [26496, 88], "ovl69": [14760, 74], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
   {"commit": "78f03e5de9", "data_b": 6788, "data_tb": 606943, "game_all_f": 2537, "game_b": 760116, "game_c_f": 2421, "game_f": 2421, "game_named_f": 345, "game_tb": 1019036, "game_typed_f": 2195, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-21T13:47:36Z", "units": {"engine": [121412, 355], "main exe": [124840, 575], "ovl5d": [38908, 97], "ovl5e": [30984, 71], "ovl5f": [48936, 161], "ovl60": [54076, 173], "ovl61": [55000, 97], "ovl62": [61448, 190], "ovl63": [41676, 121], "ovl64": [20412, 51], "ovl65": [25108, 72], "ovl66": [20316, 77], "ovl67": [44684, 125], "ovl68": [26496, 88], "ovl69": [14760, 74], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
   {"commit": "ea85ecc5bd", "data_b": 6788, "data_tb": 606943, "game_all_f": 2537, "game_b": 761468, "game_c_f": 2422, "game_f": 2422, "game_named_f": 345, "game_tb": 1019036, "game_typed_f": 2196, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-21T13:47:51Z", "units": {"engine": [121412, 355], "main exe": [124840, 575], "ovl5d": [38908, 97], "ovl5e": [30984, 71], "ovl5f": [48936, 161], "ovl60": [54076, 173], "ovl61": [55000, 97], "ovl62": [61448, 190], "ovl63": [43028, 122], "ovl64": [20412, 51], "ovl65": [25108, 72], "ovl66": [20316, 77], "ovl67": [44684, 125], "ovl68": [26496, 88], "ovl69": [14760, 74], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
-  {"commit": "b9d0aaf3", "data_b": 6788, "data_tb": 606943, "game_all_f": 2537, "game_b": 762816, "game_c_f": 2423, "game_f": 2423, "game_named_f": 345, "game_tb": 1019036, "game_typed_f": 2197, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-21T13:48:55Z", "units": {"engine": [121412, 355], "main exe": [124840, 575], "ovl5d": [38908, 97], "ovl5e": [30984, 71], "ovl5f": [48936, 161], "ovl60": [54076, 173], "ovl61": [55000, 97], "ovl62": [61448, 190], "ovl63": [43028, 122], "ovl64": [20412, 51], "ovl65": [25108, 72], "ovl66": [20316, 77], "ovl67": [46032, 126], "ovl68": [26496, 88], "ovl69": [14760, 74], "ovl6a": [31060, 94], "psyq": [122112, 564]}}
+  {"commit": "6e1c1722", "data_b": 6788, "data_tb": 606943, "game_all_f": 2537, "game_b": 762816, "game_c_f": 2423, "game_f": 2423, "game_named_f": 345, "game_tb": 1019036, "game_typed_f": 2197, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-21T14:18:57Z", "units": {"engine": [121412, 355], "main exe": [124840, 575], "ovl5d": [38908, 97], "ovl5e": [30984, 71], "ovl5f": [48936, 161], "ovl60": [54076, 173], "ovl61": [55000, 97], "ovl62": [61448, 190], "ovl63": [43028, 122], "ovl64": [20412, 51], "ovl65": [25108, 72], "ovl66": [20316, 77], "ovl67": [46032, 126], "ovl68": [26496, 88], "ovl69": [14760, 74], "ovl6a": [31060, 94], "psyq": [122112, 564]}}
  ],
  "recent": [
   {
