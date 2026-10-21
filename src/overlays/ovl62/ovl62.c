@@ -2779,7 +2779,44 @@ void InitBearminator(NAS *m) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBearminator);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotPolarMissile);
+void PlotPolarMissile(NAS *m) {
+    PolarMissileExt *ext;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    switch (ext->unk10) {
+    case 0:
+        ext->unk10 = 1;
+        ext->pos = m->Engine->unk10;
+        break;
+    case 1:
+        if (--ext->unk60 == -1) {
+            PolarMissileBlast(m, 0);
+            ext->unk60 = 1;
+        }
+        break;
+    }
+    ext->pos.x -= (ext->unk5C * D_80068BD4[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 12;
+    ext->pos.z -= (ext->unk5C * D_80068BD4[(u16)m->Engine->unk1E & 0xFFF].unk2) >> 12;
+    if (PolarMissileHitHero(&ext->pos) != -1) {
+    blast:
+        PolarMissileBlast(m, 1);
+    } else {
+        m->Engine->unk5E = 1;
+        m->Engine->unk10 = ext->pos;
+        if (ext->unk58 >= 3) {
+            goto blast;
+        }
+        if (csqrt(m->Engine->unk10.x * m->Engine->unk10.x
+                  + m->Engine->unk10.z * m->Engine->unk10.z) >> 6 <= 0xFA0) {
+            return;
+        }
+        PolarMissileBlast(m, 1);
+    }
+    KillNAS(m);
+}
 
 void PlotBigMissile(NAS *m) {
     BigMissileArcExt *ext;

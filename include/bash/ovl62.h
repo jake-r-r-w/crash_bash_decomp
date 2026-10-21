@@ -872,8 +872,66 @@ typedef struct PolarMissileExt {
     /* 0x58 */ s32 unk58;
     /* 0x5C */ s32 unk5C;
     /* 0x60 */ s32 unk60;
-    /* 0x64 */ u8 pad64[0x70 - 0x64];
+    /* 0x64 */ SLONG_XYZ pos;
 } PolarMissileExt;
+
+extern u8 D_80054A0C[];
+
+/* Index of the first live hero within 0x7BC4 of pos (knocked back and a
+ * sound played), or -1 (PlotPolarMissile). */
+static inline s32 PolarMissileHitHero(SLONG_XYZ *pos) {
+    HeroInfo *h;
+    u32 i;
+    u32 n;
+
+    n = 1;
+    if (D_8005A680[0] != 0) {
+        n = 2;
+    }
+    i = 0;
+    while (1) {
+        if (i >= n) {
+            return -1;
+        }
+        h = &Heroes[i];
+        if (!(h->hero_mode & 0x2000)
+            && func_8008CEB0((u8 *)pos, (u8 *)&h->hero_eng->unk10) < 0x7BC4) {
+            if (h->hero_mode != 0x4B) {
+                SetHeroAction((HeroInfo *)i, 0x4B);
+            }
+            PlaySfx(0x43D, NULL, NULL, 0x1000, 0x1E00, 0);
+            return i;
+        }
+        i++;
+    }
+}
+
+/* Spawns the 0x1605 blast at m's position (PlotPolarMissile). */
+static inline void PolarMissileBlast(NAS *m, s32 kind) {
+    SLONG_XYZ *pos;
+    u8 *anim;
+    NAS *nas;
+    ExtSpawn5910 *x;
+
+    pos = &m->Engine->unk10;
+    anim = D_80054A0C;
+    nas = SpawnNASById(pos->x, pos->y, pos->z, 0x1605, 0x11);
+    if (nas != NULL) {
+        x = FindExtension(nas, 0x10000000);
+        if (x != NULL) {
+            x->unkC = kind;
+            x->unk18 = 0x100;
+            if (anim != NULL) {
+                x->unk20 = 5;
+                nas->Engine->sub->unk6C = anim;
+            } else {
+                x->unk20 = 1;
+            }
+            x->unk28 = 0;
+            nas->InitDelete(nas);
+        }
+    }
+}
 
 /* Polar bomb extension (0x84 bytes, id 0x10000000). */
 typedef struct PolarBombExt {
