@@ -2071,7 +2071,18 @@ ${DECL_CLASH.test(job.gateFix) ? DECL_HINT : ''}Fix that, keep it matching, and 
       runs: [{ id: this.id, started: run.started, ended: run.ended, target: run.target, matched: this.stats.matched,
                parked: this.stats.parked, failed: this.stats.failed, sessions: this.sessions, usd: run.costUsd },
              ...(this.pastRuns ||= readRuns(o.dir, this.id))].slice(0, 8),
+      parks: this.parkList(),
     };
+  }
+
+  // every function a run has parked (history `last` = parked), for the dashboard's Parked total and
+  // list: its best C so far and last note. The page drops the ones its code map shows matched since
+  parkList() {
+    return Object.entries(this.history).filter(([, h]) => h.last === 'parked').map(([key, h]) => {
+      const cp = this.checkpoint({ key, name: h.name });
+      const note = String(h.notes?.at(-1) || '').replace(/^S+ S+ /, '');
+      return { key, name: h.name, best: cp ? Swarm.describe(cp) : null, note: note.slice(0, 400) };
+    });
   }
 
   // docs/swarm.js in your checkout (git-ignored), which docs/index.html loads as a script: a file://

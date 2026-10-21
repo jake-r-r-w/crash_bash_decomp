@@ -189,7 +189,7 @@ const uname=u=>u+(TITLE[u]&&TITLE[u]!=u?` (${TITLE[u]})`:"");
  $("tiles").innerHTML=tile("Game code matched",f2(G.pct),`${n(G.done_b)} / ${n(G.total_b)} bytes<br>${n(G.done_f)} / ${n(G.total_f)} functions · ${f2(pct(G.done_f,G.total_f))}`,G.pct,"var(--s1)",wk)+
   tile("Game functions named",f2(pct(named,all)),`${n(named)} / ${n(all)} with a real name`,pct(named,all),"var(--s3)")+
   tile("Data in C",f2(DA.pct),`${n(DA.done_b)} / ${n(DA.total_b)} bytes of data and rodata`,DA.pct,"var(--s4)")+
-  tile("Parked",`${S.blocked}`,"functions waiting for another attempt",null);
+  tile("Parked",`${S.blocked}`,"functions waiting for another attempt",null).replace('<div class="card">','<div class="card" id="parkTile">');
 })();
 
 // ---------------------------------------------------------------- time scale and measure
@@ -430,10 +430,22 @@ function drawMap(){
  $("recent").innerHTML=R.length?`<tr><th>Function</th><th>Unit</th><th class="num">Bytes</th><th class="num">When</th></tr>`+R.map(r=>
   `<tr><td><code>${esc(r.name)}</code></td><td>${esc(unitOfSeg(r.seg))}</td><td class="num">${n(r.size)}</td><td class="num" title="${esc(r.at)}">${esc(when(r.at))}</td></tr>`).join("")
   :'<tr><td class="empty">No matches recorded yet.</td></tr>';
- const Bl=D.blocked||[];
- $("parked").innerHTML=Bl.length?Bl.map(b=>`<details class="park"><summary><code>${esc(b.name)}</code> <span class="small">${esc(unitOfSeg(b.seg))} · ${n(b.size)} bytes</span></summary>`+
-  `<div class="note">${esc(b.note||"No note.")}</div></details>`).join(""):'<div class="empty">Nothing parked.</div>';
 })();
+
+// parked: by hand (decomp.py block, in the page's data) and by the swarm (docs/swarm.js parks, minus
+// any the code map shows matched since); the tile counts both
+function renderParked(){
+ const Bl=D.blocked||[],hand=new Set(Bl.map(b=>b.name));
+ const byName=new Map(M.fn.map(f=>[f.name,f]));
+ const Sp=((SW.last&&SW.last.parks)||[]).map(p=>Object.assign({},p,{f:byName.get(p.name)}))
+  .filter(p=>p.f&&p.f.st!="m"&&!hand.has(p.name));
+ const pt=document.getElementById("parkTile");
+ if(pt)pt.innerHTML=`<div class="label">Parked</div><div class="big">${Bl.length+Sp.length}</div><div class="small">${Bl.length} by hand, ${Sp.length} by the swarm${SW.last?"":" (swarm.js not loaded)"}</div>`;
+ const row=(name,seg,size,tag,note)=>`<details class="park"><summary><code>${esc(name)}</code> <span class="tag">${tag}</span> <span class="small">${esc(unitOfSeg(seg))} · ${n(size)} bytes</span></summary><div class="note">${esc(note||"No note.")}</div></details>`;
+ const all=[...Bl.map(b=>row(b.name,b.seg,b.size,"by hand",b.note)),
+  ...Sp.map(p=>row(p.name,p.f.seg,p.f.size,"swarm",(p.best?"Best: "+p.best+". ":"")+(p.note||"")))];
+ $("parked").innerHTML=all.length?all.join(""):'<div class="empty">Nothing parked.</div>';
+}
 
 drawTime();drawMap();
 let rt,lastW=document.documentElement.clientWidth;
@@ -444,6 +456,7 @@ addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{const w=docum
 // Pages has none and the card stays hidden. A file:// page can't fetch JSON, so it comes as a
 // script that calls swarmStatus(): every 5 s while a run is on, every minute otherwise.
 const SW={last:null,timer:null,misses:0};
+renderParked();
 const MIDX=new Map(M.fn.map(f=>[f.seg+"|"+f.name,f.st]));
 const OUT={matched:["Matched","var(--good)"],failed:["Failed","var(--bad)"],infra:["Environment error","var(--bad)"],error:["Error","var(--bad)"],
  conflict:["Conflict","var(--serious)"],"gate-refused":["Refused by the gate","var(--serious)"],parked:["Parked","var(--axis)"],
@@ -495,7 +508,7 @@ function renderSwarm(st){
   (runs?`<div class="sub2">Recent runs</div><div class="wrap"><table><tr><th>Started</th><th>Target</th><th class="num">Took</th><th class="num">Matched</th><th class="num opt">Parked</th><th class="num">Spend</th><th class="num opt">$/match</th></tr>${runs}</table></div>`:"");
  const rb=$("reload");if(rb)rb.onclick=()=>location.reload();
 }
-window.swarmStatus=st=>{SW.last=st;try{renderSwarm(st)}catch(e){console.error("swarm card:",e)}};
+window.swarmStatus=st=>{SW.last=st;try{renderSwarm(st)}catch(e){console.error("swarm card:",e)}try{renderParked()}catch(e){console.error("parked:",e)}};
 function pollSwarm(){
  const s=document.createElement("script");
  s.src="swarm.js?"+Date.now();
