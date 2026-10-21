@@ -503,6 +503,31 @@ static inline void Ovl5fSpawnBit1605(SLONG_XYZ *pos, s32 kind) {
         }
     }
 }
+static inline NAS *Ovl5fSpawnBit1605Nas(SLONG_XYZ *pos, s32 kind) {
+    u8 *p;
+    NAS *nas;
+    Ovl5fExt1605 *ext;
+
+    p = D_8005365C;
+    nas = SpawnNASById(pos->x, pos->y, pos->z, 0x1605, 0x11);
+    if (nas != NULL) {
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL) {
+            ext->unkC = kind;
+            ext->unk18 = 0x100;
+            if (p != NULL) {
+                ext->unk20 = 5;
+                nas->Engine->sub->unk6C = p;
+            } else {
+                ext->unk20 = 1;
+            }
+            ext->unk28 = 0;
+            nas->InitDelete(nas);
+        }
+        return nas;
+    }
+    return NULL;
+}
 extern s32 D_80051244[]; /* flags by angle octant */
 void func_800B4240(s32 player, s32 x, s32 z, EXTengine *eng, Ovl5fAITarget *ai);
 s32 func_800B4490(s32 player, EXTengine *eng, Ovl5fAITarget *ai);
@@ -528,5 +553,7 @@ extern s32 D_800CA630[4];
 extern s32 D_800CA640[4];
 
 void func_800B9170(s32 player);
+
+void func_800C30C0(EXTengine *arg0);
 
 #endif /* BASH_OVL5F_H */
