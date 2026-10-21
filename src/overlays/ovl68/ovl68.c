@@ -181,7 +181,66 @@ s32 func_800B51C8(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B52C8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B5CD0);
+static inline s32 Chk5CD0_A(s32 arg0) {
+    s32 ret;
+    u16 st;
+
+    st = Heroes[arg0].hero_status;
+    if (st & 0x200) {
+        SetHeroAction((HeroInfo *)arg0, 0x75);
+        ret = 1;
+    } else if (st & 0x400) {
+        SetHeroAction((HeroInfo *)arg0, 0x74);
+        ret = 1;
+    } else {
+        ret = 0;
+    }
+    return ret;
+}
+
+static inline s32 Chk5CD0_B(s32 arg0) {
+    s32 ret;
+
+    if (D_80051338[arg0].unk54 & 0x4000) {
+        SetHeroAction((HeroInfo *)arg0, 0x78);
+        ret = 1;
+    } else {
+        ret = 0;
+    }
+    return ret;
+}
+
+static inline s32 Chk5CD0_C(s32 arg0) {
+    s32 ret;
+
+    if (Heroes[arg0].hero_move->forward_speed != 0) {
+        SetHeroAction((HeroInfo *)arg0, 0x72);
+        ret = 1;
+    } else {
+        ret = 0;
+    }
+    return ret;
+}
+
+void func_800B5CD0(s32 arg0) {
+    if (!Chk5CD0_A(arg0)) {
+        if (!Chk5CD0_B(arg0)) {
+            if (!Chk5CD0_C(arg0)) {
+                if (Heroes[arg0].hero_move->velocity_calc == 3) {
+                    SetHeroSeq((HeroInfo *)arg0, 0x61);
+                }
+                func_8008502C(arg0);
+                if (D_8005A5DC < 4) {
+                    if (D_8005A5DC >= 2) {
+                        func_800B52C8(arg0);
+                    }
+                }
+                func_800B51C8(arg0);
+                Heroes[arg0].hero_hit = 0;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B5E84);
 

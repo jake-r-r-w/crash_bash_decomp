@@ -12,6 +12,7 @@ typedef struct { s16 unk0; s16 unk2; } Ovl68Trig;
 extern Ovl68Trig D_80068BD4[];
 
 extern NAS *D_8005AA9C;
+extern s32 D_8005A5DC;
 
 typedef struct CoalFlameInner {
     s32 pad0[3];
@@ -387,6 +388,8 @@ typedef struct {
     u8 pad0[0x10]; s32 x; s32 pad14; s32 z; u8 pad1C[0x10];
     s32 sx; s32 sy; s32 sz; u8 pad38[0x26]; s16 unk5E;
 } CoalFlameEng;
+void func_800B5CD0(s32 arg0);
+
 void func_800B7B80(CoalFlameEng *eng, CoalFlameFux *fux, s32 id);
 
 s32 func_800BB7E0(Ovl68Obj *a, Ovl68Pos *b);
