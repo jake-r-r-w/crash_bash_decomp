@@ -1785,15 +1785,11 @@ void func_800B7134(void) {
     s32 i;
     s32 j;
     s32 m;
-    u32 t;
     u32 a;
     s32 w;
     u32 u;
     u32 k;
     Ovl5eTile *tile;
-    u16 *tb;
-    TrigEntry *trig;
-    u16 *seq;
 
     if (D_800BE824 != NULL) {
         if (D_800BD8D4 == 0) {
@@ -1837,27 +1833,23 @@ void func_800B7134(void) {
             j--;
         } while (j > 0);
         D_800BE888 += 0x20;
-        t = D_800BE888;
         for (i = 1; i < 8; i++) {
             j = 0;
-            tb = D_800BE838;
-            trig = D_80068BD4;
-            seq = D_800BD1B0;
             for (; j < 7; j++) {
                 tile = D_800BD948[j][i].tile;
                 if (tile != NULL) {
                     a = D_800BD948[j][i].unkC;
-                    u = t + a;
+                    u = D_800BE888 + a;
                     a >>= 7;
-                    w = tb[a];
+                    w = D_800BE838[a];
                     tile->unk8 = D_800BD948[j][i].unk12;
                     k = ((u & 0xFFF) - 0x400) & 0xFFF;
-                    tile->unk8 += (w * trig[k].unk2) >> 12;
+                    tile->unk8 += (w * D_80068BD4[k].unk2) >> 12;
                     if (D_800BD948[j][i].unkE != 0) {
                         D_800BD948[j][i].unkA |= 0x100;
-                        tile->unk74 = seq[D_800BD948[j][i].unkE];
+                        tile->unk74 = D_800BD1B0[D_800BD948[j][i].unkE];
                         D_800BD948[j][i].unkE++;
-                        if (seq[D_800BD948[j][i].unkE] == 0) {
+                        if (D_800BD1B0[D_800BD948[j][i].unkE] == 0) {
                             D_800BD948[j][i].unkE = 0;
                         }
                     } else {
@@ -1866,11 +1858,6 @@ void func_800B7134(void) {
                     }
                 }
             }
-            /* Dead stores (flow deletes them): a hack. Setting the table bases twice per pass
-               stops loop.c moving them out of this loop; the target rebuilds each one per i. */
-            tb = NULL;
-            trig = NULL;
-            seq = NULL;
         }
     }
 }
