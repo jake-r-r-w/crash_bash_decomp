@@ -21,7 +21,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   **main.exe, ovl61 and ovl6a are complete**; 114 left: ovl62 26, ovl5f 18,
   ovl63 17, ovl67 9, ovl65 8, ovl5d 7, ovl60 7, ovl64 7, ovl68 5, ovl66 3,
   ovl69 3, engine 2, ovl5e 2. All 564 PsyQ functions (Sony objects). 4
-  parked by hand (`decomp.py status`), 13 matched with a hack (`decomp.py
+  parked by hand (`decomp.py status`), 12 matched with a hack (`decomp.py
   hacks`; the lint flags dead stores and identical if/else arms since
   2026-10-21). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
@@ -54,7 +54,7 @@ big-mode retry (`--seg overlays/ --retry-failed --big-bytes 1 --workers 1
 --big-workers 6`) still matched 85 in 3 h, at $2.70 a match (the first:
 $1.90). Next: `swarm.mjs permute --near --minutes 60` on the checkpoints at
 the registers stage (CPU only), then one more big-mode retry if it still
-pays; rework the 13 hacks by hand between runs. After each run, the
+pays; rework the 12 hacks by hand between runs. After each run, the
 "After a run" checklist in tools/swarm/README.md (`stats --run ID`, parks,
 gate failures, `fold`, this log).
 
@@ -79,7 +79,7 @@ rest are fixed by hand from the worker's patch (Gotchas). A park whose
 `jtbl_` names functions is a bad split (Gotchas).
 
 Hand work, between runs:
-1. The parks: `func_8007F314` and `PlotScriptFX` (engine), `func_800BC274` (ovl5e), and the 13 hack matches (`decomp.py hacks`; Open leads for `func_800B345C`, `func_800B4444`).
+1. The parks: `func_8007F314` and `PlotScriptFX` (engine), `func_800BC274` (ovl5e), and the 12 hack matches (`decomp.py hacks`; Open lead for `func_800B345C`).
 2. Name each function as it's matched when the evidence allows.
 3. Split `main.c` into its translation units: on hold since 2026-10-15. Its
    one proven boundary (jump-table parity, 95..370) has three possible
@@ -174,13 +174,6 @@ and current tools).
     the worker's patch (`<swarm dir>/results/ovl65_800B4268/`). Its hint:
     end with `r2 = r1 < 0x100; if (r2) goto one; t0 = 0; return t0;` so the
     early `return 0` isn't cross-jumped onto the final one.
-  - `func_800B4444` (ovl68) matched with two workarounds. It keeps a dead
-    pointer increment alive with an unused `j`/`k` cycle (`if (*p != 0) {
-    j = k + 1; k = j; }`, which cse keeps and flow deletes; `decomp.py hacks`
-    lists it as a dead store since 2026-10-21, write_only_locals), and it
-    calls `func_800B3330` through a function-pointer cast instead of fixing
-    that stub's `void (void)` prototype. Fix the prototype and find the
-    real loop shape.
   - Hints on still-unmatched functions: `func_800B47C8` (ovl60) lays out
     0xD/0xE/else as E, D, else (`goto case_d` into an `else if (0)`
     block got it there); `PlotCircleFire` structure 133/155: index the
@@ -514,6 +507,15 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-21 (hand: `func_800B4444` without its hack):** 40ba6e7d. The
+  target steps a pointer it never reads, so the original read `*p` and
+  lost the read late: the `-d` dumps showed jump2 deleting an
+  `if (*p)` branch whose body flow had emptied. An unused `s16` counter
+  (`if (*p != NULL) c++;`, add + sign-extend: a cycle cse1 keeps and flow
+  deletes) in a goto loop matches; an `s32` one dies in cse1.
+  `func_800B3330` takes its `s32 *` (18402bd5), no cast.
+  12 hacks left.
 
 - **2026-10-21 (hand: `func_800BC274`, still parked):** a fourth pass
   with no hacks or permuter. Worked sched1's tie-breaks from sched.c:
