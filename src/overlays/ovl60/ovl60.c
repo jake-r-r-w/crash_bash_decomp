@@ -1573,7 +1573,38 @@ void func_800B9C10(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B9D64);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BA018);
+s32 func_800BA018(s32 arg0, s32 arg1, s32 arg2) {
+    Ovl60Cell *c;
+    Ovl60Cell *base;
+    HeroInfo *h;
+    s32 lock;
+
+    if ((u32)arg1 < 8 && (u32)arg2 < 8) {
+        if (func_800C0AFC(arg1, arg2) != 0) {
+            return 1;
+        }
+        base = D_800C53DC[0];
+        c = (Ovl60Cell *)(arg2 * sizeof(Ovl60Cell) + arg1 * sizeof(D_800C53DC[0]) + (u32)base);
+        h = c->hero;
+        if (h == NULL) {
+            return 0;
+        }
+        lock = h->hero_pu_lock;
+        if (h->hero_pu_action == 10) {
+            if (lock < 3) {
+                return 0;
+            }
+        } else if (lock < 3) {
+            return 0;
+        }
+        if (D_800C53DC[arg1][arg2].unk10 == 0 || D_800C53DC[arg1][arg2].unk10 == arg0 + 1) {
+            goto ok;
+        }
+    }
+    return 0;
+ok:
+    return 1;
+}
 
 s32 func_800BA110(s32 arg0, s32 arg1, s32 arg2) {
     Ovl60Cell *c;
