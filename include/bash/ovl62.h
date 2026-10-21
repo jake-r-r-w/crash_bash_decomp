@@ -335,6 +335,24 @@ static inline void Ovl62StartChase(s32 player) {
 }
 s32 func_800B9714(s32 player);
 
+/* Inlined twice into func_800B7CDC. */
+static inline void Ovl62Grab(s32 player) {
+    Ovl62Fux *f;
+
+    f = (Ovl62Fux *)Heroes[player].hero->FUX;
+    if (f == NULL) {
+        return;
+    }
+    if (f->state != 6 || f->unk24 == 0) {
+        f->unk24 = 0x3C;
+    }
+    f->state = 6;
+    f->func = func_800B7F70;
+    f->unk2C = 0;
+    f->unk3C = 1;
+    f->unk34 |= 1;
+}
+
 s32 func_800CD118(s32 *arg0, s32 arg1);
 
 void func_800B9D48(s32 player);
