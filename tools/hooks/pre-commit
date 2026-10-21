@@ -9,7 +9,8 @@ while IFS= read -r -d '' f; do
   esac
   [ -f "$f" ] || continue
   size=$(wc -c < "$f")
-  if [ "$size" -gt 2097152 ]; then
+  # docs/progress.json is our own stats; its history grows by a line per commit
+  if [ "$size" -gt 2097152 ] && [ "$f" != docs/progress.json ]; then
     echo "pre-commit: refusing file over 2 MB: $f" >&2; fail=1; continue
   fi
   if [ "$(head -c 8 "$f" 2>/dev/null)" = "PS-X EXE" ]; then

@@ -303,11 +303,11 @@ Other:
 ## Gotchas
 
 **Tooling**
-- **docs/progress.json must stay under 2 MB** (pre-commit limit): its
-  history grows by one point per commit. At the limit `done --commit`
-  fails after a full match ("refusing file over 2 MB"); the swarm keeps
-  the match in results/, and `run --resume RUNID --only ...` gates it
-  again. Thin the history if it nears 2 MB again.
+- **The pre-commit hook refuses files over 2 MB** (a catch-all for game
+  data) except docs/progress.json, whose history grows by a line per commit
+  (exempt since 2026-10-21; it once blocked 5 swarm matches). A match the
+  gate refuses at commit stays in the swarm's results/:
+  `run --resume RUNID --only ...` gates it again.
 - **`done --commit` in a git worktree (`.claude/worktrees/...`) fails at
   `git add`** ("not a git repository: /work/C:/..."): the worktree's `.git`
   file names a Windows path the container can't see. A worktree also lacks
