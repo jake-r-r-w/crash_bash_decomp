@@ -538,7 +538,59 @@ void func_800B46DC(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B4954);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B4AD8);
+s32 func_800B4AD8(arg0)
+s32 arg0;
+{
+    s32 v;
+    s32 t;
+    u32 u;
+    u16 *p;
+    u16 *d;
+    subengine *s;
+
+    v = D_800C4184[arg0];
+    if (v == 0) {
+        d = &D_800C417C[arg0];
+        do {
+        } while (0);
+        p = (u16 *)D_800C39EC;
+        p += Heroes[arg0].hero_name * 5;
+        if (*d <= p[2]) {
+            t = p[2];
+        } else {
+            t = p[3];
+        }
+        if (D_800C417C[arg0] == t) {
+            if (p || Heroes[arg0].hero_name) {
+                return 1;
+            } else {
+                return 1;
+            }
+        }
+    } else {
+        if (v < 0) {
+            u = D_800C39EC[Heroes[arg0].hero_name][0];
+        } else {
+            u = D_800C39EC[Heroes[arg0].hero_name][1];
+        }
+        if (D_800C417C[arg0] == u) {
+            goto skip;
+        }
+    }
+    D_800C417C[arg0] += 1;
+skip:
+    if (D_800C417C[arg0] >= 0x1D) {
+        D_800C417C[arg0] = 1;
+    }
+
+    s = Heroes[arg0].hero_sub;
+    s = s->next;
+    if (s != 0) {
+        s->unk74 = D_800C39EC[Heroes[arg0].hero_name][4] + D_800C417C[arg0];
+        return 0;
+    }
+    return 1;
+}
 
 void func_800B4CE0(s32 arg0) {
     HeroInfo *base;
