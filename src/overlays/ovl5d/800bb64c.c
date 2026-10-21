@@ -667,7 +667,145 @@ void func_800BEDE8(s32 arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bb64c", func_800BEF00);
+void func_800BEF00(s32 arg0) {
+    HeroInfo *h;
+    EXTengine *pu;
+    subengine *sub;
+    VECTOR pos;
+    s32 y;
+    s32 t;
+    HeroInfo *base;
+    s32 top;
+    HeroInfo *h2;
+    HeroInfo *b2;
+    HeroInfo *h4;
+    HeroInfo *h5;
+    HeroInfo *h6;
+    HeroInfo *b4;
+    HeroInfo *b5;
+    HeroInfo *b6;
+
+    base = Heroes;
+    h = base + arg0;
+    if (h->hero_pu_timer != 0) {
+        h->hero_pu_timer--;
+    }
+    if (h->hero_pu_lock != 0) {
+        h->hero_pu_lock--;
+    }
+    if (h->hero_pu != 0) {
+        pu = h->hero_powerup;
+        sub = pu->sub;
+        if (func_80015780(h->hero_eng, h->hero_sub, 0x80, &pos) != NULL) {
+            top = pos.vy - 0x40;
+            y = top - h->hero_eng->unk10.y;
+        } else {
+            switch (h->hero_name) {
+            case 1:
+            case 2:
+                y = -0x180;
+                break;
+            case 3:
+            case 4:
+                y = -0x200;
+                break;
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            default:
+                y = -0x280;
+                break;
+            }
+        }
+        pu->unk10 = Heroes[arg0].hero_eng->unk10;
+        sub->unk08 = y;
+        switch (Heroes[arg0].hero_pu) {
+        case 0x1B:
+            sub->unk08 -= 0x60;
+            /* fallthrough */
+        case 0x19:
+        case 0x1C:
+            b2 = Heroes;
+            h2 = b2 + arg0;
+            if (h2->hero_weapon_count != 0) {
+                sub->flags |= 0x8000;
+                pu->unk10 = h2->hero_eng->unk10;
+                pu->unk1E += 0xAA;
+            } else {
+                h2->hero_pu = 0x1E;
+                h2->hero_pu_timer = 0;
+                h2->hero_status &= 0xFFEF;
+                if (pu->sfx != NULL) {
+                    StopSfx(pu->sfx);
+                }
+            }
+            break;
+        case 0x1E:
+            Heroes[arg0].hero_pu = 0;
+            Heroes[arg0].hero_status &= 0xFFEF;
+            sub->flags &= ~0x8000;
+            break;
+        case 0x14:
+            b4 = Heroes;
+            h4 = b4 + arg0;
+            if (h4->hero_pu_timer != 0) {
+                sub->flags |= 0x8000;
+                pu->unk10 = h4->hero_eng->unk10;
+                do {
+                    pu->unk1E += 0xAA;
+                } while (0);
+                if (D_800C4780 != NULL) {
+                    t = h4->hero_pu_timer;
+                    if (t >= 0x12C) {
+                        t = 0x12B;
+                    }
+                    func_800228A4(D_800C4780, (0x12C - t) * 0xF00 / 300 + 0x1E00);
+                }
+            } else {
+                if (D_800C4780 != NULL) {
+                    StopSfx(D_800C4780);
+                }
+                h4->hero_pu = 0;
+                SetHeroAction((HeroInfo *)arg0, 0x12);
+                pu->unk1E = 0;
+                sub->unk08 = 0;
+            }
+            break;
+        case 0x12:
+            b5 = Heroes;
+            h5 = b5 + arg0;
+            if (h5->hero_pu_timer != 0) {
+                sub->flags |= 0x8000;
+                pu->unk10 = h5->hero_eng->unk10;
+                pu->unk1E += 0xAA;
+                sub->unk0C = sub->unk08 >> 1;
+            } else {
+                h5->hero_pu = 0;
+                pu->unk1E = 0;
+                sub->unk04 = 0;
+                sub->unk08 = 0;
+                sub->unk0C = 0;
+                sub->flags &= ~0x8000;
+                PlaySfx(0x421, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            break;
+        default:
+            b6 = Heroes;
+            h6 = b6 + arg0;
+            if (h6->hero_pu_timer != 0) {
+                sub->flags |= 0x8000;
+            } else {
+                h6->hero_pu = 0;
+                sub->flags &= ~0x8000;
+            }
+            pu->unk10 = Heroes[arg0].hero_eng->unk10;
+            pu->unk1E += 0xAA;
+            break;
+        }
+        pu->unk5E = 1;
+    }
+}
 
 s32 func_800BF404(EXTengine *eng, s32 arg1, s32 who, s32 heroes) {
     s32 d;
