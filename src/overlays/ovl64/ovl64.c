@@ -511,7 +511,80 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B5D3C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", PlotBalloon);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B697C);
+void func_800B697C(Ovl64Fux *arg0) {
+    NAS *n;
+    Ovl64Fux *f;
+    s16 idx;
+    u32 a;
+    u32 b;
+    u16 w0;
+    u16 w1;
+    u16 w2;
+    u16 t;
+    u32 r;
+    s32 k;
+    u16 *p;
+
+    n = D_8005AA24;
+    idx = arg0->owner;
+    if (idx != -1) {
+        a = D_8009D87C[idx][0];
+        p = D_800BB848;
+        b = 0x20 - a;
+        a = p[a];
+        b = p[b];
+        if (D_8005A614[idx + 0x5C] != 0) {
+            w0 = a;
+            w1 = a >> 1;
+            w2 = b;
+        } else {
+            w0 = b;
+            w1 = b >> 1;
+            w2 = a;
+        }
+        w2++;
+        t = w2 + ((w0 = w0 + 1) + (w1 = w1 + 1));
+        if (t == 0) {
+            return;
+        }
+        r = (u16)Random(t);
+        arg0->state = 4;
+        if ((u16)w0 < r) {
+            arg0->state = 5;
+        }
+        if ((u16)w0 + (u16)w1 < (s32)r) {
+            arg0->state = 6;
+        }
+    }
+    switch (arg0->state) {
+    case 5:
+        PlaySfx(0x5ED, NULL, NULL, 0x1000, 0x1E00, 0);
+        for (; n != NULL; n = n->Object.Child) {
+            f = (Ovl64Fux *)n->FUX;
+            if (f != NULL && (k = f->kind) < 12 && k >= 8 && f->state != arg0->owner) {
+                f->owner = -1;
+                f->hit |= 8;
+            }
+        }
+        PlaySfx(0x5F1, NULL, NULL, 0x1000, 0x1E00, 0);
+        break;
+    case 6:
+        PlaySfx(0x5ED, NULL, NULL, 0x1000, 0x1E00, 0);
+        if (D_800BBD6C.sfx != NULL) {
+            StopSfx(D_800BBD6C.sfx);
+        }
+        PlaySfx(0x5EC, &D_800BBD6C.sfx, NULL, 0x1000, 0x1E00, 0);
+        PlaySfx(0x5F0, NULL, NULL, 0x1000, 0x1E00, 0);
+        D_800BC01C = ~D_800BC01C + 1;
+        break;
+    default:
+        PlaySfx(0x5ED, NULL, NULL, 0x1000, 0x1E00, 0);
+        PlaySfx(0x5EE, NULL, NULL, 0x1000, 0x1E00, 0);
+        D_800BBD64 = 0x96;
+        D_800BBD62 = arg0->owner;
+        break;
+    }
+}
 
 void func_800B6C50(s32 arg0) {
     HeroInfo *base;

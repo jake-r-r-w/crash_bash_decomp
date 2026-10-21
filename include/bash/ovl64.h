@@ -95,10 +95,17 @@ typedef struct {
 typedef struct Ovl64Fux {
     /* 0x00 */ u8 pad0[0x14];
     /* 0x14 */ u16 kind;
-    /* 0x16 */ u8 pad16[0x1A - 0x16];
+    /* 0x16 */ s16 owner;
+    /* 0x18 */ u8 pad18[0x1A - 0x18];
     /* 0x1A */ u16 sub;
     /* 0x1C */ u16 mask;
+    /* 0x1E */ u16 hit;
+    /* 0x20 */ u8 pad20[0x24 - 0x20];
+    /* 0x24 */ s16 state;
 } Ovl64Fux;
+
+/* balloon chance weights, indexed by score and 0x20 - score (func_800B697C) */
+extern u16 D_800BB848[];
 
 typedef struct {
     u8 unk0;
@@ -297,5 +304,7 @@ extern s32 D_800BBD68;
 extern EXTengine D_800BBD6C;
 extern _sfx_handler *D_800BBE00;
 extern s32 D_80053004;
+
+void func_800B697C(Ovl64Fux *arg0);
 
 #endif /* BASH_OVL64_H */
