@@ -293,6 +293,8 @@ static inline NAS *Ovl5dSpawnPuff(SLONG_XYZ *v) {
     return NULL;
 }
 
+void func_800B8C9C(EXTengine *self);
+
 void InitTumbler(NAS *nas);
 
 void PlotTumbler(NAS *nas);

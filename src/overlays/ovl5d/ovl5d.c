@@ -793,7 +793,99 @@ void func_800B8B00(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B8C9C);
+void func_800B8C9C(EXTengine *self) {
+    FlagRecord *rec;
+    FlagRecord *r;
+    s32 etop;
+    s32 ebot;
+    EXTengine *eng;
+    NAS *nas;
+    EXTobject *obj;
+    s32 i;
+    s32 radius;
+    s32 top;
+    s32 bot;
+    s32 dx;
+    s32 dz;
+    s32 rr;
+    s32 dist;
+    s32 ang;
+
+    rec = func_80025A48(self, 0x400);
+    i = 0;
+    if (rec == NULL) {
+        return;
+    }
+    radius = rec->radius;
+    top = self->unk10.y + rec->unk2;
+    bot = self->unk10.y + rec->height;
+    for (; i < 4; i++) {
+        if (!(Heroes[i].hero_status & 0xF800)) {
+            eng = Heroes[i].hero_eng;
+            if (eng != NULL) {
+                r = func_80025A48(eng, 0x40);
+                if (r == NULL) {
+                    continue;
+                }
+                etop = eng->unk10.y + r->unk2;
+                ebot = eng->unk10.y + r->height;
+                if (bot < etop && ebot < top) {
+                    dx = eng->unk10.x - self->unk10.x;
+                    dz = eng->unk10.z - self->unk10.z;
+                    rr = r->radius;
+                    rr += radius;
+                    dist = dx * dx + dz * dz;
+                    rr *= rr;
+                    if (dist < rr) {
+                        Heroes[i].hero_move->reactive_angle = get_angle(self->unk10.x, self->unk10.z);
+                        Heroes[i].hero_move->reactive_speed = 0x60;
+                        func_80084E04(i, NULL, -1, 0x8005, 0x446);
+                    }
+                }
+            }
+        }
+    }
+    for (nas = D_8005AA2C; nas != NULL; nas = nas->Solid.Child) {
+        if (!(nas->Class & 0x200)) {
+            continue;
+        }
+        eng = nas->Engine;
+        if (eng == NULL || eng == self) {
+            continue;
+        }
+        r = func_80025A48(eng, 0x40);
+        if (r == NULL) {
+            continue;
+        }
+        etop = eng->unk10.y + r->unk2;
+        ebot = eng->unk10.y + r->height;
+        if (bot < etop && ebot < top) {
+            dx = eng->unk10.x - self->unk10.x;
+            dz = eng->unk10.z - self->unk10.z;
+            rr = r->radius;
+            rr += radius;
+            dist = dx * dx + dz * dz;
+            if (dist < rr * rr) {
+                ang = get_angle(-dx, -dz);
+                dist = csqrt(dist) >> 6;
+                dist = rr - dist;
+                eng->unk10.x -= (dist * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                eng->unk10.z -= (dist * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+                obj = FindExtension(nas, 0x1000);
+                if (obj != NULL) {
+                    if (obj->can_do & 8) {
+                        obj->player = 6;
+                        obj->will_do |= 8;
+                    }
+                    if (obj->can_do & 2) {
+                        obj->player = 6;
+                        obj->will_do |= 2;
+                    }
+                }
+            }
+        }
+    }
+}
 
 void InitTumbler(NAS *nas) {
     EXTengine *eng;
