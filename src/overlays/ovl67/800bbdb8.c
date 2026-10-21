@@ -264,7 +264,35 @@ void func_800BF7C8(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", InitAsteroidRoll);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", PlotAsteroidRoll);
+void PlotAsteroidRoll(NAS *nas) {
+    AsteroidExt *ext;
+    s32 n;
+
+    ext = FindExtension(nas, 0x10000000);
+    if (ext != NULL) {
+        nas->Engine->unk1C += 0x200;
+        if (func_8008C5C4(&ext->from.x, &ext->to.x, ext->arc, &nas->Engine->unk10.x) != 0) {
+            ext->vy = -((ext->vy * 200) >> 8);
+            nas->Engine->unk10.y = ext->floor;
+            n = ext->bounces + 1;
+            ext->vx *= 200;
+            ext->bounces = n;
+            ext->vz *= 200;
+            ext->vx >>= 8;
+            ext->vz >>= 8;
+            if (n == 4 ||
+                nas->Engine->unk10.x * nas->Engine->unk10.x +
+                        nas->Engine->unk10.z * nas->Engine->unk10.z > 0x6400000) {
+                KillNAS(nas);
+                return;
+            }
+        }
+        ext->shadow->unk10 = nas->Engine->unk10;
+        ext->shadow->unk10.y = 0x100;
+    }
+    nas->Engine->unk5E = 1;
+    ext->shadow->unk5E = 1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", PlotNitroMine);
 

@@ -398,4 +398,25 @@ extern s32 D_800C45B8;
 
 void func_800C2218(SparkObj *arg0);
 
+/* Asteroid roll extension (id 0x10000000): a ballistic arc (func_8008C5C4's
+ * Arc, declared in bash/8007ee2c.h) at 0x0C. */
+typedef struct AsteroidExt {
+    /* 0x00 */ u8 pad00[0xC];
+    /* 0x0C */ s32 arc[5];
+    /* 0x20 */ s32 vy;    /* arc vy */
+    /* 0x24 */ s32 floor; /* arc floor */
+    /* 0x28 */ s32 arc28[6];
+    /* 0x40 */ s32 vx;    /* arc vx */
+    /* 0x44 */ s32 vz;    /* arc vz */
+    /* 0x48 */ u8 pad48[0x60 - 0x48];
+    /* 0x60 */ SLONG_XYZ from;
+    /* 0x6C */ SLONG_XYZ to;
+    /* 0x78 */ s32 bounces;
+    /* 0x7C */ EXTengine *shadow;
+} AsteroidExt;
+
+s32 func_8008C5C4(s32 *from, s32 *to, void *arc, s32 *pos);
+
+void PlotAsteroidRoll(NAS *nas);
+
 #endif /* BASH_OVL67_800BBDB8_H */
