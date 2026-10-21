@@ -405,7 +405,64 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B53CC);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B574C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B5B1C);
+void func_800B5B1C(s32 i) {
+    VECTOR v;
+    subengine *sub;
+    s32 name;
+    s32 n;
+
+    name = Heroes[i].hero_name;
+    if ((u32)(name - 3) < 2) {
+        sub = Heroes[i].hero_fx->sub;
+        if (sub != NULL && func_80015780(Heroes[i].hero_eng, Heroes[i].hero_sub, 0x200, &v) != NULL) {
+            sub->unk6C = D_80053B9C;
+            sub->unk50 = 1;
+            sub->flags |= 0x8000;
+            Heroes[i].hero_fx->unk5D = 1;
+            Heroes[i].hero_fx->unk10 = *(SLONG_XYZ *)&v;
+            Heroes[i].hero_fx->unk1E = Heroes[i].hero_eng->unk1E;
+            Heroes[i].hero_fx->unk5E = 1;
+            if (Heroes[i].hero_mode == 0x3A) {
+                D_800C53CC[i] += 5;
+                if (D_800C53CC[i] > 45) {
+                    D_800C53CC[i] = 45;
+                }
+            } else {
+                D_800C53CC[i] -= 2;
+                if (D_800C53CC[i] < 5) {
+                    D_800C53CC[i] = 5;
+                }
+            }
+            Heroes[i].hero_fx->unk1C = (D_800C53CC[i] << 12) / 360;
+            switch (name) {
+            case 3:
+                n = D_800C52E4;
+                sub->unk74 = 0x2021;
+                break;
+            case 4:
+                n = D_800C52E0;
+                sub->unk74 = 0x2021;
+                break;
+            default:
+                sub->unk74 = 0;
+                n = 0;
+                break;
+            }
+            if (n > 20) {
+                n = 0;
+            }
+            if (n != 20 && n != 0) {
+                n = Random(16);
+            }
+            sub->unk50 = 1;
+            sub->unk20.x = 0x1000;
+            sub->unk20.z = 0x1000;
+            sub->unk51 = 0;
+            sub->unk20.y = D_800C44D8[n];
+            sub->unk52 = 1;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B5D90);
 

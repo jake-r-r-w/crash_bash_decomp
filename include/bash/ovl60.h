@@ -147,6 +147,7 @@ void func_800B7B1C(s32 x, s32 z, s32 hero);
 void func_800B8180(s32 x, s32 z);
 s32 func_800C1EA8(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 extern s32 D_800C53CC[];
+extern s16 D_800C44D8[];
 extern s32 D_800C4484[];
 void func_800C1004(s32 arg0);
 void func_800C02AC(EXTengine *eng, s32 angle);
