@@ -9,12 +9,17 @@
 #include "bash/ovl66.h"
 
 typedef struct Ovl66PadButtons {
-    /* 0x00 */ u8 unk0[0x50];
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ u8 unk4[0x38 - 0x04];
+    /* 0x38 */ u16 unk38;
+    /* 0x3A */ u8 unk3A[0x50 - 0x3A];
     /* 0x50 */ s32 unk50;
     /* 0x54 */ s32 unk54;
 } Ovl66PadButtons;
 
 extern HeroInfo Heroes[4];
+extern s32 D_800B94E0[];
+extern s32 D_800B9440[];
 
 void func_800B8A30(s32 arg0);
 typedef struct Ovl66Slot {

@@ -57,7 +57,30 @@ void func_800B70C4(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/800b6efc", func_800B717C);
+void func_800B717C(s32 arg0) {
+    EXTheromove *m;
+
+    m = Heroes[arg0].hero_move;
+    m->forward_speed = 0;
+    if (Heroes[arg0].hero_frozen != 0) {
+        ((Ovl66PadButtons *)D_80051338)[arg0].unk50 &= 0x8000;
+    }
+    if ((((Ovl66PadButtons *)D_80051338)[arg0].unk0 & 1) || D_8005A614[arg0 + 0x5C] != 0) {
+        if (((Ovl66PadButtons *)D_80051338)[arg0].unk50 & 0xF0) {
+            m->forward_angle = ((Ovl66PadButtons *)D_80051338)[arg0].unk38 + 0x800;
+            if (m->velocity_enable != 0) {
+                if (D_800B9F4C[arg0].f8 == 0) {
+                    m->forward_speed = D_8005A614[arg0 + 0x5C] != 0 ? D_800B94E0[D_800B9EEC] : 0x50;
+                } else {
+                    m->forward_speed = D_8005A614[arg0 + 0x5C] != 0 ? D_800B9440[D_800B9EEC] : 0x2D;
+                }
+            }
+        } else {
+            m->x_max = 0;
+            m->z_max = 0;
+        }
+    }
+}
 
 void func_800B72FC(s32 idx) {
     HeroInfo *base = Heroes;
