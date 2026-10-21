@@ -398,6 +398,44 @@ done:
     return found;
 }
 
+/* func_800CB178, inlined into func_800B90C0. */
+static inline s32 Ovl62Closest(s32 self, s32 *dist) {
+    SLONG_XYZ pos;
+    s32 best;
+    HeroInfo *h;
+    HeroInfo *me;
+    HeroInfo *base;
+    s32 i;
+    s32 d;
+    s32 min;
+    u16 st;
+
+    best = -1;
+    min = 0x07FFFFFF;
+    i = 0;
+    base = Heroes;
+    me = &base[self];
+    h = base;
+loop:
+    if (i < 4) {
+        do {
+            if (i != self && !((st = h->hero_status) & 0x2000) && !(st & 0x8000)) {
+                pos = h->hero_eng->unk10;
+                d = func_8008CEB0((u8 *)&pos, (u8 *)&me->hero_eng->unk10);
+                if (d < min) {
+                    min = d;
+                    best = i;
+                }
+            }
+            h++;
+            i++;
+        } while (0);
+        goto loop;
+    }
+    *dist = min;
+    return best;
+}
+
 /* func_800CB56C as inlined into func_800B6FEC. */
 static inline s32 Ovl62HasBomb2(s32 player) {
     NAS *nas;
