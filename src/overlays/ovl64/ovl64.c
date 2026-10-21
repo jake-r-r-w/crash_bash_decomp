@@ -209,7 +209,67 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B4970);
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl64/ovl64", D_800B32B8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B4BA4);
+void func_800B4BA4(void) {
+    s32 i;
+    u16 *p;
+    s32 j;
+    NAS *n;
+    EXTengine *e;
+    Ovl64Fux *f;
+    s32 t;
+    s32 x0, x1, z0, z1;
+
+    i = 12;
+    p = D_8009E46C;
+    p += 12;
+    do {
+        *p = 0;
+        i--;
+        p--;
+    } while (i >= 0);
+    for (j = 12; j >= 0; j--) {
+        D_8009E25C[j] = 0;
+    }
+    for (n = D_8005AA24; n != NULL; n = n->Object.Child) {
+        e = n->Engine;
+        if (e == NULL) continue;
+        f = (Ovl64Fux *)n->FUX;
+        if (f == NULL) continue;
+        t = f->kind;
+        x0 = ((e->unk10.x - 0x80) >> 8) + 10;
+        x1 = ((e->unk10.x + 0x80) >> 8) + 10;
+        z0 = 9 - ((e->unk10.z - 0x80) >> 8);
+        z1 = 9 - ((e->unk10.z + 0x80) >> 8);
+        if ((u32)x0 < 20) {
+            if ((u32)z0 < 20) {
+                D_8009D90C[z0 * 20 + x0].unk0 |= t;
+            }
+            if ((u32)z1 < 20) {
+                D_8009D90C[z1 * 20 + x0].unk0 |= t;
+            }
+        }
+        if ((u32)x1 < 20) {
+            if ((u32)z0 < 20) {
+                D_8009D90C[z0 * 20 + x1].unk0 |= t;
+            }
+            if ((u32)z1 < 20) {
+                D_8009D90C[z1 * 20 + x1].unk0 |= t;
+            }
+        }
+        if ((u16)(f->kind - 1) < 12) {
+            switch (f->sub) {
+            case 0:
+            case 1:
+            case 3:
+            case 6:
+            case 7:
+                D_8009E46C[0]++;
+                D_8009E46C[f->kind]++;
+                break;
+            }
+        }
+    }
+}
 
 void func_800B4DC4(u16 count, s16 arg1) {
     Ovl64Pair *p;

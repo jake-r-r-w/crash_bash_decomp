@@ -95,9 +95,17 @@ typedef struct {
 typedef struct Ovl64Fux {
     /* 0x00 */ u8 pad0[0x14];
     /* 0x14 */ u16 kind;
-    /* 0x16 */ u8 pad16[0x1C - 0x16];
+    /* 0x16 */ u8 pad16[0x1A - 0x16];
+    /* 0x1A */ u16 sub;
     /* 0x1C */ u16 mask;
 } Ovl64Fux;
+
+typedef struct {
+    u8 unk0;
+    u8 unk1;
+} Ovl64MapCell;
+extern Ovl64MapCell D_8009D90C[400];
+extern u16 D_8009E25C[13];
 
 void func_800BB37C(EXTengine *eng, Ovl64HitMask *m, u32 flag, s32 hero);
 
@@ -265,6 +273,8 @@ typedef struct {
 } Ovl64HitFlags;
 
 s32 func_800B3EDC(void);
+
+void func_800B4BA4(void);
 
 void func_800B4DC4(u16 count, s16 arg1);
 
