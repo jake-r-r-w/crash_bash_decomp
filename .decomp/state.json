@@ -6289,7 +6289,8 @@
   "status": "matched"
  },
  "ovl60:800C1840": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-21T06:32:34Z",
+  "status": "matched"
  },
  "ovl60:800C19A8": {
   "matched_at": "2026-10-19T08:34:48Z",

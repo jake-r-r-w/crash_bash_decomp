@@ -449,4 +449,6 @@ s32 func_800BD630(s32 hero);
 
 s32 func_800BDE24(s32 arg0);
 
+void func_800C1840(u32 x, u32 z, s32 id, s32 *seen);
+
 #endif /* BASH_OVL60_H */

@@ -2938,7 +2938,19 @@ s32 func_800C178C(void) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1840);
+void func_800C1840(u32 x, u32 z, s32 id, s32 *seen) {
+    if (x < 8 && z < 8 && D_800C53DC[x][z].unkA != id && seen[z * 8 + x] == 0) {
+        seen[z * 8 + x] = 1;
+        func_800C1840(x - 1, z - 1, id, seen);
+        func_800C1840(x, z - 1, id, seen);
+        func_800C1840(x + 1, z - 1, id, seen);
+        func_800C1840(x - 1, z, id, seen);
+        func_800C1840(x + 1, z, id, seen);
+        func_800C1840(x - 1, z + 1, id, seen);
+        func_800C1840(x, z + 1, id, seen);
+        func_800C1840(x + 1, z + 1, id, seen);
+    }
+}
 
 void func_800C19A8(s32 *arg0, s32 arg1) {
     s32 i;
