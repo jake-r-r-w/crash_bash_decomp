@@ -465,7 +465,38 @@ s32 func_800B6108(Ovl63Barrel *b) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B62F4);
+s32 func_800B62F4(Ovl63Barrel *self) {
+    Ovl63Barrel *b;
+    Ovl63SceneObj *obj;
+    Ovl63SceneObj *o;
+    s32 i;
+    s32 dx;
+    s32 dz;
+    s32 d;
+    s32 angle;
+
+    b = D_800C6F34;
+    i = 0;
+    obj = self->obj;
+    for (;; i++, b++) {
+        if (i >= D_800C66F0) {
+            return 1;
+        }
+        o = b->obj;
+        if (b != self && b->unk58 == 1) {
+            dx = obj->pos.x - o->pos.x;
+            dz = obj->pos.z - o->pos.z;
+            d = dx * dx + dz * dz;
+            if (d < 0x24000) {
+                d = csqrt(d) >> 6;
+                angle = get_angle(dx, dz) & 0xFFF;
+                d = 0x180 - d;
+                obj->pos.x += d * D_80068BD4[(angle - 0x400) & 0xFFF].unk2 >> 12;
+                obj->pos.z += d * D_80068BD4[angle].unk2 >> 12;
+            }
+        }
+    }
+}
 
 void func_800B6474(void) {
     Ovl63Barrel *b;
