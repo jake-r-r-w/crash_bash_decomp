@@ -94,7 +94,9 @@ void func_800B3538(s32 id);
 
 /* Hero NAS extension 0x10000000 func_800B9C10 ticks: a 26-frame timer. */
 typedef struct Ovl65HeroExt {
-    u8 pad[0x1C];
+    u8 pad[0xC];
+    s32 unkC;  /* 0x0C */
+    u8 pad10[0xC];
     s32 timer; /* 0x1C */
 } Ovl65HeroExt;
 
@@ -182,6 +184,8 @@ extern s32 D_800BD9FC;
 extern NAS *D_800BDA00;
 extern NAS *D_800BDA04;
 extern s32 D_800BDBA8;
+extern s32 D_800BDBA4;
+extern s32 D_800BDBAC;
 
 void func_800B7300(void);
 void func_800B7AA0(void);

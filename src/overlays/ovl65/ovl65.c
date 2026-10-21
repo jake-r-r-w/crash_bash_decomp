@@ -1181,7 +1181,139 @@ void func_800B7300(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B7664);
+void func_800B7664(void) {
+    NAS *nas;
+    NAS *o;
+    Ovl65Chase *c;
+    Ovl65HeroExt *x;
+    Ovl65Ext *e;
+    EXTheromove *mv;
+    s32 i;
+    s32 a;
+    u16 ang;
+    s32 sc;
+    s16 acc;
+    u8 *g;
+
+    func_8007EB1C(0x140, 0x28, 0);
+    func_8007D144();
+    g = D_8005A614;
+    if (*(s32 *)(g + 0x6C) != 0) {
+        D_80099174 |= 0x2000;
+    }
+    if (*(s32 *)(g + 0x6C) == 0) {
+        sc = *(u16 *)(g + 0x32) & 0x40;
+        do {
+            a = 0x100;
+        } while (0);
+    } else {
+        sc = *(u16 *)(g + 0x32) & 0x40;
+        do {
+            a = 0x45;
+        } while (0);
+    }
+    if (!sc) {
+        a = 0x130;
+    }
+    func_8007B7FC(a, 0x81C0);
+    D_8005A5D8 = -0x10;
+    func_800B714C();
+    D_800BDBA4 = 0;
+    D_800BDBA8 = 0;
+    D_800BDB90 = 0;
+    D_800BDB94 = 0;
+    D_800BDB88 = NULL;
+    D_800BDB9C = 0;
+    D_800BDBA0 = 0;
+    D_800BDBAC = 0;
+    o = SpawnNASById(0, 0, 0, 0x1902, 0x11);
+    if (o != NULL) {
+        o->UserInfo.user1 = 0;
+    }
+    o = SpawnNASById(0, 0, 0, 0x1902, 0x11);
+    if (o != NULL) {
+        o->UserInfo.user1 = 1;
+    }
+    o = SpawnNASById(0, 0, 0, 0x1902, 0x11);
+    if (o != NULL) {
+        o->UserInfo.user1 = 2;
+    }
+    o = SpawnNASById(0, 0, 0, 0x1902, 0x11);
+    if (o != NULL) {
+        o->UserInfo.user1 = 3;
+    }
+    i = 0;
+    for (;;) {
+        HeroInfo *h;
+
+        if (i >= 4) {
+            break;
+        }
+        h = &Heroes[i];
+        c = AddExtension(h->hero, 0x44, 0x20000000);
+        if (c != NULL) {
+            c->unk28 = -1;
+            c->fn = func_800BD1FC;
+            c->unk30 = 8;
+            c->state = 0;
+        }
+        x = AddExtension(h->hero, 0x20, 0x10000000);
+        if (x != NULL) {
+            acc = 6;
+            mv = h->hero_move;
+            mv->x_acc = acc;
+            mv->z_acc = acc;
+            mv->z_dec = acc;
+            mv->x_dec = acc;
+            mv->mass = 0x100;
+            ang = ((get_angle(h->hero_eng->unk10.x, h->hero_eng->unk10.z) + 0x800) & 0xFFF) + 0x800;
+            mv->forward_angle = ang;
+            h->hero_eng->unk1E = ang;
+            h->hero_eng->unk5E = 1;
+            h->hero_shadow->unk1E = h->hero_eng->unk1E;
+            x->unkC = 0x1E;
+            x->timer = 0;
+            h->hero_score = 0;
+            if (((Ovl65Game *)D_8005A614)->flags & 0x40) {
+                sc = D_8005A614[i + 0x5C];
+                if (sc != 0) {
+                    sc = 0xF;
+                } else {
+                    sc = 0x14;
+                }
+                h->hero_score = sc;
+            }
+            h->hero_score_displayed = h->hero_score;
+            SetHeroAction((HeroInfo *)i, 0x63);
+        }
+        i++;
+    }
+    nas = SpawnNASById(0x400, -0x40, 0, 0x1901, 0x11);
+    D_800BD9FC = (s32)nas;
+    e = FindExtension(nas, 0x10000000);
+    if (e != NULL) {
+        e->unkC = 7;
+    }
+    nas = SpawnNASById(-0x400, -0x40, 0, 0x1901, 0x11);
+    D_800BDA00 = nas;
+    e = FindExtension(nas, 0x10000000);
+    if (e != NULL) {
+        e->unkC = 7;
+    }
+    D_800BDA00->Engine->sub->unk74 = 0x2002;
+    if (((Ovl65Game *)D_8005A614)->flags & 0x80) {
+        D_800BDA00->Engine->sub->unk74 = 0x2002;
+    }
+    o = SpawnNASById(0, -0x40, 0x200, 0x1901, 0x11);
+    D_800BDA04 = o;
+    o->Engine->sub->unk74 = 0x2003;
+    if (((Ovl65Game *)D_8005A614)->flags & 0x80) {
+        o->Engine->sub->unk74 = 0x2003;
+    }
+    D_800BDA08[0] = (NAS *)D_800BD9FC;
+    D_800BDA08[1] = D_800BDA00;
+    D_800BDA08[2] = D_800BDA04;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B7AA0);
 
