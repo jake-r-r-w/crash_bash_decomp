@@ -1666,7 +1666,109 @@ void func_800B90F4(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B92D4);
+void func_800B92D4(void) {
+    Ovl67Aim *pad;
+    HeroInfo *heroes;
+    Ovl67Slot *s;
+    Ovl67Rec *r;
+    Ovl67SlotObj *o;
+    s32 i;
+    s32 y;
+    s32 p0;
+    s32 p1;
+    s32 x;
+    s32 z;
+
+    i = 0;
+    pad = (Ovl67Aim *)D_8005A614;
+    heroes = Heroes;
+    s = D_800C42D0;
+    r = D_800C4230;
+loop:
+    {
+        if (r->f16 != 0) {
+            r->f16--;
+        }
+        if (pad->unk30 & 0x801) {
+            if (s->kind != 0) {
+                s->kind = 1;
+            }
+            s->f24 = 1;
+        }
+        o = s->src;
+        if (o != NULL) {
+            y = s->kind;
+            switch (y) {
+            case 2:
+                if (s->f24 == 0) {
+                    PlaySfx(0x2C3, NULL, NULL, 0x1000, 0x1E00, 0);
+                    s->f24 = 1;
+                }
+                p0 = o->y;
+                if (s->f1C < p0) {
+                    p0 -= 0x10;
+                    o->y = p0;
+                    if (s->f1C < p0) {
+                        goto aim;
+                    }
+                }
+                o->y = s->f1C;
+                s->kind = 3;
+                s->f24 = 0;
+            case 3:
+            aim:
+                x = o->x;
+                z = o->z;
+                p1 = 1;
+                if (pad->unk6C == 0 || (p0 = heroes[0].hero_status, p0 &= 0xFA00, p0 = p0 != 0, heroes[1].hero_status & 0xFA00)) {
+                    p0 = p1 = 0;
+                }
+                if (!(i & 1)) {
+                    if (pad->unk6C != 0) {
+                        if (i != 0) {
+                            x -= heroes[(u16)p1].hero_eng->unk10.x;
+                            z -= heroes[(u16)p1].hero_eng->unk10.z;
+                        } else {
+                            x -= heroes[(u16)p0].hero_eng->unk10.x;
+                            z -= heroes[(u16)p0].hero_eng->unk10.z;
+                        }
+                    } else {
+                        x -= heroes[(u16)p0].hero_eng->unk10.x;
+                        z -= heroes[(u16)p0].hero_eng->unk10.z;
+                    }
+                } else {
+                    x -= heroes[3].hero_eng->unk10.x;
+                    z -= heroes[3].hero_eng->unk10.z;
+                }
+                s->f18 = get_angle(x, z);
+                break;
+            case 1:
+                if (s->f24 == 0) {
+                    PlaySfx(0x2C3, NULL, NULL, 0x1000, 0x1E00, 0);
+                    s->f24 = y;
+                }
+                if (o->y < s->f20) {
+                    o->y += 0x10;
+                } else {
+                    o->y = s->f20;
+                    s->kind = 0;
+                    s->f24 = 0;
+                }
+                break;
+            }
+            o->unk51 = 2;
+            y = func_800154A0(o->ang, (s16)s->f18);
+            o->unk52 = 1;
+            o->ang += y >> 1;
+        }
+        s++;
+        i++;
+        r++;
+    }
+    if (i < 4) {
+        goto loop;
+    }
+}
 
 void InitN2ODeadWall(NAS *nas)
 {

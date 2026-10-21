@@ -213,8 +213,29 @@ typedef struct {
 extern Ovl67Circle *D_800C418C;
 extern u8 D_800C37DC[];
 
+/* The object a D_800C42D0 slot moves (func_800B92D4). */
+typedef struct Ovl67SlotObj {
+    /* 0x00 */ u8 pad0[4];
+    /* 0x04 */ s32 x;
+    /* 0x08 */ s32 y;
+    /* 0x0C */ s32 z;
+    /* 0x10 */ u8 pad10[2];
+    /* 0x12 */ s16 ang;
+    /* 0x14 */ u8 pad14[0x3D];
+    /* 0x51 */ u8 unk51;
+    /* 0x52 */ u16 unk52;
+} Ovl67SlotObj;
+
+/* D_8005A614 as seen by func_800B92D4. */
+typedef struct Ovl67Aim {
+    /* 0x00 */ u8 pad0[0x30];
+    /* 0x30 */ u16 unk30;
+    /* 0x32 */ u8 pad32[0x3A];
+    /* 0x6C */ s32 unk6C;
+} Ovl67Aim;
+
 typedef struct Ovl67Slot {
-    struct { u8 pad0[8]; s32 y; } *src;
+    Ovl67SlotObj *src;
     s32 unk4;
     NAS *nas;
     u16 f0C;
@@ -482,6 +503,8 @@ typedef struct Ovl67FuxF {
     u8 pad0[0x1C];
     u16 flags;
 } Ovl67FuxF;
+
+void func_800B92D4(void);
 
 s32 func_800BA6C4(EXTengine *eng, Ovl67FuxF *self);
 
