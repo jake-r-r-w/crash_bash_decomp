@@ -23,6 +23,23 @@ extern u8 D_800548F4[];
 extern u8 D_80054AB4[];
 extern u8 D_80054AEC[];
 
+/* Per-character tables func_800CD594 hangs on hero_eng->sub->unk6C. */
+extern u8 D_80052E0C[];
+extern u8 D_80052E44[];
+extern u8 D_80052E7C[];
+extern u8 D_80052EB4[];
+extern u8 D_80052F24[];
+extern u8 D_800549D4[];
+extern u8 D_80054A44[];
+extern u8 D_80054BCC[];
+extern u8 D_80054C04[];
+extern u8 D_80054C3C[];
+extern u8 D_80054C74[];
+extern u8 D_80054CAC[];
+extern u8 D_80054CE4[];
+extern u8 D_80054D1C[];
+extern u8 D_80054D54[];
+
 void func_800B5AC4();
 void func_800BAFA0();
 void func_800BB810();
@@ -1288,5 +1305,7 @@ void func_800CBBE8(s32 p1, s32 p2);
 
 void func_800CC3B4(void);
 void func_800CCCB8(void);
+
+void func_800CD594(s32 player);
 
 #endif /* BASH_OVL62_H */

@@ -4328,7 +4328,122 @@ s32 func_800CD560(s32 arg0) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CD594);
+void func_800CD594(s32 player) {
+    HeroInfo *base;
+    HeroInfo *info;
+    EXTheromove *move;
+    Ext20 *ext;
+    s32 rnd;
+    s32 sfx;
+    s32 speed;
+
+    rnd = Random(6);
+    sfx = 0;
+    base = Heroes;
+    info = &base[player];
+    speed = 0;
+    if (info->hero_eng->sfx != NULL) {
+        StopSfx(info->hero_eng->sfx);
+    }
+    info->hero_eng->sub->flags &= 0xFFBFFFFF;
+    if (func_800D2D2C(player) != 0) {
+        return;
+    }
+    info->hero_eng->sub->unk68 = 0;
+    ext = FindExtension(info->hero, 0x20000000);
+    if (ext != NULL) {
+        ext->unk14 = 0;
+    }
+    info->hero_eng->unk5D = 0;
+    info->hero_eng->unk1C = 0;
+    move = info->hero_move;
+    if (move != NULL) {
+        speed = csqrt(move->x_vel * move->x_vel + move->z_vel * move->z_vel) >> 6;
+        move->z_dir = 0;
+        move->x_acc = 2;
+        move->x_dec = 1;
+        move->z_acc = 2;
+        move->z_dec = 1;
+        if (((Ovl62ModeView *)D_8005A614)->mode == 0x16) {
+            move->x_acc = 4;
+            move->z_acc = 4;
+        }
+    }
+    if (D_8005A648 != 0x14) {
+        if (Heroes[player].hero_name == 1) {
+            Heroes[player].hero_eng->sub->unk6C = D_80052E0C;
+        }
+        if (Heroes[player].hero_name == 2) {
+            Heroes[player].hero_eng->sub->unk6C = D_80052E44;
+        }
+        if (Heroes[player].hero_name == 5) {
+            Heroes[player].hero_eng->sub->unk6C = D_80052EB4;
+        }
+        if (Heroes[player].hero_name == 3) {
+            Heroes[player].hero_eng->sub->unk6C = D_80052E7C;
+        }
+        if (Heroes[player].hero_name == 7) {
+            Heroes[player].hero_eng->sub->unk6C = D_80052EEC;
+        }
+        if (Heroes[player].hero_name == 8) {
+            Heroes[player].hero_eng->sub->unk6C = D_80054A44;
+        }
+        if (Heroes[player].hero_name == 4) {
+            Heroes[player].hero_eng->sub->unk6C = D_80052F24;
+        }
+        if (Heroes[player].hero_name == 6) {
+            Heroes[player].hero_eng->sub->unk6C = D_800549D4;
+        }
+    } else {
+        if (Heroes[player].hero_name == 1) {
+            Heroes[player].hero_eng->sub->unk6C = D_80054BCC;
+        }
+        if (Heroes[player].hero_name == 2) {
+            Heroes[player].hero_eng->sub->unk6C = D_80054C04;
+        }
+        if (Heroes[player].hero_name == 5) {
+            Heroes[player].hero_eng->sub->unk6C = D_80054C74;
+        }
+        if (Heroes[player].hero_name == 3) {
+            Heroes[player].hero_eng->sub->unk6C = D_80054C3C;
+        }
+        if (Heroes[player].hero_name == 7) {
+            Heroes[player].hero_eng->sub->unk6C = D_80054CAC;
+        }
+        if (Heroes[player].hero_name == 8) {
+            Heroes[player].hero_eng->sub->unk6C = D_80054D1C;
+        }
+        if (Heroes[player].hero_name == 4) {
+            Heroes[player].hero_eng->sub->unk6C = D_80054CE4;
+        }
+        if (Heroes[player].hero_name == 6) {
+            Heroes[player].hero_eng->sub->unk6C = D_80054D54;
+        }
+    }
+    SetHeroSeq((HeroInfo *)player, 0x3A);
+    D_800D6934[player] = 0x4000;
+    if (rnd == 0) {
+        sfx = 0x456;
+    }
+    if (rnd == 1) {
+        sfx = 0x457;
+    }
+    if (rnd == 2) {
+        sfx = 0x458;
+    }
+    if (rnd == 3) {
+        sfx = 0x459;
+    }
+    if (rnd == 4) {
+        sfx = 0x45A;
+    }
+    if (rnd == 5) {
+        sfx = 0x45B;
+    }
+    if (speed > 0x20) {
+        PlaySfx(sfx, &Heroes[player].hero_eng->sfx, NULL, 0x1000, Random(0x100) + 0x1D80, 0);
+    }
+}
 
 void func_800CDA54(s32 player) {
     Ext20 *ext;
