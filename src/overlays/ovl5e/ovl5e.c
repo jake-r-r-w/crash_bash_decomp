@@ -798,7 +798,369 @@ NAS *func_800B4EE8(s32 a, s32 b, s32 c, u16 d)
   return nas;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", PlotPapuMinion);
+void PlotPapuMinion(NAS *nas)
+{
+  EXTengine *target_eng;
+  s32 slot;
+  s32 level;
+  EXTengine *eng;
+  MinionMove *move;
+  EXTanimator *anim;
+  MinionFux *fux;
+  MinionFux *other;
+  NAS *target;
+  Slot40 *s;
+  s32 dx;
+  s32 dz;
+  s32 i;
+  s32 hit;
+  s32 dist;
+  s32 angle;
+  s32 pick;
+  s32 who;
+  s32 frame;
+  s32 step;
+  u16 a;
+
+  slot = nas->UserInfo.user1;
+  eng = nas->Engine;
+  level = D_8009D88E;
+  if (eng == NULL) {
+    return;
+  }
+  target_eng = NULL;
+  dist = -1;
+  angle = 0;
+  move = FindExtension(nas, 0x800);
+  if (move == NULL) {
+    return;
+  }
+  anim = FindExtension(nas, 0x400);
+  if (anim == NULL) {
+    return;
+  }
+  fux = (MinionFux *)nas->FUX;
+  if (fux == NULL) {
+    return;
+  }
+  target = fux->target;
+  hit = 0;
+  if (target != NULL) {
+    for (i = 0; i < 4; i++) {
+      if (Heroes[i].hero == target) {
+        if (!(Heroes[i].hero_status & 0xFA00)) {
+          hit = 1;
+        }
+        break;
+      }
+    }
+    if (i == 4) {
+      pick = (s32)target->FUX;
+      if (pick != 0 && ((MinionFux *)pick)->state == 1) {
+        hit = 1;
+      }
+      if (target->Engine->platform != NULL) {
+        hit = 0;
+      }
+    }
+    if (hit) {
+      target_eng = target->Engine;
+      dx = target_eng->unk10.x - eng->unk10.x;
+      dz = target_eng->unk10.z - eng->unk10.z;
+      angle = get_angle(-dx, -dz);
+      dist = csqrt(dx * dx + dz * dz) >> 6;
+    }
+  }
+  if (!hit) {
+    fux->target = NULL;
+  }
+  frame = func_800250B0(nas);
+  switch (fux->state) {
+  case 5:
+    move->speed = 0;
+    eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
+    break;
+  case 1:
+    move->speed = 0;
+    if (fux->unk22 == 0) {
+      PlaySfx(0x1FA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+      func_8007A524(0, &eng->unk10.x, (s32)D_8005342C);
+      fux->unk22 = 5;
+      fux->state = 2;
+    } else {
+      fux->unk22--;
+    }
+    break;
+  case 2:
+    move->speed = 0;
+    if (fux->unk22 != 0) {
+      fux->unk22--;
+      break;
+    }
+    eng->flags |= 0x8021;
+    fux->state = 3;
+    move->unk1E = 0x50;
+    move->unk18 = 0;
+    move->unk1A = 6;
+    move->unk1C = 0;
+    move->unkC = 0;
+    func_80025FAC(anim, 3);
+    break;
+  case 3:
+    move->speed = 0;
+    if (func_8007A26C(nas) != 0) {
+      fux->unk1C |= 0x102;
+      eng->flags &= ~0x21;
+      fux->state = 4;
+      func_80025FAC(anim, 4);
+    }
+    break;
+  case 4:
+    move->speed = 0;
+    if (frame == 8) {
+      fux->state = 0;
+    }
+    break;
+  case 6:
+    dx = ((s32 (*)(EXTengine *))func_80025F44)(eng);
+    i = (s16)((s16)(((eng->unk1E -= 0x155) & 0xFFF) / 341) % 12);
+    eng->unk10.y -= dx;
+    if (frame == 8) {
+      fux->state = 0;
+      if (eng->sfx != NULL) {
+        StopSfx(eng->sfx);
+      }
+      eng->unk5C = 0;
+      eng->unk2C.x = 0x1000;
+      eng->unk2C.y = 0x1000;
+      eng->unk2C.z = 0x1000;
+    } else {
+      eng->unk5C = 1;
+      eng->unk2C.x = D_8009DC38[i];
+      eng->unk2C.y = D_8009DC50[i];
+      eng->unk2C.z = D_8009DC38[i];
+    }
+    who = func_800B6334(eng, 0x400);
+    if (who != -1) {
+      if ((Heroes[who].hero_immunity | Heroes[who].hero_hit) == 0) {
+        Heroes[who].hero_move->reactive_angle = angle;
+        Heroes[who].hero_move->reactive_speed = 0x30;
+        func_80084E04(who, NULL, -1, 0x8005, 0x446);
+      }
+    }
+    func_800B64AC(eng, 2, 0x400, (u16)nas->UserInfo.user1);
+    if (target_eng != NULL) {
+      move->angle = angle;
+    }
+    move->speed = 0x20;
+    break;
+  case 7:
+    eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
+    hit = (s32)func_800B6008(slot, 0x180);
+    if (hit != 0) {
+      for (i = 0; i < 4; i++) {
+        if (!(Heroes[i].hero_status & 0xFA00) &&
+            func_80015480(eng->unk1E, get_angle(eng->unk10.x - Heroes[i].hero_eng->unk10.x,
+                                                eng->unk10.z - Heroes[i].hero_eng->unk10.z)) < level * 4 + 0x1C0) {
+          func_80025FAC(anim, 0x10);
+          fux->state = 6;
+          break;
+        }
+      }
+      do {
+        if (fux->state != 6) {
+          other = (MinionFux *)((NAS *)hit)->FUX;
+          if (other != NULL) {
+            other->unk1E |= 1;
+            other->unk16 = D_800BD70C[slot].unk22;
+            fux->target = NULL;
+            fux->state = 8;
+            func_80025FAC(anim, 7);
+          }
+        }
+      } while (0);
+    } else if (target_eng == NULL) {
+      fux->state = 0;
+      func_80025FAC(anim, 0);
+    } else {
+      move->angle = angle;
+      move->speed = 0x20;
+    }
+    break;
+  case 8:
+    eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
+    move->speed = 0;
+    if (D_800BD70C[slot].pad4[6] != 0) {
+      if (frame == 8) {
+        if (((MinionFux *)D_800BD70C[slot].pad4[6])->unk14 == 5) {
+          fux->unk20 = 0x5A - Random(level + 0xA);
+        } else {
+          fux->unk20 = Random(level * 3 + 0x96) + 0xB4;
+        }
+        pick = 0;
+        if (*D_8005A680 != 0) {
+          pick = Random(2);
+          if (Heroes[pick].hero_status & 0xFA00) {
+            pick = Heroes[pick].hero_teammate;
+          }
+          if (pick == -1) {
+            who = -1;
+            goto have;
+          }
+        }
+        if (Heroes[pick].hero_status & 0xFA00) {
+          pick = -1;
+        }
+        who = pick;
+      have:
+        if (who != -1) {
+          fux->target = Heroes[who].hero;
+          fux->state = 9;
+          func_80025FAC(anim, 9);
+        }
+      }
+    } else {
+      fux->unk1E |= 2;
+    }
+    break;
+  case 9:
+    eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
+    if (D_800BD70C[slot].pad4[6] == 0) {
+      fux->unk1E |= 2;
+      break;
+    }
+    hit = (s32)((NAS **)D_800BD70C[slot].pad4[6])[-1];
+    if (hit == 0 || ((NAS *)hit)->Engine->platform != NULL) {
+      fux->target = NULL;
+      fux->state = 0xA;
+      func_80025FAC(anim, 0xA);
+    }
+    if (fux->unk20 != 0) {
+      fux->unk20--;
+      if (frame == 8 && dist < 0x600 &&
+          func_80015480(angle, eng->unk1E) < (0x20 - level) * 4 + 0x40) {
+        fux->target = NULL;
+        fux->state = 0xA;
+        func_80025FAC(anim, 0xA);
+      }
+      if (target_eng != NULL) {
+        move->angle = angle;
+        move->speed = 0x18;
+        break;
+      }
+      fux->target = NULL;
+      fux->state = 0xA;
+      func_80025FAC(anim, 0xA);
+      break;
+    }
+    fux->target = NULL;
+    fux->state = 0xA;
+    func_80025FAC(anim, 0xA);
+    break;
+  case 13:
+    eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
+    dx = D_800BD500[nas->UserInfo.user2].x - eng->unk10.x;
+    dz = D_800BD500[nas->UserInfo.user2].z - eng->unk10.z;
+    angle = get_angle(-dx, -dz);
+    dist = csqrt(dx * dx + dz * dz) >> 6;
+    if (dist < 0x200) {
+      fux->state = 0;
+    }
+    move->angle = angle;
+    move->speed = 0x20;
+    break;
+  case 10:
+    eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
+    move->speed = 0;
+    if (frame == 8) {
+      fux->state = 0;
+    } else if (frame == 0x10) {
+      if (D_800BD70C[slot].pad4[6] != 0) {
+        ((MinionFux *)D_800BD70C[slot].pad4[6])->unk1E |= 4;
+      }
+      D_800BD70C[slot].pad4[6] = 0;
+    }
+    break;
+  case 12:
+    eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
+    move->speed = 0;
+    pick = (s32)D_800BD70C[slot].pad4[6];
+    if (pick != 0) {
+      ((MinionFux *)pick)->unk16 = fux->unk16;
+    }
+    D_800BD70C[slot].pad4[6] = 0;
+    fux->state = 0xB;
+    fux->unk1C &= 0xFEFD;
+    fux->unk1E &= 0xFEFD;
+    D_800BD70C[slot].unk26 = 0;
+    func_80025FAC(anim, 0xD);
+    break;
+  case 11:
+    eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
+    move->speed = 0;
+    D_800BD70C[slot].pad4[6] = 0;
+    if (frame != 8) {
+      if (frame == 9 && D_800BD70C[slot].unk26 != 0) {
+        fux->state = 0;
+      }
+      break;
+    }
+    D_800BD70C[slot].unk0 = 0;
+    PlaySfx(0x1FB, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+    func_8007A524(0, &eng->unk10.x, (s32)D_8005342C);
+    KillNAS(nas);
+    return;
+  default:
+    eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
+    fux->unk1C |= 0x102;
+    move->speed = 0;
+    move->push = 0;
+    fux->target = func_800B4B9C(slot);
+    if (fux->target != NULL) {
+      func_80025FAC(anim, 1);
+      fux->state = 7;
+    } else {
+      nas->UserInfo.user2 = func_800B4D70((Ovl5ePos *)eng);
+      func_80025FAC(anim, 1);
+      fux->state = 0xD;
+    }
+    break;
+  }
+  if (fux->state != 6) {
+    s32 turn = func_800154A0(eng->unk1E, move->angle) >> 2;
+    if (turn != 0) {
+      eng->unk1E += turn;
+    } else {
+      eng->unk1E = move->angle;
+    }
+  }
+  eng->unk10.x -= (move->speed * D_80068BD4[(move->angle - 0x400) & 0xFFF].unk2) >> 12;
+  eng->unk10.z -= (move->speed * D_80068BD4[(u16)move->angle & 0xFFF].unk2) >> 12;
+  if (move->push != 0) {
+    eng->unk10.x -= (move->push * D_80068BD4[(move->push_angle - 0x400) & 0xFFF].unk2) >> 12;
+    eng->unk10.z -= (move->push * D_80068BD4[(u16)move->push_angle & 0xFFF].unk2) >> 12;
+    move->push -= 4;
+    if ((s16)move->push < 0) {
+      move->push = 0;
+    }
+  }
+  func_800B6860(slot);
+  func_800B7670((u8 *)eng);
+  if (fux->unk1E & 0x102) {
+    if (D_800BD70C[slot].pad4[6] != 0) {
+      ((MinionFux *)D_800BD70C[slot].pad4[6])->unk16 = fux->unk16;
+    }
+    D_800BD70C[slot].pad4[6] = 0;
+    move->push = 0x40;
+    move->push_angle = (move->angle + 0x800) & 0xFFF;
+    fux->state = 0xB;
+    fux->unk1C &= 0xFEFD;
+    fux->unk1E &= 0xFEFD;
+    PlaySfx(D_800BD700[Random(4)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+    func_80025FAC(anim, 0xD);
+  }
+  eng->unk5E = 1;
+}
 
 void func_800B5E44(B5E44Owner *arg0, s32 arg1, s32 arg2)
 {
