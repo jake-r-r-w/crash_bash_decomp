@@ -231,6 +231,11 @@ extern s32 D_800C5B4C[8];
 extern s32 D_800C5B6C[8];
 extern s32 D_800C5B8C[8];
 extern u8 D_800C3C14[][4][8];
+extern s32 D_800C3B14[];
+extern s32 D_800C3B94[];
+extern s16 D_800C4014[][2];
+extern s32 D_800C4084[][4];
+extern s32 D_800C4284[][4];
 
 typedef struct {
     s32 unk0;

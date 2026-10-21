@@ -3406,7 +3406,113 @@ void func_800BC490(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoProjectile);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BCB4C);
+void func_800BCB4C(void) {
+    s32 buf[0x40];
+    u8 *row;
+    s32 *pos;
+    s32 i;
+    s32 j;
+    HeroInfo *h;
+    Ovl60ModeView *g;
+
+    if (D_800C5BB4 == NULL) {
+        return;
+    }
+    if (D_800C5BC4 != 0) {
+        D_800C5BC4--;
+    }
+    if (D_800C5BD0 == 0) {
+        switch ((u32)D_80099178 >> 8) {
+        case 0x16:
+        case 0x17:
+        case 0x31:
+        case 0x32:
+        case 0x46:
+        case 0x47:
+        case 0x101:
+        case 0x102:
+        case 0x116:
+        case 0x117:
+            if (((u32)D_80099178 >> 8) != D_800C5BD4) {
+                PlaySfx(0x532, NULL, NULL, 0x1000, 0x1E00, 0);
+                D_800C5BD4 = (u32)D_80099178 >> 8;
+            }
+            break;
+        case 0x15:
+        case 0x30:
+        case 0x45:
+        case 0x100:
+        case 0x115:
+            D_800C5BD0 = Random(4) + 1;
+            PlaySfx(0x534, NULL, NULL, 0x1000, 0x1E00, 0);
+            func_800BD008(D_800C5BD0);
+            break;
+        }
+        return;
+    }
+    if (D_800C5BC4 != 0) {
+        return;
+    }
+    if (D_800C5300 != 0) {
+        if (--D_800C5BC0 < 0) {
+            D_800C5BC0 = 0x1F;
+        }
+    } else {
+        if (++D_800C5BC0 >= 0x20) {
+            D_800C5BC0 = 0;
+        }
+    }
+    if (D_8005A646 & 0x80) {
+        D_800C5BB4->index = D_800C3B94[D_800C5BC0];
+    } else {
+        D_800C5BB4->index = D_800C3B14[D_800C5BC0];
+    }
+    j = 0;
+    row = D_800C3C14[D_800C5BC0][0];
+    for (; j < 8; j++) {
+        D_800C5B2C[j] = row[j];
+        D_800C5B6C[j] = row[j + 8];
+        D_800C5B4C[7 - j] = row[j + 0x10];
+        D_800C5B8C[7 - j] = row[j + 0x18];
+    }
+    if (D_800C5300 != 0) {
+        pos = D_800C4284[D_800C5BC0];
+    } else {
+        pos = D_800C4084[D_800C5BC0];
+    }
+    func_800B7C3C(D_800C4014[pos[0]][0], D_800C4014[pos[0]][1]);
+    func_800B7C3C(D_800C4014[pos[1]][0], D_800C4014[pos[1]][1]);
+    func_800B7C3C(D_800C4014[pos[2]][0], D_800C4014[pos[2]][1]);
+    func_800B7C3C(D_800C4014[pos[3]][0], D_800C4014[pos[3]][1]);
+    i = 0;
+    g = (Ovl60ModeView *)D_8005A614;
+    h = Heroes;
+loop:
+    if (i < 4) {
+        if (g->mode != 10 && g->mode != 13) {
+            func_800C19A8(buf, i);
+            func_800BB840(buf, i);
+            if (func_800BBB08(buf, i, 1)) {
+                PlaySfx(0x51D, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+                if (g->mode == 11) {
+                    func_800B788C(i);
+                }
+            }
+        }
+        h++;
+        i++;
+        goto loop;
+    }
+    if (--D_800C5BC8 <= 0) {
+        if (!(D_8005A646 & 0x80)) {
+            D_800C5BC4 = Random(0xC8) + 0xC8;
+        }
+        D_800C5BD0 = 0;
+    } else {
+        D_800C5BC4 = D_800C5BCC;
+    }
+    PlaySfx(0x533, NULL, NULL, 0x1000, 0x1E00, 0);
+}
 
 void func_800BD008(s32 arg0) {
     D_800C5BD0 = arg0;
