@@ -55,7 +55,10 @@ typedef struct EggExt {
 
 /* PadState (D_80051338) as func_800BB260 reads it: flags at 0x54. */
 typedef struct Ovl68Pad {
-    /* 0x00 */ u8 pad0[0x50];
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ u8 pad4[0x34];
+    /* 0x38 */ u16 unk38;
+    /* 0x3A */ u8 pad3A[0x16];
     /* 0x50 */ s32 unk50;
     /* 0x54 */ s32 unk54;
 } Ovl68Pad;
@@ -63,6 +66,8 @@ extern u16 D_800BC188[];
 extern u16 D_800BC19C[];
 extern s32 D_800BC45C[];
 extern Ovl68Pad D_80051338[];
+extern s32 D_8005A670;
+extern u16 *D_8009D6F4;
 
 typedef struct CoalPosInner {
     s32 pad0[4];
@@ -262,7 +267,7 @@ extern u8 D_800BC0E4[];
 extern u8 D_800BC0F8[];
 s32 func_800B37C8();
 void func_800B46BC(s32 arg0);
-s32 func_800B48E4();
+void func_800B48E4(s32 arg0);
 s32 func_800B4B34();
 s32 func_800B52C8();
 

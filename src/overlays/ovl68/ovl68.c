@@ -202,7 +202,68 @@ void func_800B46BC(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B48E4);
+void func_800B48E4(s32 arg0) {
+    HeroInfo *hb;
+    HeroInfo *hb2;
+    Ovl68Pad *pb;
+    HeroInfo *h;
+    HeroInfo *h2;
+    EXTheromove *m;
+    Ovl68Pad *pad;
+    u16 *row;
+    u16 speed;
+    u16 rw;
+    s32 vc;
+
+    hb = Heroes;
+    h = hb + arg0;
+    m = h->hero_move;
+    m->forward_speed = 0;
+    if (h->hero_frozen != 0) {
+        D_80051338[arg0].unk50 = 0;
+        D_80051338[arg0].unk54 = 0;
+    }
+    pb = D_80051338;
+    pad = pb + arg0;
+    if ((pad->unk0 & 1) || &D_8005A670 != NULL) {
+        if (pad->unk50 & 0xF0) {
+            m->forward_angle = pad->unk38 + 0x800;
+            if (m->velocity_enable != 0) {
+                rw = m->run_walk;
+                if (h->hero_object != NULL) {
+                    if (rw != 0) {
+                        rw--;
+                    }
+                }
+                row = D_8009D6F4;
+                hb2 = Heroes;
+                h2 = hb2 + arg0;
+                speed = (row + h2->hero_name * 3)[rw];
+                if (h2->hero_pu == 0x13) {
+                    speed += (row + h2->hero_name * 3)[2];
+                }
+                vc = m->velocity_calc;
+                if (vc != 1) {
+                    if (vc != 0) {
+                        if (vc < 4) {
+                            m->x_max = (speed * D_80068BD4[(m->forward_angle + 0x400) & 0xFFF].unk2) >> 12;
+                            m->z_max = (speed * D_80068BD4[(m->forward_angle + 0x800) & 0xFFF].unk2) >> 12;
+                        }
+                    }
+                }
+                m->forward_speed = speed;
+            }
+        } else {
+            m->x_max = 0;
+            m->z_max = 0;
+            m->facing_angle = m->forward_angle = m->forward_angle & 0xFFF;
+        }
+    }
+    m->forward_angle &= 0xFFF;
+    if (abs(func_800154A0(m->forward_angle, m->facing_angle) & 0xFFFF) > 0x110) {
+        m->facing_angle = (m->forward_angle + 0x100) & 0xE00;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B4B34);
 
