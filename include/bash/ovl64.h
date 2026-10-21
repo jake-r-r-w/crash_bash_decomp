@@ -168,8 +168,8 @@ typedef struct Ovl64Pair {
     s32 b;
 } Ovl64Pair;
 
-extern u8 D_800BBD5E;
-Ovl64Pair *func_800B4F7C(void *arg0);
+extern u16 D_800BBD5E;
+Ovl64Pair *func_800B4F7C(u16 *head);
 void func_800B5D3C(s32 a, s32 b, u16 c, s32 d);
 extern u16 D_800BBD5A;
 static inline u16 Ovl64NextSlot(void) {

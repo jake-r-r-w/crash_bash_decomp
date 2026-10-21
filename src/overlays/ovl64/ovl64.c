@@ -382,7 +382,69 @@ void func_800B4DC4(u16 count, s16 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B4F7C);
+Ovl64Pair *func_800B4F7C(u16 *head) {
+    Ovl64Cell *p;
+    Ovl64Cell *bestp;
+    s32 i;
+    u16 besti;
+    u16 best;
+    u16 tries;
+    u16 n;
+    s32 x;
+    s32 z;
+    s32 a;
+    s32 b;
+
+    p = D_800BBE10[0];
+    best = 27;
+    tries = 9;
+    i = *head;
+    bestp = p = p + i;
+    besti = i++;
+    i &= 63;
+    x = (p->x >> 8) + 10;
+    z = 9 - (p->y >> 8);
+    do {
+        while (D_8009D90C[z * 20 + x].unk0 != 0) {
+            if (i == *head) {
+                goto fail;
+            }
+            p = D_800BBE10[0];
+            p += i++;
+            x = (p->x >> 8) + 10;
+            z = 9 - (p->y >> 8);
+            i &= 63;
+        }
+        n = 0;
+        for (a = x - 3; a < x + 3; a++) {
+            for (b = z - 3; b < z + 3; b++) {
+                if ((u32)a < 20 && b >= 0 && b < 20 && D_8009D90C[b * 20 + a].unk0 != 0) {
+                    n++;
+                }
+            }
+        }
+        if (n == 0) {
+            *head = i;
+            return (Ovl64Pair *)p;
+        }
+        if (n < best) {
+            best = n;
+            bestp = p;
+            besti = i;
+        }
+        if (i == *head) {
+        fail:
+            return NULL;
+        }
+        p = D_800BBE10[0];
+        p += i++;
+        i &= 63;
+        x = (p->x >> 8) + 10;
+        z = 9 - (p->y >> 8);
+    } while (tries-- != 0);
+    *head = besti;
+    return (Ovl64Pair *)bestp;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B51A0);
 
