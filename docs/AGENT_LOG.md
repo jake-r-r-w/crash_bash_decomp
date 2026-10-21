@@ -21,7 +21,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   **main.exe, ovl61 and ovl6a are complete**; 114 left: ovl62 26, ovl5f 18,
   ovl63 17, ovl67 9, ovl65 8, ovl5d 7, ovl60 7, ovl64 7, ovl68 5, ovl66 3,
   ovl69 3, engine 2, ovl5e 2. All 564 PsyQ functions (Sony objects). 4
-  parked by hand (`decomp.py status`), 12 matched with a hack (`decomp.py
+  parked by hand (`decomp.py status`), 11 matched with a hack (`decomp.py
   hacks`; the lint flags dead stores and identical if/else arms since
   2026-10-21). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
@@ -54,7 +54,7 @@ big-mode retry (`--seg overlays/ --retry-failed --big-bytes 1 --workers 1
 --big-workers 6`) still matched 85 in 3 h, at $2.70 a match (the first:
 $1.90). Next: `swarm.mjs permute --near --minutes 60` on the checkpoints at
 the registers stage (CPU only), then one more big-mode retry if it still
-pays; rework the 12 hacks by hand between runs. After each run, the
+pays; rework the 11 hacks by hand between runs. After each run, the
 "After a run" checklist in tools/swarm/README.md (`stats --run ID`, parks,
 gate failures, `fold`, this log).
 
@@ -79,7 +79,7 @@ rest are fixed by hand from the worker's patch (Gotchas). A park whose
 `jtbl_` names functions is a bad split (Gotchas).
 
 Hand work, between runs:
-1. The parks: `func_8007F314` and `PlotScriptFX` (engine), `func_800BC274` (ovl5e), and the 12 hack matches (`decomp.py hacks`; Open lead for `func_800B345C`).
+1. The parks: `func_8007F314` and `PlotScriptFX` (engine), `func_800BC274` (ovl5e), and the 11 hack matches (`decomp.py hacks`; Open leads for `func_800B345C` and four tried 2026-10-21).
 2. Name each function as it's matched when the evidence allows.
 3. Split `main.c` into its translation units: on hold since 2026-10-15. Its
    one proven boundary (jump-table parity, 95..370) has three possible
@@ -179,6 +179,18 @@ and current tools).
     block got it there); `PlotCircleFire` structure 133/155: index the
     table by the loop counter (`T[i].x`), not a walking pointer;
     `func_800B5D90`: `lh` + `sra 3` as `.unk2 * 1024 >> 13`.
+- **Hack reworks tried 2026-10-21 (still hacks; plain C and how far off):**
+  `func_8001097C`: a block-scope `MemBlock *p = cur->prev;` in the search
+  loop un-rotates it (94/94 long, 12 lines off); left: `cur` and `blk`
+  share `s0`. cse1 deletes `blk = cur` because `blk` isn't live past the
+  extended block (cse.c `make_regs_eqv`); the hack's if/else join is the
+  label that ends it, and no natural label found yet.
+  `func_800272AC`: plain C keeps `&D_8005B790` and `%hi(D_8005B68C)` in
+  s-regs across the four calls (frame 64, `s3`/`s4`); the target rebuilds
+  them. `func_80010000`: without `t = 0;` 10 lines off, the target puts
+  `n / 10` in `q`'s register and copies it to `i` (ours the reverse).
+  `func_800B4AD8`: a plain `return 1;` is 3 insns off (`u` in `a1`, the
+  target `a0`); sharing `t` for `u` is worse.
 - **Hack matches to revisit:** `decomp.py hacks` lists them (three on
   2026-10-20: `func_800193A8`, register pins that are probably the original
   source, `func_800B345C` above; `func_800B7134` reworked without its hack 2026-10-21). Since 2026-10-20 the
@@ -507,6 +519,11 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-21 (hand: hack reworks):** `func_8001CE00` without its
+  `if (e || blk)` hack (340ce459): `e` 6 refs/21 insns lost `s0` to `blk`
+  5/16 in global.c; its `func_80019094(e, ...)` call in a do-while(0)
+  fixes it. Four more tried and left as hacks (Open leads). 11 hacks left.
 
 - **2026-10-21 (hand: `func_800B4444` without its hack):** 40ba6e7d. The
   target steps a pointer it never reads, so the original read `*p` and
