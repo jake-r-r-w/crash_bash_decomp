@@ -795,7 +795,58 @@ void func_800B8B00(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B8C9C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", InitTumbler);
+void InitTumbler(NAS *nas) {
+    EXTengine *eng;
+    EXTmotion *mot;
+    TumblerObj *obj;
+    subengine *sub;
+    NAS *puff;
+
+    eng = nas->Engine;
+    if (eng != NULL) {
+        sub = eng->sub;
+        sub->unk6C = *(void **)D_80058AD0;
+        eng->sub->unk74 = 0x200A;
+        eng->flags &= 0xFFFF7FFF;
+        eng->unk10 = D_8005B2B8[8].pos;
+        eng->unk5D = 1;
+        eng->unk5C = 1;
+        func_8001D390(eng, 1);
+        sub = sub->next;
+        if (sub != NULL) {
+            sub->unk6C = *(void **)D_80058AD0;
+            sub->unk74 = 0x2001;
+            sub->flags |= 0x40008041;
+            sub->unk50 = 1;
+            sub->unk76 = 0xB00;
+        }
+        puff = Ovl5dSpawnPuff(&D_8005B2B8[8].pos);
+        if (puff != NULL) {
+            func_80026C38((u8 *)nas, (u8 *)puff);
+        }
+        obj = (TumblerObj *)AddObject(nas);
+        if (obj != NULL) {
+            nas->FUX = (EXT *)obj;
+            obj->unk1A = 1;
+            obj->unk14 = 6;
+        }
+        mot = AddMotion(nas);
+        if (mot != NULL) {
+            mot->Xvel = 0x80;
+            mot->Xmax = 0x80;
+            mot->Yvel = 0xA0;
+            mot->Ymax = 0xA0;
+            mot->Ydec = 6;
+            mot->Xacc = 0;
+            mot->Xdec = 0;
+            mot->Yacc = 0;
+            mot->Ydir = 0xFF;
+        }
+    }
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotTumbler);
 

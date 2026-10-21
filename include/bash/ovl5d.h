@@ -262,4 +262,34 @@ void InitBashHomer(NAS *nas);
 
 u8 *func_800BAFDC(s32 x, s32 unused, s32 z, u16 flag);
 
+/* The object extension InitTumbler adds (AddObject). */
+typedef struct TumblerObj {
+    /* 0x00 */ u8 pad0[0x14];
+    /* 0x14 */ s16 unk14;
+    /* 0x16 */ u8 pad16[4];
+    /* 0x1A */ s16 unk1A;
+} TumblerObj;
+
+/* Spawns the 0x1605 puff at v and returns it (InitTumbler). */
+static inline NAS *Ovl5dSpawnPuff(SLONG_XYZ *v) {
+    NAS *nas;
+    s32 *ext;
+
+    nas = SpawnNASById(v->x, v->y, v->z, 0x1605, 0x11);
+    if (nas != NULL) {
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL) {
+            ext[6] = 0x100;
+            ext[3] = 0;
+            ext[8] = 9;
+            ext[10] = 0;
+            nas->InitDelete(nas);
+        }
+        return nas;
+    }
+    return NULL;
+}
+
+void InitTumbler(NAS *nas);
+
 #endif /* BASH_OVL5D_H */
