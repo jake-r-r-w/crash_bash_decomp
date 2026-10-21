@@ -1719,7 +1719,53 @@ void func_800B9C10(s32 id) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B9E68);
+void func_800B9E68(s32 id) {
+    Ovl65ExtB *ext;
+    EXTheromove *mv;
+    s32 r;
+
+    ext = FindExtension(Heroes[id].hero, 0x10000000);
+    if (ext != NULL) {
+        mv = Heroes[id].hero_move;
+        mv->x_max = 0;
+        mv->z_max = 0;
+        mv->x_acc = 9;
+        mv->z_acc = 9;
+        mv->z_dec = 9;
+        mv->x_dec = 9;
+        SetHeroSeq((HeroInfo *)id, 0x4D);
+        ext->unkC = 7;
+        ext->unk14 = 0;
+        func_80028018(id, 0xA);
+        ((void (*)(s32, s32, s32))func_80027F7C)(id, 0xA, 0xFF);
+        switch (Heroes[id].hero_name) {
+        case 1:
+            SFX4(3, 4, 5, 6);
+            break;
+        case 2:
+            SFX4(0x35, 0x36, 0x37, 0x38);
+            break;
+        case 3:
+            SFX4(0x67, 0x68, 0x69, 0x6A);
+            break;
+        case 4:
+            SFX4(0x99, 0x9A, 0x9B, 0x9C);
+            break;
+        case 5:
+            SFX4(0x12F, 0x130, 0x131, 0x132);
+            break;
+        case 7:
+            SFX4(0xFD, 0xFE, 0xFF, 0x100);
+            break;
+        case 8:
+            SFX4(0xCB, 0xCC, 0xCD, 0xCE);
+            break;
+        case 6:
+            SFX4(0x161, 0x162, 0x163, 0x164);
+            break;
+        }
+    }
+}
 
 void func_800BA468(s32 id) {
     Ovl65Ext *ext;

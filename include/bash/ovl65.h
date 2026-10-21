@@ -292,6 +292,24 @@ void func_800B5DCC(s32 arg0, u16 arg1);
 
 void func_800BAE94(NAS *arg0);
 
+/* plays one of four sfx at random (r: the caller's s32) */
+#define SFX4(a, b, c, d)                                    \
+    r = Random(4);                                          \
+    if (r == 0) {                                           \
+        PlaySfx(a, NULL, NULL, 0x1000, 0x1E00, 0);          \
+    }                                                       \
+    if (r == 1) {                                           \
+        PlaySfx(b, NULL, NULL, 0x1000, 0x1E00, 0);          \
+    }                                                       \
+    if (r == 2) {                                           \
+        PlaySfx(c, NULL, NULL, 0x1000, 0x1E00, 0);          \
+    }                                                       \
+    if (r == 3) {                                           \
+        PlaySfx(d, NULL, NULL, 0x1000, 0x1E00, 0);          \
+    }
+
+void func_800B9E68(s32 id);
+
 #endif /* BASH_OVL65_H */
 
 extern u8 D_800BDA7C[], D_800BDA5C[], D_8008B29C[], D_8008B418[];
