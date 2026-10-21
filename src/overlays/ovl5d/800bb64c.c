@@ -510,7 +510,101 @@ void func_800BEDE8(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bb64c", func_800BEF00);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bb64c", func_800BF404);
+s32 func_800BF404(EXTengine *eng, s32 arg1, s32 who, s32 heroes) {
+    s32 d;
+    FlagRecord *box;
+    FlagRecord *rec;
+    EXTengine *e;
+    EXTobject *obj;
+    NAS *nas;
+    s32 i;
+    s32 r;
+    s32 top;
+    s32 bot;
+    s32 dx;
+    s32 dz;
+    s32 rr;
+    s32 lo;
+    s32 hi;
+
+    box = func_80025A48(eng, 0x40);
+    if (box != NULL) {
+        r = box->radius;
+        top = eng->unk10.y + box->unk2;
+        bot = eng->unk10.y + box->height;
+        if (heroes != 0) {
+            for (i = 0; i < 4; i++) {
+                if (who == i) {
+                    continue;
+                }
+                if (Heroes[i].hero_status & 0xF800) {
+                    continue;
+                }
+                e = Heroes[i].hero_eng;
+                if (e == NULL) {
+                    continue;
+                }
+                rec = func_80025A48(e, 0x40);
+                if (rec == NULL) {
+                    continue;
+                }
+                lo = e->unk10.y + rec->unk2;
+                hi = e->unk10.y + rec->height;
+                if (bot < lo && hi < top) {
+                    dx = e->unk10.x - eng->unk10.x;
+                    dz = dx * dx;
+                    dx = e->unk10.z - eng->unk10.z;
+                    d = dz + dx * dx;
+                    rr = rec->radius + r;
+                    rr = rr * rr;
+                    if (d < rr) {
+                        return (s32)Heroes[i].hero;
+                    }
+                }
+            }
+        }
+        for (nas = D_8005AA2C; nas != NULL; nas = nas->Solid.Child) {
+            if (nas->Class & 0x200) {
+                e = nas->Engine;
+                if (e != NULL && e != eng) {
+                    rec = func_80025A48(e, 0x40);
+                    if (rec != NULL) {
+                        lo = e->unk10.y + rec->unk2;
+                        hi = e->unk10.y + rec->height;
+                        if (bot < lo && hi < top) {
+                            dx = e->unk10.x - eng->unk10.x;
+                            dz = dx * dx;
+                            dx = e->unk10.z - eng->unk10.z;
+                            d = dz + dx * dx;
+                            rr = rec->radius + r;
+                            rr = rr * rr;
+                            if (d < rr) {
+                                obj = FindExtension(nas, 0x1000);
+                                if (obj != NULL && (obj->whatami < 0xE || obj->whatami != who)) {
+                                    if (obj->can_do & 8) {
+                                        obj->player = -1;
+                                        obj->will_do |= 8;
+                                    }
+                                    if (obj->can_do & 2) {
+                                        obj->will_do |= 2;
+                                        if (obj->status != 2) {
+                                            obj->player = -1;
+                                        }
+                                    }
+                                    if (obj->can_do & 0x10) {
+                                        return 0;
+                                    }
+                                    return (s32)nas;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+}
 
 NAS *func_800BF708(EXTengine *eng, s32 who) {
     FlagRecord *box;
