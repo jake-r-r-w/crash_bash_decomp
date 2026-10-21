@@ -433,7 +433,11 @@ typedef struct {
 typedef struct {
     u8 pad0[0x10]; s32 x; s32 pad14; s32 z; u8 pad1C[0x10];
     s32 sx; s32 sy; s32 sz; u8 pad38[0x26]; s16 unk5E;
+    u8 pad60[0x34]; _sfx_handler *sfx;
 } CoalFlameEng;
+s32 func_800B7DF0(s32 x, s32 z, s32 id, s32 cur, s32 arg4, s32 arg5);
+/* D_800BC210: one 0x30-byte record per player (id). */
+typedef struct { u8 pad0[0x20]; s32 unk20; u8 pad24[0xC]; } CoalPlayerRec;
 void func_800B5CD0(s32 arg0);
 
 void func_800B6C84(s32 arg0);
@@ -443,6 +447,8 @@ void PlotBarrelGenerator(NAS *nas);
 NAS *func_800B7948(s32 arg0);
 
 void func_800B7B80(CoalFlameEng *eng, CoalFlameFux *fux, s32 id);
+
+void PlotCoalFlame(NAS *nas);
 
 void PlotPUGenerator_CH(NAS *nas);
 

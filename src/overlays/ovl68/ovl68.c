@@ -1247,7 +1247,50 @@ void func_800B7B80(CoalFlameEng *eng, CoalFlameFux *fux, s32 id) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B7DF0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotCoalFlame);
+void PlotCoalFlame(NAS *nas) {
+    CoalFlameFux *fux;
+    CoalFlameEng *eng;
+    s32 t;
+
+    fux = (CoalFlameFux *)nas->FUX;
+    eng = (CoalFlameEng *)nas->Engine;
+    ((CoalPlayerRec *)D_800BC210)[fux->unk2C].unk20 = 2;
+    if (fux->unk1C == 0) {
+        if (eng->x < fux->unk20) {
+            eng->x += 0x14;
+        } else if (eng->x > fux->unk20) {
+            eng->x -= 0x14;
+        }
+        if (eng->z < fux->unk24) {
+            eng->z += 0x14;
+        } else if (eng->z > fux->unk24) {
+            eng->z -= 0x14;
+        }
+        if ((u32)(fux->unk20 - eng->x + 0x27) < 0x4F
+            && (u32)((t = fux->unk24) - eng->z + 0x27) < 0x4F) {
+            eng->x = fux->unk20;
+            eng->z = fux->unk24;
+            fux->unk1C = -7;
+        }
+    } else if ((t = --nas->UserInfo.user2) <= 0) {
+        if (eng->sfx != NULL) {
+            StopSfx(eng->sfx);
+        }
+        KillNAS(nas);
+        return;
+    }
+    if (fux->unk1C < 0) {
+        func_800B7B80(eng, fux, fux->unk2C);
+    }
+    D_800BC48C[fux->unk2C] += func_800B7DF0(eng->x, eng->z, fux->unk2C,
+                                            D_800BC48C[fux->unk2C], 0x12C, 0);
+    if (D_800BC48C[fux->unk2C] > 10) {
+        D_800BC48C[fux->unk2C] = 10;
+    }
+    ((CoalFlameEng *)D_800BC45C[fux->unk2C])->x = eng->x;
+    ((CoalFlameEng *)D_800BC45C[fux->unk2C])->z = eng->z;
+    D_800BC46C[fux->unk2C] = 10;
+}
 
 void PlotCircleFire(NAS *nas) {
     EXTengine *eng;
