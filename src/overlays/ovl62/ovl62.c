@@ -2240,7 +2240,98 @@ zero:
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BFEE0);
 #endif
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotScratchMaster);
+void PlotScratchMaster(NAS *m) {
+    subengine *s;
+    EXTengine *e;
+    s32 dx;
+    s32 v;
+    s32 w;
+    s32 x;
+    u16 ang;
+
+    s = m->Engine->sub;
+    while (s != NULL) {
+        if (!(s->flags & 0x8000)) {
+            break;
+        }
+        s = s->next;
+    }
+    e = Heroes[m->UserInfo.user1].hero_shadow;
+    if (e != NULL) {
+        if ((e->unk10.x - e->OldXYZ.x) * (e->unk10.x - e->OldXYZ.x)
+            + (e->unk10.z - e->OldXYZ.z) * (e->unk10.z - e->OldXYZ.z) > 0 && s != NULL) {
+            if (Heroes[m->UserInfo.user1].hero_mode == 0x49) {
+                if (!(m->UserInfo.user2++ & 1) && !(s->flags & 0x8000)) {
+                    *(SLONG_XYZ *)&s->unk04 = Heroes[m->UserInfo.user1].hero_eng->unk10;
+                    if (Heroes[m->UserInfo.user1].hero_eng->unk2C.x > 0x1000) {
+                        s->unk50 = 1;
+                        dx = Heroes[m->UserInfo.user1].hero_eng->unk2C.x;
+                        s->unk20.z = dx;
+                        s->unk20.y = dx;
+                        s->unk20.x = dx;
+                    }
+                    if (Heroes[m->UserInfo.user1].hero_eng->unk2C.x < 0x1000) {
+                        s->unk50 = 1;
+                        v = Heroes[m->UserInfo.user1].hero_eng->unk2C.x;
+                        s->unk20.z = v;
+                        s->unk20.y = v;
+                        s->unk20.x = v;
+                    }
+                    if (D_8005A648 == 0x15) {
+                        s->flags = 0x40008021;
+                        s->unk74 = 0x2030;
+                    } else {
+                        s->flags = 0x40008061;
+                    }
+                    ang = Heroes[m->UserInfo.user1].hero_eng->unk1E + 0x800;
+                    s->unk52 = 1;
+                    s->unk76 = 0x400;
+                    s->unk12 = ang;
+                }
+            }
+            if (Heroes[m->UserInfo.user1].hero_mode == 0x4A
+                && Heroes[m->UserInfo.user1].hero_anim->Aindex == 9
+                && !(s->flags & 0x8000)) {
+                if (Heroes[m->UserInfo.user1].hero_eng->unk2C.x > 0x1000) {
+                    s->unk50 = 1;
+                    w = Heroes[m->UserInfo.user1].hero_eng->unk2C.x;
+                    s->unk20.z = w;
+                    s->unk20.y = w;
+                    s->unk20.x = w;
+                }
+                if (Heroes[m->UserInfo.user1].hero_eng->unk2C.x < 0x1000) {
+                    s->unk50 = 1;
+                    x = Heroes[m->UserInfo.user1].hero_eng->unk2C.x;
+                    s->unk20.z = x;
+                    s->unk20.y = x;
+                    s->unk20.x = x;
+                }
+                *(SLONG_XYZ *)&s->unk04 = Heroes[m->UserInfo.user1].hero_eng->unk10;
+                if (D_8005A648 == 0x15) {
+                    s->flags = 0x40008021;
+                    s->unk74 = 0x2030;
+                } else {
+                    s->flags = 0x40008061;
+                }
+                ang = Heroes[m->UserInfo.user1].hero_eng->unk1E + 0x800;
+                s->unk76 = 0;
+                s->unk52 = 1;
+                s->unk12 = ang;
+            }
+        }
+    }
+    for (s = m->Engine->sub; s != NULL; s = s->next) {
+        if (s->flags & 0x8000) {
+            s->unk76 += 0x60;
+            if ((s16)s->unk76 > 0xC00) {
+                s->flags = 0;
+                s->unk20.z = 0x1000;
+                s->unk20.y = 0x1000;
+                s->unk20.x = 0x1000;
+            }
+        }
+    }
+}
 
 void InitIceBerg(NAS *m) {
     MapTriggerInfo *info;
