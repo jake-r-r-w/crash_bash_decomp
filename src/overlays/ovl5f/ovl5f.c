@@ -1000,7 +1000,172 @@ void func_800B6354(s32 player, s32 damage) {
     Heroes[player].hero_health = ta->Energy;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B6658);
+void func_800B6658(s32 player) {
+    HeroInfo *h;
+    HeroInfo *hh;
+    HeroInfo *hb;
+    EXTengine *eng;
+    subengine *sub;
+    TA_player *ta;
+    TA_Bot *bot;
+    EngPtr3 *pp;
+    EngPtr3 *pb;
+    PanelPrim *pnl;
+    NAS *nas;
+    u8 *g;
+    u8 *g1;
+    u8 *g2;
+    s32 n;
+
+    ((PadButtons *)D_80051338)[player].unk50 = 0;
+    ((PadButtons *)D_80051338)[player].unk54 = 0;
+    hb = Heroes;
+    h = &hb[player];
+    if (h->hero_name == 9) {
+        return;
+    }
+    g = D_8005A614;
+    if (g[player + 0x50] == 9) {
+        return;
+    }
+    eng = h->hero_eng;
+    eng->unk10.x = (eng->unk10.x + 0x80) & ~0xFF;
+    eng->unk10.z = (eng->unk10.z + 0x80) & ~0xFF;
+    SetHeroAction((HeroInfo *)player, 0x6C);
+    func_80018F3C(eng, 2);
+    sub = eng->sub;
+    eng->unk5D = 1;
+    eng->unk1E = 0x400;
+    sub->unk51 = 1;
+    if (((Ovl5fModeView *)g)->mode == 5) {
+        sub->unk08 = 0x48;
+    }
+    sub = sub->next;
+    sub->unk51 = 1;
+    if (((Ovl5fModeView *)g)->mode == 5) {
+        sub->unk6C = D_80053774;
+        sub->unk74 = 0x2005;
+        sub->unk08 = -0x100;
+    } else {
+        sub->unk6C = D_80053694;
+        sub->unk74 = 0x2009;
+    }
+    sub = sub->next;
+    sub->unk51 = 1;
+    if (D_8005A648 == 5) {
+        sub->unk6C = D_80053774;
+        sub->unk74 = 0x2001;
+    } else {
+        sub->unk6C = D_80053694;
+        sub->unk74 = 0x4300;
+    }
+    func_800B8EC4(player);
+    switch ((u32)player) {
+    case 0:
+        D_800CAD50[player].MoveDir = 2;
+        D_800CAD50[player].FaceDir = 2;
+        D_800CAD50[player].RunnerMoving = 2;
+        D_800CAD50[player].RunnerFacing = 2;
+        break;
+    case 1:
+        D_800CAD50[player].MoveDir = 3;
+        D_800CAD50[player].FaceDir = 3;
+        D_800CAD50[player].RunnerMoving = 3;
+        D_800CAD50[player].RunnerFacing = 3;
+        break;
+    case 2:
+        D_800CAD50[player].MoveDir = 0;
+        D_800CAD50[player].FaceDir = 0;
+        D_800CAD50[player].RunnerMoving = 0;
+        D_800CAD50[player].RunnerFacing = 0;
+        break;
+    case 3:
+        D_800CAD50[player].MoveDir = 1;
+        D_800CAD50[player].FaceDir = 1;
+        D_800CAD50[player].RunnerMoving = 1;
+        D_800CAD50[player].RunnerFacing = 1;
+        break;
+    }
+    ta = &D_800CAD50[player];
+    ta->Speed = D_800C8F14[Heroes[player].hero_name - 1];
+    hh = &Heroes[player];
+    ta->SpeedX = 0;
+    ta->SpeedZ = 0;
+    g1 = D_8005A614;
+    if (((Ovl5fModeView *)g1)->mode == 5) {
+        ta->Speed = ta->Speed * 3 / 2;
+    }
+    if (g1[player + 0x5C] != 0) {
+        ta->Speed = ta->Speed * (D_8009D87C[player].unk0 + 0x54) / 100;
+    }
+    ta->Energy = 0x63;
+    hh->hero_health = ta->Energy;
+    ta->PosX = eng->unk10.x;
+    ta->PosZ = eng->unk10.z;
+    ta->RequestQuickFinish = 0;
+    ta->SubWeaponFireDelay = 0;
+    if (((Ovl5fModeView *)g1)->mode == 5 && (((Ovl5fModeView *)g1)->flags & 0x80)) {
+        ta->SubWeaponRounds = 0;
+    } else {
+        ta->SubWeaponRounds = 3;
+    }
+    ta->FireBreatherSFXDuration = 0;
+    ta->TurretSFXDuration = 0;
+    ta->TurretReqdDir = -1;
+    ta->HangaboutTime = -0x5A;
+    ta->IdleAnimCt = Random(0x1E);
+    ta->TurretFiring = -1;
+    ta->TauntDelay = 0;
+    ta->ForceFieldDelay = 0;
+    func_800B6FF4(player);
+    if (D_8005A614[player + 0x5C] != 0) {
+        ta->MainWeaponFireDelay = 0x96;
+    } else {
+        ta->MainWeaponFireDelay = 0;
+    }
+    ta->MainWeaponNas[0] = NULL;
+    n = Heroes[player].hero_name;
+    if (n == 0 || n >= 7) {
+        ta->MainWeaponNas[2] = (NAS *)0xFFEEEEFF;
+    } else {
+        ta->MainWeaponNas[1] = (NAS *)0xFFEEEEFF;
+        ta->MainWeaponNas[2] = (NAS *)0xFFEEEEFF;
+    }
+    if (D_8005A648 == 5) {
+        nas = SpawnNASById(eng->unk10.x, 0, eng->unk10.z, 0x1320, 0x11);
+        if (nas != NULL) {
+            nas->UserInfo.user1 = player;
+        }
+    }
+    g2 = D_8005A614;
+    if (g2[player + 0x5C] != 0) {
+        bot = (TA_Bot *)(D_800CAFFC + player * 0x2C);
+        bot->Doing = 0;
+        bot->DoingTimer = 0;
+        bot->Victim = 0;
+        bot->pMine = NULL;
+        bot->pMissile = NULL;
+        bot->AIpad = 0;
+        bot->FirePercentChance = 0;
+    }
+    pnl = D_80099A64[player];
+    pnl->unk0 |= 0x8000;
+    pb = D_8009AE40;
+    pp = &pb[player];
+    pp->a = &ta->MainWeaponType;
+    pp->b = &ta->MainWeaponRounds;
+    pp->c = &ta->SubWeaponRounds;
+    if (((Ovl5fModeView *)g2)->mode == 5 && g2[player + 0x5C] == 0 && (((Ovl5fModeView *)g2)->flags & 0x80)) {
+        if (player == 0) {
+            nas = SpawnNASById(0x880, 0, 0x880, 0x1322, 0x11);
+        } else {
+            nas = SpawnNASById(0x980, 0, 0x880, 0x1322, 0x11);
+        }
+        if (nas != NULL) {
+            nas->UserInfo.user1 = player;
+        }
+    }
+}
 
 void func_800B6C24(s32 player) {
     HeroInfo *hb;

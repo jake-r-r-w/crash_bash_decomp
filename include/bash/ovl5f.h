@@ -33,6 +33,7 @@ extern RockTblEnt D_800C938C[]; /* PlotMine: frame by countdown */
 extern RockTblEnt D_800C939C[]; /* PlotMine: frame by countdown, modes 8/9 */
 
 extern u8 D_80053774[];
+extern s32 D_800C8F14[]; /* func_800B6658: tank speed by hero_name - 1 */
 extern u8 D_800C9EE8[];
 extern u8 D_800C9EFC[];
 extern u8 D_800C9ED0[];
@@ -74,7 +75,7 @@ extern u8 D_800C9E3C[];
 extern u8 D_800C9E28[];
 extern u8 D_800C9E50[];
 void func_800B5228(s32 player);
-void func_800B6658(void);
+void func_800B6658(s32 player);
 void func_800B6C24(s32 player);
 void func_800B5588(void);
 void func_800B58B0(void);
