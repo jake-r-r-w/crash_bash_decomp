@@ -2515,7 +2515,133 @@ void InitIceBerg(NAS *m) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C0888);
+s32 func_800C0888(SLONG_XYZ *pos, s32 player) {
+    volatile s32 t0;
+    volatile s32 t1;
+    SceneObj *o;
+    TrigEntry *t;
+    s32 i;
+    s32 dx;
+    s32 dz;
+    s32 d;
+    s32 ang;
+    s32 r;
+    EXTengine *eng;
+    EXTheromove *mv;
+    NAS *nas;
+    EXTmotion *m;
+    EXTmotion *m2;
+    s32 k;
+    s32 sp;
+
+    i = 0;
+    o = D_800D6010[0];
+    if (D_8005A648 == 0x13) {
+        t0 = VSync(1);
+        t = D_80068BD4;
+        k = 0x100;
+        while (1) {
+            if (o != NULL) {
+            if (o->flags & 0x8000) {
+                dx = o->unk4 - pos->x;
+                dz = o->unkC - pos->z;
+                if (abs(dx) < 0x14B && abs(dz) < 0x14B) {
+                    d = dx * dx + dz * dz;
+                    if (d <= 0x1A963) {
+                        ang = get_angle(dx, dz) & 0xFFF;
+                        eng = Heroes[player].hero_eng;
+                        d = csqrt(d) >> 6;
+                        d = 0x14A - d;
+                        d += 2;
+                        eng->unk10.x -= d * t[(ang - 0x400) & 0xFFF].unk2 >> 12;
+                        eng->unk10.z -= d * t[ang].unk2 >> 12;
+                        ang = get_angle(eng->unk10.x, eng->unk10.z) & 0xFFF;
+                        mv = Heroes[player].hero_move;
+                        if (mv != NULL) {
+                            sp = csqrt(mv->x_vel * mv->x_vel + mv->z_vel * mv->z_vel) >> 6;
+                            mv->x_vel = -(sp * t[(-ang + 0x400) & 0xFFF].unk2 >> 13);
+                            mv->z_vel = -(sp * t[-ang & 0xFFF].unk2 >> 13);
+                            sp *= Heroes[player].hero_move->mass;
+                            if ((D_8009D6F4[Heroes[player].hero_name * 3] * 0xC000 >> 8) < sp) {
+                                nas = SpawnNASById(o->unk4, o->unk8 - 0x80, o->unkC, 0x1604, 0x11);
+                                if (nas != NULL) {
+                                    m = (EXTmotion *)nas->FUX;
+                                    if (m != NULL) {
+                                        r = Random(3);
+                                        m->flags = 0x1E;
+                                        m->Xvel = t[(ang - 0x200) & 0xFFF].unk2 * 0x11 >> 11;
+                                        m->Zvel = t[(ang + 0x200) & 0xFFF].unk2 * 0x11 >> 11;
+                                        m->Yvel = -0x20;
+                                        m->Xa = -0x100;
+                                        m->Ya = -0x80;
+                                        m->Za = k;
+                                        m->Yacc = 3;
+                                        if (r == 0) {
+                                            PlaySfx(0x46A, NULL, NULL, 0x1000, 0x1E00, 0);
+                                        }
+                                        if (r == 1) {
+                                            PlaySfx(0x46B, NULL, NULL, 0x1000, 0x1E00, 0);
+                                        }
+                                        if (r == 2) {
+                                            PlaySfx(0x46C, NULL, NULL, 0x1000, 0x1E00, 0);
+                                        }
+                                    }
+                                    if ((u32)(ang - 0x400) > 0x800) {
+                                        nas->Engine->sub->unk68 = 0x200;
+                                    }
+                                }
+                                nas = SpawnNASById(o->unk4, o->unk8 - 0x80, o->unkC, 0x1604, 0x11);
+                                if (nas != NULL) {
+                                    m2 = (EXTmotion *)nas->FUX;
+                                    if (m2 != NULL) {
+                                        m2->flags = 0x1E;
+                                        m2->Xvel = t[ang].unk2 * 0xB >> 10;
+                                        m2->Zvel = t[(ang + 0x400) & 0xFFF].unk2 * 0xB >> 10;
+                                        m2->Yvel = -0x2A;
+                                        m2->Ya = 0x80;
+                                        m2->Za = -0x100;
+                                        m2->Xa = k;
+                                        m2->Yacc = 3;
+                                    }
+                                    if ((u32)(ang - 0x400) > 0x800) {
+                                        nas->Engine->sub->unk68 = 0x200;
+                                    }
+                                }
+                                nas = SpawnNASById(o->unk4, o->unk8 - 0x80, o->unkC, 0x1604, 0x11);
+                                if (nas != NULL) {
+                                    m2 = (EXTmotion *)nas->FUX;
+                                    if (m2 != NULL) {
+                                        m2->flags = 0x1E;
+                                        m2->Xvel = t[(ang - 0x400) & 0xFFF].unk2 * 0xB >> 10;
+                                        m2->Zvel = t[ang].unk2 * 0xB >> 10;
+                                        m2->Yvel = -0x48;
+                                        m2->Ya = -0x80;
+                                        m2->Xa = k;
+                                        m2->Za = k;
+                                        m2->Yacc = 3;
+                                    }
+                                    if ((u32)(ang - 0x400) > 0x800) {
+                                        nas->Engine->sub->unk68 = 0x200;
+                                    }
+                                }
+                                o->flags &= ~0x8000;
+                            }
+                        }
+                        t1 = VSync(1);
+                        return 1;
+                    }
+                }
+            }
+            o = D_800D6010[i];
+            i++;
+            continue;
+            }
+            break;
+        }
+        t1 = VSync(1);
+    }
+    return 0;
+}
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl62/ovl62", D_800B3498);
 

@@ -76,9 +76,10 @@ typedef struct BombGFXExt {
 /* A scene's model object as func_800CA770 walks the list at D_80058AD0 + 0x1C. */
 typedef struct SceneObj {
     /* 0x00 */ u32 flags; /* 0x8000 visible */
-    /* 0x04 */ u8 pad4[0x8 - 0x4];
+    /* 0x04 */ s32 unk4;
     /* 0x08 */ s32 unk8;
-    /* 0x0C */ u8 padC[0x5C - 0xC];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ u8 pad10[0x5C - 0x10];
     /* 0x5C */ struct SceneObj *next;
     /* 0x60 */ u8 pad60[0x6C - 0x60];
     /* 0x6C */ GfxModel *model;
@@ -1391,6 +1392,8 @@ extern u8 D_800D35C4[], D_800D35D8[], D_800D35EC[], D_800D35F8[], D_800D3610[], 
 extern u8 D_800D3678[], D_800D368C[], D_800D36A0[], D_800D36AC[], D_800D36C4[], D_800D36D8[];
 extern u8 D_800D372C[], D_800D3740[], D_800D3754[], D_800D3760[], D_800D3778[], D_800D378C[];
 extern u8 D_800D37E0[], D_800D3830[], D_800D3874[], D_800D388C[], D_800D38A4[];
+s32 func_800C0888(SLONG_XYZ *pos, s32 player);
+
 void func_800CBBE8(s32 p1, s32 p2);
 
 void func_800CC3B4(void);
