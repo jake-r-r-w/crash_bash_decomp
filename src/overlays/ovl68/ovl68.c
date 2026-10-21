@@ -923,7 +923,52 @@ void PlotCoalFlameSFX(CoalSfxObj *obj) {
     D_800BC47C[obj->idx] = D_800BC46C[obj->idx];
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotPUGenerator_CH);
+void PlotPUGenerator_CH(NAS *nas) {
+    s32 i;
+    s32 j;
+    s32 x;
+    s32 z;
+    NAS *pu;
+    subengine *sub;
+
+    if (D_800BC444 != 0) {
+        KillNAS(nas);
+        return;
+    }
+    if (nas->UserInfo.flags != 0) {
+        nas->UserInfo.flags--;
+        return;
+    }
+    nas->UserInfo.flags = 0x258;
+    for (i = 0;; i++) {
+        if (i >= 1) {
+            return;
+        }
+        if (D_800BC420[i] != NULL) {
+            continue;
+        }
+    again:
+        do {
+            x = (Random(0xE) - 7) << 8;
+            z = (Random(0xE) - 7) << 8;
+        } while (BarrelNearHero(x, z, 0x200) >= 0);
+        for (j = 0; j < 8; j++) {
+            if (D_800BC424[j] != NULL && D_800BC424[j]->Engine->unk10.x == x &&
+                D_800BC424[j]->Engine->unk10.z == z) {
+                goto again;
+            }
+        }
+        pu = SpawnNASById(x, 0, z, 0x1D04, 0x11);
+        if (pu != NULL) {
+            D_800BC420[i] = pu;
+            sub = pu->Engine->sub;
+            sub->unk6C = D_80052F5C;
+            sub->unk74 = 0x200C;
+            pu->UserInfo.status = Random(2) + 1;
+            return;
+        }
+    }
+}
 
 void InitPickupCH(NAS *nas) {
     EXTengine *eng;

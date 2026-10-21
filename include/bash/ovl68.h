@@ -399,6 +399,8 @@ void PlotBarrelGenerator(NAS *nas);
 
 void func_800B7B80(CoalFlameEng *eng, CoalFlameFux *fux, s32 id);
 
+void PlotPUGenerator_CH(NAS *nas);
+
 void PlotPickupCH(NAS *nas);
 
 s32 func_800BB7E0(Ovl68Obj *a, Ovl68Pos *b);
