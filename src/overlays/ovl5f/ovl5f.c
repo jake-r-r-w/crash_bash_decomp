@@ -372,7 +372,73 @@ void func_800B4FAC(s32 player) {
     func_80013C94((u8 *)&D_80051338[player], buttons);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B5228);
+void func_800B5228(s32 player) {
+    Ovl5fAITarget *ai;
+    EXTengine *eng;
+    EXTengine *te;
+    EXTengine *tgt;
+    NAS *nas;
+    s32 i;
+    s32 d;
+    s32 ex;
+    s32 ez;
+    u8 *g;
+
+    g = D_8005A614;
+    if (*(s32 *)(g + 0x10) & 0x04000000) {
+        return;
+    }
+    if (((Ovl5fModeView *)g)->mode == 5) {
+        func_800B4FAC(player);
+        return;
+    }
+    eng = Heroes[player].hero->Engine;
+    ai = (Ovl5fAITarget *)(D_800CAFFC + player * 0x2C);
+    if (ai->timer == 0) {
+        ai->timer = D_8009D87C[player].unk0 * 0x55 / 32 + 5;
+    }
+    if (D_8005A648 != 5 && ai->unk8 >= 0) {
+        tgt = Heroes[ai->unk8].hero_eng;
+        D_800CAD50[player].TurretReqdDir =
+            (get_angle(tgt->unk10.x - eng->unk10.x, tgt->unk10.z - eng->unk10.z) + 0x800) & 0xFFF;
+    }
+    if (ai->unk0 == 5 && !(eng->unk10.x & 0x1FF) && !(eng->unk10.z & 0x1FF)) {
+        func_800B4A28(player, eng, ai);
+    }
+    if (--ai->unk4 <= 0) {
+        func_800B4A28(player, eng, ai);
+    } else {
+        func_800B4490(player, eng, ai);
+        func_800B3F44(player, eng, ai);
+    }
+    if (D_8009D908 == 0 && (u32)Random(D_8009D87C[player].unk0 + 1) >= 9) {
+        ex = eng->unk10.x;
+        ez = eng->unk10.z;
+        for (i = 0; i < 8; i++) {
+            nas = D_800CB0C0[i];
+            if (nas != NULL) {
+                te = nas->Engine;
+                d = ex - te->unk10.x;
+                if (d > 250) {
+                    if (d < 500) {
+                        ai->flags &= ~0x80;
+                    }
+                } else if (d < -250 && d > -500) {
+                    ai->flags &= ~0x20;
+                }
+                d = ez - te->unk10.z;
+                if (d > 250) {
+                    if (d < 500) {
+                        ai->flags &= ~0x40;
+                    }
+                } else if (d < -250 && d > -500) {
+                    ai->flags &= ~0x10;
+                }
+            }
+        }
+    }
+    func_80013C94((u8 *)&D_80051338[player], ai->flags);
+}
 
 void func_800B5588(void) {
     void **p;

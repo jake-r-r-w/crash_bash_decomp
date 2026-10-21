@@ -63,7 +63,7 @@ extern u8 D_800C9E5C[];
 extern u8 D_800C9E3C[];
 extern u8 D_800C9E28[];
 extern u8 D_800C9E50[];
-void func_800B5228(void);
+void func_800B5228(s32 player);
 void func_800B6658(void);
 void func_800B6C24(s32 player);
 void func_800B5588(void);
@@ -469,6 +469,7 @@ typedef struct Ovl5fAITarget {
 extern s32 D_800CB284[];
 s32 func_800B3F44(s32 player, EXTengine *eng, Ovl5fAITarget *ai);
 void func_800B4688(s32 player, EXTengine *eng, Ovl5fAITarget *ai);
+void func_800B4A28(s32 player, EXTengine *eng, Ovl5fAITarget *ai);
 static inline s32 Ovl5fASTIndex(s32 id) {
     s32 i;
 
