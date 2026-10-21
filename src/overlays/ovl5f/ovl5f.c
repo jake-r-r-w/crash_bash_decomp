@@ -2144,7 +2144,121 @@ void PlotPillarControl(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotPillar);
+void PlotPillar(NAS *nas) {
+    EXTengine *eng;
+    EXTengine *e;
+    NAS *obj;
+    s32 i;
+    s32 d;
+    s32 x;
+    s32 z;
+    s32 r;
+    s32 n;
+    s32 hit;
+    u16 name;
+
+    eng = nas->Engine;
+    switch (nas->UserInfo.user1) {
+    case 1:
+        if (--nas->UserInfo.status != 0) {
+            return;
+        }
+        r = 0x1FF;
+        x = eng->unk10.x;
+        z = eng->unk10.z;
+        for (i = 0; i < 4; i++) {
+            name = Heroes[i].hero_name;
+            if (name == 9 &&
+                (((Ovl5fModeView *)D_8005A614)->mode != name || D_800CB210 != 0 ||
+                 (u32)(i - 2) >= 2)) {
+                continue;
+            }
+            if (Heroes[i].hero_status & 0xC000) {
+                continue;
+            }
+            e = Heroes[i].hero_eng;
+            d = x - e->unk10.x;
+            if (d < -0x1FF) {
+                continue;
+            }
+            if (r < d) {
+                continue;
+            }
+            d = z - e->unk10.z;
+            n = -0x1FF;
+            if (n < d && d < 0x1FF) {
+                hit = i;
+                goto found;
+            }
+        }
+        hit = -1;
+    found:
+        if (hit < 0) {
+            if (D_800CACB4[((eng->unk10.z >> 9) * D_800CAFF4) + (eng->unk10.x >> 9)] != 0) {
+                KillNAS(nas);
+                return;
+            }
+            nas->UserInfo.user1 = 4;
+            {
+                s32 z = eng->unk10.z >> 9;
+                s32 x = eng->unk10.x >> 9;
+                u8 v = ((x << 5) | 0x10) + ((z * 2) + 1);
+                D_800CACB4[(z * D_800CAFF4) + x] = v;
+                D_800CACFC[(z * D_800CAFF4) + x] = v;
+            }
+            eng->sub->unk68 = 0;
+            eng->sub->flags &= ~0x02000000;
+            func_800BF548(eng);
+            return;
+        }
+        if (nas->UserInfo.user2 >= 2) {
+            nas->UserInfo.user2--;
+        }
+        nas->UserInfo.status++;
+        return;
+    case 4:
+        eng->unk10.y -= 0x1E;
+        if (eng->unk10.y <= 0) {
+            eng->unk10.y = 0;
+            nas->UserInfo.user1 = 0;
+        }
+        return;
+    case 0:
+    case 3:
+    default:
+        if (D_800CB0F0 == 0 && --nas->UserInfo.user2 <= 0) {
+            nas->UserInfo.user1 = 5;
+            eng->sub->unk68 = 0x20;
+            D_800CB0EC = 2;
+            eng->sub->flags |= 0x02000000;
+        }
+        return;
+    case 5:
+        eng->unk10.y += 0x1E;
+        if (eng->unk10.y >= 0xB8) {
+            obj = SpawnNASById(eng->unk10.x, 0, eng->unk10.z, 0x1312, 0x11);
+            if (obj != NULL) {
+                obj->UserInfo.user1 = 7;
+                obj->UserInfo.status = 3;
+                obj->Engine->sub->unk74 = 0x400F;
+            }
+            {
+                s32 z = eng->unk10.z >> 9;
+                s32 x = eng->unk10.x >> 9;
+                D_800CACB4[(z * D_800CAFF4) + x] = 0;
+                D_800CACFC[(z * D_800CAFF4) + x] = 0;
+            }
+            nas->UserInfo.user1 = 2;
+            nas->UserInfo.status = 4;
+        }
+        return;
+    case 2:
+        if (--nas->UserInfo.status == 0) {
+            KillNAS(nas);
+        }
+        return;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotTotemPole);
 
