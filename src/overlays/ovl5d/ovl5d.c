@@ -386,7 +386,52 @@ s32 func_800B6FE0(s32 arg0) {
     return r;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B710C);
+void func_800B710C(u16 arg0, u16 arg1, u16 arg2, u16 arg3, u16 arg4, u16 arg5,
+                   u16 arg6, u16 arg7, u16 arg8) {
+    s32 i;
+    s32 k;
+    s32 b;
+    u16 c;
+    u8 t;
+
+    D_800C3B94[3] = arg1 * arg6 / 16 + 1;
+    D_800C3B94[2] = arg2 * arg6 / 16 + 1;
+    D_800C3B94[1] = arg3 * arg6 / 16 + 1;
+    D_800C3B94[0] = arg3 * arg6 / 16 + 1;
+    D_800C3B88 = arg0;
+    D_800C3B8C[3] = arg1;
+    D_800C3B8C[2] = arg2;
+    D_800C3B8C[0] = D_800C3B8C[1] = arg3;
+    arg4 *= 4;
+    arg5 *= 4;
+    c = arg6 * 4;
+    arg7 *= 4;
+    arg8 *= 4;
+    k = 0;
+    for (i = 0; i < arg4; i++) {
+        D_800C3B44[k++] = 4;
+    }
+    for (i = 0; i < arg5; i++) {
+        D_800C3B44[k++] = 5;
+    }
+    for (i = 0; i < c; i++) {
+        D_800C3B44[k++] = 6;
+    }
+    for (i = 0; i < arg7; i++) {
+        D_800C3B44[k++] = 1;
+    }
+    for (i = 0; i < arg8; i++) {
+        D_800C3B44[k++] = 2;
+    }
+    for (i = 0; i < 600; i++) {
+        k = Random(0x40);
+        b = Random(0x40);
+        t = D_800C3B44[k];
+        D_800C3B44[k] = D_800C3B44[b];
+        D_800C3B44[b] = t;
+    }
+    D_800C3B84 = Random(0x20) + 0x14;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B7358);
 

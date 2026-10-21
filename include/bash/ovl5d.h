@@ -86,6 +86,7 @@ extern u8 D_800C3B44[];
 extern u16 D_800C3B84;
 extern u8 D_800C3B86[];
 extern u16 D_800C3B94[];
+extern u16 D_800C3B8C[];
 extern u16 D_8009E46C[];
 extern s32 D_8009D758;
 Ovl5dPair *func_800B8040(u8 *arg0);
@@ -248,6 +249,8 @@ s32 func_800B46B8(s32 arg0);
 s32 func_800B6138(s32 arg0);
 
 s32 func_800B6FE0(s32 arg0);
+
+void func_800B710C(u16 arg0, u16 arg1, u16 arg2, u16 arg3, u16 arg4, u16 arg5, u16 arg6, u16 arg7, u16 arg8);
 
 void func_800B7E74(void);
 
