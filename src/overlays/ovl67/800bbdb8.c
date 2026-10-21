@@ -8,7 +8,110 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/ovl67/800bbdb8", D_800B336C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BBDB8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BC3A4);
+void func_800BC3A4(void) {
+    AstSceneObj *o;
+    AstKind *k;
+    AstSlot *a;
+    AstMineSlot *m;
+    TrigEntry *trig;
+    s32 nAst;
+    s32 nMine;
+    s32 nBig;
+    s32 r;
+    u16 id;
+    /* Arrays rather than literals: the retail rodata carries 3 stray bytes
+     * after the last string's NUL, and the arrays keep the strings' order. */
+    static const char D_800B3404[] = "init asteroids\n";
+    static const char D_800B3414[] = "ark sub count %d\n";
+    static const char D_800B3428[] = "mine count %d\n";
+    static const char D_800B3438[] = "spin/fire count %d\n";
+    static const char D_800B344C[] = "big mine count %d\n";
+    static const char D_800B3460[0x44] ="mine array error"
+        "!!!!!!!!!!" "!!!!!!!!!!" "!!!!!!!!!!" "!!!!!!!!!!" "!!!!!!!\n"
+        "\0\x0B\x80\x82";
+
+    o = (AstSceneObj *)((GfxScene *)D_80058AD0)->objs;
+    printf(D_800B3404);
+    nAst = 0;
+    nMine = 0;
+    nBig = 0;
+    trig = D_80068BD4;
+    a = D_800C4614;
+    D_800C450C = 0x3C;
+loop:
+    if (o != NULL) {
+        do {
+            do {
+                k = &o->k;
+            } while (0);
+        } while (0);
+        if (k->mode == 0x63) {
+            o->flags &= ~0x8000;
+        } else if (k->mode != 0x64) {
+            if ((u32)(o->k.kind - 1) < 3) {
+                o->unk51 = 0;
+                o->rx = Random(0x1000);
+                o->ry = Random(0x1000);
+                o->rz = Random(0x1000);
+                o->unk52 = 1;
+            }
+            if (k->kind == 5 || k->kind == 8) {
+                r = Random(0x200);
+                o->rz = r - Random(0x200);
+                a->ang = Random(0x1000);
+                a->pos = o->pos;
+                a->unk18 = 3;
+                a->unk10 = 0;
+                a->unk14 = 0;
+                a->unk20 = 0x800;
+                a->unk1C = 0;
+                a->unk24 = 0xE4C40;
+                id = o->id;
+                if (id == 0x5002) {
+                    a->unk1C = 1;
+                    a->unk24 = 0x49DA40;
+                    o->rx = Random(0x1000);
+                    a->unk20 = 0x2AA;
+                    nBig++;
+                    if (o->id == id) {
+                        o->pos.y = a->pos.y + (trig[(a->ang - 0x400) & 0xFFF].unk2 * 512 >> 12);
+                        o->pos.x = a->pos.x + (trig[a->ang & 0xFFF].unk2 * 512 >> 12);
+                    } else {
+                        goto plain;
+                    }
+                } else {
+                plain:
+                    o->pos.y = a->pos.y;
+                    o->pos.x = a->pos.x;
+                }
+                a++;
+                nAst++;
+            }
+            if (k->kind == 6 || k->kind == 9 || k->kind == 10) {
+                D_800C6E14[nMine].unk0 = 0;
+                D_800C6E14[nMine].unkC = 0;
+                D_800C6E14[nMine].ang = Random(0x1000);
+                D_800C6E14[nMine].y = o->pos.y;
+                o->rx = 0;
+                o->ry = 0;
+                o->rz = 0;
+                o->unk51 = 0;
+                do {
+                    nMine++;
+                } while (0);
+            }
+        }
+        o = o->next;
+        goto loop;
+    }
+    printf(D_800B3414, 0);
+    printf(D_800B3428, nAst);
+    printf(D_800B3438, nMine);
+    printf(D_800B344C, nBig);
+    if (nAst > 0x100) {
+        printf(D_800B3460);
+    }
+}
 
 void func_800BC6B8(void) {
     s32 temp_v0;

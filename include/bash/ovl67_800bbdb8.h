@@ -502,4 +502,47 @@ void PlotMineSFX(NAS *nas);
 
 void PlotLaserShoot(NAS *nas);
 
+/* A scene object as func_800BC3A4 walks the list at D_80058AD0 + 0x1C. */
+typedef struct AstKind {
+    /* 0x0 */ u8 kind;
+    /* 0x1 */ u8 mode;
+} AstKind;
+typedef struct AstSceneObj {
+    /* 0x00 */ s32 flags;
+    /* 0x04 */ SLONG_XYZ pos;
+    /* 0x10 */ s16 rx;
+    /* 0x12 */ s16 ry;
+    /* 0x14 */ s16 rz;
+    /* 0x16 */ u8 pad16[0x51 - 0x16];
+    /* 0x51 */ u8 unk51;
+    /* 0x52 */ s16 unk52;
+    /* 0x54 */ u8 pad54[0x5C - 0x54];
+    /* 0x5C */ struct AstSceneObj *next;
+    /* 0x60 */ u8 pad60[4];
+    /* 0x64 */ AstKind k;
+    /* 0x66 */ u8 pad66[0x74 - 0x66];
+    /* 0x74 */ u16 id;
+} AstSceneObj;
+typedef struct AstSlot {
+    /* 0x00 */ SLONG_XYZ pos;
+    /* 0x0C */ s32 ang;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ s32 unk1C;
+    /* 0x20 */ s32 unk20;
+    /* 0x24 */ s32 unk24;
+} AstSlot;
+typedef struct AstMineSlot {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 ang;
+    /* 0x08 */ s32 y;
+    /* 0x0C */ s32 unkC;
+} AstMineSlot;
+extern s32 D_800C450C;
+extern AstSlot D_800C4614[];
+extern AstMineSlot D_800C6E14[];
+
+void func_800BC3A4(void);
+
 #endif /* BASH_OVL67_800BBDB8_H */
