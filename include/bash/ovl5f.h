@@ -492,4 +492,18 @@ void func_800C4BC0(s32 arg0);
 
 void func_800C53B0(s32 arg0);
 
+/* Extension 0x10000000 of the TA helicopter (InitHelicopterTA). */
+typedef struct HelicopterTAExt {
+    /* 0x00 */ u8 pad[0x10];
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ u8 pad14[0x30 - 0x14];
+    /* 0x30 */ s32 unk30;
+} HelicopterTAExt;
+extern s32 D_800CB0F4;
+extern s32 D_800CA600[4];
+extern s32 D_800CA610[4];
+extern s32 D_800CA620[4];
+extern s32 D_800CA630[4];
+extern s32 D_800CA640[4];
+
 #endif /* BASH_OVL5F_H */

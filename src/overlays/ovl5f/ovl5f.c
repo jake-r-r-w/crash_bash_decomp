@@ -899,7 +899,72 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotShrapnelBit);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotPickupGenerator_TA);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitHelicopterTA);
+void InitHelicopterTA(NAS *nas) {
+    HelicopterTAExt *ext;
+    EXTengine *eng;
+    EXTengine *e;
+    subengine *sub;
+    u8 *p;
+
+    ext = AddExtension(nas, 0x38, 0x10000000);
+    if (ext != NULL) {
+        nas->FUX = (EXT *)ext;
+        ext->unk30 = 3;
+        eng = nas->Engine;
+        if (++D_800CB0F4 & 1) {
+            eng->unk1E = 0x400;
+            eng->unk10.x = 0x1800;
+            ext->unk10 = -0x40;
+            eng->unk10.y = -0x400;
+        } else {
+            eng->unk1E = 0xC00;
+            eng->unk10.x = -0x800;
+            ext->unk10 = 0x40;
+            eng->unk10.y = -0x400;
+        }
+        switch ((s16)(D_8005A648 - 5)) {
+        case 0:
+            eng->unk10.z = D_800CA600[Random(4)];
+            break;
+        case 1:
+            eng->unk10.z = D_800CA610[Random(4)];
+            break;
+        case 2:
+            eng->unk10.z = D_800CA620[Random(4)];
+            break;
+        case 3:
+            eng->unk10.z = D_800CA630[Random(4)];
+            break;
+        case 4:
+            eng->unk10.z = D_800CA640[Random(4)];
+            break;
+        }
+        p = D_80053694;
+        sub = eng->sub;
+        sub->unk6C = p;
+        sub->unk74 = 0x4080;
+        eng->unk5D = 1;
+        eng->unk5E = 1;
+        nas->UserInfo.user2 = 0;
+        PlaySfx(0x4F6, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+        e = AddEngine(nas, 1);
+        if (e != NULL) {
+            e->unk10.x = eng->unk10.x;
+            e->unk10.y = 0;
+            e->unk10.z = eng->unk10.z;
+            e->sub->unk51 = 2;
+            e->sub->unk6C = p;
+            e->sub->unk74 = 0x200F;
+            e->sub->flags |= 0x40000041;
+            e->sub->unk76 = 0x800;
+            e->sub->unk50 = 1;
+        }
+        if (nas->Failure == 0) {
+            return;
+        }
+    }
+    KillNAS(nas);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotHelicopterTA);
 
