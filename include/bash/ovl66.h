@@ -156,6 +156,21 @@ void func_800B5050(s32 arg0, u16 arg1);
 void func_800B54D8(s32 arg0, u16 arg1);
 void func_800B5820(s32 arg0, u16 arg1);
 
+/* D_8005A614 as seen by func_800B5820 (the final ranking). */
+typedef struct Ovl66RankView {
+    /* 0x00 */ u8 unk0[0x30];
+    /* 0x30 */ u16 unk30;
+    /* 0x32 */ u8 unk32[0x48 - 0x32];
+    /* 0x48 */ s16 team[2];
+    /* 0x4C */ u8 unk4C[0x60 - 0x4C];
+    /* 0x60 */ u8 winner[2];
+    /* 0x62 */ u8 unk62[0x6C - 0x62];
+    /* 0x6C */ s32 teams;
+    /* 0x70 */ u8 unk70[0xA7 - 0x70];
+    /* 0xA7 */ u8 order[4];
+} Ovl66RankView;
+#define RANK66V ((Ovl66RankView *)D_8005A614)
+
 void PlotBonkShockwave(NAS *nas);
 
 void func_800B6AAC(void);
