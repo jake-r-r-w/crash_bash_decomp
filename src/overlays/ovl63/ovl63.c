@@ -3553,7 +3553,113 @@ void InitDac(NAS *m) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotDac);
+void PlotDac(NAS *nas) {
+    EXTovl63dac *ext;
+    EXTengine *eng;
+    HeroInfo *h;
+    HeroInfo *base;
+    s32 dx, dz, dy, dd;
+    s32 a, b, i, p;
+    u8 *g;
+
+    ext = FindExtension(nas, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    func_800250B0(nas);
+    nas->Engine->unk5E = 1;
+    switch (ext->state) {
+    found:
+        ext->player = p;
+        goto sfx;
+    case 0:
+        nas->Engine->unk10.y -= (nas->Engine->unk10.y - ext->height) >> 4;
+        ext->angle = ((get_angle(nas->Engine->unk10.x, nas->Engine->unk10.z) & 0xFFF) + 0x400) & 0xFFF;
+        nas->Engine->unk10.x += D_80068BD4[(ext->angle - 0x400) & 0xFFF].unk2 * 32 >> 12;
+        nas->Engine->unk10.z += D_80068BD4[ext->angle & 0xFFF].unk2 * 32 >> 12;
+        {
+            s32 r;
+            r = nas->Engine->unk1E - 0x800;
+            nas->Engine->unk1E -= ((r - ext->angle) << 20) >> 22;
+        }
+        nas->Engine->unk1C -= (nas->Engine->unk1C << 20) >> 22;
+        if (ext->timer-- < 0) {
+            i = 0;
+            p = Random(4);
+            ext->state = 1;
+            g = D_8005A614;
+        search:
+            i++;
+            if (g[p + 0x5C] == 0) {
+                goto found;
+            }
+            p++;
+            p &= 3;
+            if (i < 4) {
+                goto search;
+            }
+        sfx:
+            PlaySfx(0x6A0, NULL, NULL, 0x1000, 0x1E00, 0);
+            ext->height = -0x200;
+            ext->timer = 0x78;
+        }
+        break;
+    case 1:
+        if (D_800C695C != 0) {
+            ext->height = -0x600;
+            ext->state = 0;
+            ext->timer = 0xF3C;
+            return;
+        }
+        dy = nas->Engine->unk10.y - ext->height;
+        nas->Engine->unk10.y -= dy >> 4;
+        base = Heroes;
+        h = &base[ext->player];
+        dx = nas->Engine->unk10.x - h->hero_eng->unk10.x;
+        dz = nas->Engine->unk10.z - h->hero_eng->unk10.z;
+        dy = nas->Engine->unk10.y - h->hero_eng->unk10.y;
+        dd = dx * dx + dz * dz;
+        if (dd + dy * dy < 0x40000) {
+            PlaySfx(0x6A1, NULL, NULL, 0x1000, 0x1E00, 0);
+            if (base[ext->player].hero_mode != 0x5D) {
+                SetHeroAction((HeroInfo *)ext->player, 0x5D);
+            }
+            ext->height = -0x600;
+            ext->state = 0;
+            ext->timer = 0x168;
+            return;
+        }
+        if (h->hero_mode == 0x61) {
+            ext->height = -0x600;
+            ext->state = 0;
+            ext->timer = 0xF0;
+            return;
+        }
+        a = get_angle(dx, dz) & 0xFFF;
+        b = get_angle(dy, csqrt(dd) >> 6);
+        ext->angle = a;
+        nas->Engine->unk10.x -= (D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 5) >> 9;
+        nas->Engine->unk10.z -= (D_80068BD4[ext->angle & 0xFFF].unk2 * 5) >> 9;
+        eng = nas->Engine;
+        eng->unk1E -= ((eng->unk1E - ext->angle) << 20) >> 22;
+        nas->Engine->unk1C -= ((nas->Engine->unk1C - (-b & 0xFFF)) << 20) >> 22;
+        if (nas->Engine->unk1C > 0x200) {
+            nas->Engine->unk1C = 0x200;
+        }
+        if (ext->timer-- < 0) {
+            ext->height = -0x600;
+            ext->state = 0;
+            ext->timer = 0x168;
+        }
+        break;
+    }
+    ext->shadow->unk2C.x = (nas->Engine->unk10.y + 0x600) * 5 + 0x3000;
+    ext->shadow->unk2C.y = (nas->Engine->unk10.y + 0x600) * 5 + 0x3000;
+    ext->shadow->unk2C.z = (nas->Engine->unk10.y + 0x600) * 5 + 0x3000;
+    ext->shadow->unk5E = 1;
+    ext->shadow->unk10 = nas->Engine->unk10;
+    ext->shadow->unk10.y = 0x40;
+}
 
 void func_800C44B0(void) {
     D_800C6BB4[0] = (Ovl63Short3){ D_800C66E4, 0x28, 0x38 };

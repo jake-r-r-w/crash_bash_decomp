@@ -341,6 +341,19 @@ typedef struct Ovl63ResetFux {
 
 extern s32 D_800C692C;
 extern s32 D_800C695C;
+
+/* Extension 0x10000000 as PlotDac drives it. */
+typedef struct EXTovl63dac {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ s32 state;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 angle;
+    /* 0x18 */ s32 timer;
+    /* 0x1C */ s32 height;
+    /* 0x20 */ EXTengine *shadow;
+    /* 0x24 */ s32 player;
+} EXTovl63dac;
+
 typedef struct Ovl63Obj74 {
     /* 0x00 */ u8 unk0[0x74];
     /* 0x74 */ s16 unk74;
@@ -996,5 +1009,7 @@ void PlotRacePickUp(NAS *m);
 void PlotTNTCrate(NAS *nas);
 
 void PlotTrackGlob(NAS *nas);
+
+void PlotDac(NAS *nas);
 
 #endif /* BASH_OVL63_H */
