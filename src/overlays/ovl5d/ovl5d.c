@@ -59,7 +59,29 @@ void func_800B432C(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B44B0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B46B8);
+s32 func_800B46B8(s32 arg0) {
+    s32 i;
+    s32 dx;
+    s32 dz;
+
+    for (i = 0; i < 4; i++) {
+        if (i != arg0 && !(Heroes[i].hero_status & 0xFA00) && Heroes[i].hero_pu == 0x14) {
+            dx = Heroes[arg0].hero_eng->unk10.x - Heroes[i].hero_eng->unk10.x;
+            dz = Heroes[arg0].hero_eng->unk10.z - Heroes[i].hero_eng->unk10.z;
+            if (dx * dx + dz * dz < 0x100000) {
+                return get_angle(dx, dz);
+            }
+        }
+    }
+    if (D_800C46B4 != NULL && D_800C46B4->status == 3) {
+        dx = D_800C46B0->unk10.x - Heroes[arg0].hero_eng->unk10.x;
+        dz = D_800C46B0->unk10.z - Heroes[arg0].hero_eng->unk10.z;
+        if (dx * dx + dz * dz < 0x240000) {
+            return get_angle(-dx, -dz);
+        }
+    }
+    return 0;
+}
 
 void func_800B4848(s32 arg0, s32 arg1, s32 arg2, Ovl5dAiState *ai, s32 prev) {
     HeroInfo *base;
