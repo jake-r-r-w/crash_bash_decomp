@@ -311,4 +311,20 @@ extern u16 D_800BAAA0[];
 
 void func_800B7EF4(void);
 
+/* D_8005A614 as seen by func_800B4464 (option screen). */
+typedef struct {
+    u8 pad0[0x2C];
+    s32 unk2C;     /* 0x2C */
+    u8 pad30[0x32 - 0x30];
+    u16 unk32;     /* 0x32 */
+    u8 pad34[0x38 - 0x34];
+    s16 unk38;     /* 0x38 */
+    u16 unk3A;     /* 0x3A */
+} Ovl69OptView;
+#define O69OV ((Ovl69OptView *)D_8005A614)
+extern s32 D_800B8E78[][3];
+extern s32 D_800B8E84[][2];
+
+void func_800B4464(void);
+
 #endif /* BASH_OVL69_H */

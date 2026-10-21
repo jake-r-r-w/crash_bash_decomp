@@ -201,7 +201,53 @@ void func_800B42B0(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B4464);
+void func_800B4464(void) {
+    subengine *sub;
+    subengine *p;
+
+    sub = GetEngineSlot(1)->sub;
+    sub->unk14 = D_8005B690 * 0x14;
+    sub->unk12 = 0x293;
+    sub->unk50 = 1;
+    sub->unk20.z = 0x2800;
+    sub->unk20.x = 0x2800;
+    sub->unk51 = 0;
+    sub->unk52 = 1;
+    if (((PadButtons *)D_80051338)->pressed & 0x1000) {
+        func_800B53D4();
+        PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    if (((PadButtons *)D_80051338)->pressed & 0x80) {
+        if (O69OV->unk3A >= 3) {
+            PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
+            O69OV->unk3A--;
+        }
+    }
+    if ((D_80051380 & 0x20) && O69OV->unk3A < 7) {
+        O69OV->unk3A++;
+        PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    if ((D_80051380 & 0x40) && O69OV->unk38 > 0) {
+        PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
+        O69OV->unk38--;
+    }
+    if ((D_80051380 & 0x10) && O69OV->unk38 < 2) {
+        PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
+        O69OV->unk38++;
+    }
+    *(u8 *)GetEngineSlot(0)->sub[2].unk6C = O69OV->unk3A + '0';
+    GetEngineSlot(0)->sub[5].unk6C = (void *)D_800B8E78[O69OV->unk2C][O69OV->unk38];
+    p = &GetEngineSlot(0)->sub[8];
+    if (O69OV->unk32 & 1) {
+        p->unk6C = (void *)D_800B8E84[O69OV->unk2C][0];
+    } else {
+        p->unk6C = (void *)D_800B8E84[O69OV->unk2C][1];
+    }
+    if (D_80051380 & 0x4000) {
+        D_8005A644 = 0x8008;
+        PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+}
 
 void func_800B4770(void) {
     u8 *p;

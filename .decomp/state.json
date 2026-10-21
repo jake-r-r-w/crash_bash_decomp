@@ -10172,7 +10172,8 @@
   "status": "matched"
  },
  "ovl69:800B4464": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-21T09:18:36Z",
+  "status": "matched"
  },
  "ovl69:800B4770": {
   "matched_at": "2026-10-18T17:53:48Z",
