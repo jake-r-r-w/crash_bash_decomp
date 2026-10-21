@@ -1359,7 +1359,133 @@ void func_800B8660(s32 arg0, s32 arg1, s32 dx, s32 dz, const s32 arg4) {
 end:;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B87DC);
+void func_800B87DC(void) {
+    s32 off;
+    Ovl60Cell *base;
+    s32 j;
+    s32 i;
+    s32 vol;
+    s32 rowOff;
+    s32 sfx;
+    s16 t;
+
+    i = 0;
+    base = D_800C53DC[0];
+    vol = 0x1E00;
+    rowOff = 0;
+loop_i:
+    j = 0;
+    if (i < 8) {
+        off = rowOff;
+loop_j:
+        if (j < 8) {
+            if (D_8005A648 == 13) {
+                if ((*(u16 *)CELL_AT(off)->unkC & 0x10) && CELL_AT(off)->unkE == 0) {
+                    *(u16 *)CELL_AT(off)->unkC &= ~0x10;
+                }
+            }
+            switch ((u16)CELL_AT(off)->unk12) {
+            case 5:
+                t = --CELL_AT(off)->unk14;
+                if (CELL_AT(off)->unk18[0] != 0) {
+                    switch (t) {
+                    case 10:
+                    case 20:
+                    case 30:
+                    case 60:
+                    case 90:
+                        do {
+                            do {
+                                PlaySfx(0x3F0, NULL, (SLONG_XYZ *)&CELL_AT(off)->unk4->x, 0x1000, vol, 0);
+                            } while (0);
+                        } while (0);
+                        break;
+                    }
+                }
+                if (CELL_AT(off)->unk14 < 2) {
+                    func_800B8180(i, j);
+                }
+                func_800B7C3C(i, j);
+                break;
+            case 6:
+                if (--CELL_AT(off)->unk14 < 2) {
+                    func_800B83AC(i, j);
+                }
+                break;
+            case 0:
+                do {
+                if (--CELL_AT(off)->unk14 < 2) {
+                    CELL_AT(off)->unk12 = 1;
+                    switch (CELL_AT(off)->unk18[0]) {
+                    case 2:
+                        sfx = 0x516;
+                        goto play;
+                    case 3:
+                        sfx = 0x517;
+                        goto play;
+                    case 4:
+                        sfx = 0x518;
+                        goto play;
+                    case 5:
+                        sfx = 0x519;
+                        goto play;
+                    case 6:
+                        sfx = 0x51A;
+                        goto play;
+                    case 7:
+                        sfx = 0x51B;
+                        goto play;
+                    case 8:
+                        sfx = 0x51C;
+                    play:
+                        do {
+                            do {
+                                PlaySfx(sfx, NULL, (SLONG_XYZ *)&CELL_AT(off)->unk4->x, 0x1000, vol, 0);
+                            } while (0);
+                        } while (0);
+                        break;
+                    }
+                    CELL_AT(off)->unk18[0] = 0;
+                }
+                } while (0);
+                func_800B7C3C(i, j);
+                break;
+            case 2:
+                do {
+                    if (--CELL_AT(off)->unk14 < 2) {
+                        CELL_AT(off)->unk12 = 3;
+                        CELL_AT(off)->unk14 = 10;
+                    }
+                } while (0);
+                func_800B7C3C(i, j);
+                break;
+            case 3:
+                do {
+                    if (--CELL_AT(off)->unk14 < 2) {
+                        CELL_AT(off)->unk12 = 1;
+                        CELL_AT(off)->unkA = -1;
+                        CELL_AT(off)->unk14 = 0;
+                    }
+                } while (0);
+                func_800B7C3C(i, j);
+                break;
+            case 1:
+            case 4:
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+                break;
+            }
+            off += sizeof(Ovl60Cell);
+            j++;
+            goto loop_j;
+        }
+        rowOff += sizeof(D_800C53DC[0]);
+        i++;
+        goto loop_i;
+    }
+}
 
 void func_800B8AF8(s32 arg0) {
     switch (Heroes[arg0].hero_name) {
