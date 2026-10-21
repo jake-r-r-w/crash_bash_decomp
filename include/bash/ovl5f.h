@@ -787,4 +787,55 @@ void func_800C4DCC(s32 player);
 
 void func_800C5BCC(NAS *nas, s32 id);
 
+/* func_800B58B0: level setup */
+typedef struct Ovl5fSetupView {
+    /* 0x00 */ u8 pad0[0x32];
+    /* 0x32 */ u16 flags;
+    /* 0x34 */ s16 mode;
+    /* 0x36 */ u8 pad36[0x51 - 0x36];
+    /* 0x51 */ u8 b51;
+    /* 0x52 */ u8 b52;
+    /* 0x53 */ u8 b53;
+    /* 0x54 */ u8 pad54[0x6C - 0x54];
+    /* 0x6C */ s32 w6C;
+} Ovl5fSetupView;
+typedef struct Ovl5fCam {
+    /* 0x00 */ s32 w0;
+    /* 0x04 */ s32 w4;
+    /* 0x08 */ s32 w8;
+    /* 0x0C */ s32 wC;
+    /* 0x10 */ s32 w10;
+    /* 0x14 */ s32 w14;
+    /* 0x18 */ s32 w18;
+    /* 0x1C */ u8 pad1C[0x54 - 0x1C];
+    /* 0x54 */ s16 h54;
+    /* 0x56 */ s16 h56;
+    /* 0x58 */ s16 h58;
+} Ovl5fCam;
+#define CAM5F ((Ovl5fCam *)D_80051640)
+typedef struct Ovl5fScreen {
+    /* 0x00 */ u8 pad0[0x10];
+    /* 0x10 */ s32 w10;
+    /* 0x14 */ s32 w14;
+} Ovl5fScreen;
+extern s32 D_800CAFE0;
+extern s32 D_800CAFE4;
+extern s32 D_800CAFE8;
+extern s32 D_800CAFEC;
+extern s32 D_800CAFF0;
+extern s32 D_800CAFF8;
+extern s32 D_800CB108[9][7];
+extern s16 D_8009D88E;
+extern u8 D_800C8ED4[];
+extern u8 D_800CA1C4[];
+extern u8 D_800CA204[];
+extern u8 D_800CA244[];
+extern u8 D_800CA284[];
+extern u8 D_800CA2C4[];
+extern u8 D_800CA30C[];
+extern u8 D_8005365C[];
+void func_8007EB04(void);
+void func_8007EB1C(s32 arg0, s32 arg1, s32 arg2);
+void func_8007B7FC(u32 a, u32 b);
+
 #endif /* BASH_OVL5F_H */

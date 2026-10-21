@@ -835,7 +835,199 @@ void func_800B5588(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B58B0);
+void func_800B58B0(void) {
+    Ovl5fSetupView *g;
+    u8 *src1;
+    u8 *src2;
+    u8 *p;
+    u8 *q;
+    s32 i;
+    s32 j;
+    s32 k;
+
+    D_800CAFF0 = 0;
+    D_800CAFEC = 0;
+    D_800CAFE8 = 0;
+    D_800CAFE4 = 0;
+    D_800CAFE0 = 0;
+    for (j = 7; j >= 0; j--) {
+        D_800CB264[j] = NULL;
+    }
+    D_800CB0F0 = 0;
+    D_800CB260 = -1;
+    D_800CB0E0 = 0;
+    D_800CB0EC = 0;
+    D_8005A5D8 = 0;
+    func_8007EB1C(0x140, 0x1E, 0);
+    g = (Ovl5fSetupView *)D_8005A614;
+    if (g->flags & 0x40) {
+        if (g->w6C != 0) {
+            switch (g->mode) {
+            case 6:
+                func_8007B7FC(0x30, 0x81C0);
+                break;
+            case 8:
+                func_8007B7FC(0x30, 0x81C0);
+                break;
+            case 7:
+                func_8007B7FC(0x25, 0x81C0);
+                break;
+            case 5:
+                func_8007B7FC(0x25, 0x81C0);
+                break;
+            case 9:
+                func_8007EB04();
+                break;
+            }
+        } else {
+            switch (g->mode) {
+            case 6:
+                func_8007B7FC(0x40, 0x81C0);
+                break;
+            case 8:
+                func_8007B7FC(0x40, 0x81C0);
+                break;
+            case 7:
+                func_8007B7FC(0x30, 0x81C0);
+                break;
+            case 5:
+                func_8007B7FC(0x40, 0x81C0);
+                break;
+            case 9:
+                func_8007EB04();
+                break;
+            }
+        }
+    } else if (g->mode == 9) {
+        func_8007EB04();
+    } else {
+        func_8007B7FC(0x130, 0x81C0);
+    }
+    if (D_8005A648 == 5) {
+        func_8001682C((s32 *)D_80053774);
+    } else {
+        func_8001682C((s32 *)D_80053694);
+    }
+    if (D_8005A648 == 7) {
+        func_8001682C((s32 *)D_800537AC);
+    }
+    func_8001682C((s32 *)D_8005365C);
+    func_8001682C((s32 *)(D_8005365C - 0x658));
+    func_8001682C(*(s32 **)D_80058AD0);
+    ((Ovl5fScreen *)D_8009F6F4)->w10 = 0x140;
+    ((Ovl5fScreen *)D_8009F6F4)->w14 = 0x15E;
+    CAM5F->w0 = 0;
+    CAM5F->w8 = 0xE98;
+    CAM5F->h54 = 0x200;
+    CAM5F->w18 = 0x200;
+    CAM5F->w4 = 0;
+    CAM5F->h56 = 0;
+    CAM5F->h58 = 0;
+    CAM5F->w10 = 0x90;
+    for (i = 0; i < 4; i++) {
+        SetHeroAction((HeroInfo *)i, 0x6C);
+    }
+    for (i = 2; i >= 0; i--) {
+        D_800CAD44[i] = NULL;
+    }
+    for (i = 7; i >= 0; i--) {
+        D_800CB0C0[i] = NULL;
+    }
+    switch (D_8005A648) {
+    default:
+    case 5:
+        src1 = src2 = D_800CA30C;
+        D_800CAFF4 = 9;
+        D_800CAFF8 = 8;
+        CAM5F->wC = 0x930;
+        CAM5F->w14 = 0x1C0;
+        D_800CB100 = 0x1100;
+        D_800CB104 = 0xF00;
+        PlaySfx(0x50F, NULL, NULL, 0x1000, 0x1E00, 0);
+        break;
+    case 6:
+        src2 = D_800CA1C4;
+        D_800CAFF4 = 8;
+        D_800CAFF8 = 8;
+        CAM5F->wC = 0x800;
+        CAM5F->w14 = 0x2A0;
+        D_800CB100 = 0xF00;
+        D_800CB104 = 0xF00;
+        if (D_8005A646 & 0x80) {
+            SpawnNASById(0x800, -0x3C, 0x800, 0x1318, 0x11);
+            src1 = D_800CA204;
+        } else {
+            src1 = src2;
+        }
+        break;
+    case 7:
+        func_8007A9D0(D_800C8ED4);
+        SpawnNASById(0x800, 0, 0x800, 0x131A, 0x11);
+        src1 = src2 = D_800CA244;
+        D_800CAFF4 = 8;
+        D_800CAFF8 = 8;
+        CAM5F->wC = 0x800;
+        CAM5F->w14 = 0x220;
+        CAM5F->h54 = 0x1EA;
+        CAM5F->w10 = 0;
+        D_800CB100 = 0xF00;
+        D_800CB104 = 0xF00;
+        break;
+    case 8:
+        D_800CAFF4 = 9;
+        D_800CAFF8 = 7;
+        CAM5F->wC = 0x930;
+        CAM5F->w14 = 0x1C0;
+        D_800CB204 = 0;
+        SpawnNASById(0, 0, 0, 0x1310, 0x11);
+        SpawnNASById(0, 0, 0, 0x1309, 0x11);
+        src1 = src2 = D_800CA284;
+        D_800CB100 = 0x1100;
+        D_800CB104 = 0xD00;
+        break;
+    case 9:
+        g = (Ovl5fSetupView *)D_8005A614;
+        if (g->w6C == 0) {
+            g->b51 = 9;
+        }
+        g->b52 = 9;
+        g->b53 = 9;
+        Heroes[2].hero_name = 9;
+        Heroes[3].hero_name = 9;
+        if (g->w6C == 0) {
+            Heroes[1].hero_name = 9;
+        }
+        CAM5F->h54 = 0x192;
+        D_800CAFF4 = 9;
+        D_800CAFF8 = 8;
+        CAM5F->wC = 0x930;
+        CAM5F->w10 = -0x70;
+        CAM5F->w14 = 0x1C0;
+        D_800CB100 = 0x1100;
+        D_800CB104 = 0xF00;
+        SpawnNASById(0x600, 0, 0x900, 0x131F, 0x11);
+        SpawnNASById(0xC00, 0, 0x900, 0x131E, 0x11);
+        SpawnNASById(0x900, 0x7D0, 0x10E0, 0x1313, 0x11);
+        src1 = src2 = D_800CA2C4;
+        D_800CB254 = 0;
+        D_800CB258 = 0;
+        break;
+    }
+    p = D_800CACB4;
+    q = D_800CACFC;
+    for (i = 0; i < 0x48; i++) {
+        *p++ = *src2++;
+        *q++ = *src1++;
+    }
+    for (k = 0; k < 7; k++) {
+        for (j = 0; j < 9; j++) {
+            D_800CB108[j][k] = 0;
+        }
+    }
+    D_800CB0E4 = 0;
+    D_800CB0F8 = 0x50;
+    D_800CB248 = 0x1E0 / (D_8009D88E + 1);
+}
 
 void func_800B5FC4(void) {
     s32 i;
