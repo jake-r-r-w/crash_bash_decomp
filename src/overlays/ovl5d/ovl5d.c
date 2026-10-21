@@ -848,7 +848,99 @@ void InitTumbler(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotTumbler);
+void PlotTumbler(NAS *nas) {
+    EXTengine *eng;
+    subengine *sub;
+    Ovl5dTumbleMove *move;
+    TumblerObj *obj;
+    NAS *child;
+    EXTengine *ceng;
+    s32 hero;
+    s32 dy;
+
+    eng = nas->Engine;
+    if (eng == NULL) {
+        return;
+    }
+    sub = eng->sub;
+    move = FindExtension(nas, 0x800);
+    if (move == NULL) {
+        return;
+    }
+    obj = (TumblerObj *)nas->FUX;
+    if (obj == NULL) {
+        return;
+    }
+    switch (nas->UserInfo.status) {
+    case 1:
+        hero = 0;
+        if (D_8005A680[0] != 0) {
+            hero = Random(2);
+            if (Heroes[hero].hero_status & 0xFA00) {
+                hero = Heroes[hero].hero_teammate;
+                if (hero == -1) {
+                    hero = 0;
+                }
+            } else {
+                goto spawn;
+            }
+        }
+        if (Heroes[hero].hero_status & 0xFA00) {
+            func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
+            func_800270B0(nas);
+            return;
+        }
+    spawn:
+        func_800BB4AC((Ovl5dTumbler *)eng, move, hero);
+        child = SpawnNASById(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1108, 0x11);
+        if (child != NULL) {
+            ceng = child->Engine;
+            if (ceng != NULL) {
+                ceng->unk1E = eng->unk1E;
+            }
+        }
+        eng->flags |= 0x8000;
+        nas->UserInfo.status = 2;
+        PlaySfx(0x409, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        return;
+    case 2:
+        if (func_8007A26C(nas) != 0) {
+            eng->unk10.y += 0x20;
+            func_800BF404(eng, 0, -1, 0);
+            eng->unk10.y -= 0x20;
+            func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 0);
+            func_800270B0(nas);
+            return;
+        }
+        if (func_800BF404(eng, 0, obj->unk16, 1) != 0) {
+            eng->unk10.y += 0x80;
+            func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
+            func_800270B0(nas);
+            return;
+        }
+        sub = sub->next;
+        if (sub != NULL) {
+            dy = ((s32 (*)(EXTengine *))func_80025F44)(eng);
+            sub->unk08 = -dy;
+            dy = 0x1000 - dy;
+            if (dy < 0x10) {
+                dy = 0x10;
+            }
+            sub->unk20.x = dy;
+            sub->unk20.y = dy;
+            sub->unk20.z = dy;
+        }
+        return;
+    case 9:
+        KillNAS(nas);
+        return;
+    default:
+        if (nas->Family.Child == NULL) {
+            nas->UserInfo.status = 1;
+        }
+        return;
+    }
+}
 
 void func_800B94C4(s32 arg0, u16 arg1) {
     HeroInfo *h2;

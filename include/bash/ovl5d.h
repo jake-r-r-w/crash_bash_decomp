@@ -266,9 +266,12 @@ u8 *func_800BAFDC(s32 x, s32 unused, s32 z, u16 flag);
 typedef struct TumblerObj {
     /* 0x00 */ u8 pad0[0x14];
     /* 0x14 */ s16 unk14;
-    /* 0x16 */ u8 pad16[4];
+    /* 0x16 */ s16 unk16;
+    /* 0x18 */ u8 pad18[2];
     /* 0x1A */ s16 unk1A;
 } TumblerObj;
+
+s32 func_800BF404(EXTengine *eng, s32 arg1, s32 arg2, s32 arg3);
 
 /* Spawns the 0x1605 puff at v and returns it (InitTumbler). */
 static inline NAS *Ovl5dSpawnPuff(SLONG_XYZ *v) {
@@ -291,5 +294,7 @@ static inline NAS *Ovl5dSpawnPuff(SLONG_XYZ *v) {
 }
 
 void InitTumbler(NAS *nas);
+
+void PlotTumbler(NAS *nas);
 
 #endif /* BASH_OVL5D_H */
