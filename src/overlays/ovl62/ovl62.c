@@ -4457,7 +4457,88 @@ s32 func_800D10A0(s32 player) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D1188);
+void func_800D1188(s32 player) {
+    SLONG_XYZ pos;
+    SLONG_XYZ to;
+    HeroInfo *base;
+    HeroInfo *base2;
+    HeroInfo *h;
+    HeroInfo *h2;
+    EXTengine *eng;
+    s32 *ext;
+    NAS *nas;
+    Ovl62Thrown *t;
+    s32 dist;
+
+    base = Heroes;
+    h = &base[player];
+    ext = FindExtension(h->hero, 0x20000000);
+    if (ext != NULL) {
+    dist = 0;
+    pos = h->hero_eng->unk10;
+    pos.y -= 0x100;
+    nas = SpawnNASById(pos.x, pos.y, pos.z, 0x160D, 0x11);
+    if (nas != NULL) {
+    t = FindExtension(nas, 0x10000000);
+    if (t != NULL) {
+    t->start = pos;
+    t->owner = player;
+    ext[10]--;
+    nas->Engine->unk1E = base[t->owner].hero_eng->unk1E;
+    to.y = h->hero_eng->unk10.y;
+    switch (h->hero_name) {
+    case 1:
+        PlaySfx(0x17, NULL, NULL, 0x1000, 0x1E00, 0);
+        dist = 0x700;
+        t->unk74 = 0x56;
+        break;
+    case 2:
+        PlaySfx(0x49, NULL, NULL, 0x1000, 0x1E00, 0);
+        dist = 0x700;
+        t->unk74 = 0x56;
+        break;
+    case 3:
+        PlaySfx(0x7B, NULL, NULL, 0x1000, 0x1E00, 0);
+        dist = 0x700;
+        t->unk74 = 0x56;
+        break;
+    case 4:
+        PlaySfx(0xAD, NULL, NULL, 0x1000, 0x1E00, 0);
+        dist = 0x700;
+        t->unk74 = 0x56;
+        break;
+    case 5:
+        PlaySfx(0x143, NULL, NULL, 0x1000, 0x1E00, 0);
+        dist = 0x800;
+        t->unk74 = 0x6A;
+        break;
+    case 6:
+        PlaySfx(0x175, NULL, NULL, 0x1000, 0x1E00, 0);
+        dist = 0x800;
+        t->unk74 = 0x6A;
+        break;
+    case 7:
+        PlaySfx(0x111, NULL, NULL, 0x1000, 0x1E00, 0);
+        dist = 0x800;
+        t->unk74 = 0x6A;
+        break;
+    case 8:
+        PlaySfx(0xDF, NULL, NULL, 0x1000, 0x1E00, 0);
+        dist = 0x800;
+        t->unk74 = 0x6A;
+        break;
+    }
+    base2 = Heroes;
+    h2 = &base2[player];
+    eng = h2->hero_eng;
+    to.x = eng->unk10.x - (dist * D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 >> 12);
+    eng = h2->hero_eng;
+    to.z = eng->unk10.z - (dist * D_80068BD4[eng->unk1E & 0xFFF].unk2 >> 12);
+    t->pos = to;
+    }
+    }
+    }
+}
 
 #define SET74(v)                                              \
     *(s16 *)((u8 *)Heroes[player].hero_eng->sub + 0x74) = (v); \

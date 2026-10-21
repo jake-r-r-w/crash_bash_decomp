@@ -25,9 +25,9 @@
    "size": 744
   }
  ],
- "commit": "ad40ac6751",
+ "commit": "46ff3c432d",
  "game": "SCUS_945.70",
- "generated": "2026-10-21T11:14:22Z",
+ "generated": "2026-10-21T11:18:09Z",
  "hacks": [
   {
    "commit": "f69a346bbb",
@@ -166324,9 +166324,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "46ff3c432d",
+   "data_b": 5716,
+   "data_tb": 606943,
+   "game_all_f": 2537,
+   "game_b": 685304,
+   "game_c_f": 2351,
+   "game_f": 2351,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 2126,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-21T11:18:09Z",
+   "units": {
+    "engine": [
+     121412,
+     355
+    ],
+    "main exe": [
+     124840,
+     575
+    ],
+    "ovl5d": [
+     32564,
+     91
+    ],
+    "ovl5e": [
+     30984,
+     71
+    ],
+    "ovl5f": [
+     35212,
+     148
+    ],
+    "ovl60": [
+     42960,
+     163
+    ],
+    "ovl61": [
+     55000,
+     97
+    ],
+    "ovl62": [
+     48304,
+     178
+    ],
+    "ovl63": [
+     33856,
+     114
+    ],
+    "ovl64": [
+     18272,
+     49
+    ],
+    "ovl65": [
+     19976,
+     67
+    ],
+    "ovl66": [
+     15220,
+     72
+    ],
+    "ovl67": [
+     37752,
+     118
+    ],
+    "ovl68": [
+     23132,
+     85
+    ],
+    "ovl69": [
+     14760,
+     74
+    ],
+    "ovl6a": [
+     31060,
+     94
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-21T11:18:07Z",
+   "auto": true,
+   "name": "func_800D1188",
+   "seg": "overlays/ovl62/ovl62",
+   "size": 836,
+   "tries": 0
+  },
   {
    "at": "2026-10-21T11:14:20Z",
    "auto": true,
@@ -166438,22 +166532,14 @@
    "seg": "overlays/ovl5f/ovl5f",
    "size": 788,
    "tries": 0
-  },
-  {
-   "at": "2026-10-21T10:38:42Z",
-   "auto": true,
-   "name": "Roo_FindNewSquare",
-   "seg": "overlays/ovl60/ovl60",
-   "size": 748,
-   "tries": 0
   }
  ],
  "summary": {
   "blocked": 4,
   "copies_b": 9232,
   "data": {
-   "done_b": 5684,
-   "pct": 0.9364965079093095,
+   "done_b": 5716,
+   "pct": 0.9417688316695307,
    "total_b": 606943
   },
   "game": {
@@ -166461,15 +166547,15 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 4,
-   "c_f": 2350,
-   "done_b": 684468,
-   "done_f": 2350,
+   "c_f": 2351,
+   "done_b": 685304,
+   "done_f": 2351,
    "named_f": 345,
-   "pct": 67.16818640362068,
+   "pct": 67.25022472218842,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2537,
-   "typed_f": 2125
+   "typed_f": 2126
   },
   "lib": {
    "all_f": 566,
@@ -166639,20 +166725,20 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 1,
-    "c_f": 177,
-    "done_b": 47468,
-    "done_f": 177,
+    "c_f": 178,
+    "done_b": 48304,
+    "done_f": 178,
     "file": "ovl62.bin",
     "files": 1,
     "lib": false,
     "named_f": 60,
-    "pct": 36.37060193698664,
+    "pct": 37.0111560622778,
     "phase": 4,
     "sony_b": 0,
     "title": "Polar",
     "total_b": 130512,
     "total_f": 216,
-    "typed_f": 165,
+    "typed_f": 166,
     "unit": "ovl62"
    },
    {

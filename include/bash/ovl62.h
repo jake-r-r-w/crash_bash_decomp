@@ -132,6 +132,16 @@ typedef struct Ext10000000 {
     /* 0x0C */ s32 unkC;
 } Ext10000000;
 
+/* The 0x10000000 extension of the object func_800D1188 spawns (0x160D). */
+typedef struct Ovl62Thrown {
+    /* 0x00 */ u8 pad0[0x14];
+    /* 0x14 */ s32 owner;
+    /* 0x18 */ SLONG_XYZ pos;
+    /* 0x24 */ SLONG_XYZ start;
+    /* 0x30 */ u8 pad30[0x74 - 0x30];
+    /* 0x74 */ s32 unk74;
+} Ovl62Thrown;
+
 /* Extension 0x10000000 of the object func_800B5910 spawns (NAS 0x1605). */
 typedef struct ExtSpawn5910 {
     /* 0x00 */ u8 pad[0xC];
@@ -1060,6 +1070,8 @@ void func_800CF6F8(s32 player);
 void func_800CFC58(s32 player);
 
 void func_800D0060(s32 player);
+
+void func_800D1188(s32 player);
 
 void func_800D14CC(s32 player);
 
