@@ -5927,7 +5927,8 @@
   "status": "matched"
  },
  "ovl60:800B5EE4": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-21T12:39:12Z",
+  "status": "matched"
  },
  "ovl60:800B6370": {
   "matched_at": "2026-10-19T08:50:26Z",

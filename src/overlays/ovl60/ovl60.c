@@ -770,7 +770,137 @@ s32 func_800B5D90(s32 arg0) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl60/ovl60", D_800B32B8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B5EE4);
+void func_800B5EE4(s32 arg0) {
+    HeroInfo *h;
+    HeroInfo *hero;
+    HeroInfo *hb;
+    HeroInfo *hb2;
+    s32 *tbl;
+    Ovl60Slot *slot;
+    Ovl60Slot *sb;
+    EXTengine *shadow;
+    s32 n;
+    s32 max;
+    s32 name;
+
+    hb = Heroes;
+    h = &hb[arg0];
+    if (h->hero_name == 4) {
+        D_800C52E0 = 0;
+    }
+    if (h->hero_name == 3) {
+        D_800C52E4 = 0;
+    }
+    if (func_800B6C14(arg0) != 0) {
+        return;
+    }
+    if (func_800C2CBC(arg0) != 0) {
+        return;
+    }
+    if (h->hero_move->jump_ctrl & 0x40) {
+        h->hero_move->forward_speed = func_800C14BC(arg0, D_800C535C[arg0].unk18);
+    } else {
+        h->hero_move->forward_speed = 0;
+    }
+    sb = D_800C535C;
+    slot = &sb[arg0];
+    if (slot->unk18 != 0) {
+        slot->unk16++;
+    }
+    tbl = D_800C5074;
+    slot->unk16++;
+    n = (u16)slot->unk16;
+    hb2 = Heroes;
+    hero = &hb2[arg0];
+    max = tbl[hero->hero_name];
+    if (n < 0) {
+        n = 0;
+    }
+    if (n >= max) {
+        n = max;
+    }
+    shadow = hero->hero_shadow;
+    if (shadow != NULL) {
+        shadow->unk2C.x = shadow->unk2C.y = shadow->unk2C.z = (abs(max / 2 - n) << 8) + 0xC00;
+        shadow->unk5E = 1;
+    }
+    if (n <= D_800C502C[hero->hero_name] || max - D_800C5050[hero->hero_name] < n) {
+        hero->hero_move->jump_ctrl &= 0xBF;
+    } else {
+        hero->hero_move->jump_ctrl |= 0x40;
+    }
+    if ((u16)D_800C535C[arg0].unk16 >= max) {
+        func_800C159C(arg0);
+        func_800B8AF8(arg0);
+        func_800B8BE4(arg0, 1);
+        Heroes[arg0].hero_move->velocity_enable = 0;
+        Heroes[arg0].hero_move->forward_speed = 0;
+        Heroes[arg0].hero_move->jump_max = 0;
+        if (func_800C2B00(arg0) != 0) {
+            return;
+        }
+        if (func_800C29F4(arg0) != 0) {
+            return;
+        }
+        if (func_800C295C(arg0) != 0) {
+            return;
+        }
+        SetHeroAction((HeroInfo *)arg0, 0x39);
+    }
+    switch (Heroes[arg0].hero_name) {
+    case 1:
+        n = D_800C4758[n];
+        if (n == 0x4111) {
+            func_800B741C(arg0);
+        }
+        break;
+    case 2:
+        n = D_800C4878[n];
+        if (n == 0x408E) {
+            func_800B741C(arg0);
+        }
+        break;
+    case 5:
+        n = D_800C4E40[n];
+        if (n == 0x418E) {
+            func_800B741C(arg0);
+        }
+        break;
+    case 6:
+        n = D_800C4F3C[n];
+        if (n == 0x410E) {
+            func_800B741C(arg0);
+        }
+        break;
+    case 8:
+        n = D_800C4CF4[n];
+        if (n == 0x4102) {
+            func_800B72B0(arg0);
+        }
+        break;
+    case 7:
+        n = D_800C4BA0[n];
+        if (n == 0x4082) {
+            func_800B72B0(arg0);
+        }
+        break;
+    case 4:
+        D_800C52E0 = n;
+        n = D_800C49DC[n];
+        if (n == 0x4105) {
+            func_800B7574(arg0);
+        }
+        break;
+    case 3:
+        D_800C52E4 = n;
+        n = D_800C4AB0[n];
+        if (n == 0x4085) {
+            func_800B7574(arg0);
+        }
+        break;
+    }
+    Heroes[arg0].hero_eng->sub->unk74 = n;
+}
 
 void func_800B6370(s32 arg0) {
     s32 seq;

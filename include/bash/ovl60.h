@@ -210,6 +210,15 @@ extern u16 D_800C3A38[][2];
 extern s32 D_800C5074[];
 extern s32 D_800C5050[];
 extern s32 D_800C502C[];
+/* func_800B5EE4's per-hero frame tables */
+extern s32 D_800C4758[];
+extern s32 D_800C4878[];
+extern s32 D_800C49DC[];
+extern s32 D_800C4AB0[];
+extern s32 D_800C4BA0[];
+extern s32 D_800C4CF4[];
+extern s32 D_800C4E40[];
+extern s32 D_800C4F3C[];
 extern s32 D_800C5300;
 extern s32 D_800C5BC0;
 extern s32 D_800C5BC4;
@@ -592,6 +601,8 @@ static inline s32 Ovl60_StatusAction(s32 arg0, s32 bit, s32 action, s32 seq)
     }
     return 0;
 }
+
+void func_800B5EE4(s32 arg0);
 
 void func_800B6F34(s32 arg0);
 
