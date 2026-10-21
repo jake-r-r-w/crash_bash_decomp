@@ -253,6 +253,8 @@ s32 func_80085890();
 s32 func_8008A200(s32 arg0);
 void func_8008A810(void);
 
+void func_800B3338(s32 arg0, EXTengine *arg1);
+
 void func_800B44C8(void);
 
 s32 func_800B459C(s32 *p);

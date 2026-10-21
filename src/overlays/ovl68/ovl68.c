@@ -8,7 +8,35 @@
 void func_800B3330(void) {
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B3338);
+void func_800B3338(s32 arg0, EXTengine *arg1) {
+    HeroInfo *h;
+    s32 hx, hz;
+    s32 a;
+    s32 dx, dz;
+    u8 *p;
+
+    hx = Heroes[arg0].hero_eng->unk10.x;
+    hz = Heroes[arg0].hero_eng->unk10.z;
+    h = &Heroes[arg0];
+    a = get_angle(arg1->unk10.x - hx, arg1->unk10.z - hz);
+    switch (h->hero_name) {
+    case 3:
+    case 4:
+        a -= 0x5A;
+        break;
+    default:
+        a += 0x5A;
+        break;
+    }
+    a &= 0xFFF;
+    dx = (D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 256) >> 12;
+    dz = (D_80068BD4[a].unk2 * 256) >> 12;
+    get_angle(arg1->unk10.x + dx - hx, arg1->unk10.z + dz - hz);
+    p = (arg0 * 0x30) + D_800BC210;
+    *(s32 *)(p + 0xC) = arg1->unk10.x + dx;
+    *(s32 *)(p + 0x10) = arg1->unk10.z + dz;
+    *(s32 *)(p + 0x14) = get_angle(*(s32 *)(p + 0xC) - hx, *(s32 *)(p + 0x10) - hz);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B3488);
 
