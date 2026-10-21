@@ -955,7 +955,54 @@ void func_800B8180(s32 arg0, s32 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B83AC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B8660);
+void func_800B8660(s32 arg0, s32 arg1, s32 dx, s32 dz, const s32 arg4) {
+    s32 z;
+    s32 x;
+    Ovl60Cell *c;
+    u8 n;
+    s16 t;
+    s16 old;
+    u8 *g;
+
+    x = arg0;
+    z = arg1;
+    n = 2;
+    t = 6;
+    for (;;) {
+        if ((u32)x >= 8 || (u32)z >= 8) {
+            goto end;
+        }
+        c = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(D_800C53DC[0]) + (u32)D_800C53DC);
+        if ((u16)c->unk12 - 5 >= 3u) {
+            old = c->unkA;
+            c->unk14 = t;
+            c->unk12 = 0;
+            c->unkA = arg4;
+            c->unk16 = old;
+            g = D_8005A614;
+            if (*(s16 *)(g + 0x34) == 0xB) {
+                if (x > 0) {
+                    func_800B7C3C(x - 1, z);
+                }
+                if (x < 7) {
+                    func_800B7C3C(x + 1, z);
+                }
+                if (z > 0) {
+                    func_800B7C3C(x, z - 1);
+                }
+                if (z < 7) {
+                    func_800B7C3C(x, z + 1);
+                }
+            }
+            ((Ovl60Cell *)(x * sizeof(D_800C53DC[0]) + z * sizeof(Ovl60Cell) + (u32)D_800C53DC))->unk18[0] = n;
+            n++;
+            t += 4;
+        }
+        x += dx;
+        z += dz;
+    }
+end:;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B87DC);
 
