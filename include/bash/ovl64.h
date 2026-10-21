@@ -102,6 +102,8 @@ typedef struct Ovl64Fux {
     /* 0x1E */ u16 hit;
     /* 0x20 */ u8 pad20[0x24 - 0x20];
     /* 0x24 */ s16 state;
+    /* 0x26 */ s16 angle;
+    /* 0x28 */ s16 dist;
 } Ovl64Fux;
 
 /* balloon chance weights, indexed by score and 0x20 - score (func_800B697C) */
@@ -121,6 +123,7 @@ extern void (*D_8009D73C)();
 
 extern s32 D_8005AA70[11];
 extern u8 D_80052FCC[];
+extern u8 D_80052F5C[];
 extern u16 D_800BC04C[];
 
 void func_800B9BF8(s32 arg0);
@@ -177,7 +180,7 @@ typedef struct Ovl64Pair {
 
 extern u16 D_800BBD5E;
 Ovl64Pair *func_800B4F7C(u16 *head);
-void func_800B5D3C(s32 a, s32 b, u16 c, s32 d);
+NAS *func_800B5D3C(s32 a, s32 b, u16 c, s16 d);
 extern u16 D_800BBD5A;
 static inline u16 Ovl64NextSlot(void) {
     D_800BBD5A = (D_800BBD5A + 1) & 3;

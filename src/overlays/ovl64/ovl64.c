@@ -507,7 +507,89 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B51A0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", PlotHazardType);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B5D3C);
+NAS *func_800B5D3C(s32 a, s32 b, u16 c, s16 d) {
+    NAS *nas;
+    EXTengine *eng;
+    EXTengine *shadow;
+    Ovl64Fux *fux;
+    EXTmotion *mot;
+    s32 x;
+    s32 y;
+    s32 z;
+    s32 r;
+
+    x = b * D_80068BD4[(a - 0x400) & 0xFFF].unk2 >> 12;
+    z = b * D_80068BD4[a & 0xFFF].unk2 >> 12;
+    r = Random(0x80);
+    y = D_8005A5D8 - 0x600;
+    nas = SpawnNASById(x, y - r, z, 0x1802, 0x11);
+    if (nas != NULL) {
+        eng = nas->Engine;
+        if (eng != NULL) {
+            eng->flags |= 0x20000000;
+            fux = (Ovl64Fux *)AddObject(nas);
+            if (fux != NULL) {
+                fux->angle = a;
+                fux->dist = b;
+                mot = AddMotion(nas);
+                if (mot != NULL) {
+                    func_80026AD8((u8 *)nas);
+                    func_8002694C(nas, 0x300);
+                    nas->FUX = (EXT *)fux;
+                    eng->sub->unk6C = D_80052FCC;
+                    eng->unk5D = 1;
+                    fux->kind = c;
+                    D_8009E46C[fux->kind]++;
+                    if (d >= 0) {
+                        fux->sub = d;
+                    } else {
+                        fux->sub = 3;
+                    }
+                    switch (c) {
+                    case 8:
+                        eng->sub->unk74 = 0x2003;
+                        fux->state = 1;
+                        break;
+                    case 9:
+                        eng->sub->unk74 = 0x2001;
+                        fux->state = 2;
+                        break;
+                    case 10:
+                        eng->sub->unk74 = 0x2002;
+                        fux->state = 3;
+                        break;
+                    case 11:
+                        eng->sub->unk74 = 0x2004;
+                        fux->state = 0;
+                        break;
+                    case 12:
+                    default:
+                        eng->sub->unk74 = 0x2005;
+                        fux->state = Random(3) + 4;
+                        break;
+                    }
+                    mot->Xvel = Random(8) + 4;
+                    mot->Xa = a + 0x800;
+                    mot->Xa = (mot->Xa - D_800BC01C * 0x200) & 0xFFF;
+                }
+            }
+            shadow = AddEngine(nas, 2);
+            if (shadow != NULL) {
+                shadow->sub->unk6C = D_80052F5C;
+                shadow->sub->unk74 = 0x2001;
+                shadow->unk10 = eng->unk10;
+                shadow->flags |= 0x41;
+                shadow->sub->unk76 = 0x800;
+                shadow->sub->flags |= 0x40000000;
+            }
+        }
+        if (nas->Failure != 0) {
+            KillNAS(nas);
+            return NULL;
+        }
+    }
+    return nas;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", PlotBalloon);
 
