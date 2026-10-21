@@ -18,6 +18,7 @@ extern NAS *D_800CB224[3];
 extern NAS *D_800CB230[4];
 extern NAS *D_800CB240[2];
 extern u32 D_800CA48C[];
+extern s32 D_800CA44C[];
 typedef struct { u16 v, pad; } RockTblEnt;
 extern RockTblEnt D_800CA6D4[];
 

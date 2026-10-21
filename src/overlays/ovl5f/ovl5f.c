@@ -1064,7 +1064,82 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotMine);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotWaterMine);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotTorpedo);
+void PlotTorpedo(NAS *nas) {
+    EXTengine *eng;
+    EXTengine *he;
+    HeroInfo *hero;
+    HeroInfo *h0;
+    HeroInfo *hb;
+    HeroInfo *h2;
+    NAS *n;
+    SLONG_XYZ *pos;
+    u8 *p;
+    Ovl5fExt1605 *ext;
+    s32 player;
+    s32 angle;
+    s32 t;
+    s32 dx;
+
+    player = nas->UserInfo.user1;
+    h0 = Heroes;
+    hero = &h0[player];
+    eng = nas->Engine;
+    if (!(hero->hero_status & 0xA400) && hero->hero_health > 0) {
+        t = nas->UserInfo.user2;
+        eng->unk10.y += D_800CA44C[t & 0xF];
+        nas->UserInfo.user2 = t + 1;
+        he = hero->hero_eng;
+        angle = get_angle(he->unk10.x - eng->unk10.x, he->unk10.z - eng->unk10.z);
+        eng->unk1E = angle;
+        eng->unk5E = 1;
+        if (nas->UserInfo.status != 0) {
+            nas->UserInfo.status--;
+        } else {
+            eng->unk10.x += (D_80068BD4[(angle - 0x400) & 0xFFF].unk2 * 9) >> 12;
+            eng->unk10.z += (D_80068BD4[angle & 0xFFF].unk2 * 9) >> 12;
+        }
+        hb = Heroes;
+        h2 = &hb[player];
+        if (h2->hero_status & 0xFA00) {
+            return;
+        }
+        if (h2->hero_immunity != 0) {
+            return;
+        }
+        dx = eng->unk10.x;
+        if ((u32)(dx - he->unk10.x + 0x15F) > 0x2BE) {
+            return;
+        }
+        dx = eng->unk10.z;
+        if ((u32)(dx - he->unk10.z + 0x15F) > 0x2BE) {
+            return;
+        }
+        h2->hero_health = 1;
+        D_800CAD50[player].Energy = 1;
+        h2->hero_immunity = 0;
+        func_800B6354(player, 0x4B0);
+    }
+    pos = &eng->unk10;
+    PlaySfx(0x4EA, NULL, pos, 0x1000, 0x1E00, 0);
+    p = D_8005365C;
+    n = SpawnNASById(eng->unk10.x, pos->y, pos->z, 0x1605, 0x11);
+    if (n != NULL) {
+        ext = FindExtension(n, 0x10000000);
+        if (ext != NULL) {
+            ext->unkC = 0x10;
+            ext->unk18 = 0x100;
+            if (p != NULL) {
+                ext->unk20 = 5;
+                n->Engine->sub->unk6C = p;
+            } else {
+                ext->unk20 = 1;
+            }
+            ext->unk28 = 0;
+            n->InitDelete(n);
+        }
+    }
+    KillNAS(nas);
+}
 
 void func_800BD654(NAS *nas) {
     EXTengine *eng;
