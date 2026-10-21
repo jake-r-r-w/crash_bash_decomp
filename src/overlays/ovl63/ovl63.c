@@ -1681,7 +1681,75 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/ovl63/ovl63", D_800B3400);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotRacePickUp);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C0218);
+void func_800C0218(s32 player) {
+    HeroInfo *base;
+    HeroInfo *hero;
+    Ovl63LapFux *fux;
+    EXTengine *e;
+    s32 one;
+    s32 flags;
+    s32 unused[2];
+
+    if (!(D_8005A644 & 0x801)) {
+        base = Heroes;
+        hero = base + player;
+        fux = (Ovl63LapFux *)hero->hero->FUX;
+        if (fux != NULL) {
+            get_angle(hero->hero_eng->unk10.x, hero->hero_eng->unk10.z);
+            e = hero->hero_eng;
+            if (e->unk10.x > 0) {
+                if (e->OldXYZ.z >= -0x1ED) {
+                    if (e->unk10.z < -0x1ED) {
+                        fux->cross++;
+                        fux->side = 1;
+                        if (fux->cross >= 2) {
+                            fux->cross = 1;
+                        }
+                    }
+                    if (Heroes[player].hero_eng->OldXYZ.z >= -0x1ED) {
+                        goto check;
+                    }
+                }
+                if (Heroes[player].hero_eng->unk10.z >= -0x1ED) {
+                    fux->side = 0;
+                    if (--fux->cross < -1) {
+                        fux->cross = -1;
+                    }
+                }
+            }
+check:
+            one = fux->cross;
+            if (one == 1) {
+                if (fux->started == 0) {
+                    fux->started = one;
+                } else {
+                    if (player == 0) {
+                        PlaySfx(0x656, NULL, NULL, 0x1000, 0x1E00, 0);
+                    }
+                    if (player == one) {
+                        PlaySfx(0x657, NULL, NULL, 0x1000, 0x1E00, 0);
+                    }
+                    if (player == 2) {
+                        PlaySfx(0x658, NULL, NULL, 0x1000, 0x1E00, 0);
+                    }
+                    if (player == 3) {
+                        PlaySfx(0x659, NULL, NULL, 0x1000, 0x1E00, 0);
+                    }
+                    fux->laps++;
+                }
+                fux->cross = 0;
+            }
+            Heroes[player].hero_score_displayed = Heroes[player].hero_score = 10 - fux->laps;
+            if (Heroes[player].hero_score == 0) {
+                flags = 1;
+                if (D_8005A618 & 0x800) {
+                    flags = 0x201;
+                }
+                D_8009D74C(-1, flags);
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C04EC);
 

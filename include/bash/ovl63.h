@@ -799,4 +799,20 @@ void PlotBarrelRoll(NAS *nas);
 
 void InitRaceSmokeBoost(NAS *nas);
 
+/* A hero's FUX as func_800C0218 counts laps in it. */
+typedef struct Ovl63LapFux {
+    /* 0x000 */ u8 pad0[0x30];
+    /* 0x030 */ s32 cross;
+    /* 0x034 */ s32 laps;
+    /* 0x038 */ u8 pad38[0x148 - 0x38];
+    /* 0x148 */ s32 started;
+    /* 0x14C */ u8 pad14C[0x170 - 0x14C];
+    /* 0x170 */ s32 side;
+} Ovl63LapFux;
+
+extern s32 D_8005A618;
+extern void (*D_8009D74C)(s32, s32);
+
+void func_800C0218(s32 player);
+
 #endif /* BASH_OVL63_H */
