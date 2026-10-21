@@ -16,9 +16,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `main.exe` function matches; Phase 2's naming, data and `main.c` split
   are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2434/2537 game functions matched (76.28% of game code bytes, 2026-10-21,
-  after three big-mode retry runs over every overlay: 181 matched):
-  **main.exe, ovl61 and ovl6a are complete**; 103 left: ovl62 22, ovl63 17, ovl5f 14, ovl67 8, ovl65 8, ovl64 7, ovl60 7, ovl5d 7, ovl68 5, ovl69 3, ovl5e 2, engine 2, ovl66 1. All 564 PsyQ functions (Sony objects). 4
+- 2471/2537 game functions matched (82.30% of game code bytes, 2026-10-22):
+  **main.exe, ovl61 and ovl6a are complete**; 66 left: ovl62 16, ovl63 11, ovl5d 7, ovl64 6, ovl60 6, ovl5f 6, ovl67 4, ovl65 3, ovl68 2, ovl5e 2, engine 2, ovl69 1. All 564 PsyQ functions (Sony objects). 4
   parked by hand (`decomp.py status`; the swarm parked 5 more, which the
   dashboard counts from `docs/swarm.js`), 11 matched with a hack
   (`decomp.py hacks`; `func_800193A8`'s register pins reviewed as plausibly
@@ -48,17 +47,15 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**The overlays' last 114 functions**, almost all >= 600 B. The second
-big-mode retry (`--seg overlays/ --retry-failed --big-bytes 1 --workers 1
---big-workers 6`) still matched 85 in 3 h, at $2.70 a match (the first:
-$1.90). 89 of the functions left have never been attempted: the queue
-puts checkpointed functions first, so `--retry-failed` runs kept re-trying
-the same ~15 hard ones. Next: `--only` the untried functions, smallest
-first, without `--retry-failed` (big mode on fresh 1400 B+ functions:
-80%, ~$7 a match); hand-match the ~15 retried ones; rework the 11 hacks
-between runs.
-After each run, the "After a run" checklist in tools/swarm/README.md
-(`stats --run ID`, parks, gate failures, `fold`, this log).
+**The overlays' last 66 functions.** Pointing the swarm at functions it
+had never tried (`--only` the untried list, smallest first, no
+`--retry-failed`) matched 37 of 42 under 2 KB for $151 (~$4 a match),
+against $7.50 for the retry runs, which kept re-trying the same hard ones
+(the queue puts checkpointed functions first). Next: the same recipe on
+the untried 2-4 KB functions, then over 4 KB with longer sessions
+(`--big-minutes 45`); hand-match the ~15 near misses the retries kept
+failing (AGENT_LOG leads); rework the 11 hacks between runs. After each
+run, the "After a run" checklist in tools/swarm/README.md.
 
 Recipes (`--seg overlays/NAME --branch main --max-minutes 60`):
 - **Low cost** (2026-10-19, ovl5f: 78 matched for $15.96, ~$0.20 a match;
@@ -497,6 +494,13 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-22 (swarm A, resumed):** run 20261021204521 on the same
+  `--only` list after `forget` reset the 8 network failures: 27 matched,
+  2 parked for $104.87 (~$3.88 a match), stopped by request with 5 queued.
+  Game code 82.30% (2471/2537), `make check` OK, no new hacks. Fold: 83
+  rows; dropped one that called a function through a cast to keep two
+  call tails apart (a workaround, as `func_800B4444`'s was).
 
 - **2026-10-21 (swarm A: untried functions under 2 KB):** run
   20261021184442 (`--only` 42 never-tried functions, no `--retry-failed`):
