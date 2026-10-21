@@ -851,7 +851,106 @@ void func_800B6C50(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B6EC0);
+s32 func_800B6EC0(EXTengine *eng, EXTmotion *mot, Ovl64Fux *fux) {
+    FlagRecord *box;
+    HeroInfo *h;
+    NAS *it;
+    EXTengine *other;
+    Ovl64Fux *f;
+    s32 hit;
+    s32 i;
+    s32 bot;
+    s32 top;
+    s32 dx;
+    s32 dz;
+    s32 d;
+    s32 ang;
+    s32 dy;
+    s32 r;
+    s32 t;
+    s32 lo;
+    s32 kind;
+
+    hit = 0;
+    box = func_80025A48(eng, 0x40);
+    if (box != NULL) {
+        i = 0;
+        top = eng->unk10.y + box->unk2;
+        bot = eng->unk10.y + box->height;
+        do {
+            h = &Heroes[i];
+            if (!(h->hero_status & 0xF800) && h->hero_pu == 0x17) {
+                if (D_800BBD64 != 0 && D_800BBD62 == i) {
+                    if (D_800BBD64 < 0x1E) {
+                        goto next;
+                    }
+                } else {
+                    do {
+                        do {
+                            if (fux->state != i) {
+                                goto next;
+                            }
+                        } while (0);
+                    } while (0);
+                }
+                other = h->hero_eng;
+                dx = other->unk10.x - eng->unk10.x;
+                dz = other->unk10.z - eng->unk10.z;
+                d = dx * dx + dz * dz;
+                if (d <= 0x01E3FFFF) {
+                    r = csqrt(d);
+                    ang = get_angle(dx, dz) & 0xFFF;
+                    d = r >> 9;
+                    eng->unk10.x += (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                    eng->unk10.z += (d * D_80068BD4[ang].unk2) >> 12;
+                    if (d < 0x280) {
+                        t = eng->unk10.y - 0x200;
+                        dy = t - h->hero_powerup->unk10.y;
+                        if (abs(dy) < 0x10) {
+                            eng->unk10.y += dy >> 3;
+                        }
+                    }
+                }
+            }
+        next:
+            i++;
+        } while (i < 4);
+        it = D_8005AA2C;
+        while (it != NULL) {
+            if (it->Class & 0x200) {
+                other = it->Engine;
+                if (other != NULL && other != eng) {
+                    f = (Ovl64Fux *)it->FUX;
+                    if (f != NULL) {
+                        kind = f->kind;
+                        if (kind < 0xD) if (kind >= 8) {
+                            d = other->unk10.y;
+                            lo = d - 0x100;
+                            if (bot < d && lo < top) {
+                                dx = other->unk10.x - eng->unk10.x;
+                                dz = other->unk10.z - eng->unk10.z;
+                                d = csqrt(dx * dx + dz * dz) >> 6;
+                                if (d < 0x100) {
+                                    ang = get_angle(dx, dz) & 0xFFF;
+                                    d = 0xFF - d;
+                                    eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                    hit = 1;
+                                    eng->unk10.z -= (d * D_80068BD4[ang].unk2) >> 12;
+                                } else if (d < 0x400) {
+                                    ang = get_angle(dx, dz) & 0xFFF;
+                                    mot->Zvel = (0x400 - d) >> 6;
+                                    mot->Za = ang;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            it = it->Solid.Child;
+        }
+    }
+    return hit;
+}
 
 s32 func_800B727C(x, y, z, size, skip, mask)
     s32 x;

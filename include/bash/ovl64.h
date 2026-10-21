@@ -313,4 +313,6 @@ extern s32 D_80053004;
 
 void func_800B697C(Ovl64Fux *arg0);
 
+s32 func_800B6EC0(EXTengine *eng, EXTmotion *mot, Ovl64Fux *fux);
+
 #endif /* BASH_OVL64_H */
