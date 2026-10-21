@@ -273,6 +273,25 @@ s32 func_800BD204(s32 arg0);
 extern s32 D_800BDB58[];
 extern u16 D_800BDB78;
 
+typedef struct Ovl65BoxHalf {
+    s16 v[3];
+} Ovl65BoxHalf;
+
+typedef struct Ovl65Box2 {
+    Ovl65BoxHalf lo;
+    Ovl65BoxHalf hi;
+} Ovl65Box2;
+
+s32 csqrt(s32 x);
+
+/* func_800B8A40's push: sets up the object's rotation and passes v through. */
+static inline s32 Ovl65BoxPushRot(SVECTOR *ang, u16 *a, s32 v) {
+    ang->vx = a[8];
+    ang->vy = a[9];
+    ang->vz = a[10];
+    return v;
+}
+
 /* Hero NAS extension 0x20000000: the AI chase state func_800B4D6C runs. */
 typedef struct Ovl65AiExt {
     u8 pad[0xC];
@@ -307,6 +326,8 @@ void func_800BAE94(NAS *arg0);
     if (r == 3) {                                           \
         PlaySfx(d, NULL, NULL, 0x1000, 0x1E00, 0);          \
     }
+
+s32 func_800B8A40(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e);
 
 void func_800B9E68(s32 id);
 

@@ -1515,7 +1515,164 @@ void PlotDinoSmoke(NAS *m) {
     func_800250B0(m);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B8A40);
+s32 func_800B8A40(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e) {
+    VECTOR d;
+    VECTOR n;
+    MATRIX m;
+    SVECTOR ang;
+    SVECTOR sv[2];
+    Ovl65BoxHalf lo;
+    Ovl65BoxHalf hi;
+    Ovl65Box2 *src;
+    SVECTOR *p;
+    s32 dist;
+    s32 side;
+    s32 *ap;
+
+    ap = (s32 *)a;
+    dist = 0x7FFFFFF;
+    side = 0;
+    src = (Ovl65Box2 *)func_8008CE20((subengine *)a, side, side);
+    p = sv;
+    if (src == NULL) {
+        printf("No Coll box on subengine in XZBoxToSphere\n");
+        return side;
+    }
+    p->pad = 0x180;
+    if (c == 2) {
+        p->pad = 0x200;
+    }
+    sv[0].vx = 0;
+    p->vy = 0;
+    p->vz = 0;
+    lo = src->lo;
+    hi = src->hi;
+    d.vx = b->x - ap[1];
+    d.vy = b->y - ap[2];
+    d.vz = b->z - ap[3];
+    ang.vx = -((u16 *)a)[8];
+    ang.vy = -((u16 *)a)[9];
+    ang.vz = 0;
+    RotMatrixZYX(&ang, &m);
+    ApplyMatrixLV(&m, &d, &d);
+    if (d.vx < lo.v[0]) {
+        side = 2;
+    }
+    if (d.vy < hi.v[1]) {
+        side |= 0x10;
+    }
+    if (d.vz < lo.v[2]) {
+        side |= 4;
+    }
+    if (hi.v[0] < d.vx) {
+        side |= 1;
+    }
+    if (hi.v[2] < d.vz) {
+        side |= 8;
+    }
+    n.vy = 0;
+    switch (side) {
+    case 20:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 22:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 21:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 4:
+        dist = abs(d.vz - lo.v[2]);
+        n.vx = 0;
+        n.vz = -0x1000;
+        break;
+    case 6:
+        dist = csqrt((d.vx - lo.v[0]) * (d.vx - lo.v[0]) + (d.vz - lo.v[2]) * (d.vz - lo.v[2])) >> 6;
+        n.vx = -0x1000;
+        n.vz = -0x1000;
+        break;
+    case 5:
+        dist = csqrt((d.vx - hi.v[0]) * (d.vx - hi.v[0]) + (d.vz - lo.v[2]) * (d.vz - lo.v[2])) >> 6;
+        n.vx = 0x1000;
+        n.vz = -0x1000;
+        break;
+    case 24:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 26:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 25:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 8:
+        dist = abs(d.vz - hi.v[2]);
+        n.vx = 0;
+        n.vz = 0x1000;
+        break;
+    case 10:
+        dist = csqrt((d.vx - lo.v[0]) * (d.vx - lo.v[0]) + (d.vz - hi.v[2]) * (d.vz - hi.v[2])) >> 6;
+        n.vx = -0x1000;
+        n.vz = 0x1000;
+        break;
+    case 9:
+        dist = csqrt((d.vx - hi.v[0]) * (d.vx - hi.v[0]) + (d.vz - hi.v[2]) * (d.vz - hi.v[2])) >> 6;
+        n.vx = 0x1000;
+        n.vz = 0x1000;
+        break;
+    case 2:
+        dist = abs(d.vx - lo.v[0]);
+        n.vx = -0x1000;
+        n.vz = 0;
+        break;
+    case 16:
+        dist = abs(d.vy - hi.v[1]);
+        n.vx = 0;
+        n.vy = -0x1000;
+        n.vz = 0;
+        break;
+    case 1:
+        dist = abs(d.vx - hi.v[0]);
+        n.vx = 0x1000;
+        n.vz = 0;
+        break;
+    }
+    if (dist < p->pad) {
+        if (c == 0) {
+            s32 push;
+
+            push = p->pad - dist;
+            push = Ovl65BoxPushRot(&ang, (u16 *)a, abs(push));
+            RotMatrix(&ang, &m);
+            ApplyMatrixLV(&m, &n, &n);
+            push += 8;
+            e->x += (push * n.vx) >> 12;
+            e->y += (push * n.vy) >> 12;
+            e->z += (push * n.vz) >> 12;
+        }
+        return csqrt((((hi.v[0] + lo.v[0]) >> 1) - d.vx) * (((hi.v[0] + lo.v[0]) >> 1) - d.vx) +
+                     (((hi.v[1] + lo.v[1]) >> 1) - (d.vy + 0x80)) * (((hi.v[1] + lo.v[1]) >> 1) - (d.vy + 0x80))) >> 6;
+    }
+    return -1;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B9020);
 
