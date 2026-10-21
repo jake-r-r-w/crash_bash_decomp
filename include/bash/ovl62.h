@@ -281,6 +281,13 @@ extern HeroInfo Heroes[4];
 extern s32 D_8005A680[];
 
 s32 func_800C9B5C(void);
+/* func_800C2ECC's box around an engine: min/max x,z corners and push radius. */
+typedef struct Ovl62Box {
+    SLONG_XYZ min;
+    SLONG_XYZ max;
+    s32 r;
+} Ovl62Box;
+
 s32 func_800C2ECC(EXTengine *a, s32 b, EXTengine *c, s32 d);
 
 void func_800BFD38();

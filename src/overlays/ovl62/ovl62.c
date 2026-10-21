@@ -2565,7 +2565,139 @@ void InitUkaPolarMask(NAS *m) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotUkaPolarMask);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C2ECC);
+s32 func_800C2ECC(EXTengine *a, s32 b, EXTengine *c, s32 d)
+{
+  VECTOR v;
+  VECTOR dir;
+  Ovl62Box box;
+  MATRIX m;
+  MATRIX *new_var2;
+  SVECTOR rot;
+  Ovl62Box *bp;
+  s32 *rp;
+  Ovl62Box *new_var;
+  s32 dist;
+  s32 side;
+  Ovl62Box *new_var5;
+  VECTOR *new_var3;
+  char new_var4;
+  s32 dx;
+  s32 dz;
+  s32 push;
+  dist = 0x07FFFFFF;
+  side = 0;
+  box.min.x = -0xC8;
+  box.min.z = -0x180;
+  box.max.x = 0xC8;
+  box.max.z = 0x180;
+  box.r = 0x100;
+  if (b != 0)
+  {
+    box.r = 0x12C;
+  }
+
+  new_var5 = (Ovl62Box *) (&m);
+  v.vx = c->unk10.x - ((unsigned long long) a->unk10.x);
+  v.vz = c->unk10.z - a->unk10.z;
+  rot.vx = -a->unk1C;
+  new_var4 = (rot.vy = -a->unk1E);
+  rot.vz = -a->unk20;
+  RotMatrixZYX(&rot, (MATRIX *) (bp = new_var5));
+  new_var2 = (MATRIX *) bp;
+  new_var = (bp = &box);
+  ApplyMatrixLV(new_var2, &v, new_var3 = &v);
+  rp = &box.r;
+  if (v.vx < bp->min.x)
+  {
+    side = 2;
+  }
+
+  if (v.vz < bp->min.z)
+  {
+    side |= 4;
+  }
+  if (bp->max.x < v.vx)
+  {
+    side |= 1;
+  }
+  if (bp->max.z < v.vz)
+  {
+    side |= 8;
+  }
+  switch (side)
+  {
+    case 4:
+      dist = abs(v.vz - bp->min.z);
+      dir.vx = 0;
+      dir.vz = -0x1000;
+      break;
+
+    case 6:
+      dx = v.vx - bp->min.x;
+      dz = v.vz - bp->min.z;
+      dist = csqrt((dx * dx) + (dz * dz)) >> 6;
+      dir.vx = -0x1000;
+      dir.vz = -0x1000;
+      break;
+
+    case 5:
+      dx = v.vx - bp->max.x;
+      dz = v.vz - bp->min.z;
+      dist = csqrt((dx * dx) + (dz * dz)) >> 6;
+      dir.vx = 0x1000;
+      dir.vz = -0x1000;
+      break;
+
+    case 8:
+      dist = abs(v.vz - bp->max.z);
+      dir.vx = 0;
+      dir.vz = 0x1000;
+      break;
+
+    case 10:
+      dx = v.vx - bp->min.x;
+      dz = v.vz - bp->max.z;
+      dist = csqrt((dx * dx) + (dz * dz)) >> 6;
+      dir.vx = -0x1000;
+      dir.vz = 0x1000;
+      break;
+
+    case 9:
+      dx = v.vx - bp->max.x;
+      dz = v.vz - bp->max.z;
+      dist = csqrt((dx * dx) + (dz * dz)) >> 6;
+      dir.vx = 0x1000;
+      dir.vz = 0x1000;
+      break;
+
+    case 2:
+      dist = abs(v.vx - bp->min.x);
+      dir.vx = -0x1000;
+      dir.vz = 0;
+      break;
+
+    case 1:
+      dist = abs(v.vx - bp->max.x);
+      dir.vx = 0x1000;
+      dir.vz = 0;
+      break;
+
+  }
+
+  if (dist < (*rp))
+  {
+    push = abs((*rp) - dist);
+    rot.vx = a->unk1C;
+    rot.vy = a->unk1E;
+    rot.vz = a->unk20;
+    RotMatrix(&rot, &m);
+    ApplyMatrixLV(&m, &dir, &dir);
+    c->unk10.x += (push * dir.vx) >> 12;
+    c->unk10.z += (push * dir.vz) >> 12;
+    return 1;
+  }
+  return 0;
+}
 
 void InitPolarWalrus(NAS *m) {
     PolarWalrusExt *ext;
