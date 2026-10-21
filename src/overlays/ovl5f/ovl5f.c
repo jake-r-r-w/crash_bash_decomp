@@ -4582,7 +4582,87 @@ void PlotTankBoss(NAS *nas) {
     D_800CB210 = fux->unk30;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C2940);
+s32 func_800C2940(EXTengine *eng) {
+    s32 x;
+    s32 z;
+    s32 ang;
+
+    if (D_800CB0F0 != 0) {
+        return -1;
+    }
+    x = eng->unk10.x;
+    z = eng->unk10.z;
+    ang = eng->unk1E;
+    if ((u32)Random(0x20) < (u32)D_8009D88E) {
+        return -1;
+    }
+    if (Heroes[0].hero_health <= 0 || (Heroes[0].hero_status & 0xFA00)) {
+        D_800CA9E4[0].z = -1;
+    } else {
+        D_800CA9E4[0].x = Heroes[0].hero_eng->unk10.x;
+        D_800CA9E4[0].z = Heroes[0].hero_eng->unk10.z;
+    }
+    if (D_8005A680[0] == 0 || Heroes[1].hero_health <= 0 || (Heroes[1].hero_status & 0xFA00)) {
+        D_800CA9E4[1].z = -1;
+    } else {
+        D_800CA9E4[1].x = Heroes[1].hero_eng->unk10.x;
+        D_800CA9E4[1].z = Heroes[1].hero_eng->unk10.z;
+    }
+    if (D_800CB210 == 0x37) {
+        if (Ovl5fTurretSees(0, 0, x, z, ang)) {
+            return 0;
+        }
+        if (Ovl5fTurretSees(1, 1, x, z, ang)) {
+            return 1;
+        }
+        return -1;
+    }
+    if (D_800CA9E4[0].z > 0x600 || D_800CA9E4[1].z > 0x600) {
+        if (D_800CA9E4[0].z > 0x600 && Ovl5fTurretSees(0, 0, x, z, ang)) {
+            return 0;
+        }
+        if (D_800CA9E4[1].z > 0x600 && Ovl5fTurretSees(1, 1, x, z, ang)) {
+            return 1;
+        }
+        return -1;
+    }
+    switch ((u32)Random(3)) {
+    case 0:
+        if (D_800CB260 != 2 && Ovl5fTurretSees(3, 3, x, z, ang)) {
+            return 3;
+        }
+        if (D_800CB260 != 3 && Ovl5fTurretSees(2, 2, x, z, ang)) {
+            return 2;
+        }
+        if (D_800CB260 != 4 && Ovl5fTurretSees(4, 4, x, z, ang)) {
+            return 4;
+        }
+        break;
+    case 1:
+        if (D_800CB260 != 4 && Ovl5fTurretSees(3, 3, x, z, ang)) {
+            return 3;
+        }
+        if (D_800CB260 != 3 && Ovl5fTurretSees(2, 2, x, z, ang)) {
+            return 2;
+        }
+        if (D_800CB260 != 2 && Ovl5fTurretSees(4, 4, x, z, ang)) {
+            return 4;
+        }
+        break;
+    case 2:
+        if (D_800CB260 != 3 && Ovl5fTurretSees(3, 3, x, z, ang)) {
+            return 3;
+        }
+        if (D_800CB260 != 2 && Ovl5fTurretSees(2, 2, x, z, ang)) {
+            return 2;
+        }
+        if (D_800CB260 != 4 && Ovl5fTurretSees(4, 4, x, z, ang)) {
+            return 4;
+        }
+        break;
+    }
+    return -1;
+}
 
 void func_800C30C0(EXTengine *arg0) {
     NAS *shell;

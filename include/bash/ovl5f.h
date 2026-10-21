@@ -275,6 +275,26 @@ typedef struct {
 } Ovl5fPoint;
 
 extern Ovl5fPoint D_800CA9E4[];
+extern s32 D_800CB0F0;
+extern s32 D_800CB260;
+s32 get_angle(s32 x, s32 z);
+
+/* func_800C2940: can the turret at (x, z) facing ang see target i? Records state. */
+static inline s32 Ovl5fTurretSees(s32 i, s32 state, s32 x, s32 z, s32 ang) {
+    if (D_800CB0F0 != 0) {
+        return 0;
+    }
+    if (D_800CA9E4[i].z < 0) {
+        return 0;
+    }
+    if ((u32)(((ang - get_angle(x - D_800CA9E4[i].x, z - D_800CA9E4[i].z)) & 0xFFF) - 0x15) < 0xFD7U) {
+        return 0;
+    }
+    D_800CB260 = state;
+    return 1;
+}
+
+extern Ovl5fPoint D_800CA9E4[];
 typedef struct {
     u16 v, pad;
 } Ovl5fU16Pad;
