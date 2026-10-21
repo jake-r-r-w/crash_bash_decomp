@@ -1897,7 +1897,34 @@ loop:
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800C9D74);
+void func_800C9D74(NAS *m) {
+    u8 *p;
+    EXTengine *e;
+    s32 dx;
+    s32 dz;
+    s32 d;
+    s32 ang;
+    TrigEntry *t;
+
+    p = D_800D5454;
+    t = D_80068BD4;
+loop:
+    if (p != NULL) {
+        e = *(EXTengine **)(p + 0x54);
+        if (e != NULL && e != m->Engine) {
+            dx = e->unk10.x - m->Engine->unk10.x;
+            dz = e->unk10.z - m->Engine->unk10.z;
+            if (dx * dx + dz * dz < 0x3D090) {
+                d = 0x7D00 - csqrt(dx * dx + dz * dz);
+                ang = get_angle(dx, dz) & 0xFFF;
+                m->Engine->unk10.x -= ((d + 2) * t[(ang - 0x400) & 0xFFF].unk2) >> 18;
+                m->Engine->unk10.z -= ((d + 2) * t[ang].unk2) >> 18;
+            }
+        }
+        p = *(u8 **)(p + 0x20);
+        goto loop;
+    }
+}
 
 s32 func_800C9EC4(EXTengine *eng, s32 player) {
     HeroInfo *base;

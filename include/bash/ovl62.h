@@ -808,6 +808,8 @@ void func_800C5EEC(Ovl62EaseCam *c, s32 *pos);
 
 void func_800C7ED4(SniperAim *a, s32 *out);
 
+void func_800C9D74(NAS *m);
+
 void func_800CA770(void);
 
 void InitGravityObject(NAS *m);
