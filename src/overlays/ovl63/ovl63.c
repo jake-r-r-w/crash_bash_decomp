@@ -1308,7 +1308,135 @@ void func_800B6474(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B66C4);
+s32 func_800B66C4(SLONG_XYZ *pos, s16 *tri) {
+    s32 d[3];
+    s32 base[3];
+    s32 e0[3];
+    s32 e1[3];
+    s32 a, b, c, dd, e, f, det, n;
+    s32 t;
+    s32 s;
+    s32 *p;
+
+    base[0] = tri[0];
+    base[1] = tri[1];
+    base[2] = tri[2];
+    e1[0] = tri[4] - tri[0];
+    e1[1] = tri[5] - tri[1];
+    e1[2] = tri[6] - tri[2];
+    e0[0] = tri[8] - tri[0];
+    e0[1] = tri[9] - tri[1];
+    e0[2] = tri[10] - tri[2];
+    a = (e0[0] * e0[0] >> 8) + (e0[1] * e0[1] >> 8) + (e0[2] * e0[2] >> 8);
+    b = (e0[0] * e1[0] >> 8) + (e0[1] * e1[1] >> 8) + (e0[2] * e1[2] >> 8);
+    c = (e1[0] * e1[0] >> 8) + (e1[1] * e1[1] >> 8) + (e1[2] * e1[2] >> 8);
+    d[0] = base[0] - pos->x;
+    d[1] = base[1] - pos->y;
+    d[2] = base[2] - pos->z;
+    p = d;
+    dd = (e0[0] * p[0] >> 8) + (e0[1] * p[1] >> 8) + (e0[2] * p[2] >> 8);
+    e = (e1[0] * p[0] >> 8) + (e1[1] * p[1] >> 8) + (e1[2] * p[2] >> 8);
+    det = (a * c >> 8) - (b * b >> 8);
+    s = (b * e - c * dd) / det;
+    t = (b * dd - a * e) / det;
+    f = (p[0] * p[0] >> 8) + (p[1] * p[1] >> 8) + (p[2] * p[2] >> 8);
+    if (s + t < 0x100) {
+        if (s < 0) {
+            if (t < 0) {
+                if (dd < 0) {
+                    s = -(dd << 8) / a;
+                    t = 0;
+                    if (s >= 0x100) {
+                        s = 0xFF;
+                    }
+                } else {
+                    s = 0;
+                    if (e < 0) {
+                        do {
+                            t = -(e << 8) / c;
+                        } while (0);
+                        if (t >= 0x100) {
+                            t = 0xFF;
+                        }
+                    } else {
+                    t_zero:
+                        t = 0;
+                    }
+                }
+            } else {
+                goto region3;
+            }
+        } else if (t < 0) {
+            s = -(dd << 8) / a;
+            t = 0;
+            if (s < 0) {
+                s = 0;
+            } else if (s >= 0x100) {
+                s = 0xFF;
+            }
+        }
+    } else if (s < 0) {
+        n = b - c + dd - e;
+        if (n < 0) {
+            s = -(n << 8) / (a - b * 2 + c);
+            if (s < 0) {
+                s = 0;
+            } else if (s >= 0x100) {
+                s = 0xFF;
+            }
+            t = 0xFF - s;
+        } else if (c + e > 0) {
+        region3:
+            s = 0;
+            t = -(e << 8) / c;
+            if (t < 0) {
+                goto t_zero;
+            } else if (t >= 0x100) {
+                t = 0xFF;
+            }
+        } else {
+            s = 0;
+            t = 0xFF;
+        }
+    } else if (t < 0) {
+        n = a - b + dd - e;
+        if (n > 0) {
+            t = (n << 8) / (a - b * 2 + c);
+            if (t < 0) {
+                t = 0;
+            } else if (t >= 0x100) {
+                t = 0xFF;
+            }
+            s = 0xFF - t;
+        } else if (a + dd > 0) {
+            s = -(dd << 8) / a;
+            t = 0;
+            if (s < 0) {
+                s = 0;
+            } else if (s >= 0x100) {
+                s = 0xFF;
+            }
+        } else {
+            s = 0xFF;
+            goto t_zero;
+        }
+    } else {
+        s = -((b - c + dd - e) << 8) / (a - b * 2 + c);
+        if (s < 0) {
+            s = 0;
+        } else if (s >= 0x100) {
+            s = 0xFF;
+        }
+        t = 0xFF - s;
+    }
+    {
+        s32 g;
+
+        g = f << 8;
+        return abs(s * ((a * s >> 8) + (b * t >> 8) + dd * 2)
+                   + t * ((b * s >> 8) + (c * t >> 8) + e * 2) + g);
+    }
+}
 
 s32 func_800B6DBC(SLONG_XYZ *arg0, s32 *arg1) {
     Ovl63Norm out;
