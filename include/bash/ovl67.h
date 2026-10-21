@@ -423,6 +423,17 @@ typedef struct Ovl67Game {
 } Ovl67Game;
 #define OVG ((Ovl67Game *)D_8005A614)
 
+/* D_8005A614 as seen by PlotN2Omissile. */
+typedef struct Ovl67MissileView {
+    /* 0x00 */ u8 pad0[4];
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ u8 pad8[0x64];
+    /* 0x6C */ s32 unk6C;
+} Ovl67MissileView;
+#define OVM ((Ovl67MissileView *)D_8005A614)
+extern u16 D_800C39CC[];
+extern u16 D_800C39D4[];
+
 /* D_8005A614 as seen by func_800B6F4C. */
 typedef struct Ovl67Teams {
     /* 0x00 */ u8 pad0[0x32];
@@ -503,6 +514,8 @@ typedef struct Ovl67FuxF {
     u8 pad0[0x1C];
     u16 flags;
 } Ovl67FuxF;
+
+void PlotN2Omissile(NAS *nas);
 
 void func_800B92D4(void);
 
