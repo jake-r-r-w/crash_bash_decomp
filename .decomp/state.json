@@ -9717,7 +9717,8 @@
   "status": "matched"
  },
  "ovl67:800C237C": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-21T12:22:23Z",
+  "status": "matched"
  },
  "ovl67:800C27D4": {
   "matched_at": "2026-10-18T16:45:50Z",

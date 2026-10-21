@@ -468,7 +468,8 @@ typedef struct Spark {
     /* 0x06 */ s16 pad06;
     /* 0x08 */ s16 x2;
     /* 0x0A */ s16 y2;
-    /* 0x0C */ u8 pad0C[0xC];
+    /* 0x0C */ s16 z2;
+    /* 0x0E */ u8 pad0E[0xA];
 } Spark;
 
 typedef struct SparkSet {
@@ -486,6 +487,11 @@ extern s32 D_800C45B4;
 extern s32 D_800C45B8;
 
 void func_800C2218(SparkObj *arg0);
+
+extern MATRIX D_800C45BC;  /* spark view matrix */
+extern SVECTOR D_800C76E4; /* spark view rotation */
+
+void func_800C237C(SparkObj *arg0);
 
 /* Asteroid roll extension (id 0x10000000): a ballistic arc (func_8008C5C4's
  * Arc, declared in bash/8007ee2c.h) at 0x0C. */

@@ -942,7 +942,84 @@ void func_800C2218(SparkObj *arg0) {
     } while (n != 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C237C);
+void func_800C237C(SparkObj *arg0) {
+    SparkSet *set = &arg0->set;
+    Spark *s = set->sparks;
+    SparkLine *l = set->lines[D_8005B690 & 1];
+    Spark *v;
+    s32 n;
+
+    if (D_800C45B8 != D_800C45B4) {
+        if (D_800C45B8 < D_800C45B4) {
+            D_800C45B8 += 0x20;
+        }
+        if (D_800C45B4 < D_800C45B8) {
+            D_800C45B8 -= 0x20;
+        }
+    }
+    if (D_800C45B4 >= 0x400) {
+        D_800C76E4.vx = 0;
+        D_800C76E4.vy = 0;
+        D_800C76E4.vz += 0x10;
+        RotMatrix(&D_800C76E4, &D_800C45BC);
+    }
+    gte_SetRotMatrix(&D_800C45BC);
+    gte_SetTransMatrix(&D_800C45BC);
+    gte_SetGeomOffset(D_8005B698->w / 2, 120);
+    n = set->count;
+    func_8002A2EC(0x10, 0x10, 0x10);
+    if (n != 0) do {
+        v = s;
+        gte_ldv0(v);
+        gte_rtps();
+        gte_stsxy(&l->x0);
+        if (D_8005A624 == 0) {
+            s->z -= D_800C45B8;
+        }
+        if (s->z < 0) {
+            s->x = Random(0x2000) - Random(0x2000);
+            s->y = Random(0x1000) - Random(0x1000);
+            s->z = 0x4000;
+            s->x2 = s->x + 0x40;
+            s->y2 = s->y + 0x40;
+        } else {
+            s->z2 = s->z;
+            if (D_80056998.modelDp != 0) {
+                l->r1 = l->r1 * ((0x1000 - D_80056998.modelDp) >> 12);
+                l->g1 = l->g1 * ((0x1000 - D_80056998.modelDp) >> 12);
+                l->b1 = l->b1 * ((0x1000 - D_80056998.modelDp) >> 12);
+            } else {
+                l->r1 = -(s->z >> 6);
+                l->g1 = -(s->z >> 6);
+                l->b1 = -(s->z >> 6);
+            }
+            if (D_800C45B4 >= 0x300) {
+                l->r0 = 0;
+                l->g0 = 0;
+                l->b0 = 0;
+                gte_ldv0(v);
+                gte_rtps();
+                gte_stsxy(&l->x1);
+            } else {
+                if (D_80056998.modelDp != 0) {
+                    l->r1 = l->r1 * ((0x1000 - D_80056998.modelDp) >> 12);
+                    l->g1 = l->g1 * ((0x1000 - D_80056998.modelDp) >> 12);
+                    l->b1 = l->b1 * ((0x1000 - D_80056998.modelDp) >> 12);
+                }
+                l->r0 = l->r1;
+                l->g0 = l->g1;
+                l->b0 = l->b1;
+                l->x1 = l->x0;
+                l->y1 = l->y0;
+            }
+            l->len = 4;
+            l->code = 0x50;
+            addPrim(D_80056998.ot + D_80056998.otLen - 4, l);
+        }
+        l++;
+        s++;
+    } while (--n != 0);
+}
 
 void func_800C27D4(void) {
     FollowCam *cam;
