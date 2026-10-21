@@ -961,7 +961,42 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800BA514);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800BAF1C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800BB230);
+Ovl64Fux *func_800BB230(s32 hero, u16 mask, s32 r) {
+    Ovl64Fux *best = NULL;
+    NAS *n = D_8005AA24;
+    EXTengine *eng = Heroes[hero].hero_eng;
+    s32 cx = eng->unk10.x;
+    s32 cz = eng->unk10.z;
+    s32 px = cx - (D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 1024 >> 14);
+    s32 pz = cz - (D_80068BD4[eng->unk1E & 0xFFF].unk2 * 1024 >> 14);
+    s32 bestd;
+    s32 lim, dx, dz, d;
+    Ovl64Fux *f;
+
+    r = r * r;
+    bestd = r * 2;
+
+    for (; n != NULL; n = n->Object.Child) {
+        f = (Ovl64Fux *)n->FUX;
+        if (f != NULL && (f->mask & mask) && n->Engine != NULL) {
+            if (f->kind == 2) {
+                lim = 0x10000;
+                dx = n->Engine->unk10.x - px;
+                dz = n->Engine->unk10.z - pz;
+            } else {
+                lim = r;
+                dx = n->Engine->unk10.x - cx;
+                dz = n->Engine->unk10.z - cz;
+            }
+            d = dx * dx + dz * dz;
+            if (d < lim && d < bestd) {
+                bestd = d;
+                best = f;
+            }
+        }
+    }
+    return best;
+}
 
 void func_800BB37C(EXTengine *eng, Ovl64HitMask *m, u32 flag, s32 hero) {
     FlagRecord *r;

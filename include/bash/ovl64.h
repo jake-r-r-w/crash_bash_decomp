@@ -74,6 +74,14 @@ typedef struct {
     /* 0x1E */ u16 hit;
 } Ovl64HitMask;
 
+/* NAS.FUX of an object in the D_8005AA24 list (func_800BB230). */
+typedef struct Ovl64Fux {
+    /* 0x00 */ u8 pad0[0x14];
+    /* 0x14 */ u16 kind;
+    /* 0x16 */ u8 pad16[0x1C - 0x16];
+    /* 0x1C */ u16 mask;
+} Ovl64Fux;
+
 void func_800BB37C(EXTengine *eng, Ovl64HitMask *m, u32 flag, s32 hero);
 
 void func_800BB52C(s32 arg0);
@@ -219,5 +227,7 @@ void func_800BA514();
 void func_800BAF1C();
 
 void func_800B9608(s32 arg0);
+
+Ovl64Fux *func_800BB230(s32 hero, u16 mask, s32 r);
 
 #endif /* BASH_OVL64_H */
