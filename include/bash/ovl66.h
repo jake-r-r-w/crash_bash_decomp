@@ -46,6 +46,7 @@ extern s32 D_800B9EEC;
 typedef struct { s32 a, b, c; } Ovl66Ent;
 extern Ovl66Ent D_800B9EC8[];
 extern s32 D_800B9F08;
+extern u16 D_800B9580[];
 extern ScriptInit D_800B9CE4;
 extern u8 D_80053C0C[];
 extern u8 D_80053C7C[];
@@ -181,5 +182,7 @@ void func_800B6B04(s32 arg0, EXTengine *p, s32 arg2);
 
 extern u16 D_8009E080[][4];
 void func_80084E04(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx);
+
+s32 func_800B4454(s32 arg0, s32 *arg1, s32 arg2);
 
 #endif /* BASH_OVL66_H */

@@ -178,7 +178,90 @@ void InitBonkCrate(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", PlotBonkCrate);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B4454);
+s32 func_800B4454(s32 arg0, s32 *arg1, s32 arg2) {
+    Ovl66Entry *found;
+    s32 x;
+    s32 z;
+    s32 ex;
+    s32 ez;
+    s32 d;
+    s32 best;
+    s32 i;
+    Ovl66Entry *e;
+    Ovl66Ent *f;
+    EXTengine *eng;
+
+    found = 0;
+    if (arg2 & 2) {
+        best = D_800B9580[Heroes[arg0].hero_name];
+    } else {
+        best = 0xFFFFFF;
+    }
+    x = Heroes[arg0].hero_eng->unk10.x;
+    z = Heroes[arg0].hero_eng->unk10.z;
+    if ((arg2 & 0x100) && D_800B9EF0 != 0) {
+        for (i = 0, e = D_800B9E50; i < 10; i++, e++) {
+            if (e->unk4 == 0) {
+                continue;
+            }
+            if (arg2 & 1) {
+                if (((Ovl66Pad *)e->unk4)->mode < 9) {
+                    continue;
+                }
+                if (e->unk8 != 0) {
+                    continue;
+                }
+            }
+            if (((Ovl66Pad *)e->unk4)->mode < 0xB) {
+                continue;
+            }
+            ex = ((Ovl66Pad *)e->unk4)->eng->unk10.x;
+            ez = ((Ovl66Pad *)e->unk4)->eng->unk10.z;
+            d = csqrt(func_800B62C8(x, z, ex, ez));
+            d >>= 6;
+            if (d < best) {
+                if (!(arg2 & 4) || func_80015480(get_angle(x - ex, z - ez), Heroes[arg0].hero_move->forward_angle) < 0x320) {
+                    do { best = d; found = e; } while (0);
+                }
+            }
+        }
+    }
+    if (arg2 & 0x200) {
+        i = 0;
+        if (D_800B9F08 != 0)
+        for (f = D_800B9EC8; i < 3; i++, f++) {
+            if (f->b == 0) {
+                continue;
+            }
+            if (arg2 & 1) {
+                if (((Ovl66Pad *)f->b)->mode < 9) {
+                    continue;
+                }
+                if (f->c != 0) {
+                    continue;
+                }
+            }
+            if (((Ovl66Pad *)f->b)->mode < 0xB) {
+                continue;
+            }
+            ex = ((Ovl66Pad *)f->b)->eng->unk10.x;
+            ez = ((Ovl66Pad *)f->b)->eng->unk10.z;
+            d = csqrt(func_800B62C8(x, z, ex, ez));
+            d >>= 6;
+            if (d < best) {
+                if (!(arg2 & 4) || func_80015480(get_angle(x - ex, z - ez), Heroes[arg0].hero_move->forward_angle) < 0x320) {
+                    best = d;
+                    found = (Ovl66Entry *)f;
+                }
+            }
+        }
+    }
+    if (found != 0) {
+        *arg1 = (s32)found;
+        return 1;
+    }
+    return 0;
+}
 
 void func_800B47C8(s32 arg0, s32 arg1, Ovl66Tgt2 *t) {
     Ovl66Pad *p;
