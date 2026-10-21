@@ -1441,7 +1441,81 @@ void func_800C1F44(void) {
     D_800CB240[1] = SpawnNASById(0xF00, 0x7D0, 0x1200, 0x1317, 0x11);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", InitTankBoss);
+void InitTankBoss(NAS *nas) {
+    EXTengine *eng;
+    subengine *sub;
+    JoeExt *ext;
+    u8 *base;
+    u8 *model;
+
+    func_80086868();
+    D_800CB208 = nas;
+    eng = nas->Engine;
+    D_800CB20C = eng;
+    ext = AddExtension(nas, 0x38, 0x10000000);
+    if (ext == NULL) {
+        KillNAS(nas);
+        return;
+    }
+    model = TANK_MODEL(57);
+    nas->FUX = (EXT *)ext;
+    sub = eng->sub;
+    sub->unk6C = model;
+    sub->unk74 = 0x2002;
+    sub->unk68 = 0x100;
+    sub->flags |= 0x02000000;
+    eng->unk5D = 0;
+    eng->unk10.y = 0x7D0;
+    ext->unk30 = D_800CB25C;
+    D_800CB210 = D_800CB25C;
+    switch (D_800CB25C) {
+    case 1:
+        base = D_80052A54;
+        if (TANK_MODEL_ON(base, 59)) {
+            func_80016F54(TANK_MODEL(59));
+        }
+        if (!TANK_MODEL_ON(base, 58)) {
+            func_8001612C(TANK_MODEL(58), 0);
+        }
+        if (!TANK_MODEL_ON(base, 57)) {
+            func_8001612C(TANK_MODEL(57), 0);
+        }
+        ext->unk28 = 0x5A;
+        D_800CB25C = 0x2C;
+        func_800C1F44();
+        break;
+    case 0x2C:
+        base = D_80052A54;
+        if (TANK_MODEL_ON(base, 59)) {
+            func_80016F54(TANK_MODEL(59));
+        }
+        if (TANK_MODEL_ON(base, 58)) {
+            func_80016F54(TANK_MODEL(58));
+        }
+        if (!TANK_MODEL_ON(base, 57)) {
+            func_8001612C(TANK_MODEL(57), 0);
+        }
+        ext->unk28 = 0x3C;
+        func_800C1F44();
+        break;
+    case 0x3A:
+        base = D_80052A54;
+        if (TANK_MODEL_ON(base, 58)) {
+            func_80016F54(TANK_MODEL(58));
+        }
+        if (TANK_MODEL_ON(base, 57)) {
+            func_80016F54(TANK_MODEL(57));
+        }
+        if (!TANK_MODEL_ON(base, 59)) {
+            func_8001612C(TANK_MODEL(59), 0);
+        }
+        ext->unk28 = 0x3C;
+        break;
+    }
+    if (nas->Failure) {
+        KillNAS(nas);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotTankBoss);
 

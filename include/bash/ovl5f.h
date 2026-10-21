@@ -264,6 +264,11 @@ typedef struct JoeExt {
     /* 0x34 */ u8 pad34[4];
 } JoeExt;
 extern u8 D_80053704[];
+extern NAS *D_800CB208;       /* InitTankBoss's NAS */
+extern EXTengine *D_800CB20C; /* and its engine */
+/* Field 0xC of the 0x38-byte model record N at D_80052A54 (D_800536CC is record 57). */
+#define TANK_MODEL(n) (&D_80052A54[(n) * 0x38])
+#define TANK_MODEL_ON(b, n) (*(s32 *)((b) + (n) * 0x38 + 0xC))
 
 
 
