@@ -1795,7 +1795,117 @@ void func_800BD654(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotShrapnelBit);
+static inline s32 ShrapnelFindHero(s32 x, s32 z) {
+    s32 i;
+    s32 d;
+    s32 r;
+    s32 n;
+    u16 name;
+    EXTengine *e;
+
+    r = 250;
+    for (i = 0; i < 4; i++) {
+        name = Heroes[i].hero_name;
+        if (name == 9 &&
+            (((Ovl5fModeView *)D_8005A614)->mode != name || D_800CB210 != 0 ||
+             (u32)(i - 2) >= 2)) {
+            continue;
+        }
+        if (Heroes[i].hero_status & 0xC000) {
+            continue;
+        }
+        e = Heroes[i].hero_eng;
+        d = x - e->unk10.x;
+        if (d < -250) {
+            continue;
+        }
+        if (r < d) {
+            continue;
+        }
+        d = z - e->unk10.z;
+        n = -250;
+        if (n < d && d < 250) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+static inline u8 ShrapnelTile(s32 x, s32 z) {
+    s32 i;
+
+    i = ((z >> 9) * D_800CAFF4) + (x >> 9);
+    return D_800CACB4[i];
+}
+
+void PlotShrapnelBit(NAS *nas) {
+    EXTengine *eng;
+    s32 x;
+    s32 z;
+    s32 dx;
+    s32 dz;
+    s32 hit;
+    s32 sfx;
+
+    eng = nas->Engine;
+    SpawnNASById(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1305, 0x11);
+    dz = nas->UserInfo.user2;
+    z = eng->unk10.z + dz;
+    dx = nas->UserInfo.user1;
+    x = eng->unk10.x + dx;
+    if (ShrapnelTile(x, z) != 0) {
+        goto kill;
+    }
+    hit = ShrapnelFindHero(x, z);
+    z += dz;
+    if (hit < 0) {
+        goto step;
+    }
+found:
+    switch ((u32)Random(4)) {
+    case 0:
+        sfx = 0x4BA;
+        goto play;
+    case 1:
+        sfx = 0x4BB;
+        goto play;
+    case 2:
+        sfx = 0x4BC;
+        goto play;
+    case 3:
+        sfx = 0x4BD;
+    play:
+        PlaySfx(sfx, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    }
+    if (((Ovl5fModeView *)D_8005A614)->mode == 8 && D_8005A614[hit + 0x5C] == 0 &&
+        (((Ovl5fGameView *)D_8005A614)->flags & 0x80)) {
+        func_800B6354(hit, 0x4B0);
+    } else {
+        func_800B6354(hit, 0x3C);
+    }
+    goto kill;
+step:
+    x += dx;
+    if (ShrapnelTile(x, z) != 0) {
+        goto kill;
+    }
+    hit = ShrapnelFindHero(x, z);
+    if (hit >= 0) {
+        goto found;
+    }
+    eng->unk10.z = z;
+    eng->unk10.x = x;
+    nas->UserInfo.status++;
+    if (D_800CB100 + 0x100 < eng->unk10.x || eng->unk10.x < 0x100 ||
+        D_800CB104 + 0x100 < eng->unk10.z || eng->unk10.z < 0x100) {
+        goto kill;
+    }
+    return;
+kill:
+    SpawnNASById(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1305, 0x11);
+    KillNAS(nas);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotPickupGenerator_TA);
 
