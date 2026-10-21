@@ -163,20 +163,19 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B4048);
 
 void func_800B4444(void) {
     s32 i;
-    s32 j;
-    s32 k;
+    s16 c;
     s32 n;
     u8 *g;
     u8 *h;
     NAS **p;
 
+    c = 0;
     i = 0;
     p = D_800BC424;
 loop:
     if (i < 8) {
-        if (*p != 0) {
-            j = k + 1;
-            k = j;
+        if (*p != NULL) {
+            c++;
         }
         p++;
         i++;
@@ -192,7 +191,7 @@ loop:
     } while (n >= 0);
     h = D_80053F8C;
     func_80029100(h + 0x10);
-    ((void (*)(s32 *))func_800B3330)(D_800BC240);
+    func_800B3330(D_800BC240);
 }
 
 void func_800B44C8(void) {
