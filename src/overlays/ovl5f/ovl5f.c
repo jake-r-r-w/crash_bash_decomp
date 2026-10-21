@@ -2274,7 +2274,155 @@ void func_800BAF64(s32 arg0) {
     s->flags &= 0xFFFF7FFF;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800BAFFC);
+s32 func_800BAFFC(NAS *nas, s32 arg1, s32 arg2, s32 arg3) {
+    EXTengine *eng;
+    Ovl5fShotFux *fux;
+    s32 owner;
+    s32 ret;
+    s32 x;
+    s32 z;
+    s32 tile;
+    s32 row;
+    s32 col;
+    s32 dx;
+    s32 dz;
+    s32 v;
+    s32 a;
+    s32 hit;
+    s32 sfx;
+
+retry:
+    D_800CB0FC = 0;
+    eng = nas->Engine;
+    fux = (Ovl5fShotFux *)nas->FUX;
+    owner = fux->player;
+    ret = 0;
+    if (D_8005A648 == 8 &&
+        *(((eng->unk10.z >> 9) * D_800CAFF4) + (eng->unk10.x >> 9) + D_800CACFC) != 0 &&
+        fux->unk30 != 1) {
+        x = eng->unk10.x;
+        z = eng->unk10.z;
+        goto dead;
+    }
+    x = eng->unk10.x + fux->vx;
+    z = eng->unk10.z + fux->vz;
+    if (x < 0 || D_800CB100 + 0x100 < x) {
+        if (fux->unk30 == 1) {
+        back:
+            eng->unk10.x -= fux->vx;
+            eng->unk10.z -= fux->vz;
+            goto retry;
+        }
+        x += fux->vx = -fux->vx;
+        eng->unk5E = 1;
+        D_800CB0FC = x;
+        eng->unk1E = 0x1000 - eng->unk1E;
+    } else
+    if (z < 0 || D_800CB104 + 0x100 < z) {
+        if (fux->unk30 == 1) {
+            goto back;
+        }
+        z += fux->vz = -fux->vz;
+        eng->unk5E = 1;
+        D_800CB0FC = z;
+        eng->unk1E = 0x800 - eng->unk1E;
+    } else if (eng->unk10.y >= -400) {
+        v = ((z >> 9) * D_800CAFF4) + (x >> 9);
+        tile = *(v + D_800CACFC);
+        if (tile != 0) {
+            D_800CB0FC = tile;
+            if (fux->unk30 == 1) {
+                goto back;
+            }
+            dx = eng->unk10.x - ((tile & 0xF0) << 4);
+            if (dx < 0) {
+                dx = -dx;
+            }
+            dz = eng->unk10.z - ((tile & 0xF) << 8);
+            if (dz < 0) {
+                dz = -dz;
+            }
+            if (dz < dx) {
+                a = fux->vx;
+                x += fux->vx = -a;
+                if (D_800CACFC[((z >> 9) * D_800CAFF4) + (x >> 9)] != 0) {
+                    x += a;
+                    fux->vx = a;
+                    z += fux->vz = -fux->vz;
+                    eng->unk1E = 0x800 - eng->unk1E;
+                } else {
+                    eng->unk1E = 0x1000 - eng->unk1E;
+                }
+            } else {
+                a = (sfx = fux->vz);
+                z += fux->vz = -a;
+                if (D_800CACFC[((z >> 9) * D_800CAFF4) + (x >> 9)] != 0) {
+                    z += a;
+                    fux->vz = a;
+                    x += fux->vx = -fux->vx;
+                    eng->unk1E = 0x1000 - eng->unk1E;
+                } else {
+                    eng->unk1E = 0x800 - eng->unk1E;
+                }
+            }
+            eng->unk5E = 1;
+        }
+    }
+    eng->unk10.x = x;
+    eng->unk10.z = z;
+    func_800BF548(eng);
+    hit = Ovl5fRocketFindHero(x, z, 0x10E);
+    if (hit >= 0) {
+        switch ((u32)Random(4)) {
+        case 0:
+            sfx = 0x4BA;
+            break;
+        case 1:
+            sfx = 0x4BB;
+            break;
+        case 2:
+            sfx = 0x4BC;
+            break;
+        case 3:
+            sfx = 0x4BD;
+            break;
+        default:
+            goto skip;
+        }
+        PlaySfx(sfx, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+    skip:
+        if (((Ovl5fModeView *)D_8005A614)->mode == 5 && D_8005A614[hit + 0x5C] != 0 &&
+            D_800CAD50[hit].ForceFieldDelay == 0 && D_8009D908 == 0 &&
+            (u32)Random(0x20) < D_8009D87C[hit].unk0) {
+            D_800CB284[hit] = 1;
+            goto hit2;
+        }
+        if (owner == hit) {
+            func_800B6354(hit, arg1 / 2);
+        } else {
+            func_800B6354(hit, arg1);
+        }
+        goto hit2;
+    }
+    if (Ovl5fRocketNear(eng->unk10.x, eng->unk10.z, 0xE0) == NULL) {
+        if (--fux->life != 0) {
+            return ret;
+        }
+    dead:
+        ret = 1;
+        goto spawn;
+    }
+hit2:
+    ret = 2;
+spawn:
+    if (arg3 != 0) {
+        Ovl5fSpawnBit1605(&eng->unk10, arg3);
+    }
+    if (arg2 != 0) {
+        SpawnNASById(x, eng->unk10.y, z, arg2, 0x11);
+    }
+    return ret;
+}
 
 void PlotLaserBitTA(NAS *nas) {
     EXTengine *eng;

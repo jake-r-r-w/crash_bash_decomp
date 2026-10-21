@@ -220,6 +220,18 @@ typedef struct LaserBitFux {
     /* 0x30 */ s32 unk30;
 } LaserBitFux;
 
+/* func_800BAFFC's view of a shot's NAS.FUX. */
+typedef struct Ovl5fShotFux {
+    /* 0x00 */ u8 pad0[0x10];
+    /* 0x10 */ s32 vx;
+    /* 0x14 */ s32 vy;
+    /* 0x18 */ s32 vz;
+    /* 0x1C */ u8 pad1C[0x28 - 0x1C];
+    /* 0x28 */ s32 life;
+    /* 0x2C */ s32 player;
+    /* 0x30 */ s32 unk30;
+} Ovl5fShotFux;
+
 s32 func_800BAFFC(NAS *nas, s32 arg1, s32 arg2, s32 arg3);
 
 /* PlotShell's NAS.FUX. */
