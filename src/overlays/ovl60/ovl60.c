@@ -3628,7 +3628,192 @@ void func_800BC490(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoProjectile);
+void Plot_PogoProjectile(NAS *arg0) {
+    EXTengine *e;
+    subengine *first;
+    subengine *sub;
+    HeroInfo *h;
+    Ovl60Slot *base;
+    Ovl60Slot *slot;
+    EXTengine *he;
+    NAS *cell;
+    NAS *nas;
+    s32 *ext;
+    u8 *p;
+    s32 *pos;
+    s32 i;
+    s32 j;
+    s32 n;
+    s32 done;
+    s32 k;
+    s32 off;
+    s32 hit;
+    s32 lim;
+    s32 px;
+    s32 pz;
+    s32 me;
+    s32 dx;
+    s32 dz;
+    s32 x;
+    s32 z;
+    u16 f;
+
+    e = arg0->Engine;
+    if (e == NULL || (first = e->sub) == NULL) {
+        return;
+    }
+    if (arg0->UserInfo.flags & 2) {
+        e->unk10.x -= (D_80068BD4[(arg0->UserInfo.status - 0x400) & 0xFFF].unk2 * 9) >> 8;
+        e->unk10.z -= (D_80068BD4[arg0->UserInfo.status & 0xFFF].unk2 * 9) >> 8;
+    }
+    j = 0;
+    n = 0;
+    done = 0;
+    sub = first->next;
+    for (;;) {
+        if (sub == NULL || done) {
+            break;
+        }
+        if (sub->flags & 0x8000) {
+            if (((s32)arg0->UserInfo.user1 >> j) & 1) {
+                k = sub->unk20.x;
+                if (arg0->UserInfo.flags & 2) {
+                    sub->unk04 += 0x90;
+                }
+                k -= 0x100;
+                if (k <= 0) {
+                    k = 0;
+                    sub->flags &= ~0x8000;
+                }
+                n++;
+                sub->unk20.z = k;
+                sub->unk20.y = k;
+                sub->unk20.x = k;
+                sub->unk52 = 1;
+            }
+            if (sub->flags & 0x8000) {
+                goto next;
+            }
+        }
+        if (!(((s32)arg0->UserInfo.user1 >> j) & 1)) {
+            done = 1;
+        } else {
+        next:
+            sub = sub->next;
+            j++;
+        }
+    }
+    if (arg0->UserInfo.flags & 2) {
+        k = (arg0->UserInfo.flags >> 4) & 3;
+        hit = 0;
+        if (D_8004E0D8 & 1) {
+            k++;
+        }
+        if (k & 2) {
+            if (sub != NULL) {
+                sub->unk74 = 0x2018;
+                sub->flags |= 0x8000;
+                arg0->UserInfo.user1 |= 1 << j;
+            }
+            k = 0;
+        }
+        i = 0;
+        base = D_800C535C;
+        h = Heroes;
+        slot = base;
+        off = i;
+        f = (arg0->UserInfo.flags & 0xFFCF) | (k << 4);
+        me = (f >> 8) & 7;
+        arg0->UserInfo.flags = f;
+    heroes:
+        if (i < 4) {
+            if (i != me) {
+                he = h->hero_eng;
+                if (he != NULL) {
+                    dx = he->unk10.x - e->unk10.x;
+                    dz = he->unk10.z - e->unk10.z;
+                    if ((csqrt(dx * dx + dz * dz) >> 6) < 0xA0) {
+                        hit = 1;
+                        if (!(h->hero_status & 0x800)) {
+                            if (arg0->UserInfo.user2 == 3) {
+                                do {
+                                    func_800BB724(me, i);
+                                    PlaySfx(0x552, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+                                } while (0);
+                            }
+                            do {
+                                do {
+                                    if (((Ovl60Slot *)(off + (u32)base))->unk4 == 5 && h->hero_aseq == 0x2F) {
+                                        SetHeroAction((HeroInfo *)i, 0x39);
+                                    }
+                                } while (0);
+                            } while (0);
+                            do {
+                                if (slot->unk4 == 6) {
+                                    func_800B91E8(i);
+                                }
+                            } while (0);
+                            slot->unk4 = 0;
+                            h->hero_status |= 0x800;
+                        }
+                    }
+                }
+            }
+            h++;
+            do {
+                slot++;
+            } while (0);
+            off += sizeof(Ovl60Slot);
+            i++;
+            goto heroes;
+        }
+        if (D_8005A648 == 0xA) {
+            x = (e->unk10.x + 0x800) >> 9;
+            z = (e->unk10.z + 0x800) >> 9;
+            if ((u32)x < 8 && z >= 0 && z < 8) {
+                cell = (NAS *)D_800C53DC[x][z].hero;
+                if (cell != NULL && cell->UserInfo.flags == 0xB) {
+                    cell->UserInfo.status = 5;
+                    hit = 1;
+                }
+            }
+        }
+        if (!hit) {
+            px = e->unk10.x;
+            pz = e->unk10.z;
+            lim = 0x800;
+            if (px < -0xA00 || px > lim || pz < -0xA00 || pz > lim) {
+                hit = 1;
+            }
+            if (!hit) {
+                return;
+            }
+        }
+        pos = (s32 *)&e->unk10;
+        p = D_80053B9C;
+        nas = SpawnNASById(e->unk10.x, pos[1], pos[2], 0x1605, 0x11);
+        if (nas != NULL) {
+            ext = FindExtension(nas, 0x10000000);
+            if (ext != NULL) {
+                ext[3] = 0;
+                ext[6] = 0x100;
+                if (p != NULL) {
+                    ext[8] = 5;
+                    ((s32 *)nas->Engine->sub)[0x6C / 4] = (s32)p;
+                } else {
+                    ext[8] = 1;
+                }
+                ext[10] = 0;
+                nas->InitDelete(nas);
+            }
+        }
+        PlaySfx(0x521, NULL, &e->unk10, 0x1000, 0x1E00, 0);
+        arg0->UserInfo.flags &= 0xFFFC;
+        first->flags &= ~0x8000;
+    } else if (arg0->UserInfo.user1 != 0 && n == 0) {
+        KillNAS(arg0);
+    }
+}
 
 void func_800BCB4C(void) {
     s32 buf[0x40];
