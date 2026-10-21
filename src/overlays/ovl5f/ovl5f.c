@@ -1093,7 +1093,190 @@ void func_800B9170(s32 player) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B9430);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B993C);
+void func_800B993C(s32 player) {
+    EXTengine *eng;
+    EXTengine *e;
+    subengine *sub;
+    HeroInfo *h;
+    s32 pad;
+    s32 speed;
+    s32 dir;
+    s32 angle;
+    s32 dx;
+    s32 dz;
+    s32 m;
+    s32 a;
+    s32 sn;
+    s32 cs;
+    u16 old;
+    s32 x;
+    s32 z;
+    s32 fx;
+    s32 fz;
+    s32 lim;
+    s32 n;
+    s32 d;
+    s32 t;
+    s32 df;
+    u16 name;
+    TA_player *ta;
+    s32 hit;
+    s32 i;
+
+    pad = ((PadButtons *)D_80051338)[player].unk50;
+    ta = &D_800CAD50[player];
+    eng = Heroes[player].hero_eng;
+    speed = ta->Speed;
+    dir = pad & 0xF0;
+    sub = eng->sub->next->next;
+    if (dir == 0) {
+        return;
+    }
+    if (((Ovl5fModeView *)D_8005A614)->mode == 7 && !(((Ovl5fModeView *)D_8005A614)->flags & 0x80)) {
+        dx = D_800CB21C->Engine->unk10.x - eng->unk10.x;
+        dz = D_800CB21C->Engine->unk10.z - eng->unk10.z;
+        if (dx >= -0x15D) {
+            if (dx < 0x15E) {
+                if (dz >= -0x15D) {
+                    if (dz < 0x15E) {
+                        if (dx < 0) {
+                            m = pad & 0x70;
+                        } else {
+                            m = pad & 0xD0;
+                        }
+                        if (dz > 0) {
+                            m &= ~0x10;
+                        } else {
+                            m &= ~0x40;
+                        }
+                        dir = m;
+                    }
+                }
+            }
+        }
+        dx = D_800CB220->Engine->unk10.x - eng->unk10.x;
+        dz = D_800CB220->Engine->unk10.z - eng->unk10.z;
+        if (dx >= -0x15D) if (dx < 0x15E) if (dz >= -0x15D) if (dz < 0x15E) {
+            if (dx < 0) {
+                m = dir & ~0x80;
+            } else {
+                m = dir & ~0x20;
+            }
+            if (dz > 0) {
+                m &= ~0x10;
+            } else {
+                m &= ~0x40;
+            }
+            dir = m;
+        }
+    }
+    if (dir == 0) {
+        return;
+    }
+    switch (dir) {
+    case 0x40:
+        angle = 0x800;
+        break;
+    case 0x80:
+        angle = 0xC00;
+        break;
+    case 0x20:
+        angle = 0x400;
+        break;
+    case 0x90:
+        angle = 0xE00;
+        break;
+    case 0x30:
+        angle = 0x200;
+        break;
+    case 0xC0:
+        angle = 0xA00;
+        break;
+    case 0x60:
+        angle = 0x600;
+        break;
+    case 0x10:
+    default:
+        angle = 0;
+        break;
+    }
+loop:
+    a = (eng->unk1E + sub->unk12) & 0xFFF;
+    df = ((angle - a) << 20) >> 20;
+    a = (u16)sub->unk12;
+    if ((u32)(df + 0x400) > 0x800) {
+        sub->unk12 = (a + 0x800) & 0xFFF;
+        goto loop;
+    }
+    df = df / 4;
+    sub->unk12 = (a + df) & 0xFFF;
+    sub->unk52 = 1;
+    a = (eng->unk1E + sub->unk12) & 0xFFF;
+    sn = D_80068BD4[(a - 0x400) & 0xFFF].unk2;
+    cs = D_80068BD4[a].unk2;
+    x = eng->unk10.x + ((speed * sn) >> 12);
+    fx = x + ((sn * 256) >> 12);
+    z = eng->unk10.z + ((speed * cs) >> 12);
+    fz = z + ((cs * 256) >> 12);
+    if (D_8005A648 == 7 && (u32)(x - 0x581) < 0x4FF && z >= 0x581 && z < 0xA80) {
+        if (x < 0x800) {
+            if (x < 0x5C0) {
+                x = 0x580;
+            } else if (x >= 0xA41) {
+                x = 0xA80;
+            }
+        }
+        if (z < 0x800) {
+            if (z < 0x5C0) {
+                z = 0x580;
+            } else if (z >= 0xA41) {
+                z = 0xA80;
+            }
+        }
+    }
+    lim = 0x1C0;
+    for (i = 0; i < 4; i++) {
+        if (i == player) {
+            continue;
+        }
+        h = &Heroes[i];
+        name = h->hero_name;
+        if (name == 9 &&
+            (((Ovl5fModeView *)D_8005A614)->mode != name || D_800CB210 != 0 ||
+             (u32)(i - 2) >= 2)) {
+            continue;
+        }
+        if (h->hero_status & 0xC000) {
+            continue;
+        }
+        e = h->hero_eng;
+        d = x - e->unk10.x;
+        if (d < -0x1C0) {
+            continue;
+        }
+        if (lim < d) {
+            continue;
+        }
+        d = z - e->unk10.z;
+        n = -0x1C0;
+        if (n < d && d < 0x1C0) {
+            hit = i;
+            goto found;
+        }
+    }
+    hit = -1;
+found:
+    if (hit < 0) {
+        t = ((fz >> 9) * D_800CAFF4) + (fx >> 9);
+        if (D_800CACB4[t] == 0) {
+            eng->unk10.x = x;
+            eng->unk10.z = z;
+        }
+    } else if (D_800CB0E0 == 0) {
+        D_800CB0E8 = eng;
+        D_800CB0E0 = -1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B9E20);
 
