@@ -3339,7 +3339,116 @@ void func_800C44E8(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C4548);
+void func_800C4548(s32 player) {
+    TA_player *ta;
+    EXTengine *eng;
+    EXTengine *e;
+    EXTengine *se;
+    subengine *sub;
+    subengine *sub2;
+    NAS *n;
+    NAS *puff;
+    PeriscopeShellExt *fux;
+    s32 a;
+    s32 dx;
+    s32 dz;
+    u16 anim;
+
+    ta = &D_800CAD50[player];
+    eng = Heroes[player].hero_eng;
+    sub = Heroes[player].hero_sub->next;
+    sub2 = sub->next;
+    if (ta->TurretFiring >= 0) {
+        a = *ta->TurretAnimPtr++;
+        if (a != 0) {
+            if (D_8005A648 == 5) {
+                sub2->unk74 = a;
+            } else {
+                sub->unk74 = a;
+            }
+        } else {
+            switch (ta->TurretFiring) {
+            default:
+                anim = 0x2010;
+                break;
+            case 11:
+                anim = 0x2011;
+                break;
+            case 10:
+                anim = 0x2012;
+                break;
+            case 8:
+                anim = 0x2009;
+                break;
+            case 0:
+            case 3:
+                anim = 0x2008;
+                break;
+            case 2:
+                anim = 0x200B;
+                break;
+            }
+            sub->unk74 = anim;
+            ta->TurretFiring = -1;
+            if (ta->MainWeaponRounds <= 0) {
+                func_800B6FF4(player);
+            }
+        }
+        if (sub->unk74 == 0x4004) {
+            e = Heroes[player].hero_eng;
+            puff = Ovl5fSpawnBit1605Nas(&e->unk10, 0);
+            if (puff != NULL) {
+                Ovl5fPuffSetAngle(puff, eng->unk1E);
+            }
+            if (D_800CAD50[player].MainWeaponType == 3) {
+                n = SpawnNASById(e->unk10.x, e->unk10.y - 0x12C, e->unk10.z, 0x130B, 0x11);
+                if (n != NULL) {
+                    PlaySfx(0x4F3, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
+                    fux = AddExtension(n, 0x38, 0x10000000);
+                    n->FUX = fux;
+                    se = n->Engine;
+                    dx = -(D_80068BD4[(e->unk1E - 0x400) & 0xFFF].unk2 * 250);
+                    se->unk10.x += dx >> 12;
+                    dz = -(D_80068BD4[(u16)e->unk1E & 0xFFF].unk2 * 250);
+                    se->unk10.z += dz >> 12;
+                    fux->vx = dx >> 13;
+                    fux->vy = -0x5B;
+                    fux->vz = dz >> 13;
+                    fux->unk2C = player;
+                    fux->unk30 = 1;
+                    D_800CAD50[player].MainWeaponRounds--;
+                }
+            }
+        }
+    } else if (D_8005A648 == 5) {
+    loop:
+        a = *ta->TurretAnimPtr++;
+        if (a == 0) {
+            switch (ta->MainWeaponType) {
+            case 9:
+            default:
+                ta->TurretAnimPtr = D_800C9A54;
+                break;
+            case 11:
+                ta->TurretAnimPtr = D_800C9AA4;
+                break;
+            case 10:
+                ta->TurretAnimPtr = D_800C9AF4;
+                break;
+            case 8:
+                ta->TurretAnimPtr = D_800C9B44;
+                break;
+            }
+            goto loop;
+        }
+        sub2->unk74 = a;
+    }
+    if (D_8005A648 != 5) {
+        if (++sub2->unk74 == 0x4306) {
+            sub2->unk74 = 0x4300;
+        }
+    }
+}
 
 void func_800C49F8(s32 arg0) {
     EXTengine *eng;

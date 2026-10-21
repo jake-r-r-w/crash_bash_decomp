@@ -607,6 +607,8 @@ void func_800B9170(s32 player);
 
 void func_800C30C0(EXTengine *arg0);
 
+void func_800C4548(s32 player);
+
 void func_800C57B0(NAS *nas, s32 id);
 
 #endif /* BASH_OVL5F_H */
