@@ -349,6 +349,7 @@ extern u16 D_800BD8E0;
 extern u16 D_800BD8E4;
 extern char D_800BD8E2[];
 extern u8 D_800BD908[];
+extern u16 D_800BD8F0[4];
 
 void func_800B7BE4(void);
 
@@ -422,8 +423,8 @@ extern s16 D_800BE828;
 extern s16 D_800BE82A;
 extern u16 D_800BE830;
 extern u16 D_800BE832;
-void func_800B38FC(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5, s32 a6,
-                   s32 a7, s32 a8);
+void func_800B38FC(u16 a0, s32 a1, s32 a2, s32 a3, u16 a4, u16 a5, u16 a6,
+                   u16 a7, u16 a8);
 
 s32 func_800B6860(u32 idx);
 
@@ -469,6 +470,8 @@ typedef struct MinionMove {
 extern s32 D_8005A680[];
 extern u16 D_8009DC38[];
 extern u16 D_8009DC50[];
+
+void func_800B38FC(u16 arg0, s32 a1, s32 a2, s32 a3, u16 n4, u16 n5, u16 n6, u16 n7, u16 n8);
 
 void PlotPapuMinion(NAS *nas);
 

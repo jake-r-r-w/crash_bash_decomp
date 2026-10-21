@@ -84,7 +84,75 @@ void func_800B36D4(void) {
     D_800BE832 = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/ovl5e", func_800B38FC);
+void func_800B38FC(u16 arg0, s32 a1, s32 a2, s32 a3, u16 n4, u16 n5, u16 n6, u16 n7, u16 n8) {
+    s32 t;
+    s32 i;
+    s32 j;
+    s32 k;
+    u16 *p;
+    u16 *e;
+    u8 *a;
+    u8 *b;
+    u8 tmp;
+    s32 x;
+
+    x = arg0 * n6;
+    p = D_800BD8F0;
+    t = x / 16;
+    k = t + 1;
+    p[3] = k;
+    p[2] = k;
+    p[1] = k;
+    do {
+    } while (0);
+    n4 *= 4;
+    n5 *= 4;
+    n6 *= 4;
+    n7 *= 4;
+    n8 *= 4;
+    do {
+    } while (0);
+    i = 0;
+    D_800BD8E4 = arg0;
+    e = &D_800BD8E8;
+    do {
+    } while (0);
+    p[0] = k;
+    e[3] = arg0;
+    e[2] = arg0;
+    e[1] = arg0;
+    D_800BD8E8 = arg0;
+    do {
+    } while (0);
+    for (j = i; j < n4; j++) {
+        D_800BD908[i++] = 4;
+    }
+    for (j = 0; j < n5; j++) {
+        D_800BD908[i++] = 5;
+    }
+    for (j = 0; j < n6; j++) {
+        D_800BD908[i++] = 6;
+    }
+    for (j = 0; j < n7; j++) {
+        D_800BD908[i++] = 1;
+    }
+    x = n8;
+    for (j = 0; j < x; j++) {
+        D_800BD908[i++] = 2;
+    }
+    j = 0;
+    do {
+        i = Random(0x40);
+        k = Random(0x40);
+        a = &D_800BD908[i];
+        b = &D_800BD908[k];
+        tmp = *a;
+        j++;
+        *a = *b;
+        *b = tmp;
+    } while (j < 0x258);
+    D_800BD8E0 = Random(0x20) + 0x14;
+}
 
 void func_800B3B08(void) {
     Ovl5eGridPos *p;
