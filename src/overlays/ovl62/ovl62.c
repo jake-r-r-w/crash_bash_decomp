@@ -5514,7 +5514,136 @@ void func_800CDBD0(s32 player) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CDE8C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CE664);
+void func_800CE664(s32 player) {
+    EXTheromove *move;
+    s32 *ext;
+    s32 *ext2;
+    s32 *p;
+    NAS *nas;
+    EXTengine *eng;
+    s32 x;
+    s32 y;
+    s32 z;
+
+    if (func_800D2D2C() == 0) {
+        move = Heroes[player].hero_move;
+        ext = FindExtension(Heroes[player].hero, 0x20000000);
+        if (ext != NULL) {
+            eng = Heroes[player].hero_eng;
+            x = eng->unk10.x;
+            y = eng->unk10.y;
+            z = eng->unk10.z;
+            if (Heroes[player].hero_name == 1) {
+                func_8008502C(player);
+            }
+            if (Heroes[player].hero_name == 7) {
+                func_8008502C(player);
+            }
+            if (Heroes[player].hero_name == 8) {
+                func_8008502C(player);
+            }
+            if (Heroes[player].hero_name == 3) {
+                func_8008502C(player);
+            }
+            if (Heroes[player].hero_name == 2) {
+                func_8008502C(player);
+            }
+            if (Heroes[player].hero_name == 5) {
+                func_8008502C(player);
+            }
+            if (Heroes[player].hero_name == 6) {
+                func_8008502C(player);
+            }
+            if (Heroes[player].hero_name == 4) {
+                func_8008502C(player);
+            }
+            if (ext[0x98 / 4]-- < 0) {
+                ext[0x98 / 4] = Random(8) + 0x18;
+                nas = SpawnNASById(x + 0x60, y - 0x180, z, 0x1612, 0x11);
+                if (nas != NULL) {
+                    p = FindExtension(nas, 0x10000000);
+                    if (p != NULL) {
+                        p[0x1C / 4] = 0xA;
+                        p[0xC / 4] = 0x100;
+                        p[0x10 / 4] = 0x50;
+                        p[0x14 / 4] = -0x40;
+                        p[0x24 / 4] = 0x20;
+                        p[0x28 / 4] = 1;
+                        p[0x18 / 4] |= 1;
+                    }
+                }
+                nas = SpawnNASById(x - 0x60, y - 0x180, z, 0x1612, 0x11);
+                if (nas != NULL) {
+                    p = FindExtension(nas, 0x10000000);
+                    if (p != NULL) {
+                        p[0x1C / 4] = 0xA;
+                        p[0xC / 4] = 0x100;
+                        p[0x10 / 4] = 0x50;
+                        p[0x14 / 4] = -0x40;
+                        p[0x24 / 4] = 0x20;
+                        p[0x28 / 4] = 1;
+                        p[0x18 / 4] |= 1;
+                    }
+                }
+            }
+            if (move != NULL) {
+                ((Ovl62Pad *)D_80051338)[player].unk50 = 0;
+                ((Ovl62Pad *)D_80051338)[player].unk54 = 0;
+                func_800BBF2C(player);
+                func_800CD214(player);
+                func_800C0888(&Heroes[player].hero_eng->unk10, player);
+                Heroes[player].hero_frozen = 2;
+                if (ext[0x24 / 4] == 0 && ext[0x1C / 4] >= 0x1F) {
+                    Heroes[player].hero_eng->unk1E += 0x10;
+                    if (D_800D4D08 != 0 && !(Heroes[player].hero_status & 0x200)) {
+                        Heroes[player].hero_eng->sub->flags &= 0xFFFF7FFF;
+                        Heroes[player].hero_shadow->sub->flags &= 0xFFFF7FFF;
+                        SetHeroAction((HeroInfo *)player, 0x50);
+                        return;
+                    }
+                    if (Heroes[player].hero_name == 1 && ext[0x24 / 4] == 0) {
+                        Heroes[player].hero_eng->sub->unk74 = 0x4100;
+                    }
+                    if (Heroes[player].hero_name == 7 && ext[0x24 / 4] == 0) {
+                        Heroes[player].hero_eng->sub->unk74 = 0x4000;
+                    }
+                    if (Heroes[player].hero_name == 8 && ext[0x24 / 4] == 0) {
+                        Heroes[player].hero_eng->sub->unk74 = 0x4000;
+                    }
+                    if (Heroes[player].hero_name == 3 && ext[0x24 / 4] == 0) {
+                        Heroes[player].hero_eng->sub->unk74 = 0x4100;
+                    }
+                    if (Heroes[player].hero_name == 2 && ext[0x24 / 4] == 0) {
+                        Heroes[player].hero_eng->sub->unk74 = 0x4000;
+                    }
+                    if (Heroes[player].hero_name == 5 && ext[0x24 / 4] == 0) {
+                        Heroes[player].hero_eng->sub->unk74 = 0x4000;
+                    }
+                    if (Heroes[player].hero_name == 6 && ext[0x24 / 4] == 0) {
+                        Heroes[player].hero_eng->sub->unk74 = 0x4000;
+                    }
+                    if (Heroes[player].hero_name == 4 && ext[0x24 / 4] == 0) {
+                        Heroes[player].hero_eng->sub->unk74 = 0x4080;
+                    }
+                }
+                Heroes[player].hero_eng->unk5E = 1;
+            }
+            if (ext[0x1C / 4]++ >= 0xB5) {
+                ext2 = FindExtension(Heroes[player].hero, 0x20000000);
+                if (ext2 != NULL) {
+                    func_800B5684(player);
+                    Heroes[player].hero_eng->sub->flags &= 0xFFBFFFFF;
+                    if (ext2[0x24 / 4] == 0) {
+                        SetHeroAction((HeroInfo *)player, 0x49);
+                    }
+                    if (ext2[0x24 / 4] == 1) {
+                        SetHeroAction((HeroInfo *)player, 0x54);
+                    }
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CED58);
 

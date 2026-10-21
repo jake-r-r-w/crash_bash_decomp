@@ -1423,6 +1423,8 @@ s32 func_800CD214(s32 player);
 
 void func_800CD594(s32 player);
 
+void func_800CE664(s32 player);
+
 void func_800D0A6C(s32 player);
 
 void func_800D257C(s32 player);
