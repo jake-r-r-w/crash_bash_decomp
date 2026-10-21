@@ -7974,7 +7974,9 @@
   "status": "matched"
  },
  "ovl63:800B7190": {
-  "auto_failed": "compile"
+  "auto_failed": "compile",
+  "copy_failed": "ovl65:800B9020",
+  "copy_failed_stage": "in-file"
  },
  "ovl63:800B76A4": {
   "auto_failed": "compile"
@@ -8799,7 +8801,8 @@
   "status": "matched"
  },
  "ovl65:800B9020": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-21T21:06:46Z",
+  "status": "matched"
  },
  "ovl65:800B9534": {
   "matched_at": "2026-10-19T16:01:51Z",

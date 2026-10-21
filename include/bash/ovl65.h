@@ -388,3 +388,36 @@ void func_800B69F4(s32 arg0, u16 arg1);
 void func_800B9930();
 void func_800B9778();
 void func_800B96A0();
+
+typedef struct Ovl65Vec {
+    s32 vx, vy, vz;
+} Ovl65Vec;
+
+/* A wall segment of a scene collision object (func_800B9020). */
+typedef struct Ovl65Seg {
+    Ovl65Vec p0; /* 0x0 */
+    Ovl65Vec p1; /* 0xC */
+    s32 len;      /* 0x18 */
+    s32 ang;      /* 0x1C */
+    u8 pad20[0x18];
+} Ovl65Seg;
+
+typedef struct Ovl65SegObj {
+    u8 pad0[0x38];
+    s32 count; /* 0x38 */
+    u8 pad3C[0xC];
+    Ovl65Seg segs[1]; /* 0x48 */
+} Ovl65SegObj;
+
+typedef struct Ovl65SceneData {
+    u8 pad0[0x14];
+    s32 off14;
+} Ovl65SceneData;
+
+typedef struct Ovl65Scene {
+    s32 unk0;
+    u8 pad4[0xC];
+    u8 *data; /* 0x10 */
+} Ovl65Scene;
+
+s32 func_800B9020(Ovl65Vec *pos, Ovl65Vec *out, s32 radius, s32 idx, s32 flags);

@@ -1817,7 +1817,136 @@ s32 func_800B8A40(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B9020);
+s32 func_800B9020(Ovl65Vec *pos, Ovl65Vec *out, s32 radius, s32 idx, s32 flags) {
+    Ovl65Vec p;
+    Ovl65Vec hit;
+    Ovl65Vec d;
+    Ovl65Vec e;
+    Ovl65SegObj *obj;
+    Ovl65SegObj *w;
+    u8 *data;
+    s32 *ent;
+    s32 best;
+    s32 found;
+    s32 shift;
+    s32 i;
+    s32 dist;
+    s32 t;
+    s32 ang;
+    s32 r2;
+    s32 len;
+    s32 bad;
+    s32 a;
+    s32 dx;
+    s32 dz;
+    s32 s;
+    s32 v;
+    s32 n;
+    s32 rad;
+
+    best = 0x7FFFFFFF;
+    found = 0;
+    rad = radius;
+    shift = 12;
+    bad = idx >= (((Ovl65Scene *)D_80058AD0)->unk0 ?
+                  *(s32 *)(*(s32 *)(((Ovl65Scene *)D_80058AD0)->data + 0x14) +
+                           (s32)((Ovl65Scene *)D_80058AD0)->data + 0x14) :
+                  0);
+    if (bad) {
+        return 0;
+    }
+    data = ((Ovl65Scene *)D_80058AD0)->data;
+    obj = (Ovl65SegObj *)((u8 *)&((s32 *)(data + (*(s32 *)(data + 0x14) + 0x14)))[idx + 1] +
+                          ((s32 *)(data + (*(s32 *)(data + 0x14) + 0x14)))[idx + 1]);
+    if (obj != NULL) {
+        i = 0;
+        dist = 0;
+        t = 0;
+        w = obj;
+        n = obj->count;
+        r2 = rad * rad;
+        for (;; i++, w = (Ovl65SegObj *)((u8 *)w + sizeof(Ovl65Seg))) {
+            s32 lt;
+
+            if (i >= n) {
+                break;
+            }
+            ang = obj->segs[i].ang;
+            if (flags & 1) {
+                ang += 0x800;
+            }
+            d.vx = pos->vx - w->segs[0].p0.vx;
+            d.vz = pos->vz - w->segs[0].p0.vz;
+            if (((d.vx * D_80068BD4[-ang & 0xFFF].unk2) >> 12) -
+                    ((d.vz * D_80068BD4[(-ang - 0x400) & 0xFFF].unk2) >> 12) < 0) {
+                continue;
+            }
+            d.vy = w->segs[0].p1.vy - w->segs[0].p0.vy;
+            e.vx = w->segs[0].p1.vx - w->segs[0].p0.vx;
+            e.vy = w->segs[0].p1.vy - w->segs[0].p0.vy;
+            e.vz = w->segs[0].p1.vz - w->segs[0].p0.vz;
+            len = (w->segs[0].len * w->segs[0].len) >> shift;
+            if (len != 0) {
+                t = (e.vx * d.vx + e.vy * d.vy + e.vz * d.vz) / len;
+            }
+            lt = t < 0x1000;
+            if (t <= 0) {
+                p = w->segs[0].p0;
+                dx = p.vx - pos->vx;
+                dz = p.vz - pos->vz;
+                dist = dx * dx + dz * dz;
+                if (dist > r2) {
+                    continue;
+                }
+            }
+            if (!lt) {
+                p = w->segs[0].p1;
+                dx = p.vx - pos->vx;
+                dz = p.vz - pos->vz;
+                dist = dx * dx + dz * dz;
+                if (dist > r2) {
+                    continue;
+                }
+            }
+            if (t > 0 && lt) {
+                p.vx = ((t * e.vx) >> shift) + w->segs[0].p0.vx;
+                p.vy = ((t * e.vy) >> shift) + w->segs[0].p0.vy;
+                p.vz = ((t * e.vz) >> shift) + w->segs[0].p0.vz;
+                dx = p.vx - pos->vx;
+                dz = p.vz - pos->vz;
+                dist = dx * dx + dz * dz;
+                if (dist > r2) {
+                    continue;
+                }
+            }
+            if (dist < 0) {
+                dist = 0x7FFFFFFF;
+            }
+            if (dist > best) {
+                continue;
+            }
+            best = dist;
+            hit.vx = p.vx;
+            hit.vy = p.vy;
+            hit.vz = p.vz;
+            if (best > r2) {
+                continue;
+            }
+            s = csqrt(best) >> 6;
+            out->vy = ang;
+            a = -ang;
+            v = rad - s + 2;
+            out->vx = (v * D_80068BD4[a & 0xFFF].unk2) >> 12;
+            ang = a + 0x400;
+            out->vz = (v * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+            pos->vx += out->vx;
+            pos->vz += out->vz;
+            found = 1;
+            hit.vy = obj->segs[i].ang;
+        }
+    }
+    return found;
+}
 
 void func_800B9534(s32 arg0, s32 arg1) {
     EXTheromove *a;
