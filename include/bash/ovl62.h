@@ -163,9 +163,12 @@ extern s32 D_800D4D08;
 typedef struct Ext20 {
     /* 0x00 */ u8 pad[0x14];
     /* 0x14 */ s32 unk14;
-    /* 0x18 */ u8 pad18[0x8];
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ u8 pad1C[0x4];
     /* 0x20 */ s32 val;
     /* 0x24 */ s32 state;
+    /* 0x28 */ u8 pad28[0xAC - 0x28];
+    /* 0xAC */ s32 unkAC;
 } Ext20;
 
 /* PadState (D_80051338) as func_800D1C14 and func_800D307C use it: the
@@ -1053,5 +1056,7 @@ typedef struct Ovl62HitExt {
 } Ovl62HitExt;
 
 void func_800CFC58(s32 player);
+
+void func_800D0060(s32 player);
 
 #endif /* BASH_OVL62_H */

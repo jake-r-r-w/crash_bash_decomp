@@ -3915,7 +3915,81 @@ void func_800CFF44(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D0060);
+void func_800D0060(s32 player) {
+    HeroInfo *h;
+    HeroInfo *h2;
+    Ext20 *ext;
+    EXTheromove *move;
+    EXTengine *eng;
+    s32 angle;
+    u16 mode;
+
+    if (func_800D2D2C() != 0) {
+        return;
+    }
+    {
+        HeroInfo *b = Heroes;
+        h = &b[player];
+    }
+    ext = FindExtension(h->hero, 0x20000000);
+    if (ext == NULL) {
+        return;
+    }
+    if (D_8005A648 == 0x16) {
+        func_800BBF2C(player);
+    }
+    mode = h->hero_last_mode;
+    if (mode == 0x4C || mode == 0x52 || ext->state == 1 || mode == 0x4B ||
+        mode == 0x5A || ext->unkAC != 0) {
+        {
+            HeroInfo *b = Heroes;
+            h2 = &b[player];
+        }
+        h2->hero_eng->unk10.y += 0x60;
+        ext->unkAC = 1;
+        func_80026980(h2->hero);
+        if (!(h2->hero_status & 0x200)) {
+            h2->hero_status |= 0x2000;
+        }
+        if (h2->hero_eng->unk10.y > 0x400) {
+            SetHeroAction((HeroInfo *)player, 0x50);
+        }
+        return;
+    }
+    move = h->hero_move;
+    if (move == NULL) {
+        return;
+    }
+    eng = h->hero_eng;
+    angle = (get_angle(eng->unk10.x - D_800D4DD4.vx, eng->unk10.z - D_800D4DD4.vz) + 0x800) & 0xFFF;
+    if (ext->unk18 == 0) {
+        ext->unk18 = csqrt(move->x_vel * move->x_vel + move->z_vel * move->z_vel) >> 6;
+    }
+    move->forward_angle = angle + 0x800;
+    move->x_max = 0;
+    move->z_max = 0;
+    move->x_vel = 0;
+    move->z_vel = 0;
+    if (((Ovl62Pad *)D_80051338)[player].unk54 & 0x8000) {
+        ext->unk14++;
+    }
+    if (h->hero_anim->Aindex < 0x21) {
+        if (ext->unk18 < 0x4A && ext->unk14 >= 5) {
+            do {
+                func_800CFF44(player);
+                ext->unk18 = 0;
+                if (h->hero_eng->sfx != NULL) {
+                    StopSfx(h->hero_eng->sfx);
+                }
+                SetHeroAction((HeroInfo *)player, 0x49);
+            } while (0);
+            return;
+        }
+    } else if (!(h->hero_status & 0x200)) {
+        h->hero_status |= 0x2000;
+    }
+    func_8008502C(player);
+}
 
 void func_800D034C(s32 player) {
     Ext20 *ext;
