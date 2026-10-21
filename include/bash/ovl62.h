@@ -79,7 +79,12 @@ typedef struct SceneObj {
     /* 0x04 */ s32 unk4;
     /* 0x08 */ s32 unk8;
     /* 0x0C */ s32 unkC;
-    /* 0x10 */ u8 pad10[0x5C - 0x10];
+    /* 0x10 */ u8 pad10[0x12 - 0x10];
+    /* 0x12 */ u16 unk12;
+    /* 0x14 */ u8 pad14[0x51 - 0x14];
+    /* 0x51 */ u8 unk51;
+    /* 0x52 */ s16 unk52;
+    /* 0x54 */ u8 pad54[0x5C - 0x54];
     /* 0x5C */ struct SceneObj *next;
     /* 0x60 */ u8 pad60[0x6C - 0x60];
     /* 0x6C */ GfxModel *model;
@@ -114,7 +119,9 @@ typedef struct Ovl62ModeView {
 
 /* D_8005A614 as func_800B649C reads it. */
 typedef struct Ovl62GameView {
-    /* 0x00 */ u8 pad0[0x6C];
+    /* 0x00 */ u8 pad0[0x10];
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ u8 pad14[0x6C - 0x14];
     /* 0x6C */ s32 unk6C;
 } Ovl62GameView;
 
@@ -680,6 +687,13 @@ typedef struct Ovl62Prox {
 } Ovl62Prox;
 
 extern Ovl62Prox *D_800D5494;
+
+/* func_800B3AA0's swaying-ground state. */
+extern s32 D_800D52A4;
+extern s32 D_800D52A8;
+extern s32 D_800D52AC;
+extern s32 D_800D52B0;
+extern MATRIX D_800D5FCC;
 
 void func_800B60B8(s32 player);
 

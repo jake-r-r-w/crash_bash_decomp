@@ -106,7 +106,194 @@ void func_800B38A0(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B3AA0);
+void func_800B3AA0(void)
+{
+  s32 i;
+  s32 sz;
+  s32 sx;
+  s32 n;
+  s32 count;
+  s32 k;
+  s32 r;
+  s32 step;
+  s32 sign;
+  s32 a;
+  s32 b;
+  HeroInfo *h;
+  u8 *p;
+  EXTengine *eng;
+  PolarMissileExt *ext;
+  SceneObj *o;
+  o = D_800D529C;
+  if (o != 0)
+  {
+    o->unk52 = 1;
+    o->unk51 = 0;
+    o->unk12 += 6;
+  }
+  if (D_800D52A0 != 0)
+  {
+    D_800D5FC8 = (D_800D5FC8 + 0x20) & 0xFFF;
+  }
+  if (((Ovl62GameView *) D_8005A614)->unk10 != 0)
+  {
+    return;
+  }
+  if ((((Ovl62ModeView *) D_8005A614)->mode == 0x12) || (((Ovl62ModeView *) D_8005A614)->mode == 0x16))
+  {
+    sx = 0;
+    sz = 0;
+    if (((Ovl62ModeView *) D_8005A614)->mode == 0x12)
+    {
+      i = 0;
+      if (!(((Ovl62ModeView *) D_8005A614)->flags & 0x80))
+      {
+
+        for (i = 0; i < 4; i++)
+        {
+          if (!(Heroes[i].hero_status & 0xFA00))
+          {
+            k = Heroes[i].hero_move->mass;
+            sx += Heroes[i].hero_eng->unk10.x * k;
+            sz += Heroes[i].hero_eng->unk10.z * k;
+          }
+        }
+
+
+        if ((D_800D5494 != 0) && (D_800D5494->unk58 != 0))
+        {
+          r = D_800D5494->unk58->mode;
+          if (((r == 1) || (r == 5)) || (r == 7))
+          {
+            eng = D_800D5494->eng;
+            sx += eng->unk10.x << 10;
+            sx >>= 8;
+            sx /= 5;
+            sz += eng->unk10.z << 10;
+            sz >>= 8;
+            sz /= 5;
+          }
+          else
+          {
+            sx >>= 10;
+            sz >>= 10;
+          }
+        }
+      }
+    }
+    else
+    {
+      n = 1;
+      if (((Ovl62GameView *) D_8005A614)->unk6C != 0)
+      {
+        n = 2;
+      }
+      count = 0;
+      for (i = 0; i < n; i++)
+      {
+        if (!(Heroes[i].hero_status & 0xFA00))
+        {
+          sx += Heroes[i].hero_eng->unk10.x;
+          sz += Heroes[i].hero_eng->unk10.z;
+        }
+      }
+
+      p = D_800D5454;
+      loop:
+      if (p != 0)
+      {
+        if ((((NAS *) p)->Engine != 0) && (((NAS *) p)->Engine->unk10.y == 0))
+        {
+          ext = FindExtension((NAS *) p, 0x10000000);
+          if (ext != 0)
+          {
+            sx += ((NAS *) p)->Engine->unk10.x;
+            sz += ((NAS *) p)->Engine->unk10.z;
+            if (ext->unk4C != 0)
+            {
+              sx *= ext->unk4C;
+              sz *= ext->unk4C;
+              sx >>= 6;
+              sz >>= 6;
+              ext->unk4C = (ext->unk4C * 200) >> 8;
+            }
+          }
+          count++;
+        }
+        p = *((u8 **) (p + 0x20));
+        goto loop;
+      }
+
+      sx /= count + 1;
+      sz /= count + 1;
+    }
+    D_8009E1F8 -= ((D_8009E1F8 - (sx / 15)) << 20) >> 22;
+    D_8009E1F4 -= ((D_8009E1F4 - ((-sz) / 16)) << 20) >> 22;
+    if (D_8009E1F8 < (-0x80))
+    {
+      D_8009E1F8 = -0x80;
+    }
+    if (D_8009E1F8 > 0x80)
+    {
+      D_8009E1F8 = 0x80;
+    }
+    if (D_8009E1F4 < (-0x40))
+    {
+      D_8009E1F4 = -0x40;
+    }
+    if (D_8009E1F4 > 0x40)
+    {
+      D_8009E1F4 = 0x40;
+    }
+    D_80058AF4.vy = 0;
+    D_80058AF4.vx = D_8009E1F4;
+    D_80058AF4.vz = D_8009E1F8;
+    if ((((Ovl62ModeView *) D_8005A614)->flags & 0x80) && (((Ovl62ModeView *) D_8005A614)->mode == 0x12))
+    {
+      a = (D_800D52AC * D_80068BD4[(D_800D52A4 - 0x400) & 0xFFF].unk2) >> 12;
+      b = (D_800D52AC * D_80068BD4[D_800D52A4 & 0xFFF].unk2) >> 12;
+      D_800D52A4 = (D_80068BD4[(D_800D52A8 - 0x400) & 0xFFF].unk2 * 3) >> 2;
+      D_800D52A8 = (D_800D52A8 + D_800D52B0) & 0xFFF;
+      if (D_800D52A8 == 0)
+      {
+        r = Random(4);
+        step = (r == 0) * 0x10;
+        if (r == 1)
+        {
+          step = 0x10;
+        }
+        if (r == 2)
+        {
+          step = 0x20;
+        }
+        if (r == 3)
+        {
+          step = 0x20;
+        }
+        D_800D52AC = 0x100;
+        sign = Random(2);
+        if (sign == 0)
+        {
+          D_800D52B0 = step;
+        }
+        if (sign == 1)
+        {
+          D_800D52B0 = -step;
+        }
+      }
+      D_800D52A4 &= 0xFFF;
+      D_80058AF4.vx -= ((a - D_80058AF4.vx) << 20) >> 22;
+      D_80058AF4.vz -= ((b - D_80058AF4.vz) << 20) >> 22;
+    }
+    RotMatrix(&D_80058AF4, &D_800D5FCC);
+  }
+  else
+  {
+    D_80058AF4.vx = 0;
+    D_80058AF4.vz = 0;
+    D_80058AF4.vy = 0;
+  }
+}
 
 s32 func_800B4094(s32 *arg0, s32 arg1) {
     MATRIX m;
