@@ -409,7 +409,8 @@ s32 func_800BE864(s32 hero, Ovl60Goal *goal);
 
 /* D_8005A614 as seen by func_800B3A38. */
 typedef struct Ovl60ScoreView {
-    /* 0x00 */ u8 unk0[0x32];
+    /* 0x00 */ u8 unk0[0x30];
+    /* 0x30 */ u16 unk30;
     /* 0x32 */ u16 flags;
     /* 0x34 */ s16 mode;
     /* 0x36 */ u8 unk36[0x5C - 0x36];

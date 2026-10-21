@@ -936,7 +936,34 @@ s32 func_800B788C(s32 arg0) {
     return count;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B7990);
+void func_800B7990(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    Ovl60ScoreView *g = SCORE60V;
+    s32 score;
+
+    if (g->unk30 & 0x801) {
+        return;
+    }
+    if (arg3 != 0) {
+        func_800C0C34(arg0, arg1, arg2, arg3);
+    }
+    if (g->flags & 0x40) {
+        if (g->teams != 0) {
+            score = Heroes[arg0].hero_score;
+            if (score < arg3) {
+                Heroes[arg0].hero_score = 0;
+                Heroes[Heroes[arg0].hero_teammate].hero_score -= arg3 - score;
+                return;
+            }
+        }
+        Heroes[arg0].hero_score -= arg3;
+    } else if ((g->flags & 0x80) && g->mode == 0xB) {
+        if (Heroes[arg0].hero_score < arg3) {
+            Heroes[arg0].hero_score = arg3;
+        }
+    } else {
+        Heroes[arg0].hero_score += arg3;
+    }
+}
 
 void func_800B7B1C(s32 arg0, s32 arg1, s32 arg2) {
     Ovl60Cell *p;
