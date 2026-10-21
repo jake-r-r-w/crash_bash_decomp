@@ -242,6 +242,8 @@ extern Ovl5dGridCell D_800C3EAC[16][16];
 
 s32 func_800B46B8(s32 arg0);
 
+s32 func_800B6138(s32 arg0);
+
 s32 func_800B6FE0(s32 arg0);
 
 void func_800B7E74(void);

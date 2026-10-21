@@ -153,7 +153,79 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B4AB0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B5E28);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B6138);
+s32 func_800B6138(s32 arg0) {
+    EXTbotai *ai;
+    u16 w[3];
+    s32 i;
+    s32 l;
+    s32 r;
+    s32 a;
+    s32 b;
+    u16 *p;
+    s32 ff;
+    s32 fe;
+
+    ai = Heroes[arg0].hero_ai;
+    i = 0;
+    ff = 0xFF;
+    fe = 0xFE;
+    p = w;
+    for (; i < 3; i++) {
+        *p = 0;
+        a = ai->AIforward_left[i];
+        b = ai->AIforward_right[i];
+        l = a & 0x3F;
+        r = b & 0x3F;
+        if (a == ff || b == ff) {
+            *p = ff;
+        }
+        if (a == fe || b == fe) {
+            *p = fe;
+        }
+        if (l >= 6) {
+            if (l < 8) {
+                goto setl;
+            }
+            if (l < 0x16) {
+                if (l >= 0x14) {
+                setl:
+                    *p = ff;
+                }
+            }
+        }
+        if (r >= 6) {
+            if (r < 8) {
+                goto setr;
+            }
+            if (r < 0x16) {
+                if (r >= 0x14) {
+                setr:
+                    *p = ff;
+                }
+            }
+        }
+        p++;
+    }
+    if (w[0] != 0) {
+        if (Heroes[arg0].hero_object != NULL) {
+            Heroes[arg0].hero_move->velocity_enable = 0;
+            ai->AImode = 0xD;
+            return 1;
+        }
+        if (w[1] != 0 || w[2] != 0) {
+            Heroes[arg0].hero_move->forward_angle += 0x31C;
+            ai->AIaborted_mode = ai->AImode;
+            ai->AImode = 5;
+            ai->AIsleep = 0x1E;
+            ai->TargetPlayer = -1;
+            ai->pTargetNas = NULL;
+            return 1;
+        }
+        Heroes[arg0].hero_move->velocity_enable = 1;
+        ai->AIpad |= 0x4000;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B62EC);
 
