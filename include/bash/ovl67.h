@@ -35,6 +35,7 @@ extern u16 D_800C417A;
 extern u16 D_800C417C[];
 extern u16 D_800C39EC[][5];
 extern s32 D_800C4050[][3];
+extern EXTengine *D_8009D59C;
 void func_800C3440(void);
 extern u16 D_800C438A;
 extern s16 D_800C4184[];

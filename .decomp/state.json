@@ -9292,7 +9292,8 @@
   "tries": 1
  },
  "ovl67:800B4138": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-21T11:19:25Z",
+  "status": "matched"
  },
  "ovl67:800B447C": {
   "matched_at": "2026-10-18T16:36:17Z",

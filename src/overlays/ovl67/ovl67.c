@@ -378,7 +378,102 @@ void func_800B3E74(s32 i) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B4138);
+void func_800B4138(s32 i) {
+    HeroInfo *h;
+    EXTengine *eng;
+    subengine *sub;
+    subengine *n;
+    s32 z;
+    HeroInfo *h0;
+    HeroInfo *hb;
+    HeroInfo *h1;
+    HeroInfo *h3;
+    HeroInfo *hp;
+    s32 mode;
+
+    hb = Heroes;
+    h0 = &hb[i];
+    func_80026980(h0->hero);
+    if (h0->hero_status & 0x8000) {
+        return;
+    }
+    eng = h0->hero_eng;
+    mode = D_8005A680[0];
+    if (i == 3) {
+        h3 = &Heroes[3];
+        h3->hero_status = (h3->hero_status & ~0x1000) | 0x40;
+        h3->hero_eng->flags |= 0x8000;
+        sub = h3->hero_sub;
+        sub->flags |= 0x8000;
+        sub = sub->next;
+        sub->flags |= 0x8000;
+        return;
+    }
+    switch (i) {
+    case 0:
+        if (mode != 0) {
+            Heroes[0].hero_eng->unk10.x = D_800C4050[1][0];
+            Heroes[0].hero_eng->unk10.z = D_800C4050[1][2];
+        } else {
+            Heroes[0].hero_eng->unk10.x = D_800C4050[0][0];
+            Heroes[0].hero_eng->unk10.z = D_800C4050[0][2];
+        }
+        break;
+    case 1:
+        h1 = &Heroes[1];
+        h1->hero_eng->unk10.x = D_800C4050[2][0];
+        h1->hero_eng->unk10.z = D_800C4050[2][2];
+        break;
+    }
+    hp = Heroes;
+    h = &hp[i];
+    h->hero_eng->unk10.y = D_8005A5D8;
+    eng->unk5D = 0;
+    eng->unk20 = 0;
+    eng->unk1E = 0;
+    eng->unk1C = 0;
+    sub = h->hero_sub;
+    n = sub->next;
+    if (n != NULL) {
+        z = ((u16 *)D_800C403C)[h->hero_name];
+        n->flags |= 0x8000;
+        n->unk0C = 0;
+        n->unk08 = 0;
+        n->unk04 = 0;
+        n->unk6C = D_80052A54 + z * 0x38;
+        h->hero_anim->sub = n;
+        n = n->next;
+        if (n != NULL) {
+            n->unk6C = D_80052A54 + 0x1490;
+            n->unk74 = 0x2005;
+            n->unk50 = 1;
+            n->unk51 = 0;
+            n->unk0C = 0;
+            n->unk08 = 0;
+            n->unk04 = 0;
+            n->flags &= ~0x8000;
+        }
+    }
+    sub->unk6C = D_80053EE4;
+    D_800C417C[i] = 0xF;
+    sub->unk74 = 0x2003;
+    sub->unk20.x = 0x1000;
+    sub->unk20.y = 0x1000;
+    sub->unk20.z = 0x1000;
+    sub->unk0C = 0;
+    sub->unk08 = 0;
+    sub->unk04 = 0;
+    sub->unk52 = 1;
+    func_800B3CD0(i);
+    func_80025B10(eng, 0x50);
+    if (i == 1) {
+        D_8009D59C->unk10.z = -0x2800;
+    } else {
+        Heroes[i].hero_eng->unk10.z = -0x2200;
+    }
+    SetHeroAction((HeroInfo *)i, 0x26);
+    Heroes[i].hero_weapon_count = 1;
+}
 
 void func_800B447C(s32 arg0) {
     EXTheromove *m;
