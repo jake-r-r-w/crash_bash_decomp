@@ -381,7 +381,136 @@ void PlotPolarBomb(NAS *m) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBombGFX);
+void PlotBombGFX(NAS *m) {
+    s32 *ext;
+    s32 *hx;
+    s32 *hero;
+    s32 *gx;
+    s32 *game;
+    s32 *bx;
+    s32 ok;
+    s32 v;
+    s32 p;
+    u16 st;
+    HeroInfo *h;
+    EXTengine *e;
+    NAS *n;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    switch (ext[3]) {
+    case 0:
+        m->Engine->unk1E += 0x20;
+        m->Engine->unk5E = 1;
+        if (func_800B4A1C(m) == 0) {
+            return;
+        }
+        hx = FindExtension(Heroes[ext[5]].hero, 0x20000000);
+        if (hx == NULL) {
+            return;
+        }
+        ok = 1;
+        gx = FindExtension((NAS *)D_800D5254, 0x40000000);
+        if (gx != NULL) {
+            v = gx[3];
+            if (v == 5) {
+                ok = gx[27] != ext[5];
+            }
+            if (v == 6 && gx[27] < 4 && gx[27] == ext[5]) {
+                ok = 0;
+            }
+        }
+        PlaySfx(0x48E, NULL, NULL, 0x1000, 0x1E00, 0);
+        if (hx[10] == 0 && ok) {
+            hx[10] = 1;
+            ext[3] = 1;
+            hx[40] = (s32)m;
+            return;
+        }
+        n = D_800D52B4;
+        if (n == NULL) {
+            return;
+        }
+        goto dec;
+    case 1:
+        hero = FindExtension(Heroes[ext[5]].hero, 0x20000000);
+        if (hero == NULL) {
+            return;
+        }
+        if (m->FUX != NULL) {
+            ((EXTengine *)m->FUX)->sub->flags &= ~0x8000;
+        }
+        game = FindExtension((NAS *)D_800D5254, 0x40000000);
+        if (game != NULL) {
+            p = ext[5];
+            st = Heroes[p].hero_status;
+            if (st & 0x2000) {
+                n = D_800D52B4;
+                if (n != NULL) {
+                dec:
+                    bx = FindExtension(n, 0x10000000);
+                    if (bx != NULL) {
+                        bx[6]--;
+                    }
+                }
+                goto kill;
+            }
+            if (st & 0x200) {
+                n = D_800D52B4;
+                if (n == NULL) {
+                    goto kill;
+                }
+                goto dec2;
+            }
+            if ((game[3] == 5 && game[27] == p && (n = D_800D52B4) != NULL)
+                || (game[3] == 6 && game[27] < 4 && game[27] == ext[5] && (n = D_800D52B4) != NULL)) {
+            dec2:
+                bx = FindExtension(n, 0x10000000);
+                if (bx != NULL) {
+                    bx[6]--;
+                    hero[10] = 0;
+                }
+                goto kill;
+            }
+        }
+        hero = FindExtension(Heroes[ext[5]].hero, 0x20000000);
+        if (hero == NULL) {
+            return;
+        }
+        m->Engine->unk10 = Heroes[ext[5]].hero_eng->unk10;
+        h = &Heroes[ext[5]];
+        if (h->hero_name == 1) {
+            m->Engine->unk10.y -= (h->hero_eng->unk2C.x * 0x258) >> 12;
+        } else {
+            m->Engine->unk10.y -= (h->hero_eng->unk2C.x * 0x300) >> 12;
+        }
+        m->Engine->unk1E += 0x20;
+        e = m->Engine;
+        e->unk2C.z = 0x800;
+        e->unk2C.y = 0x800;
+        e->unk2C.x = 0x800;
+        m->Engine->unk5E = 1;
+        if (hero[10] != 0) {
+            return;
+        }
+        if (D_800D52B4 == NULL) {
+            return;
+        }
+        bx = FindExtension(D_800D52B4, 0x10000000);
+        if (bx != NULL) {
+            bx[6]--;
+        }
+        if (hero[40] != 0) {
+            KillNAS((NAS *)hero[40]);
+            hero[40] = 0;
+        }
+    kill:
+        KillNAS(m);
+        break;
+    }
+}
 
 void func_800B5570(s32 player) {
     HeroInfo *base;
