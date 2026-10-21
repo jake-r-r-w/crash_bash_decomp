@@ -447,4 +447,22 @@ void func_800BF0AC(s32 arg0);
 
 extern Ovl67Edge D_800C40D0[];
 
+/* Motion extension (0x800) viewed by func_800BA6C4. */
+typedef struct Ovl67Mot {
+    u8 pad0[0xE];
+    s16 a;
+    s16 b;
+    s16 c;
+    s16 lim;
+    s16 dir;
+} Ovl67Mot;
+
+/* A FUX viewed for its flags word (0x80 tested by func_800BA6C4). */
+typedef struct Ovl67FuxF {
+    u8 pad0[0x1C];
+    u16 flags;
+} Ovl67FuxF;
+
+s32 func_800BA6C4(EXTengine *eng, Ovl67FuxF *self);
+
 #endif /* BASH_OVL67_H */

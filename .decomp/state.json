@@ -9360,9 +9360,10 @@
   "status": "matched"
  },
  "ovl67:800BA6C4": {
-  "auto_failed": "types",
   "copy_failed": "ovl61:800BF640",
-  "copy_failed_stage": "in-file"
+  "copy_failed_stage": "in-file",
+  "matched_at": "2026-10-21T07:38:15Z",
+  "status": "matched"
  },
  "ovl67:800BAAA8": {
   "matched_at": "2026-10-18T17:18:14Z",
