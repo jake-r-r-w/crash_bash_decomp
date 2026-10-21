@@ -319,6 +319,8 @@ typedef struct Ovl67Node {
     struct {
         u8 pad0[0x14];
         u16 unk14;
+        u8 pad16[4];
+        u16 unk1A;
     } *unk58;
 } Ovl67Node;
 
@@ -410,6 +412,11 @@ void InitN2OBall(NAS *nas);
 void func_800B6E6C(Ovl67Blend *p);
 
 s32 func_800B8058(s32 arg0);
+
+/* func_800B83EC */
+extern s32 D_8005A624;
+extern s32 D_8009D908;
+extern u32 D_80051244[]; /* flags by angle octant */
 
 /* D_8005A614 as seen by func_800B34A4. */
 typedef struct Ovl67Game {
@@ -515,6 +522,8 @@ typedef struct Ovl67FuxF {
     u8 pad0[0x1C];
     u16 flags;
 } Ovl67FuxF;
+
+void func_800B83EC(u16 *arg0);
 
 void PlotN2Omissile(NAS *nas);
 

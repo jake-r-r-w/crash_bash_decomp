@@ -1653,7 +1653,176 @@ ret0:
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B83EC);
+void func_800B83EC(u16 *arg0) {
+    Ovl67Pos best;
+    Ovl67Pos pos;
+    EXTbotai *ai;
+    Ovl67Node *n;
+    Ovl67Node *t;
+    void *ext;
+    s32 skill;
+    s32 dist;
+    s32 dx;
+    s32 dz;
+    s32 d;
+    s32 ang;
+    s32 r;
+    s32 tgt;
+    s32 k;
+
+    if (D_8005A624 & 0x04000000) {
+        return;
+    }
+    ai = Heroes[3].hero_ai;
+    do {
+        if (ai->AIinitial_delay != 0) {
+            ai->AIinitial_delay--;
+        }
+        if (ai->AIsleep != 0) {
+            ai->AIsleep--;
+        }
+        if (ai->AItimer1 != 0) {
+            ai->AItimer1--;
+        }
+        if (ai->AItimer2 != 0) {
+            ai->AItimer2--;
+        }
+        ai->AIpad = 0;
+        skill = D_8009D87C[3].unk0 + (u16)D_800C43DC;
+        if (skill > 0x20) {
+            skill = 0x20;
+        }
+    } while (0);
+    if (Heroes[3].hero_mode == (u16)D_8009E0D8 || Heroes[3].hero_mode == (u16)D_8009E0E2) {
+        ai->AIsleep = 5;
+        ai->AImode = 0x14;
+    }
+    n = D_8005AA38;
+    dist = 0x7FFFFF;
+    if (ai->TargetPlayer == -1) {
+        ai->TargetPlayer = func_800B8058(3);
+    }
+    t = (Ovl67Node *)((0x20 - skill) << 4);
+    for (; n != NULL; n = n->next) {
+        d = (s32)n + (s32)t;
+        d -= (s32)t;
+        t = ((Ovl67Node *)d)->target;
+        if (t != NULL && n->unk58 != NULL && n->unk58->unk1A == 1) {
+            ext = FindExtension((NAS *)n, 0x800);
+            if (ext != NULL && func_800B7858(3, (Ovl67Pos *)&t->x, &pos, *(u16 *)((u8 *)ext + 0x16)) != 0) {
+                dx = t->x - pos.x;
+                dz = t->z - pos.z;
+                d = dx * dx + dz * dz;
+                if (d < dist) {
+                    dist = d;
+                    best = pos;
+                }
+            }
+        }
+    }
+    if (dist != 0x7FFFFF) {
+        ang = get_angle(best.x - Heroes[3].hero_eng->unk10.x, best.z - Heroes[3].hero_eng->unk10.z);
+        dist = csqrt(dist) >> 6;
+    } else {
+        dist = 0;
+        ang = get_angle(ai->TargetXYZ.x - Heroes[3].hero_eng->unk10.x, ai->TargetXYZ.z - Heroes[3].hero_eng->unk10.z);
+    }
+    switch (ai->AImode) {
+    case 3:
+        r = skill * 16;
+        r -= D_800C4386;
+        if (r <= 0) {
+            r = 1;
+        }
+        {
+            s32 q = Random(r) + 0x100;
+
+            do {
+                r += q;
+            } while (0);
+        }
+        tgt = ai->TargetPlayer;
+        n = (Ovl67Node *)0;
+        if (tgt != -1) {
+            if (ai->AItimer1 == 0) {
+                if (skill < (s16)Random(0x20)) {
+                    ai->AItimer1 = ((0x20 - skill) >> 1) + 0x20;
+                    if (ai->AItimer1 == 0) {
+                        ai->AItimer1 = 1;
+                    }
+                } else {
+                    n = (Ovl67Node *)1;
+                }
+            }
+            if (D_8009D908 == 0) {
+                n = (Ovl67Node *)1;
+            }
+            if (((s32 (*)(s32, s32, s32, s32, s32, s32))func_800B817C)(3, tgt, r, -0x200, 0x200, (s32)n) != 0) {
+                ai->TargetPlayer = -1;
+                ai->AIpad |= 0x8000;
+            } else if (ai->AItimer1 != 0) {
+                ai->AItimer1--;
+            }
+        }
+        if (dist != 0) {
+            r = abs(Heroes[3].hero_eng->unk10.x - best.x) + ((D_8009D87C[3].unk0 + D_800C4386) << 5);
+            if (abs(r) > 0x280) {
+                if (dist < r) {
+                    ai->AIpad |= 0xF00;
+                }
+                goto set_ang;
+            }
+        } else {
+            ai->AImode = 1;
+        }
+        break;
+    case 4:
+        if (dist != 0) {
+            goto abort;
+        }
+        dx = Heroes[3].hero_eng->unk10.x - ai->TargetXYZ.x;
+        dz = Heroes[3].hero_eng->unk10.z - ai->TargetXYZ.z;
+        d = csqrt(dx * dx + dz * dz) >> 6;
+        if (d < 0x80) {
+            ai->AIsleep = Random(0x3C) + 0x1E;
+            ai->AImode = 5;
+            break;
+        }
+    set_ang:
+        ai->AIang = ang;
+        ai->AIpad |= D_80051244[(ang >> 9) & 7];
+        break;
+    case 21:
+        if (dist != 0) {
+            goto abort;
+        }
+        if (Heroes[3].hero_mode != 0x1E) {
+            ai->AImode = 1;
+        }
+        break;
+    case 5:
+        if (dist != 0) {
+            goto abort;
+        }
+        if (ai->AIsleep == 0) {
+            ai->AImode = 0x15;
+            ai->AIpad |= 0x1000;
+        }
+        break;
+    abort:
+        ai->AImode = 3;
+        ai->AIaborted_mode = 0;
+        break;
+    case 20:
+        break;
+    default:
+        ai->TargetXYZ = Heroes[3].hero_eng->unk10;
+        ai->TargetXYZ.x = Random(0x400) - 0x200;
+        ai->AImode = 4;
+        break;
+    }
+    *arg0 |= ai->AIpad;
+}
 
 void func_800B8968(s32 a) {
     s16 (*tab)[3] = (s16 (*)[3])D_800C37DC;
