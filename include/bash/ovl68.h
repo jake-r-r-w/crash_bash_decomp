@@ -430,6 +430,8 @@ void PlotPUGenerator_CH(NAS *nas);
 
 void PlotPickupCH(NAS *nas);
 
+void func_800BB010(s32 x, s32 z, s32 skip, s32 range);
+
 s32 func_800BB7E0(Ovl68Obj *a, Ovl68Pos *b);
 
 #endif /* BASH_OVL68_H */

@@ -1605,7 +1605,39 @@ s32 func_800BAFB4(s32 arg0)
   return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800BB010);
+void func_800BB010(s32 x, s32 z, s32 skip, s32 range) {
+    HeroInfo *h;
+    s32 d;
+    s32 i;
+    s32 neg;
+
+    i = 0;
+    neg = -range;
+    h = Heroes;
+loop:
+    if (i < 4) {
+        if (skip != i) {
+            d = x - h->hero_eng->unk10.x;
+            do {
+                if (d < neg) {
+                    goto next;
+                }
+            } while (0);
+            if (d <= range) {
+                d = z - h->hero_eng->unk10.z;
+                if (d >= neg && d <= range && D_800BC444 == 0 &&
+                    h->hero_immunity == 0 && !(h->hero_status & 0xFA00)) {
+                    SetHeroAction((HeroInfo *)i, (u16)D_8009E0D8);
+                    func_80027F7C(i, 0xA, 0xF0);
+                }
+            }
+        }
+    next:
+        h++;
+        i++;
+        goto loop;
+    }
+}
 
 void func_800BB134(s32 arg0)
 {
