@@ -1350,7 +1350,118 @@ void PlotFlamerBitTA(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotFlubberTA);
+void PlotFlubberTA(NAS *nas) {
+    EXTengine *eng;
+    FlubberFux *fux;
+    EXTengine *e;
+    s32 sfx;
+    s32 i;
+
+    eng = nas->Engine;
+    fux = (FlubberFux *)nas->FUX;
+    eng->unk5E = 1;
+    eng->unk1C += 0x55;
+    fux->vy += 0xC;
+    eng->unk10.y += fux->vy;
+    if (eng->unk10.y >= -0x64) {
+        eng->unk10.y = -0x64;
+        fux->vy = -0x3C;
+        eng->unk10.y -= 0x3C;
+        if (((Ovl5fModeView *)D_8005A614)->mode == 5 ||
+            (((Ovl5fModeView *)D_8005A614)->mode == 6 && (((Ovl5fModeView *)D_8005A614)->flags & 0x80) &&
+             D_800CACB4[((eng->unk10.z >> 9) * D_800CAFF4) + (eng->unk10.x >> 9)] != 0)) {
+            switch ((u32)Random(4)) {
+            case 0:
+                sfx = 0x4F7;
+                break;
+            case 1:
+                sfx = 0x4F8;
+                break;
+            case 2:
+                sfx = 0x4F9;
+                break;
+            case 3:
+                sfx = 0x4FA;
+                break;
+            default:
+                goto skip1;
+            }
+            PlaySfx(sfx, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+        skip1:
+            Ovl5fSpawnBit1605(&eng->unk10, 0x12);
+        } else {
+            switch ((u32)Random(6)) {
+            case 0:
+                sfx = 0x4D2;
+                break;
+            case 1:
+                sfx = 0x4D3;
+                break;
+            case 2:
+                sfx = 0x4D4;
+                break;
+            case 3:
+                sfx = 0x4D5;
+                break;
+            case 4:
+                sfx = 0x4D6;
+                break;
+            case 5:
+                sfx = 0x4D7;
+                break;
+            default:
+                goto skip2;
+            }
+            PlaySfx(sfx, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+        skip2:
+            Ovl5fSpawnBit1605(&eng->unk10, 9);
+        }
+    }
+    if (func_800BAFFC(nas, 0x1E, 0x1306, 0xB) != 0) {
+        do {
+            if (eng->sfx != NULL) {
+                StopSfx(eng->sfx);
+            }
+            PlaySfx(0x4E5, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        } while (0);
+        for (i = 0; i < 3; i++) {
+            if (D_800CAD50[fux->player].MainWeaponNas[i] == nas) {
+                D_800CAD50[fux->player].MainWeaponNas[i] = NULL;
+                break;
+            }
+        }
+        KillNAS(nas);
+        return;
+    }
+    if (D_800CB0FC != 0) {
+        switch ((u32)Random(3)) {
+        case 0:
+            sfx = 0x4DE;
+            break;
+        case 1:
+            sfx = 0x4DF;
+            break;
+        case 2:
+            sfx = 0x4E0;
+            break;
+        default:
+            goto skip3;
+        }
+        PlaySfx(sfx, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+    skip3:;
+    }
+    if (fux->unk30 == 1) {
+        fux->unk30 = 0;
+    }
+    do {
+        e = eng->Engine;
+        if (e != NULL) {
+            e->unk1E = eng->unk1E;
+            e->unk10 = eng->unk10;
+            e->unk10.y = 0;
+        }
+    } while (0);
+}
 
 void PlotSwirlyTA(NAS *nas) {
     EXTengine *eng;

@@ -9,7 +9,8 @@
 #include "bash/nas.h"
 
 typedef struct Ovl5fModeView {
-    /* 0x00 */ u8 pad0[0x34];
+    /* 0x00 */ u8 pad0[0x32];
+    /* 0x32 */ u16 flags;
     /* 0x34 */ s16 mode;
 } Ovl5fModeView;
 
@@ -227,6 +228,15 @@ typedef struct ShellFux {
     /* 0x18 */ u8 unk18[0x30 - 0x18];
     /* 0x30 */ s32 unk30;
 } ShellFux;
+
+/* PlotFlubberTA's NAS.FUX. */
+typedef struct FlubberFux {
+    /* 0x00 */ u8 unk0[0x14];
+    /* 0x14 */ s32 vy;
+    /* 0x18 */ u8 unk18[0x2C - 0x18];
+    /* 0x2C */ s32 player;
+    /* 0x30 */ s32 unk30;
+} FlubberFux;
 
 /* InitPickupTA's extension 0x10000000 (0x38 bytes), its NAS.FUX. */
 typedef struct PickupTAExt {

@@ -25,9 +25,9 @@
    "size": 744
   }
  ],
- "commit": "781dcea4f2",
+ "commit": "f76f2e904e",
  "game": "SCUS_945.70",
- "generated": "2026-10-21T12:22:25Z",
+ "generated": "2026-10-21T12:24:10Z",
  "hacks": [
   {
    "commit": "f69a346bbb",
@@ -169506,9 +169506,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "f76f2e904e",
+   "data_b": 6188,
+   "data_tb": 606943,
+   "game_all_f": 2537,
+   "game_b": 721724,
+   "game_c_f": 2389,
+   "game_f": 2389,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 2163,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-21T12:24:09Z",
+   "units": {
+    "engine": [
+     121412,
+     355
+    ],
+    "main exe": [
+     124840,
+     575
+    ],
+    "ovl5d": [
+     36260,
+     95
+    ],
+    "ovl5e": [
+     30984,
+     71
+    ],
+    "ovl5f": [
+     42096,
+     155
+    ],
+    "ovl60": [
+     46756,
+     167
+    ],
+    "ovl61": [
+     55000,
+     97
+    ],
+    "ovl62": [
+     54312,
+     184
+    ],
+    "ovl63": [
+     36772,
+     117
+    ],
+    "ovl64": [
+     19228,
+     50
+    ],
+    "ovl65": [
+     22732,
+     70
+    ],
+    "ovl66": [
+     17996,
+     75
+    ],
+    "ovl67": [
+     43544,
+     124
+    ],
+    "ovl68": [
+     23972,
+     86
+    ],
+    "ovl69": [
+     14760,
+     74
+    ],
+    "ovl6a": [
+     31060,
+     94
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-21T12:24:07Z",
+   "auto": true,
+   "name": "PlotFlubberTA",
+   "seg": "overlays/ovl5f/ovl5f",
+   "size": 1112,
+   "tries": 0
+  },
   {
    "at": "2026-10-21T12:22:23Z",
    "auto": true,
@@ -169620,22 +169714,14 @@
    "seg": "overlays/ovl65/ovl65",
    "size": 952,
    "tries": 0
-  },
-  {
-   "at": "2026-10-21T11:55:44Z",
-   "auto": true,
-   "name": "InitBearminator",
-   "seg": "overlays/ovl62/ovl62",
-   "size": 984,
-   "tries": 0
   }
  ],
  "summary": {
   "blocked": 4,
   "copies_b": 7496,
   "data": {
-   "done_b": 6164,
-   "pct": 1.015581364312629,
+   "done_b": 6188,
+   "pct": 1.019535607132795,
    "total_b": 606943
   },
   "game": {
@@ -169643,15 +169729,15 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 4,
-   "c_f": 2388,
-   "done_b": 720612,
-   "done_f": 2388,
+   "c_f": 2389,
+   "done_b": 721724,
+   "done_f": 2389,
    "named_f": 345,
-   "pct": 70.7150679661955,
+   "pct": 70.8241907057258,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2537,
-   "typed_f": 2162
+   "typed_f": 2163
   },
   "lib": {
    "all_f": 566,
@@ -169758,20 +169844,20 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
-    "c_f": 154,
-    "done_b": 40984,
-    "done_f": 154,
+    "c_f": 155,
+    "done_b": 42096,
+    "done_f": 155,
     "file": "ovl5f.bin",
     "files": 1,
     "lib": false,
     "named_f": 68,
-    "pct": 47.51878304424451,
+    "pct": 48.808088303496895,
     "phase": 4,
     "sony_b": 0,
     "title": "Tank",
     "total_b": 86248,
     "total_f": 179,
-    "typed_f": 151,
+    "typed_f": 152,
     "unit": "ovl5f"
    },
    {
