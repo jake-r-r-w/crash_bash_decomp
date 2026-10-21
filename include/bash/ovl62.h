@@ -204,6 +204,25 @@ typedef struct Ovl62GameExt {
     /* 0x78 */ EXTengine *unk78[4];
 } Ovl62GameExt;
 
+/* func_800D0A6C: aim the hero's x/z velocity and max along forward_angle at
+ * func_800D0750's speed. Stored through a pointer so a later `max = 0` keeps
+ * the max store (flow deletes it otherwise). */
+#define OVL62_AIM(move, player)                                                    \
+    {                                                                              \
+        s32 spd_ = func_800D0750(player);                                          \
+        s32 x_;                                                                    \
+        s32 z_;                                                                    \
+        s32 *p_;                                                                   \
+        x_ = (spd_ * D_80068BD4[((move)->forward_angle + 0x400) & 0xFFF].unk2) >> 12; \
+        p_ = &(move)->x_vel;                                                       \
+        p_[0] = x_;                                                                \
+        p_[1] = x_;                                                                \
+        z_ = (spd_ * D_80068BD4[((move)->forward_angle + 0x800) & 0xFFF].unk2) >> 12; \
+        p_ = &(move)->z_vel;                                                       \
+        p_[0] = z_;                                                                \
+        p_[1] = z_;                                                                \
+    }
+
 typedef struct Ext20 {
     /* 0x00 */ u8 pad[0x14];
     /* 0x14 */ s32 unk14;
@@ -211,7 +230,8 @@ typedef struct Ext20 {
     /* 0x1C */ u8 pad1C[0x4];
     /* 0x20 */ s32 val;
     /* 0x24 */ s32 state;
-    /* 0x28 */ u8 pad28[0xA8 - 0x28];
+    /* 0x28 */ u8 pad28[0xA4 - 0x28];
+    /* 0xA4 */ NAS *unkA4;
     /* 0xA8 */ s32 unkA8;
     /* 0xAC */ s32 unkAC;
 } Ext20;
@@ -1402,6 +1422,8 @@ void func_800CCCB8(s32 player);
 s32 func_800CD214(s32 player);
 
 void func_800CD594(s32 player);
+
+void func_800D0A6C(s32 player);
 
 void func_800D257C(s32 player);
 

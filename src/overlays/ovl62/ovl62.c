@@ -6042,7 +6042,125 @@ void func_800D0808(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D0A6C);
+void func_800D0A6C(s32 player) {
+    HeroInfo *h;
+    HeroInfo *hero;
+    EXTheromove *move;
+    Ext20 *ext;
+    NAS *nas;
+
+    {
+        HeroInfo *base = Heroes;
+        h = base + player;
+    }
+    move = h->hero_move;
+    if (move == NULL) {
+        return;
+    }
+    ext = FindExtension(h->hero, 0x20000000);
+    if (ext == NULL) {
+        return;
+    }
+    if (ext->state == 0) {
+        switch (h->hero_name) {
+        case 3:
+        case 4:
+            {
+                HeroInfo *base = Heroes;
+                hero = base + player;
+            }
+            hero->hero_frozen = 0;
+            if (hero->hero_anim->Aindex == 0xA) {
+                OVL62_AIM(move, player);
+                move->x_max = 0;
+                move->x_acc = 6;
+                move->x_dec = 3;
+                move->z_acc = 6;
+                move->z_dec = 3;
+                move->z_max = 0;
+                {
+                    EXTengine *eng = hero->hero_eng;
+                    hero->hero_frozen = 2;
+                    nas = SpawnNASById(eng->unk10.x, eng->unk10.y - ((eng->unk2C.x * 0x1A4) >> 12), eng->unk10.z, 0x1616, 0x11);
+                }
+                ext->unkA4 = nas;
+                if (nas != NULL) {
+                    nas->UserInfo.user1 = (s32)hero;
+                }
+            }
+            return;
+        case 7:
+            {
+                HeroInfo *base = Heroes;
+                hero = base + player;
+            }
+            if (hero->hero_anim->Aindex == 1) {
+                OVL62_AIM(move, player);
+            }
+            if (hero->hero_anim->Aindex == 7) {
+                {
+                    EXTengine *eng = hero->hero_eng;
+                    nas = SpawnNASById(eng->unk10.x, eng->unk10.y - ((eng->unk2C.x * 0x1A4) >> 12), eng->unk10.z, 0x1615, 0x11);
+                }
+                ext->unkA4 = nas;
+                if (nas != NULL) {
+                    nas->UserInfo.user1 = (s32)hero;
+                    if (D_8005A648 == 0x14) {
+                        ext->unkA4->Engine->sub->unk6C = D_80054CAC;
+                        ext->unkA4->Engine->sub->unk74 = 0x2002;
+                    }
+                }
+            }
+            return;
+        case 8:
+            {
+                HeroInfo *base = Heroes;
+                hero = base + player;
+            }
+            if (hero->hero_anim->Aindex == 1) {
+                OVL62_AIM(move, player);
+            }
+            if (hero->hero_anim->Aindex == 7) {
+                {
+                    EXTengine *eng = hero->hero_eng;
+                    nas = SpawnNASById(eng->unk10.x, eng->unk10.y - ((eng->unk2C.x * 0xB4) >> 12), eng->unk10.z, 0x1615, 0x11);
+                }
+                ext->unkA4 = nas;
+                if (nas != NULL) {
+                    nas->UserInfo.user1 = (s32)hero;
+                    if (D_8005A648 == 0x14) {
+                        ext->unkA4->Engine->sub->unk6C = D_80054D1C;
+                    } else {
+                        ext->unkA4->Engine->sub->unk6C = D_80054A44;
+                    }
+                    ext->unkA4->Engine->sub->unk74 = 0x2003;
+                }
+            }
+            return;
+        case 5:
+        case 6:
+            {
+                HeroInfo *base = Heroes;
+                h = base + player;
+            }
+            if (h->hero_anim->Aindex == 6) {
+                OVL62_AIM(move, player);
+                move->x_max = 0;
+                move->z_max = 0;
+            }
+            if (h->hero_anim->Aindex < 6) {
+                move->x_vel = 0;
+                move->z_vel = 0;
+                move->x_max = 0;
+                move->z_max = 0;
+            }
+            return;
+        }
+    }
+    if (h->hero_anim->Aindex == 1) {
+        OVL62_AIM(move, player);
+    }
+}
 
 s32 func_800D10A0(s32 player) {
     HeroInfo *base = Heroes;
