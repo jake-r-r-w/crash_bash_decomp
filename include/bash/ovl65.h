@@ -152,6 +152,53 @@ typedef struct Ovl65Game {
     u16 flags; /* 0x32 */
 } Ovl65Game;
 
+/* func_800B69F4: D_8005A614's team-game view. */
+typedef struct Ovl65TeamView {
+    /* 0x00 */ u8 unk0[0x30];
+    /* 0x30 */ u16 unk30;
+    /* 0x32 */ u8 unk32[0x48 - 0x32];
+    /* 0x48 */ s16 team0;
+    /* 0x4A */ s16 team1;
+    /* 0x4C */ u8 unk4C[0x5C - 0x4C];
+    /* 0x5C */ u8 out[4];
+    /* 0x60 */ u8 winner;
+    /* 0x61 */ u8 unk61[0x6C - 0x61];
+    /* 0x6C */ s32 teams;
+} Ovl65TeamView;
+
+/* func_800B69F4: the 0x10000000 extension of the spawned 0x1605 effect. */
+typedef struct Ovl65Puff {
+    /* 0x00 */ u8 unk0[0xC];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ u8 unk10[0x18 - 0x10];
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ u8 unk1C[0x20 - 0x1C];
+    /* 0x20 */ s32 unk20;
+    /* 0x24 */ u8 unk24[0x28 - 0x24];
+    /* 0x28 */ s32 unk28;
+} Ovl65Puff;
+
+/* func_800B69F4: a puff of smoke at hero h. */
+#define OVL65_PUFF(h)                                                       \
+    {                                                                       \
+        NAS *nas_;                                                          \
+        Ovl65Puff *p_;                                                      \
+        SLONG_XYZ *v_;                                                      \
+                                                                            \
+        v_ = &(h)->hero_eng->unk10;                                         \
+        nas_ = SpawnNASById(v_->x, v_->y, v_->z, 0x1605, 0x11);             \
+        if (nas_ != NULL) {                                                 \
+            p_ = FindExtension(nas_, 0x10000000);                           \
+            if (p_ != NULL) {                                               \
+                p_->unk18 = 0x100;                                          \
+                p_->unkC = 0;                                               \
+                p_->unk20 = 1;                                              \
+                p_->unk28 = 0;                                              \
+                nas_->InitDelete(nas_);                                     \
+            }                                                               \
+        }                                                                   \
+    }
+
 extern Ovl65Obj *D_800BDB54;
 extern Ovl65Obj *D_800BDB7C;
 extern Ovl65Obj *D_800BDB80;
@@ -337,7 +384,7 @@ extern u8 D_800BDA7C[], D_800BDA5C[], D_8008B29C[], D_8008B418[];
 extern u8 D_800BD948[], D_800BD95C[], D_800BD970[], D_800BD97C[], D_800BD994[], D_800BD9A8[];
 extern Ovl65Obj *D_800BDB88, *D_800BDB8C;
 extern s32 D_800BDB90, D_800BDB94, D_800BDB98, D_800BDB9C, D_800BDBA0;
-void func_800B69F4();
+void func_800B69F4(s32 arg0, u16 arg1);
 void func_800B9930();
 void func_800B9778();
 void func_800B96A0();

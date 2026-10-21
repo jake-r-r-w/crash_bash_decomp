@@ -1103,7 +1103,150 @@ void func_800B5DCC(s32 arg0, u16 arg1) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B62D8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B69F4);
+void func_800B69F4(s32 arg0, u16 arg1) {
+    HeroInfo *ha;
+    Ovl65TeamView *w;
+    Ovl65TeamView *q;
+    Ovl65TeamView *p;
+    HeroInfo *hb;
+    HeroInfo *hc;
+    HeroInfo *ta;
+    HeroInfo *tc;
+    s32 ia;
+    s32 ib;
+    s32 sa;
+    s32 sb;
+    s32 found;
+    s32 done;
+    s32 i;
+    Ovl65TeamView *g;
+
+    g = (Ovl65TeamView *)D_8005A614;
+    found = -1;
+    done = 0;
+    if (g->teams != 0) {
+        hb = Heroes;
+        ia = g->team0;
+        ha = &hb[ia];
+        ta = &hb[ha->hero_teammate];
+        ib = g->team1;
+        hc = &hb[ib];
+        tc = &hb[hc->hero_teammate];
+        sa = ha->hero_score + ta->hero_score;
+        sb = hc->hero_score + tc->hero_score;
+        if (sa <= 0) {
+            i = done;
+            if (g->out[ia] != 0) {
+                goto out;
+            }
+            q = g;
+            q->winner = ha->hero_name;
+            q->unk30 |= 0x800;
+            D_8009917C |= 0x200;
+            for (;; i++) {
+                s32 t_;
+
+                if (i >= 4) {
+                    break;
+                }
+                if (((u8 *)q)[i + 0x5C] != 0) {
+                    Heroes[i].hero_status |= 0x8400;
+                    Heroes[i].hero_shadow->sub->flags &= ~0x8000;
+                    OVL65_PUFF(&Heroes[i]);
+                    func_80026980(Heroes[i].hero);
+                } else {
+                    Heroes[i].hero_status |= 0x200;
+                }
+            }
+        } else if (sb <= 0) {
+            i = 0;
+            if (((u8 *)g)[ib + 0x5C] != 0) {
+                goto out;
+            }
+            p = g;
+            p->winner = hc->hero_name;
+            p->unk30 |= 0x800;
+            D_8009917C |= 0x200;
+            for (;; i++) {
+                s32 t_;
+
+                if (i >= 4) {
+                    break;
+                }
+                if (((u8 *)p)[i + 0x5C] != 0) {
+                    hb[i].hero_status |= 0x8100;
+                    OVL65_PUFF(&hb[i]);
+                    hb[i].hero_shadow->sub->flags &= ~0x8000;
+                    func_80026980(hb[i].hero);
+                } else {
+                    hb[i].hero_status |= 0x200;
+                }
+            }
+        }
+    } else {
+        for (i = 0; i < 4; i++) {
+            if (Heroes[i].hero_score <= 0) {
+                found = i;
+            }
+        }
+        if (found != -1) {
+            i = 0;
+            w = (Ovl65TeamView *)D_8005A614;
+            if (w->out[found] != 0) {
+                goto out;
+            }
+            p = w;
+            p->winner = Heroes[found].hero_name;
+            p->unk30 |= 0x800;
+            D_8009917C |= 0x200;
+            for (;; i++) {
+                s32 t_;
+
+                if (i >= 4) {
+                    break;
+                }
+                if (((u8 *)p)[i + 0x5C] != 0) {
+                    Heroes[i].hero_status |= 0x8400;
+                    OVL65_PUFF(&Heroes[i]);
+                    Heroes[i].hero_shadow->sub->flags &= ~0x8000;
+                    func_80026980(Heroes[i].hero);
+                } else {
+                    Heroes[i].hero_status |= 0x200;
+                }
+            }
+        }
+    }
+    goto end;
+out:
+    done = 1;
+end:
+    if (done || arg0 == -1) {
+        Ovl65TeamView *r;
+        Ovl65TeamView *x;
+
+        i = 0;
+        r = (Ovl65TeamView *)D_8005A614;
+        x = r;
+        x->winner = 0;
+        x->unk30 |= arg1;
+        D_8009917C |= 0x200;
+        for (;; i++) {
+            s32 t_;
+
+            if (i >= 4) {
+                break;
+            }
+            if (D_8005A614[i + 0x5C] != 0) {
+                Heroes[i].hero_status |= 0x8400;
+                OVL65_PUFF(&Heroes[i]);
+                Heroes[i].hero_shadow->sub->flags &= ~0x8000;
+                func_80026980(Heroes[i].hero);
+            } else {
+                Heroes[i].hero_status |= 0x100;
+            }
+        }
+    }
+}
 
 void func_800B6FE4(void) {
     void *v;
