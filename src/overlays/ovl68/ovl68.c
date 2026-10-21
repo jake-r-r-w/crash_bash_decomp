@@ -131,7 +131,174 @@ void func_800B3488(s32 arg0, EXTengine *arg1, Ovl68AiState *arg2) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl68/ovl68", D_800B32B8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B37C8);
+void func_800B37C8(s32 arg0) {
+    u32 off;
+    Ovl68AiState *ai;
+    EXTengine *eng;
+    EXTengine *e;
+    NAS *nas;
+    NAS *best;
+    NAS **pp;
+    s32 i;
+    s32 n;
+    s32 d, dx, dz;
+    s32 bestd;
+    s32 x, z;
+    Ovl68CoalFux *fux;
+
+    if (D_8005A624 & 0x04000000) {
+        return;
+    }
+    eng = Heroes[arg0].hero->Engine;
+    ai = (Ovl68AiState *)(D_800BC210 + arg0 * 0x30);
+    switch ((ai->timer >> 4) & 3) {
+    case 1:
+    default:
+        off = 0;
+        break;
+    case 0:
+        off = -200;
+        break;
+    case 2:
+        off = 200;
+        break;
+    }
+    ai->unk8 = 0;
+    if (ai->unk20 > 0) {
+        ai->unk20--;
+    }
+    if (--ai->timer <= 0) {
+        func_800B3488(arg0, eng, ai);
+    } else {
+        Ovl68NearPickup(eng->unk10.x, eng->unk10.z);
+    }
+    switch (ai->state) {
+    case 4:
+        ai->unk8 |= D_80051244[((ai->angle + off) >> 9) & 7];
+        if (ai->timer < 5 || ((d = ai->x - eng->unk10.x, (u32)(d + 99) < 199) &&
+                              (dz = ai->z - eng->unk10.z, (u32)(dz + 99) < 199))) {
+            ai->state = 1;
+            ai->timer = 1;
+            ai->unk8 |= 0x2000;
+        }
+        break;
+    case 5:
+        if (ai->pickup->Type != Ovl68ASTIndex(0x1D04) || ai->pickup->NASid == 0 || ai->unk24 != 0) {
+            goto rethink;
+        }
+        ((void (*)(s32, EXTengine *, s32))func_800B3338)(arg0, ai->pickup->Engine, 0);
+        ai->unk8 |= D_80051244[((ai->angle + off) >> 9) & 7];
+        break;
+    case 6:
+        if (ai->unk20 <= 0) {
+            func_800B3488(arg0, eng, ai);
+            break;
+        }
+        if (ai->target->Type != Ovl68ASTIndex(0x1D01) || ai->target->NASid == 0) {
+            goto rethink;
+        }
+        if (Random(0x20) < D_8009D87C[arg0].unk0) {
+            nas = ai->target;
+            fux = (Ovl68CoalFux *)nas->FUX;
+            x = eng->unk10.x;
+            z = eng->unk10.z;
+            if (fux->owner == arg0) {
+                fux->owner = -21;
+            }
+            bestd = 0x8000;
+            best = NULL;
+            for (i = 0; i < 8; i++) {
+                nas = D_800BC424[i];
+                if (nas != NULL) {
+                    e = nas->Engine;
+                    dx = e->unk10.x - x;
+                    dz = e->unk10.z - z;
+                    dx *= dx;
+                    dz *= dz;
+                    d = csqrt(dx + dz) >> 6;
+                    fux = (Ovl68CoalFux *)nas->FUX;
+                    if (fux->owner >= 0 && fux->owner != arg0) {
+                        d *= 2;
+                    }
+                    if (e->sub->unk74 == 0x2017) {
+                        d = d * 2 / 3;
+                    } else if (e->sub->unk74 == 0x2016) {
+                        d /= 2;
+                    }
+                    if (d < bestd) {
+                        bestd = d;
+                        best = nas;
+                    }
+                }
+            }
+            if (best != NULL) {
+                ai->state = 6;
+                ai->target = best;
+                ai->timer = 0x3C;
+                ((void (*)(s32, EXTengine *, s32))func_800B3338)(arg0, best->Engine, 0x100);
+                fux = (Ovl68CoalFux *)best->FUX;
+                fux->owner = arg0;
+            }
+        }
+        ((void (*)(s32, EXTengine *, s32))func_800B3338)(arg0, ai->target->Engine, 0);
+        ai->unk8 |= D_80051244[((ai->angle + off) >> 9) & 7];
+        break;
+    case 7:
+        if (ai->unk20 > 0) {
+            goto rethink;
+        }
+        dx = eng->unk10.x;
+        dz = eng->unk10.z;
+        dx *= dx;
+        dz *= dz;
+        if ((csqrt(dx + dz) >> 6) >= D_800BC448 - 200) {
+            ai->state = 8;
+            ai->timer = 0x3C;
+            ai->angle -= 0x400;
+        }
+        ai->unk8 |= D_80051244[(ai->angle >> 9) & 7];
+        break;
+    case 8:
+        if (ai->unk20 > 0) {
+        rethink:
+            func_800B3488(arg0, eng, ai);
+            break;
+        }
+        ai->unk8 |= D_80051244[(ai->angle >> 9) & 7];
+        break;
+    }
+    if (ai->timer & 7) {
+        n = 0;
+        for (i = 0; i < 8; i++) {
+            nas = D_800BC424[i];
+            if (nas != NULL) {
+                e = nas->Engine;
+                dx = e->unk10.x - eng->unk10.x;
+                dz = e->unk10.z - eng->unk10.z;
+                dx *= dx;
+                dz *= dz;
+                d = csqrt(dx + dz) >> 6;
+                if (d < 0x380) {
+                    n++;
+                }
+            }
+        }
+        if (n >= 3) {
+            ai->unk8 |= 0x2000;
+        }
+    }
+    switch (ai->state) {
+    case 1:
+    case 4:
+    case 7:
+        break;
+    case 5:
+    default:
+        ai->unk8 |= 0x8000;
+        break;
+    }
+    func_80013C94((u8 *)&D_80051338[arg0], ai->unk8);
+}
 
 void func_800B3EFC(void) {
     D_8009D6E8.unk4 = D_800BB928;

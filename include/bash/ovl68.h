@@ -283,7 +283,7 @@ extern u8 D_800BC0C0[];
 extern u8 D_800BC0CC[];
 extern u8 D_800BC0E4[];
 extern u8 D_800BC0F8[];
-s32 func_800B37C8();
+void func_800B37C8(s32 arg0);
 void func_800B46BC(s32 arg0);
 void func_800B48E4(s32 arg0);
 void func_800B4B34(s32 arg0);
@@ -512,7 +512,24 @@ typedef struct Ovl68AiState {
     /* 0x18 */ NAS *target;
     /* 0x1C */ NAS *pickup;
     /* 0x20 */ s32 unk20;
+    /* 0x24 */ s32 unk24;
 } Ovl68AiState;
+
+extern s32 ASTCount;
+extern ASTEntry *ASTTable;
+extern s32 D_8005A624;
+
+/* Index of the ASTTable entry with this id, or 0. */
+static inline s32 Ovl68ASTIndex(s32 id) {
+    s32 i;
+
+    for (i = 0; i < ASTCount; i++) {
+        if (ASTTable[i].id == id) {
+            return i;
+        }
+    }
+    return 0;
+}
 typedef struct { u8 pad0[0x40]; s32 owner; } Ovl68CoalFux;
 void func_800B3488(s32 arg0, EXTengine *arg1, Ovl68AiState *arg2);
 
