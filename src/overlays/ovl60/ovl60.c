@@ -1859,7 +1859,44 @@ void func_800BC184(s32 arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BC314);
+void func_800BC314(s32 arg0, s32 arg1) {
+    HeroInfo *h;
+    EXTengine *eng;
+    s32 x;
+    s32 z;
+    Ovl60Slot *base;
+    Ovl60Slot *slot;
+    HeroInfo *heroes;
+
+    heroes = Heroes;
+    h = &heroes[arg0];
+    eng = h->hero_eng;
+    x = (eng->unk10.x + 0x800) >> 9;
+    z = (eng->unk10.z + 0x800) >> 9;
+    func_800BC490(arg0);
+    if (x > 0) {
+        func_800C1384(arg0, 2, 0x400, 0x180);
+    }
+    if (x < 7) {
+        func_800C1384(arg0, 2, 0xC00, 0x180);
+    }
+    if (z > 0) {
+        func_800C1384(arg0, 2, 0, 0x180);
+    }
+    if (z < 7) {
+        func_800C1384(arg0, 2, 0x800, 0x180);
+    }
+    PlaySfx(0x43C, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+    if (D_800C535C[arg0].unk4 == 5 && h->hero_aseq == 0x2F) {
+        SetHeroAction((HeroInfo *)arg0, 0x39);
+    }
+    base = D_800C535C;
+    slot = &base[arg0];
+    if (slot->unk4 == 6) {
+        func_800B91E8(arg0);
+    }
+    slot->unk4 = 0;
+}
 
 void func_800BC490(s32 arg0) {
     switch (Heroes[arg0].hero_name) {
