@@ -498,6 +498,17 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-21 (swarm A: untried functions under 2 KB):** run
+  20261021184442 (`--only` 42 never-tried functions, no `--retry-failed`):
+  10 matched in 40 min before the network went down; 8 failed on API
+  errors (ENOTFOUND, uncharged), not on their C: func_800B7D94, func_800D0A6C, func_800C0888, func_800B9020, func_800B7244, func_800B980C, func_800B6E0C, func_800C18F0. Requeue
+  them (`swarm.mjs forget --only ... --why "network"`, then the same
+  `--only` list from `scratch/swarmA_only.txt`). Hand (B) in parallel:
+  `func_800B4048` natural C at 247/255 (`scratch/b4048_natural.c`; left:
+  `andi 0xFFFE` and one copy), `func_800B5E28` 178/195 (its `dz`/`c` reuse
+  looks original; one variable per value gives 120), `func_800BE914`'s
+  163/170 checkpoint is contrived (aligned struct, param reuse).
+
 - **2026-10-21 (swarm, third big-mode retry, stopped):** the first start
   died in 30 s on an OAuth refresh collision (4 failures in a row; login
   fine), restarted with `--start-gap-seconds 30`. Run 20261021170058,
