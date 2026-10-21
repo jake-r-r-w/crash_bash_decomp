@@ -4476,7 +4476,8 @@
   "status": "matched"
  },
  "ovl5d:800B879C": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-21T11:33:07Z",
+  "status": "matched"
  },
  "ovl5d:800B8B00": {
   "auto_diff": 102,

@@ -303,4 +303,21 @@ void PlotBashHomer(NAS *nas);
 
 void PlotBashShox(NAS *nas);
 
+/* PlotBashPenguin's NAS.FUX. */
+typedef struct PenguinFux {
+    /* 0x00 */ u8 pad0[0x1A];
+    /* 0x1A */ u16 state;
+    /* 0x1C */ u16 unk1C;
+    /* 0x1E */ u16 unk1E;
+    /* 0x20 */ u8 pad20[2];
+    /* 0x22 */ s16 unk22;
+} PenguinFux;
+
+extern s16 D_800C3B38;
+extern u16 D_800C3B3C;
+
+void func_800B8C9C(EXTengine *eng);
+
+void PlotBashPenguin(NAS *nas);
+
 #endif /* BASH_OVL5D_H */

@@ -757,7 +757,106 @@ void PlotSnowGlint(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotBashPenguin);
+void PlotBashPenguin(NAS *nas) {
+    EXTengine *eng;
+    EXTanimator *anim;
+    PenguinFux *fux;
+    s32 t;
+    s32 r;
+    s32 ang;
+    s32 d;
+
+    eng = nas->Engine;
+    if (eng == NULL) {
+        return;
+    }
+    anim = FindExtension(nas, 0x400);
+    if (anim != NULL) {
+        fux = (PenguinFux *)nas->FUX;
+        if (fux != NULL) {
+            switch (fux->state) {
+            case 0:
+                if (D_8005A644 & 0x801) {
+                    goto stop;
+                }
+                fux->state = 1;
+                fux->unk1C |= 0xA;
+                eng->unk1E = 0xE3;
+                eng->unk10.x = 0;
+                eng->unk10.z = 0;
+                func_800250B0(nas);
+                break;
+            case 2:
+                if (D_8005A644 & 0x801) {
+                    func_80025FAC(anim, 0);
+                    goto stop;
+                }
+                if (func_800250B0(nas) == 8) {
+                    fux->state = 3;
+                    nas->UserInfo.user1 = 0x800;
+                    PlaySfx(0x427, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+                }
+                break;
+            case 3:
+                if (D_8005A644 & 0x801) {
+                    /* a value-returning call: keeps it from being cross-jumped into case 2's */
+                    ((s32 (*)(EXTanimator *, s16))func_80025FAC)(anim, 0);
+                    goto stop;
+                }
+                t = nas->UserInfo.user1;
+                if (t > 0) {
+                    r = (D_80068BD4[(t - 0x400) & 0xFFF].unk2 * 3) >> 3;
+                    if (r > 0x500) {
+                        r = 0x500;
+                    }
+                    nas->UserInfo.user1 = t - 4;
+                    d = ((0x500 - abs(r)) >> 6) + 0x28;
+                    ang = (nas->UserInfo.user2 + d) & 0xFFF;
+                    nas->UserInfo.user2 = ang;
+                    eng->unk10.x = (r * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                    eng->unk10.z = (r * D_80068BD4[ang].unk2) >> 12;
+                    eng->sub->unk74 = 0x2002;
+                } else {
+                    func_80025FAC(anim, 2);
+                    fux->state = 0;
+                    fux->unk1E &= 0xFFF5;
+                    if (eng->sfx != NULL) {
+                        StopSfx(eng->sfx);
+                    }
+                    func_800250B0(nas);
+                }
+                func_800B8C9C(eng);
+                eng->unk1E += 0x1C7;
+                break;
+            case 4:
+                eng->unk1E = 0xE3;
+                func_800250B0(nas);
+                break;
+            case 1:
+            default:
+                if (D_8005A644 & 0x801) {
+                stop:
+                    fux->state = 4;
+                    if (eng->sfx != NULL) {
+                        StopSfx(eng->sfx);
+                    }
+                    break;
+                }
+                if (fux->unk1E & 2) {
+                    fux->state = 2;
+                    fux->unk22 = 0x3C;
+                    func_80025FAC(anim, 1);
+                    PlaySfx(0x426, NULL, NULL, 0x1000, 0x1E00, 0);
+                    D_800C3B38 = 0;
+                    D_800C3B3C += 0x258;
+                }
+                func_800250B0(nas);
+                break;
+            }
+        }
+    }
+    eng->unk5E = 1;
+}
 
 void func_800B8B00(void) {
     s32 lo, hi;
