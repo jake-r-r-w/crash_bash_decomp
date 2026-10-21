@@ -110,4 +110,6 @@ typedef struct {
 
 void func_800BB64C(T_BB64C_A *a, T_BB64C_B *b);
 
+NAS *func_800BF708(EXTengine *eng, s32 who);
+
 #endif /* BASH_OVL5D_800BB64C_H */

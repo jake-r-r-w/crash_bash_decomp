@@ -424,7 +424,66 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bb64c", func_800BEF00);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bb64c", func_800BF404);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bb64c", func_800BF708);
+NAS *func_800BF708(EXTengine *eng, s32 who) {
+    FlagRecord *box;
+    FlagRecord *rec;
+    EXTengine *e;
+    EXTobject *obj;
+    NAS *nas;
+    s32 r;
+    s32 top;
+    s32 bot;
+    s32 dx;
+    s32 dz;
+    s32 rr;
+    s32 lo;
+    s32 hi;
+
+    box = func_80025A48(eng, 0x40);
+    if (box != NULL) {
+        r = box->radius;
+        top = eng->unk10.y + box->unk2;
+        bot = eng->unk10.y + box->height;
+        for (nas = D_8005AA2C; nas != NULL; nas = nas->Solid.Child) {
+            if (nas->Class & 0x200) {
+                e = nas->Engine;
+                if (e != NULL && e != eng) {
+                    rec = func_80025A48(e, 0x40);
+                    if (rec != NULL) {
+                        lo = e->unk10.y + rec->unk2;
+                        hi = e->unk10.y + rec->height;
+                        if (bot < lo && hi < top) {
+                            dx = e->unk10.x - eng->unk10.x;
+                            dz = e->unk10.z - eng->unk10.z;
+                            rr = rec->radius + r;
+                            rr = rr * rr;
+                            if (dx * dx + dz * dz < rr) {
+                                obj = FindExtension(nas, 0x1000);
+                                if (obj != NULL && (obj->whatami < 0xE || obj->whatami != who) && obj->status != 1) {
+                                    if (obj->can_do & 8) {
+                                        obj->player = -1;
+                                        obj->will_do |= 8;
+                                    }
+                                    if (obj->can_do & 2) {
+                                        obj->will_do |= 2;
+                                        if (obj->status != 2) {
+                                            obj->player = -1;
+                                        }
+                                    }
+                                    if (obj->can_do & 0x10) {
+                                        return NULL;
+                                    }
+                                    return nas;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return NULL;
+}
 
 s32 func_800BF928(EXTengine *eng, HitFlags *flags, u32 mask) {
     s32 sum;
