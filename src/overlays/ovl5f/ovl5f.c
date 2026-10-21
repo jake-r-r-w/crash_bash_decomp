@@ -83,7 +83,98 @@ s32 arg0;
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B3F44);
+s32 func_800B3F44(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
+    EXTengine *te;
+    EXTengine *me;
+    HeroInfo *hb;
+    s32 d;
+    s32 dir;
+    s32 ex;
+    s32 ez;
+    s32 tx;
+    s32 tz;
+    s32 dx;
+    s32 dz;
+    s32 a;
+    s32 i;
+    s32 t;
+
+    if (D_8009D908 == 0) {
+        i = Random(0x65);
+        if (ai->timer < (u32)i) {
+            return 0;
+        }
+    }
+    do {
+        do {
+            i = ai->unk8;
+        } while (0);
+    } while (0);
+    if (i >= 0) {
+    if (((Ovl5fModeView *)D_8005A614)->mode == 5) {
+        te = Heroes[ai->unk8].hero_eng;
+        a = get_angle(eng->unk10.x - te->unk10.x, eng->unk10.z - te->unk10.z);
+        if ((u32)(((eng->unk1E - a) & 0xFFF) - 100) < 0xF39) {
+            goto ret0;
+        }
+    } else {
+    d = eng->unk1E;
+    dir = (d + ((D_800CAD50[player].TurretReqdDir - d) << 20 >> 22)) & 0xFFF;
+    if (((s32 (*)(s32, s32))func_800C891C)(eng->unk10.x + (-(D_80068BD4[(dir - 0x400) & 0xFFF].unk2 << 9) >> 12),
+                      eng->unk10.z + (-(D_80068BD4[dir].unk2 << 9) >> 12)) != 0) {
+        return 0;
+    }
+    if (((Ovl5fGameView *)D_8005A614)->w6C != 0 || ((Ovl5fModeView *)D_8005A614)->mode == 9) {
+        hb = Heroes;
+        me = hb[hb[player].hero_teammate].hero_eng;
+        ex = eng->unk10.x;
+        tx = me->unk10.x;
+        player = tx - ex;
+        if (player < 0) {
+            player = -player;
+        }
+        tz = me->unk10.z;
+        ez = eng->unk10.z;
+        dz = tz - ez;
+        if (dz < 0) {
+            dz = -dz;
+        }
+        player = (player + dz) >> 8;
+        if (player == 0) {
+            player = 1;
+        }
+        do {
+            do {
+                te = hb[ai->unk8].hero_eng;
+            } while (0);
+        } while (0);
+        dx = te->unk10.x - ex;
+        if (dx < 0) {
+            dx = -dx;
+        }
+        dz = te->unk10.z - ez;
+        if (dz < 0) {
+            dz = -dz;
+        }
+        dx = (dx + dz) >> 8;
+        if (dx >= player) {
+        t = dir - 0x800;
+        a = ((t - get_angle(tx - ex, tz - ez)) << 20) >> 20;
+        if (a < 0) {
+            a = -a;
+        }
+        if (a * player < 0x800) {
+            return 0;
+        }
+        }
+    }
+    }
+    ai->flags |= 0x8000;
+    return 1;
+    }
+ret0:
+    return 0;
+}
 
 void func_800B4240(s32 player, s32 x, s32 z, EXTengine *eng, Ovl5fAITarget *ai) {
     s32 ex;

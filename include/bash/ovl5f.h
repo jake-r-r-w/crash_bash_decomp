@@ -462,7 +462,7 @@ typedef struct Ovl5fAITarget {
     /* 0x2A */ u16 unk2A;
 } Ovl5fAITarget;
 extern s32 D_800CB284[];
-void func_800B3F44(s32 player, EXTengine *eng, Ovl5fAITarget *ai);
+s32 func_800B3F44(s32 player, EXTengine *eng, Ovl5fAITarget *ai);
 void func_800B4688(s32 player, EXTengine *eng, Ovl5fAITarget *ai);
 static inline s32 Ovl5fASTIndex(s32 id) {
     s32 i;
