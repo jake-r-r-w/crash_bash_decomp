@@ -19,9 +19,9 @@
    "size": 788
   }
  ],
- "commit": "d5a6828805",
+ "commit": "9dbdcb542c",
  "game": "SCUS_945.70",
- "generated": "2026-10-21T08:37:37Z",
+ "generated": "2026-10-21T08:38:51Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -161984,9 +161984,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "9dbdcb542c",
+   "data_b": 5264,
+   "data_tb": 606943,
+   "game_all_f": 2537,
+   "game_b": 646980,
+   "game_c_f": 2301,
+   "game_f": 2301,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 2078,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-21T08:38:51Z",
+   "units": {
+    "engine": [
+     121412,
+     355
+    ],
+    "main exe": [
+     124840,
+     575
+    ],
+    "ovl5d": [
+     28652,
+     86
+    ],
+    "ovl5e": [
+     29508,
+     69
+    ],
+    "ovl5f": [
+     29116,
+     140
+    ],
+    "ovl60": [
+     41416,
+     161
+    ],
+    "ovl61": [
+     55000,
+     97
+    ],
+    "ovl62": [
+     41404,
+     169
+    ],
+    "ovl63": [
+     28632,
+     107
+    ],
+    "ovl64": [
+     16684,
+     47
+    ],
+    "ovl65": [
+     18496,
+     65
+    ],
+    "ovl66": [
+     15220,
+     72
+    ],
+    "ovl67": [
+     34660,
+     114
+    ],
+    "ovl68": [
+     20024,
+     81
+    ],
+    "ovl69": [
+     10856,
+     69
+    ],
+    "ovl6a": [
+     31060,
+     94
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-21T08:38:49Z",
+   "auto": true,
+   "name": "PlotTankBossCortexTurret",
+   "seg": "overlays/ovl5f/ovl5f",
+   "size": 728,
+   "tries": 0
+  },
   {
    "at": "2026-10-21T08:37:35Z",
    "auto": true,
@@ -162098,22 +162192,14 @@
    "seg": "overlays/ovl60/ovl60",
    "size": 692,
    "tries": 0
-  },
-  {
-   "at": "2026-10-21T08:19:26Z",
-   "auto": true,
-   "name": "func_800B83AC",
-   "seg": "overlays/ovl60/ovl60",
-   "size": 692,
-   "tries": 0
   }
  ],
  "summary": {
   "blocked": 3,
   "copies_b": 9976,
   "data": {
-   "done_b": 5104,
-   "pct": 0.8409356397552983,
+   "done_b": 5264,
+   "pct": 0.8672972585564048,
    "total_b": 606943
   },
   "game": {
@@ -162121,15 +162207,15 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 3,
-   "c_f": 2300,
-   "done_b": 646252,
-   "done_f": 2300,
+   "c_f": 2301,
+   "done_b": 646980,
+   "done_f": 2301,
    "named_f": 345,
-   "pct": 63.417975419906654,
+   "pct": 63.4894154867934,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2537,
-   "typed_f": 2077
+   "typed_f": 2078
   },
   "lib": {
    "all_f": 566,
@@ -162236,20 +162322,20 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
-    "c_f": 139,
-    "done_b": 28388,
-    "done_f": 139,
+    "c_f": 140,
+    "done_b": 29116,
+    "done_f": 140,
     "file": "ovl5f.bin",
     "files": 1,
     "lib": false,
     "named_f": 68,
-    "pct": 32.91438642055468,
+    "pct": 33.75846396438178,
     "phase": 4,
     "sony_b": 0,
     "title": "Tank",
     "total_b": 86248,
     "total_f": 179,
-    "typed_f": 136,
+    "typed_f": 137,
     "unit": "ovl5f"
    },
    {

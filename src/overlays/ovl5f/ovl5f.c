@@ -1758,7 +1758,134 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotTankBossCrashTurret);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C3778);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotTankBossCortexTurret);
+void PlotTankBossCortexTurret(NAS *nas) {
+    EXTengine *eng;
+    s32 a;
+    s32 t;
+    s32 u;
+
+    eng = nas->Engine;
+    eng->unk10.y = D_800CB20C->unk10.y - 0x2B6;
+    switch (nas->UserInfo.status) {
+    case 17:
+        if (D_800CB210 == 0x32) {
+            eng->unk5E = 1;
+            eng->unk1C += 20;
+        } else if (D_800CB210 == 0x33) {
+            nas->UserInfo.flags = 0;
+            nas->UserInfo.status = 39;
+            nas->UserInfo.user1 = 0;
+        }
+        break;
+    case 39:
+        a = eng->unk10.x;
+        switch (a) {
+        case 0x300:
+        default:
+            a = 300;
+            break;
+        case 0xF00:
+            a = -300;
+            break;
+        case 0x700:
+            a = -200;
+            break;
+        case 0xB00:
+            a = 200;
+            break;
+        }
+        a -= eng->unk1E;
+        a = (a << 20) >> 20;
+        if (a >= 0) {
+            if (a < 20) {
+                func_800C3778(eng);
+                nas->UserInfo.status = 13;
+                nas->UserInfo.user2 = 0;
+                break;
+            }
+            eng->unk1E += 16;
+        } else {
+            if (a >= -19) {
+                func_800C3778(eng);
+                nas->UserInfo.status = 13;
+                break;
+            }
+            eng->unk1E -= 16;
+        }
+        eng->unk5E = 1;
+        break;
+    case 13:
+        nas->UserInfo.user2 = 60;
+        nas->UserInfo.status = 0;
+        break;
+    case 0:
+        if (nas->UserInfo.flags != 2) {
+            if (eng->unk1E <= 16) {
+                nas->UserInfo.user2 = 0;
+                nas->UserInfo.status = 14;
+            } else {
+                if (eng->unk1E < 0x800) {
+                    eng->unk1E -= 16;
+                } else {
+                    eng->unk1E += 16;
+                }
+                eng->unk5E = 1;
+                eng->unk1E &= 0xFFF;
+            }
+        }
+        break;
+    case 14:
+        if (nas->UserInfo.user1 & 1) {
+            eng->unk1E += 16;
+        } else {
+            eng->unk1E -= 16;
+        }
+        eng->unk5E = 1;
+        t = eng->unk1E &= 0xFFF;
+        if ((u32)(t - 900) < 0x8F9U) {
+            nas->UserInfo.user2 = 0;
+            if (nas->UserInfo.user1 & 1) {
+                nas->UserInfo.status = 15;
+            } else {
+                nas->UserInfo.status = 16;
+            }
+        }
+        break;
+    case 15:
+        do {
+            eng->unk1E = (eng->unk1E - 16) & 0xFFF;
+        } while (0);
+        u = eng->unk1E;
+        eng->unk5E = 1;
+        if ((u32)(u - 900) < 0x8F9U) {
+            eng->unk1E = u + 16;
+            nas->UserInfo.user2 = 0;
+            nas->UserInfo.status = 16;
+            break;
+        }
+        goto fire;
+    case 16:
+        do {
+            eng->unk1E = (eng->unk1E + 16) & 0xFFF;
+        } while (0);
+        t = eng->unk1E;
+        eng->unk5E = 1;
+        if ((u32)(t - 900) < 0x8F9U) {
+            eng->unk1E = t - 16;
+            nas->UserInfo.user2 = 0;
+            nas->UserInfo.status = 15;
+            break;
+        }
+    fire:
+        if (func_800C2940(eng) >= 0) {
+            nas->UserInfo.user1++;
+            func_800C3778(eng);
+            nas->UserInfo.user2 = 0;
+            nas->UserInfo.status = 13;
+        }
+        break;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C3D48);
 
