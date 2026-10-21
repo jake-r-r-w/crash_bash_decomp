@@ -6706,26 +6706,20 @@ void func_8001CE00(s32 arg0, ModelSet *set, s32 arg2) {
 
     arg0 &= 0xFFF;
     if (*(s32 *)((u8 *)set + 0x54) >= arg0) {
-        if (e || blk) {
-            e = &set->entries[arg0];
-            blk = (u8 *)&e->off + e->off;
-        } else {
-            e = &set->entries[arg0];
-            blk = (u8 *)&e->off + e->off;
-        }
+        e = &set->entries[arg0];
+        blk = (u8 *)&e->off + e->off;
         if (!(arg2 & 0x1000000) && !func_8001AF2C(blk)) {
             return;
         }
-        {
+        do {
             p = func_80019094(e, arg2);
-            blk += 0x14;
-            if (p != NULL) {
-                func_800193A8(p, (SVECTOR *)blk, (u8 *)&e->runs + e->runs);
-            }
+        } while (0);
+        blk += 0x14;
+        if (p != NULL) {
+            func_800193A8(p, (SVECTOR *)blk, (u8 *)&e->runs + e->runs);
         }
     }
 }
-
 void func_8001CEB4(u16 arg0, u8 *arg1, s32 arg2) {
     void *p;
     u8 *blk;
