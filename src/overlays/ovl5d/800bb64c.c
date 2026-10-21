@@ -123,7 +123,97 @@ void func_800BB7E8(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bb64c", func_800BBA14);
+u8 *func_800BBA14(s32 a, s32 b, s32 c, s32 d, s32 e) {
+    NAS *nas;
+    T_BBD48Obj *obj;
+    EXTengine *eng;
+    s32 x, z;
+    u16 k;
+    s32 t;
+
+    nas = SpawnNASById(a, b, c, 0x202, 0x11);
+    k = d;
+    if (nas != NULL) {
+        eng = nas->Engine;
+        if (eng != NULL) {
+            obj = (T_BBD48Obj *)AddObject(nas);
+            if (obj != NULL && AddMotion(nas) != NULL) {
+                func_80026AD8((u8 *)nas);
+                func_8002694C(nas, 0x300);
+                nas->FUX = (EXT *)obj;
+                eng->sub->unk6C = D_80052F94;
+                eng->unk5D = 1;
+                obj->unk14 = d;
+                D_8009E46C[obj->unk14]++;
+                if ((s16)e >= 0) {
+                    obj->unk1A = e;
+                } else {
+                    obj->unk1A = 6;
+                }
+                switch (k) {
+                case 3:
+                    eng->sub->unk74 = 0x2008;
+                    break;
+                case 1:
+                    eng->sub->unk74 = 0x2014;
+                    break;
+                case 2:
+                    eng->sub->unk74 = 0x2014;
+                    break;
+                case 5:
+                    eng->sub->unk74 = 0x2009;
+                    obj->unk22 = 0x5A;
+                    obj->unk1C |= 0x100;
+                    break;
+                case 6:
+                    eng->sub->unk74 = 0x2001;
+                    obj->unk1C |= 0x100;
+                    break;
+                default:
+                    eng->sub->unk74 = 0x2013;
+                    break;
+                }
+                switch ((u16)obj->unk1A) {
+                case 3:
+                    eng->unk10.y = D_8005A5D8;
+                    break;
+                case 7:
+                    eng->unk2C.x = 0x40;
+                    eng->unk2C.y = 0x40;
+                    eng->unk2C.z = 0x40;
+                    eng->unk5D = 1;
+                    eng->unk5C = 1;
+                    eng->unk5E = 1;
+                    eng->flags = (eng->flags & ~0x8000) | 1;
+                    eng->unk10.y = D_8005A5D8;
+                    PlaySfx(0x3FA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                    break;
+                case 6:
+                    eng->unk5D = 1;
+                    eng->unk5C = 1;
+                    eng->unk5E = 1;
+                    eng->unk2C.y = 0;
+                    eng->flags &= ~0x8000;
+                    eng->unk10.y = D_8005A5D8;
+                    break;
+                }
+                t = k;
+                x = (eng->unk10.x >> 8) + 10;
+                z = 9 - (eng->unk10.z >> 8);
+                if (x >= 20) x = 19;
+                if (x < 0) x = 0;
+                if (z >= 20) z = 19;
+                if (z < 0) z = 0;
+                D_8009D90C[z * 20 + x].unk0 = t;
+            }
+        }
+        if (nas->Failure != 0) {
+            KillNAS(nas);
+            return NULL;
+        }
+    }
+    return (u8 *)nas;
+}
 
 void func_800BBD48(NAS *arg0) {
     EXTengine *eng;
