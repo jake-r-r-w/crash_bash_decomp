@@ -259,7 +259,40 @@ s32 func_800B4A1C(NAS *nas)
   return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitPolarBomb);
+void InitPolarBomb(NAS *m) {
+    PolarBombExt *ext;
+    EXTengine *e;
+
+    ext = AddExtension(m, 0x84, 0x10000000);
+    if (ext != NULL) {
+        m->Engine->sub->unk74 = 0x201A;
+        m->Engine->sub->unk6C = D_800546C4;
+        m->Engine->unk5D = 2;
+        m->Engine->sub->flags |= 0x02000000;
+        ext->unk30 = 2;
+        ext->unk74 = 0x56;
+        ext->unk34 = 0;
+        ext->unk48 = 0;
+        ext->unk10 = 0;
+        ext->unkC = 0;
+        m->FUX = NULL;
+        e = AddEngine(m, 2);
+        if (e != NULL) {
+            e->sub->unk6C = D_800546C4;
+            e->sub->unk74 = 0x202F;
+            e->Engine->unk5C = 1;
+            e->Engine->unk5D = 0;
+            e->Engine->unk2C.x = 0xC00;
+            e->Engine->unk2C.y = 0xC00;
+            e->Engine->unk2C.z = 0xC00;
+            e->unk10 = m->Engine->unk10;
+            e->flags |= 0x8041;
+            e->sub->unk76 = 0x200;
+            e->sub->flags |= 0x40000000;
+            m->FUX = (EXT *)e;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotPolarBomb);
 

@@ -692,6 +692,21 @@ typedef struct PolarMissileExt {
     /* 0x64 */ u8 pad64[0x70 - 0x64];
 } PolarMissileExt;
 
+/* Polar bomb extension (0x84 bytes, id 0x10000000). */
+typedef struct PolarBombExt {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ u8 pad14[0x30 - 0x14];
+    /* 0x30 */ s32 unk30;
+    /* 0x34 */ s32 unk34;
+    /* 0x38 */ u8 pad38[0x48 - 0x38];
+    /* 0x48 */ s32 unk48;
+    /* 0x4C */ u8 pad4C[0x74 - 0x4C];
+    /* 0x74 */ s32 unk74;
+    /* 0x78 */ u8 pad78[0x84 - 0x78];
+} PolarBombExt;
+
 extern u8 D_80054A0C[];
 
 /* Big missile extension (0x7C bytes, id 0x10000000). */
