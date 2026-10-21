@@ -151,7 +151,7 @@ typedef struct Ovl68Obj {
     Ovl68Pos *pos;
 } Ovl68Obj;
 
-void func_800B3330(void);
+void func_800B3330(s32 *arg0);
 extern s32 D_800BC240[];
 void func_80029100(void *arg0);
 void func_800BADA8(s32 arg0);

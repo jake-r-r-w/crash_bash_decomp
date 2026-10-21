@@ -10,7 +10,7 @@
 #include "bash/hero.h"
 #include "bash/shell.h"
 
-void func_800B3330(void) {
+void func_800B3330(s32 *arg0) {
 }
 
 void func_800B3338(s32 arg0, EXTengine *arg1) {
