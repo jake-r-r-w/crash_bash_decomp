@@ -112,4 +112,16 @@ void func_800BB64C(T_BB64C_A *a, T_BB64C_B *b);
 
 NAS *func_800BF708(EXTengine *eng, s32 who);
 
+typedef struct {
+    /* 0x00 */ u8 pad0[0x14];
+    /* 0x14 */ u16 unk14;
+    /* 0x16 */ u8 pad16[0x1A - 0x16];
+    /* 0x1A */ s16 unk1A;
+    /* 0x1C */ u16 unk1C;
+    /* 0x1E */ u8 pad1E[0x22 - 0x1E];
+    /* 0x22 */ s16 unk22;
+} T_BBD48Obj;
+
+void func_800BBD48(NAS *arg0);
+
 #endif /* BASH_OVL5D_800BB64C_H */
