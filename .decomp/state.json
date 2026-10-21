@@ -5902,7 +5902,8 @@
   "auto_failed": "types"
  },
  "ovl60:800B53CC": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-21T11:39:56Z",
+  "status": "matched"
  },
  "ovl60:800B574C": {
   "auto_failed": "types"
@@ -8991,7 +8992,9 @@
   "auto_failed": "types"
  },
  "ovl66:800B5820": {
-  "auto_failed": "types"
+  "auto_failed": "types",
+  "copy_failed": "ovl60:800B53CC",
+  "copy_failed_stage": "in-file"
  },
  "ovl66:800B5BA0": {
   "auto_failed": "types"
@@ -9995,7 +9998,9 @@
   "auto_failed": "types"
  },
  "ovl68:800BA220": {
-  "auto_failed": "types"
+  "auto_failed": "types",
+  "copy_failed": "ovl60:800B53CC",
+  "copy_failed_stage": "in-file"
  },
  "ovl68:800BA5A0": {
   "auto_diff": 33,

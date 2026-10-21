@@ -427,6 +427,21 @@ typedef struct Ovl60ScoreView {
 } Ovl60ScoreView;
 #define SCORE60V ((Ovl60ScoreView *)D_8005A614)
 
+/* D_8005A614 as seen by func_800B53CC (the final ranking). */
+typedef struct Ovl60RankView {
+    /* 0x00 */ u8 unk0[0x30];
+    /* 0x30 */ u16 unk30;
+    /* 0x32 */ u8 unk32[0x48 - 0x32];
+    /* 0x48 */ s16 team[2];
+    /* 0x4C */ u8 unk4C[0x60 - 0x4C];
+    /* 0x60 */ u8 winner[2];
+    /* 0x62 */ u8 unk62[0x6C - 0x62];
+    /* 0x6C */ s32 teams;
+    /* 0x70 */ u8 unk70[0xA7 - 0x70];
+    /* 0xA7 */ u8 order[4];
+} Ovl60RankView;
+#define RANK60V ((Ovl60RankView *)D_8005A614)
+
 /* func_800B3FF0: per-mode entries picked by teams, with two values at 0xE/0x10. */
 typedef struct Ovl60ModeEntry {
     /* 0x00 */ u8 unk0[0xE];
