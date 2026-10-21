@@ -9041,9 +9041,10 @@
   "status": "matched"
  },
  "ovl66:800B7B48": {
-  "auto_failed": "types",
   "copy_failed": "ovl64:800BA514",
-  "copy_failed_stage": "in-file"
+  "copy_failed_stage": "in-file",
+  "matched_at": "2026-10-21T06:53:31Z",
+  "status": "matched"
  },
  "ovl66:800B8550": {
   "matched_at": "2026-10-20T06:46:28Z",
@@ -9721,7 +9722,7 @@
  },
  "ovl68:800B52C8": {
   "auto_failed": "types",
-  "copy_failed": "ovl64:800BA514",
+  "copy_failed": "ovl66:800B7B48",
   "copy_failed_stage": "in-file"
  },
  "ovl68:800B5CD0": {

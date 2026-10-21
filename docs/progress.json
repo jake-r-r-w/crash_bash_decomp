@@ -19,9 +19,9 @@
    "size": 788
   }
  ],
- "commit": "19a9e7a1e8",
+ "commit": "9e4ce36847",
  "game": "SCUS_945.70",
- "generated": "2026-10-21T06:53:00Z",
+ "generated": "2026-10-21T06:53:45Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -154330,9 +154330,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "9e4ce36847",
+   "data_b": 4800,
+   "data_tb": 606943,
+   "game_all_f": 2537,
+   "game_b": 589100,
+   "game_c_f": 2211,
+   "game_f": 2211,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 1991,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-21T06:53:45Z",
+   "units": {
+    "engine": [
+     121412,
+     355
+    ],
+    "main exe": [
+     124840,
+     575
+    ],
+    "ovl5d": [
+     21624,
+     73
+    ],
+    "ovl5e": [
+     26000,
+     68
+    ],
+    "ovl5f": [
+     20972,
+     127
+    ],
+    "ovl60": [
+     35168,
+     150
+    ],
+    "ovl61": [
+     55000,
+     97
+    ],
+    "ovl62": [
+     35448,
+     160
+    ],
+    "ovl63": [
+     23268,
+     98
+    ],
+    "ovl64": [
+     11636,
+     38
+    ],
+    "ovl65": [
+     18496,
+     65
+    ],
+    "ovl66": [
+     14036,
+     70
+    ],
+    "ovl67": [
+     28404,
+     104
+    ],
+    "ovl68": [
+     10880,
+     68
+    ],
+    "ovl69": [
+     10856,
+     69
+    ],
+    "ovl6a": [
+     31060,
+     94
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-21T06:53:31Z",
+   "auto": true,
+   "name": "func_800B7B48",
+   "seg": "overlays/ovl66/800b6efc",
+   "size": 2568,
+   "tries": 0
+  },
   {
    "at": "2026-10-21T06:52:58Z",
    "auto": true,
@@ -154444,19 +154538,11 @@
    "seg": "overlays/ovl60/ovl60",
    "size": 384,
    "tries": 0
-  },
-  {
-   "at": "2026-10-21T06:41:24Z",
-   "auto": true,
-   "name": "func_800B8660",
-   "seg": "overlays/ovl60/ovl60",
-   "size": 380,
-   "tries": 0
   }
  ],
  "summary": {
   "blocked": 3,
-  "copies_b": 13568,
+  "copies_b": 11000,
   "data": {
    "done_b": 4800,
    "pct": 0.7908485640331959,
@@ -154467,15 +154553,15 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 3,
-   "c_f": 2210,
-   "done_b": 586532,
-   "done_f": 2210,
+   "c_f": 2211,
+   "done_b": 589100,
+   "done_f": 2211,
    "named_f": 345,
-   "pct": 57.55753476815343,
+   "pct": 57.80953764145722,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2537,
-   "typed_f": 1990
+   "typed_f": 1991
   },
   "lib": {
    "all_f": 566,
@@ -154729,20 +154815,20 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
-    "c_f": 69,
-    "done_b": 11468,
-    "done_f": 69,
+    "c_f": 70,
+    "done_b": 14036,
+    "done_f": 70,
     "file": "ovl66.bin",
     "files": 2,
     "lib": false,
     "named_f": 8,
-    "pct": 47.170121750575845,
+    "pct": 57.732806844356695,
     "phase": 5,
     "sony_b": 0,
     "title": "Bonk",
     "total_b": 24312,
     "total_f": 80,
-    "typed_f": 69,
+    "typed_f": 70,
     "unit": "ovl66"
    },
    {
