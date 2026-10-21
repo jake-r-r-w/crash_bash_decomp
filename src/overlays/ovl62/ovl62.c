@@ -1936,7 +1936,151 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B9D48);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BAFA0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BB810);
+void func_800BB810(void) {
+    VECTOR pos;
+    s32 dead;
+    s32 n;
+    s32 kind;
+    s32 i;
+    s32 snd;
+    s32 j;
+    s32 drop;
+    Ovl62Link *l;
+    EXTheromove *mv;
+
+    dead = 0;
+    if (((Ovl62ModeView *)D_8005A614)->mode == 0x12
+        && (((Ovl62ModeView *)D_8005A614)->flags & 0x80)
+        && D_800D4DEC == 0) {
+        if (D_800D5450-- < 0) {
+            n = Random(3);
+            if (n == 0) {
+                n = 1;
+            }
+            kind = Random(6);
+            drop = 0;
+            while (1) {
+                if (drop >= n) {
+                    break;
+                }
+                pos.vx = -Random(0x1300) + Random(0x1300);
+                pos.vz = 0x1D00;
+                pos.vy = 0x200;
+                if (++kind == 6) {
+                    kind = 0;
+                }
+                if (kind == 0) {
+                    Ovl62SpawnDrop(&pos, 0);
+                }
+                if (kind == 1) {
+                    Ovl62SpawnDrop(&pos, 2);
+                }
+                if (kind == 2) {
+                    Ovl62SpawnDrop(&pos, 3);
+                }
+                if (kind == 3) {
+                    Ovl62SpawnDrop(&pos, 4);
+                }
+                if (kind == 4) {
+                    Ovl62SpawnDrop(&pos, 5);
+                }
+                if (kind == 5) {
+                    Ovl62SpawnDrop(&pos, 6);
+                }
+                D_800D5450 = (Random(2) + 1) * 30;
+                snd = Random(4);
+                if (snd == 0) {
+                    PlaySfx(0x47F, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (snd == 1) {
+                    PlaySfx(0x480, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (snd == 2) {
+                    PlaySfx(0x481, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (snd == 3) {
+                    PlaySfx(0x482, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                drop++;
+            }
+        }
+    }
+    if (D_8005A648 == 0x2C && (D_8005138C & 0x2000)) {
+        D_8009E194 ^= 1;
+    }
+    if (D_800D5254 != NULL) {
+        l = D_800D5254->unk58;
+        if (l != NULL) {
+            if (D_800D5FEC[6] == 0 && l->unk10 != -1) {
+                D_800D5FEC[6] = 1;
+            }
+            if (D_800D5FEC[6] == -1 && l->unk10 == D_800D5FEC[6]) {
+                D_800D5FEC[6] = 0;
+            }
+        }
+    }
+    func_800B3AA0();
+    for (j = 0; j < 4; j++) {
+        if (Heroes[j].hero_ai->AImode != 0) {
+            D_800D5FB0[j] = 0x1000;
+        } else {
+            D_800D5FB0[j] = 0x2000;
+        }
+    }
+    if (D_800D52B4 != NULL) {
+        FindExtension(D_800D52B4, 0x10000000);
+    }
+    if (D_8009D908 == 0) {
+        D_8009D908 = 1;
+        i = 0;
+        do {
+            if (!(Heroes[i].hero_status & 0xFA00)) {
+                if (D_8005A614[i + 0x5C] == 0) {
+                    D_8009D908 = 0;
+                }
+                if (((Ovl62GameView *)D_8005A614)->unk6C != 0
+                    && D_8005A614[Heroes[i].hero_teammate + 0x5C] == 0) {
+                    D_8009D908 = 0;
+                }
+            }
+            i++;
+        } while (i < 4);
+    }
+    i = 0;
+    D_800D4E08++;
+    while (1) {
+        if (i >= 4) {
+            break;
+        }
+        if (Heroes[i].hero_eng->unk10.y > 0) {
+            func_80026980(Heroes[i].hero);
+        }
+        if (Heroes[i].hero_mode == 0x50) {
+            dead++;
+        }
+        if (dead == 3) {
+            D_800D4DEC = 1;
+        }
+        if (Heroes[i].hero_status & 0x200) {
+            mv = Heroes[i].hero_move;
+            D_800D4DEC = 1;
+            if (mv != NULL) {
+                mv->z_dir = 0;
+                mv->x_max = 0;
+                mv->z_max = 0;
+                mv->x_vel = 0;
+                mv->z_vel = 0;
+            }
+        }
+        i++;
+    }
+    if (D_8005A644 & 0x800) {
+        D_800D4DEC = 1;
+    }
+    if (D_8005A644 & 1) {
+        D_800D4DEC = 1;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BBF2C);
 

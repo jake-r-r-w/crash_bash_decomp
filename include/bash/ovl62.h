@@ -1429,4 +1429,39 @@ void func_800D0A6C(s32 player);
 
 void func_800D257C(s32 player);
 
+/* Extension of the 0x1605 objects func_800BB810 drops (id 0x10000000). */
+typedef struct Ovl62DropExt {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ s32 kind;
+    /* 0x10 */ u8 pad10[0x8];
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ s32 pad1C;
+    /* 0x20 */ s32 unk20;
+    /* 0x24 */ s32 pad24;
+    /* 0x28 */ s32 unk28;
+} Ovl62DropExt;
+
+extern s32 D_800D5450;
+extern s32 D_8005138C;
+extern s32 D_8009E194;
+void func_800B3AA0(void);
+
+/* One drop of func_800BB810's shower (like ovl5f's Ovl5fSpawnBit1605). */
+static inline void Ovl62SpawnDrop(VECTOR *pos, s32 kind) {
+    NAS *nas;
+    Ovl62DropExt *ext;
+
+    nas = SpawnNASById(pos->vx, pos->vy, pos->vz, 0x1605, 0x11);
+    if (nas != NULL) {
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL) {
+            ext->kind = kind;
+            ext->unk18 = 0x100;
+            ext->unk20 = 1;
+            ext->unk28 = 0;
+            nas->InitDelete(nas);
+        }
+    }
+}
+
 #endif /* BASH_OVL62_H */
