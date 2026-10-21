@@ -16,11 +16,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `main.exe` function matches; Phase 2's naming, data and `main.c` split
   are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2423/2537 game functions matched (74.86% of game code bytes, 2026-10-21,
-  after two big-mode retry runs over every overlay: 170 matched):
-  **main.exe, ovl61 and ovl6a are complete**; 114 left: ovl62 26, ovl5f 18,
-  ovl63 17, ovl67 9, ovl65 8, ovl5d 7, ovl60 7, ovl64 7, ovl68 5, ovl66 3,
-  ovl69 3, engine 2, ovl5e 2. All 564 PsyQ functions (Sony objects). 4
+- 2434/2537 game functions matched (76.28% of game code bytes, 2026-10-21,
+  after three big-mode retry runs over every overlay: 181 matched):
+  **main.exe, ovl61 and ovl6a are complete**; 103 left: ovl62 22, ovl63 17, ovl5f 14, ovl67 8, ovl65 8, ovl64 7, ovl60 7, ovl5d 7, ovl68 5, ovl69 3, ovl5e 2, engine 2, ovl66 1. All 564 PsyQ functions (Sony objects). 4
   parked by hand (`decomp.py status`; the swarm parked 5 more, which the
   dashboard counts from `docs/swarm.js`), 11 matched with a hack
   (`decomp.py hacks`; `func_800193A8`'s register pins reviewed as plausibly
