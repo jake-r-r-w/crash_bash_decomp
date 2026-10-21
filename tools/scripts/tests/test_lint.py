@@ -73,6 +73,37 @@ class WriteOnlyLocals(unittest.TestCase):
         self.assertNotIn("dead store", lint(s)[1])
 
 
+class OverwrittenStores(unittest.TestCase):
+    """Roo_FindNewSquare (2026-10-21) matched with `z = D_800C5BEC;` overwritten before any read."""
+
+    def test_overwritten_before_a_read_is_a_hack(self):
+        for s in ("int z; z = g;\n    g = 1;\n    z = g + 2;\n    g = z;",
+                  "int z; z = g;\n    switch (g) { case 1: g = 2; break; }\n    z = 3;\n    g = z;",
+                  "int i, z; z = g;\n    for (i = 0; i < 4; i++) { if (i) break; }\n    z = 3;\n    g = z;"):
+            self.assertIn("dead store", lint(s)[1], s)
+
+    def test_live_first_stores_are_clean(self):
+        for s in ("int z; z = g;\n    z = z >> 2;\n    g = z;",               # the second store reads it
+                  "int z; z = g;\n    if (g) { g = z; }\n    z = 3;\n    g = z;",  # read between
+                  "int z; z = g;\n    if (g) z = 3;\n    g = z;",            # the second store is conditional
+                  "int z; z = f2();\n    z = 3;\n    g = z;",                 # a call
+                  "int i, z; for (i = 0; i < 4; i++) { z = g; if (i) break; z = 3; g = z; }\n    g = z;"):
+            self.assertNotIn("dead store", lint(s)[1], s)
+
+
+class SameBranches(unittest.TestCase):
+    """PlotHelicopterTA (2026-10-21) matched with the same test in both arms of `if (i)`."""
+
+    def test_identical_arms_are_a_hack(self):
+        for s in ("if (g) { g = 1; } else { g = 1; }", "if (g)\n        g = 1;\n    else\n        g = 1;"):
+            self.assertIn("identical if/else arms", lint(s)[1], s)
+
+    def test_different_arms_are_clean(self):
+        for s in ("if (g) { g = 1; } else { g = 2; }", "if (g) { g = 1; } else if (g) { g = 1; }",
+                  "if (g) { } else { }"):
+            self.assertNotIn("identical if/else arms", lint(s)[1], s)
+
+
 class KandR(unittest.TestCase):
     def test_definition_found(self):
         text = "void f(void);\nvoid f(a, b)\n    u8 *a;\n    s32 b;\n{\n    *a = b;\n}\n"

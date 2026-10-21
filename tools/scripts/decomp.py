@@ -2120,6 +2120,80 @@ def write_only_locals(body):
     return sorted(dead) if any(feeds.get(v) for v in dead) else []
 
 
+def overwritten_stores(body):
+    """Locals whose first store is overwritten before anything reads it: `v = expr;` (no call or
+    side effect) then, in the same block, `v = ...;` not reading v, and no jump between that can
+    leave the block (goto, or a break/continue outside a loop or switch nested between).
+    flow deletes the first, but its load can move a %hi's luid and so the schedule (2026-10-21:
+    Roo_FindNewSquare's `z = D_800C5BEC;`). The first use only, so a loop can't carry a read back."""
+    decls, found = [(d.start(), d.end()) for d in LOCAL_DECL.finditer(body)], []
+    names = {v.strip("* \t") for d in LOCAL_DECL.finditer(body) for v in d.group(1).split(",")}
+
+    def plain_store(pos, v):
+        if body[:pos].rstrip()[-1:] not in (";", "{", "}"):
+            return None
+        m = re.match(rf"{v}\s*=(?!=)([^;]*);", body[pos:])
+        return m if m and not re.search(r"\w\s*\(|\+\+|--|(?<![=!<>])=(?!=)|\b" + v + r"\b", m.group(1)) else None
+
+    for v in sorted(names):
+        if not v or re.search(rf"&\s*{v}\b", body):
+            continue
+        uses = [u.start() for u in re.finditer(rf"(?<![.>\w])\b{v}\b", body)
+                if not any(a <= u.start() < b for a, b in decls)]
+        if len(uses) < 2 or not (first := plain_store(uses[0], v)):
+            continue
+        between = body[uses[0] + first.end():uses[1]]
+        depth = 0
+        for ch in between:
+            depth += {"{": 1, "}": -1}.get(ch, 0)
+            if depth < 0:
+                break
+        second = re.match(rf"{v}\s*=(?!=)([^;]*);", body[uses[1]:])
+        if (depth != 0 or body[:uses[1]].rstrip()[-1:] not in (";", "}") or not second
+                or re.search(rf"\b{v}\b", second.group(1)) or re.search(r"\bgoto\b", between)):
+            continue
+        # a break/continue is local only inside a loop or switch that opens between the stores
+        local = [(o, c) for o, c, lp in blocks(between)
+                 if lp or re.search(r"\bswitch\s*\([^{]*\)\s*$", between[:o])]
+        if all(any(o < j.start() < c for o, c in local)
+               for j in re.finditer(r"\b(?:break|continue)\b", between)):
+            found.append(v)
+    return found
+
+
+def same_branches(body):
+    """True if an if/else has the same code in both arms (`if (v) {S} else {S}`): the duplicate
+    only adds refs to raise a pseudo's allocation priority, and jump2 cross-jumps the copies
+    (2026-10-21: PlotHelicopterTA)."""
+    def arm(pos):
+        pos = len(body) - len(body[pos:].lstrip())
+        if body.startswith("{", pos):
+            depth = 0
+            for i in range(pos, len(body)):
+                depth += {"{": 1, "}": -1}.get(body[i], 0)
+                if depth == 0:
+                    return body[pos + 1:i], i + 1
+            return None, len(body)
+        end = body.find(";", pos)
+        return (body[pos:end + 1], end + 1) if end >= 0 else (None, len(body))
+
+    norm = lambda s: re.sub(r"\s+", " ", s).strip()
+    for m in re.finditer(r"\bif\s*\(", body):
+        depth, i = 0, m.end() - 1
+        for i in range(m.end() - 1, len(body)):
+            depth += {"(": 1, ")": -1}.get(body[i], 0)
+            if depth == 0:
+                break
+        then, after = arm(i + 1)
+        rest = body[after:].lstrip()
+        if then is None or not rest.startswith("else") or re.match(r"else\s+if\b", rest):
+            continue
+        other, _ = arm(len(body) - len(rest) + 4)
+        if other is not None and norm(then) and norm(then) == norm(other):
+            return True
+    return False
+
+
 def lint_function(src, name):
     """(errors, hacks) found in NAME's definition in SRC."""
     return lint_body(extract_function(read(src), name) or "")
@@ -2134,8 +2208,10 @@ def lint_body(body):
     hacks = {why for rx, why in LINT_HACKS if rx.search(body)}
     if noop_steps(body):
         hacks.add("no-op ++/-- pair")
-    if dead_stores(body) or write_only_locals(body):
+    if dead_stores(body) or write_only_locals(body) or overwritten_stores(body):
         hacks.add("dead store")
+    if same_branches(body):
+        hacks.add("identical if/else arms")
     return errs, sorted(hacks)
 
 
