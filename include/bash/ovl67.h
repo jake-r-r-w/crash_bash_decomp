@@ -518,6 +518,8 @@ typedef struct Ovl67FuxF {
 
 void PlotN2Omissile(NAS *nas);
 
+void PlotN2Ofirstmissile(NAS *nas);
+
 void func_800B92D4(void);
 
 s32 func_800BA6C4(EXTengine *eng, Ovl67FuxF *self);

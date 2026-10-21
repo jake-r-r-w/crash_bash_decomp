@@ -1783,7 +1783,92 @@ alive:
     eng->unk5E = 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", PlotN2Ofirstmissile);
+void PlotN2Ofirstmissile(NAS *nas) {
+    EXTengine *eng;
+    subengine *sub;
+    EXTmotion *mot;
+    s32 x;
+    s32 y;
+    s32 z;
+    s32 vel;
+    s32 ang;
+    s32 hit;
+    SLONG_XYZ *pos;
+    HeroInfo *h;
+    s16 hp;
+
+    eng = nas->Engine;
+    if (eng == NULL) {
+        return;
+    }
+    sub = eng->sub;
+    if (sub == NULL) {
+        return;
+    }
+    mot = FindExtension(nas, 0x800);
+    if (mot == NULL) {
+        return;
+    }
+    if (nas->UserInfo.flags == 0) {
+        eng->unk10.y = D_800C42D0[nas->UserInfo.user1].src->y - 0x80;
+    } else {
+        sub->unk68 = 0;
+        mot->Xvel += mot->Xacc;
+        if (mot->Xvel > mot->Xmax) {
+            mot->Xvel = mot->Xmax;
+        }
+    }
+    vel = mot->Xvel;
+    if (vel < 0) {
+        vel = 0;
+    }
+    if (vel < 0x10) {
+        ang = (s16)D_800C42D0[nas->UserInfo.user1].f18;
+        nas->UserInfo.user2 = ang;
+        eng->unk1E = ang - 0x400;
+    }
+    if (vel > 0x20 && eng->boomshanka != 0) {
+        D_800C42D0[nas->UserInfo.user1].nas = NULL;
+        PlaySfx(D_800C39CC[Random(4)], &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+        eng->boomshanka = 0;
+    }
+    ang = nas->UserInfo.user2;
+    if (vel != 0) {
+        eng->unk10.x -= (vel * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+        eng->unk10.z -= (vel * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+        x = eng->unk10.x;
+        y = eng->unk10.y += mot->Yvel;
+        z = eng->unk10.z;
+        if (z >= -0x1100) {
+            hit = func_800BAC30(x, y, z, 0x20, 0xA);
+            if (hit == -1) {
+                goto alive;
+            }
+            pos = &eng->unk10;
+            func_8007A524(0, (s32 *)pos, 0);
+            PlaySfx(D_800C39D4[Random(4)], NULL, pos, 0x1000, 0x1E00, 0);
+            if (!(OVM->unk4 & 1)) {
+                if (!(Heroes[hit].hero_status & 0xFA00)) {
+                    h = &Heroes[hit];
+                    if (OVM->unk6C != 0) {
+                        hp = h->hero_health - 0x28;
+                    } else {
+                        hp = h->hero_health - 0x18;
+                    }
+                    h->hero_health = hp;
+                    if (hp < 0) {
+                        h->hero_health = 0;
+                    }
+                    h->hero_hit++;
+                }
+            }
+        }
+        KillNAS(nas);
+        return;
+    }
+alive:
+    eng->unk5E = 1;
+}
 
 void func_800B90F4(void) {
     s32 i;
