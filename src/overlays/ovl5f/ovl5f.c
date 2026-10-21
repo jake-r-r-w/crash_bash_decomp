@@ -369,7 +369,60 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B6354);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B6658);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B6C24);
+void func_800B6C24(s32 player) {
+    HeroInfo *hb;
+    HeroInfo *hero;
+    EXTengine *eng;
+    TA_player *ta;
+    NAS *nas;
+    s32 x;
+    s32 dz;
+
+    hb = Heroes;
+    hero = &hb[player];
+    eng = hero->hero_eng;
+    ta = &D_800CAD50[player];
+    func_800B71F8(player);
+    if (D_8005A648 != 5) {
+        x = eng->unk10.x;
+        dz = eng->unk10.z - eng->OldXYZ.z;
+        if (x != eng->OldXYZ.x || dz != 0) {
+            if (ta->HangaboutTime != 0) {
+                ta->HangaboutTime--;
+            }
+            func_800C8090(player, eng, D_800C94C8[player]);
+        } else {
+            if (!(hero->hero_status & 0xFA00)) {
+                ta->HangaboutTime++;
+            }
+            func_800C8090(player, eng, 0);
+        }
+        if (ta->TurretSFXDuration != 0) {
+            if (--ta->TurretSFXDuration == 0) {
+                func_800C8008(player, (s32)eng, 0);
+            } else {
+                func_800C8008(player, (s32)eng, D_800C94D8[player]);
+            }
+        }
+    } else {
+        if (((PadButtons *)D_80051338)[player].unk50 & 0x800) {
+            func_800C8090(player, eng, D_800C9408[player]);
+        } else {
+            func_800C8090(player, eng, 0);
+        }
+    }
+    if (((Ovl5fModeView *)D_8005A614)->mode == 8 && D_8005A614[player + 0x5C] == 0 &&
+        (((Ovl5fGameView *)D_8005A614)->flags & 0x80) && ta->HangaboutTime >= 30 && D_800CB0F0 == 0 &&
+        D_800CB0F8 <= 0 && (eng->unk10.z > 0x400 || (u32)(eng->unk10.x - 0x301) < 0xDFF)) {
+        nas = SpawnNASById(eng->unk10.x, -0x8FC, eng->unk10.z, 0x1308, 0x11);
+        if (nas != NULL) {
+            nas->UserInfo.status = 6;
+            D_800CB0F8 = 60;
+            nas->Engine->sub->unk74 = 0x202B;
+            ta->HangaboutTime = 0;
+        }
+    }
+}
 
 void func_800B6ED8(s32 player) {
     if (D_8005A614[player + 0x5C] != 0) {

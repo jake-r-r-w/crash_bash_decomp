@@ -61,7 +61,7 @@ extern u8 D_800C9E28[];
 extern u8 D_800C9E50[];
 void func_800B5228(void);
 void func_800B6658(void);
-void func_800B6C24(void);
+void func_800B6C24(s32 player);
 void func_800B5588(void);
 void func_800B58B0(void);
 void func_800B5FC4(void);
@@ -348,6 +348,11 @@ typedef struct Ovl5fGameView {
 } Ovl5fGameView;
 
 extern s32 D_800C94A8[];
+extern s32 D_800C94C8[]; /* func_800B6C24: hull sfx while moving, by player */
+extern s32 D_800C94D8[]; /* turret sfx, by player */
+extern s32 D_800C9408[]; /* hull sfx in mode 5, by player */
+extern s32 D_800CB0F8;    /* delay before the next hangabout spawn */
+void func_800B71F8(s32 player);
 
 void func_800BADB8(s32 arg0);
 typedef struct OvlClampPos {
