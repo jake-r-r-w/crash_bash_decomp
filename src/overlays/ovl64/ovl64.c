@@ -176,7 +176,112 @@ void func_800B3938(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B3A3C);
+void func_800B3A3C(void) {
+    Ovl64Obj *obj;
+    HeroInfo *h;
+    EXTengine *eng;
+    EXTengine *e;
+    NAS *n;
+    Ovl64Fux *f;
+    s32 i;
+    s32 x;
+    s32 z;
+    s32 d;
+    s32 a;
+
+    if (D_8005A644 & 0x801) {
+        D_800BC01C = 0;
+    }
+    a = D_800BC018 - D_800BC01C * 13;
+    if (a != 0) {
+        if (a < 0) {
+            D_800BC018++;
+        } else {
+            D_800BC018--;
+        }
+    }
+    a = D_800BC01A - D_800BC01C * 24;
+    if (a != 0) {
+        if (a < 0) {
+            D_800BC01A++;
+        } else {
+            D_800BC01A--;
+        }
+    }
+    D_800BC010 += D_800BC018;
+    D_800BC014 -= D_800BC01A;
+    obj = D_800BC020[0];
+    if (obj != NULL) {
+        obj->dirty = 1;
+        obj->ry = D_800BC010;
+    }
+    obj = D_800BC020[1];
+    if (obj != NULL) {
+        obj->dirty = 1;
+        obj->ry = D_800BC010;
+    }
+    for (i = 0; i < 10; i++) {
+        obj = D_800BBCB0[i].obj;
+        if (obj != NULL) {
+            if (D_800BBCB0[i].fixed[0] != 0) {
+                obj->rx = D_800BBCB0[i].fixed[0];
+            } else {
+                obj->rx = (u32)(D_800BC010 * D_800BBCB0[i].rate[0]) >> 4;
+            }
+            if (D_800BBCB0[i].fixed[1] != 0) {
+                obj->ry = D_800BBCB0[i].fixed[1];
+            } else {
+                obj->ry = (u32)(D_800BC010 * D_800BBCB0[i].rate[1]) >> 4;
+            }
+            if (D_800BBCB0[i].fixed[2] != 0) {
+                obj->rz = D_800BBCB0[i].fixed[2];
+            } else {
+                obj->rz = (u32)(D_800BC010 * D_800BBCB0[i].rate[2]) >> 4;
+            }
+            obj->dirty = 1;
+        }
+    }
+    for (i = 0; i < 4; i++) {
+        h = &Heroes[i];
+        if (h->hero_status & 0xFA00) continue;
+        eng = h->hero_eng;
+        if (eng->unk10.y < D_8005A5D8) continue;
+        if (h->hero_pu == 0x13) continue;
+        x = eng->unk10.x;
+        z = eng->unk10.z;
+        d = x * x + z * z;
+        if (d > 0x640000) continue;
+        if (d <= 0xC3FFF) continue;
+        d = (csqrt(d) + 0x20) >> 6;
+        a = get_angle(x, z) + D_800BC018;
+        a &= 0xFFF;
+        h->hero_eng->unk10.x = d * D_80068BD4[(a - 0x400) & 0xFFF].unk2 >> 12;
+        h->hero_eng->unk10.z = d * D_80068BD4[a].unk2 >> 12;
+        h->hero_move->forward_angle += D_800BC018;
+        h->hero_move->forward_angle &= 0xFFF;
+    }
+    for (n = D_8005AA24; n != NULL; n = n->Object.Child) {
+        f = (Ovl64Fux *)n->FUX;
+        if (f == NULL) continue;
+        e = n->Engine;
+        if (e == NULL) continue;
+        x = e->unk10.x;
+        z = e->unk10.z;
+        d = x * x + z * z;
+        if (d > 0x640000) continue;
+        if (e->unk10.y < D_8005A5D8) continue;
+        if (d <= 0xC3FFF) continue;
+        d = f->dist;
+        a = f->angle;
+        a += D_800BC018;
+        a &= 0xFFF;
+        f->angle = a;
+        e->unk10.x = d * D_80068BD4[(a - 0x400) & 0xFFF].unk2 >> 12;
+        e->unk10.z = d * D_80068BD4[a].unk2 >> 12;
+        e->unk1E = (e->unk1E + D_800BC018) & 0xFFF;
+        e->unk5E = 1;
+    }
+}
 
 s32 func_800B3EDC(void) {
     Ovl64Game *g;

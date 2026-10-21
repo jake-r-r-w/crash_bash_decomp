@@ -11,9 +11,14 @@
 
 /* A scene object in the list at D_80058AD0 + 0x1C (func_800B3938). */
 typedef struct Ovl64Obj {
-    /* 0x00 */ u8 pad0[0x51];
+    /* 0x00 */ u8 pad0[0x10];
+    /* 0x10 */ u16 rx;
+    /* 0x12 */ u16 ry;
+    /* 0x14 */ u16 rz;
+    /* 0x16 */ u8 pad16[0x51 - 0x16];
     /* 0x51 */ u8 unk51;
-    /* 0x52 */ u8 pad52[0x5C - 0x52];
+    /* 0x52 */ u16 dirty;
+    /* 0x54 */ u8 pad54[0x5C - 0x54];
     /* 0x5C */ struct Ovl64Obj *next;
     /* 0x60 */ u8 pad60[0x6C - 0x60];
     /* 0x6C */ u8 *model;
@@ -27,8 +32,9 @@ typedef struct Ovl64Scene {
 } Ovl64Scene;
 
 typedef struct Ovl64Slot {
-    Ovl64Obj *obj;
-    s32 pad[3];
+    /* 0x00 */ Ovl64Obj *obj;
+    /* 0x04 */ s16 fixed[3]; /* used as is when nonzero */
+    /* 0x0A */ s16 rate[3];  /* else D_800BC010 * rate >> 4 */
 } Ovl64Slot;
 
 typedef struct Ovl64Cell {
@@ -310,6 +316,8 @@ extern s32 D_800BBD68;
 extern EXTengine D_800BBD6C;
 extern _sfx_handler *D_800BBE00;
 extern s32 D_80053004;
+
+void func_800B3A3C(void);
 
 void func_800B697C(Ovl64Fux *arg0);
 
