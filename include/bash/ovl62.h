@@ -877,6 +877,8 @@ void func_800D0808(s32 player);
 
 void func_800D17E8(s32 player);
 
+void func_800D1DB4(s32 player);
+
 void func_800D2044(s32 player);
 
 void func_800D2248(s32 arg0);
