@@ -390,6 +390,8 @@ typedef struct {
 } CoalFlameEng;
 void func_800B5CD0(s32 arg0);
 
+void PlotBarrelGenerator(NAS *nas);
+
 void func_800B7B80(CoalFlameEng *eng, CoalFlameFux *fux, s32 id);
 
 void PlotPickupCH(NAS *nas);

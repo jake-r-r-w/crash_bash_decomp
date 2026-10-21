@@ -609,7 +609,74 @@ void func_800B722C(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotBarrelGenerator);
+static inline s32 BarrelNearHero(s32 x, s32 z, s32 r) {
+    s32 i;
+    s32 d;
+
+    for (i = 0; i < 4; i++) {
+        if (Heroes[i].hero_name == 9) {
+            continue;
+        }
+        if (Heroes[i].hero_status & 0xC000) {
+            continue;
+        }
+        d = x - Heroes[i].hero_eng->unk10.x;
+        if (d >= -r) {
+            if (d <= r) {
+                d = z - Heroes[i].hero_eng->unk10.z;
+                if (d > -r) {
+                    if (d < r) {
+                        return i;
+                    }
+                }
+            }
+        }
+    }
+    return -1;
+}
+
+void PlotBarrelGenerator(NAS *nas) {
+    s32 i;
+    s32 n;
+    s32 x;
+    s32 z;
+
+    if (D_800BC444 != 0) {
+        KillNAS(nas);
+        return;
+    }
+    if (nas->UserInfo.flags != 0) {
+        nas->UserInfo.flags--;
+        return;
+    }
+    n = 0;
+    for (i = 0; i < 8; i++) {
+        if (D_800BC424[i] != NULL) {
+            n++;
+        }
+    }
+    nas->UserInfo.flags = n * 5 + 1;
+    if (n >= 8) {
+        return;
+    }
+again:
+    do {
+        x = Random(8) - 4;
+        x <<= 9;
+        z = Random(8) - 4;
+        z <<= 9;
+        if ((csqrt(x * x + z * z) >> 6) > 0x800) {
+            goto again;
+        }
+    } while (BarrelNearHero(x, z, 0x200) >= 0);
+    for (i = 0; i < 8; i++) {
+        if (D_800BC424[i] != NULL && D_800BC424[i]->Engine->unk10.x == x &&
+            D_800BC424[i]->Engine->unk10.z == z) {
+            goto again;
+        }
+    }
+    SpawnNASById(x, 0, z, 0x1D01, 0x11);
+}
 
 void InitBarrelCH(NAS *nas) {
     EXTengine *eng;
