@@ -160,7 +160,82 @@ void func_800B3A9C(void) {
     p2->unk52 = 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B3CA8);
+void func_800B3CA8(void) {
+    subengine *s;
+    u8 *g;
+
+    func_800B3A9C();
+    func_800B39C8();
+    s = GetEngineSlot(0)->sub;
+    if (D_80051380 & 0x40) {
+        if (D_800B95F0 < 3) {
+            D_800B95F0++;
+            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        D_800B9624 = 0x5A;
+    }
+    if (D_80051380 & 0x10) {
+        if (D_800B95F0 > 0) {
+            D_800B95F0--;
+            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        D_800B9624 = 0x5A;
+    }
+    if (D_80051380 & 0x4000) {
+        g = D_8005A614;
+        ((u16 *)g)[0x19] &= 0xFF00;
+        switch (D_800B95F0) {
+        case 0:
+            g[0x27] = 2;
+            *(s32 *)(g + 0x6C) = 1;
+            *(s16 *)(g + 0x48) = 0;
+            *(s16 *)(g + 0x4A) = 2;
+            g[0x54] = 1;
+            g[0x55] = 0;
+            g[0x56] = 3;
+            g[0x57] = 2;
+            *(u16 *)(g + 0x32) |= 4;
+            func_800B5360(D_800B8EC0);
+            PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+            break;
+        case 1:
+            g[0x27] = 4;
+            *(s16 *)(g + 0x4A) = 2;
+            ((s8 *)g)[0x54] = -1;
+            ((s8 *)g)[0x55] = -1;
+            ((s8 *)g)[0x56] = -1;
+            ((s8 *)g)[0x57] = -1;
+            *(s32 *)(g + 0x6C) = 0;
+            *(s16 *)(g + 0x48) = 0;
+            *(u16 *)(g + 0x32) |= 1;
+            func_800B5360(D_800B8EA4);
+            PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+            break;
+        case 2:
+            g[0x27] = 4;
+            *(u16 *)(g + 0x32) |= 2;
+            func_800B5360(D_800B8ED4);
+            PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+            break;
+        case 3:
+            PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+            func_8001E838(&D_8009F8A4, (s32)D_800B9510);
+            break;
+        }
+    }
+    s[1].unk7C = 0;
+    s[2].unk7C = 0;
+    s[4].unk7C = 0;
+    s[3].unk7C = 0;
+    if (D_800B9624 != 0) {
+        s[5].flags |= 0x8000;
+        D_800B9624--;
+        s[5].unk6C = (void *)D_800B8508[D_800B95F0];
+    } else {
+        s[5].flags &= ~0x8000;
+    }
+    s[D_800B95F0 + 1].unk7C = 2;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B3F7C);
 

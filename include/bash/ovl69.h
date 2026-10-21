@@ -85,6 +85,14 @@ void func_800B6E0C(void);
 extern Ovl69Entry D_800BA324[];
 
 void func_800B39C8(void);
+void func_800B3A9C(void);
+void func_800B5360(s32 *arg0);
+
+extern s32 D_800B8508[];
+extern s32 D_800B8EA4[];
+extern s32 D_800B8EC0[];
+extern s32 D_800B8ED4[];
+extern u8 D_800B9510[];
 
 extern s32 D_800B8C84;
 extern u8 D_800B8E28[];
@@ -324,6 +332,8 @@ typedef struct {
 #define O69OV ((Ovl69OptView *)D_8005A614)
 extern s32 D_800B8E78[][3];
 extern s32 D_800B8E84[][2];
+
+void func_800B3CA8(void);
 
 void func_800B4464(void);
 
