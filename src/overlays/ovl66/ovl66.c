@@ -176,7 +176,91 @@ void InitBonkCrate(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", PlotBonkCrate);
+void PlotBonkCrate(NAS *nas) {
+    EXTengine *e = nas->Engine;
+    s32 x;
+    s32 z;
+    s32 s;
+    SLONG_XYZ *v;
+
+    if (e == NULL) {
+        return;
+    }
+    switch (nas->UserInfo.status) {
+    case 0:
+        e->unk10.y = D_8005A5D8 - 0x2000;
+        if (nas->UserInfo.user1 == 0) {
+            D_800B9EC8[nas->UserInfo.user2].c = D_800B93A0[D_800B9EEC];
+            nas->UserInfo.user1 = Random(0x5A) + 0x5A;
+        } else {
+            D_800B9EC8[nas->UserInfo.user2].c = 0;
+        }
+        e->flags &= 0xFFFF7FFF;
+        e->unk1E = Random(0x1000);
+        nas->UserInfo.status = 2;
+        break;
+    case 2:
+        if (!(D_8005A624 & 0x4000000)) {
+            if (nas->UserInfo.user1 > 0) {
+                nas->UserInfo.user1--;
+            } else {
+                goto spawn;
+            }
+        }
+        if (nas->UserInfo.user1 > 0) {
+            break;
+        }
+    spawn:
+        if (func_800B3D28(&x, &z) != 0) {
+            e->unk10.x = x;
+            e->unk10.z = z;
+            e->unk10.y = D_8005A5D8;
+            func_800B8F64(e);
+            nas->UserInfo.status = 10;
+            e->unk2C.z = 0;
+            e->unk2C.x = 0;
+            e->unk2C.y = 0;
+            e->unk5E = 1;
+            e->flags |= 0x8021;
+        }
+        break;
+    case 10:
+        e->unk2C.x += 0x100;
+        if (e->unk2C.y >= 0x1000) {
+            e->unk2C.x = 0x1000;
+            nas->UserInfo.status = 12;
+            e->flags &= ~0x21;
+        }
+        s = e->unk2C.x;
+        e->unk5E = 1;
+        e->unk2C.y = s;
+        e->unk2C.z = s;
+        break;
+    case 12:
+        if (D_800B9EC8[nas->UserInfo.user2].c > 0) {
+            D_800B9EC8[nas->UserInfo.user2].c--;
+        }
+        break;
+    case 5:
+        Ovl66_SpawnPuff((s32 *)&e->unk10, 0, D_80053C7C);
+        v = &e->unk10;
+        func_800B4910((VECTOR *)v, 0x380, -1, 0);
+        e->flags &= 0xFFFF7FFF;
+        nas->UserInfo.status = 6;
+        PlaySfx(D_800B9E20[Random(4)], NULL, v, 0x1000, 0x1E00, 0);
+        break;
+    case 4:
+        Ovl66_SpawnPuff((s32 *)&e->unk10, 2, D_80053C7C);
+        e->flags &= 0xFFFF7FFF;
+        nas->UserInfo.status = 6;
+        break;
+    case 6:
+        nas->UserInfo.user1 = 0;
+        e->unk10.y = D_8005A5D8 - 0x2000;
+        nas->UserInfo.status = 0;
+        break;
+    }
+}
 
 s32 func_800B4454(s32 arg0, s32 *arg1, s32 arg2) {
     Ovl66Entry *found;

@@ -45,6 +45,31 @@ void func_800B6AFC(void);
 extern s32 D_800B9EEC;
 typedef struct { s32 a, b, c; } Ovl66Ent;
 extern Ovl66Ent D_800B9EC8[];
+extern s32 D_800B93A0[];
+extern s32 D_800B9E20[];
+extern s32 D_8005A624;
+/* PlotBonkCrate's puff of smoke at pos (type 0x1605, flags 0x11). */
+static inline void Ovl66_SpawnPuff(s32 *pos, s32 mode, u8 *p) {
+    NAS *obj;
+    s32 *ext;
+
+    obj = SpawnNASById(pos[0], pos[1], pos[2], 0x1605, 0x11);
+    if (obj != NULL) {
+        ext = FindExtension(obj, 0x10000000);
+        if (ext != NULL) {
+            ext[3] = mode;
+            ext[6] = 0x100;
+            if (p != NULL) {
+                ext[8] = 5;
+                ((s32 *)obj->Engine->sub)[0x6C / 4] = (s32)p;
+            } else {
+                ext[8] = 1;
+            }
+            ext[10] = 0;
+            obj->InitDelete(obj);
+        }
+    }
+}
 extern s32 D_800B9F08;
 extern u16 D_800B9580[];
 extern ScriptInit D_800B9CE4;
@@ -184,6 +209,8 @@ extern u16 D_8009917C;
 
 extern u16 D_8009E080[][4];
 void func_80084E04(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx);
+
+void PlotBonkCrate(NAS *nas);
 
 s32 func_800B4454(s32 arg0, s32 *arg1, s32 arg2);
 
