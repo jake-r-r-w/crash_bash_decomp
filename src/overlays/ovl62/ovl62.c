@@ -1478,7 +1478,59 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitTransmuterBeam);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotTransmuterBeam);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotWeightDeath);
+void PlotWeightDeath(NAS *m) {
+    WeightDeathExt *ext;
+    HeroInfo *h;
+    HeroInfo *base;
+    HeroInfo *p;
+    HeroInfo *q;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    if (ext->unk24-- >= 0) {
+        return;
+    }
+    m->Engine->unk10.y += ext->unk10;
+    ext->unk10 += ext->unk14;
+    if (ext->unkC < m->Engine->unk10.y) {
+        m->Engine->unk10.y -= abs(m->Engine->unk10.y - ext->unkC);
+        if (++ext->unk18 < 5) {
+            ext->unk10 = -ext->unk10 >> 3;
+            if (ext->unk18 == 1) {
+                PlaySfx(0x455, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+        }
+    }
+    if (ext->unk20 > 0x3C) {
+        HeroInfo *b = Heroes;
+
+        q = &b[ext->unk1C];
+        if (!(q->hero_status & 0x200)) {
+            q->hero_status |= 0x2000;
+        }
+        m->Engine->sub->flags &= ~0x8000;
+    }
+    if (ext->unk20 > 0x78) {
+        base = Heroes;
+        p = &base[ext->unk1C];
+        if (!(p->hero_status & 0x200)) {
+            p->hero_status |= 0x2000;
+            base[ext->unk1C].hero_status |= 0x8000;
+        }
+    } else {
+        ext->unk20++;
+    }
+    if (ext->unk20 > 0xF) {
+        base = Heroes;
+        h = &base[ext->unk1C];
+        if (!(h->hero_status & 0x200)) {
+            h->hero_eng->flags &= ~0x8000;
+            base[ext->unk1C].hero_shadow->flags &= ~0x8000;
+        }
+    }
+}
 
 void func_800BFD38(NAS *nas, GravityMotion *m) {
     EXTengine *eng;

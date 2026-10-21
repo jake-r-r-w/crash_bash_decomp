@@ -712,7 +712,8 @@ s32 func_800B3740(s32 arg0);
 s32 func_800CB178(s32 self, s32 *dist);
 /* Weight death extension (0x28 bytes, id 0x10000000). */
 typedef struct WeightDeathExt {
-    /* 0x00 */ u8 pad0[0x10];
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ s32 unkC;
     /* 0x10 */ s32 unk10;
     /* 0x14 */ s32 unk14;
     /* 0x18 */ s32 unk18;
