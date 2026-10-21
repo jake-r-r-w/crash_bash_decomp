@@ -3996,7 +3996,85 @@ void func_800C57B0(NAS *nas, s32 id) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C5BCC);
+void func_800C5BCC(NAS *nas, s32 id) {
+    EXTengine *eng;
+    TA_player *ta;
+    s32 p;
+    s32 x;
+    s32 dz;
+    u16 mode;
+
+    p = 2;
+    if (id == 0x131E) {
+        p = 3;
+    }
+    eng = nas->Engine;
+    eng->flags = 0x8000;
+    ta = &D_800CAD50[p];
+    switch (Heroes[p].hero_mode) {
+    case 0x6C:
+        mode = Heroes[p].hero_mode;
+        Heroes[p].hero_mode = 0x6E;
+        Heroes[p].hero_last_mode = mode;
+        func_800C4B60(p);
+        break;
+    case 0x6E:
+        func_800C4DCC(p);
+        break;
+    case 0x69:
+        func_800C53B0(p);
+        break;
+    case 0x6A:
+        func_800C5620(p);
+        break;
+    case 0x6B:
+        func_80089BE8(p);
+        break;
+    }
+    if (eng->unk10.x > D_800CB100) {
+        eng->unk10.x = D_800CB100;
+    }
+    if (eng->unk10.x < 0x100) {
+        eng->unk10.x = 0x100;
+    }
+    if (eng->unk10.z > D_800CB104) {
+        eng->unk10.z = D_800CB104;
+    }
+    if (eng->unk10.z < 0x100) {
+        eng->unk10.z = 0x100;
+    }
+    func_800C4548(p);
+    if (D_8005A648 != 5) {
+        x = eng->unk10.x;
+        dz = eng->unk10.z - eng->OldXYZ.z;
+        if (x != eng->OldXYZ.x || dz != 0) {
+            if (ta->HangaboutTime != 0) {
+                ta->HangaboutTime--;
+            }
+            OVL5F_SET_HULL_SFX(p, eng, D_800C94C8[p]);
+        } else {
+            if (!(Heroes[p].hero_status & 0xFA00)) {
+                ta->HangaboutTime++;
+            }
+            OVL5F_SET_HULL_SFX(p, eng, 0);
+        }
+        if (ta->TurretSFXDuration != 0) {
+            if (--ta->TurretSFXDuration == 0) {
+                OVL5F_SET_TURRET_SFX(p, 0);
+            } else {
+                OVL5F_SET_TURRET_SFX(p, D_800C94D8[p]);
+            }
+        }
+    }
+    if (((PadButtons *)D_80051338)[p].unk50 & 0x4800) {
+        OVL5F_SET_HULL_SFX(p, eng, D_800C9408[p]);
+    } else {
+        OVL5F_SET_HULL_SFX(p, eng, 0);
+    }
+    if (Heroes[p].hero_immunity != 0) {
+        Heroes[p].hero_immunity--;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C60AC);
 

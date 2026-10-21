@@ -614,4 +614,40 @@ void func_800C4548(s32 player);
 
 void func_800C57B0(NAS *nas, s32 id);
 
+/* func_800C8090 (SetHullSFX) inlined by func_800C5BCC. */
+#define OVL5F_SET_HULL_SFX(player, pEngine, ReqdSFX)                        \
+    {                                                                       \
+        s32 sfx_ = (ReqdSFX);                                               \
+        TA_player *tb_ = D_800CAD50;                                        \
+        TA_player *ta_ = &tb_[player];                                      \
+        if (ta_->HullSFX != sfx_) {                                         \
+            ta_->HullSFX = sfx_;                                            \
+            if (sfx_ != 0) {                                                \
+                PlaySfx(sfx_, &(pEngine)->sfx, &(pEngine)->unk10, 0x1000,   \
+                        0x1E00, 0);                                         \
+            } else if ((pEngine)->sfx != NULL) {                            \
+                StopSfx((pEngine)->sfx);                                    \
+            }                                                               \
+        }                                                                   \
+    }
+
+/* func_800C8008 (SetTurretSFX) inlined by func_800C5BCC. */
+#define OVL5F_SET_TURRET_SFX(player, ReqdSFX)                               \
+    {                                                                       \
+        s32 sfx_ = (ReqdSFX);                                               \
+        TA_player *tb_ = D_800CAD50;                                        \
+        TA_player *ta_ = &tb_[player];                                      \
+        if (ta_->TurretSFX != sfx_) {                                       \
+            ta_->TurretSFX = sfx_;                                          \
+            if (sfx_ == 0) {                                                \
+                StopSfx(ta_->TurretSFXHandler);                             \
+            } else {                                                        \
+                PlaySfx(sfx_, &D_800CAD50[player].TurretSFXHandler, NULL,   \
+                        0x1000, 0x1E00, 0);                                 \
+            }                                                               \
+        }                                                                   \
+    }
+
+void func_800C5BCC(NAS *nas, s32 id);
+
 #endif /* BASH_OVL5F_H */
