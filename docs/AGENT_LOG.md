@@ -517,6 +517,16 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-21 (hand: MATCHING.md cleanup, three swarm parks):** merged
+  21 duplicate Diff patterns rows from the last two folds (e8ba0e20).
+  `func_800B4240` was already matched by the retry run. From the swarm's
+  checkpoints: `func_800B3CA8` (ovl69, e33213ca) matched with its +0x32
+  store as an array element (in-struct, so sched moves it past the scalar
+  load into the delay slot); `func_800B9E74` (ovl5e, cecd6837) with
+  `lo *= lo; if (dx * dx + dz * dz < lo)` (it also drops the checkpoint's
+  `(dx = dz * dz)` trick); `func_800BFEE0` (ovl62) parked by hand at
+  183/187 with C under NON_MATCHING (`decomp.py block` note has the tries).
+
 - **2026-10-21 (swarm all overlays, retry in big mode):** run
   20261021072703, `--seg overlays/ --retry-failed --big-bytes 1 --model opus
   --workers 1 --big-workers 6 --big-budget-usd 20 --max-run-usd 250`

@@ -17,11 +17,17 @@
    "note": "STAGE instructions 2/197 (C under NON_MATCHING). Only diff: addiu a1,s4,0x3C must precede lw a0,0x6C(s4) before jal func_8001CD04. sched1 ties them (priority 1, class 3); the target's order needs schedule_select's potential_hazard, i.e. a 2nd load/store in sched1's block [label after the unk5E if .. func_80015758 call] (cc1 -dS on a variant with one: 'insn 98 has a greater potential hazard'). Every matched a1-first caller (func_800BAAA8, func_800B61A0, func_800B64AC...) has one; every a0-first one (ArkHeroRad2ObjectAttract...) has none. The final block has none, so the original's was deleted after sched1. Ruled out 2026-10-20: cross-jumped duplicate tails (only the D_8005AA2C lui can merge: the join recomputes Heroes[idx], duplicating it lets cse share the address); local-alloc reg_equiv_replace / reload equiv-init deletion (need a load set only in the then-arm and used after the join, or const memory); reload_cse (needs a redundant load cse missed); an unfolded a1 precompute (sched1 gives the single-set temp birthing priority, a0 still first). Arg locals, inline helpers, volatile, pin, do-while(0), 47k permuter iterations also fail. Same code: func_800C284C (ovl5d), func_800BAF1C (ovl64). Also ruled out (third pass): single -f flag changes on -O2 (20 tried, none flips it), 810 inserted \"local = field;\" reads at 6 points, and prototypes (absent from Aug 23 and Sep 14; Oct 9 is byte-identical to retail). Next: only a new mechanism; scripts scratch/bc274/{score.sh,gen.py,try.sh}",
    "seg": "overlays/ovl5e/800b87a0",
    "size": 788
+  },
+  {
+   "name": "func_800BFEE0",
+   "note": "regions 19/22, 183/187 exact (C under NON_MATCHING): early-out written as goto zero / return 1 per branch. Only the t0<0 && t1<0 test differs: target bltz to the epilogue with v0=0 in its delay slot and slt t0<t1 recomputed after, ours keeps the bgez-delay slt live (nop in the slot). Next: -dS/-dR for why sched leaves the slt before the bltz; tried ret var, early returns, nested tests (as func_800B4268), goto into the disc<0 return",
+   "seg": "overlays/ovl62/ovl62",
+   "size": 744
   }
  ],
- "commit": "e33213ca",
+ "commit": "cecd6837",
  "game": "SCUS_945.70",
- "generated": "2026-10-21T10:23:40Z",
+ "generated": "2026-10-21T10:27:58Z",
  "hacks": [
   {
    "commit": "f69a346bb",
@@ -164858,7 +164864,7 @@
    }
   },
   {
-   "commit": "e33213ca",
+   "commit": "cecd6837",
    "data_b": 5548,
    "data_tb": 606943,
    "game_all_f": 2537,
@@ -164871,7 +164877,7 @@
    "lib_b": 122112,
    "lib_f": 564,
    "lib_tb": 122112,
-   "ts": "2026-10-21T10:23:40Z",
+   "ts": "2026-10-21T10:27:58Z",
    "units": {
     "engine": [
      121412,
@@ -165067,7 +165073,7 @@
   }
  ],
  "summary": {
-  "blocked": 3,
+  "blocked": 4,
   "copies_b": 9976,
   "data": {
    "done_b": 5548,
@@ -165078,7 +165084,7 @@
    "all_f": 2537,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 3,
+   "blocked": 4,
    "c_f": 2334,
    "done_b": 671724,
    "done_f": 2334,
@@ -165256,7 +165262,7 @@
     "all_f": 216,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 0,
+    "blocked": 1,
     "c_f": 176,
     "done_b": 46672,
     "done_f": 176,
