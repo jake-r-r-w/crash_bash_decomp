@@ -1641,7 +1641,97 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotTankBossCortexTurret);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C3D48);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotTankBossRocketTurret);
+void PlotTankBossRocketTurret(NAS *nas) {
+    EXTengine *eng;
+    s32 t;
+
+    eng = nas->Engine;
+    eng->unk10.y = D_800CB20C->unk10.y - 0x4BF;
+    if (D_800CB210 < 0x36) {
+        return;
+    }
+    if (D_800CB210 >= 0x38) {
+        return;
+    }
+    ((void (*)(char *, s32))func_8008AD9C)("RocketTurret", nas->UserInfo.status);
+    if (nas->UserInfo.flags == 2) {
+        return;
+    }
+    switch (nas->UserInfo.status) {
+    case 17:
+        if (D_800CB210 == 0x36) {
+            eng->flags = 0x8000;
+            eng->unk5E = 1;
+            eng->unk10.z -= 10;
+            eng->unk10.y -= 3;
+            nas->UserInfo.user2 = 30;
+        } else if (D_800CB210 == 0x37) {
+            if (--nas->UserInfo.user2 <= 0) {
+                nas->UserInfo.flags = 0;
+                nas->UserInfo.status = 19;
+                nas->UserInfo.user2 = 0;
+            }
+        }
+        break;
+    case 19:
+        t = ++nas->UserInfo.user2 & 0x3F;
+        if (eng->unk10.x > 0x900) {
+            if (t < 0x20) {
+                eng->unk1E += 30;
+            } else {
+                eng->unk1E -= 30;
+            }
+        } else if (t >= 0x20) {
+            eng->unk1E += 30;
+        } else {
+            eng->unk1E -= 30;
+        }
+        eng->unk5E = 1;
+        if (nas->UserInfo.user2 > 30 && func_800C2940(eng) >= 0) {
+            nas->UserInfo.status = 10;
+            nas->UserInfo.user2 = D_800CB248;
+        }
+        break;
+    case 10:
+        if (--nas->UserInfo.user2 == D_800CB248 / 2) {
+            if (nas->UserInfo.flags != 0) {
+                eng->sub->unk74 = 0x2022;
+            } else {
+                eng->sub->unk74 = 0x2021;
+            }
+        }
+        if (nas->UserInfo.user2 <= 0) {
+            func_800C3D48(nas, eng);
+            nas->UserInfo.status = 13;
+            nas->UserInfo.user2 = 30;
+        }
+        break;
+    case 13:
+        if (--nas->UserInfo.user2 <= 0) {
+            nas->UserInfo.status = 18;
+        }
+        break;
+    case 18:
+        eng->unk5E = 1;
+        if (eng->unk10.x > 0x900) {
+            if (eng->unk1E < 0xFCF) {
+                eng->unk1E = (eng->unk1E - 20) & 0xFFF;
+                break;
+            }
+        } else if (eng->unk1E < 0) {
+            eng->unk1E = (eng->unk1E + 20) & 0xFFF;
+            break;
+        }
+        eng->unk1E = 0;
+        nas->UserInfo.status = 19;
+        nas->UserInfo.user2 = 0;
+        break;
+    case 0:
+        nas->UserInfo.status = 18;
+        nas->UserInfo.user2--;
+        break;
+    }
+}
 
 void func_800C4320(NAS *nas, s32 id) {
     EXTengine *eng;
