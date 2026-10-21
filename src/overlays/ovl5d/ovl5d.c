@@ -1287,7 +1287,75 @@ void InitBashHomer(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", PlotBashHomer);
+void PlotBashHomer(NAS *nas) {
+    EXTengine *eng;
+    EXTengine *he;
+    EXTmotion *mot;
+    s32 dead;
+    s32 ang;
+    s32 d;
+    s32 dx, dz;
+    s32 x, y, z;
+    s16 target;
+
+    eng = nas->Engine;
+    dead = 1;
+    if (eng != NULL) {
+        mot = FindExtension(nas, 0x800);
+        if (mot != NULL) {
+            mot->Xvel += mot->Xacc;
+            dead = 0;
+            if (mot->Xvel > mot->Xmax) {
+                mot->Xvel = mot->Xmax;
+            }
+            ang = nas->UserInfo.user2;
+            target = nas->UserInfo.status;
+            if (target != -1) {
+                d = func_800154A0(get_angle(eng->unk10.x - Heroes[target].hero_eng->unk10.x,
+                                            eng->unk10.z - Heroes[target].hero_eng->unk10.z), ang);
+                if (abs(d) < 0x40) {
+                    if (d < 0) {
+                        ang += 0x40;
+                    } else {
+                        ang -= 0x40;
+                    }
+                } else {
+                    ang -= d >> 3;
+                }
+                nas->UserInfo.user2 = ang;
+                he = Heroes[target].hero_eng;
+                dx = eng->unk10.x - he->unk10.x;
+                dz = eng->unk10.z - he->unk10.z;
+                if (dx * dx + dz * dz < 0x40000) {
+                    eng->unk10.y -= (eng->unk10.y - (he->unk10.y - 0xA0)) >> 2;
+                }
+            }
+            eng->unk10.x -= (mot->Xvel * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+            eng->unk10.z -= (mot->Xvel * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+            x = eng->unk10.x;
+            y = eng->unk10.y;
+            z = eng->unk10.z;
+            if (y >= D_8005A5D8 || nas->UserInfo.flags == 0) {
+                func_800BA8A4(x, D_8005A5D8, z, nas->UserInfo.user1, 0x1B);
+                dead = 1;
+            }
+            if (func_800B97A8(x, y, z, 0x80, nas->UserInfo.user1, 0xA) != -1) {
+                func_800BA8A4(x, y, z, nas->UserInfo.user1, 0x1B);
+                dead = 1;
+            }
+            nas->UserInfo.flags--;
+            if ((u32)(eng->unk10.x + 0x1000) > 0x2000) {
+                dead = 1;
+            }
+            if ((u32)(eng->unk10.z + 0x1000) > 0x2000) {
+                dead = 1;
+            }
+        }
+        if (dead) {
+            KillNAS(nas);
+        }
+    }
+}
 
 extern u16 D_8009D754;
 

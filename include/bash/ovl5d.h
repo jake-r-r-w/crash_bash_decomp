@@ -297,6 +297,8 @@ void InitTumbler(NAS *nas);
 
 void PlotTumbler(NAS *nas);
 
+void PlotBashHomer(NAS *nas);
+
 void PlotBashShox(NAS *nas);
 
 #endif /* BASH_OVL5D_H */
