@@ -141,6 +141,10 @@ and current tools).
     reads; the function is absent from the Aug/Sep prototypes and identical
     in Oct 9. The same code is unmatched in `func_800C284C`
     (ovl5d) and `func_800BAF1C` (ovl64): solve the three together.
+    A fourth pass (2026-10-21, no hacks or permuter) worked every
+    sched1 tie-break through from `sched.c`: each needs the target's
+    block to hold an instruction its final code lacks, and no natural
+    pass after sched1 deletes one (the block note lists them).
     Untried mechanism from `func_800BB3F0` (same file, same
     `func_8001CD04` block shape, a1 first there): duplicated code wrapped
     in `do { } while (0)` lives until jump2's cross-jump (after sched1 and
@@ -510,6 +514,15 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-21 (hand: `func_800BC274`, still parked):** a fourth pass
+  with no hacks or permuter. Worked sched1's tie-breaks from sched.c:
+  potential hazard, priority (counted from the block start: the call
+  data-depends on a0, but the load only outranks `addiu a1` with an
+  in-block predecessor), class and luid all need an instruction in the
+  target's sched1 block that its final code lacks, and REG_EQUIV,
+  reload_cse, ADDRESSOF and cross-jumping can't remove one from natural
+  C. Block note updated; the next try needs a new block boundary.
 
 - **2026-10-21 (hand: `func_800B7134` without its hack):** df4e1881 replaces
   the dead-store match (tb/trig/seq NULLed at the outer loop's bottom).
