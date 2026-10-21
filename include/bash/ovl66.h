@@ -9,9 +9,18 @@
 #include "bash/nas.h"
 
 typedef struct Ovl66Pad {
-    /* 0x00 */ u8 pad0[0x5C];
-    /* 0x5C */ s16 mode;
+    /* 0x00 */ u8 pad0[0x54];
+    /* 0x54 */ EXTengine *eng;
+    /* 0x58 */ u8 pad58[4];
+    /* 0x5C */ u16 mode;
 } Ovl66Pad;
+
+typedef struct Ovl66Tgt2 {
+    /* 0x0 */ s32 kind;
+    /* 0x4 */ Ovl66Pad *obj;
+} Ovl66Tgt2;
+
+extern s32 D_800B9E30[];
 
 typedef struct Ovl66Obj {
     /* 0x00 */ u8 pad0[4];

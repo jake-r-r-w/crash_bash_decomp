@@ -125,7 +125,38 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", PlotBonkCrate);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B4454);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B47C8);
+void func_800B47C8(s32 arg0, s32 arg1, Ovl66Tgt2 *t) {
+    Ovl66Pad *p;
+    EXTengine *e;
+    s32 big;
+
+    p = t->obj;
+    if (p != NULL) {
+        e = p->eng;
+        big = 0;
+        if (e != NULL) {
+            big = ((subengine *)e->sub)->unk74 == 0x2015;
+        }
+        if (arg0 >= 0) {
+            switch (p->mode) {
+            case 0xE:
+                func_800B6B04(arg0, e, big ? 0x14 : 5);
+                break;
+            case 0xD:
+                func_800B6B04(arg0, e, big ? 0xF : 3);
+                break;
+            default:
+                func_800B6B04(arg0, e, big ? 0xA : 2);
+                break;
+            }
+            PlaySfx(D_800B9E30[arg0], NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            if (big) {
+                PlaySfx(0x72B, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            }
+        }
+        p->mode = 4;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", func_800B4910);
 
