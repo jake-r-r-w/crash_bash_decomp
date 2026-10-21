@@ -652,7 +652,49 @@ void PlotLaserBitTA(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotFlamerBitTA);
+void PlotFlamerBitTA(NAS *nas) {
+    EXTengine *eng;
+    LaserBitFux *fux;
+    s32 i;
+
+    fux = (LaserBitFux *)nas->FUX;
+    eng = nas->Engine;
+    eng->unk5E = 1;
+    eng->unk20 += 0x96;
+    if (!(D_8004E0D8 & 7)) {
+        Ovl5fSpawnBit1605(&eng->unk10, 2);
+    }
+    if (func_800BAFFC(nas, 0x14, 0x1306, 0xC) != 0) {
+        if (eng->sfx != NULL) {
+            StopSfx(eng->sfx);
+        }
+        PlaySfx(0x4E4, NULL, NULL, 0x1000, 0x1E00, 0);
+        for (i = 0; i < 3; i++) {
+            if (D_800CAD50[fux->player].MainWeaponNas[i] == nas) {
+                D_800CAD50[fux->player].MainWeaponNas[i] = NULL;
+                break;
+            }
+        }
+        KillNAS(nas);
+        return;
+    }
+    if (D_800CB0FC != 0) {
+        switch ((u32)Random(3)) {
+        case 0:
+            PlaySfx(0x4E1, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+            break;
+        case 1:
+            PlaySfx(0x4E2, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+            break;
+        case 2:
+            PlaySfx(0x4E3, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+            break;
+        }
+    }
+    if (fux->unk30 == 1) {
+        fux->unk30 = 0;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotFlubberTA);
 

@@ -460,6 +460,29 @@ static inline s32 Ovl5fNear(s32 a, s32 b) {
     d = a - b;
     return d >= -999 && d <= 999;
 }
+static inline void Ovl5fSpawnBit1605(SLONG_XYZ *pos, s32 kind) {
+    u8 *p;
+    NAS *nas;
+    Ovl5fExt1605 *ext;
+
+    p = D_8005365C;
+    nas = SpawnNASById(pos->x, pos->y, pos->z, 0x1605, 0x11);
+    if (nas != NULL) {
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL) {
+            ext->unkC = kind;
+            ext->unk18 = 0x100;
+            if (p != NULL) {
+                ext->unk20 = 5;
+                nas->Engine->sub->unk6C = p;
+            } else {
+                ext->unk20 = 1;
+            }
+            ext->unk28 = 0;
+            nas->InitDelete(nas);
+        }
+    }
+}
 void func_800B4240(s32 player, s32 x, s32 z, EXTengine *eng, Ovl5fAITarget *ai);
 s32 func_800B4490(s32 player, EXTengine *eng, Ovl5fAITarget *ai);
 
