@@ -7,7 +7,44 @@
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800BFF1C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C013C);
+void func_800C013C(s32 arg0) {
+    VECTOR pos;
+    HeroInfo *h;
+    subengine *s;
+    HeroInfo *b;
+    s16 t;
+
+    func_8008502C();
+    b = Heroes;
+    h = &b[arg0];
+    s = h->hero_fx->sub;
+    if (s != NULL && func_80015780(h->hero_eng, h->hero_sub, 0x40, &pos) != NULL) {
+        h->hero_fx->unk10 = h->hero_eng->unk10;
+        t = h->hero_weapon_timer;
+        if (t >= 0) {
+            if (D_800C4790[t * 3] == 0) {
+                goto clear;
+            }
+            s->unk20.x = D_800C4790[t * 3];
+            s->unk20.y = D_800C4790[t * 3 + 1];
+            s->unk20.x = D_800C4790[t * 3 + 2];
+            s->unk04 = pos.vx - h->hero_eng->unk10.x;
+            s->unk08 = pos.vy - h->hero_eng->unk10.y;
+            s->unk0C = pos.vz - h->hero_eng->unk10.z;
+            s->flags |= 0x8000;
+            s->unk52 = 1;
+            h->hero_weapon_timer++;
+        } else {
+            h->hero_weapon_timer++;
+        }
+        goto done;
+clear:
+        s->flags &= ~0x8000;
+    }
+done:
+    func_800871E4(arg0);
+    D_8009D73C(arg0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C02D4);
 

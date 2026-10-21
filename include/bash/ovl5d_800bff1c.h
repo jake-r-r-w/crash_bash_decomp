@@ -44,4 +44,9 @@ void func_800C2F60(s32 arg0);
 
 s32 func_800C2FB0(s32 arg0);
 
+extern u8 D_800C4790[];
+s32 func_8008502C();
+
+void func_800C013C(s32 arg0);
+
 #endif /* BASH_OVL5D_800BFF1C_H */
