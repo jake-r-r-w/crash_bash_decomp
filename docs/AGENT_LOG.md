@@ -21,8 +21,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
   **main.exe, ovl61 and ovl6a are complete**; 114 left: ovl62 26, ovl5f 18,
   ovl63 17, ovl67 9, ovl65 8, ovl5d 7, ovl60 7, ovl64 7, ovl68 5, ovl66 3,
   ovl69 3, engine 2, ovl5e 2. All 564 PsyQ functions (Sony objects). 4
-  parked by hand (`decomp.py status`), 11 matched with a hack (`decomp.py
-  hacks`; the lint flags dead stores and identical if/else arms since
+  parked by hand (`decomp.py status`), 10 matched with a hack (`decomp.py
+  hacks`; `func_800193A8`'s register pins reviewed as plausibly
+  original; the lint flags dead stores and identical if/else arms since
   2026-10-21). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
@@ -54,7 +55,7 @@ big-mode retry (`--seg overlays/ --retry-failed --big-bytes 1 --workers 1
 --big-workers 6`) still matched 85 in 3 h, at $2.70 a match (the first:
 $1.90). Next: `swarm.mjs permute --near --minutes 60` on the checkpoints at
 the registers stage (CPU only), then one more big-mode retry if it still
-pays; rework the 11 hacks by hand between runs. After each run, the
+pays; rework the 10 hacks by hand between runs. After each run, the
 "After a run" checklist in tools/swarm/README.md (`stats --run ID`, parks,
 gate failures, `fold`, this log).
 
@@ -79,7 +80,7 @@ rest are fixed by hand from the worker's patch (Gotchas). A park whose
 `jtbl_` names functions is a bad split (Gotchas).
 
 Hand work, between runs:
-1. The parks: `func_8007F314` and `PlotScriptFX` (engine), `func_800BC274` (ovl5e), and the 11 hack matches (`decomp.py hacks`; Open leads for `func_800B345C` and four tried 2026-10-21).
+1. The parks: `func_8007F314` and `PlotScriptFX` (engine), `func_800BC274` (ovl5e), and the 10 hack matches (`decomp.py hacks`; Open leads for `func_800B345C` and four tried 2026-10-21).
 2. Name each function as it's matched when the evidence allows.
 3. Split `main.c` into its translation units: on hold since 2026-10-15. Its
    one proven boundary (jump-table parity, 95..370) has three possible
@@ -527,6 +528,8 @@ Newest first, a few lines each. Details are in the commits.
   Permuter on the one near miss (`func_800BE914`, registers 26/170) 38 min:
   no gain. Dashboard: swarm parks are looked up by unit and name (slot
   overlays share names); Parked reads 9 with swarm.js (4 hand, 5 swarm).
+  `hacks --accept NAME --why` records a hack reviewed as plausibly original
+  (state `hack_ok`): off the count, still listed; `func_800193A8` first. 10 left.
 
 - **2026-10-21 (hand: `func_800B4444` without its hack):** 40ba6e7d. The
   target steps a pointer it never reads, so the original read `*p` and
