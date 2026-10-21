@@ -15,6 +15,13 @@ typedef struct Ovl5fModeView {
 
 extern s32 D_800CB210;
 extern NAS *D_800CB224[3];
+
+typedef struct TotemFux {
+    /* 0x00 */ u8 pad0[0x28];
+    /* 0x28 */ s32 timer;
+    /* 0x2C */ u8 pad2C[4];
+    /* 0x30 */ u32 state;
+} TotemFux;
 extern NAS *D_800CB230[4];
 extern NAS *D_800CB240[2];
 extern u32 D_800CA48C[];

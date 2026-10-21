@@ -2260,7 +2260,109 @@ void PlotPillar(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotTotemPole);
+static inline s32 TotemFindHero(s32 x, s32 z, s32 r) {
+    s32 i;
+    s32 d;
+    u16 name;
+    EXTengine *e;
+
+    for (i = 0; i < 4; i++) {
+        name = Heroes[i].hero_name;
+        if (name == 9 &&
+            (((Ovl5fModeView *)D_8005A614)->mode != name || D_800CB210 != 0 ||
+             (u32)(i - 2) >= 2)) {
+            continue;
+        }
+        if (Heroes[i].hero_status & 0xC000) {
+            continue;
+        }
+        e = Heroes[i].hero_eng;
+        d = x - e->unk10.x;
+        if (d < -r) {
+            continue;
+        }
+        if (r < d) {
+            continue;
+        }
+        d = z - e->unk10.z;
+        if (-r < d && d < r) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+void PlotTotemPole(NAS *nas) {
+    TotemFux *fux;
+    EXTengine *eng;
+    EXTengine *e;
+    s32 i;
+
+    fux = (TotemFux *)nas->FUX;
+    eng = nas->Engine;
+    switch (fux->state) {
+    case 1:
+        if (--fux->timer > 0) {
+            return;
+        }
+        if (((Ovl5fGameView *)D_8005A614)->flags & 0x80) {
+            fux->state = 0x24;
+            PlaySfx(0x502, &eng->sfx, NULL, 0x1000, 0x1E00, 0);
+            nas->UserInfo.user2 = 0x1E;
+            return;
+        }
+        if (TotemFindHero(0x590, 0x400, 0x200) < 0) {
+            fux->timer = 0x12C;
+            fux->state = 0x11;
+            return;
+        }
+        fux->timer++;
+        return;
+    case 0x11:
+        if (--fux->timer > 0) {
+            return;
+        }
+        if (TotemFindHero(0xA40, 0x440, 0x200) >= 0) {
+            fux->timer++;
+            return;
+        }
+        fux->state = 0;
+        return;
+    case 0:
+    case 2:
+    default:
+        return;
+    case 0x24:
+        if (nas->UserInfo.user2 > 0) {
+            nas->UserInfo.user2--;
+            return;
+        }
+        eng->unk5E = 1;
+        eng->unk1E += 0x22;
+        for (i = 0; i < 4; i++) {
+            if (Heroes[i].hero_name == 9) {
+                continue;
+            }
+            if (Heroes[i].hero_status & 0xFA00) {
+                continue;
+            }
+            if (D_8005A614[i + 0x5C] != 0) {
+                continue;
+            }
+            e = Heroes[i].hero_eng;
+            if ((u32)(((eng->unk1E - get_angle(eng->unk10.x - e->unk10.x, eng->unk10.z - e->unk10.z)) & 0xFFF) - 0x15) < 0xFD7) {
+                continue;
+            }
+            fux->state = 0xD;
+            fux->timer = 0;
+            if (eng->sfx != NULL) {
+                StopSfx(eng->sfx);
+            }
+            PlaySfx(0x503, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        return;
+    }
+}
 
 void func_800C0C68(NAS *nas, s32 id) {
     TotemExt *ext;
