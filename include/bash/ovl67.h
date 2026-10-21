@@ -38,6 +38,7 @@ extern s32 D_800C4050[][3];
 void func_800C3440(void);
 extern u16 D_800C438A;
 extern s16 D_800C4184[];
+extern u16 D_800C39EC[][5];
 extern s32 (*D_8009D750)(EXTengine *);
 
 /* PadState (D_80051338) as func_800B447C reads it: the buttons at 0x50. */

@@ -536,7 +536,36 @@ void func_800B46DC(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", func_800B4954);
+void func_800B4954(arg0)
+s32 arg0;
+{
+    u16 *p;
+    u16 *b;
+    u16 t;
+    s32 v;
+
+    v = D_800C4184[arg0];
+    do {
+        do {
+            if (v >= 0) {
+                goto pos;
+            }
+        } while (0);
+    } while (0);
+    t = D_800C39EC[Heroes[arg0].hero_name][2];
+    goto done;
+pos:
+    t = D_800C39EC[Heroes[arg0].hero_name][3];
+done:
+    b = (u16 *)D_800C417C;
+    p = b + arg0;
+    if ((u32)(abs(*p - D_800C39EC[Heroes[arg0].hero_name][2]) - 2) >= 0x19U) {
+        *p = t;
+    }
+    if ((u32)(abs(*p - D_800C39EC[Heroes[arg0].hero_name][3]) - 2) >= 0x19U) {
+        *p = t;
+    }
+}
 
 s32 func_800B4AD8(arg0)
 s32 arg0;
