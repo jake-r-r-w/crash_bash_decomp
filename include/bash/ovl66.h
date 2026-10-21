@@ -108,6 +108,9 @@ extern s32 D_800B9EF8;
 extern s32 D_800B9EFC;
 extern s32 D_800B9F00;
 extern s32 D_800B9F04;
+extern s32 D_800B9300[];
+extern s32 D_800B95C4[];
+extern s32 D_800B95E0[];
 
 int func_800B61B0(int a0, int *out);
 /* D_8009D6E8 (EngineHooks in bash/engine.h, which this unit does not include). */
@@ -244,5 +247,7 @@ static inline s32 ovl66_sq(s32 x0, s32 z0, s32 x1, s32 z1)
 
     return dx * dx + dz * dz;
 }
+
+void PlotBonkStool(NAS *nas);
 
 #endif /* BASH_OVL66_H */

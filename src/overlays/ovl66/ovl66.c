@@ -78,7 +78,131 @@ void func_800B34F8(void) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl66/ovl66", D_800B32B8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl66/ovl66", PlotBonkStool);
+void PlotBonkStool(NAS *nas) {
+    EXTengine *e = nas->Engine;
+    s32 x;
+    s32 z;
+    SLONG_XYZ pos;
+    SLONG_XYZ *v;
+    s32 *p;
+    s32 *q;
+
+    if (e == NULL) {
+        return;
+    }
+    switch (nas->UserInfo.status) {
+    case 0:
+        if (func_800B3D28(&x, &z) != 0) {
+            D_800B9E50[nas->UserInfo.user2].unk8 = 1000;
+            e->unk10.x = x;
+            e->unk10.z = z;
+            e->unk10.y = D_8005A5D8 - 0x2000;
+            func_800B8F64(e);
+            nas->UserInfo.status = 2;
+            if (nas->UserInfo.user1 == 0) {
+                D_800B9E50[nas->UserInfo.user2].unk8 = D_800B9300[D_800B9EEC];
+                nas->UserInfo.user1 = Random(0x14) + 10;
+            } else {
+                D_800B9E50[nas->UserInfo.user2].unk8 = 0;
+            }
+            e->flags &= 0xFFFF7FFF;
+            if (D_800B9F00 == 0) {
+                e->sub->unk74 = 0x2015;
+                p = &D_800B9E0C;
+                D_800B9F00 = p[++D_800B9F04];
+            } else {
+                e->sub->unk74 = 0x2002;
+            }
+        }
+        break;
+    case 2:
+        if (!(D_8005A624 & 0x4000000)) {
+            nas->UserInfo.user1--;
+        }
+        if (nas->UserInfo.user1 <= 0) {
+            nas->UserInfo.status = 10;
+            e->unk5E = 1;
+            e->unk2C.y = 0;
+            e->flags |= 0x8000;
+            e->unk10.y = D_8005A5D8;
+            if (e->sub->unk74 == 0x2015) {
+                PlaySfx(0x72A, NULL, &e->unk10, 0x1000, 0x1E00, 0);
+            } else {
+                PlaySfx(0x528, NULL, &e->unk10, 0x1000, 0x1E00, 0);
+            }
+        }
+        break;
+    case 10:
+        e->unk2C.y += 0x100;
+        if (e->unk2C.y > 0xC00) {
+            e->unk2C.y = 0xC00;
+            nas->UserInfo.status = 12;
+            nas->UserInfo.user1 = D_800B95C4[D_800B9EF4] + Random(D_800B95E0[D_800B9EF4]);
+            if (e->sub->unk74 == 0x2015) {
+                pos = e->unk10;
+                pos.y -= 0x100;
+                Ovl66_SpawnPuff((s32 *)&pos, 3, D_80053C7C);
+            }
+        }
+        e->unk5E = 1;
+        break;
+    case 12:
+        if (D_800B9E50[nas->UserInfo.user2].unk8 != 0) {
+            D_800B9E50[nas->UserInfo.user2].unk8--;
+        }
+        if (--nas->UserInfo.user1 <= 0) {
+            nas->UserInfo.status = 13;
+            nas->UserInfo.user1 = 70;
+        }
+        break;
+    case 13:
+    case 14:
+        if (D_800B9E50[nas->UserInfo.user2].unk8 != 0) {
+            D_800B9E50[nas->UserInfo.user2].unk8--;
+        }
+        if (--nas->UserInfo.user1 <= 0) {
+            if (nas->UserInfo.status == 13) {
+                nas->UserInfo.status = 14;
+                nas->UserInfo.user1 = 40;
+            } else {
+                nas->UserInfo.status = (D_8005A624 & 0x4000000) ? 4 : 5;
+            }
+            break;
+        }
+        if (nas->UserInfo.status == 13) {
+            e->unk2C.y = Random(0x200) + 0xB00;
+        } else {
+            e->unk2C.y = Random(0x800) + 0x800;
+        }
+        e->unk5E = 1;
+        break;
+    case 5:
+        Ovl66_SpawnPuff((s32 *)&e->unk10, 0, D_80053C7C);
+        v = &e->unk10;
+        func_800B4910((VECTOR *)v, 0x380, -1, 0);
+        e->flags &= 0xFFFF7FFF;
+        nas->UserInfo.status = 6;
+        PlaySfx(D_800B9E20[Random(4)], NULL, v, 0x1000, 0x1E00, 0);
+        break;
+    case 4:
+        Ovl66_SpawnPuff((s32 *)&e->unk10, 1, D_80053C7C);
+        e->flags &= 0xFFFF7FFF;
+        nas->UserInfo.status = 6;
+        break;
+    case 6:
+        p = &D_800B9EF0;
+        q = &D_800B95A8;
+        if (*p > q[D_800B9EF4]) {
+            nas->UserInfo.status = 1;
+            (*p)--;
+            e->unk10.y = D_8005A5D8 - 0x2000;
+        } else {
+            nas->UserInfo.status = 0;
+            nas->UserInfo.user1 = 0;
+        }
+        break;
+    }
+}
 
 s32 func_800B3D28(s32 *arg0, s32 *arg1) {
     s32 tries;

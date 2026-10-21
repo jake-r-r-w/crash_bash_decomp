@@ -9032,7 +9032,8 @@
   "status": "matched"
  },
  "ovl66:800B3668": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-21T21:15:51Z",
+  "status": "matched"
  },
  "ovl66:800B3D28": {
   "auto_diff": 115,
