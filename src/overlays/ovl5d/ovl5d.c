@@ -57,7 +57,60 @@ void func_800B432C(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B44B0);
+void func_800B44B0(s32 arg0) {
+    EXTengine *e = Heroes[arg0].hero_eng;
+    EXTheromove *m = Heroes[arg0].hero_move;
+    s32 step;
+
+    D_8009D714();
+    func_800860D4(arg0);
+    if (m->velocity_calc == 3) {
+        if (m->x_vel != m->x_max) {
+            if (m->x_max != 0) {
+                step = m->x_acc;
+            } else {
+                step = m->x_dec;
+            }
+            if (Heroes[arg0].hero_eng->unk10.y < D_8005A5D8) {
+                step = 0x80;
+            }
+            if (m->x_vel < m->x_max) {
+                m->x_vel += step;
+                if (m->x_vel > m->x_max) {
+                    m->x_vel = m->x_max;
+                }
+            } else {
+                m->x_vel -= step;
+                if (m->x_vel < m->x_max) {
+                    m->x_vel = m->x_max;
+                }
+            }
+        }
+        if (m->z_vel != m->z_max) {
+            if (m->z_max != 0) {
+                step = m->z_acc;
+            } else {
+                step = m->z_dec;
+            }
+            if (Heroes[arg0].hero_eng->unk10.y < D_8005A5D8) {
+                step = 0x80;
+            }
+            if (m->z_vel < m->z_max) {
+                m->z_vel += step;
+                if (m->z_vel > m->z_max) {
+                    m->z_vel = m->z_max;
+                }
+            } else {
+                m->z_vel -= step;
+                if (m->z_vel < m->z_max) {
+                    m->z_vel = m->z_max;
+                }
+            }
+        }
+        e->unk10.z += m->z_vel >> 2;
+        e->unk10.x += m->x_vel >> 2;
+    }
+}
 
 s32 func_800B46B8(s32 arg0) {
     s32 i;
