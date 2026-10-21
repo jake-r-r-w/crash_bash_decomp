@@ -237,7 +237,91 @@ void func_800B3CA8(void) {
     s[D_800B95F0 + 1].unk7C = 2;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B3F7C);
+void func_800B3F7C(void) {
+    subengine *s;
+    s32 n;
+    s32 i;
+    u32 c;
+
+    s = GetEngineSlot(0)->sub;
+    s++;
+    func_800B3A9C();
+    s[0].unk7C = 3;
+    s[1].unk7C = 3;
+    s[2].unk7C = 3;
+    s[3].unk7C = 3;
+    if (D_8005A63B == 2) {
+        s[0].unk08 = -0x22;
+        s[1].unk08 = 0;
+    } else {
+        s[0].unk08 = -0x40;
+        s[1].unk08 = -0x1C;
+    }
+    if (O69CV->unk27 == 2) {
+        s[2].flags &= ~0x8000;
+        s[3].flags &= ~0x8000;
+    }
+    n = D_80051600;
+    if (n > 4) {
+        n = 4;
+    }
+    if (O69CV->unk27 < n) {
+        n = O69CV->unk27;
+    }
+    for (i = 0; i < n; i++) {
+        s[i].unk7C = 0;
+    }
+    if (n < O69CV->unk26) {
+        O69CV->unk26 = n;
+    }
+    if (O69CV->unk26 != 0) {
+        s[O69CV->unk26 - 1].unk7C = 2;
+    } else {
+        O69CV->unk26 = n;
+    }
+    if (D_80051380 & 0x10) {
+        if (O69CV->unk26 >= 2) {
+            O69CV->unk26--;
+            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+    }
+    if ((D_80051380 & 0x40) && O69CV->unk26 < n) {
+        O69CV->unk26++;
+        PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    if ((O69CV->unk32 & 4) && O69CV->unk26 == 2) {
+        O69CV->unk6C = 1;
+        O69CV->unk54 = 1;
+        O69CV->unk55 = 0;
+        O69CV->unk56 = 3;
+        O69CV->unk57 = O69CV->unk26;
+    } else {
+        O69CV->unk6C = 0;
+        O69CV->unk54 = -1;
+        O69CV->unk55 = -1;
+        O69CV->unk56 = -1;
+        O69CV->unk57 = -1;
+    }
+    c = O69CV->unk26;
+    O69CV->unk5C[0] = c < 1;
+    O69CV->unk5C[1] = c < 2;
+    O69CV->unk5C[2] = c < 3;
+    O69CV->unk5C[3] = c < 4;
+    O69PAD[0].unk2A = c < 1;
+    O69PAD[1].unk2A = c < 2;
+    O69PAD[2].unk2A = c < 3;
+    O69PAD[3].unk2A = c < 4;
+    if (c != 0) {
+        if (O69PAD->pressed & 0x4000) {
+            PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+            func_800B5410();
+        }
+        if (O69PAD->pressed & 0x1000) {
+            PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
+            func_800B53D4();
+        }
+    }
+}
 
 void func_800B42B0(void) {
     Ovl69Sub *s;

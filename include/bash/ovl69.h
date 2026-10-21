@@ -337,4 +337,37 @@ void func_800B3CA8(void);
 
 void func_800B4464(void);
 
+/* D_8005A614 as seen by func_800B3F7C (player count menu). */
+typedef struct {
+    u8 pad0[0x26];
+    u8 unk26;      /* 0x26: chosen count */
+    u8 unk27;      /* 0x27: mode (D_8005A63B) */
+    u8 pad28[0x32 - 0x28];
+    u16 unk32;     /* 0x32 */
+    u8 pad34[0x54 - 0x34];
+    s8 unk54;
+    s8 unk55;
+    s8 unk56;
+    s8 unk57;
+    u8 pad58[0x5C - 0x58];
+    u8 unk5C[4];   /* 0x5C */
+    u8 pad60[0x6C - 0x60];
+    s32 unk6C;     /* 0x6C */
+} Ovl69CountView;
+#define O69CV ((Ovl69CountView *)D_8005A614)
+/* PadState (D_80051338) as seen by func_800B3F7C. */
+typedef struct {
+    u8 pad0[0x2A];
+    s16 unk2A;     /* 0x2A */
+    u8 pad2C[0x48 - 0x2C];
+    s32 pressed;   /* 0x48 */
+    u8 pad4C[0x58 - 0x4C];
+} Ovl69Pad;
+#define O69PAD ((Ovl69Pad *)D_80051338)
+extern u8 D_8005A63B;
+void func_800B3F7C(void);
+
+void func_800B53D4(void);
+void func_800B5410(void);
+
 #endif /* BASH_OVL69_H */
