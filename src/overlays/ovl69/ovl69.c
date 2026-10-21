@@ -812,7 +812,102 @@ void func_800B5B10(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B5CA8);
+void func_800B5CA8(Ovl69Slot *slot) {
+    Ovl69Obj *o = (Ovl69Obj *)slot;
+    subengine *t;
+    subengine *s;
+    subengine *s2;
+    Ovl69Card *card;
+    Ovl69Off *off;
+    s32 y;
+    s32 x;
+    s32 still;
+    s32 tgt;
+    s32 v;
+    s32 a;
+    s32 d;
+
+    s = o->unk8;
+    t = o->unkC;
+    s2 = o->unk10;
+    x = O69CARD[o->unk30].x + D_800B9C84[o->unk4].x;
+    y = O69CARD[o->unk30].y + D_800B9C84[o->unk4].y;
+    t->unk04 = func_80015210(t->unk04, x, 0x800);
+    t->unk08 = func_80015210(t->unk08, y, 0x800);
+    still = abs(t->unk04 - x) + abs(t->unk08 - y);
+    s->unk08 = s2->unk08 = ((Ovl69Trig *)D_80068BD4)[(D_8005B690 * o->unk28 - 0x400) & 0xFFF].hi + 0x1A4;
+    still = still == 0;
+    if (o->unk0 & 1) {
+        tgt = O69CARD[o->unk30].target;
+        v = o->unk14;
+        v = Ovl69Steer(o->unk1C, tgt, v, 0x2BC);
+        o->unk14 = v;
+        o->unk1C += v;
+        s->unk20.x = o->unk1C >> 4;
+        v = o->unk18;
+        v = Ovl69Steer(o->unk20, tgt, v, 0x3E8);
+        o->unk18 = v;
+        o->unk20 += v;
+        s->unk20.y = o->unk20 >> 4;
+        {
+            EXTengine *e = GetEngineSlot(2);
+            func_800251A8(NULL, e, o->unk8, (EXTanimator *)&o->ext);
+        }
+        s->unk52 = 1;
+        o->unk24++;
+        return;
+    }
+    if (o->unk4 < D_8005A63A) {
+        if (O69PAD[o->unk4].pressed & 0x80) {
+            PlaySfx(D_800B9CB4[o->unk4], NULL, NULL, 0x1000, 0x1E00, 0);
+            o->unk30--;
+        }
+        if (O69PAD[o->unk4].pressed & 0x20) {
+            PlaySfx(D_800B9CB4[o->unk4], NULL, NULL, 0x1000, 0x1E00, 0);
+            o->unk30++;
+        }
+        if (O69PAD[o->unk4].pressed & 0x10) {
+            PlaySfx(D_800B9CB4[o->unk4], NULL, NULL, 0x1000, 0x1E00, 0);
+            o->unk30 -= 4;
+        }
+        if (O69PAD[o->unk4].pressed & 0x40) {
+            PlaySfx(D_800B9CB4[o->unk4], NULL, NULL, 0x1000, 0x1E00, 0);
+            o->unk30 += 4;
+        }
+    }
+    o->unk30 &= 7;
+    if ((o->unk4 < ((Ovl69ModeView *)D_8005A614)->unk26 && (O69PAD[o->unk4].pressed & 0x4000) && still) || o->unk2C != 0) {
+        GetEngineSlot(0)->sub[20].flags &= 0xFFFF7FFF;
+        GetEngineSlot(0)->sub[21].flags &= 0xFFFF7FFF;
+        card = O69CARD;
+        if (card[o->unk30].flags & 1) {
+            PlaySfx(0x38D, NULL, NULL, 0x1000, 0x1E00, 0);
+            return;
+        }
+        if (o->unk2C == 0) {
+            PlaySfx(card[o->unk30].sfx, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        card[o->unk30].flags |= 1;
+        o->unk1C = 0;
+        o->unk20 = 0;
+        o->unk14 = 0;
+        o->unk18 = 0;
+        o->unk0 |= 1;
+        {
+            s->unk6C = D_80052A54 + card[o->unk30].unk14 * 0x38;
+            s->flags |= 0x8000;
+        }
+        D_8005A614[o->unk4 + 0x50] = card[o->unk30].unk4;
+        D_8005A614[o->unk4 + 0x4C] = card[o->unk30].unk4;
+        PlaySfx(D_800B9CA4[o->unk4], NULL, NULL, 0x1000, 0x1E00, 0);
+        o->ext = D_8005A9A0;
+        {
+            s32 w = O69CARD[o->unk30].unk1C;
+            o->unk24++;
+            o->ext.w[3] = w;
+        }
+    }
+}
 
 void func_800B63F4(void) {
     EXTengine *eng;

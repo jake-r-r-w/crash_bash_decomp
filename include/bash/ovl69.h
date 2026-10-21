@@ -201,6 +201,66 @@ typedef struct {
     s32 y;
 } Ovl69Off;
 extern Ovl69Slot D_800B9FD4[];
+/* D_800B9B44 as func_800B5CA8 reads it: 8 cards of 0x28 bytes. */
+typedef struct {
+    s32 flags;     /* 0x00: bit 0 taken */
+    u8 unk4;
+    u8 pad5[3];
+    s32 x;         /* 0x08 */
+    s32 y;         /* 0x0C */
+    s32 target;    /* 0x10 */
+    s32 unk14;     /* 0x14: index into D_80052A54 */
+    s32 pad18;
+    s32 unk1C;     /* 0x1C */
+    s32 sfx;       /* 0x20 */
+    s32 pad24;
+} Ovl69Card;
+#define O69CARD ((Ovl69Card *)D_800B9B44)
+/* func_800B5CA8: speed toward tgt, +-lim (+-lim+900 when reversing), 0 when near. */
+static inline s32 Ovl69Steer(s32 pos, s32 tgt, s32 vx, s32 lim) {
+    s32 v;
+    s32 a;
+    s32 d;
+
+    v = vx;
+    if (pos != tgt) {
+        if (pos < tgt) {
+            if (vx < 0) {
+                v = vx + (lim + 900);
+            } else {
+                v = vx + lim;
+            }
+        } else {
+            v = vx - (lim + 900);
+            if (vx <= 0) {
+                v = vx - lim;
+            }
+        }
+    }
+    a = v;
+    if (a < 0) {
+        a = -a;
+    }
+    if (a <= lim) {
+        d = tgt - pos;
+        if (d < 0) {
+            d = -d;
+        }
+        if (d <= lim) {
+            v = 0;
+        }
+    }
+    return v;
+}
+/* D_80068BD4 read bytewise: hi is the sine's high byte. */
+typedef struct {
+    s16 unk0;
+    s8 lo;
+    s8 hi;
+} Ovl69Trig;
+extern s32 D_800B9CA4[];
+extern s32 D_800B9CB4[];
+extern u8 D_80052A54[];
 extern Ovl69Off D_800B9C84[];
 /* D_8005A614 as seen by func_800B64B8 (unk26 is D_8005A63A). */
 typedef struct {
