@@ -3165,7 +3165,176 @@ kill:
     KillNAS(nas);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotPickupGenerator_TA);
+void PlotPickupGenerator_TA(NAS *nas)
+{
+  s32 i;
+  s32 j;
+  s32 x;
+  s32 z;
+  s32 r;
+  s32 n;
+  s32 new_var;
+  NAS *p;
+  EXTengine *eng;
+  if (D_800CB0F0 != 0)
+  {
+    KillNAS(nas);
+    return;
+  }
+  if (nas->UserInfo.flags == 0)
+  {
+    nas->UserInfo.flags = Random(0x78) + 0xB4;
+    switch (D_8005A648)
+    {
+      case 7:
+
+      default:
+        SpawnNASById(0x600, -0x500, 0x600, 0x1307, 0x11);
+        return;
+
+      case 8:
+        for (i = 0;; i++)
+      {
+        s32 r;
+        if (i >= 3)
+        {
+          break;
+        }
+        if (D_800CAD44[i] != 0)
+        {
+          continue;
+        }
+
+        n = Random(0x29);
+        x = D_800CA4B8[n * 2];
+        new_var = x;
+        z = D_800CA4B8[(n * 2) | 1];
+        if (PickupFindHero(new_var, z) >= 0)
+        {
+          return;
+        }
+        for (j = 0; j < 3; j++)
+        {
+          p = D_800CAD44[j];
+          if (p != 0)
+          {
+            if ((p->Engine->unk10.x != new_var) || (p->Engine->unk10.z != z))
+            {
+              break;
+            }
+            return;
+          }
+        }
+
+
+        p = SpawnNASById(new_var, 0, z, 0x1308, 0x11);
+        if (p == 0)
+        {
+          continue;
+        }
+        eng = p->Engine;
+        D_800CAD44[i] = p;
+        r = Random(3);
+        switch (r)
+        {
+          case 0:
+            p->Engine->sub->unk6C = D_80053694;
+            p->Engine->sub->unk74 = 0x2013;
+            r = 5;
+            break;
+
+          case 1:
+            eng->sub->unk6C = D_80052F5C;
+            eng->sub->unk74 = 0x2018;
+            r = 4;
+            break;
+
+          case 2:
+            p->Engine->sub->unk74 = 0x200C;
+            r = 3;
+            break;
+
+        }
+
+        p->UserInfo.status = r;
+      }
+
+        break;
+
+      case 9:
+        for (i = 0;; i++)
+      {
+        s32 k;
+        if (i >= 3)
+        {
+          break;
+        }
+        if (D_800CAD44[i] != 0)
+        {
+          continue;
+        }
+        x = nas->Engine->unk10.x;
+        z = nas->Engine->unk10.z;
+        if (PickupFindHero(x, z) >= 0)
+        {
+          return;
+        }
+        for (k = 0; k < 3; k++)
+        {
+          p = D_800CAD44[k];
+          if (((p != 0) && (p->Engine->unk10.x == x)) && (p->Engine->unk10.z == z))
+          {
+            return;
+          }
+        }
+
+        p = SpawnNASById(x, 0, z, 0x1308, 0x11);
+        if (p == 0)
+        {
+          return;
+        }
+        D_800CAD44[i] = p;
+        nas->UserInfo.flags = ((D_8009D87C[3].unk0 * 2) - D_8005A614[0xB4]) * 30;
+        if (((u16) (nas->UserInfo.flags & 0xFFFE)) < 60)
+        {
+          nas->UserInfo.flags = 60;
+        }
+        if (nas->UserInfo.flags > 1200)
+        {
+          nas->UserInfo.flags = 1200;
+        }
+        if (D_8005A614[0xB4] > 10)
+        {
+          nas->UserInfo.flags >>= 1;
+        }
+        if (((u32) Random(0x20)) > 8)
+        {
+          eng = p->Engine;
+          p->UserInfo.status = 4;
+          eng->sub->unk6C = D_80052F5C;
+          eng->sub->unk74 = 0x2018;
+          eng->sub->flags |= 0x20000000;
+          eng = eng->Engine;
+          eng->sub->unk6C = D_80052F5C;
+          eng->sub->unk74 = 0x2001;
+          return;
+        }
+        p->UserInfo.status = 5;
+        p->Engine->sub->unk6C = D_80053694;
+        p->Engine->sub->unk74 = 0x2013;
+        return;
+      }
+
+        break;
+
+    }
+
+  }
+  else
+  {
+    nas->UserInfo.flags--;
+  }
+}
 
 void InitHelicopterTA(NAS *nas) {
     HelicopterTAExt *ext;

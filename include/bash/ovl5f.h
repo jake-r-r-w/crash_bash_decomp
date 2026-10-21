@@ -695,6 +695,43 @@ extern s32 D_800CA610[4];
 extern s32 D_800CA620[4];
 extern s32 D_800CA630[4];
 extern s32 D_800CA640[4];
+extern s32 D_800CA4B8[]; /* (x, z) pairs */
+/* PlotPickupGenerator_TA: hero within 0x200 of (x, z). */
+static inline s32 PickupFindHero(s32 x, s32 z) {
+    s32 i;
+    s32 d;
+    s32 r;
+    s32 n;
+    u16 name;
+    EXTengine *e;
+
+    r = 0x200;
+    for (i = 0; i < 4; i++) {
+        name = Heroes[i].hero_name;
+        if (name == 9 &&
+            (((Ovl5fModeView *)D_8005A614)->mode != name || D_800CB210 != 0 ||
+             (u32)(i - 2) >= 2)) {
+            continue;
+        }
+        if (Heroes[i].hero_status & 0xC000) {
+            continue;
+        }
+        e = Heroes[i].hero_eng;
+        d = x - e->unk10.x;
+        if (d < -0x200) {
+            continue;
+        }
+        if (r < d) {
+            continue;
+        }
+        d = z - e->unk10.z;
+        n = -0x200;
+        if (n < d && d < 0x200) {
+            return i;
+        }
+    }
+    return -1;
+}
 
 void func_800B6354(s32 player, s32 damage);
 
