@@ -83,6 +83,46 @@ typedef struct {
 void func_800B6E0C(void);
 
 extern Ovl69Entry D_800BA324[];
+extern s32 D_800BA154[];
+extern s32 D_800BA158[];
+extern s32 D_800BA15C[];
+extern s32 D_800BA160[];
+extern s32 D_800BA660[];
+
+/* Inline forms of the slot getters func_800B7D98 / func_800B7DC0 / func_800B7E04. */
+static inline s32 Ovl69SlotModelI(s32 a, s32 b) {
+    return *(s32 *)(D_800BA324[a].unk0 + (b << 4) + 8);
+}
+
+static inline s32 Ovl69SlotCI(s32 a, s32 b) {
+    return *(s32 *)(D_800BA324[a].unk0 + (b << 4) + 0xC);
+}
+
+extern s32 *D_8004DD70[];
+
+static inline s32 Ovl69SlotRowI(s32 a, s32 b) {
+    s32 base = D_800BA324[a].unk0;
+    s32 idx = *(s32 *)((u8 *)base + (b << 4) + 4);
+    s32 *row = D_8004DD70[*(s32 *)(D_8005A614 + 0x2C)];
+    return row[idx];
+}
+
+/* func_800B6E0C: is the selected slot of D_800BA324 available? */
+static inline s32 Ovl69SlotOn(void) {
+    u8 *g = D_8005A614;
+    Ovl69ListSlot *slot;
+    s32 type;
+    s32 idx;
+
+    slot = (Ovl69ListSlot *)((u8 *)D_800BA324[(s8)g[0x36]].unk0 + ((s8)g[0x37] << 4));
+    idx = slot->idx;
+    type = slot->type;
+    if ((*(s32 *)(g + 4) & 0x2000) || type == 1
+        || (type == 2 && (g[idx + 0xE4] != 0 || g[idx + 0x168] != 0))) {
+        return 1;
+    }
+    return 0;
+}
 
 void func_800B39C8(void);
 void func_800B3A9C(void);

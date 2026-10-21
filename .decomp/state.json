@@ -10490,7 +10490,8 @@
   "status": "matched"
  },
  "ovl69:800B6E0C": {
-  "auto_failed": "compile"
+  "matched_at": "2026-10-21T21:05:05Z",
+  "status": "matched"
  },
  "ovl69:800B7458": {
   "blocked_at": "2026-10-19T17:11:49Z",
