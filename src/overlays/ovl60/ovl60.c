@@ -2392,7 +2392,121 @@ void func_800BA3E0(s32 arg0, s32 arg1, s32 arg2) {
     D_800C52EC++;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BA51C);
+s32 func_800BA51C(s32 arg0, s32 arg1) {
+    EXTheromove *mv;
+    EXTengine *eng;
+    EXTengine *e;
+    NAS *nas;
+    subengine *sub;
+    s32 pos[3];
+    s32 x;
+    s32 z;
+    s32 n;
+    s32 dx;
+    s32 dz;
+    s32 t;
+
+    mv = Heroes[arg0].hero_move;
+    n = 0;
+    if (mv != NULL) {
+        dz = 0;
+        eng = Heroes[arg0].hero_eng;
+        x = (eng->unk10.x + 0x800) >> 9;
+        z = (eng->unk10.z + 0x800) >> 9;
+        dx = 0;
+        switch (mv->facing_angle >> 10) {
+        case 0:
+            n = z;
+            break;
+        case 1:
+            n = x;
+            break;
+        case 2:
+            n = 7 - z;
+            break;
+        case 3:
+            n = 7 - x;
+            break;
+        }
+        if (n > 0) {
+            goto spawn;
+        }
+    }
+    return n;
+spawn:
+    x = Heroes[arg0].hero_eng->unk10.x;
+    z = Heroes[arg0].hero_eng->unk10.z;
+    *(SLONG_XYZ *)pos = Heroes[arg0].hero_eng->unk10;
+    pos[1] -= 0x80;
+    switch (mv->facing_angle >> 10) {
+    case 0:
+        z -= 0x100;
+        dz = -0x200;
+        pos[2] -= 0x100;
+        break;
+    case 1:
+        x -= 0x100;
+        dx = -0x200;
+        pos[0] -= 0x100;
+        break;
+    case 2:
+        z += 0x100;
+        dz = 0x200;
+        pos[2] += 0x100;
+        break;
+    case 3:
+        x += 0x100;
+        dx = 0x200;
+        pos[0] += 0x100;
+        break;
+    }
+    if (D_800C535C[arg0].nas != NULL) {
+        return n;
+    }
+    nas = SpawnNASById(x, D_8005A5D8 - 0x40, z, 0x1405, 0x11);
+    if (nas == NULL) {
+        return n;
+    }
+    e = nas->Engine;
+    if (e == NULL) {
+        return n;
+    }
+    e->unk1E = (mv->facing_angle + 0x400) % 0x1000;
+    if ((mv->facing_angle >> 10) & 1) {
+        e->unk1C = 0x400;
+    }
+    e->unk5E = 1;
+    if (n >= 2) {
+        nas->UserInfo.flags = func_80018F3C(e, n - 1);
+    }
+    sub = e->sub;
+    t = 0;
+    while (sub != NULL) {
+        pos[0] += dx;
+        pos[2] += dz;
+        sub->unk6C = D_80053B9C;
+        sub->unk74 = 0x2005;
+        sub->unk04 = t;
+        sub->flags |= 0x21;
+        sub = sub->next;
+        t += 0x200;
+    }
+    Ovl60_SpawnPuff(pos, 8, D_80053B9C);
+    do {
+        do {
+            D_800C535C[arg0].nas = nas;
+            PlaySfx(0x520, NULL, (SLONG_XYZ *)&Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        } while (0);
+    } while (0);
+    if (D_800C535C[arg0].unk4 == 5 && Heroes[arg0].hero_aseq == 0x2F) {
+        SetHeroAction((HeroInfo *)arg0, 0x39);
+    }
+    if (D_800C535C[arg0].unk4 == 6) {
+        func_800B91E8(arg0);
+    }
+    D_800C535C[arg0].unk4 = 0;
+    return n;
+}
 
 void Plot_PogoTazer(NAS *nas) {
     EXTengine *eng;
