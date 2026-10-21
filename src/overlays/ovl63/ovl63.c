@@ -2101,7 +2101,109 @@ void InitDinoEgg(NAS *m) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotDinoEgg);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotRaceShield);
+static inline NAS *SpawnShieldFx(SLONG_XYZ *pos) {
+    NAS *fx;
+    Ovl63ShieldFxExt *fxe;
+
+    fx = SpawnNASById(pos->x, pos->y, pos->z, 0x1605, 0x11);
+    if (fx != NULL) {
+        fxe = FindExtension(fx, 0x10000000);
+        if (fxe != NULL) {
+            fxe->unkC = 8;
+            fxe->unk18 = 0x100;
+            fxe->unk20 = 1;
+            fxe->unk28 = 0;
+            fx->InitDelete(fx);
+        }
+        return fx;
+    }
+    return NULL;
+}
+
+void PlotRaceShield(NAS *nas) {
+    EXTraceshield *ext;
+    HeroInfo *hero;
+    Ovl63ShieldFux *fux;
+    Ovl63ShieldFux *fux2;
+    SLONG_XYZ *pos;
+    HeroInfo *other;
+    HeroInfo *h;
+    HeroInfo *base;
+    HeroInfo *hb;
+    EXTengine *eng;
+    EXTengine *eng2;
+    u32 i;
+    s32 found;
+    s32 me;
+    s32 lim;
+    s32 angle;
+    s32 c;
+    s32 s;
+
+    ext = FindExtension(nas, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    base = Heroes;
+    hero = &base[ext->unk14[0]];
+    fux = (Ovl63ShieldFux *)hero->hero->FUX;
+    if (fux == NULL) {
+        return;
+    }
+    switch (ext->unkC) {
+    case 0:
+        fux->shield = SpawnShieldFx(&nas->Engine->unk10);
+        PlaySfx(0x43A, NULL, NULL, 0x1000, 0x1E00, 0);
+        ext->unkC = 1;
+        break;
+    case 1:
+        i = 0;
+        if (fux->shield != NULL) {
+            fux->shield->Engine->unk10 = hero->hero_eng->unk10;
+        }
+        lim = 0xC5C10;
+        ext->unk1C = 0x384;
+        other = base;
+        me = ext->unk14[0];
+        pos = &fux->shield->Engine->unk10;
+        while (1) {
+            if (i >= 4) {
+                found = -1;
+                break;
+            }
+            if (i != me && func_8008CEB0((u8 *)pos, (u8 *)&other->hero_eng->unk10) < lim) {
+                found = i;
+                break;
+            }
+            other++;
+            i++;
+        }
+        if (found != -1) {
+            hb = Heroes;
+            h = &hb[found];
+            eng = nas->Engine;
+            eng2 = h->hero_eng;
+            angle = get_angle(eng->unk10.x - eng2->unk10.x, eng->unk10.z - eng2->unk10.z);
+            c = D_80068BD4[(angle - 0x400) & 0xFFF].unk2 * 8;
+            s = D_80068BD4[angle & 0xFFF].unk2 * 8;
+            fux2 = (Ovl63ShieldFux *)h->hero->FUX;
+            if (fux2 != NULL) {
+                fux2->unk13C = -c;
+                fux2->unk140 = -s;
+                h->hero_move->x_max = 0;
+                h->hero_move->z_max = 0;
+                h->hero_move->x_max = 0;
+                h->hero_move->z_max = 0;
+            }
+        }
+        if (--ext->unk10 < 0) {
+            fux->unk130 &= ~1;
+            KillNAS(fux->shield);
+            KillNAS(nas);
+        }
+        break;
+    }
+}
 
 void PlotRaceTag(NAS *m) {
     s32 i;

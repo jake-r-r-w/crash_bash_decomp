@@ -830,4 +830,29 @@ void func_800C0218(s32 player);
 
 void PlotGlob(NAS *m);
 
+/* A hero's FUX as PlotRaceShield drives it: flags, the shield NAS, velocity. */
+typedef struct Ovl63ShieldFux {
+    /* 0x000 */ u8 pad0[0x130];
+    /* 0x130 */ s32 unk130;
+    /* 0x134 */ NAS *shield;
+    /* 0x138 */ s32 unk138;
+    /* 0x13C */ s32 unk13C;
+    /* 0x140 */ s32 unk140;
+} Ovl63ShieldFux;
+
+/* Extension 0x10000000 of the effect NAS PlotRaceShield spawns. */
+typedef struct Ovl63ShieldFxExt {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ s32 unk1C;
+    /* 0x20 */ s32 unk20;
+    /* 0x24 */ s32 unk24;
+    /* 0x28 */ s32 unk28;
+} Ovl63ShieldFxExt;
+
+void PlotRaceShield(NAS *nas);
+
 #endif /* BASH_OVL63_H */
