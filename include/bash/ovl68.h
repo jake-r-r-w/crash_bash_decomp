@@ -182,6 +182,9 @@ extern s32 D_800BC44C;
 extern s32 D_800BB95C[][4];
 void func_800BA694(s32 arg0);
 extern s16 D_8009E0D8;
+extern u16 *D_8009D6EC;
+extern u8 D_80052A54[];
+extern u16 D_800AD12C;
 
 void func_800BA5A0(s32 arg0, s32 arg1);
 void func_800B94FC(s32 arg0, u16 arg1);
@@ -389,6 +392,8 @@ typedef struct {
     s32 sx; s32 sy; s32 sz; u8 pad38[0x26]; s16 unk5E;
 } CoalFlameEng;
 void func_800B5CD0(s32 arg0);
+
+void func_800B6C84(s32 arg0);
 
 void PlotBarrelGenerator(NAS *nas);
 
