@@ -613,7 +613,237 @@ NAS *func_800BB69C(idx, arg1)
     return NULL;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BB86C);
+s32 func_800BB86C(s32 arg0) {
+    TrigEntry *tbl;
+    VECTOR pos;
+    NAS *own;
+    EXTengine *obj;
+    s32 hit;
+    s32 top;
+    s32 push;
+    s32 rad;
+    s32 lo;
+    s32 hi;
+    s32 rad2;
+    s32 hi2;
+    s32 lo2;
+    s32 rad3;
+    s32 lo3;
+    s32 hi3;
+    u32 i;
+    HeroInfo *self;
+    HeroInfo *other;
+    EXTengine *eng;
+    EXTengine *e;
+    FlagRecord *rec;
+    FlagRecord *box;
+    NAS *n;
+    Ovl5eHitFlags *t;
+    s32 bot;
+    s32 dx;
+    s32 dz;
+    s32 d;
+    s32 r;
+    s32 rr;
+    s32 ang;
+    s32 a;
+    s32 tmp;
+
+    hit = 0;
+    lo2 = 0;
+    hi2 = 0;
+    rad2 = 0;
+    hi3 = 0;
+    lo3 = 0;
+    rad3 = 0;
+    eng = Heroes[arg0].hero_eng;
+    obj = NULL;
+    if (eng != NULL) {
+        box = func_80025A48(eng, 0x40);
+        if (box != NULL) {
+            rad = box->radius;
+            hi = eng->unk10.y + box->unk2;
+            lo = eng->unk10.y + box->height;
+            box = func_80025A48(eng, 1);
+            if (box != NULL) {
+                if (eng->unk5E != 0) {
+                    func_800142D4(&eng->unk1C);
+                }
+                func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
+                lo2 = eng->unk10.y + box->unk2;
+                hi2 = eng->unk10.y + box->height;
+                if (lo2 < hi2) {
+                    tmp = hi2;
+                    hi2 = lo2;
+                    lo2 = tmp;
+                }
+                rad2 = box->radius;
+                func_80015758((SVECTOR *)box, &pos);
+            }
+            if (Heroes[arg0].hero_object != NULL) {
+                n = ((NAS **)Heroes[arg0].hero_object)[-1];
+                obj = n->Engine;
+                if (obj != NULL) {
+                    rad3 = 0x80;
+                    hi3 = obj->unk10.y;
+                    lo3 = hi3 - 0x100;
+                }
+            }
+            other = Heroes;
+            i = 0;
+            self = &Heroes[arg0];
+            do {
+                tbl = D_80068BD4;
+                if (arg0 != i && !(other[i].hero_status & 0xF800)) {
+                    if (self->hero_move->forward_speed != 0) {
+                        push = 1;
+                    } else {
+                        push = other[i].hero_move->forward_speed == 0;
+                    }
+                    if (D_8005A5DC < 4) {
+                        if (D_8005A5DC >= 2) {
+                            push = 1;
+                        }
+                    }
+                    e = other[i].hero_eng;
+                    if (e != NULL) {
+                        rec = func_80025A48(e, 0x40);
+                        if (rec != NULL) {
+                            bot = e->unk10.y + rec->unk2;
+                            top = e->unk10.y + rec->height;
+                            if (push != 0) {
+                                r = rec->radius;
+                                r += rad;
+                                rr = r * r;
+                                if (lo < bot && top < hi) {
+                                    dx = e->unk10.x - eng->unk10.x;
+                                    dz = e->unk10.z - eng->unk10.z;
+                                    d = dx * dx + dz * dz;
+                                    if (d < rr) {
+                                        d = csqrt(d) >> 6;
+                                        if (d < r) {
+                                            ang = get_angle(dx, dz) & 0xFFF;
+                                            d = r - d + 1;
+                                            eng->unk10.x -= (d * tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                            eng->unk10.z -= (d * tbl[ang].unk2) >> 12;
+                                            hit = 1;
+                                            if (self->hero_pu != 0) {
+                                                (*(void (**)(s32, s32))&D_8009D6E8.unk60)(arg0, i);
+                                            }
+                                            if (other[i].hero_pu != 0) {
+                                                (*(void (**)(s32, s32))&D_8009D6E8.unk60)(i, arg0);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (rad2 != 0 && hi2 < bot && top < lo2) {
+                                dx = e->unk10.x - pos.vx;
+                                dz = e->unk10.z - pos.vz;
+                                r = rec->radius;
+                                r += rad2;
+                                d = dx * dx + dz * dz;
+                                rr = r * r;
+                                if (d < rr) {
+                                    d = csqrt(d) >> 6;
+                                    if (d < r) {
+                                        hit = 1;
+                                        ang = get_angle(dx, dz) & 0xFFF;
+                                        d = r - d + 1;
+                                        if (push != 0) {
+                                            eng->unk10.x -= (d * tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                            eng->unk10.z -= (d * tbl[ang].unk2) >> 12;
+                                        } else {
+                                            e->unk10.x += (d * tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                            e->unk10.z += (d * tbl[ang].unk2) >> 12;
+                                        }
+                                    }
+                                }
+                            }
+                            if (rad3 != 0 && lo3 < bot && top < hi3) {
+                                dx = e->unk10.x - obj->unk10.x;
+                                dz = e->unk10.z - obj->unk10.z;
+                                r = rec->radius;
+                                r += rad3;
+                                d = dx * dx + dz * dz;
+                                rr = r * r;
+                                if (d < rr) {
+                                    d = csqrt(d) >> 6;
+                                    if (d < r) {
+                                        hit = 1;
+                                        ang = get_angle(dx, dz) & 0xFFF;
+                                        d = r - d + 1;
+                                        if (push != 0) {
+                                            eng->unk10.x -= (d * tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                            eng->unk10.z -= (d * tbl[ang].unk2) >> 12;
+                                        } else {
+                                            e->unk10.x += (d * tbl[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                            e->unk10.z += (d * tbl[ang].unk2) >> 12;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                i++;
+            } while (i < 4);
+            own = NULL;
+            n = D_8005AA2C;
+            if (Heroes[arg0].hero_object != NULL) {
+                own = ((NAS **)Heroes[arg0].hero_object)[-1];
+            }
+            rad = 0x78;
+            push = Heroes[arg0].hero_move->forward_speed != 0;
+            if (D_8005A5DC < 4) {
+                if (D_8005A5DC >= 2) {
+                    push = 1;
+                }
+            }
+            for (; n != NULL; n = n->Solid.Child) {
+                if (!(n->Class & 0x200)) continue;
+                if (n == own) continue;
+                e = n->Engine;
+                if (e == NULL) continue;
+                if (e == eng) continue;
+                rec = func_80025A48(e, 0x40);
+                if (rec == NULL) continue;
+                bot = e->unk10.y + rec->unk2;
+                top = e->unk10.y + rec->height;
+                if (lo < bot && top < hi) {
+                    dx = e->unk10.x - eng->unk10.x;
+                    dz = e->unk10.z - eng->unk10.z;
+                    r = rec->radius;
+                    r += rad;
+                    d = dx * dx + dz * dz;
+                    rr = r * r;
+                    if (d < rr) {
+                        d = csqrt(d) >> 6;
+                        if (d < r) {
+                            hit = 1;
+                            a = get_angle(dx, dz);
+                            ang = a & 0xFFF;
+                            if (!(a & 0xFF)) {
+                                ang -= 8 - Random(0x10);
+                            }
+                            d = r - d + 1;
+                            if (push != 0) {
+                                eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->unk10.z -= (d * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+                            }
+                            t = FindExtension(n, 0x1000);
+                            if (t != NULL && (t->unk1C & 8)) {
+                                t->unk16 = arg0;
+                                t->unk1E |= 8;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return hit;
+}
 
 #ifdef NON_MATCHING
 s32 func_800BC274(s32 idx) {
