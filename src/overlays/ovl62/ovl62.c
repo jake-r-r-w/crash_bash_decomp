@@ -4459,7 +4459,61 @@ s32 func_800D10A0(s32 player) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D1188);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D14CC);
+#define SET74(v)                                              \
+    *(s16 *)((u8 *)Heroes[player].hero_eng->sub + 0x74) = (v); \
+    if (D_8005A646 & 0x80) {                                  \
+        Heroes[player].hero_eng->sub->unk74 = (v);            \
+    }
+
+void func_800D14CC(s32 player) {
+    HeroInfo *base;
+    HeroInfo *h;
+
+    base = Heroes;
+    h = &base[player];
+    if (h->hero_move != NULL) {
+        h->hero_move->z_dir = 0;
+    }
+    if (func_800D2D2C(player) != 0) {
+        return;
+    }
+    D_800D6934[player] = 0x4100;
+    h->hero_eng->sub->unk68 = 0;
+    switch (h->hero_name) {
+    case 1:
+        SET74(0x2004);
+        break;
+    case 2:
+        SET74(0x2006);
+        break;
+    case 3:
+        SET74(0x2007);
+        break;
+    case 5:
+        SET74(0x2009);
+        break;
+    case 6:
+        SET74(0x200A);
+        break;
+    case 4:
+        SET74(0x2005);
+        break;
+    case 7:
+        SET74(0x2008);
+        break;
+    case 8:
+        SET74(0x200B);
+        break;
+    default:
+        *(s16 *)((u8 *)h->hero_eng->sub + 0x74) = 0x2004;
+        if (D_8005A646 & 0x80) {
+            h->hero_eng->sub->unk74 = 0x2004;
+        }
+        break;
+    }
+    Heroes[player].hero_eng->sub->unk6C = *(void **)D_80058AD0;
+    Heroes[player].hero_eng->unk5D = 2;
+}
 
 void func_800D17E8(s32 player) {
     HeroInfo *base = Heroes;
