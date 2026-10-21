@@ -447,6 +447,8 @@ s32 func_800BD520(s32 hero);
 
 s32 func_800BD630(s32 hero);
 
+s32 func_800BDCB8(s32 arg0, s32 x, s32 z, s32 dx, s32 dz, s32 flags);
+
 s32 func_800BDE24(s32 arg0);
 
 void func_800BFFF4(EXTengine *eng);

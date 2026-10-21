@@ -2002,7 +2002,58 @@ end:
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BD790);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BDCB8);
+s32 func_800BDCB8(s32 arg0, s32 x, s32 z, s32 dx, s32 dz, s32 flags) {
+    Ovl60Cell *p;
+    HeroInfo *h;
+    u8 *g;
+    u16 t;
+    u16 a;
+
+    x += dx;
+    z += dz;
+    if ((u32)x >= 8 || (u32)z >= 8) {
+        return 0;
+    }
+    p = &D_800C53DC[x][z];
+    if (p == NULL) {
+        return 0;
+    }
+    if (p->unkE != 0) {
+        return 0;
+    }
+    if (p->unk10 != 0 && p->unk10 != arg0 + 1) {
+        return 0;
+    }
+    g = D_8005A614;
+    if (g[arg0 + 0x5C] == 0 && !(flags & 1)) {
+        goto one;
+    }
+    t = p->unk12;
+    if (t == 5) {
+        return 0;
+    }
+    if (t == 6) {
+        return 0;
+    }
+    h = p->hero;
+    if (h != NULL) {
+        a = h->hero_pu_action;
+        if (a == 0xB) {
+            return 0;
+        }
+        if (*(s16 *)(g + 0x34) != 0xD) {
+            goto one;
+        }
+        if (a == 0xA) {
+            return 1;
+        }
+    }
+    if (D_8005A648 == 0xD && (flags & 2) && p->unkA == arg0 && D_800C535C[arg0].unk4 != 6) {
+        return 0;
+    }
+one:
+    return 1;
+}
 
 s32 func_800BDE24(s32 arg0) {
     s32 x;
