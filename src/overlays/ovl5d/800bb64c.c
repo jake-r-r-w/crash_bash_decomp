@@ -568,7 +568,76 @@ void InitSlowmoPickup(NAS *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bb64c", func_800BE9D0);
+void func_800BE9D0(NAS *arg0) {
+    EXTengine *eng;
+    EXTobject *obj;
+    HeroInfo *h;
+
+    eng = arg0->Engine;
+    if (eng == NULL) {
+        return;
+    }
+    eng->unk5E = 1;
+    eng->unk1E += 0x71;
+    obj = (EXTobject *)arg0->FUX;
+    if (obj == NULL) {
+        return;
+    }
+    switch (obj->status) {
+    case 4:
+    case 5:
+        if (func_8007A26C(arg0) != 0) {
+            if (obj->status == 4) {
+                PlaySfx(0x420, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            }
+            obj->status = 1;
+            obj->can_do |= 0x18;
+        }
+        return;
+    }
+    func_8008D6C8(arg0);
+    if (obj->will_do & 8) {
+        obj->will_do &= ~8;
+        if (obj->player != -1 && obj->player < 5) {
+            Heroes[obj->player].hero_pu = obj->whatami;
+            Heroes[obj->player].hero_pu_timer = 0xB4;
+            Heroes[obj->player].hero_powerup->sub->unk74 = eng->sub->unk74;
+            switch (obj->whatami) {
+            case 0x12:
+                Heroes[obj->player].hero_pu_timer = 0x12C;
+                Heroes[obj->player].hero_powerup->sub->unk74 = 0x200D;
+                PlaySfx(0x41B, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                h = &Heroes[obj->player];
+                h->hero_harm_Nas = NULL;
+                h->hero_harm_player = -1;
+                h->hero_harm_value = 0;
+                h->hero_harm_flags = 0;
+                break;
+            case 0x13:
+                Heroes[obj->player].hero_pu_timer = 0xF0;
+                Heroes[obj->player].hero_powerup->sub->unk74 = eng->sub->unk74;
+                PlaySfx(0x41C, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                break;
+            case 0x14:
+                Heroes[obj->player].hero_pu_timer = 0xF0;
+                Heroes[obj->player].hero_powerup->sub->unk74 = 0x2011;
+                PlaySfx(0x452, &D_800C4780, NULL, 0x1000, 0x1E00, 0);
+                PlaySfx(0x41A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                break;
+            default:
+                Heroes[obj->player].hero_pu_timer = 0xF0;
+                Heroes[obj->player].hero_powerup->sub->unk74 = eng->sub->unk74;
+                PlaySfx(0x41D, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                break;
+            }
+        }
+    } else if (obj->countdown != 0) {
+        obj->countdown--;
+        return;
+    }
+    SpawnNASById(eng->unk10.x, eng->unk10.y - 0x100, eng->unk10.z, 0x207, 0x11);
+    KillNAS(arg0);
+}
 
 void func_800BEDE8(s32 arg0, s32 arg1) {
     HeroInfo *base = Heroes;

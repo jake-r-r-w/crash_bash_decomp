@@ -124,4 +124,6 @@ typedef struct {
 
 void func_800BBD48(NAS *arg0);
 
+void func_800BE9D0(NAS *arg0);
+
 #endif /* BASH_OVL5D_800BB64C_H */
