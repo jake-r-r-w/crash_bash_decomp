@@ -342,6 +342,36 @@ s32 func_800BB428(s32 x, s32 z);
 s32 func_800BB4F8(s32 x, s32 z, s32 range, s32 skip);
 
 s32 func_800BB5A0(s32 x, s32 z, s32 range);
+/* PlotCircleFire: offsets of the 8 fire points around the circle, and the
+ * 40x40 grid of fire NASes (128 units a cell, centred on 0). */
+typedef struct { s32 x; s32 z; } CircleFireOfs;
+extern CircleFireOfs D_800BC1B0[8];
+NAS *SpawnNASById(s32 x, s32 y, s32 z, u16 id, u16 flags);
+s32 KillNAS(NAS *nas);
+typedef struct { u8 pad0[0x2C]; s32 unk2C; } CircleFireFux;
+void PlotCircleFire(NAS *nas);
+
+static inline s32 CircleFireIndex(s32 x, s32 z) {
+    s32 col = (x + 0xA00) >> 7;
+    s32 row = (z + 0xA00) >> 7;
+
+    return row * 40 + col;
+}
+#define CIRCLEFIRE_CELL(x, z) CircleFireIndex(x, z)
+
+static inline NAS *CircleFireCell(s32 x, s32 z) {
+    if (x >= -0x9FF && x < 0xA00 && z >= -0x9FF) {
+        return (NAS *)D_800BC4E8[CIRCLEFIRE_CELL(x, z)];
+    }
+    return NULL;
+}
+
+static inline NAS *CircleFireGridCell(s32 *grid, s32 x, s32 z) {
+    if (x >= -0x9FF && x < 0xA00 && z >= -0x9FF) {
+        return (NAS *)grid[CIRCLEFIRE_CELL(x, z)];
+    }
+    return NULL;
+}
 
 s32 func_800BB7E0(Ovl68Obj *a, Ovl68Pos *b);
 

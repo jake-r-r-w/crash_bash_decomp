@@ -19,9 +19,9 @@
    "size": 788
   }
  ],
- "commit": "f4656f7446",
+ "commit": "c78f0504be",
  "game": "SCUS_945.70",
- "generated": "2026-10-21T06:28:01Z",
+ "generated": "2026-10-21T06:28:13Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -151320,9 +151320,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "c78f0504be",
+   "data_b": 4596,
+   "data_tb": 606943,
+   "game_all_f": 2537,
+   "game_b": 568008,
+   "game_c_f": 2176,
+   "game_f": 2176,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 1957,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-21T06:28:13Z",
+   "units": {
+    "engine": [
+     121412,
+     355
+    ],
+    "main exe": [
+     124840,
+     575
+    ],
+    "ovl5d": [
+     20812,
+     71
+    ],
+    "ovl5e": [
+     21612,
+     66
+    ],
+    "ovl5f": [
+     20972,
+     127
+    ],
+    "ovl60": [
+     28852,
+     133
+    ],
+    "ovl61": [
+     55000,
+     97
+    ],
+    "ovl62": [
+     33572,
+     155
+    ],
+    "ovl63": [
+     22884,
+     97
+    ],
+    "ovl64": [
+     8736,
+     36
+    ],
+    "ovl65": [
+     18496,
+     65
+    ],
+    "ovl66": [
+     10760,
+     67
+    ],
+    "ovl67": [
+     27636,
+     102
+    ],
+    "ovl68": [
+     10508,
+     67
+    ],
+    "ovl69": [
+     10856,
+     69
+    ],
+    "ovl6a": [
+     31060,
+     94
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-21T06:28:11Z",
+   "auto": true,
+   "name": "PlotCircleFire",
+   "seg": "overlays/ovl68/ovl68",
+   "size": 616,
+   "tries": 0
+  },
   {
    "at": "2026-10-21T06:27:59Z",
    "auto": true,
@@ -151434,14 +151528,6 @@
    "seg": "overlays/ovl66/ovl66",
    "size": 296,
    "tries": 0
-  },
-  {
-   "at": "2026-10-20T21:18:21Z",
-   "auto": true,
-   "name": "func_800B34F8",
-   "seg": "overlays/ovl66/ovl66",
-   "size": 368,
-   "tries": 0
   }
  ],
  "summary": {
@@ -151457,15 +151543,15 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 3,
-   "c_f": 2175,
-   "done_b": 567392,
-   "done_f": 2175,
+   "c_f": 2176,
+   "done_b": 568008,
+   "done_f": 2176,
    "named_f": 345,
-   "pct": 55.67928905357613,
+   "pct": 55.739738340941834,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2537,
-   "typed_f": 1956
+   "typed_f": 1957
   },
   "lib": {
    "all_f": 566,
@@ -151761,20 +151847,20 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
-    "c_f": 66,
-    "done_b": 9892,
-    "done_f": 66,
+    "c_f": 67,
+    "done_b": 10508,
+    "done_f": 67,
     "file": "ovl68.bin",
     "files": 1,
     "lib": false,
     "named_f": 18,
-    "pct": 29.04968871138259,
+    "pct": 30.858686714436743,
     "phase": 5,
     "sony_b": 0,
     "title": "Chase",
     "total_b": 34052,
     "total_f": 93,
-    "typed_f": 64,
+    "typed_f": 65,
     "unit": "ovl68"
    },
    {

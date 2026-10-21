@@ -573,7 +573,61 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B7DF0);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotCoalFlame);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotCircleFire);
+void PlotCircleFire(NAS *nas) {
+    EXTengine *eng;
+    subengine *sub;
+    s32 cx;
+    s32 cz;
+    s32 i;
+    s32 *grid;
+
+    eng = nas->Engine;
+    sub = eng->sub;
+    if (++sub->unk74 >= 0x4014) {
+        sub->unk74 = 0x4000;
+    }
+    nas->UserInfo.status = (nas->UserInfo.status + 0xC) & 0xFFF;
+    eng->unk10.x = (D_80068BD4[(nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 9) >> 4;
+    eng->unk10.z = (D_80068BD4[nas->UserInfo.status & 0xFFF].unk2 * 9) >> 4;
+    cx = eng->unk10.x;
+    eng->unk1E = (nas->UserInfo.status - 0x400) & 0xFFF;
+    eng->unk5E = 1;
+    cz = eng->unk10.z;
+    i = 0;
+    grid = D_800BC4E8;
+    for (;;) {
+        NAS *cell;
+        NAS *fire;
+        CircleFireFux *fux;
+        s32 x;
+        s32 z;
+
+        if (i >= 8) {
+            break;
+        }
+        x = cx + D_800BC1B0[i].x;
+        if (x >= -0x9FF) if (x < 0xA00) {
+            z = cz + D_800BC1B0[i].z;
+            if (z >= -0x9FF) if (z < 0xA00) {
+                cell = CircleFireGridCell(grid, x, z);
+                if (cell != NULL) {
+                    fux = (CircleFireFux *)cell->FUX;
+                    fire = SpawnNASById(x, 0, z, 0x1D05, 0x11);
+                    if (fire != NULL) {
+                        ((CircleFireFux *)fire->FUX)->unk2C = fux->unk2C;
+                    }
+                    fire = SpawnNASById(x, 0, z, 0x1D05, 0x11);
+                    if (fire != NULL) {
+                        ((CircleFireFux *)fire->FUX)->unk2C = fux->unk2C;
+                    }
+                    grid[CIRCLEFIRE_CELL(x, z)] = 0;
+                    KillNAS(cell);
+                }
+            }
+        }
+        i++;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotEgg);
 
