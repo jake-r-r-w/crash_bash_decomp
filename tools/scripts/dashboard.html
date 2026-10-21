@@ -444,8 +444,10 @@ function drawMap(){
 // any the code map shows matched since); the tile counts both
 function renderParked(){
  const Bl=D.blocked||[],hand=new Set(Bl.map(b=>b.name));
- const byName=new Map(M.fn.map(f=>[f.name,f]));
- const Sp=((SW.last&&SW.last.parks)||[]).map(p=>Object.assign({},p,{f:byName.get(p.name)}))
+ // slot overlays share addresses, so a name can be in two units: the key's prefix picks one
+ const byKey=p=>{const u=(p.key||"").includes(":")?p.key.split(":")[0]:null;
+  return M.fn.find(f=>f.name==p.name&&(!u||f.unit==u))};
+ const Sp=((SW.last&&SW.last.parks)||[]).map(p=>Object.assign({},p,{f:byKey(p)}))
   .filter(p=>p.f&&p.f.st!="m"&&!hand.has(p.name));
  // the code map shows them parked too (amber), not just the hand parks the page's data marks
  let marked=0;

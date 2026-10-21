@@ -524,6 +524,9 @@ Newest first, a few lines each. Details are in the commits.
   `if (e || blk)` hack (340ce459): `e` 6 refs/21 insns lost `s0` to `blk`
   5/16 in global.c; its `func_80019094(e, ...)` call in a do-while(0)
   fixes it. Four more tried and left as hacks (Open leads). 11 hacks left.
+  Permuter on the one near miss (`func_800BE914`, registers 26/170) 38 min:
+  no gain. Dashboard: swarm parks are looked up by unit and name (slot
+  overlays share names); Parked reads 9 with swarm.js (4 hand, 5 swarm).
 
 - **2026-10-21 (hand: `func_800B4444` without its hack):** 40ba6e7d. The
   target steps a pointer it never reads, so the original read `*p` and
