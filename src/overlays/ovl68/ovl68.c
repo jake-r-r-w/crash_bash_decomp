@@ -146,7 +146,61 @@ s32 func_800B459C(s32 *p) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B46BC);
+void func_800B46BC(s32 arg0) {
+    HeroInfo *b;
+    HeroInfo *h;
+    EXTengine *eng;
+    subengine *sub;
+    s32 *st;
+    u8 *g;
+    u8 *p;
+    NAS *nas;
+
+    D_80051338[arg0].unk50 = 0;
+    D_80051338[arg0].unk54 = 0;
+    b = Heroes;
+    h = b + arg0;
+    if (h->hero_name == 9) {
+        return;
+    }
+    g = &D_8005A614[arg0];
+    if (g[0x50] == 9) {
+        return;
+    }
+    SetHeroAction((HeroInfo *)arg0, 0x71);
+    eng = h->hero_eng;
+    eng->unk5D = 1;
+    eng->unk1E = 0x400;
+    st = D_800BC2D0[arg0];
+    func_80018F3C(eng, 1);
+    sub = eng->sub;
+    sub->unk51 = 1;
+    sub->unk74 = D_800BC188[h->hero_name];
+    func_80025B10(eng, 0x50);
+    sub->unk74 = D_800BC19C[h->hero_name];
+    h->hero_score = 0;
+    st[0] = 1;
+    st[2] = 0xB4;
+    st[0x12] = 0;
+    D_800BC46C[arg0] = 0;
+    D_800BC47C[arg0] = 0;
+    nas = SpawnNASById(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1D09, 0x11);
+    nas->UserInfo.user2 = arg0;
+    D_800BC45C[arg0] = (s32)nas->Engine;
+    D_800BC48C[arg0] = 0;
+    if (g[0x5C] != 0) {
+        p = (arg0 * 0x30) + D_800BC210;
+        *(s32 *)(p + 0) = 1;
+        *(s32 *)(p + 4) = 1;
+        *(s32 *)(p + 8) = 0;
+        *(s32 *)(p + 24) = 0;
+        *(s32 *)(p + 28) = 0;
+        *(s32 *)(p + 32) = 0;
+        *(s32 *)(p + 36) = 0;
+        *(s32 *)(p + 40) = 0x8000;
+        *(s32 *)(p + 44) = 0x8000;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B48E4);
 
