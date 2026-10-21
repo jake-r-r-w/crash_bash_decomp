@@ -587,7 +587,65 @@ void func_800B5CD0(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B5E84);
+static inline s32 Chk5E84_C(s32 arg0) {
+    if (Heroes[arg0].hero_move->forward_speed == 0) {
+        SetHeroAction((HeroInfo *)arg0, 0x71);
+        return 1;
+    }
+    return 0;
+}
+
+void func_800B5E84(s32 arg0) {
+    HeroInfo *h;
+    HeroInfo *base;
+    EXTengine *e;
+
+    if (!Chk5CD0_A(arg0)) {
+        if (!Chk5CD0_B(arg0)) {
+            if (!Chk5E84_C(arg0)) {
+                base = Heroes;
+                h = base + arg0;
+                h->hero_move->velocity_enable = 1;
+                func_800B52C8(arg0);
+                switch (func_8008502C(arg0)) {
+                case 8:
+                    e = h->hero_eng;
+                    if (h->hero_pu == 0x15) {
+                        PlaySfx(0x41E, NULL, NULL, 0x1000, 0x1E00, 0);
+                        break;
+                    }
+                    switch (h->hero_name) {
+                    case 1: PlaySfx(0xA, NULL, &e->unk10, 0x1000, 0x1E00, 0); break;
+                    case 2: PlaySfx(0x3C, NULL, &e->unk10, 0x1000, 0x1E00, 0); break;
+                    case 3: PlaySfx(0x6E, NULL, &e->unk10, 0x1000, 0x1E00, 0); break;
+                    case 4: PlaySfx(0xA0, NULL, &e->unk10, 0x1000, 0x1E00, 0); break;
+                    case 7: PlaySfx(0x104, NULL, &e->unk10, 0x1000, 0x1E00, 0); break;
+                    case 8: PlaySfx(0xD2, NULL, &e->unk10, 0x1000, 0x1E00, 0); break;
+                    case 5: PlaySfx(0x136, NULL, &e->unk10, 0x1000, 0x1E00, 0); break;
+                    case 6: PlaySfx(0x168, NULL, &e->unk10, 0x1000, 0x1E00, 0); break;
+                    }
+                    break;
+                case 9:
+                    if (h->hero_pu == 0x15) {
+                        break;
+                    }
+                    switch (h->hero_name) {
+                    case 1: PlaySfx(0xB, NULL, NULL, 0x1000, 0x1E00, 0); break;
+                    case 2: PlaySfx(0x3D, NULL, NULL, 0x1000, 0x1E00, 0); break;
+                    case 3: PlaySfx(0x6F, NULL, NULL, 0x1000, 0x1E00, 0); break;
+                    case 4: PlaySfx(0xA1, NULL, NULL, 0x1000, 0x1E00, 0); break;
+                    case 7: PlaySfx(0x105, NULL, NULL, 0x1000, 0x1E00, 0); break;
+                    case 8: PlaySfx(0xD3, NULL, NULL, 0x1000, 0x1E00, 0); break;
+                    case 5: PlaySfx(0x137, NULL, NULL, 0x1000, 0x1E00, 0); break;
+                    case 6: PlaySfx(0x169, NULL, NULL, 0x1000, 0x1E00, 0); break;
+                    }
+                    break;
+                }
+                func_800B51C8(arg0);
+            }
+        }
+    }
+}
 
 void func_800B6168(s32 arg0) {
     HeroInfo *base = Heroes;

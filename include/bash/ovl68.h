@@ -450,6 +450,8 @@ s32 func_800B7DF0(s32 x, s32 z, s32 id, s32 cur, s32 arg4, s32 arg5);
 typedef struct { u8 pad0[0x20]; s32 unk20; u8 pad24[0xC]; } CoalPlayerRec;
 void func_800B5CD0(s32 arg0);
 
+void func_800B5E84(s32 arg0);
+
 void func_800B6C84(s32 arg0);
 
 void func_800B6F6C(s32 arg0);
