@@ -174,6 +174,22 @@ extern u8 D_800BC210[];
 extern s32 D_800BC2D0[][21];
 extern u8 D_80052F5C[];
 extern s32 D_800BC4E8[];
+
+/* Per-level spawn offsets read by func_800B7948: radius, angle, height. */
+typedef struct Ovl68SpawnOfs {
+    s32 r;
+    s32 ang;
+    s32 y;
+} Ovl68SpawnOfs;
+extern Ovl68SpawnOfs D_800BBA44[];
+
+/* D_8009D87C (declared in bash/8007ee2c.h, which this unit does not include). */
+typedef struct Ovl68Odds {
+    s16 unk0;
+    s16 unk2;
+    s16 unk4;
+} Ovl68Odds;
+extern Ovl68Odds D_8009D87C[];
 extern NAS *D_800BC420[];
 extern NAS *D_800BC424[8];
 extern NAS *D_800BC424[];
@@ -400,6 +416,8 @@ void func_800B5CD0(s32 arg0);
 void func_800B6C84(s32 arg0);
 
 void PlotBarrelGenerator(NAS *nas);
+
+NAS *func_800B7948(s32 arg0);
 
 void func_800B7B80(CoalFlameEng *eng, CoalFlameFux *fux, s32 id);
 

@@ -820,7 +820,65 @@ void InitBarrelCH(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotBarrelCH);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B7948);
+NAS *func_800B7948(s32 arg0) {
+    u8 *g = D_8005A614 + arg0;
+    EXTengine *he = Heroes[arg0].hero_eng;
+    s32 lv = g[0x50];
+    Ovl68SpawnOfs *o = &D_800BBA44[--lv];
+    s32 r = o->r;
+    s32 a = (he->unk1E + o->ang) & 0xFFF;
+    s32 dx = (r * D_80068BD4[(a - 0x400) & 0xFFF].unk2) >> 12;
+    s32 dz = (r * D_80068BD4[a].unk2) >> 12;
+    s32 x = he->unk10.x + dx;
+    s32 y = -o->y;
+    s32 z;
+    s32 old;
+    NAS *nas;
+    EXTengine *e;
+
+    if (x < -0x9FF) {
+        x = -0x9FF;
+    }
+    if (x >= 0xA00) {
+        x = 0x9FF;
+    }
+    z = he->unk10.z + dz;
+    if (z < -0x9FF) {
+        z = -0x9FF;
+    }
+    if (z >= 0xA00) {
+        z = 0x9FF;
+    }
+    nas = SpawnNASById(x, he->unk10.y + y, z, 0x1D02, 0x11);
+    if (nas != NULL) {
+        {
+            CoalPosInner *p = ((CoalGridObj *)nas)->pos;
+            s32 gx = p->x;
+            s32 gz = p->z;
+            s32 idx;
+
+            gx += 0xA00;
+            gz += 0xA00;
+            gx >>= 7;
+            gz >>= 7;
+            idx = gz * 40 + gx;
+            old = D_800BC4E8[idx];
+            D_800BC4E8[idx] = (s32)nas;
+            if (old != 0) {
+                KillNAS((NAS *)old);
+            }
+        }
+        if (g[0x5C] != 0) {
+            nas->UserInfo.status = (nas->UserInfo.status * D_8009D87C[arg0].unk0) / 16;
+        }
+        e = nas->Engine;
+        e->unk1E = he->unk1E;
+        e->unk1C = 0x400;
+        e->unk5E = 1;
+        ((s32 *)nas->FUX)[0x2C / 4] = arg0;
+    }
+    return nas;
+}
 
 void func_800B7B80(CoalFlameEng *eng, CoalFlameFux *fux, s32 id) {
     s32 *grid;
