@@ -6994,7 +6994,8 @@
   "status": "matched"
  },
  "ovl62:800B5788": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-21T06:47:53Z",
+  "status": "matched"
  },
  "ovl62:800B5910": {
   "matched_at": "2026-10-19T07:16:26Z",

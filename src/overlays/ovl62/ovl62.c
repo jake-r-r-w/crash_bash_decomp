@@ -349,7 +349,54 @@ void func_800B5684(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B5788);
+void func_800B5788(s32 arg0) {
+    EXTengine *e = Heroes[arg0].hero_eng;
+    EXTheromove *m = Heroes[arg0].hero_move;
+    s32 step;
+
+    D_8009D714();
+    func_800860D4(arg0);
+    if (m->velocity_calc == 3) {
+        if (m->x_vel != m->x_max) {
+            if (m->x_max != 0) {
+                step = m->x_acc;
+            } else {
+                step = m->x_dec;
+            }
+            if (m->x_vel < m->x_max) {
+                m->x_vel += step;
+                if (m->x_vel > m->x_max) {
+                    m->x_vel = m->x_max;
+                }
+            } else {
+                m->x_vel -= step;
+                if (m->x_vel < m->x_max) {
+                    m->x_vel = m->x_max;
+                }
+            }
+        }
+        if (m->z_vel != m->z_max) {
+            if (m->z_max != 0) {
+                step = m->z_acc;
+            } else {
+                step = m->z_dec;
+            }
+            if (m->z_vel < m->z_max) {
+                m->z_vel += step;
+                if (m->z_vel > m->z_max) {
+                    m->z_vel = m->z_max;
+                }
+            } else {
+                m->z_vel -= step;
+                if (m->z_vel < m->z_max) {
+                    m->z_vel = m->z_max;
+                }
+            }
+        }
+        e->unk10.z += m->z_vel;
+        e->unk10.x += m->x_vel;
+    }
+}
 
 void func_800B5910(void) {
     SLONG_XYZ pos;

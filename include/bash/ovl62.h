@@ -8,6 +8,7 @@
 #include "common.h"
 #include "bash/nas.h"
 
+extern void (*D_8009D714)(void);
 extern u8 D_800546C4[];
 extern u8 D_80052EEC[];
 extern s16 D_8005A65C[2];
@@ -803,6 +804,8 @@ s32 func_800B4260(s32 *arg0, s32 arg1);
 void func_800B5570(s32 player);
 
 void func_800B5684(s32 player);
+
+void func_800B5788(s32 arg0);
 
 void func_800B6258(s32 player);
 
