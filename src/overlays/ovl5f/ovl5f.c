@@ -1091,7 +1091,166 @@ void func_800B9170(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B9430);
+void func_800B9430(s32 player) {
+    TA_player *ta;
+    TA_player *o;
+    EXTengine *eng;
+    EXTengine *e;
+    HeroInfo *h;
+    s32 pad;
+    s32 v;
+    s32 px;
+    s32 pz;
+    s32 c;
+    s32 x;
+    s32 z;
+    s32 d;
+    s32 lim;
+    s32 n;
+    s32 bank;
+    s32 sp;
+    s32 i;
+    s32 hit;
+    u16 name;
+
+    ta = &D_800CAD50[player];
+    eng = Heroes[player].hero_eng;
+    bank = ta->BankAngle;
+    pad = ((PadButtons *)D_80051338)[player].unk50 & 0xF0;
+    if (bank != 0) {
+        eng->unk5E = 1;
+        if (ta->BankAngle > 0) {
+            ta->BankAngle -= 10;
+            if (ta->BankAngle < 3) {
+                ta->BankAngle = 0;
+            }
+        } else {
+            ta->BankAngle += 10;
+            if (ta->BankAngle >= -2) {
+                ta->BankAngle = 0;
+            }
+        }
+    }
+    if (pad != 0) {
+        if (pad & 0x20) {
+            ta->BankAngle -= 20;
+            if (ta->BankAngle < -200) {
+                ta->BankAngle = -200;
+            }
+            eng->unk1E += ta->Speed * 3 / 2;
+        }
+        if (pad & 0x80) {
+            ta->BankAngle += 20;
+            if (ta->BankAngle > 200) {
+                ta->BankAngle = 200;
+            }
+            eng->unk1E -= ta->Speed * 3 / 2;
+        }
+        eng->unk5E = 1;
+        eng->unk1E &= 0xFFF;
+    }
+    eng->unk20 = ta->BankAngle & 0xFFF;
+    c = ((PadButtons *)D_80051338)[player].unk50;
+    if (c & 0x800) {
+        goto thrust;
+    }
+    if (c & 0x200) {
+    thrust:
+        v = ta->Speed;
+        px = v * D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2;
+        pz = v * D_80068BD4[(u16)eng->unk1E & 0xFFF].unk2;
+        ta->SpeedX += -(px >> 12) >> 2;
+        ta->SpeedZ += -(pz >> 12) >> 2;
+    }
+    sp = ta->SpeedX;
+    c = ta->Speed;
+    if (c < sp || sp < (c = -c)) {
+        ta->SpeedX = c;
+    }
+    sp = ta->SpeedZ;
+    c = ta->Speed;
+    if (c < sp || sp < (c = -c)) {
+        ta->SpeedZ = c;
+    }
+    x = eng->unk10.x + ta->SpeedX;
+    if (ta->SpeedX > 0) {
+        ta->SpeedX--;
+        if (D_800CB100 < x) {
+            x = D_800CB100;
+            ta->SpeedX = -ta->SpeedX;
+        }
+    } else {
+        if (ta->SpeedX != 0) {
+            ta->SpeedX++;
+        }
+        if (x < 0x100) {
+            x = 0x100;
+            ta->SpeedX = -ta->SpeedX;
+        }
+    }
+    z = eng->unk10.z + ta->SpeedZ;
+    if (ta->SpeedZ > 0) {
+        ta->SpeedZ--;
+        if (D_800CB104 < z) {
+            z = D_800CB104;
+            ta->SpeedZ = -ta->SpeedZ;
+        }
+    } else {
+        if (ta->SpeedZ != 0) {
+            ta->SpeedZ++;
+        }
+        if (z < 0x100) {
+            z = 0x100;
+            ta->SpeedZ = -ta->SpeedZ;
+        }
+    }
+    lim = 0x1C0;
+    for (i = 0; i < 4; i++) {
+        if (i == player) {
+            continue;
+        }
+        h = &Heroes[i];
+        name = h->hero_name;
+        if (name == 9 &&
+            (((Ovl5fModeView *)D_8005A614)->mode != name || D_800CB210 != 0 ||
+             (u32)(i - 2) >= 2)) {
+            continue;
+        }
+        if (h->hero_status & 0xC000) {
+            continue;
+        }
+        e = h->hero_eng;
+        d = x - e->unk10.x;
+        if (d < -0x1C0) {
+            continue;
+        }
+        if (lim < d) {
+            continue;
+        }
+        d = z - e->unk10.z;
+        n = -0x1C0;
+        if (n < d && d < 0x1C0) {
+            hit = i;
+            goto found;
+        }
+    }
+    hit = -1;
+found:
+    if (hit < 0) {
+        eng->unk10.x = x;
+        eng->unk10.z = z;
+        return;
+    }
+    if (D_800CB0E0 == 0) {
+        D_800CB0E8 = eng;
+        D_800CB0E0 = -1;
+    }
+    o = &D_800CAD50[hit];
+    o->SpeedX += ta->SpeedX / 2;
+    ta->SpeedX /= 4;
+    o->SpeedZ += ta->SpeedZ / 2;
+    ta->SpeedZ /= 4;
+}
 
 void func_800B993C(s32 player) {
     EXTengine *eng;

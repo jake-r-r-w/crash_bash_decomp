@@ -648,6 +648,8 @@ void func_800C57B0(NAS *nas, s32 id);
         }                                                                   \
     }
 
+void func_800B9430(s32 player);
+
 void func_800B993C(s32 player);
 
 void func_800C5BCC(NAS *nas, s32 id);
