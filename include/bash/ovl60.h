@@ -443,6 +443,8 @@ void func_800BC490(s32 arg0);
 
 s32 func_800BD520(s32 hero);
 
+s32 func_800BD630(s32 hero);
+
 s32 func_800BDE24(s32 arg0);
 
 #endif /* BASH_OVL60_H */
