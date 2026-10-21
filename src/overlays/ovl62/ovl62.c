@@ -3826,7 +3826,72 @@ void func_800CFB7C(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CFC58);
+void func_800CFC58(s32 player) {
+    HeroInfo *hero;
+    Ovl62HitExt *ext;
+    EXTheromove *move;
+    u8 *g;
+    u16 status;
+    HeroInfo *base;
+    HeroInfo *base2;
+    HeroInfo *h;
+
+    if (func_800D2D2C() == 0) {
+        base = Heroes;
+        hero = &base[player];
+        ext = FindExtension(hero->hero, 0x20000000);
+        if (ext != NULL) {
+            if (hero->hero_last_mode == 0x52) {
+                ext->unkAC = 1;
+            }
+            if (hero->hero_last_mode == 0x4C) {
+                ext->unkAC = 1;
+            }
+            if (hero->hero_last_mode != 0x4C && hero->hero_last_mode != 0x52
+                && hero->hero_last_mode != 0x4B) {
+                move = hero->hero_move;
+                if (move != NULL) {
+                    move->z_dir = 0;
+                }
+                if (ext->unk24 == 0) {
+                    SetHeroSeq((HeroInfo *)player, 0x3D);
+                }
+                hero->hero_eng->sub->unk68 = 0;
+                ext->speed = csqrt(move->x_vel * move->x_vel + move->z_vel * move->z_vel) >> 6;
+                if (ext->speed >= 0x4A || ext->unkA8 != 0) {
+                    hero->hero_anim->Aindex = 0x21;
+                    status = hero->hero_status;
+                    if (!(status & 0x200)) {
+                        hero->hero_status = status | 0x2000;
+                    }
+                } else if (ext->unk24 == 0) {
+                    PlaySfx(0x45C, &hero->hero_eng->sfx, NULL, 0x1000, 0x1E00, 0);
+                }
+            }
+            if (D_8005A648 == 0x12) {
+                if (func_800CAC20(player) != 0) {
+                    Heroes[player].hero_anim->Aindex = 0x21;
+                }
+            }
+            g = D_8005A614;
+            if (*(u16 *)(g + 0x32) & 0x80) {
+                if (g[player + 0x5C] == 0 && *(s16 *)(g + 0x34) == 0x14) {
+                    Heroes[player].hero_anim->Aindex = 0x21;
+                }
+            }
+            base2 = Heroes;
+            h = &base2[player];
+            if (h->hero_eng->unk10.z >= -0x3E7) {
+                h->hero_eng->sub->unk68 = 0x200;
+            }
+            if (D_8005A648 == 0x16) {
+                if (h->hero_eng->unk10.z >= -0x3E7) {
+                    h->hero_eng->sub->unk68 = 0x320;
+                }
+            }
+        }
+    }
+}
 
 void func_800CFF44(s32 player) {
     HeroInfo *hero;

@@ -1041,4 +1041,17 @@ s32 func_800D32CC(s32 player);
 
 s32 func_800D3394(s32 player);
 
+/* A hero's 0x20000000 extension as func_800CFC58 uses it. */
+typedef struct Ovl62HitExt {
+    /* 0x00 */ u8 pad0[0x18];
+    /* 0x18 */ s32 speed;
+    /* 0x1C */ u8 pad1C[0x24 - 0x1C];
+    /* 0x24 */ s32 unk24;
+    /* 0x28 */ u8 pad28[0xA8 - 0x28];
+    /* 0xA8 */ s32 unkA8;
+    /* 0xAC */ s32 unkAC;
+} Ovl62HitExt;
+
+void func_800CFC58(s32 player);
+
 #endif /* BASH_OVL62_H */

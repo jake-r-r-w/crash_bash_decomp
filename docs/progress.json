@@ -19,9 +19,9 @@
    "size": 788
   }
  ],
- "commit": "a929d0fd25",
+ "commit": "547e2a664b",
  "game": "SCUS_945.70",
- "generated": "2026-10-21T08:52:51Z",
+ "generated": "2026-10-21T08:53:06Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -163016,9 +163016,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "547e2a664b",
+   "data_b": 5328,
+   "data_tb": 606943,
+   "game_all_f": 2537,
+   "game_b": 655508,
+   "game_c_f": 2313,
+   "game_f": 2313,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 2090,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-21T08:53:06Z",
+   "units": {
+    "engine": [
+     121412,
+     355
+    ],
+    "main exe": [
+     124840,
+     575
+    ],
+    "ovl5d": [
+     28652,
+     86
+    ],
+    "ovl5e": [
+     30032,
+     70
+    ],
+    "ovl5f": [
+     31348,
+     143
+    ],
+    "ovl60": [
+     41416,
+     161
+    ],
+    "ovl61": [
+     55000,
+     97
+    ],
+    "ovl62": [
+     43644,
+     172
+    ],
+    "ovl63": [
+     29956,
+     109
+    ],
+    "ovl64": [
+     16684,
+     47
+    ],
+    "ovl65": [
+     19232,
+     66
+    ],
+    "ovl66": [
+     15220,
+     72
+    ],
+    "ovl67": [
+     34660,
+     114
+    ],
+    "ovl68": [
+     21496,
+     83
+    ],
+    "ovl69": [
+     10856,
+     69
+    ],
+    "ovl6a": [
+     31060,
+     94
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-21T08:53:04Z",
+   "auto": true,
+   "name": "func_800CFC58",
+   "seg": "overlays/ovl62/ovl62",
+   "size": 748,
+   "tries": 0
+  },
   {
    "at": "2026-10-21T08:52:49Z",
    "auto": true,
@@ -163130,14 +163224,6 @@
    "seg": "overlays/ovl64/ovl64",
    "size": 724,
    "tries": 0
-  },
-  {
-   "at": "2026-10-21T08:34:03Z",
-   "auto": true,
-   "name": "PlotTumbler",
-   "seg": "overlays/ovl5d/ovl5d",
-   "size": 728,
-   "tries": 0
   }
  ],
  "summary": {
@@ -163153,15 +163239,15 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 3,
-   "c_f": 2312,
-   "done_b": 654760,
-   "done_f": 2312,
+   "c_f": 2313,
+   "done_b": 655508,
+   "done_f": 2313,
    "named_f": 345,
-   "pct": 64.25288213566547,
+   "pct": 64.3262848417524,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2537,
-   "typed_f": 2089
+   "typed_f": 2090
   },
   "lib": {
    "all_f": 566,
@@ -163331,20 +163417,20 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
-    "c_f": 171,
-    "done_b": 42896,
-    "done_f": 171,
+    "c_f": 172,
+    "done_b": 43644,
+    "done_f": 172,
     "file": "ovl62.bin",
     "files": 1,
     "lib": false,
     "named_f": 60,
-    "pct": 32.86747578766703,
+    "pct": 33.440603162927545,
     "phase": 4,
     "sony_b": 0,
     "title": "Polar",
     "total_b": 130512,
     "total_f": 216,
-    "typed_f": 160,
+    "typed_f": 161,
     "unit": "ovl62"
    },
    {
