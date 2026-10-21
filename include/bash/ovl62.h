@@ -94,6 +94,12 @@ typedef struct Ovl62ModeView {
     /* 0x34 */ s16 mode;
 } Ovl62ModeView;
 
+/* D_8005A614 as func_800B649C reads it. */
+typedef struct Ovl62GameView {
+    /* 0x00 */ u8 pad0[0x6C];
+    /* 0x6C */ s32 unk6C;
+} Ovl62GameView;
+
 /* D_80051640 as the camera func_800CACC0 sets up. */
 typedef struct Ovl62Cam {
     /* 0x00 */ CamXYZ eye;

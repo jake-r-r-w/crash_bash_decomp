@@ -601,7 +601,80 @@ void func_800B6258(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B649C);
+void func_800B649C(s32 player) {
+    Ovl62Fux *fux;
+    s32 i;
+    s32 n;
+    SLONG_XYZ pos;
+    HeroInfo *h;
+    HeroInfo *me;
+    HeroInfo *base;
+    HeroInfo *p;
+    s32 best;
+    s32 min;
+
+    fux = (Ovl62Fux *)Heroes[player].hero->FUX;
+    if (fux == NULL) {
+        return;
+    }
+    for (n = i = 0, p = Heroes; i < 4; i++, p++) {
+        if (p->hero_status & 0x2000) {
+            n++;
+        }
+        fux->state = 5;
+        if (n >= 3) {
+            return;
+        }
+    }
+    fux->target = Random(4);
+    n = 0;
+    fux->unk3C = 1;
+    for (;;) {
+        if (func_800BCF08(player, fux->target) != 0) {
+            n++;
+            fux->target = (fux->target + 1) & 3;
+        }
+        if (fux->target != player && !(Heroes[fux->target].hero_status & 0x2000)) {
+            break;
+        }
+        fux->target = (fux->target + 1) & 3;
+        n++;
+        if (((Ovl62GameView *)D_8005A614)->unk6C != 0 && n >= 3) {
+            fux->state = 5;
+            fux->func = func_800CB6B4;
+            return;
+        }
+    }
+    if (!(fux->unk34 & 2)) {
+        return;
+    }
+    best = -1;
+    i = 0;
+    base = Heroes;
+    me = &base[player];
+    h = base;
+loop:
+    do {
+        if (i < 4) {
+            min = 0x07FFFFFF;
+            if (i != player && func_800BCF08(player, i) == 0 && !(h->hero_status & 0x2000)) {
+                pos = h->hero_eng->unk10;
+                if (func_8008CEB0((u8 *)&pos, (u8 *)&me->hero_eng->unk10) < min) {
+                    best = i;
+                }
+            }
+            h++;
+            i++;
+            goto loop;
+        }
+    } while (0);
+    if (best == -1) {
+        fux->state = 5;
+        fux->func = func_800CB6B4;
+        return;
+    }
+    fux->target = best;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B6708);
 
