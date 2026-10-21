@@ -125,10 +125,15 @@ void func_800BCE6C(void);
 
 /* A scene object in the list at D_80058AD0 + 0x1C (func_800B714C). */
 typedef struct Ovl65Obj {
-    u8 pad0[0x5C];
+    u32 flags;             /* 0x00 */
+    u8 pad4[0x58];
     struct Ovl65Obj *next; /* 0x5C */
     u8 pad60[0x14];
     u16 index;             /* 0x74 */
+    s16 scale;             /* 0x76 */
+    s32 r;                 /* 0x78 */
+    s32 g;                 /* 0x7C */
+    s32 b;                 /* 0x80 */
 } Ovl65Obj;
 
 typedef struct Ovl65Game {
@@ -274,7 +279,8 @@ typedef struct Ovl65AiExt {
 
 extern u8 D_800BDA7C[], D_800BDA5C[], D_8008B29C[], D_8008B418[];
 extern u8 D_800BD948[], D_800BD95C[], D_800BD970[], D_800BD97C[], D_800BD994[], D_800BD9A8[];
-extern s32 D_800BDB88, D_800BDB8C;
+extern Ovl65Obj *D_800BDB88, *D_800BDB8C;
+extern s32 D_800BDB90, D_800BDB94, D_800BDB98, D_800BDB9C, D_800BDBA0;
 void func_800B69F4();
 void func_800B9930();
 void func_800B9778();

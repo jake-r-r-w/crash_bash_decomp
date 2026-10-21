@@ -1093,7 +1093,93 @@ void func_800B714C(void) {
     D_800BDC6C[2] = D_800BDB84;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B7300);
+void func_800B7300(void) {
+    Ovl65Obj *cur;
+    Ovl65Obj **p;
+    Ovl65Obj **q;
+    s32 i;
+    s32 j;
+
+    if (!(D_8005A646 & 0x80)) {
+        return;
+    }
+    if (D_800BDB94 == 0xF) {
+        PlaySfx(0x6CF, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+    if (D_800BDB94-- < 0) {
+        D_800BDB94 = 0xB4;
+        D_800BDBA0 = 0x1E;
+        D_800BDB9C = D_800BDB90;
+        D_800BDB90 = Random(3);
+        if (D_800BDB90 == D_800BDB9C) {
+            D_800BDB90++;
+        }
+        if (D_800BDB90 >= 3) {
+            D_800BDB90 = 0;
+        }
+        if (D_800BDB90 == 0) {
+            D_800BDB88 = D_800BDB7C;
+        }
+        if (D_800BDB90 == 1) {
+            D_800BDB88 = D_800BDB80;
+        }
+        if (D_800BDB90 == 2) {
+            D_800BDB88 = D_800BDB84;
+        }
+        if (D_800BDB90 == 0) {
+            D_800BDB8C = D_800BDC78[0];
+        }
+        if (D_800BDB90 == 1) {
+            D_800BDB8C = D_800BDC78[1];
+        }
+        if (D_800BDB90 == 2) {
+            D_800BDB8C = D_800BDC78[2];
+        }
+        D_800BDB98 = 0;
+        return;
+    }
+    if (D_800BDBA0-- < 0) {
+        D_800BDB9C = D_800BDB90;
+    }
+    if (D_800BDB88 != NULL) {
+        D_800BDB88->flags |= 0x40000000;
+        D_800BDB88->scale = abs((D_80068BD4[((D_800BDB98 & 0xFFF) - 0x400) & 0xFFF].unk2 * 3) >> 3);
+        if (D_800BDB90 == 2) {
+            D_800BDB88->r = 0xFFF;
+            D_800BDB88->g = 0;
+            D_800BDB88->b = 0;
+        }
+        if (D_800BDB90 == 1) {
+            D_800BDB88->r = 0xFFF;
+            D_800BDB88->g = 0xFFF;
+            D_800BDB88->b = 0;
+        }
+        if (D_800BDB90 == 0) {
+            D_800BDB88->r = 0;
+            D_800BDB88->g = 0xFFF;
+            D_800BDB88->b = 0;
+        }
+        D_800BDB98 += 0x30;
+        for (i = 0, p = D_800BDC6C; i < 3; i++, p++) {
+            if (D_800BDB88 != *p) {
+                (*p)->scale -= (*p)->scale >> 1;
+            }
+        }
+    }
+    if (D_800BDB8C != NULL) {
+        D_800BDB8C->flags |= 0x40000000;
+        D_800BDB8C->scale = abs(D_80068BD4[((D_800BDB98 & 0xFFF) - 0x400) & 0xFFF].unk2);
+        cur = D_800BDB8C;
+        cur->r = 0;
+        cur->g = 0;
+        cur->b = 0;
+        for (j = 0, q = D_800BDC78; j < 3; j++, q++) {
+            if (cur != *q) {
+                (*q)->scale -= (*q)->scale >> 1;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B7664);
 

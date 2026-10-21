@@ -25,9 +25,9 @@
    "size": 744
   }
  ],
- "commit": "e5d1614e89",
+ "commit": "e2b0ea2aba",
  "game": "SCUS_945.70",
- "generated": "2026-10-21T11:23:38Z",
+ "generated": "2026-10-21T11:27:45Z",
  "hacks": [
   {
    "commit": "f69a346bbb",
@@ -166840,9 +166840,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "e2b0ea2aba",
+   "data_b": 5716,
+   "data_tb": 606943,
+   "game_all_f": 2537,
+   "game_b": 690420,
+   "game_c_f": 2357,
+   "game_f": 2357,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 2132,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-21T11:27:45Z",
+   "units": {
+    "engine": [
+     121412,
+     355
+    ],
+    "main exe": [
+     124840,
+     575
+    ],
+    "ovl5d": [
+     33416,
+     92
+    ],
+    "ovl5e": [
+     30984,
+     71
+    ],
+    "ovl5f": [
+     36076,
+     149
+    ],
+    "ovl60": [
+     42960,
+     163
+    ],
+    "ovl61": [
+     55000,
+     97
+    ],
+    "ovl62": [
+     48304,
+     178
+    ],
+    "ovl63": [
+     33856,
+     114
+    ],
+    "ovl64": [
+     18272,
+     49
+    ],
+    "ovl65": [
+     20844,
+     68
+    ],
+    "ovl66": [
+     15220,
+     72
+    ],
+    "ovl67": [
+     40284,
+     121
+    ],
+    "ovl68": [
+     23132,
+     85
+    ],
+    "ovl69": [
+     14760,
+     74
+    ],
+    "ovl6a": [
+     31060,
+     94
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-21T11:27:44Z",
+   "auto": true,
+   "name": "func_800B7300",
+   "seg": "overlays/ovl65/ovl65",
+   "size": 868,
+   "tries": 0
+  },
   {
    "at": "2026-10-21T11:23:35Z",
    "auto": true,
@@ -166954,14 +167048,6 @@
    "seg": "overlays/ovl5d/ovl5d",
    "size": 808,
    "tries": 0
-  },
-  {
-   "at": "2026-10-21T10:58:59Z",
-   "auto": true,
-   "name": "func_800B87DC",
-   "seg": "overlays/ovl60/ovl60",
-   "size": 796,
-   "tries": 0
   }
  ],
  "summary": {
@@ -166977,15 +167063,15 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 4,
-   "c_f": 2356,
-   "done_b": 689552,
-   "done_f": 2356,
+   "c_f": 2357,
+   "done_b": 690420,
+   "done_f": 2357,
    "named_f": 345,
-   "pct": 67.66708928830778,
+   "pct": 67.75226782959581,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2537,
-   "typed_f": 2131
+   "typed_f": 2132
   },
   "lib": {
    "all_f": 566,
@@ -167218,20 +167304,20 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
-    "c_f": 67,
-    "done_b": 19976,
-    "done_f": 67,
+    "c_f": 68,
+    "done_b": 20844,
+    "done_f": 68,
     "file": "ovl65.bin",
     "files": 1,
     "lib": false,
     "named_f": 6,
-    "pct": 48.46191169335274,
+    "pct": 50.56768558951965,
     "phase": 5,
     "sony_b": 0,
     "title": "Dino",
     "total_b": 41220,
     "total_f": 80,
-    "typed_f": 62,
+    "typed_f": 63,
     "unit": "ovl65"
    },
    {
