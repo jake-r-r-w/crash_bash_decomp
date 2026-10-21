@@ -2609,7 +2609,99 @@ void Plot_PogoBanker(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoMushroom);
+void Plot_PogoMushroom(NAS *nas) {
+    s32 x;
+    s32 z;
+    EXTengine *eng;
+    Ovl60CellPos *pos;
+    Ovl60Cell *c;
+    s32 cx;
+    s32 cz;
+    s32 scale;
+    s32 i;
+    s32 j;
+
+    eng = nas->Engine;
+    if (eng == NULL) {
+        return;
+    }
+    switch (nas->UserInfo.status) {
+    case 0:
+        if (--nas->UserInfo.user1 > 0) {
+            break;
+        }
+        if (D_8005A644 & 0x801) {
+            break;
+        }
+        if (func_800BBF00(&x, &z) == 0) {
+            break;
+        }
+        pos = D_800C53DC[x][z].unk4;
+        if (pos == NULL) {
+            break;
+        }
+        eng->unk10.x = pos->x;
+        eng->unk10.y = D_8005A5D8;
+        eng->unk10.z = pos->z;
+        Ovl60_SpawnPuff((s32 *)&eng->unk10, 0, D_80053ABC);
+        nas->UserInfo.status = 6;
+        nas->UserInfo.user1 = 0x12;
+        break;
+    case 6:
+        if (--nas->UserInfo.user1 <= 0) {
+            nas->UserInfo.status = 1;
+        }
+        break;
+    case 1:
+        cx = (eng->unk10.x + 0x800) >> 9;
+        cz = (eng->unk10.z + 0x800) >> 9;
+        nas->UserInfo.status = 0;
+        if (func_800BC04C(cx, cz) != 0) {
+            Ovl60Cell *cb = D_800C53DC[0];
+            c = (Ovl60Cell *)(cz * sizeof(Ovl60Cell) + cx * sizeof(D_800C53DC[0]) + (u32)cb);
+            c->hero = (HeroInfo *)nas;
+            if (c->unk4 != NULL) {
+                eng->unk2C.x = 0x1000;
+                eng->unk2C.z = 0x1000;
+                eng->unk2C.y = 0;
+                eng->unk5E = 1;
+                eng->flags |= 0x8000;
+                nas->UserInfo.status = 2;
+                nas->UserInfo.user1 = 0;
+                PlaySfx(0x528, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            }
+        }
+        break;
+    case 2:
+        scale = D_800C45FC[nas->UserInfo.user1];
+        if (++nas->UserInfo.user1 >= 0x10) {
+            scale = 0x1000;
+            nas->UserInfo.user1 = Random(0x28) + 0x28;
+            nas->UserInfo.status = 3;
+        }
+        eng->unk2C.y = scale;
+        eng->unk5E = 1;
+        break;
+    case 3:
+        if (--nas->UserInfo.user1 <= 0) {
+            nas->UserInfo.status = 5;
+        }
+        break;
+    case 5:
+        for (i = 0; i < 8; i++) {
+            for (j = 0; j < 8; j++) {
+                if (D_800C53DC[i][j].hero == (HeroInfo *)nas) {
+                    D_800C53DC[i][j].hero = NULL;
+                }
+            }
+        }
+        Ovl60_SpawnPuff((s32 *)&eng->unk10, 1, D_80053B9C);
+        eng->flags &= ~0x8000;
+        nas->UserInfo.status = 0;
+        nas->UserInfo.user1 = Random(0x14) + 0x1E;
+        break;
+    }
+}
 
 void func_800BB724(s32 arg0, s32 arg1) {
     s32 i;

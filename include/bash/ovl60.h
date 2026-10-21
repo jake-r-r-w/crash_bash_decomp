@@ -156,6 +156,30 @@ void func_800C1004(s32 arg0);
 void func_800C02AC(EXTengine *eng, s32 angle);
 extern u8 D_80053B9C[];
 extern u8 D_80053ABC[];
+/* Plot_PogoMushroom's 16-step y scale bounce. */
+extern s32 D_800C45FC[16];
+/* Plot_PogoMushroom's puff of smoke at pos (type 0x1605, flags 0x11). */
+static inline void Ovl60_SpawnPuff(s32 *pos, s32 mode, u8 *p) {
+    NAS *obj;
+    s32 *ext;
+
+    obj = SpawnNASById(pos[0], pos[1], pos[2], 0x1605, 0x11);
+    if (obj != NULL) {
+        ext = FindExtension(obj, 0x10000000);
+        if (ext != NULL) {
+            ext[3] = mode;
+            ext[6] = 0x100;
+            if (p != NULL) {
+                ext[8] = 5;
+                ((s32 *)obj->Engine->sub)[0x6C / 4] = (s32)p;
+            } else {
+                ext[8] = 1;
+            }
+            ext[10] = 0;
+            obj->InitDelete(obj);
+        }
+    }
+}
 extern u8 D_80053BD4[];
 extern ScriptInit D_800C4680;
 extern s32 D_800C5308;
