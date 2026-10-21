@@ -1914,7 +1914,56 @@ done:;
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BB840);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BBB08);
+s32 func_800BBB08(s32 *arg0, const s32 arg1, s32 arg2) {
+    s32 i;
+    s32 j;
+    s32 n;
+    Ovl60Cell *c;
+    u16 t;
+    s32 k;
+    s32 r;
+
+    n = 0;
+    for (j = 0;; j++) {
+        if (j >= 8) goto done;
+        for (i = 0;; i++) {
+            r = j * 8;
+            k = 10;
+            if (i >= 8) goto next;
+            if (arg0[r + i] != 0) continue;
+            c = (Ovl60Cell *)(i * sizeof(D_800C53DC[0]) + j * sizeof(Ovl60Cell) + (u32)D_800C53DC);
+            if (c->unkE != 0) continue;
+            t = c->unk12;
+            if (t == 6) continue;
+            if (t == 5) continue;
+            if (t == 7) continue;
+            if (arg2 != 0) {
+                c->unk14 = k;
+                c->unk12 = 0;
+                c->unk16 = c->unkA;
+                c->unkA = arg1;
+                if (D_8005A648 == 0xB) {
+                    if (i > 0) {
+                        func_800B7C3C(i - 1, j);
+                    }
+                    if (i < 7) {
+                        func_800B7C3C(i + 1, j);
+                    }
+                    if (j > 0) {
+                        func_800B7C3C(i, j - 1);
+                    }
+                    if (j < 7) {
+                        func_800B7C3C(i, j + 1);
+                    }
+                }
+            }
+            n++;
+        }
+    next:;
+    }
+done:
+    return n;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BBC94);
 
