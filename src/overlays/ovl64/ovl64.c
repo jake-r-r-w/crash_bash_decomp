@@ -750,7 +750,62 @@ void func_800B9088(void) {
     D_8005AA70[8] = 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B90D0);
+void func_800B90D0(s32 arg0) {
+    HeroInfo *h;
+    EXTheromove *m;
+    PadStick *pad;
+    HeroInfo *hb;
+    HeroInfo *hb2;
+    HeroInfo *h2;
+    PadStick *pb;
+    u16 *row;
+    s32 speed;
+    u16 rw;
+
+    hb = Heroes;
+    h = hb + arg0;
+    m = h->hero_move;
+    m->forward_speed = 0;
+    speed = (D_8009D6F4 + h->hero_name * 3)[1] + (D_8009D87C[arg0][0] >> 2);
+    (D_8009D6F4 + h->hero_name * 3)[2] = speed;
+    if (h->hero_frozen != 0) {
+        ((PadStick *)D_80051338)[arg0].dirHeld2 = 0;
+        ((PadStick *)D_80051338)[arg0].dirPressed = 0;
+    }
+    pb = (PadStick *)D_80051338;
+    pad = pb + arg0;
+    if ((pad->flags & 1) || h->hero_ai->AImode != 0) {
+        if (pad->dirHeld2 & 0xF0) {
+            m->forward_angle = *(u16 *)&pad->angle + 0x800;
+            if (m->velocity_enable != 0) {
+                rw = m->run_walk;
+                if (h->hero_object != NULL) {
+                    if (rw != 0) {
+                        rw--;
+                    }
+                }
+                row = D_8009D6F4;
+                hb2 = Heroes;
+                h2 = hb2 + arg0;
+                speed = (row + h2->hero_name * 3)[rw];
+                m->forward_speed = speed;
+            }
+        } else {
+            if (pad->dirHeld2 & 0x100) {
+                m->forward_angle -= 0x100;
+            }
+            if (pad->dirHeld2 & 0x200) {
+                m->forward_angle += 0x100;
+            }
+            m->x_max = 0;
+            m->z_max = 0;
+            m->facing_angle = m->forward_angle = m->forward_angle & 0xFFF;
+        }
+    }
+    speed = m->forward_angle & 0xFFF;
+    m->forward_angle = speed;
+    m->facing_angle = speed;
+}
 
 void func_800B92BC(s32 arg0) {
     HeroInfo *h;

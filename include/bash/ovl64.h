@@ -123,6 +123,7 @@ extern s32 D_8005B5B8;
 extern HeroInfo Heroes[4];
 extern s32 D_8005A680;
 extern s16 D_8009D87C[][3];
+extern u16 *D_8009D6F4;
 extern u16 *D_8009D6EC;
 extern u16 D_800AD12C;
 FlagRecord *func_80025A48(EXTengine *eng, u32 flag);
