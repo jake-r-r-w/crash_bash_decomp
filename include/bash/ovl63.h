@@ -253,6 +253,22 @@ typedef struct Ovl63GameView2 {
 } Ovl63GameView2;
 #define G63B ((Ovl63GameView2 *)D_8005A614)
 
+/* One of four random voice sfx (func_800BBA04; as SFX4 in ovl65.h). */
+#define OVL63_SFX4(a, b, c, d)                              \
+    r = Random(4);                                          \
+    if (r == 0) {                                           \
+        PlaySfx(a, NULL, NULL, 0x1000, 0x1E00, 0);          \
+    }                                                       \
+    if (r == 1) {                                           \
+        PlaySfx(b, NULL, NULL, 0x1000, 0x1E00, 0);          \
+    }                                                       \
+    if (r == 2) {                                           \
+        PlaySfx(c, NULL, NULL, 0x1000, 0x1E00, 0);          \
+    }                                                       \
+    if (r == 3) {                                           \
+        PlaySfx(d, NULL, NULL, 0x1000, 0x1E00, 0);          \
+    }
+
 void func_8007EB1C(s32 arg0, s32 arg1, s32 arg2);
 void func_8007B7FC(u32 a, u32 b);
 extern s32 D_800C6BA4;
@@ -1017,6 +1033,8 @@ s32 func_800B6DBC(SLONG_XYZ *arg0, s32 *arg1);
 
 void func_800B8FD8();
 void func_800B980C();
+void func_800BBA04(s32 player);
+
 void func_800BD99C();
 void func_800BCE88();
 

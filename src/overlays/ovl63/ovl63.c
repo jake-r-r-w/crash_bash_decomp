@@ -1991,7 +1991,87 @@ void func_800BB878(s32 player) {
     func_800BC984(player);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BBA04);
+void func_800BBA04(s32 player) {
+    HeroInfo *h;
+    Ovl63SpawnExt *f;
+    EXTheromove *m;
+    HeroInfo *base;
+    s32 r;
+
+    func_800C5400(player);
+    if (G63->unk34 != 0x19) {
+        SetHeroSeq((HeroInfo *)player, 0x4A);
+    }
+    func_80028018(player, 0xA);
+    ((void (*)(s32, s32, s32))func_80027F7C)(player, 0xA, 0xFF);
+    base = Heroes;
+    h = &base[player];
+    f = (Ovl63SpawnExt *)h->hero->FUX;
+    if (f != NULL) {
+        f->unkC = 0x3C;
+        m = h->hero_move;
+        if (m != NULL) {
+            m->jump_acc = 0xA;
+            m->jump_dec = 0x14;
+            m->jump_vel = -0xA0;
+        }
+        if (G63->unk34 != 0x19) {
+            switch (h->hero_name) {
+            case 1:
+                OVL63_SFX4(3, 4, 5, 6);
+                break;
+            case 2:
+                OVL63_SFX4(0x35, 0x36, 0x37, 0x38);
+                break;
+            case 3:
+                OVL63_SFX4(0x67, 0x68, 0x69, 0x6A);
+                break;
+            case 4:
+                OVL63_SFX4(0x99, 0x9A, 0x9B, 0x9C);
+                break;
+            case 5:
+                OVL63_SFX4(0x12F, 0x130, 0x131, 0x132);
+                break;
+            case 7:
+                OVL63_SFX4(0xFD, 0xFE, 0xFF, 0x100);
+                break;
+            case 8:
+                OVL63_SFX4(0xCB, 0xCC, 0xCD, 0xCE);
+                break;
+            case 6:
+                OVL63_SFX4(0x161, 0x162, 0x163, 0x164);
+                break;
+            }
+        } else {
+            switch (h->hero_name) {
+            case 1:
+                PlaySfx(0x687, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 2:
+                PlaySfx(0x686, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 3:
+                PlaySfx(0x688, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 4:
+                PlaySfx(0x685, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 5:
+                PlaySfx(0x68C, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 7:
+                PlaySfx(0x68B, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 8:
+                PlaySfx(0x689, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            case 6:
+                PlaySfx(0x68A, NULL, NULL, 0x1000, 0x1E00, 0);
+                break;
+            }
+        }
+    }
+}
 
 void func_800BC0A4(s32 arg0) {
     HeroInfo *hero;
