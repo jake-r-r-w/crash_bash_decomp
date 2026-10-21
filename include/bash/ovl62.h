@@ -1061,4 +1061,6 @@ void func_800CFC58(s32 player);
 
 void func_800D0060(s32 player);
 
+void func_800D191C(s32 player);
+
 #endif /* BASH_OVL62_H */

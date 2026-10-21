@@ -4344,7 +4344,91 @@ void func_800D17E8(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800D191C);
+void func_800D191C(s32 player) {
+    HeroInfo *info;
+    HeroInfo *h;
+    EXTheromove *move;
+    Ext20 *ext;
+    s32 rnd;
+    s32 sfx;
+    s32 speed;
+    s32 off;
+    u8 *base;
+
+    rnd = Random(6);
+    off = player * sizeof(HeroInfo);
+    info = (HeroInfo *)((u8 *)Heroes + off);
+    sfx = 0;
+    info->hero_eng->sub->unk68 = 0;
+    speed = 0;
+    if (info->hero_eng->sfx != NULL) {
+        StopSfx(info->hero_eng->sfx);
+    }
+    ext = FindExtension(info->hero, 0x20000000);
+    if (ext != NULL) {
+        ext->unk14 = 0;
+        ext->state = 1;
+    }
+    info->hero_eng->unk5D = 0;
+    info->hero_eng->unk1C = 0;
+    move = info->hero_move;
+    if (move != NULL) {
+        speed = csqrt(move->x_vel * move->x_vel + move->z_vel * move->z_vel) >> 6;
+        move->z_dir = 0;
+        move->x_acc = 4;
+        move->x_dec = 2;
+        move->z_acc = 4;
+        move->z_dec = 2;
+    }
+    if (info->hero_name == 1) {
+        info->hero_eng->sub->unk6C = D_800547DC;
+    }
+    if (info->hero_name == 2) {
+        info->hero_eng->sub->unk6C = D_80054814;
+    }
+    if (info->hero_name == 5) {
+        info->hero_eng->sub->unk6C = D_80054884;
+    }
+    if (info->hero_name == 3) {
+        info->hero_eng->sub->unk6C = D_8005484C;
+    }
+    if (info->hero_name == 7) {
+        info->hero_eng->sub->unk6C = D_800548BC;
+    }
+    if (info->hero_name == 4) {
+        info->hero_eng->sub->unk6C = D_800548F4;
+    }
+    base = (u8 *)Heroes;
+    if (info->hero_name == 6) {
+        info->hero_eng->sub->unk6C = D_80054AEC;
+    }
+    h = (HeroInfo *)(base + off);
+    if (h->hero_name == 8) {
+        h->hero_eng->sub->unk6C = D_80054AB4;
+    }
+    SetHeroSeq((HeroInfo *)player, 0x42);
+    if (rnd == 0) {
+        sfx = 0x456;
+    }
+    if (rnd == 1) {
+        sfx = 0x457;
+    }
+    if (rnd == 2) {
+        sfx = 0x458;
+    }
+    if (rnd == 3) {
+        sfx = 0x459;
+    }
+    if (rnd == 4) {
+        sfx = 0x45A;
+    }
+    if (rnd == 5) {
+        sfx = 0x45B;
+    }
+    if (speed > 0x20) {
+        PlaySfx(sfx, &h->hero_eng->sfx, NULL, 0x1000, Random(0x100) + 0x1D80, 0);
+    }
+}
 
 void func_800D1C14(s32 player) {
     HeroInfo *base = Heroes;
