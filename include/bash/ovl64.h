@@ -276,6 +276,13 @@ s32 func_800B3EDC(void);
 
 void func_800B4BA4(void);
 
+extern u16 D_800BBD54;
+extern u16 D_800BBD56;
+extern u16 D_800BBD5C;
+extern u16 D_800BBD64;
+
+void func_800B4970(void);
+
 void func_800B4DC4(u16 count, s16 arg1);
 
 void func_800B9608(s32 arg0);
