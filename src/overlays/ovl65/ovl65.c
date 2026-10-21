@@ -513,7 +513,61 @@ one:
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B4474);
+s32 func_800B4474(s32 *a, s32 *b, s16 *c, s32 *d) {
+    s32 rel[3];
+    s32 dir[3];
+    s32 qa;
+    s32 qb;
+    s32 qc;
+    s32 disc;
+    s32 t0;
+    s32 t1;
+    s32 *p;
+
+    dir[0] = b[0] - a[0];
+    dir[1] = 0;
+    dir[2] = b[2] - a[2];
+    rel[0] = c[0] - a[0];
+    rel[1] = 0;
+    rel[2] = c[2] - a[2];
+    qa = (dir[0] * dir[0] + dir[2] * dir[2]) >> 8;
+    p = rel;
+    qb = ((dir[0] * p[0] + dir[2] * p[2]) * 2) >> 8;
+    qc = (p[0] * p[0] + p[1] * p[1] + p[2] * p[2] - c[3] * c[3]) >> 8;
+    disc = qb * qb - qa * qc * 4;
+    if (disc >= 0) {
+        disc = csqrt(disc) >> 6;
+        t0 = ((-qb + disc) << 8) / (qa * 2);
+        t1 = ((-qb - disc) << 8) / (qa * 2);
+        if (t0 < 0 && t1 < 0) {
+            return 0;
+        }
+        if (t0 < t1) {
+            if (t0 < 0) {
+                d[0] = a[0] + ((dir[0] * t1) >> 8);
+                d[1] = a[1] + ((dir[1] * t1) >> 8);
+                d[2] = a[2] + ((dir[2] * t1) >> 8);
+                return 1;
+            } else {
+                d[0] = a[0] + ((dir[0] * t0) >> 8);
+                d[1] = a[1] + ((dir[1] * t0) >> 8);
+                d[2] = a[2] + ((dir[2] * t0) >> 8);
+                return 1;
+            }
+        } else if (t1 > 0) {
+            d[0] = a[0] + ((dir[0] * t1) >> 8);
+            d[1] = a[1] + ((dir[1] * t1) >> 8);
+            d[2] = a[2] + ((dir[2] * t1) >> 8);
+            return 1;
+        } else {
+            d[0] = a[0] + ((dir[0] * t0) >> 8);
+            d[1] = a[1] + ((dir[1] * t0) >> 8);
+            d[2] = a[2] + ((dir[2] * t0) >> 8);
+            return 1;
+        }
+    }
+    return 0;
+}
 
 s32 func_800B475C(s32 a, s32 b) {
     s32 v1[3];
