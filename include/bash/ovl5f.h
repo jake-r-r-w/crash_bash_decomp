@@ -322,6 +322,8 @@ void func_800C3D48(NAS *nas, EXTengine *eng);
 /* Field 0xC of the 0x38-byte model record N at D_80052A54 (D_800536CC is record 57). */
 #define TANK_MODEL(n) (&D_80052A54[(n) * 0x38])
 #define TANK_MODEL_ON(b, n) (*(s32 *)((b) + (n) * 0x38 + 0xC))
+extern s32 D_800CA954[16]; /* PlotTankBoss: per-frame height wobble */
+extern s8 D_8005A6C8;
 
 
 

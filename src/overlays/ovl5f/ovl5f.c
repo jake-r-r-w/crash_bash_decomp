@@ -4226,7 +4226,169 @@ void InitTankBoss(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotTankBoss);
+void PlotTankBoss(NAS *nas) {
+    JoeExt *fux;
+    EXTengine *eng;
+
+    if (D_800CB0F0 != 0) {
+        return;
+    }
+    fux = (JoeExt *)nas->FUX;
+    eng = nas->Engine;
+    switch (fux->unk30) {
+    case 1:
+        if (--fux->unk28 <= 0) {
+            fux->unk30 = 0x2C;
+            fux->unk28 = 0x96;
+        }
+        break;
+    case 0x2C:
+        if (--fux->unk28 <= 0) {
+            fux->unk30 = 0x2D;
+            PlaySfx(0x258, &eng->sfx, NULL, 0x1000, 0x1E00, 0);
+        }
+        break;
+    case 0x2D:
+        if ((eng->unk10.y -= 0x1E) <= 0) {
+            if (eng->sfx != NULL) {
+                StopSfx(eng->sfx);
+            }
+            PlaySfx(0x259, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            eng->unk10.y = 0;
+            fux->unk30 = 0x2E;
+            fux->unk28 = 0x1E;
+            PlaySfx(0x25B, &eng->sfx, NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(0x25D, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        break;
+    case 0x2E:
+        if (--fux->unk28 <= 0) {
+            fux->unk30 = 0x2F;
+            if (eng->sfx != NULL) {
+                StopSfx(eng->sfx);
+            }
+        }
+        break;
+    case 0x2F:
+        if (D_800CB224[0]->UserInfo.flags == 2 &&
+            D_800CB224[1]->UserInfo.flags == D_800CB224[0]->UserInfo.flags &&
+            D_800CB224[2]->UserInfo.flags == D_800CB224[1]->UserInfo.flags) {
+            fux->unk30 = 0x30;
+            fux->unk28 = 0x2D;
+            PlaySfx(0x25A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        }
+        break;
+    case 0x30:
+        eng->unk10.y += D_800CA954[fux->unk28 & 0xF];
+        if (--fux->unk28 <= 0) {
+            fux->unk30 = 0x31;
+        }
+        break;
+    case 0x31:
+        if ((eng->unk10.y += 10) >= 0x2B6) {
+            KillNAS(D_800CB224[0]);
+            KillNAS(D_800CB224[1]);
+            KillNAS(D_800CB224[2]);
+            eng->unk10.y = 0x2B6;
+            fux->unk30 = 0x32;
+            fux->unk28 = 0x33;
+            PlaySfx(0x25C, &eng->sfx, NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(0x25D, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        break;
+    case 0x32:
+        if (--fux->unk28 <= 0) {
+            fux->unk30 = 0x33;
+            if (eng->sfx != NULL) {
+                StopSfx(eng->sfx);
+            }
+            D_800CB0E4 = 0x25D;
+        }
+        break;
+    case 0x33:
+        if (D_800CB230[0]->UserInfo.flags == 2 &&
+            D_800CB230[1]->UserInfo.flags == D_800CB230[0]->UserInfo.flags &&
+            D_800CB230[2]->UserInfo.flags == D_800CB230[1]->UserInfo.flags &&
+            D_800CB230[3]->UserInfo.flags == D_800CB230[2]->UserInfo.flags) {
+            fux->unk30 = 0x34;
+            fux->unk28 = 0x2D;
+            PlaySfx(0x25A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        }
+        break;
+    case 0x34:
+        eng->unk10.y += D_800CA954[fux->unk28 & 0xF];
+        if (--fux->unk28 <= 0) {
+            fux->unk30 = 0x35;
+        }
+        break;
+    case 0x35:
+        if ((eng->unk10.y += 10) >= 0x4BF) {
+            KillNAS(D_800CB230[0]);
+            KillNAS(D_800CB230[1]);
+            KillNAS(D_800CB230[2]);
+            KillNAS(D_800CB230[3]);
+            eng->unk10.y = 0x4BF;
+            fux->unk30 = 0x36;
+            fux->unk28 = 0x3C;
+            PlaySfx(0x25C, &eng->sfx, NULL, 0x1000, 0x1E00, 0);
+            PlaySfx(0x25D, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        break;
+    case 0x36:
+        if (--fux->unk28 <= 0) {
+            fux->unk30 = 0x37;
+            if (eng->sfx != NULL) {
+                StopSfx(eng->sfx);
+            }
+            D_800CB0E4 = 0x25D;
+        }
+        break;
+    case 0x37:
+        if (D_800CB240[0]->UserInfo.flags == 2 &&
+            D_800CB240[1]->UserInfo.flags == D_800CB240[0]->UserInfo.flags) {
+            fux->unk30 = 0x38;
+            fux->unk28 = 0x5A;
+            PlaySfx(0x25A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        }
+        break;
+    case 0x38:
+        eng->unk10.y += D_800CA954[fux->unk28 & 0xF];
+        if (--fux->unk28 <= 0) {
+            fux->unk30 = 0x39;
+            fux->unk28 = 0x5A;
+        }
+        break;
+    case 0x39:
+        if ((eng->unk10.y += 10) >= 0x7D0) {
+            KillNAS(D_800CB240[0]);
+            KillNAS(D_800CB240[1]);
+            D_800CB25C = 0x3A;
+            D_8005A6C8 = 0;
+            fux->unk28 = 0x5A;
+            fux->unk30 = 0x3A;
+            PlaySfx(0x25D, NULL, NULL, 0x1000, 0x1E00, 0);
+            func_80016F54(D_800536CC);
+            func_8001612C(D_800536CC + 0x70, 0);
+        }
+        break;
+    case 0x3A:
+        if (--fux->unk28 == 0) {
+            eng->flags &= ~0x8000;
+            fux->unk30 = 0;
+            func_800B6FF4(0);
+            if (D_8005A680[0] != 0) {
+                func_800B6FF4(1);
+            }
+        }
+        break;
+    case 0:
+        if (D_800CB254 == 0x26 && D_800CB258 == D_800CB254) {
+            D_8009D6DC[2] |= 0x8000;
+        }
+        break;
+    }
+    D_800CB210 = fux->unk30;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C2940);
 
