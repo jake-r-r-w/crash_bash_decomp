@@ -510,13 +510,24 @@ s32 func_800C5A50(s32 player);
 typedef struct Ovl63SceneObj {
     /* 0x00 */ u32 flags;
     /* 0x04 */ SLONG_XYZ pos;
-    /* 0x10 */ u8 pad10[0x51 - 0x10];
+    /* 0x10 */ u8 pad10[2];
+    /* 0x12 */ s16 angle; /* set by func_800B5778 */
+    /* 0x14 */ u8 pad14[0x51 - 0x14];
     /* 0x51 */ u8 unk51;
     /* 0x52 */ u8 pad52[0x5C - 0x52];
     /* 0x5C */ struct Ovl63SceneObj *next;
-    /* 0x60 */ u8 pad60[0x74 - 0x60];
+    /* 0x60 */ u8 pad60[0x6C - 0x60];
+    /* 0x6C */ struct Ovl63SceneModel *model;
+    /* 0x70 */ u8 pad70[4];
     /* 0x74 */ u16 index;
 } Ovl63SceneObj;
+
+/* An Ovl63SceneObj's model as func_800B5778 reads it. */
+typedef struct Ovl63SceneModel {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ u8 *unkC; /* passed to func_80015A18 */
+} Ovl63SceneModel;
+extern s32 D_800CA604;
 
 /* D_80058AD0 as seen by func_800B5F04. */
 typedef struct Ovl63Scene {
@@ -812,6 +823,8 @@ typedef struct Ovl63LapFux {
 
 extern s32 D_8005A618;
 extern void (*D_8009D74C)(s32, s32);
+
+void func_800B5778(void);
 
 void func_800C0218(s32 player);
 

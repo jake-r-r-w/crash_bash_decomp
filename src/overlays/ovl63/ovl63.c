@@ -657,7 +657,82 @@ void func_800B5660(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B5778);
+void func_800B5778(void) {
+    Ovl63SceneObj *obj;
+    s32 i;
+    u8 *r;
+
+    D_800C69B4 = NULL;
+    D_800C69B8 = 0;
+    D_800C69BC = 0;
+    obj = ((Ovl63Scene *)D_80058AD0)->objs;
+    for (i = 0; i < 6; i++) {
+        D_800CA544[i] = 0;
+        D_800CA55C[i].unk8 = 1;
+        D_800CA55C[i].pos = 0;
+        D_800CA55C[i].timer = 0;
+        D_800CA55C[i].hold = 0;
+        D_800CA55C[i].state = 0;
+        D_800CA55C[i].active = 0;
+        D_800C69A8 = 0;
+        D_800C69AC = Random(5) + 0;
+        D_800CA604 = 150;
+        D_800CA608 = 180;
+    }
+    i = 0;
+    for (;;) {
+        if (obj == NULL) {
+            return;
+        }
+        if (G63->unk34 == 0x17) {
+            if (!(G63->unk32 & 0x80)) {
+                if (obj->index == 0x5001) {
+                    obj->flags &= ~0x8000;
+                }
+                if (obj->index == 0x5003) {
+                    obj->flags &= ~0x8000;
+                }
+            } else {
+                if (obj->index == 0x5001) {
+                    obj->flags &= ~0x8000;
+                }
+                if (obj->index == 0x5002) {
+                    obj->flags &= ~0x8000;
+                }
+            }
+        }
+        if (G63->unk34 == 0x19 && obj->index == 0x5003) {
+            obj->flags &= ~0x8000;
+        }
+        if (G63->unk34 == 0x1A) {
+            if (obj->index == 0x5003) {
+                obj->flags &= ~0x8000;
+            }
+            if (obj->index == 0x4000) {
+                printf("found lava\n");
+                D_800C69B4 = (Ovl63Obj74 *)obj;
+            }
+        }
+        if (G63->unk34 == 0x18 && obj->model->unkC != NULL) {
+            r = func_80015A18(obj->index, obj->model->unkC);
+            if (r != NULL && *(s32 *)(r + 0x28) != 0) {
+                obj->flags &= ~0x8000;
+            }
+        }
+        if (G63->unk34 == 0x19) {
+            if (obj->index == 0x5005) {
+                D_800C69A4 = (Ovl63SpinObj *)obj;
+            }
+            if (obj->index == 0x4000) {
+                D_800CA544[i] = (s32)obj;
+                D_800CA55C[i].unkC = (s32)obj;
+                obj->angle = i * 0x2AA;
+                i++;
+            }
+        }
+        obj = obj->next;
+    }
+}
 
 s32 func_800B5A70(Ovl63Pattern *pats, s32 idx) {
     Ovl63Pattern *pat;
