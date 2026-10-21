@@ -579,7 +579,43 @@ void func_800B6790(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B6960);
+void func_800B6960(s32 arg0) {
+    s32 *pos;
+    NAS *nas;
+    s32 *ext;
+    u8 *p;
+
+    func_800C2810(arg0);
+    Heroes[arg0].hero_move->velocity_enable = 0;
+    Heroes[arg0].hero_frozen = 2;
+    func_800C1CF0(arg0);
+    func_800C159C(arg0);
+    Heroes[arg0].hero_move->jump_vel = 0x30;
+    Heroes[arg0].hero_move->jump_max = 0x90;
+    Heroes[arg0].hero_move->jump_acc = 0;
+    Heroes[arg0].hero_move->jump_dec = 0;
+    Heroes[arg0].hero_move->jump_dir = -1;
+    pos = (s32 *)&Heroes[arg0].hero_eng->unk10;
+    p = D_80053B9C;
+    nas = SpawnNASById(pos[0], pos[1], pos[2], 0x1605, 0x11);
+    if (nas != NULL) {
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL) {
+            ext[3] = 0;
+            ext[6] = 0x100;
+            if (p != NULL) {
+                ext[8] = 5;
+                ((s32 *)nas->Engine->sub)[0x6C / 4] = (s32)p;
+            } else {
+                ext[8] = 1;
+            }
+            ext[10] = 0;
+            nas->InitDelete(nas);
+        }
+    }
+    func_80026980(Heroes[arg0].hero);
+    Heroes[arg0].hero_shadow->flags &= ~0x8000;
+}
 
 void func_800B6AE0(s32 arg0) {
     HeroInfo *base;
