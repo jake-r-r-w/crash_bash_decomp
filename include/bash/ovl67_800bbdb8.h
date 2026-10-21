@@ -622,6 +622,8 @@ static inline void BossHeroSteer(s32 i) {
     h->hero_eng->unk5E = 1;
 }
 
+void PlotNitroMissile(NAS *nas);
+
 void PlotSpiralSat(NAS *nas);
 
 #endif /* BASH_OVL67_800BBDB8_H */

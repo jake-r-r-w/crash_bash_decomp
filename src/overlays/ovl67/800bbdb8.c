@@ -923,7 +923,133 @@ void PlotAsteroidRoll(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", PlotNitroMine);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", PlotNitroMissile);
+void PlotNitroMissile(NAS *nas) {
+    NitroShotExt *ext;
+    NitroShotExt *e2;
+    NAS *n;
+    HeroInfo *h;
+    EXTengine *eng;
+    EXTengine *he;
+    SLONG_XYZ *pos;
+    BossGameView *g;
+    s32 dx;
+    s32 dz;
+    s32 dy;
+    s32 xx;
+    s32 zz;
+    s32 d;
+    s32 a;
+    s32 b;
+    s32 r;
+
+    if (*D_8005A680 != 0) {
+        if ((Heroes[0].hero_status & 0x2000) && (Heroes[1].hero_status & 0x2000)) {
+            ((void (*)(s32, s32, s32, u16, u16))SpawnNASById)(nas->Engine->unk10.x, nas->Engine->unk10.y, nas->Engine->unk10.z, 0x1C09, 0x11);
+            goto kill;
+        }
+    } else if (Heroes[0].hero_status & 0x2000) {
+        SpawnNASById(nas->Engine->unk10.x, nas->Engine->unk10.y, nas->Engine->unk10.z, 0x1C09, 0x11);
+        goto kill;
+    }
+    ext = FindExtension(nas, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    nas->Engine->unk5E = 1;
+    if (ext->unk18-- < 0) {
+        SpawnNASById(nas->Engine->unk10.x, nas->Engine->unk10.y, nas->Engine->unk10.z, 0x1C09, 0x11);
+        ext->unk18 = 1;
+    }
+    switch (ext->unkC) {
+    case 0:
+        he = Heroes[ext->unk14].hero_eng;
+        dx = nas->Engine->unk10.x - he->unk10.x;
+        xx = dx * dx;
+        dz = nas->Engine->unk10.z - he->unk10.z;
+        zz = dz * dz;
+        dy = nas->Engine->unk10.y - he->unk10.y + 0x100;
+        d = csqrt(xx + zz) >> 6;
+        a = get_angle(dx, dz) & 0xFFF;
+        b = get_angle(-dy, d);
+        nas->Engine->unk1E += ((a - nas->Engine->unk1E) << 20) >> 20;
+        nas->Engine->unk1C += ((b - nas->Engine->unk1C) << 20) >> 20;
+        nas->Engine->unk10.x -= D_80068BD4[(nas->Engine->unk1E - 0x400) & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->unk10.z -= D_80068BD4[nas->Engine->unk1E & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->unk10.y += D_80068BD4[(nas->Engine->unk1C - 0x400) & 0xFFF].unk2 * 55 >> 10;
+        eng = nas->Engine;
+        h = &Heroes[ext->unk14];
+        if (eng->unk10.z < h->hero_eng->unk10.z) {
+            ext->unkC = 1;
+            r = Random(4);
+            if (r == 0) {
+                PlaySfx(0x29B, 0, 0, 0x1000, 0x1E00, 0);
+            }
+            if (r == 1) {
+                PlaySfx(0x29C, 0, 0, 0x1000, 0x1E00, 0);
+            }
+            if (r == 2) {
+                PlaySfx(0x29D, 0, 0, 0x1000, 0x1E00, 0);
+            }
+            if (r == 3) {
+                PlaySfx(0x29E, 0, 0, 0x1000, 0x1E00, 0);
+            }
+            return;
+        }
+        if (h->hero_status & 0x2000) {
+            return;
+        }
+        if (h->hero_status & 0x200) {
+            return;
+        }
+        if (xx + dy * dy + zz > 0x3FFFF) {
+            return;
+        }
+        pos = &eng->unk10;
+        n = SpawnNASById(pos->x, pos->y, pos->z, 0x1605, 0x11);
+        if (n != NULL) {
+            e2 = FindExtension(n, 0x10000000);
+            if (e2 != NULL) {
+                e2->unk18 = 0x100;
+                e2->unkC = 0;
+                e2->unk20 = 1;
+                e2->unk28 = 0;
+                n->InitDelete(n);
+            }
+        }
+        g = (BossGameView *)D_8005A614;
+        if ((g->unk4 & 0x80000001) != 0x80000001) {
+            r = Random(4);
+            if (r == 0) {
+                PlaySfx(0x2A7, 0, 0, 0x1000, 0x1E00, 0);
+            }
+            if (r == 1) {
+                PlaySfx(0x2A8, 0, 0, 0x1000, 0x1E00, 0);
+            }
+            if (r == 2) {
+                PlaySfx(0x2A9, 0, 0, 0x1000, 0x1E00, 0);
+            }
+            if (r == 3) {
+                PlaySfx(0x2AA, 0, 0, 0x1000, 0x1E00, 0);
+            }
+            if (Heroes[ext->unk14].hero_mode != 0x31) {
+                Heroes[ext->unk14].hero_health -= MineDamage(g) >> 2;
+                SetHeroAction((HeroInfo *)ext->unk14, 0x31);
+            }
+        }
+        goto kill;
+    case 1:
+        nas->Engine->unk10.x -= D_80068BD4[(nas->Engine->unk1E - 0x400) & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->unk10.z -= D_80068BD4[nas->Engine->unk1E & 0xFFF].unk2 * 55 >> 10;
+        nas->Engine->unk10.y += D_80068BD4[(nas->Engine->unk1C - 0x400) & 0xFFF].unk2 * 55 >> 10;
+        if (nas->Engine->unk10.z < Heroes[ext->unk14].hero_eng->unk10.z - 0x1000) {
+            goto kill;
+        }
+        return;
+    }
+    return;
+kill:
+    KillNAS(nas);
+}
 
 void func_800C0C28(BossPath *arg0, BossObj *obj) {
     BossObj *arg1 = obj;
