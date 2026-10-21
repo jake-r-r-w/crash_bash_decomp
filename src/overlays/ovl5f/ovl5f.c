@@ -3325,7 +3325,148 @@ void func_800C5620(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C57B0);
+void func_800C57B0(NAS *nas, s32 id) {
+    EXTengine *eng;
+    subengine *sub;
+    HeroInfo *h;
+    HeroInfo *hb;
+    EXTbotai *ai;
+    TA_player *ta;
+    TA_player *tb;
+    Ovl5fAITarget *t;
+    s32 p;
+    u16 mode;
+    u8 *g;
+
+    eng = nas->Engine;
+    sub = eng->sub;
+    if (id == 0x131E) {
+        p = 3;
+        D_8009D6A0 = 2;
+        D_800CB254 = 0x3B;
+    } else {
+        p = 2;
+        D_8009D634 = 3;
+        D_800CB258 = 0x3B;
+    }
+    g = D_8005A614 + p;
+    g[0x5C] = 1;
+    hb = Heroes;
+    h = &hb[p];
+    h->hero_status = 0x80;
+    h->hero_strength = 0x14;
+    h->hero_idle_count = 0x258;
+    h->hero_harm_player = -1;
+    h->hero = nas;
+    h->hero_eng = eng;
+    h->hero_sub = sub;
+    h->hero_immunity = 0;
+    h->hero_immunity_level = 0;
+    h->hero_hit = 0;
+    h->hero_last_mode = 0;
+    h->hero_mode = 0;
+    h->hero_pick_delay = 0;
+    h->hero_aseq = 0;
+    h->hero_harm_Nas = NULL;
+    h->hero_harm_value = 0;
+    h->hero_harm_fraction = 0;
+    h->hero_harm_flags = 0;
+    h->hero_harm_sfx = 0;
+    h->hero_ctrl = 0;
+    h->hero_score = 0;
+    h->hero_score_displayed = 0;
+    h->hero_pu = 0;
+    h->hero_pu_timer = 0;
+    h->hero_pu_lock = 0;
+    h->hero_attack_timer = 0;
+    h->hero_attack_delay = 0;
+    h->hero_pu_action = 0;
+    h->hero_pu_action_timer = 0;
+    h->hero_weapon_count = 0;
+    h->hero_weapon_timer = 0;
+    h->hero_attack_counter = 0;
+    h->hero_name = 9;
+    g[0x50] = 9;
+    D_8009D87C[p].unk0 = 0x10;
+    D_8009D87C[p].unk2 = 0x10;
+    D_8009D87C[p].unk4 = 0x10;
+    if (h->hero_ai == NULL) {
+        ai = AddExtension(h->hero, 0x44, 0x400000F4);
+        if (ai != NULL) {
+            h->hero_ai = ai;
+            ai->AImode = 0;
+            ai->AIaborted_mode = 0;
+            ai->AItimer1 = 0;
+            ai->AItimer2 = 0;
+            ai->AIang = 0;
+            ai->AIpad = 0;
+            ai->pTargetNas = NULL;
+            ai->TargetPlayer = -1;
+            ai->TargetXYZ.z = 0;
+            ai->TargetXYZ.y = 0;
+            ai->TargetXYZ.x = 0;
+            ai->AIinitial_delay = Random(0x3C) + 0x1E;
+            ai->AIsleep = 8;
+        }
+    }
+    ((PadButtons *)D_80051338)[p].unk50 = 0;
+    ((PadButtons *)D_80051338)[p].unk54 = 0;
+    eng = Heroes[p].hero_eng;
+    eng->unk10.z = 0xF00;
+    eng->unk10.x = (eng->unk10.x + 0x80) & ~0xFF;
+    mode = Heroes[p].hero_mode;
+    Heroes[p].hero_mode = 0x6E;
+    Heroes[p].hero_last_mode = mode;
+    func_800C4B60(p);
+    sub = eng->sub;
+    sub->unk68 = 0;
+    sub = sub->next;
+    sub->unk51 = 1;
+    sub->unk68 = 0;
+    sub = sub->next;
+    sub->unk51 = 1;
+    sub->unk68 = 0;
+    func_800C49F8(p);
+    tb = D_800CAD50;
+    ta = &tb[p];
+    ta->Speed = 0x1A;
+    ta->MoveDir = 0;
+    ta->FaceDir = 0;
+    ta->RunnerMoving = 0;
+    ta->RunnerFacing = 0;
+    ta->SpeedX = 0;
+    ta->SpeedZ = 0;
+    ta->Speed = ta->Speed * (D_8009D87C[p].unk0 + 0x54) / 100;
+    ta->Energy = 0x63;
+    Heroes[p].hero_health = ta->Energy;
+    ta->PosX = eng->unk10.x;
+    ta->PosZ = eng->unk10.z;
+    ta->SubWeaponFireDelay = 0;
+    ta->SubWeaponRounds = 0;
+    ta->FireBreatherSFXDuration = 0;
+    ta->TurretSFXDuration = 0;
+    ta->TurretReqdDir = -1;
+    ta->HangaboutTime = -0x5A;
+    ta->IdleAnimCt = Random(0x1E);
+    ta->TurretFiring = -1;
+    ta->TauntDelay = 0;
+    func_800B6FF4(p);
+    ta->MainWeaponFireDelay = 0x1E;
+    ta->MainWeaponNas[0] = (NAS *)0xFFEEEEFF;
+    ta->MainWeaponNas[2] = (NAS *)0xFFEEEEFF;
+    t = (Ovl5fAITarget *)(D_800CAFFC + p * 0x2C);
+    t->unk0 = 0;
+    t->unk4 = 0;
+    t->unk8 = 0;
+    t->target = NULL;
+    t->unk10 = 0;
+    t->flags = 0;
+    t->timer = 0;
+    if (D_800CB254 == 0x3B && D_800CB258 == D_800CB254) {
+        func_8007E93C(0x3B, 0x300E, 0x300F);
+        func_8007C830((s32)&Heroes[2].hero_health, (s32)&Heroes[3].hero_health);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C5BCC);
 
