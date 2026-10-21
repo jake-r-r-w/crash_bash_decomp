@@ -1224,7 +1224,98 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotRocketTA);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotMine);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotWaterMine);
+void PlotWaterMine(NAS *nas) {
+    s32 i;
+    s32 j;
+    TA_player *ta;
+    EXTengine *eng;
+    EXTengine *e;
+    s32 t;
+    s32 d;
+    s32 hit;
+    s32 x;
+    s32 z;
+    s32 r;
+    s32 n;
+    u16 name;
+
+    t = nas->UserInfo.user2;
+    eng = nas->Engine;
+    eng->unk10.y += D_800CA44C[t & 0xF];
+    nas->UserInfo.user2 = t + 1;
+    nas->UserInfo.status = (nas->UserInfo.status + 4) & 0xFFF;
+    eng->unk10.x += (D_80068BD4[(nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 7) >> 12;
+    eng->unk10.z += (D_80068BD4[nas->UserInfo.status & 0xFFF].unk2 * 7) >> 12;
+    if (eng->unk10.x > D_800CB100) {
+        eng->unk10.x = D_800CB100;
+    }
+    if (eng->unk10.x < 0x100) {
+        eng->unk10.x = 0x100;
+    }
+    if (eng->unk10.z > D_800CB104) {
+        eng->unk10.z = D_800CB104;
+    }
+    if (eng->unk10.z < 0x100) {
+        eng->unk10.z = 0x100;
+    }
+    x = eng->unk10.x;
+    z = eng->unk10.z;
+    r = 400;
+    for (i = 0; i < 4; i++) {
+        name = Heroes[i].hero_name;
+        if (name == 9 &&
+            (((Ovl5fModeView *)D_8005A614)->mode != name || D_800CB210 != 0 ||
+             (u32)(i - 2) >= 2)) {
+            continue;
+        }
+        if (Heroes[i].hero_status & 0xC000) {
+            continue;
+        }
+        e = Heroes[i].hero_eng;
+        d = x - e->unk10.x;
+        if (d < -400) {
+            continue;
+        }
+        if (r < d) {
+            continue;
+        }
+        d = z - e->unk10.z;
+        n = -400;
+        if (n < d && d < 400) {
+            hit = i;
+            goto found;
+        }
+    }
+    hit = -1;
+found:
+    if (nas->UserInfo.flags == 1) {
+        if (hit < 0) {
+            nas->UserInfo.flags = 0;
+        }
+    } else if (hit >= 0) {
+        PlaySfx(0x4EA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        for (j = 0; j < 8; j++) {
+            if (D_800CB0C0[j] == nas) {
+                D_800CB0C0[j] = NULL;
+                break;
+            }
+        }
+        if (D_8005A614[hit + 0x5C] == 0) {
+            if (((Ovl5fGameView *)D_8005A614)->flags & 0x80) {
+                func_800B6354(hit, 0x4B0);
+            } else {
+                func_800B6354(hit, 0x3C);
+            }
+        } else {
+            func_800B6354(hit, 0x3C);
+        }
+        ta = &D_800CAD50[hit];
+        ta->SpeedX = 0;
+        ta->SpeedZ = 0;
+        func_800BD654(nas);
+        KillNAS(nas);
+    }
+}
 
 void PlotTorpedo(NAS *nas) {
     EXTengine *eng;
