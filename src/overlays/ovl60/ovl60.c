@@ -3139,7 +3139,37 @@ s32 func_800C1DA4(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800C1EA8);
+s32 func_800C1EA8(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    Ovl60Cell *base;
+    Ovl60Cell *c;
+
+    if (D_8005A648 == 0xC) {
+        base = D_800C53DC[0];
+        c = (Ovl60Cell *)(arg2 * sizeof(Ovl60Cell) + arg1 * sizeof(D_800C53DC[0]) + (u32)base);
+        if ((u16)c->unk12 == 7) {
+            func_800B7B1C(arg1, arg2, arg0);
+            if (arg1 > 0) {
+                func_800B8660(arg1, arg2, -1, 0, arg0);
+            }
+            if (arg1 < 7) {
+                func_800B8660(arg1, arg2, 1, 0, arg0);
+            }
+            if (arg2 > 0) {
+                func_800B8660(arg1, arg2, 0, -1, arg0);
+            }
+            if (arg2 < 7) {
+                func_800B8660(arg1, arg2, 0, 1, arg0);
+            }
+            func_800C1A18(arg0);
+            if (arg3 != 0) {
+                PlaySfx(0x515, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+            }
+            return 1;
+        }
+        return 0;
+    }
+    return 0;
+}
 
 void func_800C2018(s32 arg0, s32 arg1, s32 arg2) {
     if (arg0 > 0) {
