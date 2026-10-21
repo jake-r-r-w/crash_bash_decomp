@@ -392,6 +392,8 @@ void func_800B5CD0(s32 arg0);
 
 void func_800B7B80(CoalFlameEng *eng, CoalFlameFux *fux, s32 id);
 
+void PlotPickupCH(NAS *nas);
+
 s32 func_800BB7E0(Ovl68Obj *a, Ovl68Pos *b);
 
 #endif /* BASH_OVL68_H */

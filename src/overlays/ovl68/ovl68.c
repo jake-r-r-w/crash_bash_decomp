@@ -845,7 +845,97 @@ void InitPickupCH(NAS *nas) {
     PlaySfx(0x3FA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotPickupCH);
+void PlotPickupCH(NAS *nas) {
+    PickupCHExt *ext = (PickupCHExt *)nas->FUX;
+    EXTengine *eng = nas->Engine;
+    HeroInfo *h;
+    EXTengine *he;
+    EXTengine *p;
+    subengine *sub;
+    s32 i;
+    s32 hero;
+    s32 dx;
+    s32 dz;
+    s32 x;
+    s32 z;
+    s32 lim;
+    s32 status;
+
+    ext->unk14 += 8;
+    eng->unk10.y += ext->unk14;
+    if (eng->unk10.y >= 0) {
+        eng->unk10.y = -1;
+        ext->unk14 = -0x28;
+        eng->unk10.y -= 0x28;
+    }
+    lim = 0x100;
+    x = eng->unk10.x;
+    z = eng->unk10.z;
+    for (i = 0; i < 4; i++) {
+        h = &Heroes[i];
+        if (h->hero_name == 9) {
+            continue;
+        }
+        if (h->hero_status & 0xC000) {
+            continue;
+        }
+        he = h->hero_eng;
+        dx = x - he->unk10.x;
+        if (dx < -0x100) {
+            continue;
+        }
+        if (dx > lim) {
+            continue;
+        }
+        dz = z - he->unk10.z;
+        if (dz > -lim) {
+            if (dz < 0x100) {
+                hero = i;
+                goto found;
+            }
+        }
+    }
+    hero = -1;
+found:
+    if (hero < 0) {
+        return;
+    }
+    if (D_800BC444 != 0) {
+        for (i = 0; i < 1; i++) {
+            if (D_800BC420[i] == nas) {
+                D_800BC420[i] = NULL;
+                break;
+            }
+        }
+    } else {
+        PlaySfx(0x439, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        status = nas->UserInfo.status;
+        sub = NULL;
+        func_800BA694(hero);
+        p = Heroes[hero].hero_powerup;
+        if (p != NULL) {
+            sub = p->sub;
+        }
+        if (status < 3) {
+            if (status != 0) {
+                if (sub != NULL) {
+                    sub->unk6C = D_80052F5C;
+                    sub->unk74 = 0x200C;
+                    sub->flags |= 0x8000;
+                    p->flags |= 0x8000;
+                }
+                D_800BC2D0[hero][0x14] = status;
+            }
+        }
+        for (i = 0; i < 1; i++) {
+            if (D_800BC420[i] == nas) {
+                D_800BC420[i] = NULL;
+                break;
+            }
+        }
+    }
+    KillNAS(nas);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B94FC);
 
