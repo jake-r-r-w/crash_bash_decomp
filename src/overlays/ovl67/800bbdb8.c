@@ -422,7 +422,45 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", PlotMineSFX);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", PlotLaserShoot);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C2218);
+void func_800C2218(SparkObj *arg0) {
+    SparkSet *set = &arg0->set;
+    s32 n = set->count;
+    Spark *s = arg0->set.sparks;
+    SparkLine *a;
+    SparkLine *b;
+
+    D_800C45B8 = 0x100;
+    D_800C45B4 = 0x100;
+    a = set->lines[0];
+    b = set->lines[1];
+    if (n != 0) do {
+        s->x = Random(0x2000) - Random(0x2000);
+        s->y = Random(0x1000) - Random(0x1000);
+        s->z = Random(0x4000);
+        s->x2 = s->x + 0x40;
+        s->y2 = s->y + 0x40;
+        a->x0 = 0;
+        b->x0 = 0;
+        a->y0 = 0;
+        b->y0 = 0;
+        a->r0 = 0x80;
+        a->g0 = 0x80;
+        a->b0 = 0x80;
+        b->r0 = 0x80;
+        b->g0 = 0x80;
+        b->b0 = 0x80;
+        a->len = 4;
+        a->code = 0x50;
+        b->len = 4;
+        b->code = 0x50;
+        a->code |= 2;
+        b->code |= 2;
+        a++;
+        b++;
+        s++;
+        n--;
+    } while (n != 0);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800C237C);
 

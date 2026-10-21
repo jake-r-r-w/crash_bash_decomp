@@ -362,4 +362,40 @@ s32 func_800C3544(s32 *arg0, s32 *arg1);
 
 void InitSpiralSat(NAS *nas);
 
+/* A 2-point gouraud line primitive (LINE_G2 layout). */
+typedef struct SparkLine {
+    /* 0x00 */ u8 tag[3];
+    /* 0x03 */ u8 len;
+    /* 0x04 */ u8 r0, g0, b0, code;
+    /* 0x08 */ s16 x0, y0;
+    /* 0x0C */ u8 r1, g1, b1, p1;
+    /* 0x10 */ s16 x1, y1;
+} SparkLine;
+
+typedef struct Spark {
+    /* 0x00 */ s16 x;
+    /* 0x02 */ s16 y;
+    /* 0x04 */ s16 z;
+    /* 0x06 */ s16 pad06;
+    /* 0x08 */ s16 x2;
+    /* 0x0A */ s16 y2;
+    /* 0x0C */ u8 pad0C[0xC];
+} Spark;
+
+typedef struct SparkSet {
+    /* 0x00 */ Spark *sparks;
+    /* 0x04 */ SparkLine *lines[2];
+    /* 0x0C */ s32 count;
+} SparkSet;
+
+typedef struct SparkObj {
+    /* 0x00 */ u8 pad00[0x6C];
+    /* 0x6C */ SparkSet set;
+} SparkObj;
+
+extern s32 D_800C45B4;
+extern s32 D_800C45B8;
+
+void func_800C2218(SparkObj *arg0);
+
 #endif /* BASH_OVL67_800BBDB8_H */
