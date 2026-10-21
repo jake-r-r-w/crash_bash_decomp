@@ -294,6 +294,33 @@ extern s32 D_800C69AC;
 extern u8 D_800C6B70[];
 s32 func_800B5A70();
 
+/* A step of a func_800B5A70 pattern (0xC bytes). */
+typedef struct Ovl63PatStep {
+    /* 0x00 */ s32 hold;
+    /* 0x04 */ s32 delay; /* -1: never */
+    /* 0x08 */ s32 unk8;
+} Ovl63PatStep;
+
+/* A func_800B5A70 pattern: its steps and its length. */
+typedef struct Ovl63Pattern {
+    /* 0x00 */ Ovl63PatStep *steps;
+    /* 0x04 */ s32 length;
+} Ovl63Pattern;
+
+/* One of the six pistons func_800B5A70 moves (0x1C bytes). */
+typedef struct Ovl63Piston {
+    /* 0x00 */ s32 pos;
+    /* 0x04 */ s32 state;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s32 timer;
+    /* 0x14 */ s32 hold;
+    /* 0x18 */ s32 active;
+} Ovl63Piston;
+extern Ovl63Piston D_800CA55C[6];
+extern s32 D_800C69A8;
+extern s32 D_800C6BA0;
+
 void func_800B5D14(void);
 void func_800B6474(void);
 void func_800C04EC(void);

@@ -533,7 +533,108 @@ void func_800B5660(s32 arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B5778);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B5A70);
+s32 func_800B5A70(Ovl63Pattern *pats, s32 idx) {
+    Ovl63Pattern *pat;
+    Ovl63PatStep *step;
+    Ovl63Piston *p;
+    s32 i;
+    s32 j;
+    s32 speed;
+    s32 base;
+    s32 one;
+    s32 two;
+    s32 st;
+    s32 act;
+    s32 v;
+
+    speed = 2;
+    pat = (Ovl63Pattern *)(idx * 8 + (s32)pats);
+    step = pat->steps;
+    base = 0x4000;
+    if (D_8005A646 & 0x80) {
+        speed = 4;
+    }
+    D_800C69A8++;
+    if (D_800C695C != 0) {
+        D_800C69A8 = 0;
+    }
+    if (D_800C69A8 > pat->length) {
+        D_800C69A8 = 0;
+        D_800C6BA0 = Random(0xC) + 0x11;
+        for (j = 0; j < 6; j++) {
+            D_800CA55C[j].active = 0;
+            D_800CA55C[j].timer = 0;
+        }
+        return 1;
+    }
+    i = 0;
+    one = 1;
+    two = 2;
+    p = D_800CA55C;
+loop:
+    if (p->active == 0 && step->delay != -1) {
+        if (p->timer >= step->delay) {
+            p->active = one;
+            p->state = one;
+            PlaySfx(0x673, NULL, NULL, 0x1000, 0x1E00, 0);
+        } else {
+            if (D_8005A646 & 0x80) {
+                v = p->timer + 4;
+            } else {
+                v = p->timer + 1;
+            }
+            p->timer = v;
+        }
+    }
+    act = p->active;
+    if (act == one) {
+        if (D_800C695C != 0) {
+            p->state = two;
+        }
+        st = p->state;
+        if (st == two) {
+            goto down;
+        }
+        if (st < 3) {
+            if (st == act) {
+                goto up;
+            }
+            goto next;
+        }
+        if (st == 3) {
+            goto hold;
+        }
+        goto next;
+    up:
+        p->pos += speed;
+        if (D_800C6BA0 < p->pos) {
+            p->pos = D_800C6BA0;
+            p->state = 3;
+        }
+        goto next;
+    hold:
+        if (step->hold < p->hold++) {
+            p->hold = 0;
+            p->state = two;
+            PlaySfx(0x674, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        goto next;
+    down:
+        p->pos -= speed;
+        if (p->pos < 0) {
+            p->pos = 0;
+            p->state = 0;
+        }
+    }
+next:
+    step++;
+    ((Ovl63Obj74 *)D_800CA544[i])->unk74 = p->pos + base;
+    p++;
+    if (++i < 6) {
+        goto loop;
+    }
+    return 0;
+}
 
 void func_800B5D14(void) {
     MATRIX m;
