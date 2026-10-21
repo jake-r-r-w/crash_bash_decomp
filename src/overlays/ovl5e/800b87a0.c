@@ -8,7 +8,130 @@
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800B87A0);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800B9E74);
+NAS *func_800B9E74(EXTengine *eng, s32 self, s32 checkHeroes) {
+    FlagRecord *rec;
+    FlagRecord *rec2;
+    EXTengine *other;
+    HeroInfo *h;
+    NAS *nas;
+    Ovl5eHitFlags *flags;
+    s32 i;
+    s32 r;
+    s32 top;
+    s32 bottom;
+    s32 dx;
+    s32 dz;
+    s32 sum;
+    s32 r2;
+    s32 lo;
+    s32 hi;
+
+    rec =func_80025A48(eng, 0x40);
+    if (rec == NULL) {
+        return NULL;
+    }
+    r = rec->radius;
+    bottom = eng->unk10.y + rec->unk2;
+    top = eng->unk10.y + rec->height;
+    if (checkHeroes != 0) {
+        for (i = 0; i < 4; i++) {
+            if (self == i) {
+                continue;
+            }
+            h = &Heroes[i];
+            if (h->hero_status & 0xF800) {
+                continue;
+            }
+            other = h->hero_eng;
+            if (other == NULL) {
+                continue;
+            }
+            rec2 = func_80025A48(other, 0x40);
+            if (rec2 == NULL) {
+                continue;
+            }
+            lo = other->unk10.y + rec2->unk2;
+            hi = other->unk10.y + rec2->height;
+            if (top < lo && hi < bottom) {
+                dx = other->unk10.x;
+                dx -= eng->unk10.x;
+                dz = other->unk10.z - eng->unk10.z;
+                lo = rec2->radius;
+                lo += r;
+                lo *= lo;
+                if (dx * dx + dz * dz < lo) {
+                    return h->hero;
+                }
+            }
+        }
+    }
+    other = D_800BD88C.eng;
+    if (other != NULL) {
+        rec2 = func_80025A48(other, 0x40);
+        if (rec2 != NULL) {
+            lo = other->unk10.y + rec2->unk2;
+            hi = other->unk10.y + rec2->height;
+            if (top < lo && hi < bottom) {
+                lo = rec2->radius;
+                if (D_800BD708 == 0) {
+                    lo += 0x100;
+                }
+                dx = other->unk10.x;
+                dx -= eng->unk10.x;
+                dz = other->unk10.z - eng->unk10.z;
+                lo += r;
+                lo *= lo;
+                if (dx * dx + dz * dz < lo) {
+                    return D_800BD88C.nas;
+                }
+            }
+        }
+    }
+    for (nas = D_8005AA2C; nas != NULL; nas = nas->Solid.Child) {
+        if (!(nas->Class & 0x200)) {
+            continue;
+        }
+        other = nas->Engine;
+        if (other == NULL || other == eng) {
+            continue;
+        }
+        rec2 = func_80025A48(other, 0x40);
+        if (rec2 == NULL) {
+            continue;
+        }
+        lo = other->unk10.y + rec2->unk2;
+        hi = other->unk10.y + rec2->height;
+        if (top < lo && hi < bottom) {
+            dx = other->unk10.x;
+            dx -= eng->unk10.x;
+            dz = other->unk10.z - eng->unk10.z;
+            lo = rec2->radius;
+            lo += r;
+            lo *= lo;
+            if (dx * dx + dz * dz < lo) {
+                flags = FindExtension(nas, 0x1000);
+                if (flags != NULL) {
+                    if (flags->unk14 >= 0xE && flags->unk14 == self) {
+                        continue;
+                    }
+                    if (flags->unk1C & 8) {
+                        flags->unk16 = -1;
+                        flags->unk1E |= 8;
+                    }
+                    if (flags->unk1C & 2) {
+                        flags->unk16 = -1;
+                        flags->unk1E |= 2;
+                    }
+                }
+                if (flags->unk1C & 0x10) {
+                    return NULL;
+                }
+                return nas;
+            }
+        }
+    }
+    return NULL;
+}
 
 s32 func_800BA22C(EXTengine *eng, Ovl5eHitFlags *flags, u32 mask) {
     s32 sum;

@@ -11,7 +11,8 @@
 
 
 typedef struct {
-    /* 0x00 */ u8 pad0[0x16];
+    /* 0x00 */ u8 pad0[0x14];
+    /* 0x14 */ u16 unk14;
     /* 0x16 */ s16 unk16;
     /* 0x18 */ u8 pad18[4];
     /* 0x1C */ u16 unk1C;
@@ -20,7 +21,8 @@ typedef struct {
 
 /* Extension 0x1000 checked by func_800BC274. */
 typedef struct {
-    /* 0x00 */ u8 pad0[0x16];
+    /* 0x00 */ u8 pad0[0x14];
+    /* 0x14 */ u16 unk14;
     /* 0x16 */ s16 unk16;
     /* 0x18 */ u8 pad18[2];
     /* 0x1A */ u16 unk1A;
@@ -50,6 +52,8 @@ void func_800BA4C0(s32 arg0);
 
 typedef struct { s16 a; s16 b; s16 c; } Ovl5eWeaponVec;
 extern Ovl5eWeaponVec D_800BE8AC[];
+
+NAS *func_800B9E74(EXTengine *eng, s32 self, s32 checkHeroes);
 
 void func_800BA5CC(s32 arg0);
 
