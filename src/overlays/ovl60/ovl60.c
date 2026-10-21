@@ -2187,7 +2187,73 @@ void func_800BD008(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BD10C);
+void func_800BD10C(s32 arg0) {
+    EXTbotai *ai;
+    s32 r;
+
+    D5A614View *g = (D5A614View *)D_8005A614;
+
+    if (!(*(s32 *)&g->unkC[4] & 0x04000000)) {
+        ai = Heroes[arg0].hero_ai;
+        if (ai != NULL) {
+            ai->AIpad = 0;
+            if (ai->AItimer1 != 0) {
+                ai->AItimer1--;
+            }
+            if (D_800C5ADC[arg0].unk4 != 0 &&
+                (u16)(g->mode - 0xB) < 2U) {
+                if (ai->AItimer2 != 0) {
+                    ai->AItimer2--;
+                }
+            }
+            switch (ai->AImode) {
+            case 1:
+                r = func_800BDE24(arg0) != 1;
+                if (r) {
+                    ai->TargetXYZ.x = Random(8);
+                    ai->TargetXYZ.z = Random(8);
+                    ai->AImode = 3;
+                }
+                break;
+            case 3:
+                r = func_800BDE24(arg0) != 1;
+                if (r) {
+                    func_800BD790(arg0);
+                }
+                break;
+            case 4:
+                r = func_800BDE24(arg0) != 1;
+                if (r) {
+                    ai->AImode = 1;
+                    break;
+                }
+            case 5:
+            case 6:
+            case 7:
+                func_800BD790(arg0);
+                break;
+            }
+            if (ai->AItimer1 == 0 || (D_8005A646 & 0x20)) {
+                switch (D_800C535C[arg0].unk4) {
+                case 1:
+                case 3:
+                case 4:
+                    r = func_800BD378(arg0);
+                    goto check;
+                case 2:
+                    r = func_800BD520(arg0);
+                check:
+                    if (r != 0) {
+                        ai->AIpad |= 0x8000;
+                    }
+                    break;
+                }
+            }
+            func_80013C94((u8 *)&D_80051338[arg0], ai->AIpad);
+        }
+        D_800C5ADC[arg0].unk4 = 0;
+    }
+}
 
 s32 func_800BD378(s32 hero) {
     u8 *g;

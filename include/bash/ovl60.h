@@ -453,6 +453,7 @@ void func_800BC314(s32 arg0, s32 arg1);
 void func_800BC490(s32 arg0);
 
 s32 func_800BD520(s32 hero);
+void func_800BD790(s32 hero);
 
 s32 func_800BD630(s32 hero);
 
