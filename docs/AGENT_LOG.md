@@ -303,6 +303,11 @@ Other:
 ## Gotchas
 
 **Tooling**
+- **docs/progress.json must stay under 2 MB** (pre-commit limit): its
+  history grows by one point per commit. At the limit `done --commit`
+  fails after a full match ("refusing file over 2 MB"); the swarm keeps
+  the match in results/, and `run --resume RUNID --only ...` gates it
+  again. Thin the history if it nears 2 MB again.
 - **`done --commit` in a git worktree (`.claude/worktrees/...`) fails at
   `git add`** ("not a git repository: /work/C:/..."): the worktree's `.git`
   file names a Windows path the container can't see. A worktree also lacks
@@ -516,6 +521,15 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-21 (swarm all overlays, second retry in big mode):** run
+  20261021103227, same flags as the first (`--max-minutes 180`), ran to
+  the time limit: 85 matched (80 in the run, 5 re-gated) for $232, 5
+  parked; game code 74.86% (2423/2537). The last 5 matches were refused
+  at commit: docs/progress.json had passed the 2 MB pre-commit limit.
+  `progress` now writes one line per history point (1.3 MB, bc39f123),
+  and `run --resume 20261021103227 --only ...` committed the saved
+  matches with no new sessions.
 
 - **2026-10-21 (hand: MATCHING.md cleanup, three swarm parks):** merged
   21 duplicate Diff patterns rows from the last two folds (e8ba0e20).
