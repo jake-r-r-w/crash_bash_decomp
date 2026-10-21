@@ -194,7 +194,8 @@ typedef struct Ext20 {
     /* 0x1C */ u8 pad1C[0x4];
     /* 0x20 */ s32 val;
     /* 0x24 */ s32 state;
-    /* 0x28 */ u8 pad28[0xAC - 0x28];
+    /* 0x28 */ u8 pad28[0xA8 - 0x28];
+    /* 0xA8 */ s32 unkA8;
     /* 0xAC */ s32 unkAC;
 } Ext20;
 
@@ -279,6 +280,19 @@ typedef struct BrioOwner {
 extern u8 *D_800D5454;
 extern HeroInfo Heroes[4];
 extern s32 D_8005A680[];
+
+/* func_800CD214's ending: put the hero into action 0x4E unless status bit
+ * 0x200 is set. */
+static inline s32 Ovl62EndAction(s32 player) {
+    if (Heroes[player].hero_mode == 0x4C) {
+        if (!(Heroes[player].hero_status & 0x200)) {
+            SetHeroAction((HeroInfo *)player, 0x4E);
+        }
+    } else if (!(Heroes[player].hero_status & 0x200) && Heroes[player].hero_mode != 0x4E) {
+        SetHeroAction((HeroInfo *)player, 0x4E);
+    }
+    return 0;
+}
 
 s32 func_800C9B5C(void);
 /* func_800C2ECC's box around an engine: min/max x,z corners and push radius. */
@@ -1359,6 +1373,8 @@ void func_800CBBE8(s32 p1, s32 p2);
 
 void func_800CC3B4(void);
 void func_800CCCB8(s32 player);
+
+s32 func_800CD214(s32 player);
 
 void func_800CD594(s32 player);
 

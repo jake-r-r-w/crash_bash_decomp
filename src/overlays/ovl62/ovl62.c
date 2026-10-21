@@ -4882,7 +4882,79 @@ s32 func_800CD118(s32 *arg0, s32 arg1) {
     return 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CD214);
+s32 func_800CD214(s32 player) {
+    HeroInfo *hb;
+    HeroInfo *h;
+    EXTengine *eng;
+    Ext20 *ext;
+    s32 out;
+    u16 act;
+    u16 mode;
+
+    hb = Heroes;
+    h = &hb[player];
+    eng = h->hero_eng;
+    ext = FindExtension(h->hero, 0x20000000);
+    if (ext != NULL) {
+    if (D_8005A648 != 0x16) {
+        act = 0x4E;
+        if (eng != NULL && func_800B4260((s32 *)&eng->unk10, 0)) {
+            return 1;
+        }
+        mode = Heroes[player].hero_mode;
+        if (mode == 0x4C) {
+            if (!(Heroes[player].hero_status & 0x200)) {
+                SetHeroAction((HeroInfo *)player, 0x4E);
+            }
+        } else if (!(Heroes[player].hero_status & 0x200)) {
+            switch (mode) {
+            case 0x4E:
+                break;
+            default:
+                SetHeroAction((HeroInfo *)player, act);
+                break;
+            }
+        }
+        return 0;
+    } else if (D_800D5298 != NULL) {
+        if (D_800D5298->unk74 == 0x2008
+            && ((s32 (*)(s32 *, s32, s32))func_800CD118)((s32 *)&eng->unk10, 1, player)
+            && !(h->hero_status & 0x200)) {
+            ext->unkA8 = 1;
+            if (h->hero_mode != 0x4E) {
+                SetHeroAction((HeroInfo *)player, 0x4E);
+            }
+        }
+        if (D_800D5298->unk74 == 0x2009
+            && ((s32 (*)(s32 *, s32, s32))func_800CD118)((s32 *)&eng->unk10, 2, player)
+            && !(Heroes[player].hero_status & 0x200)) {
+            ext->unkA8 = 1;
+            if (Heroes[player].hero_mode != 0x4E) {
+                SetHeroAction((HeroInfo *)player, 0x4E);
+            }
+        }
+        if (D_800D5298->unk74 == 0x200A) {
+            out = ((s32 (*)(s32 *, s32, s32))func_800CD118)((s32 *)&eng->unk10, 3, player) != 1;
+            if (out && !(Heroes[player].hero_status & 0x200)) {
+                ext->unkA8 = 1;
+                if (Heroes[player].hero_mode != 0x4E) {
+                    SetHeroAction((HeroInfo *)player, 0x4E);
+                }
+            }
+        }
+        if (D_800D5298->flags & 0x8000) {
+            if (eng != NULL && ((s32 (*)(s32 *, s32, s32))func_800CD118)((s32 *)&eng->unk10, 0, player)) {
+                ext->unkA8 = 0;
+                return 1;
+            }
+        } else {
+            ext->unkA8 = 1;
+        }
+        return Ovl62EndAction(player);
+    }
+    }
+    return 0;
+}
 
 s32 func_800CD560(s32 arg0) {
     Heroes[arg0].hero_move->HitBy = -1;
