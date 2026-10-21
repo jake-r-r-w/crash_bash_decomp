@@ -45,7 +45,64 @@ void func_800B3428() {
     D_8009D900 = D_800BB748;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B359C);
+void func_800B359C() {
+    s32 i;
+    EXTheromove *m;
+    s16 a;
+
+    if (D_8005A646 & 0x40) {
+        func_8007EB1C(0x140, 0x28, 0);
+        func_8007B7FC(0x125, 0x81D0);
+    } else {
+        func_8007EB1C(0x140, 0x28, 0);
+        func_8007B7FC(0x130, 0x81D0);
+    }
+    D_8005A5D8 = -0x10;
+    D_800BBD52 = 0x1F4;
+    D_800BBD54 = 0x12C;
+    D_800BBD56 = 0x190;
+    D_800BBD58 = 0x1E;
+    D_800BBD5A = 0;
+    D_800BBD5C = 0;
+    D_800BBD5E = 0;
+    D_800BBD62 = 0;
+    D_800BBD64 = 0;
+    D_800BBD68 = 0;
+    D_800BBD6C = EngineTemplate;
+    for (i = 0; i < 4; i++) {
+        a = (get_angle(Heroes[i].hero_eng->unk10.x, Heroes[i].hero_eng->unk10.z) + 0x800) & 0xFFF;
+        m = Heroes[i].hero_move;
+        Heroes[i].hero_eng->unk1E = a;
+        m->facing_angle = a;
+        m->forward_angle = a;
+        Heroes[i].hero->Camera.width = 0;
+        Heroes[i].hero->Camera.look_ahead = 0;
+        if (((Ovl64Game *)D_8005A614)->cpu[i] != 0) {
+            Heroes[i].hero_move->run_walk = 2;
+        }
+    }
+    if (((Ovl64Game *)D_8005A614)->flags & 0x80) {
+        func_8001682C(&D_80053004);
+    }
+    if (((Ovl64Game *)D_8005A614)->flags & 0x40) {
+        if (((Ovl64Game *)D_8005A614)->teams != 0) {
+            Heroes[0].hero_score = 0x28;
+            Heroes[1].hero_score = 0;
+            Heroes[2].hero_score = 0x1E;
+            Heroes[3].hero_score = 0;
+            func_8007D144();
+        } else {
+            Heroes[0].hero_score = 0x1E;
+            Heroes[1].hero_score = 0x19;
+            Heroes[2].hero_score = 0x19;
+            Heroes[3].hero_score = 0x19;
+        }
+    }
+    func_800B382C();
+    func_80086D88();
+    func_800B3938();
+    PlaySfx(0x5EC, &D_800BBE00, NULL, 0x1000, 0x1E00, 0);
+}
 
 void func_800B382C(void) {
     s32 i;
