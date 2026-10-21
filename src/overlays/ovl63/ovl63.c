@@ -3297,7 +3297,232 @@ check:
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C04EC);
+void func_800C04EC(void) {
+    NAS *nas;
+    NAS *spawned;
+    RacePickUpExt *pick;
+    RacePickUpExt *ext;
+    Ovl63PickUpSlot *s;
+    s32 k;
+    Ovl63FuxHeld *fux;
+    Ovl63FuxHeld *hfux;
+    EXTengine *eng;
+    Ovl63GameView *g;
+    s32 n;
+    s32 big;
+    s32 count;
+    s32 extra;
+    s32 state;
+    s32 i;
+    s32 j;
+    s32 p;
+    s32 slot;
+    s32 dist;
+    s32 angle;
+    s32 r;
+
+    if (D_800C6BB0 >= 0) {
+        return;
+    }
+    big = 0;
+    nas = D_800C6920;
+    count = 0;
+    if (D_800C6928 != 0) {
+        D_800C6928--;
+        big = 1;
+    }
+    if (D_800C6BA4 == 0) {
+        big = 1;
+        D_800C6BA4 = big;
+        D_800C6CB0 = 30;
+        for (k = 0; k < 16; k++) {
+            D_800CA64C[k].used = 0;
+            if (k == 2) {
+                D_800CA64C[k].used = 1;
+            }
+            D_800CA64C[k].angle = k << 8;
+        }
+    }
+    for (;; nas = nas->Group.Child) {
+        if (nas == NULL) {
+            goto heroes_loop;
+        }
+        pick = FindExtension(nas, 0x10000000);
+        if (pick != NULL) {
+            state = pick->unk38;
+            if (state == 4) {
+                big = 1;
+            }
+            if (state == 2 && D_800C6924 == 0) {
+                D_800C6924 = 1;
+            }
+            if (pick->unk38 == 3) {
+                count++;
+            }
+        }
+    }
+heroes_loop:
+    for (p = 0;; p++) {
+        if (p >= 4) {
+            goto heroes_done;
+        }
+        hfux = (Ovl63FuxHeld *)Heroes[p].hero->FUX;
+        if (hfux != NULL) {
+            state = hfux->unk18;
+            if (state != 0) {
+                if (state == 0x10) {
+                    big = 1;
+                }
+                if (state == 4 && D_800C6924 == 0) {
+                    D_800C6924 = 1;
+                }
+            }
+        }
+    }
+heroes_done:
+    extra = 0;
+    if (D_800C692C > 0) {
+        extra = 3;
+    }
+    if (D_800C692C >= 0x385) {
+        extra = 2;
+    }
+    if (D_800C692C >= 0x709) {
+        extra = 1;
+    }
+    n = 6 - (count + extra);
+    if (n != 0) {
+        if (--D_800C6CB0 < 0) {
+            D_800C6CB0 = 0;
+        }
+    }
+    i = 0;
+    g = G63;
+    for (;; i++) {
+        dist = 0x898;
+        if (i > 0) {
+            goto held;
+        }
+        slot = Random(16);
+        j = 0;
+        if (g->unk34 == 0x19) {
+            dist = 0x5DC;
+        }
+        if (D_800C6CB0 == 0) {
+            D_800C6CB0 = 30;
+            for (; j < 16;) {
+                j++;
+                if (D_800CA64C[slot].used == 0) {
+                    break;
+                }
+                slot++;
+                slot &= 0xF;
+            }
+            if (j == 16) {
+                return;
+            }
+            s = &D_800CA64C[slot];
+            angle = s->angle;
+            spawned = SpawnNASById(dist * D_80068BD4[(angle - 0x400) & 0xFFF].unk2 >> 12, 0,
+                                   dist * D_80068BD4[angle & 0xFFF].unk2 >> 12, 0x1702, 0x11);
+            if (spawned != NULL) {
+                s->used = 1;
+                ext = FindExtension(spawned, 0x10000000);
+                if (ext != NULL) {
+                    ext->unk44 = slot;
+                    Random(big ? 4 : 5);
+                    r = Random(0x1000);
+                    if (r < 0x800) {
+                        ext->unk38 = 3;
+                    }
+                    if (r > 0x800) {
+                        ext->unk38 = 5;
+                    }
+                    if (r > 0xC00) {
+                        ext->unk38 = 0;
+                    }
+                    ext->unk38 = 3;
+                }
+            }
+        }
+    }
+held:
+    for (p = 0;; p++) {
+        if (p >= 4) {
+            return;
+        }
+        fux = (Ovl63FuxHeld *)Heroes[p].hero->FUX;
+        if (fux == NULL) {
+            continue;
+        }
+        eng = fux->unk1C;
+        if (eng == NULL) {
+            continue;
+        }
+        eng->sub->flags &= ~0x8000;
+        if (fux->unk18 == 1) {
+            eng->sub->flags |= 0x8000;
+            eng->sub->unk74 = 0x2011;
+            eng->sub->unk6C = &D_80054F84;
+            eng->unk5E = 1;
+            eng->unk1E += 0x80;
+            eng->unk10 = Heroes[p].hero_eng->unk10;
+        }
+        if (fux->unk18 == 2) {
+            eng->sub->flags |= 0x8000;
+            eng->sub->unk74 = 0x2009;
+            eng->sub->unk6C = D_80052F94;
+            eng->unk5E = 1;
+            eng->unk1E += 0x80;
+            eng->unk10 = Heroes[p].hero_eng->unk10;
+        }
+        if (fux->unk18 == 4) {
+            eng->sub->flags |= 0x8000;
+            eng->sub->unk74 = 0x2005;
+            eng->sub->unk6C = *(void **)D_80058AD0;
+            eng->unk5E = 1;
+            eng->unk1E += 0x80;
+            eng->unk10 = Heroes[p].hero_eng->unk10;
+        }
+        if (fux->unk18 == 8) {
+            eng->sub->unk74 = 0x2002;
+            eng->sub->unk6C = *(void **)D_80058AD0;
+            eng->unk5E = 1;
+            eng->unk1E += 0x80;
+            eng->unk10 = Heroes[p].hero_eng->unk10;
+        }
+        if (fux->unk18 == 0x10) {
+            eng->sub->flags |= 0x8000;
+            eng->sub->unk74 = 0x2011;
+            eng->sub->unk20.x = eng->sub->unk20.y = eng->sub->unk20.z = 0x200;
+            eng->sub->unk6C = *(void **)D_80058AD0;
+            eng->unk5E = 1;
+            eng->unk1E += 0x80;
+            eng->unk10 = Heroes[p].hero_eng->unk10;
+        }
+        if (fux->unk18 == 0x20) {
+            eng->sub->flags |= 0x8000;
+            eng->sub->unk74 = 0x2017;
+            eng->sub->unk20.x = eng->sub->unk20.y = eng->sub->unk20.z = 0x200;
+            eng->sub->unk6C = &D_80054F84;
+            eng->unk5E = 1;
+            eng->unk1E += 0x80;
+            eng->unk10 = Heroes[p].hero_eng->unk10;
+        }
+        if (fux->unk18 == 0x40) {
+            eng->sub->flags |= 0x8000;
+            eng->sub->unk74 = 0x2011;
+            eng->sub->unk20.x = eng->sub->unk20.y = eng->sub->unk20.z = 0x200;
+            eng->sub->unk6C = *(void **)D_80058AD0;
+            eng->unk5E = 1;
+            eng->unk1E += 0x80;
+            eng->unk10 = Heroes[p].hero_eng->unk10;
+        }
+        if (eng->sub->flags & 0x8000) {
+            eng->unk10.y -= 0x200;
+        }
+    }
+}
 
 void func_800C0CB4(void) {
     NAS *nas;

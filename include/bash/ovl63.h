@@ -495,6 +495,14 @@ typedef struct Ovl63PickUpSlot {
 } Ovl63PickUpSlot;
 extern Ovl63PickUpSlot D_800CA64C[16];
 extern s32 D_800C6CB4;
+extern s32 D_800C6CB0;
+
+/* A hero's FUX as func_800C04EC reads it: a held pick-up and its engine. */
+typedef struct Ovl63FuxHeld {
+    /* 0x00 */ u8 unk0[0x18];
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ EXTengine *unk1C;
+} Ovl63FuxHeld;
 
 /* A hero's FUX as func_800C0CB4 reads it: a state at 0x18. */
 typedef struct Ovl63FuxState {
