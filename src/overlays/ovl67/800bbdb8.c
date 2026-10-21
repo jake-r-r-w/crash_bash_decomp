@@ -1210,7 +1210,157 @@ void InitSpiralSat(NAS *nas) {
 done:;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", PlotSpiralSat);
+void PlotSpiralSat(NAS *nas) {
+    SpiralExt *ext;
+    EXTengine *f;
+    EXTengine *e;
+    EXTengine *g;
+    NAS *s;
+    LaserExt *le;
+    SLONG_XYZ *q;
+    SLONG_XYZ *r;
+    s32 i, j, mode;
+    SpiralExt *p;
+    s32 dx, dy, dz;
+    s32 z;
+
+    ext = FindExtension(nas, 0x10000000);
+    if (ext != NULL && ext->unk3C == 0) {
+        for (i = 0;; i++) {
+            if (i >= 4) {
+                goto done;
+            }
+            f = ext->eng[i];
+            if (f == NULL) {
+                continue;
+            }
+            if (((BossGameView *)D_8005A614)->unk6C == 0) {
+                if (Heroes[0].hero_eng->unk10.z + 0x6000 < f->unk10.z) {
+                    f->sub->flags &= ~0x8000;
+                    if (ext->sat[i] != NULL) {
+                        ext->sat[i]->Engine->flags &= ~0x8000;
+                    }
+                } else {
+                    goto show;
+                }
+            } else if (!(Heroes[0].hero_status & 0x2000)) {
+                if (Heroes[0].hero_eng->unk10.z + 0x6000 < f->unk10.z) {
+                    f->sub->flags &= ~0x8000;
+                    if (ext->sat[i] != NULL) {
+                        ext->sat[i]->Engine->flags &= ~0x8000;
+                    }
+                } else {
+                    goto show;
+                }
+            } else if (Heroes[1].hero_eng->unk10.z + 0x6000 < f->unk10.z) {
+                f->sub->flags &= ~0x8000;
+                if (ext->sat[i] != NULL) {
+                    ext->sat[i]->Engine->flags &= ~0x8000;
+                }
+            } else {
+            show:
+                f->sub->flags |= 0x8000;
+                if (ext->sat[i] != NULL) {
+                    ext->sat[i]->Engine->flags |= 0x8000;
+                }
+            }
+            do {
+                e = ext->eng[i];
+            } while (0);
+            if (!(e->sub->flags & 0x8000)) {
+                continue;
+            }
+            dx = e->unk10.x - Heroes[0].hero_eng->unk10.x;
+            dz = e->unk10.z - Heroes[0].hero_eng->unk10.z;
+            dy = e->unk10.y - Heroes[0].hero_eng->unk10.y;
+            if (!(Heroes[0].hero_status & 0x2000) && dx * dx + dy * dy + dz * dz < 0x90000) {
+                r = &e->unk10;
+                s = SpawnNASById(e->unk10.x, r->y, r->z, 0x1605, 0x11);
+                mode = 0;
+                if (s != NULL) {
+                    le = FindExtension(s, 0x10000000);
+                    if (le != NULL) {
+                        le->unk18 = 0x100;
+                        le->unkC = mode;
+                        le->unk20 = 1;
+                        le->unk28 = 0;
+                        s->InitDelete(s);
+                    }
+                }
+                if ((((BossGameView *)D_8005A614)->unk4 & 0x80000001) != 0x80000001 && Heroes[0].hero_mode != 0x30) {
+                    extern int SetHeroAction();
+                    ((void (*)(HeroInfo *, s32))SetHeroAction)((HeroInfo *)0, 0x30);
+                }
+                goto kill;
+            }
+            if (((BossGameView *)D_8005A614)->unk6C != 0 && !(Heroes[1].hero_status & 0x2000)) {
+                g = ext->eng[i];
+                if ((g->unk10.x - Heroes[1].hero_eng->unk10.x) * (g->unk10.x - Heroes[1].hero_eng->unk10.x)
+                    + (g->unk10.y - Heroes[1].hero_eng->unk10.y) * (g->unk10.y - Heroes[1].hero_eng->unk10.y)
+                    + (g->unk10.z - Heroes[1].hero_eng->unk10.z) * (g->unk10.z - Heroes[1].hero_eng->unk10.z) < 0x90000) {
+                    q = &g->unk10;
+                    s = SpawnNASById(g->unk10.x, q->y, q->z, 0x1605, 0x11);
+                    mode = 0;
+                    if (s != NULL) {
+                        le = FindExtension(s, 0x10000000);
+                        if (le != NULL) {
+                            le->unk18 = 0x100;
+                            le->unkC = mode;
+                            le->unk20 = 1;
+                            le->unk28 = 0;
+                            s->InitDelete(s);
+                        }
+                    }
+                    if ((((BossGameView *)D_8005A614)->unk4 & 0x80000001) != 0x80000001
+                        && !(Heroes[1].hero_status & 0x2000) && Heroes[1].hero_mode != 0x30) {
+                        SetHeroAction((HeroInfo *)1, 0x30);
+                    }
+                    goto kill;
+                }
+            }
+            ext->eng[i]->unk1C += 0x40;
+            ext->eng[i]->unk1E += 0x40;
+            ext->eng[i]->unk5E = 1;
+            ext->eng[i]->unk10.x = ext->c.x + ((ext->radius * D_80068BD4[(ext->ang[i] - 0x400) & 0xFFF].unk2) >> 12);
+            ext->eng[i]->unk10.y = ext->c.y + ((ext->radius * D_80068BD4[ext->ang[i] & 0xFFF].unk2) >> 12);
+            ext->eng[i]->unk10.z = ext->c.z;
+            if (ext->sat[i] != NULL) {
+                ext->sat[i]->Engine->unk10 = ext->eng[i]->unk10;
+            }
+            if (ext->unk40 < 0x800) {
+                ext->ang[i] += 0x30;
+            } else {
+                ext->ang[i] -= 0x30;
+            }
+        }
+    done:
+        ext->radius = abs((D_80068BD4[(ext->unk40 - 0x400) & 0xFFF].unk2 * 3) >> 3) + 0x200;
+        ext->unk40 = (ext->unk40 + 0x18) & 0xFFF;
+    }
+    z = nas->Engine->unk10.z;
+    j = 0;
+    if (z < Heroes[0].hero_eng->unk10.z - 0x800) {
+        p = ext;
+        for (; j < 4; j++) {
+            if (p->sat[0] != NULL) {
+                KillNAS(p->sat[0]);
+            }
+            p = (SpiralExt *)((s32 *)p + 1);
+        }
+        goto kill;
+    }
+    if (*D_8005A680 != 0 && z < Heroes[1].hero_eng->unk10.z - 0x800) {
+        p = ext;
+        for (mode = 0; mode < 4; mode++) {
+            if (p->sat[0] != NULL) {
+                KillNAS(p->sat[0]);
+            }
+            p = (SpiralExt *)((s32 *)p + 1);
+        }
+    kill:
+        KillNAS(nas);
+    }
+}
 
 void PlotMineSFX(NAS *nas) {
     s32 z;
