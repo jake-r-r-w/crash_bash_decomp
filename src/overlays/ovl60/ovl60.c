@@ -451,7 +451,48 @@ void func_800B6438(s32 arg0) {
     func_800871E4(arg0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B662C);
+void func_800B662C(s32 arg0) {
+    HeroInfo *h;
+    EXTengine *eng;
+    EXTheromove *mv;
+    HeroInfo *base;
+    s32 d;
+
+    if (func_800C2B00(arg0) != 0) {
+        return;
+    }
+    if (func_800C29F4(arg0) != 0) {
+        return;
+    }
+    if (func_800C295C(arg0) != 0) {
+        return;
+    }
+    if (func_800B6C14(arg0) != 0) {
+        return;
+    }
+    func_800BC0EC(arg0);
+    base = Heroes;
+    h = &base[arg0];
+    h->hero_frozen = 10;
+    if (func_8008502C(arg0) == 0x14) {
+        func_800C2674(arg0);
+    }
+    eng = h->hero_eng;
+    if (eng != NULL) {
+        mv = h->hero_move;
+        if (mv != NULL) {
+            d = func_800154A0(eng->unk1E, mv->facing_angle);
+            eng->unk5E = 1;
+            eng->unk1E += d >> 3;
+        }
+    }
+    if (--D_800C535C[arg0].unk6 <= 0) {
+        Heroes[arg0].hero_frozen = 0;
+        func_800C2B98(arg0);
+        SetHeroAction((HeroInfo *)arg0, 0x39);
+    }
+    func_800871E4(arg0);
+}
 
 void func_800B6790(s32 arg0) {
     EXTengine *eng;
