@@ -2360,7 +2360,49 @@ void PlotTankBossCortexTurret(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C3D48);
+void func_800C3D48(NAS *nas, EXTengine *eng) {
+    s32 i;
+    s32 dir;
+    s32 a;
+    NAS *n;
+    NAS *puff;
+    PeriscopeShellExt *fux;
+    EXTengine *e;
+
+    dir = eng->unk1E;
+    for (i = 0; ; i++) {
+        {
+            s32 k;
+            if (i >= 2) {
+                break;
+            }
+        }
+        n = SpawnNASById(eng->unk10.x, eng->unk10.y - 0xFA, eng->unk10.z, 0x1302, 0x11);
+        if (n != NULL) {
+            PlaySfx(0x522, &n->Engine->sfx, (fux = (PeriscopeShellExt *)n->FUX, (SLONG_XYZ *)NULL), 0x1000, 0x1E00, 0);
+            e = n->Engine;
+            a = dir - Ovl5fShellAngleOffsets()[i];
+            e->unk10.x -= (D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 245) >> 11;
+            e->unk10.z -= (D_80068BD4[a & 0xFFF].unk2 * 245) >> 11;
+            e->unk1E = eng->unk1E;
+            fux->vx = -(D_80068BD4[(dir - 0x400) & 0xFFF].unk2 * 200) >> 12;
+            fux->vz = -(D_80068BD4[dir & 0xFFF].unk2 * 200) >> 12;
+            fux->unk30 = 1;
+            fux->unk2C = -1;
+        }
+        puff = Ovl5fSpawnBit1605Nas(&n->Engine->unk10, 7);
+        if (puff != NULL) {
+            Ovl5fPuffSetAngle(puff, eng->unk1E);
+        }
+    }
+    nas->UserInfo.user2 = 0x78;
+    nas->UserInfo.status = 0xD;
+    if (nas->UserInfo.flags != 0) {
+        eng->sub->unk74 = 0x2025;
+    } else {
+        eng->sub->unk74 = 0x2024;
+    }
+}
 
 void PlotTankBossRocketTurret(NAS *nas) {
     EXTengine *eng;

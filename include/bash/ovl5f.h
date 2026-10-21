@@ -46,6 +46,7 @@ void func_800C8324(void);
 void func_800C832C(void);
 void func_800C83D0(void);
 extern s32 D_800CB25C;
+extern s32 D_800C93AC[];
 extern s32 D_800C9A54[];
 extern s32 D_800C9AA4[];
 extern s32 D_800C9AF4[];
@@ -531,6 +532,20 @@ static inline NAS *Ovl5fSpawnBit1605Nas(SLONG_XYZ *pos, s32 kind) {
         return nas;
     }
     return NULL;
+}
+/* func_800C3D48: per-shell angle offsets. */
+static inline s32 *Ovl5fShellAngleOffsets(void) {
+    return D_800C93AC;
+}
+/* func_800C3D48: face a spawned puff along `angle` and flag its subengines. */
+static inline void Ovl5fPuffSetAngle(NAS *puff, s32 angle) {
+    subengine *s;
+
+    puff->Engine->unk1E = angle;
+    puff->Engine->unk5E = 1;
+    for (s = puff->Engine->sub; s != NULL; s = s->next) {
+        s->flags |= 0x20000000;
+    }
 }
 extern s32 D_80051244[]; /* flags by angle octant */
 void func_800B4240(s32 player, s32 x, s32 z, EXTengine *eng, Ovl5fAITarget *ai);
