@@ -2133,7 +2133,7 @@ def overwritten_stores(body):
         if body[:pos].rstrip()[-1:] not in (";", "{", "}"):
             return None
         m = re.match(rf"{v}\s*=(?!=)([^;]*);", body[pos:])
-        return m if m and not re.search(r"\w\s*\(|\+\+|--|(?<![=!<>])=(?!=)|\b" + v + r"\b", m.group(1)) else None
+        return m if m and not re.search(r"\w\s*\(|\+\+|--|(?<![=!<>])=(?!=)|(?<![.>\w])\b" + v + r"\b", m.group(1)) else None
 
     for v in sorted(names):
         if not v or re.search(rf"&\s*{v}\b", body):
@@ -2150,7 +2150,7 @@ def overwritten_stores(body):
                 break
         second = re.match(rf"{v}\s*=(?!=)([^;]*);", body[uses[1]:])
         if (depth != 0 or body[:uses[1]].rstrip()[-1:] not in (";", "}") or not second
-                or re.search(rf"\b{v}\b", second.group(1)) or re.search(r"\bgoto\b", between)):
+                or re.search(rf"(?<![.>\w])\b{v}\b", second.group(1)) or re.search(r"\bgoto\b", between)):
             continue
         # a break/continue is local only inside a loop or switch that opens between the stores
         local = [(o, c) for o, c, lp in blocks(between)

@@ -82,6 +82,11 @@ class OverwrittenStores(unittest.TestCase):
                   "int i, z; z = g;\n    for (i = 0; i < 4; i++) { if (i) break; }\n    z = 3;\n    g = z;"):
             self.assertIn("dead store", lint(s)[1], s)
 
+    def test_a_field_of_the_same_name_is_not_a_read(self):
+        """func_8001AF2C: `in = &D_800569CC.in; in = &box->center;`."""
+        s = "int *in;\n\n    in = &s.in;\n    in = &g;\n    g = *in;"
+        self.assertIn("dead store", lint(s, head="struct T { int in; } s;\nvoid f(void)\n")[1])
+
     def test_live_first_stores_are_clean(self):
         for s in ("int z; z = g;\n    z = z >> 2;\n    g = z;",               # the second store reads it
                   "int z; z = g;\n    if (g) { g = z; }\n    z = 3;\n    g = z;",  # read between

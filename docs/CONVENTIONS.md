@@ -83,14 +83,18 @@ A file is finished when every function in it reaches level 4.
 - Matching C must compile with the stock pipeline in `configs/USA/project.mk`.
   No compiler or maspsx patches, no post-build rewriting, no whole-function
   `asm()` bodies.
-- Register pins, empty `asm("")` barriers, no-op `x++; x--;` pairs and dead
+- Register pins, empty `asm("")` barriers, no-op `x++; x--;` pairs, dead
   stores (a local set again at the bottom of a loop that its next pass
-  overwrites, so loop.c can't hoist it) are a last resort: `decomp.py done`
-  refuses them without `--hack "why"`, which goes in the commit message. Remove
-  them when the function matches without; `decomp.py hacks` lists every hack match
-  with its commit's reason, to retry them after tool upgrades. A hack that
-  isn't likely to be the original source (a barrier around a scheduler quirk)
-  is worse than a park.
+  overwrites, locals only stored to feed each other, a first store
+  overwritten before any read) and if/else arms with identical code are a
+  last resort: `decomp.py done` refuses them without `--hack "why"`, which
+  goes in the commit message. Remove them when the function matches without;
+  `decomp.py hacks` lists every hack match with its commit's reason, to retry
+  them after tool upgrades. One reviewed as plausibly the original source (a
+  register choice normal allocation never makes) is recorded with `hacks
+  --accept NAME --why` and leaves the count. A hack that isn't likely to be
+  the original source (a barrier around a scheduler quirk) is worse than a
+  park.
 - One function per match commit, through `decomp.py done NAME --commit`
   ([MATCHING.md](MATCHING.md)).
 - A function that will not match after a bounded effort is parked

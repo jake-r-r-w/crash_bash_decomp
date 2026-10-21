@@ -29,7 +29,8 @@ first build that isn't byte-identical.
 Alongside matching, hack matches are paid down as they appear rather than
 left for Phase 6. A hack is any match the gate's lint flags (`decomp.py
 hacks`, and the Hacks tile on the dashboard): register pins, empty
-`asm("")` barriers, no-op `++`/`--` pairs and dead stores. After each
+`asm("")` barriers, no-op `++`/`--` pairs, dead stores and identical
+if/else arms. After each
 swarm run, run `decomp.py hacks` and work the new ones by hand (see the
 Phase 6 item for the rule). No hack is committed without a `Hack:` line
 in its match commit saying what it works around and what the natural C
@@ -203,8 +204,8 @@ test (Phase 4). A box below is ticked on the same terms.
 **Done when** every test in [The final test](#the-final-test) passes.
 
 - [ ] No `INCLUDE_ASM` or `INCLUDE_RODATA` anywhere, and no parked functions.
-- [ ] No hack matches left (`decomp.py hacks` lists none, or only pins kept
-  on evidence). For each one, in this order:
+- [ ] No hack matches left (`decomp.py hacks` lists none; reviewed ones
+  kept on evidence are listed apart). For each one, in this order:
   1. Write down what the hack works around: the natural C, its stage and
      score, and the gcc pass that decides the difference (`sched`, `vars`,
      the `-dS`/`-dR`/`-dl` dumps, `tools/reference/`). Matches committed
@@ -216,7 +217,8 @@ test (Phase 4). A box below is ticked on the same terms.
      the caller and retry with `similar`, `splitvars` and the permuter.
   3. Keep a register pin only where the evidence says it's the original
      source (a register choice normal allocation never makes), and say so
-     in the function's comment and its commit.
+     in the function's comment and its commit; `decomp.py hacks --accept
+     NAME --why` records the review and takes it off the count.
   4. Otherwise re-match it without the hack, or park it
      (`decomp.py block`) with the natural C under `NON_MATCHING`: a park
      is honest, a hack hides the gap.

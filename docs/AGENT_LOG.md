@@ -21,10 +21,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
   **main.exe, ovl61 and ovl6a are complete**; 114 left: ovl62 26, ovl5f 18,
   ovl63 17, ovl67 9, ovl65 8, ovl5d 7, ovl60 7, ovl64 7, ovl68 5, ovl66 3,
   ovl69 3, engine 2, ovl5e 2. All 564 PsyQ functions (Sony objects). 4
-  parked by hand (`decomp.py status`), 10 matched with a hack (`decomp.py
-  hacks`; `func_800193A8`'s register pins reviewed as plausibly
-  original; the lint flags dead stores and identical if/else arms since
-  2026-10-21). Every slot overlay's id word is
+  parked by hand (`decomp.py status`; the swarm parked 5 more, which the
+  dashboard counts from `docs/swarm.js`), 11 matched with a hack
+  (`decomp.py hacks`; `func_800193A8`'s register pins reviewed as plausibly
+  original, `hacks --accept`). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Dashboard (2026-10-18): `docs/index.html` is `tools/scripts/dashboard.html` plus
@@ -53,11 +53,11 @@ leads**, add any new gotcha, and add one short entry at the top of the
 **The overlays' last 114 functions**, almost all >= 600 B. The second
 big-mode retry (`--seg overlays/ --retry-failed --big-bytes 1 --workers 1
 --big-workers 6`) still matched 85 in 3 h, at $2.70 a match (the first:
-$1.90). Next: `swarm.mjs permute --near --minutes 60` on the checkpoints at
-the registers stage (CPU only), then one more big-mode retry if it still
-pays; rework the 10 hacks by hand between runs. After each run, the
-"After a run" checklist in tools/swarm/README.md (`stats --run ID`, parks,
-gate failures, `fold`, this log).
+$1.90). `permute --near` found one checkpoint at the registers stage
+(`func_800BE914`) and no gain in 38 min. Next: one more big-mode retry if
+the rate still pays, else hand work; rework the 11 hacks between runs.
+After each run, the "After a run" checklist in tools/swarm/README.md
+(`stats --run ID`, parks, gate failures, `fold`, this log).
 
 Recipes (`--seg overlays/NAME --branch main --max-minutes 60`):
 - **Low cost** (2026-10-19, ovl5f: 78 matched for $15.96, ~$0.20 a match;
@@ -80,7 +80,9 @@ rest are fixed by hand from the worker's patch (Gotchas). A park whose
 `jtbl_` names functions is a bad split (Gotchas).
 
 Hand work, between runs:
-1. The parks: `func_8007F314` and `PlotScriptFX` (engine), `func_800BC274` (ovl5e), and the 10 hack matches (`decomp.py hacks`; Open leads for `func_800B345C` and four tried 2026-10-21).
+1. The parks: `func_8007F314` and `PlotScriptFX` (engine), `func_800BC274`
+   (ovl5e), `func_800BFEE0` (ovl62), and the 11 hack matches (`decomp.py
+   hacks`; Open leads for `func_800B345C` and the ones tried 2026-10-21).
 2. Name each function as it's matched when the evidence allows.
 3. Split `main.c` into its translation units: on hold since 2026-10-15. Its
    one proven boundary (jump-table parity, 95..370) has three possible
@@ -127,59 +129,22 @@ and current tools).
     initially ready) takes the stall. No statement order, `pos.x` spelling or
     index temp moved it. Next: find C whose RTL emits the table address after
     the index arithmetic (or makes `i = 0` depend on something late).
-- **ovl5e big-mode checkpoints (2026-10-20), hints the workers left** (their
-  Diff-patterns rows, not folded: the functions aren't matched yet). Closest
-  first; the first two were worked by hand on 2026-10-20 (BC274 parked,
-  B7134 matched with a hack):
-  - `func_800BC274` instructions 2/197, parked by hand 2026-10-20 (block
-    note): only `addiu a1` / `lw a0` before `jal func_8001CD04` are swapped.
-    sched1 ties them and luid puts a0 first; the target's order needs a
-    second load/store in that block (potential hazard; every matched
-    a1-first caller has one), so the original's was deleted after sched1.
-    A second pass (2026-10-20) ruled out cross-jumped tails, local-alloc
-    and reload equivalences, reload_cse and an unfolded a1 precompute (the
-    block note has why), and a third ruled out single -f flags and inserted
-    reads; the function is absent from the Aug/Sep prototypes and identical
-    in Oct 9. The same code is unmatched in `func_800C284C`
-    (ovl5d) and `func_800BAF1C` (ovl64): solve the three together.
-    A fourth pass (2026-10-21, no hacks or permuter) worked every
-    sched1 tie-break through from `sched.c`: each needs the target's
-    block to hold an instruction its final code lacks, and no natural
-    pass after sched1 deletes one (the block note lists them).
-    Untried mechanism from `func_800BB3F0` (same file, same
-    `func_8001CD04` block shape, a1 first there): duplicated code wrapped
-    in `do { } while (0)` lives until jump2's cross-jump (after sched1 and
-    allocation), while plain duplicates merge before flow. A wrapped copy
-    of a join load in the then-arm could be sched1's second memory insn
-    (the loop notes are also a sched1 barrier: check -dS).
-  - `func_800B9E74` registers 12/238: a `subu` takes the second operand's
-    register; split `d = a->x; d -= b->x;`. Its permuter run was cut short.
-  - `PlotPapuBoss` structure 242/455: two adjacent u16 stores, chain them
-    (`a = (&a)[1] = X;`). `PlotPapuMinion` structure 854/877: index
-    `Table[slot].f` at each use, not through a pointer. `func_800BB86C`
-    structure 439/644: `x < 4 && x >= 2` as nested ifs (fold-const makes a
-    range check of the `&&`).
-  - `func_800BB3F0` matched by hand 2026-10-20 (08aa8ff7, no hack; copies
-    `func_800C159C` and `func_800BA098` too). Diff patterns has the three
-    fixes: read `Heroes[player]` directly in the loop, so loop.c moves its
-    la first and lowers its threshold, which keeps the multiply in the
-    loop; K&R `u16 cone`; and the claim written once per arm, each in
-    `do { } while (0)`.
-  - `func_800B38FC` instructions 32/131: stack `u16` args get `andi` +
-    `sll` after a branch; declare the params `u16` and scale them in place
-    (`n4 *= 4;`).
-- **Overlay run 2026-10-20 (run 20261020211358), to fix by hand:**
-  - `func_800B4268` (ovl65): the gate refused the worker's match because the
-    full build failed. It gave the function an extra parameter, and its
-    callers still pass fewer arguments. Fix the callers' prototype use from
-    the worker's patch (`<swarm dir>/results/ovl65_800B4268/`). Its hint:
-    end with `r2 = r1 < 0x100; if (r2) goto one; t0 = 0; return t0;` so the
-    early `return 0` isn't cross-jumped onto the final one.
-  - Hints on still-unmatched functions: `func_800B47C8` (ovl60) lays out
-    0xD/0xE/else as E, D, else (`goto case_d` into an `else if (0)`
-    block got it there); `PlotCircleFire` structure 133/155: index the
-    table by the loop counter (`T[i].x`), not a walking pointer;
-    `func_800B5D90`: `lh` + `sra 3` as `.unk2 * 1024 >> 13`.
+- **`func_800BC274` (ovl5e) instructions 2/197, parked by hand 2026-10-20**
+  (block note): only `addiu a1` / `lw a0` before `jal func_8001CD04` are swapped.
+  sched1 ties them and luid puts a0 first; the target's order needs a
+  second load/store in that block (potential hazard; every matched
+  a1-first caller has one), so the original's was deleted after sched1.
+  A second pass (2026-10-20) ruled out cross-jumped tails, local-alloc
+  and reload equivalences, reload_cse and an unfolded a1 precompute (the
+  block note has why), and a third ruled out single -f flags and inserted
+  reads; the function is absent from the Aug/Sep prototypes and identical
+  in Oct 9. The same code is unmatched in `func_800C284C`
+  (ovl5d) and `func_800BAF1C` (ovl64): solve the three together.
+  A fourth pass (2026-10-21, no hacks or permuter) worked every
+  sched1 tie-break through from `sched.c`: each needs the target's
+  block to hold an instruction its final code lacks, and no natural
+  pass after sched1 deletes one (the block note lists them; do-while(0)
+  wrapped copies were tried in the third pass).
 - **Hack reworks tried 2026-10-21 (still hacks; plain C and how far off):**
   `func_8001097C`: a block-scope `MemBlock *p = cur->prev;` in the search
   loop un-rotates it (94/94 long, 12 lines off); left: `cur` and `blk`
@@ -191,14 +156,19 @@ and current tools).
   them. `func_80010000`: without `t = 0;` 10 lines off, the target puts
   `n / 10` in `q`'s register and copies it to `i` (ours the reverse).
   `func_800B4AD8`: a plain `return 1;` is 3 insns off (`u` in `a1`, the
-  target `a0`); sharing `t` for `u` is worse.
-- **Hack matches to revisit:** `decomp.py hacks` lists them (three on
-  2026-10-20: `func_800193A8`, register pins that are probably the original
-  source, `func_800B345C` above; `func_800B7134` reworked without its hack 2026-10-21). Since 2026-10-20 the
-  `done` lint also flags dead stores, and `hacks` lints every matched
-  function (its old file prefilter hid no-op pairs). Parks are `decomp.py status` / the dashboard. Before reaching for a
-  barrier or pin, try `do { } while (0)` (Diff patterns): it matched
-  `func_800926CC` and `func_8008A924` without one.
+  target `a0`); sharing `t` for `u` is worse. Not tried yet:
+  `func_8001A6D4`, `func_800B6CD8`, `func_800B649C`, `PlotHelicopterTA`,
+  `Roo_FindNewSquare` and `func_8001AF2C` (a dead `in = &D_800569CC.in;`
+  before the asm, flagged since the lint stopped reading `.in` as `in`).
+- **Hack matches:** `decomp.py hacks` lints every matched function: register
+  pins, empty asm barriers, no-op `++`/`--` pairs, dead stores (a loop's
+  last store, write-only locals, a first store overwritten before any read)
+  and identical if/else arms. Reworked without one so far: `func_800B7134`,
+  `func_800B4444`, `func_8001CE00` (2026-10-21). `hacks --accept NAME --why`
+  takes one off the count when it's plausibly the original
+  (`func_800193A8`'s pins). Before reaching for a barrier or pin, try
+  `do { } while (0)` (Diff patterns): it matched `func_800926CC` and
+  `func_8008A924` without one.
 - **`PlotScriptFX` (engine script keyframes, 2080 B), parked 2026-10-18 at
   regions 95/112, 484/520 exact** (C under `#ifdef NON_MATCHING`). Left:
   - Block 21: the target computes `p = &kf[keyindex]` into v0, copies it to
@@ -425,7 +395,7 @@ Other:
   wait for `run <id> finished` in `swarm.log` (or the pid gone, by
   `tasklist //FI "PID eq N"`; `process.kill(pid, 0)` doesn't work for it on
   Windows). Don't wait on a bare `fatal`: git errors quoted in the log
-  contain it. `swarm.log` timestamps are UTC, an hour behind local time.
+  contain it. `swarm.log` timestamps are UTC.
 - Git Bash heredocs can fail outright ("unexpected EOF while looking for
   matching quote") on long scripts with backticks and quotes: write the
   script with the Write tool and run it with `tools/dk python3 build/x.py`.
@@ -447,7 +417,13 @@ Other:
 - `tryf.sh` replaces only the function, so a comment line above it in the
   draft file is added again on every run. Keep comments out of drafts.
 - `tools/dk` right after `git checkout` sometimes hits a Windows
-  `PermissionError`; retry.
+  `PermissionError`; retry. Writing a source file (`main.c`) from a script
+  in a loop can hit it too, now and then: retry the write, and check the
+  file is back to its base after a variant loop (`git diff`).
+- **main.exe has no target `.s` files** (it is fully matched, so splat
+  writes none): `make diff`, `regions` and `vars` can't align a main.exe
+  function. To rework one, `objdump -d -r` the current object as the target
+  and diff a variant's disassembly against it.
 - `make permute` runs in its own container: stopping the background task
   doesn't stop it. `docker stop` it before running `done`.
 - Stopping `swarm.mjs permute` early (a STOP file or Ctrl+C) saves nothing,
@@ -521,15 +497,17 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
-- **2026-10-21 (hand: hack reworks):** `func_8001CE00` without its
+- **2026-10-21 (hand: hack reworks, docs):** `func_8001CE00` without its
   `if (e || blk)` hack (340ce459): `e` 6 refs/21 insns lost `s0` to `blk`
   5/16 in global.c; its `func_80019094(e, ...)` call in a do-while(0)
-  fixes it. Four more tried and left as hacks (Open leads). 11 hacks left.
-  Permuter on the one near miss (`func_800BE914`, registers 26/170) 38 min:
-  no gain. Dashboard: swarm parks are looked up by unit and name (slot
-  overlays share names); Parked reads 9 with swarm.js (4 hand, 5 swarm).
-  `hacks --accept NAME --why` records a hack reviewed as plausibly original
-  (state `hack_ok`): off the count, still listed; `func_800193A8` first. 10 left.
+  fixes it. Four more tried and left as hacks (Open leads). Permuter on the
+  one near miss (`func_800BE914`, registers 26/170) 38 min: no gain.
+  Dashboard: swarm parks are looked up by unit and name (slot overlays
+  share names); Parked reads 9 with swarm.js (4 hand, 5 swarm). `hacks
+  --accept NAME --why` records a hack reviewed as plausibly original (state
+  `hack_ok`), off the count but listed: `func_800193A8`. The overwritten-store
+  lint read `.in` as the local `in`; fixed, it flags `func_8001AF2C`. 11
+  hacks. Docs: stale leads (matched functions) cut, hack kinds updated.
 
 - **2026-10-21 (hand: `func_800B4444` without its hack):** 40ba6e7d. The
   target steps a pointer it never reads, so the original read `*p` and
