@@ -1630,7 +1630,80 @@ void func_800B9C10(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B9D64);
+void func_800B9D64(void) {
+    D5A614View *g = (D5A614View *)D_8005A614;
+    s32 idx = g->mode - 10;
+    s32 x, z;
+    u32 r;
+    D5A614View *g2;
+
+    if (D_800C52EA == -1) {
+        if (g->mode == 13 && (g->flags & 0x80)) {
+            if (D_800C52F0 < 4) {
+                D_800C52EA = Random(60) + 60;
+            }
+        } else if (D_800C52F0 < D_800C38B8[idx]) {
+            goto rearm;
+        }
+    } else {
+        D_800C52EA--;
+        if (D_800C52EA < 2) {
+            if (func_800C165C(&x, &z) != 0) {
+                switch (g->mode) {
+                case 10:
+                    if (Random(3) != 0) {
+                        func_800BA25C(x, z, 1);
+                    } else {
+                        goto five;
+                    }
+                    break;
+                case 11:
+                    r = Random(5);
+                    if (r == 0) {
+                        func_800BA25C(x, z, 3);
+                    } else if (r < 3) {
+                        goto five;
+                    } else {
+                        func_800BA25C(x, z, 2);
+                    }
+                    break;
+                case 12:
+                    switch (Random(2)) {
+                    case 0:
+                        func_800BA25C(x, z, 1);
+                        break;
+                    case 1:
+                        goto five;
+                    }
+                    break;
+                case 13:
+                    if (g->flags & 0x80) {
+                        func_800BA25C(x, z, 4);
+                    } else if (Random(2) == 0) {
+                        func_800BA25C(x, z, 4);
+                    } else {
+                    five:
+                        func_800BA25C(x, z, 5);
+                    }
+                    break;
+                }
+            }
+            g2 = (D5A614View *)D_8005A614;
+            if (g2->mode == 13 && (g2->flags & 0x80)) {
+                if (D_800C52F0 >= 7) {
+                    D_800C52EA = -1;
+                } else {
+                    goto rearm;
+                }
+            } else if (D_800C52F0 > D_800C38C8[idx]) {
+                D_800C52EA = -1;
+            } else {
+            rearm:
+                D_800C52EA = Random(60) + 60;
+            }
+        }
+    }
+}
 
 s32 func_800BA018(s32 arg0, s32 arg1, s32 arg2) {
     Ovl60Cell *c;

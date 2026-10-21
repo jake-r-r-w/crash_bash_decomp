@@ -168,6 +168,10 @@ extern s32 D_800C38D8[];
 extern s32 D_800C38E8[];
 extern s32 D_800C38F8[];
 extern s32 D_800C52F0;
+/* the s16 after D_800C52E8: func_800B9D64's timer */
+#define D_800C52EA ((&D_800C52E8)[1])
+extern s32 D_800C38B8[];
+extern s32 D_800C38C8[];
 extern s32 D_800C52F8;
 extern s32 D_800C52FC;
 extern s32 D_800C5304;
