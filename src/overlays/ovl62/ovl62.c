@@ -1618,7 +1618,34 @@ void InitSimpleExplosion(NAS *m) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotDingoTail);
+void PlotDingoTail(NAS *m) {
+    BrioOwner *owner;
+    s32 user;
+
+    user = m->UserInfo.user1;
+    if (user != 0) {
+        owner = (BrioOwner *)user;
+        if (owner->type != 0x51) {
+            KillNAS(m);
+            return;
+        }
+        m->Engine->unk1C += 0x200;
+        m->Engine->unk5E = 1;
+        m->Engine->unk10 = owner->engine->unk10;
+        m->Engine->unk1E = owner->engine->unk1E - 0x400;
+        m->Engine->unk2C.x = owner->engine->unk2C.x;
+        m->Engine->unk2C.y = owner->engine->unk2C.y;
+        m->Engine->unk2C.z = owner->engine->unk2C.z;
+        if (owner->subtype == 7) {
+            m->Engine->unk10.y = owner->engine->unk10.y - ((owner->engine->unk2C.x * 0x208) >> 12);
+        } else {
+            m->Engine->unk10.y = owner->engine->unk10.y - ((owner->engine->unk2C.x * 0x1A4) >> 12);
+        }
+        if (owner->anim->frame >= 0xD) {
+            m->Engine->sub->unk76 += 0x400;
+        }
+    }
+}
 
 void PlotBrioPack(NAS *m) {
     BrioOwner *owner;

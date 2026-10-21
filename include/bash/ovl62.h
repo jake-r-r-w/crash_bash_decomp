@@ -226,6 +226,7 @@ typedef struct BrioOwner {
     /* 0x1C */ BrioAnim *anim;
     /* 0x20 */ u8 pad20[0x2C - 0x20];
     /* 0x2C */ u16 type;
+    /* 0x2E */ u16 subtype;
 } BrioOwner;
 
 /* Head of a list linked through +0x20 (counted by func_800C9B5C). */
