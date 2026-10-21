@@ -733,7 +733,146 @@ void InitNitroBoss(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", PlotNitroBoss);
+void PlotNitroBoss(NAS *nas) {
+    BossExt *ext;
+    EXTengine *e;
+    NAS *n;
+    NAS *m;
+    NitroShotExt *s;
+    NitroShotExt *t;
+    NitroShotExt *r;
+    NitroShotExt *q;
+    SLONG_XYZ *pos;
+    u16 *fl;
+    s32 k;
+    s32 k2;
+    s32 k3;
+    EXTengine *e2;
+
+    ext = FindExtension(nas, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    fl = (u16 *)D_8009D6DC;
+    if (fl[2] & 0x8000) {
+        pos = &nas->Engine->unk10;
+        n = SpawnNASById(pos->x, pos->y, pos->z, 0x1605, 0x11);
+        if (n != NULL) {
+            s = FindExtension(n, 0x10000000);
+            if (s != NULL) {
+                s->unk18 = 0x100;
+                s->unkC = 0;
+                s->unk20 = 1;
+                s->unk28 = 0;
+                n->InitDelete(n);
+            }
+        }
+        PlaySfx(0x2E5, 0, 0, 0x1000, 0x1E00, 0);
+        KillNAS(nas);
+        D_800C4084 = NULL;
+        return;
+    }
+    nas->Engine->unk5E = 1;
+    switch (ext->unk18) {
+    case 0:
+        func_800C0C28((BossPath *)ext, (BossObj *)nas);
+        k = ((u16 *)func_8001E41C(ext->keys, ext->unk14))[0xB];
+        if (k == 2) {
+            ext->unk18 = 1;
+        }
+        if (k == 1) {
+            ext->unk18 = 2;
+        }
+        if (k == 4) {
+            D_800C4498 = 1;
+            D_800C4484 = 1;
+            D_800C45B4 = 0x400;
+            if (D_800C4530 == 0) {
+                PlaySfx(0x2B9, 0, 0, 0x1000, 0x1E00, 0);
+                D_800C4530 = 1;
+            }
+        }
+        if (k == 5) {
+            nas->Engine->unk2C.x -= 0x300;
+            if (nas->Engine->unk2C.x < 0) {
+                nas->Engine->unk2C.x = 0;
+            }
+            nas->Engine->unk2C.y = nas->Engine->unk2C.x;
+            nas->Engine->unk2C.z = nas->Engine->unk2C.x;
+        }
+        if (k == 6) {
+            D_800C4480 = 1;
+        }
+        break;
+    case 1:
+        func_800C0C28((BossPath *)ext, (BossObj *)nas);
+        if (ext->unk1C-- < 0) {
+            if (D_8005A680[0] == 0) {
+                if (!(Heroes[0].hero_status & 0x2000)) {
+                    e = nas->Engine;
+                    m = SpawnNASById(e->unk10.x, e->unk10.y, e->unk10.z, 0x1C04, 0x11);
+                    if (m != NULL) {
+                        q = FindExtension(m, 0x10000000);
+                        if (q != NULL) {
+                            q->unk14 = 0;
+                        }
+                    }
+                }
+            } else {
+                if (!(Heroes[0].hero_status & 0x2000)) {
+                    e = nas->Engine;
+                    m = SpawnNASById(e->unk10.x, e->unk10.y, e->unk10.z, 0x1C04, 0x11);
+                    if (m != NULL) {
+                        r = FindExtension(m, 0x10000000);
+                        if (r != NULL) {
+                            r->unk14 = 0;
+                        }
+                    }
+                }
+                if (!(Heroes[1].hero_status & 0x2000)) {
+                    e = nas->Engine;
+                    m = SpawnNASById(e->unk10.x, e->unk10.y, e->unk10.z, 0x1C04, 0x11);
+                    if (m != NULL) {
+                        t = FindExtension(m, 0x10000000);
+                        if (t != NULL) {
+                            t->unk14 = 1;
+                        }
+                    }
+                }
+            }
+            ext->unk1C = 0x1E;
+        }
+        k2 = ((u16 *)func_8001E41C(ext->keys, ext->unk14))[0xB];
+        if (k2 == 3) {
+            ext->unk18 = 0;
+        }
+        if (k2 == 4) {
+            D_800C4498 = 1;
+            ext->unk18 = 0;
+        }
+        break;
+    case 2:
+        func_800C0C28((BossPath *)ext, (BossObj *)nas);
+        if (ext->unk20-- < 0) {
+            e2 = nas->Engine;
+            SpawnNASById(e2->unk10.x, e2->unk10.y, e2->unk10.z, 0x1C05, 0x11);
+            ext->unk20 = 3;
+        }
+        k3 = ((u16 *)func_8001E41C(ext->keys, ext->unk14))[0xB];
+        if (k3 == 3) {
+            ext->unk18 = 0;
+        }
+        if (k3 == 4) {
+            D_800C4498 = 1;
+            ext->unk18 = 0;
+        }
+        break;
+    case 3:
+        fl[2] |= 0x8000;
+        return;
+    }
+    func_800250B0(nas);
+}
 
 void InitSpiralSat(NAS *nas) {
     SpiralExt *ext = AddExtension(nas, 0x54, 0x10000000);

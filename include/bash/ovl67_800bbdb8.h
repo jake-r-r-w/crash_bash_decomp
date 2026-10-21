@@ -427,6 +427,21 @@ void func_800C0C28(BossPath *arg0, BossObj *obj);
 
 void InitNitroBoss(NAS *nas);
 
+/* Extension of the objects PlotNitroBoss spawns. */
+typedef struct NitroShotExt {
+    /* 0x00 */ u8 pad00[0xC];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ u8 pad10[4];
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ u8 pad1C[4];
+    /* 0x20 */ s32 unk20;
+    /* 0x24 */ u8 pad24[4];
+    /* 0x28 */ s32 unk28;
+} NitroShotExt;
+
+extern s32 D_800C4484;
+
 s32 func_800C3544(s32 *arg0, s32 *arg1);
 
 /* Moves one EXTheromove velocity toward its max by acc (max != 0) or dec,
@@ -572,5 +587,7 @@ void func_800BC3A4(void);
 void func_800BD6E8(s32 *arg0, s32 arg1);
 
 void func_800BF37C(s32 arg0);
+
+void PlotNitroBoss(NAS *nas);
 
 #endif /* BASH_OVL67_800BBDB8_H */
