@@ -52,7 +52,45 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C05A8);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C07F4);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C09F4);
+void func_800C09F4(s32 arg0) {
+    HeroInfo *h;
+    EXTengine *p;
+    HeroInfo *base = Heroes;
+
+    h = base + arg0;
+    h->hero_move->velocity_enable = 0;
+    h->hero_move->jump_max = 0;
+    h->hero_move->velocity_calc = 9;
+    h->hero_move->z_vel = 0;
+    h->hero_move->x_vel = 0;
+    h->hero_move->z_max = 0;
+    h->hero_move->x_max = 0;
+    h->hero_frozen = 0x3C;
+    h->hero_status |= 0x2800;
+    SetHeroSeq((HeroInfo *)arg0, 1);
+    p = h->hero_powerup;
+    p->unk10 = h->hero_eng->unk10;
+    p->sub->unk74 = 0x2002;
+    p->flags |= 0x8000;
+    p->unk10.x = (p->unk10.x & ~0xFF) + 0x80;
+    p->unk10.z = (p->unk10.z & ~0xFF) + 0x80;
+    p->unk10.y -= 0x1000;
+    if (h->hero_object != NULL) {
+        h->hero_object->player = h->hero_harm_player;
+        h->hero_object->status = 4;
+        h->hero_object = NULL;
+    }
+    if (h->hero_eng->sfx != NULL) {
+        StopSfx(h->hero_eng->sfx);
+    }
+    if (h->hero_powerup->sfx != NULL) {
+        StopSfx(h->hero_powerup->sfx);
+    }
+    if (D_800C4780 != NULL) {
+        StopSfx(D_800C4780);
+    }
+    PlaySfx(0x453, NULL, NULL, 0x1000, 0x1E00, 0);
+}
 
 void func_800C0BAC(s32 arg0) {
     HeroInfo *h;
