@@ -120,7 +120,82 @@ void func_800B372C(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B3890);
+void func_800B3890(s32 player) {
+    s32 b[3];
+    s32 a[3];
+    s16 c[8];
+    Ovl63Barrel *p;
+    Ovl63SceneObj *o;
+    Ovl63Barrel *best;
+    HeroInfo *hp;
+    HeroInfo *h;
+    HeroInfo *base;
+    s32 x;
+    s32 z;
+    s32 d;
+    s32 i;
+    s32 ang;
+    s32 bestd;
+    s32 besti;
+
+    bestd = 0x7FFFFFFF;
+    besti = -1;
+    i = 0;
+    p = D_800C6F34;
+    ang = get_angle(Heroes[player].hero_eng->unk10.x, Heroes[player].hero_eng->unk10.z) & 0xFFF;
+    ang -= 0x400;
+    ang &= 0xFFF;
+    hp = &Heroes[player];
+    do {
+loop:
+    if (i < D_800C66F0) {
+        o = p->obj;
+        if (p->unk58 == 1) {
+            x = o->pos.x;
+            z = o->pos.z;
+            if ((((get_angle(x, z) & 0xFFF) - 0x400) & 0xFFF) >= ang) {
+                x -= hp->hero_eng->unk10.x;
+                z -= hp->hero_eng->unk10.z;
+                d = x * x + z * z;
+                if (d < bestd) {
+                    bestd = d;
+                    besti = i;
+                }
+            }
+        }
+        i++;
+        p++;
+        goto loop;
+    }
+    } while (0);
+    if (besti != -1) {
+        base = Heroes;
+        h = &base[player];
+        a[0] = 0;
+        a[2] = 0;
+        b[0] = D_80068BD4[(h->hero_eng->unk1E - 0x400) & 0xFFF].unk2;
+        b[1] = 0;
+        b[2] = D_80068BD4[h->hero_eng->unk1E & 0xFFF].unk2;
+        best = &D_800C6F34[besti];
+        c[0] = best->obj->pos.x - h->hero_eng->unk10.x;
+        c[2] = best->obj->pos.z - h->hero_eng->unk10.z;
+        c[3] = 0x180;
+        if (func_800B3E60(a, b, c) != 0) {
+            x = best->obj->pos.x;
+            z = best->obj->pos.z;
+            d = x * x + z * z;
+            if (d < 0x400000) {
+                h->hero_ai->AIpad &= ~0x20;
+                h->hero_ai->AIpad |= 0x80;
+            } else {
+                h->hero_ai->AIpad &= ~0x80;
+                h->hero_ai->AIpad |= 0x20;
+            }
+            h->hero_ai->AIpad &= ~0x8000;
+            ((Ovl63Pad *)D_80051338)[player].unk50 = h->hero_ai->AIpad;
+        }
+    }
+}
 
 void func_800B3BC0(s32 player) {
     s32 b[3];
