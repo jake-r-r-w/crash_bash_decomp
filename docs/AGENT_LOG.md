@@ -53,9 +53,12 @@ leads**, add any new gotcha, and add one short entry at the top of the
 **The overlays' last 114 functions**, almost all >= 600 B. The second
 big-mode retry (`--seg overlays/ --retry-failed --big-bytes 1 --workers 1
 --big-workers 6`) still matched 85 in 3 h, at $2.70 a match (the first:
-$1.90). `permute --near` found one checkpoint at the registers stage
-(`func_800BE914`) and no gain in 38 min. Next: one more big-mode retry if
-the rate still pays, else hand work; rework the 11 hacks between runs.
+$1.90). 89 of the functions left have never been attempted: the queue
+puts checkpointed functions first, so `--retry-failed` runs kept re-trying
+the same ~15 hard ones. Next: `--only` the untried functions, smallest
+first, without `--retry-failed` (big mode on fresh 1400 B+ functions:
+80%, ~$7 a match); hand-match the ~15 retried ones; rework the 11 hacks
+between runs.
 After each run, the "After a run" checklist in tools/swarm/README.md
 (`stats --run ID`, parks, gate failures, `fold`, this log).
 
@@ -496,6 +499,16 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-21 (swarm, third big-mode retry, stopped):** the first start
+  died in 30 s on an OAuth refresh collision (4 failures in a row; login
+  fine), restarted with `--start-gap-seconds 30`. Run 20261021170058,
+  killed by request: 11 matched for $82.57 (~$7.50 each, all fresh
+  0.8-1.5 KB functions), 5 parked. Finding: 89 of the 104 left (221 KB)
+  were never attempted. The queue puts checkpointed functions first, so
+  `--retry-failed` runs spent their budget re-trying ~15 hard ones
+  (`func_800BE914`: 11 ledger entries). Next runs: drop `--retry-failed`,
+  `--only` the untried ones, smallest first.
 
 - **2026-10-21 (hand: hack reworks, docs):** `func_8001CE00` without its
   `if (e || blk)` hack (340ce459): `e` 6 refs/21 insns lost `s0` to `blk`
