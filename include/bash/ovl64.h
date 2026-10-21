@@ -100,7 +100,8 @@ typedef struct Ovl64Fux {
     /* 0x1A */ u16 sub;
     /* 0x1C */ u16 mask;
     /* 0x1E */ u16 hit;
-    /* 0x20 */ u8 pad20[0x24 - 0x20];
+    /* 0x20 */ u8 pad20[0x22 - 0x20];
+    /* 0x22 */ s16 timer;
     /* 0x24 */ s16 state;
     /* 0x26 */ s16 angle;
     /* 0x28 */ s16 dist;
@@ -123,6 +124,7 @@ extern void (*D_8009D73C)();
 
 extern s32 D_8005AA70[11];
 extern u8 D_80052FCC[];
+extern u8 D_80052F94[];
 extern u8 D_80052F5C[];
 extern u16 D_800BC04C[];
 
@@ -189,7 +191,8 @@ static inline u16 Ovl64NextSlot(void) {
 extern s16 D_800BB88C[];
 extern u16 D_8009E46C[];
 extern s32 D_80099178;
-void func_800B51A0(s32 a, s32 b, s32 c, s32 d);
+extern u16 D_800BB888[];
+NAS *func_800B51A0(s32 a, s32 b, u16 c, s16 d);
 
 void func_800B8E64(u16 arg0, u16 arg1);
 

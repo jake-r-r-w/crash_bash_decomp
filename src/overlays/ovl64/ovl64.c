@@ -503,7 +503,124 @@ Ovl64Pair *func_800B4F7C(u16 *head) {
     return (Ovl64Pair *)bestp;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B51A0);
+NAS *func_800B51A0(s32 a, s32 b, u16 c, s16 d)
+{
+  NAS *nas;
+  EXTengine *eng;
+  Ovl64Fux *fux;
+  s32 x;
+  Ovl64Fux *new_var;
+  s32 z;
+  u16 mask;
+  x = (b * D_80068BD4[(a - 0x400) & 0xFFF].unk2) >> 12;
+  z = (b * D_80068BD4[a & 0xFFF].unk2) >> 12;
+  nas = SpawnNASById(x, D_8005A5D8, z, 0x1801, 0x11);
+  if (nas != 0)
+  {
+    eng = nas->Engine;
+    if (eng != 0)
+    {
+      fux = (Ovl64Fux *) AddObject(nas);
+      if (fux != 0)
+      {
+        fux->angle = a;
+        fux->dist = b;
+        if (AddMotion(nas) != 0)
+        {
+          func_80026AD8((u8 *) nas);
+          func_8002694C(nas, 0x300);
+          nas->FUX = (EXT *) fux;
+          eng->sub->unk6C = D_80052F94;
+          eng->unk5D = 1;
+          fux->kind = c;
+          D_8009E46C[fux->kind]++;
+          if (d >= 0)
+          {
+            fux->sub = d;
+          }
+          else
+          {
+            fux->sub = 6;
+          }
+          switch (c)
+          {
+            case 2:
+              eng->sub->unk74 = 0x2014;
+              fux->state = D_800BB888[Random(2)];
+              break;
+
+            case 5:
+            {
+
+              eng->sub->unk74 = 0x2009;
+            }
+              z = 0x5A;
+              fux->timer = z;
+              new_var = fux;
+              mask = new_var->mask;
+              goto set_mask;
+
+
+            case 6:
+            {
+
+              eng->sub->unk74 = 0x2001;
+            }
+              mask = fux->mask;
+              set_mask:
+            fux->mask = mask | 0x100;
+
+              break;
+
+
+            case 4:
+
+            default:
+              eng->sub->unk74 = 0x2013;
+              break;
+
+          }
+
+          switch (fux->sub)
+          {
+            case 3:
+              eng->unk10.y = D_8005A5D8;
+              break;
+
+            case 7:
+              eng->unk2C.x = 0x40;
+              eng->unk2C.y = 0x40;
+              eng->unk2C.z = 0x40;
+              eng->unk5D = 1;
+              eng->unk5C = 1;
+              eng->unk5E = 1;
+              eng->flags |= 1;
+              eng->unk10.y = D_8005A5D8;
+              PlaySfx(0x3FA, 0, &eng->unk10, 0x1000, 0x1E00, 0);
+              break;
+
+            case 6:
+              eng->unk2C.y = 0x40;
+              eng->unk5D = 1;
+              eng->unk5C = 1;
+              eng->unk5E = 1;
+              eng->unk10.y = D_8005A5D8;
+              PlaySfx(0x3FA, 0, &eng->unk10, 0x1000, 0x1E00, 0);
+              break;
+
+          }
+
+        }
+      }
+    }
+    if (nas->Failure != 0)
+    {
+      KillNAS(nas);
+      return 0;
+    }
+  }
+  return nas;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", PlotHazardType);
 
