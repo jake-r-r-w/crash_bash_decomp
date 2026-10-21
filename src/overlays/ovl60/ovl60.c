@@ -2157,7 +2157,73 @@ done:
     return n;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BBC94);
+s32 func_800BBC94(s32 x, s32 z) {
+    D5A614View *g = (D5A614View *)D_8005A614;
+    s32 id;
+    s32 mask;
+    s32 n;
+    s32 r;
+
+    if (g->mode == 11) {
+        do {
+            id = D_800C53DC[x][z].unkA;
+        } while (0);
+        mask = 0;
+        if (id != -1) {
+            if (x > 0) {
+                n = D_800C53DC[x - 1][z].unkA;
+                mask = n == id;
+            } else if (D_800C5B2C[z] == id) {
+                mask = 1;
+            }
+            if (x < 7) {
+                if (D_800C53DC[x + 1][z].unkA == id) {
+                    mask |= 4;
+                }
+            } else if (D_800C5B4C[z] == id) {
+                mask |= 4;
+            }
+            if (z > 0) {
+                if (D_800C53DC[x][z - 1].unkA == id) {
+                    mask |= 2;
+                }
+            } else if (D_800C5B8C[x] == id) {
+                mask |= 2;
+            }
+            if (z < 7) {
+                if (D_800C53DC[x][z + 1].unkA == id) {
+                    mask |= 8;
+                }
+            } else if (D_800C5B6C[x] == id) {
+                mask |= 8;
+            }
+        }
+        if (D_8005A646 & 0x80) {
+            return mask + 0x301B;
+        }
+        return mask + 0x3052;
+    }
+    switch (g->mode) {
+    case 12:
+        r = 0x304E;
+        if (g->flags & 0x80) {
+            r = 0x3058;
+        }
+        return r;
+    case 13:
+        r = 0x3026;
+        if (g->flags & 0x80) {
+            r = 0x3044;
+        }
+        return r;
+    default:
+        r = 0x303C;
+        if (D_8005A646 & 0x80) {
+            r = 0x3033;
+        }
+        return r;
+    }
+}
 
 s32 func_800BBF00(s32 *arg0, s32 *arg1) {
     s32 x;
