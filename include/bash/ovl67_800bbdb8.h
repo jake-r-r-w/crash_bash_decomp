@@ -206,11 +206,22 @@ typedef struct BossObj {
 
 /* D_8005A614 as seen by func_800C0C28. */
 typedef struct BossGameView {
-    /* 0x00 */ u8 pad00[0x10];
+    /* 0x00 */ u8 pad00[4];
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ u8 pad08[8];
     /* 0x10 */ s32 unk10;
-    /* 0x14 */ u8 pad14[0x6C - 0x14];
+    /* 0x14 */ u8 pad14[0x30 - 0x14];
+    /* 0x30 */ u16 unk30;
+    /* 0x32 */ u8 pad32[0x6C - 0x32];
     /* 0x6C */ s32 unk6C;
+    /* 0x70 */ u8 pad70[5];
+    /* 0x75 */ u8 unk75;
 } BossGameView;
+
+extern SLONG_XYZ D_800C76CC;
+extern SLONG_XYZ D_800C76D8;
+extern s16 D_8009D6DC[];
+extern s32 D_8005A624;
 
 extern EXTengine *D_8009D530;
 extern s32 D_800C4478;
@@ -420,6 +431,8 @@ typedef struct AsteroidExt {
 extern u8 D_80052F5C[];
 
 s32 func_8008C5C4(s32 *from, s32 *to, void *arc, s32 *pos);
+
+void func_800BE70C(void);
 
 void InitAsteroidRoll(NAS *m);
 

@@ -19,9 +19,9 @@
    "size": 788
   }
  ],
- "commit": "00878d3bc5",
+ "commit": "a68e52843f",
  "game": "SCUS_945.70",
- "generated": "2026-10-21T06:58:03Z",
+ "generated": "2026-10-21T06:58:16Z",
  "history": [
   {
    "commit": "9d2e150",
@@ -155018,9 +155018,103 @@
      564
     ]
    }
+  },
+  {
+   "commit": "a68e52843f",
+   "data_b": 4832,
+   "data_tb": 606943,
+   "game_all_f": 2537,
+   "game_b": 593056,
+   "game_c_f": 2219,
+   "game_f": 2219,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 1999,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-21T06:58:16Z",
+   "units": {
+    "engine": [
+     121412,
+     355
+    ],
+    "main exe": [
+     124840,
+     575
+    ],
+    "ovl5d": [
+     22032,
+     74
+    ],
+    "ovl5e": [
+     26000,
+     68
+    ],
+    "ovl5f": [
+     20972,
+     127
+    ],
+    "ovl60": [
+     36184,
+     152
+    ],
+    "ovl61": [
+     55000,
+     97
+    ],
+    "ovl62": [
+     36068,
+     161
+    ],
+    "ovl63": [
+     23268,
+     98
+    ],
+    "ovl64": [
+     11636,
+     38
+    ],
+    "ovl65": [
+     18496,
+     65
+    ],
+    "ovl66": [
+     14036,
+     70
+    ],
+    "ovl67": [
+     29692,
+     107
+    ],
+    "ovl68": [
+     11504,
+     69
+    ],
+    "ovl69": [
+     10856,
+     69
+    ],
+    "ovl6a": [
+     31060,
+     94
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-21T06:58:15Z",
+   "auto": true,
+   "name": "func_800BE70C",
+   "seg": "overlays/ovl67/800bbdb8",
+   "size": 436,
+   "tries": 0
+  },
   {
    "at": "2026-10-21T06:58:01Z",
    "auto": true,
@@ -155132,14 +155226,6 @@
    "seg": "overlays/ovl5d/ovl5d",
    "size": 400,
    "tries": 0
-  },
-  {
-   "at": "2026-10-21T06:48:27Z",
-   "auto": true,
-   "name": "PlotPapuBoss",
-   "seg": "overlays/ovl5e/ovl5e",
-   "size": 1820,
-   "tries": 0
   }
  ],
  "summary": {
@@ -155155,15 +155241,15 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 3,
-   "c_f": 2218,
-   "done_b": 592620,
-   "done_f": 2218,
+   "c_f": 2219,
+   "done_b": 593056,
+   "done_f": 2219,
    "named_f": 345,
-   "pct": 58.154962140689825,
+   "pct": 58.197747675253865,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2537,
-   "typed_f": 1998
+   "typed_f": 1999
   },
   "lib": {
    "all_f": 566,
@@ -155438,20 +155524,20 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
-    "c_f": 106,
-    "done_b": 29256,
-    "done_f": 106,
+    "c_f": 107,
+    "done_b": 29692,
+    "done_f": 107,
     "file": "ovl67.bin",
     "files": 2,
     "lib": false,
     "named_f": 28,
-    "pct": 44.156000965950255,
+    "pct": 44.81405457618933,
     "phase": 5,
     "sony_b": 0,
     "title": "N2O, NOX",
     "total_b": 66256,
     "total_f": 135,
-    "typed_f": 104,
+    "typed_f": 105,
     "unit": "ovl67"
    },
    {

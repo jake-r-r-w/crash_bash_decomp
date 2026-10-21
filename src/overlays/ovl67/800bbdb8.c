@@ -105,7 +105,43 @@ void func_800BDB00(void)
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BDC0C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BE70C);
+void func_800BE70C(void) {
+    NAS *first;
+    NAS *nas;
+
+    if (((BossGameView *)D_8005A614)->unk75 != 0 && (((BossGameView *)D_8005A614)->unk30 & 1)) {
+        ((BossGameView *)D_8005A614)->unk75 = 0;
+    }
+    if (((BossGameView *)D_8005A614)->unk4 & 8) {
+        D_8009D6DC[2] |= 0x8000;
+    }
+    if (D_800C45F0 == 0) {
+        D_800C4494 = NULL;
+        D_800C4490 = NULL;
+        D_800C76CC = Heroes[0].hero_eng->unk10;
+        D_800C76D8 = Heroes[1].hero_eng->unk10;
+        first = SpawnNASById(0, 0, 0, 0x1C03, 0x11);
+        D_800C4490 = first;
+        if (first != NULL) {
+            first->UserInfo.user1 = 0;
+            func_80026A04((u8 *)first);
+        }
+        if (((BossGameView *)D_8005A614)->unk6C != 0) {
+            nas = SpawnNASById(0, 0, 0, 0x1C03, 0x11);
+            D_800C4494 = nas;
+            if (nas != NULL) {
+                nas->UserInfo.user1 = 1;
+                func_80026A04((u8 *)nas);
+            }
+        }
+        func_80026980(Heroes[0].hero);
+        func_80026980(Heroes[1].hero);
+        D_800C45F0 = 1;
+    }
+    if (D_8005A624 == 0) {
+        func_800BDC0C();
+    }
+}
 
 void func_800BE8C0(s32 arg0) {
     HeroInfo *h;
