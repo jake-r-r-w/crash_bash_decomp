@@ -4415,14 +4415,17 @@ def split_functions(text):
     return out
 
 
-def hack_rows(funcs, syms, stat):
+def hack_rows(funcs, syms, stat, reviewed=False):
     """Matched functions that need a hack (a register pin, an empty asm barrier, a no-op ++/--
     pair or a dead store), as dicts with the reason their match commit gives. Read from the
     source, so the list can't go stale (each file split into its functions in one pass: the lint
-    is slow on a whole file)."""
-    bodies, rows = {}, []
+    is slow on a whole file). A hack reviewed as plausibly the original source (`hacks --accept`,
+    state `hack_ok`) is left out unless REVIEWED, which returns only those."""
+    bodies, rows, st = {}, [], jload(P_STATE, {})
     for k, e in funcs.items():
         if stat.get(k) != "matched" or not e.get("src"):
+            continue
+        if bool(st.get(k, {}).get("hack_ok")) != reviewed:
             continue
         if e["src"] not in bodies:
             bodies[e["src"]] = split_functions(read(e["src"]))
@@ -4441,6 +4444,8 @@ def hack_rows(funcs, syms, stat):
                 commit = lines[0]
                 why = next((l.strip()[len("Hack:"):].strip() for l in lines if l.strip().startswith("Hack:")), why)
                 break
+        if reviewed:
+            why = st[k]["hack_ok"]
         rows.append({"name": name, "seg": e["seg"], "size": e["size"], "kinds": ", ".join(hacks),
                      "commit": commit, "why": why})
     return sorted(rows, key=lambda r: (r["seg"], r["name"]))
@@ -4450,14 +4455,25 @@ def cmd_hacks(a):
     """Matched functions that need a hack, with the reason their match commit gives, so they can
     be retried without it (docs/CONVENTIONS.md, Matching rules)."""
     funcs = need_funcs()
+    if a.accept:
+        if not a.why:
+            raise SystemExit("--accept needs --why: why the flagged code is plausibly the original")
+        key, e = find_func(funcs, a.accept)
+        st = jload(P_STATE, {})
+        st.setdefault(key, {})["hack_ok"] = a.why
+        jsave(P_STATE, st)
+        print(f"{e['name']}: reviewed, plausibly original: {a.why}")
     stat, _ = statuses(funcs)
     rows = hack_rows(funcs, sym_names(), stat)
-    if not rows:
-        print("no matched function uses a hack")
-        return
+    ok = hack_rows(funcs, sym_names(), stat, reviewed=True)
     for r in rows:
         print(f"{r['name']} ({r['seg']}): {r['kinds']}; {r['commit']}: {r['why']}")
-    print(f"{len(rows)} function(s) match only with a hack; retry them without it after tool upgrades")
+    for r in ok:
+        print(f"reviewed: {r['name']} ({r['seg']}): {r['kinds']}; plausibly original: {r['why']}")
+    print(f"{len(rows)} function(s) match only with a hack; retry them without it after tool upgrades"
+          + (f" ({len(ok)} more reviewed as plausibly original)" if ok else ""))
+    if a.accept:
+        cmd_progress(a)  # the dashboard counts hacks
 
 
 def cmd_unblock(a):
@@ -5269,8 +5285,12 @@ def main():
     p.add_argument("func")
     p.add_argument("--note", required=True)
     p.set_defaults(fn=cmd_block)
-    sub.add_parser("hacks", help="matched functions that need a hack (register pin, asm barrier, "
-                   "no-op pair, dead store), with their commit's reason").set_defaults(fn=cmd_hacks)
+    p = sub.add_parser("hacks", help="matched functions that need a hack (register pin, asm barrier, "
+                       "no-op pair, dead store, identical arms), with their commit's reason")
+    p.add_argument("--accept", metavar="NAME", help="mark NAME's flagged code as reviewed: plausibly "
+                   "the original source, so it leaves the hacks count")
+    p.add_argument("--why", help="with --accept: the reason")
+    p.set_defaults(fn=cmd_hacks)
     p = sub.add_parser("unblock", help="unpark functions (their park notes stay) so they are offered again")
     p.add_argument("funcs", nargs="+")
     p.add_argument("--why", required=True, help="what changed since they were parked")

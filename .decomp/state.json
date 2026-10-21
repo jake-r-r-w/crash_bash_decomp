@@ -999,6 +999,7 @@
   "status": "matched"
  },
  "800193A8": {
+  "hack_ok": "register pins to s2-s4 with s0/s1 unused in a leaf: plain allocation never does that, so the original most likely pinned them too (register ... asm)",
   "matched_at": "2026-10-11T11:58:48Z",
   "started": "2026-10-11T09:11:35Z",
   "status": "matched"
