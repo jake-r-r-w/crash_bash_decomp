@@ -374,6 +374,8 @@ void func_800BAE94(NAS *arg0);
         PlaySfx(d, NULL, NULL, 0x1000, 0x1E00, 0);          \
     }
 
+void func_800B62D8(s32 arg0, u16 arg1);
+
 s32 func_800B8A40(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e);
 
 void func_800B9E68(s32 id);

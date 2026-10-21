@@ -1101,7 +1101,251 @@ void func_800B5DCC(s32 arg0, u16 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B62D8);
+void func_800B62D8(s32 arg0, u16 arg1)
+{
+  s32 best;
+  s32 i;
+  s32 j;
+  s32 taken;
+  NAS *new_var;
+  u8 *e;
+  s32 k;
+  u8 *g;
+  if ((!(D_8005A644 & 0x801)) && (arg0 == (-1)))
+  {
+    taken = 0;
+
+    for (j = 0; j < 4; j++)
+    {
+      best = -1;
+      for (i = 0; i < 4; i++)
+      {
+        if ((!((taken >> i) & 1)) && ((Heroes[i].hero_score > Heroes[best].hero_score) || (best == (-1))))
+        {
+          best = i;
+        }
+      }
+
+      D_8005A614[0xA7 + j] = best;
+      taken |= 1 << best;
+    }
+
+    e = D_8005A614;
+    if ((*((s32 *) (e + 0x6C))) == 0)
+    {
+      HeroInfo *hb;
+      HeroInfo *a;
+      u8 *w;
+      s32 n;
+      hb = Heroes;
+      a = &hb[e[0xA7]];
+      if (a->hero_score == hb[e[0xA8]].hero_score)
+      {
+        e[0x60] = 0;
+        *((u16 *) (e + 0x30)) |= arg1;
+        for (k = 0; k < 4; k++)
+        {
+          hb[k].hero_status |= 0x100;
+        }
+
+      }
+      else
+      {
+        n = 0;
+        ;
+        e[0x60] = a->hero_name;
+        *((u16 *) (D_8005A614 + 0x30)) |= 0x800;
+        for (;; n++)
+        {
+          s32 t_;
+          if (n >= 4)
+          {
+            break;
+          }
+          if (D_8005A614[0xA7] == n)
+          {
+            hb[n].hero_status |= 0x200;
+          }
+          else
+          {
+            hb[n].hero_status |= 0x8400;
+            {
+              NAS *nas_;
+              Ovl65Puff *p_;
+              SLONG_XYZ *v_;
+              v_ = &(&hb[n])->hero_eng->unk10;
+              nas_ = SpawnNASById(v_->x, v_->y, v_->z, 0x1605, 0x11);
+              if (nas_ != 0)
+              {
+                p_ = FindExtension(nas_, 0x10000000);
+                if (p_ != 0)
+                {
+                  p_->unk18 = 0x100;
+                  p_->unkC = 0;
+                  p_->unk20 = 1;
+                  p_->unk28 = 0;
+                  nas_->InitDelete(nas_);
+                }
+              }
+            }
+            ;
+            hb[n].hero_shadow->sub->flags &= ~0x8000;
+          }
+        }
+
+      }
+    }
+    else
+    {
+      s32 ia;
+      s32 ib;
+      s32 ita;
+      s32 itb;
+      s32 sa;
+      s32 sb;
+      s32 p;
+      HeroInfo *ha;
+      HeroInfo *hb;
+      HeroInfo *ta;
+      HeroInfo *tb;
+      HeroInfo *hh;
+      g = D_8005A614;
+      hh = Heroes;
+      ia = *((s16 *) (g + 0x48));
+      ib = *((s16 *) (g + 0x4A));
+      ha = &hh[ia];
+      hb = &hh[ib];
+      ita = ha->hero_teammate;
+      itb = hb->hero_teammate;
+      ta = &hh[ita];
+      tb = &hh[itb];
+      sa = ha->hero_score + (ta->hero_score ^ 0);
+      sb = hb->hero_score + tb->hero_score;
+      if (sa == sb)
+      {
+        g[0x60] = 0;
+        *((u16 *) (g + 0x30)) |= arg1;
+        for (p = 0; p < 4; p++)
+        {
+          Heroes[p].hero_status |= 0x100;
+        }
+
+      }
+      else
+      {
+        *((u16 *) (g + 0x30)) |= 0x800;
+        if (sb < sa)
+        {
+          g[0x60] = ha->hero_name;
+          g[0x61] = ta->hero_name;
+          ha->hero_status |= 0x200;
+          ta->hero_status |= 0x200;
+          hb->hero_status |= 0x400;
+          tb->hero_status |= 0x400;
+          hb->hero_status |= 0x8000;
+          {
+            NAS *nas_;
+            Ovl65Puff *p_;
+            SLONG_XYZ *v_;
+            v_ = &hb->hero_eng->unk10;
+            new_var = SpawnNASById(v_->x, v_->y, v_->z, 0x1605, 0x11);
+            nas_ = new_var;
+            if (nas_ != 0)
+            {
+              p_ = FindExtension(nas_, 0x10000000);
+              if (p_ != 0)
+              {
+                p_->unk18 = 0x100;
+                p_->unkC = 0;
+                p_->unk20 = 1;
+                p_->unk28 = 0;
+                nas_->InitDelete(nas_);
+              }
+            }
+          }
+          ;
+          Heroes[itb].hero_status |= 0x8000;
+          Heroes[ib].hero_shadow->sub->flags &= ~0x8000;
+          {
+            NAS *nas_;
+            Ovl65Puff *p_;
+            SLONG_XYZ *v_;
+            v_ = &(&Heroes[itb])->hero_eng->unk10;
+            nas_ = SpawnNASById(v_->x, v_->y, v_->z, 0x1605, 0x11);
+            if (nas_ != 0)
+            {
+              p_ = FindExtension(nas_, 0x10000000);
+              if (p_ != 0)
+              {
+                p_->unk18 = 0x100;
+                p_->unkC = 0;
+                p_->unk20 = 1;
+                p_->unk28 = 0;
+                nas_->InitDelete(nas_);
+              }
+            }
+          }
+          ;
+          Heroes[itb].hero_shadow->sub->flags &= ~0x8000;
+        }
+        else
+        {
+          g[0x60] = hb->hero_name;
+          g[0x61] = tb->hero_name;
+          hb->hero_status |= 0x200;
+          tb->hero_status |= 0x200;
+          ha->hero_status |= 0x400;
+          ta->hero_status |= 0x400;
+          ha->hero_status |= 0x8000;
+          {
+            NAS *nas_;
+            Ovl65Puff *p_;
+            SLONG_XYZ *v_;
+            v_ = &ha->hero_eng->unk10;
+            nas_ = SpawnNASById(v_->x, v_->y, v_->z, 0x1605, 0x11);
+            if (nas_ != 0)
+            {
+              p_ = FindExtension(nas_, 0x10000000);
+              if (p_ != 0)
+              {
+                p_->unk18 = 0x100;
+                p_->unkC = 0;
+                p_->unk20 = 1;
+                p_->unk28 = 0;
+                nas_->InitDelete(nas_);
+              }
+            }
+          }
+          ;
+          Heroes[ita].hero_status |= 0x8000;
+          Heroes[ia].hero_shadow->sub->flags &= ~0x8000;
+          Heroes[ita].hero_shadow->sub->flags &= ~0x8000;
+          {
+            NAS *nas_;
+            Ovl65Puff *p_;
+            SLONG_XYZ *v_;
+            v_ = &(&Heroes[ita])->hero_eng->unk10;
+            nas_ = SpawnNASById(v_->x, v_->y, v_->z, 0x1605, 0x11);
+            if (nas_ != 0)
+            {
+              p_ = FindExtension(nas_, 0x10000000);
+              if (p_ != 0)
+              {
+                p_->unk18 = 0x100;
+                p_->unkC = 0;
+                p_->unk20 = 1;
+                p_->unk28 = 0;
+                nas_->InitDelete(nas_);
+              }
+            }
+          }
+          ;
+        }
+      }
+    }
+
+  }
+}
 
 void func_800B69F4(s32 arg0, u16 arg1) {
     HeroInfo *ha;
