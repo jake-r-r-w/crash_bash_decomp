@@ -288,6 +288,8 @@ typedef struct Ovl65AiExt {
     s32 timer;        /* 0x40 */
 } Ovl65AiExt;
 
+void func_800B5DCC(s32 arg0, u16 arg1);
+
 void func_800BAE94(NAS *arg0);
 
 #endif /* BASH_OVL65_H */
