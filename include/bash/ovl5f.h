@@ -517,4 +517,6 @@ extern s32 D_800CA620[4];
 extern s32 D_800CA630[4];
 extern s32 D_800CA640[4];
 
+void func_800B9170(s32 player);
+
 #endif /* BASH_OVL5F_H */

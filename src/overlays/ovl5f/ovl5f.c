@@ -570,7 +570,64 @@ void func_800B906C(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B9170);
+void func_800B9170(s32 player) {
+    s32 done;
+
+    if (D_8005A644 & 0x801) {
+        D_800CB0F0 = -1;
+    }
+    if ((Heroes[player].hero_status & 0x200) && Heroes[player].hero_mode != 0x70) {
+        SetHeroAction((HeroInfo *)player, 0x70);
+        D_800CB0F0 = player + 1;
+        done = 1;
+    } else {
+        done = 0;
+    }
+    if (done == 0) {
+        EXTengine *eng;
+        TA_player *ta;
+        subengine *sub;
+        HeroInfo *h;
+        HeroInfo *hb;
+
+        func_800B77E8(player);
+        if (func_8008502C(player) != 0) {
+            func_800B6ED8(player);
+        }
+        hb = Heroes;
+        h = &hb[player];
+        ta = &D_800CAD50[player];
+        eng = h->hero_eng;
+        sub = h->hero_sub->next->next;
+        sub->unk12 += ta->ModeSpeed;
+        sub->unk52 = 1;
+        if (--ta->ModeCounter == 0) {
+            SetHeroAction((HeroInfo *)player, 0x6E);
+            switch (ta->MoveDir) {
+            case 2:
+                if (((PadButtons *)D_80051338)[player].unk50 & 0x10) {
+                    eng->unk10.z += ta->Speed;
+                }
+                break;
+            case 0:
+                if (((PadButtons *)D_80051338)[player].unk50 & 0x40) {
+                    eng->unk10.z -= ta->Speed;
+                }
+                break;
+            case 3:
+                if (((PadButtons *)D_80051338)[player].unk50 & 0x20) {
+                    eng->unk10.x += ta->Speed;
+                }
+                break;
+            case 1:
+                if (((PadButtons *)D_80051338)[player].unk50 & 0x80) {
+                    eng->unk10.x -= ta->Speed;
+                }
+                break;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B9430);
 
