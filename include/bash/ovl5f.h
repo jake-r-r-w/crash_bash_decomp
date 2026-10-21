@@ -483,6 +483,7 @@ static inline void Ovl5fSpawnBit1605(SLONG_XYZ *pos, s32 kind) {
         }
     }
 }
+extern s32 D_80051244[]; /* flags by angle octant */
 void func_800B4240(s32 player, s32 x, s32 z, EXTengine *eng, Ovl5fAITarget *ai);
 s32 func_800B4490(s32 player, EXTengine *eng, Ovl5fAITarget *ai);
 

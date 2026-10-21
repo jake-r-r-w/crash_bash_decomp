@@ -39,7 +39,89 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B3C7C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B3F44);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B4240);
+void func_800B4240(s32 player, s32 x, s32 z, EXTengine *eng, Ovl5fAITarget *ai) {
+    s32 ex;
+    s32 ez;
+    s32 a;
+    s32 r;
+    s32 speed;
+    s32 px;
+    s32 p;
+
+    ex = eng->unk10.x;
+    ez = eng->unk10.z;
+    a = get_angle(ex - x, ez - z);
+    ai->unk0 = 2;
+    speed = D_800CAD50[player].Speed;
+    ai->unk4 = (speed / 2 + 0x400) / speed;
+    ai->flags = D_80051244[(a >> 9) & 7];
+    if (D_8009D908 != 0) {
+        return;
+    }
+    r = Random(4);
+    switch (r) {
+    case 0:
+    case 1:
+        if (ai->flags & 0xA0) {
+            goto doz;
+        }
+    dox:
+        if (ai->flags & 0xA0) {
+            break;
+        }
+        px = eng->unk10.x;
+        if (px - 0x400 < 0) {
+            goto left;
+        }
+        if (D_800CB100 < px + 0x400) {
+            goto right;
+        }
+        if (r & 1) {
+            if (((s32 (*)(s32, s32))func_800C8950)(ex - 0x100, ez) != 0) {
+                goto left;
+            }
+        right:
+            ai->flags |= 0x80;
+            break;
+        }
+        if (((s32 (*)(s32, s32))func_800C8950)(ex + 0x100, ez) != 0) {
+            goto right;
+        }
+    left:
+        ai->flags |= 0x20;
+        break;
+    case 2:
+    case 3:
+        if (ai->flags & 0x50) {
+            goto dox;
+        }
+    doz:
+        if (ai->flags & 0x50) {
+            break;
+        }
+        p = eng->unk10.z;
+        if (D_800CB104 < p + 0x400) {
+            goto up;
+        }
+        if (p - 0x400 < 0) {
+            goto down;
+        }
+        if (r & 1) {
+            if (((s32 (*)(s32, s32))func_800C8950)(ex, ez + 0x100) != 0) {
+                goto up;
+            }
+        down:
+            ai->flags |= 0x10;
+            break;
+        }
+        if (((s32 (*)(s32, s32))func_800C8950)(ex, ez - 0x100) != 0) {
+            goto down;
+        }
+    up:
+        ai->flags |= 0x40;
+        break;
+    }
+}
 
 s32 func_800B4490(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
     NAS *nas;
