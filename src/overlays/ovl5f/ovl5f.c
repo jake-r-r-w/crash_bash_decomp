@@ -1867,7 +1867,46 @@ loop:
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotTankBossCrashTurret);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C3778);
+void func_800C3778(EXTengine *arg0) {
+    NAS *shell;
+    PeriscopeShellExt *ext;
+    EXTengine *se;
+    NAS *n;
+    subengine *sub;
+    s32 dz;
+    s32 ang;
+
+    shell = SpawnNASById(arg0->unk10.x, arg0->unk10.y - 0x113, arg0->unk10.z, 0x130C, 0x11);
+    if (shell == NULL) {
+        return;
+    }
+    ext = (PeriscopeShellExt *)shell->FUX;
+    ext->unk28 = ext->unk28 * 5 / 3;
+    se = shell->Engine;
+    PlaySfx(0x4CC, &se->sfx, NULL, 0x1000, 0x1E00, 0);
+    se->unk10.x += -(D_80068BD4[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12;
+    se->unk10.z += -(D_80068BD4[(u16)arg0->unk1E & 0xFFF].unk2 * 400) >> 12;
+    se->unk1E = arg0->unk1E;
+    ext->vx = -(D_80068BD4[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 74) >> 12;
+    dz = D_80068BD4[(u16)arg0->unk1E & 0xFFF].unk2;
+    ext->unk30 = 1;
+    ext->unk2C = -1;
+    ext->vz = -(dz * 74) >> 12;
+loop:
+    if (se->unk10.z > D_800CB104 + 0x100) {
+        se->unk10.z -= 0x10;
+        goto loop;
+    }
+    n = Ovl5fSpawnBit1605Nas(&shell->Engine->unk10, 7);
+    if (n != NULL) {
+        ang = arg0->unk1E;
+        n->Engine->unk1E = ang;
+        n->Engine->unk5E = 1;
+        for (sub = n->Engine->sub; sub != NULL; sub = sub->next) {
+            sub->flags |= 0x20000000;
+        }
+    }
+}
 
 void PlotTankBossCortexTurret(NAS *nas) {
     EXTengine *eng;
