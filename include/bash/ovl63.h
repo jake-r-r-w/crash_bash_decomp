@@ -384,6 +384,12 @@ extern s32 D_800C6CB4;
 typedef struct Ovl63FuxState {
     /* 0x00 */ u8 unk0[0x18];
     /* 0x18 */ s32 unk18;
+    /* 0x1C */ u8 pad1C[0x24 - 0x1C];
+    /* 0x24 */ s32 unk24;
+    /* 0x28 */ u8 pad28[0x58 - 0x28];
+    /* 0x58 */ s32 unk58;
+    /* 0x5C */ u8 pad5C[0x130 - 0x5C];
+    /* 0x130 */ s32 unk130;
 } Ovl63FuxState;
 /* Race volcano extension (0x15C bytes, id 0x10000000). */
 typedef struct RaceVolcanoExt {
@@ -912,6 +918,8 @@ void func_800B8FD8();
 void func_800B980C();
 void func_800BD99C();
 void func_800BCE88();
+
+void PlotRacePickUp(NAS *m);
 
 void PlotTNTCrate(NAS *nas);
 

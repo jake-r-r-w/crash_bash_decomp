@@ -2209,7 +2209,131 @@ void InitRacePickUp(NAS *m) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl63/ovl63", D_800B3400);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotRacePickUp);
+void PlotRacePickUp(NAS *m) {
+    RacePickUpExt *ext;
+    Ovl63FuxState *fux;
+    HeroInfo *h;
+    SLONG_XYZ *pos;
+    EXTengine *e;
+    u32 i;
+    s32 found;
+    s32 lim;
+    s32 d;
+    s32 s;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    if (D_8005A648 != 0x19) {
+        func_800C467C((Ovl63BounceObj *)m->Engine, (Ovl63Bouncer *)&ext->pad0[0xC]);
+    }
+    m->Engine->unk1E += 0x80;
+    m->Engine->unk5E = 1;
+    switch (ext->unk38) {
+    case 1:
+        s = 0xC00;
+        m->Engine->unk2C.x = s;
+        m->Engine->unk2C.y = s;
+        m->Engine->unk2C.z = s;
+        m->Engine->sub->unk74 = 0x2009;
+        m->Engine->sub->unk6C = D_80052F94;
+        break;
+    case 2:
+        m->Engine->sub->unk74 = 0x2005;
+        break;
+    case 3:
+        m->Engine->sub->unk6C = &D_80054F84;
+        m->Engine->sub->flags |= 0x20000000;
+        m->Engine->sub->unk74 = ext->unk48 + 0x2049;
+        if (++ext->unk48 >= 0xE) {
+            ext->unk48 = 0;
+        }
+        break;
+    case 5:
+        m->Engine->sub->unk74 = 0x2017;
+        break;
+    case 0:
+    case 4:
+    case 6:
+        m->Engine->sub->unk74 = 0x2011;
+        break;
+    }
+    if (ext->unk40 == 0) {
+        pos = &m->Engine->unk10;
+        i = 0;
+        h = Heroes;
+    loop:
+        if (i < 4) {
+            do {
+                d = func_8008CEB0((u8 *)pos, (u8 *)&h->hero_eng->unk10);
+                lim = 0x24000;
+                if (d < lim) {
+                    if (abs(pos->y - h->hero_eng->unk10.y) < 0x200) {
+                        found = i;
+                        goto done;
+                    }
+                }
+                h++;
+                i++;
+            } while (0);
+            goto loop;
+        }
+        found = -1;
+    done:
+        if (found != -1) {
+            fux = (Ovl63FuxState *)Heroes[found].hero->FUX;
+            if (fux != NULL && fux->unk130 == 0 && fux->unk18 != 0x10) {
+                switch (ext->unk38) {
+                case 0:
+                    fux->unk18 = 1;
+                    PlaySfx(0x51F, NULL, NULL, 0x1000, 0x1E00, 0);
+                    D_800CA64C[ext->unk44].used = 0;
+                    break;
+                case 1:
+                    fux->unk18 = 2;
+                    break;
+                case 2:
+                    fux->unk18 = 4;
+                    break;
+                case 5:
+                    fux->unk18 = 0x20;
+                    PlaySfx(0x439, NULL, NULL, 0x1000, 0x1E00, 0);
+                    D_800CA64C[ext->unk44].used = 0;
+                    break;
+                case 6:
+                    fux->unk18 = 0;
+                    fux->unk24 = 0x5A;
+                    D_800CA64C[ext->unk44].used = 0;
+                    break;
+                case 3:
+                    fux->unk58 += 0x2000;
+                    if (fux->unk58 > 0x10000) {
+                        fux->unk58 = 0x10000;
+                    }
+                    D_800CA64C[ext->unk44].used = 0;
+                    PlaySfx(0x1C2, NULL, NULL, 0x1000, 0x1E00, 0);
+                    break;
+                case 4:
+                    fux->unk18 = 0x10;
+                    SpawnNASById(Heroes[found].hero_eng->unk10.x, Heroes[found].hero_eng->unk10.y,
+                                 Heroes[found].hero_eng->unk10.z, 0x1706, 0x11);
+                    break;
+                }
+            }
+            KillNAS(m);
+            return;
+        }
+    }
+    e = ext->unk3C;
+    if (e != NULL) {
+        e->unk10 = m->Engine->unk10;
+        ext->unk3C->unk10.y = 0;
+        ext->unk3C->unk2C.x = m->Engine->unk2C.x;
+        ext->unk3C->unk2C.y = m->Engine->unk2C.y;
+        ext->unk3C->unk2C.z = m->Engine->unk2C.z;
+    }
+}
 
 void func_800C0218(s32 player) {
     HeroInfo *base;
