@@ -2237,7 +2237,102 @@ void func_800C0F5C(void) {
     u8 unused[24];
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotTNTCrate);
+void PlotTNTCrate(NAS *nas) {
+    s32 status;
+    s32 next;
+    s32 i;
+    s32 *pos;
+    u8 *p;
+    NAS *spawned;
+    s32 *ext;
+    HeroInfo *h;
+    subengine *sub;
+
+    status = nas->UserInfo.status;
+    switch (status) {
+    case 0:
+        next = 1;
+        nas->UserInfo.status = next;
+        break;
+    case 1:
+        i = 0;
+        if (nas->UserInfo.user1 < 90) {
+            if (nas->UserInfo.user1 == 0) {
+                nas->Engine->sub->unk74 = 0x2012;
+            }
+            if (nas->UserInfo.user1 == 30) {
+                nas->Engine->sub->unk74 = 0x2011;
+            }
+            if (nas->UserInfo.user1 == 60) {
+                nas->Engine->sub->unk74 = 0x2010;
+            }
+            for (; i < 4; i++) {
+            }
+            if (nas->UserInfo.user2 == 0) {
+                nas->UserInfo.flags++;
+                PlaySfx(0x3F0, NULL, NULL, 0x1000, 0x1E00, 0);
+                nas->UserInfo.user2 = 30 / nas->UserInfo.flags;
+                if (nas->UserInfo.user2 < 4) {
+                    nas->UserInfo.user2 = 4;
+                }
+            }
+            nas->UserInfo.user2--;
+        } else {
+            if (nas->UserInfo.user1 == 90) {
+                i = Random(4);
+                if (i == 0) {
+                    PlaySfx(0x3EC, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (i == 1) {
+                    PlaySfx(0x3ED, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (i == 2) {
+                    PlaySfx(0x3EE, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (i == 3) {
+                    PlaySfx(0x3EF, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                pos = (s32 *)&nas->Engine->unk10;
+                p = D_80052F94;
+                spawned = SpawnNASById(pos[0], pos[1], pos[2], 0x1605, 0x11);
+                if (spawned != NULL) {
+                    ext = FindExtension(spawned, 0x10000000);
+                    if (ext != NULL) {
+                        ext[3] = status;
+                        ext[6] = 0x100;
+                        if (p != NULL) {
+                            ext[8] = 5;
+                            spawned->Engine->sub->unk6C = p;
+                        } else {
+                            ext[8] = status;
+                        }
+                        ext[10] = 0;
+                        spawned->InitDelete(spawned);
+                    }
+                }
+                nas->Engine->sub->flags &= ~0x8000;
+            }
+            i = 0;
+            h = Heroes;
+        loop:
+            if (i < 4) {
+                if (func_8008CEB0((u8 *)&nas->Engine->unk10, (u8 *)&h->hero_eng->unk10) < 0x40000 &&
+                    h->hero_mode != 0x5D) {
+                    SetHeroAction((HeroInfo *)i, 0x5D);
+                }
+                h++;
+                i++;
+                goto loop;
+            }
+            if (nas->UserInfo.user1 == 100) {
+                KillNAS(nas);
+                return;
+            }
+        }
+        nas->UserInfo.user1++;
+        break;
+    }
+}
 
 void InitDinoEgg(NAS *m) {
     EXTdinoegg *ext;

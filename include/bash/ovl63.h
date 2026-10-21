@@ -904,4 +904,6 @@ void func_800B980C();
 void func_800BD99C();
 void func_800BCE88();
 
+void PlotTNTCrate(NAS *nas);
+
 #endif /* BASH_OVL63_H */
