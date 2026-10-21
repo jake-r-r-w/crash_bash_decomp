@@ -718,6 +718,8 @@ typedef struct Ovl63TagExt {
 
 extern s32 D_800C6928;
 
+s32 func_800B4D64(s32 *arg0, s32 arg1, s32 *arg2);
+
 s32 func_800B62F4(Ovl63Barrel *self);
 
 void func_800C0F5C(void);

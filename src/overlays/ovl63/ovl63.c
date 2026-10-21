@@ -207,7 +207,59 @@ void func_800B48EC(s32 player) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B4A4C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B4D64);
+s32 func_800B4D64(s32 *arg0, s32 arg1, s32 *arg2)
+{
+  u8 *base;
+  s32 off;
+  u8 *p;
+  u8 *a2;
+  u8 *a3;
+  s32 found;
+  u8 *new_var;
+  s32 n;
+  s32 i;
+  s32 ang;
+  s32 a;
+  s32 b;
+  s32 r;
+  s32 c;
+  found = -1;
+  if ((*((s32 *) D_80058AD0)) != 0)
+  {
+    u8 *q = *((u8 **) (((u8 *) D_80058AD0) + 0x10));
+    c = arg1 >= (*((s32 *) (((*((s32 *) (q + 0x14))) + 0x14) + q)));
+  }
+  else
+  {
+    if (1)
+    {
+    }
+    c = arg1 >= 0;
+  }
+  if (c)
+  {
+    return 0;
+  }
+  base = *((u8 **) (((u8 *) D_80058AD0) + 0x10));
+  off = *((s32 *) (base + 0x14));
+  p = ((u8 *) (&((s32 *) ((base + 0x14) + off))[arg1 + 1])) + ((s32 *) ((base + 0x14) + off))[arg1 + 1];
+  if ((new_var = p) != 0)
+  {
+    i = 0;
+    a2 = p + 0x5C;
+    a3 = p;
+    ang = get_angle(arg0[0], arg0[2]) & 0xFFF;
+    n = *((s32 *) (a3 + 0x38));
+    loop:
+    if (i < n)
+    {
+ do { r = *((s32 *) (a3 + 0x64)); a = get_angle(*((s32 *) (a2 - 0x14)), *((s32 *) (a2 - 0xC))) & 0xFFF; b = get_angle(*((s32 *) (a2 - 8)), *((s32 *) a2)) & 0xFFF; if ((a < ang) && (ang < b)) { *arg2 = -r; found = i; } a3 += 0x38; i++; a2 += 0x38; } while (0);
+      goto loop;
+    }
+
+  }
+  return found;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B4EDC);
 
