@@ -21,7 +21,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   **main.exe, ovl61 and ovl6a are complete**; 114 left: ovl62 26, ovl5f 18,
   ovl63 17, ovl67 9, ovl65 8, ovl5d 7, ovl60 7, ovl64 7, ovl68 5, ovl66 3,
   ovl69 3, engine 2, ovl5e 2. All 564 PsyQ functions (Sony objects). 4
-  parked by hand (`decomp.py status`), 14 matched with a hack (`decomp.py
+  parked by hand (`decomp.py status`), 13 matched with a hack (`decomp.py
   hacks`; the lint flags dead stores and identical if/else arms since
   2026-10-21). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
@@ -54,7 +54,7 @@ big-mode retry (`--seg overlays/ --retry-failed --big-bytes 1 --workers 1
 --big-workers 6`) still matched 85 in 3 h, at $2.70 a match (the first:
 $1.90). Next: `swarm.mjs permute --near --minutes 60` on the checkpoints at
 the registers stage (CPU only), then one more big-mode retry if it still
-pays; rework the 14 hacks by hand between runs. After each run, the
+pays; rework the 13 hacks by hand between runs. After each run, the
 "After a run" checklist in tools/swarm/README.md (`stats --run ID`, parks,
 gate failures, `fold`, this log).
 
@@ -79,7 +79,7 @@ rest are fixed by hand from the worker's patch (Gotchas). A park whose
 `jtbl_` names functions is a bad split (Gotchas).
 
 Hand work, between runs:
-1. The parks: `func_8007F314` and `PlotScriptFX` (engine), `func_800BC274` (ovl5e), and the 14 hack matches (`decomp.py hacks`; Open leads for `func_800B345C`, `func_800B7134`, `func_800B4444`).
+1. The parks: `func_8007F314` and `PlotScriptFX` (engine), `func_800BC274` (ovl5e), and the 13 hack matches (`decomp.py hacks`; Open leads for `func_800B345C`, `func_800B4444`).
 2. Name each function as it's matched when the evidence allows.
 3. Split `main.c` into its translation units: on hold since 2026-10-15. Its
    one proven boundary (jump-table parity, 95..370) has three possible
@@ -154,23 +154,12 @@ and current tools).
     `Table[slot].f` at each use, not through a pointer. `func_800BB86C`
     structure 439/644: `x < 4 && x >= 2` as nested ifs (fold-const makes a
     range check of the `&&`).
-  - `func_800B7134` matched with a dead-store hack 2026-10-20 (ba1244e6):
-    locals `tb/trig/seq` set at the outer loop's top and NULLed at its
-    bottom. Without them (globals used directly) it is 2 insns off, the
-    inner loop exact: the `D_800BE838` lui/addiu is hoisted out of the outer
-    loop. `move_movables` doubles `insn_count` per inner-moved reg, so the
-    3rd+ candidate always moves; a user variable's set escapes only with
-    `maybe_never` (outer scan past a label/jump, e.g. a loop entered at its
-    exit test) or a second set. Tried and failed: for/while/do/goto outer loops, block-scope locals, cell pointers.
-    Scripts: `scratch/b7134/` (`brute2.py`, `full.py`).
   - `func_800BB3F0` matched by hand 2026-10-20 (08aa8ff7, no hack; copies
     `func_800C159C` and `func_800BA098` too). Diff patterns has the three
     fixes: read `Heroes[player]` directly in the loop, so loop.c moves its
     la first and lowers its threshold, which keeps the multiply in the
     loop; K&R `u16 cone`; and the claim written once per arm, each in
-    `do { } while (0)`. For `func_800B7134`'s outer-loop hoist (a hack
-    match), wrapped duplicates also add to loop.c's `insn_count` without
-    changing the final code: untried there.
+    `do { } while (0)`.
   - `func_800B38FC` instructions 32/131: stack `u16` args get `andi` +
     `sll` after a branch; declare the params `u16` and scale them in place
     (`n4 *= 4;`).
@@ -195,7 +184,7 @@ and current tools).
     `func_800B5D90`: `lh` + `sra 3` as `.unk2 * 1024 >> 13`.
 - **Hack matches to revisit:** `decomp.py hacks` lists them (three on
   2026-10-20: `func_800193A8`, register pins that are probably the original
-  source, `func_800B345C` and `func_800B7134` above). Since 2026-10-20 the
+  source, `func_800B345C` above; `func_800B7134` reworked without its hack 2026-10-21). Since 2026-10-20 the
   `done` lint also flags dead stores, and `hacks` lints every matched
   function (its old file prefilter hid no-op pairs). Parks are `decomp.py status` / the dashboard. Before reaching for a
   barrier or pin, try `do { } while (0)` (Diff patterns): it matched
@@ -521,6 +510,13 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-21 (hand: `func_800B7134` without its hack):** df4e1881 replaces
+  the dead-store match (tb/trig/seq NULLed at the outer loop's bottom).
+  The `-dL` dump showed the outer loop's move_movables stopping two
+  candidates late; reading `D_800BE888` in the inner loop (not through `t`)
+  adds two inner movables ahead of the `D_800BE838` base, so `insn_count`
+  doubles twice more and the bases stay per i. No permuter. 13 hacks left.
 
 - **2026-10-21 (swarm all overlays, second retry in big mode):** run
   20261021103227, same flags as the first (`--max-minutes 180`), ran to
