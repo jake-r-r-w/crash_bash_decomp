@@ -674,6 +674,47 @@ typedef struct UkaMaskSet {
 
 void func_800C0FE8(s32 i, UkaMaskSet *m);
 
+/* InitUkaPolarMask's extension (id 0x40000000, 0x1E0 bytes). */
+typedef struct UkaPolarExt {
+    /* 0x000 */ u8 pad0[0x10];
+    /* 0x010 */ s32 unk10;
+    /* 0x014 */ s32 unk14;
+    /* 0x018 */ u8 pad18[0x64 - 0x18];
+    /* 0x064 */ s32 unk64;
+    /* 0x068 */ s32 unk68;
+    /* 0x06C */ s32 unk6C;
+    /* 0x070 */ u8 pad70[4];
+    /* 0x074 */ EXTengine *eng;
+    /* 0x078 */ u8 pad78[0x88 - 0x78];
+    /* 0x088 */ SLONG_XYZ pos;
+    /* 0x094 */ u8 pad94[0xA8 - 0x94];
+    /* 0x0A8 */ NAS *bit;
+    /* 0x0AC */ s32 unkAC;
+    /* 0x0B0 */ NAS *mask;
+    /* 0x0B4 */ s32 unkB4;
+    /* 0x0B8 */ UkaMaskSeg seg[16];
+    /* 0x1B8 */ s32 unk1B8;
+    /* 0x1BC */ s32 unk1BC;
+    /* 0x1C0 */ s32 angle;
+    /* 0x1C4 */ s32 unk1C4;
+    /* 0x1C8 */ s32 unk1C8;
+    /* 0x1CC */ s32 unk1CC;
+    /* 0x1D0 */ s32 unk1D0;
+    /* 0x1D4 */ s32 unk1D4;
+    /* 0x1D8 */ s32 unk1D8;
+    /* 0x1DC */ s32 unk1DC;
+} UkaPolarExt;
+
+/* The 0x1605 bit's extension (id 0x10000000) InitUkaPolarMask sets up. */
+typedef struct UkaBitExt {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ u8 pad10[8];
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ u8 pad1C[4];
+    /* 0x20 */ s32 unk20;
+} UkaBitExt;
+
 typedef struct Ovl62RiserObj {
     /* 0x00 */ u8 pad0[0x74];
     /* 0x74 */ s16 y;

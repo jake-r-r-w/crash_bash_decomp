@@ -1899,7 +1899,98 @@ void func_800C0FE8(s32 i, UkaMaskSet *m) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitUkaPolarMask);
+void InitUkaPolarMask(NAS *m) {
+    UkaPolarExt *ext;
+    UkaBitExt *bx;
+    EXTengine *e;
+    subengine *sub;
+    subengine *s2;
+    NAS *n;
+    s32 r;
+    s32 i;
+
+    ext = AddExtension(m, 0x1E0, 0x40000000);
+    if (ext == NULL) {
+        return;
+    }
+    func_800C0E94();
+    ext->unk14 = 4;
+    ext->unkB4 = 0x12C;
+    ext->unk1B8 = 0xC;
+    ext->unk1CC = 0xC;
+    m->FUX = (EXT *)ext;
+    m->Engine->sub->unk6C = *(void **)D_80058AD0;
+    *(u16 *)((u8 *)m->Engine->sub + 0x74) = 0x200C;
+    D_800D5254 = (Ovl62Owner *)m;
+    if (D_8005A646 & 0x80) {
+        m->Engine->sub->unk74 = 0x200C;
+    }
+    m->UserInfo.user1 = 0;
+    m->Engine->unk10.x = 0;
+    m->Engine->unk10.z = 0;
+    ext->unk10 = -1;
+    r = Random(4);
+    if (r == 0) {
+        ext->angle = -0x100;
+    }
+    if (r == 1) {
+        ext->angle = 0x300;
+    }
+    if (r == 2) {
+        ext->angle = 0x700;
+    }
+    if (r == 3) {
+        ext->angle = 0xB00;
+    }
+    ext->unk1D0 = (D_80068BD4[(ext->angle - 0x400) & 0xFFF].unk2 * 0x115) >> 9;
+    ext->unk1D8 = (D_80068BD4[ext->angle & 0xFFF].unk2 * 0x115) >> 9;
+    ext->unk1C4 = 1;
+    ext->unk1C8 = 1;
+    ext->unk68 = -1;
+    ext->pos = *(SLONG_XYZ *)&m->Engine->unk10;
+    ext->unk64 = 0x5A;
+    ext->unk6C = 5;
+    for (i = 0; i < 16; i++) {
+        ext->seg[i].state = 0;
+        ext->seg[i].count = 0;
+        ext->seg[i].t = 0;
+        ext->seg[i].angle = 0;
+    }
+    ext->mask = n = SpawnNASById(0, 0, 0, 0x160B, 0x11);
+    if (n != NULL) {
+        func_80026A04((u8 *)n);
+    }
+    ext->bit = n = SpawnNASById(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1605, 0x11);
+    if (n != NULL) {
+        n->Engine->flags |= 0x200000;
+        bx = FindExtension(ext->bit, 0x10000000);
+        if (bx != NULL) {
+            bx->unkC = 3;
+            bx->unk18 = 0x100;
+            bx->unk20 = 4;
+            ext->bit->Engine->sub->unk6C = D_800546C4;
+            ext->bit->InitDelete(ext->bit);
+            ext->unkAC = 0;
+        }
+    }
+    e = AddEngine(m, 2);
+    if (e != NULL) {
+        ext->eng = e;
+        e->sub->unk6C = D_800546C4;
+        e->sub->unk74 = 0x2003;
+        e->sub->unk51 = 0;
+        s2 = e->sub;
+        s2->unk14 = 0;
+        s2->unk12 = 0;
+        s2->unk10 = 0;
+        e->sub->unk50 = 1;
+        sub = e->sub;
+        sub->unk20.z = 0x200;
+        sub->unk20.y = 0x200;
+        sub->unk20.x = 0x200;
+        e->sub->flags &= ~0x8000;
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotUkaPolarMask);
 
