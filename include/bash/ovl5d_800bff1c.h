@@ -47,6 +47,8 @@ s32 func_800C2FB0(s32 arg0);
 extern u8 D_800C4790[];
 s32 func_8008502C();
 
+void func_800BFF1C(s32 arg0);
+
 void func_800C013C(s32 arg0);
 
 void func_800C07F4(s32 arg0);

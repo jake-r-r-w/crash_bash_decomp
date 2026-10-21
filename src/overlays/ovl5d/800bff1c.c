@@ -5,7 +5,64 @@
 #include "bash/xtras.h"
 #include "bash/papu.h"
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800BFF1C);
+void func_800BFF1C(s32 arg0) {
+    HeroInfo *b = Heroes;
+    HeroInfo *h = &b[arg0];
+    s32 sfx;
+
+    if (h->hero_move->reactive_speed != 0) {
+        D_8009D73C();
+    }
+    switch (func_8008502C(arg0)) {
+    case 8:
+        switch (h->hero_name) {
+        case 1:
+            sfx = 0xD;
+            goto play8;
+        case 2:
+            sfx = 0x3F;
+            goto play8;
+        case 7:
+            sfx = 0x107;
+            goto play8;
+        case 8:
+            sfx = 0xD5;
+            goto play8;
+        case 5:
+            sfx = 0x139;
+            goto play8;
+        case 6:
+            sfx = 0x16B;
+        play8:
+            PlaySfx(sfx, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        }
+        if (Heroes[arg0].hero_health <= 0 && !(D_8005A618 & 2)) {
+            Heroes[arg0].hero_immunity = 0;
+            Heroes[arg0].hero_status |= 0x2000;
+            Heroes[arg0].hero_hit += 0x28;
+            SetHeroSeq((HeroInfo *)arg0, 0x13);
+        }
+        break;
+    case 9:
+        switch (h->hero_name) {
+        case 3:
+            sfx = 0x71;
+            break;
+        case 4:
+            sfx = 0xA3;
+            break;
+        default:
+            goto done;
+        }
+        PlaySfx(sfx, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    }
+done:
+    if (D_8009D740 != NULL) {
+        D_8009D740(arg0);
+    }
+    func_800871E4(arg0);
+}
 
 void func_800C013C(s32 arg0) {
     VECTOR pos;
