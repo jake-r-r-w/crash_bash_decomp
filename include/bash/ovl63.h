@@ -336,13 +336,28 @@ typedef struct RacePickUpExt {
     /* 0x28 */ s32 unk28;
     /* 0x2C */ s32 unk2C;
     /* 0x30 */ s32 unk30;
-    /* 0x34 */ u8 pad34[0x3C - 0x34];
+    /* 0x34 */ u8 pad34[0x38 - 0x34];
+    /* 0x38 */ s32 unk38;
     /* 0x3C */ EXTengine *unk3C;
     /* 0x40 */ s32 unk40;
-    /* 0x44 */ u8 pad44[0x48 - 0x44];
+    /* 0x44 */ s32 unk44;
     /* 0x48 */ s32 unk48;
     /* 0x4C */ s32 unk4C;
 } RacePickUpExt;
+
+/* Pickup spawn slots func_800C0CB4 picks from: an angle and an in-use flag. */
+typedef struct Ovl63PickUpSlot {
+    /* 0x00 */ s32 angle;
+    /* 0x04 */ s32 used;
+} Ovl63PickUpSlot;
+extern Ovl63PickUpSlot D_800CA64C[16];
+extern s32 D_800C6CB4;
+
+/* A hero's FUX as func_800C0CB4 reads it: a state at 0x18. */
+typedef struct Ovl63FuxState {
+    /* 0x00 */ u8 unk0[0x18];
+    /* 0x18 */ s32 unk18;
+} Ovl63FuxState;
 /* Race volcano extension (0x15C bytes, id 0x10000000). */
 typedef struct RaceVolcanoExt {
     /* 0x000 */ u8 pad0[0xC];

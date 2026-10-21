@@ -1584,7 +1584,114 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C0218);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C04EC);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800C0CB4);
+void func_800C0CB4(void) {
+    NAS *nas;
+    NAS *spawned;
+    RacePickUpExt *ext;
+    RacePickUpExt *pick;
+    Ovl63FuxState *fux;
+    s32 count;
+    s32 heroes;
+    s32 extra;
+    s32 n;
+    s32 p;
+    s32 i;
+    s32 j;
+    s32 slot;
+    s32 dist;
+    s32 angle;
+    s32 state;
+
+    if (D_800C6BB0 >= 0) {
+        return;
+    }
+    heroes = 0;
+    count = 0;
+    for (nas = D_800C6920;; nas = nas->Group.Child) {
+        if (nas == NULL) {
+            goto heroes_loop;
+        }
+        pick = FindExtension(nas, 0x10000000);
+        if (pick != NULL) {
+            state = pick->unk38;
+            if (state == 0) {
+                count++;
+            }
+            if (state == 5) {
+                count++;
+            }
+        }
+    }
+heroes_loop:
+    for (p = 0;; p++) {
+        if (p >= 4) {
+            goto heroes_done;
+        }
+        fux = (Ovl63FuxState *)Heroes[p].hero->FUX;
+        if (fux != NULL) {
+            state = fux->unk18;
+            if (state != 0) {
+                if (state == 1) {
+                    heroes++;
+                }
+                if (state == 0x20) {
+                    heroes++;
+                }
+            }
+        }
+    }
+heroes_done:
+    extra = D_800C692C > 0;
+    if (D_800C692C >= 0x385) {
+        extra = 1;
+    }
+    if (D_800C692C >= 0x709) {
+        extra = 0;
+    }
+    n = 3 - (count + extra + heroes);
+    if (n != 0) {
+        if (--D_800C6CB4 < 0) {
+            D_800C6CB4 = 0;
+        }
+    }
+    for (i = 0;; i++) {
+        if (i >= n) {
+            return;
+        }
+        dist = Random(100) + 0x898;
+        slot = Random(16);
+        j = 0;
+        if (D_800C6CB4 == 0) {
+            D_800C6CB4 = 30;
+            for (; j < 16;) {
+                j++;
+                if (D_800CA64C[slot].used == 0) {
+                    break;
+                }
+                slot++;
+                slot &= 0xF;
+            }
+            if (j == 16) {
+                return;
+            }
+            D_800CA64C[slot].used = 1;
+            angle = D_800CA64C[slot].angle;
+            spawned = SpawnNASById(dist * D_80068BD4[(angle - 0x400) & 0xFFF].unk2 >> 12, 0,
+                                   dist * D_80068BD4[angle & 0xFFF].unk2 >> 12, 0x1702, 0x11);
+            if (spawned != NULL) {
+                ext = FindExtension(spawned, 0x10000000);
+                if (ext != NULL) {
+                    ext->unk44 = slot;
+                    if (G63->unk34 != 0x18) {
+                        ext->unk38 = 0;
+                    } else {
+                        ext->unk38 = 5;
+                    }
+                }
+            }
+        }
+    }
+}
 
 void func_800C0F5C(void) {
     u8 unused[24];
