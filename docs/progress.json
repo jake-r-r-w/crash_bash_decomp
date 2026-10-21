@@ -25,9 +25,9 @@
    "size": 744
   }
  ],
- "commit": "21636d62a8",
+ "commit": "68b60cc766",
  "game": "SCUS_945.70",
- "generated": "2026-10-21T12:33:20Z",
+ "generated": "2026-10-21T12:38:40Z",
  "hacks": [
   {
    "commit": "f69a346bbb",
@@ -169850,9 +169850,119 @@
      564
     ]
    }
+  },
+  {
+   "commit": "68b60cc766",
+   "data_b": 6188,
+   "data_tb": 606943,
+   "game_all_f": 2537,
+   "game_b": 728364,
+   "game_c_f": 2395,
+   "game_f": 2395,
+   "game_named_f": 345,
+   "game_tb": 1019036,
+   "game_typed_f": 2169,
+   "lib_b": 122112,
+   "lib_f": 564,
+   "lib_tb": 122112,
+   "ts": "2026-10-21T12:38:40Z",
+   "units": {
+    "engine": [
+     121412,
+     355
+    ],
+    "main exe": [
+     124840,
+     575
+    ],
+    "ovl5d": [
+     36260,
+     95
+    ],
+    "ovl5e": [
+     30984,
+     71
+    ],
+    "ovl5f": [
+     42960,
+     156
+    ],
+    "ovl60": [
+     46756,
+     167
+    ],
+    "ovl61": [
+     55000,
+     97
+    ],
+    "ovl62": [
+     54312,
+     184
+    ],
+    "ovl63": [
+     37928,
+     118
+    ],
+    "ovl64": [
+     19228,
+     50
+    ],
+    "ovl65": [
+     22732,
+     70
+    ],
+    "ovl66": [
+     20316,
+     77
+    ],
+    "ovl67": [
+     44684,
+     125
+    ],
+    "ovl68": [
+     25132,
+     87
+    ],
+    "ovl69": [
+     14760,
+     74
+    ],
+    "ovl6a": [
+     31060,
+     94
+    ],
+    "psyq": [
+     122112,
+     564
+    ]
+   }
   }
  ],
  "recent": [
+  {
+   "at": "2026-10-21T12:38:28Z",
+   "auto": true,
+   "name": "func_800B9A50",
+   "seg": "overlays/ovl68/ovl68",
+   "size": 1160,
+   "tries": 0
+  },
+  {
+   "at": "2026-10-21T12:38:28Z",
+   "auto": true,
+   "name": "func_800B5050",
+   "seg": "overlays/ovl66/ovl66",
+   "size": 1160,
+   "tries": 0
+  },
+  {
+   "at": "2026-10-21T12:38:12Z",
+   "auto": true,
+   "name": "func_800B4BC8",
+   "seg": "overlays/ovl66/ovl66",
+   "size": 1160,
+   "tries": 0
+  },
   {
    "at": "2026-10-21T12:33:18Z",
    "auto": true,
@@ -169948,35 +170058,11 @@
    "seg": "overlays/ovl60/ovl60",
    "size": 1032,
    "tries": 0
-  },
-  {
-   "at": "2026-10-21T12:06:58Z",
-   "auto": true,
-   "name": "func_800BE9D0",
-   "seg": "overlays/ovl5d/800bb64c",
-   "size": 1048,
-   "tries": 0
-  },
-  {
-   "at": "2026-10-21T12:06:18Z",
-   "auto": true,
-   "name": "PlotPolarMissile",
-   "seg": "overlays/ovl62/ovl62",
-   "size": 1028,
-   "tries": 0
-  },
-  {
-   "at": "2026-10-21T12:04:23Z",
-   "auto": true,
-   "name": "PlotPolarBomb",
-   "seg": "overlays/ovl62/ovl62",
-   "size": 1024,
-   "tries": 0
   }
  ],
  "summary": {
   "blocked": 4,
-  "copies_b": 7496,
+  "copies_b": 5176,
   "data": {
    "done_b": 6188,
    "pct": 1.019535607132795,
@@ -169987,15 +170073,15 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 4,
-   "c_f": 2392,
-   "done_b": 724884,
-   "done_f": 2392,
+   "c_f": 2395,
+   "done_b": 728364,
+   "done_f": 2395,
    "named_f": 345,
-   "pct": 71.13428769935507,
+   "pct": 71.47578692018732,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2537,
-   "typed_f": 2166
+   "typed_f": 2169
   },
   "lib": {
    "all_f": 566,
@@ -170249,20 +170335,20 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
-    "c_f": 75,
-    "done_b": 17996,
-    "done_f": 75,
+    "c_f": 77,
+    "done_b": 20316,
+    "done_f": 77,
     "file": "ovl66.bin",
     "files": 2,
     "lib": false,
     "named_f": 8,
-    "pct": 74.02105955906548,
+    "pct": 83.56367226061204,
     "phase": 5,
     "sony_b": 0,
     "title": "Bonk",
     "total_b": 24312,
     "total_f": 80,
-    "typed_f": 75,
+    "typed_f": 77,
     "unit": "ovl66"
    },
    {
@@ -170291,20 +170377,20 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
-    "c_f": 86,
-    "done_b": 23972,
-    "done_f": 86,
+    "c_f": 87,
+    "done_b": 25132,
+    "done_f": 87,
     "file": "ovl68.bin",
     "files": 1,
     "lib": false,
     "named_f": 18,
-    "pct": 70.3982144954775,
+    "pct": 73.8047691765535,
     "phase": 5,
     "sony_b": 0,
     "title": "Chase",
     "total_b": 34052,
     "total_f": 93,
-    "typed_f": 84,
+    "typed_f": 85,
     "unit": "ovl68"
    },
    {

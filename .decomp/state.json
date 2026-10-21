@@ -9008,10 +9008,13 @@
   "status": "matched"
  },
  "ovl66:800B4BC8": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-21T12:38:12Z",
+  "status": "matched"
  },
  "ovl66:800B5050": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-21T12:38:28Z",
+  "status": "matched",
+  "via": "copy"
  },
  "ovl66:800B54D8": {
   "matched_at": "2026-10-21T11:48:54Z",
@@ -10022,7 +10025,9 @@
   "auto_failed": "types"
  },
  "ovl68:800B9A50": {
-  "auto_failed": "types"
+  "matched_at": "2026-10-21T12:38:28Z",
+  "status": "matched",
+  "via": "copy"
  },
  "ovl68:800B9ED8": {
   "matched_at": "2026-10-21T11:49:09Z",
