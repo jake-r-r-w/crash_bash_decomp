@@ -1076,7 +1076,57 @@ done:
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B9080);
+void func_800B9080(s32 arg0) {
+    NAS *nas;
+    s32 i;
+    s32 j;
+    s32 n;
+    u16 st;
+    Ovl60Cell *c;
+
+    nas = D_800C5BB0;
+    if (nas == NULL) {
+        return;
+    }
+    n = 0;
+    if (nas->UserInfo.status < 3) {
+        return;
+    }
+    nas->UserInfo.status = 6;
+    i = 0;
+    for (;;) {
+        j = 0;
+        if (i >= 8) {
+            goto done;
+        }
+        for (;;) {
+            if (j >= 8) {
+                goto next;
+            }
+            c = (Ovl60Cell *)(j * sizeof(Ovl60Cell) + i * sizeof(D_800C53DC[0]) + (u32)D_800C53DC);
+            st = c->unk12;
+            if (st == 1 && c->unkA == arg0) {
+                c->unk12 = 10;
+                c->unkA = arg0;
+                c->unk14 = 0xF0;
+                func_800B7C3C(i, j);
+                if (n == 0) {
+                    c->unk18[0] = st;
+                } else {
+                    c->unk18[0] = 0;
+                }
+                n++;
+            }
+            j++;
+        }
+    next:
+        i++;
+    }
+done:
+    if (n != 0) {
+        PlaySfx(0x54C, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B91E8);
 
