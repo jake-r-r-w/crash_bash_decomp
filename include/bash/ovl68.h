@@ -373,6 +373,8 @@ static inline NAS *CircleFireGridCell(s32 *grid, s32 x, s32 z) {
     return NULL;
 }
 
+void func_800B643C(s32 arg0);
+
 s32 func_800BB7E0(Ovl68Obj *a, Ovl68Pos *b);
 
 #endif /* BASH_OVL68_H */
