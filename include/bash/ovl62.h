@@ -870,6 +870,36 @@ typedef struct SniperAim {
     /* 0x40 */ SniperEase y;
 } SniperAim;
 
+/* Sniper extension (0x9C bytes, id 0x10000000; InitSniper). */
+typedef struct SniperExt {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ EXTengine *unk10;
+    /* 0x14 */ u8 pad14[4];
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ s32 unk1C;
+    /* 0x20 */ EXTengine *unk20;
+    /* 0x24 */ s32 unk24;
+    /* 0x28 */ s32 unk28;
+    /* 0x2C */ u8 pad2C[0x50 - 0x2C];
+    /* 0x50 */ s32 unk50;
+    /* 0x54 */ s32 unk54;
+    /* 0x58 */ s16 unk58;
+    /* 0x5A */ s16 unk5A;
+    /* 0x5C */ u8 pad5C[0x70 - 0x5C];
+    /* 0x70 */ s32 unk70;
+    /* 0x74 */ s32 unk74;
+    /* 0x78 */ s16 unk78;
+    /* 0x7A */ s16 unk7A;
+    /* 0x7C */ u8 pad7C[0x84 - 0x7C];
+    /* 0x84 */ s32 unk84;
+    /* 0x88 */ s32 unk88;
+    /* 0x8C */ s32 unk8C;
+    /* 0x90 */ s32 unk90;
+    /* 0x94 */ EXTengine *unk94;
+    /* 0x98 */ s32 unk98;
+} SniperExt;
+
 /* Bear death extension (0x88 bytes, id 0x10000000). */
 typedef struct BearDeathExt {
     /* 0x00 */ u8 pad0[0x14];

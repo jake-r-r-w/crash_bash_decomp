@@ -2351,7 +2351,90 @@ void func_800C7ED4(SniperAim *a, s32 *out) {
     out[1] -= a->y.cur;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitSniper);
+void InitSniper(NAS *m) {
+    SniperExt *ext;
+    EXTengine *e;
+    EXTengine *f;
+
+    ext = AddExtension(m, 0x9C, 0x10000000);
+    if (ext != NULL) {
+        m->Engine->sub->unk74 = 0x2006;
+        m->Engine->sub->unk6C = D_80054A0C;
+        ext->unk8C = 8;
+        ext->unk90 = 0;
+        ext->unk98 = 0;
+        ext->unkC = 0;
+        ext->unk18 = 0;
+        ext->unk1C = 0;
+        ext->unk24 = 0;
+        ext->unk28 = 0;
+        ext->unk54 = 0;
+        ext->unk74 = 0;
+        ext->unk50 = 0;
+        ext->unk70 = 0;
+        ext->unk58 = 0xC;
+        ext->unk78 = 0xC;
+        ext->unk5A = 1;
+        ext->unk7A = 1;
+        ext->unk84 = 0;
+        ext->unk88 = 0;
+        m->Engine->unk2C.x = 0x1830;
+        m->Engine->unk2C.y = 0x1830;
+        m->Engine->unk2C.z = 0x1830;
+        m->Engine->unk5E = 1;
+        m->Engine->flags |= 0x200000;
+        ext->unk10 = NULL;
+        ext->unk20 = NULL;
+        e = AddEngine(m, 2);
+        if (e != NULL) {
+            ext->unk10 = e;
+            e->sub->unk6C = *(void **)D_80058AD0;
+            e->sub->unk74 = 0x2018;
+            e->sub->flags = 0x22000000;
+            e->sub->flags &= ~0x8000;
+            e->unk10.x = 0;
+            e->unk10.y = 0;
+            e->unk10.z = 0;
+            e->unk10.x = 0;
+            e->unk10.y = 0;
+            e->unk10.z = 0;
+            e->sub->unk68 = -0x600;
+        }
+        e = AddEngine(m, 3);
+        if (e != NULL) {
+            ext->unk20 = e;
+            e->sub->unk6C = *(void **)D_80058AD0;
+            e->sub->unk74 = 0x2019;
+            e->sub->flags = 0x22000000;
+            e->sub->flags &= ~0x8000;
+            e->unk10.x = 0;
+            e->unk10.y = 0;
+            e->unk10.z = 0;
+            e->unk10.x = 0;
+            e->unk10.y = 0;
+            e->unk10.z = 0;
+            e->sub->unk68 = -0x3F4;
+        }
+        f = AddEngine(m, 4);
+        if (f != NULL) {
+            ext->unk94 = f;
+            f->sub->unk6C = D_80054A0C;
+            f->sub->unk74 = 0x2006;
+            f->sub->flags |= 0x02000000;
+            f->unk10 = m->Engine->unk10;
+            f->unk5D = 0;
+            f->flags |= 0x200000;
+            f->sub->flags = 0x40008021;
+            f->unk1E = m->Engine->unk1E;
+            f->unk20 = -0x800;
+            f->unk2C.x = 0x1830;
+            f->unk2C.y = 0x1830;
+            f->unk2C.z = 0x1830;
+            f->sub->unk76 = 0xC00;
+            f->unk5E = 1;
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotSniper);
 
