@@ -886,6 +886,8 @@ void func_800CAEB0(s32 player, s32 idx);
 
 void func_800CB41C(s32 player);
 
+void func_800CC024(s32 player, EXTheromove *other);
+
 void func_800CC2BC(s32 player);
 
 void func_800CDA54(s32 player);

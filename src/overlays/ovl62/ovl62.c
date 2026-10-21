@@ -3227,7 +3227,69 @@ void func_800CBB8C(void) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CBBE8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CC024);
+void func_800CC024(s32 player, EXTheromove *other) {
+    HeroInfo *base = Heroes;
+    HeroInfo *hero = &base[player];
+    EXTheromove *move = hero->hero_move;
+    s32 m1 = move->mass;
+    s32 m2 = other->mass;
+    s32 k = 0x100;
+    s32 v1;
+    s32 v2;
+    s32 d;
+    s32 a;
+    s32 b;
+
+    if (m1 > 0 && m2 > 0) {
+        if (hero->hero_mode == 0x51 && hero->hero_eng->unk2C.x > 0xFA0) {
+            m1 += 0x220;
+        }
+        v1 = move->x_vel;
+        v2 = other->x_vel;
+        d = -(k * (v1 - v2));
+        a = d * m2 + ((m1 * v1 + m2 * v2) << 8);
+        a /= m2 + m1;
+        b = a - d;
+        if (a < 0) {
+            if (a < -0x9600) {
+                a = -0x9600;
+            }
+        } else if (a > 0x9600) {
+            a = 0x9600;
+        }
+        if (b < 0) {
+            if (b < -0x9600) {
+                b = -0x9600;
+            }
+        } else if (b > 0x9600) {
+            b = 0x9600;
+        }
+        move->x_vel = -(a >> 8);
+        other->x_vel = -(b >> 8);
+        v1 = move->z_vel;
+        v2 = other->z_vel;
+        d = -(k * (v1 - v2));
+        a = d * m2 + ((m1 * v1 + m2 * v2) << 8);
+        a /= m2 + m1;
+        b = a - d;
+        if (a < 0) {
+            if (a < -0x9600) {
+                a = -0x9600;
+            }
+        } else if (a > 0x9600) {
+            a = 0x9600;
+        }
+        if (b < 0) {
+            if (b < -0x9600) {
+                b = -0x9600;
+            }
+        } else if (b > 0x9600) {
+            b = 0x9600;
+        }
+        move->z_vel = -(a >> 8);
+        other->z_vel = -(b >> 8);
+    }
+}
 
 void func_800CC2BC(s32 player) {
     u8 *g = D_8005A614;
