@@ -190,6 +190,15 @@ extern s32 D_800C44FC;
 extern s32 D_800C4500;
 extern s32 D_800C4504;
 extern s32 D_800C4508;
+/* PadState (D_80051338) as seen by func_800BEB68. */
+typedef struct BossPad {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ u8 pad04[0x50 - 0x04];
+    /* 0x50 */ s32 unk50;
+    /* 0x54 */ s32 unk54;
+} BossPad;
+extern s32 D_800C45F4[];
+extern s32 D_800C4604[];
 extern ScriptInit D_800C44F0;
 
 /* Path follower of func_800C0C28: a key table and a position along it. */
@@ -589,5 +598,20 @@ void func_800BD6E8(s32 *arg0, s32 arg1);
 void func_800BF37C(s32 arg0);
 
 void PlotNitroBoss(NAS *nas);
+
+extern HeroInfo Heroes[4];
+
+/* func_800BEB68's tail: steer the hero's pitch and yaw toward their targets. */
+static inline void BossHeroSteer(s32 i) {
+    s32 *tb = D_800C4604;
+    s32 *t = &tb[i];
+    HeroInfo *base = Heroes;
+    HeroInfo *h = &base[i];
+    EXTengine *e = h->hero_eng;
+
+    e->unk1C += ((*t - e->unk1C) << 20) >> 23;
+    h->hero_eng->unk1E += func_800154A0(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
+    h->hero_eng->unk5E = 1;
+}
 
 #endif /* BASH_OVL67_800BBDB8_H */

@@ -396,7 +396,127 @@ void func_800BE8C0(s32 arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BEB68);
+void func_800BEB68(s32 arg0) {
+    HeroInfo *base = Heroes;
+    HeroInfo *h = &base[arg0];
+    EXTheromove *m;
+    BossPad *pad;
+    BossPad *pad2;
+    BossPad *pb;
+    BossPad *pb2;
+    s32 *turn;
+    s32 spd;
+    s32 b;
+    EXTengine *e;
+    EXTengine *e2;
+    HeroInfo *h2;
+    HeroInfo *base2;
+    HeroInfo *base3;
+    HeroInfo *base4;
+    HeroInfo *hh;
+
+    if (h->hero_frozen != 0) {
+        pb = (BossPad *)D_80051338;
+        pad = &pb[arg0];
+        pad->unk50 = 0;
+        pad->unk54 = 0;
+    }
+    m = h->hero_move;
+    if (m != NULL) {
+        m->forward_angle = 0x800;
+        m->x_max = 0;
+        m->z_max = 0;
+        m->jump_max = 0;
+        D_800C45F4[arg0] = 0;
+        turn = &D_800C4604[arg0];
+        pb2 = (BossPad *)D_80051338;
+        pad2 = &pb2[arg0];
+        *turn = 0;
+        if ((pad2->unk0 & 1) || h->hero_ai->AImode != 0) {
+            b = pad2->unk50;
+            if (b & 0x80F0) {
+                if (b & 0x20) {
+                    m->forward_angle = 0x980;
+                }
+                if (pad2->unk50 & 0x80) {
+                    m->forward_angle = 0x680;
+                }
+                if (pad2->unk50 & 0x10) {
+                    *turn = -0x180;
+                }
+                if (pad2->unk50 & 0x40) {
+                    *turn = 0x180;
+                }
+            }
+        }
+    }
+    if (((BossGameView *)D_8005A614)->unk10 == 0) {
+        spd = D_800C4478;
+        base2 = Heroes;
+        hh = &base2[arg0];
+        m->x_max = (spd * D_80068BD4[(hh->hero_eng->unk1E + 0x400) & 0xFFF].unk2) >> 11;
+        m->jump_max = (spd * D_80068BD4[(hh->hero_eng->unk1C + 0x400) & 0xFFF].unk2) >> 11;
+        if (D_800C4484 == 0) {
+            m->z_max = spd;
+        } else {
+            m->forward_angle = 0x800;
+            m->z_max = 0;
+            m->jump_max = 0;
+            m->x_max = 0;
+            D_800C4604[arg0] = 0;
+            e = hh->hero_eng;
+            e->unk10.y += (-0xAF0 - e->unk10.y) >> 5;
+            if (((BossGameView *)D_8005A614)->unk6C == 0) {
+                e2 = hh->hero_eng;
+                e2->unk10.x -= e2->unk10.x >> 5;
+            } else {
+                if (D_800C44FC == 0) {
+                    if (!(base2[0].hero_status & 0x2000) && !(base2[1].hero_status & 0x2000)) {
+                        D_800C4508 = 0;
+                        if (base2[0].hero_eng->unk10.x <= base2[1].hero_eng->unk10.x) {
+                            D_800C4500 = 0;
+                            D_800C4504 = 1;
+                        } else {
+                            D_800C4500 = 1;
+                            D_800C4504 = 0;
+                        }
+                    } else {
+                        D_800C4508 = 1;
+                    }
+                    D_800C44FC = 1;
+                }
+                if (D_800C4508 == 0) {
+                    if (arg0 == D_800C4500) {
+                        base3 = Heroes;
+                        h2 = &base3[arg0];
+                        if (!(h2->hero_status & 0x2000)) {
+                            e = h2->hero_eng;
+                            e->unk10.x -= (D_800C448C * 0x302 + e->unk10.x) >> 5;
+                        }
+                    }
+                    if (arg0 == D_800C4504) {
+                        base4 = Heroes;
+                        h2 = &base4[arg0];
+                        if (!(h2->hero_status & 0x2000)) {
+                            e = h2->hero_eng;
+                            e->unk10.x -= (e->unk10.x - D_800C448C * 0x302) >> 5;
+                        }
+                    }
+                } else {
+                    e = Heroes[arg0].hero_eng;
+                    e->unk10.x -= e->unk10.x >> 5;
+                }
+            }
+        }
+    }
+    BossHeroSteer(arg0);
+    m->x_acc = 0x10;
+    m->z_acc = 0x10;
+    m->jump_acc = 0x10;
+    m->z_dec = 1;
+    m->x_dec = 1;
+    m->jump_dec = 1;
+}
 
 void func_800BF0AC(s32 arg0) {
     EXTheromove *m;
