@@ -2299,7 +2299,46 @@ void func_800C02AC(EXTengine *eng, s32 angle) {
     PlaySfx(0x522, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Init_PogoPadlock);
+void Init_PogoPadlock(NAS *nas) {
+    EXTengine *e;
+    EXTengine *e2;
+    subengine *sub;
+
+    e = nas->Engine;
+    if (e != NULL) {
+        e->sub->unk6C = D_80053B9C;
+        e->sub->unk74 = 0x2041;
+        e->unk2C.z = 0x1000;
+        e->unk2C.y = 0x1000;
+        e->unk2C.x = 0x1000;
+        e->unk5C = 1;
+        e->flags &= ~0x8000;
+        e2 = AddEngine(nas, 1);
+        if (e2 != NULL) {
+            sub = e2->sub;
+            e2->unk10.x = e->unk10.x;
+            e2->unk10.y = D_8005A5D8;
+            e2->unk10.z = e->unk10.z;
+            e2->flags &= ~0x8000;
+            if (sub != NULL) {
+                sub->unk74 = 0x2029;
+                sub->unk51 = 2;
+                sub->unk6C = D_80053B9C;
+                sub->unk50 = 1;
+                sub->unk76 = 0x800;
+                sub->flags |= 0x40008041;
+            }
+        }
+    } else {
+        nas->Failure = 1;
+    }
+    nas->UserInfo.user1 = 0xF0;
+    nas->UserInfo.status = 0;
+    nas->UserInfo.flags = D_800C530C[0];
+    if (nas->Failure != 0) {
+        KillNAS(nas);
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoPadlock);
 
