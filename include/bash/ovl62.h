@@ -882,15 +882,26 @@ typedef struct PolarWalrusExt {
     /* 0x0C */ s32 state;
     /* 0x10 */ s32 timer;
     /* 0x14 */ s32 arc[0xD];
-    /* 0x48 */ u8 pad48[0x58 - 0x48];
+    /* 0x48 */ s32 unk48;
+    /* 0x4C */ s32 unk4C;
+    /* 0x50 */ u8 pad50[0x58 - 0x50];
     /* 0x58 */ s32 unk58;
     /* 0x5C */ u8 pad5C[0x68 - 0x5C];
     /* 0x68 */ SLONG_XYZ to;
     /* 0x74 */ SLONG_XYZ from;
     /* 0x80 */ ScriptCursor *cursor;
-    /* 0x84 */ u8 pad84[0x90 - 0x84];
+    /* 0x84 */ NAS *unk84;
+    /* 0x88 */ s32 speed;
+    /* 0x8C */ s32 maxSpeed;
     /* 0x90 */ s32 unk90;
 } PolarWalrusExt;
+
+extern s32 D_800D544C;
+extern s32 D_800D5498[];
+extern s32 D_800D5500[];
+extern s32 D_800D5508[];
+extern s32 D_800D5540[];
+extern s32 D_800D5584[];
 
 /* Polar walrus second extension (0x54 bytes, id 0x20000000). */
 typedef struct PolarWalrusExt2 {

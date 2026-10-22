@@ -3346,7 +3346,186 @@ void InitPolarWalrus(NAS *m) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotPolarWalrus);
+void PlotPolarWalrus(NAS *m) {
+    PolarWalrusExt *ext;
+    PolarWalrusExt2 *e2;
+    s32 *gx;
+    s32 v;
+    s32 r;
+    s32 ang;
+    SLONG_XYZ pos;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    m->Engine->unk5E = 1;
+    if (D_800D4DEC != 0) {
+        func_80026980(m);
+    }
+    e2 = FindExtension(m, 0x20000000);
+    if (e2 == NULL) {
+        return;
+    }
+    e2->unk20 = ext->unk48;
+    e2->unk40 = ext->unk4C;
+    switch (ext->state) {
+    case 0:
+        if (ext->timer-- < 0 && D_800D5254 != NULL) {
+            gx = FindExtension((NAS *)D_800D5254, 0x40000000);
+            if (gx != NULL && D_800D4DEC == 0) {
+                v = gx[5];
+                if (v == 1 && gx[4] == -1) {
+                    ext->unk84 = SpawnNASById(0, 0, 0, 0x1610, 0x11);
+                    ext->state = 2;
+                    ext->timer = 0x5A;
+                    D_800D544C = v;
+                }
+            }
+        }
+        break;
+    case 2:
+        if (D_800D4DEC == 0 && ext->timer-- < 0) {
+            ext->state = 3;
+            PlaySfx(0x473, NULL, NULL, 0x1000, 0x1E00, 0);
+            m->Engine->sub->flags |= 0x8000;
+            func_80026A04((u8 *)m);
+            ext->timer = 0;
+        }
+        break;
+    case 3:
+        if (++ext->timer < 0x1E) {
+            m->Engine->sub->unk68 = 0x200;
+        } else {
+            m->Engine->sub->unk68 = 0;
+        }
+        func_800250B0(m);
+        func_8008C5C4(&ext->from.x, &ext->to.x, ext->arc, &m->Engine->unk10.x);
+        e2->unk20 = ext->unk48;
+        e2->unk40 = ext->unk4C;
+        if (ext->cursor->unk1E == 0x18) {
+            ext->state = 4;
+            ext->cursor->unk1E = 0;
+            ext->cursor->unk1C = 0;
+            ext->cursor->cur = (s32)D_800D5500;
+        }
+        break;
+    case 4:
+        m->Engine->sub->unk68 = 0;
+        e2->unk20 = ext->unk48;
+        e2->unk40 = ext->unk4C;
+        func_800250B0(m);
+        if (func_8008C5C4(&ext->from.x, &ext->to.x, ext->arc, &m->Engine->unk10.x) != 0) {
+            r = Random(4);
+            ext->state = 1;
+            ext->timer = 0x96;
+            ext->cursor->unk1E = 0;
+            ext->cursor->unk1C = 0;
+            ext->cursor->cur = (s32)D_800D5508;
+            PlaySfx(0x475, NULL, NULL, 0x1000, 0x1E00, 0);
+            if (r == 0) {
+                PlaySfx(0x46F, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (r == 1) {
+                PlaySfx(0x470, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (r == 2) {
+                PlaySfx(0x471, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (r == 3) {
+                PlaySfx(0x472, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+        }
+        break;
+    case 1:
+        m->UserInfo.status = 1;
+        m->Engine->sub->flags |= 0x8000;
+        if (func_800250B0(m)) {
+            ext->state = 5;
+            ext->cursor->unk1E = 0;
+            ext->cursor->unk1C = 0;
+            ext->cursor->cur = (s32)D_800D5540;
+            ext->timer = 0;
+            ext->maxSpeed = 0x10;
+            ext->speed = 0;
+            ext->unk90 = m->Engine->unk1E + 0x800;
+            if (ext->unk84 != NULL) {
+                KillNAS(ext->unk84);
+                ext->unk84 = NULL;
+            }
+        }
+        break;
+    case 5:
+        func_800250B0(m);
+        if (ext->cursor->unk1E == 7) {
+            PlaySfx(0x476, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (ext->cursor->unk1E == 0xD) {
+            PlaySfx(0x477, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        m->Engine->unk1E -= (s32)((m->Engine->unk1E - ext->unk90) << 20) >> 24;
+        if (ext->speed != ext->maxSpeed && ext->speed < ext->maxSpeed) {
+            ext->speed++;
+            if (ext->speed > ext->maxSpeed) {
+                ext->speed = ext->maxSpeed;
+            }
+            if (ext->speed < ext->maxSpeed) {
+                ext->speed--;
+                if (ext->speed < ext->maxSpeed) {
+                    ext->speed = ext->maxSpeed;
+                }
+            }
+        }
+        if (++ext->timer == 0x1E) {
+            PlaySfx(0x47A, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        m->Engine->unk10.x -= (ext->speed * D_80068BD4[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 12;
+        m->Engine->unk10.z -= (ext->speed * D_80068BD4[m->Engine->unk1E & 0xFFF].unk2) >> 12;
+        pos.x = m->Engine->unk10.x + ((D_80068BD4[(m->Engine->unk1E - 0x400) & 0xFFF].unk2 * 0x80) >> 12);
+        pos.z = m->Engine->unk10.z + ((D_80068BD4[m->Engine->unk1E & 0xFFF].unk2 * 0x80) >> 12);
+        e2->unk20 = 0;
+        e2->unk40 = 0;
+        if ((CheckMelted(&pos, 0) ^ 1) != 0) {
+            ext->state = 7;
+            ext->cursor->unk1E = 0;
+            ext->cursor->unk1C = 0;
+            ext->cursor->cur = (s32)D_800D5584;
+            m->Engine->sub->unk68 = 0x19C;
+            PlaySfx(0x474, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        break;
+    case 7:
+        if (func_800250B0(m)) {
+            ext->state = 6;
+            D_800D544C = 0;
+        }
+        break;
+    case 6:
+        ext->timer = Random(0x384) + 0x5A;
+        ext->state = 0;
+        m->UserInfo.status = 0;
+        m->Engine->sub->flags &= ~0x8000;
+        m->Engine->sub->unk68 = 0x200;
+        ang = D_800D563C;
+        m->Engine->unk10.x = (D_80068BD4[(ang + 0x400) & 0xFFF].unk2 * 0x307) >> 10;
+        m->Engine->unk10.z = (D_80068BD4[(ang + 0x800) & 0xFFF].unk2 * 0x307) >> 10;
+        m->Engine->unk10.y = 0x400;
+        D_800D563C += 0x800;
+        ext->from = *(SLONG_XYZ *)&m->Engine->unk10;
+        ext->to.x = (D_80068BD4[(D_800D563C - 0x400) & 0xFFF].unk2 * 0x7D) >> 8;
+        ext->to.y = 0;
+        ext->to.z = (D_80068BD4[D_800D563C & 0xFFF].unk2 * 0x7D) >> 8;
+        m->Engine->unk1E = get_angle(m->Engine->unk10.x, m->Engine->unk10.z) & 0xFFF;
+        ext->cursor->unk1E = 0;
+        ext->cursor->unk1C = 0;
+        ext->cursor->cur = (s32)D_800D5498;
+        ext->arc[0] = 0x10;
+        ext->unk58 = 0x28;
+        ext->arc[1] = 0;
+        func_80026980(m);
+        break;
+    }
+}
 
 void InitWalrusFish(NAS *m) {
     WalrusFishExt *ext;
