@@ -31,9 +31,9 @@
    "size": 744
   }
  ],
- "commit": "8693f20e64",
+ "commit": "3e76824658",
  "game": "SCUS_945.70",
- "generated": "2026-10-22T09:35:51Z",
+ "generated": "2026-10-22T09:43:33Z",
  "hacks": [
   {
    "commit": "934369ad2d",
@@ -300,14 +300,6 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "8946314271",
-   "kinds": "do { } while (0) wrapper",
-   "name": "LevelSpecific_ClaimedTile",
-   "seg": "overlays/ovl60/ovl60",
-   "size": 620,
-   "why": "(no Hack: line in its match commit)"
-  },
-  {
    "commit": "e247821a77",
    "kinds": "do { } while (0) wrapper",
    "name": "Plot_PogoProjectile",
@@ -388,30 +380,6 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "1a1225bc01",
-   "kinds": "do { } while (0) wrapper",
-   "name": "TestArkObject2Hero",
-   "seg": "overlays/ovl61/ovl61",
-   "size": 240,
-   "why": "(no Hack: line in its match commit)"
-  },
-  {
-   "commit": "ed5ae737de",
-   "kinds": "do { } while (0) wrapper",
-   "name": "func_800B3528",
-   "seg": "overlays/ovl61/ovl61",
-   "size": 420,
-   "why": "(no Hack: line in its match commit)"
-  },
-  {
-   "commit": "d0d34e0c8a",
-   "kinds": "do { } while (0) wrapper",
-   "name": "func_800B4AE8",
-   "seg": "overlays/ovl61/ovl61",
-   "size": 692,
-   "why": "(no Hack: line in its match commit)"
-  },
-  {
    "commit": "cd6c7d87f7",
    "kinds": "do { } while (0) wrapper, identical if/else arms",
    "name": "func_800B649C",
@@ -449,14 +417,6 @@
    "name": "func_800B5910",
    "seg": "overlays/ovl62/ovl62",
    "size": 436,
-   "why": "(no Hack: line in its match commit)"
-  },
-  {
-   "commit": "808568aaa6",
-   "kinds": "do { } while (0) wrapper",
-   "name": "func_800B782C",
-   "seg": "overlays/ovl62/ovl62",
-   "size": 556,
    "why": "(no Hack: line in its match commit)"
   },
   {
@@ -684,14 +644,6 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "bc2ab2edfa",
-   "kinds": "do { } while (0) wrapper",
-   "name": "func_800B3CD0",
-   "seg": "overlays/ovl67/ovl67",
-   "size": 420,
-   "why": "(no Hack: line in its match commit)"
-  },
-  {
    "commit": "b05ce415de",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800B4954",
@@ -748,14 +700,6 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "8dddeeabed",
-   "kinds": "do { } while (0) wrapper",
-   "name": "func_800BAEA8",
-   "seg": "overlays/ovl67/ovl67",
-   "size": 240,
-   "why": "(no Hack: line in its match commit)"
-  },
-  {
    "commit": "8885b9fc6d",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800BB010",
@@ -772,14 +716,6 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "f65cd04f1b",
-   "kinds": "do { } while (0) wrapper",
-   "name": "func_800B5978",
-   "seg": "overlays/ovl69/ovl69",
-   "size": 200,
-   "why": "(no Hack: line in its match commit)"
-  },
-  {
    "commit": "196ec9e21a",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800B5B10",
@@ -793,14 +729,6 @@
    "name": "func_800B6C04",
    "seg": "overlays/ovl69/ovl69",
    "size": 240,
-   "why": "(no Hack: line in its match commit)"
-  },
-  {
-   "commit": "?",
-   "kinds": "do { } while (0) wrapper",
-   "name": "func_800B7FD0",
-   "seg": "overlays/ovl6a/800b4eac",
-   "size": 200,
    "why": "(no Hack: line in its match commit)"
   },
   {
@@ -2913,9 +2841,18 @@
   {"commit": "ba2dca03", "data_b": 8428, "data_tb": 606943, "game_all_f": 2537, "game_b": 838652, "game_c_f": 2471, "game_f": 2471, "game_named_f": 602, "game_tb": 1019036, "game_typed_f": 2246, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-22T09:06:28Z", "units": {"engine": [121412, 355], "main exe": [124840, 575], "ovl5d": [38908, 97], "ovl5e": [30984, 71], "ovl5f": [68260, 173], "ovl60": [55500, 174], "ovl61": [55000, 97], "ovl62": [76676, 200], "ovl63": [53676, 128], "ovl64": [21876, 52], "ovl65": [32788, 77], "ovl66": [24312, 80], "ovl67": [54200, 131], "ovl68": [30920, 91], "ovl69": [18240, 76], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
   {"commit": "77c4aa0b12", "data_b": 8460, "data_tb": 606943, "game_all_f": 2537, "game_b": 840660, "game_c_f": 2472, "game_f": 2472, "game_named_f": 602, "game_tb": 1019036, "game_typed_f": 2247, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-22T09:31:56Z", "units": {"engine": [121412, 355], "main exe": [124840, 575], "ovl5d": [38908, 97], "ovl5e": [30984, 71], "ovl5f": [68260, 173], "ovl60": [55500, 174], "ovl61": [55000, 97], "ovl62": [78684, 201], "ovl63": [53676, 128], "ovl64": [21876, 52], "ovl65": [32788, 77], "ovl66": [24312, 80], "ovl67": [54200, 131], "ovl68": [30920, 91], "ovl69": [18240, 76], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
   {"commit": "f82b1fe931", "data_b": 8460, "data_tb": 606943, "game_all_f": 2537, "game_b": 842668, "game_c_f": 2473, "game_f": 2473, "game_named_f": 602, "game_tb": 1019036, "game_typed_f": 2248, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-22T09:34:34Z", "units": {"engine": [121412, 355], "main exe": [124840, 575], "ovl5d": [38908, 97], "ovl5e": [30984, 71], "ovl5f": [68260, 173], "ovl60": [55500, 174], "ovl61": [55000, 97], "ovl62": [78684, 201], "ovl63": [55684, 129], "ovl64": [21876, 52], "ovl65": [32788, 77], "ovl66": [24312, 80], "ovl67": [54200, 131], "ovl68": [30920, 91], "ovl69": [18240, 76], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
-  {"commit": "8693f20e64", "data_b": 8460, "data_tb": 606943, "game_all_f": 2537, "game_b": 844688, "game_c_f": 2474, "game_f": 2474, "game_named_f": 602, "game_tb": 1019036, "game_typed_f": 2249, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-22T09:35:51Z", "units": {"engine": [121412, 355], "main exe": [124840, 575], "ovl5d": [38908, 97], "ovl5e": [30984, 71], "ovl5f": [68260, 173], "ovl60": [55500, 174], "ovl61": [55000, 97], "ovl62": [78684, 201], "ovl63": [55684, 129], "ovl64": [21876, 52], "ovl65": [34808, 78], "ovl66": [24312, 80], "ovl67": [54200, 131], "ovl68": [30920, 91], "ovl69": [18240, 76], "ovl6a": [31060, 94], "psyq": [122112, 564]}}
+  {"commit": "8693f20e64", "data_b": 8460, "data_tb": 606943, "game_all_f": 2537, "game_b": 844688, "game_c_f": 2474, "game_f": 2474, "game_named_f": 602, "game_tb": 1019036, "game_typed_f": 2249, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-22T09:35:51Z", "units": {"engine": [121412, 355], "main exe": [124840, 575], "ovl5d": [38908, 97], "ovl5e": [30984, 71], "ovl5f": [68260, 173], "ovl60": [55500, 174], "ovl61": [55000, 97], "ovl62": [78684, 201], "ovl63": [55684, 129], "ovl64": [21876, 52], "ovl65": [34808, 78], "ovl66": [24312, 80], "ovl67": [54200, 131], "ovl68": [30920, 91], "ovl69": [18240, 76], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
+  {"commit": "3e76824658", "data_b": 8460, "data_tb": 606943, "game_all_f": 2537, "game_b": 846780, "game_c_f": 2475, "game_f": 2475, "game_named_f": 602, "game_tb": 1019036, "game_typed_f": 2250, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-22T09:43:33Z", "units": {"engine": [121412, 355], "main exe": [124840, 575], "ovl5d": [38908, 97], "ovl5e": [30984, 71], "ovl5f": [68260, 173], "ovl60": [55500, 174], "ovl61": [55000, 97], "ovl62": [78684, 201], "ovl63": [55684, 129], "ovl64": [23968, 53], "ovl65": [34808, 78], "ovl66": [24312, 80], "ovl67": [54200, 131], "ovl68": [30920, 91], "ovl69": [18240, 76], "ovl6a": [31060, 94], "psyq": [122112, 564]}}
  ],
  "recent": [
+  {
+   "at": "2026-10-22T09:43:29Z",
+   "auto": true,
+   "name": "func_800B4144",
+   "seg": "overlays/ovl64/ovl64",
+   "size": 2092,
+   "tries": 0
+  },
   {
    "at": "2026-10-22T09:35:49Z",
    "auto": true,
@@ -3027,14 +2964,6 @@
    "seg": "overlays/ovl62/ovl62",
    "size": 1852,
    "tries": 0
-  },
-  {
-   "at": "2026-10-21T21:47:15Z",
-   "auto": true,
-   "name": "func_800B37C8",
-   "seg": "overlays/ovl68/ovl68",
-   "size": 1844,
-   "tries": 0
   }
  ],
  "summary": {
@@ -3050,15 +2979,15 @@
    "asm_b": 0,
    "asm_f": 0,
    "blocked": 5,
-   "c_f": 2474,
-   "done_b": 844688,
-   "done_f": 2474,
+   "c_f": 2475,
+   "done_b": 846780,
+   "done_f": 2475,
    "named_f": 602,
-   "pct": 82.8908890363049,
+   "pct": 83.09618109664427,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2537,
-   "typed_f": 2249
+   "typed_f": 2250
   },
   "lib": {
    "all_f": 566,
@@ -3270,20 +3199,20 @@
     "asm_b": 0,
     "asm_f": 0,
     "blocked": 0,
-    "c_f": 52,
-    "done_b": 21876,
-    "done_f": 52,
+    "c_f": 53,
+    "done_b": 23968,
+    "done_f": 53,
     "file": "ovl64.bin",
     "files": 1,
     "lib": false,
     "named_f": 2,
-    "pct": 65.24695776664281,
+    "pct": 71.48651873061321,
     "phase": 5,
     "sony_b": 0,
     "title": "Spin",
     "total_b": 33528,
     "total_f": 58,
-    "typed_f": 50,
+    "typed_f": 51,
     "unit": "ovl64"
    },
    {

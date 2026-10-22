@@ -46,17 +46,35 @@ extern Ovl64Cell D_800BBE10[4][16];
 
 /* D_8005A614 as seen by the ranking code (func_800B3EDC). */
 typedef struct Ovl64Game {
-    /* 0x00 */ u8 pad0[0x32];
+    /* 0x00 */ u8 pad0[0x30];
+    /* 0x30 */ u16 state;
     /* 0x32 */ u16 flags;
     /* 0x34 */ u8 pad34[0x48 - 0x34];
     /* 0x48 */ s16 team[2];
     /* 0x4C */ u8 pad4C[0x5C - 0x4C];
     /* 0x5C */ u8 cpu[4];
-    /* 0x60 */ u8 pad60[0x6C - 0x60];
+    /* 0x60 */ u8 winner[2];
+    /* 0x62 */ u8 pad62[0x6C - 0x62];
     /* 0x6C */ s32 teams;
     /* 0x70 */ u8 pad70[0xA7 - 0x70];
     /* 0xA7 */ u8 rank[4];
 } Ovl64Game;
+
+void func_8007B120(void);
+
+#define OVL64_GAME ((Ovl64Game *)D_8005A614)
+
+/* Sets the round's result to a draw: every hero still standing loses. */
+#define OVL64_DRAW(g, arg1, i)                          \
+    do {                                                \
+        (g)->winner[0] = 0;                             \
+        (g)->state |= (arg1);                           \
+        for ((i) = 0; (i) < 4; (i)++) {                 \
+            if (!(Heroes[i].hero_status & 0xFA00)) {    \
+                Heroes[i].hero_status |= 0x400;         \
+            }                                           \
+        }                                               \
+    } while (0)
 
 extern s32 D_800BBE08;
 extern s32 D_800BBE0C;
@@ -274,7 +292,7 @@ extern u8 D_800BB76C[];
 extern u8 D_800BB780[];
 extern u8 D_800BB7BC[];
 extern u8 D_800BB80C[];
-void func_800B4144();
+void func_800B4144(s32 arg0, u16 arg1);
 void func_800B7508();
 void func_800B8EE0();
 void func_800B90D0();

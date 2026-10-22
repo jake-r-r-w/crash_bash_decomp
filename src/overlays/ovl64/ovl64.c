@@ -365,7 +365,157 @@ s32 func_800B3EDC(void) {
     return gt->rank[0];
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B4144);
+void func_800B4144(s32 arg0, u16 arg1) {
+    s32 found;
+    Ovl64Game *g;
+    Ovl64Game *game;
+    HeroInfo *hb;
+    HeroInfo *heroes;
+    HeroInfo *h;
+    Ovl64Game *p;
+    s32 i;
+    s32 mate;
+
+    if (OVL64_GAME->state & 0x801) {
+        return;
+    }
+    found = 0;
+    if (OVL64_GAME->flags & 0x80) {
+        for (i = 0; i < 4; i++) {
+            if (!(Heroes[i].hero_status & 0xFA00) && (i == 0 || (OVL64_GAME->teams != 0 && i == 1))) {
+                found++;
+            }
+        }
+        if (found == 0) {
+            OVL64_DRAW(OVL64_GAME, arg1, i);
+            return;
+        }
+    }
+    if (OVL64_GAME->flags & 0x40) {
+        if (arg0 == -1) {
+            OVL64_DRAW(OVL64_GAME, arg1, i);
+            return;
+        }
+        found = -1;
+        if (OVL64_GAME->teams != 0) {
+            if (Heroes[OVL64_GAME->team[0]].hero_score == 0) {
+                found = OVL64_GAME->team[0];
+            }
+            if (Heroes[OVL64_GAME->team[1]].hero_score == 0) {
+                found = OVL64_GAME->team[1];
+            }
+        } else {
+            for (i = 0; i < 4; i++) {
+                if (Heroes[i].hero_score == 0) {
+                    found = i;
+                }
+            }
+        }
+        if (found != -1) {
+            if (found == 0 || (OVL64_GAME->teams != 0 && found == 1)) {
+                Heroes[found].hero_status |= 0x200;
+                if (OVL64_GAME->teams != 0 && (mate = Heroes[found].hero_teammate) != -1) {
+                    Heroes[mate].hero_status |= 0x200;
+                }
+                OVL64_GAME->winner[0] = Heroes[found].hero_name;
+                OVL64_GAME->state |= arg1;
+                for (i = 0; i < 4; i++) {
+                    if (!(Heroes[i].hero_status & 0xFA00)) {
+                        Heroes[i].hero_status |= 0x400;
+                    }
+                }
+                return;
+            }
+            OVL64_DRAW(OVL64_GAME, arg1, i);
+            return;
+        }
+    }
+    if (arg0 != -1) {
+        return;
+    }
+    found = func_800B3EDC();
+    g = (Ovl64Game *)D_8005A614;
+    if ((g->flags & 0xE0) && found != 0) {
+        if (g->teams != 0) {
+            if (found == 1) {
+                goto decide;
+            }
+            func_8007B120();
+        }
+        OVL64_DRAW(g, arg1, i);
+        return;
+    }
+decide:
+    game = (Ovl64Game *)D_8005A614;
+    if (game->teams != 0) {
+        func_8007B120();
+        if (D_800BBE08 == D_800BBE0C) {
+            game->winner[0] = 0;
+            game->state |= arg1;
+            for (i = 0; i < 4; i++) {
+                Heroes[i].hero_status |= 0x100;
+            }
+            return;
+        }
+        game->state |= 0x800;
+        if (found == game->team[0]) {
+            hb = Heroes;
+            h = &hb[found];
+            mate = h->hero_teammate;
+            if (h->hero_status & 0xFA00) {
+                game->winner[0] = mate;
+                hb[mate].hero_status |= 0x200;
+            } else if (hb[mate].hero_status & 0xFA00) {
+                game->winner[0] = h->hero_name;
+                h->hero_status |= 0x200;
+            } else {
+                game->winner[0] = h->hero_name;
+                h->hero_status |= 0x200;
+                game->winner[1] = hb[mate].hero_name;
+                hb[mate].hero_status |= 0x200;
+            }
+            Heroes[OVL64_GAME->team[1]].hero_status |= 0x400;
+            mate = Heroes[OVL64_GAME->team[1]].hero_teammate;
+            if (mate != 0) {
+                Heroes[mate].hero_status |= 0x400;
+            }
+        } else {
+            game->winner[0] = Heroes[game->team[1]].hero_name;
+            Heroes[game->team[1]].hero_status |= 0x200;
+            mate = Heroes[game->team[1]].hero_teammate;
+            if (mate != 0) {
+                game->winner[1] = Heroes[mate].hero_name;
+                Heroes[mate].hero_status |= 0x200;
+            }
+            Heroes[game->team[0]].hero_status |= 0x400;
+            mate = Heroes[game->team[0]].hero_teammate;
+            if (mate != 0) {
+                Heroes[mate].hero_status |= 0x400;
+            }
+        }
+    } else {
+        heroes = Heroes;
+        h = &heroes[game->rank[0]];
+        if (h->hero_score == heroes[game->rank[1]].hero_score) {
+            game->winner[0] = 0;
+            game->state |= arg1;
+            for (i = 0; i < 4; i++) {
+                Heroes[i].hero_status |= 0x100;
+            }
+            return;
+        }
+        p = game;
+        p->winner[0] = h->hero_name;
+        p->state |= 0x800;
+        for (i = 0; i < 4; i++) {
+            if (p->rank[0] == i) {
+                heroes[i].hero_status |= 0x200;
+            } else {
+                heroes[i].hero_status |= 0x400;
+            }
+        }
+    }
+}
 
 void func_800B4970(void) {
     s32 i;
