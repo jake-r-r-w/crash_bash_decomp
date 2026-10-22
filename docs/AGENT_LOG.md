@@ -20,7 +20,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   **main.exe, ovl61, ovl69 and ovl6a are complete**; 28 left, every one
   tried by the swarm at least once. All 564 PsyQ functions (Sony objects). 6
   parked by hand (`decomp.py status`; the swarm parked 5 more, which the
-  dashboard counts from `docs/swarm.js`), 103 matched with a hack (most of
+  dashboard counts from `docs/swarm.js`), 102 matched with a hack (most of
   them `do { } while (0)` wrappers, flagged since 2026-10-22, in headers'
   macros and inlines too; 7 macro-shaped ones accepted)
   (`decomp.py hacks`; `func_800193A8`'s register pins reviewed as plausibly
@@ -552,6 +552,13 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-22 (hand: `PogoWinner_Relic` without its hack, 348e2185):**
+  the do-while around `if (out != 0) done = 1; else lose;` was a loop to
+  loop.c, which moved the `done = 1` arm out of line, so the lose code fell
+  through with no label and reload_cse turned `i = 0` into `move s1,s3`.
+  Writing the test as `if (out == 0) lose; else done = 1;` (as the
+  function's other two arms already were) matches plainly.
 
 - **2026-10-22 (hand: ovl66's two hacks):** `func_800B6CD8` without its
   identical if/else arms (c585c406): one PlaySfx per case and the store
