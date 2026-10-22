@@ -919,7 +919,7 @@ void func_800B574C(s32 arg0) {
         }
         if ((bits & 0xF0) && move->velocity_enable != 0) {
             speed = func_800C14BC(arg0, D_800C535C[arg0].unk4 == 5);
-            func_800C2810(arg0);
+            Player_RemoveReserve(arg0);
             if (((bits & 0x80) && x > 0) || ((bits & 0x20) && x < 7)
                 || ((bits & 0x10) && z < 7) || ((bits & 0x40) && z > 0)) {
                 if ((bits & 0x80) && func_800BDCB8(arg0, x, z, -1, 0, 0) != 0) {
@@ -951,7 +951,7 @@ void func_800B574C(s32 arg0) {
     }
     move->facing_angle = move->forward_angle;
     } else {
-        func_800C2810(arg0);
+        Player_RemoveReserve(arg0);
     }
 }
 
@@ -1014,7 +1014,7 @@ void func_800B5B1C(s32 i) {
     }
 }
 
-s32 func_800B5D90(s32 arg0) {
+bool TestHeroPogo(u32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
     EXTheromove *m = h->hero_move;
@@ -1078,10 +1078,10 @@ void HeroPogo(u32 arg0) {
     if (h->hero_name == 3) {
         D_800C52E4 = 0;
     }
-    if (func_800B6C14(arg0) != 0) {
+    if (TestHeroPogoDazed(arg0) != 0) {
         return;
     }
-    if (func_800C2CBC(arg0) != 0) {
+    if (TestHeroPogoShoot(arg0) != 0) {
         return;
     }
     if (h->hero_move->jump_ctrl & 0x40) {
@@ -1118,7 +1118,7 @@ void HeroPogo(u32 arg0) {
     }
     if ((u16)D_800C535C[arg0].unk16 >= max) {
         func_800C159C(arg0);
-        func_800B8AF8(arg0);
+        PlayBoingNoise(arg0);
         func_800B8BE4(arg0, 1);
         Heroes[arg0].hero_move->velocity_enable = 0;
         Heroes[arg0].hero_move->forward_speed = 0;
@@ -1138,51 +1138,51 @@ void HeroPogo(u32 arg0) {
     case 1:
         n = D_800C4758[n];
         if (n == 0x4111) {
-            func_800B741C(arg0);
+            AddSomeDust(arg0);
         }
         break;
     case 2:
         n = D_800C4878[n];
         if (n == 0x408E) {
-            func_800B741C(arg0);
+            AddSomeDust(arg0);
         }
         break;
     case 5:
         n = D_800C4E40[n];
         if (n == 0x418E) {
-            func_800B741C(arg0);
+            AddSomeDust(arg0);
         }
         break;
     case 6:
         n = D_800C4F3C[n];
         if (n == 0x410E) {
-            func_800B741C(arg0);
+            AddSomeDust(arg0);
         }
         break;
     case 8:
         n = D_800C4CF4[n];
         if (n == 0x4102) {
-            func_800B72B0(arg0);
+            AddDingoSmoke(arg0);
         }
         break;
     case 7:
         n = D_800C4BA0[n];
         if (n == 0x4082) {
-            func_800B72B0(arg0);
+            AddDingoSmoke(arg0);
         }
         break;
     case 4:
         D_800C52E0 = n;
         n = D_800C49DC[n];
         if (n == 0x4105) {
-            func_800B7574(arg0);
+            AddBrioSmoke(arg0);
         }
         break;
     case 3:
         D_800C52E4 = n;
         n = D_800C4AB0[n];
         if (n == 0x4085) {
-            func_800B7574(arg0);
+            AddBrioSmoke(arg0);
         }
         break;
     }
@@ -1192,7 +1192,7 @@ void HeroPogo(u32 arg0) {
 void SetHeroPogoIdle(u32 arg0) {
     s32 seq;
 
-    func_800C2810(arg0);
+    Player_RemoveReserve(arg0);
     Heroes[arg0].hero_move->jump_max = 0;
     Heroes[arg0].hero_move->velocity_enable = 1;
     Heroes[arg0].hero_move->jump_ctrl |= 0x22;
@@ -1219,31 +1219,31 @@ void HeroPogoIdle(u32 arg0) {
     if (TestHeroPogoTied(arg0) != 0) {
         return;
     }
-    if (func_800B6C14(arg0) != 0) {
+    if (TestHeroPogoDazed(arg0) != 0) {
         return;
     }
-    if (func_800C2CBC(arg0) != 0) {
+    if (TestHeroPogoShoot(arg0) != 0) {
         return;
     }
-    if (func_800B5D90(arg0) != 0) {
+    if (TestHeroPogo(arg0) != 0) {
         return;
     }
     switch (func_8008502C(arg0)) {
     case 0x12:
-        func_800B8AF8(arg0);
+        PlayBoingNoise(arg0);
         func_800B8BE4(arg0, 1);
         if (D_800C535C[arg0].unk4 != 5 && Heroes[arg0].hero_aseq == 0x2F) {
             SetHeroSeq((HeroInfo *)arg0, 0x2E);
         }
         break;
     case 0x11:
-        func_800B72B0(arg0);
+        AddDingoSmoke(arg0);
         break;
     case 0x14:
-        func_800B741C(arg0);
+        AddSomeDust(arg0);
         break;
     case 0x13:
-        func_800B7574(arg0);
+        AddBrioSmoke(arg0);
         break;
     }
     base = Heroes;
@@ -1283,7 +1283,7 @@ void HeroPogoTazing(u32 arg0) {
     if (TestHeroPogoTied(arg0) != 0) {
         return;
     }
-    if (func_800B6C14(arg0) != 0) {
+    if (TestHeroPogoDazed(arg0) != 0) {
         return;
     }
     func_800BC0EC(arg0);
@@ -1291,7 +1291,7 @@ void HeroPogoTazing(u32 arg0) {
     h = &base[arg0];
     h->hero_frozen = 10;
     if (func_8008502C(arg0) == 0x14) {
-        func_800C2674(arg0);
+        AddTazerRing(arg0);
     }
     eng = h->hero_eng;
     if (eng != NULL) {
@@ -1304,7 +1304,7 @@ void HeroPogoTazing(u32 arg0) {
     }
     if (--D_800C535C[arg0].unk6 <= 0) {
         Heroes[arg0].hero_frozen = 0;
-        func_800C2B98(arg0);
+        HeroPogoTazingCancel(arg0);
         SetHeroAction((HeroInfo *)arg0, 0x39);
     }
     func_800871E4(arg0);
@@ -1326,17 +1326,17 @@ void HeroPogoWinner(u32 arg0) {
     }
     switch (func_8008502C(arg0)) {
     case 0x12:
-        func_800B8AF8(arg0);
+        PlayBoingNoise(arg0);
         func_800B8BE4(arg0, 1);
         break;
     case 0x11:
-        func_800B72B0(arg0);
+        AddDingoSmoke(arg0);
         break;
     case 0x14:
-        func_800B741C(arg0);
+        AddSomeDust(arg0);
         break;
     case 0x13:
-        func_800B7574(arg0);
+        AddBrioSmoke(arg0);
         break;
     }
     switch (Heroes[arg0].hero_name) {
@@ -1361,7 +1361,7 @@ void SetHeroPogoLoser(u32 arg0) {
     s32 *ext;
     u8 *p;
 
-    func_800C2810(arg0);
+    Player_RemoveReserve(arg0);
     Heroes[arg0].hero_move->velocity_enable = 0;
     Heroes[arg0].hero_frozen = 2;
     func_800C1CF0(arg0);
@@ -1433,7 +1433,7 @@ void HeroPogoLoser(u32 arg0) {
     }
 }
 
-s32 func_800B6C14(s32 arg0) {
+bool TestHeroPogoDazed(u32 arg0) {
     HeroInfo *h;
     s32 x;
     s32 z;
@@ -1491,9 +1491,9 @@ void SetHeroPogoDazed(u32 arg0) {
     HeroInfo *h;
     HeroInfo *base;
 
-    func_800C2810(arg0);
+    Player_RemoveReserve(arg0);
     if (D_800C535C[arg0].nas != NULL) {
-        func_800C2B98(arg0);
+        HeroPogoTazingCancel(arg0);
     }
     func_800C1CF0(arg0);
     func_80028018(arg0, 0x1E);
@@ -1579,7 +1579,7 @@ void HeroPogoDazed(u32 arg0) {
     }
 }
 
-void func_800B72B0(s32 arg0) {
+void AddDingoSmoke(u32 arg0) {
     s32 *pos;
     NAS *nas;
     NAS *r;
@@ -1624,7 +1624,7 @@ void func_800B72B0(s32 arg0) {
     }
 }
 
-void func_800B741C(s32 arg0) {
+void AddSomeDust(u32 arg0) {
     s32 *pos;
     NAS *nas;
     NAS *r;
@@ -1667,7 +1667,7 @@ void func_800B741C(s32 arg0) {
     }
 }
 
-void func_800B7574(s32 arg0) {
+void AddBrioSmoke(u32 arg0) {
     s32 *pos;
     NAS *nas;
     NAS *r;
@@ -2133,7 +2133,7 @@ loop_j:
     }
 }
 
-void func_800B8AF8(s32 arg0) {
+void PlayBoingNoise(u32 arg0) {
     switch (Heroes[arg0].hero_name) {
     case 4:
         PlaySfx(0x561, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
@@ -2679,7 +2679,7 @@ void func_800BA3E0(s32 arg0, s32 arg1, s32 arg2) {
     D_800C52EC++;
 }
 
-s32 func_800BA51C(s32 arg0, s32 arg1) {
+s32 Fire_Tazer(s32 arg0, s32 arg1) {
     EXTheromove *mv;
     EXTengine *eng;
     EXTengine *e;
@@ -3517,14 +3517,14 @@ void func_800BC0EC(s32 arg0) {
     Heroes[arg0].hero_eng->unk10.z -= (Heroes[arg0].hero_eng->unk10.z - tz) / 4;
 }
 
-void func_800BC184(s32 arg0, s32 arg1) {
+void Fire_Rocket(s32 arg0, s32 arg1) {
     EXTheromove *move;
     EXTengine *eng;
     s32 buttons;
     s32 angle;
     s32 mode;
 
-    func_800BC490(arg0);
+    PlayThrowNoise(arg0);
     move = Heroes[arg0].hero_move;
     if (move != NULL) {
         buttons = ((Ovl60Pad *)D_80051338)[arg0].unk50;
@@ -3547,7 +3547,7 @@ void func_800BC184(s32 arg0, s32 arg1) {
         if (arg1 != 0) {
             mode = 3;
         }
-        func_800C1384(arg0, mode, angle, 0x180);
+        Fire_RocketInDir(arg0, mode, angle, 0x180);
         eng = Heroes[arg0].hero_eng;
         PlaySfx(0x522, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
         if (D_800C535C[arg0].unk4 == 5 && Heroes[arg0].hero_aseq == 0x2F) {
@@ -3560,7 +3560,7 @@ void func_800BC184(s32 arg0, s32 arg1) {
     }
 }
 
-void func_800BC314(s32 arg0, s32 arg1) {
+void Fire_RocketFourWays(s32 arg0, s32 arg1) {
     HeroInfo *h;
     EXTengine *eng;
     s32 x;
@@ -3574,18 +3574,18 @@ void func_800BC314(s32 arg0, s32 arg1) {
     eng = h->hero_eng;
     x = (eng->unk10.x + 0x800) >> 9;
     z = (eng->unk10.z + 0x800) >> 9;
-    func_800BC490(arg0);
+    PlayThrowNoise(arg0);
     if (x > 0) {
-        func_800C1384(arg0, 2, 0x400, 0x180);
+        Fire_RocketInDir(arg0, 2, 0x400, 0x180);
     }
     if (x < 7) {
-        func_800C1384(arg0, 2, 0xC00, 0x180);
+        Fire_RocketInDir(arg0, 2, 0xC00, 0x180);
     }
     if (z > 0) {
-        func_800C1384(arg0, 2, 0, 0x180);
+        Fire_RocketInDir(arg0, 2, 0, 0x180);
     }
     if (z < 7) {
-        func_800C1384(arg0, 2, 0x800, 0x180);
+        Fire_RocketInDir(arg0, 2, 0x800, 0x180);
     }
     PlaySfx(0x43C, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
     if (D_800C535C[arg0].unk4 == 5 && h->hero_aseq == 0x2F) {
@@ -3599,7 +3599,7 @@ void func_800BC314(s32 arg0, s32 arg1) {
     slot->unk4 = 0;
 }
 
-void func_800BC490(s32 arg0) {
+void PlayThrowNoise(u32 arg0) {
     switch (Heroes[arg0].hero_name) {
     case 1:
         PlaySfx(0x10, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
@@ -5293,7 +5293,7 @@ void Init_PogoProjectile(NAS *arg0) {
     }
 }
 
-void func_800C11C4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+void Create_PogoProjectile(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     NAS *nas;
     EXTengine *e;
     subengine *sub;
@@ -5341,11 +5341,11 @@ void func_800C11C4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     }
 }
 
-void func_800C1384(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+void Fire_RocketInDir(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     EXTengine *eng;
 
     eng = Heroes[arg0].hero_eng;
-    func_800C11C4(arg1, (((eng->unk10.x + 0x800) >> 9) << 9) - 0x700,
+    Create_PogoProjectile(arg1, (((eng->unk10.x + 0x800) >> 9) << 9) - 0x700,
                   (((eng->unk10.z + 0x800) >> 9) << 9) - 0x700, arg3, arg0 & 7, arg2);
 }
 
@@ -5873,7 +5873,7 @@ s32 func_800C2660(u8 *arg0) {
     return (*(s32*)((u8*)(arg0) + 20)) - D_8005A5D8;
 }
 
-void func_800C2674(s32 arg0) {
+void AddTazerRing(u32 arg0) {
     s32 *pos;
     NAS *nas;
     NAS *r;
@@ -5920,7 +5920,7 @@ void func_800C2770(s32 arg0, u32 arg1, u32 arg2) {
     }
 }
 
-void func_800C2810(s32 arg0) {
+void Player_RemoveReserve(u32 arg0) {
     s32 i;
     s32 j;
 
@@ -5954,7 +5954,7 @@ void SetHeroPogoTied(u32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
 
-    func_800C2810(arg0);
+    Player_RemoveReserve(arg0);
     func_800C1CF0(arg0);
     base = Heroes;
     h = (HeroInfo *)(arg0 * sizeof(HeroInfo) + (u32)base);
@@ -5965,7 +5965,7 @@ void SetHeroPogoTied(u32 arg0) {
 bool TestHeroPogoTied(u32 arg0) {
     if (Heroes[arg0].hero_status & 0x100) {
         if (D_800C535C[arg0].nas != NULL) {
-            func_800C2B98(arg0);
+            HeroPogoTazingCancel(arg0);
         }
         SetHeroAction((HeroInfo *)arg0, 0x3E);
         SetHeroSeq((HeroInfo *)arg0, 0x2E);
@@ -5977,7 +5977,7 @@ bool TestHeroPogoTied(u32 arg0) {
 bool TestHeroPogoLoser(u32 arg0) {
     if (Heroes[arg0].hero_status & 0x400) {
         if (D_800C535C[arg0].nas != NULL) {
-            func_800C2B98(arg0);
+            HeroPogoTazingCancel(arg0);
         }
         SetHeroAction((HeroInfo *)arg0, 0x3D);
         SetHeroSeq((HeroInfo *)arg0, 0x2E);
@@ -5990,7 +5990,7 @@ void SetHeroPogoWinner(u32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
 
-    func_800C2810(arg0);
+    Player_RemoveReserve(arg0);
     func_80089FA4(arg0);
     func_800C1CF0(arg0);
     base = Heroes;
@@ -6003,7 +6003,7 @@ void SetHeroPogoWinner(u32 arg0) {
 bool TestHeroPogoWinner(u32 arg0) {
     if (Heroes[arg0].hero_status & 0x200) {
         if (D_800C535C[arg0].nas != NULL) {
-            func_800C2B98(arg0);
+            HeroPogoTazingCancel(arg0);
         }
         SetHeroAction((HeroInfo *)arg0, 0x3C);
         SetHeroSeq((HeroInfo *)arg0, 0x32);
@@ -6012,7 +6012,7 @@ bool TestHeroPogoWinner(u32 arg0) {
     return 0;
 }
 
-void func_800C2B98(s32 arg0) {
+void HeroPogoTazingCancel(u32 arg0) {
     Ovl60Slot *base = D_800C535C;
     Ovl60Slot *slot = (Ovl60Slot *)(arg0 * sizeof(Ovl60Slot) + (u32)base);
 
@@ -6027,7 +6027,7 @@ void SetHeroPogoTazing(u32 arg0) {
     HeroInfo *h;
     EXTheromove *move;
 
-    func_800C2810(arg0);
+    Player_RemoveReserve(arg0);
     SetHeroSeq((HeroInfo *)arg0, 0x30);
     base = Heroes;
     h = (HeroInfo *)(arg0 * sizeof(HeroInfo) + (u32)base);
@@ -6040,31 +6040,31 @@ void SetHeroPogoTazing(u32 arg0) {
     D_800C535C[arg0].unk6 = 0x14;
 }
 
-s32 func_800C2C70(s32 arg0) {
+bool TestHeroPogoShootCancel(u32 arg0) {
     Ovl60Slot *base = D_800C535C;
     Ovl60Slot *slot = (Ovl60Slot *)(arg0 * sizeof(Ovl60Slot) + (u32)base);
 
     if (slot->nas != NULL) {
-        func_800C2B98(arg0);
+        HeroPogoTazingCancel(arg0);
         return 1;
     }
     return 0;
 }
 
-s32 func_800C2CBC(s32 arg0) {
+bool TestHeroPogoShoot(u32 arg0) {
     if (D_80051338[arg0].unk54 & 0x8000) {
         switch (D_800C535C[arg0].unk4) {
         case 1:
-            func_800BC184(arg0, 0);
+            Fire_Rocket(arg0, 0);
             break;
         case 2:
-            func_800BC314(arg0, 0);
+            Fire_RocketFourWays(arg0, 0);
             break;
         case 4:
-            func_800BC184(arg0, 1);
+            Fire_Rocket(arg0, 1);
             break;
         case 3:
-            if (func_800BA51C(arg0, 0) != 0) {
+            if (Fire_Tazer(arg0, 0) != 0) {
                 SetHeroAction((HeroInfo *)arg0, 0x3F);
                 return 1;
             }

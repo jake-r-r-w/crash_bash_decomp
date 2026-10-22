@@ -472,6 +472,20 @@ signature alone is not enough.
   (0x200, `pogo_winner` anim), `TestHeroPogoLoser` (0x400) and
   `TestHeroPogoTied` (0x100): Arkenoid's Dead state uses the same 0x200/0x400
   bits for Winner/Lose.
+- **Pogo helpers** (ovl60), each from its code: `TestHeroPogo` (moving onto a
+  free square enters 0x3A), `TestHeroPogoDazed` (status 0x800 enters 0x3B),
+  `TestHeroPogoShoot` (fire button: the held pickup picks `Fire_Rocket(p, 0)`,
+  `Fire_Rocket(p, 1)`, `Fire_RocketFourWays` or `Fire_Tazer`, which enters
+  0x3F), `TestHeroPogoShootCancel` / `HeroPogoTazingCancel` (kill the tazer
+  object), `Player_RemoveReserve` (clears the player's `reserved` marks; every
+  Set state calls it). `Fire_Rocket` shoots one way (d-pad or facing),
+  `Fire_RocketFourWays` the four ways that stay on the board, each through
+  `Fire_RocketInDir(p, type, angle, speed)`, which calls
+  `Create_PogoProjectile` (6 args, spawns `AST_PogoProjectile`).
+  `PlayThrowNoise` / `PlayBoingNoise` play a per-hero sound (throw, landed
+  bounce). Effects by hero (`hero_name`): `AddDingoSmoke` (Dingodile, Kanga),
+  `AddSomeDust` (Crash, Coco, Tiny, Kong), `AddBrioSmoke` (Brio, Cortex);
+  `AddTazerRing` is the tazer state's.
 - **Ambiguous, left unnamed:**
   - Both of the leak's `Roo_FireRocket` declarations match real functions:
     `func_800BFFF4(eng)` and `func_800C02AC(eng, dir)` both spawn

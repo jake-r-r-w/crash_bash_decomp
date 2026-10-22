@@ -137,7 +137,7 @@ typedef struct {
 } Ovl60Slot;
 
 extern Ovl60Slot D_800C535C[];
-/* PadState (D_80051338) as func_800BC184 reads it: d-pad bits 0xF0 at 0x50. */
+/* PadState (D_80051338) as Fire_Rocket reads it: d-pad bits 0xF0 at 0x50. */
 typedef struct Ovl60Pad {
     /* 0x00 */ u8 unk0[0x50];
     /* 0x50 */ s32 unk50;
@@ -267,13 +267,11 @@ void func_800C1068();
 
 void func_800C10F8(void);
 
-void func_800C11C4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 
 void func_800C159C(s32 arg0);
 
-void func_800C2810(s32 arg0);
 
-void func_800C2B98(s32 arg0);
+void HeroPogoTazingCancel(u32 arg0);
 extern s16 D_8009D87C[][3];
 
 void func_800B76CC(s32 arg0);
@@ -296,7 +294,6 @@ s32 func_800C0E40(s32 arg0, u32 arg1, u32 arg2);
 
 void func_800C0FAC(s32 i);
 
-void func_800C1384(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
 void func_800C1400(s32 arg0);
 
@@ -333,7 +330,6 @@ void func_800C2620(s32 arg0, s32 arg1);
 
 
 
-s32 func_800C2C70(s32 arg0);
 
 
 void func_800C2E50(s32 arg0, s32 arg1);
@@ -368,18 +364,11 @@ void func_800B3C44(void);
 
 
 
-s32 func_800B6C14(s32 arg0);
-s32 func_800B5D90(s32 arg0);
 void func_800BDF60(s32 arg0, s32 *arg1, s32 *arg2);
 
 s32 func_800C1DA4(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
-s32 func_800C2CBC(s32 arg0);
 
-void func_800B72B0(s32 arg0);
-void func_800B741C(s32 arg0);
-void func_800B7574(s32 arg0);
-void func_800B8AF8(s32 arg0);
 
 void func_800B4374(s32 arg0, u16 arg1);
 void func_800B44F4(s32 arg0, u16 arg1);
@@ -415,7 +404,6 @@ void func_800C2388(s32 arg0, s32 arg1, s16 arg2, s16 arg3);
 
 void func_800C2564(s32 arg0, s32 arg1, s16 arg2);
 
-void func_800C2674(s32 arg0);
 
 void func_800C2770(s32 arg0, u32 arg1, u32 arg2);
 
@@ -636,11 +624,9 @@ void func_800BB724(s32 arg0, s32 arg1);
 
 s32 func_800BBC94(s32 x, s32 z);
 
-void func_800BC184(s32 arg0, s32 arg1);
+void Fire_Rocket(s32 arg0, s32 arg1);
 
-void func_800BC314(s32 arg0, s32 arg1);
 
-void func_800BC490(s32 arg0);
 
 s32 func_800BD520(s32 hero);
 void func_800BD790(s32 hero);
@@ -661,7 +647,7 @@ static inline s32 Ovl60_StatusAction(s32 arg0, s32 bit, s32 action, s32 seq)
 {
     if (Heroes[arg0].hero_status & bit) {
         if (D_800C535C[arg0].nas != NULL) {
-            func_800C2B98(arg0);
+            HeroPogoTazingCancel(arg0);
         }
         SetHeroAction((HeroInfo *)arg0, action);
         SetHeroSeq((HeroInfo *)arg0, seq);
@@ -674,6 +660,5 @@ void HeroPogo(u32 arg0);
 
 void HeroPogoDazed(u32 arg0);
 
-s32 func_800BA51C(s32 arg0, s32 arg1);
 
 #endif /* BASH_OVL60_H */
