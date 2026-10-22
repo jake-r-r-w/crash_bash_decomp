@@ -16,8 +16,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `main.exe` function matches; Phase 2's naming, data and `main.c` split
   are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2509/2537 game functions matched (92.39% of game code bytes, 2026-10-22):
-  **main.exe, ovl61, ovl69 and ovl6a are complete**; 28 left, every one
+- 2510/2537 game functions matched (92.66% of game code bytes, 2026-10-22):
+  **main.exe, ovl61, ovl69 and ovl6a are complete**; 27 left, every one
   tried by the swarm at least once. All 564 PsyQ functions (Sony objects). 6
   parked by hand (`decomp.py status`; the swarm parked 5 more, which the
   dashboard counts from `docs/swarm.js`). Matches are C only, natural C
@@ -81,11 +81,9 @@ rest are fixed by hand from the worker's patch (Gotchas). A park whose
 
 Hand work, between runs:
 1. The parks: `func_8007F314` and `PlotScriptFX` (engine), `func_800BC274`
-   (ovl5e), `func_800BFEE0` (ovl62). Two were held back only by the old
-   hack rule and can be finished now that steering C is allowed when
-   nothing natural matches: `PogoAI_RadialSearch` (its nested-do-while
-   checkpoint, Open leads) and `func_800B62EC` (ovl5d; swarm D matched it
-   with a do-while and the gate refused it: the C is in that run's results).
+   (ovl5e), `func_800BFEE0` (ovl62), `PogoAI_RadialSearch` (ovl60, 2/347
+   with steering C: one store pair's order in a cross-jumped tail, Open
+   leads).
 2. Name each function as it's matched when the evidence allows.
 3. Split `main.c` into its translation units: on hold since 2026-10-15. Its
    one proven boundary (jump-table parity, 95..370) has three possible
@@ -106,19 +104,16 @@ and current tools).
 
 ## Open leads
 
-- **`PogoAI_RadialSearch` (was `func_800BE158`; ovl60, parked):** the swarm checkpoint is
-  registers 2/347 but only with nested `do { } while (0)` around each case's
-  `dx`/`dz` set. They do two jobs: end cse's block (cse.c
-  `cse_end_of_basic_block` stops at `NOTE_INSN_LOOP_END`) so `side1 = dx` and
-  `side2 = dz` stay register copies like the target's, and add loop-weighted
-  refs (flow.c `REG_N_REFS += loop_depth`) so `dz`/`dx` (need >= 9 refs over
-  ~209 insns) beat `side2` (8/194) and the hoisted grid base for `s7`/`fp`.
-  Natural C (in the file under `NON_MATCHING`) is structure 337/350: cse
-  folds the copies via `record_jump_equiv` on the switch path. Tried: plain
-  cases, one do-while, goto-shared tails, `dz = angle - 1`, `side0 = -dz`.
-  Next: steering C is allowed now (2026-10-22), so finish it from the do-while
-  checkpoint.
-
+- **`PogoAI_RadialSearch` (was `func_800BE158`; ovl60, parked) registers
+  2/347** with the swarm checkpoint's nested do-whiles (under
+  `NON_MATCHING`). Only diff: in the tail cases 1 and 3 share (jump2
+  cross-jump) the target stores `side0` (sp+16) before `side1` (sp+20).
+  Reload emits `side1 = dx`'s `t0 = fp` and its store together at that
+  statement and sched2 keeps equal stores in source order, so the target
+  loads t0 before the side0 store but stores it after; `side0` first in both
+  cases breaks the shared tail. Variants tried are in the block note
+  (`scratch/rw/rs.py`). Natural C without the do-whiles is 337/350 (cse
+  `record_jump_equiv` folds the side copies; dz/dx need >= 9 weighted refs).
 - **Tune the permuter from its record.** Runs are logged since 2026-10-20
   (`decomp.py permstats`, `swarm.mjs stats`). Two ideas to try once there
   are a few dozen runs, compared on that record:
@@ -490,6 +485,12 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-22 (the two unblocked by dropping hacks):** `func_800B62EC`
+  matched (be7c85ca) from swarm D's patch: its hero-loop dx/dz do-while
+  keeps `pz` in fp (loop-weighted refs); without it the structure is off.
+  `PogoAI_RadialSearch` ported from its checkpoint to 2/347 and parked:
+  one store pair in a cross-jumped case tail (Open leads).
 
 - **2026-10-22 (no more hack class):** on the user's call, matches that
   steer the compiler with C count as matched like any other; only C is

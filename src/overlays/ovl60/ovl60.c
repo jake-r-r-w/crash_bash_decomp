@@ -4580,26 +4580,42 @@ bool PogoAI_RadialSearch(u32 i, s32 x, s32 z, s32 angle, s32 *outX, s32 *outZ) {
     side3 = 0;
     switch (angle) {
     case 2:
-        dz = 1;
+        do {
+            do {
+                dz = 1;
+            } while (0);
+        } while (0);
         side0 = -1;
         side1 = 0;
         side2 = dz;
         break;
     case 0:
-        dz = -1;
+        do {
+            do {
+                dz = -1;
+            } while (0);
+        } while (0);
         side0 = 1;
         side1 = 0;
         side2 = dz;
         break;
     case 1:
-        dx = -1;
+        do {
+            do {
+                dx = -1;
+            } while (0);
+        } while (0);
         side1 = dx;
         side0 = 0;
         side2 = 0;
         side3 = 1;
         break;
     case 3:
-        dx = 1;
+        do {
+            do {
+                dx = 1;
+            } while (0);
+        } while (0);
         side1 = dx;
         side0 = 0;
         side2 = 0;
