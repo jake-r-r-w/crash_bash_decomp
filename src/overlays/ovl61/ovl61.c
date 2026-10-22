@@ -318,7 +318,7 @@ void AR_InitLevel(void) {
         PlaySfx(0x5C8, &D_800C1BC4, 0, 0x1000, 0x1E00, 0);
         break;
     }
-    func_800BC564();
+    InitARKfloor();
 }
 
 void AR_UpdateLevel(void) {
@@ -376,7 +376,7 @@ void AR_UpdateLevel(void) {
             }
         }
     }
-    func_800BC0D8();
+    ArkCrateMaster();
     UpdateArkFloor();
     if (D_8005A648 != 0x10) {
         if (D_8005A648 >= 0x11) {
@@ -3798,7 +3798,7 @@ end:
     eng->unk5E = 1;
 }
 
-void func_800BC0D8(void) {
+void ArkCrateMaster(void) {
     Ovl61GameView *g;
     Ovl61Node *n;
     NAS *nas;
@@ -3829,7 +3829,7 @@ void func_800BC0D8(void) {
                 }
             }
             if (cnt == 0) {
-                func_800BD770();
+                Create_ArkPickup();
                 D_800C1F0A = Random(0x5A) + 0x1E;
             }
         }
@@ -3917,7 +3917,7 @@ void func_800BC0D8(void) {
 
 #define LINK(x) ((Ovl61Link *)(x))
 
-void func_800BC564(void) {
+void InitARKfloor(void) {
     s32 i;
     Ovl61ScnObj *obj;
     s16 *p;
@@ -4466,7 +4466,7 @@ loop:
     } while (0);
 }
 
-void func_800BD770(void)
+void Create_ArkPickup(void)
 {
   SLONG_XYZ pos;
   HeroInfo *base;

@@ -71,3 +71,6 @@ HandleCornerFailure = 0x800BD510; // type:func
 LineToCircleTest = 0x800BE1C4; // type:func
 TestArkObjectObstacles = 0x800BF640; // type:func
 TestArkObject2Hero = 0x800BFA24; // type:func
+Create_ArkPickup = 0x800BD770; // type:func
+ArkCrateMaster = 0x800BC0D8; // type:func
+InitARKfloor = 0x800BC564; // type:func

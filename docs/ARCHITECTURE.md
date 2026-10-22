@@ -466,6 +466,11 @@ signature alone is not enough.
     (`func_800B60FC` maps fire buttons to kick/red kick/grab,
     `func_800B649C` steps the walk animation: neither fits), `DangerBalls`
     (`func_800B8964` finds a ball ahead but returns a bool, not a NAS).
+    `Create_ArkPickup` is the only spawner of `AST_AR_PU` (0x1502, at a
+    corner); `ArkCrateMaster` (every frame from `AR_UpdateLevel`) times and
+    calls it. `InitARKfloor` (from `AR_InitLevel`, clears the floor/wall
+    state) sits right before `UpdateArkFloor` in code, as in the leak (the
+    weakest of these). The leak's MagnaRing has no AST id in the enum: cut.
   - Hero states: the engine's `HEROFunc` table (`{SetMode, Action}` pairs)
     has 10 Arkenoid pairs at `0x8009DD80`, hero actions 0x1C-0x25, the leak's
     10 `SetArkHero*`/`ArkHero*` pairs. Each is named from its own code, not

@@ -80,7 +80,7 @@ typedef struct Ovl61FuxType {
     u16 type;
 } Ovl61FuxType;
 
-void func_800BC0D8(void);
+void ArkCrateMaster(void);
 void UpdateArkFloor(void);
 
 
@@ -317,7 +317,7 @@ extern Ovl61Circle D_800C1184[];
 extern Ovl61Circle D_800C11B4[];
 extern Ovl61Circle D_800C11CC[];
 extern Ovl61Circle D_800C11E4[];
-void func_800BC564(void);
+void InitARKfloor(void);
 extern u16 D_800C139C[];
 
 /* Blinking light slots (D_800C1E28, D_800C1D38) as Ovl61Link (declared
@@ -415,7 +415,7 @@ s32 func_800B8964(s32 arg0);
 void func_800B99E0(void);
 
 
-/* D_8005A614 as seen by func_800BC0D8. */
+/* D_8005A614 as seen by ArkCrateMaster. */
 typedef struct Ovl61GameView {
     u8 pad0[0x30];
     u16 flags;
@@ -426,7 +426,6 @@ typedef struct Ovl61GameView {
 } Ovl61GameView;
 #define O61GV ((Ovl61GameView *)D_8005A614)
 
-void func_800BD770(void);
 extern u16 D_800C1328[];
 extern u16 D_800C19FC[];
 extern u16 D_800C1A20[];
@@ -458,7 +457,7 @@ s32 func_800B7C60(s32 arg0, Ovl61Pos *from, Ovl61Pos *to, s32 angle);
 
 s32 func_800B808C(s32 arg0, Ovl61Pos *from, Ovl61Pos *to, s32 angle);
 extern Ovl61Edge D_800C1940[4];
-/* A scene object as func_800BC564 sorts it (list at GfxScene.objs). */
+/* A scene object as InitARKfloor sorts it (list at GfxScene.objs). */
 typedef struct Ovl61ScnObj {
     u32 flags;
     u8 pad4[0x5C - 0x4];
@@ -471,7 +470,7 @@ typedef struct Ovl61ScnObj {
     u16 unk74;
 } Ovl61ScnObj;
 
-/* The 0x14-byte link slots func_800BC564 fills (D_800C1CE8, D_800C1D38...). */
+/* The 0x14-byte link slots InitARKfloor fills (D_800C1CE8, D_800C1D38...). */
 typedef struct {
     Ovl61ScnObj *a;
     Ovl61ScnObj *b;
@@ -493,7 +492,7 @@ extern u16 D_800C1464[][3];
 
 s32 func_800B85DC(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5);
 
-void func_800BC564(void);
+void InitARKfloor(void);
 
 bool TestArkObjectObstacles(EXTengine *eng, EXTobject *self);
 /* D_8005A614 as seen by PlotBall (unk34 is D_8005A648, the mode). */
