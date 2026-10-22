@@ -160,3 +160,4 @@ PogoHero_ExtraEffects = 0x800B76CC; // type:func
 Tiles_PlayerIsStealing = 0x800BB724; // type:func
 LevelSpecific_ClaimedTile = 0x800BBC94; // type:func
 LevelSpecific_UnclaimedTile = 0x800C178C; // type:func
+PogoAI_StartEncircling = 0x800BE864; // type:func

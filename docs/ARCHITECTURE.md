@@ -672,9 +672,11 @@ signature alone is not enough.
   while a bot has a target (modes 3, 5-7) and `PogoAI_PrimeDirective`,
   which tries the planners and the pickup scan in order and says whether one
   set a target.
-  The three `(p, EXTbotai *)` planners `func_800C0F08`, `func_800BE864` and
-  `func_800BE6C4` are GoForMyOwn / StartEncircling / StartEnclosing in some
-  order: left unnamed.
+  Of the three `(p, EXTbotai *)` planners, `PogoAI_StartEncircling` decides
+  through `PogoAI_ClaimingThisTileWillEncircle` (its old `Ovl60Goal` was
+  `EXTbotai`: `TargetXYZ.x/z`, `AImode`); `func_800C0F08` (radial search)
+  and `func_800BE6C4` (needs 9+ own tiles) are GoForMyOwn / StartEnclosing
+  in some order: left unnamed.
 - **Ambiguous, left unnamed:**
   - Both of the leak's `Roo_FireRocket` declarations match real functions:
     `func_800BFFF4(eng)` and `func_800C02AC(eng, dir)` both spawn

@@ -348,7 +348,6 @@ s32 func_800BC04C(s32 arg0, s32 arg1);
 
 
 
-s32 func_800BE864(s32 hero, Ovl60Goal *goal);
 
 /* D_8005A614 as seen by PogoInit_RelicChallenge. */
 typedef struct Ovl60ScoreView {

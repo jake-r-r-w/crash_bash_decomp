@@ -4256,7 +4256,7 @@ bool PogoAI_PrimeDirective(u32 arg0) {
             if (func_800C0F08(arg0, ai) != 0) {
                 return 1;
             }
-            if (func_800BE864(arg0, (Ovl60Goal *)ai) != 0) {
+            if (PogoAI_StartEncircling(arg0, ai) != 0) {
                 return 1;
             }
             if (func_800BE6C4(arg0, (Ovl60Goal *)ai) != 0) {
@@ -4540,7 +4540,7 @@ s32 func_800BE6C4(s32 arg0, Ovl60Goal *arg1) {
     return 0;
 }
 
-s32 func_800BE864(s32 hero, Ovl60Goal *goal) {
+bool PogoAI_StartEncircling(u32 hero, EXTbotai *goal) {
     EXTengine *eng;
     s32 ox;
     s32 oz;
@@ -4600,9 +4600,9 @@ s32 func_800BE864(s32 hero, Ovl60Goal *goal) {
     }
 done:
     if (bx != ox || bz != oz) {
-        goal->unk14 = bx;
-        goal->unk1C = bz;
-        goal->unk20 = 6;
+        goal->TargetXYZ.x = bx;
+        goal->TargetXYZ.z = bz;
+        goal->AImode = 6;
         return 1;
     }
     return 0;

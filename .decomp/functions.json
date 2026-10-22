@@ -31330,7 +31330,7 @@
   "fp": "0bd4ea49f9fe3140",
   "fpn": "e4692d17545a75f3",
   "leaf": false,
-  "name": "func_800BE864",
+  "name": "PogoAI_StartEncircling",
   "orig": "func_800BE864",
   "rom": 46512,
   "seg": "overlays/ovl60/ovl60",
