@@ -7154,13 +7154,10 @@ void InitLaserBitTA(NAS *nas) {
     }
 }
 
-void func_800C7C08(u8 *arg0) {
-    u32 temp_v0;
-
-    temp_v0 = (*(s32*)((u8*)(arg0) + 16)) * 3;
-    (*(s32*)((u8*)(arg0) + 16)) = (s32) ((s32) (temp_v0 + (temp_v0 >> 0x1F)) >> 1);
-    (*(s32*)((u8*)(arg0) + 24)) = (s32) ((s32) ((*(s32*)((u8*)(arg0) + 24)) * 3) / 2);
-    (*(s32*)((u8*)(arg0) + 40)) = (s32) (((*(s32*)((u8*)(arg0) + 40)) * 2) / 3);
+void BumpSpeedsForSwamp(EXTobject_TA *pObject) {
+    pObject->SpeedX = pObject->SpeedX * 3 / 2;
+    pObject->SpeedZ = pObject->SpeedZ * 3 / 2;
+    pObject->Counter = pObject->Counter * 2 / 3;
 }
 
 void TankHeroMinelay(u32 player) {

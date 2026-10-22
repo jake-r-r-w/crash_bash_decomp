@@ -29189,7 +29189,7 @@
   "fp": "35c8f2a40d394e1a",
   "fpn": "3fdad66159cabe20",
   "leaf": true,
-  "name": "func_800C7C08",
+  "name": "BumpSpeedsForSwamp",
   "orig": "func_800C7C08",
   "rom": 84308,
   "seg": "overlays/ovl5f/ovl5f",

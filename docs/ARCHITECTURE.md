@@ -589,6 +589,9 @@ signature alone is not enough.
     Mode 9 is the Komodo Moe and Joe tank-boss fight (players 2 and 3 go
     through `SetMoeJoeMode`); in it the mine and the lobber call
     `CheckMineToBoss(x, y, z)` with their explosion point.
+    `BumpSpeedsForSwamp(EXTobject_TA *)` scales `SpeedX`/`SpeedZ` by 3/2 and
+    `Counter` by 2/3 (it was raw offsets +0x10/+0x18/+0x28; now the fields,
+    same code).
     `GetSandbagValueTank(x, z)` / `GetSandbagValueMiss(x, z)` read the two
     byte maps `D_800CACFC` / `D_800CACB4` (one cell per 0x200 units, row
     width `D_800CAFF4`): the first is checked ahead of a tank's facing
