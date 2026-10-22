@@ -1359,7 +1359,7 @@ void func_800B6D74(s32 player) {
         if (DoesPlayerHaveBomb(player) != 0) {
             t = FindClosetPlayer(player, &dist);
             if (t != -1) {
-                func_800B6EB4(player, t);
+                IsPlayerInRange(player, t);
             }
         }
     }
@@ -1382,7 +1382,7 @@ void func_800B6D74(s32 player) {
     }
 }
 
-s32 func_800B6EB4(s32 player, s32 target) {
+bool IsPlayerInRange(u32 player, u32 target) {
     HeroInfo *base;
     HeroInfo *h;
     Ovl62Fux *fux;
@@ -1489,7 +1489,7 @@ void func_800B7224(s32 player) {
         if (Ovl62HasBomb(player)) {
             t = FindClosetPlayer(player, &dist);
             if (t != -1) {
-                func_800B6EB4(player, t);
+                IsPlayerInRange(player, t);
             }
         }
     }
@@ -1637,7 +1637,7 @@ void func_800B782C(s32 player) {
         if (Ovl62HasBomb(player)) {
             r = FindClosetPlayer(player, &dist);
             if (r != -1) {
-                func_800B6EB4(player, r);
+                IsPlayerInRange(player, r);
             }
         }
     }
@@ -1841,7 +1841,7 @@ s32 player;
         if (Ovl62HasBomb(player)) {
             r = Ovl62Closest(player, &dist);
             if (r != -1) {
-                func_800B6EB4(player, r);
+                IsPlayerInRange(player, r);
             }
         }
     }

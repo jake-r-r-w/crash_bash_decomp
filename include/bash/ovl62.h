@@ -1225,7 +1225,6 @@ void func_800B5788(s32 arg0);
 
 void func_800B6258(s32 player);
 
-s32 func_800B6EB4(s32 player, s32 target);
 
 void func_800B782C(s32 player);
 

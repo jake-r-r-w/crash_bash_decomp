@@ -77,3 +77,4 @@ EnsureMateNotObstructingMate = 0x800B7CDC; // type:func
 POLARtriggers = 0x800CAD14; // type:func
 CheckMelted = 0x800B4260; // type:func
 IsPtInALLZone = 0x800B4094; // type:func
+IsPlayerInRange = 0x800B6EB4; // type:func

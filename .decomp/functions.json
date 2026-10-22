@@ -35009,7 +35009,7 @@
   "fp": "587672a2e419c93b",
   "fpn": "ce5fd6bf704a3f73",
   "leaf": false,
-  "name": "func_800B6EB4",
+  "name": "IsPlayerInRange",
   "orig": "func_800B6EB4",
   "rom": 15360,
   "seg": "overlays/ovl62/ovl62",

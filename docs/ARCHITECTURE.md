@@ -617,6 +617,10 @@ signature alone is not enough.
     with extension 0x20000000); `TestForTeamMate(src, dst)` is true in team
     games when they are team-mates; `Player2PlayerRayTest(p, target)` casts
     the facing ray at the target through `func_800BFEE0`.
+    `IsPlayerInRange(p, target)` (no team-mates, distance under ~2000, charge
+    `unk54 >= 0x1F`, then `Player2PlayerRayTest`; sets the fire bit in
+    `AIpad`) is the only two-player range check, and precedes the ray test
+    as in the leak; weaker than the rest (it also fires).
     `Polar_HeroBot` clears the pad, calls `DoChooseNewAction` (which runs
     the tests that install a state function in the FUX) and then the state
     function. Each state function starts with
