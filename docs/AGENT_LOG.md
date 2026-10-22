@@ -19,8 +19,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
 - 2475/2537 game functions matched (83.10% of game code bytes, 2026-10-22):
   **main.exe, ovl61 and ovl6a are complete**; 62 left: ovl62 15, ovl63 10, ovl5d 7, ovl60 6, ovl5f 6, ovl64 5, ovl67 4, ovl68 2, ovl65 2, ovl5e 2, engine 2, ovl69 1. All 564 PsyQ functions (Sony objects). 4
   parked by hand (`decomp.py status`; the swarm parked 5 more, which the
-  dashboard counts from `docs/swarm.js`), 88 matched with a hack (79 of them
-  `do { } while (0)` wrappers, flagged since 2026-10-22)
+  dashboard counts from `docs/swarm.js`), 82 matched with a hack (73 of them
+  `do { } while (0)` wrappers, flagged since 2026-10-22; 6 macro-shaped ones
+  accepted)
   (`decomp.py hacks`; `func_800193A8`'s register pins reviewed as plausibly
   original, `hacks --accept`). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
@@ -527,8 +528,13 @@ Newest first, a few lines each. Details are in the commits.
   Swarm C on the 35 untried 2-4 KB functions, stopped by request after
   ~15 min: 4 matched (`func_800CDE8C`, `PlotRaceMissile`, `func_800B55E8`,
   `func_800B4144`, the last gated with `--resume`), none with a hack.
-  83.10%. Next: decide the 79 (rework, `--accept` the macro-shaped ones,
-  or leave flagged); rerun swarm C (`scratch/swarmC_only.txt`).
+  83.10%. By request the 79 stay flagged except macro-shaped ones: 6
+  accepted (`hacks --accept`), each wrapper a self-contained idiom (the
+  `obj->player = ...; obj->will_do |= mask; return nas;` block in five
+  functions of ovl5d/5e/64, and `PlotFlubberTA`'s restart-sound and
+  child-engine copy); single assignments wrapped 2-3 deep were not. 82
+  hacks remain, to rework when a natural form turns up. Next: rerun swarm
+  C (`scratch/swarmC_only.txt`).
 
 - **2026-10-22 (naming, second hour):** 554 -> 602 named. Leak names via
   their code (Arkenoid intersect/balls/floor/corners/collisions/pickups;

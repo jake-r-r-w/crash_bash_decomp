@@ -4771,6 +4771,7 @@
   "status": "matched"
  },
  "ovl5d:800C159C": {
+  "hack_ok": "do { } while (0) around obj->player = player; obj->will_do |= mask; return nas; (fields +0x16/+0x1E): the same block, return included, recurs in ovl5d/5e/64 functions built apart, so it reads as a shared macro's expansion",
   "matched_at": "2026-10-20T20:59:11Z",
   "status": "matched",
   "via": "copy"
@@ -5090,10 +5091,12 @@
   "via": "copy"
  },
  "ovl5e:800BB3F0": {
+  "hack_ok": "do { } while (0) around obj->player = player; obj->will_do |= mask; return nas; (fields +0x16/+0x1E): the same block, return included, recurs in ovl5d/5e/64 functions built apart, so it reads as a shared macro's expansion",
   "matched_at": "2026-10-20T20:58:55Z",
   "status": "matched"
  },
  "ovl5e:800BB69C": {
+  "hack_ok": "do { } while (0) around obj->player = player; obj->will_do |= mask; return nas; (fields +0x16/+0x1E): the same block, return included, recurs in ovl5d/5e/64 functions built apart, so it reads as a shared macro's expansion",
   "matched_at": "2026-10-20T12:03:09Z",
   "status": "matched"
  },
@@ -5273,6 +5276,7 @@
   "status": "matched"
  },
  "ovl5f:800BBA9C": {
+  "hack_ok": "its two do { } while (0) wrappers are self-contained helper idioms (stop-then-play a sound; copy position and angle to the child engine), plausibly macros",
   "matched_at": "2026-10-21T12:24:07Z",
   "status": "matched"
  },
@@ -8643,12 +8647,14 @@
  "ovl64:800BA098": {
   "copy_failed": "ovl5d:800C159C",
   "copy_failed_stage": "in-file",
+  "hack_ok": "do { } while (0) around obj->player = player; obj->will_do |= mask; return nas; (fields +0x16/+0x1E): the same block, return included, recurs in ovl5d/5e/64 functions built apart, so it reads as a shared macro's expansion",
   "matched_at": "2026-10-20T21:00:26Z",
   "status": "matched"
  },
  "ovl64:800BA344": {
   "copy_failed": "ovl5e:800BB69C",
   "copy_failed_stage": "in-file",
+  "hack_ok": "do { } while (0) around obj->player = player; obj->will_do |= mask; return nas; (fields +0x16/+0x1E): the same block, return included, recurs in ovl5d/5e/64 functions built apart, so it reads as a shared macro's expansion",
   "matched_at": "2026-10-21T07:01:34Z",
   "status": "matched"
  },
