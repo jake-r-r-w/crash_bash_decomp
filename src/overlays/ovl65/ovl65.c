@@ -2927,7 +2927,267 @@ void InitDinoGem(NAS *m) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", PlotDinoGem);
+void PlotDinoGem(NAS *m) {
+    Ovl65DinoGem *ext;
+    SLONG_XYZ pos;
+    s32 n[4];
+    s32 d[4];
+    s32 rv[4];
+    SLONG_XYZ *p;
+    s32 i;
+    s32 found;
+    s32 r;
+    s32 dist;
+    s32 ang;
+    s32 spd;
+    s32 dot;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    if (D_8005A644 & 0x801) {
+        KillNAS(m);
+        return;
+    }
+    m->Engine->unk5E = 1;
+    if (ext->unk8C > 0) {
+        ext->unk8C--;
+    }
+    switch (ext->unkC) {
+    case 7:
+        ext->unkC = 0;
+        m->Engine->sub->flags |= 0x8000;
+        pos = m->Engine->unk10;
+        pos.y += 0x100;
+        {
+            NAS *nas_;
+            Ovl65Puff *p_;
+            SLONG_XYZ *v_;
+
+            v_ = &pos;
+            nas_ = SpawnNASById(v_->x, v_->y, v_->z, 0x1605, 0x11);
+            if (nas_ != NULL) {
+                p_ = FindExtension(nas_, 0x10000000);
+                if (p_ != NULL) {
+                    p_->unk18 = 0x100;
+                    p_->unkC = 0;
+                    p_->unk20 = 1;
+                    p_->unk28 = 0;
+                    nas_->InitDelete(nas_);
+                }
+            }
+        }
+        PlaySfx(0x6CE, NULL, NULL, 0x1000, 0x1E00, 0);
+        break;
+    case 0:
+        m->Engine->unk1E += 0x20;
+        ext->unk84->sub->flags |= 0x8000;
+        func_800BAE94(m);
+        m->Engine->unk10.x += ext->unkB4;
+        m->Engine->unk10.z += ext->unkD4;
+        if (ext->unkB4 < 0) {
+            ext->unkB4 += 2;
+            if (ext->unkB4 > 0) {
+                ext->unkB4 = 0;
+            }
+        }
+        if (ext->unkB4 > 0) {
+            ext->unkB4 -= 2;
+            if (ext->unkB4 < 0) {
+                ext->unkB4 = 0;
+            }
+        }
+        if (ext->unkD4 < 0) {
+            ext->unkD4 += 2;
+            if (ext->unkD4 > 0) {
+                ext->unkD4 = 0;
+            }
+        }
+        if (ext->unkD4 > 0) {
+            ext->unkD4 -= 2;
+            if (ext->unkD4 < 0) {
+                ext->unkD4 = 0;
+            }
+        }
+        goto check;
+    case 1:
+        ext->unk84->sub->flags &= 0xFFFF7FFF;
+        m->Engine->unk1E += 0x40;
+        m->Engine->unk10 = Heroes[ext->unk10].hero_eng->unk10;
+        m->Engine->unk10.y -= 0x400;
+        break;
+    case 2: {
+        HeroInfo *hb;
+        s32 a;
+
+        ext->unk68 = Heroes[ext->unk10].hero_eng->unk10;
+        ext->unk68.y -= 0x200;
+        m->Engine->unk10 = ext->unk68;
+        a = Heroes[ext->unk10].hero_eng->unk1E;
+        m->Engine->unk2C.x = 0x1000;
+        m->Engine->unk2C.y = 0x1000;
+        m->Engine->unk2C.z = 0x1000;
+        ext->unk14 = 0x800;
+        ext->unk28 = 0;
+        ext->unk2C = 0;
+        ext->unk48 = -(D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 0xD2) >> 12;
+        ext->unk4C = -(D_80068BD4[a & 0xFFF].unk2 * 0xD2) >> 12;
+        ext->unk80 = 0;
+        ext->unkB4 = ext->unk48;
+        ext->unkD4 = ext->unk4C;
+        ext->unk84->sub->flags |= 0x8000;
+        func_80026A04((u8 *)m);
+        found = -1;
+        ext->unkC = 3;
+        hb = &Heroes[ext->unk10];
+        for (i = 3; i > 0; i--) {
+            if (func_8008C4C8((s32 *)&hb->hero_eng->unk10, i) != 0) {
+                found = i;
+            }
+        }
+        if (found == 1) {
+            ext->unk90 = 5;
+        }
+        if (found == 2) {
+            ext->unk90 = 3;
+        }
+        if (found == 3) {
+            ext->unk90 = 2;
+        }
+        if (found == -1) {
+            ext->unk90 = 1;
+        }
+        m->Engine->unk1E = Heroes[ext->unk10].hero_eng->unk1E;
+        ext->unk88 = 4;
+        break;
+    }
+    case 5: {
+        s32 a;
+
+        a = Random(0x1000);
+        m->Engine->unk2C.x = 0x1000;
+        m->Engine->unk2C.y = 0x1000;
+        m->Engine->unk2C.z = 0x1000;
+        ext->unk28 = -0x60;
+        ext->unk14 = 8;
+        ext->unk2C = 0;
+        ext->unk48 = (D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 0x40) >> 12;
+        ext->unk4C = (D_80068BD4[a & 0xFFF].unk2 * 0x40) >> 12;
+        ext->unk80 = 0;
+        ext->unkB4 = ext->unk48;
+        ext->unkD4 = ext->unk4C;
+        ext->unk84->sub->flags |= 0x8000;
+        ext->unkC = 4;
+        SFX4(0x6C0, 0x6C1, 0x6C2, 0x6C3);
+        func_80026A04((u8 *)m);
+        break;
+    }
+    case 4:
+        m->Engine->unk10.x += ext->unkB4;
+        m->Engine->unk10.z += ext->unkD4;
+        m->Engine->unk10.y += ext->unk28;
+        ext->unk28 += ext->unk14;
+        if (ext->unk2C < m->Engine->unk10.y) {
+            m->Engine->unk10.y -= abs(m->Engine->unk10.y - ext->unk2C);
+            ext->unk28 = -ext->unk28 >> 1;
+            ext->unkB4 >>= 1;
+            ext->unkD4 >>= 1;
+            ext->unk80++;
+            SFX4(0x6B7, 0x6B8, 0x6B9, 0x6BA);
+            if (ext->unk80 >= 5) {
+                ext->unk80 = 0;
+                ext->unkC = 0;
+                ext->unkB4 = 0;
+                ext->unkD4 = 0;
+                ext->unk10 = 5;
+                return;
+            }
+        }
+        goto check;
+    case 3:
+        ext->unk84->sub->flags |= 0x8000;
+        if (ext->unk88-- > 0
+            && (D_8005A614[ext->unk10 + 0x5C] != 0 || (((Ovl65Pad *)D_80051338)[ext->unk10].unk50 & 0x8000))) {
+            ext->unk28 -= 0x1800;
+            if (ext->unk28 < -0x6000) {
+                ext->unk28 = -0x6000;
+            }
+        }
+        m->Engine->unk10.x += ext->unkB4;
+        m->Engine->unk10.z += ext->unkD4;
+        m->Engine->unk10.y += ext->unk28 >> 8;
+        ext->unk28 += ext->unk14;
+        if (ext->unk2C < m->Engine->unk10.y) {
+            m->Engine->unk10.y -= abs(m->Engine->unk10.y - ext->unk2C);
+            ext->unk28 = -ext->unk28 >> 1;
+            ext->unkB4 >>= 1;
+            ext->unkD4 >>= 1;
+            ext->unk80++;
+            SFX4(0x6B7, 0x6B8, 0x6B9, 0x6BA);
+            if (ext->unk80 >= 5) {
+                ext->unk80 = 0;
+                func_80026980(m);
+                ext->unkC = 0;
+                ext->unkB4 = 0;
+                ext->unkD4 = 0;
+                ext->unk10 = 5;
+                return;
+            }
+        }
+    check:
+        if (func_800BAD18(m) != 0) {
+            ext->unkC = 1;
+            func_80026980(m);
+            PlaySfx(0x6CD, NULL, NULL, 0x1000, 0x1E00, 0);
+            m->Engine->unk2C.x = 0x800;
+            m->Engine->unk2C.y = 0x800;
+            m->Engine->unk2C.z = 0x800;
+            return;
+        }
+        break;
+    }
+    if (ext->unkC != 1) {
+        EXTengine *e;
+        s32 lim;
+
+        e = m->Engine;
+        p = &e->unk10;
+        dist = csqrt(e->unk10.x * e->unk10.x + p->z * p->z) >> 6;
+        lim = 0xB00;
+        if (dist > lim) {
+            s32 a;
+
+            a = get_angle(e->unk10.x, p->z) & 0xFFF;
+            e->unk10.x -= ((dist - 0xAFC) * D_80068BD4[(a - 0x400) & 0xFFF].unk2) >> 12;
+            p->z -= ((dist - 0xAFC) * D_80068BD4[a].unk2) >> 12;
+            ang = a;
+        } else {
+            ang = -1;
+        }
+        if (ang != -1) {
+            s32 w;
+            s32 h;
+
+            PlaySfx(0x6CC, NULL, NULL, 0x1000, 0x1E00, 0);
+            spd = csqrt(ext->unkB4 * ext->unkB4 + ext->unkD4 * ext->unkD4) >> 6;
+            w = (ang + 0x800) & 0xFFF;
+            n[0] = D_80068BD4[(w - 0x400) & 0xFFF].unk2;
+            n[2] = D_80068BD4[w].unk2;
+            d[0] = -D_80068BD4[(m->Engine->unk1E - 0x400) & 0xFFF].unk2;
+            d[2] = -D_80068BD4[m->Engine->unk1E & 0xFFF].unk2;
+            dot = (d[0] * n[0] >> 12) + (d[2] * n[2] >> 12);
+            rv[0] = d[0] - (dot * n[0] >> 11);
+            rv[2] = d[2] - (dot * n[2] >> 11);
+            h = get_angle(rv[0], rv[2]) + 0x800;
+            m->Engine->unk1E = h;
+            ext->unkB4 = -(spd * D_80068BD4[(h - 0x400) & 0xFFF].unk2 >> 12);
+            ext->unkD4 = -(spd * D_80068BD4[h & 0xFFF].unk2 >> 12);
+        }
+    }
+    ext->unk84->unk10 = m->Engine->unk10;
+    ext->unk84->unk10.y = 0x80;
+}
 
 void PlotDinoScratch(NAS *m) {
     subengine *s;

@@ -41,7 +41,16 @@ typedef struct Ovl65DinoGem {
     u8 pad0[0xC];
     s32 unkC;
     s32 unk10;
-    u8 pad14[0x6C];
+    s32 unk14;
+    u8 pad18[0x10];
+    s32 unk28;
+    s32 unk2C;
+    u8 pad30[0x18];
+    s32 unk48;
+    s32 unk4C;
+    u8 pad50[0x18];
+    SLONG_XYZ unk68;
+    u8 pad74[0xC];
     s32 unk80;
     EXTengine *unk84;
     s32 unk88;
@@ -381,6 +390,8 @@ void func_800B55E8(s32 arg0, u16 arg1);
 s32 XZBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e);
 
 void func_800B9E68(s32 id);
+
+void PlotDinoGem(NAS *m);
 
 #endif /* BASH_OVL65_H */
 
