@@ -101,6 +101,18 @@ and current tools).
 
 ## Open leads
 
+- **`func_800BE158` (ovl60, parked, hack-only):** the swarm checkpoint is
+  registers 2/347 but only with nested `do { } while (0)` around each case's
+  `dx`/`dz` set. They do two jobs: end cse's block (cse.c
+  `cse_end_of_basic_block` stops at `NOTE_INSN_LOOP_END`) so `side1 = dx` and
+  `side2 = dz` stay register copies like the target's, and add loop-weighted
+  refs (flow.c `REG_N_REFS += loop_depth`) so `dz`/`dx` (need >= 9 refs over
+  ~209 insns) beat `side2` (8/194) and the hoisted grid base for `s7`/`fp`.
+  Natural C (in the file under `NON_MATCHING`) is structure 337/350: cse
+  folds the copies via `record_jump_equiv` on the switch path. Tried: plain
+  cases, one do-while, goto-shared tails, `dz = angle - 1`, `side0 = -dz`.
+  Next: find a natural loop note (a macro?), or ask for hack sign-off.
+
 - **Tune the permuter from its record.** Runs are logged since 2026-10-20
   (`decomp.py permstats`, `swarm.mjs stats`). Two ideas to try once there
   are a few dozen runs, compared on that record:
@@ -494,6 +506,13 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-22 (hand: `func_800BE158`, parked):** worked the 2/347
+  checkpoint under the updated `/match-function` rules (no hacks, permuter
+  only at registers stage). Its nested do-whiles are a hack; natural C
+  reaches structure 337/350 and is parked with the deciding rules (Open
+  leads). A permuter run started from the structure-stage C was stopped
+  under the new rule; no result used. Still 82.30%.
 
 - **2026-10-22 (swarm C, aborted):** queued the 35 never-tried 2-4 KB
   functions (`scratch/swarmC_only.txt`, from `scratch/untried_now.txt`).

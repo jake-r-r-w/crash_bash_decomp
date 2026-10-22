@@ -4343,7 +4343,142 @@ void func_800BDF60(s32 arg0, s32 *arg1, s32 *arg2) {
     }
 }
 
+#ifdef NON_MATCHING
+s32 func_800BE158(s32 i, s32 x, s32 z, s32 angle, s32 *outX, s32 *outZ) {
+    s32 dx;
+    s32 dz;
+    s32 side0, side1, side2, side3;
+    s32 off0, off1, off2, off3, off4, off5;
+    s32 f0, f1, f2;
+    s32 miss;
+    s32 px, pz;
+    s32 sb;
+
+    dz = dx = 0;
+    side0 = 0;
+    side1 = 0;
+    side2 = 0;
+    side3 = 0;
+    switch (angle) {
+    case 2:
+        dz = 1;
+        side0 = -1;
+        side1 = 0;
+        side2 = dz;
+        break;
+    case 0:
+        dz = -1;
+        side0 = 1;
+        side1 = 0;
+        side2 = dz;
+        break;
+    case 1:
+        dx = -1;
+        side1 = dx;
+        side0 = 0;
+        side2 = 0;
+        side3 = 1;
+        break;
+    case 3:
+        dx = 1;
+        side1 = dx;
+        side0 = 0;
+        side2 = 0;
+        side3 = -1;
+        break;
+    }
+    f0 = 0;
+    f1 = 0;
+    f2 = 0;
+    off0 = side3;
+    off1 = side2;
+    off2 = side1;
+    off3 = side0;
+    off4 = dz;
+    off5 = dx;
+    for (;;) {
+        miss = 0;
+        px = x + off5;
+        pz = z + off4;
+        if (px >= -1 && px < 9 && pz >= -1 && pz < 9) {
+            if (px >= 0 && px < 8 && pz >= 0 && pz < 8) {
+                if (!f0 && D_800C53DC[px][pz].unkA != i) {
+                    f0 = 1;
+                }
+                if (f0 && D_800C53DC[px][pz].unkA == i) {
+                    goto found;
+                }
+            } else if (((Ovl60ModeView *)D_8005A614)->mode == 11 && f0 &&
+                       func_800C0E40(i, px, pz)) {
+                goto found;
+            }
+        } else {
+            miss++;
+        }
+        px = x + off3;
+        pz = z + off2;
+        if (px >= -1 && px < 9 && pz >= -1 && pz < 9) {
+            if (px >= 0 && px < 8 && pz >= 0 && pz < 8) {
+                if (!f1 && D_800C53DC[px][pz].unkA != i) {
+                    f1 = 1;
+                }
+                if (f1 && D_800C53DC[px][pz].unkA == i) {
+                    goto found;
+                }
+            } else if (((Ovl60ModeView *)D_8005A614)->mode == 11 && f1 &&
+                       func_800C0E40(i, px, pz)) {
+                goto found;
+            }
+        } else {
+            miss++;
+        }
+        px = x + off1;
+        pz = z + off0;
+        if (px >= -1 && px < 9 && pz >= -1 && pz < 9) {
+            if (px >= 0 && px < 8 && pz >= 0 && pz < 8) {
+                if (!f2 && D_800C53DC[px][pz].unkA != i) {
+                    f2 = 1;
+                }
+                if (f2 && D_800C53DC[px][pz].unkA == i) {
+                    goto found;
+                }
+            } else if (((Ovl60ModeView *)D_8005A614)->mode == 11 && f2 &&
+                       func_800C0E40(i, px, pz)) {
+                goto found;
+            }
+        } else {
+            miss++;
+        }
+        if (miss >= 3) {
+            return 0;
+        }
+        off0 += side3;
+        off1 += side2;
+        off2 += side1;
+        off3 += side0;
+        off4 += dz;
+        off5 += dx;
+    }
+found:
+    if (px < 0) {
+        px = 0;
+    }
+    if (px >= 8) {
+        px = 7;
+    }
+    if (pz < 0) {
+        pz = 0;
+    }
+    if (pz >= 8) {
+        pz = 7;
+    }
+    *outX = px;
+    *outZ = pz;
+    return D_800C53DC[px][pz].unkE == 0;
+}
+#else
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BE158);
+#endif
 
 s32 func_800BE6C4(s32 arg0, Ovl60Goal *arg1) {
     Ovl60Move *m2;

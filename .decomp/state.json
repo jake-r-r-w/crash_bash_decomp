@@ -6212,7 +6212,10 @@
   "status": "matched"
  },
  "ovl60:800BE158": {
-  "auto_failed": "types"
+  "auto_failed": "types",
+  "blocked_at": "2026-10-22T07:03:32Z",
+  "note": "natural C (NON_MATCHING): structure 337/350; swarm checkpoint registers 2/347 only with nested do { } while (0) around each case's dx/dz set (hack). Deciding rules: cse.c record_jump_equiv + follow-jumps knows angle per case, so side1 = dx / side2 = dz fold to constants (COST(pseudo)=1 > CONST_INT 0); target keeps the copies, which needs a cse block end (cse_end_of_basic_block stops at NOTE_INSN_LOOP_END). global.c priority: dz/dx need >= 9 refs over ~209 insns (flow.c REG_N_REFS += loop_depth) to beat side2 (8/194, .124) and the hoisted grid base (13/320) for s7/fp; natural forms give 6. Tried: plain cases, single do-while, goto-shared tails, dz = angle - 1, perpendicular side0 = -dz. Next: a natural source of the loop note / extra loop-weighted refs (a macro?), or ask for hack sign-off",
+  "status": "blocked"
  },
  "ovl60:800BE6C4": {
   "matched_at": "2026-10-19T08:40:38Z",
