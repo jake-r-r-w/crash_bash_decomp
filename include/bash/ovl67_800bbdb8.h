@@ -695,7 +695,12 @@ typedef struct AstSceneObj {
     /* 0x10 */ s16 rx;
     /* 0x12 */ s16 ry;
     /* 0x14 */ s16 rz;
-    /* 0x16 */ u8 pad16[0x51 - 0x16];
+    /* 0x16 */ u8 pad16[0x20 - 0x16];
+    /* 0x20 */ s32 unk20;
+    /* 0x24 */ s32 unk24;
+    /* 0x28 */ s32 unk28;
+    /* 0x2C */ u8 pad2C[0x50 - 0x2C];
+    /* 0x50 */ u8 unk50;
     /* 0x51 */ u8 unk51;
     /* 0x52 */ s16 unk52;
     /* 0x54 */ u8 pad54[0x5C - 0x54];
@@ -704,6 +709,7 @@ typedef struct AstSceneObj {
     /* 0x64 */ AstKind k;
     /* 0x66 */ u8 pad66[0x74 - 0x66];
     /* 0x74 */ u16 id;
+    /* 0x76 */ s16 unk76;
 } AstSceneObj;
 typedef struct AstSlot {
     /* 0x00 */ SLONG_XYZ pos;
@@ -778,6 +784,69 @@ static inline void AstSfx(void) {
     }
 }
 
+/* func_800BDC0C: flags 0x40000000 and sets the fade (unk76) of an object
+ * between 0x5000 and 0x6000 ahead of hero engine e. */
+#define AST_NEAR(o, e)                                       \
+    if (o->pos.z < e->unk10.z + 0x6000) {                    \
+        o->flags |= 0x40000000;                              \
+        o->unk76 = abs(e->unk10.z - o->pos.z) - 0x5000;      \
+        if (o->unk76 >= 0x1000) {                            \
+            o->unk76 = 0xFFF;                                \
+        }                                                    \
+        if (o->unk76 < 0) {                                  \
+            o->unk76 = 0xFFF;                                \
+        }                                                    \
+        if (o->pos.z < e->unk10.z + 0x5000) {                \
+            o->unk76 = 0;                                    \
+            o->flags &= ~0x40000000;                         \
+        }                                                    \
+    } else {                                                 \
+        o->unk76 = 0;                                        \
+        o->flags &= ~0x40000000;                             \
+    }
+
+/* func_800BDC0C: spins the small asteroids (kinds 1-3) and moves the
+ * others but 7 down the track. */
+static inline void AstSpin(AstSceneObj *o, AstKind *k, u8 kind) {
+    if (k->kind >= 1 && k->kind <= 3) {
+        if (o->flags & 0x8000) {
+            o->pos.z -= 0x40;
+            if (k->kind == 1) {
+                o->rx += 0x18;
+                o->ry += 0x18;
+                o->rz += 0x18;
+            }
+            if (k->kind == 2) {
+                o->rx += 0x10;
+                o->ry += 0x10;
+                o->rz += 0x10;
+            }
+            if (k->kind == 3) {
+                o->rx += 8;
+                o->ry += 8;
+                o->rz += 8;
+            }
+            o->unk52 = 1;
+        }
+    } else if (kind != 7 && (o->flags & 0x8000)) {
+        o->pos.z -= 0x14;
+    }
+}
+
+/* Runs body with e set to the engine of the hero func_800BDC0C tracks:
+ * hero 0 in one-player games, else the first hero not out (status 0x2000). */
+#define AST_TRACKED_HERO(e, body)                          \
+    if (((BossGameView *)D_8005A614)->unk6C == 0) {        \
+        e = Heroes[0].hero_eng;                            \
+        body                                               \
+    } else if (!(Heroes[0].hero_status & 0x2000)) {        \
+        e = Heroes[0].hero_eng;                            \
+        body                                               \
+    } else if (!(Heroes[1].hero_status & 0x2000)) {        \
+        e = Heroes[1].hero_eng;                            \
+        body                                               \
+    }
+
 void func_800BD6E8(s32 *arg0, s32 arg1);
 
 void func_800BF37C(s32 arg0);
@@ -800,6 +869,8 @@ static inline void BossHeroSteer(s32 i) {
 }
 
 void func_800BC9B4(s32 *arg0, s32 arg1);
+
+void func_800BDC0C(void);
 
 void PlotNitroMine(NAS *nas);
 

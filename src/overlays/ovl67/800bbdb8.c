@@ -533,7 +533,179 @@ void func_800BDB00(void)
   func_800B6F4C();
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BDC0C);
+void func_800BDC0C(void) {
+    AstSceneObj *o;
+    AstKind *k;
+    EXTengine *e;
+    u8 kind;
+    s32 lim;
+    s32 zl;
+    s32 nMine;
+    s32 nAst;
+
+    nMine = 0;
+    o = (AstSceneObj *)((GfxScene *)D_80058AD0)->objs;
+    nAst = 0;
+    if (D_8005A680[0] != 0) {
+        if ((Heroes[0].hero_status & 0x2000) && (Heroes[1].hero_status & 0x2000)) {
+            return;
+        }
+    } else if (Heroes[0].hero_status & 0x2000) {
+        return;
+    }
+    for (;;) {
+        if (o == NULL) {
+            return;
+        }
+        k = &o->k;
+        if (k->mode == 0x63) {
+            o->flags &= ~0x8000;
+        } else if (k->mode != 0x64) {
+            if (o->k.kind == 7 && (o->flags & 0x8000)) {
+                o->unk51 = 0;
+                o->unk50 = 1;
+                if (o->unk20 < 0x7C18) {
+                    o->unk20 += 0x80;
+                    o->unk24 += 0x80;
+                    o->unk28 += 0x80;
+                }
+                if (Heroes[0].hero_eng->unk2C.x > 0) {
+                    Heroes[0].hero_eng->unk2C.x -= 0x30;
+                }
+                if (Heroes[0].hero_eng->unk2C.x < 0) {
+                    Heroes[0].hero_eng->unk2C.x = 0;
+                }
+                Heroes[0].hero_eng->unk2C.y = Heroes[0].hero_eng->unk2C.x;
+                Heroes[0].hero_eng->unk2C.z = Heroes[0].hero_eng->unk2C.x;
+                if (((BossGameView *)D_8005A614)->unk6C != 0) {
+                    Heroes[1].hero_eng->unk2C.x = Heroes[0].hero_eng->unk2C.x;
+                    Heroes[1].hero_eng->unk2C.y = Heroes[0].hero_eng->unk2C.x;
+                    Heroes[1].hero_eng->unk2C.z = Heroes[0].hero_eng->unk2C.x;
+                }
+                D_800C450C--;
+                if (D_800C450C == -1) {
+                    func_8001E588(D_8009F644, 0x100, 0);
+                }
+                if (D_800C450C == -0x3C) {
+                    func_8001E588(D_8009F644, -0x100, 0);
+                    func_800BDB00();
+                    return;
+                }
+                if (D_800C450C < 0x1F) {
+                    D_800C4488 = 1;
+                    D_800C448C = 0;
+                }
+                o->unk52 = 1;
+                D_800C45B4 = 0x100 - (o->unk20 >> 7);
+            }
+            if (k->kind == 6 || k->kind == 10 || k->kind == 9) {
+                if (o->flags & 0x8000) {
+                    if (k->kind != 7) {
+                        func_800BD6E8((s32 *)o, nMine);
+                        if (k->kind == 6) {
+                            o->rz += 0x20;
+                        }
+                        if (k->kind == 9) {
+                            o->rz -= 0x20;
+                        }
+                        o->unk52 = 1;
+                    }
+                }
+            }
+            if ((k->kind == 5 || k->kind == 8) && (o->flags & 0x8000)) {
+                o->unk51 = 0;
+                o->ry += 0x20;
+                if (D_800C4614[nAst].unk1C != 1) {
+                    o->pos.y = D_800C4614[nAst].pos.y;
+                    o->pos.x = D_800C4614[nAst].pos.x;
+                } else {
+                    o->pos.y = D_800C4614[nAst].pos.y + (D_80068BD4[(D_800C4614[nAst].ang - 0x400) & 0xFFF].unk2 * 512 >> 12);
+                    o->pos.x = D_800C4614[nAst].pos.x + (D_80068BD4[D_800C4614[nAst].ang & 0xFFF].unk2 * 512 >> 12);
+                }
+                D_800C4614[nAst].ang = (D_800C4614[nAst].ang + 0x20) & 0xFFF;
+                if (o->flags & 0x8000) {
+                    func_800BC9B4((s32 *)o, nAst);
+                }
+                o->unk52 = 1;
+            }
+            AstSpin(o, k, k->kind);
+            kind = k->kind;
+            if (kind < 4) {
+                o->flags |= 0x8000;
+                AST_TRACKED_HERO(e,
+                    if (o->pos.z < e->unk10.z - 0x800) {
+                        o->flags &= ~0x8000;
+                    })
+                AST_TRACKED_HERO(e,
+                    if (e->unk10.z + 0x6000 < o->pos.z) {
+                        o->flags &= ~0x8000;
+                    })
+            } else if ((u8)(kind - 5) < 6) {
+                if (kind == 5 || kind == 8) {
+                    if (D_800C4614[nAst].unk10 == 1) {
+                        o->flags &= ~0x8000;
+                    } else {
+                        o->flags |= 0x8000;
+                        if (k->kind == 8 && ((BossGameView *)D_8005A614)->unk6C != 0) {
+                            o->flags &= ~0x8000;
+                        }
+                    }
+                    AST_TRACKED_HERO(e,
+                        lim = D_800C4614[nAst].unk20;
+                        zl = e->unk10.z - lim;
+                        if (o->pos.z < zl) {
+                            o->flags &= ~0x8000;
+                            if (D_800C4614[nAst].unk14 == 0) {
+                                D_800C4614[nAst].unk14 = 1;
+                            }
+                        })
+                } else {
+                    o->flags |= 0x8000;
+                    if (k->kind == 6 || k->kind == 9 || k->kind == 10) {
+                        AST_TRACKED_HERO(e,
+                            if (o->pos.z < e->unk10.z - 0x800) {
+                                o->flags &= ~0x8000;
+                            })
+                    }
+                }
+                AST_TRACKED_HERO(e,
+                    if (e->unk10.z + 0x6000 < o->pos.z) {
+                        o->flags &= ~0x8000;
+                    })
+            } else {
+                AST_TRACKED_HERO(e,
+                    if (o->pos.z < e->unk10.z - 0x1000) {
+                        o->flags &= ~0x8000;
+                    })
+                AST_TRACKED_HERO(e,
+                    if (e->unk10.z + 0x6000 < o->pos.z) {
+                        o->flags &= ~0x8000;
+                    })
+            }
+            if (o->flags & 0x8000) {
+                if (((BossGameView *)D_8005A614)->unk6C == 0) {
+                    if (!(Heroes[0].hero_status & 0x2000)) {
+                        AST_NEAR(o, Heroes[0].hero_eng)
+                    }
+                } else if (!(Heroes[0].hero_status & 0x2000)) {
+                    AST_NEAR(o, Heroes[0].hero_eng)
+                } else if (!(Heroes[1].hero_status & 0x2000)) {
+                    AST_NEAR(o, Heroes[1].hero_eng)
+                }
+            } else {
+                o->flags &= ~0x40000000;
+                o->unk76 = 0;
+            }
+            if (k->kind == 5 || k->kind == 8) {
+                nAst++;
+            }
+            if (k->kind == 6 || k->kind == 9 || k->kind == 10) {
+                nMine++;
+            }
+        }
+        o = o->next;
+    }
+}
 
 void func_800BE70C(void) {
     NAS *first;
