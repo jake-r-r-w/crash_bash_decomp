@@ -1255,7 +1255,7 @@ void func_800B6258(s32 player) {
     if (h->hero_mode != 0x4E) {
         return;
     }
-    target = func_800CB178(player, &dist);
+    target = FindClosetPlayer(player, &dist);
     if (target == -1 && h->hero_anim->Aindex == 0x1E) {
         ext->unk14 = 8;
         return;
@@ -1357,7 +1357,7 @@ void func_800B6D74(s32 player) {
     }
     if (D_8005A648 == 0x15) {
         if (func_800CB56C(player) != 0) {
-            t = func_800CB178(player, &dist);
+            t = FindClosetPlayer(player, &dist);
             if (t != -1) {
                 func_800B6EB4(player, t);
             }
@@ -1487,7 +1487,7 @@ void func_800B7224(s32 player) {
     best = 0;
     if (D_8005A648 == 0x15) {
         if (Ovl62HasBomb(player)) {
-            t = func_800CB178(player, &dist);
+            t = FindClosetPlayer(player, &dist);
             if (t != -1) {
                 func_800B6EB4(player, t);
             }
@@ -1635,7 +1635,7 @@ void func_800B782C(s32 player) {
     }
     if (D_8005A648 == 0x15) {
         if (Ovl62HasBomb(player)) {
-            r = func_800CB178(player, &dist);
+            r = FindClosetPlayer(player, &dist);
             if (r != -1) {
                 func_800B6EB4(player, r);
             }
@@ -5086,7 +5086,7 @@ void func_800CB134(s32 player) {
     }
 }
 
-s32 func_800CB178(s32 self, s32 *dist) {
+u32 FindClosetPlayer(u32 self, s32 *dist) {
     SLONG_XYZ pos;
     s32 best;
     HeroInfo *h;
@@ -5236,7 +5236,7 @@ loop:
     return 0;
 }
 
-NAS *func_800CB5F4(void) {
+NAS *IsBombAvailable(void) {
     NAS *nas;
     Ext10000000 *ext;
 

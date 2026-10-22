@@ -559,6 +559,9 @@ signature alone is not enough.
     other `Test*Chance` functions (`func_800B9398`, `B94B8`, `B9600`,
     `B9714`, `B98AC`) each roll against a per-hero table at `D_800D4E0C` and
     start an AI state, but the states have no names yet: left unnamed.
+    `FindClosetPlayer(p, &dist)` (the leak's spelling) returns the nearest
+    live opponent; `IsBombAvailable()` the first bomb object in
+    `D_800D5294`'s list whose extension is still free.
   The `CheckBounds` functions take the leak's `EXTengine *`; their old local
   stand-in structs were `unk10.x/z`, `collision_box.radius/flags` and `unk1E`.
 - **Pogo challenges** (ovl60). The challenge flags at `D_8005A614+0x32` are

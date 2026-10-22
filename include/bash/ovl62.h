@@ -501,7 +501,7 @@ done:
     return found;
 }
 
-/* func_800CB178, inlined into func_800B90C0. */
+/* FindClosetPlayer, inlined into func_800B90C0. */
 static inline s32 Ovl62Closest(s32 self, s32 *dist) {
     SLONG_XYZ pos;
     s32 best;
@@ -559,7 +559,7 @@ loop:
     return 0;
 }
 
-/* func_800CB5F4, inlined into func_800B6FEC. */
+/* IsBombAvailable, inlined into func_800B6FEC. */
 static inline NAS *Ovl62FreeBomb(void) {
     NAS *nas;
     BombMakerExt *ext;
@@ -629,7 +629,7 @@ extern NAS *D_800D52B4;
 
 s32 func_800C9C98(u8 *arg0);
 
-NAS *func_800CB5F4(void);
+NAS *IsBombAvailable(void);
 
 void func_800D2C38(s32 player);
 
@@ -964,7 +964,7 @@ extern NAS *D_800D5448;
 
 s32 func_800B3740(s32 arg0);
 
-s32 func_800CB178(s32 self, s32 *dist);
+u32 FindClosetPlayer(u32 self, s32 *dist);
 /* Weight death extension (0x28 bytes, id 0x10000000). */
 typedef struct WeightDeathExt {
     /* 0x00 */ u8 pad0[0xC];

@@ -65,3 +65,5 @@ InitialisePOLAR = 0x800BAFA0; // type:func
 UpdatePOLAR = 0x800BB810; // type:func
 PlayerActionCount = 0x800CAF94; // type:func
 TestChaseChance = 0x800B9994; // type:func
+FindClosetPlayer = 0x800CB178; // type:func
+IsBombAvailable = 0x800CB5F4; // type:func
