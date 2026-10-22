@@ -781,7 +781,7 @@ void func_800B5660(s32 arg0);
 /* Six object pointers walked by func_800B372C and others. */
 extern s32 D_800CA544[];
 
-s32 func_800B82FC(s32 obj, SLONG_XYZ *a, s32 b, SLONG_XYZ *c);
+s32 XZBoxToSphere(s32 obj, SLONG_XYZ *a, s32 b, SLONG_XYZ *c);
 
 void func_800B5FFC(Ovl63EaseCam *c, s32 *pos);
 
@@ -895,7 +895,7 @@ typedef struct Ovl63Box {
     Ovl63BoxHalf hi;
 } Ovl63Box;
 
-/* Sets ang to a's rotation and passes v through (func_800B82FC). */
+/* Sets ang to a's rotation and passes v through (XZBoxToSphere). */
 static inline s32 Ovl63BoxPushRot(SVECTOR *ang, u16 *a, s32 v) {
     ang->vx = a[8];
     ang->vy = a[9];
@@ -903,7 +903,7 @@ static inline s32 Ovl63BoxPushRot(SVECTOR *ang, u16 *a, s32 v) {
     return v;
 }
 
-s32 func_800B82FC(s32 arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3);
+s32 XZBoxToSphere(s32 arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3);
 
 /* Spawns the 0x1605 puff at v (func_800B6474). */
 static inline void Ovl63SpawnPuff(SLONG_XYZ *v, s32 kind, void *anim) {

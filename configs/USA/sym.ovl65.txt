@@ -5,3 +5,4 @@ InitDinoScratch = 0x800BC5E0; // type:func
 PlotDinoScratch = 0x800BC1BC; // type:func
 InitDinoSmoke = 0x800BCD64; // type:func
 PlotDinoSmoke = 0x800B88E0; // type:func
+XZBoxToSphere = 0x800B8A40; // type:func

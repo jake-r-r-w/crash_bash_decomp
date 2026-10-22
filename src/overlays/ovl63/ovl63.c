@@ -20,7 +20,7 @@ s32 func_800B345C(s32 player) {
     pos.z = h->hero_eng->unk10.z - (0x40 * D_80068BD4[h->hero_eng->unk1E & 0xFFF].unk2 >> 12);
 loop:
     if (i < 6) {
-        if (func_800B82FC(*p, &pos, 1, &pos) != -1) {
+        if (XZBoxToSphere(*p, &pos, 1, &pos) != -1) {
             h->hero_ai->AIpad &= ~0x20;
             h->hero_ai->AIpad |= 0x2000;
             h->hero_ai->AIpad |= 0x80;
@@ -103,7 +103,7 @@ void func_800B372C(s32 player) {
         p = D_800CA544;
     loop:
         if (i < 6) {
-            r = func_800B82FC(*p, &pos, 1, &pos);
+            r = XZBoxToSphere(*p, &pos, 1, &pos);
             if (r != -1) {
                 p++;
                 if (!(r & 4)) {
@@ -1552,7 +1552,7 @@ INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B7D94);
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl63/ovl63", D_800B3310);
 
-s32 func_800B82FC(s32 arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3) {
+s32 XZBoxToSphere(s32 arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3) {
     VECTOR d;
     VECTOR n;
     MATRIX m;

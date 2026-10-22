@@ -37,3 +37,4 @@ InitRippled = 0x800C4ABC; // type:func
 PlotRippled = 0x800C49DC; // type:func
 InitInnerRipple = 0x800C48E8; // type:func
 PlotInnerRipple = 0x800C4810; // type:func
+XZBoxToSphere = 0x800B82FC; // type:func

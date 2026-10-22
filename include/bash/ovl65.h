@@ -331,7 +331,7 @@ typedef struct Ovl65Box2 {
 
 s32 csqrt(s32 x);
 
-/* func_800B8A40's push: sets up the object's rotation and passes v through. */
+/* XZBoxToSphere's push: sets up the object's rotation and passes v through. */
 static inline s32 Ovl65BoxPushRot(SVECTOR *ang, u16 *a, s32 v) {
     ang->vx = a[8];
     ang->vy = a[9];
@@ -376,7 +376,7 @@ void func_800BAE94(NAS *arg0);
 
 void func_800B62D8(s32 arg0, u16 arg1);
 
-s32 func_800B8A40(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e);
+s32 XZBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e);
 
 void func_800B9E68(s32 id);
 

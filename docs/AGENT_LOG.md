@@ -101,6 +101,13 @@ and current tools).
 
 ## Open leads
 
+- **Dashboard data % falls with each `rename` (tooling bug).** `data_b` went
+  8404 -> 7680 over 2026-10-22's renames (about 32 B per rename call, 304 B
+  for the three `XZBoxToSphere`s) while every binary still matches. Not the
+  `INCLUDE_RODATA` files or stale `func_*.s` files; `scratch/datachk.py`
+  lists rodata by owner. Suspect `rodata_syms` after the re-split (symbol
+  boundaries or owner lists change when functions get names). Find it with
+  a before/after `data_summary` around one rename.
 - **`PogoAI_RadialSearch` (was `func_800BE158`; ovl60, parked, hack-only):** the swarm checkpoint is
   registers 2/347 but only with nested `do { } while (0)` around each case's
   `dx`/`dz` set. They do two jobs: end cse's block (cse.c

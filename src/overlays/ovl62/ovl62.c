@@ -4144,7 +4144,7 @@ void PlotSniperMissile(NAS *m) {
             PolarMissileBlast(m, 0);
             ext->unk30 = 1;
         }
-        if (func_800C9230(D_800D5448->Engine, m->Engine, 0) != 0 || ext->unk34 == 0x3C) {
+        if (XZBoxToSphere(D_800D5448->Engine, m->Engine, 0) != 0 || ext->unk34 == 0x3C) {
             PolarMissileBlast(m, 1);
             PlaySfx(0x22F, NULL, NULL, 0x1000, 0x1E00, 0);
             boss->unk8C = 0xC;
@@ -4154,7 +4154,7 @@ void PlotSniperMissile(NAS *m) {
                 PlaySfx(0x23B, NULL, NULL, 0x1000, 0x1E00, 0);
             }
         } else {
-            if (func_800C9230(boss->unk84->Engine, m->Engine, 1) == 0) {
+            if (XZBoxToSphere(boss->unk84->Engine, m->Engine, 1) == 0) {
                 return;
             }
             PolarMissileBlast(m, 1);
@@ -4188,7 +4188,7 @@ void PlotSniperMissile(NAS *m) {
     }
 }
 
-s32 func_800C9230(EXTengine *a, EXTengine *b, s32 c) {
+s32 XZBoxToSphere(EXTengine *a, EXTengine *b, s32 c) {
     VECTOR d;
     VECTOR n;
     MATRIX m;

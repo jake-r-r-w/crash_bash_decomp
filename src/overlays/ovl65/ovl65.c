@@ -1902,7 +1902,7 @@ void PlotDinoSmoke(NAS *m) {
     func_800250B0(m);
 }
 
-s32 func_800B8A40(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e) {
+s32 XZBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e) {
     VECTOR d;
     VECTOR n;
     MATRIX m;
