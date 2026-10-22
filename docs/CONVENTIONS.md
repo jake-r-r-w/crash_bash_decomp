@@ -86,8 +86,9 @@ A file is finished when every function in it reaches level 4.
 - Register pins, empty `asm("")` barriers, no-op `x++; x--;` pairs, dead
   stores (a local set again at the bottom of a loop that its next pass
   overwrites, locals only stored to feed each other, a first store
-  overwritten before any read) and if/else arms with identical code are a
-  last resort: `decomp.py done` refuses them without `--hack "why"`, which
+  overwritten before any read), if/else arms with identical code and
+  `do { } while (0)` wrappers written to steer a pass (in the body, or moved
+  into a macro or static inline for the same effect) are a last resort: `decomp.py done` refuses them without `--hack "why"`, which
   goes in the commit message. Remove them when the function matches without;
   `decomp.py hacks` lists every hack match with its commit's reason, to retry
   them after tool upgrades. One reviewed as plausibly the original source (a

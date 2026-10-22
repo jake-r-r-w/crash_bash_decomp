@@ -103,6 +103,15 @@ and current tools).
 
 ## Open leads
 
+- **The do-while lint misses headers.** `lint_body` reads a function's body
+  in its `.c` file, so a `do { } while (0)` inside a header macro or a
+  header `static inline` passes: 7 today (`OVL60_ROUND_OVER`, ovl64's five
+  `OVL64_*` macros, `Ovl62HasBomb`, `Ovl62Closest`, `Ovl63HitHero`,
+  `LaserBurst`). The `OVL64_*` macros came in on 2026-10-22 with
+  `func_800B4144` and `PlotBalloon`, whose worker noted it used a macro to
+  pass the lint. They read as real idioms (round draw, pop, bounce, float,
+  shadow), so it is a judgement call: extend the lint to macros and inlines
+  the body uses, then review each like the 6 accepted ones.
 - **`PogoAI_RadialSearch` (was `func_800BE158`; ovl60, parked, hack-only):** the swarm checkpoint is
   registers 2/347 but only with nested `do { } while (0)` around each case's
   `dx`/`dz` set. They do two jobs: end cse's block (cse.c

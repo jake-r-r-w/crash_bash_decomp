@@ -29,8 +29,8 @@ first build that isn't byte-identical.
 Alongside matching, hack matches are paid down as they appear rather than
 left for Phase 6. A hack is any match the gate's lint flags (`decomp.py
 hacks`, and the Hacks tile on the dashboard): register pins, empty
-`asm("")` barriers, no-op `++`/`--` pairs, dead stores and identical
-if/else arms. After each
+`asm("")` barriers, no-op `++`/`--` pairs, dead stores, identical
+if/else arms and `do { } while (0)` wrappers (since 2026-10-22). After each
 swarm run, run `decomp.py hacks` and work the new ones by hand (see the
 Phase 6 item for the rule). No hack is committed without a `Hack:` line
 in its match commit saying what it works around and what the natural C
