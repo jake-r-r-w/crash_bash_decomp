@@ -110,6 +110,30 @@ class Declarations(unittest.TestCase):
                 "} Pt;\n", "void f(s32 x);\n", "extern s32 x;\n"]
         self.assertEqual([top for _, top in decomp.top_level(text)], [True, False, False, False, True, True])
 
+    def test_dedupe_keeps_names_the_header_uses(self):
+        """Tank renames (2026-10-22): ovl5f.h's inline functions use Heroes, which engine.h
+        (included after it) also declares; dropping ovl5f.h's copy broke them."""
+        d = tempfile.mkdtemp()
+        os.makedirs(f"{d}/bash")
+        own, other, src = f"{d}/bash/own.h", f"{d}/bash/other.h", f"{d}/x.c"
+        with open(own, "w") as f:
+            f.write("/* owner: x.c */\ntypedef struct { s32 n; } T;\nextern s32 Heroes[4];\n"
+                    "static inline s32 g(void) { return Heroes[0]; }\nvoid Renamed(u32 p);\n")
+        with open(other, "w") as f:
+            f.write("extern s32 Heroes[4];\nvoid Renamed(u32 p);\nextern s32 n;\n")
+        with open(src, "w") as f:
+            f.write('#include "bash/own.h"\n#include "bash/other.h"\n')
+        old = decomp.HEADERS, decomp.owned_header
+        decomp.HEADERS, decomp.owned_header = d, lambda s: own
+        try:
+            decomp.dedupe_owned(src)
+        finally:
+            decomp.HEADERS, decomp.owned_header = old
+        kept = open(own).read()
+        self.assertNotIn("void Renamed", kept)
+        self.assertIn("extern s32 Heroes[4];", kept)
+        self.assertIn("s32 n; }", kept)
+
     def test_copy_decls(self):
         """A copy gets the declarations its original's file sees and its own file doesn't (the
         ovl64:800BB52C case: an implicit call to a function pointer)."""

@@ -2644,9 +2644,15 @@ def dedupe_owned(src):
         p = f"{HEADERS}/{m.group(1)}" if m else None
         if p and p != h and os.path.exists(p):
             others |= {decl_name(x) for x, top in top_level(read(p).splitlines()) if top} - {None}
-    lines = read(h).splitlines(keepends=True)
-    # struct members (`s32 x;`) look like declarations too: only drop top-level lines
-    kept = [l for l, top in top_level(lines) if not top or decl_name(l) not in others]
+    text = read(h)
+    lines = text.splitlines(keepends=True)
+
+    def drop(l, top):
+        # struct members (`s32 x;`) look like declarations too: only top-level lines go, and not
+        # a name the header itself uses (its inline functions may come before the other header)
+        n = decl_name(l) if top else None
+        return n in others and len(re.findall(rf"\b{re.escape(n)}\b", text)) == 1
+    kept = [l for l, top in top_level(lines) if not drop(l, top)]
     if len(kept) != len(lines):
         write(h, "".join(kept))
 
