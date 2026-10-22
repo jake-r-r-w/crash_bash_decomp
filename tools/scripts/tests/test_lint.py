@@ -147,6 +147,19 @@ class Helpers(unittest.TestCase):
              "#define WRAP() (Get() + 1)\n")
         self.assertTrue(any(s.startswith("do { } while (0) wrapper in Get") for s in self.lint_with(h, "g = WRAP();")))
 
+    def test_accepted_idiom_is_clean(self):
+        """OVL66_SET_CLOSEST (2026-10-22): a macro the human accepted is not a hack anywhere."""
+        h = "#define SET(b, v) do { (b) = (v); } while (0)\n"
+        d = tempfile.mkdtemp()
+        with open(os.path.join(d, "h.h"), "w") as fh:
+            fh.write(h)
+        src = os.path.join(d, "f.c")
+        with open(src, "w") as fh:
+            fh.write('#include "h.h"\nint g;\nvoid f(void)\n{\n    SET(g, 1);\n}\n')
+        body = decomp.extract_function(open(src).read(), "f")
+        self.assertTrue(decomp.helper_hacks(src, body, idioms={}))
+        self.assertEqual(decomp.helper_hacks(src, body, idioms={"SET": "why"}), [])
+
     def test_unused_or_clean_helpers_are_clean(self):
         h = "#define POP(x) do { x = 0; } while (0)\n#define ADD(x) ((x) + 1)\n"
         self.assertEqual(self.lint_with(h, "g = ADD(g);"), [])

@@ -45,8 +45,8 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   swap), `sched NAME` (why cc1 allocated and scheduled it so: priorities, each
   block's memory-insn count, and the rule that took each insn off the ready
   list: priority, birthing, class, potential hazard or luid), `splitvars NAME VAR` (search splits of a variable), `hacks` (hack matches to
-  revisit, with their reasons, including hacks in the macros and inlines they use; `--accept NAME --why` marks one reviewed as plausibly
-  original, off the count), `permute NAME
+  revisit, with their reasons, including hacks in the macros and inlines they use; `--accept NAME --why`, on the human's yes, accepts a
+  function, or a macro/inline wherever it's used, as plausibly original: not a hack), `permute NAME
   --differing` (permute only the differing blocks' C), `permstats` (every
   permuter run: speed, improvements, matches), `units [SEG]` (evidence
   for file boundaries: switch-table parity proves a file start in any

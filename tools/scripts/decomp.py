@@ -28,6 +28,8 @@ P_PROJ = os.path.join(DEC, "project.json")
 P_FUNCS = os.path.join(DEC, "functions.json")
 P_STATE = os.path.join(DEC, "state.json")
 P_HIST = os.path.join(DEC, "history.json")
+# macros and static inlines accepted as the original's own idiom (hacks --accept NAME): not hacks
+P_IDIOMS = os.path.join(DEC, "idioms.json")
 CFG = "configs/USA"          # splat configs, symbols, checksums, compiler settings
 P_MK = f"{CFG}/project.mk"
 P_SUMS = f"{CFG}/checksum.sha"
@@ -2265,11 +2267,14 @@ def helper_defs(src):
     return defs
 
 
-def helper_hacks(src, body):
+def helper_hacks(src, body, idioms=None):
     """Hacks in the macros and static inline functions BODY uses (and the ones they use), as
     `<kind> in <name> (<file>)`: moving a do-while or a dead store into a header only hides it
-    (2026-10-22: the OVL64_* macros wrapped in do { } while (0) to pass the lint)."""
-    defs, out, seen = helper_defs(src), [], set()
+    (2026-10-22: the OVL64_* macros wrapped in do { } while (0) to pass the lint). A helper the
+    human accepted as the original's idiom (IDIOMS, default .decomp/idioms.json) isn't one."""
+    if idioms is None:
+        idioms = jload(P_IDIOMS, {})
+    defs, out, seen = helper_defs(src), [], set(idioms)
     todo = [w for w in dict.fromkeys(re.findall(r"\b[A-Za-z_]\w*\b", re.sub(r"/\*.*?\*/", "", body, flags=re.S)))
             if w in defs]
     while todo:
@@ -4573,20 +4578,31 @@ def cmd_hacks(a):
     if a.accept:
         if not a.why:
             raise SystemExit("--accept needs --why: why the flagged code is plausibly the original")
-        key, e = find_func(funcs, a.accept)
-        st = jload(P_STATE, {})
-        st.setdefault(key, {})["hack_ok"] = a.why
-        jsave(P_STATE, st)
-        print(f"{e['name']}: reviewed, plausibly original: {a.why}")
+        is_func = (any(a.accept in (e["name"], e["orig"], k) for k, e in funcs.items())
+                   or a.accept in sym_names().values())
+        if not is_func:
+            # a macro or static inline: accepted wherever it is used
+            idioms = jload(P_IDIOMS, {})
+            idioms[a.accept] = a.why
+            jsave(P_IDIOMS, idioms)
+            print(f"{a.accept}: accepted as the original's idiom, not a hack: {a.why}")
+        else:
+            key, e = find_func(funcs, a.accept)
+            st = jload(P_STATE, {})
+            st.setdefault(key, {})["hack_ok"] = a.why
+            jsave(P_STATE, st)
+            print(f"{e['name']}: accepted as plausibly original, not a hack: {a.why}")
     stat, _ = statuses(funcs)
     rows = hack_rows(funcs, sym_names(), stat)
     ok = hack_rows(funcs, sym_names(), stat, reviewed=True)
     for r in rows:
         print(f"{r['name']} ({r['seg']}): {r['kinds']}; {r['commit']}: {r['why']}")
     for r in ok:
-        print(f"reviewed: {r['name']} ({r['seg']}): {r['kinds']}; plausibly original: {r['why']}")
+        print(f"accepted: {r['name']} ({r['seg']}): {r['kinds']}; plausibly original: {r['why']}")
+    for name, why in sorted(jload(P_IDIOMS, {}).items()):
+        print(f"accepted idiom: {name}: {why}")
     print(f"{len(rows)} function(s) match only with a hack; retry them without it after tool upgrades"
-          + (f" ({len(ok)} more reviewed as plausibly original)" if ok else ""))
+          + (f" ({len(ok)} more accepted as plausibly original, not hacks)" if ok else ""))
     if a.accept:
         cmd_progress(a)  # the dashboard counts hacks
 
@@ -5402,8 +5418,9 @@ def main():
     p.set_defaults(fn=cmd_block)
     p = sub.add_parser("hacks", help="matched functions that need a hack (register pin, asm barrier, "
                        "no-op pair, dead store, identical arms), with their commit's reason")
-    p.add_argument("--accept", metavar="NAME", help="mark NAME's flagged code as reviewed: plausibly "
-                   "the original source, so it leaves the hacks count")
+    p.add_argument("--accept", metavar="NAME", help="accept NAME's flagged code as plausibly the "
+                   "original source (only on the human's yes), so it is not a hack: a function, or a "
+                   "macro/static inline, which is then clean wherever it is used (.decomp/idioms.json)")
     p.add_argument("--why", help="with --accept: the reason")
     p.set_defaults(fn=cmd_hacks)
     p = sub.add_parser("unblock", help="unpark functions (their park notes stay) so they are offered again")
