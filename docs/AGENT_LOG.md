@@ -547,7 +547,16 @@ Newest first, a few lines each. Details are in the commits.
   loop-weighted ref; it matches in both loops too, so it reads like a
   macro around `best = d; found = ...`. Loop shape (the sibling's
   `do { e = &T[i]; ... } while`), pointer locals and an `else if` split
-  don't help. Awaiting a call on `hacks --accept`.
+  don't help. From the dumps (`-df`: flow.c counts REG_N_REFS +=
+  loop_depth before combine; global.c allocno_compare): `arg0`'s 10 refs
+  are 3 `Heroes[arg0]` multiplies (3 mentions each) + its copy, the same 3
+  as the target, and `x`/`z` are loaded at their block's end (hazard), so
+  the target's flow RTL had `found` >= 8 refs (beats `arg0` 0.160) and
+  `best` >= 11 (beats `z` 0.248). The wrapper in loop 1, loop 2 or both
+  matches; around the whole body it doesn't. A second `found != 0` test
+  (`return found != 0`, `?:`, two ifs) gives `found` its 8th ref and `fp`
+  but becomes an `sltu` where the target branches on constants. Awaiting
+  a call on `hacks --accept` (macro around `best = d; found = ...`).
 
 - **2026-10-22 (hand: hack reworks, no permuter):** `func_800115D8`
   without its do-while (2202c6e4): `arg3` is `s32`, not `s16`. A narrow
