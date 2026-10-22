@@ -137,6 +137,20 @@ and current tools).
   `dx*dx + dz*dz` to the dying `dz*dz` (both v1, the 0x15F8F constant v0)
   where the target keeps them apart (sum v0, product t1, constant v1);
   statement and operand order don't change it.
+- **Hack families (2026-10-22, `scratch/families.py`):** each do-while
+  hack compiled with and without its wrappers, all cc1 dumps, first pass
+  whose RTL differs (notes, labels and insn ids ignored): 44 flow (same
+  RTL, only loop-weighted refs differ: allocation priority), 23 cse, 11
+  jump, 3 loop, 2 sched, 1 none (84 of 86). A cse-first diff can be
+  incidental: in `func_800B7858` cse reuses the pre-truncation `ang` sum
+  in the plain build, but the target does too; what matters is the refs.
+  `func_800B7858`/`func_800B7C58` (ovl67) and `func_800B7C60`/
+  `func_800B808C` (ovl61) are one function: `angle` (a3 -> s1) needs ~5
+  weighted refs to outrank `from` (0.109) but natural C gives 2 (0.023;
+  a u16 parameter only shortens its life to 45). `func_80010C70`/
+  `func_80010E8C` (main): the `Heap_FindFree` inline is the swarm's;
+  passing `words = ...` inside the call gets 5/135, the loop written in
+  place is structurally off (123/135).
 - **Header do-whiles to review (lint extended 2026-10-22).** The lint now
   reads the macros and `static inline` functions a body uses (outside the
   leaked headers), and matches `do { } while (0)` at any brace depth (the
