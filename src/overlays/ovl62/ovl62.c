@@ -5183,7 +5183,413 @@ void InitBearminator(NAS *m) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotBearminator);
+void PlotBearminator(NAS *m) {
+    BearminatorExt *ext;
+    Ovl62EaseCam *cam;
+    EXTengine *fux;
+    u8 *p;
+    s32 done;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    fux = (EXTengine *)m->FUX;
+    cam = FindExtension(m, 0x20000000);
+    if (cam == NULL) {
+        return;
+    }
+    done = func_800250B0(m);
+    p = D_800D5454;
+    for (;;) {
+        EXTengine *n;
+        EXTengine *e;
+        s32 dx;
+        s32 dz;
+        s32 d;
+        s32 a;
+        s32 s;
+
+        if (p == NULL) {
+            break;
+        }
+        n = ((NAS *)p)->Engine;
+        if (n != NULL) {
+            e = m->Engine;
+            if (n != e) {
+                dx = n->unk10.x - e->unk10.x;
+                dz = n->unk10.z - e->unk10.z;
+                d = dx * dx + dz * dz;
+                if (d <= 0x3D08F) {
+                    s = 0x7D00 - csqrt(d);
+                    a = get_angle(dx, dz) & 0xFFF;
+                    m->Engine->unk10.x -= ((s + 2) * D_80068BD4[(a - 0x400) & 0xFFF].unk2) >> 18;
+                    m->Engine->unk10.z -= ((s + 2) * D_80068BD4[a].unk2) >> 18;
+                }
+            }
+        }
+        p = *(u8 **)(p + 0x20);
+    }
+    switch (ext->unkC) {
+    case 8:
+        D_800AD12C = 0;
+        break;
+    case 3:
+        m->Engine->sub->flags &= ~0x8000;
+        if (D_800D5DC4->UserInfo.user1 != 0) {
+            s32 r;
+
+            r = Random(0x29C) + 0x400;
+            ext->vel[0] = (r * D_80068BD4[(ext->unk94 - 0x400) & 0xFFF].unk2) >> 12;
+            ext->vel[1] = 0;
+            ext->vel[2] = (r * D_80068BD4[ext->unk94 & 0xFFF].unk2) >> 12;
+            *(SLONG_XYZ *)ext->from = m->Engine->unk10;
+            func_8008C5C4(ext->from, ext->vel, &ext->unk38, &m->Engine->unk10.x);
+            m->Engine->sub->flags |= 0x8000;
+            ext->unkC = 4;
+        }
+        break;
+    case 9:
+        if (--ext->unkB0 == -1) {
+            SpawnNASById(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1612, 0x11);
+            ext->unkB0 = 1;
+        }
+        m->Engine->sub->unk74 = 0x4100;
+        m->Engine->unk1C += 0x200;
+        if (ext->unk4C < 0) {
+            func_80026980(ext->unk98);
+        }
+        if (func_8008C5C4(ext->from, ext->vel, &ext->unk38, &m->Engine->unk10.x) == 0) {
+            break;
+        }
+        goto kill;
+    case 4:
+        m->Engine->sub->unk74 = 0x4100;
+        m->Engine->unk1C += 0x200;
+        if (func_8008C5C4(ext->from, ext->vel, &ext->unk38, &m->Engine->unk10.x) != 0) {
+            s32 r;
+
+            if (ext->unkB4 != 0) {
+                m->Engine->unk10.y = 0;
+                ext->unkC = 9;
+                r = Random(2);
+                if (r == 0) {
+                    PlaySfx(0x228, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (r == 1) {
+                    PlaySfx(0x229, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (r == 2) {
+                    PlaySfx(0x22A, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                ext->unk4C = -((ext->unk4C * 0xAA) >> 8);
+                return;
+            }
+            func_80025FAC((EXTanimator *)ext->cursor, 2);
+            ext->unkC = 5;
+            r = Random(2);
+            if (r == 0) {
+                PlaySfx(0x228, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (r == 1) {
+                PlaySfx(0x229, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (r == 2) {
+                PlaySfx(0x22A, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (D_8005A680[0] != 0) {
+                ext->unkA0 = r;
+            } else {
+                ext->unkA0 = 0;
+            }
+            m->Engine->unk1C = 0;
+            fux->sub->flags |= 0x8000;
+            m->Engine->unk10.y = 0;
+            return;
+        }
+        break;
+    case 5: {
+        HeroInfo *hi;
+        EXTengine *h;
+        NAS *n;
+
+        ((Ovl62EaseCam *)ext->unkAC)->x.cur = 0;
+        ((Ovl62EaseCam *)ext->unkAC)->z.cur = 0;
+        ((Ovl62EaseCam *)ext->unkAC)->x.target = 0;
+        ((Ovl62EaseCam *)ext->unkAC)->z.target = 0;
+        if (ext->unk1C >= 7) {
+            if (ext->unkA4-- < 0) {
+                PlaySfx(0x23C, NULL, NULL, 0x1000, 0x1E00, 0);
+                ext->unkA4 = ((0xF - (0x5A - ext->unk1C) * 3) / 90 + 3) * 2;
+            }
+        }
+        ext->unkA8++;
+        if (ext->unk1C == 6) {
+            PlaySfx(0x23D, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (((Ovl62BearView *)D_8005A614)->unk6C != 0) {
+            HeroInfo *hb = Heroes;
+
+            hi = &hb[((Ovl62BearView *)D_8005A614)->lead];
+            if (hi->hero_status & 0x2000) {
+                ext->unkA0 = hi->hero_teammate;
+            }
+            if (hb[hb[((Ovl62BearView *)D_8005A614)->lead].hero_teammate].hero_status & 0x2000) {
+                ext->unkA0 = ((Ovl62BearView *)D_8005A614)->lead;
+            }
+            hi = &hb[((Ovl62BearView *)D_8005A614)->lead];
+            if ((hi->hero_status & 0x2000) && (hb[hi->hero_teammate].hero_status & 0x2000)) {
+                ext->unkC = 8;
+                func_80025FAC((EXTanimator *)ext->cursor, 3);
+                return;
+            }
+        } else if (Heroes[0].hero_status & 0x2000) {
+            ext->unkC = 8;
+            func_80025FAC((EXTanimator *)ext->cursor, 3);
+        }
+        h = Heroes[ext->unkA0].hero_eng;
+        ext->unk18 = (get_angle(h->unk10.x - m->Engine->unk10.x, h->unk10.z - m->Engine->unk10.z) + 0x800) & 0xFFF;
+        ext->unk9C->sub->flags |= 0x8000;
+        ext->unk9C->unk10 = m->Engine->unk10;
+        ext->unk9C->unk10.y -= 0x19A;
+        ext->unk9C->unk5E = 1;
+        m->Engine->unk1E += ((ext->unk18 - m->Engine->unk1E) << 20) >> 22;
+        ext->unk9C->unk1E = m->Engine->unk1E;
+        if (ext->unk1C-- < 0) {
+            ext->unkC = 2;
+            n = SpawnNASById(m->Engine->unk10.x, m->Engine->unk10.y - 0x19A, m->Engine->unk10.z, 0x161C, 0x11);
+            if (n != NULL) {
+                n->Engine->unk1E = m->Engine->unk1E;
+                ext->unk9C->sub->flags &= ~0x8000;
+            }
+            cam->x.target = 0;
+            cam->z.target = 0;
+            ext->unk1C = 0x5A;
+            func_80025FAC((EXTanimator *)ext->cursor, 0);
+        }
+        break;
+    }
+    case 7: {
+        EXTengine *e;
+
+        e = m->Engine;
+        if (e->unk10.z > 0) {
+            e->sub->unk68 = 0x400;
+        } else {
+            e->sub->unk68 = 0x200;
+        }
+        m->Engine->sub->flags |= 0x02000000;
+        fux->sub->flags &= ~0x8000;
+        if (done != 0) {
+        kill:
+            PlaySfx(0x45D, NULL, NULL, 0x1000, 0x1E00, 0);
+            KillNAS(ext->unk98);
+            KillNAS(m);
+            return;
+        }
+        break;
+    }
+    case 0: {
+        HeroInfo *hi;
+        EXTengine *h;
+        s32 near;
+        s32 r;
+        s32 s;
+
+        r = Random(3);
+        s = ((EXTanimator *)ext->cursor)->Aindex;
+        if (s == 1) {
+            if (r == 0) {
+                PlaySfx(0x230, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (r == s) {
+                PlaySfx(0x231, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (r == 2) {
+                PlaySfx(0x232, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+        }
+        if (func_800C5DCC(m) != 0) {
+            goto fall;
+        }
+        if (ext->unk14-- < 0) {
+            if (((Ovl62BearView *)D_8005A614)->unk6C != 0) {
+                HeroInfo *hb = Heroes;
+
+                hi = &hb[((Ovl62BearView *)D_8005A614)->lead];
+                if (hi->hero_status & 0x2000) {
+                    ext->unkA0 = hi->hero_teammate;
+                }
+                if (hb[hb[((Ovl62BearView *)D_8005A614)->lead].hero_teammate].hero_status & 0x2000) {
+                    ext->unkA0 = ((Ovl62BearView *)D_8005A614)->lead;
+                }
+                hi = &hb[((Ovl62BearView *)D_8005A614)->lead];
+                if ((hi->hero_status & 0x2000) && (hb[hi->hero_teammate].hero_status & 0x2000)) {
+                    ext->unkC = 8;
+                    func_80025FAC((EXTanimator *)ext->cursor, 3);
+                    return;
+                }
+            } else if (Heroes[0].hero_status & 0x2000) {
+                func_80025FAC((EXTanimator *)ext->cursor, 3);
+                ext->unkC = 8;
+            }
+            h = Heroes[ext->unkA0].hero_eng;
+            ext->unk18 = (get_angle(h->unk10.x - m->Engine->unk10.x, h->unk10.z - m->Engine->unk10.z) + 0x800) & 0xFFF;
+            ext->unk14 = 1;
+        }
+        m->Engine->unk1E += ((ext->unk18 - m->Engine->unk1E) << 20) >> 21;
+        {
+            s32 k;
+
+            k = D_8009D87C[0].unk0 + 0x20;
+            cam->x.target = (k * D_80068BD4[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 13;
+            cam->z.target = (k * D_80068BD4[m->Engine->unk1E & 0xFFF].unk2) >> 13;
+        }
+        if (Heroes[ext->unkA0].hero_mode == 0x4E) {
+            ext->unkC = 6;
+            return;
+        }
+        func_800C5EEC(cam, &m->Engine->unk10.x);
+        if (ext->unk1C-- < 0) {
+            hi = &Heroes[ext->unkA0];
+            if (hi->hero_mode != 0x4E) {
+                s32 dx;
+                s32 dz;
+
+                dx = m->Engine->unk10.x - hi->hero_eng->unk10.x;
+                dz = m->Engine->unk10.z - hi->hero_eng->unk10.z;
+                near = dx * dx + dz * dz < 0x40000;
+                if (near != 0)
+                if (near == 1) {
+                    ext->unkC = near;
+                    cam->x.target = cam->x.cur = (D_80068BD4[(m->Engine->unk1E - 0x400) & 0xFFF].unk2 * 0x4B) >> 12;
+                    cam->z.target = cam->z.cur = (D_80068BD4[m->Engine->unk1E & 0xFFF].unk2 * 0x4B) >> 12;
+                    func_80025FAC((EXTanimator *)ext->cursor, 1);
+                    ext->unk1C = 0x5A - (D_8009D87C[0].unk0 - 0x10) * 4;
+                }
+            }
+        }
+        break;
+    }
+    case 6: {
+        EXTengine *e;
+        EXTengine *h;
+        s32 x;
+        s32 z;
+        s32 dx;
+        s32 dz;
+        s32 a;
+
+        if (func_800C5DCC(m) != 0) {
+        fall:
+            ext->unkC = 7;
+            PlaySfx(0x23E, NULL, NULL, 0x1000, 0x1E00, 0);
+            func_80025FAC((EXTanimator *)ext->cursor, 4);
+            return;
+        }
+        if (Heroes[0].hero_mode != 0x4E) {
+            ext->unkC = 0;
+            return;
+        }
+        if (ext->unk14-- < 0) {
+            e = m->Engine;
+            x = e->unk10.x;
+            z = e->unk10.z;
+            dx = -x;
+            dz = -z;
+            if (dx * dx + dz * dz > 0x400000) {
+                a = (get_angle(dx, dz) + 0x800) & 0xFFF;
+                ext->unk18 = a;
+                m->Engine->unk1E += ((a - m->Engine->unk1E) << 20) >> 21;
+                cam->x.target = (D_80068BD4[(m->Engine->unk1E - 0x400) & 0xFFF].unk2 * 3) >> 9;
+                cam->z.target = (D_80068BD4[m->Engine->unk1E & 0xFFF].unk2 * 3) >> 9;
+            } else {
+                h = Heroes[ext->unkA0].hero_eng;
+                dx = h->unk10.x;
+                dz = h->unk10.z;
+                cam->x.target = 0;
+                cam->z.target = 0;
+                ext->unk18 = (get_angle(dx - x, dz - z) + 0x800) & 0xFFF;
+            }
+            ext->unk14 = 1;
+        }
+        func_800C5EEC(cam, &m->Engine->unk10.x);
+        break;
+    }
+    case 1: {
+        HeroInfo *hi;
+        EXTengine *h;
+        s32 r;
+        s32 s;
+
+        r = Random(3);
+        s = ((EXTanimator *)ext->cursor)->Aindex;
+        if (s == 1) {
+            if (r == 0) {
+                PlaySfx(0x233, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (r == s) {
+                PlaySfx(0x234, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (r == 2) {
+                PlaySfx(0x235, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+        }
+        if (func_800C5DCC(m) != 0) {
+            ext->unkC = 7;
+            func_80025FAC((EXTanimator *)ext->cursor, 4);
+            return;
+        }
+        if (ext->unk14-- < 0) {
+            if (((Ovl62BearView *)D_8005A614)->unk6C != 0) {
+                HeroInfo *hb = Heroes;
+
+                hi = &hb[((Ovl62BearView *)D_8005A614)->lead];
+                if (hi->hero_status & 0x2000) {
+                    ext->unkA0 = hi->hero_teammate;
+                }
+                if (hb[hb[((Ovl62BearView *)D_8005A614)->lead].hero_teammate].hero_status & 0x2000) {
+                    ext->unkA0 = ((Ovl62BearView *)D_8005A614)->lead;
+                }
+                hi = &hb[((Ovl62BearView *)D_8005A614)->lead];
+                if ((hi->hero_status & 0x2000) && (hb[hi->hero_teammate].hero_status & 0x2000)) {
+                    ext->unkC = 8;
+                    func_80025FAC((EXTanimator *)ext->cursor, 3);
+                    return;
+                }
+            } else if (Heroes[0].hero_status & 0x2000) {
+                func_80025FAC((EXTanimator *)ext->cursor, 3);
+                ext->unkC = 8;
+            }
+            h = Heroes[ext->unkA0].hero_eng;
+            ext->unk18 = (get_angle(h->unk10.x - m->Engine->unk10.x, h->unk10.z - m->Engine->unk10.z) + 0x800) & 0xFFF;
+            ext->unk14 = 1;
+        }
+        m->Engine->unk1E += ((ext->unk18 - m->Engine->unk1E) << 20) >> 21;
+        cam->x.target = (D_80068BD4[(m->Engine->unk1E - 0x400) & 0xFFF].unk2 * 0x4B) >> 12;
+        cam->z.target = (D_80068BD4[m->Engine->unk1E & 0xFFF].unk2 * 0x4B) >> 12;
+        func_800C5EEC(cam, &m->Engine->unk10.x);
+        if (done != 0) {
+            ext->unkC = 0;
+            func_80025FAC((EXTanimator *)ext->cursor, 0);
+            return;
+        }
+        break;
+    }
+    case 2:
+        ext->unkC = 0;
+        break;
+    }
+    fux->sub->unk74 = m->Engine->sub->unk74;
+    fux->unk1E = m->Engine->unk1E;
+    fux->unk10 = m->Engine->unk10;
+    if (ext->unk98 != NULL) {
+        ext->unk98->Engine->unk10 = m->Engine->unk10;
+        ext->unk98->Engine->unk10.y = 0;
+    }
+    fux->unk5E = 1;
+    m->Engine->unk5E = 1;
+}
 
 void PlotPolarMissile(NAS *m) {
     PolarMissileExt *ext;

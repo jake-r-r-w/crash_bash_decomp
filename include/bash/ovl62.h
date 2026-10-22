@@ -1365,16 +1365,19 @@ typedef struct BearminatorExt {
     /* 0x14 */ s32 unk14;
     /* 0x18 */ s32 unk18;
     /* 0x1C */ s32 unk1C;
-    /* 0x20 */ u8 pad20[0x38 - 0x20];
-    /* 0x38 */ s32 unk38;
+    /* 0x20 */ s32 vel[3];
+    /* 0x2C */ s32 from[3];
+    /* 0x38 */ s32 unk38; /* arc state for func_8008C5C4 */
     /* 0x3C */ s32 unk3C;
-    /* 0x40 */ u8 pad40[0x50 - 0x40];
+    /* 0x40 */ u8 pad40[0x4C - 0x40];
+    /* 0x4C */ s32 unk4C;
     /* 0x50 */ s32 unk50;
     /* 0x54 */ u8 pad54[0x7C - 0x54];
     /* 0x7C */ s32 unk7C;
     /* 0x80 */ u8 pad80[0x8C - 0x80];
     /* 0x8C */ s32 unk8C;
-    /* 0x90 */ u8 pad90[0x98 - 0x90];
+    /* 0x90 */ u8 pad90[0x94 - 0x90];
+    /* 0x94 */ s32 unk94;
     /* 0x98 */ NAS *unk98;
     /* 0x9C */ EXTengine *unk9C;
     /* 0xA0 */ s32 unkA0;
@@ -1386,6 +1389,15 @@ typedef struct BearminatorExt {
 } BearminatorExt;
 
 extern ScriptInit D_800D5FA4;
+
+/* D_8005A614 as PlotBearminator reads it. */
+typedef struct Ovl62BearView {
+    /* 0x00 */ u8 pad0[0x48];
+    /* 0x48 */ s16 lead;
+    /* 0x4A */ u8 pad4A[0x6C - 0x4A];
+    /* 0x6C */ s32 unk6C;
+} Ovl62BearView;
+
 /* D_8005A614 as seen by InitialisePOLARFirst. */
 typedef struct Ovl62InitView {
     /* 0x00 */ u8 pad0[0x32];
