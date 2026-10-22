@@ -307,8 +307,8 @@ loop:
     if (i < 4) {
         goto loop;
     }
-    func_800B9C10();
-    func_800B9D64();
+    PogoPickups_Poll();
+    PogoPowerups_Poll();
     g = D_8005A614;
     switch ((Ovl60Mode)*(s16 *)(g + 0x34)) {
     case OVL60_MODE_12:
@@ -2396,7 +2396,7 @@ done:
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B935C);
 
-void func_800B9C10(void) {
+void PogoPickups_Poll(void) {
     D5A614View *g = (D5A614View *)D_8005A614;
     s32 idx = g->mode - 10;
     s32 x, z;
@@ -2408,16 +2408,16 @@ void func_800B9C10(void) {
     } else {
         D_800C52E8--;
         if (D_800C52E8 < 5) {
-            if (func_800C165C(&x, &z) != 0) {
+            if (FindFreeSquare(&x, &z) != 0) {
                 if (g->mode == 10) {
                     goto seven;
                 }
                 if (g->mode == 11) {
                     if (Random(3) == 0) {
-                        func_800BA3E0(x, z, 8);
+                        CreatePickupOnTile(x, z, 8);
                     } else {
                     seven:
-                        func_800BA3E0(x, z, 7);
+                        CreatePickupOnTile(x, z, 7);
                     }
                 }
             }
@@ -2430,7 +2430,7 @@ void func_800B9C10(void) {
     }
 }
 
-void func_800B9D64(void) {
+void PogoPowerups_Poll(void) {
     D5A614View *g = (D5A614View *)D_8005A614;
     s32 idx = g->mode - 10;
     s32 x, z;
@@ -2448,11 +2448,11 @@ void func_800B9D64(void) {
     } else {
         D_800C52EA--;
         if (D_800C52EA < 2) {
-            if (func_800C165C(&x, &z) != 0) {
+            if (FindFreeSquare(&x, &z) != 0) {
                 switch (g->mode) {
                 case 10:
                     if (Random(3) != 0) {
-                        func_800BA25C(x, z, 1);
+                        CreatePowerupOnTile(x, z, 1);
                     } else {
                         goto five;
                     }
@@ -2460,17 +2460,17 @@ void func_800B9D64(void) {
                 case 11:
                     r = Random(5);
                     if (r == 0) {
-                        func_800BA25C(x, z, 3);
+                        CreatePowerupOnTile(x, z, 3);
                     } else if (r < 3) {
                         goto five;
                     } else {
-                        func_800BA25C(x, z, 2);
+                        CreatePowerupOnTile(x, z, 2);
                     }
                     break;
                 case 12:
                     switch (Random(2)) {
                     case 0:
-                        func_800BA25C(x, z, 1);
+                        CreatePowerupOnTile(x, z, 1);
                         break;
                     case 1:
                         goto five;
@@ -2478,12 +2478,12 @@ void func_800B9D64(void) {
                     break;
                 case 13:
                     if (g->flags & 0x80) {
-                        func_800BA25C(x, z, 4);
+                        CreatePowerupOnTile(x, z, 4);
                     } else if (Random(2) == 0) {
-                        func_800BA25C(x, z, 4);
+                        CreatePowerupOnTile(x, z, 4);
                     } else {
                     five:
-                        func_800BA25C(x, z, 5);
+                        CreatePowerupOnTile(x, z, 5);
                     }
                     break;
                 }
@@ -2512,7 +2512,7 @@ bool Pickup_IsClaimable(s32 arg0, s32 arg1, s32 arg2) {
     s32 lock;
 
     if ((u32)arg1 < 8 && (u32)arg2 < 8) {
-        if (func_800C0AFC(arg1, arg2) != 0) {
+        if (PogoPadlock_IsHere(arg1, arg2) != 0) {
             return 1;
         }
         base = D_800C53DC[0];
@@ -2549,7 +2549,7 @@ bool Pickup_IsClaimableByAI(s32 arg0, s32 arg1, s32 arg2) {
     if ((u32)arg1 >= 8 || (u32)arg2 >= 8) {
         return 0;
     }
-    if (func_800C0AFC(arg1, arg2) != 0) {
+    if (PogoPadlock_IsHere(arg1, arg2) != 0) {
         return 1;
     }
     base = D_800C53DC[0];
@@ -2587,7 +2587,7 @@ bool Pickup_IsClaimableByAI(s32 arg0, s32 arg1, s32 arg2) {
     return (u16)c->unk12 == 7;
 }
 
-void func_800BA25C(s32 arg0, s32 arg1, s32 arg2) {
+void CreatePowerupOnTile(s32 arg0, s32 arg1, s32 arg2) {
     Ovl60Cell *c;
     Ovl60CellPos *pos;
     NAS *nas;
@@ -2596,7 +2596,7 @@ void func_800BA25C(s32 arg0, s32 arg1, s32 arg2) {
 
     base = D_800C53DC[0];
     c = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
-    if (c->hero != NULL || func_800C0AFC(arg0, arg1) != 0) {
+    if (c->hero != NULL || PogoPadlock_IsHere(arg0, arg1) != 0) {
         return;
     }
     pos = c->unk4;
@@ -2637,7 +2637,7 @@ void func_800BA25C(s32 arg0, s32 arg1, s32 arg2) {
     D_800C52F0++;
 }
 
-void func_800BA3E0(s32 arg0, s32 arg1, s32 arg2) {
+void CreatePickupOnTile(s32 arg0, s32 arg1, s32 arg2) {
     Ovl60Cell *c;
     Ovl60CellPos *pos;
     NAS *nas;
@@ -2646,7 +2646,7 @@ void func_800BA3E0(s32 arg0, s32 arg1, s32 arg2) {
 
     base = D_800C53DC[0];
     c = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
-    if (c->hero != NULL || func_800C0AFC(arg0, arg1) != 0) {
+    if (c->hero != NULL || PogoPadlock_IsHere(arg0, arg1) != 0) {
         return;
     }
     pos = c->unk4;
@@ -3095,7 +3095,7 @@ void Plot_PogoBanker(NAS *nas) {
         }
         break;
     case 1:
-        if (func_800C165C(&x, &z) != 0) {
+        if (FindFreeSquare(&x, &z) != 0) {
             Ovl60Cell *cb = D_800C53DC[0];
             c = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(D_800C53DC[0]) + (u32)cb);
             pos = c->unk4;
@@ -3164,7 +3164,7 @@ void Plot_PogoMushroom(NAS *nas) {
         if (D_8005A644 & 0x801) {
             break;
         }
-        if (func_800BBF00(&x, &z) == 0) {
+        if (FindFreeSquareForMushroom(&x, &z) == 0) {
             break;
         }
         pos = D_800C53DC[x][z].unk4;
@@ -3448,7 +3448,7 @@ s32 func_800BBC94(s32 x, s32 z) {
     }
 }
 
-s32 func_800BBF00(s32 *arg0, s32 *arg1) {
+bool FindFreeSquareForMushroom(s32 *arg0, s32 *arg1) {
     s32 x;
     s32 y;
     s32 i;
@@ -3476,15 +3476,15 @@ loop:
     }
     ok = 1;
     if (*arg0 > 0) {
-        ok = func_800C1608(*arg0 - 1, *arg1) == 0;
+        ok = SquareContainsMushroom(*arg0 - 1, *arg1) == 0;
     }
-    if (*arg0 < 7 && func_800C1608(*arg0 + 1, *arg1)) {
+    if (*arg0 < 7 && SquareContainsMushroom(*arg0 + 1, *arg1)) {
         ok = 0;
     }
-    if (*arg1 > 0 && func_800C1608(*arg0, *arg1 - 1)) {
+    if (*arg1 > 0 && SquareContainsMushroom(*arg0, *arg1 - 1)) {
         ok = 0;
     }
-    if (*arg1 < 7 && func_800C1608(*arg0, *arg1 + 1)) {
+    if (*arg1 < 7 && SquareContainsMushroom(*arg0, *arg1 + 1)) {
         ok = 0;
     }
     return ok;
@@ -3505,7 +3505,7 @@ s32 func_800BC04C(s32 arg0, s32 arg1) {
     if (s == 6) {
         return 0;
     }
-    return func_800C0AFC(arg0, arg1) == 0;
+    return PogoPadlock_IsHere(arg0, arg1) == 0;
 }
 
 void func_800BC0EC(s32 arg0) {
@@ -5095,7 +5095,7 @@ void Init_PogoPadlock(NAS *nas) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoPadlock);
 
-s32 func_800C0AFC(s32 arg0, s32 arg1) {
+bool PogoPadlock_IsHere(s32 arg0, s32 arg1) {
     EXTengine *e;
 
     if (D_800C5BB0 != NULL) {
@@ -5110,7 +5110,7 @@ s32 func_800C0AFC(s32 arg0, s32 arg1) {
     return 0;
 }
 
-s32 func_800C0B70(s32 arg0, s32 arg1, s32 arg2) {
+bool PadlockAI_IsTileOKForPadlock(NAS *arg0, s32 arg1, s32 arg2) {
     Ovl60Cell *p;
 
     if ((u32)arg1 >= 8 || (u32)arg2 >= 8) {
@@ -5398,7 +5398,7 @@ void Player_SnapToTile(u32 arg0) {
     Heroes[arg0].hero_eng->unk10.z = (((Heroes[arg0].hero_eng->unk10.z + 0x800) >> 9) << 9) - 0x700;
 }
 
-s32 func_800C1608(s32 arg0, s32 arg1) {
+bool SquareContainsMushroom(s32 arg0, s32 arg1) {
     Ovl60Cell *base = D_800C53DC[0];
     HeroInfo *hero = ((Ovl60Cell *)(arg0 * sizeof(D_800C53DC[0]) + arg1 * sizeof(Ovl60Cell) + (u32)base))->hero;
 
@@ -5408,7 +5408,7 @@ s32 func_800C1608(s32 arg0, s32 arg1) {
     return 0;
 }
 
-s32 func_800C165C(s32 *arg0, s32 *arg1) {
+bool FindFreeSquare(s32 *arg0, s32 *arg1) {
     s32 x;
     s32 y;
     s32 i;

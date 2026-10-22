@@ -575,6 +575,16 @@ signature alone is not enough.
   board). `func_800B3FF0` (per-mode table) and `func_800C2EE0` (also called
   by `UpdatePOGO`) are AIQuality / PogoQuality_Init / PogoQuality_Update in
   some assignment: left unnamed.
+- **Pogo pickups** (ovl60): `UpdatePOGO` runs `PogoPickups_Poll` and
+  `PogoPowerups_Poll`, which drop `AST_PogoPickup` (0x1401) through
+  `CreatePickupOnTile` and `AST_PogoPowerup` (0x1402) through
+  `CreatePowerupOnTile` on a square from `FindFreeSquare` (10 random tries).
+  `FindFreeSquareForMushroom` adds `SquareContainsMushroom` (a square whose
+  hero holds pickup action 0xB). `PogoPadlock_IsHere(x, z)` tests the padlock
+  object (`D_800C5BB0`, status >= 3); `PadlockAI_IsTileOKForPadlock(nas, x,
+  z)` is its tile test (the NAS is unused). `func_800BC04C` (a square free
+  of heroes, reservations, TNT/Nitro and the padlock; used by all of them)
+  may be the leak's `SquareIsFreeForMushroom`: left unnamed.
 - **Pogo AI** (ovl60). `PogoAI_Poll(p)` runs the bot (`EXTbotai`: `AIpad`,
   timers, `AImode` 1/3/4-7). Tests: `PogoAI_CanPlayerShootAnyone` (an
   opponent in the facing row or column), `...FourWays` (any row or column),

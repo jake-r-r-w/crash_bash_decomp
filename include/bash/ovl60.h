@@ -177,7 +177,7 @@ extern s32 D_800C38D8[];
 extern s32 D_800C38E8[];
 extern s32 D_800C38F8[];
 extern s32 D_800C52F0;
-/* the s16 after D_800C52E8: func_800B9D64's timer */
+/* the s16 after D_800C52E8: PogoPowerups_Poll's timer */
 #define D_800C52EA ((&D_800C52E8)[1])
 extern s32 D_800C38B8[];
 extern s32 D_800C38C8[];
@@ -262,9 +262,7 @@ void func_800BC0EC(s32 arg0);
 void func_800BD008(s32 arg0);
 
 
-s32 func_800C0AFC(s32 arg0, s32 arg1);
 
-s32 func_800C0B70(s32 arg0, s32 arg1, s32 arg2);
 
 
 s32 PogoAI_CountMyTiles(u32 arg0);
@@ -279,9 +277,7 @@ void func_800C1400(s32 arg0);
 
 s32 func_800C1460(s32 arg0);
 
-s32 func_800C1608(s32 arg0, s32 arg1);
 
-s32 func_800C165C(s32 *arg0, s32 *arg1);
 
 
 void func_800C2294(s32 arg0, s32 arg1, s16 arg2, s16 arg3);
@@ -308,8 +304,7 @@ void func_800C2EE0(void);
 void func_800C1CF0();
 void func_800B4230();
 void func_800B87DC();
-void func_800B9C10();
-void func_800B9D64();
+void PogoPowerups_Poll(void);
 void func_800BCB4C();
 extern s32 D_800C52F4;
 extern s32 D_80099178;
@@ -344,7 +339,6 @@ void PogoWinner_Normal(s32 arg0, u16 arg1);
 
 
 
-s32 func_800BBF00(s32 *arg0, s32 *arg1);
 
 
 s32 func_800C0F08(s32 arg0, EXTbotai *ai);
@@ -558,9 +552,7 @@ void Tile_Claim(s32 arg0, s32 arg1, s32 arg2);
 
 
 
-void func_800BA25C(s32 arg0, s32 arg1, s32 arg2);
 
-void func_800BA3E0(s32 arg0, s32 arg1, s32 arg2);
 
 void func_800BB724(s32 arg0, s32 arg1);
 
