@@ -71,3 +71,6 @@ ResetMass = 0x800B5684; // type:func
 Player2PlayerRayTest = 0x800B7A58; // type:func
 TestForTeamMate = 0x800BCF08; // type:func
 XZBoxToSphere = 0x800C9230; // type:func
+DoChooseNewAction = 0x800B9D48; // type:func
+DoesPlayerHaveBomb = 0x800CB56C; // type:func
+EnsureMateNotObstructingMate = 0x800B7CDC; // type:func

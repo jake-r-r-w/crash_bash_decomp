@@ -35160,7 +35160,7 @@
   "fp": "311ab57e60b927f1",
   "fpn": "e9cf58698bf220d7",
   "leaf": false,
-  "name": "func_800B7CDC",
+  "name": "EnsureMateNotObstructingMate",
   "orig": "func_800B7CDC",
   "rom": 18984,
   "seg": "overlays/ovl62/ovl62",
@@ -35353,7 +35353,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B9D48": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B9D48.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/DoChooseNewAction.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590",
@@ -35370,7 +35370,7 @@
   "fp": "211c1525c0472afa",
   "fpn": "9d3539c54f755cf3",
   "leaf": false,
-  "name": "func_800B9D48",
+  "name": "DoChooseNewAction",
   "orig": "func_800B9D48",
   "rom": 27284,
   "seg": "overlays/ovl62/ovl62",
@@ -37121,7 +37121,7 @@
   "fp": "d2da2280386a34f6",
   "fpn": "b89bccf98967d775",
   "leaf": false,
-  "name": "func_800CB56C",
+  "name": "DoesPlayerHaveBomb",
   "orig": "func_800CB56C",
   "rom": 99000,
   "seg": "overlays/ovl62/ovl62",

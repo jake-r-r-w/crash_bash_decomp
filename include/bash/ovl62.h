@@ -438,7 +438,7 @@ static inline void Ovl62StartChase(s32 player) {
 }
 s32 func_800B9714(s32 player);
 
-/* Inlined twice into func_800B7CDC. */
+/* Inlined twice into EnsureMateNotObstructingMate. */
 static inline void Ovl62Grab(s32 player) {
     Ovl62Fux *f;
 
@@ -458,7 +458,6 @@ static inline void Ovl62Grab(s32 player) {
 
 s32 func_800CD118(s32 *arg0, s32 arg1);
 
-void func_800B9D48(s32 player);
 
 void func_800D2EB0(s32 player);
 
@@ -475,7 +474,7 @@ typedef struct BombMakerExt {
 
 extern s32 D_800D4DEC;
 extern VECTOR D_800D4DD4;
-/* func_800CB56C, inlined into func_800B782C. */
+/* DoesPlayerHaveBomb, inlined into func_800B782C. */
 static inline s32 Ovl62HasBomb(s32 player) {
     NAS *nas;
     BombMakerExt *ext;
@@ -539,7 +538,7 @@ loop:
     return best;
 }
 
-/* func_800CB56C as inlined into func_800B6FEC. */
+/* DoesPlayerHaveBomb as inlined into func_800B6FEC. */
 static inline s32 Ovl62HasBomb2(s32 player) {
     NAS *nas;
     BombMakerExt *ext;
@@ -668,7 +667,7 @@ typedef struct Ovl62Owner {
 extern Ovl62Owner *D_800D5254;
 extern s32 D_800D5FFC;
 extern s32 D_8009D908;
-s32 func_800B7CDC();
+bool EnsureMateNotObstructingMate(u32 self);
 
 /* Read by func_800CAEB0. */
 typedef struct Ovl62Mode {
@@ -858,7 +857,7 @@ extern SceneObj *D_800D6190[16];
 
 void func_800CA6E8(Ovl62RiserSet *arg0);
 
-s32 func_800CB56C(s32 arg0);
+bool DoesPlayerHaveBomb(u32 arg0);
 /* Walrus fish extension (id 0x10000000): a ballistic arc (func_8008C5C4's
  * Arc, declared in bash/8007ee2c.h) at 0x10. */
 typedef struct WalrusFishExt {

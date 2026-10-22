@@ -1352,11 +1352,11 @@ void func_800B6D74(s32 player) {
     s32 dist;
     s32 t;
 
-    if (func_800B7CDC() != 0) {
+    if (EnsureMateNotObstructingMate(player) != 0) {
         return;
     }
     if (D_8005A648 == 0x15) {
-        if (func_800CB56C(player) != 0) {
+        if (DoesPlayerHaveBomb(player) != 0) {
             t = FindClosetPlayer(player, &dist);
             if (t != -1) {
                 func_800B6EB4(player, t);
@@ -1421,7 +1421,7 @@ void func_800B6FEC(s32 player) {
     NAS *nas;
     s32 r;
 
-    if (func_800B7CDC() != 0) {
+    if (EnsureMateNotObstructingMate(player) != 0) {
         return;
     }
     fux = (Ovl62Fux *)Heroes[player].hero->FUX;
@@ -1549,7 +1549,7 @@ void func_800B7520(s32 player) {
     h = &base[player];
     fux = (Ovl62Fux *)h->hero->FUX;
     if (fux != NULL) {
-        if (func_800B7CDC() != 0) {
+        if (EnsureMateNotObstructingMate(player) != 0) {
             return;
         }
         fux->pos = h->hero_eng->unk10;
@@ -1621,7 +1621,7 @@ void func_800B782C(s32 player) {
     s32 dx;
     s32 dz;
 
-    if (func_800B7CDC() != 0) {
+    if (EnsureMateNotObstructingMate(player) != 0) {
         return;
     }
     base = Heroes;
@@ -1749,7 +1749,7 @@ loop:
     return 0;
 }
 
-s32 func_800B7CDC(s32 self) {
+bool EnsureMateNotObstructingMate(u32 self) {
     SLONG_XYZ pos;
     s32 dist;
     s32 *dp;
@@ -1830,7 +1830,7 @@ s32 player;
     s32 dx;
     s32 dz;
 
-    if (func_800B7CDC(player) != 0) {
+    if (EnsureMateNotObstructingMate(player) != 0) {
         return;
     }
     fux = (Ovl62Fux *)Heroes[player].hero->FUX;
@@ -2119,7 +2119,7 @@ s32 func_800B9B6C(s32 hero) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B9D48);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", DoChooseNewAction);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitialisePOLAR);
 
@@ -4954,7 +4954,7 @@ void Polar_HeroBot(u32 player) {
     fux = (Ovl62Fux *)h->hero->FUX;
     if (fux != NULL) {
         h->hero_ai->AIpad = 0;
-        func_800B9D48(player);
+        DoChooseNewAction(player);
         ((void (*)(s32))fux->func)(player);
         func_80013C94((u8 *)&D_80051338[player], h->hero_ai->AIpad);
     }
@@ -5217,7 +5217,7 @@ void func_800CB508(s32 player) {
     }
 }
 
-s32 func_800CB56C(s32 arg0) {
+bool DoesPlayerHaveBomb(u32 arg0) {
     NAS *nas;
     BombMakerExt *ext;
     s32 one;

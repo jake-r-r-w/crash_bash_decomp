@@ -607,6 +607,16 @@ signature alone is not enough.
     with extension 0x20000000); `TestForTeamMate(src, dst)` is true in team
     games when they are team-mates; `Player2PlayerRayTest(p, target)` casts
     the facing ray at the target through `func_800BFEE0`.
+    `Polar_HeroBot` clears the pad, calls `DoChooseNewAction` (which runs
+    the tests that install a state function in the FUX) and then the state
+    function. Each state function starts with
+    `EnsureMateNotObstructingMate(p)` (team games: when the nearest player is
+    a close team-mate and the two face each other, it separates them and
+    returns 1); its callers called it with no argument (old-style prototype),
+    now with `player`, same code. `DoesPlayerHaveBomb(p)`: a bomb in
+    `D_800D5294`'s list held by p (also inlined as `Ovl62HasBomb`).
+    `XZBoxToSphere` (box of one subengine against another's sphere) is named
+    by its own debug message; ovl63 and ovl65 have their own copies.
   The `CheckBounds` functions take the leak's `EXTengine *`; their old local
   stand-in structs were `unk10.x/z`, `collision_box.radius/flags` and `unk1E`.
 - **Pogo challenges** (ovl60). The challenge flags at `D_8005A614+0x32` are
