@@ -128,7 +128,6 @@ typedef struct Ovl60Pad {
     /* 0x50 */ s32 unk50;
     /* 0x54 */ s32 unk54;
 } Ovl60Pad;
-void func_800B935C(s32 x, s32 z, s32 hero);
 void Tile_Claim(s32 arg0, s32 arg1, s32 arg2);
 extern s32 D_800C53CC[];
 extern s16 D_800C44D8[];
@@ -264,7 +263,6 @@ void func_800BD008(s32 arg0);
 s32 PogoAI_CountMyTiles(u32 arg0);
 
 
-void func_800C0FAC(s32 i);
 
 
 
@@ -548,12 +546,10 @@ void Fire_Rocket(s32 arg0, s32 arg1);
 
 
 
-void func_800BD790(s32 hero);
 
 
 bool PogoAI_IsSquareOKForPlayer(u32 arg0, s32 x, s32 z, s32 dx, s32 dz, u32 flags);
 
-s32 func_800BDE24(s32 arg0);
 
 void func_800BFFF4(EXTengine *eng);
 

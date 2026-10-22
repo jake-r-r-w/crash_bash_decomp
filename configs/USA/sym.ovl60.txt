@@ -150,3 +150,7 @@ Create_PogoPadlock = 0x800C0BF0; // type:func
 PogoKerb_Init = 0x800C10F8; // type:func
 PogoKerb_CopyData = 0x800C1068; // type:func
 PogoKerb_Poll = 0x800BCB4C; // type:func
+Pickup_Claim = 0x800B935C; // type:func
+PogoAI_HeroClaimedPickup = 0x800C0FAC; // type:func
+PogoAI_MoveTowardsTarget = 0x800BD790; // type:func
+PogoAI_PrimeDirective = 0x800BDE24; // type:func

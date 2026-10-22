@@ -30660,7 +30660,7 @@
   "src": "src/overlays/ovl60/ovl60.c"
  },
  "ovl60:800B935C": {
-  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/func_800B935C.s",
+  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/Pickup_Claim.s",
   "bin": "disc/ovl60.bin",
   "calls": [
    "80022660",
@@ -30680,7 +30680,7 @@
   "fp": "46a84c4e8146db34",
   "fpn": "54864045c00e6026",
   "leaf": false,
-  "name": "func_800B935C",
+  "name": "Pickup_Claim",
   "orig": "func_800B935C",
   "rom": 24744,
   "seg": "overlays/ovl60/ovl60",
@@ -31220,7 +31220,7 @@
   "src": "src/overlays/ovl60/ovl60.c"
  },
  "ovl60:800BD790": {
-  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/func_800BD790.s",
+  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/PogoAI_MoveTowardsTarget.s",
   "bin": "disc/ovl60.bin",
   "calls": [
    "80015590",
@@ -31230,7 +31230,7 @@
   "fp": "185a80362b05e556",
   "fpn": "ee3626896727b726",
   "leaf": false,
-  "name": "func_800BD790",
+  "name": "PogoAI_MoveTowardsTarget",
   "orig": "func_800BD790",
   "rom": 42204,
   "seg": "overlays/ovl60/ovl60",
@@ -31264,7 +31264,7 @@
   "fp": "aa2b71cfc45c61e5",
   "fpn": "a2b646c81bc60ad2",
   "leaf": false,
-  "name": "func_800BDE24",
+  "name": "PogoAI_PrimeDirective",
   "orig": "func_800BDE24",
   "rom": 43888,
   "seg": "overlays/ovl60/ovl60",
@@ -31727,7 +31727,7 @@
   "fp": "fa68a2d6f8414119",
   "fpn": "d306edc643200ad5",
   "leaf": true,
-  "name": "func_800C0FAC",
+  "name": "PogoAI_HeroClaimedPickup",
   "orig": "func_800C0FAC",
   "rom": 56568,
   "seg": "overlays/ovl60/ovl60",

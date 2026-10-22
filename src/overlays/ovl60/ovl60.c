@@ -892,7 +892,7 @@ void PreMovePOGO(u32 arg0) {
     x = (h->hero_eng->unk10.x + 0x800) >> 9;
     z = (h->hero_eng->unk10.z + 0x800) >> 9;
     if (Pickup_IsClaimable(arg0, x, z) != 0) {
-        func_800B935C(x, z, arg0);
+        Pickup_Claim(x, z, arg0);
     }
     move = h->hero_move;
     move->forward_speed = 0;
@@ -2394,7 +2394,7 @@ done:
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B935C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Pickup_Claim);
 
 void PogoPickups_Poll(void) {
     D5A614View *g = (D5A614View *)D_8005A614;
@@ -3980,7 +3980,7 @@ void PogoAI_Poll(u32 arg0) {
             }
             switch (ai->AImode) {
             case 1:
-                r = func_800BDE24(arg0) != 1;
+                r = PogoAI_PrimeDirective(arg0) != 1;
                 if (r) {
                     ai->TargetXYZ.x = Random(8);
                     ai->TargetXYZ.z = Random(8);
@@ -3988,13 +3988,13 @@ void PogoAI_Poll(u32 arg0) {
                 }
                 break;
             case 3:
-                r = func_800BDE24(arg0) != 1;
+                r = PogoAI_PrimeDirective(arg0) != 1;
                 if (r) {
-                    func_800BD790(arg0);
+                    PogoAI_MoveTowardsTarget(arg0);
                 }
                 break;
             case 4:
-                r = func_800BDE24(arg0) != 1;
+                r = PogoAI_PrimeDirective(arg0) != 1;
                 if (r) {
                     ai->AImode = 1;
                     break;
@@ -4002,7 +4002,7 @@ void PogoAI_Poll(u32 arg0) {
             case 5:
             case 6:
             case 7:
-                func_800BD790(arg0);
+                PogoAI_MoveTowardsTarget(arg0);
                 break;
             }
             if (ai->AItimer1 == 0 || (D_8005A646 & 0x20)) {
@@ -4189,7 +4189,7 @@ end:
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BD790);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", PogoAI_MoveTowardsTarget);
 
 bool PogoAI_IsSquareOKForPlayer(u32 arg0, s32 x, s32 z, s32 dx, s32 dz, u32 flags) {
     Ovl60Cell *p;
@@ -4244,7 +4244,7 @@ one:
     return 1;
 }
 
-s32 func_800BDE24(s32 arg0) {
+bool PogoAI_PrimeDirective(u32 arg0) {
     s32 x;
     s32 z;
     EXTbotai *ai;
@@ -5234,7 +5234,7 @@ s32 func_800C0F08(s32 arg0, EXTbotai *ai)
     return 0;
 }
 
-void func_800C0FAC(s32 i)
+void PogoAI_HeroClaimedPickup(u32 i)
 {
     EXTbotai *ai;
 

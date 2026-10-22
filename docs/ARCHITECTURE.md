@@ -656,6 +656,12 @@ signature alone is not enough.
   `PogoAI_RadialSearch(p, x, z, dir, &x, &z)` has the leak's 6-arg shape; its
   off-board test is `PogoAI_RadialSearch_CheckKerbs` (the kerb arrays at
   `D_800C5B2C`/`4C`/`6C`/`8C`; `s32` x/z with `(u32)` casts, as in the leak).
+  `PreMovePOGO` calls `Pickup_Claim(x, z, p)` when `Pickup_IsClaimable`
+  holds; it calls `PogoAI_HeroClaimedPickup` (resets the bot's `AItimer1`
+  from the quality table). `PogoAI_Poll` runs `PogoAI_MoveTowardsTarget`
+  while a bot has a target (modes 3, 5-7) and `PogoAI_PrimeDirective`,
+  which tries the planners and the pickup scan in order and says whether one
+  set a target.
   The three `(p, EXTbotai *)` planners `func_800C0F08`, `func_800BE864` and
   `func_800BE6C4` are GoForMyOwn / StartEncircling / StartEnclosing in some
   order: left unnamed.
