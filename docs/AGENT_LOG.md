@@ -507,6 +507,19 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-22 (naming: hero states):** the engine's `HEROFunc` table
+  (`0x8009DCA0`, `{SetMode, Action}` per hero action id) gives every
+  minigame's state machine. Named the leaked ones from it plus each state's
+  code: Arkenoid (20), Tank (16), Pogo (14 + 3 end tests); named 345 -> 398.
+  Evidence in ARCHITECTURE.md. Anim ids passed to `SetHeroSeq` are
+  `HeroAnim_seqs` values, which pins most states. Each renamed definition
+  takes the leak's `u32 player` (or `bool` return) first, checked with
+  `make check`, else the rename fails on conflicting types. Fixed two
+  `rename` bugs (`dedupe_owned` dropped struct members and declarations
+  its own header's inline functions use). Next: the table's other games
+  (ovl5d, 5e, 62-68) have no leaked names; the leak's `TestHeroPogo*`,
+  `AR_*` and `Player_*` helpers are next to these states in code.
+
 - **2026-10-22 (hand: `func_800BE158`, parked):** worked the 2/347
   checkpoint under the updated `/match-function` rules (no hacks, permuter
   only at registers stage). Its nested do-whiles are a hack; natural C
