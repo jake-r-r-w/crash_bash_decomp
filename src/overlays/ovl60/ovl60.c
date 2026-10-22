@@ -623,13 +623,11 @@ void PogoWinner_Relic(s32 arg0, u16 arg1) {
         sa = Ovl60TeamScore(g->team0);
         sb = Ovl60TeamScore(g->team1);
         if (sa == 0) {
-            do {
-                if (g->out[g->team0] != 0) {
-                    done = 1;
-                } else {
-                    OVL60_TEAM_LOST(g, g->team0, i, done);
-                }
-            } while (0);
+            if (g->out[g->team0] == 0) {
+                OVL60_TEAM_LOST(g, g->team0, i, 0);
+            } else {
+                done = 1;
+            }
         } else if (sb == 0) {
             if (g->out[g->team1] == 0) {
                 OVL60_TEAM_LOST_LATE(g, g->team1, i, 0);
