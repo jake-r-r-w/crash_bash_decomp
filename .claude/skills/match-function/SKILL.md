@@ -29,6 +29,15 @@ the host has no Python. In Git Bash loops, pass `</dev/null` to `tools/dk`.
   conditions in step 4. Its output is a clue, never a fix by itself.
 - **Parking is a good outcome.** A clean park with a precise note beats a
   hacked match.
+- **Write a script when it helps.** If a one-shot script would answer a
+  question faster than reading by hand (diffing two pass dumps, tracing one
+  pseudo-reg through the RTL, counting sched priorities, brute-forcing a few C
+  shapes through cc1), write it and run it. One-shot scripts go in `scratch/`
+  (ignored) and run through `tools/dk`. If it would help on other functions
+  too, make it a proper tool before the session ends: a `decomp.py` subcommand
+  or a module in `tools/scripts/`, with a test in `tools/scripts/tests/`, a
+  `--help`, a line in docs/MATCHING.md where it is used, and in the CLAUDE.md
+  tool list. Commit it on its own, separate from any match.
 
 ## Steps
 
