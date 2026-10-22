@@ -507,7 +507,7 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
-- **2026-10-22 (naming from the leak, ~1.5 h):** named 345 -> 553 game
+- **2026-10-22 (naming from the leak, ~1.5 h):** named 345 -> 554 game
   functions from the leaked minigame headers, each from its own code
   (evidence in ARCHITECTURE.md). Sources that pin names: the engine's
   `HEROFunc` table (`0x8009DCA0`, `{SetMode, Action}` per hero action id:

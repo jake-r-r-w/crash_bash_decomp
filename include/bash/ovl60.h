@@ -8,7 +8,6 @@
 #include "common.h"
 #include "bash/nas.h"
 
-void func_800C0BF0(s32 arg0, s32 arg1);
 void func_800C318C(s32 arg0);
 void func_800C3390(void);
 void UpdatePOGO(void);

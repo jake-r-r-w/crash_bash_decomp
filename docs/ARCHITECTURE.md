@@ -611,7 +611,8 @@ signature alone is not enough.
   `CreatePowerupOnTile` on a square from `FindFreeSquare` (10 random tries).
   `FindFreeSquareForMushroom` adds `SquareContainsMushroom` (a square whose
   hero holds pickup action 0xB). `PogoPadlock_IsHere(x, z)` tests the padlock
-  object (`D_800C5BB0`, status >= 3); `PadlockAI_IsTileOKForPadlock(nas, x,
+  object (`D_800C5BB0`, status >= 3), which `Create_PogoPadlock(x, z)` spawns
+  (`AST_PogoPadlock`, 0x1408; at (4, 4) in mode 13); `PadlockAI_IsTileOKForPadlock(nas, x,
   z)` is its tile test (the NAS is unused). `func_800BC04C` (a square free
   of heroes, reservations, TNT/Nitro and the padlock; used by all of them)
   may be the leak's `SquareIsFreeForMushroom`: left unnamed.

@@ -5129,7 +5129,7 @@ bool PadlockAI_IsTileOKForPadlock(NAS *arg0, s32 arg1, s32 arg2) {
     return p->unk10 == 0;
 }
 
-void func_800C0BF0(s32 arg0, s32 arg1) {
+void Create_PogoPadlock(s32 arg0, s32 arg1) {
     D_800C5BB0 = SpawnNASById((arg0 << 9) - 0x700, D_8005A5D8, (arg1 << 9) - 0x700, 0x1408, 0x11);
 }
 
@@ -6163,7 +6163,7 @@ void func_800C3048(void) {
         break;
     case 13:
         n = 2;
-        func_800C0BF0(4, 4);
+        Create_PogoPadlock(4, 4);
         break;
     }
     if (n != 0) {
