@@ -372,6 +372,27 @@ typedef struct Ovl63DiveFux {
     /* 0x144 */ s32 unk144;
 } Ovl63DiveFux;
 
+/* hero->FUX as func_800BA278 (the swim) reads it. */
+typedef struct Ovl63SwimFux {
+    /* 0x000 */ u8 unk0[0x24];
+    /* 0x024 */ s32 unk24;
+    /* 0x028 */ u8 unk28[0x48 - 0x28];
+    /* 0x048 */ s32 unk48;
+    /* 0x04C */ s32 unk4C;
+    /* 0x050 */ u8 unk50[0x58 - 0x50];
+    /* 0x058 */ s32 unk58;
+    /* 0x05C */ u8 unk5C[0x8C - 0x5C];
+    /* 0x08C */ s32 unk8C;
+    /* 0x090 */ s32 unk90;
+    /* 0x094 */ u8 unk94[0xA4 - 0x94];
+    /* 0x0A4 */ SLONG_XYZ unkA4;
+    /* 0x0B0 */ u8 unkB0[0x128 - 0xB0];
+    /* 0x128 */ _sfx_handler *unk128;
+    /* 0x12C */ u8 unk12C[0x168 - 0x12C];
+    /* 0x168 */ s32 unk168;
+    /* 0x16C */ s32 unk16C;
+} Ovl63SwimFux;
+
 extern s32 D_800C692C;
 extern s32 D_800C695C;
 
@@ -1171,6 +1192,8 @@ void func_800BCE88();
     Heroes[l].hero_shadow->sub->flags &= ~0x8000;           \
     Heroes[lt].hero_status |= 0x8000;                       \
     Heroes[lt].hero_shadow->sub->flags &= ~0x8000;
+
+void func_800BA278(s32 player);
 
 s32 func_800BEBC0(s32 player);
 

@@ -2106,7 +2106,219 @@ void func_800BA004(VECTOR *ang, Quat *q) {
     func_800B9E50(q);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BA278);
+void func_800BA278(s32 player) {
+    HeroInfo *h;
+    Ovl63SwimFux *f;
+    Ovl63Pad *pad;
+    Ovl63Pad *pb;
+    EXTengine *e;
+    SLONG_XYZ pos;
+    HeroInfo *base;
+    HeroInfo *h1;
+    HeroInfo *hb;
+    HeroInfo *hn;
+    HeroInfo *h2;
+    s32 spawned;
+
+    base = Heroes;
+    h1 = &base[player];
+    h1->hero_eng->unk1C -= h1->hero_eng->unk1C >> 1;
+    f = (Ovl63SwimFux *)h1->hero->FUX;
+    if (f == NULL) {
+        return;
+    }
+    if (G63B->unk34 == 0x18) {
+        if (f->unk168 > 0) {
+            f->unk168--;
+        }
+        if ((G63B->unk32 & 0x80) && G63B->unk5C[player] == 0) {
+            if (f->unk16C-- < 0) {
+                f->unk16C = (150 - f->unk168) / 5;
+            }
+        }
+    }
+    hb = Heroes;
+    h2 = &hb[player];
+    if (h2->hero_move == NULL) {
+        return;
+    }
+    h2->hero_eng->unk5E = 1;
+    spawned = 0;
+    if (f->unk24 == 0) {
+        pb = (Ovl63Pad *)D_80051338;
+        pad = &pb[player];
+        if (pad->unk50 & 0x8000) {
+            if (f->unk58 > 0) {
+                if (f->unk8C == 0) {
+                    if (D_8005A648 == 0x19) {
+                        if (player == 0) {
+                            PlaySfx(0x679, NULL, NULL, 0x1000, 0x1E00, 0);
+                        }
+                        if (player == 1) {
+                            PlaySfx(0x67A, NULL, NULL, 0x1000, 0x1E00, 0);
+                        }
+                        if (player == 2) {
+                            PlaySfx(0x67B, NULL, NULL, 0x1000, 0x1E00, 0);
+                        }
+                        if (player == 3) {
+                            PlaySfx(0x67C, NULL, NULL, 0x1000, 0x1E00, 0);
+                        }
+                    }
+                    SetHeroSeq((HeroInfo *)player, 0x49);
+                    if (D_8005A648 == 0x19) {
+                        SetHeroSeq((HeroInfo *)player, 0x53);
+                        hn = Heroes;
+                        h = &hn[player];
+                        if (h->hero_name == 1) {
+                            PlaySfx(0x67D, NULL, NULL, 0x1000, 0x1E00, 0);
+                        }
+                        if (h->hero_name == 3) {
+                            PlaySfx(0x67F, NULL, NULL, 0x1000, 0x1E00, 0);
+                        }
+                        if (h->hero_name == 5) {
+                            PlaySfx(0x681, NULL, NULL, 0x1000, 0x1E00, 0);
+                        }
+                        if (h->hero_name == 7) {
+                            PlaySfx(0x684, NULL, NULL, 0x1000, 0x1E00, 0);
+                        }
+                    }
+                    if (player == 0) {
+                        PlaySfx(0x648, &f->unk128, &f->unkA4, 0x1000, 0x1E00, 0);
+                    }
+                    if (player == 1) {
+                        PlaySfx(0x649, &f->unk128, &f->unkA4, 0x1000, 0x1E00, 0);
+                    }
+                    if (player == 2) {
+                        PlaySfx(0x64A, &f->unk128, &f->unkA4, 0x1000, 0x1E00, 0);
+                    }
+                    if (player == 3) {
+                        PlaySfx(0x64B, &f->unk128, &f->unkA4, 0x1000, 0x1E00, 0);
+                    }
+                    f->unk8C = 1;
+                }
+                {
+                    HeroInfo *hb;
+                    HeroInfo *h;
+
+                    hb = Heroes;
+                    h = &hb[player];
+                    e = h->hero_eng;
+                    pos.x = e->unk10.x + (D_80068BD4[(e->unk1E - 0x400) & 0xFFF].unk2 * 25 >> 9);
+                    e = h->hero_eng;
+                    pos.z = e->unk10.z + (D_80068BD4[e->unk1E & 0xFFF].unk2 * 25 >> 9);
+                    pos.y = h->hero_eng->unk10.y;
+                }
+                if (--f->unk48 == -1) {
+                    if (G63B->unk34 == 0x18 && (G63B->unk32 & 0x80) && G63B->unk5C[player] == 0) {
+                        if (f->unk168 > 0) {
+                            SpawnNASById(pos.x, pos.y, pos.z, 0x1710, 0x11);
+                        } else {
+                            SpawnNASById(pos.x, pos.y, pos.z, 0x170A, 0x11);
+                        }
+                    } else if (D_8005A648 != 0x19) {
+                        SpawnNASById(pos.x, pos.y, pos.z, 0x170A, 0x11);
+                    } else {
+                        SpawnNASById(pos.x, pos.y, pos.z, 0x1711, 0x11);
+                    }
+                    spawned = 1;
+                    f->unk48 = 4;
+                }
+            } else {
+                if (f->unk128 != NULL) {
+                    StopSfx(f->unk128);
+                }
+                pad->unk54 &= ~0x8000;
+            }
+        } else {
+            if (f->unk128 != NULL) {
+                StopSfx(f->unk128);
+            }
+            f->unk8C = 0;
+        }
+        if (spawned == 0) {
+            if (((Ovl63Pad *)D_80051338)[player].unk50 & 0x800) {
+                if (f->unk90 == 0) {
+                    if (player == 0) {
+                        PlaySfx(0x644, &Heroes[0].hero_eng->sfx, &Heroes[0].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                    }
+                    if (player == 1) {
+                        PlaySfx(0x645, &Heroes[1].hero_eng->sfx, &Heroes[1].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                    }
+                    if (player == 2) {
+                        PlaySfx(0x646, &Heroes[2].hero_eng->sfx, &Heroes[2].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                    }
+                    if (player == 3) {
+                        PlaySfx(0x647, &Heroes[3].hero_eng->sfx, &Heroes[3].hero_eng->unk10, 0x1000, 0x1E00, 0);
+                    }
+                    f->unk90 = 1;
+                }
+                {
+                    HeroInfo *hb;
+                    HeroInfo *h;
+
+                    hb = Heroes;
+                    h = &hb[player];
+                    e = h->hero_eng;
+                    pos.x = e->unk10.x + (D_80068BD4[(e->unk1E - 0x400) & 0xFFF].unk2 * 25 >> 9);
+                    e = h->hero_eng;
+                    pos.z = e->unk10.z + (D_80068BD4[e->unk1E & 0xFFF].unk2 * 25 >> 9);
+                    pos.y = h->hero_eng->unk10.y;
+                }
+                if (--f->unk4C == -1) {
+                    if (G63B->unk34 == 0x18 && (G63B->unk32 & 0x80) && G63B->unk5C[player] == 0) {
+                        if (f->unk168 > 0) {
+                            SpawnNASById(pos.x, pos.y, pos.z, 0x170F, 0x11);
+                        } else {
+                            SpawnNASById(pos.x, pos.y, pos.z, 0x1709, 0x11);
+                        }
+                    } else if (D_8005A648 != 0x19) {
+                        SpawnNASById(pos.x, pos.y, pos.z, 0x1709, 0x11);
+                    } else {
+                        SpawnNASById(pos.x, pos.y, pos.z, 0x1711, 0x11);
+                    }
+                    f->unk4C = 6;
+                }
+            } else {
+                if (Heroes[player].hero_eng->sfx != NULL) {
+                    StopSfx(Heroes[player].hero_eng->sfx);
+                }
+                f->unk90 = 0;
+            }
+        }
+    } else {
+        if (--f->unk4C == -1) {
+            EXTengine *e2;
+
+            e2 = h2->hero_eng;
+            pos.x = e2->unk10.x + (D_80068BD4[(e2->unk1E - 0x400) & 0xFFF].unk2 * 25 >> 9);
+            e2 = h2->hero_eng;
+            pos.z = e2->unk10.z + (D_80068BD4[e2->unk1E & 0xFFF].unk2 * 25 >> 9);
+            pos.y = h2->hero_eng->unk10.y;
+            if (D_8005A648 != 0x19) {
+                SpawnNASById(pos.x, pos.y, pos.z, 0x170A, 0x11);
+            } else {
+                SpawnNASById(pos.x, pos.y, pos.z, 0x1711, 0x11);
+            }
+            f->unk4C = 3;
+        }
+    }
+    if (G63B->unk34 == 0x1A) {
+        D_800C6930 = -0xB4;
+    }
+    Heroes[player].hero_eng->unk10.y = D_800C6930;
+    func_800BC984(player);
+    if (G63B->unk34 == 0x19) {
+        func_800BCC20(player);
+    }
+    func_800C5400(player);
+    if (G63B->unk34 != 0x19) {
+        if (func_8008502C(player) != 0) {
+            SetHeroSeq((HeroInfo *)player, 0x48);
+        }
+    } else {
+        func_8008502C(player);
+    }
+}
 
 void func_800BAD54(s32 player) {
     HeroInfo *h;
