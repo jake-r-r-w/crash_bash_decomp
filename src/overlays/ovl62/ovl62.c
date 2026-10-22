@@ -5804,7 +5804,224 @@ void func_800CC2BC(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CC3B4);
+void func_800CC3B4(s32 player) {
+    u8 *g;
+    HeroInfo *h;
+    s32 *ext;
+    EXTengine *shadow;
+    EXTengine *eng;
+    EXTanimator *anim;
+    Ovl62Fux *fux;
+    s32 *p;
+    s32 i;
+    HeroInfo *base;
+    HeroInfo *h2;
+    HeroInfo *base2;
+    HeroInfo *base3;
+    HeroInfo *hh;
+    HeroInfo *h3;
+    HeroInfo *hb2;
+    HeroInfo *hb6;
+    HeroInfo *hb5;
+    HeroInfo *hb4;
+
+    base = Heroes;
+    h = &base[player];
+    ext = FindExtension(h->hero, 0x20000000);
+    if (ext == NULL) {
+        return;
+    }
+    g = D_8005A614;
+    if (*(s16 *)(g + 0x34) == 0x15) {
+        return;
+    }
+    shadow = h->hero_shadow;
+    eng = h->hero_eng;
+    if (shadow == NULL) {
+        return;
+    }
+    shadow->flags |= 0x200000;
+    shadow->unk1E = eng->unk1E;
+    shadow->unk5E = 1;
+    if (g[player + 0x50] == 9 || h->hero_mode == 0x4E || h->hero_mode == 0x50) {
+        shadow->sub->flags &= ~0x8000;
+        shadow->flags &= ~0x8000;
+        return;
+    }
+    shadow->sub->flags |= 0x8000;
+    shadow->flags |= 0x8000;
+    if (h->hero_mode == 0x58) {
+        if (h->hero_name != 1 && h->hero_name != 7 && h->hero_name != 8 && h->hero_name != 2 &&
+            h->hero_name != 6 && h->hero_name != 5 && h->hero_name != 4) {
+            shadow->sub->unk74 = 0x4000;
+            shadow->unk1E = eng->unk1E;
+            shadow->unk10 = eng->unk10;
+            shadow->unk5E = 1;
+            return;
+        }
+    }
+    fux = (Ovl62Fux *)Heroes[player].hero->FUX;
+    if (fux != NULL && fux->unk50 != 0) {
+        shadow->sub->unk74 = 0x4000;
+        shadow->unk1E = eng->unk1E;
+        shadow->unk10 = eng->unk10;
+        shadow->unk5E = 1;
+        return;
+    }
+    if (eng == NULL) {
+        return;
+    }
+    base2 = Heroes;
+    h2 = &base2[player];
+    anim = h2->hero_anim;
+    if (anim == NULL) {
+        return;
+    }
+    if (h2->hero_mode != 0x51) {
+        if (h2->hero_mode != 0x58) {
+            shadow->sub->unk6C = D_80054654;
+            shadow->sub->flags = 0x8000;
+            p = &D_800D6934[player];
+            shadow->sub->unk74 = *p + (anim->Aindex - 1);
+            if (h2->hero_mode == 0x4B || h2->hero_mode == 0x4C) {
+                shadow->sub->unk6C = D_80054654;
+                shadow->sub->unk74 = 0x4000;
+                *p = 0x4000;
+            }
+            shadow->unk10 = eng->unk10;
+            if (h2->hero_mode == 0x52) {
+                shadow->sub->unk6C = *(void **)D_80058AD0;
+                shadow->unk10.y += 0x298;
+                shadow->sub->unk74 = 0x2003;
+                *p = 0x2003;
+            }
+            shadow->unk1E = eng->unk1E;
+            shadow->unk5E = 1;
+        }
+        if (Heroes[player].hero_mode != 0x51) {
+            goto mode58;
+        }
+    }
+    {
+        shadow->sub->unk6C = D_80054654;
+        shadow->unk10 = eng->unk10;
+        shadow->sub->flags = 0x8000;
+        switch (Heroes[player].hero_name) {
+        case 4:
+            shadow->sub->unk74 = D_800D61D0[anim->Aindex - 1][0];
+            break;
+        case 3:
+            shadow->sub->unk74 = D_800D61D0[anim->Aindex - 1][0];
+            break;
+        case 7:
+            shadow->sub->unk74 = D_800D624C[anim->Aindex - 1][0];
+            break;
+        case 8:
+            shadow->sub->unk74 = D_800D62B4[anim->Aindex - 1][0];
+            break;
+        case 5:
+            shadow->sub->unk74 = D_800D624C[anim->Aindex - 1][0];
+            break;
+        case 6:
+            shadow->sub->unk74 = D_800D624C[anim->Aindex - 1][0];
+            break;
+        default:
+            shadow->sub->unk74 = D_800D63B0[anim->Aindex - 1][0];
+            break;
+        }
+        shadow->unk1E = eng->unk1E;
+        shadow->unk5E = 1;
+    }
+mode58:
+    base3 = Heroes;
+    h3 = &base3[player];
+    if (h3->hero_mode == 0x58) {
+        shadow->sub->unk6C = D_80054654;
+        shadow->unk10 = eng->unk10;
+        shadow->sub->flags = 0x8000;
+        switch (h3->hero_name) {
+        case 1:
+            if (Heroes[player].hero_anim->Atable == D_800D3948) {
+                shadow->sub->unk74 = D_800D6418[anim->Aindex - 1][0];
+            } else {
+                shadow->sub->unk74 = D_800D6418[0][0];
+            }
+            break;
+        case 7:
+            if (Heroes[player].hero_anim->Atable == D_800D40D0) {
+                shadow->sub->unk74 = D_800D64BC[anim->Aindex - 1][0];
+            } else {
+                shadow->sub->unk74 = D_800D64BC[0][0];
+            }
+            break;
+        case 8:
+            if (Heroes[player].hero_anim->Atable == D_800D4AC0) {
+                shadow->sub->unk74 = D_800D6548[anim->Aindex - 1][0];
+            } else {
+                shadow->sub->unk74 = D_800D6548[0][0];
+            }
+            break;
+        case 2:
+            hb2 = Heroes;
+            hh = &hb2[player];
+            if (hh->hero_anim->Atable == D_800D3C1C || ext[45] != 0) {
+                i = hh->hero_eng->sub->unk74 - 0x4300;
+                if (i < 0) {
+                    i = 0;
+                }
+                ext[45] = 1;
+                shadow->sub->unk74 = D_800D65F0[i][0];
+            } else {
+                shadow->sub->unk74 = D_800D65F0[0][0];
+            }
+            break;
+        case 6:
+            hb6 = Heroes;
+            hh = &hb6[player];
+            if (hh->hero_anim->Atable == D_800D4860 || ext[45] != 0) {
+                i = hh->hero_eng->sub->unk74 - 0x4280;
+                if (i < 0) {
+                    i = 0;
+                }
+                ext[45] = 1;
+                shadow->sub->unk74 = D_800D6760[i][0];
+            } else {
+                shadow->sub->unk74 = D_800D6760[0][0];
+            }
+            break;
+        case 5:
+            hb5 = Heroes;
+            hh = &hb5[player];
+            if (hh->hero_anim->Atable == D_800D4330 || ext[45] != 0) {
+                i = hh->hero_eng->sub->unk74 - 0x4300;
+                if (i < 0) {
+                    i = 0;
+                }
+                ext[45] = 1;
+                shadow->sub->unk74 = D_800D6828[i][0];
+            } else {
+                shadow->sub->unk74 = D_800D6828[0][0];
+            }
+            break;
+        case 4:
+            hb4 = Heroes;
+            hh = &hb4[player];
+            if (hh->hero_anim->Atable == D_800D4624 || ext[45] != 0) {
+                i = hh->hero_eng->sub->unk74 - 0x4300;
+                if (i < 0) {
+                    i = 0;
+                }
+                ext[45] = 1;
+                shadow->sub->unk74 = D_800D66A8[i][0];
+            } else {
+                shadow->sub->unk74 = D_800D66A8[0][0];
+            }
+            break;
+        }
+        shadow->unk1E = eng->unk1E;
+        shadow->unk5E = 1;
+    }
+}
 
 void func_800CCCB8(s32 player) {
     HeroInfo *h;

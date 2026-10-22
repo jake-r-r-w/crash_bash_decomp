@@ -1440,7 +1440,13 @@ s32 func_800C0888(SLONG_XYZ *pos, s32 player);
 
 void func_800CBBE8(s32 p1, s32 p2);
 
-void func_800CC3B4(void);
+/* func_800CC3B4: shadow frame tables, indexed by the hero's Aindex - 1. */
+extern u16 D_800D61D0[][2], D_800D624C[][2], D_800D62B4[][2], D_800D63B0[][2];
+extern u16 D_800D6418[][2], D_800D64BC[][2], D_800D6548[][2], D_800D65F0[][2];
+extern u16 D_800D66A8[][2], D_800D6760[][2], D_800D6828[][2];
+extern hero_seq D_800D3948[], D_800D40D0[], D_800D4AC0[], D_800D3C1C[];
+extern hero_seq D_800D4860[], D_800D4330[], D_800D4624[];
+void func_800CC3B4(s32 player);
 void func_800CCCB8(s32 player);
 
 s32 func_800CD214(s32 player);
