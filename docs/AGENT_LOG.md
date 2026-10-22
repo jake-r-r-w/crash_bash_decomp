@@ -495,6 +495,14 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-22 (swarm C, aborted):** queued the 35 never-tried 2-4 KB
+  functions (`scratch/swarmC_only.txt`, from `scratch/untried_now.txt`).
+  Docker Desktop was down (start it first); the first start used the
+  default `--big-workers 1` (pass `--big-workers 6`, every function here is
+  big) and lost 2 sessions to the OAuth refresh collision (reset with
+  `forget`). Restarted, then stopped by request after 2 min: 0 matched,
+  nothing to gate. Rerun the same command for a real try.
+
 - **2026-10-22 (swarm A, resumed):** run 20261021204521 on the same
   `--only` list after `forget` reset the 8 network failures: 27 matched,
   2 parked for $104.87 (~$3.88 a match), stopped by request with 5 queued.
