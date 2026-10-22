@@ -486,6 +486,33 @@ signature alone is not enough.
   bounce). Effects by hero (`hero_name`): `AddDingoSmoke` (Dingodile, Kanga),
   `AddSomeDust` (Crash, Coco, Tiny, Kong), `AddBrioSmoke` (Brio, Cortex);
   `AddTazerRing` is the tazer state's.
+- **Pogo tiles** (ovl60). `PogoSquare.state` (`+0x12`): 0 a pending claim
+  (owner after `+0x14` frames, old owner in `+0x16`), 1 normal (owner `+0xA`,
+  -1 free), 5 TNT (120-frame fuse), 6 Nitro, 7 four-way arrow, 10 locked
+  (240 frames). The setters are named by the state they write: `Tile_Set`
+  (1, owner), `Tile_SetLocked` (10), `Tile_DelayedSet` (0; `ZapInDir`
+  writes the same with a growing delay), `Tile_SetTnt`, `Tile_SetNitro`,
+  `Tile_SetFourWay`; `Tile_Claim` sets 1 (or 10 with the freeze pickup).
+  Three more (`func_800C2294`/`22E8`/`2338`, states 4/2/3) are the leak's
+  FizzleOut/DelayedFizzleOut/OnFire in some order: left unnamed.
+  `Set_Tile_Under_Player(p, bool)` runs a landing: the mode rules
+  (`SetTile_PogoThree` for mode 12's arrows, `SetTile_PogoFour` for mode 13),
+  then claim, or `Tile_FireTnt` / `Tile_FireNitro` on states 5/6 (both daze
+  players within a square: `Player_SetDazed` sets status 0x800).
+  `Tile_FireAllNitros` fires every state-6 tile. `Tile_Update(x, z)` is called
+  after every change. Mode 13: `PogoFour_PlayerHasStoodOnOwnTile` frees all
+  the player's tiles, `PogoFour_FreezeMyTiles` / `UnfreezeMyTiles` toggle
+  state 10. `ZapFourWays` and `ZapArrow` call `ZapInDir`. Islands:
+  `Tiles_CheckForIslands` builds a map of the player's tiles
+  (`Tiles_MakeUpIslandMap`), floods it from the edges
+  (`Tiles_FloodFillIslandMap`, recursive `func_800C1840` = the leak's
+  `Island_FloodFill`, left unnamed: its body needs unsigned x/z where the
+  leak says `s32`) and claims what is enclosed (`Tiles_CountUnflagged`).
+  `Bank_Tiles` banks the player's tiles and returns the count;
+  `Handle_Score` adds it with `CreateFloatyPogoScore`. `Player_SnapToTile`
+  centres the hero on its square; `Player_CalcForwardSpeed(p, bool)` is the
+  per-hero bounce speed. `PlaySquareChangeNoise` / `PlaySquareLockedNoise`
+  are per-player sounds for claiming and for landing on a locked square.
 - **Ambiguous, left unnamed:**
   - Both of the leak's `Roo_FireRocket` declarations match real functions:
     `func_800BFFF4(eng)` and `func_800C02AC(eng, dir)` both spawn

@@ -122,7 +122,6 @@ typedef struct Ovl60Obj {
 } Ovl60Obj;
 extern Ovl60Obj *D_800C5BB4;
 extern HeroInfo Heroes[4];
-void func_800B83AC(s32, s32);
 
 /* 0x1C-byte entries of D_800C535C */
 typedef struct {
@@ -145,10 +144,7 @@ typedef struct Ovl60Pad {
 } Ovl60Pad;
 s32 func_800BA110(s32 arg0, s32 arg1, s32 arg2);
 void func_800B935C(s32 x, s32 z, s32 hero);
-void func_800B8BE4(s32 arg0, s32 arg1);
-void func_800B7B1C(s32 x, s32 z, s32 hero);
-void func_800B8180(s32 x, s32 z);
-s32 func_800C1EA8(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
+void Tile_Claim(s32 arg0, s32 arg1, s32 arg2);
 extern s32 D_800C53CC[];
 extern s16 D_800C44D8[];
 extern s32 D_800C4484[];
@@ -268,7 +264,6 @@ void func_800C1068();
 void func_800C10F8(void);
 
 
-void func_800C159C(s32 arg0);
 
 
 void HeroPogoTazingCancel(u32 arg0);
@@ -286,7 +281,6 @@ s32 func_800C0AFC(s32 arg0, s32 arg1);
 
 s32 func_800C0B70(s32 arg0, s32 arg1, s32 arg2);
 
-void func_800C0C34(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
 s32 func_800C0DE4(s32 arg0);
 
@@ -297,7 +291,6 @@ void func_800C0FAC(s32 i);
 
 void func_800C1400(s32 arg0);
 
-void func_800C142C(s32 arg0);
 
 s32 func_800C1460(s32 arg0);
 
@@ -305,7 +298,6 @@ s32 func_800C1608(s32 arg0, s32 arg1);
 
 s32 func_800C165C(s32 *arg0, s32 *arg1);
 
-void func_800C19A8(s32 *arg0, s32 arg1);
 
 void func_800C2294(s32 arg0, s32 arg1, s16 arg2, s16 arg3);
 
@@ -313,17 +305,11 @@ void func_800C22E8(s32 arg0, s32 arg1, s16 arg2, s16 arg3);
 
 void func_800C2338(s32 arg0, s32 arg1, s16 arg2, s16 arg3);
 
-void func_800B7990(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
-void func_800C244C(s32 arg0, s32 arg1);
 
-void func_800C2488(s32 arg0, s32 arg1);
 
-void func_800C24E4(s32 arg0, s32 arg1);
 
-void func_800C2524(s32 arg0, s32 arg1, s32 arg2);
 
-void func_800B7C3C(s32 arg0, s32 arg1);
 
 void func_800C2620(s32 arg0, s32 arg1);
 
@@ -366,7 +352,6 @@ void func_800B3C44(void);
 
 void func_800BDF60(s32 arg0, s32 *arg1, s32 *arg2);
 
-s32 func_800C1DA4(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
 
 
@@ -376,11 +361,8 @@ void func_800B4A70(s32 arg0, u16 arg1);
 void func_800B4E50(s32 arg0, u16 arg1);
 void func_800B53CC(s32 arg0, u16 arg1);
 
-void func_800B8DFC(u32 arg0);
 
-void func_800B8EC8(u32 arg0);
 
-void func_800B8F94(s32 arg0);
 
 s32 func_800BBF00(s32 *arg0, s32 *arg1);
 
@@ -388,21 +370,14 @@ s32 func_800BEB6C(s32 arg0, s32 arg1, s32 arg2);
 
 s32 func_800C0F08(s32 arg0, EXTbotai *ai);
 
-s32 func_800C14BC(s32 arg0, s32 arg1);
 
 s32 func_800C178C(void);
 
-void func_800C1A18(s32 arg0);
 
-void func_800C2018(s32 arg0, s32 arg1, s32 arg2);
 
-void func_800C20C0(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
-void func_800C2204(void);
 
-void func_800C2388(s32 arg0, s32 arg1, s16 arg2, s16 arg3);
 
-void func_800C2564(s32 arg0, s32 arg1, s16 arg2);
 
 
 void func_800C2770(s32 arg0, u32 arg1, u32 arg2);
@@ -422,10 +397,6 @@ s32 func_800BC04C(s32 arg0, s32 arg1);
 void func_800C327C(s32 arg0);
 
 void func_800C3434(void);
-void func_800B8660(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
-s32 func_800B788C(s32 arg0);
-void func_800BB840(s32 *arg0, s32 arg1);
-s32 func_800BBB08(s32 *arg0, s32 arg1, s32 arg2);
 
 s32 func_800BEA34(s32 x, s32 z, s32 hero);
 s32 func_800BE864(s32 hero, Ovl60Goal *goal);
@@ -608,11 +579,9 @@ void func_800B3FF0(void);
 
 
 
-void func_800B7B1C(s32 arg0, s32 arg1, s32 arg2);
+void Tile_Claim(s32 arg0, s32 arg1, s32 arg2);
 
-void func_800B9080(s32 arg0);
 
-void func_800B91E8(s32 arg0);
 
 s32 func_800BA018(s32 arg0, s32 arg1, s32 arg2);
 

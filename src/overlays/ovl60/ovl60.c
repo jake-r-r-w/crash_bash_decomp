@@ -63,9 +63,9 @@ loop:
             h->hero->Camera.height = 0x500;
             break;
         }
-        func_800C159C(i);
-        func_800B8BE4(i, 0);
-        slot->unk14 = func_800C14BC(i, 0);
+        Player_SnapToTile(i);
+        Set_Tile_Under_Player(i, 0);
+        slot->unk14 = Player_CalcForwardSpeed(i, 0);
         mv->unk4 = 0;
         e = h->hero_eng;
         if (e != NULL) {
@@ -273,7 +273,7 @@ void func_800B3C44(void) {
     }
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 8; j++) {
-            func_800B7C3C(i, j);
+            Tile_Update(i, j);
         }
     }
 }
@@ -918,7 +918,7 @@ void func_800B574C(s32 arg0) {
             }
         }
         if ((bits & 0xF0) && move->velocity_enable != 0) {
-            speed = func_800C14BC(arg0, D_800C535C[arg0].unk4 == 5);
+            speed = Player_CalcForwardSpeed(arg0, D_800C535C[arg0].unk4 == 5);
             Player_RemoveReserve(arg0);
             if (((bits & 0x80) && x > 0) || ((bits & 0x20) && x < 7)
                 || ((bits & 0x10) && z < 7) || ((bits & 0x40) && z > 0)) {
@@ -1085,7 +1085,7 @@ void HeroPogo(u32 arg0) {
         return;
     }
     if (h->hero_move->jump_ctrl & 0x40) {
-        h->hero_move->forward_speed = func_800C14BC(arg0, D_800C535C[arg0].unk18);
+        h->hero_move->forward_speed = Player_CalcForwardSpeed(arg0, D_800C535C[arg0].unk18);
     } else {
         h->hero_move->forward_speed = 0;
     }
@@ -1117,9 +1117,9 @@ void HeroPogo(u32 arg0) {
         hero->hero_move->jump_ctrl |= 0x40;
     }
     if ((u16)D_800C535C[arg0].unk16 >= max) {
-        func_800C159C(arg0);
+        Player_SnapToTile(arg0);
         PlayBoingNoise(arg0);
-        func_800B8BE4(arg0, 1);
+        Set_Tile_Under_Player(arg0, 1);
         Heroes[arg0].hero_move->velocity_enable = 0;
         Heroes[arg0].hero_move->forward_speed = 0;
         Heroes[arg0].hero_move->jump_max = 0;
@@ -1197,7 +1197,7 @@ void SetHeroPogoIdle(u32 arg0) {
     Heroes[arg0].hero_move->velocity_enable = 1;
     Heroes[arg0].hero_move->jump_ctrl |= 0x22;
     Heroes[arg0].hero_move->jump_ctrl &= 0xEF;
-    func_800C159C(arg0);
+    Player_SnapToTile(arg0);
     if (D_800C535C[arg0].unk4 == 5) {
         SetHeroSeq((HeroInfo *)arg0, 0x2F);
     } else {
@@ -1231,7 +1231,7 @@ void HeroPogoIdle(u32 arg0) {
     switch (func_8008502C(arg0)) {
     case 0x12:
         PlayBoingNoise(arg0);
-        func_800B8BE4(arg0, 1);
+        Set_Tile_Under_Player(arg0, 1);
         if (D_800C535C[arg0].unk4 != 5 && Heroes[arg0].hero_aseq == 0x2F) {
             SetHeroSeq((HeroInfo *)arg0, 0x2E);
         }
@@ -1327,7 +1327,7 @@ void HeroPogoWinner(u32 arg0) {
     switch (func_8008502C(arg0)) {
     case 0x12:
         PlayBoingNoise(arg0);
-        func_800B8BE4(arg0, 1);
+        Set_Tile_Under_Player(arg0, 1);
         break;
     case 0x11:
         AddDingoSmoke(arg0);
@@ -1365,7 +1365,7 @@ void SetHeroPogoLoser(u32 arg0) {
     Heroes[arg0].hero_move->velocity_enable = 0;
     Heroes[arg0].hero_frozen = 2;
     func_800C1CF0(arg0);
-    func_800C159C(arg0);
+    Player_SnapToTile(arg0);
     Heroes[arg0].hero_move->jump_vel = 0x30;
     Heroes[arg0].hero_move->jump_max = 0x90;
     Heroes[arg0].hero_move->jump_acc = 0;
@@ -1497,7 +1497,7 @@ void SetHeroPogoDazed(u32 arg0) {
     }
     func_800C1CF0(arg0);
     func_80028018(arg0, 0x1E);
-    func_800C159C(arg0);
+    Player_SnapToTile(arg0);
     x = (Heroes[arg0].hero_eng->unk10.x + 0x800) >> 9;
     z = (Heroes[arg0].hero_eng->unk10.z + 0x800) >> 9;
     if ((u32)x < 8 && z >= 0 && z < 8) {
@@ -1753,7 +1753,7 @@ void func_800B76CC(s32 arg0) {
     }
 }
 
-s32 func_800B788C(s32 arg0) {
+s32 Bank_Tiles(s32 arg0) {
     s32 i;
     s32 j;
     s32 count;
@@ -1770,12 +1770,12 @@ s32 func_800B788C(s32 arg0) {
     }
     if (count != 0) {
         eng = Heroes[arg0].hero_eng;
-        func_800B7990(arg0, (eng->unk10.x + 0x800) >> 9, (eng->unk10.z + 0x800) >> 9, count);
+        Handle_Score(arg0, (eng->unk10.x + 0x800) >> 9, (eng->unk10.z + 0x800) >> 9, count);
     }
     return count;
 }
 
-void func_800B7990(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+void Handle_Score(u32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     Ovl60ScoreView *g = SCORE60V;
     s32 score;
 
@@ -1783,7 +1783,7 @@ void func_800B7990(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
         return;
     }
     if (arg3 != 0) {
-        func_800C0C34(arg0, arg1, arg2, arg3);
+        CreateFloatyPogoScore(arg0, arg1, arg2, arg3);
     }
     if (g->flags & 0x40) {
         if (g->teams != 0) {
@@ -1804,7 +1804,7 @@ void func_800B7990(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     }
 }
 
-void func_800B7B1C(s32 arg0, s32 arg1, s32 arg2) {
+void Tile_Claim(s32 arg0, s32 arg1, s32 arg2) {
     Ovl60Cell *p;
     Ovl60Cell *base;
 
@@ -1824,23 +1824,23 @@ void func_800B7B1C(s32 arg0, s32 arg1, s32 arg2) {
     p->unkA = arg2;
     if (D_8005A648 == 0xB) {
         if (arg0 > 0) {
-            func_800B7C3C(arg0 - 1, arg1);
+            Tile_Update(arg0 - 1, arg1);
         }
         if (arg0 < 7) {
-            func_800B7C3C(arg0 + 1, arg1);
+            Tile_Update(arg0 + 1, arg1);
         }
         if (arg1 > 0) {
-            func_800B7C3C(arg0, arg1 - 1);
+            Tile_Update(arg0, arg1 - 1);
         }
         if (arg1 < 7) {
-            func_800B7C3C(arg0, arg1 + 1);
+            Tile_Update(arg0, arg1 + 1);
         }
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800B7C3C);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Tile_Update);
 
-void func_800B8180(s32 arg0, s32 arg1) {
+void Tile_FireTnt(s32 arg0, s32 arg1) {
     HeroInfo *h;
     Ovl60Cell *c;
     Ovl60Cell *base;
@@ -1858,7 +1858,7 @@ void func_800B8180(s32 arg0, s32 arg1) {
             near = abs((arg1 << 9) - (((h->hero_eng->unk10.z + 0x800) >> 9) << 9)) < 0x300;
         }
         if (near && !(h->hero_status & 0x800)) {
-            func_800C142C(i);
+            Player_SetDazed(i);
         }
     }
     base = D_800C53DC[0];
@@ -1895,7 +1895,7 @@ void func_800B8180(s32 arg0, s32 arg1) {
     }
 }
 
-void func_800B83AC(s32 arg0, s32 arg1) {
+void Tile_FireNitro(s32 arg0, s32 arg1) {
     HeroInfo *h;
     Ovl60Cell *c;
     Ovl60Cell *base;
@@ -1918,7 +1918,7 @@ void func_800B83AC(s32 arg0, s32 arg1) {
                 func_800C1400(i);
                 PlaySfx(0x529, NULL, (SLONG_XYZ *)&h->hero_eng->unk10, 0x1000, 0x1E00, 0);
             } else {
-                func_800C142C(i);
+                Player_SetDazed(i);
             }
         }
     }
@@ -1927,7 +1927,7 @@ void func_800B83AC(s32 arg0, s32 arg1) {
     c->unk12 = 1;
     c->unkA = -1;
     c->unk14 = 0;
-    func_800B7C3C(arg0, arg1);
+    Tile_Update(arg0, arg1);
     pos = &c->unk4->x;
     nas = SpawnNASById(pos[0], pos[1], pos[2], 0x1605, 0x11);
     if (nas != NULL) {
@@ -1956,7 +1956,7 @@ void func_800B83AC(s32 arg0, s32 arg1) {
     }
 }
 
-void func_800B8660(s32 arg0, s32 arg1, s32 dx, s32 dz, const s32 arg4) {
+void ZapInDir(s32 arg0, s32 arg1, s32 dx, s32 dz, const s32 arg4) {
     s32 z;
     s32 x;
     Ovl60Cell *c;
@@ -1983,16 +1983,16 @@ void func_800B8660(s32 arg0, s32 arg1, s32 dx, s32 dz, const s32 arg4) {
             g = D_8005A614;
             if (*(s16 *)(g + 0x34) == 0xB) {
                 if (x > 0) {
-                    func_800B7C3C(x - 1, z);
+                    Tile_Update(x - 1, z);
                 }
                 if (x < 7) {
-                    func_800B7C3C(x + 1, z);
+                    Tile_Update(x + 1, z);
                 }
                 if (z > 0) {
-                    func_800B7C3C(x, z - 1);
+                    Tile_Update(x, z - 1);
                 }
                 if (z < 7) {
-                    func_800B7C3C(x, z + 1);
+                    Tile_Update(x, z + 1);
                 }
             }
             ((Ovl60Cell *)(x * sizeof(D_800C53DC[0]) + z * sizeof(Ovl60Cell) + (u32)D_800C53DC))->unk18[0] = n;
@@ -2049,13 +2049,13 @@ loop_j:
                     }
                 }
                 if (CELL_AT(off)->unk14 < 2) {
-                    func_800B8180(i, j);
+                    Tile_FireTnt(i, j);
                 }
-                func_800B7C3C(i, j);
+                Tile_Update(i, j);
                 break;
             case 6:
                 if (--CELL_AT(off)->unk14 < 2) {
-                    func_800B83AC(i, j);
+                    Tile_FireNitro(i, j);
                 }
                 break;
             case 0:
@@ -2094,7 +2094,7 @@ loop_j:
                     CELL_AT(off)->unk18[0] = 0;
                 }
                 } while (0);
-                func_800B7C3C(i, j);
+                Tile_Update(i, j);
                 break;
             case 2:
                 do {
@@ -2103,7 +2103,7 @@ loop_j:
                         CELL_AT(off)->unk14 = 10;
                     }
                 } while (0);
-                func_800B7C3C(i, j);
+                Tile_Update(i, j);
                 break;
             case 3:
                 do {
@@ -2113,7 +2113,7 @@ loop_j:
                         CELL_AT(off)->unk14 = 0;
                     }
                 } while (0);
-                func_800B7C3C(i, j);
+                Tile_Update(i, j);
                 break;
             case 1:
             case 4:
@@ -2162,7 +2162,7 @@ void PlayBoingNoise(u32 arg0) {
     }
 }
 
-void func_800B8BE4(s32 arg0, s32 arg1) {
+void Set_Tile_Under_Player(u32 arg0, bool arg1) {
     EXTengine *eng;
     Ovl60Cell *c;
     Ovl60Cell *p;
@@ -2189,14 +2189,14 @@ void func_800B8BE4(s32 arg0, s32 arg1) {
     }
     if (c->unkA != arg0) {
         if (arg1 != 0) {
-            func_800B8DFC(arg0);
+            PlaySquareChangeNoise(arg0);
         }
         *(u16 *)c->unkC |= 0x10;
     }
-    if (func_800C1EA8(arg0, x, z, arg1) != 0) {
+    if (SetTile_PogoThree(arg0, x, z, arg1) != 0) {
         return;
     }
-    if (func_800C1DA4(arg0, x, z, arg1) != 0) {
+    if (SetTile_PogoFour(arg0, x, z, arg1) != 0) {
         return;
     }
     {
@@ -2205,9 +2205,9 @@ void func_800B8BE4(s32 arg0, s32 arg1) {
     }
     owner = p->unkA;
     if (owner == -1) {
-        func_800B7B1C(x, z, arg0);
-        func_800B7C3C(x, z);
-        func_800C1A18(arg0);
+        Tile_Claim(x, z, arg0);
+        Tile_Update(x, z);
+        Tiles_CheckForIslands(arg0);
         return;
     }
     if (owner == arg0) {
@@ -2216,22 +2216,22 @@ void func_800B8BE4(s32 arg0, s32 arg1) {
     switch ((u16)p->unk12) {
     case 1:
     case 3:
-        func_800B7B1C(x, z, arg0);
-        func_800B7C3C(x, z);
-        func_800C1A18(arg0);
+        Tile_Claim(x, z, arg0);
+        Tile_Update(x, z);
+        Tiles_CheckForIslands(arg0);
         break;
     case 5:
-        func_800B8180(x, z);
-        func_800B7C3C(x, z);
+        Tile_FireTnt(x, z);
+        Tile_Update(x, z);
         break;
     case 6:
-        func_800B83AC(x, z);
-        func_800B7C3C(x, z);
+        Tile_FireNitro(x, z);
+        Tile_Update(x, z);
         break;
     }
 }
 
-void func_800B8DFC(u32 arg0) {
+void PlaySquareChangeNoise(u32 arg0) {
     switch (arg0) {
     case 0:
         PlaySfx(0x55A, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
@@ -2248,7 +2248,7 @@ void func_800B8DFC(u32 arg0) {
     }
 }
 
-void func_800B8EC8(u32 arg0) {
+void PlaySquareLockedNoise(u32 arg0) {
     switch (arg0) {
     case 0:
         PlaySfx(0x54E, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
@@ -2265,7 +2265,7 @@ void func_800B8EC8(u32 arg0) {
     }
 }
 
-void func_800B8F94(s32 arg0) {
+void PogoFour_PlayerHasStoodOnOwnTile(s32 arg0) {
     s32 i;
     s32 j;
     s32 n;
@@ -2281,7 +2281,7 @@ void func_800B8F94(s32 arg0) {
                 c->unk12 = 1;
                 c->unkA = -1;
                 c->unk14 = 0;
-                func_800B7C3C(i, j);
+                Tile_Update(i, j);
                 n++;
             }
         }
@@ -2293,7 +2293,7 @@ done:
     }
 }
 
-void func_800B9080(s32 arg0) {
+void PogoFour_FreezeMyTiles(s32 arg0) {
     NAS *nas;
     s32 i;
     s32 j;
@@ -2326,7 +2326,7 @@ void func_800B9080(s32 arg0) {
                 c->unk12 = 10;
                 c->unkA = arg0;
                 c->unk14 = 0xF0;
-                func_800B7C3C(i, j);
+                Tile_Update(i, j);
                 if (n == 0) {
                     c->unk18[0] = st;
                 } else {
@@ -2345,7 +2345,7 @@ done:
     }
 }
 
-void func_800B91E8(s32 arg0) {
+void PogoFour_UnfreezeMyTiles(s32 arg0) {
     s32 i;
     s32 j;
     s32 n;
@@ -2368,19 +2368,19 @@ void func_800B91E8(s32 arg0) {
                 c->unkA = arg0;
                 if (((D5A614View *)D_8005A614)->mode == 0xB) {
                     if (i > 0) {
-                        func_800B7C3C(i - 1, j);
+                        Tile_Update(i - 1, j);
                     }
                     if (i < 7) {
-                        func_800B7C3C(i + 1, j);
+                        Tile_Update(i + 1, j);
                     }
                     if (j > 0) {
-                        func_800B7C3C(i, j - 1);
+                        Tile_Update(i, j - 1);
                     }
                     if (j < 7) {
-                        func_800B7C3C(i, j + 1);
+                        Tile_Update(i, j + 1);
                     }
                 }
-                func_800B7C3C(i, j);
+                Tile_Update(i, j);
                 n++;
             }
             j++;
@@ -2789,7 +2789,7 @@ spawn:
         SetHeroAction((HeroInfo *)arg0, 0x39);
     }
     if (D_800C535C[arg0].unk4 == 6) {
-        func_800B91E8(arg0);
+        PogoFour_UnfreezeMyTiles(arg0);
     }
     D_800C535C[arg0].unk4 = 0;
     return n;
@@ -2864,12 +2864,12 @@ next_sub:
                 break;
             }
             if (hit) {
-                func_800C142C(i);
+                Player_SetDazed(i);
                 if (slot->unk4 == 5 && h->hero_aseq == 0x2F) {
                     SetHeroAction((HeroInfo *)i, 0x39);
                 }
                 if (slot->unk4 == 6) {
-                    func_800B91E8(i);
+                    PogoFour_UnfreezeMyTiles(i);
                 }
                 slot->unk4 = 0;
             }
@@ -3254,16 +3254,16 @@ void func_800BB724(s32 arg0, s32 arg1) {
                 c->unk12 = 0;
                 if (D_8005A648 == 0xB) {
                     if (i > 0) {
-                        func_800B7C3C(i - 1, j);
+                        Tile_Update(i - 1, j);
                     }
                     if (i < 7) {
-                        func_800B7C3C(i + 1, j);
+                        Tile_Update(i + 1, j);
                     }
                     if (j > 0) {
-                        func_800B7C3C(i, j - 1);
+                        Tile_Update(i, j - 1);
                     }
                     if (j < 7) {
-                        func_800B7C3C(i, j + 1);
+                        Tile_Update(i, j + 1);
                     }
                 }
             }
@@ -3273,7 +3273,7 @@ void func_800BB724(s32 arg0, s32 arg1) {
 done:;
 }
 
-void func_800BB840(s32 *seen, s32 id) {
+void Tiles_FloodFillIslandMap(s32 *seen, s32 id) {
     s32 i;
 
     if (D_8005A648 == 0xB) {
@@ -3329,7 +3329,7 @@ void func_800BB840(s32 *seen, s32 id) {
     }
 }
 
-s32 func_800BBB08(s32 *arg0, const s32 arg1, s32 arg2) {
+s32 Tiles_CountUnflagged(s32 *arg0, const s32 arg1, s32 arg2) {
     s32 i;
     s32 j;
     s32 n;
@@ -3359,16 +3359,16 @@ s32 func_800BBB08(s32 *arg0, const s32 arg1, s32 arg2) {
                 c->unkA = arg1;
                 if (D_8005A648 == 0xB) {
                     if (i > 0) {
-                        func_800B7C3C(i - 1, j);
+                        Tile_Update(i - 1, j);
                     }
                     if (i < 7) {
-                        func_800B7C3C(i + 1, j);
+                        Tile_Update(i + 1, j);
                     }
                     if (j > 0) {
-                        func_800B7C3C(i, j - 1);
+                        Tile_Update(i, j - 1);
                     }
                     if (j < 7) {
-                        func_800B7C3C(i, j + 1);
+                        Tile_Update(i, j + 1);
                     }
                 }
             }
@@ -3554,7 +3554,7 @@ void Fire_Rocket(s32 arg0, s32 arg1) {
             SetHeroAction((HeroInfo *)arg0, 0x39);
         }
         if (D_800C535C[arg0].unk4 == 6) {
-            func_800B91E8(arg0);
+            PogoFour_UnfreezeMyTiles(arg0);
         }
         D_800C535C[arg0].unk4 = 0;
     }
@@ -3594,7 +3594,7 @@ void Fire_RocketFourWays(s32 arg0, s32 arg1) {
     base = D_800C535C;
     slot = &base[arg0];
     if (slot->unk4 == 6) {
-        func_800B91E8(arg0);
+        PogoFour_UnfreezeMyTiles(arg0);
     }
     slot->unk4 = 0;
 }
@@ -3750,7 +3750,7 @@ void Plot_PogoProjectile(NAS *arg0) {
                             } while (0);
                             do {
                                 if (slot->unk4 == 6) {
-                                    func_800B91E8(i);
+                                    PogoFour_UnfreezeMyTiles(i);
                                 }
                             } while (0);
                             slot->unk4 = 0;
@@ -3889,22 +3889,22 @@ void func_800BCB4C(void) {
     } else {
         pos = D_800C4084[D_800C5BC0];
     }
-    func_800B7C3C(D_800C4014[pos[0]][0], D_800C4014[pos[0]][1]);
-    func_800B7C3C(D_800C4014[pos[1]][0], D_800C4014[pos[1]][1]);
-    func_800B7C3C(D_800C4014[pos[2]][0], D_800C4014[pos[2]][1]);
-    func_800B7C3C(D_800C4014[pos[3]][0], D_800C4014[pos[3]][1]);
+    Tile_Update(D_800C4014[pos[0]][0], D_800C4014[pos[0]][1]);
+    Tile_Update(D_800C4014[pos[1]][0], D_800C4014[pos[1]][1]);
+    Tile_Update(D_800C4014[pos[2]][0], D_800C4014[pos[2]][1]);
+    Tile_Update(D_800C4014[pos[3]][0], D_800C4014[pos[3]][1]);
     i = 0;
     g = (Ovl60ModeView *)D_8005A614;
     h = Heroes;
 loop:
     if (i < 4) {
         if (g->mode != 10 && g->mode != 13) {
-            func_800C19A8(buf, i);
-            func_800BB840(buf, i);
-            if (func_800BBB08(buf, i, 1)) {
+            Tiles_MakeUpIslandMap(buf, i);
+            Tiles_FloodFillIslandMap(buf, i);
+            if (Tiles_CountUnflagged(buf, i, 1)) {
                 PlaySfx(0x51D, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
                 if (g->mode == 11) {
-                    func_800B788C(i);
+                    Bank_Tiles(i);
                 }
             }
         }
@@ -4638,8 +4638,8 @@ s32 func_800BEA34(s32 x, s32 z, s32 hero) {
         }
     }
     grid[z * 8 + x] = 1;
-    func_800BB840(grid, hero);
-    return func_800BBB08(grid, hero, 0) != 0;
+    Tiles_FloodFillIslandMap(grid, hero);
+    return Tiles_CountUnflagged(grid, hero, 0) != 0;
 }
 
 s32 func_800BEB6C(s32 arg0, s32 arg1, s32 arg2) {
@@ -5133,7 +5133,7 @@ void func_800C0BF0(s32 arg0, s32 arg1) {
     D_800C5BB0 = SpawnNASById((arg0 << 9) - 0x700, D_8005A5D8, (arg1 << 9) - 0x700, 0x1408, 0x11);
 }
 
-void func_800C0C34(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+void CreateFloatyPogoScore(u32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     func_8008D5D4((arg1 << 9) - 0x700, D_8005A5D8 - 0x100, (arg2 << 9) - 0x800, arg3, 0);
 }
 
@@ -5353,7 +5353,7 @@ void func_800C1400(s32 arg0) {
     D_800C535C[arg0].flags |= 1;
 }
 
-void func_800C142C(s32 arg0) {
+void Player_SetDazed(u32 arg0) {
     Heroes[arg0].hero_status |= 0x800;
 }
 
@@ -5373,7 +5373,7 @@ s32 func_800C1460(s32 arg0) {
     return count;
 }
 
-s32 func_800C14BC(s32 arg0, s32 arg1)
+s32 Player_CalcForwardSpeed(u32 arg0, s32 arg1)
 {
     s32 h;
     s32 n;
@@ -5393,7 +5393,7 @@ s32 func_800C14BC(s32 arg0, s32 arg1)
     return r;
 }
 
-void func_800C159C(s32 arg0) {
+void Player_SnapToTile(u32 arg0) {
     Heroes[arg0].hero_eng->unk10.x = (((Heroes[arg0].hero_eng->unk10.x + 0x800) >> 9) << 9) - 0x700;
     Heroes[arg0].hero_eng->unk10.z = (((Heroes[arg0].hero_eng->unk10.z + 0x800) >> 9) << 9) - 0x700;
 }
@@ -5496,7 +5496,7 @@ void func_800C1840(u32 x, u32 z, s32 id, s32 *seen) {
     }
 }
 
-void func_800C19A8(s32 *arg0, s32 arg1) {
+void Tiles_MakeUpIslandMap(s32 *arg0, s32 arg1) {
     s32 i;
     s32 j;
     s32 *p;
@@ -5512,16 +5512,16 @@ void func_800C19A8(s32 *arg0, s32 arg1) {
     }
 }
 
-void func_800C1A18(s32 arg0) {
+void Tiles_CheckForIslands(s32 arg0) {
     s32 grid[64];
 
     if (((D5A614View *)D_8005A614)->mode != 10 && ((D5A614View *)D_8005A614)->mode != 13) {
-        func_800C19A8(grid, arg0);
-        func_800BB840(grid, arg0);
-        if (func_800BBB08(grid, arg0, 1) != 0) {
+        Tiles_MakeUpIslandMap(grid, arg0);
+        Tiles_FloodFillIslandMap(grid, arg0);
+        if (Tiles_CountUnflagged(grid, arg0, 1) != 0) {
             PlaySfx(0x51D, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
             if (((D5A614View *)D_8005A614)->mode == 11) {
-                func_800B788C(arg0);
+                Bank_Tiles(arg0);
             }
         }
     }
@@ -5605,12 +5605,12 @@ s32 arg0;
     base = D_800C535C;
     slot = &base[arg0];
     if (slot->unk4 == 6) {
-        func_800B91E8(arg0);
+        PogoFour_UnfreezeMyTiles(arg0);
     }
     slot->unk4 = 0;
 }
 
-s32 func_800C1DA4(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+bool SetTile_PogoFour(s32 arg0, s32 arg1, s32 arg2, bool arg3) {
     u8 *g = D_8005A614;
     Ovl60Cell *base;
     Ovl60Cell *p;
@@ -5625,7 +5625,7 @@ s32 func_800C1DA4(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     p = (Ovl60Cell *)(arg2 * sizeof(Ovl60Cell) + arg1 * sizeof(D_800C53DC[0]) + (u32)base);
     if ((u16)p->unk12 == 10) {
         if (arg3 != 0) {
-            func_800B8EC8(arg0);
+            PlaySquareLockedNoise(arg0);
         }
         return 1;
     }
@@ -5635,12 +5635,12 @@ s32 func_800C1DA4(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     if (*(u16 *)p->unkC & 0x10) {
         return 0;
     }
-    func_800B8F94(arg0);
-    func_800B7C3C(arg1, arg2);
+    PogoFour_PlayerHasStoodOnOwnTile(arg0);
+    Tile_Update(arg1, arg2);
     return 1;
 }
 
-s32 func_800C1EA8(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+bool SetTile_PogoThree(s32 arg0, s32 arg1, s32 arg2, bool arg3) {
     Ovl60Cell *base;
     Ovl60Cell *c;
 
@@ -5648,20 +5648,20 @@ s32 func_800C1EA8(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
         base = D_800C53DC[0];
         c = (Ovl60Cell *)(arg2 * sizeof(Ovl60Cell) + arg1 * sizeof(D_800C53DC[0]) + (u32)base);
         if ((u16)c->unk12 == 7) {
-            func_800B7B1C(arg1, arg2, arg0);
+            Tile_Claim(arg1, arg2, arg0);
             if (arg1 > 0) {
-                func_800B8660(arg1, arg2, -1, 0, arg0);
+                ZapInDir(arg1, arg2, -1, 0, arg0);
             }
             if (arg1 < 7) {
-                func_800B8660(arg1, arg2, 1, 0, arg0);
+                ZapInDir(arg1, arg2, 1, 0, arg0);
             }
             if (arg2 > 0) {
-                func_800B8660(arg1, arg2, 0, -1, arg0);
+                ZapInDir(arg1, arg2, 0, -1, arg0);
             }
             if (arg2 < 7) {
-                func_800B8660(arg1, arg2, 0, 1, arg0);
+                ZapInDir(arg1, arg2, 0, 1, arg0);
             }
-            func_800C1A18(arg0);
+            Tiles_CheckForIslands(arg0);
             if (arg3 != 0) {
                 PlaySfx(0x515, NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
             }
@@ -5672,22 +5672,22 @@ s32 func_800C1EA8(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 0;
 }
 
-void func_800C2018(s32 arg0, s32 arg1, s32 arg2) {
+void ZapFourWays(s32 arg0, s32 arg1, s32 arg2) {
     if (arg0 > 0) {
-        func_800B8660(arg0, arg1, -1, 0, arg2);
+        ZapInDir(arg0, arg1, -1, 0, arg2);
     }
     if (arg0 < 7) {
-        func_800B8660(arg0, arg1, 1, 0, arg2);
+        ZapInDir(arg0, arg1, 1, 0, arg2);
     }
     if (arg1 > 0) {
-        func_800B8660(arg0, arg1, 0, -1, arg2);
+        ZapInDir(arg0, arg1, 0, -1, arg2);
     }
     if (arg1 < 7) {
-        func_800B8660(arg0, arg1, 0, 1, arg2);
+        ZapInDir(arg0, arg1, 0, 1, arg2);
     }
 }
 
-void func_800C20C0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+void ZapArrow(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     NAS *nas = (NAS *)D_800C53DC[arg0][arg1].hero;
     s32 dir;
     s32 i;
@@ -5722,20 +5722,20 @@ void func_800C20C0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
                 dz = 0;
                 break;
             }
-            func_800B8660(arg0, arg1, dx, dz, arg2);
+            ZapInDir(arg0, arg1, dx, dz, arg2);
             dir ^= 2;
         }
     }
 }
 
-void func_800C2204(void) {
+void Tile_FireAllNitros(void) {
     s32 i;
     s32 j;
 
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 8; j++) {
             if ((u16)D_800C53DC[i][j].unk12 == 6) {
-                func_800B83AC(i, j);
+                Tile_FireNitro(i, j);
             }
         }
     }
@@ -5778,7 +5778,7 @@ void func_800C2338(s32 arg0, s32 arg1, s16 arg2, s16 arg3) {
     p->unk16 = arg2;
 }
 
-void func_800C2388(s32 arg0, s32 arg1, s16 arg2, s16 arg3) {
+void Tile_DelayedSet(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     Ovl60Cell *base = D_800C53DC[0];
     Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
     s16 old = p->unkA;
@@ -5789,21 +5789,21 @@ void func_800C2388(s32 arg0, s32 arg1, s16 arg2, s16 arg3) {
     p->unk16 = old;
     if (D_8005A648 == 0xB) {
         if (arg0 > 0) {
-            func_800B7C3C(arg0 - 1, arg1);
+            Tile_Update(arg0 - 1, arg1);
         }
         if (arg0 < 7) {
-            func_800B7C3C(arg0 + 1, arg1);
+            Tile_Update(arg0 + 1, arg1);
         }
         if (arg1 > 0) {
-            func_800B7C3C(arg0, arg1 - 1);
+            Tile_Update(arg0, arg1 - 1);
         }
         if (arg1 < 7) {
-            func_800B7C3C(arg0, arg1 + 1);
+            Tile_Update(arg0, arg1 + 1);
         }
     }
 }
 
-void func_800C244C(s32 arg0, s32 arg1) {
+void Tile_SetFourWay(s32 arg0, s32 arg1) {
     Ovl60Cell *base = D_800C53DC[0];
     Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
 
@@ -5811,7 +5811,7 @@ void func_800C244C(s32 arg0, s32 arg1) {
     p->unk12 = 7;
 }
 
-void func_800C2488(s32 arg0, s32 arg1) {
+void Tile_SetNitro(s32 arg0, s32 arg1) {
     Ovl60Cell *base = D_800C53DC[0];
     Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
 
@@ -5820,7 +5820,7 @@ void func_800C2488(s32 arg0, s32 arg1) {
     p->unk14 = D_800C3998[D_800C5BB8][0];
 }
 
-void func_800C24E4(s32 arg0, s32 arg1) {
+void Tile_SetTnt(s32 arg0, s32 arg1) {
     Ovl60Cell *base = D_800C53DC[0];
     Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
 
@@ -5829,7 +5829,7 @@ void func_800C24E4(s32 arg0, s32 arg1) {
     p->unk14 = 0x78;
 }
 
-void func_800C2524(s32 arg0, s32 arg1, s32 arg2) {
+void Tile_SetLocked(s32 arg0, s32 arg1, s32 arg2) {
     Ovl60Cell *base = D_800C53DC[0];
     Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
 
@@ -5838,7 +5838,7 @@ void func_800C2524(s32 arg0, s32 arg1, s32 arg2) {
     p->unk14 = 0xF0;
 }
 
-void func_800C2564(s32 arg0, s32 arg1, s16 arg2) {
+void Tile_Set(s32 arg0, s32 arg1, s32 arg2) {
     Ovl60Cell *base = D_800C53DC[0];
     Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
 
@@ -5846,16 +5846,16 @@ void func_800C2564(s32 arg0, s32 arg1, s16 arg2) {
     p->unkA = arg2;
     if (D_8005A648 == 0xB) {
         if (arg0 > 0) {
-            func_800B7C3C(arg0 - 1, arg1);
+            Tile_Update(arg0 - 1, arg1);
         }
         if (arg0 < 7) {
-            func_800B7C3C(arg0 + 1, arg1);
+            Tile_Update(arg0 + 1, arg1);
         }
         if (arg1 > 0) {
-            func_800B7C3C(arg0, arg1 - 1);
+            Tile_Update(arg0, arg1 - 1);
         }
         if (arg1 < 7) {
-            func_800B7C3C(arg0, arg1 + 1);
+            Tile_Update(arg0, arg1 + 1);
         }
     }
 }
@@ -6082,7 +6082,7 @@ void SetHeroPogo(u32 arg0) {
     slot = &D_800C535C[arg0];
     *(s16 *)((u8 *)slot + 0x16) = 0;
     slot->unk18 = (u16)slot->unk4 == 5;
-    func_800B8BE4(arg0, 0);
+    Set_Tile_Under_Player(arg0, 0);
 }
 
 void func_800C2E50(s32 arg0, s32 arg1) {
