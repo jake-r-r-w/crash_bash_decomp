@@ -696,7 +696,286 @@ NAS *func_800C1848(idx, cone)
     return NULL;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C1A30);
+static inline void func_800C1A30_bounce(s32 *a, s32 *b, s16 ma, s32 *c, s32 *d, s16 mb) {
+    s32 total;
+    s32 r;
+    s32 q;
+    s32 dd;
+    s32 x;
+    s32 y;
+
+    if (ma > 0 && mb > 0) {
+        x = *a;
+        y = *c;
+        dd = -((x - y) << 8);
+        q = (dd * mb + ((ma * x + mb * y) << 8)) / (total = mb + ma);
+        r = q - dd;
+        *a = q >> 8;
+        *c = r >> 8;
+        x = *b;
+        y = *d;
+        dd = -((x - y) << 8);
+        q = (dd * mb + ((ma * x + mb * y) << 8)) / total;
+        r = q - dd;
+        *b = q >> 8;
+        *d = r >> 8;
+    }
+}
+
+#define BOUNCE(m1, m2) \
+    func_800C1A30_bounce(&(m1)->x_vel, &(m1)->z_vel, (m1)->mass, &(m2)->x_vel, &(m2)->z_vel, (m2)->mass)
+
+s32 func_800C1A30(s32 arg0) {
+    VECTOR pos;
+    NAS *own;
+    EXTengine *obj;
+    s32 hit;
+    s32 bot;
+    s32 top;
+    s32 rad;
+    s32 lo;
+    s32 hi;
+    s32 rad2;
+    s32 hi2;
+    s32 lo2;
+    s32 rad3;
+    s32 lo3;
+    s32 hi3;
+    u32 i;
+    HeroInfo *self;
+    HeroInfo *heroes;
+    EXTengine *eng;
+    EXTengine *e;
+    FlagRecord *rec;
+    FlagRecord *box;
+    NAS *n;
+    EXTobject *t;
+    s32 push;
+    s32 dx;
+    s32 r;
+    s32 d;
+    s32 dz;
+    s32 rr;
+    s32 ang;
+    s32 a;
+    s32 tmp;
+
+    hit = 0;
+    lo2 = 0;
+    hi2 = 0;
+    rad2 = 0;
+    hi3 = 0;
+    lo3 = 0;
+    rad3 = 0;
+    eng = Heroes[arg0].hero_eng;
+    obj = NULL;
+    if (eng != NULL) {
+        box = func_80025A48(eng, 0x40);
+        if (box != NULL) {
+            rad = box->radius;
+            hi = eng->unk10.y + box->unk2;
+            lo = eng->unk10.y + box->height;
+            box = func_80025A48(eng, 1);
+            if (box != NULL) {
+                if (eng->unk5E != 0) {
+                    func_800142D4(&eng->unk1C);
+                }
+                func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
+                lo2 = eng->unk10.y + box->unk2;
+                hi2 = eng->unk10.y + box->height;
+                if (lo2 < hi2) {
+                    tmp = hi2;
+                    hi2 = lo2;
+                    lo2 = tmp;
+                }
+                rad2 = box->radius;
+                func_80015758((SVECTOR *)box, &pos);
+            }
+            if (Heroes[arg0].hero_object != NULL) {
+                n = ((NAS **)Heroes[arg0].hero_object)[-1];
+                obj = n->Engine;
+                if (obj != NULL) {
+                    rad3 = 0x80;
+                    hi3 = obj->unk10.y;
+                    lo3 = hi3 - 0x100;
+                }
+            }
+            heroes = Heroes;
+            i = 0;
+            self = &heroes[arg0];
+            for (; ; i++) {
+                s32 unused;
+
+                if (i >= 4) {
+                    break;
+                }
+                if (arg0 == i || (Heroes[i].hero_status & 0xF800)) {
+                    continue;
+                }
+                if (self->hero_move->forward_speed != 0) {
+                    push = 1;
+                } else {
+                    push = Heroes[i].hero_move->forward_speed == 0;
+                }
+                if (D_8005A5DC < 4) {
+                    if (D_8005A5DC >= 2) {
+                        push = 1;
+                    }
+                }
+                e = Heroes[i].hero_eng;
+                if (e == NULL) {
+                    continue;
+                }
+                rec = func_80025A48(e, 0x40);
+                if (rec == NULL) {
+                    continue;
+                }
+                bot = e->unk10.y + rec->unk2;
+                top = e->unk10.y + rec->height;
+                if (push != 0) {
+                    r = rec->radius;
+                    r += rad;
+                    rr = r * r;
+                    if (lo < bot && top < hi) {
+                        dx = e->unk10.x - eng->unk10.x;
+                        dz = e->unk10.z - eng->unk10.z;
+                        d = dx * dx + dz * dz;
+                        if (d < rr) {
+                            d = csqrt(d) >> 6;
+                            if (d < r) {
+                                ang = get_angle(dx, dz) & 0xFFF;
+                                d = r - d + 1;
+                                eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->unk10.z -= (d * D_80068BD4[ang].unk2) >> 12;
+                                hit = 1;
+                                if (self->hero_pu != 0) {
+                                    (*(void (**)(s32, s32))&D_8009D6E8.unk60)(arg0, i);
+                                }
+                                if (Heroes[i].hero_pu != 0) {
+                                    (*(void (**)(s32, s32))&D_8009D6E8.unk60)(i, arg0);
+                                }
+                                if (D_8005A5DC < 4) {
+                                    if (D_8005A5DC >= 2) {
+                                        BOUNCE(self->hero_move, Heroes[i].hero_move);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (rad2 != 0 && hi2 < bot && top < lo2) {
+                    dx = e->unk10.x - pos.vx;
+                    dz = e->unk10.z - pos.vz;
+                    r = rec->radius;
+                    r += rad2;
+                    d = dx * dx + dz * dz;
+                    rr = r * r;
+                    if (d < rr) {
+                        d = csqrt(d) >> 6;
+                        if (d < r) {
+                            hit = 1;
+                            ang = get_angle(dx, dz) & 0xFFF;
+                            d = r - d + 1;
+                            if (push != 0) {
+                                eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->unk10.z -= (d * D_80068BD4[ang].unk2) >> 12;
+                            } else {
+                                e->unk10.x += (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                e->unk10.z += (d * D_80068BD4[ang].unk2) >> 12;
+                            }
+                            if (D_8005A5DC < 4) {
+                                if (D_8005A5DC >= 2) {
+                                    BOUNCE(self->hero_move, Heroes[i].hero_move);
+                                }
+                            }
+                        }
+                    }
+                }
+                if (rad3 != 0 && lo3 < bot && top < hi3) {
+                    dx = e->unk10.x - obj->unk10.x;
+                    dz = e->unk10.z - obj->unk10.z;
+                    r = rec->radius;
+                    r += rad3;
+                    d = dx * dx + dz * dz;
+                    rr = r * r;
+                    if (d < rr) {
+                        d = csqrt(d) >> 6;
+                        if (d < r) {
+                            hit = 1;
+                            ang = get_angle(dx, dz) & 0xFFF;
+                            d = r - d + 1;
+                            if (push != 0) {
+                                eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->unk10.z -= (d * D_80068BD4[ang].unk2) >> 12;
+                            } else {
+                                e->unk10.x += (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                e->unk10.z += (d * D_80068BD4[ang].unk2) >> 12;
+                            }
+                            if (D_8005A5DC < 4) {
+                                if (D_8005A5DC >= 2) {
+                                    BOUNCE(self->hero_move, Heroes[i].hero_move);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            own = NULL;
+            n = D_8005AA2C;
+            if (Heroes[arg0].hero_object != NULL) {
+                own = ((NAS **)Heroes[arg0].hero_object)[-1];
+            }
+            rad = 0x78;
+            push = Heroes[arg0].hero_move->forward_speed != 0;
+            if (D_8005A5DC < 4) {
+                if (D_8005A5DC >= 2) {
+                    push = 1;
+                }
+            }
+            for (; n != NULL; n = n->Solid.Child) {
+                if (!(n->Class & 0x200)) continue;
+                if (n == own) continue;
+                e = n->Engine;
+                if (e == NULL) continue;
+                if (e == eng) continue;
+                rec = func_80025A48(e, 0x40);
+                if (rec == NULL) continue;
+                bot = e->unk10.y + rec->unk2;
+                top = e->unk10.y + rec->height;
+                if (lo < bot && top < hi) {
+                    dx = e->unk10.x - eng->unk10.x;
+                    dz = e->unk10.z - eng->unk10.z;
+                    r = rec->radius;
+                    r += rad;
+                    d = dx * dx + dz * dz;
+                    rr = r * r;
+                    if (d < rr) {
+                        d = csqrt(d) >> 6;
+                        if (d < r) {
+                            hit = 1;
+                            a = get_angle(dx, dz);
+                            ang = a & 0xFFF;
+                            if (!(a & 0xFF)) {
+                                ang -= 8 - Random(0x10);
+                            }
+                            d = r - d + 1;
+                            if (push != 0) {
+                                eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                                eng->unk10.z -= (d * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+                            }
+                            t = FindExtension(n, 0x1000);
+                            if (t != NULL && (t->can_do & 8)) {
+                                t->player = arg0;
+                                t->will_do |= 8;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return hit;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bff1c", func_800C284C);
 

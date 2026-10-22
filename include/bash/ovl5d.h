@@ -327,7 +327,7 @@ extern void (*D_8009D70C)(s32);
 void func_800B4AB0();
 void func_800BEF00();
 NAS *func_800C1848();
-void func_800C1A30();
+s32 func_800C1A30(s32 arg0);
 void func_800C284C();
 extern u8 D_800C3004[];
 extern u8 D_800C3018[];
