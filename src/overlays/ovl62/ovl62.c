@@ -6019,7 +6019,166 @@ void func_800CDBD0(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CDE8C);
+void func_800CDE8C(s32 player) {
+    s32 *ext;
+    NAS *nas;
+    s32 *fux;
+    EXTengine *eng;
+    EXTheromove *move;
+    s32 sfx;
+
+    if (func_800D2D2C() == 0) {
+        PlaySfx(0x467, NULL, NULL, 0x1000, 0x1E00, 0);
+        switch (Heroes[player].hero_name) {
+        case 1:
+            sfx = 3;
+            goto play;
+        case 2:
+            sfx = 0x35;
+            goto play;
+        case 3:
+            sfx = 0x67;
+            goto play;
+        case 4:
+            sfx = 0x99;
+            goto play;
+        case 5:
+            sfx = 0x12F;
+            goto play;
+        case 7:
+            sfx = 0xFD;
+            goto play;
+        case 8:
+            sfx = 0xCB;
+            goto play;
+        case 6:
+            sfx = 0x161;
+        play:
+            PlaySfx(sfx, NULL, NULL, 0x1000, 0x1E00, 0);
+            break;
+        }
+        ext = FindExtension(Heroes[player].hero, 0x20000000);
+        if (ext != NULL) {
+            if (D_8005A648 != 0x16) {
+                eng = Heroes[player].hero_eng;
+                ext[0x98 / 4] = 0;
+                nas = SpawnNASById(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1605, 0x11);
+                if (nas != NULL) {
+                    nas->Engine->flags |= 0x200000;
+                    fux = (s32 *)nas->FUX;
+                    if (fux != NULL) {
+                        fux[0x18 / 4] = 0x200;
+                        fux[0xC / 4] = 0;
+                        fux[0x20 / 4] = 5;
+                        nas->Engine->sub->unk6C = D_800546C4;
+                        nas->Engine->flags |= 0x200000;
+                        fux[0x28 / 4] = 6;
+                    }
+                    nas->InitDelete(nas);
+                }
+            }
+            ext[0x1C / 4] = 0;
+            move = Heroes[player].hero_move;
+            if (move != NULL) {
+                move->z_dir = 0;
+                move->x_max = 0;
+                move->z_max = 0;
+                move->x_vel = 0;
+                move->z_vel = 0;
+                move->mass = 0x200;
+            }
+            Heroes[player].hero_eng->sub->unk68 = 0;
+            if (Heroes[player].hero_name == 1) {
+                if (ext[0x24 / 4] == 0) {
+                    SetHeroSeq((HeroInfo *)player, 0x44);
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                } else {
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                    SetHeroSeq((HeroInfo *)player, 0x3C);
+                }
+            }
+            if (Heroes[player].hero_name == 5) {
+                if (ext[0x24 / 4] == 0) {
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                    SetHeroSeq((HeroInfo *)player, 0x44);
+                } else {
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                    SetHeroSeq((HeroInfo *)player, 0x3C);
+                }
+            }
+            if (Heroes[player].hero_name == 6) {
+                if (ext[0x24 / 4] == 0) {
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                    SetHeroSeq((HeroInfo *)player, 0x44);
+                } else {
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                    SetHeroSeq((HeroInfo *)player, 0x3C);
+                }
+            }
+            if (Heroes[player].hero_name == 3) {
+                if (ext[0x24 / 4] == 0) {
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                    SetHeroSeq((HeroInfo *)player, 0x44);
+                } else {
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                    SetHeroSeq((HeroInfo *)player, 0x3C);
+                }
+            }
+            if (Heroes[player].hero_name == 2) {
+                if (ext[0x24 / 4] == 0) {
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                    SetHeroSeq((HeroInfo *)player, 0x44);
+                } else {
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                    SetHeroSeq((HeroInfo *)player, 0x3C);
+                }
+            }
+            if (Heroes[player].hero_name == 4) {
+                if (ext[0x24 / 4] == 0) {
+                    Heroes[player].hero_eng->sub->unk8E = 0x2001;
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                    SetHeroSeq((HeroInfo *)player, 0x44);
+                } else {
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                    SetHeroSeq((HeroInfo *)player, 0x3C);
+                }
+            }
+            if (Heroes[player].hero_name == 7) {
+                if (ext[0x24 / 4] == 0) {
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                    SetHeroSeq((HeroInfo *)player, 0x44);
+                } else {
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                    SetHeroSeq((HeroInfo *)player, 0x3C);
+                }
+            }
+            if (Heroes[player].hero_name == 8) {
+                if (ext[0x24 / 4] == 0) {
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                    SetHeroSeq((HeroInfo *)player, 0x44);
+                } else {
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                    SetHeroSeq((HeroInfo *)player, 0x3C);
+                }
+            }
+        }
+    }
+}
 
 void func_800CE664(s32 player) {
     EXTheromove *move;
