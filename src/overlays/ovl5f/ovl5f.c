@@ -2868,7 +2868,7 @@ void PlotLobber_TA(NAS *nas)
     eng->unk10.y = -0x104;
     if ((D_8005A648 == 9) && (fux->player != (-1)))
     {
-      func_800C18F0(eng->unk10.x, eng->unk10.y, eng->unk10.z);
+      CheckMineToBoss(eng->unk10.x, eng->unk10.y, eng->unk10.z);
     }
     x = eng->unk10.x;
     z = eng->unk10.z;
@@ -3379,7 +3379,7 @@ void CreateMineShrapnelBits(NAS *nas) {
         x = eng->unk10.x;
         z = eng->unk10.z;
         if (D_8005A648 == 9) {
-            func_800C18F0(x, eng->unk10.y, z);
+            CheckMineToBoss(x, eng->unk10.y, z);
         }
         for (i = 0; i < 4; i++) {
             if (!(Heroes[i].hero_status & 0xFA00)) {
@@ -4476,7 +4476,7 @@ void func_800C0DA0(EXTengine *arg0) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C0F24);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C18F0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", CheckMineToBoss);
 
 void func_800C1F44(void) {
     D_800CB224[0] = SpawnNASById(0x369, 0x7D0, 0x10E0, 0x1315, 0x11);

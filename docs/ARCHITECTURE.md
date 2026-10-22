@@ -586,6 +586,9 @@ signature alone is not enough.
     `SetMoeJoeMode(hero, mode)` is the boss tanks' mode setter: it sets
     `hero_mode` / `hero_last_mode` and runs their own handlers for idle
     (0x6C), move (0x6E), recoil (0x69) and dead (0x6B).
+    Mode 9 is the Komodo Moe and Joe tank-boss fight (players 2 and 3 go
+    through `SetMoeJoeMode`); in it the mine and the lobber call
+    `CheckMineToBoss(x, y, z)` with their explosion point.
     `GetSandbagValueTank(x, z)` / `GetSandbagValueMiss(x, z)` read the two
     byte maps `D_800CACFC` / `D_800CACB4` (one cell per 0x200 units, row
     width `D_800CAFF4`): the first is checked ahead of a tank's facing

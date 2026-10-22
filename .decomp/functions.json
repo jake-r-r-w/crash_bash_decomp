@@ -27957,7 +27957,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C18F0": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C18F0.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/CheckMineToBoss.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80022A3C",
@@ -27966,7 +27966,7 @@
   "fp": "d4083121f592d774",
   "fpn": "3ab47ffbb4aeea5f",
   "leaf": false,
-  "name": "func_800C18F0",
+  "name": "CheckMineToBoss",
   "orig": "func_800C18F0",
   "rom": 58940,
   "seg": "overlays/ovl5f/ovl5f",
