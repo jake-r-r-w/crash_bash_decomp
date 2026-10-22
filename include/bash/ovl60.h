@@ -250,11 +250,8 @@ s32 func_800BE6C4(s32 arg0, Ovl60Goal *arg1);
 void HeroPogoTazingCancel(u32 arg0);
 extern s16 D_8009D87C[][3];
 
-void func_800B76CC(s32 arg0);
 
-void func_800BC0EC(s32 arg0);
 
-void func_800BD008(s32 arg0);
 
 
 
@@ -329,7 +326,6 @@ void PogoWinner_Normal(s32 arg0, u16 arg1);
 s32 func_800C0F08(s32 arg0, EXTbotai *ai);
 
 
-s32 func_800C178C(void);
 
 
 
@@ -538,9 +534,7 @@ void Tile_Claim(s32 arg0, s32 arg1, s32 arg2);
 
 
 
-void func_800BB724(s32 arg0, s32 arg1);
 
-s32 func_800BBC94(s32 x, s32 z);
 
 void Fire_Rocket(s32 arg0, s32 arg1);
 

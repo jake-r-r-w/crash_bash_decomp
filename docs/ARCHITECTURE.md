@@ -642,6 +642,16 @@ signature alone is not enough.
   pattern `D_800C5BC0` of `D_800C3C14` into them; `PogoKerb_Poll` (every
   frame from `UpdatePOGO`) runs the timer `D_800C5BC4`. Its caller passed an
   unused argument (old-style prototype); dropped, same code.
+  `PogoKerb_SetMode(mode)` (from the poll) sets the kerb mode `D_800C5BD0`
+  and its timers.
+- **More Pogo:** `Player_RampToTile` eases the hero a quarter of the way to
+  its square's centre per frame (the tazing state; `Player_SnapToTile` jumps
+  there); `PogoHero_ExtraEffects` is the `PowerUp` hook (floats and spins
+  the held power-up over the hero); `Tiles_PlayerIsStealing(new, old)`
+  (from the projectile) hands every tile of one player to another with a
+  delay; `Tile_Update`'s mode helpers are `LevelSpecific_UnclaimedTile` (the
+  free-square graphic id per mode) and `LevelSpecific_ClaimedTile` (mode
+  11's owned-tile neighbour mask, kerbs included).
 - **Pogo AI** (ovl60). `PogoAI_Poll(p)` runs the bot (`EXTbotai`: `AIpad`,
   timers, `AImode` 1/3/4-7). Tests: `PogoAI_CanPlayerShootAnyone` (an
   opponent in the facing row or column), `...FourWays` (any row or column),

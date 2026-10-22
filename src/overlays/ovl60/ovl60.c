@@ -1286,7 +1286,7 @@ void HeroPogoTazing(u32 arg0) {
     if (TestHeroPogoDazed(arg0) != 0) {
         return;
     }
-    func_800BC0EC(arg0);
+    Player_RampToTile(arg0);
     base = Heroes;
     h = &base[arg0];
     h->hero_frozen = 10;
@@ -1710,7 +1710,7 @@ void AddBrioSmoke(u32 arg0) {
     }
 }
 
-void func_800B76CC(s32 arg0) {
+void PogoHero_ExtraEffects(s32 arg0) {
     VECTOR pos;
     HeroInfo *h;
     EXTengine *pu;
@@ -3234,7 +3234,7 @@ void Plot_PogoMushroom(NAS *nas) {
     }
 }
 
-void func_800BB724(s32 arg0, s32 arg1) {
+void Tiles_PlayerIsStealing(s32 arg0, s32 arg1) {
     s32 i;
     s32 j;
     Ovl60Cell *c;
@@ -3380,7 +3380,7 @@ done:
     return n;
 }
 
-s32 func_800BBC94(s32 x, s32 z) {
+s32 LevelSpecific_ClaimedTile(s32 x, s32 z) {
     D5A614View *g = (D5A614View *)D_8005A614;
     s32 id;
     s32 mask;
@@ -3508,7 +3508,7 @@ s32 func_800BC04C(s32 arg0, s32 arg1) {
     return PogoPadlock_IsHere(arg0, arg1) == 0;
 }
 
-void func_800BC0EC(s32 arg0) {
+void Player_RampToTile(u32 arg0) {
     s32 x = Heroes[arg0].hero_eng->unk10.x;
     s32 tx = (((x + 0x800) >> 9) << 9) - 0x700;
     s32 tz = (((Heroes[arg0].hero_eng->unk10.z + 0x800) >> 9) << 9) - 0x700;
@@ -3737,7 +3737,7 @@ void Plot_PogoProjectile(NAS *arg0) {
                         if (!(h->hero_status & 0x800)) {
                             if (arg0->UserInfo.user2 == 3) {
                                 do {
-                                    func_800BB724(me, i);
+                                    Tiles_PlayerIsStealing(me, i);
                                     PlaySfx(0x552, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
                                 } while (0);
                             }
@@ -3854,7 +3854,7 @@ void PogoKerb_Poll(void) {
         case 0x115:
             D_800C5BD0 = Random(4) + 1;
             PlaySfx(0x534, NULL, NULL, 0x1000, 0x1E00, 0);
-            func_800BD008(D_800C5BD0);
+            PogoKerb_SetMode(D_800C5BD0);
             break;
         }
         return;
@@ -3923,7 +3923,7 @@ loop:
     PlaySfx(0x533, NULL, NULL, 0x1000, 0x1E00, 0);
 }
 
-void func_800BD008(s32 arg0) {
+void PogoKerb_SetMode(s32 arg0) {
     D_800C5BD0 = arg0;
     switch (arg0) {
     case 1:
@@ -5453,7 +5453,7 @@ u32 PogoDistanceToDestination(s32 x0, s32 y0, s32 x1, s32 y1) {
     return csqrt(PogoSquaredDistanceToDestination(x0, y0, x1, y1)) >> 6;
 }
 
-s32 func_800C178C(void) {
+s32 LevelSpecific_UnclaimedTile(s32 x, s32 z) {
     D5A614View *g = (D5A614View *)D_8005A614;
     s32 v;
 
@@ -6255,7 +6255,7 @@ void InitialisePOGOFirst(void) {
     D_8009D6E8.unk20 = PreMovePOGO;
     D_8009D6E8.unk28 = PostMovePOGO;
     D_8009D6E8.unk64 = PogoHeroChooseWinner;
-    D_8009D6E8.unk5C = func_800B76CC;
+    D_8009D6E8.unk5C = PogoHero_ExtraEffects;
     D_8009D6E8.unk18 = PogoCreateShadow;
     D_8009D6E8.unk38 = PogoAI_Poll;
     func_800B3534();
