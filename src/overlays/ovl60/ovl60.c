@@ -4562,7 +4562,6 @@ void PogoAI_ScanForClosestPickup(u32 arg0, s32 *arg1, s32 *arg2) {
     }
 }
 
-#ifdef NON_MATCHING
 bool PogoAI_RadialSearch(u32 i, s32 x, s32 z, s32 angle, s32 *outX, s32 *outZ) {
     s32 dx;
     s32 dz;
@@ -4571,7 +4570,6 @@ bool PogoAI_RadialSearch(u32 i, s32 x, s32 z, s32 angle, s32 *outX, s32 *outZ) {
     s32 f0, f1, f2;
     s32 miss;
     s32 px, pz;
-    s32 sb;
 
     dz = dx = 0;
     side0 = 0;
@@ -4580,44 +4578,36 @@ bool PogoAI_RadialSearch(u32 i, s32 x, s32 z, s32 angle, s32 *outX, s32 *outZ) {
     side3 = 0;
     switch (angle) {
     case 2:
-        do {
-            do {
-                dz = 1;
-            } while (0);
-        } while (0);
+        dz = 1;
+        do {} while (0);
+        dz = 1;
         side0 = -1;
         side1 = 0;
         side2 = dz;
         break;
     case 0:
-        do {
-            do {
-                dz = -1;
-            } while (0);
-        } while (0);
+        dz = -1;
+        do {} while (0);
+        dz = -1;
         side0 = 1;
         side1 = 0;
         side2 = dz;
         break;
     case 1:
-        do {
-            do {
-                dx = -1;
-            } while (0);
-        } while (0);
-        side1 = dx;
+        dx = -1;
+        do {} while (0);
+        dx = -1;
         side0 = 0;
+        side1 = dx;
         side2 = 0;
         side3 = 1;
         break;
     case 3:
-        do {
-            do {
-                dx = 1;
-            } while (0);
-        } while (0);
-        side1 = dx;
+        dx = 1;
+        do {} while (0);
+        dx = 1;
         side0 = 0;
+        side1 = dx;
         side2 = 0;
         side3 = -1;
         break;
@@ -4711,9 +4701,6 @@ found:
     *outZ = pz;
     return D_800C53DC[px][pz].unkE == 0;
 }
-#else
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", PogoAI_RadialSearch);
-#endif
 
 s32 func_800BE6C4(s32 arg0, Ovl60Goal *arg1) {
     Ovl60Move *m2;
