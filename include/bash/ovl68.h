@@ -48,10 +48,27 @@ typedef struct EggExt {
     u8 pad0C[4];
     s32 unk10;
     s32 unk14;
-    u8 pad18[0x18];
+    u8 pad18[4];
+    s32 unk1C;
+    u8 pad20[0x10];
     s32 unk30;
     u8 pad34[0x10];
 } EggExt;
+
+extern s32 D_80099178;
+extern u16 D_8005A644;
+
+/* Extension 0x10000000 of the NAS 0x1605 puff PlotEgg spawns. */
+typedef struct EggPuffExt {
+    /* 0x00 */ u8 pad[0xC];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ u8 pad10[0x18 - 0x10];
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ u8 pad1C[0x20 - 0x1C];
+    /* 0x20 */ s32 unk20;
+    /* 0x24 */ u8 pad24[0x28 - 0x24];
+    /* 0x28 */ s32 unk28;
+} EggPuffExt;
 
 /* PadState (D_80051338) as func_800BB260 reads it: flags at 0x54. */
 typedef struct Ovl68Pad {
@@ -557,5 +574,7 @@ static inline NAS *Ovl68NearPickup(s32 x, s32 z) {
 }
 
 extern u16 D_8009917C;
+
+void PlotEgg(NAS *nas);
 
 #endif /* BASH_OVL68_H */

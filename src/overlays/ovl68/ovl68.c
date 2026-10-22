@@ -2025,7 +2025,171 @@ void PlotCircleFire(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", PlotEgg);
+void PlotEgg(NAS *nas) {
+    EXTengine *eng;
+    EggExt *fux;
+    subengine *sub;
+    SLONG_XYZ *pos;
+    SLONG_XYZ *at;
+    NAS *n;
+    EggPuffExt *ext;
+    s32 p;
+    s32 i;
+    s32 skip;
+    s32 lim;
+    s32 x;
+    s32 z;
+    HeroInfo *h;
+
+    eng = nas->Engine;
+    sub = eng->sub;
+    fux = (EggExt *)nas->FUX;
+    if (D_80099178 == 0 || (D_8005A644 & 0x801)) {
+        PlaySfx(0x75A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        pos = &eng->unk10;
+        p = *D_80058AD0;
+        n = SpawnNASById(eng->unk10.x, pos->y, pos->z, 0x1605, 0x11);
+        if (n != NULL) {
+            ext = FindExtension(n, 0x10000000);
+            if (ext != NULL) {
+                ext->unkC = 0;
+                ext->unk18 = 0x100;
+                if (p != 0) {
+                    ext->unk20 = 5;
+                    n->Engine->sub->unk6C = (void *)p;
+                } else {
+                    ext->unk20 = 1;
+                }
+                ext->unk28 = 0;
+                n->InitDelete(n);
+            }
+        }
+        KillNAS(nas);
+        return;
+    }
+    switch (fux->unk30) {
+    case 0x26:
+    default:
+        if (--nas->UserInfo.user2 > 0) {
+            return;
+        }
+        if (nas->UserInfo.user2 == 0) {
+            PlaySfx(0x756, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        }
+        eng->unk10.x += fux->unk10;
+        fux->unk14 += 0xC;
+        eng->unk10.y += fux->unk14;
+        if (++sub->unk74 == 0x4091) {
+            fux->unk30 = 0x29;
+            sub->unk74 = 0x4000;
+            eng->unk10.x = 0;
+            eng->unk10.y = -0x12C;
+        }
+        break;
+    case 0x29:
+        nas->UserInfo.status = (nas->UserInfo.status - 0xA) & 0xFFF;
+        eng->unk10.x = (D_80068BD4[(nas->UserInfo.status - 0x400) & 0xFFF].unk2 * 0x53) >> 7;
+        eng->unk10.z = (D_80068BD4[nas->UserInfo.status & 0xFFF].unk2 * 0x53) >> 7;
+        eng->unk1E = (nas->UserInfo.status + 0x400) & 0xFFF;
+        eng->unk5E = 1;
+        if (eng->unk10.z > 0) {
+            sub->unk68 = 0x100;
+        } else {
+            sub->unk68 = -0x100;
+        }
+        if (++sub->unk74 == 0x4006) {
+            PlaySfx(0x757, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        }
+        if (sub->unk74 == 0x400F) {
+            PlaySfx(0x758, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        }
+        if (sub->unk74 == 0x4012) {
+            sub->unk74 = 0x4000;
+            i = BarrelNearHero(eng->unk10.x, eng->unk10.z, 0x600);
+            if (i >= 0 && D_8005A614[i + 0x5C] == 0) {
+                PlaySfx(0x759, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                fux->unk1C = get_angle(Heroes[i].hero_eng->unk10.x - eng->unk10.x,
+                                       Heroes[i].hero_eng->unk10.z - eng->unk10.z);
+                fux->unk30 = 0x27;
+                fux->unk14 = -0x64;
+                sub->unk74 = 0x4080;
+                eng->unk5E = 1;
+            }
+        }
+        break;
+    case 0x27:
+        if (++sub->unk74 == 0x4091) {
+            sub->unk74 = 0x4090;
+        }
+        fux->unk14 += 0xC;
+        eng->unk10.y += fux->unk14;
+        eng->unk10.x += (D_80068BD4[(fux->unk1C - 0x400) & 0xFFF].unk2 * 5) >> 8;
+        eng->unk10.z += (D_80068BD4[fux->unk1C & 0xFFF].unk2 * 5) >> 8;
+        if (eng->unk10.y > 0) {
+            PlaySfx(0x75A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            i = BarrelNearHero(eng->unk10.x, eng->unk10.z, 0x280);
+            if (i >= 0) {
+                if (D_800BC444 == 0) {
+                    HeroInfo *hb = Heroes;
+
+                    h = &hb[i];
+                    if (h->hero_immunity == 0 && !(h->hero_status & 0xFA00)) {
+                        SetHeroAction((HeroInfo *)i, (u16)D_8009E0D8);
+                        func_80027F7C(i, 0xA, 0xF0);
+                    }
+                }
+                if (D_8005A614[i + 0x5C] == 0) {
+                    D_800BC2D0[i][0] = 0;
+                }
+            }
+            skip = 0x63;
+            lim = 0x280;
+            i = 0;
+            x = eng->unk10.x;
+            z = eng->unk10.z;
+            for (;;) {
+                s32 d;
+
+                if (i >= 4) {
+                    break;
+                }
+                if (skip != i) {
+                    d = x - Heroes[i].hero_eng->unk10.x;
+                    if (d >= -0x280 && d <= lim) {
+                        d = z - Heroes[i].hero_eng->unk10.z;
+                        if (d >= -0x280 && d <= lim && D_800BC444 == 0 && Heroes[i].hero_immunity == 0 &&
+                            !(Heroes[i].hero_status & 0xFA00)) {
+                            SetHeroAction((HeroInfo *)i, (u16)D_8009E0D8);
+                            func_80027F7C(i, 0xA, 0xF0);
+                        }
+                    }
+                }
+                i++;
+            }
+            at = &eng->unk10;
+            p = *D_80058AD0;
+            n = SpawnNASById(eng->unk10.x, at->y, at->z, 0x1605, 0x11);
+            if (n != NULL) {
+                ext = FindExtension(n, 0x10000000);
+                if (ext != NULL) {
+                    ext->unkC = 0;
+                    ext->unk18 = 0x100;
+                    if (p != 0) {
+                        ext->unk20 = 5;
+                        n->Engine->sub->unk6C = (void *)p;
+                    } else {
+                        ext->unk20 = 1;
+                    }
+                    ext->unk28 = 0;
+                    n->InitDelete(n);
+                }
+            }
+            KillNAS(nas);
+            SpawnNASById(0, 0, 0, 0x1D08, 0x11);
+        }
+        break;
+    }
+}
 
 void PlotCoalFlameSFX(CoalSfxObj *obj) {
     CoalSfxInner *in = obj->unk54;
