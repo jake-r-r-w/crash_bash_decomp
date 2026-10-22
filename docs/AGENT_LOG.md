@@ -20,7 +20,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   **main.exe, ovl61, ovl69 and ovl6a are complete**; 28 left, every one
   tried by the swarm at least once. All 564 PsyQ functions (Sony objects). 6
   parked by hand (`decomp.py status`; the swarm parked 5 more, which the
-  dashboard counts from `docs/swarm.js`), 107 matched with a hack (most of
+  dashboard counts from `docs/swarm.js`), 106 matched with a hack (most of
   them `do { } while (0)` wrappers, flagged since 2026-10-22, in headers'
   macros and inlines too; 6 macro-shaped ones accepted)
   (`decomp.py hacks`; `func_800193A8`'s register pins reviewed as plausibly
@@ -538,6 +538,15 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-22 (hand: `func_80098284` without its hack):** the do-while
+  only moved `li v0,0x1E00` ahead of `li a0,0x19D` before PlaySfx. The real
+  cause: `func_800976F8` never reads the `arg0` the decomp gave it, and
+  passing `p` set `$a0` twice, so sched1's birthing launch (REG_N_SETS ==
+  1) skipped `$a0 = 0x19D`. With `func_800976F8(void)` it matches plainly
+  (53a439eb; prototype in 7caa393e and the next commit). Of 222 matched
+  PlaySfx setups only this one and four with `$a0` set once are v0-first.
+  Lesson for the other hacks: check the callees' asm for unused params.
 
 - **2026-10-22 (lint helpers, swarm E/F, hand: the BC274 triplet):** the
   lint now reads the macros and static inlines a body uses and matches

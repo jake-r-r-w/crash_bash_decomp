@@ -556,7 +556,7 @@ s32 func_800976A8(u8 *arg0, s32 arg1) {
 }
 
 extern s32 D_800ADBD4;
-void func_800976F8() {
+void func_800976F8(void) {
     EXTengine *eng;
     s32 v;
 
