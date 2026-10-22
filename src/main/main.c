@@ -928,21 +928,19 @@ void func_80011578(u8 *arg0, Heap *heap, s32 arg2) {
     heap->deferred = blk;
 }
 
-void *func_800115D8(s32 arg0, void **arg1, s32 arg2, s16 arg3) {
+void *func_800115D8(s32 arg0, void **arg1, s32 arg2, s32 arg3) {
     u8 *blk;
     u8 *ret;
 
-    do {
+    blk = func_80010E8C(arg0, arg2);
+    if (blk == NULL) {
         blk = func_80010E8C(arg0, arg2);
         if (blk == NULL) {
-            blk = func_80010E8C(arg0, arg2);
-            if (blk == NULL) {
-                return NULL;
-            }
+            return NULL;
         }
-        ret = blk + 0x18;
-        *(void **)(blk + 4) = arg1;
-    } while (0);
+    }
+    ret = blk + 0x18;
+    *(void **)(blk + 4) = arg1;
     *arg1 = ret;
     *(s16 *)blk = arg3;
     return ret;

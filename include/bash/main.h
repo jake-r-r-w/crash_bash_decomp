@@ -2353,7 +2353,7 @@ typedef struct VelState {
 
 u8 *func_80011498(u8 *arg0, s32 arg1, Heap *arg2);
 
-void *func_800115D8(s32 arg0, void * *arg1, s32 arg2, s16 arg3);
+void *func_800115D8(s32 arg0, void * *arg1, s32 arg2, s32 arg3);
 
 struct TexSet2926C;
 void func_8002926C(struct TexSet2926C *arg0);
