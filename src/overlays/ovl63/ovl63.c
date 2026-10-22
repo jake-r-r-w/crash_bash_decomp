@@ -3864,7 +3864,86 @@ void InitDinoEgg(NAS *m) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotDinoEgg);
+void PlotDinoEgg(NAS *m) {
+    EXTdinoegg *ext;
+    EXTengine *h;
+    Ovl63Vec4 hit;
+    s32 n[4];
+    s32 d[4];
+    s32 r[4];
+    s32 status;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    m->Engine->unk5E = 1;
+    status = ext->NasStatus;
+    switch (status) {
+    case 0:
+        h = Heroes[ext->owner].hero_eng;
+        ext->NasStatus = 2;
+        ext->yang = m->Engine->unk1E = h->unk1E + 0x800;
+        ext->vel = 0x80;
+        ext->dec = 4;
+        func_800B7190(&m->Engine->unk10, &hit, 0x9E, 1, 0);
+        func_800B7190(&m->Engine->unk10, &hit, 0x9E, 0, 1);
+        m->Engine->unk10.x += (D_80068BD4[(h->unk1E - 0x400) & 0xFFF].unk2 * 75) >> 11;
+        m->Engine->unk10.z += (D_80068BD4[(u16)h->unk1E & 0xFFF].unk2 * 75) >> 11;
+        break;
+    case 2:
+        if (ext->vel > 0) {
+            ext->vel -= ext->dec;
+        }
+        m->Engine->unk20 = (D_80068BD4[(ext->angcounter - 0x400) & 0xFFF].unk2 * 3) >> 5;
+        ext->angcounter += 0x80;
+        if (func_800B7190(&m->Engine->unk10, &hit, 0x9E, 1, 0) != 0) {
+            OVL63_BOUNCE(ext->yang, n, d, r, m->Engine->unk1E, hit.y);
+        }
+        if (func_800B7190(&m->Engine->unk10, &hit, 0x9E, 0, 1) != 0) {
+            OVL63_BOUNCE(ext->yang, n, d, r, m->Engine->unk1E, hit.y);
+        }
+        m->Engine->unk10.x -= (ext->vel * D_80068BD4[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 12;
+        m->Engine->unk10.z -= (ext->vel * D_80068BD4[(u16)m->Engine->unk1E & 0xFFF].unk2) >> 12;
+        m->Engine->unk1E += ((ext->yang - m->Engine->unk1E) << 20) >> 21;
+        if (Ovl63HitHero((u8 *)&m->Engine->unk10) != -1) {
+            KillNAS(m);
+            D_800C6924 = 0;
+            return;
+        }
+        if (ext->vel <= 0) {
+            ext->vel = 0;
+            ext->NasStatus = 1;
+            func_80025FAC(ext->anim, 0);
+            func_800250B0(m);
+        }
+        break;
+    case 1:
+        m->Engine->unk10.x -= (D_80068BD4[(m->Engine->unk1E - 0x400) & 0xFFF].unk2 * 0x20) >> 12;
+        m->Engine->unk10.z -= (D_80068BD4[(u16)m->Engine->unk1E & 0xFFF].unk2 * 0x20) >> 12;
+        ext->angcounter += 0x80;
+        func_800250B0(m);
+        if (func_800B7190(&m->Engine->unk10, &hit, 0x9E, 1, 0) != 0)
+            ext->yang = Ovl63Bounce(m->Engine->unk1E, hit.y);
+        if (func_800B7190(&m->Engine->unk10, &hit, 0x9E, 0, 1) != 0) {
+            OVL63_BOUNCE(ext->yang, n, d, r, m->Engine->unk1E, hit.y);
+        }
+        m->Engine->unk1E += ((ext->yang - m->Engine->unk1E) << 20) >> 21;
+        if (Ovl63HitHero((u8 *)&m->Engine->unk10) != -1) {
+            D_800C6924 = 0;
+            KillNAS(m);
+            return;
+        }
+        break;
+    }
+    if (ext->shadow != NULL) {
+        ext->shadow->unk10 = m->Engine->unk10;
+        ext->shadow->unk10.y = 0;
+        ext->shadow->unk2C.x = m->Engine->unk2C.x;
+        ext->shadow->unk2C.y = m->Engine->unk2C.y;
+        ext->shadow->unk2C.z = m->Engine->unk2C.z;
+    }
+}
 
 static inline NAS *SpawnShieldFx(SLONG_XYZ *pos) {
     NAS *fx;

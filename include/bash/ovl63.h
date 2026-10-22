@@ -482,6 +482,67 @@ typedef struct Ovl63Vec4 {
 
 s32 func_800B7190(SLONG_XYZ *pos, Ovl63Vec4 *out, s32 r, s32 i, s32 f);
 
+/* Heading a reflected off a wall of normal angle b (inline copy of func_800C4E54, PlotDinoEgg). */
+static inline s32 Ovl63Bounce(s32 a, s32 b) {
+    s32 n[4];
+    s32 d[4];
+    s32 r[4];
+    s32 dot;
+
+    n[0] = D_80068BD4[b & 0xFFF].unk2;
+    n[2] = D_80068BD4[(b - 0x400) & 0xFFF].unk2;
+    d[0] = -D_80068BD4[(a - 0x400) & 0xFFF].unk2;
+    d[2] = -D_80068BD4[a & 0xFFF].unk2;
+    dot = (d[0] * n[0] >> 12) + (d[2] * n[2] >> 12);
+    r[0] = d[0] - (dot * n[0] >> 11);
+    r[2] = d[2] - (dot * n[2] >> 11);
+    return get_angle(r[0], r[2]) + 0x800;
+}
+
+/* Ovl63Bounce written out on the caller's own n/d/r arrays (PlotDinoEgg). */
+#define OVL63_BOUNCE(out, n, d, r, ang, wall)                   \
+    {                                                           \
+        s32 b_ = (wall);                                        \
+        s32 a_ = (ang);                                         \
+        s32 dot_;                                               \
+                                                                \
+        n[0] = D_80068BD4[b_ & 0xFFF].unk2;                     \
+        n[2] = D_80068BD4[(b_ - 0x400) & 0xFFF].unk2;           \
+        d[0] = -D_80068BD4[(a_ - 0x400) & 0xFFF].unk2;          \
+        d[2] = -D_80068BD4[a_ & 0xFFF].unk2;                    \
+        dot_ = (d[0] * n[0] >> 12) + (d[2] * n[2] >> 12);       \
+        r[0] = d[0] - (dot_ * n[0] >> 11);                      \
+        r[2] = d[2] - (dot_ * n[2] >> 11);                      \
+        (out) = get_angle(r[0], r[2]) + 0x800;                  \
+    }
+
+/* First hero within reach of pos, knocked into action 0x5D, or -1 (inline copy of func_800C4F30). */
+static inline s32 Ovl63HitHero(u8 *pos) {
+    HeroInfo *hero;
+    u32 i;
+
+    i = 0;
+    hero = Heroes;
+loop:
+    if (i < 4) {
+        s32 dist;
+
+        do {
+            dist = func_8008CEB0(pos, (u8 *)hero->hero_eng + 0x10);
+        } while (0);
+        if (dist < 0x6184) {
+            if (hero->hero_mode != 0x5D) {
+                SetHeroAction((HeroInfo *)i, 0x5D);
+            }
+            return i;
+        }
+        hero++;
+        i++;
+        goto loop;
+    }
+    return -1;
+}
+
 /* out[0] = v's x/z distance from the origin, out[1] its angle (PlotRaceMissile). */
 static inline void Ovl63ToPolar(SLONG_XYZ *v, s32 *out) {
     out[0] = csqrt(v->x * v->x + v->z * v->z) >> 6;
@@ -1094,6 +1155,8 @@ void PlotRaceMissile(NAS *m);
 void PlotRacePickUp(NAS *m);
 
 void PlotTNTCrate(NAS *nas);
+
+void PlotDinoEgg(NAS *m);
 
 void PlotTrackGlob(NAS *nas);
 
