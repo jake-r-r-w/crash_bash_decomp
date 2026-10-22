@@ -616,17 +616,66 @@ typedef struct Ovl63FuxState {
     /* 0x5C */ u8 pad5C[0x130 - 0x5C];
     /* 0x130 */ s32 unk130;
 } Ovl63FuxState;
+/* A volcano rock's arc, passed to func_8008C5C4 (0x54 bytes). */
+typedef struct Ovl63VolcArc {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ u8 pad8[0x14 - 0x8];
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ u8 pad1C[0x34 - 0x1C];
+    /* 0x34 */ s32 unk34;
+    /* 0x38 */ s32 unk38;
+    /* 0x3C */ u8 pad3C[0x44 - 0x3C];
+    /* 0x44 */ s32 unk44;
+    /* 0x48 */ u8 pad48[0x54 - 0x48];
+} Ovl63VolcArc;
+
 /* Race volcano extension (0x15C bytes, id 0x10000000). */
 typedef struct RaceVolcanoExt {
     /* 0x000 */ u8 pad0[0xC];
     /* 0x00C */ s32 unkC;
     /* 0x010 */ s32 unk10;
-    /* 0x014 */ u8 pad14[0x18 - 0x14];
+    /* 0x014 */ s32 unk14;
     /* 0x018 */ EXTengine *eng[3];
-    /* 0x024 */ u8 pad24[0x144 - 0x24];
-    /* 0x144 */ s32 unk144[3];
+    /* 0x024 */ SLONG_XYZ vel[3];
+    /* 0x048 */ Ovl63VolcArc arc[3];
+    /* 0x144 */ NAS *unk144[3];
     /* 0x150 */ s32 unk150[3];
 } RaceVolcanoExt;
+
+/* Squared distance between a and b (PlotRaceVolcano). */
+static inline s32 Ovl63DistSq(SLONG_XYZ *a, SLONG_XYZ *b) {
+    s32 dx;
+    s32 dz;
+    s32 dy;
+
+    dx = a->x - b->x;
+    dz = a->z - b->z;
+    dy = a->y - b->y;
+    return dx * dx + dz * dz + dy * dy;
+}
+
+/* Spawns the 0x1605 puff at v and returns it (PlotRaceVolcano). */
+static inline NAS *Ovl63SpawnPuffRet(SLONG_XYZ *v, s32 kind, s32 mode) {
+    NAS *nas;
+    s32 *ext;
+
+    nas = SpawnNASById(v->x, v->y, v->z, 0x1605, 0x11);
+    if (nas != NULL) {
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL) {
+            ext[3] = kind;
+            ext[6] = 0x100;
+            ext[8] = mode;
+            ext[10] = 0;
+            nas->InitDelete(nas);
+        }
+        return nas;
+    }
+    return NULL;
+}
+
 
 extern u8 D_80052F5C[];
 
@@ -1204,6 +1253,8 @@ void PlotRacePickUp(NAS *m);
 void PlotTNTCrate(NAS *nas);
 
 void PlotDinoEgg(NAS *m);
+
+void PlotRaceVolcano(NAS *nas);
 
 void PlotTrackGlob(NAS *nas);
 

@@ -4483,7 +4483,187 @@ void InitRaceVolcano(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotRaceVolcano);
+void PlotRaceVolcano(NAS *nas) {
+    RaceVolcanoExt *ext;
+    SLONG_XYZ zero;
+    s32 count;
+    s32 i;
+    s32 rock;
+    s32 n;
+    s32 j;
+    s32 ang;
+    s32 d;
+    s32 r;
+    NAS *fx;
+
+    ext = FindExtension(nas, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    memset(&zero, 0, sizeof(zero));
+    if (D_800C695C != 0) {
+        for (i = 0; i < 3; i++) {
+            if (ext->eng[i]->sub->flags & 0x8000) {
+                ext->eng[i]->sub->flags &= ~0x8000;
+            }
+        }
+        return;
+    }
+    switch (ext->unkC) {
+    case 0:
+        if (--ext->unk10 == 0x3C) {
+            PlaySfx(0x69A, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if (ext->unk10 < 0) {
+            ext->unkC = 1;
+        }
+        break;
+    case 1:
+        ang = Random(0x1000);
+        for (rock = 0; ; rock++) {
+            s32 x;
+            s32 z;
+
+            if (rock >= 3) {
+                break;
+            }
+            x = D_80068BD4[(ang - 0x400) & 0xFFF].unk2 * 75 >> 9;
+            z = D_80068BD4[ang & 0xFFF].unk2 * 75 >> 9;
+            if (ext->eng[rock] != NULL) {
+                ext->eng[rock]->unk1E = ang;
+                ext->vel[rock].x = x;
+                ext->vel[rock].y = 0;
+                ext->vel[rock].z = z;
+                ext->arc[rock].unk0 = 4;
+                ext->arc[rock].unk44 = 0xC - Random(3);
+                ext->arc[rock].unk4 = 0;
+                ext->arc[rock].unk18 = 0x100;
+                ext->eng[rock]->sub->flags |= 0x8000;
+                ext->eng[rock]->unk10 = zero;
+                ang += 0x555 + Random(0x200);
+                fx = Ovl63SpawnPuffRet(&ext->eng[rock]->unk10, 0xA, 0);
+                ext->unk144[rock] = fx;
+                if (fx != NULL) {
+                    if (z < 0) {
+                        fx->Engine->sub->flags |= 0x02000000;
+                        ext->unk144[rock]->Engine->sub->unk68 = -0x400;
+                    } else {
+                        fx->Engine->sub->flags |= 0x02000000;
+                        ext->unk144[rock]->Engine->sub->unk68 = 0x200;
+                    }
+                }
+            }
+        }
+        PlaySfx(0x69B, NULL, NULL, 0x1000, 0x1E00, 0);
+        Ovl63SpawnPuff(&nas->Engine->unk10, 4, NULL);
+        ext->unk10 = 0x14;
+        ext->unk14 = -0x80;
+        ext->unkC = 2;
+        break;
+    case 2:
+        count = 0;
+        for (n = 0; ; n++) {
+            EXTengine *cur;
+            EXTengine *eng;
+
+            if (n >= 3) {
+                break;
+            }
+            ext->eng[n]->unk5E = 1;
+            cur = ext->eng[n];
+            if (cur->sub->flags & 0x8000) {
+                cur->unk1C -= 0x80;
+                eng = ext->eng[n];
+                d = eng->unk10.x * eng->unk10.x + eng->unk10.z * eng->unk10.z;
+                func_8008C5C4(&zero.x, &ext->vel[n].x, &ext->arc[n], &eng->unk10.x);
+                if (d < 0x90000) {
+                    if (ext->unk144[n] != NULL) {
+                        ext->unk144[n]->Engine->unk10.y = 0;
+                    }
+                    if (ext->eng[n]->unk10.y >= -0xFF && ext->arc[n].unk14 > 0) {
+                        ext->arc[n].unk14 = -(ext->arc[n].unk14 * 0x94 >> 8);
+                        if (ext->arc[n].unk34 < 0) {
+                            ext->arc[n].unk34 = -0x14;
+                        }
+                        if (ext->arc[n].unk34 > 0) {
+                            ext->arc[n].unk34 = 0x14;
+                        }
+                        if (ext->arc[n].unk38 < 0) {
+                            ext->arc[n].unk38 = -0x14;
+                        }
+                        if (ext->arc[n].unk38 > 0) {
+                            ext->arc[n].unk38 = 0x14;
+                        }
+                    }
+                } else {
+                    if (ext->unk144[n] != NULL) {
+                        ext->unk144[n]->Engine->unk10.y = 0;
+                    }
+                    if (ext->unk14 == -0x80 && ext->unk14 < ext->eng[n]->unk10.y
+                        && ext->arc[n].unk14 > 0) {
+                        ext->arc[n].unk14 = -(ext->arc[n].unk14 * 0x94 >> 8);
+                        ext->eng[n]->unk10.y = ext->unk14;
+                    }
+                }
+                if (ext->unk144[n] != NULL) {
+                    ext->unk144[n]->Engine->unk10.x = ext->eng[n]->unk10.x;
+                    ext->unk144[n]->Engine->unk10.z = ext->eng[n]->unk10.z;
+                }
+                if (d > 0x900000) {
+                    if (ext->eng[n] != NULL) {
+                        Ovl63SpawnPuff(&ext->eng[n]->unk10, 1, NULL);
+                        OVL63_SFX4(0x69C, 0x69D, 0x69E, 0x69F);
+                        ext->eng[n]->sub->flags &= ~0x8000;
+                        ext->arc[n].unk4 = 0;
+                        ext->eng[n]->unk10.y = 0;
+                        KillNAS(ext->unk144[n]);
+                        ext->unk144[n] = NULL;
+                    }
+                } else if (ext->unk150[n]-- < 0) {
+                    Ovl63SpawnPuff(&ext->eng[n]->unk10, 3, NULL);
+                    ext->unk150[n] = Random(3) + 8;
+                }
+            }
+        }
+        for (n = 0; ; n++) {
+            s32 dummy;
+
+            if (n >= 3) {
+                break;
+            }
+            j = 0;
+            if (!(ext->eng[n]->sub->flags & 0x8000)) {
+                count++;
+            } else {
+                for (; ; j++) {
+                    s32 dummy;
+
+                    if (j >= 4) {
+                        break;
+                    }
+                    if (Ovl63DistSq(&ext->eng[n]->unk10, &Heroes[j].hero_eng->unk10) < 0x27100) {
+                        if (Heroes[j].hero_mode != 0x5D) {
+                            SetHeroAction((HeroInfo *)j, 0x5D);
+                        }
+                        Ovl63SpawnPuff(&ext->eng[n]->unk10, 1, NULL);
+                        ext->eng[n]->sub->flags &= ~0x8000;
+                        ext->arc[n].unk4 = 0;
+                        ext->eng[n]->unk10.y = 0;
+                        if (ext->unk144[n] != NULL) {
+                            KillNAS(ext->unk144[n]);
+                            ext->unk144[n] = NULL;
+                        }
+                    }
+                }
+            }
+        }
+        if (count == 3 && ext->unk10-- < 0) {
+            ext->unk10 = 0x12C;
+            ext->unkC = 0;
+        }
+        break;
+    }
+}
 
 void PlotGlob(NAS *m) {
     EXTglob *ext;
