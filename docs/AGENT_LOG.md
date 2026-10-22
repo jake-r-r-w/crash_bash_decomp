@@ -20,7 +20,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   **main.exe, ovl61, ovl69 and ovl6a are complete**; 28 left, every one
   tried by the swarm at least once. All 564 PsyQ functions (Sony objects). 6
   parked by hand (`decomp.py status`; the swarm parked 5 more, which the
-  dashboard counts from `docs/swarm.js`), 105 matched with a hack (most of
+  dashboard counts from `docs/swarm.js`), 104 matched with a hack (most of
   them `do { } while (0)` wrappers, flagged since 2026-10-22, in headers'
   macros and inlines too; 6 macro-shaped ones accepted)
   (`decomp.py hacks`; `func_800193A8`'s register pins reviewed as plausibly
@@ -538,6 +538,16 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-22 (hand: ovl66's two hacks):** `func_800B6CD8` without its
+  identical if/else arms (c585c406): one PlaySfx per case and the store
+  after the switch. `func_800B4454` left flagged: plain C allocates by
+  global.c priority `best` 10/124 below `z`/`x` (9/109, 9/110) and
+  `found` 7/140 below `arg0` 10/188. The do-while gives each one more
+  loop-weighted ref; it matches in both loops too, so it reads like a
+  macro around `best = d; found = ...`. Loop shape (the sibling's
+  `do { e = &T[i]; ... } while`), pointer locals and an `else if` split
+  don't help. Awaiting a call on `hacks --accept`.
 
 - **2026-10-22 (hand: hack reworks, no permuter):** `func_800115D8`
   without its do-while (2202c6e4): `arg3` is `s32`, not `s16`. A narrow
