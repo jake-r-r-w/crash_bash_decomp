@@ -10,15 +10,15 @@ At the end of a session, update **Current state**, **Next** and **Open
 leads**, add any new gotcha, and add one short entry at the top of the
 **Session log**.
 
-## Current state (2026-10-22)
+## Current state (2026-10-23)
 
 - [ROADMAP.md](ROADMAP.md): Phase 1 (types and names) is done, and every
   `main.exe` function matches; Phase 2's naming, data and `main.c` split
   are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2511/2537 game functions matched (92.80% of game code bytes, 2026-10-22):
-  **main.exe, ovl61, ovl69 and ovl6a are complete**; 26 left, every one
-  tried by the swarm at least once. All 564 PsyQ functions (Sony objects). 6
+- 2512/2537 game functions matched (93.00% of game code bytes, 2026-10-23):
+  **main.exe, ovl61, ovl69 and ovl6a are complete**; 25 left, every one
+  tried by the swarm at least once. All 564 PsyQ functions (Sony objects). 5
   parked by hand (`decomp.py status`; the swarm parked 5 more, which the
   dashboard counts from `docs/swarm.js`). Matches are C only, natural C
   first (CONVENTIONS.md, Matching rules; the "hack" class was dropped on
@@ -49,7 +49,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**The overlays' last 26 functions.** Pointing the swarm at functions it
+**The overlays' last 25 functions.** Pointing the swarm at functions it
 had never tried (`--only` the untried list, smallest first, no
 `--retry-failed`) matched 37 of 42 under 2 KB for $151 (~$4 a match),
 against $7.50 for the retry runs, which kept re-trying the same hard ones
@@ -80,12 +80,14 @@ rest are fixed by hand from the worker's patch (Gotchas). A park whose
 `jtbl_` names functions is a bad split (Gotchas).
 
 Hand work, between runs:
-1. The parks: `func_8007F314` and `PlotScriptFX` (engine), `func_800BC274`
-   (ovl5e) with its two copies `func_800C284C` (ovl5d) and `func_800BAF1C`
-   (ovl64), `func_800BFEE0` (ovl62). For a register-priority miss, try the
-   repeated assignment after an empty `do {} while (0)` (MATCHING.md, CSE's
-   block ends): it adds refs without a sched barrier, which matched
-   `PogoAI_RadialSearch`.
+1. The parks: `func_8007F314` (engine), `func_800BC274` (ovl5e) with its
+   two copies `func_800C284C` (ovl5d) and `func_800BAF1C` (ovl64),
+   `func_800BFEE0` (ovl62). For a register-priority miss, try the repeated
+   assignment after an empty `do {} while (0)` (MATCHING.md, CSE's block
+   ends): it adds refs without a sched barrier, which matched
+   `PogoAI_RadialSearch` and `PlotScriptFX`. For a wrong cse canonical
+   register, a dead assignment after the last use reorders `make_regs_eqv`'s
+   last uses (MATCHING.md, CSE's canonical register).
 2. Name each function as it's matched when the evidence allows.
 3. Split `main.c` into its translation units: on hold since 2026-10-15. Its
    one proven boundary (jump-table parity, 95..370) has three possible
@@ -140,25 +142,6 @@ and current tools).
   where the target's join has `$4` (block note, `scratch/bct/`). All
   three copies are parked by hand now (`func_800BAF1C`'s C under
   `NON_MATCHING`), so the swarm stops retrying them.
-- **`PlotScriptFX` (engine script keyframes, 2080 B), parked 2026-10-18 at
-  regions 95/112, 484/520 exact** (C under `#ifdef NON_MATCHING`). Left:
-  - Block 21: the target computes `p = &kf[keyindex]` into v0, copies it to
-    `cur` (s2), reads `start` through v0, does `addiu v0,v0,0x50` and
-    copies that to `next` (s4). In ours, cse makes `cur` the canonical
-    register (`make_regs_eqv`: it outlives `p`), rewrites `p + 80` to
-    `cur + 80` and swaps the `next` copy (cse.c, the REG0/REG1 swap after
-    insn 7455). Eight statement orders gave the same RTL. Post-reload CSE
-    (`reload_cse_regs`) can turn an operand into an equal register, which
-    may explain the v0 uses. Update (2026-10-18 pm): the v0 load is reorg's
-    copy rewrite (Diff patterns row), so the RTL loads `start` via `cur`.
-    What is left is the `p + 80` on the temp plus `end` via `next`: the temp
-    must outlive `cur` but not `next` (`make_regs_eqv`), which the fade
-    statement's use order rules out for a single temp. 14 statement orders,
-    6 dispatch shapes and a late use of `p` were tried (block note).
-  - `f` and `cur` sit in each other's registers (target `f` s1, `cur` s2).
-    global.c gives `cur` 13533 against `f`'s 9719, too far apart for lives
-    to explain. If block 21's fix moves uses from `cur` to the temp, it may
-    fix this too.
 - **`func_8007F314` (engine pause menu, 5772 B), parked 2026-10-18 at
   structure 1147/1443** (swarm checkpoint was 1263; C under
   `#ifdef NON_MATCHING`, the `block` note lists what's left). Most of the
@@ -477,6 +460,16 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-23 (hand: `PlotScriptFX` matched, 562b2203):** from the parked
+  95/112. The f/cur swap: `f = 0` repeated twice behind empty do-whiles (34
+  refs, outranks `cur`). Block 21: a dead `p = NULL;` after the
+  interpolation makes `p` the last-mentioned of p/cur/next for cse, so the
+  load of `next->frame` stays on `p` and combine can't fold `p++` into
+  `next = p`; local-alloc's `optimize_reg_copy_1` then moves the load to
+  `next`. `kf->frame` is read into `first` before the `||` test, and a second
+  `sub->unk52 = 1` after the sy line makes that quotient tie the remainder
+  in local-alloc (a0). MATCHING.md has the rules.
 
 - **2026-10-22 (hand: `PogoAI_RadialSearch` matched, 8a76ba61):** the
   nested do-whiles gave dx/dz the refs for fp/s7 but put a sched2 barrier

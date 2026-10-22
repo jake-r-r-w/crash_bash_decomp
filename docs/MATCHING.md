@@ -484,10 +484,10 @@ first. Rows that need inline asm are not allowed (only C).
 | Two copies of one inner scan (pointer `p`, counter `j`) get `p` in `s0` and `j` in `s1` | Make `j` and the compared value one function-level variable shared by both scans, with a block-local `p` in each. The shared counter's refs double (14 over 28 = 15000), tying the second scan's `p`, and it wins on its lower pseudo number | `func_80093854` |
 | A block-local address of a global and a record-index chain swap `a0`/`a1` (local-alloc: both 6 refs, life 18 against 17) | Compute the index first (`n = tab[k]; b = GLOBAL; t = &b[n];`), so the address local is born later and its shorter life ranks it first | `func_80093854` |
 | `addu rd,base,prod` where the target has `addu rd,prod,base` for `e = tab[c] * 0x38 + base` | Write it on integers: `tab[c] * 0x38 + (s32)base` | `func_80093854` |
-| A constant hoisted out of a loop (here 1, used by HImode `sh` stores and SImode compares) gets two registers, or the wrong one | `combine_movables` merges a narrower movable only into an earlier, wider one. Put an SImode use first in the loop: here the `switch` with `case 1:` (the `== 1` test) before `case 0:` (the `unk52 = 1` stores) | `PlotScriptFX` (parked) |
-| A hoisted constant ranks below a loop counter in global.c although the target gives it the earlier `s` register (its life is doubled as a constant: 13 refs over 472 against 11 over 238) | Add uses that vanish after reload: a repeat of an earlier `p->f = 1` later in the same block, with loads between, survives flow's dead-store check and counts as refs, then `reload_cse_regs` deletes it as storing what memory holds. Two of them took 13 refs to 17 | `PlotScriptFX` (parked) |
-| A store (`sd->timer = 0`, `sub->unk76 = 0`) is scheduled after the load of a global where the target keeps it before | The global is really a field of a global struct (`D_8005A648` is `EngineGameView.mode` at `D_8005A614 + 0x34`). Read it through the struct: an in-struct reference may conflict with the store, so the load stays below it | `PlotScriptFX` (parked) |
-| Right after a copy `s2 = v0`, the target uses v0 where the RTL (`-dd` before, `-dR` dump) names s2 | reorg does it: `fill_slots_from_thread` rewrites the insn just after a register-register copy to use the copy's source, when scanning a branch's thread for a delay slot. So the order sched2 leaves (the copy, then the use) decides it, not cse | `PlotScriptFX` (parked) |
+| A constant hoisted out of a loop (here 1, used by HImode `sh` stores and SImode compares) gets two registers, or the wrong one | `combine_movables` merges a narrower movable only into an earlier, wider one. Put an SImode use first in the loop: here the `switch` with `case 1:` (the `== 1` test) before `case 0:` (the `unk52 = 1` stores) | `PlotScriptFX` |
+| A hoisted constant ranks below a loop counter in global.c although the target gives it the earlier `s` register (its life is doubled as a constant: 13 refs over 472 against 11 over 238) | Add uses that vanish after reload: a repeat of an earlier `p->f = 1` later in the same block, with loads between, survives flow's dead-store check and counts as refs, then `reload_cse_regs` deletes it as storing what memory holds. Two of them took 13 refs to 17 | `PlotScriptFX` |
+| A store (`sd->timer = 0`, `sub->unk76 = 0`) is scheduled after the load of a global where the target keeps it before | The global is really a field of a global struct (`D_8005A648` is `EngineGameView.mode` at `D_8005A614 + 0x34`). Read it through the struct: an in-struct reference may conflict with the store, so the load stays below it | `PlotScriptFX` |
+| Right after a copy `s2 = v0`, the target uses v0 where the RTL (`-dd` before, `-dR` dump) names s2 | reorg does it: `fill_slots_from_thread` rewrites the insn just after a register-register copy to use the copy's source, when scanning a branch's thread for a delay slot. So the order sched2 leaves (the copy, then the use) decides it, not cse | `PlotScriptFX` |
 | Two clamp results swap `a3`/`v1` (target: the one passed as arg 4 in `v1`, the other in `a3`), and the `-dg` dump shows arg 4's variable with `preferences: 7` from `sll a3,x,15`, allocated first | Give arg 4's value to a variable that is live while `a3` is set as a hard register elsewhere: here `dx`, which the other branch already uses for the height while that call sets `a3 = 0`. `prune_preferences` then drops the `a3` preference, the variable keeps `v1`, and the other one, now conflicting with `v1`, takes `a3` | `func_80078DD4` |
 | A struct pointer's `%hi` gets a third register (`lui a0`) at a join where the target has it in `v0` and the other `%hi` in `v1` | One pointer reused for two structs dies twice, so local-alloc leaves it to global and can't tie the dying `%hi` to it. Use a separate pointer per struct (each dies once and is tied). If that lets later loads move above the stores (alias analysis now knows both bases), put each struct's stores in `do { } while (0)`: the loop notes are a sched1 barrier | `func_8007B330` |
 | gcc 2.7.2 unit: a test of a loaded byte computes `andi` into another register (`andi v0,v1,0x10`) where the target masks in place (`andi v1,v1`) | load into the variable and mask it in place inside the condition: `(t = buf[0], t &= 0x10, !t)` (an `(x = buf[0]) & 0x10` temp gets its own register) | `func_8002DE2C` |
@@ -1574,7 +1574,10 @@ first. Rows that need inline asm are not allowed (only C).
 | Two whole-function s-reg variables swapped (arg0 s3 / ang s4 against target s4 / s3) and a shared `goto tail` uses the lower one | repeat the tail at the early-exit gotos (each with its own block-local table pointer, ending in goto done): cross-jumping merges them after reload, the extra pre-reload refs raise the variable's priority | `func_800B4AB0 (ovl5d)` |
 | D_8005A614 fields read inside a loop fold to lui+lh %lo(sym+off) each time; target keeps the base in an s-reg hoisted out of the loop (addiu fp,%lo(D_8005A614) before the loop, lh 0x34(fp)) | read them through a block-local view pointer: `{ View *v; v = (View *)D_8005A614; if (v->mode == ..) ... }` | `PlotTransmuterBeam` |
 | A loop-invariant &Global (lui/addiu) is hoisted out of a big loop in yours but stays in the loop in the target, and the target's preheader holds the same other hoists | loop.c lowers its threshold by 3 for every insn it moves, in loop order: move a copy the target hoists (here wRnd = wNas, a 2-insn sign extend) from before the loop to the top of the loop body so it is hoisted first, and the later lui falls under the threshold | `func_800B62EC (ovl5d)` |
-| a variable needs more refs to win its callee-saved reg, but a `do { } while (0)` around its assignment puts a sched barrier mid-block (the next insn: stores come out in the wrong order, a shared tail breaks) | set it, then an empty `do {} while (0);`, then set it again to the same value: cse1 stops at the loop-end note and keeps the repeat, cse2 makes it a self-copy that flow counts (2 refs), combine folds the first set into it, so no code is added and the barrier falls on the set itself (Reading the compiler's rules, CSE's block ends) | `PogoAI_RadialSearch` |
+| a variable needs more refs to win its callee-saved reg, but a `do { } while (0)` around its assignment puts a sched barrier mid-block (the next insn: stores come out in the wrong order, a shared tail breaks) | set it, then an empty `do {} while (0);`, then set it again to the same value: cse1 stops at the loop-end note and keeps the repeat, cse2 makes it a self-copy that flow counts (2 refs), combine folds the first set into it, so no code is added and the barrier falls on the set itself (Reading the compiler's rules, CSE's block ends) | `PogoAI_RadialSearch`, `PlotScriptFX` (`f = 0` twice: +8 refs inside a loop) |
+| target has `addiu v0,v0,N; move sN,v0` for `cur = p; p++; next = p;` and loads `next->f` through sN; yours computes `addiu sN,v0,N` (cse rewrites `p + N` to `cur + N`, or swaps the copy, or combine folds the add into it) | make `p` the last of the three to be mentioned: a dead `p = NULL;` after the last use of `cur` and `next` (flow deletes it). cse's `make_regs_eqv` then keeps `p` canonical, the load stays on `p`, so `p` lives past `next = p` and combine can't fold the add; local-alloc's `optimize_reg_copy_1` moves the load to `next` (Reading the compiler's rules) | `PlotScriptFX` |
+| a load from the second operand of `a \|\| b` sits before the first test's branch in the target | read it into a local before the `if` (`first = kf->frame; if (x < t \|\| t < first)`): sched never moves a load across a branch | `PlotScriptFX` |
+| a divide's quotient lands in v0 where the target has a0 (the unused remainder took v0 there) | put an insn between the divide and the quotient's use in sched1's order, e.g. a repeat of an earlier store that reload_cse deletes later (`sub->unk52 = 1;` after the line): the quotient's life doubles and its priority ties the remainder's, which wins the tie (Reading the compiler's rules, local-alloc) | `PlotScriptFX` |
 
 ## Classify the diff, then work through the list
 
@@ -1833,6 +1836,15 @@ The rules found so far, each one checked against a trace:
     `Processing block` lines).
   - `PlotBall`'s `abs((s16)k)` reads the call's temp in v0, not `k`'s s3,
     because `k` is an `s16` (the temp exists) and only the temp is first.
+  - "Last use" is `REGNO_LAST_UID`, which `reg_scan` sets before each cse
+    pass: the last insn that mentions the register, including an assignment
+    that flow later deletes as dead. So a dead `p = NULL;` after the real
+    last uses makes `p` outlive the registers copied from it
+    (`PlotScriptFX`).
+  - The copy swap (`cse_insn`, "Special handling for (set REG0 REG1)"): when
+    `b = a` makes `b` first and the insn just before it (notes skipped) sets
+    `a`, cse rewrites the pair as `b = <a's value>; a = b`. An insn between
+    them stops it.
 - **CSE's block ends (`cse_end_of_basic_block`, `cse_insn` in `cse.c`;
   `toplev.c`).**
   - cse1 ends an extended block at a `NOTE_INSN_LOOP_END`, so the code after
@@ -1852,6 +1864,10 @@ The rules found so far, each one checked against a trace:
     `i`'s bits.
   - `PlotBall`'s side index used `or` with an `i = 0 / 1 / 3 / ...` chain and
     `addu` with an inline that `return`s each value.
+  - It folds `a = a + N` into a following `b = a` only when `a` dies there
+    (`added_sets_2` in `try_combine`). A later use of `a` keeps the two insns
+    (`addiu v0,v0,N; move sN,v0`), and local-alloc's `optimize_reg_copy_1`
+    can still move that use to `b` afterwards (`PlotScriptFX`).
 - **Scheduling (`sched.c`, both passes).** It schedules backwards from the
   end of the block.
   - `priority` is the longest chain of predecessors, adding latency minus 1
@@ -1916,6 +1932,12 @@ The rules found so far, each one checked against a trace:
     Refs are flow's counts weighted by loop depth; life is measured in half-insns.
   - Equal priorities go to the pseudo born first. Each takes the first
     register in `REG_ALLOC_ORDER` (v0, v1, a0, ...) that is free over its whole life.
+  - Two outputs of one insn, like a divide's quotient and remainder, are born
+    together. `note_stores` walks the PARALLEL backwards, so the remainder
+    gets the lower qty number and wins a tie. The unused remainder lives one
+    half-insn; at loop depth 2 the quotient ties it when one insn sits
+    between the divide and the quotient's use, and then takes a0, not v0
+    (`PlotScriptFX`).
   - `combine_regs` ties an insn's output to a register operand that dies
     there, so they share a register. The operand must not be inside a
     memory address, and the output must be local and not yet placed.
