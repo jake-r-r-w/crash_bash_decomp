@@ -1479,7 +1479,6 @@ void func_800B6B04(s32 arg0, EXTengine *p, s32 arg2) {
 void func_800B6CD8(s32 arg0, s32 arg1) {
     EXTengine *e;
     subengine *s;
-    s32 sfx;
     HeroInfo *h;
     HeroInfo *base;
 
@@ -1500,7 +1499,7 @@ void func_800B6CD8(s32 arg0, s32 arg1) {
             s->flags |= 0x8000;
             e->flags |= 0x8000;
         }
-        sfx = 0x41C;
+        PlaySfx(0x41C, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
         break;
     case 1:
         if (s != NULL) {
@@ -1509,18 +1508,12 @@ void func_800B6CD8(s32 arg0, s32 arg1) {
             s->flags |= 0x8000;
             e->flags |= 0x8000;
         }
-        sfx = 0x72E;
+        PlaySfx(0x72E, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
         break;
     default:
         return;
     }
-    if (s != NULL) {
-        PlaySfx(sfx, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
-        D_800B9F4C[arg0].f8 = arg1;
-    } else {
-        PlaySfx(sfx, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
-        D_800B9F4C[arg0].f8 = arg1;
-    }
+    D_800B9F4C[arg0].f8 = arg1;
 }
 
 void func_800B6E1C(s32 player) {
