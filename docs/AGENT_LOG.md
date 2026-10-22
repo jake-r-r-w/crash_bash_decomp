@@ -287,9 +287,11 @@ Other:
   lacks. Until 2026-10-22 `rename` deleted the old file, losing the target
   asm (`regions`, `vars`, `similar`) and the rodata ownership behind the
   dashboard's data % (1.38% -> 1.27% over that day's renames). `rename` now
-  moves the file. To re-create missing ones: `scratch/restore_asm.py OVL...`
-  splits with `disassemble_all` into `build/asmall` and copies them from
-  `matchings/` (byte-identical to the originals); 300+ were restored.
+  moves the file. To re-create missing ones, split a copy of the overlay's
+  yaml with `asm_path: build/asmall`, `disassemble_all: True` and the
+  linker/undefined-syms paths moved under `build/asmall`, then copy the
+  missing NAME.s files from `build/asmall/matchings/` (byte-identical to the
+  originals); 300+ were restored this way.
 - **The pre-commit hook refuses files over 2 MB** (a catch-all for game
   data) except docs/progress.json, whose history grows by a line per commit
   (exempt since 2026-10-21; it once blocked 5 swarm matches). A match the
