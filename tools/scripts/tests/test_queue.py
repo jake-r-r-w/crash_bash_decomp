@@ -103,6 +103,13 @@ class Declarations(unittest.TestCase):
         self.assertEqual(decomp.decl_name("void func_80010000(s32 (*cb)(void));"), "func_80010000")
         self.assertEqual(decomp.decl_name("extern u8 D_80030000[16];"), "D_80030000")
 
+    def test_struct_members_are_not_top_level(self):
+        """A rename to SetArkHeroIdle (2026-10-22) made dedupe_owned drop every `s32 x;` member
+        of ovl61.h because arkenoid.h declares something named x."""
+        text = ["typedef struct {\n", "    s32 x; /* { */\n", "    struct { s32 z; } in;\n",
+                "} Pt;\n", "void f(s32 x);\n", "extern s32 x;\n"]
+        self.assertEqual([top for _, top in decomp.top_level(text)], [True, False, False, False, True, True])
+
     def test_copy_decls(self):
         """A copy gets the declarations its original's file sees and its own file doesn't (the
         ovl64:800BB52C case: an implicit call to a function pointer)."""

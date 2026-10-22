@@ -2643,11 +2643,21 @@ def dedupe_owned(src):
         m = re.search(r'"([^"]+)"', l)
         p = f"{HEADERS}/{m.group(1)}" if m else None
         if p and p != h and os.path.exists(p):
-            others |= {decl_name(x) for x in read(p).splitlines()} - {None}
+            others |= {decl_name(x) for x, top in top_level(read(p).splitlines()) if top} - {None}
     lines = read(h).splitlines(keepends=True)
-    kept = [l for l in lines if decl_name(l) not in others]
+    # struct members (`s32 x;`) look like declarations too: only drop top-level lines
+    kept = [l for l, top in top_level(lines) if not top or decl_name(l) not in others]
     if len(kept) != len(lines):
         write(h, "".join(kept))
+
+
+def top_level(lines):
+    """(line, True if it starts outside any braces) for each line."""
+    depth = 0
+    for l in lines:
+        yield l, depth == 0
+        code = re.sub(r"/\*.*?\*/|//.*", "", l)
+        depth = max(0, depth + code.count("{") - code.count("}"))
 
 
 def compile_alone(src, decls, ftext, name, cfg, tag="t"):
