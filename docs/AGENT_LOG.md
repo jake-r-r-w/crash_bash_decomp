@@ -101,13 +101,6 @@ and current tools).
 
 ## Open leads
 
-- **Dashboard data % falls with each `rename` (tooling bug).** `data_b` went
-  8404 -> 7680 over 2026-10-22's renames (about 32 B per rename call, 304 B
-  for the three `XZBoxToSphere`s) while every binary still matches. Not the
-  `INCLUDE_RODATA` files or stale `func_*.s` files; `scratch/datachk.py`
-  lists rodata by owner. Suspect `rodata_syms` after the re-split (symbol
-  boundaries or owner lists change when functions get names). Find it with
-  a before/after `data_summary` around one rename.
 - **`PogoAI_RadialSearch` (was `func_800BE158`; ovl60, parked, hack-only):** the swarm checkpoint is
   registers 2/347 but only with nested `do { } while (0)` around each case's
   `dx`/`dz` set. They do two jobs: end cse's block (cse.c
@@ -289,6 +282,14 @@ Other:
 ## Gotchas
 
 **Tooling**
+- **A matched function's `.s` exists only from before it was matched.**
+  splat writes `asm/nonmatchings/**/NAME.s` only for functions the C file
+  lacks. Until 2026-10-22 `rename` deleted the old file, losing the target
+  asm (`regions`, `vars`, `similar`) and the rodata ownership behind the
+  dashboard's data % (1.38% -> 1.27% over that day's renames). `rename` now
+  moves the file. To re-create missing ones: `scratch/restore_asm.py OVL...`
+  splits with `disassemble_all` into `build/asmall` and copies them from
+  `matchings/` (byte-identical to the originals); 300+ were restored.
 - **The pre-commit hook refuses files over 2 MB** (a catch-all for game
   data) except docs/progress.json, whose history grows by a line per commit
   (exempt since 2026-10-21; it once blocked 5 swarm matches). A match the
