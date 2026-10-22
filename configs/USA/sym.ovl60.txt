@@ -147,3 +147,6 @@ Player_SetReserve = 0x800C2770; // type:func
 PogoAI_RadialSearch_CheckKerbs = 0x800C0E40; // type:func
 Island_FloodFill = 0x800C1840; // type:func
 Create_PogoPadlock = 0x800C0BF0; // type:func
+PogoKerb_Init = 0x800C10F8; // type:func
+PogoKerb_CopyData = 0x800C1068; // type:func
+PogoKerb_Poll = 0x800BCB4C; // type:func

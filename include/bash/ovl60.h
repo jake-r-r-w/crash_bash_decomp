@@ -243,9 +243,7 @@ extern Ovl60Offset D_800C457C[];
 extern Ovl60Offset D_800C45BC[];
 s32 PogoAI_CountMyTiles(u32 arg0);
 s32 func_800BE6C4(s32 arg0, Ovl60Goal *arg1);
-void func_800C1068();
 
-void func_800C10F8(void);
 
 
 
@@ -295,7 +293,6 @@ void func_800C2338(s32 arg0, s32 arg1, s16 arg2, s16 arg3);
 
 
 void PogoPowerups_Poll(void);
-void func_800BCB4C();
 extern s32 D_800C52F4;
 extern s32 D_80099178;
 extern s32 D_800C5BD8;

@@ -340,7 +340,7 @@ loop:
         }
         break;
     case OVL60_MODE_11:
-        func_800BCB4C(g);
+        PogoKerb_Poll();
         break;
     }
 }
@@ -3815,7 +3815,7 @@ void Plot_PogoProjectile(NAS *arg0) {
     }
 }
 
-void func_800BCB4C(void) {
+void PogoKerb_Poll(void) {
     s32 buf[0x40];
     u8 *row;
     s32 *pos;
@@ -5256,7 +5256,7 @@ void PogoAI_InitHero(u32 i)
     }
 }
 
-void func_800C1068(void) {
+void PogoKerb_CopyData(void) {
     s32 i;
     u8 (*p)[8] = D_800C3C14[D_800C5BC0];
 
@@ -5268,7 +5268,7 @@ void func_800C1068(void) {
     }
 }
 
-void func_800C10F8(void) {
+void PogoKerb_Init(void) {
     D_800C5BC0 = 0;
     D_800C5BC4 = Random(0xC8) + 0xC8;
     D_800C5BD0 = 0;
@@ -5278,7 +5278,7 @@ void func_800C10F8(void) {
     if (D_8005A646 & 0x80) {
         D_800C5BC4 = 0x78;
     }
-    func_800C1068();
+    PogoKerb_CopyData();
 }
 
 void Init_PogoProjectile(NAS *arg0) {
@@ -6155,7 +6155,7 @@ void func_800C3048(void) {
         n = 2;
         break;
     case 11:
-        func_800C10F8();
+        PogoKerb_Init();
         break;
     case 12:
         n = 3;

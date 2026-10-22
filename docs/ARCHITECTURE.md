@@ -636,6 +636,12 @@ signature alone is not enough.
   z)` is its tile test (the NAS is unused). `func_800BC04C` (a square free
   of heroes, reservations, TNT/Nitro and the padlock; used by all of them)
   may be the leak's `SquareIsFreeForMushroom`: left unnamed.
+- **Pogo kerbs** (ovl60, mode 11): the board's edges are four 8-entry owner
+  arrays (`D_800C5B2C`, `B4C`, `B6C`, `B8C`). `PogoKerb_Init` (from the mode
+  11 setup) sets the kerb timers and calls `PogoKerb_CopyData`, which copies
+  pattern `D_800C5BC0` of `D_800C3C14` into them; `PogoKerb_Poll` (every
+  frame from `UpdatePOGO`) runs the timer `D_800C5BC4`. Its caller passed an
+  unused argument (old-style prototype); dropped, same code.
 - **Pogo AI** (ovl60). `PogoAI_Poll(p)` runs the bot (`EXTbotai`: `AIpad`,
   timers, `AImode` 1/3/4-7). Tests: `PogoAI_CanPlayerShootAnyone` (an
   opponent in the facing row or column), `...FourWays` (any row or column),
