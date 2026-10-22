@@ -397,7 +397,6 @@ s32 func_800B4454(s32 arg0, s32 *arg1, s32 arg2) {
     s32 i;
     Ovl66Entry *e;
     Ovl66Ent *f;
-    EXTengine *eng;
 
     found = 0;
     if (arg2 & 2) {
@@ -429,7 +428,7 @@ s32 func_800B4454(s32 arg0, s32 *arg1, s32 arg2) {
             d >>= 6;
             if (d < best) {
                 if (!(arg2 & 4) || func_80015480(get_angle(x - ex, z - ez), Heroes[arg0].hero_move->forward_angle) < 0x320) {
-                    do { best = d; found = e; } while (0);
+                    OVL66_SET_CLOSEST(best, found, d, e);
                 }
             }
         }
@@ -458,8 +457,7 @@ s32 func_800B4454(s32 arg0, s32 *arg1, s32 arg2) {
             d >>= 6;
             if (d < best) {
                 if (!(arg2 & 4) || func_80015480(get_angle(x - ex, z - ez), Heroes[arg0].hero_move->forward_angle) < 0x320) {
-                    best = d;
-                    found = (Ovl66Entry *)f;
+                    OVL66_SET_CLOSEST(best, found, d, (Ovl66Entry *)f);
                 }
             }
         }

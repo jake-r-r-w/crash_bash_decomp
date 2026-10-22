@@ -174,6 +174,13 @@ typedef struct Ovl66RankView {
 } Ovl66RankView;
 #define RANK66V ((Ovl66RankView *)D_8005A614)
 
+/* func_800B4454: keep the closest target found so far (both search loops). */
+#define OVL66_SET_CLOSEST(best, found, d, p) \
+    do {                                     \
+        (best) = (d);                        \
+        (found) = (p);                       \
+    } while (0)
+
 void PlotBonkShockwave(NAS *nas);
 
 void func_800B6AAC(void);
