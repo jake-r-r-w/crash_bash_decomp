@@ -447,8 +447,12 @@ signature alone is not enough.
     its address name), `AR_PI_TestOutOfBounds` and `AR_PI_TestLaunchBounds`,
     and its `GetContour` is `GetArkPIContour`; the other modes use
     `GetArkContour`. The leak has only BA and PI launch tests, so the other
-    one is `AR_BA_TestLaunchBounds`. The non-PI bounce and out-of-bounds
-    hooks could be BA, SE or NG: left unnamed. These take the leak's
+    one is `AR_BA_TestLaunchBounds`. Mode 16 spawns N. Gin (0x1507), so its
+    out-of-bounds hook is `AR_NG_TestOutOfBounds`; the default mode (and 15)
+    uses `AR_BA_TestOutOfBounds` and the BA bounce `func_800B4880` (named in
+    notes only: the leak's `s16` return changes its code, like PI's). No
+    mode installs an SE function: the leak's SE variants are not in the
+    build. These take the leak's
     `EXTengine *` / `EXTobject *` (the out-of-bounds test writes
     `EXTobject.player`).
   - More Arkenoid, each from its code: `GetIntersect(p0, p1, q)` (segment

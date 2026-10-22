@@ -21,18 +21,6 @@ typedef struct Ovl61HeroBox {
 
 extern Ovl61HeroBox D_800C1A88[];
 
-typedef struct Ovl61Vel {
-    u8 pad0[0x10];
-    s32 x;
-    s32 pad14;
-    s32 z;
-} Ovl61Vel;
-
-typedef struct Ovl61Dir {
-    u8 pad0[0x16];
-    s16 dir;
-} Ovl61Dir;
-
 typedef struct Ovl61Spawn {
     u8 pad0[0x10];
     s32 x;
@@ -89,19 +77,6 @@ typedef struct {
     s16 z;
     s16 r;
 } Ovl61Circle;
-
-typedef struct {
-    u8 pad0[0x10];
-    s32 x;
-    u8 pad14[4];
-    s32 z;
-    u8 pad1C[2];
-    s16 dir;
-    u8 pad20[0x6A];
-    s16 radius;
-    u8 pad8C[4];
-    u32 flags;
-} Ovl61Obj;
 
 typedef struct Ovl61Gin {
     u8 pad0[0x14];
@@ -167,7 +142,7 @@ extern u16 D_800C2718;
 extern s16 D_800C1440[];
 
 
-s32 func_800B4880(Ovl61Obj *arg0, s32 arg1);
+s32 func_800B4880(EXTengine *arg0, s32 arg1);
 
 extern u16 D_800C1EFE;
 
@@ -179,13 +154,11 @@ void func_800BDD30(s32 arg0);
 s32 func_800C05B8(s32 arg0);
 
 
-s32 func_800C096C(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2);
 
 
 u8 *func_800C01B8(void);
 
 
-s32 func_800C0A74(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2);
 
 
 

@@ -85,7 +85,7 @@ void AR_PreInitLevel(void) {
         D_8009D6E8.unk20 = AR_PreMoveHero;
         D_8009D6E8.unk24 = AR_MoveHero;
         D_800C1C8C = func_800B4880;
-        D_800C1C90 = func_800C0A74;
+        D_800C1C90 = AR_BA_TestOutOfBounds;
         D_800C1C94 = AR_BA_TestLaunchBounds;
         D_8005AA94 = (void *)GetArkContour;
         D_8009D8F4 = D_800C0F44;
@@ -105,7 +105,7 @@ void AR_PreInitLevel(void) {
         D_8009D6E8.unk20 = AR_PreMoveHero;
         D_8009D6E8.unk24 = AR_MoveHero;
         D_800C1C8C = func_800B4880;
-        D_800C1C90 = func_800C096C;
+        D_800C1C90 = AR_NG_TestOutOfBounds;
         D_800C1C94 = AR_BA_TestLaunchBounds;
         D_8005AA94 = (void *)GetArkContour;
         D_8009D8F4 = D_800C0FB8;
@@ -146,7 +146,7 @@ void AR_PreInitLevel(void) {
         D_8009D6E8.unk20 = AR_PreMoveHero;
         D_8009D6E8.unk24 = AR_MoveHero;
         D_800C1C8C = func_800B4880;
-        D_800C1C90 = func_800C0A74;
+        D_800C1C90 = AR_BA_TestOutOfBounds;
         D_800C1C94 = AR_BA_TestLaunchBounds;
         D_8005AA94 = (void *)GetArkContour;
         D_8009D8F4 = D_800C0ED0;
@@ -467,7 +467,7 @@ bool AR_PI_KeepInBounds(EXTengine *arg0) {
     return 0;
 }
 
-s32 func_800B4880(Ovl61Obj *arg0, s32 arg1) {
+s32 func_800B4880(EXTengine *arg0, s32 arg1) {
     Ovl61Circle *c;
     Ovl61Circle *base;
     SLONG_XYZ v;
@@ -482,18 +482,18 @@ s32 func_800B4880(Ovl61Obj *arg0, s32 arg1) {
     s32 cz;
 
     for (i = 0; i < 4; i++) {
-        if (arg0->flags & 0x40) {
-            r = D_800C1A7C[i].r + arg0->radius;
+        if (arg0->collision_box.flags & 0x40) {
+            r = D_800C1A7C[i].r + arg0->collision_box.radius;
         } else {
             r = D_800C1A7C[i].r + 0x80;
         }
         base = D_800C1A7C;
         c = &base[i];
         cx = c->x;
-        x = arg0->x;
+        x = arg0->unk10.x;
         dx = x - cx;
         cz = c->z;
-        z = arg0->z;
+        z = arg0->unk10.z;
         dz = z - cz;
         if (dx * dx + dz * dz < r * r) {
             goto found;
@@ -505,25 +505,25 @@ s32 func_800B4880(Ovl61Obj *arg0, s32 arg1) {
     }
     dx = x;
     dz = z;
-    if (arg0->flags & 0x40) {
-        r = 0x800 - arg0->radius;
+    if (arg0->collision_box.flags & 0x40) {
+        r = 0x800 - arg0->collision_box.radius;
     } else {
         r = 0x800;
     }
     if (dx > r && (D_800C1F14 & 0x88)) {
-        arg0->x = r;
+        arg0->unk10.x = r;
         ret = 0x400;
     }
     if (dx < -r && (D_800C1F14 & 0x44)) {
-        arg0->x = -r;
+        arg0->unk10.x = -r;
         ret = 0xC00;
     }
     if (dz > r && (D_800C1F14 & 0x22)) {
-        arg0->z = r;
+        arg0->unk10.z = r;
         ret = 0;
     }
     if (dz < -r && (D_800C1F14 & 0x11)) {
-        arg0->z = -r;
+        arg0->unk10.z = -r;
         ret = 0x800;
     }
     if (ret != -1) {
@@ -534,8 +534,8 @@ found:
     v.x = cx;
     v.y = 0;
     v.z = base[i].z;
-    LineToCircleTest((SLONG_XYZ *)&arg0->x, arg1, &v, r);
-    ret = get_angle(D_800C1A7C[i].x - arg0->x, D_800C1A7C[i].z - arg0->z);
+    LineToCircleTest(&arg0->unk10, arg1, &v, r);
+    ret = get_angle(D_800C1A7C[i].x - arg0->unk10.x, D_800C1A7C[i].z - arg0->unk10.z);
     D_800C1E28[i].state = 3;
     return ret;
 fail:
@@ -5872,7 +5872,7 @@ bool AR_PI_TestLaunchBounds(EXTengine *arg0, EXTobject *obj) {
     return 0;
 }
 
-s32 func_800C096C(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2) {
+bool AR_NG_TestOutOfBounds(EXTengine *arg0, EXTobject *arg1, bool arg2) {
     s32 lim;
     s32 x;
     s32 z;
@@ -5882,46 +5882,46 @@ s32 func_800C096C(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2) {
     if (arg2 != 0) {
         lim = 0x1000;
     }
-    x = arg0->x;
+    x = arg0->unk10.x;
     if (x > lim) {
-        arg1->dir = D_800C271C;
+        arg1->player = D_800C271C;
         return 1;
     }
     if (x < -lim) {
-        arg1->dir = D_800C2720;
+        arg1->player = D_800C2720;
         return 1;
     }
-    z = arg0->z;
+    z = arg0->unk10.z;
     if (z > lim) {
-        arg1->dir = D_800C2724;
+        arg1->player = D_800C2724;
         return 1;
     }
     if (z < -lim) {
-        arg1->dir = D_800C2728;
+        arg1->player = D_800C2728;
         return 1;
     }
     if (arg2 != 0) {
-        d = arg1->dir;
+        d = arg1->player;
         if (d == D_800C2724 || d == D_800C2728) {
             if (x > 0x680) {
-                arg0->x = 0x680;
+                arg0->unk10.x = 0x680;
             }
-            if (arg0->x < -0x680) {
-                arg0->x = -0x680;
+            if (arg0->unk10.x < -0x680) {
+                arg0->unk10.x = -0x680;
             }
         } else {
             if (z > 0x680) {
-                arg0->z = 0x680;
+                arg0->unk10.z = 0x680;
             }
-            if (arg0->z < -0x680) {
-                arg0->z = -0x680;
+            if (arg0->unk10.z < -0x680) {
+                arg0->unk10.z = -0x680;
             }
         }
     }
     return 0;
 }
 
-s32 func_800C0A74(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2) {
+bool AR_BA_TestOutOfBounds(EXTengine *arg0, EXTobject *arg1, bool arg2) {
     s32 lim;
     s32 x;
     s32 z;
@@ -5931,39 +5931,39 @@ s32 func_800C0A74(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2) {
     if (arg2 != 0) {
         lim = 0xB80;
     }
-    x = arg0->x;
+    x = arg0->unk10.x;
     if (x > lim) {
-        arg1->dir = D_800C271C;
+        arg1->player = D_800C271C;
         return 1;
     }
     if (x < -lim) {
-        arg1->dir = D_800C2720;
+        arg1->player = D_800C2720;
         return 1;
     }
-    z = arg0->z;
+    z = arg0->unk10.z;
     if (z > lim) {
-        arg1->dir = D_800C2724;
+        arg1->player = D_800C2724;
         return 1;
     }
     if (z < -lim) {
-        arg1->dir = D_800C2728;
+        arg1->player = D_800C2728;
         return 1;
     }
     if (arg2 != 0) {
-        d = arg1->dir;
+        d = arg1->player;
         if (d == D_800C2724 || d == D_800C2728) {
             if (x > 0x600) {
-                arg0->x = 0x600;
+                arg0->unk10.x = 0x600;
             }
-            if (arg0->x < -0x600) {
-                arg0->x = -0x600;
+            if (arg0->unk10.x < -0x600) {
+                arg0->unk10.x = -0x600;
             }
         } else {
             if (z > 0x600) {
-                arg0->z = 0x600;
+                arg0->unk10.z = 0x600;
             }
-            if (arg0->z < -0x600) {
-                arg0->z = -0x600;
+            if (arg0->unk10.z < -0x600) {
+                arg0->unk10.z = -0x600;
             }
         }
     }
