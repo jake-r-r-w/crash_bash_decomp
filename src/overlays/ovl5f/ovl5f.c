@@ -4033,7 +4033,160 @@ void PlotRock_TA(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotPeriscope);
+void PlotPeriscope(NAS *nas) {
+    TotemFux *fux;
+    EXTengine *eng;
+    EXTengine *e;
+    NAS *n;
+    subengine *sub;
+    s32 i;
+    s32 j;
+    s32 frame;
+
+    if (D_800CB0F0 != 0) {
+        KillNAS(nas);
+        return;
+    }
+    fux = (TotemFux *)nas->FUX;
+    eng = nas->Engine;
+    switch (fux->state) {
+    case 1:
+        if (--fux->timer == 30) {
+            D_800CB214 = Ovl5fPeriscopePuff(&nas->Engine->unk10, 1);
+            PlaySfx(0x4FB, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        }
+        if (fux->timer <= 0) {
+            fux->state = 4;
+            fux->timer = 4;
+        }
+        break;
+    case 4:
+        Ovl5fPeriscopePuff(&nas->Engine->unk10, 0);
+        fux->timer--;
+        switch (fux->timer) {
+        case 3:
+            eng->sub->next->flags = 0x8000;
+            eng->sub->next->unk74 = 0x2001;
+            break;
+        case 2:
+            eng->sub->next->unk74 = 0x2002;
+            break;
+        case 1:
+            eng->sub->next->unk74 = 0x2003;
+            break;
+        case 0:
+            for (j = 0; j < 8; j++) {
+                if (D_800CB264[j] == NULL) {
+                    D_800CB264[j] = nas;
+                    break;
+                }
+            }
+            eng->sub->next->unk74 = 0x2004;
+            fux->state = 0;
+            fux->timer = 210;
+            break;
+        }
+        break;
+    case 0:
+        if (!(D_8004E0D8 & 0x3F)) {
+            Ovl5fPeriscopePuff(&nas->Engine->unk10, 0);
+        }
+        sub = eng->sub;
+        eng->unk5E = 1;
+        eng->unk1E += 30;
+        sub = sub->next;
+        sub->unk51 = 0;
+        sub->unk52 = 1;
+        if (--fux->timer <= 0) {
+            fux->state = 5;
+            fux->timer = 4;
+            break;
+        }
+        for (i = 0; i < 4; i++) {
+            if (Heroes[i].hero_name != 9 && !(Heroes[i].hero_status & 0xFA00) && D_8005A614[i + 0x5C] == 0) {
+                e = Heroes[i].hero_eng;
+                if ((u32)(((eng->unk1E - get_angle(eng->unk10.x - e->unk10.x, eng->unk10.z - e->unk10.z)) & 0xFFF) - 0x15) >= 0xFD7U) {
+                    fux->state = 10;
+                    fux->timer = 0;
+                    PlaySfx(0x4FC, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                }
+            }
+        }
+        break;
+    case 10:
+        if (!(D_8004E0D8 & 0x1F)) {
+            Ovl5fPeriscopePuff(&nas->Engine->unk10, 0);
+        }
+        frame = D_800CA6EC[fux->timer];
+        if (++fux->timer == 9) {
+            n = SpawnNASById(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1319, 0x11);
+            if (n != NULL) {
+                n->Engine->unk1E = eng->unk1E;
+            }
+        }
+        if (frame == 0) {
+            fux->state = 11;
+            fux->timer = 4;
+            break;
+        }
+        eng->sub->next->unk74 = frame;
+        break;
+    case 11:
+        Ovl5fPeriscopePuff(&nas->Engine->unk10, 0);
+        fux->timer--;
+        switch (fux->timer) {
+        case 3:
+            eng->sub->next->flags = 0x8000;
+            eng->sub->next->unk74 = 0x2003;
+            break;
+        case 2:
+            for (j = 0; j < 8; j++) {
+                if (D_800CB264[j] == nas) {
+                    D_800CB264[j] = NULL;
+                    break;
+                }
+            }
+            eng->sub->next->unk74 = 0x2002;
+            break;
+        case 1:
+            eng->sub->next->unk74 = 0x2001;
+            break;
+        case 0:
+            fux->state = 12;
+            fux->timer = 1;
+            eng->sub->next->flags = 0;
+            break;
+        }
+        break;
+    case 12:
+        if (--fux->timer <= 0) {
+            fux->state = 1;
+            fux->timer = 120;
+        }
+        break;
+    case 5:
+        Ovl5fPeriscopePuff(&nas->Engine->unk10, 0);
+        fux->timer--;
+        switch (fux->timer) {
+        case 3:
+            eng->sub->next->flags = 0x8000;
+            eng->sub->next->unk74 = 0x2003;
+            break;
+        case 2:
+            eng->sub->next->unk74 = 0x2002;
+            break;
+        case 1:
+            eng->sub->next->unk74 = 0x2001;
+            break;
+        case 0:
+            fux->state = 1;
+            fux->timer = 150;
+            eng->sub->next->flags = 0;
+            break;
+        }
+        break;
+    }
+}
 
 void PlotPeriscopeGun(NAS *nas) {
     EXTengine *e;

@@ -663,6 +663,34 @@ static inline NAS *Ovl5fSpawnBit1605Nas(SLONG_XYZ *pos, s32 kind) {
     }
     return NULL;
 }
+/* PlotPeriscope: a 0x1605 puff with the scene's first model. */
+static inline NAS *Ovl5fPeriscopePuff(SLONG_XYZ *pos, s32 kind) {
+    u8 *p;
+    NAS *nas;
+    Ovl5fExt1605 *ext;
+
+    p = *(u8 **)D_80058AD0;
+    nas = SpawnNASById(pos->x, pos->y, pos->z, 0x1605, 0x11);
+    if (nas != NULL) {
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL) {
+            ext->unkC = kind;
+            ext->unk18 = 0x100;
+            if (p != NULL) {
+                ext->unk20 = 5;
+                nas->Engine->sub->unk6C = p;
+            } else {
+                ext->unk20 = 1;
+            }
+            ext->unk28 = 0;
+            nas->InitDelete(nas);
+        }
+        return nas;
+    }
+    return NULL;
+}
+extern NAS *D_800CB214;  /* PlotPeriscope's last puff */
+extern s32 D_800CA6EC[]; /* PlotPeriscope: frame by timer in state 10, 0 ends */
 /* func_800C3D48: per-shell angle offsets. */
 static inline s32 *Ovl5fShellAngleOffsets(void) {
     return D_800C93AC;
