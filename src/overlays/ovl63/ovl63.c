@@ -2785,7 +2785,111 @@ void func_800BCDAC(s32 player) {
     func_80011D28((u8 *)&D_8004E0F0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BCE88);
+void func_800BCE88(s32 arg0, s32 arg1) {
+    s32 taken;
+    s32 j;
+    s32 i;
+    s32 best;
+    s32 k;
+    u8 *g;
+
+    if (!(D_8005A644 & 0x801) && arg0 == -1) {
+        taken = 0;
+        for (j = 0; j < 4; j++) {
+            best = -1;
+            for (i = 0; i < 4; i++) {
+                if (!((taken >> i) & 1)) {
+                    if (Heroes[i].hero_score < Heroes[best].hero_score || best == -1) {
+                        best = i;
+                    }
+                }
+            }
+            D_8005A614[j + 0xA7] = best;
+            taken |= 1 << best;
+        }
+        g = D_8005A614;
+        if (*(s32 *)(g + 0x6C) == 0) {
+            HeroInfo *hb;
+            HeroInfo *a;
+            s32 n;
+
+            if (g[g[0xA7] + 0x5C] != 0
+                || (hb = Heroes, a = &hb[g[0xA7]], a->hero_score == hb[g[0xA8]].hero_score)) {
+                D_8005A614[0x60] = 0;
+                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                for (k = 0; k < 4; k++) {
+                    Heroes[k].hero_status |= 0x100;
+                    if (D_8005A614[k + 0x5C] != 0) {
+                        func_80026980(Heroes[k].hero);
+                    }
+                }
+            } else {
+                D_8005A614[0x60] = a->hero_name;
+                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                for (n = 0; n < 4; n++) {
+                    if (D_8005A614[0xA7] == n) {
+                        hb[n].hero_status |= 0x200;
+                    } else {
+                        hb[n].hero_status |= 0x8400;
+                        hb[n].hero_shadow->sub->flags &= ~0x8000;
+                    }
+                }
+            }
+        } else {
+            s32 ia;
+            s32 ib;
+            s32 ita;
+            s32 itb;
+            s32 sa;
+            s32 sb;
+            s32 p;
+
+            ia = *(s16 *)(g + 0x48);
+            ib = *(s16 *)(g + 0x4A);
+            ita = Heroes[ia].hero_teammate;
+            itb = Heroes[ib].hero_teammate;
+            if (Heroes[ia].hero_score == 0 && D_8005A614[ia + 0x5C] == 0) {
+                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                OVL63_TEAM_WIN(ia, ita, ib, itb);
+            } else if (Heroes[ita].hero_score == 0 && D_8005A614[ia + 0x5C] == 0) {
+                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                OVL63_TEAM_WIN(ia, ita, ib, itb);
+            } else if (Heroes[ib].hero_score == 0 && D_8005A614[ib + 0x5C] == 0) {
+                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                OVL63_TEAM_WIN(ib, itb, ia, ita);
+            } else if (Heroes[itb].hero_score == 0 && D_8005A614[ib + 0x5C] == 0) {
+                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                OVL63_TEAM_WIN(ib, itb, ia, ita);
+            } else if (Heroes[ia].hero_score == 0 && D_8005A614[ia + 0x5C] != 0) {
+                OVL63_DRAW(p, arg1);
+            } else if (Heroes[ita].hero_score == 0 && D_8005A614[ia + 0x5C] != 0) {
+                OVL63_DRAW(p, arg1);
+            } else if (Heroes[ib].hero_score == 0 && D_8005A614[ib + 0x5C] != 0) {
+                OVL63_DRAW(p, arg1);
+            } else if (Heroes[itb].hero_score == 0 && D_8005A614[ib + 0x5C] != 0) {
+                OVL63_DRAW(p, arg1);
+            } else {
+                sa = Heroes[ia].hero_score + Heroes[ita].hero_score;
+                sb = Heroes[ib].hero_score + Heroes[itb].hero_score;
+                if (sa == sb) {
+                    OVL63_DRAW(p, arg1);
+                } else if ((sa < sb && D_8005A614[ia + 0x5C] == 0)
+                           || (sb < sa && D_8005A614[ib + 0x5C] == 0)) {
+                    u8 *w = D_8005A614;
+
+                    *(u16 *)(w + 0x30) |= 0x800;
+                    if (w[ia + 0x5C] == 0) {
+                        OVL63_TEAM_WIN(ia, ita, ib, itb);
+                    } else {
+                        OVL63_TEAM_WIN(ib, itb, ia, ita);
+                    }
+                } else {
+                    OVL63_DRAW(p, arg1);
+                }
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BD99C);
 

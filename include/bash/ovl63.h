@@ -1148,6 +1148,30 @@ void func_800BBA04(s32 player);
 void func_800BD99C();
 void func_800BCE88();
 
+/* func_800BCE88: a drawn round (every hero gets 0x100). */
+#define OVL63_DRAW(k, arg1)                                 \
+    {                                                       \
+        s32 k;                                              \
+        D_8005A614[0x60] = 0;                               \
+        *(u16 *)(D_8005A614 + 0x30) |= (arg1);              \
+        for (k = 0; k < 4; k++) {                           \
+            Heroes[k].hero_status |= 0x100;                 \
+        }                                                   \
+    }
+
+/* func_800BCE88: team w/wt wins, l/lt lose and lose their shadows. */
+#define OVL63_TEAM_WIN(w, wt, l, lt)                        \
+    D_8005A614[0x60] = Heroes[w].hero_name;                 \
+    D_8005A614[0x61] = Heroes[wt].hero_name;                \
+    Heroes[w].hero_status |= 0x200;                         \
+    Heroes[wt].hero_status |= 0x200;                        \
+    Heroes[l].hero_status |= 0x400;                         \
+    Heroes[lt].hero_status |= 0x400;                        \
+    Heroes[l].hero_status |= 0x8000;                        \
+    Heroes[l].hero_shadow->sub->flags &= ~0x8000;           \
+    Heroes[lt].hero_status |= 0x8000;                       \
+    Heroes[lt].hero_shadow->sub->flags &= ~0x8000;
+
 s32 func_800BEBC0(s32 player);
 
 void PlotRaceMissile(NAS *m);
