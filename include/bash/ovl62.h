@@ -1002,6 +1002,54 @@ void func_80086868(void);
 
 extern NAS *D_800D5448;
 
+/* D_8005A614 as PlotPolarBoss reads it. */
+typedef struct PolarBossGame {
+    /* 0x00 */ u8 pad0[0x48];
+    /* 0x48 */ s16 lead;
+    /* 0x4A */ u8 pad4A[0x6C - 0x4A];
+    /* 0x6C */ s32 teams;
+    /* 0x70 */ u8 pad70[0xC1 - 0x70];
+    /* 0xC1 */ u8 level;
+} PolarBossGame;
+
+/* The 0x10000000 extension of the boss's partner (PlotPolarBoss). */
+typedef struct PolarBossAnimExt {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ EXTanimator *anim;
+} PolarBossAnimExt;
+
+/* The 0x10000000 extension of the shards PlotPolarBoss spawns (0x161B). */
+typedef struct PolarShardExt {
+    /* 0x00 */ u8 pad0[0x94];
+    /* 0x94 */ s32 unk94;
+    /* 0x98 */ u8 pad98[0xB4 - 0x98];
+    /* 0xB4 */ s32 unkB4;
+} PolarShardExt;
+
+/* PlotPolarBoss: r * sin(ang) in 12-bit fixed point. */
+static inline s32 PolarSinMul(s32 ang, s32 r) {
+    return (D_80068BD4[ang & 0xFFF].unk2 * r) >> 12;
+}
+
+/* PlotPolarBoss: a random offset in (-n, n). */
+static inline s32 PolarRandSpread(s32 n) {
+    return Random(n) - Random(n);
+}
+
+/* PlotPolarBoss: the chance (out of 0x1000) a shard is special, by level. */
+static inline s32 PolarShardChance(void) {
+    s32 k;
+
+    if (((PolarBossGame *)D_8005A614)->level < 10) {
+        return 0;
+    }
+    if (((PolarBossGame *)D_8005A614)->level >= 30) {
+        return 0xE66;
+    }
+    k = 0xB8;
+    return (((PolarBossGame *)D_8005A614)->level - 9) * k;
+}
+
 s32 func_800B3740(s32 arg0);
 
 u32 FindClosetPlayer(u32 self, s32 *dist);

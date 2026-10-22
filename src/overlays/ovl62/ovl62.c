@@ -5323,7 +5323,347 @@ void InitPolarBoss(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotPolarBoss);
+void PlotPolarBoss(NAS *m) {
+    PolarBossExt *ext;
+    PolarBossAnimExt *mate;
+    PolarBossAnimExt *pe;
+    PolarBossExt *be;
+    NAS *nas;
+    HeroInfo *h;
+    SLONG_XYZ pos;
+    s32 ang;
+    s32 i;
+    s32 n;
+    s32 rot;
+    s32 dx;
+    s32 dz;
+    s32 k;
+    s32 t;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    if (((PolarBossGame *)D_8005A614)->teams != 0) {
+        h = Heroes;
+        if ((h[((PolarBossGame *)D_8005A614)->lead].hero_status & 0x2000)
+            && (h[h[((PolarBossGame *)D_8005A614)->lead].hero_teammate].hero_status & 0x2000)) {
+            D_800AD12C = 0;
+        }
+    } else if (Heroes[0].hero_status & 0x2000) {
+        D_800AD12C = 0;
+    }
+    D_800D5448 = m;
+    m->UserInfo.user1 = func_800250B0(m);
+    if (!(Heroes[0].hero_mode & 0x2000)) {
+        ang = get_angle(m->Engine->unk10.x - Heroes[0].hero_eng->unk10.x,
+                        m->Engine->unk10.z - Heroes[0].hero_eng->unk10.z) & 0xFFF;
+    } else {
+        ang = get_angle(m->Engine->unk10.x - Heroes[1].hero_eng->unk10.x,
+                        m->Engine->unk10.z - Heroes[1].hero_eng->unk10.z) & 0xFFF;
+    }
+    if (ext->state != 8) {
+        ext->unk84->Engine->unk1E = ang;
+    }
+    mate = FindExtension(ext->unk84, 0x10000000);
+    if (mate != NULL) {
+        if (((PolarBossGame *)D_8005A614)->teams != 0) {
+            h = Heroes;
+            if ((h[((PolarBossGame *)D_8005A614)->lead].hero_status & 0x2000)
+                && (h[h[((PolarBossGame *)D_8005A614)->lead].hero_teammate].hero_status & 0x2000)
+                && ext->state != 9 && ext->unk90 == 0) {
+                ext->state = 9;
+                func_80025FAC(mate->anim, 7);
+                return;
+            }
+        } else if ((Heroes[0].hero_status & 0x2000) && ext->unk90 == 0 && ext->state != 9) {
+            PlaySfx(0x23B, NULL, NULL, 0x1000, 0x1E00, 0);
+            ext->state = 9;
+            func_80025FAC(mate->anim, 7);
+            return;
+        }
+    }
+    if (ext->unk68-- < 0) {
+        for (k = 0;; k++) {
+            s32 d;
+
+            if (k >= 4) {
+                break;
+            }
+            d = 0x700;
+            pos.x = m->Engine->unk10.x + PolarSinMul((u16)m->Engine->unk1E, d);
+            pos.z = m->Engine->unk10.z + PolarSinMul(m->Engine->unk1E + 0x400, d);
+            pos.x += PolarRandSpread(0x400);
+            pos.z += PolarRandSpread(0x400);
+            d = 0x500;
+            pos.x = m->Engine->unk10.x - PolarSinMul((u16)m->Engine->unk1E, d);
+            pos.z = m->Engine->unk10.z - PolarSinMul(m->Engine->unk1E + 0x400, d);
+            pos.x += PolarRandSpread(0x5F4);
+            pos.z += PolarRandSpread(0x5F4);
+        }
+        ext->unk68 = Random(4) + 5;
+    }
+    switch (ext->state) {
+    case 5:
+        if (ext->unk84->Engine->sfx != NULL) {
+            StopSfx(ext->unk84->Engine->sfx);
+        }
+        m->Engine->OldXYZ.x = (D_80068BD4[(((ext->ang + 0x20) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3) >> 2;
+        m->Engine->OldXYZ.z = ((D_80068BD4[(ext->ang + 0x20) & 0xFFF].unk2 * 0x400) >> 12) + 0x2000;
+        ext->unk84->Engine->unk10 = m->Engine->unk10;
+        ext->unk88->Engine->unk10 = m->Engine->unk10;
+        ext->unk88->Engine->unk10.y -= 0x400;
+        rot = (get_angle(m->Engine->OldXYZ.x - m->Engine->unk10.x,
+                         m->Engine->OldXYZ.z - m->Engine->unk10.z) & 0xFFF) + 0x400;
+        m->Engine->unk1E -= ((m->Engine->unk1E - rot) << 20) >> 22;
+        m->Engine->unk10.x = (D_80068BD4[(ext->ang - 0x400) & 0xFFF].unk2 * 3) >> 2;
+        m->Engine->unk10.z = ((D_80068BD4[ext->ang & 0xFFF].unk2 * 0x400) >> 12) + 0x2000;
+        ext->ang = (ext->ang + ext->unk8C) & 0xFFF;
+        if (ext->unk70 != 0) {
+            if (ext->phase == 0 || ext->phase == 2 || ext->phase == 4 || ext->phase == 6) {
+                if ((u32)(ext->ang - 0x709) < 0xC7) {
+                    ext->state = 6;
+                    ext->unk70 = 0;
+                    ext->unk8C = 4;
+                }
+            }
+            if (ext->phase == 1 || ext->phase == 3 || ext->phase == 5 || ext->phase == 7) {
+                if (ext->phase == 7) {
+                    FindExtension(Heroes[0].hero, 0x20000000);
+                    FindExtension(Heroes[1].hero, 0x20000000);
+                }
+                if ((u32)(ext->ang - 0x12C) >= 0xE11) {
+                    if (ext->unk80 == 0 && ext->phase < 4) {
+                        ext->phase--;
+                        return;
+                    }
+                    ext->state = 6;
+                    ext->unk70 = 0;
+                    ext->unk80 = 0;
+                }
+            }
+        }
+        break;
+    case 6:
+        if (ext->phase == 0 || ext->phase == 2 || ext->phase == 4 || ext->phase == 6) {
+            n = 0;
+            t = 0;
+            pos.z = 0;
+            pos.y = 0;
+            pos.x = 0;
+            pe = FindExtension(ext->unk84, 0x10000000);
+            if (pe != NULL) {
+                func_80025FAC(pe->anim, 1);
+            }
+            if (ext->phase == 0) {
+                n = 1;
+                func_80025FAC((EXTanimator *)ext->cursor, n);
+                func_800250B0(m);
+            }
+            if (ext->phase == 2) {
+                n = 2;
+                func_80025FAC((EXTanimator *)ext->cursor, 3);
+                func_800250B0(m);
+            }
+            if (ext->phase == 4) {
+                func_80025FAC((EXTanimator *)ext->cursor, 5);
+                n = 3;
+                func_800250B0(m);
+            }
+            if (ext->phase == 6) {
+                func_80025FAC((EXTanimator *)ext->cursor, 5);
+                n = 3;
+                func_800250B0(m);
+            }
+            dz = 0;
+            dx = dz;
+            i = dz;
+            for (;; i++) {
+                PolarShardExt *se;
+                NAS *nas;
+
+                if (i >= n) {
+                    break;
+                }
+                if (n == 1) {
+                    dx = 0;
+                    dz = -0x700;
+                }
+                if (n == 2) {
+                    if (i == 0) {
+                        dx = -0x380;
+                        dz = -0x700;
+                    }
+                    if (i == 1) {
+                        dx = 0x380;
+                        dz = -0x700;
+                    }
+                }
+                if (n == 3) {
+                    if (i == 0) {
+                        dx = -0x380;
+                        dz = -0x700;
+                    }
+                    if (i == 1) {
+                        dx = 0x380;
+                        dz = -0x700;
+                    }
+                    if (i == 2) {
+                        dx = 0;
+                        dz = -0x700;
+                    }
+                }
+                nas = SpawnNASById(m->Engine->unk10.x + dx, m->Engine->unk10.y - 0x5DC,
+                                   m->Engine->unk10.z + dz, 0x161B, 0x11);
+                if (nas != NULL) {
+                    se = FindExtension(nas, 0x10000000);
+                    if (se != NULL) {
+                        if (ext->phase == 0 && i == 0) {
+                            t = Random(0x1000);
+                        }
+                        if (ext->phase == 2) {
+                            if (i == 0) {
+                                t = Random(0x400);
+                            }
+                            if (i == 1) {
+                                t = Random(0x400) + 0x400;
+                                if (Random(0x1000) < PolarShardChance()) {
+                                    se->unkB4 = 1;
+                                }
+                            }
+                        }
+                        if (ext->phase == 4) {
+                            if (i == 0) {
+                                t = Random(0x2AA) + 0x800;
+                            }
+                            if (i == 1) {
+                                t = Random(0x2AA) + 0xAAA;
+                                if (Random(0x1000) < PolarShardChance()) {
+                                    se->unkB4 = 1;
+                                }
+                            }
+                            if (i == 2) {
+                                t = Random(0x2AA) + 0xD54;
+                                if (Random(0x1000) < PolarShardChance()) {
+                                    se->unkB4 = 1;
+                                }
+                            }
+                            t -= 0x400;
+                        }
+                        if (ext->phase == 6) {
+                            if (i == 0) {
+                                t = Random(0x78) + 0xC00;
+                            }
+                            if (i == 1) {
+                                t = Random(0x78) + 0xD7D;
+                                if (Random(0x1000) < PolarShardChance()) {
+                                    se->unkB4 = 1;
+                                }
+                            }
+                            if (i == 2) {
+                                t = Random(0x78) + 0xEAA;
+                                if (Random(0x1000) < PolarShardChance()) {
+                                    se->unkB4 = 1;
+                                }
+                            }
+                            t -= 0x400;
+                        }
+                        se->unk94 = t;
+                    }
+                }
+            }
+            ext->unk74 = 1;
+            ext->state = 7;
+            ext->phase++;
+            if (m->Engine->sfx != NULL) {
+                StopSfx(m->Engine->sfx);
+            }
+            PlaySfx(0x227, &ext->unk84->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
+            return;
+        }
+        if (ext->phase == 1 || ext->phase == 3 || ext->phase == 5 || ext->phase == 7) {
+            NAS *nas;
+
+            pe = FindExtension(ext->unk84, 0x10000000);
+            if (pe != NULL) {
+                func_80025FAC(pe->anim, 1);
+            }
+            func_80025FAC((EXTanimator *)ext->cursor, 7);
+            nas = SpawnNASById(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1621, 0x11);
+            if (nas != NULL) {
+                be = FindExtension(nas, 0x10000000);
+                if (be != NULL) {
+                    be->unk70 = 0;
+                    if (ext->phase == 1) {
+                        be->ang = (D_80068BD4[0xA00].unk2 * 3) >> 3;
+                        be->unk74 = (D_80068BD4[0xE00].unk2 * 3) >> 3;
+                    }
+                    if (ext->phase == 3) {
+                        be->ang = (D_80068BD4[0xE00].unk2 * 3) >> 3;
+                        be->unk74 = (D_80068BD4[0x200].unk2 * 3) >> 3;
+                    }
+                    if (ext->phase == 5) {
+                        be->ang = (D_80068BD4[0x200].unk2 * 3) >> 3;
+                        be->unk74 = (D_80068BD4[0x600].unk2 * 3) >> 3;
+                    }
+                    if (ext->phase == 7) {
+                        be->ang = (D_80068BD4[0x600].unk2 * 3) >> 3;
+                        be->unk74 = (D_80068BD4[0xA00].unk2 * 3) >> 3;
+                    }
+                }
+            }
+            ext->state = 7;
+            ext->phase++;
+            return;
+        }
+        break;
+    case 7:
+        if (func_800C9B5C() == 0) {
+            ext->state = 5;
+            PlaySfx(0x226, &m->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
+            ext->unk70 = 1;
+            if (ext->phase & 1) {
+                SLONG_XYZ *p;
+                void *tex;
+
+                pos.y = -0x700;
+                pos.x = 0;
+                pos.z = 0;
+                p = &pos;
+                tex = D_800546C4;
+                nas = SpawnNASById(p->x, p->y, p->z, 0x1605, 0x11);
+                if (nas != NULL) {
+                    ExtSpawn5910 *sp = FindExtension(nas, 0x10000000);
+                    if (sp != NULL) {
+                        sp->unkC = 5;
+                        sp->unk18 = 0x100;
+                        if (tex != NULL) {
+                            sp->unk20 = 5;
+                            nas->Engine->sub->unk6C = tex;
+                        } else {
+                            sp->unk20 = 1;
+                        }
+                        sp->unk28 = 0;
+                        nas->InitDelete(nas);
+                    }
+                }
+                SpawnNASById(0, -0x600, 0, 0x1623, 0x11);
+            }
+        }
+        break;
+    case 9:
+        if (mate->anim->Aindex == 1) {
+            if (++ext->unk90 == 4) {
+                func_80025FAC(mate->anim, 0);
+                ext->state = 10;
+                return;
+            }
+            PlaySfx(0x23B, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        break;
+    }
+    m->Engine->unk5E = 1;
+}
 
 s32 func_800C5CD0(s32 *arg0, s32 arg1) {
     s32 v[3];
