@@ -31,12 +31,12 @@
    "size": 744
   }
  ],
- "commit": "3e76824658",
+ "commit": "e94c2da2",
  "game": "SCUS_945.70",
- "generated": "2026-10-22T09:43:33Z",
+ "generated": "2026-10-22T09:44:15Z",
  "hacks": [
   {
-   "commit": "934369ad2d",
+   "commit": "934369ad2",
    "kinds": "dead store",
    "name": "func_80010000",
    "seg": "main/main",
@@ -44,7 +44,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "7337d1b976",
+   "commit": "7337d1b97",
    "kinds": "identical if/else arms",
    "name": "func_8001097C",
    "seg": "main/main",
@@ -52,7 +52,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "4558c650cb",
+   "commit": "4558c650c",
    "kinds": "do { } while (0) wrapper",
    "name": "func_80010C70",
    "seg": "main/main",
@@ -60,7 +60,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "87a7ac27ed",
+   "commit": "87a7ac27e",
    "kinds": "do { } while (0) wrapper",
    "name": "func_80010E8C",
    "seg": "main/main",
@@ -68,7 +68,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "7bdceec698",
+   "commit": "7bdceec69",
    "kinds": "identical if/else arms",
    "name": "func_8001A6D4",
    "seg": "main/main",
@@ -76,7 +76,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "87de1e96f0",
+   "commit": "87de1e96f",
    "kinds": "dead store",
    "name": "func_8001AF2C",
    "seg": "main/main",
@@ -84,7 +84,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "340ce459c7",
+   "commit": "340ce459",
    "kinds": "do { } while (0) wrapper",
    "name": "func_8001CE00",
    "seg": "main/main",
@@ -92,7 +92,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "58a441aa69",
+   "commit": "58a441aa6",
    "kinds": "do { } while (0) wrapper",
    "name": "func_80022140",
    "seg": "main/main",
@@ -100,7 +100,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "60f7c77ca1",
+   "commit": "60f7c77ca",
    "kinds": "identical if/else arms",
    "name": "func_800272AC",
    "seg": "main/main",
@@ -108,7 +108,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "7233c73c64",
+   "commit": "7233c73c6",
    "kinds": "do { } while (0) wrapper",
    "name": "func_8007B330",
    "seg": "overlays/engine/8007ac20",
@@ -116,7 +116,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "92cd619063",
+   "commit": "92cd61906",
    "kinds": "do { } while (0) wrapper",
    "name": "func_8007B8D4",
    "seg": "overlays/engine/8007ac20",
@@ -124,7 +124,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "2c157a1cff",
+   "commit": "2c157a1cf",
    "kinds": "do { } while (0) wrapper",
    "name": "func_8007EC48",
    "seg": "overlays/engine/8007ac20",
@@ -132,7 +132,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "fe211d79fe",
+   "commit": "fe211d79f",
    "kinds": "do { } while (0) wrapper",
    "name": "func_8008502C",
    "seg": "overlays/engine/8007ee2c",
@@ -140,7 +140,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "97874568d3",
+   "commit": "97874568d",
    "kinds": "do { } while (0) wrapper",
    "name": "func_8008A924",
    "seg": "overlays/engine/8007ee2c",
@@ -148,7 +148,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "d3e79abeac",
+   "commit": "d3e79abea",
    "kinds": "do { } while (0) wrapper",
    "name": "func_8008C824",
    "seg": "overlays/engine/8007ee2c",
@@ -156,7 +156,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "6f0ce161d9",
+   "commit": "6f0ce161d",
    "kinds": "do { } while (0) wrapper",
    "name": "func_8008CA90",
    "seg": "overlays/engine/8007ee2c",
@@ -164,7 +164,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "73de79a89c",
+   "commit": "73de79a89",
    "kinds": "do { } while (0) wrapper",
    "name": "func_8008D488",
    "seg": "overlays/engine/8007ee2c",
@@ -172,7 +172,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "01be8b2705",
+   "commit": "01be8b270",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800926CC",
    "seg": "overlays/engine/8008e27c",
@@ -180,7 +180,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "d78ed9d25b",
+   "commit": "d78ed9d25",
    "kinds": "do { } while (0) wrapper",
    "name": "func_80096280",
    "seg": "overlays/engine/8009608c",
@@ -188,7 +188,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "33a57516bc",
+   "commit": "33a57516b",
    "kinds": "do { } while (0) wrapper",
    "name": "func_80096530",
    "seg": "overlays/engine/8009608c",
@@ -196,7 +196,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "68cf015555",
+   "commit": "68cf01555",
    "kinds": "do { } while (0) wrapper",
    "name": "func_80098284",
    "seg": "overlays/engine/8009608c",
@@ -204,7 +204,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "c647435968",
+   "commit": "c6474359",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800BEF00",
    "seg": "overlays/ovl5d/800bb64c",
@@ -212,7 +212,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "6bd18a7a71",
+   "commit": "6bd18a7a",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800C159C",
    "seg": "overlays/ovl5d/800bff1c",
@@ -220,7 +220,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "08aa8ff7f2",
+   "commit": "08aa8ff7",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800BB3F0",
    "seg": "overlays/ovl5e/800b87a0",
@@ -228,7 +228,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "67c041d9b6",
+   "commit": "67c041d9",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800BB69C",
    "seg": "overlays/ovl5e/800b87a0",
@@ -236,7 +236,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "17c77f215c",
+   "commit": "17c77f21",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800B38FC",
    "seg": "overlays/ovl5e/ovl5e",
@@ -244,7 +244,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "8352193af9",
+   "commit": "8352193a",
    "kinds": "do { } while (0) wrapper",
    "name": "PlotFlubberTA",
    "seg": "overlays/ovl5f/ovl5f",
@@ -252,7 +252,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "a74c23f1ca",
+   "commit": "a74c23f1",
    "kinds": "identical if/else arms",
    "name": "PlotHelicopterTA",
    "seg": "overlays/ovl5f/ovl5f",
@@ -260,7 +260,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "679b35c39f",
+   "commit": "679b35c3",
    "kinds": "do { } while (0) wrapper",
    "name": "PlotTankBossCortexTurret",
    "seg": "overlays/ovl5f/ovl5f",
@@ -268,7 +268,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "2166359bb8",
+   "commit": "2166359b",
    "kinds": "do { } while (0) wrapper",
    "name": "PlotTankBossCrashTurret",
    "seg": "overlays/ovl5f/ovl5f",
@@ -276,7 +276,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "5e430bd169",
+   "commit": "5e430bd1",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800B3F44",
    "seg": "overlays/ovl5f/ovl5f",
@@ -284,7 +284,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "1ff61d0962",
+   "commit": "1ff61d09",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800C4BC0",
    "seg": "overlays/ovl5f/ovl5f",
@@ -292,7 +292,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "acf0b71b82",
+   "commit": "acf0b71b",
    "kinds": "do { } while (0) wrapper",
    "name": "Fire_Tazer",
    "seg": "overlays/ovl60/ovl60",
@@ -300,7 +300,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "e247821a77",
+   "commit": "e247821a",
    "kinds": "do { } while (0) wrapper",
    "name": "Plot_PogoProjectile",
    "seg": "overlays/ovl60/ovl60",
@@ -308,7 +308,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "61991f566d",
+   "commit": "61991f56",
    "kinds": "do { } while (0) wrapper",
    "name": "PogoAI_CanPlayerShootAnyoneFourWays",
    "seg": "overlays/ovl60/ovl60",
@@ -316,7 +316,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "04ffae28e4",
+   "commit": "04ffae28",
    "kinds": "do { } while (0) wrapper",
    "name": "PogoAI_ScanForClosestPickup",
    "seg": "overlays/ovl60/ovl60",
@@ -324,7 +324,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "cb79228709",
+   "commit": "cb792287",
    "kinds": "do { } while (0) wrapper",
    "name": "PogoWinner_Relic",
    "seg": "overlays/ovl60/ovl60",
@@ -332,7 +332,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "2b221d328a",
+   "commit": "2b221d32",
    "kinds": "dead store",
    "name": "Roo_FindNewSquare",
    "seg": "overlays/ovl60/ovl60",
@@ -340,7 +340,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "5f00684aee",
+   "commit": "5f00684a",
    "kinds": "do { } while (0) wrapper",
    "name": "Update_Tiles",
    "seg": "overlays/ovl60/ovl60",
@@ -348,7 +348,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "3e5b628c09",
+   "commit": "3e5b628c",
    "kinds": "do { } while (0) wrapper",
    "name": "AR_PI_PreMoveHero",
    "seg": "overlays/ovl61/ovl61",
@@ -356,7 +356,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "4cfd7d9b4b",
+   "commit": "4cfd7d9b",
    "kinds": "do { } while (0) wrapper",
    "name": "AR_PreMoveHero",
    "seg": "overlays/ovl61/ovl61",
@@ -364,7 +364,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "010a57e4fb",
+   "commit": "010a57e4",
    "kinds": "do { } while (0) wrapper",
    "name": "Create_ArkPickup",
    "seg": "overlays/ovl61/ovl61",
@@ -372,7 +372,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "b801c4b915",
+   "commit": "b801c4b9",
    "kinds": "do { } while (0) wrapper",
    "name": "HandleCornerFailure",
    "seg": "overlays/ovl61/ovl61",
@@ -380,7 +380,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "cd6c7d87f7",
+   "commit": "cd6c7d87",
    "kinds": "do { } while (0) wrapper, identical if/else arms",
    "name": "func_800B649C",
    "seg": "overlays/ovl61/ovl61",
@@ -388,7 +388,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "7b0b4b82aa",
+   "commit": "7b0b4b82",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800B7C60",
    "seg": "overlays/ovl61/ovl61",
@@ -404,7 +404,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "4855a6119e",
+   "commit": "4855a611",
    "kinds": "do { } while (0) wrapper",
    "name": "FindClosetPlayer",
    "seg": "overlays/ovl62/ovl62",
@@ -412,7 +412,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "ca751d96ca",
+   "commit": "ca751d96",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800B5910",
    "seg": "overlays/ovl62/ovl62",
@@ -420,7 +420,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "b45543b91e",
+   "commit": "b45543b9",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800D0060",
    "seg": "overlays/ovl62/ovl62",
@@ -428,7 +428,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "bd97a05dde",
+   "commit": "bd97a05d",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800D3460",
    "seg": "overlays/ovl62/ovl62",
@@ -436,7 +436,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "30735f0ce4",
+   "commit": "30735f0c",
    "kinds": "no-op ++/-- pair",
    "name": "func_800B345C",
    "seg": "overlays/ovl63/ovl63",
@@ -444,7 +444,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "83a9ca48d7",
+   "commit": "83a9ca48",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800B372C",
    "seg": "overlays/ovl63/ovl63",
@@ -452,7 +452,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "ae8a3c86f0",
+   "commit": "ae8a3c86",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800B406C",
    "seg": "overlays/ovl63/ovl63",
@@ -460,7 +460,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "a929d0fd25",
+   "commit": "a929d0fd",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800B41DC",
    "seg": "overlays/ovl63/ovl63",
@@ -468,7 +468,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "b2b6c61b65",
+   "commit": "b2b6c61b",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800B442C",
    "seg": "overlays/ovl63/ovl63",
@@ -476,7 +476,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "46cd276321",
+   "commit": "46cd2763",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800B4A4C",
    "seg": "overlays/ovl63/ovl63",
@@ -484,7 +484,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "acd225684a",
+   "commit": "acd22568",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800B4D64",
    "seg": "overlays/ovl63/ovl63",
@@ -492,7 +492,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "72fcf47198",
+   "commit": "72fcf471",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800B66C4",
    "seg": "overlays/ovl63/ovl63",
@@ -500,7 +500,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "04743a72c7",
+   "commit": "04743a72",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800BC6C8",
    "seg": "overlays/ovl63/ovl63",
@@ -508,7 +508,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "21d5a17990",
+   "commit": "21d5a179",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800BC984",
    "seg": "overlays/ovl63/ovl63",
@@ -516,7 +516,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "db3c9d4896",
+   "commit": "db3c9d48",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800C5C64",
    "seg": "overlays/ovl63/ovl63",
@@ -524,7 +524,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "abbb27d097",
+   "commit": "abbb27d0",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800B6EC0",
    "seg": "overlays/ovl64/ovl64",
@@ -532,7 +532,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "8e6f225563",
+   "commit": "8e6f2255",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800BA098",
    "seg": "overlays/ovl64/ovl64",
@@ -540,7 +540,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "280dd86e65",
+   "commit": "280dd86e",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800BA344",
    "seg": "overlays/ovl64/ovl64",
@@ -548,7 +548,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "1be0c555cc",
+   "commit": "1be0c555",
    "kinds": "do { } while (0) wrapper",
    "name": "InitDinoGem",
    "seg": "overlays/ovl65/ovl65",
@@ -556,7 +556,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "74ef05a446",
+   "commit": "74ef05a4",
    "kinds": "do { } while (0) wrapper",
    "name": "InitDinoSmoke",
    "seg": "overlays/ovl65/ovl65",
@@ -564,7 +564,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "c0696e2575",
+   "commit": "c0696e25",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800B7664",
    "seg": "overlays/ovl65/ovl65",
@@ -572,7 +572,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "0f0e0f8ac5",
+   "commit": "0f0e0f8a",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800B86C8",
    "seg": "overlays/ovl65/ovl65",
@@ -580,7 +580,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "e668eb287c",
+   "commit": "e668eb28",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800BA960",
    "seg": "overlays/ovl65/ovl65",
@@ -588,7 +588,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "6c0a67f252",
+   "commit": "6c0a67f2",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800BD0AC",
    "seg": "overlays/ovl65/ovl65",
@@ -596,7 +596,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "53e1718af1",
+   "commit": "53e1718a",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800B4454",
    "seg": "overlays/ovl66/ovl66",
@@ -604,7 +604,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "a9f1f2e7de",
+   "commit": "a9f1f2e7",
    "kinds": "identical if/else arms",
    "name": "func_800B6CD8",
    "seg": "overlays/ovl66/ovl66",
@@ -612,7 +612,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "089308cd44",
+   "commit": "089308cd",
    "kinds": "do { } while (0) wrapper",
    "name": "PlotSpiralSat",
    "seg": "overlays/ovl67/800bbdb8",
@@ -620,7 +620,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "4a9a85b6ad",
+   "commit": "4a9a85b6",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800BC3A4",
    "seg": "overlays/ovl67/800bbdb8",
@@ -628,7 +628,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "69beaacf11",
+   "commit": "69beaacf",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800C0C28",
    "seg": "overlays/ovl67/800bbdb8",
@@ -636,7 +636,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "ca3a674c78",
+   "commit": "ca3a674c",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800B39C0",
    "seg": "overlays/ovl67/ovl67",
@@ -644,7 +644,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "b05ce415de",
+   "commit": "b05ce415",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800B4954",
    "seg": "overlays/ovl67/ovl67",
@@ -652,7 +652,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "97d468e741",
+   "commit": "97d468e7",
    "kinds": "do { } while (0) wrapper, identical if/else arms",
    "name": "func_800B4AD8",
    "seg": "overlays/ovl67/ovl67",
@@ -660,7 +660,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "1f022e0e1d",
+   "commit": "1f022e0e",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800B7858",
    "seg": "overlays/ovl67/ovl67",
@@ -676,7 +676,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "e35fc3043a",
+   "commit": "e35fc304",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800B817C",
    "seg": "overlays/ovl67/ovl67",
@@ -684,7 +684,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "2b3af94a7f",
+   "commit": "2b3af94a",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800B83EC",
    "seg": "overlays/ovl67/ovl67",
@@ -692,7 +692,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "1b1589b5ff",
+   "commit": "1b1589b5",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800BAAA8",
    "seg": "overlays/ovl67/ovl67",
@@ -700,7 +700,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "8885b9fc6d",
+   "commit": "8885b9fc",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800BB010",
    "seg": "overlays/ovl68/ovl68",
@@ -708,7 +708,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "06134ef05c",
+   "commit": "06134ef0",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800B42B0",
    "seg": "overlays/ovl69/ovl69",
@@ -716,7 +716,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "196ec9e21a",
+   "commit": "196ec9e2",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800B5B10",
    "seg": "overlays/ovl69/ovl69",
@@ -724,7 +724,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "49a7d6ea94",
+   "commit": "49a7d6ea",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800B6C04",
    "seg": "overlays/ovl69/ovl69",
@@ -732,7 +732,7 @@
    "why": "(no Hack: line in its match commit)"
   },
   {
-   "commit": "d03a8b83d9",
+   "commit": "d03a8b83",
    "kinds": "do { } while (0) wrapper",
    "name": "func_800BB4AC",
    "seg": "overlays/ovl6a/800b4eac",
@@ -2842,7 +2842,7 @@
   {"commit": "77c4aa0b12", "data_b": 8460, "data_tb": 606943, "game_all_f": 2537, "game_b": 840660, "game_c_f": 2472, "game_f": 2472, "game_named_f": 602, "game_tb": 1019036, "game_typed_f": 2247, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-22T09:31:56Z", "units": {"engine": [121412, 355], "main exe": [124840, 575], "ovl5d": [38908, 97], "ovl5e": [30984, 71], "ovl5f": [68260, 173], "ovl60": [55500, 174], "ovl61": [55000, 97], "ovl62": [78684, 201], "ovl63": [53676, 128], "ovl64": [21876, 52], "ovl65": [32788, 77], "ovl66": [24312, 80], "ovl67": [54200, 131], "ovl68": [30920, 91], "ovl69": [18240, 76], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
   {"commit": "f82b1fe931", "data_b": 8460, "data_tb": 606943, "game_all_f": 2537, "game_b": 842668, "game_c_f": 2473, "game_f": 2473, "game_named_f": 602, "game_tb": 1019036, "game_typed_f": 2248, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-22T09:34:34Z", "units": {"engine": [121412, 355], "main exe": [124840, 575], "ovl5d": [38908, 97], "ovl5e": [30984, 71], "ovl5f": [68260, 173], "ovl60": [55500, 174], "ovl61": [55000, 97], "ovl62": [78684, 201], "ovl63": [55684, 129], "ovl64": [21876, 52], "ovl65": [32788, 77], "ovl66": [24312, 80], "ovl67": [54200, 131], "ovl68": [30920, 91], "ovl69": [18240, 76], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
   {"commit": "8693f20e64", "data_b": 8460, "data_tb": 606943, "game_all_f": 2537, "game_b": 844688, "game_c_f": 2474, "game_f": 2474, "game_named_f": 602, "game_tb": 1019036, "game_typed_f": 2249, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-22T09:35:51Z", "units": {"engine": [121412, 355], "main exe": [124840, 575], "ovl5d": [38908, 97], "ovl5e": [30984, 71], "ovl5f": [68260, 173], "ovl60": [55500, 174], "ovl61": [55000, 97], "ovl62": [78684, 201], "ovl63": [55684, 129], "ovl64": [21876, 52], "ovl65": [34808, 78], "ovl66": [24312, 80], "ovl67": [54200, 131], "ovl68": [30920, 91], "ovl69": [18240, 76], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
-  {"commit": "3e76824658", "data_b": 8460, "data_tb": 606943, "game_all_f": 2537, "game_b": 846780, "game_c_f": 2475, "game_f": 2475, "game_named_f": 602, "game_tb": 1019036, "game_typed_f": 2250, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-22T09:43:33Z", "units": {"engine": [121412, 355], "main exe": [124840, 575], "ovl5d": [38908, 97], "ovl5e": [30984, 71], "ovl5f": [68260, 173], "ovl60": [55500, 174], "ovl61": [55000, 97], "ovl62": [78684, 201], "ovl63": [55684, 129], "ovl64": [23968, 53], "ovl65": [34808, 78], "ovl66": [24312, 80], "ovl67": [54200, 131], "ovl68": [30920, 91], "ovl69": [18240, 76], "ovl6a": [31060, 94], "psyq": [122112, 564]}}
+  {"commit": "e94c2da2", "data_b": 8460, "data_tb": 606943, "game_all_f": 2537, "game_b": 846780, "game_c_f": 2475, "game_f": 2475, "game_named_f": 602, "game_tb": 1019036, "game_typed_f": 2250, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-22T09:44:15Z", "units": {"engine": [121412, 355], "main exe": [124840, 575], "ovl5d": [38908, 97], "ovl5e": [30984, 71], "ovl5f": [68260, 173], "ovl60": [55500, 174], "ovl61": [55000, 97], "ovl62": [78684, 201], "ovl63": [55684, 129], "ovl64": [23968, 53], "ovl65": [34808, 78], "ovl66": [24312, 80], "ovl67": [54200, 131], "ovl68": [30920, 91], "ovl69": [18240, 76], "ovl6a": [31060, 94], "psyq": [122112, 564]}}
  ],
  "recent": [
   {

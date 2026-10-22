@@ -10,16 +10,17 @@ At the end of a session, update **Current state**, **Next** and **Open
 leads**, add any new gotcha, and add one short entry at the top of the
 **Session log**.
 
-## Current state (2026-10-21)
+## Current state (2026-10-22)
 
 - [ROADMAP.md](ROADMAP.md): Phase 1 (types and names) is done, and every
   `main.exe` function matches; Phase 2's naming, data and `main.c` split
   are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2471/2537 game functions matched (82.30% of game code bytes, 2026-10-22):
-  **main.exe, ovl61 and ovl6a are complete**; 66 left: ovl62 16, ovl63 11, ovl5d 7, ovl64 6, ovl60 6, ovl5f 6, ovl67 4, ovl65 3, ovl68 2, ovl5e 2, engine 2, ovl69 1. All 564 PsyQ functions (Sony objects). 4
+- 2475/2537 game functions matched (83.10% of game code bytes, 2026-10-22):
+  **main.exe, ovl61 and ovl6a are complete**; 62 left: ovl62 15, ovl63 10, ovl5d 7, ovl60 6, ovl5f 6, ovl64 5, ovl67 4, ovl68 2, ovl65 2, ovl5e 2, engine 2, ovl69 1. All 564 PsyQ functions (Sony objects). 4
   parked by hand (`decomp.py status`; the swarm parked 5 more, which the
-  dashboard counts from `docs/swarm.js`), 11 matched with a hack
+  dashboard counts from `docs/swarm.js`), 88 matched with a hack (79 of them
+  `do { } while (0)` wrappers, flagged since 2026-10-22)
   (`decomp.py hacks`; `func_800193A8`'s register pins reviewed as plausibly
   original, `hacks --accept`). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
@@ -516,6 +517,18 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-22 (hack audit + swarm C):** the lint now flags `do { } while
+  (0)` wrappers in function bodies (they only add loop notes): 88 matched
+  functions had them. A script unwrapped each and re-ran `try`: 9 match
+  without (wrappers removed), 79 need them and are on `decomp.py hacks`
+  (88 hacks in all). 57 Diff patterns rows that recommend the wrapper are
+  marked (hack). One was mine (`func_8001CE00`, earlier this session).
+  Swarm C on the 35 untried 2-4 KB functions, stopped by request after
+  ~15 min: 4 matched (`func_800CDE8C`, `PlotRaceMissile`, `func_800B55E8`,
+  `func_800B4144`, the last gated with `--resume`), none with a hack.
+  83.10%. Next: decide the 79 (rework, `--accept` the macro-shaped ones,
+  or leave flagged); rerun swarm C (`scratch/swarmC_only.txt`).
 
 - **2026-10-22 (naming, second hour):** 554 -> 602 named. Leak names via
   their code (Arkenoid intersect/balls/floor/corners/collisions/pickups;
