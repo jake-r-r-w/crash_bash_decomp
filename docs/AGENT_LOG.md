@@ -16,8 +16,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `main.exe` function matches; Phase 2's naming, data and `main.c` split
   are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2475/2537 game functions matched (83.10% of game code bytes, 2026-10-22):
-  **main.exe, ovl61 and ovl6a are complete**; 62 left: ovl62 15, ovl63 10, ovl5d 7, ovl60 6, ovl5f 6, ovl64 5, ovl67 4, ovl68 2, ovl65 2, ovl5e 2, engine 2, ovl69 1. All 564 PsyQ functions (Sony objects). 4
+- 2508/2537 game functions matched (92.26% of game code bytes, 2026-10-22):
+  **main.exe, ovl61, ovl69 and ovl6a are complete**; 29 left. All 564 PsyQ functions (Sony objects). 4
   parked by hand (`decomp.py status`; the swarm parked 5 more, which the
   dashboard counts from `docs/swarm.js`), 82 matched with a hack (73 of them
   `do { } while (0)` wrappers, flagged since 2026-10-22; 6 macro-shaped ones
@@ -518,6 +518,22 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-22 (swarm D: every never-tried function):** run 20261022104953
+  on the 42 never-tried functions (`scratch/swarmD_only.txt`; `func_800BAF1C`
+  left out, a `func_800BC274`-style hack case). Started with the default 5
+  normal workers idle (every function is over `--big-bytes`), restarted
+  with `--workers 1 --big-workers 10`. 33 matched in 1 h 50 min, none with
+  a hack, 83.10% -> 92.26%: up to 5.3 KB (`PlotBearminator`,
+  `DoChooseNewAction`, `PlotPolarBoss`, `PlotN2OBall`). $265 (~$8 a match;
+  the $200 cap stops new sessions but lets running ones finish). 1 parked,
+  9 never started (cap). `func_800B62EC` matched only with a `do { } while
+  (0)` wrapper and the gate refused it (new lint): its C is in the swarm's
+  results, for a sign-off or rework. Checkpoints: `func_800B4AB0` 27/1246
+  instructions; `PlotTransmuterBeam`, `func_800BC038`, `func_800B87A0`,
+  `func_800B77E8`, `PlotUkaPolarMask` at structure. Next: the 9 unstarted
+  plus `--resume` those checkpoints; let idle normal workers take big jobs
+  (swarm.mjs).
 
 - **2026-10-22 (hack audit + swarm C):** the lint now flags `do { } while
   (0)` wrappers in function bodies (they only add loop notes): 88 matched
