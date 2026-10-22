@@ -3103,7 +3103,149 @@ void func_800BCE88(s32 arg0, s32 arg1) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BD99C);
+void func_800BD99C(s32 arg0, u16 arg1) {
+    s32 i;
+    Ovl63ResultView *g;
+    HeroInfo *hb;
+    Ovl63ResultView *g0;
+
+    g0 = RV;
+    if (!(g0->unk30 & 0x801) && arg0 == -1) {
+        for (i = 0; ; i++) {
+            Ovl63ResultFux *f;
+
+            if (i >= 4) {
+                break;
+            }
+            RV->unkA7[i] = i;
+            f = (Ovl63ResultFux *)Heroes[i].hero->FUX;
+            if (f != NULL) {
+                if (f->unk128 != NULL) {
+                    StopSfx(f->unk128);
+                }
+                if (Heroes[i].hero_eng->sfx != NULL) {
+                    StopSfx(Heroes[i].hero_eng->sfx);
+                }
+            }
+        }
+        {
+        HeroInfo *hp;
+
+        i = 0;
+        hp = Heroes;
+        for (; ; i++) {
+            s32 j;
+
+            if (i >= 4) {
+                break;
+            }
+            for (j = 1; ; j++) {
+                s32 a;
+                s32 b;
+
+                if (j >= 4) {
+                    break;
+                }
+                a = RV->unkA7[j - 1];
+                b = RV->unkA7[j];
+                if (hp[a].hero_score > hp[b].hero_score) {
+                    RV->unkA7[j - 1] = b;
+                    RV->unkA7[j] = a;
+                }
+            }
+        }
+        }
+        g = RV;
+        if (g->unk6C == 0) {
+            HeroInfo *a;
+
+            hb = Heroes;
+            a = &hb[g->unkA7[0]];
+            if (a->hero_score == hb[g->unkA7[1]].hero_score) {
+                OVL63_DRAW_I(g, i, arg1);
+            } else {
+                RV->unk60 = a->hero_name;
+                RV->unk30 |= 0x800;
+                for (i = 0; i < 4; i++) {
+                    if (RV->unkA7[0] == i) {
+                        hb[i].hero_status |= 0x200;
+                    } else {
+                        hb[i].hero_status |= 0x8400;
+                        hb[i].hero_shadow->sub->flags &= ~0x8000;
+                    }
+                }
+            }
+        } else {
+            s32 ia;
+            s32 ib;
+            s32 ita;
+            s32 itb;
+            s32 sa;
+            s32 sta;
+            s32 sb;
+            s32 stb;
+            s32 mb;
+            s32 ma;
+            s32 n;
+
+            ia = g->unk48;
+            ib = g->unk4A;
+            ita = Heroes[ia].hero_teammate;
+            itb = Heroes[ib].hero_teammate;
+            if (Heroes[ia].hero_score == 0) {
+                g->unk30 |= 0x800;
+                OVL63_TEAM_WIN(ia, ita, ib, itb);
+            } else if (Heroes[ita].hero_score == 0) {
+                g->unk30 |= 0x800;
+                OVL63_TEAM_WIN(ia, ita, ib, itb);
+            } else if (Heroes[ib].hero_score == 0) {
+                g->unk30 |= 0x800;
+                OVL63_TEAM_WIN(ib, itb, ia, ita);
+            } else if (Heroes[itb].hero_score == 0) {
+                g->unk30 |= 0x800;
+                OVL63_TEAM_WIN(ib, itb, ia, ita);
+            } else {
+                sa = (Heroes[g->unk48].hero_score << 12) + Ovl63Facing(ia);
+                sta = (Heroes[Heroes[g->unk48].hero_teammate].hero_score << 12)
+                    + Ovl63Facing(Heroes[g->unk48].hero_teammate);
+                sb = (Heroes[g->unk4A].hero_score << 12) + Ovl63Facing(g->unk4A);
+                stb = (Heroes[Heroes[g->unk4A].hero_teammate].hero_score << 12)
+                    + Ovl63Facing(Heroes[g->unk4A].hero_teammate);
+                for (n = 0; ; n++) {
+                    Ovl63ResultFux *f;
+
+                    if (n >= 4) {
+                        break;
+                    }
+                    f = (Ovl63ResultFux *)Heroes[n].hero->FUX;
+                    if (f != NULL) {
+                        if (n == 0) {
+                            sa -= f->unk148 << 12;
+                        }
+                        if (n == 1) {
+                            sta -= f->unk148 << 12;
+                        }
+                        if (n == 2) {
+                            sb -= f->unk148 << 12;
+                        }
+                        if (n == 3) {
+                            stb -= f->unk148 << 12;
+                        }
+                    }
+                }
+                ma = (sa < sta) ? sa : sta;
+                mb = (sb < stb) ? sb : stb;
+                if (ma == mb) {
+                    OVL63_DRAW_I(RV, i, arg1);
+                } else if (ma < mb) {
+                    OVL63_TEAM_WIN_BY(RV, Heroes, RV->unk48, RV->unk4A);
+                } else {
+                    OVL63_TEAM_WIN_BY(RV, Heroes, RV->unk4A, RV->unk48);
+                }
+            }
+        }
+    }
+}
 
 void func_800BE7B4(s32 player, Ovl63Barrel *b) {
     Ovl63Fux *f;

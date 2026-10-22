@@ -1215,8 +1215,70 @@ void func_800BAFC8(s32 player);
 
 void func_800BBA04(s32 player);
 
-void func_800BD99C();
+void func_800BD99C(s32 arg0, u16 arg1);
 void func_800BCE88();
+
+/* hero->FUX as func_800BD99C (round result) reads it. */
+typedef struct Ovl63ResultFux {
+    /* 0x000 */ u8 unk0[0x128];
+    /* 0x128 */ _sfx_handler *unk128;
+    /* 0x12C */ u8 unk12C[0x148 - 0x12C];
+    /* 0x148 */ s32 unk148;
+} Ovl63ResultFux;
+
+/* D_8005A614 as seen by func_800BD99C (round result). */
+typedef struct Ovl63ResultView {
+    /* 0x00 */ u8 unk0[0x30];
+    /* 0x30 */ u16 unk30;
+    /* 0x32 */ u8 unk32[0x48 - 0x32];
+    /* 0x48 */ s16 unk48;
+    /* 0x4A */ s16 unk4A;
+    /* 0x4C */ u8 unk4C[0x60 - 0x4C];
+    /* 0x60 */ u8 unk60;
+    /* 0x61 */ u8 unk61;
+    /* 0x62 */ u8 unk62[0x6C - 0x62];
+    /* 0x6C */ s32 unk6C;
+    /* 0x70 */ u8 unk70[0xA7 - 0x70];
+    /* 0xA7 */ u8 unkA7[4];
+} Ovl63ResultView;
+#define RV ((Ovl63ResultView *)D_8005A614)
+
+/* func_800BD99C: a drawn round, counting with the caller's i. */
+#define OVL63_DRAW_I(g, i, arg1)                                            \
+    (g)->unk60 = 0;                                                         \
+    (g)->unk30 |= (arg1);                                                   \
+    for (i = 0; i < 4; i++) {                                               \
+        Heroes[i].hero_status |= 0x100;                                     \
+    }
+
+/* func_800BD99C: team w wins by total, re-reading the team indices. */
+#define OVL63_TEAM_WIN_BY(g, hb, w, l)                                      \
+    (g)->unk30 |= 0x800;                                                    \
+    (g)->unk60 = hb[w].hero_name;                                           \
+    (g)->unk61 = hb[hb[w].hero_teammate].hero_name;                         \
+    hb[w].hero_status |= 0x200;                                             \
+    hb[hb[w].hero_teammate].hero_status |= 0x200;                           \
+    hb[l].hero_status |= 0x400;                                             \
+    hb[hb[l].hero_teammate].hero_status |= 0x400;                           \
+    hb[l].hero_status |= 0x8000;                                            \
+    hb[hb[l].hero_teammate].hero_status |= 0x8000;                          \
+    hb[l].hero_shadow->sub->flags &= ~0x8000;                               \
+    hb[hb[l].hero_teammate].hero_shadow->sub->flags &= ~0x8000;
+
+/* func_800BD99C: hero p's facing, printed (func_800C5334's sum unfolded). */
+static inline s32 Ovl63Facing(s32 p) {
+    EXTengine *eng;
+    s32 ang;
+
+    eng = Heroes[p].hero_eng;
+    ang = get_angle(eng->unk10.x, eng->unk10.z) & 0xFFF;
+    ang -= 0x52C;
+    ang = 0x1000 - ang;
+    ang &= 0xFFF;
+    printf(D_800B3400, p, ang);
+    return ang;
+}
+
 
 /* func_800BCE88: a drawn round (every hero gets 0x100). */
 #define OVL63_DRAW(k, arg1)                                 \
