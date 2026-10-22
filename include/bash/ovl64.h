@@ -143,6 +143,20 @@ extern u16 D_8009E25C[13];
 
 void func_800BB37C(EXTengine *eng, Ovl64HitMask *m, u32 flag, s32 hero);
 
+/* FindExtension(nas, 0x800) of a hazard (PlotHazardType). */
+typedef struct Ovl64Glow {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ u8 unkC;
+    /* 0x0D */ u8 padD[0x18 - 0xD];
+    /* 0x18 */ s16 unk18;
+    /* 0x1A */ s16 unk1A;
+    /* 0x1C */ s16 unk1C;
+    /* 0x1E */ s16 unk1E;
+} Ovl64Glow;
+extern s32 (*D_8009D750)(EXTengine *);
+s32 func_8007A26C(NAS *nas);
+void func_8008E27C(s32 *arg0, void *arg1, s32 arg2);
+
 void func_800BB52C(s32 arg0);
 extern void (*D_8009D73C)();
 
@@ -157,6 +171,27 @@ extern u16 D_800BB89C[];
 extern s32 D_8005A5D8;
 extern s32 D_8005B5B8;
 extern HeroInfo Heroes[4];
+
+/* PlotHazardType: let go of a hazard its owner is holding. */
+static inline void Ovl64DropHazard(Ovl64Fux *fux) {
+    HeroInfo *hb;
+    HeroInfo *h;
+    s16 owner;
+    _sfx_handler *sfx;
+
+    owner = fux->owner;
+    if (owner != -1 && owner < 5) {
+        hb = Heroes;
+        h = &hb[owner];
+        if (h->hero_object == (EXTobject *)fux) {
+            h->hero_object = NULL;
+            sfx = hb[fux->owner].hero_eng->sfx;
+            if (sfx != NULL) {
+                StopSfx(sfx);
+            }
+        }
+    }
+}
 extern s32 D_8005A680;
 extern s16 D_8009D87C[][3];
 extern u16 *D_8009D6F4;
@@ -336,6 +371,8 @@ extern _sfx_handler *D_800BBE00;
 extern s32 D_80053004;
 
 void func_800B3A3C(void);
+
+void PlotHazardType(NAS *nas);
 
 void func_800B697C(Ovl64Fux *arg0);
 

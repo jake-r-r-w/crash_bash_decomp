@@ -877,7 +877,236 @@ NAS *func_800B51A0(s32 a, s32 b, u16 c, s16 d)
   return nas;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", PlotHazardType);
+void PlotHazardType(NAS *nas) {
+    EXTengine *eng;
+    Ovl64Fux *fux;
+    s32 kind;
+    Ovl64Glow *glow;
+    s32 v;
+    s16 owner;
+    HeroInfo *h;
+    HeroInfo *hb;
+    s32 a;
+    s32 b;
+    s16 w;
+    s16 o;
+    u16 t;
+    u32 r;
+    s32 done;
+    VECTOR pos;
+    EXTengine *he;
+
+    eng = nas->Engine;
+    if (eng == NULL) {
+        return;
+    }
+    D_8009D750(eng);
+    fux = (Ovl64Fux *)nas->FUX;
+    if (fux == NULL) {
+        return;
+    }
+    kind = fux->kind;
+    glow = FindExtension(nas, 0x800);
+    if (glow == NULL) {
+        return;
+    }
+    switch (fux->sub) {
+    case 0:
+        fux->sub = 1;
+        fux->mask = (fux->mask & 0xFFD0) | 0xA;
+        eng->unk5E = 1;
+        fux->owner = -1;
+        func_80025B10(eng, 0x50);
+        break;
+    case 6:
+        v = eng->unk2C.y;
+        v += 0x200;
+        eng->unk1E = 0;
+        if (v >= 0x1000) {
+            v = 0x1000;
+            fux->sub = 0;
+        }
+        eng->unk2C.y = v;
+        eng->unk5E = 1;
+        break;
+    case 7:
+        v = eng->unk2C.x;
+        v += 0x100;
+        if (v >= 0x1000) {
+            v = 0x1000;
+            fux->sub = 0;
+            eng->flags &= ~0x21;
+        }
+        eng->unk2C.x = v;
+        eng->unk2C.y = v;
+        eng->unk2C.z = v;
+        eng->sub->unk76 = v;
+        eng->unk5E = 1;
+        break;
+    case 9:
+        switch (kind) {
+        case 2:
+            Ovl64DropHazard(fux);
+            func_8008E27C((s32 *)&eng->unk10, fux, 0);
+            fux->sub = 0xC;
+            break;
+        case 6:
+            Ovl64DropHazard(fux);
+            func_8008E27C((s32 *)&eng->unk10, fux, 0);
+            func_800270B0(nas);
+            break;
+        case 5:
+            fux->timer = 0x5A;
+            fux->kind = 7;
+            PlaySfx(0x3F0, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            break;
+        default:
+            fux->sub = 0;
+            break;
+        }
+        break;
+    case 3:
+        fux->sub = 0;
+        break;
+    case 12:
+        fux->timer = 0x78;
+        fux->mask &= 0xFFF4;
+        eng->sub->unk6C = D_80052FCC;
+        glow->unk18 = 0x60;
+        glow->unk1E = 0xF0;
+        glow->unk1C = 4;
+        glow->unk1A = 0;
+        glow->unkC = 0xFF;
+        eng->unk1C = 0;
+        eng->unk20 = 0;
+        owner = fux->owner;
+        if (owner != -1) {
+            a = D_8009D87C[owner][0];
+            b = 0x20 - a;
+            if (D_8005A614[owner + 0x5C] != 0) {
+                w = a;
+                o = b;
+            } else {
+                w = b;
+                o = a;
+            }
+            t = w + o;
+            if (t == 0) {
+                return;
+            }
+            r = (u16)Random(t);
+            if ((u16)w < r) {
+                fux->state = 0x13;
+            } else {
+                fux->state = 0x17;
+            }
+        }
+        switch (fux->state) {
+        case 0x17:
+            eng->sub->unk74 = 0x2015;
+            fux->sub = 0xD;
+            break;
+        case 0x13:
+            eng->sub->unk74 = 0x2014;
+            fux->sub = 0xD;
+            break;
+        }
+        break;
+    case 13:
+        if (D_8009D750(eng) != 0) {
+            func_800270B0(nas);
+            break;
+        }
+        done = 0;
+        owner = fux->owner;
+        if (owner != -1) {
+            if (glow->unkC == 0) {
+                s32 dx;
+                s32 dy;
+                s32 dz;
+
+                fux->mask |= 8;
+                hb = Heroes;
+                h = &hb[owner];
+                if (func_80015780(h->hero_eng, h->hero_sub, 0x80, &pos) != NULL) {
+                    dx = eng->unk10.x - pos.vx;
+                    dy = eng->unk10.y - pos.vy;
+                    dz = eng->unk10.z - pos.vz;
+                } else {
+                    s32 ty;
+
+                    dx = eng->unk10.x - hb[fux->owner].hero_eng->unk10.x;
+                    ty = eng->unk10.y + 0x180;
+                    dy = ty - hb[fux->owner].hero_eng->unk10.y;
+                    dz = eng->unk10.z - hb[fux->owner].hero_eng->unk10.z;
+                }
+                dx >>= 2;
+                dy >>= 2;
+                dz >>= 2;
+                eng->unk10.x -= dx;
+                eng->unk10.y -= dy;
+                eng->unk10.z -= dz;
+                dx >>= 1;
+                dz >>= 1;
+                if (dx == 0 && dz == 0) {
+                    done = 1;
+                }
+                func_800BB37C(eng, (Ovl64HitMask *)fux, 8, fux->owner);
+                if (fux->hit & 8) {
+                    done = 1;
+                }
+            }
+        } else {
+            KillNAS(nas);
+            break;
+        }
+        if (func_8007A26C(nas) != 0) {
+            done = 1;
+        }
+        if (done) {
+            owner = fux->owner;
+            if (owner != -1 && owner < 5) {
+                Heroes[owner].hero_pu = fux->state;
+                switch (fux->state) {
+                case 0x17:
+                    he = Heroes[fux->owner].hero_powerup;
+                    PlaySfx(0x5F2, &he->sfx, &he->unk10, 0x1000, 0x1E00, 0);
+                    Heroes[fux->owner].hero_pu_timer = 0x12C;
+                    Heroes[fux->owner].hero_powerup->sub->unk74 = 0x2015;
+                    Heroes[fux->owner].hero_powerup->sub->unk6C = D_80052FCC;
+                    break;
+                case 0x13:
+                    he = Heroes[fux->owner].hero_powerup;
+                    PlaySfx(0x5F3, &he->sfx, &he->unk10, 0x1000, 0x1E00, 0);
+                    Heroes[fux->owner].hero_pu_timer = 0xF0;
+                    Heroes[fux->owner].hero_powerup->sub->unk74 = 0x2014;
+                    Heroes[fux->owner].hero_powerup->sub->unk6C = D_80052FCC;
+                    PlaySfx(0x41C, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                    break;
+                }
+            }
+            func_800270B0(nas);
+        }
+        eng->unk5E = 1;
+        eng->unk1E += 0x71;
+        break;
+    default:
+        if (fux->hit & 2) {
+            if (fux->owner != -1) {
+                fux->sub = 9;
+                fux->hit &= 0xFFF4;
+                fux->mask &= 0xFFF4;
+            } else {
+                fux->hit &= 0xFFFC;
+            }
+        }
+        if ((fux->hit & 8) && kind == 6) {
+            func_8008E27C((s32 *)&eng->unk10, fux, 0);
+            func_800270B0(nas);
+        }
+        break;
+    }
+}
 
 NAS *func_800B5D3C(s32 a, s32 b, u16 c, s16 d) {
     NAS *nas;
