@@ -2119,7 +2119,272 @@ s32 func_800B9B6C(s32 hero) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", DoChooseNewAction);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitialisePOLAR);
+void InitialisePOLAR(void) {
+    SceneObj *obj;
+    Ovl62Cam *cam;
+    s32 i;
+    s32 *speed;
+    HeroInfo *h;
+    Ovl62PolarView *v;
+    u8 *g;
+    EXTheromove *move;
+    Ovl62PolarFux *fux;
+    Ovl62PolarAi *ai;
+    subengine *sub;
+    EXTengine *eng;
+    EXTengine *eng2;
+    NAS *nas;
+    u16 status;
+    u16 ang;
+    s32 fast;
+    s32 slow;
+    Ovl62PolarView *w;
+    HeroInfo *hp;
+    s32 j;
+    void (*fn)(void);
+
+    D_800D5454 = NULL;
+    func_8007EB1C(0x140, 0x28, 0);
+    func_800B38A0();
+    D_800D5450 = 0;
+    D_800D4D08 = 0;
+    D_8009D6F4 = D_800D5408;
+    D_800D4E04 = 0x658;
+    obj = ((Ovl62Scene *)D_80058AD0)->objs;
+    D_800D5FC0 = 0x800;
+    while (obj != NULL) {
+        obj->flags |= 0x1000000;
+        obj = obj->next;
+    }
+    D_800D4D08 = 0;
+    cam = (Ovl62Cam *)D_80051640;
+    cam->at.x = 0;
+    cam->at.y = 0;
+    cam->at.z = 0;
+    if (((Ovl62PolarView *)D_8005A614)->mode != 0x16) {
+        if (((Ovl62PolarView *)D_8005A614)->flags & 0x40) {
+            func_8007B7FC(0x45, 0x81C0);
+        } else {
+            func_8007B7FC(0x130, 0x81C0);
+        }
+        if (((Ovl62PolarView *)D_8005A614)->mode == 0x13) {
+            if (((Ovl62PolarView *)D_8005A614)->flags & 0x40) {
+                func_8007B7FC(0x100, 0x81C0);
+            } else {
+                func_8007B7FC(0x130, 0x81C0);
+            }
+            if (((Ovl62PolarView *)D_8005A614)->flags & 0x40) {
+                if (((Ovl62PolarView *)D_8005A614)->unk6C != 0) {
+                    func_8007B7FC(0x45, 0x81C0);
+                }
+            }
+        }
+        if (((Ovl62PolarView *)D_8005A614)->mode == 0x12) {
+            if (((Ovl62PolarView *)D_8005A614)->flags & 0x40) {
+                func_8007B7FC(0x30, 0x81C0);
+            } else {
+                func_8007B7FC(0x130, 0x81C0);
+            }
+            if (((Ovl62PolarView *)D_8005A614)->unk6C != 0) {
+                if (((Ovl62PolarView *)D_8005A614)->flags & 0x40) {
+                    func_8007B7FC(0x25, 0x81C0);
+                }
+            }
+        }
+        if (((Ovl62PolarView *)D_8005A614)->mode == 0x14) {
+            if (((Ovl62PolarView *)D_8005A614)->flags & 0x40) {
+                func_8007B7FC(0x25, 0x81C0);
+            } else {
+                func_8007B7FC(0x130, 0x81C0);
+            }
+            if (((Ovl62PolarView *)D_8005A614)->unk6C != 0) {
+                if (((Ovl62PolarView *)D_8005A614)->flags & 0x40) {
+                    func_8007B7FC(0x20, 0x81C0);
+                }
+            }
+        }
+        if (((Ovl62PolarView *)D_8005A614)->mode == 0x15) {
+            if (((Ovl62PolarView *)D_8005A614)->flags & 0x40) {
+                func_8007B7FC(0x30, 0x81C0);
+            } else {
+                func_8007B7FC(0x130, 0x81C0);
+            }
+            if (((Ovl62PolarView *)D_8005A614)->unk6C != 0
+                && (((Ovl62PolarView *)D_8005A614)->flags & 0x40)) {
+                func_8007B7FC(0x25, 0x81C0);
+            }
+        }
+    }
+    func_800CA770();
+    func_8001682C((s32 *)D_80054654);
+    j = 0;
+    fast = 0x1000;
+    slow = 0x2000;
+    speed = D_800D5FB0;
+    hp = Heroes;
+    D_800D544C = 0;
+    D_800D4DEC = 0;
+    D_80058AF4.vx = 0;
+    D_80058AF4.vz = 0;
+    D_80058AF4.vy = 0;
+    D_8009E1F8 = 0;
+    D_8009E1F4 = 0;
+    D_800D5448 = NULL;
+    D_800D4E08 = 0;
+    D_800AD12C = 1;
+    do {
+        if (hp->hero_ai->AImode != 0) {
+            *speed = fast;
+        } else {
+            *speed = slow;
+        }
+        speed++;
+        j++;
+        hp++;
+    } while (j < 4);
+    i = 0;
+    v = (Ovl62PolarView *)D_8005A614;
+    fn = func_800CB6B4;
+    h = Heroes;
+    g = (u8 *)v;
+loop:
+    if (i < 4) {
+        move = h->hero_move;
+        if (move != NULL) {
+            if (((Ovl62PolarView *)g)->unk50[0] == 9) {
+                status = h->hero_status;
+                h->hero_status = status | 0x2000;
+                if (((Ovl62PolarView *)g)->unk50[0] == 9) {
+                    h->hero_status = status | 0xA000;
+                }
+            }
+            func_800D3460(i);
+            SetHeroAction((HeroInfo *)i, 0x49);
+            if (v->mode == 0x15 && (v->flags & 0x80) && ((Ovl62PolarView *)g)->unk5C[0] == 0) {
+                SetHeroAction((HeroInfo *)i, 0x54);
+            }
+            h->hero_eng->unk5C = 1;
+            h->hero_eng->unk5D = 0;
+            h->hero_eng->unk10.y = 0;
+            eng = h->hero_eng;
+            eng->unk2C.z = 0x1000;
+            eng->unk2C.y = 0x1000;
+            eng->unk2C.x = 0x1000;
+            if (v->mode == 0x12) {
+                func_8001682C((s32 *)D_8005476C);
+            }
+            if (v->mode == 0x15) {
+                func_8001682C((s32 *)D_800546C4);
+            }
+            ResetMass(i);
+            eng2 = h->hero_eng;
+            ang = ((get_angle(eng2->unk10.x - D_800D4DD4.vx, eng2->unk10.z - D_800D4DD4.vz) + 0x800) & 0xFFF) + 0x800;
+            move->forward_angle = ang;
+            h->hero_eng->unk1E = ang;
+            h->hero_eng->unk5E = 1;
+            h->hero_shadow->unk1E = h->hero_eng->unk1E;
+            h->hero_ai->AItimer1 = 0;
+            fux = (Ovl62PolarFux *)h->hero->FUX;
+            if (fux == NULL) {
+                fux = AddExtension(h->hero, 0x60, 0x10000000);
+                if (fux != NULL) {
+                    h->hero->FUX = (EXT *)fux;
+                    fux->unk24 = 0;
+                    fux->unk38 = 0;
+                    fux->unk48 = 0;
+                    fux->unk30 = 5;
+                    fux->unk44 = fn;
+                    h->hero_frozen = 0;
+                    fux->unk34 = 0;
+                    fux->unk4C = 0;
+                    fux->unk50 = 0;
+                    fux->unk54 = 0;
+                    fux->unk58 = 0;
+                    sub = h->hero_eng->sub;
+                    sub->flags |= 0x2000000;
+                    h->hero_eng->sub->unk68 = 0;
+                }
+                ai = AddExtension(h->hero, 0xB8, 0x20000000);
+            } else {
+                fux->unk24 = 0;
+                fux->unk38 = 0;
+                fux->unk48 = 0;
+                fux->unk30 = 5;
+                fux->unk44 = fn;
+                h->hero_frozen = 0;
+                fux->unk34 = 0;
+                fux->unk4C = 0;
+                fux->unk50 = 0;
+                fux->unk54 = 0;
+                fux->unk58 = 0;
+                fux->unk5C = 0;
+                sub = h->hero_eng->sub;
+                sub->flags |= 0x2000000;
+                h->hero_eng->sub->unk68 = 0;
+                ai = FindExtension(h->hero, 0x20000000);
+            }
+            if (ai != NULL) {
+                ai->unk10 = 0x1E;
+                ai->unkC = 0;
+                ai->unk14 = 0;
+                ai->unk18 = 0;
+                ai->unk1C = 0;
+                ai->unk20 = 0x100;
+                ai->unk24 = 0;
+                ai->unk28 = 0;
+                ai->unk98 = 0;
+                ai->unkA0 = 0;
+                ai->unkA4 = 0;
+                ai->unkA8 = 0;
+                ai->unkAC = 0;
+                ai->unkB0 = NULL;
+                ai->unkB0 = AddEngine(h->hero, 0x14);
+                ai->unkB4 = 0;
+            }
+            D_800D5FEC[i] = 0;
+            D_800D5FEC[6] = 0;
+        }
+        h++;
+        g++;
+        i++;
+        goto loop;
+    }
+    if (D_8005A648 != 0x16) {
+        nas = SpawnNASById(0, 0, 0, 0x1606, 0x11);
+        if (nas != NULL) {
+            nas->UserInfo.user1 = 0;
+        }
+        nas = SpawnNASById(0, 0, 0, 0x1606, 0x11);
+        if (nas != NULL) {
+            nas->UserInfo.user1 = 1;
+        }
+        nas = SpawnNASById(0, 0, 0, 0x1606, 0x11);
+        if (nas != NULL) {
+            nas->UserInfo.user1 = 2;
+        }
+        nas = SpawnNASById(0, 0, 0, 0x1606, 0x11);
+        if (nas != NULL) {
+            nas->UserInfo.user1 = 3;
+        }
+    }
+    w = (Ovl62PolarView *)D_8005A614;
+    if (w->mode == 0x15) {
+        SpawnNASById(0, 0, 0, 0x160E, 0x11);
+    }
+    if (w->mode == 0x16) {
+        func_8001682C((s32 *)D_80054A0C);
+        func_8007E9FC(0x82, 0x3031);
+        func_8007C6EC();
+        SpawnNASById(0, 0, 0, 0x1625, 0x11);
+    }
+    if (w->mode == 0x12) {
+        if (!(w->flags & 0x80)) {
+            SpawnNASById(0, 0, 0, 0x160C, 0x11);
+        } else {
+            PlaySfx(0x47E, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+    }
+}
 
 void UpdatePOLAR(void) {
     VECTOR pos;

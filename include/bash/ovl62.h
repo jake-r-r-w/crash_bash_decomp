@@ -1497,5 +1497,66 @@ static inline void Ovl62SpawnDrop(VECTOR *pos, s32 kind) {
 void func_800CDE8C(s32 player);
 
 void func_800CED58(s32 player);
+/* D_8005A614 as InitialisePOLAR reads it. */
+typedef struct Ovl62PolarView {
+    /* 0x00 */ u8 pad0[0x32];
+    /* 0x32 */ u16 flags;
+    /* 0x34 */ s16 mode;
+    /* 0x36 */ u8 pad36[0x50 - 0x36];
+    /* 0x50 */ u8 unk50[4];
+    /* 0x54 */ u8 pad54[0x5C - 0x54];
+    /* 0x5C */ u8 unk5C[4];
+    /* 0x60 */ u8 pad60[0x6C - 0x60];
+    /* 0x6C */ s32 unk6C;
+} Ovl62PolarView;
+
+/* The hero's FUX extension (0x60 bytes) InitialisePOLAR sets up. */
+typedef struct Ovl62PolarFux {
+    /* 0x00 */ u8 pad0[0x24];
+    /* 0x24 */ s32 unk24;
+    /* 0x28 */ u8 pad28[0x30 - 0x28];
+    /* 0x30 */ s32 unk30;
+    /* 0x34 */ s32 unk34;
+    /* 0x38 */ s32 unk38;
+    /* 0x3C */ u8 pad3C[0x44 - 0x3C];
+    /* 0x44 */ void *unk44;
+    /* 0x48 */ s32 unk48;
+    /* 0x4C */ s32 unk4C;
+    /* 0x50 */ s32 unk50;
+    /* 0x54 */ s32 unk54;
+    /* 0x58 */ s32 unk58;
+    /* 0x5C */ s32 unk5C;
+} Ovl62PolarFux;
+
+/* The hero's 0x20000000 extension (0xB8 bytes). */
+typedef struct Ovl62PolarAi {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ s32 unk1C;
+    /* 0x20 */ s32 unk20;
+    /* 0x24 */ s32 unk24;
+    /* 0x28 */ s32 unk28;
+    /* 0x2C */ u8 pad2C[0x98 - 0x2C];
+    /* 0x98 */ s32 unk98;
+    /* 0x9C */ u8 pad9C[0xA0 - 0x9C];
+    /* 0xA0 */ s32 unkA0;
+    /* 0xA4 */ s32 unkA4;
+    /* 0xA8 */ s32 unkA8;
+    /* 0xAC */ s32 unkAC;
+    /* 0xB0 */ EXTengine *unkB0;
+    /* 0xB4 */ s32 unkB4;
+} Ovl62PolarAi;
+
+extern u16 D_800D5408[];
+extern s32 D_800D5FC0;
+extern s32 D_800D544C;
+extern u16 D_800AD12C;
+void func_8007E9FC(u16 arg0, s16 arg1);
+void func_8007EB1C(s32 arg0, s32 arg1, s32 arg2);
+void func_8007B7FC(u32 a, u32 b);
+void func_8007C6EC(void);
 
 #endif /* BASH_OVL62_H */
