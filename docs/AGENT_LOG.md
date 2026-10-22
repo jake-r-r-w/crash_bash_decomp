@@ -114,6 +114,13 @@ and current tools).
   cases breaks the shared tail. Variants tried are in the block note
   (`scratch/rw/rs.py`). Natural C without the do-whiles is 337/350 (cse
   `record_jump_equiv` folds the side copies; dz/dx need >= 9 weighted refs).
+  Third pass (2026-10-22): jump2 cross-jumps after sched2, so the tail is
+  sched2 order. The first insn after the wrapper's notes is a sched barrier
+  and must be side1's value load (t0), but reload emits side1's store right
+  after it and sched2 orders equal stores by luid; side0 first makes its
+  store the barrier instead. 100+ variants (orders, wrapper placements,
+  temporaries, an array) and one permuter run: no match. Needs a C shape
+  that loads side1's value early but stores it after side0 (block note).
 - **Tune the permuter from its record.** Runs are logged since 2026-10-20
   (`decomp.py permstats`, `swarm.mjs stats`). Two ideas to try once there
   are a few dozen runs, compared on that record:
