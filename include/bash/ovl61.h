@@ -173,7 +173,6 @@ s32 func_800B4880(Ovl61Obj *arg0, s32 arg1);
 
 extern u16 D_800C1EFE;
 
-s32 func_800B4EFC(Ovl61Obj *arg0);
 
 s32 func_800B84B8(s32 arg0);
 void func_800BDD30(s32 arg0);
@@ -185,7 +184,6 @@ s32 func_800C05B8(s32 arg0);
 
 s32 func_800C096C(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2);
 
-s32 func_800BFD9C(u8 *arg0);
 
 u8 *func_800C01B8(void);
 
@@ -232,7 +230,6 @@ void func_800B9728(void);
 
 
 
-s32 func_800BFD14(Ovl61Vel *v);
 
 s32 func_800C0250(s32 arg0, s32 arg1);
 
@@ -242,7 +239,6 @@ s32 func_800C0250(s32 arg0, s32 arg1);
 s32 func_800C0624(s32 arg0);
 
 
-s32 func_800C08C8(Ovl61Obj *arg0);
 
 
 typedef struct {
@@ -394,9 +390,8 @@ void func_800B3528(s32 arg0);
 
 
 
-s32 func_800B4AE8(Ovl61Obj *arg0, s32 arg1);
+s32 func_800B4AE8(EXTengine *arg0, s32 arg1);
 
-s32 func_800B4D9C(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2);
 
 s32 func_800B4FC8(s32 *p0, s32 *p1, s32 *q);
 

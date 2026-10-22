@@ -441,6 +441,16 @@ signature alone is not enough.
     `func_800C096C`, `func_800B4D9C`: `AR_*_TestOutOfBounds(EXTengine *,
     EXTobject *, bool)`) and `D_800C1C94` (`func_800B4EFC`, `func_800C08C8`:
     `AR_*_TestLaunchBounds(EXTengine *, EXTobject *)`).
+    `AR_PreInitLevel`'s mode 17 installs the `AR_PI_` movers, so its hooks
+    are `AR_PI_BounceOnBounds` (`func_800B4AE8`: named in notes only; with
+    the leak's `s16` return it gains a sign extension, so it keeps `s32` and
+    its address name), `AR_PI_TestOutOfBounds` and `AR_PI_TestLaunchBounds`,
+    and its `GetContour` is `GetArkPIContour`; the other modes use
+    `GetArkContour`. The leak has only BA and PI launch tests, so the other
+    one is `AR_BA_TestLaunchBounds`. The non-PI bounce and out-of-bounds
+    hooks could be BA, SE or NG: left unnamed. These take the leak's
+    `EXTengine *` / `EXTobject *` (the out-of-bounds test writes
+    `EXTobject.player`).
   - Hero states: the engine's `HEROFunc` table (`{SetMode, Action}` pairs)
     has 10 Arkenoid pairs at `0x8009DD80`, hero actions 0x1C-0x25, the leak's
     10 `SetArkHero*`/`ArkHero*` pairs. Each is named from its own code, not

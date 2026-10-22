@@ -86,8 +86,8 @@ void AR_PreInitLevel(void) {
         D_8009D6E8.unk24 = AR_MoveHero;
         D_800C1C8C = func_800B4880;
         D_800C1C90 = func_800C0A74;
-        D_800C1C94 = func_800B4EFC;
-        D_8005AA94 = (void *)func_800BFD9C;
+        D_800C1C94 = AR_BA_TestLaunchBounds;
+        D_8005AA94 = (void *)GetArkContour;
         D_8009D8F4 = D_800C0F44;
         D_8009D8F8 = D_800C0F58;
         D_8009D904 = D_800C0F2C;
@@ -106,8 +106,8 @@ void AR_PreInitLevel(void) {
         D_8009D6E8.unk24 = AR_MoveHero;
         D_800C1C8C = func_800B4880;
         D_800C1C90 = func_800C096C;
-        D_800C1C94 = func_800B4EFC;
-        D_8005AA94 = (void *)func_800BFD9C;
+        D_800C1C94 = AR_BA_TestLaunchBounds;
+        D_8005AA94 = (void *)GetArkContour;
         D_8009D8F4 = D_800C0FB8;
         D_8009D8F8 = D_800C0FCC;
         D_8009D904 = D_800C0FA0;
@@ -125,9 +125,9 @@ void AR_PreInitLevel(void) {
         D_8009D6E8.unk20 = AR_PI_PreMoveHero;
         D_8009D6E8.unk24 = AR_PI_MoveHero;
         D_800C1C8C = func_800B4AE8;
-        D_800C1C90 = func_800B4D9C;
-        D_800C1C94 = func_800C08C8;
-        D_8005AA94 = (void *)func_800BFD14;
+        D_800C1C90 = AR_PI_TestOutOfBounds;
+        D_800C1C94 = AR_PI_TestLaunchBounds;
+        D_8005AA94 = (void *)GetArkPIContour;
         D_8009D8F4 = D_800C102C;
         D_8009D8F8 = D_800C1040;
         D_8009D904 = D_800C1014;
@@ -147,8 +147,8 @@ void AR_PreInitLevel(void) {
         D_8009D6E8.unk24 = AR_MoveHero;
         D_800C1C8C = func_800B4880;
         D_800C1C90 = func_800C0A74;
-        D_800C1C94 = func_800B4EFC;
-        D_8005AA94 = (void *)func_800BFD9C;
+        D_800C1C94 = AR_BA_TestLaunchBounds;
+        D_8005AA94 = (void *)GetArkContour;
         D_8009D8F4 = D_800C0ED0;
         D_8009D8F8 = D_800C0EE4;
         D_8009D904 = D_800C0EB8;
@@ -542,7 +542,7 @@ fail:
     return -1;
 }
 
-s32 func_800B4AE8(Ovl61Obj *arg0, s32 arg1) {
+s32 func_800B4AE8(EXTengine *arg0, s32 arg1) {
     SLONG_XYZ v;
     s32 i;
     s32 dx;
@@ -555,45 +555,45 @@ s32 func_800B4AE8(Ovl61Obj *arg0, s32 arg1) {
 
     a = ret = -1;
     for (i = 0; i < 4; i++) {
-        if (arg0->flags & 0x40) {
-            r = D_800C1A7C[i].r + arg0->radius;
+        if (arg0->collision_box.flags & 0x40) {
+            r = D_800C1A7C[i].r + arg0->collision_box.radius;
         } else {
             r = D_800C1A7C[i].r + 0x80;
         }
         cx = D_800C1A7C[i].x;
-        dx = arg0->x - cx;
-        dz = arg0->z - D_800C1A7C[i].z;
+        dx = arg0->unk10.x - cx;
+        dz = arg0->unk10.z - D_800C1A7C[i].z;
         if (dx * dx + dz * dz < r * r) {
             v.x = cx;
             v.y = 0;
             v.z = D_800C1A7C[i].z;
-            func_800BE1C4((SLONG_XYZ *)&arg0->x, arg1, &v, r);
-            a = get_angle(D_800C1A7C[i].x - arg0->x, D_800C1A7C[i].z - arg0->z);
+            func_800BE1C4(&arg0->unk10, arg1, &v, r);
+            a = get_angle(D_800C1A7C[i].x - arg0->unk10.x, D_800C1A7C[i].z - arg0->unk10.z);
             D_800C1E28[i].state = 3;
             ret = a;
         }
         if (D_800C1F14 != 0) {
-            dx = arg0->x;
-            dz = arg0->z;
-            if (arg0->flags & 0x40) {
-                r = 0x800 - arg0->radius;
+            dx = arg0->unk10.x;
+            dz = arg0->unk10.z;
+            if (arg0->collision_box.flags & 0x40) {
+                r = 0x800 - arg0->collision_box.radius;
             } else {
                 r = 0x800;
             }
             if (dx > r && (D_800C1F14 & 0x88)) {
-                arg0->x = r;
+                arg0->unk10.x = r;
                 a = 0x400;
             }
             if (dx < -r && (D_800C1F14 & 0x44)) {
-                arg0->x = -r;
+                arg0->unk10.x = -r;
                 a = 0xC00;
             }
             if (dz > r && (D_800C1F14 & 0x22)) {
-                arg0->z = r;
+                arg0->unk10.z = r;
                 a = 0;
             }
             if (dz < -r && (D_800C1F14 & 0x11)) {
-                arg0->z = -r;
+                arg0->unk10.z = -r;
                 a = 0x800;
             }
             if (a != -1) {
@@ -613,7 +613,7 @@ s32 func_800B4AE8(Ovl61Obj *arg0, s32 arg1) {
     return ret;
 }
 
-s32 func_800B4D9C(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2) {
+bool AR_PI_TestOutOfBounds(EXTengine *arg0, EXTobject *arg1, bool arg2) {
     s32 lim = 0x980;
     s32 x, z;
     s32 a;
@@ -621,47 +621,47 @@ s32 func_800B4D9C(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2) {
     if (arg2 != 0) {
         lim = 0xC00;
     }
-    x = arg0->x;
-    z = arg0->z;
+    x = arg0->unk10.x;
+    z = arg0->unk10.z;
     if (x * x + z * z > lim * lim) {
         a = get_angle(-x, -z) + 0x200;
         a &= 0xC00;
         if (a == 0x400) {
-            arg1->dir = D_800C2720;
+            arg1->player = D_800C2720;
             return 1;
         } else if (a == 0x800) {
-            arg1->dir = D_800C2724;
+            arg1->player = D_800C2724;
             return 1;
         } else if (a == 0xC00) {
-            arg1->dir = D_800C271C;
+            arg1->player = D_800C271C;
             return 1;
         } else {
-            arg1->dir = D_800C2728;
+            arg1->player = D_800C2728;
             return 1;
         }
     }
     if (arg2 != 0) {
-        s16 d = arg1->dir;
+        s16 d = arg1->player;
         if (d == D_800C2724 || d == D_800C2728) {
             if (x >= 0x601) {
-                arg0->x = 0x600;
+                arg0->unk10.x = 0x600;
             }
-            if (arg0->x < -0x600) {
-                arg0->x = -0x600;
+            if (arg0->unk10.x < -0x600) {
+                arg0->unk10.x = -0x600;
             }
         } else {
             if (z >= 0x601) {
-                arg0->z = 0x600;
+                arg0->unk10.z = 0x600;
             }
-            if (arg0->z < -0x600) {
-                arg0->z = -0x600;
+            if (arg0->unk10.z < -0x600) {
+                arg0->unk10.z = -0x600;
             }
         }
     }
     return 0;
 }
 
-s32 func_800B4EFC(Ovl61Obj *arg0) {
+bool AR_BA_TestLaunchBounds(EXTengine *arg0, EXTobject *obj) {
     Ovl61Circle *base = D_800C1A7C;
     Ovl61Circle *c;
     s32 i;
@@ -674,15 +674,15 @@ s32 func_800B4EFC(Ovl61Obj *arg0) {
 
     for (i = 0; i < 4; i++) {
         c = &base[i];
-        if (arg0->flags & 0x40) {
-            r = c->r + arg0->radius;
+        if (arg0->collision_box.flags & 0x40) {
+            r = c->r + arg0->collision_box.radius;
         } else {
             r = c->r + 0x80;
         }
         dx = c->x;
-        x = arg0->x;
+        x = arg0->unk10.x;
         dx = x - dx;
-        z = arg0->z;
+        z = arg0->unk10.z;
         dz = z - c->z;
         if (dx * dx + dz * dz < r * r) {
             return 1;
@@ -5518,13 +5518,13 @@ void Init_RepulseRing(NAS *nas)
   }
 }
 
-s32 func_800BFD14(Ovl61Vel *v) {
-    return v->pad14 - ((D_8005A5D8 - (v->z * D_80068BD4[(D_800C1C68 - 0x400) & 0xFFF].unk2 >> 12)) +
-                       (v->x * D_80068BD4[(D_800C1C6C - 0x400) & 0xFFF].unk2 >> 12));
+s32 GetArkPIContour(EXTengine *v) {
+    return v->unk10.y - ((D_8005A5D8 - (v->unk10.z * D_80068BD4[(D_800C1C68 - 0x400) & 0xFFF].unk2 >> 12)) +
+                       (v->unk10.x * D_80068BD4[(D_800C1C6C - 0x400) & 0xFFF].unk2 >> 12));
 }
 
-s32 func_800BFD9C(u8 *arg0) {
-    return (*(s32*)((u8*)(arg0) + 20)) - D_8005A5D8;
+s32 GetArkContour(EXTengine *arg0) {
+    return arg0->unk10.y - D_8005A5D8;
 }
 
 void Plot_ArkDeadWall(NAS *arg0) {
@@ -5848,7 +5848,7 @@ s32 func_800C0804(s32 arg0, s16 arg1, s32 arg2, s16 arg3) {
     return get_angle(x, z) & 0xFFFF;
 }
 
-s32 func_800C08C8(Ovl61Obj *arg0) {
+bool AR_PI_TestLaunchBounds(EXTengine *arg0, EXTobject *obj) {
     Ovl61Circle *base = D_800C1A7C;
     Ovl61Circle *c;
     s32 i;
@@ -5858,13 +5858,13 @@ s32 func_800C08C8(Ovl61Obj *arg0) {
 
     for (i = 0; i < 4; i++) {
         c = &base[i];
-        if (arg0->flags & 0x40) {
-            r = c->r + arg0->radius;
+        if (arg0->collision_box.flags & 0x40) {
+            r = c->r + arg0->collision_box.radius;
         } else {
             r = c->r + 0x80;
         }
-        dx = arg0->x - c->x;
-        dz = arg0->z - c->z;
+        dx = arg0->unk10.x - c->x;
+        dz = arg0->unk10.z - c->z;
         if (dx * dx + dz * dz < r * r) {
             return 1;
         }
@@ -5988,6 +5988,6 @@ void AR_SetUp(void) {
     D_8005AA70[5] = (s32)AR_EarliestTriggers;
     D_8005AA70[7] = 0;
     D_8005AA70[8] = 0;
-    D_8005AA70[9] = (s32)func_800BFD9C;
+    D_8005AA70[9] = (s32)GetArkContour;
     D_8005AA70[10] = (s32)func_800B9728;
 }
