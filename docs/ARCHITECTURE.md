@@ -621,6 +621,11 @@ signature alone is not enough.
     returns 1); its callers called it with no argument (old-style prototype),
     now with `player`, same code. `DoesPlayerHaveBomb(p)`: a bomb in
     `D_800D5294`'s list held by p (also inlined as `Ovl62HasBomb`).
+    `CheckMelted(pos, zone)` (resolved from the old ambiguity note) looks up
+    the ice sector under pos (angle from the centre) and returns 0 when it
+    has melted (`val >= 0x72`) unless `IsPtInALLZone(pos, zone 2 or 3)`, a
+    point-against-every-edge test of a zone polygon, says the point is on a
+    safe piece; the two are adjacent in code and in the leak.
     `XZBoxToSphere` (box of one subengine against another's sphere) is named
     by its own debug message; ovl63 and ovl65 have their own copies.
   `LevSpec.PostTriggers` (`D_8005AA88`, typed `void (*)(NASTrigger *, s32)`
@@ -701,8 +706,6 @@ signature alone is not enough.
   - Both of the leak's `Roo_FireRocket` declarations match real functions:
     `func_800BFFF4(eng)` and `func_800C02AC(eng, dir)` both spawn
     `AST_PogoProjectile`. One of them must have another name.
-  - `func_800B4260(pos, n)` (Polar) fits `CheckMelted`, `IsRayEndInZone` and
-    `IsPtInALLZone`.
   - `func_800C9B5C()` counts a list linked through `+0x20`, which could be
     `CountBears`.
   - `get_angle(x, z)` returns a 12-bit angle, as the leak's inline

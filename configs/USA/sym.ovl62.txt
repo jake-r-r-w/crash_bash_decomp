@@ -75,3 +75,5 @@ DoChooseNewAction = 0x800B9D48; // type:func
 DoesPlayerHaveBomb = 0x800CB56C; // type:func
 EnsureMateNotObstructingMate = 0x800B7CDC; // type:func
 POLARtriggers = 0x800CAD14; // type:func
+CheckMelted = 0x800B4260; // type:func
+IsPtInALLZone = 0x800B4094; // type:func

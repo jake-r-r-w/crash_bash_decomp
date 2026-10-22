@@ -640,14 +640,14 @@ s32 func_800B4A1C(NAS *nas);
 
 void func_800B5910(void);
 
-/* One of the 16 angular sectors func_800B4260 checks. */
+/* One of the 16 angular sectors CheckMelted checks. */
 typedef struct Ovl62Sector {
     /* 0x00 */ s32 state;
     /* 0x04 */ s32 val;
     /* 0x08 */ s32 pad8[2];
 } Ovl62Sector;
 
-/* Read by func_800CB0A4 and func_800B4260. */
+/* Read by func_800CB0A4 and CheckMelted. */
 typedef struct Ovl62Link {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ s32 unk10;
@@ -1215,9 +1215,8 @@ extern ScriptInit D_800D5DB8;
 
 void func_800B38A0(void);
 
-s32 func_800B4094(s32 *arg0, s32 arg1);
 
-s32 func_800B4260(s32 *arg0, s32 arg1);
+bool CheckMelted(SLONG_XYZ *arg0, s32 arg1);
 
 void func_800B5570(s32 player);
 

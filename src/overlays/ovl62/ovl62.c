@@ -295,7 +295,7 @@ void func_800B3AA0(void)
   }
 }
 
-s32 func_800B4094(s32 *arg0, s32 arg1) {
+bool IsPtInALLZone(SLONG_XYZ *arg0, s32 arg1) {
     MATRIX m;
     SVECTOR rot;
     VECTOR v;
@@ -320,7 +320,7 @@ s32 func_800B4094(s32 *arg0, s32 arg1) {
         vp = &v;
         a2 = p + 0x50;
         a3 = p;
-        ry = ((((get_angle(arg0[0], arg0[2]) - 0x7D) & 0xFFF) >> 8) + 1 & 0xF) << 8;
+        ry = ((((get_angle(arg0->x, arg0->z) - 0x7D) & 0xFFF) >> 8) + 1 & 0xF) << 8;
         t = D_80068BD4;
         n = *(s32 *)(p + 0x38);
         for (;;) {
@@ -338,8 +338,8 @@ s32 func_800B4094(s32 *arg0, s32 arg1) {
             rot.vz = 0;
             RotMatrix(&rot, &m);
             ApplyMatrixLV(&m, vp, vp);
-            v.vx = arg0[0] - v.vx;
-            v.vz = arg0[2] - v.vz;
+            v.vx = arg0->x - v.vx;
+            v.vz = arg0->z - v.vz;
             ang = -ang;
             if (((v.vx * t[ang & 0xFFF].unk2) >> 12) - ((v.vz * t[(ang - 0x400) & 0xFFF].unk2) >> 12) < 0) {
                 cnt++;
@@ -355,7 +355,7 @@ s32 func_800B4094(s32 *arg0, s32 arg1) {
     return 1;
 }
 
-s32 func_800B4260(s32 *arg0, s32 arg1) {
+bool CheckMelted(SLONG_XYZ *arg0, s32 arg1) {
     s32 v[3];
     Ovl62Link *l;
     u32 sec;
@@ -372,21 +372,21 @@ s32 func_800B4260(s32 *arg0, s32 arg1) {
     if (D_8005A648 == 0x14 && D_800D5254 != NULL) {
         l = D_800D5254->unk58;
         if (l != NULL) {
-            sec = (u32)((get_angle(arg0[0], arg0[2]) - 0x7D) & 0xFFF) >> 8;
+            sec = (u32)((get_angle(arg0->x, arg0->z) - 0x7D) & 0xFFF) >> 8;
             if (l->sectors[sec].state == 1) {
                 arg1 = 1;
             }
-            if (l->sectors[sec].state == 3 && l->sectors[sec].val >= 0x72 && !func_800B4094(arg0, 2)) {
+            if (l->sectors[sec].state == 3 && l->sectors[sec].val >= 0x72 && !IsPtInALLZone(arg0, 2)) {
                 return 0;
             }
-            if (l->sectors[sec].state == 2 && l->sectors[sec].val >= 0x72 && !func_800B4094(arg0, 3)) {
+            if (l->sectors[sec].state == 2 && l->sectors[sec].val >= 0x72 && !IsPtInALLZone(arg0, 3)) {
                 return 0;
             }
             if (l->sectors[sec].state == 4 && l->sectors[sec].val >= 0x72) {
-                if (!func_800B4094(arg0, 2)) {
+                if (!IsPtInALLZone(arg0, 2)) {
                     return 0;
                 }
-                if (!func_800B4094(arg0, 3)) {
+                if (!IsPtInALLZone(arg0, 3)) {
                     return 0;
                 }
             }
@@ -406,8 +406,8 @@ s32 func_800B4260(s32 *arg0, s32 arg1) {
                 return 1;
             }
             ang = *(s32 *)(a3 + 0x64);
-            v[0] = arg0[0] - *(s32 *)(a2 - 8);
-            v[2] = arg0[2] - *(s32 *)a2;
+            v[0] = arg0->x - *(s32 *)(a2 - 8);
+            v[2] = arg0->z - *(s32 *)a2;
             ang = -ang;
             if (((v[0] * t[ang & 0xFFF].unk2) >> 12) - ((v[2] * t[(ang - 0x400) & 0xFFF].unk2) >> 12) < 0) {
                 return 0;
@@ -637,7 +637,7 @@ void PlotPolarBomb(NAS *m) {
     }
     switch (ext->unkC) {
     case 0:
-        if ((func_800B4260(&m->Engine->unk10.x, 0) ^ 1) != 0) {
+        if ((CheckMelted(&m->Engine->unk10, 0) ^ 1) != 0) {
             ext->unk48 = 0x100;
             m->Engine->sub->unk68 = 0x200;
             if (m->Engine->unk10.y >= ext->unk48) {
@@ -647,7 +647,7 @@ void PlotPolarBomb(NAS *m) {
             }
         }
         if (func_8008C5C4(ext->from, ext->to, &ext->unk30, &m->Engine->unk10.x) != 0) {
-            PlaySfx((func_800B4260(&m->Engine->unk10.x, 0) ^ 1) != 0 ? 0x494 : 0x48F, NULL, NULL, 0x1000, 0x1E00, 0);
+            PlaySfx((CheckMelted(&m->Engine->unk10, 0) ^ 1) != 0 ? 0x494 : 0x48F, NULL, NULL, 0x1000, 0x1E00, 0);
             nas = SpawnNASById(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1605, 0x11);
             if (nas != NULL) {
                 nas->Engine->flags |= 0x200000;
@@ -5753,7 +5753,7 @@ s32 func_800CD214(s32 player) {
     if (ext != NULL) {
     if (D_8005A648 != 0x16) {
         act = 0x4E;
-        if (eng != NULL && func_800B4260((s32 *)&eng->unk10, 0)) {
+        if (eng != NULL && CheckMelted(&eng->unk10, 0)) {
             return 1;
         }
         mode = Heroes[player].hero_mode;
