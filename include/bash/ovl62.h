@@ -1558,6 +1558,14 @@ typedef struct Ovl62PolarAi {
     /* 0xB4 */ s32 unkB4;
 } Ovl62PolarAi;
 
+/* D_800D5254's 0x40000000 extension as func_800BBF2C reads it. */
+typedef struct Ovl62PolarGame {
+    /* 0x00 */ u8 pad0[0x48];
+    /* 0x48 */ s32 unk48[8];
+    /* 0x68 */ s32 unk68;
+    /* 0x6C */ s32 unk6C;
+} Ovl62PolarGame;
+
 extern u16 D_800D5408[];
 extern s32 D_800D5FC0;
 extern s32 D_800D544C;
@@ -1568,5 +1576,7 @@ void func_8007B7FC(u32 a, u32 b);
 void func_8007C6EC(void);
 
 void func_800B889C(s32 player);
+
+s32 func_800BBF2C(s32 player);
 
 #endif /* BASH_OVL62_H */

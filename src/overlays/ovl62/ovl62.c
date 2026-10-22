@@ -2751,7 +2751,319 @@ void UpdatePOLAR(void) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BBF2C);
+s32 func_800BBF2C(s32 player) {
+    s32 hit;
+    s32 range;
+    HeroInfo *o;
+    EXTengine *eng;
+    EXTengine *e; /* one pointer for every engine/extension in turn (its register needs it) */
+    EXTheromove *mv;
+    HeroInfo *h;
+    HeroInfo *hp;
+    HeroInfo *hq;
+    Ovl62PolarAi *ai;
+    s32 swapped;
+    TrigEntry *t;
+    u8 *p;
+    u32 i;
+    s32 dx;
+    s32 r;
+    s32 dz;
+    s32 d;
+    s32 ang;
+    s32 pick;
+    s32 spd;
+    s32 snd;
+    s32 k;
+
+    hit = 0;
+    eng = Heroes[player].hero_eng;
+    range = 0x100;
+    if (eng != NULL) {
+    i = 0;
+    while (1) {
+        if (i >= 4) {
+            break;
+        }
+        if (player != i && !(Heroes[i].hero_status & 0x2000)) {
+            e = Heroes[i].hero_eng;
+            if (e != NULL) {
+                dx = e->unk10.x - eng->unk10.x;
+                dz = e->unk10.z - eng->unk10.z;
+                d = csqrt(dx * dx + dz * dz) >> 6;
+                if (d < range) {
+                    h = &Heroes[player];
+                    e = (EXTengine *)h->hero_move;
+                    snd = Random(4);
+                    ang = get_angle(dx, dz) & 0xFFF;
+                    d = range - d + 8;
+                    func_800CBBE8(player, i);
+                    spd = ((EXTheromove *)e)->x_vel * ((EXTheromove *)e)->x_vel + ((EXTheromove *)e)->z_vel * ((EXTheromove *)e)->z_vel;
+                    hit = 1;
+                    if (spd > 0x400) {
+                        if (h->hero_mode == 0x52) {
+                            PlaySfx(0x48B, NULL, NULL, 0x1000, 0x1E00, 0);
+                        } else {
+                            if (snd == 0) {
+                                PlaySfx(0x446, NULL, NULL, 0x1000, 0x1E00, 0);
+                            }
+                            if (snd == 1) {
+                                PlaySfx(0x447, NULL, NULL, 0x1000, 0x1E00, 0);
+                            }
+                            if (snd == 2) {
+                                PlaySfx(0x448, NULL, NULL, 0x1000, 0x1E00, 0);
+                            }
+                            if (snd == 3) {
+                                PlaySfx(0x449, NULL, NULL, 0x1000, 0x1E00, 0);
+                            }
+                        }
+                    }
+                    if (spd > 0x1000) {
+                        func_80028018(player, 0xA);
+                        ((void (*)(s32, s32, s32))func_80027F7C)(player, 0xA, 0xFF);
+                        hp =&Heroes[player];
+                        if (hp->hero_mode == 0x52) {
+                            goto snow;
+                        }
+                        if (hp->hero_mode == 0x4C) {
+                            goto done;
+                        }
+                        if (hp->hero_mode == 0x4B) {
+                            goto done;
+                        }
+                        if (hp->hero_mode == 0x5A) {
+                            goto done;
+                        }
+                        e = FindExtension(hp->hero, 0x20000000);
+                        if (e != NULL) {
+                            ((Ovl62PolarAi *)e)->unkB0->unk10 = hp->hero_eng->unk10;
+                            if (((Ovl62PolarAi *)e)->unkB0 != NULL) {
+                            switch (hp->hero_name) {
+                            case 1:
+                                r = Random(4);
+                                if (r == 0) {
+                                    PlaySfx(3, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (r == 1) {
+                                    PlaySfx(4, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (r == 2) {
+                                    PlaySfx(5, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (r == 3) {
+                                    PlaySfx(6, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                break;
+                            case 2:
+                                r = Random(4);
+                                if (r == 0) {
+                                    PlaySfx(0x35, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (r == 1) {
+                                    PlaySfx(0x36, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (r == 2) {
+                                    PlaySfx(0x37, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (r == 3) {
+                                    PlaySfx(0x38, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                break;
+                            case 3:
+                                r = Random(4);
+                                if (r == 0) {
+                                    PlaySfx(0x67, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (r == 1) {
+                                    PlaySfx(0x68, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (r == 2) {
+                                    PlaySfx(0x69, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (r == 3) {
+                                    PlaySfx(0x6A, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                break;
+                            case 4:
+                                r = Random(4);
+                                if (r == 0) {
+                                    PlaySfx(0x99, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (r == 1) {
+                                    PlaySfx(0x9A, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (r == 2) {
+                                    PlaySfx(0x9B, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (r == 3) {
+                                    PlaySfx(0x9C, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                break;
+                            case 5:
+                                pick = Random(4);
+                                if (pick == 0) {
+                                    PlaySfx(0x12F, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (pick == 1) {
+                                    PlaySfx(0x130, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (pick == 2) {
+                                    PlaySfx(0x131, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (pick == 3) {
+                                    PlaySfx(0x132, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                break;
+                            case 7:
+                                pick = Random(4);
+                                if (pick == 0) {
+                                    PlaySfx(0xFD, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (pick == 1) {
+                                    PlaySfx(0xFE, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (pick == 2) {
+                                    PlaySfx(0xFF, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (pick == 3) {
+                                    PlaySfx(0x100, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                break;
+                            case 8:
+                                pick = Random(4);
+                                if (pick == 0) {
+                                    PlaySfx(0xCB, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (pick == 1) {
+                                    PlaySfx(0xCC, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (pick == 2) {
+                                    PlaySfx(0xCD, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (pick == 3) {
+                                    PlaySfx(0xCE, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                break;
+                            case 6:
+                                pick = Random(4);
+                                if (pick == 0) {
+                                    PlaySfx(0x161, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (pick == 1) {
+                                    PlaySfx(0x162, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (pick == 2) {
+                                    PlaySfx(0x163, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (pick == 3) {
+                                    PlaySfx(0x164, &((Ovl62PolarAi *)e)->unkB0->sfx, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                break;
+                            }
+                            }
+                        }
+                        goto done;
+                    snow:
+                        printf("snow\n");
+                        PlaySfx(0x48B, NULL, NULL, 0x1000, 0x1E00, 0);
+                    }
+                done:
+                    if (D_800D5254 != NULL) {
+                        e = FindExtension((NAS *)D_800D5254, 0x40000000);
+                        if (e != NULL) {
+                            swapped = 0;
+                            if (player == ((Ovl62PolarGame *)e)->unk6C && ((Ovl62PolarGame *)e)->unk68 > 0) {
+                                if (((Ovl62PolarGame *)e)->unk48[i] == 0) {
+                                    ((Ovl62PolarGame *)e)->unk6C = i;
+                                    ((Ovl62PolarGame *)e)->unk48[player] = 0xF;
+                                    PlaySfx(0x454, NULL, NULL, 0x1000, 0x1E00, 0);
+                                    swapped = 1;
+                                    ((Ovl62PolarGame *)e)->unk48[i] = 0;
+                                }
+                            }
+                            if (i == ((Ovl62PolarGame *)e)->unk6C && swapped == 0 && ((Ovl62PolarGame *)e)->unk68 > 0) {
+                                if (((Ovl62PolarGame *)e)->unk48[player] == 0) {
+                                    ((Ovl62PolarGame *)e)->unk6C = player;
+                                    ((Ovl62PolarGame *)e)->unk48[i] = 0xF;
+                                    PlaySfx(0x454, NULL, NULL, 0x1000, 0x1E00, 0);
+                                    ((Ovl62PolarGame *)e)->unk48[player] = 0;
+                                }
+                            }
+                        }
+                    }
+                    eng->unk10.x -= ((d + 2) * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                    eng->unk10.z -= ((d + 2) * D_80068BD4[ang].unk2) >> 12;
+                }
+            }
+        }
+        i++;
+    }
+    if (D_8005A648 != 0x16) {
+        p = D_800D5454;
+        o = Heroes;
+        hq = &o[player];
+        while (1) {
+            if (p == NULL) {
+                break;
+            }
+            if (((NAS *)p)->UserInfo.status != 0) {
+                e = *(EXTengine **)(p + 0x54);
+                if (e != NULL && e != eng && func_800C2ECC(e, 0, hq->hero_eng, 0) != 0) {
+                    mv = FindExtension((NAS *)p, 0x20000000);
+                    if (mv != NULL) {
+                        hit = 1;
+                        func_800CA930(hq->hero_move, mv);
+                    }
+                }
+            }
+            p = *(u8 **)(p + 0x20);
+        }
+    } else {
+        range = 0x1F4;
+        p = D_800D5454;
+        t = D_80068BD4;
+        while (1) {
+            if (p == NULL) {
+                break;
+            }
+            e = *(EXTengine **)(p + 0x54);
+            if (e != NULL && e != eng) {
+                ai = FindExtension((NAS *)p, 0x10000000);
+                if (ai != NULL && ai->unkB4 == 0 && abs(e->unk10.y - eng->unk10.y) <= range) {
+                    dx = e->unk10.x - eng->unk10.x;
+                    dz = e->unk10.z - eng->unk10.z;
+                    d = csqrt(dx * dx + dz * dz) >> 6;
+                    if (d < range) {
+                        e = FindExtension((NAS *)p, 0x20000000);
+                        if (e != NULL) {
+                            ang = get_angle(dx, dz) & 0xFFF;
+                            d = range - d + 2;
+                            eng->unk10.x -= (d * t[(ang - 0x400) & 0xFFF].unk2) >> 12;
+                            eng->unk10.z -= (d * t[ang].unk2) >> 12;
+                            func_800CC024(player, (EXTheromove *)e);
+                            hit = 1;
+                            if (((EXTheromove *)e)->x_vel * ((EXTheromove *)e)->x_vel + ((EXTheromove *)e)->z_vel * ((EXTheromove *)e)->z_vel > 0x2400) {
+                                k = Random(3);
+                                if (k == 0) {
+                                    PlaySfx(0x236, NULL, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (k == 1) {
+                                    PlaySfx(0x237, NULL, NULL, 0x1000, 0x1E00, 0);
+                                }
+                                if (k == 2) {
+                                    PlaySfx(0x238, NULL, NULL, 0x1000, 0x1E00, 0);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            p = *(u8 **)(p + 0x20);
+        }
+    }
+    }
+    return hit;
+}
 
 s32 func_800BCC9C(s32 player) {
     HeroInfo *h;
