@@ -507,18 +507,30 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
-- **2026-10-22 (naming: hero states):** the engine's `HEROFunc` table
-  (`0x8009DCA0`, `{SetMode, Action}` per hero action id) gives every
-  minigame's state machine. Named the leaked ones from it plus each state's
-  code: Arkenoid (20), Tank (16), Pogo (14 + 3 end tests); named 345 -> 398.
-  Evidence in ARCHITECTURE.md. Anim ids passed to `SetHeroSeq` are
-  `HeroAnim_seqs` values, which pins most states. Each renamed definition
-  takes the leak's `u32 player` (or `bool` return) first, checked with
-  `make check`, else the rename fails on conflicting types. Fixed two
-  `rename` bugs (`dedupe_owned` dropped struct members and declarations
-  its own header's inline functions use). Next: the table's other games
-  (ovl5d, 5e, 62-68) have no leaked names; the leak's `TestHeroPogo*`,
-  `AR_*` and `Player_*` helpers are next to these states in code.
+- **2026-10-22 (naming from the leak, ~1.5 h):** named 345 -> 550 game
+  functions from the leaked minigame headers, each from its own code
+  (evidence in ARCHITECTURE.md). Sources that pin names: the engine's
+  `HEROFunc` table (`0x8009DCA0`, `{SetMode, Action}` per hero action id:
+  every game's state machine), `LevSpec` (`D_8005AA70`) and `HookInf`
+  (`D_8009D6E8`) slots (field names from the prototype's types), anim ids
+  (`HeroAnim_seqs`), AST spawn ids, and the leak's code order. Done:
+  Arkenoid states, hooks, PI bounds; Tank states, hooks, SFX setters,
+  sandbag maps, Moe/Joe; Pogo almost all (states, tiles, zaps, islands, AI,
+  pickups, challenges); Polar hooks and a few AI helpers. Method: rewrite
+  the definition and owned prototype to the leak's types
+  (`scratch/leak_sig.py OVL LEAKHDR ADDR=NAME...`), `make check`, then
+  `decomp.py rename` (it fails on conflicting types otherwise). Local
+  stand-in structs (`Ovl61Obj`, `OvlClampPos`, `Ovl61Vel`) were
+  `EXTengine` fields; unsigned params became `s32` with `(u32)` casts in
+  the bounds tests (same code). Fixed two `rename` bugs (`dedupe_owned`
+  dropped struct members and declarations its header's inline functions
+  use). Left unnamed with notes in ARCHITECTURE.md: Pogo FizzleOut /
+  DelayedFizzleOut / OnFire, the three AI planners, AIQuality vs
+  Quality_Init; Arkenoid's non-PI bounce / out-of-bounds (BA/SE/NG) and
+  `AR_PI_BounceOnBounds` (the `s16` return adds a sign extension); Polar's
+  `Test*Chance` family (AI states unnamed). Next: make `leak_sig.py` and
+  `scratch/fninfo.js` (callers/callees/arg count per function) proper
+  tools; the table's other games (ovl5d, 5e, 63-68) have no leaked names.
 
 - **2026-10-22 (hand: `func_800BE158`, parked):** worked the 2/347
   checkpoint under the updated `/match-function` rules (no hacks, permuter
