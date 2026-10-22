@@ -2121,7 +2121,253 @@ found:
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", TankHeroMove);
+void TankHeroMove(u32 player) {
+    s32 done;
+
+    if (D_8005A644 & 0x801) {
+        D_800CB0F0 = -1;
+    }
+    if ((Heroes[player].hero_status & 0x200) && Heroes[player].hero_mode != 0x70) {
+        SetHeroAction((HeroInfo *)player, 0x70);
+        D_800CB0F0 = player + 1;
+        done = 1;
+    } else {
+        done = 0;
+    }
+    if (done == 0) {
+        TA_player *ta;
+        EXTengine *eng;
+        s32 speed;
+        s32 pad;
+        s32 x;
+        s32 z;
+        s32 dir;
+        s32 half;
+        s32 off;
+        s32 pos;
+        s32 frac;
+        s32 hit;
+
+        func_800B77E8(player);
+        if (func_8008502C(player) != 0) {
+            AnimateTank(player);
+        }
+        if (D_800CB0F0 != 0) {
+            return;
+        }
+        ta = &D_800CAD50[player];
+        eng = Heroes[player].hero_eng;
+        if (ta->RequestQuickFinish != 0) {
+            func_800B6354(player, 9999);
+            return;
+        }
+        if (D_8005A648 == 5) {
+            func_800B9430(player);
+            return;
+        }
+        if (D_8005A648 == 7 || D_8005A648 == 9 || D_8005A648 == 5) {
+            func_800B993C(player);
+            return;
+        }
+        half = (speed = ta->Speed) / 2;
+        pad = ((PadButtons *)D_80051338)[player].unk50;
+        x = eng->unk10.x;
+        z = eng->unk10.z;
+        dir = pad & 0xF0;
+        if (dir == 0) {
+            return;
+        }
+        if (!(x & 0xFF) && !(z & 0xFF) && (x & 0x100) && (z & 0x100)) {
+            if ((pad & 0x20) && x != 0xF00 && Ovl5fMapCell(x + 0x100, z) == 0) {
+                switch (ta->MoveDir) {
+                case 0:
+                    SetHeroAction((HeroInfo *)player, 0x6F);
+                    ta->ModeSpeed = -0x80;
+                    ta->ModeCounter = 8;
+                    ta->MoveDir = 3;
+                    return;
+                case 2:
+                    SetHeroAction((HeroInfo *)player, 0x6F);
+                    ta->ModeSpeed = 0x80;
+                    ta->ModeCounter = 8;
+                    ta->MoveDir = 3;
+                    return;
+                case 1:
+                    ta->MoveDir = 3;
+                    return;
+                }
+            }
+            if ((dir & 0x80) && eng->unk10.x != 0x100 &&
+                (off = ta->Speed + 0x100, Ovl5fMapCell(x - off, z) == 0)) {
+                switch (ta->MoveDir) {
+                case 1:
+                    break;
+                case 3:
+                    ta->MoveDir = 1;
+                    return;
+                case 0:
+                    SetHeroAction((HeroInfo *)player, 0x6F);
+                    ta->ModeSpeed = 0x80;
+                    ta->ModeCounter = 8;
+                    ta->MoveDir = 1;
+                    return;
+                case 2:
+                    SetHeroAction((HeroInfo *)player, 0x6F);
+                    ta->ModeSpeed = -0x80;
+                    ta->ModeCounter = 8;
+                    ta->MoveDir = 1;
+                    return;
+                }
+            }
+            if ((dir & 0x10) && eng->unk10.z != 0xF00 && Ovl5fMapCell(x, z + 0x100) == 0) {
+                switch (ta->MoveDir) {
+                case 2:
+                    break;
+                case 1:
+                    SetHeroAction((HeroInfo *)player, 0x6F);
+                    ta->ModeSpeed = 0x80;
+                    ta->ModeCounter = 8;
+                    ta->MoveDir = 2;
+                    return;
+                case 0:
+                    ta->MoveDir = 2;
+                    return;
+                case 3:
+                    SetHeroAction((HeroInfo *)player, 0x6F);
+                    ta->ModeSpeed = -0x80;
+                    ta->ModeCounter = 8;
+                    ta->MoveDir = 2;
+                    return;
+                }
+            }
+            if ((dir & 0x40) && eng->unk10.z != 0x100 &&
+                (off = ta->Speed + 0x100, Ovl5fMapCell(x, z - off) == 0)) {
+                switch (ta->MoveDir) {
+                case 1:
+                    SetHeroAction((HeroInfo *)player, 0x6F);
+                    ta->ModeSpeed = -0x80;
+                    ta->ModeCounter = 8;
+                    ta->MoveDir = 0;
+                    return;
+                case 3:
+                    SetHeroAction((HeroInfo *)player, 0x6F);
+                    ta->ModeSpeed = 0x80;
+                    ta->ModeCounter = 8;
+                    ta->MoveDir = 0;
+                    return;
+                case 2:
+                    ta->MoveDir = 0;
+                    return;
+                case 0:
+                    break;
+                }
+            }
+        } else {
+            switch (ta->MoveDir) {
+            case 0:
+                if (dir & 0x10) {
+                    ta->MoveDir = 2;
+                }
+                break;
+            case 2:
+                if (dir & 0x40) {
+                    ta->MoveDir = 0;
+                }
+                break;
+            case 1:
+                if (dir & 0x20) {
+                    ta->MoveDir = 3;
+                }
+                break;
+            case 3:
+                if (dir & 0x80) {
+                    ta->MoveDir = 1;
+                }
+                break;
+            }
+        }
+        switch (ta->MoveDir) {
+        case 2:
+            hit = TankMoveFindHero(player, eng->unk10.x, eng->unk10.z + speed, 0x1C0 - speed);
+            if (hit < 0) {
+                if (Ovl5fMapCell(x, z + 0x100) == 0) {
+                    pos = eng->unk10.z + ta->Speed;
+                    frac = pos & 0xFF;
+                    eng->unk10.z = pos;
+                    if (frac > 0x80) {
+                        frac -= 0x100;
+                    }
+                    if (frac >= -half && frac <= half) {
+                        eng->unk10.z = pos - frac;
+                    }
+                }
+            } else if (D_800CB0E0 == 0) {
+                D_800CB0E8 = eng;
+                D_800CB0E0 = -1;
+            }
+            break;
+        case 0:
+            hit = TankMoveFindHero(player, eng->unk10.x, eng->unk10.z - speed, 0x1C0);
+            if (hit < 0) {
+                off = half + 0x100;
+                if (Ovl5fMapCell(x, z - off) == 0) {
+                    pos = eng->unk10.z - ta->Speed;
+                    frac = pos & 0xFF;
+                    eng->unk10.z = pos;
+                    if (frac > 0x80) {
+                        frac -= 0x100;
+                    }
+                    if (frac >= -half && frac <= half) {
+                        eng->unk10.z = pos - frac;
+                    }
+                }
+            } else if (D_800CB0E0 == 0) {
+                D_800CB0E8 = eng;
+                D_800CB0E0 = -1;
+            }
+            break;
+        case 3:
+            hit = TankMoveFindHero(player, eng->unk10.x + speed, eng->unk10.z, 0x1C0 - speed);
+            if (hit < 0) {
+                if (Ovl5fMapCell(x + 0x100, z) == 0) {
+                    pos = eng->unk10.x + ta->Speed;
+                    frac = pos & 0xFF;
+                    eng->unk10.x = pos;
+                    if (frac > 0x80) {
+                        frac -= 0x100;
+                    }
+                    if (frac >= -half && frac <= half) {
+                        eng->unk10.x = pos - frac;
+                    }
+                }
+            } else if (D_800CB0E0 == 0) {
+                D_800CB0E8 = eng;
+                D_800CB0E0 = -1;
+            }
+            break;
+        case 1:
+            hit = TankMoveFindHero(player, eng->unk10.x - speed, eng->unk10.z, 0x1C0);
+            if (hit < 0) {
+                off = half + 0x100;
+                if (Ovl5fMapCell(x - off, z) == 0) {
+                    pos = eng->unk10.x - ta->Speed;
+                    frac = pos & 0xFF;
+                    eng->unk10.x = pos;
+                    if (frac > 0x80) {
+                        frac -= 0x100;
+                    }
+                    if (frac >= -half && frac <= half) {
+                        eng->unk10.x = pos - frac;
+                    }
+                }
+            } else if (D_800CB0E0 == 0) {
+                D_800CB0E8 = eng;
+                D_800CB0E0 = -1;
+            }
+            break;
+        }
+    }
+}
 
 void SetTankHeroRecoil(u32 player) {
     s32 done;

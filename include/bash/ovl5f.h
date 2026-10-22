@@ -620,6 +620,45 @@ static inline s32 Ovl5fRocketTile(s32 x, s32 z) {
 static inline s32 Ovl5fMapCell(s32 x, s32 z) {
     return *(((z >> 9) * D_800CAFF4) + (x >> 9) + D_800CACB4);
 }
+/* TankHeroMove: the other hero within lim of (x, z), or -1. */
+static inline s32 TankMoveFindHero(s32 player, s32 x, s32 z, s32 lim) {
+    s32 i;
+    s32 d;
+    s32 n;
+    u16 name;
+    HeroInfo *h;
+    EXTengine *e;
+
+    for (i = 0; i < 4; i++) {
+        if (i == player) {
+            continue;
+        }
+        h = &Heroes[i];
+        name = h->hero_name;
+        if (name == 9 &&
+            (((Ovl5fModeView *)D_8005A614)->mode != name || D_800CB210 != 0 ||
+             (u32)(i - 2) >= 2)) {
+            continue;
+        }
+        if (h->hero_status & 0xC000) {
+            continue;
+        }
+        e = h->hero_eng;
+        d = x - e->unk10.x;
+        if (d < -lim) {
+            continue;
+        }
+        if (lim < d) {
+            continue;
+        }
+        d = z - e->unk10.z;
+        n = -lim;
+        if (n < d && d < lim) {
+            return i;
+        }
+    }
+    return -1;
+}
 static inline s32 Ovl5fNear(s32 a, s32 b) {
     s32 d;
 
