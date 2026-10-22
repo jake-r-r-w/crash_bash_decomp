@@ -484,7 +484,339 @@ s32 func_800B6138(s32 arg0) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B62EC);
+s32 func_800B62EC(s32 player) {
+    NAS *bestNas;
+    s32 bestHeroScore;
+    s32 r;
+    s32 bestHero;
+    s32 bestCell;
+    s32 px;
+    s32 mate;
+    s32 pz;
+    s32 wRnd;
+    s32 bestNasScore;
+    EXTbotai *ai;
+    EXTengine *e;
+    EXTengine *he;
+    NAS *n;
+    EXTobject *f;
+    EXTobject *obj;
+    u16 wNear;
+    u16 wFar;
+    u16 wHero;
+    s16 wHealth;
+    s16 wNas;
+    s16 w;
+    s32 lvl;
+    s32 inv;
+    s32 rnd;
+    s32 d;
+    s32 dh;
+    s32 dx;
+    s32 dz;
+    s32 d2;
+    s32 cnt;
+    s32 i;
+    s32 k;
+    s32 wt;
+
+    n = D_8005AA24;
+    bestNas = NULL;
+    bestHero = -1;
+    bestCell = -1;
+    bestHeroScore = 0;
+    mate = Heroes[player].hero_teammate;
+    he = Heroes[player].hero_eng;
+    ai = Heroes[player].hero_ai;
+    px = he->unk10.x;
+    pz = he->unk10.z;
+    Random(0x100);
+    bestNasScore = 0;
+    if (func_800B6FE0(player) < 0x300) {
+        wNear = 0;
+        wFar = 8;
+    } else {
+        wNear = 8;
+        wFar = 0;
+    }
+    r = Random(0x1000);
+    if (Heroes[player].hero_weapon_count != 0) {
+        wHero = 0xA0;
+        switch (Heroes[player].hero_pu) {
+        case 0x19:
+        case 0x1B:
+            wNear = 0;
+            wFar = 0xA;
+            break;
+        case 0x1C:
+        default:
+            wNear = 0xA;
+            wFar = 0;
+            break;
+        }
+    } else {
+        wHero = 0;
+    }
+    wNas = 0x20;
+    lvl = D_8009D87C[player].unk0;
+    i = Heroes[player].hero_health;
+    w = ((lvl - 0x10) * 2) | 1;
+    if (i < 0) {
+        i = 0;
+    }
+    if (i > 0x14) {
+        i = 0x14;
+    }
+    inv = 0x10 - lvl;
+    wHealth = D_800C3AC4[i] + inv * 4;
+    if (Heroes[player].hero_pu == 0x14) {
+        wHero = 0xA0;
+        wNas = 0;
+        w = wNear = 0x200;
+        wFar = 0;
+        wHealth = 0;
+    }
+    i = 0x180 - inv * 0x10;
+    wRnd = i;
+    switch (D_8005A648) {
+    case 1:
+        if (Random(3) == 0) {
+            rnd = (s16)i * wHealth + 0x2000;
+        } else {
+            rnd = 0;
+        }
+        break;
+    case 2:
+        if (Random(4) == 0) {
+            rnd = (s16)i * wHealth + 0x3000;
+        } else {
+            rnd = 0;
+        }
+        break;
+    case 3:
+        if (Random(8) == 0) {
+            rnd = (s16)i * wHealth + 0x4000;
+        } else {
+            rnd = 0;
+        }
+        break;
+    default:
+        if (Random(6) == 0) {
+            rnd = (s16)wRnd * wHealth + 0x4000;
+        } else {
+            rnd = 0;
+        }
+        break;
+    }
+    if (ai->AIinitial_delay != 0) {
+        r = Random(0x400);
+        w = 0;
+        wNear = 0;
+        wFar = 0;
+    }
+    if (n != NULL) {
+    do {
+        wRnd = wNas;
+        wt = wRnd + 8;
+        e = n->Engine;
+        if (e == NULL) continue;
+        f = (EXTobject *)n->FUX;
+        if (f == NULL) continue;
+        switch (f->whatami) {
+        case 1: case 3: case 4: case 5:
+            if (f->status != 1) continue;
+            dx = px - e->unk10.x;
+            dz = pz - e->unk10.z;
+            d = csqrt(dx * dx + dz * dz) >> 6;
+            d = (0x1000 - abs(d - r)) * wt;
+            cnt = 0;
+            for (i = 0; i < 4; i++) {
+                if (ai->pTargetNas == n) cnt += 2;
+            }
+            if (cnt != 0) d >>= cnt;
+            if (bestNasScore < d) {
+                bestNas = n;
+                bestNasScore = d;
+            }
+            continue;
+        case 14:
+            if (f->status != 1) continue;
+            dx = px - e->unk10.x;
+            dz = pz - e->unk10.z;
+            d2 = csqrt(dx * dx + dz * dz) >> 6;
+            d = 0x800 - d2;
+            if (d < 0) d = 0;
+            d *= wNear + wRnd;
+            d2 *= wFar | wRnd;
+            cnt = 0;
+            for (i = 0; i < 4; i++) {
+                if (ai->pTargetNas == n) cnt += 2;
+            }
+            if (cnt != 0) {
+                d >>= cnt;
+                d2 >>= cnt;
+            }
+            if (bestNasScore < d) {
+                bestNas = n;
+                bestNasScore = d;
+            }
+            if (bestNasScore < d2) {
+                bestNas = n;
+                bestNasScore = d2;
+            }
+            continue;
+        case 18: case 19: case 25: case 27: case 28:
+            dx = px - e->unk10.x;
+            dz = pz - e->unk10.z;
+            d = csqrt(dx * dx + dz * dz) >> 6;
+            d = abs(d - r) * 0xFA;
+            cnt = 0;
+            for (i = 0; i < 4; i++) {
+                if (ai->pTargetNas == n) cnt += 2;
+            }
+            if (cnt != 0) d >>= cnt;
+            if (bestNasScore < d) {
+                bestNas = n;
+                bestNasScore = d;
+            }
+            continue;
+        case 2:
+            dx = px - e->unk10.x;
+            dz = pz - e->unk10.z;
+            d = csqrt(dx * dx + dz * dz) >> 6;
+            d = abs(d - r) * 0x190;
+            if (Heroes[player].hero_pu != 0) {
+                d >>= 8;
+            }
+            cnt = 0;
+            for (i = 0; i < 4; i++) {
+                if (ai->pTargetNas == n) cnt += 1;
+            }
+            if (cnt != 0) d >>= cnt;
+            if (bestNasScore < d) {
+                bestNas = n;
+                bestNasScore = d;
+            }
+            continue;
+        case 17:
+            dx = px - e->unk10.x;
+            dz = pz - e->unk10.z;
+            d2 = csqrt(dx * dx + dz * dz) >> 6;
+            d = 0xE00 - d2;
+            if (d < 0) d = 0;
+            cnt = 0;
+            d *= wNear + wHealth;
+            for (i = 0; i < 4; i++) {
+                if (ai->pTargetNas == n) cnt += 3;
+            }
+            if (cnt != 0) d >>= cnt;
+            if (bestNasScore < d) {
+                bestNas = n;
+                bestNasScore = d;
+            }
+            continue;
+        default:
+            continue;
+        }
+    } while ((n = n->Object.Child) != NULL);
+    }
+    for (i = 0; i < 4; i++) {
+        s32 wn = (s16)wNear;
+        wRnd = (s16)wHero;
+        if (i == player) continue;
+        if (OVLG->p2_active != 0 && i == mate) continue;
+        if (Heroes[i].hero_status & 0xFA00) continue;
+        do {
+            dx = px - Heroes[i].hero_eng->unk10.x;
+            dz = pz - Heroes[i].hero_eng->unk10.z;
+        } while (0);
+        if (Heroes[player].hero_pu != 0x14) {
+            obj = Heroes[i].hero_object;
+            if (obj != NULL) {
+                if (OVLG->mode == 1) {
+                    if (obj->whatami == 7) {
+                        w += 1;
+                    } else {
+                        w += 5;
+                    }
+                } else if (obj->whatami == 7) {
+                    w += 8;
+                } else {
+                    w += 0x10;
+                }
+            } else {
+                w = 0;
+            }
+        }
+        if (Heroes[i].hero_mode == 2) {
+            w += 0x20;
+        }
+        d2 = csqrt(dx * dx + dz * dz) >> 6;
+        dh = 0x800 - d2;
+        if (dh < 0) dh = 0;
+        dh *= wn + w + wRnd;
+        d2 *= wFar - w - wRnd;
+        cnt = 0;
+        for (k = 0; k < 4; k++) {
+            if (ai->TargetPlayer == k) cnt += 6;
+        }
+        if (cnt != 0) {
+            dh >>= cnt;
+            d2 >>= cnt;
+        }
+        if (bestHeroScore < dh) {
+            bestHero = i;
+            bestHeroScore = dh;
+        }
+        if (bestHeroScore < d2) {
+            bestHero = i;
+            bestHeroScore = d2;
+        }
+    }
+    switch (ai->AIaborted_mode) {
+    case 2:
+        bestNasScore = 0;
+        break;
+    case 3:
+        bestHeroScore = 0;
+        break;
+    case 4:
+        rnd = 0;
+        break;
+    }
+    if (bestNasScore < rnd && bestHeroScore < rnd) {
+        d2 = 0;
+        for (i = 7; i < 0x10; i++) {
+            d = 0x7FFFFF;
+            for (k = 0; k < 4; k++) {
+                if (k == player) continue;
+                dx = D_800C3A04[i].x - Heroes[k].hero_eng->unk10.x;
+                dz = D_800C3A04[i].z - Heroes[k].hero_eng->unk10.z;
+                if (dx * dx + dz * dz < d) {
+                    d = d2;
+                }
+            }
+            if (d2 < d) {
+                d2 = d;
+                bestCell = i;
+            }
+        }
+        ai->TargetPlayer = bestCell;
+        ai->pTargetNas = NULL;
+        return 1;
+    }
+    if (bestHeroScore < bestNasScore) {
+        ai->pTargetNas = bestNas;
+        ai->TargetPlayer = -1;
+        return 1;
+    }
+    if (bestHeroScore > 0x14) {
+        ai->TargetPlayer = bestHero;
+        ai->pTargetNas = NULL;
+        return 1;
+    }
+    return 0;
+}
 
 s32 func_800B6DA4(s32 arg0) {
     s32 i;

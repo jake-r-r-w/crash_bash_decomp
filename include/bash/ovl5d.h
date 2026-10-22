@@ -64,7 +64,9 @@ typedef struct {
     /* 0x2C */ s32 flags;
 } Ovl5dAiState;
 
-void func_800B62EC(void);
+s32 func_800B62EC(s32 player);
+extern u16 D_800C3AC4[];      /* func_800B62EC: weight by hero_health (0..20) */
+extern SLONG_XYZ D_800C3A04[]; /* func_800B62EC: grid points, 7..15 scanned */
 
 void func_800B6F0C(void);
 
