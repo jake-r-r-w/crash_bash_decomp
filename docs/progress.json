@@ -7,12 +7,6 @@
    "size": 5772
   },
   {
-   "name": "PlotScriptFX",
-   "note": "parked by hand at regions 95/112, 484/520 exact; C under #ifdef NON_MATCHING. Block 21 (2026-10-18 pm): the target's lw start,0(v0) is reorg (fill_slots_from_thread rewrites the insn after a reg-reg copy to use the copy's source), so its RTL loads start via cur; but it also needs p = p + 80 on the temp (cur not cse-canonical: cur's last use <= the temp's, make_regs_eqv) and end = mem(next) (next canonical: next's last use > the temp's), with no insn pair swap (cse.c REG0/REG1 copy swap needs p++ and next = p adjacent). In RTL order cur's last use (fade) comes after next's, so one temp can't satisfy both; 14 statement orders, 6 dispatch shapes and a late use of p tried. f/cur s1/s2 likely follows from it (cur would lose ~6 refs). Next: a source where the A and A+80 temps are different pseudos, or cur/next's last uses ordered next-last",
-   "seg": "overlays/engine/8007ee2c",
-   "size": 2080
-  },
-  {
    "name": "func_800C284C",
    "note": "STAGE instructions 2/197 (the swarm checkpoint has the C; it no longer applies). Same code as func_800BC274 (ovl5e), parked there after five passes: only `addiu a1`/`lw a0` before jal func_8001CD04 are swapped (a sched1 tie). Solve the three together from its note (decomp.py next --func func_800BC274).",
    "seg": "overlays/ovl5d/800bff1c",
@@ -37,9 +31,9 @@
    "size": 788
   }
  ],
- "commit": "9b818fd0",
+ "commit": "f0641e91",
  "game": "SCUS_945.70",
- "generated": "2026-10-22T21:45:13Z",
+ "generated": "2026-10-22T22:17:14Z",
  "history": [
   {"commit": "9d2e150", "data_b": 0, "data_tb": 182932, "game_all_f": 1140, "game_b": 152, "game_f": 19, "game_named_f": 0, "game_tb": 247148, "lib_b": 0, "lib_f": 0, "lib_tb": 0, "ts": "2026-10-10T08:35:31Z", "units": {"engine": [80, 10], "main exe": [136, 17], "ovl5d": [16, 2], "ovl5e": [16, 2], "ovl5f": [72, 9], "ovl60": [16, 2], "ovl61": [24, 3], "ovl62": [160, 20], "ovl63": [16, 2], "ovl64": [24, 3], "ovl65": [24, 3], "ovl66": [32, 4], "ovl67": [40, 5], "ovl68": [48, 6], "ovl69": [40, 5], "ovl6a": [32, 4]}},
   {"commit": "d76b415", "data_b": 0, "data_tb": 182932, "game_all_f": 574, "game_b": 136, "game_f": 17, "game_named_f": 0, "game_tb": 124840, "lib_b": 8, "lib_f": 1, "lib_tb": 118356, "ts": "2026-10-10T08:51:01Z", "units": {"main exe": [136, 17], "psyq": [121280, 535]}},
@@ -2178,9 +2172,18 @@
   {"commit": "7690e207", "data_b": 9160, "data_tb": 606943, "game_all_f": 2537, "game_b": 940188, "game_c_f": 2508, "game_f": 2508, "game_named_f": 602, "game_tb": 1019036, "game_typed_f": 2282, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-22T13:19:31Z", "units": {"engine": [121412, 355], "main exe": [124840, 575], "ovl5d": [45024, 99], "ovl5e": [30984, 71], "ovl5f": [78776, 177], "ovl60": [57728, 175], "ovl61": [55000, 97], "ovl62": [112408, 212], "ovl63": [69860, 134], "ovl64": [28488, 55], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
   {"commit": "0954b0c3", "data_b": 9208, "data_tb": 606943, "game_all_f": 2537, "game_b": 941536, "game_c_f": 2509, "game_f": 2509, "game_named_f": 602, "game_tb": 1019036, "game_typed_f": 2283, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-22T20:40:38Z", "units": {"engine": [121412, 355], "main exe": [124840, 575], "ovl5d": [45024, 99], "ovl5e": [30984, 71], "ovl5f": [78776, 177], "ovl60": [59076, 176], "ovl61": [55000, 97], "ovl62": [112408, 212], "ovl63": [69860, 134], "ovl64": [28488, 55], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
   {"commit": "75b1e35e", "data_b": 9320, "data_tb": 606943, "game_all_f": 2537, "game_b": 944280, "game_c_f": 2510, "game_f": 2510, "game_named_f": 602, "game_tb": 1019036, "game_typed_f": 2284, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-22T21:07:35Z", "units": {"engine": [121412, 355], "main exe": [124840, 575], "ovl5d": [47768, 100], "ovl5e": [30984, 71], "ovl5f": [78776, 177], "ovl60": [59076, 176], "ovl61": [55000, 97], "ovl62": [112408, 212], "ovl63": [69860, 134], "ovl64": [28488, 55], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
-  {"commit": "9b818fd0", "data_b": 9320, "data_tb": 606943, "game_all_f": 2537, "game_b": 945668, "game_c_f": 2511, "game_f": 2511, "game_named_f": 602, "game_tb": 1019036, "game_typed_f": 2285, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-22T21:45:13Z", "units": {"engine": [121412, 355], "main exe": [124840, 575], "ovl5d": [47768, 100], "ovl5e": [30984, 71], "ovl5f": [78776, 177], "ovl60": [60464, 177], "ovl61": [55000, 97], "ovl62": [112408, 212], "ovl63": [69860, 134], "ovl64": [28488, 55], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}}
+  {"commit": "9b818fd0", "data_b": 9320, "data_tb": 606943, "game_all_f": 2537, "game_b": 945668, "game_c_f": 2511, "game_f": 2511, "game_named_f": 602, "game_tb": 1019036, "game_typed_f": 2285, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-22T21:45:13Z", "units": {"engine": [121412, 355], "main exe": [124840, 575], "ovl5d": [47768, 100], "ovl5e": [30984, 71], "ovl5f": [78776, 177], "ovl60": [60464, 177], "ovl61": [55000, 97], "ovl62": [112408, 212], "ovl63": [69860, 134], "ovl64": [28488, 55], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
+  {"commit": "f0641e91", "data_b": 9320, "data_tb": 606943, "game_all_f": 2537, "game_b": 947748, "game_c_f": 2512, "game_f": 2512, "game_named_f": 602, "game_tb": 1019036, "game_typed_f": 2286, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-22T22:17:14Z", "units": {"engine": [123492, 356], "main exe": [124840, 575], "ovl5d": [47768, 100], "ovl5e": [30984, 71], "ovl5f": [78776, 177], "ovl60": [60464, 177], "ovl61": [55000, 97], "ovl62": [112408, 212], "ovl63": [69860, 134], "ovl64": [28488, 55], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}}
  ],
  "recent": [
+  {
+   "at": "2026-10-22T22:17:12Z",
+   "auto": false,
+   "name": "PlotScriptFX",
+   "seg": "overlays/engine/8007ee2c",
+   "size": 2080,
+   "tries": 1
+  },
   {
    "at": "2026-10-22T21:45:11Z",
    "auto": true,
@@ -2292,18 +2295,10 @@
    "seg": "overlays/ovl62/ovl62",
    "size": 2348,
    "tries": 0
-  },
-  {
-   "at": "2026-10-22T11:51:49Z",
-   "auto": true,
-   "name": "func_800BBF2C",
-   "seg": "overlays/ovl62/ovl62",
-   "size": 3440,
-   "tries": 0
   }
  ],
  "summary": {
-  "blocked": 6,
+  "blocked": 5,
   "copies_b": 1576,
   "data": {
    "done_b": 9320,
@@ -2314,16 +2309,16 @@
    "all_f": 2537,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 6,
-   "c_f": 2511,
-   "done_b": 945668,
-   "done_f": 2511,
+   "blocked": 5,
+   "c_f": 2512,
+   "done_b": 947748,
+   "done_f": 2512,
    "named_f": 602,
-   "pct": 92.80025435804035,
+   "pct": 93.00436883485962,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2537,
-   "typed_f": 2285
+   "typed_f": 2286
   },
   "lib": {
    "all_f": 566,
@@ -2345,21 +2340,21 @@
     "all_f": 357,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 2,
-    "c_f": 355,
-    "done_b": 121412,
-    "done_f": 355,
+    "blocked": 1,
+    "c_f": 356,
+    "done_b": 123492,
+    "done_f": 356,
     "file": "engine.bin",
     "files": 6,
     "lib": false,
     "named_f": 18,
-    "pct": 93.92560960514915,
+    "pct": 95.53471964352023,
     "phase": 3,
     "sony_b": 0,
     "title": "Engine",
     "total_b": 129264,
     "total_f": 357,
-    "typed_f": 330,
+    "typed_f": 331,
     "unit": "engine"
    },
    {

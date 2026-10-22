@@ -3599,11 +3599,10 @@
   "status": "matched"
  },
  "engine:8008BB48": {
-  "auto_failed": "types",
   "blocked_at": "2026-10-18T10:26:21Z",
-  "note": "parked by hand at regions 95/112, 484/520 exact; C under #ifdef NON_MATCHING. Block 21 (2026-10-18 pm): the target's lw start,0(v0) is reorg (fill_slots_from_thread rewrites the insn after a reg-reg copy to use the copy's source), so its RTL loads start via cur; but it also needs p = p + 80 on the temp (cur not cse-canonical: cur's last use <= the temp's, make_regs_eqv) and end = mem(next) (next canonical: next's last use > the temp's), with no insn pair swap (cse.c REG0/REG1 copy swap needs p++ and next = p adjacent). In RTL order cur's last use (fade) comes after next's, so one temp can't satisfy both; 14 statement orders, 6 dispatch shapes and a late use of p tried. f/cur s1/s2 likely follows from it (cur would lose ~6 refs). Next: a source where the A and A+80 temps are different pseudos, or cur/next's last uses ordered next-last",
+  "matched_at": "2026-10-22T22:17:12Z",
   "started": "2026-10-18T09:39:07Z",
-  "status": "blocked",
+  "status": "matched",
   "tries": 1
  },
  "engine:8008C368": {

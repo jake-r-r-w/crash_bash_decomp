@@ -806,4 +806,6 @@ typedef struct ScriptKey {
 } ScriptKey;
 extern s32 D_8009E194;
 
+void PlotScriptFX(NAS *nas);
+
 #endif /* BASH_8007EE2C_H */

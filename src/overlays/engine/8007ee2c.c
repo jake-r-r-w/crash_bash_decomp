@@ -5470,7 +5470,6 @@ void InitScriptFX(NAS *nas)
 
 }
 
-#ifdef NON_MATCHING
 void PlotScriptFX(NAS *nas) {
     volatile s32 t0 = 0;
     volatile s32 t1 = 0;
@@ -5493,6 +5492,7 @@ void PlotScriptFX(NAS *nas) {
     s32 nf;
     s32 alpha;
     u32 fl;
+    s32 first;
 
     t0 = VSync(1);
     if (((EngineGameView *)D_8005A614)->mode == 0x2C && D_8009E194 != 0) {
@@ -5549,12 +5549,17 @@ void PlotScriptFX(NAS *nas) {
                     next = p;
                     nf = next->frame;
                     d = nf - start;
+                    first = kf->frame;
                     p = &kf[t->keycount - 1];
-                    if (p->frame < sd->timer >> 8 || sd->timer >> 8 < kf->frame) {
+                    if (p->frame < sd->timer >> 8 || sd->timer >> 8 < first) {
                         sub->flags &= ~0x8000;
                     } else {
                         sub->flags |= 0x8000;
                     }
+                    f = 0;
+                    do {} while (0);
+                    f = 0;
+                    do {} while (0);
                     f = 0;
                     if (sd->timer - start > 0) {
                         f = sd->timer - (start << 8);
@@ -5577,6 +5582,7 @@ void PlotScriptFX(NAS *nas) {
                         sub->unk20.x = cur->sx + (next->sx - cur->sx) * f / (d << 8);
                         sub->unk52 = 1;
                         sub->unk20.y = cur->sy + (next->sy - cur->sy) * f / (d << 8);
+                        sub->unk52 = 1;
                         sub->unk20.z = cur->sz + (next->sz - cur->sz) * f / (d << 8);
                         fl = sub->flags & ~0x40000000;
                         sub->flags = fl;
@@ -5584,6 +5590,7 @@ void PlotScriptFX(NAS *nas) {
                         sub->unk76 = 0x1000 - alpha;
                         sub->flags = fl | 0x40000000;
                     }
+                    p = NULL;
                     if (sd->timer >= nf << 8) {
                         t->keyindex++;
                     }
@@ -5636,9 +5643,6 @@ void PlotScriptFX(NAS *nas) {
     t1;
     t0;
 }
-#else
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/8007ee2c", PlotScriptFX);
-#endif
 
 void PlotSmokePoof(NAS *m) {
     s32 w = m->UserInfo.user1;
