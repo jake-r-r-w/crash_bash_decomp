@@ -98,3 +98,4 @@ ResetToBasicWeapon = 0x800B6FF4; // type:func
 AnimateTank = 0x800B6ED8; // type:func
 CreateMineShrapnelBits = 0x800BD654; // type:func
 MissileCollideWithPickup = 0x800BF548; // type:func
+SetMoeJoeMode = 0x800C6914; // type:func

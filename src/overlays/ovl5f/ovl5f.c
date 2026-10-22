@@ -1171,7 +1171,7 @@ void func_800B6354(s32 player, s32 damage) {
     h->hero->UserInfo.status = 0x20;
     ta = &D_800CAD50[player];
     if (D_8005A648 == 9 && (u32)(player - 2) < 2) {
-        func_800C6914(player, 0x69);
+        SetMoeJoeMode(player, 0x69);
     } else {
         SetHeroAction((HeroInfo *)player, 0x69);
     }
@@ -6475,7 +6475,7 @@ void func_800C68C8(s32 arg0) {
     func_800C4B60(arg0);
 }
 
-void func_800C6914(s32 hero, s32 mode) {
+void SetMoeJoeMode(s32 hero, s32 mode) {
     u16 last = Heroes[hero].hero_mode;
 
     Heroes[hero].hero_mode = mode;

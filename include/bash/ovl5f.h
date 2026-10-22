@@ -470,7 +470,6 @@ void func_800C4B60(s32 arg0);
 
 void func_800C68C8(s32 arg0);
 
-void func_800C6914(s32 hero, s32 mode);
 
 s32 func_800C6A30(s32 arg0);
 

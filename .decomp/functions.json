@@ -28497,7 +28497,7 @@
   "fp": "a1bbdf1b28ab14a1",
   "fpn": "f3cd723c4c57d85f",
   "leaf": false,
-  "name": "func_800C6914",
+  "name": "SetMoeJoeMode",
   "orig": "func_800C6914",
   "rom": 79456,
   "seg": "overlays/ovl5f/ovl5f",
