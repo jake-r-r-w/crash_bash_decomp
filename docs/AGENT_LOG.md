@@ -118,6 +118,17 @@ and current tools).
   lacks), `func_800B4954` 5/97, `func_800B4D64` 5/94, `func_800B4A1C`
   6/58, `func_800BB4AC` 6/54, `func_80095258` 7/39, `func_800BB010` 8/73,
   then 15 more at 9-15 registers. Work them by hand, nearest first.
+  Worked 2026-10-22: `PogoWinner_Relic` fixed (348e2185). Still hacks:
+  `func_800B4954`: block 0 has three local qtys, and local-alloc.c's
+  hand-written case-3 sort compares qty numbers, so qty 0 (the
+  D_800C4184 base) is allocated first unless qty1 > qty0 and qty2 > qty1
+  (then qty 2, the loaded value, goes first and the base gets v1, as in
+  the target); natural if/else, `arg0[T]`, pointer forms, s16/flag temps
+  all stay at 5/97. `func_800B4D64` is permuter C (goto loop, casts):
+  needs a full rewrite first. `func_80095258`: a `for` loop reloads
+  D_800A0C70 (stores may alias it; the target keeps `n` in a register)
+  and loop.c reduces a different entry giv (target: `&ent[i].val` at
+  0x66 with the kind at -2), so the entry layout is still uncertain.
 - **Header do-whiles to review (lint extended 2026-10-22).** The lint now
   reads the macros and `static inline` functions a body uses (outside the
   leaked headers), and matches `do { } while (0)` at any brace depth (the
