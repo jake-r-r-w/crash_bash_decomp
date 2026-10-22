@@ -545,6 +545,12 @@ signature alone is not enough.
     follows the leak's).
   - Tank: `TA_EarliestTriggers`; hooks `TA_InitHero`, `TA_HeroBot`,
     `TA_KeepInBounds`, `TA_CreateShadow`, `TA_PreMoveHero`, `TA_MoveHero`.
+    Also from their code: `SetHullSFX` / `SetTurretSFX` /
+    `SetFireBreatherSFX` (each swaps one `TA_player` sound: `HullSFX`,
+    `TurretSFX`, `FireBreatherSFX`), `ResetToBasicWeapon` (999 rounds and
+    the hero's basic weapon type) and `AnimateTank` (idle anim, with a
+    random `tankidle1` and sound after `IdleAnimCt`; it follows
+    `TA_MoveHero` in code as in the leak).
   - Polar (ovl62): `InitialisePOLARFirst`, `InitialisePOLAR`, `UpdatePOLAR`;
     hooks `Polar_HeroBot` and `DoNowt` (the `CheckBounds` hook, which only
     returns 0). From the AI: `PlayerActionCount(action, player)` counts the

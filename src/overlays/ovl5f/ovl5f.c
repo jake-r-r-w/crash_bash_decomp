@@ -1049,9 +1049,9 @@ void func_800B5FC4(void) {
         ta->PosX = eng->unk10.x;
         ta->PosZ = eng->unk10.z;
         if (e <= 0) {
-            func_800C8090(i, eng, 0);
-            func_800C8008(i, (s32)eng, 0);
-            func_800C7F80(i, (s32)eng, 0);
+            SetHullSFX(i, eng, 0);
+            SetTurretSFX(i, (s32)eng, 0);
+            SetFireBreatherSFX(i, (s32)eng, 0);
         }
     }
     if (D_800CB0E0 <= 0) {
@@ -1179,9 +1179,9 @@ void func_800B6354(s32 player, s32 damage) {
         ta->Energy -= damage;
     }
     if (ta->Energy <= 0) {
-        func_800C8090(player, eng, 0);
-        func_800C8008(player, (s32)eng, 0);
-        func_800C7F80(player, (s32)eng, 0);
+        SetHullSFX(player, eng, 0);
+        SetTurretSFX(player, (s32)eng, 0);
+        SetFireBreatherSFX(player, (s32)eng, 0);
         ta->Energy = 0;
         if ((((Ovl5fGameView *)D_8005A614)->w4 & 0x80000002) == 0x80000002) {
             ta->Energy = 2;
@@ -1309,7 +1309,7 @@ void TA_InitHero(u32 player) {
     ta->TurretFiring = -1;
     ta->TauntDelay = 0;
     ta->ForceFieldDelay = 0;
-    func_800B6FF4(player);
+    ResetToBasicWeapon(player);
     if (D_8005A614[player + 0x5C] != 0) {
         ta->MainWeaponFireDelay = 0x96;
     } else {
@@ -1380,25 +1380,25 @@ void TA_MoveHero(u32 player) {
             if (ta->HangaboutTime != 0) {
                 ta->HangaboutTime--;
             }
-            func_800C8090(player, eng, D_800C94C8[player]);
+            SetHullSFX(player, eng, D_800C94C8[player]);
         } else {
             if (!(hero->hero_status & 0xFA00)) {
                 ta->HangaboutTime++;
             }
-            func_800C8090(player, eng, 0);
+            SetHullSFX(player, eng, 0);
         }
         if (ta->TurretSFXDuration != 0) {
             if (--ta->TurretSFXDuration == 0) {
-                func_800C8008(player, (s32)eng, 0);
+                SetTurretSFX(player, (s32)eng, 0);
             } else {
-                func_800C8008(player, (s32)eng, D_800C94D8[player]);
+                SetTurretSFX(player, (s32)eng, D_800C94D8[player]);
             }
         }
     } else {
         if (((PadButtons *)D_80051338)[player].unk50 & 0x800) {
-            func_800C8090(player, eng, D_800C9408[player]);
+            SetHullSFX(player, eng, D_800C9408[player]);
         } else {
-            func_800C8090(player, eng, 0);
+            SetHullSFX(player, eng, 0);
         }
     }
     if (((Ovl5fModeView *)D_8005A614)->mode == 8 && D_8005A614[player + 0x5C] == 0 &&
@@ -1414,7 +1414,7 @@ void TA_MoveHero(u32 player) {
     }
 }
 
-void func_800B6ED8(s32 player) {
+void AnimateTank(u32 player) {
     if (D_8005A614[player + 0x5C] != 0) {
         if (++D_800CAD50[player].IdleAnimCt >= 0x50 && D_800CB0F0 == 0) {
             D_800CAD50[player].IdleAnimCt = Random(0x1E);
@@ -1428,7 +1428,7 @@ void func_800B6ED8(s32 player) {
     SetHeroSeq((HeroInfo *)player, 0x59);
 }
 
-void func_800B6FF4(s32 player) {
+void ResetToBasicWeapon(s32 player) {
     TA_player *ta;
     subengine *sub;
 
@@ -1589,7 +1589,7 @@ void func_800B71F8(s32 player) {
             }
             ta->TurretFiring = -1;
             if (ta->MainWeaponRounds <= 0) {
-                func_800B6FF4(player);
+                ResetToBasicWeapon(player);
             }
         }
         if (sub->unk74 == 0x4004) {
@@ -1693,7 +1693,7 @@ void SetTankHeroIdle(u32 player) {
             D_800CAD50[player].FireBreatherSFX = 0;
             StopSfx(D_800CAD50[player].FireBreatherSFXHandler);
         }
-        func_800B6ED8(player);
+        AnimateTank(player);
     }
 }
 
@@ -1738,7 +1738,7 @@ void TankHeroTurn(u32 player) {
 
         func_800B77E8(player);
         if (func_8008502C(player) != 0) {
-            func_800B6ED8(player);
+            AnimateTank(player);
         }
         hb = Heroes;
         h = &hb[player];
@@ -4715,9 +4715,9 @@ void PlotTankBoss(NAS *nas) {
         if (--fux->unk28 == 0) {
             eng->flags &= ~0x8000;
             fux->unk30 = 0;
-            func_800B6FF4(0);
+            ResetToBasicWeapon(0);
             if (D_8005A680[0] != 0) {
-                func_800B6FF4(1);
+                ResetToBasicWeapon(1);
             }
         }
         break;
@@ -5459,7 +5459,7 @@ void func_800C4548(s32 player) {
             sub->unk74 = anim;
             ta->TurretFiring = -1;
             if (ta->MainWeaponRounds <= 0) {
-                func_800B6FF4(player);
+                ResetToBasicWeapon(player);
             }
         }
         if (sub->unk74 == 0x4004) {
@@ -6051,7 +6051,7 @@ void func_800C57B0(NAS *nas, s32 id) {
     ta->IdleAnimCt = Random(0x1E);
     ta->TurretFiring = -1;
     ta->TauntDelay = 0;
-    func_800B6FF4(p);
+    ResetToBasicWeapon(p);
     ta->MainWeaponFireDelay = 0x1E;
     ta->MainWeaponNas[0] = (NAS *)0xFFEEEEFF;
     ta->MainWeaponNas[2] = (NAS *)0xFFEEEEFF;
@@ -7247,7 +7247,7 @@ void func_800C7F18(NAS *nas, s32 player) {
     KillNAS(nas);
 }
 
-void func_800C7F80(s32 player, s32 unused, s32 ReqdSFX) {
+void SetFireBreatherSFX(s32 player, EXTengine *unused, s32 ReqdSFX) {
     if (D_800CAD50[player].FireBreatherSFX != ReqdSFX) {
         D_800CAD50[player].FireBreatherSFX = ReqdSFX;
         if (ReqdSFX == 0) {
@@ -7258,7 +7258,7 @@ void func_800C7F80(s32 player, s32 unused, s32 ReqdSFX) {
     }
 }
 
-void func_800C8008(s32 player, s32 unused, s32 ReqdSFX) {
+void SetTurretSFX(s32 player, EXTengine *unused, s32 ReqdSFX) {
     if (D_800CAD50[player].TurretSFX != ReqdSFX) {
         D_800CAD50[player].TurretSFX = ReqdSFX;
         if (ReqdSFX == 0) {
@@ -7269,7 +7269,7 @@ void func_800C8008(s32 player, s32 unused, s32 ReqdSFX) {
     }
 }
 
-void func_800C8090(s32 player, EXTengine *pEngine, s32 ReqdSFX) {
+void SetHullSFX(s32 player, EXTengine *pEngine, s32 ReqdSFX) {
     if (D_800CAD50[player].HullSFX != ReqdSFX) {
         D_800CAD50[player].HullSFX = ReqdSFX;
         if (ReqdSFX == 0) {

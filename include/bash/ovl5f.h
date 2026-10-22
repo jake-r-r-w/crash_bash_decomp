@@ -56,7 +56,6 @@ extern s32 D_800C9A54[];
 extern s32 D_800C9AA4[];
 extern s32 D_800C9AF4[];
 extern s32 D_800C9B44[];
-void func_800B6FF4(s32 player);
 extern s32 D_800CB254;
 extern s32 D_800CB258;
 extern s16 D_8009D634;
@@ -326,7 +325,6 @@ extern Ovl5fU16Pad D_800CA650[];    /* PlotHelicopterTA's rotor frames, by UserI
 /* PlotPillarControl's waves: delay, then {x, z, angle} until x < 0. */
 extern s32 *D_800CA8C4[];
 extern s32 D_800CB204;      /* next wave */
-void func_800B6ED8(s32 player);
 extern s32 D_800CB260;
 extern NAS *D_800CB264[8];    /* objects func_800C8598 adds and func_800C8560 removes; func_800C84D8 tests their distance */
 extern NAS *D_800CB0C0[8];
@@ -375,7 +373,7 @@ void func_800C7E68(HeroInfo *hero, Ovl5fActObj *obj, s32 arg2);
 void func_800C7EB0(HeroInfo *hero, Ovl5fActState *state, s32 arg2);
 
 
-void func_800C8090(s32 player, EXTengine *pEngine, s32 ReqdSFX);
+void SetHullSFX(s32 player, EXTengine *pEngine, s32 ReqdSFX);
 
 void func_800C81C8(s32 x, s32 z, s32 range, s32 arg3);
 
@@ -486,9 +484,8 @@ void func_800C7298(NAS *nas);
 
 void func_800C7F18(NAS *nas, s32 player);
 
-void func_800C7F80(s32 player, s32 unused, s32 ReqdSFX);
 
-void func_800C8008(s32 player, s32 unused, s32 ReqdSFX);
+void SetTurretSFX(s32 player, EXTengine *unused, s32 ReqdSFX);
 
 s32 func_800C8120(s32 arg0);
 
@@ -757,7 +754,7 @@ void func_800C4548(s32 player);
 
 void func_800C57B0(NAS *nas, s32 id);
 
-/* func_800C8090 (SetHullSFX) inlined by func_800C5BCC. */
+/* SetHullSFX inlined by func_800C5BCC. */
 #define OVL5F_SET_HULL_SFX(player, pEngine, ReqdSFX)                        \
     {                                                                       \
         s32 sfx_ = (ReqdSFX);                                               \
@@ -774,7 +771,7 @@ void func_800C57B0(NAS *nas, s32 id);
         }                                                                   \
     }
 
-/* func_800C8008 (SetTurretSFX) inlined by func_800C5BCC. */
+/* SetTurretSFX inlined by func_800C5BCC. */
 #define OVL5F_SET_TURRET_SFX(player, ReqdSFX)                               \
     {                                                                       \
         s32 sfx_ = (ReqdSFX);                                               \
