@@ -104,6 +104,20 @@ and current tools).
 
 ## Open leads
 
+- **Hack triage (2026-10-22, `scratch/triage.py`, all 103 hack matches).**
+  Each was tried with its do-while wrappers flattened, with narrow
+  parameters widened to `s32`, and checked for callees that never read an
+  argument it passes. None matched that way; both "wide" matches still use
+  a do-while in a header macro, and the unused-argument hits were false
+  (the wrong overlay's `XZBoxToSphere`; `a1` passed through to a call; a
+  real `a2` in a delay slot). Without the hack, 53 are off only in
+  registers, 9 in instruction order, 25 in structure, and 16 have no plain
+  form to try (helpers, identical arms, dead stores, no-op pairs). Closest:
+  `PogoWinner_Relic` 1/248 (the target sets `i = done` from `done`'s
+  register, so cse had lost `done = 0` there: a join or loop note the C
+  lacks), `func_800B4954` 5/97, `func_800B4D64` 5/94, `func_800B4A1C`
+  6/58, `func_800BB4AC` 6/54, `func_80095258` 7/39, `func_800BB010` 8/73,
+  then 15 more at 9-15 registers. Work them by hand, nearest first.
 - **Header do-whiles to review (lint extended 2026-10-22).** The lint now
   reads the macros and `static inline` functions a body uses (outside the
   leaked headers), and matches `do { } while (0)` at any brace depth (the
