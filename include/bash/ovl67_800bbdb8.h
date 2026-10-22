@@ -369,6 +369,132 @@ static inline void LaserBurst(LaserNode *n) {
     KillNAS((NAS *)n);
 }
 
+/* Inline copy of func_800C323C (defined after PlotNitroMine): bursts the
+ * first laser target whose squared distance to p is under r. */
+static inline s32 MineHitLaser(LaserPos p, s32 r) {
+    LaserNode *n;
+    LaserTgt *t;
+    LaserExt *ext;
+    NAS *nas;
+    s32 dx, dy, dz;
+
+    LaserPos *tp;
+    s32 mode;
+
+    n = (LaserNode *)D_800C449C;
+    for (;;) {
+        s32 t_;
+        if (n == NULL) {
+            break;
+        }
+        t = n->tgt;
+        if (t != NULL) {
+            dx = t->pos.x - p.x;
+            dy = t->pos.y - p.y;
+            dz = t->pos.z - p.z;
+            if (dx * dx + dy * dy + dz * dz < r) {
+                tp = &t->pos;
+                nas = SpawnNASById(t->pos.x, tp->y, tp->z, 0x1605, 0x11);
+                mode = 3;
+                if (nas != NULL) {
+                    ext = FindExtension(nas, 0x10000000);
+                    if (ext != NULL) {
+                        ext->unk18 = 0x100;
+                        ext->unkC = mode;
+                        ext->unk20 = 1;
+                        ext->unk28 = 0;
+                        nas->InitDelete(nas);
+                    }
+                }
+                KillNAS((NAS *)n);
+                return 1;
+            }
+        }
+        n = n->next;
+    }
+    return 0;
+}
+
+/* Spawns the 0x1605 burst at pos with mode 1. */
+static inline void MineBurst(NAS *e) {
+    LaserExt *ext;
+    NAS *nas;
+    SLONG_XYZ *tp;
+    s32 mode;
+
+    tp = &e->Engine->unk10;
+    nas = SpawnNASById(e->Engine->unk10.x, tp->y, tp->z, 0x1605, 0x11);
+    mode = 1;
+    if (nas != NULL) {
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL) {
+            ext->unkC = mode;
+            ext->unk18 = 0x100;
+            ext->unk20 = 1;
+            ext->unk28 = 0;
+            nas->InitDelete(nas);
+        }
+    }
+}
+
+/* PlotNitroMine's explosion sound. */
+static inline void MineSfx(void) {
+    s32 r;
+
+    r = Random(4);
+    if (r == 0) {
+        PlaySfx(0x3F1, 0, 0, 0x1000, 0x1E00, 0);
+    }
+    if (r == 1) {
+        PlaySfx(0x3F2, 0, 0, 0x1000, 0x1E00, 0);
+    }
+    if (r == 2) {
+        PlaySfx(0x3F3, 0, 0, 0x1000, 0x1E00, 0);
+    }
+    if (r == 3) {
+        PlaySfx(0x3F4, 0, 0, 0x1000, 0x1E00, 0);
+    }
+}
+
+/* MineSfx with the last PlaySfx called as void: keeps the copy apart from
+ * MineSfx's, which cross-jumping would otherwise merge. */
+static inline void MineSfxV(void) {
+    s32 r;
+
+    r = Random(4);
+    if (r == 0) {
+        PlaySfx(0x3F1, 0, 0, 0x1000, 0x1E00, 0);
+    }
+    if (r == 1) {
+        PlaySfx(0x3F2, 0, 0, 0x1000, 0x1E00, 0);
+    }
+    if (r == 2) {
+        PlaySfx(0x3F3, 0, 0, 0x1000, 0x1E00, 0);
+    }
+    if (r == 3) {
+        ((void (*)(s32, _sfx_handler **, SLONG_XYZ *, s32, s32, s32))PlaySfx)(0x3F4, 0, 0, 0x1000, 0x1E00, 0);
+    }
+}
+
+/* As MineSfxV, with the last PlaySfx returning s16. */
+static inline void MineSfxH(void) {
+    s32 r;
+
+    r = Random(4);
+    if (r == 0) {
+        PlaySfx(0x3F1, 0, 0, 0x1000, 0x1E00, 0);
+    }
+    if (r == 1) {
+        PlaySfx(0x3F2, 0, 0, 0x1000, 0x1E00, 0);
+    }
+    if (r == 2) {
+        PlaySfx(0x3F3, 0, 0, 0x1000, 0x1E00, 0);
+    }
+    if (r == 3) {
+        ((s16 (*)(s32, _sfx_handler **, SLONG_XYZ *, s32, s32, s32))PlaySfx)(0x3F4, 0, 0, 0x1000, 0x1E00, 0);
+    }
+}
+
 /* func_800BBDB8's push: sets up the object's rotation and passes v through. */
 static inline s32 BoxPushRot(SVECTOR *ang, u16 *a, s32 v) {
     ang->vx = a[8];
@@ -621,6 +747,8 @@ static inline void BossHeroSteer(s32 i) {
     h->hero_eng->unk1E += func_800154A0(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
     h->hero_eng->unk5E = 1;
 }
+
+void PlotNitroMine(NAS *nas);
 
 void PlotNitroMissile(NAS *nas);
 

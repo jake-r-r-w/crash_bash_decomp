@@ -921,7 +921,58 @@ void PlotAsteroidRoll(NAS *nas) {
     ext->shadow->unk5E = 1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", PlotNitroMine);
+void PlotNitroMine(NAS *nas) {
+    EXTengine *eng;
+    EXTengine *me;
+    HeroInfo *h;
+    s32 dx;
+    s32 dz;
+    s32 dy;
+    s32 z;
+
+    nas->Engine->unk1C += 0x20;
+    nas->Engine->unk1E += 0x20;
+    nas->Engine->unk5E = 1;
+    eng = nas->Engine;
+    dx = eng->unk10.x - D_8009D530->unk10.x;
+    dz = eng->unk10.z - D_8009D530->unk10.z;
+    dy = eng->unk10.y - D_8009D530->unk10.y;
+    if (MineHitLaser(*(LaserPos *)&eng->unk10, 0x90000)) {
+        MineBurst(nas);
+        MineSfx();
+        goto kill;
+    }
+    if (!(*(s32 *)&Heroes[0].hero_teammate & 0x22000000) && dx * dx + dy * dy + dz * dz < 0x90000) {
+        MineBurst(nas);
+        if ((((BossGameView *)D_8005A614)->unk4 & 0x80000001) != 0x80000001 && Heroes[0].hero_mode != 0x31) {
+            Heroes[0].hero_health -= MineDamage((BossGameView *)D_8005A614) >> 2;
+            SetHeroAction((HeroInfo *)0, 0x31);
+        }
+        MineSfxV();
+        goto kill;
+    }
+    if (*D_8005A680 != 0 && (h = Heroes, !(*(s32 *)&h[1].hero_teammate & 0x22000000))) {
+        me = nas->Engine;
+        if ((me->unk10.x - h[1].hero_eng->unk10.x) * (me->unk10.x - h[1].hero_eng->unk10.x)
+            + (me->unk10.y - h[1].hero_eng->unk10.y) * (me->unk10.y - h[1].hero_eng->unk10.y)
+            + (me->unk10.z - h[1].hero_eng->unk10.z) * (me->unk10.z - h[1].hero_eng->unk10.z) < 0x40000) {
+            MineBurst(nas);
+            if ((((BossGameView *)D_8005A614)->unk4 & 0x80000001) != 0x80000001
+                && !(Heroes[1].hero_status & 0x2000) && Heroes[1].hero_mode != 0x31) {
+                Heroes[1].hero_health -= MineDamage((BossGameView *)D_8005A614) >> 2;
+                SetHeroAction((HeroInfo *)1, 0x31);
+            }
+            MineSfxH();
+            goto kill;
+        }
+    }
+    z = nas->Engine->unk10.z;
+    if (z < Heroes[0].hero_eng->unk10.z - 0x11F4 ||
+        (*D_8005A680 != 0 && z < Heroes[1].hero_eng->unk10.z - 0x11F4)) {
+    kill:
+        KillNAS(nas);
+    }
+}
 
 void PlotNitroMissile(NAS *nas) {
     NitroShotExt *ext;
