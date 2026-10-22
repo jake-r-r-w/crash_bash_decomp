@@ -6488,7 +6488,147 @@ void func_800CE664(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800CED58);
+void func_800CED58(s32 player) {
+    s32 *ext;
+    s32 sfx;
+
+    if (func_800D2D2C() == 0) {
+        PlaySfx(0x467, NULL, NULL, 0x1000, 0x1E00, 0);
+        D_800D6934[player] = 0x4000;
+        switch (Heroes[player].hero_name) {
+        case 1:
+            sfx = 3;
+            goto play;
+        case 2:
+            sfx = 0x35;
+            goto play;
+        case 3:
+            sfx = 0x67;
+            goto play;
+        case 4:
+            sfx = 0x99;
+            goto play;
+        case 5:
+            sfx = 0x12F;
+            goto play;
+        case 7:
+            sfx = 0xFD;
+            goto play;
+        case 8:
+            sfx = 0xCB;
+            goto play;
+        case 6:
+            sfx = 0x161;
+        play:
+            PlaySfx(sfx, NULL, NULL, 0x1000, 0x1E00, 0);
+            break;
+        }
+        ext = FindExtension(Heroes[player].hero, 0x20000000);
+        if (ext != NULL) {
+            ext[0x98 / 4] = 0;
+            Heroes[player].hero_eng->sub->flags |= 0x400000;
+            ext[0x1C / 4] = 0;
+            if (Heroes[player].hero_name == 1) {
+                if (ext[0x24 / 4] == 0) {
+                    SetHeroSeq((HeroInfo *)player, 0x44);
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                } else {
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                }
+            }
+            if (Heroes[player].hero_name == 5) {
+                if (ext[0x24 / 4] == 0) {
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                } else {
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                }
+            }
+            if (Heroes[player].hero_name == 6) {
+                if (ext[0x24 / 4] == 0) {
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                } else {
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                }
+            }
+            if (Heroes[player].hero_name == 3) {
+                if (ext[0x24 / 4] == 0) {
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                } else {
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                }
+            }
+            if (Heroes[player].hero_name == 2) {
+                if (ext[0x24 / 4] == 0) {
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                } else {
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                }
+            }
+            if (Heroes[player].hero_name == 4) {
+                if (ext[0x24 / 4] == 0) {
+                    Heroes[player].hero_eng->sub->unk8E = 0x2001;
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                } else {
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                }
+            }
+            if (Heroes[player].hero_name == 7) {
+                if (ext[0x24 / 4] == 0) {
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                } else {
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                }
+            }
+            if (Heroes[player].hero_name == 8) {
+                if (ext[0x24 / 4] == 0) {
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                } else {
+                    Heroes[player].hero_eng->sub->flags |= 0x400000;
+                    Heroes[player].hero_eng->sub->unk8E = 0x2002;
+                }
+            }
+            if (Heroes[player].hero_name == 1 && ext[0x24 / 4] == 0) {
+                Heroes[player].hero_eng->sub->unk74 = 0x4100;
+            }
+            if (Heroes[player].hero_name == 7 && ext[0x24 / 4] == 0) {
+                Heroes[player].hero_eng->sub->unk74 = 0x4000;
+            }
+            if (Heroes[player].hero_name == 8 && ext[0x24 / 4] == 0) {
+                Heroes[player].hero_eng->sub->unk74 = 0x4000;
+            }
+            if (Heroes[player].hero_name == 3 && ext[0x24 / 4] == 0) {
+                Heroes[player].hero_eng->sub->unk74 = 0x4100;
+            }
+            if (Heroes[player].hero_name == 2 && ext[0x24 / 4] == 0) {
+                Heroes[player].hero_eng->sub->unk74 = 0x4000;
+            }
+            if (Heroes[player].hero_name == 5 && ext[0x24 / 4] == 0) {
+                Heroes[player].hero_eng->sub->unk74 = 0x4000;
+            }
+            if (Heroes[player].hero_name == 6 && ext[0x24 / 4] == 0) {
+                Heroes[player].hero_eng->sub->unk74 = 0x4000;
+            }
+            if (Heroes[player].hero_name == 4 && ext[0x24 / 4] == 0) {
+                Heroes[player].hero_eng->sub->unk74 = 0x4080;
+            }
+            Heroes[player].hero_eng->sub->unk68 = 0;
+        }
+    }
+}
 
 void func_800CF6F8(s32 player) {
     EXTheromove *move;

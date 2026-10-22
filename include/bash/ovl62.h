@@ -1490,4 +1490,6 @@ static inline void Ovl62SpawnDrop(VECTOR *pos, s32 kind) {
 
 void func_800CDE8C(s32 player);
 
+void func_800CED58(s32 player);
+
 #endif /* BASH_OVL62_H */
