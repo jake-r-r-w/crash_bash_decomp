@@ -31,7 +31,8 @@ extern u8 D_8005A614[];
 
 /* D_8005A614 as seen by func_800BB2BC. */
 typedef struct {
-    /* 0x00 */ u8 pad0[0x32];
+    /* 0x00 */ u8 pad0[0x30];
+    /* 0x30 */ u16 pause;
     /* 0x32 */ u16 flags;
     /* 0x34 */ s16 mode;
     /* 0x36 */ u8 pad36[0x6C - 0x36];
@@ -313,7 +314,7 @@ typedef struct PenguinFux {
     /* 0x22 */ s16 unk22;
 } PenguinFux;
 
-extern s16 D_800C3B38;
+extern u16 D_800C3B38;
 extern u16 D_800C3B3C;
 
 void func_800B8C9C(EXTengine *eng);
@@ -354,14 +355,71 @@ extern u8 D_800C31AC[];
 extern u8 D_800C31C0[];
 
 /* func_800B3DD8 */
-extern s16 D_800C3B32;
-extern s16 D_800C3B34;
-extern s16 D_800C478A;
-extern s16 D_800C3B3A;
+extern u16 D_800C3B32;
+extern u16 D_800C3B34;
+extern u16 D_800C478A;
+extern u16 D_800C3B3A;
 extern s16 D_800C3B3E;
-extern s16 D_800C4788;
+extern u16 D_800C4788;
 extern s32 D_800C46AC;
-extern s32 D_800C3B9C[4];
+extern u8 *D_800C3B9C[4];
+extern u16 D_800C46C0[];
+
+/* The object func_800BBA14 returns, as func_800B7358 sees it. */
+typedef struct {
+    /* 0x00 */ u8 pad0[0x24];
+    /* 0x24 */ u16 unk24;
+} Ovl5dEdgeSub;
+typedef struct {
+    /* 0x00 */ u8 pad0[0x58];
+    /* 0x58 */ Ovl5dEdgeSub *unk58;
+} Ovl5dEdgeObj;
+
+/* func_800B7358: from (x, z), walk the board along x (dx) or z (dz),
+ * 1, -1, 2, -2, ... cells, to the first empty cell, and spawn there. */
+static inline u8 *Ovl5dSpawnEdge(s32 x, s32 z, s32 dx, s32 dz) {
+    s32 col;
+    s32 row;
+    s32 d;
+    u8 *p;
+
+    d = 1;
+    col = (x >> 8) + 10;
+    row = 9 - (z >> 8);
+    do {
+        if (D_8009D90C[row * 20 + col].unk0 != 0) {
+            col = (x >> 8) + 10;
+            row = 9 - (z >> 8);
+            col += d * dx;
+            row += d * dz;
+            d = ~d + 1;
+            if (d > 0) {
+                d++;
+            }
+            if (d >= 9) {
+                d = 0;
+            }
+        } else {
+            d = 0;
+        }
+    } while (d != 0);
+    col -= 10;
+    col <<= 8;
+    row = 19 - row;
+    row -= 10;
+    row <<= 8;
+    if (col < -0x700 || col > 0x700) {
+        col = x;
+    }
+    if (row < -0x700 || row > 0x700) {
+        row = z;
+    }
+    p = func_800BBA14(col, 0, row, 2, -1);
+    if (p != NULL) {
+        func_80026B70(&D_800C478C, p);
+    }
+    return p;
+}
 extern u8 D_800C395C[];
 extern u16 D_800C3984[];
 extern u8 D_800C39C0[];

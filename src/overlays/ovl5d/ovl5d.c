@@ -637,7 +637,159 @@ void func_800B710C(u16 arg0, u16 arg1, u16 arg2, u16 arg3, u16 arg4, u16 arg5,
     D_800C3B84 = Random(0x20) + 0x14;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B7358);
+void func_800B7358(void) {
+    u32 n;
+    s32 left;
+    Ovl5dGridCell *c;
+    s32 pu;
+    s32 i;
+    s32 s;
+    s32 r;
+    s32 z;
+    u8 **pp;
+    Ovl5dEdgeSub *sub;
+
+    if (OVLG->pause & 0x801) {
+        return;
+    }
+    if (D_800C3B32 != 0) {
+        D_800C3B32--;
+    } else {
+        if (D_8009E46C[0] < D_800C3B8C[D_8009D758 - 1]) {
+            n = D_800C3B8C[D_8009D758 - 1];
+            left = n - D_8009E46C[0];
+            r = 4;
+            if ((u16)n < 4) {
+                r = n;
+            }
+            if (left < r) {
+                pu = Random(left) + 1;
+                D_800C3B32 = Random(20) + 8;
+            } else {
+                pu = r;
+                D_800C3B32 = Random(10) + 2;
+            }
+            func_800B7D20(pu);
+        } else {
+            D_800C3B32 = Random(40) + 5;
+        }
+    }
+    if (D_800C3B3C != 0) {
+        D_800C3B3C--;
+    }
+    if (D_8009E25C[0] < 3) {
+        if (D_800C3B34 != 0) {
+            D_800C3B34--;
+        } else {
+            c = (Ovl5dGridCell *)func_800B8040(D_800C3B86);
+            if (c != NULL) {
+                SpawnNASById(c->x, D_8005A5D8, c->z, 0x20C, 0x11);
+            }
+            D_800C3B34 = Random(30) + 10;
+        }
+    }
+    if (D_8005A648 != 3) {
+        if (D_800C3B38 != 0) {
+            if (D_800C3B3A != 0) {
+                D_800C3B3A--;
+            } else {
+                c = D_800C3EAC[0];
+                c += Random(256);
+                s = (c->x >> 8) + 10;
+                z = 9 - (c->z >> 8);
+                if (D_8009D90C[z * 20 + s].unk0 < 16) {
+                    SpawnNASById(c->x, -0x800, c->z, 0x20C, 0x11);
+                    D_800C3B38--;
+                    D_800C3B3A = Random(4) + 2;
+                }
+            }
+        } else if (D_800C3B3C == 0) {
+            if (D_8009E25C[0] < 5) {
+                D_800C3B38 = Random(4) + 6;
+                D_800C3B3C = (Random(20) + 30) * 30;
+            } else {
+                D_800C3B3C = 60;
+            }
+        }
+    }
+    if (D_8005A648 == 1 || D_8005A648 == 2) {
+        if (D_800C478A != 0) {
+            D_800C478A--;
+        } else if (D_8009E25C[18] + D_8009E25C[19] + D_8009E25C[20] + D_8009E25C[21] == 0) {
+            pu = Random(4) + 18;
+            for (i = 0; i < 4; i++) {
+                if (Heroes[i].hero_pu == pu) {
+                    pu = 0;
+                }
+            }
+            if (pu != 0) {
+                c = D_800C3EAC[0];
+                c += Random(256);
+                s = (c->x >> 8) + 10;
+                z = 9 - (c->z >> 8);
+                if (D_8009D90C[z * 20 + s].unk0 == 0) {
+                    switch (pu) {
+                    case 18:
+                        SpawnNASById(c->x, -0x800, c->z, 0x208, 0x11);
+                        D_800C478A = (Random(10) + 10) * 30;
+                        break;
+                    case 19:
+                        SpawnNASById(c->x, -0x800, c->z, 0x209, 0x11);
+                        D_800C478A = (Random(10) + 10) * 30;
+                        break;
+                    case 20:
+                        SpawnNASById(c->x, -0x800, c->z, 0x20A, 0x11);
+                        D_800C478A = (Random(10) + 10) * 30;
+                        break;
+                    case 21:
+                        SpawnNASById(c->x, -0x800, c->z, 0x20B, 0x11);
+                        D_800C478A = (Random(10) + 10) * 30;
+                        break;
+                    }
+                }
+            }
+        } else {
+            D_800C478A = (Random(10) + 5) * 30;
+        }
+    }
+    if (D_8005A648 == 3) {
+        if (D_800C478A != 0) {
+            D_800C478A--;
+        } else if (D_8009E46C[2] == 0) {
+            s = (Random(12) << 8) - 0x580;
+            D_800C3B9C[0] = Ovl5dSpawnEdge(-s, -0x700, 1, 0);
+            D_800C3B9C[1] = Ovl5dSpawnEdge(s, 0x600, 1, 0);
+            D_800C3B9C[2] = Ovl5dSpawnEdge(-0x700, s, 0, 1);
+            D_800C3B9C[3] = Ovl5dSpawnEdge(0x600, -s, 0, 1);
+            s = Random(4);
+            pp = D_800C3B9C;
+            for (i = 0; i < 4; i++, pp++) {
+                if (*pp != NULL) {
+                    sub = ((Ovl5dEdgeObj *)*pp)->unk58;
+                    if (sub != NULL) {
+                        if (i == s) {
+                            sub->unk24 = D_800C46C0[D_800C4788];
+                            D_800C4788++;
+                            D_800C4788 %= 18;
+                        } else {
+                            sub->unk24 = 17;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if (OVLG->mode == 0 && (OVLG->flags & 0x80)) {
+        if (D_800C46AC != 0) {
+            D_800C46AC--;
+        } else {
+            if (!(OVLG->pause & 0x801)) {
+                SpawnNASById(0, 0, 0, 0x1107, 0x11);
+            }
+            D_800C46AC = Random(90) + 30;
+        }
+    }
+}
 
 void func_800B7D20(u16 arg0) {
     s32 i;
