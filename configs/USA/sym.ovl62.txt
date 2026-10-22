@@ -67,3 +67,6 @@ PlayerActionCount = 0x800CAF94; // type:func
 TestChaseChance = 0x800B9994; // type:func
 FindClosetPlayer = 0x800CB178; // type:func
 IsBombAvailable = 0x800CB5F4; // type:func
+ResetMass = 0x800B5684; // type:func
+Player2PlayerRayTest = 0x800B7A58; // type:func
+TestForTeamMate = 0x800BCF08; // type:func

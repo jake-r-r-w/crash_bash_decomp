@@ -861,7 +861,7 @@ void func_800B5570(s32 player) {
     }
 }
 
-void func_800B5684(s32 player) {
+void ResetMass(s32 player) {
     EXTheromove *move = Heroes[player].hero_move;
     s32 *ext;
 
@@ -1208,7 +1208,7 @@ void func_800B60B8(s32 player) {
     if (fux == NULL) {
         return;
     }
-    if (func_800BCF08(player, fux->target) != 0) {
+    if (TestForTeamMate(player, fux->target) != 0) {
         return;
     }
     func_8008CEB0((u8 *)&base[fux->target].hero_eng->unk10, (u8 *)&h->hero_eng->unk10);
@@ -1260,7 +1260,7 @@ void func_800B6258(s32 player) {
         ext->unk14 = 8;
         return;
     }
-    if (dist <= 0x3FFFF && func_800B7A58(player, target) != 0) {
+    if (dist <= 0x3FFFF && Player2PlayerRayTest(player, target) != 0) {
         Ovl62RollOdds(player, ext);
     }
     if (Heroes[player].hero_anim->Aindex == 0x1E) {
@@ -1297,7 +1297,7 @@ void func_800B649C(s32 player) {
     n = 0;
     fux->unk3C = 1;
     for (;;) {
-        if (func_800BCF08(player, fux->target) != 0) {
+        if (TestForTeamMate(player, fux->target) != 0) {
             n++;
             fux->target = (fux->target + 1) & 3;
         }
@@ -1324,7 +1324,7 @@ loop:
     do {
         if (i < 4) {
             min = 0x07FFFFFF;
-            if (i != player && func_800BCF08(player, i) == 0 && !(h->hero_status & 0x2000)) {
+            if (i != player && TestForTeamMate(player, i) == 0 && !(h->hero_status & 0x2000)) {
                 pos = h->hero_eng->unk10;
                 if (func_8008CEB0((u8 *)&pos, (u8 *)&me->hero_eng->unk10) < min) {
                     best = i;
@@ -1395,7 +1395,7 @@ s32 func_800B6EB4(s32 player, s32 target) {
     h = &base[player];
     fux = (Ovl62Fux *)h->hero->FUX;
     if (fux != NULL) {
-        if (func_800BCF08(player, target) != 0) {
+        if (TestForTeamMate(player, target) != 0) {
             return 0;
         }
         a = h->hero_eng;
@@ -1408,7 +1408,7 @@ s32 func_800B6EB4(s32 player, s32 target) {
         if (fux->unk54 < 0x1F) {
             return 0;
         }
-        if (func_800B7A58(player, target) != 0) {
+        if (Player2PlayerRayTest(player, target) != 0) {
             h->hero_ai->AIpad |= 0x2000;
             return 1;
         }
@@ -1662,7 +1662,7 @@ void func_800B782C(s32 player) {
     } while (0);
 }
 
-s32 func_800B7A58(s32 player, s32 target) {
+bool Player2PlayerRayTest(u32 player, u32 target) {
     VECTOR vel;
     VECTOR out;
     VECTOR pos;
@@ -1736,10 +1736,10 @@ loop:
     *dp = min;
     if (best != -1) {
         st = 0;
-        if (func_800BCF08(self, best) == 0) {
+        if (TestForTeamMate(self, best) == 0) {
             if (dist <= 0x3FFFF) {
                 st = 1;
-                d = func_800B7A58(self, best);
+                d = Player2PlayerRayTest(self, best);
                 if (d != 0) {
                     return st;
                 }
@@ -1794,17 +1794,17 @@ loop:
     if (target == -1) {
         goto ret0;
     }
-    d = func_800BCF08(self, target) != 1;
+    d = TestForTeamMate(self, target) != 1;
     if (d) {
         return 0;
     }
     if (dist > 0x7FFFF) {
         return 0;
     }
-    if (func_800B7A58(self, target) == 0) {
+    if (Player2PlayerRayTest(self, target) == 0) {
         goto ret0;
     }
-    if (func_800B7A58(target, self) == 0) {
+    if (Player2PlayerRayTest(target, self) == 0) {
         goto ret0;
     }
     Ovl62Grab(self);
@@ -2347,7 +2347,7 @@ fail:
     return 0;
 }
 
-s32 func_800BCF08(s32 arg0, s32 arg1) {
+bool TestForTeamMate(u32 arg0, u32 arg1) {
     u8 *g = D_8005A614;
 
     if (*(s32 *)(g + 0x6C) != 0) {
@@ -2396,7 +2396,7 @@ void func_800BD058(s32 arg0, s32 arg1, s32 arg2) {
                 shadow->unk2C.x = 0x1000;
                 shadow->unk2C.y = 0x1000;
                 shadow->unk2C.z = 0x1000;
-                func_800B5684(arg0);
+                ResetMass(arg0);
                 D_800D6924[arg0] = D_8009D6F4[h->hero_name * 3];
             }
         }
@@ -4968,7 +4968,7 @@ void func_800CAE10(s32 player, s32 target) {
     if (fux == NULL) {
         return;
     }
-    if (func_800BCF08(player, target) == 0) {
+    if (TestForTeamMate(player, target) == 0) {
         return;
     }
     r = func_800B9B6C(player);
@@ -6138,7 +6138,7 @@ void func_800CE664(s32 player) {
             if (ext[0x1C / 4]++ >= 0xB5) {
                 ext2 = FindExtension(Heroes[player].hero, 0x20000000);
                 if (ext2 != NULL) {
-                    func_800B5684(player);
+                    ResetMass(player);
                     Heroes[player].hero_eng->sub->flags &= 0xFFBFFFFF;
                     if (ext2[0x24 / 4] == 0) {
                         SetHeroAction((HeroInfo *)player, 0x49);
@@ -6217,7 +6217,7 @@ void func_800CF6F8(s32 player) {
             if (ext[0x1C / 4]++ >= 0xB5) {
                 ext2 = FindExtension(Heroes[player].hero, 0x20000000);
                 if (ext2 != NULL) {
-                    func_800B5684(player);
+                    ResetMass(player);
                     Heroes[player].hero_eng->sub->flags &= 0xFFBFFFFF;
                     if (ext2[0x24 / 4] == 0) {
                         SetHeroAction((HeroInfo *)player, 0x49);

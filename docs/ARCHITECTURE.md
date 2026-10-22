@@ -583,6 +583,10 @@ signature alone is not enough.
     `FindClosetPlayer(p, &dist)` (the leak's spelling) returns the nearest
     live opponent; `IsBombAvailable()` the first bomb object in
     `D_800D5294`'s list whose extension is still free.
+    `ResetMass(p)` sets the hero's `mass` (0x180 for heroes 5-8, less 0x46
+    with extension 0x20000000); `TestForTeamMate(src, dst)` is true in team
+    games when they are team-mates; `Player2PlayerRayTest(p, target)` casts
+    the facing ray at the target through `func_800BFEE0`.
   The `CheckBounds` functions take the leak's `EXTengine *`; their old local
   stand-in structs were `unk10.x/z`, `collision_box.radius/flags` and `unk1E`.
 - **Pogo challenges** (ovl60). The challenge flags at `D_8005A614+0x32` are

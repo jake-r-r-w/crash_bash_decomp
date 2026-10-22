@@ -595,7 +595,6 @@ extern s32 D_8009D908;
 extern s32 D_800D4E04;
 s32 func_800BFEE0(VECTOR *a, VECTOR *b, SVECTOR *c, VECTOR *out);
 
-s32 func_800B7A58(s32 player, s32 target);
 
 /* Roll the odds in D_800D5364 (by D_8009D87C[player].unk0) and set ext->unk14. */
 static inline void Ovl62RollOdds(s32 player, Ext20 *ext) {
@@ -620,7 +619,6 @@ static inline void Ovl62RollOdds(s32 player, Ext20 *ext) {
 
 s32 func_8008CEB0(u8 *arg0, u8 *arg1);
 s32 func_800B7B88(s32 arg0);
-s32 func_800BCF08(s32 arg0, s32 arg1);
 s32 func_800B9B6C(s32 player);
 s32 func_800D05A8(s32 arg0);
 
@@ -1225,7 +1223,6 @@ s32 func_800B4260(s32 *arg0, s32 arg1);
 
 void func_800B5570(s32 player);
 
-void func_800B5684(s32 player);
 
 void func_800B5788(s32 arg0);
 
