@@ -299,7 +299,7 @@ loop:
     if (slot->unk4 == 6) {
     tick:
         if (--slot->unk6 < 2) {
-            func_800C1CF0(i);
+            Pickup_Lose(i);
         }
     }
     i++;
@@ -1315,7 +1315,7 @@ void HeroPogoWinner(u32 arg0) {
     u8 *g;
 
     Heroes[arg0].hero_frozen = 2;
-    func_800C1CF0();
+    Pickup_Lose(arg0);
     if (func_8008A200(arg0) != 0) {
         g = D_8005A614;
         if (*(s32 *)(g + 4) & 0x800) {
@@ -1364,7 +1364,7 @@ void SetHeroPogoLoser(u32 arg0) {
     Player_RemoveReserve(arg0);
     Heroes[arg0].hero_move->velocity_enable = 0;
     Heroes[arg0].hero_frozen = 2;
-    func_800C1CF0(arg0);
+    Pickup_Lose(arg0);
     Player_SnapToTile(arg0);
     Heroes[arg0].hero_move->jump_vel = 0x30;
     Heroes[arg0].hero_move->jump_max = 0x90;
@@ -1402,7 +1402,7 @@ void HeroPogoLoser(u32 arg0) {
     s32 *ext;
     u8 *p;
 
-    func_800C1CF0();
+    Pickup_Lose(arg0);
     base = Heroes;
     h = &base[arg0];
     eng = h->hero_eng;
@@ -1495,7 +1495,7 @@ void SetHeroPogoDazed(u32 arg0) {
     if (D_800C535C[arg0].nas != NULL) {
         HeroPogoTazingCancel(arg0);
     }
-    func_800C1CF0(arg0);
+    Pickup_Lose(arg0);
     func_80028018(arg0, 0x1E);
     Player_SnapToTile(arg0);
     x = (Heroes[arg0].hero_eng->unk10.x + 0x800) >> 9;
@@ -5593,7 +5593,7 @@ void Init_PogoTazer(NAS *nas) {
     }
 }
 
-void func_800C1CF0(arg0)
+void Pickup_Lose(arg0)
 s32 arg0;
 {
     Ovl60Slot *base;
@@ -5940,7 +5940,7 @@ void HeroPogoTied(u32 arg0) {
 
     h = (HeroInfo *)(arg0 * sizeof(HeroInfo) + (u32)base);
     h->hero_frozen = 2;
-    func_800C1CF0();
+    Pickup_Lose(arg0);
     eng = h->hero_eng;
     if (eng != NULL) {
         s32 r = func_80015480(0, eng->unk1E);
@@ -5955,7 +5955,7 @@ void SetHeroPogoTied(u32 arg0) {
     HeroInfo *h;
 
     Player_RemoveReserve(arg0);
-    func_800C1CF0(arg0);
+    Pickup_Lose(arg0);
     base = Heroes;
     h = (HeroInfo *)(arg0 * sizeof(HeroInfo) + (u32)base);
     h->hero_move->velocity_enable = 0;
@@ -5992,7 +5992,7 @@ void SetHeroPogoWinner(u32 arg0) {
 
     Player_RemoveReserve(arg0);
     func_80089FA4(arg0);
-    func_800C1CF0(arg0);
+    Pickup_Lose(arg0);
     base = Heroes;
     h = (HeroInfo *)(arg0 * sizeof(HeroInfo) + (u32)base);
     h->hero_move->velocity_enable = 0;

@@ -495,7 +495,10 @@ signature alone is not enough.
   `PlayThrowNoise` / `PlayBoingNoise` play a per-hero sound (throw, landed
   bounce). Effects by hero (`hero_name`): `AddDingoSmoke` (Dingodile, Kanga),
   `AddSomeDust` (Crash, Coco, Tiny, Kong), `AddBrioSmoke` (Brio, Cortex);
-  `AddTazerRing` is the tazer state's.
+  `AddTazerRing` is the tazer state's. `Pickup_Lose(p)` drops the held pickup
+  (`D_800C535C[p].unk4`), leaving the quick-idle state for pickup 5 and
+  unfreezing the tiles for pickup 6; three end states called it with no
+  argument (K&R), now `Pickup_Lose(arg0)` with the same code.
 - **Pogo tiles** (ovl60). `PogoSquare.state` (`+0x12`): 0 a pending claim
   (owner after `+0x14` frames, old owner in `+0x16`), 1 normal (owner `+0xA`,
   -1 free), 5 TNT (120-frame fuse), 6 Nitro, 7 four-way arrow, 10 locked

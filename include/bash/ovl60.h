@@ -301,7 +301,6 @@ void func_800C2620(s32 arg0, s32 arg1);
 
 
 void func_800C2EE0(void);
-void func_800C1CF0();
 void func_800B4230();
 void func_800B87DC();
 void PogoPowerups_Poll(void);

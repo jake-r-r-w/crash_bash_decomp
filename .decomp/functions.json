@@ -32103,7 +32103,7 @@
   "fp": "7360526437968782",
   "fpn": "e86cd3a2fbf7208d",
   "leaf": false,
-  "name": "func_800C1CF0",
+  "name": "Pickup_Lose",
   "orig": "func_800C1CF0",
   "rom": 59964,
   "seg": "overlays/ovl60/ovl60",

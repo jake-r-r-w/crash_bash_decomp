@@ -135,3 +135,4 @@ FindFreeSquareForMushroom = 0x800BBF00; // type:func
 SquareContainsMushroom = 0x800C1608; // type:func
 PogoPadlock_IsHere = 0x800C0AFC; // type:func
 PadlockAI_IsTileOKForPadlock = 0x800C0B70; // type:func
+Pickup_Lose = 0x800C1CF0; // type:func
