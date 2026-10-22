@@ -514,6 +514,19 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-22 (naming, second hour):** 554 -> 594 named. Leak names via
+  their code (Arkenoid intersect/balls/floor/corners/collisions/pickups;
+  Pogo kerbs, claim, AI, ramp, stealing, level tile helpers; Tank
+  sandbag/swamp/mine-to-boss/triggers; Polar AI chooser, team-mate check,
+  bombs, CheckMelted/IsPtInALLZone), `LevSpec.PostTriggers` (`D_8005AA88`)
+  for the `*Triggers` stubs, and a debug string for `XZBoxToSphere` (one
+  copy each in ovl62, ovl63, ovl65). More stand-ins became real types
+  (`Ovl60Goal` = `EXTbotai`, `Ovl61FuxF` = `EXTobject.can_do`, raw offsets
+  = `EXTobject_TA` fields), all byte-identical. Found the data-% drift on
+  renames (Open leads). What is left of the leak is ambiguous (Polar
+  `Test*Chance`/`Do*` states, Pogo FizzleOut trio and two planners,
+  Arkenoid BA/SE/NG hooks); the other seven games have no leaked names.
+
 - **2026-10-22 (naming from the leak, ~1.5 h):** named 345 -> 554 game
   functions from the leaked minigame headers, each from its own code
   (evidence in ARCHITECTURE.md). Sources that pin names: the engine's
