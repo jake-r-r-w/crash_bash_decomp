@@ -47,8 +47,6 @@ void func_800C0F24(NAS *nas, s32 id);
 void func_800C68A8(void);
 void func_800C69BC(void);
 void func_800C7C08(u8 *arg0);
-void func_800C7C68(void);
-void func_800C7D04(void);
 void func_800C81C0(void);
 void func_800C831C(void);
 void func_800C8324(void);
@@ -371,18 +369,14 @@ void func_800C69C4(s32 arg0, s32 *arg1);
 
 s32 func_800C6B9C(s32 id, s32 x, s32 z, s32 angle);
 
-void func_800C7C70(s32 arg0);
 
-void func_800C7D24(HeroInfo *hero);
 
-void func_800C7DB8(s32 arg0);
 s32 func_800C7D44(s32 flags, Ovl5fHolder *a, Ovl5fPos *b);
 
 void func_800C7E68(HeroInfo *hero, Ovl5fActObj *obj, s32 arg2);
 
 void func_800C7EB0(HeroInfo *hero, Ovl5fActState *state, s32 arg2);
 
-void func_800C7EF8(HeroInfo *hero);
 
 void func_800C8090(s32 player, EXTengine *pEngine, s32 ReqdSFX);
 
@@ -447,7 +441,6 @@ extern EXTengine *D_800CB0E8;
 extern s32 D_800CB0EC;    /* func_800B5FC4: countdown to sfx 0x501 */
 void func_800B71F8(s32 player);
 
-void func_800BADB8(s32 arg0);
 typedef struct OvlClampPos {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ s32 x;
@@ -459,19 +452,12 @@ extern s32 D_800CB100;
 extern s32 D_800CB104;
 
 
-void func_800B8EC4(s32 player);
 
-void func_800B906C(s32 player);
 
-void func_800BA95C(s32 player);
 
-void func_800BAAB0(s32 arg0);
 
-void func_800BABCC(s32 arg0);
 
-void func_800BACD4(s32 arg0);
 
-void func_800BAF64(s32 arg0);
 
 void func_800BD654(NAS *nas);
 
@@ -769,7 +755,6 @@ static inline s32 PickupFindHero(s32 x, s32 z) {
 
 void func_800B6354(s32 player, s32 damage);
 
-void func_800B9170(s32 player);
 
 void func_800C30C0(EXTengine *arg0);
 

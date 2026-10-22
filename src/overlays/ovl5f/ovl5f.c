@@ -1251,7 +1251,7 @@ void func_800B6658(s32 player) {
         sub->unk6C = D_80053694;
         sub->unk74 = 0x4300;
     }
-    func_800B8EC4(player);
+    SetTankHeroIdle(player);
     switch ((u32)player) {
     case 0:
         D_800CAD50[player].MoveDir = 2;
@@ -1657,7 +1657,7 @@ void func_800B71F8(s32 player) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B77E8);
 
-void func_800B8EC4(s32 player) {
+void SetTankHeroIdle(u32 player) {
     s32 done;
     u8 unused[8];
 
@@ -1697,7 +1697,7 @@ void func_800B8EC4(s32 player) {
     }
 }
 
-void func_800B906C(s32 player) {
+void SetTankHeroTurn(u32 player) {
     s32 done;
 
     if (D_8005A644 & 0x801) {
@@ -1716,7 +1716,7 @@ void func_800B906C(s32 player) {
     }
 }
 
-void func_800B9170(s32 player) {
+void TankHeroTurn(u32 player) {
     s32 done;
 
     if (D_8005A644 & 0x801) {
@@ -2121,9 +2121,9 @@ found:
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B9E20);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", TankHeroMove);
 
-void func_800BA95C(s32 player) {
+void SetTankHeroRecoil(u32 player) {
     s32 done;
 
     if (D_8005A644 & 0x801) {
@@ -2145,7 +2145,7 @@ void func_800BA95C(s32 player) {
     }
 }
 
-void func_800BAAB0(s32 arg0) {
+void TankHeroRecoil(u32 arg0) {
     EXTengine *eng;
     HeroInfo *h;
     TA_player *p;
@@ -2170,7 +2170,7 @@ void func_800BAAB0(s32 arg0) {
     }
 }
 
-void func_800BABCC(s32 arg0) {
+void SetTankHeroVictory(u32 arg0) {
     u32 i;
     subengine *sub;
 
@@ -2193,7 +2193,7 @@ void func_800BABCC(s32 arg0) {
     sub->unk08 = 0;
 }
 
-void func_800BACD4(s32 arg0) {
+void TankHeroVictory(u32 arg0) {
     EXTengine *eng;
     subengine *sub;
 
@@ -2216,7 +2216,7 @@ void func_800BACD4(s32 arg0) {
     }
 }
 
-void func_800BADB8(s32 arg0) {
+void TankHeroDie(u32 arg0) {
     s32 ok;
     EXTengine *eng;
     s32 *pos;
@@ -2259,7 +2259,7 @@ void func_800BADB8(s32 arg0) {
     }
 }
 
-void func_800BAF64(s32 arg0) {
+void SetTankHeroDead(u32 arg0) {
     subengine *s;
 
     Heroes[arg0].hero_hit = 0;
@@ -7163,10 +7163,10 @@ void func_800C7C08(u8 *arg0) {
     (*(s32*)((u8*)(arg0) + 40)) = (s32) (((*(s32*)((u8*)(arg0) + 40)) * 2) / 3);
 }
 
-void func_800C7C68(void) {
+void TankHeroMinelay(u32 player) {
 }
 
-void func_800C7C70(s32 arg0) {
+void SetTankHeroMinelay(u32 arg0) {
     if (D_8005A644 & 0x801) {
         D_800CB0F0 = -1;
     }
@@ -7176,12 +7176,12 @@ void func_800C7C70(s32 arg0) {
     }
 }
 
-void func_800C7D04(void) {
-    func_80089BE8();
+void TankHeroDead(u32 player) {
+    func_80089BE8(player);
 }
 
-void func_800C7D24(HeroInfo *hero) {
-    SetHeroSeq(hero, 0x58);
+void SetTankHeroDie(u32 player) {
+    SetHeroSeq((HeroInfo *)player, 0x58);
 }
 
 s32 func_800C7D44(s32 flags, Ovl5fHolder *a, Ovl5fPos *b) {
@@ -7199,7 +7199,7 @@ s32 func_800C7D44(s32 flags, Ovl5fHolder *a, Ovl5fPos *b) {
     return flags;
 }
 
-void func_800C7DB8(s32 arg0) {
+void SetTankHeroMove(u32 arg0) {
     s32 ok;
 
     if (D_8005A644 & 0x801) {
@@ -7231,8 +7231,8 @@ void func_800C7EB0(HeroInfo *hero, Ovl5fActState *state, s32 arg2) {
     state->unk8 = arg2;
 }
 
-void func_800C7EF8(HeroInfo *hero) {
-    SetHeroAction(hero, 0x6E);
+void TankHeroIdle(u32 player) {
+    SetHeroAction((HeroInfo *)player, 0x6E);
 }
 
 void func_800C7F18(NAS *nas, s32 player) {

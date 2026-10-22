@@ -454,6 +454,16 @@ signature alone is not enough.
     `hero_hit` down, then 0x25), 0x25 Dead (health 0, explosion, sound 0x586).
     The anim ids fit `HeroAnim_seqs`' Arkenoid order from 0x19 (breathe,
     move, idle, taunt, kick, ...). They take `u32 player` as the leak does.
+- **Tank hero states** (ovl5f, the same table, actions 0x69-0x70; anim ids
+  are `HeroAnim_seqs` values): 0x69 Recoil (`tankrecoil` anim, 60 frames of
+  `hero_immunity`), 0x6A Die (`tankdie`; the Do spawns the explosion, then
+  0x6B), 0x6B Dead (health 0, the same engine calls as `SetArkHeroDead` /
+  `ArkHeroDead`), 0x6C Idle (`tankidle`, random `hero_idle_count`), 0x6E Move
+  (the Do is the 3 KB driving code), 0x6F Turn (`func_800C7E68`/`EB0` enter it
+  with a +-0x80 turn speed; the Do turns for `ModeCounter` frames, then back
+  to Move), 0x70 Victory (the engine calls of `SetArkHeroWinner` /
+  `ArkHeroWinner`). 0x6D Minelay is by elimination: its Set only checks for
+  a win and its Do is empty (the `tankminelay` anim is never set).
 - **Ambiguous, left unnamed:**
   - Both of the leak's `Roo_FireRocket` declarations match real functions:
     `func_800BFFF4(eng)` and `func_800C02AC(eng, dir)` both spawn
