@@ -812,13 +812,11 @@ void func_80098278(void) {
 void func_80098284(void) {
     s32 *p;
     if (D_800ADBC0 == 0) {
-        do {
-            D_800ADBC0 = 1;
-            p = &D_800ADBC0;
-            p[1] = 0;
-            p[2] = 0;
-            func_800976F8(p);
-        } while (0);
+        D_800ADBC0 = 1;
+        p = &D_800ADBC0;
+        p[1] = 0;
+        p[2] = 0;
+        func_800976F8();
         PlaySfx(0x19D, NULL, NULL, 0x1000, 0x1E00, 0);
     }
 }
