@@ -999,7 +999,6 @@
   "status": "matched"
  },
  "800193A8": {
-  "hack_ok": "register pins to s2-s4 with s0/s1 unused in a leaf: plain allocation never does that, so the original most likely pinned them too (register ... asm)",
   "matched_at": "2026-10-11T11:58:48Z",
   "started": "2026-10-11T09:11:35Z",
   "status": "matched"
@@ -4772,7 +4771,6 @@
   "status": "matched"
  },
  "ovl5d:800C159C": {
-  "hack_ok": "do { } while (0) around obj->player = player; obj->will_do |= mask; return nas; (fields +0x16/+0x1E): the same block, return included, recurs in ovl5d/5e/64 functions built apart, so it reads as a shared macro's expansion",
   "matched_at": "2026-10-20T20:59:11Z",
   "status": "matched",
   "via": "copy"
@@ -5096,12 +5094,10 @@
   "via": "copy"
  },
  "ovl5e:800BB3F0": {
-  "hack_ok": "do { } while (0) around obj->player = player; obj->will_do |= mask; return nas; (fields +0x16/+0x1E): the same block, return included, recurs in ovl5d/5e/64 functions built apart, so it reads as a shared macro's expansion",
   "matched_at": "2026-10-20T20:58:55Z",
   "status": "matched"
  },
  "ovl5e:800BB69C": {
-  "hack_ok": "do { } while (0) around obj->player = player; obj->will_do |= mask; return nas; (fields +0x16/+0x1E): the same block, return included, recurs in ovl5d/5e/64 functions built apart, so it reads as a shared macro's expansion",
   "matched_at": "2026-10-20T12:03:09Z",
   "status": "matched"
  },
@@ -5112,7 +5108,7 @@
  "ovl5e:800BC274": {
   "auto_failed": "compile",
   "blocked_at": "2026-10-22T13:58:20Z",
-  "note": "STAGE instructions 2/197 (C under NON_MATCHING). Only diff: addiu a1,s4,0x3C must precede lw a0,0x6C(s4) before jal func_8001CD04. sched1 ties them (priority 1, class 3); the target's order needs schedule_select's potential_hazard, i.e. a 2nd load/store in sched1's block [label after the unk5E if .. func_80015758 call] (cc1 -dS on a variant with one: 'insn 98 has a greater potential hazard'). Every matched a1-first caller (func_800BAAA8, func_800B61A0, func_800B64AC...) has one; every a0-first one (ArkHeroRad2ObjectAttract...) has none. The final block has none, so the original's was deleted after sched1. Ruled out 2026-10-20: cross-jumped duplicate tails (only the D_8005AA2C lui can merge: the join recomputes Heroes[idx], duplicating it lets cse share the address); local-alloc reg_equiv_replace / reload equiv-init deletion (need a load set only in the then-arm and used after the join, or const memory); reload_cse (needs a redundant load cse missed); an unfolded a1 precompute (sched1 gives the single-set temp birthing priority, a0 still first). Arg locals, inline helpers, volatile, pin, do-while(0), 47k permuter iterations also fail. Same code: func_800C284C (ovl5d), func_800BAF1C (ovl64). Also ruled out (third pass): single -f flag changes on -O2 (20 tried, none flips it), 810 inserted \"local = field;\" reads at 6 points, and prototypes (absent from Aug 23 and Sep 14; Oct 9 is byte-identical to retail). Next: only a new mechanism; scripts scratch/bc274/{score.sh,gen.py,try.sh} Fourth pass (2026-10-21, no hacks/permuter): the tie can only flip by potential hazard (unit_n_insns[memory] >= 2 in the block: loads, stores, xfer; nothing else is typed load), priority (counted from the block START over LOG_LINKS: the call data-depends on a0 via CALL_INSN_FUNCTION_USAGE, but lw a0 only outranks addiu a1 if it depends on an earlier in-block insn with latency > 1), class vs the last scheduled insn (a2's set, birthing since a2 is set once in the function; would need an anti/output link to a1's set), or luid (load_register_parameters always emits a0 first). Block 5 starts at the L334 label in both, so the target's sched1 block held an insn its final code lacks. Deletion routes after sched1, all closed for natural C: REG_EQUIV notes only come from incoming params (function.c) or local-alloc's single-block cases; reload_cse resets at labels and calls; purge_addressof runs before sched1; jump2 cross-jump needs duplicated code (dupjoin/dupnas variants: worse, and hacks). Next: a mechanism outside these, e.g. a different block boundary (some C shape that puts L334's code in an earlier sched1 block). Fifth pass (2026-10-22, no hacks/permuter): (1) duplicating `nas = D_8005AA2C;` at the end of both arms of `if (box != NULL)` (scratch/bct/dupnas.c, harness scratch/bct/h.sh) flips the tie: the lw is block 5's 2nd memory insn at sched1 (potential hazard), jump2 cross-jumps the two [lui; lw] tails back into one and reorg rebuilds the target's lui-in-delay-slot layout. 6 lines left: the %hi pseudo, block-local and born right after a call, gets $2 (no REG_ALLOC_ORDER: lowest free reg), where the target's join allocated $4 across the Heroes[idx] math, so sched2 can't sink lw s5 below `sll $2`. Else-first, `self = NULL` too, or the whole tail: same or worse; a statement duplicated in both arms is borderline anyway. (2) local-alloc's reg_equiv_replace runs after sched1: `p = eng->sub; ... $a0 = p` kept apart would give the target's order (p's load lifts `$a0 = p` to priority 2, then the replace moves the load into it), but combine folds them unless a store or call sits between (use_crosses_set_p, last_call_cuid), which the final block lacks. Next: a shape that keeps the %hi pseudo live across v0/v1 in both arms, or another deleted-after-sched1 memory insn.",
+  "note": "STAGE instructions 2/197 (C under NON_MATCHING). Only diff: addiu a1,s4,0x3C must precede lw a0,0x6C(s4) before jal func_8001CD04. sched1 ties them (priority 1, class 3); the target's order needs schedule_select's potential_hazard, i.e. a 2nd load/store in sched1's block [label after the unk5E if .. func_80015758 call] (cc1 -dS on a variant with one: 'insn 98 has a greater potential hazard'). Every matched a1-first caller (func_800BAAA8, func_800B61A0, func_800B64AC...) has one; every a0-first one (ArkHeroRad2ObjectAttract...) has none. The final block has none, so the original's was deleted after sched1. Ruled out 2026-10-20: cross-jumped duplicate tails (only the D_8005AA2C lui can merge: the join recomputes Heroes[idx], duplicating it lets cse share the address); local-alloc reg_equiv_replace / reload equiv-init deletion (need a load set only in the then-arm and used after the join, or const memory); reload_cse (needs a redundant load cse missed); an unfolded a1 precompute (sched1 gives the single-set temp birthing priority, a0 still first). Arg locals, inline helpers, volatile, pin, do-while(0), 47k permuter iterations also fail. Same code: func_800C284C (ovl5d), func_800BAF1C (ovl64). Also ruled out (third pass): single -f flag changes on -O2 (20 tried, none flips it), 810 inserted \"local = field;\" reads at 6 points, and prototypes (absent from Aug 23 and Sep 14; Oct 9 is byte-identical to retail). Next: only a new mechanism; scripts scratch/bc274/{score.sh,gen.py,try.sh} Fourth pass (2026-10-21, natural C, no permuter): the tie can only flip by potential hazard (unit_n_insns[memory] >= 2 in the block: loads, stores, xfer; nothing else is typed load), priority (counted from the block START over LOG_LINKS: the call data-depends on a0 via CALL_INSN_FUNCTION_USAGE, but lw a0 only outranks addiu a1 if it depends on an earlier in-block insn with latency > 1), class vs the last scheduled insn (a2's set, birthing since a2 is set once in the function; would need an anti/output link to a1's set), or luid (load_register_parameters always emits a0 first). Block 5 starts at the L334 label in both, so the target's sched1 block held an insn its final code lacks. Deletion routes after sched1, all closed for natural C: REG_EQUIV notes only come from incoming params (function.c) or local-alloc's single-block cases; reload_cse resets at labels and calls; purge_addressof runs before sched1; jump2 cross-jump needs duplicated code (dupjoin/dupnas variants: worse). Next: a mechanism outside these, e.g. a different block boundary (some C shape that puts L334's code in an earlier sched1 block). Fifth pass (2026-10-22, natural C, no permuter): (1) duplicating `nas = D_8005AA2C;` at the end of both arms of `if (box != NULL)` (scratch/bct/dupnas.c, harness scratch/bct/h.sh) flips the tie: the lw is block 5's 2nd memory insn at sched1 (potential hazard), jump2 cross-jumps the two [lui; lw] tails back into one and reorg rebuilds the target's lui-in-delay-slot layout. 6 lines left: the %hi pseudo, block-local and born right after a call, gets $2 (no REG_ALLOC_ORDER: lowest free reg), where the target's join allocated $4 across the Heroes[idx] math, so sched2 can't sink lw s5 below `sll $2`. Else-first, `self = NULL` too, or the whole tail: same or worse; a statement duplicated in both arms is borderline anyway. (2) local-alloc's reg_equiv_replace runs after sched1: `p = eng->sub; ... $a0 = p` kept apart would give the target's order (p's load lifts `$a0 = p` to priority 2, then the replace moves the load into it), but combine folds them unless a store or call sits between (use_crosses_set_p, last_call_cuid), which the final block lacks. Next: a shape that keeps the %hi pseudo live across v0/v1 in both arms, or another deleted-after-sched1 memory insn.",
   "status": "blocked"
  },
  "ovl5e:800BC588": {
@@ -5282,7 +5278,6 @@
   "status": "matched"
  },
  "ovl5f:800BBA9C": {
-  "hack_ok": "its two do { } while (0) wrappers are self-contained helper idioms (stop-then-play a sound; copy position and angle to the child engine), plausibly macros",
   "matched_at": "2026-10-21T12:24:07Z",
   "status": "matched"
  },
@@ -6229,7 +6224,7 @@
  "ovl60:800BE158": {
   "auto_failed": "types",
   "blocked_at": "2026-10-22T07:03:32Z",
-  "note": "natural C (NON_MATCHING): structure 337/350; swarm checkpoint registers 2/347 only with nested do { } while (0) around each case's dx/dz set (hack). Deciding rules: cse.c record_jump_equiv + follow-jumps knows angle per case, so side1 = dx / side2 = dz fold to constants (COST(pseudo)=1 > CONST_INT 0); target keeps the copies, which needs a cse block end (cse_end_of_basic_block stops at NOTE_INSN_LOOP_END). global.c priority: dz/dx need >= 9 refs over ~209 insns (flow.c REG_N_REFS += loop_depth) to beat side2 (8/194, .124) and the hoisted grid base (13/320) for s7/fp; natural forms give 6. Tried: plain cases, single do-while, goto-shared tails, dz = angle - 1, perpendicular side0 = -dz. Next: a natural source of the loop note / extra loop-weighted refs (a macro?), or ask for hack sign-off",
+  "note": "natural C (NON_MATCHING): structure 337/350; swarm checkpoint registers 2/347 only with nested do { } while (0) around each case's dx/dz set (steering C, allowed since 2026-10-22: finish from that checkpoint). Deciding rules: cse.c record_jump_equiv + follow-jumps knows angle per case, so side1 = dx / side2 = dz fold to constants (COST(pseudo)=1 > CONST_INT 0); target keeps the copies, which needs a cse block end (cse_end_of_basic_block stops at NOTE_INSN_LOOP_END). global.c priority: dz/dx need >= 9 refs over ~209 insns (flow.c REG_N_REFS += loop_depth) to beat side2 (8/194, .124) and the hoisted grid base (13/320) for s7/fp; natural forms give 6. Tried: plain cases, single do-while, goto-shared tails, dz = angle - 1, perpendicular side0 = -dz. Next: a natural source of the loop note / extra loop-weighted refs (a macro?), or match it with the steering checkpoint (allowed now)",
   "status": "blocked"
  },
  "ovl60:800BE6C4": {
@@ -8676,14 +8671,12 @@
  "ovl64:800BA098": {
   "copy_failed": "ovl5d:800C159C",
   "copy_failed_stage": "in-file",
-  "hack_ok": "do { } while (0) around obj->player = player; obj->will_do |= mask; return nas; (fields +0x16/+0x1E): the same block, return included, recurs in ovl5d/5e/64 functions built apart, so it reads as a shared macro's expansion",
   "matched_at": "2026-10-20T21:00:26Z",
   "status": "matched"
  },
  "ovl64:800BA344": {
   "copy_failed": "ovl5e:800BB69C",
   "copy_failed_stage": "in-file",
-  "hack_ok": "do { } while (0) around obj->player = player; obj->will_do |= mask; return nas; (fields +0x16/+0x1E): the same block, return included, recurs in ovl5d/5e/64 functions built apart, so it reads as a shared macro's expansion",
   "matched_at": "2026-10-21T07:01:34Z",
   "status": "matched"
  },

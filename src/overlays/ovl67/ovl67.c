@@ -1958,7 +1958,7 @@ s32 func_800B7858(s32 arg0, Ovl67Pos *from, Ovl67Pos *to, s32 angle) {
         n = 0;
     }
     n = D_800C4110[n];
-    /* The empty loops raise angle's ref count so it gets s1 (hack). */
+    /* The empty loops raise angle's ref count (flow.c weights refs by loop depth) so it gets s1. */
     do {
         do {
             do {
@@ -2058,7 +2058,7 @@ s32 func_800B7C58(s32 arg0, Ovl67Pos *from, Ovl67Pos *to, s32 angle) {
         n = 0;
     }
     n = D_800C4110[n];
-    /* The empty loops raise angle's ref count so it gets s1 (hack). */
+    /* The empty loops raise angle's ref count (flow.c weights refs by loop depth) so it gets s1. */
     do {
         do {
             do {

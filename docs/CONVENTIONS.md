@@ -83,19 +83,18 @@ A file is finished when every function in it reaches level 4.
 - Matching C must compile with the stock pipeline in `configs/USA/project.mk`.
   No compiler or maspsx patches, no post-build rewriting, no whole-function
   `asm()` bodies.
-- Register pins, empty `asm("")` barriers, no-op `x++; x--;` pairs, dead
-  stores (a local set again at the bottom of a loop that its next pass
-  overwrites, locals only stored to feed each other, a first store
-  overwritten before any read), if/else arms with identical code and
-  `do { } while (0)` wrappers written to steer a pass (in the body, or moved
-  into a macro or static inline for the same effect) are a last resort: `decomp.py done` refuses them without `--hack "why"`, which
-  goes in the commit message. Remove them when the function matches without;
-  `decomp.py hacks` lists every hack match with its commit's reason, to retry
-  them after tool upgrades. One reviewed as plausibly the original source (a
-  register choice normal allocation never makes) is recorded with `hacks
-  --accept NAME --why` and leaves the count. A hack that isn't likely to be
-  the original source (a barrier around a scheduler quirk) is worse than a
-  park.
+- Only C. No inline asm of any kind: no `asm()` statements, register pins
+  (`register int x asm("$20")`) or empty `asm("")` barriers, in the body or in a
+  macro or static inline it uses; `decomp.py done` refuses them. The one
+  exception is the SDK's `gte_*` macros (GTE coprocessor instructions C can't
+  express). `func_800193A8` (main.exe) still pins registers from before this
+  rule: plain allocation never makes that choice.
+- Natural C first: what a 1999 programmer would have written, with the
+  diff fixed by types, statement order and real code shapes found from the
+  evidence and the compiler's rules (MATCHING.md). C that only steers the
+  compiler (a `do { } while (0)` wrapper, an extra temporary or store, a
+  reordered statement) is fine when no natural form matches; say which and
+  the gcc rule it works around in the match note.
 - One function per match commit, through `decomp.py done NAME --commit`
   ([MATCHING.md](MATCHING.md)).
 - A function that will not match after a bounded effort is parked

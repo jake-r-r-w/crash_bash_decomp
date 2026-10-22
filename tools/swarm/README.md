@@ -164,7 +164,7 @@ Parks are not committed. Then:
    or matches for its CPU; `decomp.py permstats <swarm dir>/permuter.jsonl` splits it by mode.
 2. Review `report.md` and the parks (big-mode best C in `checkpoints/`).
 3. `swarm.mjs fold`: appends the workers' proposed rows (`patterns.md`) to the Diff patterns table
-   in `docs/MATCHING.md`. Review the diff, drop weak rows (hacks, duplicates), commit.
+   in `docs/MATCHING.md`. Review the diff, drop weak rows and duplicates, commit.
 4. Near misses: `swarm.mjs permute --near --minutes 60` (CPU only; gate a match with the
    `run --resume` line it prints).
 5. Add the run to `docs/AGENT_LOG.md`.

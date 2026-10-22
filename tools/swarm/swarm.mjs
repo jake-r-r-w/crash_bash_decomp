@@ -74,8 +74,8 @@ function infraError(out, code) {
 }
 const PATCH_MAX = 64 << 10;
 const OLD_DIFF = '.swarm-old.diff';    // a checkpoint that no longer applies, for decomp.py port
-// Diff patterns rows that teach what the gate refuses (pins, asm barriers, do-while (0), --hack) aren't passed on
-const PATTERN_REFUSED = /\b(?:asm|__asm|__asm__)\s*(?:volatile|__volatile__)?\s*\(|--hack|\bregister\b[^|]*\b(?:asm|__asm|__asm__)\b|\bwhile\s*\(\s*0\s*\)|\(hack\)/i;
+// Diff patterns rows that teach what the gate refuses (inline asm: pins, barriers) aren't passed on
+const PATTERN_REFUSED = /\b(?:asm|__asm|__asm__)\s*(?:volatile|__volatile__)?\s*\(|\bregister\b[^|]*\b(?:asm|__asm|__asm__)\b/i;
 const PATTERNS_MAX = 2500;
 // the matching loop both prompts give inline (workers then needn't read SKILL.md, whose steps the
 // swarm overrides, and the docs are for grepping)
@@ -103,11 +103,11 @@ CONVENTIONS.md and SKILL.md):
    blocks. For a long diff, \`decomp.py regions ${r}\` aligns it block by block (\`--changed\` after
    an edit).
 `;
-// the gate's lint (decomp.py lint_body, helper_hacks) refuses these without a human's --hack
-const HACK_RULE = `- No tricks that only steer the compiler: the gate refuses \`do { } while (0)\` wrappers (also
-  inside a macro or static inline you add: the lint reads those too), dead or overwritten stores,
-  no-op \`x++; x--;\` pairs and if/else arms with the same code. If only such a trick matches,
-  finish "parked" with your closest plain C and name the trick and the gcc rule in "note".`;
+// natural C first (docs/CONVENTIONS.md, Matching rules); steering C is allowed when nothing else matches
+const NATURAL_RULE = `- Natural C first: write what a 1999 programmer would have written, and fix diffs with types,
+  statement order and real code shapes from the evidence. Only if no natural form matches, C that
+  just steers the compiler (a \`do { } while (0)\` wrapper, an extra temporary, a reordered
+  statement) is fine: say in "note" which and the gcc rule it works around.`;
 const ASM_REFUSED = 'adds inline asm';   // checkPatch's finding, measured anyway
 const TOOL_MINUTES = 10;                  // the orchestrator's try/regions; done and verify get 2x
 const NEIGHBOUR = 8;            // lines between two INCLUDE_ASMs below which they aren't leased together
@@ -1040,7 +1040,7 @@ These swarm rules override CLAUDE.md and the docs:
 - Pure C only: no \`asm\`/\`__asm__\` of any kind and no register pins (the swarm refuses the
   patch). Use the \`gte_*\` macros already in include/. If only asm would match, finish "parked" and
   say why.
-${HACK_RULE}
+${NATURAL_RULE}
 - Don't run the permuter (it is refused). ${canPermute
     ? `If the evidence step, the Diff patterns, the checklist and (for register diffs) the cc1 dump
   don't get you to a match, leave your closest C in place of the INCLUDE_ASM line and finish with
@@ -1181,7 +1181,7 @@ on from the log above.
 - Pure C only: no \`asm\`/\`__asm__\` of any kind and no register pins (the swarm refuses the
   patch). Use the \`gte_*\` macros already in include/. If only asm would match, finish "parked" and
   say why.
-${HACK_RULE}
+${NATURAL_RULE}
 - Don't run the permuter (it is refused).${canPermute ? ` When you are at the registers stage and
   stuck, finish with status "needs_permute": the orchestrator runs a long permuter on your C and the
   next session gets its result.` : ''}
@@ -1354,7 +1354,7 @@ ${DECL_CLASH.test(job.gateFix) ? DECL_HINT : ''}Fix that, keep it matching, and 
       errs.push(`replaces INCLUDE_ASM for [${removed.join(', ')}], expected only ${f.name}`);
     // every spelling (decomp.py's ASM_CALL): asm, __asm, __asm__, optionally volatile; pins too
     if (/^\+.*\b(?:asm|__asm|__asm__)\s*(?:(?:volatile|__volatile|__volatile__)\s*)?\(/m.test(patch))
-      errs.push(`${ASM_REFUSED} (needs a human --hack)`);
+      errs.push(`${ASM_REFUSED} (only C is allowed)`);
     // a function-like macro named after the function hides a change to its prototype from callers
     if (new RegExp(`^\\+[ \\t]*#[ \\t]*define[ \\t]+${f.name}[ \\t]*\\(`, 'm').test(patch))
       errs.push(`adds a macro named ${f.name} (fix its declarations instead)`);
@@ -1403,14 +1403,8 @@ ${DECL_CLASH.test(job.gateFix) ? DECL_HINT : ''}Fix that, keep it matching, and 
     if (!patch.trim()) return this.notMatched(slot, job, res.note || (job.timedOut ? 'timed out' : 'no change'));
     fs.writeFileSync(path.join(job.dir, 'patch.diff'), patch);
     const errs = this.checkPatch(patch, f);
-    if (errs.length && errs.every(e => e.startsWith(ASM_REFUSED))) {
-      // measured anyway: a match that needs the asm goes to a human (`done --hack`), not lost
-      const r = await this.dk(slot.dir, ['python3', 'tools/scripts/decomp.py', 'try', ref(f)], slot.id, { minutes: TOOL_MINUTES });
-      fs.writeFileSync(path.join(job.dir, 'try.txt'), r.out);
-      const hack = /^MATCH /m.test(r.out);
-      if (hack) this.needsHack(job);
-      return this.notMatched(slot, job, `patch refused: inline asm${hack ? ' (it matches with it: needs a human --hack)' : ''}; ${res.note || ''}`);
-    }
+    if (errs.length && errs.every(e => e.startsWith(ASM_REFUSED)))
+      return this.notMatched(slot, job, `patch refused: inline asm (only C is allowed); ${res.note || ''}`);
     // a park's leftover that the checks refuse is simply not kept; only a claimed match is a failure
     if (errs.length && res.status !== 'matched')
       return this.notMatched(slot, job, `${res.note || 'parked'} (its C not kept: ${errs.join('; ')})`);
@@ -1481,10 +1475,8 @@ ${DECL_CLASH.test(job.gateFix) ? DECL_HINT : ''}Fix that, keep it matching, and 
     if (this.stopping === 'now') return;
     slot.job = null;
     const note = res.note || (job.timedOut ? 'killed at --big-minutes' : 'no note');
-    if (asmScore?.stage === 'match') {
-      this.needsHack(job);
-      return this.parkBig(job, `matches only with inline asm: needs a human --hack. ${note}`);
-    }
+    if (asmScore?.stage === 'match')
+      return this.parkBig(job, `matches only with inline asm, and only C is allowed. ${note}`);
     if (score?.stage === 'match') {
       (this.history[f.key] ||= { name: f.name, attempts: 0, notes: [] }).big = true;   // for `stats`
       job.note = note;
@@ -1541,15 +1533,6 @@ ${DECL_CLASH.test(job.gateFix) ? DECL_HINT : ''}Fix that, keep it matching, and 
         ? `${h.bigStale} big sessions in a row without progress` : `${h.bigSessions} big sessions used`);
     }
     this.retry.push(this.bigJob(f, job.attempt + 1, [...job.notes, note].slice(-6), { retry: true, ...extra }));
-  }
-
-  // a C that matches only with inline asm: a human can commit it with `done --hack "reason"`
-  needsHack(job) {
-    const { f } = job;
-    (this.hacks ||= []).push(f.name);
-    fs.appendFileSync(this.paths.report, `- ${stamp()} **${f.name}** (${f.seg}, ${f.size} B): matches only with inline asm: ` +
-                      `needs a human \`--hack\` (patch: ${path.join(job.dir, 'patch.diff')})\n`);
-    this.log(`${f.name}: matches only with inline asm; listed in report.md for a human --hack`);
   }
 
   parkBig(job, why) {
@@ -2214,7 +2197,6 @@ ${DECL_CLASH.test(job.gateFix) ? DECL_HINT : ''}Fix that, keep it matching, and 
              `${s.conflicts} conflicts. Commits are on ${this.o.branch}; notes in ${this.paths.report}`);
     if (this.staleCheckpoints?.length)
       this.log(`checkpoints that no longer apply (sessions port them by hand): ${[...new Set(this.staleCheckpoints)].join(', ')}`);
-    if (this.hacks?.length) this.log(`match only with inline asm, for a human --hack (report.md): ${this.hacks.join(', ')}`);
     fs.rmSync(this.paths.lock, { force: true });
     fs.rmSync(this.paths.stop, { force: true });
     process.exit(exitCode);

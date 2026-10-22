@@ -20,11 +20,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
   **main.exe, ovl61, ovl69 and ovl6a are complete**; 28 left, every one
   tried by the swarm at least once. All 564 PsyQ functions (Sony objects). 6
   parked by hand (`decomp.py status`; the swarm parked 5 more, which the
-  dashboard counts from `docs/swarm.js`), 102 matched with a hack (most of
-  them `do { } while (0)` wrappers, flagged since 2026-10-22, in headers'
-  macros and inlines too; 7 macro-shaped ones accepted)
-  (`decomp.py hacks`; `func_800193A8`'s register pins reviewed as plausibly
-  original, `hacks --accept`). Every slot overlay's id word is
+  dashboard counts from `docs/swarm.js`). Matches are C only, natural C
+  first (CONVENTIONS.md, Matching rules; the "hack" class was dropped on
+  2026-10-22: steering C counts as matched, inline asm is refused;
+  `func_800193A8`'s register pins predate that). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
   `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
 - Dashboard (2026-10-18): `docs/index.html` is `tools/scripts/dashboard.html` plus
@@ -57,7 +56,7 @@ against $7.50 for the retry runs, which kept re-trying the same hard ones
 (the queue puts checkpointed functions first). Next: the same recipe on
 the untried 2-4 KB functions, then over 4 KB with longer sessions
 (`--big-minutes 45`); hand-match the ~15 near misses the retries kept
-failing (AGENT_LOG leads); rework the 11 hacks between runs. After each
+failing (AGENT_LOG leads). After each
 run, the "After a run" checklist in tools/swarm/README.md.
 
 Recipes (`--seg overlays/NAME --branch main --max-minutes 60`):
@@ -82,8 +81,11 @@ rest are fixed by hand from the worker's patch (Gotchas). A park whose
 
 Hand work, between runs:
 1. The parks: `func_8007F314` and `PlotScriptFX` (engine), `func_800BC274`
-   (ovl5e), `func_800BFEE0` (ovl62), and the 11 hack matches (`decomp.py
-   hacks`; Open leads for `func_800B345C` and the ones tried 2026-10-21).
+   (ovl5e), `func_800BFEE0` (ovl62). Two were held back only by the old
+   hack rule and can be finished now that steering C is allowed when
+   nothing natural matches: `PogoAI_RadialSearch` (its nested-do-while
+   checkpoint, Open leads) and `func_800B62EC` (ovl5d; swarm D matched it
+   with a do-while and the gate refused it: the C is in that run's results).
 2. Name each function as it's matched when the evidence allows.
 3. Split `main.c` into its translation units: on hold since 2026-10-15. Its
    one proven boundary (jump-table parity, 95..370) has three possible
@@ -104,65 +106,7 @@ and current tools).
 
 ## Open leads
 
-- **Hack triage (2026-10-22, `scratch/triage.py`, all 103 hack matches).**
-  Each was tried with its do-while wrappers flattened, with narrow
-  parameters widened to `s32`, and checked for callees that never read an
-  argument it passes. None matched that way; both "wide" matches still use
-  a do-while in a header macro, and the unused-argument hits were false
-  (the wrong overlay's `XZBoxToSphere`; `a1` passed through to a call; a
-  real `a2` in a delay slot). Without the hack, 53 are off only in
-  registers, 9 in instruction order, 25 in structure, and 16 have no plain
-  form to try (helpers, identical arms, dead stores, no-op pairs). Closest:
-  `PogoWinner_Relic` 1/248 (the target sets `i = done` from `done`'s
-  register, so cse had lost `done = 0` there: a join or loop note the C
-  lacks), `func_800B4954` 5/97, `func_800B4D64` 5/94, `func_800B4A1C`
-  6/58, `func_800BB4AC` 6/54, `func_80095258` 7/39, `func_800BB010` 8/73,
-  then 15 more at 9-15 registers. Work them by hand, nearest first.
-  Worked 2026-10-22: `PogoWinner_Relic` fixed (348e2185). Still hacks:
-  `func_800B4954`: block 0 has three local qtys, and local-alloc.c's
-  hand-written case-3 sort compares qty numbers, so qty 0 (the
-  D_800C4184 base) is allocated first unless qty1 > qty0 and qty2 > qty1
-  (then qty 2, the loaded value, goes first and the base gets v1, as in
-  the target); natural if/else, `arg0[T]`, pointer forms, s16/flag temps
-  all stay at 5/97. `func_800B4D64` is permuter C (goto loop, casts):
-  needs a full rewrite first. `func_80095258`: a `for` loop reloads
-  D_800A0C70 (stores may alias it; the target keeps `n` in a register)
-  and loop.c reduces a different entry giv (target: `&ent[i].val` at
-  0x66 with the kind at -2), so the entry layout is still uncertain.
-  `func_800B4A1C`: the target's loop is tested at the top with a `j` back,
-  so it was never rotated: jump.c `duplicate_loop_exit_test` refuses an
-  exit test with a call, label or block note, and a goto loop has no loop
-  notes; the swarm's goto loop gets the structure, every `for`/`while`
-  doesn't (39/58). Left (6/58): local-alloc's combine_regs ties the sum
-  `dx*dx + dz*dz` to the dying `dz*dz` (both v1, the 0x15F8F constant v0)
-  where the target keeps them apart (sum v0, product t1, constant v1);
-  statement and operand order don't change it.
-- **Hack families (2026-10-22, `scratch/families.py`):** each do-while
-  hack compiled with and without its wrappers, all cc1 dumps, first pass
-  whose RTL differs (notes, labels and insn ids ignored): 44 flow (same
-  RTL, only loop-weighted refs differ: allocation priority), 23 cse, 11
-  jump, 3 loop, 2 sched, 1 none (84 of 86). A cse-first diff can be
-  incidental: in `func_800B7858` cse reuses the pre-truncation `ang` sum
-  in the plain build, but the target does too; what matters is the refs.
-  `func_800B7858`/`func_800B7C58` (ovl67) and `func_800B7C60`/
-  `func_800B808C` (ovl61) are one function: `angle` (a3 -> s1) needs ~5
-  weighted refs to outrank `from` (0.109) but natural C gives 2 (0.023;
-  a u16 parameter only shortens its life to 45). `func_80010C70`/
-  `func_80010E8C` (main): the `Heap_FindFree` inline is the swarm's;
-  passing `words = ...` inside the call gets 5/135, the loop written in
-  place is structurally off (123/135).
-- **Header do-whiles to review (lint extended 2026-10-22).** The lint now
-  reads the macros and `static inline` functions a body uses (outside the
-  leaked headers), and matches `do { } while (0)` at any brace depth (the
-  old regex saw one level). That flagged 25 more matches: 8 through helpers
-  (ovl64's `OVL64_*` macros in `PlotBalloon`/`func_800B4144`, whose worker
-  used macros to pass the lint; `Ovl62HasBomb`, `Ovl62Closest`,
-  `Ovl63HitHero`, `LaserBurst`, `HeroAnimSlotSet`) and 17 deep wrappers in
-  bodies (`DoChooseNewAction`, `func_800115D8`, `PlotTrackGlob`, ...).
-  The macro ones read as real idioms (round draw, pop, bounce, float,
-  shadow): review each like the 6 accepted ones (`hacks --accept`, with
-  the human's yes). `OVL60_ROUND_OVER` is no longer used.
-- **`PogoAI_RadialSearch` (was `func_800BE158`; ovl60, parked, hack-only):** the swarm checkpoint is
+- **`PogoAI_RadialSearch` (was `func_800BE158`; ovl60, parked):** the swarm checkpoint is
   registers 2/347 but only with nested `do { } while (0)` around each case's
   `dx`/`dz` set. They do two jobs: end cse's block (cse.c
   `cse_end_of_basic_block` stops at `NOTE_INSN_LOOP_END`) so `side1 = dx` and
@@ -172,7 +116,8 @@ and current tools).
   Natural C (in the file under `NON_MATCHING`) is structure 337/350: cse
   folds the copies via `record_jump_equiv` on the switch path. Tried: plain
   cases, one do-while, goto-shared tails, `dz = angle - 1`, `side0 = -dz`.
-  Next: find a natural loop note (a macro?), or ask for hack sign-off.
+  Next: steering C is allowed now (2026-10-22), so finish it from the do-while
+  checkpoint.
 
 - **Tune the permuter from its record.** Runs are logged since 2026-10-20
   (`decomp.py permstats`, `swarm.mjs stats`). Two ideas to try once there
@@ -184,22 +129,6 @@ and current tools).
   - A deterministic search over the Diff patterns' common fixes (copy a
     parameter to a local, s16 -> s32, split a statement, a constant in a
     local, a goto loop), generalising `splitvars`.
-- **`func_800B345C` (ovl63, 30735f0c) still matches only with a hack** (no-op
-  `h++; h--;` and `p++; p++; p--;` in its goto loop; `done` now refuses such runs
-  without --hack). Reworked 2026-10-19, not finished. Without the no-ops it is
-  instructions 19/92: `h`/`i` swap s1/s2 and `i = 0` sits at 0x48, not 0x10.
-  - Registers: global.c priority (-dl) is i 4 refs/30 = 0.267 against h 6/46 =
-    0.261, so i takes s1. `do { } while (0)` around only the first
-    `h->hero_ai->AIpad &= ~0x20;` (one weighted ref, h 0.304) fixes all of
-    them: 11/92 left. Wrapping any other statement or the whole branch breaks
-    the structure; a real `while (1)` loop too.
-  - Left: `i = 0` fills the load-delay stall after `lw a0,4(v1)`, where the
-    target has `addiu a1,%lo(D_80068BD4)`. In sched1 (scheduling backwards)
-    the table address insn 29 loses every launch-priority tie to the index
-    insns on INSN_LUID, so it goes to the top and `i = 0` (priority 1,
-    initially ready) takes the stall. No statement order, `pos.x` spelling or
-    index temp moved it. Next: find C whose RTL emits the table address after
-    the index arithmetic (or makes `i = 0` depend on something late).
 - **`func_800BC274` (ovl5e) instructions 2/197, parked by hand 2026-10-20**
   (block note): only `addiu a1` / `lw a0` before `jal func_8001CD04` are swapped.
   sched1 ties them and luid puts a0 first; the target's order needs a
@@ -211,12 +140,12 @@ and current tools).
   reads; the function is absent from the Aug/Sep prototypes and identical
   in Oct 9. The same code is unmatched in `func_800C284C`
   (ovl5d) and `func_800BAF1C` (ovl64): solve the three together.
-  A fourth pass (2026-10-21, no hacks or permuter) worked every
+  A fourth pass (2026-10-21, natural C only, no permuter) worked every
   sched1 tie-break through from `sched.c`: each needs the target's
   block to hold an instruction its final code lacks, and no natural
   pass after sched1 deletes one (the block note lists them; do-while(0)
   wrapped copies were tried in the third pass).
-  A fifth pass (2026-10-22, no hacks or permuter) found one that does:
+  A fifth pass (2026-10-22, natural C only, no permuter) found one that does:
   `nas = D_8005AA2C;` at the end of both arms of `if (box != NULL)`
   gives sched1 the second memory insn, and jump2 cross-jumps the copies
   back into one, so the call block comes out in the target's order. It
@@ -224,30 +153,6 @@ and current tools).
   where the target's join has `$4` (block note, `scratch/bct/`). All
   three copies are parked by hand now (`func_800BAF1C`'s C under
   `NON_MATCHING`), so the swarm stops retrying them.
-- **Hack reworks tried 2026-10-21 (still hacks; plain C and how far off):**
-  `func_8001097C`: a block-scope `MemBlock *p = cur->prev;` in the search
-  loop un-rotates it (94/94 long, 12 lines off); left: `cur` and `blk`
-  share `s0`. cse1 deletes `blk = cur` because `blk` isn't live past the
-  extended block (cse.c `make_regs_eqv`); the hack's if/else join is the
-  label that ends it, and no natural label found yet.
-  `func_800272AC`: plain C keeps `&D_8005B790` and `%hi(D_8005B68C)` in
-  s-regs across the four calls (frame 64, `s3`/`s4`); the target rebuilds
-  them. `func_80010000`: without `t = 0;` 10 lines off, the target puts
-  `n / 10` in `q`'s register and copies it to `i` (ours the reverse).
-  `func_800B4AD8`: a plain `return 1;` is 3 insns off (`u` in `a1`, the
-  target `a0`); sharing `t` for `u` is worse. Not tried yet:
-  `func_8001A6D4`, `func_800B6CD8`, `func_800B649C`, `PlotHelicopterTA`,
-  `Roo_FindNewSquare` and `func_8001AF2C` (a dead `in = &D_800569CC.in;`
-  before the asm, flagged since the lint stopped reading `.in` as `in`).
-- **Hack matches:** `decomp.py hacks` lints every matched function: register
-  pins, empty asm barriers, no-op `++`/`--` pairs, dead stores (a loop's
-  last store, write-only locals, a first store overwritten before any read)
-  and identical if/else arms. Reworked without one so far: `func_800B7134`,
-  `func_800B4444`, `func_8001CE00` (2026-10-21). `hacks --accept NAME --why`
-  takes one off the count when it's plausibly the original
-  (`func_800193A8`'s pins). Before reaching for a barrier or pin, try
-  `do { } while (0)` (Diff patterns): it matched `func_800926CC` and
-  `func_8008A924` without one.
 - **`PlotScriptFX` (engine script keyframes, 2080 B), parked 2026-10-18 at
   regions 95/112, 484/520 exact** (C under `#ifdef NON_MATCHING`). Left:
   - Block 21: the target computes `p = &kf[keyindex]` into v0, copies it to
@@ -538,8 +443,8 @@ Other:
 - A new prototype can also change a matched caller's code through the
   type it assigns to (`D_800C5BB0` had to become `NAS *`). Run `make check`
   after adding one.
-- Register pins pass the lint as hacks (`--hack`) since `ef8fdc9`; before,
-  `asm("$20")` was misread as inline asm.
+- Every inline asm spelling, register pins included, is a lint error since
+  2026-10-22 (only C), in macros and inlines too; `gte_*` macros are exempt.
 - Renaming a function to a leak-declared name and back loses its owned
   declaration; re-add it by hand.
 - `rename` prints `ERROR: unknown function OVL:ADDR` for data symbols; the
@@ -585,6 +490,16 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-22 (no more hack class):** on the user's call, matches that
+  steer the compiler with C count as matched like any other; only C is
+  allowed (inline asm of any kind is a lint error, in macros and inlines
+  too, `gte_*` excepted) and natural C comes first. Removed `decomp.py
+  hacks`, `done --hack`, the idioms/acceptance records, the dashboard's
+  Hacks tile, the swarm's hack rule and pattern filter, and the (hack)
+  markers in MATCHING.md; updated CONVENTIONS, ROADMAP, CONTRIBUTING,
+  CLAUDE.md and the /match-function skill. Older entries below keep the
+  old wording.
 
 - **2026-10-22 (hand: `PogoWinner_Relic` without its hack, 348e2185):**
   the do-while around `if (out != 0) done = 1; else lose;` was a loop to

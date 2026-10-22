@@ -403,11 +403,9 @@ test('patterns: asm tricks dropped, duplicates once, same overlay first, capped'
   s.addPattern(eng, '| pin | `register s32 x asm("v1")` | ex |');
   s.addPattern(eng, '| barrier | `__asm__("" : "=r"(p))` | ex |');
   s.addPattern(eng, '| target has a gte_* asm barrier | reorder | ex |');   // mentions asm, teaches no asm
-  s.addPattern(eng, '| swap | wrap it in `do { } while (0)` | ex |');
-  s.addPattern(eng, '| swap | a dummy store | `func_1` (hack) |');
   s.addPattern(eng, '| engine row | change | ex |');
   s.addPattern(main, '| engine row | change | ex |');
-  fs.appendFileSync(s.paths.patterns, '| old pin | `--hack` | ex |  <!-- func_1 -->\n');   // from before the filter
+  fs.appendFileSync(s.paths.patterns, '| old pin | `register s32 x asm("v1")` | ex |  <!-- func_1 -->\n');   // from before the filter
   const rows = s.patternsFor(fn('func_8007AC20', { seg: 'overlays/engine/8007ac20' })).split('\n');
   assert.deepEqual(rows, ['| engine row | change | ex |', '| target has a gte_* asm barrier | reorder | ex |', '| main row | change | ex |']);
   for (let i = 0; i < 100; i++) s.addPattern(main, `| row ${i} ${'x'.repeat(60)} | change | ex |`);
@@ -421,11 +419,11 @@ test('both prompts forbid inline asm', () => {
   assert.match(s.prompt(s.bigJob(f, 1, [])), /Pure C only: no `asm`/);
 });
 
-test('both prompts name the lint hacks, macros included', () => {
+test('both prompts put natural C first', () => {
   const s = swarm('--big-workers', '1');
   const f = fn('func_80010000');
   for (const p of [s.prompt({ f, model: 'sonnet', attempt: 1, notes: [] }), s.prompt(s.bigJob(f, 1, []))])
-    assert.match(p, /refuses `do \{ \} while \(0\)` wrappers \(also\s+inside a macro or static inline/);
+    assert.match(p, /Natural C first/);
 });
 
 test('checkPatch refuses every inline asm spelling', () => {

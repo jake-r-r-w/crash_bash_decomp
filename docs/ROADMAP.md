@@ -26,15 +26,9 @@ byte, so it plays like retail by definition. Builds are tested by playing
 them. The next step is the shiftable `NON_MATCHING` build (Phase 4), the
 first build that isn't byte-identical.
 
-Alongside matching, hack matches are paid down as they appear rather than
-left for Phase 6. A hack is any match the gate's lint flags (`decomp.py
-hacks`, and the Hacks tile on the dashboard): register pins, empty
-`asm("")` barriers, no-op `++`/`--` pairs, dead stores, identical
-if/else arms and `do { } while (0)` wrappers (since 2026-10-22). After each
-swarm run, run `decomp.py hacks` and work the new ones by hand (see the
-Phase 6 item for the rule). No hack is committed without a `Hack:` line
-in its match commit saying what it works around and what the natural C
-gives.
+Matches are C only (no inline asm; the SDK's `gte_*` macros excepted), and
+natural C comes first: C that only steers the compiler is used when nothing
+natural matches (docs/CONVENTIONS.md, Matching rules).
 
 ## Phase 1 - Foundations: types and names
 
@@ -204,27 +198,6 @@ test (Phase 4). A box below is ticked on the same terms.
 **Done when** every test in [The final test](#the-final-test) passes.
 
 - [ ] No `INCLUDE_ASM` or `INCLUDE_RODATA` anywhere, and no parked functions.
-- [ ] No hack matches left (`decomp.py hacks` lists none; reviewed ones
-  kept on evidence are listed apart). For each one, in this order:
-  1. Write down what the hack works around: the natural C, its stage and
-     score, and the gcc pass that decides the difference (`sched`, `vars`,
-     the `-dS`/`-dR`/`-dl` dumps, `tools/reference/`). Matches committed
-     without a `Hack:` line get one in `docs/AGENT_LOG.md`, Open leads.
-  2. Look for the real cause first. A dead store or a no-op step usually
-     stands in for something the C has wrong: a prototype (a callee's
-     argument or return types), a struct field's size or type, a loop's
-     real shape, or an alias the original had. Fix that in the headers or
-     the caller and retry with `similar`, `splitvars` and the permuter.
-  3. Keep a register pin only where the evidence says it's the original
-     source (a register choice normal allocation never makes), and say so
-     in the function's comment and its commit; `decomp.py hacks --accept
-     NAME --why` records the review and takes it off the count.
-  4. Otherwise re-match it without the hack, or park it
-     (`decomp.py block`) with the natural C under `NON_MATCHING`: a park
-     is honest, a hack hides the gap.
-  A unit's box in Phases 3-5 isn't ticked while it has a hack match that
-  isn't a kept pin. Re-run the list after tool upgrades, since a new rule
-  in the lint can flag old matches.
 - [ ] Every remaining disc file (music, movies, anything not covered above)
   extracts, and the formats are documented.
 - [ ] Shift everything at once: pad `main.exe` and the engine too, and relink

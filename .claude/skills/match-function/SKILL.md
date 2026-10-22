@@ -10,25 +10,24 @@ the host has no Python. In Git Bash loops, pass `</dev/null` to `tools/dk`.
 
 ## Hard rules
 
-- **No hacks without the human's sign-off.** A hack is C written to steer a
-  compiler pass, not code a 1999 programmer would plausibly have written:
-  - register pins (`register ... asm("$N")`), `asm("")` barriers, any inline asm;
-  - dead stores, or values assigned only to steer cse/flow;
-  - no-op terms (`x + k - k`, `min + k - k`); the offset form `(a + k) - (b + k)`
-    is fine only where it reads like real source;
-  - `do { } while (0)`, labels or gotos used only to block a pass;
-  - bodies duplicated in a redundant `if (a) {...} else {...}`;
-  - casts, temporaries or statement orders that have no reason except the diff.
-  
-  Never pass `done --hack` and never `hacks --accept` on your own. If only a hack
-  matches, follow step 5 (Hack found).
+- **Only C.** No inline asm of any kind: no `asm()` statements, register pins
+  (`register ... asm("$N")`) or `asm("")` barriers, in the body or in a macro or
+  static inline it uses. `done` refuses them. The SDK's `gte_*` macros are the
+  one exception.
+- **Natural C first.** Write what a 1999 programmer would plausibly have
+  written, and fix diffs with types, struct layouts, prototypes, statement
+  order and real code shapes found from the evidence and the compiler's rules
+  (step 3). Only when step 3 finds no natural form may you use C that just
+  steers a pass: a `do { } while (0)` wrapper, an extra temporary or store, a
+  reordered statement. Then say in the `done --note` which one and the gcc
+  rule it works around.
 - **Compiler first.** Every C change for an instruction-order, register or
   tail-merge difference must be justified by the gcc rule that decides it
   (step 3). Shuffling statements until the diff moves is not analysis.
 - **Permuter last, and rarely.** At most one run per function, under the
   conditions in step 4. Its output is a clue, never a fix by itself.
-- **Parking is a good outcome.** A clean park with a precise note beats a
-  hacked match.
+- **Parking is a good outcome.** When nothing matches, a clean park with a
+  precise note is fine.
 - **Write a script when it helps.** If a one-shot script would answer a
   question faster than reading by hand (diffing two pass dumps, tracing one
   pseudo-reg through the RTL, counting sched priorities, brute-forcing a few C
@@ -61,7 +60,7 @@ the host has no Python. In Git Bash loops, pass `</dev/null` to `tools/dk`.
      it (`bash/main.h`, `bash/engine.h`, `bash/ovlXX.h`, marked `owner:`), or in
      the original headers (`bash/pogo.h`, ...) if they already name it. `done`
      adds the function's own prototype. See docs/CONVENTIONS.md (Headers).
-   - No `M2C_*` macros, no `?` types, no `asm()` with instructions.
+   - No `M2C_*` macros, no `?` types, no inline asm.
    - Prefer struct fields over pointer arithmetic once the layout is known.
 3. **Diff and reason from the compiler.** `tools/dk make diff FUNC=NAME`. The last
    line, `STAGE NAME stage n/total`, says what to fix next: `structure` (length,
@@ -94,23 +93,18 @@ the host has no Python. In Git Bash loops, pass `</dev/null` to `tools/dk`.
    - step 3's analysis is done and written down, and found no natural fix;
    - it is the only run for this function: `tools/dk make permute FUNC=NAME
      MINUTES=5 ARGS=--differing`.
-   Port a find only if you can explain it with a gcc rule and the result is
-   natural C. A find that is a hack goes to step 5 (Hack found); one you can't
-   explain is discarded. Otherwise park (step 5).
-5. **Finish one of three ways.**
+   Port a find only if you can explain it with a gcc rule; prefer it in
+   natural form, and treat a find that only steers a pass like any steering C
+   (Natural C first). One you can't explain is discarded. Otherwise park
+   (step 5).
+5. **Finish one of two ways.**
    - **Match:** `tools/dk python3 tools/scripts/decomp.py done NAME --commit --note "<one line: what made it match>" --trailer "Co-Authored-By: <your model attribution>"`.
-     If `done` refuses, fix the reason it gives (scope, lint, hack, function, or
+     If `done` refuses, fix the reason it gives (scope, lint, function, or
      full build). Never commit a match with plain `git commit`, and never use
      `--no-verify`.
-   - **Park:** restore the `INCLUDE_ASM` line, keep the best natural C under
-     `#ifndef NON_MATCHING ... #endif`, and run `decomp.py block NAME --note
+   - **Park:** keep the best C under `#ifdef NON_MATCHING`, with the
+     `INCLUDE_ASM` line under `#else` (`#endif` after), and run `decomp.py block NAME --note
      "<the STAGE line>; deciding pass and rule; what was tried; next: ..."`.
-   - **Hack found (needs sign-off):** park it as above, with the natural C kept and
-     the hack noted in the `block` note. Then stop and ask the human in chat,
-     showing: the hack lines, the gcc rule it works around, the natural C it
-     replaces, and why no natural form was found. Only on their explicit yes in
-     this conversation, put the hack version in and commit with `done NAME
-     --commit --hack "<their reason>"`. Their sign-off covers that one function only.
 6. **Report** the commit hash (or the park), the function, and anything learned.
    Put an idiom in the Diff patterns table in docs/MATCHING.md *with the gcc rule
    that explains it* (not just "permuter find"); update `docs/AGENT_LOG.md`

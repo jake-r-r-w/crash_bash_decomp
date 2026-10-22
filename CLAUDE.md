@@ -10,6 +10,10 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   `config/`), symbols in `configs/USA/sym.main.txt`, exe target `build/main.exe`.
 - Never commit game data or `ext/`; never commit a match except via
   `decomp.py done NAME --commit`.
+- Only C: no inline asm of any kind (the gate refuses it, in macros and inlines
+  too; the SDK's `gte_*` macros are the exception). Natural C first; C that only
+  steers the compiler (a `do { } while (0)`, an extra temporary) is fine when
+  nothing natural matches.
 - Matching is by hand, one function per commit, through the validation gate
   `decomp.py done NAME --commit` ([docs/MATCHING.md](docs/MATCHING.md); skill
   `/match-function`). `decomp.py auto` is retired.
@@ -44,9 +48,7 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   functions with the same code), `vars NAME` (the variable behind a register
   swap), `sched NAME` (why cc1 allocated and scheduled it so: priorities, each
   block's memory-insn count, and the rule that took each insn off the ready
-  list: priority, birthing, class, potential hazard or luid), `splitvars NAME VAR` (search splits of a variable), `hacks` (hack matches to
-  revisit, with their reasons, including hacks in the macros and inlines they use; `--accept NAME --why`, on the human's yes, accepts a
-  function, or a macro/inline wherever it's used, as plausibly original: not a hack), `permute NAME
+  list: priority, birthing, class, potential hazard or luid), `splitvars NAME VAR` (search splits of a variable), `permute NAME
   --differing` (permute only the differing blocks' C), `permstats` (every
   permuter run: speed, improvements, matches), `units [SEG]` (evidence
   for file boundaries: switch-table parity proves a file start in any

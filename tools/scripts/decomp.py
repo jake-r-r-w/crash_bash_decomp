@@ -28,8 +28,6 @@ P_PROJ = os.path.join(DEC, "project.json")
 P_FUNCS = os.path.join(DEC, "functions.json")
 P_STATE = os.path.join(DEC, "state.json")
 P_HIST = os.path.join(DEC, "history.json")
-# macros and static inlines accepted as the original's own idiom (hacks --accept NAME): not hacks
-P_IDIOMS = os.path.join(DEC, "idioms.json")
 CFG = "configs/USA"          # splat configs, symbols, checksums, compiler settings
 P_MK = f"{CFG}/project.mk"
 P_SUMS = f"{CFG}/checksum.sha"
@@ -1995,232 +1993,29 @@ def cmd_verify(a):
 # every spelling of an inline asm statement: asm, __asm, __asm__, each optionally volatile
 # (tools/swarm/swarm.mjs checkPatch refuses the same in a worker's patch)
 ASM_CALL = r"\b(?:asm|__asm|__asm__)\s*(?:(?:volatile|__volatile|__volatile__)\s*)?\("
-# m2c leftovers and hacks a hand match must not contain (see docs/CONVENTIONS.md, Matching rules)
+# m2c leftovers and anything that isn't C, which a hand match must not contain (docs/CONVENTIONS.md,
+# Matching rules): inline asm of every kind, register pins and empty barriers included
 LINT_ERRORS = [
     (re.compile(r"\bM2C_\w+"), "m2c macro"),
     # where a type goes (a declaration, a cast, a parameter), so a ternary's `?` doesn't count
     (re.compile(r"(^[ \t]*|[(,][ \t]*)\?(\s|\*)", re.M), "m2c unknown type `?`"),
-    (re.compile(ASM_CALL + r"\s*\"[^\"]"), "inline asm with instructions"),
-]
-# allowed only with --hack "reason", which goes into the commit message
-LINT_HACKS = [
-    (re.compile(r"\bregister\b[^;]*" + ASM_CALL), "register pin"),
-    # no instructions, with or without operands: asm("" ::: "memory"), asm("" : "=r"(p) : "0"(p))
-    (re.compile(ASM_CALL + r"\s*\"\""), "empty asm barrier"),
+    (re.compile(ASM_CALL), "inline asm (only C is allowed)"),
 ]
 INCLUDE_ASM_LINE = re.compile(r'^\s*INCLUDE_ASM\(\s*"[^"]+"\s*,\s*(\w+)\s*\)')
-# consecutive `x++;` / `x--;` statements on one variable; a run with both directions is a no-op
-# that only moves refs or schedule ties (2026-10-19: `h++; h--;` in func_800B345C)
-NOOP_STEPS = re.compile(r"\b(\w+)\s*(?:\+\+|--)\s*;(?:\s*\b\1\s*(?:\+\+|--)\s*;)+")
-
-
-def do_while_zero(body):
-    """True if BODY has a `do { ... } while (0)`: it only adds loop notes (cse block ends,
-    loop-depth weighted refs), 2026-10-22: 176 in matched C. Braces matched to any depth."""
-    for m in re.finditer(r"\bdo\s*\{", body):
-        depth = 0
-        for i in range(m.end() - 1, len(body)):
-            depth += {"{": 1, "}": -1}.get(body[i], 0)
-            if depth == 0:
-                if re.match(r"\s*while\s*\(\s*0\s*\)", body[i + 1:]):
-                    return True
-                break
-    return False
-
-
-def noop_steps(body):
-    """True if BODY has a run of x++/x-- statements on one variable that goes both ways."""
-    return any("++" in m.group(0) and "--" in m.group(0) for m in NOOP_STEPS.finditer(body))
-
-
-# a block-scope local declaration without initializers: `u16 *tb;`, `s32 i, j;`
-LOCAL_DECL = re.compile(r"^[ \t]*(?!(?:return|goto|else|case|do|static|extern)\b)(?:\w+[ \t]+)+"
-                        r"(\**[ \t]*\w+(?:[ \t]*,[ \t]*\**[ \t]*\w+)*)[ \t]*;", re.M)
-def loop_body(body, o):
-    """True if the { at O in BODY opens a for, while or do body."""
-    head = body[:o].rstrip()
-    if re.search(r"\bdo$", head):
-        return True
-    if not head.endswith(")"):
-        return False
-    depth, i = 0, len(head) - 1
-    while i >= 0:
-        depth += {")": 1, "(": -1}.get(head[i], 0)
-        if depth == 0:
-            break
-        i -= 1
-    return bool(re.search(r"\b(?:for|while)\s*$", head[:i]))
-
-
-def blocks(body):
-    """(open, close, is_loop) for every {...} in BODY; is_loop for a for/while/do body."""
-    out, stack = [], []
-    for i, ch in enumerate(body):
-        if ch == "{":
-            stack.append(i)
-        elif ch == "}" and stack:
-            o = stack.pop()
-            out.append((o, i, loop_body(body, o)))
-    return out
-
-
-def dead_stores(body):
-    """Locals whose last store is dead: every use is in one loop's body, which assigns the local
-    first thing and ends with a store that nothing reads (the next pass overwrites it). flow
-    deletes the store, but setting the local twice stops loop.c hoisting it out of the loop
-    (2026-10-20: tb/trig/seq = NULL at the bottom of func_800B7134's outer loop)."""
-    found, bl = [], blocks(body)
-
-    def depth0(lo, pos):
-        return all(not (lo < o < pos) or c < pos for o, c, _ in bl)
-
-    def store_at(pos):
-        prev = body[:pos].rstrip()
-        return prev[-1:] in (";", "{", "}") and re.match(r"\w+\s*=(?!=)", body[pos:])
-
-    for d in LOCAL_DECL.finditer(body):
-        for v in re.findall(r"\w+", d.group(1)):
-            if re.search(rf"&\s*{v}\b", body):
-                continue
-            uses = [u.start() for u in re.finditer(rf"(?<![.>])\b{v}\b", body) if u.start() >= d.end()]
-            loops = [(o, c) for o, c, lp in bl if lp and uses and o < uses[0] and uses[-1] < c]
-            if len(uses) < 2 or not loops:
-                continue
-            o, c = max(loops)
-            first, last = uses[0], uses[-1]
-            if (depth0(o, first) and depth0(o, last) and store_at(first) and store_at(last)
-                    and not re.search(rf"\b{v}\b", body[first:body.index(";", first)].split("=", 1)[1])):
-                found.append(v)
-    return found
-
-
-def write_only_locals(body):
-    """Locals that are only ever stored, from values with no call in them, and read only to
-    compute each other's stores: every store is dead and flow deletes it, but the code they
-    leave behind can steer cse and the scheduler first (2026-10-21: func_800B4444's
-    `if (*p != 0) { j = k + 1; k = j; }` keeps a pointer increment the loop needs). At least one
-    such read, so a lone unused assignment isn't counted."""
-    names, decls = set(), []
-    for d in LOCAL_DECL.finditer(body):
-        names.update(v.strip("* \t") for v in d.group(1).split(","))
-        decls.append((d.start(), d.end()))
-    stores, feeds, live = {}, {}, set()
-    for v in names:
-        if re.search(rf"&\s*{v}\b", body):
-            live.add(v)
-            continue
-        for u in re.finditer(rf"(?<![.>\w])\b{v}\b", body):
-            pos = u.start()
-            if any(a <= pos < b for a, b in decls):     # its own declaration
-                continue
-            s0 = max(body.rfind(c, 0, pos) for c in ";{}") + 1
-            s1 = body.find(";", pos)
-            stmt = body[s0:s1 if s1 >= 0 else len(body)]
-            m = re.match(r"\s*(\w+)\s*([-+*/&|^]?=)(?!=)(.*)$", stmt, re.S)
-            if m and m.group(1) == v and s0 + m.start(1) == pos:
-                if re.search(r"\w\s*\(", m.group(3)):      # a call: the store has an effect
-                    live.add(v)
-                stores[v] = stores.get(v, 0) + 1
-                if m.group(2) != "=":
-                    feeds.setdefault(v, set()).add(v)
-            elif m and m.group(1) in names and m.group(1) != v and s0 + m.end(2) <= pos:
-                feeds.setdefault(v, set()).add(m.group(1))
-            else:
-                live.add(v)
-    dead = {v for v in names if stores.get(v) and v not in live}
-    while True:
-        drop = {v for v in dead if feeds.get(v, set()) - dead}
-        if not drop:
-            break
-        dead -= drop
-    return sorted(dead) if any(feeds.get(v) for v in dead) else []
-
-
-def overwritten_stores(body):
-    """Locals whose first store is overwritten before anything reads it: `v = expr;` (no call or
-    side effect) then, in the same block, `v = ...;` not reading v, and no jump between that can
-    leave the block (goto, or a break/continue outside a loop or switch nested between).
-    flow deletes the first, but its load can move a %hi's luid and so the schedule (2026-10-21:
-    Roo_FindNewSquare's `z = D_800C5BEC;`). The first use only, so a loop can't carry a read back."""
-    decls, found = [(d.start(), d.end()) for d in LOCAL_DECL.finditer(body)], []
-    names = {v.strip("* \t") for d in LOCAL_DECL.finditer(body) for v in d.group(1).split(",")}
-
-    def plain_store(pos, v):
-        if body[:pos].rstrip()[-1:] not in (";", "{", "}"):
-            return None
-        m = re.match(rf"{v}\s*=(?!=)([^;]*);", body[pos:])
-        return m if m and not re.search(r"\w\s*\(|\+\+|--|(?<![=!<>])=(?!=)|(?<![.>\w])\b" + v + r"\b", m.group(1)) else None
-
-    for v in sorted(names):
-        if not v or re.search(rf"&\s*{v}\b", body):
-            continue
-        uses = [u.start() for u in re.finditer(rf"(?<![.>\w])\b{v}\b", body)
-                if not any(a <= u.start() < b for a, b in decls)]
-        if len(uses) < 2 or not (first := plain_store(uses[0], v)):
-            continue
-        between = body[uses[0] + first.end():uses[1]]
-        depth = 0
-        for ch in between:
-            depth += {"{": 1, "}": -1}.get(ch, 0)
-            if depth < 0:
-                break
-        second = re.match(rf"{v}\s*=(?!=)([^;]*);", body[uses[1]:])
-        if (depth != 0 or body[:uses[1]].rstrip()[-1:] not in (";", "}") or not second
-                or re.search(rf"(?<![.>\w])\b{v}\b", second.group(1)) or re.search(r"\bgoto\b", between)):
-            continue
-        # a break/continue is local only inside a loop or switch that opens between the stores
-        local = [(o, c) for o, c, lp in blocks(between)
-                 if lp or re.search(r"\bswitch\s*\([^{]*\)\s*$", between[:o])]
-        if all(any(o < j.start() < c for o, c in local)
-               for j in re.finditer(r"\b(?:break|continue)\b", between)):
-            found.append(v)
-    return found
-
-
-def same_branches(body):
-    """True if an if/else has the same code in both arms (`if (v) {S} else {S}`): the duplicate
-    only adds refs to raise a pseudo's allocation priority, and jump2 cross-jumps the copies
-    (2026-10-21: PlotHelicopterTA)."""
-    def arm(pos):
-        pos = len(body) - len(body[pos:].lstrip())
-        if body.startswith("{", pos):
-            depth = 0
-            for i in range(pos, len(body)):
-                depth += {"{": 1, "}": -1}.get(body[i], 0)
-                if depth == 0:
-                    return body[pos + 1:i], i + 1
-            return None, len(body)
-        end = body.find(";", pos)
-        return (body[pos:end + 1], end + 1) if end >= 0 else (None, len(body))
-
-    norm = lambda s: re.sub(r"\s+", " ", s).strip()
-    for m in re.finditer(r"\bif\s*\(", body):
-        depth, i = 0, m.end() - 1
-        for i in range(m.end() - 1, len(body)):
-            depth += {"(": 1, ")": -1}.get(body[i], 0)
-            if depth == 0:
-                break
-        then, after = arm(i + 1)
-        rest = body[after:].lstrip()
-        if then is None or not rest.startswith("else") or re.match(r"else\s+if\b", rest):
-            continue
-        other, _ = arm(len(body) - len(rest) + 4)
-        if other is not None and norm(then) and norm(then) == norm(other):
-            return True
-    return False
 
 
 def lint_function(src, name):
-    """(errors, hacks) found in NAME's definition in SRC, and in the macros and static inline
-    functions it uses."""
+    """Errors found in NAME's definition in SRC and in the macros and static inline functions it
+    uses: moving asm into a header doesn't make it C."""
     body = extract_function(read(src), name) or ""
-    errs, hacks = lint_body(body)
-    return errs, sorted(set(hacks) | set(helper_hacks(src, body)))
+    return sorted(set(lint_body(body)) | set(helper_errors(src, body)))
 
 
 # headers recovered from the leaked original source: their macros are the game's own
 ORIGINAL_HEADERS = {"include/bash/pogo.h", "include/bash/arkenoid.h", "include/bash/polar.h",
                     "include/bash/tank.h"}
+# the SDK's GTE macros (coprocessor instructions C can't express) and the INCLUDE_ASM machinery
+SDK_HELPER = re.compile(r"gte_\w+|INCLUDE_ASM|INCLUDE_RODATA")
 INCLUDE_LINE = re.compile(r'^\s*#\s*include\s+"([^"]+)"', re.M)
 DEFINE = re.compile(r"^[ \t]*#[ \t]*define[ \t]+(\w+)((?:[^\n\\]|\\.|\\\n)*)", re.M)
 STATIC_INLINE = re.compile(r"^static\s+(?:__inline__\s+|__inline\s+|inline\s+)[^;{(]*?\b(\w+)\s*\([^;{]*\)\s*\{", re.M)
@@ -2241,8 +2036,8 @@ def included_files(src):
 
 
 def helper_defs(src):
-    """{name: (file, hacks, text)} for the macros and static inline functions visible in SRC
-    (outside the original headers), with what the lint finds in each one's own text."""
+    """{name: (file, errors, text)} for the macros and static inline functions visible in SRC
+    (outside the original headers and the SDK's), with what the lint finds in each one's text."""
     if src in _helper_cache:
         return _helper_cache[src]
     defs = {}
@@ -2251,30 +2046,20 @@ def helper_defs(src):
             continue
         text = re.sub(r"/\*.*?\*/", lambda m: re.sub(r"[^\n]", " ", m.group(0)), read(p), flags=re.S)
         for m in DEFINE.finditer(text):
-            body = m.group(2).replace("\\\n", "\n")
-            hacks = {why for rx, why in LINT_HACKS if rx.search(body)}
-            if do_while_zero(body):
-                hacks.add("do { } while (0) wrapper")
-            if noop_steps(body):
-                hacks.add("no-op ++/-- pair")
-            if same_branches(body):
-                hacks.add("identical if/else arms")
-            defs.setdefault(m.group(1), (p, sorted(hacks), body))
+            if not SDK_HELPER.fullmatch(m.group(1)):
+                body = m.group(2).replace("\\\n", "\n")
+                defs.setdefault(m.group(1), (p, lint_body(body), body))
         for m in STATIC_INLINE.finditer(text):
             body = extract_function(text[m.start():], m.group(1), top=True) or ""
-            defs.setdefault(m.group(1), (p, lint_body(body)[1], body))
+            defs.setdefault(m.group(1), (p, lint_body(body), body))
     _helper_cache[src] = defs
     return defs
 
 
-def helper_hacks(src, body, idioms=None):
-    """Hacks in the macros and static inline functions BODY uses (and the ones they use), as
-    `<kind> in <name> (<file>)`: moving a do-while or a dead store into a header only hides it
-    (2026-10-22: the OVL64_* macros wrapped in do { } while (0) to pass the lint). A helper the
-    human accepted as the original's idiom (IDIOMS, default .decomp/idioms.json) isn't one."""
-    if idioms is None:
-        idioms = jload(P_IDIOMS, {})
-    defs, out, seen = helper_defs(src), [], set(idioms)
+def helper_errors(src, body):
+    """Errors in the macros and static inline functions BODY uses (and the ones they use), as
+    `<error> in <name> (<file>)`."""
+    defs, out, seen = helper_defs(src), [], set()
     todo = [w for w in dict.fromkeys(re.findall(r"\b[A-Za-z_]\w*\b", re.sub(r"/\*.*?\*/", "", body, flags=re.S)))
             if w in defs]
     while todo:
@@ -2282,28 +2067,16 @@ def helper_hacks(src, body, idioms=None):
         if w in seen:
             continue
         seen.add(w)
-        f, hacks, text = defs[w]
-        out += [f"{h} in {w} ({f})" for h in hacks]
+        f, errs, text = defs[w]
+        out += [f"{x} in {w} ({f})" for x in errs]
         todo += [x for x in re.findall(r"\b[A-Za-z_]\w*\b", text) if x in defs and x not in seen]
     return out
 
 
 def lint_body(body):
-    """(errors, hacks) found in a function's definition BODY."""
+    """Errors found in a function's definition BODY."""
     body = re.sub(r"/\*.*?\*/", "", body, flags=re.S)
-    # a register pin's asm("$20") names a register, not instructions: it's a hack, not an error
-    unpinned = re.sub(r"(\bregister\b[^;]*?)" + ASM_CALL + r"\s*\"[^\"]*\"\s*\)", r"\1", body)
-    errs = sorted({why for rx, why in LINT_ERRORS if rx.search(unpinned)})
-    hacks = {why for rx, why in LINT_HACKS if rx.search(body)}
-    if do_while_zero(body):
-        hacks.add("do { } while (0) wrapper")
-    if noop_steps(body):
-        hacks.add("no-op ++/-- pair")
-    if dead_stores(body) or write_only_locals(body) or overwritten_stores(body):
-        hacks.add("dead store")
-    if same_branches(body):
-        hacks.add("identical if/else arms")
-    return errs, sorted(hacks)
+    return sorted({why for rx, why in LINT_ERRORS if rx.search(body)})
 
 
 def matched_in_worktree(path="src"):
@@ -2421,13 +2194,10 @@ def cmd_done(a):
     if still_asm(src, name, e["name"], e["orig"]):
         die(f"{src} still has the INCLUDE_ASM line for {name}: replace it with the C first "
             "(nothing recorded or committed)")
-    # 2. lint: no m2c leftovers, hacks only when declared
-    errs, hacks = lint_function(src, name)
+    # 2. lint: no m2c leftovers, and only C
+    errs = lint_function(src, name)
     if errs:
-        die(f"{name}: {', '.join(errs)} left in the C - clean it up before recording the match")
-    if hacks and not a.hack:
-        die(f"{name} uses {' and '.join(hacks)}: pass --hack \"why it is needed\" (it goes in the commit "
-            "message) or remove it")
+        die(f"{name}: {', '.join(errs)} in the C - clean it up before recording the match")
     # its prototype goes in its file's owned header (unless an original header declares it)
     proto = prototype_of(read(src), name)
     if proto:
@@ -2451,7 +2221,7 @@ def cmd_done(a):
     copies = propagate(funcs, proj, only={key})
     cmd_progress(a)
     if a.commit:
-        notes = ([a.note] if a.note else []) + ([f"Hack: {', '.join(hacks)} - {a.hack}"] if hacks else [])
+        notes = [a.note] if a.note else []
         if copies:
             notes.append("Identical copies matched with the same C:\n"
                          + "\n".join(f"- {n} ({ce['seg']})" for _, ce, n, *_ in copies))
@@ -4535,78 +4305,6 @@ def split_functions(text):
     return out
 
 
-def hack_rows(funcs, syms, stat, reviewed=False):
-    """Matched functions that need a hack (a register pin, an empty asm barrier, a no-op ++/--
-    pair or a dead store), as dicts with the reason their match commit gives. Read from the
-    source, so the list can't go stale (each file split into its functions in one pass: the lint
-    is slow on a whole file). A hack reviewed as plausibly the original source (`hacks --accept`,
-    state `hack_ok`) is left out unless REVIEWED, which returns only those."""
-    bodies, rows, st = {}, [], jload(P_STATE, {})
-    for k, e in funcs.items():
-        if stat.get(k) != "matched" or not e.get("src"):
-            continue
-        if bool(st.get(k, {}).get("hack_ok")) != reviewed:
-            continue
-        if e["src"] not in bodies:
-            bodies[e["src"]] = split_functions(read(e["src"]))
-        names = list(dict.fromkeys([cur_name(k, e, syms), e["name"], e["orig"]]))
-        name, body = next(((nm, bodies[e["src"]][nm]) for nm in names if nm in bodies[e["src"]]), (None, None))
-        if not name:
-            continue
-        hacks = sorted(set(lint_body(body)[1]) | set(helper_hacks(e["src"], body)))
-        if not hacks:
-            continue
-        commit, why = "?", "(no Hack: line in its match commit)"
-        for nm in names:
-            r = run(["git", "log", "-1", "-F", f"--grep=Match {nm} (", "--format=%h%n%B"])
-            if r.stdout.strip():
-                lines = r.stdout.splitlines()
-                commit = lines[0]
-                why = next((l.strip()[len("Hack:"):].strip() for l in lines if l.strip().startswith("Hack:")), why)
-                break
-        if reviewed:
-            why = st[k]["hack_ok"]
-        rows.append({"name": name, "seg": e["seg"], "size": e["size"], "kinds": ", ".join(hacks),
-                     "commit": commit, "why": why})
-    return sorted(rows, key=lambda r: (r["seg"], r["name"]))
-
-
-def cmd_hacks(a):
-    """Matched functions that need a hack, with the reason their match commit gives, so they can
-    be retried without it (docs/CONVENTIONS.md, Matching rules)."""
-    funcs = need_funcs()
-    if a.accept:
-        if not a.why:
-            raise SystemExit("--accept needs --why: why the flagged code is plausibly the original")
-        is_func = (any(a.accept in (e["name"], e["orig"], k) for k, e in funcs.items())
-                   or a.accept in sym_names().values())
-        if not is_func:
-            # a macro or static inline: accepted wherever it is used
-            idioms = jload(P_IDIOMS, {})
-            idioms[a.accept] = a.why
-            jsave(P_IDIOMS, idioms)
-            print(f"{a.accept}: accepted as the original's idiom, not a hack: {a.why}")
-        else:
-            key, e = find_func(funcs, a.accept)
-            st = jload(P_STATE, {})
-            st.setdefault(key, {})["hack_ok"] = a.why
-            jsave(P_STATE, st)
-            print(f"{e['name']}: accepted as plausibly original, not a hack: {a.why}")
-    stat, _ = statuses(funcs)
-    rows = hack_rows(funcs, sym_names(), stat)
-    ok = hack_rows(funcs, sym_names(), stat, reviewed=True)
-    for r in rows:
-        print(f"{r['name']} ({r['seg']}): {r['kinds']}; {r['commit']}: {r['why']}")
-    for r in ok:
-        print(f"accepted: {r['name']} ({r['seg']}): {r['kinds']}; plausibly original: {r['why']}")
-    for name, why in sorted(jload(P_IDIOMS, {}).items()):
-        print(f"accepted idiom: {name}: {why}")
-    print(f"{len(rows)} function(s) match only with a hack; retry them without it after tool upgrades"
-          + (f" ({len(ok)} more accepted as plausibly original, not hacks)" if ok else ""))
-    if a.accept:
-        cmd_progress(a)  # the dashboard counts hacks
-
-
 def cmd_unblock(a):
     """Unpark functions so `next`/`queue` (and the swarm) offer them again; the park note
     stays as the function's note, which `next` and the swarm's workers see."""
@@ -5226,7 +4924,6 @@ def cmd_progress(a):
                     "auto": st[k].get("via") == "auto" or not st[k].get("tries")} for t, k in recent],
         "blocked": [{"name": cur_name(k, funcs[k], syms), "seg": funcs[k]["seg"], "size": funcs[k]["size"],
                      "note": st.get(k, {}).get("note", "")} for k, v in sorted(stat.items()) if v == "blocked"],
-        "hacks": hack_rows(funcs, syms, stat),
     }
     os.makedirs("docs", exist_ok=True)
     # one line per history point: indented, the points alone pass the 2 MB pre-commit limit
@@ -5416,13 +5113,6 @@ def main():
     p.add_argument("func")
     p.add_argument("--note", required=True)
     p.set_defaults(fn=cmd_block)
-    p = sub.add_parser("hacks", help="matched functions that need a hack (register pin, asm barrier, "
-                       "no-op pair, dead store, identical arms), with their commit's reason")
-    p.add_argument("--accept", metavar="NAME", help="accept NAME's flagged code as plausibly the "
-                   "original source (only on the human's yes), so it is not a hack: a function, or a "
-                   "macro/static inline, which is then clean wherever it is used (.decomp/idioms.json)")
-    p.add_argument("--why", help="with --accept: the reason")
-    p.set_defaults(fn=cmd_hacks)
     p = sub.add_parser("unblock", help="unpark functions (their park notes stay) so they are offered again")
     p.add_argument("funcs", nargs="+")
     p.add_argument("--why", required=True, help="what changed since they were parked")
@@ -5432,8 +5122,6 @@ def main():
     p.add_argument("--commit", action="store_true",
                    help="after every check passes, commit src/ include/ configs/ .decomp/ docs/")
     p.add_argument("--note", help="what made it match (types, statement order, ...): goes in the commit body")
-    p.add_argument("--hack", help="why a hack (register pin, asm(\"\") barrier, no-op pair, dead "
-                   "store) is needed (required if used)")
     p.add_argument("--trailer", action="append", help="line appended to the commit message (repeatable)")
     p.add_argument("--defer-build", action="store_true",
                    help="batch mode (tools/swarm): skip the full build; run `decomp.py verify` after the "
