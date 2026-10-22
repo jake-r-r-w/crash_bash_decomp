@@ -109,6 +109,22 @@ class SameBranches(unittest.TestCase):
             self.assertNotIn("identical if/else arms", lint(s)[1], s)
 
 
+class DoWhileZero(unittest.TestCase):
+    """func_800BE158's checkpoint (2026-10-22) matched only with `do { do { dx = -1; } while (0); }
+    while (0);` around each case's assignment; 176 such wrappers were in matched C, unflagged."""
+
+    def test_wrappers_are_hacks(self):
+        for s in ("int x; do { x = g; } while (0); g = x;",
+                  "int x; do {\n        do {\n            x = -1;\n        } while (0);\n    } while (0);\n    g = x;",
+                  "do { if (g) { g = 1; } } while(0);"):
+            self.assertIn("do { } while (0) wrapper", lint(s)[1], s)
+
+    def test_real_loops_are_clean(self):
+        for s in ("int i = 0; do { i++; } while (i < 4); g = i;", "while (0) { g = 1; }",
+                  "int i; for (i = 0; i < 4; i++) { do { g++; } while (g < 2); }"):
+            self.assertNotIn("do { } while (0) wrapper", lint(s)[1], s)
+
+
 class KandR(unittest.TestCase):
     def test_definition_found(self):
         text = "void f(void);\nvoid f(a, b)\n    u8 *a;\n    s32 b;\n{\n    *a = b;\n}\n"

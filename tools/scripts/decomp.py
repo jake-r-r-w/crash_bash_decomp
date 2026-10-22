@@ -2005,6 +2005,9 @@ LINT_HACKS = [
     (re.compile(r"\bregister\b[^;]*" + ASM_CALL), "register pin"),
     # no instructions, with or without operands: asm("" ::: "memory"), asm("" : "=r"(p) : "0"(p))
     (re.compile(ASM_CALL + r"\s*\"\""), "empty asm barrier"),
+    # written in a function body it only adds loop notes (cse block ends, loop-depth weighted refs);
+    # a macro's do-while is in a header and doesn't show here (2026-10-22: 176 in matched C)
+    (re.compile(r"\bdo\s*\{(?:[^{}]|\{[^{}]*\})*\}\s*while\s*\(\s*0\s*\)"), "do { } while (0) wrapper"),
 ]
 INCLUDE_ASM_LINE = re.compile(r'^\s*INCLUDE_ASM\(\s*"[^"]+"\s*,\s*(\w+)\s*\)')
 # consecutive `x++;` / `x--;` statements on one variable; a run with both directions is a no-op
