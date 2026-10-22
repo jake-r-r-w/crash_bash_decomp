@@ -541,7 +541,6 @@ void Fire_Rocket(s32 arg0, s32 arg1);
 bool PogoAI_IsSquareOKForPlayer(u32 arg0, s32 x, s32 z, s32 dx, s32 dz, u32 flags);
 
 
-void func_800BFFF4(EXTengine *eng);
 
 bool PogoAI_IsSquareOKForPlayer(u32 arg0, s32 x, s32 z, s32 dx, s32 dz, u32 flags);
 

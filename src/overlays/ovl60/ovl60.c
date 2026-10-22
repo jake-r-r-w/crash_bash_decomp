@@ -4927,7 +4927,7 @@ void Roo_GoBoing(EXTengine *eng) {
     }
 }
 
-void func_800BFFF4(EXTengine *eng) {
+void Roo_FireRocket(EXTengine *eng) {
     NAS *nas;
     EXTengine *e;
     subengine *sub;

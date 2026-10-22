@@ -164,3 +164,4 @@ PogoAI_StartEncircling = 0x800BE864; // type:func
 Tile_FizzleOut = 0x800C2338; // type:func
 Tile_DelayedFizzleOut = 0x800C22E8; // type:func
 Tile_OnFire = 0x800C2294; // type:func
+Roo_FireRocket = 0x800BFFF4; // type:func

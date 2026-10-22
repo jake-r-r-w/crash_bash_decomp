@@ -713,9 +713,12 @@ signature alone is not enough.
   and `func_800BE6C4` (needs 9+ own tiles) are GoForMyOwn / StartEnclosing
   in some order: left unnamed.
 - **Ambiguous, left unnamed:**
-  - Both of the leak's `Roo_FireRocket` declarations match real functions:
-    `func_800BFFF4(eng)` and `func_800C02AC(eng, dir)` both spawn
-    `AST_PogoProjectile`. One of them must have another name.
+  - The leak declares `Roo_FireRocket(EXTengine *)` and
+    `Roo_FireRocket(EXTengine *, s32)`. The one-argument one is
+    `Roo_FireRocket` (`0x800BFFF4`: fires along the Roo's facing; it sits
+    before `Roo_ShootAtHumans` as in the leak); `func_800C02AC(eng, dir)`,
+    which `Roo_ShootAtHumans` calls, matches the other declaration but must
+    have had another name in this build.
   - `func_800C9B5C()` counts a list linked through `+0x20`, which could be
     `CountBears`.
   - `get_angle(x, z)` returns a 12-bit angle, as the leak's inline
