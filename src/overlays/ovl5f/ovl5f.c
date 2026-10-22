@@ -4188,7 +4188,278 @@ void InitPickupTA(NAS *nas) {
     KillNAS(nas);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", PlotPickupTA);
+void PlotPickupTA(NAS *nas) {
+    EXTengine *eng;
+    FlubberFux *fux;
+    NAS *n;
+    EXTengine *e;
+    EXTengine *fe;
+    subengine *sub;
+    s32 dx;
+    s32 fx;
+    s32 fz;
+    s32 d;
+    s32 j;
+    s32 i;
+    s32 hit;
+    s32 k;
+    s32 lim;
+    s32 v;
+    s32 x;
+    s32 sc;
+    s32 anim;
+    s32 sn;
+    u16 st;
+
+    eng = nas->Engine;
+    fux = (FlubberFux *)nas->FUX;
+    dx = 0;
+    if (Ovl5fMapCell(d = eng->unk10.x, eng->unk10.z) != 0) {
+        goto puff;
+    }
+    switch (nas->UserInfo.user1) {
+    case 0:
+    default:
+        if (nas->UserInfo.status == 4) {
+            eng->sub->unk74++;
+            if (eng->sub->unk74 >= 0x2026) {
+                eng->sub->unk74 = 0x2018;
+            }
+        }
+        if (nas->UserInfo.status == 2) {
+            eng->unk5E = 1;
+            eng->unk1E += 0x28;
+        }
+        fux->vy += 8;
+        eng->unk10.y += fux->vy;
+        if (eng->unk10.y >= 0) {
+            eng->unk10.y = -1;
+            fux->vy = -0x28;
+            eng->unk10.y -= 0x28;
+        }
+        break;
+    case 5:
+        eng->unk10.y += 0x14;
+        nas->UserInfo.user2 = (nas->UserInfo.user2 + 0x78) & 0xFFF;
+        sn = D_80068BD4[(nas->UserInfo.user2 - 0x400) & 0xFFF].unk2;
+        eng->unk5E = 1;
+        eng->unk20 = (sn * 25) >> 9;
+        dx = -(D_80068BD4[(nas->UserInfo.user2 - 0x400) & 0xFFF].unk2 * 120) >> 12;
+        if (eng->unk10.y < -0x12B) {
+            break;
+        }
+        fx = eng->unk10.x;
+        fz = eng->unk10.z;
+        lim = 0x100;
+        for (j = 0; j < 8; j++) {
+            n = D_800CB0C0[j];
+            if (n == NULL) {
+                continue;
+            }
+            e = n->Engine;
+            d = fx - e->unk10.x;
+            if (d < -0x100) {
+                continue;
+            }
+            if (lim < d) {
+                continue;
+            }
+            d = fz - e->unk10.z;
+            if (d < -0x100) {
+                continue;
+            }
+            if (lim < d) {
+                continue;
+            }
+            n->UserInfo.status = 1;
+        }
+        if ((u32)((u16)D_8005A648 - 8) >= 2) {
+            Ovl5fSpawnBit1605(&eng->unk10, 3);
+            switch ((u32)Random(4)) {
+            case 0:
+                PlaySfx(0x4B4, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                break;
+            case 1:
+                PlaySfx(0x4B5, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                break;
+            case 2:
+                PlaySfx(0x4B6, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                break;
+            case 3:
+                PlaySfx(0x4B7, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                break;
+            }
+        }
+        eng->unk10.y = 0;
+        fux->vy = -0x28;
+        nas->UserInfo.user1 = 0;
+        eng->unk20 = 0;
+        switch (nas->UserInfo.status) {
+        case 2:
+            eng->sub->unk6C = D_80053694;
+            eng->sub->unk74 = 0x2007;
+            eng->Engine->sub->unk6C = D_80053694;
+            eng->Engine->sub->unk74 = 0x200F;
+            eng->Engine->unk1E = eng->unk1E + 0x400;
+            eng->Engine->sub->unk20.x = 0x20;
+            eng->Engine->sub->unk20.z = 0x60;
+            eng->Engine->unk5E = 1;
+            break;
+        case 6:
+            SpawnNASById(eng->unk10.x, -0x14, eng->unk10.z, 0x1303, 0x11);
+            for (i = 0; i < 3; i++) {
+                if (D_800CAD44[i] == nas) {
+                    D_800CAD44[i] = NULL;
+                    break;
+                }
+            }
+            KillNAS(nas);
+            return;
+        case 5:
+        default:
+            eng->sub->unk6C = D_80053694;
+            eng->sub->unk74 = 0x2013;
+            eng->Engine->sub->unk6C = D_80053694 - 0x738;
+            eng->Engine->sub->unk74 = 0x2001;
+            break;
+        case 3:
+            eng->sub->unk74 = 0x200C;
+            eng->Engine->sub->unk6C = D_80052F5C;
+            eng->Engine->sub->unk74 = 0x2001;
+            break;
+        case 4:
+            eng->sub->unk6C = D_80052F5C;
+            eng->sub->unk74 = 0x2018;
+            eng->sub->flags |= 0x20000000;
+            eng->Engine->sub->unk6C = D_80052F5C;
+            eng->Engine->sub->unk74 = 0x2001;
+            break;
+        }
+        break;
+    }
+    eng->unk5E = 1;
+    if (eng->unk10.y < -0x2ED) {
+        goto follow;
+    }
+    hit = Ovl5fRocketFindHero(eng->unk10.x, eng->unk10.z, 0x12C);
+    if (hit < 0) {
+        goto follow;
+    }
+    if (D_800CB0F0 != 0) {
+    puff:
+        Ovl5fSpawnBit1605(&eng->unk10, 3);
+        PlaySfx(0x4EA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        for (k = 0; k < 3; k++) {
+            if (D_800CAD44[k] == nas) {
+                D_800CAD44[k] = NULL;
+                break;
+            }
+        }
+        KillNAS(nas);
+        return;
+    }
+    switch (nas->UserInfo.status) {
+    case 6:
+        if (((Ovl5fModeView *)D_8005A614)->mode != 8 || D_8005A614[hit + 0x5C] != 0 ||
+            !(((Ovl5fModeView *)D_8005A614)->flags & 0x80)) {
+            v = 0x1E;
+        } else {
+            v = 0x4B0;
+        }
+        func_800B6354(hit, v);
+        SpawnNASById(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1306, 0x11);
+        goto puff;
+    case 5:
+        D_800CAD50[hit].SubWeaponRounds++;
+        break;
+    case 4:
+        D_800CAD50[hit].Energy += 0x14;
+        if (D_800CAD50[hit].Energy >= 0x64) {
+            D_800CAD50[hit].Energy = 0x63;
+        }
+        Heroes[hit].hero_health = D_800CAD50[hit].Energy;
+        break;
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+        sub = Heroes[hit].hero_sub->next;
+        D_800CAD50[hit].TurretFiring = -1;
+        st = nas->UserInfo.status;
+        if (st != 2) {
+            if (st != D_800CAD50[hit].MainWeaponType) {
+                D_800CAD50[hit].MainWeaponRounds = 2;
+            } else {
+                D_800CAD50[hit].MainWeaponRounds += 2;
+            }
+            anim = 0x2008;
+        } else {
+            if (D_800CAD50[hit].MainWeaponType != st) {
+                D_800CAD50[hit].MainWeaponRounds = st;
+            } else {
+                D_800CAD50[hit].MainWeaponRounds += 2;
+            }
+            anim = 0x200B;
+        }
+        sub->unk74 = anim;
+        D_800CAD50[hit].MainWeaponType = nas->UserInfo.status;
+        break;
+    case 7:
+        sub = Heroes[hit].hero_sub->next;
+        sub->unk74 = 0x2008;
+        if (hit < 2) {
+            D_800CAD50[hit].SubWeaponRounds++;
+        }
+        if (D_800CAD50[hit].MainWeaponType != 3) {
+            D_800CAD50[hit].MainWeaponType = 3;
+            D_800CAD50[hit].MainWeaponRounds = 1;
+        } else {
+            D_800CAD50[hit].MainWeaponRounds++;
+        }
+        break;
+    }
+    for (i = 0; i < 3; i++) {
+        if (D_800CAD44[i] == nas) {
+            D_800CAD44[i] = NULL;
+            break;
+        }
+    }
+    KillNAS(nas);
+    switch (nas->UserInfo.status) {
+    case 4:
+    default:
+        PlaySfx(0x1C2, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        return;
+    case 3:
+        PlaySfx(0x48E, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        return;
+    case 2:
+        PlaySfx(0x51F, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        return;
+    case 5:
+        PlaySfx(0x4E8, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        return;
+    }
+follow:
+    fe = eng->Engine;
+    if (fe != NULL) {
+        fe->unk1E = eng->unk1E;
+        fe->unk10 = eng->unk10;
+        x = eng->unk10.x;
+        fe->unk10.y = 0;
+        fe->unk10.x = x + dx;
+        sc = ((eng->unk10.y + 0x1000) * 0xAF0) / 0x1000;
+        fe->sub->unk20.x = sc;
+        fe->sub->unk20.z = sc;
+        fe->sub->unk52 = 1;
+    }
+    if (nas->UserInfo.status == 2) {
+        fe->unk1E = eng->unk1E + 0x400;
+        fe->sub->unk20.x = 0x3E8;
+        fe->sub->unk20.z = 0xAF0;
+        eng->Engine->unk5E = 1;
+    }
+}
 
 static inline void SpawnPuff1605(SLONG_XYZ *pos, s32 kind) {
     u8 *p;
