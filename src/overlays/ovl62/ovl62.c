@@ -4547,7 +4547,203 @@ void InitSniper(NAS *m) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotSniper);
+void PlotSniper(NAS *m) {
+    SniperExt *ext;
+    PolarBossExt *boss;
+    subengine *sub;
+    SniperMissileExt *mext;
+    NAS *nas;
+    _sfx_handler *sfx;
+    s32 i;
+    s32 dx;
+    s32 dy;
+    s32 y;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    boss = FindExtension(D_800D5448, 0x10000000);
+    if (boss != NULL) {
+        m->Engine->unk5E = 1;
+        switch (ext->unkC) {
+        case 0:
+            if (ext->unk98 < 3) {
+                m->Engine->unk10.y += ext->unk90;
+                ext->unk90 += ext->unk8C;
+                y = m->Engine->unk10.y;
+                if (y >= -0x1F) {
+                    m->Engine->unk10.y -= abs(y - 0x20);
+                    ext->unk98++;
+                    ext->unk90 = -(ext->unk90 >> 1);
+                }
+            }
+            m->Engine->unk1E += 0x40;
+            if (++ext->unk1C == 0x96) {
+                boss->unk8C = 0xC;
+                PolarMissileBlast(m, 1);
+                PlaySfx(0x43D, NULL, NULL, 0x1000, 0x1E00, 0);
+                KillNAS(m);
+                return;
+            }
+            if (ext->unk98 > 0) {
+                for (i = 0;; i++) {
+                    EXTengine *e;
+                    EXTengine *he;
+
+                    if (i >= 2) {
+                        break;
+                    }
+                    e = m->Engine;
+                    he = Heroes[i].hero_eng;
+                    if ((he->unk10.x - e->unk10.x) * (he->unk10.x - e->unk10.x)
+                        + (he->unk10.z - e->unk10.z) * (he->unk10.z - e->unk10.z) <= 0x23FFF) {
+                        SNIPER_CAM->at.x = D_800D5448->Engine->unk10.x;
+                        SNIPER_CAM->at.y = D_800D5448->Engine->unk10.y + 0x100;
+                        SNIPER_CAM->at.z = D_800D5448->Engine->unk10.z;
+                        SNIPER_CAM->eye.x = 0;
+                        SNIPER_CAM->eye.y = 0;
+                        ext->unk14 = SNIPER_CAM->eye.z;
+                        SNIPER_CAM->eye.z = 0x1A80;
+                        SNIPER_CAM->rotX = 0xDC;
+                        SNIPER_CAM->rotY = 0;
+                        SNIPER_CAM->rotZ = 0;
+                        m->Engine->sub->flags &= ~0x8000;
+                        ext->unk10->sub->flags |= 0x8000;
+                        ext->unkC = 1;
+                        D_800AD12C = 0;
+                        ext->unk10->sub->unk04 = SNIPER_CAM->at.x;
+                        ext->unk10->sub->unk08 = SNIPER_CAM->at.y - 0x600;
+                        ext->unk10->sub->unk0C = SNIPER_CAM->at.z;
+                        ext->unk20->sub->flags |= 0x8000;
+                        ext->unkC = 1;
+                        ext->unk20->sub->unk04 = SNIPER_CAM->at.x;
+                        ext->unk20->sub->unk08 = SNIPER_CAM->at.y - 0x600;
+                        ext->unk20->sub->unk0C = SNIPER_CAM->at.z;
+                        ext->unk24 = -0x5DC;
+                        ext->unk28 = 0x400;
+                        PlaySfx(0x23F, NULL, NULL, 0x1000, 0x1E00, 0);
+                        PlaySfx(0x240, &m->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
+                        if (!(Heroes[0].hero_mode & 0x2000)) {
+                            SetHeroAction((HeroInfo *)0, 0x4D);
+                            Heroes[0].hero_sub->flags &= ~0x8000;
+                        }
+                        if (D_8005A680[0] != 0 && !(Heroes[1].hero_mode & 0x2000)) {
+                            SetHeroAction((HeroInfo *)1, 0x4D);
+                            Heroes[1].hero_sub->flags &= ~0x8000;
+                        }
+                        ext->unk88 = i;
+                        return;
+                    }
+                }
+            }
+            break;
+        case 1:
+            ext->unk10->sub->unk04 = SNIPER_CAM->at.x;
+            ext->unk54 = 0;
+            ext->unk74 = 0;
+            ext->unk18++;
+            if (SNIPER_PAD[ext->unk88].unk50 & 0x80) {
+                ext->unk54 = 0xC4;
+            }
+            if (SNIPER_PAD[ext->unk88].unk50 & 0x20) {
+                ext->unk54 = -0xC4;
+            }
+            if (SNIPER_PAD[ext->unk88].unk50 & 0x10) {
+                ext->unk74 = 0xC4;
+            }
+            if (SNIPER_PAD[ext->unk88].unk50 & 0x40) {
+                ext->unk74 = -0xC4;
+            }
+            if (ext->unk84 == 0) {
+                func_800C7ED4((SniperAim *)&ext->pad2C[4], &ext->unk24);
+                sub = ext->unk20->sub;
+                dx = SNIPER_CAM->at.x - sub->unk04;
+                dy = SNIPER_CAM->at.y - sub->unk08;
+                if (dx < -0x700) {
+                    SNIPER_CAM->at.x += 0x41;
+                    i = abs(ext->unk50);
+                    ext->unk50 = 0;
+                    ext->unk24 -= i;
+                }
+                if (dx > 0x700) {
+                    SNIPER_CAM->at.x -= 0x41;
+                    i = abs(ext->unk50);
+                    ext->unk50 = 0;
+                    ext->unk24 += i;
+                }
+                if (dy > 0xAF0) {
+                    i = abs(ext->unk70);
+                    ext->unk70 = 0;
+                    ext->unk28 += i;
+                }
+                if (dy < 0x190) {
+                    i = abs(ext->unk70);
+                    ext->unk70 = 0;
+                    ext->unk28 -= i;
+                }
+                if (SNIPER_CAM->at.x < -0x1000) {
+                    SNIPER_CAM->at.x = -0x1000;
+                }
+                if (SNIPER_CAM->at.x > 0x1000) {
+                    SNIPER_CAM->at.x = 0x1000;
+                }
+                ext->unk20->sub->unk04 = SNIPER_CAM->at.x + ext->unk24;
+                {
+                    s32 ay = ext->unk28 - 0x600;
+                    ext->unk20->sub->unk08 = SNIPER_CAM->at.y + ay;
+                }
+                if (ext->unk84 == 0 && (SNIPER_PAD[ext->unk88].unk54 & 0x8000)) {
+                    ext->unk84 = 1;
+                    ext->unk18 = 0xD2;
+                    nas = SpawnNASById(Heroes[ext->unk88].hero_eng->unk10.x,
+                                       Heroes[ext->unk88].hero_eng->unk10.y,
+                                       Heroes[ext->unk88].hero_eng->unk10.z, 0x1624, 0x11);
+                    if (nas != NULL) {
+                        mext = FindExtension(nas, 0x10000000);
+                        if (mext != NULL) {
+                            mext->from = *(SLONG_XYZ *)&ext->unk20->sub->unk04;
+                            mext->to = Heroes[ext->unk88].hero_eng->unk10;
+                            mext->to.x = SNIPER_CAM->at.x;
+                            mext->to.y = SNIPER_CAM->at.y - 0x700;
+                            mext->to.z = SNIPER_CAM->at.z - SNIPER_CAM->eye.z + 0x300;
+                            nas->Engine->unk10 = mext->to;
+                        }
+                    }
+                }
+            }
+            if (ext->unk18 == 0x10E) {
+                SNIPER_CAM->at.x = 0;
+                SNIPER_CAM->at.y = 0;
+                SNIPER_CAM->at.z = 0;
+                SNIPER_CAM->eye.z = ext->unk14;
+                if (!(Heroes[0].hero_mode & 0x2000)) {
+                    SetHeroAction((HeroInfo *)0, 0x49);
+                    Heroes[0].hero_sub->flags |= 0x8000;
+                }
+                if (D_8005A680[0] != 0 && !(Heroes[1].hero_mode & 0x2000)) {
+                    SetHeroAction((HeroInfo *)1, 0x49);
+                    Heroes[1].hero_sub->flags |= 0x8000;
+                }
+                sfx = m->Engine->sfx;
+                D_800AD12C = 1;
+                if (sfx != NULL) {
+                    StopSfx(sfx);
+                }
+                boss->unk8C = 0xC;
+                KillNAS(m);
+                return;
+            }
+            break;
+        }
+    }
+    if (ext->unk94 != NULL) {
+        ext->unk94->unk10 = m->Engine->unk10;
+        ext->unk94->unk10.y = -m->Engine->unk10.y + 0x40;
+        ext->unk94->unk1E = m->Engine->unk1E;
+        ext->unk94->unk5E = 1;
+    }
+}
 
 void PlotSniperMissile(NAS *m) {
     SniperMissileExt *ext;

@@ -1147,7 +1147,7 @@ typedef struct SniperExt {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 unkC;
     /* 0x10 */ EXTengine *unk10;
-    /* 0x14 */ u8 pad14[4];
+    /* 0x14 */ s32 unk14; /* saved camera eye.z */
     /* 0x18 */ s32 unk18;
     /* 0x1C */ s32 unk1C;
     /* 0x20 */ EXTengine *unk20;
@@ -1171,6 +1171,11 @@ typedef struct SniperExt {
     /* 0x94 */ EXTengine *unk94;
     /* 0x98 */ s32 unk98;
 } SniperExt;
+
+extern u16 D_800AD12C;
+
+#define SNIPER_CAM ((Ovl62Cam *)D_80051640)
+#define SNIPER_PAD ((Ovl62Pad *)D_80051338)
 
 /* Bear death extension (0x88 bytes, id 0x10000000). */
 typedef struct BearDeathExt {
