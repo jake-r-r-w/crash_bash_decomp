@@ -284,9 +284,9 @@ void UpdatePOGO(void) {
     s32 ok;
     u8 *g;
 
-    func_800C2EE0();
-    func_800B4230();
-    func_800B87DC();
+    PogoQuality_Update();
+    Update_Occupancy();
+    Update_Tiles();
     if (D_8005A644 & 0x801) {
         return;
     }
@@ -413,10 +413,10 @@ void func_800B3FF0(void) {
             }
         }
     }
-    func_800C2EE0();
+    PogoQuality_Update();
 }
 
-void func_800B4230(void) {
+void Update_Occupancy(void) {
     s32 x;
     s32 z;
     EXTengine *eng;
@@ -2005,7 +2005,7 @@ void ZapInDir(s32 arg0, s32 arg1, s32 dx, s32 dz, const s32 arg4) {
 end:;
 }
 
-void func_800B87DC(void) {
+void Update_Tiles(void) {
     s32 off;
     Ovl60Cell *base;
     s32 j;
@@ -6103,7 +6103,7 @@ void PogoHeroChooseWinner(s32 arg0, u16 arg1) {
     }
 }
 
-void func_800C2EE0(void) {
+void PogoQuality_Update(void) {
     s32 i;
     u8 *p;
 

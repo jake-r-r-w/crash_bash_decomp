@@ -590,9 +590,11 @@ signature alone is not enough.
   (`PogoWinner_Relic` 0x40, `PogoWinner_Gem` 0x20, `PogoWinner_Normal` the
   fallback), both giving 0x20 = gem. Also `PogoInit_Camera`,
   `PogoInit_AllHeros` (per-hero setup) and `InitPogo_Tiles` (clears the
-  board). `func_800B3FF0` (per-mode table) and `func_800C2EE0` (also called
-  by `UpdatePOGO`) are AIQuality / PogoQuality_Init / PogoQuality_Update in
-  some assignment: left unnamed.
+  board). `UpdatePOGO` runs `PogoQuality_Update` (`func_800C2EE0`, every
+  frame), `Update_Occupancy` (rebuilds `PogoSquare.occupied` from the heroes
+  and the Roo) and `Update_Tiles` (tile timers: TNT fuse, Nitro, locks).
+  `func_800B3FF0` (per-mode table, ends with `PogoQuality_Update`) is
+  `PogoInit_AIQuality` or `PogoQuality_Init`: left unnamed.
 - **Pogo pickups** (ovl60): `UpdatePOGO` runs `PogoPickups_Poll` and
   `PogoPowerups_Poll`, which drop `AST_PogoPickup` (0x1401) through
   `CreatePickupOnTile` and `AST_PogoPowerup` (0x1402) through

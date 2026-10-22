@@ -136,3 +136,6 @@ SquareContainsMushroom = 0x800C1608; // type:func
 PogoPadlock_IsHere = 0x800C0AFC; // type:func
 PadlockAI_IsTileOKForPadlock = 0x800C0B70; // type:func
 Pickup_Lose = 0x800C1CF0; // type:func
+Update_Occupancy = 0x800B4230; // type:func
+Update_Tiles = 0x800B87DC; // type:func
+PogoQuality_Update = 0x800C2EE0; // type:func
