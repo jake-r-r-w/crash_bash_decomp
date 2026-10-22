@@ -891,7 +891,7 @@ void func_800B574C(s32 arg0) {
     h = &hb[arg0];
     x = (h->hero_eng->unk10.x + 0x800) >> 9;
     z = (h->hero_eng->unk10.z + 0x800) >> 9;
-    if (func_800BA018(arg0, x, z) != 0) {
+    if (Pickup_IsClaimable(arg0, x, z) != 0) {
         func_800B935C(x, z, arg0);
     }
     move = h->hero_move;
@@ -922,25 +922,25 @@ void func_800B574C(s32 arg0) {
             Player_RemoveReserve(arg0);
             if (((bits & 0x80) && x > 0) || ((bits & 0x20) && x < 7)
                 || ((bits & 0x10) && z < 7) || ((bits & 0x40) && z > 0)) {
-                if ((bits & 0x80) && func_800BDCB8(arg0, x, z, -1, 0, 0) != 0) {
+                if ((bits & 0x80) && PogoAI_IsSquareOKForPlayer(arg0, x, z, -1, 0, 0) != 0) {
                     func_800C2770(arg0, x - 1, z);
                     move->forward_angle = 0x400;
                     move->forward_speed = speed;
                     D_800C535C[arg0].unk8[1] = 0;
                 }
-                if ((bits & 0x20) && func_800BDCB8(arg0, x, z, 1, 0, 0) != 0) {
+                if ((bits & 0x20) && PogoAI_IsSquareOKForPlayer(arg0, x, z, 1, 0, 0) != 0) {
                     func_800C2770(arg0, x + 1, z);
                     move->forward_angle = 0xC00;
                     move->forward_speed = speed;
                     D_800C535C[arg0].unk8[1] = 0;
                 }
-                if ((bits & 0x10) && func_800BDCB8(arg0, x, z, 0, 1, 0) != 0) {
+                if ((bits & 0x10) && PogoAI_IsSquareOKForPlayer(arg0, x, z, 0, 1, 0) != 0) {
                     func_800C2770(arg0, x, z + 1);
                     move->forward_angle = 0x800;
                     move->forward_speed = speed;
                     D_800C535C[arg0].unk8[1] = 0;
                 }
-                if ((bits & 0x40) && func_800BDCB8(arg0, x, z, 0, -1, 0) != 0) {
+                if ((bits & 0x40) && PogoAI_IsSquareOKForPlayer(arg0, x, z, 0, -1, 0) != 0) {
                     func_800C2770(arg0, x, z - 1);
                     move->forward_angle = 0;
                     move->forward_speed = speed;
@@ -1044,7 +1044,7 @@ bool TestHeroPogo(u32 arg0) {
                 Heroes[arg0].hero_move->forward_speed = 0;
                 return 0;
             }
-            if (func_800BDCB8(arg0, x, z, 0, 0, 0) != 0) {
+            if (PogoAI_IsSquareOKForPlayer(arg0, x, z, 0, 0, 0) != 0) {
                 SetHeroAction((HeroInfo *)arg0, 0x3A);
                 h->hero_move->forward_speed = 0;
                 return 1;
@@ -2505,7 +2505,7 @@ void func_800B9D64(void) {
     }
 }
 
-s32 func_800BA018(s32 arg0, s32 arg1, s32 arg2) {
+bool Pickup_IsClaimable(s32 arg0, s32 arg1, s32 arg2) {
     Ovl60Cell *c;
     Ovl60Cell *base;
     HeroInfo *h;
@@ -2538,7 +2538,7 @@ ok:
     return 1;
 }
 
-s32 func_800BA110(s32 arg0, s32 arg1, s32 arg2) {
+bool Pickup_IsClaimableByAI(s32 arg0, s32 arg1, s32 arg2) {
     Ovl60Cell *c;
     Ovl60Cell *base;
     HeroInfo *h;
@@ -3959,7 +3959,7 @@ void func_800BD008(s32 arg0) {
     }
 }
 
-void func_800BD10C(s32 arg0) {
+void PogoAI_Poll(u32 arg0) {
     EXTbotai *ai;
     s32 r;
 
@@ -4010,10 +4010,10 @@ void func_800BD10C(s32 arg0) {
                 case 1:
                 case 3:
                 case 4:
-                    r = func_800BD378(arg0);
+                    r = PogoAI_CanPlayerShootAnyone(arg0);
                     goto check;
                 case 2:
-                    r = func_800BD520(arg0);
+                    r = PogoAI_CanPlayerShootAnyoneFourWays(arg0);
                 check:
                     if (r != 0) {
                         ai->AIpad |= 0x8000;
@@ -4027,7 +4027,7 @@ void func_800BD10C(s32 arg0) {
     }
 }
 
-s32 func_800BD378(s32 hero) {
+bool PogoAI_CanPlayerShootAnyone(u32 hero) {
     u8 *g;
     HeroInfo *p;
     EXTengine *eng;
@@ -4095,7 +4095,7 @@ next:
     return 0;
 }
 
-s32 func_800BD520(s32 hero) {
+bool PogoAI_CanPlayerShootAnyoneFourWays(u32 hero) {
     u8 *g;
     HeroInfo *p;
     EXTengine *eng;
@@ -4150,7 +4150,7 @@ next:
     return 0;
 }
 
-s32 func_800BD630(s32 hero) {
+bool PogoAI_CanPlayerShockAnyone(u32 hero) {
     u8 *g;
     HeroInfo *p;
     EXTengine *eng;
@@ -4175,7 +4175,7 @@ s32 func_800BD630(s32 hero) {
             goto end;
         }
         if (i != hero && i != mate) {
-            if ((u32)(csqrt(func_800C16FC(x, z, p->hero_eng->unk10.x, p->hero_eng->unk10.z)) >> 6) < 0x381) {
+            if ((u32)(csqrt(PogoSquaredDistanceToDestination(x, z, p->hero_eng->unk10.x, p->hero_eng->unk10.z)) >> 6) < 0x381) {
                 if ((*(u16 *)(g + 0x32) & 0x20) && g[i + 0x5C] != 0) {
                     return 0;
                 }
@@ -4191,7 +4191,7 @@ end:
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BD790);
 
-s32 func_800BDCB8(s32 arg0, s32 x, s32 z, s32 dx, s32 dz, s32 flags) {
+bool PogoAI_IsSquareOKForPlayer(u32 arg0, s32 x, s32 z, s32 dx, s32 dz, u32 flags) {
     Ovl60Cell *p;
     HeroInfo *h;
     u8 *g;
@@ -4266,7 +4266,7 @@ s32 func_800BDE24(s32 arg0) {
     }
     x = -1;
     z = -1;
-    func_800BDF60(arg0, &x, &z);
+    PogoAI_ScanForClosestPickup(arg0, &x, &z);
     if (x != -1) {
         EXTbotai *ai2 = Heroes[arg0].hero_ai;
         if (ai2 != NULL) {
@@ -4279,7 +4279,7 @@ s32 func_800BDE24(s32 arg0) {
     return 0;
 }
 
-void func_800BDF60(s32 arg0, s32 *arg1, s32 *arg2) {
+void PogoAI_ScanForClosestPickup(u32 arg0, s32 *arg1, s32 *arg2) {
     s32 hx;
     s32 hz;
     u32 best;
@@ -4310,7 +4310,7 @@ void func_800BDF60(s32 arg0, s32 *arg1, s32 *arg2) {
             if (j >= 8) {
                 break;
             }
-            if (func_800BA110(arg0, i, j) != 0) {
+            if (Pickup_IsClaimableByAI(arg0, i, j) != 0) {
                 HeroInfo *h;
                 c = (Ovl60Cell *)(j * sizeof(Ovl60Cell) + i * sizeof(D_800C53DC[0]) + (u32)D_800C53DC);
                 h = c->hero;
@@ -4344,7 +4344,7 @@ void func_800BDF60(s32 arg0, s32 *arg1, s32 *arg2) {
 }
 
 #ifdef NON_MATCHING
-s32 func_800BE158(s32 i, s32 x, s32 z, s32 angle, s32 *outX, s32 *outZ) {
+bool PogoAI_RadialSearch(u32 i, s32 x, s32 z, s32 angle, s32 *outX, s32 *outZ) {
     s32 dx;
     s32 dz;
     s32 side0, side1, side2, side3;
@@ -4477,7 +4477,7 @@ found:
     return D_800C53DC[px][pz].unkE == 0;
 }
 #else
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", func_800BE158);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", PogoAI_RadialSearch);
 #endif
 
 s32 func_800BE6C4(s32 arg0, Ovl60Goal *arg1) {
@@ -4494,7 +4494,7 @@ s32 func_800BE6C4(s32 arg0, Ovl60Goal *arg1) {
     if ((u16)D_8005A648 - 0xB >= 2U) {
         return 0;
     }
-    if (func_800C0DE4(arg0) < 9) {
+    if (PogoAI_CountMyTiles(arg0) < 9) {
         return 0;
     }
     {
@@ -4581,7 +4581,7 @@ s32 func_800BE864(s32 hero, Ovl60Goal *goal) {
             if (j >= 8) {
                 goto next;
             }
-            if (func_800BEA34(i, j, hero) != 0) {
+            if (PogoAI_ClaimingThisTileWillEncircle(i, j, hero) != 0) {
                 ax = px - 0x800;
                 az = pz - 0x800;
                 cx = (i << 9) - 0x800;
@@ -4608,7 +4608,7 @@ done:
     return 0;
 }
 
-s32 func_800BEA34(s32 x, s32 z, s32 hero) {
+bool PogoAI_ClaimingThisTileWillEncircle(s32 x, s32 z, s32 hero) {
     s32 grid[64];
     s32 *g;
     Ovl60Cell *base;
@@ -4616,7 +4616,7 @@ s32 func_800BEA34(s32 x, s32 z, s32 hero) {
     s32 i;
     s32 j;
 
-    if (func_800BEB6C(x, z, hero) < 2) {
+    if (PogoAI_CountNeighbours(x, z, hero) < 2) {
         return 0;
     }
     base = D_800C53DC[0];
@@ -4642,7 +4642,7 @@ s32 func_800BEA34(s32 x, s32 z, s32 hero) {
     return Tiles_CountUnflagged(grid, hero, 0) != 0;
 }
 
-s32 func_800BEB6C(s32 arg0, s32 arg1, s32 arg2) {
+s32 PogoAI_CountNeighbours(s32 arg0, s32 arg1, s32 arg2) {
     s32 n;
 
     n = 0;
@@ -5180,7 +5180,7 @@ void Roo_UpdateVelocities(EXTengine *eng) {
     D_800C5BE8 = get_angle(dx, dz) + 0x800;
 }
 
-s32 func_800C0DE4(s32 arg0) {
+s32 PogoAI_CountMyTiles(u32 arg0) {
     s32 i;
     s32 j;
     s32 count;
@@ -5224,7 +5224,7 @@ s32 func_800C0F08(s32 arg0, EXTbotai *ai)
     EXTengine *e = Heroes[arg0].hero_eng;
     s32 a = Heroes[arg0].hero_move->facing_angle >> 10;
 
-    if (func_800BE158(arg0, (e->unk10.x + 0x800) >> 9, (e->unk10.z + 0x800) >> 9,
+    if (PogoAI_RadialSearch(arg0, (e->unk10.x + 0x800) >> 9, (e->unk10.z + 0x800) >> 9,
                       a, &x, &z) != 0) {
         ai->AImode = 7;
         ai->TargetXYZ.x = x;
@@ -5431,7 +5431,7 @@ loop:
     return 1;
 }
 
-s32 func_800C16FC(x0, y0, x1, y1)
+u32 PogoSquaredDistanceToDestination(x0, y0, x1, y1)
 s32 x0;
 s32 y0;
 s32 x1;
@@ -5449,8 +5449,8 @@ s32 y1;
     return dx * dx + dy * dy;
 }
 
-s32 func_800C1764(void) {
-    return csqrt(func_800C16FC()) >> 6;
+u32 PogoDistanceToDestination(s32 x0, s32 y0, s32 x1, s32 y1) {
+    return csqrt(PogoSquaredDistanceToDestination(x0, y0, x1, y1)) >> 6;
 }
 
 s32 func_800C178C(void) {
@@ -6257,7 +6257,7 @@ void func_800C3398(void) {
     D_8009D6E8.unk64 = func_800C2E50;
     D_8009D6E8.unk5C = func_800B76CC;
     D_8009D6E8.unk18 = func_800C32E8;
-    D_8009D6E8.unk38 = func_800BD10C;
+    D_8009D6E8.unk38 = PogoAI_Poll;
     func_800B3534();
 }
 

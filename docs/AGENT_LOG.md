@@ -101,7 +101,7 @@ and current tools).
 
 ## Open leads
 
-- **`func_800BE158` (ovl60, parked, hack-only):** the swarm checkpoint is
+- **`PogoAI_RadialSearch` (was `func_800BE158`; ovl60, parked, hack-only):** the swarm checkpoint is
   registers 2/347 but only with nested `do { } while (0)` around each case's
   `dx`/`dz` set. They do two jobs: end cse's block (cse.c
   `cse_end_of_basic_block` stops at `NOTE_INSN_LOOP_END`) so `side1 = dx` and

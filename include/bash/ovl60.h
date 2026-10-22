@@ -9,9 +9,6 @@
 #include "bash/nas.h"
 
 void func_800C0BF0(s32 arg0, s32 arg1);
-s32 func_800BE158(s32 i, s32 x, s32 z, s32 angle, s32 *outX, s32 *outZ);
-s32 func_800C16FC();
-s32 func_800C1764(void);
 s32 func_800C2660(u8 *arg0);
 void func_800C2F50(void);
 void func_800C2F84(void);
@@ -26,7 +23,6 @@ extern u8 D_800C52CC[];
 extern u8 D_800C44A8[];
 void func_800B574C();
 void func_800B5B1C();
-void func_800BD10C();
 void func_800C32E8();
 void func_800B3534();
 
@@ -142,7 +138,6 @@ typedef struct Ovl60Pad {
     /* 0x50 */ s32 unk50;
     /* 0x54 */ s32 unk54;
 } Ovl60Pad;
-s32 func_800BA110(s32 arg0, s32 arg1, s32 arg2);
 void func_800B935C(s32 x, s32 z, s32 hero);
 void Tile_Claim(s32 arg0, s32 arg1, s32 arg2);
 extern s32 D_800C53CC[];
@@ -257,7 +252,7 @@ typedef struct {
 extern Ovl60Move D_800C5ADC[];
 extern Ovl60Offset D_800C457C[];
 extern Ovl60Offset D_800C45BC[];
-s32 func_800C0DE4(s32 arg0);
+s32 PogoAI_CountMyTiles(u32 arg0);
 s32 func_800BE6C4(s32 arg0, Ovl60Goal *arg1);
 void func_800C1068();
 
@@ -275,14 +270,13 @@ void func_800BC0EC(s32 arg0);
 
 void func_800BD008(s32 arg0);
 
-s32 func_800BD378(s32 hero);
 
 s32 func_800C0AFC(s32 arg0, s32 arg1);
 
 s32 func_800C0B70(s32 arg0, s32 arg1, s32 arg2);
 
 
-s32 func_800C0DE4(s32 arg0);
+s32 PogoAI_CountMyTiles(u32 arg0);
 
 s32 func_800C0E40(s32 arg0, u32 arg1, u32 arg2);
 
@@ -350,7 +344,6 @@ void func_800B3C44(void);
 
 
 
-void func_800BDF60(s32 arg0, s32 *arg1, s32 *arg2);
 
 
 
@@ -366,7 +359,6 @@ void func_800B53CC(s32 arg0, u16 arg1);
 
 s32 func_800BBF00(s32 *arg0, s32 *arg1);
 
-s32 func_800BEB6C(s32 arg0, s32 arg1, s32 arg2);
 
 s32 func_800C0F08(s32 arg0, EXTbotai *ai);
 
@@ -398,7 +390,6 @@ void func_800C327C(s32 arg0);
 
 void func_800C3434(void);
 
-s32 func_800BEA34(s32 x, s32 z, s32 hero);
 s32 func_800BE864(s32 hero, Ovl60Goal *goal);
 
 /* D_8005A614 as seen by func_800B3A38. */
@@ -583,7 +574,6 @@ void Tile_Claim(s32 arg0, s32 arg1, s32 arg2);
 
 
 
-s32 func_800BA018(s32 arg0, s32 arg1, s32 arg2);
 
 void func_800BA25C(s32 arg0, s32 arg1, s32 arg2);
 
@@ -597,19 +587,17 @@ void Fire_Rocket(s32 arg0, s32 arg1);
 
 
 
-s32 func_800BD520(s32 hero);
 void func_800BD790(s32 hero);
 
-s32 func_800BD630(s32 hero);
 
-s32 func_800BDCB8(s32 arg0, s32 x, s32 z, s32 dx, s32 dz, s32 flags);
+bool PogoAI_IsSquareOKForPlayer(u32 arg0, s32 x, s32 z, s32 dx, s32 dz, u32 flags);
 
 s32 func_800BDE24(s32 arg0);
 
 void func_800BFFF4(EXTengine *eng);
 
 void func_800C1840(u32 x, u32 z, s32 id, s32 *seen);
-s32 func_800BDCB8(s32 hero, s32 x, s32 z, s32 arg3, s32 arg4, s32 arg5);
+bool PogoAI_IsSquareOKForPlayer(u32 arg0, s32 x, s32 z, s32 dx, s32 dz, u32 flags);
 
 /* HeroPogoDazed: a status bit sends the hero to an action and seq. */
 static inline s32 Ovl60_StatusAction(s32 arg0, s32 bit, s32 action, s32 seq)

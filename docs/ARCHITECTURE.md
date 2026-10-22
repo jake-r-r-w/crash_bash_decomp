@@ -513,6 +513,23 @@ signature alone is not enough.
   centres the hero on its square; `Player_CalcForwardSpeed(p, bool)` is the
   per-hero bounce speed. `PlaySquareChangeNoise` / `PlaySquareLockedNoise`
   are per-player sounds for claiming and for landing on a locked square.
+- **Pogo AI** (ovl60). `PogoAI_Poll(p)` runs the bot (`EXTbotai`: `AIpad`,
+  timers, `AImode` 1/3/4-7). Tests: `PogoAI_CanPlayerShootAnyone` (an
+  opponent in the facing row or column), `...FourWays` (any row or column),
+  `PogoAI_CanPlayerShockAnyone` (an opponent within
+  `PogoDistanceToDestination` 0x380, which is `csqrt` of
+  `PogoSquaredDistanceToDestination` >> 6), `PogoAI_IsSquareOKForPlayer(p,
+  x, z, dx, dz, flags)` (6 args as in the leak). `PogoAI_ScanForClosestPickup
+  (p, &x, &z)` scans with `Pickup_IsClaimableByAI`; the player-side
+  `Pickup_IsClaimable` precedes it in code and leak. `PogoAI_CountMyTiles`,
+  `PogoAI_CountNeighbours(x, z, p)` (including the kerbs) and
+  `PogoAI_ClaimingThisTileWillEncircle` (flood-fills a trial map).
+  `PogoAI_RadialSearch(p, x, z, dir, &x, &z)` has the leak's 6-arg shape; its
+  off-board test `func_800C0E40` is `PogoAI_RadialSearch_CheckKerbs` but
+  needs unsigned x/z where the leak has `s32`, so it keeps its address name.
+  The three `(p, EXTbotai *)` planners `func_800C0F08`, `func_800BE864` and
+  `func_800BE6C4` are GoForMyOwn / StartEncircling / StartEnclosing in some
+  order: left unnamed.
 - **Ambiguous, left unnamed:**
   - Both of the leak's `Roo_FireRocket` declarations match real functions:
     `func_800BFFF4(eng)` and `func_800C02AC(eng, dir)` both spawn
