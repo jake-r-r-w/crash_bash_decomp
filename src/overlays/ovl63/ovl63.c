@@ -3063,7 +3063,107 @@ void InitRaceMissile(NAS *m) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", PlotRaceMissile);
+void PlotRaceMissile(NAS *m) {
+    RaceMissileExt *ext;
+    Ovl63Vec4 hit;
+    Ovl63Vec4 n;
+    Ovl63Vec4 d;
+    Ovl63Vec4 r;
+    s32 dot;
+    s32 i;
+    s32 count;
+
+    ext = FindExtension(m, 0x10000000);
+    if (ext == NULL) {
+        return;
+    }
+    switch (ext->unk10) {
+    case 0:
+        Ovl63ToPolar(&m->Engine->unk10, &ext->unk14);
+        if ((Heroes[ext->unkC].hero_eng->unk1E - ext->unk18) << 20 > 0) {
+            ext->unk1C = -(ext->unk64 << 8) / ext->unk14;
+        } else {
+            ext->unk1C = (ext->unk64 << 8) / ext->unk14;
+        }
+        m->Engine->unk1E = Heroes[ext->unkC].hero_eng->unk1E;
+        ext->pos = Heroes[ext->unkC].hero_eng->unk10;
+        ext->unk10 = 1;
+        break;
+    case 1:
+        if (--ext->unk68 == -1) {
+            Ovl63SpawnPuff(&m->Engine->unk10, 0, &D_80054F84);
+            ext->unk68 = 2;
+        }
+        break;
+    }
+    ext->pos.x -= (ext->unk64 * D_80068BD4[(m->Engine->unk1E - 0x400) & 0xFFF].unk2) >> 12;
+    ext->pos.z -= (ext->unk64 * D_80068BD4[(u16)m->Engine->unk1E & 0xFFF].unk2) >> 12;
+    if (func_800BF0F8((u8 *)&ext->pos, ext->unkC) != -1) {
+        Ovl63SpawnPuff(&m->Engine->unk10, 1, &D_80054F84);
+        PlaySfx(0x43D, NULL, NULL, 0x1000, 0x1E00, 0);
+        if (m->Engine->sfx != NULL) {
+            StopSfx(m->Engine->sfx);
+        }
+    } else {
+        m->Engine->unk5E = 1;
+        if (csqrt(m->Engine->unk10.x * m->Engine->unk10.x
+                  + m->Engine->unk10.z * m->Engine->unk10.z) >> 6 > 0xF00) {
+            goto kill;
+        }
+        count = 1;
+        if (D_8005A648 == 0x17) {
+            count = 3;
+        }
+        for (i = 0; ; i++) {
+            s32 snd;
+
+            if (i >= count) {
+                break;
+            }
+            if (i != 1 && func_800B7190(&ext->pos, &hit, 0x96, i, 1) != 0) {
+                n.x = D_80068BD4[hit.y & 0xFFF].unk2;
+                n.z = D_80068BD4[(hit.y - 0x400) & 0xFFF].unk2;
+                d.x = -D_80068BD4[(m->Engine->unk1E - 0x400) & 0xFFF].unk2;
+                d.z = -D_80068BD4[(u16)m->Engine->unk1E & 0xFFF].unk2;
+                dot = (d.x * n.x >> 12) + (d.z * n.z >> 12);
+                r.x = d.x - (dot * n.x >> 11);
+                r.z = d.z - (dot * n.z >> 11);
+                m->Engine->unk1E = get_angle(r.x, r.z) + 0x800;
+                ext->unk60++;
+                snd = Random(3);
+                if (snd == 0) {
+                    PlaySfx(0x65E, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (snd == 1) {
+                    PlaySfx(0x65F, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (snd == 2) {
+                    PlaySfx(0x660, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+            }
+        }
+        m->Engine->unk10 = ext->pos;
+        if (ext->unk5C != NULL) {
+            ext->unk5C->unk10 = m->Engine->unk10;
+            ext->unk5C->unk10.y = 0;
+            ext->unk5C->unk2C.x = m->Engine->unk2C.x;
+            ext->unk5C->unk2C.y = m->Engine->unk2C.y;
+            ext->unk5C->unk2C.z = m->Engine->unk2C.z;
+            if (D_8005A648 == 0x1A) {
+                ext->unk5C->unk1E = m->Engine->unk1E;
+                ext->unk5C->unk5E = 1;
+                ext->unk5C->unk10.y = -m->Engine->unk10.y;
+            }
+        }
+        if (ext->unk60 < 3) {
+            return;
+        }
+        Ovl63SpawnPuff(&m->Engine->unk10, 1, &D_80054F84);
+        PlaySfx(0x43D, NULL, NULL, 0x1000, 0x1E00, 0);
+    }
+kill:
+    KillNAS(m);
+}
 
 void InitRacePickUp(NAS *m) {
     RacePickUpExt *ext;

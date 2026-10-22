@@ -449,9 +449,12 @@ typedef struct Ovl63Pad {
 } Ovl63Pad;
 /* Race missile extension (0x78 bytes, id 0x10000000). */
 typedef struct RaceMissileExt {
-    /* 0x00 */ u8 pad0[0x10];
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ s32 unkC;
     /* 0x10 */ s32 unk10;
-    /* 0x14 */ u8 pad14[0x20 - 0x14];
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ s32 unk1C;
     /* 0x20 */ s32 unk20;
     /* 0x24 */ u8 pad24[0x34 - 0x24];
     /* 0x34 */ s32 unk34;
@@ -466,8 +469,24 @@ typedef struct RaceMissileExt {
     /* 0x60 */ s32 unk60;
     /* 0x64 */ s32 unk64;
     /* 0x68 */ s32 unk68;
-    /* 0x6C */ u8 pad6C[0x78 - 0x6C];
+    /* 0x6C */ SLONG_XYZ pos;
 } RaceMissileExt;
+
+/* An x/z vector as PlotRaceMissile keeps it on the stack (16 bytes). */
+typedef struct Ovl63Vec4 {
+    s32 x;
+    s32 y;
+    s32 z;
+    s32 pad;
+} Ovl63Vec4;
+
+s32 func_800B7190(SLONG_XYZ *pos, Ovl63Vec4 *out, s32 r, s32 i, s32 f);
+
+/* out[0] = v's x/z distance from the origin, out[1] its angle (PlotRaceMissile). */
+static inline void Ovl63ToPolar(SLONG_XYZ *v, s32 *out) {
+    out[0] = csqrt(v->x * v->x + v->z * v->z) >> 6;
+    out[1] = get_angle(v->x, v->z) & 0xFFF;
+}
 
 /* Race pick-up extension (0x50 bytes, id 0x10000000). */
 typedef struct RacePickUpExt {
@@ -1069,6 +1088,8 @@ void func_800BD99C();
 void func_800BCE88();
 
 s32 func_800BEBC0(s32 player);
+
+void PlotRaceMissile(NAS *m);
 
 void PlotRacePickUp(NAS *m);
 
