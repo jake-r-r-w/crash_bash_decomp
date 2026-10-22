@@ -20,9 +20,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
   **main.exe, ovl61, ovl69 and ovl6a are complete**; 28 left, every one
   tried by the swarm at least once. All 564 PsyQ functions (Sony objects). 6
   parked by hand (`decomp.py status`; the swarm parked 5 more, which the
-  dashboard counts from `docs/swarm.js`), 104 matched with a hack (most of
+  dashboard counts from `docs/swarm.js`), 103 matched with a hack (most of
   them `do { } while (0)` wrappers, flagged since 2026-10-22, in headers'
-  macros and inlines too; 6 macro-shaped ones accepted)
+  macros and inlines too; 7 macro-shaped ones accepted)
   (`decomp.py hacks`; `func_800193A8`'s register pins reviewed as plausibly
   original, `hacks --accept`). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
@@ -555,8 +555,9 @@ Newest first, a few lines each. Details are in the commits.
   `best` >= 11 (beats `z` 0.248). The wrapper in loop 1, loop 2 or both
   matches; around the whole body it doesn't. A second `found != 0` test
   (`return found != 0`, `?:`, two ifs) gives `found` its 8th ref and `fp`
-  but becomes an `sltu` where the target branches on constants. Awaiting
-  a call on `hacks --accept` (macro around `best = d; found = ...`).
+  but becomes an `sltu` where the target branches on constants. The user
+  accepted it as a macro: `OVL66_SET_CLOSEST` in both loops (093716cd,
+  `hacks --accept`).
 
 - **2026-10-22 (hand: hack reworks, no permuter):** `func_800115D8`
   without its do-while (2202c6e4): `arg3` is `s32`, not `s16`. A narrow

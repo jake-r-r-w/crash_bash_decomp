@@ -9110,6 +9110,7 @@
   "status": "matched"
  },
  "ovl66:800B4454": {
+  "hack_ok": "OVL66_SET_CLOSEST: a do-while(0) macro for the keep-closest update, used in both search loops; accepted by the user 2026-10-22 (flow.c loop-weighted refs on best/found, either loop matches, no non-macro C does)",
   "matched_at": "2026-10-22T19:12:33Z",
   "status": "matched"
  },
