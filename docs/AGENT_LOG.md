@@ -19,9 +19,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
 - 2508/2537 game functions matched (92.26% of game code bytes, 2026-10-22):
   **main.exe, ovl61, ovl69 and ovl6a are complete**; 29 left. All 564 PsyQ functions (Sony objects). 4
   parked by hand (`decomp.py status`; the swarm parked 5 more, which the
-  dashboard counts from `docs/swarm.js`), 82 matched with a hack (73 of them
-  `do { } while (0)` wrappers, flagged since 2026-10-22; 6 macro-shaped ones
-  accepted)
+  dashboard counts from `docs/swarm.js`), 107 matched with a hack (most of
+  them `do { } while (0)` wrappers, flagged since 2026-10-22, in headers'
+  macros and inlines too; 6 macro-shaped ones accepted)
   (`decomp.py hacks`; `func_800193A8`'s register pins reviewed as plausibly
   original, `hacks --accept`). Every slot overlay's id word is
   its own rodata unit (2026-10-19), so first-file switches link as `switch`.
@@ -103,15 +103,17 @@ and current tools).
 
 ## Open leads
 
-- **The do-while lint misses headers.** `lint_body` reads a function's body
-  in its `.c` file, so a `do { } while (0)` inside a header macro or a
-  header `static inline` passes: 7 today (`OVL60_ROUND_OVER`, ovl64's five
-  `OVL64_*` macros, `Ovl62HasBomb`, `Ovl62Closest`, `Ovl63HitHero`,
-  `LaserBurst`). The `OVL64_*` macros came in on 2026-10-22 with
-  `func_800B4144` and `PlotBalloon`, whose worker noted it used a macro to
-  pass the lint. They read as real idioms (round draw, pop, bounce, float,
-  shadow), so it is a judgement call: extend the lint to macros and inlines
-  the body uses, then review each like the 6 accepted ones.
+- **Header do-whiles to review (lint extended 2026-10-22).** The lint now
+  reads the macros and `static inline` functions a body uses (outside the
+  leaked headers), and matches `do { } while (0)` at any brace depth (the
+  old regex saw one level). That flagged 25 more matches: 8 through helpers
+  (ovl64's `OVL64_*` macros in `PlotBalloon`/`func_800B4144`, whose worker
+  used macros to pass the lint; `Ovl62HasBomb`, `Ovl62Closest`,
+  `Ovl63HitHero`, `LaserBurst`, `HeroAnimSlotSet`) and 17 deep wrappers in
+  bodies (`DoChooseNewAction`, `func_800115D8`, `PlotTrackGlob`, ...).
+  The macro ones read as real idioms (round draw, pop, bounce, float,
+  shadow): review each like the 6 accepted ones (`hacks --accept`, with
+  the human's yes). `OVL60_ROUND_OVER` is no longer used.
 - **`PogoAI_RadialSearch` (was `func_800BE158`; ovl60, parked, hack-only):** the swarm checkpoint is
   registers 2/347 but only with nested `do { } while (0)` around each case's
   `dx`/`dz` set. They do two jobs: end cse's block (cse.c

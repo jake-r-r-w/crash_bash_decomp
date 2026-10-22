@@ -125,6 +125,37 @@ class DoWhileZero(unittest.TestCase):
             self.assertNotIn("do { } while (0) wrapper", lint(s)[1], s)
 
 
+class Helpers(unittest.TestCase):
+    """PlotBalloon (2026-10-22) moved its do { } while (0) into header macros (OVL64_*) to pass
+    the lint: a macro or static inline the function uses is linted too."""
+
+    def lint_with(self, header, body):
+        d = tempfile.mkdtemp()
+        with open(os.path.join(d, "h.h"), "w") as fh:
+            fh.write(header)
+        src = os.path.join(d, "f.c")
+        with open(src, "w") as fh:
+            fh.write(f'#include "h.h"\nint g;\nvoid f(void)\n{{\n{body}\n}}\n')
+        return decomp.lint_function(src, "f")[1]
+
+    def test_macro_do_while_is_a_hack(self):
+        h = "#define POP(x)          \\\n    do {                \\\n        if (x) {        \\\n            for (;;) { if (g) { g = 0; } } \\\n        }               \\\n    } while (0)\n"
+        self.assertTrue(any(s.startswith("do { } while (0) wrapper in POP") for s in self.lint_with(h, "POP(g);")))
+
+    def test_inline_and_nested_macros(self):
+        h = ("static inline int Get(void) {\n    int x;\n    do { x = g; } while (0);\n    return x;\n}\n"
+             "#define WRAP() (Get() + 1)\n")
+        self.assertTrue(any(s.startswith("do { } while (0) wrapper in Get") for s in self.lint_with(h, "g = WRAP();")))
+
+    def test_unused_or_clean_helpers_are_clean(self):
+        h = "#define POP(x) do { x = 0; } while (0)\n#define ADD(x) ((x) + 1)\n"
+        self.assertEqual(self.lint_with(h, "g = ADD(g);"), [])
+
+    def test_deep_nesting_in_a_body(self):
+        s = "do {\n        for (;;) { if (g) { g = 0; } else { g = 1; } }\n    } while (0);"
+        self.assertIn("do { } while (0) wrapper", lint(s)[1])
+
+
 class KandR(unittest.TestCase):
     def test_definition_found(self):
         text = "void f(void);\nvoid f(a, b)\n    u8 *a;\n    s32 b;\n{\n    *a = b;\n}\n"

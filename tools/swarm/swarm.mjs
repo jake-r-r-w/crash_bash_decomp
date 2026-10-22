@@ -74,8 +74,8 @@ function infraError(out, code) {
 }
 const PATCH_MAX = 64 << 10;
 const OLD_DIFF = '.swarm-old.diff';    // a checkpoint that no longer applies, for decomp.py port
-// Diff patterns rows that teach what the gate refuses (pins, asm barriers, --hack) aren't passed on
-const PATTERN_REFUSED = /\b(?:asm|__asm|__asm__)\s*(?:volatile|__volatile__)?\s*\(|--hack|\bregister\b[^|]*\b(?:asm|__asm|__asm__)\b/i;
+// Diff patterns rows that teach what the gate refuses (pins, asm barriers, do-while (0), --hack) aren't passed on
+const PATTERN_REFUSED = /\b(?:asm|__asm|__asm__)\s*(?:volatile|__volatile__)?\s*\(|--hack|\bregister\b[^|]*\b(?:asm|__asm|__asm__)\b|\bwhile\s*\(\s*0\s*\)|\(hack\)/i;
 const PATTERNS_MAX = 2500;
 // the matching loop both prompts give inline (workers then needn't read SKILL.md, whose steps the
 // swarm overrides, and the docs are for grepping)
@@ -103,6 +103,11 @@ CONVENTIONS.md and SKILL.md):
    blocks. For a long diff, \`decomp.py regions ${r}\` aligns it block by block (\`--changed\` after
    an edit).
 `;
+// the gate's lint (decomp.py lint_body, helper_hacks) refuses these without a human's --hack
+const HACK_RULE = `- No tricks that only steer the compiler: the gate refuses \`do { } while (0)\` wrappers (also
+  inside a macro or static inline you add: the lint reads those too), dead or overwritten stores,
+  no-op \`x++; x--;\` pairs and if/else arms with the same code. If only such a trick matches,
+  finish "parked" with your closest plain C and name the trick and the gcc rule in "note".`;
 const ASM_REFUSED = 'adds inline asm';   // checkPatch's finding, measured anyway
 const TOOL_MINUTES = 10;                  // the orchestrator's try/regions; done and verify get 2x
 const NEIGHBOUR = 8;            // lines between two INCLUDE_ASMs below which they aren't leased together
@@ -1035,6 +1040,7 @@ These swarm rules override CLAUDE.md and the docs:
 - Pure C only: no \`asm\`/\`__asm__\` of any kind and no register pins (the swarm refuses the
   patch). Use the \`gte_*\` macros already in include/. If only asm would match, finish "parked" and
   say why.
+${HACK_RULE}
 - Don't run the permuter (it is refused). ${canPermute
     ? `If the evidence step, the Diff patterns, the checklist and (for register diffs) the cc1 dump
   don't get you to a match, leave your closest C in place of the INCLUDE_ASM line and finish with
@@ -1175,6 +1181,7 @@ on from the log above.
 - Pure C only: no \`asm\`/\`__asm__\` of any kind and no register pins (the swarm refuses the
   patch). Use the \`gte_*\` macros already in include/. If only asm would match, finish "parked" and
   say why.
+${HACK_RULE}
 - Don't run the permuter (it is refused).${canPermute ? ` When you are at the registers stage and
   stuck, finish with status "needs_permute": the orchestrator runs a long permuter on your C and the
   next session gets its result.` : ''}

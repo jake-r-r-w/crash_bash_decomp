@@ -2005,14 +2005,25 @@ LINT_HACKS = [
     (re.compile(r"\bregister\b[^;]*" + ASM_CALL), "register pin"),
     # no instructions, with or without operands: asm("" ::: "memory"), asm("" : "=r"(p) : "0"(p))
     (re.compile(ASM_CALL + r"\s*\"\""), "empty asm barrier"),
-    # written in a function body it only adds loop notes (cse block ends, loop-depth weighted refs);
-    # a macro's do-while is in a header and doesn't show here (2026-10-22: 176 in matched C)
-    (re.compile(r"\bdo\s*\{(?:[^{}]|\{[^{}]*\})*\}\s*while\s*\(\s*0\s*\)"), "do { } while (0) wrapper"),
 ]
 INCLUDE_ASM_LINE = re.compile(r'^\s*INCLUDE_ASM\(\s*"[^"]+"\s*,\s*(\w+)\s*\)')
 # consecutive `x++;` / `x--;` statements on one variable; a run with both directions is a no-op
 # that only moves refs or schedule ties (2026-10-19: `h++; h--;` in func_800B345C)
 NOOP_STEPS = re.compile(r"\b(\w+)\s*(?:\+\+|--)\s*;(?:\s*\b\1\s*(?:\+\+|--)\s*;)+")
+
+
+def do_while_zero(body):
+    """True if BODY has a `do { ... } while (0)`: it only adds loop notes (cse block ends,
+    loop-depth weighted refs), 2026-10-22: 176 in matched C. Braces matched to any depth."""
+    for m in re.finditer(r"\bdo\s*\{", body):
+        depth = 0
+        for i in range(m.end() - 1, len(body)):
+            depth += {"{": 1, "}": -1}.get(body[i], 0)
+            if depth == 0:
+                if re.match(r"\s*while\s*\(\s*0\s*\)", body[i + 1:]):
+                    return True
+                break
+    return False
 
 
 def noop_steps(body):
@@ -2198,8 +2209,78 @@ def same_branches(body):
 
 
 def lint_function(src, name):
-    """(errors, hacks) found in NAME's definition in SRC."""
-    return lint_body(extract_function(read(src), name) or "")
+    """(errors, hacks) found in NAME's definition in SRC, and in the macros and static inline
+    functions it uses."""
+    body = extract_function(read(src), name) or ""
+    errs, hacks = lint_body(body)
+    return errs, sorted(set(hacks) | set(helper_hacks(src, body)))
+
+
+# headers recovered from the leaked original source: their macros are the game's own
+ORIGINAL_HEADERS = {"include/bash/pogo.h", "include/bash/arkenoid.h", "include/bash/polar.h",
+                    "include/bash/tank.h"}
+INCLUDE_LINE = re.compile(r'^\s*#\s*include\s+"([^"]+)"', re.M)
+DEFINE = re.compile(r"^[ \t]*#[ \t]*define[ \t]+(\w+)((?:[^\n\\]|\\.|\\\n)*)", re.M)
+STATIC_INLINE = re.compile(r"^static\s+(?:__inline__\s+|__inline\s+|inline\s+)[^;{(]*?\b(\w+)\s*\([^;{]*\)\s*\{", re.M)
+_helper_cache = {}
+
+
+def included_files(src):
+    """SRC and every header it includes, transitively, that exists under include/ (or beside it)."""
+    seen, todo = [], [src.replace("\\", "/")]
+    while todo:
+        p = todo.pop()
+        if p in seen or not os.path.isfile(p):
+            continue
+        seen.append(p)
+        for inc in INCLUDE_LINE.findall(read(p)):
+            todo += [f"include/{inc}", os.path.join(os.path.dirname(p), inc).replace("\\", "/")]
+    return seen
+
+
+def helper_defs(src):
+    """{name: (file, hacks, text)} for the macros and static inline functions visible in SRC
+    (outside the original headers), with what the lint finds in each one's own text."""
+    if src in _helper_cache:
+        return _helper_cache[src]
+    defs = {}
+    for p in included_files(src):
+        if p in ORIGINAL_HEADERS:
+            continue
+        text = re.sub(r"/\*.*?\*/", lambda m: re.sub(r"[^\n]", " ", m.group(0)), read(p), flags=re.S)
+        for m in DEFINE.finditer(text):
+            body = m.group(2).replace("\\\n", "\n")
+            hacks = {why for rx, why in LINT_HACKS if rx.search(body)}
+            if do_while_zero(body):
+                hacks.add("do { } while (0) wrapper")
+            if noop_steps(body):
+                hacks.add("no-op ++/-- pair")
+            if same_branches(body):
+                hacks.add("identical if/else arms")
+            defs.setdefault(m.group(1), (p, sorted(hacks), body))
+        for m in STATIC_INLINE.finditer(text):
+            body = extract_function(text[m.start():], m.group(1), top=True) or ""
+            defs.setdefault(m.group(1), (p, lint_body(body)[1], body))
+    _helper_cache[src] = defs
+    return defs
+
+
+def helper_hacks(src, body):
+    """Hacks in the macros and static inline functions BODY uses (and the ones they use), as
+    `<kind> in <name> (<file>)`: moving a do-while or a dead store into a header only hides it
+    (2026-10-22: the OVL64_* macros wrapped in do { } while (0) to pass the lint)."""
+    defs, out, seen = helper_defs(src), [], set()
+    todo = [w for w in dict.fromkeys(re.findall(r"\b[A-Za-z_]\w*\b", re.sub(r"/\*.*?\*/", "", body, flags=re.S)))
+            if w in defs]
+    while todo:
+        w = todo.pop(0)
+        if w in seen:
+            continue
+        seen.add(w)
+        f, hacks, text = defs[w]
+        out += [f"{h} in {w} ({f})" for h in hacks]
+        todo += [x for x in re.findall(r"\b[A-Za-z_]\w*\b", text) if x in defs and x not in seen]
+    return out
 
 
 def lint_body(body):
@@ -2209,6 +2290,8 @@ def lint_body(body):
     unpinned = re.sub(r"(\bregister\b[^;]*?)" + ASM_CALL + r"\s*\"[^\"]*\"\s*\)", r"\1", body)
     errs = sorted({why for rx, why in LINT_ERRORS if rx.search(unpinned)})
     hacks = {why for rx, why in LINT_HACKS if rx.search(body)}
+    if do_while_zero(body):
+        hacks.add("do { } while (0) wrapper")
     if noop_steps(body):
         hacks.add("no-op ++/-- pair")
     if dead_stores(body) or write_only_locals(body) or overwritten_stores(body):
@@ -4465,7 +4548,7 @@ def hack_rows(funcs, syms, stat, reviewed=False):
         name, body = next(((nm, bodies[e["src"]][nm]) for nm in names if nm in bodies[e["src"]]), (None, None))
         if not name:
             continue
-        _, hacks = lint_body(body)
+        hacks = sorted(set(lint_body(body)[1]) | set(helper_hacks(e["src"], body)))
         if not hacks:
             continue
         commit, why = "?", "(no Hack: line in its match commit)"

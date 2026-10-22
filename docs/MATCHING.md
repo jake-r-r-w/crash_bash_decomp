@@ -211,7 +211,9 @@ match or a park adds a row here** (not only an AGENT_LOG paragraph).
 Rows marked **(hack)** are not natural C: they steer a pass and need the
 human's sign-off (`done --hack`) before a match may use them. Most are
 `do { } while (0)` wrappers, which only add loop notes (a cse block end and
-loop-weighted refs for global-alloc); the lint flags them since 2026-10-22.
+loop-weighted refs for global-alloc); the lint flags them since 2026-10-22,
+also inside a macro or `static inline` the function uses (moving one into
+a header doesn't make it natural).
 Read such a row for the gcc rule it names, then look for a natural change
 that has the same effect.
 
