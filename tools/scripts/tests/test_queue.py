@@ -110,6 +110,22 @@ class Declarations(unittest.TestCase):
                 "} Pt;\n", "void f(s32 x);\n", "extern s32 x;\n"]
         self.assertEqual([top for _, top in decomp.top_level(text)], [True, False, False, False, True, True])
 
+    def test_rename_moves_the_asm(self):
+        """rename deleted a matched function's .s and splat never rewrites it (it only writes what
+        the C file lacks): the target asm and its rodata's owner were lost (2026-10-22)."""
+        d = tempfile.mkdtemp()
+        old = os.path.join(d, "func_800C9230.s")
+        with open(old, "w") as f:
+            f.write("glabel func_800C9230\n    jal func_800C92300\n.L800C9230_1:\nendlabel func_800C9230\n")
+        text = decomp.rename_asm_file(old, "func_800C9230", "XZBoxToSphere")
+        self.assertFalse(os.path.exists(old))
+        self.assertIn("glabel func_800C9230", text)
+        with open(os.path.join(d, "XZBoxToSphere.s")) as f:
+            moved = f.read()
+        self.assertIn("glabel XZBoxToSphere\n", moved)
+        self.assertIn("endlabel XZBoxToSphere\n", moved)
+        self.assertIn("func_800C92300", moved)  # a longer name is left alone
+
     def test_dedupe_keeps_names_the_header_uses(self):
         """Tank renames (2026-10-22): ovl5f.h's inline functions use Heroes, which engine.h
         (included after it) also declares; dropping ovl5f.h's copy broke them."""

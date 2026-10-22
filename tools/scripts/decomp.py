@@ -3440,12 +3440,21 @@ def ref_files(ovl):
     return mine, [h for h in all_headers() if header_owner(h) in mine]
 
 
+def rename_asm_file(path, old, new):
+    """Move asm/nonmatchings/.../OLD.s to NEW.s with its labels renamed; returns the old text."""
+    text = read(path)
+    write(os.path.join(os.path.dirname(path), f"{new}.s"), re.sub(rf"\b{re.escape(old)}\b", new, text))
+    os.remove(path)
+    return text
+
+
 def apply_renames(pairs, proj, write_syms=True):
     """pairs: [(ovl, addr, old, new, typ)]. Writes the names, rewrites references in src/ and
     include/, re-splits, re-indexes and checks the build; undoes everything if it differs."""
     snap = {p: read(p) for p in glob.glob(f"{CFG}/**/*", recursive=True) + all_headers()
             + glob.glob("src/**/*.c", recursive=True) + [P_FUNCS] if os.path.isfile(p)}
     created = set()
+    moved_asm = {}
     yamls = set()
     by_scope = defaultdict(dict)
     for ovl, addr, old, new, typ in pairs:
@@ -3458,7 +3467,9 @@ def apply_renames(pairs, proj, write_syms=True):
         by_scope[ovl][old] = new
         yamls |= set(yamls_seeing(ovl, proj))
         for f in glob.glob(f"asm/nonmatchings/**/{old}.s", recursive=True):
-            os.remove(f)                          # splat writes the new name; don't index both
+            # splat writes only the functions the C file lacks, so a matched function's .s (its
+            # target asm, and the owner of its rodata in the data count) must move with it
+            moved_asm[f] = rename_asm_file(f, old, new)
     for ovl, mp in by_scope.items():
         srcs, hdrs = ref_files(ovl)
         for p in srcs + hdrs:
@@ -3489,6 +3500,8 @@ def apply_renames(pairs, proj, write_syms=True):
         for _, _, old, new, _ in pairs:
             for f in glob.glob(f"asm/nonmatchings/**/{new}.s", recursive=True):
                 os.remove(f)
+        for f, text in moved_asm.items():
+            write(f, text)
         resplit_all()
         die("rename undone, the build no longer matched:\n" + msg)
     return len(pairs)
