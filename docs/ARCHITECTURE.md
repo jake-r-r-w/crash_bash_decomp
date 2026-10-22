@@ -441,6 +441,19 @@ signature alone is not enough.
     `func_800C096C`, `func_800B4D9C`: `AR_*_TestOutOfBounds(EXTengine *,
     EXTobject *, bool)`) and `D_800C1C94` (`func_800B4EFC`, `func_800C08C8`:
     `AR_*_TestLaunchBounds(EXTengine *, EXTobject *)`).
+  - Hero states: the engine's `HEROFunc` table (`{SetMode, Action}` pairs)
+    has 10 Arkenoid pairs at `0x8009DD80`, hero actions 0x1C-0x25, the leak's
+    10 `SetArkHero*`/`ArkHero*` pairs. Each is named from its own code, not
+    the leak's order (the table puts Taunt before Kick):
+    0x1C Idle (breathe anim, random idle anim; every state ends back here),
+    0x1D Move, 0x1E Taunt (taunt anim and sound), 0x1F Kick (raises
+    `hero_attack_delay`, `ArkHeroRad2ObjectCollision(.., 0)`), 0x20 RedKick
+    (the same with `.., 1` and effect 0x2007), 0x21 Grab (150-frame
+    `hero_weapon_timer`, then `FreeGrabbedObject`), 0x22 Winner, 0x23 Lose
+    (status bits 0x200/0x400 pick them at the end), 0x24 Die (counts
+    `hero_hit` down, then 0x25), 0x25 Dead (health 0, explosion, sound 0x586).
+    The anim ids fit `HeroAnim_seqs`' Arkenoid order from 0x19 (breathe,
+    move, idle, taunt, kick, ...). They take `u32 player` as the leak does.
 - **Ambiguous, left unnamed:**
   - Both of the leak's `Roo_FireRocket` declarations match real functions:
     `func_800BFFF4(eng)` and `func_800C02AC(eng, dir)` both spawn

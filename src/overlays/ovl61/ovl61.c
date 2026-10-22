@@ -1408,7 +1408,7 @@ static inline s32 HeroCheckStatus2600(s32 arg0) {
     return ret;
 }
 
-void func_800B66D0(s32 arg0) {
+void ArkHeroIdle(u32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
     HeroInfo *base2;
@@ -1445,7 +1445,7 @@ void func_800B66D0(s32 arg0) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl61/ovl61", D_800B32B8);
 
-void func_800B68C8(s32 arg0) {
+void SetArkHeroTaunt(u32 arg0) {
     s32 id;
     SLONG_XYZ *pos;
     HeroInfo *base;
@@ -1481,7 +1481,7 @@ void func_800B68C8(s32 arg0) {
     }
 }
 
-void func_800B69E8(s32 arg0) {
+void ArkHeroTaunt(u32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
     u16 st;
@@ -1516,7 +1516,7 @@ void func_800B69E8(s32 arg0) {
     }
 }
 
-void func_800B6AE0(s32 arg0) {
+void ArkHeroMove(u32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
     u16 st;
@@ -1552,7 +1552,7 @@ void func_800B6AE0(s32 arg0) {
     }
 }
 
-void func_800B6BE8(s32 arg0) {
+void SetArkHeroWinner(u32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
 
@@ -1577,7 +1577,7 @@ void func_800B6BE8(s32 arg0) {
     func_80089FA4(arg0);
 }
 
-void func_800B6CF0(s32 arg0) {
+void ArkHeroWinner(u32 arg0) {
     EXTengine *e;
     EXTengine *f;
     s32 v;
@@ -1654,7 +1654,7 @@ void func_800B6CF0(s32 arg0) {
     func_8008502C(arg0);
 }
 
-void func_800B6FE0(s32 arg0) {
+void SetArkHeroLose(u32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
 
@@ -1676,7 +1676,7 @@ void func_800B6FE0(s32 arg0) {
     SetHeroSeq(arg0, 0x19);
 }
 
-void func_800B70CC(s32 arg0) {
+void SetArkHeroDie(u32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
     subengine *s;
@@ -1760,7 +1760,7 @@ void func_800B70CC(s32 arg0) {
     Heroes[arg0].hero_hit = 0x3C;
 }
 
-void func_800B7450(s32 arg0) {
+void SetArkHeroKick(u32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
 
@@ -1778,7 +1778,7 @@ void func_800B7450(s32 arg0) {
     PlaySfx(D_800C18E0[arg0], NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
 }
 
-void func_800B7518(s32 arg0) {
+void ArkHeroKick(u32 arg0) {
     HeroInfo *base;
     HeroInfo *base2;
     HeroInfo *h;
@@ -1824,7 +1824,7 @@ void func_800B7518(s32 arg0) {
     }
 }
 
-void func_800B7688(s32 arg0) {
+void ArkHeroRedKick(u32 arg0) {
     HeroInfo *base;
     HeroInfo *base2;
     HeroInfo *h;
@@ -1871,7 +1871,7 @@ void func_800B7688(s32 arg0) {
     }
 }
 
-void func_800B77F8(s32 arg0) {
+void ArkHeroGrab(u32 arg0) {
     subengine *a;
     subengine *s;
     HeroInfo *h;
@@ -1929,7 +1929,7 @@ act:
     }
 }
 
-void func_800B79F4(s32 arg0) {
+void SetArkHeroDead(u32 arg0) {
     SLONG_XYZ sp18;
     EXTengine *temp_v0;
     HeroInfo *base;
@@ -1975,7 +1975,7 @@ void func_800B79F4(s32 arg0) {
     func_800898EC(arg0);
 }
 
-void func_800B7B60(s32 arg0) {
+void ArkHeroDead(u32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
     u16 st;
@@ -5709,7 +5709,7 @@ s32 func_800C0250(s32 arg0, s32 arg1) {
     return 3;
 }
 
-void func_800C02F8(s32 arg0) {
+void SetArkHeroGrab(u32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
 
@@ -5723,7 +5723,7 @@ void func_800C02F8(s32 arg0) {
     PlaySfx(D_800C18E8[arg0], &h->hero_eng->sfx, NULL, 0x1000, 0x1E00, 0);
 }
 
-void func_800C039C(s32 arg0) {
+void SetArkHeroRedKick(u32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
 
@@ -5737,7 +5737,7 @@ void func_800C039C(s32 arg0) {
     PlaySfx(D_800C18E0[arg0], NULL, NULL, 0x1000, 0x1E00, 0);
 }
 
-void func_800C0448(s32 arg0) {
+void ArkHeroDie(u32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
 
@@ -5750,17 +5750,17 @@ void func_800C0448(s32 arg0) {
     func_8008502C(arg0);
 }
 
-void func_800C04B8(s32 arg0) {
+void ArkHeroLose(u32 arg0) {
     Heroes[arg0].hero_frozen = 5;
     func_8008502C();
 }
 
-void func_800C04FC(s32 arg0) {
+void SetArkHeroMove(u32 arg0) {
     func_800B62F4();
     SetHeroSeq(arg0, 0x1A);
 }
 
-void func_800C052C(s32 arg0) {
+void SetArkHeroIdle(u32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
 

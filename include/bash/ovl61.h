@@ -84,7 +84,6 @@ void func_800BC0D8(void);
 void func_800BCA30(void);
 void func_800BD510(void);
 
-void Plot_ArkLaserWall(NAS *nas);
 
 typedef struct {
     s16 x;
@@ -179,9 +178,7 @@ s32 func_800B4EFC(Ovl61Obj *arg0);
 s32 func_800B84B8(s32 arg0);
 void func_800BDD30(s32 arg0);
 
-void func_800C0448(s32 arg0);
 
-void func_800C04B8(s32 arg0);
 
 s32 func_800C05B8(s32 arg0);
 
@@ -193,7 +190,6 @@ s32 func_800BFD9C(u8 *arg0);
 
 u8 *func_800C01B8(void);
 
-void func_800C04FC(s32 arg0);
 
 s32 func_800C0A74(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2);
 
@@ -238,19 +234,14 @@ void func_800B3B20(void);
 void func_800B40AC(void);
 void func_800B9728(void);
 
-void func_800B69E8(s32 arg0);
 
-void func_800B79F4(s32 arg0);
 
 s32 func_800BFD14(Ovl61Vel *v);
 
 s32 func_800C0250(s32 arg0, s32 arg1);
 
-void func_800C02F8(s32 arg0);
 
-void func_800C039C(s32 arg0);
 
-void func_800C052C(s32 arg0);
 
 s32 func_800C0624(s32 arg0);
 
@@ -429,29 +420,17 @@ void func_800B5EC8(s32 arg0);
 
 s32 func_800B60FC(s32 arg0);
 
-void func_800B66D0(s32 arg0);
 
-void func_800B68C8(s32 arg0);
 
-void func_800B6AE0(s32 arg0);
 
-void func_800B6BE8(s32 arg0);
 
-void func_800B6CF0(s32 arg0);
 
-void func_800B6FE0(s32 arg0);
 
-void func_800B70CC(s32 arg0);
 
-void func_800B7450(s32 arg0);
 
-void func_800B7518(s32 arg0);
 
-void func_800B7688(s32 arg0);
 
-void func_800B77F8(s32 arg0);
 
-void func_800B7B60(s32 arg0);
 
 s32 func_800B8964(s32 arg0);
 
