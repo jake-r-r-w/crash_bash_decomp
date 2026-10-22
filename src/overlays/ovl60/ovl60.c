@@ -1838,7 +1838,117 @@ void Tile_Claim(s32 arg0, s32 arg1, s32 arg2) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Tile_Update);
+
+void Tile_Update(s32 arg0, s32 arg1) {
+    s32 rnd;
+    s32 anim;
+    Ovl60ModeView *g = (Ovl60ModeView *)D_8005A614;
+    s32 row = g->mode - 10;
+    u16 *tbl;
+    Ovl60Cell *c;
+    Ovl60Cell *cell;
+    Ovl60Cell *cell5;
+    Ovl60Cell *cell2;
+    Ovl60Cell *cell3;
+    Ovl60Cell *c0;
+    Ovl60Cell *base;
+    Ovl60Cell *base1;
+    Ovl60Cell *base10;
+    Ovl60Cell *base0;
+    Ovl60Cell *base2;
+    Ovl60Cell *base3;
+    Ovl60Cell *base5;
+    s32 fr;
+    s32 fr5;
+    Ovl60CellObj *o;
+    s32 n;
+
+    if ((u32)arg0 < 8 && (u32)arg1 < 8) {
+        rnd = LevelSpecific_UnclaimedTile(arg0, arg1);
+        anim = LevelSpecific_ClaimedTile(arg0, arg1);
+        if (g->flags & 0x80) {
+            tbl = D_800C4524[row];
+        } else {
+            tbl = D_800C4504[row];
+        }
+        base = D_800C53DC[0];
+        c0 = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
+        o = (Ovl60CellObj *)c0->unk4;
+        if (o == NULL) {
+            return;
+        }
+        switch ((u16)c0->unk12) {
+        case 0:
+            base0 = D_800C53DC[0];
+            c = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base0);
+            if (c->unk16 == -1) {
+                if (D_8004E0D8 & 1) {
+                    CELL_SET_T(o, rnd, rnd);
+                } else {
+                    CELL_SET_T(o, anim, tbl[c->unkA]);
+                }
+            } else {
+                o->anim = anim;
+                if (c->unk16 != c->unkA) {
+                    if (D_8004E0D8 & 1) {
+                        o->frame = CELL_FRAME(o, tbl[c->unk16] & 0xFFF)->unk26;
+                    } else {
+                        o->frame = CELL_FRAME(o, tbl[c->unkA] & 0xFFF)->unk26;
+                    }
+                }
+            }
+            break;
+        case 1:
+            base1 = D_800C53DC[0];
+            c = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base1);
+            if (c->unkA == -1) {
+                CELL_SET_T(o, rnd, rnd);
+            } else {
+                CELL_SET_T(o, anim, tbl[c->unkA]);
+            }
+            break;
+        case 10:
+            base10 = D_800C53DC[0];
+            cell = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base10);
+            if (cell->unkA != -1) {
+                CELL_SET_T(o, (MV->flags & 0x80) ? 0x3045 : 0x3031, tbl[cell->unkA]);
+            }
+            break;
+        case 2:
+            base2 = D_800C53DC[0];
+            cell2 = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base2);
+            CELL_SET_T(o, anim, tbl[cell2->unk16]);
+            break;
+        case 3:
+            if (D_8004E0D8 & 1) {
+                base3 = D_800C53DC[0];
+            cell3 = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base3);
+                CELL_SET_T(o, anim, tbl[cell3->unk16]);
+            } else {
+                CELL_SET_T(o, rnd, rnd);
+            }
+            break;
+        case 5:
+            base5 = D_800C53DC[0];
+            cell5 = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base5);
+            n = (s16)(cell5->unk14 / 30);
+            if (n >= 4) {
+                n = 3;
+            }
+            fr5 = (MV->flags & 0x80) ? D_800C4560[n] : D_800C4544[n];
+            o->anim = fr5;
+            fr5 = (MV->flags & 0x80) ? D_800C4560[n] : D_800C4544[n];
+            o->frame = CELL_FRAME(o, fr5 & 0xFFF)->unk26;
+            break;
+        case 7:
+            CELL_SET(o, (MV->flags & 0x80) ? 0x304A : 0x3040, (MV->flags & 0x80) ? 0x304A : 0x3040);
+            break;
+        case 6:
+            CELL_SET(o, (MV->flags & 0x80) ? 0x304F : 0x3045, (MV->flags & 0x80) ? 0x304F : 0x3045);
+            break;
+        }
+    }
+}
 
 void Tile_FireTnt(s32 arg0, s32 arg1) {
     HeroInfo *h;

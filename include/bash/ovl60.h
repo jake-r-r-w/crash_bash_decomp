@@ -623,4 +623,38 @@ void HeroPogo(u32 arg0);
 void HeroPogoDazed(u32 arg0);
 
 
+extern s32 D_800C4544[];
+extern s32 D_800C4560[];
+
+/* A 0x38-byte frame of a cell object's model (Tile_Update reads unk26). */
+typedef struct {
+    /* 0x00 */ u8 pad0[0x26];
+    /* 0x26 */ u16 unk26;
+    /* 0x28 */ u8 pad28[0x38 - 0x28];
+} Ovl60Frame;
+
+typedef struct {
+    /* 0x00 */ u8 pad0[0x18];
+    /* 0x18 */ Ovl60Frame *frames;
+} Ovl60Model;
+
+/* The object a board cell's unk4 points to, as Tile_Update sets it. */
+typedef struct {
+    /* 0x00 */ u8 pad0[0x6C];
+    /* 0x6C */ Ovl60Model *model;
+    /* 0x70 */ u8 pad70[0x8C - 0x70];
+    /* 0x8C */ u16 frame;
+    /* 0x8E */ s16 anim;
+} Ovl60CellObj;
+extern u16 D_800C4504[][4];
+extern u16 D_800C4524[][4];
+#define MV ((Ovl60ModeView *)D_8005A614)
+/* Set a cell object's animation and its frame (fr: an s32 temp of the caller). */
+#define CELL_SET(o, a, f) \
+    ((o)->anim = (a), fr = (f), (o)->frame = CELL_FRAME(o, fr & 0xFFF)->unk26)
+#define CELL_SET_T(o, a, f) \
+    ((o)->anim = (a), (o)->frame = CELL_FRAME(o, (f) & 0xFFF)->unk26)
+/* &(o)->model->frames[i], as (i * 7) << 3 bytes (sizeof(Ovl60Frame) is 0x38) */
+#define CELL_FRAME(o, i) ((Ovl60Frame *)((u32)(o)->model->frames + (((i) * 7) << 3)))
+
 #endif /* BASH_OVL60_H */
