@@ -4929,7 +4929,7 @@ void func_800CACC0(void) {
 void func_800CAD0C(void) {
 }
 
-void func_800CAD14(void) {
+void POLARtriggers(NASTrigger *arg0, s32 arg1) {
 }
 
 void func_800CAD1C(void) {
@@ -5405,7 +5405,7 @@ void func_800CBA64(void) {
     D_8005AA70[1] = (s32)InitialisePOLAR;
     D_8005AA70[2] = (s32)InitialisePOLAR;
     D_8005AA70[3] = (s32)UpdatePOLAR;
-    D_8005AA70[6] = (s32)func_800CAD14;
+    D_8005AA70[6] = (s32)POLARtriggers;
 }
 
 s32 func_800CBAA4(s32 arg0, s32 arg1) {

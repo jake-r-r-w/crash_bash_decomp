@@ -74,3 +74,4 @@ TestArkObject2Hero = 0x800BFA24; // type:func
 Create_ArkPickup = 0x800BD770; // type:func
 ArkCrateMaster = 0x800BC0D8; // type:func
 InitARKfloor = 0x800BC564; // type:func
+AR_Triggers = 0x800C0B7C; // type:func

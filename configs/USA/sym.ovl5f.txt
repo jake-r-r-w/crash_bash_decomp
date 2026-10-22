@@ -103,3 +103,4 @@ GetSandbagValueTank = 0x800C891C; // type:func
 GetSandbagValueMiss = 0x800C8950; // type:func
 CheckMineToBoss = 0x800C18F0; // type:func
 BumpSpeedsForSwamp = 0x800C7C08; // type:func
+TA_Triggers = 0x800C8324; // type:func

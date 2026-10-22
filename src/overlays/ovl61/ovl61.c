@@ -5970,7 +5970,7 @@ s32 func_800C0A74(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2) {
     return 0;
 }
 
-void func_800C0B7C(void) {
+void AR_Triggers(NASTrigger *arg0, s32 arg1) {
 }
 
 void AR_EarliestTriggers(void) {
@@ -5984,7 +5984,7 @@ void AR_SetUp(void) {
     D_8005AA70[1] = (s32)AR_InitLevel;
     D_8005AA70[2] = (s32)AR_InitLevel;
     D_8005AA70[3] = (s32)AR_UpdateLevel;
-    D_8005AA70[6] = (s32)func_800C0B7C;
+    D_8005AA70[6] = (s32)AR_Triggers;
     D_8005AA70[5] = (s32)AR_EarliestTriggers;
     D_8005AA70[7] = 0;
     D_8005AA70[8] = 0;

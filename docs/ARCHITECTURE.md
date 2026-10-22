@@ -623,6 +623,10 @@ signature alone is not enough.
     `D_800D5294`'s list held by p (also inlined as `Ovl62HasBomb`).
     `XZBoxToSphere` (box of one subengine against another's sphere) is named
     by its own debug message; ovl63 and ovl65 have their own copies.
+  `LevSpec.PostTriggers` (`D_8005AA88`, typed `void (*)(NASTrigger *, s32)`
+  in main.h) holds the leak's per-game triggers function: `TA_Triggers`,
+  `AR_Triggers` and `POLARtriggers` are all empty stubs (Pogo leaves the
+  slot unset, so `POGOriggers` has no code).
   The `CheckBounds` functions take the leak's `EXTengine *`; their old local
   stand-in structs were `unk10.x/z`, `collision_box.radius/flags` and `unk1E`.
 - **Pogo challenges** (ovl60). The challenge flags at `D_8005A614+0x32` are

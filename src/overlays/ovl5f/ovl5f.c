@@ -7343,7 +7343,7 @@ bool TA_KeepInBounds(EXTengine *p) {
 void func_800C831C(void) {
 }
 
-void func_800C8324(void) {
+void TA_Triggers(NASTrigger *arg0, s32 arg1) {
 }
 
 void TA_EarliestTriggers(void) {
@@ -7375,7 +7375,7 @@ void func_800C83D8(void) {
     D_8005AA70[2] = (s32)func_800B58B0;
     D_8005AA70[3] = (s32)func_800B5FC4;
     D_8005AA70[4] = (s32)func_800C8360;
-    D_8005AA70[6] = (s32)func_800C8324;
+    D_8005AA70[6] = (s32)TA_Triggers;
     D_8005AA70[5] = (s32)TA_EarliestTriggers;
     D_8005AA70[7] = 0;
     D_8005AA70[8] = 0;

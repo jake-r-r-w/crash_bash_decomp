@@ -47,7 +47,6 @@ void func_800C0F24(NAS *nas, s32 id);
 void func_800C68A8(void);
 void func_800C69BC(void);
 void func_800C831C(void);
-void func_800C8324(void);
 void func_800C83D0(void);
 extern s32 D_800CB25C;
 extern s32 D_800C93AC[];

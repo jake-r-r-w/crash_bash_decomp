@@ -43,7 +43,6 @@ extern u8 D_80054D54[];
 void InitialisePOLARFirst(void);
 void UpdatePOLAR(void);
 void func_800CAD0C(void);
-void func_800CAD14(void);
 void func_800CAD1C(void);
 s32 func_800CAFF0(void);
 void func_800CB124(void);
