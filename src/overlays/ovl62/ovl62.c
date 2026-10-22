@@ -1814,7 +1814,226 @@ ret0:
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B7F70);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B889C);
+void func_800B889C(s32 player) {
+    VECTOR v1;
+    VECTOR out;
+    VECTOR v2;
+    SVECTOR d[2];
+    struct {
+        SLONG_XYZ v;
+        s32 pad;
+    } pos;
+    SVECTOR d2[2];
+    SVECTOR d3[2];
+    EXTheromove *mv;
+    s32 rnd;
+    s32 best;
+    s32 bestd;
+    s32 i;
+    s32 j;
+    s32 found;
+    s32 found2;
+    s32 ang;
+    s32 dx;
+    s32 ax;
+    s32 az;
+    s32 dz;
+    s32 prox;
+    HeroInfo *base;
+    HeroInfo *h;
+    HeroInfo *o;
+    HeroInfo *hp;
+    HeroInfo *q;
+    EXTengine *my;
+    EXTengine *ve;
+    Ovl62Fux *fux;
+
+    bestd = 0x7FFFFFFF;
+    best = 0;
+    base = Heroes;
+    h = &base[player];
+    fux = (Ovl62Fux *)h->hero->FUX;
+    prox = 0;
+    if (fux == NULL) {
+        return;
+    }
+    ve = NULL;
+    mv = h->hero_move;
+    if (D_8005A648 == 0x12) {
+        D_800D4E04 = 0x9F4;
+    }
+    fux->unk24--;
+    if (fux->unk34 & 1) {
+        HeroInfo *me;
+        EXTengine *a;
+        EXTengine *b;
+
+        i = 0;
+        me = h;
+        o = base;
+    loop:
+        if (i < 4) {
+            do {
+                s32 dist;
+                if (i != player && !(o->hero_status & 0x2000)) {
+                    pos.v = o->hero_eng->unk10;
+                    dist = func_8008CEB0((u8 *)&pos.v, (u8 *)&me->hero_eng->unk10);
+                    if (dist < bestd) {
+                        bestd = dist;
+                        best = i;
+                    }
+                }
+                o++;
+            } while (0);
+            i++;
+            goto loop;
+        }
+        fux->unk2C = best;
+        if (((Ovl62ModeView *)D_8005A614)->mode == 0x12 && D_800D5494 != NULL) {
+            a = D_800D5494->eng;
+            b = Heroes[player].hero_eng;
+            dx = a->unk10.x - b->unk10.x;
+            dz = a->unk10.z - b->unk10.z;
+            dx = dx * dx + dz * dz;
+            if (dx < bestd) {
+                prox = 1;
+                fux->unk2C = 5;
+            }
+        }
+    }
+    if (mv != NULL) {
+        if (prox == 0) {
+            ax = Heroes[player].hero_eng->unk10.x - Heroes[fux->unk2C].hero_eng->unk10.x;
+            az = Heroes[player].hero_eng->unk10.z - Heroes[fux->unk2C].hero_eng->unk10.z;
+        } else {
+            ax = Heroes[player].hero_eng->unk10.x - D_800D5494->eng->unk10.x;
+            az = Heroes[player].hero_eng->unk10.z - D_800D5494->eng->unk10.z;
+        }
+        mv->forward_angle = get_angle(ax, az) & 0xFFF;
+    }
+    my = Heroes[player].hero_eng;
+    if (prox == 0) {
+        ve = Heroes[fux->unk2C].hero_eng;
+        goto aim;
+escape:
+        fux->vel = pos.v;
+        fux->pos = Heroes[player].hero_eng->unk10;
+        func_800B5EBC(player);
+        fux->angle = ang;
+        goto end;
+    } else if (D_800D5494 != NULL) {
+        ve = D_800D5494->eng;
+    }
+aim:
+    d[0].vx = *(u16 *)&ve->unk10.x - *(u16 *)&my->unk10.x;
+    d[0].vz = *(u16 *)&ve->unk10.z - *(u16 *)&my->unk10.z;
+    d[0].vy = 0;
+    d[0].pad = 0x10E;
+    dx = ve->unk10.x - my->unk10.x;
+    dz = ve->unk10.z - my->unk10.z;
+    dx = dx * dx + dz * dz;
+    if (dx > 0x283E3F) {
+        goto end;
+    }
+    rnd = Random(8);
+    v1.vx = (D_800D4E04 * D_80068BD4[(fux->angle - 0x400) & 0xFFF].unk2) >> 12;
+    v1.vz = (D_800D4E04 * D_80068BD4[fux->angle & 0xFFF].unk2) >> 12;
+    bestd = 0;
+    v2.vx = 0;
+    v2.vz = 0;
+    if (func_800BFEE0(&v2, &v1, d, &out) == 0) {
+        found2 = 0;
+        j = 0;
+        hp = Heroes;
+    loop2:
+        if (j < 4) {
+            do {
+                EXTengine *e2;
+                e2 = hp->hero_eng;
+                if (j != player && j != fux->unk2C && !(hp->hero_status & 0x2000)) {
+                    d2[0].vx = *(u16 *)&e2->unk10.x - *(u16 *)&my->unk10.x;
+                    d2[0].vz = *(u16 *)&e2->unk10.z - *(u16 *)&my->unk10.z;
+                    d2[0].vy = 0;
+                    d2[0].pad = 0x10E;
+                    if (func_800BFEE0(&v2, &v1, d2, &out) == 1) {
+                        found2 = 1;
+                    }
+                }
+                hp++;
+            } while (0);
+            j++;
+            goto loop2;
+        }
+        if (!found2) {
+            HeroInfo *hb;
+            HeroInfo *me2;
+
+            hb = Heroes;
+            me2 = &hb[player];
+            pos.v.x = me2->hero_eng->unk10.x - v1.vx;
+            pos.v.z = me2->hero_eng->unk10.z - v1.vz;
+            if (CheckMelted(&pos.v, 0) != 0) {
+                fux->vel = pos.v;
+                fux->pos = me2->hero_eng->unk10;
+                func_800B5EBC(player);
+                bestd = 1;
+            }
+        }
+    }
+    if (bestd != 1) {
+        for (j = rnd; ; j++) {
+            if (j >= rnd + 8) {
+                goto end;
+            }
+            ang = D_800D53E8[j & 7];
+            v1.vx = (D_800D4E04 * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
+            v1.vz = (D_800D4E04 * D_80068BD4[ang & 0xFFF].unk2) >> 12;
+            v2.vx = 0;
+            v2.vz = 0;
+            if (func_800BFEE0(&v2, &v1, d, &out) != 0) {
+                continue;
+            }
+            found = 0;
+            i = 0;
+            pos.v.x = Heroes[player].hero_eng->unk10.x - v1.vx;
+            q = Heroes;
+            pos.v.z = Heroes[player].hero_eng->unk10.z - v1.vz;
+        loop3:
+            if (i < 4) {
+                do {
+                    EXTengine *e3;
+                    e3 = q->hero_eng;
+                    if (i != player && i != fux->unk2C && !(q->hero_status & 0x2000)) {
+                        d3[0].vx = *(u16 *)&e3->unk10.x - *(u16 *)&my->unk10.x;
+                        d3[0].vz = *(u16 *)&e3->unk10.z - *(u16 *)&my->unk10.z;
+                        d3[0].vy = 0;
+                        d3[0].pad = 0x10E;
+                        if (func_800BFEE0(&v2, &v1, d3, &out) == 1) {
+                            found = 1;
+                        }
+                    }
+                    q++;
+                } while (0);
+                i++;
+                goto loop3;
+            }
+            if (!found && CheckMelted(&pos.v, 0) != 0) {
+                goto escape;
+            }
+        }
+    }
+end:
+    if (D_800D5FEC[player] & 1) {
+        fux->state = 0xB;
+        func_800CB134(player);
+        fux->func = func_800B90C0;
+    }
+    if (fux->unk24 <= 0) {
+        fux->state = 5;
+        fux->func = func_800CB6B4;
+        fux->unk34 &= ~1;
+    }
+}
 
 void func_800B90C0(player)
 s32 player;

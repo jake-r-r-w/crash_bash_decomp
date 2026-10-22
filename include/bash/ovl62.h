@@ -385,7 +385,7 @@ typedef struct Ovl62Fux {
     /* 0x34 */ s32 unk34;
     /* 0x38 */ u8 pad38[0x3C - 0x38];
     /* 0x3C */ s32 unk3C;
-    /* 0x40 */ u8 pad40[0x44 - 0x40];
+    /* 0x40 */ s32 angle;
     /* 0x44 */ void *func;
     /* 0x48 */ u8 pad48[0x4C - 0x48];
     /* 0x4C */ s32 flags;
@@ -681,6 +681,9 @@ typedef struct Ovl62Prox {
 } Ovl62Prox;
 
 extern Ovl62Prox *D_800D5494;
+
+/* Escape headings tried by func_800B889C. */
+extern s32 D_800D53E8[8];
 
 /* func_800B3AA0's swaying-ground state. */
 extern s32 D_800D52A4;
@@ -1563,5 +1566,7 @@ void func_8007E9FC(u16 arg0, s16 arg1);
 void func_8007EB1C(s32 arg0, s32 arg1, s32 arg2);
 void func_8007B7FC(u32 a, u32 b);
 void func_8007C6EC(void);
+
+void func_800B889C(s32 player);
 
 #endif /* BASH_OVL62_H */
