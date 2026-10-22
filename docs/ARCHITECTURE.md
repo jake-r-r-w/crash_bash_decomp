@@ -451,6 +451,21 @@ signature alone is not enough.
     hooks could be BA, SE or NG: left unnamed. These take the leak's
     `EXTengine *` / `EXTobject *` (the out-of-bounds test writes
     `EXTobject.player`).
+  - More Arkenoid, each from its code: `GetIntersect(p0, p1, q)` (segment
+    intersection in x/z; `SLONG_XYZ *` as in the leak), `CreateBall(nas)`
+    (splits a ball: spawns another 0x1501 at a rotated angle and returns
+    it), `FinishArkLevel` (keeps the healthiest player, knocks out the rest),
+    `PickArkPlayer(p)` (a random live opponent weighted by a per-player
+    table), `UpdateArkFloor` (the PI floor tilt `D_800C1C68`/`6C` that
+    `GetArkPIContour` reads), `SetCornerFailure(u16)` / `HandleCornerFailure`
+    (start and run a wall's failure timer; the old `arg & 0xFFFF` was the
+    `u16`), `LineToCircleTest` (exact leak signature), `TestArkObject2Hero
+    (eng, u16 radius)` (against every hero's collision radius) and
+    `TestArkObjectObstacles(eng, obj)` (from `PlotBall`; its flag word is
+    `EXTobject.can_do`). Not placed: `TestArkenoidStop` / `TestForMove`
+    (`func_800B60FC` maps fire buttons to kick/red kick/grab,
+    `func_800B649C` steps the walk animation: neither fits), `DangerBalls`
+    (`func_800B8964` finds a ball ahead but returns a bool, not a NAS).
   - Hero states: the engine's `HEROFunc` table (`{SetMode, Action}` pairs)
     has 10 Arkenoid pairs at `0x8009DD80`, hero actions 0x1C-0x25, the leak's
     10 `SetArkHero*`/`ArkHero*` pairs. Each is named from its own code, not

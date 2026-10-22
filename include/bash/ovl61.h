@@ -81,8 +81,7 @@ typedef struct Ovl61FuxType {
 } Ovl61FuxType;
 
 void func_800BC0D8(void);
-void func_800BCA30(void);
-void func_800BD510(void);
+void UpdateArkFloor(void);
 
 
 typedef struct {
@@ -167,14 +166,12 @@ typedef struct {
 extern u16 D_800C2718;
 extern s16 D_800C1440[];
 
-void func_800BE1C4(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r);
 
 s32 func_800B4880(Ovl61Obj *arg0, s32 arg1);
 
 extern u16 D_800C1EFE;
 
 
-s32 func_800B84B8(s32 arg0);
 void func_800BDD30(s32 arg0);
 
 
@@ -226,7 +223,6 @@ extern u8 D_800C1014[];
 extern u8 D_800C102C[];
 extern u8 D_800C1040[];
 void AR_InitLevel(void);
-void func_800B9728(void);
 
 
 
@@ -325,7 +321,7 @@ void func_800BC564(void);
 extern u16 D_800C139C[];
 
 /* Blinking light slots (D_800C1E28, D_800C1D38) as Ovl61Link (declared
- * below), as seen by func_800BCA30. */
+ * below), as seen by UpdateArkFloor. */
 #define BLINK_E28 ((Ovl61Link *)D_800C1E28)
 #define BLINK_D38 ((Ovl61Link *)D_800C1D38)
 
@@ -380,7 +376,7 @@ typedef struct Ovl61Mot {
     s16 dir;
 } Ovl61Mot;
 
-/* A FUX viewed for its flags word (0x80 tested by func_800BF640). */
+/* A FUX viewed for its flags word (0x80 tested by TestArkObjectObstacles). */
 typedef struct Ovl61FuxF {
     u8 pad0[0x1C];
     u16 flags;
@@ -393,7 +389,6 @@ void func_800B3528(s32 arg0);
 s32 func_800B4AE8(EXTengine *arg0, s32 arg1);
 
 
-s32 func_800B4FC8(s32 *p0, s32 *p1, s32 *q);
 
 
 
@@ -416,11 +411,9 @@ s32 func_800B60FC(s32 arg0);
 
 s32 func_800B8964(s32 arg0);
 
-NAS *func_800B97D8(NAS *arg0);
 
 void func_800B99E0(void);
 
-void func_800BD43C(u32 arg0);
 
 /* D_8005A614 as seen by func_800BC0D8. */
 typedef struct Ovl61GameView {
@@ -438,7 +431,6 @@ extern u16 D_800C1328[];
 extern u16 D_800C19FC[];
 extern u16 D_800C1A20[];
 
-s32 func_800BFA24(Ovl61Vel *arg0, s32 arg1);
 
 s32 func_800C0804(s32 arg0, s16 arg1, s32 arg2, s16 arg3);
 
@@ -503,7 +495,7 @@ s32 func_800B85DC(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5);
 
 void func_800BC564(void);
 
-s32 func_800BF640(EXTengine *eng, Ovl61FuxF *self);
+bool TestArkObjectObstacles(EXTengine *eng, EXTobject *self);
 /* D_8005A614 as seen by PlotBall (unk34 is D_8005A648, the mode). */
 typedef struct {
     u8 pad0[4];

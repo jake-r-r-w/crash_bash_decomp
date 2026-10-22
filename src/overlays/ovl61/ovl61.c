@@ -377,11 +377,11 @@ void AR_UpdateLevel(void) {
         }
     }
     func_800BC0D8();
-    func_800BCA30();
+    UpdateArkFloor();
     if (D_8005A648 != 0x10) {
         if (D_8005A648 >= 0x11) {
             if (D_8005A648 == 0x11) {
-                func_800BD510();
+                HandleCornerFailure();
             }
         }
     }
@@ -534,7 +534,7 @@ found:
     v.x = cx;
     v.y = 0;
     v.z = base[i].z;
-    func_800BE1C4((SLONG_XYZ *)&arg0->x, arg1, &v, r);
+    LineToCircleTest((SLONG_XYZ *)&arg0->x, arg1, &v, r);
     ret = get_angle(D_800C1A7C[i].x - arg0->x, D_800C1A7C[i].z - arg0->z);
     D_800C1E28[i].state = 3;
     return ret;
@@ -567,7 +567,7 @@ s32 func_800B4AE8(EXTengine *arg0, s32 arg1) {
             v.x = cx;
             v.y = 0;
             v.z = D_800C1A7C[i].z;
-            func_800BE1C4(&arg0->unk10, arg1, &v, r);
+            LineToCircleTest(&arg0->unk10, arg1, &v, r);
             a = get_angle(D_800C1A7C[i].x - arg0->unk10.x, D_800C1A7C[i].z - arg0->unk10.z);
             D_800C1E28[i].state = 3;
             ret = a;
@@ -698,33 +698,33 @@ bool AR_BA_TestLaunchBounds(EXTengine *arg0, EXTobject *obj) {
     return z < -lim;
 }
 
-s32 func_800B4FC8(s32 *p0, s32 *p1, s32 *q) {
+bool GetIntersect(SLONG_XYZ *p0, SLONG_XYZ *p1, SLONG_XYZ *q) {
     s32 denom, num, u, t;
     s32 dqz;
     s32 dpx;
     s32 dpz, dqx, ez, ex;
     s32 a, b, c;
 
-    a = p0[0];
-    if (a < 0 && (c = p1[0]) < 0 && a < (b = q[0]) && c < b) {
+    a = p0->x;
+    if (a < 0 && (c = p1->x) < 0 && a < (b = q->x) && c < b) {
         return 0;
     }
-    if ((a = p0[0]) > 0 && (c = p1[0]) > 0 && (b = q[0]) < a && b < c) {
+    if ((a = p0->x) > 0 && (c = p1->x) > 0 && (b = q->x) < a && b < c) {
         return 0;
     }
-    a = p0[2];
-    if (a < 0 && (c = p1[2]) < 0 && a < (b = q[2]) && c < b) {
+    a = p0->z;
+    if (a < 0 && (c = p1->z) < 0 && a < (b = q->z) && c < b) {
         return 0;
     }
-    if ((a = p0[2]) > 0 && (c = p1[2]) > 0 && (b = q[2]) < a && b < c) {
+    if ((a = p0->z) > 0 && (c = p1->z) > 0 && (b = q->z) < a && b < c) {
         return 0;
     }
-    dqz = -q[2] >> 4;
-    dpx = p0[0] >> 4;
-    dqx = -q[0] >> 4;
-    dpz = p0[2] >> 4;
-    ez = (p1[2] - p0[2]) >> 4;
-    ex = (p1[0] - p0[0]) >> 4;
+    dqz = -q->z >> 4;
+    dpx = p0->x >> 4;
+    dqx = -q->x >> 4;
+    dpz = p0->z >> 4;
+    ez = (p1->z - p0->z) >> 4;
+    ex = (p1->x - p0->x) >> 4;
     num = dqz * dpx - dqx * dpz;
     denom = ez * dqx - ex * dqz;
     if (denom > 0) {
@@ -762,8 +762,8 @@ s32 func_800B4FC8(s32 *p0, s32 *p1, s32 *q) {
         return 0;
     }
     t = (num << 8) / denom;
-    q[0] = p0[0] + (((p1[0] - p0[0]) * t) >> 8);
-    q[2] = p0[2] + (((p1[2] - p0[2]) * t) >> 8);
+    q->x = p0->x + (((p1->x - p0->x) * t) >> 8);
+    q->z = p0->z + (((p1->z - p0->z) * t) >> 8);
     return 1;
 }
 
@@ -2200,7 +2200,7 @@ s32 func_800B808C(s32 arg0, Ovl61Pos *from, Ovl61Pos *to, s32 angle) {
     return 1;
 }
 
-s32 func_800B84B8(s32 arg0) {
+s32 PickArkPlayer(u32 arg0) {
     s32 sum;
     s32 i;
     s32 r;
@@ -2435,7 +2435,7 @@ void Ark_HeroBot(u32 arg0) {
     min = 0x7FFFFF;
     n = D_8005AA38;
     if (ai->TargetPlayer == -1) {
-        ai->TargetPlayer = func_800B84B8(arg0);
+        ai->TargetPlayer = PickArkPlayer(arg0);
     }
     target = ai->TargetPlayer;
     k = (0x20 - D_8009D87C[arg0].unk0) << 4;
@@ -2708,7 +2708,7 @@ void Ark_HeroBot(u32 arg0) {
     *(s32 *)((u8 *)pad + 0x38) = ai->AIang;
 }
 
-void func_800B9728(void) {
+void FinishArkLevel(void) {
     s32 best = 0;
     s32 idx = -1;
     s32 i;
@@ -2733,7 +2733,7 @@ void func_800B9728(void) {
     }
 }
 
-NAS *func_800B97D8(NAS *arg0) {
+NAS *CreateBall(NAS *arg0) {
     NAS *nas;
     Ovl61Eng *src;
     Ovl61Eng *eng;
@@ -3410,7 +3410,7 @@ void PlotBall(NAS *nas) {
     case 2:
         break;
     default:
-        func_800BF640(eng, (Ovl61FuxF *)obj);
+        TestArkObjectObstacles(eng, obj);
         break;
     }
     eng->sub->unk68 = shade;
@@ -3625,7 +3625,7 @@ void AlignGrabBall(EXTengine *arg0, EXTmotion *arg1, EXTobject *arg2) {
             v.x = D_800C1A7C[i].x;
             v.y = 0;
             v.z = D_800C1A7C[i].z;
-            func_800BE1C4(&arg0->unk10, a1, &v, r);
+            LineToCircleTest(&arg0->unk10, a1, &v, r);
             dx = -arg0->unk10.x;
             arg1->Xa = get_angle(dx + target.vx, (dz = -arg0->unk10.z) + target.vz);
         }
@@ -3909,7 +3909,7 @@ void func_800BC0D8(void) {
             } else {
                 i = D_800C19FC[D_800C1C7C];
             }
-            func_800BD43C((u16)i);
+            SetCornerFailure((u16)i);
             D_800C1C78 = Random(9) * 0x1E + 0x10E;
         }
     }
@@ -4045,7 +4045,7 @@ void func_800BC564(void) {
     }
 }
 
-void func_800BCA30(void)
+void UpdateArkFloor(void)
 {
     s32 a;
     s32 i;
@@ -4324,13 +4324,13 @@ void Init_NGArkDeadWall(NAS *arg0) {
     }
 }
 
-void func_800BD43C(u32 arg0) {
+void SetCornerFailure(u16 arg0) {
     Ovl61Wall *base;
     Ovl61Wall *w;
     s32 r = Random(0x1E);
 
     base = D_800C1E78;
-    w = &base[arg0 & 0xFFFF];
+    w = &base[arg0];
     w->f1A = r + 0x3C;
     w->f18 = 1;
     w->f10 = 0xA0;
@@ -4342,7 +4342,7 @@ void func_800BD43C(u32 arg0) {
     PlaySfx(D_800C139C[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
 }
 
-void func_800BD510(void) {
+void HandleCornerFailure(void) {
     Ovl61Wall *base;
     Ovl61Wall *w;
     Ovl61WallObj *o;
@@ -4784,7 +4784,7 @@ void Init_ArkLaserWall(NAS *nas)
     }
 }
 
-void func_800BE1C4(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r) {
+void LineToCircleTest(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r) {
     SLONG_XYZ start;
     SLONG_XYZ d;
     SLONG_XYZ dir;
@@ -5011,7 +5011,7 @@ s32 func_800BE4D4(s32 arg0, EXTengine *unused) {
         } else {
             r = get_angle(eng->OldXYZ.x - eng->unk10.x, eng->OldXYZ.z - eng->unk10.z);
         }
-        func_800BE1C4(&eng->unk10, r, &tgt, rad + 8);
+        LineToCircleTest(&eng->unk10, r, &tgt, rad + 8);
         r = get_angle(-eng->unk10.x + tgt.x, -eng->unk10.z + tgt.z) & 0xFFF;
         puck = FindExtension(nas, 0x800);
         if (puck == NULL) {
@@ -5319,7 +5319,7 @@ void ArkHeroRad2ObjectAttract(u32 arg0, s32 arg1) {
     }
 }
 
-s32 func_800BF640(EXTengine *eng, Ovl61FuxF *self) {
+bool TestArkObjectObstacles(EXTengine *eng, EXTobject *self) {
     FlagRecord *box;
     FlagRecord *rec;
     EXTengine *other;
@@ -5370,7 +5370,7 @@ s32 func_800BF640(EXTengine *eng, Ovl61FuxF *self) {
                                         d = r - d + 1;
                                         fux = (Ovl61FuxF *)it->FUX;
                                         if (fux != NULL) {
-                                            if (self->flags & 0x80) {
+                                            if (self->can_do & 0x80) {
                                                 m = FindExtension(it, 0x800);
                                                 if (m != NULL) {
                                                     other->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
@@ -5422,7 +5422,7 @@ s32 func_800BF640(EXTengine *eng, Ovl61FuxF *self) {
     return hit;
 }
 
-s32 func_800BFA24(Ovl61Vel *arg0, s32 arg1) {
+s32 TestArkObject2Hero(EXTengine *arg0, u16 arg1) {
     s32 i;
     FlagRecord *rec;
     s32 r;
@@ -5447,9 +5447,9 @@ s32 func_800BFA24(Ovl61Vel *arg0, s32 arg1) {
                 goto next;
             }
         } while (0);
-        dx = eng->unk10.x - arg0->x;
-        dz = eng->unk10.z - arg0->z;
-        r = rec->radius + (arg1 & 0xFFFF);
+        dx = eng->unk10.x - arg0->unk10.x;
+        dz = eng->unk10.z - arg0->unk10.z;
+        r = rec->radius + arg1;
         r = r * r;
         if ((dx * dx) + (dz * dz) < r) {
             return i;
@@ -5989,5 +5989,5 @@ void AR_SetUp(void) {
     D_8005AA70[7] = 0;
     D_8005AA70[8] = 0;
     D_8005AA70[9] = (s32)GetArkContour;
-    D_8005AA70[10] = (s32)func_800B9728;
+    D_8005AA70[10] = (s32)FinishArkLevel;
 }
