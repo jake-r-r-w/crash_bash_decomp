@@ -291,7 +291,7 @@ extern s16 D_800C437C;
 extern s16 D_800C437E;
 extern s16 D_800C4380;
 extern s16 D_800C4382;
-extern s16 D_800C4384;
+extern u16 D_800C4384;
 extern s32 D_800C438C;
 extern s32 D_800C4390;
 
@@ -556,5 +556,67 @@ void PlotN2Ofirstmissile(NAS *nas);
 void func_800B92D4(void);
 
 s32 func_800BA6C4(EXTengine *eng, Ovl67FuxF *self);
+
+/* D_8005A614 as seen by PlotN2OBall. */
+typedef struct Ovl67BallView {
+    /* 0x00 */ u8 pad0[0x10];
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ u8 pad14[0x1C];
+    /* 0x30 */ u16 unk30;
+} Ovl67BallView;
+extern EXTengine *D_8009D674;
+extern s16 D_8009D88E;
+extern s32 D_8009E424[];
+extern SLONG_XYZ D_800C3794[];
+extern u16 D_800C39A8[];
+extern u16 D_800C39B8[];
+
+/* D_8005AA94 as PlotN2OBall reads it: the level's contour hook. */
+typedef struct Ovl67Hook {
+    s32 (*fn)(EXTengine *eng);
+} Ovl67Hook;
+
+/* PlotN2OBall's bounds tests: past an edge sets the scoring side. */
+static inline s32 N2OBallOut(EXTengine *eng, EXTobject *obj, s32 wide) {
+    s32 lim;
+    s32 x;
+    s32 z;
+
+    lim = 0xB00;
+    if (wide != 0) {
+        lim = 0x1200;
+    }
+    x = eng->unk10.x;
+    if (x > lim) {
+        obj->player = -1;
+        return 1;
+    }
+    if (x < -lim) {
+        obj->player = -1;
+        return 1;
+    }
+    z = eng->unk10.z;
+    if (z > lim) {
+        obj->player = 3;
+        return 1;
+    }
+    if (z < -lim) {
+        obj->player = 0;
+        return 1;
+    }
+    if (wide != 0) {
+        if (z < -0xA00) {
+            if (x > 0x600) {
+                eng->unk10.x = 0x600;
+            }
+            if (eng->unk10.x < -0x600) {
+                eng->unk10.x = -0x600;
+            }
+        }
+    }
+    return 0;
+}
+
+void PlotN2OBall(NAS *nas);
 
 #endif /* BASH_OVL67_H */

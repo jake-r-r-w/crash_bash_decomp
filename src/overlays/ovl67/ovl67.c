@@ -1228,7 +1228,377 @@ void InitN2OBall(NAS *nas) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl67/ovl67", D_800B32B8);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/ovl67", PlotN2OBall);
+void PlotN2OBall(NAS *nas) {
+    EXTengine *eng;
+    EXTobject *obj;
+    EXTmotion *mot;
+    EXTengine *e2;
+    s32 skill;
+    s32 done;
+    s32 idx;
+    s32 ang;
+    s16 d;
+    s16 a;
+    s16 k;
+    s32 dx;
+    s32 dz;
+    s32 dist;
+    s32 px;
+    s32 pz;
+
+    skill = D_8009D88E + (u16)D_800C43DC;
+    if (skill > 0x20) {
+        skill = 0x20;
+    }
+    eng = nas->Engine;
+    done = 0;
+    if (eng == NULL) {
+        return;
+    }
+    obj = (EXTobject *)nas->FUX;
+    if (obj == NULL) {
+        return;
+    }
+    mot = FindExtension(nas, 0x800);
+    if (mot != NULL) {
+        if (mot->Xvel < mot->Xmax) {
+            mot->Xvel += mot->Xacc;
+            if (mot->Xvel > mot->Xmax) {
+                mot->Xvel = mot->Xmax;
+            }
+        }
+        if (mot->Xvel > mot->Xmax) {
+            mot->Xvel -= mot->Xdec;
+            if (mot->Xvel < mot->Xmax) {
+                mot->Xvel = mot->Xmax;
+            }
+        }
+        eng->unk10.x -= (mot->Xvel * D_80068BD4[(mot->Xa - 0x400) & 0xFFF].unk2) >> 12;
+        eng->unk10.z -= (mot->Xvel * D_80068BD4[mot->Xa & 0xFFF].unk2) >> 12;
+        if (obj->timer != 0) {
+            obj->timer--;
+        }
+        switch (obj->status) {
+        case 0:
+            if ((((Ovl67BallView *)D_8005A614)->unk10 & 0x04000000) ||
+                (((Ovl67BallView *)D_8005A614)->unk30 & 0x1000)) {
+                mot->Xvel = 0;
+                mot->Xacc = 0;
+                mot->Xdec = 0;
+                eng->unk10.x = 0x2000;
+                eng->unk10.y = 0x2000;
+                eng->unk10.z = 0x2000;
+                eng->flags &= ~0x8000;
+                break;
+            }
+            idx = Random(2);
+            if (D_800C4230[idx].f16 != 0) {
+                break;
+            }
+            eng->unk10 = D_800C3794[idx];
+            D_800C4230[idx].f16 = 0x1F;
+            obj->countdown = 0xF;
+            obj->status = 12;
+            if (D_800C4384 != 0) {
+                D_800C4384--;
+                break;
+            }
+            D_800C4384 = 0x26 - skill;
+            eng->sub->unk74 = 0x2018;
+            obj->whatami = 2;
+            break;
+        case 12:
+            if (obj->countdown != 0) {
+                obj->countdown--;
+                break;
+            }
+            e2 = eng->Engine;
+            eng->flags |= 0x8000;
+            if (e2 != NULL) {
+                e2->flags |= 0x8000;
+            }
+            px = D_8009D674->unk10.x;
+            pz = D_8009D674->unk10.z;
+            dx = eng->unk10.x - px;
+            dz = eng->unk10.z - pz;
+            ang = get_angle(dx, dz);
+            mot->Xa = ang;
+            mot->Za = ang & 0xFFF;
+            mot->Xacc = 4;
+            mot->Xdec = 1;
+            mot->Zvel = 0;
+            obj->timer = 0x14;
+            PlaySfx(0x5A0, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+            eng->unk10.y = D_8005A5D8 - 0x100;
+            mot->Yvel = 0x30;
+            mot->Yacc = 0;
+            mot->Ydec = 6;
+            mot->Ymax = 0x60;
+            mot->Ydir = 0xFF;
+            mot->Xvel = 0x30;
+            obj->status = 6;
+            mot->Xmax = 0x50;
+            obj->player = -1;
+            obj->owner = -1;
+            break;
+        case 6:
+            if (((s32 (*)(EXTengine *, EXTobject *))func_800B3C04)(eng, obj) == 0) {
+                mot->Xa = mot->Za;
+                mot->Za = 0;
+                obj->status = 8;
+            }
+        case 8:
+            mot->Yvel += mot->Yacc - mot->Ydec;
+            if (mot->Yvel < 0) {
+                mot->Yvel = 0;
+            }
+            if (mot->Yvel > mot->Ymax) {
+                mot->Yvel = mot->Ymax;
+            }
+            if (mot->Ydir != 0) {
+                eng->unk10.y -= mot->Yvel;
+            } else {
+                eng->unk10.y += mot->Yvel;
+            }
+            if (mot->Yvel == 0) {
+                mot->Yacc = mot->Ydec;
+                mot->Ydec = 0;
+                mot->Ydir = 0;
+            }
+            if (mot->Ydir != 0) {
+                break;
+            }
+            eng->unk10.y += 0x60;
+            if (func_80025BBC(eng) != 0) {
+                obj->can_do |= 0x400;
+                if (nas->UserInfo.flags == 0) {
+                    PlaySfx(D_800C39A8[Random(4)], &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+                    nas->UserInfo.flags |= 1;
+                }
+                mot->Yvel = mot->Yvel >> 2;
+                mot->Ydec = mot->Yacc;
+                mot->Yacc = 0;
+                mot->Ydir = 0xFF;
+                if (mot->Yvel < 8) {
+                    obj->status = 1;
+                    obj->can_do |= 0x400;
+                }
+            }
+            if (obj->can_do & 0x400) {
+                d = (s16)func_800B39C0((Ovl67Obj *)eng, mot->Xa);
+                if (d != -1) {
+                    a = mot->Xa;
+                    if (func_80015480(d, a) < 0x200) {
+                        a += 0x800;
+                    }
+                    k = (s16)func_800154A0(a & 0xFFF, d);
+                    if (abs(k) < 8) {
+                        k = Random(0x10) + 8;
+                    }
+                    mot->Xa = (d + k) & 0xFFF;
+                    mot->Zmax = 0;
+                    PlaySfx(D_800C39B8[Random(6)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                }
+                if (N2OBallOut(eng, obj, 0)) {
+                    obj->countdown = 4;
+                    break;
+                }
+            }
+            eng->unk10.y -= 0x60;
+            break;
+        case 1:
+            d = (s16)func_800B39C0((Ovl67Obj *)eng, mot->Xa);
+            if (d != -1) {
+                a = mot->Xa;
+                if (func_80015480(d, a) > 0x200) {
+                    a += 0x800;
+                }
+                k = (s16)func_800154A0(a & 0xFFF, d);
+                if (abs(k) < 8) {
+                    k = Random(0x10) + 8;
+                }
+                mot->Xa = (d + k) & 0xFFF;
+                mot->Zmax = 0;
+                PlaySfx(D_800C39B8[Random(6)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            }
+            if (N2OBallOut(eng, obj, 0)) {
+                obj->countdown = 4;
+                obj->status = 10;
+            }
+            func_800B6E6C((Ovl67Blend *)mot);
+            eng->unk10.y = eng->unk10.y - ((s32 (*)(EXTengine *))func_80025F44)(eng) - 0x60;
+            break;
+        case 0x11:
+            if (obj->countdown != 0) {
+                if (--obj->countdown == 0) {
+                    eng->flags |= 0x40000021;
+                    eng->sub->flags |= 0x40000021;
+                    eng->sub->unk76 = 0x400;
+                    e2 = eng->Engine;
+                    if (e2 != NULL) {
+                        e2->flags |= 0x40000000;
+                        e2->sub->flags |= 0x40000000;
+                        e2->sub->unk76 = 0x400;
+                    }
+                }
+            } else {
+                eng->sub->unk76 += 0x200;
+                e2 = eng->Engine;
+                if (e2 != NULL) {
+                    e2->sub->unk76 += 0x200;
+                    if ((s16)e2->sub->unk76 >= 0x1000) {
+                        e2->sub->unk76 = 0xFFF;
+                        done = 1;
+                    }
+                }
+            }
+            if (N2OBallOut(eng, obj, 1) || done != 0) {
+                obj->status = 0x12;
+            }
+            eng->unk10.y = eng->unk10.y - ((s32 (*)(EXTengine *))func_80025F44)(eng) - 0x60;
+            break;
+        case 4:
+            if (obj->countdown != 0) {
+                if (--obj->countdown == 0) {
+                    eng->flags |= 0x40000021;
+                    eng->sub->flags |= 0x40000021;
+                    eng->sub->unk76 = 0x400;
+                    eng->sub->unk68 = 0x100;
+                    e2 = eng->Engine;
+                    if (e2 != NULL) {
+                        e2->flags |= 0x40000000;
+                        e2->sub->flags |= 0x40000000;
+                        e2->sub->unk76 = 0x400;
+                    }
+                }
+            } else {
+                eng->sub->unk76 += 0x200;
+                e2 = eng->Engine;
+                if (e2 != NULL) {
+                    e2->sub->unk76 += 0x200;
+                    if ((s16)e2->sub->unk76 >= 0x1000) {
+                        e2->sub->unk76 = 0xFFF;
+                        done = 1;
+                    }
+                }
+            }
+            mot->Xvel >>= 1;
+            mot->Xmax >>= 1;
+            mot->Yvel += mot->Yacc - mot->Ydec;
+            if (mot->Yvel < 0) {
+                mot->Yvel = 0;
+            }
+            if (mot->Yvel > mot->Ymax) {
+                mot->Yvel = mot->Ymax;
+            }
+            eng->unk10.y += mot->Yvel;
+            if (N2OBallOut(eng, obj, 1) || done != 0) {
+                obj->status = 0x12;
+            }
+            break;
+        case 0x12:
+            obj->can_do &= 0xFF7F;
+            if (obj->whatami == 2) {
+                goto explode;
+            }
+            if (obj->player != 0) {
+                if (obj->player != 3) {
+                    goto explode;
+                }
+                func_8007A524(0, &eng->unk10.x, 0);
+                PlaySfx(D_8009E424[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+                D_8009D6DC[3] -= 0x20;
+                D_800C43DC++;
+                if (D_8009D6DC[3] <= 0) {
+                    D_8009D6DC[3] = 0;
+                    D_8009D6D6 = 0x1E;
+                    D_8009D6DC[2] |= 0x2000;
+                }
+            } else {
+                ((void (*)(s32, s32, s32, s32, s32))func_800BB3A0)(eng->unk10.x, eng->unk10.y, eng->unk10.z, -1, 0);
+                if (!(D_8005A618 & 1) && !(Heroes[obj->player].hero_status & 0xFA00)) {
+                    Heroes[0].hero_health -= 0x10;
+                    if (Heroes[0].hero_health < 0) {
+                        Heroes[0].hero_health = 0;
+                    }
+                    Heroes[0].hero_hit++;
+                    Heroes[1].hero_health -= 0x10;
+                    if (Heroes[1].hero_health < 0) {
+                        Heroes[1].hero_health = 0;
+                    }
+                    Heroes[1].hero_hit++;
+                }
+            }
+            KillNAS(nas);
+            return;
+        case 10:
+            obj->can_do &= 0xFF7F;
+            if (obj->whatami == 2) {
+                goto explode;
+            }
+            if (obj->player != 0) {
+                if (obj->player == 3) {
+                    func_8007A524(0, (s32 *)&eng->unk10, 0);
+                    PlaySfx(D_800C39D4[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
+                    D_8009D6DC[3] -= 0x20;
+                    if (D_8009D6DC[3] <= 0) {
+                        D_8009D6DC[3] = 0;
+                        D_8009D6D6 = 0x1E;
+                        D_8009D6DC[2] |= 0x2000;
+                    }
+                }
+            } else {
+                ((void (*)(s32, s32, s32, s32, s32))func_800BB3A0)(eng->unk10.x, eng->unk10.y, eng->unk10.z, -1, 0);
+                if (!(D_8005A618 & 1) && obj->player == 0) {
+                    if (!(Heroes[0].hero_status & 0xFA00)) {
+                        Heroes[0].hero_health -= 0x10;
+                        if (Heroes[0].hero_health < 0) {
+                            Heroes[0].hero_health = 0;
+                        }
+                        Heroes[0].hero_hit++;
+                    }
+                    if (!(Heroes[1].hero_status & 0xFA00)) {
+                        Heroes[1].hero_health -= 0x10;
+                        if (Heroes[1].hero_health < 0) {
+                            Heroes[1].hero_health = 0;
+                        }
+                        Heroes[1].hero_hit++;
+                    }
+                }
+            }
+            KillNAS(nas);
+            return;
+        }
+        mot->Zvel = 0;
+    }
+    dx = eng->unk10.x - eng->OldXYZ.x;
+    dz = eng->unk10.z - eng->OldXYZ.z;
+    eng->unk1E += (((get_angle(dx, dz) & 0xFFF) - eng->unk1E) << 20) >> 21;
+    dist = csqrt(dx * dx + dz * dz);
+    eng->unk5E = 1;
+    eng->unk1C -= dist >> 5;
+    if (obj->will_do & 0x100) {
+    explode:
+        ((void (*)(s32, s32, s32, s32, s32))func_800BB3A0)(eng->unk10.x, eng->unk10.y, eng->unk10.z, -1, 0);
+        KillNAS(nas);
+        return;
+    }
+    switch (obj->status) {
+    case 4:
+    case 2:
+    case 0x12:
+    case 0x63:
+        break;
+    default:
+        func_800BA6C4(eng, (Ovl67FuxF *)obj);
+        break;
+    }
+    e2 = eng->Engine;
+    if (e2 != NULL) {
+        e2->unk10 = eng->unk10;
+        ((Ovl67Hook *)&D_8005AA94)->fn(eng);
+    }
+}
 
 void func_800B6E6C(Ovl67Blend *p) {
     s32 x1;
