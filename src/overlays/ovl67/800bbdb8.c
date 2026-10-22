@@ -320,7 +320,84 @@ loop:
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl67/800bbdb8", func_800BC9B4);
+void func_800BC9B4(s32 *arg0, s32 arg1) {
+    AstSlot *a;
+    AstSlot *b;
+    AstSlot *tb;
+    AstSlot *tb1;
+    HeroInfo *h;
+    BossGameView *g;
+    s32 d;
+    s32 r;
+
+    h = Heroes;
+    if (!(*(s32 *)&h->hero_teammate & 0x22000000)) {
+        d = AstDist(arg0, h->hero_eng);
+        tb = D_800C4614;
+        a = &tb[arg1];
+        if (d < a->unk24 && d > 0) {
+            if (a->unk1C != 1) {
+                a->unk10 = 1;
+                AstBurst(arg0, 0);
+                AstSfx();
+                if ((BGV->unk4 & 0x80000001) != 0x80000001 && Heroes[0].hero_mode != 0x31) {
+                    Heroes[0].hero_health -= MineDamage(BGV) >> 2;
+                    SetHeroAction(0, 0x31);
+                }
+            } else if ((BGV->unk4 & 0x80000001) != 0x80000001) {
+                AstSfx();
+                a->unk10 = 1;
+                AstBurst(arg0, 4);
+                if (Heroes[0].hero_mode != 0x31) {
+                    Heroes[0].hero_health -= MineDamage(BGV);
+                    SetHeroAction(0, 0x31);
+                }
+            }
+        }
+    }
+    g = (BossGameView *)D_8005A614;
+    if (g->unk6C != 0 && (h = Heroes, !(*(s32 *)&h[1].hero_teammate & 0x22000000))) {
+        d = AstDist(arg0, h[1].hero_eng);
+        tb1 = D_800C4614;
+        b = &tb1[arg1];
+        if (d < b->unk24 && d > 0) {
+            if (b->unk1C != 1) {
+                b->unk10 = 1;
+                AstBurst(arg0, 0);
+                AstSfx();
+                if ((BGV->unk4 & 0x80000001) != 0x80000001 && Heroes[1].hero_mode != 0x31) {
+                    Heroes[1].hero_health -= MineDamage(BGV) >> 2;
+                    SetHeroAction((HeroInfo *)1, 0x31);
+                }
+            } else if ((g->unk4 & 0x80000001) != 0x80000001) {
+                b->unk10 = 1;
+                AstBurst(arg0, 4);
+                AstSfx();
+                if (Heroes[1].hero_mode != 0x31) {
+                    Heroes[1].hero_health -= MineDamage(BGV);
+                    SetHeroAction((HeroInfo *)1, 0x31);
+                }
+            }
+        }
+    }
+    r = 0x90000;
+    if (D_800C4614[arg1].unk1C == 1) {
+        r = 0x57E400;
+    }
+    if (MineHitLaser(*(LaserPos *)(arg0 + 1), r)) {
+        AstSlot *tb2 = D_800C4614;
+        AstSlot *s = &tb2[arg1];
+        if (s->unk1C != 1) {
+            if (s->unk18-- < 0) {
+                s->unk10 = 1;
+                AstBurst(arg0, 0);
+                AstSfx();
+            }
+        } else {
+            func_800BC6B8();
+        }
+    }
+}
 
 void func_800BD584(AngObj *o) {
     if (o->state == 0x5003) {

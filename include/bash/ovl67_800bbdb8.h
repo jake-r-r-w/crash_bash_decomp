@@ -727,6 +727,57 @@ extern AstMineSlot D_800C6E14[];
 
 void func_800BC3A4(void);
 
+#define BGV ((BossGameView *)D_8005A614)
+
+/* Squared distance from the asteroid's position (o + 1) to q. */
+static inline s32 AstDist(s32 *o, EXTengine *q) {
+    s32 dx, dy, dz;
+
+    dx = o[1] - q->unk10.x;
+    dy = o[2] - q->unk10.y;
+    dz = o[3] - q->unk10.z;
+    return dx * dx + dy * dy + dz * dz;
+}
+
+/* func_800BC9B4's 0x1605 burst at the asteroid's position (o + 1). */
+static inline void AstBurst(s32 *o, s32 mode) {
+    LaserExt *ext;
+    NAS *nas;
+    LaserPos *tp;
+
+    tp = (LaserPos *)(o + 1);
+    nas = SpawnNASById(o[1], tp->y, tp->z, 0x1605, 0x11);
+    if (nas != NULL) {
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL) {
+            ext->unkC = mode;
+            ext->unk18 = 0x100;
+            ext->unk20 = 1;
+            ext->unk28 = 0;
+            nas->InitDelete(nas);
+        }
+    }
+}
+
+/* func_800BC9B4's asteroid hit sound. */
+static inline void AstSfx(void) {
+    s32 r;
+
+    r = Random(4);
+    if (r == 0) {
+        PlaySfx(0x28B, 0, 0, 0x1000, 0x1E00, 0);
+    }
+    if (r == 1) {
+        PlaySfx(0x28C, 0, 0, 0x1000, 0x1E00, 0);
+    }
+    if (r == 2) {
+        PlaySfx(0x28D, 0, 0, 0x1000, 0x1E00, 0);
+    }
+    if (r == 3) {
+        PlaySfx(0x28E, 0, 0, 0x1000, 0x1E00, 0);
+    }
+}
+
 void func_800BD6E8(s32 *arg0, s32 arg1);
 
 void func_800BF37C(s32 arg0);
@@ -747,6 +798,8 @@ static inline void BossHeroSteer(s32 i) {
     h->hero_eng->unk1E += func_800154A0(h->hero_eng->unk1E, h->hero_move->forward_angle) >> 2;
     h->hero_eng->unk5E = 1;
 }
+
+void func_800BC9B4(s32 *arg0, s32 arg1);
 
 void PlotNitroMine(NAS *nas);
 
