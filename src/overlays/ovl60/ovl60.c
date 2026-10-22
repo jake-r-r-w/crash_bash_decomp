@@ -2394,7 +2394,120 @@ done:
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Pickup_Claim);
+void Pickup_Claim(s32 arg0, s32 arg1, s32 arg2) {
+    NAS *nas;
+    HeroInfo *h;
+    Ovl60Slot *slot;
+
+    if (PogoPadlock_IsHere(arg0, arg1)) {
+        Ovl60Slot *s;
+
+        Pickup_Lose(arg2);
+        s = D_800C535C;
+        s[arg2].unk4 = 6;
+        s[arg2].unk6 = 0xF0;
+        Ovl60_PowerupAnim(arg2, 0x2042);
+        PogoFour_FreezeMyTiles(arg2);
+        return;
+    }
+    nas = (NAS *)D_800C53DC[arg0][arg1].hero;
+    if (nas == NULL) {
+        return;
+    }
+    if (D_8005A648 != 0xD) {
+        Set_Tile_Under_Player(arg2, 1);
+    }
+    switch (nas->UserInfo.flags) {
+    case 10:
+        PlaySfx(0x514, NULL, &Heroes[arg2].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        Bank_Tiles(arg2);
+        nas->UserInfo.status = 4;
+        break;
+    case 11:
+        nas->UserInfo.status = 5;
+        if (D_8005A614[arg2 + 0x5C] == 0 && !(*(u16 *)(D_8005A614 + 0x30) & 0x801)) {
+            Player_SetPoisoned(arg2);
+            PlaySfx(0x529, NULL, &Heroes[arg2].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        }
+        break;
+    case 5: {
+        Ovl60Slot *b = D_800C535C;
+
+        slot = &b[arg2];
+    }
+        if (slot->unk4 != 5) {
+            Pickup_Lose(arg2);
+        }
+        {
+            HeroInfo *hb = Heroes;
+
+            h = &hb[arg2];
+        }
+        PlaySfx(0x41C, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
+        slot->unk4 = 5;
+        slot->unk6 = 0xF0;
+        Ovl60_PowerupAnim(arg2, 0x200C);
+        D_800C52F0--;
+        break;
+    case 7:
+        Ovl60_ZapArrow(arg0, arg1, arg2, 1);
+        D_800C52EC--;
+        break;
+    case 8:
+        Ovl60_ZapArrow(arg0, arg1, arg2, 2);
+        Tiles_CheckForIslands(arg2);
+        D_800C52EC--;
+        break;
+    case 1:
+        Ovl60_PickupSet(arg2, 1);
+        Ovl60_PowerupAnim(arg2, 0x200D);
+        D_800C52F0--;
+        PlaySfx(0x51F, NULL, &Heroes[arg2].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        if (D_8005A614[arg2 + 0x5C] != 0) {
+            PogoAI_HeroClaimedPickup(arg2);
+        }
+        break;
+    case 2:
+        Ovl60_PickupSet(arg2, 2);
+        Ovl60_PowerupAnim(arg2, 0x201B);
+        D_800C52F0--;
+        PlaySfx(0x438, NULL, &Heroes[arg2].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        if (D_8005A614[arg2 + 0x5C] != 0) {
+            PogoAI_HeroClaimedPickup(arg2);
+        }
+        break;
+    case 4:
+        Ovl60_PickupSet(arg2, 4);
+        Ovl60_PowerupAnim(arg2, 0x2040);
+        PlaySfx(0x51F, NULL, &Heroes[arg2].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        if (D_8005A614[arg2 + 0x5C] != 0) {
+            PogoAI_HeroClaimedPickup(arg2);
+        }
+        D_800C52F0--;
+        break;
+    case 3:
+        Ovl60_PickupSet(arg2, 3);
+        Ovl60_PowerupAnim(arg2, 0x2002);
+        D_800C52F0--;
+        PlaySfx(0x51E, NULL, &Heroes[arg2].hero_eng->unk10, 0x1000, 0x1E00, 0);
+        if (D_8005A614[arg2 + 0x5C] != 0) {
+            PogoAI_HeroClaimedPickup(arg2);
+        }
+        break;
+    }
+    Tiles_CheckForIslands(arg2);
+    if (nas->Engine != NULL) {
+        if (nas->UserInfo.flags == 10) {
+            Ovl60_SpawnPuff(&nas->Engine->unk10.x, 3, D_80053B9C);
+        } else {
+            Ovl60_SpawnPuff(&nas->Engine->unk10.x, 1, D_80053B9C);
+        }
+    }
+    if (nas->UserInfo.flags < 10) {
+        KillNAS(nas);
+    }
+    D_800C53DC[arg0][arg1].hero = NULL;
+}
 
 void PogoPickups_Poll(void) {
     D5A614View *g = (D5A614View *)D_8005A614;

@@ -159,6 +159,67 @@ static inline void Ovl60_SpawnPuff(s32 *pos, s32 mode, u8 *p) {
         }
     }
 }
+void Pickup_Lose(s32);
+/* Drops hero i's pickup and sets its slot state (Pickup_Claim). */
+#define Ovl60_PickupSet(i, state) \
+    {                             \
+        Ovl60Slot *s_;            \
+                                  \
+        Pickup_Lose(i);           \
+        s_ = D_800C535C;          \
+        s_[i].unk4 = (state);     \
+    }
+/* Plays anim on a hero's powerup sub-engine (Pickup_Claim). */
+static inline void Ovl60_PowerupAnim(s32 i, s32 anim) {
+    subengine *sub = Heroes[i].hero_powerup->sub;
+
+    if (sub != NULL) {
+        sub->unk6C = D_80053B9C;
+        sub->unk74 = anim;
+    }
+}
+void ZapInDir(s32, s32, s32, s32, s32);
+/* ZapArrow, inlined into Pickup_Claim. */
+static inline void Ovl60_ZapArrow(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+    NAS *nas = (NAS *)D_800C53DC[arg0][arg1].hero;
+    s32 dir;
+    s32 i;
+    s32 dx;
+    s32 dz;
+
+    if (nas != NULL) {
+        if (nas->Engine != NULL) {
+            PlaySfx(0x515, NULL, &nas->Engine->unk10, 0x1000, 0x1E00, 0);
+        }
+        dir = nas->UserInfo.user1 & 3;
+        for (i = 0; i < arg3; i++) {
+            switch (dir) {
+            case 0:
+                dx = 0;
+                dz = 1;
+                break;
+            case 1:
+                dx = 1;
+                dz = 0;
+                break;
+            case 2:
+                dx = 0;
+                dz = -1;
+                break;
+            case 3:
+                dx = -1;
+                dz = 0;
+                break;
+            default:
+                dx = 0;
+                dz = 0;
+                break;
+            }
+            ZapInDir(arg0, arg1, dx, dz, arg2);
+            dir ^= 2;
+        }
+    }
+}
 extern u8 D_80053BD4[];
 extern ScriptInit D_800C4680;
 extern s32 D_800C5308;
