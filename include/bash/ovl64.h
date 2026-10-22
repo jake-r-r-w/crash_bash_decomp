@@ -76,6 +76,46 @@ void func_8007B120(void);
         }                                               \
     } while (0)
 
+/* A hit (flags 2|8) pops the object: state 9, hit and mask flags cleared. */
+#define OVL64_CHECK_POP(fux)                            \
+    do {                                                \
+        if ((fux)->hit & 0xA) {                         \
+            (fux)->sub = 9;                             \
+            (fux)->hit &= 0xFFF5;                       \
+            (fux)->mask &= 0xFFF5;                      \
+        }                                               \
+    } while (0)
+
+/* Turns the heading half a quadrant when the engine collides. */
+#define OVL64_BOUNCE(eng, mot)                                          \
+    do {                                                                \
+        if (D_8009D750(eng) != 0) {                                     \
+            (mot)->Xa = ((mot)->Xa - D_800BC01C * 0x200) & 0xFFF;       \
+        }                                                               \
+    } while (0)
+
+/* Eases the engine towards 0x300 below the water level D_8005A5D8. */
+#define OVL64_FLOAT(eng, g, y, s)                       \
+    do {                                                \
+        (g) = D_8005A5D8;                               \
+        (y) = (eng)->unk10.y;                           \
+        (y) += 0x300;                                   \
+        (s) = (y) - (g);                                \
+        if (abs(s) > 0x10) {                            \
+            (eng)->unk10.y -= (s) >> 6;                 \
+        }                                               \
+    } while (0)
+
+/* Puts the engine's shadow (its child engine) on the ground below it. */
+#define OVL64_SHADOW(eng, shadow)                                                   \
+    do {                                                                            \
+        (shadow) = (eng)->Engine;                                                   \
+        if ((shadow) != NULL) {                                                     \
+            (shadow)->unk10 = (eng)->unk10;                                         \
+            (shadow)->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);        \
+        }                                                                           \
+    } while (0)
+
 extern s32 D_800BBE08;
 extern s32 D_800BBE0C;
 extern s32 D_800BC010;
@@ -379,5 +419,12 @@ void func_800B697C(Ovl64Fux *arg0);
 s32 func_800B6EC0(EXTengine *eng, EXTmotion *mot, Ovl64Fux *fux);
 
 s32 func_800B85A4(s32 player);
+
+/* PlotBalloon */
+extern s32 (*D_8009D750)(EXTengine *);
+extern u16 D_800BB894[];
+extern s32 *D_800BB8E8[];
+
+void PlotBalloon(NAS *nas);
 
 #endif /* BASH_OVL64_H */

@@ -1192,7 +1192,174 @@ NAS *func_800B5D3C(s32 a, s32 b, u16 c, s16 d) {
     return nas;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", PlotBalloon);
+void PlotBalloon(NAS *nas) {
+    EXTengine *eng;
+    Ovl64Fux *fux;
+    EXTmotion *mot;
+    EXTengine *shadow;
+    s32 kind;
+    s32 owner;
+    s32 s;
+    s32 a;
+    u16 t;
+    u16 uo;
+    s32 o;
+    s32 g;
+    s32 y;
+
+    eng = nas->Engine;
+    if (eng == NULL) {
+        return;
+    }
+    D_8009D750(eng);
+    fux = (Ovl64Fux *)nas->FUX;
+    if (fux != NULL) {
+        kind = fux->kind;
+        if ((mot = FindExtension(nas, 0x800)) != NULL) {
+            switch (fux->sub) {
+            case 0:
+                fux->sub = 1;
+                fux->mask &= 0xFFF5;
+                if (kind < 0xD) if (kind >= 8) {
+                    fux->mask |= 0xA;
+                }
+                eng->unk5E = 1;
+                fux->owner = -1;
+                func_80025B10(eng, 0x50);
+                break;
+            case 9:
+                switch (kind) {
+                case 8:
+                case 9:
+                case 10:
+                case 11:
+                    uo = fux->owner;
+                    owner = (s16)uo;
+                    if (owner != -1 && owner < 4) {
+                        if (D_800BBD64 != 0) {
+                            if (D_800BBD62 == owner) {
+                                if (D_8005A646 & 0x40) {
+                                    Heroes[uo & 2].hero_score--;
+                                } else {
+                                    Heroes[owner].hero_score++;
+                                }
+                            } else {
+                                SetHeroAction((HeroInfo *)owner, (u16)D_8009E0D8);
+                                if (OVL64_GAME->flags & 0x80) {
+                                    owner = fux->owner;
+                                    if (owner == 0 || (OVL64_GAME->teams != 0 && owner == 1)) {
+                                        Heroes[owner].hero_health = 0;
+                                        func_80084E04(fux->owner, NULL, -1, 1, 8);
+                                    }
+                                }
+                            }
+                            func_8007A524(D_800BB89C[D_800BBD62], &eng->unk10.x, (s32)D_80052FCC);
+                            goto sfx;
+                        }
+                        if (fux->state == owner) {
+                            if (D_8005A646 & 0x40) {
+                                Heroes[uo & 2].hero_score--;
+                            } else {
+                                Heroes[owner].hero_score++;
+                            }
+                        } else {
+                            SetHeroAction((HeroInfo *)owner, (u16)D_8009E0D8);
+                            if (OVL64_GAME->flags & 0x80) {
+                                owner = fux->owner;
+                                if (owner == 0 || (OVL64_GAME->teams != 0 && owner == 1)) {
+                                    Heroes[owner].hero_health = 0;
+                                    func_80084E04(fux->owner, NULL, -1, 1, 8);
+                                }
+                            }
+                        }
+                    }
+                    func_8007A524(D_800BB89C[fux->state], &eng->unk10.x, (s32)D_80052FCC);
+                sfx:
+                    PlaySfx(D_800BB8E8[kind - 8][Random(4)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                    o = fux->owner;
+                    if (o != -1 && o < 5 && Heroes[o].hero_object == (EXTobject *)fux) {
+                        Heroes[o].hero_object = NULL;
+                        if (Heroes[fux->owner].hero_eng->sfx != NULL) {
+                            StopSfx(Heroes[fux->owner].hero_eng->sfx);
+                        }
+                    }
+                    goto kill;
+                case 12:
+                    func_800B697C(fux);
+                    o = fux->owner;
+                    if (o != -1 && o < 5 && Heroes[o].hero_object == (EXTobject *)fux) {
+                        Heroes[o].hero_object = NULL;
+                        if (Heroes[fux->owner].hero_eng->sfx != NULL) {
+                            StopSfx(Heroes[fux->owner].hero_eng->sfx);
+                        }
+                    }
+                    func_8007A524(4, &eng->unk10.x, (s32)D_80052FCC);
+                    goto kill;
+                }
+            case 3:
+                fux->sub = 0;
+                break;
+            case 0x63:
+                if (func_8007A26C(nas) != 0) {
+                    goto kill;
+                }
+                s = eng->unk2C.x;
+                s -= 0x100;
+                if (s < 0x101) {
+                kill:
+                    func_800270B0(nas);
+                    return;
+                }
+                eng->unk2C.x = s;
+                eng->unk2C.y = s;
+                eng->unk2C.z = s;
+                eng->sub->unk76 = s;
+                eng->unk5E = 1;
+                break;
+            default:
+                OVL64_CHECK_POP(fux);
+                break;
+            }
+            if (D_8005A644 & 0x801) {
+                fux->owner = -1;
+                fux->hit |= 8;
+            }
+            a = get_angle(-eng->unk10.x, -eng->unk10.z) + D_800BC018;
+            mot->Zvel = 4;
+            a &= 0xFFF;
+            mot->Za = a;
+            eng->unk10.x -= (mot->Xvel * D_80068BD4[(mot->Xa - 0x400) & 0xFFF].unk2) >> 12;
+            eng->unk10.z -= (mot->Xvel * D_80068BD4[mot->Xa & 0xFFF].unk2) >> 12;
+            OVL64_BOUNCE(eng, mot);
+            func_800B6EC0(eng, mot, fux);
+            eng->unk10.x -= (mot->Zvel * D_80068BD4[(mot->Za - 0x400) & 0xFFF].unk2) >> 12;
+            eng->unk10.z -= (mot->Zvel * D_80068BD4[mot->Za & 0xFFF].unk2) >> 12;
+        }
+        if ((u16)fux->state < 4) {
+            t = D_800BBD64;
+            if (t != 0) {
+                eng->sub->unk74 = D_800BB894[D_800BBD62];
+                if (t < 0x1E) {
+                    if (t & 2) {
+                        eng->sub->unk74 = D_800BB894[fux->state];
+                        if (D_800BBD68 == 0) {
+                            PlaySfx(0x5EF, NULL, NULL, 0x1000, 0x1E00, 0);
+                        }
+                        D_800BBD68 = 1;
+                    } else {
+                        D_800BBD68 = 0;
+                    }
+                }
+            } else {
+                eng->sub->unk74 = D_800BB894[fux->state];
+            }
+        }
+        a = fux->angle + D_8004E0D8 * 16;
+        eng->sub->unk08 = (D_80068BD4[(a * 4 - 0x400) & 0xFFF].unk2 + D_80068BD4[a & 0xFFF].unk2) >> 6;
+        OVL64_FLOAT(eng, g, y, s);
+    }
+    OVL64_SHADOW(eng, shadow);
+}
 
 void func_800B697C(Ovl64Fux *arg0) {
     NAS *n;
