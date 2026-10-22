@@ -54,7 +54,7 @@ next:
     }
 }
 
-void func_800B36CC(void) {
+void AR_PreInitLevel(void) {
     u8 *g;
     void **p;
     void **p2;
@@ -63,10 +63,10 @@ void func_800B36CC(void) {
     void *t;
 
     D_8009D6E8.unk4 = D_800C0E70;
-    D_8009D6E8.unk0 = (s32)func_800B5238;
-    D_8009D6E8.unk18 = func_800C0760;
-    D_8009D6E8.unk1C = func_800C069C;
-    D_8009D6E8.unk38 = func_800B8A68;
+    D_8009D6E8.unk0 = (s32)AR_InitHero;
+    D_8009D6E8.unk18 = AR_InitShadow;
+    D_8009D6E8.unk1C = AR_UpdateShadow;
+    D_8009D6E8.unk38 = Ark_HeroBot;
     D_8009D6E8.unk14 = D_800C1054;
     if (D_8005A680[0] != 0) {
         D_800C271C = 1;
@@ -81,9 +81,9 @@ void func_800B36CC(void) {
     g = D_8005A614;
     switch (*(s16 *)(g + 0x34)) {
     case 15:
-        D_8009D6E8.unk68 = func_800B42F4;
-        D_8009D6E8.unk20 = func_800B558C;
-        D_8009D6E8.unk24 = func_800B5C30;
+        D_8009D6E8.unk68 = AR_KeepInBounds;
+        D_8009D6E8.unk20 = AR_PreMoveHero;
+        D_8009D6E8.unk24 = AR_MoveHero;
         D_800C1C8C = func_800B4880;
         D_800C1C90 = func_800C0A74;
         D_800C1C94 = func_800B4EFC;
@@ -101,9 +101,9 @@ void func_800B36CC(void) {
         D_8009D900 = D_800C0F20;
         return;
     case 16:
-        D_8009D6E8.unk68 = func_800B42F4;
-        D_8009D6E8.unk20 = func_800B558C;
-        D_8009D6E8.unk24 = func_800B5C30;
+        D_8009D6E8.unk68 = AR_KeepInBounds;
+        D_8009D6E8.unk20 = AR_PreMoveHero;
+        D_8009D6E8.unk24 = AR_MoveHero;
         D_800C1C8C = func_800B4880;
         D_800C1C90 = func_800C096C;
         D_800C1C94 = func_800B4EFC;
@@ -121,9 +121,9 @@ void func_800B36CC(void) {
         D_8009D900 = D_800C0F94;
         return;
     case 17:
-        D_8009D6E8.unk68 = func_800B453C;
-        D_8009D6E8.unk20 = func_800B58E8;
-        D_8009D6E8.unk24 = func_800B5EC8;
+        D_8009D6E8.unk68 = AR_PI_KeepInBounds;
+        D_8009D6E8.unk20 = AR_PI_PreMoveHero;
+        D_8009D6E8.unk24 = AR_PI_MoveHero;
         D_800C1C8C = func_800B4AE8;
         D_800C1C90 = func_800B4D9C;
         D_800C1C94 = func_800C08C8;
@@ -142,9 +142,9 @@ void func_800B36CC(void) {
         return;
     case 0:
     default:
-        D_8009D6E8.unk68 = func_800B42F4;
-        D_8009D6E8.unk20 = func_800B558C;
-        D_8009D6E8.unk24 = func_800B5C30;
+        D_8009D6E8.unk68 = AR_KeepInBounds;
+        D_8009D6E8.unk20 = AR_PreMoveHero;
+        D_8009D6E8.unk24 = AR_MoveHero;
         D_800C1C8C = func_800B4880;
         D_800C1C90 = func_800C0A74;
         D_800C1C94 = func_800B4EFC;
@@ -164,7 +164,7 @@ void func_800B36CC(void) {
     }
 }
 
-void func_800B3B20(void) {
+void AR_InitLevel(void) {
     Ovl61ModeView *m;
     Ovl61ModeView *m2;
     HeroInfo *h;
@@ -321,7 +321,7 @@ void func_800B3B20(void) {
     func_800BC564();
 }
 
-void func_800B40AC(void) {
+void AR_UpdateLevel(void) {
     s32 i;
     s32 best;
     s32 k;
@@ -390,7 +390,7 @@ void func_800B40AC(void) {
     func_80029100((AnimOwner *)ao);
 }
 
-s32 func_800B42F4(Ovl61Obj *arg0) {
+bool AR_KeepInBounds(EXTengine *arg0) {
     s32 i;
     s32 dx;
     s32 dz;
@@ -398,10 +398,10 @@ s32 func_800B42F4(Ovl61Obj *arg0) {
     s32 a;
 
     for (i = 0; i < 4; i++) {
-        dx = arg0->x - D_800C1A7C[i].x;
-        dz = arg0->z - D_800C1A7C[i].z;
-        if (arg0->flags & 0x40) {
-            r = D_800C1A7C[i].r + arg0->radius;
+        dx = arg0->unk10.x - D_800C1A7C[i].x;
+        dz = arg0->unk10.z - D_800C1A7C[i].z;
+        if (arg0->collision_box.flags & 0x40) {
+            r = D_800C1A7C[i].r + arg0->collision_box.radius;
         } else {
             r = D_800C1A7C[i].r + 0x80;
         }
@@ -409,11 +409,11 @@ s32 func_800B42F4(Ovl61Obj *arg0) {
             a = get_angle(-dx, -dz);
             if ((void *)arg0 != (void *)Heroes[D_800C2720].hero_eng &&
                 (void *)arg0 != (void *)Heroes[D_800C271C].hero_eng) {
-                arg0->x = D_800C1A7C[i].x - (r * D_80068BD4[(a - 0x400) & 0xFFF].unk2 >> 12);
+                arg0->unk10.x = D_800C1A7C[i].x - (r * D_80068BD4[(a - 0x400) & 0xFFF].unk2 >> 12);
             }
             if ((void *)arg0 != (void *)Heroes[D_800C2724].hero_eng &&
                 (void *)arg0 != (void *)Heroes[D_800C2728].hero_eng) {
-                arg0->z = D_800C1A7C[i].z - (r * D_80068BD4[a & 0xFFF].unk2 >> 12);
+                arg0->unk10.z = D_800C1A7C[i].z - (r * D_80068BD4[a & 0xFFF].unk2 >> 12);
             }
             return 1;
         }
@@ -421,7 +421,7 @@ s32 func_800B42F4(Ovl61Obj *arg0) {
     return 0;
 }
 
-s32 func_800B453C(Ovl61Obj *arg0) {
+bool AR_PI_KeepInBounds(EXTengine *arg0) {
     s32 i;
     s32 dx;
     s32 dz;
@@ -436,14 +436,14 @@ s32 func_800B453C(Ovl61Obj *arg0) {
             return 0;
         }
     }
-    a = arg0->dir;
-    arg0->x = D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 9 >> 4;
-    arg0->z = D_80068BD4[a & 0xFFF].unk2 * 9 >> 4;
+    a = arg0->unk1E;
+    arg0->unk10.x = D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 9 >> 4;
+    arg0->unk10.z = D_80068BD4[a & 0xFFF].unk2 * 9 >> 4;
     for (i = 0; i < 4; i++) {
-        dx = arg0->x - D_800C1A7C[i].x;
-        dz = arg0->z - D_800C1A7C[i].z;
-        if (arg0->flags & 0x40) {
-            r = D_800C1A7C[i].r + arg0->radius;
+        dx = arg0->unk10.x - D_800C1A7C[i].x;
+        dz = arg0->unk10.z - D_800C1A7C[i].z;
+        if (arg0->collision_box.flags & 0x40) {
+            r = D_800C1A7C[i].r + arg0->collision_box.radius;
         } else {
             r = D_800C1A7C[i].r + 0x80;
         }
@@ -451,16 +451,16 @@ s32 func_800B453C(Ovl61Obj *arg0) {
             a = get_angle(-dx, -dz);
             if ((void *)arg0 != (void *)Heroes[D_800C2720].hero_eng &&
                 (void *)arg0 != (void *)Heroes[D_800C271C].hero_eng) {
-                arg0->x = D_800C1A7C[i].x - (r * D_80068BD4[(a - 0x400) & 0xFFF].unk2 >> 12);
+                arg0->unk10.x = D_800C1A7C[i].x - (r * D_80068BD4[(a - 0x400) & 0xFFF].unk2 >> 12);
             }
             if ((void *)arg0 != (void *)Heroes[D_800C2724].hero_eng &&
                 (void *)arg0 != (void *)Heroes[D_800C2728].hero_eng) {
-                arg0->z = D_800C1A7C[i].z - (r * D_80068BD4[a & 0xFFF].unk2 >> 12);
+                arg0->unk10.z = D_800C1A7C[i].z - (r * D_80068BD4[a & 0xFFF].unk2 >> 12);
             }
-            a = get_angle(arg0->x, arg0->z);
-            arg0->dir = a;
-            arg0->x = D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 9 >> 4;
-            arg0->z = D_80068BD4[a & 0xFFF].unk2 * 9 >> 4;
+            a = get_angle(arg0->unk10.x, arg0->unk10.z);
+            arg0->unk1E = a;
+            arg0->unk10.x = D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 9 >> 4;
+            arg0->unk10.z = D_80068BD4[a & 0xFFF].unk2 * 9 >> 4;
             return 1;
         }
     }
@@ -767,7 +767,7 @@ s32 func_800B4FC8(s32 *p0, s32 *p1, s32 *q) {
     return 1;
 }
 
-void func_800B5238(s32 arg0) {
+void AR_InitHero(u32 arg0) {
     HeroInfo *h;
     HeroInfo *c;
     HeroInfo *g;
@@ -853,7 +853,7 @@ void func_800B5238(s32 arg0) {
     g->hero_eng->unk10.y = y + d;
 }
 
-void func_800B558C(s32 arg0) {
+void AR_PreMoveHero(u32 arg0) {
     EXTheromove *m;
     HeroInfo *h;
     HeroInfo *c;
@@ -968,7 +968,7 @@ void func_800B558C(s32 arg0) {
     }
 }
 
-void func_800B58E8(s32 arg0) {
+void AR_PI_PreMoveHero(u32 arg0) {
     EXTheromove *mv;
     HeroInfo *h;
     PadButtons *p;
@@ -1068,7 +1068,7 @@ void func_800B58E8(s32 arg0) {
     }
 }
 
-void func_800B5C30(s32 arg0) {
+void AR_MoveHero(u32 arg0) {
     HeroInfo *h;
     HeroInfo *g;
     HeroInfo *c;
@@ -1138,7 +1138,7 @@ void func_800B5C30(s32 arg0) {
     }
 }
 
-void func_800B5EC8(s32 arg0) {
+void AR_PI_MoveHero(u32 arg0) {
     HeroInfo *h;
     HeroInfo *g;
     HeroInfo *b;
@@ -2376,7 +2376,7 @@ s32 func_800B8964(s32 arg0) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl61/ovl61", D_800B3300);
 
-void func_800B8A68(s32 arg0) {
+void Ark_HeroBot(u32 arg0) {
     s32 unused[2];
     Ovl61Pos best;
     Ovl61Pos pos;
@@ -5805,7 +5805,7 @@ s32 func_800C0624(s32 arg0) {
     return 1;
 }
 
-void func_800C069C(s32 arg0) {
+void AR_UpdateShadow(u32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
     EXTengine *shadow = h->hero_shadow;
@@ -5821,7 +5821,7 @@ void func_800C069C(s32 arg0) {
 
 extern char D_8005453C[];
 
-void func_800C0760(s32 arg0) {
+void AR_InitShadow(u32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
     EXTengine *s = h->hero_shadow;
@@ -5973,19 +5973,19 @@ s32 func_800C0A74(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2) {
 void func_800C0B7C(void) {
 }
 
-void func_800C0B84(void) {
+void AR_EarliestTriggers(void) {
 }
 
 void func_800C0B8C(void) {
 }
 
-void func_800C0B94(void) {
-    D_8005AA70[0] = (s32)func_800B36CC;
-    D_8005AA70[1] = (s32)func_800B3B20;
-    D_8005AA70[2] = (s32)func_800B3B20;
-    D_8005AA70[3] = (s32)func_800B40AC;
+void AR_SetUp(void) {
+    D_8005AA70[0] = (s32)AR_PreInitLevel;
+    D_8005AA70[1] = (s32)AR_InitLevel;
+    D_8005AA70[2] = (s32)AR_InitLevel;
+    D_8005AA70[3] = (s32)AR_UpdateLevel;
     D_8005AA70[6] = (s32)func_800C0B7C;
-    D_8005AA70[5] = (s32)func_800C0B84;
+    D_8005AA70[5] = (s32)AR_EarliestTriggers;
     D_8005AA70[7] = 0;
     D_8005AA70[8] = 0;
     D_8005AA70[9] = (s32)func_800BFD9C;

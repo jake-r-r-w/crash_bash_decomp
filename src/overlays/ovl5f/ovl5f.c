@@ -670,7 +670,7 @@ void func_800B4FAC(s32 player) {
     func_80013C94((u8 *)&D_80051338[player], buttons);
 }
 
-void func_800B5228(s32 player) {
+void TA_HeroBot(u32 player) {
     Ovl5fAITarget *ai;
     EXTengine *eng;
     EXTengine *te;
@@ -748,13 +748,13 @@ void func_800B5588(void) {
     Ovl5fGameView *g;
 
     D_8009D6E8.unk4 = D_800C8EA0;
-    D_8009D6E8.unk38 = func_800B5228;
-    D_8009D6E8.unk0 = (s32)func_800B6658;
-    D_8009D6E8.unk68 = func_800C8294;
+    D_8009D6E8.unk38 = TA_HeroBot;
+    D_8009D6E8.unk0 = (s32)TA_InitHero;
+    D_8009D6E8.unk68 = TA_KeepInBounds;
     D_8009D6E8.unk14 = D_800C8EB4;
-    D_8009D6E8.unk18 = func_800C8334;
-    D_8009D6E8.unk20 = func_800C81C0;
-    D_8009D6E8.unk24 = func_800B6C24;
+    D_8009D6E8.unk18 = TA_CreateShadow;
+    D_8009D6E8.unk20 = TA_PreMoveHero;
+    D_8009D6E8.unk24 = TA_MoveHero;
     switch (D_8005A648) {
     case 6:
     default:
@@ -1192,7 +1192,7 @@ void func_800B6354(s32 player, s32 damage) {
     Heroes[player].hero_health = ta->Energy;
 }
 
-void func_800B6658(s32 player) {
+void TA_InitHero(u32 player) {
     HeroInfo *h;
     HeroInfo *hh;
     HeroInfo *hb;
@@ -1359,7 +1359,7 @@ void func_800B6658(s32 player) {
     }
 }
 
-void func_800B6C24(s32 player) {
+void TA_MoveHero(u32 player) {
     HeroInfo *hb;
     HeroInfo *hero;
     EXTengine *eng;
@@ -5673,7 +5673,7 @@ void func_800C4DCC(s32 player) {
     saved = ((Ovl5fGameView *)D_8005A614)->w6C;
     ((Ovl5fGameView *)D_8005A614)->w6C = 1;
     ai = (Ovl5fAITarget *)(D_800CAFFC + player * 0x2C);
-    func_800B5228(player);
+    TA_HeroBot(player);
     ((Ovl5fGameView *)D_8005A614)->w6C = saved;
     pad = ai->flags;
     dir = pad & 0xF0;
@@ -7294,7 +7294,7 @@ s32 func_800C8120(s32 arg0) {
     return 0;
 }
 
-void func_800C81C0(void) {
+void TA_PreMoveHero(u32 player) {
 }
 
 void func_800C81C8(s32 x, s32 z, s32 range, s32 arg3) {
@@ -7317,27 +7317,27 @@ void func_800C81C8(s32 x, s32 z, s32 range, s32 arg3) {
     }
 }
 
-s32 func_800C8294(OvlClampPos *p) {
+bool TA_KeepInBounds(EXTengine *p) {
     s32 r;
     s32 lim;
 
     r = 0;
-    if (p->x > D_800CB100) {
+    if (p->unk10.x > D_800CB100) {
         lim = D_800CB100;
-        p->x = lim;
+        p->unk10.x = lim;
         r = 1;
     }
-    if (p->x < 0x100) {
-        p->x = 0x100;
+    if (p->unk10.x < 0x100) {
+        p->unk10.x = 0x100;
         r = 1;
     }
-    if (p->z > D_800CB104) {
+    if (p->unk10.z > D_800CB104) {
         lim = D_800CB104;
-        p->z = lim;
+        p->unk10.z = lim;
         r = 1;
     }
-    if (p->z < 0x100) {
-        p->z = 0x100;
+    if (p->unk10.z < 0x100) {
+        p->unk10.z = 0x100;
         r = 1;
     }
     return r;
@@ -7349,10 +7349,10 @@ void func_800C831C(void) {
 void func_800C8324(void) {
 }
 
-void func_800C832C(void) {
+void TA_EarliestTriggers(void) {
 }
 
-void func_800C8334(s32 arg0) {
+void TA_CreateShadow(u32 arg0) {
     Heroes[arg0].hero_shadow->flags = 0;
 }
 
@@ -7379,7 +7379,7 @@ void func_800C83D8(void) {
     D_8005AA70[3] = (s32)func_800B5FC4;
     D_8005AA70[4] = (s32)func_800C8360;
     D_8005AA70[6] = (s32)func_800C8324;
-    D_8005AA70[5] = (s32)func_800C832C;
+    D_8005AA70[5] = (s32)TA_EarliestTriggers;
     D_8005AA70[7] = 0;
     D_8005AA70[8] = 0;
     D_8005AA70[10] = (s32)func_800B62A4;

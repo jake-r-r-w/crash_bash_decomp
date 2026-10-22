@@ -33,7 +33,7 @@ extern RockTblEnt D_800C938C[]; /* PlotMine: frame by countdown */
 extern RockTblEnt D_800C939C[]; /* PlotMine: frame by countdown, modes 8/9 */
 
 extern u8 D_80053774[];
-extern s32 D_800C8F14[]; /* func_800B6658: tank speed by hero_name - 1 */
+extern s32 D_800C8F14[]; /* TA_InitHero: tank speed by hero_name - 1 */
 extern u8 D_800C9EE8[];
 extern u8 D_800C9EFC[];
 extern u8 D_800C9ED0[];
@@ -47,10 +47,8 @@ void func_800C0F24(NAS *nas, s32 id);
 void func_800C68A8(void);
 void func_800C69BC(void);
 void func_800C7C08(u8 *arg0);
-void func_800C81C0(void);
 void func_800C831C(void);
 void func_800C8324(void);
-void func_800C832C(void);
 void func_800C83D0(void);
 extern s32 D_800CB25C;
 extern s32 D_800C93AC[];
@@ -72,9 +70,8 @@ extern u8 D_800C9E5C[];
 extern u8 D_800C9E3C[];
 extern u8 D_800C9E28[];
 extern u8 D_800C9E50[];
-void func_800B5228(s32 player);
-void func_800B6658(s32 player);
-void func_800B6C24(s32 player);
+void TA_InitHero(u32 player);
+void TA_MoveHero(u32 player);
 void func_800B5588(void);
 void func_800B58B0(void);
 void func_800B5FC4(void);
@@ -431,7 +428,7 @@ typedef struct Ovl5fGameView {
 } Ovl5fGameView;
 
 extern s32 D_800C94A8[];
-extern s32 D_800C94C8[]; /* func_800B6C24: hull sfx while moving, by player */
+extern s32 D_800C94C8[]; /* TA_MoveHero: hull sfx while moving, by player */
 extern s32 D_800C94D8[]; /* turret sfx, by player */
 extern s32 D_800C9408[]; /* hull sfx in mode 5, by player */
 extern s32 D_800CB0F8;    /* delay before the next hangabout spawn */
@@ -495,9 +492,7 @@ void func_800C8008(s32 player, s32 unused, s32 ReqdSFX);
 
 s32 func_800C8120(s32 arg0);
 
-s32 func_800C8294(OvlClampPos *p);
 
-void func_800C8334(s32 arg0);
 
 void func_800C8360(void);
 

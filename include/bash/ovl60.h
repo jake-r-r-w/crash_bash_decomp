@@ -9,21 +9,14 @@
 #include "bash/nas.h"
 
 void func_800C0BF0(s32 arg0, s32 arg1);
-s32 func_800C2660(u8 *arg0);
 void func_800C2F50(void);
 void func_800C2F84(void);
 void func_800C318C(s32 arg0);
-void func_800C31B0(void);
-void func_800C3388(void);
 void func_800C3390(void);
-void func_800B3E34();
-void func_800C3398();
+void UpdatePOGO(void);
 extern u8 D_8008AB04[];
 extern u8 D_800C52CC[];
 extern u8 D_800C44A8[];
-void func_800B574C();
-void func_800B5B1C();
-void func_800C32E8();
 void func_800B3534();
 
 /* The engine callback table (EngineHooks in bash/engine.h). */
@@ -312,7 +305,6 @@ void func_800C2620(s32 arg0, s32 arg1);
 
 
 
-void func_800C2E50(s32 arg0, s32 arg1);
 
 void func_800C2EE0(void);
 void func_800C1CF0();
@@ -330,7 +322,7 @@ extern s32 D_800C5BE4;
 extern s32 D_800C5BE8;
 extern s32 D_800C5BEC;
 
-/* D_8005A614+0x34 as func_800B3E34 switches on it: an enum, so gcc's
+/* D_8005A614+0x34 as UpdatePOGO switches on it: an enum, so gcc's
  * switch tree skips its text cost table. */
 typedef enum Ovl60Mode {
     OVL60_MODE_NONE = -1,
@@ -386,9 +378,7 @@ void func_800C3148(void);
 
 s32 func_800BC04C(s32 arg0, s32 arg1);
 
-void func_800C327C(s32 arg0);
 
-void func_800C3434(void);
 
 s32 func_800BE864(s32 hero, Ovl60Goal *goal);
 

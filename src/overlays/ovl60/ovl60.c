@@ -278,7 +278,7 @@ void func_800B3C44(void) {
     }
 }
 
-void func_800B3E34(void) {
+void UpdatePOGO(void) {
     Ovl60Slot *slot;
     s32 i;
     s32 ok;
@@ -876,7 +876,7 @@ void func_800B53CC(s32 arg0, u16 arg1) {
     }
 }
 
-void func_800B574C(s32 arg0) {
+void PreMovePOGO(u32 arg0) {
     HeroInfo *hb;
     HeroInfo *h;
     EXTheromove *move;
@@ -955,7 +955,7 @@ void func_800B574C(s32 arg0) {
     }
 }
 
-void func_800B5B1C(s32 i) {
+void PostMovePOGO(u32 i) {
     VECTOR v;
     subengine *sub;
     s32 name;
@@ -5869,8 +5869,8 @@ void func_800C2620(s32 arg0, s32 arg1) {
     p->unk14 = 0;
 }
 
-s32 func_800C2660(u8 *arg0) {
-    return (*(s32*)((u8*)(arg0) + 20)) - D_8005A5D8;
+s32 GetPogoContour(EXTengine *arg0) {
+    return arg0->unk10.y - D_8005A5D8;
 }
 
 void AddTazerRing(u32 arg0) {
@@ -6085,7 +6085,7 @@ void SetHeroPogo(u32 arg0) {
     Set_Tile_Under_Player(arg0, 0);
 }
 
-void func_800C2E50(s32 arg0, s32 arg1) {
+void PogoHeroChooseWinner(s32 arg0, u16 arg1) {
     u8 *g = D_8005A614;
 
     if (!(*(u16 *)(g + 0x30) & 0x801)) {
@@ -6190,7 +6190,7 @@ void func_800C318C(s32 arg0) {
     func_8007B7FC(arg0 & 0xFFFF, 0x81D0);
 }
 
-void func_800C31B0(void) {
+void InitialisePOGO(void) {
     func_8007EB1C(0x140, 0x28, 0);
     D_800C5BB0 = 0;
     D_800C5BAC = 0;
@@ -6214,7 +6214,7 @@ void func_800C31B0(void) {
     func_800C2F50();
 }
 
-void func_800C327C(s32 arg0) {
+void POGO_InitHero(u32 arg0) {
     Ovl60Slot *base = D_800C535C;
     Ovl60Slot *p = (Ovl60Slot *)(arg0 * sizeof(Ovl60Slot) + (u32)base);
 
@@ -6226,7 +6226,7 @@ void func_800C327C(s32 arg0) {
     func_800C1004(arg0);
 }
 
-void func_800C32E8(s32 arg0) {
+void PogoCreateShadow(u32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
     EXTengine *s = h->hero_shadow;
@@ -6241,35 +6241,35 @@ void func_800C32E8(s32 arg0) {
     }
 }
 
-void func_800C3388(void) {
+void FirstTriggersPOGO(void) {
 }
 
 void func_800C3390(void) {
 }
 
-void func_800C3398(void) {
-    D_8009D6E8.unk0 = (s32)func_800C327C;
+void InitialisePOGOFirst(void) {
+    D_8009D6E8.unk0 = (s32)POGO_InitHero;
     D_8009D6E8.unk44 = &D_8008AB04;
     D_8009D6E8.unk4 = &D_800C52CC;
     D_8009D6E8.unkC = &D_800C44A8;
-    D_8009D6E8.unk20 = func_800B574C;
-    D_8009D6E8.unk28 = func_800B5B1C;
-    D_8009D6E8.unk64 = func_800C2E50;
+    D_8009D6E8.unk20 = PreMovePOGO;
+    D_8009D6E8.unk28 = PostMovePOGO;
+    D_8009D6E8.unk64 = PogoHeroChooseWinner;
     D_8009D6E8.unk5C = func_800B76CC;
-    D_8009D6E8.unk18 = func_800C32E8;
+    D_8009D6E8.unk18 = PogoCreateShadow;
     D_8009D6E8.unk38 = PogoAI_Poll;
     func_800B3534();
 }
 
-void func_800C3434(void) {
-    D_8005AA70[0] = (s32)func_800C3398;
-    D_8005AA70[1] = (s32)func_800C31B0;
-    D_8005AA70[2] = (s32)func_800C31B0;
-    D_8005AA70[3] = (s32)func_800B3E34;
-    D_8005AA70[5] = (s32)func_800C3388;
+void POGOSetUp(void) {
+    D_8005AA70[0] = (s32)InitialisePOGOFirst;
+    D_8005AA70[1] = (s32)InitialisePOGO;
+    D_8005AA70[2] = (s32)InitialisePOGO;
+    D_8005AA70[3] = (s32)UpdatePOGO;
+    D_8005AA70[5] = (s32)FirstTriggersPOGO;
     D_8005AA70[7] = 0;
     D_8005AA70[8] = 0;
-    D_8005AA70[9] = (s32)func_800C2660;
+    D_8005AA70[9] = (s32)GetPogoContour;
     func_8001E934(&D_8009F8A4, (s32)D_800C52B8);
 }
 

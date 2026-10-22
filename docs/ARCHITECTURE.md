@@ -513,6 +513,30 @@ signature alone is not enough.
   centres the hero on its square; `Player_CalcForwardSpeed(p, bool)` is the
   per-hero bounce speed. `PlaySquareChangeNoise` / `PlaySquareLockedNoise`
   are per-player sounds for claiming and for landing on a locked square.
+- **Game hook tables.** Every minigame fills two engine tables, and their slot
+  names come from the prototype's types: `D_8005AA70` is a `LevSpec`
+  (`LevelPreInit`, `LevelInit`, `LevelRestartInit`, `LevelRoutine`,
+  `LevelExit`, `EarliestTriggers`, `PostTriggers`, `SpecTriggerFunc`,
+  `OnOffWindowTest`, `GetContour`, `FinishQuick`) and `D_8009D6E8` is a
+  `HookInf` (`InitHero`, ..., `CreateShadow`, `UpdateShadow`, `PreMoveHero`,
+  `MoveHero`, `PostMoveHero`, ..., `HeroBot`, ..., `PowerUp`, `Touched`,
+  `ChooseWinner`, `CheckBounds`). The function that fills `LevSpec` is the
+  game's SetUp, and the slots name the leaked functions:
+  - Pogo: `POGOSetUp`; `InitialisePOGOFirst` (pre-init, fills `HookInf`),
+    `InitialisePOGO` (init and restart), `UpdatePOGO`, `FirstTriggersPOGO`,
+    `GetPogoContour`; hooks `POGO_InitHero`, `PogoCreateShadow`,
+    `PreMovePOGO`, `PostMovePOGO`, `PogoAI_Poll` (`HeroBot`, matching its
+    own evidence), `PogoHeroChooseWinner`.
+  - Arkenoid: `AR_SetUp`; `AR_PreInitLevel` (fills `HookInf`; per mode),
+    `AR_InitLevel` (init and restart), `AR_UpdateLevel`,
+    `AR_EarliestTriggers`; hooks `AR_InitHero`, `AR_InitShadow` /
+    `AR_UpdateShadow`, `Ark_HeroBot`, and per mode `AR_PreMoveHero` /
+    `AR_MoveHero` / `AR_KeepInBounds` or the `AR_PI_` three (code order
+    follows the leak's).
+  - Tank: `TA_EarliestTriggers`; hooks `TA_InitHero`, `TA_HeroBot`,
+    `TA_KeepInBounds`, `TA_CreateShadow`, `TA_PreMoveHero`, `TA_MoveHero`.
+  The `CheckBounds` functions take the leak's `EXTengine *`; their old local
+  stand-in structs were `unk10.x/z`, `collision_box.radius/flags` and `unk1E`.
 - **Pogo AI** (ovl60). `PogoAI_Poll(p)` runs the bot (`EXTbotai`: `AIpad`,
   timers, `AImode` 1/3/4-7). Tests: `PogoAI_CanPlayerShootAnyone` (an
   opponent in the facing row or column), `...FourWays` (any row or column),

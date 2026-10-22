@@ -182,7 +182,6 @@ void func_800BDD30(s32 arg0);
 
 s32 func_800C05B8(s32 arg0);
 
-void func_800C069C(s32 arg0);
 
 s32 func_800C096C(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2);
 
@@ -195,12 +194,10 @@ s32 func_800C0A74(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2);
 
 void func_800C0B7C(void);
 
-void func_800C0B84(void);
 
 void func_800C0B8C(void);
 
-void func_800B36CC(void);
-void func_800B8A68();
+void Ark_HeroBot(u32 arg0);
 extern u8 D_800C0E70[];
 extern u8 D_800C1054[];
 extern void *D_800C1C8C;
@@ -230,8 +227,7 @@ extern u8 D_800C1008[];
 extern u8 D_800C1014[];
 extern u8 D_800C102C[];
 extern u8 D_800C1040[];
-void func_800B3B20(void);
-void func_800B40AC(void);
+void AR_InitLevel(void);
 void func_800B9728(void);
 
 
@@ -245,11 +241,9 @@ s32 func_800C0250(s32 arg0, s32 arg1);
 
 s32 func_800C0624(s32 arg0);
 
-void func_800C0760(s32 arg0);
 
 s32 func_800C08C8(Ovl61Obj *arg0);
 
-void func_800C0B94(void);
 
 typedef struct {
     s32 pad0;
@@ -301,7 +295,7 @@ typedef struct {
     s32 unk6C;
 } Ovl61ModeView;
 
-/* func_800B3B20 (stage setup) */
+/* AR_InitLevel (stage setup) */
 extern s32 D_8005AA3C;
 extern s16 D_800C1F02;
 extern s16 D_800C1F04;
@@ -398,9 +392,7 @@ typedef struct Ovl61FuxF {
 
 void func_800B3528(s32 arg0);
 
-s32 func_800B42F4(Ovl61Obj *arg0);
 
-s32 func_800B453C(Ovl61Obj *arg0);
 
 s32 func_800B4AE8(Ovl61Obj *arg0, s32 arg1);
 
@@ -408,15 +400,10 @@ s32 func_800B4D9C(Ovl61Vel *arg0, Ovl61Dir *arg1, s32 arg2);
 
 s32 func_800B4FC8(s32 *p0, s32 *p1, s32 *q);
 
-void func_800B5238(s32 arg0);
 
-void func_800B558C(s32 arg0);
 
-void func_800B58E8(s32 arg0);
 
-void func_800B5C30(s32 arg0);
 
-void func_800B5EC8(s32 arg0);
 
 s32 func_800B60FC(s32 arg0);
 
@@ -577,7 +564,7 @@ extern u16 D_800C1380[];
 
 s32 func_800BE4D4(s32 arg0, EXTengine *unused);
 
-/* func_800B8A68: the object lists (D_8005AA38 by next, D_8005AA24 by child). */
+/* Ark_HeroBot: the object lists (D_8005AA38 by next, D_8005AA24 by child). */
 typedef struct Ovl61AiFux {
     u8 pad0[0x1A];
     u16 unk1A;
