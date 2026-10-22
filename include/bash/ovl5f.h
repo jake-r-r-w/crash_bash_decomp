@@ -113,13 +113,24 @@ extern s32 D_800C9B94[][2];
 
 /* Extension 0x10000000 of the totem NAS func_800C0C68 sets up. */
 typedef struct TotemExt {
-    /* 0x00 */ u8 pad0[0x1C];
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ s32 unkC;  /* turn per frame */
+    /* 0x10 */ s32 unk10; /* velocity x */
+    /* 0x14 */ s32 unk14; /* velocity y */
+    /* 0x18 */ s32 unk18; /* velocity z */
     /* 0x1C */ s32 unk1C;
     /* 0x20 */ s32 unk20;
     /* 0x24 */ s32 unk24;
-    /* 0x28 */ u8 pad28[0x8];
+    /* 0x28 */ s32 timer;
+    /* 0x2C */ s32 unk2C;
     /* 0x30 */ s32 unk30;
+    /* 0x34 */ s32 *anim; /* animation script: frames, 0 ends, -1 is an event */
 } TotemExt;
+extern s32 D_800C9C14[];
+extern s32 D_800C9C94[];
+extern s32 D_800C9CE4[];
+extern s32 D_800C9D58[];
+extern s32 D_800C9DD0[];
 
 /* State block func_800C7E68/func_800C7EB0 set up alongside a hero action. */
 typedef struct Ovl5fActState {

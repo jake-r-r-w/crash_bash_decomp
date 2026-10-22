@@ -4627,7 +4627,223 @@ void func_800C0DA0(EXTengine *arg0) {
     PlaySfx(0x505, NULL, NULL, 0x1000, 0x1E00, 0);
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800C0F24);
+void func_800C0F24(NAS *nas, s32 id) {
+    EXTengine *eng;
+    s32 v;
+    NAS *pole;
+    TotemPoleExt *pf;
+    TotemExt *ext;
+    NAS *n;
+    EXTengine *ne;
+    TotemExt *nx;
+    s32 x;
+    s32 z;
+    s32 k;
+    s32 t;
+    s32 a;
+
+    eng = nas->Engine;
+    ext = (TotemExt *)nas->FUX;
+    x = eng->unk10.x;
+    z = eng->unk10.z;
+    switch ((u32)ext->unk30) {
+    case 1:
+        pole = D_800CB218;
+        pf = (TotemPoleExt *)pole->FUX;
+        switch (pf->unk30) {
+        case 0xD:
+            if (id == 0x131B) {
+                ext->unk30 = 0xD;
+                ext->anim = D_800C9C14;
+            }
+            break;
+        case 0x24:
+            if (eng->unk1E != pole->Engine->unk1E) {
+                eng->unk1E = pole->Engine->unk1E;
+                eng->unk5E = 1;
+            }
+            break;
+        case 0x11:
+            if (id == 0x131B) {
+                ext->unk30 = 5;
+                ext->unk14 = -0x5A;
+                ext->unk10 = -0x1E;
+                ext->unk18 = -0x2D;
+                PlaySfx(0x504, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            }
+            break;
+        case 0:
+            if (id == 0x131C) {
+                ext->unk30 = 5;
+                ext->unk14 = -0x5A;
+                ext->unk10 = 0x1E;
+                ext->unk18 = -0x2D;
+                PlaySfx(0x504, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            }
+            break;
+        }
+        break;
+    case 13:
+        v = *ext->anim++;
+        if (v != 0) {
+            if (v == -1) {
+            n = SpawnNASById(eng->unk10.x, eng->unk10.y - 100, eng->unk10.z, 0x130E, 0x11);
+            if (n != NULL) {
+                ne = n->Engine;
+                nx = (TotemExt *)n->FUX;
+                ne->sub->unk6C = D_800537AC;
+                ne->sub->unk74 = 0x2006;
+                nx->unk2C = v;
+                ne->unk10.x += -(D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 300) >> 12;
+                ne->unk10.z += -(D_80068BD4[eng->unk1E & 0xFFF].unk2 * 300) >> 12;
+                ne->unk1E = eng->unk1E;
+                nx->unk10 = -(D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 60) >> 12;
+                nx->unk18 = -(D_80068BD4[eng->unk1E & 0xFFF].unk2 * 60) >> 12;
+            }
+            } else {
+                eng->sub->unk74 = v;
+            }
+        } else {
+            pole = D_800CB218;
+            ext->unk30 = 1;
+            eng->sub->unk74 = 0x2005;
+            pf = (TotemPoleExt *)pole->FUX;
+            pf->unk30 = 0x24;
+            PlaySfx(0x502, &pole->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
+            pole->UserInfo.user2 = 0x1E;
+        }
+        break;
+    case 5:
+        ext->unk14 += 12;
+        eng->unk10.y += ext->unk14;
+        x = eng->unk10.x + ext->unk10;
+        z = eng->unk10.z + ext->unk18;
+        if (eng->unk10.y < 0) {
+            break;
+        }
+        eng->unk10.y = 0;
+        if (ext->unk14 >= 0x25) {
+            func_800C0DA0(eng);
+        } else {
+            PlaySfx(0x506, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        }
+        if (ext->unk14 < 13) {
+            ext->unk30 = 0;
+            ext->timer = 0x5A;
+        } else {
+            ext->unk14 = -(ext->unk14 * 2) / 3;
+            ext->unk10 = (ext->unk10 * 2) / 3;
+            ext->unk18 = (ext->unk18 * 2) / 3;
+        }
+        break;
+    case 0:
+        if (--ext->timer > 0) {
+            break;
+        }
+        ext->unk30 = 0x25;
+        ext->anim = D_800C9CE4;
+        nas->UserInfo.status = 0;
+        ext->unk1C = (ext->unk1C + 1) & 0xF;
+        ext->unk20 = D_800C9B94[ext->unk1C][0];
+        ext->unk24 = *(s32 *)((u8 *)D_800C9B94 + ((ext->unk1C * 8) | 4));
+        ext->unk10 = (ext->unk20 - eng->unk10.x) / 31;
+        ext->unk18 = (ext->unk24 - eng->unk10.z) / 31;
+        a = get_angle(ext->unk10, ext->unk18) + 0x800;
+        a -= eng->unk1E;
+        a = (a << 20) >> 20;
+        a /= 12;
+        ext->unkC = a;
+        PlaySfx(0x507, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        break;
+    case 0x25:
+        v = *ext->anim++;
+        if (v != 0) {
+            eng->sub->unk74 = v;
+            k = nas->UserInfo.status++;
+            k -= 16;
+            if (k > 0) {
+                eng->unk1E += ext->unkC;
+                eng->unk5E = 1;
+                x = eng->unk10.x + ext->unk10 * k / 12;
+                z = eng->unk10.z + ext->unk18 * k / 12;
+            }
+        } else {
+            ext->anim = D_800C9C94;
+            ext->unk30 = 0x29;
+        }
+        break;
+    case 0x29:
+        v = *ext->anim++;
+        if (v == 0) {
+            ext->unk30 = 0x26;
+            ext->anim = D_800C9DD0;
+            nas->UserInfo.status = 0;
+            a = -eng->unk1E;
+            a = (a << 20) >> 20;
+            a /= 12;
+            ext->unkC = a;
+            break;
+        }
+        eng->sub->unk74 = v;
+        x = eng->unk10.x + ext->unk10;
+        z = eng->unk10.z + ext->unk18;
+        break;
+    case 0x26:
+        v = *ext->anim++;
+        if (v != 0) {
+            eng->sub->unk74 = v;
+            t = nas->UserInfo.status++;
+            if (t < 12) {
+                t = 12 - t;
+                x = eng->unk10.x + ext->unk10 * t / 12;
+                z = eng->unk10.z + ext->unk18 * t / 12;
+                eng->unk1E += ext->unkC;
+                eng->unk5E = 1;
+            }
+        } else if (D_800CB0F0 != 0) {
+            ext->unk30 = 0;
+            eng->sub->unk74 = 0x2004;
+            ext->timer = 0xB9A;
+        } else {
+            ext->anim = D_800C9D58;
+            ext->unk30 = 0x27;
+            PlaySfx(0x504, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        }
+        break;
+    case 0x27:
+    next:
+        v = *ext->anim++;
+        if (v != 0) {
+            eng->sub->unk74 = v;
+            if (v == -1) {
+                func_800C0DA0(eng);
+                goto next;
+            }
+        } else {
+            ext->unk30 = 0;
+            eng->sub->unk74 = 0x2004;
+            ext->timer = 0x96;
+        }
+        break;
+    }
+    if (Ovl5fRocketFindHero(x, z, 0x180) < 0) {
+        eng->unk10.x = x;
+        eng->unk10.z = z;
+    }
+    if (eng->unk10.x > D_800CB100) {
+        eng->unk10.x = D_800CB100;
+    }
+    if (eng->unk10.x < 0x100) {
+        eng->unk10.x = 0x100;
+    }
+    if (eng->unk10.z > D_800CB104) {
+        eng->unk10.z = D_800CB104;
+    }
+    if (eng->unk10.z < 0x100) {
+        eng->unk10.z = 0x100;
+    }
+    MissileCollideWithPickup(eng);
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", CheckMineToBoss);
 
