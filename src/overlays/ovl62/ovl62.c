@@ -1657,9 +1657,7 @@ void func_800B782C(s32 player) {
         fux->state = 5;
         fux->func = func_800CB6B4;
     }
-    do {
-        func_800B5EBC(player);
-    } while (0);
+    func_800B5EBC(player);
 }
 
 bool Player2PlayerRayTest(u32 player, u32 target) {

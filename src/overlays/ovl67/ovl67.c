@@ -260,10 +260,8 @@ void func_800B3CD0(s32 arg0) {
         func_800142D4(&e->unk1C);
     }
     func_8001CD04(e->sub, e->unk3C, &e->unk10);
-    do {
-        r = func_80025A48(e, 1);
-        if (r == NULL) goto next;
-    } while (0);
+    r = func_80025A48(e, 1);
+    if (r == NULL) goto next;
     {
         base = D_800C4190;
         b = (Ovl67HeroBox *)(arg0 << 2);
@@ -3096,12 +3094,10 @@ s32 func_800BAEA8(Ovl67Vel *arg0, s32 arg1) {
         if (eng == NULL) {
             continue;
         }
-        do {
-            rec = func_80025A48(eng, 0x40);
-            if (rec == NULL) {
-                goto next;
-            }
-        } while (0);
+        rec = func_80025A48(eng, 0x40);
+        if (rec == NULL) {
+            goto next;
+        }
         dx = eng->unk10.x - arg0->x;
         dz = eng->unk10.z - arg0->z;
         r = rec->radius + (arg1 & 0xFFFF);

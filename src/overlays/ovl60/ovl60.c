@@ -3388,9 +3388,7 @@ s32 LevelSpecific_ClaimedTile(s32 x, s32 z) {
     s32 r;
 
     if (g->mode == 11) {
-        do {
-            id = D_800C53DC[x][z].unkA;
-        } while (0);
+        id = D_800C53DC[x][z].unkA;
         mask = 0;
         if (id != -1) {
             if (x > 0) {
