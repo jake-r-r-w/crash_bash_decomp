@@ -531,8 +531,10 @@ signature alone is not enough.
   writes the same with a growing delay), `Tile_SetTnt`, `Tile_SetNitro`,
   `Tile_SetFourWay`; `Tile_Claim` sets 1 (or 10 with the freeze pickup);
   `Tile_Clear` resets a square (state 1, no owner), which the others inline.
-  Three more (`func_800C2294`/`22E8`/`2338`, states 4/2/3) are the leak's
-  FizzleOut/DelayedFizzleOut/OnFire in some order: left unnamed.
+  `Update_Tiles` shows what each timed state becomes: 3 frees the square when
+  its timer ends (`Tile_FizzleOut`; `Bank_Tiles` fizzles banked squares with
+  delay 10), 2 turns into 3 (`Tile_DelayedFizzleOut`), and 4 has no timer and
+  keeps its owner (`Tile_OnFire`).
   `Set_Tile_Under_Player(p, bool)` runs a landing: the mode rules
   (`SetTile_PogoThree` for mode 12's arrows, `SetTile_PogoFour` for mode 13),
   then claim, or `Tile_FireTnt` / `Tile_FireNitro` on states 5/6 (both daze

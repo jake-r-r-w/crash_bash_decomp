@@ -1763,7 +1763,7 @@ s32 Bank_Tiles(s32 arg0) {
     for (i = 0; i < 8; i++) {
         for (j = 0; j < 8; j++) {
             if (D_800C53DC[i][j].unkA == arg0) {
-                func_800C2338(i, j, D_800C53DC[i][j].unkA, 10);
+                Tile_FizzleOut(i, j, D_800C53DC[i][j].unkA, 10);
                 count++;
             }
         }
@@ -5741,7 +5741,7 @@ void Tile_FireAllNitros(void) {
     }
 }
 
-void func_800C2294(s32 arg0, s32 arg1, s16 arg2, s16 arg3) {
+void Tile_OnFire(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     Ovl60Cell *base = D_800C53DC[0];
     Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
 
@@ -5754,7 +5754,7 @@ void func_800C2294(s32 arg0, s32 arg1, s16 arg2, s16 arg3) {
     p->unkA = arg2;
 }
 
-void func_800C22E8(s32 arg0, s32 arg1, s16 arg2, s16 arg3) {
+void Tile_DelayedFizzleOut(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     Ovl60Cell *base = D_800C53DC[0];
     Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
 
@@ -5766,7 +5766,7 @@ void func_800C22E8(s32 arg0, s32 arg1, s16 arg2, s16 arg3) {
     p->unk16 = arg2;
 }
 
-void func_800C2338(s32 arg0, s32 arg1, s16 arg2, s16 arg3) {
+void Tile_FizzleOut(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     Ovl60Cell *base = D_800C53DC[0];
     Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
 

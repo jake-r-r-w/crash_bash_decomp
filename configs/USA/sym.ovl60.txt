@@ -161,3 +161,6 @@ Tiles_PlayerIsStealing = 0x800BB724; // type:func
 LevelSpecific_ClaimedTile = 0x800BBC94; // type:func
 LevelSpecific_UnclaimedTile = 0x800C178C; // type:func
 PogoAI_StartEncircling = 0x800BE864; // type:func
+Tile_FizzleOut = 0x800C2338; // type:func
+Tile_DelayedFizzleOut = 0x800C22E8; // type:func
+Tile_OnFire = 0x800C2294; // type:func

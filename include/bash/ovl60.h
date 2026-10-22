@@ -268,11 +268,8 @@ s32 PogoAI_CountMyTiles(u32 arg0);
 
 
 
-void func_800C2294(s32 arg0, s32 arg1, s16 arg2, s16 arg3);
 
-void func_800C22E8(s32 arg0, s32 arg1, s16 arg2, s16 arg3);
 
-void func_800C2338(s32 arg0, s32 arg1, s16 arg2, s16 arg3);
 
 
 
