@@ -454,9 +454,7 @@ extern s32 D_800CB104;
 
 
 
-void func_800BD654(NAS *nas);
 
-s32 func_800BF548(EXTengine *eng);
 
 void func_800C0DA0(EXTengine *arg0);
 

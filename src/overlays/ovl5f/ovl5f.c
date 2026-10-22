@@ -2370,7 +2370,7 @@ retry:
     }
     eng->unk10.x = x;
     eng->unk10.z = z;
-    func_800BF548(eng);
+    MissileCollideWithPickup(eng);
     hit = Ovl5fRocketFindHero(x, z, 0x10E);
     if (hit >= 0) {
         switch ((u32)Random(4)) {
@@ -3049,7 +3049,7 @@ void PlotRocketTA(NAS *nas)
     }
     eng->unk10.x = x;
     eng->unk10.z = z;
-    func_800BF548(eng);
+    MissileCollideWithPickup(eng);
     hit = Ovl5fRocketFindHero(x, z, 0x10E);
     if (hit < 0 || hit == fux->player) {
         goto puff;
@@ -3094,7 +3094,7 @@ void PlotMine(NAS *nas) {
          D_800CACB4[((eng->unk10.z >> 9) * D_800CAFF4) + (eng->unk10.x >> 9)] != 0) ||
         --nas->UserInfo.status == 0) {
         PlaySfx(0x4EA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
-        func_800BD654(nas);
+        CreateMineShrapnelBits(nas);
         for (i = 0; i < 8; i++) {
             if (D_800CB0C0[i] == nas) {
                 D_800CB0C0[i] = NULL;
@@ -3244,7 +3244,7 @@ found:
         ta = &D_800CAD50[hit];
         ta->SpeedX = 0;
         ta->SpeedZ = 0;
-        func_800BD654(nas);
+        CreateMineShrapnelBits(nas);
         KillNAS(nas);
     }
 }
@@ -3326,7 +3326,7 @@ void PlotTorpedo(NAS *nas) {
     KillNAS(nas);
 }
 
-void func_800BD654(NAS *nas) {
+void CreateMineShrapnelBits(NAS *nas) {
     EXTengine *eng;
     EXTengine *he;
     NAS *n;
@@ -3968,7 +3968,7 @@ static inline void SpawnPuff1605(SLONG_XYZ *pos, s32 kind) {
     }
 }
 
-s32 func_800BF548(EXTengine *eng) {
+bool MissileCollideWithPickup(EXTengine *eng) {
     s32 i;
     s32 j;
     NAS *pickup;
@@ -4223,7 +4223,7 @@ void PlotPillar(NAS *nas) {
             }
             eng->sub->unk68 = 0;
             eng->sub->flags &= ~0x02000000;
-            func_800BF548(eng);
+            MissileCollideWithPickup(eng);
             return;
         }
         if (nas->UserInfo.user2 >= 2) {

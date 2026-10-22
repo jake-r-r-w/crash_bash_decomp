@@ -550,7 +550,10 @@ signature alone is not enough.
     `TurretSFX`, `FireBreatherSFX`), `ResetToBasicWeapon` (999 rounds and
     the hero's basic weapon type) and `AnimateTank` (idle anim, with a
     random `tankidle1` and sound after `IdleAnimCt`; it follows
-    `TA_MoveHero` in code as in the leak).
+    `TA_MoveHero` in code as in the leak). `CreateMineShrapnelBits(nas)`
+    (from `PlotMine` / `PlotWaterMine`) spawns four `AST_ShrapnelBit`;
+    `MissileCollideWithPickup(eng)` tests a missile against the three
+    pickups in `D_800CAD44` and destroys the one it hits.
   - Polar (ovl62): `InitialisePOLARFirst`, `InitialisePOLAR`, `UpdatePOLAR`;
     hooks `Polar_HeroBot` and `DoNowt` (the `CheckBounds` hook, which only
     returns 0). From the AI: `PlayerActionCount(action, player)` counts the
