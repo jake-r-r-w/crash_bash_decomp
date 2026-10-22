@@ -464,6 +464,14 @@ signature alone is not enough.
   to Move), 0x70 Victory (the engine calls of `SetArkHeroWinner` /
   `ArkHeroWinner`). 0x6D Minelay is by elimination: its Set only checks for
   a win and its Do is empty (the `tankminelay` anim is never set).
+- **Pogo hero states** (ovl60, actions 0x39-0x3F): 0x39 Idle (`pogo_idle` /
+  `pogo_quick_idle`), 0x3A Pogo (the bounce; back to Idle), 0x3B Dazed
+  (`pogo_dazed`, `hero_frozen` 10), 0x3C Winner (the engine's winner calls),
+  0x3D Loser, 0x3E Tied, 0x3F Tazing (`pogo_tazing`). The end states are
+  entered by three tests on `hero_status`, the leak's `TestHeroPogoWinner`
+  (0x200, `pogo_winner` anim), `TestHeroPogoLoser` (0x400) and
+  `TestHeroPogoTied` (0x100): Arkenoid's Dead state uses the same 0x200/0x400
+  bits for Winner/Lose.
 - **Ambiguous, left unnamed:**
   - Both of the leak's `Roo_FireRocket` declarations match real functions:
     `func_800BFFF4(eng)` and `func_800C02AC(eng, dir)` both spawn

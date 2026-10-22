@@ -210,7 +210,7 @@ extern u16 D_800C3A38[][2];
 extern s32 D_800C5074[];
 extern s32 D_800C5050[];
 extern s32 D_800C502C[];
-/* func_800B5EE4's per-hero frame tables */
+/* HeroPogo's per-hero frame tables */
 extern s32 D_800C4758[];
 extern s32 D_800C4878[];
 extern s32 D_800C49DC[];
@@ -330,15 +330,11 @@ void func_800B7C3C(s32 arg0, s32 arg1);
 
 void func_800C2620(s32 arg0, s32 arg1);
 
-void func_800C286C(s32 arg0);
 
-void func_800C28FC(s32 arg0);
 
-void func_800C2A8C(s32 arg0);
 
 s32 func_800C2C70(s32 arg0);
 
-void func_800C2DCC(s32 arg0);
 
 void func_800C2E50(s32 arg0, s32 arg1);
 
@@ -369,11 +365,8 @@ typedef enum Ovl60Mode {
 s32 func_8008502C();
 void func_800B3C44(void);
 
-void func_800B6370(s32 arg0);
 
-void func_800B6438(s32 arg0);
 
-void func_800B6790(s32 arg0);
 
 s32 func_800B6C14(s32 arg0);
 s32 func_800B5D90(s32 arg0);
@@ -426,13 +419,9 @@ void func_800C2674(s32 arg0);
 
 void func_800C2770(s32 arg0, u32 arg1, u32 arg2);
 
-s32 func_800C295C(s32 arg0);
 
-s32 func_800C29F4(s32 arg0);
 
-s32 func_800C2B00(s32 arg0);
 
-void func_800C2BE8(s32 arg0);
 
 void func_800C2FB8(void);
 
@@ -627,13 +616,9 @@ void func_800B3A38(void);
 
 void func_800B3FF0(void);
 
-void func_800B662C(s32 arg0);
 
-void func_800B6960(s32 arg0);
 
-void func_800B6AE0(s32 arg0);
 
-void func_800B6DF4(s32 arg0);
 
 void func_800B7B1C(s32 arg0, s32 arg1, s32 arg2);
 
@@ -671,7 +656,7 @@ void func_800BFFF4(EXTengine *eng);
 void func_800C1840(u32 x, u32 z, s32 id, s32 *seen);
 s32 func_800BDCB8(s32 hero, s32 x, s32 z, s32 arg3, s32 arg4, s32 arg5);
 
-/* func_800B6F34: a status bit sends the hero to an action and seq. */
+/* HeroPogoDazed: a status bit sends the hero to an action and seq. */
 static inline s32 Ovl60_StatusAction(s32 arg0, s32 bit, s32 action, s32 seq)
 {
     if (Heroes[arg0].hero_status & bit) {
@@ -685,9 +670,9 @@ static inline s32 Ovl60_StatusAction(s32 arg0, s32 bit, s32 action, s32 seq)
     return 0;
 }
 
-void func_800B5EE4(s32 arg0);
+void HeroPogo(u32 arg0);
 
-void func_800B6F34(s32 arg0);
+void HeroPogoDazed(u32 arg0);
 
 s32 func_800BA51C(s32 arg0, s32 arg1);
 

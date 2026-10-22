@@ -1057,7 +1057,7 @@ s32 func_800B5D90(s32 arg0) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl60/ovl60", D_800B32B8);
 
-void func_800B5EE4(s32 arg0) {
+void HeroPogo(u32 arg0) {
     HeroInfo *h;
     HeroInfo *hero;
     HeroInfo *hb;
@@ -1123,13 +1123,13 @@ void func_800B5EE4(s32 arg0) {
         Heroes[arg0].hero_move->velocity_enable = 0;
         Heroes[arg0].hero_move->forward_speed = 0;
         Heroes[arg0].hero_move->jump_max = 0;
-        if (func_800C2B00(arg0) != 0) {
+        if (TestHeroPogoWinner(arg0) != 0) {
             return;
         }
-        if (func_800C29F4(arg0) != 0) {
+        if (TestHeroPogoLoser(arg0) != 0) {
             return;
         }
-        if (func_800C295C(arg0) != 0) {
+        if (TestHeroPogoTied(arg0) != 0) {
             return;
         }
         SetHeroAction((HeroInfo *)arg0, 0x39);
@@ -1189,7 +1189,7 @@ void func_800B5EE4(s32 arg0) {
     Heroes[arg0].hero_eng->sub->unk74 = n;
 }
 
-void func_800B6370(s32 arg0) {
+void SetHeroPogoIdle(u32 arg0) {
     s32 seq;
 
     func_800C2810(arg0);
@@ -1205,18 +1205,18 @@ void func_800B6370(s32 arg0) {
     }
 }
 
-void func_800B6438(s32 arg0) {
+void HeroPogoIdle(u32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
     s32 v;
 
-    if (func_800C2B00(arg0) != 0) {
+    if (TestHeroPogoWinner(arg0) != 0) {
         return;
     }
-    if (func_800C29F4(arg0) != 0) {
+    if (TestHeroPogoLoser(arg0) != 0) {
         return;
     }
-    if (func_800C295C(arg0) != 0) {
+    if (TestHeroPogoTied(arg0) != 0) {
         return;
     }
     if (func_800B6C14(arg0) != 0) {
@@ -1267,20 +1267,20 @@ void func_800B6438(s32 arg0) {
     func_800871E4(arg0);
 }
 
-void func_800B662C(s32 arg0) {
+void HeroPogoTazing(u32 arg0) {
     HeroInfo *h;
     EXTengine *eng;
     EXTheromove *mv;
     HeroInfo *base;
     s32 d;
 
-    if (func_800C2B00(arg0) != 0) {
+    if (TestHeroPogoWinner(arg0) != 0) {
         return;
     }
-    if (func_800C29F4(arg0) != 0) {
+    if (TestHeroPogoLoser(arg0) != 0) {
         return;
     }
-    if (func_800C295C(arg0) != 0) {
+    if (TestHeroPogoTied(arg0) != 0) {
         return;
     }
     if (func_800B6C14(arg0) != 0) {
@@ -1310,7 +1310,7 @@ void func_800B662C(s32 arg0) {
     func_800871E4(arg0);
 }
 
-void func_800B6790(s32 arg0) {
+void HeroPogoWinner(u32 arg0) {
     EXTengine *eng;
     u8 *g;
 
@@ -1355,7 +1355,7 @@ void func_800B6790(s32 arg0) {
     }
 }
 
-void func_800B6960(s32 arg0) {
+void SetHeroPogoLoser(u32 arg0) {
     s32 *pos;
     NAS *nas;
     s32 *ext;
@@ -1393,7 +1393,7 @@ void func_800B6960(s32 arg0) {
     Heroes[arg0].hero_shadow->flags &= ~0x8000;
 }
 
-void func_800B6AE0(s32 arg0) {
+void HeroPogoLoser(u32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
     EXTengine *eng;
@@ -1484,7 +1484,7 @@ s32 func_800B6C14(s32 arg0) {
     return 1;
 }
 
-void func_800B6DF4(s32 arg0) {
+void SetHeroPogoDazed(u32 arg0) {
     s32 x;
     s32 z;
     Ovl60Cell *c;
@@ -1514,7 +1514,7 @@ void func_800B6DF4(s32 arg0) {
     SetHeroSeq((HeroInfo *)arg0, 0x31);
 }
 
-void func_800B6F34(s32 arg0) {
+void HeroPogoDazed(u32 arg0) {
     s32 x;
     s32 z;
     Ovl60Cell *c;
@@ -5933,7 +5933,7 @@ void func_800C2810(s32 arg0) {
     }
 }
 
-void func_800C286C(s32 arg0) {
+void HeroPogoTied(u32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h;
     EXTengine *eng;
@@ -5950,7 +5950,7 @@ void func_800C286C(s32 arg0) {
     func_8008502C(arg0);
 }
 
-void func_800C28FC(s32 arg0) {
+void SetHeroPogoTied(u32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
 
@@ -5962,7 +5962,7 @@ void func_800C28FC(s32 arg0) {
     h->hero_frozen = 2;
 }
 
-s32 func_800C295C(s32 arg0) {
+bool TestHeroPogoTied(u32 arg0) {
     if (Heroes[arg0].hero_status & 0x100) {
         if (D_800C535C[arg0].nas != NULL) {
             func_800C2B98(arg0);
@@ -5974,7 +5974,7 @@ s32 func_800C295C(s32 arg0) {
     return 0;
 }
 
-s32 func_800C29F4(s32 arg0) {
+bool TestHeroPogoLoser(u32 arg0) {
     if (Heroes[arg0].hero_status & 0x400) {
         if (D_800C535C[arg0].nas != NULL) {
             func_800C2B98(arg0);
@@ -5986,7 +5986,7 @@ s32 func_800C29F4(s32 arg0) {
     return 0;
 }
 
-void func_800C2A8C(s32 arg0) {
+void SetHeroPogoWinner(u32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
 
@@ -6000,7 +6000,7 @@ void func_800C2A8C(s32 arg0) {
     D_800AD12C = 1;
 }
 
-s32 func_800C2B00(s32 arg0) {
+bool TestHeroPogoWinner(u32 arg0) {
     if (Heroes[arg0].hero_status & 0x200) {
         if (D_800C535C[arg0].nas != NULL) {
             func_800C2B98(arg0);
@@ -6022,7 +6022,7 @@ void func_800C2B98(s32 arg0) {
     }
 }
 
-void func_800C2BE8(s32 arg0) {
+void SetHeroPogoTazing(u32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
     EXTheromove *move;
@@ -6074,7 +6074,7 @@ s32 func_800C2CBC(s32 arg0) {
     return 0;
 }
 
-void func_800C2DCC(s32 arg0) {
+void SetHeroPogo(u32 arg0) {
     Ovl60Slot *slot;
 
     Heroes[arg0].hero_move->velocity_enable = 0;
