@@ -2674,7 +2674,360 @@ s32 func_800B9B6C(s32 hero) {
     return -1;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", DoChooseNewAction);
+void DoChooseNewAction(u32 player) {
+    s32 i;
+    Ovl62Fux *fux;
+    Ovl62Fux *f;
+    Ext20 *ext;
+    EXTengine *eng;
+    HeroInfo *h;
+    HeroInfo *me;
+    s32 *fl;
+    s32 *all;
+    Ovl62ModeView *g;
+    Ovl62Link *l;
+    Ovl62Fux *o;
+    s32 one;
+    s32 found;
+    s32 j;
+    s32 n;
+    s32 r;
+    HeroInfo *base;
+    HeroInfo *hb;
+    HeroInfo *hp;
+    HeroInfo *e;
+
+    base = Heroes;
+    h = &base[player];
+    fux = (Ovl62Fux *)h->hero->FUX;
+    if (fux == NULL) {
+        return;
+    }
+    ext = FindExtension(h->hero, 0x20000000);
+    if (ext != NULL) {
+        if (((Ovl62ModeView *)D_8005A614)->mode == 0x12) {
+            D_800D4DD0 = 1000000;
+        }
+        h->hero_ai->AImode = 1;
+        eng = h->hero_eng;
+        if (h->hero_mode != 0x49) {
+            fux->unk50 = 0;
+        }
+        i = 0;
+        if (fux->state != 1) {
+            fux->unk58 = 0;
+        }
+        g = (Ovl62ModeView *)D_8005A614;
+        one = 1;
+        for (;; i++) {
+            NAS *nas;
+            BombMakerExt *b;
+
+            if (i >= 4) {
+                break;
+            }
+            o = (Ovl62Fux *)Heroes[i].hero->FUX;
+            if (o == NULL) {
+                continue;
+            }
+            D_800D5FEC[i] = 0;
+            if (Heroes[i].hero_mode == 0x4B || Heroes[i].hero_mode == 0x5A) {
+                D_800D5FEC[i] = 0x80;
+            }
+            if (Heroes[i].hero_mode == 0x56) {
+                D_800D5FEC[i] |= 0x800;
+            }
+            if (g->mode == 0x12) {
+                Ovl62Prox *p = D_800D5494;
+                Ovl62Mode *m;
+                s32 dx;
+                s32 dz;
+
+                if (p != NULL && (m = p->unk58) != NULL) {
+                    dx = p->eng->unk10.x - Heroes[player].hero_eng->unk10.x;
+                    dz = p->eng->unk10.z - Heroes[player].hero_eng->unk10.z;
+                    if (dx * dx + dz * dz <= 0xB0643 && (m->mode == one || m->mode == 5)) {
+                        D_800D5FEC[i] |= 0x100;
+                    }
+                }
+            }
+            if (g->mode == 0x14 && Heroes[i].hero_mode == 0x52) {
+                D_800D5FEC[i] |= 0x200;
+            }
+            if (g->mode == 0x15) {
+                nas = D_800D5294;
+            loop:
+                if (nas != NULL) {
+                    b = FindExtension(nas, 0x10000000);
+                    if (b != NULL && b->unkC == one && b->unk14 == i) {
+                        found = 1;
+                        goto done;
+                    }
+                    nas = nas->Group.Child;
+                    goto loop;
+                }
+                found = 0;
+            done:
+                if (found) {
+                    D_800D5FEC[i] |= 0x400;
+                    o->unk54++;
+                } else {
+                    o->unk54 = 0;
+                    if (Ovl62FreeBomb() != NULL && o->func == func_800CB6B4 && ext->state == one) {
+                        f = (Ovl62Fux *)Heroes[i].hero->FUX;
+                        if (f != NULL) {
+                            f->unk24 = Random(0x168) + 0x5A;
+                        }
+                        o->state = 0xD;
+                        o->func = func_800B6FEC;
+                    }
+                }
+            }
+        }
+        func_800BCC9C(player);
+        func_800B6258(player);
+        func_800B60B8(player);
+        if (Heroes[player].hero_mode == 0x4E || (Heroes[player].hero_status & 0x2000)) {
+            goto stop;
+        }
+        if (eng != NULL) {
+            if (D_800D4DD0 < func_8008CEB0((u8 *)&D_800D4DD4, (u8 *)&eng->unk10)) {
+                D_800D5FEC[player] |= 1;
+            }
+            if (D_800D5254 != NULL && (l = D_800D5254->unk58) != NULL) {
+                if (l->unk14 == 2) {
+                    D_800D5FFC = l->unk14;
+                } else {
+                    D_800D5FFC = 1;
+                    fux->flags &= ~1;
+                }
+                if (l->unk6C != 5) {
+                    if (l->unkC == 5) {
+                        D_800D5FEC[l->unk6C] |= 2;
+                    }
+                    if (l->unkC == 6) {
+                        D_800D5FEC[l->unk6C] |= 0x40;
+                    }
+                }
+                if (l->unk10 != -1) {
+                    switch (l->unk28[l->unk10]) {
+                    case 1:
+                        D_800D5FEC[l->unk10] |= 4;
+                        break;
+                    case 0:
+                        D_800D5FEC[l->unk10] |= 8;
+                        break;
+                    case 2:
+                        D_800D5FEC[l->unk10] |= 0x20;
+                        break;
+                    }
+                }
+            }
+        }
+        if (!(fux->flags & 1)) {
+            func_800B9398(player);
+        }
+        if (fux->state == 5) {
+            r = Random(5);
+            for (n = 0; n < 5; n++) {
+                if (D_800D4DF0[r](player) != 0) {
+                    break;
+                }
+                if (++r >= 5) {
+                    r = 0;
+                }
+            }
+        }
+        i = 0;
+        hb = Heroes;
+        all = D_800D5FEC;
+        hp = &hb[player];
+        fl = all;
+        me = hb;
+    loop2:
+        if (i < 4) {
+            do {
+            do {
+            if (i == player || me->hero_mode == 0x4E || (me->hero_status & 0x2000)) {
+                goto next2;
+            }
+            if (*fl & 0x400) {
+                EXTengine *a = hp->hero_eng;
+                EXTengine *c = me->hero_eng;
+                s32 dx;
+                s32 dz;
+
+                dx = a->unk10.x - c->unk10.x;
+                dz = a->unk10.z - c->unk10.z;
+                if (dx * dx + dz * dz <= 0x4D1C3F) {
+                    all[6] = -1;
+                    OVL62_ATTACK(fux, hp, player, i, f, j);
+                }
+            }
+            if (*fl & 4) {
+                all[6] = -1;
+                if (fux->state != 6 || fux->unk24 == 0) {
+                    fux->unk24 = 0xD2;
+                }
+                fux->state = 6;
+                fux->func = func_800B7F70;
+                fux->unk2C = i;
+                fux->unk3C = 1;
+                fux->unk34 |= 1;
+                if (TestForTeamMate(player, i)) {
+                    OVL62_ATTACK(fux, hp, player, i, f, j);
+                }
+            }
+            if (*fl & 8) {
+                all[6] = -1;
+                OVL62_ATTACK(fux, hp, player, i, f, j);
+            }
+            if (*fl & 0x20) {
+                all[6] = -1;
+                OVL62_ATTACK(fux, hp, player, i, f, j);
+            }
+            if (*fl & 2) {
+                all[6] = -1;
+                if (fux->unk24 <= 0 && (fux->state != 6 || fux->unk24 == 0)) {
+                    fux->unk24 = 0x168;
+                }
+                fux->state = 6;
+                fux->func = func_800B7F70;
+                fux->unk2C = i;
+                fux->unk3C = 0;
+                fux->unk34 |= 1;
+                if (TestForTeamMate(player, i)) {
+                    OVL62_ATTACK(fux, hp, player, i, f, j);
+                }
+            }
+            if (*fl & 0x40) {
+                all[6] = -1;
+                OVL62_ATTACK(fux, hp, player, i, f, j);
+            }
+            if (*fl & 0x80) {
+                all[6] = -1;
+                OVL62_ATTACK(fux, hp, player, i, f, j);
+            }
+            if ((*fl & 0x200) && all[6] == 1) {
+                all[6] = -1;
+                OVL62_ATTACK(fux, hp, player, i, f, j);
+            }
+        next2:
+            fl++;
+            } while (0);
+            } while (0);
+            me++;
+            i++;
+            goto loop2;
+        }
+        i = 0;
+        if (D_800D5FEC[player] & 4) {
+            fux->unk3C = 2;
+            if (fux->state != 1 || fux->unk24 == 0) {
+                fux->unk24 = 0xD2;
+            }
+            if (fux->unk58 == 0) {
+                s32 t = func_800B3740(player);
+
+                fux->unk58 = 1;
+                if (t == -1) {
+                    fux->state = 1;
+                    fux->target = i;
+                    fux->func = func_800B6708;
+                    fux->unk34 |= 2;
+                } else {
+                    fux->func = func_800B6708;
+                    fux->target = t;
+                    fux->state = 1;
+                    fux->unk34 &= ~2;
+                }
+            }
+        }
+        if (D_800D5FEC[player] & 8) {
+            fux->unk34 |= 1;
+            if (fux->state != 6 || fux->unk24 == 0) {
+                fux->unk24 = 0xD2;
+            }
+            fux->state = 6;
+            fux->unk3C = 2;
+            fux->unk2C = i;
+            fux->func = func_800B7F70;
+        }
+        if (D_800D5FEC[player] & 2) {
+            fux->unk3C = 0;
+            if (fux->state != 1 || fux->unk24 == 0) {
+                fux->unk24 = 0x168;
+            }
+            if (fux->unk58 == 0) {
+                s32 t = func_800B3740(player);
+
+                fux->unk58 = 1;
+                if (t == -1) {
+                    fux->state = 1;
+                    fux->target = i;
+                    fux->func = func_800B6708;
+                    fux->unk34 |= 2;
+                } else {
+                    fux->func = func_800B6708;
+                    fux->target = t;
+                    fux->state = 1;
+                    fux->unk34 &= ~2;
+                }
+            }
+        }
+        if (D_800D5FEC[player] & 0x40) {
+            fux->unk34 |= 1;
+            if (fux->state != 6 || fux->unk24 == 0) {
+                fux->unk24 = 0xD2;
+            }
+            fux->state = 6;
+            fux->unk3C = 2;
+            fux->unk2C = i;
+            fux->func = func_800B7F70;
+        }
+        if (D_800D5FEC[player] & 0x100) {
+            fux->unk34 |= 1;
+            if (fux->state != 6 || fux->unk24 == 0) {
+                fux->unk24 = 0xD2;
+            }
+            fux->state = 0xC;
+            fux->unk3C = 1;
+            fux->unk2C = i;
+            fux->func = func_800B889C;
+        }
+        if (D_800D5FEC[player] & 0x200) {
+            fux->unk34 |= 1;
+            if (fux->state != 6 || fux->unk24 == 0) {
+                fux->unk24 = 0xD2;
+            }
+            fux->state = 6;
+            fux->unk3C = 2;
+            fux->unk2C = i;
+            fux->func = func_800B7F70;
+        }
+        if (D_800D5FEC[player] & 0x800) {
+            fux->unk34 |= 1;
+            if (fux->state != 6 || fux->unk24 == 0) {
+                fux->unk24 = 0xD2;
+            }
+            fux->state = 6;
+            fux->unk3C = 2;
+            fux->unk2C = i;
+            fux->func = func_800B7F70;
+        }
+    }
+    {
+        HeroInfo *hb2 = Heroes;
+
+        e = &hb2[player];
+    }
+    if ((u16)(e->hero_mode - 0x4B) < 2) {
+        e->hero_ai->AImode = 0;
+    stop:
+        fux->state = 5;
+        fux->func = func_800CB6B4;
+    }
+}
 
 void InitialisePOLAR(void) {
     SceneObj *obj;

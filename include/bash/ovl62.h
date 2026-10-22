@@ -391,7 +391,7 @@ typedef struct Ovl62Fux {
     /* 0x4C */ s32 flags;
     /* 0x50 */ s32 unk50;
     /* 0x54 */ s32 unk54;
-    /* 0x58 */ u8 pad58[0x5C - 0x58];
+    /* 0x58 */ s32 unk58;
     /* 0x5C */ s32 timer;
 } Ovl62Fux;
 
@@ -649,9 +649,12 @@ typedef struct Ovl62Sector {
 
 /* Read by func_800CB0A4 and CheckMelted. */
 typedef struct Ovl62Link {
-    /* 0x00 */ u8 pad0[0x10];
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ s32 unkC;
     /* 0x10 */ s32 unk10;
-    /* 0x14 */ u8 pad14[0x6C - 0x14];
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ u8 pad18[0x28 - 0x18];
+    /* 0x28 */ s32 unk28[(0x6C - 0x28) / 4];
     /* 0x6C */ s32 unk6C;
     /* 0x70 */ u8 pad70[0xBC - 0x70];
     /* 0xBC */ Ovl62Sector sectors[16];
@@ -681,6 +684,33 @@ typedef struct Ovl62Prox {
 } Ovl62Prox;
 
 extern Ovl62Prox *D_800D5494;
+
+/* Action choosers DoChooseNewAction tries in turn from a random start. */
+extern s32 (*D_800D4DF0[5])(s32 player);
+
+/* DoChooseNewAction's "attack target t" step: chase t, and send a team mate
+   after one of the other team. */
+#define OVL62_ATTACK(fux, h, player, t, f, r)                    \
+    {                                                            \
+        if ((fux)->state != 1 || (fux)->unk24 == 0) {            \
+            (fux)->unk24 = 0xD2;                                 \
+        }                                                        \
+        (fux)->state = 1;                                        \
+        (fux)->unk3C = 1;                                        \
+        (fux)->func = func_800B6708;                             \
+        (fux)->target = (t);                                     \
+        (fux)->unk34 &= ~2;                                      \
+        (f) = (Ovl62Fux *)(h)->hero->FUX;                        \
+        if ((f) != NULL && TestForTeamMate((player), (t))) {     \
+            (r) = func_800B9B6C(player);                         \
+            if ((r) == -1) {                                     \
+                (f)->state = 5;                                  \
+                (f)->func = func_800CB6B4;                       \
+            } else {                                             \
+                (f)->target = (r);                               \
+            }                                                    \
+        }                                                        \
+    }
 
 /* Escape headings tried by func_800B889C. */
 extern s32 D_800D53E8[8];
