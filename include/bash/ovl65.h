@@ -436,3 +436,24 @@ typedef struct Ovl65Scene {
 } Ovl65Scene;
 
 s32 func_800B9020(Ovl65Vec *pos, Ovl65Vec *out, s32 radius, s32 idx, s32 flags);
+
+/* func_800B7AA0: D_800BDB54 (the swinging target) as it moves. */
+typedef struct Ovl65Target {
+    u8 pad0[4];
+    s32 x;      /* 0x04 */
+    u8 pad8[4];
+    s32 z;      /* 0x0C */
+    u8 pad10[2];
+    s16 ang;    /* 0x12 */
+    s16 ang2;   /* 0x14 */
+    u8 pad16[0x51 - 0x16];
+    u8 unk51;   /* 0x51 */
+    s16 unk52;  /* 0x52 */
+} Ovl65Target;
+
+extern s32 D_800BDBB0;
+extern s32 D_800BDBB4;
+
+static inline s32 Ovl65Dot(VECTOR *a, VECTOR *b) {
+    return (a->vx * b->vx >> 12) + (a->vz * b->vz >> 12);
+}

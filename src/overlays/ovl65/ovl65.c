@@ -1924,7 +1924,172 @@ void func_800B7664(void) {
     D_800BDA08[2] = D_800BDA04;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B7AA0);
+void func_800B7AA0(void) {
+    VECTOR n;
+    VECTOR d;
+    VECTOR r;
+    NAS *nas;
+    Ovl65DinoGem *ext;
+    s32 i;
+    s32 kind;
+    s32 sign;
+    s32 spd;
+    s32 a;
+    s32 out;
+    s32 dot;
+
+    if (D_800BDB54 == NULL || (D_8005A644 & 0x801)) {
+        return;
+    }
+    if (D_800BDBAC-- < 0) {
+        D_800BDBAC = 0;
+    }
+    ((Ovl65Target *)D_800BDB54)->unk51 = 0;
+    ((Ovl65Target *)D_800BDB54)->x = (D_80068BD4[(D_800BDBB4 - 0x400) & 0xFFF].unk2 * 11) >> 4;
+    ((Ovl65Target *)D_800BDB54)->z = (D_80068BD4[D_800BDBB4 & 0xFFF].unk2 * 11) >> 4;
+    {
+        s32 h = (u16)D_800BDBB4;
+
+        ((Ovl65Target *)D_800BDB54)->ang = h;
+        ((Ovl65Target *)D_800BDB54)->ang2 = h * 2;
+    }
+    D_800BDBB4 = ((D_80068BD4[(D_800BDBA4 - 0x400) & 0xFFF].unk2 * 3) >> 4) & 0xFFF;
+    if (D_800BDBB4 >= 0x2F8 && D_800BDBAC == 0 && D_800BDBB4 <= 0x400) {
+        PlaySfx(0x6BF, NULL, NULL, 0x1000, 0x1E00, 0);
+        D_800BDBAC = 0x5A;
+    }
+    if (D_800BDBB4 <= 0xD08 && D_800BDBAC == 0 && D_800BDBB4 >= 0x400) {
+        PlaySfx(0x6BF, NULL, NULL, 0x1000, 0x1E00, 0);
+        D_800BDBAC = 0x5A;
+    }
+    D_800BDBA4 = (D_800BDBA4 + 0xC) & 0xFFF;
+    ((Ovl65Target *)D_800BDB54)->unk52 = 1;
+    for (i = 0;; i++) {
+        s32 t_;
+
+        if (i >= 3) {
+            break;
+        }
+        nas = NULL;
+        if (i == 0) {
+            nas = (NAS *)D_800BD9FC;
+        }
+        if (i == 1) {
+            nas = D_800BDA00;
+        }
+        if (i == 2) {
+            nas = D_800BDA04;
+        }
+        ext = FindExtension(nas, 0x10000000);
+        if (ext == NULL) {
+            continue;
+        }
+        kind = ext->unkC;
+        if (kind != 3 || ext->unk80 >= 2 || ext->unk8C > 0) {
+            continue;
+        }
+        if (XZBoxToSphere((SLONG_XYZ *)D_800BDB54, &nas->Engine->unk10, 0, &nas->Engine->unk10) == -1) {
+            continue;
+        }
+        D_800BDBB0++;
+        spd = csqrt(ext->unkB4 * ext->unkB4 + ext->unkD4 * ext->unkD4) >> 6;
+        a = (((Ovl65Target *)D_800BDB54)->ang + 0x800) & 0xFFF;
+        ext->unk8C = 0x14;
+        n.vx = D_80068BD4[(a - 0x400) & 0xFFF].unk2;
+        n.vz = D_80068BD4[a].unk2;
+        d.vx = -D_80068BD4[(nas->Engine->unk1E - 0x400) & 0xFFF].unk2;
+        d.vz = -D_80068BD4[nas->Engine->unk1E & 0xFFF].unk2;
+        dot = Ovl65Dot(&d, &n);
+        r.vx = d.vx - (dot * n.vx >> 11);
+        r.vz = d.vz - (dot * n.vz >> 11);
+        out = get_angle(r.vx, r.vz) + 0x800;
+        nas->Engine->unk1E = out;
+        ext->unkB4 = -(spd * D_80068BD4[(out - 0x400) & 0xFFF].unk2 >> 12);
+        ext->unkD4 = -(spd * D_80068BD4[out & 0xFFF].unk2 >> 12);
+        nas->Engine->unk10.x += ext->unkB4;
+        nas->Engine->unk10.z += ext->unkD4;
+        sign = 1;
+        if (((Ovl65Game *)D_8005A614)->flags & 0x40) {
+            sign = -1;
+        }
+        if (((Ovl65Game *)D_8005A614)->flags & 0x80) {
+            if (D_8005A614[ext->unk10 + 0x5C] == 0) {
+                PlaySfx(0x6B1, NULL, NULL, 0x1000, 0x1E00, 0);
+                if (ext->unk90 == 5 && (D_800BDB90 == 2 || D_800BDB9C == 2)) {
+                    PlaySfx(0x6BE, NULL, NULL, 0x1000, 0x1E00, 0);
+                    Heroes[ext->unk10].hero_score += ext->unk90 * sign;
+                    if (Heroes[ext->unk10].hero_score <= 0) {
+                        Heroes[ext->unk10].hero_score = 0;
+                    }
+                    Heroes[ext->unk10].hero_score_displayed = Heroes[ext->unk10].hero_score;
+                }
+                if (ext->unk90 == 3 && (D_800BDB90 == 1 || D_800BDB9C == 1)) {
+                    PlaySfx(0x6BD, NULL, NULL, 0x1000, 0x1E00, 0);
+                    Heroes[ext->unk10].hero_score += ext->unk90 * sign;
+                    if (Heroes[ext->unk10].hero_score <= 0) {
+                        Heroes[ext->unk10].hero_score = 0;
+                    }
+                    Heroes[ext->unk10].hero_score_displayed = Heroes[ext->unk10].hero_score;
+                }
+                if (ext->unk90 == 2 && (D_800BDB90 == 0 || D_800BDB9C == 0)) {
+                    PlaySfx(0x6BC, NULL, NULL, 0x1000, 0x1E00, 0);
+                    Heroes[ext->unk10].hero_score += ext->unk90 * sign;
+                    if (Heroes[ext->unk10].hero_score <= 0) {
+                        Heroes[ext->unk10].hero_score = 0;
+                    }
+                    Heroes[ext->unk10].hero_score_displayed = Heroes[ext->unk10].hero_score;
+                }
+            } else {
+                PlaySfx(0x6B1, NULL, NULL, 0x1000, 0x1E00, 0);
+                Heroes[ext->unk10].hero_score += ext->unk90 * sign;
+                if (Heroes[ext->unk10].hero_score <= 0) {
+                    Heroes[ext->unk10].hero_score = 0;
+                }
+                Heroes[ext->unk10].hero_score_displayed = Heroes[ext->unk10].hero_score;
+                if (ext->unk90 == 1) {
+                    PlaySfx(0x6BB, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (ext->unk90 == 2) {
+                    PlaySfx(0x6BC, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (ext->unk90 == 3) {
+                    PlaySfx(0x6BD, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+                if (ext->unk90 == 5) {
+                    PlaySfx(0x6BE, NULL, NULL, 0x1000, 0x1E00, 0);
+                    PlaySfx(0x6B2, NULL, NULL, 0x1000, 0x1E00, 0);
+                }
+            }
+        } else {
+            PlaySfx(0x6B1, NULL, NULL, 0x1000, 0x1E00, 0);
+            Heroes[ext->unk10].hero_score += ext->unk90 * sign;
+            if (Heroes[ext->unk10].hero_score < 0) {
+                Heroes[ext->unk10].hero_score = 0;
+            }
+            if (((Ovl65TeamView *)D_8005A614)->teams != 0 && (((Ovl65Game *)D_8005A614)->flags & 0x40) &&
+                Heroes[ext->unk10].hero_score == 0) {
+                Heroes[Heroes[ext->unk10].hero_teammate].hero_score += ext->unk90 * sign;
+                if (Heroes[Heroes[ext->unk10].hero_teammate].hero_score < 0) {
+                    Heroes[Heroes[ext->unk10].hero_teammate].hero_score = 0;
+                }
+            }
+            Heroes[ext->unk10].hero_score_displayed = Heroes[ext->unk10].hero_score;
+            if (ext->unk90 == 1) {
+                PlaySfx(0x6BB, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (ext->unk90 == 2) {
+                PlaySfx(0x6BC, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (ext->unk90 == 3) {
+                PlaySfx(0x6BD, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (ext->unk90 == 5) {
+                PlaySfx(0x6BE, NULL, NULL, 0x1000, 0x1E00, 0);
+                PlaySfx(0x6B2, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+        }
+    }
+}
 
 void func_800B85DC(void) {
     s32 i;
