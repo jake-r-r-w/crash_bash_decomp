@@ -59,6 +59,15 @@ extern s32 D_800B962C;
 extern u8 D_800B8F20[];
 extern s32 D_800B9508;
 extern s32 D_800B950C;
+/* D_8005A604 as func_800B4910 edits it (options menu). */
+typedef struct Ovl69Opt {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ u8 unkC[4];
+} Ovl69Opt;
+extern s32 D_800B901C[];
+extern s32 D_800B91CC[];
 extern u8 D_800BA754[];
 extern s32 D_800BAAC8;
 extern s32 D_800BAACC;
@@ -467,6 +476,8 @@ typedef struct {
 #define O69PAD ((Ovl69Pad *)D_80051338)
 extern u8 D_8005A63B;
 void func_800B3F7C(void);
+
+void func_800B4910(void);
 
 void func_800B53D4(void);
 void func_800B5410(void);

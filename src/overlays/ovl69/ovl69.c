@@ -442,7 +442,140 @@ void func_800B4848(void) {
     *(s16 *)(g + 0x44) = (s8)D_8004E0A4[g[i + 0x4C]];
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl69/ovl69", func_800B4910);
+void func_800B4910(void) {
+    subengine *sub;
+    s32 v;
+    s32 n;
+    s32 i;
+    subengine *cam;
+
+    cam = GetEngineSlot(1)->sub;
+    cam->unk14 = D_8005B690 * 0x14;
+    cam->unk12 = 0x293;
+    cam->unk50 = 1;
+    cam->unk20.z = 0x2800;
+    cam->unk20.x = 0x2800;
+    cam->unk51 = 0;
+    cam->unk52 = 1;
+    sub = GetEngineSlot(4)->sub;
+    switch (D_800B950C) {
+    case 0:
+        sub[D_800B9508 + 3].unk7C = 0;
+        if ((((PadButtons *)D_80051338)->pressed & 0x40) && D_800B9508 < 2) {
+            D_800B9508++;
+            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if ((D_80051380 & 0x10) && D_800B9508 > 0) {
+            D_800B9508--;
+            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        sub[D_800B9508 + 3].unk7C = 2;
+        if (((PadButtons *)D_80051338)->pressed & 0x4000) {
+            PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+            switch (D_800B9508) {
+            case 0:
+                D_800B950C = 1;
+                func_80095BEC(4, D_800B901C);
+                break;
+            case 1:
+                D_800B950C = 2;
+                func_80095BEC(4, D_800B91CC);
+                break;
+            case 2:
+                func_8001E824(&D_8009F8A4);
+                break;
+            }
+            D_800B9508 = 0;
+        }
+        if (D_80051380 & 0x1000) {
+            PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
+            func_8001E824(&D_8009F8A4);
+        }
+        return;
+    case 1:
+        if ((D_80051380 & 0x40) && D_800B9508 < 2) {
+            D_800B9508++;
+            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        if ((D_80051380 & 0x10) && D_800B9508 > 0) {
+            D_800B9508--;
+            PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+        }
+        sub[3].unk7C = 0;
+        sub[4].unk7C = 0;
+        sub[5].unk7C = 0;
+        sub[8].unk7C = 0;
+        sub[9].unk7C = 0;
+        sub[6].unk7C = 0;
+        sub[7].unk7C = 0;
+        switch (D_800B9508) {
+        case 0:
+            if (D_80051380 & 0xA0) {
+                s32 *opt = (s32 *)D_8005A604;
+
+                opt[2] ^= 1;
+                PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+                if (opt[2] != 0) {
+                    func_800222BC();
+                } else {
+                    func_800222DC();
+                }
+            }
+            sub[3].unk7C = 2;
+            sub[4].unk7C = 2;
+            sub[5].unk7C = 2;
+            break;
+        case 1:
+            v = *(s32 *)D_8005A604;
+            if (v > 0 && (D_80051380 & 0x80)) {
+                v -= 5;
+            }
+            if (v < 100 && (D_80051380 & 0x20)) {
+                v += 5;
+            }
+            *(s32 *)D_8005A604 = v;
+            sub[6].unk7C = 2;
+            sub[7].unk7C = 2;
+            break;
+        case 2:
+            v = D_8005A608;
+            if (v > 0 && (D_80051380 & 0x80)) {
+                v -= 5;
+                PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (v < 100 && (D_80051380 & 0x20)) {
+                v += 5;
+                PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            D_8005A608 = v;
+            sub[8].unk7C = 2;
+            sub[9].unk7C = 2;
+            break;
+        }
+        break;
+    case 2:
+        n = D_800515F8;
+        if (n >= 5) {
+            n = 4;
+        }
+        for (i = 0; i < n; i++) {
+            if (((PadButtons *)D_80051338)[i].pressed & 0x8000) {
+                ((Ovl69Opt *)D_8005A604)->unkC[i] ^= 1;
+                func_80028018(i, 0xA);
+                PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+        }
+        break;
+    default:
+        return;
+    }
+    if (D_80051380 & 0x5000) {
+        PlaySfx(0x384, NULL, NULL, 0x1000, 0x1E00, 0);
+        D_800B950C = 0;
+        D_800B9508 = 0;
+        func_80095BEC(4, (s32 *)D_800B8F20);
+    }
+}
 
 void func_800B4F1C(void) {
     subengine *sub;
