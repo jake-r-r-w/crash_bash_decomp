@@ -997,7 +997,129 @@ s32 id;
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl65/ovl65", func_800B55E8);
+void func_800B55E8(s32 arg0, u16 arg1) {
+    s32 taken;
+    s32 j;
+    s32 i;
+    s32 best;
+    s32 k;
+    u8 *g;
+
+    if (!(D_8005A644 & 0x801) && arg0 == -1) {
+        taken = 0;
+        for (j = 0; j < 4; j++) {
+            best = -1;
+            for (i = 0; i < 4; i++) {
+                if (!((taken >> i) & 1)) {
+                    if (Heroes[i].hero_score > Heroes[best].hero_score || best == -1) {
+                        best = i;
+                    }
+                }
+            }
+            D_8005A614[j + 0xA7] = best;
+            taken |= 1 << best;
+        }
+        g = D_8005A614;
+        if (*(s32 *)(g + 0x6C) == 0) {
+            HeroInfo *hb;
+            HeroInfo *a;
+            s32 n;
+
+            if (g[g[0xA7] + 0x5C] != 0
+                || (hb = Heroes, a = &hb[g[0xA7]], a->hero_score == hb[g[0xA8]].hero_score)) {
+                D_8005A614[0x60] = 0;
+                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                for (k = 0; k < 4; k++) {
+                    Heroes[k].hero_status |= 0x100;
+                    if (D_8005A614[k + 0x5C] != 0) {
+                        func_80026980(Heroes[k].hero);
+                    }
+                }
+            } else {
+                D_8005A614[0x60] = a->hero_name;
+                *(u16 *)(D_8005A614 + 0x30) |= 0x800;
+                n = 0;
+                for (;; n++) {
+                    s32 t_;
+
+                    if (n >= 4) {
+                        break;
+                    }
+                    if (D_8005A614[0xA7] == n) {
+                        hb[n].hero_status |= 0x200;
+                    } else {
+                        hb[n].hero_status |= 0x8400;
+                        hb[n].hero_shadow->sub->flags &= ~0x8000;
+                        OVL65_PUFF(&hb[n]);
+                    }
+                }
+            }
+        } else {
+            s32 ia;
+            s32 ib;
+            s32 ita;
+            s32 itb;
+            s32 sa;
+            s32 sb;
+            s32 p;
+            s32 q;
+
+            u8 *t;
+
+            t = D_8005A614;
+            ia = *(s16 *)(t + 0x48);
+            ib = *(s16 *)(t + 0x4A);
+            ita = Heroes[ia].hero_teammate;
+            itb = Heroes[ib].hero_teammate;
+            sa = Heroes[ia].hero_score + Heroes[ita].hero_score;
+            sb = Heroes[ib].hero_score + Heroes[itb].hero_score;
+            if (sa == sb) {
+                t[0x60] = 0;
+                *(u16 *)(t + 0x30) |= arg1;
+                for (p = 0; p < 4; p++) {
+                    Heroes[p].hero_status |= 0x100;
+                }
+            } else if ((sb < sa && t[ia + 0x5C] == 0) || (sa < sb && t[ib + 0x5C] == 0)) {
+                u8 *w = D_8005A614;
+
+                *(u16 *)(w + 0x30) |= 0x800;
+                if (w[ia + 0x5C] == 0) {
+                    w[0x60] = Heroes[ia].hero_name;
+                    w[0x61] = Heroes[ita].hero_name;
+                    Heroes[ia].hero_status |= 0x200;
+                    Heroes[ita].hero_status |= 0x200;
+                    Heroes[ib].hero_status |= 0x400;
+                    Heroes[itb].hero_status |= 0x400;
+                    Heroes[ib].hero_status |= 0x8000;
+                    OVL65_PUFF(&Heroes[ib]);
+                    Heroes[ib].hero_shadow->sub->flags &= ~0x8000;
+                    Heroes[itb].hero_status |= 0x8000;
+                    Heroes[itb].hero_shadow->sub->flags &= ~0x8000;
+                    OVL65_PUFF(&Heroes[itb]);
+                } else {
+                    w[0x60] = Heroes[ib].hero_name;
+                    w[0x61] = Heroes[itb].hero_name;
+                    Heroes[ib].hero_status |= 0x200;
+                    Heroes[itb].hero_status |= 0x200;
+                    Heroes[ia].hero_status |= 0x400;
+                    Heroes[ita].hero_status |= 0x400;
+                    Heroes[ia].hero_status |= 0x8000;
+                    OVL65_PUFF(&Heroes[ia]);
+                    Heroes[ia].hero_shadow->sub->flags &= ~0x8000;
+                    Heroes[ita].hero_status |= 0x8000;
+                    Heroes[ita].hero_shadow->sub->flags &= ~0x8000;
+                    OVL65_PUFF(&Heroes[ita]);
+                }
+            } else {
+                D_8005A614[0x60] = 0;
+                *(u16 *)(D_8005A614 + 0x30) |= arg1;
+                for (q = 0; q < 4; q++) {
+                    Heroes[q].hero_status |= 0x100;
+                }
+            }
+        }
+    }
+}
 
 void func_800B5DCC(s32 arg0, u16 arg1) {
     s32 taken;

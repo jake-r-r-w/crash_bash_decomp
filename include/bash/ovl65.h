@@ -376,6 +376,8 @@ void func_800BAE94(NAS *arg0);
 
 void func_800B62D8(s32 arg0, u16 arg1);
 
+void func_800B55E8(s32 arg0, u16 arg1);
+
 s32 XZBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e);
 
 void func_800B9E68(s32 id);
