@@ -20,7 +20,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   **main.exe, ovl61, ovl69 and ovl6a are complete**; 28 left, every one
   tried by the swarm at least once. All 564 PsyQ functions (Sony objects). 6
   parked by hand (`decomp.py status`; the swarm parked 5 more, which the
-  dashboard counts from `docs/swarm.js`), 106 matched with a hack (most of
+  dashboard counts from `docs/swarm.js`), 105 matched with a hack (most of
   them `do { } while (0)` wrappers, flagged since 2026-10-22, in headers'
   macros and inlines too; 6 macro-shaped ones accepted)
   (`decomp.py hacks`; `func_800193A8`'s register pins reviewed as plausibly
@@ -538,6 +538,14 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-22 (hand: hack reworks, no permuter):** `func_800115D8`
+  without its do-while (2202c6e4): `arg3` is `s32`, not `s16`. A narrow
+  parameter's conversion insn sits in block 0 and sched1 sinks it to the
+  first call, shortening its life so it outranks `arg1` in global-alloc.
+  `func_8008A924` tried again and left as a hack: a byte temp lets
+  reload_cse delete the self-store but sched2 floats `li a1,5` into the
+  load slot; a wider temp keeps the order and the store (Diff patterns).
 
 - **2026-10-22 (hand: `func_80098284` without its hack):** the do-while
   only moved `li v0,0x1E00` ahead of `li a0,0x19D` before PlaySfx. The real
