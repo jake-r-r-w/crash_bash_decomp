@@ -535,6 +535,14 @@ signature alone is not enough.
     follows the leak's).
   - Tank: `TA_EarliestTriggers`; hooks `TA_InitHero`, `TA_HeroBot`,
     `TA_KeepInBounds`, `TA_CreateShadow`, `TA_PreMoveHero`, `TA_MoveHero`.
+  - Polar (ovl62): `InitialisePOLARFirst`, `InitialisePOLAR`, `UpdatePOLAR`;
+    hooks `Polar_HeroBot` and `DoNowt` (the `CheckBounds` hook, which only
+    returns 0). From the AI: `PlayerActionCount(action, player)` counts the
+    bots in a state (player unused; its caller had cast it to the two-arg
+    form), `TestChaseChance` picks a live target and starts a chase. The
+    other `Test*Chance` functions (`func_800B9398`, `B94B8`, `B9600`,
+    `B9714`, `B98AC`) each roll against a per-hero table at `D_800D4E0C` and
+    start an AI state, but the states have no names yet: left unnamed.
   The `CheckBounds` functions take the leak's `EXTengine *`; their old local
   stand-in structs were `unk10.x/z`, `collision_box.radius/flags` and `unk1E`.
 - **Pogo AI** (ovl60). `PogoAI_Poll(p)` runs the bot (`EXTbotai`: `AIpad`,

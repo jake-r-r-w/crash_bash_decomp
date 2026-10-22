@@ -1008,7 +1008,7 @@ void func_800B5910(void) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl62/ovl62", D_800B3358);
 
-void func_800B5AC4(void) {
+void InitialisePOLARFirst(void) {
     Ovl62Hooks *h;
     Ovl62InitView *g;
     void **p;
@@ -1041,11 +1041,11 @@ void func_800B5AC4(void) {
     if (g->mode == 0x14) {
         D_8009D6E8.unk4 = D_800D5280;
     }
-    D_8009D6E8.unk68 = func_800CBA5C;
+    D_8009D6E8.unk68 = DoNowt;
     D_8009D6E8.unk0 = (s32)func_800D34F0;
     D_8009D6E8.unk20 = func_800CCCB8;
     D_8009D6E8.unk24 = func_800B5788;
-    D_8009D6E8.unk38 = func_800CAD60;
+    D_8009D6E8.unk38 = Polar_HeroBot;
     D_8009D6E8.unk3C = func_800D0650;
     D_8009D6E8.unk2C = func_800B5570;
     D_8009D6E8.unk14 = D_800D52B8;
@@ -1957,7 +1957,7 @@ s32 func_800B9600(s32 player) {
         fux = (Ovl62Fux *)h->hero->FUX;
         if (fux != NULL) {
             r = Random(0x1000);
-            if (((s32(*)(s32, s32))func_800CAF94)(8, player) != 0) {
+            if (PlayerActionCount(8, player) != 0) {
                 r = 0x7FFF;
             }
             if (r < D_800D4E0C[h->hero_name + 0x27]) {
@@ -2036,7 +2036,7 @@ s32 func_800B98AC(s32 player) {
     return 0;
 }
 
-s32 func_800B9994(s32 player) {
+bool TestChaseChance(u32 player) {
     Ovl62Fux *fux;
     HeroInfo *h;
     s32 start;
@@ -2121,9 +2121,9 @@ s32 func_800B9B6C(s32 hero) {
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B9D48);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BAFA0);
+INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", InitialisePOLAR);
 
-void func_800BB810(void) {
+void UpdatePOLAR(void) {
     VECTOR pos;
     s32 dead;
     s32 n;
@@ -4944,7 +4944,7 @@ void func_800CAD1C(void) {
     }
 }
 
-void func_800CAD60(s32 player) {
+void Polar_HeroBot(u32 player) {
     Ovl62Fux *fux;
     HeroInfo *base;
     HeroInfo *h;
@@ -5009,7 +5009,7 @@ void func_800CAEB0(s32 player, s32 idx) {
     }
 }
 
-s32 func_800CAF94(s32 state) {
+s32 PlayerActionCount(s32 state, s32 player) {
     Ovl62Fux *f;
     s32 i;
     s32 n;
@@ -5396,15 +5396,15 @@ u32 func_800CBA28(u8 *arg0) {
     return (u32) ((get_angle((*(s32*)((u8*)(arg0) + 0)), (*(s32*)((u8*)(arg0) + 8))) - 0x7D) & 0xFFF) >> 8;
 }
 
-s32 func_800CBA5C(void) {
+bool DoNowt(EXTengine *eng) {
     return 0;
 }
 
 void func_800CBA64(void) {
-    D_8005AA70[0] = (s32)func_800B5AC4;
-    D_8005AA70[1] = (s32)func_800BAFA0;
-    D_8005AA70[2] = (s32)func_800BAFA0;
-    D_8005AA70[3] = (s32)func_800BB810;
+    D_8005AA70[0] = (s32)InitialisePOLARFirst;
+    D_8005AA70[1] = (s32)InitialisePOLAR;
+    D_8005AA70[2] = (s32)InitialisePOLAR;
+    D_8005AA70[3] = (s32)UpdatePOLAR;
     D_8005AA70[6] = (s32)func_800CAD14;
 }
 

@@ -40,9 +40,8 @@ extern u8 D_80054CE4[];
 extern u8 D_80054D1C[];
 extern u8 D_80054D54[];
 
-void func_800B5AC4();
-void func_800BAFA0();
-void func_800BB810();
+void InitialisePOLARFirst(void);
+void UpdatePOLAR(void);
 void func_800CAD0C(void);
 void func_800CAD14(void);
 void func_800CAD1C(void);
@@ -54,7 +53,6 @@ void func_800CB6BC(void);
 s32 func_800CB6C4(s32 arg0);
 s32 func_800CB744(u8 *arg0, u8 *arg1);
 u32 func_800CBA28(u8 *arg0);
-s32 func_800CBA5C(void);
 void func_800CF9EC(s32 player);
 s32 func_800D2D2C();
 void func_800D3170(void);
@@ -415,7 +413,7 @@ void func_800B6FEC();
 void func_800B6D74();
 extern s32 D_800D5FEC[];
 
-/* Inlined into func_800B9994. */
+/* Inlined into TestChaseChance. */
 static inline void Ovl62StartChase(s32 player) {
     Ovl62Fux *f;
     s32 j;
@@ -699,7 +697,7 @@ void func_800B60B8(s32 player);
 
 void func_800B767C(s32 player);
 
-s32 func_800B9994(s32 player);
+bool TestChaseChance(u32 player);
 
 s32 func_800C9EC4(EXTengine *eng, s32 player);
 
@@ -707,7 +705,6 @@ s32 func_800C9F70(void);
 
 void func_800CACC0(void);
 
-s32 func_800CAF94(s32 state);
 
 void func_800CB0A4(void);
 
@@ -1213,7 +1210,6 @@ typedef struct Ovl62TeamView {
 
 s32 func_800B9B6C(s32 hero);
 
-void func_800CAD60(s32 player);
 
 void func_800CB368(s32 player);
 
@@ -1378,7 +1374,7 @@ typedef struct BearminatorExt {
 } BearminatorExt;
 
 extern ScriptInit D_800D5FA4;
-/* D_8005A614 as seen by func_800B5AC4. */
+/* D_8005A614 as seen by InitialisePOLARFirst. */
 typedef struct Ovl62InitView {
     /* 0x00 */ u8 pad0[0x32];
     /* 0x32 */ u16 flags;
@@ -1453,7 +1449,7 @@ void func_800D0A6C(s32 player);
 
 void func_800D257C(s32 player);
 
-/* Extension of the 0x1605 objects func_800BB810 drops (id 0x10000000). */
+/* Extension of the 0x1605 objects UpdatePOLAR drops (id 0x10000000). */
 typedef struct Ovl62DropExt {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 kind;
@@ -1470,7 +1466,7 @@ extern s32 D_8005138C;
 extern s32 D_8009E194;
 void func_800B3AA0(void);
 
-/* One drop of func_800BB810's shower (like ovl5f's Ovl5fSpawnBit1605). */
+/* One drop of UpdatePOLAR's shower (like ovl5f's Ovl5fSpawnBit1605). */
 static inline void Ovl62SpawnDrop(VECTOR *pos, s32 kind) {
     NAS *nas;
     Ovl62DropExt *ext;
