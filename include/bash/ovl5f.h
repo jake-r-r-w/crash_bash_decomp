@@ -75,8 +75,6 @@ void func_800B5588(void);
 void func_800B58B0(void);
 void func_800B5FC4(void);
 void func_800B62A4(void);
-u8 func_800C891C(s32 arg0, s32 arg1);
-u8 func_800C8950(s32 arg0, s32 arg1);
 void func_800C8984(s32 arg0, s32 arg1);
 void func_800C89D8(s32 arg0, s32 arg1);
 void func_800C8A40(s32 arg0);

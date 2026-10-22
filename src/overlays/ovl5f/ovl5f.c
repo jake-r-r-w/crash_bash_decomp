@@ -120,7 +120,7 @@ s32 func_800B3F44(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
     } else {
     d = eng->unk1E;
     dir = (d + ((D_800CAD50[player].TurretReqdDir - d) << 20 >> 22)) & 0xFFF;
-    if (((s32 (*)(s32, s32))func_800C891C)(eng->unk10.x + (-(D_80068BD4[(dir - 0x400) & 0xFFF].unk2 << 9) >> 12),
+    if (GetSandbagValueTank(eng->unk10.x + (-(D_80068BD4[(dir - 0x400) & 0xFFF].unk2 << 9) >> 12),
                       eng->unk10.z + (-(D_80068BD4[dir].unk2 << 9) >> 12)) != 0) {
         return 0;
     }
@@ -214,14 +214,14 @@ void func_800B4240(s32 player, s32 x, s32 z, EXTengine *eng, Ovl5fAITarget *ai) 
             goto right;
         }
         if (r & 1) {
-            if (((s32 (*)(s32, s32))func_800C8950)(ex - 0x100, ez) != 0) {
+            if (GetSandbagValueMiss(ex - 0x100, ez) != 0) {
                 goto left;
             }
         right:
             ai->flags |= 0x80;
             break;
         }
-        if (((s32 (*)(s32, s32))func_800C8950)(ex + 0x100, ez) != 0) {
+        if (GetSandbagValueMiss(ex + 0x100, ez) != 0) {
             goto right;
         }
     left:
@@ -244,14 +244,14 @@ void func_800B4240(s32 player, s32 x, s32 z, EXTengine *eng, Ovl5fAITarget *ai) 
             goto down;
         }
         if (r & 1) {
-            if (((s32 (*)(s32, s32))func_800C8950)(ex, ez + 0x100) != 0) {
+            if (GetSandbagValueMiss(ex, ez + 0x100) != 0) {
                 goto up;
             }
         down:
             ai->flags |= 0x10;
             break;
         }
-        if (((s32 (*)(s32, s32))func_800C8950)(ex, ez - 0x100) != 0) {
+        if (GetSandbagValueMiss(ex, ez - 0x100) != 0) {
             goto down;
         }
     up:
@@ -535,7 +535,7 @@ void func_800B4A28(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
             case 0:
             px:
                 x = ex + 0x200;
-                if (D_800CB100 < x || ((s32 (*)(s32, s32))func_800C8950)(x, ez) != 0) {
+                if (D_800CB100 < x || GetSandbagValueMiss(x, ez) != 0) {
                     continue;
                 }
                 ai->flags = 0x20;
@@ -543,7 +543,7 @@ void func_800B4A28(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
             case 1:
             nx:
                 x = ex - 0x200;
-                if (x < 0 || ((s32 (*)(s32, s32))func_800C8950)(x, ez) != 0) {
+                if (x < 0 || GetSandbagValueMiss(x, ez) != 0) {
                     continue;
                 }
                 ai->flags = 0x80;
@@ -551,7 +551,7 @@ void func_800B4A28(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
             case 2:
             pz:
                 z = ez + 0x200;
-                if (D_800CB104 < z || ((s32 (*)(s32, s32))func_800C8950)(ex, z) != 0) {
+                if (D_800CB104 < z || GetSandbagValueMiss(ex, z) != 0) {
                     continue;
                 }
                 ai->flags = 0x10;
@@ -559,7 +559,7 @@ void func_800B4A28(s32 player, EXTengine *eng, Ovl5fAITarget *ai) {
             case 3:
             nz:
                 z = ez - 0x200;
-                if (z < 0 || ((s32 (*)(s32, s32))func_800C8950)(ex, z) != 0) {
+                if (z < 0 || GetSandbagValueMiss(ex, z) != 0) {
                     continue;
                 }
                 ai->flags = 0x40;
@@ -7573,11 +7573,11 @@ void func_800C88A8(NAS *nas) {
     D_800CA34C[idx] = (s32)nas;
 }
 
-u8 func_800C891C(s32 arg0, s32 arg1) {
+u32 GetSandbagValueTank(s32 arg0, s32 arg1) {
     return *(((arg1 >> 9) * D_800CAFF4) + (arg0 >> 9) + D_800CACFC);
 }
 
-u8 func_800C8950(s32 arg0, s32 arg1) {
+u32 GetSandbagValueMiss(s32 arg0, s32 arg1) {
     return *(((arg1 >> 9) * D_800CAFF4) + (arg0 >> 9) + D_800CACB4);
 }
 

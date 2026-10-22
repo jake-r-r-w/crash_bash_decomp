@@ -557,6 +557,12 @@ signature alone is not enough.
     `SetMoeJoeMode(hero, mode)` is the boss tanks' mode setter: it sets
     `hero_mode` / `hero_last_mode` and runs their own handlers for idle
     (0x6C), move (0x6E), recoil (0x69) and dead (0x6B).
+    `GetSandbagValueTank(x, z)` / `GetSandbagValueMiss(x, z)` read the two
+    byte maps `D_800CACFC` / `D_800CACB4` (one cell per 0x200 units, row
+    width `D_800CAFF4`): the first is checked ahead of a tank's facing
+    (`func_800B3F44`), the second on the AI's lines of fire; they follow
+    `TA_CreateShadow` in code as in the leak. With the leak's `u32` return
+    the callers' `s32 (*)(s32, s32)` casts went.
   - Polar (ovl62): `InitialisePOLARFirst`, `InitialisePOLAR`, `UpdatePOLAR`;
     hooks `Polar_HeroBot` and `DoNowt` (the `CheckBounds` hook, which only
     returns 0). From the AI: `PlayerActionCount(action, player)` counts the
