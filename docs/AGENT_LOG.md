@@ -129,6 +129,14 @@ and current tools).
   D_800A0C70 (stores may alias it; the target keeps `n` in a register)
   and loop.c reduces a different entry giv (target: `&ent[i].val` at
   0x66 with the kind at -2), so the entry layout is still uncertain.
+  `func_800B4A1C`: the target's loop is tested at the top with a `j` back,
+  so it was never rotated: jump.c `duplicate_loop_exit_test` refuses an
+  exit test with a call, label or block note, and a goto loop has no loop
+  notes; the swarm's goto loop gets the structure, every `for`/`while`
+  doesn't (39/58). Left (6/58): local-alloc's combine_regs ties the sum
+  `dx*dx + dz*dz` to the dying `dz*dz` (both v1, the 0x15F8F constant v0)
+  where the target keeps them apart (sum v0, product t1, constant v1);
+  statement and operand order don't change it.
 - **Header do-whiles to review (lint extended 2026-10-22).** The lint now
   reads the macros and `static inline` functions a body uses (outside the
   leaked headers), and matches `do { } while (0)` at any brace depth (the
