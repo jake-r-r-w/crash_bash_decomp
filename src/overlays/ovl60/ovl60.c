@@ -3187,7 +3187,7 @@ void Plot_PogoMushroom(NAS *nas) {
         cx = (eng->unk10.x + 0x800) >> 9;
         cz = (eng->unk10.z + 0x800) >> 9;
         nas->UserInfo.status = 0;
-        if (func_800BC04C(cx, cz) != 0) {
+        if (SquareIsFreeForMushroom(cx, cz) != 0) {
             Ovl60Cell *cb = D_800C53DC[0];
             c = (Ovl60Cell *)(cz * sizeof(Ovl60Cell) + cx * sizeof(D_800C53DC[0]) + (u32)cb);
             c->hero = (HeroInfo *)nas;
@@ -3459,7 +3459,7 @@ bool FindFreeSquareForMushroom(s32 *arg0, s32 *arg1) {
 loop:
     x = Random(8);
     y = Random(8);
-    found = func_800BC04C(x, y) ^ 1;
+    found = SquareIsFreeForMushroom(x, y) ^ 1;
     i++;
     if (found && i < 10) {
         goto loop;
@@ -3490,7 +3490,7 @@ loop:
     return ok;
 }
 
-s32 func_800BC04C(s32 arg0, s32 arg1) {
+bool SquareIsFreeForMushroom(s32 arg0, s32 arg1) {
     Ovl60Cell *base = D_800C53DC[0];
     Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
     s32 s;
@@ -5418,7 +5418,7 @@ bool FindFreeSquare(s32 *arg0, s32 *arg1) {
 loop:
     x = Random(8);
     y = Random(8);
-    ok = func_800BC04C(x, y) != 1;
+    ok = SquareIsFreeForMushroom(x, y) != 1;
     i++;
     if (ok && i < 10) {
         goto loop;

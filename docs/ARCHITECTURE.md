@@ -668,9 +668,10 @@ signature alone is not enough.
   hero holds pickup action 0xB). `PogoPadlock_IsHere(x, z)` tests the padlock
   object (`D_800C5BB0`, status >= 3), which `Create_PogoPadlock(x, z)` spawns
   (`AST_PogoPadlock`, 0x1408; at (4, 4) in mode 13); `PadlockAI_IsTileOKForPadlock(nas, x,
-  z)` is its tile test (the NAS is unused). `func_800BC04C` (a square free
-  of heroes, reservations, TNT/Nitro and the padlock; used by all of them)
-  may be the leak's `SquareIsFreeForMushroom`: left unnamed.
+  z)` is its tile test (the NAS is unused). `SquareIsFreeForMushroom` (free
+  of heroes, reservations, TNT/Nitro and the padlock) is the only free-square
+  test, so it takes the leak's name although `FindFreeSquare` and the padlock
+  use it too.
 - **Pogo kerbs** (ovl60, mode 11): the board's edges are four 8-entry owner
   arrays (`D_800C5B2C`, `B4C`, `B6C`, `B8C`). `PogoKerb_Init` (from the mode
   11 setup) sets the kerb timers and calls `PogoKerb_CopyData`, which copies

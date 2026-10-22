@@ -341,7 +341,6 @@ void func_800C3048(void);
 
 void PogoInit_Camera(void);
 
-s32 func_800BC04C(s32 arg0, s32 arg1);
 
 
 

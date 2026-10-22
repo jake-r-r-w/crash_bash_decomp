@@ -31006,7 +31006,7 @@
   "src": "src/overlays/ovl60/ovl60.c"
  },
  "ovl60:800BC04C": {
-  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/func_800BC04C.s",
+  "asm": "asm/nonmatchings/overlays/ovl60/ovl60/SquareIsFreeForMushroom.s",
   "bin": "disc/ovl60.bin",
   "calls": [
    "800C0AFC"
@@ -31014,7 +31014,7 @@
   "fp": "7c8c99ff61d56b84",
   "fpn": "f6daf399bacf385c",
   "leaf": false,
-  "name": "func_800BC04C",
+  "name": "SquareIsFreeForMushroom",
   "orig": "func_800BC04C",
   "rom": 36248,
   "seg": "overlays/ovl60/ovl60",
