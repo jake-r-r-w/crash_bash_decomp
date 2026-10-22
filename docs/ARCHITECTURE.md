@@ -505,7 +505,8 @@ signature alone is not enough.
   (240 frames). The setters are named by the state they write: `Tile_Set`
   (1, owner), `Tile_SetLocked` (10), `Tile_DelayedSet` (0; `ZapInDir`
   writes the same with a growing delay), `Tile_SetTnt`, `Tile_SetNitro`,
-  `Tile_SetFourWay`; `Tile_Claim` sets 1 (or 10 with the freeze pickup).
+  `Tile_SetFourWay`; `Tile_Claim` sets 1 (or 10 with the freeze pickup);
+  `Tile_Clear` resets a square (state 1, no owner), which the others inline.
   Three more (`func_800C2294`/`22E8`/`2338`, states 4/2/3) are the leak's
   FizzleOut/DelayedFizzleOut/OnFire in some order: left unnamed.
   `Set_Tile_Under_Player(p, bool)` runs a landing: the mode rules
@@ -518,13 +519,18 @@ signature alone is not enough.
   state 10. `ZapFourWays` and `ZapArrow` call `ZapInDir`. Islands:
   `Tiles_CheckForIslands` builds a map of the player's tiles
   (`Tiles_MakeUpIslandMap`), floods it from the edges
-  (`Tiles_FloodFillIslandMap`, recursive `func_800C1840` = the leak's
-  `Island_FloodFill`, left unnamed: its body needs unsigned x/z where the
-  leak says `s32`) and claims what is enclosed (`Tiles_CountUnflagged`).
+  (`Tiles_FloodFillIslandMap`, recursive `Island_FloodFill`, which takes the
+  leak's `s32` x/z with `(u32)` casts in its bounds test) and claims what is
+  enclosed (`Tiles_CountUnflagged`).
   `Bank_Tiles` banks the player's tiles and returns the count;
   `Handle_Score` adds it with `CreateFloatyPogoScore`. `Player_SnapToTile`
   centres the hero on its square; `Player_CalcForwardSpeed(p, bool)` is the
-  per-hero bounce speed. `PlaySquareChangeNoise` / `PlaySquareLockedNoise`
+  per-hero bounce speed. `Player_SetReserve(p, x, z)` moves the player's
+  reservation; `Player_CountTiles` counts its squares (the same body as
+  `PogoAI_CountMyTiles`, which only the AI calls); `Player_SetPoisoned` sets
+  the slot flag that makes the dazed state spin the hero, beside
+  `Player_SetDazed` in code and leak. `PogoAI_InitHero` resets a bot's
+  `EXTbotai` (called from `POGO_InitHero` and `PogoInit_AllHeros`). `PlaySquareChangeNoise` / `PlaySquareLockedNoise`
   are per-player sounds for claiming and for landing on a locked square.
 - **Game hook tables.** Every minigame fills two engine tables, and their slot
   names come from the prototype's types: `D_8005AA70` is a `LevSpec`
@@ -617,8 +623,8 @@ signature alone is not enough.
   `PogoAI_CountNeighbours(x, z, p)` (including the kerbs) and
   `PogoAI_ClaimingThisTileWillEncircle` (flood-fills a trial map).
   `PogoAI_RadialSearch(p, x, z, dir, &x, &z)` has the leak's 6-arg shape; its
-  off-board test `func_800C0E40` is `PogoAI_RadialSearch_CheckKerbs` but
-  needs unsigned x/z where the leak has `s32`, so it keeps its address name.
+  off-board test is `PogoAI_RadialSearch_CheckKerbs` (the kerb arrays at
+  `D_800C5B2C`/`4C`/`6C`/`8C`; `s32` x/z with `(u32)` casts, as in the leak).
   The three `(p, EXTbotai *)` planners `func_800C0F08`, `func_800BE864` and
   `func_800BE6C4` are GoForMyOwn / StartEncircling / StartEnclosing in some
   order: left unnamed.

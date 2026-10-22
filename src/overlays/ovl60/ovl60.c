@@ -130,7 +130,7 @@ loop:
             e->unk2C.x = 0x1A00;
             e->unk5E = 1;
         }
-        func_800C1004(i);
+        PogoAI_InitHero(i);
         h++;
         mv++;
         slot++;
@@ -236,7 +236,7 @@ void InitPogo_Tiles(void) {
         do {
             Ovl60Cell *c;
 
-            func_800C2620(i, j);
+            Tile_Clear(i, j);
             c = (Ovl60Cell *)(off + (u32)base);
             c->unk4 = NULL;
             *(s16 *)c->unk8 = 0;
@@ -923,25 +923,25 @@ void PreMovePOGO(u32 arg0) {
             if (((bits & 0x80) && x > 0) || ((bits & 0x20) && x < 7)
                 || ((bits & 0x10) && z < 7) || ((bits & 0x40) && z > 0)) {
                 if ((bits & 0x80) && PogoAI_IsSquareOKForPlayer(arg0, x, z, -1, 0, 0) != 0) {
-                    func_800C2770(arg0, x - 1, z);
+                    Player_SetReserve(arg0, x - 1, z);
                     move->forward_angle = 0x400;
                     move->forward_speed = speed;
                     D_800C535C[arg0].unk8[1] = 0;
                 }
                 if ((bits & 0x20) && PogoAI_IsSquareOKForPlayer(arg0, x, z, 1, 0, 0) != 0) {
-                    func_800C2770(arg0, x + 1, z);
+                    Player_SetReserve(arg0, x + 1, z);
                     move->forward_angle = 0xC00;
                     move->forward_speed = speed;
                     D_800C535C[arg0].unk8[1] = 0;
                 }
                 if ((bits & 0x10) && PogoAI_IsSquareOKForPlayer(arg0, x, z, 0, 1, 0) != 0) {
-                    func_800C2770(arg0, x, z + 1);
+                    Player_SetReserve(arg0, x, z + 1);
                     move->forward_angle = 0x800;
                     move->forward_speed = speed;
                     D_800C535C[arg0].unk8[1] = 0;
                 }
                 if ((bits & 0x40) && PogoAI_IsSquareOKForPlayer(arg0, x, z, 0, -1, 0) != 0) {
-                    func_800C2770(arg0, x, z - 1);
+                    Player_SetReserve(arg0, x, z - 1);
                     move->forward_angle = 0;
                     move->forward_speed = speed;
                     D_800C535C[arg0].unk8[1] = 0;
@@ -1915,7 +1915,7 @@ void Tile_FireNitro(s32 arg0, s32 arg1) {
             if (((Ovl60ModeView *)D_8005A614)->mode == 0xC
                 && (((Ovl60ModeView *)D_8005A614)->flags & 0x80)
                 && ((Ovl60ModeView *)D_8005A614)->out[i] == 0) {
-                func_800C1400(i);
+                Player_SetPoisoned(i);
                 PlaySfx(0x529, NULL, (SLONG_XYZ *)&h->hero_eng->unk10, 0x1000, 0x1E00, 0);
             } else {
                 Player_SetDazed(i);
@@ -3279,52 +3279,52 @@ void Tiles_FloodFillIslandMap(s32 *seen, s32 id) {
     if (D_8005A648 == 0xB) {
         for (i = 0; i < 8; i++) {
             if (D_800C5B2C[i] != id) {
-                func_800C1840(0, i, id, seen);
+                Island_FloodFill(0, i, id, seen);
             } else {
                 if (i > 0 && D_800C5B2C[i - 1] != id) {
-                    func_800C1840(0, i, id, seen);
+                    Island_FloodFill(0, i, id, seen);
                 }
                 if (i < 7 && D_800C5B2C[i + 1] != id) {
-                    func_800C1840(0, i, id, seen);
+                    Island_FloodFill(0, i, id, seen);
                 }
             }
             if (D_800C5B4C[i] != id) {
-                func_800C1840(7, i, id, seen);
+                Island_FloodFill(7, i, id, seen);
             } else {
                 if (i > 0 && D_800C5B4C[i - 1] != id) {
-                    func_800C1840(7, i, id, seen);
+                    Island_FloodFill(7, i, id, seen);
                 }
                 if (i < 7 && D_800C5B4C[i + 1] != id) {
-                    func_800C1840(7, i, id, seen);
+                    Island_FloodFill(7, i, id, seen);
                 }
             }
             if (D_800C5B6C[i] != id) {
-                func_800C1840(i, 7, id, seen);
+                Island_FloodFill(i, 7, id, seen);
             } else {
                 if (i > 0 && D_800C5B6C[i - 1] != id) {
-                    func_800C1840(i, 7, id, seen);
+                    Island_FloodFill(i, 7, id, seen);
                 }
                 if (i < 7 && D_800C5B6C[i + 1] != id) {
-                    func_800C1840(i, 7, id, seen);
+                    Island_FloodFill(i, 7, id, seen);
                 }
             }
             if (D_800C5B8C[i] != id) {
-                func_800C1840(i, 0, id, seen);
+                Island_FloodFill(i, 0, id, seen);
             } else {
                 if (i > 0 && D_800C5B8C[i - 1] != id) {
-                    func_800C1840(i, 0, id, seen);
+                    Island_FloodFill(i, 0, id, seen);
                 }
                 if (i < 7 && D_800C5B8C[i + 1] != id) {
-                    func_800C1840(i, 0, id, seen);
+                    Island_FloodFill(i, 0, id, seen);
                 }
             }
         }
     } else {
         for (i = 0; i < 8; i++) {
-            func_800C1840(0, i, id, seen);
-            func_800C1840(7, i, id, seen);
-            func_800C1840(i, 0, id, seen);
-            func_800C1840(i, 7, id, seen);
+            Island_FloodFill(0, i, id, seen);
+            Island_FloodFill(7, i, id, seen);
+            Island_FloodFill(i, 0, id, seen);
+            Island_FloodFill(i, 7, id, seen);
         }
     }
 }
@@ -4409,7 +4409,7 @@ bool PogoAI_RadialSearch(u32 i, s32 x, s32 z, s32 angle, s32 *outX, s32 *outZ) {
                     goto found;
                 }
             } else if (((Ovl60ModeView *)D_8005A614)->mode == 11 && f0 &&
-                       func_800C0E40(i, px, pz)) {
+                       PogoAI_RadialSearch_CheckKerbs(i, px, pz)) {
                 goto found;
             }
         } else {
@@ -4426,7 +4426,7 @@ bool PogoAI_RadialSearch(u32 i, s32 x, s32 z, s32 angle, s32 *outX, s32 *outZ) {
                     goto found;
                 }
             } else if (((Ovl60ModeView *)D_8005A614)->mode == 11 && f1 &&
-                       func_800C0E40(i, px, pz)) {
+                       PogoAI_RadialSearch_CheckKerbs(i, px, pz)) {
                 goto found;
             }
         } else {
@@ -4443,7 +4443,7 @@ bool PogoAI_RadialSearch(u32 i, s32 x, s32 z, s32 angle, s32 *outX, s32 *outZ) {
                     goto found;
                 }
             } else if (((Ovl60ModeView *)D_8005A614)->mode == 11 && f2 &&
-                       func_800C0E40(i, px, pz)) {
+                       PogoAI_RadialSearch_CheckKerbs(i, px, pz)) {
                 goto found;
             }
         } else {
@@ -5196,8 +5196,8 @@ s32 PogoAI_CountMyTiles(u32 arg0) {
     return count;
 }
 
-s32 func_800C0E40(s32 arg0, u32 arg1, u32 arg2) {
-    if (arg2 < 8) {
+bool PogoAI_RadialSearch_CheckKerbs(s32 arg0, s32 arg1, s32 arg2) {
+    if ((u32)arg2 < 8) {
         if (arg1 == -1 && D_800C5B2C[arg2] == arg0) {
             return 1;
         }
@@ -5205,7 +5205,7 @@ s32 func_800C0E40(s32 arg0, u32 arg1, u32 arg2) {
             return 1;
         }
     }
-    if (arg1 < 8) {
+    if ((u32)arg1 < 8) {
         if (arg2 == -1 && D_800C5B8C[arg1] == arg0) {
             return 1;
         }
@@ -5244,7 +5244,7 @@ void func_800C0FAC(s32 i)
     }
 }
 
-void func_800C1004(s32 i)
+void PogoAI_InitHero(u32 i)
 {
     EXTbotai *ai;
 
@@ -5349,7 +5349,7 @@ void Fire_RocketInDir(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
                   (((eng->unk10.z + 0x800) >> 9) << 9) - 0x700, arg3, arg0 & 7, arg2);
 }
 
-void func_800C1400(s32 arg0) {
+void Player_SetPoisoned(u32 arg0) {
     D_800C535C[arg0].flags |= 1;
 }
 
@@ -5357,7 +5357,7 @@ void Player_SetDazed(u32 arg0) {
     Heroes[arg0].hero_status |= 0x800;
 }
 
-s32 func_800C1460(s32 arg0) {
+s32 Player_CountTiles(u32 arg0) {
     s32 i;
     s32 j;
     s32 count;
@@ -5482,17 +5482,17 @@ s32 func_800C178C(void) {
     return 0;
 }
 
-void func_800C1840(u32 x, u32 z, s32 id, s32 *seen) {
-    if (x < 8 && z < 8 && D_800C53DC[x][z].unkA != id && seen[z * 8 + x] == 0) {
+void Island_FloodFill(s32 x, s32 z, u32 id, s32 *seen) {
+    if ((u32)x < 8 && (u32)z < 8 && D_800C53DC[x][z].unkA != id && seen[z * 8 + x] == 0) {
         seen[z * 8 + x] = 1;
-        func_800C1840(x - 1, z - 1, id, seen);
-        func_800C1840(x, z - 1, id, seen);
-        func_800C1840(x + 1, z - 1, id, seen);
-        func_800C1840(x - 1, z, id, seen);
-        func_800C1840(x + 1, z, id, seen);
-        func_800C1840(x - 1, z + 1, id, seen);
-        func_800C1840(x, z + 1, id, seen);
-        func_800C1840(x + 1, z + 1, id, seen);
+        Island_FloodFill(x - 1, z - 1, id, seen);
+        Island_FloodFill(x, z - 1, id, seen);
+        Island_FloodFill(x + 1, z - 1, id, seen);
+        Island_FloodFill(x - 1, z, id, seen);
+        Island_FloodFill(x + 1, z, id, seen);
+        Island_FloodFill(x - 1, z + 1, id, seen);
+        Island_FloodFill(x, z + 1, id, seen);
+        Island_FloodFill(x + 1, z + 1, id, seen);
     }
 }
 
@@ -5860,7 +5860,7 @@ void Tile_Set(s32 arg0, s32 arg1, s32 arg2) {
     }
 }
 
-void func_800C2620(s32 arg0, s32 arg1) {
+void Tile_Clear(s32 arg0, s32 arg1) {
     Ovl60Cell *base = D_800C53DC[0];
     Ovl60Cell *p = (Ovl60Cell *)(arg1 * sizeof(Ovl60Cell) + arg0 * sizeof(D_800C53DC[0]) + (u32)base);
 
@@ -5904,11 +5904,11 @@ void AddTazerRing(u32 arg0) {
     r->Engine->unk10.y -= 0x40;
 }
 
-void func_800C2770(s32 arg0, u32 arg1, u32 arg2) {
+void Player_SetReserve(u32 arg0, s32 arg1, s32 arg2) {
     s32 i;
     s32 j;
 
-    if (arg1 < 8 && arg2 < 8) {
+    if ((u32)arg1 < 8 && (u32)arg2 < 8) {
         for (i = 0; i < 8; i++) {
             for (j = 0; j < 8; j++) {
                 if (D_800C53DC[i][j].unk10 == arg0 + 1) {
@@ -6223,7 +6223,7 @@ void POGO_InitHero(u32 arg0) {
     p->nas = NULL;
     D_800C53CC[arg0] = 5;
     SetHeroAction((HeroInfo *)arg0, 0x39);
-    func_800C1004(arg0);
+    PogoAI_InitHero(arg0);
 }
 
 void PogoCreateShadow(u32 arg0) {

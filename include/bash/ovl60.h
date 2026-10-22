@@ -134,7 +134,6 @@ void Tile_Claim(s32 arg0, s32 arg1, s32 arg2);
 extern s32 D_800C53CC[];
 extern s16 D_800C44D8[];
 extern s32 D_800C4484[];
-void func_800C1004(s32 arg0);
 void func_800C02AC(EXTengine *eng, s32 angle);
 extern u8 D_80053B9C[];
 extern u8 D_80053ABC[];
@@ -267,15 +266,12 @@ void func_800BD008(s32 arg0);
 
 s32 PogoAI_CountMyTiles(u32 arg0);
 
-s32 func_800C0E40(s32 arg0, u32 arg1, u32 arg2);
 
 void func_800C0FAC(s32 i);
 
 
-void func_800C1400(s32 arg0);
 
 
-s32 func_800C1460(s32 arg0);
 
 
 
@@ -292,7 +288,6 @@ void func_800C2338(s32 arg0, s32 arg1, s16 arg2, s16 arg3);
 
 
 
-void func_800C2620(s32 arg0, s32 arg1);
 
 
 
@@ -349,7 +344,6 @@ s32 func_800C178C(void);
 
 
 
-void func_800C2770(s32 arg0, u32 arg1, u32 arg2);
 
 
 
@@ -567,7 +561,6 @@ s32 func_800BDE24(s32 arg0);
 
 void func_800BFFF4(EXTengine *eng);
 
-void func_800C1840(u32 x, u32 z, s32 id, s32 *seen);
 bool PogoAI_IsSquareOKForPlayer(u32 arg0, s32 x, s32 z, s32 dx, s32 dz, u32 flags);
 
 /* HeroPogoDazed: a status bit sends the hero to an action and seq. */
