@@ -145,6 +145,6 @@ extern EngRec24 D_800AD8CC[];
 extern EngRec24 D_800AD9C8[];
 extern EngRec24 D_800ADB54[];
 
-void func_800976F8(s32 *arg0);
+void func_800976F8();
 
 #endif /* BASH_8009608C_H */
