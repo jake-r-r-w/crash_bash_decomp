@@ -16,8 +16,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `main.exe` function matches; Phase 2's naming, data and `main.c` split
   are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2508/2537 game functions matched (92.26% of game code bytes, 2026-10-22):
-  **main.exe, ovl61, ovl69 and ovl6a are complete**; 29 left. All 564 PsyQ functions (Sony objects). 4
+- 2509/2537 game functions matched (92.39% of game code bytes, 2026-10-22):
+  **main.exe, ovl61, ovl69 and ovl6a are complete**; 28 left, every one
+  tried by the swarm at least once. All 564 PsyQ functions (Sony objects). 6
   parked by hand (`decomp.py status`; the swarm parked 5 more, which the
   dashboard counts from `docs/swarm.js`), 107 matched with a hack (most of
   them `do { } while (0)` wrappers, flagged since 2026-10-22, in headers'
@@ -168,6 +169,14 @@ and current tools).
   block to hold an instruction its final code lacks, and no natural
   pass after sched1 deletes one (the block note lists them; do-while(0)
   wrapped copies were tried in the third pass).
+  A fifth pass (2026-10-22, no hacks or permuter) found one that does:
+  `nas = D_8005AA2C;` at the end of both arms of `if (box != NULL)`
+  gives sched1 the second memory insn, and jump2 cross-jumps the copies
+  back into one, so the call block comes out in the target's order. It
+  is 6 lines off: the `%hi` pseudo, born right after a call, takes `$2`
+  where the target's join has `$4` (block note, `scratch/bct/`). All
+  three copies are parked by hand now (`func_800BAF1C`'s C under
+  `NON_MATCHING`), so the swarm stops retrying them.
 - **Hack reworks tried 2026-10-21 (still hacks; plain C and how far off):**
   `func_8001097C`: a block-scope `MemBlock *p = cur->prev;` in the search
   loop un-rotates it (94/94 long, 12 lines off); left: `cur` and `blk`
@@ -529,6 +538,18 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-22 (lint helpers, swarm E/F, hand: the BC274 triplet):** the
+  lint now reads the macros and static inlines a body uses and matches
+  `do { } while (0)` at any depth (fc8825e9): 107 hack matches (+25).
+  The swarm's prompts name the refused hacks. Swarm E (the 24 todo
+  functions, all retries) was stopped after 10 min on the user's word
+  (only never-swarmed functions wanted): `Tile_Update` matched
+  (430e013d). Swarm F ran the last never-tried one, `func_800BAF1C`: parked
+  at 2/197, the same sched1 tie as `func_800BC274`/`func_800C284C`. A
+  fifth hand pass on the three (no hacks, no permuter) found a tail
+  duplication that flips the tie but costs a `%hi` register (Open leads);
+  all three parked by hand.
 
 - **2026-10-22 (swarm D: every never-tried function):** run 20261022104953
   on the 42 never-tried functions (`scratch/swarmD_only.txt`; `func_800BAF1C`
