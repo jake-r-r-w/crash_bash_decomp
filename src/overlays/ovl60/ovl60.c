@@ -33,7 +33,7 @@ void func_800B3534(void) {
     }
 }
 
-void func_800B3808(void) {
+void PogoInit_AllHeros(void) {
     s32 i;
     s16 a;
     HeroInfo *h;
@@ -139,7 +139,7 @@ loop:
     }
 }
 
-void func_800B3A38(void) {
+void PogoInit_RelicChallenge(void) {
     s32 i;
     s16 v;
     u32 snd;
@@ -215,7 +215,7 @@ void func_800B3A38(void) {
     }
 }
 
-void func_800B3C44(void) {
+void InitPogo_Tiles(void) {
     s32 i;
     s32 j;
     Ovl60Cell *p;
@@ -450,7 +450,7 @@ void func_800B4230(void) {
     }
 }
 
-void func_800B4374(s32 arg0, u16 arg1) {
+void PogoWinner_Crystal(s32 arg0, u16 arg1) {
     u8 *g;
     s32 i;
     s32 found;
@@ -489,10 +489,10 @@ void func_800B4374(s32 arg0, u16 arg1) {
     default:
         return;
     }
-    func_800B44F4(arg0, arg1);
+    PogoWinner_CrystalOther(arg0, arg1);
 }
 
-void func_800B44F4(s32 arg0, u16 arg1) {
+void PogoWinner_CrystalOther(s32 arg0, u16 arg1) {
     s32 taken;
     s32 j;
     s32 i;
@@ -606,7 +606,7 @@ void func_800B44F4(s32 arg0, u16 arg1) {
     }
 }
 
-void func_800B4A70(s32 arg0, u16 arg1) {
+void PogoWinner_Relic(s32 arg0, u16 arg1) {
     Ovl60TeamView *g;
     Ovl60TeamView *p;
     Ovl60TeamView *q;
@@ -671,7 +671,7 @@ void func_800B4A70(s32 arg0, u16 arg1) {
     }
 }
 
-void func_800B4E50(s32 arg0, u16 arg1) {
+void PogoWinner_Gem(s32 arg0, u16 arg1) {
     s32 taken;
     s32 j;
     s32 i;
@@ -785,7 +785,7 @@ void func_800B4E50(s32 arg0, u16 arg1) {
     }
 }
 
-void func_800B53CC(s32 arg0, u16 arg1) {
+void PogoWinner_Normal(s32 arg0, u16 arg1) {
     Ovl60RankView *g;
     Ovl60RankView *p;
     HeroInfo *hb;
@@ -6092,13 +6092,13 @@ void PogoHeroChooseWinner(s32 arg0, u16 arg1) {
         u16 f = *(u16 *)(g + 0x32);
 
         if (f & 0x80) {
-            func_800B4374(arg0, (u16)arg1);
+            PogoWinner_Crystal(arg0, (u16)arg1);
         } else if (f & 0x20) {
-            func_800B4E50(arg0, (u16)arg1);
+            PogoWinner_Gem(arg0, (u16)arg1);
         } else if (f & 0x40) {
-            func_800B4A70(arg0, (u16)arg1);
+            PogoWinner_Relic(arg0, (u16)arg1);
         } else {
-            func_800B53CC(arg0, (u16)arg1);
+            PogoWinner_Normal(arg0, (u16)arg1);
         }
     }
 }
@@ -6118,19 +6118,19 @@ void func_800C2EE0(void) {
     }
 }
 
-void func_800C2F50(void) {
+void PogoInit_TrophyChallenge(void) {
     if (!(D_8005A646 & 0xE0)) {
         func_8007B7FC(0x130, 0x81D0);
     }
 }
 
-void func_800C2F84(void) {
+void PogoInit_GemChallenge(void) {
     if (D_8005A646 & 0x20) {
         func_8007B7FC(0x130, 0x81D0);
     }
 }
 
-void func_800C2FB8(void) {
+void PogoInit_CrystalChallenge(void) {
     u8 *g = D_8005A614;
     s32 i;
 
@@ -6173,7 +6173,7 @@ void func_800C3048(void) {
     }
 }
 
-void func_800C3148(void) {
+void PogoInit_Camera(void) {
     ((Ovl60Cam *)D_80051640)->eyeX = 0;
     ((Ovl60Cam *)D_80051640)->eyeZ = 0xE98;
     ((Ovl60Cam *)D_80051640)->rotX = 0x1BE;
@@ -6204,14 +6204,14 @@ void InitialisePOGO(void) {
     D_800C5BB8 = 0x10;
     D_800C5BBC = 0x10;
     func_800B3FF0();
-    func_800C3148();
-    func_800B3C44();
+    PogoInit_Camera();
+    InitPogo_Tiles();
     func_800C3048();
-    func_800B3808();
-    func_800C2FB8();
-    func_800C2F84();
-    func_800B3A38();
-    func_800C2F50();
+    PogoInit_AllHeros();
+    PogoInit_CrystalChallenge();
+    PogoInit_GemChallenge();
+    PogoInit_RelicChallenge();
+    PogoInit_TrophyChallenge();
 }
 
 void POGO_InitHero(u32 arg0) {

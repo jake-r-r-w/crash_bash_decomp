@@ -561,6 +561,20 @@ signature alone is not enough.
     start an AI state, but the states have no names yet: left unnamed.
   The `CheckBounds` functions take the leak's `EXTengine *`; their old local
   stand-in structs were `unk10.x/z`, `collision_box.radius/flags` and `unk1E`.
+- **Pogo challenges** (ovl60). The challenge flags at `D_8005A614+0x32` are
+  0x80 crystal, 0x40 relic, 0x20 gem, none trophy/normal. Evidence:
+  `PogoInit_CrystalChallenge` (flag 0x80) spawns the crystals, and
+  `PogoWinner_Crystal` (0x80) is the only winner that hands off, to
+  `PogoWinner_CrystalOther` on modes 11/13, as the leak's pair suggests;
+  `PogoInit_RelicChallenge` (0x40) sets score targets; the init functions
+  sit in reverse leak order (`PogoInit_TrophyChallenge` with no flag,
+  `PogoInit_GemChallenge` 0x20, ..., crystal) and the winners in leak order
+  (`PogoWinner_Relic` 0x40, `PogoWinner_Gem` 0x20, `PogoWinner_Normal` the
+  fallback), both giving 0x20 = gem. Also `PogoInit_Camera`,
+  `PogoInit_AllHeros` (per-hero setup) and `InitPogo_Tiles` (clears the
+  board). `func_800B3FF0` (per-mode table) and `func_800C2EE0` (also called
+  by `UpdatePOGO`) are AIQuality / PogoQuality_Init / PogoQuality_Update in
+  some assignment: left unnamed.
 - **Pogo AI** (ovl60). `PogoAI_Poll(p)` runs the bot (`EXTbotai`: `AIpad`,
   timers, `AImode` 1/3/4-7). Tests: `PogoAI_CanPlayerShootAnyone` (an
   opponent in the facing row or column), `...FourWays` (any row or column),

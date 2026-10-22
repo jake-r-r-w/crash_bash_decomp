@@ -9,8 +9,6 @@
 #include "bash/nas.h"
 
 void func_800C0BF0(s32 arg0, s32 arg1);
-void func_800C2F50(void);
-void func_800C2F84(void);
 void func_800C318C(s32 arg0);
 void func_800C3390(void);
 void UpdatePOGO(void);
@@ -62,7 +60,7 @@ void func_800C353C();
 void func_80089FA4(s32 arg0);
 extern u16 D_800AD12C;
 
-/* D_80051640 as the camera func_800C3148 sets up. */
+/* D_80051640 as the camera PogoInit_Camera sets up. */
 typedef struct Ovl60Cam {
     /* 0x00 */ s32 eyeX, eyeY, eyeZ;
     /* 0x0C */ s32 atX, atY, atZ;
@@ -99,7 +97,7 @@ extern Ovl60Cell D_800C53DC[8][8];
 /* The position a board cell's unk4 points to, as PlaySfx takes it. */
 #define CELL_POS(cx, cz) ((SLONG_XYZ *)&((Ovl60Cell *)((cx) * sizeof(D_800C53DC[0]) + (cz) * sizeof(Ovl60Cell) + (u32)D_800C53DC))->unk4->x)
 
-/* A scene object in the list at D_80058AD0 + 0x1C (func_800B3C44). */
+/* A scene object in the list at D_80058AD0 + 0x1C (InitPogo_Tiles). */
 typedef struct Ovl60Obj {
     /* 0x00 */ u32 flags;
     /* 0x04 */ u8 pad4[0x5C - 0x4];
@@ -331,7 +329,7 @@ typedef enum Ovl60Mode {
     OVL60_MODE_12 = 12
 } Ovl60Mode;
 s32 func_8008502C();
-void func_800B3C44(void);
+void InitPogo_Tiles(void);
 
 
 
@@ -340,11 +338,8 @@ void func_800B3C44(void);
 
 
 
-void func_800B4374(s32 arg0, u16 arg1);
-void func_800B44F4(s32 arg0, u16 arg1);
-void func_800B4A70(s32 arg0, u16 arg1);
-void func_800B4E50(s32 arg0, u16 arg1);
-void func_800B53CC(s32 arg0, u16 arg1);
+void PogoWinner_Relic(s32 arg0, u16 arg1);
+void PogoWinner_Normal(s32 arg0, u16 arg1);
 
 
 
@@ -370,11 +365,10 @@ void func_800C2770(s32 arg0, u32 arg1, u32 arg2);
 
 
 
-void func_800C2FB8(void);
 
 void func_800C3048(void);
 
-void func_800C3148(void);
+void PogoInit_Camera(void);
 
 s32 func_800BC04C(s32 arg0, s32 arg1);
 
@@ -382,7 +376,7 @@ s32 func_800BC04C(s32 arg0, s32 arg1);
 
 s32 func_800BE864(s32 hero, Ovl60Goal *goal);
 
-/* D_8005A614 as seen by func_800B3A38. */
+/* D_8005A614 as seen by PogoInit_RelicChallenge. */
 typedef struct Ovl60ScoreView {
     /* 0x00 */ u8 unk0[0x30];
     /* 0x30 */ u16 unk30;
@@ -395,7 +389,7 @@ typedef struct Ovl60ScoreView {
 } Ovl60ScoreView;
 #define SCORE60V ((Ovl60ScoreView *)D_8005A614)
 
-/* D_8005A614 as seen by func_800B53CC (the final ranking). */
+/* D_8005A614 as seen by PogoWinner_Normal (the final ranking). */
 typedef struct Ovl60RankView {
     /* 0x00 */ u8 unk0[0x30];
     /* 0x30 */ u16 unk30;
@@ -442,7 +436,7 @@ typedef struct Ovl60ModeView {
     /* 0x6C */ s32 teams;
 } Ovl60ModeView;
 extern u16 D_8009917C;
-/* D_8005A614 as seen by func_800B4A70 (team end of round). */
+/* D_8005A614 as seen by PogoWinner_Relic (team end of round). */
 typedef struct Ovl60TeamView {
     /* 0x00 */ u8 unk0[0x30];
     /* 0x30 */ u16 unk30;
@@ -455,7 +449,7 @@ typedef struct Ovl60TeamView {
     /* 0x61 */ u8 unk61[0x6C - 0x61];
     /* 0x6C */ s32 teams;
 } Ovl60TeamView;
-/* func_800B4A70: hero idx's team is out of points (i starts at i0). */
+/* PogoWinner_Relic: hero idx's team is out of points (i starts at i0). */
 #define OVL60_TEAM_LOST(g, idx, i, i0)                                   \
     {                                                                    \
         Ovl60TeamView *g_;                                               \
@@ -474,7 +468,7 @@ typedef struct Ovl60TeamView {
             }                                                            \
         }                                                                \
     }
-/* func_800B4A70: OVL60_TEAM_LOST, g copied for the loop after the stores. */
+/* PogoWinner_Relic: OVL60_TEAM_LOST, g copied for the loop after the stores. */
 #define OVL60_TEAM_LOST_LATE(g, idx, i, i0)                              \
     {                                                                    \
         Ovl60TeamView *g_;                                               \
@@ -493,7 +487,7 @@ typedef struct Ovl60TeamView {
             }                                                            \
         }                                                                \
     }
-/* func_800B4A70: the round ends with no winner. */
+/* PogoWinner_Relic: the round ends with no winner. */
 #define OVL60_ROUND_OVER(g, flag, i)                                     \
     do {                                                                 \
         Ovl60TeamView *g_;                                               \
@@ -512,7 +506,7 @@ typedef struct Ovl60TeamView {
             }                                                            \
         }                                                                \
     } while (0)
-/* func_800B4A70: a hero's score plus its teammate's. */
+/* PogoWinner_Relic: a hero's score plus its teammate's. */
 static inline s32 Ovl60TeamScore(s32 idx) {
     HeroInfo *hb = Heroes;
     HeroInfo *h = &hb[idx];
@@ -550,9 +544,8 @@ void func_8007B7FC(u32 a, u32 b);
 void func_8007D144(void);
 extern s32 D_80099174;
 
-void func_800B3808(void);
 
-void func_800B3A38(void);
+void PogoInit_RelicChallenge(void);
 
 void func_800B3FF0(void);
 
