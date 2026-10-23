@@ -129,7 +129,8 @@ and current tools).
     parameter to a local, s16 -> s32, split a statement, a constant in a
     local, a goto loop), generalising `splitvars`.
 - **`func_8007F314` (engine pause menu, 5772 B), parked 2026-10-18 at
-  structure 1147/1443** (swarm checkpoint was 1263; C under
+  structure 1147/1443, regions 197/264 since the 2026-10-23 goto pass**
+  (swarm checkpoint was 1263; C under
   `#ifdef NON_MATCHING`, the `block` note lists what's left). Most of the
   diff comes from jump2's cross-jumping of the ~20 `ret = 0; break;` tails:
   the target keeps the copy in case 0 (`.L8007F704`) and every other tail
@@ -163,6 +164,34 @@ and current tools).
     tarball: the reference tree lacks host configs), or C with a `goto`
     giving the surviving `j` a label. `scratch/f3/` has the variants and
     `dumpv.sh` (install a variant, dump sched2/jump2/dbr, list the tails).
+  - 2026-10-23 goto pass (regions 176 -> 197/264, now the park). Three
+    changes help: the hook `if (D_8005A644 & 0x1000) func_80082D90(ret);`
+    written in both branches (the else as `else if`), which replaces the
+    empty loop (+6); a `goto` from the `unk74` test into the first
+    `return 1` block (+4, FindExtension's rule); and case 0's
+    `PlaySfx(0x192)` as a `goto` into case 8's (+11 with the hook pair).
+    The last is not the source: the target's case 0 jump-table cases 2-4
+    share one `sw v0,0x10(a0); j` (L8F4), which needs case 0's own PlaySfx
+    to survive until jump2.
+  - The three tail families keep different copies in the target: the
+    first `ret = 0; break;` (case 0), case 8's PlaySfx, and the last
+    `ret = 1; func_80080FBC();` (case 0x20). Plain `break`s give all-first
+    (with the empty loop) or all-last (without). Mixing `goto exit` (cases
+    0 and 8, case 0x20's tail) with `break` (the rest, loop kept) gets the
+    PlaySfx merge right (187), but case 0's `ret = 0` copy still folds away.
+    `goto`s for the `ret = 1` copies remove refs and move `ret` to s4, so
+    the source has those duplicates.
+  - Case 0's `s3 = 0; .L8007F708: j; lui`: in matched code (`func_80086918`,
+    `AR_PI_TestOutOfBounds`) that layout comes from a cross-jump label put
+    before one matched insn that reorg then moves into the `j`'s slot. So
+    before reorg one more shared insn sat after case 0's `s3 = 0`, probably
+    the hook's `lui v0, %hi(D_8005A644)`.
+  - The unit is probably `PAUSE.CPP` (PROTOTYPES.md, Jampack). The
+    container's 2.8.1-psx `cc1plus` compiles this C to identical code
+    (`scratch/f3/g/cxx/`), but `xori v0,v0,1` after `func_800832BC` is
+    C++'s `!f()` on a `bool` (our C needs `r ^= 1`).
+  - Harness: `scratch/f3/g/` (`t.sh` scores `.fn` variants by try and
+    regions, `full.sh` the full diff, `dump.sh` the jump2/dbr RTL).
   - Also verified here: a constant set in the same basic block as its use
     stays in a register (reload_cse makes `and v0,a1` / `sllv ...,s5`), so
     move `max = 4` / `n = 1` past the label in front of them.
@@ -467,6 +496,13 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-23 (hand: `func_8007F314` goto pass, still parked):** regions
+  176 -> 197/264, the new park: the debug hook in both branches instead of
+  the empty loop, a `goto` into the first `return 1` block, and case 0's
+  PlaySfx as a `goto` into case 8's (not the source; leads list why). No
+  `break`/`goto` mix gives the target's three tail survivors. Found the
+  unit is probably `PAUSE.CPP`; `cc1plus` compiles the C identically.
 
 - **2026-10-23 (Jampack Winter 2000 demo scan):** the demo's DAT holds an
   SN fragment in its engine entry's tail: the first function records (all

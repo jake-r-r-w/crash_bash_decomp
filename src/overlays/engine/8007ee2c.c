@@ -111,10 +111,12 @@ s32 func_8007F314(void) {
         return 0;
     }
     if (D_8004DDD0[PSV->mode * 3] == 0x101 || PSV->mode == 0x2B) {
+    /* goto into this copy: jump2 would fold it into the later one */
+    ret1:
         return 1;
     }
     if (PSV->unk74 != 0) {
-        return 1;
+        goto ret1;
     }
     if (PSV->unk68 != 0) {
         if (PSV->unk14 != 0) {
@@ -232,7 +234,8 @@ found:
                     break;
                 }
             }
-            PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+            /* case 8 keeps the PlaySfx copy in the target */
+            goto sfx;
             }
             ret = 0;
             break;
@@ -259,6 +262,7 @@ found:
                 PSV->flags |= 0x10000;
                 break;
             }
+            sfx:
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             }
             ret = 0;
@@ -574,15 +578,12 @@ found:
             PSV->flags |= 1;
             break;
         }
-        /* Empty loop (a compiled-out debug macro?): its LOOP_BEG note stops
-           jump threading of the breaks until jump2, so the ret = 0 tails
-           merge into case 0's first copy as in the target. */
-        do {
-        } while (0);
-    } else {
-        if ((PSV->flags & 0x04000000) && !(PSV->unk30 & 0x1000)) {
-            goto skip;
+        /* The hook in both branches: jump2 cross-jumps the copies, and the
+           breaks keep the switch end as their target until then. */
+        if (D_8005A644 & 0x1000) {
+            func_80082D90(ret);
         }
+    } else if (!(PSV->flags & 0x04000000) || (PSV->unk30 & 0x1000)) {
         n = 1;
         D_8009AEF0 = 0;
         D_8009AEF4 = -1;
@@ -606,11 +607,10 @@ found:
                 }
             }
         }
+        if (D_8005A644 & 0x1000) {
+            func_80082D90(ret);
+        }
     }
-    if (D_8005A644 & 0x1000) {
-        func_80082D90(ret);
-    }
-skip:
     if (ret == 0) {
         func_80080FBC();
     }

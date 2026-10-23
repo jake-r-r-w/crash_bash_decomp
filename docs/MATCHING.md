@@ -1682,6 +1682,11 @@ The flags are the unit's: `-O2 -G0 -fno-builtin` for gcc 2.8.1 code (`configs/US
 Units with their own settings set `CC_VER` and `EXTRA_CC1FLAGS` in the Makefile. Leaving out
 `-fno-builtin` inlines `abs` and changes the code.
 
+The game's own files were C++ (`PANEL.CPP`, `PAUSE.CPP`: PROTOTYPES.md, Jampack), and the
+container also has `/opt/gcc/2.8.1-psx/cc1plus`. On C-style code it emits the same code as cc1
+(tested on `func_8007F314`), so a C shape stays the thing to change. A C++ idiom can explain
+odd C, though: `xori v0,v0,1` after a call is `!f()` on a `bool`, which C writes as `r ^= 1`.
+
 **1. Dump every pass of the function.** `decomp.py sched NAME` writes the file's preprocessed
 source, with the C as it is now, to `build/sched/NAME.i`. Run cc1 on it with the dump flags,
 then cut the function's section out of each dump (each holds the whole file). The loop runs in
@@ -2004,6 +2009,19 @@ The rules found so far, each one checked against a trace:
     join and all merge into the last tail. Either way an earlier copy can
     hand itself to a later one only if the later jump is already in the
     chain when the earlier one is reached (`func_8007F314`, parked).
+  - Each jump is threaded before its cross-jump is tried, and
+    `redirect_jump` deletes the old label once its last user has gone. So a
+    label that stops a tail's match lasts only until its users are
+    threaded, often in the same pass. A copy that has collected others has
+    a label before its first insn, so in a later pass it can hand itself
+    over too.
+  - Two tails that end up jumping to a label jump2 made (the label before
+    a kept copy) are never compared again, so their own preceding code (a
+    call and its arguments) stays duplicated.
+  - A layout `x; L: j T` with `x` in other jumps' delay slots (`j L; x`)
+    comes from a cross-jump that put `L` before one shared insn, which
+    reorg then moved into the `j`'s slot (`func_80086918`,
+    `AR_PI_TestOutOfBounds`).
 - **Delay slots (`reorg.c`).**
   - `fill_simple_delay_slots` fills from before the branch first, then
     fills an unconditional jump from its target. Its backward scan stops at
