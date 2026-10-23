@@ -200,10 +200,12 @@ unit `8007ee2c`, maybe from `func_8007ED0C`. Not proven.
 **Still to do.**
 - Apply the signatures and the locals to the 23 renamed functions, and
   rename the unit `panel`.
-- Rename the globals: 34 of the 44 are mapped, every one referenced at its
-  start and on a retail `D_` symbol's start (`PanelCtrl` is `D_80099174`,
-  `CupTimer` `D_8009AE3C`, `HealthIconPos` `D_80099250`, ...; `globals.txt`).
-  The shipped data sits 0x28 below the records, though the code is 4 above.
+- Globals: the 33 mapped (of 44; every one referenced at its start and on a
+  retail `D_` start) are renamed with Euro's engine ones
+  (`renames_engine_globals.txt`: `PanelCtrl` is `D_80099174`, `CupTimer`
+  `D_8009AE3C`, `HealthIconPos` `D_80099250`, ...). The shipped data sits
+  0x28 below the records, though the code is 4 above. Their types (sizes,
+  arrays) are still to apply.
 - Add the new enums to `include/bash/` (`shell.h` for the cheat flags and
   level/world numbers).
 - Place `PAUSE.CPP` in retail from its line table (statement boundaries
@@ -291,8 +293,11 @@ The 4 names the repo gave itself are replaced by the originals
   `screen_aspect`, `FirstNas`, `World_floor_level`, `num_sfx_banks`, `cdb`,
   ...); 5 sit inside one (`core_process`, `map_frame_counter`,
   `GlobalNAStatus`, `GemRules`, `ASTString`) and need the symbol split first;
-  15 are PsyQ data (Sony's names stay). The engine's and the overlays' wait
-  with their functions. The two globals both demos map agree
+  15 are PsyQ data (Sony's names stay). The engine's are renamed with
+  Jampack's (36 in all: also `map`, `camera_frame_list_size`,
+  `camera_frame_right`); `default_shell_info` and the two overlay ones
+  (`PolarAITeeterChance`, `RACEQualityFactor4t`) sit inside a symbol and wait
+  with the 5 above. The two globals both demos map agree
   (`HealthIconPos`, `BigScore_teamA`).
 - The link groups give file boundaries in the engine (`_core_end`,
   `_engine_start`, ...); check them against the unit split in

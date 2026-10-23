@@ -628,7 +628,7 @@ typedef struct HudBox {
     /* 0x10 */ s32 unk10;
     /* 0x14 */ s32 unk14;
 } HudBox;
-/* D_80099290 as seen by func_800809A0. */
+/* PanelTab as seen by func_800809A0. */
 typedef struct HudEngView {
     /* 0x000 */ u8 pad0[0x31C];
     /* 0x31C */ s32 x0;
@@ -703,7 +703,7 @@ typedef struct PauseView {
 #define PSV ((PauseView *)D_8005A614)
 extern u16 D_8009AF38[];
 #define HUDBOX ((HudBox *)D_8009BCE0)
-#define HUDENG ((HudEngView *)D_80099290)
+#define HUDENG ((HudEngView *)PanelTab)
 extern s32 D_8009AF00;
 extern s16 D_8009AE98[][8];
 void func_800248A0();

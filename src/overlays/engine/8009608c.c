@@ -253,7 +253,7 @@ void func_80096A08(void) {
 
     cam = (EngCam *)D_80051640;
     RotMatrix(&cam->rot, &m);
-    n = D_800AD1E8;
+    n = camera_frame_list_size;
     D_800AD31C = 0x7FFFFFFF;
     D_800AD320 = 0x80000000;
     D_800AD324 = 0x7FFFFFFF;
@@ -290,8 +290,8 @@ void func_80096A08(void) {
         v = xr - (z + 0x3000) * 320 / ((EngCam *)D_80051640)->dist;
         if (v > D_800AD328) {
             D_800AD328 = v;
-            D_800AD310[0] = xr;
-            D_800AD310[2] = z;
+            camera_frame_right[0] = xr;
+            camera_frame_right[2] = z;
         }
         z = out.vz - e->unk8;
         xr = out.vy - e->unkC;
@@ -323,8 +323,8 @@ void func_80096A08(void) {
         v = w - (z + 0x3000) * 320 / ((EngCam *)D_80051640)->dist;
         if (v > D_800AD328) {
             D_800AD328 = v;
-            D_800AD310[0] = w;
-            D_800AD310[2] = z;
+            camera_frame_right[0] = w;
+            camera_frame_right[2] = z;
         }
         z = out.vz + e->unkA;
         w = out.vy - e->unkC;
@@ -357,7 +357,7 @@ void func_80096F98(s32 arg0) {
 
     func_80078DD4();
     func_80096A08();
-    if (func_800967E0(&D_800AD2EC, D_800AD2F8, &D_800AD304, D_800AD310, pos) != 0) {
+    if (func_800967E0(&D_800AD2EC, D_800AD2F8, &D_800AD304, camera_frame_right, pos) != 0) {
         d[0] = ((View *)D_80051640)->pos.vx - pos[0];
     }
     d[1] = ((View *)D_80051640)->pos.vy - pos[1];
@@ -463,8 +463,8 @@ void func_800973AC(s32 arg0, s32 arg1) {
 
     if (D_800AD328 < temp) {
         D_800AD328 = temp;
-        D_800AD310[0] = arg0;
-        D_800AD310[2] = arg1;
+        camera_frame_right[0] = arg0;
+        camera_frame_right[2] = arg1;
     }
 }
 
@@ -481,15 +481,15 @@ void func_80097424(s32 arg0, s32 arg1) {
 void camera_add_frame_list(s32 arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5) {
     D_800AD1EC_entry *e;
 
-    if (D_800AD1E8 < 0x10) {
-        e = &D_800AD1EC[D_800AD1E8];
+    if (camera_frame_list_size < 0x10) {
+        e = &D_800AD1EC[camera_frame_list_size];
         e->unk0 = arg0;
         e->unk4 = arg1;
         e->unk6 = arg2;
         e->unk8 = arg3;
         e->unkA = arg4;
         e->unkC = arg5;
-        D_800AD1E8 += 1;
+        camera_frame_list_size += 1;
     }
 }
 

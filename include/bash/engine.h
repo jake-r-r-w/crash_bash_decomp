@@ -14,7 +14,7 @@ extern s32 D_80051658;
 extern s32 D_800AD2F8[];
 extern u16 D_800A00D0[];
 extern s32 D_800AD320;
-extern s32 D_800AD310[];
+extern s32 camera_frame_right[];
 extern s32 D_800AD328;
 typedef struct {
     s32 unk0;
@@ -25,7 +25,7 @@ typedef struct {
     s16 unkC;
     s16 unkE;
 } D_800AD1EC_entry;
-extern s32 D_800AD1E8;
+extern s32 camera_frame_list_size;
 extern D_800AD1EC_entry D_800AD1EC[];
 extern void (*D_8005AA80)(void);
 extern void (*D_8009D704)(void);
@@ -57,12 +57,12 @@ extern subengine D_800A13F4[][32]; /* 32 subengines per EnginePool slot */
 
 typedef struct { u16 a, b; } U16Pair;
 typedef struct { u16 a, b, c, d; } U16Quad;
-extern U16Quad D_8009AD74[4];
-extern U16Pair D_80099260[4];
-extern U16Pair D_80099270[4];
+extern U16Quad Score[4];
+extern U16Pair ScoreIcon3Pos[4];
+extern U16Pair ScoreIcon2Pos[4];
 
 extern s32 D_800ADBC0;
-extern s32 D_80099174;
+extern s32 PanelCtrl;
 typedef struct EngObj {
     s32 flags;
     u8 pad[0x48];
@@ -71,17 +71,17 @@ typedef struct EngObj {
 extern EngObj **D_8005AA40;
 extern void (*D_8005AA7C)(void);
 extern subengine D_8009A04C[];
-extern struct { s32 *c; u8 pad[4]; s32 *a; s32 *b; } D_8009970C;
+extern struct { s32 *c; u8 pad[4]; s32 *a; s32 *b; } Icon;
 extern s16 D_80099208[];
 extern s32 D_8005A680[];
 extern subengine D_8009A4E4;
-extern s32 D_80099178;
-extern u16 D_8009917C;
-extern U16Pair D_80099180[];
+extern s32 Clock_Time;
+extern u16 Clock_flags;
+extern U16Pair Clock_offsets[];
 typedef struct { u16 a, b; s32 c; } GpuTextCmd;
-extern GpuTextCmd D_8009AD54[4];
-extern s32 D_800996D4[3];
-extern s16 D_8009AE76;
+extern GpuTextCmd Clock[4];
+extern s32 Clock_XYZ[3];
+extern s16 Clock_last_ping;
 extern s16 D_80099194;
 extern s32 D_80099700[];
 extern s32 D_8009AE78;
@@ -94,9 +94,9 @@ typedef struct EngineBox {
     s16 unk68, pad6A, unk6C, unk6E, unk70, pad72, unk74, unk76, unk78, pad7A, unk7C, unk7E, unk80, pad82, unk84, unk86, unk88, pad8A;
     s32 unk8C, unk90, unk94, unk98;
 } EngineBox;
-extern u16 D_8009AE70;
-extern s32 D_8009AE3C;
-extern u16 D_8009AE74;
+extern u16 CupMode;
+extern s32 CupTimer;
+extern u16 Trophy_Cups;
 extern s32 D_8009F708;
 extern u8 D_8009F658[];
 extern u8 D_8009FA14[];
@@ -430,9 +430,9 @@ typedef struct WobbleObj {
 } WobbleObj;
 extern WobbleObj *D_800A0290;
 
-extern U16Pair D_80099280[4];
+extern U16Pair ScoreIcon1Pos[4];
 extern s16 D_8005A650;
-extern s32 D_800A00F0[];
+extern s32 map[];
 
 void func_8007A8C4(void);
 
@@ -553,7 +553,7 @@ typedef struct EngHudGame {
     /* 0x34 */ s16 mode;
 } EngHudGame;
 #define HUDGAME ((EngHudGame *)D_8005A614)
-#define HUDPLAYERS ((EXTengine **)&D_8009970C)
+#define HUDPLAYERS ((EXTengine **)&Icon)
 extern s32 D_8009AEF4;
 void func_800798A4(void);
 

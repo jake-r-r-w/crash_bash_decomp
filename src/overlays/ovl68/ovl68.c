@@ -2044,7 +2044,7 @@ void PlotEgg(NAS *nas) {
     eng = nas->Engine;
     sub = eng->sub;
     fux = (EggExt *)nas->FUX;
-    if (D_80099178 == 0 || (D_8005A644 & 0x801)) {
+    if (Clock_Time == 0 || (D_8005A644 & 0x801)) {
         PlaySfx(0x75A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         pos = &eng->unk10;
         p = *D_80058AD0;
@@ -2651,7 +2651,7 @@ void func_800B9ED8(s32 arg0, u16 arg1) {
             if (g[*(s16 *)(g + 0x48) + 0x5C] == 0) {
                 D_8005A614[0x60] = a->hero_name;
                 *(u16 *)(D_8005A614 + 0x30) |= 0x800;
-                D_8009917C |= 0x200;
+                Clock_flags |= 0x200;
                 for (i = 0; i < 4; i++) {
                     if (D_8005A614[i + 0x5C] != 0) {
                         hb[i].hero_status |= 0x400;
@@ -2666,7 +2666,7 @@ void func_800B9ED8(s32 arg0, u16 arg1) {
             if (g[*(s16 *)(g + 0x4A) + 0x5C] == 0) {
                 D_8005A614[0x60] = b->hero_name;
                 *(u16 *)(D_8005A614 + 0x30) |= 0x800;
-                D_8009917C |= 0x200;
+                Clock_flags |= 0x200;
                 for (i = 0; i < 4; i++) {
                     if (D_8005A614[i + 0x5C] != 0) {
                         hb[i].hero_status |= 0x400;
@@ -2688,7 +2688,7 @@ void func_800B9ED8(s32 arg0, u16 arg1) {
             if (D_8005A614[found + 0x5C] == 0) {
                 D_8005A614[0x60] = Heroes[found].hero_name;
                 *(u16 *)(D_8005A614 + 0x30) |= 0x800;
-                D_8009917C |= 0x200;
+                Clock_flags |= 0x200;
                 for (i = 0; i < 4; i++) {
                     if (D_8005A614[i + 0x5C] != 0) {
                         Heroes[i].hero_status |= 0x400;
@@ -2704,7 +2704,7 @@ void func_800B9ED8(s32 arg0, u16 arg1) {
     if (fail || arg0 == -1) {
         D_8005A614[0x60] = 0;
         *(u16 *)(D_8005A614 + 0x30) |= arg1;
-        D_8009917C |= 0x200;
+        Clock_flags |= 0x200;
         for (i = 0; i < 4; i++) {
             if (D_8005A614[i + 0x5C] != 0) {
                 Heroes[i].hero_status |= 0x400;

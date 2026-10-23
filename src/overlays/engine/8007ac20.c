@@ -9,7 +9,7 @@ void Setup_panel(void) {
     EngineSlotView *v;
     s32 i;
 
-    D_80099174 = (D_80099174 | 0x80000000) & 0xFFFE2FFF;
+    PanelCtrl = (PanelCtrl | 0x80000000) & 0xFFFE2FFF;
     v = (EngineSlotView *)D_8005A614;
     if (v->unk6C != 0) {
         i = v->unk48;
@@ -155,22 +155,22 @@ void Setup_panel(void) {
 void func_8007AF3C(void) {
     u16 *t;
 
-    if (D_80099174 & 8) {
+    if (PanelCtrl & 8) {
         UpdateHealthIcons();
     }
-    if (D_80099174 & 0x10) {
+    if (PanelCtrl & 0x10) {
         UpdatePowerIcons();
     }
-    if (D_80099174 & 0x700) {
+    if (PanelCtrl & 0x700) {
         UpdateScoreIcons();
     }
-    if (D_80099174 & 0x1000) {
+    if (PanelCtrl & 0x1000) {
         UpdateBigScore();
     }
-    if (D_80099174 & 0x8000) {
+    if (PanelCtrl & 0x8000) {
         func_8007D5EC();
     }
-    if (D_80099174 & 0x100000) {
+    if (PanelCtrl & 0x100000) {
         func_8007D2F4();
     }
     Cups_Update();
@@ -186,32 +186,32 @@ void func_8007AF3C(void) {
 }
 
 void InitBigScore(void) {
-    D_8009A97C = EngineTemplate;
-    D_8009A97C.flags = 0x10008000;
-    D_8009A97C.unk10.x = 0x82;
-    D_8009A97C.unk10.y = 0x8C;
-    D_8009A97C.unk10.z = 0;
-    func_8001D3B0(&D_8009A97C, 1, &D_8009AAB4);
-    func_80095F48((s32 *)&D_8009AAB4, -0x30, 0, D_80099200, 0);
-    D_8009A97C.unk5D = 0;
-    D_8009A97C.unk5C = 1;
-    D_8009AAB4.flags &= ~0x10000000;
-    D_8009AA18 = EngineTemplate;
-    D_8009AA18.flags = 0x10008000;
-    D_8009AA18.unk10.x = 0x1E0;
-    D_8009AA18.unk10.y = 0x8C;
-    D_8009AA18.unk10.z = 0;
-    func_8001D3B0(&D_8009AA18, 1, &D_8009AB5C);
-    func_80095F48((s32 *)&D_8009AB5C, -0x30, 0, D_80099204, 0);
-    D_8009AA18.unk5C = 1;
-    D_8009AA18.unk5D = 0;
-    D_8009AE7C = 0x10;
-    D_8009AE7E = 0;
-    D_8009AE80 = 0;
-    D_8009AE82 = 0;
-    D_8009AE84 = 0;
-    D_8009AB5C.flags &= ~0x10000000;
-    D_80099174 |= 0x1000;
+    BigScore1 = EngineTemplate;
+    BigScore1.flags = 0x10008000;
+    BigScore1.unk10.x = 0x82;
+    BigScore1.unk10.y = 0x8C;
+    BigScore1.unk10.z = 0;
+    func_8001D3B0(&BigScore1, 1, &BigScoreParts1);
+    func_80095F48((s32 *)&BigScoreParts1, -0x30, 0, left_score, 0);
+    BigScore1.unk5D = 0;
+    BigScore1.unk5C = 1;
+    BigScoreParts1.flags &= ~0x10000000;
+    BigScore2 = EngineTemplate;
+    BigScore2.flags = 0x10008000;
+    BigScore2.unk10.x = 0x1E0;
+    BigScore2.unk10.y = 0x8C;
+    BigScore2.unk10.z = 0;
+    func_8001D3B0(&BigScore2, 1, &BigScoreParts2);
+    func_80095F48((s32 *)&BigScoreParts2, -0x30, 0, right_score, 0);
+    BigScore2.unk5C = 1;
+    BigScore2.unk5D = 0;
+    BigScore_scale = 0x10;
+    BigScore_teamA = 0;
+    BigScore_teamB = 0;
+    BigScore_Adelay = 0;
+    BigScore_Bdelay = 0;
+    BigScoreParts2.flags &= ~0x10000000;
+    PanelCtrl |= 0x1000;
 }
 
 void UpdateBigScore(void) {
@@ -236,43 +236,43 @@ void UpdateBigScore(void) {
     s32 cur;
     s32 diff;
 
-    if (D_8009AE70 != 0) {
+    if (CupMode != 0) {
         lim = 0xA00;
-        if (D_8009A97C.unk10.y > 0x5A) {
-            D_8009A97C.unk10.y -= 8;
+        if (BigScore1.unk10.y > 0x5A) {
+            BigScore1.unk10.y -= 8;
         }
-        if (D_8009AA18.unk10.y > 0x5A) {
-            D_8009AA18.unk10.y -= 8;
+        if (BigScore2.unk10.y > 0x5A) {
+            BigScore2.unk10.y -= 8;
         }
         for (i = 0; i < 4; i++) {
-            if ((s16)D_8009AD74[i].c > -0x100) {
-                D_8009AD74[i].c -= 8;
+            if ((s16)Score[i].c > -0x100) {
+                Score[i].c -= 8;
             }
         }
     } else {
         lim = 0x1000;
     }
-    if ((u16)D_8009AE7C < lim) {
-        D_8009AE7C += 0x100;
-        if ((u16)D_8009AE7C > lim) {
-            D_8009AE7C = lim;
+    if ((u16)BigScore_scale < lim) {
+        BigScore_scale += 0x100;
+        if ((u16)BigScore_scale > lim) {
+            BigScore_scale = lim;
         }
     }
-    if ((u16)D_8009AE7C > lim) {
-        D_8009AE7C -= 0x100;
-        if ((u16)D_8009AE7C < lim) {
-            D_8009AE7C = lim;
+    if ((u16)BigScore_scale > lim) {
+        BigScore_scale -= 0x100;
+        if ((u16)BigScore_scale < lim) {
+            BigScore_scale = lim;
         }
     }
-    e = &D_8009A97C;
-    v = (u16)D_8009AE7C;
+    e = &BigScore1;
+    v = (u16)BigScore_scale;
     do {
         e->unk2C.x = v;
         e->unk2C.y = v;
         e->unk2C.z = v;
     } while (0);
     do {
-        f = &D_8009AA18;
+        f = &BigScore2;
         f->unk2C.x = v;
         f->unk2C.y = v;
         f->unk2C.z = v;
@@ -288,23 +288,23 @@ void UpdateBigScore(void) {
     b = &hb[tm];
     s1 = a->hero_score;
     s2 = b->hero_score;
-    cur = (u16)D_8009AE7E;
+    cur = (u16)BigScore_teamA;
     diff = cur - (s1 + s2);
     if (diff < 0) {
-        D_8009AE7E = cur + 1;
+        BigScore_teamA = cur + 1;
         if (diff < -30) {
-            D_8009AE7E = cur + 2;
+            BigScore_teamA = cur + 2;
         }
         if (diff < -60) {
-            D_8009AE7E++;
+            BigScore_teamA++;
         }
         if (diff < -90) {
-            D_8009AE7E++;
+            BigScore_teamA++;
         }
         if (diff < -120) {
-            D_8009AE7E++;
+            BigScore_teamA++;
         }
-        diff = (u16)D_8009AE7E;
+        diff = (u16)BigScore_teamA;
         if (s1 < diff) {
             a->hero_score_displayed = 0;
             b->hero_score_displayed = s1 + s2 - diff;
@@ -327,23 +327,23 @@ void UpdateBigScore(void) {
     b = &hb[tm];
     s1 = a->hero_score;
     s2 = b->hero_score;
-    cur = (u16)D_8009AE80;
+    cur = (u16)BigScore_teamB;
     diff = cur - (s1 + s2);
     if (diff < 0) {
-        D_8009AE80 = cur + 1;
+        BigScore_teamB = cur + 1;
         if (diff < -30) {
-            D_8009AE80 = cur + 2;
+            BigScore_teamB = cur + 2;
         }
         if (diff < -60) {
-            D_8009AE80++;
+            BigScore_teamB++;
         }
         if (diff < -90) {
-            D_8009AE80++;
+            BigScore_teamB++;
         }
         if (diff < -120) {
-            D_8009AE80++;
+            BigScore_teamB++;
         }
-        diff = (u16)D_8009AE80;
+        diff = (u16)BigScore_teamB;
         if (s1 < diff) {
             a->hero_score_displayed = 0;
             b->hero_score_displayed = s1 + s2 - diff;
@@ -356,7 +356,7 @@ void UpdateBigScore(void) {
         b->hero_score_displayed = 0;
     }
 
-    n = (u16)D_8009AE7E;
+    n = (u16)BigScore_teamA;
     d = n / 10;
     q = d;
     d = n - q * 10;
@@ -366,12 +366,12 @@ void UpdateBigScore(void) {
     q = d;
     d = n - q * 10;
     n = q;
-    ((char *)D_80099200)[2] = c2;
-    ((char *)D_80099200)[1] = d + '0';
+    ((char *)left_score)[2] = c2;
+    ((char *)left_score)[1] = d + '0';
     d = n / 10;
     d = n - d * 10;
-    ((char *)D_80099200)[0] = d + '0';
-    n = (u16)D_8009AE80;
+    ((char *)left_score)[0] = d + '0';
+    n = (u16)BigScore_teamB;
     d = n / 10;
     q = d;
     d = n - q * 10;
@@ -381,13 +381,13 @@ void UpdateBigScore(void) {
     q = d;
     d = n - q * 10;
     n = q;
-    ((char *)D_80099204)[2] = m;
-    ((char *)D_80099204)[1] = d + '0';
+    ((char *)right_score)[2] = m;
+    ((char *)right_score)[1] = d + '0';
     d = n / 10;
     d = n - d * 10;
-    ((char *)D_80099204)[0] = d + '0';
-    D_8009A97C.unk5E = 1;
-    D_8009AA18.unk5E = 1;
+    ((char *)right_score)[0] = d + '0';
+    BigScore1.unk5E = 1;
+    BigScore2.unk5E = 1;
 }
 
 void Set_Clock(u32 a, u32 b) {
@@ -398,26 +398,26 @@ void Set_Clock(u32 a, u32 b) {
     u32 t;
 
     if ((v & 0xFFFF) == 0xFFFF) {
-        v = (u32)D_80099178 >> 8;
+        v = (u32)Clock_Time >> 8;
     }
     if ((w & 0xFFFF) == 0xFFFF) {
-        w = D_8009917C;
+        w = Clock_flags;
     }
-    D_80099178 = (v & 0xFFFF) << 8;
+    Clock_Time = (v & 0xFFFF) << 8;
     t = w | 0x400;
-    D_8009917C = t;
-    D_8009AD54[0].c = 0x10008000;
-    D_8009AD54[0].a = 0x3013;
-    D_8009AD54[0].b = D_80099180[0].a;
+    Clock_flags = t;
+    Clock[0].c = 0x10008000;
+    Clock[0].a = 0x3013;
+    Clock[0].b = Clock_offsets[0].a;
     for (i = 1; i < 4; i++) {
         d = v & 0xF;
         if (d >= 0xA) {
             d = 0;
         }
         v = (v & 0xFFFF) >> 4;
-        D_8009AD54[i].a = d + 0x3009;
-        D_8009AD54[i].c = 0x10008000;
-        D_8009AD54[i].b = D_80099180[i].a;
+        Clock[i].a = d + 0x3009;
+        Clock[i].c = 0x10008000;
+        Clock[i].b = Clock_offsets[i].a;
     }
 }
 
@@ -436,19 +436,19 @@ void Draw_Clock(void) {
     GpuTextCmd *p;
     HeroInfo *h;
 
-    if (!(D_80099174 & 1)) {
+    if (!(PanelCtrl & 1)) {
         return;
     }
     if (D_8005A644 & 0x9800) {
         return;
     }
-    s = (u32)D_80099178 >> 8;
-    if (D_8009917C & 0x400) {
-        if (D_80099178 == 0x2000) {
+    s = (u32)Clock_Time >> 8;
+    if (Clock_flags & 0x400) {
+        if (Clock_Time == 0x2000) {
             func_8002C1C0(0x6E, 0xF0);
         }
     }
-    if (D_8009917C & 0x200) {
+    if (Clock_flags & 0x200) {
         if (StillTottingUpScore() != 0) {
             s32 k = 100;
 
@@ -461,34 +461,34 @@ void Draw_Clock(void) {
                 n = 0x201;
             }
             D_8009D74C(-1, n);
-            D_8009917C = 0x8000;
+            Clock_flags = 0x8000;
         }
     }
-    if ((D_8009917C & 0x100) && s == 0) {
+    if ((Clock_flags & 0x100) && s == 0) {
         PlaySfx(0x19C, NULL, NULL, 0x1000, 0x1E00, 0);
         if (StillTottingUpScore() != 0) {
-            D_80099178 = 0;
-            D_8009917C = 0x8200;
+            Clock_Time = 0;
+            Clock_flags = 0x8200;
         } else {
             n = 1;
             if (D_8005A618 & 0x800) {
                 n = 0x201;
             }
             D_8009D74C(-1, n);
-            D_80099178 = 0;
-            D_8009917C = 0x8000;
+            Clock_Time = 0;
+            Clock_flags = 0x8000;
         }
     }
     v = (EngineClockView *)D_8005A614;
     if (!(v->unk4 & 0x40) && !(v->unk10 & 0x04000000)) {
-        if (D_8009917C & 0x20) {
+        if (Clock_flags & 0x20) {
             u32 bf;
             u32 bs;
             u32 bm;
 
-            sec = (u32)D_80099178 >> 8;
-            min = (u32)D_80099178 >> 16;
-            bf = *(u8 *)&D_80099178;
+            sec = (u32)Clock_Time >> 8;
+            min = (u32)Clock_Time >> 16;
+            bf = *(u8 *)&Clock_Time;
             f = (bf >> 4) * 10 + (bf & 0xF);
             bs = (u8)sec;
             sec = (bs >> 4) * 10 + (bs & 0xF);
@@ -509,17 +509,17 @@ void Draw_Clock(void) {
             e = (f / 10) * 16 + f % 10;
             sec = (sec / 10) * 16 + sec % 10;
             min = (min / 10) * 16 + min % 10;
-            D_80099178 = ((min & 0xFF) << 16) + ((sec & 0xFF) << 8) + (e & 0xFF);
+            Clock_Time = ((min & 0xFF) << 16) + ((sec & 0xFF) << 8) + (e & 0xFF);
         }
-        if (D_8009917C & 0x40) {
+        if (Clock_flags & 0x40) {
             s32 min;
             u32 bf;
             u32 bs;
             u32 m;
 
-            sec = (u32)D_80099178 >> 8;
-            min = (u32)D_80099178 >> 16;
-            bf = *(u8 *)&D_80099178;
+            sec = (u32)Clock_Time >> 8;
+            min = (u32)Clock_Time >> 16;
+            bf = *(u8 *)&Clock_Time;
             f = (bf >> 4) * 10 + (bf & 0xF);
             bs = (u8)sec;
             sec = (bs >> 4) * 10 + (bs & 0xF);
@@ -540,38 +540,38 @@ void Draw_Clock(void) {
             e = (f / 10) * 16 + f % 10;
             sec = (sec / 10) * 16 + sec % 10;
             min = (min / 10) * 16 + min % 10;
-            D_80099178 = ((min & 0xFF) << 16) + ((sec & 0xFF) << 8) + (e & 0xFF);
+            Clock_Time = ((min & 0xFF) << 16) + ((sec & 0xFF) << 8) + (e & 0xFF);
         }
     }
-    if (D_8009917C & 0x80) {
+    if (Clock_flags & 0x80) {
         if (s < 6) {
-            if ((u16)D_8009AE76 != s) {
+            if ((u16)Clock_last_ping != s) {
                 PlaySfx(0x19B, NULL, NULL, 0x1000, 0x1E00, 0);
-                D_8009AE76 = s;
+                Clock_last_ping = s;
             }
         } else {
-            D_8009AE76 = 99;
+            Clock_last_ping = 99;
         }
     }
-    fl = D_8009917C;
+    fl = Clock_flags;
     do {
         if (!(fl & 0x10)) {
             goto join;
         }
-        p = D_8009AD54;
+        p = Clock;
         t = p->c & ~0x8000;
         p->c = t;
     } while (0);
-    if (!(fl & 2) && (u32)(D_80099178 & 0x70) < 0x1D) {
+    if (!(fl & 2) && (u32)(Clock_Time & 0x70) < 0x1D) {
         do {
             t |= 0x8000;
-            D_8009AD54->c = t;
+            Clock->c = t;
             break;
         } while (1);
     }
 join:
     f = 4;
-    if (D_8009917C & 4) {
+    if (Clock_flags & 4) {
         f = 3;
     }
     for (i = 1; i < f; i++) {
@@ -579,7 +579,7 @@ join:
         if (d >= 10) {
             d = 0;
         }
-        D_8009AD54[i].a = d + 0x3009;
+        Clock[i].a = d + 0x3009;
         s >>= 4;
     }
 }
@@ -627,23 +627,23 @@ void func_8007BFA8(void) {
     subengine *sub;
 
     for (i = 0; i < 4; i++) {
-        ((EXTengine **)&D_8009970C)[i] = &D_80099290[i];
-        sub = D_8009971C[i];
-        func_8001D3B0(((EXTengine **)&D_8009970C)[i], 7, sub);
+        ((EXTengine **)&Icon)[i] = &PanelTab[i];
+        sub = IconParts[i];
+        func_8001D3B0(((EXTengine **)&Icon)[i], 7, sub);
         for (j = 0; j < 7; j++) {
             sub->unk6C = D_80053074;
             sub->flags = 0x10000000;
             sub++;
         }
-        sub = D_8009971C[i];
+        sub = IconParts[i];
         sub->unk6C = D_80053074;
-        ((EXTengine **)&D_8009970C)[i]->flags = 0x10008000;
+        ((EXTengine **)&Icon)[i]->flags = 0x10008000;
         sub->flags = 0x10008000;
-        ((EXTengine **)&D_8009970C)[i]->unk10.x = D_800991E0[D_800991D8[i]][0];
-        ((EXTengine **)&D_8009970C)[i]->unk10.y = D_800991E0[D_800991D8[i]][1];
-        ((EXTengine **)&D_8009970C)[i]->unk10.z = 0;
+        ((EXTengine **)&Icon)[i]->unk10.x = D_800991E0[D_800991D8[i]][0];
+        ((EXTengine **)&Icon)[i]->unk10.y = D_800991E0[D_800991D8[i]][1];
+        ((EXTengine **)&Icon)[i]->unk10.z = 0;
         sub->unk74 = D_80099218[Heroes[i].hero_name];
-        sub = &D_8009971C[i][1];
+        sub = &IconParts[i][1];
         sub->unk6C = D_80053074;
         sub->flags = 0;
         sub->unk04 = D_80099240[i].x;
@@ -651,7 +651,7 @@ void func_8007BFA8(void) {
         sub->unk0C = 0;
         sub->unk74 = 0x3026;
     }
-    D_80099174 |= 2;
+    PanelCtrl |= 2;
 }
 
 void func_8007C170(void) {
@@ -660,23 +660,23 @@ void func_8007C170(void) {
     subengine *sub;
 
     for (i = 0; i < 2; i++) {
-        ((EXTengine **)&D_8009970C)[i] = &D_80099290[i];
-        sub = D_8009971C[i];
-        func_8001D3B0(((EXTengine **)&D_8009970C)[i], 7, sub);
+        ((EXTengine **)&Icon)[i] = &PanelTab[i];
+        sub = IconParts[i];
+        func_8001D3B0(((EXTengine **)&Icon)[i], 7, sub);
         for (j = 0; j < 7; j++) {
             sub->unk6C = D_80053074;
             sub->flags = 0x10000000;
             sub++;
         }
-        sub = D_8009971C[i];
+        sub = IconParts[i];
         sub->unk6C = D_80053074;
-        ((EXTengine **)&D_8009970C)[i]->flags = 0x10008000;
+        ((EXTengine **)&Icon)[i]->flags = 0x10008000;
         sub->flags = 0x10008000;
-        ((EXTengine **)&D_8009970C)[i]->unk10.x = D_800991F0[D_800991D8[i]][0];
-        ((EXTengine **)&D_8009970C)[i]->unk10.y = D_800991F0[D_800991D8[i]][1];
-        ((EXTengine **)&D_8009970C)[i]->unk10.z = 0;
+        ((EXTengine **)&Icon)[i]->unk10.x = D_800991F0[D_800991D8[i]][0];
+        ((EXTengine **)&Icon)[i]->unk10.y = D_800991F0[D_800991D8[i]][1];
+        ((EXTengine **)&Icon)[i]->unk10.z = 0;
         sub->unk74 = D_80099218[Heroes[i].hero_name];
-        sub = &D_8009971C[i][1];
+        sub = &IconParts[i][1];
         sub->unk6C = D_80053074;
         sub->flags = 0;
         sub->unk04 = D_80099240[i].x;
@@ -684,7 +684,7 @@ void func_8007C170(void) {
         sub->unk0C = 0;
         sub->unk74 = 0x3026;
     }
-    D_80099174 |= 2;
+    PanelCtrl |= 2;
 }
 
 void InitHealthIcons(void) {
@@ -720,21 +720,21 @@ void InitHealthIcons(void) {
             break;
         }
         col = 0;
-        D_8009AE88[i] = col;
+        pHeroHealth[i] = col;
         if (Heroes[i].hero_name != 9) {
-            D_8009AE88[i] = (s32)&Heroes[i].hero_health;
+            pHeroHealth[i] = (s32)&Heroes[i].hero_health;
             p = D_8009986C[i];
             p->u6C.ptr = tim;
             p->unk0 = 0x10008000;
-            p->unk4 = D_80099250[i].a + 0x10;
-            yb = D_80099250[i].b;
+            p->unk4 = HealthIconPos[i].a + 0x10;
+            yb = HealthIconPos[i].b;
             p->unk74 = 0x2018;
             off = i * sizeof(D_8009986C[0]);
             b = (PanelPrim *)(off + (u8 *)&D_8009986C[0][1]);
             p->unkC = 0;
             p->unk8 = yb + 0x10;
-            x0 = D_80099250[i].a + 0x1C;
-            x1 = D_80099250[i].a + 0x5C;
+            x0 = HealthIconPos[i].a + 0x1C;
+            x1 = HealthIconPos[i].a + 0x5C;
             b->unk54 = tex;
             b->u6C.s.unk6E = y0;
             b->unk70 = 0;
@@ -754,8 +754,8 @@ void InitHealthIcons(void) {
             b->unk74 = x1;
             b->unk7C = x0;
             b->unk84 = x1;
-            x0 = D_80099250[i].a + 0x1C;
-            x1 = D_80099250[i].a + 0x5C;
+            x0 = HealthIconPos[i].a + 0x1C;
+            x1 = HealthIconPos[i].a + 0x5C;
             q = &D_8009986C[i][2];
             q->unk54 = tex;
             q->u6C.s.unk6E = y0;
@@ -780,7 +780,7 @@ void InitHealthIcons(void) {
         }
         i++;
     }
-    D_80099174 |= 8;
+    PanelCtrl |= 8;
 }
 
 void ClearHealthIcons(void) {
@@ -816,21 +816,21 @@ void ClearHealthIcons(void) {
             break;
         }
         col = 0;
-        D_8009AE88[i] = col;
+        pHeroHealth[i] = col;
         if (Heroes[i].hero_name != 9) {
-            D_8009AE88[i] = (s32)&Heroes[i].hero_health;
+            pHeroHealth[i] = (s32)&Heroes[i].hero_health;
             p = D_8009986C[i];
             p->u6C.ptr = tim;
             p->unk0 = 0x10008000;
-            p->unk4 = D_80099250[i].a;
-            yb = D_80099250[i].b;
+            p->unk4 = HealthIconPos[i].a;
+            yb = HealthIconPos[i].b;
             p->unk74 = 0x2018;
             off = i * sizeof(D_8009986C[0]);
             b = (PanelPrim *)(off + (u8 *)&D_8009986C[0][1]);
             p->unkC = 0;
             p->unk8 = yb + 0x10;
-            x0 = D_80099250[i].a + 8;
-            x1 = D_80099250[i].a + 0x48;
+            x0 = HealthIconPos[i].a + 8;
+            x1 = HealthIconPos[i].a + 0x48;
             b->unk54 = tex;
             b->u6C.s.unk6E = y0;
             b->unk70 = 0;
@@ -850,8 +850,8 @@ void ClearHealthIcons(void) {
             b->unk74 = x1;
             b->unk7C = x0;
             b->unk84 = x1;
-            x0 = D_80099250[i].a + 8;
-            x1 = D_80099250[i].a + 0x48;
+            x0 = HealthIconPos[i].a + 8;
+            x1 = HealthIconPos[i].a + 0x48;
             q = &D_8009986C[i][2];
             q->unk54 = tex;
             q->u6C.s.unk6E = y0;
@@ -876,7 +876,7 @@ void ClearHealthIcons(void) {
         }
         i++;
     }
-    D_80099174 |= 8;
+    PanelCtrl |= 8;
 }
 
 void InitBossHealthIcons(void) {
@@ -895,7 +895,7 @@ void InitBossHealthIcons(void) {
     u8 i;
 
     i = 3;
-    D_8009AE88[3] = (s32)&D_8009D6DC[3];
+    pHeroHealth[3] = (s32)&D_8009D6DC[3];
     p = D_8009986C[3];
     b = p + 1;
     p->u6C.ptr = D_80052F5C;
@@ -923,7 +923,7 @@ void InitBossHealthIcons(void) {
     b->unk98 = c1;
     p[1].unk0 = code;
     b->unk68 = 8;
-    s = &D_80099250[i];
+    s = &HealthIconPos[i];
     q = p + 2;
     q->unk54 = tex;
     q->u6C.s.unk6E = y0;
@@ -952,7 +952,7 @@ void InitBossHealthIcons(void) {
     q->unk98 = 0xBF;
     q->unk0 = code;
     q->unk68 = 8;
-    D_80099174 |= 8;
+    PanelCtrl |= 8;
 }
 
 void func_8007C830(s32 arg0, s32 arg1) {
@@ -971,7 +971,7 @@ void func_8007C830(s32 arg0, s32 arg1) {
 
     tim = D_80052F5C;
 
-    D_8009AE88[2] = arg0;
+    pHeroHealth[2] = arg0;
     p = D_8009986C[2];
     p->u6C.ptr = tim;
     p->unk0 = 0x10008000;
@@ -979,14 +979,14 @@ void func_8007C830(s32 arg0, s32 arg1) {
     y1 = 0x43;
     code = 0x12000000;
     n = 8;
-    p->unk4 = D_80099250[2].a;
-    yb = D_80099250[2].b;
+    p->unk4 = HealthIconPos[2].a;
+    yb = HealthIconPos[2].b;
     p->unkC = 0;
     p->unk74 = 0x2018;
     p->unk8 = yb + 0x10;
     b = p + 1;
-    x0 = (u16)D_80099250[2].a + 8;
-    x1 = (u16)D_80099250[2].a + 0x48;
+    x0 = (u16)HealthIconPos[2].a + 8;
+    x1 = (u16)HealthIconPos[2].a + 0x48;
     b->unk54 = D_8001C7FC;
     b->u6C.s.unk6C = x0;
     b->u6C.s.unk6E = y0;
@@ -1028,17 +1028,17 @@ void func_8007C830(s32 arg0, s32 arg1) {
     p[2].unk0 = code;
     q->unk68 = n;
 
-    D_8009AE88[3] = arg1;
+    pHeroHealth[3] = arg1;
     p = p + 7;
     p->u6C.ptr = tim;
     p->unk0 = 0x10008000;
-    p->unk4 = D_80099250[3].a;
-    yb = D_80099250[3].b;
+    p->unk4 = HealthIconPos[3].a;
+    yb = HealthIconPos[3].b;
     p->unkC = 0;
     p->unk74 = 0x2018;
     p->unk8 = yb + 0x10;
-    x0 = (u16)D_80099250[3].a + 8;
-    x1 = (u16)D_80099250[3].a + 0x48;
+    x0 = (u16)HealthIconPos[3].a + 8;
+    x1 = (u16)HealthIconPos[3].a + 0x48;
     {
     PanelPrim *q;
     q = b + 7;
@@ -1085,7 +1085,7 @@ void func_8007C830(s32 arg0, s32 arg1) {
     b[8].unk0 = code;
     q->unk68 = n;
     }
-    D_80099174 |= 8;
+    PanelCtrl |= 8;
 }
 
 void UpdateHealthIcons(void) {
@@ -1097,12 +1097,12 @@ void UpdateHealthIcons(void) {
     subengine (*e)[7];
     s32 c;
 
-    e = D_8009971C;
+    e = IconParts;
     c = D_8004E0D8;
     for (i = 0; i < 4; i++) {
         t = c >> 1;
         v = 0;
-        if (D_8009AE88[i] != 0) {
+        if (pHeroHealth[i] != 0) {
             switch (((EngineGameView *)D_8005A614)->mode) {
             case 5:
             case 6:
@@ -1110,15 +1110,15 @@ void UpdateHealthIcons(void) {
             case 8:
             case 9:
                 e[i][2].unk74 = (t + i * 4) % 14 + 0x2018;
-                v = (u16)(*(u16 *)D_8009AE88[i] / 3);
+                v = (u16)(*(u16 *)pHeroHealth[i] / 3);
                 break;
             case 0x1F:
                 e[i][2].unk74 = (t + i * 4) % 14 + 0x2018;
-                v = *(u16 *)D_8009AE88[i] >> 3;
+                v = *(u16 *)pHeroHealth[i] >> 3;
                 break;
             default:
                 e[i][2].unk74 = (t + i * 4) % 14 + 0x2018;
-                v = *(u16 *)D_8009AE88[i] * 31 / 20;
+                v = *(u16 *)pHeroHealth[i] * 31 / 20;
                 break;
             }
         }
@@ -1178,20 +1178,20 @@ void InitPowerIcons(void) {
             break;
         }
         col = 0;
-        D_8009AE88[i] = col;
+        pHeroHealth[i] = col;
         if (Heroes[i].hero_name != 9) {
             p = D_8009986C[i];
             p->u6C.ptr = tim;
             p->unk0 = 0x10008000;
-            p->unk4 = D_80099250[i].a - 0xE;
-            yb = D_80099250[i].b;
+            p->unk4 = HealthIconPos[i].a - 0xE;
+            yb = HealthIconPos[i].b;
             p->unk74 = 0x3021;
             off = i * sizeof(D_8009986C[0]);
             b = (PanelPrim *)(off + (u8 *)&D_8009986C[0][1]);
             p->unkC = 0;
             p->unk8 = yb - 0x10;
-            x0 = D_80099250[3].a + 0x10;
-            x1 = D_80099250[3].a + 0x50;
+            x0 = HealthIconPos[3].a + 0x10;
+            x1 = HealthIconPos[3].a + 0x50;
             b->unk54 = tex;
             b->u6C.s.unk6E = y0;
             b->unk70 = 0;
@@ -1211,8 +1211,8 @@ void InitPowerIcons(void) {
             b->unk74 = x1;
             b->unk7C = x0;
             b->unk84 = x1;
-            x0 = D_80099250[3].a + 0x10;
-            x1 = D_80099250[3].a + 0x50;
+            x0 = HealthIconPos[3].a + 0x10;
+            x1 = HealthIconPos[3].a + 0x50;
             q = &D_8009986C[i][2];
             q->unk54 = tex;
             q->u6C.s.unk6E = y0;
@@ -1237,7 +1237,7 @@ void InitPowerIcons(void) {
         }
         i++;
     }
-    D_80099174 |= 0x10;
+    PanelCtrl |= 0x10;
 }
 
 void UpdatePowerIcons(void) {
@@ -1311,15 +1311,15 @@ void InitScore3Icons(void) {
 
     for (i = 0; i < 4; i++) {
         if (Heroes[i].hero_name != 9) {
-            D_8009AD74[i].a = 0;
-            D_8009AD74[i].b = D_80099260[i].a;
-            D_8009AD74[i].c = D_80099260[i].b;
-            D_8009AD74[i].d = 1;
+            Score[i].a = 0;
+            Score[i].b = ScoreIcon3Pos[i].a;
+            Score[i].c = ScoreIcon3Pos[i].b;
+            Score[i].d = 1;
         } else {
-            D_8009AD74[i].d = 0;
+            Score[i].d = 0;
         }
     }
-    D_80099174 |= 0x400;
+    PanelCtrl |= 0x400;
 }
 
 void InitScore2Icons(void) {
@@ -1327,15 +1327,15 @@ void InitScore2Icons(void) {
 
     for (i = 0; i < 4; i++) {
         if (Heroes[i].hero_name != 9) {
-            D_8009AD74[i].a = 0;
-            D_8009AD74[i].b = D_80099270[i].a;
-            D_8009AD74[i].c = D_80099270[i].b;
-            D_8009AD74[i].d = 1;
+            Score[i].a = 0;
+            Score[i].b = ScoreIcon2Pos[i].a;
+            Score[i].c = ScoreIcon2Pos[i].b;
+            Score[i].d = 1;
         } else {
-            D_8009AD74[i].d = 0;
+            Score[i].d = 0;
         }
     }
-    D_80099174 |= 0x200;
+    PanelCtrl |= 0x200;
 }
 
 void InitScore1Icons(void) {
@@ -1343,15 +1343,15 @@ void InitScore1Icons(void) {
 
     for (i = 0; i < 4; i++) {
         if (Heroes[i].hero_name != 9) {
-            D_8009AD74[i].a = 0;
-            D_8009AD74[i].b = D_80099280[i].a;
-            D_8009AD74[i].c = D_80099280[i].b;
-            D_8009AD74[i].d = 1;
+            Score[i].a = 0;
+            Score[i].b = ScoreIcon1Pos[i].a;
+            Score[i].c = ScoreIcon1Pos[i].b;
+            Score[i].d = 1;
         } else {
-            D_8009AD74[i].d = 0;
+            Score[i].d = 0;
         }
     }
-    D_80099174 |= 0x200;
+    PanelCtrl |= 0x200;
 }
 
 void InitSharedScoreIcons(void) {
@@ -1360,18 +1360,18 @@ void InitSharedScoreIcons(void) {
 
     if (*(s32 *)(g + 0x6C) != 0) {
         t = *(s16 *)(g + 0x48);
-        D_8009AD74[t].d = 1;
-        D_8009AD74[t].b += 0x46;
+        Score[t].d = 1;
+        Score[t].b += 0x46;
         t = Heroes[t].hero_teammate;
         if (t != -1) {
-            D_8009AD74[t].d = 0;
+            Score[t].d = 0;
         }
         t = *(s16 *)(g + 0x4A);
-        D_8009AD74[t].d = 1;
-        D_8009AD74[t].b += 0x46;
+        Score[t].d = 1;
+        Score[t].b += 0x46;
         t = Heroes[t].hero_teammate;
         if (t != -1) {
-            D_8009AD74[t].d = 0;
+            Score[t].d = 0;
         }
     }
 }
@@ -1409,7 +1409,7 @@ void func_8007D208(void) {
         }
         i++;
     }
-    D_80099174 |= 0x100000;
+    PanelCtrl |= 0x100000;
 }
 
 void func_8007D2F4(void) {
@@ -1478,7 +1478,7 @@ void func_8007D2F4(void) {
 }
 
 void UpdateScoreIcons(void) {
-    U16Quad *q = D_8009AD74;
+    U16Quad *q = Score;
     U16Quad *end = q;
     HeroInfo *base = Heroes;
     HeroInfo *h;
@@ -1492,9 +1492,9 @@ void UpdateScoreIcons(void) {
         if (h->hero_score < 0) {
             h->hero_score = 0;
         }
-        if (!(D_80099174 & 0x1000)) {
+        if (!(PanelCtrl & 0x1000)) {
             if (h->hero_score != h->hero_score_displayed &&
-                (!(D_8004E0D8 & 3) || (D_8009917C & 0x200))) {
+                (!(D_8004E0D8 & 3) || (Clock_flags & 0x200))) {
                 if (h->hero_score_displayed < h->hero_score) {
                     h->hero_score_displayed++;
                 } else {
@@ -1502,7 +1502,7 @@ void UpdateScoreIcons(void) {
                 }
             }
         }
-        if ((D_80099174 & 0x2000) && h->hero_teammate != -1) {
+        if ((PanelCtrl & 0x2000) && h->hero_teammate != -1) {
             q->a = h->hero_score_displayed + base[h->hero_teammate].hero_score_displayed;
         } else {
             q->a = h->hero_score_displayed;
@@ -1527,7 +1527,7 @@ void func_8007D5EC(void) {
         PlaySfx(0x194, NULL, NULL, 0x1000, 0x1E00, 0);
         e->unk10.y = 0x1F4;
         e->flags |= 0x10008000;
-        D_80099174 = (D_80099174 & 0xFFFF7FFF) | 0x4000;
+        PanelCtrl = (PanelCtrl & 0xFFFF7FFF) | 0x4000;
     }
 }
 
@@ -1542,16 +1542,16 @@ void func_8007D6D0(void) {
         return;
     }
     e = GetEngineSlot(5);
-    if (D_80099174 & 0x10000) {
+    if (PanelCtrl & 0x10000) {
         if (e->unk10.y < 0x258) {
             e->unk10.y += 0x20;
         } else {
-            D_80099174 &= ~0x4000;
+            PanelCtrl &= ~0x4000;
         }
         return;
     }
     if (g->unk30 & 0x8801) {
-        D_80099174 |= 0x10000;
+        PanelCtrl |= 0x10000;
         return;
     }
     if (e->unk10.y < 0x17D) {
@@ -1569,7 +1569,7 @@ void func_8007D6D0(void) {
             if (D_8005AA70[10] != 0) {
                 ((void (*)(void))D_8005AA70[10])();
             }
-            D_80099174 |= 0x10000;
+            PanelCtrl |= 0x10000;
         }
         i++;
     }
@@ -1631,8 +1631,8 @@ void Cups_Update(void) {
     s32 t;
     u8 v;
 
-    if (D_8009AE3C != 0) {
-        D_8009AE3C--;
+    if (CupTimer != 0) {
+        CupTimer--;
     }
     if (!(D_8005A646 & 0x100)) {
         s32 j;
@@ -1652,7 +1652,7 @@ void Cups_Update(void) {
         mode = 7;
     }
 found:
-    switch ((u16)D_8009AE70) {
+    switch ((u16)CupMode) {
     case 0:
         if ((MODEV->unk30 & 1) && !(MODEV->unk30 & 0x8000)) {
             MODEV->unk14 = 0;
@@ -1661,30 +1661,30 @@ found:
                 func_8002C1C0(100, 5);
                 func_8002C29C();
                 func_80082AC4();
-                D_8009AE72 = -1;
-                D_8009AE70 = 0xC;
-                D_8009AE3C = 0x78;
+                CupWinner = -1;
+                CupMode = 0xC;
+                CupTimer = 0x78;
             } else if (MODEV->unk32 & 0x100) {
-                D_8009AE72 = func_8007D850();
+                CupWinner = func_8007D850();
                 slot = MODEV->unk34;
-                if (D_8009AE72 != -1) {
+                if (CupWinner != -1) {
                     MODEV->unk168[slot] = 1;
                     func_80092F9C();
                 }
-                D_8009AE70 = 0x10;
-                D_8009AE3C = 0x78;
+                CupMode = 0x10;
+                CupTimer = 0x78;
             } else {
                 if (MODEV->unk34 == 0x20) {
-                    D_8009AE72 = func_8007D850();
-                    if (D_8009AE72 != -1) {
-                        MODEV->unkCC[D_8009AE72]++;
+                    CupWinner = func_8007D850();
+                    if (CupWinner != -1) {
+                        MODEV->unkCC[CupWinner]++;
                         func_80098284();
                     }
                 } else {
-                    D_8009AE72 = func_8007D850();
-                    if (D_8009AE72 != -1) {
-                        MODEV->unkCC[D_8009AE72]++;
-                        r = D_8009AE72;
+                    CupWinner = func_8007D850();
+                    if (CupWinner != -1) {
+                        MODEV->unkCC[CupWinner]++;
+                        r = CupWinner;
                         t = Heroes[r].hero_teammate;
                         if (t != -1) {
                             MODEV->unkCC[t] = MODEV->unkCC[r];
@@ -1692,47 +1692,47 @@ found:
                         func_80098284();
                     }
                 }
-                D_8009AE70 = 1;
-                D_8009AE3C = 2;
+                CupMode = 1;
+                CupTimer = 2;
             }
         }
         break;
     case 1:
-        if (D_8009AE3C == 0) {
-            D_8009AE70 = 3;
-            D_8009AE3C = 0x5A;
+        if (CupTimer == 0) {
+            CupMode = 3;
+            CupTimer = 0x5A;
         }
         break;
     case 3:
-        if (D_8009AE3C != 0) {
+        if (CupTimer != 0) {
             break;
         }
-        D_8009AE70 = 0xD;
-        D_8009AE3C = 0x1E;
+        CupMode = 0xD;
+        CupTimer = 0x1E;
         if (MODEV->unk42 == -1) {
-            MODEV->unk42 = D_8009AE72;
-        } else if (MODEV->unkCC[D_8009AE72] > MODEV->unkCC[MODEV->unk42]) {
-            MODEV->unk42 = D_8009AE72;
+            MODEV->unk42 = CupWinner;
+        } else if (MODEV->unkCC[CupWinner] > MODEV->unkCC[MODEV->unk42]) {
+            MODEV->unk42 = CupWinner;
         }
         printf("mode%x\n", mode);
         switch (mode) {
         case 2:
-            if (MODEV->unkCC[D_8009AE72] < D_8009AE74) {
+            if (MODEV->unkCC[CupWinner] < Trophy_Cups) {
                 break;
             }
             if ((MODEV->unk4 & 0x800) || (MODEV->unk30 & 0x200)) {
-                MODEV->unkCC[D_8009AE72] = D_8009AE74;
-                t = Heroes[D_8009AE72].hero_teammate;
+                MODEV->unkCC[CupWinner] = Trophy_Cups;
+                t = Heroes[CupWinner].hero_teammate;
                 if (t != -1) {
-                    MODEV->unkCC[t] = MODEV->unkCC[D_8009AE72];
+                    MODEV->unkCC[t] = MODEV->unkCC[CupWinner];
                 }
                 break;
             }
             if (MODEV->unk6C != 0) {
-                MODEV->unkA7[2] = (D_8009AE72 & 2) ? 0 : 2;
-                MODEV->unkA7[0] = D_8009AE72 & 2;
-                MODEV->unkA7[1] = D_8009AE72 ^ 1;
-                MODEV->unkA7[3] = (D_8009AE72 & 2) ? 1 : 3;
+                MODEV->unkA7[2] = (CupWinner & 2) ? 0 : 2;
+                MODEV->unkA7[0] = CupWinner & 2;
+                MODEV->unkA7[1] = CupWinner ^ 1;
+                MODEV->unkA7[3] = (CupWinner & 2) ? 1 : 3;
             } else {
                 n = 0;
                 k = 3;
@@ -1756,9 +1756,9 @@ found:
                     k--;
                 }
             }
-            D_8009AE70 = 5;
+            CupMode = 5;
             slot = MODEV->unk34;
-            if (MODEV->unk5C[D_8009AE72] == 0) {
+            if (MODEV->unk5C[CupWinner] == 0) {
                 MODEV->unkE4[slot] = 1;
             }
             if (MODEV->unkE4[slot] != 0) {
@@ -1771,63 +1771,63 @@ found:
             }
             break;
         case 3:
-            if (MODEV->unkCC[0] < D_8009AE74) {
+            if (MODEV->unkCC[0] < Trophy_Cups) {
                 break;
             }
             slot = MODEV->unk34;
-            if (MODEV->unk5C[D_8009AE72] == 0) {
+            if (MODEV->unk5C[CupWinner] == 0) {
                 MODEV->unk105[slot] = 1;
             }
-            D_8009AE70 = 6;
+            CupMode = 6;
             break;
         case 4:
-            if (MODEV->unkCC[0] < D_8009AE74) {
+            if (MODEV->unkCC[0] < Trophy_Cups) {
                 break;
             }
             slot = MODEV->unk34;
-            if (MODEV->unk5C[D_8009AE72] == 0) {
+            if (MODEV->unk5C[CupWinner] == 0) {
                 MODEV->unk105[slot] = 2;
             }
-            D_8009AE70 = 6;
+            CupMode = 6;
             break;
         case 5:
             if (MODEV->unkCC[0] == 0) {
                 break;
             }
             slot = MODEV->unk34;
-            if (MODEV->unk5C[D_8009AE72] == 0) {
+            if (MODEV->unk5C[CupWinner] == 0) {
                 MODEV->unk126[slot] = 1;
             }
-            D_8009AE70 = 7;
+            CupMode = 7;
             break;
         case 6:
             if (MODEV->unkCC[0] == 0) {
                 break;
             }
             slot = MODEV->unk34;
-            if (MODEV->unk5C[D_8009AE72] == 0) {
+            if (MODEV->unk5C[CupWinner] == 0) {
                 MODEV->unk147[slot] = 1;
             }
-            D_8009AE70 = 8;
+            CupMode = 8;
             break;
         case 0:
         case 1:
-            if (MODEV->unkCC[D_8009AE72] < D_8009AE74) {
+            if (MODEV->unkCC[CupWinner] < Trophy_Cups) {
                 break;
             }
             if ((MODEV->unk4 & 0x800) || (MODEV->unk30 & 0x200)) {
-                MODEV->unkCC[D_8009AE72] = D_8009AE74;
-                t = Heroes[D_8009AE72].hero_teammate;
+                MODEV->unkCC[CupWinner] = Trophy_Cups;
+                t = Heroes[CupWinner].hero_teammate;
                 if (t != -1) {
-                    MODEV->unkCC[t] = MODEV->unkCC[D_8009AE72];
+                    MODEV->unkCC[t] = MODEV->unkCC[CupWinner];
                 }
                 break;
             }
             if (MODEV->unk6C != 0) {
-                MODEV->unkA7[2] = (D_8009AE72 & 2) ? 0 : 2;
-                MODEV->unkA7[0] = D_8009AE72 & 2;
-                MODEV->unkA7[1] = D_8009AE72 ^ 1;
-                MODEV->unkA7[3] = (D_8009AE72 & 2) ? 1 : 3;
+                MODEV->unkA7[2] = (CupWinner & 2) ? 0 : 2;
+                MODEV->unkA7[0] = CupWinner & 2;
+                MODEV->unkA7[1] = CupWinner ^ 1;
+                MODEV->unkA7[3] = (CupWinner & 2) ? 1 : 3;
             } else {
                 n = 0;
                 k = 3;
@@ -1852,9 +1852,9 @@ found:
                 }
             }
             if (mode == 0) {
-                D_8009AE70 = 4;
+                CupMode = 4;
             } else {
-                D_8009AE70 = 0xB;
+                CupMode = 0xB;
                 MODEV->unk9F[0] += MODEV->unkCC[0];
                 MODEV->unk9F[1] += MODEV->unkCC[1];
                 MODEV->unk9F[2] += MODEV->unkCC[2];
@@ -1864,47 +1864,47 @@ found:
         }
         break;
     case 5:
-        if (MODEV->unk5C[D_8009AE72] != 0) {
+        if (MODEV->unk5C[CupWinner] != 0) {
             D_800ADBCC = 1;
             D_8009AEEC = 0;
-            D_8009AE3C = 900;
+            CupTimer = 900;
             MODEV->unk10 |= 0x21;
             PlaySfx(0x19E, NULL, NULL, 0x1000, 0x1E00, 0);
-            D_8009AE70 = 9;
+            CupMode = 9;
             break;
         }
         if (MODEV->unk34 != 0x20) {
             D_800ADBCC = 1;
-            D_8009AE3C = 0x78;
+            CupTimer = 0x78;
         }
-        D_8009AE70 = 0xB;
+        CupMode = 0xB;
         break;
     case 6:
         D_800ADBCC = 1;
-        D_8009AE3C = 0x78;
-        D_8009AE70 = 0xB;
+        CupTimer = 0x78;
+        CupMode = 0xB;
         break;
     case 8:
         D_800ADBCC = 1;
-        D_8009AE3C = 0x78;
-        D_8009AE70 = 0xB;
+        CupTimer = 0x78;
+        CupMode = 0xB;
         break;
     case 7:
         D_800ADBCC = 1;
-        D_8009AE3C = 0x78;
-        D_8009AE70 = 0xB;
+        CupTimer = 0x78;
+        CupMode = 0xB;
         break;
     case 17:
-        D_8009AE3C = 0x1E;
-        D_8009AE70 = 0xB;
+        CupTimer = 0x1E;
+        CupMode = 0xB;
         break;
     case 4:
         D_800ADBCC = 1;
         D_8009AEEC = 0;
-        D_8009AE3C = 900;
+        CupTimer = 900;
         MODEV->unk10 |= 0x201;
         PlaySfx(0x19E, NULL, NULL, 0x1000, 0x1E00, 0);
-        D_8009AE70 = 0xA;
+        CupMode = 0xA;
         break;
     case 9:
         for (i = 0; i < 4; i++) {
@@ -1912,30 +1912,30 @@ found:
                 HUDPLAYERS[i]->unk10.y -= 8;
             }
         }
-        if (D_800996D4[1] >= -0xFF) {
-            D_800996D4[1] -= 8;
+        if (Clock_XYZ[1] >= -0xFF) {
+            Clock_XYZ[1] -= 8;
         }
-        if (D_8009A97C.unk10.y >= -0xFF) {
-            D_8009A97C.unk10.y -= 8;
+        if (BigScore1.unk10.y >= -0xFF) {
+            BigScore1.unk10.y -= 8;
         }
-        if (D_8009AA18.unk10.y >= -0xFF) {
-            D_8009AA18.unk10.y -= 8;
+        if (BigScore2.unk10.y >= -0xFF) {
+            BigScore2.unk10.y -= 8;
         }
-        if (D_8009AE3C == 0) {
+        if (CupTimer == 0) {
             if (D_8009AEEC == 0) {
                 MODEV->unk42 = -1;
                 MODEV->unkCC[0] = 0;
                 MODEV->unkCC[1] = 0;
                 MODEV->unkCC[2] = 0;
                 MODEV->unkCC[3] = 0;
-                D_8009AE70 = 0xD;
+                CupMode = 0xD;
             } else {
                 func_80098278();
                 func_8008352C();
                 MODEV->unk10 &= ~1;
             }
         }
-        D_8009AE3C++;
+        CupTimer++;
         break;
     case 10:
         for (i = 0; i < 4; i++) {
@@ -1943,16 +1943,16 @@ found:
                 HUDPLAYERS[i]->unk10.y -= 8;
             }
         }
-        if (D_800996D4[1] >= -0xFF) {
-            D_800996D4[1] -= 8;
+        if (Clock_XYZ[1] >= -0xFF) {
+            Clock_XYZ[1] -= 8;
         }
-        if (D_8009A97C.unk10.y >= -0xFF) {
-            D_8009A97C.unk10.y -= 8;
+        if (BigScore1.unk10.y >= -0xFF) {
+            BigScore1.unk10.y -= 8;
         }
-        if (D_8009AA18.unk10.y >= -0xFF) {
-            D_8009AA18.unk10.y -= 8;
+        if (BigScore2.unk10.y >= -0xFF) {
+            BigScore2.unk10.y -= 8;
         }
-        if (D_8009AE3C == 0) {
+        if (CupTimer == 0) {
             switch (D_8009AEEC) {
             case 0:
                 MODEV->unk42 = -1;
@@ -1960,7 +1960,7 @@ found:
                 MODEV->unkCC[1] = 0;
                 MODEV->unkCC[2] = 0;
                 MODEV->unkCC[3] = 0;
-                D_8009AE70 = 0xD;
+                CupMode = 0xD;
                 MODEV->unk10 &= ~1;
                 break;
             case 1:
@@ -1979,7 +1979,7 @@ found:
                 break;
             }
         }
-        D_8009AE3C++;
+        CupTimer++;
         break;
     case 12:
         {
@@ -1995,44 +1995,44 @@ found:
         case 5:
         case 6:
             D_8009AEEC = 0;
-            D_8009AE3C = 900;
+            CupTimer = 900;
             MODEV->unk10 |= 0x401;
             PlaySfx(0x19E, NULL, NULL, 0x1000, 0x1E00, 0);
-            D_8009AE70 = 0xF;
+            CupMode = 0xF;
             break;
         case 7:
             D_8009AEEC = 0;
-            D_8009AE3C = 900;
+            CupTimer = 900;
             MODEV->unk10 |= 0x401;
             PlaySfx(0x19E, NULL, NULL, 0x1000, 0x1E00, 0);
-            D_8009AE70 = 0xF;
+            CupMode = 0xF;
             func_80080FBC();
             break;
         default:
-            D_8009AE70 = 0xE;
+            CupMode = 0xE;
             break;
         }
         break;
     case 15:
-        if (D_8009AE3C == 0) {
+        if (CupTimer == 0) {
             if (D_8009AEEC == 0) {
                 MODEV->unk42 = -1;
                 MODEV->unkCC[0] = 0;
                 MODEV->unkCC[1] = 0;
                 MODEV->unkCC[2] = 0;
                 MODEV->unkCC[3] = 0;
-                D_8009AE70 = 0xD;
+                CupMode = 0xD;
             } else {
                 func_80098278();
                 func_8008352C();
                 MODEV->unk10 &= ~1;
             }
         }
-        D_8009AE3C++;
+        CupTimer++;
     case 14:
         func_80082D90(0);
     case 13:
-        if (D_8009AE3C != 0) {
+        if (CupTimer != 0) {
             break;
         }
         MODEV->unk30 |= 0x8200;
@@ -2040,7 +2040,7 @@ found:
         music_duck_off();
     case 11:
     case 16:
-        if (D_8009AE3C == 0) {
+        if (CupTimer == 0) {
             func_80098278();
             func_8008352C();
         }
@@ -2066,29 +2066,29 @@ void func_8007E7F4(void) {
     u8 *p;
     u16 f;
 
-    D_8009AE70 = 0;
-    D_8009AE3C = 0;
-    D_8009AE74 = 3;
+    CupMode = 0;
+    CupTimer = 0;
+    Trophy_Cups = 3;
     p = D_8005A614;
     f = *(u16 *)(p + 0x32);
     if (f & 3) {
-        D_8009AE74 = *(u16 *)(p + 0x3A);
+        Trophy_Cups = *(u16 *)(p + 0x3A);
     }
     if (f & 0x20) {
         if (f & 8) {
-            D_8009AE74 = 3;
+            Trophy_Cups = 3;
         } else {
-            D_8009AE74 = 2;
+            Trophy_Cups = 2;
         }
     }
     if (D_8005A648 == 0x20) {
-        D_8009AE74 = 3;
+        Trophy_Cups = 3;
     }
 }
 
 void func_8007E874(void) {
     D_8009AE78 = 0xF0;
-    D_80099174 |= 0x8000;
+    PanelCtrl |= 0x8000;
 }
 
 s32 StillTottingUpScore(void) {
@@ -2125,34 +2125,34 @@ void MakeSubBar(EngineBox *p, s16 x, s16 y, s32 a, s32 b) {
 }
 
 void func_8007E93C(u16 arg0, s16 arg1, s16 arg2) {
-    if (D_80099174 & 2) {
+    if (PanelCtrl & 2) {
         void *p = &D_80052A54[arg0 * 0x38];
         subengine *s = D_8009A04C;
         s->unk6C = p;
         s->unk74 = arg1;
-        D_8009970C.a[4] = D_80099208[4];
-        D_8009970C.a[5] = D_80099208[5];
-        D_8009970C.a[6] = 0;
+        Icon.a[4] = D_80099208[4];
+        Icon.a[5] = D_80099208[5];
+        Icon.a[6] = 0;
         s = (subengine *)((u8 *)s + 0x498);
         s->unk6C = p;
         s->unk74 = arg2;
-        D_8009970C.b[4] = D_80099208[6];
-        D_8009970C.b[5] = D_80099208[7];
-        D_8009970C.b[6] = 0;
+        Icon.b[4] = D_80099208[6];
+        Icon.b[5] = D_80099208[7];
+        Icon.b[6] = 0;
     }
 }
 
 void func_8007E9FC(u16 arg0, s16 arg1) {
-    if (D_80099174 & 2) {
+    if (PanelCtrl & 2) {
         D_8009A4E4.unk6C = &D_80052A54[arg0 * 0x38];
         D_8009A4E4.unk74 = arg1;
-        D_8009970C.b[4] = D_80099208[2];
-        D_8009970C.b[5] = D_80099208[3];
-        D_8009970C.b[6] = 0;
+        Icon.b[4] = D_80099208[2];
+        Icon.b[5] = D_80099208[3];
+        Icon.b[6] = 0;
         if (D_8005A680[0] == 0) {
-            D_8009970C.c[4] = D_80099208[0];
-            D_8009970C.c[5] = D_80099208[1];
-            D_8009970C.c[6] = 0;
+            Icon.c[4] = D_80099208[0];
+            Icon.c[5] = D_80099208[1];
+            Icon.c[6] = 0;
         }
     }
 }
@@ -2163,21 +2163,21 @@ void func_8007EAC0(void) {
     D_80099700[0] = 0x138;
     D_80099700[1] = 0x20;
     D_80099700[2] = 0;
-    D_80099174 |= 0x20000;
+    PanelCtrl |= 0x20000;
 }
 
 void Clock_Off(void) {
-    D_80099174 &= ~1;
+    PanelCtrl &= ~1;
 }
 
 void Init_Clock(s32 arg0, s32 arg1, s32 arg2) {
-    D_80099178 = 0;
-    D_8009917C = 0;
-    D_800996D4[0] = arg0 - 8;
-    D_800996D4[1] = arg1 - 8;
-    D_800996D4[2] = arg2;
-    D_8009AE76 = 0x63;
-    D_80099174 |= 1;
+    Clock_Time = 0;
+    Clock_flags = 0;
+    Clock_XYZ[0] = arg0 - 8;
+    Clock_XYZ[1] = arg1 - 8;
+    Clock_XYZ[2] = arg2;
+    Clock_last_ping = 0x63;
+    PanelCtrl |= 1;
 }
 
 void InitCountdown(void) {
@@ -2185,13 +2185,13 @@ void InitCountdown(void) {
     subengine *d;
 
     d = &D_80099500;
-    D_80099170 = d;
+    countdown_eng = d;
     d->unk0C = 0x8000;
     *(s32 *)&d->unk10 = 0;
     *(s32 *)&d->unk14 = 0;
     d->unk18 = 0;
-    d->unk6C = &D_8009AD94;
-    p = &D_8009AD94;
+    d->unk6C = &counter_sub;
+    p = &counter_sub;
     if (p != NULL) {
         *p = D_8005A830;
         p->unk6C = D_80053074;
@@ -2213,15 +2213,15 @@ void InitCountdown(void) {
 void Init_Panel(void) {
     s32 i;
 
-    D_80099174 = 0;
+    PanelCtrl = 0;
     do {
         for (i = 0; i < 7; i++) {
             do {
             } while (0);
-            D_80099290[i] = EngineTemplate;
-            D_80099290[i].flags = 0;
+            PanelTab[i] = EngineTemplate;
+            PanelTab[i].flags = 0;
         }
-        ((s32 *)&D_8009970C)[i] = 0;
+        ((s32 *)&Icon)[i] = 0;
         i++;
     } while (i < 4);
     func_8007ED0C();

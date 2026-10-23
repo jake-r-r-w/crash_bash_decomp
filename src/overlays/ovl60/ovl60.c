@@ -210,7 +210,7 @@ void PogoInit_RelicChallenge(void) {
     skip:
         InitSharedScoreIcons();
         if (D_8005A680[0] != 0) {
-            D_80099174 |= 0x2000;
+            PanelCtrl |= 0x2000;
         }
     }
 }
@@ -315,7 +315,7 @@ loop:
         break;
     case OVL60_MODE_10:
         if (*(u16 *)(g + 0x32) & 0x80) {
-            switch ((u32)D_80099178 >> 8) {
+            switch ((u32)Clock_Time >> 8) {
             case 0x115:
                 ok = D_800C52F4 < 3;
                 break;
@@ -656,7 +656,7 @@ void PogoWinner_Relic(s32 arg0, u16 arg1) {
         p = q;
         q->winner = 0;
         q->unk30 |= arg1;
-        D_8009917C |= 0x200;
+        Clock_flags |= 0x200;
         for (; i < 4; i++) {
             if (D_8005A614[i + 0x5C] != 0) {
                 Heroes[i].hero_status |= 0x400;
@@ -4050,7 +4050,7 @@ void PogoKerb_Poll(void) {
         D_800C5BC4--;
     }
     if (D_800C5BD0 == 0) {
-        switch ((u32)D_80099178 >> 8) {
+        switch ((u32)Clock_Time >> 8) {
         case 0x16:
         case 0x17:
         case 0x31:
@@ -4061,9 +4061,9 @@ void PogoKerb_Poll(void) {
         case 0x102:
         case 0x116:
         case 0x117:
-            if (((u32)D_80099178 >> 8) != D_800C5BD4) {
+            if (((u32)Clock_Time >> 8) != D_800C5BD4) {
                 PlaySfx(0x532, NULL, NULL, 0x1000, 0x1E00, 0);
-                D_800C5BD4 = (u32)D_80099178 >> 8;
+                D_800C5BD4 = (u32)Clock_Time >> 8;
             }
             break;
         case 0x15:

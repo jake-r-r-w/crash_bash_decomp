@@ -821,7 +821,7 @@ void func_800B54D8(s32 arg0, u16 arg1) {
             if (g[*(s16 *)(g + 0x48) + 0x5C] == 0) {
                 D_8005A614[0x60] = a->hero_name;
                 *(u16 *)(D_8005A614 + 0x30) |= 0x800;
-                D_8009917C |= 0x200;
+                Clock_flags |= 0x200;
                 for (i = 0; i < 4; i++) {
                     if (D_8005A614[i + 0x5C] != 0) {
                         hb[i].hero_status |= 0x400;
@@ -836,7 +836,7 @@ void func_800B54D8(s32 arg0, u16 arg1) {
             if (g[*(s16 *)(g + 0x4A) + 0x5C] == 0) {
                 D_8005A614[0x60] = b->hero_name;
                 *(u16 *)(D_8005A614 + 0x30) |= 0x800;
-                D_8009917C |= 0x200;
+                Clock_flags |= 0x200;
                 for (i = 0; i < 4; i++) {
                     if (D_8005A614[i + 0x5C] != 0) {
                         hb[i].hero_status |= 0x400;
@@ -858,7 +858,7 @@ void func_800B54D8(s32 arg0, u16 arg1) {
             if (D_8005A614[found + 0x5C] == 0) {
                 D_8005A614[0x60] = Heroes[found].hero_name;
                 *(u16 *)(D_8005A614 + 0x30) |= 0x800;
-                D_8009917C |= 0x200;
+                Clock_flags |= 0x200;
                 for (i = 0; i < 4; i++) {
                     if (D_8005A614[i + 0x5C] != 0) {
                         Heroes[i].hero_status |= 0x400;
@@ -874,7 +874,7 @@ void func_800B54D8(s32 arg0, u16 arg1) {
     if (fail || arg0 == -1) {
         D_8005A614[0x60] = 0;
         *(u16 *)(D_8005A614 + 0x30) |= arg1;
-        D_8009917C |= 0x200;
+        Clock_flags |= 0x200;
         for (i = 0; i < 4; i++) {
             if (D_8005A614[i + 0x5C] != 0) {
                 Heroes[i].hero_status |= 0x400;
@@ -1368,7 +1368,7 @@ void func_800B68EC(void) {
         func_800B6868(0x130);
         InitSharedScoreIcons();
         if (D_8005A680[0] != 0) {
-            D_80099174 |= 0x2000;
+            PanelCtrl |= 0x2000;
         }
     }
 }

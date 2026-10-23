@@ -77,7 +77,7 @@ extern u8 D_80053C0C[];
 extern u8 D_80053C7C[];
 extern u8 D_80052F5C[];
 extern s32 D_8005A680[];
-extern s32 D_80099174;
+extern s32 PanelCtrl;
 extern void *D_8009D8FC;
 extern void *D_8009D900;
 extern void *D_8009D904;
@@ -230,7 +230,7 @@ void func_800B69D0(void);
 
 void func_800B6B04(s32 arg0, EXTengine *p, s32 arg2);
 
-extern u16 D_8009917C;
+extern u16 Clock_flags;
 
 extern u16 D_8009E080[][4];
 void func_80084E04(s32 player, NAS *nas, s32 attacker, u16 flags, u16 sfx);

@@ -347,7 +347,7 @@ s32 PogoAI_CountMyTiles(u32 arg0);
 
 void PogoPowerups_Poll(void);
 extern s32 D_800C52F4;
-extern s32 D_80099178;
+extern s32 Clock_Time;
 extern s32 D_800C5BD8;
 extern s32 D_800C5BDC;
 extern s32 D_800C5BE0;
@@ -465,7 +465,7 @@ typedef struct Ovl60ModeView {
     /* 0x60 */ u8 unk60[0x6C - 0x60];
     /* 0x6C */ s32 teams;
 } Ovl60ModeView;
-extern u16 D_8009917C;
+extern u16 Clock_flags;
 /* D_8005A614 as seen by PogoWinner_Relic (team end of round). */
 typedef struct Ovl60TeamView {
     /* 0x00 */ u8 unk0[0x30];
@@ -488,7 +488,7 @@ typedef struct Ovl60TeamView {
         g_ = (g);                                                        \
         g_->winner = Heroes[idx].hero_name;                              \
         g_->unk30 |= 0x800;                                              \
-        D_8009917C |= 0x200;                                             \
+        Clock_flags |= 0x200;                                             \
         for (; i < 4; i++) {                                             \
             if (((u8 *)g_)[i + 0x5C] != 0) {                             \
                 Heroes[i].hero_status |= 0x400;                          \
@@ -506,7 +506,7 @@ typedef struct Ovl60TeamView {
         i = (i0);                                                        \
         (g)->winner = Heroes[idx].hero_name;                             \
         (g)->unk30 |= 0x800;                                             \
-        D_8009917C |= 0x200;                                             \
+        Clock_flags |= 0x200;                                             \
         g_ = (g);                                                        \
         for (; i < 4; i++) {                                             \
             if (((u8 *)g_)[i + 0x5C] != 0) {                             \
@@ -526,7 +526,7 @@ typedef struct Ovl60TeamView {
         g_ = (g);                                                        \
         g_->winner = 0;                                                  \
         g_->unk30 |= (flag);                                             \
-        D_8009917C |= 0x200;                                             \
+        Clock_flags |= 0x200;                                             \
         for (; i < 4; i++) {                                             \
             if (((u8 *)g_)[i + 0x5C] != 0) {                             \
                 Heroes[i].hero_status |= 0x400;                          \
@@ -572,7 +572,7 @@ extern Ovl60ModeEntry D_800C3860;
 extern Ovl60ModeEntry D_800C3878;
 void Set_Clock(u32 a, u32 b);
 void InitSharedScoreIcons(void);
-extern s32 D_80099174;
+extern s32 PanelCtrl;
 
 
 void PogoInit_RelicChallenge(void);

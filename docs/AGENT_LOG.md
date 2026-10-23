@@ -521,6 +521,11 @@ Newest first, a few lines each. Details are in the commits.
   `break`/`goto` mix gives the target's three tail survivors. Found the
   unit is probably `PAUSE.CPP`; `cc1plus` compiles the C identically.
 
+- **2026-10-23 (36 engine globals named):** Jampack's 33 PANEL.CPP globals
+  (`PanelCtrl`, `Clock`, `Score`, `IconParts`, `CupTimer`, `pHeroHealth`,
+  ...) and Euro's `map`, `camera_frame_list_size`, `camera_frame_right`
+  (`engine:ADDRESS` specs, so they go in `sym.engine.txt`).
+
 - **2026-10-23 (10 slot overlay names from Euro Demo 65):** `UpdatePAPU`,
   `PAHeroHit`, `SetPAHeroCarry` (ovl5e), `PlotTotemBit` (ovl5f), `DoGetBomb`,
   `TestBeamChance` (ovl62), `MaintainCentre` (ovl63), `num_players_render`,
@@ -542,7 +547,7 @@ Newest first, a few lines each. Details are in the commits.
 
 - **2026-10-23 (globals mapped to retail):** `proto_scan.py` pairs the data
   addresses aligned instructions of strong matches build and gives each
-  global a retail address (`globals.txt`): Jampack 34 (all PANEL.CPP, all on
+  global a retail address (`globals.txt`): Jampack 33 (all PANEL.CPP, all on
   a `D_` start), Euro 41 (`main.exe` 33). A module's data can move apart from
   its code (Jampack: code +4, data -0x28), so the data offset is measured,
   not assumed; a vote on start hits over the code's shifts only got it wrong.

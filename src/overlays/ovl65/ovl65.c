@@ -1508,7 +1508,7 @@ void func_800B69F4(s32 arg0, u16 arg1) {
             q = g;
             q->winner = ha->hero_name;
             q->unk30 |= 0x800;
-            D_8009917C |= 0x200;
+            Clock_flags |= 0x200;
             for (;; i++) {
                 s32 t_;
 
@@ -1532,7 +1532,7 @@ void func_800B69F4(s32 arg0, u16 arg1) {
             p = g;
             p->winner = hc->hero_name;
             p->unk30 |= 0x800;
-            D_8009917C |= 0x200;
+            Clock_flags |= 0x200;
             for (;; i++) {
                 s32 t_;
 
@@ -1564,7 +1564,7 @@ void func_800B69F4(s32 arg0, u16 arg1) {
             p = w;
             p->winner = Heroes[found].hero_name;
             p->unk30 |= 0x800;
-            D_8009917C |= 0x200;
+            Clock_flags |= 0x200;
             for (;; i++) {
                 s32 t_;
 
@@ -1595,7 +1595,7 @@ end:
         x = r;
         x->winner = 0;
         x->unk30 |= arg1;
-        D_8009917C |= 0x200;
+        Clock_flags |= 0x200;
         for (;; i++) {
             s32 t_;
 
@@ -1808,7 +1808,7 @@ void func_800B7664(void) {
     InitSharedScoreIcons();
     g = D_8005A614;
     if (*(s32 *)(g + 0x6C) != 0) {
-        D_80099174 |= 0x2000;
+        PanelCtrl |= 0x2000;
     }
     if (*(s32 *)(g + 0x6C) == 0) {
         sc = *(u16 *)(g + 0x32) & 0x40;

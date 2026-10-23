@@ -679,7 +679,7 @@ void func_800B4DC4(u16 count, s16 arg1) {
                 continue;
             }
             if (((Ovl64Game *)D_8005A614)->cpu[idx] == 0
-                && (n = D_8009D87C[idx][0], n++, (u32)D_80099178 >> 8 < 0x120)) {
+                && (n = D_8009D87C[idx][0], n++, (u32)Clock_Time >> 8 < 0x120)) {
                 if (kind == 0) {
                     r = (u32)Random(n) < 9;
                 } else {

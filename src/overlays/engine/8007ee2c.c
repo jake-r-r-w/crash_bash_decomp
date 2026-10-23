@@ -540,7 +540,7 @@ found:
                 D_8009AEEC = 0;
                 PSV->flags &= 0x04000010;
                 func_8002AC18();
-                D_8009AE3C = 0;
+                CupTimer = 0;
                 break;
             }
             break;
@@ -563,7 +563,7 @@ found:
             if (HPADS[0].pressed & 0x4008) {
                 PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
                 ret = 1;
-                D_8009AE3C = 0;
+                CupTimer = 0;
                 D_8009AEF0 = 0;
                 PSV->flags &= ~0x21;
             } else {
@@ -778,7 +778,7 @@ void func_800809A0(HudEntry *e, s32 arg1) {
     if (D_8009AF00 != 0) {
         D_8009AF00--;
     }
-    eng = (HudEngView *)D_80099290;
+    eng = (HudEngView *)PanelTab;
     eng->on0 = 1;
     eng->on1 = 1;
     eng->rot0 += 0x40;
@@ -1448,7 +1448,7 @@ void func_80082AC4(void) {
             r[0xCC] = 0;
             r--;
         }
-        if ((D_8005A646 & 0x40) && (D_80099174 & 1) && D_80099178 == 0) {
+        if ((D_8005A646 & 0x40) && (PanelCtrl & 1) && Clock_Time == 0) {
             D_8009BD40 = 6;
             D_8009BD44 = 3;
             D_8009E0D2 = 0x28;
@@ -1475,26 +1475,26 @@ void func_80082C34(void) {
 
     switch (D_8009BD44) {
     case 1:
-        t = D_8009AD94.unk20.x = (D_8009BD08 << 12) / 25;
-        D_8009AD94.unk20.y = t;
-        D_8009AD94.unk20.z = t;
-        D_8009AD94.unk10 = (D_8009BD08 << 10) / 25 - 0x400;
+        t = counter_sub.unk20.x = (D_8009BD08 << 12) / 25;
+        counter_sub.unk20.y = t;
+        counter_sub.unk20.z = t;
+        counter_sub.unk10 = (D_8009BD08 << 10) / 25 - 0x400;
         if (D_8009BD40 & 1) {
-            D_8009AD94.unk12 = D_8009AD94.unk12 + 0x80;
+            counter_sub.unk12 = counter_sub.unk12 + 0x80;
         } else {
-            D_8009AD94.unk12 = D_8009AD94.unk12 - 0x80;
+            counter_sub.unk12 = counter_sub.unk12 - 0x80;
         }
         if (D_8009BD40 == 4) {
-            D_8009AD94.unk04 = 0x140;
+            counter_sub.unk04 = 0x140;
         }
-        if (D_8009AD94.unk20.x < 0x101) {
-            D_8009AD94.unk20.x = 0x1000;
-            D_8009AD94.unk20.y = 0x1000;
-            D_8009AD94.unk20.z = 0x1000;
-            D_8009AD94.unk12 = 0;
-            D_8009AD94.unk10 = 0;
-            D_8009AD94.unk04 = 0x140;
-            D_8009AD94.flags &= 0xFFFF7FFF;
+        if (counter_sub.unk20.x < 0x101) {
+            counter_sub.unk20.x = 0x1000;
+            counter_sub.unk20.y = 0x1000;
+            counter_sub.unk20.z = 0x1000;
+            counter_sub.unk12 = 0;
+            counter_sub.unk10 = 0;
+            counter_sub.unk04 = 0x140;
+            counter_sub.flags &= 0xFFFF7FFF;
             if (D_8009BD40 == 4) {
                 u8 *g = D_8005A614;
                 D_8009BD44 = 0;
@@ -1516,72 +1516,72 @@ void func_80082D90(s32 arg0) {
     s32 t;
     s32 r;
 
-    if (!(D_8009AD94.flags & 0x8000)) {
+    if (!(counter_sub.flags & 0x8000)) {
         switch (D_8009BD40) {
         case 1:
-            D_8009AD94.unk74 = 0x2004;
+            counter_sub.unk74 = 0x2004;
             D_8009BD48 = 3;
             D_8009BD44 = 1;
-            D_8009AD94.flags |= 0x8000;
-            pos = *(SLONG_XYZ *)&D_8009AD94.unk04;
+            counter_sub.flags |= 0x8000;
+            pos = *(SLONG_XYZ *)&counter_sub.unk04;
             pos.y -= 0x300;
             pos.x -= 0x180;
             PlaySfx(0x1A6, NULL, NULL, 0x1000, 0x1E00, 0);
             break;
         case 2:
-            D_8009AD94.unk74 = 0x2003;
+            counter_sub.unk74 = 0x2003;
             D_8009BD48 = 3;
             D_8009BD44 = 1;
-            D_8009AD94.flags |= 0x8000;
-            pos = *(SLONG_XYZ *)&D_8009AD94.unk04;
+            counter_sub.flags |= 0x8000;
+            pos = *(SLONG_XYZ *)&counter_sub.unk04;
             pos.y -= 0x300;
             pos.x -= 0x180;
             PlaySfx(0x1A5, NULL, NULL, 0x1000, 0x1E00, 0);
             break;
         case 3:
-            D_8009AD94.unk74 = 0x2002;
+            counter_sub.unk74 = 0x2002;
             D_8009BD48 = 3;
             D_8009BD44 = 1;
-            D_8009AD94.flags |= 0x8000;
-            pos = *(SLONG_XYZ *)&D_8009AD94.unk04;
+            counter_sub.flags |= 0x8000;
+            pos = *(SLONG_XYZ *)&counter_sub.unk04;
             pos.y -= 0x300;
             pos.x -= 0x180;
             PlaySfx(0x1A4, NULL, NULL, 0x1000, 0x1E00, 0);
             break;
         case 4:
             D_8009BD48 = 3;
-            D_8009AD94.unk74 = 0x2005;
-            D_8009AD94.flags |= 0x8000;
+            counter_sub.unk74 = 0x2005;
+            counter_sub.flags |= 0x8000;
             PlaySfx(0x1A7, NULL, NULL, 0x1000, 0x1E00, 0);
             ((EngineHintView *)D_8005A614)->flags &= 0xFBFFFFFF;
             break;
         case 5:
-            D_8009AD94.unk74 = 0x2006;
-            D_8009AD94.unk20.x = 0x100;
-            D_8009AD94.unk20.y = 0x100;
-            D_8009AD94.unk20.z = 0x100;
-            D_8009AD94.unk52 = 1;
+            counter_sub.unk74 = 0x2006;
+            counter_sub.unk20.x = 0x100;
+            counter_sub.unk20.y = 0x100;
+            counter_sub.unk20.z = 0x100;
+            counter_sub.unk52 = 1;
             D_8009BD40 = 0xB;
             D_8009BD44 = 2;
-            D_8009AD94.flags |= 0x8000;
+            counter_sub.flags |= 0x8000;
             break;
         case 6:
-            D_8009AD94.unk74 = 0x201B;
-            D_8009AD94.unk20.x = 0x100;
-            D_8009AD94.unk20.y = 0x100;
-            D_8009AD94.unk20.z = 0x100;
-            D_8009AD94.unk10 = 0;
-            D_8009AD94.unk12 = 0;
-            D_8009AD94.unk14 = 0;
-            D_8009AD94.unk52 = 1;
+            counter_sub.unk74 = 0x201B;
+            counter_sub.unk20.x = 0x100;
+            counter_sub.unk20.y = 0x100;
+            counter_sub.unk20.z = 0x100;
+            counter_sub.unk10 = 0;
+            counter_sub.unk12 = 0;
+            counter_sub.unk14 = 0;
+            counter_sub.unk52 = 1;
             D_8009BD40 = 0xB;
             D_8009BD44 = 2;
-            D_8009AD94.flags |= 0x8000;
+            counter_sub.flags |= 0x8000;
             break;
         }
     }
     if (D_8009BD44 == 0) {
-        D_8009AD94.flags &= 0xFFFF7FFF;
+        counter_sub.flags &= 0xFFFF7FFF;
     }
     if (arg0 != 0) {
         if (D_8009BD48 > 0) {
@@ -1592,24 +1592,24 @@ void func_80082D90(s32 arg0) {
         }
     }
     if (D_8009BD40 == 0xB) {
-        d = 0x1000 - D_8009AD94.unk20.x;
-        D_8009AD94.unk20.x += d >> 3;
-        D_8009AD94.unk20.y = D_8009AD94.unk20.x;
-        D_8009AD94.unk20.z = D_8009AD94.unk20.x;
-        D_8009AD94.unk12 = ((D_80068BD4[(((D_8004E0D8 << 5) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3 >> 9) << 12) / 360;
-        D_8009AD94.unk52 = 1;
+        d = 0x1000 - counter_sub.unk20.x;
+        counter_sub.unk20.x += d >> 3;
+        counter_sub.unk20.y = counter_sub.unk20.x;
+        counter_sub.unk20.z = counter_sub.unk20.x;
+        counter_sub.unk12 = ((D_80068BD4[(((D_8004E0D8 << 5) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3 >> 9) << 12) / 360;
+        counter_sub.unk52 = 1;
         if (d < 0x100) {
             PlaySfx(0x1AF, NULL, NULL, 0x1000, 0x1E00, 0);
             D_8009BD40 = 0xC;
         }
     }
     if (D_8009BD40 == 0xC) {
-        t = D_8009AD94.unk20.x + ((0x1000 - D_8009AD94.unk20.x) >> 3);
-        D_8009AD94.unk20.x = t;
-        D_8009AD94.unk20.y = t;
-        D_8009AD94.unk20.z = t;
-        D_8009AD94.unk12 = ((D_80068BD4[(((D_8004E0D8 << 5) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3 >> 9) << 12) / 360;
-        D_8009AD94.unk52 = 1;
+        t = counter_sub.unk20.x + ((0x1000 - counter_sub.unk20.x) >> 3);
+        counter_sub.unk20.x = t;
+        counter_sub.unk20.y = t;
+        counter_sub.unk20.z = t;
+        counter_sub.unk12 = ((D_80068BD4[(((D_8004E0D8 << 5) & 0xFFF) - 0x400) & 0xFFF].unk2 * 3 >> 9) << 12) / 360;
+        counter_sub.unk52 = 1;
     }
     if (D_8009BD08 <= 0) {
         D_8009BD08 = 0x19;

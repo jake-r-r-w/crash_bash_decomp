@@ -57,15 +57,15 @@ void Set_Clock(u32 a, u32 b);
 
 void InitSharedScoreIcons(void);
 
-extern EXTengine D_80099290[];
+extern EXTengine PanelTab[];
 void Init_Panel(void);
 
 void func_8007ED0C(void);
 
 void func_8007E93C(u16 arg0, s16 arg1, s16 arg2);
 
-extern EXTengine D_80099290[4];
-extern subengine D_8009971C[4][7];
+extern EXTengine PanelTab[4];
+extern subengine IconParts[4][7];
 extern u16 D_800991D8[4];
 extern s16 D_800991E0[][2];
 extern s16 D_800991F0[][2];
@@ -75,9 +75,9 @@ extern EngXY D_80099240[4];
 
 void func_8007BFA8(void);
 
-extern subengine *D_80099170;
+extern subengine *countdown_eng;
 extern subengine D_80099500;
-extern subengine D_8009AD94;
+extern subengine counter_sub;
 extern subengine D_8009AC04;
 extern subengine D_8009ACAC;
 
@@ -102,8 +102,8 @@ typedef struct PanelPrim {
     u8 pad9C[0xC];
 } PanelPrim; /* 0xA8 */
 extern PanelPrim D_8009986C[4][7];
-extern S16Pair D_80099250[4];
-extern s32 D_8009AE88[4];
+extern S16Pair HealthIconPos[4];
+extern s32 pHeroHealth[4];
 
 void func_8007C170(void);
 
@@ -144,17 +144,17 @@ void func_8007D6D0(void);
 s16 func_8007D850(void);
 
 s32 func_80095F48(s32 *p, s32 a1, s32 a2, s32 a3, s32 a4);
-extern s32 D_80099200;
-extern s32 D_80099204;
-extern EXTengine D_8009A97C;
-extern EXTengine D_8009AA18;
-extern subengine D_8009AAB4;
-extern subengine D_8009AB5C;
-extern s16 D_8009AE7C;
-extern s16 D_8009AE7E;
-extern s16 D_8009AE80;
-extern s16 D_8009AE82;
-extern s16 D_8009AE84;
+extern s32 left_score;
+extern s32 right_score;
+extern EXTengine BigScore1;
+extern EXTengine BigScore2;
+extern subengine BigScoreParts1;
+extern subengine BigScoreParts2;
+extern s16 BigScore_scale;
+extern s16 BigScore_teamA;
+extern s16 BigScore_teamB;
+extern s16 BigScore_Adelay;
+extern s16 BigScore_Bdelay;
 extern s16 D_8005A65C[2];
 
 void InitBigScore(void);
@@ -218,7 +218,7 @@ typedef struct EngModeD9DC {
 } EngModeD9DC;
 #define MODEV ((EngModeD9DC *)D_8005A614)
 
-extern s16 D_8009AE72;
+extern s16 CupWinner;
 extern u16 D_8009AF38[7];
 extern s32 D_800ADBCC;
 

@@ -344,7 +344,7 @@ void func_80093BE8(void) {
             func_80022140(D_8005A648, D_8004DDD0[D_8005A648 * 3]);
         }
         load_initial_dbases();
-        a = D_800A00F0;
+        a = map;
         if (D_8005A650 >= 0) {
             p = (s32 *)(D_80052A54 + D_8005A650 * 0x38);
         } else {
@@ -368,7 +368,7 @@ void func_80093BE8(void) {
         D_800A0158 = 3;
         break;
     case 3:
-        a = D_800A00F0;
+        a = map;
         if (D_8005A650 >= 0) {
             p = (s32 *)(D_80052A54 + D_8005A650 * 0x38);
         } else {
@@ -495,7 +495,7 @@ void func_80094274(void) {
 }
 
 void level_load_map(void) {
-    s32 *a = D_800A00F0;
+    s32 *a = map;
     s32 *p;
 
     if (D_8005A650 >= 0) {
