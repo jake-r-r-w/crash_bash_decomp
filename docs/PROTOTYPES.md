@@ -437,6 +437,9 @@ Under 0.8 the closest function may be a different one. What the table shows:
   `func_800B87A0` one shorter, Sep 14's `PlotTransmuterBeam` 12 shorter,
   Oct 9's `func_800B77E8` 10 shorter, and the older builds'
   `PlotUkaPolarMask` 20 shorter.
+- `func_800B4AB0` is matched (2026-10-23). Its Aug 23 copy gave the
+  first test's shape, `ok = (fux->status == 1)`, the way in to its last
+  register choices (MATCHING.md, Diff patterns).
 - `func_800B5E28` and `func_800B8294` are exact opcode twins (ovl5d and
   ovl64), unchanged in every build; `PogoAI_MoveTowardsTarget` and
   `CheckMineToBoss` are the same in every build but Jampack's. Their

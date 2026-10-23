@@ -16,9 +16,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `main.exe` function matches and `main.c` is split (2026-10-23); Phase 2's
   naming and data are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2518/2537 game functions matched (94.01% of game code bytes, 2026-10-23):
+- 2519/2537 game functions matched (94.49% of game code bytes, 2026-10-23):
   **main.exe, the engine, ovl61, ovl65, ovl66, ovl67, ovl69 and ovl6a are
-  complete**; 19 left (ovl5d 3, ovl5e 1, ovl5f 2, ovl60 3, ovl62 3, ovl63 4,
+  complete**; 18 left (ovl5d 2, ovl5e 1, ovl5f 2, ovl60 3, ovl62 3, ovl63 4,
   ovl64 2, ovl68 1), every one tried by the swarm at least once. All 564
   PsyQ functions (Sony objects). None parked by hand (`decomp.py status`;
   the swarm parked 5, which the dashboard counts from `docs/swarm.js`). Matches are C only, natural C
@@ -54,14 +54,13 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**The overlays' last 20 functions.** Pointing the swarm at functions it
-had never tried (`--only` the untried list, smallest first, no
-`--retry-failed`) matched 37 of 42 under 2 KB for $151 (~$4 a match),
+**The overlays' last 18 functions**, all tried by the swarm. Hand-match
+them from their checkpoints, closest first (Open leads), with their
+earlier compiles (`decomp.py protos`) as evidence. Pointing the swarm at
+functions it had never tried (`--only` the untried list, smallest first,
+no `--retry-failed`) matched 37 of 42 under 2 KB for $151 (~$4 a match),
 against $7.50 for the retry runs, which kept re-trying the same hard ones
-(the queue puts checkpointed functions first). Next: the same recipe on
-the untried 2-4 KB functions, then over 4 KB with longer sessions
-(`--big-minutes 45`); hand-match the ~15 near misses the retries kept
-failing (AGENT_LOG leads). After each
+(the queue puts checkpointed functions first). After each
 run, the "After a run" checklist in tools/swarm/README.md.
 
 Recipes (`--seg overlays/NAME --branch main --max-minutes 60`):
@@ -122,7 +121,20 @@ and current tools).
 
 ## Open leads
 
-- **Earlier compiles of the 19 left** (PROTOTYPES.md, Earlier compiles of a
+- **The swarm's checkpoints are worth finishing by hand.** `func_800B4AB0`
+  went from the checkpoint's 27/1246 to a match in one session: apply
+  `<repo>-swarm/checkpoints/<key>/best.diff` (`git apply
+  --include=src/...`; merge its header part by hand, since the headers have
+  moved on), score it, then work the rows with `sched` and the global.c
+  priorities. Its leftovers were all register choices that a variable's
+  other uses decide (MATCHING.md, Diff patterns, `func_800B4AB0`). The
+  closest checkpoints left (stage, differing insns): `PogoAI_MoveTowardsTarget`
+  instructions 4/330, `func_800BE914` registers 7/170, `func_800B4048`
+  instructions 10/255, `Plot_PogoPadlock` registers 11/350,
+  `Plot_PogoRipperRoo` instructions 16/656, `func_800B7508` registers
+  17/867, `func_800B5E28` instructions 21/195, `func_800B6708` registers
+  27/411. `CheckMineToBoss` has none.
+- **Earlier compiles of the 18 left** (PROTOTYPES.md, Earlier compiles of a
   function, has the table). Each of the five biggest has a build within a
   few instructions of retail's: Oct 9's `func_800BC038` (+1 insn) and
   `func_800B87A0` (-1), Sep 14's `PlotTransmuterBeam` (-12), Oct 9's
@@ -514,6 +526,15 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-23 (hand: `func_800B4AB0` matched):** from the swarm's
+  checkpoint (instructions 27/1246) and the Aug 23 build's copy, whose
+  first test, `ok = (fux->status == 1)`, led to one variable for
+  `nas->FUX` and the hit object. The rest were register choices that a
+  variable's other uses decide: the `func_800B46B8` results in `tmp`,
+  two-statement angle flips, and two steering exits back to `goto steer`
+  to keep `ang`'s global.c priority between its neighbours' (three Diff
+  patterns rows). 18 left, all in the slot overlays.
 
 - **2026-10-23 (tools: `protos` covers the minigames):** it now reads each
   disc's slot overlays from its DAT and looks a function up in all of them.
