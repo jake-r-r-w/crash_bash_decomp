@@ -31,14 +31,17 @@ A file is finished when every function in it reaches level 4.
 
 ## Source layout
 
-- `src/main/main.c` is scaffolding: one file for most of the game segment.
-  Split it into `src/main/<subsystem>/<file>.c` as boundaries are found
-  (jump-table alignment hints from splat, alignment padding, `.data`/`.bss`
-  order, strings, a change of compiler style). Each split is a yaml
-  subsegment change for `.text` and `.rodata`, then `make split`,
-  `decomp.py index` and `make verify`, with the evidence in
-  ARCHITECTURE.md. Until a unit's content is known it is named by its start
-  address (`src/main/8002d488.c`); rename it when it is.
+- A segment is split into its files (`src/main/<file>.c`,
+  `src/overlays/<overlay>/<file>.c`) as boundaries are found: switch-table
+  parity, `.data`/`.bss` and `.rodata` order, file-local data, strings, a
+  change of compiler style, a leaked line table, and what the functions on
+  either side of a cut zone do. The evidence goes in ARCHITECTURE.md.
+  `tools/scripts/split_unit.py` does a split end to end: the yaml
+  subsegments for `.text` and `.rodata`, the moved prototypes and header
+  inlines, `make split`, `decomp.py index`, the build and the check. A file
+  is named by what it holds when that is known (`sound.c`; a leaked source
+  name wins: `panel.c` is `PANEL.CPP`) and by its start address until then
+  (`src/main/80017164.c`); rename it when it is.
 - A unit built with other compiler settings than `configs/USA/project.mk`
   gets them in the Makefile as `build/<src>.o: VAR = value` lines
   (`CC_VER`, `ASPSX_FILL`); `decomp.py` reads the same lines.

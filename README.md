@@ -55,6 +55,15 @@ its diagram are in [docs/MATCHING.md](docs/MATCHING.md), the order of work in
 Agents use the `/match-function` skill, or the [swarm](tools/swarm/README.md)
 for many functions at once.
 
+## Names, types and files
+
+Names, types and file boundaries come from the code itself and from what
+other discs leaked: the headers in retail's own archive, and the debug
+records, symbol tables and line tables left on the prototype and demo
+discs. What each disc gave, and the tools that scan a disc and apply it, are
+in [docs/PROTOTYPES.md](docs/PROTOTYPES.md); the evidence for each file
+boundary is in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
 ## How the game is built
 
 `SCUS_945.70` holds the game's resident code (`0x80010000..0x8002E7A8`), Sony's
@@ -103,19 +112,22 @@ Spyro 3 demo) come from the disc as they are. As functions are matched they move
 
 ## Layout
 
-- `src/main/` - the executable's game code (`main.c` and units split out by
-  address, such as `8002d488.c`).
+- `src/main/` - the executable's game code, split into its files: named by
+  what they hold where that is known (`dbase.c`, `scripts.c`, `sound.c`,
+  `card.c`, ...), by their first function's address until then (`80017164.c`).
 - `src/overlays/<overlay>/` - one directory per overlay (`engine`,
-  `ovl5d`..`ovl6a`); a further source file where the binary proves one starts,
-  named by its first function's address.
+  `ovl5d`..`ovl6a`), split the same way where the binary or a leak proves a
+  file starts (`panel.c` is `PANEL.CPP`, `pause.c` `PAUSE.CPP`).
 - `include/bash/` - game headers, one owner per declaration.
 - `configs/USA/` - splat config, symbols, relocations, checksums, compiler
   settings (`project.mk`), PsyQ provenance (`psyq/`) and the names of the
   game archive's files (`dat_names.txt`, from CTR-tools).
 - `tools/scripts/` - `decomp.py` (the main CLI) and build helpers; the game
   data tools: `dat.py` (the archive), `tex.py`, `mdl.py` + `gltf.py`,
-  `sfx.py`, `tga.py`, `txt.py` (one per format) and `pack_disc.py`;
-  `tools/swarm/`, `tools/docker/`, `tools/hooks/`.
+  `sfx.py`, `tga.py`, `txt.py` (one per format) and `pack_disc.py`; the leak
+  tools `proto_scan.py`, `proto_apply.py`, `proto_types.py`; `split_unit.py`
+  (splits a source file in two); `tools/swarm/`, `tools/docker/`,
+  `tools/hooks/`.
 - `tools/reference/` - third-party source kept to read, not built: GCC 2.8.1 and
   2.7.2.3 (the C compiler and its MIPS target, GPL).
 - `.claude/skills/match-function/` - the agent's matching loop.

@@ -51,7 +51,10 @@ Functions that won't match go to `decomp.py block NAME --note "..."`.
 
 ## Other changes
 
-Renames: `decomp.py rename OLD NEW` (checks the build itself). A change to an
+Renames: `decomp.py rename OLD NEW` (checks the build itself); names and
+types from a prototype or demo disc go through `proto_apply.py` and
+`proto_types.py` ([docs/PROTOTYPES.md](docs/PROTOTYPES.md)), and a file
+split through `split_unit.py` (CONVENTIONS.md, Source layout). A change to an
 asm filter (`tools/scripts/dmpsx.py`, `aspsx_fill.py`) needs `tools/dk make
 test-tools` to pass and a case in `tools/scripts/tests/` for the new rule. A change to
 the swarm's policy (`tools/swarm/swarm.mjs`: leasing, scoring, escalation, patch

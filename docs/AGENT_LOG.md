@@ -17,8 +17,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
   are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
 - 2517/2537 game functions matched (93.44% of game code bytes, 2026-10-23):
-  **main.exe, ovl61, ovl69 and ovl6a are complete**; 20 left, every one
-  tried by the swarm at least once. All 564 PsyQ functions (Sony objects). 1
+  **main.exe, ovl61, ovl65, ovl66, ovl67, ovl69 and ovl6a are complete**;
+  20 left (engine, ovl5d, ovl5e, ovl5f, ovl60, ovl62, ovl63, ovl64, ovl68),
+  every one tried by the swarm at least once. All 564 PsyQ functions (Sony objects). 1
   parked by hand (`decomp.py status`; the swarm parked 5 more, which the
   dashboard counts from `docs/swarm.js`). Matches are C only, natural C
   first (CONVENTIONS.md, Matching rules; the "hack" class was dropped on
@@ -125,8 +126,8 @@ and current tools).
   stand-in (`geo`,
   `geo_entity`, `joypad_info`, `tga_header`, `file`, ...), merging the
   other views of `obj_texture` (AnimEntry, TexDst2A84C) and of the camera,
-  `PrintNasPos` (never referenced), the link groups against the engine
-  units. Full reports: `protos/<disc>/scan.md`.
+  `PrintNasPos` (never referenced). The link groups place no file inside
+  the engine. Full reports: `protos/<disc>/scan.md`.
 - **Tune the permuter from its record.** Runs are logged since 2026-10-20
   (`decomp.py permstats`, `swarm.mjs stats`). Two ideas to try once there
   are a few dozen runs, compared on that record:
@@ -568,6 +569,12 @@ Newest first, a few lines each. Details are in the commits.
   PlaySfx as a `goto` into case 8's (not the source; leads list why). No
   `break`/`goto` mix gives the target's three tail survivors. Found the
   unit is probably `PAUSE.CPP`; `cc1plus` compiles the C identically.
+
+- **2026-10-23 (docs tidy):** README (layout, a names-and-types section, the
+  leak and split tools), CONVENTIONS (how a segment is split and named),
+  CONTRIBUTING, ROADMAP (current focus, statuses), ARCHITECTURE (main.c's
+  section no longer says it is one file) and PROTOTYPES (what is applied and
+  what is left) brought up to date.
 
 - **2026-10-23 (numbered types):** core.h's `._1`/`._2`/`._10` fields are
   SLONG_XY, SWORD_XY, UBYTE_RGB (Oct 9 numbers them as Jampack does);

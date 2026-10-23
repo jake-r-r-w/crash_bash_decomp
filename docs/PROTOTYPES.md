@@ -85,11 +85,11 @@ breaks the match is dropped (`--apply`; without it, it only lists).
 | Aug 23 2000 prototype (Hidden Palace) | early | engine entry `+0x4E000`: an SN object for `PSX_PAD.CPP`, its ~90-header include list, 788 type records | source directory and header names (`Core\Shell`, `GameEng\Titles`, ...) |
 | Sep 14 2000 prototype (Hidden Palace) | early | none | exe comparison only |
 | Oct 9 2000 prototype (Hidden Palace; PAL review build `SCES_028.34`) | close to retail | engine entry `+0x40002`: 3447 type records | the engine's own types (`NAS`, `EXTengine`, `subengine`, `HeroInfo`, ...), every AST enum: names for 201 AST Init/Plot functions; the `include/bash/` game headers |
-| Jampack Winter 2000 demo (`SCUS_946.24`) | older than Oct 9 | engine entry `+0x2BE15`: 4611 type records, **30 function records**, 44 globals, 1021 line records | unit `8007ac20` is `PANEL.CPP` (now `panel`); its 23 function and 33 global names applied |
+| Jampack Winter 2000 demo (`SCUS_946.24`) | older than Oct 9 | engine entry `+0x2BE15`: 4611 type records, **30 function records**, 44 globals, 1021 line records | the engine units `panel` (`PANEL.CPP`) and `pause` (`PAUSE.CPP`); 23 function and 33 global names, 13 locals, the global types; the shell's types (`SWORD_XY`, `process_info`, `fade_info`, ...) and enums |
 | PlayStation Demo Disc 1.3 (`SCUS-94618`, mastered 2000-08-30) | the Jampack build | the same as Jampack: the same `CRASHBSH.EXE` and `.DAT`, byte for byte | nothing new; dates the Jampack build to 2000-08-30 or earlier |
 | PAL retail (`SCES-02834`, mastered 2000-10-23) | release | none: the engine's spare space is zeros and `0x01` filler, no leftover memory | nothing |
 | Japanese retail, Crash Bandicoot Carnival (`SCPS-10140`, mastered 2000-11-16) | release | none: as PAL; the extra `B320I.EXE`/`B321I.EXE` only play the two `BANJ/*.IKI` videos | nothing |
-| Euro Demo 65 (`SCED-02639`, PAL; also sold as Official PlayStation Magazine UK Demo 65) | near the demos | engine entry `+0x332CB`: **1182 symbol table labels**, 2325 type records | 163 function names mapped across `main.exe`, the engine and 6 slot overlays; 184 global names; the link layout and overlay names. Applied: 82 `main.exe`, 21 engine and 11 overlay functions, 18 globals |
+| Euro Demo 65 (`SCED-02639`, PAL; also sold as Official PlayStation Magazine UK Demo 65) | near the demos | engine entry `+0x332CB`: **1182 symbol table labels**, 2325 type records | 163 function names mapped across `main.exe`, the engine and 6 slot overlays; 184 global names; the link layout and overlay names. Applied: the names, the parameter types of 43 functions, the class names (`mal`, `obj_texture`, ...) |
 
 The prototype exes have no source names, but by masked code signature they
 hold the retail `main.exe` functions in retail order (Oct 9: 466 of 566,
@@ -204,23 +204,27 @@ Files inside the engine). Its early functions were rewritten after the demo
 last ones match in order and the line table ends right before the demo copy
 of `func_80083708`.
 
-**Still to do.**
-- Signatures and locals: the parameter types are in where the repo has the
-  type (`proto_types.py`, below); 13 locals are named by register
-  (`Draw_Clock`'s `time`, `UpdateHealthIcons`' `sub`, `len`, `BarLength`, ...):
-  where one C variable has a register and the records name one local in it
-  (`decomp.py vars NAME --all` gives the C's homes). The others share a
-  register with a second variable on one side, so they stay.
+**Applied.**
+- Signatures and locals: the parameter types (Euro Demo 65, Applied) and
+  13 locals named by register (`Draw_Clock`'s `time`, `UpdateHealthIcons`'
+  `sub`, `len`, `BarLength`, ...): where one C variable has a register and
+  the records name one local in it (`decomp.py vars NAME --all` gives the
+  C's homes). The others share a register with a second variable on one
+  side, so they stay.
 - Globals: the 33 mapped (of 44; every one referenced at its start and on a
   retail `D_` start) are renamed with Euro's engine ones
   (`renames_engine_globals.txt`: `PanelCtrl` is `D_80099174`, `CupTimer`
-  `D_8009AE3C`, `HealthIconPos` `D_80099250`, ...). The shipped data sits
-  0x28 below the records, though the code is 4 above. Their types (sizes,
-  arrays) are still to apply.
-- New enums: `cheatflags`, `worldnumbers` and `levnumbers` are in `shell.h`
-  (Jampack values; the level list may differ in retail). Its `IconParts` is
-  Oct 9's `IconBits` reordered (retail's `IconParts` array is too big for
-  Jampack's 5 parts), so it is left out.
+  `D_8009AE3C`, `HealthIconPos` `D_80099250`, ...); the shipped data sits
+  0x28 below the records, though the code is 4 above. Their recorded types:
+  `Score` is `ScoreInfo`, `Clock` `ClockInfo`, the icon positions
+  `SWORD_XY`; `PanelCtrl` stays `s32` (as `unsigned` it builds other code).
+  The other 11 (`IconPos`, `BossPos`, ...) have no retail reference.
+- Types and enums: the shell's types (`SWORD_XY` and the other small vector
+  types, `process_info`, `process_control_info`, `fade_info`) and
+  `cheatflags`, `worldnumbers`, `levnumbers` (in `shell.h`, Jampack values;
+  the level list may differ in retail). Its `IconParts` is Oct 9's
+  `IconBits` reordered (retail's `IconParts` array is too big for Jampack's
+  5 parts), so it is left out.
 - `PAUSE.CPP` is placed (`pause.c`).
 
 ## Euro Demo 65
@@ -277,9 +281,8 @@ from the leaks agree (`InitSmokePoof`, `PlotSmokePoof`; `TA_HeroBot` and
 `InitialisePOLARFirst` are the best, if weak, matches of their labels). Some
 names the repo gave itself ("Name 15 core engine functions") had their
 originals here: `SpawnNASById` was `CreateNAS`, `SpawnNASFromRecord`
-`TriggerNas`, `AddEngine` `AddExtEngine`, `AddExtension` `AddExt` (all four
-renamed), and `InitHealth`/`PlotHealth` are `Init_HealthPU`/`Plot_HealthPU`
-(engine, not yet).
+`TriggerNas`, `AddEngine` `AddExtEngine`, `AddExtension` `AddExt`, and
+`InitHealth`/`PlotHealth` were `Init_HealthPU`/`Plot_HealthPU` (all renamed).
 
 **Applied.** 78 `main.exe` placeholder functions are renamed: the 73
 matches of 0.9 and up (`renames_main.txt`; `mal_update`, `init_file`,
@@ -293,8 +296,8 @@ The 4 names the repo gave itself are replaced by the originals
 (`renames_main_replace.txt`: `CreateNAS`, `TriggerNas`, `AddExtEngine`,
 `AddExt`).
 
-**Still to do.**
-- Function names done: 37 engine with Jampack's (`renames_engine_all.txt`), 10
+**Applied since.**
+- Function names: 37 engine with Jampack's (`renames_engine_all.txt`), 10
   overlay (`renames_slot.txt`), and `SetTweakAi`, `HeroGhost`,
   `line_intersect_zy`, `TankBossCortexTurretFire` (0.78..0.88, in link order,
   approved: `renames_unconfirmed.txt`). The stubs: `DefaultTouched` and
@@ -316,11 +319,7 @@ The 4 names the repo gave itself are replaced by the originals
   `update_camera_thread` (`script_control_info` now has a layout), and the
   widths `Set_Clock(u16, u16)`, `GotoLinkAnim(EXTanimator *, int)`,
   `map_entity_address(u16, geo)`, each matching with natural code for its
-  type. Left: `cam_init` (the camera globals are byte arrays seen through
-  several structs), 11 the tool can't write (a function pointer, a
-  differing count, no definition), and the classes with no stand-in yet
-  (`geo`, `geo_entity`, `geo_vertex`, `geo_tristrip`, `joypad_info`,
-  `tga_header`, `file`, `UPOLY_GT3`, `lPOLY_GT4`, `prim_`).
+  type.
 - Types from the leaks (2026-10-23): the shell's small vector types
   (`SWORD_XY`, `SWORD_XYZ`, `xy_w`, ... in `nas.h`; `SWORD_XYZ` for
   `GlyphPos`), PANEL.CPP's globals (`Score` is `ScoreInfo`, `Clock`
@@ -353,9 +352,25 @@ The 4 names the repo gave itself are replaced by the originals
   in, to the next objects (a label has no size, so its span runs to the next
   label). `globals.txt` shows that offset (`inside+0xK`); a large one is weak.
   The two globals both demos map agree (`HealthIconPos`, `BigScore_teamA`).
-- The link groups give file boundaries in the engine (`_core_end`,
-  `_engine_start`, ...); check them against the unit split in
-  ARCHITECTURE.md.
+- The link groups name only whole sections and the two overlay slots, so
+  they place no file inside the engine (ARCHITECTURE.md, Files inside the
+  engine).
+
+**Left.**
+- `cam_init(camera_info_tag *)`: the camera globals are byte arrays seen
+  through several structs (CamView, EngCam, ...); merge them first.
+- 11 prototypes `proto_types.py` can't write: a function pointer parameter
+  (`asload_permanent_callback`), a parameter count that differs
+  (`camera_count_bottom`, `draw_map_sub`, `map_update`, `HeroQuiet`,
+  `DefHero2ObjectCollision`), no definition the tool can find
+  (`dbase_release_all_mesh_anims` is K&R, `prim_write_uvs`, `HeroGhost`),
+  two definitions (`mal_update`), an original header's (`TestBeamChance`).
+- Classes with no stand-in yet: `geo`, `geo_entity` (Euro has its layout),
+  `geo_vertex`, `geo_tristrip`, `joypad_info`, `tga_header`, `file`,
+  `UPOLY_GT3`, `lPOLY_GT4`, `prim_`.
+- `PrintNasPos` is never referenced, so it can't be placed.
+- The 0x38-byte texture entry still has three views (`obj_texture`,
+  `AnimEntry`, `TexDst2A84C`) whose fields disagree in type.
 
 ## Discs not scanned yet
 

@@ -21,7 +21,7 @@ PS-X EXE header at file offset `0x0`; the file body (offset `0x800`) loads at
 
 | VRAM | File | Section | Owner |
 |---|---|---|---|
-| `0x80010000..0x8002D488` | `0x800` | `.text` | game code, `src/main/main.c` |
+| `0x80010000..0x8002D488` | `0x800` | `.text` | game code, nine files in `src/main/` (Files inside `main/main`) |
 | `0x8002D488..0x8002E0F0` | `0x1DC88` | `.text` | game code built with gcc 2.7.2 + ASPSX, `src/main/8002d488.c` |
 | `0x8002E0F0..0x8002E7A8` | `0x1E8F0` | `.text` | game code built with gcc 2.7.2 + ASPSX, `src/main/8002e0f0.c` |
 | `0x8002E7A8..0x8004C56C` | `0x1EFA8` | `.text` | PsyQ 4.7: 281 Sony objects linked in place, plus `2MBYTE.OBJ` (asm) |
@@ -62,9 +62,10 @@ How the boundaries were found:
     `0x8006789C` indexed by `D_8006EA24` (the font mode): `+2` u8, `+4`/`+6`
     s16 x/y, `+8` the text pointer. `TextPos` has a fourth s16 at `+6`
     (set to 1 there).
-- **Files inside `main/main`** (`0x80010000..0x8002D488`, 566 functions; split
-  from 2026-10-23, see Split so far below),
-  evidence as of 2026-10-15. None of it places a boundary yet:
+- **Files inside `main/main`** (`0x80010000..0x8002D488`, 566 functions).
+  It is nine files (Split so far, below). The evidence, gathered before the
+  split, says where a file can't end; the cuts were then settled by what
+  the functions on either side do:
   - No padding between functions (every symbol ends where the next starts),
     so `.text` alignment marks no file end.
   - Style: all 2.8.1, no change of compiler inside the unit.
@@ -124,8 +125,9 @@ How the boundaries were found:
     item that is 0 mod 8 between the two tables: `0x8004C8A8` (used by
     193), `0x8004C8B8` (202) or `0x8004C8D0` (358). With the one-file
     regions below that leaves three separate places for the start, 121..193,
-    194..199 or 226..354, and nothing yet chooses between them, so `main.c`
-    stays whole. The engine has five (after 4/by 33,
+    194..199 or 226..354; two of them turned out to be file starts
+    (`80017164` at `0x8004C8A8` and `80022a3c` at `0x8004C8D0`). The engine
+    has five (after 4/by 33,
     59/77, 154/208, 244/289, 320/330), and `ovl5d` two, `ovl5e`, `ovl66`,
     `ovl67`, `ovl6a` one each (`decomp.py units overlays/<ovl>/<ovl>`).
   - Calls: 84 functions are called only by code within 40 functions and
@@ -134,10 +136,10 @@ How the boundaries were found:
     the shared private data and the inversions, that leaves 17 possible cut
     zones (`units --data`, last list), eight of them one or two functions
     wide: after 0, 46, 56-57, 134-135, 456-457, 495-496, 527-528, 548. All
-    of this says where a boundary can't be; nothing yet proves one: no
-    duplicate literal, no style change, and the only byte-identical function
-    pairs (307/312, 467/468) are neighbours, so no `static` from a shared
-    header shows up in two places.
+    of this says where a boundary can't be: there is no duplicate literal or
+    style change, and the only byte-identical function pairs (307/312,
+    467/468) are neighbours, so no `static` from a shared header shows up in
+    two places.
   - Who uses the rest of the data (`.data` labels with their code users,
     overlays included, and the pointers in each table): the first game data
     (`0x8004DCBC..0x8004DDD0`) is tables of pointers into the first rodata
@@ -157,8 +159,8 @@ How the boundaries were found:
     the 566 functions (Sep 14: 295, Aug 23: 251) in the same order; the
     offset changes at edited functions, and no block of functions moved, so
     the link order didn't change between Oct 9 and retail.
-  - Names: 93 of the 575 game functions are named, 78 of them from Euro
-    Demo 65's symbol table (PROTOTYPES.md). Their prefixes run in address
+  - Names: most of the named functions are from Euro Demo 65's symbol
+    table (PROTOTYPES.md). Their prefixes run in address
     order (`mal_*` the allocator, then file loading, joypad, camera,
     `dbase_*`, `prim_*`, `map_*`, scripts, `sfx_*`, the NAS object calls,
     `texture_*`, `music_*`, `card_*`), a lead for the module split. Against
@@ -213,8 +215,11 @@ How the boundaries were found:
     Demo Disc line records cover only the engine (`PAUSE.CPP`, `PANEL.CPP`),
     the Euro Demo 65 labels are in hash order (no grouping by object), and
     the Aug 23 `PSX_PAD.CPP` object is one page of a `LNK` file: its
-    section and include list, then unrelated type records, no code or
-    symbols. Identical function bodies (`fp` in the index) are only
+    section and include list (about 50 headers under `CORE\NASCORE`,
+    `CORE\SHELL\INCLUDE` (`SHELL.H`, `ALLDBASE.H`), `GAMEENG`, `GAMESPEC`
+    (`FILES.H`) and `LANGUAGE`, so the exe is probably the `Core\Shell`
+    code), then unrelated type records, no code or symbols. Identical
+    function bodies (`fp` in the index) are only
     common wrappers (empty functions, `if (p) { mal_free(p); p = 0; }`).
   - **Split so far** (2026-10-23, `tools/scripts/split_unit.py`; each build
     byte-identical, which also proves each new file's rodata start). The
@@ -233,11 +238,6 @@ How the boundaries were found:
     | `sound` | 497..528: `sound_critical`, `machine_load_sfx`, ... | 495 releases a texture (`func_80028AE4`) and 496 clears a texture set (the map code calls it right before `map_loaded_textureset`); 497 resets `D_80064414`, a flag only the sound code uses | none |
     | `music` | 529..548: `continue_music`, `music_dload_midi`, ... | 527 loads sfx banks (`machine_load_sfx`), 528 fills `SfxTable`; 529 opens and plays a SEQ (`SsSeqOpen`, `SsSeqPlay`) and sets the music volume | none |
     | `card` | 549..565: `func_8002C4B0` (ASCII to Shift-JIS for save titles: Euro's `card_ascii2sjis`), `card_save` | the one exact cut: music ends by 548, the memory card starts by 554, and no other gap may hold a boundary; no zone after 548, so it is one file | `0x8004CD10` (549's jump table) |
-  - The Aug 23 prototype's debug pages name one shell source,
-    `C:\crash4\Core\Shell\PSX\PSX_PAD.CPP`, and about 50 headers under
-    `CORE\NASCORE`, `CORE\SHELL\INCLUDE` (`SHELL.H`, `ALLDBASE.H`),
-    `GAMEENG`, `GAMESPEC` (`FILES.H`) and `LANGUAGE`: the exe is probably the
-    `Core\Shell` code, but nothing maps functions to files.
 - **`.data` start** `0x8004DCBC`: the first game table (pointers to the game's
   own strings) after the last LIBMCRD string; the lowest stored-to address is
   `0x8004E0B4`.

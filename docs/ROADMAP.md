@@ -16,15 +16,16 @@ badges. Tick a box in the commit that finishes that item, and run
 Preparation goes in the phase that first needs it. When later work turns up
 something new to do, add it to the phase it blocks, not to an earlier one.
 
-## Current focus: a build we can play and test
+## Current focus: the last matches, then a shiftable build
 
-Matching continues, but the first priority is being able to run any build of
-ours. `tools/dk make disc` packs `build/main.exe` and the overlays into
-`build/CrashBash.bin`/`.cue`, which boots in an emulator, and `make
-disc-check` confirms the matching build packs to the retail image byte for
-byte, so it plays like retail by definition. Builds are tested by playing
-them. The next step is the shiftable `NON_MATCHING` build (Phase 4), the
-first build that isn't byte-identical.
+Any build of ours can be played: `tools/dk make disc` packs `build/main.exe`
+and the overlays into `build/CrashBash.bin`/`.cue`, which boots in an
+emulator, and `make disc-check` confirms the matching build packs to the
+retail image byte for byte. The work now is matching the overlays' last
+functions (the swarm; the dashboard shows what is left), and alongside it
+naming, typing and splitting with what the prototype and demo discs leaked
+([PROTOTYPES.md](PROTOTYPES.md)). After that comes the shiftable
+`NON_MATCHING` build (Phase 4), the first build that isn't byte-identical.
 
 Matches are C only (no inline asm; the SDK's `gte_*` macros excepted), and
 natural C comes first: C that only steers the compiler is used when nothing
@@ -88,13 +89,17 @@ phases can play what they finish.
   file's local data moves with it, and early in the matching: code in
   the wrong unit can't match its rodata, and a split moves functions out
   from under swarm patches, so do it between swarm runs.
-  Status: `main/main` is split at each cut the evidence settles (the cut
-  zones of `decomp.py units`, the gap functions' work, the data blocks;
-  `tools/scripts/split_unit.py` does a split end to end). A few zones are
-  still open (ARCHITECTURE.md, Files inside `main/main`).
+  Status: `main/main` is nine files, cut where the evidence settles it
+  (the cut zones of `decomp.py units`, the data blocks, what the functions
+  on either side do; `tools/scripts/split_unit.py` does a split end to end).
+  A few zones are still open, and no leak names the exe's files
+  (ARCHITECTURE.md, Files inside `main/main`).
 - [x] Match every game function in the executable.
 - [ ] Name and type every function and global in the exe (a descriptive name
   where the original is unknown, per [CONVENTIONS.md](CONVENTIONS.md)).
+  Status: the names, parameter types and struct names the demo discs
+  leaked are applied ([PROTOTYPES.md](PROTOTYPES.md)); the rest is named
+  from behaviour as it is understood.
   For browsing cross-references across the whole binary, try Ghidra with a
   PSX loader by hand first; an agent bridge such as REA
   (github.com/morluto/rea) adds little over that and doesn't help matching.
@@ -127,11 +132,13 @@ typed, `build/engine.bin` still matches, and the formats the engine loads
 extract and are documented.
 
 - [ ] Match every function in `engine`.
-  Status: two left, both parked (docs/AGENT_LOG.md, Open leads).
+  Status: its last function is parked (docs/AGENT_LOG.md, Open leads).
 - [ ] Split it into its original translation units.
   Status: split at every start the binary proves (switch-table parity;
-  ARCHITECTURE.md, Files inside the engine); more files may hide inside
-  those units. The slot overlays with proven starts are split the same way.
+  ARCHITECTURE.md, Files inside the engine), and Jampack's records name two
+  of the files (`panel` is `PANEL.CPP`, `pause` `PAUSE.CPP`); more files may
+  hide inside those units. The slot overlays with proven starts are split
+  the same way.
 - [ ] Turn its data and jump-table rodata into C.
 - [ ] Extract and document the asset formats the engine loads (models,
   animation, level data, ...).

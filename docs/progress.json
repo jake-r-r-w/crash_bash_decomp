@@ -3,13 +3,13 @@
   {
    "name": "func_8007F314",
    "note": "structure 1153/1443, regions 197/264 blocks (best C under #ifdef NON_MATCHING, 2026-10-23 goto pass; was 176). What raised it: the debug hook if (D_8005A644 & 0x1000) func_80082D90(ret) written in both branches (switch side and pad-loop side, the else as else-if) in place of one hook after the if plus the empty do-while(0): +6, and the loop then makes no difference; goto into the first return 1 block from the unk74 test: +4; case 0's PlaySfx(0x192) as goto into case 8's: +11 with the hook pair. Earlier fixes kept: max = 4 / n = 1 after the early returns, case 0 unk32&4 case 3 stores D_8009AEEC = 1 in both arms. Still wrong: case 0's flags & 0x7000 ret = 0 tail is folded away (all the ret = 0 tails need to fold into it, with a label between its s3 = 0 and j: in matched code that label comes from a cross-jump that matched one insn the j later takes into its slot, e.g. AR_PI_TestOutOfBounds, func_80086918); case 0's jump-table cases 2/3 share their sw v0,0x10(a0); j with case 4 in the target (needs case 0 to keep its own PlaySfx until jump2, so the goto sfx is not the source); case 0x40/0x80 0x1000 tails must stay apart; ret = 1; func_80080FBC() tails must fold into case 0x20's (last) copy; ret = 1 gotos remove refs and move ret to s4, so those copies are duplicates in the source. Rules found: jump2 never cross-jumps two jumps to a label it created (both PlaySfx tails end at the new L704 label); redirect_jump deletes a label when its count reaches 0; a kept copy that collected others gets a label and can give itself up in a later pass. Also open: HPADS base lui before the index lui (not fixed by an array-typed lvalue); kind loop counter wants a1 (a separate counter loses the pointer giv). The unit is probably PAUSE.CPP (Jampack line records): cc1plus gives identical code for this C, but xori v0,1 after func_800832BC is a bool !f(). Variants and harness: scratch/f3/g (t.sh, full.sh, dump.sh, cxx/).",
-   "seg": "overlays/engine/8007ee2c",
+   "seg": "overlays/engine/pause",
    "size": 5772
   }
  ],
- "commit": "23afb81f",
+ "commit": "ad4edf00",
  "game": "SCUS_945.70",
- "generated": "2026-10-23T13:07:17Z",
+ "generated": "2026-10-23T16:15:04Z",
  "history": [
   {"commit": "9d2e150", "data_b": 0, "data_tb": 182932, "game_all_f": 1140, "game_b": 152, "game_f": 19, "game_named_f": 0, "game_tb": 247148, "lib_b": 0, "lib_f": 0, "lib_tb": 0, "ts": "2026-10-10T08:35:31Z", "units": {"engine": [80, 10], "main exe": [136, 17], "ovl5d": [16, 2], "ovl5e": [16, 2], "ovl5f": [72, 9], "ovl60": [16, 2], "ovl61": [24, 3], "ovl62": [160, 20], "ovl63": [16, 2], "ovl64": [24, 3], "ovl65": [24, 3], "ovl66": [32, 4], "ovl67": [40, 5], "ovl68": [48, 6], "ovl69": [40, 5], "ovl6a": [32, 4]}},
   {"commit": "d76b415", "data_b": 0, "data_tb": 182932, "game_all_f": 574, "game_b": 136, "game_f": 17, "game_named_f": 0, "game_tb": 124840, "lib_b": 8, "lib_f": 1, "lib_tb": 118356, "ts": "2026-10-10T08:51:01Z", "units": {"main exe": [136, 17], "psyq": [121280, 535]}},
@@ -2160,7 +2160,8 @@
   {"commit": "f9c3834a", "data_b": 9320, "data_tb": 606943, "game_all_f": 2537, "game_b": 952156, "game_c_f": 2517, "game_f": 2517, "game_named_f": 715, "game_tb": 1019036, "game_typed_f": 2290, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-23T12:32:22Z", "units": {"engine": [123492, 356], "main exe": [124840, 575], "ovl5d": [48556, 101], "ovl5e": [31772, 72], "ovl5f": [78776, 177], "ovl60": [60464, 177], "ovl61": [55000, 97], "ovl62": [113152, 213], "ovl63": [71160, 135], "ovl64": [29276, 56], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
   {"commit": "ed0e9741", "data_b": 9320, "data_tb": 606943, "game_all_f": 2537, "game_b": 952156, "game_c_f": 2517, "game_f": 2517, "game_named_f": 725, "game_tb": 1019036, "game_typed_f": 2290, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-23T12:41:00Z", "units": {"engine": [123492, 356], "main exe": [124840, 575], "ovl5d": [48556, 101], "ovl5e": [31772, 72], "ovl5f": [78776, 177], "ovl60": [60464, 177], "ovl61": [55000, 97], "ovl62": [113152, 213], "ovl63": [71160, 135], "ovl64": [29276, 56], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
   {"commit": "af854abb", "data_b": 9320, "data_tb": 606943, "game_all_f": 2537, "game_b": 952156, "game_c_f": 2517, "game_f": 2517, "game_named_f": 729, "game_tb": 1019036, "game_typed_f": 2290, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-23T12:50:39Z", "units": {"engine": [123492, 356], "main exe": [124840, 575], "ovl5d": [48556, 101], "ovl5e": [31772, 72], "ovl5f": [78776, 177], "ovl60": [60464, 177], "ovl61": [55000, 97], "ovl62": [113152, 213], "ovl63": [71160, 135], "ovl64": [29276, 56], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
-  {"commit": "23afb81f", "data_b": 9320, "data_tb": 606943, "game_all_f": 2537, "game_b": 952156, "game_c_f": 2517, "game_f": 2517, "game_named_f": 731, "game_tb": 1019036, "game_typed_f": 2290, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-23T13:07:17Z", "units": {"engine": [123492, 356], "main exe": [124840, 575], "ovl5d": [48556, 101], "ovl5e": [31772, 72], "ovl5f": [78776, 177], "ovl60": [60464, 177], "ovl61": [55000, 97], "ovl62": [113152, 213], "ovl63": [71160, 135], "ovl64": [29276, 56], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}}
+  {"commit": "23afb81f", "data_b": 9320, "data_tb": 606943, "game_all_f": 2537, "game_b": 952156, "game_c_f": 2517, "game_f": 2517, "game_named_f": 731, "game_tb": 1019036, "game_typed_f": 2290, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-23T13:07:17Z", "units": {"engine": [123492, 356], "main exe": [124840, 575], "ovl5d": [48556, 101], "ovl5e": [31772, 72], "ovl5f": [78776, 177], "ovl60": [60464, 177], "ovl61": [55000, 97], "ovl62": [113152, 213], "ovl63": [71160, 135], "ovl64": [29276, 56], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
+  {"commit": "ad4edf00", "data_b": 9880, "data_tb": 606943, "game_all_f": 2537, "game_b": 952520, "game_c_f": 2517, "game_f": 2517, "game_named_f": 731, "game_tb": 1019400, "game_typed_f": 2299, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-23T16:15:04Z", "units": {"engine": [123492, 356], "main exe": [125204, 575], "ovl5d": [48556, 101], "ovl5e": [31772, 72], "ovl5f": [78776, 177], "ovl60": [60464, 177], "ovl61": [55000, 97], "ovl62": [113152, 213], "ovl63": [71160, 135], "ovl64": [29276, 56], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}}
  ],
  "recent": [
   {
@@ -2207,7 +2208,7 @@
    "at": "2026-10-22T22:17:12Z",
    "auto": false,
    "name": "PlotScriptFX",
-   "seg": "overlays/engine/8007ee2c",
+   "seg": "overlays/engine/80083708",
    "size": 2080,
    "tries": 1
   },
@@ -2288,8 +2289,8 @@
   "blocked": 1,
   "copies_b": 0,
   "data": {
-   "done_b": 9320,
-   "pct": 1.5355642951644553,
+   "done_b": 9880,
+   "pct": 1.6278299609683282,
    "total_b": 606943
   },
   "game": {
@@ -2298,14 +2299,14 @@
    "asm_f": 0,
    "blocked": 1,
    "c_f": 2517,
-   "done_b": 952156,
+   "done_b": 952520,
    "done_f": 2517,
    "named_f": 731,
-   "pct": 93.43693451458044,
+   "pct": 93.43927800667059,
    "sony_b": 0,
-   "total_b": 1019036,
+   "total_b": 1019400,
    "total_f": 2537,
-   "typed_f": 2290
+   "typed_f": 2299
   },
   "lib": {
    "all_f": 566,
@@ -2332,7 +2333,7 @@
     "done_b": 123492,
     "done_f": 356,
     "file": "engine.bin",
-    "files": 6,
+    "files": 7,
     "lib": false,
     "named_f": 58,
     "pct": 95.53471964352023,
@@ -2350,19 +2351,19 @@
     "asm_f": 0,
     "blocked": 0,
     "c_f": 575,
-    "done_b": 124840,
+    "done_b": 125204,
     "done_f": 575,
     "file": "SCUS_945.70",
-    "files": 3,
+    "files": 11,
     "lib": false,
     "named_f": 93,
     "pct": 100.0,
     "phase": 2,
     "sony_b": 0,
     "title": "main.exe",
-    "total_b": 124840,
+    "total_b": 125204,
     "total_f": 575,
-    "typed_f": 442,
+    "typed_f": 451,
     "unit": "main exe"
    },
    {
