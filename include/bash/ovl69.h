@@ -23,7 +23,7 @@ void func_800B5A6C(void);
 void func_800B5A74(void);
 void func_800B7D20(void);
 void func_800B81F0(void);
-void func_800B83A4(void);
+void team_mode_init(void);
 void func_800B8470(void);
 void func_800B8490(void);
 void func_800B8498(void);
@@ -73,7 +73,7 @@ extern s32 D_800BAAC8;
 extern s32 D_800BAACC;
 extern void (*D_800B9DFC)(void);
 
-void func_800B556C(void);
+void num_players_render(void);
 
 void func_800B6A64(void);
 /* 16-byte slot record of an Ovl69Entry list (func_800B7458). */
@@ -357,7 +357,7 @@ void func_800B58E4(void);
 s32 func_800B65D0(s32 a0);
 void func_800B5CA8(Ovl69Slot *slot);
 
-s8 func_800B6ACC(s32 a0);
+s8 adventure_mode_head(s32 a0);
 
 s32 func_800B6C04(s32 arg0);
 

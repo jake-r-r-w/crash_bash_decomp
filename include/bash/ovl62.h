@@ -408,7 +408,7 @@ extern s32 D_800D4B64[];
 void func_800B7520();
 void func_800B767C();
 void func_800B7F70();
-void func_800B6FEC();
+void DoGetBomb();
 void func_800B6D74();
 extern s32 D_800D5FEC[];
 
@@ -537,7 +537,7 @@ loop:
     return best;
 }
 
-/* DoesPlayerHaveBomb as inlined into func_800B6FEC. */
+/* DoesPlayerHaveBomb as inlined into DoGetBomb. */
 static inline s32 Ovl62HasBomb2(s32 player) {
     NAS *nas;
     BombMakerExt *ext;
@@ -557,7 +557,7 @@ loop:
     return 0;
 }
 
-/* IsBombAvailable, inlined into func_800B6FEC. */
+/* IsBombAvailable, inlined into DoGetBomb. */
 static inline NAS *Ovl62FreeBomb(void) {
     NAS *nas;
     BombMakerExt *ext;
@@ -1325,7 +1325,6 @@ void func_800B6258(s32 player);
 
 void func_800B782C(s32 player);
 
-s32 func_800B9398(s32 player);
 
 s32 func_800B94B8(s32 player);
 

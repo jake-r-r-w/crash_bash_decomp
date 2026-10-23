@@ -1062,7 +1062,7 @@ next:
     return 0;
 }
 
-void func_800B5D14(void) {
+void MaintainCentre(void) {
     MATRIX m;
     SVECTOR v;
     Ovl63SpinObj **pp;
@@ -1992,7 +1992,7 @@ void func_800B8D68(void) {
         func_800B6474();
     }
     if (G63->unk34 == 0x19) {
-        func_800B5D14();
+        MaintainCentre();
     }
     if (G63->unk34 == 0x1A && !(G63->unk32 & 0x80)) {
         D_800C69B4->unk74 = (D_800C69B8 >> 8) + 0x4000;

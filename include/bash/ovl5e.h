@@ -279,7 +279,7 @@ void func_800B7D94(void);
 
 void func_800B7D9C(void);
 
-void func_800B7DA4(void);
+void UpdatePAPU(void);
 
 extern s32 D_8009E468;
 extern u8 D_8009E3B4[];

@@ -620,7 +620,8 @@ signature alone is not enough.
     returns 0). From the AI: `PlayerActionCount(action, player)` counts the
     bots in a state (player unused; its caller had cast it to the two-arg
     form), `TestChaseChance` picks a live target and starts a chase. The
-    other `Test*Chance` functions (`func_800B9398`, `B94B8`, `B9600`,
+    other `Test*Chance` functions (`TestBeamChance` at `0x800B9398`, named
+    from Euro Demo 65, and `B94B8`, `B9600`,
     `B9714`, `B98AC`) each roll against a per-hero table at `D_800D4E0C` and
     start an AI state, but the states have no names yet: left unnamed.
     `FindClosetPlayer(p, &dist)` (the leak's spelling) returns the nearest

@@ -763,7 +763,7 @@ void func_800B54F0(void) {
     *(u16 *)(g + 0x32) |= 4;
 }
 
-void func_800B556C(void) {
+void num_players_render(void) {
     D_800569AC = *(s32 *)D_8009F644;
     func_80018B08(&D_800B8DD8, &D_800B9538);
     func_8001C2C0((u8 *)GetEngineSlot(0));
@@ -1209,7 +1209,7 @@ void func_800B6A64(void) {
     func_8001C2C0((u8 *)GetEngineSlot(2));
 }
 
-s8 func_800B6ACC(s32 a0) {
+s8 adventure_mode_head(s32 a0) {
     u8 *g = D_8005A614;
 
     if (g[0x26] == 1) {
@@ -1735,7 +1735,7 @@ void func_800B81F0(void) {
     }
 }
 
-void func_800B83A4(void) {
+void team_mode_init(void) {
     func_80095BEC(0, D_800BA754);
     D_800BAAC8 = 0;
     D_800BAACC = 0;

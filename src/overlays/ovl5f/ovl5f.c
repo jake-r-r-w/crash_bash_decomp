@@ -5144,7 +5144,7 @@ void func_800C0DA0(EXTengine *arg0) {
     PlaySfx(0x505, NULL, NULL, 0x1000, 0x1E00, 0);
 }
 
-void func_800C0F24(NAS *nas, s32 id) {
+void PlotTotemBit(NAS *nas, s32 id) {
     EXTengine *eng;
     s32 v;
     NAS *pole;
@@ -7523,7 +7523,7 @@ s32 func_800C6C90(OvlClampPos *p, s32 x, s32 y, s32 z) {
 }
 
 void PlotTotemBot(NAS *nas) {
-    func_800C0F24(nas, 0x131C);
+    PlotTotemBit(nas, 0x131C);
 }
 
 void InitTotemBot(NAS *nas) {
@@ -7531,7 +7531,7 @@ void InitTotemBot(NAS *nas) {
 }
 
 void PlotTotemTop(NAS *nas) {
-    func_800C0F24(nas, 0x131B);
+    PlotTotemBit(nas, 0x131B);
 }
 
 void InitTotemTop(NAS *nas) {

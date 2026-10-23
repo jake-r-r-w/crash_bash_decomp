@@ -1416,7 +1416,7 @@ bool IsPlayerInRange(u32 player, u32 target) {
     return 0;
 }
 
-void func_800B6FEC(s32 player) {
+void DoGetBomb(s32 player) {
     Ovl62Fux *fux;
     NAS *nas;
     s32 r;
@@ -2422,7 +2422,7 @@ s32 player;
     func_800B5EBC(player);
 }
 
-s32 func_800B9398(s32 player) {
+s32 TestBeamChance(u32 player) {
     s32 mode;
     Ovl62Fux *fux;
     HeroInfo *h;
@@ -2583,7 +2583,7 @@ s32 func_800B98AC(s32 player) {
                 f->unk24 = Random(0x168) + 0x5A;
             }
             fux->state = 0xD;
-            fux->func = func_800B6FEC;
+            fux->func = DoGetBomb;
             return 1;
         }
         return 0;
@@ -2779,7 +2779,7 @@ void DoChooseNewAction(u32 player) {
                             f->unk24 = Random(0x168) + 0x5A;
                         }
                         o->state = 0xD;
-                        o->func = func_800B6FEC;
+                        o->func = DoGetBomb;
                     }
                 }
             }
@@ -2825,7 +2825,7 @@ void DoChooseNewAction(u32 player) {
             }
         }
         if (!(fux->flags & 1)) {
-            func_800B9398(player);
+            TestBeamChance(player);
         }
         if (fux->state == 5) {
             r = Random(5);

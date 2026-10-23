@@ -236,7 +236,7 @@ void func_800BA4C0(s32 arg0) {
     SetHeroSeq((HeroInfo *)arg0, 9);
 }
 
-void func_800BA5CC(s32 arg0) {
+void PAHeroHit(s32 arg0) {
     HeroInfo *b = Heroes;
     HeroInfo *h = &b[arg0];
     s32 sfx;
@@ -1114,7 +1114,7 @@ void func_800BC744(s32 arg0) {
     h->hero_weapon_timer = 0;
 }
 
-void func_800BC7B4(s32 arg0) {
+void SetPAHeroCarry(s32 arg0) {
     Heroes[arg0].hero_move->velocity_enable = 1;
     SetHeroSeq((HeroInfo *)arg0, 0x16);
 }

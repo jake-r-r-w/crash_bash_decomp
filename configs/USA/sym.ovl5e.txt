@@ -4,3 +4,6 @@ PlotPapuBoss = 0x800B4480; // type:func
 PlotPapuMinion = 0x800B5090; // type:func
 InitPapuColumn = 0x800B7AA4; // type:func
 PlotPapuColumn = 0x800B7988; // type:func
+UpdatePAPU = 0x800B7DA4; // type:func
+PAHeroHit = 0x800BA5CC; // type:func
+SetPAHeroCarry = 0x800BC7B4; // type:func

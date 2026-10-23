@@ -257,6 +257,12 @@ Other:
 ## Gotchas
 
 **Tooling**
+- **A new name an original header declares must take its types.** When a
+  function gets a name the recovered headers (`polar.h`, `tank.h`, ...)
+  already declare, `decomp.py rename` keeps only that declaration, and a
+  definition with other types fails as "conflicting types" (rolled back).
+  Give the definition the header's types first (`TestBeamChance(u32
+  player)`). `proto_apply.py` lists such names before `--apply`.
 - **Renaming a function breaks a `D_` alias of its address.** An overlay's
   generated symbol lists (`linkers/<ovl>_undefined_*_auto.txt`) name an
   outside address after the symbol files only, so source that took a
@@ -514,6 +520,13 @@ Newest first, a few lines each. Details are in the commits.
   PlaySfx as a `goto` into case 8's (not the source; leads list why). No
   `break`/`goto` mix gives the target's three tail survivors. Found the
   unit is probably `PAUSE.CPP`; `cc1plus` compiles the C identically.
+
+- **2026-10-23 (10 slot overlay names from Euro Demo 65):** `UpdatePAPU`,
+  `PAHeroHit`, `SetPAHeroCarry` (ovl5e), `PlotTotemBit` (ovl5f), `DoGetBomb`,
+  `TestBeamChance` (ovl62), `MaintainCentre` (ovl63), `num_players_render`,
+  `adventure_mode_head`, `team_mode_init` (ovl69). `polar.h` (the leak)
+  declares `TestBeamChance(u32)`, so its definition took `u32` first (see
+  Gotchas).
 
 - **2026-10-23 (37 engine names, PANEL.CPP and Euro):** Jampack's 23
   `PANEL.CPP` functions and Euro Demo 65's engine labels (`InitialiseNasSystem`,

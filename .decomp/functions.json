@@ -26246,7 +26246,7 @@
   "fp": "bc7c065f8ea7f6a6",
   "fpn": "8f3e0fa4204458b9",
   "leaf": false,
-  "name": "func_800B7DA4",
+  "name": "UpdatePAPU",
   "orig": "func_800B7DA4",
   "rom": 19184,
   "seg": "overlays/ovl5e/ovl5e",
@@ -26466,7 +26466,7 @@
   "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5e:800BA5CC": {
-  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/func_800BA5CC.s",
+  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/PAHeroHit.s",
   "bin": "disc/ovl5e.bin",
   "calls": [
    "80022660",
@@ -26477,7 +26477,7 @@
   "fp": "0d7668b7301854ab",
   "fpn": "928164975e947501",
   "leaf": false,
-  "name": "func_800BA5CC",
+  "name": "PAHeroHit",
   "orig": "func_800BA5CC",
   "rom": 29464,
   "seg": "overlays/ovl5e/800b87a0",
@@ -26754,7 +26754,7 @@
   "src": "src/overlays/ovl5e/800b87a0.c"
  },
  "ovl5e:800BC7B4": {
-  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/func_800BC7B4.s",
+  "asm": "asm/nonmatchings/overlays/ovl5e/800b87a0/SetPAHeroCarry.s",
   "bin": "disc/ovl5e.bin",
   "calls": [
    "800854C0"
@@ -26762,7 +26762,7 @@
   "fp": "4afe8c0c712fc916",
   "fpn": "efcc9da72fd17a0f",
   "leaf": false,
-  "name": "func_800BC7B4",
+  "name": "SetPAHeroCarry",
   "orig": "func_800BC7B4",
   "rom": 38144,
   "seg": "overlays/ovl5e/800b87a0",
@@ -27937,7 +27937,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C0F24": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C0F24.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/PlotTotemBit.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "8001463C",
@@ -27949,7 +27949,7 @@
   "fp": "1140dfcca048c16b",
   "fpn": "517420cb950bac45",
   "leaf": false,
-  "name": "func_800C0F24",
+  "name": "PlotTotemBit",
   "orig": "func_800C0F24",
   "rom": 56432,
   "seg": "overlays/ovl5f/ovl5f",
@@ -35017,7 +35017,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B6FEC": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B6FEC.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/DoGetBomb.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590",
@@ -35031,7 +35031,7 @@
   "fp": "36f3e4544e0d27b4",
   "fpn": "9a93cd4c354fd934",
   "leaf": false,
-  "name": "func_800B6FEC",
+  "name": "DoGetBomb",
   "orig": "func_800B6FEC",
   "rom": 15672,
   "seg": "overlays/ovl62/ovl62",
@@ -35236,7 +35236,7 @@
   "src": "src/overlays/ovl62/ovl62.c"
  },
  "ovl62:800B9398": {
-  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/func_800B9398.s",
+  "asm": "asm/nonmatchings/overlays/ovl62/ovl62/TestBeamChance.s",
   "bin": "disc/ovl62.bin",
   "calls": [
    "80015590"
@@ -35244,7 +35244,7 @@
   "fp": "5b11053dfa20fcaa",
   "fpn": "541a159cdbd18c58",
   "leaf": false,
-  "name": "func_800B9398",
+  "name": "TestBeamChance",
   "orig": "func_800B9398",
   "rom": 24804,
   "seg": "overlays/ovl62/ovl62",
@@ -38736,7 +38736,7 @@
   "src": "src/overlays/ovl63/ovl63.c"
  },
  "ovl63:800B5D14": {
-  "asm": "asm/nonmatchings/overlays/ovl63/ovl63/func_800B5D14.s",
+  "asm": "asm/nonmatchings/overlays/ovl63/ovl63/MaintainCentre.s",
   "bin": "disc/ovl63.bin",
   "calls": [
    "80015590",
@@ -38746,7 +38746,7 @@
   "fp": "c0d4276b4d01dea2",
   "fpn": "549a894dfe70b9ba",
   "leaf": false,
-  "name": "func_800B5D14",
+  "name": "MaintainCentre",
   "orig": "func_800B5D14",
   "rom": 10848,
   "seg": "overlays/ovl63/ovl63",
@@ -48979,7 +48979,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B556C": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B556C.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/num_players_render.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80018B08",
@@ -48989,7 +48989,7 @@
   "fp": "a8d9bd3543311174",
   "fpn": "248b6963ab296a53",
   "leaf": false,
-  "name": "func_800B556C",
+  "name": "num_players_render",
   "orig": "func_800B556C",
   "rom": 8888,
   "seg": "overlays/ovl69/ovl69",
@@ -49340,7 +49340,7 @@
   "src": "src/overlays/ovl69/ovl69.c"
  },
  "ovl69:800B6ACC": {
-  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/func_800B6ACC.s",
+  "asm": "asm/nonmatchings/overlays/ovl69/ovl69/adventure_mode_head.s",
   "bin": "disc/ovl69.bin",
   "calls": [
    "80015590"
@@ -49348,7 +49348,7 @@
   "fp": "6db202e58864cc37",
   "fpn": "fe95304829c0d58a",
   "leaf": false,
-  "name": "func_800B6ACC",
+  "name": "adventure_mode_head",
   "orig": "func_800B6ACC",
   "rom": 14360,
   "seg": "overlays/ovl69/ovl69",
@@ -49709,7 +49709,7 @@
   "fp": "3127f4aed979ce4f",
   "fpn": "8068191dda547544",
   "leaf": false,
-  "name": "func_800B83A4",
+  "name": "team_mode_init",
   "orig": "func_800B83A4",
   "rom": 20720,
   "seg": "overlays/ovl69/ovl69",

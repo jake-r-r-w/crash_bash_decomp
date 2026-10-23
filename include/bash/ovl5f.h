@@ -42,7 +42,7 @@ extern u8 D_800C9E9C[];
 extern u8 D_800C9EC4[];
 
 void func_800C0C68(NAS *nas, s32 id);
-void func_800C0F24(NAS *nas, s32 id);
+void PlotTotemBit(NAS *nas, s32 id);
 
 void func_800C68A8(void);
 void func_800C69BC(void);

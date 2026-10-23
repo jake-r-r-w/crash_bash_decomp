@@ -418,7 +418,7 @@ extern s32 D_800C69BC;
 extern s32 D_800C6BB0;
 extern u16 D_800AD12C;
 
-/* Spinning object func_800B5D14 updates: rotation at 0x10, its matrix at 0x30. */
+/* Spinning object MaintainCentre updates: rotation at 0x10, its matrix at 0x30. */
 typedef struct Ovl63SpinObj {
     /* 0x00 */ u8 unk0[0x10];
     /* 0x10 */ SVECTOR rot;
@@ -458,7 +458,7 @@ extern Ovl63Piston D_800CA55C[6];
 extern s32 D_800C69A8;
 extern s32 D_800C6BA0;
 
-void func_800B5D14(void);
+void MaintainCentre(void);
 void func_800B6474(void);
 void func_800C04EC(void);
 void func_800C0CB4(void);

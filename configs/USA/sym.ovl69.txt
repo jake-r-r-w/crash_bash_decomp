@@ -1,0 +1,4 @@
+
+num_players_render = 0x800B556C; // type:func
+adventure_mode_head = 0x800B6ACC; // type:func
+team_mode_init = 0x800B83A4; // type:func
