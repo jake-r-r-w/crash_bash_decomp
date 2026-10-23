@@ -116,25 +116,7 @@ typedef struct {
 
 s32 interp(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
-/* out = a + (b - a) * t / len, per component. */
-static inline void CamVec3_Lerp(CamVec3 *out, CamVec3 *a, CamVec3 *b, s32 len, s32 t) {
-    out->v[0] = interp(a->v[0], b->v[0], len, t);
-    out->v[1] = interp(a->v[1], b->v[1], len, t);
-    out->v[2] = interp(a->v[2], b->v[2], len, t);
-}
 
-/* The key of the camera track that covers frame v (or the terminating one). */
-static inline CamKey *CamTrack_FindKey(u8 *track, s32 v) {
-    CamKey *key = (CamKey *)(track + 0x1C);
-
-    while (key->len != 0) {
-        if (v >= key->start && v < key->start + key->len) {
-            return key;
-        }
-        key++;
-    }
-    return key;
-}
 
 /* A 0x4C-byte animation key of the track func_8001F0D4 walks (at track+0x30). */
 typedef struct AnimKey {
@@ -152,15 +134,6 @@ typedef struct {
     s32 v[4];
 } AnimRot;
 
-static inline AnimKey *AnimTrack_FindKey(AnimKey *key, s32 v) {
-    while (key->len != 0) {
-        if (v >= key->start && v < key->start + key->len) {
-            return key;
-        }
-        key++;
-    }
-    return key;
-}
 
 typedef struct {
     s32 v[4];
@@ -181,16 +154,6 @@ typedef struct ObjKey {
     /* 0x4C */ s32 unk4C;
 } ObjKey;
 
-/* The key of the object track that covers frame v (or the terminating one). */
-static inline ObjKey *ObjTrack_FindKey(ObjKey *key, s32 v) {
-    while (key->len != 0) {
-        if (v >= key->start && v < key->start + key->len) {
-            return key;
-        }
-        key++;
-    }
-    return key;
-}
 
 /* Frame range of an animation track (at track+0x14). */
 typedef struct {
@@ -201,29 +164,6 @@ typedef struct {
     /* 0x10 */ s32 clamp;
 } AnimRange;
 
-/* Frame t (16.16) of the range, clamped or looped, relative to its first frame. */
-static inline s32 AnimRange_Frame(AnimRange *range, s32 t) {
-    s32 frame;
-
-    t -= range->off << 16;
-    if (t < 0) {
-        frame = range->lo << 16;
-    } else if (range->clamp != 0) {
-        if (t < (range->hi - range->lo) << 16) {
-            frame = t + (range->lo << 16);
-        } else {
-            frame = (range->hi - 1) << 16;
-        }
-    } else {
-        frame = t % ((range->hi - range->lo + 1) << 16);
-        frame += range->lo << 16;
-        if ((range->hi - 1) << 16 < frame) {
-            frame = (range->hi - 1) << 16;
-        }
-    }
-    frame -= range->lo << 16;
-    return frame;
-}
 
 /* The pose func_8001F0D4 writes (at obj+8). */
 typedef struct {
@@ -241,7 +181,6 @@ typedef struct {
     /* 0x76 */ s16 unk76;
 } AnimPose;
 
-void func_80020B44(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5);
 
 
 /* A 0x38-byte record in the table at +8 of the block func_8002A9AC frees
@@ -800,7 +739,6 @@ void func_80012E0C(void);
 void func_80012E14(u8 *arg0);
 void func_80012F04(LoadNode *arg0);
 s32 func_8001534C(u8 *s);
-void func_8001828C(void);
 s32 func_80013650(s32 arg0, void (*done)(), void *ctx);
 s32 func_80012FFC(void);
 s32 func_8001231C(void);
@@ -832,18 +770,6 @@ void func_80016EF4(u8 *arg0, u8 *arg1);
 void func_80017070(void);
 void func_80017094(u8 *arg0, s32 arg1, s32 arg2);
 void func_80017138(u8 *arg0);
-void func_800184D4(u8 * *arg0);
-s32 *func_80018570(u8 *arg0);
-s32 *func_800185F8(u8 *arg0);
-void func_80018728(s32 arg0, s32 arg1);
-void func_80018764(s32 *arg0);
-void func_8001888C(void);
-void func_800189E0(u8 *arg0);
-void func_8001C008(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc);
-void func_8001C0F0(s32 p, MorphModel *model, u16 *ia, u16 *ib, s16 (*verts)[3]);
-void func_8001965C(void *arg0, void *arg1, void *arg2, u8 *arg3, GteSetup *out);
-void func_8001CD04(void *arg0, void *arg1, void *arg2);
-void func_80019A60(s32 a, u8 *set, s32 c, void *d);
 typedef struct RotScale {
     /* 0x00 */ SVECTOR rot;
     /* 0x08 */ u8 pad8[8];
@@ -857,42 +783,6 @@ void func_80013D54(SVECTOR *rot, MATRIX *m);
 void func_800142D4(void *arg0);
 PointList *func_8001562C(subengine *sub);
 FlagPoint *func_80015780(EXTengine *eng, subengine *sub, u16 flag, VECTOR *out);
-void func_8001C2C0(u8 *arg0);
-void kill_sprim_sub(subengine *arg0);
-void func_8001AA48(ModelObj *obj, void *arg1, s32 flags);
-void prim_colour_poly(RelTable *face, POLY_GT4 *poly, VECTOR *arg2, s32 mode);
-void prim_create_entity_single(u8 *face, POLY_GT4 *poly);
-void func_8001CBD4(u32 arg0);
-void func_8001CC08(void);
-void func_8001D174(EXTengine *eng);
-void func_8001D220(EXTengine *eng);
-void func_8001D2B4(subengine *first, subengine *last);
-void kill_subs(subengine *first);
-s32 func_80018F3C(EXTengine *eng, s32 n);
-s32 func_8001D390(EXTengine *eng, s32 n);
-void func_8001D604(void);
-void map_update(s32 *arg0);
-void func_8001DDD8(u8 *arg0);
-void map_loaded_textureset(u8 *arg0, u8 * *arg1);
-void func_8001E054(u8 *arg0, s32 arg1);
-void set_fade(u8 *arg0, s32 arg1, s32 arg2);
-void func_8001E824(u8 *arg0);
-void process_interrupt(u8 *arg0, s32 arg1);
-void func_8001E848(u8 *arg0, s32 arg1);
-void func_8001E898(u8 *arg0);
-void func_8001E934(u8 *arg0, s32 arg1);
-void func_8001E948(void);
-void func_8002141C(u8 *arg0);
-void render_entity_thread(u8 *arg0, s32 *arg1);
-void func_80021990(u8 *arg0, s32 *arg1);
-void func_80021C20(u8 *arg0, u8 *arg1, u8 *arg2, s32 arg3, s32 arg4);
-void func_80021ED8(u8 *arg0);
-void func_80021F14(u8 *arg0);
-u8 *func_80021F6C(void);
-void func_80021FB0(void);
-void func_80022030(void);
-void scripts_update(void);
-void func_8001C270(EXTengine *eng);
 void func_800369FC(void);
 
 extern GteScratch D_800569CC;
@@ -901,9 +791,6 @@ typedef struct { s16 unk0; s16 unk2; } TrigEntry;
 extern TrigEntry D_80068BD4[];
 /* A 4.12 fixed-point quaternion (func_80020344 slerps two of them). */
 typedef struct { s32 v[4]; } Quat;
-static inline s32 QuatDot(Quat *a, Quat *b) {
-    return (a->v[0] * b->v[0] + a->v[1] * b->v[1] + a->v[2] * b->v[2] + a->v[3] * b->v[3] + 0x800) >> 12;
-}
 extern s32 D_80064478[];
 extern s32 D_8006E9F8;
 extern u8 D_800527C4[];
@@ -933,7 +820,6 @@ extern VTable8 *D_8005B648;
 extern s32 D_8004E0E0;
 extern s32 D_8004E0E4;
 void mal_update(Heap *heap);
-void func_80017388(void);
 extern u8 D_80078C90[];
 MemBlock *func_80011BF8(Heap *heap, u8 *start, s32 size);
 extern u8 D_80050008[];
@@ -1230,12 +1116,6 @@ void func_80014540(u8 *arg0, RECT *rect);
 extern GfxState D_80056998;
 extern VECTOR D_8005688C; /* screen-space translation (func_8001965C) */
 
-/* Adds v to the translation GfxState.unk88 points at (func_8001965C). */
-static inline void GfxAddTrans(VECTOR *v) {
-    ((VECTOR *)D_80056998.unk88)->vx += v->vx;
-    ((VECTOR *)D_80056998.unk88)->vy += v->vy;
-    ((VECTOR *)D_80056998.unk88)->vz += v->vz;
-}
 /* The current draw buffer: primitives are allocated from the pointer at
  * +0x4008 (texture_draw). */
 extern u8 *cdb;
@@ -1269,40 +1149,7 @@ typedef struct {
     u8 *objs;              /* 0x1C: list linked at +0x5C, callback at +0x54 */
 } GfxScene;
 
-/* Copies a scene's background into the current viewport, faded by modelDp
- * (func_8001DAF8). */
-static inline void GfxSetSceneBg(GfxState *gs, GfxScene *scene) {
-    GfxViewport *vp;
 
-    vp = gs->viewport;
-    vp->isbg = scene->viewport->isbg;
-    if (gs->modelDp != 0) {
-        vp->isbg = 1;
-    }
-    if (vp->isbg != 0) {
-        if (gs->modelDp != 0) {
-            vp->r = scene->viewport->r * (0x1000 - gs->modelDp) / 4096;
-            vp->g = scene->viewport->g * (0x1000 - gs->modelDp) / 4096;
-            vp->b = scene->viewport->b * (0x1000 - gs->modelDp) / 4096;
-        } else {
-            *(GfxRgb8 *)&vp->r = *(GfxRgb8 *)&scene->viewport->r;
-        }
-    }
-}
-
-/* Sets the clip area c (640-wide units) for cam. */
-static inline void GfxSetClip(GfxState *gs, RECT *c, GfxCamera *cam) {
-    RECT clip;
-
-    clip.x = c->x * D_8005B698->w / 640;
-    clip.y = c->y / 2;
-    clip.w = (c->w - c->x) * D_8005B698->w / 640;
-    clip.h = (c->h - c->y) / 2;
-    gs->clipX1 = c->w * D_8005B698->w / 640;
-    gs->clipY1 = c->h / 2;
-    gs->cam = cam;
-    func_80014540((u8 *)cam, &clip);
-}
 
 /* A sprite frame texture_draw draws as one POLY_FT4. */
 typedef struct {
@@ -1373,11 +1220,6 @@ typedef struct {
 extern s32 D_8005B690; /* frame counter: its low bit picks the frame buffer */
 extern s32 D_8004E0E8; /* VSync ticks spent compacting the heap (mal_update) */
 extern s32 D_8004E0EC; /* words moved compacting the heap (mal_update) */
-void func_8001A6D4(void *arg0, u32 hidden);
-s32 func_8001A0D8(void *arg0, u32 flags);
-void *func_80019094(void *arg0, s32 arg1);
-s32 func_8001AF2C(void *arg0);
-
 typedef struct {
     u8 unk0[0x10];
     s32 off; /* 0x10: byte offset from this field to a block */
@@ -1389,19 +1231,10 @@ typedef struct {
     u8 unk0[0x24];
     ModelEntry entries[1]; /* 0x24, stride 0x34 */
 } ModelSet;
-void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs);
 extern s32 D_80056AC4; /* func_80019A60: the object's +0x8A */
 extern s32 D_80056878;    /* func_80019094: with D_80056AC4, forces the depth-cued path */
 extern s32 D_80056868[3]; /* func_80019094: default far colour */
 
-/* func_80019A60: draw model entry e with vertices v. */
-static inline void ModelEntry_Draw(u8 *e, s32 c, SVECTOR *v) {
-    void *p = func_80019094(e, c);
-
-    if (p != NULL) {
-        draw_verts(p, v, e + (*(s32 *)(e + 0x14) + 0x14));
-    }
-}
 extern u8 D_80053694[];
 typedef struct Words3 {
     s32 w0;
@@ -1455,7 +1288,6 @@ extern u8 *D_8005685C;             /* 0x58-byte nodes (func_80017164) */
 extern u8 *D_80056840;             /* 0x54-byte nodes, free list in D_80056850 */
 extern u8 *D_80056854;             /* 8-byte nodes, free list in D_80056858 */
 extern s32 D_80056848;
-void func_80017164(s32 *cfg);
 typedef struct ListNode18938 {
     s32 f0;
     s32 f4;
@@ -1464,32 +1296,6 @@ typedef struct ListNode18938 {
     s32 **f10;
 } ListNode18938;
 
-/* Takes the node at the cursor fC of a list (func_800185F8's code). */
-static inline s32 *ListNode18938_Take(ListNode18938 *l) {
-    s32 *n;
-    s32 **tail;
-
-    if (l == NULL || (n = l->fC) == NULL) {
-        return NULL;
-    }
-    tail = l->f10;
-    l->fC = (s32 *)*n;
-    if (tail != NULL) {
-        *tail = (s32 *)*n;
-        l->fC = (s32 *)*n;
-        if (*n == 0) {
-            l->f8 = tail;
-        }
-    } else {
-        if (l->f8 == (s32 **)n) {
-            l->f8 = NULL;
-        }
-        l->f4 = *n;
-        l->fC = (s32 *)*n;
-        *n = 0;
-    }
-    return n;
-}
 typedef struct {
     ListNode18938 b; /* 0x00 */
     ListNode18938 a; /* 0x14 */
@@ -1513,7 +1319,6 @@ extern s32 D_80058B60;
 extern s32 D_80058B64;
 extern s32 D_80058B68;
 extern s32 D_80058B6C;
-void map_loaded_geo();
 extern s8 D_8005A63C;
 extern void *D_8005699C;
 extern void *D_8005AA38;
@@ -1541,27 +1346,7 @@ typedef struct EmitPart {
     s32 vel[3];
     u8 pad14[0x14];
 } EmitPart;
-void func_8001F604(u8 *obj, EmitPart *part, u8 *def);
 
-/* fade from `from` to `to` over [0,in), hold `to`, back to `from` over (out,end] */
-static inline s32 EmitPart_Fade(s32 in, s32 out, s32 n, s32 end, s32 from, s32 to) {
-    s32 ret;
-
-    if (n < 0) {
-        ret = from;
-    } else if (n < in) {
-        ret = interp(from, to, in, n);
-    } else if (out < n) {
-        if (end < n) {
-            ret = from;
-        } else {
-            ret = interp(to, from, end - out, n - out);
-        }
-    } else {
-        ret = to;
-    }
-    return ret;
-}
 
 extern NAS *NASFreeList;
 extern u16 FirstNas;            /* first pool slot func_80026D08 frees */
@@ -1576,20 +1361,15 @@ extern s32 D_800512A4;
 extern s32 screen_aspect[2];
 
 
-void func_8001D3B0(EXTengine *eng, s32 n, subengine *sub);
 
 
 
 void func_80015758(SVECTOR *v, VECTOR *out);
 
-void func_8001C008(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc);
-
-void func_8001D048(SVECTOR *v, POLY_GT4 *poly);
 
 
-u32 func_8001C974(NAS *nas, u8 *arg1, u32 flags);
 
-void func_8001C690(NAS *nas, u8 *arg1);
+
 
 void func_80015C1C(PointSprites *ps, MATRIX *m);
 
@@ -1605,7 +1385,6 @@ void palette_set_top_bits(u16 *arg0, u32 arg1);
 
 void func_800154C0(u16 *arg0, s32 arg1);
 
-void *func_8001CFE8(MorphModel *model, void *arg1, s32 arg2);
 
 
 
@@ -1630,23 +1409,18 @@ u8 *func_80016AD4(s32 *arg0, u8 *rec);
 u8 *func_800160C4(u8 *arg0, s32 i);
 
 
-void func_80021330(u8 *arg0, s32 *arg1);
 
 
 
 
-void process_quit(void *arg0);
 
-void process_init(void *arg0);
 
 s32 func_80011410(Heap *heap);
 
 
-s32 func_8001E598(u8 *arg0);
 
 void func_800101E0(void);
 
-subengine *func_8001DCD4(s32 i, s32 val);
 
 s32 func_80016274(s32 *list, u8 *arg1);
 
@@ -1659,11 +1433,8 @@ s32 func_80015284(s32 a, s32 b, s32 t);
 
 void *func_80015AB0(s32 *arg0, u8 *rec);
 
-void *new_sprim(void);
 
-void release_sprim(void *data);
 
-void func_800183DC(void);
 
 
 void func_80013CFC(s32 pad, u8 *out);
@@ -1673,10 +1444,8 @@ void func_8001682C(s32 *arg0);
 
 
 
-u8 *func_80021E44(OffsetTable *tbl, s32 i);
 
 
-void *func_80021EEC(void);
 
 typedef struct {
     u16 x;
@@ -1710,29 +1479,22 @@ void func_8001636C(u8 *arg0, s32 arg1);
 
 s32 func_80016450(u8 *arg0, s32 arg1);
 
-void func_8001C298(EXTengine *eng);
 
 void *func_80012E28(void);
 
-subengine *func_8001C34C(s32 n, subengine *sub);
 
 
 
 
-void func_8002120C(u8 *arg0);
-
-void draw_init(void);
 
 
-u8 *get_script_header(u8 *arg0, s32 arg1);
+
 
 
 void func_80016E5C(u8 *arg0, u8 *arg1);
 
-s32 func_8001DD20(s32 *arg0);
 
 
-u8 *func_80021E98(u8 *arg0);
 
 void *func_80011828(void *ptr, s32 bytes);
 
@@ -1773,7 +1535,6 @@ void func_80011578(u8 *arg0, Heap *heap, s32 arg2);
 void func_8001702C(SlotList *arg0);
 
 
-void func_80021940(s32 arg0, u8 *arg1, s32 arg2);
 
 
 void func_80010354(void);
@@ -1788,7 +1549,6 @@ s32 map_entity_address(s32 arg0, u8 *arg1);
 
 void func_80016F54(u8 *arg0);
 
-void func_8001CE00(s32 arg0, ModelSet *set, s32 arg2);
 
 
 
@@ -1796,18 +1556,13 @@ void func_8001CE00(s32 arg0, ModelSet *set, s32 arg2);
 
 
 
-void func_8001CEB4(u16 arg0, u8 *arg1, s32 arg2);
 
 u8 *entity_address(s32 arg0, u8 *arg1);
 
-void func_80021238(u8 *arg0, s32 *arg1);
 
-void func_80021B88(s32 *arg0, s32 *arg1, s16 *arg2, s32 arg3, s32 arg4);
 
-void func_80021AF0(s32 *arg0, s32 *arg1, s16 *arg2, s32 arg3, s32 arg4);
 s32 func_800152A8(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
-void func_80021708(u8 *arg0, u8 *arg1, s32 arg2);
 
 void func_800170D4(void);
 
@@ -1837,7 +1592,6 @@ typedef struct {
     s32 font;    /* 0x78: into D_8005B2B4 */
 } TextNAS;
 extern s16 D_800569C4;
-void func_8001A82C(TextNAS *t, s32 arg1, s32 arg2);
 extern PosEntry D_8005689C[];
 void func_80010158(void);
 
@@ -1873,47 +1627,26 @@ s32 func_80015210(s32 a, s32 b, s32 t);
 
 u8 *func_800167A8(u8 *arg0, u8 *arg1);
 
-void func_8001830C(void);
 
-s32 *func_800184F0(s32 arg0, s32 *arg1, s32 arg2, s32 arg3);
 
-void func_8001C3D0(u8 *arg0);
 
-void func_8001C448(PosDst *arg0, s32 arg1, s32 arg2);
 
-void func_8001C584(PosDst *arg0, s32 arg1);
 
-s32 func_8001CC10(void *arg0, s32 arg1);
 
-void func_8001D640(s32 n);
 
-void draw_map_sub(void *arg0, void *arg1);
 
-void func_8001DEF4(s32 *arg0, s32 *arg1);
 
-KeyEntry *func_8001E41C(KeyBlock *arg0, s32 arg1);
 
-s32 path_find(u32 arg0);
 
-void func_80020B44(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5);
 
-void func_80020BA8(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4);
 
-s16 func_80020C4C(s32 arg0);
 
-s32 func_800213A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5);
 
-s32 *func_80021878(u8 *arg0, s32 arg1);
 
-s32 *func_800218DC(u8 *arg0, s32 arg1);
 
-s32 *func_800219B8(u8 *arg0, s32 arg1);
 
-u8 *func_80021DD4(u8 *arg0, s32 arg1, s32 arg2);
 
-void func_800201BC(u8 *arg0, GteSetup *arg1);
 
-void scripts_render(void);
 
 
 
@@ -2031,44 +1764,25 @@ u8 *func_80016A20(u8 *arg0, s32 arg1);
 
 u8 *func_80016B48(u8 *arg0, s32 arg1);
 
-void func_80018430(s32 count);
 
-s32 *func_80018694(s32 * *arg0, s32 arg1);
 
-void func_800187D4(ListNode18938 *arg0, s32 arg1);
 
-void func_80018938(ListNode18938 *arg0, s32 arg1);
 
-void func_8001C1E0(u8 *arg0, u16 *src, u8 *tab, u16 *dst);
 
-void *func_8001CF50(ModelEntry *e, s32 arg1);
 
-s32 *path_get(s32 arg0);
 
-void func_8001E984(s32 arg0, s32 arg1);
 
-void func_80020DF8(u8 *arg0);
 
-void func_80020E9C(NAS *nas, u8 *arg1);
 
-void func_80020F5C(u8 *arg0);
 
-void func_80021054(u8 *arg0);
 
-void func_8002128C(u8 *arg0, u8 *arg1, s32 arg2);
 
-void func_8002147C(VelObj *obj, VelParams *p, VelState *s);
 void *func_80010E8C(s32 bytes, Heap *heap);
 
-void func_80021604(u8 *arg0, u8 *arg1, s32 arg2);
 
-void func_80021798(u8 *arg0, u8 *arg1, s32 arg2);
 
-void func_80021A1C(u8 *arg0, u8 *arg1, s32 arg2);
 
-s32 *func_80021CB8(s32 *arg0, s32 arg1, s32 arg2);
 
-u8 *func_80021D1C(u8 *arg0, s32 arg1);
 
 
 
@@ -2150,11 +1864,8 @@ void func_80012BC8(s32 * *arg0, s32 *arg1, u8 *arg2);
 
 void func_80013B0C(ComboSeq *c);
 
-void func_8001CAD4(u16 *arg0, s32 arg1, u32 arg2);
 
-void func_8001D894(void *sub, void *arg1, s32 flags, s32 arg3);
 
-void func_8001F4F8(u8 *arg0, u8 *arg1);
 
 
 
@@ -2190,13 +1901,9 @@ void func_800143F0(s32 arg0, s32 arg1);
 
 s32 func_80015D70(u8 *arg0, u8 *arg1);
 
-MATRIX *func_8001ACC0(GfxXform *obj);
 
-s32 func_8001D48C(subengine * *out_first, subengine * *last, s32 n);
 
-void sub_play_script(u8 *arg0, s32 arg1, u8 *arg2, s32 arg3);
 
-void func_800210F8(u8 *arg0, s32 arg1, u8 *arg2, s32 arg3, u8 * *arg4);
 
 typedef struct ScriptInit {
     s32 cur;
@@ -2206,9 +1913,7 @@ typedef struct ScriptInit {
 
 void init_dots(subengine *arg0);
 
-u8 *tga_convert(u8 *arg0, s32 w, s32 h);
 
-s32 func_80020064(u8 *arg0);
 
 
 
@@ -2282,23 +1987,14 @@ void func_800139A8(void);
 
 void func_80015F60(u8 *arg0, s32 *arg1);
 
-void func_80017640(void);
 
-void func_80017B08(FaceRuns *faces, FacePrim *prim, s32 arg2, s32 mode);
 
-void func_80017D90(FaceRuns *faces, FacePrim *prim);
 
-void func_80019F1C(u8 *arg0, u8 *arg1, s32 arg2);
 
-void func_8001A43C(u16 *arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4);
 
-void func_8001E0A8(u8 *arg0);
 
-void update_camera_thread(u8 *arg0, u8 *arg1);
 
-void func_8001FCDC(u8 *arg0, u8 *arg1);
 
-void func_80020344(Quat *a, Quat *b, s32 t, Quat *out);
 
 
 
@@ -2331,46 +2027,11 @@ typedef struct CamEase {
 
 void func_80013F44(CamView *cam, CamView *dst, CamEase *ease);
 
-FacePrim *func_800180BC(s32 arg0, ListNode18938 *list, ListNode18938 *pool, FaceRuns *faces, s32 arg4);
 
-/* func_80019094: the next free primitive slot of list (refilled from pool). */
-static inline FacePrim *PrimSet_NextPrim(PrimSet *set, s32 pairOff, s32 which, ListNode18938 *pool,
-                                         void *faces, s32 flag) {
-    s32 *n;
-    s32 *next;
-    FacePrim *ret;
-    ListNode18938 *list =(ListNode18938 *)((u8 *)set + pairOff) + which;
 
-    if (set->mode == 1) {
-        n = list->fC;
-        if (n != NULL) {
-            next = (s32 *)*n;
-            list->f10 = (s32 **)n;
-            list->fC = next;
-            set = (PrimSet *)n[1];
-        } else {
-            set = (PrimSet *)func_800180BC((s32)set, list, pool, (FaceRuns *)faces, flag);
-        }
-    } else {
-        n = list->fC;
-        if (n != NULL) {
-            list->fC = (s32 *)*n;
-            list->f10 = (s32 **)n;
-            set = (PrimSet *)(n + 1);
-        } else {
-            set = (PrimSet *)func_800184F0((s32)set, (s32 *)list, (s32)pool, (s32)faces);
-        }
-    }
-    return (FacePrim *)set;
-}
 
-void func_80018B08(GfxViewport *vp, GfxCamera *cam);
 
-void func_8001DAF8(GfxScene *scene);
 
-void func_8001F0D4(u8 *arg0, u8 *arg1);
-
-void func_8001F828(u8 *arg0, u8 *arg1);
 
 
 /* Map placement record (map_enviroment.placements, 0xA0 bytes each),
@@ -2397,24 +2058,8 @@ typedef struct MapEnvHead {
     /* 0x18 */ s32 num_placements;
     /* 0x1C */ subengine *subs;
 } MapEnvHead;
-/* func_8001D6B4: reuse the map's subengine array or allocate it. */
-static inline subengine *MapEnv_GetSubs(MapEnvHead *env) {
-    subengine *sub;
-    subengine *t;
 
-    t = env->subs;
-    if (t != NULL) {
-        sub = t;
-        kill_subs(sub);
-    } else {
-        sub = (subengine *)func_80011654(env->num_placements * 0xA8, &D_8004E0F0);
-    }
-    return sub;
-}
 
-void func_8001D6B4(MapEnvHead *env);
-
-u8 *func_8001FE80(u8 *arg0, s32 arg1, Blk32 *arg2, CamVec3 *arg3, s32 arg4, u8 * *arg5);
 
 
 /* func_800248A0: three 0x38-byte sprite records drawn side by side */
@@ -2425,19 +2070,12 @@ MemBlock *func_80011E80(Heap *heap);
 
 void func_8001492C(void);
 
-s32 func_8001B6D4(SVECTOR *v);
 
-void func_8001C7FC(NAS *nas, u8 *arg1, u32 flags);
 
-KeyEntry *func_8001E21C(KeyBlock *arg0, s32 arg1, SLONG_XYZ *out);
 
-void func_8001E610(u8 *mgr, u8 *fadeState);
 
-void func_8001EAA4(u8 *arg0, u8 *arg1);
 
-void func_80020680(Quat *a, Quat *b, s32 t, Quat *out, s32 *pre);
 
-s32 func_80020C04(s32 arg0);
 
 
 
@@ -2453,5 +2091,7 @@ s32 func_80020C04(s32 arg0);
 #include "bash/80022a3c.h"
 
 #include "bash/sfx.h"
+
+#include "bash/80017164.h"
 
 #endif /* BASH_MAIN_H */
