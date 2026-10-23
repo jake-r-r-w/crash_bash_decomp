@@ -88,6 +88,12 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/engine/pause", D_800ADE20);
 INCLUDE_RODATA("asm/nonmatchings/overlays/engine/pause", D_800ADE38);
 
 #ifdef NON_MATCHING
+static inline PadButtons *ActivePad(void) {
+    PadButtons *base = HPADS;
+
+    return &base[D_8009AEF0];
+}
+
 s32 func_8007F314(void) {
     s32 ret;
     s32 kind;
@@ -300,7 +306,7 @@ found:
                     break;
                 }
             }
-            if (HPADS[D_8009AEF0].pressed & 0x1000) {
+            if (ActivePad()->pressed & 0x1000) {
                 D_8009AEEC = 0;
                 PSV->flags &= ~0x8000;
             }
@@ -319,7 +325,7 @@ found:
                     break;
                 }
             }
-            if (HPADS[D_8009AEF0].pressed & 0x1000) {
+            if (ActivePad()->pressed & 0x1000) {
                 D_8009AEEC = 0;
                 PSV->flags &= ~4;
             }
@@ -328,7 +334,7 @@ found:
         case 0x40:
         case 0x240:
             if (PSV->mode != 0x25) {
-                p = &HPADS[D_8009AEF0];
+                p = ActivePad();
                 /* no ret = 0 exit right after a branch: jump2 would give
                    case 0's 0x7000 exit to it (MATCHING.md, Cross-jumping) */
                 if ((p->held & 9) != 9) {
@@ -355,7 +361,7 @@ found:
                         }
                         PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
                     }
-                    if (HPADS[D_8009AEF0].pressed & 0x1000) {
+                    if (ActivePad()->pressed & 0x1000) {
                         func_80083244();
                     }
                     ret = 0;
@@ -365,7 +371,7 @@ found:
             }
             break;
         case 0x80:
-            p = &HPADS[D_8009AEF0];
+            p = ActivePad();
             if ((p->held & 9) != 9) {
                 if (p->pressed & 0x4000) {
                     r = func_800832BC();
@@ -380,7 +386,7 @@ found:
                         PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
                     }
                 }
-                if (HPADS[D_8009AEF0].pressed & 0x1000) {
+                if (ActivePad()->pressed & 0x1000) {
                     func_80083244();
                 }
                 ret = 0;
@@ -405,7 +411,7 @@ found:
                     case 0:
                         on = OPTV->unk8 != 0;
                         D_8009BD1C[0] = on;
-                        if (HPADS[D_8009AEF0].pressed & 0xA0) {
+                        if (ActivePad()->pressed & 0xA0) {
                             D_8009BD1C[0] = on ^ 1;
                             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
                             if ((u16)D_8009BD1C[0] != 0) {
@@ -419,21 +425,21 @@ found:
                         break;
                     case 1:
                         v = OPTV->unk0;
-                        if (v > 0 && (HPADS[D_8009AEF0].pressed & 0x80)) {
+                        if (v > 0 && (ActivePad()->pressed & 0x80)) {
                             v -= 5;
                         }
-                        if (v < 100 && (HPADS[D_8009AEF0].pressed & 0x20)) {
+                        if (v < 100 && (ActivePad()->pressed & 0x20)) {
                             v += 5;
                         }
                         OPTV->unk0 = v;
                         break;
                     case 2:
                         v = D_8005A608;
-                        if (v > 0 && (HPADS[D_8009AEF0].pressed & 0x80)) {
+                        if (v > 0 && (ActivePad()->pressed & 0x80)) {
                             v -= 5;
                             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
                         }
-                        if (v < 100 && (HPADS[D_8009AEF0].pressed & 0x20)) {
+                        if (v < 100 && (ActivePad()->pressed & 0x20)) {
                             v += 5;
                             PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
                         }
@@ -441,7 +447,7 @@ found:
                         break;
                     }
                 }
-                if (func_8007EFC0(D_8009AEF0, 3) != 0 || (HPADS[D_8009AEF0].pressed & 0x1000)) {
+                if (func_8007EFC0(D_8009AEF0, 3) != 0 || (ActivePad()->pressed & 0x1000)) {
                     D_8009AEEC = 0;
                     D_8009AEE8 = 0;
                     func_8002C11C();
@@ -456,7 +462,7 @@ found:
                         PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
                     }
                 }
-                if (func_8007EFC0(D_8009AEF0, 0) != 0 || (HPADS[D_8009AEF0].pressed & 0x1000)) {
+                if (func_8007EFC0(D_8009AEF0, 0) != 0 || (ActivePad()->pressed & 0x1000)) {
                     D_8009AEEC = 1;
                     D_8009AEE8 = 0;
                     PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -476,7 +482,7 @@ found:
                     D_8009AEEC = 0;
                     PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
                 }
-                if (HPADS[D_8009AEF0].pressed & 0x1000) {
+                if (ActivePad()->pressed & 0x1000) {
                     D_8009AEEC = 0;
                     PSV->flags &= ~0x100;
                 }
@@ -486,7 +492,7 @@ found:
             break;
         case 0x20000:
         case 0x20008:
-            if (HPADS[D_8009AEF0].pressed & 8) {
+            if (ActivePad()->pressed & 8) {
                 D_8009AEEC = 0;
                 PSV->flags = (PSV->flags & ~0x20000) | 0x10000;
             }
@@ -494,13 +500,13 @@ found:
             break;
         case 0x40000:
         case 0x40008:
-            if (HPADS[D_8009AEF0].pressed & 1) {
+            if (ActivePad()->pressed & 1) {
                 PSV->unk30 = 0x8008;
                 D_8009AEF0 = 2;
                 D_8009E5DC = PSV->mode;
                 PSV->flags &= 0xFFFBFFFE;
             }
-            if (HPADS[D_8009AEF0].pressed & 0x1008) {
+            if (ActivePad()->pressed & 0x1008) {
                 D_8009AEEC = 2;
                 PSV->flags = (PSV->flags & ~0x40000) | 0x10000;
             }
