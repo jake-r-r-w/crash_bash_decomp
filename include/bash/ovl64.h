@@ -289,7 +289,7 @@ static inline u16 Ovl64NextSlot(void) {
 }
 extern s16 D_800BB88C[];
 extern u16 D_8009E46C[];
-extern s32 Clock_Time;
+extern u32 Clock_Time;
 extern u16 D_800BB888[];
 NAS *func_800B51A0(s32 a, s32 b, u16 c, s16 d);
 

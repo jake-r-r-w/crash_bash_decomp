@@ -103,7 +103,7 @@ typedef struct PanelPrim {
 } PanelPrim; /* 0xA8 */
 extern PanelPrim D_8009986C[4][7];
 extern S16Pair HealthIconPos[4];
-extern s32 pHeroHealth[4];
+extern u16 *pHeroHealth[4];
 
 void func_8007C170(void);
 
@@ -144,17 +144,17 @@ void func_8007D6D0(void);
 s16 func_8007D850(void);
 
 s32 func_80095F48(s32 *p, s32 a1, s32 a2, s32 a3, s32 a4);
-extern s32 left_score;
-extern s32 right_score;
+extern char *left_score;
+extern char *right_score;
 extern EXTengine BigScore1;
 extern EXTengine BigScore2;
 extern subengine BigScoreParts1;
 extern subengine BigScoreParts2;
-extern s16 BigScore_scale;
-extern s16 BigScore_teamA;
-extern s16 BigScore_teamB;
-extern s16 BigScore_Adelay;
-extern s16 BigScore_Bdelay;
+extern u16 BigScore_scale;
+extern u16 BigScore_teamA;
+extern u16 BigScore_teamB;
+extern u16 BigScore_Adelay;
+extern u16 BigScore_Bdelay;
 extern s16 D_8005A65C[2];
 
 void InitBigScore(void);

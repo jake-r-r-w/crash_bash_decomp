@@ -55,7 +55,7 @@ typedef struct EggExt {
     u8 pad34[0x10];
 } EggExt;
 
-extern s32 Clock_Time;
+extern u32 Clock_Time;
 extern u16 D_8005A644;
 
 /* Extension 0x10000000 of the NAS 0x1605 puff PlotEgg spawns. */

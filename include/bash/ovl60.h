@@ -347,7 +347,7 @@ s32 PogoAI_CountMyTiles(u32 arg0);
 
 void PogoPowerups_Poll(void);
 extern s32 D_800C52F4;
-extern s32 Clock_Time;
+extern u32 Clock_Time;
 extern s32 D_800C5BD8;
 extern s32 D_800C5BDC;
 extern s32 D_800C5BE0;
