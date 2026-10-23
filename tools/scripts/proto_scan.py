@@ -29,6 +29,7 @@ types.h, lines.txt, sections.txt, engine_<id>.bin and leaks/.
 import argparse
 import bisect
 import difflib
+import glob
 import hashlib
 import json
 import os
@@ -190,6 +191,13 @@ class Module:
         self.w = words(data)
         self.starts = set(starts(self.w)) | set(first)   # first: starts no jr ra precedes
         self.sorted = sorted(base + o for o in self.starts)
+        self._refs = None
+
+    def refs(self):
+        """data_refs over the whole module (cached): {word index: address}."""
+        if self._refs is None:
+            self._refs = data_refs(self.w)
+        return self._refs
 
     def holds(self, a):
         return self.base <= a < self.base + len(self.data)
@@ -469,13 +477,81 @@ def data_refs(w):
     return out
 
 
-def ref_pairs(dw, rw):
-    """[(demo address, retail address)]: the data references at the aligned
-    instructions of two matched functions (their raw words)."""
+def ref_pairs(dw, rw, calls=False):
+    """[(demo address, retail address)]: the addresses the aligned instructions of two
+    matched functions (their raw words) build (data, and functions taken as pointers)
+    or, with calls, call (jal targets)."""
     da, ra = data_refs(dw), data_refs(rw)
+    for w, refs in ((dw, da), (rw, ra)) if calls else ():
+        refs.update({i: ((x & 0x3FFFFFF) << 2) | 0x80000000 for i, x in enumerate(w) if x >> 26 == 3})
     sm = difflib.SequenceMatcher(None, [norm(x) for x in dw], [norm(x) for x in rw], autojunk=False)
     return [(da[i + k], ra[j + k]) for i, j, n in sm.get_matching_blocks() for k in range(n)
             if i + k in da and j + k in ra]
+
+
+def strong_pairs(matched, rmods, rlen, calls=False):
+    """[(demo address, retail address, retail module)]: ref_pairs over every strong match.
+    rmods: {retail module: Module}; rlen: {(module, address): length in words}."""
+    out = []
+    for r, mod, pick, code in matched:
+        if not pick or pick[0] < STRONG or not code:
+            continue
+        m, a, e = code
+        rk = overlay_of(pick[2]) or m.kind
+        n = rlen.get((rk, pick[1]))
+        if rk not in rmods or not n:
+            continue
+        lo = (pick[1] - rmods[rk].base) // 4
+        out += [(d, x, rk) for d, x in ref_pairs(m.w[(a - m.base) // 4:(e - m.base) // 4],
+                                                 rmods[rk].w[lo:lo + n], calls)]
+    return out
+
+
+def users_refs(m, a, retail, rmods, rlen):
+    """[(retail address, module)] for code address a of demo module m through the demo
+    functions that call it or build its address: each one that matches a retail function
+    strongly gives the address at its aligned instruction."""
+    w = m.w
+    users = {i for i, x in enumerate(w) if x == (3 << 26) | ((a >> 2) & 0x3FFFFFF)}
+    users |= {i for i, v in m.refs().items() if v == a}
+    out = []
+    for i in sorted(users):
+        k = bisect.bisect_right(m.sorted, m.base + 4 * i) - 1
+        if k < 0:
+            continue
+        s = m.sorted[k]
+        e = m.end_of(s)
+        if not s <= m.base + 4 * i < e:
+            continue
+        cs = best_match(m.body(s, e), retail.get(m.kind, []), {})
+        if not cs or cs[0][0] < STRONG:
+            continue
+        _, ra, rn = cs[0]
+        rk = overlay_of(rn) or m.kind
+        n = rlen.get((rk, ra))
+        if rk not in rmods or not n:
+            continue
+        lo = (ra - rmods[rk].base) // 4
+        dw = w[(s - m.base) // 4:(e - m.base) // 4]
+        out += [(x, rk) for d, x in ref_pairs(list(dw), list(rmods[rk].w[lo:lo + n]), True) if d == a]
+    return out
+
+
+def stub_by_order(m, a, body, matched, rlist):
+    """(retail address, name) for the stub at demo code address a of module m: between
+    the nearest confirmed matches around it, the same number of stubs with this code in
+    both builds pairs them in order. None if the counts differ."""
+    conf = sorted((c[1], p[1]) for _, _, p, c in matched
+                  if p and p[0] >= STRONG and c and c[0] is m and len(m.body(c[1], c[2])) > 2)
+    k = bisect.bisect_left(conf, (a, 0))
+    if k == 0 or k == len(conf):
+        return None
+    (d1, r1), (d2, r2) = conf[k - 1], conf[k]
+    demo = [s for s in m.sorted if d1 < s < d2 and m.body(s, m.end_of(s)) == body]
+    ret = [(x, n) for x, n, b in rlist if r1 < x < r2 and b == body]
+    if a not in demo or len(demo) != len(ret):
+        return None
+    return ret[demo.index(a)]
 
 
 def data_shift(syms, refs, prior, span=0x1000, least=3):
@@ -538,21 +614,32 @@ def map_globals(syms, pairs, shifts, near=0x100):
     return shift, out
 
 
-def retail_data_names(mods):
-    """{module: sorted [(address, name)]} of each retail module's symbols: its link map
-    and the outside addresses its generated symbol lists name."""
+def symbols_in(p):
+    """{address: name} from a link map or a `NAME = 0xADDRESS;` symbol list."""
+    names = {}
+    if os.path.exists(p):
+        for line in open(p):
+            s = re.match(r"^\s+0x([0-9a-f]+)\s+([A-Za-z_]\w*)$", line) or \
+                re.match(r"^\s*([A-Za-z_]\w*)\s*=\s*0x([0-9A-Fa-f]+)\s*;", line)
+            if s:
+                a, n = (s.group(1), s.group(2)) if p.endswith(".map") else (s.group(2), s.group(1))
+                names.setdefault(int(a, 16) & 0xFFFFFFFF, n)
+    return names
+
+
+def retail_data_names(mods, shared_below):
+    """{module: sorted [(address, name)]} of each retail module's symbols: its link map,
+    the outside addresses its generated symbol lists name, and the names any module's
+    lists give an address below shared_below (the exe's and the engine's: data only the
+    overlays use is named in their lists alone)."""
+    shared = {}
+    for p in sorted(glob.glob("linkers/*_undefined_syms_auto.txt")):
+        shared.update({a: n for a, n in symbols_in(p).items() if a < shared_below and a not in shared})
     out = {}
     for m in mods:
-        names = {}
-        for p in [f"build/{m}.map", f"linkers/{m}_undefined_syms_auto.txt"]:
-            if not os.path.exists(p):
-                continue
-            for line in open(p):
-                s = re.match(r"^\s+0x([0-9a-f]+)\s+([A-Za-z_]\w*)$", line) or \
-                    re.match(r"^\s*([A-Za-z_]\w*)\s*=\s*0x([0-9A-Fa-f]+)\s*;", line)
-                if s:
-                    a, n = (s.group(1), s.group(2)) if p.endswith(".map") else (s.group(2), s.group(1))
-                    names.setdefault(int(a, 16) & 0xFFFFFFFF, n)
+        names = dict(shared)
+        names.update(symbols_in(f"linkers/{m}_undefined_syms_auto.txt"))
+        names.update(symbols_in(f"build/{m}.map"))
         out[m] = sorted(names.items())
     return out
 
@@ -807,6 +894,48 @@ def main():
             matched = match_funcs(placed, retail, prefer)
             rep += ["", "Demo slot overlays and the retail overlay most of their strong matches are in: "
                     + ", ".join(f"{m} = `{o}`" for m, o in sorted(prefer.items())) + "."]
+        pairs = strong_pairs(matched, rmods, rlen, calls=True)
+        # a function its code can't place (a stub: every stub is alike) is placed by the
+        # matched code that calls it or takes its address, onto the same code
+        rat = {k: {a: (n, b) for a, n, b in retail[k]} for k in ("main", "engine")}
+        for a, n, b in retail["slot"]:
+            rat.setdefault(overlay_of(n), {})[a] = (n, b)
+        refs = {}
+        for d, x, rk in pairs:
+            refs.setdefault(d, []).append((x, rk))
+        by_ref, by_order = 0, 0
+        for i, ((r, cands), (_, mod, pick, _)) in enumerate(zip(placed, matched)):
+            if pick is not None:
+                continue
+            for m, a, e in cands:
+                votes = {}
+                for xr in refs.get(a, []) or users_refs(m, a, retail, rmods, rlen):
+                    votes[xr] = votes.get(xr, 0) + 1
+                if not votes:
+                    continue
+                (x, rk), _ = max(votes.items(), key=lambda kv: kv[1])
+                hit = rat.get(rk, {}).get(x)
+                if hit and hit[1] == m.body(a, e):
+                    matched[i] = (r, m.name, (1.0, x, hit[0]), (m, a, e))
+                    by_ref += 1
+                    break
+        # a stub no code references: between two confirmed neighbours, the same number of
+        # identical stubs in both builds pairs them in order
+        for i, ((r, cands), (_, mod, pick, _)) in enumerate(zip(placed, matched)):
+            if pick is not None or not cands or cands[0][0].kind not in ("main", "engine"):
+                continue
+            m, a, e = cands[0]
+            body = m.body(a, e)
+            if len(body) > 2:
+                continue
+            got = stub_by_order(m, a, body, matched, retail[m.kind])
+            if got:
+                matched[i] = (r, m.name, (1.0, got[0], got[1]), (m, a, e))
+                by_order += 1
+        if by_ref or by_order:
+            rep += ["", f"Placed without matching their own code (stubs, mostly): {by_ref} by the matched "
+                    f"code that calls them or takes their address, {by_order} by order among identical stubs "
+                    "between confirmed neighbours."]
         rep += ["", f"Similarity of the masked code: {STRONG} and up is the same function, "
                 f"{LIKELY} and up probably; below that the best guess is in brackets. "
                 "Retail library functions are named `<object>+<offset>`, slot overlay ones "
@@ -841,17 +970,7 @@ def main():
             rep.append(f"| `{name}` | `0x{val:08X}` | 0x{size:X} | `{decl}` |")
 
     # the globals at retail addresses, through the data references of the strong matches
-    pairs = []
-    for r, mod, pick, code in matched:
-        if not pick or pick[0] < STRONG or not code:
-            continue
-        m, a, e = code
-        rk = overlay_of(pick[2]) or m.kind
-        n = rlen.get((rk, pick[1]))
-        if rk not in rmods or not n:
-            continue
-        lo = (pick[1] - rmods[rk].base) // 4
-        pairs += [(d, x, rk) for d, x in ref_pairs(m.w[(a - m.base) // 4:(e - m.base) // 4], rmods[rk].w[lo:lo + n])]
+    pairs = strong_pairs(matched, rmods, rlen)
     gsyms = {n: (a, n, None) for a, n in data_labels if not n.startswith("__")}   # not linker internals
     gsyms.update({name: (val, name, def_size(typ, size)) for val, cls, typ, size, dims, tag, name in glob})
     if pairs and gsyms:
@@ -871,8 +990,8 @@ def main():
             mapped += got
             if shift:
                 notes.append(f"{key} data shifted by {shift:+#x}")
-        names = retail_data_names(sorted({m for _, _, m in pairs} | {"main", "engine"}))
         slot_lo = min((m.base for k, m in rmods.items() if k not in ("main", "engine")), default=0xFFFFFFFF)
+        names = retail_data_names(sorted({m for _, _, m in pairs} | {"main", "engine"}), slot_lo)
 
         def home(r, m):
             """The retail module that holds address r (m: the referencing code's)."""
