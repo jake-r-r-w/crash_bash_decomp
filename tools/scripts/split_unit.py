@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Split a C unit in two at a function: the function and everything after it go to a new unit.
 
-    tools/dk python3 tools/scripts/split_unit.py SRC FUNC NEW --text-off OFF --rodata-off OFF
+    tools/dk python3 tools/scripts/split_unit.py SRC FUNC NEW --text-off OFF [--rodata-off OFF]
         --yaml configs/USA/<file>.yaml [--umbrella include/bash/<header>.h]
 
 SRC is the C file (src/<seg>.c), FUNC the first function of the new unit, NEW its name (the
@@ -27,6 +27,9 @@ import re
 import shutil
 import subprocess
 import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import decomp  # noqa: E402
 
 
 def run(cmd):
@@ -59,7 +62,7 @@ def main():
     ap.add_argument("func")
     ap.add_argument("new")
     ap.add_argument("--text-off", required=True)
-    ap.add_argument("--rodata-off", required=True)
+    ap.add_argument("--rodata-off", help="the new unit's first rodata item; leave out when it has none")
     ap.add_argument("--yaml", required=True)
     ap.add_argument("--umbrella")
     a = ap.parse_args()
@@ -100,7 +103,7 @@ def main():
         need += "".join(first[s:e] for s, e in more)
     copied = [first[s:e] for s, e, name in defs if (s, e) in seen]
     rest = rest.replace(f"asm/nonmatchings/{seg}\"", f"asm/nonmatchings/{newseg}\"")
-    moved = set(re.findall(r"^[A-Za-z_][^\n;{}()]*?\b(\w+)\s*\([^;{]*?\)\s*\{", rest, re.M | re.S))
+    moved = decomp.defined_names(rest)   # K&R definitions too
     open(a.src, "w").write(first.rstrip("\n") + "\n")
     open(new_c, "w").write(head + "\n" + "".join(c if c.endswith("\n") else c + "\n" for c in copied)
                            + ("\n" if copied else "") + rest)
@@ -139,9 +142,11 @@ def main():
     y = open(a.yaml).read()
     y, n1 = re.subn(rf"(\n(\s*)- \[0x[0-9A-Fa-f]+, c, {re.escape(seg)}\][^\n]*)",
                     rf"\1\n\2- [{a.text_off}, c, {newseg}]", y, count=1)
-    y, n2 = re.subn(rf"(\n(\s*)- \[0x[0-9A-Fa-f]+, \.rodata, {re.escape(seg)}\][^\n]*)",
-                    rf"\1\n\2- [{a.rodata_off}, .rodata, {newseg}]", y, count=1)
-    if n1 != 1 or n2 != 1:
+    n2 = 0
+    if a.rodata_off:   # a unit whose code uses no rodata gets no .rodata subsegment
+        y, n2 = re.subn(rf"(\n(\s*)- \[0x[0-9A-Fa-f]+, \.rodata, {re.escape(seg)}\][^\n]*)",
+                        rf"\1\n\2- [{a.rodata_off}, .rodata, {newseg}]", y, count=1)
+    if n1 != 1 or (a.rodata_off and n2 != 1):
         sys.exit(f"{a.yaml}: no c and .rodata lines for {seg}")
     open(a.yaml, "w").write(y)
     print(f"{a.src}: {len(moved)} functions to {new_c}; {len(protos)} prototypes and {len(take)} "
