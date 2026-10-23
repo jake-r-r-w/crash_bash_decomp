@@ -232,7 +232,7 @@ void UpdateBigScore(void) {
     s32 h2;
     s32 tm;
     s32 s1;
-    s32 s2;
+    s32 num2;
     s32 cur;
     s32 diff;
 
@@ -287,9 +287,9 @@ void UpdateBigScore(void) {
     }
     b = &hb[tm];
     s1 = a->hero_score;
-    s2 = b->hero_score;
+    num2 = b->hero_score;
     cur = (u16)BigScore_teamA;
-    diff = cur - (s1 + s2);
+    diff = cur - (s1 + num2);
     if (diff < 0) {
         BigScore_teamA = cur + 1;
         if (diff < -30) {
@@ -307,10 +307,10 @@ void UpdateBigScore(void) {
         diff = (u16)BigScore_teamA;
         if (s1 < diff) {
             a->hero_score_displayed = 0;
-            b->hero_score_displayed = s1 + s2 - diff;
+            b->hero_score_displayed = s1 + num2 - diff;
         } else {
             a->hero_score_displayed = s1 - diff;
-            b->hero_score_displayed = s2;
+            b->hero_score_displayed = num2;
         }
     } else {
         a->hero_score_displayed = 0;
@@ -326,9 +326,9 @@ void UpdateBigScore(void) {
     }
     b = &hb[tm];
     s1 = a->hero_score;
-    s2 = b->hero_score;
+    num2 = b->hero_score;
     cur = (u16)BigScore_teamB;
-    diff = cur - (s1 + s2);
+    diff = cur - (s1 + num2);
     if (diff < 0) {
         BigScore_teamB = cur + 1;
         if (diff < -30) {
@@ -346,10 +346,10 @@ void UpdateBigScore(void) {
         diff = (u16)BigScore_teamB;
         if (s1 < diff) {
             a->hero_score_displayed = 0;
-            b->hero_score_displayed = s1 + s2 - diff;
+            b->hero_score_displayed = s1 + num2 - diff;
         } else {
             a->hero_score_displayed = s1 - diff;
-            b->hero_score_displayed = s2;
+            b->hero_score_displayed = num2;
         }
     } else {
         a->hero_score_displayed = 0;
@@ -423,7 +423,7 @@ void Set_Clock(u32 a, u32 b) {
 
 void Draw_Clock(void) {
     EngineClockView *v;
-    u32 s;
+    u32 time;
     u32 t;
     u32 e;
     s32 sec;
@@ -442,7 +442,7 @@ void Draw_Clock(void) {
     if (D_8005A644 & 0x9800) {
         return;
     }
-    s = (u32)Clock_Time >> 8;
+    time = (u32)Clock_Time >> 8;
     if (Clock_flags & 0x400) {
         if (Clock_Time == 0x2000) {
             func_8002C1C0(0x6E, 0xF0);
@@ -464,7 +464,7 @@ void Draw_Clock(void) {
             Clock_flags = 0x8000;
         }
     }
-    if ((Clock_flags & 0x100) && s == 0) {
+    if ((Clock_flags & 0x100) && time == 0) {
         PlaySfx(0x19C, NULL, NULL, 0x1000, 0x1E00, 0);
         if (StillTottingUpScore() != 0) {
             Clock_Time = 0;
@@ -544,10 +544,10 @@ void Draw_Clock(void) {
         }
     }
     if (Clock_flags & 0x80) {
-        if (s < 6) {
-            if ((u16)Clock_last_ping != s) {
+        if (time < 6) {
+            if ((u16)Clock_last_ping != time) {
                 PlaySfx(0x19B, NULL, NULL, 0x1000, 0x1E00, 0);
-                Clock_last_ping = s;
+                Clock_last_ping = time;
             }
         } else {
             Clock_last_ping = 99;
@@ -575,12 +575,12 @@ join:
         f = 3;
     }
     for (i = 1; i < f; i++) {
-        d = s & 0xF;
+        d = time & 0xF;
         if (d >= 10) {
             d = 0;
         }
         Clock[i].a = d + 0x3009;
-        s >>= 4;
+        time >>= 4;
     }
 }
 
@@ -880,7 +880,7 @@ void ClearHealthIcons(void) {
 }
 
 void InitBossHealthIcons(void) {
-    PanelPrim *p;
+    PanelPrim *sub;
     PanelPrim *b;
     PanelPrim *q;
     s32 x0;
@@ -896,18 +896,18 @@ void InitBossHealthIcons(void) {
 
     i = 3;
     pHeroHealth[3] = (s32)&D_8009D6DC[3];
-    p = D_8009986C[3];
-    b = p + 1;
-    p->u6C.ptr = D_80052F5C;
-    p->unk0 = 0x10008000;
-    p->unk74 = 0x2018;
+    sub = D_8009986C[3];
+    b = sub + 1;
+    sub->u6C.ptr = D_80052F5C;
+    sub->unk0 = 0x10008000;
+    sub->unk74 = 0x2018;
     c0 = 0x3FFF7F;
     c1 = 0xF4F2F;
     tex = D_8001C7FC;
     y1 = 0x43;
     y0 = 0x37;
     code = 0x12000000;
-    p->unkC = 0;
+    sub->unkC = 0;
     b->unk8C = c0;
     b->unk90 = c0;
     b->unk54 = tex;
@@ -921,15 +921,15 @@ void InitBossHealthIcons(void) {
     b->unk88 = 0;
     b->unk94 = c1;
     b->unk98 = c1;
-    p[1].unk0 = code;
+    sub[1].unk0 = code;
     b->unk68 = 8;
     s = &HealthIconPos[i];
-    q = p + 2;
+    q = sub + 2;
     q->unk54 = tex;
     q->u6C.s.unk6E = y0;
     q->unk70 = 0;
-    p->unk4 = s->a;
-    p->unk8 = s->b + 0x10;
+    sub->unk4 = s->a;
+    sub->unk8 = s->b + 0x10;
     x0 = (u16)s->a + 8;
     x1 = (u16)s->a + 0x48;
     b->u6C.s.unk6C = x0;
@@ -1090,9 +1090,9 @@ void func_8007C830(s32 arg0, s32 arg1) {
 
 void UpdateHealthIcons(void) {
     s32 i;
-    s32 v;
-    s32 sum;
-    u8 *p;
+    s32 BarLength;
+    s32 len;
+    u8 *sub;
     s32 t;
     subengine (*e)[7];
     s32 c;
@@ -1101,7 +1101,7 @@ void UpdateHealthIcons(void) {
     c = D_8004E0D8;
     for (i = 0; i < 4; i++) {
         t = c >> 1;
-        v = 0;
+        BarLength = 0;
         if (pHeroHealth[i] != 0) {
             switch (((EngineGameView *)D_8005A614)->mode) {
             case 5:
@@ -1110,37 +1110,37 @@ void UpdateHealthIcons(void) {
             case 8:
             case 9:
                 e[i][2].unk74 = (t + i * 4) % 14 + 0x2018;
-                v = (u16)(*(u16 *)pHeroHealth[i] / 3);
+                BarLength = (u16)(*(u16 *)pHeroHealth[i] / 3);
                 break;
             case 0x1F:
                 e[i][2].unk74 = (t + i * 4) % 14 + 0x2018;
-                v = *(u16 *)pHeroHealth[i] >> 3;
+                BarLength = *(u16 *)pHeroHealth[i] >> 3;
                 break;
             default:
                 e[i][2].unk74 = (t + i * 4) % 14 + 0x2018;
-                v = *(u16 *)pHeroHealth[i] * 31 / 20;
+                BarLength = *(u16 *)pHeroHealth[i] * 31 / 20;
                 break;
             }
         }
-        if (v >= 0x20) {
-            v = 0x1F;
+        if (BarLength >= 0x20) {
+            BarLength = 0x1F;
         }
-        p = D_80099914 + i * 0x498;
-        sum = v * 2 + *(s16 *)(p + 0x6C);
-        *(s16 *)(p + 0x74) = sum;
-        *(s16 *)(p + 0x84) = sum;
-        if (v != 0) {
-            *(s32 *)p |= 0x8000;
+        sub = D_80099914 + i * 0x498;
+        len = BarLength * 2 + *(s16 *)(sub + 0x6C);
+        *(s16 *)(sub + 0x74) = len;
+        *(s16 *)(sub + 0x84) = len;
+        if (BarLength != 0) {
+            *(s32 *)sub |= 0x8000;
         } else {
-            *(s32 *)p &= 0xFFFF7FFF;
+            *(s32 *)sub &= 0xFFFF7FFF;
         }
-        p = D_800999BC + i * 0x498;
-        *(s16 *)(p + 0x6C) = sum;
-        *(s16 *)(p + 0x7C) = sum;
-        if (v < 0x1F) {
-            *(s32 *)p |= 0x8000;
+        sub = D_800999BC + i * 0x498;
+        *(s16 *)(sub + 0x6C) = len;
+        *(s16 *)(sub + 0x7C) = len;
+        if (BarLength < 0x1F) {
+            *(s32 *)sub |= 0x8000;
         } else {
-            *(s32 *)p &= 0xFFFF7FFF;
+            *(s32 *)sub &= 0xFFFF7FFF;
         }
     }
 }
@@ -1244,10 +1244,10 @@ void UpdatePowerIcons(void) {
     s32 i;
     s32 off;
     HeroInfo *h;
-    s32 v;
-    s32 sum;
+    s32 BarLength;
+    s32 len;
     u8 *e;
-    u8 *p;
+    u8 *sub;
 
     i = 0;
     off = i;
@@ -1256,47 +1256,47 @@ loop:
     if (i < 4) {
         if (h->hero_name != 9) {
             if (D_8005A648 < 0x12) {
-                v = 0;
+                BarLength = 0;
             } else {
                 if (D_8005A648 >= 0x17) {
                     if (D_8005A648 >= 0x1B) {
-                        v = 0;
+                        BarLength = 0;
                     } else {
                         e = FindExtension(h->hero, 0x10000000);
                         if (e != NULL) {
-                            v = *(s32 *)(e + 0x58) >> 10;
+                            BarLength = *(s32 *)(e + 0x58) >> 10;
                         } else {
-                            v = 0;
+                            BarLength = 0;
                         }
                     }
                 } else {
                     e = FindExtension(h->hero, 0x20000000);
                     if (e != NULL) {
-                        v = *(s32 *)(e + 0x20) >> 2;
+                        BarLength = *(s32 *)(e + 0x20) >> 2;
                     } else {
-                        v = 0;
+                        BarLength = 0;
                     }
                 }
             }
-            if (v >= 0x40) {
-                v = 0x3F;
+            if (BarLength >= 0x40) {
+                BarLength = 0x3F;
             }
-            p = D_80099914 + off;
-            sum = v + *(s16 *)(p + 0x6C);
-            *(s16 *)(p + 0x74) = sum;
-            *(s16 *)(p + 0x84) = sum;
-            if (v != 0) {
-                *(s32 *)p |= 0x8000;
+            sub = D_80099914 + off;
+            len = BarLength + *(s16 *)(sub + 0x6C);
+            *(s16 *)(sub + 0x74) = len;
+            *(s16 *)(sub + 0x84) = len;
+            if (BarLength != 0) {
+                *(s32 *)sub |= 0x8000;
             } else {
-                *(s32 *)p &= 0xFFFF7FFF;
+                *(s32 *)sub &= 0xFFFF7FFF;
             }
-            p = D_800999BC + off;
-            *(s16 *)(p + 0x6C) = sum;
-            *(s16 *)(p + 0x7C) = sum;
-            if (v < 0x3F) {
-                *(s32 *)p |= 0x8000;
+            sub = D_800999BC + off;
+            *(s16 *)(sub + 0x6C) = len;
+            *(s16 *)(sub + 0x7C) = len;
+            if (BarLength < 0x3F) {
+                *(s32 *)sub |= 0x8000;
             } else {
-                *(s32 *)p &= 0xFFFF7FFF;
+                *(s32 *)sub &= 0xFFFF7FFF;
             }
         }
         off += 0x498;
@@ -1355,23 +1355,23 @@ void InitScore1Icons(void) {
 }
 
 void InitSharedScoreIcons(void) {
-    s32 t;
+    s32 i;
     u8 *g = D_8005A614;
 
     if (*(s32 *)(g + 0x6C) != 0) {
-        t = *(s16 *)(g + 0x48);
-        Score[t].d = 1;
-        Score[t].b += 0x46;
-        t = Heroes[t].hero_teammate;
-        if (t != -1) {
-            Score[t].d = 0;
+        i = *(s16 *)(g + 0x48);
+        Score[i].d = 1;
+        Score[i].b += 0x46;
+        i = Heroes[i].hero_teammate;
+        if (i != -1) {
+            Score[i].d = 0;
         }
-        t = *(s16 *)(g + 0x4A);
-        Score[t].d = 1;
-        Score[t].b += 0x46;
-        t = Heroes[t].hero_teammate;
-        if (t != -1) {
-            Score[t].d = 0;
+        i = *(s16 *)(g + 0x4A);
+        Score[i].d = 1;
+        Score[i].b += 0x46;
+        i = Heroes[i].hero_teammate;
+        if (i != -1) {
+            Score[i].d = 0;
         }
     }
 }
@@ -1623,7 +1623,7 @@ void Cups_Update(void) {
     u16 *p;
     s32 mode;
     s32 i;
-    s32 k;
+    s32 num;
     s32 n = 0;
     s32 used;
     s32 slot;
@@ -1735,10 +1735,10 @@ found:
                 MODEV->unkA7[3] = (CupWinner & 2) ? 1 : 3;
             } else {
                 n = 0;
-                k = 3;
+                num = 3;
                 used = 0;
                 while (1) {
-                    if (k < 0) {
+                    if (num < 0) {
                         break;
                     }
                     i = 0;
@@ -1746,14 +1746,14 @@ found:
                         if (i >= 4) {
                             break;
                         }
-                        if (MODEV->unkCC[i] == k && !((used >> i) & 1)) {
+                        if (MODEV->unkCC[i] == num && !((used >> i) & 1)) {
                             MODEV->unkA7[n] = i;
                             used |= 1 << i;
                             n++;
                         }
                         i++;
                     }
-                    k--;
+                    num--;
                 }
             }
             CupMode = 5;
@@ -1830,10 +1830,10 @@ found:
                 MODEV->unkA7[3] = (CupWinner & 2) ? 1 : 3;
             } else {
                 n = 0;
-                k = 3;
+                num = 3;
                 used = 0;
                 while (1) {
-                    if (k < 0) {
+                    if (num < 0) {
                         break;
                     }
                     i = 0;
@@ -1841,14 +1841,14 @@ found:
                         if (i >= 4) {
                             break;
                         }
-                        if (MODEV->unkCC[i] == k && !((used >> i) & 1)) {
+                        if (MODEV->unkCC[i] == num && !((used >> i) & 1)) {
                             MODEV->unkA7[n] = i;
                             used |= 1 << i;
                             n++;
                         }
                         i++;
                     }
-                    k--;
+                    num--;
                 }
             }
             if (mode == 0) {
@@ -2181,32 +2181,32 @@ void Init_Clock(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void InitCountdown(void) {
-    subengine *p;
-    subengine *d;
+    subengine *sub;
+    subengine *counter;
 
-    d = &D_80099500;
-    countdown_eng = d;
-    d->unk0C = 0x8000;
-    *(s32 *)&d->unk10 = 0;
-    *(s32 *)&d->unk14 = 0;
-    d->unk18 = 0;
-    d->unk6C = &counter_sub;
-    p = &counter_sub;
-    if (p != NULL) {
-        *p = D_8005A830;
-        p->unk6C = D_80053074;
-        p->unk74 = 0x2004;
-        p->flags = 0x11000000;
-        p->unk04 = 0x140;
-        p->unk08 = 0xB4;
-        p->unk50 = 1;
-        p->unk0C = 0;
-        p->unk20.x = 0xA00;
-        p->unk20.y = 0xA00;
-        p->unk20.z = 0xA00;
-        p->unk51 = 0;
-        p->next = NULL;
-        p->prev = NULL;
+    counter = &D_80099500;
+    countdown_eng = counter;
+    counter->unk0C = 0x8000;
+    *(s32 *)&counter->unk10 = 0;
+    *(s32 *)&counter->unk14 = 0;
+    counter->unk18 = 0;
+    counter->unk6C = &counter_sub;
+    sub = &counter_sub;
+    if (sub != NULL) {
+        *sub = D_8005A830;
+        sub->unk6C = D_80053074;
+        sub->unk74 = 0x2004;
+        sub->flags = 0x11000000;
+        sub->unk04 = 0x140;
+        sub->unk08 = 0xB4;
+        sub->unk50 = 1;
+        sub->unk0C = 0;
+        sub->unk20.x = 0xA00;
+        sub->unk20.y = 0xA00;
+        sub->unk20.z = 0xA00;
+        sub->unk51 = 0;
+        sub->next = NULL;
+        sub->prev = NULL;
     }
 }
 

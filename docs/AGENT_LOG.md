@@ -113,9 +113,11 @@ and current tools).
 ## Open leads
 
 - **Finish the demo discs' symbols** (PROTOTYPES.md; applied: 135 function
-  and 51 global names, unit `panel`, the Jampack enums). Left: the parameter
-  types from the C++ names and the globals' types; PANEL.CPP's locals; the
-  link groups against the engine units. Full reports: `protos/<disc>/scan.md`.
+  and 51 global names, unit `panel`, the Jampack enums, 21 prototypes and 10
+  global types, 13 PANEL.CPP locals). Left: types the repo lacks
+  (`SWORD_XY`, `obj_texture`, ...: adding them would let `proto_types.py`
+  write more), `PrintNasPos` (never referenced), the link groups against
+  the engine units. Full reports: `protos/<disc>/scan.md`.
 - **Tune the permuter from its record.** Runs are logged since 2026-10-20
   (`decomp.py permstats`, `swarm.mjs stats`). Two ideas to try once there
   are a few dozen runs, compared on that record:
@@ -523,6 +525,13 @@ Newest first, a few lines each. Details are in the commits.
   PlaySfx as a `goto` into case 8's (not the source; leads list why). No
   `break`/`goto` mix gives the target's three tail survivors. Found the
   unit is probably `PAUSE.CPP`; `cc1plus` compiles the C identically.
+
+- **2026-10-23 (PANEL.CPP locals and global types):** 13 locals named from
+  Jampack's register records (one C variable in the register, one recorded
+  local: `vars NAME --all`); local names can't change the code (make check
+  OK). `proto_types.py --globals`: 10 PANEL.CPP globals typed (`Clock_Time`
+  u32, the `BigScore_*` counters u16, `left_score` char *, `pHeroHealth`
+  u16 *[4]); `PanelCtrl` u32 changes the code.
 
 - **2026-10-23 (parameter types from the C++ names):** new `proto_types.py`
   demangles the applied names (g++ 2.x: `P7NAStype`, `T0`, `N40`, ...) and

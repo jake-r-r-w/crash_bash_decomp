@@ -203,8 +203,12 @@ similarity 0.40). Its largest function (`0x1238` bytes) is closest to
 unit `8007ee2c`, maybe from `func_8007ED0C`. Not proven.
 
 **Still to do.**
-- Apply the signatures and the locals to the 23 renamed functions (the
-  unit is `panel` now).
+- Signatures and locals: the parameter types are in where the repo has the
+  type (`proto_types.py`, below); 13 locals are named by register
+  (`Draw_Clock`'s `time`, `UpdateHealthIcons`' `sub`, `len`, `BarLength`, ...):
+  where one C variable has a register and the records name one local in it
+  (`decomp.py vars NAME --all` gives the C's homes). The others share a
+  register with a second variable on one side, so they stay.
 - Globals: the 33 mapped (of 44; every one referenced at its start and on a
   retail `D_` start) are renamed with Euro's engine ones
   (`renames_engine_globals.txt`: `PanelCtrl` is `D_80099174`, `CupTimer`
@@ -292,9 +296,10 @@ The 4 names the repo gave itself are replaced by the originals
 - Function names done: 37 engine with Jampack's (`renames_engine_all.txt`), 10
   overlay (`renames_slot.txt`), and `SetTweakAi`, `HeroGhost`,
   `line_intersect_zy`, `TankBossCortexTurretFire` (0.78..0.88, in link order,
-  approved: `renames_unconfirmed.txt`). Left: four stubs no place confirms
-  (`DefaultTouched`, `DefHero2ObjectCollision`, `PrintNasPos`,
-  `InitParticleEffect`).
+  approved: `renames_unconfirmed.txt`). The stubs: `DefaultTouched` and
+  `DefHero2ObjectCollision` are placed by the matched code that stores them
+  as handlers (`renames_engine_stubs.txt`), `InitParticleEffect` lands on the
+  repo's own name by order; `PrintNasPos` is never referenced: unplaceable.
 - Parameter types: `proto_types.py` gave 21 functions the types their C++
   names spell (`InsertNasTag(NAS *, NAS *)`, `kill_sprim_sub(subengine *)`,
   `SysGetLen(char *)`, `BSwapEndian(u8 *, u32)`, ...); 13 more would change
