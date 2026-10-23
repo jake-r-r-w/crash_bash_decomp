@@ -501,7 +501,30 @@ typedef struct Ovl63Vec4 {
     s32 pad;
 } Ovl63Vec4;
 
-s32 func_800B7190(SLONG_XYZ *pos, Ovl63Vec4 *out, s32 r, s32 i, s32 f);
+/* A wall segment of a scene collision object (func_800B7190; ovl65's Ovl65Seg). */
+typedef struct Ovl63Seg {
+    /* 0x00 */ SLONG_XYZ p0;
+    /* 0x0C */ SLONG_XYZ p1;
+    /* 0x18 */ s32 len;
+    /* 0x1C */ s32 ang;
+    /* 0x20 */ u8 pad20[0x18];
+} Ovl63Seg;
+
+typedef struct Ovl63SegObj {
+    /* 0x00 */ u8 pad0[0x38];
+    /* 0x38 */ s32 count;
+    /* 0x3C */ u8 pad3C[0xC];
+    /* 0x48 */ Ovl63Seg segs[1];
+} Ovl63SegObj;
+
+/* D_80058AD0 as func_800B7190 reads it. */
+typedef struct Ovl63SegScene {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ u8 pad4[0xC];
+    /* 0x10 */ u8 *data;
+} Ovl63SegScene;
+
+s32 func_800B7190(SLONG_XYZ *pos, Ovl63Vec4 *out, s32 radius, s32 idx, s32 flags);
 
 /* Heading a reflected off a wall of normal angle b (inline copy of func_800C4E54, PlotDinoEgg). */
 static inline s32 Ovl63Bounce(s32 a, s32 b) {

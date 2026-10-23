@@ -8007,9 +8007,10 @@
   "status": "matched"
  },
  "ovl63:800B7190": {
-  "auto_failed": "compile",
   "copy_failed": "ovl65:800B9020",
-  "copy_failed_stage": "in-file"
+  "copy_failed_stage": "in-file",
+  "matched_at": "2026-10-23T08:00:53Z",
+  "status": "matched"
  },
  "ovl63:800B76A4": {
   "auto_failed": "compile"
