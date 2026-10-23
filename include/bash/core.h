@@ -8,7 +8,9 @@
  * does not define are word (or byte) arrays of the recorded size, except the
  * shell's first types: the Oct 9 records number them as Jampack Winter 2000's
  * do, which define them (._1 SLONG_XY, ._2 SWORD_XY, ._10 UBYTE_RGB, sizes
- * agreeing), so those fields have their types. */
+ * agreeing), and from ._11 on two ahead of Jampack's (._21 MATRIX, ._22 VECTOR,
+ * ._23 SVECTOR, ._37 RECT: Jampack's ._19, ._20, ._21, ._35), so those fields
+ * have their types. */
 
 #include "bash/nas.h"
 
@@ -102,8 +104,8 @@ BASH_SIZE_CHECK(script_command_fade, 0x8);
 struct partmotdata {
     /* 0x00 */ s32 life;
     /* 0x04 */ s32 delay;
-    /* 0x08 */ s32 vel[4]; /* struct ._22 (0x10 bytes), not in the fragment */
-    /* 0x18 */ s32 grav[4]; /* struct ._22 (0x10 bytes), not in the fragment */
+    /* 0x08 */ VECTOR vel;
+    /* 0x18 */ VECTOR grav;
 };
 BASH_SIZE_CHECK(partmotdata, 0x28);
 
@@ -374,7 +376,7 @@ struct REL {
 BASH_SIZE_CHECK(REL, 0xC);
 
 struct fadescreen_info {
-    /* 0x00 */ s32 master[4]; /* struct ._22 (0x10 bytes), not in the fragment */
+    /* 0x00 */ VECTOR master;
     /* 0x10 */ u16 speed;
     /* 0x12 */ u16 flags;
     /* 0x14 */ s16 fade;
@@ -425,8 +427,8 @@ struct geom_info {
 BASH_SIZE_CHECK(geom_info, 0xC);
 
 struct draw_window {
-    /* 0x00 */ s32 clip[2]; /* struct ._37 (0x8 bytes), not in the fragment */
-    /* 0x08 */ s32 screen[2]; /* struct ._37 (0x8 bytes), not in the fragment */
+    /* 0x00 */ RECT clip;
+    /* 0x08 */ RECT screen;
     /* 0x10 */ SLONG_XY origin;
     /* 0x18 */ s32 zstart;
     /* 0x1C */ s32 zsize;
@@ -437,7 +439,7 @@ struct draw_window {
 BASH_SIZE_CHECK(draw_window, 0x28);
 
 struct matrix_stack {
-    /* 0x00 */ s32 m[8]; /* struct ._21 (0x20 bytes), not in the fragment */
+    /* 0x00 */ MATRIX m;
     /* 0x20 */ void *faces;
 };
 BASH_SIZE_CHECK(matrix_stack, 0x24);
@@ -449,26 +451,26 @@ struct obj_globals {
     /* 0x0C */ s32 fade;
     /* 0x10 */ draw_window *window;
     /* 0x14 */ s32 global_fade;
-    /* 0x18 */ s32 screen_clip[2]; /* struct ._37 (0x8 bytes), not in the fragment */
+    /* 0x18 */ RECT screen_clip;
     /* 0x20 */ SLONG_XY render_origin;
     /* 0x28 */ SLONG_XY draw_origin;
     /* 0x30 */ s32 ot_adjust;
-    /* 0x34 */ s32 sv[2]; /* struct ._23 (0x8 bytes), not in the fragment */
+    /* 0x34 */ SVECTOR sv;
     /* 0x3C */ s16 num_palettes;
     /* 0x3E */ s16 num_textures;
     /* 0x40 */ u32 *otlist;
     /* 0x44 */ s16 ot_offset;
     /* 0x46 */ s16 otmax;
     /* 0x48 */ struct camera_info_tag *cam;
-    /* 0x4C */ s32 scratch_matrix[8]; /* struct ._21 (0x20 bytes), not in the fragment */
-    /* 0x6C */ s32 scratch_sv[2]; /* struct ._23 (0x8 bytes), not in the fragment */
-    /* 0x74 */ s32 scratch_v[4]; /* struct ._22 (0x10 bytes), not in the fragment */
+    /* 0x4C */ MATRIX scratch_matrix;
+    /* 0x6C */ SVECTOR scratch_sv;
+    /* 0x74 */ VECTOR scratch_v;
     /* 0x84 */ void *msp;
     /* 0x88 */ void *vsp;
-    /* 0x8C */ s32 vap_matrix[8]; /* struct ._21 (0x20 bytes), not in the fragment */
-    /* 0xAC */ s32 tm[8]; /* struct ._21 (0x20 bytes), not in the fragment */
-    /* 0xCC */ s32 rot_matrix_stack[16]; /* struct ._21 (0x40 bytes), not in the fragment */
-    /* 0x10C */ s32 trans_vector_stack[8]; /* struct ._22 (0x20 bytes), not in the fragment */
+    /* 0x8C */ MATRIX vap_matrix;
+    /* 0xAC */ MATRIX tm;
+    /* 0xCC */ MATRIX rot_matrix_stack[2];
+    /* 0x10C */ VECTOR trans_vector_stack[2];
 };
 BASH_SIZE_CHECK(obj_globals, 0x12C);
 
@@ -1170,7 +1172,7 @@ struct pcontrol {
     /* 0x08 */ s32 scaleinrate;
     /* 0x0C */ s32 scaleoutrate;
     /* 0x10 */ s32 freqcounter;
-    /* 0x14 */ s32 emitterang[4]; /* struct ._22 (0x10 bytes), not in the fragment */
+    /* 0x14 */ VECTOR emitterang;
     /* 0x24 */ subengine *lastsub;
 };
 BASH_SIZE_CHECK(pcontrol, 0x28);
