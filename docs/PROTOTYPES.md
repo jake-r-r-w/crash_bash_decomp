@@ -301,7 +301,7 @@ The 4 names the repo gave itself are replaced by the originals
   `DefHero2ObjectCollision` are placed by the matched code that stores them
   as handlers (`renames_engine_stubs.txt`), `InitParticleEffect` lands on the
   repo's own name by order; `PrintNasPos` is never referenced: unplaceable.
-- Parameter types: 37 functions have the types their C++ names spell.
+- Parameter types: 36 functions have the types their C++ names spell.
   `proto_types.py` gave 27 (`InsertNasTag(NAS *, NAS *)`,
   `kill_sprim_sub(subengine *)`, `AddExt(NAS *)`, `mal_unlink(mal *,
   _mal_area *)`, ...). Before 2026-10-23 it rewrote call statements as if

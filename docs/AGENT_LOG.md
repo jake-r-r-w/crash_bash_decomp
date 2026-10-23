@@ -119,8 +119,8 @@ and current tools).
 ## Open leads
 
 - **Finish the demo discs' symbols** (PROTOTYPES.md; applied: 135 function
-  and 51 global names, unit `panel`, the Jampack enums, 37 prototypes, the
-  leaked types and class names, 17 global types, 13 PANEL.CPP locals).
+  and 51 global names, unit `panel`, the Jampack enums, 36 prototypes, the
+  leaked types and class names, 16 global types, 13 PANEL.CPP locals).
   Left: 7 prototypes whose bodies index the parameter as bytes (typing
   each body is a small job), the classes with no stand-in (`geo`,
   `geo_entity`, `joypad_info`, `tga_header`, `file`, ...), merging the
@@ -575,7 +575,7 @@ Newest first, a few lines each. Details are in the commits.
   PANEL.CPP's globals as `ScoreInfo`/`ClockInfo`/`SWORD_XY`, the leaked
   class names on the stand-ins (`mal`, `_mal_area`, `obj_texture`,
   `obj_textureset`, ...) and an `obj_dbase` layout. `proto_types.py` had
-  rewritten calls as prototypes (fixed); 37 functions now have the leak's
+  rewritten calls as prototypes (fixed); 36 functions now have the leak's
   parameter types (PROTOTYPES.md lists what is left).
 
 - **2026-10-23 (main.c split into nine):** four more cuts, one commit
