@@ -968,9 +968,9 @@ s32 func_800BB86C(s32 arg0) {
     return hit;
 }
 
-#ifdef NON_MATCHING
 s32 func_800BC274(s32 idx) {
     VECTOR v;
+    subengine *sub;
     s32 hit;
     s32 top;
     s32 bot;
@@ -986,7 +986,6 @@ s32 func_800BC274(s32 idx) {
     s32 r;
     s32 d;
     s32 ang;
-    s32 y;
     s32 lo;
     s32 hi;
 
@@ -1001,8 +1000,14 @@ s32 func_800BC274(s32 idx) {
             if (box != NULL) {
                 if (eng->unk5E != 0) {
                     func_800142D4(&eng->unk1C);
+                    sub = eng->sub;
+                    eng->sub = sub;
+                    func_8001CD04(sub, eng->unk3C, &eng->unk10);
+                } else {
+                    sub = eng->sub;
+                    eng->sub = sub;
+                    func_8001CD04(sub, eng->unk3C, &eng->unk10);
                 }
-                func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
                 func_80015758((SVECTOR *)box, &v);
             }
             nas = D_8005AA2C;
@@ -1053,9 +1058,6 @@ s32 func_800BC274(s32 idx) {
     }
     return hit;
 }
-#else
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800BC274);
-#endif
 
 void *func_800BC588(s32 idx, s32 mask) {
     NAS *n;
