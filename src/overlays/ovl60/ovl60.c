@@ -335,7 +335,7 @@ loop:
                 return;
             }
             if (ok) {
-                SpawnNASById(0, 0, 0, 0x1407, 0x11);
+                CreateNAS(0, 0, 0, 0x1407, 0x11);
             }
         }
         break;
@@ -1371,7 +1371,7 @@ void SetHeroPogoLoser(u32 arg0) {
     Heroes[arg0].hero_move->jump_dir = -1;
     pos = (s32 *)&Heroes[arg0].hero_eng->unk10;
     p = D_80053B9C;
-    nas = SpawnNASById(pos[0], pos[1], pos[2], 0x1605, 0x11);
+    nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
@@ -1411,7 +1411,7 @@ void HeroPogoLoser(u32 arg0) {
         if (((D_8004E0D8 + arg0) & 3) == 0) {
             pos = (s32 *)&eng->unk10;
             p = D_80053B9C;
-            nas = SpawnNASById(pos[0], pos[1], pos[2], 0x1605, 0x11);
+            nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
             if (nas != NULL) {
                 ext = FindExtension(nas, 0x10000000);
                 if (ext != NULL) {
@@ -1588,7 +1588,7 @@ void AddDingoSmoke(u32 arg0) {
 
     pos = (s32 *)&Heroes[arg0].hero_eng->unk10;
     p = D_80053B9C;
-    nas = SpawnNASById(pos[0], pos[1], pos[2], 0x1605, 0x11);
+    nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
@@ -1633,7 +1633,7 @@ void AddSomeDust(u32 arg0) {
 
     pos = (s32 *)&Heroes[arg0].hero_eng->unk10;
     p = D_80053B9C;
-    nas = SpawnNASById(pos[0], pos[1], pos[2], 0x1605, 0x11);
+    nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
@@ -1676,7 +1676,7 @@ void AddBrioSmoke(u32 arg0) {
 
     pos = (s32 *)&Heroes[arg0].hero_eng->unk10;
     p = D_80053B9C;
-    nas = SpawnNASById(pos[0], pos[1], pos[2], 0x1605, 0x11);
+    nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
@@ -1975,7 +1975,7 @@ void Tile_FireTnt(s32 arg0, s32 arg1) {
     c->unkA = -1;
     c->unk14 = 0;
     pos = &c->unk4->x;
-    nas = SpawnNASById(pos[0], pos[1], pos[2], 0x1605, 0x11);
+    nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
     one = 1;
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
@@ -2037,7 +2037,7 @@ void Tile_FireNitro(s32 arg0, s32 arg1) {
     c->unk14 = 0;
     Tile_Update(arg0, arg1);
     pos = &c->unk4->x;
-    nas = SpawnNASById(pos[0], pos[1], pos[2], 0x1605, 0x11);
+    nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
@@ -2824,7 +2824,7 @@ void CreatePowerupOnTile(s32 arg0, s32 arg1, s32 arg2) {
     if (pos == NULL) {
         return;
     }
-    nas = SpawnNASById(pos->x, D_8005A5D8, pos->z, 0x1402, 0x11);
+    nas = CreateNAS(pos->x, D_8005A5D8, pos->z, 0x1402, 0x11);
     if (nas == NULL) {
         return;
     }
@@ -2874,7 +2874,7 @@ void CreatePickupOnTile(s32 arg0, s32 arg1, s32 arg2) {
     if (pos == NULL) {
         return;
     }
-    nas = SpawnNASById(pos->x, D_8005A5D8, pos->z, 0x1401, 0x11);
+    nas = CreateNAS(pos->x, D_8005A5D8, pos->z, 0x1401, 0x11);
     if (nas == NULL) {
         return;
     }
@@ -2971,7 +2971,7 @@ spawn:
     if (D_800C535C[arg0].nas != NULL) {
         return n;
     }
-    nas = SpawnNASById(x, D_8005A5D8 - 0x40, z, 0x1405, 0x11);
+    nas = CreateNAS(x, D_8005A5D8 - 0x40, z, 0x1405, 0x11);
     if (nas == NULL) {
         return n;
     }
@@ -3193,7 +3193,7 @@ void Init_PogoPowerup(NAS *nas) {
         } else {
             nas->Failure = 1;
         }
-        e2 = AddEngine(nas, 1);
+        e2 = AddExtEngine(nas, 1);
         if (e2 != NULL) {
             sub = e2->sub;
             e2->unk10.x = e->unk10.x;
@@ -4010,7 +4010,7 @@ void Plot_PogoProjectile(NAS *arg0) {
         }
         pos = (s32 *)&e->unk10;
         p = D_80053B9C;
-        nas = SpawnNASById(e->unk10.x, pos[1], pos[2], 0x1605, 0x11);
+        nas = CreateNAS(e->unk10.x, pos[1], pos[2], 0x1605, 0x11);
         if (nas != NULL) {
             ext = FindExtension(nas, 0x10000000);
             if (ext != NULL) {
@@ -4922,7 +4922,7 @@ void Init_PogoRipperRoo(NAS *nas) {
         } else {
             nas->Failure = 1;
         }
-        e2 = AddEngine(nas, 1);
+        e2 = AddExtEngine(nas, 1);
         if (e2 != NULL) {
             sub = e2->sub;
             e2->unk10.x = e->unk10.x;
@@ -5158,7 +5158,7 @@ void Roo_FireRocket(EXTengine *eng) {
     s32 z = eng->unk10.z;
     s32 angle = eng->unk1E;
 
-    nas = SpawnNASById(x, D_8005A5D8 - 0x200, z, 0x1404, 0x11);
+    nas = CreateNAS(x, D_8005A5D8 - 0x200, z, 0x1404, 0x11);
     if (nas != NULL) {
         e = nas->Engine;
         if (e != NULL) {
@@ -5241,7 +5241,7 @@ void func_800C02AC(EXTengine *eng, s32 angle) {
     s32 x = eng->unk10.x;
     s32 z = eng->unk10.z;
 
-    nas = SpawnNASById(x, D_8005A5D8 - 0x280, z, 0x1404, 0x11);
+    nas = CreateNAS(x, D_8005A5D8 - 0x280, z, 0x1404, 0x11);
     if (nas != NULL) {
         e = nas->Engine;
         if (e != NULL) {
@@ -5288,7 +5288,7 @@ void Init_PogoPadlock(NAS *nas) {
         e->unk2C.x = 0x1000;
         e->unk5C = 1;
         e->flags &= ~0x8000;
-        e2 = AddEngine(nas, 1);
+        e2 = AddExtEngine(nas, 1);
         if (e2 != NULL) {
             sub = e2->sub;
             e2->unk10.x = e->unk10.x;
@@ -5352,7 +5352,7 @@ bool PadlockAI_IsTileOKForPadlock(NAS *arg0, s32 arg1, s32 arg2) {
 }
 
 void Create_PogoPadlock(s32 arg0, s32 arg1) {
-    D_800C5BB0 = SpawnNASById((arg0 << 9) - 0x700, D_8005A5D8, (arg1 << 9) - 0x700, 0x1408, 0x11);
+    D_800C5BB0 = CreateNAS((arg0 << 9) - 0x700, D_8005A5D8, (arg1 << 9) - 0x700, 0x1408, 0x11);
 }
 
 void CreateFloatyPogoScore(u32 arg0, s32 arg1, s32 arg2, s32 arg3) {
@@ -5521,7 +5521,7 @@ void Create_PogoProjectile(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
     subengine *sub;
     subengine *s;
 
-    nas = SpawnNASById(arg1, D_8005A5D8 - arg3, arg2, 0x1404, 0x11);
+    nas = CreateNAS(arg1, D_8005A5D8 - arg3, arg2, 0x1404, 0x11);
     if (nas != NULL) {
         e = nas->Engine;
         if (e != NULL) {
@@ -6104,7 +6104,7 @@ void AddTazerRing(u32 arg0) {
 
     pos = (s32 *)&Heroes[arg0].hero_eng->unk10;
     p = D_80053B9C;
-    nas = SpawnNASById(pos[0], pos[1], pos[2], 0x1605, 0x11);
+    nas = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
@@ -6360,7 +6360,7 @@ void PogoInit_CrystalChallenge(void) {
         if (*(s16 *)(g + 0x34) == 10) {
             D_800C52F4 = 0;
             for (i = 0; i < 2; i++) {
-                SpawnNASById(0, 0, 0, 0x1407, 0x11);
+                CreateNAS(0, 0, 0, 0x1407, 0x11);
             }
         }
         func_8007B7FC(0x130, 0x81D0);
@@ -6381,7 +6381,7 @@ void func_800C3048(void) {
         break;
     case 12:
         n = 3;
-        SpawnNASById(0, 0, 0, 0x1406, 0x11);
+        CreateNAS(0, 0, 0, 0x1406, 0x11);
         break;
     case 13:
         n = 2;
@@ -6390,7 +6390,7 @@ void func_800C3048(void) {
     }
     if (n != 0) {
         for (i = 0; i < n; i++) {
-            SpawnNASById(0, 0, 0, 0x1403, 0x11);
+            CreateNAS(0, 0, 0, 0x1403, 0x11);
         }
     }
 }

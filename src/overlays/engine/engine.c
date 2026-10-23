@@ -638,7 +638,7 @@ NAS *func_8007A464(s32 arg0, s32 *arg1, s32 arg2) {
     NAS *nas;
     s32 *ext;
 
-    nas = SpawnNASById(arg1[0], arg1[1], arg1[2], 0x1605, 0x11);
+    nas = CreateNAS(arg1[0], arg1[1], arg1[2], 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
@@ -662,7 +662,7 @@ NAS *func_8007A524(s32 arg0, s32 *arg1, s32 arg2) {
     NAS *nas;
     s32 *ext;
 
-    nas = SpawnNASById(arg1[0], arg1[1], arg1[2], 0x1605, 0x11);
+    nas = CreateNAS(arg1[0], arg1[1], arg1[2], 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {

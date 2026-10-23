@@ -769,7 +769,7 @@ NAS *func_800B51A0(s32 a, s32 b, u16 c, s16 d)
   u16 mask;
   x = (b * D_80068BD4[(a - 0x400) & 0xFFF].unk2) >> 12;
   z = (b * D_80068BD4[a & 0xFFF].unk2) >> 12;
-  nas = SpawnNASById(x, D_8005A5D8, z, 0x1801, 0x11);
+  nas = CreateNAS(x, D_8005A5D8, z, 0x1801, 0x11);
   if (nas != 0)
   {
     eng = nas->Engine;
@@ -1123,7 +1123,7 @@ NAS *func_800B5D3C(s32 a, s32 b, u16 c, s16 d) {
     z = b * D_80068BD4[a & 0xFFF].unk2 >> 12;
     r = Random(0x80);
     y = D_8005A5D8 - 0x600;
-    nas = SpawnNASById(x, y - r, z, 0x1802, 0x11);
+    nas = CreateNAS(x, y - r, z, 0x1802, 0x11);
     if (nas != NULL) {
         eng = nas->Engine;
         if (eng != NULL) {
@@ -1174,7 +1174,7 @@ NAS *func_800B5D3C(s32 a, s32 b, u16 c, s16 d) {
                     mot->Xa = (mot->Xa - D_800BC01C * 0x200) & 0xFFF;
                 }
             }
-            shadow = AddEngine(nas, 2);
+            shadow = AddExtEngine(nas, 2);
             if (shadow != NULL) {
                 shadow->sub->unk6C = D_80052F5C;
                 shadow->sub->unk74 = 0x2001;

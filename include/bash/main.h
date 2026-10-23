@@ -1898,7 +1898,7 @@ EXTmotion *AddMotion(NAS *nas);
 
 void func_8001D3B0(EXTengine *eng, s32 n, subengine *sub);
 
-EXTengine *AddEngine(NAS *nas, s32 id);
+EXTengine *AddExtEngine(NAS *nas, s32 id);
 
 s32 func_80025BBC(EXTengine *eng);
 
@@ -1918,7 +1918,7 @@ void func_80015C1C(PointSprites *ps, MATRIX *m);
 
 void func_80016F34(u8 *arg0, u8 *arg1);
 
-void *AddExtension(void *owner, s32 size, s32 id);
+void *AddExt(void *owner, s32 size, s32 id);
 
 void func_80012E54(void);
 
@@ -1940,7 +1940,7 @@ void func_8002AABC(void);
 
 s32 Random(s32 n);
 void *FindExtension(NAS *nas, s32 id);
-NAS *SpawnNASById(s32 x, s32 y, s32 z, u16 id, u16 flags);
+NAS *CreateNAS(s32 x, s32 y, s32 z, u16 id, u16 flags);
 
 void StopSfx(_sfx_handler *voice);
 
@@ -2063,7 +2063,7 @@ void func_80016CA0(u8 *rec);
 
 void func_80013238(void);
 
-NAS *SpawnNASFromRecord(NASTrigger *trig);
+NAS *TriggerNas(NASTrigger *trig);
 
 void func_8001636C(u8 *arg0, s32 arg1);
 

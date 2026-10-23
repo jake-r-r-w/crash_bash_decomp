@@ -438,7 +438,7 @@ s32 func_800BB5A0(s32 x, s32 z, s32 range);
  * 40x40 grid of fire NASes (128 units a cell, centred on 0). */
 typedef struct { s32 x; s32 z; } CircleFireOfs;
 extern CircleFireOfs D_800BC1B0[8];
-NAS *SpawnNASById(s32 x, s32 y, s32 z, u16 id, u16 flags);
+NAS *CreateNAS(s32 x, s32 y, s32 z, u16 id, u16 flags);
 s32 KillNAS(NAS *nas);
 typedef struct { u8 pad0[0x2C]; s32 unk2C; } CircleFireFux;
 void PlotCircleFire(NAS *nas);

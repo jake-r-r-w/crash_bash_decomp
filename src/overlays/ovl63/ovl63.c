@@ -1873,7 +1873,7 @@ void func_800B8890(void) {
     g = G63B;
     if (g->unk34 == 0x18) {
         func_800B5F04();
-        SpawnNASById(0, 0xC4, 0, 0x170B, 0x11);
+        CreateNAS(0, 0xC4, 0, 0x170B, 0x11);
         PlaySfx(0x42E, NULL, NULL, 0x1000, 0x1E00, 0);
     }
     if (g->unk34 == 0x19) {
@@ -1890,7 +1890,7 @@ void func_800B8890(void) {
         printf("hero status %d\n", Heroes[i].hero_status);
         func_800B8F04(i);
         Heroes[i].hero_eng->unk5D = 1;
-        fux = AddExtension(Heroes[i].hero, 0x174, 0x10000000);
+        fux = AddExt(Heroes[i].hero, 0x174, 0x10000000);
         if (fux == NULL) {
             continue;
         }
@@ -1901,7 +1901,7 @@ void func_800B8890(void) {
         Heroes[i].hero_eng->unk5E = 1;
         sub = Heroes[i].hero_eng->sub;
         sub->flags |= 0x8000;
-        ai = AddExtension(Heroes[i].hero, 0x20, 0x20000000);
+        ai = AddExt(Heroes[i].hero, 0x20, 0x20000000);
         if (ai != NULL) {
             ai->unkC = 0;
             ai->unk10 = Heroes[i].hero_move->forward_angle;
@@ -1948,7 +1948,7 @@ void func_800B8890(void) {
         fux->unk160 = D_800C66E0;
         fux->unk164 = 0x100;
         D_800C692C = 0;
-        eng = AddEngine(Heroes[i].hero, 8);
+        eng = AddExtEngine(Heroes[i].hero, 8);
         if (eng != NULL) {
             fux->unk1C = eng;
             eng->sub->flags &= ~0x8000;
@@ -1961,9 +1961,9 @@ void func_800B8890(void) {
     }
     if (G63->unk34 == 0x1A) {
         if (G63->unk32 & 0x80) {
-            SpawnNASById(0, -0x400, 0, 0x170E, 0x11);
+            CreateNAS(0, -0x400, 0, 0x170E, 0x11);
         } else {
-            SpawnNASById(0, 0, 0, 0x1707, 0x11);
+            CreateNAS(0, 0, 0, 0x1707, 0x11);
         }
     }
 }
@@ -2340,14 +2340,14 @@ void func_800BA278(s32 player) {
                 if (--f->unk48 == -1) {
                     if (G63B->unk34 == 0x18 && (G63B->unk32 & 0x80) && G63B->unk5C[player] == 0) {
                         if (f->unk168 > 0) {
-                            SpawnNASById(pos.x, pos.y, pos.z, 0x1710, 0x11);
+                            CreateNAS(pos.x, pos.y, pos.z, 0x1710, 0x11);
                         } else {
-                            SpawnNASById(pos.x, pos.y, pos.z, 0x170A, 0x11);
+                            CreateNAS(pos.x, pos.y, pos.z, 0x170A, 0x11);
                         }
                     } else if (D_8005A648 != 0x19) {
-                        SpawnNASById(pos.x, pos.y, pos.z, 0x170A, 0x11);
+                        CreateNAS(pos.x, pos.y, pos.z, 0x170A, 0x11);
                     } else {
-                        SpawnNASById(pos.x, pos.y, pos.z, 0x1711, 0x11);
+                        CreateNAS(pos.x, pos.y, pos.z, 0x1711, 0x11);
                     }
                     spawned = 1;
                     f->unk48 = 4;
@@ -2396,14 +2396,14 @@ void func_800BA278(s32 player) {
                 if (--f->unk4C == -1) {
                     if (G63B->unk34 == 0x18 && (G63B->unk32 & 0x80) && G63B->unk5C[player] == 0) {
                         if (f->unk168 > 0) {
-                            SpawnNASById(pos.x, pos.y, pos.z, 0x170F, 0x11);
+                            CreateNAS(pos.x, pos.y, pos.z, 0x170F, 0x11);
                         } else {
-                            SpawnNASById(pos.x, pos.y, pos.z, 0x1709, 0x11);
+                            CreateNAS(pos.x, pos.y, pos.z, 0x1709, 0x11);
                         }
                     } else if (D_8005A648 != 0x19) {
-                        SpawnNASById(pos.x, pos.y, pos.z, 0x1709, 0x11);
+                        CreateNAS(pos.x, pos.y, pos.z, 0x1709, 0x11);
                     } else {
-                        SpawnNASById(pos.x, pos.y, pos.z, 0x1711, 0x11);
+                        CreateNAS(pos.x, pos.y, pos.z, 0x1711, 0x11);
                     }
                     f->unk4C = 6;
                 }
@@ -2424,9 +2424,9 @@ void func_800BA278(s32 player) {
             pos.z = e2->unk10.z + (D_80068BD4[e2->unk1E & 0xFFF].unk2 * 25 >> 9);
             pos.y = h2->hero_eng->unk10.y;
             if (D_8005A648 != 0x19) {
-                SpawnNASById(pos.x, pos.y, pos.z, 0x170A, 0x11);
+                CreateNAS(pos.x, pos.y, pos.z, 0x170A, 0x11);
             } else {
-                SpawnNASById(pos.x, pos.y, pos.z, 0x1711, 0x11);
+                CreateNAS(pos.x, pos.y, pos.z, 0x1711, 0x11);
             }
             f->unk4C = 3;
         }
@@ -2509,7 +2509,7 @@ static inline void Ovl63DiveSplash(SLONG_XYZ *pos, s32 kind) {
     NAS *fx;
     Ovl63RaceFux *x;
 
-    fx = SpawnNASById(pos->x, pos->y, pos->z, 0x1605, 0x11);
+    fx = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (fx != NULL) {
         x = FindExtension(fx, 0x10000000);
         if (x != NULL) {
@@ -2600,7 +2600,7 @@ void func_800BAFC8(s32 player) {
                     e = h2->hero_eng;
                     sp.z = e->unk10.z + (D_80068BD4[e->unk1E & 0xFFF].unk2 * 256 >> 12);
                     sp.y = h2->hero_eng->unk10.y;
-                    SpawnNASById(sp.x, sp.y, sp.z, 0x1709, 0x11);
+                    CreateNAS(sp.x, sp.y, sp.z, 0x1709, 0x11);
                     f->unk48 = 4;
                 }
             } else {
@@ -3006,7 +3006,7 @@ s32 func_800BC984(s32 player) {
                 fux->unk18 &= ~1;
                 return 1;
             } else if (t == 0x20) {
-                nas = SpawnNASById(eng->unk10.x, eng->unk10.y + 0x60, eng->unk10.z, 0x1708, 0x11);
+                nas = CreateNAS(eng->unk10.x, eng->unk10.y + 0x60, eng->unk10.z, 0x1708, 0x11);
                 if (nas != NULL) {
                     ext = FindExtension(nas, 0x10000000);
                     if (ext != NULL) {
@@ -3037,12 +3037,12 @@ s32 func_800BC984(s32 player) {
                     } while (0);
                 }
                 if (found == -1) {
-                    SpawnNASById(pos.x, 0, pos.z, 0x1703, 0x11);
+                    CreateNAS(pos.x, 0, pos.z, 0x1703, 0x11);
                     fux->unk18 &= ~2;
                     return 1;
                 }
             } else if (t == 4) {
-                nas = SpawnNASById(eng->unk10.x, -0x20, eng->unk10.z, 0x1704, 0x11);
+                nas = CreateNAS(eng->unk10.x, -0x20, eng->unk10.z, 0x1704, 0x11);
                 if (nas != NULL) {
                     ext = FindExtension(nas, 0x10000000);
                     if (ext != NULL) {
@@ -3615,7 +3615,7 @@ void InitRaceMissile(NAS *m) {
     RaceMissileExt *ext;
     EXTengine *e;
 
-    ext = AddExtension(m, 0x78, 0x10000000);
+    ext = AddExt(m, 0x78, 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->unk74 = 0x2011;
         m->Engine->sub->unk6C = D_80052F5C + 0x2028;
@@ -3635,7 +3635,7 @@ void InitRaceMissile(NAS *m) {
         ext->unk5C = NULL;
         ext->unk68 = 0;
         ext->unk58 = ext->unk34;
-        e = AddEngine(m, 2);
+        e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->unk5C = e;
             e->sub->unk6C = D_80052F5C;
@@ -3756,7 +3756,7 @@ void InitRacePickUp(NAS *m) {
     RacePickUpExt *ext;
     EXTengine *e;
 
-    ext = AddExtension(m, 0x50, 0x10000000);
+    ext = AddExt(m, 0x50, 0x10000000);
     if (ext != NULL) {
         func_80026B70((u8 **)&D_800C6920, (u8 *)m);
         m->Engine->sub->unk74 = 0x2006;
@@ -3772,7 +3772,7 @@ void InitRacePickUp(NAS *m) {
         ext->unk28 = 0;
         ext->unk2C = 0x100;
         ext->unk3C = NULL;
-        e = AddEngine(m, 2);
+        e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->unk3C = e;
             e->sub->unk6C = (u8 *)&D_80054F84 - 0x2028;
@@ -3895,7 +3895,7 @@ void PlotRacePickUp(NAS *m) {
                     break;
                 case 4:
                     fux->unk18 = 0x10;
-                    SpawnNASById(Heroes[found].hero_eng->unk10.x, Heroes[found].hero_eng->unk10.y,
+                    CreateNAS(Heroes[found].hero_eng->unk10.x, Heroes[found].hero_eng->unk10.y,
                                  Heroes[found].hero_eng->unk10.z, 0x1706, 0x11);
                     break;
                 }
@@ -4110,7 +4110,7 @@ heroes_done:
             }
             s = &D_800CA64C[slot];
             angle = s->angle;
-            spawned = SpawnNASById(dist * D_80068BD4[(angle - 0x400) & 0xFFF].unk2 >> 12, 0,
+            spawned = CreateNAS(dist * D_80068BD4[(angle - 0x400) & 0xFFF].unk2 >> 12, 0,
                                    dist * D_80068BD4[angle & 0xFFF].unk2 >> 12, 0x1702, 0x11);
             if (spawned != NULL) {
                 s->used = 1;
@@ -4303,7 +4303,7 @@ heroes_done:
             }
             D_800CA64C[slot].used = 1;
             angle = D_800CA64C[slot].angle;
-            spawned = SpawnNASById(dist * D_80068BD4[(angle - 0x400) & 0xFFF].unk2 >> 12, 0,
+            spawned = CreateNAS(dist * D_80068BD4[(angle - 0x400) & 0xFFF].unk2 >> 12, 0,
                                    dist * D_80068BD4[angle & 0xFFF].unk2 >> 12, 0x1702, 0x11);
             if (spawned != NULL) {
                 ext = FindExtension(spawned, 0x10000000);
@@ -4381,7 +4381,7 @@ void PlotTNTCrate(NAS *nas) {
                 }
                 pos = (s32 *)&nas->Engine->unk10;
                 p = D_80052F94;
-                spawned = SpawnNASById(pos[0], pos[1], pos[2], 0x1605, 0x11);
+                spawned = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
                 if (spawned != NULL) {
                     ext = FindExtension(spawned, 0x10000000);
                     if (ext != NULL) {
@@ -4425,7 +4425,7 @@ void InitDinoEgg(NAS *m) {
     EXTdinoegg *ext;
     EXTengine *e;
 
-    ext = AddExtension(m, 0x34, 0x10000000);
+    ext = AddExt(m, 0x34, 0x10000000);
     if (ext != NULL) {
         ext->anim = (EXTanimator *)func_80024E30(m, &D_800C6D14);
         m->Engine->unk5D = 0;
@@ -4436,7 +4436,7 @@ void InitDinoEgg(NAS *m) {
         ext->angcounter = 0;
         ext->yang = 0;
         ext->shadow = NULL;
-        e = AddEngine(m, 2);
+        e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->shadow = e;
             e->sub->unk6C = D_80052F5C;
@@ -4536,7 +4536,7 @@ static inline NAS *SpawnShieldFx(SLONG_XYZ *pos) {
     NAS *fx;
     Ovl63ShieldFxExt *fxe;
 
-    fx = SpawnNASById(pos->x, pos->y, pos->z, 0x1605, 0x11);
+    fx = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (fx != NULL) {
         fxe = FindExtension(fx, 0x10000000);
         if (fxe != NULL) {
@@ -4679,7 +4679,7 @@ loop2:
             }
             pos = h->hero_eng->unk10;
             tex = D_800546C4;
-            tag = SpawnNASById(pos.x, pp->y, pp->z, 0x1605, 0x11);
+            tag = CreateNAS(pos.x, pp->y, pp->z, 0x1605, 0x11);
             if (tag != NULL) {
                 ext = FindExtension(tag, 0x10000000);
                 if (ext != NULL) {
@@ -4722,7 +4722,7 @@ void InitRaceVolcano(NAS *nas) {
     RaceVolcanoExt *ext;
     EXTengine *eng;
 
-    v = AddExtension(nas, 0x15C, 0x10000000);
+    v = AddExt(nas, 0x15C, 0x10000000);
     i = 0;
     if (v != NULL) {
         ext = v;
@@ -4730,7 +4730,7 @@ void InitRaceVolcano(NAS *nas) {
         ext->unkC = 0;
     loop:
         if (i < 3) {
-            eng = AddEngine(nas, i + 2);
+            eng = AddExtEngine(nas, i + 2);
             if (eng != NULL) {
                 ext->eng[0] = eng;
                 eng->sub->flags &= ~0x8000;
@@ -4971,7 +4971,7 @@ void PlotGlob(NAS *m) {
                 pos.y = -0x29C;
                 pos.x = x;
                 pos.z = x;
-                tag = SpawnNASById(pp->x, pp->y, pp->z, 0x1605, 0x11);
+                tag = CreateNAS(pp->x, pp->y, pp->z, 0x1605, 0x11);
                 if (tag != NULL) {
                     text = FindExtension(tag, 0x10000000);
                     if (text != NULL) {
@@ -4983,7 +4983,7 @@ void PlotGlob(NAS *m) {
                     }
                 }
                 for (i = 0; i < 3; i++) {
-                    SpawnNASById(pos.x, pos.y, pos.z, 0x170D, 0x11);
+                    CreateNAS(pos.x, pos.y, pos.z, 0x170D, 0x11);
                 }
             }
             if (func_800250B0(m) != 0) {
@@ -5066,7 +5066,7 @@ void InitBarrelRoll(NAS *m) {
     EXTengine *e;
     s32 r;
 
-    ext = AddExtension(m, 0x80, 0x10000000);
+    ext = AddExt(m, 0x80, 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->unk6C = *(s32 *)D_80058AD0;
         m->Engine->sub->unk74 = 0x2037;
@@ -5087,7 +5087,7 @@ void InitBarrelRoll(NAS *m) {
         ext->pos.y = -0x100;
         m->Engine->unk10 = ext->pos;
         m->Engine->unk5E = 1;
-        e = AddEngine(m, 2);
+        e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->shadow = e;
             e->sub->unk6C = D_80052F5C;
@@ -5145,7 +5145,7 @@ void InitTrackGlob(NAS *m) {
     EXTengine *e;
     s32 angle;
 
-    ext = AddExtension(m, 0x8C, 0x10000000);
+    ext = AddExt(m, 0x8C, 0x10000000);
     if (ext != NULL) {
         ext->cursor = func_80024E30(m, &D_800C6EA4);
         func_80026B70(&D_800C66EC, (u8 *)m);
@@ -5168,7 +5168,7 @@ void InitTrackGlob(NAS *m) {
         m->Engine->unk1E = 0;
         ext->pos = m->Engine->unk10;
         m->Engine->unk5E = 1;
-        e = AddEngine(m, 2);
+        e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->eng = e;
             e->sub->unk6C = D_80052F5C;
@@ -5289,7 +5289,7 @@ void InitDac(NAS *m) {
     DacExt *ext;
     EXTengine *e;
 
-    ext = AddExtension(m, 0x28, 0x10000000);
+    ext = AddExt(m, 0x28, 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->unk6C = *(s32 *)D_80058AD0;
         m->Engine->unk5C = 1;
@@ -5311,7 +5311,7 @@ void InitDac(NAS *m) {
         ext->unk1C = -0x600;
         ext->unk24 = 0;
         ext->shadow = NULL;
-        e = AddEngine(m, 2);
+        e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->shadow = e;
             e->sub->unk6C = D_80052F5C;
@@ -5484,7 +5484,7 @@ s32 func_800C467C(Ovl63BounceObj *obj, Ovl63Bouncer *b) {
 void InitGlob(NAS *m) {
     EXTglob *ext;
 
-    ext = AddExtension(m, 0x1C, 0x10000000);
+    ext = AddExt(m, 0x1C, 0x10000000);
     if (ext != NULL) {
         ext->unk10 = func_80024E30(m, &D_800C6E80);
         m->Engine->sub->unk6C = *(s32 *)D_80058AD0;
@@ -5522,7 +5522,7 @@ void PlotInnerRipple(NAS *m) {
 void InitInnerRipple(NAS *m) {
     EXTinnerripple *ext;
 
-    ext = AddExtension(m, 0x1C, 0x10000000);
+    ext = AddExt(m, 0x1C, 0x10000000);
     if (ext != NULL) {
         ext->speed = 0x240;
         ext->max = 0x4000;
@@ -5564,7 +5564,7 @@ void PlotRippled(NAS *m) {
 void InitRippled(NAS *m) {
     EXTrippled *ext;
 
-    ext = AddExtension(m, 0x1C, 0x10000000);
+    ext = AddExt(m, 0x1C, 0x10000000);
     if (ext != NULL) {
         ext->speed = 0x480;
         ext->max = 0x4000;
@@ -5635,7 +5635,7 @@ void InitRaceTag(u8 *arg0) {
 void InitRaceShield(NAS *nas) {
     EXTraceshield *ext;
 
-    ext = AddExtension(nas, 0x20, 0x10000000);
+    ext = AddExt(nas, 0x20, 0x10000000);
     if (ext != NULL) {
         ext->unk10 = 0xE;
         ext->unkC = 0;
@@ -5650,7 +5650,7 @@ void PlotRaceFire(NAS *nas) {
 void InitRaceFire(NAS *nas) {
     EXTracefire *ext;
 
-    ext = AddExtension(nas, 0x20, 0x10000000);
+    ext = AddExt(nas, 0x20, 0x10000000);
     if (ext != NULL) {
         ext->unk10 = 0;
         ext->unk18 = 0;
@@ -5766,7 +5766,7 @@ void func_800C5154(s32 player) {
     s32 *ext;
 
     pos = hero->hero_eng->unk10;
-    nas = SpawnNASById(pos.x, pos.y - 0x80, pos.z, 0x1701, 0x11);
+    nas = CreateNAS(pos.x, pos.y - 0x80, pos.z, 0x1701, 0x11);
     if (nas != NULL) {
         nas->Engine->unk1E = hero->hero_eng->unk1E;
         ext = FindExtension(nas, 0x10000000);
@@ -5845,7 +5845,7 @@ s32 func_800C5470(s32 arg0) {
     fux = (Ovl63FuxCount *)hero->hero->FUX;
     if (fux != NULL && fux->unk3C > 0 &&
         (((Ovl63Pad *)D_80051338)[arg0].unk54 & 0x8000)) {
-        nas = SpawnNASById(hero->hero_eng->unk10.x, hero->hero_eng->unk10.y,
+        nas = CreateNAS(hero->hero_eng->unk10.x, hero->hero_eng->unk10.y,
                            hero->hero_eng->unk10.z, 0x1705, 0x11);
         if (nas != NULL) {
             ext = FindExtension(nas, 0x10000000);
@@ -6033,7 +6033,7 @@ void func_800C5B8C(void) {
 
 void func_800C5B94(void) {
     if (D_800C6BAC-- < 0) {
-        SpawnNASById(0, 0, 0, 0x170C, 0x11);
+        CreateNAS(0, 0, 0, 0x170C, 0x11);
         D_800C6BAC = 0xB4;
     }
 }

@@ -189,8 +189,8 @@ void func_800B3DD8(void) {
             Heroes[i].hero_move->velocity_calc = D_8005A5DC;
         }
         func_800BB2BC();
-        SpawnNASById(0, D_8005A5D8, 0, 0x1101, 0x11);
-        SpawnNASById(0, D_8005A5D8, 0, 0x1102, 0x11);
+        CreateNAS(0, D_8005A5D8, 0, 0x1101, 0x11);
+        CreateNAS(0, D_8005A5D8, 0, 0x1102, 0x11);
         func_800BAFB4();
         break;
     case 3:
@@ -1015,7 +1015,7 @@ void func_800B7358(void) {
         } else {
             c = (Ovl5dGridCell *)func_800B8040(D_800C3B86);
             if (c != NULL) {
-                SpawnNASById(c->x, D_8005A5D8, c->z, 0x20C, 0x11);
+                CreateNAS(c->x, D_8005A5D8, c->z, 0x20C, 0x11);
             }
             D_800C3B34 = Random(30) + 10;
         }
@@ -1030,7 +1030,7 @@ void func_800B7358(void) {
                 s = (c->x >> 8) + 10;
                 z = 9 - (c->z >> 8);
                 if (D_8009D90C[z * 20 + s].unk0 < 16) {
-                    SpawnNASById(c->x, -0x800, c->z, 0x20C, 0x11);
+                    CreateNAS(c->x, -0x800, c->z, 0x20C, 0x11);
                     D_800C3B38--;
                     D_800C3B3A = Random(4) + 2;
                 }
@@ -1062,19 +1062,19 @@ void func_800B7358(void) {
                 if (D_8009D90C[z * 20 + s].unk0 == 0) {
                     switch (pu) {
                     case 18:
-                        SpawnNASById(c->x, -0x800, c->z, 0x208, 0x11);
+                        CreateNAS(c->x, -0x800, c->z, 0x208, 0x11);
                         D_800C478A = (Random(10) + 10) * 30;
                         break;
                     case 19:
-                        SpawnNASById(c->x, -0x800, c->z, 0x209, 0x11);
+                        CreateNAS(c->x, -0x800, c->z, 0x209, 0x11);
                         D_800C478A = (Random(10) + 10) * 30;
                         break;
                     case 20:
-                        SpawnNASById(c->x, -0x800, c->z, 0x20A, 0x11);
+                        CreateNAS(c->x, -0x800, c->z, 0x20A, 0x11);
                         D_800C478A = (Random(10) + 10) * 30;
                         break;
                     case 21:
-                        SpawnNASById(c->x, -0x800, c->z, 0x20B, 0x11);
+                        CreateNAS(c->x, -0x800, c->z, 0x20B, 0x11);
                         D_800C478A = (Random(10) + 10) * 30;
                         break;
                     }
@@ -1116,7 +1116,7 @@ void func_800B7358(void) {
             D_800C46AC--;
         } else {
             if (!(OVLG->pause & 0x801)) {
-                SpawnNASById(0, 0, 0, 0x1107, 0x11);
+                CreateNAS(0, 0, 0, 0x1107, 0x11);
             }
             D_800C46AC = Random(90) + 30;
         }
@@ -1771,7 +1771,7 @@ void PlotTumbler(NAS *nas) {
         }
     spawn:
         func_800BB4AC((Ovl5dTumbler *)eng, move, hero);
-        child = SpawnNASById(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1108, 0x11);
+        child = CreateNAS(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1108, 0x11);
         if (child != NULL) {
             ceng = child->Engine;
             if (ceng != NULL) {
@@ -1878,7 +1878,7 @@ s32 func_800B95F0(s32 arg0)
             D_8009D754 = arg0;
             switch (h->hero_pu) {
             case 0x19:
-                n = SpawnNASById(h->hero_eng->unk10.x, h->hero_eng->unk10.y, h->hero_eng->unk10.z, 0x1103, 0x11);
+                n = CreateNAS(h->hero_eng->unk10.x, h->hero_eng->unk10.y, h->hero_eng->unk10.z, 0x1103, 0x11);
                 if (n != NULL) {
                     n->UserInfo.user1 = arg0;
                     h->hero_attack_timer = 0x14;
@@ -1887,7 +1887,7 @@ s32 func_800B95F0(s32 arg0)
                 }
                 break;
             case 0x1B:
-                n = SpawnNASById(h->hero_eng->unk10.x, h->hero_eng->unk10.y, h->hero_eng->unk10.z, 0x1104, 0x11);
+                n = CreateNAS(h->hero_eng->unk10.x, h->hero_eng->unk10.y, h->hero_eng->unk10.z, 0x1104, 0x11);
                 if (n != NULL) {
                     n->UserInfo.user1 = arg0;
                     h->hero_attack_timer = 0x14;
@@ -1896,7 +1896,7 @@ s32 func_800B95F0(s32 arg0)
                 }
                 break;
             case 0x1C:
-                n = SpawnNASById(h->hero_eng->unk10.x, h->hero_eng->unk10.y, h->hero_eng->unk10.z, 0x1105, 0x11);
+                n = CreateNAS(h->hero_eng->unk10.x, h->hero_eng->unk10.y, h->hero_eng->unk10.z, 0x1105, 0x11);
                 if (n != NULL) {
                     n->UserInfo.user1 = arg0;
                     h->hero_attack_timer = 0x28;
@@ -2247,7 +2247,7 @@ void InitBashShox(NAS *nas) {
     eng = nas->Engine;
     if (eng != NULL) {
         nas->UserInfo.user1 = D_8009D754;
-        x = AddExtension(nas, 0x68, 0x20000000);
+        x = AddExt(nas, 0x68, 0x20000000);
         if (x != NULL) {
             nas->FUX = (void *)x;
             func_8001D390(eng, 6);
@@ -2410,7 +2410,7 @@ void InitMissileExplode(NAS *nas) {
 void func_800BA8A4(s32 x, s32 y, s32 z, s32 arg3, s32 arg4) {
     NAS *n;
 
-    n = SpawnNASById(x, y - 0x80, z, 0x1106, 0x11);
+    n = CreateNAS(x, y - 0x80, z, 0x1106, 0x11);
     if (n != NULL) {
         n->UserInfo.user1 = arg3;
         if (arg4 != 0x19) {
@@ -2487,7 +2487,7 @@ void InitSnowGlint(NAS *nas) {
         eng->sub->unk6C = *(s32 *)D_80058AD0;
         func_8001D390(eng, 9);
         sub = nas->Engine->sub;
-        g = AddExtension(nas, 0x34, 0x20000002);
+        g = AddExt(nas, 0x34, 0x20000002);
         if (g != NULL && sub != NULL) {
             i = 0;
             do {

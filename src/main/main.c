@@ -9532,7 +9532,7 @@ static inline NAS *AllocNAS(void) {
     return free;
 }
 
-NAS *SpawnNASById(s32 x, s32 y, s32 z, u16 id, u16 flags) {
+NAS *CreateNAS(s32 x, s32 y, s32 z, u16 id, u16 flags) {
     NAS *nas;
     EXTengine *eng;
     s32 i;
@@ -9568,7 +9568,7 @@ found:
             nas->InitDelete = ASTTable[ast].Init;
             nas->Handler = ASTTable[ast].Plot;
             if (flags & 1) {
-                eng = AddEngine(nas, 1);
+                eng = AddExtEngine(nas, 1);
                 if (eng != NULL) {
                     eng->unk10.x = x;
                     eng->unk10.y = y;
@@ -9623,7 +9623,7 @@ found:
         nas->Type = ast;
         nas->InitDelete = ASTTable[ast].Init;
         nas->Handler = ASTTable[ast].Plot;
-        eng = AddEngine(nas, 1);
+        eng = AddExtEngine(nas, 1);
         if (eng == NULL) {
             return NULL;
         }
@@ -9635,7 +9635,7 @@ found:
     return nas;
 }
 
-NAS *SpawnNASFromRecord(NASTrigger *trig) {
+NAS *TriggerNas(NASTrigger *trig) {
     NAS *nas;
     EXTengine *eng;
     s32 i;
@@ -9669,7 +9669,7 @@ found:
             trig->Status |= 1;
             nas->InitDelete = ASTTable[i].Init;
             nas->Handler = ASTTable[i].Plot;
-            eng = AddEngine(nas, 1);
+            eng = AddExtEngine(nas, 1);
             if (eng != NULL) {
                 eng->unk10.x = trig->TrigXYZ.x;
                 eng->unk10.y = trig->TrigXYZ.y;
@@ -11344,7 +11344,7 @@ void func_8002617C(void) {
     }
     for (i = 0; i < D_8005AA4C; i++, trig++) {
         if (!(trig->Status & 0x8001)) {
-            SpawnNASFromRecord(trig);
+            TriggerNas(trig);
         }
     }
 }
@@ -11517,7 +11517,7 @@ Ext1000 *AddObject(NAS *nas) {
     return ext;
 }
 
-EXTengine *AddEngine(NAS *nas, s32 id) {
+EXTengine *AddExtEngine(NAS *nas, s32 id) {
     EXTengine *eng;
     EXTengine *prev;
     EXTengine *ext;
@@ -11555,7 +11555,7 @@ void func_80026858(void *owner, s32 size, s32 id, Words3 *tmpl) {
     }
 }
 
-void *AddExtension(void *owner, s32 size, s32 id) {
+void *AddExt(void *owner, s32 size, s32 id) {
     return AllocExtension(owner, size, id, NULL);
 }
 

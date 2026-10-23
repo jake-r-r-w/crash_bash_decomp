@@ -281,7 +281,7 @@ static inline NAS *Ovl5dSpawnPuff(SLONG_XYZ *v) {
     NAS *nas;
     s32 *ext;
 
-    nas = SpawnNASById(v->x, v->y, v->z, 0x1605, 0x11);
+    nas = CreateNAS(v->x, v->y, v->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {

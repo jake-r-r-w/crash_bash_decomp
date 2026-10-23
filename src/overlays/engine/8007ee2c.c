@@ -1912,7 +1912,7 @@ void func_80083708(void) {
         if (h->hero_name == 9) {
             h->hero_status = 0x1000;
         }
-        eng = AddEngine(h->hero, 1);
+        eng = AddExtEngine(h->hero, 1);
         if (eng == NULL) {
             goto next;
         }
@@ -1937,7 +1937,7 @@ void func_80083708(void) {
         } else {
             SetHeroAction((HeroInfo *)i, 0);
         }
-        e = AddEngine(h->hero, 2);
+        e = AddExtEngine(h->hero, 2);
         if (e != NULL) {
             h->hero_shadow = e;
             if (D_8009D6E8.unk18 != NULL) {
@@ -1951,7 +1951,7 @@ void func_80083708(void) {
                 e->sub->flags |= 0x40000000;
             }
         }
-        fx = AddEngine(h->hero, 3);
+        fx = AddExtEngine(h->hero, 3);
         if (fx != NULL) {
             h->hero_powerup = fx;
             fx->unk10 = eng->unk10;
@@ -1964,7 +1964,7 @@ void func_80083708(void) {
                 sub->flags &= mask;
             }
         }
-        fx = AddEngine(h->hero, 3);
+        fx = AddExtEngine(h->hero, 3);
         if (fx != NULL) {
             h->hero_fx = fx;
             fx->unk10 = eng->unk10;
@@ -1990,7 +1990,7 @@ void func_80083708(void) {
             }
         }
         if (h->hero_move == NULL) {
-            mv = AddExtension(h->hero, 0x54, 0x400000F0);
+            mv = AddExt(h->hero, 0x54, 0x400000F0);
             if (mv != NULL) {
                 h->hero_move = mv;
                 mv->forward_speed = 0;
@@ -2025,7 +2025,7 @@ void func_80083708(void) {
             }
         }
         if (h->hero_ai == NULL) {
-            ai = AddExtension(h->hero, 0x44, 0x400000F4);
+            ai = AddExt(h->hero, 0x44, 0x400000F4);
             if (ai != NULL) {
                 h->hero_ai = ai;
                 ai->AImode = 0;
@@ -5218,7 +5218,7 @@ void InitScriptFX(NAS *nas)
   fux = new_var->FUX;
   if (fux == 0)
   {
-    sd = AddExtension(new_var, 0x3BC, 0x10000000);
+    sd = AddExt(new_var, 0x3BC, 0x10000000);
     new_var->FUX = (EXT *) sd;
     if (sd == 0)
     {
@@ -6146,7 +6146,7 @@ void func_8008D5D4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     if (arg3 >= 0x64) {
         arg3 = 0x63;
     }
-    nas = SpawnNASById(arg0, arg1, arg2, 0x1409, 0x11);
+    nas = CreateNAS(arg0, arg1, arg2, 0x1409, 0x11);
     if (nas != NULL) {
         eng = nas->Engine;
         nas->UserInfo.user1 = arg4;
@@ -6254,7 +6254,7 @@ void InitHealth(NAS *nas) {
                 mot->Ydir = 0xFF;
                 mot->Yvel = 0;
             }
-            e2 = AddEngine(nas, 1);
+            e2 = AddExtEngine(nas, 1);
             if (e2 != NULL) {
                 e2->sub->unk6C = D_80052F5C;
                 e2->sub->unk74 = 0x2001;
@@ -6377,7 +6377,7 @@ void func_8008DDC0(NAS *nas) {
         mot->Ydir = 0xFF;
         mot->Yvel = 0;
     }
-    eng = AddEngine(nas, 1);
+    eng = AddExtEngine(nas, 1);
     if (eng != NULL) {
         eng->sub->unk6C = D_80052F5C;
         eng->sub->unk74 = 0x2001;

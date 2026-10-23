@@ -19,7 +19,7 @@ void func_800B6EFC(s32 arg0) {
     if (func_80015780(h->hero_eng, h->hero_sub, 1, &sp18) == NULL) {
         *(SLONG_XYZ *)&sp18 = h->hero_eng->unk10;
     }
-    nas = SpawnNASById(sp18.vx, D_8005A5D8 - 0x80, sp18.vz, 0x1A03, 0x11);
+    nas = CreateNAS(sp18.vx, D_8005A5D8 - 0x80, sp18.vz, 0x1A03, 0x11);
     sbase = D_800B9F4C;
     slot = sbase + arg0;
     if (slot->f8 == 1) {

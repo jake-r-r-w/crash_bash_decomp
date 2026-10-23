@@ -106,7 +106,7 @@ void func_800B361C(void) {
     D_800C4398.unk3C = 0;
     func_800BB070(D_800C417A);
     if (D_800C417A != 1) {
-        D_800C4084 = SpawnNASById(0, -0x200, 0xA00, 0x1C02, 0x11);
+        D_800C4084 = CreateNAS(0, -0x200, 0xA00, 0x1C02, 0x11);
         func_800C349C();
     } else {
         func_800B6F4C();
@@ -1214,7 +1214,7 @@ void InitN2OBall(NAS *nas) {
         eng->sub->unk6C = D_80054504;
         eng->sub->unk74 = 0x2009;
         func_80026B70((u8 **)&D_8005AA38, (u8 *)nas);
-        e1 = AddEngine(nas, 1);
+        e1 = AddExtEngine(nas, 1);
         if (e1 != NULL) {
             sub = e1->sub;
             sub->unk6C = D_80054504;
@@ -1708,8 +1708,8 @@ void func_800B6F4C(void) {
         sub2->unk04 = 0;
     }
     D_8009D6E2 = 0xFF;
-    SpawnNASById(4, D_8005A5D8 - 0x20, 0, 0x1B05, 0x11);
-    SpawnNASById(5, D_8005A5D8 - 0x20, 0, 0x1B05, 0x11);
+    CreateNAS(4, D_8005A5D8 - 0x20, 0, 0x1B05, 0x11);
+    CreateNAS(5, D_8005A5D8 - 0x20, 0, 0x1B05, 0x11);
     D_800AD12C = 8;
 }
 
@@ -2414,14 +2414,14 @@ void func_800B8968(s32 a) {
         if (n != NULL) {
             return;
         }
-        n = SpawnNASById(x, y, z, 0x1B03, 0x11);
+        n = CreateNAS(x, y, z, 0x1B03, 0x11);
     } else {
         n = s->nas;
         if (n != NULL) {
             n->UserInfo.flags = 1;
             return;
         }
-        n = SpawnNASById(x, y, z, 0x1B02, 0x11);
+        n = CreateNAS(x, y, z, 0x1B02, 0x11);
     }
     if (n != NULL) {
         if (n->Failure == 0) {
@@ -3616,7 +3616,7 @@ void InitN2OmissileExplode(NAS *nas) {
 void func_800BB3A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     NAS *nas;
 
-    nas = SpawnNASById(arg0, arg1 - 0x80, arg2, 0x1B04, 0x11);
+    nas = CreateNAS(arg0, arg1 - 0x80, arg2, 0x1B04, 0x11);
     if (nas != NULL) {
         nas->UserInfo.user1 = arg3;
         PlaySfx(D_800C39DC[Random(4)], NULL, &nas->Engine->unk10, 0x1000, 0x1E00, 0);
@@ -3692,7 +3692,7 @@ void InitN2Omissile(NAS *nas) {
 
 void func_800BB5F0(void) {
     volatile s32 x, y, z;
-    SpawnNASById(x, y, z, 0x1B01, 0x11);
+    CreateNAS(x, y, z, 0x1B01, 0x11);
 }
 
 u8 *func_800BB624(void) {
@@ -3712,7 +3712,7 @@ u8 *func_800BB624(void) {
     if (var_v0 >= 9) {
         return NULL;
     }
-    temp_v0 = SpawnNASById(0x1000, 0x1000, 0x1000, 0x1B01, 0x11);
+    temp_v0 = CreateNAS(0x1000, 0x1000, 0x1000, 0x1B01, 0x11);
     if ((temp_v0 != NULL) && ((*(s32*)((u8*)(temp_v0) + 84)) != 0)) {
         temp_v0_2 = (*(s32*)((u8*)(temp_v0) + 88));
         if (temp_v0_2 != NULL) {

@@ -671,7 +671,7 @@ static inline void Ovl5fSpawnBit1605(SLONG_XYZ *pos, s32 kind) {
     Ovl5fExt1605 *ext;
 
     p = D_8005365C;
-    nas = SpawnNASById(pos->x, pos->y, pos->z, 0x1605, 0x11);
+    nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
@@ -694,7 +694,7 @@ static inline NAS *Ovl5fSpawnBit1605Nas(SLONG_XYZ *pos, s32 kind) {
     Ovl5fExt1605 *ext;
 
     p = D_8005365C;
-    nas = SpawnNASById(pos->x, pos->y, pos->z, 0x1605, 0x11);
+    nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
@@ -720,7 +720,7 @@ static inline NAS *Ovl5fPeriscopePuff(SLONG_XYZ *pos, s32 kind) {
     Ovl5fExt1605 *ext;
 
     p = *(u8 **)D_80058AD0;
-    nas = SpawnNASById(pos->x, pos->y, pos->z, 0x1605, 0x11);
+    nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {

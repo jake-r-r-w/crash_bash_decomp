@@ -750,7 +750,7 @@ void func_800B6E20(void) {
         }
         e = (s32 *)((u8 *)p + *p);
         if ((u32)(e[3] - 0xC8) < 5) {
-            nas = SpawnNASById(0, 0, 0, 0x1626, 0x11);
+            nas = CreateNAS(0, 0, 0, 0x1626, 0x11);
             if (nas != NULL) {
                 ext = FindExtension(nas, 0x10000000);
                 if (ext != NULL) {
@@ -844,7 +844,7 @@ void PlotPathEffect(NAS *nas) {
             func_800250B0(nas);
         }
         if ((u32)(ext->kind - 3) < 2) {
-            ext->fx = SpawnNASById(nas->Engine->unk10.x, nas->Engine->unk10.y, nas->Engine->unk10.z, 0x1627, 0x11);
+            ext->fx = CreateNAS(nas->Engine->unk10.x, nas->Engine->unk10.y, nas->Engine->unk10.z, 0x1627, 0x11);
             ext->state = 5;
             nas->Engine->flags &= 0xFFFF7FFF;
         }
@@ -956,7 +956,7 @@ void PlotPathEffect(NAS *nas) {
 }
 
 void InitPathEffect(NAS *nas) {
-    ScriptExt40 *ext = AddExtension(nas, 0x40, 0x10000000);
+    ScriptExt40 *ext = AddExt(nas, 0x40, 0x10000000);
 
     if (ext != NULL) {
         ext->cursor = func_80024E30(nas, &D_800BCCE8);
@@ -1130,7 +1130,7 @@ void func_800B7E14(s32 *arg0, s32 arg1) {
     u8 *p;
 
     p = D_800558EC;
-    nas = SpawnNASById(arg0[0], arg0[1], arg0[2], 0x1605, 0x11);
+    nas = CreateNAS(arg0[0], arg0[1], arg0[2], 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
@@ -1608,7 +1608,7 @@ void func_800B8CA0(void) {
             PlaySfx(0x360, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         x = Random(10000) - 5000;
-        SpawnNASById(x, Random(10000) - 5000, 0xE10, 0x1628, 0x11);
+        CreateNAS(x, Random(10000) - 5000, 0xE10, 0x1628, 0x11);
         D_800BD390 = Random(10) + 5;
     }
 }
@@ -1670,7 +1670,7 @@ void func_800B8F50(void) {
                 PlaySfx(0x360, NULL, NULL, 0x1000, 0x1E00, 0);
             }
             x = -Random(0x2000) + Random(0x2000);
-            SpawnNASById(x, Random(0x400) - 0xC00, 0x1000, 0x1628, 0x11);
+            CreateNAS(x, Random(0x400) - 0xC00, 0x1000, 0x1628, 0x11);
             D_800BD390 = Random(0x14) + 0xA;
         }
         break;
@@ -2304,7 +2304,7 @@ void func_800BA9C8(s32 arg0, Ovl6aSpawnEnt *arg1) {
     s32 t;
     u8 *p;
 
-    nas = SpawnNASById(arg1->x, D_8005A5D8, arg1->z, 0x1F01, 0x11);
+    nas = CreateNAS(arg1->x, D_8005A5D8, arg1->z, 0x1F01, 0x11);
     if (nas != NULL) {
         D_800BD584[arg0] = nas;
         nas->UserInfo.user1 = arg0 + 1;

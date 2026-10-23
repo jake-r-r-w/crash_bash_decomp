@@ -1296,7 +1296,7 @@ void func_800B62D8(s32 arg0, u16 arg1)
               Ovl65Puff *p_;
               SLONG_XYZ *v_;
               v_ = &(&hb[n])->hero_eng->unk10;
-              nas_ = SpawnNASById(v_->x, v_->y, v_->z, 0x1605, 0x11);
+              nas_ = CreateNAS(v_->x, v_->y, v_->z, 0x1605, 0x11);
               if (nas_ != 0)
               {
                 p_ = FindExtension(nas_, 0x10000000);
@@ -1370,7 +1370,7 @@ void func_800B62D8(s32 arg0, u16 arg1)
             Ovl65Puff *p_;
             SLONG_XYZ *v_;
             v_ = &hb->hero_eng->unk10;
-            new_var = SpawnNASById(v_->x, v_->y, v_->z, 0x1605, 0x11);
+            new_var = CreateNAS(v_->x, v_->y, v_->z, 0x1605, 0x11);
             nas_ = new_var;
             if (nas_ != 0)
             {
@@ -1393,7 +1393,7 @@ void func_800B62D8(s32 arg0, u16 arg1)
             Ovl65Puff *p_;
             SLONG_XYZ *v_;
             v_ = &(&Heroes[itb])->hero_eng->unk10;
-            nas_ = SpawnNASById(v_->x, v_->y, v_->z, 0x1605, 0x11);
+            nas_ = CreateNAS(v_->x, v_->y, v_->z, 0x1605, 0x11);
             if (nas_ != 0)
             {
               p_ = FindExtension(nas_, 0x10000000);
@@ -1424,7 +1424,7 @@ void func_800B62D8(s32 arg0, u16 arg1)
             Ovl65Puff *p_;
             SLONG_XYZ *v_;
             v_ = &ha->hero_eng->unk10;
-            nas_ = SpawnNASById(v_->x, v_->y, v_->z, 0x1605, 0x11);
+            nas_ = CreateNAS(v_->x, v_->y, v_->z, 0x1605, 0x11);
             if (nas_ != 0)
             {
               p_ = FindExtension(nas_, 0x10000000);
@@ -1447,7 +1447,7 @@ void func_800B62D8(s32 arg0, u16 arg1)
             Ovl65Puff *p_;
             SLONG_XYZ *v_;
             v_ = &(&Heroes[ita])->hero_eng->unk10;
-            nas_ = SpawnNASById(v_->x, v_->y, v_->z, 0x1605, 0x11);
+            nas_ = CreateNAS(v_->x, v_->y, v_->z, 0x1605, 0x11);
             if (nas_ != 0)
             {
               p_ = FindExtension(nas_, 0x10000000);
@@ -1835,19 +1835,19 @@ void func_800B7664(void) {
     D_800BDB9C = 0;
     D_800BDBA0 = 0;
     D_800BDBAC = 0;
-    o = SpawnNASById(0, 0, 0, 0x1902, 0x11);
+    o = CreateNAS(0, 0, 0, 0x1902, 0x11);
     if (o != NULL) {
         o->UserInfo.user1 = 0;
     }
-    o = SpawnNASById(0, 0, 0, 0x1902, 0x11);
+    o = CreateNAS(0, 0, 0, 0x1902, 0x11);
     if (o != NULL) {
         o->UserInfo.user1 = 1;
     }
-    o = SpawnNASById(0, 0, 0, 0x1902, 0x11);
+    o = CreateNAS(0, 0, 0, 0x1902, 0x11);
     if (o != NULL) {
         o->UserInfo.user1 = 2;
     }
-    o = SpawnNASById(0, 0, 0, 0x1902, 0x11);
+    o = CreateNAS(0, 0, 0, 0x1902, 0x11);
     if (o != NULL) {
         o->UserInfo.user1 = 3;
     }
@@ -1859,14 +1859,14 @@ void func_800B7664(void) {
             break;
         }
         h = &Heroes[i];
-        c = AddExtension(h->hero, 0x44, 0x20000000);
+        c = AddExt(h->hero, 0x44, 0x20000000);
         if (c != NULL) {
             c->unk28 = -1;
             c->fn = func_800BD1FC;
             c->unk30 = 8;
             c->state = 0;
         }
-        x = AddExtension(h->hero, 0x20, 0x10000000);
+        x = AddExt(h->hero, 0x20, 0x10000000);
         if (x != NULL) {
             acc = 6;
             mv = h->hero_move;
@@ -1897,13 +1897,13 @@ void func_800B7664(void) {
         }
         i++;
     }
-    nas = SpawnNASById(0x400, -0x40, 0, 0x1901, 0x11);
+    nas = CreateNAS(0x400, -0x40, 0, 0x1901, 0x11);
     D_800BD9FC = (s32)nas;
     e = FindExtension(nas, 0x10000000);
     if (e != NULL) {
         e->unkC = 7;
     }
-    nas = SpawnNASById(-0x400, -0x40, 0, 0x1901, 0x11);
+    nas = CreateNAS(-0x400, -0x40, 0, 0x1901, 0x11);
     D_800BDA00 = nas;
     e = FindExtension(nas, 0x10000000);
     if (e != NULL) {
@@ -1913,7 +1913,7 @@ void func_800B7664(void) {
     if (((Ovl65Game *)D_8005A614)->flags & 0x80) {
         D_800BDA00->Engine->sub->unk74 = 0x2002;
     }
-    o = SpawnNASById(0, -0x40, 0x200, 0x1901, 0x11);
+    o = CreateNAS(0, -0x40, 0x200, 0x1901, 0x11);
     D_800BDA04 = o;
     o->Engine->sub->unk74 = 0x2003;
     if (((Ovl65Game *)D_8005A614)->flags & 0x80) {
@@ -2782,7 +2782,7 @@ void func_800BA724(s32 id) {
     NAS *nas;
 
     if (Heroes[id].hero_anim->Aindex == 2) {
-        nas = SpawnNASById(Heroes[id].hero_eng->unk10.x, Heroes[id].hero_eng->unk10.y, Heroes[id].hero_eng->unk10.z, 0x1903, 0x11);
+        nas = CreateNAS(Heroes[id].hero_eng->unk10.x, Heroes[id].hero_eng->unk10.y, Heroes[id].hero_eng->unk10.z, 0x1903, 0x11);
         if (nas != NULL) {
             nas->UserInfo.user1 = (s32)&Heroes[id];
         }
@@ -3054,7 +3054,7 @@ void InitDinoGem(NAS *m) {
     Ovl65DinoGem *ext;
     EXTengine *e;
 
-    ext = AddExtension(m, 0xE8, 0x10000000);
+    ext = AddExt(m, 0xE8, 0x10000000);
     if (ext != NULL) {
         do {
             m->Engine->sub->unk74 = 0x2001;
@@ -3074,7 +3074,7 @@ void InitDinoGem(NAS *m) {
         ext->unkD4 = 0;
         func_80026A04((u8 *)m);
         m->Engine->sub->flags &= 0xFFFF7FFF;
-        e = AddEngine(m, 2);
+        e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->unk84 = e;
             e->sub->unk6C = D_80055534;
@@ -3131,7 +3131,7 @@ void PlotDinoGem(NAS *m) {
             SLONG_XYZ *v_;
 
             v_ = &pos;
-            nas_ = SpawnNASById(v_->x, v_->y, v_->z, 0x1605, 0x11);
+            nas_ = CreateNAS(v_->x, v_->y, v_->z, 0x1605, 0x11);
             if (nas_ != NULL) {
                 p_ = FindExtension(nas_, 0x10000000);
                 if (p_ != NULL) {

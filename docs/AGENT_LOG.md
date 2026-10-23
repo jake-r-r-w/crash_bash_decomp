@@ -112,15 +112,15 @@ and current tools).
 
 ## Open leads
 
-- **Apply the demo discs' symbols** (PROTOTYPES.md): Jampack's 23
-  `PANEL.CPP` names (engine unit `8007ac20`) with signatures and locals, 44
-  globals and new enums (`cheatflags`, `levnumbers`, `worldnumbers`,
-  `IconParts`); Euro Demo 65's 163 matched labels (`main.exe`, the engine,
-  6 slot overlays; some replace the repo's own names, e.g. `SpawnNASById`
-  is `CreateNAS`), 184 data labels and the link groups. Full reports:
-  `protos/<disc>/scan.md`. The user is collecting more discs first, then
-  deciding how to apply all of them. Wait until no other agent is working
-  on the files concerned: it renames symbols across `src/` and the headers.
+- **Apply the rest of the demo discs' symbols** (PROTOTYPES.md; `main.exe`'s
+  are done: 82 names). Left: Jampack's 23 `PANEL.CPP` names (engine unit
+  `8007ac20`) with signatures and locals, 44 globals and new enums
+  (`cheatflags`, `levnumbers`, `worldnumbers`, `IconParts`); Euro Demo 65's
+  engine (27) and slot overlay (12) matches (`proto_apply.py --module
+  engine`; the slot ones need overlay support in it), parameter types from
+  the C++ names, 184 data labels and the link groups. Full reports:
+  `protos/<disc>/scan.md`. Wait until no other agent is working on the files
+  concerned: a rename rewrites `src/` and the headers.
 - **Tune the permuter from its record.** Runs are logged since 2026-10-20
   (`decomp.py permstats`, `swarm.mjs stats`). Two ideas to try once there
   are a few dozen runs, compared on that record:
@@ -514,6 +514,11 @@ Newest first, a few lines each. Details are in the commits.
   PlaySfx as a `goto` into case 8's (not the source; leads list why). No
   `break`/`goto` mix gives the target's three tail survivors. Found the
   unit is probably `PAUSE.CPP`; `cc1plus` compiles the C identically.
+
+- **2026-10-23 (4 originals for our own names):** `SpawnNASById` ->
+  `CreateNAS`, `SpawnNASFromRecord` -> `TriggerNas`, `AddEngine` ->
+  `AddExtEngine`, `AddExtension` -> `AddExt` (Euro Demo 65's symbols),
+  across 31 code files and the docs.
 
 - **2026-10-23 (5 more `main.exe` names):** the 0.75..0.9 matches checked
   by hand (link order between confirmed renames, same gap to the next one)

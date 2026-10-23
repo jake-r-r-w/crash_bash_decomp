@@ -142,7 +142,7 @@ static inline void Ovl60_SpawnPuff(s32 *pos, s32 mode, u8 *p) {
     NAS *obj;
     s32 *ext;
 
-    obj = SpawnNASById(pos[0], pos[1], pos[2], 0x1605, 0x11);
+    obj = CreateNAS(pos[0], pos[1], pos[2], 0x1605, 0x11);
     if (obj != NULL) {
         ext = FindExtension(obj, 0x10000000);
         if (ext != NULL) {

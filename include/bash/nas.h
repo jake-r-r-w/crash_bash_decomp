@@ -153,7 +153,7 @@ typedef struct MapTriggerInfo {
 } MapTriggerInfo;
 BASH_SIZE_CHECK(MapTriggerInfo, 0x14);
 
-/* A map trigger that SpawnNASFromRecord builds a NAS from (NAS.trigger). */
+/* A map trigger that TriggerNas builds a NAS from (NAS.trigger). */
 struct NASTrigger {
     /* 0x00 */ SLONG_XYZ TrigXYZ;       /* copied to the engine (xyzrf +0x10) */
     /* 0x0C */ trig_path TrigPath;
@@ -166,7 +166,7 @@ struct NASTrigger {
 BASH_SIZE_CHECK(NASTrigger, 0x1C);
 
 /* An engine object instance: an entry of the AST table ({id, Init, Plot}),
- * spawned by SpawnNASFromRecord from a pool of copies of a template. */
+ * spawned by TriggerNas from a pool of copies of a template. */
 struct NAStype {
     /* 0x00 */ s32 NASid;               /* 1 when spawned; 0x100 once it has an engine */
     /* 0x04 */ EXTnode Extend;          /* Child: the first extension */
@@ -179,7 +179,7 @@ struct NAStype {
     /* 0x48 */ void (*InitDelete)(NAS *); /* AST Init: called once when spawned */
     /* 0x4C */ void (*Handler)(NAS *);  /* AST Plot */
     /* 0x50 */ NASTrigger *trigger;     /* the trigger it was built from, or NULL */
-    /* 0x54 */ EXTengine *Engine;       /* first engine extension (AddEngine) */
+    /* 0x54 */ EXTengine *Engine;       /* first engine extension (AddExtEngine) */
     /* 0x58 */ EXT *FUX;
     /* 0x5C */ NasUser UserInfo;
     /* 0x68 */ u16 Class;
@@ -212,7 +212,7 @@ typedef struct {
 } FlagRecord;
 BASH_SIZE_CHECK(FlagRecord, 0x10);
 
-/* Engine extension, made by AddEngine(nas, id) from a template: EXTid is
+/* Engine extension, made by AddExtEngine(nas, id) from a template: EXTid is
  * id | 0x100. The first one is NAS.Engine; later ones are linked through
  * Engine. 0x0C..0x60 is the prototype's `xyzrf` (an anonymous struct whose
  * layout is not in the fragment), so its fields keep code-derived names. */
@@ -443,14 +443,14 @@ typedef u16 hero_seq;
  * Functions take the player index (the leak's `unsigned int player`). */
 typedef struct HeroInfo {
     /* 0x00 */ NAS *hero;               /* from the pool at D_8005AA1C, AST index 3 */
-    /* 0x04 */ EXTengine *hero_eng;     /* AddEngine(nas, 1) */
+    /* 0x04 */ EXTengine *hero_eng;     /* AddExtEngine(nas, 1) */
     /* 0x08 */ subengine *hero_sub;     /* hero_eng->sub */
-    /* 0x0C */ EXTengine *hero_shadow;  /* AddEngine(nas, 2) */
-    /* 0x10 */ EXTengine *hero_powerup; /* AddEngine(nas, 3) */
-    /* 0x14 */ EXTengine *hero_fx;      /* AddEngine(nas, 3) */
-    /* 0x18 */ EXTheromove *hero_move;  /* AddExtension(nas, 0x54, 0x400000F0) */
+    /* 0x0C */ EXTengine *hero_shadow;  /* AddExtEngine(nas, 2) */
+    /* 0x10 */ EXTengine *hero_powerup; /* AddExtEngine(nas, 3) */
+    /* 0x14 */ EXTengine *hero_fx;      /* AddExtEngine(nas, 3) */
+    /* 0x18 */ EXTheromove *hero_move;  /* AddExt(nas, 0x54, 0x400000F0) */
     /* 0x1C */ EXTanimator *hero_anim;  /* func_800265DC(nas) */
-    /* 0x20 */ EXTbotai *hero_ai;       /* AddExtension(nas, 0x44, 0x400000F4) */
+    /* 0x20 */ EXTbotai *hero_ai;       /* AddExt(nas, 0x44, 0x400000F4) */
     /* 0x24 */ EXTobject *hero_object;
     /* 0x28 */ NAS *hero_harm_Nas;
     /* 0x2C */ u16 hero_mode;           /* SetHeroAction (HeroMode_nums) */

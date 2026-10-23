@@ -131,7 +131,7 @@ u8 *func_800BBA14(s32 a, s32 b, s32 c, s32 d, s32 e) {
     u16 k;
     s32 t;
 
-    nas = SpawnNASById(a, b, c, 0x202, 0x11);
+    nas = CreateNAS(a, b, c, 0x202, 0x11);
     k = d;
     if (nas != NULL) {
         eng = nas->Engine;
@@ -635,7 +635,7 @@ void func_800BE9D0(NAS *arg0) {
         obj->countdown--;
         return;
     }
-    SpawnNASById(eng->unk10.x, eng->unk10.y - 0x100, eng->unk10.z, 0x207, 0x11);
+    CreateNAS(eng->unk10.x, eng->unk10.y - 0x100, eng->unk10.z, 0x207, 0x11);
     KillNAS(arg0);
 }
 
@@ -1024,7 +1024,7 @@ void func_800BFAC0(EXTengine *eng) {
     PlaySfx(((HitSfxTable *)D_8009E424)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
     func_8007A524(2, (s32 *)((u8 *)eng + 0x10), (s32)D_80052F94);
     if ((D_8009D750(eng) ^ 1) != 0) {
-        SpawnNASById(((s32 *)eng)[4], ((s32 *)eng)[5], ((s32 *)eng)[6], 0x206, 0x11);
+        CreateNAS(((s32 *)eng)[4], ((s32 *)eng)[5], ((s32 *)eng)[6], 0x206, 0x11);
     }
 }
 

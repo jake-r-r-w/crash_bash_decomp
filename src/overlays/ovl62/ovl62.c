@@ -539,7 +539,7 @@ s32 func_800B44B4(NAS *nas, s32 dist) {
             }
             move = h->hero_move;
             if (move != NULL) {
-                obj = SpawnNASById(h->hero_eng->unk10.x, h->hero_eng->unk10.y, h->hero_eng->unk10.z, 0x1611, 0x11);
+                obj = CreateNAS(h->hero_eng->unk10.x, h->hero_eng->unk10.y, h->hero_eng->unk10.z, 0x1611, 0x11);
                 if (obj != NULL) {
                     b = FindExtension(obj, 0x10000000);
                     if (b != NULL) {
@@ -593,7 +593,7 @@ void InitPolarBomb(NAS *m) {
     PolarBombExt *ext;
     EXTengine *e;
 
-    ext = AddExtension(m, 0x84, 0x10000000);
+    ext = AddExt(m, 0x84, 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->unk74 = 0x201A;
         m->Engine->sub->unk6C = D_800546C4;
@@ -606,7 +606,7 @@ void InitPolarBomb(NAS *m) {
         ext->unk10 = 0;
         ext->unkC = 0;
         m->FUX = NULL;
-        e = AddEngine(m, 2);
+        e = AddExtEngine(m, 2);
         if (e != NULL) {
             e->sub->unk6C = D_800546C4;
             e->sub->unk74 = 0x202F;
@@ -648,7 +648,7 @@ void PlotPolarBomb(NAS *m) {
         }
         if (func_8008C5C4(ext->from, ext->to, &ext->unk30, &m->Engine->unk10.x) != 0) {
             PlaySfx((CheckMelted(&m->Engine->unk10, 0) ^ 1) != 0 ? 0x494 : 0x48F, NULL, NULL, 0x1000, 0x1E00, 0);
-            nas = SpawnNASById(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1605, 0x11);
+            nas = CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1605, 0x11);
             if (nas != NULL) {
                 nas->Engine->flags |= 0x200000;
                 fx = (ExtSpawn5910 *)nas->FUX;
@@ -665,7 +665,7 @@ void PlotPolarBomb(NAS *m) {
             break;
         }
         if (ext->unk10-- < 0) {
-            smoke = SpawnNASById(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1612, 0x11);
+            smoke = CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1612, 0x11);
             if (smoke != NULL) {
                 smoke->Engine->unk2C.x = 0x5DC;
                 smoke->Engine->unk2C.y = 0x5DC;
@@ -700,7 +700,7 @@ void PlotPolarBomb(NAS *m) {
             ((EXTengine *)m->FUX)->sub->flags &= ~0x8000;
         }
         if (ext->unk10 == 0) {
-            SpawnNASById(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1614, 0x11);
+            CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1614, 0x11);
             func_800B44B4(m, 0x35EE4);
         }
         ext->unk10++;
@@ -975,7 +975,7 @@ void func_800B5910(void) {
             pos.z = hero->hero_eng->unk10.z;
             tex = D_800546C4;
             p = &pos;
-            nas = SpawnNASById(pos.x, p->y, p->z, 0x1605, 0x11);
+            nas = CreateNAS(pos.x, p->y, p->z, 0x1605, 0x11);
             n = 5;
             if (nas != NULL) {
                 ext = FindExtension(nas, 0x10000000);
@@ -3196,7 +3196,7 @@ loop:
             h->hero_ai->AItimer1 = 0;
             fux = (Ovl62PolarFux *)h->hero->FUX;
             if (fux == NULL) {
-                fux = AddExtension(h->hero, 0x60, 0x10000000);
+                fux = AddExt(h->hero, 0x60, 0x10000000);
                 if (fux != NULL) {
                     h->hero->FUX = (EXT *)fux;
                     fux->unk24 = 0;
@@ -3214,7 +3214,7 @@ loop:
                     sub->flags |= 0x2000000;
                     h->hero_eng->sub->unk68 = 0;
                 }
-                ai = AddExtension(h->hero, 0xB8, 0x20000000);
+                ai = AddExt(h->hero, 0xB8, 0x20000000);
             } else {
                 fux->unk24 = 0;
                 fux->unk38 = 0;
@@ -3248,7 +3248,7 @@ loop:
                 ai->unkA8 = 0;
                 ai->unkAC = 0;
                 ai->unkB0 = NULL;
-                ai->unkB0 = AddEngine(h->hero, 0x14);
+                ai->unkB0 = AddExtEngine(h->hero, 0x14);
                 ai->unkB4 = 0;
             }
             D_800D5FEC[i] = 0;
@@ -3260,36 +3260,36 @@ loop:
         goto loop;
     }
     if (D_8005A648 != 0x16) {
-        nas = SpawnNASById(0, 0, 0, 0x1606, 0x11);
+        nas = CreateNAS(0, 0, 0, 0x1606, 0x11);
         if (nas != NULL) {
             nas->UserInfo.user1 = 0;
         }
-        nas = SpawnNASById(0, 0, 0, 0x1606, 0x11);
+        nas = CreateNAS(0, 0, 0, 0x1606, 0x11);
         if (nas != NULL) {
             nas->UserInfo.user1 = 1;
         }
-        nas = SpawnNASById(0, 0, 0, 0x1606, 0x11);
+        nas = CreateNAS(0, 0, 0, 0x1606, 0x11);
         if (nas != NULL) {
             nas->UserInfo.user1 = 2;
         }
-        nas = SpawnNASById(0, 0, 0, 0x1606, 0x11);
+        nas = CreateNAS(0, 0, 0, 0x1606, 0x11);
         if (nas != NULL) {
             nas->UserInfo.user1 = 3;
         }
     }
     w = (Ovl62PolarView *)D_8005A614;
     if (w->mode == 0x15) {
-        SpawnNASById(0, 0, 0, 0x160E, 0x11);
+        CreateNAS(0, 0, 0, 0x160E, 0x11);
     }
     if (w->mode == 0x16) {
         func_8001682C((s32 *)D_80054A0C);
         func_8007E9FC(0x82, 0x3031);
         func_8007C6EC();
-        SpawnNASById(0, 0, 0, 0x1625, 0x11);
+        CreateNAS(0, 0, 0, 0x1625, 0x11);
     }
     if (w->mode == 0x12) {
         if (!(w->flags & 0x80)) {
-            SpawnNASById(0, 0, 0, 0x160C, 0x11);
+            CreateNAS(0, 0, 0, 0x160C, 0x11);
         } else {
             PlaySfx(0x47E, NULL, NULL, 0x1000, 0x1E00, 0);
         }
@@ -3903,7 +3903,7 @@ void InitTransmuterBeam(NAS *m) {
     NAS *n;
     s32 i;
 
-    ext = AddExtension(m, 0x1E0, 0x40000000);
+    ext = AddExt(m, 0x1E0, 0x40000000);
     if (ext == NULL) {
         return;
     }
@@ -3938,7 +3938,7 @@ void InitTransmuterBeam(NAS *m) {
     ext->unk94 = Random(0x3C);
     m->UserInfo.user1 = 0;
     ext->unk1DC = 0x1E0;
-    ext->bit1 = n = SpawnNASById(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1605, 0x11);
+    ext->bit1 = n = CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1605, 0x11);
     if (n != NULL) {
         bx = FindExtension(n, 0x10000000);
         if (bx != NULL) {
@@ -3966,7 +3966,7 @@ void InitTransmuterBeam(NAS *m) {
             ext->bit1->InitDelete(ext->bit1);
         }
     }
-    ext->bit2 = n = SpawnNASById(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1605, 0x11);
+    ext->bit2 = n = CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1605, 0x11);
     if (n != NULL) {
         n->Engine->flags |= 0x200000;
         bx = FindExtension(ext->bit2, 0x10000000);
@@ -3999,7 +3999,7 @@ void InitTransmuterBeam(NAS *m) {
     m->Engine->unk5D = 2;
     m->Engine->flags |= 0x200000;
     ext->eng = NULL;
-    e = AddEngine(m, 2);
+    e = AddExtEngine(m, 2);
     if (e != NULL) {
         ext->eng = e;
         e->sub->unk6C = D_800546C4;
@@ -4018,7 +4018,7 @@ void InitTransmuterBeam(NAS *m) {
         e->flags |= 0x200000;
     }
     for (i = 0; i < 4; i++) {
-        e = AddEngine(m, i + 3);
+        e = AddExtEngine(m, i + 3);
         if (e != NULL) {
             ext->engs[i] = e;
             e->sub->unk6C = D_800546C4;
@@ -4368,7 +4368,7 @@ s32 func_800C0888(SLONG_XYZ *pos, s32 player) {
                             mv->z_vel = -(sp * t[-ang & 0xFFF].unk2 >> 13);
                             sp *= Heroes[player].hero_move->mass;
                             if ((D_8009D6F4[Heroes[player].hero_name * 3] * 0xC000 >> 8) < sp) {
-                                nas = SpawnNASById(o->unk4, o->unk8 - 0x80, o->unkC, 0x1604, 0x11);
+                                nas = CreateNAS(o->unk4, o->unk8 - 0x80, o->unkC, 0x1604, 0x11);
                                 if (nas != NULL) {
                                     m = (EXTmotion *)nas->FUX;
                                     if (m != NULL) {
@@ -4395,7 +4395,7 @@ s32 func_800C0888(SLONG_XYZ *pos, s32 player) {
                                         nas->Engine->sub->unk68 = 0x200;
                                     }
                                 }
-                                nas = SpawnNASById(o->unk4, o->unk8 - 0x80, o->unkC, 0x1604, 0x11);
+                                nas = CreateNAS(o->unk4, o->unk8 - 0x80, o->unkC, 0x1604, 0x11);
                                 if (nas != NULL) {
                                     m2 = (EXTmotion *)nas->FUX;
                                     if (m2 != NULL) {
@@ -4412,7 +4412,7 @@ s32 func_800C0888(SLONG_XYZ *pos, s32 player) {
                                         nas->Engine->sub->unk68 = 0x200;
                                     }
                                 }
-                                nas = SpawnNASById(o->unk4, o->unk8 - 0x80, o->unkC, 0x1604, 0x11);
+                                nas = CreateNAS(o->unk4, o->unk8 - 0x80, o->unkC, 0x1604, 0x11);
                                 if (nas != NULL) {
                                     m2 = (EXTmotion *)nas->FUX;
                                     if (m2 != NULL) {
@@ -4554,7 +4554,7 @@ void InitUkaPolarMask(NAS *m) {
     s32 r;
     s32 i;
 
-    ext = AddExtension(m, 0x1E0, 0x40000000);
+    ext = AddExt(m, 0x1E0, 0x40000000);
     if (ext == NULL) {
         return;
     }
@@ -4601,11 +4601,11 @@ void InitUkaPolarMask(NAS *m) {
         ext->seg[i].t = 0;
         ext->seg[i].angle = 0;
     }
-    ext->mask = n = SpawnNASById(0, 0, 0, 0x160B, 0x11);
+    ext->mask = n = CreateNAS(0, 0, 0, 0x160B, 0x11);
     if (n != NULL) {
         func_80026A04((u8 *)n);
     }
-    ext->bit = n = SpawnNASById(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1605, 0x11);
+    ext->bit = n = CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1605, 0x11);
     if (n != NULL) {
         n->Engine->flags |= 0x200000;
         bx = FindExtension(ext->bit, 0x10000000);
@@ -4618,7 +4618,7 @@ void InitUkaPolarMask(NAS *m) {
             ext->unkAC = 0;
         }
     }
-    e = AddEngine(m, 2);
+    e = AddExtEngine(m, 2);
     if (e != NULL) {
         ext->eng = e;
         e->sub->unk6C = D_800546C4;
@@ -4779,7 +4779,7 @@ void InitPolarWalrus(NAS *m) {
 
     D_800D5494 = (Ovl62Prox *)m;
     m->Engine->flags |= 0x200000;
-    ext = AddExtension(m, 0x94, 0x10000000);
+    ext = AddExt(m, 0x94, 0x10000000);
     if (ext != NULL) {
         ext->cursor = func_80024E30(m, &D_800D5630);
         m->FUX = (EXT *)ext;
@@ -4813,7 +4813,7 @@ void InitPolarWalrus(NAS *m) {
         ext->unk90 = 0;
         m->UserInfo.user1 = 0;
     }
-    e2 = AddExtension(m, 0x54, 0x20000000);
+    e2 = AddExt(m, 0x54, 0x20000000);
     if (e2 != NULL) {
         e2->unk4E = 0x400;
         e2->unk20 = 0;
@@ -4852,7 +4852,7 @@ void PlotPolarWalrus(NAS *m) {
             if (gx != NULL && D_800D4DEC == 0) {
                 v = gx[5];
                 if (v == 1 && gx[4] == -1) {
-                    ext->unk84 = SpawnNASById(0, 0, 0, 0x1610, 0x11);
+                    ext->unk84 = CreateNAS(0, 0, 0, 0x1610, 0x11);
                     ext->state = 2;
                     ext->timer = 0x5A;
                     D_800D544C = v;
@@ -5006,7 +5006,7 @@ void PlotPolarWalrus(NAS *m) {
 void InitWalrusFish(NAS *m) {
     WalrusFishExt *ext;
 
-    ext = AddExtension(m, 0x88, 0x10000000);
+    ext = AddExt(m, 0x88, 0x10000000);
     if (ext != NULL) {
         ext->cursor = func_80024E30(m, &D_800D5690);
         m->Engine->flags |= 0x200000;
@@ -5136,7 +5136,7 @@ void InitSimpleExplosion(NAS *m) {
     subengine *sub;
     s32 i;
 
-    ext = AddExtension(m, 0x108, 0x10000000);
+    ext = AddExt(m, 0x108, 0x10000000);
     if (ext != NULL) {
         sub = m->Engine->sub;
         func_80018F3C(m->Engine, 0x10);
@@ -5205,7 +5205,7 @@ void PlotBrioPack(NAS *m) {
             return;
         }
         if (owner->anim->frame == 0xC) {
-            nas = SpawnNASById(owner->engine->unk10.x,
+            nas = CreateNAS(owner->engine->unk10.x,
                                owner->engine->unk10.y - ((owner->engine->unk2C.x * 0x1A4) >> 12),
                                owner->engine->unk10.z + 0x40, 0x1613, 0x11);
             if (nas != NULL) {
@@ -5232,7 +5232,7 @@ void InitPackEffect(NAS *m) {
     subengine *sub;
     s32 i;
 
-    ext = AddExtension(m, 0x108, 0x10000000);
+    ext = AddExt(m, 0x108, 0x10000000);
     if (ext != NULL) {
         sub = m->Engine->sub;
         func_80018F3C(m->Engine, 0xC);
@@ -5260,7 +5260,7 @@ void InitPackEffect(NAS *m) {
 }
 
 void InitPolarBoss(NAS *nas) {
-    PolarBossExt *ext = AddExtension(nas, 0x94, 0x10000000);
+    PolarBossExt *ext = AddExt(nas, 0x94, 0x10000000);
     NAS *s;
     Ext20 *e;
 
@@ -5271,8 +5271,8 @@ void InitPolarBoss(NAS *nas) {
         ext->cursor = func_80024E30(nas, &D_800D5A34);
         GotoLinkAnim((EXTanimator *)ext->cursor, 0);
         func_800250B0(nas);
-        ext->unk84 = SpawnNASById(nas->Engine->unk10.x, nas->Engine->unk10.y, nas->Engine->unk10.z, 0x1622, 0x11);
-        s = SpawnNASById(nas->Engine->unk10.x, 0, nas->Engine->unk10.z, 0x1620, 0x11);
+        ext->unk84 = CreateNAS(nas->Engine->unk10.x, nas->Engine->unk10.y, nas->Engine->unk10.z, 0x1622, 0x11);
+        s = CreateNAS(nas->Engine->unk10.x, 0, nas->Engine->unk10.z, 0x1620, 0x11);
         if (s != NULL) {
             ext->unk88 = s;
             func_80026A04((u8 *)s);
@@ -5502,7 +5502,7 @@ void PlotPolarBoss(NAS *m) {
                         dz = -0x700;
                     }
                 }
-                nas = SpawnNASById(m->Engine->unk10.x + dx, m->Engine->unk10.y - 0x5DC,
+                nas = CreateNAS(m->Engine->unk10.x + dx, m->Engine->unk10.y - 0x5DC,
                                    m->Engine->unk10.z + dz, 0x161B, 0x11);
                 if (nas != NULL) {
                     se = FindExtension(nas, 0x10000000);
@@ -5578,7 +5578,7 @@ void PlotPolarBoss(NAS *m) {
                 GotoLinkAnim(pe->anim, 1);
             }
             GotoLinkAnim((EXTanimator *)ext->cursor, 7);
-            nas = SpawnNASById(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1621, 0x11);
+            nas = CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1621, 0x11);
             if (nas != NULL) {
                 be = FindExtension(nas, 0x10000000);
                 if (be != NULL) {
@@ -5620,7 +5620,7 @@ void PlotPolarBoss(NAS *m) {
                 pos.z = 0;
                 p = &pos;
                 tex = D_800546C4;
-                nas = SpawnNASById(p->x, p->y, p->z, 0x1605, 0x11);
+                nas = CreateNAS(p->x, p->y, p->z, 0x1605, 0x11);
                 if (nas != NULL) {
                     ExtSpawn5910 *sp = FindExtension(nas, 0x10000000);
                     if (sp != NULL) {
@@ -5636,7 +5636,7 @@ void PlotPolarBoss(NAS *m) {
                         nas->InitDelete(nas);
                     }
                 }
-                SpawnNASById(0, -0x600, 0, 0x1623, 0x11);
+                CreateNAS(0, -0x600, 0, 0x1623, 0x11);
             }
         }
         break;
@@ -5776,7 +5776,7 @@ void InitBearminator(NAS *m) {
     s32 r;
     s16 v;
 
-    ext = AddExtension(m, 0xB8, 0x10000000);
+    ext = AddExt(m, 0xB8, 0x10000000);
     if (ext != NULL) {
         r = Random(2);
         if (r == 0) {
@@ -5786,10 +5786,10 @@ void InitBearminator(NAS *m) {
             PlaySfx(0x22C, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         PlaySfx(0x22E, NULL, NULL, 0x1000, 0x1E00, 0);
-        e2 = AddExtension(m, 0x54, 0x20000000);
+        e2 = AddExt(m, 0x54, 0x20000000);
         if (e2 != NULL) {
             m->Engine->sub->unk6C = D_80054A0C;
-            n = SpawnNASById(m->Engine->unk10.x, 0, m->Engine->unk10.z, 0x1620, 0x11);
+            n = CreateNAS(m->Engine->unk10.x, 0, m->Engine->unk10.z, 0x1620, 0x11);
             if (n != NULL) {
                 ext->unk98 = n;
                 func_80026A04((u8 *)n);
@@ -5828,7 +5828,7 @@ void InitBearminator(NAS *m) {
             ext->unkA8 = 0;
             ext->unkB0 = 0;
             m->FUX = NULL;
-            e = AddEngine(m, 2);
+            e = AddExtEngine(m, 2);
             if (e != NULL) {
                 e->sub->unk6C = D_80054A0C;
                 e->sub->unk74 = 0x4000;
@@ -5849,7 +5849,7 @@ void InitBearminator(NAS *m) {
                 e->unk5E = 1;
             }
             ext->unk9C = NULL;
-            f = AddEngine(m, 3);
+            f = AddExtEngine(m, 3);
             if (f != NULL) {
                 f->sub->unk6C = D_80054A0C;
                 f->sub->unk74 = 0x2006;
@@ -5933,7 +5933,7 @@ void PlotBearminator(NAS *m) {
         break;
     case 9:
         if (--ext->unkB0 == -1) {
-            SpawnNASById(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1612, 0x11);
+            CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1612, 0x11);
             ext->unkB0 = 1;
         }
         m->Engine->sub->unk74 = 0x4100;
@@ -6039,7 +6039,7 @@ void PlotBearminator(NAS *m) {
         ext->unk9C->unk1E = m->Engine->unk1E;
         if (ext->unk1C-- < 0) {
             ext->unkC = 2;
-            n = SpawnNASById(m->Engine->unk10.x, m->Engine->unk10.y - 0x19A, m->Engine->unk10.z, 0x161C, 0x11);
+            n = CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y - 0x19A, m->Engine->unk10.z, 0x161C, 0x11);
             if (n != NULL) {
                 n->Engine->unk1E = m->Engine->unk1E;
                 ext->unk9C->sub->flags &= ~0x8000;
@@ -6332,7 +6332,7 @@ void PlotBigMissile(NAS *m) {
     }
     m->Engine->unk10.y = 0x20;
     pos = &m->Engine->unk10;
-    nas = SpawnNASById(pos->x, pos->y, pos->z, 0x1605, 0x11);
+    nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (nas != NULL) {
         sext = FindExtension(nas, 0x10000000);
         if (sext != NULL) {
@@ -6424,7 +6424,7 @@ void InitSniper(NAS *m) {
     EXTengine *e;
     EXTengine *f;
 
-    ext = AddExtension(m, 0x9C, 0x10000000);
+    ext = AddExt(m, 0x9C, 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->unk74 = 0x2006;
         m->Engine->sub->unk6C = D_80054A0C;
@@ -6453,7 +6453,7 @@ void InitSniper(NAS *m) {
         m->Engine->flags |= 0x200000;
         ext->unk10 = NULL;
         ext->unk20 = NULL;
-        e = AddEngine(m, 2);
+        e = AddExtEngine(m, 2);
         if (e != NULL) {
             ext->unk10 = e;
             e->sub->unk6C = *(void **)D_80058AD0;
@@ -6468,7 +6468,7 @@ void InitSniper(NAS *m) {
             e->unk10.z = 0;
             e->sub->unk68 = -0x600;
         }
-        e = AddEngine(m, 3);
+        e = AddExtEngine(m, 3);
         if (e != NULL) {
             ext->unk20 = e;
             e->sub->unk6C = *(void **)D_80058AD0;
@@ -6483,7 +6483,7 @@ void InitSniper(NAS *m) {
             e->unk10.z = 0;
             e->sub->unk68 = -0x3F4;
         }
-        f = AddEngine(m, 4);
+        f = AddExtEngine(m, 4);
         if (f != NULL) {
             ext->unk94 = f;
             f->sub->unk6C = D_80054A0C;
@@ -6653,7 +6653,7 @@ void PlotSniper(NAS *m) {
                 if (ext->unk84 == 0 && (SNIPER_PAD[ext->unk88].unk54 & 0x8000)) {
                     ext->unk84 = 1;
                     ext->unk18 = 0xD2;
-                    nas = SpawnNASById(Heroes[ext->unk88].hero_eng->unk10.x,
+                    nas = CreateNAS(Heroes[ext->unk88].hero_eng->unk10.x,
                                        Heroes[ext->unk88].hero_eng->unk10.y,
                                        Heroes[ext->unk88].hero_eng->unk10.z, 0x1624, 0x11);
                     if (nas != NULL) {
@@ -6964,7 +6964,7 @@ s32 XZBoxToSphere(EXTengine *a, EXTengine *b, s32 c) {
 void InitSniperMissile(NAS *m) {
     SniperMissileExt *ext;
 
-    ext = AddExtension(m, 0x38, 0x10000000);
+    ext = AddExt(m, 0x38, 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->unk74 = 0x2006;
         m->Engine->sub->unk6C = D_80054A0C;
@@ -6983,7 +6983,7 @@ void InitSniperMissile(NAS *m) {
 void InitBigMissile(NAS *m) {
     BigMissileExt *ext;
 
-    ext = AddExtension(m, 0x7C, 0x10000000);
+    ext = AddExt(m, 0x7C, 0x10000000);
     if (ext != NULL) {
         m->Engine->unk5D = 2;
         m->Engine->unk5C = 1;
@@ -7024,7 +7024,7 @@ s32 func_800C9B5C(void) {
 void InitPolarMissile(NAS *m) {
     PolarMissileExt *ext;
 
-    ext = AddExtension(m, 0x70, 0x10000000);
+    ext = AddExt(m, 0x70, 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->unk74 = 0x2006;
         m->Engine->sub->unk6C = D_80054A0C;
@@ -7161,7 +7161,7 @@ void PlotBearBoss(NAS *m) {
 void InitBearBoss(NAS *m) {
     Ext10000000 *ext;
 
-    ext = AddExtension(m, 0x10, 0x10000000);
+    ext = AddExt(m, 0x10, 0x10000000);
     if (ext != NULL) {
         m->Engine->unk5D = 0;
         m->Engine->sub->unk68 = 0x300;
@@ -7269,7 +7269,7 @@ void PlotSimpleExplosion(NAS *m) {
 void InitSmokeTrail(NAS *m) {
     ExtSmokeTrail *ext;
 
-    ext = AddExtension(m, 0x30, 0x10000000);
+    ext = AddExt(m, 0x30, 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->unk6C = D_800546C4;
         m->Engine->sub->unk74 = 0x2020;
@@ -7302,7 +7302,7 @@ void PlotBearDeath(NAS *m) {
             func_80026980(m);
         }
         if (--ext->unk84 < 0) {
-            SpawnNASById(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1612, 0x11);
+            CreateNAS(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1612, 0x11);
             ext->unk84 = Random(7) + 1;
         }
         if (func_8008C5C4(&ext->from.x, &ext->to.x, &ext->unk2C, &m->Engine->unk10.x) != 0) {
@@ -7314,7 +7314,7 @@ void PlotBearDeath(NAS *m) {
 void InitBearDeath(NAS *m) {
     BearDeathExt *ext;
 
-    ext = AddExtension(m, 0x88, 0x10000000);
+    ext = AddExt(m, 0x88, 0x10000000);
     if (ext != NULL) {
         func_80024E30(m, &D_800D56D4);
         m->Engine->sub->unk6C = *(s32 *)D_80058AD0;
@@ -7454,7 +7454,7 @@ void InitGravityObject(NAS *m) {
     GravityMotion *g;
     s32 t;
 
-    g = AddExtension(m, 0x34, 0x10000000);
+    g = AddExt(m, 0x34, 0x10000000);
     if (g != NULL) {
         m->Engine->sub->unk74 = 0x200C;
         m->Engine->sub->unk6C = D_800546C4;
@@ -7475,7 +7475,7 @@ void InitGravityObject(NAS *m) {
 void InitWeightDeath(NAS *m) {
     WeightDeathExt *ext;
 
-    ext = AddExtension(m, 0x28, 0x10000000);
+    ext = AddExt(m, 0x28, 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->unk6C = D_800546C4;
         m->Engine->sub->unk74 = 0x2003;
@@ -7922,7 +7922,7 @@ void InitBombGFX(NAS *m) {
     BombGFXExt *ext;
     EXTengine *e;
 
-    ext = AddExtension(m, 0x1C, 0x10000000);
+    ext = AddExt(m, 0x1C, 0x10000000);
     if (ext != NULL) {
         m->Engine->sub->unk74 = 0x2018;
         m->Engine->sub->unk6C = D_800546C4;
@@ -7930,7 +7930,7 @@ void InitBombGFX(NAS *m) {
         m->Engine->unk5C = 1;
         func_80026B70((u8 **)&D_800D5294, (u8 *)m);
         m->FUX = NULL;
-        e = AddEngine(m, 2);
+        e = AddExtEngine(m, 2);
         if (e != NULL) {
             e->sub->unk6C = D_800546C4;
             e->sub->unk74 = 0x202F;
@@ -7967,7 +7967,7 @@ void PlotBombMaker(NAS *m) {
         case 2:
             x = Random(0x800) - Random(0x800);
             z = Random(0x800);
-            SpawnNASById(x, 0, z - Random(0x800), 0x160F, 0x11);
+            CreateNAS(x, 0, z - Random(0x800), 0x160F, 0x11);
             PlaySfx(0x3FA, NULL, NULL, 0x1000, 0x1E00, 0);
             ext->unkC = 0;
             break;
@@ -7978,7 +7978,7 @@ void PlotBombMaker(NAS *m) {
 void InitBombMaker(NAS *m) {
     BombMakerExt *ext;
 
-    ext = AddExtension(m, 0x1C, 0x10000000);
+    ext = AddExt(m, 0x1C, 0x10000000);
     if (ext != NULL) {
         ext->timer = 0xB4;
         ext->unkC = 0;
@@ -8874,7 +8874,7 @@ void func_800CDE8C(s32 player) {
             if (D_8005A648 != 0x16) {
                 eng = Heroes[player].hero_eng;
                 ext[0x98 / 4] = 0;
-                nas = SpawnNASById(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1605, 0x11);
+                nas = CreateNAS(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1605, 0x11);
                 if (nas != NULL) {
                     nas->Engine->flags |= 0x200000;
                     fux = (s32 *)nas->FUX;
@@ -9037,7 +9037,7 @@ void func_800CE664(s32 player) {
             }
             if (ext[0x98 / 4]-- < 0) {
                 ext[0x98 / 4] = Random(8) + 0x18;
-                nas = SpawnNASById(x + 0x60, y - 0x180, z, 0x1612, 0x11);
+                nas = CreateNAS(x + 0x60, y - 0x180, z, 0x1612, 0x11);
                 if (nas != NULL) {
                     p = FindExtension(nas, 0x10000000);
                     if (p != NULL) {
@@ -9050,7 +9050,7 @@ void func_800CE664(s32 player) {
                         p[0x18 / 4] |= 1;
                     }
                 }
-                nas = SpawnNASById(x - 0x60, y - 0x180, z, 0x1612, 0x11);
+                nas = CreateNAS(x - 0x60, y - 0x180, z, 0x1612, 0x11);
                 if (nas != NULL) {
                     p = FindExtension(nas, 0x10000000);
                     if (p != NULL) {
@@ -9286,7 +9286,7 @@ void func_800CF6F8(s32 player) {
             z = eng->unk10.z;
             if (ext[0x98 / 4]-- < 0) {
                 ext[0x98 / 4] = Random(0x14) + 1;
-                nas = SpawnNASById(x + 0x60, y - 0x180, z, 0x1612, 0x11);
+                nas = CreateNAS(x + 0x60, y - 0x180, z, 0x1612, 0x11);
                 if (nas != NULL) {
                     p = FindExtension(nas, 0x10000000);
                     if (p != NULL) {
@@ -9299,7 +9299,7 @@ void func_800CF6F8(s32 player) {
                         p[0x18 / 4] |= 1;
                     }
                 }
-                nas = SpawnNASById(x - 0x60, y - 0x180, z, 0x1612, 0x11);
+                nas = CreateNAS(x - 0x60, y - 0x180, z, 0x1612, 0x11);
                 if (nas != NULL) {
                     p = FindExtension(nas, 0x10000000);
                     if (p != NULL) {
@@ -9828,7 +9828,7 @@ void func_800D0A6C(s32 player) {
                 {
                     EXTengine *eng = hero->hero_eng;
                     hero->hero_frozen = 2;
-                    nas = SpawnNASById(eng->unk10.x, eng->unk10.y - ((eng->unk2C.x * 0x1A4) >> 12), eng->unk10.z, 0x1616, 0x11);
+                    nas = CreateNAS(eng->unk10.x, eng->unk10.y - ((eng->unk2C.x * 0x1A4) >> 12), eng->unk10.z, 0x1616, 0x11);
                 }
                 ext->unkA4 = nas;
                 if (nas != NULL) {
@@ -9847,7 +9847,7 @@ void func_800D0A6C(s32 player) {
             if (hero->hero_anim->Aindex == 7) {
                 {
                     EXTengine *eng = hero->hero_eng;
-                    nas = SpawnNASById(eng->unk10.x, eng->unk10.y - ((eng->unk2C.x * 0x1A4) >> 12), eng->unk10.z, 0x1615, 0x11);
+                    nas = CreateNAS(eng->unk10.x, eng->unk10.y - ((eng->unk2C.x * 0x1A4) >> 12), eng->unk10.z, 0x1615, 0x11);
                 }
                 ext->unkA4 = nas;
                 if (nas != NULL) {
@@ -9870,7 +9870,7 @@ void func_800D0A6C(s32 player) {
             if (hero->hero_anim->Aindex == 7) {
                 {
                     EXTengine *eng = hero->hero_eng;
-                    nas = SpawnNASById(eng->unk10.x, eng->unk10.y - ((eng->unk2C.x * 0xB4) >> 12), eng->unk10.z, 0x1615, 0x11);
+                    nas = CreateNAS(eng->unk10.x, eng->unk10.y - ((eng->unk2C.x * 0xB4) >> 12), eng->unk10.z, 0x1615, 0x11);
                 }
                 ext->unkA4 = nas;
                 if (nas != NULL) {
@@ -9956,7 +9956,7 @@ void func_800D1188(s32 player) {
     dist = 0;
     pos = h->hero_eng->unk10;
     pos.y -= 0x100;
-    nas = SpawnNASById(pos.x, pos.y, pos.z, 0x160D, 0x11);
+    nas = CreateNAS(pos.x, pos.y, pos.z, 0x160D, 0x11);
     if (nas != NULL) {
     t = FindExtension(nas, 0x10000000);
     if (t != NULL) {
@@ -10341,7 +10341,7 @@ void func_800D2248(s32 arg0) {
         h->hero_eng->sub->unk6C = D_800546C4;
         h->hero_eng->sub->unk74 = 0x202D;
         eng = h->hero_eng;
-        SpawnNASById(eng->unk10.x + 0x80, eng->unk10.y - 0x200, eng->unk10.z, 0x1613, 0x11);
+        CreateNAS(eng->unk10.x + 0x80, eng->unk10.y - 0x200, eng->unk10.z, 0x1613, 0x11);
     }
 }
 
@@ -10373,18 +10373,18 @@ void func_800D2334(s32 player) {
         z = eng->unk10.z;
         ext[0x9C / 4] = t;
         if (t == 4) {
-            SpawnNASById(x - 0x80, y - 0x100, z, 0x1613, 0x11);
-            SpawnNASById(x, y - 0x100, z, 0x1614, 0x11);
+            CreateNAS(x - 0x80, y - 0x100, z, 0x1613, 0x11);
+            CreateNAS(x, y - 0x100, z, 0x1614, 0x11);
         }
         if (ext[0x9C / 4] == 2) {
-            SpawnNASById(x + 0x80, y - 0x180, z, 0x1613, 0x11);
+            CreateNAS(x + 0x80, y - 0x180, z, 0x1613, 0x11);
         }
         if (ext[0x9C / 4] == 0x3C) {
             SetHeroAction((HeroInfo *)player, 0x50);
         }
         if (--ext[0x98 / 4] < 0) {
             ext[0x98 / 4] = Random(7) + 1;
-            nas = SpawnNASById(x + 0x40, y - 0x40, z, 0x1612, 0x11);
+            nas = CreateNAS(x + 0x40, y - 0x40, z, 0x1612, 0x11);
             if (nas != NULL) {
                 p = FindExtension(nas, 0x10000000);
                 if (p != NULL) {
@@ -10397,7 +10397,7 @@ void func_800D2334(s32 player) {
                     p[0x18 / 4] |= 1;
                 }
             }
-            nas = SpawnNASById(x - 0x40, y - 0x40, z, 0x1612, 0x11);
+            nas = CreateNAS(x - 0x40, y - 0x40, z, 0x1612, 0x11);
             if (nas != NULL) {
                 p = FindExtension(nas, 0x10000000);
                 if (p != NULL) {

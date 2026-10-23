@@ -75,7 +75,7 @@ void func_800B36D4(void) {
     func_8007C6EC();
     func_800B42C0();
     func_800B6D14();
-    SpawnNASById(D_8005B2B8[2].pos.x, D_8005B2B8[2].pos.y, D_8005B2B8[2].pos.z,
+    CreateNAS(D_8005B2B8[2].pos.x, D_8005B2B8[2].pos.y, D_8005B2B8[2].pos.z,
                  0x1201, 0x11);
     func_800B38FC(0, 0, 0, 0, 0xC, 4, 0, 0, 0);
     func_800B7BE4();
@@ -193,7 +193,7 @@ void func_800B3B08(void) {
         a1 += 10;
         y = 9 - (p->y >> 8);
         if (D_8009D90C[y * 20 + a1].unk0 < 16) {
-            SpawnNASById(p->x, -0x800, p->y, 0x20C, 0x11);
+            CreateNAS(p->x, -0x800, p->y, 0x20C, 0x11);
             D_800BD8CC -= 1;
             D_800BD8CE = Random(4) + 2;
         }
@@ -605,7 +605,7 @@ void PlotPapuBoss(NAS *nas) {
         break;
     case 20:
         if (frame == 0xC) {
-            o = SpawnNASById(eng->unk10.x, eng->unk10.y - 0x800, eng->unk10.z, 0x1203, 0x11);
+            o = CreateNAS(eng->unk10.x, eng->unk10.y - 0x800, eng->unk10.z, 0x1203, 0x11);
             if (o != NULL) {
                 func_80026C38((u8 *)nas, (u8 *)o);
             }
@@ -807,7 +807,7 @@ NAS *func_800B4EE8(s32 a, s32 b, s32 c, u16 d)
   Ovl5eObj *obj;
   Slot40 *s;
   s32 i;
-  nas = SpawnNASById(a, b, c, 0x1202, 0x11);
+  nas = CreateNAS(a, b, c, 0x1202, 0x11);
   if (nas != 0)
   {
     eng = nas->Engine;
@@ -2341,7 +2341,7 @@ NAS *func_800B82DC(s32 a, s32 b, s32 c, s32 d, s32 e) {
     SLONG_XYZ *p;
     s32 t;
 
-    nas = SpawnNASById(a, b, c, 0x204, 0x11);
+    nas = CreateNAS(a, b, c, 0x204, 0x11);
     k = d;
     if (nas != NULL) {
         eng = nas->Engine;

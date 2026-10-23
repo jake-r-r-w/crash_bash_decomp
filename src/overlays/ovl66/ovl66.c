@@ -1253,7 +1253,7 @@ void func_800B6568(void) {
         D_800B9EC8[i].c = 0;
     }
     for (i = 0; i < 2; i++) {
-        SpawnNASById(0, 0, 0, 0x1A04, 0x11);
+        CreateNAS(0, 0, 0, 0x1A04, 0x11);
     }
 }
 
@@ -1296,7 +1296,7 @@ void func_800B66C8(void) {
     NAS *n;
 
     if (D_800B9EF0 < 10) {
-        n = SpawnNASById(0, D_8005A5D8 - 0x2000, 0, 0x1A01, 0x11);
+        n = CreateNAS(0, D_8005A5D8 - 0x2000, 0, 0x1A01, 0x11);
         if (n != NULL) {
             n->UserInfo.user1 = Random(10) + D_800B9EF0 * 5;
             n->UserInfo.user2 = D_800B9EF0;

@@ -439,7 +439,7 @@ void func_800B46BC(s32 arg0) {
     st[0x12] = 0;
     D_800BC46C[arg0] = 0;
     D_800BC47C[arg0] = 0;
-    nas = SpawnNASById(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1D09, 0x11);
+    nas = CreateNAS(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1D09, 0x11);
     nas->UserInfo.user2 = arg0;
     D_800BC45C[arg0] = (s32)nas->Engine;
     D_800BC48C[arg0] = 0;
@@ -658,7 +658,7 @@ void func_800B4B34(s32 arg0) {
         func_800B7DF0(e0->unk10.x, e0->unk10.z, arg0, 0, 0x380, 0);
         func_800BB010(e0->unk10.x, e0->unk10.z, arg0, 0x380);
         anim = D_80053F8C;
-        nas = SpawnNASById(e0->unk10.x, v->y, v->z, 0x1605, 0x11);
+        nas = CreateNAS(e0->unk10.x, v->y, v->z, 0x1605, 0x11);
         if (nas != NULL) {
             ext = FindExtension(nas, 0x10000000);
             if (ext != NULL) {
@@ -1480,7 +1480,7 @@ void func_800B6F6C(s32 arg0) {
         SetHeroSeq(arg0, 0x61);
         v = &g->hero_eng->unk10;
         anim = D_80053F8C;
-        nas = SpawnNASById(v->x, v->y, v->z, 0x1605, 0x11);
+        nas = CreateNAS(v->x, v->y, v->z, 0x1605, 0x11);
         if (nas != NULL) {
             ext = FindExtension(nas, 0x10000000);
             if (ext != NULL) {
@@ -1609,7 +1609,7 @@ again:
             goto again;
         }
     }
-    SpawnNASById(x, 0, z, 0x1D01, 0x11);
+    CreateNAS(x, 0, z, 0x1D01, 0x11);
 }
 
 void InitBarrelCH(NAS *nas) {
@@ -1619,7 +1619,7 @@ void InitBarrelCH(NAS *nas) {
     s32 i;
     s32 n;
 
-    ext = AddExtension(nas, 0x44, 0x10000001);
+    ext = AddExt(nas, 0x44, 0x10000001);
     nas->FUX = &ext->ext;
     ((s32 *)ext)[0x30 / 4] = 1;
     ((s32 *)ext)[0x40 / 4] = -0x17;
@@ -1703,7 +1703,7 @@ void PlotBarrelCH(NAS *nas) {
         v = &eng->unk10;
         PlaySfx(D_800BB9EC[Random(4)], 0, v, 0x1000, 0x1E00, 0);
         anim = D_80053F8C;
-        n = SpawnNASById(eng->unk10.x, v->y, v->z, 0x1605, 0x11);
+        n = CreateNAS(eng->unk10.x, v->y, v->z, 0x1605, 0x11);
         if (n != NULL) {
             ext = FindExtension(n, 0x10000000);
             if (ext != NULL) {
@@ -1758,7 +1758,7 @@ NAS *func_800B7948(s32 arg0) {
     if (z >= 0xA00) {
         z = 0x9FF;
     }
-    nas = SpawnNASById(x, he->unk10.y + y, z, 0x1D02, 0x11);
+    nas = CreateNAS(x, he->unk10.y + y, z, 0x1D02, 0x11);
     if (nas != NULL) {
         {
             CoalPosInner *p = ((CoalGridObj *)nas)->pos;
@@ -1843,7 +1843,7 @@ void func_800B7B80(CoalFlameEng *eng, CoalFlameFux *fux, s32 id) {
                         grid[CIRCLEFIRE_CELL(x, z)] = 0;
                         KillNAS((NAS *)cell);
                     } else {
-                        fire = SpawnNASById(cx, 0, cz, 0x1D05, 0x11);
+                        fire = CreateNAS(cx, 0, cz, 0x1D05, 0x11);
                         if (fire != NULL) {
                             ff = (CoalFlameFux *)fire->FUX;
                             ff->unk2C = cf->unk2C;
@@ -2008,11 +2008,11 @@ void PlotCircleFire(NAS *nas) {
                 cell = CircleFireGridCell(grid, x, z);
                 if (cell != NULL) {
                     fux = (CircleFireFux *)cell->FUX;
-                    fire = SpawnNASById(x, 0, z, 0x1D05, 0x11);
+                    fire = CreateNAS(x, 0, z, 0x1D05, 0x11);
                     if (fire != NULL) {
                         ((CircleFireFux *)fire->FUX)->unk2C = fux->unk2C;
                     }
-                    fire = SpawnNASById(x, 0, z, 0x1D05, 0x11);
+                    fire = CreateNAS(x, 0, z, 0x1D05, 0x11);
                     if (fire != NULL) {
                         ((CircleFireFux *)fire->FUX)->unk2C = fux->unk2C;
                     }
@@ -2048,7 +2048,7 @@ void PlotEgg(NAS *nas) {
         PlaySfx(0x75A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         pos = &eng->unk10;
         p = *D_80058AD0;
-        n = SpawnNASById(eng->unk10.x, pos->y, pos->z, 0x1605, 0x11);
+        n = CreateNAS(eng->unk10.x, pos->y, pos->z, 0x1605, 0x11);
         if (n != NULL) {
             ext = FindExtension(n, 0x10000000);
             if (ext != NULL) {
@@ -2168,7 +2168,7 @@ void PlotEgg(NAS *nas) {
             }
             at = &eng->unk10;
             p = *D_80058AD0;
-            n = SpawnNASById(eng->unk10.x, at->y, at->z, 0x1605, 0x11);
+            n = CreateNAS(eng->unk10.x, at->y, at->z, 0x1605, 0x11);
             if (n != NULL) {
                 ext = FindExtension(n, 0x10000000);
                 if (ext != NULL) {
@@ -2185,7 +2185,7 @@ void PlotEgg(NAS *nas) {
                 }
             }
             KillNAS(nas);
-            SpawnNASById(0, 0, 0, 0x1D08, 0x11);
+            CreateNAS(0, 0, 0, 0x1D08, 0x11);
         }
         break;
     }
@@ -2245,7 +2245,7 @@ void PlotPUGenerator_CH(NAS *nas) {
                 goto again;
             }
         }
-        pu = SpawnNASById(x, 0, z, 0x1D04, 0x11);
+        pu = CreateNAS(x, 0, z, 0x1D04, 0x11);
         if (pu != NULL) {
             D_800BC420[i] = pu;
             sub = pu->Engine->sub;
@@ -2268,12 +2268,12 @@ void InitPickupCH(NAS *nas) {
     }
     nas->UserInfo.user2 = 0;
     nas->UserInfo.user1 = 5;
-    ext = AddExtension(nas, 0x44, 0x10000006);
+    ext = AddExt(nas, 0x44, 0x10000006);
     ext->unk14 = 0;
     eng = nas->Engine;
     nas->FUX = (EXT *)ext;
     eng->unk5D = 1;
-    e = AddEngine(nas, 1);
+    e = AddExtEngine(nas, 1);
     if (e != NULL) {
         e->unk10.x = eng->unk10.x;
         e->unk10.y = 0;
@@ -2902,7 +2902,7 @@ void InitEgg(NAS *nas) {
     subengine *sub;
     s32 scene;
 
-    ext = AddExtension(nas, 0x44, 0x10000005);
+    ext = AddExt(nas, 0x44, 0x10000005);
     nas->FUX = &ext->ext;
     ext->unk30 = 8;
     ext->unk10 = -0x55;
@@ -2931,7 +2931,7 @@ void InitCircleFire(NAS *nas) {
     subengine *sub;
     CircleFireExt *ext;
 
-    ext = AddExtension(nas, 0x44, 0x10000004);
+    ext = AddExt(nas, 0x44, 0x10000004);
     nas->FUX = &ext->ext;
     ext->unk30 = 1;
     eng = nas->Engine;
@@ -2956,7 +2956,7 @@ void InitCoalFlame(NAS *nas) {
 
     eng = nas->Engine;
     nas->UserInfo.user2 = 0xF;
-    ext = AddExtension(nas, 0x44, 0x10000003);
+    ext = AddExt(nas, 0x44, 0x10000003);
     nas->FUX = &ext->ext;
     ext->unk1C = -0xD;
     sub = eng->sub;
@@ -3002,7 +3002,7 @@ void InitCoal(NAS *nas) {
     EXTengine *eng;
     subengine *sub;
 
-    nas->FUX = AddExtension(nas, 0x44, 0x10000002);
+    nas->FUX = AddExt(nas, 0x44, 0x10000002);
     eng = nas->Engine;
     eng->unk5D = 1;
     nas->UserInfo.flags = 5;

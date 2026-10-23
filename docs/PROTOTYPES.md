@@ -249,10 +249,11 @@ Checks: the `PANEL.CPP` names agree with the Jampack mapping
 (`InitBossHealthIcons` is `func_8007C6EC` in both), and names the repo got
 from the leaks agree (`InitSmokePoof`, `PlotSmokePoof`; `TA_HeroBot` and
 `InitialisePOLARFirst` are the best, if weak, matches of their labels). Some
-names the repo gave itself ("Name 15 core engine functions") now have their
-originals: `SpawnNASById` is `CreateNAS`, `SpawnNASFromRecord` `TriggerNas`,
-`AddEngine` `AddExtEngine`, `AddExtension` `AddExt`, `InitHealth`/
-`PlotHealth` `Init_HealthPU`/`Plot_HealthPU`.
+names the repo gave itself ("Name 15 core engine functions") had their
+originals here: `SpawnNASById` was `CreateNAS`, `SpawnNASFromRecord`
+`TriggerNas`, `AddEngine` `AddExtEngine`, `AddExtension` `AddExt` (all four
+renamed), and `InitHealth`/`PlotHealth` are `Init_HealthPU`/`Plot_HealthPU`
+(engine, not yet).
 
 **Applied.** 78 `main.exe` placeholder functions are renamed: the 73
 matches of 0.9 and up (`renames_main.txt`; `mal_update`, `init_file`,
@@ -262,10 +263,11 @@ by hand (`renames_main_checked.txt`: `mal_free`, `path_get`,
 between confirmed renames, and four are the same distance from the next
 one in both builds). One needed a source fix first: `ovl60` named
 `0x8001C378` as data (`D_8001C378`), so it now uses the function's name.
+The 4 names the repo gave itself are replaced by the originals
+(`renames_main_replace.txt`: `CreateNAS`, `TriggerNas`, `AddExtEngine`,
+`AddExt`).
 
 **Still to do.**
-- `main.exe`: the 4 the repo named itself (`--replace`: `CreateNAS`,
-  `TriggerNas`, `AddExtEngine`, `AddExt`).
 - The engine and slot overlay names, once no other agent is working there.
 - The parameter types from the C++ names, one prototype at a time.
 - Map the 184 data labels to retail addresses through the matched functions'

@@ -100,7 +100,7 @@ typedef struct Ovl63EaseCam {
     /* 0x40 */ Ovl63Ease z;
 } Ovl63EaseCam;
 
-/* Shield extension, AddExtension(nas, 0x20, 0x10000000). */
+/* Shield extension, AddExt(nas, 0x20, 0x10000000). */
 typedef struct EXTraceshield {
     /* 0x00 */ s32 unk0[3];
     /* 0x0C */ s32 unkC;
@@ -190,7 +190,7 @@ typedef struct EXTinnerripple {
     /* 0x14 */ s32 max;
     /* 0x18 */ s16 unk18;
 } EXTinnerripple;
-/* Rippled extension, AddExtension(nas, 0x1C, 0x10000000). */
+/* Rippled extension, AddExt(nas, 0x1C, 0x10000000). */
 typedef struct EXTrippled {
     /* 0x00 */ s32 unk0[3];
     /* 0x0C */ s32 scale;
@@ -274,7 +274,7 @@ void func_8007B7FC(u32 a, u32 b);
 extern s32 D_800C6BA4;
 extern s32 D_800C6BA8;
 
-/* A hero's race FUX, AddExtension(nas, 0x174, 0x10000000) in func_800B8890. */
+/* A hero's race FUX, AddExt(nas, 0x174, 0x10000000) in func_800B8890. */
 typedef struct Ovl63RaceFux {
     /* 0x000 */ s32 unk0[3];
     /* 0x00C */ s32 unkC;
@@ -684,7 +684,7 @@ static inline NAS *Ovl63SpawnPuffRet(SLONG_XYZ *v, s32 kind, s32 mode) {
     NAS *nas;
     s32 *ext;
 
-    nas = SpawnNASById(v->x, v->y, v->z, 0x1605, 0x11);
+    nas = CreateNAS(v->x, v->y, v->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
@@ -793,7 +793,7 @@ extern Ovl63Odds D_8009D87C[];
 s32 func_800C5640(u8 *arg0, u32 arg1, s32 arg2);
 
 s32 func_800C5E6C(s32 arg0, s32 arg1);
-/* Glob extension, AddExtension(nas, 0x1C, 0x10000000). */
+/* Glob extension, AddExt(nas, 0x1C, 0x10000000). */
 typedef struct EXTglob {
     /* 0x00 */ s32 unk0[3];
     /* 0x0C */ s32 unkC;
@@ -972,7 +972,7 @@ s32 func_800C5470(s32 arg0);
 
 void func_800C56D4(s32 player);
 
-/* Track glob extension, AddExtension(nas, 0x8C, 0x10000000). */
+/* Track glob extension, AddExt(nas, 0x8C, 0x10000000). */
 typedef struct EXTtrackglob {
     /* 0x00 */ s32 unk0[3];
     /* 0x0C */ s32 unkC;
@@ -1083,7 +1083,7 @@ static inline void Ovl63SpawnPuff(SLONG_XYZ *v, s32 kind, void *anim) {
     NAS *nas;
     s32 *ext;
 
-    nas = SpawnNASById(v->x, v->y, v->z, 0x1605, 0x11);
+    nas = CreateNAS(v->x, v->y, v->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {

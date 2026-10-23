@@ -195,7 +195,7 @@ typedef struct Ovl65Puff {
         SLONG_XYZ *v_;                                                      \
                                                                             \
         v_ = &(h)->hero_eng->unk10;                                         \
-        nas_ = SpawnNASById(v_->x, v_->y, v_->z, 0x1605, 0x11);             \
+        nas_ = CreateNAS(v_->x, v_->y, v_->z, 0x1605, 0x11);             \
         if (nas_ != NULL) {                                                 \
             p_ = FindExtension(nas_, 0x10000000);                           \
             if (p_ != NULL) {                                               \

@@ -310,7 +310,7 @@ void AR_InitLevel(void) {
     }
     switch (D_8005A648) {
     case 0x10:
-        SpawnNASById(0, D_8005A5D8, 0, 0x1507, 0x11);
+        CreateNAS(0, D_8005A5D8, 0, 0x1507, 0x11);
         break;
     case 0x11:
         PlaySfx(0x5C8, &D_800C1BC4, 0, 0x1000, 0x1E00, 0);
@@ -1719,7 +1719,7 @@ void SetArkHeroDie(u32 arg0) {
     m = (Ovl61ModeView *)D_8005A614;
     switch (m->unk34) {
     case 16:
-        SpawnNASById(arg0, D_8005A5D8 - 0x50, -0x20, 0x1506, 0x11);
+        CreateNAS(arg0, D_8005A5D8 - 0x50, -0x20, 0x1506, 0x11);
         break;
     case 17:
         if (m->unk30 & 0x801) {
@@ -1750,7 +1750,7 @@ void SetArkHeroDie(u32 arg0) {
         }
         break;
     default:
-        SpawnNASById(arg0, D_8005A5D8 - 0x50, 0, 0x1505, 0x11);
+        CreateNAS(arg0, D_8005A5D8 - 0x50, 0, 0x1505, 0x11);
         break;
     }
     Heroes[arg0].hero_hit = 0x3C;
@@ -2742,7 +2742,7 @@ NAS *CreateBall(NAS *arg0) {
     if (arg0 != NULL) {
         src = (Ovl61Eng *)arg0->Engine;
         if (src != NULL) {
-            nas = SpawnNASById(src->x, src->pad14, src->z, 0x1501, 0x11);
+            nas = CreateNAS(src->x, src->pad14, src->z, 0x1501, 0x11);
             if (nas != NULL) {
                 eng = (Ovl61Eng *)nas->Engine;
                 if (eng != NULL) {
@@ -2801,7 +2801,7 @@ void func_800B99E0(void) {
         } while (nas != NULL);
     }
     if (n < 8) {
-        nas = SpawnNASById(((Ovl61Spawn *)D_800C1B28)->x, ((Ovl61Spawn *)D_800C1B28)->y, ((Ovl61Spawn *)D_800C1B28)->z, 0x1501, 0x11);
+        nas = CreateNAS(((Ovl61Spawn *)D_800C1B28)->x, ((Ovl61Spawn *)D_800C1B28)->y, ((Ovl61Spawn *)D_800C1B28)->z, 0x1501, 0x11);
         if (nas != NULL) {
             eng = nas->Engine;
             if (eng != NULL) {
@@ -2874,7 +2874,7 @@ void InitBall(NAS *nas) {
         eng->sub->unk74 = 0x2009;
     }
     func_80026B70((u8 **)&D_8005AA38, (u8 *)nas);
-    e1 = AddEngine(nas, 1);
+    e1 = AddExtEngine(nas, 1);
     if (e1 != NULL) {
         sub = e1->sub;
         sub->unk6C = D_80054504;
@@ -2887,7 +2887,7 @@ void InitBall(NAS *nas) {
         sub->flags |= 0x22000021;
         e1->flags &= 0xFFFF7FFF;
     }
-    e = AddEngine(nas, 1);
+    e = AddExtEngine(nas, 1);
     if (e != NULL) {
         sub = e->sub;
         e->unk5D = 0;
@@ -2898,7 +2898,7 @@ void InitBall(NAS *nas) {
             sub->unk74 = 0x200C;
             sub->unk76 = 0xB00;
             sub->flags |= 0x42000021;
-            ext = AddExtension(nas, 0x74, 0x10000000);
+            ext = AddExt(nas, 0x74, 0x10000000);
             if (ext != NULL) {
                 i = 7;
                 ext += i;
@@ -3833,7 +3833,7 @@ void ArkCrateMaster(void) {
     if (D_8005A648 == 0xE && Random(0xF) == 0) {
         x = Random(0x1800) - 0xC00;
         y = -(Random(0x200) + 0x80);
-        SpawnNASById(x, y, Random(0x800) + 0x1000, 0x1504, 0x11);
+        CreateNAS(x, y, Random(0x800) + 0x1000, 0x1504, 0x11);
     }
     if (D_800C1EFC != 0) {
         D_800C1EFC--;
@@ -3863,7 +3863,7 @@ void ArkCrateMaster(void) {
                 total++;
             }
             if (total < 9) {
-                nas = SpawnNASById(0x1000, 0x1000, 0x1000, 0x1501, 0x11);
+                nas = CreateNAS(0x1000, 0x1000, 0x1000, 0x1501, 0x11);
                 if (nas != NULL && nas->Engine != NULL && nas->FUX != NULL) {
                     ((Ovl61Fux *)nas->FUX)->flag = 0;
                 }
@@ -3885,7 +3885,7 @@ void ArkCrateMaster(void) {
                 hero = D_800C19FC[D_800C1C74];
             }
             if (!(Heroes[hero].hero_status & 0xFA00)) {
-                SpawnNASById(hero, 0, 0, 0x1509, 0x11);
+                CreateNAS(hero, 0, 0, 0x1509, 0x11);
             }
             D_800C1C70 = Random(6) * 0x1E + 0x5A;
         }
@@ -4546,7 +4546,7 @@ void Create_ArkPickup(void)
 
     if (s >= 0)
     {
-      nas = SpawnNASById(D_800C1A7C[s].x, 0, D_800C1A7C[s].z, 0x1502, 0x11);
+      nas = CreateNAS(D_800C1A7C[s].x, 0, D_800C1A7C[s].z, 0x1502, 0x11);
       if (nas == 0)
       {
         return;
@@ -4629,7 +4629,7 @@ void Plot_Ark_Pickup(NAS *arg0) {
                     D_8009D754 = i;
                     h->hero_pu = fux->contains;
                     if (fux->contains == 0x12 || fux->contains == 0x17) {
-                        SpawnNASById(h->hero_eng->unk10.x, h->hero_eng->unk10.y, h->hero_eng->unk10.z, 0x1503, 0x11);
+                        CreateNAS(h->hero_eng->unk10.x, h->hero_eng->unk10.y, h->hero_eng->unk10.z, 0x1503, 0x11);
                     }
                     D_800C1E28[arg0->UserInfo.user1].unk10 = 0;
                     PlaySfx(0x5DA, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -5671,7 +5671,7 @@ u8 *func_800C01B8(void) {
     if (var_v0 >= 9) {
         return NULL;
     }
-    temp_v0 = SpawnNASById(0x1000, 0x1000, 0x1000, 0x1501, 0x11);
+    temp_v0 = CreateNAS(0x1000, 0x1000, 0x1000, 0x1501, 0x11);
     if ((temp_v0 != NULL) && ((*(s32*)((u8*)(temp_v0) + 84)) != 0)) {
         temp_v0_2 = (*(s32*)((u8*)(temp_v0) + 88));
         if (temp_v0_2 != NULL) {

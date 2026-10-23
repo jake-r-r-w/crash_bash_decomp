@@ -346,7 +346,7 @@ static inline void LaserBurst(LaserNode *n) {
 
     do {
         tp = &n->tgt->pos;
-        nas = SpawnNASById(n->tgt->pos.x, tp->y, tp->z, 0x1605, 0x11);
+        nas = CreateNAS(n->tgt->pos.x, tp->y, tp->z, 0x1605, 0x11);
         mode = 3;
     } while (0);
     do {
@@ -389,7 +389,7 @@ static inline s32 MineHitLaser(LaserPos p, s32 r) {
             dz = t->pos.z - p.z;
             if (dx * dx + dy * dy + dz * dz < r) {
                 tp = &t->pos;
-                nas = SpawnNASById(t->pos.x, tp->y, tp->z, 0x1605, 0x11);
+                nas = CreateNAS(t->pos.x, tp->y, tp->z, 0x1605, 0x11);
                 mode = 3;
                 if (nas != NULL) {
                     ext = FindExtension(nas, 0x10000000);
@@ -418,7 +418,7 @@ static inline void MineBurst(NAS *e) {
     s32 mode;
 
     tp = &e->Engine->unk10;
-    nas = SpawnNASById(e->Engine->unk10.x, tp->y, tp->z, 0x1605, 0x11);
+    nas = CreateNAS(e->Engine->unk10.x, tp->y, tp->z, 0x1605, 0x11);
     mode = 1;
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
@@ -746,7 +746,7 @@ static inline void AstBurst(s32 *o, s32 mode) {
     LaserPos *tp;
 
     tp = (LaserPos *)(o + 1);
-    nas = SpawnNASById(o[1], tp->y, tp->z, 0x1605, 0x11);
+    nas = CreateNAS(o[1], tp->y, tp->z, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {

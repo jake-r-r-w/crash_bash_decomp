@@ -266,7 +266,7 @@ code finds 15 code files; nothing else on the disc holds code.
   `jr $ra`). Leaf functions reached only through this table are
   declared in `configs/USA/sym.<ovl>.txt` so splat splits them.
 - **AST names**: the field order is fixed by the engine's spawn code
-  (`SpawnNASFromRecord`): it stores `+4` at `nas+0x48` and calls it at once
+  (`TriggerNas`): it stores `+4` at `nas+0x48` and calls it at once
   (Init), and it stores `+8` at `nas+0x4C` (Plot). Each Pogo, Arkenoid and
   Polar id is named from its leaked enum entry (id = `*_AST_zero` + position).
   The functions take the leak's own `Init`/`Plot` prototype spelling where one
@@ -740,8 +740,11 @@ signature alone is not enough.
 ## Core engine functions
 
 The most-called functions in the exe and the engine. `get_angle` is the leak's
-own name, from the inline `CalcCurrentSector` in polar.h. The others are
-**descriptive names**: the leak doesn't name them, so replace them if the
+own name, from the inline `CalcCurrentSector` in polar.h, and `CreateNAS`,
+`TriggerNas`, `AddExt` and `AddExtEngine` are the originals from Euro Demo
+65's symbol table (PROTOTYPES.md; they replaced our `SpawnNASById`,
+`SpawnNASFromRecord`, `AddExtension` and `AddEngine`). The others are
+**descriptive names**: no source names them, so replace them if the
 originals turn up. Call counts are `jal` sites across all binaries.
 
 | Name | Address | Calls | Evidence |
@@ -749,18 +752,18 @@ originals turn up. Call counts are `jal` sites across all binaries.
 | `PlaySfx` | `0x80022660` | 911 | Looks the id up in the table at `D_80064508`, takes a voice from the pool at `D_800590D0+0x540`, returns it. `Roo_GoBoing` passes a random id and `&eng->unk10`. |
 | `Random(n)` | `0x80015590` | 650 | Advances two seeds (`D_800517B8`, `D_800517BC`) and returns `seed % n`, or 0 for `n < 2`. |
 | `FindExtension(nas, id)` | `0x800264E8` | 438 | Walks the extension chain from `NAS.Extend.Child`, matching `EXTid` (and the low byte when given). |
-| `SpawnNASById(x, y, z, id, ...)` | `0x80022A3C` | 349 | Finds `id` in the AST table, then builds a `NAS` the way `SpawnNASFromRecord` does. Callers pass `AST_*` ids. |
+| `CreateNAS(x, y, z, id, ...)` | `0x80022A3C` | 349 | Finds `id` in the AST table, then builds a `NAS` the way `TriggerNas` does. Callers pass `AST_*` ids. |
 | `SetHeroAction(player, action)` | `0x800868B4` | 310 | Stores the action at `hero+0x2C` (the previous one at `+0x4C`) and calls its handler from `D_8009DCA0`. |
 | `get_angle(x, z)` | `0x8001463C` | 300 | Arctangent through the table at `D_800517C0`, giving a 12-bit angle; used as `get_angle(x, z) & 4095` as in the leak. |
 | `GetEngineSlot(i)` | `0x80095E38` | 237 | `&D_800A0E78[i]` with 0x9C-byte entries (`sizeof(EXTengine)`); its sibling copies the engine template into one. |
 | `KillNAS(nas)` | `0x80022FD4` | 225 | Frees the engines and extensions, unlinks from the active list (`D_8005AA08`), clears `flags`, pushes onto the free list (`D_8005AA0C`). |
 | `StopSfx(voice)` | `0x800225C4` | 173 | Stops the voice (`func_8002B8F4(voice+0x2C)`) and returns it to `PlaySfx`'s pool. |
 | `SetHeroSeq(player, seq)` | `0x800854C0` | 133 | Picks the per-character table from `D_8009D29C` by `hero+0x2E` (1-8, the leak's eight `hero_seq` prefixes) and sets `hero+0x56`. |
-| `AddExtension(nas, size, id)` | `0x8002689C` | 75 | `AllocExtension` with no template. |
-| `AddEngine(nas, id)` | `0x8002672C` | 44 | 0x9C-byte engine from a template, first one in `NAS.Engine`. |
+| `AddExt(nas, size, id)` | `0x8002689C` | 75 | `AllocExtension` with no template. |
+| `AddExtEngine(nas, id)` | `0x8002672C` | 44 | 0x9C-byte engine from a template, first one in `NAS.Engine`. |
 | `AddMotion(nas)` | `0x80026540` | - | 0x34-byte `EXTmotion`, id 0x800, from the template `D_8005A9CC`; sets 0x800 in `NAS.flags`. |
 | `AddObject(nas)` | `0x80026684` | - | 0x2C-byte `EXTobject`, id 0x1000, from the template `D_8005A974`; sets 0x1000 in `NAS.flags`. |
-| `SpawnNASFromRecord(rec)` | `0x80022DDC` | - | Takes a `NAS` from the free list and sets it up (see Engine types). |
+| `TriggerNas(rec)` | `0x80022DDC` | - | Takes a `NAS` from the free list and sets it up (see Engine types). |
 | `AllocExtension(owner, size, id, tmpl)` | `0x800232B0` | - | The heap allocator behind the extension calls. |
 | `FreeExtension(ext)` | `0x80023404` | - | Range-checks against the heap, unlinks from the chain, frees the block. |
 
@@ -779,10 +782,10 @@ Descriptive names (the leak doesn't name these), with types in `bash/main.h`,
 | `ASTTable` | `0x8005AA6C` | `ASTEntry *` | The engine's `func_8007AB8C` points it at `EngineASTTable`; the spawners index it by id with 12-byte steps. |
 | `ASTCount` | `0x8005AA60` | `s32` | Set from `func_8007AC00` (which counts the entries); the bound of every `ASTTable` search. |
 | `EngineASTTable` | `0x80098720` | `ASTEntry[]` | The engine's table (`{id, Init, Plot}`, see Overlays). |
-| `NASActiveHead` / `NASActiveTail` | `0x8005AA04` / `0x8005AA08` | `NAS *` | Head and tail of the active list: `SpawnNASFromRecord` appends, `KillNAS` unlinks. |
+| `NASActiveHead` / `NASActiveTail` | `0x8005AA04` / `0x8005AA08` | `NAS *` | Head and tail of the active list: `TriggerNas` appends, `KillNAS` unlinks. |
 | `NASFreeList` | `0x8005AA0C` | `NAS *` | Spawners pop from it, `KillNAS` pushes onto it (linked through `+0x10`). |
 | `NASTemplate` | `0x8005A7C0` | `NAS` | Copied over each spawned `NAS` (0x70 bytes). |
-| `EngineTemplate` | `0x8005A8D8` | `EXTengine` | Copied over each new engine by `AddEngine` and `func_80095BEC`. |
+| `EngineTemplate` | `0x8005A8D8` | `EXTengine` | Copied over each new engine by `AddExtEngine` and `func_80095BEC`. |
 | `EnginePool` | `0x800A0E78` | `EXTengine[]` | `GetEngineSlot(i)` returns `&EnginePool[i]`. |
 | `Heroes` | `0x8009D52C` | `HeroInfo[4]` | The player/hero array (see Engine types); used by 822 functions. `func_80083708` sets up all four. |
 | `HeroActionTable` | `0x8009DCA0` | not typed yet | 8-byte entries; `SetHeroAction` calls entry `action`'s handler. |
@@ -805,7 +808,7 @@ indexes as `void **`. Fields of types the fragment does not define
 (`subengine`, `EXTengine`'s `xyzrf` block at `0x0C..0x60`, `_sfx_handler`)
 keep code-derived names (`unkXX` where only offset and width are known).
 
-- **Extension allocator.** `AddExtension(owner, size, id)` calls
+- **Extension allocator.** `AddExt(owner, size, id)` calls
   `AllocExtension`. That allocates `size` bytes after a 0x18-byte heap header,
   then writes `id` at `+0` (`EXTid`), the owner at `+4` (`Extend.Parent`) and
   a null at `+8` (`Extend.Child`). It appends the new extension to the owner's
@@ -820,15 +823,15 @@ keep code-derived names (`unkXX` where only offset and width are known).
   fields: `fadeuprate` at `+0xC`, `angle` at `+0x2C`, and `EXTbombmaker.timer`
   is set to 180.
 - **NAS (`struct NAStype`, 0x70 bytes).**
-  - `SpawnNASFromRecord(trigger)` takes one from the free list (linked through
+  - `TriggerNas(trigger)` takes one from the free list (linked through
     `Tag.Child`), copies a 0x70-byte template over it, and appends it to the
     active list (`Tag.Parent`/`Tag.Child`).
   - It sets `NASid` to 1, `Type` (the AST index) and `trigger` (the
     `NASTrigger` it was built from; `Type` there is the AST id and `Status`
     bit 0 means spawned).
   - It stores the AST entry's Init and Plot in `InitDelete`/`Handler`, calls
-    `AddEngine(nas, 1)` to make the engine extension, and then calls Init.
-- **EXTengine (`struct EXTengtype`, 0x9C bytes).** `AddEngine(nas, id)`
+    `AddExtEngine(nas, 1)` to make the engine extension, and then calls Init.
+- **EXTengine (`struct EXTengtype`, 0x9C bytes).** `AddExtEngine(nas, id)`
   allocates 0x9C bytes with `EXTid = id | 0x100` from a template, and sets
   `0x100` in `NAS.NASid`.
   - The first engine extension goes to `NAS.Engine`; later ones are linked
@@ -860,8 +863,8 @@ keep code-derived names (`unkXX` where only offset and width are known).
   them, some with halfword operands; the prototype's `HEROcmds`) and other
   values are frames.
 - **HeroInfo (0x6C bytes).** `func_80083708` sets up the four `Heroes`: `hero`
-  from a pool at `D_8005AA1C` (AST index 3), `hero_eng = AddEngine(nas, 1)`,
-  `hero_sub = hero_eng->sub`, three more engines (`AddEngine` ids 2, 3, 3:
+  from a pool at `D_8005AA1C` (AST index 3), `hero_eng = AddExtEngine(nas, 1)`,
+  `hero_sub = hero_eng->sub`, three more engines (`AddExtEngine` ids 2, 3, 3:
   `hero_shadow`, `hero_powerup`, `hero_fx`), `hero_move` (0x54-byte
   `EXTheromove`), `hero_anim` (the 0x2C-byte id-0x400 `EXTanimator` from
   `func_800265DC`, which plays the current `hero_seq`; `SetHeroSeq` sets its

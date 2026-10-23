@@ -1152,7 +1152,7 @@ static inline void PolarMissileBlast(NAS *m, s32 kind) {
 
     pos = &m->Engine->unk10;
     anim = D_80054A0C;
-    nas = SpawnNASById(pos->x, pos->y, pos->z, 0x1605, 0x11);
+    nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
     if (nas != NULL) {
         x = FindExtension(nas, 0x10000000);
         if (x != NULL) {
@@ -1579,7 +1579,7 @@ static inline void Ovl62SpawnDrop(VECTOR *pos, s32 kind) {
     NAS *nas;
     Ovl62DropExt *ext;
 
-    nas = SpawnNASById(pos->vx, pos->vy, pos->vz, 0x1605, 0x11);
+    nas = CreateNAS(pos->vx, pos->vy, pos->vz, 0x1605, 0x11);
     if (nas != NULL) {
         ext = FindExtension(nas, 0x10000000);
         if (ext != NULL) {
