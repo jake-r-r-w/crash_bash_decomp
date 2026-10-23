@@ -36,7 +36,6 @@ typedef struct {
     s16 *dst;       /* 0x0C: x, y */
 } AnimScroll;
 
-void texture_update_scroll(AnimScroll *, AnimOwner *);
 
 /* The same 0x38-byte entry as func_80028D40 uploads it to VRAM. */
 typedef struct AnimTex {
@@ -808,8 +807,6 @@ s32 func_8001231C(void);
 void func_80010AE8(Heap *arg0);
 MemBlock *mal_first_free(u32 words, MemBlock *blk);
 s32 func_80013034(s32 arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *arg4, s32 arg5, s32 arg6);
-void func_80029560(u8 *arg0);
-void func_8002A5A4(u8 *arg0, u8 *arg1);
 s32 asload_permanent_callback(s32 arg0, void (*done)(), void *ctx);
 void func_80012E88(void);
 void func_80012F90(u8 *arg0);
@@ -898,61 +895,13 @@ void scripts_update(void);
 void func_800222BC(void);
 void func_800222DC(void);
 void func_800222FC(void);
-void SetNasDefaults(void);
 void func_8002232C(void);
 void func_800227C0(void);
 void func_800227FC(void);
 void func_80022838(void);
 void func_800228A4(_sfx_handler *voice, s32 arg1);
 void func_800229D4(void);
-void func_80025AE4(u8 *arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4, s32 arg5, s32 arg6);
-void func_80025F8C(void);
-void func_80025F94(void);
-void func_80025F9C(void);
-void func_80025FA4(void);
-void func_80026308(void);
-void func_80026418(void);
-void func_80026420(void);
-void func_80026428(void);
-void func_800264B4(void);
-void func_80026A04(u8 *arg0);
-void func_80026AD8(u8 *arg0);
-void func_80026B70(u8 * *arg0, u8 *arg1);
-void RemoveFamily(NAS *arg0);
 void func_8001C270(EXTengine *eng);
-void func_80026D08(void);
-void func_80026430(NAS *nas);
-void func_80026AFC(NAS *nas);
-void func_80026980(NAS *nas);
-void func_80026A54(NAS *nas);
-void func_800268BC(NAS *nas);
-void func_80026C38(u8 *arg0, u8 *arg1);
-void InsertNasTag(NAS *arg0, NAS *arg1);
-void func_80026C94(u8 *arg0, u8 *arg1);
-void NullProc(NAS *arg0);
-void DeleteNas_AllAST(s32 arg0);
-void func_800270B0(NAS *nas);
-s32 func_8002718C(void);
-void func_8002726C(void);
-void func_8002759C(void);
-void func_800276A4(void);
-void func_800278BC(s32 *arg0, s32 arg1);
-void func_80027908(void);
-void func_80027A74(void);
-void func_80027A94(void);
-void func_80027A9C(void);
-void func_80028184(u8 *arg0, s32 arg1, s8 arg2);
-void func_800281A0(u8 *arg0, s32 arg1);
-void func_800282D8(u8 *arg0);
-void func_80028D38(void);
-void func_8002A2DC(void);
-void func_8002A2E4(void);
-void texture_release_loading_mem(u8 *arg0);
-void func_8002A4B8(void);
-void func_8002A67C(void);
-void func_8002A740(u8 *arg0);
-void func_8002AA50(u8 *arg0);
-void func_8002AA8C(u8 *arg0);
 void func_800369FC(void);
 
 extern GteScratch D_800569CC;
@@ -999,9 +948,7 @@ MemBlock *func_80011BF8(Heap *heap, u8 *start, s32 size);
 extern u8 D_80050008[];
 extern u8 D_8004E0B8[];
 s32 func_800134FC(u8 *a, u8 *b);
-void func_800270F0(u8 *a);
 void init_file(void);
-void func_800272AC(s32 arg0);
 extern s32 D_8004E0B4;
 extern s32 D_8006E9F4;
 s32 func_800320CC(void);
@@ -1073,7 +1020,6 @@ extern s32 D_80067830;
 /* Free bytes on the card (func_8002D178). */
 extern Heap D_8004E0F0;
 extern s32 D_800637B0;
-s32 func_80027790(u8 *a, s32 b, u8 *c, s32 d);
 extern u8 *D_8006E9FC;
 extern u8 D_80055684[];
 extern void *D_8005AA34;
@@ -1136,7 +1082,6 @@ extern u8 D_80063B58[];
 extern u8 D_80063BA0[];
 extern FreeNode *D_80063BAC;
 extern FreeNode *D_80063BB0;
-extern FreeHdr *func_800282F8(u8 *);
 extern void *D_80063BB4;        /* list walked by func_80028A00 (next at +4) */
 extern s32 D_8004E104;            /* func_80011410: free bytes */
 extern s32 D_8004E108;            /* func_80011410: free blocks */
@@ -1401,54 +1346,9 @@ typedef union {
     s32 w;
 } SprPos;
 
-/* Draws f at xy (640-wide units) as a POLY_FT4 in ot[otz]; color bit 31 makes
- * it semi-transparent, bits 29-30 its blend mode. Returns f's advance. */
-s32 texture_draw(SpriteFrame *f, s32 xy, s32 otz, u32 color);
-/* texture_draw as a POLY_GT4 with one colour per vertex (c0 also sets the
- * semi-transparency and blend mode). */
-s32 func_8002992C(SpriteFrame *f, s32 xy, s32 otz, u32 c0, u32 c1, u32 c2, u32 c3);
-/* Draws f at the 3D point pos as a POLY_GT4 in the OT at cdb, c0 on
- * the top vertices and c1 on the bottom ones; returns f's advance. */
-s32 func_80029F9C(SpriteFrame *f, GlyphPos *pos, s32 otz, u32 c0, u32 c1);
 
 /* calc_rgbcode: fades r, g, b towards black by D_800569AC / 0x1000. */
-static inline s32 FadeColor(s32 r, s32 g, s32 b) {
-    s32 t;
-    s32 d;
-
-    d = D_800569AC;
-    if (d != 0) {
-        t = 0x1000 - d;
-        r *= t;
-        g *= t;
-        b *= t;
-        r >>= 12;
-        r &= 0xFF;
-        g >>= 12;
-        g &= 0xFF;
-        b >>= 12;
-        b &= 0xFF;
-    }
-    return (r << 16) | (g << 8) | b;
-}
 /* FadeColor reading the fade from gs->modelDp (func_80029F9C). */
-static inline s32 FadeColorGs(GfxState *gs, s32 r, s32 g, s32 b) {
-    s32 t;
-
-    if (gs->modelDp != 0) {
-        t = 0x1000 - gs->modelDp;
-        r *= t;
-        g *= t;
-        b *= t;
-        r >>= 12;
-        r &= 0xFF;
-        g >>= 12;
-        g &= 0xFF;
-        b >>= 12;
-        b &= 0xFF;
-    }
-    return (r << 16) | (g << 8) | b;
-}
 extern u16 D_800569DC;
 extern s32 D_800569C0;
 
@@ -1534,7 +1434,6 @@ typedef struct SortList {
     SortNode *tail;    /* 0x10 */
 } SortList;
 
-void *AllocExtension(void *owner, s32 size, s32 id, void *tmpl);
 extern EXTmotion D_8005A9CC;
 typedef struct Ext400 {
     s32 w[11];
@@ -1548,11 +1447,7 @@ extern subengine D_8005A830;
 typedef struct Words4 {
     s32 w[4];
 } Words4;
-void FreeExtension(void *ext);
 s32 abs(s32);         /* LIBC2 ABS_0.OBJ (labs in ABS_1.OBJ is identical); a call, not inlined: -fno-builtin */
-s32 AddPlatformContour(EXTengine *eng, s32 y);
-s16 func_800251A8(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim);
-s16 func_80025534(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim);
 /* A step of a kind 2 animator's Atable (func_80025534): cmd >= 0 is a frame
  * shown for arg ticks, 0x8000 | n is command n with operand arg. */
 typedef struct AnimStep {
@@ -1689,13 +1584,10 @@ extern u16 D_8005A644;
 extern s32 D_800512A4;
 extern s32 screen_aspect[2];
 
-EXTmotion *AddMotion(NAS *nas);
 
 void func_8001D3B0(EXTengine *eng, s32 n, subengine *sub);
 
-EXTengine *AddExtEngine(NAS *nas, s32 id);
 
-s32 func_80025BBC(EXTengine *eng);
 
 void func_80015758(SVECTOR *v, VECTOR *out);
 
@@ -1712,7 +1604,6 @@ void func_80015C1C(PointSprites *ps, MATRIX *m);
 
 void func_80016F34(u8 *arg0, u8 *arg1);
 
-void *AddExt(void *owner, s32 size, s32 id);
 
 void func_80012E54(void);
 
@@ -1720,34 +1611,26 @@ void func_8001325C(void);
 
 void palette_set_top_bits(u16 *arg0, u32 arg1);
 
-void func_8002775C(u8 *arg0);
 
 void func_800154C0(u16 *arg0, s32 arg1);
 
 void *func_8001CFE8(MorphModel *model, void *arg1, s32 arg2);
 
-s32 func_80028BC8(u8 * *arg0);
 
 
 
 s32 Random(s32 n);
-void *FindExtension(NAS *nas, s32 id);
-NAS *CreateNAS(s32 x, s32 y, s32 z, u16 id, u16 flags);
 
 void StopSfx(_sfx_handler *voice);
 
 _sfx_handler *PlaySfx(s32 id, _sfx_handler **handle, SLONG_XYZ *pos, s32 arg3, s32 arg4, s32 flags);
 
-s32 KillNAS(NAS *nas);
 
 s32 get_angle(s32 x, s32 z);
 
-FlagRecord *func_80025A48(EXTengine *eng, u32 flag);
-
-s16 func_800250B0(NAS *nas);
 
 
-void GotoLinkAnim(EXTanimator *anim, s16 n);
+
 
 void mal_free(void *ptr, Heap *heap);
 
@@ -1760,7 +1643,6 @@ u8 *func_800160C4(u8 *arg0, s32 i);
 
 void func_80021330(u8 *arg0, s32 *arg1);
 
-s32 func_8002A650(u8 *arg0);
 
 
 
@@ -1779,7 +1661,6 @@ subengine *func_8001DCD4(s32 i, s32 val);
 
 s32 func_80016274(s32 *list, u8 *arg1);
 
-s32 func_800280C0(u8 *src, u8 *dst, s32 n);
 
 void func_80013C78(void);
 
@@ -1795,11 +1676,9 @@ void release_sprim(void *data);
 
 void func_800183DC(void);
 
-s32 func_80026A28(void);
 
 void func_80013CFC(s32 pad, u8 *out);
 
-void ReAdoptChild(NAS *list, NAS *nas);
 
 void func_8001682C(s32 *arg0);
 
@@ -1807,11 +1686,9 @@ void func_8001682C(s32 *arg0);
 
 u8 *func_80021E44(OffsetTable *tbl, s32 i);
 
-void func_8002A830(u8 *src, u8 *out, s32 len);
 
 void *func_80021EEC(void);
 
-void *func_80028A00(void);
 typedef struct {
     u16 x;
     u16 y;
@@ -1822,9 +1699,7 @@ typedef struct {
     ClutPos *pos;
     s32 off;
 } ClutUpload;
-ClutPos *func_80028420(void);
 
-void func_8002694C(NAS *nas, s32 bits);
 
 u8 *func_80015A78(s32 i, u8 *rec);
 
@@ -1832,7 +1707,6 @@ void BSwapEndian(u8 *p, u32 n);
 
 void func_800228C4(_sfx_handler *voice);
 
-void func_80027F00(void);
 
 
 
@@ -1844,7 +1718,6 @@ void func_80016CA0(u8 *rec);
 
 void func_80013238(void);
 
-NAS *TriggerNas(NASTrigger *trig);
 
 void func_8001636C(u8 *arg0, s32 arg1);
 
@@ -1856,11 +1729,8 @@ void *func_80012E28(void);
 
 subengine *func_8001C34C(s32 n, subengine *sub);
 
-void func_80028158(void);
 
-void func_80026FCC(void);
 
-void func_80026D9C(void);
 
 void func_8002120C(u8 *arg0);
 
@@ -1909,7 +1779,6 @@ typedef struct {
     PitchInfo *info; /* 0x04 */
 } PitchVoice;
 
-IdEntry *func_800263D8(IdEntry *p, s32 id);
 
 s32 func_80015984(s32 i, EntryBlock *blk);
 
@@ -1917,7 +1786,6 @@ void func_80011578(u8 *arg0, Heap *heap, s32 arg2);
 
 void func_8001702C(SlotList *arg0);
 
-void xa_setvol(s16 vol);
 
 void func_80021940(s32 arg0, u8 *arg1, s32 arg2);
 
@@ -1936,13 +1804,9 @@ void func_80016F54(u8 *arg0);
 
 void func_8001CE00(s32 arg0, ModelSet *set, s32 arg2);
 
-void func_80025F44(EXTengine *eng);
 
-void func_80026858(void *owner, s32 size, s32 id, Words3 *tmpl);
 
-void func_80028BF0(void);
 
-void func_80028C94(void);
 
 
 
@@ -2067,17 +1931,11 @@ void scripts_render(void);
 
 _sfx_handler *func_80022924(void);
 
-void func_80024214(u8 *a, u8 *b);
 
-void func_80026ECC(void);
 
-void func_80026F48(void);
 
-s32 func_80027944(void);
 
-s32 func_80028994(s32 a, s32 b, s32 c);
 
-s32 calc_rgbcode(s32 r, s32 g, s32 b);
 
 
 
@@ -2124,7 +1982,6 @@ u8 *func_80011498(u8 *arg0, s32 arg1, Heap *arg2);
 void *func_800115D8(s32 arg0, void * *arg1, s32 arg2, s32 arg3);
 
 struct TexSet2926C;
-void texture_init_mem_textureset(struct TexSet2926C *arg0);
 
 typedef struct {
     s32 f0;
@@ -2230,48 +2087,26 @@ u8 *func_80021D1C(u8 *arg0, s32 arg1);
 
 void sfx_delete_all(void);
 
-void func_80023158(s32 arg0);
 
-void func_8002321C(void);
 
-void FetchDefaultColBox(EXTengine *eng, u32 flag);
 
-s32 FollowUnderContour(EXTengine *eng);
 
-s32 FollowContour(EXTengine *eng);
 
-void func_8002617C(void);
 
-s16 func_80026210(s32 x, u8 *s);
 
-s32 SysGetLen(char *s);
 
-Ext400 *func_800265DC(NAS *nas);
 
-Ext1000 *AddObject(NAS *nas);
 
-void func_80026E2C(void);
 
-s32 func_800274FC(s32 *arg0);  /* func_800276C4, then D_8005B698 = NULL; returns the second end */
-void func_800276C4(s32 *arg0);
 
-void func_800279A4(void);
 
-void func_80027F7C(s32 pad, s32 arg1, s8 arg2);
 
-void func_80028018(s32 pad, s32 arg1);
 
-FreeNode *func_80028A28(void);
 
-void func_80028AE4(BufNode *arg0);
 
-void func_8002A3D0(u8 *arg0);
 
-void func_8002A684(u8 *arg0, u8 *arg1);
 
-void func_8002A77C(ClutUpload *arg0, s32 arg1);
 
-void func_8002A9AC(s32 *arg0, s32 arg1);
 
 
 
@@ -2312,46 +2147,10 @@ typedef struct PadInput {
     /* 0x1C */ PadRumble rumble;
 } PadInput;
 
-void func_80027AD4(PadPacket *p, PadInput *in, s32 n);
 
 extern s32 D_80063A8C;
 
 /* func_800281C0's body, inlined into func_80027AD4. */
-static inline s32 PadRumble_update(PadRumble *r, s32 port) {
-    if (r->reset != 0) {
-        if (r->time0 != 0) {
-            r->time0 = 1;
-        }
-        if (r->time1 != 0) {
-            r->time1 = 1;
-        }
-    }
-    r->reset = 0;
-    if (r->time0 != 0) {
-        r->time0 = r->time0 - 1;
-        if ((r->time0 << 16) == 0) {
-            r->act[0] = 0;
-            r->dirty |= 1;
-        }
-    }
-    if (r->time1 != 0) {
-        r->time1 = r->time1 - 1;
-        if ((r->time1 << 16) == 0) {
-            r->act[1] = 0;
-            r->dirty |= 2;
-        }
-    }
-    if (PadGetState(port) != 6) {
-        return 0;
-    }
-    if (r->dirty != 0) {
-        PadSetAct(port, r->act, 2);
-        if (PadSetActAlign(port, D_80063A84) == 1) {
-            r->dirty = 0;
-        }
-    }
-    return 8;
-}
 
 MemBlock *func_800118BC(MemBlock *blk, s32 words, Heap *heap);
 
@@ -2373,11 +2172,8 @@ void func_8001D894(void *sub, void *arg1, s32 flags, s32 arg3);
 
 void func_8001F4F8(u8 *arg0, u8 *arg1);
 
-s32 func_800281C0(PadRumble *r, s32 port);
 
-void func_80029100(AnimOwner *arg0);
 
-void func_8002A4C0(TexUploadList *arg0, u8 *arg1);
 
 /* A script cursor: kind 1 or 2 steps idx through a table of entries (0 entries
  * jump to the index in their low half) and stores the entry in cur. */
@@ -2430,11 +2226,8 @@ u8 *tga_convert(u8 *arg0, s32 w, s32 h);
 
 s32 func_80020064(u8 *arg0);
 
-ScriptCursor *func_80024E30(NAS *nas, ScriptInit *init);
 
-void func_80024FA4(ScriptCursor *c);
 
-ScriptCursor *func_80026048(NAS *nas, s32 arg1, s32 arg2, ScriptInit *init);
 
 
 
@@ -2527,23 +2320,14 @@ void func_80022140(s32 arg0, s32 arg1);
 
 s32 func_8002235C(_sfx_handler *voice);
 
-NAS *func_80022C3C(s32 x, s32 y, s32 z, u16 id, s32 slot);
 
-s16 func_80024008(s16 x, u8 *s);
 
-void SysPrintAt3d(GlyphPos *arg0, char *s, u32 arg2, u32 arg3);
 
-void func_80024AD8(void);
 
-s32 func_8002578C(NAS *nas);
 
-void func_80027408(void);
 
-void func_80027D90(void);
 
-void func_80029790(u8 *arg0);
 
-void func_8002A84C(TexSrc2A84C *s, TexDst2A84C *d, s32 n);
 
 
 /* func_80013F44: camera eased towards a target view */
@@ -2606,7 +2390,6 @@ void func_8001F0D4(u8 *arg0, u8 *arg1);
 
 void func_8001F828(u8 *arg0, u8 *arg1);
 
-void func_800243A0(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5);
 
 /* Map placement record (map_enviroment.placements, 0xA0 bytes each),
  * copied into a subengine by func_8001D6B4. */
@@ -2651,7 +2434,6 @@ void func_8001D6B4(MapEnvHead *env);
 
 u8 *func_8001FE80(u8 *arg0, s32 arg1, Blk32 *arg2, CamVec3 *arg3, s32 arg4, u8 * *arg5);
 
-void func_80028D40(AnimTex *t, s32 base, AnimTexSet *set);
 
 /* func_800248A0: three 0x38-byte sprite records drawn side by side */
 extern u8 D_80053074[];
@@ -2675,13 +2457,9 @@ void func_80020680(Quat *a, Quat *b, s32 t, Quat *out, s32 *pre);
 
 s32 func_80020C04(s32 arg0);
 
-void func_800235BC(ArenaDef *arg0);
 
-void func_80023A90(void);
 
-void func_8002854C(FreeNode *n);
 
-void func_80028774(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf);
 
 
 #include "bash/card.h"
@@ -2689,5 +2467,7 @@ void func_80028774(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf);
 #include "bash/music.h"
 
 #include "bash/sound.h"
+
+#include "bash/80022a3c.h"
 
 #endif /* BASH_MAIN_H */

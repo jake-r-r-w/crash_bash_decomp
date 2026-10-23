@@ -240,15 +240,18 @@
  },
  "800110A8": {
   "asm": "asm/nonmatchings/main/main/mal_free.s",
-  "calls": [],
-  "fp": "a9d17c29434f08f6",
-  "fpn": "a8d91761e1f9847c",
-  "leaf": true,
+  "calls": [
+   "800110A8",
+   "800322FC"
+  ],
+  "fp": "30b939f7a52eba89",
+  "fpn": "9884b5a5cc2bbf34",
+  "leaf": false,
   "name": "mal_free",
   "orig": "func_800110A8",
   "rom": 6312,
   "seg": "main/main",
-  "size": 508,
+  "size": 872,
   "src": "src/main/main.c"
  },
  "800112A4": {
@@ -5204,7 +5207,7 @@
   "src": "src/main/main.c"
  },
  "80022A3C": {
-  "asm": "asm/nonmatchings/main/main/CreateNAS.s",
+  "asm": "asm/nonmatchings/main/80022a3c/CreateNAS.s",
   "calls": [
    "80022FD4",
    "8002672C"
@@ -5215,12 +5218,12 @@
   "name": "CreateNAS",
   "orig": "func_80022A3C",
   "rom": 78396,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 512,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80022C3C": {
-  "asm": "asm/nonmatchings/main/main/func_80022C3C.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80022C3C.s",
   "calls": [
    "8002672C"
   ],
@@ -5230,12 +5233,12 @@
   "name": "func_80022C3C",
   "orig": "func_80022C3C",
   "rom": 78908,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 416,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80022DDC": {
-  "asm": "asm/nonmatchings/main/main/TriggerNas.s",
+  "asm": "asm/nonmatchings/main/80022a3c/TriggerNas.s",
   "calls": [
    "80022FD4",
    "8002672C"
@@ -5246,12 +5249,12 @@
   "name": "TriggerNas",
   "orig": "func_80022DDC",
   "rom": 79324,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 504,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80022FD4": {
-  "asm": "asm/nonmatchings/main/main/KillNAS.s",
+  "asm": "asm/nonmatchings/main/80022a3c/KillNAS.s",
   "calls": [
    "8001C270",
    "80026430",
@@ -5267,12 +5270,12 @@
   "name": "KillNAS",
   "orig": "func_80022FD4",
   "rom": 79828,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 388,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80023158": {
-  "asm": "asm/nonmatchings/main/main/func_80023158.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80023158.s",
   "calls": [
    "80011654"
   ],
@@ -5282,12 +5285,12 @@
   "name": "func_80023158",
   "orig": "func_80023158",
   "rom": 80216,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 196,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002321C": {
-  "asm": "asm/nonmatchings/main/main/func_8002321C.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002321C.s",
   "calls": [],
   "fp": "dcfa3ab9534018cb",
   "fpn": "36fe03559a7f6b96",
@@ -5295,12 +5298,12 @@
   "name": "func_8002321C",
   "orig": "func_8002321C",
   "rom": 80412,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 148,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800232B0": {
-  "asm": "asm/nonmatchings/main/main/AllocExtension.s",
+  "asm": "asm/nonmatchings/main/80022a3c/AllocExtension.s",
   "calls": [],
   "fp": "42150d5964dadcc0",
   "fpn": "d210d3ffb5aa7fd5",
@@ -5308,12 +5311,12 @@
   "name": "AllocExtension",
   "orig": "func_800232B0",
   "rom": 80560,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 340,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80023404": {
-  "asm": "asm/nonmatchings/main/main/FreeExtension.s",
+  "asm": "asm/nonmatchings/main/80022a3c/FreeExtension.s",
   "calls": [],
   "fp": "e903545db579294a",
   "fpn": "56b483c1ae583417",
@@ -5321,12 +5324,12 @@
   "name": "FreeExtension",
   "orig": "func_80023404",
   "rom": 80900,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 440,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800235BC": {
-  "asm": "asm/nonmatchings/main/main/func_800235BC.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_800235BC.s",
   "calls": [
    "800322FC"
   ],
@@ -5336,12 +5339,12 @@
   "name": "func_800235BC",
   "orig": "func_800235BC",
   "rom": 81340,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 512,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800237BC": {
-  "asm": "asm/nonmatchings/main/main/SetNasDefaults.s",
+  "asm": "asm/nonmatchings/main/80022a3c/SetNasDefaults.s",
   "calls": [],
   "fp": "d35e407150fd2374",
   "fpn": "5719596839975a0a",
@@ -5349,12 +5352,12 @@
   "name": "SetNasDefaults",
   "orig": "func_800237BC",
   "rom": 81852,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 724,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80023A90": {
-  "asm": "asm/nonmatchings/main/main/func_80023A90.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80023A90.s",
   "calls": [],
   "fp": "629eb74686a5b763",
   "fpn": "96f8b676a8036ac6",
@@ -5362,12 +5365,12 @@
   "name": "func_80023A90",
   "orig": "func_80023A90",
   "rom": 82576,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 1400,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80024008": {
-  "asm": "asm/nonmatchings/main/main/func_80024008.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80024008.s",
   "calls": [],
   "fp": "e2ede506d764bfb5",
   "fpn": "5c1a7afced403f72",
@@ -5375,12 +5378,12 @@
   "name": "func_80024008",
   "orig": "func_80024008",
   "rom": 83976,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 524,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80024214": {
-  "asm": "asm/nonmatchings/main/main/func_80024214.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80024214.s",
   "calls": [],
   "fp": "d88c61c44e2ad528",
   "fpn": "e3598b5b25e33704",
@@ -5388,12 +5391,12 @@
   "name": "func_80024214",
   "orig": "func_80024214",
   "rom": 84500,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 396,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800243A0": {
-  "asm": "asm/nonmatchings/main/main/func_800243A0.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_800243A0.s",
   "calls": [
    "80024008",
    "80024214",
@@ -5406,12 +5409,12 @@
   "name": "func_800243A0",
   "orig": "func_800243A0",
   "rom": 84896,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 816,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800246D0": {
-  "asm": "asm/nonmatchings/main/main/SysPrintAt3d.s",
+  "asm": "asm/nonmatchings/main/80022a3c/SysPrintAt3d.s",
   "calls": [
    "80029F9C"
   ],
@@ -5421,12 +5424,12 @@
   "name": "SysPrintAt3d",
   "orig": "func_800246D0",
   "rom": 85712,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 464,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800248A0": {
-  "asm": "asm/nonmatchings/main/main/func_800248A0.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_800248A0.s",
   "calls": [
    "8002992C"
   ],
@@ -5436,12 +5439,12 @@
   "name": "func_800248A0",
   "orig": "func_800248A0",
   "rom": 86176,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 568,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80024AD8": {
-  "asm": "asm/nonmatchings/main/main/func_80024AD8.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80024AD8.s",
   "calls": [
    "80011654"
   ],
@@ -5451,12 +5454,12 @@
   "name": "func_80024AD8",
   "orig": "func_80024AD8",
   "rom": 86744,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 856,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80024E30": {
-  "asm": "asm/nonmatchings/main/main/func_80024E30.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80024E30.s",
   "calls": [
    "800232B0",
    "80024FA4"
@@ -5467,12 +5470,12 @@
   "name": "func_80024E30",
   "orig": "func_80024E30",
   "rom": 87600,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 372,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80024FA4": {
-  "asm": "asm/nonmatchings/main/main/func_80024FA4.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80024FA4.s",
   "calls": [],
   "fp": "22b64678621b663c",
   "fpn": "b86071497f2a2ece",
@@ -5480,12 +5483,12 @@
   "name": "func_80024FA4",
   "orig": "func_80024FA4",
   "rom": 87972,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 268,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800250B0": {
-  "asm": "asm/nonmatchings/main/main/func_800250B0.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_800250B0.s",
   "calls": [
    "800251A8",
    "80025534"
@@ -5496,12 +5499,12 @@
   "name": "func_800250B0",
   "orig": "func_800250B0",
   "rom": 88240,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 248,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800251A8": {
-  "asm": "asm/nonmatchings/main/main/func_800251A8.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_800251A8.s",
   "calls": [
    "80022660",
    "80022FD4",
@@ -5513,12 +5516,12 @@
   "name": "func_800251A8",
   "orig": "func_800251A8",
   "rom": 88488,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 908,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80025534": {
-  "asm": "asm/nonmatchings/main/main/func_80025534.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80025534.s",
   "calls": [
    "80022660",
    "80022FD4",
@@ -5530,12 +5533,12 @@
   "name": "func_80025534",
   "orig": "func_80025534",
   "rom": 89396,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 600,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002578C": {
-  "asm": "asm/nonmatchings/main/main/func_8002578C.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002578C.s",
   "calls": [
    "8001463C",
    "8001562C",
@@ -5547,12 +5550,12 @@
   "name": "func_8002578C",
   "orig": "func_8002578C",
   "rom": 89996,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 700,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80025A48": {
-  "asm": "asm/nonmatchings/main/main/func_80025A48.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80025A48.s",
   "calls": [
    "8001562C"
   ],
@@ -5562,12 +5565,12 @@
   "name": "func_80025A48",
   "orig": "func_80025A48",
   "rom": 90696,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 156,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80025AE4": {
-  "asm": "asm/nonmatchings/main/main/func_80025AE4.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80025AE4.s",
   "calls": [],
   "fp": "bede8e06bb02b4d0",
   "fpn": "6ab149ac5e710a76",
@@ -5575,12 +5578,12 @@
   "name": "func_80025AE4",
   "orig": "func_80025AE4",
   "rom": 90852,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 44,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80025B10": {
-  "asm": "asm/nonmatchings/main/main/FetchDefaultColBox.s",
+  "asm": "asm/nonmatchings/main/80022a3c/FetchDefaultColBox.s",
   "calls": [
    "8001562C"
   ],
@@ -5590,12 +5593,12 @@
   "name": "FetchDefaultColBox",
   "orig": "func_80025B10",
   "rom": 90896,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 172,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80025BBC": {
-  "asm": "asm/nonmatchings/main/main/func_80025BBC.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80025BBC.s",
   "calls": [
    "80025E00",
    "80032F3C"
@@ -5606,12 +5609,12 @@
   "name": "func_80025BBC",
   "orig": "func_80025BBC",
   "rom": 91068,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 196,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80025C80": {
-  "asm": "asm/nonmatchings/main/main/FollowUnderContour.s",
+  "asm": "asm/nonmatchings/main/80022a3c/FollowUnderContour.s",
   "calls": [
    "80025E00",
    "80032F3C"
@@ -5622,12 +5625,12 @@
   "name": "FollowUnderContour",
   "orig": "func_80025C80",
   "rom": 91264,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 192,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80025D40": {
-  "asm": "asm/nonmatchings/main/main/FollowContour.s",
+  "asm": "asm/nonmatchings/main/80022a3c/FollowContour.s",
   "calls": [
    "80025E00",
    "80032F3C"
@@ -5638,12 +5641,12 @@
   "name": "FollowContour",
   "orig": "func_80025D40",
   "rom": 91456,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 192,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80025E00": {
-  "asm": "asm/nonmatchings/main/main/AddPlatformContour.s",
+  "asm": "asm/nonmatchings/main/80022a3c/AddPlatformContour.s",
   "calls": [
    "80025A48",
    "80032F3C"
@@ -5654,12 +5657,12 @@
   "name": "AddPlatformContour",
   "orig": "func_80025E00",
   "rom": 91648,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 324,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80025F44": {
-  "asm": "asm/nonmatchings/main/main/func_80025F44.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80025F44.s",
   "calls": [
    "80025E00"
   ],
@@ -5669,12 +5672,12 @@
   "name": "func_80025F44",
   "orig": "func_80025F44",
   "rom": 91972,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 72,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80025F8C": {
-  "asm": "asm/nonmatchings/main/main/func_80025F8C.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80025F8C.s",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -5682,12 +5685,12 @@
   "name": "func_80025F8C",
   "orig": "func_80025F8C",
   "rom": 92044,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 8,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80025F94": {
-  "asm": "asm/nonmatchings/main/main/func_80025F94.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80025F94.s",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -5695,12 +5698,12 @@
   "name": "func_80025F94",
   "orig": "func_80025F94",
   "rom": 92052,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 8,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80025F9C": {
-  "asm": "asm/nonmatchings/main/main/func_80025F9C.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80025F9C.s",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -5708,12 +5711,12 @@
   "name": "func_80025F9C",
   "orig": "func_80025F9C",
   "rom": 92060,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 8,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80025FA4": {
-  "asm": "asm/nonmatchings/main/main/func_80025FA4.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80025FA4.s",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -5721,12 +5724,12 @@
   "name": "func_80025FA4",
   "orig": "func_80025FA4",
   "rom": 92068,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 8,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80025FAC": {
-  "asm": "asm/nonmatchings/main/main/GotoLinkAnim.s",
+  "asm": "asm/nonmatchings/main/80022a3c/GotoLinkAnim.s",
   "calls": [],
   "fp": "fa588c12f8fe2343",
   "fpn": "d6283882ff835081",
@@ -5734,12 +5737,12 @@
   "name": "GotoLinkAnim",
   "orig": "func_80025FAC",
   "rom": 92076,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 156,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026048": {
-  "asm": "asm/nonmatchings/main/main/func_80026048.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80026048.s",
   "calls": [
    "800232B0",
    "80024FA4"
@@ -5750,12 +5753,12 @@
   "name": "func_80026048",
   "orig": "func_80026048",
   "rom": 92232,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 308,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002617C": {
-  "asm": "asm/nonmatchings/main/main/func_8002617C.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002617C.s",
   "calls": [
    "80022DDC"
   ],
@@ -5765,12 +5768,12 @@
   "name": "func_8002617C",
   "orig": "func_8002617C",
   "rom": 92540,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 148,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026210": {
-  "asm": "asm/nonmatchings/main/main/func_80026210.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80026210.s",
   "calls": [],
   "fp": "d443889ecc699fa6",
   "fpn": "4816e7c4195f1f5c",
@@ -5778,12 +5781,12 @@
   "name": "func_80026210",
   "orig": "func_80026210",
   "rom": 92688,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 248,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026308": {
-  "asm": "asm/nonmatchings/main/main/func_80026308.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80026308.s",
   "calls": [
    "80023A90"
   ],
@@ -5793,12 +5796,12 @@
   "name": "func_80026308",
   "orig": "func_80026308",
   "rom": 92936,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 52,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002633C": {
-  "asm": "asm/nonmatchings/main/main/SysGetLen.s",
+  "asm": "asm/nonmatchings/main/80022a3c/SysGetLen.s",
   "calls": [],
   "fp": "660591b30f983e97",
   "fpn": "b780e73821037de7",
@@ -5806,12 +5809,12 @@
   "name": "SysGetLen",
   "orig": "func_8002633C",
   "rom": 92988,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 156,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800263D8": {
-  "asm": "asm/nonmatchings/main/main/func_800263D8.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_800263D8.s",
   "calls": [],
   "fp": "266daf81c1c6f42e",
   "fpn": "b792411275b3e0a8",
@@ -5819,12 +5822,12 @@
   "name": "func_800263D8",
   "orig": "func_800263D8",
   "rom": 93144,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 64,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026418": {
-  "asm": "asm/nonmatchings/main/main/func_80026418.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80026418.s",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -5832,12 +5835,12 @@
   "name": "func_80026418",
   "orig": "func_80026418",
   "rom": 93208,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 8,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026420": {
-  "asm": "asm/nonmatchings/main/main/func_80026420.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80026420.s",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -5845,12 +5848,12 @@
   "name": "func_80026420",
   "orig": "func_80026420",
   "rom": 93216,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 8,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026428": {
-  "asm": "asm/nonmatchings/main/main/func_80026428.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80026428.s",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -5858,12 +5861,12 @@
   "name": "func_80026428",
   "orig": "func_80026428",
   "rom": 93224,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 8,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026430": {
-  "asm": "asm/nonmatchings/main/main/func_80026430.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80026430.s",
   "calls": [
    "80023404"
   ],
@@ -5873,12 +5876,12 @@
   "name": "func_80026430",
   "orig": "func_80026430",
   "rom": 93232,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 132,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800264B4": {
-  "asm": "asm/nonmatchings/main/main/func_800264B4.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_800264B4.s",
   "calls": [
    "800110A8"
   ],
@@ -5888,12 +5891,12 @@
   "name": "func_800264B4",
   "orig": "func_800264B4",
   "rom": 93364,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 52,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800264E8": {
-  "asm": "asm/nonmatchings/main/main/FindExtension.s",
+  "asm": "asm/nonmatchings/main/80022a3c/FindExtension.s",
   "calls": [],
   "fp": "0cba2e3210407ded",
   "fpn": "c74b68499548f303",
@@ -5901,12 +5904,12 @@
   "name": "FindExtension",
   "orig": "func_800264E8",
   "rom": 93416,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 88,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026540": {
-  "asm": "asm/nonmatchings/main/main/AddMotion.s",
+  "asm": "asm/nonmatchings/main/80022a3c/AddMotion.s",
   "calls": [
    "800232B0"
   ],
@@ -5916,12 +5919,12 @@
   "name": "AddMotion",
   "orig": "func_80026540",
   "rom": 93504,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 156,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800265DC": {
-  "asm": "asm/nonmatchings/main/main/func_800265DC.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_800265DC.s",
   "calls": [
    "800232B0"
   ],
@@ -5931,12 +5934,12 @@
   "name": "func_800265DC",
   "orig": "func_800265DC",
   "rom": 93660,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 168,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026684": {
-  "asm": "asm/nonmatchings/main/main/AddObject.s",
+  "asm": "asm/nonmatchings/main/80022a3c/AddObject.s",
   "calls": [
    "800232B0"
   ],
@@ -5946,12 +5949,12 @@
   "name": "AddObject",
   "orig": "func_80026684",
   "rom": 93828,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 168,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002672C": {
-  "asm": "asm/nonmatchings/main/main/AddExtEngine.s",
+  "asm": "asm/nonmatchings/main/80022a3c/AddExtEngine.s",
   "calls": [
    "8001D390",
    "800232B0",
@@ -5963,12 +5966,12 @@
   "name": "AddExtEngine",
   "orig": "func_8002672C",
   "rom": 93996,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 300,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026858": {
-  "asm": "asm/nonmatchings/main/main/func_80026858.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80026858.s",
   "calls": [
    "800232B0"
   ],
@@ -5978,12 +5981,12 @@
   "name": "func_80026858",
   "orig": "func_80026858",
   "rom": 94296,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 68,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002689C": {
-  "asm": "asm/nonmatchings/main/main/AddExt.s",
+  "asm": "asm/nonmatchings/main/80022a3c/AddExt.s",
   "calls": [
    "800232B0"
   ],
@@ -5993,12 +5996,12 @@
   "name": "AddExt",
   "orig": "func_8002689C",
   "rom": 94364,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 32,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800268BC": {
-  "asm": "asm/nonmatchings/main/main/func_800268BC.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_800268BC.s",
   "calls": [],
   "fp": "28b064277f297c57",
   "fpn": "58f44a3a085d086a",
@@ -6006,12 +6009,12 @@
   "name": "func_800268BC",
   "orig": "func_800268BC",
   "rom": 94396,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 144,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002694C": {
-  "asm": "asm/nonmatchings/main/main/func_8002694C.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002694C.s",
   "calls": [],
   "fp": "40fecdee2d86bb2f",
   "fpn": "3277c9065c9a080d",
@@ -6019,12 +6022,12 @@
   "name": "func_8002694C",
   "orig": "func_8002694C",
   "rom": 94540,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 52,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026980": {
-  "asm": "asm/nonmatchings/main/main/func_80026980.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80026980.s",
   "calls": [],
   "fp": "8211bd908fe87afd",
   "fpn": "74a80fc26a5e83e4",
@@ -6032,12 +6035,12 @@
   "name": "func_80026980",
   "orig": "func_80026980",
   "rom": 94592,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 132,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026A04": {
-  "asm": "asm/nonmatchings/main/main/func_80026A04.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80026A04.s",
   "calls": [],
   "fp": "10a4c5a16f08f40b",
   "fpn": "38628dabd8323d94",
@@ -6045,12 +6048,12 @@
   "name": "func_80026A04",
   "orig": "func_80026A04",
   "rom": 94724,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 36,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026A28": {
-  "asm": "asm/nonmatchings/main/main/func_80026A28.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80026A28.s",
   "calls": [],
   "fp": "50357991685eb7b8",
   "fpn": "7fc5e21059f7536d",
@@ -6058,12 +6061,12 @@
   "name": "func_80026A28",
   "orig": "func_80026A28",
   "rom": 94760,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 44,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026A54": {
-  "asm": "asm/nonmatchings/main/main/func_80026A54.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80026A54.s",
   "calls": [],
   "fp": "3dcf117a19330b11",
   "fpn": "74a80fc26a5e83e4",
@@ -6071,12 +6074,12 @@
   "name": "func_80026A54",
   "orig": "func_80026A54",
   "rom": 94804,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 132,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026AD8": {
-  "asm": "asm/nonmatchings/main/main/func_80026AD8.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80026AD8.s",
   "calls": [],
   "fp": "b4d24a89cd849557",
   "fpn": "38628dabd8323d94",
@@ -6084,12 +6087,12 @@
   "name": "func_80026AD8",
   "orig": "func_80026AD8",
   "rom": 94936,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 36,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026AFC": {
-  "asm": "asm/nonmatchings/main/main/func_80026AFC.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80026AFC.s",
   "calls": [],
   "fp": "cef3cacf9dc7729b",
   "fpn": "7b5831b505bd7034",
@@ -6097,12 +6100,12 @@
   "name": "func_80026AFC",
   "orig": "func_80026AFC",
   "rom": 94972,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 116,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026B70": {
-  "asm": "asm/nonmatchings/main/main/func_80026B70.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80026B70.s",
   "calls": [],
   "fp": "837b77e46b3b5a67",
   "fpn": "db1db64dc504aa50",
@@ -6110,12 +6113,12 @@
   "name": "func_80026B70",
   "orig": "func_80026B70",
   "rom": 95088,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 36,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026B94": {
-  "asm": "asm/nonmatchings/main/main/ReAdoptChild.s",
+  "asm": "asm/nonmatchings/main/80022a3c/ReAdoptChild.s",
   "calls": [],
   "fp": "15b1deac96f4a1b6",
   "fpn": "3d7966e4191bf873",
@@ -6123,12 +6126,12 @@
   "name": "ReAdoptChild",
   "orig": "func_80026B94",
   "rom": 95124,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 96,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026BF4": {
-  "asm": "asm/nonmatchings/main/main/RemoveFamily.s",
+  "asm": "asm/nonmatchings/main/80022a3c/RemoveFamily.s",
   "calls": [],
   "fp": "00889d05c7c8e50f",
   "fpn": "15770cdf35020cf4",
@@ -6136,12 +6139,12 @@
   "name": "RemoveFamily",
   "orig": "func_80026BF4",
   "rom": 95220,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 68,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026C38": {
-  "asm": "asm/nonmatchings/main/main/func_80026C38.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80026C38.s",
   "calls": [],
   "fp": "d8047264f0a350a7",
   "fpn": "f50e6109c43aec7f",
@@ -6149,12 +6152,12 @@
   "name": "func_80026C38",
   "orig": "func_80026C38",
   "rom": 95288,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 52,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026C6C": {
-  "asm": "asm/nonmatchings/main/main/InsertNasTag.s",
+  "asm": "asm/nonmatchings/main/80022a3c/InsertNasTag.s",
   "calls": [],
   "fp": "5f1ff67f65931198",
   "fpn": "181688339e7f4a46",
@@ -6162,12 +6165,12 @@
   "name": "InsertNasTag",
   "orig": "func_80026C6C",
   "rom": 95340,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 40,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026C94": {
-  "asm": "asm/nonmatchings/main/main/func_80026C94.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80026C94.s",
   "calls": [],
   "fp": "938490e961faee10",
   "fpn": "9444e8f3f2d367d7",
@@ -6175,12 +6178,12 @@
   "name": "func_80026C94",
   "orig": "func_80026C94",
   "rom": 95380,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 108,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026D00": {
-  "asm": "asm/nonmatchings/main/main/NullProc.s",
+  "asm": "asm/nonmatchings/main/80022a3c/NullProc.s",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -6188,12 +6191,12 @@
   "name": "NullProc",
   "orig": "func_80026D00",
   "rom": 95488,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 8,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026D08": {
-  "asm": "asm/nonmatchings/main/main/func_80026D08.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80026D08.s",
   "calls": [],
   "fp": "fbd9dae5b9bbdd81",
   "fpn": "3f2dfa86ce6bd3c6",
@@ -6201,12 +6204,12 @@
   "name": "func_80026D08",
   "orig": "func_80026D08",
   "rom": 95496,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 148,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026D9C": {
-  "asm": "asm/nonmatchings/main/main/func_80026D9C.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80026D9C.s",
   "calls": [
    "80026D08"
   ],
@@ -6216,12 +6219,12 @@
   "name": "func_80026D9C",
   "orig": "func_80026D9C",
   "rom": 95644,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 144,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026E2C": {
-  "asm": "asm/nonmatchings/main/main/func_80026E2C.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80026E2C.s",
   "calls": [
    "80026D08"
   ],
@@ -6231,12 +6234,12 @@
   "name": "func_80026E2C",
   "orig": "func_80026E2C",
   "rom": 95788,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 160,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026ECC": {
-  "asm": "asm/nonmatchings/main/main/func_80026ECC.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80026ECC.s",
   "calls": [],
   "fp": "9955cf6815471f1e",
   "fpn": "b3e05f8d97f22323",
@@ -6244,12 +6247,12 @@
   "name": "func_80026ECC",
   "orig": "func_80026ECC",
   "rom": 95948,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 124,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026F48": {
-  "asm": "asm/nonmatchings/main/main/func_80026F48.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80026F48.s",
   "calls": [
    "80022FD4"
   ],
@@ -6259,12 +6262,12 @@
   "name": "func_80026F48",
   "orig": "func_80026F48",
   "rom": 96072,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 132,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80026FCC": {
-  "asm": "asm/nonmatchings/main/main/func_80026FCC.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80026FCC.s",
   "calls": [
    "80022FD4"
   ],
@@ -6274,12 +6277,12 @@
   "name": "func_80026FCC",
   "orig": "func_80026FCC",
   "rom": 96204,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 116,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80027040": {
-  "asm": "asm/nonmatchings/main/main/DeleteNas_AllAST.s",
+  "asm": "asm/nonmatchings/main/80022a3c/DeleteNas_AllAST.s",
   "calls": [
    "80022FD4"
   ],
@@ -6289,12 +6292,12 @@
   "name": "DeleteNas_AllAST",
   "orig": "func_80027040",
   "rom": 96320,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 112,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800270B0": {
-  "asm": "asm/nonmatchings/main/main/func_800270B0.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_800270B0.s",
   "calls": [
    "80022FD4"
   ],
@@ -6304,12 +6307,12 @@
   "name": "func_800270B0",
   "orig": "func_800270B0",
   "rom": 96432,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 64,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800270F0": {
-  "asm": "asm/nonmatchings/main/main/func_800270F0.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_800270F0.s",
   "calls": [],
   "fp": "8adf483f67e9ef24",
   "fpn": "a28c378952689bca",
@@ -6317,12 +6320,12 @@
   "name": "func_800270F0",
   "orig": "func_800270F0",
   "rom": 96496,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 156,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002718C": {
-  "asm": "asm/nonmatchings/main/main/func_8002718C.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002718C.s",
   "calls": [
    "80010158",
    "800153A8",
@@ -6351,12 +6354,12 @@
   "name": "func_8002718C",
   "orig": "func_8002718C",
   "rom": 96652,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 224,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002726C": {
-  "asm": "asm/nonmatchings/main/main/func_8002726C.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002726C.s",
   "calls": [
    "8002ED68",
    "8002EF7C"
@@ -6367,12 +6370,12 @@
   "name": "func_8002726C",
   "orig": "func_8002726C",
   "rom": 96876,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 64,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800272AC": {
-  "asm": "asm/nonmatchings/main/main/func_800272AC.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_800272AC.s",
   "calls": [
    "80010488",
    "80017388",
@@ -6389,12 +6392,12 @@
   "name": "func_800272AC",
   "orig": "func_800272AC",
   "rom": 96940,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 348,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80027408": {
-  "asm": "asm/nonmatchings/main/main/func_80027408.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80027408.s",
   "calls": [
    "80015590",
    "8002ECD0",
@@ -6413,12 +6416,12 @@
   "name": "func_80027408",
   "orig": "func_80027408",
   "rom": 97288,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 244,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800274FC": {
-  "asm": "asm/nonmatchings/main/main/func_800274FC.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_800274FC.s",
   "calls": [
    "80011654"
   ],
@@ -6428,12 +6431,12 @@
   "name": "func_800274FC",
   "orig": "func_800274FC",
   "rom": 97532,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 160,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002759C": {
-  "asm": "asm/nonmatchings/main/main/func_8002759C.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002759C.s",
   "calls": [
    "8002ED68",
    "8002EEEC"
@@ -6444,12 +6447,12 @@
   "name": "func_8002759C",
   "orig": "func_8002759C",
   "rom": 97692,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 92,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800275F8": {
-  "asm": "asm/nonmatchings/main/main/func_800275F8.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_800275F8.s",
   "calls": [
    "8002ECD0",
    "8002ED68",
@@ -6461,12 +6464,12 @@
   "name": "func_800275F8",
   "orig": "func_800275F8",
   "rom": 97784,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 172,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800276A4": {
-  "asm": "asm/nonmatchings/main/main/func_800276A4.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_800276A4.s",
   "calls": [
    "800275F8"
   ],
@@ -6476,12 +6479,12 @@
   "name": "func_800276A4",
   "orig": "func_800276A4",
   "rom": 97956,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 32,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800276C4": {
-  "asm": "asm/nonmatchings/main/main/func_800276C4.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_800276C4.s",
   "calls": [
    "80011654"
   ],
@@ -6491,12 +6494,12 @@
   "name": "func_800276C4",
   "orig": "func_800276C4",
   "rom": 97988,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 152,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002775C": {
-  "asm": "asm/nonmatchings/main/main/func_8002775C.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002775C.s",
   "calls": [
    "8002F254"
   ],
@@ -6506,12 +6509,12 @@
   "name": "func_8002775C",
   "orig": "func_8002775C",
   "rom": 98140,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 52,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80027790": {
-  "asm": "asm/nonmatchings/main/main/func_80027790.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80027790.s",
   "calls": [
    "8003470C",
    "800348A8",
@@ -6525,12 +6528,12 @@
   "name": "func_80027790",
   "orig": "func_80027790",
   "rom": 98192,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 300,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800278BC": {
-  "asm": "asm/nonmatchings/main/main/func_800278BC.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_800278BC.s",
   "calls": [
    "80035718",
    "8003599C"
@@ -6541,12 +6544,12 @@
   "name": "func_800278BC",
   "orig": "func_800278BC",
   "rom": 98492,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 76,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80027908": {
-  "asm": "asm/nonmatchings/main/main/func_80027908.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80027908.s",
   "calls": [
    "800348A8"
   ],
@@ -6556,12 +6559,12 @@
   "name": "func_80027908",
   "orig": "func_80027908",
   "rom": 98568,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 60,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80027944": {
-  "asm": "asm/nonmatchings/main/main/func_80027944.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80027944.s",
   "calls": [
    "800348A8",
    "80034AEC",
@@ -6573,12 +6576,12 @@
   "name": "func_80027944",
   "orig": "func_80027944",
   "rom": 98628,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 96,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800279A4": {
-  "asm": "asm/nonmatchings/main/main/func_800279A4.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_800279A4.s",
   "calls": [
    "800322FC",
    "800349AC",
@@ -6593,12 +6596,12 @@
   "name": "func_800279A4",
   "orig": "func_800279A4",
   "rom": 98724,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 140,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80027A30": {
-  "asm": "asm/nonmatchings/main/main/xa_setvol.s",
+  "asm": "asm/nonmatchings/main/80022a3c/xa_setvol.s",
   "calls": [
    "80035B2C"
   ],
@@ -6608,12 +6611,12 @@
   "name": "xa_setvol",
   "orig": "func_80027A30",
   "rom": 98864,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 68,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80027A74": {
-  "asm": "asm/nonmatchings/main/main/func_80027A74.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80027A74.s",
   "calls": [
    "80012FFC"
   ],
@@ -6623,12 +6626,12 @@
   "name": "func_80027A74",
   "orig": "func_80027A74",
   "rom": 98932,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 32,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80027A94": {
-  "asm": "asm/nonmatchings/main/main/func_80027A94.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80027A94.s",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -6636,12 +6639,12 @@
   "name": "func_80027A94",
   "orig": "func_80027A94",
   "rom": 98964,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 8,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80027A9C": {
-  "asm": "asm/nonmatchings/main/main/func_80027A9C.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80027A9C.s",
   "calls": [
    "80027A30"
   ],
@@ -6651,12 +6654,12 @@
   "name": "func_80027A9C",
   "orig": "func_80027A9C",
   "rom": 98972,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 56,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80027AD4": {
-  "asm": "asm/nonmatchings/main/main/func_80027AD4.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80027AD4.s",
   "calls": [
    "80035EAC",
    "800360DC",
@@ -6669,12 +6672,12 @@
   "name": "func_80027AD4",
   "orig": "func_80027AD4",
   "rom": 99028,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 700,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80027D90": {
-  "asm": "asm/nonmatchings/main/main/func_80027D90.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80027D90.s",
   "calls": [
    "80027AD4"
   ],
@@ -6684,12 +6687,12 @@
   "name": "func_80027D90",
   "orig": "func_80027D90",
   "rom": 99728,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 368,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80027F00": {
-  "asm": "asm/nonmatchings/main/main/func_80027F00.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80027F00.s",
   "calls": [
    "8002C894",
    "80031FAC",
@@ -6701,12 +6704,12 @@
   "name": "func_80027F00",
   "orig": "func_80027F00",
   "rom": 100096,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 124,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80027F7C": {
-  "asm": "asm/nonmatchings/main/main/func_80027F7C.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80027F7C.s",
   "calls": [],
   "fp": "7a41c2285520caed",
   "fpn": "50f39dd593b613a8",
@@ -6714,12 +6717,12 @@
   "name": "func_80027F7C",
   "orig": "func_80027F7C",
   "rom": 100220,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 156,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80028018": {
-  "asm": "asm/nonmatchings/main/main/func_80028018.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80028018.s",
   "calls": [],
   "fp": "75d5a3af43cdb03d",
   "fpn": "a2821730a2aab696",
@@ -6727,12 +6730,12 @@
   "name": "func_80028018",
   "orig": "func_80028018",
   "rom": 100376,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 168,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800280C0": {
-  "asm": "asm/nonmatchings/main/main/func_800280C0.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_800280C0.s",
   "calls": [
    "80027AD4"
   ],
@@ -6742,12 +6745,12 @@
   "name": "func_800280C0",
   "orig": "func_800280C0",
   "rom": 100544,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 152,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80028158": {
-  "asm": "asm/nonmatchings/main/main/func_80028158.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80028158.s",
   "calls": [],
   "fp": "03df95fe402c31ee",
   "fpn": "9957afe20a72c8c6",
@@ -6755,12 +6758,12 @@
   "name": "func_80028158",
   "orig": "func_80028158",
   "rom": 100696,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 44,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80028184": {
-  "asm": "asm/nonmatchings/main/main/func_80028184.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80028184.s",
   "calls": [],
   "fp": "cc5c829dff6796e9",
   "fpn": "620596f467045862",
@@ -6768,12 +6771,12 @@
   "name": "func_80028184",
   "orig": "func_80028184",
   "rom": 100740,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 28,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800281A0": {
-  "asm": "asm/nonmatchings/main/main/func_800281A0.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_800281A0.s",
   "calls": [],
   "fp": "1020faef4d1761ac",
   "fpn": "85aa37f02bdefdcc",
@@ -6781,12 +6784,12 @@
   "name": "func_800281A0",
   "orig": "func_800281A0",
   "rom": 100768,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 32,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800281C0": {
-  "asm": "asm/nonmatchings/main/main/func_800281C0.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_800281C0.s",
   "calls": [
    "80035EAC",
    "800360DC",
@@ -6798,12 +6801,12 @@
   "name": "func_800281C0",
   "orig": "func_800281C0",
   "rom": 100800,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 280,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800282D8": {
-  "asm": "asm/nonmatchings/main/main/func_800282D8.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_800282D8.s",
   "calls": [],
   "fp": "08781630d4bb4fd0",
   "fpn": "bf8b1e2af7acf6ab",
@@ -6811,12 +6814,12 @@
   "name": "func_800282D8",
   "orig": "func_800282D8",
   "rom": 101080,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 32,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "800282F8": {
-  "asm": "asm/nonmatchings/main/main/func_800282F8.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_800282F8.s",
   "calls": [
    "800282F8"
   ],
@@ -6826,12 +6829,12 @@
   "name": "func_800282F8",
   "orig": "func_800282F8",
   "rom": 101112,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 296,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80028420": {
-  "asm": "asm/nonmatchings/main/main/func_80028420.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80028420.s",
   "calls": [
    "800282F8"
   ],
@@ -6841,12 +6844,12 @@
   "name": "func_80028420",
   "orig": "func_80028420",
   "rom": 101408,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 300,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002854C": {
-  "asm": "asm/nonmatchings/main/main/func_8002854C.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002854C.s",
   "calls": [
    "80028AE4"
   ],
@@ -6856,12 +6859,12 @@
   "name": "func_8002854C",
   "orig": "func_8002854C",
   "rom": 101708,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 552,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80028774": {
-  "asm": "asm/nonmatchings/main/main/func_80028774.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80028774.s",
   "calls": [
    "80011654",
    "8003358C",
@@ -6875,12 +6878,12 @@
   "name": "func_80028774",
   "orig": "func_80028774",
   "rom": 102260,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 544,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80028994": {
-  "asm": "asm/nonmatchings/main/main/func_80028994.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80028994.s",
   "calls": [],
   "fp": "d3c375fe5fbb377b",
   "fpn": "1648aab057fd2501",
@@ -6888,12 +6891,12 @@
   "name": "func_80028994",
   "orig": "func_80028994",
   "rom": 102804,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 108,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80028A00": {
-  "asm": "asm/nonmatchings/main/main/func_80028A00.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80028A00.s",
   "calls": [],
   "fp": "78ae30f1f14b0bb7",
   "fpn": "54a91f70115bb25d",
@@ -6901,12 +6904,12 @@
   "name": "func_80028A00",
   "orig": "func_80028A00",
   "rom": 102912,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 40,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80028A28": {
-  "asm": "asm/nonmatchings/main/main/func_80028A28.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80028A28.s",
   "calls": [
    "800282F8"
   ],
@@ -6916,12 +6919,12 @@
   "name": "func_80028A28",
   "orig": "func_80028A28",
   "rom": 102952,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 188,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80028AE4": {
-  "asm": "asm/nonmatchings/main/main/func_80028AE4.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80028AE4.s",
   "calls": [
    "80028AE4"
   ],
@@ -6931,12 +6934,12 @@
   "name": "func_80028AE4",
   "orig": "func_80028AE4",
   "rom": 103140,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 228,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80028BC8": {
-  "asm": "asm/nonmatchings/main/main/func_80028BC8.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80028BC8.s",
   "calls": [],
   "fp": "fe559fbca3c92ec2",
   "fpn": "1d77bfff239230c5",
@@ -6944,12 +6947,12 @@
   "name": "func_80028BC8",
   "orig": "func_80028BC8",
   "rom": 103368,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 40,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80028BF0": {
-  "asm": "asm/nonmatchings/main/main/func_80028BF0.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80028BF0.s",
   "calls": [
    "8003358C",
    "8003362C",
@@ -6962,12 +6965,12 @@
   "name": "func_80028BF0",
   "orig": "func_80028BF0",
   "rom": 103408,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 164,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80028C94": {
-  "asm": "asm/nonmatchings/main/main/func_80028C94.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80028C94.s",
   "calls": [
    "8003358C",
    "8003362C",
@@ -6980,12 +6983,12 @@
   "name": "func_80028C94",
   "orig": "func_80028C94",
   "rom": 103572,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 164,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80028D38": {
-  "asm": "asm/nonmatchings/main/main/func_80028D38.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80028D38.s",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -6993,12 +6996,12 @@
   "name": "func_80028D38",
   "orig": "func_80028D38",
   "rom": 103736,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 8,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80028D40": {
-  "asm": "asm/nonmatchings/main/main/func_80028D40.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80028D40.s",
   "calls": [
    "800282F8",
    "8002F014"
@@ -7009,12 +7012,12 @@
   "name": "func_80028D40",
   "orig": "func_80028D40",
   "rom": 103744,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 488,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80028F28": {
-  "asm": "asm/nonmatchings/main/main/texture_update_scroll.s",
+  "asm": "asm/nonmatchings/main/80022a3c/texture_update_scroll.s",
   "calls": [
    "8003649C"
   ],
@@ -7024,12 +7027,12 @@
   "name": "texture_update_scroll",
   "orig": "func_80028F28",
   "rom": 104232,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 472,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80029100": {
-  "asm": "asm/nonmatchings/main/main/func_80029100.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80029100.s",
   "calls": [
    "80028F28",
    "8002F014"
@@ -7040,12 +7043,12 @@
   "name": "func_80029100",
   "orig": "func_80029100",
   "rom": 104704,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 364,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002926C": {
-  "asm": "asm/nonmatchings/main/main/texture_init_mem_textureset.s",
+  "asm": "asm/nonmatchings/main/80022a3c/texture_init_mem_textureset.s",
   "calls": [
    "80011654",
    "80028994"
@@ -7056,12 +7059,12 @@
   "name": "texture_init_mem_textureset",
   "orig": "func_8002926C",
   "rom": 105068,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 756,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80029560": {
-  "asm": "asm/nonmatchings/main/main/func_80029560.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80029560.s",
   "calls": [
    "800282F8",
    "80028420",
@@ -7076,12 +7079,12 @@
   "name": "func_80029560",
   "orig": "func_80029560",
   "rom": 105824,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 560,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80029790": {
-  "asm": "asm/nonmatchings/main/main/func_80029790.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80029790.s",
   "calls": [
    "800110A8",
    "8002854C",
@@ -7093,12 +7096,12 @@
   "name": "func_80029790",
   "orig": "func_80029790",
   "rom": 106384,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 412,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002992C": {
-  "asm": "asm/nonmatchings/main/main/func_8002992C.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002992C.s",
   "calls": [],
   "fp": "793f8cddce6d8114",
   "fpn": "1a34f479bfb143ae",
@@ -7106,12 +7109,12 @@
   "name": "func_8002992C",
   "orig": "func_8002992C",
   "rom": 106796,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 1020,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80029D28": {
-  "asm": "asm/nonmatchings/main/main/texture_draw.s",
+  "asm": "asm/nonmatchings/main/80022a3c/texture_draw.s",
   "calls": [],
   "fp": "8480c54510db718d",
   "fpn": "9c183cad50141b2e",
@@ -7119,12 +7122,12 @@
   "name": "texture_draw",
   "orig": "func_80029D28",
   "rom": 107816,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 628,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "80029F9C": {
-  "asm": "asm/nonmatchings/main/main/func_80029F9C.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_80029F9C.s",
   "calls": [],
   "fp": "13e34680a272e286",
   "fpn": "b3783047a4823c4d",
@@ -7132,12 +7135,12 @@
   "name": "func_80029F9C",
   "orig": "func_80029F9C",
   "rom": 108444,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 832,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002A2DC": {
-  "asm": "asm/nonmatchings/main/main/func_8002A2DC.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002A2DC.s",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -7145,12 +7148,12 @@
   "name": "func_8002A2DC",
   "orig": "func_8002A2DC",
   "rom": 109276,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 8,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002A2E4": {
-  "asm": "asm/nonmatchings/main/main/func_8002A2E4.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002A2E4.s",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -7158,12 +7161,12 @@
   "name": "func_8002A2E4",
   "orig": "func_8002A2E4",
   "rom": 109284,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 8,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002A2EC": {
-  "asm": "asm/nonmatchings/main/main/calc_rgbcode.s",
+  "asm": "asm/nonmatchings/main/80022a3c/calc_rgbcode.s",
   "calls": [],
   "fp": "abc4d8763069b907",
   "fpn": "5d2bcb271185625d",
@@ -7171,12 +7174,12 @@
   "name": "calc_rgbcode",
   "orig": "func_8002A2EC",
   "rom": 109292,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 112,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002A35C": {
-  "asm": "asm/nonmatchings/main/main/texture_release_loading_mem.s",
+  "asm": "asm/nonmatchings/main/80022a3c/texture_release_loading_mem.s",
   "calls": [
    "800112A4",
    "80011544",
@@ -7188,12 +7191,12 @@
   "name": "texture_release_loading_mem",
   "orig": "func_8002A35C",
   "rom": 109404,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 116,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002A3D0": {
-  "asm": "asm/nonmatchings/main/main/func_8002A3D0.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002A3D0.s",
   "calls": [
    "80028420",
    "80028A00",
@@ -7206,12 +7209,12 @@
   "name": "func_8002A3D0",
   "orig": "func_8002A3D0",
   "rom": 109520,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 232,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002A4B8": {
-  "asm": "asm/nonmatchings/main/main/func_8002A4B8.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002A4B8.s",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -7219,12 +7222,12 @@
   "name": "func_8002A4B8",
   "orig": "func_8002A4B8",
   "rom": 109752,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 8,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002A4C0": {
-  "asm": "asm/nonmatchings/main/main/func_8002A4C0.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002A4C0.s",
   "calls": [
    "800282F8",
    "8002F014"
@@ -7235,12 +7238,12 @@
   "name": "func_8002A4C0",
   "orig": "func_8002A4C0",
   "rom": 109760,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 228,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002A5A4": {
-  "asm": "asm/nonmatchings/main/main/func_8002A5A4.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002A5A4.s",
   "calls": [
    "800115D8",
    "8002926C"
@@ -7251,12 +7254,12 @@
   "name": "func_8002A5A4",
   "orig": "func_8002A5A4",
   "rom": 109988,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 172,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002A650": {
-  "asm": "asm/nonmatchings/main/main/func_8002A650.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002A650.s",
   "calls": [],
   "fp": "1539450191a30037",
   "fpn": "25fc1c0348e3cf93",
@@ -7264,12 +7267,12 @@
   "name": "func_8002A650",
   "orig": "func_8002A650",
   "rom": 110160,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 44,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002A67C": {
-  "asm": "asm/nonmatchings/main/main/func_8002A67C.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002A67C.s",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -7277,12 +7280,12 @@
   "name": "func_8002A67C",
   "orig": "func_8002A67C",
   "rom": 110204,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 8,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002A684": {
-  "asm": "asm/nonmatchings/main/main/func_8002A684.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002A684.s",
   "calls": [
    "8002F014"
   ],
@@ -7292,12 +7295,12 @@
   "name": "func_8002A684",
   "orig": "func_8002A684",
   "rom": 110212,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 188,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002A740": {
-  "asm": "asm/nonmatchings/main/main/func_8002A740.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002A740.s",
   "calls": [
    "8002854C"
   ],
@@ -7307,12 +7310,12 @@
   "name": "func_8002A740",
   "orig": "func_8002A740",
   "rom": 110400,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 60,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002A77C": {
-  "asm": "asm/nonmatchings/main/main/func_8002A77C.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002A77C.s",
   "calls": [
    "80028420",
    "80028A00",
@@ -7325,12 +7328,12 @@
   "name": "func_8002A77C",
   "orig": "func_8002A77C",
   "rom": 110460,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 180,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002A830": {
-  "asm": "asm/nonmatchings/main/main/func_8002A830.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002A830.s",
   "calls": [],
   "fp": "eb586f3f6a18818e",
   "fpn": "3aa229107891d94b",
@@ -7338,12 +7341,12 @@
   "name": "func_8002A830",
   "orig": "func_8002A830",
   "rom": 110640,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 28,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002A84C": {
-  "asm": "asm/nonmatchings/main/main/func_8002A84C.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002A84C.s",
   "calls": [
    "80028994"
   ],
@@ -7353,12 +7356,12 @@
   "name": "func_8002A84C",
   "orig": "func_8002A84C",
   "rom": 110668,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 352,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002A9AC": {
-  "asm": "asm/nonmatchings/main/main/func_8002A9AC.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002A9AC.s",
   "calls": [
    "80028AE4"
   ],
@@ -7368,12 +7371,12 @@
   "name": "func_8002A9AC",
   "orig": "func_8002A9AC",
   "rom": 111020,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 164,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002AA50": {
-  "asm": "asm/nonmatchings/main/main/func_8002AA50.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002AA50.s",
   "calls": [
    "80028AE4"
   ],
@@ -7383,12 +7386,12 @@
   "name": "func_8002AA50",
   "orig": "func_8002AA50",
   "rom": 111184,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 60,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002AA8C": {
-  "asm": "asm/nonmatchings/main/main/func_8002AA8C.s",
+  "asm": "asm/nonmatchings/main/80022a3c/func_8002AA8C.s",
   "calls": [],
   "fp": "3b19aef005d7c6d9",
   "fpn": "4400fbfad107156d",
@@ -7396,9 +7399,9 @@
   "name": "func_8002AA8C",
   "orig": "func_8002AA8C",
   "rom": 111244,
-  "seg": "main/main",
+  "seg": "main/80022a3c",
   "size": 20,
-  "src": "src/main/main.c"
+  "src": "src/main/80022a3c.c"
  },
  "8002AAA0": {
   "asm": "asm/nonmatchings/main/sound/func_8002AAA0.s",
