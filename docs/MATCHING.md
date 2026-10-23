@@ -206,6 +206,13 @@ first diff:
   headers (`bash/tank.h`, `pogo.h`, `arkenoid.h`, `polar.h`; see
   [ARCHITECTURE.md](ARCHITECTURE.md), Leaked source) for the function's
   prototype, its structs and the globals' types.
+- **Earlier builds:** the prototype and demo discs ([PROTOTYPES.md](PROTOTYPES.md))
+  hold earlier compiles of most exe and engine functions. `decomp.py protos
+  NAME` finds the function in each disc's exe or engine by opcode
+  similarity. Diffing
+  two successive builds shows which source change made a pattern: in
+  `func_8007F314` the Oct 9 build added case 0's 0x7000 test and, with it,
+  retail's tail merge, which narrowed the search to that test's shape.
 
 ## Diff patterns
 
@@ -806,8 +813,13 @@ first. Rows that need inline asm are not allowed (only C).
 | a call's arg register (a1 = &D_x) set in every arm of an if/switch tree, all arms jumping to one shared jal | write the call in each arm with its own constant argument instead of choosing a pointer then calling once: cross-jumping merges the identical jal tails | `func_80081470` |
 | a shared tail reached by goto from one switch case reloads base/hi regs (and steals a lui into the gotos' delay slots) while the target reuses the other path's live regs | write the tail in full in both cases instead of a goto: cross-jumping merges the identical copies with the fallthrough path's registers | `Cups_Update` |
 | a big constant (lui/ori) used in a loop body is hoisted out of the loop to a reg/stack slot; target rebuilds it at each use | assign it to a local right before the use (mask = ~0x8000; x &= mask;) instead of the literal | `func_80083708` |
-| a search loop's hit copy (mode = j) belongs in the compare branch's delay slot, but with `mode = j` at the loop top cse rewrites j++ as mode+1 (the longer-lived var becomes canonical, so the registers rotate), and with `mode = j; goto found;` inside the if the slot stays a nop and an out-of-line move+j block appears | move the default (`mode = 7;` before the if) into an else branch: reorg's mark_target_live_regs scans linearly from the last BARRIER, so a default set earlier makes mode look live on the fallthrough and blocks filling the slot from the hit block | `Cups_Update` |
-| lui/addiu of a global array base comes after the index multiply/sll in ours, before it in target | take the base into a pointer local first, then index it: `T *base = Array; p = &base[i];` (or `b = G; p = b + i;`) | `func_800BDD30`, `func_800C0448`, `func_800B62F4`, `func_800B77F8`, `func_800B558C`, `func_800C2D10`, `func_800C2E60`, `func_800BB9B0`, `func_800B5168`, `func_800B8324` |
+| a search loop's hit copy (mode = j) belongs in the compare branch's delay slot, but with `mode = j` at the loop top cse rewrites j++ as mode+1 (the longer-lived var becomes canonical, so the registers rotate), and with `mode = j; goto found;` inside the if the slot stays a nop and an out-of-line move+j block appears | move the default (`mode = 7;` before the if) into an else branch: reorg's mark_target_live_regs scans linearly from the last BARRIER, so a default set earlier makes mode look live on the fallthrough and blocks filling the slot from the hit block | `Cups_Update`, `func_8007F314` (the same `D_8009AF38` search, ported as is) |
+| lui/addiu of a global array base comes after the index multiply/sll in ours, before it in target | take the base into a pointer local first, then index it: `T *base = Array; p = &base[i];` (or `b = G; p = b + i;`). Used at many sites, a `static inline` returning `&base[i]` does it for all of them | `func_800BDD30`, `func_800C0448`, `func_800B62F4`, `func_800B77F8`, `func_800B558C`, `func_800C2D10`, `func_800C2E60`, `func_800BB9B0`, `func_800B5168`, `func_800B8324`, `func_80083488`, `func_8007F314` (`ActivePad()`, 18 sites) |
+| An early copy of a repeated `x = 0; j join` exit (right after `if (c)`) collects all the others in the target; yours folds it into a later one | another exit shaped `if (c2) { x = 0; break; }` captures it: write those as `if (!c2) { ...; x = 0; } else x = 0;` (Reading the compiler's rules, Cross-jumping); `decomp.py jtrace` shows which copy each exit went to | `func_8007F314` |
+| Two `and`s, `x & ~c1` then `& c2`, with c2's lui/ori loaded first; yours has one `and` | `keep = c2; t = x & ~c1; y = t & keep;`: one expression is folded by fold-const, `t` alone puts c2 after it (statement order breaks sched's tie), and the constant local alone lets combine drop `& ~c1` from c2's known bits | `func_8007F314` |
+| The target sets `ret = 1` again after a call in one arm; yours drops it | cse knows ret is already 1 on that path: set it in each arm instead of once before the `if` | `func_8007F314` |
+| A variable moves to the next callee-saved register after you remove a few of its assignments | global.c's priority is floor_log2(refs) * refs / live (`decomp.py sched` prints both pseudos'): keep the assignments the target's shape allows (`ret = 0` in both arms of an `if`), or a pseudo just under it takes the register | `func_8007F314` |
+| A constant (`ret = 1`) scheduled before a mask's lui/ori at a block start where the target has it after (reorg then fills the jumps into the block from the mask) | put the assignment after the statement that uses the mask: sched1 breaks the tie by source order | `func_8007F314` |
 | lui/addiu of a global array base hoisted before the first call into a saved reg in ours; target sets it after the call (after the arg setup) | declare `T *base;` and assign `base = Array;` after the call, just before the index expression | `func_800C02F8`, `func_800BD43C` |
 | a second use of the same global base (Heroes) CSEs with the first: its lui/addiu lands after the shifts, or one hi/lo pair splits across v0/v1 | give each use its own base local (`b = Heroes; ...; b2 = Heroes;`) | `func_800B79F4`, `func_800B5EC8` |
 | a compare against a constant becomes an slti/sltiu range merge, or its lui/ori is placed after the loads; target keeps the constant in a register set first | assign it to a local before the loads (`lim = 0x900;`) and compare with `lim` / `-lim` | `func_800B4EFC`, `func_800B8964` |
@@ -2001,16 +2013,30 @@ The rules found so far, each one checked against a trace:
     the label when jump2 starts sit in code order, the last one at the head.
   - That needs the matched insns to follow a label, or a branch around the
     jump when the other copy is also preceded by a jump (the codes must
-    agree before the branch-around discount applies). A tail that follows a
-    call never hands itself over.
+    agree before the branch-around discount applies: `find_cross_jump`
+    stops without it when one side is a jump and the other an insn, call
+    or barrier; labels are skipped on the other copy's side). A tail that
+    follows a call hands itself over only to a copy with the same call
+    before it, arguments and all.
+  - So a first copy that follows a branch around it (`if (c) { x = 0;
+    break; }`) is kept when no other copy in the chain follows a
+    conditional branch; the last copy, which follows a label, then hands
+    itself to it at the end of the pass, and the rest follow in the next
+    pass. That keeps the earliest copy, as retail's `func_8007F314` does.
+    Any later exit shaped `if (c) { x = 0; break; }` captures the first
+    copy instead: write it as `if (!c) { ...; x = 0; } else x = 0;` or let
+    it fall to an exit after the block.
   - Jumps to a label made during jump2 itself are not searched (`INSN_UID < max_uid`).
   - Before reload, threading stops at a loop's start note (`follow_jumps`).
     An empty loop after a switch therefore makes jump2 thread the `break`s
     one at a time, so each tail meets the copies threaded before it, and the
     first copy is kept. Without that loop every `break` already targets the
-    join and all merge into the last tail. Either way an earlier copy can
-    hand itself to a later one only if the later jump is already in the
-    chain when the earlier one is reached (`func_8007F314`, parked).
+    join and all merge into the last tail. It applies to every family of
+    tails at once; `func_8007F314` needed the first copy kept only for its
+    `ret = 0` exits, which the shape above gives.
+  - `decomp.py jtrace NAME [--cross]` runs cc1 under ptrace and lists each
+    comparison (`fcj E1 vs E2 min N -> F1 F2`), each cross-jump and each
+    redirect by insn uid, annotated from the `.greg` dump.
   - Each jump is threaded before its cross-jump is tried, and
     `redirect_jump` deletes the old label once its last user has gone. So a
     label that stops a tail's match lasts only until its users are
@@ -2019,7 +2045,12 @@ The rules found so far, each one checked against a trace:
     over too.
   - Two tails that end up jumping to a label jump2 made (the label before
     a kept copy) are never compared again, so their own preceding code (a
-    call and its arguments) stays duplicated.
+    call and its arguments) stays duplicated. That keeps two identical
+    tails apart when their last statement is a copy that gives itself up
+    first (`func_8007F314`'s cases 0x40 and 0x80 end `if (...) f(); ret =
+    0;`, so their jumps reach the new label before they meet), and it
+    splits them when they should merge (two `PlaySfx(); ret = 0;` tails
+    that each follow a label).
   - A layout `x; L: j T` with `x` in other jumps' delay slots (`j L; x`)
     comes from a cross-jump that put `L` before one shared insn, which
     reorg then moved into the `j`'s slot (`SetTweakAi`,

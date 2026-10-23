@@ -83,7 +83,7 @@ breaks the match is dropped (`--apply`; without it, it only lists).
 |---|---|---|---|
 | Retail `SCUS_945.70` | release | 40 KB of preprocessed headers (engine entry `+0x54000`) | ~400 prototypes, the AST enums and the Tank/Pogo/Arkenoid/Polar structs (`bash/tank.h`, `pogo.h`, `arkenoid.h`, `polar.h`) |
 | Aug 23 2000 prototype (Hidden Palace) | early | engine entry `+0x4E000`: an SN object for `PSX_PAD.CPP`, its ~90-header include list, 788 type records | source directory and header names (`Core\Shell`, `GameEng\Titles`, ...) |
-| Sep 14 2000 prototype (Hidden Palace) | early | none | exe comparison only |
+| Sep 14 2000 prototype (Hidden Palace) | early | none | exe comparison; earlier compiles (Earlier compiles of a function) |
 | Oct 9 2000 prototype (Hidden Palace; PAL review build `SCES_028.34`) | close to retail | engine entry `+0x40002`: 3447 type records | the engine's own types (`NAS`, `EXTengine`, `subengine`, `HeroInfo`, ...), every AST enum: names for 201 AST Init/Plot functions; the `include/bash/` game headers |
 | Jampack Winter 2000 demo (`SCUS_946.24`) | older than Oct 9 | engine entry `+0x2BE15`: 4611 type records, **30 function records**, 44 globals, 1021 line records | the engine units `panel` (`PANEL.CPP`) and `pause` (`PAUSE.CPP`); 23 function and 33 global names, 13 locals, the global types; the shell's types (`SWORD_XY`, `process_info`, `fade_info`, ...) and enums |
 | PlayStation Demo Disc 1.3 (`SCUS-94618`, mastered 2000-08-30) | the Jampack build | the same as Jampack: the same `CRASHBSH.EXE` and `.DAT`, byte for byte | nothing new; dates the Jampack build to 2000-08-30 or earlier |
@@ -372,6 +372,33 @@ The 4 names the repo gave itself are replaced by the originals
 - `PrintNasPos` is never referenced, so it can't be placed.
 - The 0x38-byte texture entry still has three views (`obj_texture`,
   `AnimEntry`, `TexDst2A84C`) whose fields disagree in type.
+
+## Earlier compiles of a function
+
+Every scanned disc carries its own build of the exe and the engine, so most
+engine functions exist in several earlier compiles. `decomp.py protos NAME`
+finds the closest function in each disc's exe or cut engine by opcode
+similarity (`--top N` for more candidates). The discs carry no debug records
+for most of these functions, but comparing the compiles of successive
+builds shows when a pattern appeared, and with it which source change made
+it. The slot overlays (minigames) are not cut out of the discs' DATs, so
+only exe and engine functions can be looked up.
+
+`func_8007F314` (the pause menu) across the builds, roughly oldest first (the Euro
+disc is dated 2000-10-09, but its code is older than the Oct 9 prototype's):
+
+| Build | Similarity | Size | What it showed |
+|---|---|---|---|
+| Aug 23 | 0.50 | 6248 B | |
+| Jampack and Demo Disc 1.3 | 0.47 (0.28 by the scan's signatures) | 4664 B | `PAUSE.CPP` line records: lines 209-818, switch dispatches at lines 323, 340 and 442 |
+| Sep 14 | 0.63 | 6996 B | no early returns and no `flags & 0x7000` test in case 0; the `ret = 0` exits fold into the last copy |
+| Euro Demo 65 | 0.56 | 5112 B | the last copy kept, as Sep 14 |
+| Oct 9 | 0.86 | 7004 B | the early returns and case 0's `0x7000` test added, and with them retail's merge (all exits on case 0's copy); a few more cases than retail |
+| US and PAL retail | 1.00 | 5772 B | the same compile |
+| Japanese retail | 0.96 | 5996 B | a later revision: the test is `0x4000`, the default case tests it too, and the exits fold into that last copy |
+
+So the shape of the new `0x7000` test was the lever, which led to the rule
+in MATCHING.md (Reading the compiler's rules, Cross-jumping) and the match.
 
 ## Discs not scanned yet
 

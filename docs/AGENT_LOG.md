@@ -16,12 +16,12 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `main.exe` function matches and `main.c` is split (2026-10-23); Phase 2's
   naming and data are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2517/2537 game functions matched (93.44% of game code bytes, 2026-10-23):
-  **main.exe, ovl61, ovl65, ovl66, ovl67, ovl69 and ovl6a are complete**;
-  20 left (engine, ovl5d, ovl5e, ovl5f, ovl60, ovl62, ovl63, ovl64, ovl68),
-  every one tried by the swarm at least once. All 564 PsyQ functions (Sony objects). 1
-  parked by hand (`decomp.py status`; the swarm parked 5 more, which the
-  dashboard counts from `docs/swarm.js`). Matches are C only, natural C
+- 2518/2537 game functions matched (94.01% of game code bytes, 2026-10-23):
+  **main.exe, the engine, ovl61, ovl65, ovl66, ovl67, ovl69 and ovl6a are
+  complete**; 19 left (ovl5d 3, ovl5e 1, ovl5f 2, ovl60 3, ovl62 3, ovl63 4,
+  ovl64 2, ovl68 1), every one tried by the swarm at least once. All 564
+  PsyQ functions (Sony objects). None parked by hand (`decomp.py status`;
+  the swarm parked 5, which the dashboard counts from `docs/swarm.js`). Matches are C only, natural C
   first (CONVENTIONS.md, Matching rules; the "hack" class was dropped on
   2026-10-22: steering C counts as matched, inline asm is refused;
   `func_800193A8`'s register pins predate that). Every slot overlay's id word is
@@ -85,7 +85,7 @@ rest are fixed by hand from the worker's patch (Gotchas). A park whose
 `jtbl_` names functions is a bad split (Gotchas).
 
 Hand work, between runs:
-1. The park: `func_8007F314` (engine). First run `decomp.py similar` on
+1. The swarm's near misses (Open leads), by hand. First run `decomp.py similar` on
    any function before working it: a 1.00 twin matched elsewhere ports by
    hand (Gotchas, Tooling). For a register-priority miss, try the repeated assignment after an empty
    `do {} while (0)` (MATCHING.md, CSE's block ends): it adds refs without a
@@ -97,6 +97,11 @@ Hand work, between runs:
    (a store-back of a just-loaded value, a repeated store) or jump2's
    cross-jump (a duplicated call, which also sets its arg registers twice
    and so takes away their birthing priority); `func_800BC274` used both.
+   For a merged tail kept in the wrong place, `decomp.py jtrace NAME`
+   shows which copy each exit went to and why; `decomp.py protos NAME`
+   finds the function's earlier compiles on the prototype discs, and two
+   successive builds show which source change made a pattern
+   (`func_8007F314`, PROTOTYPES.md).
 2. Name each function as it's matched when the evidence allows.
 3. The `main.c` split is finished: nine files (2026-10-23). The zones
    left open (ARCHITECTURE.md, Files inside `main/main`) are closed: no
@@ -136,76 +141,6 @@ and current tools).
   - A deterministic search over the Diff patterns' common fixes (copy a
     parameter to a local, s16 -> s32, split a statement, a constant in a
     local, a goto loop), generalising `splitvars`.
-- **`func_8007F314` (engine pause menu, 5772 B), parked 2026-10-18 at
-  structure 1147/1443, regions 197/264 since the 2026-10-23 goto pass**
-  (swarm checkpoint was 1263; C under
-  `#ifdef NON_MATCHING`, the `block` note lists what's left). Most of the
-  diff comes from jump2's cross-jumping of the ~20 `ret = 0; break;` tails:
-  the target keeps the copy in case 0 (`.L8007F704`) and every other tail
-  jumps there. What I found, from `jump.c` (`find_cross_jump`) and dumps
-  (`-dg -dJ`):
-  - jump2 walks the code forward. The jump it is looking at gives up its
-    tail to a matching copy, and the search starts with the jump most
-    recently added to the target label's chain.
-  - A tail can give itself up when `s3 = 0` follows a label or a branch
-    around it. A tail that follows a call never can, so it is kept and
-    collects the later ones.
-  - Jumps to a label made during jump2 itself are never cross-jumped with
-    each other (`INSN_UID < max_uid`).
-  - An empty `do {} while (0)` after the switch stops the `break`s being
-    threaded before reload (its LOOP_BEG note), so the first copy is the
-    one kept. That gives the target's merge pattern.
-  - Still to find: the C that puts an *existing* label on case 0's
-    `ret = 0` block. Then case 0's `PlaySfx(0x192)` tail could merge into
-    case 8's, and that block's `j` would get its delay slot from the target
-    (the target keeps `s3 = 0` outside it).
-  - 2026-10-23 pass (regions 176/264 blocks still the best): the chain
-    order comes from `redirect_jump`, which puts each threaded jump at the
-    head of the join's chain (MATCHING.md, Cross-jumping). So case 0's
-    PlaySfx tail can merge into case 8's only if case 8's jump already
-    targets the join when jump2 starts. The target also keeps both
-    `return 1` blocks apart at 0xb0, where ours folds the first into the
-    second. Early exits in cases 0 and 8, `return ret` for 0x101/0x2B and
-    other shapes raised `try`'s structure count (to 1298) but lowered
-    regions (163-164 blocks); the block note lists them. Next: a cc1 built
-    from FSF 2.8.1 with traces in `jump.c`/`reorg.c` (needs the full
-    tarball: the reference tree lacks host configs), or C with a `goto`
-    giving the surviving `j` a label. `scratch/f3/` has the variants and
-    `dumpv.sh` (install a variant, dump sched2/jump2/dbr, list the tails).
-  - 2026-10-23 goto pass (regions 176 -> 197/264, now the park). Three
-    changes help: the hook `if (D_8005A644 & 0x1000) func_80082D90(ret);`
-    written in both branches (the else as `else if`), which replaces the
-    empty loop (+6); a `goto` from the `unk74` test into the first
-    `return 1` block (+4, FindExtension's rule); and case 0's
-    `PlaySfx(0x192)` as a `goto` into case 8's (+11 with the hook pair).
-    The last is not the source: the target's case 0 jump-table cases 2-4
-    share one `sw v0,0x10(a0); j` (L8F4), which needs case 0's own PlaySfx
-    to survive until jump2.
-  - The three tail families keep different copies in the target: the
-    first `ret = 0; break;` (case 0), case 8's PlaySfx, and the last
-    `ret = 1; func_80080FBC();` (case 0x20). Plain `break`s give all-first
-    (with the empty loop) or all-last (without). Mixing `goto exit` (cases
-    0 and 8, case 0x20's tail) with `break` (the rest, loop kept) gets the
-    PlaySfx merge right (187), but case 0's `ret = 0` copy still folds away.
-    `goto`s for the `ret = 1` copies remove refs and move `ret` to s4, so
-    the source has those duplicates.
-  - Case 0's `s3 = 0; .L8007F708: j; lui`: in matched code (`SetTweakAi`,
-    `AR_PI_TestOutOfBounds`) that layout comes from a cross-jump label put
-    before one matched insn that reorg then moves into the `j`'s slot. So
-    before reorg one more shared insn sat after case 0's `s3 = 0`, probably
-    the hook's `lui v0, %hi(D_8005A644)`.
-  - The unit is probably `PAUSE.CPP` (PROTOTYPES.md, Jampack). The
-    container's 2.8.1-psx `cc1plus` compiles this C to identical code
-    (`scratch/f3/g/cxx/`), but `xori v0,v0,1` after `func_800832BC` is
-    C++'s `!f()` on a `bool` (our C needs `r ^= 1`).
-  - Harness: `scratch/f3/g/` (`t.sh` scores `.fn` variants by try and
-    regions, `full.sh` the full diff, `dump.sh` the jump2/dbr RTL).
-  - Also verified here: a constant set in the same basic block as its use
-    stays in a register (reload_cse makes `and v0,a1` / `sllv ...,s5`), so
-    move `max = 4` / `n = 1` past the label in front of them.
-  - Tools: `scratch/f314/` (ignored) has `rtl.js` (compact RTL from a cc1
-    dump), `copies.js` (lists the `s3 = 0; j` tails before and after
-    jump2) and the listing scripts.
 - **Tooling ideas not done** (from the 2026-10-16 plan):
   - Pilots, no code: model tiers (`--model haiku --escalate-model sonnet
     --big-workers 0` on ~40 functions under 128 B, check the first matches'
@@ -262,6 +197,15 @@ Other:
 ## Gotchas
 
 **Tooling**
+- **`try`'s `structure n/total` counts differing instructions** (lower is
+  better), and a shift in alignment swings it by hundreds; for a big
+  function compare `regions` blocks instead. Look the symptom up in the
+  Diff patterns table before digging into a pass: `func_8007F314`'s
+  base-before-index order was already a row (`T *base = Array; p =
+  &base[i];`).
+- **`try` adds one to the function's `tries` in `.decomp/state.json`
+  each run**, so a script that runs it over many variants should restore
+  that file afterwards (`git checkout .decomp/state.json`).
 - **Typing a byte-array global as a struct can move its loads.** Its reads
   become in-struct MEMs, and gcc 2.8's alias rule lets a scalar read at a
   fixed address pass a store through a struct pointer but not an in-struct
@@ -560,6 +504,15 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-23 (hand: `func_8007F314` matched, the engine complete):** from
+  the user's prototype findings. The Sep 14 and Oct 9 builds' copies
+  (`decomp.py protos`, new) showed retail's tail merge came in with case
+  0's `0x7000` test; a ptrace tracer on cc1's jump2 (`decomp.py jtrace`,
+  new) showed why (an exit right after a branch takes the first copy) and
+  which shapes keep it. Then the `ActivePad()` base-first helper (a known
+  Diff patterns row), Cups_Update's search loop, three statement orders
+  and the mask temps: regions 197 -> 264/264. ROADMAP's engine box ticked.
 
 - **2026-10-23 (hand: `func_8007F314` goto pass, still parked):** regions
   176 -> 197/264, the new park: the debug hook in both branches instead of

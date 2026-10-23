@@ -48,12 +48,15 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   functions with the same code), `vars NAME` (the variable behind a register
   swap), `sched NAME` (why cc1 allocated and scheduled it so: priorities, each
   block's memory-insn count, and the rule that took each insn off the ready
-  list: priority, birthing, class, potential hazard or luid), `splitvars NAME VAR` (search splits of a variable), `permute NAME
+  list: priority, birthing, class, potential hazard or luid), `jtrace NAME`
+  (jump2's cross-jumping step by step: which copy of a repeated tail is
+  kept, and why the others gave theirs up), `protos NAME` (the function's
+  earlier compiles on the prototype and demo discs), `splitvars NAME VAR` (search splits of a variable), `permute NAME
   --differing` (permute only the differing blocks' C), `permstats` (every
   permuter run: speed, improvements, matches), `units [SEG]` (evidence
   for file boundaries: switch-table parity proves a file start in any
   segment; `--data` adds data blocks, inversions and call ties for `main.c`).
-  `sched`, `regions` and `vars` read a parked function's C under
+  `sched`, `jtrace`, `regions` and `vars` read a parked function's C under
   `#ifdef NON_MATCHING` (built apart, with `-DNON_MATCHING`).
 - At the end of every session, update `docs/AGENT_LOG.md`: Current state,
   Next and Open leads, any new gotcha, and one short entry at the top of its

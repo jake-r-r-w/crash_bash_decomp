@@ -131,8 +131,10 @@ it's split into its translation units, its data is C, everything is named and
 typed, `build/engine.bin` still matches, and the formats the engine loads
 extract and are documented.
 
-- [ ] Match every function in `engine`.
-  Status: its last function is parked (docs/AGENT_LOG.md, Open leads).
+- [x] Match every function in `engine`.
+  Done 2026-10-23: the pause menu (`func_8007F314`) was the last, matched
+  from its earlier compiles on the prototype discs (PROTOTYPES.md, Earlier
+  compiles of a function).
 - [ ] Split it into its original translation units.
   Status: split at every start the binary proves (switch-table parity;
   ARCHITECTURE.md, Files inside the engine), and Jampack's records name two
