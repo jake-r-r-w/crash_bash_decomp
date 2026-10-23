@@ -38,10 +38,12 @@ def run(cmd):
 
 
 def blocks(text):
-    """File-scope definitions: [(start, end, kind, name)] for static inline functions (to the
-    } at column 0), #define macros (with their continuation lines) and one-line externs."""
+    """File-scope definitions: [(start, end, kind, name)] for static inline functions (from
+    the comment right above, through a parameter list on one line or several, to the } at
+    column 0), #define macros (with their continuation lines) and one-line externs."""
     out = []
-    for m in re.finditer(r"^static inline [^\n]*?\b(\w+)\s*\([^\n]*\{\n.*?^\}\n", text, re.M | re.S):
+    for m in re.finditer(r"^(?:/\*(?:[^*]|\*(?!/))*\*/\n)*static inline [^\n(]*?\b(\w+)\s*\([^;{]*?\)\s*\{\n.*?^\}\n",
+                         text, re.M | re.S):
         out.append((m.start(), m.end(), "inline", m.group(1)))
     for m in re.finditer(r"^#define\s+(\w+)(?:[^\n]*\\\n)*[^\n]*\n", text, re.M):
         # a macro #undef'd again (a temporary one around a few functions) is gone by the cut
@@ -117,7 +119,7 @@ def main():
             take.insert(0, hdr[s:e])
             keep = keep[:s] + keep[e:]
     protos = []
-    for pm in reversed(list(re.finditer(r"(?:(?:/\*(?:[^*]|\*(?!/))*\*/\n))?^[A-Za-z_][^\n;()]*?\b(\w+)\s*\([^;{]*?\)\s*;[^\n]*\n",
+    for pm in reversed(list(re.finditer(r"(?:^/\*(?:[^*]|\*(?!/))*\*/\n)?^[A-Za-z_][^\n;()]*?\b(\w+)\s*\([^;{]*?\)\s*;[^\n]*\n",
                                         keep, re.M))):
         if pm.group(1) in moved:
             protos.insert(0, pm.group(0))
@@ -128,7 +130,7 @@ def main():
             f"/* Functions and data defined in {new_c}. Anything the original headers declare\n"
             f" * (bash/pogo.h, ...) is declared there instead, not here.\n * owner: {new_c} */\n\n"
             f'#include "common.h"\n{old_inc_line}\n\n' + "".join(protos) + ("\n" if take else "")
-            + "\n".join(t.rstrip("\n") for t in take) + f"\n\n#endif /* {guard} */\n")
+            + "\n\n".join(t.rstrip("\n") for t in take) + f"\n\n#endif /* {guard} */\n")
     open(new_h, "w").write(text)
     if umbrella == old_h:
         keep = re.sub(r"\n(#endif[^\n]*\n?)\Z", f"\n{new_inc}\n\n\\1", keep.rstrip("\n") + "\n")
