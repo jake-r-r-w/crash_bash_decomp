@@ -538,7 +538,9 @@ Newest first, a few lines each. Details are in the commits.
   functions match retail in order, so `8007ee2c` is `pause` (functions
   74..95) and a new unit `80083708` starts at 96 (rodata `0x800ADF60`; the
   build matches). The link groups name only whole sections: no file inside
-  the engine. `main.c`: see the next entry.
+  the engine. `main.c`: the names against the cut zones (ARCHITECTURE.md,
+  Files inside `main/main`) pin one cut exactly (after 548); the rest leave
+  2-6 choices, so `main.c` is not split yet.
 
 - **2026-10-23 (PANEL.CPP locals and global types):** 13 locals named from
   Jampack's register records (one C variable in the register, one recorded

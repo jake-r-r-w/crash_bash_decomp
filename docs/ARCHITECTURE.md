@@ -160,7 +160,25 @@ How the boundaries were found:
     Demo 65's symbol table (PROTOTYPES.md). Their prefixes run in address
     order (`mal_*` the allocator, then file loading, joypad, camera,
     `dbase_*`, `prim_*`, `map_*`, scripts, `sfx_*`, the NAS object calls,
-    `texture_*`, `music_*`, `card_*`), a lead for the module split.
+    `texture_*`, `music_*`, `card_*`), a lead for the module split. Against
+    the cut zones (`units --data`, 2026-10-23, after regenerating the asm),
+    each change of prefix leaves (position of the last and first named
+    function; the cut may lie after any listed function):
+
+    | Change | Zone | Cuts |
+    |---|---|---|
+    | `mal_first_free` (35) / `init_file` (62) | after 46, after 56-57 | 3 |
+    | `dbase_release_all_mesh_anims` (153) / `prim_colour_poly` (173) | after 164-169 | 6 |
+    | `scripts_update` (331) / `sfx_delete_all` (338) | after 331-334 | 4 |
+    | `PlaySfx` (340) / `CreateNAS` (350) | after 348-349 | 2 |
+    | `texture_release_loading_mem` (482) / `sound_critical` (498) | after 495-496 | 2 |
+    | `machine_load_sfx` (520) / `continue_music` (533) | after 527-528 | 2 |
+    | `music_dload_midi` (544) / `card_save` (554) | after 548 | 1 |
+
+    A prefix is not a file, though: `shell_render_dcache` (3) shares the
+    one-file region 1-16 with `mal_*`, and no zone separates `xa_setvol`
+    (443) from the NAS calls (354-430). Only the last row is exact, and only
+    if music and the memory card are different files.
   - The Aug 23 prototype's debug pages name one shell source,
     `C:\crash4\Core\Shell\PSX\PSX_PAD.CPP`, and about 50 headers under
     `CORE\NASCORE`, `CORE\SHELL\INCLUDE` (`SHELL.H`, `ALLDBASE.H`),
