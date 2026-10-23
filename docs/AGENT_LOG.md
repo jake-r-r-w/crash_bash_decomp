@@ -507,6 +507,10 @@ Newest first, a few lines each. Details are in the commits.
   `break`/`goto` mix gives the target's three tail survivors. Found the
   unit is probably `PAUSE.CPP`; `cc1plus` compiles the C identically.
 
+- **2026-10-23 (Japanese retail scan, `protos/JP_retail/`):** no leak,
+  as PAL. Every disc on the list is scanned (PROTOTYPES.md); next is
+  deciding how to apply the Jampack and Euro Demo 65 names.
+
 - **2026-10-23 (PAL retail scan, `protos/PAL_retail/`):** no leak: no
   debug records, no source text or build paths, and the engine's spare
   space is zeros and `0x01` filler.
