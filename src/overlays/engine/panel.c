@@ -2102,7 +2102,7 @@ s32 StillTottingUpScore(void) {
     return 0;
 }
 
-void MakeSubBar(EngineBox *p, s16 x, s16 y, s32 a, s32 b) {
+void MakeSubBar(EngineBox *p, s16 x, s16 y, u32 a, u32 b) {
     p->unk54 = D_8001C7FC;
     p->unk6E = y;
     p->unk76 = y;

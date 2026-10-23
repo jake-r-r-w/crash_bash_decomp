@@ -54,7 +54,7 @@ extern Ovl5eWeaponVec D_800BE8AC[];
 
 NAS *func_800B9E74(EXTengine *eng, s32 self, s32 checkHeroes);
 
-void PAHeroHit(s32 arg0);
+void PAHeroHit(u32 arg0);
 
 void func_800BA7D8(s32 arg0);
 
@@ -72,7 +72,7 @@ void *func_800BC588(s32 idx, s32 mask);
 
 void func_800BC744(s32 arg0);
 
-void SetPAHeroCarry(s32 arg0);
+void SetPAHeroCarry(u32 arg0);
 
 void func_800BC800(s32 arg0);
 

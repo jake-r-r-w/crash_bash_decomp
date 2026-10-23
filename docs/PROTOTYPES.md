@@ -72,6 +72,11 @@ name the build already uses, two symbols on one function, and a function
 the repo has already named (unless `--replace`). The renames are kept in
 `protos/<disc>/renames_<module>.txt`.
 
+`proto_types.py` then gives the renamed functions the parameter types their
+C++ names spell, where the repo has the type and its own is generic (`u8 *`,
+an integer); it builds the whole batch and halves it until every change that
+breaks the match is dropped (`--apply`; without it, it only lists).
+
 ## At a glance
 
 | Disc | Build | Leak | What it gave |
@@ -290,7 +295,12 @@ The 4 names the repo gave itself are replaced by the originals
   approved: `renames_unconfirmed.txt`). Left: four stubs no place confirms
   (`DefaultTouched`, `DefHero2ObjectCollision`, `PrintNasPos`,
   `InitParticleEffect`).
-- The parameter types from the C++ names, one prototype at a time.
+- Parameter types: `proto_types.py` gave 21 functions the types their C++
+  names spell (`InsertNasTag(NAS *, NAS *)`, `kill_sprim_sub(subengine *)`,
+  `SysGetLen(char *)`, `BSwapEndian(u8 *, u32)`, ...); 13 more would change
+  the code or not compile and were dropped (`Set_Clock(u16, u16)`,
+  `line_intersect_zy(VECTOR *...)`, ...), 11 can't be written yet (a
+  function pointer, a differing count, a type the repo lacks).
 - Globals (`globals.txt`, 41 mapped): `main.exe`'s 15 game ones are renamed
   (`renames_main_globals*.txt`: `screen_aspect`, `FirstNas`, `World_floor_level`,
   `num_sfx_banks`, `cdb`, ..., `core_process`, `GlobalNAStatus`; those two are

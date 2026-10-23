@@ -823,7 +823,7 @@ void func_80012E88(void);
 void func_80012F90(u8 *arg0);
 u8 *func_80013110(u8 *arg0);
 s32 func_80013160(u8 *arg0);
-void set_joypad(u8 *arg0, s32 arg1);
+void set_joypad(u8 *arg0, u32 arg1);
 void cam_init(u8 *arg0);
 void func_8001452C(s32 arg0, s32 arg1);
 s32 *func_800153A8(void);
@@ -869,9 +869,9 @@ void func_800142D4(void *arg0);
 PointList *func_8001562C(subengine *sub);
 FlagPoint *func_80015780(EXTengine *eng, subengine *sub, u16 flag, VECTOR *out);
 void func_8001C2C0(u8 *arg0);
-void kill_sprim_sub(u8 *arg0);
+void kill_sprim_sub(subengine *arg0);
 void func_8001AA48(ModelObj *obj, void *arg1, s32 flags);
-void prim_colour_poly(RelTable *face, POLY_GT4 *poly, s32 arg2, s32 mode);
+void prim_colour_poly(RelTable *face, POLY_GT4 *poly, VECTOR *arg2, s32 mode);
 void prim_create_entity_single(u8 *face, POLY_GT4 *poly);
 void func_8001CBD4(u32 arg0);
 void func_8001CC08(void);
@@ -926,7 +926,7 @@ void func_800264B4(void);
 void func_80026A04(u8 *arg0);
 void func_80026AD8(u8 *arg0);
 void func_80026B70(u8 * *arg0, u8 *arg1);
-void RemoveFamily(u8 *arg0);
+void RemoveFamily(NAS *arg0);
 void func_8001C270(EXTengine *eng);
 void func_80026D08(void);
 void func_80026430(NAS *nas);
@@ -935,9 +935,9 @@ void func_80026980(NAS *nas);
 void func_80026A54(NAS *nas);
 void func_800268BC(NAS *nas);
 void func_80026C38(u8 *arg0, u8 *arg1);
-void InsertNasTag(u8 *arg0, u8 *arg1);
+void InsertNasTag(NAS *arg0, NAS *arg1);
 void func_80026C94(u8 *arg0, u8 *arg1);
-void NullProc(void);
+void NullProc(NAS *arg0);
 void DeleteNas_AllAST(s32 arg0);
 void func_800270B0(NAS *nas);
 s32 func_8002718C(void);
@@ -1924,7 +1924,7 @@ void func_80012E54(void);
 
 void func_8001325C(void);
 
-void palette_set_top_bits(u16 *arg0, s32 arg1);
+void palette_set_top_bits(u16 *arg0, u32 arg1);
 
 void func_8002775C(u8 *arg0);
 
@@ -2045,7 +2045,7 @@ void func_8002694C(NAS *nas, s32 bits);
 
 u8 *func_80015A78(s32 i, u8 *rec);
 
-void BSwapEndian(u8 *p, s32 n);
+void BSwapEndian(u8 *p, u32 n);
 
 void func_800228C4(_sfx_handler *voice);
 
@@ -2055,7 +2055,7 @@ void continue_music(void);
 
 void func_8002C11C(void);
 
-void WSwapEndian(u16 *p, s32 n);
+void WSwapEndian(u16 *p, u32 n);
 
 void func_800229FC(s32 i);
 
@@ -2103,7 +2103,7 @@ void *func_80011828(void *ptr, s32 bytes);
 
 void func_800138A4(void);
 
-s32 asload_chunk_relocatable(s32 arg0, s32 arg1, u8 *arg2, s32 arg3);
+s32 asload_chunk_relocatable(s32 arg0, s32 arg1, u32 **arg2, s32 arg3);
 
 s32 func_8002D360(u8 *arg0);
 
@@ -2269,7 +2269,7 @@ void func_8001DEF4(s32 *arg0, s32 *arg1);
 
 KeyEntry *func_8001E41C(KeyBlock *arg0, s32 arg1);
 
-s32 path_find(s32 arg0);
+s32 path_find(u32 arg0);
 
 void func_80020B44(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5);
 
@@ -2410,7 +2410,7 @@ s32 func_800158E4(u8 *arg0, s32 arg1);
 
 u8 *func_80016478(u8 *arg0, u8 *arg1);
 
-s32 dbase_mesh_anim_name_loaded(u8 *arg0, u8 *arg1);
+s32 dbase_mesh_anim_name_loaded(u8 *arg0, char *arg1);
 
 u8 *func_800165F8(u8 *arg0, u8 *arg1);
 
@@ -2475,7 +2475,7 @@ void func_8002617C(void);
 
 s16 func_80026210(s32 x, u8 *s);
 
-s32 SysGetLen(u8 *s);
+s32 SysGetLen(char *s);
 
 Ext400 *func_800265DC(NAS *nas);
 
@@ -2660,7 +2660,7 @@ typedef struct ScriptInit {
     u32 flags;
 } ScriptInit;
 
-void init_dots(void *arg0);
+void init_dots(subengine *arg0);
 
 u8 *tga_convert(u8 *arg0, s32 w, s32 h);
 
@@ -2818,7 +2818,7 @@ NAS *func_80022C3C(s32 x, s32 y, s32 z, u16 id, s32 slot);
 
 s16 func_80024008(s16 x, u8 *s);
 
-void SysPrintAt3d(GlyphPos *arg0, u8 *s, s32 arg2, s32 arg3);
+void SysPrintAt3d(GlyphPos *arg0, char *s, u32 arg2, u32 arg3);
 
 void func_80024AD8(void);
 

@@ -37,7 +37,7 @@ extern u16 D_8009D866;
 extern s16 D_8009D870;
 extern u16 D_8009D872;
 
-void DefaultTouched(void);
+void DefaultTouched(s32 arg0, s32 arg1);
 
 s32 func_8008670C(void);
 

@@ -47,7 +47,7 @@ void InitScore1Icons(void);
 
 void func_8007EAC0(void);
 
-void MakeSubBar(EngineBox *p, s16 x, s16 y, s32 a, s32 b);
+void MakeSubBar(EngineBox *p, s16 x, s16 y, u32 a, u32 b);
 
 void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
 

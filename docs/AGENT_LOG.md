@@ -524,6 +524,12 @@ Newest first, a few lines each. Details are in the commits.
   `break`/`goto` mix gives the target's three tail survivors. Found the
   unit is probably `PAUSE.CPP`; `cc1plus` compiles the C identically.
 
+- **2026-10-23 (parameter types from the C++ names):** new `proto_types.py`
+  demangles the applied names (g++ 2.x: `P7NAStype`, `T0`, `N40`, ...) and
+  writes the types the repo has over generic ones, then builds the batch and
+  halves it on a mismatch: 21 kept, 13 dropped (49 builds). Types are fixed
+  for the 21 only where the C's were generic or a different integer.
+
 - **2026-10-23 (stubs and the "mid-symbol" globals):** `DefaultTouched`,
   `DefHero2ObjectCollision` placed by the matched code storing them as
   handlers (`proto_scan.py`: by users, then by order among identical stubs;

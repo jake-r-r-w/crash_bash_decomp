@@ -3188,7 +3188,7 @@ s32 func_800866DC(s32 *arg0) {
     return 0;
 }
 
-void DefaultTouched(void) {
+void DefaultTouched(s32 arg0, s32 arg1) {
 }
 
 s32 func_8008670C(void) {

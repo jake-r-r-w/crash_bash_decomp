@@ -2265,7 +2265,7 @@ s32 func_80013334(s32 arg0, s32 arg1, u8 **arg2, s32 arg3) {
     return 0;
 }
 
-s32 asload_chunk_relocatable(s32 arg0, s32 arg1, u8 *arg2, s32 arg3) {
+s32 asload_chunk_relocatable(s32 arg0, s32 arg1, u32 **arg2, s32 arg3) {
     return func_80013034(arg0, arg1, arg3, NULL, arg2, 1, 0);
 }
 
@@ -2552,7 +2552,7 @@ void func_80013C78(void) {
     p[1] |= 0x80010000;
 }
 
-void set_joypad(u8 *arg0, s32 arg1) {
+void set_joypad(u8 *arg0, u32 arg1) {
     (*(s32*)((u8*)(arg0) + 48)) = arg1;
     (*(s32*)((u8*)(arg0) + 44)) = 1;
 }
@@ -3129,7 +3129,7 @@ void func_800154C0(u16 *arg0, s32 arg1) {
     }
 }
 
-void palette_set_top_bits(u16 *arg0, s32 arg1) {
+void palette_set_top_bits(u16 *arg0, u32 arg1) {
     s32 i;
 
     for (i = arg1 - 1; i != -1; i--) {
@@ -3137,7 +3137,7 @@ void palette_set_top_bits(u16 *arg0, s32 arg1) {
     }
 }
 
-void BSwapEndian(u8 *p, s32 n) {
+void BSwapEndian(u8 *p, u32 n) {
     s32 i;
     u8 lo;
     s32 v;
@@ -3150,7 +3150,7 @@ void BSwapEndian(u8 *p, s32 n) {
     }
 }
 
-void WSwapEndian(u16 *p, s32 n) {
+void WSwapEndian(u16 *p, u32 n) {
     s32 i;
     u16 lo;
     s32 v;
@@ -3389,7 +3389,7 @@ void *func_80015AB0(s32 *arg0, u8 *rec) {
     return *node;
 }
 
-void init_dots(void *arg0) {
+void init_dots(subengine *arg0) {
     s32 *p = (s32 *)((u8 *)arg0 + 0x6C);
     s32 n = p[3];
     TILE_1 *a = (TILE_1 *)p[1];
@@ -3734,7 +3734,7 @@ found:
     return NULL;
 }
 
-s32 dbase_mesh_anim_name_loaded(u8 *arg0, u8 *arg1) {
+s32 dbase_mesh_anim_name_loaded(u8 *arg0, char *arg1) {
     u8 *tbl;
     u8 *p;
     s32 n;
@@ -4419,7 +4419,7 @@ void func_80017640(void) {
     }
 }
 
-void prim_colour_poly(RelTable *face, POLY_GT4 *poly, s32 arg2, s32 mode) {
+void prim_colour_poly(RelTable *face, POLY_GT4 *poly, VECTOR *arg2, s32 mode) {
     u16 *idx;
     u32 *colors;
     u32 *c;
@@ -6453,7 +6453,7 @@ subengine *func_8001C34C(s32 n, subengine *sub) {
 }
 
 
-void kill_sprim_sub(u8 *arg0) {
+void kill_sprim_sub(subengine *arg0) {
     s32 temp_a0;
     s32 temp_a0_2;
 
@@ -7377,7 +7377,7 @@ found:
     return NULL;
 }
 
-s32 path_find(s32 arg0) {
+s32 path_find(u32 arg0) {
     s32 *p;
     s32 n;
     s32 i;
@@ -10548,7 +10548,7 @@ void func_800243A0(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
     }
 }
 
-void SysPrintAt3d(GlyphPos *arg0, u8 *s, s32 arg2, s32 arg3) {
+void SysPrintAt3d(GlyphPos *arg0, char *s, u32 arg2, u32 arg3) {
     GlyphPos pos;
     GlyphPos tmp;
     s32 c;
@@ -11388,7 +11388,7 @@ void func_80026308(void) {
     sysfont_dbase = D_80055684;
 }
 
-s32 SysGetLen(u8 *s) {
+s32 SysGetLen(char *s) {
     s32 sum;
     s32 c;
     s32 d;
@@ -11705,7 +11705,7 @@ void ReAdoptChild(NAS *list, NAS *nas) {
     nas->Family.Child = NULL;
 }
 
-void RemoveFamily(u8 *arg0) {
+void RemoveFamily(NAS *arg0) {
     u8 *temp_v1;
     u8 *temp_v1_2;
 
@@ -11734,7 +11734,7 @@ void func_80026C38(u8 *arg0, u8 *arg1) {
     (*(s32*)((u8*)(arg1) + 20)) = var_a0;
 }
 
-void InsertNasTag(u8 *arg0, u8 *arg1) {
+void InsertNasTag(NAS *arg0, NAS *arg1) {
     u8 *temp_v0;
 
     temp_v0 = (*(s32*)((u8*)(arg1) + 12));
@@ -11770,7 +11770,7 @@ void func_80026C94(u8 *arg0, u8 *arg1) {
     }
 }
 
-void NullProc(void) {
+void NullProc(NAS *arg0) {
 }
 
 void func_80026D08(void) {

@@ -1416,7 +1416,7 @@ bool IsPlayerInRange(u32 player, u32 target) {
     return 0;
 }
 
-void DoGetBomb(s32 player) {
+void DoGetBomb(u32 player) {
     Ovl62Fux *fux;
     NAS *nas;
     s32 r;

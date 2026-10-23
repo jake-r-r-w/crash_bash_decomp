@@ -478,7 +478,7 @@ void func_80097424(s32 arg0, s32 arg1) {
     }
 }
 
-void camera_add_frame_list(s32 arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5) {
+void camera_add_frame_list(SLONG_XYZ *arg0, s16 arg1, s16 arg2, s16 arg3, s16 arg4, s16 arg5) {
     D_800AD1EC_entry *e;
 
     if (camera_frame_list_size < 0x10) {
