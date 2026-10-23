@@ -49,6 +49,16 @@ class Plan(unittest.TestCase):
         self.assertIn(("OurGuess", "orig", "orig__Fv", 1.0), renames)
 
 
+class Slot(unittest.TestCase):
+    def test_overlay_functions_rename_by_key(self):
+        found = [row("UpdatePAPU__Fv", "func_800B7DA4 (ovl5e)", 1.0, "slot 17F"),
+                 row("TA_HeroBot__FUi", "TA_HeroBot (ovl5f)", 0.95, "slot 17E"),     # already this name
+                 row("Other__Fv", "Named (ovl5f)", 0.95, "slot 17E")]                # named otherwise
+        renames, _, left = proto_apply.plan(found, "slot", 0.9, False, set())
+        self.assertEqual(renames, [("ovl5e:800B7DA4", "UpdatePAPU", "UpdatePAPU__Fv", 1.0)])
+        self.assertEqual([r[0] for r, _ in left], ["Other__Fv"])
+
+
 class Aliases(unittest.TestCase):
     def test_data_use_of_a_renamed_address(self):
         here = os.getcwd()

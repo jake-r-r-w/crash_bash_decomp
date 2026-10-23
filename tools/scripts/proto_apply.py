@@ -6,7 +6,7 @@ retail functions the disc's symbols match, each with the C name its symbol gives
 name without its mangled parameters: mal_free__FPvP9_mal_area -> mal_free):
 
     tools/dk python3 -I tools/scripts/proto_apply.py protos/<disc>/scan.md
-        [--module main|engine] [--min 0.9] [--replace] [--apply]
+        [--module main|engine|slot] [--min 0.9] [--replace] [--apply]
 
 Matches at --min and up become renames; those from 0.75 up to --min are listed to check
 by hand. Left out, each with its reason: PsyQ functions (Sony's names stay), a C++ name
@@ -71,39 +71,67 @@ def taken_names():
     return names
 
 
+def files_of(ovl):
+    """The sources and headers that can name a slot overlay's addresses (all of them for
+    the exe and the engine: None)."""
+    if ovl is None:
+        return glob.glob("src/**/*.c", recursive=True) + glob.glob("include/**/*.h", recursive=True)
+    return (glob.glob(f"src/overlays/{ovl}/**/*.c", recursive=True) + glob.glob(f"include/bash/{ovl}.h")
+            + glob.glob(f"include/bash/{ovl}_*.h"))
+
+
 def aliases(renames):
     """[(old, file:line)]: sources still naming a renamed function's address as data
     (D_<address>). The overlays' generated symbol lists name an address after the symbol
     files only, so once the function has a name that D_ no longer links; the source must
-    use the function's name first."""
-    want = {old[5:]: old for old, _, _, _ in renames}
+    use the function's name first. A slot overlay's (old `ovl:ADDRESS`) are looked for in
+    its own files only: the overlays share one range."""
+    scopes = {}
+    for old, _, _, _ in renames:
+        ovl, _, addr = old.rpartition(":") if ":" in old else (None, "", old[5:])
+        scopes.setdefault(ovl or None, {})[addr] = old
     out = []
-    for p in glob.glob("src/**/*.c", recursive=True) + glob.glob("include/**/*.h", recursive=True):
-        for i, line in enumerate(open(p, errors="replace"), 1):
-            for m in re.finditer(r"\bD_([0-9A-F]{8})\b", line):
-                if m.group(1) in want:
-                    out.append((want[m.group(1)], f"{p.replace(os.sep, '/')}:{i}"))
+    for ovl, want in scopes.items():
+        for p in files_of(ovl):
+            for i, line in enumerate(open(p, errors="replace"), 1):
+                for m in re.finditer(r"\bD_([0-9A-F]{8})\b", line):
+                    if m.group(1) in want:
+                        out.append((want[m.group(1)], f"{p.replace(os.sep, '/')}:{i}"))
     return out
 
 
+def split_overlay(retail):
+    """'func_800B7DA4 (ovl5e)' -> ('func_800B7DA4', 'ovl5e'); others keep None."""
+    m = re.fullmatch(r"(\S+) \((\w+)\)", retail)
+    return (m.group(1), m.group(2)) if m else (retail, None)
+
+
 def plan(found, module, lo, replace, taken):
-    """(renames [(old, new, symbol, similarity)], check [rows], left [(row, why)])."""
-    mine = [r for r in found if r[3] == module]
+    """(renames [(old, new, symbol, similarity)], check [rows], left [(row, why)]). A slot
+    overlay function's old name is its key, `ovl:ADDRESS`."""
+    mine = [r for r in found if r[3] == module or (module == "slot" and r[3].startswith("slot "))]
     want, check, left = {}, [], []
     for r in mine:
         sym, _, _, _, retail, sim = r
         if sim < LIKELY:
             continue
+        retail, ovl = split_overlay(retail)
         if not PLACEHOLDER.match(retail) and not re.fullmatch(r"[A-Za-z_]\w*", retail):
             left.append((r, "a PsyQ function (Sony's names stay)"))
             continue
+        if ovl and not PLACEHOLDER.match(retail):
+            if c_name(sym)[0] != retail:
+                left.append((r, f"already named `{retail}` in {ovl} (rename it by hand)"))
+            continue
+        if ovl:
+            retail = f"{ovl}:{retail[5:]}"
         new, why = c_name(sym)
         if new is None:
             left.append((r, why))
             continue
         if new == retail:
             continue
-        if not PLACEHOLDER.match(retail) and not replace:
+        if not ovl and not PLACEHOLDER.match(retail) and not replace:
             left.append((r, f"already named `{retail}` (pass --replace to take `{new}`)"))
             continue
         if sim < lo:
@@ -134,7 +162,7 @@ def plan(found, module, lo, replace, taken):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("scan")
-    ap.add_argument("--module", default="main", choices=("main", "engine"))
+    ap.add_argument("--module", default="main", choices=("main", "engine", "slot"))
     ap.add_argument("--min", type=float, default=0.9)
     ap.add_argument("--replace", action="store_true", help="also replace names the repo gave itself")
     ap.add_argument("--apply", action="store_true", help="run decomp.py rename on the renames")

@@ -47,6 +47,7 @@ RAM = (0x80010000, 0x80200000)
 PROJECT = ".decomp/project.json"
 STRONG, LIKELY = 0.9, 0.75     # similarity for "same function" / "probably"
 MIN_RUN = 10                   # shorter runs of records are chance byte patterns
+STUB_REACH = 0x400             # how far from the last match a stub is placed by distance
 # the linker's section symbols: _<group>[_<section>]_org/orgend/obj/objend/size
 SECTION = re.compile(r"(_(text|data|sdata|rdata|bss|sbss|ctors|dtors))?_(obj|objend|org|orgend|size)$")
 
@@ -397,12 +398,22 @@ def match_funcs(placed, retail, prefer=None):
     for k, fl in retail.items():
         for a, n, b in fl:
             exact[k].setdefault(b, []).append((a, n))
-    out, prev = [], {}
+    at = {k: {a: (n, b) for a, n, b in fl} for k, fl in retail.items()}
+    out, prev, last = [], {}, {}
     for r, cands in placed:
         best = (None, None, None)
         for mod, a, e in cands:
             body = mod.body(a, e)
             if mod.kind not in retail or not body:
+                continue
+            if len(body) <= 2:
+                # a stub (`jr ra; nop`) matches every stub, so only its place can tell: the same
+                # distance from the module's last match, onto the same stub
+                d, ra = last.get(mod.name, (None, None))
+                near = d is not None and 0 < a - d <= STUB_REACH and mod.kind != "slot"   # overlays overlap
+                hit = at[mod.kind].get(ra + a - d) if near else None
+                if hit and hit[1] == body and (best[1] is None or best[1][0] < 1.0):
+                    best = (mod, (1.0, ra + a - d, hit[0]), (mod, a, e))
                 continue
             cs = best_match(body, retail[mod.kind], exact[mod.kind])
             if not cs:
@@ -419,6 +430,7 @@ def match_funcs(placed, retail, prefer=None):
         mod, pick, code = best
         if pick and pick[0] >= LIKELY:
             prev[mod.name] = pick[1]
+            last[mod.name] = (code[1], pick[1])
         out.append((r, mod.name if mod else (cands[0][0].name if cands else None), pick, code))
     return out
 
