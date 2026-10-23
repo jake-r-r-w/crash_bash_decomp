@@ -32,9 +32,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
 - The engine overlay is seven files (`panel` and `pause` named from
   Jampack's records) and `ovl5d` three, `ovl5e`, `ovl66`, `ovl67`, `ovl6a`
   two each (ARCHITECTURE.md, Files inside the engine / the slot overlays).
-  `main/main` is five since 2026-10-23: `main` (0..349), `80022a3c`, `sound`,
-  `music`, `card` (Files inside `main/main`, Split so far); the main segment
-  links with `SUBALIGN(4)`.
+  `main/main` is nine since 2026-10-23: `main` (0..135), `dbase`,
+  `80017164`, `scripts`, `sfx`, `80022a3c`, `sound`, `music`, `card` (Files
+  inside `main/main`, Split so far); the main segment links with
+  `SUBALIGN(4)`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
 - PsyQ 4.7: all library code is Sony's objects (281, plus `2MBYTE.OBJ`), and
@@ -96,13 +97,15 @@ Hand work, between runs:
    cross-jump (a duplicated call, which also sets its arg registers twice
    and so takes away their birthing priority); `func_800BC274` used both.
 2. Name each function as it's matched when the evidence allows.
-3. Split `main.c` into its translation units: on hold since 2026-10-15. Its
-   one proven boundary (jump-table parity, 95..370) has three possible
-   places and no overlay shows another positive sign; more cuts need new
-   evidence (a leak, a symbol file of a game on this engine). The evidence
-   so far is in ARCHITECTURE.md, Files inside `main/main`; `decomp.py units
-   [--data] [--clusters]` collects it. A split moves functions, so workers'
-   patches and checkpoints for them stop applying.
+3. The rest of the `main.c` split: nine files since 2026-10-23
+   (`split_unit.py`, one commit each). The open zones (ARCHITECTURE.md,
+   Files inside `main/main`, Still open) need new evidence: mal/file
+   (after 46 or none), function 0 alone or not, prims/map (234-251),
+   map/path/fade/process (258-267) and xa/texture (456/457). `decomp.py
+   units [--data] [--clusters]` collects the evidence; it needs the `.s`
+   of matched functions too, which `split_unit.py` leaves behind for the
+   units it writes. A split moves functions, so workers' patches and
+   checkpoints for them stop applying.
 4. Later Phase 2 items: data to C (after the split), naming and typing
    passes.
 
@@ -276,6 +279,10 @@ Other:
   includes just moves the problem when the new header needs the old one's
   types. Move each helper to the header of the file that uses it, and point
   other headers' direct `#include "bash/<old>.h"` at both new headers.
+  `split_unit.py` moves the ones only the new unit uses (with the comment
+  above, signatures over several lines too); a prototype's comment moves
+  only if it starts its own line (a trailing one belongs to the line
+  above).
 - **Renaming a unit of matched C leaves the index on the old name.**
   `decomp.py index` moves a function to a segment only through its `.s`, and
   splat writes none for matched C, so after renaming a unit's `.c`, header and
@@ -547,6 +554,14 @@ Newest first, a few lines each. Details are in the commits.
   PlaySfx as a `goto` into case 8's (not the source; leads list why). No
   `break`/`goto` mix gives the target's three tail survivors. Found the
   unit is probably `PAUSE.CPP`; `cc1plus` compiles the C identically.
+
+- **2026-10-23 (main.c split into nine):** four more cuts, one commit
+  each: `sfx` (332..349), `80017164` (170..), `dbase` (136..169, the dots
+  code ends at 135) and `scripts` (275..331: its data block is used only
+  by 275..331, the process manager ends at 274). `split_unit.py` now moves
+  header inlines with multi-line signatures and leaves trailing comments
+  where they are. The leaks hold no `main.exe` file names; the open zones
+  are listed in ARCHITECTURE.md.
 
 - **2026-10-23 (main.c split into five):** new `tools/scripts/split_unit.py`
   does a split end to end. `card` (549..) is the one exact cut; the

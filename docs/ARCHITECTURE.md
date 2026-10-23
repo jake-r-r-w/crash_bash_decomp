@@ -168,9 +168,13 @@ How the boundaries were found:
 
     | Change | Zone | Cuts |
     |---|---|---|
-    | `mal_first_free` (35) / `init_file` (62) | after 46, after 56-57 | 3 |
-    | `dbase_release_all_mesh_anims` (153) / `prim_colour_poly` (173) | after 164-169 | 6 |
-    | `scripts_update` (331) / `sfx_delete_all` (338) | after 331-334 | 4 |
+    | `mal_first_free` (35) / `init_file` (62) | after 46, after 56-57 | 3: open |
+    | `init_dots` (131) / `dbase_asload_with_anims_texture_callback` (140) | after 134-135 | 2: after 135 |
+    | `dbase_release_all_mesh_anims` (153) / `prim_colour_poly` (173) | after 164-169 | 6: after 169 |
+    | `kill_sprim_sub` (219) / `map_update` (252) | after 234-243, after 245-251 | 17: open |
+    | `map_loaded_geo` (257) / `path_get` (262), `set_fade` (264), `process_interrupt` (268) | after 258-267 | 10: open |
+    | `process_init` (272) / `update_camera_thread` (277) | after 272-275 | 4: after 274 |
+    | `scripts_update` (331) / `sfx_delete_all` (338) | after 331-334 | 4: after 331 |
     | `PlaySfx` (340) / `CreateNAS` (350) | after 348-349 | 2: after 349 |
     | `xa_setvol` (443) / `texture_update_scroll` (471) | after 456-457 | 2: open |
     | `texture_release_loading_mem` (482) / `sound_critical` (498) | after 495-496 | 2: after 496 |
@@ -180,11 +184,38 @@ How the boundaries were found:
     A prefix is not a file, though: `shell_render_dcache` (3) shares the
     one-file region 1-16 with `mal_*`, and no zone separates `xa_setvol`
     (443) from the NAS calls (354-430). Only the last row is exact, and only
-    if music and the memory card are different files; the 2-cut zones were
-    settled by what the gap functions do (Split so far). The xa/texture one
-    stays open: 456 is the pad rumble code (`PadSetAct`), 457 clears a
-    0x2C-byte struct nothing in C calls, and 458, a free-list pool both the
-    texture and the sound code use, says nothing about 457.
+    if music and the memory card are different files; the others were
+    settled by what the gap functions do and by the data blocks (Split so
+    far). Still open:
+    - xa/texture: 456 is the pad rumble code (`PadSetAct`), 457 clears a
+      0x2C-byte struct nothing in C calls (neither the pad nor the texture
+      structs have that layout), and 458, a free-list pool both the texture
+      and the sound code use, says nothing about 457.
+    - mal/file: the shared literal of 51, 52 and 67 rules out 56-57, so a
+      cut is after 46 or nowhere. 46 is the file loader's state machine
+      (it uses the file data `D_80050628`/`D_80050F3C`) and 45 its
+      allocator (`mal_first_free`); both read as either module. Function 0
+      (the save's completion percentage, called by `card`) may be a file of
+      its own: the one datum it writes, `D_8004E0D0`, lies inside the data
+      block of 1-7, which a global defined there would explain too.
+    - prims/map: the prim file's data ends with the 8 KB array
+      `D_80056AC8` at `0x80058AC8`, where the map's block starts with
+      `D_80058AC8` (only 244 and 245 use it). The subengine code (236-242,
+      244-246: `next_sub`, `kill_subs`) and `draw_init` (243) lie between,
+      and `next_sub` is a global (198 and `ovl60` use it), so it does not
+      say which side they are on.
+    - map/path/fade/process: the map's data (`0x80058AC8..0x80058AFF`) is
+      used through 263 (`path_get`, `path_find`), but `D_80058AD0` is a
+      global (the NAS calls, the engine and the overlays read it); fade
+      (264-265) and the process manager (266-274) have no data of their
+      own, and 266 reads the fade struct's fields, so they may be one file.
+  - **Prototype leaks hold no file names for `main.exe`**: the Jampack and
+    Demo Disc line records cover only the engine (`PAUSE.CPP`, `PANEL.CPP`),
+    the Euro Demo 65 labels are in hash order (no grouping by object), and
+    the Aug 23 `PSX_PAD.CPP` object is one page of a `LNK` file: its
+    section and include list, then unrelated type records, no code or
+    symbols. Identical function bodies (`fp` in the index) are only
+    common wrappers (empty functions, `if (p) { mal_free(p); p = 0; }`).
   - **Split so far** (2026-10-23, `tools/scripts/split_unit.py`; each build
     byte-identical, which also proves each new file's rodata start). The
     main segment links with `SUBALIGN(4)`: psylink 4-aligned every object,
@@ -193,7 +224,11 @@ How the boundaries were found:
 
     | Unit | Functions | Evidence | Rodata from |
     |---|---|---|---|
-    | `main` | 0..349 | | `0x8004C56C` |
+    | `main` | 0..135: the shell, `mal_*`, file loading, joypad, camera, maths, `Random`, entities, dots | | `0x8004C56C` |
+    | `dbase` | 136..169: `dbase_*` | 134 creates the dots subengine (the three blocks at +0x6C that `init_dots` fills, 133 its destructor, 132 its renderer, all three in one handler table) and 135 is the same allocation on a bare point-sprite set; 136 loads a dbase's file table and only 141, the dbase load callback, calls it | none |
+    | `80017164` | 170..274: `prim_*`, sprims, `tga_convert`, draw, subengines, `map_*`, `path_*`, fade, process | 164 releases mesh animations and 168/169 set up the 0x38-byte records at `D_80052A54` (`load_initial_dbases`' pool), before the prim data block; 170 allocates the prim and sprim pools and is the first user of that block (`0x8005683C..0x80058AC7`) | `0x8004C8A8` ("empty prims", right after `main`'s last jump table) |
+    | `scripts` | 275..331: `sub_play_script`, `get_script_header`, `scripts_*`, the threads | the scripts' data block `0x80058B00..0x80058B87` (thread table `D_80058B00`, six types each pairing an update function from 276..282 with init and render ones from 298..313; `D_80058B68..B84`, `free_scripts`) is used only by 275..331, so the zones after 288-291 and 294-325 hold no cut; 275 allocates the 0x7C-byte script slots and is the block's first user, while 266..274 are the process manager (266 switches modes, 267-272 queue, interrupt, quit and init them, 273 sets it up, 274 flushes the heap as 266 does) | none |
+    | `sfx` | 332..349: `sfx_delete_all`, `StopSfx`, `PlaySfx`, ... | 331 (`scripts_update`) is the last script function; 332 restarts the sound system and loads the level's sfx bank (`func_8002BBB4`, `func_8002BD0C`) through `D_80058B88`, the sfx code's own data that 349 uses too | none |
     | `80022a3c` | 350..496: `CreateNAS`, the NAS calls, `xa_setvol`, rumble, `texture_*` | 348 restarts the sound system and the sfx voice pool; 349 loads a music track through the music loader with `D_80058B88`, which lies in the sfx code's data block (before `0x80058F0C`), while the NAS calls' own data starts at `0x8005A5C0`: each file's `.data` is one block in code order, so 349 is sfx | `0x8004C8D0` (0 mod 8, as the switch-table parity requires: a file starts after 95 and by 370) |
     | `sound` | 497..528: `sound_critical`, `machine_load_sfx`, ... | 495 releases a texture (`func_80028AE4`) and 496 clears a texture set (the map code calls it right before `map_loaded_textureset`); 497 resets `D_80064414`, a flag only the sound code uses | none |
     | `music` | 529..548: `continue_music`, `music_dload_midi`, ... | 527 loads sfx banks (`machine_load_sfx`), 528 fills `SfxTable`; 529 opens and plays a SEQ (`SsSeqOpen`, `SsSeqPlay`) and sets the music volume | none |

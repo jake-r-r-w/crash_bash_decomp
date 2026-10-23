@@ -88,9 +88,10 @@ phases can play what they finish.
   file's local data moves with it, and early in the matching: code in
   the wrong unit can't match its rodata, and a split moves functions out
   from under swarm patches, so do it between swarm runs.
-  Status: `decomp.py units` collects the evidence; switch-table parity
-  proves one boundary in `main/main`, but not yet where (ARCHITECTURE.md,
-  Files inside `main/main`), so `main.c` is still one file.
+  Status: `main/main` is split at each cut the evidence settles (the cut
+  zones of `decomp.py units`, the gap functions' work, the data blocks;
+  `tools/scripts/split_unit.py` does a split end to end). A few zones are
+  still open (ARCHITECTURE.md, Files inside `main/main`).
 - [x] Match every game function in the executable.
 - [ ] Name and type every function and global in the exe (a descriptive name
   where the original is unknown, per [CONVENTIONS.md](CONVENTIONS.md)).
