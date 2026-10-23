@@ -4784,12 +4784,11 @@
   "status": "matched"
  },
  "ovl5d:800C284C": {
-  "auto_failed": "compile",
   "blocked_at": "2026-10-22T14:00:19Z",
   "copy_failed": "ovl64:800BAF1C",
   "copy_failed_stage": "in-file",
-  "note": "STAGE instructions 2/197 (the swarm checkpoint has the C; it no longer applies). Same code as func_800BC274 (ovl5e), parked there after five passes: only `addiu a1`/`lw a0` before jal func_8001CD04 are swapped (a sched1 tie). Solve the three together from its note (decomp.py next --func func_800BC274).",
-  "status": "blocked"
+  "matched_at": "2026-10-23T07:34:21Z",
+  "status": "matched"
  },
  "ovl5d:800C2B60": {
   "matched_at": "2026-10-19T14:01:29Z",
