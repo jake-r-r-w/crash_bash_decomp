@@ -206,7 +206,7 @@ typedef struct Ovl68SpawnOfs {
 } Ovl68SpawnOfs;
 extern Ovl68SpawnOfs D_800BBA44[];
 
-/* D_8009D87C (declared in bash/8007ee2c.h, which this unit does not include). */
+/* D_8009D87C (declared in bash/pause.h, which this unit does not include). */
 typedef struct Ovl68Odds {
     s16 unk0;
     s16 unk2;

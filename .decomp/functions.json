@@ -56,7 +56,7 @@
   "src": "src/main/main.c"
  },
  "80010278": {
-  "asm": "asm/nonmatchings/main/main/func_80010278.s",
+  "asm": "asm/nonmatchings/main/main/shell_render_dcache.s",
   "calls": [
    "800272AC",
    "800320CC",
@@ -239,7 +239,7 @@
   "src": "src/main/main.c"
  },
  "800110A8": {
-  "asm": "asm/nonmatchings/main/main/func_800110A8.s",
+  "asm": "asm/nonmatchings/main/main/mal_free.s",
   "calls": [],
   "fp": "a9d17c29434f08f6",
   "fpn": "a8d91761e1f9847c",
@@ -281,7 +281,7 @@
   "src": "src/main/main.c"
  },
  "80011474": {
-  "asm": "asm/nonmatchings/main/main/func_80011474.s",
+  "asm": "asm/nonmatchings/main/main/mal_print_free.s",
   "calls": [
    "80011410"
   ],
@@ -493,7 +493,7 @@
   "src": "src/main/main.c"
  },
  "80011B74": {
-  "asm": "asm/nonmatchings/main/main/func_80011B74.s",
+  "asm": "asm/nonmatchings/main/main/mal_unlink.s",
   "calls": [],
   "fp": "5d6cfbd2e7580abb",
   "fpn": "52636fb44a9331c7",
@@ -532,7 +532,7 @@
   "src": "src/main/main.c"
  },
  "80011C5C": {
-  "asm": "asm/nonmatchings/main/main/func_80011C5C.s",
+  "asm": "asm/nonmatchings/main/main/mal_first_free.s",
   "calls": [],
   "fp": "a910d50ba1d4842c",
   "fpn": "fdc9f45360c27b1b",
@@ -932,7 +932,7 @@
   "src": "src/main/main.c"
  },
  "80012E90": {
-  "asm": "asm/nonmatchings/main/main/func_80012E90.s",
+  "asm": "asm/nonmatchings/main/main/init_file.s",
   "calls": [
    "80012E54",
    "800279A4"
@@ -1137,7 +1137,7 @@
   "src": "src/main/main.c"
  },
  "800133C8": {
-  "asm": "asm/nonmatchings/main/main/func_800133C8.s",
+  "asm": "asm/nonmatchings/main/main/asload_chunk_relocatable.s",
   "calls": [
    "80013034"
   ],
@@ -1152,7 +1152,7 @@
   "src": "src/main/main.c"
  },
  "800133FC": {
-  "asm": "asm/nonmatchings/main/main/func_800133FC.s",
+  "asm": "asm/nonmatchings/main/main/load_file_permanent.s",
   "calls": [
    "80010AE8",
    "8001231C",
@@ -1256,7 +1256,7 @@
   "src": "src/main/main.c"
  },
  "80013688": {
-  "asm": "asm/nonmatchings/main/main/func_80013688.s",
+  "asm": "asm/nonmatchings/main/main/asload_permanent_callback.s",
   "calls": [
    "80013034"
   ],
@@ -1359,7 +1359,7 @@
   "src": "src/main/main.c"
  },
  "80013C94": {
-  "asm": "asm/nonmatchings/main/main/func_80013C94.s",
+  "asm": "asm/nonmatchings/main/main/set_joypad.s",
   "calls": [],
   "fp": "588fc6caf8d6dd37",
   "fpn": "9b38de7a711ea01b",
@@ -1447,7 +1447,7 @@
   "src": "src/main/main.c"
  },
  "80014388": {
-  "asm": "asm/nonmatchings/main/main/func_80014388.s",
+  "asm": "asm/nonmatchings/main/main/cam_init.s",
   "calls": [],
   "fp": "2cc82b344b2b157c",
   "fpn": "4e00571474cdd9b7",
@@ -1596,7 +1596,7 @@
   "src": "src/main/main.c"
  },
  "80015304": {
-  "asm": "asm/nonmatchings/main/main/func_80015304.s",
+  "asm": "asm/nonmatchings/main/main/interp.s",
   "calls": [],
   "fp": "9f29809d26493d14",
   "fpn": "71d510ef515e7ef4",
@@ -1703,7 +1703,7 @@
   "src": "src/main/main.c"
  },
  "800154EC": {
-  "asm": "asm/nonmatchings/main/main/func_800154EC.s",
+  "asm": "asm/nonmatchings/main/main/palette_set_top_bits.s",
   "calls": [],
   "fp": "0463e96cb7d1fa12",
   "fpn": "49107f1df630e7cc",
@@ -1716,7 +1716,7 @@
   "src": "src/main/main.c"
  },
  "80015518": {
-  "asm": "asm/nonmatchings/main/main/func_80015518.s",
+  "asm": "asm/nonmatchings/main/main/BSwapEndian.s",
   "calls": [],
   "fp": "f7c5d47cfae37a69",
   "fpn": "1d7b76fe018a6fe3",
@@ -1729,7 +1729,7 @@
   "src": "src/main/main.c"
  },
  "80015554": {
-  "asm": "asm/nonmatchings/main/main/func_80015554.s",
+  "asm": "asm/nonmatchings/main/main/WSwapEndian.s",
   "calls": [],
   "fp": "dec2a6e392e735e8",
   "fpn": "f7a00512a8620dad",
@@ -1755,7 +1755,7 @@
   "src": "src/main/main.c"
  },
  "800155E8": {
-  "asm": "asm/nonmatchings/main/main/func_800155E8.s",
+  "asm": "asm/nonmatchings/main/main/SetRandomSeed.s",
   "calls": [],
   "fp": "284a8280b65e2dd1",
   "fpn": "284a8280b65e2dd1",
@@ -1870,7 +1870,7 @@
   "src": "src/main/main.c"
  },
  "800159C4": {
-  "asm": "asm/nonmatchings/main/main/func_800159C4.s",
+  "asm": "asm/nonmatchings/main/main/map_entity_address.s",
   "calls": [
    "8001DD20"
   ],
@@ -1885,7 +1885,7 @@
   "src": "src/main/main.c"
  },
  "80015A18": {
-  "asm": "asm/nonmatchings/main/main/func_80015A18.s",
+  "asm": "asm/nonmatchings/main/main/entity_address.s",
   "calls": [
    "800159C4"
   ],
@@ -1926,7 +1926,7 @@
   "src": "src/main/main.c"
  },
  "80015AD4": {
-  "asm": "asm/nonmatchings/main/main/func_80015AD4.s",
+  "asm": "asm/nonmatchings/main/main/init_dots.s",
   "calls": [
    "80015590",
    "8003306C"
@@ -2065,7 +2065,7 @@
   "src": "src/main/main.c"
  },
  "80016188": {
-  "asm": "asm/nonmatchings/main/main/func_80016188.s",
+  "asm": "asm/nonmatchings/main/main/dbase_asload_with_anims_texture_callback.s",
   "calls": [
    "800110A8",
    "80011C5C",
@@ -2198,7 +2198,7 @@
   "src": "src/main/main.c"
  },
  "80016558": {
-  "asm": "asm/nonmatchings/main/main/func_80016558.s",
+  "asm": "asm/nonmatchings/main/main/dbase_mesh_anim_name_loaded.s",
   "calls": [
    "8001534C"
   ],
@@ -2278,7 +2278,7 @@
   "src": "src/main/main.c"
  },
  "80016928": {
-  "asm": "asm/nonmatchings/main/main/func_80016928.s",
+  "asm": "asm/nonmatchings/main/main/dbase_release_all_mesh_anims.s",
   "calls": [
    "800110A8",
    "80012E14",
@@ -2663,7 +2663,7 @@
   "src": "src/main/main.c"
  },
  "80017EE8": {
-  "asm": "asm/nonmatchings/main/main/func_80017EE8.s",
+  "asm": "asm/nonmatchings/main/main/prim_write_uvs.s",
   "calls": [],
   "fp": "292501d7ef1b447e",
   "fpn": "85eb9e4720be70e8",
@@ -2720,7 +2720,7 @@
   "src": "src/main/main.c"
  },
  "80018388": {
-  "asm": "asm/nonmatchings/main/main/func_80018388.s",
+  "asm": "asm/nonmatchings/main/main/release_sprim.s",
   "calls": [],
   "fp": "e2be7129b433d240",
   "fpn": "9e31c9ac0c117052",
@@ -2733,7 +2733,7 @@
   "src": "src/main/main.c"
  },
  "800183B0": {
-  "asm": "asm/nonmatchings/main/main/func_800183B0.s",
+  "asm": "asm/nonmatchings/main/main/new_sprim.s",
   "calls": [],
   "fp": "9be9600d088c263c",
   "fpn": "7a66bf7acc6e9a6e",
@@ -2938,7 +2938,7 @@
   "src": "src/main/main.c"
  },
  "800189F4": {
-  "asm": "asm/nonmatchings/main/main/func_800189F4.s",
+  "asm": "asm/nonmatchings/main/main/tga_convert.s",
   "calls": [
    "80011654"
   ],
@@ -3001,7 +3001,7 @@
   "src": "src/main/main.c"
  },
  "800193A8": {
-  "asm": "asm/nonmatchings/main/main/func_800193A8.s",
+  "asm": "asm/nonmatchings/main/main/draw_verts.s",
   "calls": [],
   "fp": "096ab3fe5e2c8dc3",
   "fpn": "1284b88805f4df17",
@@ -3289,7 +3289,7 @@
   "src": "src/main/main.c"
  },
  "8001C378": {
-  "asm": "asm/nonmatchings/main/main/func_8001C378.s",
+  "asm": "asm/nonmatchings/main/main/kill_sprim_sub.s",
   "calls": [
    "80018388"
   ],
@@ -3594,7 +3594,7 @@
   "src": "src/main/main.c"
  },
  "8001D334": {
-  "asm": "asm/nonmatchings/main/main/func_8001D334.s",
+  "asm": "asm/nonmatchings/main/main/kill_subs.s",
   "calls": [],
   "fp": "55a00dede88ef588",
   "fpn": "820425be7dedef90",
@@ -3648,7 +3648,7 @@
   "src": "src/main/main.c"
  },
  "8001D5D0": {
-  "asm": "asm/nonmatchings/main/main/func_8001D5D0.s",
+  "asm": "asm/nonmatchings/main/main/draw_init.s",
   "calls": [],
   "fp": "9cf9fd2a6bce48c4",
   "fpn": "517b61c314ce5272",
@@ -3766,7 +3766,7 @@
   "src": "src/main/main.c"
  },
  "8001DD50": {
-  "asm": "asm/nonmatchings/main/main/func_8001DD50.s",
+  "asm": "asm/nonmatchings/main/main/draw_map_sub.s",
   "calls": [
    "80019A60",
    "8001D894"
@@ -3782,7 +3782,7 @@
   "src": "src/main/main.c"
  },
  "8001DDB4": {
-  "asm": "asm/nonmatchings/main/main/func_8001DDB4.s",
+  "asm": "asm/nonmatchings/main/main/map_update.s",
   "calls": [
    "80029100"
   ],
@@ -3842,7 +3842,7 @@
   "src": "src/main/main.c"
  },
  "8001DF74": {
-  "asm": "asm/nonmatchings/main/main/func_8001DF74.s",
+  "asm": "asm/nonmatchings/main/main/map_loaded_textureset.s",
   "calls": [
    "80011544",
    "80013034",
@@ -3861,7 +3861,7 @@
   "src": "src/main/main.c"
  },
  "8001DFF8": {
-  "asm": "asm/nonmatchings/main/main/func_8001DFF8.s",
+  "asm": "asm/nonmatchings/main/main/map_loaded_geo.s",
   "calls": [
    "8001682C",
    "8001D6B4",
@@ -3934,7 +3934,7 @@
   "src": "src/main/main.c"
  },
  "8001E48C": {
-  "asm": "asm/nonmatchings/main/main/func_8001E48C.s",
+  "asm": "asm/nonmatchings/main/main/path_get.s",
   "calls": [],
   "fp": "323eec544f6270c2",
   "fpn": "8f5cc18d2cde2f90",
@@ -3947,7 +3947,7 @@
   "src": "src/main/main.c"
  },
  "8001E51C": {
-  "asm": "asm/nonmatchings/main/main/func_8001E51C.s",
+  "asm": "asm/nonmatchings/main/main/path_find.s",
   "calls": [],
   "fp": "80885c2b48ac2842",
   "fpn": "b78a2ee33de99fc7",
@@ -3960,7 +3960,7 @@
   "src": "src/main/main.c"
  },
  "8001E588": {
-  "asm": "asm/nonmatchings/main/main/func_8001E588.s",
+  "asm": "asm/nonmatchings/main/main/set_fade.s",
   "calls": [],
   "fp": "7ec332678082d6b2",
   "fpn": "780d356ca89a04e0",
@@ -4022,7 +4022,7 @@
   "src": "src/main/main.c"
  },
  "8001E838": {
-  "asm": "asm/nonmatchings/main/main/func_8001E838.s",
+  "asm": "asm/nonmatchings/main/main/process_interrupt.s",
   "calls": [],
   "fp": "1ea540f26e74d2f0",
   "fpn": "9b38de7a711ea01b",
@@ -4048,7 +4048,7 @@
   "src": "src/main/main.c"
  },
  "8001E854": {
-  "asm": "asm/nonmatchings/main/main/func_8001E854.s",
+  "asm": "asm/nonmatchings/main/main/process_quit.s",
   "calls": [],
   "fp": "3d0293025de82c27",
   "fpn": "b43f5923752a9d4b",
@@ -4074,7 +4074,7 @@
   "src": "src/main/main.c"
  },
  "8001E8F0": {
-  "asm": "asm/nonmatchings/main/main/func_8001E8F0.s",
+  "asm": "asm/nonmatchings/main/main/process_init.s",
   "calls": [],
   "fp": "19e816c99c07e9fa",
   "fpn": "b43f5923752a9d4b",
@@ -4148,7 +4148,7 @@
   "src": "src/main/main.c"
  },
  "8001EDFC": {
-  "asm": "asm/nonmatchings/main/main/func_8001EDFC.s",
+  "asm": "asm/nonmatchings/main/main/update_camera_thread.s",
   "calls": [
    "80015304",
    "800153B4"
@@ -4375,7 +4375,7 @@
   "src": "src/main/main.c"
  },
  "80020CC4": {
-  "asm": "asm/nonmatchings/main/main/func_80020CC4.s",
+  "asm": "asm/nonmatchings/main/main/sub_play_script.s",
   "calls": [
    "80020064"
   ],
@@ -4586,7 +4586,7 @@
   "src": "src/main/main.c"
  },
  "80021770": {
-  "asm": "asm/nonmatchings/main/main/func_80021770.s",
+  "asm": "asm/nonmatchings/main/main/render_entity_thread.s",
   "calls": [
    "80019F1C"
   ],
@@ -4791,7 +4791,7 @@
   "src": "src/main/main.c"
  },
  "80021E60": {
-  "asm": "asm/nonmatchings/main/main/func_80021E60.s",
+  "asm": "asm/nonmatchings/main/main/get_script_header.s",
   "calls": [],
   "fp": "234fe89b850bee9a",
   "fpn": "05cc7a1a7ecd1ffb",
@@ -4900,7 +4900,7 @@
   "src": "src/main/main.c"
  },
  "80022070": {
-  "asm": "asm/nonmatchings/main/main/func_80022070.s",
+  "asm": "asm/nonmatchings/main/main/scripts_render.s",
   "calls": [
    "8001ACC0",
    "800201BC"
@@ -4916,7 +4916,7 @@
   "src": "src/main/main.c"
  },
  "800220E8": {
-  "asm": "asm/nonmatchings/main/main/func_800220E8.s",
+  "asm": "asm/nonmatchings/main/main/scripts_update.s",
   "calls": [
    "80020064",
    "80021F14"
@@ -5030,7 +5030,7 @@
   "src": "src/main/main.c"
  },
  "80022504": {
-  "asm": "asm/nonmatchings/main/main/func_80022504.s",
+  "asm": "asm/nonmatchings/main/main/sfx_delete_all.s",
   "calls": [
    "8002B8F4"
   ],
@@ -5204,7 +5204,7 @@
   "src": "src/main/main.c"
  },
  "80022A3C": {
-  "asm": "asm/nonmatchings/main/main/SpawnNASById.s",
+  "asm": "asm/nonmatchings/main/main/CreateNAS.s",
   "calls": [
    "80022FD4",
    "8002672C"
@@ -5235,7 +5235,7 @@
   "src": "src/main/main.c"
  },
  "80022DDC": {
-  "asm": "asm/nonmatchings/main/main/SpawnNASFromRecord.s",
+  "asm": "asm/nonmatchings/main/main/TriggerNas.s",
   "calls": [
    "80022FD4",
    "8002672C"
@@ -5341,7 +5341,7 @@
   "src": "src/main/main.c"
  },
  "800237BC": {
-  "asm": "asm/nonmatchings/main/main/func_800237BC.s",
+  "asm": "asm/nonmatchings/main/main/SetNasDefaults.s",
   "calls": [],
   "fp": "d35e407150fd2374",
   "fpn": "5719596839975a0a",
@@ -5411,7 +5411,7 @@
   "src": "src/main/main.c"
  },
  "800246D0": {
-  "asm": "asm/nonmatchings/main/main/func_800246D0.s",
+  "asm": "asm/nonmatchings/main/main/SysPrintAt3d.s",
   "calls": [
    "80029F9C"
   ],
@@ -5580,7 +5580,7 @@
   "src": "src/main/main.c"
  },
  "80025B10": {
-  "asm": "asm/nonmatchings/main/main/func_80025B10.s",
+  "asm": "asm/nonmatchings/main/main/FetchDefaultColBox.s",
   "calls": [
    "8001562C"
   ],
@@ -5611,7 +5611,7 @@
   "src": "src/main/main.c"
  },
  "80025C80": {
-  "asm": "asm/nonmatchings/main/main/func_80025C80.s",
+  "asm": "asm/nonmatchings/main/main/FollowUnderContour.s",
   "calls": [
    "80025E00",
    "80032F3C"
@@ -5627,7 +5627,7 @@
   "src": "src/main/main.c"
  },
  "80025D40": {
-  "asm": "asm/nonmatchings/main/main/func_80025D40.s",
+  "asm": "asm/nonmatchings/main/main/FollowContour.s",
   "calls": [
    "80025E00",
    "80032F3C"
@@ -5643,7 +5643,7 @@
   "src": "src/main/main.c"
  },
  "80025E00": {
-  "asm": "asm/nonmatchings/main/main/func_80025E00.s",
+  "asm": "asm/nonmatchings/main/main/AddPlatformContour.s",
   "calls": [
    "80025A48",
    "80032F3C"
@@ -5726,7 +5726,7 @@
   "src": "src/main/main.c"
  },
  "80025FAC": {
-  "asm": "asm/nonmatchings/main/main/func_80025FAC.s",
+  "asm": "asm/nonmatchings/main/main/GotoLinkAnim.s",
   "calls": [],
   "fp": "fa588c12f8fe2343",
   "fpn": "d6283882ff835081",
@@ -5798,7 +5798,7 @@
   "src": "src/main/main.c"
  },
  "8002633C": {
-  "asm": "asm/nonmatchings/main/main/func_8002633C.s",
+  "asm": "asm/nonmatchings/main/main/SysGetLen.s",
   "calls": [],
   "fp": "660591b30f983e97",
   "fpn": "b780e73821037de7",
@@ -5951,7 +5951,7 @@
   "src": "src/main/main.c"
  },
  "8002672C": {
-  "asm": "asm/nonmatchings/main/main/AddEngine.s",
+  "asm": "asm/nonmatchings/main/main/AddExtEngine.s",
   "calls": [
    "8001D390",
    "800232B0",
@@ -5983,7 +5983,7 @@
   "src": "src/main/main.c"
  },
  "8002689C": {
-  "asm": "asm/nonmatchings/main/main/AddExtension.s",
+  "asm": "asm/nonmatchings/main/main/AddExt.s",
   "calls": [
    "800232B0"
   ],
@@ -6115,7 +6115,7 @@
   "src": "src/main/main.c"
  },
  "80026B94": {
-  "asm": "asm/nonmatchings/main/main/func_80026B94.s",
+  "asm": "asm/nonmatchings/main/main/ReAdoptChild.s",
   "calls": [],
   "fp": "15b1deac96f4a1b6",
   "fpn": "3d7966e4191bf873",
@@ -6128,7 +6128,7 @@
   "src": "src/main/main.c"
  },
  "80026BF4": {
-  "asm": "asm/nonmatchings/main/main/func_80026BF4.s",
+  "asm": "asm/nonmatchings/main/main/RemoveFamily.s",
   "calls": [],
   "fp": "00889d05c7c8e50f",
   "fpn": "15770cdf35020cf4",
@@ -6154,7 +6154,7 @@
   "src": "src/main/main.c"
  },
  "80026C6C": {
-  "asm": "asm/nonmatchings/main/main/func_80026C6C.s",
+  "asm": "asm/nonmatchings/main/main/InsertNasTag.s",
   "calls": [],
   "fp": "5f1ff67f65931198",
   "fpn": "181688339e7f4a46",
@@ -6180,7 +6180,7 @@
   "src": "src/main/main.c"
  },
  "80026D00": {
-  "asm": "asm/nonmatchings/main/main/func_80026D00.s",
+  "asm": "asm/nonmatchings/main/main/NullProc.s",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
@@ -6279,7 +6279,7 @@
   "src": "src/main/main.c"
  },
  "80027040": {
-  "asm": "asm/nonmatchings/main/main/func_80027040.s",
+  "asm": "asm/nonmatchings/main/main/DeleteNas_AllAST.s",
   "calls": [
    "80022FD4"
   ],
@@ -6396,7 +6396,6 @@
  "80027408": {
   "asm": "asm/nonmatchings/main/main/func_80027408.s",
   "calls": [
-   "80011654",
    "80015590",
    "8002ECD0",
    "8002ED68",
@@ -6408,8 +6407,8 @@
    "8003336C",
    "80033FCC"
   ],
-  "fp": "f27985043bbeb29a",
-  "fpn": "f9c45860c1729007",
+  "fp": "2d552970570b7bc6",
+  "fpn": "5c6db7909cf3f51b",
   "leaf": false,
   "name": "func_80027408",
   "orig": "func_80027408",
@@ -6599,7 +6598,7 @@
   "src": "src/main/main.c"
  },
  "80027A30": {
-  "asm": "asm/nonmatchings/main/main/func_80027A30.s",
+  "asm": "asm/nonmatchings/main/main/xa_setvol.s",
   "calls": [
    "80035B2C"
   ],
@@ -7015,7 +7014,7 @@
   "src": "src/main/main.c"
  },
  "80028F28": {
-  "asm": "asm/nonmatchings/main/main/func_80028F28.s",
+  "asm": "asm/nonmatchings/main/main/texture_update_scroll.s",
   "calls": [
    "8003649C"
   ],
@@ -7046,7 +7045,7 @@
   "src": "src/main/main.c"
  },
  "8002926C": {
-  "asm": "asm/nonmatchings/main/main/func_8002926C.s",
+  "asm": "asm/nonmatchings/main/main/texture_init_mem_textureset.s",
   "calls": [
    "80011654",
    "80028994"
@@ -7112,7 +7111,7 @@
   "src": "src/main/main.c"
  },
  "80029D28": {
-  "asm": "asm/nonmatchings/main/main/func_80029D28.s",
+  "asm": "asm/nonmatchings/main/main/texture_draw.s",
   "calls": [],
   "fp": "8480c54510db718d",
   "fpn": "9c183cad50141b2e",
@@ -7164,7 +7163,7 @@
   "src": "src/main/main.c"
  },
  "8002A2EC": {
-  "asm": "asm/nonmatchings/main/main/func_8002A2EC.s",
+  "asm": "asm/nonmatchings/main/main/calc_rgbcode.s",
   "calls": [],
   "fp": "abc4d8763069b907",
   "fpn": "5d2bcb271185625d",
@@ -7177,7 +7176,7 @@
   "src": "src/main/main.c"
  },
  "8002A35C": {
-  "asm": "asm/nonmatchings/main/main/func_8002A35C.s",
+  "asm": "asm/nonmatchings/main/main/texture_release_loading_mem.s",
   "calls": [
    "800112A4",
    "80011544",
@@ -7415,7 +7414,7 @@
   "src": "src/main/main.c"
  },
  "8002AAAC": {
-  "asm": "asm/nonmatchings/main/main/func_8002AAAC.s",
+  "asm": "asm/nonmatchings/main/main/sound_critical.s",
   "calls": [],
   "fp": "f9a6136d2299aaec",
   "fpn": "3bdb41083303167b",
@@ -7452,7 +7451,7 @@
   "src": "src/main/main.c"
  },
  "8002AB44": {
-  "asm": "asm/nonmatchings/main/main/func_8002AB44.s",
+  "asm": "asm/nonmatchings/main/main/machine_quit_sound.s",
   "calls": [
    "8002C428",
    "800320EC",
@@ -7623,7 +7622,7 @@
   "src": "src/main/main.c"
  },
  "8002B4B8": {
-  "asm": "asm/nonmatchings/main/main/func_8002B4B8.s",
+  "asm": "asm/nonmatchings/main/main/sound_continue.s",
   "calls": [
    "80037ADC"
   ],
@@ -7774,7 +7773,7 @@
   "src": "src/main/main.c"
  },
  "8002BA10": {
-  "asm": "asm/nonmatchings/main/main/func_8002BA10.s",
+  "asm": "asm/nonmatchings/main/main/machine_load_sfx.s",
   "calls": [
    "80013688"
   ],
@@ -7980,7 +7979,7 @@
   "src": "src/main/main.c"
  },
  "8002C0E0": {
-  "asm": "asm/nonmatchings/main/main/func_8002C0E0.s",
+  "asm": "asm/nonmatchings/main/main/continue_music.s",
   "calls": [
    "80038638"
   ],
@@ -8055,7 +8054,7 @@
   "src": "src/main/main.c"
  },
  "8002C248": {
-  "asm": "asm/nonmatchings/main/main/func_8002C248.s",
+  "asm": "asm/nonmatchings/main/main/music_fade_out.s",
   "calls": [
    "800389C0"
   ],
@@ -8083,7 +8082,7 @@
   "src": "src/main/main.c"
  },
  "8002C290": {
-  "asm": "asm/nonmatchings/main/main/func_8002C290.s",
+  "asm": "asm/nonmatchings/main/main/music_duck_off.s",
   "calls": [],
   "fp": "ad519239883ac4b9",
   "fpn": "ad519239883ac4b9",
@@ -8109,7 +8108,7 @@
   "src": "src/main/main.c"
  },
  "8002C2AC": {
-  "asm": "asm/nonmatchings/main/main/func_8002C2AC.s",
+  "asm": "asm/nonmatchings/main/main/music_restart.s",
   "calls": [],
   "fp": "daff192e809d49cc",
   "fpn": "820562035fac9fa1",
@@ -8140,7 +8139,7 @@
   "src": "src/main/main.c"
  },
  "8002C394": {
-  "asm": "asm/nonmatchings/main/main/func_8002C394.s",
+  "asm": "asm/nonmatchings/main/main/music_dload_midi.s",
   "calls": [
    "80013688",
    "8003666C",
@@ -8305,7 +8304,7 @@
   "src": "src/main/main.c"
  },
  "8002D0C8": {
-  "asm": "asm/nonmatchings/main/main/func_8002D0C8.s",
+  "asm": "asm/nonmatchings/main/main/card_save.s",
   "calls": [],
   "fp": "b1797786c7ef5f9c",
   "fpn": "45aa54dcc9727b4b",
@@ -18821,7 +18820,7 @@
   "src": "src/overlays/engine/panel.c"
  },
  "engine:8007EE2C": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8007EE2C.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/func_8007EE2C.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022660",
@@ -18833,12 +18832,12 @@
   "name": "func_8007EE2C",
   "orig": "func_8007EE2C",
   "rom": 24988,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/pause",
   "size": 404,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/pause.c"
  },
  "engine:8007EFC0": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8007EFC0.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/func_8007EFC0.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022660",
@@ -18850,12 +18849,12 @@
   "name": "func_8007EFC0",
   "orig": "func_8007EFC0",
   "rom": 25392,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/pause",
   "size": 488,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/pause.c"
  },
  "engine:8007F1A8": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8007F1A8.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/func_8007F1A8.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022660"
@@ -18866,12 +18865,12 @@
   "name": "func_8007F1A8",
   "orig": "func_8007F1A8",
   "rom": 25880,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/pause",
   "size": 364,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/pause.c"
  },
  "engine:8007F314": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8007F314.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/func_8007F314.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800222BC",
@@ -18902,12 +18901,12 @@
   "name": "func_8007F314",
   "orig": "func_8007F314",
   "rom": 26244,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/pause",
   "size": 5772,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/pause.c"
  },
  "engine:800809A0": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_800809A0.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/func_800809A0.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800243A0",
@@ -18919,12 +18918,12 @@
   "name": "func_800809A0",
   "orig": "func_800809A0",
   "rom": 32016,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/pause",
   "size": 1564,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/pause.c"
  },
  "engine:80080FBC": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80080FBC.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/func_80080FBC.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8007BE84",
@@ -18939,12 +18938,12 @@
   "name": "func_80080FBC",
   "orig": "func_80080FBC",
   "rom": 33580,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/pause",
   "size": 1204,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/pause.c"
  },
  "engine:80081470": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80081470.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/func_80081470.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80095BEC",
@@ -18956,12 +18955,12 @@
   "name": "func_80081470",
   "orig": "func_80081470",
   "rom": 34784,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/pause",
   "size": 2804,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/pause.c"
  },
  "engine:80081F64": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80081F64.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/func_80081F64.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022660",
@@ -18975,12 +18974,12 @@
   "name": "func_80081F64",
   "orig": "func_80081F64",
   "rom": 37588,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/pause",
   "size": 1580,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/pause.c"
  },
  "engine:80082590": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80082590.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/func_80082590.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80018B08",
@@ -18995,12 +18994,12 @@
   "name": "func_80082590",
   "orig": "func_80082590",
   "rom": 39168,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/pause",
   "size": 360,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/pause.c"
  },
  "engine:800826F8": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_800826F8.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/func_800826F8.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80095BEC"
@@ -19011,12 +19010,12 @@
   "name": "func_800826F8",
   "orig": "func_800826F8",
   "rom": 39528,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/pause",
   "size": 972,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/pause.c"
  },
  "engine:80082AC4": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80082AC4.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/func_80082AC4.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "c55af0e5471d3c8f",
@@ -19025,12 +19024,12 @@
   "name": "func_80082AC4",
   "orig": "func_80082AC4",
   "rom": 40500,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/pause",
   "size": 368,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/pause.c"
  },
  "engine:80082C34": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80082C34.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/func_80082C34.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "f72a9378e6630d13",
@@ -19039,12 +19038,12 @@
   "name": "func_80082C34",
   "orig": "func_80082C34",
   "rom": 40868,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/pause",
   "size": 348,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/pause.c"
  },
  "engine:80082D90": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80082D90.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/func_80082D90.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022660",
@@ -19056,12 +19055,12 @@
   "name": "func_80082D90",
   "orig": "func_80082D90",
   "rom": 41216,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/pause",
   "size": 1076,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/pause.c"
  },
  "engine:800831C4": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_800831C4.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/func_800831C4.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80095E38"
@@ -19072,12 +19071,12 @@
   "name": "func_800831C4",
   "orig": "func_800831C4",
   "rom": 42292,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/pause",
   "size": 44,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/pause.c"
  },
  "engine:800831F0": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_800831F0.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/func_800831F0.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "4263bba76c16dc3a",
@@ -19086,12 +19085,12 @@
   "name": "func_800831F0",
   "orig": "func_800831F0",
   "rom": 42336,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/pause",
   "size": 84,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/pause.c"
  },
  "engine:80083244": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80083244.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/func_80083244.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022660",
@@ -19103,12 +19102,12 @@
   "name": "func_80083244",
   "orig": "func_80083244",
   "rom": 42420,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/pause",
   "size": 120,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/pause.c"
  },
  "engine:800832BC": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_800832BC.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/func_800832BC.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80095BEC"
@@ -19119,12 +19118,12 @@
   "name": "func_800832BC",
   "orig": "func_800832BC",
   "rom": 42540,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/pause",
   "size": 120,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/pause.c"
  },
  "engine:80083334": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80083334.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/func_80083334.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80095BEC"
@@ -19135,12 +19134,12 @@
   "name": "func_80083334",
   "orig": "func_80083334",
   "rom": 42660,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/pause",
   "size": 340,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/pause.c"
  },
  "engine:80083488": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80083488.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/func_80083488.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "7ab5b84857b6394e",
@@ -19149,12 +19148,12 @@
   "name": "func_80083488",
   "orig": "func_80083488",
   "rom": 43000,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/pause",
   "size": 92,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/pause.c"
  },
  "engine:800834E4": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_800834E4.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/func_800834E4.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8002AC18"
@@ -19165,12 +19164,12 @@
   "name": "func_800834E4",
   "orig": "func_800834E4",
   "rom": 43092,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/pause",
   "size": 72,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/pause.c"
  },
  "engine:8008352C": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008352C.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/func_8008352C.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "0f22546beecf4e9f",
@@ -19179,12 +19178,12 @@
   "name": "func_8008352C",
   "orig": "func_8008352C",
   "rom": 43164,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/pause",
   "size": 36,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/pause.c"
  },
  "engine:80083550": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80083550.s",
+  "asm": "asm/nonmatchings/overlays/engine/pause/func_80083550.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "e2fef49bdf3c9945",
@@ -19193,12 +19192,12 @@
   "name": "func_80083550",
   "orig": "func_80083550",
   "rom": 43200,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/pause",
   "size": 440,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/pause.c"
  },
  "engine:80083708": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80083708.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80083708.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590",
@@ -19219,12 +19218,12 @@
   "name": "func_80083708",
   "orig": "func_80083708",
   "rom": 43640,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 1924,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80083E8C": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80083E8C.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80083E8C.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590",
@@ -19242,12 +19241,12 @@
   "name": "func_80083E8C",
   "orig": "func_80083E8C",
   "rom": 45564,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 2300,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80084788": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80084788.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80084788.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "b99df81021fdf6de",
@@ -19256,12 +19255,12 @@
   "name": "func_80084788",
   "orig": "func_80084788",
   "rom": 47864,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 1660,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80084E04": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80084E04.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80084E04.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "74b9e8d0868796cf",
@@ -19270,12 +19269,12 @@
   "name": "func_80084E04",
   "orig": "func_80084E04",
   "rom": 49524,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 552,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008502C": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008502C.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008502C.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800225C4",
@@ -19290,12 +19289,12 @@
   "name": "func_8008502C",
   "orig": "func_8008502C",
   "rom": 50076,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 1172,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:800854C0": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/SetHeroSeq.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/SetHeroSeq.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8008502C"
@@ -19306,12 +19305,12 @@
   "name": "SetHeroSeq",
   "orig": "func_800854C0",
   "rom": 51248,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 196,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80085584": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80085584.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80085584.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8008502C"
@@ -19322,12 +19321,12 @@
   "name": "func_80085584",
   "orig": "func_80085584",
   "rom": 51444,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 204,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80085650": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80085650.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80085650.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590"
@@ -19338,12 +19337,12 @@
   "name": "func_80085650",
   "orig": "func_80085650",
   "rom": 51648,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 200,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80085718": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80085718.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80085718.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800165F8"
@@ -19354,12 +19353,12 @@
   "name": "func_80085718",
   "orig": "func_80085718",
   "rom": 51848,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 376,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80085890": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80085890.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80085890.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80016558",
@@ -19371,12 +19370,12 @@
   "name": "func_80085890",
   "orig": "func_80085890",
   "rom": 52224,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 324,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:800859D4": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_800859D4.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_800859D4.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800154A0",
@@ -19388,12 +19387,12 @@
   "name": "func_800859D4",
   "orig": "func_800859D4",
   "rom": 52548,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 688,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80085C84": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80085C84.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80085C84.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800154A0"
@@ -19404,12 +19403,12 @@
   "name": "func_80085C84",
   "orig": "func_80085C84",
   "rom": 53236,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 168,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80085D2C": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80085D2C.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80085D2C.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800860D4"
@@ -19420,12 +19419,12 @@
   "name": "func_80085D2C",
   "orig": "func_80085D2C",
   "rom": 53404,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 936,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:800860D4": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_800860D4.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_800860D4.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "df1d589f0eddb6fe",
@@ -19434,12 +19433,12 @@
   "name": "func_800860D4",
   "orig": "func_800860D4",
   "rom": 54340,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 764,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:800863D0": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_800863D0.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_800863D0.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80025F44",
@@ -19451,12 +19450,12 @@
   "name": "func_800863D0",
   "orig": "func_800863D0",
   "rom": 55104,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 252,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:800864CC": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_800864CC.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_800864CC.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800142D4",
@@ -19470,12 +19469,12 @@
   "name": "func_800864CC",
   "orig": "func_800864CC",
   "rom": 55356,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 528,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:800866DC": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_800866DC.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_800866DC.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "ba32b4fb966396c3",
@@ -19484,12 +19483,12 @@
   "name": "func_800866DC",
   "orig": "func_800866DC",
   "rom": 55884,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 40,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80086704": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80086704.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/DefaultTouched.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -19498,12 +19497,12 @@
   "name": "DefaultTouched",
   "orig": "func_80086704",
   "rom": 55924,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 8,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008670C": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008670C.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008670C.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "af99c5b3dbef98d9",
@@ -19512,12 +19511,12 @@
   "name": "func_8008670C",
   "orig": "func_8008670C",
   "rom": 55932,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 8,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80086714": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80086714.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80086714.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "af99c5b3dbef98d9",
@@ -19526,12 +19525,12 @@
   "name": "func_80086714",
   "orig": "func_80086714",
   "rom": 55940,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 8,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008671C": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008671C.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008671C.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "af99c5b3dbef98d9",
@@ -19540,12 +19539,12 @@
   "name": "func_8008671C",
   "orig": "func_8008671C",
   "rom": 55948,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 8,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80086724": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80086724.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/DefHero2ObjectCollision.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "af99c5b3dbef98d9",
@@ -19554,12 +19553,12 @@
   "name": "DefHero2ObjectCollision",
   "orig": "func_80086724",
   "rom": 55956,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 8,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008672C": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008672C.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008672C.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80025F44"
@@ -19570,12 +19569,12 @@
   "name": "func_8008672C",
   "orig": "func_8008672C",
   "rom": 55964,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 192,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:800867EC": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_800867EC.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_800867EC.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80085D2C"
@@ -19586,12 +19585,12 @@
   "name": "func_800867EC",
   "orig": "func_800867EC",
   "rom": 56156,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 32,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008680C": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008680C.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008680C.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -19600,12 +19599,12 @@
   "name": "func_8008680C",
   "orig": "func_8008680C",
   "rom": 56188,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 8,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80086814": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80086814.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80086814.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80016478"
@@ -19616,12 +19615,12 @@
   "name": "func_80086814",
   "orig": "func_80086814",
   "rom": 56196,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 84,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80086868": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80086868.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80086868.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "7f02819218aa2e3d",
@@ -19630,12 +19629,12 @@
   "name": "func_80086868",
   "orig": "func_80086868",
   "rom": 56280,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 36,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008688C": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008688C.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008688C.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "5d47a4bc6c56265b",
@@ -19644,12 +19643,12 @@
   "name": "func_8008688C",
   "orig": "func_8008688C",
   "rom": 56316,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 40,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:800868B4": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/SetHeroAction.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/SetHeroAction.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "cfe9d1e260cecebc",
@@ -19658,12 +19657,12 @@
   "name": "SetHeroAction",
   "orig": "func_800868B4",
   "rom": 56356,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 100,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80086918": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/SetTweakAi.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/SetTweakAi.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80086C94"
@@ -19674,12 +19673,12 @@
   "name": "SetTweakAi",
   "orig": "func_80086918",
   "rom": 56456,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 892,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80086C94": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80086C94.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80086C94.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "db83015fa4dbaae6",
@@ -19688,12 +19687,12 @@
   "name": "func_80086C94",
   "orig": "func_80086C94",
   "rom": 57348,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 244,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80086D88": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80086D88.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80086D88.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "4727eebb0bb990b5",
@@ -19702,12 +19701,12 @@
   "name": "func_80086D88",
   "orig": "func_80086D88",
   "rom": 57592,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 452,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80086F4C": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80086F4C.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80086F4C.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "daeb1b92d0a44c67",
@@ -19716,12 +19715,12 @@
   "name": "func_80086F4C",
   "orig": "func_80086F4C",
   "rom": 58044,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 44,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80086F78": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80086F78.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80086F78.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "3e0ed40b5c2d10b7",
@@ -19730,12 +19729,12 @@
   "name": "func_80086F78",
   "orig": "func_80086F78",
   "rom": 58088,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 40,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80086FA0": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80086FA0.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80086FA0.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "6bac7d73b8116891",
@@ -19744,12 +19743,12 @@
   "name": "func_80086FA0",
   "orig": "func_80086FA0",
   "rom": 58128,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 44,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80086FCC": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80086FCC.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80086FCC.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800868B4"
@@ -19760,12 +19759,12 @@
   "name": "func_80086FCC",
   "orig": "func_80086FCC",
   "rom": 58172,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 536,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:800871E4": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_800871E4.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_800871E4.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80025BBC",
@@ -19778,12 +19777,12 @@
   "name": "func_800871E4",
   "orig": "func_800871E4",
   "rom": 58708,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 580,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80087428": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80087428.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80087428.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800854C0"
@@ -19794,12 +19793,12 @@
   "name": "func_80087428",
   "orig": "func_80087428",
   "rom": 59288,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 196,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:800874EC": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_800874EC.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_800874EC.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590",
@@ -19817,12 +19816,12 @@
   "name": "func_800874EC",
   "orig": "func_800874EC",
   "rom": 59484,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 1136,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008795C": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008795C.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008795C.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8008502C",
@@ -19836,12 +19835,12 @@
   "name": "func_8008795C",
   "orig": "func_8008795C",
   "rom": 60620,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 560,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80087B8C": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80087B8C.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80087B8C.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022660",
@@ -19856,12 +19855,12 @@
   "name": "func_80087B8C",
   "orig": "func_80087B8C",
   "rom": 61180,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 1076,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80087FC0": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80087FC0.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80087FC0.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800854C0"
@@ -19872,12 +19871,12 @@
   "name": "func_80087FC0",
   "orig": "func_80087FC0",
   "rom": 62256,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 288,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:800880E0": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_800880E0.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_800880E0.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800225C4",
@@ -19889,12 +19888,12 @@
   "name": "func_800880E0",
   "orig": "func_800880E0",
   "rom": 62544,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 256,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:800881E0": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_800881E0.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_800881E0.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80025BBC",
@@ -19907,12 +19906,12 @@
   "name": "func_800881E0",
   "orig": "func_800881E0",
   "rom": 62800,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 252,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:800882DC": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_800882DC.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_800882DC.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022660",
@@ -19924,12 +19923,12 @@
   "name": "func_800882DC",
   "orig": "func_800882DC",
   "rom": 63052,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 372,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80088450": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80088450.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80088450.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800264E8",
@@ -19941,12 +19940,12 @@
   "name": "func_80088450",
   "orig": "func_80088450",
   "rom": 63424,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 244,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80088544": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80088544.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80088544.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8008502C",
@@ -19960,12 +19959,12 @@
   "name": "func_80088544",
   "orig": "func_80088544",
   "rom": 63668,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 452,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80088708": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80088708.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80088708.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800854C0"
@@ -19976,12 +19975,12 @@
   "name": "func_80088708",
   "orig": "func_80088708",
   "rom": 64120,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 140,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80088794": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80088794.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80088794.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001463C",
@@ -19997,12 +19996,12 @@
   "name": "func_80088794",
   "orig": "func_80088794",
   "rom": 64260,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 1048,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80088BAC": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80088BAC.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80088BAC.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800854C0"
@@ -20013,12 +20012,12 @@
   "name": "func_80088BAC",
   "orig": "func_80088BAC",
   "rom": 65308,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 124,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80088C28": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80088C28.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80088C28.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001463C",
@@ -20034,12 +20033,12 @@
   "name": "func_80088C28",
   "orig": "func_80088C28",
   "rom": 65432,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 848,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80088F78": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80088F78.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80088F78.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800854C0"
@@ -20050,12 +20049,12 @@
   "name": "func_80088F78",
   "orig": "func_80088F78",
   "rom": 66280,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 148,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008900C": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008900C.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008900C.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001463C",
@@ -20073,12 +20072,12 @@
   "name": "func_8008900C",
   "orig": "func_8008900C",
   "rom": 66428,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 1236,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:800894E0": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_800894E0.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_800894E0.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800854C0"
@@ -20089,12 +20088,12 @@
   "name": "func_800894E0",
   "orig": "func_800894E0",
   "rom": 67664,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 124,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008955C": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008955C.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008955C.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001463C",
@@ -20111,12 +20110,12 @@
   "name": "func_8008955C",
   "orig": "func_8008955C",
   "rom": 67788,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 912,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:800898EC": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_800898EC.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_800898EC.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590",
@@ -20129,12 +20128,12 @@
   "name": "func_800898EC",
   "orig": "func_800898EC",
   "rom": 68700,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 764,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80089BE8": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/HeroGhost.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/HeroGhost.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590",
@@ -20146,12 +20145,12 @@
   "name": "HeroGhost",
   "orig": "func_80089BE8",
   "rom": 69464,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 956,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:80089FA4": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80089FA4.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_80089FA4.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8002C1C0",
@@ -20163,12 +20162,12 @@
   "name": "func_80089FA4",
   "orig": "func_80089FA4",
   "rom": 70420,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 604,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008A200": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008A200.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008A200.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800154A0",
@@ -20180,12 +20179,12 @@
   "name": "func_8008A200",
   "orig": "func_8008A200",
   "rom": 71024,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 1552,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008A810": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008A810.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008A810.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "8146892f46e93034",
@@ -20194,12 +20193,12 @@
   "name": "func_8008A810",
   "orig": "func_8008A810",
   "rom": 72576,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 68,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008A854": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008A854.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008A854.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8008502C",
@@ -20211,12 +20210,12 @@
   "name": "func_8008A854",
   "orig": "func_8008A854",
   "rom": 72644,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 156,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008A8F0": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008A8F0.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008A8F0.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8008502C"
@@ -20227,12 +20226,12 @@
   "name": "func_8008A8F0",
   "orig": "func_8008A8F0",
   "rom": 72800,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 52,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008A924": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008A924.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008A924.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800854C0"
@@ -20243,12 +20242,12 @@
   "name": "func_8008A924",
   "orig": "func_8008A924",
   "rom": 72852,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 120,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008A99C": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008A99C.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008A99C.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800854C0"
@@ -20259,12 +20258,12 @@
   "name": "func_8008A99C",
   "orig": "func_8008A99C",
   "rom": 72972,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 84,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008A9F0": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008A9F0.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008A9F0.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590"
@@ -20275,12 +20274,12 @@
   "name": "func_8008A9F0",
   "orig": "func_8008A9F0",
   "rom": 73056,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 80,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008AA40": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008AA40.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008AA40.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590"
@@ -20291,12 +20290,12 @@
   "name": "func_8008AA40",
   "orig": "func_8008AA40",
   "rom": 73136,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 80,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008AA90": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008AA90.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/HeroQuiet.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8008502C"
@@ -20307,12 +20306,12 @@
   "name": "HeroQuiet",
   "orig": "func_8008AA90",
   "rom": 73216,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 32,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008AAB0": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008AAB0.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008AAB0.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800854C0"
@@ -20323,12 +20322,12 @@
   "name": "func_8008AAB0",
   "orig": "func_8008AAB0",
   "rom": 73248,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 84,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008AB04": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008AB04.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008AB04.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "675b3180eabd5e33",
@@ -20337,12 +20336,12 @@
   "name": "func_8008AB04",
   "orig": "func_8008AB04",
   "rom": 73332,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 68,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008AB48": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008AB48.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008AB48.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "af99c5b3dbef98d9",
@@ -20351,12 +20350,12 @@
   "name": "func_8008AB48",
   "orig": "func_8008AB48",
   "rom": 73400,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 8,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008AB50": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008AB50.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008AB50.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "91a6f68585cac66a",
@@ -20365,12 +20364,12 @@
   "name": "func_8008AB50",
   "orig": "func_8008AB50",
   "rom": 73408,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 68,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008AB94": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008AB94.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008AB94.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800868B4"
@@ -20381,12 +20380,12 @@
   "name": "func_8008AB94",
   "orig": "func_8008AB94",
   "rom": 73476,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 100,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008ABF8": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008ABF8.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008ABF8.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800868B4"
@@ -20397,12 +20396,12 @@
   "name": "func_8008ABF8",
   "orig": "func_8008ABF8",
   "rom": 73576,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 124,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008AC74": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008AC74.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008AC74.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800868B4"
@@ -20413,12 +20412,12 @@
   "name": "func_8008AC74",
   "orig": "func_8008AC74",
   "rom": 73700,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 124,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008ACF0": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008ACF0.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008ACF0.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800868B4"
@@ -20429,12 +20428,12 @@
   "name": "func_8008ACF0",
   "orig": "func_8008ACF0",
   "rom": 73824,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 172,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008AD9C": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008AD9C.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008AD9C.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -20443,12 +20442,12 @@
   "name": "func_8008AD9C",
   "orig": "func_8008AD9C",
   "rom": 73996,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 8,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008ADA4": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008ADA4.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008ADA4.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590",
@@ -20463,12 +20462,12 @@
   "name": "func_8008ADA4",
   "orig": "func_8008ADA4",
   "rom": 74004,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 1272,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008B29C": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008B29C.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008B29C.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "9b9b46535728d634",
@@ -20477,12 +20476,12 @@
   "name": "func_8008B29C",
   "orig": "func_8008B29C",
   "rom": 75276,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 380,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008B418": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008B418.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008B418.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "7aae394a124a50fd",
@@ -20491,12 +20490,12 @@
   "name": "func_8008B418",
   "orig": "func_8008B418",
   "rom": 75656,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 248,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008B510": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/InitScriptFX.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/InitScriptFX.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800115D8",
@@ -20513,12 +20512,12 @@
   "name": "InitScriptFX",
   "orig": "func_8008B510",
   "rom": 75904,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 1592,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008BB48": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/PlotScriptFX.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/PlotScriptFX.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800110A8",
@@ -20534,12 +20533,12 @@
   "name": "PlotScriptFX",
   "orig": "func_8008BB48",
   "rom": 77496,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 2080,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008C368": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/PlotSmokePoof.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/PlotSmokePoof.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800250B0"
@@ -20550,12 +20549,12 @@
   "name": "PlotSmokePoof",
   "orig": "func_8008C368",
   "rom": 79576,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 352,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008C4C8": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008C4C8.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008C4C8.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "29e1b03832b375f6",
@@ -20564,12 +20563,12 @@
   "name": "func_8008C4C8",
   "orig": "func_8008C4C8",
   "rom": 79928,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 252,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008C5C4": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008C5C4.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008C5C4.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001463C",
@@ -20582,12 +20581,12 @@
   "name": "func_8008C5C4",
   "orig": "func_8008C5C4",
   "rom": 80180,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 608,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008C824": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008C824.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008C824.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590"
@@ -20598,12 +20597,12 @@
   "name": "func_8008C824",
   "orig": "func_8008C824",
   "rom": 80788,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 620,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008CA90": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008CA90.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008CA90.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590",
@@ -20615,12 +20614,12 @@
   "name": "func_8008CA90",
   "orig": "func_8008CA90",
   "rom": 81408,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 688,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008CD40": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/PlotWeatherNas.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/PlotWeatherNas.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015D70"
@@ -20631,12 +20630,12 @@
   "name": "PlotWeatherNas",
   "orig": "func_8008CD40",
   "rom": 82096,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 116,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008CDB4": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/InitWeatherNas.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/InitWeatherNas.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015D70"
@@ -20647,12 +20646,12 @@
   "name": "InitWeatherNas",
   "orig": "func_8008CDB4",
   "rom": 82212,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 92,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008CE10": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008CE10.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008CE10.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -20661,12 +20660,12 @@
   "name": "func_8008CE10",
   "orig": "func_8008CE10",
   "rom": 82304,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 8,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008CE18": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008CE18.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008CE18.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -20675,12 +20674,12 @@
   "name": "func_8008CE18",
   "orig": "func_8008CE18",
   "rom": 82312,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 8,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008CE20": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008CE20.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008CE20.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001562C"
@@ -20691,12 +20690,12 @@
   "name": "func_8008CE20",
   "orig": "func_8008CE20",
   "rom": 82320,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 144,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008CEB0": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008CEB0.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008CEB0.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "ee8c3652aa2d2079",
@@ -20705,12 +20704,12 @@
   "name": "func_8008CEB0",
   "orig": "func_8008CEB0",
   "rom": 82464,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 56,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008CEE8": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/PlotParticleEffect.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/PlotParticleEffect.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -20719,12 +20718,12 @@
   "name": "PlotParticleEffect",
   "orig": "func_8008CEE8",
   "rom": 82520,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 8,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008CEF0": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/InitParticleEffect.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/InitParticleEffect.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
@@ -20733,12 +20732,12 @@
   "name": "InitParticleEffect",
   "orig": "func_8008CEF0",
   "rom": 82528,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 8,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008CEF8": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/InitSmokePoof.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/InitSmokePoof.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80024E30"
@@ -20749,12 +20748,12 @@
   "name": "InitSmokePoof",
   "orig": "func_8008CEF8",
   "rom": 82536,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 196,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008CFBC": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008CFBC.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008CFBC.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800110A8",
@@ -20767,12 +20766,12 @@
   "name": "func_8008CFBC",
   "orig": "func_8008CFBC",
   "rom": 82732,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 204,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008D088": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008D088.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008D088.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590",
@@ -20784,12 +20783,12 @@
   "name": "func_8008D088",
   "orig": "func_8008D088",
   "rom": 82936,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 452,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008D24C": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008D24C.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008D24C.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80021DD4"
@@ -20800,12 +20799,12 @@
   "name": "func_8008D24C",
   "orig": "func_8008D24C",
   "rom": 83388,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 56,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008D284": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008D284.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008D284.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80021DD4"
@@ -20816,12 +20815,12 @@
   "name": "func_8008D284",
   "orig": "func_8008D284",
   "rom": 83444,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 56,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008D2BC": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/PlotFloatyScore.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/PlotFloatyScore.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022FD4"
@@ -20832,12 +20831,12 @@
   "name": "PlotFloatyScore",
   "orig": "func_8008D2BC",
   "rom": 83500,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 460,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008D488": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008D488.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008D488.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "8d77cc31a1934c57",
@@ -20846,12 +20845,12 @@
   "name": "func_8008D488",
   "orig": "func_8008D488",
   "rom": 83960,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 232,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008D570": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/InitFloatyScore.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/InitFloatyScore.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022FD4"
@@ -20862,12 +20861,12 @@
   "name": "InitFloatyScore",
   "orig": "func_8008D570",
   "rom": 84192,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 100,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008D5D4": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008D5D4.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008D5D4.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80018F3C",
@@ -20880,12 +20879,12 @@
   "name": "func_8008D5D4",
   "orig": "func_8008D5D4",
   "rom": 84292,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 244,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008D6C8": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008D6C8.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008D6C8.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80025BBC",
@@ -20898,12 +20897,12 @@
   "name": "func_8008D6C8",
   "orig": "func_8008D6C8",
   "rom": 84536,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 348,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008D824": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/Init_HealthPU.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/Init_HealthPU.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590",
@@ -20922,12 +20921,12 @@
   "name": "Init_HealthPU",
   "orig": "func_8008D824",
   "rom": 84884,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 596,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008DA78": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/Plot_HealthPU.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/Plot_HealthPU.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590",
@@ -20943,12 +20942,12 @@
   "name": "Plot_HealthPU",
   "orig": "func_8008DA78",
   "rom": 85480,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 680,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008DD20": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/PlotBigPoof.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/PlotBigPoof.s",
   "bin": "disc/engine.bin",
   "calls": [
    "800250B0"
@@ -20959,12 +20958,12 @@
   "name": "PlotBigPoof",
   "orig": "func_8008DD20",
   "rom": 86160,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 32,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008DD40": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/InitBigPoof.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/InitBigPoof.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80022FD4",
@@ -20976,12 +20975,12 @@
   "name": "InitBigPoof",
   "orig": "func_8008DD40",
   "rom": 86192,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 128,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008DDC0": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008DDC0.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008DDC0.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80026540",
@@ -20993,12 +20992,12 @@
   "name": "func_8008DDC0",
   "orig": "func_8008DDC0",
   "rom": 86320,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 204,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008DE8C": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008DE8C.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008DE8C.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "af99c5b3dbef98d9",
@@ -21007,12 +21006,12 @@
   "name": "func_8008DE8C",
   "orig": "func_8008DE8C",
   "rom": 86524,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 8,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008DE94": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008DE94.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008DE94.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "593597bbcd104b34",
@@ -21021,12 +21020,12 @@
   "name": "func_8008DE94",
   "orig": "func_8008DE94",
   "rom": 86532,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 52,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008DEC8": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_8008DEC8.s",
+  "asm": "asm/nonmatchings/overlays/engine/80083708/func_8008DEC8.s",
   "bin": "disc/engine.bin",
   "calls": [
    "8001463C",
@@ -21040,9 +21039,9 @@
   "name": "func_8008DEC8",
   "orig": "func_8008DEC8",
   "rom": 86584,
-  "seg": "overlays/engine/8007ee2c",
+  "seg": "overlays/engine/80083708",
   "size": 948,
-  "src": "src/overlays/engine/8007ee2c.c"
+  "src": "src/overlays/engine/80083708.c"
  },
  "engine:8008E27C": {
   "asm": "asm/nonmatchings/overlays/engine/8008e27c/func_8008E27C.s",

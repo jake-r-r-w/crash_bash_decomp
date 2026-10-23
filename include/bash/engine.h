@@ -454,7 +454,8 @@ void DoAmbience(void);
 
 /* The engine's other files (ARCHITECTURE.md, Files inside the engine). */
 #include "bash/panel.h"
-#include "bash/8007ee2c.h"
+#include "bash/pause.h"
+#include "bash/80083708.h"
 #include "bash/8008e27c.h"
 #include "bash/8009317c.h"
 #include "bash/8009608c.h"

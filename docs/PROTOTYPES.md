@@ -197,10 +197,12 @@ names `E7C8`: `CalcElapsedTime`.
 The last functions in the file (from `Cups_Init` on in the demo) come in
 reverse line order; the ones placed in retail keep that order.
 
-**PAUSE.CPP.** The demo's pause code differs a lot from retail (best
-similarity 0.40). Its largest function (`0x1238` bytes) is closest to
-`func_8007F314`, the engine pause menu (0.28), so `PAUSE.CPP` is probably the
-unit `8007ee2c`, maybe from `func_8007ED0C`. Not proven.
+**PAUSE.CPP.** Placed: it is the engine unit `pause`, `func_8007EE2C` to
+`func_80083550`, and a new file starts at `func_80083708` (ARCHITECTURE.md,
+Files inside the engine). Its early functions were rewritten after the demo
+(the pause menu, `func_8007F314`, matches its demo copy at 0.28), but its
+last ones match in order and the line table ends right before the demo copy
+of `func_80083708`.
 
 **Still to do.**
 - Signatures and locals: the parameter types are in where the repo has the
@@ -219,8 +221,7 @@ unit `8007ee2c`, maybe from `func_8007ED0C`. Not proven.
   (Jampack values; the level list may differ in retail). Its `IconParts` is
   Oct 9's `IconBits` reordered (retail's `IconParts` array is too big for
   Jampack's 5 parts), so it is left out.
-- Place `PAUSE.CPP` in retail from its line table (statement boundaries
-  against retail's code).
+- `PAUSE.CPP` is placed (`pause.c`).
 
 ## Euro Demo 65
 

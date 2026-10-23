@@ -646,7 +646,7 @@ extern SVECTOR D_800C76E4; /* spark view rotation */
 void func_800C237C(SparkObj *arg0);
 
 /* Asteroid roll extension (id 0x10000000): a ballistic arc (func_8008C5C4's
- * Arc, declared in bash/8007ee2c.h) at 0x0C. */
+ * Arc, declared in bash/pause.h) at 0x0C. */
 typedef struct AsteroidExt {
     /* 0x00 */ u8 pad00[0xC];
     /* 0x0C */ s32 arc[5];

@@ -8,7 +8,8 @@
 #include "common.h"
 #include "bash/nas.h"
 #include "bash/engine.h"
-#include "bash/8007ee2c.h"
+#include "bash/pause.h"
+#include "bash/80083708.h"
 
 extern HeroInfo Heroes[4];
 extern char D_80054504[];

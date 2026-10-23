@@ -578,7 +578,7 @@ loop:
 void func_800B649C(s32 player);
 void func_800B6708(void);
 
-/* D_8009D87C (declared in bash/8007ee2c.h, which this unit does not include). */
+/* D_8009D87C (declared in bash/pause.h, which this unit does not include). */
 typedef struct Ovl62Odds {
     s16 unk0;
     s16 unk2;
@@ -891,7 +891,7 @@ void func_800CA6E8(Ovl62RiserSet *arg0);
 
 bool DoesPlayerHaveBomb(u32 arg0);
 /* Walrus fish extension (id 0x10000000): a ballistic arc (func_8008C5C4's
- * Arc, declared in bash/8007ee2c.h) at 0x10. */
+ * Arc, declared in bash/pause.h) at 0x10. */
 typedef struct WalrusFishExt {
     /* 0x00 */ u8 pad0[0xC];
     /* 0x0C */ s32 state;
@@ -1283,7 +1283,7 @@ void func_800CAE10(s32 player, s32 target);
 
 void func_800D2CB8(s32 arg0);
 
-/* Per-hero speed table (declared in bash/8007ee2c.h, not included here). */
+/* Per-hero speed table (declared in bash/pause.h, not included here). */
 extern u16 *D_8009D6F4;
 extern s32 D_800D6924[];
 extern s32 D_800D6934[];

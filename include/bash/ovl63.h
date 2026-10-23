@@ -781,7 +781,7 @@ void func_800C5B94(void);
 void func_800C5BEC(void);
 
 NAS *func_800C5DAC(s32 arg0);
-/* D_8009D87C (declared in bash/8007ee2c.h, which this unit does not include). */
+/* D_8009D87C (declared in bash/pause.h, which this unit does not include). */
 typedef struct Ovl63Odds {
     s16 unk0;
     s16 unk2;

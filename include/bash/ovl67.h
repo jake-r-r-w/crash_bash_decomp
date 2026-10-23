@@ -8,7 +8,7 @@
 #include "common.h"
 #include "bash/nas.h"
 
-/* D_8009D87C (declared in bash/8007ee2c.h, which this unit does not include). */
+/* D_8009D87C (declared in bash/pause.h, which this unit does not include). */
 typedef struct Ovl67Odds {
     s16 unk0;
     s16 unk2;

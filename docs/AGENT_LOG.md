@@ -254,6 +254,13 @@ Other:
 ## Gotchas
 
 **Tooling**
+- **Splitting a unit: its header's inline helpers go with their users.** A
+  `static inline` helper in the old unit's header that calls a function now
+  declared in the new unit's header sees no prototype (the headers are
+  included in unit order) and gets "conflicting types"; reordering the
+  includes just moves the problem when the new header needs the old one's
+  types. Move each helper to the header of the file that uses it, and point
+  other headers' direct `#include "bash/<old>.h"` at both new headers.
 - **Renaming a unit of matched C leaves the index on the old name.**
   `decomp.py index` moves a function to a segment only through its `.s`, and
   splat writes none for matched C, so after renaming a unit's `.c`, header and
@@ -525,6 +532,13 @@ Newest first, a few lines each. Details are in the commits.
   PlaySfx as a `goto` into case 8's (not the source; leads list why). No
   `break`/`goto` mix gives the target's three tail survivors. Found the
   unit is probably `PAUSE.CPP`; `cc1plus` compiles the C identically.
+
+- **2026-10-23 (PAUSE.CPP placed; engine unit split):** Jampack's line table
+  ends `PAUSE.CPP` right before the demo copy of `func_80083708`, and its last
+  functions match retail in order, so `8007ee2c` is `pause` (functions
+  74..95) and a new unit `80083708` starts at 96 (rodata `0x800ADF60`; the
+  build matches). The link groups name only whole sections: no file inside
+  the engine. `main.c`: see the next entry.
 
 - **2026-10-23 (PANEL.CPP locals and global types):** 13 locals named from
   Jampack's register records (one C variable in the register, one recorded

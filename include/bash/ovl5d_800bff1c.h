@@ -8,7 +8,8 @@
 #include "common.h"
 #include "bash/ovl5d.h"
 #include "bash/main.h"
-#include "bash/8007ee2c.h"
+#include "bash/pause.h"
+#include "bash/80083708.h"
 
 void func_800C1190(s32 arg0);
 

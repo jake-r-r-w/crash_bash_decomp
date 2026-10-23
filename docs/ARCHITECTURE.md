@@ -212,13 +212,34 @@ code finds 15 code files; nothing else on the disc holds code.
   |---|---|---|---|
   | `engine` | `InitialiseNasSystem` (0) | - | `0x800ADBD8` |
   | `panel` (`PANEL.CPP`) | `Setup_panel` (33) | 7..33: function 6's string stays before | `0x800ADC2C` |
-  | `8007ee2c` | `func_8007EE2C` (74) | 60..77; fewest call ties at 74 | `0x800ADDB0`: the mode names `D_8009AF00` (used by 77, 78) points to |
+  | `pause` (`PAUSE.CPP`) | `func_8007EE2C` (74) | 60..77; fewest call ties at 74 | `0x800ADDB0`: the mode names `D_8009AF00` (used by 77, 78) points to |
+  | `80083708` | `func_80083708` (96) | exact, from Jampack's line table (below) | `0x800ADF60` (proven: the build matches) |
   | `8008e27c` | `func_8008E27C` (208) | 176..208: function 175's strings can't straddle; no call ties from 192 | `0x800AE464` |
   | `8009317c` | `func_8009317C` (282) | 248..289: the memory-card text tables are used up to 247; no call ties 273..282 | `0x800AEBC8` |
   | `8009608c` | `func_8009608C` (330) | 321..330; no call ties from 328 | `0x800AEC34` |
 
   A start can still move earlier inside its range, and a unit can hide more
   starts where the parity doesn't change.
+
+  `PAUSE.CPP`'s extent (2026-10-23): Jampack's 1021 line records cover the
+  demo's code from just after `Init_Panel` to `0x8007A080`. Its early
+  functions were rewritten for release (they match nothing), but the last
+  ones match retail in order (`func_80082C34` 0.90, `func_80082D90` 0.97,
+  `func_800831C4` 1.00, `func_8008352C` 1.00, `func_80083550` 0.98), and the
+  demo function right after the file matches `func_80083708` (0.87):
+  `func_80083550` ends where `func_80083708` starts, so a file starts there.
+  The two sides use no rodata item in common (`0x800ADE50..0x800ADF48`
+  against `0x800ADFB0..`), and the build matches with the second file's
+  rodata from `0x800ADF60`. `func_8007ED0C`, between `Init_Panel` and
+  `func_8007EE2C`, builds two engines from PANEL's data and only PANEL calls
+  it, so `PAUSE.CPP` starts at `func_8007EE2C`, the parity start.
+
+  The Euro Demo 65 link groups can't place a file inside the engine: they
+  name whole sections (`_core_*`, `_engine_start`/`_engine_end`, the engine
+  group's `__text_objend`, `__data_objend`, `__sbss_objend`, and the two
+  overlay slots `_RULES_OVERLAY`, `_WORLD_OVERLAY`). The rules slot, each
+  game's rules text in each language, sits right before the world slot, so
+  it is probably retail's second writable block before `0x800B32B4`.
 - **Files inside the slot overlays** (split 2026-10-15, the same way). A slot
   overlay's `.rodata` comes first (from `0x800B32B4`, 4 mod 8), then `.text`,
   `.data`; each later file has its own `.rodata` range in the yaml and an
