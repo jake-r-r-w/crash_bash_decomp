@@ -16,9 +16,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `main.exe` function matches; Phase 2's naming, data and `main.c` split
   are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2515/2537 game functions matched (93.24% of game code bytes, 2026-10-23):
-  **main.exe, ovl61, ovl69 and ovl6a are complete**; 22 left, every one
-  tried by the swarm at least once. All 564 PsyQ functions (Sony objects). 2
+- 2517/2537 game functions matched (93.44% of game code bytes, 2026-10-23):
+  **main.exe, ovl61, ovl69 and ovl6a are complete**; 20 left, every one
+  tried by the swarm at least once. All 564 PsyQ functions (Sony objects). 1
   parked by hand (`decomp.py status`; the swarm parked 5 more, which the
   dashboard counts from `docs/swarm.js`). Matches are C only, natural C
   first (CONVENTIONS.md, Matching rules; the "hack" class was dropped on
@@ -49,7 +49,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**The overlays' last 22 functions.** Pointing the swarm at functions it
+**The overlays' last 20 functions.** Pointing the swarm at functions it
 had never tried (`--only` the untried list, smallest first, no
 `--retry-failed`) matched 37 of 42 under 2 KB for $151 (~$4 a match),
 against $7.50 for the retry runs, which kept re-trying the same hard ones
@@ -80,8 +80,9 @@ rest are fixed by hand from the worker's patch (Gotchas). A park whose
 `jtbl_` names functions is a bad split (Gotchas).
 
 Hand work, between runs:
-1. The parks: `func_8007F314` (engine) and `func_800BFEE0` (ovl62). For a
-   register-priority miss, try the repeated assignment after an empty
+1. The park: `func_8007F314` (engine). First run `decomp.py similar` on
+   any function before working it: a 1.00 twin matched elsewhere ports by
+   hand (Gotchas, Tooling). For a register-priority miss, try the repeated assignment after an empty
    `do {} while (0)` (MATCHING.md, CSE's block ends): it adds refs without a
    sched barrier, which matched `PogoAI_RadialSearch` and `PlotScriptFX`.
    For a wrong cse canonical register, a dead assignment after the last use
@@ -205,6 +206,14 @@ Other:
 ## Gotchas
 
 **Tooling**
+- **A park can gain a matched twin later, and nothing revisits it.** When a
+  function matches, the gate's propagate step tries its C on the identical
+  copies; one that fails is marked `copy_failed` (and `copy_failed_stage`)
+  in `.decomp/state.json`, and differing prototypes (`VECTOR *` against
+  `s32 *`) are enough to fail it. `func_800BFEE0` and `func_800B7190` stayed
+  unmatched for one to two days after their ovl65 twins matched. `decomp.py similar
+  NAME` shows a twin as similarity 1.00: port its C by hand with the local
+  types.
 - **A matched function's `.s` exists only from before it was matched.**
   splat writes `asm/nonmatchings/**/NAME.s` only for functions the C file
   lacks. Until 2026-10-22 `rename` deleted the old file, losing the target
@@ -439,6 +448,17 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-23 (hand: `func_800BFEE0` and `func_800B7190` from their ovl65
+  twins, 35308bcd, 402f835a):** `func_800BFEE0`'s park (4 lines off) had an
+  identical twin, `func_800B4474` (ovl65), matched 26 minutes after it
+  was parked; the gate's copy failed on the differing prototypes.
+  Its control flow fixed it:
+  the body nested in `if (disc >= 0)`, with `return 0;` in place for the
+  `t0 < 0 && t1 < 0` early-out (MATCHING.md has the jump2 rule; 35308bcd's
+  note credits a cross-jump, which the jump2 dump doesn't show). `similar`
+  on all 21 unmatched functions found one more twin: `func_800B7190`
+  (ovl63) is ovl65's `func_800B9020`, ported with new `Ovl63Seg` types.
 
 - **2026-10-23 (hand: the `func_800BC274` triplet matched, ce174819,
   b3a8cd4c, 52ce83eb):** the a1/a0 swap before `jal func_8001CD04`, parked
