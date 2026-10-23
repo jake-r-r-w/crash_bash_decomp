@@ -62,6 +62,7 @@ segments:
     # bss_size: Please fill out this value when you figure out the bss size
     subsegments:
       - [0x800, c, main/main]
+      - [0x6760, c, main/dbase]
       - [0x7964, c, main/80017164]
       - [0x12940, c, main/sfx]
       - [0x1323C, c, main/80022a3c]

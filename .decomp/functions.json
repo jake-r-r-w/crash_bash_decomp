@@ -2006,7 +2006,7 @@
   "src": "src/main/main.c"
  },
  "80015F60": {
-  "asm": "asm/nonmatchings/main/main/func_80015F60.s",
+  "asm": "asm/nonmatchings/main/dbase/func_80015F60.s",
   "calls": [
    "800110A8",
    "80011498",
@@ -2022,12 +2022,12 @@
   "name": "func_80015F60",
   "orig": "func_80015F60",
   "rom": 26464,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 356,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "800160C4": {
-  "asm": "asm/nonmatchings/main/main/func_800160C4.s",
+  "asm": "asm/nonmatchings/main/dbase/func_800160C4.s",
   "calls": [],
   "fp": "e10adb356d67593a",
   "fpn": "9a5bf0cad65ba0f9",
@@ -2035,12 +2035,12 @@
   "name": "func_800160C4",
   "orig": "func_800160C4",
   "rom": 26820,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 52,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "800160F8": {
-  "asm": "asm/nonmatchings/main/main/func_800160F8.s",
+  "asm": "asm/nonmatchings/main/dbase/func_800160F8.s",
   "calls": [],
   "fp": "f4097f7a82f388db",
   "fpn": "7f49724865ac4fde",
@@ -2048,12 +2048,12 @@
   "name": "func_800160F8",
   "orig": "func_800160F8",
   "rom": 26872,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 52,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "8001612C": {
-  "asm": "asm/nonmatchings/main/main/func_8001612C.s",
+  "asm": "asm/nonmatchings/main/dbase/func_8001612C.s",
   "calls": [
    "80013650"
   ],
@@ -2063,12 +2063,12 @@
   "name": "func_8001612C",
   "orig": "func_8001612C",
   "rom": 26924,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 92,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "80016188": {
-  "asm": "asm/nonmatchings/main/main/dbase_asload_with_anims_texture_callback.s",
+  "asm": "asm/nonmatchings/main/dbase/dbase_asload_with_anims_texture_callback.s",
   "calls": [
    "800110A8",
    "80011C5C",
@@ -2085,12 +2085,12 @@
   "name": "dbase_asload_with_anims_texture_callback",
   "orig": "func_80016188",
   "rom": 27016,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 172,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "80016234": {
-  "asm": "asm/nonmatchings/main/main/func_80016234.s",
+  "asm": "asm/nonmatchings/main/dbase/func_80016234.s",
   "calls": [
    "80011544",
    "80015F60"
@@ -2101,12 +2101,12 @@
   "name": "func_80016234",
   "orig": "func_80016234",
   "rom": 27188,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 64,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "80016274": {
-  "asm": "asm/nonmatchings/main/main/func_80016274.s",
+  "asm": "asm/nonmatchings/main/dbase/func_80016274.s",
   "calls": [
    "8001534C"
   ],
@@ -2116,12 +2116,12 @@
   "name": "func_80016274",
   "orig": "func_80016274",
   "rom": 27252,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 112,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "800162E4": {
-  "asm": "asm/nonmatchings/main/main/func_800162E4.s",
+  "asm": "asm/nonmatchings/main/dbase/func_800162E4.s",
   "calls": [
    "800115D8",
    "80012E28",
@@ -2134,12 +2134,12 @@
   "name": "func_800162E4",
   "orig": "func_800162E4",
   "rom": 27364,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 136,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "8001636C": {
-  "asm": "asm/nonmatchings/main/main/func_8001636C.s",
+  "asm": "asm/nonmatchings/main/dbase/func_8001636C.s",
   "calls": [
    "800110A8",
    "80012F04"
@@ -2150,12 +2150,12 @@
   "name": "func_8001636C",
   "orig": "func_8001636C",
   "rom": 27500,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 116,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "800163E0": {
-  "asm": "asm/nonmatchings/main/main/func_800163E0.s",
+  "asm": "asm/nonmatchings/main/dbase/func_800163E0.s",
   "calls": [
    "800133C8"
   ],
@@ -2165,12 +2165,12 @@
   "name": "func_800163E0",
   "orig": "func_800163E0",
   "rom": 27616,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 112,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "80016450": {
-  "asm": "asm/nonmatchings/main/main/func_80016450.s",
+  "asm": "asm/nonmatchings/main/dbase/func_80016450.s",
   "calls": [],
   "fp": "a5985f825f1f932d",
   "fpn": "fcf875c8eac0e96f",
@@ -2178,12 +2178,12 @@
   "name": "func_80016450",
   "orig": "func_80016450",
   "rom": 27728,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 40,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "80016478": {
-  "asm": "asm/nonmatchings/main/main/func_80016478.s",
+  "asm": "asm/nonmatchings/main/dbase/func_80016478.s",
   "calls": [
    "800110A8",
    "80012E14",
@@ -2196,12 +2196,12 @@
   "name": "func_80016478",
   "orig": "func_80016478",
   "rom": 27768,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 224,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "80016558": {
-  "asm": "asm/nonmatchings/main/main/dbase_mesh_anim_name_loaded.s",
+  "asm": "asm/nonmatchings/main/dbase/dbase_mesh_anim_name_loaded.s",
   "calls": [
    "8001534C"
   ],
@@ -2211,12 +2211,12 @@
   "name": "dbase_mesh_anim_name_loaded",
   "orig": "func_80016558",
   "rom": 27992,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 160,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "800165F8": {
-  "asm": "asm/nonmatchings/main/main/func_800165F8.s",
+  "asm": "asm/nonmatchings/main/dbase/func_800165F8.s",
   "calls": [
    "80012E14",
    "80012E28",
@@ -2229,12 +2229,12 @@
   "name": "func_800165F8",
   "orig": "func_800165F8",
   "rom": 28152,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 260,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "800166FC": {
-  "asm": "asm/nonmatchings/main/main/func_800166FC.s",
+  "asm": "asm/nonmatchings/main/dbase/func_800166FC.s",
   "calls": [
    "8001534C"
   ],
@@ -2244,12 +2244,12 @@
   "name": "func_800166FC",
   "orig": "func_800166FC",
   "rom": 28412,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 172,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "800167A8": {
-  "asm": "asm/nonmatchings/main/main/func_800167A8.s",
+  "asm": "asm/nonmatchings/main/dbase/func_800167A8.s",
   "calls": [
    "8001534C"
   ],
@@ -2259,12 +2259,12 @@
   "name": "func_800167A8",
   "orig": "func_800167A8",
   "rom": 28584,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 132,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "8001682C": {
-  "asm": "asm/nonmatchings/main/main/func_8001682C.s",
+  "asm": "asm/nonmatchings/main/dbase/func_8001682C.s",
   "calls": [
    "80012E14",
    "80012E28",
@@ -2276,12 +2276,12 @@
   "name": "func_8001682C",
   "orig": "func_8001682C",
   "rom": 28716,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 252,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "80016928": {
-  "asm": "asm/nonmatchings/main/main/dbase_release_all_mesh_anims.s",
+  "asm": "asm/nonmatchings/main/dbase/dbase_release_all_mesh_anims.s",
   "calls": [
    "800110A8",
    "80012E14",
@@ -2293,12 +2293,12 @@
   "name": "dbase_release_all_mesh_anims",
   "orig": "func_80016928",
   "rom": 28968,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 248,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "80016A20": {
-  "asm": "asm/nonmatchings/main/main/func_80016A20.s",
+  "asm": "asm/nonmatchings/main/dbase/func_80016A20.s",
   "calls": [
    "800110A8",
    "80012E14",
@@ -2310,12 +2310,12 @@
   "name": "func_80016A20",
   "orig": "func_80016A20",
   "rom": 29216,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 180,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "80016AD4": {
-  "asm": "asm/nonmatchings/main/main/func_80016AD4.s",
+  "asm": "asm/nonmatchings/main/dbase/func_80016AD4.s",
   "calls": [
    "800110A8",
    "80012E14",
@@ -2327,12 +2327,12 @@
   "name": "func_80016AD4",
   "orig": "func_80016AD4",
   "rom": 29396,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 116,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "80016B48": {
-  "asm": "asm/nonmatchings/main/main/func_80016B48.s",
+  "asm": "asm/nonmatchings/main/dbase/func_80016B48.s",
   "calls": [
    "80012E14",
    "80012E28",
@@ -2344,12 +2344,12 @@
   "name": "func_80016B48",
   "orig": "func_80016B48",
   "rom": 29512,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 208,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "80016C18": {
-  "asm": "asm/nonmatchings/main/main/func_80016C18.s",
+  "asm": "asm/nonmatchings/main/dbase/func_80016C18.s",
   "calls": [
    "80012E14",
    "80012E28",
@@ -2361,12 +2361,12 @@
   "name": "func_80016C18",
   "orig": "func_80016C18",
   "rom": 29720,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 136,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "80016CA0": {
-  "asm": "asm/nonmatchings/main/main/func_80016CA0.s",
+  "asm": "asm/nonmatchings/main/dbase/func_80016CA0.s",
   "calls": [
    "80010AE8",
    "80011DB4",
@@ -2382,12 +2382,12 @@
   "name": "func_80016CA0",
   "orig": "func_80016CA0",
   "rom": 29856,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 164,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "80016D44": {
-  "asm": "asm/nonmatchings/main/main/func_80016D44.s",
+  "asm": "asm/nonmatchings/main/dbase/func_80016D44.s",
   "calls": [
    "80013650"
   ],
@@ -2397,12 +2397,12 @@
   "name": "func_80016D44",
   "orig": "func_80016D44",
   "rom": 30020,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 84,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "80016D98": {
-  "asm": "asm/nonmatchings/main/main/func_80016D98.s",
+  "asm": "asm/nonmatchings/main/dbase/func_80016D98.s",
   "calls": [
    "800110A8",
    "80011C5C",
@@ -2419,12 +2419,12 @@
   "name": "func_80016D98",
   "orig": "func_80016D98",
   "rom": 30104,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 196,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "80016E5C": {
-  "asm": "asm/nonmatchings/main/main/func_80016E5C.s",
+  "asm": "asm/nonmatchings/main/dbase/func_80016E5C.s",
   "calls": [
    "800110A8",
    "80011C5C",
@@ -2440,12 +2440,12 @@
   "name": "func_80016E5C",
   "orig": "func_80016E5C",
   "rom": 30300,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 152,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "80016EF4": {
-  "asm": "asm/nonmatchings/main/main/func_80016EF4.s",
+  "asm": "asm/nonmatchings/main/dbase/func_80016EF4.s",
   "calls": [
    "80029560",
    "8002A5A4"
@@ -2456,12 +2456,12 @@
   "name": "func_80016EF4",
   "orig": "func_80016EF4",
   "rom": 30452,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 64,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "80016F34": {
-  "asm": "asm/nonmatchings/main/main/func_80016F34.s",
+  "asm": "asm/nonmatchings/main/dbase/func_80016F34.s",
   "calls": [
    "80011544"
   ],
@@ -2471,12 +2471,12 @@
   "name": "func_80016F34",
   "orig": "func_80016F34",
   "rom": 30516,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 32,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "80016F54": {
-  "asm": "asm/nonmatchings/main/main/func_80016F54.s",
+  "asm": "asm/nonmatchings/main/dbase/func_80016F54.s",
   "calls": [
    "800110A8",
    "80012F04",
@@ -2489,12 +2489,12 @@
   "name": "func_80016F54",
   "orig": "func_80016F54",
   "rom": 30548,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 216,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "8001702C": {
-  "asm": "asm/nonmatchings/main/main/func_8001702C.s",
+  "asm": "asm/nonmatchings/main/dbase/func_8001702C.s",
   "calls": [],
   "fp": "d85bc5697db096ae",
   "fpn": "a7c8fcdf8046d2f2",
@@ -2502,12 +2502,12 @@
   "name": "func_8001702C",
   "orig": "func_8001702C",
   "rom": 30764,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 68,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "80017070": {
-  "asm": "asm/nonmatchings/main/main/func_80017070.s",
+  "asm": "asm/nonmatchings/main/dbase/func_80017070.s",
   "calls": [
    "80016CA0"
   ],
@@ -2517,12 +2517,12 @@
   "name": "func_80017070",
   "orig": "func_80017070",
   "rom": 30832,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 36,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "80017094": {
-  "asm": "asm/nonmatchings/main/main/func_80017094.s",
+  "asm": "asm/nonmatchings/main/dbase/func_80017094.s",
   "calls": [
    "80029560",
    "8002A5A4"
@@ -2533,12 +2533,12 @@
   "name": "func_80017094",
   "orig": "func_80017094",
   "rom": 30868,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 64,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "800170D4": {
-  "asm": "asm/nonmatchings/main/main/func_800170D4.s",
+  "asm": "asm/nonmatchings/main/dbase/func_800170D4.s",
   "calls": [
    "8002AA8C"
   ],
@@ -2548,12 +2548,12 @@
   "name": "func_800170D4",
   "orig": "func_800170D4",
   "rom": 30932,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 100,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "80017138": {
-  "asm": "asm/nonmatchings/main/main/func_80017138.s",
+  "asm": "asm/nonmatchings/main/dbase/func_80017138.s",
   "calls": [
    "8002AA8C"
   ],
@@ -2563,9 +2563,9 @@
   "name": "func_80017138",
   "orig": "func_80017138",
   "rom": 31032,
-  "seg": "main/main",
+  "seg": "main/dbase",
   "size": 44,
-  "src": "src/main/main.c"
+  "src": "src/main/dbase.c"
  },
  "80017164": {
   "asm": "asm/nonmatchings/main/80017164/func_80017164.s",

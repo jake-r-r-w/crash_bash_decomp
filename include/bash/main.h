@@ -759,17 +759,6 @@ s32 func_800154A0(s32 arg0, s32 arg1);
 void SetRandomSeed(s32 arg0, s32 arg1);
 void func_80015D08(u8 *arg0);
 s32 func_80015E94(u8 *arg0, u8 *arg1);
-s32 func_800160F8(u8 *arg0, s32 arg1);
-void func_8001612C(u8 *arg0, s32 arg1);
-void func_80016234(u8 *arg0, u8 *arg1);
-void func_800162E4(u8 *arg0, s32 arg1);
-void func_800163E0(u8 *arg0, s32 arg1);
-u8 *func_80016C18(s32 *arg0, u8 *arg1);
-void func_80016D44(u8 *arg0);
-void func_80016EF4(u8 *arg0, u8 *arg1);
-void func_80017070(void);
-void func_80017094(u8 *arg0, s32 arg1, s32 arg2);
-void func_80017138(u8 *arg0);
 typedef struct RotScale {
     /* 0x00 */ SVECTOR rot;
     /* 0x08 */ u8 pad8[8];
@@ -1101,8 +1090,6 @@ extern s32 D_80051380;
 extern u8 D_800512A8[]; /* ComboSeq table, 0x90 bytes per entry */
 extern u8 D_800536CC[];
 extern CdlLOC D_8006EA14;
-void func_80016D98();
-void dbase_asload_with_anims_texture_callback();
 extern RECT *D_8005B698;
 extern s32 D_8005B694;
 extern s32 D_8005B78C;
@@ -1373,7 +1360,6 @@ void func_80015758(SVECTOR *v, VECTOR *out);
 
 void func_80015C1C(PointSprites *ps, MATRIX *m);
 
-void func_80016F34(u8 *arg0, u8 *arg1);
 
 
 void func_80012E54(void);
@@ -1402,11 +1388,9 @@ s32 get_angle(s32 x, s32 z);
 
 void mal_free(void *ptr, Heap *heap);
 
-u8 *func_80016AD4(s32 *arg0, u8 *rec);
 
 
 
-u8 *func_800160C4(u8 *arg0, s32 i);
 
 
 
@@ -1422,7 +1406,6 @@ s32 func_80011410(Heap *heap);
 void func_800101E0(void);
 
 
-s32 func_80016274(s32 *list, u8 *arg1);
 
 
 void func_80013C78(void);
@@ -1440,7 +1423,6 @@ void *func_80015AB0(s32 *arg0, u8 *rec);
 void func_80013CFC(s32 pad, u8 *out);
 
 
-void func_8001682C(s32 *arg0);
 
 
 
@@ -1470,14 +1452,11 @@ void BSwapEndian(u8 *p, u32 n);
 void WSwapEndian(u16 *p, u32 n);
 
 
-void func_80016CA0(u8 *rec);
 
 void func_80013238(void);
 
 
-void func_8001636C(u8 *arg0, s32 arg1);
 
-s32 func_80016450(u8 *arg0, s32 arg1);
 
 
 void *func_80012E28(void);
@@ -1491,7 +1470,6 @@ void *func_80012E28(void);
 
 
 
-void func_80016E5C(u8 *arg0, u8 *arg1);
 
 
 
@@ -1532,7 +1510,6 @@ s32 func_80015984(s32 i, EntryBlock *blk);
 
 void func_80011578(u8 *arg0, Heap *heap, s32 arg2);
 
-void func_8001702C(SlotList *arg0);
 
 
 
@@ -1547,7 +1524,6 @@ void func_80013CA4(void);
 
 s32 map_entity_address(s32 arg0, u8 *arg1);
 
-void func_80016F54(u8 *arg0);
 
 
 
@@ -1564,7 +1540,6 @@ u8 *entity_address(s32 arg0, u8 *arg1);
 s32 func_800152A8(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
 
-void func_800170D4(void);
 
 typedef struct {
     s32 a[3]; /* 0x00 */
@@ -1625,7 +1600,6 @@ char *func_8001517C(char *arg0, s32 arg1, s32 arg2);
 
 s32 func_80015210(s32 a, s32 b, s32 t);
 
-u8 *func_800167A8(u8 *arg0, u8 *arg1);
 
 
 
@@ -1752,17 +1726,11 @@ u8 *func_80015870(u8 *arg0, s32 arg1);
 
 s32 func_800158E4(u8 *arg0, s32 arg1);
 
-u8 *func_80016478(u8 *arg0, u8 *arg1);
 
-s32 dbase_mesh_anim_name_loaded(u8 *arg0, char *arg1);
 
-u8 *func_800165F8(u8 *arg0, u8 *arg1);
 
-s32 func_800166FC(u8 *arg0, u8 *arg1);
 
-u8 *func_80016A20(u8 *arg0, s32 arg1);
 
-u8 *func_80016B48(u8 *arg0, s32 arg1);
 
 
 
@@ -1985,7 +1953,6 @@ void func_8001097C(Heap *heap);
 
 void func_800139A8(void);
 
-void func_80015F60(u8 *arg0, s32 *arg1);
 
 
 
@@ -2093,5 +2060,7 @@ void func_8001492C(void);
 #include "bash/sfx.h"
 
 #include "bash/80017164.h"
+
+#include "bash/dbase.h"
 
 #endif /* BASH_MAIN_H */
