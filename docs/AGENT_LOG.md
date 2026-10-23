@@ -29,9 +29,12 @@ leads**, add any new gotcha, and add one short entry at the top of the
 - Dashboard (2026-10-18): `docs/index.html` is `tools/scripts/dashboard.html` plus
   the data; a live Swarm card from the git-ignored `docs/swarm.js` the swarm
   writes (tools/swarm/README.md, Live status). `progress` takes ~2.5 s warm.
-- The engine overlay is six files and `ovl5d` three, `ovl5e`, `ovl66`,
-  `ovl67`, `ovl6a` two each since 2026-10-15 (ARCHITECTURE.md, Files inside
-  the engine / the slot overlays); main.c is still one file.
+- The engine overlay is seven files (`panel` and `pause` named from
+  Jampack's records) and `ovl5d` three, `ovl5e`, `ovl66`, `ovl67`, `ovl6a`
+  two each (ARCHITECTURE.md, Files inside the engine / the slot overlays).
+  `main/main` is five since 2026-10-23: `main` (0..349), `80022a3c`, `sound`,
+  `music`, `card` (Files inside `main/main`, Split so far); the main segment
+  links with `SUBALIGN(4)`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
   2.7.2-cdk matched a strict subset).
 - PsyQ 4.7: all library code is Sony's objects (281, plus `2MBYTE.OBJ`), and
@@ -254,6 +257,18 @@ Other:
 ## Gotchas
 
 **Tooling**
+- **A split whose rodata starts with an asm item needs 4-aligned objects.**
+  An `INCLUDE_RODATA` item's `.align 2` doesn't survive the linker
+  script's `SUBALIGN(2)`, so after a file whose rodata ends at 2 mod 4 the
+  next one lands 2 bytes early (the whole exe shifts). psylink 4-aligned
+  objects: the main segment now links with `SUBALIGN(4)` (`subalign: 4` in
+  main.yaml); the overlays still use 2 (ovl5d 1), so check a split there.
+- **Splitting C: K&R definitions and temporary macros.** `split_unit.py`
+  takes the moved functions from `decomp.py`'s definition finder (a K&R
+  definition, whose parameter lines have `;`, was missed once and its stale
+  `.s` sent it back to the old unit in the index, which then dropped it),
+  and copies a file-scope `#define` only if no `#undef` follows it (a
+  temporary macro copied into the new file broke every local of that name).
 - **Splitting a unit: its header's inline helpers go with their users.** A
   `static inline` helper in the old unit's header that calls a function now
   declared in the new unit's header sees no prototype (the headers are
@@ -532,6 +547,13 @@ Newest first, a few lines each. Details are in the commits.
   PlaySfx as a `goto` into case 8's (not the source; leads list why). No
   `break`/`goto` mix gives the target's three tail survivors. Found the
   unit is probably `PAUSE.CPP`; `cc1plus` compiles the C identically.
+
+- **2026-10-23 (main.c split into five):** new `tools/scripts/split_unit.py`
+  does a split end to end. `card` (549..) is the one exact cut; the
+  2-option zones were settled by the gap functions' behaviour and data
+  (`80022a3c` from 350, `sound` from 497, `music` from 529); the
+  xa/texture zone (456/457) stays open, the 3-6 option ones untouched. The
+  main segment needed `SUBALIGN(4)` (see Gotchas).
 
 - **2026-10-23 (PAUSE.CPP placed; engine unit split):** Jampack's line table
   ends `PAUSE.CPP` right before the demo copy of `func_80083708`, and its last

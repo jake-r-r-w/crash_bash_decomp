@@ -171,21 +171,33 @@ How the boundaries were found:
     | `mal_first_free` (35) / `init_file` (62) | after 46, after 56-57 | 3 |
     | `dbase_release_all_mesh_anims` (153) / `prim_colour_poly` (173) | after 164-169 | 6 |
     | `scripts_update` (331) / `sfx_delete_all` (338) | after 331-334 | 4 |
-    | `PlaySfx` (340) / `CreateNAS` (350) | after 348-349 | 2 |
-    | `texture_release_loading_mem` (482) / `sound_critical` (498) | after 495-496 | 2 |
-    | `machine_load_sfx` (520) / `continue_music` (533) | after 527-528 | 2 |
+    | `PlaySfx` (340) / `CreateNAS` (350) | after 348-349 | 2: after 349 |
+    | `xa_setvol` (443) / `texture_update_scroll` (471) | after 456-457 | 2: open |
+    | `texture_release_loading_mem` (482) / `sound_critical` (498) | after 495-496 | 2: after 496 |
+    | `machine_load_sfx` (520) / `continue_music` (533) | after 527-528 | 2: after 528 |
     | `music_dload_midi` (544) / `card_save` (554) | after 548 | 1 |
 
     A prefix is not a file, though: `shell_render_dcache` (3) shares the
     one-file region 1-16 with `mal_*`, and no zone separates `xa_setvol`
     (443) from the NAS calls (354-430). Only the last row is exact, and only
-    if music and the memory card are different files.
+    if music and the memory card are different files; the 2-cut zones were
+    settled by what the gap functions do (Split so far). The xa/texture one
+    stays open: 456 is the pad rumble code (`PadSetAct`), 457 clears a
+    0x2C-byte struct nothing in C calls, and 458, a free-list pool both the
+    texture and the sound code use, says nothing about 457.
   - **Split so far** (2026-10-23, `tools/scripts/split_unit.py`; each build
-    byte-identical, which also proves each new file's rodata start):
+    byte-identical, which also proves each new file's rodata start). The
+    main segment links with `SUBALIGN(4)`: psylink 4-aligned every object,
+    and `80022a3c`'s rodata needs the 2 bytes of padding retail has before
+    it (`SUBALIGN(2)` packed it 2 bytes early).
 
-    | Unit | First function | Evidence | Rodata from |
+    | Unit | Functions | Evidence | Rodata from |
     |---|---|---|---|
-    | `card` | `func_8002C4B0` (549, ASCII to Shift-JIS for save titles: Euro's `card_ascii2sjis`) | the one exact cut: music ends by 548, the memory card starts by 554, and no other gap may hold a boundary; 549..565 is one file (no zone after 548) | `0x8004CD10` (549's jump table) |
+    | `main` | 0..349 | | `0x8004C56C` |
+    | `80022a3c` | 350..496: `CreateNAS`, the NAS calls, `xa_setvol`, rumble, `texture_*` | 348 restarts the sound system and the sfx voice pool; 349 loads a music track through the music loader with `D_80058B88`, which lies in the sfx code's data block (before `0x80058F0C`), while the NAS calls' own data starts at `0x8005A5C0`: each file's `.data` is one block in code order, so 349 is sfx | `0x8004C8D0` (0 mod 8, as the switch-table parity requires: a file starts after 95 and by 370) |
+    | `sound` | 497..528: `sound_critical`, `machine_load_sfx`, ... | 495 releases a texture (`func_80028AE4`) and 496 clears a texture set (the map code calls it right before `map_loaded_textureset`); 497 resets `D_80064414`, a flag only the sound code uses | none |
+    | `music` | 529..548: `continue_music`, `music_dload_midi`, ... | 527 loads sfx banks (`machine_load_sfx`), 528 fills `SfxTable`; 529 opens and plays a SEQ (`SsSeqOpen`, `SsSeqPlay`) and sets the music volume | none |
+    | `card` | 549..565: `func_8002C4B0` (ASCII to Shift-JIS for save titles: Euro's `card_ascii2sjis`), `card_save` | the one exact cut: music ends by 548, the memory card starts by 554, and no other gap may hold a boundary; no zone after 548, so it is one file | `0x8004CD10` (549's jump table) |
   - The Aug 23 prototype's debug pages name one shell source,
     `C:\crash4\Core\Shell\PSX\PSX_PAD.CPP`, and about 50 headers under
     `CORE\NASCORE`, `CORE\SHELL\INCLUDE` (`SHELL.H`, `ALLDBASE.H`),
