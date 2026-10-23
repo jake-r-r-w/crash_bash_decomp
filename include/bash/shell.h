@@ -567,4 +567,103 @@ enum SYS_MAPPATHS {
     GEOPA_SYS_PATHSNUM
 };
 
+/* From the Jampack Winter 2000 demo's debug types (docs/PROTOTYPES.md), not in the
+ * Oct 9 fragment. That build is from August 2000, older than retail: the level
+ * list may have changed by release (check a value against retail code before
+ * relying on it). Its IconParts is the Oct 9 IconBits above, reordered. */
+enum cheatflags {
+    cheat_mode_no_harm_hero = 0x1,
+    cheat_mode_no_death = 0x2,
+    cheat_mode_force_death = 0x4,
+    cheat_mode_force_victory = 0x8,
+    cheat_mode_numbers = 0x10,
+    cheat_mode_no_winners = 0x20,
+    cheat_mode_freeze_time = 0x40,
+    cheat_mode_no_rumble = 0x80,
+    cheat_mode_no_aibots = 0x100,
+    cheat_mode_limit_camera = 0x200,
+    cheat_mode_health_nums = 0x400,
+    cheat_mode_loop_level = 0x800,
+    cheat_mode_no_holes = 0x1000,
+    cheat_mode_all_hub_levels = 0x2000,
+    cheat_mode_pick_characters = 0x4000,
+    cheat_mode_all_movies = 0x8000,
+    cheat_mode_menu_active = 0x10000
+};
+
+enum worldnumbers {
+    WORLD_NONE = 0x100,
+    WORLD_TITLES,
+    WORLD_HUB,
+    WORLD_SPIN,
+    WORLD_BASH,
+    WORLD_PAPU,
+    WORLD_TANK,
+    WORLD_POGO,
+    WORLD_ARKENOID,
+    WORLD_POLAR,
+    WORLD_BEAR,
+    WORLD_RACE,
+    WORLD_DINO,
+    WORLD_N2O,
+    WORLD_BONK,
+    WORLD_CHASE,
+    NUM_WORLDS,
+    MAX_WORLDS = NUM_WORLDS
+};
+
+enum levnumbers {
+    LEV_TITLES,
+    LEV_ARENASEL,
+    LEV_HUB0,
+    LEV_HUB1,
+    LEV_HUB2,
+    LEV_HUB3,
+    LEV_HUB4,
+    LEV_HUB5,
+    LEV_HUB6,
+    LEV_HUB7,
+    LEV_HUBDEMO,
+    LEV_HUB,
+    LEV_E3_HUB0,
+    LEV_E3_HUB1,
+    LEV_PODIUM,
+    LEV_JUNGLE,
+    LEV_SPACE,
+    LEV_SNOW,
+    LEV_DRAINS,
+    LEV_PAPU,
+    LEV_TANKLAST,
+    LEV_TANKDESERT,
+    LEV_TANKJUNGLE,
+    LEV_TANKMETAL,
+    LEV_TANKBOSS,
+    LEV_CHASE,
+    LEV_POGOPAINTER,
+    LEV_POGOAGOGO,
+    LEV_POGOLOCO,
+    LEV_POGOBOUNCER,
+    LEV_BALLS,
+    LEV_BEACHBALL,
+    LEV_NGINBALL,
+    LEV_SKYBALL,
+    LEV_POLARDAY,
+    LEV_POLARNGT,
+    LEV_POLARCUT,
+    LEV_POLAREND,
+    LEV_POLARBSS,
+    LEV_GFXTEST,
+    LEV_DASH,
+    LEV_TOXIC,
+    LEV_WATER,
+    LEV_LAVA,
+    LEV_RING,
+    LEV_DINO,
+    LEV_BONK,
+    LEV_OXIDE,
+    LEV_OXIDEPART1,
+    NUM_LEVELS,
+    MAX_LEVELS = NUM_LEVELS
+};
+
 #endif /* BASH_SHELL_H */

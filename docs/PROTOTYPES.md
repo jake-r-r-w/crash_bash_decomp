@@ -206,8 +206,10 @@ unit `8007ee2c`, maybe from `func_8007ED0C`. Not proven.
   `D_8009AE3C`, `HealthIconPos` `D_80099250`, ...). The shipped data sits
   0x28 below the records, though the code is 4 above. Their types (sizes,
   arrays) are still to apply.
-- Add the new enums to `include/bash/` (`shell.h` for the cheat flags and
-  level/world numbers).
+- New enums: `cheatflags`, `worldnumbers` and `levnumbers` are in `shell.h`
+  (Jampack values; the level list may differ in retail). Its `IconParts` is
+  Oct 9's `IconBits` reordered (retail's `IconParts` array is too big for
+  Jampack's 5 parts), so it is left out.
 - Place `PAUSE.CPP` in retail from its line table (statement boundaries
   against retail's code).
 

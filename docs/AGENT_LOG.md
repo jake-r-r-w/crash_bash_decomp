@@ -527,6 +527,11 @@ Newest first, a few lines each. Details are in the commits.
   `break`/`goto` mix gives the target's three tail survivors. Found the
   unit is probably `PAUSE.CPP`; `cc1plus` compiles the C identically.
 
+- **2026-10-23 (Jampack enums in `shell.h`):** `cheatflags`,
+  `worldnumbers`, `levnumbers` (demo values, marked). Jampack's `IconParts`
+  is Oct 9's `IconBits` reordered and would redefine its enumerators: left
+  out. Check demo types against the Oct 9 headers before adding them.
+
 - **2026-10-23 (4 more names, approved):** `SetTweakAi`, `HeroGhost`,
   `line_intersect_zy` (engine) and `TankBossCortexTurretFire` (ovl5f):
   0.78..0.88 and in link order, no gap to confirm them; the user approved.
