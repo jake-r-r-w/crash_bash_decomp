@@ -87,7 +87,6 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/engine/pause", D_800ADE20);
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/engine/pause", D_800ADE38);
 
-#ifdef NON_MATCHING
 static inline PadButtons *ActivePad(void) {
     PadButtons *base = HPADS;
 
@@ -99,6 +98,8 @@ s32 func_8007F314(void) {
     s32 kind;
     s32 max;
     s32 i;
+    s32 key;
+    u16 *tbl;
     s32 n;
     s32 v;
     s32 s;
@@ -117,7 +118,8 @@ s32 func_8007F314(void) {
         return 0;
     }
     if (D_8004DDD0[PSV->mode * 3] == 0x101 || PSV->mode == 0x2B) {
-        /* goto into this copy: jump2 would fold it into the later one */
+        /* the unk74 test jumps into this copy: as a second return 1,
+           jump2 would fold this one into it */
     ret1:
         return 1;
     }
@@ -133,15 +135,22 @@ s32 func_8007F314(void) {
             PSV->flags &= ~0x02000000;
         }
     }
-    kind = 7;
     if (!(D_8005A646 & 0x100)) {
-        for (i = 0; i < 7; i++) {
-            kind = i;
-            if ((D_8005A646 & 0xFF) == D_8009AF38[i]) {
+        s32 j;
+        j = 0;
+        key = D_8005A646 & 0xFF;
+        tbl = D_8009AF38;
+        do {
+            if (key == *tbl) {
+                kind = j;
                 goto found;
             }
-        }
+            j++;
+            tbl++;
+        } while (j < 7);
         kind = 0;
+    } else {
+        kind = 7;
     }
 found:
     if (!(D_8005A624 & 0x660)) {
@@ -231,12 +240,12 @@ found:
                         PSV->flags |= 0x100;
                         break;
                     case 3:
-                        D_8009AEEC = 1;
                         PSV->flags |= 0x8000;
+                        D_8009AEEC = 1;
                         break;
                     case 4:
-                        D_8009AEEC = 1;
                         PSV->flags |= 4;
+                        D_8009AEEC = 1;
                         break;
                     }
                 }
@@ -344,13 +353,18 @@ found:
                         if (r) {
                             PlaySfx(0x191, NULL, NULL, 0x1000, 0x1E00, 0);
                             func_80095A04(0);
-                            ret = 1;
                             fl = PSV->flags;
                             if (fl & 0x200) {
+                                ret = 1;
                                 PSV->flags = fl & ~0x40;
                                 D_8009AEEC = 0;
                             } else {
-                                PSV->flags = fl & ~0x40 & 0x04000010;
+                                /* the mask set first and the cleared bit in its own
+                                   statement, so the two ands stay apart */
+                                s32 keep = 0x04000010;
+                                s32 t = fl & ~0x40;
+
+                                PSV->flags = t & keep;
                                 D_8009AEF0 = 0;
                                 D_8009AEEC = 0;
                                 func_8002AC18();
@@ -507,8 +521,8 @@ found:
                 PSV->flags &= 0xFFFBFFFE;
             }
             if (ActivePad()->pressed & 0x1008) {
-                D_8009AEEC = 2;
                 PSV->flags = (PSV->flags & ~0x40000) | 0x10000;
+                D_8009AEEC = 2;
             }
             ret = 0;
             break;
@@ -543,11 +557,11 @@ found:
                 func_8002AC18();
                 break;
             default:
-                ret = 1;
                 D_8009AEF0 = 0;
                 D_8009AEEC = 0;
                 PSV->flags &= 0x04000010;
                 func_8002AC18();
+                ret = 1;
                 CupTimer = 0;
                 break;
             }
@@ -586,8 +600,7 @@ found:
             PSV->flags |= 1;
             break;
         }
-        /* The hook in both branches: jump2 cross-jumps the copies, and the
-           breaks keep the switch end as their target until then. */
+        /* in both branches: when neither runs, the hook doesn't either */
         if (D_8005A644 & 0x1000) {
             func_80082D90(ret);
         }
@@ -624,9 +637,6 @@ found:
     }
     return ret;
 }
-#else
-INCLUDE_ASM("asm/nonmatchings/overlays/engine/pause", func_8007F314);
-#endif
 
 void func_800809A0(HudEntry *e, s32 arg1) {
     s32 n;

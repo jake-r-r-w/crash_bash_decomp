@@ -3184,11 +3184,10 @@
   "status": "matched"
  },
  "engine:8007F314": {
-  "auto_failed": "types",
   "blocked_at": "2026-10-23T17:32:01Z",
-  "note": "structure 839/1443, regions 249/264 blocks, 98.5% insns (best C under #ifdef NON_MATCHING, 2026-10-23 leak pass; was 197). Tail merges match retail (tracer scratch/f3/h/jtrace.py: case 0's 0x7000 ret = 0 exit is kept only if no other ret = 0 exit follows a conditional branch; held & 9 tests wrap the menu with ret = 0 in both arms; case 0's PlaySfx tail has its own ret = 0; break; case 0x100 sets ret = 0 once after its inner switch; 0x40/0x80 set it after the 0x1000 test). Every HPADS[D_8009AEF0] goes through static inline ActivePad() { base = HPADS; return &base[D_8009AEF0]; }, as the matched func_80083488 writes it: the base is then set before the index load (+35 blocks). Left: kind loop counter (a1 vs s0), lui %hi(D_8009AEEC) order in case 0's inner cases 2/3 and case 0x40000, case 0x40 fl & ~0x40 recompute and second ret = 1, case 0x200 default's 0x04000010 mask before ret = 1. Harness: scratch/f3/h (t.sh, tr.sh, full.sh, jtrace.py).",
+  "matched_at": "2026-10-23T17:46:16Z",
   "started": "2026-10-18T06:05:27Z",
-  "status": "blocked",
+  "status": "matched",
   "tries": 1
  },
  "engine:800809A0": {
