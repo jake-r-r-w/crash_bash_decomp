@@ -207,8 +207,8 @@ first diff:
   [ARCHITECTURE.md](ARCHITECTURE.md), Leaked source) for the function's
   prototype, its structs and the globals' types.
 - **Earlier builds:** the prototype and demo discs ([PROTOTYPES.md](PROTOTYPES.md))
-  hold earlier compiles of most exe and engine functions. `decomp.py protos
-  NAME` finds the function in each disc's exe or engine by opcode
+  hold earlier compiles of most functions. `decomp.py protos NAME` finds
+  the function in each disc's exe, engine or minigame overlays by opcode
   similarity. Diffing
   two successive builds shows which source change made a pattern: in
   `func_8007F314` the Oct 9 build added case 0's 0x7000 test and, with it,

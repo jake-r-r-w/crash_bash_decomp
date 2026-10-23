@@ -122,6 +122,16 @@ and current tools).
 
 ## Open leads
 
+- **Earlier compiles of the 19 left** (PROTOTYPES.md, Earlier compiles of a
+  function, has the table). Each of the five biggest has a build within a
+  few instructions of retail's: Oct 9's `func_800BC038` (+1 insn) and
+  `func_800B87A0` (-1), Sep 14's `PlotTransmuterBeam` (-12), Oct 9's
+  `func_800B77E8` (-10), the older builds' `PlotUkaPolarMask` (-20). Next:
+  disassemble that copy (`decomp.py protos NAME` gives the address and the
+  entry offset), diff it against retail, and see whether the change sits
+  where the C still differs. `func_800B5E28` and `func_800B8294` are the
+  same code but two `andi` masks (`0xF0` in ovl5d, `0xE0` in ovl64), so one
+  match ports to the other.
 - **Finish the demo discs' symbols** (PROTOTYPES.md; applied: 135 function
   and 51 global names, unit `panel`, the Jampack enums, 43 prototypes, the
   leaked types and class names, 16 global types, 13 PANEL.CPP locals).
@@ -504,6 +514,12 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-23 (tools: `protos` covers the minigames):** it now reads each
+  disc's slot overlays from its DAT and looks a function up in all of them.
+  Run on the 19 functions left: the table is in PROTOTYPES.md, the lead in
+  Open leads. The Oct 9 prototype has PAL retail's minigame code in 15 of
+  the 19; US retail matches JP more often.
 
 - **2026-10-23 (hand: `func_8007F314` matched, the engine complete):** from
   the user's prototype findings. The Sep 14 and Oct 9 builds' copies

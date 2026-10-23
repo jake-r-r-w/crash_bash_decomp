@@ -375,14 +375,15 @@ The 4 names the repo gave itself are replaced by the originals
 
 ## Earlier compiles of a function
 
-Every scanned disc carries its own build of the exe and the engine, so most
-engine functions exist in several earlier compiles. `decomp.py protos NAME`
-finds the closest function in each disc's exe or cut engine by opcode
-similarity (`--top N` for more candidates). The discs carry no debug records
-for most of these functions, but comparing the compiles of successive
-builds shows when a pattern appeared, and with it which source change made
-it. The slot overlays (minigames) are not cut out of the discs' DATs, so
-only exe and engine functions can be looked up.
+Every scanned disc carries its own build of the exe, the engine and all the
+minigame overlays (13 or 14 slot entries, the demos included), so most
+functions exist in several earlier compiles. `decomp.py protos NAME` finds
+the closest function in each disc's exe, cut engine or slot entries (read
+from the DAT through the exe's index) by opcode similarity (`--top N` for
+more candidates; a slot function is looked for in every entry, so an exact
+twin in another overlay shows too). The discs carry no debug records for
+most of these functions, but comparing the compiles of successive builds
+shows when a pattern appeared, and with it which source change made it.
 
 `func_8007F314` (the pause menu) across the builds, roughly oldest first (the Euro
 disc is dated 2000-10-09, but its code is older than the Oct 9 prototype's):
@@ -399,6 +400,47 @@ disc is dated 2000-10-09, but its code is older than the Oct 9 prototype's):
 
 So the shape of the new `0x7000` test was the lever, which led to the rule
 in MATCHING.md (Reading the compiler's rules, Cross-jumping) and the match.
+
+The 19 slot overlay functions left (2026-10-23): similarity of each build's
+closest function, with its size against retail's (+/- bytes) where it
+differs. A 1.000 is the same compile as US retail.
+
+| Function | Ovl | Size | Aug 23 | Jampack | Sep 14 | Euro | Oct 9 | PAL | JP |
+|---|---|---|---|---|---|---|---|---|---|
+| `func_800BC038` | 5d | 8600 | 0.937 -656 | 0.910 -920 | 0.959 -316 | 0.937 -656 | 0.997 +4 | 0.993 +8 | 0.992 +8 |
+| `func_800B4AB0` | 5d | 4984 | 0.983 -60 | 0.909 +520 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| `func_800B87A0` | 5e | 5844 | 0.936 +488 | 0.931 +456 | 0.940 +564 | 0.936 +528 | 0.998 -4 | 0.998 -4 | 1.000 |
+| `func_800B77E8` | 5f | 5852 | 0.898 -652 | 0.890 -632 | 0.952 -380 | 0.898 -636 | 0.989 -40 | 0.989 -40 | 1.000 |
+| `Plot_PogoPadlock` | 60 | 1400 | 1.000 | 0.960 | 1.000 | 1.000 | 0.967 +96 | 0.967 +96 | 1.000 |
+| `Plot_PogoRipperRoo` | 60 | 2624 | 0.992 -36 | 0.970 -120 | 1.000 | 0.992 -36 | 0.980 +84 | 0.980 +84 | 1.000 |
+| `PlotTransmuterBeam` | 62 | 9244 | 0.979 -268 | 0.976 -272 | 0.997 -48 | 0.970 -76 | 0.989 +152 | 0.989 +152 | 0.987 +132 |
+| `PlotUkaPolarMask` | 62 | 6472 | 0.989 -80 | 0.988 -80 | 0.989 -80 | 0.989 -80 | 1.000 | 1.000 | 0.982 +124 |
+| `func_800B7508` | 64 | 3468 | 0.699 +884 | 0.582 +300 | 1.000 | 0.838 +860 | 0.995 | 0.995 | 1.000 |
+| `func_800BE914` | 63 | 684 | 0.746 -256 | 0.615 -280 | 0.746 -256 | 0.746 -256 | 1.000 | 0.944 -72 | 0.944 -72 |
+| `func_800B5E28` | 5d | 784 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| `func_800B8294` | 64 | 784 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| `func_800B4048` | 68 | 1020 | 0.374 | 0.349 | 0.658 | 0.362 | 0.963 -12 | 0.963 -12 | 1.000 |
+| `PogoAI_MoveTowardsTarget` | 60 | 1320 | 1.000 | 0.764 -264 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| `func_800B7D94` | 63 | 1384 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0.746 -120 | 0.746 -120 |
+| `func_800B980C` | 63 | 1604 | 0.917 -32 | 0.885 -116 | 0.917 -32 | 0.917 -32 | 0.931 +92 | 0.931 +92 | 0.983 +16 |
+| `CheckMineToBoss` | 5f | 1620 | 1.000 | 0.410 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| `func_800B6708` | 62 | 1644 | 0.979 -68 | 0.979 -68 | 0.979 -68 | 0.979 -68 | 1.000 | 1.000 | 1.000 |
+| `func_800B76A4` | 63 | 1776 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0.618 -512 | 0.618 -512 |
+
+Under 0.8 the closest function may be a different one. What the table shows:
+- The Oct 9 prototype (the PAL review build) has PAL retail's minigame
+  code in 15 of the 19. US retail equals JP in 12 and PAL in 7. In
+  `func_800BE914`, `func_800B7D94` and `func_800B76A4` US keeps the
+  prototypes' version, while PAL and JP share a revised one.
+- Each of the five biggest has a build within a few instructions of
+  retail's size: Oct 9's `func_800BC038` is one instruction longer and its
+  `func_800B87A0` one shorter, Sep 14's `PlotTransmuterBeam` 12 shorter,
+  Oct 9's `func_800B77E8` 10 shorter, and the older builds'
+  `PlotUkaPolarMask` 20 shorter.
+- `func_800B5E28` and `func_800B8294` are exact opcode twins (ovl5d and
+  ovl64), unchanged in every build; `PogoAI_MoveTowardsTarget` and
+  `CheckMineToBoss` are the same in every build but Jampack's. Their
+  history adds nothing.
 
 ## Discs not scanned yet
 
