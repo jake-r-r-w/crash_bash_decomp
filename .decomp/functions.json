@@ -7912,7 +7912,7 @@
   "src": "src/main/main.c"
  },
  "8002BD98": {
-  "asm": "asm/nonmatchings/main/main/func_8002BD98.s",
+  "asm": "asm/nonmatchings/main/music/func_8002BD98.s",
   "calls": [
    "8003849C",
    "800388CC",
@@ -7928,12 +7928,12 @@
   "name": "func_8002BD98",
   "orig": "func_8002BD98",
   "rom": 116120,
-  "seg": "main/main",
+  "seg": "main/music",
   "size": 272,
-  "src": "src/main/main.c"
+  "src": "src/main/music.c"
  },
  "8002BEA8": {
-  "asm": "asm/nonmatchings/main/main/func_8002BEA8.s",
+  "asm": "asm/nonmatchings/main/music/func_8002BEA8.s",
   "calls": [
    "8002BD98",
    "8002C248",
@@ -7945,12 +7945,12 @@
   "name": "func_8002BEA8",
   "orig": "func_8002BEA8",
   "rom": 116392,
-  "seg": "main/main",
+  "seg": "main/music",
   "size": 440,
-  "src": "src/main/main.c"
+  "src": "src/main/music.c"
  },
  "8002C060": {
-  "asm": "asm/nonmatchings/main/main/func_8002C060.s",
+  "asm": "asm/nonmatchings/main/music/func_8002C060.s",
   "calls": [],
   "fp": "6d0870a492c08e92",
   "fpn": "78ebfd8d03fc9f68",
@@ -7958,12 +7958,12 @@
   "name": "func_8002C060",
   "orig": "func_8002C060",
   "rom": 116832,
-  "seg": "main/main",
+  "seg": "main/music",
   "size": 48,
-  "src": "src/main/main.c"
+  "src": "src/main/music.c"
  },
  "8002C090": {
-  "asm": "asm/nonmatchings/main/main/func_8002C090.s",
+  "asm": "asm/nonmatchings/main/music/func_8002C090.s",
   "calls": [
    "80038FB4",
    "80039168"
@@ -7974,12 +7974,12 @@
   "name": "func_8002C090",
   "orig": "func_8002C090",
   "rom": 116880,
-  "seg": "main/main",
+  "seg": "main/music",
   "size": 80,
-  "src": "src/main/main.c"
+  "src": "src/main/music.c"
  },
  "8002C0E0": {
-  "asm": "asm/nonmatchings/main/main/continue_music.s",
+  "asm": "asm/nonmatchings/main/music/continue_music.s",
   "calls": [
    "80038638"
   ],
@@ -7989,12 +7989,12 @@
   "name": "continue_music",
   "orig": "func_8002C0E0",
   "rom": 116960,
-  "seg": "main/main",
+  "seg": "main/music",
   "size": 60,
-  "src": "src/main/main.c"
+  "src": "src/main/music.c"
  },
  "8002C11C": {
-  "asm": "asm/nonmatchings/main/main/func_8002C11C.s",
+  "asm": "asm/nonmatchings/main/music/func_8002C11C.s",
   "calls": [
    "80039288"
   ],
@@ -8004,12 +8004,12 @@
   "name": "func_8002C11C",
   "orig": "func_8002C11C",
   "rom": 117020,
-  "seg": "main/main",
+  "seg": "main/music",
   "size": 60,
-  "src": "src/main/main.c"
+  "src": "src/main/music.c"
  },
  "8002C158": {
-  "asm": "asm/nonmatchings/main/main/func_8002C158.s",
+  "asm": "asm/nonmatchings/main/music/func_8002C158.s",
   "calls": [
    "80038638"
   ],
@@ -8019,12 +8019,12 @@
   "name": "func_8002C158",
   "orig": "func_8002C158",
   "rom": 117080,
-  "seg": "main/main",
+  "seg": "main/music",
   "size": 52,
-  "src": "src/main/main.c"
+  "src": "src/main/music.c"
  },
  "8002C18C": {
-  "asm": "asm/nonmatchings/main/main/func_8002C18C.s",
+  "asm": "asm/nonmatchings/main/music/func_8002C18C.s",
   "calls": [
    "80039288"
   ],
@@ -8034,12 +8034,12 @@
   "name": "func_8002C18C",
   "orig": "func_8002C18C",
   "rom": 117132,
-  "seg": "main/main",
+  "seg": "main/music",
   "size": 52,
-  "src": "src/main/main.c"
+  "src": "src/main/music.c"
  },
  "8002C1C0": {
-  "asm": "asm/nonmatchings/main/main/func_8002C1C0.s",
+  "asm": "asm/nonmatchings/main/music/func_8002C1C0.s",
   "calls": [
    "80038868"
   ],
@@ -8049,12 +8049,12 @@
   "name": "func_8002C1C0",
   "orig": "func_8002C1C0",
   "rom": 117184,
-  "seg": "main/main",
+  "seg": "main/music",
   "size": 136,
-  "src": "src/main/main.c"
+  "src": "src/main/music.c"
  },
  "8002C248": {
-  "asm": "asm/nonmatchings/main/main/music_fade_out.s",
+  "asm": "asm/nonmatchings/main/music/music_fade_out.s",
   "calls": [
    "800389C0"
   ],
@@ -8064,12 +8064,12 @@
   "name": "music_fade_out",
   "orig": "func_8002C248",
   "rom": 117320,
-  "seg": "main/main",
+  "seg": "main/music",
   "size": 60,
-  "src": "src/main/main.c"
+  "src": "src/main/music.c"
  },
  "8002C284": {
-  "asm": "asm/nonmatchings/main/main/func_8002C284.s",
+  "asm": "asm/nonmatchings/main/music/func_8002C284.s",
   "calls": [],
   "fp": "379568001121d671",
   "fpn": "379568001121d671",
@@ -8077,12 +8077,12 @@
   "name": "func_8002C284",
   "orig": "func_8002C284",
   "rom": 117380,
-  "seg": "main/main",
+  "seg": "main/music",
   "size": 12,
-  "src": "src/main/main.c"
+  "src": "src/main/music.c"
  },
  "8002C290": {
-  "asm": "asm/nonmatchings/main/main/music_duck_off.s",
+  "asm": "asm/nonmatchings/main/music/music_duck_off.s",
   "calls": [],
   "fp": "ad519239883ac4b9",
   "fpn": "ad519239883ac4b9",
@@ -8090,12 +8090,12 @@
   "name": "music_duck_off",
   "orig": "func_8002C290",
   "rom": 117392,
-  "seg": "main/main",
+  "seg": "main/music",
   "size": 12,
-  "src": "src/main/main.c"
+  "src": "src/main/music.c"
  },
  "8002C29C": {
-  "asm": "asm/nonmatchings/main/main/func_8002C29C.s",
+  "asm": "asm/nonmatchings/main/music/func_8002C29C.s",
   "calls": [],
   "fp": "f9a6136d2299aaec",
   "fpn": "3bdb41083303167b",
@@ -8103,12 +8103,12 @@
   "name": "func_8002C29C",
   "orig": "func_8002C29C",
   "rom": 117404,
-  "seg": "main/main",
+  "seg": "main/music",
   "size": 16,
-  "src": "src/main/main.c"
+  "src": "src/main/music.c"
  },
  "8002C2AC": {
-  "asm": "asm/nonmatchings/main/main/music_restart.s",
+  "asm": "asm/nonmatchings/main/music/music_restart.s",
   "calls": [],
   "fp": "daff192e809d49cc",
   "fpn": "820562035fac9fa1",
@@ -8116,12 +8116,12 @@
   "name": "music_restart",
   "orig": "func_8002C2AC",
   "rom": 117420,
-  "seg": "main/main",
+  "seg": "main/music",
   "size": 24,
-  "src": "src/main/main.c"
+  "src": "src/main/music.c"
  },
  "8002C2C4": {
-  "asm": "asm/nonmatchings/main/main/func_8002C2C4.s",
+  "asm": "asm/nonmatchings/main/music/func_8002C2C4.s",
   "calls": [
    "800112A4",
    "8003740C",
@@ -8134,12 +8134,12 @@
   "name": "func_8002C2C4",
   "orig": "func_8002C2C4",
   "rom": 117444,
-  "seg": "main/main",
+  "seg": "main/music",
   "size": 208,
-  "src": "src/main/main.c"
+  "src": "src/main/music.c"
  },
  "8002C394": {
-  "asm": "asm/nonmatchings/main/main/music_dload_midi.s",
+  "asm": "asm/nonmatchings/main/music/music_dload_midi.s",
   "calls": [
    "80013688",
    "8003666C",
@@ -8153,12 +8153,12 @@
   "name": "music_dload_midi",
   "orig": "func_8002C394",
   "rom": 117652,
-  "seg": "main/main",
+  "seg": "main/music",
   "size": 92,
-  "src": "src/main/main.c"
+  "src": "src/main/music.c"
  },
  "8002C3F0": {
-  "asm": "asm/nonmatchings/main/main/func_8002C3F0.s",
+  "asm": "asm/nonmatchings/main/music/func_8002C3F0.s",
   "calls": [
    "8002C2C4"
   ],
@@ -8168,12 +8168,12 @@
   "name": "func_8002C3F0",
   "orig": "func_8002C3F0",
   "rom": 117744,
-  "seg": "main/main",
+  "seg": "main/music",
   "size": 56,
-  "src": "src/main/main.c"
+  "src": "src/main/music.c"
  },
  "8002C428": {
-  "asm": "asm/nonmatchings/main/main/func_8002C428.s",
+  "asm": "asm/nonmatchings/main/music/func_8002C428.s",
   "calls": [
    "8002C090"
   ],
@@ -8183,12 +8183,12 @@
   "name": "func_8002C428",
   "orig": "func_8002C428",
   "rom": 117800,
-  "seg": "main/main",
+  "seg": "main/music",
   "size": 36,
-  "src": "src/main/main.c"
+  "src": "src/main/music.c"
  },
  "8002C44C": {
-  "asm": "asm/nonmatchings/main/main/func_8002C44C.s",
+  "asm": "asm/nonmatchings/main/music/func_8002C44C.s",
   "calls": [
    "800110A8"
   ],
@@ -8198,12 +8198,12 @@
   "name": "func_8002C44C",
   "orig": "func_8002C44C",
   "rom": 117836,
-  "seg": "main/main",
+  "seg": "main/music",
   "size": 60,
-  "src": "src/main/main.c"
+  "src": "src/main/music.c"
  },
  "8002C488": {
-  "asm": "asm/nonmatchings/main/main/func_8002C488.s",
+  "asm": "asm/nonmatchings/main/music/func_8002C488.s",
   "calls": [
    "8002C394"
   ],
@@ -8213,9 +8213,9 @@
   "name": "func_8002C488",
   "orig": "func_8002C488",
   "rom": 117896,
-  "seg": "main/main",
+  "seg": "main/music",
   "size": 40,
-  "src": "src/main/main.c"
+  "src": "src/main/music.c"
  },
  "8002C4B0": {
   "asm": "asm/nonmatchings/main/card/func_8002C4B0.s",

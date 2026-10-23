@@ -664,9 +664,6 @@ typedef struct SeqSlot {
 } SeqSlot;
 
 /* Set both channels of slot's sequence volume (func_8002BEA8). */
-static inline void SeqSlot_SetVol(SeqSlot *slot, s32 vol) {
-    SsSeqSetVol((s16)slot->seq, (s16)vol, (s16)vol);
-}
 
 /* The offsets at the start of the loaded sound data. */
 typedef struct {
@@ -814,7 +811,6 @@ MemBlock *mal_first_free(u32 words, MemBlock *blk);
 s32 func_80013034(s32 arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *arg4, s32 arg5, s32 arg6);
 void func_80029560(u8 *arg0);
 void func_8002A5A4(u8 *arg0, u8 *arg1);
-void music_dload_midi(s32 arg0, SeqSlot *slot, s32 type);
 s32 asload_permanent_callback(s32 arg0, void (*done)(), void *ctx);
 void machine_load_sfx(s32 arg0, VabSlot *slot);
 void func_8002ADD4(void *data, VabSlot *slot);
@@ -974,12 +970,6 @@ s32 func_8002B6D0(VECTOR *pos, View *view);
 void func_8002B760(VECTOR *pos, View *view, VECTOR *out, s32 *sxy);
 void func_8002B96C(void);
 s32 func_8002BB80(void);
-void func_8002C284(s32 arg0);
-void music_duck_off(void);
-void func_8002C29C(void);
-void music_restart(void);
-void func_8002C3F0(s32 arg0, s32 *arg1);
-void func_8002C428(void);
 
 extern GteScratch D_800569CC;
 extern SVECTOR D_80056AC8[];
@@ -1014,7 +1004,6 @@ typedef struct {
     u8 *unk10;
 } VTable8;
 s32 func_800155FC(void);
-void func_8002BEA8(void);
 extern VTable8 *D_8004E0DC;
 extern VTable8 *D_8005B648;
 extern s32 D_8004E0E0;
@@ -1778,7 +1767,6 @@ FlagRecord *func_80025A48(EXTengine *eng, u32 flag);
 
 s16 func_800250B0(NAS *nas);
 
-void func_8002C44C(void);
 
 void GotoLinkAnim(EXTanimator *anim, s16 n);
 
@@ -1786,7 +1774,6 @@ void mal_free(void *ptr, Heap *heap);
 
 u8 *func_80016AD4(s32 *arg0, u8 *rec);
 
-void func_8002C488(s32 arg0, s32 type);
 
 
 u8 *func_800160C4(u8 *arg0, s32 i);
@@ -1841,9 +1828,7 @@ void ReAdoptChild(NAS *list, NAS *nas);
 
 void func_8001682C(s32 *arg0);
 
-void func_8002C158(u8 *arg0);
 
-void func_8002C18C(u8 *arg0);
 
 u8 *func_80021E44(OffsetTable *tbl, s32 i);
 
@@ -1874,9 +1859,7 @@ void func_800228C4(_sfx_handler *voice);
 
 void func_80027F00(void);
 
-void continue_music(void);
 
-void func_8002C11C(void);
 
 void WSwapEndian(u16 *p, u32 n);
 
@@ -1917,7 +1900,6 @@ void func_80016E5C(u8 *arg0, u8 *arg1);
 
 s32 func_8001DD20(s32 *arg0);
 
-void func_8002C060(void);
 
 u8 *func_80021E98(u8 *arg0);
 
@@ -1940,7 +1922,6 @@ MemBlock *func_80011878(MemBlock *blk, s32 words);
 
 s32 interp(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
-void music_fade_out(s32 arg0);
 
 /* Per-note pitch data: a signed note and a signed fine nibble in the top of +1. */
 typedef struct {
@@ -1990,7 +1971,6 @@ void func_80028C94(void);
 
 void func_8002B4D8(PitchVoice *arg0, s32 arg1);
 
-void func_8002C090(SeqSlot *slot);
 
 void func_8001CEB4(u16 arg0, u8 *arg1, s32 arg2);
 
@@ -2131,7 +2111,6 @@ void func_8002BA44(void);
 
 void func_8002BCB0(s32 *arg0);
 
-void func_8002C1C0(s32 arg0, s32 arg1);
 
 
 s32 func_8002E584(u8 *arg0);
@@ -2325,7 +2304,6 @@ void func_8002A9AC(s32 *arg0, s32 arg1);
 
 void func_8002BBEC(void);
 
-void func_8002C2C4(SeqSlot *slot);
 
 
 
@@ -2431,7 +2409,6 @@ void func_80029100(AnimOwner *arg0);
 
 void func_8002A4C0(TexUploadList *arg0, u8 *arg1);
 
-void func_8002BD98(SeqSlot *slot, s32 idx);
 /* A script cursor: kind 1 or 2 steps idx through a table of entries (0 entries
  * jump to the index in their low half) and stores the entry in cur. */
 typedef struct ScriptCursor {
@@ -2789,5 +2766,7 @@ void func_80028774(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf);
 
 
 #include "bash/card.h"
+
+#include "bash/music.h"
 
 #endif /* BASH_MAIN_H */
