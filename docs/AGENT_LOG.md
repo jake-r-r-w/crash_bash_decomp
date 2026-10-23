@@ -119,11 +119,14 @@ and current tools).
 ## Open leads
 
 - **Finish the demo discs' symbols** (PROTOTYPES.md; applied: 135 function
-  and 51 global names, unit `panel`, the Jampack enums, 21 prototypes and 10
-  global types, 13 PANEL.CPP locals). Left: types the repo lacks
-  (`SWORD_XY`, `obj_texture`, ...: adding them would let `proto_types.py`
-  write more), `PrintNasPos` (never referenced), the link groups against
-  the engine units. Full reports: `protos/<disc>/scan.md`.
+  and 51 global names, unit `panel`, the Jampack enums, 37 prototypes, the
+  leaked types and class names, 17 global types, 13 PANEL.CPP locals).
+  Left: 7 prototypes whose bodies index the parameter as bytes (typing
+  each body is a small job), the classes with no stand-in (`geo`,
+  `geo_entity`, `joypad_info`, `tga_header`, `file`, ...), merging the
+  other views of `obj_texture` (AnimEntry, TexDst2A84C) and of the camera,
+  `PrintNasPos` (never referenced), the link groups against the engine
+  units. Full reports: `protos/<disc>/scan.md`.
 - **Tune the permuter from its record.** Runs are logged since 2026-10-20
   (`decomp.py permstats`, `swarm.mjs stats`). Two ideas to try once there
   are a few dozen runs, compared on that record:
@@ -260,6 +263,17 @@ Other:
 ## Gotchas
 
 **Tooling**
+- **Typing a byte-array global as a struct can move its loads.** Its reads
+  become in-struct MEMs, and gcc 2.8's alias rule lets a scalar read at a
+  fixed address pass a store through a struct pointer but not an in-struct
+  one: `D_8009F644.amount` stayed below `gs->otzAdd = 0x200` in pause.c's
+  `func_80082590`, where retail hoists it, so that read is
+  `*(s32 *)&D_8009F644`. Build and check after retyping a global, and look
+  for that pattern where one function stops matching.
+- **An overlay that names a symbol its code reaches only at an offset**
+  (`D_8009F658.next_process` for splat's `D_8009F65C`) doesn't link: splat's
+  `<ovl>_undefined_syms_auto.txt` lists only the labels the code touches.
+  Add a `PROVIDE` to `configs/USA/undefined_syms_manual.txt`.
 - **A split whose rodata starts with an asm item needs 4-aligned objects.**
   An `INCLUDE_RODATA` item's `.align 2` doesn't survive the linker
   script's `SUBALIGN(2)`, so after a file whose rodata ends at 2 mod 4 the
@@ -554,6 +568,15 @@ Newest first, a few lines each. Details are in the commits.
   PlaySfx as a `goto` into case 8's (not the source; leads list why). No
   `break`/`goto` mix gives the target's three tail survivors. Found the
   unit is probably `PAUSE.CPP`; `cc1plus` compiles the C identically.
+
+- **2026-10-23 (leaked types and prototypes):** the shell's `SWORD_XY`
+  family, `process_info`/`process_control_info`/`fade_info` (for ModeMgr,
+  GameModeDef and the fade, with the engine's and overlays' globals typed),
+  PANEL.CPP's globals as `ScoreInfo`/`ClockInfo`/`SWORD_XY`, the leaked
+  class names on the stand-ins (`mal`, `_mal_area`, `obj_texture`,
+  `obj_textureset`, ...) and an `obj_dbase` layout. `proto_types.py` had
+  rewritten calls as prototypes (fixed); 37 functions now have the leak's
+  parameter types (PROTOTYPES.md lists what is left).
 
 - **2026-10-23 (main.c split into nine):** four more cuts, one commit
   each: `sfx` (332..349), `80017164` (170..), `dbase` (136..169, the dots

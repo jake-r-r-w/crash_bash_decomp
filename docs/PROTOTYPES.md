@@ -301,12 +301,33 @@ The 4 names the repo gave itself are replaced by the originals
   `DefHero2ObjectCollision` are placed by the matched code that stores them
   as handlers (`renames_engine_stubs.txt`), `InitParticleEffect` lands on the
   repo's own name by order; `PrintNasPos` is never referenced: unplaceable.
-- Parameter types: `proto_types.py` gave 21 functions the types their C++
-  names spell (`InsertNasTag(NAS *, NAS *)`, `kill_sprim_sub(subengine *)`,
-  `SysGetLen(char *)`, `BSwapEndian(u8 *, u32)`, ...); 13 more would change
-  the code or not compile and were dropped (`Set_Clock(u16, u16)`,
-  `line_intersect_zy(VECTOR *...)`, ...), 11 can't be written yet (a
-  function pointer, a differing count, a type the repo lacks).
+- Parameter types: 37 functions have the types their C++ names spell.
+  `proto_types.py` gave 27 (`InsertNasTag(NAS *, NAS *)`,
+  `kill_sprim_sub(subengine *)`, `AddExt(NAS *)`, `mal_unlink(mal *,
+  _mal_area *)`, ...). Before 2026-10-23 it rewrote call statements as if
+  they were prototypes, so most functions with a caller were dropped; they
+  were retried once that was fixed. The process and fade functions
+  (`set_fade(fade_info *)`, `process_interrupt(process_control_info *,
+  process_info *)`, ...), `texture_release_loading_mem(obj_textureset *)`
+  and the four `obj_dbase` ones were typed by hand, because their bodies
+  indexed the parameter as bytes. Left: 7 whose bodies need the same
+  (`Set_Clock(u16, u16)`, `line_intersect_zy(VECTOR *...)`,
+  `map_loaded_geo(geo *, map_enviroment *)`, `render_entity_thread`,
+  `update_camera_thread`, `GotoLinkAnim`, `map_entity_address`), `cam_init`
+  (the camera globals are byte arrays seen through several structs), 11 the
+  tool can't write (a function pointer, a differing count), and the classes
+  with no stand-in yet (`geo`, `geo_entity`, `geo_vertex`, `geo_tristrip`,
+  `joypad_info`, `tga_header`, `file`, `UPOLY_GT3`, `lPOLY_GT4`, `prim_`).
+- Types from the leaks (2026-10-23): the shell's small vector types
+  (`SWORD_XY`, `SWORD_XYZ`, `xy_w`, ... in `nas.h`; `SWORD_XYZ` for
+  `GlyphPos`), PANEL.CPP's globals (`Score` is `ScoreInfo`, `Clock`
+  `ClockInfo`, the icon positions `SWORD_XY`), `process_info`,
+  `process_control_info` and `fade_info` (for `GameModeDef`, `ModeMgr` and
+  the fade). The classes the C++ names only name went to the stand-ins
+  holding the same parameter: `mal` (MemBlock), `_mal_area` (Heap),
+  `obj_texture` (SpriteFrame), `obj_textureset` (TexSet2926C and AnimOwner),
+  `texture_scroll`, `sfx_machine_bank_info`, `music_midi`. `struct obj_dbase`
+  has a layout from the code (the 0x38-byte records at `D_80052A54`).
 - Globals (`globals.txt`, 41 mapped): `main.exe`'s 15 game ones are renamed
   (`renames_main_globals*.txt`: `screen_aspect`, `FirstNas`, `World_floor_level`,
   `num_sfx_banks`, `cdb`, ..., `core_process`, `GlobalNAStatus`; those two are
