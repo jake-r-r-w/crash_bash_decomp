@@ -828,7 +828,7 @@ typedef struct Ovl63SceneObj {
 /* An Ovl63SceneObj's model as func_800B5778 reads it. */
 typedef struct Ovl63SceneModel {
     /* 0x00 */ u8 pad0[0xC];
-    /* 0x0C */ u8 *unkC; /* passed to func_80015A18 */
+    /* 0x0C */ u8 *unkC; /* passed to entity_address */
 } Ovl63SceneModel;
 extern s32 D_800CA604;
 

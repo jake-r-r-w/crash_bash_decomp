@@ -364,7 +364,7 @@ void func_800B3E74(s32 i) {
     sub->unk20.z = 0x1201;
     one = 1;
     sub->unk52 = one;
-    func_80025B10(eng, 0x50);
+    FetchDefaultColBox(eng, 0x50);
     hb2 = Heroes;
     h2 = hb2 + i;
     func_80026B70((u8 **)&D_800C4080, (u8 *)h2->hero);
@@ -463,7 +463,7 @@ void func_800B4138(s32 i) {
     sub->unk04 = 0;
     sub->unk52 = 1;
     func_800B3CD0(i);
-    func_80025B10(eng, 0x50);
+    FetchDefaultColBox(eng, 0x50);
     if (i == 1) {
         D_8009D59C->unk10.z = -0x2800;
     } else {
@@ -1667,7 +1667,7 @@ void func_800B6F4C(void) {
     sub->unk08 = 0;
     sub->unk04 = 0;
     sub->flags |= 0x8000;
-    func_80025B10(eng, 0x50);
+    FetchDefaultColBox(eng, 0x50);
     func_800B3CD0(3);
     if (eng->unk10.x > 0x880) {
         eng->unk10.x = 0x880;

@@ -78,7 +78,7 @@ void func_8009342C(void) {
                 PlaySfx(0x3C8, NULL, NULL, 0x1000, 0x1E00, 0);
             }
         }
-        func_800220E8();
+        scripts_update();
     }
 }
 
@@ -102,11 +102,11 @@ void func_80093588(void) {
         func_80016CA0(D_800555A4);
     }
     D_8009F8B4 = func_80093038;
-    func_80014388(D_80051640);
-    func_80014388(D_8009F734);
-    func_80014388((u8 *)&D_8009F7EC);
+    cam_init(D_80051640);
+    cam_init(D_8009F734);
+    cam_init((u8 *)&D_8009F7EC);
     *(s32 *)&D_8009F734[0x14] = 0x2000;
-    func_80014388(D_800A016C);
+    cam_init(D_800A016C);
     *(s32 *)&D_800A016C[8] = 0xA24;
     *(s32 *)&D_800A016C[0x14] = 0;
     q = (s32 *)D_8009F6F4;
@@ -150,7 +150,7 @@ void func_800936C4(void) {
     func_80017164(cfg->pools);
     func_800170D4();
     func_800222FC();
-    func_8001D5D0();
+    draw_init();
     D_800A0158 = 0;
     if (((D5A614View *)D_8005A614)->mode == 0x28 && D_800590CC != 0) {
         ((ModeMgr *)D_8009F658)->flags = 0x1D;
@@ -319,14 +319,14 @@ void func_80093BE8(void) {
         g0->unk30 &= ~0x200;
         break;
     case 1:
-        func_800237BC();
+        SetNasDefaults();
         g = (EngStateView *)D_8005A614;
         g->unk30 = 0;
         g->unk10 = 0;
         func_80023158(D_8005AA50);
         func_8001D640(D_8005AA54);
         func_8001E984(0x20, 0x20);
-        func_8001E8F0(D_800A015C);
+        process_init(D_800A015C);
         func_80078CA4();
         func_8007A8C4();
         if (g->mode != 0x28 || D_800590CC == 0) {
@@ -336,7 +336,7 @@ void func_80093BE8(void) {
             func_8002BBB4();
             func_8002BD0C((s32)D_8004E998);
         }
-        func_8001E588(D_8009F644, -0x300, 0);
+        set_fade(D_8009F644, -0x300, 0);
         D_800A0158 = 2;
         break;
     case 6:
@@ -410,7 +410,7 @@ void func_8009400C(void) {
 }
 
 void func_80094058(void) {
-    func_8001E854(D_800A015C);
+    process_quit(D_800A015C);
 }
 
 void func_8009407C(void) {
@@ -443,12 +443,12 @@ void func_8009414C(void) {
         if (D_800A02C0 != 0) {
             func_8009440C();
         }
-        func_80022070();
+        scripts_render();
     }
 }
 
 void func_800941BC(void) {
-    func_80014388(D_80051640);
+    cam_init(D_80051640);
     D_800A02C0 = 0;
     D_800A02C4 = 0;
 }
@@ -553,7 +553,7 @@ void func_800945C0(EngineStartArgs *arg0) {
     D_8004E0E0 = rate;
     D_80058B64 = 0x1E0000 / (60 / rate);
     D_80058B64 = arg0->unk8 * rate / 60;
-    func_80014388(D_80051640);
+    cam_init(D_80051640);
     D_800A0D30 = 0;
     D_800A0D38 = 1;
     D_800A0C70 = 0;
@@ -631,7 +631,7 @@ void func_80094860(void) {
         base = D_800644C0;
         slot = &base[D_800A0D20[0]];
         if (slot->head == NULL && slot->handle == 0 && func_80012FFC() == 0) {
-            func_8002BA10(((EngineVabCue *)D_800A0D1C)->vab, &base[D_800A0D20[0]]);
+            machine_load_sfx(((EngineVabCue *)D_800A0D1C)->vab, &base[D_800A0D20[0]]);
         }
     }
 }
@@ -682,7 +682,7 @@ void func_80094B38(void) {
     s32 ok;
 
     D_8004E0D8 += 1;
-    func_800220E8();
+    scripts_update();
     if (D_800A0D2C != NULL) {
         if (D_800A0D34 == NULL) {
             if ((s32)((MarkCtx *)D_800A0D2C)->obj != D_800A0D30 && D_800A0D30 != 0) {
@@ -716,7 +716,7 @@ void func_80094B38(void) {
                         D_800654B0 = 1;
                         D_800A0D38 = 0;
                         D_800A0D28 = 1;
-                        func_8001E588(D_8009F644, -0x800, 0);
+                        set_fade(D_8009F644, -0x800, 0);
                     }
                 }
             }
@@ -739,7 +739,7 @@ void func_80094B38(void) {
 void func_80094D88(s32 arg0, s32 arg1) {
     D_800A0C08 = arg1;
     D_800A0C0C = arg0;
-    func_8001E588(D_8009F644, 0x200, 0);
+    set_fade(D_8009F644, 0x200, 0);
     D_8009F65C = D_800A0BF4;
 }
 
@@ -770,7 +770,7 @@ void func_80094DD0(void) {
 void func_80094EB8(void) {
     func_80018B08(&D_800A0BCC, (GfxCamera *)D_80051640);
     D_80056998.modelDp = *(s32 *)D_8009F644;
-    func_80022070();
+    scripts_render();
     D_80056998.modelDp = 0x1000 - (((0x1000 - D_80058B60) * (0x1000 - D_80056998.modelDp)) >> 12);
     func_8009440C();
 }
@@ -1086,7 +1086,7 @@ void func_800952F8(subengine *sub, s32 *recs) {
                 s->x = rec->x;
                 s->y = rec->y;
                 s->z = rec->z;
-                func_80020CC4(D_80052A54 + rec->unk1C * 0x38, rec->unk1E, (u8 *)s, rec->unk20);
+                sub_play_script(D_80052A54 + rec->unk1C * 0x38, rec->unk1E, (u8 *)s, rec->unk20);
             }
             break;
         case 2:
@@ -1101,7 +1101,7 @@ void func_80095A04(s32 arg0) {
     EXTengine *eng;
 
     eng = &EnginePool[arg0];
-    func_8001D334(eng->sub);
+    kill_subs(eng->sub);
     eng->flags &= 0xFFFF7FFF;
 }
 
@@ -1115,7 +1115,7 @@ void func_80095A60(s32 arg0, s32 arg1) {
     *eng = EngineTemplate;
     subs = D_800A13F4[arg0];
     n = arg1;
-    func_8001D334(eng->sub);
+    kill_subs(eng->sub);
     *eng = EngineTemplate;
     eng->unk5C = 1;
     eng->unk5D = 0;
@@ -1150,7 +1150,7 @@ void func_80095BEC(s32 arg0, s32 *recs) {
             i++;
         }
         n = i;
-        func_8001D334(eng->sub);
+        kill_subs(eng->sub);
         *eng = EngineTemplate;
         eng->unk5C = 1;
         eng->unk5D = 0;

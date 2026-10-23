@@ -4240,7 +4240,7 @@ void PogoAI_Poll(u32 arg0) {
                     break;
                 }
             }
-            func_80013C94((u8 *)&D_80051338[arg0], ai->AIpad);
+            set_joypad((u8 *)&D_80051338[arg0], ai->AIpad);
         }
         D_800C5ADC[arg0].unk4 = 0;
     }
@@ -6509,7 +6509,7 @@ void func_800C34F0(s32 arg0) {
 
 void func_800C3510(u8 *arg0) {
     (*(s32*)((u8*)(arg0) + 84)) = func_800C353C;
-    (*(s32*)((u8*)(arg0) + 88)) = D_8001C378;
+    (*(s32*)((u8*)(arg0) + 88)) = kill_sprim_sub;
     (*(s32*)((u8*)(arg0) + 0)) = (s32) ((*(s32*)((u8*)(arg0) + 0)) | 0x01000000);
 }
 

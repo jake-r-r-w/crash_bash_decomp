@@ -916,7 +916,7 @@ void PlotHazardType(NAS *nas) {
         fux->mask = (fux->mask & 0xFFD0) | 0xA;
         eng->unk5E = 1;
         fux->owner = -1;
-        func_80025B10(eng, 0x50);
+        FetchDefaultColBox(eng, 0x50);
         break;
     case 6:
         v = eng->unk2C.y;
@@ -1225,7 +1225,7 @@ void PlotBalloon(NAS *nas) {
                 }
                 eng->unk5E = 1;
                 fux->owner = -1;
-                func_80025B10(eng, 0x50);
+                FetchDefaultColBox(eng, 0x50);
                 break;
             case 9:
                 switch (kind) {

@@ -138,8 +138,6 @@ extern NAS *D_800C4490;
 extern NAS *D_800C4494;
 extern s32 D_800C4478;
 extern void (*D_8009F8B4)(void);
-extern s32 D_800C4498;
-extern s32 D_800C45F0;
 
 typedef struct MineModel {
     /* 0x00 */ u8 pad00[0x6C];
@@ -248,9 +246,7 @@ static inline s32 MineDamage(BossGameView *g) {
 extern SLONG_XYZ D_800C76CC;
 extern SLONG_XYZ D_800C76D8;
 extern s16 D_8009D6DC[];
-extern s32 D_8005A624;
 
-extern EXTengine *D_8009D530;
 extern s32 D_800C4478;
 
 void func_800C0C28(BossPath *arg0, BossObj *arg1);void func_800BC6B8(void);
@@ -277,7 +273,6 @@ void func_800C3234(void);
 
 void func_800C3370(void);
 
-void func_800C3440(void);
 
 void func_800C36D4(void);
 
@@ -553,7 +548,6 @@ typedef struct BossExt {
     /* 0x38 */ s32 unk38;
 } BossExt;
 
-extern s16 D_8009D6E2;
 extern ScriptInit D_800C446C;
 extern s32 D_800C4530;
 extern s8 D_8005A6DE;

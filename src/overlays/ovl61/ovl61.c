@@ -825,7 +825,7 @@ void AR_InitHero(u32 arg0) {
     }
     D_800C1EE8[arg0] = 0xF;
     s->unk74 = 0x2004;
-    func_80025B10(e, 0x50);
+    FetchDefaultColBox(e, 0x50);
     if (e->unk10.x > 0x880) {
         e->unk10.x = 0x880;
     }
@@ -2700,7 +2700,7 @@ void Ark_HeroBot(u32 arg0) {
         break;
     }
     pad = &D_80051338[arg0];
-    func_80013C94((u8 *)pad, ai->AIpad);
+    set_joypad((u8 *)pad, ai->AIpad);
     *(s32 *)((u8 *)pad + 0x38) = ai->AIang;
 }
 
@@ -5608,7 +5608,7 @@ void Init_seaweed(NAS *arg0) {
             if (trig != NULL) {
                 u8 *info = (u8*)*(s32*)(trig + 16);
                 s32 n = *(s32*)(info + 4);
-                ((void (*)(EXTanimator*, s32))func_80025FAC)((EXTanimator*)cur, n);
+                ((void (*)(EXTanimator*, s32))GotoLinkAnim)((EXTanimator*)cur, n);
                 if (n < 2) {
                     func_800250B0(arg0);
                     *(u16*)((u8*)cur + 30) += Random(8);
@@ -5647,7 +5647,7 @@ void Init_N_Gin(NAS *nas) {
         nas->Class &= 0xFDFF;
         eng->unk5D = 1;
         eng->flags &= 0xFFFF7FFF;
-        func_80025B10(eng, 0x50);
+        FetchDefaultColBox(eng, 0x50);
     }
     if (nas->Failure != 0) {
         KillNAS(nas);

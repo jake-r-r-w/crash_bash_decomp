@@ -9,7 +9,6 @@
 #include "bash/engine.h"
 
 extern s32 D_8005687C[];
-void func_800798A4(void);
 s32 func_8007F314(void);
 void func_8007976C(void);
 void func_80097C28(void);

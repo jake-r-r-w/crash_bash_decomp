@@ -47,7 +47,7 @@ s32 func_80010000(u8 *arg0) {
 void func_80010158(void) {
     D_8004E0E0 = 2;
     func_80011BF8(&D_8004E0F0, D_80078C90, 0x801FF000 - (s32)D_80078C90);
-    func_80012E90();
+    init_file();
     func_80013CA4();
     func_800138A4();
     func_800134FC(D_80050008, D_80078C90);
@@ -61,7 +61,7 @@ INCLUDE_RODATA("asm/nonmatchings/main/main", D_8004C56C);
 void func_800101E0(void) {
     char unused[24]; /* never used, but the frame has room for it */
 
-    func_8002AB44();
+    machine_quit_sound();
     DrawSync(0);
     StopRCnt(RCntCNT0);
     StopRCnt(RCntCNT1);
@@ -76,7 +76,7 @@ void func_800101E0(void) {
     LoadExec("cdrom:\\SPYRO3\\SPYRO3.EXE;1", 0, 0);
 }
 
-void func_80010278(void) {
+void shell_render_dcache(void) {
     if (D_8004E0B4 == 0) {
         D_8004E0B4 = 1;
         D_8006E9F4 = func_800320CC();
@@ -90,7 +90,7 @@ void func_80010278(void) {
 void func_800102F8(void) {
     D_8004E0E0 = 2;
     func_80011BF8(&D_8004E0F0, D_80078C90, 0x801FF000 - (s32)D_80078C90);
-    func_80012E90();
+    init_file();
     func_80013CA4();
     func_800138A4();
 }
@@ -120,7 +120,7 @@ void func_80010410(void) {
         func_80012E54();
     }
     func_800222FC();
-    func_800237BC();
+    SetNasDefaults();
     D_8004E0DC->unk0();
 }
 
@@ -136,7 +136,7 @@ static inline void func_800107C8_merge(MemBlock *a, Heap *arg1, s32 m1) {
     s32 n;
     u32 size;
 
-    func_80011B74((u8 *)a, (u8 *)arg1);
+    mal_unlink((u8 *)a, (u8 *)arg1);
     size = a->size;
     b = (MemBlock *)((u8 *)a + (size * 4 + 0x18));
     new_var = a;
@@ -170,7 +170,7 @@ static inline void func_800107C8_merge(MemBlock *a, Heap *arg1, s32 m1) {
 }
 
 #ifndef NON_MATCHING
-void func_80010488(Heap *heap) {
+void mal_update(Heap *heap) {
     u32 size;
     s32 size2;
     s32 n;
@@ -196,7 +196,7 @@ void func_80010488(Heap *heap) {
         t = VSync(1);
         D_8004E0EC += p->size;
         a = heap->lowest;
-        func_80011B74((u8 *)a, (u8 *)heap);
+        mal_unlink((u8 *)a, (u8 *)heap);
         size = a->size;
         b = (MemBlock *)((u8 *)a + (size * 4 + 0x18));
         n = b->size;
@@ -264,7 +264,7 @@ static inline MemBlock *Heap_NextLowest(Heap *heap, s32 m1) {
     return next;
 }
 
-void func_80010488(Heap *heap) {
+void mal_update(Heap *heap) {
     s32 m1;
     MemBlock *lo;
     MemBlock *nx;
@@ -394,7 +394,7 @@ void func_8001097C(Heap *heap) {
         if (prev == NULL) {
             continue;
         }
-        func_80011B74((u8 *)blk, (u8 *)heap);
+        mal_unlink((u8 *)blk, (u8 *)heap);
         dst = (u32 *)((u8 *)blk + (blk->size * 4 + 0x14));
         n = prev->size;
         src = (u32 *)((u8 *)prev + (n * 4 + 0x14));
@@ -439,7 +439,7 @@ static inline void func_80010AE8_merge(MemBlock *arg0, Heap *arg1) {
     s32 n;
     s32 size;
 
-    func_80011B74((u8 *)arg0, (u8 *)arg1);
+    mal_unlink((u8 *)arg0, (u8 *)arg1);
     size = arg0->size;
     next = (MemBlock *)((u8 *)arg0 + (size * 4 + 0x18));
     new_var = arg0;
@@ -854,7 +854,7 @@ s32 func_80011410(Heap *heap) {
     return D_8004E104;
 }
 
-void func_80011474(void) {
+void mal_print_free(void) {
     func_80011410(&D_8004E0F0);
 }
 
@@ -968,7 +968,7 @@ u8 *func_80011654(s32 arg0, Heap *arg1) {
         var_v1 = func_80010C70(arg0, arg1);
         var_a0 = var_v1 + 0x18;
         if (var_v1 == NULL) {
-            func_80011474();
+            mal_print_free();
             var_a0 = NULL;
         } else {
             goto block_10;
@@ -1002,7 +1002,7 @@ u8 *func_80011748(s32 arg0, u8 *arg1) {
         var_a0 = func_80010C70(arg0, arg1);
         var_v0 = var_a0 + 0x18;
         if (var_a0 == NULL) {
-            func_80011474();
+            mal_print_free();
             return NULL;
         }
         goto block_10;
@@ -1207,7 +1207,7 @@ loop:
     goto loop;
 }
 
-void func_80011B74(u8 *arg0, u8 *arg1) {
+void mal_unlink(u8 *arg0, u8 *arg1) {
     u8 *temp_v1;
     u8 *temp_v1_2;
 
@@ -1260,7 +1260,7 @@ MemBlock *func_80011BF8(Heap *heap, u8 *start, s32 size) {
     return blk;
 }
 
-MemBlock *func_80011C5C(u32 words, MemBlock *blk) {
+MemBlock *mal_first_free(u32 words, MemBlock *blk) {
     for (; blk != NULL; blk = blk->nextFree) {
         if (blk->size >= words) {
             return blk;
@@ -1399,7 +1399,7 @@ void func_80011FC8(MemBlock *arg0, Heap *arg1) {
     s32 n;
     s32 size;
 
-    func_80011B74((u8 *)arg0, (u8 *)arg1);
+    mal_unlink((u8 *)arg0, (u8 *)arg1);
     size = arg0->size;
     next = (MemBlock *)((u8 *)arg0 + (size * 4 + 0x18));
     new_var = arg0;
@@ -1444,7 +1444,7 @@ void func_800120E8(MemBlock *arg0, Heap *arg1) {
     prev = arg0->prev;
     next = (MemBlock *)((u8 *)arg0 + (size * 4 + 0x18));
     if (prev != NULL) {
-        func_80011B74((u8 *)arg0, (u8 *)arg1);
+        mal_unlink((u8 *)arg0, (u8 *)arg1);
         d = (s32 *)((u8 *)arg0 + (arg0->size * 4 + 0x14));
         n = prev->size;
         s = (s32 *)((u8 *)prev + (n * 4 + 0x14));
@@ -1474,11 +1474,11 @@ u8 *func_800121F8(u8 *arg0) {
         }
         words = ((*(s32 *)(arg0 + 8) + 0x7FF) / 0x800) << 9;
         h = &D_8004E0F0;
-        if (func_80011C5C(words, h->free) == NULL) {
+        if (mal_first_free(words, h->free) == NULL) {
             func_80017640();
-            if (func_80011C5C(words, h->free) == NULL) {
+            if (mal_first_free(words, h->free) == NULL) {
                 func_80011D28((u8 *)h);
-                if (func_80011C5C(words, h->free) == NULL) {
+                if (mal_first_free(words, h->free) == NULL) {
                     return NULL;
                 }
             }
@@ -2033,7 +2033,7 @@ void func_80012E54(void) {
 void func_80012E88(void) {
 }
 
-void func_80012E90(void) {
+void init_file(void) {
     LoadNode *node;
     s32 i;
 
@@ -2205,11 +2205,11 @@ s32 func_800131B0(s32 arg0) {
     s32 words;
     arg0 += 3;
     words = arg0 >> 2;
-    if (func_80011C5C(words, h->free) == NULL) {
+    if (mal_first_free(words, h->free) == NULL) {
         func_80017640();
-        if (func_80011C5C(words, h->free) == NULL) {
+        if (mal_first_free(words, h->free) == NULL) {
             func_80011D28((u8 *)h);
-            if (func_80011C5C(words, h->free) == NULL) {
+            if (mal_first_free(words, h->free) == NULL) {
                 return 0;
             }
         }
@@ -2265,11 +2265,11 @@ s32 func_80013334(s32 arg0, s32 arg1, u8 **arg2, s32 arg3) {
     return 0;
 }
 
-s32 func_800133C8(s32 arg0, s32 arg1, u8 *arg2, s32 arg3) {
+s32 asload_chunk_relocatable(s32 arg0, s32 arg1, u8 *arg2, s32 arg3) {
     return func_80013034(arg0, arg1, arg3, NULL, arg2, 1, 0);
 }
 
-s32 func_800133FC(s32 *arg0) {
+s32 load_file_permanent(s32 *arg0) {
     s32 a2 = arg0[1];
 
     if (a2 == -1) {
@@ -2336,7 +2336,7 @@ s32 func_80013650(s32 arg0, void (*done)(), void *ctx) {
     return func_80013034(arg0, 0, ((s32 *)arg0)[1], done, ctx, 1, 0);
 }
 
-s32 func_80013688(s32 arg0, void (*done)(), void *ctx) {
+s32 asload_permanent_callback(s32 arg0, void (*done)(), void *ctx) {
     return func_80013034(arg0, 0, ((s32 *)arg0)[1], done, ctx, 0, 0);
 }
 
@@ -2552,7 +2552,7 @@ void func_80013C78(void) {
     p[1] |= 0x80010000;
 }
 
-void func_80013C94(u8 *arg0, s32 arg1) {
+void set_joypad(u8 *arg0, s32 arg1) {
     (*(s32*)((u8*)(arg0) + 48)) = arg1;
     (*(s32*)((u8*)(arg0) + 44)) = 1;
 }
@@ -2694,7 +2694,7 @@ void func_800142D4(void *arg0) {
     }
 }
 
-void func_80014388(u8 *arg0) {
+void cam_init(u8 *arg0) {
     D_800517B0 = 0;
     (*(s32*)((u8*)(arg0) + 100)) = 0x1000;
     (*(s32*)((u8*)(arg0) + 104)) = 0x1000;
@@ -2830,7 +2830,7 @@ void func_8001492C(void) {
     t[0x00C / 4] = StopSfx;
     t[0x010 / 4] = func_8002BD0C;
     t[0x014 / 4] = func_8002232C;
-    t[0x018 / 4] = func_80022504;
+    t[0x018 / 4] = sfx_delete_all;
     t[0x01C / 4] = func_800228A4;
     t[0x020 / 4] = func_8002BCB0;
     t[0x024 / 4] = func_8002AC40;
@@ -2840,14 +2840,14 @@ void func_8001492C(void) {
     t[0x034 / 4] = func_800222FC;
     t[0x038 / 4] = func_800222DC;
     t[0x03C / 4] = func_800222BC;
-    t[0x040 / 4] = func_8002C248;
-    t[0x044 / 4] = func_8001E51C;
+    t[0x040 / 4] = music_fade_out;
+    t[0x044 / 4] = path_find;
     t[0x048 / 4] = func_8001E48C;
     t[0x04C / 4] = func_8001E21C;
     t[0x050 / 4] = func_8001E41C;
     t[0x054 / 4] = func_8001DAF8;
-    t[0x058 / 4] = func_8001DD50;
-    t[0x05C / 4] = func_8001DDB4;
+    t[0x058 / 4] = draw_map_sub;
+    t[0x05C / 4] = map_update;
     t[0x060 / 4] = func_8001DEF4;
     t[0x064 / 4] = func_8001E054;
     t[0x068 / 4] = func_8001DDD8;
@@ -2861,36 +2861,36 @@ void func_8001492C(void) {
     t[0x088 / 4] = func_80018728;
     t[0x08C / 4] = func_80018430;
     t[0x090 / 4] = func_800183DC;
-    t[0x094 / 4] = func_80018388;
+    t[0x094 / 4] = release_sprim;
     t[0x098 / 4] = func_800183B0;
     t[0x09C / 4] = func_8001A0D8;
     t[0x0A0 / 4] = func_8001A6D4;
-    t[0x0A4 / 4] = func_80020CC4;
+    t[0x0A4 / 4] = sub_play_script;
     t[0x0A8 / 4] = func_8001AA48;
     t[0x0AC / 4] = func_8001C7FC;
     t[0x0B0 / 4] = func_8001C690;
     t[0x0B4 / 4] = func_8001A82C;
     t[0x0B8 / 4] = func_8001C3D0;
-    t[0x0BC / 4] = func_8001C378;
+    t[0x0BC / 4] = kill_sprim_sub;
     t[0x0C0 / 4] = func_800158E4;
     t[0x0C4 / 4] = func_80015870;
     t[0x0C8 / 4] = SetDrawArea;
-    t[0x0CC / 4] = func_800189F4;
+    t[0x0CC / 4] = tga_convert;
     t[0x0D0 / 4] = func_80018F3C;
     t[0x0D4 / 4] = func_8001C270;
     t[0x0D8 / 4] = func_8001C298;
     t[0x0DC / 4] = func_8001D640;
     t[0x0E0 / 4] = func_8001D390;
     t[0x0E4 / 4] = func_8001D3B0;
-    t[0x0E8 / 4] = func_8001D5D0;
+    t[0x0E8 / 4] = draw_init;
     t[0x0EC / 4] = func_80018B08;
-    t[0x0F0 / 4] = func_80015A18;
-    t[0x0F4 / 4] = func_80015AD4;
+    t[0x0F0 / 4] = entity_address;
+    t[0x0F4 / 4] = init_dots;
     t[0x0F8 / 4] = func_80015C1C;
     t[0x0FC / 4] = func_80015D70;
     t[0x100 / 4] = func_80015D08;
-    t[0x104 / 4] = func_8002A2EC;
-    t[0x108 / 4] = func_80014388;
+    t[0x104 / 4] = calc_rgbcode;
+    t[0x108 / 4] = cam_init;
     t[0x10C / 4] = func_80013F44;
     t[0x110 / 4] = func_800276A4;
     t[0x114 / 4] = func_80028774;
@@ -2906,49 +2906,49 @@ void func_8001492C(void) {
     t[0x13C / 4] = func_80027F7C;
     t[0x140 / 4] = func_80028C94;
     t[0x144 / 4] = func_800165F8;
-    t[0x148 / 4] = func_80016558;
+    t[0x148 / 4] = dbase_mesh_anim_name_loaded;
     t[0x14C / 4] = func_80016478;
     t[0x150 / 4] = func_8001682C;
     t[0x154 / 4] = func_800166FC;
     t[0x158 / 4] = func_8001636C;
     t[0x15C / 4] = func_80016450;
     t[0x160 / 4] = func_800163E0;
-    t[0x164 / 4] = func_80013C94;
+    t[0x164 / 4] = set_joypad;
     t[0x168 / 4] = func_800139A8;
     t[0x16C / 4] = func_80015780;
     t[0x170 / 4] = func_80012DDC;
     t[0x174 / 4] = func_8001361C;
     t[0x178 / 4] = func_80011DB4;
     t[0x17C / 4] = func_8001C34C;
-    t[0x180 / 4] = func_800133FC;
+    t[0x180 / 4] = load_file_permanent;
     t[0x184 / 4] = func_800134FC;
     t[0x188 / 4] = func_8001D6B4;
     t[0x18C / 4] = func_8001DCD4;
     t[0x190 / 4] = func_80015984;
     t[0x194 / 4] = func_80015758;
     t[0x198 / 4] = func_8001E598;
-    t[0x19C / 4] = func_8001E588;
-    t[0x1A0 / 4] = func_8001E8F0;
+    t[0x19C / 4] = set_fade;
+    t[0x1A0 / 4] = process_init;
     t[0x1A4 / 4] = func_8001E610;
     t[0x1A8 / 4] = func_8001E898;
-    t[0x1AC / 4] = func_8001E854;
+    t[0x1AC / 4] = process_quit;
     t[0x1B0 / 4] = func_8001E934;
     t[0x1B4 / 4] = func_8001E848;
-    t[0x1B8 / 4] = func_8001E838;
+    t[0x1B8 / 4] = process_interrupt;
     t[0x1BC / 4] = func_8001E824;
     t[0x1C0 / 4] = func_8002992C;
-    t[0x1C4 / 4] = func_8002A35C;
+    t[0x1C4 / 4] = texture_release_loading_mem;
     t[0x1C8 / 4] = func_8002D274;
     t[0x1CC / 4] = func_800229FC;
     t[0x1D0 / 4] = func_80029F9C;
-    t[0x1D4 / 4] = func_800246D0;
+    t[0x1D4 / 4] = SysPrintAt3d;
     t[0x1D8 / 4] = func_800243A0;
-    t[0x1DC / 4] = func_8002D0C8;
+    t[0x1DC / 4] = card_save;
     t[0x1E0 / 4] = func_8002D15C;
     t[0x1E4 / 4] = func_80013D54;
     t[0x1E8 / 4] = func_8001E984;
-    t[0x1EC / 4] = func_800220E8;
-    t[0x1F0 / 4] = func_80022070;
+    t[0x1EC / 4] = scripts_update;
+    t[0x1F0 / 4] = scripts_render;
     t[0x1F4 / 4] = func_80021FB0;
     t[0x1F8 / 4] = func_80022030;
     t[0x1FC / 4] = func_8001FE80;
@@ -2958,7 +2958,7 @@ void func_8001492C(void) {
     t[0x20C / 4] = func_8001ACC0;
     t[0x210 / 4] = func_8001F604;
     t[0x214 / 4] = func_8002147C;
-    t[0x218 / 4] = func_80015304;
+    t[0x218 / 4] = interp;
     t[0x21C / 4] = func_800152A8;
     t[0x220 / 4] = func_80015284;
     t[0x224 / 4] = func_8001C584;
@@ -2967,9 +2967,9 @@ void func_8001492C(void) {
     t[0x230 / 4] = D_8004DDBC;
     t[0x234 / 4] = func_8002D294;
     t[0x238 / 4] = func_8002C1C0;
-    t[0x23C / 4] = func_8002C2AC;
+    t[0x23C / 4] = music_restart;
     t[0x240 / 4] = func_8002C29C;
-    t[0x244 / 4] = func_8002C290;
+    t[0x244 / 4] = music_duck_off;
     t[0x248 / 4] = func_8002BB80;
     t[0x24C / 4] = func_8002BA44;
     t[0x250 / 4] = func_80020344;
@@ -3051,7 +3051,7 @@ s32 func_800152A8(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return (d * arg3) / arg2 + arg0;
 }
 
-s32 func_80015304(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 interp(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return ((arg1 - arg0) * arg3) / arg2 + arg0;
 }
 
@@ -3129,7 +3129,7 @@ void func_800154C0(u16 *arg0, s32 arg1) {
     }
 }
 
-void func_800154EC(u16 *arg0, s32 arg1) {
+void palette_set_top_bits(u16 *arg0, s32 arg1) {
     s32 i;
 
     for (i = arg1 - 1; i != -1; i--) {
@@ -3137,7 +3137,7 @@ void func_800154EC(u16 *arg0, s32 arg1) {
     }
 }
 
-void func_80015518(u8 *p, s32 n) {
+void BSwapEndian(u8 *p, s32 n) {
     s32 i;
     u8 lo;
     s32 v;
@@ -3150,7 +3150,7 @@ void func_80015518(u8 *p, s32 n) {
     }
 }
 
-void func_80015554(u16 *p, s32 n) {
+void WSwapEndian(u16 *p, s32 n) {
     s32 i;
     u16 lo;
     s32 v;
@@ -3212,7 +3212,7 @@ PointList *func_8001562C(subengine *sub) {
             }
             return NULL;
         case 0x5000:
-            rec = (u8 *)func_800159C4(flag & 0xFFF, base);
+            rec = (u8 *)map_entity_address(flag & 0xFFF, base);
         tail:
             off = *(s32 *)(rec + 0x2C);
             if (off != 0) {
@@ -3280,7 +3280,7 @@ u8 *func_80015870(u8 *arg0, s32 arg1) {
     base = *(u8 **)(arg0 + 0xC);
     switch (arg1 & 0x7000) {
     case 0x5000:
-        rec = (u8 *)func_800159C4(arg1 & 0xFFF, base);
+        rec = (u8 *)map_entity_address(arg1 & 0xFFF, base);
         break;
     case 0x2000:
         rec = base + ((arg1 & 0xFFF) * 0x34 + 0x24);
@@ -3305,7 +3305,7 @@ s32 func_800158E4(u8 *arg0, s32 arg1) {
     k = arg1 & 0x7000;
     switch (k) {
     case 0x5000:
-        p = (u8 *)func_800159C4(arg1 & 0xFFF, base);
+        p = (u8 *)map_entity_address(arg1 & 0xFFF, base);
         break;
     case 0x2000:
         p = base + ((arg1 & 0xFFF) * 0x34 + 0x24);
@@ -3337,7 +3337,7 @@ s32 func_80015984(s32 i, EntryBlock *blk) {
     return *(s32 *)(base + idx * 12 + 0xC);
 }
 
-s32 func_800159C4(s32 arg0, u8 *arg1) {
+s32 map_entity_address(s32 arg0, u8 *arg1) {
     u8 *base;
     s32 t;
     s32 r;
@@ -3351,13 +3351,13 @@ s32 func_800159C4(s32 arg0, u8 *arg1) {
     return r;
 }
 
-u8 *func_80015A18(s32 arg0, u8 *arg1) {
+u8 *entity_address(s32 arg0, u8 *arg1) {
     s32 k;
 
     k = arg0 & 0x7000;
     if (k != 0x2000) {
         if (k == 0x5000) {
-            return (u8 *)func_800159C4(arg0 & 0xFFF, arg1);
+            return (u8 *)map_entity_address(arg0 & 0xFFF, arg1);
         }
         return NULL;
     }
@@ -3389,7 +3389,7 @@ void *func_80015AB0(s32 *arg0, u8 *rec) {
     return *node;
 }
 
-void func_80015AD4(void *arg0) {
+void init_dots(void *arg0) {
     s32 *p = (s32 *)((u8 *)arg0 + 0x6C);
     s32 n = p[3];
     TILE_1 *a = (TILE_1 *)p[1];
@@ -3599,18 +3599,18 @@ s32 func_800160F8(u8 *arg0, s32 arg1) {
 void func_8001612C(u8 *arg0, s32 arg1) {
     if (((*(s32*)((u8*)(arg0) + 8)) == 0) && ((*(s32*)((u8*)(arg0) + 12)) == 0)) {
         (*(s32*)((u8*)(arg0) + 52)) = arg1;
-        (*(s32*)((u8*)(arg0) + 8)) = func_80013650((*(s32*)((u8*)(arg0) + 4)), func_80016188, arg0);
+        (*(s32*)((u8*)(arg0) + 8)) = func_80013650((*(s32*)((u8*)(arg0) + 4)), dbase_asload_with_anims_texture_callback, arg0);
     }
 }
 
-void func_80016188(u8 *arg0, u8 *arg1) {
+void dbase_asload_with_anims_texture_callback(u8 *arg0, u8 *arg1) {
     Heap *heap;
     u8 *p;
     s32 n;
 
     n = func_8002A650(arg0);
     heap = &D_8004E0F0;
-    if (func_80011C5C((n + 3) >> 2, heap->free) == NULL) {
+    if (mal_first_free((n + 3) >> 2, heap->free) == NULL) {
         func_800110A8(arg0, heap);
         *(s32 *)(arg1 + 8) = 0;
         func_80016D44(arg1);
@@ -3618,7 +3618,7 @@ void func_80016188(u8 *arg0, u8 *arg1) {
         p = arg1 + 0x10;
         func_8002A5A4(p, arg0);
         func_80029560(p);
-        func_8002A35C(p);
+        texture_release_loading_mem(p);
     }
     func_80013650(*(s32 *)arg1, func_80016234, arg1);
 }
@@ -3679,7 +3679,7 @@ void func_800163E0(u8 *arg0, s32 arg1) {
     temp_s0 = temp_v1 + ((*(s32*)((u8*)(temp_v1) + 60)) + 0x3C) + ((arg1 * 0x10) + 4);
     if (((*(s32*)((u8*)(temp_s0) + 8)) == 0) && ((*(s32*)((u8*)(temp_s0) + 12)) == 0)) {
         temp_a1 = (*(s32*)((u8*)(temp_s0) + 0));
-        (*(s32*)((u8*)(temp_s0) + 12)) = func_800133C8((*(s32*)((u8*)(arg0) + 0)), temp_a1, temp_s0 + 8, (*(s32*)((u8*)(temp_s0) + 4)) - temp_a1);
+        (*(s32*)((u8*)(temp_s0) + 12)) = asload_chunk_relocatable((*(s32*)((u8*)(arg0) + 0)), temp_a1, temp_s0 + 8, (*(s32*)((u8*)(temp_s0) + 4)) - temp_a1);
     }
 }
 
@@ -3734,7 +3734,7 @@ found:
     return NULL;
 }
 
-s32 func_80016558(u8 *arg0, u8 *arg1) {
+s32 dbase_mesh_anim_name_loaded(u8 *arg0, u8 *arg1) {
     u8 *tbl;
     u8 *p;
     s32 n;
@@ -3802,7 +3802,7 @@ found:
             if (node != NULL) {
                 start = *(s32 *)res;
                 *(u8 **)(res + 0x14) = node;
-                h = func_800133C8(*(s32 *)arg0, start, node, *(s32 *)(res + 4) - start);
+                h = asload_chunk_relocatable(*(s32 *)arg0, start, node, *(s32 *)(res + 4) - start);
                 *(s32 *)(node + 4) = h;
                 if (h == 0) {
                     func_80012E14(node);
@@ -3892,7 +3892,7 @@ void func_8001682C(s32 *arg0) {
                     if (node != NULL) {
                         start = *(s32 *)rec;
                         *(u8 **)(rec + 0x14) = node;
-                        handle = func_800133C8(*arg0, start, node, *(s32 *)(rec + 4) - start);
+                        handle = asload_chunk_relocatable(*arg0, start, node, *(s32 *)(rec + 4) - start);
                         *(s32 *)(node + 4) = handle;
                         if (handle == 0) {
                             func_80012E14(node);
@@ -3904,7 +3904,7 @@ void func_8001682C(s32 *arg0) {
     }
 }
 
-void func_80016928(a)
+void dbase_release_all_mesh_anims(a)
 u8 *a;
 {
     u8 **slot;
@@ -4003,7 +4003,7 @@ static inline u8 *func_80016B48_load(s32 *arg0, u8 *arg1) {
         if (node != NULL) {
             start = *(s32 *)arg1;
             *(u8 **)(arg1 + 0x14) = node;
-            h = func_800133C8(*arg0, start, node, *(s32 *)(arg1 + 4) - start);
+            h = asload_chunk_relocatable(*arg0, start, node, *(s32 *)(arg1 + 4) - start);
             *(s32 *)(node + 4) = h;
             if (h != 0) {
                 goto ok;
@@ -4042,7 +4042,7 @@ u8 *func_80016C18(s32 *arg0, u8 *arg1) {
         if (temp_v0 != NULL) {
             temp_a1 = (*(s32*)((u8*)(arg1) + 0));
             (*(s32*)((u8*)(arg1) + 20)) = temp_v0;
-            temp_v0_2 = func_800133C8(*arg0, temp_a1, temp_v0, (*(s32*)((u8*)(arg1) + 4)) - temp_a1);
+            temp_v0_2 = asload_chunk_relocatable(*arg0, temp_a1, temp_v0, (*(s32*)((u8*)(arg1) + 4)) - temp_a1);
             (*(s32*)((u8*)(temp_v0) + 4)) = temp_v0_2;
             if (temp_v0_2 != 0) {
                 return temp_v0;
@@ -4088,14 +4088,14 @@ void func_80016D98(u8 *data, u8 *rec) {
 
     size = func_8002A650(data);
     heap = &D_8004E0F0;
-    if (func_80011C5C((size + 3) >> 2, heap->free) == NULL) {
+    if (mal_first_free((size + 3) >> 2, heap->free) == NULL) {
         func_800110A8(data, heap);
         *(s32 *)(rec + 8) = 0;
         func_80016D44(rec);
     } else {
         func_8002A5A4(rec + 0x10, data);
         func_80029560(rec + 0x10);
-        func_8002A35C(rec + 0x10);
+        texture_release_loading_mem(rec + 0x10);
     }
     *(s32 *)(rec + 8) = func_80013034(*(s32 *)(rec + 0), 0, *(s32 *)(rec + 0x24), func_80016F34, rec, 1, 0);
 }
@@ -4106,7 +4106,7 @@ void func_80016E5C(u8 *arg0, u8 *arg1) {
 
     n = func_8002A650(arg0);
     heap = &D_8004E0F0;
-    if (func_80011C5C((n + 3) >> 2, heap->free) == NULL) {
+    if (mal_first_free((n + 3) >> 2, heap->free) == NULL) {
         func_800110A8(arg0, heap);
         *(s32 *)(arg1 + 8) = 0;
         func_80016D44(arg1);
@@ -4114,7 +4114,7 @@ void func_80016E5C(u8 *arg0, u8 *arg1) {
         arg1 += 0x10;
         func_8002A5A4(arg1, arg0);
         func_80029560(arg1);
-        func_8002A35C(arg1);
+        texture_release_loading_mem(arg1);
     }
 }
 
@@ -4138,7 +4138,7 @@ void func_80016F54(u8 *arg0) {
     u8 *q;
 
     if (*(u8 **)(arg0 + 0xC) != NULL) {
-        func_80016928();
+        dbase_release_all_mesh_anims();
         p = *(u8 **)(arg0 + 0xC);
         q = p + 0x58;
         i = *(s32 *)(p + 0x54);
@@ -4419,7 +4419,7 @@ void func_80017640(void) {
     }
 }
 
-void func_800177F4(RelTable *face, POLY_GT4 *poly, s32 arg2, s32 mode) {
+void prim_colour_poly(RelTable *face, POLY_GT4 *poly, s32 arg2, s32 mode) {
     u16 *idx;
     u32 *colors;
     u32 *c;
@@ -4459,7 +4459,7 @@ void func_800177F4(RelTable *face, POLY_GT4 *poly, s32 arg2, s32 mode) {
     gte_strgb(&poly->r3);
 }
 
-void func_8001795C(u8 *arg0, POLY_GT4 *arg1) {
+void prim_create_entity_single(u8 *arg0, POLY_GT4 *arg1) {
     GfxModel *model = D_80056998.unk0;
     TexFaceRuns *face = (TexFaceRuns *)arg0;
     POLY_GT4 *poly = arg1;
@@ -4642,7 +4642,7 @@ void func_80017D90(FaceRuns *faces, FacePrim *prim) {
 done:;
 }
 
-void func_80017EE8(faces, prim)
+void prim_write_uvs(faces, prim)
     TexFaceRuns *faces;
     FacePrim *prim;
 {
@@ -4738,7 +4738,7 @@ FacePrim *func_800180BC(s32 arg0, ListNode18938 *list, ListNode18938 *pool, Face
             func_80017D90(faces, (FacePrim *)node[1]);
         }
     } else {
-        if (func_80011C5C(*(u16 *)((u8 *)faces + 8) * 10, D_8004E0F0.free) == NULL || (node = D_80056858) == NULL) {
+        if (mal_first_free(*(u16 *)((u8 *)faces + 8) * 10, D_8004E0F0.free) == NULL || (node = D_80056858) == NULL) {
             return NULL;
         }
         D_80056858 = (s32 *)*node;
@@ -4749,7 +4749,7 @@ FacePrim *func_800180BC(s32 arg0, ListNode18938 *list, ListNode18938 *pool, Face
         list->f4 = (s32)node;
         func_800115D8(*(u16 *)((u8 *)faces + 8) * 0x28, (void **)(node + 1), (s32)&D_8004E0F0, ((D_8005B690 & 1)?3:2));
         prim = (FacePrim *)node[1];
-        func_80017EE8(faces, prim);
+        prim_write_uvs(faces, prim);
         func_80017D90(faces, prim);
     }
     return (FacePrim *)node[1];
@@ -4813,7 +4813,7 @@ void func_8001830C(void) {
     } while (cur != NULL);
 }
 
-void func_80018388(void *data) {
+void release_sprim(void *data) {
     NodePool *pool = &D_80056844;
     PoolNode *node;
 
@@ -4891,7 +4891,7 @@ s32 *func_800184F0(s32 arg0, s32 *arg1, s32 arg2, s32 arg3) {
     data = node + 1;
     *node = arg1[1];
     arg1[1] = (s32) node;
-    func_80017EE8(arg3, data);
+    prim_write_uvs(arg3, data);
     func_80017D90(arg3, data);
     return data;
 }
@@ -4986,7 +4986,7 @@ s32 *func_80018694(s32 **arg0, s32 arg1) {
 }
 
 void func_80018728(s32 arg0, s32 arg1) {
-    func_80017EE8();
+    prim_write_uvs();
     func_80017D90(arg0, arg1);
 }
 
@@ -5085,7 +5085,7 @@ void func_800189E0(u8 *arg0) {
     (*(s32*)((u8*)(arg0) + 16)) = 0;
 }
 
-u8 *func_800189F4(u8 *arg0, s32 w, s32 h) {
+u8 *tga_convert(u8 *arg0, s32 w, s32 h) {
     s32 pw;
     s32 x;
     u16 *src;
@@ -5265,7 +5265,7 @@ void *func_80019094(void *arg0, s32 arg1) {
  * selects primitives whose SXY go at +0x10/+0x18/+0x20 and whose length is
  * preset; otherwise each is a POLY_GT3. The three register variables are
  * the original's: only they give s4/s3/s2 with s0/s1 unused. */
-void func_800193A8(POLY_GT3 *poly, SVECTOR *v, u8 *runs) {
+void draw_verts(POLY_GT3 *poly, SVECTOR *v, u8 *runs) {
     u32 otz;
     s32 opz;
     GfxState *gs;
@@ -5549,7 +5549,7 @@ void func_80019A60(s32 a, u8 *set, s32 c, void *d) {
         e = set + (idx * 0x34 + 0x24);
         goto block;
     case 0x5000:
-        e = (u8 *)func_800159C4(a & 0xFFFF, set);
+        e = (u8 *)map_entity_address(a & 0xFFFF, set);
         if (e == NULL) {
             return;
         }
@@ -5562,7 +5562,7 @@ void func_80019A60(s32 a, u8 *set, s32 c, void *d) {
         set += 0x14;
     draw:
         if (p != NULL) {
-            func_800193A8(p, (SVECTOR *)set, e + (*(s32 *)(e + 0x14) + 0x14));
+            draw_verts(p, (SVECTOR *)set, e + (*(s32 *)(e + 0x14) + 0x14));
         }
         return;
     case 0x3000:
@@ -5647,10 +5647,10 @@ s32 func_8001A0D8(void *arg0, u32 flags) {
     if (!(flags & 0x8000)) {
         return 0;
     }
-    p->v[0].c = func_8002A2EC(q->c[0][2], q->c[0][1], q->c[0][0]);
-    p->v[1].c = func_8002A2EC(q->c[1][2], q->c[1][1], q->c[1][0]);
-    p->v[2].c = func_8002A2EC(q->c[2][2], q->c[2][1], q->c[2][0]);
-    p->v[3].c = func_8002A2EC(q->c[3][2], q->c[3][1], q->c[3][0]);
+    p->v[0].c = calc_rgbcode(q->c[0][2], q->c[0][1], q->c[0][0]);
+    p->v[1].c = calc_rgbcode(q->c[1][2], q->c[1][1], q->c[1][0]);
+    p->v[2].c = calc_rgbcode(q->c[2][2], q->c[2][1], q->c[2][0]);
+    p->v[3].c = calc_rgbcode(q->c[3][2], q->c[3][1], q->c[3][0]);
     ((u8 *)p)[3] = 0xA;
     ((u8 *)p)[0xF] = 0x38;
     p->mode = 0xE1000200;
@@ -5882,7 +5882,7 @@ void func_8001A82C(TextNAS *t, s32 arg1, s32 arg2) {
     ((GlyphPos *)&s)->v[0] = t->x;
     ((GlyphPos *)&s)->v[1] = t->y;
     ((GlyphPos *)&s)->v[2] = t->z;
-    func_800246D0((GlyphPos *)&s, t->str, t->c0, t->c1);
+    SysPrintAt3d((GlyphPos *)&s, t->str, t->c0, t->c1);
 }
 
 static inline u8 *func_8001AA48_setup(ModelObj *obj, void *arg1, s32 flags, RelTable *colors, u8 *t) {
@@ -5912,14 +5912,14 @@ void func_8001AA48(ModelObj *obj, void *arg1, s32 flags) {
             return;
         }
         D_80056998.unk0 = obj->model;
-        func_8001795C(func_80015A18(obj->index, (u8 *)colors), prim);
+        prim_create_entity_single(entity_address(obj->index, (u8 *)colors), prim);
     }
-    t = func_80015A18(obj->index, (u8 *)colors);
+    t = entity_address(obj->index, (u8 *)colors);
     D_80056998.dp = D_80056998.modelDp;
     D_80056998.unk0 = obj->model;
-    func_800177F4((RelTable *)t, prim, (s32)D_80056998.farColor, flags);
+    prim_colour_poly((RelTable *)t, prim, (s32)D_80056998.farColor, flags);
     colors = obj->model->colors;
-    t = func_8001AA48_setup(obj, arg1, flags, colors, func_80015A18(obj->index, (u8 *)colors));
+    t = func_8001AA48_setup(obj, arg1, flags, colors, entity_address(obj->index, (u8 *)colors));
     t += *(s32 *)(t + 0x10) + 0x10;
     gte_ldv0_t(t + 0x14);
     gte_rtps();
@@ -6453,18 +6453,18 @@ subengine *func_8001C34C(s32 n, subengine *sub) {
 }
 
 
-void func_8001C378(u8 *arg0) {
+void kill_sprim_sub(u8 *arg0) {
     s32 temp_a0;
     s32 temp_a0_2;
 
     temp_a0 = (*(s32*)((u8*)(arg0) + 144));
     if (temp_a0 != 0) {
-        func_80018388(temp_a0);
+        release_sprim(temp_a0);
         (*(s32*)((u8*)(arg0) + 144)) = 0;
     }
     temp_a0_2 = (*(s32*)((u8*)(arg0) + 156));
     if (temp_a0_2 != 0) {
-        func_80018388(temp_a0_2);
+        release_sprim(temp_a0_2);
         (*(s32*)((u8*)(arg0) + 156)) = 0;
     }
 }
@@ -6473,11 +6473,11 @@ void func_8001C3D0(u8 *arg0) {
     u8 *temp_v0;
     u16 temp_a0;
 
-    temp_v0 = func_80015A18(*(u16*)(arg0 + 0x74), *(u8**)(*(u8**)(arg0 + 0x6C) + 0xC));
+    temp_v0 = entity_address(*(u16*)(arg0 + 0x74), *(u8**)(*(u8**)(arg0 + 0x6C) + 0xC));
     temp_a0 = *(u16*)(temp_v0 + 8);
     if (temp_a0 == 2 && temp_v0[*(s32*)(temp_v0 + 0x14) + 0x15] == temp_a0) {
         *(void**)(arg0 + 0x54) = func_8001AA48;
-        *(void**)(arg0 + 0x58) = func_8001C378;
+        *(void**)(arg0 + 0x58) = kill_sprim_sub;
     }
 }
 
@@ -6652,7 +6652,7 @@ void func_8001CAD4(u16 *arg0, s32 arg1, u32 arg2) {
 }
 
 void func_8001CBD4(u32 arg0) {
-    func_8002A2EC((arg0 >> 0x10) & 0xFF, (arg0 >> 8) & 0xFF, arg0 & 0xFF);
+    calc_rgbcode((arg0 >> 0x10) & 0xFF, (arg0 >> 8) & 0xFF, arg0 & 0xFF);
 }
 
 void func_8001CC08(void) {
@@ -6714,7 +6714,7 @@ void func_8001CE00(s32 arg0, ModelSet *set, s32 arg2) {
         } while (0);
         blk += 0x14;
         if (p != NULL) {
-            func_800193A8(p, (SVECTOR *)blk, (u8 *)&e->runs + e->runs);
+            draw_verts(p, (SVECTOR *)blk, (u8 *)&e->runs + e->runs);
         }
     }
 }
@@ -6723,7 +6723,7 @@ void func_8001CEB4(u16 arg0, u8 *arg1, s32 arg2) {
     u8 *blk;
     ModelEntry *e;
 
-    e = (ModelEntry *)func_800159C4(arg0, arg1);
+    e = (ModelEntry *)map_entity_address(arg0, arg1);
     if (e == NULL) {
         return;
     }
@@ -6734,7 +6734,7 @@ void func_8001CEB4(u16 arg0, u8 *arg1, s32 arg2) {
     p = func_80019094(e, arg2);
     blk += 0x14;
     if (p != NULL) {
-        func_800193A8(p, (SVECTOR *)blk, (u8 *)&e->runs + e->runs);
+        draw_verts(p, (SVECTOR *)blk, (u8 *)&e->runs + e->runs);
     }
 }
 
@@ -6752,7 +6752,7 @@ void *func_8001CF50(ModelEntry *e, s32 arg1) {
     q = blk + 0x14;
     p = func_80019094(e, arg1);
     if (p != NULL) {
-        func_800193A8(p, (SVECTOR *)q,(u8 *)&e->runs + e->runs);
+        draw_verts(p, (SVECTOR *)q,(u8 *)&e->runs + e->runs);
     }
     return p;
 }
@@ -6762,7 +6762,7 @@ void *func_8001CFE8(MorphModel *model, void *arg1, s32 arg2) {
 
     p = func_80019094(model, arg2);
     if (p != NULL) {
-        func_800193A8(p, arg1, (u8 *)&model->runs + model->runs);
+        draw_verts(p, arg1, (u8 *)&model->runs + model->runs);
     }
     return p;
 }
@@ -6887,7 +6887,7 @@ void func_8001D2B4(subengine *first, subengine *last) {
     }
 }
 
-void func_8001D334(subengine *first) {
+void kill_subs(subengine *first) {
     void (*release)(subengine *);
     subengine *next;
     subengine *sub;
@@ -6971,7 +6971,7 @@ s32 func_8001D48C(subengine **out_first, subengine **last, s32 n) {
     return count;
 }
 
-void func_8001D5D0(void) {
+void draw_init(void) {
     D_80056998.unk8C.m[0][0] = 0x1000;
     D_80056998.unk8C.m[0][1] = 0;
     D_80056998.unk8C.m[0][2] = 0;
@@ -7026,7 +7026,7 @@ void func_8001D6B4(MapEnvHead *env) {
         sub->flags = p->flags;
         *(SLONG_XYZ *)&sub->unk04 = p->pos;
         *(PlacementBlk *)&sub->unk2C[4] = p->blk;
-        sub->hook = (void *)func_8001DD50;
+        sub->hook = (void *)draw_map_sub;
         sub->unk6C = env->dbase;
         sub->unk74 = p->unk88;
         sub->unk8A = p->unk9E;
@@ -7129,7 +7129,7 @@ s32 func_8001DD20(s32 *arg0) {
 
 
 extern void func_8001D894(void *a, void *b, s32 c, s32 d);
-void func_8001DD50(void *arg0, void *arg1) {
+void draw_map_sub(void *arg0, void *arg1) {
     s32 flags;
     s32 x;
 
@@ -7141,7 +7141,7 @@ void func_8001DD50(void *arg0, void *arg1) {
     }
 }
 
-void func_8001DDB4(s32 *arg0) {
+void map_update(s32 *arg0) {
     func_80029100(*arg0 + 0x10);
 }
 
@@ -7199,10 +7199,10 @@ void func_8001DEF4(s32 *arg0, s32 *arg1) {
     }
     arg0[1] = 3;
     func_8002AA8C(p);
-    func_80013650(arg1[1], func_8001DF74, arg0);
+    func_80013650(arg1[1], map_loaded_textureset, arg0);
 }
 
-void func_8001DF74(u8 *arg0, u8 **arg1) {
+void map_loaded_textureset(u8 *arg0, u8 **arg1) {
     u8 *temp_s0;
     u8 *temp_s1;
 
@@ -7211,11 +7211,11 @@ void func_8001DF74(u8 *arg0, u8 **arg1) {
     temp_s0 = temp_s1 + 0x10;
     func_8002A5A4(temp_s0, (*(s32*)((u8*)(temp_s0) + 16)));
     func_80029560(temp_s0);
-    func_8002A35C(temp_s0);
-    (*(s32*)((u8*)(temp_s1) + 8)) = func_80013034((*(s32*)((u8*)(temp_s1) + 0)), 0, (*(s32*)((u8*)(temp_s1) + 36)), func_8001DFF8, arg1, 0, 0);
+    texture_release_loading_mem(temp_s0);
+    (*(s32*)((u8*)(temp_s1) + 8)) = func_80013034((*(s32*)((u8*)(temp_s1) + 0)), 0, (*(s32*)((u8*)(temp_s1) + 36)), map_loaded_geo, arg1, 0, 0);
 }
 
-void func_8001DFF8(s32 arg0, s32 *arg1) {
+void map_loaded_geo(s32 arg0, s32 *arg1) {
     s32 *temp_s1;
     s32 *t;
 
@@ -7256,7 +7256,7 @@ void func_8001E0A8(u8 *arg0) {
         *(Words3 *)(dst + 4) = *(Words3 *)(src + 4);
         *(Words4 *)(dst + 0x30) = *(Words4 *)(src + 0x28);
         *(Words4 *)(dst + 0x40) = *(Words4 *)(src + 0x38);
-        *(void **)(dst + 0x54) = func_8001DD50;
+        *(void **)(dst + 0x54) = draw_map_sub;
         *(s32 *)(dst + 0x6C) = *(s32 *)arg0;
         *(u16 *)(dst + 0x74) = *(u16 *)(src + 0x88);
         *(u16 *)(dst + 0x8A) = *(u16 *)(src + 0x9E);
@@ -7377,7 +7377,7 @@ found:
     return NULL;
 }
 
-s32 func_8001E51C(s32 arg0) {
+s32 path_find(s32 arg0) {
     s32 *p;
     s32 n;
     s32 i;
@@ -7400,7 +7400,7 @@ loop:
     return -1;
 }
 
-void func_8001E588(u8 *arg0, s32 arg1, s32 arg2) {
+void set_fade(u8 *arg0, s32 arg1, s32 arg2) {
     (*(s32*)((u8*)(arg0) + 4)) = arg1;
     (*(s32*)((u8*)(arg0) + 12)) = arg2;
     (*(s32*)((u8*)(arg0) + 8)) = 0;
@@ -7481,7 +7481,7 @@ void func_8001E824(u8 *arg0) {
     (*(s32*)((u8*)(arg0) + 4)) = (s32) (*(s32*)((u8*)(arg0) + 8));
 }
 
-void func_8001E838(u8 *arg0, s32 arg1) {
+void process_interrupt(u8 *arg0, s32 arg1) {
     (*(s32*)((u8*)(arg0) + 4)) = arg1;
     (*(s32*)((u8*)(arg0) + 12)) = 1;
 }
@@ -7492,7 +7492,7 @@ void func_8001E848(u8 *arg0, s32 arg1) {
 }
 
 /* arg0 points to a table of handlers; calls handler 3 if there is one. */
-void func_8001E854(void *arg0) {
+void process_quit(void *arg0) {
     void (**ops)(void);
     void (*fn)(void);
 
@@ -7523,7 +7523,7 @@ void func_8001E898(u8 *arg0) {
 }
 
 /* arg0 points to a table of handlers; calls handler 0 if there is one. */
-void func_8001E8F0(void *arg0) {
+void process_init(void *arg0) {
     void (**ops)(void);
     void (*fn)(void);
 
@@ -7643,7 +7643,7 @@ void func_8001EAA4(u8 *arg0, u8 *arg1) {
             func_80020B44((s32)&key->rot, (s32)&key[1].rot, (s32)(arg0 + 0x18), len, t, (s32)key->unk34);
             *(s16 *)(d + 0x52) = 1;
             CamVec3_Lerp((CamVec3 *)(arg0 + 0x28), &key->scale, &key[1].scale, len, t);
-            w = func_80015304(key->unk4C, key[1].unk4C, len, t);
+            w = interp(key->unk4C, key[1].unk4C, len, t);
         } else {
             *(CamVec3 *)(arg0 + 0xC) = key->pos;
             *(s16 *)(d + 0x52) = 1;
@@ -7666,7 +7666,7 @@ void func_8001EAA4(u8 *arg0, u8 *arg1) {
     }
 }
 
-void func_8001EDFC(u8 *arg0, u8 *arg1) {
+void update_camera_thread(u8 *arg0, u8 *arg1) {
     u8 *p;
     u8 *r;
     u8 *res;
@@ -7792,7 +7792,7 @@ void func_8001F0D4(u8 *arg0, u8 *arg1) {
             func_80020B44((s32)key->rot, (s32)key[1].rot, (s32)pose->rot, len, t, (s32)key->unk30);
             CamVec3_Lerp(&pose->pos, &key->pos, &key[1].pos, len, t);
             CamVec3_Lerp(&pose->scale, &key->scale, &key[1].scale, len, t);
-            a = func_80015304(key->alpha, key[1].alpha, len << 8, t);
+            a = interp(key->alpha, key[1].alpha, len << 8, t);
         } else {
             pose->pos = key->pos;
             *(AnimRot *)pose->rot = *(AnimRot *)key->rot;
@@ -7849,7 +7849,7 @@ void func_8001F4F8(u8 *arg0, u8 *arg1) {
             res = NULL;
         }
         if (res != NULL) {
-            D_80058B60 = func_80015304(*(s32 *)(arg0 + 8), *(s32 *)(arg0 + 0xC),
+            D_80058B60 = interp(*(s32 *)(arg0 + 8), *(s32 *)(arg0 + 0xC),
                                        (*(s32 *)(res + 8) - *(s32 *)(res + 4)) << 8,
                                        (*(s32 *)(arg1 + 0xC) >> 8) - (*(s32 *)(res + 4) << 8));
         }
@@ -8079,7 +8079,7 @@ void func_8001FCDC(u8 *arg0, u8 *arg1) {
         t = *(u16 *)(res + 0x18);
         *(u16 *)(d + 0x52) = 1;
         *(u16 *)(d + 0x68) = t;
-        func_80020CC4(*(u8 **)arg1, *(s32 *)(res + 0x14), d, 0);
+        sub_play_script(*(u8 **)arg1, *(s32 *)(res + 0x14), d, 0);
         *(s32 *)(arg0 + 8) |= 0x8000;
     }
 }
@@ -8387,7 +8387,7 @@ s16 func_80020C4C(s32 arg0) {
     return D_80068BD4[((arg0 >> 1) - 0x400) & 0xFFF].unk2;
 }
 
-void func_80020CC4(u8 *arg0, s32 arg1, u8 *arg2, s32 arg3) {
+void sub_play_script(u8 *arg0, s32 arg1, u8 *arg2, s32 arg3) {
     u8 *p;
     u8 *e;
     s32 *s;
@@ -8676,13 +8676,13 @@ s32 func_800213A0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
         return arg0;
     }
     if (arg5 < arg2) {
-        return func_80015304(arg0, arg1, arg2, arg5);
+        return interp(arg0, arg1, arg2, arg5);
     }
     if (arg3 < arg5) {
         if (arg4 < arg5) {
             return arg0;
         }
-        return func_80015304(arg1, arg0, arg4 - arg3, arg5 - arg3);
+        return interp(arg1, arg0, arg4 - arg3, arg5 - arg3);
     }
     return arg1;
 }
@@ -8804,7 +8804,7 @@ void func_80021708(u8 *arg0, u8 *arg1, s32 arg2) {
     }
 }
 
-void func_80021770(u8 *arg0, s32 *arg1) {
+void render_entity_thread(u8 *arg0, s32 *arg1) {
     func_80019F1C(arg0 + 8, *arg1, (*(s32*)((u8*)(arg0) + 8)));
 }
 
@@ -8942,15 +8942,15 @@ void func_80021AF0(s32 *arg0, s32 *arg1, s16 *arg2, s32 arg3, s32 arg4) {
 }
 
 void func_80021B88(s32 *arg0, s32 *arg1, s16 *arg2, s32 arg3, s32 arg4) {
-    arg2[0] = func_80015304(arg0[0], arg1[0], arg3, arg4);
-    arg2[1] = func_80015304(arg0[1], arg1[1], arg3, arg4);
-    arg2[2] = func_80015304(arg0[2], arg1[2], arg3, arg4);
+    arg2[0] = interp(arg0[0], arg1[0], arg3, arg4);
+    arg2[1] = interp(arg0[1], arg1[1], arg3, arg4);
+    arg2[2] = interp(arg0[2], arg1[2], arg3, arg4);
 }
 
 void func_80021C20(u8 *arg0, u8 *arg1, u8 *arg2, s32 arg3, s32 arg4) {
-    (*(s32*)((u8*)(arg2) + 0)) = func_80015304((*(s32*)((u8*)(arg0) + 0)), (*(s32*)((u8*)(arg1) + 0)), arg3, arg4);
-    (*(s32*)((u8*)(arg2) + 4)) = func_80015304((*(s32*)((u8*)(arg0) + 4)), (*(s32*)((u8*)(arg1) + 4)), arg3, arg4);
-    (*(s32*)((u8*)(arg2) + 8)) = func_80015304((*(s32*)((u8*)(arg0) + 8)), (*(s32*)((u8*)(arg1) + 8)), arg3, arg4);
+    (*(s32*)((u8*)(arg2) + 0)) = interp((*(s32*)((u8*)(arg0) + 0)), (*(s32*)((u8*)(arg1) + 0)), arg3, arg4);
+    (*(s32*)((u8*)(arg2) + 4)) = interp((*(s32*)((u8*)(arg0) + 4)), (*(s32*)((u8*)(arg1) + 4)), arg3, arg4);
+    (*(s32*)((u8*)(arg2) + 8)) = interp((*(s32*)((u8*)(arg0) + 8)), (*(s32*)((u8*)(arg1) + 8)), arg3, arg4);
 }
 
 s32 *func_80021CB8(s32 *arg0, s32 arg1, s32 arg2) {
@@ -9147,7 +9147,7 @@ void func_80022030(void) {
     }
 }
 
-void func_80022070(void) {
+void scripts_render(void) {
     struct {
         s32 a;
         s32 b;
@@ -9174,7 +9174,7 @@ void func_80022070(void) {
     }
 }
 
-void func_800220E8(void) {
+void scripts_update(void) {
     u8 *temp_s1;
     u8 *var_s0;
 
@@ -9311,7 +9311,7 @@ s32 func_8002235C(_sfx_handler *voice) {
     return voice->unk28 != -1;
 }
 
-void func_80022504(void) {
+void sfx_delete_all(void) {
     _sfx_handler *next;
     _sfx_handler *v;
 
@@ -9722,7 +9722,7 @@ s32 KillNAS(NAS *nas) {
     }
 freed:
     func_80026430(nas);
-    func_80026BF4((u8 *)nas);
+    RemoveFamily((u8 *)nas);
     func_80026AFC(nas);
     func_80026980(nas);
     func_80026A54(nas);
@@ -10023,14 +10023,14 @@ void func_800235BC(ArenaDef *arg0) {
     }
 }
 
-void func_800237BC(void) {
+void SetNasDefaults(void) {
     NASTemplate.NASid = 0;
     NASTemplate.Camera.width = 0x200;
     NASTemplate.Camera.look_ahead = 0x200;
     NASTemplate.Camera.height = 0x200;
     NASTemplate.Camera.flags = 0x8000;
-    NASTemplate.InitDelete = (void (*)(NAS *)) func_80026D00;
-    NASTemplate.Handler = (void (*)(NAS *)) func_80026D00;
+    NASTemplate.InitDelete = (void (*)(NAS *)) NullProc;
+    NASTemplate.Handler = (void (*)(NAS *)) NullProc;
     NASTemplate.Class = 2;
     NASTemplate.Extend.Parent = NULL;
     NASTemplate.Extend.Child = NULL;
@@ -10548,7 +10548,7 @@ void func_800243A0(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
     }
 }
 
-void func_800246D0(GlyphPos *arg0, u8 *s, s32 arg2, s32 arg3) {
+void SysPrintAt3d(GlyphPos *arg0, u8 *s, s32 arg2, s32 arg3) {
     GlyphPos pos;
     GlyphPos tmp;
     s32 c;
@@ -11129,7 +11129,7 @@ void func_80025AE4(u8 *arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4, s32 arg5, s
     (*(s32*)((u8*)(arg0) + 144)) = arg6;
 }
 
-void func_80025B10(EXTengine *eng, u32 flag) {
+void FetchDefaultColBox(EXTengine *eng, u32 flag) {
     PointList *list;
     FlagRecord *rec;
     s32 n;
@@ -11156,7 +11156,7 @@ s32 func_80025BBC(EXTengine *eng) {
     if (D_8005AA94 != NULL) {
         dy = D_8005AA94(eng);
     } else {
-        dy = func_80025E00(eng, eng->unk10.y - D_8005A5D8);
+        dy = AddPlatformContour(eng, eng->unk10.y - D_8005A5D8);
     }
     D_8005B5B8 = dy;
     if (dy == 0x7FFFFFFF) {
@@ -11169,7 +11169,7 @@ s32 func_80025BBC(EXTengine *eng) {
     return 1;
 }
 
-s32 func_80025C80(EXTengine *eng) {
+s32 FollowUnderContour(EXTengine *eng) {
     s32 lim;
     s32 dy;
 
@@ -11180,7 +11180,7 @@ s32 func_80025C80(EXTengine *eng) {
     if (D_8005AA94 != NULL) {
         dy = D_8005AA94(eng);
     } else {
-        dy = func_80025E00(eng, eng->unk10.y - D_8005A5D8);
+        dy = AddPlatformContour(eng, eng->unk10.y - D_8005A5D8);
     }
     if (dy == 0x7FFFFFFF) {
         return 0;
@@ -11196,7 +11196,7 @@ s32 func_80025C80(EXTengine *eng) {
     return 1;
 }
 
-s32 func_80025D40(EXTengine *eng) {
+s32 FollowContour(EXTengine *eng) {
     s32 dy;
     int new_var;
 
@@ -11207,7 +11207,7 @@ s32 func_80025D40(EXTengine *eng) {
     if (D_8005AA94 != NULL) {
         dy = D_8005AA94(eng);
     } else {
-        dy = func_80025E00(eng, eng->unk10.y - D_8005A5D8);
+        dy = AddPlatformContour(eng, eng->unk10.y - D_8005A5D8);
     }
     if (dy == 0x7FFFFFFF) {
         return 1;
@@ -11220,7 +11220,7 @@ s32 func_80025D40(EXTengine *eng) {
     }
 }
 
-s32 func_80025E00(EXTengine *eng, s32 y) {
+s32 AddPlatformContour(EXTengine *eng, s32 y) {
     NAS *nas;
     EXTengine *other;
     FlagRecord *rec;
@@ -11262,7 +11262,7 @@ s32 func_80025E00(EXTengine *eng, s32 y) {
 
 void func_80025F44(EXTengine *eng) {
     if (D_8005AA94 == NULL) {
-        func_80025E00(eng, eng->unk10.y - D_8005A5D8);
+        AddPlatformContour(eng, eng->unk10.y - D_8005A5D8);
     } else {
         D_8005AA94(eng);
     }
@@ -11280,7 +11280,7 @@ void func_80025F9C(void) {
 void func_80025FA4(void) {
 }
 
-void func_80025FAC(EXTanimator *anim, s16 n) {
+void GotoLinkAnim(EXTanimator *anim, s16 n) {
     switch (anim->EXTid & 0xFF) {
     case 1:
         if (anim->Alist != NULL) {
@@ -11388,7 +11388,7 @@ void func_80026308(void) {
     D_8005B63C = D_80055684;
 }
 
-s32 func_8002633C(u8 *s) {
+s32 SysGetLen(u8 *s) {
     s32 sum;
     s32 c;
     s32 d;
@@ -11690,7 +11690,7 @@ void func_80026B70(u8 **arg0, u8 *arg1) {
     (*(s32*)((u8*)(arg1) + 36)) = arg0;
 }
 
-void func_80026B94(NAS *list, NAS *nas) {
+void ReAdoptChild(NAS *list, NAS *nas) {
     if (nas->Family.Parent != NULL) {
         nas->Family.Parent->Family.Child = nas->Family.Child;
     }
@@ -11705,7 +11705,7 @@ void func_80026B94(NAS *list, NAS *nas) {
     nas->Family.Child = NULL;
 }
 
-void func_80026BF4(u8 *arg0) {
+void RemoveFamily(u8 *arg0) {
     u8 *temp_v1;
     u8 *temp_v1_2;
 
@@ -11734,7 +11734,7 @@ void func_80026C38(u8 *arg0, u8 *arg1) {
     (*(s32*)((u8*)(arg1) + 20)) = var_a0;
 }
 
-void func_80026C6C(u8 *arg0, u8 *arg1) {
+void InsertNasTag(u8 *arg0, u8 *arg1) {
     u8 *temp_v0;
 
     temp_v0 = (*(s32*)((u8*)(arg1) + 12));
@@ -11770,7 +11770,7 @@ void func_80026C94(u8 *arg0, u8 *arg1) {
     }
 }
 
-void func_80026D00(void) {
+void NullProc(void) {
 }
 
 void func_80026D08(void) {
@@ -11864,7 +11864,7 @@ void func_80026FCC(void) {
     }
 }
 
-void func_80027040(s32 arg0) {
+void DeleteNas_AllAST(s32 arg0) {
     u8 *temp_s0;
     u8 *var_a0;
 
@@ -11921,7 +11921,7 @@ s32 func_8002718C(void) {
     func_80010158();
     func_80027908();
     func_800153A8();
-    func_8002AB44();
+    machine_quit_sound();
     StopCallback();
     PadStopCom();
     SetDispMask(0);
@@ -11943,7 +11943,7 @@ void func_800272AC(s32 arg0) {
 
     FntFlush(D_800643E8);
     DrawSync(0);
-    func_80010488(&D_8004E0F0);
+    mal_update(&D_8004E0F0);
     if (r != NULL) {
         if (D_8005B790 == D_8005B68C) {
             if (D_8005B790) {
@@ -12150,7 +12150,7 @@ void func_800279A4(void) {
     D_800637B8 = CdPosToInt(&file.pos);
 }
 
-void func_80027A30(s16 vol) {
+void xa_setvol(s16 vol) {
     SpuCommonAttr attr;
 
     attr.mask = SPU_COMMON_MVOLL | SPU_COMMON_MVOLR | SPU_COMMON_CDVOLL | SPU_COMMON_CDVOLR | SPU_COMMON_CDMIX;
@@ -12173,7 +12173,7 @@ void func_80027A9C(void) {
     if (D_80063A7C >= 0x1F) {
         D_80063A7C = 0x1E;
     }
-    func_80027A30(0);
+    xa_setvol(0);
 }
 
 void func_80027AD4(PadPacket *p, PadInput *in, s32 n) {
@@ -12807,7 +12807,7 @@ void func_80028D40(AnimTex *t, s32 base, AnimTexSet *set) {
     }
 }
 
-void func_80028F28(AnimScroll *s, AnimOwner *o) {
+void texture_update_scroll(AnimScroll *s, AnimOwner *o) {
     AnimEntry *e;
     DR_MOVE *p;
     RECT r;
@@ -12886,7 +12886,7 @@ void func_80029100(AnimOwner *arg0) {
             n = *p;
             if (--n != -1) {
                 do {
-                    func_80028F28(r, arg0);
+                    texture_update_scroll(r, arg0);
                     r += 4;
                 } while (--n != -1);
             }
@@ -12894,7 +12894,7 @@ void func_80029100(AnimOwner *arg0) {
     }
 }
 
-void func_8002926C(TexSet2926C *arg0) {
+void texture_init_mem_textureset(TexSet2926C *arg0) {
     s32 n;
     u8 *src;
     TexEnt12 *e;
@@ -13295,7 +13295,7 @@ void func_8002A2DC(void) {
 void func_8002A2E4(void) {
 }
 
-s32 func_8002A2EC(s32 r, s32 g, s32 b) {
+s32 calc_rgbcode(s32 r, s32 g, s32 b) {
     s32 t;
     s32 d;
 
@@ -13315,7 +13315,7 @@ s32 func_8002A2EC(s32 r, s32 g, s32 b) {
     return (r << 16) | (g << 8) | b;
 }
 
-void func_8002A35C(u8 *arg0) {
+void texture_release_loading_mem(u8 *arg0) {
     u8 *temp_a0;
     u8 *temp_v0;
 
@@ -13399,7 +13399,7 @@ void func_8002A5A4(u8 *a0, u8 *arg1) {
     arg0->f0 = *(u16 *)(arg0->src + 8);
     arg0->f4 = *(u16 *)(arg0->src + 0xA);
     arg0->f14 = *(s32 *)(arg0->src + 0x14);
-    func_8002926C((TexSet2926C *)arg0);
+    texture_init_mem_textureset((TexSet2926C *)arg0);
 }
 
 /* Size in bytes: 0xB0 plus +8 records of 0x38 and +0xA records of 0xC. */
@@ -13549,7 +13549,7 @@ void func_8002AAA0(void) {
     D_80064414 = 0;
 }
 
-void func_8002AAAC(void) {
+void sound_critical(void) {
     D_80064414 = 1;
 }
 
@@ -13567,7 +13567,7 @@ void func_8002AABC(void) {
     SsStart();
 }
 
-void func_8002AB44(void) {
+void machine_quit_sound(void) {
     if (D_800643F8 != 0) {
         func_8002C428();
         SsUtFlush();
@@ -13591,12 +13591,12 @@ void func_8002ABA8(void) {
         }
     }
     if (D_80064414 == 0) {
-        func_8002B4B8();
+        sound_continue();
     }
 }
 
 void func_8002AC18(void) {
-    func_8002C0E0();
+    continue_music();
     func_800227C0();
 }
 
@@ -13608,7 +13608,7 @@ void func_8002AC40(void) {
 
 void func_8002AC70(void) {
     func_8002C428();
-    func_80022504();
+    sfx_delete_all();
     func_80027A9C();
 }
 
@@ -13619,7 +13619,7 @@ void func_8002ACA0(s32 id, s32 arg1) {
     s32 j;
     s32 n;
 
-    func_8002AAAC();
+    sound_critical();
     for (i = 0;; i++) {
         if (i >= 16) {
             goto done;
@@ -13754,7 +13754,7 @@ S16Pair func_8002B210(VECTOR *pos) {
     return ret;
 }
 
-void func_8002B4B8(void) {
+void sound_continue(void) {
     SsSeqCalledTbyT();
 }
 
@@ -13871,8 +13871,8 @@ void func_8002B9A4(void) {
     func_8002B96C();
 }
 
-void func_8002BA10(s32 arg0, VabSlot *slot) {
-    slot->handle = func_80013688(arg0, func_8002ADD4, slot);
+void machine_load_sfx(s32 arg0, VabSlot *slot) {
+    slot->handle = asload_permanent_callback(arg0, func_8002ADD4, slot);
 }
 
 void func_8002BA44(void) {
@@ -13959,7 +13959,7 @@ void func_8002BCB0(s32 *arg0) {
 
 void func_8002BD0C(s32 arg0) {
     if (D_800654BC < 6) {
-        func_8002BA10(arg0, &D_800644C0[D_800654BC]);
+        machine_load_sfx(arg0, &D_800644C0[D_800654BC]);
         D_800654BC++;
     }
 }
@@ -14017,7 +14017,7 @@ void func_8002BEA8(void) {
             }
         } else {
             D_800655A0 = 10;
-            func_8002C248(20);
+            music_fade_out(20);
         }
     } else {
         if (slot->seq >= 0) {
@@ -14051,7 +14051,7 @@ void func_8002C090(SeqSlot *slot) {
     slot->unk1C = -1;
 }
 
-void func_8002C0E0(void) {
+void continue_music(void) {
     if (D_8006557C.seq >= 0) {
         SsSeqReplay(D_8006557C.seq);
     }
@@ -14081,7 +14081,7 @@ void func_8002C1C0(s32 arg0, s32 arg1) {
     }
 }
 
-void func_8002C248(s32 arg0) {
+void music_fade_out(s32 arg0) {
     if (D_8006557C.seq >= 0) {
         SsSeqSetDecrescendo(D_8006557C.seq, 0x7F, arg0);
     }
@@ -14091,7 +14091,7 @@ void func_8002C284(s32 arg0) {
     D_8006559C = arg0;
 }
 
-void func_8002C290(void) {
+void music_duck_off(void) {
     D_800655AC = 0;
 }
 
@@ -14099,7 +14099,7 @@ void func_8002C29C(void) {
     D_800655AC = 1;
 }
 
-void func_8002C2AC(void) {
+void music_restart(void) {
     D_800655A8 += 1;
 }
 
@@ -14125,8 +14125,8 @@ void func_8002C2C4(SeqSlot *slot) {
     slot->data = (s32)func_800112A4((void *)slot->data, ((s32 *)slot->data)[1], &D_8004E0F0);
 }
 
-void func_8002C394(s32 arg0, SeqSlot *slot, s32 type) {
-    func_80013688(arg0, func_8002C3F0, slot);
+void music_dload_midi(s32 arg0, SeqSlot *slot, s32 type) {
+    asload_permanent_callback(arg0, func_8002C3F0, slot);
     SpuReserveReverbWorkArea(1);
     SsUtSetReverbType(type);
     SsUtSetReverbDepth(0, 0);
@@ -14153,7 +14153,7 @@ void func_8002C44C(void) {
 }
 
 void func_8002C488(s32 arg0, s32 type) {
-    func_8002C394(arg0, &D_8006557C, type);
+    music_dload_midi(arg0, &D_8006557C, type);
 }
 
 s32 func_8002C4B0(u8 c) {
@@ -14473,7 +14473,7 @@ s32 func_8002D094(void) {
     return 0;
 }
 
-void func_8002D0C8(void) {
+void card_save(void) {
     s32 flags;
     s32 on;
 

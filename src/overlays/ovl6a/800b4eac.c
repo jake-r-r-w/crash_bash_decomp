@@ -709,7 +709,7 @@ void func_800B6A3C(void) {
         break;
     case 1:
         if (func_80012FFC() == 0) {
-            func_8001E588(D_8009F644, 0x200, 0);
+            set_fade(D_8009F644, 0x200, 0);
             D_800BCED8 = 2;
         }
         break;
@@ -722,7 +722,7 @@ void func_800B6A3C(void) {
             g->unk34 = base[g->unk62][0];
             func_800B4EAC();
             D_800BCED8 = 0;
-            func_8001E588(p, -0x200, 0);
+            set_fade(p, -0x200, 0);
         }
         break;
     }
@@ -840,7 +840,7 @@ void PlotPathEffect(NAS *nas) {
             nas->Engine->unk1E = rot.y;
             nas->Engine->unk1C = rot.x;
             ext->state = 2;
-            ((void (*)(EXTanimator *, s32))func_80025FAC)(ext->anim, ext->kind * 2);
+            ((void (*)(EXTanimator *, s32))GotoLinkAnim)(ext->anim, ext->kind * 2);
             func_800250B0(nas);
         }
         if ((u32)(ext->kind - 3) < 2) {
@@ -876,7 +876,7 @@ void PlotPathEffect(NAS *nas) {
             case 1:
                 ext->timer = 0x5A;
                 ext->state = 3;
-                ((void (*)(EXTanimator *, s32))func_80025FAC)(ext->anim, (ext->kind * 2) | 1);
+                ((void (*)(EXTanimator *, s32))GotoLinkAnim)(ext->anim, (ext->kind * 2) | 1);
                 return;
             case 2:
                 ext->timer = -1;
@@ -894,7 +894,7 @@ void PlotPathEffect(NAS *nas) {
             func_800250B0(nas);
         }
         if (ext->timer-- < 0) {
-            ((void (*)(EXTanimator *, s32))func_80025FAC)(ext->anim, ext->kind * 2);
+            ((void (*)(EXTanimator *, s32))GotoLinkAnim)(ext->anim, ext->kind * 2);
             ext->state = 2;
         }
         break;
@@ -1688,10 +1688,10 @@ void PlotPodiumOdo(NAS *arg0) {
         if (anim != NULL && ((idx = anim->ALindex) == 0 || idx == 4)) {
             if (arg0->UserInfo.status == 0) {
                 if (arg0->UserInfo.flags != 0) {
-                    func_80025FAC(anim, 5);
+                    GotoLinkAnim(anim, 5);
                     arg0->UserInfo.status = Random(0x28);
                 } else {
-                    func_80025FAC(anim, 1);
+                    GotoLinkAnim(anim, 1);
                     switch (arg0->UserInfo.user2) {
                     case 3:
                         arg0->UserInfo.status = Random(0x1E) + 0x14;
@@ -2154,7 +2154,7 @@ void func_800BA374(Ovl6aSparks *arg0, MATRIX *m) {
             } else {
                 row->unk13C = 255 - i * 255 / 8;
             }
-            c = func_8002A2EC(row->unk13C, row->unk13C, row->unk13C) | 0x2E000000;
+            c = calc_rgbcode(row->unk13C, row->unk13C, row->unk13C) | 0x2E000000;
             if (i == 0) {
                 v.vx = row->rot[0].vx - 0x80;
                 v.vy = row->rot[0].vy - 0x80;
@@ -2468,7 +2468,7 @@ void func_800BB038(void) {
     D_800BF19C = 0;
     D_800BF1A0 = 0;
     i = 0;
-    func_8001D334(D_800BF100.sub);
+    kill_subs(D_800BF100.sub);
     func_8001D3B0(&D_800BF100, 0x21, D_800BDB58);
     s = D_800BDB58;
     list = (SubInitList *)D_800BD7E0;
@@ -2494,8 +2494,8 @@ void func_800BB038(void) {
         new_var = &D_800BD7E0[D_800BF1A0];
         D_800BF19C = (*new_var).unk8;
     }
-    func_8001E588(D_8009F644, -0x300, 0);
-    func_80014388(D_800BF1A8);
+    set_fade(D_8009F644, -0x300, 0);
+    cam_init(D_800BF1A8);
     func_80095BEC(0, D_800BD8B0);
     GetEngineSlot(0)->unk10.x = 0xC8;
     GetEngineSlot(0)->unk10.y = 0x6E;
@@ -2566,7 +2566,7 @@ void func_800BB4AC(SubInitList *list) {
     subengine *s;
     SubInit *p;
 
-    func_8001D334(D_800BF100.sub);
+    kill_subs(D_800BF100.sub);
     do {
         i = 0;
         func_8001D3B0(&D_800BF100, 0x21, D_800BDB58);
@@ -2600,7 +2600,7 @@ void func_800BB5F0(Ovl6aRenderObj *obj, s16 *out) {
     s32 off;
     s16 *p;
 
-    m =(u8 *)func_800159C4(obj->unk74, (u8 *)obj->sub->unkC);
+    m =(u8 *)map_entity_address(obj->unk74, (u8 *)obj->sub->unkC);
     off = *(s32 *)(m + 0x10);
     out[0] = 0x7FFF;
     out[1] = 0x7FFF;

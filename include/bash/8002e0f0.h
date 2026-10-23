@@ -39,7 +39,6 @@ void func_8002E0F0(void);
 
 void func_8002E25C(u8 *str, TextPos *pos, s32 arg2);
 void func_8002E3D0(TextPos *pos, u8 *glyph, s32 colour, s32 bits);
-s32 func_8002E584(u8 *glyph);
 void func_8002E618(void);
 
 #endif /* BASH_8002E0F0_H */

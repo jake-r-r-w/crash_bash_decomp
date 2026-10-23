@@ -584,10 +584,10 @@ void func_800BDC0C(void) {
                 }
                 D_800C450C--;
                 if (D_800C450C == -1) {
-                    func_8001E588(D_8009F644, 0x100, 0);
+                    set_fade(D_8009F644, 0x100, 0);
                 }
                 if (D_800C450C == -0x3C) {
-                    func_8001E588(D_8009F644, -0x100, 0);
+                    set_fade(D_8009F644, -0x100, 0);
                     func_800BDB00();
                     return;
                 }
@@ -1965,7 +1965,7 @@ void func_800C237C(SparkObj *arg0) {
     gte_SetTransMatrix(&D_800C45BC);
     gte_SetGeomOffset(D_8005B698->w / 2, 120);
     n = set->count;
-    func_8002A2EC(0x10, 0x10, 0x10);
+    calc_rgbcode(0x10, 0x10, 0x10);
     if (n != 0) do {
         v = s;
         gte_ldv0(v);

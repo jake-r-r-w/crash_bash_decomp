@@ -10,7 +10,6 @@
 #include "bash/main.h"
 #include "bash/engine.h"
 
-extern s32 D_8009E464;
 typedef struct {
     s32 pad0[4];
     s32 x;
@@ -46,7 +45,6 @@ typedef struct {
 } T_BB7E8Fux;
 
 s32 func_800BB7B8(T_BB7B8 *p);
-void func_800BB7E8(void);
 
 extern u16 D_800C46E4[];
 

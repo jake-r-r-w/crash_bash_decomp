@@ -77,7 +77,7 @@ void func_800B38A0(void) {
         }
         if (obj->flags & 0x8000) {
             if (obj->model->colors != NULL) {
-                func_80015A18(obj->index, (u8 *)obj->model->colors);
+                entity_address(obj->index, (u8 *)obj->model->colors);
                 if (((Ovl62ModeView *)D_8005A614)->mode == 0x12) {
                     if (!(((Ovl62ModeView *)D_8005A614)->flags & 0x80)) {
                         if (obj->index == 0x5001 || obj->index == 0x5004) {
@@ -5269,7 +5269,7 @@ void InitPolarBoss(NAS *nas) {
         func_80086868();
         D_800D5DC4 = nas;
         ext->cursor = func_80024E30(nas, &D_800D5A34);
-        func_80025FAC((EXTanimator *)ext->cursor, 0);
+        GotoLinkAnim((EXTanimator *)ext->cursor, 0);
         func_800250B0(nas);
         ext->unk84 = SpawnNASById(nas->Engine->unk10.x, nas->Engine->unk10.y, nas->Engine->unk10.z, 0x1622, 0x11);
         s = SpawnNASById(nas->Engine->unk10.x, 0, nas->Engine->unk10.z, 0x1620, 0x11);
@@ -5362,13 +5362,13 @@ void PlotPolarBoss(NAS *m) {
                 && (h[h[((PolarBossGame *)D_8005A614)->lead].hero_teammate].hero_status & 0x2000)
                 && ext->state != 9 && ext->unk90 == 0) {
                 ext->state = 9;
-                func_80025FAC(mate->anim, 7);
+                GotoLinkAnim(mate->anim, 7);
                 return;
             }
         } else if ((Heroes[0].hero_status & 0x2000) && ext->unk90 == 0 && ext->state != 9) {
             PlaySfx(0x23B, NULL, NULL, 0x1000, 0x1E00, 0);
             ext->state = 9;
-            func_80025FAC(mate->anim, 7);
+            GotoLinkAnim(mate->anim, 7);
             return;
         }
     }
@@ -5442,25 +5442,25 @@ void PlotPolarBoss(NAS *m) {
             pos.x = 0;
             pe = FindExtension(ext->unk84, 0x10000000);
             if (pe != NULL) {
-                func_80025FAC(pe->anim, 1);
+                GotoLinkAnim(pe->anim, 1);
             }
             if (ext->phase == 0) {
                 n = 1;
-                func_80025FAC((EXTanimator *)ext->cursor, n);
+                GotoLinkAnim((EXTanimator *)ext->cursor, n);
                 func_800250B0(m);
             }
             if (ext->phase == 2) {
                 n = 2;
-                func_80025FAC((EXTanimator *)ext->cursor, 3);
+                GotoLinkAnim((EXTanimator *)ext->cursor, 3);
                 func_800250B0(m);
             }
             if (ext->phase == 4) {
-                func_80025FAC((EXTanimator *)ext->cursor, 5);
+                GotoLinkAnim((EXTanimator *)ext->cursor, 5);
                 n = 3;
                 func_800250B0(m);
             }
             if (ext->phase == 6) {
-                func_80025FAC((EXTanimator *)ext->cursor, 5);
+                GotoLinkAnim((EXTanimator *)ext->cursor, 5);
                 n = 3;
                 func_800250B0(m);
             }
@@ -5575,9 +5575,9 @@ void PlotPolarBoss(NAS *m) {
 
             pe = FindExtension(ext->unk84, 0x10000000);
             if (pe != NULL) {
-                func_80025FAC(pe->anim, 1);
+                GotoLinkAnim(pe->anim, 1);
             }
-            func_80025FAC((EXTanimator *)ext->cursor, 7);
+            GotoLinkAnim((EXTanimator *)ext->cursor, 7);
             nas = SpawnNASById(m->Engine->unk10.x, m->Engine->unk10.y, m->Engine->unk10.z, 0x1621, 0x11);
             if (nas != NULL) {
                 be = FindExtension(nas, 0x10000000);
@@ -5643,7 +5643,7 @@ void PlotPolarBoss(NAS *m) {
     case 9:
         if (mate->anim->Aindex == 1) {
             if (++ext->unk90 == 4) {
-                func_80025FAC(mate->anim, 0);
+                GotoLinkAnim(mate->anim, 0);
                 ext->state = 10;
                 return;
             }
@@ -5967,7 +5967,7 @@ void PlotBearminator(NAS *m) {
                 ext->unk4C = -((ext->unk4C * 0xAA) >> 8);
                 return;
             }
-            func_80025FAC((EXTanimator *)ext->cursor, 2);
+            GotoLinkAnim((EXTanimator *)ext->cursor, 2);
             ext->unkC = 5;
             r = Random(2);
             if (r == 0) {
@@ -6022,12 +6022,12 @@ void PlotBearminator(NAS *m) {
             hi = &hb[((Ovl62BearView *)D_8005A614)->lead];
             if ((hi->hero_status & 0x2000) && (hb[hi->hero_teammate].hero_status & 0x2000)) {
                 ext->unkC = 8;
-                func_80025FAC((EXTanimator *)ext->cursor, 3);
+                GotoLinkAnim((EXTanimator *)ext->cursor, 3);
                 return;
             }
         } else if (Heroes[0].hero_status & 0x2000) {
             ext->unkC = 8;
-            func_80025FAC((EXTanimator *)ext->cursor, 3);
+            GotoLinkAnim((EXTanimator *)ext->cursor, 3);
         }
         h = Heroes[ext->unkA0].hero_eng;
         ext->unk18 = (get_angle(h->unk10.x - m->Engine->unk10.x, h->unk10.z - m->Engine->unk10.z) + 0x800) & 0xFFF;
@@ -6047,7 +6047,7 @@ void PlotBearminator(NAS *m) {
             cam->x.target = 0;
             cam->z.target = 0;
             ext->unk1C = 0x5A;
-            func_80025FAC((EXTanimator *)ext->cursor, 0);
+            GotoLinkAnim((EXTanimator *)ext->cursor, 0);
         }
         break;
     }
@@ -6108,11 +6108,11 @@ void PlotBearminator(NAS *m) {
                 hi = &hb[((Ovl62BearView *)D_8005A614)->lead];
                 if ((hi->hero_status & 0x2000) && (hb[hi->hero_teammate].hero_status & 0x2000)) {
                     ext->unkC = 8;
-                    func_80025FAC((EXTanimator *)ext->cursor, 3);
+                    GotoLinkAnim((EXTanimator *)ext->cursor, 3);
                     return;
                 }
             } else if (Heroes[0].hero_status & 0x2000) {
-                func_80025FAC((EXTanimator *)ext->cursor, 3);
+                GotoLinkAnim((EXTanimator *)ext->cursor, 3);
                 ext->unkC = 8;
             }
             h = Heroes[ext->unkA0].hero_eng;
@@ -6146,7 +6146,7 @@ void PlotBearminator(NAS *m) {
                     ext->unkC = near;
                     cam->x.target = cam->x.cur = (D_80068BD4[(m->Engine->unk1E - 0x400) & 0xFFF].unk2 * 0x4B) >> 12;
                     cam->z.target = cam->z.cur = (D_80068BD4[m->Engine->unk1E & 0xFFF].unk2 * 0x4B) >> 12;
-                    func_80025FAC((EXTanimator *)ext->cursor, 1);
+                    GotoLinkAnim((EXTanimator *)ext->cursor, 1);
                     ext->unk1C = 0x5A - (D_8009D87C[0].unk0 - 0x10) * 4;
                 }
             }
@@ -6166,7 +6166,7 @@ void PlotBearminator(NAS *m) {
         fall:
             ext->unkC = 7;
             PlaySfx(0x23E, NULL, NULL, 0x1000, 0x1E00, 0);
-            func_80025FAC((EXTanimator *)ext->cursor, 4);
+            GotoLinkAnim((EXTanimator *)ext->cursor, 4);
             return;
         }
         if (Heroes[0].hero_mode != 0x4E) {
@@ -6219,7 +6219,7 @@ void PlotBearminator(NAS *m) {
         }
         if (func_800C5DCC(m) != 0) {
             ext->unkC = 7;
-            func_80025FAC((EXTanimator *)ext->cursor, 4);
+            GotoLinkAnim((EXTanimator *)ext->cursor, 4);
             return;
         }
         if (ext->unk14-- < 0) {
@@ -6236,11 +6236,11 @@ void PlotBearminator(NAS *m) {
                 hi = &hb[((Ovl62BearView *)D_8005A614)->lead];
                 if ((hi->hero_status & 0x2000) && (hb[hi->hero_teammate].hero_status & 0x2000)) {
                     ext->unkC = 8;
-                    func_80025FAC((EXTanimator *)ext->cursor, 3);
+                    GotoLinkAnim((EXTanimator *)ext->cursor, 3);
                     return;
                 }
             } else if (Heroes[0].hero_status & 0x2000) {
-                func_80025FAC((EXTanimator *)ext->cursor, 3);
+                GotoLinkAnim((EXTanimator *)ext->cursor, 3);
                 ext->unkC = 8;
             }
             h = Heroes[ext->unkA0].hero_eng;
@@ -6253,7 +6253,7 @@ void PlotBearminator(NAS *m) {
         func_800C5EEC(cam, &m->Engine->unk10.x);
         if (done != 0) {
             ext->unkC = 0;
-            func_80025FAC((EXTanimator *)ext->cursor, 0);
+            GotoLinkAnim((EXTanimator *)ext->cursor, 0);
             return;
         }
         break;
@@ -6745,7 +6745,7 @@ void PlotSniperMissile(NAS *m) {
             boss->unk8C = 0xC;
             anim = FindExtension(boss->unk84, 0x10000000);
             if (anim != NULL) {
-                func_80025FAC((EXTanimator *)anim[3], 8);
+                GotoLinkAnim((EXTanimator *)anim[3], 8);
                 PlaySfx(0x23B, NULL, NULL, 0x1000, 0x1E00, 0);
             }
         } else {
@@ -6755,11 +6755,11 @@ void PlotSniperMissile(NAS *m) {
             PolarMissileBlast(m, 1);
             anim = FindExtension(boss->unk84, 0x10000000);
             if (anim != NULL) {
-                func_80025FAC((EXTanimator *)anim[3], 3);
+                GotoLinkAnim((EXTanimator *)anim[3], 3);
             }
             boss->unk80 = 1;
             boss->unk8C = 0xC;
-            func_80025FAC((EXTanimator *)boss->cursor, 9);
+            GotoLinkAnim((EXTanimator *)boss->cursor, 9);
             PlaySfx(0x22F, NULL, NULL, 0x1000, 0x1E00, 0);
             PlaySfx(0x23A, NULL, NULL, 0x1000, 0x1E00, 0);
             D_8009D6DC[3] -= 7;
@@ -6772,7 +6772,7 @@ void PlotSniperMissile(NAS *m) {
                 D_8009D6DC[2] |= 0x8000;
                 anim = FindExtension(boss->unk84, 0x10000000);
                 if (anim != NULL) {
-                    func_80025FAC((EXTanimator *)anim[3], 5);
+                    GotoLinkAnim((EXTanimator *)anim[3], 5);
                     boss->unk84->Engine->sub->unk68 = 0x238;
                     boss->state = 8;
                 }
@@ -7168,7 +7168,7 @@ void InitBearBoss(NAS *m) {
         m->Engine->sub->flags |= 0x02000000;
         m->Engine->sub->unk6C = *(void **)D_80058AD0;
         ext->unkC = (s32)func_80024E30(m, &D_800D5DB8);
-        func_80025FAC((EXTanimator *)ext->unkC, 0);
+        GotoLinkAnim((EXTanimator *)ext->unkC, 0);
         func_800250B0(m);
     }
 }
@@ -7370,7 +7370,7 @@ void func_800CA770(void) {
         }
         if (obj->flags & 0x8000) {
             if (obj->model->colors != NULL) {
-                u8 *p = func_80015A18(obj->index, (u8 *)obj->model->colors);
+                u8 *p = entity_address(obj->index, (u8 *)obj->model->colors);
                 if (p != NULL && *(s32 *)(p + 0x28) != 0) {
                     *out++ = obj;
                     i++;
@@ -7551,7 +7551,7 @@ void Polar_HeroBot(u32 player) {
         h->hero_ai->AIpad = 0;
         DoChooseNewAction(player);
         ((void (*)(s32))fux->func)(player);
-        func_80013C94((u8 *)&D_80051338[player], h->hero_ai->AIpad);
+        set_joypad((u8 *)&D_80051338[player], h->hero_ai->AIpad);
     }
 }
 

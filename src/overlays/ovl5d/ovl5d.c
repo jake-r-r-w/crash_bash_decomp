@@ -1476,7 +1476,7 @@ void PlotBashPenguin(NAS *nas) {
                 break;
             case 2:
                 if (D_8005A644 & 0x801) {
-                    func_80025FAC(anim, 0);
+                    GotoLinkAnim(anim, 0);
                     goto stop;
                 }
                 if (func_800250B0(nas) == 8) {
@@ -1488,7 +1488,7 @@ void PlotBashPenguin(NAS *nas) {
             case 3:
                 if (D_8005A644 & 0x801) {
                     /* a value-returning call: keeps it from being cross-jumped into case 2's */
-                    ((s32 (*)(EXTanimator *, s16))func_80025FAC)(anim, 0);
+                    ((s32 (*)(EXTanimator *, s16))GotoLinkAnim)(anim, 0);
                     goto stop;
                 }
                 t = nas->UserInfo.user1;
@@ -1505,7 +1505,7 @@ void PlotBashPenguin(NAS *nas) {
                     eng->unk10.z = (r * D_80068BD4[ang].unk2) >> 12;
                     eng->sub->unk74 = 0x2002;
                 } else {
-                    func_80025FAC(anim, 2);
+                    GotoLinkAnim(anim, 2);
                     fux->state = 0;
                     fux->unk1E &= 0xFFF5;
                     if (eng->sfx != NULL) {
@@ -1533,7 +1533,7 @@ void PlotBashPenguin(NAS *nas) {
                 if (fux->unk1E & 2) {
                     fux->state = 2;
                     fux->unk22 = 0x3C;
-                    func_80025FAC(anim, 1);
+                    GotoLinkAnim(anim, 1);
                     PlaySfx(0x426, NULL, NULL, 0x1000, 0x1E00, 0);
                     D_800C3B38 = 0;
                     D_800C3B3C += 0x258;
@@ -2468,7 +2468,7 @@ void InitBashPenguin(NAS *nas) {
             obj->can_do |= 2;
         }
         eng->unk5D = 1;
-        func_80025B10(eng, 0x50);
+        FetchDefaultColBox(eng, 0x50);
         func_800B8B00();
     }
     if (nas->Failure != 0) {
@@ -2526,7 +2526,7 @@ s32 func_800BAC5C(EXTengine *eng) {
     if (D_800C3BAC[x][z].unk8 & 0x100) {
         return 0x7FFFFFFF;
     }
-    return func_80025E00(eng, dy);
+    return AddPlatformContour(eng, dy);
 }
 
 u16 func_800BAD0C(s32 arg0, s32 arg1) {

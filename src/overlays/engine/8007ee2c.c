@@ -469,7 +469,7 @@ found:
                         D_8009AEE8 = D_8009AEEC + 1;
                     }
                     if (D_8009AEEC == 0) {
-                        func_8002C0E0();
+                        continue_music();
                     }
                     D_8009AEEC = 0;
                     PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -1931,7 +1931,7 @@ void func_80083708(void) {
             h->hero_sub->unk6C = NULL;
         }
         sub->unk74 = D_8009D3A4[name];
-        func_80025B10(eng, 0x50);
+        FetchDefaultColBox(eng, 0x50);
         if (D_8009D6E8.unk0 != 0) {
             ((void (*)(s32))D_8009D6E8.unk0)(i);
         } else {
@@ -2809,7 +2809,7 @@ s32 func_80085890(s32 arg0) {
             return D_8009D866;
         }
         if (D_8009D86C != 0) {
-            if (func_80016558((u8 *)D_8009D86C, (u8 *)D_8009D868) != 0) {
+            if (dbase_mesh_anim_name_loaded((u8 *)D_8009D86C, (u8 *)D_8009D868) != 0) {
                 SetHeroSeq((HeroInfo *)arg0, D_8009D866);
                 i = 3;
                 do {
@@ -2819,7 +2819,7 @@ s32 func_80085890(s32 arg0) {
         }
     }
     if (D_8009D870 == arg0 && Heroes[arg0].hero_aseq != D_8009D872 && D_8009D878 != 0) {
-        if (func_80016558((u8 *)D_8009D878, (u8 *)D_8009D874) != 0) {
+        if (dbase_mesh_anim_name_loaded((u8 *)D_8009D878, (u8 *)D_8009D874) != 0) {
             SetHeroSeq((HeroInfo *)arg0, D_8009D872);
             i = 3;
             do {
@@ -5409,12 +5409,12 @@ void InitScriptFX(NAS *nas)
       {
         break;
       }
-        if (func_80011C5C(((u32) ((*((s32 *) (k + 0x10))) * 0x28)) >> 2, D_8004E0F0.free) == 0)
+        if (mal_first_free(((u32) ((*((s32 *) (k + 0x10))) * 0x28)) >> 2, D_8004E0F0.free) == 0)
       {
         goto kill;
       }
         func_800115D8((*((s32 *) (k + 0x10))) * 0x28, &t->threadinfo, (s32) (&D_8004E0F0), 0);
-        if (func_80011C5C(0xA, D_8004E0F0.free) == 0)
+        if (mal_first_free(0xA, D_8004E0F0.free) == 0)
       {
         goto kill;
       }
@@ -5830,7 +5830,7 @@ void func_8008CA90(u8 *arg0, MATRIX *m) {
     gte_SetRotMatrix(m);
     gte_SetTransMatrix(m);
     n = fp->count;
-    col = func_8002A2EC(0x10, 0x10, 0x10);
+    col = calc_rgbcode(0x10, 0x10, 0x10);
     tag = col | 0x2E000000;
     while (n != 0) {
         p->top.vy += 0x18;

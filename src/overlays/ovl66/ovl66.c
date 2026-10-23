@@ -1089,7 +1089,7 @@ void func_800B5BA0(s32 arg0)
         ai->AIpad |= D_80051244[(ang >> 9) & 7];
         break;
     }
-    func_80013C94((u8 *)&D_80051338[arg0], ai->AIpad);
+    set_joypad((u8 *)&D_80051338[arg0], ai->AIpad);
 }
 
 s32 func_800B60FC(s32 arg0)

@@ -19,7 +19,7 @@ void func_80078CA4(void) {
     if (v->unk0 != NULL) {
         v->unk0(rec);
     }
-    func_800237BC();
+    SetNasDefaults();
     func_8007EC48();
     D_8005AA1C = (NAS *)func_80011654(D_8005AA14 * 0x70, &D_8004E0F0);
     D_8005AA20 = (u8 *)D_8005AA1C + (D_8005AA14 * 0x70 - 0x70);

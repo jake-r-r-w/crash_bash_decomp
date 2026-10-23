@@ -166,8 +166,8 @@ s32 func_800B488C(void) {
         func_80095A04(0);
         D_8009870E = 2;
         D_80098710 = 45;
-        func_8002C248(45);
-        func_8001E588(D_8009F644, 0x200, 0);
+        music_fade_out(45);
+        set_fade(D_8009F644, 0x200, 0);
         return 0;
     case 2:
         if (D_80098710 == 0) {
@@ -197,7 +197,7 @@ void func_800B4C94(void)
   ((EngMenuGame *) g)->unk74 = 0;
   func_800B8324(0);
   D_80098714 = 0;
-  func_8001E588(D_8009F644, -0x200, 0);
+  set_fade(D_8009F644, -0x200, 0);
   new_var = 0x1628;
   *((u8 *) (g + 0x75)) = 1;
   for (i = 0; i < ASTCount; i++)
@@ -210,7 +210,7 @@ void func_800B4C94(void)
 
   i = 0;
   found:
-  func_80027040(i);
+  DeleteNas_AllAST(i);
 
   ((Ovl6aCam *) D_80051640)->h = D_800BC2BC;
   D_800AD12C = D_800BC2C0;

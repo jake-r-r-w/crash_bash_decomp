@@ -680,7 +680,7 @@ void func_80097C28(void) {
     case 0:
         eng->unk20 = func_800152A8(-0x800, 0, 0x14, p[2]);
         eng->unk1C = func_800152A8(-0x400, 0, 0x14, p[2]);
-        v = func_80015304(0x800, 0x1800, 0x14, p[2]);
+        v = interp(0x800, 0x1800, 0x14, p[2]);
         eng->unk2C.z = v;
         eng->unk2C.y = v;
         eng->unk2C.x = v;

@@ -939,7 +939,7 @@ void func_800B5778(void) {
             }
         }
         if (G63->unk34 == 0x18 && obj->model->unkC != NULL) {
-            r = func_80015A18(obj->index, obj->model->unkC);
+            r = entity_address(obj->index, obj->model->unkC);
             if (r != NULL && *(s32 *)(r + 0x28) != 0) {
                 obj->flags &= ~0x8000;
             }
@@ -1465,7 +1465,7 @@ s32 func_800B6DBC(SLONG_XYZ *arg0, s32 *arg1) {
             break;
         }
         if (!(obj->flags & 0x8000) && obj->model->unkC != NULL) {
-            r = func_80015A18(obj->index, obj->model->unkC);
+            r = entity_address(obj->index, obj->model->unkC);
             if (r != NULL && *(s32 *)(r + 0x28) != 0) {
                 pos = *arg0;
                 grp = r + (*(s32 *)(r + 0x14) + 0x14);
@@ -4501,7 +4501,7 @@ void PlotDinoEgg(NAS *m) {
         if (ext->vel <= 0) {
             ext->vel = 0;
             ext->NasStatus = 1;
-            func_80025FAC(ext->anim, 0);
+            GotoLinkAnim(ext->anim, 0);
             func_800250B0(m);
         }
         break;
@@ -4955,7 +4955,7 @@ void PlotGlob(NAS *m) {
                 PlaySfx(0x666, NULL, NULL, 0x1000, 0x1E00, 0);
             }
             if (func_800250B0(m) != 0) {
-                func_80025FAC((EXTanimator *)ext->unk10, 1);
+                GotoLinkAnim((EXTanimator *)ext->unk10, 1);
                 ext->unkC = 1;
                 PlaySfx(0x667, NULL, NULL, 0x1000, 0x1E00, 0);
                 ext->unk18 = 0;
@@ -4987,7 +4987,7 @@ void PlotGlob(NAS *m) {
                 }
             }
             if (func_800250B0(m) != 0) {
-                func_80025FAC((EXTanimator *)ext->unk10, 3);
+                GotoLinkAnim((EXTanimator *)ext->unk10, 3);
                 func_800250B0(m);
                 ext->unkC = 2;
                 PlaySfx(0x669, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -4995,7 +4995,7 @@ void PlotGlob(NAS *m) {
             break;
         case 2:
             if (func_800250B0(m) != 0) {
-                func_80025FAC((EXTanimator *)ext->unk10, 2);
+                GotoLinkAnim((EXTanimator *)ext->unk10, 2);
                 func_800250B0(m);
                 ext->unkC = 3;
             }
@@ -5003,7 +5003,7 @@ void PlotGlob(NAS *m) {
         case 3:
             if (ext->unk14-- < 0 && D_800C695C == 0) {
                 ext->unk14 = Random(0x96) + 0x1C2;
-                func_80025FAC((EXTanimator *)ext->unk10, 0);
+                GotoLinkAnim((EXTanimator *)ext->unk10, 0);
                 func_800250B0(m);
                 PlaySfx(0x665, NULL, NULL, 0x1000, 0x1E00, 0);
                 ext->unkC = 0;
@@ -5204,7 +5204,7 @@ void PlotTrackGlob(NAS *nas) {
     case 0:
         if (func_8008C5C4(&ext->pos.x, &ext->unk64, &ext->unk10, &nas->Engine->unk10.x) != 0) {
             ext->unkC = 1;
-            func_80025FAC((EXTanimator *)ext->cursor, 0);
+            GotoLinkAnim((EXTanimator *)ext->cursor, 0);
             func_800250B0(nas);
             nas->Engine->unk10.y = 0;
         }
@@ -5488,7 +5488,7 @@ void InitGlob(NAS *m) {
     if (ext != NULL) {
         ext->unk10 = func_80024E30(m, &D_800C6E80);
         m->Engine->sub->unk6C = *(s32 *)D_80058AD0;
-        func_80025FAC((EXTanimator *)ext->unk10, 2);
+        GotoLinkAnim((EXTanimator *)ext->unk10, 2);
         func_800250B0(m);
         ext->unkC = 3;
         ext->unk14 = Random(0x5A) + 0xF0;

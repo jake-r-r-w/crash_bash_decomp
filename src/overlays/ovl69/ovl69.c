@@ -12,7 +12,7 @@ void func_800B37BC(void) {
     func_8009029C();
     g = D_8005A614;
     g[0x62] = 0;
-    func_80014388((u8 *)&D_800B9538);
+    cam_init((u8 *)&D_800B9538);
     *(s32 *)((u8 *)&D_800B9538 + 8) = 0x400;
     *(s32 *)((u8 *)&D_800B9538 + 0x18) = 0x190;
     func_80095BEC(1, &D_800B8C84);
@@ -52,7 +52,7 @@ void func_800B39C8(void) {
     s32 f;
     if (D_80051604 >= 0x385) {
         D_80051604 = 0;
-        func_8001E588(D_8009F644, 0x200, 0);
+        set_fade(D_8009F644, 0x200, 0);
         f = D_8009F654;
         if (f & 1) {
             D_8005A648 = 0x28;
@@ -219,7 +219,7 @@ void func_800B3CA8(void) {
             break;
         case 3:
             PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
-            func_8001E838(&D_8009F8A4, (s32)D_800B9510);
+            process_interrupt(&D_8009F8A4, (s32)D_800B9510);
             break;
         }
     }
@@ -742,7 +742,7 @@ void func_800B5484(void) {
 }
 
 void func_800B54B0(void) {
-    func_8001E588(D_8009F644, 0x200, 0);
+    set_fade(D_8009F644, 0x200, 0);
     func_80094D88((s32)D_800A0840, (s32)D_8009E5C8);
 }
 
@@ -1046,7 +1046,7 @@ void func_800B63F4(void) {
     s32 i;
     s32 off;
 
-    func_80014388((u8 *)&D_800B9F1C);
+    cam_init((u8 *)&D_800B9F1C);
     *(s32 *)((u8 *)&D_800B9F1C + 8) = 0x400;
     *(s32 *)((u8 *)&D_800B9F1C + 0x18) = 0x190;
     eng = GetEngineSlot(0);

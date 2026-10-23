@@ -336,7 +336,7 @@ void InitCratePickup(NAS *arg0) {
                 func_8008DDC0(arg0);
             }
         }
-        func_80025B10(eng, 0x50);
+        FetchDefaultColBox(eng, 0x50);
         pos = &eng->unk10;
         x = (pos->x >> 8) + 10;
         z = 9 - (pos->z >> 8);
@@ -387,7 +387,7 @@ void InitShieldPickup(NAS *arg0) {
                 func_8008DDC0(arg0);
             }
         }
-        func_80025B10(eng, 0x50);
+        FetchDefaultColBox(eng, 0x50);
         pos = &eng->unk10;
         x = (pos->x >> 8) + 10;
         z = 9 - (pos->z >> 8);
@@ -439,7 +439,7 @@ void InitBootsPickup(NAS *arg0) {
                 func_8008DDC0(arg0);
             }
         }
-        func_80025B10(eng, 0x50);
+        FetchDefaultColBox(eng, 0x50);
         pos = &eng->unk10;
         x = (pos->x >> 8) + 10;
         z = 9 - (pos->z >> 8);
@@ -491,7 +491,7 @@ void InitAnvilPickup(NAS *arg0) {
                 func_8008DDC0(arg0);
             }
         }
-        func_80025B10(eng, 0x50);
+        FetchDefaultColBox(eng, 0x50);
         pos = &eng->unk10;
         x = (pos->x >> 8) + 10;
         z = 9 - (pos->z >> 8);
@@ -543,7 +543,7 @@ void InitSlowmoPickup(NAS *arg0) {
                 func_8008DDC0(arg0);
             }
         }
-        func_80025B10(eng, 0x50);
+        FetchDefaultColBox(eng, 0x50);
         pos = &eng->unk10;
         x = (pos->x >> 8) + 10;
         z = 9 - (pos->z >> 8);

@@ -38,7 +38,6 @@ void func_8008A810(void);
 
 extern u16 D_8009E080[][4];
 void func_800BA3C4(EXTengine *eng);
-extern s32 D_8009E464;
 
 extern _sfx_handler *D_800C4780;
 void func_800898EC(s32 arg0);

@@ -257,6 +257,14 @@ Other:
 ## Gotchas
 
 **Tooling**
+- **Renaming a function breaks a `D_` alias of its address.** An overlay's
+  generated symbol lists (`linkers/<ovl>_undefined_*_auto.txt`) name an
+  outside address after the symbol files only, so source that took a
+  function's address as data (`= D_8001C378;`, `extern u8 D_8001C378[]`)
+  stops linking once the function is named, and `decomp.py rename` rolls
+  back. Write the function's name there in the same change (it can't link
+  as `func_<addr>` before the rename either). `proto_apply.py` lists such
+  uses and refuses `--apply` until they're fixed.
 - **A park can gain a matched twin later, and nothing revisits it.** When a
   function matches, the gate's propagate step tries its C on the identical
   copies; one that fails is marked `copy_failed` (and `copy_failed_stage`)
@@ -506,6 +514,13 @@ Newest first, a few lines each. Details are in the commits.
   PlaySfx as a `goto` into case 8's (not the source; leads list why). No
   `break`/`goto` mix gives the target's three tail survivors. Found the
   unit is probably `PAUSE.CPP`; `cc1plus` compiles the C identically.
+
+- **2026-10-23 (73 `main.exe` names from Euro Demo 65):** new
+  `proto_apply.py` turns a scan's matches into a checked rename list for
+  `decomp.py rename --file`; the 0.9+ placeholder matches in `main.exe` are
+  renamed (88/575 game functions named now). `ovl60` used `D_8001C378` for
+  `func_8001C378`'s address and stopped linking (see Gotchas); fixed in the
+  same commit.
 
 - **2026-10-23 (Japanese retail scan, `protos/JP_retail/`):** no leak,
   as PAL. Every disc on the list is scanned (PROTOTYPES.md); next is

@@ -428,7 +428,6 @@ typedef struct {
 } Arc;
 
 s32 csqrt(s32 x);
-s32 abs(s32);
 
 void func_80089FA4(s32 arg0);
 

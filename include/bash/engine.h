@@ -224,7 +224,7 @@ extern u8 D_8005A614[];
 extern s32 func_800B7EE4(s32, u8 *);
 extern u8 D_800657D0[];
 extern u16 D_8004DDD0[];
-void func_8001E8F0(void *arg0);
+void process_init(void *arg0);
 void func_80079260(void);
 s32 func_8007A5E8(u8 *arg0);
 void func_800B478C(void);
@@ -301,7 +301,7 @@ extern s32 (*D_8009D72C)(s32);
 
 /* An entry of the list D_800A0D1C walks (func_80094860), 12 bytes. */
 typedef struct {
-    s32 vab;   /* func_8002BA10's first argument; 0 ends the list */
+    s32 vab;   /* machine_load_sfx's first argument; 0 ends the list */
     s32 sfx;   /* PlaySfx id */
     s32 unk8;  /* -> D_800654B0 */
 } EngineVabCue;
@@ -472,7 +472,7 @@ static inline void EngineBeginMode(s32 arg) {
     D_8009F6F4[0x27] = 0;
     g->unk30 &= 0xFDFF;
     func_8009608C(arg);
-    func_8001E8F0(&D_8009F8A4);
+    process_init(&D_8009F8A4);
     func_80098570();
     mode = g->mode;
     world = D_8004DDD0[mode * 3];

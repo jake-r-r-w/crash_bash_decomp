@@ -445,7 +445,7 @@ void InitPapuBoss(NAS *nas) {
         eng->sub->unk74 = 0x2001;
         eng->unk5C = 1;
         eng->unk5E = 1;
-        func_80025B10(eng, 0x40);
+        FetchDefaultColBox(eng, 0x40);
         cur = func_80024E30(nas, &D_800BD3AC);
         func_800250B0(nas);
         D_800BE88E = 0;
@@ -499,7 +499,7 @@ void PlotPapuBoss(NAS *nas) {
     if (D_8009D6E0 & 0x200) {
         if (D_800BE88E != 0x1E) {
             D_800BE88E = 0x1E;
-            func_80025FAC(anim, 0x1C);
+            GotoLinkAnim(anim, 0x1C);
         }
     }
     switch (D_800BE88E) {
@@ -569,7 +569,7 @@ void PlotPapuBoss(NAS *nas) {
                 if (D_8009D6DC[3] < 0) {
                     D_8009D6DC[3] = 0;
                 }
-                func_80025FAC(anim, 0x1E);
+                GotoLinkAnim(anim, 0x1E);
             }
         }
         if (frame == 0xC) {
@@ -593,7 +593,7 @@ void PlotPapuBoss(NAS *nas) {
         }
         if (frame == 8) {
             empty = D_800BD2F4[Random(8)];
-            ((void (*)(EXTanimator *, s32))func_80025FAC)(anim, empty);
+            ((void (*)(EXTanimator *, s32))GotoLinkAnim)(anim, empty);
         }
         break;
     case 9:
@@ -635,7 +635,7 @@ void PlotPapuBoss(NAS *nas) {
         switch (D_800BE832) {
         case 1:
             D_800BE88E = 0xA;
-            func_80025FAC(anim, 0);
+            GotoLinkAnim(anim, 0);
             break;
         case 9:
             D_800BD8D4 = 0;
@@ -645,7 +645,7 @@ void PlotPapuBoss(NAS *nas) {
             if (D_800BE824 != NULL) {
                 D_800BE824->flags |= 0x8000;
             }
-            func_80025FAC(anim, 0x21);
+            GotoLinkAnim(anim, 0x21);
             break;
         case 2:
             D_800BD708 = 0;
@@ -654,13 +654,13 @@ void PlotPapuBoss(NAS *nas) {
             }
             D_800BE88E = 6;
             D_800BD8E8 = (&D_800BD8E8)[1] = 0;
-            func_80025FAC(anim, 3);
+            GotoLinkAnim(anim, 3);
             func_800B4154(D_800BE834);
             break;
         case 3:
             func_800B7600(D_800BE834);
             D_800BE88E = 1;
-            func_80025FAC(anim, 0xA);
+            GotoLinkAnim(anim, 0xA);
             break;
         case 5:
             D_800BD8DC = 0x1E;
@@ -670,31 +670,31 @@ void PlotPapuBoss(NAS *nas) {
             D_800BD8D4 = 1;
             func_800B42C0();
             D_800BE88E = 8;
-            func_80025FAC(anim, 0x16);
+            GotoLinkAnim(anim, 0x16);
             break;
         case 7:
             D_800BD8D4 = 1;
             func_800B42C0();
             D_800BE88E = 8;
-            func_80025FAC(anim, 0x16);
+            GotoLinkAnim(anim, 0x16);
             break;
         case 8:
             D_800BD8D4 = 1;
             D_800BE88E = 0xB;
-            func_80025FAC(anim, 0);
+            GotoLinkAnim(anim, 0);
             break;
         case 10:
             if (D_8009D6E0 & 0x200) {
                 D_800BE88E = 0x1E;
-                func_80025FAC(anim, 0x1C);
+                GotoLinkAnim(anim, 0x1C);
             } else {
                 D_800BE88E = 0x14;
-                func_80025FAC(anim, 0x19);
+                GotoLinkAnim(anim, 0x19);
             }
             break;
         default:
             D_800BE88E = 1;
-            func_80025FAC(anim, 0);
+            GotoLinkAnim(anim, 0);
             break;
         }
         break;
@@ -817,7 +817,7 @@ NAS *func_800B4EE8(s32 a, s32 b, s32 c, u16 d)
       eng->unk5D = 0;
       eng->sub->unk74 = 0x2001;
       eng->flags &= 0xFFFF7FFF;
-      func_80025B10(eng, 0x50);
+      FetchDefaultColBox(eng, 0x50);
       for (i = 0; i < 6; i++)
       {
         if (D_800BD70C[i].unk0 == 0)
@@ -972,7 +972,7 @@ void PlotPapuMinion(NAS *nas)
     move->unk1A = 6;
     move->unk1C = 0;
     move->unkC = 0;
-    func_80025FAC(anim, 3);
+    GotoLinkAnim(anim, 3);
     break;
   case 3:
     move->speed = 0;
@@ -980,7 +980,7 @@ void PlotPapuMinion(NAS *nas)
       fux->unk1C |= 0x102;
       eng->flags &= ~0x21;
       fux->state = 4;
-      func_80025FAC(anim, 4);
+      GotoLinkAnim(anim, 4);
     }
     break;
   case 4:
@@ -1030,7 +1030,7 @@ void PlotPapuMinion(NAS *nas)
         if (!(Heroes[i].hero_status & 0xFA00) &&
             func_80015480(eng->unk1E, get_angle(eng->unk10.x - Heroes[i].hero_eng->unk10.x,
                                                 eng->unk10.z - Heroes[i].hero_eng->unk10.z)) < level * 4 + 0x1C0) {
-          func_80025FAC(anim, 0x10);
+          GotoLinkAnim(anim, 0x10);
           fux->state = 6;
           break;
         }
@@ -1043,13 +1043,13 @@ void PlotPapuMinion(NAS *nas)
             other->unk16 = D_800BD70C[slot].unk22;
             fux->target = NULL;
             fux->state = 8;
-            func_80025FAC(anim, 7);
+            GotoLinkAnim(anim, 7);
           }
         }
       } while (0);
     } else if (target_eng == NULL) {
       fux->state = 0;
-      func_80025FAC(anim, 0);
+      GotoLinkAnim(anim, 0);
     } else {
       move->angle = angle;
       move->speed = 0x20;
@@ -1084,7 +1084,7 @@ void PlotPapuMinion(NAS *nas)
         if (who != -1) {
           fux->target = Heroes[who].hero;
           fux->state = 9;
-          func_80025FAC(anim, 9);
+          GotoLinkAnim(anim, 9);
         }
       }
     } else {
@@ -1101,7 +1101,7 @@ void PlotPapuMinion(NAS *nas)
     if (hit == 0 || ((NAS *)hit)->Engine->platform != NULL) {
       fux->target = NULL;
       fux->state = 0xA;
-      func_80025FAC(anim, 0xA);
+      GotoLinkAnim(anim, 0xA);
     }
     if (fux->unk20 != 0) {
       fux->unk20--;
@@ -1109,7 +1109,7 @@ void PlotPapuMinion(NAS *nas)
           func_80015480(angle, eng->unk1E) < (0x20 - level) * 4 + 0x40) {
         fux->target = NULL;
         fux->state = 0xA;
-        func_80025FAC(anim, 0xA);
+        GotoLinkAnim(anim, 0xA);
       }
       if (target_eng != NULL) {
         move->angle = angle;
@@ -1118,12 +1118,12 @@ void PlotPapuMinion(NAS *nas)
       }
       fux->target = NULL;
       fux->state = 0xA;
-      func_80025FAC(anim, 0xA);
+      GotoLinkAnim(anim, 0xA);
       break;
     }
     fux->target = NULL;
     fux->state = 0xA;
-    func_80025FAC(anim, 0xA);
+    GotoLinkAnim(anim, 0xA);
     break;
   case 13:
     eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
@@ -1161,7 +1161,7 @@ void PlotPapuMinion(NAS *nas)
     fux->unk1C &= 0xFEFD;
     fux->unk1E &= 0xFEFD;
     D_800BD70C[slot].unk26 = 0;
-    func_80025FAC(anim, 0xD);
+    GotoLinkAnim(anim, 0xD);
     break;
   case 11:
     eng->unk10.y -= ((s32 (*)(EXTengine *))func_80025F44)(eng);
@@ -1185,11 +1185,11 @@ void PlotPapuMinion(NAS *nas)
     move->push = 0;
     fux->target = func_800B4B9C(slot);
     if (fux->target != NULL) {
-      func_80025FAC(anim, 1);
+      GotoLinkAnim(anim, 1);
       fux->state = 7;
     } else {
       nas->UserInfo.user2 = func_800B4D70((Ovl5ePos *)eng);
-      func_80025FAC(anim, 1);
+      GotoLinkAnim(anim, 1);
       fux->state = 0xD;
     }
     break;
@@ -1225,7 +1225,7 @@ void PlotPapuMinion(NAS *nas)
     fux->unk1C &= 0xFEFD;
     fux->unk1E &= 0xFEFD;
     PlaySfx(D_800BD700[Random(4)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
-    func_80025FAC(anim, 0xD);
+    GotoLinkAnim(anim, 0xD);
   }
   eng->unk5E = 1;
 }
@@ -1901,7 +1901,7 @@ s32 func_800B7558(EXTengine *eng) {
     if (t != NULL) {
         y -= t->unk8;
     }
-    return func_80025E00(eng, y);
+    return AddPlatformContour(eng, y);
 }
 
 void func_800B7600(s32 arg0) {

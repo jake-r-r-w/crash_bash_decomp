@@ -2037,7 +2037,7 @@ found:
         }
         MODEV->unk30 |= 0x8200;
         func_80098278();
-        func_8002C290();
+        music_duck_off();
     case 11:
     case 16:
         if (D_8009AE3C == 0) {

@@ -66,7 +66,7 @@ void func_8008E5BC(void) {
     if ((D_8005137C & 0x8C08) == 0x8C08) {
         func_800101E0();
     }
-    func_800220E8();
+    scripts_update();
     if (D_8009E5B4 != 0) {
         if (--D_8009E5B4 == 0) {
             PlaySfx(D_8009E5B0, &D_8009E5C4, NULL, 0x1000, 0x1E00, 0);
@@ -104,8 +104,8 @@ void func_8008E5BC(void) {
     switch (type) {
     case 1:
         D_8009E5A8 = e->delay;
-        a = (u8 *)func_800133FC(e->pic);
-        b = func_800189F4(a, D_8005B698->w, D_8005B698->h);
+        a = (u8 *)load_file_permanent(e->pic);
+        b = tga_convert(a, D_8005B698->w, D_8005B698->h);
         func_800110A8(a, &D_8004E0F0);
         LoadImage(D_8005B698, (u32 *)b);
         LoadImage(D_8005B698 + 1, (u32 *)b);
@@ -169,7 +169,7 @@ void func_8008EB3C(void) {
     if (D_800AEC5C != 0) {
         func_8009440C();
     }
-    func_80022070();
+    scripts_render();
 }
 
 void func_8008EB8C(void) {
@@ -181,17 +181,17 @@ void func_8008EB8C(void) {
     D_8009E5B0 = -1;
     D_8009E5B4 = 0;
     func_8001D640(0x200);
-    func_80014388(D_80051640);
+    cam_init(D_80051640);
     D_800590CC = 1;
 }
 
 void func_8008EC00(void) {
     u8 *a;
     u8 *b;
-    s32 func_800133FC();
+    s32 load_file_permanent();
 
-    a = (u8 *)func_800133FC();
-    b = func_800189F4(a, D_8005B698->w, D_8005B698->h);
+    a = (u8 *)load_file_permanent();
+    b = tga_convert(a, D_8005B698->w, D_8005B698->h);
     func_800110A8(a, &D_8004E0F0);
     LoadImage(D_8005B698, (u32 *)b);
     LoadImage(D_8005B698 + 1, (u32 *)b);
@@ -1150,7 +1150,7 @@ void func_80090E20(void) {
                 *(Blk12p4 *)(q + 0xD0) = *(Blk12p4 *)D_8005A604;
                 *(Blk18C *)dst->pad = *(Blk18C *)q;
                 func_80091E58();
-                func_8002D0C8();
+                card_save();
                 D_8009F640 = 1;
                 if (D_800BDB3C.unkC != NULL) {
                     D_800BDB3C.unkC();
@@ -1396,12 +1396,12 @@ void func_800920DC(void) {
     GetEngineSlot(2)->unk10.y = 0x1E;
     eng = GetEngineSlot(2);
     eng->flags |= 0x10000000;
-    func_80014388((u8 *)&D_8009F4C0);
+    cam_init((u8 *)&D_8009F4C0);
     *(s32 *)((u8 *)&D_8009F4C0 + 8) = 0x5DC;
-    func_80014388((u8 *)&D_8009F578);
+    cam_init((u8 *)&D_8009F578);
     *(s32 *)((u8 *)&D_8009F578 + 8) = 0x400;
     *(s32 *)((u8 *)&D_8009F578 + 0x18) = 0x190;
-    func_8001E588(D_8009F644, -0x200, 0);
+    set_fade(D_8009F644, -0x200, 0);
 }
 
 void func_80092198(void) {
@@ -1727,7 +1727,7 @@ void func_800929D8(void) {
 
 void func_80092AA8(GameModeDef *arg0) {
     if (((ModeMgr *)D_8009F658)->next != arg0) {
-        ((void (*)(u8 *))func_8001E588)(D_8009F644);
+        ((void (*)(u8 *))set_fade)(D_8009F644);
         ((ModeMgr *)D_8009F658)->next = arg0;
     }
 }
@@ -1736,7 +1736,7 @@ void func_80092AF4(s32 arg0, s32 arg1) {
     u8 *p = D_8009F658;
 
     if (*(s32 *)(p + 4) != arg0) {
-        func_8001E588(D_8009F644, arg1, 0);
+        set_fade(D_8009F644, arg1, 0);
         *(s32 *)(p + 4) = arg0;
     }
 }
@@ -1791,7 +1791,7 @@ void func_80092CAC(void) {
 
     g = (EngineGameView *)D_8005A614;
     g->unk30 &= 0x7FF8;
-    func_8001E588(D_8009F644, -0x300, 0);
+    set_fade(D_8009F644, -0x300, 0);
     D_8009F8B8 = 0;
     if (g->mode == 0x24 && g->unkE0 <= 0) {
         g->unkE0 = 1;
@@ -1814,8 +1814,8 @@ void func_80092CAC(void) {
 void func_80092E40(void) {
     func_80022030();
     func_8007AB28();
-    func_80022504();
-    func_8001E854(&D_8009F8A4);
+    sfx_delete_all();
+    process_quit(&D_8009F8A4);
     func_8001888C();
     func_800183DC();
     func_8008ECE4();
@@ -1835,7 +1835,7 @@ void func_80092EDC(void) {
         g = D_8005A614;
         *(s32 *)(g + 0xC) += 1;
         func_8007976C();
-        ((void (*)(void *, u8 *))func_8001DDB4)(D_80058AD0, D_8005164C);
+        ((void (*)(void *, u8 *))map_update)(D_80058AD0, D_8005164C);
     } else {
         func_8007A7C0();
     }
@@ -1844,7 +1844,7 @@ void func_80092EDC(void) {
     D_8009F7EC.z = 0;
     *(s32 *)((u8 *)&D_8009F7EC + 8) = 0x40C;
     func_80097C28();
-    func_800220E8();
+    scripts_update();
     func_8001E610(&D_8009F8A4, D_8009F644);
     func_8008EFD4();
 }
@@ -1874,7 +1874,7 @@ void func_80093038(void) {
     D_8005687C[0] = 0;
     D_8005687C[1] = 0;
     D_8005687C[2] = 0;
-    func_80022070();
+    scripts_render();
     func_8007A718();
     func_8001DAF8((GfxScene *)D_80058AD0);
     func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);

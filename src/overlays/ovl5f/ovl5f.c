@@ -667,7 +667,7 @@ void func_800B4FAC(s32 player) {
         buttons |= 0x4000;
         D_800CB284[player] = 0;
     }
-    func_80013C94((u8 *)&D_80051338[player], buttons);
+    set_joypad((u8 *)&D_80051338[player], buttons);
 }
 
 void TA_HeroBot(u32 player) {
@@ -735,7 +735,7 @@ void TA_HeroBot(u32 player) {
             }
         }
     }
-    func_80013C94((u8 *)&D_80051338[player], ai->flags);
+    set_joypad((u8 *)&D_80051338[player], ai->flags);
 }
 
 void func_800B5588(void) {

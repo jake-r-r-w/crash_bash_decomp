@@ -44,6 +44,25 @@ them. It writes everything next to the disc:
 | `engine_<id>.bin` | the engine module cut from the DAT |
 | `leaks/` | each source-text hit |
 
+## Applying names
+
+`proto_apply.py` turns a scan's matches into renames for one module and
+hands them to `decomp.py rename --file`, which rolls back if the build stops
+matching:
+
+```bash
+tools/dk python3 -I tools/scripts/proto_apply.py protos/<disc>/scan.md --module main
+```
+
+Without `--apply` it only lists. A C++ symbol gives its name without the
+mangled parameters (`mal_free__FPvP9_mal_area` is `mal_free`). Matches of
+0.9 and up become renames (`--min`); 0.75 up to that are listed to check by
+hand. Left out, with the reason: PsyQ functions (Sony's names stay), C++
+class members and operators, overloads (one C name for two functions), a
+name the build already uses, two symbols on one function, and a function
+the repo has already named (unless `--replace`). The renames are kept in
+`protos/<disc>/renames_<module>.txt`.
+
 ## At a glance
 
 | Disc | Build | Leak | What it gave |
@@ -235,9 +254,19 @@ originals: `SpawnNASById` is `CreateNAS`, `SpawnNASFromRecord` `TriggerNas`,
 `AddEngine` `AddExtEngine`, `AddExtension` `AddExt`, `InitHealth`/
 `PlotHealth` `Init_HealthPU`/`Plot_HealthPU`.
 
+**Applied.** The 73 `main.exe` matches of 0.9 and up on placeholder
+functions are renamed (`renames_main.txt`; `mal_update`, `init_file`,
+`cam_init`, `dbase_*`, `map_*`, `music_*`, ...). One needed a source fix
+first: `ovl60` named `0x8001C378` as data (`D_8001C378`), so it now uses the
+function's name.
+
 **Still to do.**
-- Apply the names (C++ ones with their parameter types) to the matched
-  functions, after checking the 0.75..0.9 ones by hand.
+- `main.exe`: 5 matches of 0.75..0.9 to check by hand (`mal_free`
+  0.88, `path_get` 0.88, `get_script_header` 0.85, `new_sprim` 0.78,
+  `texture_draw` 0.75), and the 4 the repo named itself (`--replace`:
+  `CreateNAS`, `TriggerNas`, `AddExtEngine`, `AddExt`).
+- The engine and slot overlay names, once no other agent is working there.
+- The parameter types from the C++ names, one prototype at a time.
 - Map the 184 data labels to retail addresses through the matched functions'
   data references.
 - The link groups give file boundaries in the engine (`_core_end`,

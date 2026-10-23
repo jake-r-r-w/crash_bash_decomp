@@ -171,7 +171,7 @@ struct NAStype {
     /* 0x00 */ s32 NASid;               /* 1 when spawned; 0x100 once it has an engine */
     /* 0x04 */ EXTnode Extend;          /* Child: the first extension */
     /* 0x0C */ NASnode Tag;             /* active list, or (Child) the free list */
-    /* 0x14 */ NASnode Family;          /* func_80026B94 appends, func_80026BF4 unlinks */
+    /* 0x14 */ NASnode Family;          /* ReAdoptChild appends, RemoveFamily unlinks */
     /* 0x1C */ GRPnode Group;
     /* 0x28 */ OBJnode Object;          /* list headed by D_8005AA24 (func_80026A54 unlinks) */
     /* 0x30 */ OBJnode Solid;           /* list headed by D_8005AA2C (func_8002694C pushes) */
@@ -333,7 +333,7 @@ typedef struct EXTanimator {
     /* 0x00 */ s32 EXTid;
     /* 0x04 */ EXTnode Extend;
     /* 0x0C */ void *Atable;            /* the one playing: Alist[ALindex] */
-    /* 0x10 */ void **Alist;            /* table func_80025FAC picks from, or NULL (void * in the prototype) */
+    /* 0x10 */ void **Alist;            /* table GotoLinkAnim picks from, or NULL (void * in the prototype) */
     /* 0x14 */ EXTengine *Engine;       /* or NULL for NAS.Engine */
     /* 0x18 */ subengine *sub;          /* or NULL for the engine's first */
     /* 0x1C */ s16 Aspeed;

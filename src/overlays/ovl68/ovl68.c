@@ -297,7 +297,7 @@ void func_800B37C8(s32 arg0) {
         ai->unk8 |= 0x8000;
         break;
     }
-    func_80013C94((u8 *)&D_80051338[arg0], ai->unk8);
+    set_joypad((u8 *)&D_80051338[arg0], ai->unk8);
 }
 
 void func_800B3EFC(void) {
@@ -431,7 +431,7 @@ void func_800B46BC(s32 arg0) {
     sub = eng->sub;
     sub->unk51 = 1;
     sub->unk74 = D_800BC188[h->hero_name];
-    func_80025B10(eng, 0x50);
+    FetchDefaultColBox(eng, 0x50);
     sub->unk74 = D_800BC19C[h->hero_name];
     h->hero_score = 0;
     st[0] = 1;
