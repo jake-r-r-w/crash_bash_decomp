@@ -6492,7 +6492,7 @@ void POGOSetUp(void) {
     D_8005AA70[7] = 0;
     D_8005AA70[8] = 0;
     D_8005AA70[9] = (s32)GetPogoContour;
-    func_8001E934(&D_8009F8A4, (s32)D_800C52B8);
+    func_8001E934(&D_8009F8A4, &D_800C52B8);
 }
 
 void func_800C34B0(void) {

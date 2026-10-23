@@ -390,7 +390,7 @@ typedef struct EngineModeView {
     /* 0x187 */ u8 unk187;
 } EngineModeView;
 extern s8 D_8004E0A4[];
-extern s32 D_8009F720[];
+extern process_info D_8009F720;
 extern void *D_8009EFCC[];
 extern void *D_8009EFD0[];
 extern void *D_8009EFD4[];
@@ -500,9 +500,9 @@ void func_8008FD40(void *arg0);
 
 s32 func_80090248(void);
 
-void func_80092AA8(GameModeDef *arg0);
+void func_80092AA8(process_info *arg0);
 
-void func_80092AF4(s32 arg0, s32 arg1);
+void func_80092AF4(process_info *process, s32 speed);
 
 void func_80092E94(void);
 

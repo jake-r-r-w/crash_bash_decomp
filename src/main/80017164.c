@@ -3175,106 +3175,102 @@ loop:
     return -1;
 }
 
-void set_fade(u8 *arg0, s32 arg1, s32 arg2) {
-    (*(s32*)((u8*)(arg0) + 4)) = arg1;
-    (*(s32*)((u8*)(arg0) + 12)) = arg2;
-    (*(s32*)((u8*)(arg0) + 8)) = 0;
+void set_fade(fade_info *fade, s32 speed, s32 delay) {
+    fade->speed = speed;
+    fade->delay = delay;
+    fade->maxed = 0;
 }
 
-s32 func_8001E598(u8 *arg0) {
+s32 func_8001E598(fade_info *fade) {
     s32 step;
     s32 level;
 
-    step = *(s32 *)(arg0 + 4);
+    step = fade->speed;
     if (step != 0) {
-        level = *(s32 *)(arg0 + 0) + step;
-        *(s32 *)(arg0 + 0) = level;
-        if (*(s32 *)(arg0 + 4) > 0) {
+        level = fade->amount + step;
+        fade->amount = level;
+        if (fade->speed > 0) {
             if (level >= 0x1000) {
-                *(s32 *)(arg0 + 0) = 0x1000;
-                *(s32 *)(arg0 + 8) += 1;
+                fade->amount = 0x1000;
+                fade->maxed += 1;
             }
         } else if (level <= 0) {
-            *(s32 *)(arg0 + 0) = 0;
-            *(s32 *)(arg0 + 8) += 1;
-            if (*(s32 *)(arg0 + 8) >= 3) {
-                *(s32 *)(arg0 + 4) = 0;
+            fade->amount = 0;
+            fade->maxed += 1;
+            if (fade->maxed >= 3) {
+                fade->speed = 0;
             }
         }
     }
-    return *(s32 *)(arg0 + 0);
+    return fade->amount;
 }
 
-void func_8001E610(u8 *mgr, u8 *fadeState) {
-    ModeMgr *arg0 = (ModeMgr *)mgr;
-    s32 *fade = (s32 *)fadeState;
-
-    if (arg0->next != NULL && fade != NULL && (fade[1] == 0 || fade[2] >= 3)) {
-        if (arg0->cur != NULL) {
-            if (!(arg0->flags & 1) && arg0->cur->exit != NULL) {
-                arg0->cur->exit();
+void func_8001E610(process_control_info *pc, fade_info *fade) {
+    if (pc->next_process != NULL && fade != NULL && (fade->speed == 0 || fade->maxed >= 3)) {
+        if (pc->process != NULL) {
+            if (!(pc->flags & 1) && pc->process->quit != NULL) {
+                pc->process->quit();
             }
-            if (fade != NULL && fade[1] != 0 && fade[2] >= 3) {
+            if (fade != NULL && fade->speed != 0 && fade->maxed >= 3) {
                 func_8001888C();
                 while (func_80011DB4(&D_8004E0F0) != NULL) {
                 }
                 func_80010AE8(&D_8004E0F0);
             }
         }
-        arg0->prev = arg0->cur;
-        arg0->cur = arg0->next;
-        arg0->next = NULL;
-        if (arg0->cur->heapStart != NULL) {
+        pc->last_process = pc->process;
+        pc->process = pc->next_process;
+        pc->next_process = NULL;
+        if (pc->process->heap != NULL) {
             func_8002AC70();
             while (func_80012FFC() != 0) {
                 func_8001231C();
                 func_80010AE8(&D_8004E0F0);
                 func_8002BAE8();
             }
-            func_80011BF8(&D_8004E0F0, arg0->cur->heapStart, 0x801FF000 - (s32)arg0->cur->heapStart);
+            func_80011BF8(&D_8004E0F0, (u8 *)pc->process->heap, 0x801FF000 - (s32)pc->process->heap);
             func_80012E54();
         }
         ((D5A614View *)D_8005A614)->unk30 &= ~1;
-        if (!(arg0->flags & 2)) {
-            if (arg0->flags & 0x10) {
-                arg0->flags = 0;
+        if (!(pc->flags & 2)) {
+            if (pc->flags & 0x10) {
+                pc->flags = 0;
             }
-            if (arg0->cur->init != NULL) {
-                arg0->cur->init();
+            if (pc->process->init != NULL) {
+                pc->process->init();
             }
-        } else if (arg0->flags & 0x10) {
-            arg0->flags = 0;
+        } else if (pc->flags & 0x10) {
+            pc->flags = 0;
         }
     }
-    if (arg0->cur != NULL && !(arg0->flags & 8) && arg0->cur->update != NULL) {
-        arg0->cur->update();
+    if (pc->process != NULL && !(pc->flags & 8) && pc->process->update != NULL) {
+        pc->process->update();
     }
 }
 
-void func_8001E824(u8 *arg0) {
-    (*(s32*)((u8*)(arg0) + 12)) = 2;
-    (*(s32*)((u8*)(arg0) + 4)) = (s32) (*(s32*)((u8*)(arg0) + 8));
+void func_8001E824(process_control_info *pc) {
+    pc->flags = 2;
+    pc->next_process = pc->last_process;
 }
 
-void process_interrupt(u8 *arg0, s32 arg1) {
-    (*(s32*)((u8*)(arg0) + 4)) = arg1;
-    (*(s32*)((u8*)(arg0) + 12)) = 1;
+void process_interrupt(process_control_info *pc, process_info *process) {
+    pc->next_process = process;
+    pc->flags = 1;
 }
 
-void func_8001E848(u8 *arg0, s32 arg1) {
-    (*(s32*)((u8*)(arg0) + 4)) = arg1;
-    (*(s32*)((u8*)(arg0) + 12)) = 0;
+void func_8001E848(process_control_info *pc, process_info *process) {
+    pc->next_process = process;
+    pc->flags = 0;
 }
 
-/* arg0 points to a table of handlers; calls handler 3 if there is one. */
-void process_quit(void *arg0) {
-    void (**ops)(void);
+void process_quit(process_control_info *pc) {
+    process_info *p;
     void (*fn)(void);
 
-    if (arg0 != NULL) {
-        ops = *(void (***)(void))arg0;
-        if (ops != NULL) {
-            fn = ops[3];
+    if (pc != NULL) {
+        p = pc->process;
+        if (p != NULL) {
+            fn = p->quit;
             if (fn != NULL) {
                 fn();
             }
@@ -3282,30 +3278,29 @@ void process_quit(void *arg0) {
     }
 }
 
-void func_8001E898(u8 *arg0) {
-    s32 (*temp_v1)();
-    u8 *temp_v0;
+void func_8001E898(process_control_info *pc) {
+    process_info *p;
+    void (*fn)(void);
 
-    if (arg0 != NULL) {
-        temp_v0 = (*(s32*)((u8*)(arg0) + 0));
-        if (temp_v0 != NULL) {
-            temp_v1 = (*(s32*)((u8*)(temp_v0) + 8));
-            if ((temp_v1 != NULL) && !((*(s32*)((u8*)(arg0) + 12)) & 4)) {
-                temp_v1();
+    if (pc != NULL) {
+        p = pc->process;
+        if (p != NULL) {
+            fn = p->render;
+            if (fn != NULL && !(pc->flags & 4)) {
+                fn();
             }
         }
     }
 }
 
-/* arg0 points to a table of handlers; calls handler 0 if there is one. */
-void process_init(void *arg0) {
-    void (**ops)(void);
+void process_init(process_control_info *pc) {
+    process_info *p;
     void (*fn)(void);
 
-    if (arg0 != NULL) {
-        ops = *(void (***)(void))arg0;
-        if (ops != NULL) {
-            fn = ops[0];
+    if (pc != NULL) {
+        p = pc->process;
+        if (p != NULL) {
+            fn = p->init;
             if (fn != NULL) {
                 fn();
             }
@@ -3313,11 +3308,11 @@ void process_init(void *arg0) {
     }
 }
 
-void func_8001E934(u8 *arg0, s32 arg1) {
-    (*(s32*)((u8*)(arg0) + 0)) = arg1;
-    (*(s32*)((u8*)(arg0) + 4)) = 0;
-    (*(s32*)((u8*)(arg0) + 8)) = 0;
-    (*(s32*)((u8*)(arg0) + 12)) = 0;
+void func_8001E934(process_control_info *pc, process_info *process) {
+    pc->process = process;
+    pc->next_process = NULL;
+    pc->last_process = NULL;
+    pc->flags = 0;
 }
 
 void func_8001E948(void) {

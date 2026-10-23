@@ -634,23 +634,38 @@ typedef struct LoaderState {
     /* 0x10 */ s32 unk10;
 } LoaderState;
 
-/* A game mode (func_8001E610): called on entry, every frame and on exit;
- * heapStart non-NULL resets the heap to start there. */
-typedef struct GameModeDef {
+/* A process (a game mode), its control block and the screen fade, from the
+ * Jampack Winter 2000 demo's debug types (docs/PROTOTYPES.md).
+ * A process's init runs when it starts (func_8001E610), update every frame,
+ * render from func_8001E898 and quit when it ends; a non-NULL heap resets the
+ * heap to start there. */
+typedef struct process_info {
     /* 0x00 */ void (*init)(void);
     /* 0x04 */ void (*update)(void);
-    /* 0x08 */ void *unk8;
-    /* 0x0C */ void (*exit)(void);
-    /* 0x10 */ u8 *heapStart;
-} GameModeDef;
+    /* 0x08 */ void (*render)(void);
+    /* 0x0C */ void (*quit)(void);
+    /* 0x10 */ u32 *heap;
+} process_info;
+BASH_SIZE_CHECK(process_info, 0x14);
 
-/* The mode switcher (func_8001E610, D_8009F658). */
-typedef struct ModeMgr {
-    /* 0x00 */ GameModeDef *cur;
-    /* 0x04 */ GameModeDef *next;
-    /* 0x08 */ GameModeDef *prev;
-    /* 0x0C */ s32 flags;   /* 1: skip exit, 2: skip init, 8: skip update, 0x10: clear after a switch */
-} ModeMgr;
+/* func_8001E610 switches to next_process once the fade is done. */
+typedef struct process_control_info {
+    /* 0x00 */ process_info *process;
+    /* 0x04 */ process_info *next_process;
+    /* 0x08 */ process_info *last_process;
+    /* 0x0C */ s32 flags;   /* 1: skip quit, 2: skip init, 4: skip render, 8: skip update, 0x10: clear after a switch */
+} process_control_info;
+BASH_SIZE_CHECK(process_control_info, 0x10);
+
+/* amount steps by speed towards 0x1000 or 0; maxed counts the frames at the
+ * end (func_8001E598). */
+typedef struct fade_info {
+    /* 0x00 */ s32 amount;
+    /* 0x04 */ s32 speed;
+    /* 0x08 */ s32 maxed;
+    /* 0x0C */ s32 delay;
+} fade_info;
+BASH_SIZE_CHECK(fade_info, 0x10);
 
 typedef struct LoadNode {
     /* 0x00 */ u8 *file;                 /* file table entry; NULL once cancelled mid-load (func_80012F04) */

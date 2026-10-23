@@ -37,7 +37,7 @@ typedef struct Ovl69Sub {
     /* 0x31C */ s32 b;
 } Ovl69Sub;
 
-extern u8 D_8009F480[];
+extern process_info D_8009F480;
 extern GfxViewport D_800B8DD8;
 extern s32 D_800B95F0;
 extern s32 D_800B9628;
@@ -47,9 +47,9 @@ extern s8 D_800B9CC4[];
 extern s8 D_800B9CF4[];
 extern s32 D_800B8518[];
 extern u8 D_800A0840[];
-extern u8 D_8009E5C8[];
+extern process_info D_8009E5C8;
 extern u16 D_800B8DC8[];
-void func_80094D88(s32 arg0, s32 arg1);
+void func_80094D88(s32 arg0, process_info *arg1);
 extern u8 D_800BAAD0[];
 extern GfxViewport D_800B8DD8;
 extern GfxCamera D_800B9F1C;
@@ -141,10 +141,10 @@ extern s32 D_800B8508[];
 extern s32 D_800B8EA4[];
 extern s32 D_800B8EC0[];
 extern s32 D_800B8ED4[];
-extern u8 D_800B9510[];
+extern process_info D_800B9510;
 
 extern s32 D_800B8C84;
-extern u8 D_800B8E28[];
+extern process_info D_800B8E28;
 extern s32 *D_800B8EB8;
 extern s32 *D_800B8EE4;
 extern Ext400 D_800B95F4;

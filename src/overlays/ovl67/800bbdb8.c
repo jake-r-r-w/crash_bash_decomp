@@ -584,10 +584,10 @@ void func_800BDC0C(void) {
                 }
                 D_800C450C--;
                 if (D_800C450C == -1) {
-                    set_fade(D_8009F644, 0x100, 0);
+                    set_fade(&D_8009F644, 0x100, 0);
                 }
                 if (D_800C450C == -0x3C) {
-                    set_fade(D_8009F644, -0x100, 0);
+                    set_fade(&D_8009F644, -0x100, 0);
                     func_800BDB00();
                     return;
                 }
@@ -2276,7 +2276,7 @@ void func_800C318C(s32 arg0) {
     D_800C7614.unk40 = 0;
     func_80093038();
     func_80018B08((GfxViewport *)D_8009F6F4, (GfxCamera *)&D_800C7614);
-    D_800569AC = *(s32 *)D_8009F644;
+    D_800569AC = D_8009F644.amount;
     func_8009440C();
 }
 

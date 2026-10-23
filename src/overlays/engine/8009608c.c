@@ -868,7 +868,7 @@ void func_800984D4(void) {
     int new_var;
 
     func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
-    D_800569AC = *(s32 *)D_8009F644;
+    D_800569AC = D_8009F644.amount;
     if (D_800ADBC4 != -1) {
         s = (s32 *)GetEngineSlot(3)->sub;
         s[new_var = 0xA8 / 4] &= 0xFFFF7FFF;

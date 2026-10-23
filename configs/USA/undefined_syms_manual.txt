@@ -1,0 +1,5 @@
+/* Symbols an overlay's C names but its code reaches only at an offset, so
+ * splat's undefined_syms lists the offset's label instead: ovl69 writes
+ * D_8009F658.next_process (splat's D_8009F65C). PROVIDE defines it only for
+ * links that do not (the engine's data defines it). */
+PROVIDE(D_8009F658 = 0x8009F658);

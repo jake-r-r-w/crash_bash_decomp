@@ -317,7 +317,7 @@ typedef struct {
 extern s32 D_8009F71C;
 extern _sfx_handler *D_800BCEEC;
 extern u16 D_800BCBDC[];
-extern u8 D_800BCC04[];
+extern process_info D_800BCC04;
 
 void PlotCrystalFlash(void);
 

@@ -25,7 +25,7 @@ void func_800B4694(void) {
         func_8001C2C0(GetEngineSlot(0));
     }
     func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
-    D_800569AC = *(s32 *)D_8009F644;
+    D_800569AC = D_8009F644.amount;
     func_800798A4();
 }
 
@@ -167,7 +167,7 @@ s32 func_800B488C(void) {
         D_8009870E = 2;
         D_80098710 = 45;
         music_fade_out(45);
-        set_fade(D_8009F644, 0x200, 0);
+        set_fade(&D_8009F644, 0x200, 0);
         return 0;
     case 2:
         if (D_80098710 == 0) {
@@ -197,7 +197,7 @@ void func_800B4C94(void)
   ((EngMenuGame *) g)->unk74 = 0;
   func_800B8324(0);
   D_80098714 = 0;
-  set_fade(D_8009F644, -0x200, 0);
+  set_fade(&D_8009F644, -0x200, 0);
   new_var = 0x1628;
   *((u8 *) (g + 0x75)) = 1;
   for (i = 0; i < ASTCount; i++)

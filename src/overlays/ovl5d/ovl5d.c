@@ -2511,7 +2511,7 @@ void func_800BAC10(void) {
     u8 *vp = D_8009F6F4;
     func_80093038();
     func_80018B08((GfxViewport *)vp, (GfxCamera *)D_80051640);
-    D_800569AC = *(s32 *)D_8009F644;
+    D_800569AC = D_8009F644.amount;
     func_8009440C();
 }
 

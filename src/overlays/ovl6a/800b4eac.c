@@ -64,7 +64,7 @@ void func_800B4EAC(void) {
     }
     func_800B8284();
     D_800BCEEC = 0;
-    func_8001E934(&D_8009F8A4, (s32)D_800BCC04);
+    func_8001E934(&D_8009F8A4, &D_800BCC04);
 }
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl6a/800b4eac", D_800B330C);
@@ -446,7 +446,7 @@ void func_800B5710(s32 arg0) {
                 Heroes[0].hero_shadow->flags &= ~0x8000;
             }
             g->unk30 |= 0x200;
-            func_80092AF4((s32)D_8009F46C, 0x200);
+            func_80092AF4(&D_8009F46C, 0x200);
             break;
         default:
             func_800B7E14(&D_8009D530->unk10.x, 9);
@@ -664,7 +664,7 @@ void func_800B6A3C(void) {
     s32 v;
     s32 k;
     s32 n;
-    u8 *p;
+    fade_info *p;
 
     switch (D_800BCED8) {
     case 0:
@@ -709,13 +709,13 @@ void func_800B6A3C(void) {
         break;
     case 1:
         if (func_80012FFC() == 0) {
-            set_fade(D_8009F644, 0x200, 0);
+            set_fade(&D_8009F644, 0x200, 0);
             D_800BCED8 = 2;
         }
         break;
     case 2:
-        p = D_8009F644;
-        if (((s32 *)p)[2] >= 3) {
+        p = &D_8009F644;
+        if (p->maxed >= 3) {
             func_8001DDD8(D_80058AD0);
             func_8001E054(D_80058AD0, D_800BCEE4);
             g->unk62 = D_800BCEDC;
@@ -1052,7 +1052,7 @@ void func_800B7BA4(void) {
     EXTengine *e;
 
     func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
-    D_800569AC = *(s32 *)D_8009F644;
+    D_800569AC = D_8009F644.amount;
     if (D_800BCED4 >= 0) {
         if (!(D_8005A624 & 1)) {
             e = GetEngineSlot(1);
@@ -1078,7 +1078,7 @@ void func_800B7CA8(void) {
     EXTengine *e;
 
     func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
-    D_800569AC = *(s32 *)D_8009F644;
+    D_800569AC = D_8009F644.amount;
     if (D_800BCED4 >= 0) {
         if (!(D_8005A624 & 1)) {
             e = GetEngineSlot(1);
@@ -2494,7 +2494,7 @@ void func_800BB038(void) {
         new_var = &D_800BD7E0[D_800BF1A0];
         D_800BF19C = (*new_var).unk8;
     }
-    set_fade(D_8009F644, -0x300, 0);
+    set_fade(&D_8009F644, -0x300, 0);
     cam_init(D_800BF1A8);
     func_80095BEC(0, D_800BD8B0);
     GetEngineSlot(0)->unk10.x = 0xC8;
@@ -2511,7 +2511,7 @@ void func_800BB280(void) {
     EXTengine *e;
 
     func_80018B08((GfxViewport *)D_800BDB14, (GfxCamera *)D_800BF1A8);
-    D_800569AC = *(s32 *)D_8009F644;
+    D_800569AC = D_8009F644.amount;
     e = GetEngineSlot(0);
     i = 0;
     g = D_8005A614;
@@ -2539,7 +2539,7 @@ void func_800BB364(void) {
 void func_800BB38C(void) {
     func_800BABEC();
     if (D_80051380 & 9) {
-        D_8009F65C = D_8009F46C;
+        D_8009F658.next_process = &D_8009F46C;
     }
 }
 

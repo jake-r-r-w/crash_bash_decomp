@@ -1282,7 +1282,7 @@ void func_80082590(void) {
             if (*(s16 *)(e + 0xC) != -1) {
                 func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
                 gs->otzAdd = 0x200;
-                gs->modelDp = *(s32 *)D_8009F644;
+                gs->modelDp = *(s32 *)&D_8009F644;   /* a scalar read: scheduled above the otzAdd store */
                 func_8001A6D4(e, 0x10000000);
             }
         }
@@ -1295,7 +1295,7 @@ void func_80082590(void) {
             if (*(s16 *)(e + 0xC) != -1) {
                 func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
                 gs->otzAdd = 0x200;
-                gs->modelDp = *(s32 *)D_8009F644;
+                gs->modelDp = *(s32 *)&D_8009F644;
                 func_8001A6D4(e, 0x10000000);
             }
         }

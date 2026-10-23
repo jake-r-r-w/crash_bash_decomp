@@ -47,8 +47,8 @@ typedef struct Ovl60Hooks {
     /* 0x68 */ void *unk68;
 } Ovl60Hooks;
 extern Ovl60Hooks D_8009D6E8;
-extern u8 D_800C52B8[];
-extern u8 D_8009F8A4;
+extern process_info D_800C52B8;
+extern process_control_info D_8009F8A4;
 void func_800C34B0(void);
 void func_800C34D0(void);
 void func_800C34F0(s32 arg0);

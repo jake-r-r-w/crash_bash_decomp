@@ -61,7 +61,7 @@ void func_800941EC(void);
 
 void func_80094274(void);
 
-void func_80094D88(s32 arg0, s32 arg1);
+void func_80094D88(s32 arg0, process_info *arg1);
 
 s32 func_80094F30(void);
 
@@ -287,13 +287,13 @@ typedef struct EngColorSrc {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ EngColor *col;
 } EngColorSrc;
-extern u8 D_8009F998[];
-extern u8 D_8009FA00[];
+extern process_info D_8009F998;
+extern process_info D_8009FA00;
 extern u8 D_8004E998[];
-extern s32 D_8009F720[];
+extern process_info D_8009F720;
 void func_80093854(void);
 void load_initial_dbases(void);
-void func_80092AF4(s32 arg0, s32 arg1);
+void func_80092AF4(process_info *process, s32 speed);
 
 void func_80093BE8(void);
 

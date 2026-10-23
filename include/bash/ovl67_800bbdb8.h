@@ -54,7 +54,7 @@ typedef struct MixObj {
 } MixObj;
 
 extern SetupCam D_800C7614;
-extern u8 D_8009F644[];
+extern fade_info D_8009F644;
 extern u8 D_8009F6F4[];
 
 typedef struct MineSrc {
