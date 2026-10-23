@@ -20,8 +20,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
   **main.exe, the engine, ovl61, ovl65, ovl66, ovl67, ovl69 and ovl6a are
   complete**; 17 left (ovl5d 2, ovl5e 1, ovl5f 2, ovl60 2, ovl62 3, ovl63 4,
   ovl64 2, ovl68 1), every one tried by the swarm at least once. All 564
-  PsyQ functions (Sony objects). None parked by hand (`decomp.py status`;
-  the swarm parked 5, which the dashboard counts from `docs/swarm.js`). Matches are C only, natural C
+  PsyQ functions (Sony objects). One parked by hand, `func_800BE914`
+  (`decomp.py status`; the swarm parked 5, which the dashboard counts from
+  `docs/swarm.js`). Matches are C only, natural C
   first (CONVENTIONS.md, Matching rules; the "hack" class was dropped on
   2026-10-22: steering C counts as matched, inline asm is refused;
   `func_800193A8`'s register pins predate that). Every slot overlay's id word is
@@ -133,10 +134,27 @@ and current tools).
   (MATCHING.md, Diff patterns). Read the checkpoint's log for what was
   tried, not for rules: its "the gate refuses do { } while (0)" predates
   2026-10-22. The closest checkpoints left (stage, differing insns):
-  `func_800BE914` registers 7/170, `func_800B4048` instructions 10/255,
-  `Plot_PogoPadlock` registers 11/350, `Plot_PogoRipperRoo` instructions
-  16/656, `func_800B7508` registers 17/867, `func_800B5E28` instructions
-  21/195, `func_800B6708` registers 27/411. `CheckMineToBoss` has none.
+  `func_800B4048` instructions 10/255, `Plot_PogoPadlock` registers
+  11/350, `Plot_PogoRipperRoo` instructions 16/656, `func_800B7508`
+  registers 17/867, `func_800B5E28` instructions 21/195, `func_800B6708`
+  registers 27/411. `CheckMineToBoss` has none.
+- **`func_800BE914`'s copies** (parked 2026-10-23 at registers 7/170; the
+  `decomp.py block` note has the detail). The target copies each clamped
+  speed into v0 right before its `>> 8` (`move v0,aN; sra a2,v0,8`, four
+  times). No plain C shape tried keeps such a copy: combine folds an SImode
+  register copy into its user unless the copy's source is set between them
+  or its result is used again, and post-reload CSE forgets every value at
+  the label before them. The parked C gets them from 8-aligned struct
+  temps (a DImode SUBREG destination, which combine refuses), which can't
+  work after the first division, where `q` holds v1. Natural C that gets
+  everything else right: the parameters `pa`/`pb` reused for the x speeds,
+  plain nested-if clamps, plain shifts (every t-register then matches, `e`
+  in t6). The Aug 23 build has no clamps and loads each field straight
+  into v0 before the shift, so the copies came in with the clamps: look
+  for a clamp shape that leaves its result in a new pseudo. The game was
+  C++ (PROTOTYPES.md); `cc1plus` gives the same code for this C, so only a
+  C++ construct (an inline taking a reference, a small fixed-point class)
+  is still untried. Test files go through `try func_800BE914 --file`.
 - **Earlier compiles of the 17 left** (PROTOTYPES.md, Earlier compiles of a
   function, has the table). Each of the five biggest has a build within a
   few instructions of retail's: Oct 9's `func_800BC038` (+1 insn) and
@@ -532,6 +550,14 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-23 (hand: `func_800BE914` parked):** from the swarm's
+  checkpoint (registers 7/170). The four `move v0,X` copies before the
+  shifts are the whole problem; no natural shape, compiler (2.7.2 too)
+  or pass explains them (Open leads). Found on the way: parameter reuse
+  for the x speeds puts every t-register right. New tool: `decomp.py try
+  NAME --file F.c` diffs a test copy of a function with its unit's
+  settings in about 2 s. The checkpoint's C stays under `NON_MATCHING`.
 
 - **2026-10-23 (hand: `PogoAI_MoveTowardsTarget` matched):** from the
   swarm's checkpoint (instructions 4/330). `az`, the next square's world z,
