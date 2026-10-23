@@ -1390,7 +1390,7 @@ extern s8 D_8005A604[];
 extern s32 card_command_delay;
 extern s32 D_8005A620;
 extern u8 D_800556F4[];
-extern s32 D_8005AA58;
+extern s32 GlobalNAStatus;
 extern u8 D_80051640[];
 extern u8 D_800555A4[];
 extern s16 D_8005A648;

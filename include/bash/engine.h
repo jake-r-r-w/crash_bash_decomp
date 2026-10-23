@@ -162,7 +162,7 @@ extern EngineCfg D_8009F96C;
 extern EngineCfg D_800A0314;
 extern s32 D_8004E0D4;
 extern s32 D_8009F654;
-extern s16 D_8004E0CC;
+extern s16 core_process;
 extern u8 *D_80098594;
 extern s32 D_8009F968;
 extern u8 D_800D7144[];

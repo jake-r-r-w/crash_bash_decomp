@@ -117,7 +117,7 @@ void func_8007906C(void) {
     NAS *nas;
     u16 cls;
 
-    D_8005AA58 = 1;
+    GlobalNAStatus = 1;
     *D_8005AA40 = NULL;
     *(s32 *)D_8005AA44 = 0;
     i = 0;
@@ -148,7 +148,7 @@ void func_8007906C(void) {
             }
         }
     }
-    D_8005AA58 = 0;
+    GlobalNAStatus = 0;
 }
 
 void func_80079260(void) {
@@ -169,7 +169,7 @@ void func_80079260(void) {
     if (D_8005AA70[0] != 0) {
         ((void (*)(void))D_8005AA70[0])();
     }
-    D_8005AA58 = 0;
+    GlobalNAStatus = 0;
     ASTTable = EngineASTTable;
     ASTCount = func_8007AC00();
     func_80083708();
@@ -367,7 +367,7 @@ void func_8007976C(void) {
     }
     func_8007906C();
     func_80083E8C();
-    D_8005AA58 = 2;
+    GlobalNAStatus = 2;
     i = 0;
     if (*(s32 *)D_8005AA40 > 0) {
         do {
@@ -378,7 +378,7 @@ void func_8007976C(void) {
             }
         } while (i < *(s32 *)D_8005AA40);
     }
-    D_8005AA58 = 0;
+    GlobalNAStatus = 0;
     Draw_Clock();
     func_8007AF3C();
     if (PanelCtrl & 0x4000) {
@@ -738,9 +738,9 @@ void func_8007A718(void) {
 void func_8007A7C0(void) {
     func_80011410(&D_8004E0F0);
     func_80079554();
-    D_8005AA58 = 4;
+    GlobalNAStatus = 4;
     func_8007AF3C();
-    D_8005AA58 = 0;
+    GlobalNAStatus = 0;
     func_80081F64(0);
 }
 
@@ -749,7 +749,7 @@ void func_8007A808(void) {
     s32 r;
     s32 want;
 
-    D_8005AA58 = 0;
+    GlobalNAStatus = 0;
     ASTTable = EngineASTTable;
     ASTCount = func_8007AC00();
     func_80083708();
@@ -802,7 +802,7 @@ void func_8007AA18(void) {
     s32 i;
     EngObj *o;
 
-    D_8005AA58 = 2;
+    GlobalNAStatus = 2;
     i = 0;
     if (*(s32 *)D_8005AA40 > 0) {
         do {
@@ -813,7 +813,7 @@ void func_8007AA18(void) {
             }
         } while (i < *(s32 *)D_8005AA40);
     }
-    D_8005AA58 = 0;
+    GlobalNAStatus = 0;
     Draw_Clock();
     func_8007AF3C();
     if (PanelCtrl & 0x4000) {
@@ -822,16 +822,16 @@ void func_8007AA18(void) {
 }
 
 void func_8007AAF0(void) {
-    D_8005AA58 = 4;
+    GlobalNAStatus = 4;
     func_8007AF3C();
-    D_8005AA58 = 0;
+    GlobalNAStatus = 0;
 }
 
 void func_8007AB20(void) {
 }
 
 void func_8007AB28(void) {
-    D_8005AA58 = 0;
+    GlobalNAStatus = 0;
     if (D_8005AA80 != NULL) {
         D_8005AA80();
     }
@@ -844,13 +844,13 @@ void func_8007AB6C(void) {
 }
 
 void func_8007AB8C(void) {
-    D_8005AA58 = 0;
+    GlobalNAStatus = 0;
     ASTTable = EngineASTTable;
     ASTCount = func_8007AC00();
 }
 
 void func_8007ABC4(void) {
-    D_8005AA58 = 0;
+    GlobalNAStatus = 0;
     D_8005AA48 = 0;
     func_80024AD8();
     func_80026ECC();

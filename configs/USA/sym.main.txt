@@ -813,3 +813,5 @@ FirstNas = 0x8005AA10;
 HeadOfMissiles = 0x8005AA28;
 xa_count = 0x80063A7C;
 num_sfx_banks = 0x800654AC;
+core_process = 0x8004E0CC;
+GlobalNAStatus = 0x8005AA58;

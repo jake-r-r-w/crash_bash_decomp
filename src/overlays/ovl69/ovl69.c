@@ -24,7 +24,7 @@ void func_800B37BC(void) {
     D_80051604 = 0;
     switch (*(s16 *)(g + 0x34)) {
     case 0x28:
-        D_8004E0CC = 0;
+        core_process = 0;
         func_80092C54();
         *(u16 *)(g + 0x32) |= 0x200;
         func_8001E934(&D_8009F8A4, (s32)D_800B8E28);

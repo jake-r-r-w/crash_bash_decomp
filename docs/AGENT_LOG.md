@@ -112,13 +112,10 @@ and current tools).
 
 ## Open leads
 
-- **Finish the demo discs' symbols** (PROTOTYPES.md; the names are applied:
-  133 functions, 49 globals, unit `panel`). Left: 8 globals that start inside a retail symbol
-  (split it first: `core_process`, `GemRules`, `default_shell_info`, ...);
-  the parameter types from the C++ names and the globals' types; PANEL.CPP's
-  locals; the new enums (`cheatflags`, `levnumbers`, `worldnumbers`,
-  `IconParts`); the link groups against the engine units. Full reports:
-  `protos/<disc>/scan.md`.
+- **Finish the demo discs' symbols** (PROTOTYPES.md; applied: 135 function
+  and 51 global names, unit `panel`, the Jampack enums). Left: the parameter
+  types from the C++ names and the globals' types; PANEL.CPP's locals; the
+  link groups against the engine units. Full reports: `protos/<disc>/scan.md`.
 - **Tune the permuter from its record.** Runs are logged since 2026-10-20
   (`decomp.py permstats`, `swarm.mjs stats`). Two ideas to try once there
   are a few dozen runs, compared on that record:
@@ -526,6 +523,15 @@ Newest first, a few lines each. Details are in the commits.
   PlaySfx as a `goto` into case 8's (not the source; leads list why). No
   `break`/`goto` mix gives the target's three tail survivors. Found the
   unit is probably `PAUSE.CPP`; `cc1plus` compiles the C identically.
+
+- **2026-10-23 (stubs and the "mid-symbol" globals):** `DefaultTouched`,
+  `DefHero2ObjectCollision` placed by the matched code storing them as
+  handlers (`proto_scan.py`: by users, then by order among identical stubs;
+  `InitParticleEffect` lands on the repo's own name). `PrintNasPos` is never
+  referenced: unplaceable. Of the 8 globals "inside a symbol", 2 had exact
+  symbols the lookup missed (`core_process`, `GlobalNAStatus`: renamed); 6
+  had no reference to their own address in retail, only to the next objects,
+  so they are rejected (`globals.txt` now shows the first offset).
 
 - **2026-10-23 (Jampack enums in `shell.h`):** `cheatflags`,
   `worldnumbers`, `levnumbers` (demo values, marked). Jampack's `IconParts`

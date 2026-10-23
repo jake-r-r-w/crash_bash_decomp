@@ -291,17 +291,18 @@ The 4 names the repo gave itself are replaced by the originals
   (`DefaultTouched`, `DefHero2ObjectCollision`, `PrintNasPos`,
   `InitParticleEffect`).
 - The parameter types from the C++ names, one prototype at a time.
-- The rest of the globals (`globals.txt`, 41 mapped). `main.exe`'s 13 that
-  land on a retail `D_` symbol's start are renamed (`renames_main_globals.txt`:
-  `screen_aspect`, `FirstNas`, `World_floor_level`, `num_sfx_banks`, `cdb`,
-  ...); 5 sit inside one (`core_process`, `map_frame_counter`,
-  `GlobalNAStatus`, `GemRules`, `ASTString`) and need the symbol split first;
-  15 are PsyQ data (Sony's names stay). The engine's are renamed with
-  Jampack's (36 in all: also `map`, `camera_frame_list_size`,
-  `camera_frame_right`); `default_shell_info` and the two overlay ones
-  (`PolarAITeeterChance`, `RACEQualityFactor4t`) sit inside a symbol and wait
-  with the 5 above. The two globals both demos map agree
-  (`HealthIconPos`, `BigScore_teamA`).
+- Globals (`globals.txt`, 41 mapped): `main.exe`'s 15 game ones are renamed
+  (`renames_main_globals*.txt`: `screen_aspect`, `FirstNas`, `World_floor_level`,
+  `num_sfx_banks`, `cdb`, ..., `core_process`, `GlobalNAStatus`; those two are
+  named only in the engine's symbol list, which the first lookup missed);
+  15 are PsyQ data (Sony's names stay); the engine's are renamed with
+  Jampack's (36: also `map`, `camera_frame_list_size`, `camera_frame_right`).
+  Rejected: `map_frame_counter`, `GemRules`, `ASTString`, `default_shell_info`,
+  `PolarAITeeterChance`, `RACEQualityFactor4t`. No retail code references
+  their computed address: their only evidence is references 4 to 0x6C bytes
+  in, to the next objects (a label has no size, so its span runs to the next
+  label). `globals.txt` shows that offset (`inside+0xK`); a large one is weak.
+  The two globals both demos map agree (`HealthIconPos`, `BigScore_teamA`).
 - The link groups give file boundaries in the engine (`_core_end`,
   `_engine_start`, ...); check them against the unit split in
   ARCHITECTURE.md.
