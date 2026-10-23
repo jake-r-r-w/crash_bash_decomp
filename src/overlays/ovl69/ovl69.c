@@ -845,7 +845,7 @@ void func_800B58E4(void) {
 }
 
 void func_800B5978(u8 *cam, s32 arg1) {
-    u8 *o = (u8 *)func_8001E48C(arg1);
+    u8 *o = (u8 *)path_get(arg1);
     s32 *p;
     s32 t;
 

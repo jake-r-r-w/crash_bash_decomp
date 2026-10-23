@@ -145,7 +145,7 @@ void func_800B5158(void) {
             }
         }
     }
-    ref = *(Vec3W *)((u8 *)func_8001E48C(2) + 0x30);
+    ref = *(Vec3W *)((u8 *)path_get(2) + 0x30);
     i = 0;
     for (;;) {
         s32 k;
@@ -155,7 +155,7 @@ void func_800B5158(void) {
         }
         p = &D_800BCCF4[i];
         if (p->unk14 != NULL) {
-            obj = (u8 *)func_8001E48C(i + 0x65);
+            obj = (u8 *)path_get(i + 0x65);
             if (obj != NULL) {
                 d = *(Vec3W *)(obj + 0x30);
                 d.a -= ref.a;
@@ -1182,7 +1182,7 @@ void func_800B7FAC(s32 arg0) {
 }
 
 void func_800B7FD0(u8 *cam, s32 arg1) {
-    u8 *o = (u8 *)func_8001E48C(arg1);
+    u8 *o = (u8 *)path_get(arg1);
     s32 *p;
     s32 t;
 
@@ -1329,7 +1329,7 @@ void func_800B8474(s32 arg0) {
     u8 *o;
 
     func_800B83D4(arg0);
-    o = (u8 *)func_8001E48C(2);
+    o = (u8 *)path_get(2);
     if (o != NULL) {
         D_8009EE9C.unkC = *(s32 *)(o + 0x58);
         D_8009EE9C.unk10 = *(s32 *)(o + 0x74);
@@ -1833,7 +1833,7 @@ void func_800B96F4(CamView *out, s32 arg1) {
     if (D_800BD5B0 < 2) {
         id = 1;
     }
-    o = (u8 *)func_8001E48C(id);
+    o = (u8 *)path_get(id);
     if (arg1 != 0) {
         t = *(s32 *)(o + 0x58);
         D_800C7F04 = *(CamXYZ *)(o + 0x30);
@@ -1866,7 +1866,7 @@ void func_800B96F4(CamView *out, s32 arg1) {
     case 1:
         if (--D_800BD5AC <= 0) {
             D_800BD5B0 = 2;
-            D_800C7EF4 = *(s32 *)((u8 *)func_8001E48C(2) + 0x58);
+            D_800C7EF4 = *(s32 *)((u8 *)path_get(2) + 0x58);
             if (D_800BD594 != NULL) {
                 c = D_800BD594->child;
                 if (c != NULL && D_800BD594->f5C == 0) {

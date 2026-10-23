@@ -5523,10 +5523,10 @@ void PlotScriptFX(NAS *nas) {
                         }
                         u = &sd->threads[j];
                         if (u->threadinfo != NULL) {
-                            func_800110A8(u->threadinfo, &D_8004E0F0);
+                            mal_free(u->threadinfo, &D_8004E0F0);
                         }
                         if (u->threadcontrol != NULL) {
-                            func_800110A8(u->threadcontrol, &D_8004E0F0);
+                            mal_free(u->threadcontrol, &D_8004E0F0);
                         }
                         j++;
                     }
@@ -5605,10 +5605,10 @@ void PlotScriptFX(NAS *nas) {
                                     }
                                     u = &sd->threads[k];
                                     if (u->threadinfo != NULL) {
-                                        func_800110A8(u->threadinfo, &D_8004E0F0);
+                                        mal_free(u->threadinfo, &D_8004E0F0);
                                     }
                                     if (u->threadcontrol != NULL) {
-                                        func_800110A8(u->threadcontrol, &D_8004E0F0);
+                                        mal_free(u->threadcontrol, &D_8004E0F0);
                                     }
                                     k++;
                                 }
@@ -5970,10 +5970,10 @@ void func_8008CFBC(EXTengine *eng) {
                 }
                 t = &sd->threads[i];
                 if (t->threadinfo != NULL) {
-                    func_800110A8(t->threadinfo, &D_8004E0F0);
+                    mal_free(t->threadinfo, &D_8004E0F0);
                 }
                 if (t->threadcontrol != NULL) {
-                    func_800110A8(t->threadcontrol, &D_8004E0F0);
+                    mal_free(t->threadcontrol, &D_8004E0F0);
                 }
                 i++;
             }

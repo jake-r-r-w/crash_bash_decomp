@@ -166,7 +166,7 @@ static inline void func_800107C8_merge(MemBlock *a, Heap *arg1, s32 m1) {
     if (a == arg1->lowest) {
         arg1->lowest = func_80011BC0(b);
     }
-    func_800110A8(b + 1, arg1);
+    mal_free(b + 1, arg1);
 }
 
 #ifndef NON_MATCHING
@@ -222,7 +222,7 @@ void mal_update(Heap *heap) {
         if (a == heap->lowest) {
             heap->lowest = func_80011BC0(b);
         }
-        func_800110A8(b + 1, heap);
+        mal_free(b + 1, heap);
         t = VSync(1) - t;
         p = Heap_NextToMove(heap);
         D_8004E0E8 += t;
@@ -236,7 +236,7 @@ void mal_update(Heap *heap) {
             } else {
                 heap->deferred = q->nextFree;
             }
-            func_800110A8(q + 1, &D_8004E0F0);
+            mal_free(q + 1, &D_8004E0F0);
             if (qprev != NULL) {
                 q = qprev->nextFree;
             } else {
@@ -317,7 +317,7 @@ void mal_update(Heap *heap) {
             } else {
                 heap->deferred = q->nextFree;
             }
-            func_800110A8(q + 1, &D_8004E0F0);
+            mal_free(q + 1, &D_8004E0F0);
             if (qprev != NULL) {
                 q = qprev->nextFree;
             } else {
@@ -408,7 +408,7 @@ void func_8001097C(Heap *heap) {
         new->prev = prev;
         prev->owner = (void **)-1;
         prev->size = size;
-        func_800110A8(prev + 1, heap);
+        mal_free(prev + 1, heap);
     }
 }
 
@@ -469,7 +469,7 @@ static inline void func_80010AE8_merge(MemBlock *arg0, Heap *arg1) {
     if (arg0 == arg1->lowest) {
         arg1->lowest = func_80011BC0(next);
     }
-    func_800110A8(next + 1, arg1);
+    mal_free(next + 1, arg1);
 }
 
 void func_80010AE8(Heap *heap) {
@@ -702,7 +702,7 @@ void *func_80010E8C(bytes, heap)
     return ret;
 }
 
-void func_800110A8(void *ptr, Heap *heap) {
+void mal_free(void *ptr, Heap *heap) {
     MemBlock *blk;
     MemBlock *next;
     MemBlock *prev;
@@ -820,7 +820,7 @@ void *func_800112A4(void *base, s32 offset, Heap *arg2) {
             prev->owner = (void **)-1;
             prev->size += (u32)offset >> 2;
             nb->prev = prev;
-            func_800110A8(prev + 1, arg2);
+            mal_free(prev + 1, arg2);
         } else {
             printf("first call here tag onto end\n");
             nb->prev = prev;
@@ -831,7 +831,7 @@ void *func_800112A4(void *base, s32 offset, Heap *arg2) {
         blk->size = words;
         next->prev = nb;
         nb->prev = blk;
-        func_800110A8(base, arg2);
+        mal_free(base, arg2);
     }
     return nb + 1;
 }
@@ -883,7 +883,7 @@ u8 *func_80011498(u8 *arg0, s32 arg1, Heap *arg2) {
         new_blk->unk0 = 0;
         new_blk->prev = blk;
         ((MemBlock *)((u8 *)blk + old * 4 + 0x18))->prev = new_blk;
-        func_800110A8((u8 *)new_blk + 0x18, heap);
+        mal_free((u8 *)new_blk + 0x18, heap);
     }
     return arg0;
 }
@@ -1321,7 +1321,7 @@ u8 *func_80011DB4(Heap *arg0) {
                 } else {
                     (*(s32*)((u8*)(arg0) + 16)) = (u8 *) (*(s32*)((u8*)(var_a0) + 20));
                 }
-                func_800110A8(var_a0 + 0x18, &D_8004E0F0);
+                mal_free(var_a0 + 0x18, &D_8004E0F0);
                 var_a0 = NULL;
                 if (var_s0 != NULL) {
                     var_a0 = (*(s32*)((u8*)(var_s0) + 20));
@@ -1428,7 +1428,7 @@ void func_80011FC8(MemBlock *arg0, Heap *arg1) {
     if (arg0 == arg1->lowest) {
         arg1->lowest = func_80011BC0(next);
     }
-    func_800110A8(next + 1, arg1);
+    mal_free(next + 1, arg1);
 }
 
 void func_800120E8(MemBlock *arg0, Heap *arg1) {
@@ -1460,7 +1460,7 @@ void func_800120E8(MemBlock *arg0, Heap *arg1) {
         dst->prev = prev;
         prev->owner = (void **)-1;
         prev->size = size;
-        func_800110A8(prev + 1, arg1);
+        mal_free(prev + 1, arg1);
     }
 }
 
@@ -1532,7 +1532,7 @@ s32 func_8001231C(void) {
             ls->state = 3;
             if (node->file == NULL) {
             free:
-                func_800110A8(buf, &D_8004E0F0);
+                mal_free(buf, &D_8004E0F0);
             } else if (node->fn != NULL) {
                 node->fn(buf, node->arg);
             } else {
@@ -1562,7 +1562,7 @@ s32 func_8001231C(void) {
         return 0;
     }
     if (func_80027790(node->file, node->offset / 2048, data, (node->size + 0x7FF) / 2048) < 0) {
-        func_800110A8((void *)ls->unk4, &D_8004E0F0);
+        mal_free((void *)ls->unk4, &D_8004E0F0);
         ls->unk4 = 0;
     }
     return 0;
@@ -2842,7 +2842,7 @@ void func_8001492C(void) {
     t[0x03C / 4] = func_800222BC;
     t[0x040 / 4] = music_fade_out;
     t[0x044 / 4] = path_find;
-    t[0x048 / 4] = func_8001E48C;
+    t[0x048 / 4] = path_get;
     t[0x04C / 4] = func_8001E21C;
     t[0x050 / 4] = func_8001E41C;
     t[0x054 / 4] = func_8001DAF8;
@@ -2862,7 +2862,7 @@ void func_8001492C(void) {
     t[0x08C / 4] = func_80018430;
     t[0x090 / 4] = func_800183DC;
     t[0x094 / 4] = release_sprim;
-    t[0x098 / 4] = func_800183B0;
+    t[0x098 / 4] = new_sprim;
     t[0x09C / 4] = func_8001A0D8;
     t[0x0A0 / 4] = func_8001A6D4;
     t[0x0A4 / 4] = sub_play_script;
@@ -2952,7 +2952,7 @@ void func_8001492C(void) {
     t[0x1F4 / 4] = func_80021FB0;
     t[0x1F8 / 4] = func_80022030;
     t[0x1FC / 4] = func_8001FE80;
-    t[0x200 / 4] = func_80021E60;
+    t[0x200 / 4] = get_script_header;
     t[0x204 / 4] = func_80021E44;
     t[0x208 / 4] = func_80021DD4;
     t[0x20C / 4] = func_8001ACC0;
@@ -3449,7 +3449,7 @@ void func_80015D08(u8 *arg0) {
     temp_s2 = arg0 + 0x6C;
     func_80011578((*(s32*)((u8*)(temp_s2) + 4)), &D_8004E0F0, 2);
     func_80011578((*(s32*)((u8*)(temp_s2) + 8)), &D_8004E0F0, 2);
-    func_800110A8((*(s32*)((u8*)(arg0) + 108)), &D_8004E0F0);
+    mal_free((*(s32*)((u8*)(arg0) + 108)), &D_8004E0F0);
 }
 
 s32 func_80015D70(u8 *arg0, u8 *arg1) {
@@ -3469,7 +3469,7 @@ s32 func_80015D70(u8 *arg0, u8 *arg1) {
     } else {
         func_800115D8(*(s32 *)(arg0 + 4), (void **)(arg1 + 0x74), (s32)&D_8004E0F0, 3);
         if (*(s32 *)(temp_s0 + 8) == 0) {
-            func_800110A8(temp_s4, &D_8004E0F0);
+            mal_free(temp_s4, &D_8004E0F0);
             var_v0 = 0;
         } else {
             func_800115D8(*(s32 *)(arg0 + 8), (void **)temp_s0, (s32)&D_8004E0F0, 3);
@@ -3505,7 +3505,7 @@ s32 func_80015E94(u8 *arg0, u8 *arg1) {
             (*(s32*)((u8*)(arg1) + 12)) = (s32) (*(s32*)((u8*)(arg0) + 0));
             return (*(s32*)((u8*)(arg1) + 0));
         }
-        func_800110A8(temp_s3, &D_8004E0F0);
+        mal_free(temp_s3, &D_8004E0F0);
         goto block_4;
     }
 block_4:
@@ -3563,7 +3563,7 @@ none:
 chk:
             if (found == 0) {
                 old = e->block;
-                func_800110A8(old->ptr, &D_8004E0F0);
+                mal_free(old->ptr, &D_8004E0F0);
                 e->block = NULL;
                 func_80012E14((u8 *)old);
             }
@@ -3611,7 +3611,7 @@ void dbase_asload_with_anims_texture_callback(u8 *arg0, u8 *arg1) {
     n = func_8002A650(arg0);
     heap = &D_8004E0F0;
     if (mal_first_free((n + 3) >> 2, heap->free) == NULL) {
-        func_800110A8(arg0, heap);
+        mal_free(arg0, heap);
         *(s32 *)(arg1 + 8) = 0;
         func_80016D44(arg1);
     } else {
@@ -3661,7 +3661,7 @@ void func_8001636C(u8 *arg0, s32 arg1) {
     temp_v0 = (*(s32*)((u8*)(arg0) + 12));
     temp_s0 = temp_v0 + ((*(s32*)((u8*)(temp_v0) + 60)) + 0x3C) + ((arg1 * 0x10) + 4);
     if ((*(s32*)((u8*)(temp_s0) + 8)) != 0) {
-        func_800110A8((void *)(*(s32*)((u8*)(temp_s0) + 8)), &D_8004E0F0);
+        mal_free((void *)(*(s32*)((u8*)(temp_s0) + 8)), &D_8004E0F0);
         (*(s32*)((u8*)(temp_s0) + 12)) = 0;
     } else if ((*(s32*)((u8*)(temp_s0) + 12)) != 0) {
         func_80012F04((void *)(*(s32*)((u8*)(temp_s0) + 12)));
@@ -3722,7 +3722,7 @@ found:
         blk = *(u8 **)(res + 0x14);
         if (blk != NULL) {
             if (*(void **)blk != NULL) {
-                func_800110A8(*(void **)blk, &D_8004E0F0);
+                mal_free(*(void **)blk, &D_8004E0F0);
             } else {
                 func_80012F04(*(LoadNode **)(blk + 4));
             }
@@ -3929,7 +3929,7 @@ u8 *a;
                 e = slot[5];
                 if (e != NULL) {
                     if (*(void **)e != NULL) {
-                        func_800110A8(*(void **)e, &D_8004E0F0);
+                        mal_free(*(void **)e, &D_8004E0F0);
                     } else {
                         func_80012F04(*(void **)(e + 4));
                     }
@@ -3957,7 +3957,7 @@ u8 *func_80016A20(u8 *arg0, s32 arg1) {
             item = *(void ***)(e + 0x14);
             if (item != NULL) {
                 if (item[0] != NULL) {
-                    func_800110A8(item[0], &D_8004E0F0);
+                    mal_free(item[0], &D_8004E0F0);
                 } else {
                     func_80012F04(item[1]);
                 }
@@ -3980,7 +3980,7 @@ u8 *func_80016AD4(s32 *arg0, u8 *rec) {
         return NULL;
     }
     if (*(void **)node != NULL) {
-        func_800110A8(*(void **)node, &D_8004E0F0);
+        mal_free(*(void **)node, &D_8004E0F0);
     } else {
         func_80012F04(*(void **)(node + 4));
     }
@@ -4089,7 +4089,7 @@ void func_80016D98(u8 *data, u8 *rec) {
     size = func_8002A650(data);
     heap = &D_8004E0F0;
     if (mal_first_free((size + 3) >> 2, heap->free) == NULL) {
-        func_800110A8(data, heap);
+        mal_free(data, heap);
         *(s32 *)(rec + 8) = 0;
         func_80016D44(rec);
     } else {
@@ -4107,7 +4107,7 @@ void func_80016E5C(u8 *arg0, u8 *arg1) {
     n = func_8002A650(arg0);
     heap = &D_8004E0F0;
     if (mal_first_free((n + 3) >> 2, heap->free) == NULL) {
-        func_800110A8(arg0, heap);
+        mal_free(arg0, heap);
         *(s32 *)(arg1 + 8) = 0;
         func_80016D44(arg1);
     } else {
@@ -4153,7 +4153,7 @@ void func_80016F54(u8 *arg0) {
                 q += 0x34;
             } while (i != -1);
         }
-        func_800110A8(*(void **)(arg0 + 0xC), &D_8004E0F0);
+        mal_free(*(void **)(arg0 + 0xC), &D_8004E0F0);
         *(s32 *)(arg0 + 0xC) = 0;
         func_80029790(arg0 + 0x10);
         *(s32 *)(arg0 + 8) = 0;
@@ -4823,7 +4823,7 @@ void release_sprim(void *data) {
     node->state = 2;
 }
 
-void *func_800183B0(void) {
+void *new_sprim(void) {
     PoolNode *node;
 
     node = D_80056844.free;
@@ -4841,7 +4841,7 @@ void func_800183DC(void) {
     func_8001828C();
     pool = &D_80056844;
     if (pool->mem != NULL) {
-        func_800110A8(pool->mem, &D_8004E0F0);
+        mal_free(pool->mem, &D_8004E0F0);
     }
     pool->mem = NULL;
 }
@@ -4999,7 +4999,7 @@ void func_80018764(s32 *arg0) {
     var_a0 = NULL;
     if (arg0 != NULL) {
         do {
-            func_800110A8((*(s32*)((u8*)(var_s0) + 4)), &D_8004E0F0);
+            mal_free((*(s32*)((u8*)(var_s0) + 4)), &D_8004E0F0);
             var_a0 = var_s0;
             var_s0 = (*(s32*)((u8*)(var_a0) + 0));
         } while (var_s0 != NULL);
@@ -5590,7 +5590,7 @@ void func_80019A60(s32 a, u8 *set, s32 c, void *d) {
             otz = *(s16 *)((u8 *)d + 0x68);
         }
         if ((u32)otz < (u32)D_80056998.otLen) {
-            func_80029D28((SpriteFrame *)(*(u8 **)((u8 *)D_80056998.unk0 + 0x18) + (a & 0xFFF) * 0x38),
+            texture_draw((SpriteFrame *)(*(u8 **)((u8 *)D_80056998.unk0 + 0x18) + (a & 0xFFF) * 0x38),
                           (s32)e, otz, g);
         }
         return;
@@ -5906,7 +5906,7 @@ void func_8001AA48(ModelObj *obj, void *arg1, s32 flags) {
     }
     prim = obj->slots[D_8005B690 & 1].prim;
     if (prim == NULL) {
-        prim = func_800183B0();
+        prim = new_sprim();
         obj->slots[D_8005B690 & 1].prim = prim;
         if (prim == NULL) {
             return;
@@ -6670,7 +6670,7 @@ s32 func_8001CC10(void *arg0, s32 arg1) {
     if (want != slot->size) {
         if (slot->size < want) {
             if (slot->ptr != 0) {
-                func_800110A8(slot, &D_8004E0F0);
+                mal_free(slot, &D_8004E0F0);
             }
             func_800115D8(*(u16 *)((u8 *)arg0 + 8) * 0x28, slot, &D_8004E0F0, ((D_8005B690 & 1)?3:2));
             if (slot->ptr == 0) {
@@ -6986,7 +6986,7 @@ void draw_init(void) {
 
 void func_8001D604(void) {
     if (D_80058AC8 != 0) {
-        func_800110A8(D_80058AC8, &D_8004E0F0);
+        mal_free(D_80058AC8, &D_8004E0F0);
         D_80058AC8 = 0;
     }
 }
@@ -7147,7 +7147,7 @@ void map_update(s32 *arg0) {
 
 void func_8001DDD8(u8 *arg0) {
     func_80016F54((*(s32*)((u8*)(arg0) + 0)));
-    func_800110A8((*(s32*)((u8*)(arg0) + 28)), &D_8004E0F0);
+    mal_free((*(s32*)((u8*)(arg0) + 28)), &D_8004E0F0);
     (*(s32*)((u8*)(arg0) + 28)) = 0;
 }
 
@@ -7347,7 +7347,7 @@ KeyEntry *func_8001E41C(KeyBlock *arg0, s32 arg1) {
     return p - 1;
 }
 
-s32 *func_8001E48C(s32 arg0) {
+s32 *path_get(s32 arg0) {
     s32 *p;
     s32 n;
     s32 i;
@@ -8698,7 +8698,7 @@ void func_8002141C(u8 *arg0) {
     }
     temp_a0_2 = (*(s32*)((u8*)(arg0) + 20));
     if (temp_a0_2 != 0) {
-        func_800110A8(temp_a0_2, &D_8004E0F0);
+        mal_free(temp_a0_2, &D_8004E0F0);
         (*(s32*)((u8*)(arg0) + 20)) = 0;
     }
 }
@@ -9024,7 +9024,7 @@ u8 *func_80021E44(OffsetTable *tbl, s32 i) {
     return (u8 *)&tbl->offs[i] + tbl->offs[i];
 }
 
-u8 *func_80021E60(u8 *arg0, s32 arg1) {
+u8 *get_script_header(u8 *arg0, s32 arg1) {
     u8 *p;
     s32 *e;
 
@@ -9126,10 +9126,10 @@ void func_80021FB0(void) {
         } while (var_a0 != NULL);
     }
     if (D_80058B6C != 0) {
-        func_800110A8(D_80058B6C, &D_8004E0F0);
+        mal_free(D_80058B6C, &D_8004E0F0);
     }
     if (D_80058B68 != 0) {
-        func_800110A8(D_80058B68, &D_8004E0F0);
+        mal_free(D_80058B68, &D_8004E0F0);
     }
 }
 
@@ -10531,12 +10531,12 @@ void func_800243A0(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
                         oy = xy >> 16;
                         xy &= 0xFFFF;
                         xy |= (oy - 7) << 16;
-                        func_80029D28((SpriteFrame *)(*(u8 **)(D_8005B63C + 0x18) + (g & 0xFFF) * 0x38), xy, 0, 0x808080);
+                        texture_draw((SpriteFrame *)(*(u8 **)(D_8005B63C + 0x18) + (g & 0xFFF) * 0x38), xy, 0, 0x808080);
                         oy = xy >> 16;
                         xy &= 0xFFFF;
                         xy |= (oy + 7) << 16;
                     } else {
-                        func_80029D28((SpriteFrame *)(*(u8 **)(D_8005B63C + 0x18) + (g & 0xFFF) * 0x38), xy, 0, 0x808080);
+                        texture_draw((SpriteFrame *)(*(u8 **)(D_8005B63C + 0x18) + (g & 0xFFF) * 0x38), xy, 0, 0x808080);
                     }
                 } else {
                     func_8002992C((SpriteFrame *)(*(u8 **)(D_8005B63C + 0x18) + (g & 0xFFF) * 0x38), xy, 0, arg3, arg3, arg4, arg4);
@@ -11460,7 +11460,7 @@ void func_80026430(NAS *nas) {
 }
 
 void func_800264B4(void) {
-    func_800110A8(D_8006EA00, &D_8004E0F0);
+    mal_free(D_8006EA00, &D_8004E0F0);
     D_8006EA00 = 0;
 }
 
@@ -13151,24 +13151,24 @@ void func_80029790(u8 *arg0) {
                 } while (--n != -1);
             }
         }
-        func_800110A8(*(void **)(arg0 + 0x18), &D_8004E0F0);
+        mal_free(*(void **)(arg0 + 0x18), &D_8004E0F0);
         *(s32 *)(arg0 + 0x18) = 0;
     }
     if (*(void **)(arg0 + 8) != NULL) {
-        func_800110A8(*(void **)(arg0 + 8), &D_8004E0F0);
+        mal_free(*(void **)(arg0 + 8), &D_8004E0F0);
     }
     *(s32 *)(arg0 + 8) = 0;
     if (*(void **)(arg0 + 0xC) != NULL) {
-        func_800110A8(*(void **)(arg0 + 0xC), &D_8004E0F0);
+        mal_free(*(void **)(arg0 + 0xC), &D_8004E0F0);
     }
     *(s32 *)(arg0 + 0xC) = 0;
     if (*(void **)(arg0 + 0x20) != NULL) {
-        func_800110A8(*(void **)(arg0 + 0x20), &D_8004E0F0);
+        mal_free(*(void **)(arg0 + 0x20), &D_8004E0F0);
     }
     *(s32 *)(arg0 + 0x20) = 0;
     *(s32 *)(arg0 + 0x1C) = 0;
     if (*(void **)(arg0 + 0x10) != NULL) {
-        func_800110A8(*(void **)(arg0 + 0x10), &D_8004E0F0);
+        mal_free(*(void **)(arg0 + 0x10), &D_8004E0F0);
         *(s32 *)(arg0 + 0x10) = 0;
     }
 }
@@ -13209,7 +13209,7 @@ s32 func_8002992C(SpriteFrame *f, s32 xy, s32 otz, u32 c0, u32 c1, u32 c2, u32 c
     return f->advance * 640 / D_8005B698->w;
 }
 
-s32 func_80029D28(SpriteFrame *f, s32 xy, s32 otz, u32 color) {
+s32 texture_draw(SpriteFrame *f, s32 xy, s32 otz, u32 color) {
     POLY_FT4 *p;
     ScreenXY v;
 
@@ -13936,7 +13936,7 @@ void func_8002BBEC(void) {
         SpuIsTransferCompleted(1);
         func_8002ACA0(slot->id, 1);
         SsVabClose(slot->id);
-        func_800110A8(slot->head, &D_8004E0F0);
+        mal_free(slot->head, &D_8004E0F0);
         slot->head = NULL;
         slot->id = -1;
     }
@@ -13952,7 +13952,7 @@ void func_8002BCB0(s32 *arg0) {
     SpuIsTransferCompleted(1);
     func_8002ACA0(arg0[1], 1);
     SsVabClose((s16)arg0[1]);
-    func_800110A8((void *)arg0[0], &D_8004E0F0);
+    mal_free((void *)arg0[0], &D_8004E0F0);
     arg0[0] = 0;
     arg0[1] = -1;
 }
@@ -14147,7 +14147,7 @@ void func_8002C428(void) {
 
 void func_8002C44C(void) {
     if (D_8006557C.data != 0) {
-        func_800110A8(D_8006557C.data, &D_8004E0F0);
+        mal_free(D_8006557C.data, &D_8004E0F0);
         D_8006557C.data = 0;
     }
 }

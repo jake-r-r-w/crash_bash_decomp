@@ -106,11 +106,11 @@ void func_8008E5BC(void) {
         D_8009E5A8 = e->delay;
         a = (u8 *)load_file_permanent(e->pic);
         b = tga_convert(a, D_8005B698->w, D_8005B698->h);
-        func_800110A8(a, &D_8004E0F0);
+        mal_free(a, &D_8004E0F0);
         LoadImage(D_8005B698, (u32 *)b);
         LoadImage(D_8005B698 + 1, (u32 *)b);
         DrawSync(0);
-        func_800110A8(b, &D_8004E0F0);
+        mal_free(b, &D_8004E0F0);
         if (D_8009E4C0[D_8009E5A4].sfx[0] != -1) {
             PlaySfx(D_8009E4C0[D_8009E5A4].sfx[0], &D_8009E5B8[0], NULL, 0x1000, 0x1E00, 0);
             PlaySfx(D_8009E4C0[D_8009E5A4].sfx[1], &D_8009E5B8[1], NULL, 0x1000, 0x1E00, 0);
@@ -192,11 +192,11 @@ void func_8008EC00(void) {
 
     a = (u8 *)load_file_permanent();
     b = tga_convert(a, D_8005B698->w, D_8005B698->h);
-    func_800110A8(a, &D_8004E0F0);
+    mal_free(a, &D_8004E0F0);
     LoadImage(D_8005B698, (u32 *)b);
     LoadImage(D_8005B698 + 1, (u32 *)b);
     DrawSync(0);
-    func_800110A8(b, &D_8004E0F0);
+    mal_free(b, &D_8004E0F0);
 }
 
 void func_8008EC94(void) {

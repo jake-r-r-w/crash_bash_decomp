@@ -369,7 +369,7 @@ typedef struct {
 /* An object drawn as one textured quad (func_8001AA48, func_8001C3D0,
  * kill_sprim_sub): one primitive per frame buffer. */
 typedef struct {
-    POLY_GT4 *prim; /* from func_800183B0, freed with release_sprim */
+    POLY_GT4 *prim; /* from new_sprim, freed with release_sprim */
     u8 unk4[8];
 } ModelObjSlot;
 
@@ -559,7 +559,7 @@ typedef struct {
 
 /* Header of a heap block, 0x18 bytes before the pointer the allocator hands
  * out; the next block follows its size words of data. Free blocks are on the
- * heap's free list, sorted by size (func_800110A8 frees and merges). */
+ * heap's free list, sorted by size (mal_free frees and merges). */
 typedef struct MemBlock {
     /* 0x00 */ u16 unk0;
     /* 0x02 */ u8 unk2[2];
@@ -594,7 +594,7 @@ typedef struct SlotList {
     /* 0x58 */ SlotEntry entries[1];
 } SlotList;
 
-/* D_80056844: entries come from free (func_800183B0) and go back on done. */
+/* D_80056844: entries come from free (new_sprim) and go back on done. */
 typedef struct NodePool {
     PoolNode *free;
     void *mem;                        /* heap block, freed by func_800183DC */
@@ -1506,7 +1506,7 @@ static inline void GfxAddTrans(VECTOR *v) {
     ((VECTOR *)D_80056998.unk88)->vz += v->vz;
 }
 /* The current draw buffer: primitives are allocated from the pointer at
- * +0x4008 (func_80029D28). */
+ * +0x4008 (texture_draw). */
 extern u8 *D_8005B68C;
 
 /* A screen offset pair, copied as one struct. */
@@ -1573,7 +1573,7 @@ static inline void GfxSetClip(GfxState *gs, RECT *c, GfxCamera *cam) {
     func_80014540((u8 *)cam, &clip);
 }
 
-/* A sprite frame func_80029D28 draws as one POLY_FT4. */
+/* A sprite frame texture_draw draws as one POLY_FT4. */
 typedef struct {
     u8 unk0[8];
     s16 w;       /* 0x08 */
@@ -1608,8 +1608,8 @@ typedef union {
 
 /* Draws f at xy (640-wide units) as a POLY_FT4 in ot[otz]; color bit 31 makes
  * it semi-transparent, bits 29-30 its blend mode. Returns f's advance. */
-s32 func_80029D28(SpriteFrame *f, s32 xy, s32 otz, u32 color);
-/* func_80029D28 as a POLY_GT4 with one colour per vertex (c0 also sets the
+s32 texture_draw(SpriteFrame *f, s32 xy, s32 otz, u32 color);
+/* texture_draw as a POLY_GT4 with one colour per vertex (c0 also sets the
  * semi-transparency and blend mode). */
 s32 func_8002992C(SpriteFrame *f, s32 xy, s32 otz, u32 c0, u32 c1, u32 c2, u32 c3);
 /* Draws f at the 3D point pos as a POLY_GT4 in the OT at D_8005B68C, c0 on
@@ -1958,7 +1958,7 @@ void func_8002C44C(void);
 
 void GotoLinkAnim(EXTanimator *anim, s16 n);
 
-void func_800110A8(void *ptr, Heap *heap);
+void mal_free(void *ptr, Heap *heap);
 
 u8 *func_80016AD4(s32 *arg0, u8 *rec);
 
@@ -2004,7 +2004,7 @@ s32 func_80015284(s32 a, s32 b, s32 t);
 
 void *func_80015AB0(s32 *arg0, u8 *rec);
 
-void *func_800183B0(void);
+void *new_sprim(void);
 
 void release_sprim(void *data);
 
@@ -2087,7 +2087,7 @@ void draw_init(void);
 
 s32 func_8002D094(void);
 
-u8 *func_80021E60(u8 *arg0, s32 arg1);
+u8 *get_script_header(u8 *arg0, s32 arg1);
 
 void func_80022984(void);
 
@@ -2432,7 +2432,7 @@ void func_8001C1E0(u8 *arg0, u16 *src, u8 *tab, u16 *dst);
 
 void *func_8001CF50(ModelEntry *e, s32 arg1);
 
-s32 *func_8001E48C(s32 arg0);
+s32 *path_get(s32 arg0);
 
 void func_8001E984(s32 arg0, s32 arg1);
 

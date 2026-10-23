@@ -254,17 +254,18 @@ originals: `SpawnNASById` is `CreateNAS`, `SpawnNASFromRecord` `TriggerNas`,
 `AddEngine` `AddExtEngine`, `AddExtension` `AddExt`, `InitHealth`/
 `PlotHealth` `Init_HealthPU`/`Plot_HealthPU`.
 
-**Applied.** The 73 `main.exe` matches of 0.9 and up on placeholder
-functions are renamed (`renames_main.txt`; `mal_update`, `init_file`,
-`cam_init`, `dbase_*`, `map_*`, `music_*`, ...). One needed a source fix
-first: `ovl60` named `0x8001C378` as data (`D_8001C378`), so it now uses the
-function's name.
+**Applied.** 78 `main.exe` placeholder functions are renamed: the 73
+matches of 0.9 and up (`renames_main.txt`; `mal_update`, `init_file`,
+`cam_init`, `dbase_*`, `map_*`, `music_*`, ...) and 5 of 0.75..0.9 checked
+by hand (`renames_main_checked.txt`: `mal_free`, `path_get`,
+`get_script_header`, `new_sprim`, `texture_draw`; each sits in link order
+between confirmed renames, and four are the same distance from the next
+one in both builds). One needed a source fix first: `ovl60` named
+`0x8001C378` as data (`D_8001C378`), so it now uses the function's name.
 
 **Still to do.**
-- `main.exe`: 5 matches of 0.75..0.9 to check by hand (`mal_free`
-  0.88, `path_get` 0.88, `get_script_header` 0.85, `new_sprim` 0.78,
-  `texture_draw` 0.75), and the 4 the repo named itself (`--replace`:
-  `CreateNAS`, `TriggerNas`, `AddExtEngine`, `AddExt`).
+- `main.exe`: the 4 the repo named itself (`--replace`: `CreateNAS`,
+  `TriggerNas`, `AddExtEngine`, `AddExt`).
 - The engine and slot overlay names, once no other agent is working there.
 - The parameter types from the C++ names, one prototype at a time.
 - Map the 184 data labels to retail addresses through the matched functions'

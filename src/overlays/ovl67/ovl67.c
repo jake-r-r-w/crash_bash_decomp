@@ -3548,7 +3548,7 @@ void func_800BB184(void) {
     EXTengine *eng;
     s32 d;
 
-    t = func_8001E48C(0x63);
+    t = path_get(0x63);
     eng = Heroes[0].hero_eng;
     z = eng->unk10.z;
     if (D_8005A680[0] != 0) {

@@ -156,7 +156,7 @@ How the boundaries were found:
     the 566 functions (Sep 14: 295, Aug 23: 251) in the same order; the
     offset changes at edited functions, and no block of functions moved, so
     the link order didn't change between Oct 9 and retail.
-  - Names: 88 of the 575 game functions are named, 73 of them from Euro
+  - Names: 93 of the 575 game functions are named, 78 of them from Euro
     Demo 65's symbol table (PROTOTYPES.md). Their prefixes run in address
     order (`mal_*` the allocator, then file loading, joypad, camera,
     `dbase_*`, `prim_*`, `map_*`, scripts, `sfx_*`, the NAS object calls,

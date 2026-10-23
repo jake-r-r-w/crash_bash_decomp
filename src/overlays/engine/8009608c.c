@@ -40,7 +40,7 @@ void func_8009608C(s32 arg0) {
         func_80013F44((CamView *)D_80051640, view, &D_800AD0F4);
         break;
     case 7:
-        obj = func_8001E48C(1);
+        obj = path_get(1);
         if (obj != NULL) {
             cam = (EngCam *)D_80051640;
             cam->eye.x = 0;
@@ -398,7 +398,7 @@ void func_80096F98(s32 arg0) {
 }
 
 void func_80097158(u8 *p) {
-    s32 *t = func_8001E48C(1);
+    s32 *t = path_get(1);
     EngineGameView *g;
 
     if (t != NULL) {
@@ -427,7 +427,7 @@ void func_80097158(u8 *p) {
 }
 
 void func_80097244(u8 *p) {
-    s32 *t = func_8001E48C(9);
+    s32 *t = path_get(9);
 
     if (t != NULL) {
         *(s16 *)(p + 0x54) = (get_angle(t[0x58 / 4] - t[0x3C / 4], t[0x50 / 4] - t[0x34 / 4]) - 0x400) & 0xFFF;

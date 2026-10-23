@@ -515,6 +515,11 @@ Newest first, a few lines each. Details are in the commits.
   `break`/`goto` mix gives the target's three tail survivors. Found the
   unit is probably `PAUSE.CPP`; `cc1plus` compiles the C identically.
 
+- **2026-10-23 (5 more `main.exe` names):** the 0.75..0.9 matches checked
+  by hand (link order between confirmed renames, same gap to the next one)
+  and renamed: `mal_free`, `path_get`, `get_script_header`, `new_sprim`,
+  `texture_draw` (93/575 named).
+
 - **2026-10-23 (73 `main.exe` names from Euro Demo 65):** new
   `proto_apply.py` turns a scan's matches into a checked rename list for
   `decomp.py rename --file`; the 0.9+ placeholder matches in `main.exe` are
