@@ -82,14 +82,14 @@ phases can play what they finish.
 - [x] Match GTE code: include Sony's GTE macros (`inline_c.h`, `gtemac.h`) in
   the game sources and match one GTE function through `done`. 27 of the exe's
   game functions use the GTE, and m2c can't draft them.
-- [ ] Split `main.c` into translation units at the boundaries the binary shows
+- [x] Split `main.c` into translation units at the boundaries the binary shows
   (rodata and data order, alignment padding, file-local data), with the
   evidence for each in `docs/ARCHITECTURE.md`. The exe has no file names, so
   the units are named by what they contain. Do this before the data, so each
   file's local data moves with it, and early in the matching: code in
   the wrong unit can't match its rodata, and a split moves functions out
   from under swarm patches, so do it between swarm runs.
-  Status: `main/main` is nine files, cut where the evidence settles it
+  Done 2026-10-23: `main/main` is nine files, cut where the evidence settles it
   (the cut zones of `decomp.py units`, the data blocks, what the functions
   on either side do; `tools/scripts/split_unit.py` does a split end to end).
   The zones left open are closed: no leak names the exe's files and the

@@ -13,8 +13,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 ## Current state (2026-10-23)
 
 - [ROADMAP.md](ROADMAP.md): Phase 1 (types and names) is done, and every
-  `main.exe` function matches; Phase 2's naming, data and `main.c` split
-  are left. The work now is matching the overlays (Phases 3-5) with the
+  `main.exe` function matches and `main.c` is split (2026-10-23); Phase 2's
+  naming and data are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
 - 2517/2537 game functions matched (93.44% of game code bytes, 2026-10-23):
   **main.exe, ovl61, ovl65, ovl66, ovl67, ovl69 and ovl6a are complete**;
