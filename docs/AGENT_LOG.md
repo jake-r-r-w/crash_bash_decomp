@@ -16,9 +16,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `main.exe` function matches and `main.c` is split (2026-10-23); Phase 2's
   naming and data are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2519/2537 game functions matched (94.49% of game code bytes, 2026-10-23):
+- 2520/2537 game functions matched (94.62% of game code bytes, 2026-10-23):
   **main.exe, the engine, ovl61, ovl65, ovl66, ovl67, ovl69 and ovl6a are
-  complete**; 18 left (ovl5d 2, ovl5e 1, ovl5f 2, ovl60 3, ovl62 3, ovl63 4,
+  complete**; 17 left (ovl5d 2, ovl5e 1, ovl5f 2, ovl60 2, ovl62 3, ovl63 4,
   ovl64 2, ovl68 1), every one tried by the swarm at least once. All 564
   PsyQ functions (Sony objects). None parked by hand (`decomp.py status`;
   the swarm parked 5, which the dashboard counts from `docs/swarm.js`). Matches are C only, natural C
@@ -54,7 +54,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**The overlays' last 18 functions**, all tried by the swarm. Hand-match
+**The overlays' last 17 functions**, all tried by the swarm. Hand-match
 them from their checkpoints, closest first (Open leads), with their
 earlier compiles (`decomp.py protos`) as evidence. Pointing the swarm at
 functions it had never tried (`--only` the untried list, smallest first,
@@ -122,19 +122,22 @@ and current tools).
 ## Open leads
 
 - **The swarm's checkpoints are worth finishing by hand.** `func_800B4AB0`
-  went from the checkpoint's 27/1246 to a match in one session: apply
-  `<repo>-swarm/checkpoints/<key>/best.diff` (`git apply
+  (27/1246) and `PogoAI_MoveTowardsTarget` (4/330) each matched in one
+  session: apply `<repo>-swarm/checkpoints/<key>/best.diff` (`git apply
   --include=src/...`; merge its header part by hand, since the headers have
   moved on), score it, then work the rows with `sched` and the global.c
-  priorities. Its leftovers were all register choices that a variable's
-  other uses decide (MATCHING.md, Diff patterns, `func_800B4AB0`). The
-  closest checkpoints left (stage, differing insns): `PogoAI_MoveTowardsTarget`
-  instructions 4/330, `func_800BE914` registers 7/170, `func_800B4048`
-  instructions 10/255, `Plot_PogoPadlock` registers 11/350,
-  `Plot_PogoRipperRoo` instructions 16/656, `func_800B7508` registers
-  17/867, `func_800B5E28` instructions 21/195, `func_800B6708` registers
-  27/411. `CheckMineToBoss` has none.
-- **Earlier compiles of the 18 left** (PROTOTYPES.md, Earlier compiles of a
+  priorities. `func_800B4AB0`'s leftovers were register choices that a
+  variable's other uses decide; `PogoAI_MoveTowardsTarget`'s were an
+  expression whose shape the swarm had rewritten (`(z - 3) << 9` for the
+  neighbour square's `((z + 1) << 9) - 0x800`) and a sched1 barrier
+  (MATCHING.md, Diff patterns). Read the checkpoint's log for what was
+  tried, not for rules: its "the gate refuses do { } while (0)" predates
+  2026-10-22. The closest checkpoints left (stage, differing insns):
+  `func_800BE914` registers 7/170, `func_800B4048` instructions 10/255,
+  `Plot_PogoPadlock` registers 11/350, `Plot_PogoRipperRoo` instructions
+  16/656, `func_800B7508` registers 17/867, `func_800B5E28` instructions
+  21/195, `func_800B6708` registers 27/411. `CheckMineToBoss` has none.
+- **Earlier compiles of the 17 left** (PROTOTYPES.md, Earlier compiles of a
   function, has the table). Each of the five biggest has a build within a
   few instructions of retail's: Oct 9's `func_800BC038` (+1 insn) and
   `func_800B87A0` (-1), Sep 14's `PlotTransmuterBeam` (-12), Oct 9's
@@ -219,6 +222,9 @@ Other:
 ## Gotchas
 
 **Tooling**
+- **`BUILD FAILED` with `tee: build/...c.i: Permission denied`** after
+  back-to-back `try` runs is a Windows file lock on the build output, not
+  the C: run it again.
 - **`try`'s `structure n/total` counts differing instructions** (lower is
   better), and a shift in alignment swings it by hundreds; for a big
   function compare `regions` blocks instead. Look the symptom up in the
@@ -526,6 +532,15 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-23 (hand: `PogoAI_MoveTowardsTarget` matched):** from the
+  swarm's checkpoint (instructions 4/330). `az`, the next square's world z,
+  is `((z + 1) << 9) - 0x800` set before the loop (combine's three-insn
+  split makes the target's `sll; addiu -0x600` after CSE has passed it);
+  `gx`/`gz`/`bz` stay in the loop for loop.c's threshold; arms 3/4 got
+  per-arm locals. Two `do { } while (0)` stay as noted steering (global.c
+  priority for `x`/`z`, a sched1 barrier on the `TargetXYZ.z` store; the
+  Jampack copy has the same load order). Four Diff patterns rows.
 
 - **2026-10-23 (hand: `func_800B4AB0` matched):** from the swarm's
   checkpoint (instructions 27/1246) and the Aug 23 build's copy, whose

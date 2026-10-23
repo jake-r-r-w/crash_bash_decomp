@@ -440,10 +440,15 @@ Under 0.8 the closest function may be a different one. What the table shows:
 - `func_800B4AB0` is matched (2026-10-23). Its Aug 23 copy gave the
   first test's shape, `ok = (fux->status == 1)`, the way in to its last
   register choices (MATCHING.md, Diff patterns).
+- `PogoAI_MoveTowardsTarget` is matched (2026-10-23). Jampack's copy is
+  an older source (one pass over the four squares, no loop, five
+  arguments to `PogoAI_IsSquareOKForPlayer`), but its mode-5 block loads
+  `hero` after the `TargetXYZ.z` store just as retail does, so that order
+  comes from the source, not from one build's luck (MATCHING.md, Diff
+  patterns).
 - `func_800B5E28` and `func_800B8294` are exact opcode twins (ovl5d and
-  ovl64), unchanged in every build; `PogoAI_MoveTowardsTarget` and
-  `CheckMineToBoss` are the same in every build but Jampack's. Their
-  history adds nothing.
+  ovl64), unchanged in every build, and `CheckMineToBoss` is the same in
+  every build but Jampack's: their history adds nothing.
 
 ## Discs not scanned yet
 
