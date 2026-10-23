@@ -7267,12 +7267,11 @@
   "status": "matched"
  },
  "ovl62:800BFEE0": {
-  "auto_failed": "types",
   "blocked_at": "2026-10-21T10:27:57Z",
   "copy_failed": "ovl65:800B4474",
   "copy_failed_stage": "in-file",
-  "note": "regions 19/22, 183/187 exact (C under NON_MATCHING): early-out written as goto zero / return 1 per branch. Only the t0<0 && t1<0 test differs: target bltz to the epilogue with v0=0 in its delay slot and slt t0<t1 recomputed after, ours keeps the bgez-delay slt live (nop in the slot). Next: -dS/-dR for why sched leaves the slt before the bltz; tried ret var, early returns, nested tests (as func_800B4268), goto into the disc<0 return",
-  "status": "blocked"
+  "matched_at": "2026-10-23T07:56:38Z",
+  "status": "matched"
  },
  "ovl62:800C01C8": {
   "matched_at": "2026-10-21T12:56:36Z",

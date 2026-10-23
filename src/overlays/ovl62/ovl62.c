@@ -4132,11 +4132,6 @@ void func_800BFD38(NAS *nas, GravityMotion *m) {
     }
 }
 
-/* Parked: regions 19/22 blocks, 183/187 exact. The tail matches; the t0/t1 < 0 test
- * doesn't: the target branches to the epilogue with v0 = 0 in the bltz delay slot and
- * recomputes slt t0 < t1 after it (v0 dead on the fallthrough), ours keeps the slt from
- * the bgez delay slot live, so reorg leaves a nop (AGENT_LOG). */
-#ifdef NON_MATCHING
 s32 func_800BFEE0(VECTOR *a, VECTOR *b, SVECTOR *c, VECTOR *out) {
     VECTOR e;
     VECTOR d;
@@ -4147,7 +4142,6 @@ s32 func_800BFEE0(VECTOR *a, VECTOR *b, SVECTOR *c, VECTOR *out) {
     s32 disc;
     s32 t0;
     s32 t1;
-    s32 ret;
 
     d.vx = b->vx - a->vx;
     d.vy = 0;
@@ -4160,17 +4154,26 @@ s32 func_800BFEE0(VECTOR *a, VECTOR *b, SVECTOR *c, VECTOR *out) {
     qb = ((d.vx * p->vx + d.vz * p->vz) * 2) >> 8;
     qc = (p->vx * p->vx + p->vy * p->vy + p->vz * p->vz - c->pad * c->pad) >> 8;
     disc = qb * qb - qa * qc * 4;
-    if (disc < 0) {
-        return 0;
-    }
-    disc = csqrt(disc) >> 6;
-    t0 = ((-qb + disc) << 8) / (qa * 2);
-    t1 = ((-qb - disc) << 8) / (qa * 2);
-    if (t0 < 0 && t1 < 0) {
-        goto zero;
-    }
-    if (t0 < t1) {
-        if (t0 < 0) {
+    if (disc >= 0) {
+        disc = csqrt(disc) >> 6;
+        t0 = ((-qb + disc) << 8) / (qa * 2);
+        t1 = ((-qb - disc) << 8) / (qa * 2);
+        if (t0 < 0 && t1 < 0) {
+            return 0;
+        }
+        if (t0 < t1) {
+            if (t0 < 0) {
+                out->vx = a->vx + ((d.vx * t1) >> 8);
+                out->vy = a->vy + ((d.vy * t1) >> 8);
+                out->vz = a->vz + ((d.vz * t1) >> 8);
+                return 1;
+            } else {
+                out->vx = a->vx + ((d.vx * t0) >> 8);
+                out->vy = a->vy + ((d.vy * t0) >> 8);
+                out->vz = a->vz + ((d.vz * t0) >> 8);
+                return 1;
+            }
+        } else if (t1 > 0) {
             out->vx = a->vx + ((d.vx * t1) >> 8);
             out->vy = a->vy + ((d.vy * t1) >> 8);
             out->vz = a->vz + ((d.vz * t1) >> 8);
@@ -4181,23 +4184,9 @@ s32 func_800BFEE0(VECTOR *a, VECTOR *b, SVECTOR *c, VECTOR *out) {
             out->vz = a->vz + ((d.vz * t0) >> 8);
             return 1;
         }
-    } else if (t1 > 0) {
-        out->vx = a->vx + ((d.vx * t1) >> 8);
-        out->vy = a->vy + ((d.vy * t1) >> 8);
-        out->vz = a->vz + ((d.vz * t1) >> 8);
-        return 1;
-    } else {
-        out->vx = a->vx + ((d.vx * t0) >> 8);
-        out->vy = a->vy + ((d.vy * t0) >> 8);
-        out->vz = a->vz + ((d.vz * t0) >> 8);
-        return 1;
     }
-zero:
     return 0;
 }
-#else
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800BFEE0);
-#endif
 
 void PlotScratchMaster(NAS *m) {
     subengine *s;

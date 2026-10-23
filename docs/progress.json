@@ -5,17 +5,11 @@
    "note": "structure 1147/1443 (length 1443 vs 1431), from the swarm's 1263. Best C under #ifdef NON_MATCHING. Fixed: return 1 (not ret) for 0x101/0x2B; max = 4 and n = 1 set after the early returns/goto so reload_cse turns andi 4 / sll 1 into and a1 / sllv s5; case 0 unk32&4 case 3 stores D_8009AEEC = 1 in both arms (a1/a2 reuse); case 0 and case 8 as if (func) {...PlaySfx} ret = 0; break; empty do-while(0) after the switch delays break threading to jump2 so all ret = 0 tails merge into case 0's first copy (target L704). Still differs: L704's j delay (target keeps s3=0 outside, needs a label at the j, i.e. L704 must be an old label so jumps to it can be cross-jumped: case 0's PlaySfx(0x192) tail should merge into case 8's); 0x40/0x80 0x1000 tails must not merge; HPADS base lui scheduled before the index lui in target (p = &HPADS[..] order); kind loop i wants a1. Next: find natural C giving an old label at case 0's ret = 0 block, then 0x40/0x80, 0x100, 0x200, 0x20.",
    "seg": "overlays/engine/8007ee2c",
    "size": 5772
-  },
-  {
-   "name": "func_800BFEE0",
-   "note": "regions 19/22, 183/187 exact (C under NON_MATCHING): early-out written as goto zero / return 1 per branch. Only the t0<0 && t1<0 test differs: target bltz to the epilogue with v0=0 in its delay slot and slt t0<t1 recomputed after, ours keeps the bgez-delay slt live (nop in the slot). Next: -dS/-dR for why sched leaves the slt before the bltz; tried ret var, early returns, nested tests (as func_800B4268), goto into the disc<0 return",
-   "seg": "overlays/ovl62/ovl62",
-   "size": 744
   }
  ],
- "commit": "b3a8cd4c",
+ "commit": "135f67fe",
  "game": "SCUS_945.70",
- "generated": "2026-10-23T07:34:23Z",
+ "generated": "2026-10-23T07:56:41Z",
  "history": [
   {"commit": "9d2e150", "data_b": 0, "data_tb": 182932, "game_all_f": 1140, "game_b": 152, "game_f": 19, "game_named_f": 0, "game_tb": 247148, "lib_b": 0, "lib_f": 0, "lib_tb": 0, "ts": "2026-10-10T08:35:31Z", "units": {"engine": [80, 10], "main exe": [136, 17], "ovl5d": [16, 2], "ovl5e": [16, 2], "ovl5f": [72, 9], "ovl60": [16, 2], "ovl61": [24, 3], "ovl62": [160, 20], "ovl63": [16, 2], "ovl64": [24, 3], "ovl65": [24, 3], "ovl66": [32, 4], "ovl67": [40, 5], "ovl68": [48, 6], "ovl69": [40, 5], "ovl6a": [32, 4]}},
   {"commit": "d76b415", "data_b": 0, "data_tb": 182932, "game_all_f": 574, "game_b": 136, "game_f": 17, "game_named_f": 0, "game_tb": 124840, "lib_b": 8, "lib_f": 1, "lib_tb": 118356, "ts": "2026-10-10T08:51:01Z", "units": {"main exe": [136, 17], "psyq": [121280, 535]}},
@@ -2158,9 +2152,18 @@
   {"commit": "f0641e91", "data_b": 9320, "data_tb": 606943, "game_all_f": 2537, "game_b": 947748, "game_c_f": 2512, "game_f": 2512, "game_named_f": 602, "game_tb": 1019036, "game_typed_f": 2286, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-22T22:17:14Z", "units": {"engine": [123492, 356], "main exe": [124840, 575], "ovl5d": [47768, 100], "ovl5e": [30984, 71], "ovl5f": [78776, 177], "ovl60": [60464, 177], "ovl61": [55000, 97], "ovl62": [112408, 212], "ovl63": [69860, 134], "ovl64": [28488, 55], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
   {"commit": "809226c9", "data_b": 9320, "data_tb": 606943, "game_all_f": 2537, "game_b": 948536, "game_c_f": 2513, "game_f": 2513, "game_named_f": 602, "game_tb": 1019036, "game_typed_f": 2287, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-23T07:31:13Z", "units": {"engine": [123492, 356], "main exe": [124840, 575], "ovl5d": [47768, 100], "ovl5e": [31772, 72], "ovl5f": [78776, 177], "ovl60": [60464, 177], "ovl61": [55000, 97], "ovl62": [112408, 212], "ovl63": [69860, 134], "ovl64": [28488, 55], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
   {"commit": "ce174819", "data_b": 9320, "data_tb": 606943, "game_all_f": 2537, "game_b": 949324, "game_c_f": 2514, "game_f": 2514, "game_named_f": 602, "game_tb": 1019036, "game_typed_f": 2288, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-23T07:32:30Z", "units": {"engine": [123492, 356], "main exe": [124840, 575], "ovl5d": [47768, 100], "ovl5e": [31772, 72], "ovl5f": [78776, 177], "ovl60": [60464, 177], "ovl61": [55000, 97], "ovl62": [112408, 212], "ovl63": [69860, 134], "ovl64": [29276, 56], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
-  {"commit": "b3a8cd4c", "data_b": 9320, "data_tb": 606943, "game_all_f": 2537, "game_b": 950112, "game_c_f": 2515, "game_f": 2515, "game_named_f": 602, "game_tb": 1019036, "game_typed_f": 2289, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-23T07:34:22Z", "units": {"engine": [123492, 356], "main exe": [124840, 575], "ovl5d": [48556, 101], "ovl5e": [31772, 72], "ovl5f": [78776, 177], "ovl60": [60464, 177], "ovl61": [55000, 97], "ovl62": [112408, 212], "ovl63": [69860, 134], "ovl64": [29276, 56], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}}
+  {"commit": "b3a8cd4c", "data_b": 9320, "data_tb": 606943, "game_all_f": 2537, "game_b": 950112, "game_c_f": 2515, "game_f": 2515, "game_named_f": 602, "game_tb": 1019036, "game_typed_f": 2289, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-23T07:34:22Z", "units": {"engine": [123492, 356], "main exe": [124840, 575], "ovl5d": [48556, 101], "ovl5e": [31772, 72], "ovl5f": [78776, 177], "ovl60": [60464, 177], "ovl61": [55000, 97], "ovl62": [112408, 212], "ovl63": [69860, 134], "ovl64": [29276, 56], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
+  {"commit": "135f67fe", "data_b": 9320, "data_tb": 606943, "game_all_f": 2537, "game_b": 950856, "game_c_f": 2516, "game_f": 2516, "game_named_f": 602, "game_tb": 1019036, "game_typed_f": 2290, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-23T07:56:41Z", "units": {"engine": [123492, 356], "main exe": [124840, 575], "ovl5d": [48556, 101], "ovl5e": [31772, 72], "ovl5f": [78776, 177], "ovl60": [60464, 177], "ovl61": [55000, 97], "ovl62": [113152, 213], "ovl63": [69860, 134], "ovl64": [29276, 56], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}}
  ],
  "recent": [
+  {
+   "at": "2026-10-23T07:56:38Z",
+   "auto": true,
+   "name": "func_800BFEE0",
+   "seg": "overlays/ovl62/ovl62",
+   "size": 744,
+   "tries": 0
+  },
   {
    "at": "2026-10-23T07:34:21Z",
    "auto": true,
@@ -2272,18 +2275,10 @@
    "seg": "overlays/ovl5f/ovl5f",
    "size": 3008,
    "tries": 0
-  },
-  {
-   "at": "2026-10-22T12:20:27Z",
-   "auto": true,
-   "name": "DoChooseNewAction",
-   "seg": "overlays/ovl62/ovl62",
-   "size": 4696,
-   "tries": 0
   }
  ],
  "summary": {
-  "blocked": 2,
+  "blocked": 1,
   "copies_b": 0,
   "data": {
    "done_b": 9320,
@@ -2294,16 +2289,16 @@
    "all_f": 2537,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 2,
-   "c_f": 2515,
-   "done_b": 950112,
-   "done_f": 2515,
+   "blocked": 1,
+   "c_f": 2516,
+   "done_b": 950856,
+   "done_f": 2516,
    "named_f": 602,
-   "pct": 93.23635278832151,
+   "pct": 93.3093629665684,
    "sony_b": 0,
    "total_b": 1019036,
    "total_f": 2537,
-   "typed_f": 2289
+   "typed_f": 2290
   },
   "lib": {
    "all_f": 566,
@@ -2472,21 +2467,21 @@
     "all_f": 216,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 1,
-    "c_f": 212,
-    "done_b": 112408,
-    "done_f": 212,
+    "blocked": 0,
+    "c_f": 213,
+    "done_b": 113152,
+    "done_f": 213,
     "file": "ovl62.bin",
     "files": 1,
     "lib": false,
     "named_f": 80,
-    "pct": 86.12847860733113,
+    "pct": 86.69854113031752,
     "phase": 4,
     "sony_b": 0,
     "title": "Polar",
     "total_b": 130512,
     "total_f": 216,
-    "typed_f": 200,
+    "typed_f": 201,
     "unit": "ovl62"
    },
    {
