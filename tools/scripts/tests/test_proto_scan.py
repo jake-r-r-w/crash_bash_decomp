@@ -148,7 +148,7 @@ class DataRefs(unittest.TestCase):
         shift, got = proto_scan.map_globals(syms, pairs, [4])
         self.assertEqual(shift, -0x28)
         self.assertEqual(got[:2], [("first", 0x80050000, 0x800500D8, "main", "start", 2, 2),
-                                   ("second", 0x80050010, 0x800500E8, "main", "inside", 1, 1)])
+                                   ("second", 0x80050010, 0x800500E8, "main", "inside+0xC", 1, 1)])
         self.assertEqual(got[4], ("none", 0x80050040, None, None, "unreferenced", 0, 0))
 
     def test_data_shift_falls_back_to_the_code_shift(self):

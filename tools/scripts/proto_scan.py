@@ -610,7 +610,8 @@ def map_globals(syms, pairs, shifts, near=0x100):
         for d, (r, m) in inside:
             votes[(r - d, m)] = votes.get((r - d, m), 0) + 1
         (delta, m), n = max(votes.items(), key=lambda kv: kv[1])
-        out.append((name, a, start + delta, m, "inside", n, len(inside)))
+        first = min(d - start for d, (r, mm) in inside if (r - d, mm) == (delta, m))
+        out.append((name, a, start + delta, m, f"inside+0x{first:X}", n, len(inside)))
     return shift, out
 
 
