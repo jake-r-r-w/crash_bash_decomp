@@ -2844,9 +2844,9 @@ s32 func_800BA514(s32 arg0) {
     return hit;
 }
 
-#ifdef NON_MATCHING
 s32 func_800BAF1C(s32 idx) {
     VECTOR v;
+    subengine *sub;
     s32 hit;
     s32 top;
     s32 bot;
@@ -2876,8 +2876,14 @@ s32 func_800BAF1C(s32 idx) {
             if (box != NULL) {
                 if (eng->unk5E != 0) {
                     func_800142D4(&eng->unk1C);
+                    sub = eng->sub;
+                    eng->sub = sub;
+                    func_8001CD04(sub, eng->unk3C, &eng->unk10);
+                } else {
+                    sub = eng->sub;
+                    eng->sub = sub;
+                    func_8001CD04(sub, eng->unk3C, &eng->unk10);
                 }
-                func_8001CD04(eng->sub, eng->unk3C, &eng->unk10);
                 func_80015758((SVECTOR *)box, &v);
             }
             nas = D_8005AA2C;
@@ -2928,9 +2934,6 @@ s32 func_800BAF1C(s32 idx) {
     }
     return hit;
 }
-#else
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800BAF1C);
-#endif
 
 Ovl64Fux *func_800BB230(s32 hero, u16 mask, s32 r) {
     Ovl64Fux *best = NULL;
