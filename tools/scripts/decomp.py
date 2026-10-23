@@ -2147,6 +2147,33 @@ def cmd_sched(a):
     print(schedx.report(dumps, name, homes, a.passname, a.block, insn))
 
 
+def cmd_jtrace(a):
+    """Which copy of each repeated tail jump2 keeps for NAME, step by step (tools/scripts/jtrace.py)."""
+    import jtrace
+    proj, funcs = need_proj(), need_funcs()
+    key, e = find_func(funcs, a.func)
+    name = cur_name(key, e, sym_names())
+    src = e.get("src") or locate_def(name)
+    defs = c_defines(src, name, e)
+    cfg = unit_cfg(mk_config(), src)
+    d = "build/jtrace"
+    os.makedirs(d, exist_ok=True)
+    i = f"{d}/{name}.i"
+    r = run(f"{X}cpp {' '.join([*make_flags('CPPFLAGS'), *defs])} {src} > {i}")
+    if r.returncode:
+        die(f"cpp failed: {r.stderr.strip()[-300:]}")
+    cc1 = f"{GCC_ROOT}/{cfg['CC_VER']}/cc1"
+    flags = [*cfg["OPT_FLAGS"].split(), *cfg.get("EXTRA_CC1FLAGS", "").split(), f"-G{cfg.get('GVAL', '0')}"]
+    r = run(f"cd {d} && {cc1} -quiet {' '.join(flags)} -dg -o {name}.s {name}.i")
+    if r.returncode:
+        die(f"cc1 failed: {r.stderr.strip()[-300:]}")
+    names = jtrace.insns(read(f"{i}.greg"), name)
+    runs = jtrace.trace([cc1, "-quiet", *flags, "-o", f"{d}/{name}.jt.s", i], name)
+    if not runs:
+        die(f"no jump2 run for {name} (is it compiled from {src}?)")
+    print(jtrace.report(runs, names, a.cross))
+
+
 def cmd_reconcile(a):
     """Put declarations the working tree's headers re-declare back to HEAD's form (headers.py)."""
     import headers
@@ -5134,6 +5161,11 @@ def main():
     p.add_argument("--block", type=int, help="one basic block only")
     p.add_argument("--insn", help="only these insn uids (comma-separated)")
     p.set_defaults(fn=cmd_sched)
+    p = sub.add_parser("jtrace", help="trace jump2's cross-jumping by insn uid: which copy of each "
+                       "repeated tail is kept, and why the others gave theirs up")
+    p.add_argument("func")
+    p.add_argument("--cross", action="store_true", help="only the cross-jumps, not every comparison")
+    p.set_defaults(fn=cmd_jtrace)
     sub.add_parser("reconcile", help="headers: keep HEAD's declaration where the working tree "
                    "declares a name again (swarm gate clashes)").set_defaults(fn=cmd_reconcile)
     sub.add_parser("verify", help="clean rebuild and byte compare").set_defaults(fn=cmd_verify)
