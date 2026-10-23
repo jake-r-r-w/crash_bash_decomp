@@ -64,6 +64,7 @@ segments:
       - [0x800, c, main/main]
       - [0x6760, c, main/dbase]
       - [0x7964, c, main/80017164]
+      - [0xF184, c, main/scripts]
       - [0x12940, c, main/sfx]
       - [0x1323C, c, main/80022a3c]
       - [0x1B2A0, c, main/sound]
