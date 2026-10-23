@@ -572,7 +572,7 @@ Newest first, a few lines each. Details are in the commits.
 - **2026-10-23 (numbered types):** core.h's `._1`/`._2`/`._10` fields are
   SLONG_XY, SWORD_XY, UBYTE_RGB (Oct 9 numbers them as Jampack does);
   `._21`/`._22`/`._23`/`._37` are MATRIX, VECTOR, SVECTOR, RECT by a
-  two-ahead shift (PROTOTYPES.md), not applied yet.
+  two-ahead shift (PROTOTYPES.md); all 23 fields typed, polar.h's left.
 
 - **2026-10-23 (the last seven leaked prototypes):** typed the bodies of
   `line_intersect_zy`, `map_loaded_geo`, `render_entity_thread`,

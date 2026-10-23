@@ -339,7 +339,8 @@ The 4 names the repo gave itself are replaced by the originals
   (0x10), `._23` (8) and `._37` (8) are Jampack's `._19` MATRIX, `._20`
   VECTOR, `._21` SVECTOR and `._35` RECT, and the fields agree by name
   (`scratch_matrix`, `rot_matrix_stack`, `trans_vector_stack`,
-  `scratch_sv`, `screen_clip`); not applied yet.
+  `scratch_sv`, `screen_clip`); core.h has them too. polar.h's `._23`
+  field (`ang`) stays as recorded: polar.h is a recovered original header.
 - Globals (`globals.txt`, 41 mapped): `main.exe`'s 15 game ones are renamed
   (`renames_main_globals*.txt`: `screen_aspect`, `FirstNas`, `World_floor_level`,
   `num_sfx_banks`, `cdb`, ..., `core_process`, `GlobalNAStatus`; those two are
