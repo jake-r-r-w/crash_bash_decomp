@@ -331,6 +331,15 @@ The 4 names the repo gave itself are replaced by the originals
   `obj_texture` (SpriteFrame), `obj_textureset` (TexSet2926C and AnimOwner),
   `texture_scroll`, `sfx_machine_bank_info`, `music_midi`. `struct obj_dbase`
   has a layout from the code (the 0x38-byte records at `D_80052A54`).
+- Numbered types: the Oct 9 records refer to the types their fragment lacks
+  by number (`struct ._1`). Jampack's records number the shell's first ten
+  the same way (`._1` SLONG_XY, `._2` SWORD_XY, `._10` UBYTE_RGB, sizes
+  agreeing), so core.h's fields of those types have them. From `._11` on,
+  Oct 9's numbers run two ahead of Jampack's: its `._21` (0x20), `._22`
+  (0x10), `._23` (8) and `._37` (8) are Jampack's `._19` MATRIX, `._20`
+  VECTOR, `._21` SVECTOR and `._35` RECT, and the fields agree by name
+  (`scratch_matrix`, `rot_matrix_stack`, `trans_vector_stack`,
+  `scratch_sv`, `screen_clip`); not applied yet.
 - Globals (`globals.txt`, 41 mapped): `main.exe`'s 15 game ones are renamed
   (`renames_main_globals*.txt`: `screen_aspect`, `FirstNas`, `World_floor_level`,
   `num_sfx_banks`, `cdb`, ..., `core_process`, `GlobalNAStatus`; those two are

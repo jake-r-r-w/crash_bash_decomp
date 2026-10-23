@@ -569,6 +569,11 @@ Newest first, a few lines each. Details are in the commits.
   `break`/`goto` mix gives the target's three tail survivors. Found the
   unit is probably `PAUSE.CPP`; `cc1plus` compiles the C identically.
 
+- **2026-10-23 (numbered types):** core.h's `._1`/`._2`/`._10` fields are
+  SLONG_XY, SWORD_XY, UBYTE_RGB (Oct 9 numbers them as Jampack does);
+  `._21`/`._22`/`._23`/`._37` are MATRIX, VECTOR, SVECTOR, RECT by a
+  two-ahead shift (PROTOTYPES.md), not applied yet.
+
 - **2026-10-23 (the last seven leaked prototypes):** typed the bodies of
   `line_intersect_zy`, `map_loaded_geo`, `render_entity_thread`,
   `update_camera_thread` (`script_control_info` laid out) and found
