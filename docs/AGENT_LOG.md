@@ -16,9 +16,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `main.exe` function matches; Phase 2's naming, data and `main.c` split
   are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2512/2537 game functions matched (93.00% of game code bytes, 2026-10-23):
-  **main.exe, ovl61, ovl69 and ovl6a are complete**; 25 left, every one
-  tried by the swarm at least once. All 564 PsyQ functions (Sony objects). 5
+- 2515/2537 game functions matched (93.24% of game code bytes, 2026-10-23):
+  **main.exe, ovl61, ovl69 and ovl6a are complete**; 22 left, every one
+  tried by the swarm at least once. All 564 PsyQ functions (Sony objects). 2
   parked by hand (`decomp.py status`; the swarm parked 5 more, which the
   dashboard counts from `docs/swarm.js`). Matches are C only, natural C
   first (CONVENTIONS.md, Matching rules; the "hack" class was dropped on
@@ -49,7 +49,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**The overlays' last 25 functions.** Pointing the swarm at functions it
+**The overlays' last 22 functions.** Pointing the swarm at functions it
 had never tried (`--only` the untried list, smallest first, no
 `--retry-failed`) matched 37 of 42 under 2 KB for $151 (~$4 a match),
 against $7.50 for the retry runs, which kept re-trying the same hard ones
@@ -80,14 +80,17 @@ rest are fixed by hand from the worker's patch (Gotchas). A park whose
 `jtbl_` names functions is a bad split (Gotchas).
 
 Hand work, between runs:
-1. The parks: `func_8007F314` (engine), `func_800BC274` (ovl5e) with its
-   two copies `func_800C284C` (ovl5d) and `func_800BAF1C` (ovl64),
-   `func_800BFEE0` (ovl62). For a register-priority miss, try the repeated
-   assignment after an empty `do {} while (0)` (MATCHING.md, CSE's block
-   ends): it adds refs without a sched barrier, which matched
-   `PogoAI_RadialSearch` and `PlotScriptFX`. For a wrong cse canonical
-   register, a dead assignment after the last use reorders `make_regs_eqv`'s
-   last uses (MATCHING.md, CSE's canonical register).
+1. The parks: `func_8007F314` (engine) and `func_800BFEE0` (ovl62). For a
+   register-priority miss, try the repeated assignment after an empty
+   `do {} while (0)` (MATCHING.md, CSE's block ends): it adds refs without a
+   sched barrier, which matched `PogoAI_RadialSearch` and `PlotScriptFX`.
+   For a wrong cse canonical register, a dead assignment after the last use
+   reorders `make_regs_eqv`'s last uses (MATCHING.md, CSE's canonical
+   register). For a sched1 tie the target breaks with code it doesn't have,
+   look for a pass after sched1 that deletes what you add: reload_cse_regs
+   (a store-back of a just-loaded value, a repeated store) or jump2's
+   cross-jump (a duplicated call, which also sets its arg registers twice
+   and so takes away their birthing priority); `func_800BC274` used both.
 2. Name each function as it's matched when the evidence allows.
 3. Split `main.c` into its translation units: on hold since 2026-10-15. Its
    one proven boundary (jump-table parity, 95..370) has three possible
@@ -118,30 +121,6 @@ and current tools).
   - A deterministic search over the Diff patterns' common fixes (copy a
     parameter to a local, s16 -> s32, split a statement, a constant in a
     local, a goto loop), generalising `splitvars`.
-- **`func_800BC274` (ovl5e) instructions 2/197, parked by hand 2026-10-20**
-  (block note): only `addiu a1` / `lw a0` before `jal func_8001CD04` are swapped.
-  sched1 ties them and luid puts a0 first; the target's order needs a
-  second load/store in that block (potential hazard; every matched
-  a1-first caller has one), so the original's was deleted after sched1.
-  A second pass (2026-10-20) ruled out cross-jumped tails, local-alloc
-  and reload equivalences, reload_cse and an unfolded a1 precompute (the
-  block note has why), and a third ruled out single -f flags and inserted
-  reads; the function is absent from the Aug/Sep prototypes and identical
-  in Oct 9. The same code is unmatched in `func_800C284C`
-  (ovl5d) and `func_800BAF1C` (ovl64): solve the three together.
-  A fourth pass (2026-10-21, natural C only, no permuter) worked every
-  sched1 tie-break through from `sched.c`: each needs the target's
-  block to hold an instruction its final code lacks, and no natural
-  pass after sched1 deletes one (the block note lists them; do-while(0)
-  wrapped copies were tried in the third pass).
-  A fifth pass (2026-10-22, natural C only, no permuter) found one that does:
-  `nas = D_8005AA2C;` at the end of both arms of `if (box != NULL)`
-  gives sched1 the second memory insn, and jump2 cross-jumps the copies
-  back into one, so the call block comes out in the target's order. It
-  is 6 lines off: the `%hi` pseudo, born right after a call, takes `$2`
-  where the target's join has `$4` (block note, `scratch/bct/`). All
-  three copies are parked by hand now (`func_800BAF1C`'s C under
-  `NON_MATCHING`), so the swarm stops retrying them.
 - **`func_8007F314` (engine pause menu, 5772 B), parked 2026-10-18 at
   structure 1147/1443** (swarm checkpoint was 1263; C under
   `#ifdef NON_MATCHING`, the `block` note lists what's left). Most of the
@@ -460,6 +439,19 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-23 (hand: the `func_800BC274` triplet matched, ce174819,
+  b3a8cd4c, 52ce83eb):** the a1/a0 swap before `jal func_8001CD04`, parked
+  after five passes, fixed with steering C. The call is written in both arms
+  of `if (eng->unk5E)`, each copy storing `eng->sub` back through a temp. The
+  store-back is the block's second memory insn but uses the load, so the load
+  waits out its latency; the second call sets `$a2` twice, so the a2 set
+  loses birthing priority and fills that slot in place of `addiu a1`, and the
+  load then wins on potential hazard. reload_cse deletes the store and copy,
+  and jump2 cross-jumps the arms back into one. The same C matched
+  `func_800BAF1C` (ovl64) and `func_800C284C` (ovl5d, with `EXTobject`
+  names). Found by tracing the ready lists in `-dS` dumps of variants
+  compiled with cc1 directly (`scratch/bct/h.sh`); MATCHING.md has the rule.
 
 - **2026-10-23 (hand: `PlotScriptFX` matched, 562b2203):** from the parked
   95/112. The f/cur swap: `f = 0` repeated twice behind empty do-whiles (34
