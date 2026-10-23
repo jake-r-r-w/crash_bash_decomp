@@ -124,13 +124,13 @@ void func_80010410(void) {
     D_8004E0DC->unk0();
 }
 
-static inline void func_800107C8_merge(MemBlock *a, Heap *arg1, s32 m1) {
+static inline void func_800107C8_merge(mal *a, _mal_area *arg1, s32 m1) {
     s32 m2;
-    MemBlock *b;
+    mal *b;
     s32 new_var2;
-    MemBlock *prev;
-    MemBlock *new_var;
-    MemBlock *end;
+    mal *prev;
+    mal *new_var;
+    mal *end;
     s32 *d;
     s32 *s;
     s32 n;
@@ -138,7 +138,7 @@ static inline void func_800107C8_merge(MemBlock *a, Heap *arg1, s32 m1) {
 
     mal_unlink((u8 *)a, (u8 *)arg1);
     size = a->size;
-    b = (MemBlock *)((u8 *)a + (size * 4 + 0x18));
+    b = (mal *)((u8 *)a + (size * 4 + 0x18));
     new_var = a;
     n = b->size;
     prev = a->prev;
@@ -146,7 +146,7 @@ static inline void func_800107C8_merge(MemBlock *a, Heap *arg1, s32 m1) {
     *a = *b;
     s = (s32 *)((u8 *)b + 0x18);
     new_var->prev = prev;
-    end = (MemBlock *)((u8 *)b + (n * 4 + 0x18));
+    end = (mal *)((u8 *)b + (n * 4 + 0x18));
     new_var2 = size;
     n--;
     *a->owner = (void *)d;
@@ -157,7 +157,7 @@ static inline void func_800107C8_merge(MemBlock *a, Heap *arg1, s32 m1) {
             n--;
         } while (n != m2);
     }
-    b = (MemBlock *)((u8 *)a + (a->size * 4 + 0x18));
+    b = (mal *)((u8 *)a + (a->size * 4 + 0x18));
     end->prev = b;
     b->size = new_var2;
     b->owner = (void **)m1;
@@ -170,19 +170,19 @@ static inline void func_800107C8_merge(MemBlock *a, Heap *arg1, s32 m1) {
 }
 
 #ifndef NON_MATCHING
-void mal_update(Heap *heap) {
+void mal_update(_mal_area *heap) {
     u32 size;
     s32 size2;
     s32 n;
     s32 *s;
     s32 *d;
-    MemBlock *end;
-    MemBlock *p;
-    MemBlock *a;
-    MemBlock *b;
-    MemBlock *prev;
-    MemBlock *q;
-    MemBlock *qprev;
+    mal *end;
+    mal *p;
+    mal *a;
+    mal *b;
+    mal *prev;
+    mal *q;
+    mal *qprev;
     s32 budget;
 
     p = Heap_NextToMove(heap);
@@ -198,14 +198,14 @@ void mal_update(Heap *heap) {
         a = heap->lowest;
         mal_unlink((u8 *)a, (u8 *)heap);
         size = a->size;
-        b = (MemBlock *)((u8 *)a + (size * 4 + 0x18));
+        b = (mal *)((u8 *)a + (size * 4 + 0x18));
         n = b->size;
         prev = a->prev;
         d = (s32 *)((u8 *)a + 0x18);
         *a = *b;
         s = (s32 *)((u8 *)b + 0x18);
         a->prev = prev;
-        end = (MemBlock *)((u8 *)b + (n * 4 + 0x18));
+        end = (mal *)((u8 *)b + (n * 4 + 0x18));
         size2 = size;
         n--;
         *a->owner = (void *)d;
@@ -213,7 +213,7 @@ void mal_update(Heap *heap) {
             *d++ = *s++;
             n--;
         }
-        b = (MemBlock *)((u8 *)a + (a->size * 4 + 0x18));
+        b = (mal *)((u8 *)a + (a->size * 4 + 0x18));
         end->prev = b;
         b->size = size2;
         b->owner = (void **)-1;
@@ -249,33 +249,33 @@ void mal_update(Heap *heap) {
     }
 }
 #else
-static inline MemBlock *Heap_NextLowest(Heap *heap, s32 m1) {
-    MemBlock *blk;
-    MemBlock *next;
+static inline mal *Heap_NextLowest(_mal_area *heap, s32 m1) {
+    mal *blk;
+    mal *next;
 
     blk = heap->lowest;
     if (blk == NULL) {
         return NULL;
     }
-    next = (MemBlock *)((u8 *)blk + (blk->size * 4 + sizeof(MemBlock)));
+    next = (mal *)((u8 *)blk + (blk->size * 4 + sizeof(mal)));
     if (next->owner == (void **)m1 || next->size == 0) {
         return NULL;
     }
     return next;
 }
 
-void mal_update(Heap *heap) {
+void mal_update(_mal_area *heap) {
     s32 m1;
-    MemBlock *lo;
-    MemBlock *nx;
-    MemBlock *ret;
-    MemBlock *p;
-    MemBlock *q;
-    MemBlock *qprev;
+    mal *lo;
+    mal *nx;
+    mal *ret;
+    mal *p;
+    mal *q;
+    mal *qprev;
     s32 budget;
 
     lo = heap->lowest;
-    if (lo == NULL || (nx = (MemBlock *)((u8 *)lo + (lo->size * 4 + 0x18)),
+    if (lo == NULL || (nx = (mal *)((u8 *)lo + (lo->size * 4 + 0x18)),
                        nx->owner == (void **)-1) || nx->size == 0) {
         ret = NULL;
     } else {
@@ -331,11 +331,11 @@ void mal_update(Heap *heap) {
 }
 #endif
 
-void func_800107C8(MemBlock *arg0, Heap *arg1) {
+void func_800107C8(mal *arg0, _mal_area *arg1) {
     s32 m1 = -1;
-    MemBlock *nx;
-    MemBlock *p;
-    MemBlock *ret;
+    mal *nx;
+    mal *p;
+    mal *ret;
 
     for (;;) {
         if (arg0 == NULL) {
@@ -343,7 +343,7 @@ void func_800107C8(MemBlock *arg0, Heap *arg1) {
         }
         func_800107C8_merge(arg1->lowest, arg1, m1);
         nx = arg1->lowest;
-        if (nx == NULL || (nx = (MemBlock *)((u8 *)nx + (nx->size * 4 + 0x18)),
+        if (nx == NULL || (nx = (mal *)((u8 *)nx + (nx->size * 4 + 0x18)),
                            nx->owner == (void **)m1) || nx->size == 0) {
             ret = NULL;
         } else {
@@ -359,19 +359,19 @@ void func_800107C8(MemBlock *arg0, Heap *arg1) {
     }
 }
 
-void func_8001097C(Heap *heap) {
-    MemBlock *cur;
-    MemBlock *prev;
-    MemBlock *next;
-    MemBlock *blk;
-    MemBlock *new;
+void func_8001097C(_mal_area *heap) {
+    mal *cur;
+    mal *prev;
+    mal *next;
+    mal *blk;
+    mal *new;
     u32 size;
     u32 *dst;
     u32 *src;
     s32 n;
 
     while (1) {
-        cur = *(MemBlock **)&heap->unk0[4];
+        cur = *(mal **)&heap->unk0[4];
         for (;;) {
             cur = cur->prev;
             if (cur == NULL) break;
@@ -390,7 +390,7 @@ void func_8001097C(Heap *heap) {
         } else {
             prev = blk->prev;
         }
-        next = (MemBlock *)((u8 *)blk + (size * 4 + 0x18));
+        next = (mal *)((u8 *)blk + (size * 4 + 0x18));
         if (prev == NULL) {
             continue;
         }
@@ -398,7 +398,7 @@ void func_8001097C(Heap *heap) {
         dst = (u32 *)((u8 *)blk + (blk->size * 4 + 0x14));
         n = prev->size;
         src = (u32 *)((u8 *)prev + (n * 4 + 0x14));
-        new = (MemBlock *)((u8 *)dst - n * 4 - 0x14);
+        new = (mal *)((u8 *)dst - n * 4 - 0x14);
         next->prev = new;
         for (n--; n != -1; n--) {
             *dst-- = *src--;
@@ -412,28 +412,28 @@ void func_8001097C(Heap *heap) {
     }
 }
 
-static inline MemBlock *func_80010AE8_next(Heap *heap) {
-    MemBlock *blk;
-    MemBlock *next;
+static inline mal *func_80010AE8_next(_mal_area *heap) {
+    mal *blk;
+    mal *next;
 
     blk = heap->lowest;
     if (blk == NULL) {
         return NULL;
     }
-    next = (MemBlock *)((u8 *)blk + (blk->size * 4 + sizeof(MemBlock)));
+    next = (mal *)((u8 *)blk + (blk->size * 4 + sizeof(mal)));
     if (next->owner == (void **)-1 || next->size == 0) {
         return NULL;
     }
     return next;
 }
 
-static inline void func_80010AE8_merge(MemBlock *arg0, Heap *arg1) {
+static inline void func_80010AE8_merge(mal *arg0, _mal_area *arg1) {
     s32 m1;
-    MemBlock *next;
+    mal *next;
     s32 new_var2;
-    MemBlock *prev;
-    MemBlock *new_var;
-    MemBlock *end;
+    mal *prev;
+    mal *new_var;
+    mal *end;
     s32 *d;
     s32 *s;
     s32 n;
@@ -441,7 +441,7 @@ static inline void func_80010AE8_merge(MemBlock *arg0, Heap *arg1) {
 
     mal_unlink((u8 *)arg0, (u8 *)arg1);
     size = arg0->size;
-    next = (MemBlock *)((u8 *)arg0 + (size * 4 + 0x18));
+    next = (mal *)((u8 *)arg0 + (size * 4 + 0x18));
     new_var = arg0;
     n = next->size;
     prev = arg0->prev;
@@ -449,7 +449,7 @@ static inline void func_80010AE8_merge(MemBlock *arg0, Heap *arg1) {
     *arg0 = *next;
     s = (s32 *)((u8 *)next + 0x18);
     new_var->prev = prev;
-    end = (MemBlock *)((u8 *)next + (n * 4 + 0x18));
+    end = (mal *)((u8 *)next + (n * 4 + 0x18));
     new_var2 = size;
     n--;
     *arg0->owner = (void *)d;
@@ -460,7 +460,7 @@ static inline void func_80010AE8_merge(MemBlock *arg0, Heap *arg1) {
             n--;
         } while (n != m1);
     }
-    next = (MemBlock *)((u8 *)arg0 + (arg0->size * 4 + 0x18));
+    next = (mal *)((u8 *)arg0 + (arg0->size * 4 + 0x18));
     end->prev = next;
     next->size = new_var2;
     next->owner = (void **)-1;
@@ -472,16 +472,16 @@ static inline void func_80010AE8_merge(MemBlock *arg0, Heap *arg1) {
     mal_free(next + 1, arg1);
 }
 
-void func_80010AE8(Heap *heap) {
+void func_80010AE8(_mal_area *heap) {
     DrawSync(0);
     while (func_80010AE8_next(heap) != NULL) {
         func_80010AE8_merge(heap->lowest, heap);
     }
 }
 
-static inline MemBlock *Heap_NextFreeAfter(MemBlock *p) {
+static inline mal *Heap_NextFreeAfter(mal *p) {
     while (p->size != 0) {
-        p = (MemBlock *)((u8 *)p + (p->size * 4 + 0x18));
+        p = (mal *)((u8 *)p + (p->size * 4 + 0x18));
         if (p->owner == NULL) {
             return p;
         }
@@ -489,7 +489,7 @@ static inline MemBlock *Heap_NextFreeAfter(MemBlock *p) {
     return NULL;
 }
 
-static inline MemBlock *Heap_FindFree(u32 words, MemBlock *blk) {
+static inline mal *Heap_FindFree(u32 words, mal *blk) {
     for (; blk != NULL; blk = blk->nextFree) {
         if (blk->size >= words) {
             return blk;
@@ -498,17 +498,17 @@ static inline MemBlock *Heap_FindFree(u32 words, MemBlock *blk) {
     return blk;
 }
 
-MemBlock *func_80010C70(bytes, heap)
+mal *func_80010C70(bytes, heap)
     s32 bytes;
-    Heap *heap;
+    _mal_area *heap;
 {
     u32 words;
-    MemBlock *blk;
-    MemBlock *ret;
-    MemBlock *cur;
-    MemBlock *p;
-    MemBlock *nb;
-    MemBlock *t;
+    mal *blk;
+    mal *ret;
+    mal *cur;
+    mal *p;
+    mal *nb;
+    mal *t;
     u32 sz;
 
     do {
@@ -578,7 +578,7 @@ MemBlock *func_80010C70(bytes, heap)
             }
         }
     done:
-        nb = (MemBlock *)((u8 *)blk + (blk->size * 4 + 0x18));
+        nb = (mal *)((u8 *)blk + (blk->size * 4 + 0x18));
         nb->size = words;
         nb->prev = blk;
         MEMBLOCK_NEXT(nb)->prev = nb;
@@ -590,16 +590,16 @@ MemBlock *func_80010C70(bytes, heap)
     return ret;
 }
 
-static inline MemBlock *Heap_NextFreeAfter2(MemBlock *p) {
+static inline mal *Heap_NextFreeAfter2(mal *p) {
     while (p->size != 0) {
-        p = (MemBlock *)((u8 *)p + (p->size * 4 + 0x18));
+        p = (mal *)((u8 *)p + (p->size * 4 + 0x18));
         if (p->owner == NULL) {
             return p;
         }
     }
     return NULL;
 }
-static inline MemBlock *Heap_FindFree2(u32 words, MemBlock *blk) {
+static inline mal *Heap_FindFree2(u32 words, mal *blk) {
     for (; blk != NULL; blk = blk->nextFree) {
         if (blk->size >= words) {
             return blk;
@@ -610,15 +610,15 @@ static inline MemBlock *Heap_FindFree2(u32 words, MemBlock *blk) {
 
 void *func_80010E8C(bytes, heap)
     s32 bytes;
-    Heap *heap;
+    _mal_area *heap;
 {
     u32 words;
-    MemBlock *blk;
-    MemBlock *ret;
-    MemBlock *cur;
-    MemBlock *p;
-    MemBlock *nb;
-    MemBlock *t;
+    mal *blk;
+    mal *ret;
+    mal *cur;
+    mal *p;
+    mal *nb;
+    mal *t;
     u32 sz;
 
     do {
@@ -653,7 +653,7 @@ void *func_80010E8C(bytes, heap)
         }
         sz = blk->size - 6;
         sz -= words;
-        nb = (MemBlock *)((u8 *)blk + (words * 4 + 0x18));
+        nb = (mal *)((u8 *)blk + (words * 4 + 0x18));
         nb->prev = blk;
         nb->owner = NULL;
         nb->unk0 = 0;
@@ -702,19 +702,19 @@ void *func_80010E8C(bytes, heap)
     return ret;
 }
 
-void mal_free(void *ptr, Heap *heap) {
-    MemBlock *blk;
-    MemBlock *next;
-    MemBlock *prev;
-    MemBlock *p;
-    MemBlock *q;
+void mal_free(void *ptr, _mal_area *heap) {
+    mal *blk;
+    mal *next;
+    mal *prev;
+    mal *p;
+    mal *q;
 
-    blk = (MemBlock *)ptr - 1;
+    blk = (mal *)ptr - 1;
     if (blk->owner != (void **)-1) {
         *blk->owner = NULL;
     }
     prev = blk->prev;
-    next = (MemBlock *)((u32 *)(blk + 1) + blk->size);
+    next = (mal *)((u32 *)(blk + 1) + blk->size);
     if (blk < heap->lowest || heap->lowest == NULL) {
         heap->lowest = blk;
     }
@@ -780,24 +780,24 @@ void mal_free(void *ptr, Heap *heap) {
     }
 }
 
-void *func_800112A4(void *base, s32 offset, Heap *arg2) {
-    MemBlock *blk;
-    MemBlock *nb;
-    MemBlock *prev;
-    MemBlock *next;
+void *func_800112A4(void *base, s32 offset, _mal_area *arg2) {
+    mal *blk;
+    mal *nb;
+    mal *prev;
+    mal *next;
     void **owner;
     u32 words;
     u32 sz;
 
     words = (u32)offset >> 2;
     words -= 6;
-    blk = (MemBlock *)base;
+    blk = (mal *)base;
     blk--;
-    next = (MemBlock *)((u8 *)blk + (blk->size * 4 + 0x18));
+    next = (mal *)((u8 *)blk + (blk->size * 4 + 0x18));
     prev = blk->prev;
-    nb = (MemBlock *)((u8 *)blk + (words * 4 + 0x18));
+    nb = (mal *)((u8 *)blk + (words * 4 + 0x18));
     nb->owner = blk->owner;
-    nb->unk0 = ((MemBlock *)base)[-1].unk0;
+    nb->unk0 = ((mal *)base)[-1].unk0;
     *(u16 *)nb->unk2 = *(u16 *)blk->unk2;
     owner = nb->owner;
     if (owner != (void **)-1) {
@@ -837,8 +837,8 @@ void *func_800112A4(void *base, s32 offset, Heap *arg2) {
 }
 
 /* Free-list statistics for a heap; returns the free bytes. */
-s32 func_80011410(Heap *heap) {
-    MemBlock *blk;
+s32 func_80011410(_mal_area *heap) {
+    mal *blk;
     s32 bytes;
 
     bytes = 0;
@@ -858,31 +858,31 @@ void mal_print_free(void) {
     func_80011410(&D_8004E0F0);
 }
 
-u8 *func_80011498(u8 *arg0, s32 arg1, Heap *arg2) {
-    MemBlock *blk;
-    MemBlock *new_blk;
+u8 *func_80011498(u8 *arg0, s32 arg1, _mal_area *arg2) {
+    mal *blk;
+    mal *new_blk;
     u32 words;
     u32 old;
     s32 rest;
-    Heap *heap;
+    _mal_area *heap;
 
     void **neg1;
 
     words = (u32)arg1 + 3;
     words = words >> 2;
     heap = arg2;
-    blk = (MemBlock *)(arg0 - 0x18);
+    blk = (mal *)(arg0 - 0x18);
     old = blk->size;
     neg1 = (void **)-1;
     rest = old - words - 6;
     if (rest >= 0x10) {
         blk->size = words;
-        new_blk = (MemBlock *)((u8 *)blk + (0x18 + words * 4));
+        new_blk = (mal *)((u8 *)blk + (0x18 + words * 4));
         new_blk->owner = neg1;
         new_blk->size = rest;
         new_blk->unk0 = 0;
         new_blk->prev = blk;
-        ((MemBlock *)((u8 *)blk + old * 4 + 0x18))->prev = new_blk;
+        ((mal *)((u8 *)blk + old * 4 + 0x18))->prev = new_blk;
         mal_free((u8 *)new_blk + 0x18, heap);
     }
     return arg0;
@@ -915,10 +915,10 @@ s16 func_8001156C(u8 *arg0) {
     return (*(s16*)((u8*)(arg0) + -24));
 }
 
-void func_80011578(u8 *arg0, Heap *heap, s32 arg2) {
-    MemBlock *blk;
+void func_80011578(u8 *arg0, _mal_area *heap, s32 arg2) {
+    mal *blk;
 
-    blk = (MemBlock *)(arg0 - 0x18);
+    blk = (mal *)(arg0 - 0x18);
     if (blk->owner != (void **)-1) {
         *blk->owner = NULL;
     }
@@ -946,7 +946,7 @@ void *func_800115D8(s32 arg0, void **arg1, s32 arg2, s32 arg3) {
     return ret;
 }
 
-u8 *func_80011654(s32 arg0, Heap *arg1) {
+u8 *func_80011654(s32 arg0, _mal_area *arg1) {
     u16 *var_a0_2;
     u8 *temp_v1;
     u8 *var_a0;
@@ -1014,15 +1014,15 @@ block_10:
 }
 
 void *func_80011828(void *ptr, s32 bytes) {
-    MemBlock *blk;
-    MemBlock *split;
-    MemBlock *next;
+    mal *blk;
+    mal *split;
+    mal *next;
     s32 words;
 
-    blk = (MemBlock *)ptr - 1;
+    blk = (mal *)ptr - 1;
     words = bytes >> 2;
-    split = (MemBlock *)((u32 *)blk + words);
-    next = (MemBlock *)((u32 *)(blk + 1) + blk->size);
+    split = (mal *)((u32 *)blk + words);
+    next = (mal *)((u32 *)(blk + 1) + blk->size);
     split->unk0 = 4;
     split->owner = (void **)-1;
     split->size = blk->size - words;
@@ -1034,12 +1034,12 @@ void *func_80011828(void *ptr, s32 bytes) {
 
 
 
-MemBlock *func_80011878(MemBlock *blk, s32 words) {
-    MemBlock *split;
-    MemBlock *next;
+mal *func_80011878(mal *blk, s32 words) {
+    mal *split;
+    mal *next;
 
-    split = (MemBlock *)((u32 *)blk + words);
-    next = (MemBlock *)((u32 *)(blk + 1) + blk->size);
+    split = (mal *)((u32 *)blk + words);
+    next = (mal *)((u32 *)(blk + 1) + blk->size);
     split->unk0 = 4;
     split->owner = (void **)-1;
     split->size = blk->size - words;
@@ -1049,10 +1049,10 @@ MemBlock *func_80011878(MemBlock *blk, s32 words) {
     return split;
 }
 
-MemBlock *func_800118BC(MemBlock *blk, s32 words, Heap *heap) {
-    MemBlock *split;
-    MemBlock *cur;
-    MemBlock *t;
+mal *func_800118BC(mal *blk, s32 words, _mal_area *heap) {
+    mal *split;
+    mal *cur;
+    mal *t;
     u32 sz;
 
     if (blk->prevFree != NULL) {
@@ -1065,7 +1065,7 @@ MemBlock *func_800118BC(MemBlock *blk, s32 words, Heap *heap) {
     }
     sz = blk->size - 6;
     sz -= words;
-    split = (MemBlock *)((u8 *)blk + (words * 4 + 0x18));
+    split = (mal *)((u8 *)blk + (words * 4 + 0x18));
     split->prev = blk;
     split->owner = NULL;
     split->unk0 = 0;
@@ -1109,11 +1109,11 @@ done:
     return blk;
 }
 
-void func_800119D4(MemBlock *arg0, s32 arg1, Heap *arg2) {
-    MemBlock *cur;
-    MemBlock *t;
-    MemBlock *nb;
-    MemBlock *p;
+void func_800119D4(mal *arg0, s32 arg1, _mal_area *arg2) {
+    mal *cur;
+    mal *t;
+    mal *nb;
+    mal *p;
     u32 sz;
 
     t = arg0->prevFree;
@@ -1163,15 +1163,15 @@ void func_800119D4(MemBlock *arg0, s32 arg1, Heap *arg2) {
         }
     }
 done:
-    nb = (MemBlock *)((u8 *)arg0 + (arg0->size * 4 + 0x18));
+    nb = (mal *)((u8 *)arg0 + (arg0->size * 4 + 0x18));
     nb->size = arg1;
     nb->prev = arg0;
     MEMBLOCK_NEXT(nb)->prev = nb;
 }
 
-void func_80011AE8(MemBlock *blk, Heap *heap) {
-    MemBlock *p;
-    MemBlock *prev;
+void func_80011AE8(mal *blk, _mal_area *heap) {
+    mal *p;
+    mal *prev;
 
     p = heap->free;
     if (p == NULL) {
@@ -1223,9 +1223,9 @@ void mal_unlink(u8 *arg0, u8 *arg1) {
     }
 }
 
-MemBlock *func_80011BC0(MemBlock *blk) {
+mal *func_80011BC0(mal *blk) {
     if (blk->size != 0) {
-        blk = (MemBlock *)((u32 *)(blk + 1) + blk->size);
+        blk = (mal *)((u32 *)(blk + 1) + blk->size);
         if (blk->owner != NULL) {
             return func_80011BC0(blk);
         }
@@ -1236,31 +1236,31 @@ MemBlock *func_80011BC0(MemBlock *blk) {
 
 
 
-MemBlock *func_80011BF8(Heap *heap, u8 *start, s32 size) {
-    MemBlock *blk;
-    MemBlock *end;
+mal *func_80011BF8(_mal_area *heap, u8 *start, s32 size) {
+    mal *blk;
+    mal *end;
 
-    blk = (MemBlock *)start;
+    blk = (mal *)start;
     blk->size = ((u32)(size + 3) >> 2) - 12;
     blk->owner = NULL;
     blk->unk0 = 0;
     blk->prev = NULL;
     blk->nextFree = NULL;
     blk->prevFree = NULL;
-    end = (MemBlock *)((u32 *)(blk + 1) + blk->size);
+    end = (mal *)((u32 *)(blk + 1) + blk->size);
     end->size = 0;
     end->owner = (void **)-1;
     end->unk0 = 0;
     end->prev = blk;
-    *(MemBlock **)&heap->unk0[0] = blk;
+    *(mal **)&heap->unk0[0] = blk;
     heap->free = blk;
     heap->lowest = blk;
-    *(MemBlock **)&heap->unk0[4] = end;
+    *(mal **)&heap->unk0[4] = end;
     heap->deferred = NULL;
     return blk;
 }
 
-MemBlock *mal_first_free(u32 words, MemBlock *blk) {
+mal *mal_first_free(u32 words, mal *blk) {
     for (; blk != NULL; blk = blk->nextFree) {
         if (blk->size >= words) {
             return blk;
@@ -1269,11 +1269,11 @@ MemBlock *mal_first_free(u32 words, MemBlock *blk) {
     return blk;
 }
 
-MemBlock *func_80011C98(MemBlock *arg0) {
-    MemBlock *blk;
-    MemBlock *p;
+mal *func_80011C98(mal *arg0) {
+    mal *blk;
+    mal *p;
 
-    blk = (MemBlock *)arg0->owner;
+    blk = (mal *)arg0->owner;
     blk = blk->prev;
     for (; blk != NULL; blk = blk->prev) {
         if (blk->owner == NULL && (p = blk->prev) != NULL && p->owner != (void **)-1) {
@@ -1302,7 +1302,7 @@ void func_80011D28(u8 *arg0) {
     func_800107C8(var_a0, arg0);
 }
 
-u8 *func_80011DB4(Heap *arg0) {
+u8 *func_80011DB4(_mal_area *arg0) {
     u16 temp_v0;
     u8 *var_a0;
     u8 *var_s0;
@@ -1336,8 +1336,8 @@ u8 *func_80011DB4(Heap *arg0) {
     return var_s1;
 }
 
-MemBlock *func_80011E80(Heap *heap) {
-    MemBlock *next;
+mal *func_80011E80(_mal_area *heap) {
+    mal *next;
 
     next = Heap_AfterLowest(heap);
     if (next != NULL) {
@@ -1348,15 +1348,15 @@ MemBlock *func_80011E80(Heap *heap) {
     return next;
 }
 
-MemBlock *func_80011EF0(Heap *heap) {
-    MemBlock *blk;
-    MemBlock *next;
-    MemBlock *ret;
+mal *func_80011EF0(_mal_area *heap) {
+    mal *blk;
+    mal *next;
+    mal *ret;
 
     blk = heap->lowest;
     ret = NULL;
     if (blk != NULL) {
-        next = (MemBlock *)((u8 *)blk + (blk->size * 4 + sizeof(MemBlock)));
+        next = (mal *)((u8 *)blk + (blk->size * 4 + sizeof(mal)));
         if (next->owner != (void **)-1) {
             ret = next;
             if (next->size == 0) {
@@ -1372,28 +1372,28 @@ MemBlock *func_80011EF0(Heap *heap) {
     return ret;
 }
 
-MemBlock *func_80011F74(Heap *heap) {
-    MemBlock *blk;
-    MemBlock *next;
+mal *func_80011F74(_mal_area *heap) {
+    mal *blk;
+    mal *next;
 
     blk = heap->lowest;
     if (blk == NULL) {
         return NULL;
     }
-    next = (MemBlock *)((u8 *)blk + (blk->size * 4 + sizeof(MemBlock)));
+    next = (mal *)((u8 *)blk + (blk->size * 4 + sizeof(mal)));
     if (next->owner == (void **)-1 || next->size == 0) {
         return NULL;
     }
     return next;
 }
 
-void func_80011FC8(MemBlock *arg0, Heap *arg1) {
-    MemBlock *next;
+void func_80011FC8(mal *arg0, _mal_area *arg1) {
+    mal *next;
     s32 new_var2;
-    MemBlock *prev;
-    MemBlock *new_var;
-    MemBlock *end;
-    MemBlock *nb;
+    mal *prev;
+    mal *new_var;
+    mal *end;
+    mal *nb;
     s32 *d;
     s32 *s;
     s32 n;
@@ -1401,7 +1401,7 @@ void func_80011FC8(MemBlock *arg0, Heap *arg1) {
 
     mal_unlink((u8 *)arg0, (u8 *)arg1);
     size = arg0->size;
-    next = (MemBlock *)((u8 *)arg0 + (size * 4 + 0x18));
+    next = (mal *)((u8 *)arg0 + (size * 4 + 0x18));
     new_var = arg0;
     n = next->size;
     prev = arg0->prev;
@@ -1409,7 +1409,7 @@ void func_80011FC8(MemBlock *arg0, Heap *arg1) {
     *arg0 = *next;
     s = (s32 *)((u8 *)next + 0x18);
     new_var->prev = prev;
-    end = (MemBlock *)((u8 *)next + (n * 4 + 0x18));
+    end = (mal *)((u8 *)next + (n * 4 + 0x18));
     new_var2 = size;
     n--;
     *arg0->owner = (void *)d;
@@ -1419,7 +1419,7 @@ void func_80011FC8(MemBlock *arg0, Heap *arg1) {
             n--;
         } while (n != -1);
     }
-    next = (MemBlock *)((u8 *)arg0 + (arg0->size * 4 + 0x18));
+    next = (mal *)((u8 *)arg0 + (arg0->size * 4 + 0x18));
     end->prev = next;
     next->size = new_var2;
     next->owner = (void **)-1;
@@ -1431,24 +1431,24 @@ void func_80011FC8(MemBlock *arg0, Heap *arg1) {
     mal_free(next + 1, arg1);
 }
 
-void func_800120E8(MemBlock *arg0, Heap *arg1) {
+void func_800120E8(mal *arg0, _mal_area *arg1) {
     s32 size;
-    MemBlock *prev;
-    MemBlock *next;
-    MemBlock *dst;
+    mal *prev;
+    mal *next;
+    mal *dst;
     s32 *d;
     s32 *s;
     s32 n;
 
     size = arg0->size;
     prev = arg0->prev;
-    next = (MemBlock *)((u8 *)arg0 + (size * 4 + 0x18));
+    next = (mal *)((u8 *)arg0 + (size * 4 + 0x18));
     if (prev != NULL) {
         mal_unlink((u8 *)arg0, (u8 *)arg1);
         d = (s32 *)((u8 *)arg0 + (arg0->size * 4 + 0x14));
         n = prev->size;
         s = (s32 *)((u8 *)prev + (n * 4 + 0x14));
-        dst = (MemBlock *)((u8 *)d - n * 4 - 0x14);
+        dst = (mal *)((u8 *)d - n * 4 - 0x14);
         next->prev = dst;
         n--;
         while (n != -1) {
@@ -1465,7 +1465,7 @@ void func_800120E8(MemBlock *arg0, Heap *arg1) {
 }
 
 u8 *func_800121F8(u8 *arg0) {
-    Heap *h;
+    _mal_area *h;
     s32 words;
 
     if (*(u8 **)(arg0 + 0x18) == NULL) {
@@ -2201,7 +2201,7 @@ u8 *func_8001316C(u8 *arg0) {
 
 
 s32 func_800131B0(s32 arg0) {
-    Heap *h = &D_8004E0F0;
+    _mal_area *h = &D_8004E0F0;
     s32 words;
     arg0 += 3;
     words = arg0 >> 2;

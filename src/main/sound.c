@@ -105,7 +105,7 @@ done:
     func_8002AAA0();
 }
 
-void func_8002ADD4(void *data, VabSlot *slot) {
+void func_8002ADD4(void *data, sfx_machine_bank_info *slot) {
     u8 *head;
     u8 *body;
     s16 id;
@@ -328,7 +328,7 @@ void func_8002B9A4(void) {
     func_8002B96C();
 }
 
-void machine_load_sfx(s32 arg0, VabSlot *slot) {
+void machine_load_sfx(s32 arg0, sfx_machine_bank_info *slot) {
     slot->handle = asload_permanent_callback(arg0, func_8002ADD4, slot);
 }
 
@@ -377,7 +377,7 @@ void func_8002BBB4(void) {
 }
 
 void func_8002BBEC(void) {
-    VabSlot *slot;
+    sfx_machine_bank_info *slot;
     s32 new_var;
     s8 *p;
     s32 i;

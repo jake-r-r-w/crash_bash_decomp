@@ -385,7 +385,7 @@ void AR_UpdateLevel(void) {
     }
     ao = (u8 *)D_80054504;
     ao += 0x10;
-    func_80029100((AnimOwner *)ao);
+    func_80029100((obj_textureset *)ao);
 }
 
 bool AR_KeepInBounds(EXTengine *arg0) {

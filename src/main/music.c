@@ -2,7 +2,7 @@
 #include "bash/main.h"
 #include "bash/music.h"
 
-void func_8002BD98(SeqSlot *slot, s32 idx) {
+void func_8002BD98(music_midi *slot, s32 idx) {
     s16 vol;
 
     if (slot->unk1C != -1) {
@@ -22,7 +22,7 @@ void func_8002BD98(SeqSlot *slot, s32 idx) {
 }
 
 void func_8002BEA8(void) {
-    SeqSlot *slot = &D_8006557C;
+    music_midi *slot = &D_8006557C;
     s32 next = D_8006559C;
     s32 cur = D_800655A4;
     s32 vol;
@@ -68,7 +68,7 @@ void func_8002C060(void) {
     D_800655B4 = 0;
 }
 
-void func_8002C090(SeqSlot *slot) {
+void func_8002C090(music_midi *slot) {
     if (slot->seq >= 0) {
         SsSeqClose(slot->seq);
         SsSepStop(slot->seq, 0);
@@ -128,7 +128,7 @@ void music_restart(void) {
     D_800655A8 += 1;
 }
 
-void func_8002C2C4(SeqSlot *slot) {
+void func_8002C2C4(music_midi *slot) {
     u8 *body;
     int new_var;
     u8 *head;
@@ -150,7 +150,7 @@ void func_8002C2C4(SeqSlot *slot) {
     slot->data = (s32)func_800112A4((void *)slot->data, ((s32 *)slot->data)[1], &D_8004E0F0);
 }
 
-void music_dload_midi(s32 arg0, SeqSlot *slot, s32 type) {
+void music_dload_midi(s32 arg0, music_midi *slot, s32 type) {
     asload_permanent_callback(arg0, func_8002C3F0, slot);
     SpuReserveReverbWorkArea(1);
     SsUtSetReverbType(type);

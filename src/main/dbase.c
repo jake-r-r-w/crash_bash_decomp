@@ -94,7 +94,7 @@ void func_8001612C(u8 *arg0, s32 arg1) {
 }
 
 void dbase_asload_with_anims_texture_callback(u8 *arg0, u8 *arg1) {
-    Heap *heap;
+    _mal_area *heap;
     u8 *p;
     s32 n;
 
@@ -573,7 +573,7 @@ void func_80016D44(u8 *arg0) {
 }
 
 void func_80016D98(u8 *data, u8 *rec) {
-    Heap *heap;
+    _mal_area *heap;
     s32 size;
 
     size = func_8002A650(data);
@@ -591,7 +591,7 @@ void func_80016D98(u8 *data, u8 *rec) {
 }
 
 void func_80016E5C(u8 *arg0, u8 *arg1) {
-    Heap *heap;
+    _mal_area *heap;
     s32 n;
 
     n = func_8002A650(arg0);

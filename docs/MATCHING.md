@@ -274,7 +274,7 @@ first. Rows that need inline asm are not allowed (only C).
 | Two `li` constants before a loop in the other order | Put the stored constant in a local assigned before the loop (`v = 1; for (...) a[i].x = v;`) | `func_80028158`, `func_800B7B10` |
 | `addu v0,a0,v0` where the target has `addu v0,v0,a0` (offset + base) | Add the offset as an integer: `(s32 *)(off + (s32)base)` | `func_8001DD20` |
 | A global loaded early, so a parameter moves out of a0 into another register | Read the global into a local at the top (`head = D_80050F3C;`) | `func_8001316C` |
-| A heap/pointer local set too early (its `lui` sits before the first call) | Assign it after the call: `n = f(x); heap = (Heap *)D_8004E0F0;` | `func_80016E5C` |
+| A heap/pointer local set too early (its `lui` sits before the first call) | Assign it after the call: `n = f(x); heap = (_mal_area *)D_8004E0F0;` | `func_80016E5C` |
 | m2c steps a `u16 *` by a byte stride in a lookup loop (`p += 0x18`) | Step a pointer to a struct of that size with `p++` | `func_800263D8` |
 | An extra `andi a1,a1,0xffff` before a compare loop | The compared argument is `s32`, even though the field it's compared with is `u16` | `func_800263D8` |
 | A leaf ends `jr ra` with a pointer temp in v0, ours in v1 (v0/v1 swapped throughout) | The function returns that pointer: give it a return type and `return p;` | `func_80011878` |
@@ -337,7 +337,7 @@ first. Rows that need inline asm are not allowed (only C).
 | Two registers where the target reuses one (a3 for the size and the loop count) | One local for both: `size -= 0x18; ...; size = (size - 0x18) >> 2;`, and count the `do`/`while` with it | `func_8002321C` |
 | An argument and a block pointer swap saved registers, `blk + 0x14` computed after the `beqz` | `q = blk + 0x14;` in its own local before the call whose result is tested; the flag tests as nested `if`s | `func_8001CF50` |
 | A leading `move a3,a0`, the walker in a3 and its `+4` giv in a0 (ours keeps the walker in a0, no copy) | Step the parameter itself in the loop and return it, instead of copying it into a local | `func_80021CB8` |
-| A global's `lui`/`addiu` after the argument shift, and s0/s1 saved in another order | `Heap *h = &global;` as the first local, then `arg += 3; w = arg >> 2;` | `func_800131B0` |
+| A global's `lui`/`addiu` after the argument shift, and s0/s1 saved in another order | `_mal_area *h = &global;` as the first local, then `arg += 3; w = arg >> 2;` | `func_800131B0` |
 | A global base `addiu` hoisted before a call, or a `+0x8000` hoisted above the second call (target: `ori` + `addu` after it) | The call result into a local first, then `g = global;`; write the second store as `*(T *)((g += 0x8000) + 0xC) = call(...)` | `func_800276C4` |
 | Full build longer than the target (+8 or +32 bytes) though the function matches alone; the string is also in an `INCLUDE_RODATA` bundle | Don't write the literal: `extern char D_xxxx[];` in the owned header and `printf(D_xxxx)` | `func_80013034` |
 | Full build +8 bytes of rodata and everything after a jump table shifts; gcc's own table is `.align 3`, the target's 4-aligned | Replace the `switch` with `static const void *const tbl[N] = {&&l21, ...}; goto *tbl[c - 0x21];` and labelled returns (the default label for gaps) | `func_8002C4B0` |

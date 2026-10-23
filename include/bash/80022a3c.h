@@ -8,7 +8,7 @@
 #include "common.h"
 #include "bash/main.h"
 
-void texture_update_scroll(AnimScroll *, AnimOwner *);
+void texture_update_scroll(texture_scroll *, obj_textureset *);
 void func_80029560(u8 *arg0);
 void func_8002A5A4(u8 *arg0, u8 *arg1);
 void SetNasDefaults(void);
@@ -65,13 +65,13 @@ s32 func_80027790(u8 *a, s32 b, u8 *c, s32 d);
 extern FreeHdr *func_800282F8(u8 *);
 /* Draws f at xy (640-wide units) as a POLY_FT4 in ot[otz]; color bit 31 makes
  * it semi-transparent, bits 29-30 its blend mode. Returns f's advance. */
-s32 texture_draw(SpriteFrame *f, s32 xy, s32 otz, u32 color);
+s32 texture_draw(obj_texture *f, s32 xy, s32 otz, u32 color);
 /* texture_draw as a POLY_GT4 with one colour per vertex (c0 also sets the
  * semi-transparency and blend mode). */
-s32 func_8002992C(SpriteFrame *f, s32 xy, s32 otz, u32 c0, u32 c1, u32 c2, u32 c3);
+s32 func_8002992C(obj_texture *f, s32 xy, s32 otz, u32 c0, u32 c1, u32 c2, u32 c3);
 /* Draws f at the 3D point pos as a POLY_GT4 in the OT at cdb, c0 on
  * the top vertices and c1 on the bottom ones; returns f's advance. */
-s32 func_80029F9C(SpriteFrame *f, SWORD_XYZ *pos, s32 otz, u32 c0, u32 c1);
+s32 func_80029F9C(obj_texture *f, SWORD_XYZ *pos, s32 otz, u32 c0, u32 c1);
 void *AllocExtension(void *owner, s32 size, s32 id, void *tmpl);
 void FreeExtension(void *ext);
 s32 AddPlatformContour(EXTengine *eng, s32 y);
@@ -114,7 +114,7 @@ void func_80026F48(void);
 s32 func_80027944(void);
 s32 func_80028994(s32 a, s32 b, s32 c);
 s32 calc_rgbcode(s32 r, s32 g, s32 b);
-void texture_init_mem_textureset(struct TexSet2926C *arg0);
+void texture_init_mem_textureset(obj_textureset *arg0);
 void func_80023158(s32 arg0);
 void func_8002321C(void);
 void FetchDefaultColBox(EXTengine *eng, u32 flag);
@@ -139,7 +139,7 @@ void func_8002A77C(ClutUpload *arg0, s32 arg1);
 void func_8002A9AC(s32 *arg0, s32 arg1);
 void func_80027AD4(PadPacket *p, PadInput *in, s32 n);
 s32 func_800281C0(PadRumble *r, s32 port);
-void func_80029100(AnimOwner *arg0);
+void func_80029100(obj_textureset *arg0);
 void func_8002A4C0(TexUploadList *arg0, u8 *arg1);
 ScriptCursor *func_80024E30(NAS *nas, ScriptInit *init);
 void func_80024FA4(ScriptCursor *c);

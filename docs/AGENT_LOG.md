@@ -238,10 +238,10 @@ Other:
 - `main/8002e0f0` with `-fno-rerun-cse-after-loop`: `func_8002E25C` stops
   matching (structure 44/95), the other four still match. Whether both
   units had the flag (and E25C's C leans on cse2) is open.
-- Heap: `D_8004E0F0` is a `Heap` now. Its +0x10 is the deferred-free list
-  (`func_80011578` pushes, `func_80011DB4` counts down); `MemBlock.unk2` is
+- Heap: `D_8004E0F0` is a `_mal_area` (the `Heap` of before) now. Its +0x10 is the deferred-free list
+  (`func_80011578` pushes, `func_80011DB4` counts down); `mal.unk2` is
   the countdown. `func_800115D8`'s prototype still takes `void **`, not
-  `Heap *`; retype it when its callers allow.
+  `_mal_area *`; retype it when its callers allow.
 - Prototype debug types (ARCHITECTURE.md, Prototype debug types): every type
   in the Oct 9 fragment is in a header now, and every single-id AST
   Init/Plot is named. Use them while matching: type `NAS` fields, `FUX`

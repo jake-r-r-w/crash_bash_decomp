@@ -1460,8 +1460,8 @@ void func_800B7458(void) {
     }
     func_800B3A9C();
     a = D_800555DC;
-    func_80029100((AnimOwner *)(a + 0x10));
-    func_80029100((AnimOwner *)(a + 0x48));
+    func_80029100((obj_textureset *)(a + 0x10));
+    func_80029100((obj_textureset *)(a + 0x48));
     val = D_800BA740;
     if (val == 0) {
         func_800B6E0C();

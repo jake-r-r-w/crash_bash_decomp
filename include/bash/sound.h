@@ -9,8 +9,8 @@
 #include "bash/main.h"
 
 void func_8002BAE8(void);
-void machine_load_sfx(s32 arg0, VabSlot *slot);
-void func_8002ADD4(void *data, VabSlot *slot);
+void machine_load_sfx(s32 arg0, sfx_machine_bank_info *slot);
+void func_8002ADD4(void *data, sfx_machine_bank_info *slot);
 void func_8002AAA0(void);
 void sound_critical(void);
 void machine_quit_sound(void);

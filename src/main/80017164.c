@@ -1365,7 +1365,7 @@ void func_80019A60(s32 a, u8 *set, s32 c, void *d) {
             otz = *(s16 *)((u8 *)d + 0x68);
         }
         if ((u32)otz < (u32)D_80056998.otLen) {
-            texture_draw((SpriteFrame *)(*(u8 **)((u8 *)D_80056998.unk0 + 0x18) + (a & 0xFFF) * 0x38),
+            texture_draw((obj_texture *)(*(u8 **)((u8 *)D_80056998.unk0 + 0x18) + (a & 0xFFF) * 0x38),
                           (s32)e, otz, g);
         }
         return;

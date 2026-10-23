@@ -1073,13 +1073,13 @@ void func_800B5FC4(void) {
     }
     base = D_80052A54;
     if (TANK_MODEL_ON(base, 56)) {
-        func_80029100((AnimOwner *)(TANK_MODEL(56) + 0x10));
+        func_80029100((obj_textureset *)(TANK_MODEL(56) + 0x10));
     }
     if (D_8005A648 == 5 && TANK_MODEL_ON(base, 60)) {
-        func_80029100((AnimOwner *)(TANK_MODEL(60) + 0x10));
+        func_80029100((obj_textureset *)(TANK_MODEL(60) + 0x10));
     }
     if (D_8005A648 == 9 && TANK_MODEL_ON(b2 = D_80052A54, 57)) {
-        func_80029100((AnimOwner *)(b2 + 57 * 0x38 + 0x10));
+        func_80029100((obj_textureset *)(b2 + 57 * 0x38 + 0x10));
     }
     if (D_8009D908 == 0) {
         D_8009D908 = 1;

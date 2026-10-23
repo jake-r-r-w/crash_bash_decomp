@@ -8,7 +8,7 @@
 #include "common.h"
 #include "bash/main.h"
 
-void music_dload_midi(s32 arg0, SeqSlot *slot, s32 type);
+void music_dload_midi(s32 arg0, music_midi *slot, s32 type);
 void func_8002C284(s32 arg0);
 void music_duck_off(void);
 void func_8002C29C(void);
@@ -24,12 +24,12 @@ void continue_music(void);
 void func_8002C11C(void);
 void func_8002C060(void);
 void music_fade_out(s32 arg0);
-void func_8002C090(SeqSlot *slot);
+void func_8002C090(music_midi *slot);
 void func_8002C1C0(s32 arg0, s32 arg1);
-void func_8002C2C4(SeqSlot *slot);
-void func_8002BD98(SeqSlot *slot, s32 idx);
+void func_8002C2C4(music_midi *slot);
+void func_8002BD98(music_midi *slot, s32 idx);
 
-static inline void SeqSlot_SetVol(SeqSlot *slot, s32 vol) {
+static inline void SeqSlot_SetVol(music_midi *slot, s32 vol) {
     SsSeqSetVol((s16)slot->seq, (s16)vol, (s16)vol);
 }
 

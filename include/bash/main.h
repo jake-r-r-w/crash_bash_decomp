@@ -13,14 +13,7 @@ typedef struct {
     s32 subOff;    /* 0x04 */
 } AnimData;
 
-typedef struct {
-    u8 unk0[8];
-    u8 *table;      /* 0x08 */
-    u8 unkC[0xC];
-    AnimData *data; /* 0x18 */
-} AnimOwner;
-
-/* An AnimOwner table entry (0x38 bytes) scrolled by texture_update_scroll. */
+/* An obj_texture as texture_update_scroll scrolls it. */
 typedef struct {
     u8 unk0[0x1C];
     u16 w;          /* 0x1C */
@@ -28,13 +21,14 @@ typedef struct {
     s16 *src;       /* 0x20: x, y */
 } AnimEntry;
 
-/* A scrolling track (func_80029100's sub list, 16 bytes each). */
-typedef struct {
-    s32 idx;        /* 0x00: entry in AnimOwner.table */
+/* A scrolling track (func_80029100's sub list, 16 bytes each); the name is
+ * the C++ symbols' (texture_update_scroll__FP14texture_scrollP14obj_textureset). */
+typedef struct texture_scroll {
+    s32 idx;        /* 0x00: entry in obj_textureset.tex */
     s32 speed;      /* 0x04 */
     s32 pos;        /* 0x08: 24.8 */
     s16 *dst;       /* 0x0C: x, y */
-} AnimScroll;
+} texture_scroll;
 
 
 /* The same 0x38-byte entry as func_80028D40 uploads it to VRAM. */
@@ -451,11 +445,13 @@ typedef struct {
     s32 head;
 } VabFile;
 
-typedef struct {
+/* A loaded sfx bank (machine_load_sfx); the name is the C++ symbols'
+ * (machine_load_sfx__FP4fileP21sfx_machine_bank_info). */
+typedef struct sfx_machine_bank_info {
     u8 *head;
     s32 id;   /* set once the transfer completes */
     s32 handle; /* asload_permanent_callback's result (machine_load_sfx) */
-} VabSlot;
+} sfx_machine_bank_info;
 
 /* Points drawn as one-pixel tiles by func_80015C1C (an engine API entry). */
 typedef struct {
@@ -497,18 +493,19 @@ typedef struct {
 
 /* Header of a heap block, 0x18 bytes before the pointer the allocator hands
  * out; the next block follows its size words of data. Free blocks are on the
- * heap's free list, sorted by size (mal_free frees and merges). */
-typedef struct MemBlock {
+ * heap's free list, sorted by size (mal_free frees and merges). The names
+ * mal and _mal_area are the C++ symbols' (mal_unlink__FP3malP9_mal_area). */
+typedef struct mal {
     /* 0x00 */ u16 unk0;
     /* 0x02 */ u8 unk2[2];
     /* 0x04 */ void **owner;             /* cleared on free; (void **)-1 for none; NULL when free */
     /* 0x08 */ u32 size;                 /* in words, header not included */
-    /* 0x0C */ struct MemBlock *prev;    /* the block before it in memory */
-    /* 0x10 */ struct MemBlock *prevFree;
-    /* 0x14 */ struct MemBlock *nextFree;
-} MemBlock;
+    /* 0x0C */ struct mal *prev;    /* the block before it in memory */
+    /* 0x10 */ struct mal *prevFree;
+    /* 0x14 */ struct mal *nextFree;
+} mal;
 
-#define MEMBLOCK_NEXT(b) ((MemBlock *)((u8 *)(b) + (b)->size * 4 + sizeof(MemBlock)))
+#define MEMBLOCK_NEXT(b) ((mal *)((u8 *)(b) + (b)->size * 4 + sizeof(mal)))
 
 /* Header of a pool entry; the data follows it. */
 typedef struct PoolNode {
@@ -589,8 +586,9 @@ typedef struct PadStick {
     /* 0x54 */ s32 dirPressed;
 } PadStick;
 
-/* Loaded sound data and the sequence opened from it (D_8006557C). */
-typedef struct SeqSlot {
+/* Loaded sound data and the sequence opened from it (D_8006557C); the name is
+ * the C++ symbols' (music_dload_midi__FP4fileP10music_midil). */
+typedef struct music_midi {
     /* 0x00 */ s32 data;                 /* heap block, freed by func_8002C44C */
     /* 0x04 */ s32 seq;                  /* SsSeq access number, or -1 */
     /* 0x08 */ s32 p8;                   /* data + header offset (func_8002C2C4) */
@@ -599,7 +597,7 @@ typedef struct SeqSlot {
     /* 0x14 */ s32 p14;
     /* 0x18 */ s32 p18;
     /* 0x1C */ s32 unk1C;                /* set to -1 on close */
-} SeqSlot;
+} music_midi;
 
 /* Set both channels of slot's sequence volume (func_8002BEA8). */
 
@@ -680,22 +678,22 @@ typedef struct LoadNode {
 } LoadNode;
 
 /* A heap (D_8004E0F0 is the main one). Only these fields are known. */
-typedef struct Heap {
+typedef struct _mal_area {
     /* 0x00 */ u8 unk0[8];
-    /* 0x08 */ MemBlock *free;           /* free list, smallest first */
-    /* 0x0C */ MemBlock *lowest;         /* lowest free block, or NULL */
-    /* 0x10 */ MemBlock *deferred;       /* freed once unk2 ticks run out (func_80011578, func_80011DB4) */
-} Heap;
+    /* 0x08 */ mal *free;           /* free list, smallest first */
+    /* 0x0C */ mal *lowest;         /* lowest free block, or NULL */
+    /* 0x10 */ mal *deferred;       /* freed once unk2 ticks run out (func_80011578, func_80011DB4) */
+} _mal_area;
 
 /* The used block right after the heap's lowest free block, or NULL. */
-static inline MemBlock *Heap_AfterLowest(Heap *heap) {
-    MemBlock *nx;
-    MemBlock *lo = heap->lowest;
+static inline mal *Heap_AfterLowest(_mal_area *heap) {
+    mal *nx;
+    mal *lo = heap->lowest;
 
     if (lo == NULL) {
         return NULL;
     }
-    nx = (MemBlock *)((u8 *)lo + (lo->size * 4 + 0x18));
+    nx = (mal *)((u8 *)lo + (lo->size * 4 + 0x18));
     if (nx->owner == (void **)-1 || nx->size == 0) {
         return NULL;
     }
@@ -706,8 +704,8 @@ static inline MemBlock *Heap_AfterLowest(Heap *heap) {
 extern s32 D_8005B690;
 
 /* Heap_AfterLowest, unless it is flagged busy for this frame buffer. */
-static inline MemBlock *Heap_NextToMove(Heap *heap) {
-    MemBlock *p;
+static inline mal *Heap_NextToMove(_mal_area *heap) {
+    mal *p;
 
     p = Heap_AfterLowest(heap);
     if (p != NULL && (p->unk0 & 2) && (p->unk0 & 1) == (D_8005B690 & 1)) {
@@ -743,12 +741,12 @@ s32 func_8001151C(u8 *arg0);
 void func_80011530(u8 *arg0);
 void func_80011544(u8 *arg0, u8 * *arg1);
 s16 func_8001156C(u8 *arg0);
-u8 *func_80011654(s32 arg0, Heap *arg1);
+u8 *func_80011654(s32 arg0, _mal_area *arg1);
 u8 *func_80011748(s32 arg0, u8 *arg1);
 void mal_unlink(u8 *arg0, u8 *arg1);
 void func_80011D00(s32 arg0);
 void func_80011D28(u8 *arg0);
-u8 *func_80011DB4(Heap *arg0);
+u8 *func_80011DB4(_mal_area *arg0);
 void func_80012DDC(s32 arg0);
 void func_80012E0C(void);
 void func_80012E14(u8 *arg0);
@@ -757,8 +755,8 @@ s32 func_8001534C(u8 *s);
 s32 func_80013650(s32 arg0, void (*done)(), void *ctx);
 s32 func_80012FFC(void);
 s32 func_8001231C(void);
-void func_80010AE8(Heap *arg0);
-MemBlock *mal_first_free(u32 words, MemBlock *blk);
+void func_80010AE8(_mal_area *arg0);
+mal *mal_first_free(u32 words, mal *blk);
 s32 func_80013034(s32 arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *arg4, s32 arg5, s32 arg6);
 s32 asload_permanent_callback(s32 arg0, void (*done)(), void *ctx);
 void func_80012E88(void);
@@ -823,9 +821,9 @@ extern VTable8 *D_8004E0DC;
 extern VTable8 *D_8005B648;
 extern s32 D_8004E0E0;
 extern s32 D_8004E0E4;
-void mal_update(Heap *heap);
+void mal_update(_mal_area *heap);
 extern u8 D_80078C90[];
-MemBlock *func_80011BF8(Heap *heap, u8 *start, s32 size);
+mal *func_80011BF8(_mal_area *heap, u8 *start, s32 size);
 extern u8 D_80050008[];
 extern u8 D_8004E0B8[];
 s32 func_800134FC(u8 *a, u8 *b);
@@ -899,19 +897,19 @@ extern s32 D_80067830;
 /* Zeroes the 0x2000-byte save buffer. */
 
 /* Free bytes on the card (func_8002D178). */
-extern Heap D_8004E0F0;
+extern _mal_area D_8004E0F0;
 extern s32 D_800637B0;
 extern u8 *D_8006E9FC;
 extern u8 D_80055684[];
 extern void *D_8005AA34;
 extern void *D_8005AA24;
-extern SeqSlot D_8006557C;
+extern music_midi D_8006557C;
 extern LoaderState D_80050628;
 extern char D_8004C83C[];
 extern void func_80012840(u8 *, u8 *);
 extern void func_80012678(u8 *, u8 *);
 extern MusicEntry D_80058B88[];
-extern VabSlot D_800644C0[6];
+extern sfx_machine_bank_info D_800644C0[6];
 extern NodePool D_80056844;
 extern NAS *D_8005AA2C;
 extern NAS *D_8005AA9C;
@@ -1039,7 +1037,7 @@ struct ExtBlk {
 };
 extern ExtBlk *D_8005A7AC;
 extern VabFile *D_800654C0;  /* VAB being transferred to the SPU, or NULL */
-extern VabSlot *D_800654C4;  /* where its id goes */
+extern sfx_machine_bank_info *D_800654C4;  /* where its id goes */
 extern s32 D_800654C8;       /* the id from SsVabOpenHead */
 extern u8 D_800644A8[];
 extern u8 D_8005A688;
@@ -1110,7 +1108,7 @@ extern u32 D_80063AF8[];
 extern s32 D_800643E8;
 extern s32 D_800643EC;
 extern s32 D_800643F0;
-void *func_800112A4(void *base, s32 offset, Heap *arg2);
+void *func_800112A4(void *base, s32 offset, _mal_area *arg2);
 void func_80014540(u8 *arg0, RECT *rect);
 extern GfxState D_80056998;
 extern VECTOR D_8005688C; /* screen-space translation (func_8001965C) */
@@ -1150,8 +1148,11 @@ typedef struct {
 
 
 
-/* A sprite frame texture_draw draws as one POLY_FT4. */
-typedef struct {
+/* A texture: the 0x38-byte entries of a texture set's table, which
+ * texture_draw draws as one POLY_FT4 (the name is the C++ symbols',
+ * texture_draw__FP11obj_textureG4xy_wiUl). AnimEntry and TexDst2A84C are other
+ * views of the same entry, kept apart until their fields are merged. */
+typedef struct obj_texture {
     u8 unk0[8];
     s16 w;       /* 0x08 */
     s16 h;       /* 0x0A */
@@ -1164,7 +1165,7 @@ typedef struct {
     u16 uv1;     /* 0x2A */
     u16 uv2;     /* 0x2C */
     u16 uv3;     /* 0x2E */
-} SpriteFrame;
+} obj_texture;
 
 /* A screen position as one word (x low, y high). */
 typedef union {
@@ -1398,7 +1399,7 @@ s32 get_angle(s32 x, s32 z);
 
 
 
-void mal_free(void *ptr, Heap *heap);
+void mal_free(void *ptr, _mal_area *heap);
 
 
 
@@ -1411,7 +1412,7 @@ void mal_free(void *ptr, Heap *heap);
 
 
 
-s32 func_80011410(Heap *heap);
+s32 func_80011410(_mal_area *heap);
 
 
 
@@ -1497,11 +1498,11 @@ u8 *func_8001316C(u8 *arg0);
 
 s32 func_8001361C(s32 *arg0, u8 *arg1);
 
-MemBlock *func_80011BC0(MemBlock *blk);
+mal *func_80011BC0(mal *blk);
 
 s32 func_800135E4(s32 *arg0, u8 *arg1);
 
-MemBlock *func_80011878(MemBlock *blk, s32 words);
+mal *func_80011878(mal *blk, s32 words);
 
 s32 interp(s32 arg0, s32 arg1, s32 arg2, s32 arg3);
 
@@ -1520,7 +1521,7 @@ typedef struct {
 
 s32 func_80015984(s32 i, EntryBlock *blk);
 
-void func_80011578(u8 *arg0, Heap *heap, s32 arg2);
+void func_80011578(u8 *arg0, _mal_area *heap, s32 arg2);
 
 
 
@@ -1528,7 +1529,7 @@ void func_80011578(u8 *arg0, Heap *heap, s32 arg2);
 
 void func_80010354(void);
 
-MemBlock *func_80011F74(Heap *heap);
+mal *func_80011F74(_mal_area *heap);
 
 void func_80013C24(void);
 
@@ -1590,11 +1591,11 @@ void func_80010394(void);
 
 void func_80010410(void);
 
-void func_80011AE8(MemBlock *blk, Heap *heap);
+void func_80011AE8(mal *blk, _mal_area *heap);
 
-MemBlock *func_80011C98(MemBlock *arg0);
+mal *func_80011C98(mal *arg0);
 
-MemBlock *func_80011EF0(Heap *heap);
+mal *func_80011EF0(_mal_area *heap);
 
 void func_80012CD4(void *arg0, s32 *arg1);
 
@@ -1681,11 +1682,11 @@ typedef struct VelState {
     /* 0x10 */ s32 vz;
 } VelState;
 
-u8 *func_80011498(u8 *arg0, s32 arg1, Heap *arg2);
+u8 *func_80011498(u8 *arg0, s32 arg1, _mal_area *arg2);
 
 void *func_800115D8(s32 arg0, void * *arg1, s32 arg2, s32 arg3);
 
-struct TexSet2926C;
+struct obj_textureset;
 
 typedef struct {
     s32 f0;
@@ -1757,7 +1758,7 @@ s32 func_800158E4(u8 *arg0, s32 arg1);
 
 
 
-void *func_80010E8C(s32 bytes, Heap *heap);
+void *func_80010E8C(s32 bytes, _mal_area *heap);
 
 
 
@@ -1830,11 +1831,11 @@ extern s32 D_80063A8C;
 
 /* func_800281C0's body, inlined into func_80027AD4. */
 
-MemBlock *func_800118BC(MemBlock *blk, s32 words, Heap *heap);
+mal *func_800118BC(mal *blk, s32 words, _mal_area *heap);
 
-void func_800119D4(MemBlock *arg0, s32 arg1, Heap *arg2);
+void func_800119D4(mal *arg0, s32 arg1, _mal_area *arg2);
 
-void func_800120E8(MemBlock *arg0, Heap *arg1);
+void func_800120E8(mal *arg0, _mal_area *arg1);
 
 u8 *func_800129D0(u8 *arg0, s32 arg1);
 
@@ -1871,7 +1872,7 @@ typedef struct {
     s16 b;
 } S16Pair;
 
-void func_80011FC8(MemBlock *arg0, Heap *arg1);
+void func_80011FC8(mal *arg0, _mal_area *arg1);
 
 u8 *func_800121F8(u8 *arg0);
 
@@ -1947,21 +1948,24 @@ typedef struct {
     /* 0x08 */ s32 off;
 } TexEnt12;
 
-typedef struct TexSet2926C {
+/* A texture set (a dbase's, at +0x10): its textures and their scroll
+ * animations. The name is the C++ symbols'
+ * (texture_init_mem_textureset__FP14obj_textureset). */
+typedef struct obj_textureset {
     /* 0x00 */ s32 nTex;
     /* 0x04 */ s32 nEnt;
-    /* 0x08 */ TexDst2A84C *tex;
+    /* 0x08 */ TexDst2A84C *tex;      /* nTex obj_textures */
     /* 0x0C */ TexEnt12 *ent;
     /* 0x10 */ u8 *base;
     /* 0x14 */ u8 pad14[4];
-    /* 0x18 */ u8 *extra;
+    /* 0x18 */ AnimData *anims;       /* in base, or NULL */
     /* 0x1C */ s32 nAnim;
     /* 0x20 */ u8 *anim;
-} TexSet2926C;
+} obj_textureset;
 
-void func_800107C8(MemBlock *arg0, Heap *arg1);
+void func_800107C8(mal *arg0, _mal_area *arg1);
 
-void func_8001097C(Heap *heap);
+void func_8001097C(_mal_area *heap);
 
 void func_800139A8(void);
 
@@ -2045,7 +2049,7 @@ typedef struct MapEnvHead {
 extern u8 D_80053074[];
 extern u16 D_8005A5C0[][3];
 
-MemBlock *func_80011E80(Heap *heap);
+mal *func_80011E80(_mal_area *heap);
 
 void func_8001492C(void);
 

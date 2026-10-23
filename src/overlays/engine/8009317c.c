@@ -114,7 +114,7 @@ void func_80093588(void) {
     q[4] = 0x140;
 }
 
-static inline void func_800936C4_heap(Heap *heap, s32 p) {
+static inline void func_800936C4_heap(_mal_area *heap, s32 p) {
     s32 size;
 
     size = 0x801FF000;
@@ -598,8 +598,8 @@ void func_80094754(void) {
 }
 
 void func_80094860(void) {
-    VabSlot *slot;
-    VabSlot *base;
+    sfx_machine_bank_info *slot;
+    sfx_machine_bank_info *base;
     s32 n;
     s32 ok;
 

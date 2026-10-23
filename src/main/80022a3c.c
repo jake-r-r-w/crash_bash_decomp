@@ -1017,15 +1017,15 @@ void func_800243A0(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
                         oy = xy >> 16;
                         xy &= 0xFFFF;
                         xy |= (oy - 7) << 16;
-                        texture_draw((SpriteFrame *)(*(u8 **)(sysfont_dbase + 0x18) + (g & 0xFFF) * 0x38), xy, 0, 0x808080);
+                        texture_draw((obj_texture *)(*(u8 **)(sysfont_dbase + 0x18) + (g & 0xFFF) * 0x38), xy, 0, 0x808080);
                         oy = xy >> 16;
                         xy &= 0xFFFF;
                         xy |= (oy + 7) << 16;
                     } else {
-                        texture_draw((SpriteFrame *)(*(u8 **)(sysfont_dbase + 0x18) + (g & 0xFFF) * 0x38), xy, 0, 0x808080);
+                        texture_draw((obj_texture *)(*(u8 **)(sysfont_dbase + 0x18) + (g & 0xFFF) * 0x38), xy, 0, 0x808080);
                     }
                 } else {
-                    func_8002992C((SpriteFrame *)(*(u8 **)(sysfont_dbase + 0x18) + (g & 0xFFF) * 0x38), xy, 0, arg3, arg3, arg4, arg4);
+                    func_8002992C((obj_texture *)(*(u8 **)(sysfont_dbase + 0x18) + (g & 0xFFF) * 0x38), xy, 0, arg3, arg3, arg4, arg4);
                 }
             }
             col += w;
@@ -1100,11 +1100,11 @@ void func_800248A0(x, y, c0, c1, n)
     tbl = D_8005A5C0;
     ids = tbl[n];
     base = D_80053074;
-    func_8002992C((SpriteFrame *)(*(u8 **)(base + 0x18) + (ids[0] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
+    func_8002992C((obj_texture *)(*(u8 **)(base + 0x18) + (ids[0] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
     pos.f.x = x + 0x9D80 / D_8005B698->w;
-    func_8002992C((SpriteFrame *)(*(u8 **)(base + 0x18) + (ids[1] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
+    func_8002992C((obj_texture *)(*(u8 **)(base + 0x18) + (ids[1] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
     pos.f.x = x + 0x13B00 / D_8005B698->w;
-    func_8002992C((SpriteFrame *)(*(u8 **)(base + 0x18) + (ids[2] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
+    func_8002992C((obj_texture *)(*(u8 **)(base + 0x18) + (ids[2] & 0xFFF) * 0x38), pos.w, 0, c0, c0, c1, c1);
 }
 
 void func_80024AD8(void) {
@@ -3293,14 +3293,14 @@ void func_80028D40(AnimTex *t, s32 base, AnimTexSet *set) {
     }
 }
 
-void texture_update_scroll(AnimScroll *s, AnimOwner *o) {
+void texture_update_scroll(texture_scroll *s, obj_textureset *o) {
     AnimEntry *e;
     DR_MOVE *p;
     RECT r;
     s32 pos;
     s32 y;
 
-    e = (AnimEntry *)(o->table + s->idx * 0x38);
+    e = (AnimEntry *)&o->tex[s->idx];
     pos = s->pos + s->speed;
     s->pos = pos;
     if (s->speed > 0) {
@@ -3325,7 +3325,7 @@ void texture_update_scroll(AnimScroll *s, AnimOwner *o) {
     addPrim(cdb + 0x3FFC, p);
 }
 
-void func_80029100(AnimOwner *arg0) {
+void func_80029100(obj_textureset *arg0) {
     AnimData *d;
     s32 *p;
     s32 n;
@@ -3337,7 +3337,7 @@ void func_80029100(AnimOwner *arg0) {
     s32 *r;
     s32 *base;
 
-    d = arg0->data;
+    d = arg0->anims;
     if (d != NULL) {
         if (d->tracksOff != 0) {
             p = (s32 *)((u8 *)d + d->tracksOff);
@@ -3349,7 +3349,7 @@ void func_80029100(AnimOwner *arg0) {
                 }
                 i = base[1];
                 pos = base[4] + base[3];
-                dst = arg0->table + i * 0x38;
+                dst = (u8 *)&arg0->tex[i];
                 old = base[4] >> 8;
                 base[4] = pos;
                 if (base[3] < 0) {
@@ -3380,7 +3380,7 @@ void func_80029100(AnimOwner *arg0) {
     }
 }
 
-void texture_init_mem_textureset(TexSet2926C *arg0) {
+void texture_init_mem_textureset(obj_textureset *arg0) {
     s32 n;
     u8 *src;
     TexEnt12 *e;
@@ -3474,9 +3474,9 @@ void texture_init_mem_textureset(TexSet2926C *arg0) {
         arg0->anim = NULL;
     }
     if (*(s32 *)(arg0->base + 0x18) != 0) {
-        arg0->extra = arg0->base + *(s32 *)(arg0->base + 0x18);
+        arg0->anims = (AnimData *)(arg0->base + *(s32 *)(arg0->base + 0x18));
     } else {
-        arg0->extra = NULL;
+        arg0->anims = NULL;
     }
 }
 
@@ -3659,7 +3659,7 @@ void func_80029790(u8 *arg0) {
     }
 }
 
-s32 func_8002992C(SpriteFrame *f, s32 xy, s32 otz, u32 c0, u32 c1, u32 c2, u32 c3) {
+s32 func_8002992C(obj_texture *f, s32 xy, s32 otz, u32 c0, u32 c1, u32 c2, u32 c3) {
     POLY_GT4 *p;
     GfxState *gs;
     ScreenXY v;
@@ -3695,7 +3695,7 @@ s32 func_8002992C(SpriteFrame *f, s32 xy, s32 otz, u32 c0, u32 c1, u32 c2, u32 c
     return f->advance * 640 / D_8005B698->w;
 }
 
-s32 texture_draw(SpriteFrame *f, s32 xy, s32 otz, u32 color) {
+s32 texture_draw(obj_texture *f, s32 xy, s32 otz, u32 color) {
     POLY_FT4 *p;
     ScreenXY v;
 
@@ -3726,7 +3726,7 @@ s32 texture_draw(SpriteFrame *f, s32 xy, s32 otz, u32 color) {
     return f->advance * 640 / D_8005B698->w;
 }
 
-s32 func_80029F9C(SpriteFrame *f, SWORD_XYZ *pos, s32 otz, u32 c0, u32 c1) {
+s32 func_80029F9C(obj_texture *f, SWORD_XYZ *pos, s32 otz, u32 c0, u32 c1) {
     POLY_GT4 *p;
     GfxState *gs;
     volatile SVECTOR v;
@@ -3885,7 +3885,7 @@ void func_8002A5A4(u8 *a0, u8 *arg1) {
     arg0->f0 = *(u16 *)(arg0->src + 8);
     arg0->f4 = *(u16 *)(arg0->src + 0xA);
     arg0->f14 = *(s32 *)(arg0->src + 0x14);
-    texture_init_mem_textureset((TexSet2926C *)arg0);
+    texture_init_mem_textureset((obj_textureset *)arg0);
 }
 
 /* Size in bytes: 0xB0 plus +8 records of 0x38 and +0xA records of 0xC. */
