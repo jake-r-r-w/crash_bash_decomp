@@ -100,6 +100,20 @@ def aliases(renames):
     return out
 
 
+def declared(renames):
+    """[(new, header:line, declaration)]: the new names a header already declares as a
+    function (the original headers: tank.h, polar.h, ...). `decomp.py rename` then keeps
+    only that declaration, so the definition must take its exact types first."""
+    want = {new for _, new, _, _ in renames}
+    out = []
+    for p in sorted(glob.glob("include/**/*.h", recursive=True)):
+        for i, line in enumerate(open(p, errors="replace"), 1):
+            for m in re.finditer(r"\b([A-Za-z_]\w*)\s*\(", line):
+                if m.group(1) in want and not line.lstrip().startswith(("/*", "*", "//")):
+                    out.append((m.group(1), f"{p.replace(os.sep, '/')}:{i}", line.strip()))
+    return out
+
+
 def split_overlay(retail):
     """'func_800B7DA4 (ovl5e)' -> ('func_800B7DA4', 'ovl5e'); others keep None."""
     m = re.fullmatch(r"(\S+) \((\w+)\)", retail)
@@ -184,6 +198,11 @@ def main():
         print(f"\n{len(left)} left out:")
         for (sym, _, _, _, retail, sim), why in left:
             print(f"  {sym} -> {retail} {sim:.2f}: {why}")
+    dc = declared(renames)
+    if dc:
+        print(f"\n{len(dc)} new names a header already declares (the definition must take these types):")
+        for new, where, line in dc:
+            print(f"  {new}: {where}: {line}")
     al = aliases(renames)
     if al:
         print(f"\n{len(al)} uses of a renamed function's address as data: write func_<address> there "
