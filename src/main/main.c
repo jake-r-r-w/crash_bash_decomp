@@ -3337,12 +3337,13 @@ s32 func_80015984(s32 i, EntryBlock *blk) {
     return *(s32 *)(base + idx * 12 + 0xC);
 }
 
-s32 map_entity_address(s32 arg0, u8 *arg1) {
+s32 map_entity_address(u16 arg0, u8 *arg1) {
     u8 *base;
     s32 t;
     s32 r;
 
-    t = (arg0 - 1) & 0xFFF;
+    arg0--;
+    t = arg0 & 0xFFF;
     base = arg1 + (*(s32 *)(arg1 + 0x1C) + 0x1C);
     r = func_8001DD20((s32 *)(base + (t * 0xC + 4)));
     if (r == 0) {

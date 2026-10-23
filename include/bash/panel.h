@@ -53,7 +53,7 @@ void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
 
 void InitScore3Icons(void);
 
-void Set_Clock(u32 a, u32 b);
+void Set_Clock(u16 time, u16 flags);
 
 void InitSharedScoreIcons(void);
 

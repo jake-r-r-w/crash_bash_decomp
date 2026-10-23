@@ -390,31 +390,28 @@ void UpdateBigScore(void) {
     BigScore2.unk5E = 1;
 }
 
-void Set_Clock(u32 a, u32 b) {
-    u32 v = a;
-    u32 w = b;
+void Set_Clock(u16 time, u16 flags) {
     s32 i;
     s32 d;
-    u32 t;
 
-    if ((v & 0xFFFF) == 0xFFFF) {
-        v = (u32)Clock_Time >> 8;
+    if (time == 0xFFFF) {
+        time = (u32)Clock_Time >> 8;
     }
-    if ((w & 0xFFFF) == 0xFFFF) {
-        w = Clock_flags;
+    if (flags == 0xFFFF) {
+        flags = Clock_flags;
     }
-    Clock_Time = (v & 0xFFFF) << 8;
-    t = w | 0x400;
-    Clock_flags = t;
+    Clock_Time = time << 8;
+    flags |= 0x400;
+    Clock_flags = flags;
     Clock[0].Ctrl = 0x10008000;
     Clock[0].frame = 0x3013;
     Clock[0].Xoffs = Clock_offsets[0].a;
     for (i = 1; i < 4; i++) {
-        d = v & 0xF;
+        d = time & 0xF;
         if (d >= 0xA) {
             d = 0;
         }
-        v = (v & 0xFFFF) >> 4;
+        time >>= 4;
         Clock[i].frame = d + 0x3009;
         Clock[i].Ctrl = 0x10008000;
         Clock[i].Xoffs = Clock_offsets[i].a;

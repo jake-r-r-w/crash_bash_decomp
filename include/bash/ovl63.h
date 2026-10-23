@@ -270,7 +270,7 @@ typedef struct Ovl63GameView2 {
     }
 
 void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
-void Set_Clock(u32 a, u32 b);
+void Set_Clock(u16 time, u16 flags);
 extern s32 D_800C6BA4;
 extern s32 D_800C6BA8;
 

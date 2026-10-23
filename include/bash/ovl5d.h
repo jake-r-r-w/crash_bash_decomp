@@ -428,7 +428,7 @@ extern Ambient_data D_800C39C0;
 extern Ambient_data D_800C39D8;
 extern u16 *D_8009D6F4;
 void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
-void Set_Clock(u32 a, u32 b);
+void Set_Clock(u16 time, u16 flags);
 void func_80095258(u8 *arg0);
 
 #endif /* BASH_OVL5D_H */

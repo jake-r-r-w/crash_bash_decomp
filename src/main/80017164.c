@@ -1324,7 +1324,7 @@ void func_80019A60(s32 a, u8 *set, s32 c, void *d) {
         e = set + (idx * 0x34 + 0x24);
         goto block;
     case 0x5000:
-        e = (u8 *)map_entity_address(a & 0xFFFF, set);
+        e = (u8 *)map_entity_address(a, set);
         if (e == NULL) {
             return;
         }

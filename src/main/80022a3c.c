@@ -1766,12 +1766,12 @@ void func_80025F9C(void) {
 void func_80025FA4(void) {
 }
 
-void GotoLinkAnim(EXTanimator *anim, s16 n) {
+void GotoLinkAnim(EXTanimator *anim, s32 n) {
     switch (anim->EXTid & 0xFF) {
     case 1:
         if (anim->Alist != NULL) {
             anim->ALindex = n;
-            anim->Atable = anim->Alist[n];
+            anim->Atable = anim->Alist[anim->ALindex];
         }
         anim->Aindex = 0;
         anim->Aspeed = -1;
@@ -1780,7 +1780,7 @@ void GotoLinkAnim(EXTanimator *anim, s16 n) {
     case 2:
         if (anim->Alist != NULL) {
             anim->ALindex = n;
-            anim->Atable = anim->Alist[n];
+            anim->Atable = anim->Alist[anim->ALindex];
         }
         anim->Aindex = -1;
         anim->Aspeed = -1;

@@ -6409,7 +6409,7 @@ void PogoInit_Camera(void) {
 }
 
 void func_800C318C(s32 arg0) {
-    Set_Clock(arg0 & 0xFFFF, 0x81D0);
+    Set_Clock(arg0, 0x81D0);
 }
 
 void InitialisePOGO(void) {

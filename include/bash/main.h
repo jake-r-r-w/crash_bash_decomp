@@ -1536,7 +1536,7 @@ void func_80013C24(void);
 
 void func_80013CA4(void);
 
-s32 map_entity_address(s32 arg0, u8 *arg1);
+s32 map_entity_address(u16 arg0, u8 *arg1);
 
 
 

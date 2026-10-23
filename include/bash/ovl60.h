@@ -570,7 +570,7 @@ extern Ovl60ModeEntry D_800C3834;
 extern Ovl60ModeEntry D_800C3848;
 extern Ovl60ModeEntry D_800C3860;
 extern Ovl60ModeEntry D_800C3878;
-void Set_Clock(u32 a, u32 b);
+void Set_Clock(u16 time, u16 flags);
 void InitSharedScoreIcons(void);
 extern s32 PanelCtrl;
 

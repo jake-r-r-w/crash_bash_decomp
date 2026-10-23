@@ -88,7 +88,7 @@ NAS *CreateNAS(s32 x, s32 y, s32 z, u16 id, u16 flags);
 s32 KillNAS(NAS *nas);
 FlagRecord *func_80025A48(EXTengine *eng, u32 flag);
 s16 func_800250B0(NAS *nas);
-void GotoLinkAnim(EXTanimator *anim, s16 n);
+void GotoLinkAnim(EXTanimator *anim, s32 n);
 s32 func_8002A650(u8 *arg0);
 s32 func_800280C0(u8 *src, u8 *dst, s32 n);
 s32 func_80026A28(void);
