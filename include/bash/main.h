@@ -892,15 +892,6 @@ u8 *func_80021F6C(void);
 void func_80021FB0(void);
 void func_80022030(void);
 void scripts_update(void);
-void func_800222BC(void);
-void func_800222DC(void);
-void func_800222FC(void);
-void func_8002232C(void);
-void func_800227C0(void);
-void func_800227FC(void);
-void func_80022838(void);
-void func_800228A4(_sfx_handler *voice, s32 arg1);
-void func_800229D4(void);
 void func_8001C270(EXTengine *eng);
 void func_800369FC(void);
 
@@ -1621,9 +1612,7 @@ void *func_8001CFE8(MorphModel *model, void *arg1, s32 arg2);
 
 s32 Random(s32 n);
 
-void StopSfx(_sfx_handler *voice);
 
-_sfx_handler *PlaySfx(s32 id, _sfx_handler **handle, SLONG_XYZ *pos, s32 arg3, s32 arg4, s32 flags);
 
 
 s32 get_angle(s32 x, s32 z);
@@ -1705,14 +1694,12 @@ u8 *func_80015A78(s32 i, u8 *rec);
 
 void BSwapEndian(u8 *p, u32 n);
 
-void func_800228C4(_sfx_handler *voice);
 
 
 
 
 void WSwapEndian(u16 *p, u32 n);
 
-void func_800229FC(s32 i);
 
 void func_80016CA0(u8 *rec);
 
@@ -1739,7 +1726,6 @@ void draw_init(void);
 
 u8 *get_script_header(u8 *arg0, s32 arg1);
 
-void func_80022984(void);
 
 void func_80016E5C(u8 *arg0, u8 *arg1);
 
@@ -1929,7 +1915,6 @@ void func_800201BC(u8 *arg0, GteSetup *arg1);
 
 void scripts_render(void);
 
-_sfx_handler *func_80022924(void);
 
 
 
@@ -2085,7 +2070,6 @@ s32 *func_80021CB8(s32 *arg0, s32 arg1, s32 arg2);
 
 u8 *func_80021D1C(u8 *arg0, s32 arg1);
 
-void sfx_delete_all(void);
 
 
 
@@ -2316,9 +2300,7 @@ void func_8001FCDC(u8 *arg0, u8 *arg1);
 
 void func_80020344(Quat *a, Quat *b, s32 t, Quat *out);
 
-void func_80022140(s32 arg0, s32 arg1);
 
-s32 func_8002235C(_sfx_handler *voice);
 
 
 
@@ -2469,5 +2451,7 @@ s32 func_80020C04(s32 arg0);
 #include "bash/sound.h"
 
 #include "bash/80022a3c.h"
+
+#include "bash/sfx.h"
 
 #endif /* BASH_MAIN_H */

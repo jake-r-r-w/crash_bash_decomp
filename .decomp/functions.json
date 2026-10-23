@@ -4935,7 +4935,7 @@
   "src": "src/main/main.c"
  },
  "80022140": {
-  "asm": "asm/nonmatchings/main/main/func_80022140.s",
+  "asm": "asm/nonmatchings/main/sfx/func_80022140.s",
   "calls": [
    "8002BBB4",
    "8002BD0C"
@@ -4946,12 +4946,12 @@
   "name": "func_80022140",
   "orig": "func_80022140",
   "rom": 76096,
-  "seg": "main/main",
+  "seg": "main/sfx",
   "size": 380,
-  "src": "src/main/main.c"
+  "src": "src/main/sfx.c"
  },
  "800222BC": {
-  "asm": "asm/nonmatchings/main/main/func_800222BC.s",
+  "asm": "asm/nonmatchings/main/sfx/func_800222BC.s",
   "calls": [
    "8003347C"
   ],
@@ -4961,12 +4961,12 @@
   "name": "func_800222BC",
   "orig": "func_800222BC",
   "rom": 76476,
-  "seg": "main/main",
+  "seg": "main/sfx",
   "size": 32,
-  "src": "src/main/main.c"
+  "src": "src/main/sfx.c"
  },
  "800222DC": {
-  "asm": "asm/nonmatchings/main/main/func_800222DC.s",
+  "asm": "asm/nonmatchings/main/sfx/func_800222DC.s",
   "calls": [
    "8003346C"
   ],
@@ -4976,12 +4976,12 @@
   "name": "func_800222DC",
   "orig": "func_800222DC",
   "rom": 76508,
-  "seg": "main/main",
+  "seg": "main/sfx",
   "size": 32,
-  "src": "src/main/main.c"
+  "src": "src/main/sfx.c"
  },
  "800222FC": {
-  "asm": "asm/nonmatchings/main/main/func_800222FC.s",
+  "asm": "asm/nonmatchings/main/sfx/func_800222FC.s",
   "calls": [
    "80022984",
    "8002C060",
@@ -4993,12 +4993,12 @@
   "name": "func_800222FC",
   "orig": "func_800222FC",
   "rom": 76540,
-  "seg": "main/main",
+  "seg": "main/sfx",
   "size": 48,
-  "src": "src/main/main.c"
+  "src": "src/main/sfx.c"
  },
  "8002232C": {
-  "asm": "asm/nonmatchings/main/main/func_8002232C.s",
+  "asm": "asm/nonmatchings/main/sfx/func_8002232C.s",
   "calls": [
    "8002BBEC",
    "8002C44C",
@@ -5010,12 +5010,12 @@
   "name": "func_8002232C",
   "orig": "func_8002232C",
   "rom": 76588,
-  "seg": "main/main",
+  "seg": "main/sfx",
   "size": 48,
-  "src": "src/main/main.c"
+  "src": "src/main/sfx.c"
  },
  "8002235C": {
-  "asm": "asm/nonmatchings/main/main/func_8002235C.s",
+  "asm": "asm/nonmatchings/main/sfx/func_8002235C.s",
   "calls": [
    "8002B210",
    "8002B4D8",
@@ -5028,12 +5028,12 @@
   "name": "func_8002235C",
   "orig": "func_8002235C",
   "rom": 76636,
-  "seg": "main/main",
+  "seg": "main/sfx",
   "size": 424,
-  "src": "src/main/main.c"
+  "src": "src/main/sfx.c"
  },
  "80022504": {
-  "asm": "asm/nonmatchings/main/main/sfx_delete_all.s",
+  "asm": "asm/nonmatchings/main/sfx/sfx_delete_all.s",
   "calls": [
    "8002B8F4"
   ],
@@ -5043,12 +5043,12 @@
   "name": "sfx_delete_all",
   "orig": "func_80022504",
   "rom": 77060,
-  "seg": "main/main",
+  "seg": "main/sfx",
   "size": 192,
-  "src": "src/main/main.c"
+  "src": "src/main/sfx.c"
  },
  "800225C4": {
-  "asm": "asm/nonmatchings/main/main/StopSfx.s",
+  "asm": "asm/nonmatchings/main/sfx/StopSfx.s",
   "calls": [
    "8002B8F4"
   ],
@@ -5058,12 +5058,12 @@
   "name": "StopSfx",
   "orig": "func_800225C4",
   "rom": 77252,
-  "seg": "main/main",
+  "seg": "main/sfx",
   "size": 156,
-  "src": "src/main/main.c"
+  "src": "src/main/sfx.c"
  },
  "80022660": {
-  "asm": "asm/nonmatchings/main/main/PlaySfx.s",
+  "asm": "asm/nonmatchings/main/sfx/PlaySfx.s",
   "calls": [
    "800225C4",
    "80027A74"
@@ -5074,12 +5074,12 @@
   "name": "PlaySfx",
   "orig": "func_80022660",
   "rom": 77408,
-  "seg": "main/main",
+  "seg": "main/sfx",
   "size": 352,
-  "src": "src/main/main.c"
+  "src": "src/main/sfx.c"
  },
  "800227C0": {
-  "asm": "asm/nonmatchings/main/main/func_800227C0.s",
+  "asm": "asm/nonmatchings/main/sfx/func_800227C0.s",
   "calls": [],
   "fp": "385e1faeaede264b",
   "fpn": "2777b34a30d864c6",
@@ -5087,12 +5087,12 @@
   "name": "func_800227C0",
   "orig": "func_800227C0",
   "rom": 77760,
-  "seg": "main/main",
+  "seg": "main/sfx",
   "size": 60,
-  "src": "src/main/main.c"
+  "src": "src/main/sfx.c"
  },
  "800227FC": {
-  "asm": "asm/nonmatchings/main/main/func_800227FC.s",
+  "asm": "asm/nonmatchings/main/sfx/func_800227FC.s",
   "calls": [],
   "fp": "40fd097a6afd17e9",
   "fpn": "2777b34a30d864c6",
@@ -5100,12 +5100,12 @@
   "name": "func_800227FC",
   "orig": "func_800227FC",
   "rom": 77820,
-  "seg": "main/main",
+  "seg": "main/sfx",
   "size": 60,
-  "src": "src/main/main.c"
+  "src": "src/main/sfx.c"
  },
  "80022838": {
-  "asm": "asm/nonmatchings/main/main/func_80022838.s",
+  "asm": "asm/nonmatchings/main/sfx/func_80022838.s",
   "calls": [
    "8002235C",
    "800225C4",
@@ -5117,12 +5117,12 @@
   "name": "func_80022838",
   "orig": "func_80022838",
   "rom": 77880,
-  "seg": "main/main",
+  "seg": "main/sfx",
   "size": 108,
-  "src": "src/main/main.c"
+  "src": "src/main/sfx.c"
  },
  "800228A4": {
-  "asm": "asm/nonmatchings/main/main/func_800228A4.s",
+  "asm": "asm/nonmatchings/main/sfx/func_800228A4.s",
   "calls": [],
   "fp": "c08a0c75b42e6bc5",
   "fpn": "ceb10df276e5434b",
@@ -5130,12 +5130,12 @@
   "name": "func_800228A4",
   "orig": "func_800228A4",
   "rom": 77988,
-  "seg": "main/main",
+  "seg": "main/sfx",
   "size": 32,
-  "src": "src/main/main.c"
+  "src": "src/main/sfx.c"
  },
  "800228C4": {
-  "asm": "asm/nonmatchings/main/main/func_800228C4.s",
+  "asm": "asm/nonmatchings/main/sfx/func_800228C4.s",
   "calls": [],
   "fp": "d940b436a890d2de",
   "fpn": "9f145c22b743abcf",
@@ -5143,12 +5143,12 @@
   "name": "func_800228C4",
   "orig": "func_800228C4",
   "rom": 78020,
-  "seg": "main/main",
+  "seg": "main/sfx",
   "size": 96,
-  "src": "src/main/main.c"
+  "src": "src/main/sfx.c"
  },
  "80022924": {
-  "asm": "asm/nonmatchings/main/main/func_80022924.s",
+  "asm": "asm/nonmatchings/main/sfx/func_80022924.s",
   "calls": [],
   "fp": "6c41faa612d6cf50",
   "fpn": "acfc7eb68e1d5ebd",
@@ -5156,12 +5156,12 @@
   "name": "func_80022924",
   "orig": "func_80022924",
   "rom": 78116,
-  "seg": "main/main",
+  "seg": "main/sfx",
   "size": 96,
-  "src": "src/main/main.c"
+  "src": "src/main/sfx.c"
  },
  "80022984": {
-  "asm": "asm/nonmatchings/main/main/func_80022984.s",
+  "asm": "asm/nonmatchings/main/sfx/func_80022984.s",
   "calls": [
    "8002B9A4"
   ],
@@ -5171,12 +5171,12 @@
   "name": "func_80022984",
   "orig": "func_80022984",
   "rom": 78212,
-  "seg": "main/main",
+  "seg": "main/sfx",
   "size": 80,
-  "src": "src/main/main.c"
+  "src": "src/main/sfx.c"
  },
  "800229D4": {
-  "asm": "asm/nonmatchings/main/main/func_800229D4.s",
+  "asm": "asm/nonmatchings/main/sfx/func_800229D4.s",
   "calls": [
    "80022984",
    "8002BBB4"
@@ -5187,12 +5187,12 @@
   "name": "func_800229D4",
   "orig": "func_800229D4",
   "rom": 78292,
-  "seg": "main/main",
+  "seg": "main/sfx",
   "size": 40,
-  "src": "src/main/main.c"
+  "src": "src/main/sfx.c"
  },
  "800229FC": {
-  "asm": "asm/nonmatchings/main/main/func_800229FC.s",
+  "asm": "asm/nonmatchings/main/sfx/func_800229FC.s",
   "calls": [
    "8002C488"
   ],
@@ -5202,9 +5202,9 @@
   "name": "func_800229FC",
   "orig": "func_800229FC",
   "rom": 78332,
-  "seg": "main/main",
+  "seg": "main/sfx",
   "size": 64,
-  "src": "src/main/main.c"
+  "src": "src/main/sfx.c"
  },
  "80022A3C": {
   "asm": "asm/nonmatchings/main/80022a3c/CreateNAS.s",
