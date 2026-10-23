@@ -515,6 +515,14 @@ Newest first, a few lines each. Details are in the commits.
   `break`/`goto` mix gives the target's three tail survivors. Found the
   unit is probably `PAUSE.CPP`; `cc1plus` compiles the C identically.
 
+- **2026-10-23 (globals mapped to retail):** `proto_scan.py` pairs the data
+  addresses aligned instructions of strong matches build and gives each
+  global a retail address (`globals.txt`): Jampack 34 (all PANEL.CPP, all on
+  a `D_` start), Euro 41 (`main.exe` 33). A module's data can move apart from
+  its code (Jampack: code +4, data -0x28), so the data offset is measured,
+  not assumed; a vote on start hits over the code's shifts only got it wrong.
+  Nothing renamed yet.
+
 - **2026-10-23 (4 originals for our own names):** `SpawnNASById` ->
   `CreateNAS`, `SpawnNASFromRecord` -> `TriggerNas`, `AddEngine` ->
   `AddExtEngine`, `AddExtension` -> `AddExt` (Euro Demo 65's symbols),

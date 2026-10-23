@@ -32,7 +32,15 @@ function record, and each label that lands on a function start, is matched
 to the retail function (exe, engine or any slot overlay) with the most
 similar code. Records can come from a link a few bytes off the shipped code,
 as a whole or from some function on; the tool fits those offsets and reports
-them. It writes everything next to the disc:
+them. Globals (data labels, and the debug records' extern and static
+variables) get retail addresses from the matched functions: every address an
+aligned instruction pair builds (`lui` plus `addiu` or a load/store) pairs a
+demo address with a retail one. A global referenced at its own start takes
+that retail address (`start`); one referenced only in its fields or
+elements takes their most common offset (`inside`). A module's data can
+move apart from its code between the two links, so its offset is measured:
+the one that puts the most globals exactly on referenced addresses. It
+writes everything next to the disc:
 
 | File | What |
 |---|---|
@@ -41,6 +49,7 @@ them. It writes everything next to the disc:
 | `types.h` | the types as C |
 | `lines.txt` | the line table, `address file:line` |
 | `sections.txt` | the linker's section symbols |
+| `globals.txt` | each global mapped to retail: module, address, name, the retail symbol there, evidence |
 | `engine_<id>.bin` | the engine module cut from the DAT |
 | `leaks/` | each source-text hit |
 
@@ -190,8 +199,10 @@ unit `8007ee2c`, maybe from `func_8007ED0C`. Not proven.
 **Still to do.**
 - Apply the 23 names, the signatures and the locals to `8007ac20.c` and its
   header, and rename the unit `panel`.
-- Map the 44 globals to retail addresses through the data references of the
-  matched pairs.
+- Rename the globals: 34 of the 44 are mapped, every one referenced at its
+  start and on a retail `D_` symbol's start (`PanelCtrl` is `D_80099174`,
+  `CupTimer` `D_8009AE3C`, `HealthIconPos` `D_80099250`, ...; `globals.txt`).
+  The shipped data sits 0x28 below the records, though the code is 4 above.
 - Add the new enums to `include/bash/` (`shell.h` for the cheat flags and
   level/world numbers).
 - Place `PAUSE.CPP` in retail from its line table (statement boundaries
@@ -270,8 +281,12 @@ The 4 names the repo gave itself are replaced by the originals
 **Still to do.**
 - The engine and slot overlay names, once no other agent is working there.
 - The parameter types from the C++ names, one prototype at a time.
-- Map the 184 data labels to retail addresses through the matched functions'
-  data references.
+- Rename the globals (`globals.txt`, 41 mapped). `main.exe`: 13 game globals
+  land on a retail `D_` symbol's start (`screen_aspect`, `FirstNas`,
+  `num_sfx_banks`, `cdb`, ...), 5 inside one (`core_process`, `GemRules`,
+  ... need the symbol split first), and 15 are PsyQ data (Sony's names
+  stay). The engine's and the overlays' wait with their functions. The two
+  globals both demos map agree (`HealthIconPos`, `BigScore_teamA`).
 - The link groups give file boundaries in the engine (`_core_end`,
   `_engine_start`, ...); check them against the unit split in
   ARCHITECTURE.md.

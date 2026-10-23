@@ -185,6 +185,7 @@ class Module:
 
     def __init__(self, name, data, base, kind=None, first=()):
         self.name, self.data, self.base, self.kind, self.shift = name, data, base, kind or name, 0
+        self.runs = []   # [(first, last, shift)]: stretches with their own shift
         self.w = words(data)
         self.starts = set(starts(self.w)) | set(first)   # first: starts no jr ra precedes
         self.sorted = sorted(base + o for o in self.starts)
@@ -303,7 +304,7 @@ def retail_funcs(name, mapfile, data):
         addrs = sorted(syms)
         for a, b in zip(addrs, addrs[1:] + [end]):
             out.append((a, syms[a], mod.body(a, b)))
-    return out
+    return out, mod
 
 
 def best_match(body, funcs, exact):
@@ -354,7 +355,7 @@ def place(funcs, mods, sure):
             notes.append(f"- {mod.name}: {n} of {len(near)} nearby function records/labels on function starts"
                          + (f", with their addresses shifted by {shift:+#x}: the records come from a link "
                             "that placed this module elsewhere" if shift else ""))
-        runs[mod.name] = local_shifts(mod, sure)
+        runs[mod.name] = mod.runs = local_shifts(mod, sure)
         for lo, hi, s in runs[mod.name]:
             notes.append(f"- {mod.name}: from `0x{lo:08X}` to `0x{hi:08X}` shifted by {s:+#x} "
                          "(the code changed size before there)")
@@ -386,7 +387,8 @@ def overlay_of(name):
 
 def match_funcs(placed, retail, prefer=None):
     """Match each placed record to retail: [(record, module, (similarity, address,
-    name) or None)]. retail: {kind: [(address, name, body)]}. With several
+    name) or None, (Module, code address, code end) or None)]. retail: {kind:
+    [(address, name, body)]}. With several
     candidate modules (slot overlays share one range) the best match wins. Among
     equal retail candidates one in the module's preferred retail overlay
     (prefer: {module: overlay}) wins, then the first after the module's last
@@ -397,7 +399,7 @@ def match_funcs(placed, retail, prefer=None):
             exact[k].setdefault(b, []).append((a, n))
     out, prev = [], {}
     for r, cands in placed:
-        best = (None, None)
+        best = (None, None, None)
         for mod, a, e in cands:
             body = mod.body(a, e)
             if mod.kind not in retail or not body:
@@ -405,7 +407,7 @@ def match_funcs(placed, retail, prefer=None):
             cs = best_match(body, retail[mod.kind], exact[mod.kind])
             if not cs:
                 if best[0] is None:
-                    best = (mod, None)
+                    best = (mod, None, None)
                 continue
             top = [c for c in cs if c[0] >= cs[0][0] - 0.005]
             want = (prefer or {}).get(mod.name)
@@ -413,12 +415,144 @@ def match_funcs(placed, retail, prefer=None):
             after = [c for c in top if c[1] > prev.get(mod.name, 0)]
             pick = min(after, key=lambda c: c[1]) if after else top[0]
             if best[1] is None or pick[0] > best[1][0]:
-                best = (mod, pick)
-        mod, pick = best
+                best = (mod, pick, (mod, a, e))
+        mod, pick, code = best
         if pick and pick[0] >= LIKELY:
             prev[mod.name] = pick[1]
-        out.append((r, mod.name if mod else (cands[0][0].name if cands else None), pick))
+        out.append((r, mod.name if mod else (cands[0][0].name if cands else None), pick, code))
     return out
+
+
+# --- data references -----------------------------------------------------------
+
+GPR_LOADS = range(0x20, 0x27)                        # lb lh lwl lw lbu lhu lwr
+MEM = set(GPR_LOADS) | {0x28, 0x29, 0x2A, 0x2B, 0x2E, 0x31, 0x32, 0x39, 0x3A}   # + stores, lwc/swc
+CALLER_SAVED = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 24, 25, 31)
+
+
+def data_refs(w):
+    """{instruction index: address} for each instruction that completes an absolute
+    address: an addiu, load or store off a register holding a lui's value (or that
+    plus an addiu). Values are followed straight through the code, dropped when the
+    register is written and, for the caller-saved ones, at each call."""
+    val, out = {}, {}
+    for i, x in enumerate(w):
+        op, rs, rt = x >> 26, (x >> 21) & 31, (x >> 16) & 31
+        lo = (x & 0xFFFF) - ((x & 0x8000) << 1)
+        if op == 0x0F:                                 # lui
+            val[rt] = (x & 0xFFFF) << 16
+            continue
+        if rs in val and (op == 0x09 or op in MEM):
+            out[i] = (val[rs] + lo) & 0xFFFFFFFF
+            if op == 0x09:
+                val[rt] = out[i]
+                continue
+        if op == 3 or (op == 0 and (x & 0x3F) == 0x09):  # jal, jalr
+            for r in CALLER_SAVED:
+                val.pop(r, None)
+        elif op == 0 and (x & 0x3F) != 0x08:          # R-type writes rd (not jr)
+            val.pop((x >> 11) & 31, None)
+        elif 0x08 <= op <= 0x0E or op in GPR_LOADS:
+            val.pop(rt, None)
+    return out
+
+
+def ref_pairs(dw, rw):
+    """[(demo address, retail address)]: the data references at the aligned
+    instructions of two matched functions (their raw words)."""
+    da, ra = data_refs(dw), data_refs(rw)
+    sm = difflib.SequenceMatcher(None, [norm(x) for x in dw], [norm(x) for x in rw], autojunk=False)
+    return [(da[i + k], ra[j + k]) for i, j, n in sm.get_matching_blocks() for k in range(n)
+            if i + k in da and j + k in ra]
+
+
+def data_shift(syms, refs, prior, span=0x1000, least=3):
+    """The offset from the records' data addresses to the shipped demo's: the one that
+    puts the most distinct globals exactly on a referenced address (code that loads a
+    global's own address is the commonest reference), the closest to prior (the
+    code's shift) among equals; prior when fewer than `least` globals agree. Data can
+    move apart from the code: Jampack's code is 4 bytes up, its PANEL.CPP data 0x28
+    down. refs: sorted referenced demo addresses."""
+    score = {}
+    for a, _, _ in syms:
+        for d in refs[bisect.bisect_left(refs, a - span):bisect.bisect_right(refs, a + span)]:
+            score.setdefault(d - a, set()).add(a)
+    if not score:
+        return prior
+    best = max(score, key=lambda s: (len(score[s]), -abs(s - prior)))
+    return best if len(score[best]) >= least else prior
+
+
+def map_globals(syms, pairs, shifts, near=0x100):
+    """Retail addresses for one module's demo globals. syms: [(record address, name,
+    size or None)]; pairs: [(demo address, retail address, retail module)] from matched
+    code; shifts: the offsets the records may have from the shipped demo's addresses.
+    Data moves as a block, so one shift serves them all: the one that puts the most
+    globals on referenced addresses (the first of equals). A global referenced at its
+    own start then takes the retail address those references have; one referenced
+    only inside (a field, an element) takes the offset of the references within its
+    size, or within `near` of its start when the size is unknown (or the next global,
+    if sooner). Returns (shift, [(name, record address, retail address or None,
+    retail module, how, votes, refs)])."""
+    by_demo = {}
+    for d, r, m in pairs:
+        by_demo.setdefault(d, []).append((r, m))
+    keys = sorted(by_demo)
+    shift = data_shift(syms, keys, shifts[0])
+    starts = sorted(a for a, _, _ in syms)
+    out = []
+    for a, name, size in syms:
+        start = a + shift
+        hits = by_demo.get(start, [])
+        if hits:
+            votes = {}
+            for rm in hits:
+                votes[rm] = votes.get(rm, 0) + 1
+            (r, m), n = max(votes.items(), key=lambda kv: kv[1])
+            out.append((name, a, r, m, "start", n, len(hits)))
+            continue
+        i = bisect.bisect_right(starts, a)
+        end = start + min(size or near, (starts[i] - a) if i < len(starts) else near)
+        inside = [(d, rm) for d in keys[bisect.bisect_left(keys, start):bisect.bisect_left(keys, end)]
+                  for rm in by_demo[d]]
+        if not inside:
+            out.append((name, a, None, None, "unreferenced", 0, 0))
+            continue
+        votes = {}
+        for d, (r, m) in inside:
+            votes[(r - d, m)] = votes.get((r - d, m), 0) + 1
+        (delta, m), n = max(votes.items(), key=lambda kv: kv[1])
+        out.append((name, a, start + delta, m, "inside", n, len(inside)))
+    return shift, out
+
+
+def retail_data_names(mods):
+    """{module: sorted [(address, name)]} of each retail module's symbols: its link map
+    and the outside addresses its generated symbol lists name."""
+    out = {}
+    for m in mods:
+        names = {}
+        for p in [f"build/{m}.map", f"linkers/{m}_undefined_syms_auto.txt"]:
+            if not os.path.exists(p):
+                continue
+            for line in open(p):
+                s = re.match(r"^\s+0x([0-9a-f]+)\s+([A-Za-z_]\w*)$", line) or \
+                    re.match(r"^\s*([A-Za-z_]\w*)\s*=\s*0x([0-9A-Fa-f]+)\s*;", line)
+                if s:
+                    a, n = (s.group(1), s.group(2)) if p.endswith(".map") else (s.group(2), s.group(1))
+                    names.setdefault(int(a, 16) & 0xFFFFFFFF, n)
+        out[m] = sorted(names.items())
+    return out
+
+
+def retail_name(names, a, reach=0x400):
+    """The retail symbol at a, or `sym+0xN` for the nearest one below within reach."""
+    if not names:
+        return ""
+    i = bisect.bisect_right(names, (a, "￿")) - 1
+    if i < 0 or a - names[i][0] > reach:
+        return ""
+    return names[i][1] if names[i][0] == a else f"{names[i][1]}+0x{a - names[i][0]:X}"
 
 
 # --- records --------------------------------------------------------------------
@@ -460,6 +594,16 @@ def where(off, entries):
 
 def is_section(name):
     return name.startswith("_") and SECTION.search(name) is not None
+
+
+BASIC_SIZE = {2: 1, 3: 2, 4: 4, 5: 4, 6: 4, 7: 8, 12: 1, 13: 2, 14: 4, 15: 4}
+
+
+def def_size(typ, size):
+    """A def's size: the recorded one, or for a scalar (recorded as 0) its type's."""
+    if size:
+        return size
+    return 4 if typ >> 4 else BASIC_SIZE.get(typ & 0xF, 4)
 
 
 def is_global(r):
@@ -613,20 +757,24 @@ def main():
     labels = sorted({(r[1], r[2]) for _, r in allrecs if r[0] == "label"
                      and RAM[0] <= r[1] < 0x80800000 and not is_section(r[2])})
     funcs = func_spans(allrecs)
+    matched, data_labels, rmods, rlen = [], [], {}, {}
     if funcs or labels:
         print(f"matching {len(funcs)} function records and {len(labels)} labels to retail...")
         proj = json.load(open(PROJECT))
         rdat = proj["overlays"][0]["from"]
         rexe = os.path.join(os.path.dirname(os.path.dirname(rdat)), proj["exe"])
-        retail = {"main": retail_funcs("main", "build/main.map", open(rexe, "rb").read()), "slot": []}
+        fl, rm = retail_funcs("main", "build/main.map", open(rexe, "rb").read())
+        retail, rmods, rlen = {"main": fl, "slot": []}, {"main": rm}, {}
         with open(rdat, "rb") as f:
             for o in proj["overlays"]:
                 f.seek(o["offset"])
-                fl = retail_funcs(o["name"], f"build/{o['name']}.map", f.read(o["size"]))
+                fl, rmods[o["name"]] = retail_funcs(o["name"], f"build/{o['name']}.map", f.read(o["size"]))
                 if o["name"] == "engine":
                     retail["engine"] = fl
                 else:   # the slot overlays share one range: name which one
                     retail["slot"] += [(a, f"{n} ({o['name']})", b) for a, n, b in fl]
+                rlen.update({(o["name"], a): len(b) for a, _, b in fl})
+        rlen.update({("main", a): len(b) for a, _, b in retail["main"]})
         # a label names a function when it lands on a function start (the function then
         # ends at the next symbol at the latest); any other label is data
         have = {f[0] for f in funcs}
@@ -638,7 +786,7 @@ def main():
         matched = match_funcs(placed, retail)
         # each demo overlay is one retail overlay: the one most of its strong matches name
         votes = {}
-        for _, mod, pick in matched:
+        for _, mod, pick, _ in matched:
             if pick and pick[0] >= STRONG and overlay_of(pick[2]):
                 votes.setdefault(mod, {}).setdefault(overlay_of(pick[2]), 0)
                 votes[mod][overlay_of(pick[2])] += 1
@@ -653,7 +801,7 @@ def main():
                 "`<name> (<overlay>)`.", "",
                 "| Record | Source line | Demo | Module | Retail | Similarity |", "|---|---|---|---|---|---|"]
         data_labels = []
-        for r, mod, pick in matched:
+        for r, mod, pick, _ in matched:
             if r[0] == "label" and mod is None:
                 data_labels.append((r[1], r[2]))
                 continue
@@ -679,6 +827,65 @@ def main():
         for val, cls, typ, size, dims, tag, name in glob:
             decl = sym_scan.decl(name, typ, tag, dims)
             rep.append(f"| `{name}` | `0x{val:08X}` | 0x{size:X} | `{decl}` |")
+
+    # the globals at retail addresses, through the data references of the strong matches
+    pairs = []
+    for r, mod, pick, code in matched:
+        if not pick or pick[0] < STRONG or not code:
+            continue
+        m, a, e = code
+        rk = overlay_of(pick[2]) or m.kind
+        n = rlen.get((rk, pick[1]))
+        if rk not in rmods or not n:
+            continue
+        lo = (pick[1] - rmods[rk].base) // 4
+        pairs += [(d, x, rk) for d, x in ref_pairs(m.w[(a - m.base) // 4:(e - m.base) // 4], rmods[rk].w[lo:lo + n])]
+    gsyms = {n: (a, n, None) for a, n in data_labels if not n.startswith("__")}   # not linker internals
+    gsyms.update({name: (val, name, def_size(typ, size)) for val, cls, typ, size, dims, tag, name in glob})
+    if pairs and gsyms:
+        # a module's data follows its code, so it has the shift of the module's last stretch
+        # of code (voting on start hits can't tell 4 bytes apart in arrays of 4-byte fields)
+        groups = {}
+        for a, n, size in sorted(gsyms.values()):
+            mod = next((m for m in demo.values() if m.kind != "slot" and m.holds(a + m.shift)), None)
+            if slot_base and a + 0x1000 >= slot_base and (mod is None or mod.name == "engine"):
+                mod = next(m for m in demo.values() if m.kind == "slot")
+            key = mod.kind if mod else "main"
+            shift = (mod.runs[-1][2] if mod.runs else mod.shift) if mod else 0
+            groups.setdefault(key, ([shift], []))[1].append((a, n, size))
+        mapped, notes = [], []
+        for key, (cand, syms) in groups.items():
+            shift, got = map_globals(syms, pairs, cand)
+            mapped += got
+            if shift:
+                notes.append(f"{key} data shifted by {shift:+#x}")
+        names = retail_data_names(sorted({m for _, _, m in pairs} | {"main", "engine"}))
+        slot_lo = min((m.base for k, m in rmods.items() if k not in ("main", "engine")), default=0xFFFFFFFF)
+
+        def home(r, m):
+            """The retail module that holds address r (m: the referencing code's)."""
+            if r < rmods["engine"].base:
+                return "main"
+            return "engine" if r < slot_lo else m
+
+        done = sorted(((n, a, r, home(r, m), how, v, refs) for n, a, r, m, how, v, refs in mapped
+                       if r is not None), key=lambda g: (g[3], g[2]))
+        with open(os.path.join(out, "globals.txt"), "w") as f:
+            for name, a, r, m, how, n, refs in done:
+                f.write(f"{m} 0x{r:08X} {name} {retail_name(names[m], r) or '-'} {how} {n}/{refs}\n")
+        rep += ["", "## Globals in retail", "",
+                f"From {len(pairs)} data references at aligned instructions of the strong matches"
+                + (f" ({'; '.join(notes)})" if notes else "") + ". `start`: references to the global's "
+                "own address; `inside`: to its fields or elements (the most common offset). Also in "
+                "`globals.txt`.", "",
+                "| Name | Record | Retail | In | Retail symbol | Evidence |", "|---|---|---|---|---|---|"]
+        for name, a, r, m, how, n, refs in done:
+            rep.append(f"| `{name}` | `0x{a:08X}` | `0x{r:08X}` | {m} | `{retail_name(names[m], r) or '-'}` "
+                       f"| {how} {n}/{refs} |")
+        none = [g[0] for g in mapped if g[2] is None]
+        if none:
+            rep += ["", f"Not referenced by the matched code ({len(none)}): "
+                    + ", ".join(f"`{n}`" for n in sorted(none)) + "."]
 
     print("scanning for source text...")
     leaks = os.path.join(out, "leaks")

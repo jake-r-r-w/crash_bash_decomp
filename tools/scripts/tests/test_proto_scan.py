@@ -111,7 +111,49 @@ class Matching(unittest.TestCase):
         placed, _ = proto_scan.place(funcs, list(demo.values()), [])
         got = proto_scan.match_funcs(placed, {"engine": retail})
         self.assertIsNone(got[0][1])
-        self.assertEqual([p[2] for _, _, p in got[1:]], ["r1", "r2"])
+        self.assertEqual([p[2] for _, _, p, _ in got[1:]], ["r1", "r2"])
+
+
+def lui(rt, imm):
+    return (0x0F << 26) | (rt << 16) | imm
+
+
+def itype(op, rs, rt, imm):
+    return (op << 26) | (rs << 21) | (rt << 16) | (imm & 0xFFFF)
+
+
+V0, V1, A0, T0, S0 = 2, 3, 4, 8, 16
+LW, ADDIU = 0x23, 0x09
+
+
+class DataRefs(unittest.TestCase):
+    def test_lui_values_followed_through_the_code(self):
+        w = [lui(V0, 0x8005), itype(LW, V0, V1, 0x1234),     # lw v1, %lo(0x80051234)(v0)
+             itype(ADDIU, V0, A0, -0x10),                      # a0 = 0x8004FFF0
+             itype(LW, A0, T0, 8),                             # 0x8004FFF8: off the addiu's value
+             lui(S0, 0x8006), jal(0x80010000), NOP,
+             itype(LW, V0, T0, 0),                             # v0 is gone after the call
+             itype(LW, S0, T0, 4)]                             # s0 survives it: 0x80060004
+        self.assertEqual(proto_scan.data_refs(w), {1: 0x80051234, 2: 0x8004FFF0, 3: 0x8004FFF8, 8: 0x80060004})
+
+    def test_map_globals(self):
+        # demo data sits 0x100 below retail; the records 0x28 above the shipped demo
+        # (the data moved apart from the code, whose shift is the prior, 4)
+        pairs = [(0x80050000 - 0x28, 0x80050100 - 0x28, "main")] * 2 + [
+            (0x80050020 - 0x28, 0x80050120 - 0x28, "main"),
+            (0x80050030 - 0x28, 0x80050130 - 0x28, "main"),
+            (0x8005001C - 0x28, 0x8005011C - 0x28, "main")]     # a field of `second`
+        syms = [(0x80050000, "first", None), (0x80050010, "second", 0x10), (0x80050020, "third", 4),
+                (0x80050030, "fourth", 4), (0x80050040, "none", 4)]
+        shift, got = proto_scan.map_globals(syms, pairs, [4])
+        self.assertEqual(shift, -0x28)
+        self.assertEqual(got[:2], [("first", 0x80050000, 0x800500D8, "main", "start", 2, 2),
+                                   ("second", 0x80050010, 0x800500E8, "main", "inside", 1, 1)])
+        self.assertEqual(got[4], ("none", 0x80050040, None, None, "unreferenced", 0, 0))
+
+    def test_data_shift_falls_back_to_the_code_shift(self):
+        # one global on a reference is no evidence: keep the prior
+        self.assertEqual(proto_scan.data_shift([(0x80050000, "a", None)], [0x80050008], 4), 4)
 
 
 class Placing(unittest.TestCase):
