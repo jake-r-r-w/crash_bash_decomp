@@ -2181,7 +2181,7 @@ void InitCountdown(void) {
     subengine *sub;
     subengine *counter;
 
-    counter = &D_80099500;
+    counter = (subengine *)&PanelTab[4];
     countdown_eng = counter;
     counter->unk0C = 0x8000;
     *(s32 *)&counter->unk10 = 0;
@@ -2228,7 +2228,7 @@ void func_8007ED0C(void) {
     EXTengine *e;
     EXTengine *f;
 
-    e = &D_8009959C;
+    e = &PanelTab[5];
     func_8001D3B0(e, 1, &D_8009AC04);
     e->flags |= 0x10008000;
     e->sub->flags |= 0x10008000;

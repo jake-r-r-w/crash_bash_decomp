@@ -1303,8 +1303,8 @@ void func_80082590(void) {
         func_8001C2C0((u8 *)GetEngineSlot(0));
         func_80018B08((GfxViewport *)D_8009F67C, (GfxCamera *)D_8009F734);
         func_8001C2C0((u8 *)GetEngineSlot(4));
-        func_8001C298(&D_8009959C);
-        func_8001C298(&D_8009959C + 1);
+        func_8001C298(&PanelTab[5]);
+        func_8001C298(&PanelTab[6]);
     }
 }
 

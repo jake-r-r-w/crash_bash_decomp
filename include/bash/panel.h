@@ -57,14 +57,17 @@ void Set_Clock(u16 time, u16 flags);
 
 void InitSharedScoreIcons(void);
 
-extern EXTengine PanelTab[];
 void Init_Panel(void);
 
 void func_8007ED0C(void);
 
 void func_8007E93C(u16 arg0, s16 arg1, s16 arg2);
 
-extern EXTengine PanelTab[4];
+/* PANEL.CPP's engines: Init_Panel sets up all seven, 0x9C bytes each, which
+ * run to Clock_XYZ (Jampack records five of its smaller ones). The icons use
+ * 0..3, the countdown 4 (InitCountdown); 5 and 6 are the two func_8007ED0C
+ * builds, which func_80082590 draws. */
+extern EXTengine PanelTab[7];
 extern subengine IconParts[4][7];
 extern u16 D_800991D8[4];
 extern s16 D_800991E0[][2];
@@ -76,7 +79,6 @@ extern EngXY D_80099240[4];
 void func_8007BFA8(void);
 
 extern subengine *countdown_eng;
-extern subengine D_80099500;
 extern subengine counter_sub;
 extern subengine D_8009AC04;
 extern subengine D_8009ACAC;

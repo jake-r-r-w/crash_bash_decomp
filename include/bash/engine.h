@@ -129,7 +129,6 @@ extern s32 D_800ADBC4;
 extern process_info D_800A00DC;
 extern s32 D_8005A624;
 extern u8 D_8009BCE0[];
-extern EXTengine D_8009959C;
 extern u8 D_80052F5C[];
 extern ScriptInit D_8009E250;
 extern ScriptInit D_8009E1E8;
