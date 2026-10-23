@@ -96,7 +96,7 @@ void PlotBonkStool(NAS *nas) {
             D_800B9E50[nas->UserInfo.user2].unk8 = 1000;
             e->unk10.x = x;
             e->unk10.z = z;
-            e->unk10.y = D_8005A5D8 - 0x2000;
+            e->unk10.y = World_floor_level - 0x2000;
             func_800B8F64(e);
             nas->UserInfo.status = 2;
             if (nas->UserInfo.user1 == 0) {
@@ -124,7 +124,7 @@ void PlotBonkStool(NAS *nas) {
             e->unk5E = 1;
             e->unk2C.y = 0;
             e->flags |= 0x8000;
-            e->unk10.y = D_8005A5D8;
+            e->unk10.y = World_floor_level;
             if (e->sub->unk74 == 0x2015) {
                 PlaySfx(0x72A, NULL, &e->unk10, 0x1000, 0x1E00, 0);
             } else {
@@ -195,7 +195,7 @@ void PlotBonkStool(NAS *nas) {
         if (*p > q[D_800B9EF4]) {
             nas->UserInfo.status = 1;
             (*p)--;
-            e->unk10.y = D_8005A5D8 - 0x2000;
+            e->unk10.y = World_floor_level - 0x2000;
         } else {
             nas->UserInfo.status = 0;
             nas->UserInfo.user1 = 0;
@@ -312,7 +312,7 @@ void PlotBonkCrate(NAS *nas) {
     }
     switch (nas->UserInfo.status) {
     case 0:
-        e->unk10.y = D_8005A5D8 - 0x2000;
+        e->unk10.y = World_floor_level - 0x2000;
         if (nas->UserInfo.user1 == 0) {
             D_800B9EC8[nas->UserInfo.user2].c = D_800B93A0[D_800B9EEC];
             nas->UserInfo.user1 = Random(0x5A) + 0x5A;
@@ -338,7 +338,7 @@ void PlotBonkCrate(NAS *nas) {
         if (func_800B3D28(&x, &z) != 0) {
             e->unk10.x = x;
             e->unk10.z = z;
-            e->unk10.y = D_8005A5D8;
+            e->unk10.y = World_floor_level;
             func_800B8F64(e);
             nas->UserInfo.status = 10;
             e->unk2C.z = 0;
@@ -380,7 +380,7 @@ void PlotBonkCrate(NAS *nas) {
         break;
     case 6:
         nas->UserInfo.user1 = 0;
-        e->unk10.y = D_8005A5D8 - 0x2000;
+        e->unk10.y = World_floor_level - 0x2000;
         nas->UserInfo.status = 0;
         break;
     }
@@ -1296,7 +1296,7 @@ void func_800B66C8(void) {
     NAS *n;
 
     if (D_800B9EF0 < 10) {
-        n = CreateNAS(0, D_8005A5D8 - 0x2000, 0, 0x1A01, 0x11);
+        n = CreateNAS(0, World_floor_level - 0x2000, 0, 0x1A01, 0x11);
         if (n != NULL) {
             n->UserInfo.user1 = Random(10) + D_800B9EF0 * 5;
             n->UserInfo.user2 = D_800B9EF0;
@@ -1394,7 +1394,7 @@ void func_800B69D0(void) {
 }
 
 void func_800B6A1C(void) {
-    D_8005A5D8 = -0x10;
+    World_floor_level = -0x10;
     func_8007EB1C(0x140, 0x28, 0);
     func_8007B7FC(0x130, 0x81D0);
     func_800B69D0();

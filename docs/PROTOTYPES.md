@@ -281,12 +281,14 @@ The 4 names the repo gave itself are replaced by the originals
 **Still to do.**
 - The engine and slot overlay names, once no other agent is working there.
 - The parameter types from the C++ names, one prototype at a time.
-- Rename the globals (`globals.txt`, 41 mapped). `main.exe`: 13 game globals
-  land on a retail `D_` symbol's start (`screen_aspect`, `FirstNas`,
-  `num_sfx_banks`, `cdb`, ...), 5 inside one (`core_process`, `GemRules`,
-  ... need the symbol split first), and 15 are PsyQ data (Sony's names
-  stay). The engine's and the overlays' wait with their functions. The two
-  globals both demos map agree (`HealthIconPos`, `BigScore_teamA`).
+- The rest of the globals (`globals.txt`, 41 mapped). `main.exe`'s 13 that
+  land on a retail `D_` symbol's start are renamed (`renames_main_globals.txt`:
+  `screen_aspect`, `FirstNas`, `World_floor_level`, `num_sfx_banks`, `cdb`,
+  ...); 5 sit inside one (`core_process`, `map_frame_counter`,
+  `GlobalNAStatus`, `GemRules`, `ASTString`) and need the symbol split first;
+  15 are PsyQ data (Sony's names stay). The engine's and the overlays' wait
+  with their functions. The two globals both demos map agree
+  (`HealthIconPos`, `BigScore_teamA`).
 - The link groups give file boundaries in the engine (`_core_end`,
   `_engine_start`, ...); check them against the unit split in
   ARCHITECTURE.md.

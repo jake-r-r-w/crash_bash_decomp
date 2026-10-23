@@ -689,12 +689,12 @@ s32 func_800B51C8(s32 arg0) {
             if (h->hero_ctrl & 8) {
                 return 0;
             }
-            if (D_8005A5D8 < h->hero_eng->unk10.y + h->hero_sub->unk08) {
+            if (World_floor_level < h->hero_eng->unk10.y + h->hero_sub->unk08) {
                 if (D_8005B5B8 == 0x7FFFFFFF) {
                     SetHeroAction((HeroInfo *)arg0, 0x79);
                     return 1;
                 }
-                h->hero_eng->unk10.y = D_8005A5D8;
+                h->hero_eng->unk10.y = World_floor_level;
                 h->hero_sub->unk08 = 0;
             }
         }
@@ -1117,11 +1117,11 @@ void func_800B6350(s32 arg0) {
         SetHeroAction((HeroInfo *)arg0, 0x7B);
     } else if (!(h->hero_ctrl & 8)) {
         e = h->hero_eng;
-        if (D_8005A5D8 < e->unk10.y + h->hero_sub->unk08) {
+        if (World_floor_level < e->unk10.y + h->hero_sub->unk08) {
             if (D_8005B5B8 == 0x7FFFFFFF) {
                 SetHeroAction((HeroInfo *)arg0, 0x79);
             } else {
-                e->unk10.y = D_8005A5D8;
+                e->unk10.y = World_floor_level;
                 h->hero_sub->unk08 = 0;
             }
         }
@@ -1388,12 +1388,12 @@ void func_800B6C84(s32 arg0) {
         StopSfx(h->hero_eng->sfx);
     }
     h->hero_sub->unk6C = D_80052A54 + D_8009D6EC[h->hero_name] * 0x38;
-    h->hero_eng->unk10.y = D_8005A5D8 - 0x200;
+    h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->unk10.y -= dy;
     } else {
-        h->hero_eng->unk10.y = D_8005A5D8;
+        h->hero_eng->unk10.y = World_floor_level;
     }
     {
         HeroInfo *b2 = Heroes;
@@ -1419,12 +1419,12 @@ void func_800B6E84(s32 arg0) {
     if (h->hero_health < 2) {
         h->hero_health = 2;
     }
-    h->hero_eng->unk10.y = D_8005A5D8 - 0x200;
+    h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->unk10.y -= dy;
     } else {
-        h->hero_eng->unk10.y = D_8005A5D8;
+        h->hero_eng->unk10.y = World_floor_level;
     }
     func_80085890(arg0);
     if (func_8008A200(arg0) != 0) {
@@ -1459,12 +1459,12 @@ void func_800B6F6C(s32 arg0) {
         StopSfx(h->hero_eng->sfx);
     }
     h->hero_sub->unk6C = D_80052A54 + D_8009D6EC[h->hero_name] * 0x38;
-    h->hero_eng->unk10.y = D_8005A5D8 - 0x200;
+    h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->unk10.y -= dy;
     } else {
-        h->hero_eng->unk10.y = D_8005A5D8;
+        h->hero_eng->unk10.y = World_floor_level;
     }
     {
         HeroInfo *b2 = Heroes;
@@ -1522,12 +1522,12 @@ void func_800B722C(s32 arg0) {
     if (h->hero_health < 2) {
         h->hero_health = 2;
     }
-    h->hero_eng->unk10.y = D_8005A5D8 - 0x200;
+    h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->unk10.y -= dy;
     } else {
-        h->hero_eng->unk10.y = D_8005A5D8;
+        h->hero_eng->unk10.y = World_floor_level;
     }
     func_8008502C(arg0);
     eng = Heroes[arg0].hero_eng;
@@ -3058,7 +3058,7 @@ void func_800BAD1C(s32 arg0) {
     hero = base + arg0;
     hero->hero_frozen = 2;
     y = hero->hero_eng->unk10.y + hero->hero_sub->unk08;
-    if (D_8005A5D8 + 0x180 < y) {
+    if (World_floor_level + 0x180 < y) {
         SetHeroAction((HeroInfo *)arg0, 0x77);
     }
     func_800B52C8(arg0);

@@ -131,7 +131,7 @@ void func_8007906C(void) {
         }
         i++;
     } while (i < 4);
-    for (i = D_8005AA10; i < D_8005AA12; i++) {
+    for (i = FirstNas; i < D_8005AA12; i++) {
         nas = &D_8005AA1C[i];
         if (nas->NASid & 1) {
             cls = nas->Class;

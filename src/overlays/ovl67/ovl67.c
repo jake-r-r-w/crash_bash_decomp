@@ -45,7 +45,7 @@ void func_800B361C(void) {
     s32 i;
 
     i = 0;
-    D_8005A5D8 = 0x2800;
+    World_floor_level = 0x2800;
     D_8005AA38 = NULL;
     D_8005AA3C = 0;
     D_800C4370 = 0;
@@ -425,7 +425,7 @@ void func_800B4138(s32 i) {
     }
     hp = Heroes;
     h = &hp[i];
-    h->hero_eng->unk10.y = D_8005A5D8;
+    h->hero_eng->unk10.y = World_floor_level;
     eng->unk5D = 0;
     eng->unk20 = 0;
     eng->unk1E = 0;
@@ -585,11 +585,11 @@ void func_800B46DC(s32 arg0) {
         s32 d;
         t = ((D_8004E0D8 + arg0) << 6) & 0xFFF;
         a1 = D_80068BD4[(t - 0x400) & 0xFFF].unk2 * 17 >> 10;
-        y = D_8005A5D8;
+        y = World_floor_level;
         d = (D_80068BD4[(t * 2 - 0x400) & 0xFFF].unk2 * 15 >> 11) - 0x80;
         g->hero_eng->unk10.y = y + d;
     } else {
-        g->hero_eng->unk10.y = D_8005A5D8 - 0x80;
+        g->hero_eng->unk10.y = World_floor_level - 0x80;
     }
     ((void (*)(s32))D_8009D6E8.unk2C)(arg0);
     b = Heroes;
@@ -617,7 +617,7 @@ void func_800B46DC(s32 arg0) {
     h = e + arg0;
     h->hero_eng->unk5E = 1;
     if (h->hero_mode == 0x26) {
-        h->hero_eng->unk10.y = D_8005A5D8 - 0x80;
+        h->hero_eng->unk10.y = World_floor_level - 0x80;
         return;
     }
     if (!(h->hero_status & 0xF800)) {
@@ -1329,7 +1329,7 @@ void PlotN2OBall(NAS *nas) {
             mot->Zvel = 0;
             obj->timer = 0x14;
             PlaySfx(0x5A0, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
-            eng->unk10.y = D_8005A5D8 - 0x100;
+            eng->unk10.y = World_floor_level - 0x100;
             mot->Yvel = 0x30;
             mot->Yacc = 0;
             mot->Ydec = 6;
@@ -1650,7 +1650,7 @@ void func_800B6F4C(void) {
     eng = Heroes[3].hero_eng;
     pos = &eng->unk10.x;
     *pos = D_800C4050[3][0];
-    eng->unk10.y = D_8005A5D8;
+    eng->unk10.y = World_floor_level;
     eng->unk10.z = *(s32 *)((u8 *)D_800C4050 + 0x2C);
     ang = get_angle(Heroes[3].hero_eng->unk10.x, Heroes[3].hero_eng->unk10.z) + 0x7F;
     ang &= 0xC00;
@@ -1708,8 +1708,8 @@ void func_800B6F4C(void) {
         sub2->unk04 = 0;
     }
     D_8009D6E2 = 0xFF;
-    CreateNAS(4, D_8005A5D8 - 0x20, 0, 0x1B05, 0x11);
-    CreateNAS(5, D_8005A5D8 - 0x20, 0, 0x1B05, 0x11);
+    CreateNAS(4, World_floor_level - 0x20, 0, 0x1B05, 0x11);
+    CreateNAS(5, World_floor_level - 0x20, 0, 0x1B05, 0x11);
     D_800AD12C = 8;
 }
 
@@ -1869,7 +1869,7 @@ void func_800B7244(void) {
         }
         func_800B3888((Ovl67Obj *)eng);
         tm = D_800C43E0;
-        q = &D_8005A5D8;
+        q = &World_floor_level;
         v = (D_80068BD4[(((tm << 7) & 0xFFF) - 0x400) & 0xFFF].unk2 * 15 >> 11) - 0x80;
         eng->unk10.y = *q + v;
         dx = ((Ovl67PanRef *)&D_8009D688)->p->unkC;
@@ -2458,7 +2458,7 @@ void PlotN2Omissile(NAS *nas) {
     if (mot == NULL) {
         return;
     }
-    top = D_8005A5D8 - 0xE0;
+    top = World_floor_level - 0xE0;
     if (eng->unk10.y > top) {
         eng->unk10.y -= 0x20;
         if (eng->unk10.y < top) {
@@ -3507,7 +3507,7 @@ void PlotN2ODeadWall(NAS *arg0) {
 }
 
 s32 func_800BB05C(u8 *arg0) {
-    return (*(s32*)((u8*)(arg0) + 20)) - D_8005A5D8;
+    return (*(s32*)((u8*)(arg0) + 20)) - World_floor_level;
 }
 
 void func_800BB070(u16 arg0) {

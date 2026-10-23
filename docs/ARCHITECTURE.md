@@ -844,7 +844,7 @@ keep code-derived names (`unkXX` where only offset and width are known).
     repo's former `SfxVoice`) that `func_8001D174` stops when it frees them.
     `platform` pairs two engines; `KillNAS` clears it both ways.
 - **subengine (0xA8 bytes).** `func_80018F3C(eng, n)` (through
-  `func_8001D390`) moves `n` nodes from the free list `D_80058ACC` onto the
+  `func_8001D390`) moves `n` nodes from the free list `next_sub` (`0x80058ACC`) onto the
   engine, copying the 0xA8-byte template `D_8005A830` over each, and links them
   through `+0x5C` (next) and `+0x60` (prev). `func_8001D174` and its siblings
   call each node's `+0x58` callback with the node and return the chain to the

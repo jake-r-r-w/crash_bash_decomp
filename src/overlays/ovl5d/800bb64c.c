@@ -175,7 +175,7 @@ u8 *func_800BBA14(s32 a, s32 b, s32 c, s32 d, s32 e) {
                 }
                 switch ((u16)obj->unk1A) {
                 case 3:
-                    eng->unk10.y = D_8005A5D8;
+                    eng->unk10.y = World_floor_level;
                     break;
                 case 7:
                     eng->unk2C.x = 0x40;
@@ -185,7 +185,7 @@ u8 *func_800BBA14(s32 a, s32 b, s32 c, s32 d, s32 e) {
                     eng->unk5C = 1;
                     eng->unk5E = 1;
                     eng->flags = (eng->flags & ~0x8000) | 1;
-                    eng->unk10.y = D_8005A5D8;
+                    eng->unk10.y = World_floor_level;
                     PlaySfx(0x3FA, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                     break;
                 case 6:
@@ -194,7 +194,7 @@ u8 *func_800BBA14(s32 a, s32 b, s32 c, s32 d, s32 e) {
                     eng->unk5E = 1;
                     eng->unk2C.y = 0;
                     eng->flags &= ~0x8000;
-                    eng->unk10.y = D_8005A5D8;
+                    eng->unk10.y = World_floor_level;
                     break;
                 }
                 t = k;
@@ -248,7 +248,7 @@ void func_800BBD48(NAS *arg0) {
                     }
                 }
             } while (again);
-            eng->unk10.y = D_8005A5D8;
+            eng->unk10.y = World_floor_level;
             eng->sub->unk6C = D_80052F94;
             eng->unk5D = 1;
             eng->unk5C = 1;
@@ -329,7 +329,7 @@ void InitCratePickup(NAS *arg0) {
             arg0->FUX = (EXT *)obj;
             obj->whatami = r + 0x12;
             obj->countdown = 0x78;
-            if (eng->unk10.y == D_8005A5D8) {
+            if (eng->unk10.y == World_floor_level) {
                 obj->status = 0;
             } else {
                 obj->status = 4;
@@ -380,7 +380,7 @@ void InitShieldPickup(NAS *arg0) {
             arg0->FUX = (EXT *)obj;
             obj->whatami = 0x12;
             obj->countdown = 0x78;
-            if (eng->unk10.y == D_8005A5D8) {
+            if (eng->unk10.y == World_floor_level) {
                 obj->status = 0;
             } else {
                 obj->status = 4;
@@ -432,7 +432,7 @@ void InitBootsPickup(NAS *arg0) {
             arg0->FUX = (EXT *)obj;
             obj->whatami = 0x13;
             obj->countdown = 0x78;
-            if (eng->unk10.y == D_8005A5D8) {
+            if (eng->unk10.y == World_floor_level) {
                 obj->status = 0;
             } else {
                 obj->status = 4;
@@ -484,7 +484,7 @@ void InitAnvilPickup(NAS *arg0) {
             arg0->FUX = (EXT *)obj;
             obj->whatami = 0x14;
             obj->countdown = 0x78;
-            if (eng->unk10.y == D_8005A5D8) {
+            if (eng->unk10.y == World_floor_level) {
                 obj->status = 0;
             } else {
                 obj->status = 4;
@@ -536,7 +536,7 @@ void InitSlowmoPickup(NAS *arg0) {
             arg0->FUX = (EXT *)obj;
             obj->whatami = 0x15;
             obj->countdown = 0x78;
-            if (eng->unk10.y == D_8005A5D8) {
+            if (eng->unk10.y == World_floor_level) {
                 obj->status = 0;
             } else {
                 obj->status = 4;
@@ -1039,7 +1039,7 @@ s32 func_800BFB6C(s32 pos, ExtCurve *c) {
     s32 max2 = c->unk1E;
     s32 n = 0;
 
-    if (pos < D_8005A5D8) {
+    if (pos < World_floor_level) {
         do {
             a += step;
             if (a < 0) {
@@ -1066,7 +1066,7 @@ s32 func_800BFB6C(s32 pos, ExtCurve *c) {
                 dir = 0;
             }
             n++;
-        } while (pos < D_8005A5D8);
+        } while (pos < World_floor_level);
     }
     c->unk30 = sum;
     c->unk32 = n;

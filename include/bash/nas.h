@@ -248,7 +248,7 @@ BASH_SIZE_CHECK(EXTengine, 0x9C);
 
 /* A node of an engine's subengine chain (EXTengine.sub .. last, linked
  * through next/prev). They come from one pool: func_80018F3C moves n of them
- * from the free list (D_80058ACC) onto an engine, copying the 0xA8-byte
+ * from the free list (next_sub) onto an engine, copying the 0xA8-byte
  * template D_8005A830 over each; func_8001D174 returns them. Pogo's
  * PogoSquare.sub (subengine * in the leak) points at these nodes. The
  * prototype fragment names the type but does not define it. */

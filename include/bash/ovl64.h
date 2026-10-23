@@ -94,10 +94,10 @@ void func_8007B120(void);
         }                                                               \
     } while (0)
 
-/* Eases the engine towards 0x300 below the water level D_8005A5D8. */
+/* Eases the engine towards 0x300 below the water level World_floor_level. */
 #define OVL64_FLOAT(eng, g, y, s)                       \
     do {                                                \
-        (g) = D_8005A5D8;                               \
+        (g) = World_floor_level;                               \
         (y) = (eng)->unk10.y;                           \
         (y) += 0x300;                                   \
         (s) = (y) - (g);                                \
@@ -208,7 +208,7 @@ extern u16 D_800BC04C[];
 
 void func_800B9BF8(s32 arg0);
 extern u16 D_800BB89C[];
-extern s32 D_8005A5D8;
+extern s32 World_floor_level;
 extern s32 D_8005B5B8;
 extern HeroInfo Heroes[4];
 

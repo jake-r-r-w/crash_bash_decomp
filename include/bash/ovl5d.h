@@ -23,7 +23,7 @@ typedef struct Ovl5dCell {
 
 extern Ovl5dCell D_800C3BAC[8][8];
 extern u8 D_8005A614[];
-extern s32 D_8005A5D8;
+extern s32 World_floor_level;
 extern void (*D_8009D714)(void);
 
 extern HeroInfo Heroes[4];

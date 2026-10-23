@@ -1825,7 +1825,7 @@ void func_800B7664(void) {
         a = 0x130;
     }
     func_8007B7FC(a, 0x81C0);
-    D_8005A5D8 = -0x10;
+    World_floor_level = -0x10;
     func_800B714C();
     D_800BDBA4 = 0;
     D_800BDBA8 = 0;

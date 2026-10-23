@@ -515,6 +515,11 @@ Newest first, a few lines each. Details are in the commits.
   `break`/`goto` mix gives the target's three tail survivors. Found the
   unit is probably `PAUSE.CPP`; `cc1plus` compiles the C identically.
 
+- **2026-10-23 (13 `main.exe` globals named):** the Euro Demo 65 globals
+  that land on a `D_` placeholder's start: `screen_aspect`, `FirstNas`,
+  `World_floor_level`, `num_sfx_banks`, `cdb`, `next_sub`, ... (`decomp.py
+  rename` takes `D_<addr> NAME` pairs too).
+
 - **2026-10-23 (globals mapped to retail):** `proto_scan.py` pairs the data
   addresses aligned instructions of strong matches build and gives each
   global a retail address (`globals.txt`): Jampack 34 (all PANEL.CPP, all on

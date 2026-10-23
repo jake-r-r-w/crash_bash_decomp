@@ -325,7 +325,7 @@ FlagRecord *func_80025A48(EXTengine *eng, u32 flag);
 s32 csqrt(s32 x);
 
 void func_800B6E84(s32 arg0);
-extern s32 D_8005A5D8;
+extern s32 World_floor_level;
 extern s32 D_8005B5B8;
 extern HeroInfo Heroes[4];
 void func_80025F44(EXTengine *eng);

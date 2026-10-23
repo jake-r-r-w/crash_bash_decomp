@@ -171,7 +171,7 @@ void AR_InitLevel(void) {
     s32 i;
     s32 a;
 
-    D_8005A5D8 = 0;
+    World_floor_level = 0;
     D_8005AA38 = 0;
     D_8005AA3C = 0;
     D_800C1F02 = 0;
@@ -310,7 +310,7 @@ void AR_InitLevel(void) {
     }
     switch (D_8005A648) {
     case 0x10:
-        CreateNAS(0, D_8005A5D8, 0, 0x1507, 0x11);
+        CreateNAS(0, World_floor_level, 0, 0x1507, 0x11);
         break;
     case 0x11:
         PlaySfx(0x5C8, &D_800C1BC4, 0, 0x1000, 0x1E00, 0);
@@ -844,7 +844,7 @@ void AR_InitHero(u32 arg0) {
     a = D_8004E0D8;
     g->hero_weapon_count = 1;
     sp = ((((((a + arg0) << 6) & 0xFFF) - 0x400) & 0xFFF) + D_80068BD4)->unk2;
-    y = D_8005A5D8;
+    y = World_floor_level;
     d = (sp * 15 >> 11) - 0x80;
     g->hero_eng->unk10.y = y + d;
 }
@@ -1082,7 +1082,7 @@ void AR_MoveHero(u32 arg0) {
         s32 y;
         sp = ((((((D_8004E0D8 + arg0) << 6) & 0xFFF) - 0x400) & 0xFFF) + D_80068BD4)->unk2;
         a1 = sp * 17 >> 10;
-        y = D_8005A5D8;
+        y = World_floor_level;
         d = (sp * 15 >> 11) - 0x80;
         g->hero_eng->unk10.y = y + d;
     } else {
@@ -1719,7 +1719,7 @@ void SetArkHeroDie(u32 arg0) {
     m = (Ovl61ModeView *)D_8005A614;
     switch (m->unk34) {
     case 16:
-        CreateNAS(arg0, D_8005A5D8 - 0x50, -0x20, 0x1506, 0x11);
+        CreateNAS(arg0, World_floor_level - 0x50, -0x20, 0x1506, 0x11);
         break;
     case 17:
         if (m->unk30 & 0x801) {
@@ -1750,7 +1750,7 @@ void SetArkHeroDie(u32 arg0) {
         }
         break;
     default:
-        CreateNAS(arg0, D_8005A5D8 - 0x50, 0, 0x1505, 0x11);
+        CreateNAS(arg0, World_floor_level - 0x50, 0, 0x1505, 0x11);
         break;
     }
     Heroes[arg0].hero_hit = 0x3C;
@@ -2865,7 +2865,7 @@ void InitBall(NAS *nas) {
             mot->Ftime = 0;
         }
     }
-    eng->unk10.y = D_8005A5D8 - 0x80;
+    eng->unk10.y = World_floor_level - 0x80;
     eng->unk5D = 2;
     eng->sub->unk6C = D_80054504;
     if (D_8005A648 == 0xF) {
@@ -3064,7 +3064,7 @@ void PlotBall(NAS *nas) {
                 mot->Xmax = 0x50;
                 break;
             case 15:
-                eng->unk10.y = D_8005A5D8 - 0x100;
+                eng->unk10.y = World_floor_level - 0x100;
                 mot->Ymax = 0x60;
                 mot->Ydir = 0xFF;
                 mot->Yvel = 0x30;
@@ -3075,7 +3075,7 @@ void PlotBall(NAS *nas) {
                 mot->Xmax = 0x30;
                 break;
             default:
-                eng->unk10.y = D_8005A5D8 - 0x100;
+                eng->unk10.y = World_floor_level - 0x100;
                 mot->Yvel = 0x30;
                 mot->Ymax = 0x60;
                 mot->Ydir = 0xFF;
@@ -3685,7 +3685,7 @@ void Plot_N_Gin(NAS *arg0) {
         s = (u16)gin->unk1A;
         switch (s) {
         case 1:
-            eng->unk10.y = D_8005A5D8;
+            eng->unk10.y = World_floor_level;
             gin->unk1A = 2;
             gin->unk22 = 0xA;
             gin->unk1C |= 0x90;
@@ -4055,7 +4055,7 @@ void UpdateArkFloor(void)
     if (D_8005A648 == 0x11) {
         D_800C1C6C = ((D_80068BD4[(a * 2 - 0x400) & 0xFFF].unk2 + D_80068BD4[a].unk2) * 11) >> 12;
         D_800C1C68 = (D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 5) >> 10;
-        D_8005A5D8 = (D_80068BD4[a].unk2 * 3) >> 7;
+        World_floor_level = (D_80068BD4[a].unk2 * 3) >> 7;
     }
     i = 0;
     do {
@@ -4147,7 +4147,7 @@ void UpdateArkFloor(void)
                 (*sp)->unk51 = 2;
                 (*sp)->unk10 = D_800C1C68;
                 (*sp)->unk14 = D_800C1C6C;
-                (*sp)->unk8 = D_8005A5D8;
+                (*sp)->unk8 = World_floor_level;
                 (*sp)->unk52 = 1;
             }
         }
@@ -4168,14 +4168,14 @@ void UpdateArkFloor(void)
                 ((Ovl61Spr *)D_800C1D88[i].flags)->unk51 = 2;
                 ((Ovl61Spr *)D_800C1D88[i].flags)->unk10 = D_800C1C68;
                 ((Ovl61Spr *)D_800C1D88[i].flags)->unk14 = D_800C1C6C;
-                ((Ovl61Spr *)D_800C1D88[i].flags)->unk8 = D_8005A5D8;
+                ((Ovl61Spr *)D_800C1D88[i].flags)->unk8 = World_floor_level;
                 ((Ovl61Spr *)D_800C1D88[i].flags)->unk52 = 1;
             }
             if (D_800C1DD8[i].sub != NULL) {
                 ((Ovl61Spr *)D_800C1DD8[i].sub)->unk51 = 2;
                 ((Ovl61Spr *)D_800C1DD8[i].sub)->unk10 = D_800C1C68;
                 ((Ovl61Spr *)D_800C1DD8[i].sub)->unk14 = D_800C1C6C;
-                ((Ovl61Spr *)D_800C1DD8[i].sub)->unk8 = D_8005A5D8;
+                ((Ovl61Spr *)D_800C1DD8[i].sub)->unk8 = World_floor_level;
                 ((Ovl61Spr *)D_800C1DD8[i].sub)->unk52 = 1;
             }
         }
@@ -5513,12 +5513,12 @@ void Init_RepulseRing(NAS *nas)
 }
 
 s32 GetArkPIContour(EXTengine *v) {
-    return v->unk10.y - ((D_8005A5D8 - (v->unk10.z * D_80068BD4[(D_800C1C68 - 0x400) & 0xFFF].unk2 >> 12)) +
+    return v->unk10.y - ((World_floor_level - (v->unk10.z * D_80068BD4[(D_800C1C68 - 0x400) & 0xFFF].unk2 >> 12)) +
                        (v->unk10.x * D_80068BD4[(D_800C1C6C - 0x400) & 0xFFF].unk2 >> 12));
 }
 
 s32 GetArkContour(EXTengine *arg0) {
-    return arg0->unk10.y - D_8005A5D8;
+    return arg0->unk10.y - World_floor_level;
 }
 
 void Plot_ArkDeadWall(NAS *arg0) {

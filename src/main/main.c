@@ -2537,13 +2537,13 @@ void func_80013B0C(ComboSeq *c) {
 void func_80013C24(void) {
     if (D_800512A4 != 0) {
         D_800512A4 = 0;
-        D_80051638[0] = 4;
-        D_80051638[1] = 3;
+        screen_aspect[0] = 4;
+        screen_aspect[1] = 3;
         return;
     }
     D_800512A4 = 1;
-    D_80051638[0] = 0x10;
-    D_80051638[1] = 9;
+    screen_aspect[0] = 0x10;
+    screen_aspect[1] = 9;
 }
 
 void func_80013C78(void) {
@@ -2644,9 +2644,9 @@ void func_80013D54(SVECTOR *rot, MATRIX *m) {
 
 void func_80013F44(CamView *cam, CamView *dst, CamEase *ease) {
     if (ease != NULL) {
-        if (D_800517B0 != 0) {
+        if (cam_ramp_overide_count != 0) {
             ease = (CamEase *)D_800517B4;
-            D_800517B0--;
+            cam_ramp_overide_count--;
         }
         cam->dist += (dst->dist - cam->dist + 4) >> 2;
         cam->at.x += (dst->at.x - cam->at.x + (ease->at.x >> 1)) / ease->at.x;
@@ -2659,7 +2659,7 @@ void func_80013F44(CamView *cam, CamView *dst, CamEase *ease) {
         cam->rot.vy += func_800154A0(cam->rot.vy, dst->rot.vy) / ease->rot.y;
         cam->rot.vz += func_800154A0(cam->rot.vz, dst->rot.vz) / ease->rot.z;
     } else {
-        D_800517B0 = 0;
+        cam_ramp_overide_count = 0;
         cam->dist = dst->dist;
         cam->at = dst->at;
         cam->rot = dst->rot;
@@ -2695,7 +2695,7 @@ void func_800142D4(void *arg0) {
 }
 
 void cam_init(u8 *arg0) {
-    D_800517B0 = 0;
+    cam_ramp_overide_count = 0;
     (*(s32*)((u8*)(arg0) + 100)) = 0x1000;
     (*(s32*)((u8*)(arg0) + 104)) = 0x1000;
     (*(s32*)((u8*)(arg0) + 108)) = 0x1000;
@@ -2721,7 +2721,7 @@ void func_800143F0(s32 arg0, s32 arg1) {
     s32 t;
     s32 v;
     ((s32 *)arg0)[0x68 / 4] = 0x1000;
-    ((s32 *)arg0)[0x64 / 4] = (D_80051638[1] << 12) / D_80051638[0];
+    ((s32 *)arg0)[0x64 / 4] = (screen_aspect[1] << 12) / screen_aspect[0];
     t = (((s32 *)arg0)[0x68 / 4] * *(s16 *)(arg1 + 6)) / 480;
     ((s32 *)arg0)[0x68 / 4] = t;
     if (D_800637A8 == 1) {
@@ -2738,7 +2738,7 @@ void func_800143F0(s32 arg0, s32 arg1) {
 }
 
 void func_8001452C(s32 arg0, s32 arg1) {
-    D_800517B0 = arg1;
+    cam_ramp_overide_count = arg1;
     D_800517B4 = arg0;
 }
 
@@ -2825,7 +2825,7 @@ void func_8001492C(void) {
     void **t = (void **)D_800527C4;
 
     t[0x000 / 4] = func_80027408;
-    t[0x004 / 4] = &D_800654AC;
+    t[0x004 / 4] = &num_sfx_banks;
     t[0x008 / 4] = PlaySfx;
     t[0x00C / 4] = StopSfx;
     t[0x010 / 4] = func_8002BD0C;
@@ -5122,10 +5122,10 @@ void func_80018B08(GfxViewport *vp, GfxCamera *cam) {
     gs->viewport = vp;
     GfxSetClip(gs, (RECT *)&vp->cx0, cam);
     disp = D_8005B698;
-    if (D_8005B68C == D_8005B790) {
+    if (cdb == D_8005B790) {
         disp += 1;
     }
-    env = (*(DRAWENV **)(D_8005B68C + 0x4008))++;
+    env = (*(DRAWENV **)(cdb + 0x4008))++;
     SetDefDrawEnv(env, vp->x0 * D_8005B698->w / 640 + disp->x, vp->y0 / 2 + disp->y,
                   (vp->x1 - vp->x0) * D_8005B698->w / 640, (vp->y1 - vp->y0) / 2);
     env->dfe = 1;
@@ -5136,9 +5136,9 @@ void func_80018B08(GfxViewport *vp, GfxCamera *cam) {
     env->b0 = vp->b;
     env->ofs[0] = disp->x;
     env->ofs[1] = disp->y;
-    dr = (*(DR_ENV **)(D_8005B68C + 0x4008))++;
+    dr = (*(DR_ENV **)(cdb + 0x4008))++;
     SetDrawEnv(dr, env);
-    addPrim((u32 *)D_8005B68C + vp->otIdx + vp->otLen - 1, dr);
+    addPrim((u32 *)cdb + vp->otIdx + vp->otLen - 1, dr);
     *(GfxOffset *)&gs->ofx = *(GfxOffset *)&vp->ofx;
     ((GfxOffset *)gs->unk28)->x = gs->ofx;
     ((GfxOffset *)gs->unk28)->y = gs->ofy;
@@ -5146,7 +5146,7 @@ void func_80018B08(GfxViewport *vp, GfxCamera *cam) {
     gte_SetGeomScreen(*(s32 *)(cam->unk18));
     gte_SetRotMatrix(&cam->view);
     gte_SetTransMatrix(&cam->view);
-    gs->ot = (u32 *)D_8005B68C + vp->otIdx;
+    gs->ot = (u32 *)cdb + vp->otIdx;
     gs->otLen = vp->otLen - 1;
     ((GfxOffset *)gs->unk28)[1].x = vp->unk20;
     gs->otzAdd = 0;
@@ -5161,7 +5161,7 @@ s32 func_80018F3C(EXTengine *eng, s32 n) {
     subengine **lastp;
 
     count = 0;
-    free = D_80058ACC;
+    free = next_sub;
     lastp = &eng->last;
     if (free != NULL && n > 0) {
         prev = *lastp;
@@ -5193,7 +5193,7 @@ s32 func_80018F3C(EXTengine *eng, s32 n) {
         }
         prev->next = NULL;
         *lastp = prev;
-        D_80058ACC = free;
+        next_sub = free;
     }
     eng->num_subs += count;
     return count;
@@ -5641,9 +5641,9 @@ s32 func_8001A0D8(void *arg0, u32 flags) {
     u32 otz;
 #define q ((ColorQuad *)arg0)
 
-    p =*(ModePolyG4 **)(D_8005B68C + 0x4008);
+    p =*(ModePolyG4 **)(cdb + 0x4008);
     otz = 0;
-    *(ModePolyG4 **)(D_8005B68C + 0x4008) = p + 1;
+    *(ModePolyG4 **)(cdb + 0x4008) = p + 1;
     if (!(flags & 0x8000)) {
         return 0;
     }
@@ -6823,8 +6823,8 @@ void func_8001D174(EXTengine *eng) {
             sub->flags = 0;
             sub = next;
         } while (sub != NULL);
-        freeList = D_80058ACC;
-        D_80058ACC = first;
+        freeList = next_sub;
+        next_sub = first;
         last->next = freeList;
     }
     eng->sub = NULL;
@@ -6854,8 +6854,8 @@ void func_8001D220(EXTengine *eng) {
             sub->flags = 0;
             sub = next;
         } while (sub != NULL);
-        freeList = D_80058ACC;
-        D_80058ACC = first;
+        freeList = next_sub;
+        next_sub = first;
         last->next = freeList;
     }
     eng->sub = NULL;
@@ -6881,8 +6881,8 @@ void func_8001D2B4(subengine *first, subengine *last) {
             sub->flags = 0;
             sub = next;
         } while (sub != NULL);
-        freeList = D_80058ACC;
-        D_80058ACC = first;
+        freeList = next_sub;
+        next_sub = first;
         last->next = freeList;
     }
 }
@@ -6936,7 +6936,7 @@ s32 func_8001D48C(subengine **out_first, subengine **last, s32 n) {
     s32 count;
 
     count = 0;
-    sub = D_80058ACC;
+    sub = next_sub;
     if (sub != NULL && n > 0) {
         prev = *last;
         if (prev == NULL) {
@@ -6966,7 +6966,7 @@ s32 func_8001D48C(subengine **out_first, subengine **last, s32 n) {
         }
         prev->next = NULL;
         *last = prev;
-        D_80058ACC = sub;
+        next_sub = sub;
     }
     return count;
 }
@@ -7000,7 +7000,7 @@ void func_8001D640(s32 n) {
     i = n - 1;
     sub = (subengine *)p;
     D_80058AC8 = (s32)sub;
-    D_80058ACC = sub;
+    next_sub = sub;
     if (i > 0) {
         do {
             subengine *nx = (subengine *)((u8 *)sub + 0xA8);
@@ -7570,7 +7570,7 @@ void func_8001E984(s32 arg0, s32 arg1) {
         D_80058B6C = 0;
     }
     D_80058B78 = NULL;
-    D_80058B74 = (void *)D_80058B6C;
+    free_scripts = (void *)D_80058B6C;
     if (arg1 != 0) {
         D_80058B68 = (s32)func_80011654(arg1 * 0xB8, &D_8004E0F0);
         p = (u8 *)D_80058B68;
@@ -8098,9 +8098,9 @@ u8 *func_8001FE80(u8 *arg0, s32 arg1, Blk32 *arg2, CamVec3 *arg3, s32 arg4, u8 *
     if (*(u8 **)(arg0 + 0xC) == NULL) {
         return NULL;
     }
-    n = D_80058B74;
+    n = free_scripts;
     if (n != NULL) {
-        D_80058B74 = *(u8 **)(n + 0x74);
+        free_scripts = *(u8 **)(n + 0x74);
         if (D_80058B78 != NULL) {
             *(u8 **)((u8 *)D_80058B78 + 0x70) = n;
         }
@@ -8519,8 +8519,8 @@ unlink:
     if (nxt != NULL) {
         *(s32 *)(nxt + 0x70) = *(s32 *)(arg0 + 0x70);
     }
-    head2 = D_80058B74;
-    D_80058B74 = arg0;
+    head2 = free_scripts;
+    free_scripts = arg0;
     *(void **)(arg0 + 0x74) = head2;
 }
 
@@ -9090,8 +9090,8 @@ void func_80021F14(u8 *arg0) {
     if (temp_v1_2 != NULL) {
         (*(s32*)((u8*)(temp_v1_2) + 112)) = (u8 *) (*(s32*)((u8*)(arg0) + 112));
     }
-    temp_v1_3 = D_80058B74;
-    D_80058B74 = arg0;
+    temp_v1_3 = free_scripts;
+    free_scripts = arg0;
     (*(s32*)((u8*)(arg0) + 116)) = temp_v1_3;
 }
 
@@ -9099,9 +9099,9 @@ u8 *func_80021F6C(void) {
     u8 *temp_v0;
     u8 *temp_v1;
 
-    temp_v1 = D_80058B74;
+    temp_v1 = free_scripts;
     if (temp_v1 != NULL) {
-        D_80058B74 = (*(s32*)((u8*)(temp_v1) + 116));
+        free_scripts = (*(s32*)((u8*)(temp_v1) + 116));
         if (D_80058B78 != NULL) {
             (*(s32*)((u8*)(D_80058B78) + 112)) = temp_v1;
         }
@@ -10005,7 +10005,7 @@ void func_800235BC(ArenaDef *arg0) {
         e = func_800235BC_find(arg0, D_8004DDD0[D_8005A648 * 3]);
     }
     if (e != NULL) {
-        D_8005AA10 = e->unk4 + 4;
+        FirstNas = e->unk4 + 4;
         D_8005AA12 = D_8005AA14 = e->unk2 + 4;
         D_8005AA50 = e->unk6 << 10;
         D_8005AA54 = e->unk8;
@@ -10178,7 +10178,7 @@ void func_80023A90(void) {
     s32 i;
 
     for (i = 0; i < 256; i++) {
-        s16 *pg = &D_8005AAB4[i];
+        s16 *pg = &SysFontLookUp[i];
         s8 *pw;
         u8 *pf;
 
@@ -10191,91 +10191,91 @@ void func_80023A90(void) {
         pw[256] = 11;
         pf[256] = 0;
     }
-    D_8005AAB4['@'] = 0x302F;
-    D_8005AAB4['A'] = 0x303A;
-    D_8005AAB4['B'] = 0x303B;
-    D_8005AAB4['C'] = 0x303C;
-    D_8005AAB4['D'] = 0x303D;
-    D_8005AAB4['E'] = 0x303E;
-    D_8005AAB4['F'] = 0x303F;
-    D_8005AAB4['G'] = 0x3040;
-    D_8005AAB4['H'] = 0x3041;
-    D_8005AAB4['I'] = 0x3042;
-    D_8005AAB4['J'] = 0x3043;
-    D_8005AAB4['K'] = 0x3044;
-    D_8005AAB4['L'] = 0x3045;
-    D_8005AAB4['M'] = 0x3046;
-    D_8005AAB4['N'] = 0x3047;
-    D_8005AAB4['O'] = 0x3048;
-    D_8005AAB4['P'] = 0x3049;
-    D_8005AAB4['Q'] = 0x304A;
-    D_8005AAB4['R'] = 0x304B;
-    D_8005AAB4['S'] = 0x304C;
-    D_8005AAB4['T'] = 0x304D;
-    D_8005AAB4['U'] = 0x304E;
-    D_8005AAB4['V'] = 0x304F;
-    D_8005AAB4['W'] = 0x3050;
-    D_8005AAB4['X'] = 0x3051;
-    D_8005AAB4['Y'] = 0x3052;
-    D_8005AAB4['Z'] = 0x3053;
-    D_8005AAB4['a'] = 0x303A;
-    D_8005AAB4['b'] = 0x303B;
-    D_8005AAB4['c'] = 0x303C;
-    D_8005AAB4['d'] = 0x303D;
-    D_8005AAB4['e'] = 0x303E;
-    D_8005AAB4['f'] = 0x303F;
-    D_8005AAB4['g'] = 0x3040;
-    D_8005AAB4['h'] = 0x3041;
-    D_8005AAB4['i'] = 0x3042;
-    D_8005AAB4['j'] = 0x3043;
-    D_8005AAB4['k'] = 0x3044;
-    D_8005AAB4['l'] = 0x3045;
-    D_8005AAB4['m'] = 0x3046;
-    D_8005AAB4['n'] = 0x3047;
-    D_8005AAB4['o'] = 0x3048;
-    D_8005AAB4['p'] = 0x3049;
-    D_8005AAB4['q'] = 0x304A;
-    D_8005AAB4['r'] = 0x304B;
-    D_8005AAB4['s'] = 0x304C;
-    D_8005AAB4['t'] = 0x304D;
-    D_8005AAB4['u'] = 0x304E;
-    D_8005AAB4['v'] = 0x304F;
-    D_8005AAB4['w'] = 0x3050;
-    D_8005AAB4['x'] = 0x3051;
-    D_8005AAB4['y'] = 0x3052;
-    D_8005AAB4['z'] = 0x3053;
-    D_8005AAB4['0'] = 0x3030;
-    D_8005AAB4['1'] = 0x3031;
-    D_8005AAB4['2'] = 0x3032;
-    D_8005AAB4['3'] = 0x3033;
-    D_8005AAB4['4'] = 0x3034;
-    D_8005AAB4['5'] = 0x3035;
-    D_8005AAB4['6'] = 0x3036;
-    D_8005AAB4['7'] = 0x3037;
-    D_8005AAB4['8'] = 0x3038;
-    D_8005AAB4['9'] = 0x3039;
-    D_8005AAB4['.'] = 0x3054;
-    D_8005AAB4[','] = 0x3055;
-    D_8005AAB4['\''] = 0x3056;
-    D_8005AAB4[':'] = 0x3057;
-    D_8005AAB4['!'] = 0x3058;
-    D_8005AAB4['='] = 0x3059;
-    D_8005AAB4['+'] = 0x305A;
-    D_8005AAB4['-'] = 0x305B;
-    D_8005AAB4['?'] = 0x305C;
-    D_8005AAB4['%'] = 0x305D;
-    D_8005AAB4['<'] = 0x305E;
-    D_8005AAB4['>'] = 0x305F;
+    SysFontLookUp['@'] = 0x302F;
+    SysFontLookUp['A'] = 0x303A;
+    SysFontLookUp['B'] = 0x303B;
+    SysFontLookUp['C'] = 0x303C;
+    SysFontLookUp['D'] = 0x303D;
+    SysFontLookUp['E'] = 0x303E;
+    SysFontLookUp['F'] = 0x303F;
+    SysFontLookUp['G'] = 0x3040;
+    SysFontLookUp['H'] = 0x3041;
+    SysFontLookUp['I'] = 0x3042;
+    SysFontLookUp['J'] = 0x3043;
+    SysFontLookUp['K'] = 0x3044;
+    SysFontLookUp['L'] = 0x3045;
+    SysFontLookUp['M'] = 0x3046;
+    SysFontLookUp['N'] = 0x3047;
+    SysFontLookUp['O'] = 0x3048;
+    SysFontLookUp['P'] = 0x3049;
+    SysFontLookUp['Q'] = 0x304A;
+    SysFontLookUp['R'] = 0x304B;
+    SysFontLookUp['S'] = 0x304C;
+    SysFontLookUp['T'] = 0x304D;
+    SysFontLookUp['U'] = 0x304E;
+    SysFontLookUp['V'] = 0x304F;
+    SysFontLookUp['W'] = 0x3050;
+    SysFontLookUp['X'] = 0x3051;
+    SysFontLookUp['Y'] = 0x3052;
+    SysFontLookUp['Z'] = 0x3053;
+    SysFontLookUp['a'] = 0x303A;
+    SysFontLookUp['b'] = 0x303B;
+    SysFontLookUp['c'] = 0x303C;
+    SysFontLookUp['d'] = 0x303D;
+    SysFontLookUp['e'] = 0x303E;
+    SysFontLookUp['f'] = 0x303F;
+    SysFontLookUp['g'] = 0x3040;
+    SysFontLookUp['h'] = 0x3041;
+    SysFontLookUp['i'] = 0x3042;
+    SysFontLookUp['j'] = 0x3043;
+    SysFontLookUp['k'] = 0x3044;
+    SysFontLookUp['l'] = 0x3045;
+    SysFontLookUp['m'] = 0x3046;
+    SysFontLookUp['n'] = 0x3047;
+    SysFontLookUp['o'] = 0x3048;
+    SysFontLookUp['p'] = 0x3049;
+    SysFontLookUp['q'] = 0x304A;
+    SysFontLookUp['r'] = 0x304B;
+    SysFontLookUp['s'] = 0x304C;
+    SysFontLookUp['t'] = 0x304D;
+    SysFontLookUp['u'] = 0x304E;
+    SysFontLookUp['v'] = 0x304F;
+    SysFontLookUp['w'] = 0x3050;
+    SysFontLookUp['x'] = 0x3051;
+    SysFontLookUp['y'] = 0x3052;
+    SysFontLookUp['z'] = 0x3053;
+    SysFontLookUp['0'] = 0x3030;
+    SysFontLookUp['1'] = 0x3031;
+    SysFontLookUp['2'] = 0x3032;
+    SysFontLookUp['3'] = 0x3033;
+    SysFontLookUp['4'] = 0x3034;
+    SysFontLookUp['5'] = 0x3035;
+    SysFontLookUp['6'] = 0x3036;
+    SysFontLookUp['7'] = 0x3037;
+    SysFontLookUp['8'] = 0x3038;
+    SysFontLookUp['9'] = 0x3039;
+    SysFontLookUp['.'] = 0x3054;
+    SysFontLookUp[','] = 0x3055;
+    SysFontLookUp['\''] = 0x3056;
+    SysFontLookUp[':'] = 0x3057;
+    SysFontLookUp['!'] = 0x3058;
+    SysFontLookUp['='] = 0x3059;
+    SysFontLookUp['+'] = 0x305A;
+    SysFontLookUp['-'] = 0x305B;
+    SysFontLookUp['?'] = 0x305C;
+    SysFontLookUp['%'] = 0x305D;
+    SysFontLookUp['<'] = 0x305E;
+    SysFontLookUp['>'] = 0x305F;
     D_8005AEB4['.'] = 9;
     D_8005AEB4[','] = 9;
     D_8005AEB4['\''] = 13;
     D_8005AEB4[0] = 20;
     D_8005AEB4[' '] = 12;
     D_8005AEB4[9] = 48;
-    D_8005AAB4[0xFC] = 0x3066;
-    D_8005AAB4[0xFD] = 0x3062;
-    D_8005AAB4[0xFE] = 0x3065;
-    D_8005AAB4[0xFF] = 0x3064;
+    SysFontLookUp[0xFC] = 0x3066;
+    SysFontLookUp[0xFD] = 0x3062;
+    SysFontLookUp[0xFE] = 0x3065;
+    SysFontLookUp[0xFF] = 0x3064;
     D_8005B0B4[0xFC] = 1;
     D_8005B0B4[0xFD] = 1;
     D_8005B0B4[0xFE] = 1;
@@ -10284,79 +10284,79 @@ void func_80023A90(void) {
     D_8005AEB4[0xFD] = 32;
     D_8005AEB4[0xFE] = 32;
     D_8005AEB4[0xFF] = 32;
-    D_8005AAB4[0x100 + '@'] = 0x3000;
-    D_8005AAB4[0x100 + 'A'] = 0x3002;
-    D_8005AAB4[0x100 + 'B'] = 0x3003;
-    D_8005AAB4[0x100 + 'C'] = 0x3004;
-    D_8005AAB4[0x100 + 'D'] = 0x3005;
-    D_8005AAB4[0x100 + 'E'] = 0x3006;
-    D_8005AAB4[0x100 + 'F'] = 0x3007;
-    D_8005AAB4[0x100 + 'G'] = 0x3008;
-    D_8005AAB4[0x100 + 'H'] = 0x3009;
-    D_8005AAB4[0x100 + 'I'] = 0x300A;
-    D_8005AAB4[0x100 + 'J'] = 0x300B;
-    D_8005AAB4[0x100 + 'K'] = 0x300C;
-    D_8005AAB4[0x100 + 'L'] = 0x300D;
-    D_8005AAB4[0x100 + 'M'] = 0x300E;
-    D_8005AAB4[0x100 + 'N'] = 0x300F;
-    D_8005AAB4[0x100 + 'O'] = 0x3010;
-    D_8005AAB4[0x100 + 'P'] = 0x3011;
-    D_8005AAB4[0x100 + 'Q'] = 0x3012;
-    D_8005AAB4[0x100 + 'R'] = 0x3013;
-    D_8005AAB4[0x100 + 'S'] = 0x3014;
-    D_8005AAB4[0x100 + 'T'] = 0x3015;
-    D_8005AAB4[0x100 + 'U'] = 0x3016;
-    D_8005AAB4[0x100 + 'V'] = 0x3017;
-    D_8005AAB4[0x100 + 'W'] = 0x3018;
-    D_8005AAB4[0x100 + 'X'] = 0x3019;
-    D_8005AAB4[0x100 + 'Y'] = 0x301A;
-    D_8005AAB4[0x100 + 'Z'] = 0x301B;
-    D_8005AAB4[0x100 + 'a'] = 0x3002;
-    D_8005AAB4[0x100 + 'b'] = 0x3003;
-    D_8005AAB4[0x100 + 'c'] = 0x3004;
-    D_8005AAB4[0x100 + 'd'] = 0x3005;
-    D_8005AAB4[0x100 + 'e'] = 0x3006;
-    D_8005AAB4[0x100 + 'f'] = 0x3007;
-    D_8005AAB4[0x100 + 'g'] = 0x3008;
-    D_8005AAB4[0x100 + 'h'] = 0x3009;
-    D_8005AAB4[0x100 + 'i'] = 0x300A;
-    D_8005AAB4[0x100 + 'j'] = 0x300B;
-    D_8005AAB4[0x100 + 'k'] = 0x300C;
-    D_8005AAB4[0x100 + 'l'] = 0x300D;
-    D_8005AAB4[0x100 + 'm'] = 0x300E;
-    D_8005AAB4[0x100 + 'n'] = 0x300F;
-    D_8005AAB4[0x100 + 'o'] = 0x3010;
-    D_8005AAB4[0x100 + 'p'] = 0x3011;
-    D_8005AAB4[0x100 + 'q'] = 0x3012;
-    D_8005AAB4[0x100 + 'r'] = 0x3013;
-    D_8005AAB4[0x100 + 's'] = 0x3014;
-    D_8005AAB4[0x100 + 't'] = 0x3015;
-    D_8005AAB4[0x100 + 'u'] = 0x3016;
-    D_8005AAB4[0x100 + 'v'] = 0x3017;
-    D_8005AAB4[0x100 + 'w'] = 0x3018;
-    D_8005AAB4[0x100 + 'x'] = 0x3019;
-    D_8005AAB4[0x100 + 'y'] = 0x301A;
-    D_8005AAB4[0x100 + 'z'] = 0x301B;
-    D_8005AAB4[0x100 + '0'] = 0x301C;
-    D_8005AAB4[0x100 + '1'] = 0x301D;
-    D_8005AAB4[0x100 + '2'] = 0x301E;
-    D_8005AAB4[0x100 + '3'] = 0x301F;
-    D_8005AAB4[0x100 + '4'] = 0x3020;
-    D_8005AAB4[0x100 + '5'] = 0x3021;
-    D_8005AAB4[0x100 + '6'] = 0x3022;
-    D_8005AAB4[0x100 + '7'] = 0x3023;
-    D_8005AAB4[0x100 + '8'] = 0x3024;
-    D_8005AAB4[0x100 + '9'] = 0x3025;
-    D_8005AAB4[0x100 + '.'] = 0x3026;
-    D_8005AAB4[0x100 + ','] = 0x3027;
-    D_8005AAB4[0x100 + '!'] = 0x3028;
-    D_8005AAB4[0x100 + '`'] = 0x3029;
-    D_8005AAB4[0x100 + '\''] = 0x3029;
-    D_8005AAB4[0x100 + '<'] = 0x302A;
-    D_8005AAB4[0x100 + '>'] = 0x302B;
-    D_8005AAB4[0x100 + '%'] = 0x302C;
-    D_8005AAB4[0x100 + ':'] = 0x302D;
-    D_8005AAB4[0x100 + '-'] = 0x302E;
+    SysFontLookUp[0x100 + '@'] = 0x3000;
+    SysFontLookUp[0x100 + 'A'] = 0x3002;
+    SysFontLookUp[0x100 + 'B'] = 0x3003;
+    SysFontLookUp[0x100 + 'C'] = 0x3004;
+    SysFontLookUp[0x100 + 'D'] = 0x3005;
+    SysFontLookUp[0x100 + 'E'] = 0x3006;
+    SysFontLookUp[0x100 + 'F'] = 0x3007;
+    SysFontLookUp[0x100 + 'G'] = 0x3008;
+    SysFontLookUp[0x100 + 'H'] = 0x3009;
+    SysFontLookUp[0x100 + 'I'] = 0x300A;
+    SysFontLookUp[0x100 + 'J'] = 0x300B;
+    SysFontLookUp[0x100 + 'K'] = 0x300C;
+    SysFontLookUp[0x100 + 'L'] = 0x300D;
+    SysFontLookUp[0x100 + 'M'] = 0x300E;
+    SysFontLookUp[0x100 + 'N'] = 0x300F;
+    SysFontLookUp[0x100 + 'O'] = 0x3010;
+    SysFontLookUp[0x100 + 'P'] = 0x3011;
+    SysFontLookUp[0x100 + 'Q'] = 0x3012;
+    SysFontLookUp[0x100 + 'R'] = 0x3013;
+    SysFontLookUp[0x100 + 'S'] = 0x3014;
+    SysFontLookUp[0x100 + 'T'] = 0x3015;
+    SysFontLookUp[0x100 + 'U'] = 0x3016;
+    SysFontLookUp[0x100 + 'V'] = 0x3017;
+    SysFontLookUp[0x100 + 'W'] = 0x3018;
+    SysFontLookUp[0x100 + 'X'] = 0x3019;
+    SysFontLookUp[0x100 + 'Y'] = 0x301A;
+    SysFontLookUp[0x100 + 'Z'] = 0x301B;
+    SysFontLookUp[0x100 + 'a'] = 0x3002;
+    SysFontLookUp[0x100 + 'b'] = 0x3003;
+    SysFontLookUp[0x100 + 'c'] = 0x3004;
+    SysFontLookUp[0x100 + 'd'] = 0x3005;
+    SysFontLookUp[0x100 + 'e'] = 0x3006;
+    SysFontLookUp[0x100 + 'f'] = 0x3007;
+    SysFontLookUp[0x100 + 'g'] = 0x3008;
+    SysFontLookUp[0x100 + 'h'] = 0x3009;
+    SysFontLookUp[0x100 + 'i'] = 0x300A;
+    SysFontLookUp[0x100 + 'j'] = 0x300B;
+    SysFontLookUp[0x100 + 'k'] = 0x300C;
+    SysFontLookUp[0x100 + 'l'] = 0x300D;
+    SysFontLookUp[0x100 + 'm'] = 0x300E;
+    SysFontLookUp[0x100 + 'n'] = 0x300F;
+    SysFontLookUp[0x100 + 'o'] = 0x3010;
+    SysFontLookUp[0x100 + 'p'] = 0x3011;
+    SysFontLookUp[0x100 + 'q'] = 0x3012;
+    SysFontLookUp[0x100 + 'r'] = 0x3013;
+    SysFontLookUp[0x100 + 's'] = 0x3014;
+    SysFontLookUp[0x100 + 't'] = 0x3015;
+    SysFontLookUp[0x100 + 'u'] = 0x3016;
+    SysFontLookUp[0x100 + 'v'] = 0x3017;
+    SysFontLookUp[0x100 + 'w'] = 0x3018;
+    SysFontLookUp[0x100 + 'x'] = 0x3019;
+    SysFontLookUp[0x100 + 'y'] = 0x301A;
+    SysFontLookUp[0x100 + 'z'] = 0x301B;
+    SysFontLookUp[0x100 + '0'] = 0x301C;
+    SysFontLookUp[0x100 + '1'] = 0x301D;
+    SysFontLookUp[0x100 + '2'] = 0x301E;
+    SysFontLookUp[0x100 + '3'] = 0x301F;
+    SysFontLookUp[0x100 + '4'] = 0x3020;
+    SysFontLookUp[0x100 + '5'] = 0x3021;
+    SysFontLookUp[0x100 + '6'] = 0x3022;
+    SysFontLookUp[0x100 + '7'] = 0x3023;
+    SysFontLookUp[0x100 + '8'] = 0x3024;
+    SysFontLookUp[0x100 + '9'] = 0x3025;
+    SysFontLookUp[0x100 + '.'] = 0x3026;
+    SysFontLookUp[0x100 + ','] = 0x3027;
+    SysFontLookUp[0x100 + '!'] = 0x3028;
+    SysFontLookUp[0x100 + '`'] = 0x3029;
+    SysFontLookUp[0x100 + '\''] = 0x3029;
+    SysFontLookUp[0x100 + '<'] = 0x302A;
+    SysFontLookUp[0x100 + '>'] = 0x302B;
+    SysFontLookUp[0x100 + '%'] = 0x302C;
+    SysFontLookUp[0x100 + ':'] = 0x302D;
+    SysFontLookUp[0x100 + '-'] = 0x302E;
     D_8005AEB4[0x100 + 0] = 10;
     D_8005AEB4[0x100 + ' '] = 6;
     D_8005AEB4[0x100 + 9] = 24;
@@ -10365,10 +10365,10 @@ void func_80023A90(void) {
     D_8005AEB4[0x100 + ','] = 6;
     D_8005AEB4[0x100 + '`'] = 6;
     D_8005AEB4[0x100 + '\''] = 6;
-    D_8005AAB4[0x1FC] = 0x3066;
-    D_8005AAB4[0x1FD] = 0x3062;
-    D_8005AAB4[0x1FE] = 0x3065;
-    D_8005AAB4[0x1FF] = 0x3064;
+    SysFontLookUp[0x1FC] = 0x3066;
+    SysFontLookUp[0x1FD] = 0x3062;
+    SysFontLookUp[0x1FE] = 0x3065;
+    SysFontLookUp[0x1FF] = 0x3064;
     D_8005B0B4[0x1FC] = 1;
     D_8005B0B4[0x1FD] = 1;
     D_8005B0B4[0x1FE] = 1;
@@ -10522,7 +10522,7 @@ void func_800243A0(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
             if (fl & 2) {
                 col -= w;
             }
-            g = ((s16 (*)[256])&D_8005AAB4[c])[D_8005B2B4][0];
+            g = ((s16 (*)[256])&SysFontLookUp[c])[D_8005B2B4][0];
             if (g != -1) {
                 xy &= 0xFFFF0000;
                 xy |= (u16)(x0 + col * 640 / D_8005B698->w);
@@ -10531,15 +10531,15 @@ void func_800243A0(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
                         oy = xy >> 16;
                         xy &= 0xFFFF;
                         xy |= (oy - 7) << 16;
-                        texture_draw((SpriteFrame *)(*(u8 **)(D_8005B63C + 0x18) + (g & 0xFFF) * 0x38), xy, 0, 0x808080);
+                        texture_draw((SpriteFrame *)(*(u8 **)(sysfont_dbase + 0x18) + (g & 0xFFF) * 0x38), xy, 0, 0x808080);
                         oy = xy >> 16;
                         xy &= 0xFFFF;
                         xy |= (oy + 7) << 16;
                     } else {
-                        texture_draw((SpriteFrame *)(*(u8 **)(D_8005B63C + 0x18) + (g & 0xFFF) * 0x38), xy, 0, 0x808080);
+                        texture_draw((SpriteFrame *)(*(u8 **)(sysfont_dbase + 0x18) + (g & 0xFFF) * 0x38), xy, 0, 0x808080);
                     }
                 } else {
-                    func_8002992C((SpriteFrame *)(*(u8 **)(D_8005B63C + 0x18) + (g & 0xFFF) * 0x38), xy, 0, arg3, arg3, arg4, arg4);
+                    func_8002992C((SpriteFrame *)(*(u8 **)(sysfont_dbase + 0x18) + (g & 0xFFF) * 0x38), xy, 0, arg3, arg3, arg4, arg4);
                 }
             }
             col += w;
@@ -10582,11 +10582,11 @@ void SysPrintAt3d(GlyphPos *arg0, u8 *s, s32 arg2, s32 arg3) {
     }
     c = *s++;
     if (c != 0) {
-        u32 tab = (u32)D_8005AAB4;
+        u32 tab = (u32)SysFontLookUp;
         do {
             s32 g = *(s16 *)(c * 2 + (D_8005B2B4 << 9) + tab);
             if (g != -1) {
-                func_80029F9C(*(u8 **)(D_8005B63C + 0x18) + (g & 0xFFF) * 0x38, &pos, 0, arg2, arg3);
+                func_80029F9C(*(u8 **)(sysfont_dbase + 0x18) + (g & 0xFFF) * 0x38, &pos, 0, arg2, arg3);
             }
             pos.v[0] += (s32)((u8)D_8005AEB4[c + (D_8005B2B4 << 8)] << 24) >> 20;
             c = *s++;
@@ -11156,7 +11156,7 @@ s32 func_80025BBC(EXTengine *eng) {
     if (D_8005AA94 != NULL) {
         dy = D_8005AA94(eng);
     } else {
-        dy = AddPlatformContour(eng, eng->unk10.y - D_8005A5D8);
+        dy = AddPlatformContour(eng, eng->unk10.y - World_floor_level);
     }
     D_8005B5B8 = dy;
     if (dy == 0x7FFFFFFF) {
@@ -11180,7 +11180,7 @@ s32 FollowUnderContour(EXTengine *eng) {
     if (D_8005AA94 != NULL) {
         dy = D_8005AA94(eng);
     } else {
-        dy = AddPlatformContour(eng, eng->unk10.y - D_8005A5D8);
+        dy = AddPlatformContour(eng, eng->unk10.y - World_floor_level);
     }
     if (dy == 0x7FFFFFFF) {
         return 0;
@@ -11207,7 +11207,7 @@ s32 FollowContour(EXTengine *eng) {
     if (D_8005AA94 != NULL) {
         dy = D_8005AA94(eng);
     } else {
-        dy = AddPlatformContour(eng, eng->unk10.y - D_8005A5D8);
+        dy = AddPlatformContour(eng, eng->unk10.y - World_floor_level);
     }
     if (dy == 0x7FFFFFFF) {
         return 1;
@@ -11262,7 +11262,7 @@ s32 AddPlatformContour(EXTengine *eng, s32 y) {
 
 void func_80025F44(EXTengine *eng) {
     if (D_8005AA94 == NULL) {
-        AddPlatformContour(eng, eng->unk10.y - D_8005A5D8);
+        AddPlatformContour(eng, eng->unk10.y - World_floor_level);
     } else {
         D_8005AA94(eng);
     }
@@ -11385,7 +11385,7 @@ s16 func_80026210(s32 x, u8 *s) {
 void func_80026308(void) {
     func_80023A90();
     D_8005B2B4 = 0;
-    D_8005B63C = D_80055684;
+    sysfont_dbase = D_80055684;
 }
 
 s32 SysGetLen(u8 *s) {
@@ -11780,7 +11780,7 @@ void func_80026D08(void) {
     NASFreeList = NULL;
     i = D_8005AA12 - 1;
     for (;;) {
-        if (i >= D_8005AA10) {
+        if (i >= FirstNas) {
             nas = &D_8005AA1C[i];
             if (nas->NASid == 0) {
                 if (NASFreeList != NULL) {
@@ -11807,10 +11807,10 @@ void func_80026D9C(void) {
     D_8005AA2C = NULL;
     D_8005AA30 = NULL;
     D_8005AA24 = NULL;
-    D_8005AA28 = NULL;
+    HeadOfMissiles = NULL;
     NASActiveHead = NULL;
     NASActiveTail = NULL;
-    D_8005A5D8 = 0;
+    World_floor_level = 0;
     D_8005A5DC = 1;
     func_80026D08();
     for (i = 1; i < 16; i++) {
@@ -11823,7 +11823,7 @@ void func_80026D9C(void) {
 void func_80026E2C(void) {
     s32 i;
 
-    i = D_8005AA10;
+    i = FirstNas;
     for (;;) {
         if (i < D_8005AA14) {
             D_8005AA1C[i] = NASTemplate;
@@ -11851,7 +11851,7 @@ void func_80026ECC(void) {
 void func_80026F48(void) {
     s32 i;
 
-    for (i = D_8005AA10; i < D_8005AA14; i++) {
+    for (i = FirstNas; i < D_8005AA14; i++) {
         KillNAS(&D_8005AA1C[i]);
     }
 }
@@ -11945,7 +11945,7 @@ void func_800272AC(s32 arg0) {
     DrawSync(0);
     mal_update(&D_8004E0F0);
     if (r != NULL) {
-        if (D_8005B790 == D_8005B68C) {
+        if (D_8005B790 == cdb) {
             if (D_8005B790) {
                 src = r;
             } else {
@@ -11964,12 +11964,12 @@ void func_800272AC(s32 arg0) {
         D_8004E0E4 = VSync(1);
         VSync(arg0);
         PutDispEnv(&sp10);
-        DrawOTag((u32 *)(D_8005B68C + 0x3FFC));
+        DrawOTag((u32 *)(cdb + 0x3FFC));
         buf = D_8005B790;
-        if (D_8005B68C == buf) {
+        if (cdb == buf) {
             buf += 0x400C;
         }
-        D_8005B68C = buf;
+        cdb = buf;
         D_8005B690 += 1;
         ClearOTagR((u32 *)buf, 0x1000);
         *(s32 *)(buf + 0x4008) = *(s32 *)(buf + 0x4000);
@@ -12000,12 +12000,12 @@ void func_80027408(void) {
     draw.isbg = 1;
     draw.dtd = 0;
     while (1) {
-        ClearOTag((u_long *)D_8005B68C, 0x10);
+        ClearOTag((u_long *)cdb, 0x10);
         draw.r0 = Random(0xFF);
         draw.g0 = Random(0xFF);
         draw.b0 = Random(0xFF);
         PutDrawEnv(&draw);
-        DrawOTag((u_long *)D_8005B68C);
+        DrawOTag((u_long *)cdb);
         DrawSync(0);
         VSync(2);
     }
@@ -12170,8 +12170,8 @@ void func_80027A94(void) {
 }
 
 void func_80027A9C(void) {
-    if (D_80063A7C >= 0x1F) {
-        D_80063A7C = 0x1E;
+    if (xa_count >= 0x1F) {
+        xa_count = 0x1E;
     }
     xa_setvol(0);
 }
@@ -12829,14 +12829,14 @@ void texture_update_scroll(AnimScroll *s, AnimOwner *o) {
     r.y = s->dst[1] + y;
     r.w = e->w;
     r.h = e->h - y;
-    p = (*(DR_MOVE **)(D_8005B68C + 0x4008))++;
+    p = (*(DR_MOVE **)(cdb + 0x4008))++;
     SetDrawMove(p, &r, e->src[0], e->src[1]);
-    addPrim(D_8005B68C + 0x3FFC, p);
+    addPrim(cdb + 0x3FFC, p);
     r.y = s->dst[1];
     r.h = y;
-    p = (*(DR_MOVE **)(D_8005B68C + 0x4008))++;
+    p = (*(DR_MOVE **)(cdb + 0x4008))++;
     SetDrawMove(p, &r, e->src[0], e->src[1] + e->h - y);
-    addPrim(D_8005B68C + 0x3FFC, p);
+    addPrim(cdb + 0x3FFC, p);
 }
 
 void func_80029100(AnimOwner *arg0) {
@@ -13182,8 +13182,8 @@ s32 func_8002992C(SpriteFrame *f, s32 xy, s32 otz, u32 c0, u32 c1, u32 c2, u32 c
         return 0;
     }
     v.s.x = (s16)xy * D_8005B698->w / 640;
-    p = *(POLY_GT4 **)(D_8005B68C + 0x4008);
-    *(POLY_GT4 **)(D_8005B68C + 0x4008) = p + 1;
+    p = *(POLY_GT4 **)(cdb + 0x4008);
+    *(POLY_GT4 **)(cdb + 0x4008) = p + 1;
     v.s.y = (s16)(xy >> 16) / 2;
     gs = &D_80056998;
     *(u32 *)&p->r0 = FadeColorGs(gs, (c0 >> 16) & 0xFF, (c0 >> 8) & 0xFF, c0 & 0xFF);
@@ -13217,8 +13217,8 @@ s32 texture_draw(SpriteFrame *f, s32 xy, s32 otz, u32 color) {
         return 0;
     }
     v.s.x = (s16)xy * D_8005B698->w / 640;
-    p = *(POLY_FT4 **)(D_8005B68C + 0x4008);
-    *(POLY_FT4 **)(D_8005B68C + 0x4008) = p + 1;
+    p = *(POLY_FT4 **)(cdb + 0x4008);
+    *(POLY_FT4 **)(cdb + 0x4008) = p + 1;
     v.s.y = (s16)(xy >> 16) / 2;
     *(u32 *)&p->r0 = FadeColor((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
     setPolyFT4(p);
@@ -13249,8 +13249,8 @@ s32 func_80029F9C(SpriteFrame *f, GlyphPos *pos, s32 otz, u32 c0, u32 c1) {
     if (D_8005B698 == NULL) {
         return 0;
     }
-    p = *(POLY_GT4 **)(D_8005B68C + 0x4008);
-    *(POLY_GT4 **)(D_8005B68C + 0x4008) = p + 1;
+    p = *(POLY_GT4 **)(cdb + 0x4008);
+    *(POLY_GT4 **)(cdb + 0x4008) = p + 1;
     gs = &D_80056998;
     t = FadeColorGs(gs, (c0 >> 16) & 0xFF, (c0 >> 8) & 0xFF, c0 & 0xFF);
     *(u32 *)&p->r0 = t;
@@ -13285,7 +13285,7 @@ s32 func_80029F9C(SpriteFrame *f, GlyphPos *pos, s32 otz, u32 c0, u32 c1) {
     gte_rtps();
     gte_stsxy(&p->x3);
     setSemiTrans(p, (s32)c0 < 0);
-    addPrim((u32 *)D_8005B68C + otz, p);
+    addPrim((u32 *)cdb + otz, p);
     return f->advance * 640 / D_8005B698->w;
 }
 
@@ -13582,7 +13582,7 @@ void machine_quit_sound(void) {
 void func_8002ABA8(void) {
     s32 temp_v0;
 
-    D_800654AC += 1;
+    num_sfx_banks += 1;
     if (D_800654B0 > 0) {
         temp_v0 = D_800654B0 - 1;
         D_800654B0 = temp_v0;
@@ -14389,8 +14389,8 @@ l2_03:
     D_800675CC = 3;
     return;
 l3:
-    if (D_800655C4 == 0 || D_800675C8 != 0) {
-        D_800675C8--;
+    if (D_800655C4 == 0 || card_command_delay != 0) {
+        card_command_delay--;
         MemCardExist(D_800655B8);
         D_800675CC = 4;
         goto lend;
@@ -14480,7 +14480,7 @@ void card_save(void) {
     flags = D_800655C0;
     if ((flags & 2) && (flags & 0x30)) {
         on = TRUE;
-        D_800675C8 = on;
+        card_command_delay = on;
         D_800655C4 = on;
         D_800655C0 = flags | 0x80;
     }
@@ -14489,13 +14489,13 @@ void card_save(void) {
 void func_8002D108(void) {
     s32 mode = 2;
 
-    D_800675C8 = 1;
+    card_command_delay = 1;
     D_800655C4 = mode;
     D_800655C0 |= 0x80;
 }
 
 void func_8002D134(s32 arg0) {
-    D_800675C8 = 1;
+    card_command_delay = 1;
     D_800655C4 = arg0;
     D_800655C0 |= 0x80;
 }

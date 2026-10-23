@@ -2824,7 +2824,7 @@ void CreatePowerupOnTile(s32 arg0, s32 arg1, s32 arg2) {
     if (pos == NULL) {
         return;
     }
-    nas = CreateNAS(pos->x, D_8005A5D8, pos->z, 0x1402, 0x11);
+    nas = CreateNAS(pos->x, World_floor_level, pos->z, 0x1402, 0x11);
     if (nas == NULL) {
         return;
     }
@@ -2874,7 +2874,7 @@ void CreatePickupOnTile(s32 arg0, s32 arg1, s32 arg2) {
     if (pos == NULL) {
         return;
     }
-    nas = CreateNAS(pos->x, D_8005A5D8, pos->z, 0x1401, 0x11);
+    nas = CreateNAS(pos->x, World_floor_level, pos->z, 0x1401, 0x11);
     if (nas == NULL) {
         return;
     }
@@ -2971,7 +2971,7 @@ spawn:
     if (D_800C535C[arg0].nas != NULL) {
         return n;
     }
-    nas = CreateNAS(x, D_8005A5D8 - 0x40, z, 0x1405, 0x11);
+    nas = CreateNAS(x, World_floor_level - 0x40, z, 0x1405, 0x11);
     if (nas == NULL) {
         return n;
     }
@@ -3255,11 +3255,11 @@ void Plot_PogoPowerup(NAS *nas) {
         sub = e2->sub;
         e2->unk10.x = eng->unk10.x;
         e2->unk10.z = eng->unk10.z;
-        e2->unk10.y = D_8005A5D8;
+        e2->unk10.y = World_floor_level;
         if (sub != NULL) {
             scale = 0;
-            if (abs(eng->unk10.y - D_8005A5D8) < 0x200) {
-                scale = 0x1000 - abs(eng->unk10.y - D_8005A5D8) * 6;
+            if (abs(eng->unk10.y - World_floor_level) < 0x200) {
+                scale = 0x1000 - abs(eng->unk10.y - World_floor_level) * 6;
             }
             sub->unk20.z = scale;
             sub->unk20.y = scale;
@@ -3323,7 +3323,7 @@ void Plot_PogoBanker(NAS *nas) {
             c->hero = (HeroInfo *)nas;
             if (pos != NULL) {
                 eng->unk10.x = pos->x;
-                eng->unk10.y = D_8005A5D8;
+                eng->unk10.y = World_floor_level;
                 eng->unk10.z = pos->z;
                 eng->unk2C.x = 0;
                 eng->unk2C.y = 0;
@@ -3393,7 +3393,7 @@ void Plot_PogoMushroom(NAS *nas) {
             break;
         }
         eng->unk10.x = pos->x;
-        eng->unk10.y = D_8005A5D8;
+        eng->unk10.y = World_floor_level;
         eng->unk10.z = pos->z;
         Ovl60_SpawnPuff((s32 *)&eng->unk10, 0, D_80053ABC);
         nas->UserInfo.status = 6;
@@ -5158,7 +5158,7 @@ void Roo_FireRocket(EXTengine *eng) {
     s32 z = eng->unk10.z;
     s32 angle = eng->unk1E;
 
-    nas = CreateNAS(x, D_8005A5D8 - 0x200, z, 0x1404, 0x11);
+    nas = CreateNAS(x, World_floor_level - 0x200, z, 0x1404, 0x11);
     if (nas != NULL) {
         e = nas->Engine;
         if (e != NULL) {
@@ -5241,7 +5241,7 @@ void func_800C02AC(EXTengine *eng, s32 angle) {
     s32 x = eng->unk10.x;
     s32 z = eng->unk10.z;
 
-    nas = CreateNAS(x, D_8005A5D8 - 0x280, z, 0x1404, 0x11);
+    nas = CreateNAS(x, World_floor_level - 0x280, z, 0x1404, 0x11);
     if (nas != NULL) {
         e = nas->Engine;
         if (e != NULL) {
@@ -5292,7 +5292,7 @@ void Init_PogoPadlock(NAS *nas) {
         if (e2 != NULL) {
             sub = e2->sub;
             e2->unk10.x = e->unk10.x;
-            e2->unk10.y = D_8005A5D8;
+            e2->unk10.y = World_floor_level;
             e2->unk10.z = e->unk10.z;
             e2->flags &= ~0x8000;
             if (sub != NULL) {
@@ -5352,11 +5352,11 @@ bool PadlockAI_IsTileOKForPadlock(NAS *arg0, s32 arg1, s32 arg2) {
 }
 
 void Create_PogoPadlock(s32 arg0, s32 arg1) {
-    D_800C5BB0 = CreateNAS((arg0 << 9) - 0x700, D_8005A5D8, (arg1 << 9) - 0x700, 0x1408, 0x11);
+    D_800C5BB0 = CreateNAS((arg0 << 9) - 0x700, World_floor_level, (arg1 << 9) - 0x700, 0x1408, 0x11);
 }
 
 void CreateFloatyPogoScore(u32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    func_8008D5D4((arg1 << 9) - 0x700, D_8005A5D8 - 0x100, (arg2 << 9) - 0x800, arg3, 0);
+    func_8008D5D4((arg1 << 9) - 0x700, World_floor_level - 0x100, (arg2 << 9) - 0x800, arg3, 0);
 }
 
 bool SquareIsFreeForRoo(s32 arg0, s32 arg1) {
@@ -5521,7 +5521,7 @@ void Create_PogoProjectile(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
     subengine *sub;
     subengine *s;
 
-    nas = CreateNAS(arg1, D_8005A5D8 - arg3, arg2, 0x1404, 0x11);
+    nas = CreateNAS(arg1, World_floor_level - arg3, arg2, 0x1404, 0x11);
     if (nas != NULL) {
         e = nas->Engine;
         if (e != NULL) {
@@ -6092,7 +6092,7 @@ void Tile_Clear(s32 arg0, s32 arg1) {
 }
 
 s32 GetPogoContour(EXTengine *arg0) {
-    return arg0->unk10.y - D_8005A5D8;
+    return arg0->unk10.y - World_floor_level;
 }
 
 void AddTazerRing(u32 arg0) {
@@ -6419,7 +6419,7 @@ void InitialisePOGO(void) {
     D_800C52FC = 0;
     D_800C52E0 = 0;
     D_800C52E4 = 0;
-    D_8005A5D8 = -0x10;
+    World_floor_level = -0x10;
     D_800C52EC = 0;
     D_800C52F0 = 0;
     D_800C52F8 = 0;

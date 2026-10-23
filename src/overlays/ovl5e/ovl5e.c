@@ -44,7 +44,7 @@ void func_800B36D4(void) {
     s32 i;
     s16 angle;
 
-    D_8005A5D8 = 0;
+    World_floor_level = 0;
     D_800BD8DC = 0;
     D_800BD8DE = 0;
     *(s16 *)D_800BD8E2 = 0;
@@ -1873,7 +1873,7 @@ s32 func_800B744C(s32 arg0) {
     ix = (eng->unk10.x + 0x700) >> 9;
     iz = (eng->unk10.z + 0x700) >> 9;
     if ((u32)ix < 7U && (u32)iz < 7U) {
-        y = eng->unk10.y - D_8005A5D8;
+        y = eng->unk10.y - World_floor_level;
         t = D_800BD948[ix][iz].tile;
         if (t != NULL) {
             y -= t->unk8;
@@ -1891,7 +1891,7 @@ s32 func_800B7558(EXTengine *eng) {
     s32 iz;
     Ovl5eTile *t;
 
-    y = eng->unk10.y - D_8005A5D8;
+    y = eng->unk10.y - World_floor_level;
     ix = (eng->unk10.x + 0x700) >> 9;
     iz = (eng->unk10.z + 0x700) >> 9;
     if ((u32)ix >= 7U || (u32)iz >= 7U) {
@@ -2376,7 +2376,7 @@ NAS *func_800B82DC(s32 a, s32 b, s32 c, s32 d, s32 e) {
                 eng->unk5C = 1;
                 eng->unk5E = 1;
                 eng->flags |= 1;
-                eng->unk10.y = D_8005A5D8;
+                eng->unk10.y = World_floor_level;
                 p = &eng->unk10;
                 PlaySfx(0x3FA, NULL, p, 0x1000, 0x1E00, 0);
                 t = k;
@@ -2430,7 +2430,7 @@ void func_800B8508(NAS *arg0) {
                     }
                 }
             } while (again);
-            eng->unk10.y = D_8005A5D8;
+            eng->unk10.y = World_floor_level;
             eng->sub->unk6C = D_80052F94;
             eng->unk5D = 1;
             eng->unk5C = 1;

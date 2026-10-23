@@ -161,13 +161,13 @@ void func_800B3DD8(void) {
     D_800C3B9C[0] = D_800C3B9C[1] = D_800C3B9C[2] = D_800C3B9C[3] = 0;
     switch (D_8005A648) {
     case 0:
-        D_8005A5D8 = -0x10;
+        World_floor_level = -0x10;
         func_800B710C(8, 8, 0xA, 0xC, 0xA, 3, 3, 0, 0);
         func_800BAFB4();
         func_8007A9D0(D_800C39C0);
         break;
     case 1:
-        D_8005A5D8 = -0x10;
+        World_floor_level = -0x10;
         func_800B8314();
         D_800C478A = (Random(0xA) + 0xA) * 0x1E;
         D_8009E488.unk8 = func_800BAE98;
@@ -179,7 +179,7 @@ void func_800B3DD8(void) {
         func_800BAFB4();
         break;
     case 2:
-        D_8005A5D8 = -0x10;
+        World_floor_level = -0x10;
         D_8009E488.unk0 = D_800C395C;
         D_8009D6F4 = D_800C3984;
         D_800C478A = (Random(0xA) + 0xA) * 0x1E;
@@ -189,12 +189,12 @@ void func_800B3DD8(void) {
             Heroes[i].hero_move->velocity_calc = D_8005A5DC;
         }
         func_800BB2BC();
-        CreateNAS(0, D_8005A5D8, 0, 0x1101, 0x11);
-        CreateNAS(0, D_8005A5D8, 0, 0x1102, 0x11);
+        CreateNAS(0, World_floor_level, 0, 0x1101, 0x11);
+        CreateNAS(0, World_floor_level, 0, 0x1102, 0x11);
         func_800BAFB4();
         break;
     case 3:
-        D_8005A5D8 = 0;
+        World_floor_level = 0;
         D_800C478A = Random(0x1E) + 0x1E;
         func_800B710C(6, 6, 6, 6, 0xE, 2, 0, 0, 0);
         func_800BAFB4();
@@ -202,13 +202,13 @@ void func_800B3DD8(void) {
         break;
     case 0x20:
         Heroes[2].hero_shadow->flags = 0;
-        D_8005A5D8 = -0x10;
+        World_floor_level = -0x10;
         Heroes[3].hero_shadow->flags = 0;
         func_800B710C(8, 8, 0xA, 0xC, 0xA, 3, 3, 0, 0);
         func_800BAFB4();
         func_80095258(*(u8 **)D_80058AD0);
         D_8009F8B4 = func_800BAC10;
-        D_8005A5D8 = 0;
+        World_floor_level = 0;
         break;
     }
 }
@@ -275,7 +275,7 @@ void func_800B44B0(s32 arg0) {
             } else {
                 step = m->x_dec;
             }
-            if (Heroes[arg0].hero_eng->unk10.y < D_8005A5D8) {
+            if (Heroes[arg0].hero_eng->unk10.y < World_floor_level) {
                 step = 0x80;
             }
             if (m->x_vel < m->x_max) {
@@ -296,7 +296,7 @@ void func_800B44B0(s32 arg0) {
             } else {
                 step = m->z_dec;
             }
-            if (Heroes[arg0].hero_eng->unk10.y < D_8005A5D8) {
+            if (Heroes[arg0].hero_eng->unk10.y < World_floor_level) {
                 step = 0x80;
             }
             if (m->z_vel < m->z_max) {
@@ -1015,7 +1015,7 @@ void func_800B7358(void) {
         } else {
             c = (Ovl5dGridCell *)func_800B8040(D_800C3B86);
             if (c != NULL) {
-                CreateNAS(c->x, D_8005A5D8, c->z, 0x20C, 0x11);
+                CreateNAS(c->x, World_floor_level, c->z, 0x20C, 0x11);
             }
             D_800C3B34 = Random(30) + 10;
         }
@@ -2080,12 +2080,12 @@ void PlotBash8way(NAS *nas) {
                     z = eng->unk10.z + sub->unk0C;
                     dead = 0;
                     sub->unk12 = a;
-                    if (y >= D_8005A5D8) {
-                        func_800BA8A4(x, D_8005A5D8, z, nas->UserInfo.user1, kind);
+                    if (y >= World_floor_level) {
+                        func_800BA8A4(x, World_floor_level, z, nas->UserInfo.user1, kind);
                         sub->flags = 0;
                     }
                     if (func_800B97A8(x, y, z, 0x20, nas->UserInfo.user1, 0xA) != -1) {
-                        func_800BA8A4(x, D_8005A5D8, z, nas->UserInfo.user1, kind);
+                        func_800BA8A4(x, World_floor_level, z, nas->UserInfo.user1, kind);
                         sub->flags = 0;
                     }
                     sub->unk52 = 1;
@@ -2214,8 +2214,8 @@ void PlotBashHomer(NAS *nas) {
             x = eng->unk10.x;
             y = eng->unk10.y;
             z = eng->unk10.z;
-            if (y >= D_8005A5D8 || nas->UserInfo.flags == 0) {
-                func_800BA8A4(x, D_8005A5D8, z, nas->UserInfo.user1, 0x1B);
+            if (y >= World_floor_level || nas->UserInfo.flags == 0) {
+                func_800BA8A4(x, World_floor_level, z, nas->UserInfo.user1, 0x1B);
                 dead = 1;
             }
             if (func_800B97A8(x, y, z, 0x80, nas->UserInfo.user1, 0xA) != -1) {
@@ -2518,7 +2518,7 @@ void func_800BAC10(void) {
 s32 func_800BAC5C(EXTengine *eng) {
     s32 x = (eng->unk10.x + 0x800) >> 9;
     s32 z = (eng->unk10.z + 0x800) >> 9;
-    s32 dy = eng->unk10.y - D_8005A5D8;
+    s32 dy = eng->unk10.y - World_floor_level;
 
     if ((u32)x >= 8 || (u32)z >= 8) {
         return dy;
@@ -2574,7 +2574,7 @@ void func_800BAE98(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     u8 *g = D_8005A614;
 
     if (!(*(u16 *)(g + 0x30) & 0x801) && !(*(s32 *)(g + 4) & 0x1000) &&
-        arg1 == D_8005A5D8 && arg5 < 8 && arg5 >= 5) {
+        arg1 == World_floor_level && arg5 < 8 && arg5 >= 5) {
         arg0 = (arg0 + 0x800) >> 9;
         arg2 = (arg2 + 0x800) >> 9;
         if ((u32)arg0 < 8 && (u32)arg2 < 8) {
@@ -2804,8 +2804,8 @@ void func_800BB4AC(Ovl5dTumbler *arg0, Ovl5dTumbleMove *arg1, s32 arg2) {
     s32 dist;
 
     dist = arg0->y;
-    if (dist >= D_8005A5D8) {
-        dist = D_8005A5D8 - 1;
+    if (dist >= World_floor_level) {
+        dist = World_floor_level - 1;
     }
     y = dist;
     sum = 0;
@@ -2817,7 +2817,7 @@ void func_800BB4AC(Ovl5dTumbler *arg0, Ovl5dTumbleMove *arg1, s32 arg2) {
     max = arg1->max;
     max2 = arg1->max2;
     steps = 0;
-    while (y < D_8005A5D8) {
+    while (y < World_floor_level) {
         vel += d1;
         if (vel < 0) {
             vel = 0;

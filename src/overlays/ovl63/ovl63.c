@@ -1863,7 +1863,7 @@ void func_800B8890(void) {
         func_8007B7FC((G63->unk32 & 0x40) ? 0x100 : 0x130, 0x81C0);
     }
     D_800C66EC = NULL;
-    D_8005A5D8 = -0x10;
+    World_floor_level = -0x10;
     func_800C0F5C();
     scene = *(s32 **)D_80058AD0;
     D_800C6928 = 0;

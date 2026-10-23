@@ -57,7 +57,7 @@ void func_800B359C() {
         func_8007EB1C(0x140, 0x28, 0);
         func_8007B7FC(0x130, 0x81D0);
     }
-    D_8005A5D8 = -0x10;
+    World_floor_level = -0x10;
     D_800BBD52 = 0x1F4;
     D_800BBD54 = 0x12C;
     D_800BBD56 = 0x190;
@@ -245,7 +245,7 @@ void func_800B3A3C(void) {
         h = &Heroes[i];
         if (h->hero_status & 0xFA00) continue;
         eng = h->hero_eng;
-        if (eng->unk10.y < D_8005A5D8) continue;
+        if (eng->unk10.y < World_floor_level) continue;
         if (h->hero_pu == 0x13) continue;
         x = eng->unk10.x;
         z = eng->unk10.z;
@@ -269,7 +269,7 @@ void func_800B3A3C(void) {
         z = e->unk10.z;
         d = x * x + z * z;
         if (d > 0x640000) continue;
-        if (e->unk10.y < D_8005A5D8) continue;
+        if (e->unk10.y < World_floor_level) continue;
         if (d <= 0xC3FFF) continue;
         d = f->dist;
         a = f->angle;
@@ -769,7 +769,7 @@ NAS *func_800B51A0(s32 a, s32 b, u16 c, s16 d)
   u16 mask;
   x = (b * D_80068BD4[(a - 0x400) & 0xFFF].unk2) >> 12;
   z = (b * D_80068BD4[a & 0xFFF].unk2) >> 12;
-  nas = CreateNAS(x, D_8005A5D8, z, 0x1801, 0x11);
+  nas = CreateNAS(x, World_floor_level, z, 0x1801, 0x11);
   if (nas != 0)
   {
     eng = nas->Engine;
@@ -839,7 +839,7 @@ NAS *func_800B51A0(s32 a, s32 b, u16 c, s16 d)
           switch (fux->sub)
           {
             case 3:
-              eng->unk10.y = D_8005A5D8;
+              eng->unk10.y = World_floor_level;
               break;
 
             case 7:
@@ -850,7 +850,7 @@ NAS *func_800B51A0(s32 a, s32 b, u16 c, s16 d)
               eng->unk5C = 1;
               eng->unk5E = 1;
               eng->flags |= 1;
-              eng->unk10.y = D_8005A5D8;
+              eng->unk10.y = World_floor_level;
               PlaySfx(0x3FA, 0, &eng->unk10, 0x1000, 0x1E00, 0);
               break;
 
@@ -859,7 +859,7 @@ NAS *func_800B51A0(s32 a, s32 b, u16 c, s16 d)
               eng->unk5D = 1;
               eng->unk5C = 1;
               eng->unk5E = 1;
-              eng->unk10.y = D_8005A5D8;
+              eng->unk10.y = World_floor_level;
               PlaySfx(0x3FA, 0, &eng->unk10, 0x1000, 0x1E00, 0);
               break;
 
@@ -1122,7 +1122,7 @@ NAS *func_800B5D3C(s32 a, s32 b, u16 c, s16 d) {
     x = b * D_80068BD4[(a - 0x400) & 0xFFF].unk2 >> 12;
     z = b * D_80068BD4[a & 0xFFF].unk2 >> 12;
     r = Random(0x80);
-    y = D_8005A5D8 - 0x600;
+    y = World_floor_level - 0x600;
     nas = CreateNAS(x, y - r, z, 0x1802, 0x11);
     if (nas != NULL) {
         eng = nas->Engine;
@@ -2244,11 +2244,11 @@ void func_800B971C(s32 arg0) {
         SetHeroAction((HeroInfo *)arg0, 7);
     } else {
         eng = h->hero_eng;
-        if (D_8005A5D8 < eng->unk10.y + h->hero_sub->unk08) {
+        if (World_floor_level < eng->unk10.y + h->hero_sub->unk08) {
             if (D_8005B5B8 == 0x7FFFFFFF) {
                 SetHeroAction((HeroInfo *)arg0, 6);
             } else {
-                eng->unk10.y = D_8005A5D8;
+                eng->unk10.y = World_floor_level;
                 h->hero_sub->unk08 = 0;
             }
         }
@@ -2344,12 +2344,12 @@ void func_800B9A04(s32 arg0) {
         StopSfx(h->hero_eng->sfx);
     }
     h->hero_sub->unk6C = D_80052A54 + D_8009D6EC[h->hero_name] * 0x38;
-    h->hero_eng->unk10.y = D_8005A5D8 - 0x200;
+    h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->unk10.y -= dy;
     } else {
-        h->hero_eng->unk10.y = D_8005A5D8;
+        h->hero_eng->unk10.y = World_floor_level;
     }
     {
         HeroInfo *h2;
@@ -2375,12 +2375,12 @@ void func_800B9BF8(s32 arg0) {
     if (h->hero_health < 2) {
         h->hero_health = 2;
     }
-    h->hero_eng->unk10.y = D_8005A5D8 - 0x200;
+    h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->unk10.y -= dy;
     } else {
-        h->hero_eng->unk10.y = D_8005A5D8;
+        h->hero_eng->unk10.y = World_floor_level;
     }
     func_80085890(arg0);
     if (func_8008A200(arg0) != 0) {
@@ -2416,12 +2416,12 @@ void func_800B9CE0(s32 arg0) {
         StopSfx(h->hero_eng->sfx);
     }
     h->hero_sub->unk6C = (s32)D_80052A54 + D_8009D6EC[h->hero_name] * 0x38;
-    h->hero_eng->unk10.y = D_8005A5D8 - 0x200;
+    h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->unk10.y -= dy;
     } else {
-        h->hero_eng->unk10.y = D_8005A5D8;
+        h->hero_eng->unk10.y = World_floor_level;
     }
     base2 = Heroes;
     h2 = base2 + arg0;
@@ -2445,12 +2445,12 @@ void func_800B9EEC(s32 arg0) {
     if (h->hero_health < 2) {
         h->hero_health = 2;
     }
-    h->hero_eng->unk10.y = D_8005A5D8 - 0x200;
+    h->hero_eng->unk10.y = World_floor_level - 0x200;
     dy = ((s32 (*)(EXTengine *))func_80025F44)(h->hero_eng);
     if (dy != 0x7FFFFFFF) {
         h->hero_eng->unk10.y -= dy;
     } else {
-        h->hero_eng->unk10.y = D_8005A5D8;
+        h->hero_eng->unk10.y = World_floor_level;
     }
     func_8008502C(arg0);
     {

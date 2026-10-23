@@ -857,7 +857,7 @@ void func_800B58B0(void) {
     D_800CB260 = -1;
     D_800CB0E0 = 0;
     D_800CB0EC = 0;
-    D_8005A5D8 = 0;
+    World_floor_level = 0;
     func_8007EB1C(0x140, 0x1E, 0);
     g = (Ovl5fSetupView *)D_8005A614;
     if (g->flags & 0x40) {

@@ -1921,7 +1921,7 @@ void func_80083708(void) {
         h->hero_sub = sub;
         eng->unk5D = 0;
         eng->unk10 = D_8005B2B8[i].pos;
-        h->hero_eng->unk10.y = D_8005A5D8;
+        h->hero_eng->unk10.y = World_floor_level;
         eng->OldXYZ = eng->unk10;
         h->hero_anim = func_800265DC(h->hero);
         name = h->hero_name;
@@ -3068,9 +3068,9 @@ void func_800860D4(s32 arg0) {
         h->hero_eng->unk10.y += h->hero_move->jump_vel;
         if (h->hero_move->jump_ctrl & 0x10) {
             y = h->hero_eng->unk10.y;
-            if (D_8005A5D8 < y) {
-                h->hero_sub->unk08 += y - D_8005A5D8;
-                h->hero_eng->unk10.y = D_8005A5D8;
+            if (World_floor_level < y) {
+                h->hero_sub->unk08 += y - World_floor_level;
+                h->hero_eng->unk10.y = World_floor_level;
             }
         }
     }
@@ -3567,11 +3567,11 @@ s32 func_800871E4(s32 arg0) {
             h->hero_sub->unk08 = 0;
         } else if (!(h->hero_ctrl & 8)) {
             e = h->hero_eng;
-            if (D_8005A5D8 < e->unk10.y + h->hero_sub->unk08) {
+            if (World_floor_level < e->unk10.y + h->hero_sub->unk08) {
                 if (D_8005B5B8 == 0x7FFFFFFF) {
                     goto set6;
                 }
-                e->unk10.y = D_8005A5D8;
+                e->unk10.y = World_floor_level;
                 h->hero_sub->unk08 = 0;
             }
         }
@@ -3601,7 +3601,7 @@ s32 func_800871E4(s32 arg0) {
         case 13:
             base13 = Heroes;
             h13 = base13 + arg0;
-            if (!(h13->hero_ctrl & 8) && D_8005A5D8 < h13->hero_eng->unk10.y + h13->hero_sub->unk08) {
+            if (!(h13->hero_ctrl & 8) && World_floor_level < h13->hero_eng->unk10.y + h13->hero_sub->unk08) {
                 if (D_8005B5B8 == 0x7FFFFFFF) {
                 set6:
                     SetHeroAction((HeroInfo *)arg0, 6);
@@ -3675,7 +3675,7 @@ void func_800874EC(s32 arg0) {
             m = h->hero_move;
             if (m->velocity_calc == 3) {
                 e = h->hero_eng;
-                if (e->unk10.y < D_8005A5D8) {
+                if (e->unk10.y < World_floor_level) {
                     if (h->hero_aseq == 0xE) {
                         SetHeroSeq((HeroInfo *)arg0, 1);
                     }
@@ -3876,11 +3876,11 @@ void func_800881E0(s32 arg0) {
         SetHeroAction((HeroInfo *)arg0, 7);
     } else if (!(h->hero_ctrl & 8)) {
         eng = (u8 *)h->hero_eng;
-        if (D_8005A5D8 < *(s32 *)(eng + 0x14) + *(s32 *)((u8 *)h->hero_sub + 8)) {
+        if (World_floor_level < *(s32 *)(eng + 0x14) + *(s32 *)((u8 *)h->hero_sub + 8)) {
             if (D_8005B5B8 == 0x7FFFFFFF) {
                 SetHeroAction((HeroInfo *)arg0, 6);
             } else {
-                *(s32 *)(eng + 0x14) = D_8005A5D8;
+                *(s32 *)(eng + 0x14) = World_floor_level;
                 *(s32 *)((u8 *)h->hero_sub + 8) = 0;
             }
         }
@@ -4528,7 +4528,7 @@ s32 arg0;
             s->unk08 += y;
             s->flags |= 0x8000;
             s->unk76 = D_8009E0E8[i][arg0].unkC += 0x60;
-            if (D_8005A5D8 < s->unk08 || D_8009E0E8[i][arg0].unkC >= 0x1000) {
+            if (World_floor_level < s->unk08 || D_8009E0E8[i][arg0].unkC >= 0x1000) {
                 D_8009E0E8[i][arg0].unk2 = 0;
                 D_8009E0E8[i][arg0].unk0 = Random(10) + 2;
                 s->flags &= ~0x8000;
@@ -4824,7 +4824,7 @@ void func_8008A854(s32 arg0) {
 
     h->hero_frozen = 2;
     sum = *(s32 *)((u8 *)h->hero_eng + 0x14) + *(s32 *)((u8 *)h->hero_sub + 8);
-    if (D_8005A5D8 + 0x180 < sum) {
+    if (World_floor_level + 0x180 < sum) {
         SetHeroAction((HeroInfo *)arg0, (u16)D_8009E0E2);
     }
     D_8009D73C(arg0);
@@ -6241,7 +6241,7 @@ void InitHealth(NAS *nas) {
             obj->whatami = 0x11;
             obj->can_do |= 0x18;
             func_80025AE4((u8 *)eng, 0, 0, 0, 0x80, -0x100, 0x40);
-            if (eng->unk10.y == D_8005A5D8) {
+            if (eng->unk10.y == World_floor_level) {
                 obj->status = 1;
             } else {
                 obj->status = 4;
@@ -6470,7 +6470,7 @@ void func_8008DEC8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     if (D_8009E494 != NULL) {
         D_8009E494(arg0, arg1, arg2, arg3);
     }
-    if (abs(eng->unk10.y - D_8005A5D8) < 0x80) {
+    if (abs(eng->unk10.y - World_floor_level) < 0x80) {
         arg1 = arg1 * arg1;
         for (nas = D_8005AA24; nas != NULL; nas = nas->Object.Child) {
             fux = (FuxFlags *)nas->FUX;

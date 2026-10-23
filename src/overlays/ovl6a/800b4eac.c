@@ -16,7 +16,7 @@ void func_800B4EAC(void) {
     D_8009F71C = 0;
     D_800BCEF4 = 0;
     hero = Heroes;
-    D_8005A5D8 = 0;
+    World_floor_level = 0;
     eng = hero->hero_eng;
     G6A->unk32 |= 0x200;
     eng->flags |= 0x8000;
@@ -1461,7 +1461,7 @@ void func_800B88B8(void) {
     s32 name;
     s32 h;
 
-    D_8005A5D8 = 0;
+    World_floor_level = 0;
     D_800AD12C = 4;
     D_800BD5B4 = 0;
     D_800BD390 = 0x5A;
@@ -2304,7 +2304,7 @@ void func_800BA9C8(s32 arg0, Ovl6aSpawnEnt *arg1) {
     s32 t;
     u8 *p;
 
-    nas = CreateNAS(arg1->x, D_8005A5D8, arg1->z, 0x1F01, 0x11);
+    nas = CreateNAS(arg1->x, World_floor_level, arg1->z, 0x1F01, 0x11);
     if (nas != NULL) {
         D_800BD584[arg0] = nas;
         nas->UserInfo.user1 = arg0 + 1;
@@ -2665,7 +2665,7 @@ void func_800BBC64(s16 *a, void *b, s32 c, s32 d) {
     s32 off;
 
     r = D_8005B698;
-    if (D_8005B68C == D_8005B790) {
+    if (cdb == D_8005B790) {
         r += 1;
     }
     SetDrawArea((DRAWENV *)((u8 *)b + (D_8005B690 & 1) * 12), r);
@@ -2680,7 +2680,7 @@ void func_800BBC64(s16 *a, void *b, s32 c, s32 d) {
     ((Ovl6aPTag *)&D_80056998.ot[0x136])->addr = (u32)((u8 *)b + off2);
     ((Ovl6aPTag *)&p[0])->addr = ((Ovl6aPTag *)&D_80056998.ot[2])->addr;
     ((Ovl6aPTag *)&D_80056998.ot[2])->addr = (u32)p;
-    q = ((u32 *)D_8005B68C) - (-c);
+    q = ((u32 *)cdb) - (-c);
     ((Ovl6aPTag *)&D_80056998.ot[0])->addr = ((Ovl6aPTag *)q)->addr;
     ((Ovl6aPTag *)q)->addr = (u32)(D_80056998.ot + 0x137);
 }

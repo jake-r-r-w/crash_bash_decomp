@@ -1043,7 +1043,7 @@ void func_800320DC(s32 arg0);
 extern void *D_80050F3C;
 extern u8 D_80050F40[]; /* 63 x 0xC pool, free list in D_80051240 */
 extern u8 D_8005063C[]; /* 63 x 0x24 pool, free list in D_80050F3C */
-extern s32 D_800517B0;
+extern s32 cam_ramp_overide_count;
 extern s32 D_800517B4;
 extern s32 RandomSeedA;
 extern s32 RandomSeedB;
@@ -1055,7 +1055,7 @@ typedef struct {
     void (*unkC)(u8 *, u8 *);
 } D_80058B00_Entry;
 extern D_80058B00_Entry D_80058B00[];
-extern s32 D_8005A5D8;
+extern s32 World_floor_level;
 extern s32 D_800655A8;
 extern s32 D_800655B8;
 extern s32 D_800655C0;
@@ -1290,7 +1290,7 @@ extern VabSlot D_800644C0[6];
 extern NodePool D_80056844;
 extern NAS *D_8005AA2C;
 extern NAS *D_8005AA9C;
-extern void *D_8005AA28;            /* tail of the D_8005AA24 list */
+extern void *HeadOfMissiles;            /* tail of the D_8005AA24 list */
 extern void *D_8005AA30;            /* tail of the D_8005AA2C list */
 extern s32 D_8005A5DC;
 extern s32 D_8005B5BC[16][2];       /* entries 1..15 cleared by func_80026D9C */
@@ -1387,7 +1387,7 @@ extern char D_8004C8D0[];         /* "FATAL METRICS ERROR ..." */
 extern u8 D_8004E9C0[];           /* func_80022140: passed (-0x10/-8/+0) to func_8002BD0C */
 extern s32 D_80058F0C[][8];       /* func_80022140 */
 extern s8 D_8005A604[];
-extern s32 D_800675C8;
+extern s32 card_command_delay;
 extern s32 D_8005A620;
 extern u8 D_800556F4[];
 extern s32 D_8005AA58;
@@ -1398,8 +1398,8 @@ extern u16 D_8005A646;
 extern s32 D_8005B2B4;
 extern s8 D_8005AEB4[];
 extern u8 D_8005B0B4[];
-extern u8 *D_8005B63C;
-extern s16 D_8005AAB4[];
+extern u8 *sysfont_dbase;
+extern s16 SysFontLookUp[];
 typedef struct GlyphPos {
     s16 v[3];
 } GlyphPos;
@@ -1422,7 +1422,7 @@ extern VabSlot *D_800654C4;  /* where its id goes */
 extern s32 D_800654C8;       /* the id from SsVabOpenHead */
 extern u8 D_800644A8[];
 extern u8 D_8005A688;
-extern s32 D_80063A7C;
+extern s32 xa_count;
 extern s32 D_800654B8;
 extern s32 D_80064418[];       /* voice bit masks, by voice */
 extern s32 D_800655B0;
@@ -1443,7 +1443,7 @@ extern s32 D_8005AA4C;
 extern void (*D_8005AA84)(void);
 extern void *D_80058B78;
 extern RECT D_8005B640;
-extern void *D_80058B74;
+extern void *free_scripts;
 extern void *D_80058AD0;
 /* A map trigger record (func_80024AD8): position, then a word whose low 2
  * bits are the cast and the rest the offset from +0xC to its info. */
@@ -1507,7 +1507,7 @@ static inline void GfxAddTrans(VECTOR *v) {
 }
 /* The current draw buffer: primitives are allocated from the pointer at
  * +0x4008 (texture_draw). */
-extern u8 *D_8005B68C;
+extern u8 *cdb;
 
 /* A screen offset pair, copied as one struct. */
 typedef struct {
@@ -1519,7 +1519,7 @@ typedef struct {
     s16 x0, y0, x1, y1;     /* 0x00: draw area */
     s16 cx0, cy0, cx1, cy1; /* 0x08: clip area (func_80014540) */
     s32 ofx, ofy;           /* 0x10: geometry offset */
-    s32 otIdx;              /* 0x18: first ot entry in D_8005B68C */
+    s32 otIdx;              /* 0x18: first ot entry in cdb */
     s32 otLen;              /* 0x1C */
     s32 unk20;
     u8 r, g, b, isbg;       /* 0x24: background */
@@ -1612,7 +1612,7 @@ s32 texture_draw(SpriteFrame *f, s32 xy, s32 otz, u32 color);
 /* texture_draw as a POLY_GT4 with one colour per vertex (c0 also sets the
  * semi-transparency and blend mode). */
 s32 func_8002992C(SpriteFrame *f, s32 xy, s32 otz, u32 c0, u32 c1, u32 c2, u32 c3);
-/* Draws f at the 3D point pos as a POLY_GT4 in the OT at D_8005B68C, c0 on
+/* Draws f at the 3D point pos as a POLY_GT4 in the OT at cdb, c0 on
  * the top vertices and c1 on the bottom ones; returns f's advance. */
 s32 func_80029F9C(SpriteFrame *f, GlyphPos *pos, s32 otz, u32 c0, u32 c1);
 
@@ -1821,13 +1821,13 @@ typedef struct PrimSet {
 } PrimSet;
 extern s32 *D_80056858;
 extern NAS *NASActiveHead;
-extern s32 D_800654AC;
+extern s32 num_sfx_banks;
 extern s32 D_800654B0;
 extern s32 D_800654B4;
 extern s32 D_8004E0D8;
 extern s32 D_8004E0D0; /* BCD of func_80010000's count */
 extern s32 D_800590CC;
-extern subengine *D_80058ACC;
+extern subengine *next_sub;
 extern s32 D_80058B60;
 extern s32 D_80058B64;
 extern s32 D_80058B68;
@@ -1883,7 +1883,7 @@ static inline s32 EmitPart_Fade(s32 in, s32 out, s32 n, s32 end, s32 from, s32 t
 }
 
 extern NAS *NASFreeList;
-extern u16 D_8005AA10;            /* first pool slot func_80026D08 frees */
+extern u16 FirstNas;            /* first pool slot func_80026D08 frees */
 extern u16 D_8005AA12;            /* pool slot count */
 extern u16 D_8005AA14;            /* pool slots in use (func_80026FCC kills them all) */
 extern NAS *D_8005AA1C;           /* NAS pool */
@@ -1892,7 +1892,7 @@ extern EXTengine EngineTemplate;   /* copied over each new engine */
 extern s16 AtanTable[];            /* get_angle */
 extern u16 D_8005A644;
 extern s32 D_800512A4;
-extern s32 D_80051638[2];
+extern s32 screen_aspect[2];
 
 EXTmotion *AddMotion(NAS *nas);
 
