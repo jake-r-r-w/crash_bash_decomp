@@ -140,37 +140,37 @@ s32 func_80096280(s32 *p0, s32 *p1, s32 *q0, s32 *q1, s32 *out) {
     return 1;
 }
 
-s32 line_intersect_zy(s32 *p0, s32 *p1, s32 *q0, s32 *q1, s32 *out) {
+s32 line_intersect_zy(VECTOR *p0, VECTOR *p1, VECTOR *q0, VECTOR *q1, VECTOR *out) {
     s32 denom, num, u, t;
     s32 dqz;
     s32 dpy;
     s32 dpz, dqy, ez, ey;
     s32 a, b, c;
 
-    a = p0[2];
-    if (a < (b = q0[2]) && (c = p1[2]) < b && a < q1[2] && c < q1[2]) {
+    a = p0->vz;
+    if (a < (b = q0->vz) && (c = p1->vz) < b && a < q1->vz && c < q1->vz) {
         return 0;
     }
-    if ((b = q0[2]) < a && b < (c = p1[2]) && q1[2] < a && q1[2] < c) {
+    if ((b = q0->vz) < a && b < (c = p1->vz) && q1->vz < a && q1->vz < c) {
         return 0;
     }
     do {
         do {
-            a = p0[1];
+            a = p0->vy;
         } while (0);
     } while (0);
-    if (a < (b = q0[1]) && (c = p1[1]) < b && a < q1[1] && c < q1[1]) {
+    if (a < (b = q0->vy) && (c = p1->vy) < b && a < q1->vy && c < q1->vy) {
         return 0;
     }
-    if ((b = q0[1]) < a && b < (c = p1[1]) && q1[1] < a && q1[1] < c) {
+    if ((b = q0->vy) < a && b < (c = p1->vy) && q1->vy < a && q1->vy < c) {
         return 0;
     }
-    dqz = (q0[2] - q1[2]) >> 4;
-    dpy = (p0[1] - q0[1]) >> 4;
-    dpz = (p0[2] - q0[2]) >> 4;
-    dqy = (q0[1] - q1[1]) >> 4;
-    ez = (p1[2] - p0[2]) >> 4;
-    ey = (p1[1] - p0[1]) >> 4;
+    dqz = (q0->vz - q1->vz) >> 4;
+    dpy = (p0->vy - q0->vy) >> 4;
+    dpz = (p0->vz - q0->vz) >> 4;
+    dqy = (q0->vy - q1->vy) >> 4;
+    ez = (p1->vz - p0->vz) >> 4;
+    ey = (p1->vy - p0->vy) >> 4;
     num = dqz * dpy - dqy * dpz;
     denom = ez * dqy - ey * dqz;
     if (denom > 0) {
@@ -208,34 +208,34 @@ s32 line_intersect_zy(s32 *p0, s32 *p1, s32 *q0, s32 *q1, s32 *out) {
         return 0;
     }
     t = (num << 8) / denom;
-    out[0] = 0;
-    out[1] = p0[1] + (((p1[1] - p0[1]) * t) >> 8);
-    out[2] = p0[2] + (((p1[2] - p0[2]) * t) >> 8);
+    out->vx = 0;
+    out->vy = p0->vy + (((p1->vy - p0->vy) * t) >> 8);
+    out->vz = p0->vz + (((p1->vz - p0->vz) * t) >> 8);
     return 1;
 }
 
 s32 func_800967E0(D_800AD2EC_t *a, s32 *b, D_800AD2EC_t *c, s32 *d, s32 *out) {
     Vec3W hit;
-    s32 sp28[4];
+    VECTOR sp28;
     s32 flags;
     s32 k;
 
     flags = 0;
-    if (EngCam_HitY((s32 *)a, b, sp28)) {
-        out[1] = sp28[1];
+    if (EngCam_HitY((VECTOR *)a, (VECTOR *)b, &sp28)) {
+        out[1] = sp28.vy;
         flags = 1;
-        out[2] = sp28[2];
+        out[2] = sp28.vz;
     }
     if (EngCam_HitX((Vec3W *)c, (Vec3W *)d, &hit)) {
         out[0] = hit.a;
         if (flags != 0) {
-            k = sp28[2];
+            k = sp28.vz;
             if (hit.c < k) {
                 k = hit.c;
             }
             out[2] = k;
         } else {
-            out[2] = sp28[2];
+            out[2] = sp28.vz;
         }
         flags |= 2;
     }
@@ -515,17 +515,17 @@ s32 func_800974EC(Vec3W *arg0, Vec3W *arg1, Vec3W *arg2) {
     return 1;
 }
 
-s32 func_80097608(s32 *arg0, s32 *arg1, s32 arg2) {
-    s32 sp18[3];
-    s32 sp28[3];
+s32 func_80097608(VECTOR *arg0, VECTOR *arg1, s32 arg2) {
+    VECTOR sp18;
+    VECTOR sp28;
     s32 d = 0x2D0000 / D_80051658;
-    extern s32 line_intersect_zy(s32 *, s32 *, s32 *, s32 *, s32 *);
+    extern s32 line_intersect_zy(VECTOR *, VECTOR *, VECTOR *, VECTOR *, VECTOR *);
 
-    sp18[1] = arg0[1] + d;
-    sp18[2] = arg0[2] - 0x3000;
-    sp28[1] = arg1[1] - d;
-    sp28[2] = arg1[2] - 0x3000;
-    return line_intersect_zy(arg0, sp18, arg1, sp28, (s32 *)arg2) != 0;
+    sp18.vy = arg0->vy + d;
+    sp18.vz = arg0->vz - 0x3000;
+    sp28.vy = arg1->vy - d;
+    sp28.vz = arg1->vz - 0x3000;
+    return line_intersect_zy(arg0, &sp18, arg1, &sp28, (VECTOR *)arg2) != 0;
 }
 
 s32 func_800976A8(u8 *arg0, s32 arg1) {

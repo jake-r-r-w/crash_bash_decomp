@@ -192,8 +192,28 @@ struct script_thread_handler {
 };
 BASH_SIZE_CHECK(script_thread_handler, 0xB8);
 
+/* A playing script (0x1C bytes; the fragment records the size, the fields
+ * are from sub_play_script, which sets one up at subengine +0x6C, and the
+ * threads that read it). */
+struct script_control_info {
+    /* 0x00 */ obj_dbase *dbase;
+    /* 0x04 */ s32 script;             /* index into the dbase's script table */
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ union {
+        s32 w;                         /* 16.16 frames */
+        struct {
+            u16 frac;
+            s16 frame;
+        } h;
+    } time;
+    /* 0x10 */ s32 unk10;              /* the script header's +8 */
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ s32 unk18;
+};
+BASH_SIZE_CHECK(script_control_info, 0x1C);
+
 struct script_handler {
-    /* 0x00 */ s32 info[7]; /* struct script_control_info (0x1C bytes), not in the fragment */
+    /* 0x00 */ script_control_info info;
     /* 0x1C */ s32 xyzrf[21]; /* struct ._319 (0x54 bytes), not in the fragment */
     /* 0x70 */ script_handler *last;
     /* 0x74 */ script_handler *next;

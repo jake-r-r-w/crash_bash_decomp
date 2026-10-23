@@ -1017,7 +1017,7 @@ s32 func_80085890(s32 arg0) {
             return D_8009D866;
         }
         if (D_8009D86C != 0) {
-            if (dbase_mesh_anim_name_loaded((struct obj_dbase *)D_8009D86C, (u8 *)D_8009D868) != 0) {
+            if (dbase_mesh_anim_name_loaded((obj_dbase *)D_8009D86C, (u8 *)D_8009D868) != 0) {
                 SetHeroSeq((HeroInfo *)arg0, D_8009D866);
                 i = 3;
                 do {
@@ -1027,7 +1027,7 @@ s32 func_80085890(s32 arg0) {
         }
     }
     if (D_8009D870 == arg0 && Heroes[arg0].hero_aseq != D_8009D872 && D_8009D878 != 0) {
-        if (dbase_mesh_anim_name_loaded((struct obj_dbase *)D_8009D878, (u8 *)D_8009D874) != 0) {
+        if (dbase_mesh_anim_name_loaded((obj_dbase *)D_8009D878, (u8 *)D_8009D874) != 0) {
             SetHeroSeq((HeroInfo *)arg0, D_8009D872);
             i = 3;
             do {

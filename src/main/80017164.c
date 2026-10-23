@@ -2990,19 +2990,19 @@ void map_loaded_textureset(u8 *arg0, u8 **arg1) {
     (*(s32*)((u8*)(temp_s1) + 8)) = func_80013034((*(s32*)((u8*)(temp_s1) + 0)), 0, (*(s32*)((u8*)(temp_s1) + 36)), map_loaded_geo, arg1, 0, 0);
 }
 
-void map_loaded_geo(s32 arg0, s32 *arg1) {
-    s32 *temp_s1;
-    s32 *t;
+void map_loaded_geo(s32 arg0, map_enviroment *env) {
+    obj_dbase *db;
+    obj_dbase *t;
 
-    t = *(s32 **)arg1;
-    D_80058AD0 = arg1;
-    t[3] = arg0;
-    temp_s1 = *(s32 **)arg1;
-    arg1[2] = 0;
-    func_8001DE18(arg1);
-    arg1[7] = 0;
-    func_8001D6B4(arg1);
-    func_8001682C(temp_s1);
+    t = env->dbase;
+    D_80058AD0 = env;
+    t->data = (u8 *)arg0;
+    db = env->dbase;
+    env->map_num = 0;
+    func_8001DE18(env);
+    env->subs = NULL;
+    func_8001D6B4((MapEnvHead *)env);
+    func_8001682C((s32 *)db);
 }
 
 void func_8001E054(u8 *arg0, s32 arg1) {

@@ -116,7 +116,7 @@ void func_8001EAA4(u8 *arg0, u8 *arg1) {
     }
 }
 
-void update_camera_thread(u8 *arg0, u8 *arg1) {
+void update_camera_thread(script_thread_handler *th, script_control_info *ci) {
     u8 *p;
     u8 *r;
     u8 *res;
@@ -124,7 +124,7 @@ void update_camera_thread(u8 *arg0, u8 *arg1) {
     s32 lo;
     s32 idx;
     s32 v;
-    u8 *e;
+    obj_dbase *e;
     CamKey *key;
     CamState *cam;
     s32 len;
@@ -133,12 +133,12 @@ void update_camera_thread(u8 *arg0, u8 *arg1) {
     CamVec3 at;
     u8 *track;
 
-    e =*(u8 **)(arg1 + 0);
-    lo = *(s32 *)(arg1 + 4);
-    idx = *(s32 *)(arg0 + 0);
-    v = *(s16 *)(arg1 + 0xE);
-    D_80058B7C = e;
-    p = *(u8 **)(e + 0xC);
+    e = ci->dbase;
+    lo = ci->script;
+    idx = th->thread_num;
+    v = ci->time.h.frame;
+    D_80058B7C = (u8 *)e;
+    p = e->data;
     D_80058B80 = lo;
     D_80058B84 = idx;
     if (p == NULL) {
@@ -159,7 +159,7 @@ void update_camera_thread(u8 *arg0, u8 *arg1) {
     }
     track = res;
     if (track != NULL) {
-        key = CamTrack_FindKey(track, *(s16 *)(arg1 + 0xE));
+        key = CamTrack_FindKey(track, ci->time.h.frame);
         cam = (CamState *)D_80051640;
         cam->unk8 = 0x800;
         cam->unk0 = 0;
@@ -168,7 +168,7 @@ void update_camera_thread(u8 *arg0, u8 *arg1) {
         cam->unk18 = *(s32 *)(track + 0x18);
         if (key->len != 0) {
             len = key->len << 8;
-            t = (*(s32 *)(arg1 + 0xC) >> 8) - (key->start << 8);
+            t = (ci->time.w >> 8) - (key->start << 8);
             CamVec3_Lerp(&eye, &key->eye, &key[1].eye, len, t);
             CamVec3_Lerp(&at, &key->at, &key[1].at, len, t);
         } else {
@@ -529,7 +529,7 @@ void func_8001FCDC(u8 *arg0, u8 *arg1) {
         t = *(u16 *)(res + 0x18);
         *(u16 *)(d + 0x52) = 1;
         *(u16 *)(d + 0x68) = t;
-        sub_play_script(*(struct obj_dbase **)arg1, *(s32 *)(res + 0x14), (subengine *)d, 0);
+        sub_play_script(*(obj_dbase **)arg1, *(s32 *)(res + 0x14), (subengine *)d, 0);
         *(s32 *)(arg0 + 8) |= 0x8000;
     }
 }
@@ -837,7 +837,7 @@ s16 func_80020C4C(s32 arg0) {
     return D_80068BD4[((arg0 >> 1) - 0x400) & 0xFFF].unk2;
 }
 
-void sub_play_script(struct obj_dbase *db, s32 arg1, subengine *sub, s32 arg3) {
+void sub_play_script(obj_dbase *db, s32 arg1, subengine *sub, s32 arg3) {
     u8 *p;
     u8 *e;
     s32 *s;
@@ -855,7 +855,7 @@ void sub_play_script(struct obj_dbase *db, s32 arg1, subengine *sub, s32 arg3) {
         e = (u8 *)s + *s;
     }
     *(s32 *)(p + 0x14) = arg3;
-    *(struct obj_dbase **)p = db;
+    *(obj_dbase **)p = db;
     *(s32 *)(p + 4) = arg1;
     *(s32 *)(p + 8) = 0;
     *(s32 *)(p + 0xC) = 0;
@@ -1254,8 +1254,8 @@ void func_80021708(u8 *arg0, u8 *arg1, s32 arg2) {
     }
 }
 
-void render_entity_thread(u8 *arg0, s32 *arg1) {
-    func_80019F1C(arg0 + 8, *arg1, (*(s32*)((u8*)(arg0) + 8)));
+void render_entity_thread(script_thread_handler *th, geom_info *gi) {
+    func_80019F1C((u8 *)&th->type.entity.sub, gi->rot, th->type.entity.sub.flags);
 }
 
 void func_80021798(u8 *arg0, u8 *arg1, s32 arg2) {
@@ -1474,7 +1474,7 @@ u8 *func_80021E44(OffsetTable *tbl, s32 i) {
     return (u8 *)&tbl->offs[i] + tbl->offs[i];
 }
 
-u8 *get_script_header(struct obj_dbase *db, s32 arg1) {
+u8 *get_script_header(obj_dbase *db, s32 arg1) {
     u8 *p;
     s32 *e;
 

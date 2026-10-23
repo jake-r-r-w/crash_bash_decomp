@@ -93,7 +93,7 @@ void func_8001612C(u8 *arg0, s32 arg1) {
     }
 }
 
-void dbase_asload_with_anims_texture_callback(u8 *arg0, struct obj_dbase *db) {
+void dbase_asload_with_anims_texture_callback(u8 *arg0, obj_dbase *db) {
     _mal_area *heap;
     obj_textureset *set;
     s32 n;
@@ -224,7 +224,7 @@ found:
     return NULL;
 }
 
-s32 dbase_mesh_anim_name_loaded(struct obj_dbase *db, char *arg1) {
+s32 dbase_mesh_anim_name_loaded(obj_dbase *db, char *arg1) {
     u8 *tbl;
     u8 *p;
     s32 n;

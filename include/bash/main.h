@@ -7,6 +7,7 @@
 
 #include "common.h"
 #include "bash/nas.h"
+#include "bash/core.h"   /* the Oct 9 records' types (map_enviroment, script_thread_handler, ...) */
 
 typedef struct {
     s32 tracksOff; /* 0x00 */
@@ -1976,7 +1977,7 @@ struct obj_dbase {
     /* 0x10 */ obj_textureset textures;
     /* 0x34 */ s32 *keep;             /* name hashes of the blocks to keep (func_80015F60) */
 };
-typedef char obj_dbase_size_check[(sizeof(struct obj_dbase) == 0x38) ? 1 : -1];
+BASH_SIZE_CHECK(obj_dbase, 0x38);
 
 void func_800107C8(mal *arg0, _mal_area *arg1);
 

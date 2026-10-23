@@ -37,8 +37,7 @@ CLASSES = {"NAStype": "NAS", "EXTengtype": "EXTengine", "subengine": "subengine"
            "sfx_machine_bank_info": "sfx_machine_bank_info", "music_midi": "music_midi",
            "fade_info": "fade_info", "process_info": "process_info",
            "process_control_info": "process_control_info",
-           # core.h has the typedef (from the Oct 9 records); main.exe's headers see only the tag
-           "_obj_dbase": "struct obj_dbase"}
+           "_obj_dbase": "obj_dbase"}   # the Oct 9 records' tag; the leaks' C++ class is _obj_dbase
 # headers recovered from the original source: their prototypes win (CONVENTIONS.md, Headers)
 ORIGINAL = ("tank.h", "pogo.h", "psx_pogo.h", "arkenoid.h", "polar.h")
 
