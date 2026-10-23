@@ -58,7 +58,7 @@ segments:
       # file starts proven by switch-table parity (ARCHITECTURE.md, Files inside the engine);
       # each cut is the latest point the rodata, data tables and calls allow in its proven range,
       # given in the comment as "after A, by B"
-      - [0x1F90, c, overlays/engine/8007ac20]     # starts after func_800793E8, by Setup_panel (func_8007AC20)
+      - [0x1F90, c, overlays/engine/panel]     # starts after func_800793E8, by Setup_panel (func_8007AC20)
       - [0x619C, c, overlays/engine/8007ee2c]     # after Cups_Update (func_8007D9DC), by func_8007F314
       - [0x155EC, c, overlays/engine/8008e27c]    # after func_8008A200 (strings of 175 stay before), by func_8008E27C
       - [0x1A4EC, c, overlays/engine/8009317c]    # after func_80090E20 (memcard tables used to 247), by func_80093BE8
@@ -67,7 +67,7 @@ segments:
       - [0x1F904, data, overlays/engine/engine_data]
       # .rodata: switch tables and strings, one block per file (first jtbl_800ADBD8 .. last ends 0x800AEC58)
       - [0x34F48, .rodata, overlays/engine/engine]
-      - [0x34F9C, .rodata, overlays/engine/8007ac20]
+      - [0x34F9C, .rodata, overlays/engine/panel]
       - [0x35120, .rodata, overlays/engine/8007ee2c]   # the mode names D_8009AF00 points to (used by 77, 78)
       - [0x357D4, .rodata, overlays/engine/8008e27c]
       - [0x35F38, .rodata, overlays/engine/8009317c]

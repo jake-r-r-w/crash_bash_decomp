@@ -1,7 +1,7 @@
 #include "common.h"
 #include "bash/main.h"
 #include "bash/engine.h"
-#include "bash/8007ac20.h"
+#include "bash/panel.h"
 #include "bash/hero.h"
 #include "bash/shell.h"
 
@@ -1614,9 +1614,9 @@ s16 func_8007D850(void) {
     return r;
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8007ac20", D_800ADD3C);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/panel", D_800ADD3C);
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8007ac20", D_800ADD40);
+INCLUDE_RODATA("asm/nonmatchings/overlays/engine/panel", D_800ADD40);
 
 void Cups_Update(void) {
     s32 key;

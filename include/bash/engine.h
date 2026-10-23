@@ -453,7 +453,7 @@ NAS *func_8007A464(s32 arg0, s32 *arg1, s32 arg2);
 void DoAmbience(void);
 
 /* The engine's other files (ARCHITECTURE.md, Files inside the engine). */
-#include "bash/8007ac20.h"
+#include "bash/panel.h"
 #include "bash/8007ee2c.h"
 #include "bash/8008e27c.h"
 #include "bash/8009317c.h"

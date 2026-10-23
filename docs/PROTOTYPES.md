@@ -80,11 +80,11 @@ the repo has already named (unless `--replace`). The renames are kept in
 | Aug 23 2000 prototype (Hidden Palace) | early | engine entry `+0x4E000`: an SN object for `PSX_PAD.CPP`, its ~90-header include list, 788 type records | source directory and header names (`Core\Shell`, `GameEng\Titles`, ...) |
 | Sep 14 2000 prototype (Hidden Palace) | early | none | exe comparison only |
 | Oct 9 2000 prototype (Hidden Palace; PAL review build `SCES_028.34`) | close to retail | engine entry `+0x40002`: 3447 type records | the engine's own types (`NAS`, `EXTengine`, `subengine`, `HeroInfo`, ...), every AST enum: names for 201 AST Init/Plot functions; the `include/bash/` game headers |
-| Jampack Winter 2000 demo (`SCUS_946.24`) | older than Oct 9 | engine entry `+0x2BE15`: 4611 type records, **30 function records**, 44 globals, 1021 line records | unit `8007ac20` is `PANEL.CPP`; 23 function names mapped (not applied yet) |
+| Jampack Winter 2000 demo (`SCUS_946.24`) | older than Oct 9 | engine entry `+0x2BE15`: 4611 type records, **30 function records**, 44 globals, 1021 line records | unit `8007ac20` is `PANEL.CPP` (now `panel`); its 23 function and 33 global names applied |
 | PlayStation Demo Disc 1.3 (`SCUS-94618`, mastered 2000-08-30) | the Jampack build | the same as Jampack: the same `CRASHBSH.EXE` and `.DAT`, byte for byte | nothing new; dates the Jampack build to 2000-08-30 or earlier |
 | PAL retail (`SCES-02834`, mastered 2000-10-23) | release | none: the engine's spare space is zeros and `0x01` filler, no leftover memory | nothing |
 | Japanese retail, Crash Bandicoot Carnival (`SCPS-10140`, mastered 2000-11-16) | release | none: as PAL; the extra `B320I.EXE`/`B321I.EXE` only play the two `BANJ/*.IKI` videos | nothing |
-| Euro Demo 65 (`SCED-02639`, PAL; also sold as Official PlayStation Magazine UK Demo 65) | near the demos | engine entry `+0x332CB`: **1182 symbol table labels**, 2325 type records | 163 function names mapped across `main.exe`, the engine and 6 slot overlays; 184 global names; the link layout and overlay names (not applied yet) |
+| Euro Demo 65 (`SCED-02639`, PAL; also sold as Official PlayStation Magazine UK Demo 65) | near the demos | engine entry `+0x332CB`: **1182 symbol table labels**, 2325 type records | 163 function names mapped across `main.exe`, the engine and 6 slot overlays; 184 global names; the link layout and overlay names. Applied: 82 `main.exe`, 18 engine and 10 overlay functions, 18 globals |
 
 The prototype exes have no source names, but by masked code signature they
 hold the retail `main.exe` functions in retail order (Oct 9: 466 of 566,
@@ -152,7 +152,7 @@ such a shift itself. The addresses below are the records'.
 
 **PANEL.CPP in retail.** All 23 below are renamed (with Euro Demo 65's
 engine names: `renames_engine_all.txt`). `Setup_panel` is `func_8007AC20`, the first function
-of the engine unit `8007ac20`, so that unit is `PANEL.CPP`. All 23 retail
+of the engine unit `8007ac20`, so that unit is `PANEL.CPP` (renamed `panel`). All 23 retail
 functions are already matched; the names are for readability.
 
 | Demo name | Retail | Similarity |
@@ -198,8 +198,8 @@ similarity 0.40). Its largest function (`0x1238` bytes) is closest to
 unit `8007ee2c`, maybe from `func_8007ED0C`. Not proven.
 
 **Still to do.**
-- Apply the signatures and the locals to the 23 renamed functions, and
-  rename the unit `panel`.
+- Apply the signatures and the locals to the 23 renamed functions (the
+  unit is `panel` now).
 - Globals: the 33 mapped (of 44; every one referenced at its start and on a
   retail `D_` start) are renamed with Euro's engine ones
   (`renames_engine_globals.txt`: `PanelCtrl` is `D_80099174`, `CupTimer`

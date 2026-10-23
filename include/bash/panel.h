@@ -1,9 +1,9 @@
-#ifndef BASH_8007AC20_H
-#define BASH_8007AC20_H
+#ifndef BASH_PANEL_H
+#define BASH_PANEL_H
 
-/* Functions and data defined in src/overlays/engine/8007ac20.c. Anything the original headers
+/* Functions and data defined in src/overlays/engine/panel.c. Anything the original headers
  * declare (bash/pogo.h, ...) is declared there instead, not here.
- * owner: src/overlays/engine/8007ac20.c */
+ * owner: src/overlays/engine/panel.c */
 
 #include "common.h"
 #include "bash/engine.h"
@@ -222,4 +222,4 @@ extern s16 CupWinner;
 extern u16 D_8009AF38[7];
 extern s32 D_800ADBCC;
 
-#endif /* BASH_8007AC20_H */
+#endif /* BASH_PANEL_H */
