@@ -7,19 +7,46 @@ are committed.
 Each separately mastered disc is a fresh chance of a leak: the build tools
 padded files with whatever was in the build machine's memory, and that
 memory sometimes held source text or pieces of the SN linker's `.SYM`
-output. Scan any new disc with `tools/scripts/leak_scan.py` (source text) and
-`tools/scripts/sym_scan.py` (debug records) over every Crash Bash file,
-including each `CRASHBSH.DAT` entry's tail.
+output. Every leak found so far, retail's included, sits inside the engine
+module's `CRASHBSH.DAT` entry.
+
+## Scanning a disc
+
+1. Extract the archive on the host with 7-Zip into its own folder,
+   `protos/<disc>/` (the image and its `.cue`).
+2. Run the scan; it dumps the image to `files/` first if there is no
+   `files/` folder yet (`make build` must have run, for the retail maps):
+
+   ```bash
+   tools/dk python3 -I tools/scripts/proto_scan.py protos/<disc>/
+   ```
+
+3. Read `protos/<disc>/scan.md` and add the disc to the tables below.
+
+`proto_scan.py` finds the Crash Bash exe by its DAT index, the engine module
+and its load address, runs `sym_scan.py` (debug records) and `leak_scan.py`
+(source text) over the exe and the DAT, and matches each function record to
+the retail function with the most similar code. It writes everything next
+to the disc:
+
+| File | What |
+|---|---|
+| `scan.md` | the report: where each record run is, source files, functions matched to retail, globals, text leaks |
+| `sym.txt` | every record, with its file offset |
+| `types.h` | the types as C |
+| `lines.txt` | the line table, `address file:line` |
+| `engine_<id>.bin` | the engine module cut from the DAT |
+| `leaks/` | each source-text hit |
 
 ## At a glance
 
 | Disc | Build | Leak | What it gave |
 |---|---|---|---|
-| Retail `SCUS_945.70` | release | 40 KB of preprocessed headers in the engine's slot image | ~400 prototypes, the AST enums and the Tank/Pogo/Arkenoid/Polar structs (`bash/tank.h`, `pogo.h`, `arkenoid.h`, `polar.h`) |
-| Aug 23 2000 prototype (Hidden Palace) | early | DAT padding: an SN object for `PSX_PAD.CPP`, its ~90-header include list, 784 type records | source directory and header names (`Core\Shell`, `GameEng\Titles`, ...) |
+| Retail `SCUS_945.70` | release | 40 KB of preprocessed headers (engine entry `+0x54000`) | ~400 prototypes, the AST enums and the Tank/Pogo/Arkenoid/Polar structs (`bash/tank.h`, `pogo.h`, `arkenoid.h`, `polar.h`) |
+| Aug 23 2000 prototype (Hidden Palace) | early | engine entry `+0x4E000`: an SN object for `PSX_PAD.CPP`, its ~90-header include list, 788 type records | source directory and header names (`Core\Shell`, `GameEng\Titles`, ...) |
 | Sep 14 2000 prototype (Hidden Palace) | early | none | exe comparison only |
-| Oct 9 2000 prototype (Hidden Palace; PAL review build `SCES_028.34`) | close to retail | DAT padding: 3429 type records | the engine's own types (`NAS`, `EXTengine`, `subengine`, `HeroInfo`, ...), every AST enum: names for 201 AST Init/Plot functions; the `include/bash/` game headers |
-| Jampack Winter 2000 demo (`SCUS_946.24`) | older than Oct 9 | engine module tail: 4611 type records, **30 function records**, 44 globals, line numbers | unit `8007ac20` is `PANEL.CPP`; 23 function names mapped (not applied yet) |
+| Oct 9 2000 prototype (Hidden Palace; PAL review build `SCES_028.34`) | close to retail | engine entry `+0x40002`: 3447 type records | the engine's own types (`NAS`, `EXTengine`, `subengine`, `HeroInfo`, ...), every AST enum: names for 201 AST Init/Plot functions; the `include/bash/` game headers |
+| Jampack Winter 2000 demo (`SCUS_946.24`) | older than Oct 9 | engine entry `+0x2BE15`: 4611 type records, **30 function records**, 44 globals, 1021 line records | unit `8007ac20` is `PANEL.CPP`; 23 function names mapped (not applied yet) |
 
 The prototype exes have no source names, but by masked code signature they
 hold the retail `main.exe` functions in retail order (Oct 9: 466 of 566,
@@ -37,13 +64,15 @@ Sep 14: 295, Aug 23: 251), so the link order didn't change before release.
 | Parameter types (mangled names) | | | | 30 |
 | Local variables and their registers | | | | yes |
 | Global variable names, types and sizes | | | | 44 |
-| Source line numbers | | | | `PANEL.CPP` |
+| Source line numbers | | | | `PAUSE.CPP`'s line table; each `PANEL.CPP` function's first line |
 | New enums | | | | `cheatflags`, `levnumbers`, `worldnumbers`, `IconParts` |
 
 Details for the retail, Aug 23 and Oct 9 leaks are in
 [ARCHITECTURE.md](ARCHITECTURE.md) (Leaked source, Prototype debug types).
 
 ## Jampack Winter 2000 demo
+
+`protos/Jampack_Winter_2000/scan.md` has the full report.
 
 **The disc.** A US multi-game demo; Crash Bash is `CRASHBSH/CRASHBSH.EXE`
 (load `0x80018000`) and a 41 MB `CRASHBSH.DAT`, both dated 2000-10-09. No
@@ -55,17 +84,20 @@ has `RACE` at `0x1700`), and `TA_player`/`CH_player` are smaller (`0x9C`/
 
 **Where the fragment is.** The exe's DAT index is at `0x8004AF84` (486
 entries). The engine module is entry `0x1E5` (sector `0x4E28`, size
-`0x4F158`), loaded at `0x80071760`: all 30 function addresses land on
-function starts there, so the fragment is the demo's own link. The records sit
-in that entry's tail, DAT `0x0273FE15..0x027513xx`.
+`0x4F158`), loaded at `0x80071764`: its header pointers and jal targets land
+on function starts there. The records sit in that entry at `+0x2BE15`
+(DAT `0x0273FE15..0x0275DFE5`). Their addresses are all 4 bytes below the
+shipped code: they come from a link of the same code one word lower (the
+exe a word shorter, say), not from the shipped build. `proto_scan.py` finds
+such a shift itself. The addresses below are the records'.
 
 **What it holds.**
 - 30 function records, all `C:\crash4\GameEng\Nas\PANEL.CPP` (the in-game
   panel: clock, scores, health, power and cup icons). Each has its mangled
   name (parameter types: `MakeSubBar(subengine *, short, short, uint, uint)`),
-  frame size, first line, and its block's locals with storage class and
+  frame size, first line, end, and its blocks' locals with storage class and
   register (`Set_Clock`: `i` in `$t3`, `n` in `$v1`).
-- 44 `PANEL.CPP` globals with demo addresses, types and sizes: `PanelTab`,
+- 44 `PANEL.CPP` globals with addresses, types and sizes: `PanelTab`,
   `Clock`, `Score`, `BigScore1`/`2`, `IconParts`, `CupTimer`, `CupMode`,
   `pHeroHealth`, the icon position tables, ...
 - 4611 type records (163 names; 116 in Oct 9's). New: `cheatflags`
@@ -73,15 +105,13 @@ in that entry's tail, DAT `0x0273FE15..0x027513xx`.
   (every level, including `LEV_HUBDEMO`, `LEV_E3_HUB0`/`1`, `LEV_GFXTEST`),
   `worldnumbers`, `IconParts`, the demo-only `BEAR_AST_types`, and PsyQ SDK
   structs. Of the 35 types both define, 31 have the same size as Oct 9's.
-- SN line-number records (tags `0x80..0x88`, which `sym_scan.py` doesn't
-  print yet). The last ones start `C:\crash4\GameEng\Nas\PAUSE.CPP` at demo
-  `0x80076318`, right after `Init_Panel`.
+- 1021 line records, all `C:\crash4\GameEng\Nas\PAUSE.CPP`, from
+  `0x80076318` (right after `Init_Panel`) to `0x8007A07C`: the whole file's
+  code, but no function records for it. `PANEL.CPP` has no line records.
 
-**PANEL.CPP in retail.** Each demo function was compared with every retail
-engine function by code (immediates and jump targets masked). `Setup_panel`
-is `func_8007AC20`, the first function of the engine unit `8007ac20`, so that
-unit is `PANEL.CPP`. All 23 retail functions are already matched; the names
-are for readability.
+**PANEL.CPP in retail.** `Setup_panel` is `func_8007AC20`, the first function
+of the engine unit `8007ac20`, so that unit is `PANEL.CPP`. All 23 retail
+functions are already matched; the names are for readability.
 
 | Demo name | Retail | Similarity |
 |---|---|---|
@@ -131,7 +161,8 @@ unit `8007ee2c`, maybe from `func_8007ED0C`. Not proven.
   matched pairs.
 - Add the new enums to `include/bash/` (`shell.h` for the cheat flags and
   level/world numbers).
-- Teach `sym_scan.py` the line-number tags and print `PANEL.CPP`'s lines.
+- Place `PAUSE.CPP` in retail from its line table (statement boundaries
+  against retail's code).
 
 ## Discs not scanned yet
 

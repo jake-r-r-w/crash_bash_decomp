@@ -116,8 +116,11 @@ and current tools).
   Winter 2000 demo): 23 names for the matched functions of the engine unit
   `8007ac20` (= `PANEL.CPP`), their signatures and locals, 44 globals to map
   to retail addresses, and the new enums (`cheatflags`, `levnumbers`,
-  `worldnumbers`, `IconParts`). Wait until no other agent is working on
-  the engine: it renames symbols in `8007ac20.c` and its header.
+  `worldnumbers`, `IconParts`); the full report is
+  `protos/Jampack_Winter_2000/scan.md`. The user is collecting more discs
+  first, then deciding how to apply all of them. Wait until no other agent
+  is working on the engine: it renames symbols in `8007ac20.c` and its
+  header.
 - **Tune the permuter from its record.** Runs are logged since 2026-10-20
   (`decomp.py permstats`, `swarm.mjs stats`). Two ideas to try once there
   are a few dozen runs, compared on that record:
@@ -503,6 +506,16 @@ Newest first, a few lines each. Details are in the commits.
   PlaySfx as a `goto` into case 8's (not the source; leads list why). No
   `break`/`goto` mix gives the target's three tail survivors. Found the
   unit is probably `PAUSE.CPP`; `cc1plus` compiles the C identically.
+
+- **2026-10-23 (`proto_scan.py`):** the disc scan is one command now
+  (PROTOTYPES.md, Scanning a disc): finds the exe by its DAT index, the
+  engine and its load address, runs sym_scan/leak_scan, matches function
+  records to retail, and writes `protos/<disc>/scan.md`. `sym_scan.py`
+  reads line records (and checks code addresses, which drops its junk
+  block records). Every disc in `protos/` rescanned; types unchanged. New:
+  the Jampack engine loads at `0x80071764`, its records 4 bytes lower (a
+  link one word off), and its 1021 line records cover all of `PAUSE.CPP`;
+  every leak so far is inside the engine's DAT entry.
 
 - **2026-10-23 (Jampack Winter 2000 demo scan):** the demo's DAT holds an
   SN fragment in its engine entry's tail: the first function records (all

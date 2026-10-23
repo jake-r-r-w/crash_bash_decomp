@@ -19,23 +19,27 @@ KEYWORDS = re.compile(
 )
 
 
-def scan(path, minlen, dump):
-    data = open(path, "rb").read()
-    hits = 0
+def hits(data, minlen):
+    """Yield (offset, text, keyword count) for each run that looks like source."""
     for m in re.finditer(rb"[\t\n\r\x20-\x7e]{%d,}" % minlen, data):
         run = m.group()
         kw = len(KEYWORDS.findall(run))
         # Real source has many keyword hits per KB; random text has almost none.
-        if kw < max(3, len(run) // 1024):
-            continue
-        hits += 1
+        if kw >= max(3, len(run) // 1024):
+            yield m.start(), run, kw
+
+
+def scan(path, minlen, dump):
+    n = 0
+    for off, run, kw in hits(open(path, "rb").read(), minlen):
+        n += 1
         head = run[:120].decode("ascii").replace("\n", "\\n").replace("\r", "")
-        print(f"{path}: 0x{m.start():08X} len {len(run):6d} kw {kw:4d}  {head}")
+        print(f"{path}: 0x{off:08X} len {len(run):6d} kw {kw:4d}  {head}")
         if dump:
             name = os.path.basename(path).replace(".", "_")
-            with open(os.path.join(dump, f"{name}_{m.start():08X}.txt"), "wb") as f:
+            with open(os.path.join(dump, f"{name}_{off:08X}.txt"), "wb") as f:
                 f.write(run)
-    return hits
+    return n
 
 
 def main():

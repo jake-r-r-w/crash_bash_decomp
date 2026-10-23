@@ -324,21 +324,24 @@ retail's. [PROTOTYPES.md](PROTOTYPES.md) summarizes what every disc gave,
 including the Jampack Winter 2000 demo, the only one with function records
 (`PANEL.CPP`, the engine unit `8007ac20`).
 
-The padding at the end of two of the prototype `CRASHBSH.DAT` files holds
+The engine module's entry in two of the prototype `CRASHBSH.DAT` files holds
 pages of build-machine memory with SN debug type records (the `.SYM` def
 format: `u32 value`, tag `0x94`/`0x96`, class, type, size, name). They hold
 only types: no functions, globals or line numbers.
-- **Aug 23** (DAT `0x2AD5800`): the start of an SN `LNK` object for
-  `C:\crash4\Core\Shell\PSX\PSX_PAD.CPP`, its include list (about 90 headers
-  under `C:\CRASH4\{CORE,GAMEENG,GAMESPEC,LANGUAGE}`), then 784 records.
-- **Oct 9** (DAT `0x54B3E00`..`0x54CAA00`): 3429 records. It defines the engine's
+- **Aug 23** (DAT `0x2AD5800`, engine entry `0x229`): the start of an SN `LNK`
+  object for `C:\crash4\Core\Shell\PSX\PSX_PAD.CPP`, its include list (about
+  90 headers under `C:\CRASH4\{CORE,GAMEENG,GAMESPEC,LANGUAGE}`), then 788
+  records.
+- **Oct 9** (DAT `0x54B3802`..`0x54CA7DE`, engine entry `0x4D8`): 3447 records. It defines the engine's
   own types, which the retail leak lacks: `NAStype` (typedef `NAS`),
   `EXTtype` (`EXT`), `EXTengtype` (`EXTengine`), `EXTnode`, `NASnode`,
   `subengine`, `HeroInfo`, `EXTobject`, `EXTanimator`, `EXTmotion`, the
   script, trigger and map structs, `TA_player`, and the `*_AST_types` enum of
   every minigame. Struct members carry their offsets.
 
-`tools/scripts/sym_scan.py FILE --from OFF --c` prints the records as C. The
+`tools/scripts/sym_scan.py FILE --from OFF --c` prints the records as C;
+`proto_scan.py` runs every check on a disc and writes `protos/<disc>/scan.md`
+(PROTOTYPES.md, Scanning a disc). The
 Oct 9 layouts agree with the ones recovered from retail code, so retail is
 close to that build: `NAStype` is 0x70 bytes with `InitDelete`/`Handler` at
 `0x48`/`0x4C` (our `Init`/`Plot`), `trigger` `0x50`, `Engine` `0x54`, `FUX`

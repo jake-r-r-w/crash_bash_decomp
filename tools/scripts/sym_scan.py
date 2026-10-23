@@ -7,18 +7,25 @@ not contiguous, so this scans every offset for a run of valid records.
 
 SYM record: u32 value, u8 tag, payload. Tags:
   01/02 label            pstr name
+  80    line + 1         (none)
+  82/84 line + n         u8 n / u16 n
+  86    line = n         u32 n
+  88    line = n in file u32 n, pstr file
+  8A    end of lines     (none)
   8C    function start   u16 fp, u32 fsize, u16 ret, u32 mask, i32 maskoff,
                          u32 line, pstr file, pstr name
   8E/90/92 fn end/block  u32 line
   94    def              u16 class, u16 type, u32 size, pstr name
   96    def2             u16 class, u16 type, u32 size, u16 ndims,
                          u32 dims[ndims], pstr tag, pstr name
+The value of a line, function or block record (tags 80..92) is a code address.
 
     tools/dk python3 -I tools/scripts/sym_scan.py FILE [--from OFF] [--to OFF]
-        [--raw] [--c]
+        [--raw] [--c] [--lines]
 
 --raw lists every record; --c prints the enums, structs, unions and typedefs
-as C (the default prints both a summary and the C).
+as C (the default prints both a summary and the C); --lines prints the line
+table, one "address file:line" per line record.
 """
 import argparse
 import re
@@ -42,27 +49,51 @@ def pstr(d, p):
     return s.decode(), p + 1 + n
 
 
+def path(d, p):
+    """A file name: holds backslashes and colons, so any printable text."""
+    n = d[p]
+    s = d[p + 1:p + 1 + n]
+    if n == 0 or len(s) != n or not all(0x20 <= c < 0x7F for c in s):
+        return None, p
+    return s.decode("ascii"), p + 1 + n
+
+
+def code_addr(v):
+    return 0x80000000 <= v < 0x80800000
+
+
 def rec(d, p):
     """Parse one record at p. Returns (record, next) or None."""
     if p + 5 > len(d):
         return None
     val, tag = struct.unpack_from("<IB", d, p)
     q = p + 5
+    if 0x80 <= tag <= 0x92 and not code_addr(val):
+        return None
     try:
         if tag in (1, 2):
             name, q2 = pstr(d, q)
             if name is None:
                 return None
             return ("label", val, name), q2
+        if tag in (0x80, 0x8A):
+            return ("line", val, "inc" if tag == 0x80 else "end", 1 if tag == 0x80 else 0), q
+        if tag in (0x82, 0x84, 0x86):
+            fmt, n = {0x82: ("<B", 1), 0x84: ("<H", 2), 0x86: ("<I", 4)}[tag]
+            (v,) = struct.unpack_from(fmt, d, q)
+            return ("line", val, "set" if tag == 0x86 else "inc", v), q + n
+        if tag == 0x88:
+            (v,) = struct.unpack_from("<I", d, q)
+            f, q = path(d, q + 4)
+            if f is None:
+                return None
+            return ("line", val, "file", v, f), q
         if tag == 0x8C:
             fp, fsize, ret, mask, moff, line = struct.unpack_from("<HIHIiI", d, q)
             q += 20
-            f, q = pstr(d, q)
+            f, q = path(d, q)
             if f is None:
-                # file names hold backslashes and colons; accept any printable
-                n = d[q]
-                f = d[q + 1:q + 1 + n].decode("ascii")
-                q += 1 + n
+                return None
             name, q = pstr(d, q)
             if name is None or fp > 31 or ret > 31:
                 return None
@@ -112,6 +143,31 @@ def scan(d, lo, hi, minrun=3):
             p = q
         else:
             p += 1
+
+
+def records(d, lo=0, hi=None):
+    """Every record in d[lo:hi] that is part of a chain, as (offset, record)."""
+    return list(scan(d, lo, len(d) if hi is None else hi))
+
+
+def lines(recs):
+    """The line table: (address, file, line) for each line record, the file and line
+    carried from the last function start or file record."""
+    out, f, n = [], None, None
+    for _, r in recs:
+        if r[0] == "func":
+            f, n = r[5], r[4]
+        elif r[0] == "line":
+            kind = r[2]
+            if kind == "file":
+                f, n = r[4], r[3]
+            elif kind == "set":
+                n = r[3]
+            elif kind == "inc" and n is not None:
+                n += r[3]
+            if kind != "end" and n is not None:
+                out.append((r[1], f, n))
+    return out
 
 
 # Anonymous tags (._N) mapped to the typedef that names them; filled by to_c.
@@ -185,12 +241,14 @@ def main():
     ap.add_argument("--to", dest="hi", type=lambda s: int(s, 0))
     ap.add_argument("--raw", action="store_true")
     ap.add_argument("--c", action="store_true")
+    ap.add_argument("--lines", action="store_true")
     a = ap.parse_args()
     d = open(a.file, "rb").read()
-    hi = a.hi or len(d)
-    recs = []
-    for off in [o for o, _ in scan(d, a.lo, hi)]:
-        recs.append((off, rec(d, off)[0]))
+    recs = records(d, a.lo, a.hi)
+    if a.lines:
+        for addr, f, n in lines(recs):
+            print("0x%08X %s:%d" % (addr, f, n))
+        return
     if a.raw or not a.c:
         for off, r in recs:
             if a.raw or r[0] in ("func", "label") or (r[0] == "def" and r[2] in (C_EXT, C_STAT)):
