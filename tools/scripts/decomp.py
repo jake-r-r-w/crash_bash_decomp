@@ -2174,6 +2174,20 @@ def cmd_jtrace(a):
     print(jtrace.report(runs, names, a.cross))
 
 
+def cmd_protos(a):
+    """NAME's copies in each scanned prototype and demo disc (tools/scripts/proto_find.py)."""
+    import proto_find
+    proj, funcs = need_proj(), need_funcs()
+    key, e = find_func(funcs, a.func)
+    seg = e["seg"].split("/")
+    kind = "main" if seg[0] == "main" else seg[1] if seg[0] == "overlays" else None
+    if kind not in ("main", "engine"):
+        die(f"{e['seg']}: only exe and engine functions (the discs' slot overlays are not cut out)")
+    tw = target_words(e, proj)
+    print(f"{cur_name(key, e, sym_names())} ({e['seg']}, {e['size']} B), by opcode similarity:")
+    print(proto_find.report(tw[:trim_nops(tw)], kind, top=a.top))
+
+
 def cmd_reconcile(a):
     """Put declarations the working tree's headers re-declare back to HEAD's form (headers.py)."""
     import headers
@@ -5166,6 +5180,11 @@ def main():
     p.add_argument("func")
     p.add_argument("--cross", action="store_true", help="only the cross-jumps, not every comparison")
     p.set_defaults(fn=cmd_jtrace)
+    p = sub.add_parser("protos", help="a function's earlier compiles: its closest match in each "
+                       "scanned prototype or demo disc (protos/*/scan.md)")
+    p.add_argument("func")
+    p.add_argument("--top", type=int, default=1, help="candidates per disc (default 1)")
+    p.set_defaults(fn=cmd_protos)
     sub.add_parser("reconcile", help="headers: keep HEAD's declaration where the working tree "
                    "declares a name again (swarm gate clashes)").set_defaults(fn=cmd_reconcile)
     sub.add_parser("verify", help="clean rebuild and byte compare").set_defaults(fn=cmd_verify)
