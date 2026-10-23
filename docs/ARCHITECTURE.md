@@ -320,7 +320,9 @@ Three prototype discs are archived on Hidden Palace (Aug 23, Sep 14 and
 Oct 9 2000; the Oct 9 one is a PAL review build, `SCES_028.34`). Keep the
 images in `protos/` (git-ignored); commit only the names and types derived
 from them. None ships a `.SYM` or `.MAP` file, and none has a text leak like
-retail's.
+retail's. [PROTOTYPES.md](PROTOTYPES.md) summarizes what every disc gave,
+including the Jampack Winter 2000 demo, the only one with function records
+(`PANEL.CPP`, the engine unit `8007ac20`).
 
 The padding at the end of two of the prototype `CRASHBSH.DAT` files holds
 pages of build-machine memory with SN debug type records (the `.SYM` def

@@ -112,6 +112,12 @@ and current tools).
 
 ## Open leads
 
+- **Apply the Jampack demo's `PANEL.CPP` symbols** (PROTOTYPES.md, Jampack
+  Winter 2000 demo): 23 names for the matched functions of the engine unit
+  `8007ac20` (= `PANEL.CPP`), their signatures and locals, 44 globals to map
+  to retail addresses, and the new enums (`cheatflags`, `levnumbers`,
+  `worldnumbers`, `IconParts`). Wait until no other agent is working on
+  the engine: it renames symbols in `8007ac20.c` and its header.
 - **Tune the permuter from its record.** Runs are logged since 2026-10-20
   (`decomp.py permstats`, `swarm.mjs stats`). Two ideas to try once there
   are a few dozen runs, compared on that record:
@@ -461,6 +467,13 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-23 (Jampack Winter 2000 demo scan):** the demo's DAT holds an
+  SN fragment in its engine entry's tail: the first function records (all
+  30 of `PANEL.CPP`, with locals), 44 globals, 4611 types and line
+  records. 23 functions mapped to retail unit `8007ac20` by masked code
+  similarity; nothing renamed yet. Written up with every other disc's
+  findings in the new PROTOTYPES.md.
 
 - **2026-10-23 (hand: `func_8007F314`, still parked):** worked jump2's
   cross-jump order out against dumps: `redirect_jump` puts each threaded
