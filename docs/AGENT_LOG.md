@@ -507,6 +507,12 @@ Newest first, a few lines each. Details are in the commits.
   `break`/`goto` mix gives the target's three tail survivors. Found the
   unit is probably `PAUSE.CPP`; `cc1plus` compiles the C identically.
 
+- **2026-10-23 (PlayStation Demo Disc 1.3 scan):** its `CRASHBSH.EXE` and
+  `.DAT` are Jampack's byte for byte, so the same leak; the disc was
+  mastered 2000-08-30, which dates that build. The leak is in the files, so
+  only a different build helps: `proto_scan.py` now prints the files'
+  SHA-1 and names any scanned disc with the same files.
+
 - **2026-10-23 (Euro Demo 65 scan):** its engine entry holds 1182 SN
   symbol table labels and 2325 types: 163 labels match retail functions
   (`main.exe` 124, engine 27, slot overlays 12), 184 are data, 811 are

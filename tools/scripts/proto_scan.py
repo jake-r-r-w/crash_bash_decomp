@@ -29,6 +29,7 @@ types.h, lines.txt, sections.txt, engine_<id>.bin and leaks/.
 import argparse
 import bisect
 import difflib
+import hashlib
 import json
 import os
 import re
@@ -497,6 +498,17 @@ def main():
            f"- Exe: `{rel(exe_path)}`, load `0x{t_addr:08X}`, `0x{len(exe) - 0x800:X}` bytes",
            f"- DAT: `{rel(dat_path)}`, {len(dat)} bytes; index at exe `0x{t_addr + index[0] - 0x800:08X}`, "
            f"{len(entries)} entries"]
+    # the leaks are in the files, so another disc with the same files has the same ones
+    sums = [hashlib.sha1(exe).hexdigest(), hashlib.sha1(dat).hexdigest()]
+    rep.append(f"- SHA-1: exe `{sums[0]}`, DAT `{sums[1]}`")
+    me = os.path.basename(os.path.normpath(args.disc))
+    parent = os.path.dirname(os.path.normpath(args.disc)) or "."
+    same = [d for d in sorted(os.listdir(parent)) if d != me
+            and os.path.isfile(os.path.join(parent, d, "scan.md"))
+            and all(s in open(os.path.join(parent, d, "scan.md")).read() for s in sums)]
+    if same:
+        rep.append(f"- **The same exe and DAT as {', '.join(f'`{d}`' for d in same)}**: the same build, "
+                   "so the same leaks")
     demo = {"main": Module("main", exe[0x800:], t_addr, first=(0,))}
     eng = find_engine(dat, entries)
     slot_base = None
