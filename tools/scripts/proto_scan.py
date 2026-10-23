@@ -10,19 +10,21 @@ next to the disc:
     tools/dk python3 -I tools/scripts/proto_scan.py protos/<disc>/ [--out DIR]
 
 <disc>/ holds the disc image (extract an archive on the host with 7-Zip first) or
-its files: with no files/ folder, the data track the .cue names is dumped there
-with dumpsxiso. Steps:
+its files: with no files/ folder, the data track the .cue names (or the folder's
+only .bin/.img) is dumped there with dumpsxiso. Steps:
   1. CRASHBSH.DAT and the exe whose DAT index fits it (a demo disc carries other games)
-  2. the engine module (the entry whose 5 header words are pointers) and its load
-     address (where the most jal targets land on function starts)
-  3. sym_scan over the exe and the DAT: records, types, line numbers
+  2. the engine module (the entry whose 5 header words are pointers), the slot
+     overlays (the entries sharing one load address) and their load addresses
+     (where the most jal targets land on function starts)
+  3. sym_scan over the exe and the DAT: records, types, line numbers, labels
   4. leak_scan over the same files
-  5. each function record placed in the exe or the engine and matched to the
-     retail function with the most similar code (immediates and jump targets
-     masked); retail's functions come from build/<module>.map (make build)
+  5. each function record, and each label on a function start, placed in the
+     exe, the engine or a slot overlay (fitting the offset of the records' link
+     from the shipped code) and matched to the retail function with the most
+     similar code (immediates and jump targets masked); retail's functions come
+     from build/<module>.map (make build)
 Writes to DIR (default <disc>/): scan.md (the report), sym.txt (every record),
-types.h, lines.txt, engine_<id>.bin and leaks/. Records in a slot overlay show as
-unplaced: the slot overlays aren't found yet.
+types.h, lines.txt, sections.txt, engine_<id>.bin and leaks/.
 """
 import argparse
 import bisect
@@ -44,6 +46,8 @@ RAM = (0x80010000, 0x80200000)
 PROJECT = ".decomp/project.json"
 STRONG, LIKELY = 0.9, 0.75     # similarity for "same function" / "probably"
 MIN_RUN = 10                   # shorter runs of records are chance byte patterns
+# the linker's section symbols: _<group>[_<section>]_org/orgend/obj/objend/size
+SECTION = re.compile(r"(_(text|data|sdata|rdata|bss|sbss|ctors|dtors))?_(obj|objend|org|orgend|size)$")
 
 
 def die(msg):
@@ -78,9 +82,13 @@ def disc_files(disc):
     if os.path.isdir(root):
         return root
     cues = [f for f in os.listdir(disc) if f.lower().endswith(".cue")]
-    image = data_track(os.path.join(disc, cues[0])) if cues else None
+    images = [f for f in os.listdir(disc) if f.lower().endswith((".bin", ".img"))]
+    if cues:
+        image = data_track(os.path.join(disc, cues[0]))
+    else:   # no .cue: a lone image starts with its data track
+        image = os.path.join(disc, images[0]) if len(images) == 1 else None
     if not image:
-        die(f"{disc}: no files/ folder and no .cue with a data track")
+        die(f"{disc}: no files/ folder, and no .cue with a data track or single .bin/.img")
     print(f"dumping {image} -> {root}/")
     subprocess.run(["dumpsxiso", "-x", root, "-s", os.path.join(disc, "layout.xml"), image],
                    check=True, stdout=subprocess.DEVNULL)
@@ -169,42 +177,44 @@ def norm(x):
 
 
 class Module:
-    """Code loaded at base: bytes, address range and function starts. shift is
-    added to a record's address to find its code (records can come from a link
-    that placed the module a few bytes away)."""
+    """Code loaded at base: bytes, address range and function starts. kind is the
+    retail code it is compared with: main, engine or slot. shift is added to a
+    record's address to find its code: records can come from a link that placed
+    the module a few bytes away."""
 
-    def __init__(self, name, data, base):
-        self.name, self.data, self.base, self.shift = name, data, base, 0
+    def __init__(self, name, data, base, kind=None, first=()):
+        self.name, self.data, self.base, self.kind, self.shift = name, data, base, kind or name, 0
         self.w = words(data)
-        self.starts = set(starts(self.w))
+        self.starts = set(starts(self.w)) | set(first)   # first: starts no jr ra precedes
+        self.sorted = sorted(base + o for o in self.starts)
 
     def holds(self, a):
         return self.base <= a < self.base + len(self.data)
 
     def is_start(self, a):
-        a += self.shift
         return self.holds(a) and (a - self.base) in self.starts
 
+    def starts_near(self, a, span):
+        st = self.sorted
+        return st[bisect.bisect_left(st, a - span):bisect.bisect_right(st, a + span)]
+
     def body(self, a, end):
-        lo, hi = (a + self.shift - self.base) // 4, (end + self.shift - self.base) // 4
-        return tuple(norm(x) for x in self.w[lo:hi])
+        return tuple(norm(x) for x in self.w[(a - self.base) // 4:(end - self.base) // 4])
 
     def end_of(self, a):
-        """The end (in record addresses) of the function at a: after its first
-        jr ra and delay slot."""
-        i = (a + self.shift - self.base) // 4
+        """The end of the function at a: after its first jr ra and delay slot."""
+        i = (a - self.base) // 4
         while i < len(self.w) and self.w[i] != JR_RA:
             i += 1
-        return self.base + 4 * (i + 2) - self.shift
+        return self.base + 4 * (i + 2)
 
 
 def fit_shift(mod, addrs, span=0x10000):
     """(shift, votes): the offset that puts the most of addrs on the module's
     function starts, the smallest of equals (0 when they already fit)."""
-    st = sorted(mod.base + o for o in mod.starts)
     votes = {}
     for a in addrs:
-        for s in st[bisect.bisect_left(st, a - span):bisect.bisect_right(st, a + span)]:
+        for s in mod.starts_near(a, span):
             votes[s - a] = votes.get(s - a, 0) + 1
     if not votes:
         return 0, 0
@@ -212,10 +222,53 @@ def fit_shift(mod, addrs, span=0x10000):
     return best, votes[best]
 
 
+def local_shifts(mod, sure, span=0x400, run=3):
+    """[(first, last, shift)]: where the code changed size part way through a
+    module, the sure function addresses after the change miss its starts at the
+    module's shift. Each stretch of at least run of them in a row that one
+    other shift puts on starts gets that shift."""
+    miss = sorted(a for a in sure if mod.holds(a + mod.shift) and not mod.is_start(a + mod.shift))
+    cand = [{s - a for s in mod.starts_near(a, span)} for a in miss]
+    out, i = [], 0
+    while i < len(miss):
+        best, n = None, 0
+        for s in cand[i]:
+            j = i
+            while j < len(miss) and s in cand[j]:
+                j += 1
+            if j - i > n or (j - i == n and abs(s - mod.shift) < abs(best - mod.shift)):
+                best, n = s, j - i
+        if n >= run:
+            out.append((miss[i], miss[i + n - 1], best))
+            i += n
+        else:
+            i += 1
+    return out
+
+
+def find_slots(dat, entries, skip, min_votes=10):
+    """(base, [(id, code)]): the slot overlays, the DAT entries whose calls into
+    themselves fit one load address, the one the most entries share."""
+    bases = {}
+    for i, (sec, size) in enumerate(entries):
+        if i == skip or size < 0x1000:
+            continue
+        code = dat[sec * SECTOR:sec * SECTOR + size]
+        b, n = find_base(code)
+        if b is not None and n >= min_votes:
+            bases.setdefault(b, []).append((i, code))
+    if not bases:
+        return None, []
+    b = max(bases, key=lambda k: len(bases[k]))
+    return (b, bases[b]) if len(bases[b]) >= 2 else (None, [])
+
+
 def retail_funcs(name, mapfile, data):
-    """[(address, name, body)] of the retail module's functions, from its link map."""
+    """[(address, name, body)] of the retail module's functions, from its link map.
+    An object without symbols (a Sony library object) is cut at its function
+    starts, each named <object>+<offset>."""
     sect = re.compile(r"^\.%s\s+0x([0-9a-f]+)\s+0x[0-9a-f]+\s+load address 0x([0-9a-f]+)" % name)
-    inp = re.compile(r"^ \.(\w+)\s+0x([0-9a-f]+)\s+0x([0-9a-f]+)\s")
+    inp = re.compile(r"^ \.(\w+)\s+0x([0-9a-f]+)\s+0x([0-9a-f]+)\s+(\S+)")
     sym = re.compile(r"^\s+0x([0-9a-f]+)\s+([A-Za-z_]\w*)$")
     vma = load = None
     groups, cur = [], None
@@ -232,17 +285,20 @@ def retail_funcs(name, mapfile, data):
             cur = None
             if m.group(1) == "text":
                 a = int(m.group(2), 16)
-                cur = (a + int(m.group(3), 16), {})
+                cur = (a, a + int(m.group(3), 16), {}, os.path.basename(m.group(4)))
                 groups.append(cur)
             continue
         m = sym.match(line)
         if m and cur is not None:
-            cur[1].setdefault(int(m.group(1), 16) & 0xFFFFFFFF, m.group(2))
+            cur[2].setdefault(int(m.group(1), 16) & 0xFFFFFFFF, m.group(2))
     if vma is None:
         die(f"{mapfile}: no .{name} section")
     mod = Module(name, data[load:], vma)
     out = []
-    for end, syms in groups:
+    for start, end, syms, obj in groups:
+        if not syms and end > start:
+            for a in [start] + sorted(vma + o for o in mod.starts if start < vma + o < end):
+                syms[a] = f"{obj}+0x{a - start:X}"
         addrs = sorted(syms)
         for a, b in zip(addrs, addrs[1:] + [end]):
             out.append((a, syms[a], mod.body(a, b)))
@@ -264,31 +320,103 @@ def best_match(body, funcs, exact):
     return sorted(scored, reverse=True)
 
 
-def match_funcs(funcs, demo, retail):
-    """Match each function record to retail. funcs: [(address, end, record)] sorted
-    by address; demo/retail: {module: Module / [(address, name, body)]}.
-    Among equal candidates the first retail function after the last match wins,
-    so identical functions keep their order."""
-    exact = {m: {} for m in retail}
-    for m, fl in retail.items():
-        for a, n, b in fl:
-            exact[m].setdefault(b, []).append((a, n))
-    out, prev = [], {}
-    for a, end, r in funcs:
-        mod = next((m for m in demo.values() if m.is_start(a)), None)
-        if mod is None or mod.name not in retail:
-            out.append((r, None, None, []))
+def place(funcs, mods, sure):
+    """Find the code of each function record or label. funcs: [(address, end or
+    None, record)] sorted by address; sure: addresses certainly functions (the
+    records and the C++ labels), which fit each module's shifts first.
+    Returns ([(record, [(module, code address, code end)])], notes); a label that
+    lands nowhere has no candidates (data, or code in a module not found)."""
+    notes, runs = [], {}
+    slots = [m for m in mods if m.kind == "slot"]
+    if slots:   # the overlays share one range and one link: fit them together
+        lo, hi = slots[0].base, max(m.base + len(m.data) for m in slots)
+        near = [a for a in sure if lo - 0x10000 <= a < hi + 0x10000]
+        votes = {}
+        for m in slots:
+            for a in near:
+                for s in m.starts_near(a, 0x10000):
+                    votes[s - a] = votes.get(s - a, 0) + 1
+        if votes:
+            shift = max(votes, key=lambda s: (votes[s], -abs(s)))
+            if votes[shift] >= 3:
+                for m in slots:
+                    m.shift = shift
+                notes.append(f"- slot overlays: {votes[shift]} function labels near `0x{lo:08X}` on their "
+                             f"function starts" + (f", with their addresses shifted by {shift:+#x}" if shift else ""))
+    for mod in mods:
+        if mod.kind == "slot":
             continue
-        body = mod.body(a, end or mod.end_of(a))
-        cands = best_match(body, retail[mod.name], exact[mod.name]) if body else []
-        pick = None
-        if cands:
-            top = [c for c in cands if c[0] >= cands[0][0] - 0.005]
+        near = [a for a in sure if mod.base - 0x10000 <= a < mod.base + len(mod.data) + 0x10000]
+        shift, n = fit_shift(mod, near)
+        if near and n >= max(3, len(near) // 2):
+            mod.shift = shift
+            notes.append(f"- {mod.name}: {n} of {len(near)} nearby function records/labels on function starts"
+                         + (f", with their addresses shifted by {shift:+#x}: the records come from a link "
+                            "that placed this module elsewhere" if shift else ""))
+        runs[mod.name] = local_shifts(mod, sure)
+        for lo, hi, s in runs[mod.name]:
+            notes.append(f"- {mod.name}: from `0x{lo:08X}` to `0x{hi:08X}` shifted by {s:+#x} "
+                         "(the code changed size before there)")
+    bounds = [a for a, _, _ in funcs]
+    out = []
+    for k, (a, end, r) in enumerate(funcs):
+        nxt = bounds[k + 1] if k + 1 < len(bounds) and bounds[k + 1] > a else None
+        cands = []
+        for mod in mods:
+            if mod.kind == "slot" and r[0] == "label" and "__F" not in r[2]:
+                continue   # in the shared range a data label can sit on another overlay's code
+            shifts = [s for lo, hi, s in runs.get(mod.name, []) if lo <= a <= hi] + [mod.shift]
+            s = next((s for s in shifts if mod.is_start(a + s)), None)
+            if s is None:
+                continue
+            e = end + s if end else mod.end_of(a + s)
+            if not end and nxt and nxt + s < e:
+                e = nxt + s
+            cands.append((mod, a + s, e))
+        out.append((r, cands))
+    return out, notes
+
+
+def overlay_of(name):
+    """The retail overlay a slot function's name carries: 'func_X (ovl5f)' -> 'ovl5f'."""
+    m = re.search(r" \((\w+)\)$", name)
+    return m.group(1) if m else None
+
+
+def match_funcs(placed, retail, prefer=None):
+    """Match each placed record to retail: [(record, module, (similarity, address,
+    name) or None)]. retail: {kind: [(address, name, body)]}. With several
+    candidate modules (slot overlays share one range) the best match wins. Among
+    equal retail candidates one in the module's preferred retail overlay
+    (prefer: {module: overlay}) wins, then the first after the module's last
+    match, so identical functions keep their order."""
+    exact = {k: {} for k in retail}
+    for k, fl in retail.items():
+        for a, n, b in fl:
+            exact[k].setdefault(b, []).append((a, n))
+    out, prev = [], {}
+    for r, cands in placed:
+        best = (None, None)
+        for mod, a, e in cands:
+            body = mod.body(a, e)
+            if mod.kind not in retail or not body:
+                continue
+            cs = best_match(body, retail[mod.kind], exact[mod.kind])
+            if not cs:
+                if best[0] is None:
+                    best = (mod, None)
+                continue
+            top = [c for c in cs if c[0] >= cs[0][0] - 0.005]
+            want = (prefer or {}).get(mod.name)
+            top = [c for c in top if overlay_of(c[2]) == want] or top
             after = [c for c in top if c[1] > prev.get(mod.name, 0)]
             pick = min(after, key=lambda c: c[1]) if after else top[0]
-            if pick[0] >= LIKELY:
-                prev[mod.name] = pick[1]
-        out.append((r, mod.name, pick, cands[:3]))
+            if best[1] is None or pick[0] > best[1][0]:
+                best = (mod, pick)
+        mod, pick = best
+        if pick and pick[0] >= LIKELY:
+            prev[mod.name] = pick[1]
+        out.append((r, mod.name if mod else (cands[0][0].name if cands else None), pick))
     return out
 
 
@@ -329,6 +457,10 @@ def where(off, entries):
     return "filler"
 
 
+def is_section(name):
+    return name.startswith("_") and SECTION.search(name) is not None
+
+
 def is_global(r):
     """A def of an extern or static variable (not a function) at an address."""
     return (r[0] == "def" and r[2] in (sym_scan.C_EXT, sym_scan.C_STAT)
@@ -341,10 +473,10 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("disc")
     ap.add_argument("--out", help="where to write (default: the disc folder)")
-    a = ap.parse_args()
-    out = a.out or a.disc
+    args = ap.parse_args()
+    out = args.out or args.disc
     os.makedirs(out, exist_ok=True)
-    root = disc_files(a.disc)
+    root = disc_files(args.disc)
     dat_path, exes = find_files(root)
     if not dat_path:
         die(f"{root}: no CRASHBSH.DAT")
@@ -359,26 +491,36 @@ def main():
         die(f"no exe under {root} indexes {dat_path}")
     t_addr = struct.unpack_from("<I", exe, 0x18)[0]
     entries = index[1]
-    rel = lambda p: os.path.relpath(p, a.disc).replace(os.sep, "/")  # noqa: E731
-    rep = [f"# {os.path.basename(os.path.normpath(a.disc))}", "",
+    rel = lambda p: os.path.relpath(p, args.disc).replace(os.sep, "/")  # noqa: E731
+    rep = [f"# {os.path.basename(os.path.normpath(args.disc))}", "",
            "Written by `tools/scripts/proto_scan.py`.", "",
            f"- Exe: `{rel(exe_path)}`, load `0x{t_addr:08X}`, `0x{len(exe) - 0x800:X}` bytes",
            f"- DAT: `{rel(dat_path)}`, {len(dat)} bytes; index at exe `0x{t_addr + index[0] - 0x800:08X}`, "
            f"{len(entries)} entries"]
-    demo = {"main": Module("main", exe[0x800:], t_addr)}
+    demo = {"main": Module("main", exe[0x800:], t_addr, first=(0,))}
     eng = find_engine(dat, entries)
+    slot_base = None
     if eng:
         i, sec, size = eng
         code = dat[sec * SECTOR:sec * SECTOR + size]
         base, votes = find_base(code)
         with open(os.path.join(out, f"engine_{i:03X}.bin"), "wb") as f:
             f.write(code)
-        demo = {"engine": Module("engine", code, base), **demo}
         rep.append(f"- Engine: entry `0x{i:03X}` (sector `0x{sec:X}`, `0x{size:X}` bytes), "
                    f"load `0x{base:08X}` ({votes} jal targets on function starts); "
                    f"cut to `engine_{i:03X}.bin`")
+        print("looking for the slot overlays...")
+        slot_base, slots = find_slots(dat, entries, i)
+        if slot_base:
+            if base < slot_base < base + len(code):
+                code = code[:slot_base - base]   # the engine's slot image is not engine code
+            rep.append(f"- Slot overlays: {len(slots)} entries load at `0x{slot_base:08X}` "
+                       f"({', '.join(f'`0x{j:03X}`' for j, _ in slots)})")
+            for j, c in slots:
+                demo[f"slot {j:03X}"] = Module(f"slot {j:03X}", c, slot_base, kind="slot")
+        demo = {"engine": Module("engine", code, base, first=(0x14,)), **demo}
 
-    def place(name, off):
+    def where_in(name, off):
         """Where a hit at off in file name is: the exe, a DAT entry or the filler."""
         if name != rel(dat_path):
             return "exe"
@@ -421,7 +563,7 @@ def main():
                     kinds[r[0]] = kinds.get(r[0], 0) + 1
                 lo, hi = c[0][0], c[-1][0]
                 ks = ", ".join(f"{n} {k}" for k, n in sorted(kinds.items(), key=lambda x: -x[1]))
-                rep.append(f"| `{name}` | `0x{lo:X}..0x{hi:X}` | {place(name, lo)} | {ks} |")
+                rep.append(f"| `{name}` | `0x{lo:X}..0x{hi:X}` | {where_in(name, lo)} | {ks} |")
         types = sum(1 for _, r in allrecs if r[0] == "def"
                     and r[2] in (sym_scan.C_STRTAG, sym_scan.C_UNTAG, sym_scan.C_ENTAG, sym_scan.C_TPDEF))
         rep += ["", f"{types} struct, union, enum and typedef records (`types.h`); "
@@ -439,37 +581,85 @@ def main():
                 code = f"`0x{min(span):08X}..0x{max(span):08X}`" if span else ""
                 rep.append(f"| `{fn}` | {nf} | {nl} | {code} |")
 
+    sect = sorted({(r[1], r[2]) for _, r in allrecs if r[0] == "label" and is_section(r[2])})
+    if sect:
+        with open(os.path.join(out, "sections.txt"), "w") as f:
+            for val, name in sect:
+                f.write("0x%08X %s\n" % (val, name))
+        groups = {}
+        for val, name in sect:
+            if RAM[0] <= val < 0x80800000:
+                g = groups.setdefault(SECTION.sub("", name) or "(whole link)", [val, val])
+                g[0], g[1] = min(g[0], val), max(g[1], val)
+        rep += ["", "## Link groups", "",
+                f"From {len(sect)} section symbols (`_<group>[_<section>]_org/orgend/obj/objend/size`, "
+                "all in `sections.txt`): each group's lowest and highest address.", "",
+                "| Group | From | To |", "|---|---|---|"]
+        for g, (lo, hi) in sorted(groups.items(), key=lambda x: (x[1][0], x[0])):
+            rep.append(f"| `{g}` | `0x{lo:08X}` | `0x{hi:08X}` |")
+
+    labels = sorted({(r[1], r[2]) for _, r in allrecs if r[0] == "label"
+                     and RAM[0] <= r[1] < 0x80800000 and not is_section(r[2])})
     funcs = func_spans(allrecs)
-    if funcs:
-        print(f"matching {len(funcs)} functions to retail...")
+    if funcs or labels:
+        print(f"matching {len(funcs)} function records and {len(labels)} labels to retail...")
         proj = json.load(open(PROJECT))
         rdat = proj["overlays"][0]["from"]
         rexe = os.path.join(os.path.dirname(os.path.dirname(rdat)), proj["exe"])
-        retail = {"main": retail_funcs("main", "build/main.map", open(rexe, "rb").read())}
-        o = next(o for o in proj["overlays"] if o["name"] == "engine")
+        retail = {"main": retail_funcs("main", "build/main.map", open(rexe, "rb").read()), "slot": []}
         with open(rdat, "rb") as f:
-            f.seek(o["offset"])
-            retail["engine"] = retail_funcs("engine", "build/engine.map", f.read(o["size"]))
-        rep += ["", "## Functions", ""]
-        for mod in demo.values():
-            near = [f[0] for f in funcs if mod.base - 0x10000 <= f[0] < mod.base + len(mod.data) + 0x10000]
-            shift, n = fit_shift(mod, near)
-            if near and n >= max(3, len(near) // 2):
-                mod.shift = shift
-                rep.append(f"- {mod.name}: {n} of {len(near)} nearby records on function starts"
-                           + (f" with their addresses shifted by {shift:+#x}: the records come from "
-                              "a link that placed this module elsewhere" if shift else ""))
+            for o in proj["overlays"]:
+                f.seek(o["offset"])
+                fl = retail_funcs(o["name"], f"build/{o['name']}.map", f.read(o["size"]))
+                if o["name"] == "engine":
+                    retail["engine"] = fl
+                else:   # the slot overlays share one range: name which one
+                    retail["slot"] += [(a, f"{n} ({o['name']})", b) for a, n, b in fl]
+        # a label names a function when it lands on a function start (the function then
+        # ends at the next symbol at the latest); any other label is data
+        have = {f[0] for f in funcs}
+        funcs += [(a, None, ("label", a, n)) for a, n in labels if a not in have]
+        funcs.sort(key=lambda x: x[0])
+        sure = [a for a, _, r in funcs if r[0] == "func" or "__F" in r[2]]
+        placed, notes = place(funcs, list(demo.values()), sure)
+        rep += ["", "## Functions", ""] + notes
+        matched = match_funcs(placed, retail)
+        # each demo overlay is one retail overlay: the one most of its strong matches name
+        votes = {}
+        for _, mod, pick in matched:
+            if pick and pick[0] >= STRONG and overlay_of(pick[2]):
+                votes.setdefault(mod, {}).setdefault(overlay_of(pick[2]), 0)
+                votes[mod][overlay_of(pick[2])] += 1
+        prefer = {m: max(v, key=v.get) for m, v in votes.items()}
+        if prefer:
+            matched = match_funcs(placed, retail, prefer)
+            rep += ["", "Demo slot overlays and the retail overlay most of their strong matches are in: "
+                    + ", ".join(f"{m} = `{o}`" for m, o in sorted(prefer.items())) + "."]
         rep += ["", f"Similarity of the masked code: {STRONG} and up is the same function, "
-                f"{LIKELY} and up probably; below that the best guess is in brackets.", "",
+                f"{LIKELY} and up probably; below that the best guess is in brackets. "
+                "Retail library functions are named `<object>+<offset>`, slot overlay ones "
+                "`<name> (<overlay>)`.", "",
                 "| Record | Source line | Demo | Module | Retail | Similarity |", "|---|---|---|---|---|---|"]
-        for r, mod, pick, cands in match_funcs(funcs, demo, retail):
-            fn = r[5].split("\\")[-1]
+        data_labels = []
+        for r, mod, pick in matched:
+            if r[0] == "label" and mod is None:
+                data_labels.append((r[1], r[2]))
+                continue
+            src = f"{r[5].split(chr(92))[-1]}:{r[4]}" if r[0] == "func" else "label"
             if pick is None:
-                rep.append(f"| `{r[2]}` | {fn}:{r[4]} | `0x{r[1]:08X}` | {mod or 'unplaced'} | | |")
+                rep.append(f"| `{r[2]}` | {src} | `0x{r[1]:08X}` | {mod or 'unplaced'} | | |")
                 continue
             s, ra, rn = pick
             name = f"`{rn}`" if s >= LIKELY else f"(`{rn}`)"
-            rep.append(f"| `{r[2]}` | {fn}:{r[4]} | `0x{r[1]:08X}` | {mod} | {name} | {s:.2f} |")
+            rep.append(f"| `{r[2]}` | {src} | `0x{r[1]:08X}` | {mod} | {name} | {s:.2f} |")
+        if data_labels:
+            rep += ["", "## Data labels", "", "Labels not on a function start: globals, or code "
+                    "in a module not found.", "",
+                    "| Name | Demo address | In |", "|---|---|---|"]
+            for a, n in data_labels:
+                mod = next((m.name for m in demo.values() if m.kind != "slot" and m.holds(a + m.shift)),
+                           "slot" if slot_base and a >= slot_base else "")
+                rep.append(f"| `{n}` | `0x{a:08X}` | {mod} |")
 
     glob = sorted({r[1:5] + (tuple(r[5]),) + r[6:] for _, r in allrecs if is_global(r)})
     if glob:
@@ -487,7 +677,7 @@ def main():
             fn = f"{os.path.basename(name).replace('.', '_')}_{off:08X}.txt"
             with open(os.path.join(leaks, fn), "wb") as f:
                 f.write(run)
-            found.append(f"| `{name}` | `0x{off:X}` | {place(name, off)} | {len(run)} | `leaks/{fn}` |")
+            found.append(f"| `{name}` | `0x{off:X}` | {where_in(name, off)} | {len(run)} | `leaks/{fn}` |")
     rep += ["", "## Source text", ""]
     rep += ["| File | Offset | Where | Bytes | Saved as |", "|---|---|---|---|---|"] + found if found else ["None."]
 

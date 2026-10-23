@@ -13,7 +13,7 @@ module's `CRASHBSH.DAT` entry.
 ## Scanning a disc
 
 1. Extract the archive on the host with 7-Zip into its own folder,
-   `protos/<disc>/` (the image and its `.cue`).
+   `protos/<disc>/` (the image, with its `.cue` if it has one).
 2. Run the scan; it dumps the image to `files/` first if there is no
    `files/` folder yet (`make build` must have run, for the retail maps):
 
@@ -23,18 +23,22 @@ module's `CRASHBSH.DAT` entry.
 
 3. Read `protos/<disc>/scan.md` and add the disc to the tables below.
 
-`proto_scan.py` finds the Crash Bash exe by its DAT index, the engine module
-and its load address, runs `sym_scan.py` (debug records) and `leak_scan.py`
-(source text) over the exe and the DAT, and matches each function record to
-the retail function with the most similar code. It writes everything next
-to the disc:
+`proto_scan.py` finds the Crash Bash exe by its DAT index, the engine module,
+the slot overlays and their load addresses, and runs `sym_scan.py` (debug
+records) and `leak_scan.py` (source text) over the exe and the DAT. Each
+function record, and each label that lands on a function start, is matched
+to the retail function (exe, engine or any slot overlay) with the most
+similar code. Records can come from a link a few bytes off the shipped code,
+as a whole or from some function on; the tool fits those offsets and reports
+them. It writes everything next to the disc:
 
 | File | What |
 |---|---|
-| `scan.md` | the report: where each record run is, source files, functions matched to retail, globals, text leaks |
+| `scan.md` | the report: where each record run is, source files, link groups, functions matched to retail, data labels, globals, text leaks |
 | `sym.txt` | every record, with its file offset |
 | `types.h` | the types as C |
 | `lines.txt` | the line table, `address file:line` |
+| `sections.txt` | the linker's section symbols |
 | `engine_<id>.bin` | the engine module cut from the DAT |
 | `leaks/` | each source-text hit |
 
@@ -47,6 +51,7 @@ to the disc:
 | Sep 14 2000 prototype (Hidden Palace) | early | none | exe comparison only |
 | Oct 9 2000 prototype (Hidden Palace; PAL review build `SCES_028.34`) | close to retail | engine entry `+0x40002`: 3447 type records | the engine's own types (`NAS`, `EXTengine`, `subengine`, `HeroInfo`, ...), every AST enum: names for 201 AST Init/Plot functions; the `include/bash/` game headers |
 | Jampack Winter 2000 demo (`SCUS_946.24`) | older than Oct 9 | engine entry `+0x2BE15`: 4611 type records, **30 function records**, 44 globals, 1021 line records | unit `8007ac20` is `PANEL.CPP`; 23 function names mapped (not applied yet) |
+| Euro Demo 65 (`SCED-02639`, PAL) | near the demos | engine entry `+0x332CB`: **1182 symbol table labels**, 2325 type records | 163 function names mapped across `main.exe`, the engine and 6 slot overlays; 184 global names; the link layout and overlay names (not applied yet) |
 
 The prototype exes have no source names, but by masked code signature they
 hold the retail `main.exe` functions in retail order (Oct 9: 466 of 566,
@@ -54,18 +59,19 @@ Sep 14: 295, Aug 23: 251), so the link order didn't change before release.
 
 ## What kind of information came from where
 
-| Information | Retail | Aug 23 | Oct 9 | Jampack |
-|---|---|---|---|---|
-| Function prototypes (Tank, Pogo, Arkenoid, Polar) | yes | | | |
-| Minigame structs and AST enums | yes | some | yes | yes |
-| Engine types (`NAS`, `EXTengine`, ...) | | | yes | |
-| Source file and header paths | 4 game dirs | yes | | `PANEL.CPP`, `PAUSE.CPP` |
-| Function names with addresses | | | | 30 (`PANEL.CPP`) |
-| Parameter types (mangled names) | | | | 30 |
-| Local variables and their registers | | | | yes |
-| Global variable names, types and sizes | | | | 44 |
-| Source line numbers | | | | `PAUSE.CPP`'s line table; each `PANEL.CPP` function's first line |
-| New enums | | | | `cheatflags`, `levnumbers`, `worldnumbers`, `IconParts` |
+| Information | Retail | Aug 23 | Oct 9 | Jampack | Euro 65 |
+|---|---|---|---|---|---|
+| Function prototypes (Tank, Pogo, Arkenoid, Polar) | yes | | | | |
+| Minigame structs and AST enums | yes | some | yes | yes | |
+| Engine types (`NAS`, `EXTengine`, ...) | | | yes | | |
+| Source file and header paths | 4 game dirs | yes | | `PANEL.CPP`, `PAUSE.CPP` | |
+| Function names with addresses | | | | 30 (`PANEL.CPP`) | 371 labels; 163 matched |
+| Parameter types (mangled names) | | | | 30 | 140 |
+| Local variables and their registers | | | | yes | |
+| Global variable names | | | | 44, with types and sizes | 184 |
+| Source line numbers | | | | `PAUSE.CPP`'s line table; each `PANEL.CPP` function's first line | |
+| Link layout (groups, overlays) | | | | | yes |
+| New enums | | | | `cheatflags`, `levnumbers`, `worldnumbers`, `IconParts` | level map enums (Tank, Pogo, ...) |
 
 Details for the retail, Aug 23 and Oct 9 leaks are in
 [ARCHITECTURE.md](ARCHITECTURE.md) (Leaked source, Prototype debug types).
@@ -144,7 +150,8 @@ and `InitBorderIcons` are probably `func_8007BE84`, `func_8007BFA8` and
 `func_8007C170` by position (similarity 0.51); `InitBossIcon`, `FetchWinner`,
 `Cups_Init` and `Draw_Panel` have no good match. Retail-only functions in the
 unit: `func_8007AF3C`, `C830`, `D208`, `D2F4`, `D5EC`, `D6D0`, `D850`,
-`E7A4`, `E7C8`, `E7F4`, `E874`, `E93C`, `E9FC`, `EAC0`, `ED0C`.
+`E7A4`, `E7C8`, `E7F4`, `E874`, `E93C`, `E9FC`, `EAC0`, `ED0C`. Euro Demo 65
+names `E7C8`: `CalcElapsedTime`.
 
 The last functions in the file (from `Cups_Init` on in the demo) come in
 reverse line order; the ones placed in retail keep that order.
@@ -164,11 +171,77 @@ unit `8007ee2c`, maybe from `func_8007ED0C`. Not proven.
 - Place `PAUSE.CPP` in retail from its line table (statement boundaries
   against retail's code).
 
+## Euro Demo 65
+
+`protos/Euro_Demo_65/scan.md` has the full report, with every label and its
+match.
+
+**The disc.** A PAL multi-game demo, `SCED-02639`, dated 2000-10-09; Crash
+Bash is `CRASHBSH/CRASH.EXE` (load `0x80018000`) and a 44 MB
+`CRASHBSH.DAT`. No `.SYM`, `.MAP` or source text on the disc.
+
+**Where the fragment is.** The exe's DAT index is at `0x8004CA38` (630
+entries). The engine is entry `0x275`, loaded at `0x8007A154` (the
+fragment's own `_engine_start_obj` says the same); 13 slot overlays (entries
+`0x174..0x180`) load at `0x800B0CCC`. The records sit in the engine entry at
+`+0x332CB` (DAT `0x2A272CB..0x2A4C22F`). Their addresses fit the shipped exe
+and the first part of the engine as they are; from `0x800947F4` on and in
+the slot overlays they are `0x4C` below the
+shipped code, so some function before there changed size between the two
+links.
+
+**What it holds.**
+- 1182 labels: the SN symbol table, a name and an address each, no types.
+  - 371 functions and globals: 140 with C++ mangled names (so their
+    parameter types), the rest C names (PsyQ functions and globals) and
+    game globals.
+  - 811 section symbols (`_<group>[_<section>]_org/orgend/obj/objend/size`),
+    which give the link layout: `_core` is the exe, `_engine_start` to
+    `_engine_end` the engine module (`0x8007A154..0x800D2B60`), and two
+    overlay slots inside it: `_WORLD_OVERLAY` (`0x800B0C84`) for the games,
+    `BASH`, `PAPU`, `TANK`, `POGO`, `ARKENOID`, `POLAR`, `RACE`, `SPIN`,
+    `DINO`, `BONK`, `N2O`, `KABOOM`, `HUB` and `TITLES` (the AST enums'
+    names, with `KABOOM`, Keg Kaboom, for the enums' `CHASE`), and
+    `_RULES_OVERLAY` (`0x800AD3C0`) for each game's rules text in each
+    language, `_<game>_<lang>` (`_TA_GE` is Tank in German; EN, FR, GE, IT,
+    SP, and one `_BA_JP`).
+- 2325 type records, 151 names; about half are new to us, nearly all map
+  enums of single levels (`*_TA_MAPS` for each Tank arena, `PG_A_MAPS` ...
+  for Pogo, `MJ_*`, `TBOSS_*`, ...), plus `AIactionTypesTA`, `geo_entity`
+  and `sub_shape_info`.
+
+**Matched to retail.** 163 labels match a retail function at 0.75 or more
+(149 at 0.9 or more):
+
+| Module | Matched (0.9+ / 0.75+) | Examples |
+|---|---|---|
+| `main.exe` | 116 / 124 | `mal_update`, `mal_free`, ... (the allocator), `init_file`, `load_file_permanent`, `set_joypad`, `cam_init`, `interp`, `BSwapEndian`, `map_entity_address`, `init_dots`, `dbase_asload_with_anims_texture_callback`, `get_script_header`, `texture_draw`, PsyQ functions |
+| engine | 22 / 27 | `InitialiseNasSystem` (`func_80078CA4`, the engine's first function), `GravitateNas`, `DoAmbience`, `CalcElapsedTime` (`func_8007E7C8`, in `PANEL.CPP`), `DefHero2ObjectCollision`, `HeroGhost`, `PrintNasPos` |
+| slot overlays | 11 / 12 | `UpdatePAPU`, `PAHeroHit`, `SetPAHeroCarry` (`ovl5e`), `DoGetBomb`, `TestBeamChance` (`ovl62`), `PlotTotemBit`, `TankBossCortexTurretFire` (`ovl5f`), `MaintainCentre` (`ovl63`), `team_mode_init`, `adventure_mode_head` (`ovl69`) |
+
+Checks: the `PANEL.CPP` names agree with the Jampack mapping
+(`InitBossHealthIcons` is `func_8007C6EC` in both), and names the repo got
+from the leaks agree (`InitSmokePoof`, `PlotSmokePoof`; `TA_HeroBot` and
+`InitialisePOLARFirst` are the best, if weak, matches of their labels). Some
+names the repo gave itself ("Name 15 core engine functions") now have their
+originals: `SpawnNASById` is `CreateNAS`, `SpawnNASFromRecord` `TriggerNas`,
+`AddEngine` `AddExtEngine`, `AddExtension` `AddExt`, `InitHealth`/
+`PlotHealth` `Init_HealthPU`/`Plot_HealthPU`.
+
+**Still to do.**
+- Apply the names (C++ ones with their parameter types) to the matched
+  functions, after checking the 0.75..0.9 ones by hand.
+- Map the 184 data labels to retail addresses through the matched functions'
+  data references.
+- The link groups give file boundaries in the engine (`_core_end`,
+  `_engine_start`, ...); check them against the unit split in
+  ARCHITECTURE.md.
+
 ## Discs not scanned yet
 
 | Disc | Why it might help |
 |---|---|
 | PlayStation Demo Disc v1.3 (US) | earliest public build (E3 2000 hubs); another link's leftovers |
-| Official PlayStation Magazine UK Demo 65 | separate PAL mastering |
+| Official PlayStation Magazine UK Demo 65 | separate PAL mastering, unless it is the same disc as Euro Demo 65 |
 | PAL retail (`SCES-02834`) | separate mastering; a diff shows PAL-only code |
 | Japanese retail (Crash Bandicoot Carnival) | later, separate mastering; localization changes |

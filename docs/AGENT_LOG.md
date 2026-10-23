@@ -112,15 +112,15 @@ and current tools).
 
 ## Open leads
 
-- **Apply the Jampack demo's `PANEL.CPP` symbols** (PROTOTYPES.md, Jampack
-  Winter 2000 demo): 23 names for the matched functions of the engine unit
-  `8007ac20` (= `PANEL.CPP`), their signatures and locals, 44 globals to map
-  to retail addresses, and the new enums (`cheatflags`, `levnumbers`,
-  `worldnumbers`, `IconParts`); the full report is
-  `protos/Jampack_Winter_2000/scan.md`. The user is collecting more discs
-  first, then deciding how to apply all of them. Wait until no other agent
-  is working on the engine: it renames symbols in `8007ac20.c` and its
-  header.
+- **Apply the demo discs' symbols** (PROTOTYPES.md): Jampack's 23
+  `PANEL.CPP` names (engine unit `8007ac20`) with signatures and locals, 44
+  globals and new enums (`cheatflags`, `levnumbers`, `worldnumbers`,
+  `IconParts`); Euro Demo 65's 163 matched labels (`main.exe`, the engine,
+  6 slot overlays; some replace the repo's own names, e.g. `SpawnNASById`
+  is `CreateNAS`), 184 data labels and the link groups. Full reports:
+  `protos/<disc>/scan.md`. The user is collecting more discs first, then
+  deciding how to apply all of them. Wait until no other agent is working
+  on the files concerned: it renames symbols across `src/` and the headers.
 - **Tune the permuter from its record.** Runs are logged since 2026-10-20
   (`decomp.py permstats`, `swarm.mjs stats`). Two ideas to try once there
   are a few dozen runs, compared on that record:
@@ -506,6 +506,14 @@ Newest first, a few lines each. Details are in the commits.
   PlaySfx as a `goto` into case 8's (not the source; leads list why). No
   `break`/`goto` mix gives the target's three tail survivors. Found the
   unit is probably `PAUSE.CPP`; `cc1plus` compiles the C identically.
+
+- **2026-10-23 (Euro Demo 65 scan):** its engine entry holds 1182 SN
+  symbol table labels and 2325 types: 163 labels match retail functions
+  (`main.exe` 124, engine 27, slot overlays 12), 184 are data, 811 are
+  section symbols giving the link layout (`_WORLD_OVERLAY`,
+  `_RULES_OVERLAY`, overlay names). `proto_scan.py` now matches labels,
+  finds the slot overlays, fits per-stretch offsets (`+0x4C` from
+  `0x800947F4`), and takes a lone `.bin` without a `.cue`.
 
 - **2026-10-23 (`proto_scan.py`):** the disc scan is one command now
   (PROTOTYPES.md, Scanning a disc): finds the exe by its DAT index, the

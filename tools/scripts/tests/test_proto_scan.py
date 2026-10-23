@@ -108,9 +108,37 @@ class Matching(unittest.TestCase):
                  for i, o in enumerate(doffs[1:], 1)]
         funcs.insert(0, (dbase + doffs[0], dbase + doffs[1], ("func", dbase + doffs[0], "d0", 0, 1, "A.CPP")))
         # the first function follows the header, not a jr ra: not a start
-        got = proto_scan.match_funcs(funcs, demo, {"engine": retail})
+        placed, _ = proto_scan.place(funcs, list(demo.values()), [])
+        got = proto_scan.match_funcs(placed, {"engine": retail})
         self.assertIsNone(got[0][1])
-        self.assertEqual([p[2] for _, _, p, _ in got[1:]], ["r1", "r2"])
+        self.assertEqual([p[2] for _, _, p in got[1:]], ["r1", "r2"])
+
+
+class Placing(unittest.TestCase):
+    SIZES = [3, 7, 2, 5, 9, 4, 6, 3, 8, 2, 5, 7]
+
+    def chain(self, base):
+        """A module whose functions each call the next."""
+        _, offs = code([[NOP] * n for n in self.SIZES])
+        return code([[jal(base + offs[(i + 1) % len(offs)])] + [NOP] * (n - 1)
+                     for i, n in enumerate(self.SIZES)])
+
+    def test_local_shift_after_a_size_change(self):
+        base = 0x80071000
+        data, offs = self.chain(base)
+        mod = proto_scan.Module("engine", data, base)
+        # the records' link had the code from function 6 on 8 bytes earlier
+        sure = [base + o for o in offs[1:6]] + [base + o - 8 for o in offs[6:]]
+        self.assertEqual(proto_scan.local_shifts(mod, sure), [(base + offs[6] - 8, base + offs[-1] - 8, 8)])
+
+    def test_find_slots(self):
+        base = 0x800B0C84
+        a = self.chain(base)[0].ljust(0x1000, b"\0")   # smaller entries aren't code
+        dat = a + a
+        entries = [(0, len(a)), (len(a) // 2048, len(a))]
+        got_base, slots = proto_scan.find_slots(dat, entries, skip=None)
+        self.assertEqual(got_base, base)
+        self.assertEqual([i for i, _ in slots], [0, 1])
 
 
 if __name__ == "__main__":
