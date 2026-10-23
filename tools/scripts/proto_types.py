@@ -197,6 +197,45 @@ def plan(names):
     return changes, left
 
 
+C_BASE = {"int": "s32", "unsigned int": "u32", "short": "s16", "unsigned short": "u16", "char": "char",
+          "unsigned char": "u8", "long": "s32", "unsigned long": "u32", "struct EXTengtype": "EXTengine",
+          "struct subengine": "subengine", "SLONG_XYZ": "SLONG_XYZ", "SVECTOR": "SVECTOR", "VECTOR": "VECTOR"}
+
+
+def plan_globals(scans):
+    """Like plan, for the globals the debug records type (scan.md's Globals table): the
+    element type of each renamed global's extern, where better(); its array sizes stay
+    the repo's (the demo's can be older: IconParts[4][5] is [4][7] in retail)."""
+    typed = {}
+    for scan in scans:
+        for line in open(scan):
+            m = re.match(r"^\| `(\w+)` \| `0x[0-9A-F]+` \| 0x[0-9A-F]+ \| `(.+)` \|$", line.rstrip())
+            if m:
+                typed.setdefault(m.group(1), m.group(2))
+    hdrs = {p: open(p).read() for p in glob.glob("include/**/*.h", recursive=True)}
+    changes, left = [], []
+    for name, decl in sorted(typed.items()):
+        d = re.fullmatch(rf"((?:struct |unsigned )?\w+)\s*(\**){name}((?:\[\d+\])*)", decl)
+        base = C_BASE.get(d.group(1)) if d else None
+        if base is None:
+            left.append((name, f"type `{decl}` not in the repo"))
+            continue
+        new_t = base + (" " + d.group(2) if d.group(2) else "")
+        rx = re.compile(rf"^extern\s+([\w ]+?)\s*(\**)\s*\b{name}\b((?:\s*\[[^\]]*\])*)\s*;", re.M)
+        found = [(p, m) for p, t in hdrs.items() for m in rx.finditer(t)]
+        olds = {(norm(m.group(1) + (" " + m.group(2) if m.group(2) else "")), m.group(3).replace(" ", ""))
+                for _, m in found}
+        if len(olds) != 1:
+            left.append((name, f"{len(found)} extern declarations" + (", not alike" if found else "")))
+            continue
+        old_t, dims = next(iter(olds))
+        if not better(old_t, norm(new_t)):
+            continue
+        new = f"extern {joined(norm(new_t), name)}{dims};"
+        changes.append((name, [(p, m.group(0), new) for p, m in found], [found[0][1].group(0)], [new]))
+    return changes, left
+
+
 def write(changes, originals):
     """Rewrite the files from their originals with these changes."""
     text = dict(originals)
@@ -219,8 +258,9 @@ def builds():
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--apply", action="store_true")
+    ap.add_argument("--globals", action="store_true", help="the debug records' global types instead")
     a = ap.parse_args()
-    changes, left = plan(renamed())
+    changes, left = (plan_globals(sorted(glob.glob("protos/*/scan.md"))) if a.globals else plan(renamed()))
     for name, _, old, new in changes:
         print(f"  {name}({', '.join(old)})\n    -> ({', '.join(new)})")
     print(f"{len(changes)} prototypes to change")
