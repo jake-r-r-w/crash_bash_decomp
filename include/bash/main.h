@@ -806,14 +806,11 @@ s32 func_80013650(s32 arg0, void (*done)(), void *ctx);
 s32 func_80012FFC(void);
 s32 func_8001231C(void);
 void func_80010AE8(Heap *arg0);
-void func_8002BAE8(void);
 MemBlock *mal_first_free(u32 words, MemBlock *blk);
 s32 func_80013034(s32 arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *arg4, s32 arg5, s32 arg6);
 void func_80029560(u8 *arg0);
 void func_8002A5A4(u8 *arg0, u8 *arg1);
 s32 asload_permanent_callback(s32 arg0, void (*done)(), void *ctx);
-void machine_load_sfx(s32 arg0, VabSlot *slot);
-void func_8002ADD4(void *data, VabSlot *slot);
 void func_80012E88(void);
 void func_80012F90(u8 *arg0);
 u8 *func_80013110(u8 *arg0);
@@ -957,19 +954,6 @@ void func_8002A740(u8 *arg0);
 void func_8002AA50(u8 *arg0);
 void func_8002AA8C(u8 *arg0);
 void func_800369FC(void);
-void func_8002AAA0(void);
-void sound_critical(void);
-void machine_quit_sound(void);
-void func_8002ABA8(void);
-void func_8002AC18(void);
-void func_8002AC40(void);
-void func_8002AC70(void);
-void sound_continue(void);
-s32 func_8002B020(VECTOR *v, s32 *range);
-s32 func_8002B6D0(VECTOR *pos, View *view);
-void func_8002B760(VECTOR *pos, View *view, VECTOR *out, s32 *sxy);
-void func_8002B96C(void);
-s32 func_8002BB80(void);
 
 extern GteScratch D_800569CC;
 extern SVECTOR D_80056AC8[];
@@ -1244,9 +1228,7 @@ extern s32 ASTCount;            /* entries in ASTTable */
 extern ASTEntry *ASTTable;      /* the AST table in use */
 extern s32 D_80058AC8;
 extern SfxPool SfxVoicePool;
-extern s8 SfxTable[][2]; /* by sound id; [1] == -1: no sound */
-void func_8002B8F4(s32 *voice);
-extern s32 D_800637B4;
+extern s8 SfxTable[][2]; extern s32 D_800637B4;
 extern s32 D_800637B8;
 void func_80034C4C(s32, s32);
 extern u8 D_8006EA08;
@@ -1309,7 +1291,6 @@ extern s32 D_800643EC;
 extern s32 D_800643F0;
 void *func_800112A4(void *base, s32 offset, Heap *arg2);
 void func_80014540(u8 *arg0, RECT *rect);
-void func_8002ACA0(s32 id, s32 arg1);
 extern GfxState D_80056998;
 extern VECTOR D_8005688C; /* screen-space translation (func_8001965C) */
 
@@ -1722,7 +1703,6 @@ void func_8001C008(s32 p, MorphModel *model, SVECTOR *src, SVECTOR *fc);
 
 void func_8001D048(SVECTOR *v, POLY_GT4 *poly);
 
-void func_8002AEE0(void);
 
 u32 func_8001C974(NAS *nas, u8 *arg1, u32 flags);
 
@@ -1749,7 +1729,6 @@ void *func_8001CFE8(MorphModel *model, void *arg1, s32 arg2);
 s32 func_80028BC8(u8 * *arg0);
 
 
-void func_8002AABC(void);
 
 s32 Random(s32 n);
 void *FindExtension(NAS *nas, s32 id);
@@ -1778,15 +1757,12 @@ u8 *func_80016AD4(s32 *arg0, u8 *rec);
 
 u8 *func_800160C4(u8 *arg0, s32 i);
 
-void func_8002BD0C(s32 arg0);
 
 void func_80021330(u8 *arg0, s32 *arg1);
 
 s32 func_8002A650(u8 *arg0);
 
-void func_8002BD68(void);
 
-void func_8002BBB4(void);
 
 void process_quit(void *arg0);
 
@@ -1794,7 +1770,6 @@ void process_init(void *arg0);
 
 s32 func_80011410(Heap *heap);
 
-void func_8002B9A4(void);
 
 s32 func_8001E598(u8 *arg0);
 
@@ -1969,7 +1944,6 @@ void func_80028BF0(void);
 
 void func_80028C94(void);
 
-void func_8002B4D8(PitchVoice *arg0, s32 arg1);
 
 
 void func_8001CEB4(u16 arg0, u8 *arg1, s32 arg2);
@@ -2105,11 +2079,8 @@ s32 func_80028994(s32 a, s32 b, s32 c);
 
 s32 calc_rgbcode(s32 r, s32 g, s32 b);
 
-void func_8002B52C(s16 *arg0, s32 arg1, s32 arg2);
 
-void func_8002BA44(void);
 
-void func_8002BCB0(s32 *arg0);
 
 
 
@@ -2302,7 +2273,6 @@ void func_8002A77C(ClutUpload *arg0, s32 arg1);
 
 void func_8002A9AC(s32 *arg0, s32 arg1);
 
-void func_8002BBEC(void);
 
 
 
@@ -2466,66 +2436,15 @@ void func_80024FA4(ScriptCursor *c);
 
 ScriptCursor *func_80026048(NAS *nas, s32 arg1, s32 arg2, ScriptInit *init);
 
-s32 func_8002B5B0(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4);
 
-S16Pair func_8002B7C8(s32 x, s32 v);
 
 extern s32 D_8005A60C;
 
 /* Inlined copies of func_8002B6D0, func_8002B760 and func_8002B7C8 (used by
  * func_8002B210). */
-static inline void ViewProject(VECTOR *pos, s32 *psxy) {
-    VECTOR *out = &D_800569CC.out;
-    SVECTOR *in = &D_800569CC.in;
-    View *view = (View *)D_80051640;
 
-    in->vx = pos->vx - view->pos.vx;
-    in->vy = pos->vy - view->pos.vy;
-    in->vz = pos->vz - view->pos.vz;
-    gte_ldv0(in);
-    gte_rtps();
-    gte_stlvl(out);
-    gte_stsxy(psxy);
-}
 
-static inline S16Pair PanVolume(s32 x, s32 v) {
-    S16Pair r;
-    s32 lo = 0;
-    s32 hi = 0x200;
 
-    if (x < lo) {
-        r.a = v;
-    } else if (x > hi) {
-        r.a = 0;
-    } else {
-        s32 d = 0x40000;
-        r.a = ((d - x * x) * v) / d;
-    }
-    if (0x200 - lo < x) {
-        r.b = v;
-    } else if (x < 0x200 - hi) {
-        r.b = 0;
-    } else {
-        r.b = ((hi * hi - (0x200 - x) * (0x200 - x)) * v) / (hi * hi - lo);
-    }
-    return r;
-}
-
-static inline s32 ViewVolumeXY(VECTOR *pos, View *view, s32 *psxy) {
-    VECTOR *out = &D_800569CC.out;
-    SVECTOR *in = &D_800569CC.in;
-
-    in->vx = pos->vx - view->pos.vx;
-    in->vy = pos->vy - view->pos.vy;
-    in->vz = pos->vz - view->pos.vz;
-    gte_ldv0(in);
-    gte_rtps();
-    gte_stlvl(out);
-    gte_stsxy(psxy);
-    return func_8002B020(out, D_80064478);
-}
-
-S16Pair func_8002B210(VECTOR *pos);
 
 typedef struct { u8 pad[0xC]; } Slot12;
 extern Slot12 D_80063B1C[];
@@ -2768,5 +2687,7 @@ void func_80028774(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf);
 #include "bash/card.h"
 
 #include "bash/music.h"
+
+#include "bash/sound.h"
 
 #endif /* BASH_MAIN_H */

@@ -7401,7 +7401,7 @@
   "src": "src/main/main.c"
  },
  "8002AAA0": {
-  "asm": "asm/nonmatchings/main/main/func_8002AAA0.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002AAA0.s",
   "calls": [],
   "fp": "ad519239883ac4b9",
   "fpn": "ad519239883ac4b9",
@@ -7409,12 +7409,12 @@
   "name": "func_8002AAA0",
   "orig": "func_8002AAA0",
   "rom": 111264,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 12,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002AAAC": {
-  "asm": "asm/nonmatchings/main/main/sound_critical.s",
+  "asm": "asm/nonmatchings/main/sound/sound_critical.s",
   "calls": [],
   "fp": "f9a6136d2299aaec",
   "fpn": "3bdb41083303167b",
@@ -7422,12 +7422,12 @@
   "name": "sound_critical",
   "orig": "func_8002AAAC",
   "rom": 111276,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 16,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002AABC": {
-  "asm": "asm/nonmatchings/main/main/func_8002AABC.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002AABC.s",
   "calls": [
    "8002AAA0",
    "8003342C",
@@ -7446,12 +7446,12 @@
   "name": "func_8002AABC",
   "orig": "func_8002AABC",
   "rom": 111292,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 136,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002AB44": {
-  "asm": "asm/nonmatchings/main/main/machine_quit_sound.s",
+  "asm": "asm/nonmatchings/main/sound/machine_quit_sound.s",
   "calls": [
    "8002C428",
    "800320EC",
@@ -7466,12 +7466,12 @@
   "name": "machine_quit_sound",
   "orig": "func_8002AB44",
   "rom": 111428,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 100,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002ABA8": {
-  "asm": "asm/nonmatchings/main/main/func_8002ABA8.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002ABA8.s",
   "calls": [
    "8002B4B8"
   ],
@@ -7481,12 +7481,12 @@
   "name": "func_8002ABA8",
   "orig": "func_8002ABA8",
   "rom": 111528,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 112,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002AC18": {
-  "asm": "asm/nonmatchings/main/main/func_8002AC18.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002AC18.s",
   "calls": [
    "800227C0",
    "8002C0E0"
@@ -7497,12 +7497,12 @@
   "name": "func_8002AC18",
   "orig": "func_8002AC18",
   "rom": 111640,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 40,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002AC40": {
-  "asm": "asm/nonmatchings/main/main/func_8002AC40.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002AC40.s",
   "calls": [
    "800227FC",
    "80027A9C",
@@ -7514,12 +7514,12 @@
   "name": "func_8002AC40",
   "orig": "func_8002AC40",
   "rom": 111680,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 48,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002AC70": {
-  "asm": "asm/nonmatchings/main/main/func_8002AC70.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002AC70.s",
   "calls": [
    "80022504",
    "80027A9C",
@@ -7531,12 +7531,12 @@
   "name": "func_8002AC70",
   "orig": "func_8002AC70",
   "rom": 111728,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 48,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002ACA0": {
-  "asm": "asm/nonmatchings/main/main/func_8002ACA0.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002ACA0.s",
   "calls": [
    "8002AAA0",
    "8002AAAC",
@@ -7549,12 +7549,12 @@
   "name": "func_8002ACA0",
   "orig": "func_8002ACA0",
   "rom": 111776,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 308,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002ADD4": {
-  "asm": "asm/nonmatchings/main/main/func_8002ADD4.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002ADD4.s",
   "calls": [
    "800112A4",
    "8002ACA0",
@@ -7568,12 +7568,12 @@
   "name": "func_8002ADD4",
   "orig": "func_8002ADD4",
   "rom": 112084,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 268,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002AEE0": {
-  "asm": "asm/nonmatchings/main/main/func_8002AEE0.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002AEE0.s",
   "calls": [
    "800112A4",
    "80014540",
@@ -7587,12 +7587,12 @@
   "name": "func_8002AEE0",
   "orig": "func_8002AEE0",
   "rom": 112352,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 320,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002B020": {
-  "asm": "asm/nonmatchings/main/main/func_8002B020.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002B020.s",
   "calls": [
    "80032490"
   ],
@@ -7602,12 +7602,12 @@
   "name": "func_8002B020",
   "orig": "func_8002B020",
   "rom": 112672,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 496,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002B210": {
-  "asm": "asm/nonmatchings/main/main/func_8002B210.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002B210.s",
   "calls": [
    "8002B020"
   ],
@@ -7617,12 +7617,12 @@
   "name": "func_8002B210",
   "orig": "func_8002B210",
   "rom": 113168,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 680,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002B4B8": {
-  "asm": "asm/nonmatchings/main/main/sound_continue.s",
+  "asm": "asm/nonmatchings/main/sound/sound_continue.s",
   "calls": [
    "80037ADC"
   ],
@@ -7632,12 +7632,12 @@
   "name": "sound_continue",
   "orig": "func_8002B4B8",
   "rom": 113848,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 32,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002B4D8": {
-  "asm": "asm/nonmatchings/main/main/func_8002B4D8.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002B4D8.s",
   "calls": [
    "80037D4C"
   ],
@@ -7647,12 +7647,12 @@
   "name": "func_8002B4D8",
   "orig": "func_8002B4D8",
   "rom": 113880,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 84,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002B52C": {
-  "asm": "asm/nonmatchings/main/main/func_8002B52C.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002B52C.s",
   "calls": [
    "8003725C"
   ],
@@ -7662,12 +7662,12 @@
   "name": "func_8002B52C",
   "orig": "func_8002B52C",
   "rom": 113964,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 132,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002B5B0": {
-  "asm": "asm/nonmatchings/main/main/func_8002B5B0.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002B5B0.s",
   "calls": [
    "800373FC",
    "800374CC"
@@ -7678,12 +7678,12 @@
   "name": "func_8002B5B0",
   "orig": "func_8002B5B0",
   "rom": 114096,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 288,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002B6D0": {
-  "asm": "asm/nonmatchings/main/main/func_8002B6D0.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002B6D0.s",
   "calls": [
    "8002B020"
   ],
@@ -7693,12 +7693,12 @@
   "name": "func_8002B6D0",
   "orig": "func_8002B6D0",
   "rom": 114384,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 144,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002B760": {
-  "asm": "asm/nonmatchings/main/main/func_8002B760.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002B760.s",
   "calls": [],
   "fp": "d9d6797ee57c9752",
   "fpn": "07d0baf27438cc67",
@@ -7706,12 +7706,12 @@
   "name": "func_8002B760",
   "orig": "func_8002B760",
   "rom": 114528,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 104,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002B7C8": {
-  "asm": "asm/nonmatchings/main/main/func_8002B7C8.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002B7C8.s",
   "calls": [],
   "fp": "e1edcd9903010b91",
   "fpn": "1b935a32804f3f73",
@@ -7719,12 +7719,12 @@
   "name": "func_8002B7C8",
   "orig": "func_8002B7C8",
   "rom": 114632,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 300,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002B8F4": {
-  "asm": "asm/nonmatchings/main/main/func_8002B8F4.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002B8F4.s",
   "calls": [
    "800371E8",
    "800373FC"
@@ -7735,12 +7735,12 @@
   "name": "func_8002B8F4",
   "orig": "func_8002B8F4",
   "rom": 114932,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 120,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002B96C": {
-  "asm": "asm/nonmatchings/main/main/func_8002B96C.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002B96C.s",
   "calls": [
    "800373FC",
    "80037F2C",
@@ -7752,12 +7752,12 @@
   "name": "func_8002B96C",
   "orig": "func_8002B96C",
   "rom": 115052,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 56,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002B9A4": {
-  "asm": "asm/nonmatchings/main/main/func_8002B9A4.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002B9A4.s",
   "calls": [
    "8002B96C",
    "80037F2C"
@@ -7768,12 +7768,12 @@
   "name": "func_8002B9A4",
   "orig": "func_8002B9A4",
   "rom": 115108,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 108,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002BA10": {
-  "asm": "asm/nonmatchings/main/main/machine_load_sfx.s",
+  "asm": "asm/nonmatchings/main/sound/machine_load_sfx.s",
   "calls": [
    "80013688"
   ],
@@ -7783,12 +7783,12 @@
   "name": "machine_load_sfx",
   "orig": "func_8002BA10",
   "rom": 115216,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 52,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002BA44": {
-  "asm": "asm/nonmatchings/main/main/func_8002BA44.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002BA44.s",
   "calls": [
    "800112A4",
    "8002ACA0",
@@ -7800,12 +7800,12 @@
   "name": "func_8002BA44",
   "orig": "func_8002BA44",
   "rom": 115268,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 164,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002BAE8": {
-  "asm": "asm/nonmatchings/main/main/func_8002BAE8.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002BAE8.s",
   "calls": [
    "800112A4",
    "8002ACA0",
@@ -7817,12 +7817,12 @@
   "name": "func_8002BAE8",
   "orig": "func_8002BAE8",
   "rom": 115432,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 152,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002BB80": {
-  "asm": "asm/nonmatchings/main/main/func_8002BB80.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002BB80.s",
   "calls": [],
   "fp": "abc13cc442b921fe",
   "fpn": "1826a82565af2653",
@@ -7830,12 +7830,12 @@
   "name": "func_8002BB80",
   "orig": "func_8002BB80",
   "rom": 115584,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 52,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002BBB4": {
-  "asm": "asm/nonmatchings/main/main/func_8002BBB4.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002BBB4.s",
   "calls": [],
   "fp": "ea62b705e501aaac",
   "fpn": "3ea85732a17266af",
@@ -7843,12 +7843,12 @@
   "name": "func_8002BBB4",
   "orig": "func_8002BBB4",
   "rom": 115636,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 56,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002BBEC": {
-  "asm": "asm/nonmatchings/main/main/func_8002BBEC.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002BBEC.s",
   "calls": [
    "800110A8",
    "8002ACA0",
@@ -7861,12 +7861,12 @@
   "name": "func_8002BBEC",
   "orig": "func_8002BBEC",
   "rom": 115692,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 196,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002BCB0": {
-  "asm": "asm/nonmatchings/main/main/func_8002BCB0.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002BCB0.s",
   "calls": [
    "800110A8",
    "8002ACA0",
@@ -7879,12 +7879,12 @@
   "name": "func_8002BCB0",
   "orig": "func_8002BCB0",
   "rom": 115888,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 92,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002BD0C": {
-  "asm": "asm/nonmatchings/main/main/func_8002BD0C.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002BD0C.s",
   "calls": [
    "8002BA10"
   ],
@@ -7894,12 +7894,12 @@
   "name": "func_8002BD0C",
   "orig": "func_8002BD0C",
   "rom": 115980,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 92,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002BD68": {
-  "asm": "asm/nonmatchings/main/main/func_8002BD68.s",
+  "asm": "asm/nonmatchings/main/sound/func_8002BD68.s",
   "calls": [],
   "fp": "b89294901192b153",
   "fpn": "34f2528152ed7b94",
@@ -7907,9 +7907,9 @@
   "name": "func_8002BD68",
   "orig": "func_8002BD68",
   "rom": 116072,
-  "seg": "main/main",
+  "seg": "main/sound",
   "size": 48,
-  "src": "src/main/main.c"
+  "src": "src/main/sound.c"
  },
  "8002BD98": {
   "asm": "asm/nonmatchings/main/music/func_8002BD98.s",
