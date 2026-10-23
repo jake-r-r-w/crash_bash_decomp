@@ -1767,6 +1767,11 @@ To use project headers, run cpp with the Makefile's `CPPFLAGS` (`-P -nostdinc -u
 patterns, not register numbers: which register an instruction reads, whether a `move` exists,
 the order. Add `-dr -ds` to a test compile to see why.
 
+To test a whole function the same way, `decomp.py try NAME --file scratch/t/v1.c` compiles the
+file (a copy of the function after its unit's `#include` lines) with the unit's settings,
+Makefile overrides included, and diffs NAME from it as `try` does, in about 2 s: the unit is
+not edited or rebuilt and no attempt is recorded (`func_800BE914`'s variants went this way).
+
 Then port the winning shape and check it in the function. Allocation priorities depend on the
 whole function (each variable's refs and live range), so a shape that fixes the snippet can
 move other variables. In `PlotBall`, an `s16` fixed the snippet but shifted every s-register,

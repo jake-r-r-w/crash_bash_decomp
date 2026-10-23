@@ -691,6 +691,31 @@ def check_function(key, e, proj, name, quiet=False):
         print("BUILD FAILED")
         print(compile_error(src, r.stderr + r.stdout))
         return False, None
+    return compare_obj(key, e, proj, name, obj, quiet)
+
+
+def check_file(key, e, proj, name, path):
+    """`try --file`: compile the C file PATH (a test copy of the function with its own #includes)
+    with the settings of the unit that defines NAME, and compare NAME from it. The unit is not
+    edited or rebuilt, so a shape takes a second to try. Returns (ok, ndiffs)."""
+    src = e.get("src") or locate_def(name)
+    if not src:
+        die(f"can't find the source file defining {name}")
+    obj = f"build/tryfile/{os.path.basename(path)}.o"
+    os.makedirs(os.path.dirname(obj), exist_ok=True)
+    if os.path.exists(obj):
+        os.remove(obj)
+    r = run("set -o pipefail; " + unit_pipeline(src, obj, mk_config(), c_path=path))
+    if r.returncode:
+        print("BUILD FAILED")
+        print(compile_error(path, r.stderr + r.stdout))
+        return False, None
+    return compare_obj(key, e, proj, name, obj, link=False)
+
+
+def compare_obj(key, e, proj, name, obj, quiet=False, link=True):
+    """Compare NAME in the object OBJ with the target and print the diff (or MATCH, with the
+    whole binary's link check when LINK). Returns (ok, ndiffs)."""
     cw, ctext, relocs = obj_func(obj, name)
     if not cw:
         print(f"{name} not found in {obj} - still INCLUDE_ASM, misspelled, or static and inlined?")
@@ -700,8 +725,9 @@ def check_function(key, e, proj, name, quiet=False):
     if not diffs:
         if not quiet:
             print(f"MATCH {name} ({nt} instructions)")
-            # the whole binary too: `done`'s full build would refuse a match that moves data
-            print(link_check(e, proj, jload(P_FUNCS, {})))
+            if link:
+                # the whole binary too: `done`'s full build would refuse a match that moves data
+                print(link_check(e, proj, jload(P_FUNCS, {})))
         return True, 0
     ttext = parse_asm(e["asm"])[3] if os.path.exists(e.get("asm", "")) else [f"{w:08x}" for w in tw]
     stage = diff_stage(tw, cw, diffs, ops, nt, nc)
@@ -1458,6 +1484,12 @@ def cmd_asm(a):
 def cmd_try(a):
     proj, funcs = need_proj(), need_funcs()
     syms = sym_names()
+    if a.file:                          # a test file: no attempt is recorded
+        if len(a.funcs) != 1:
+            die("try --file compares one function")
+        key, e = find_func(funcs, a.funcs[0])
+        ok, _ = check_file(key, e, proj, cur_name(key, e, syms), a.file)
+        sys.exit(0 if ok else 1)
     st = jload(P_STATE, {})
     all_ok = True
     stat = statuses(funcs)[0]
@@ -1670,10 +1702,11 @@ def asm_labels(path, vram):
     return [(int(m.group(1), 16) - vram) // 4 for m in map(LABEL_LINE.match, read(path).splitlines()) if m]
 
 
-def unit_pipeline(src, o, cfg, opt="", defs=()):
-    """pipeline() for src with its unit's settings, extra cc1 flags OPT and cpp flags DEFS."""
+def unit_pipeline(src, o, cfg, opt="", defs=(), c_path=None):
+    """pipeline() for src with its unit's settings, extra cc1 flags OPT and cpp flags DEFS. With
+    C_PATH, that file is compiled instead of src (src still picks the settings)."""
     cfg = unit_cfg(cfg, src)
-    return pipeline(src, o, cfg["CC_VER"], f"{cfg['OPT_FLAGS']} {cfg.get('EXTRA_CC1FLAGS', '')} {opt}".strip(),
+    return pipeline(c_path or src, o, cfg["CC_VER"], f"{cfg['OPT_FLAGS']} {cfg.get('EXTRA_CC1FLAGS', '')} {opt}".strip(),
                     int(cfg.get("GVAL", "0")), re.sub(r"\s*-G\d+", "", cfg.get("MASPSX_ARGS", DEFAULT_MASPSX)),
                     post_filters(cfg), defs)
 
@@ -5044,6 +5077,9 @@ def main():
     p.set_defaults(fn=cmd_asm)
     p = sub.add_parser("try", help="build and diff one or more functions")
     p.add_argument("funcs", nargs="+")
+    p.add_argument("--file", help="compile this C file (a test copy of the function, with its own "
+                   "#includes) with the function's unit settings and diff it, without editing or "
+                   "rebuilding the unit; no attempt is recorded")
     p.set_defaults(fn=cmd_try)
     p = sub.add_parser("regions", help="score a function block by block (aligned diff, C lines)")
     p.add_argument("func")
