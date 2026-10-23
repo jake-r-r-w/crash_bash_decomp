@@ -349,7 +349,7 @@ extern NAS *D_800CB208;       /* InitTankBoss's NAS */
 extern EXTengine *D_800CB20C; /* and its engine */
 extern s32 D_800CB248;
 s32 func_800C2940(EXTengine *eng);
-void func_800C3778(EXTengine *eng);
+void TankBossCortexTurretFire(EXTengine *eng);
 void func_800C3D48(NAS *nas, EXTengine *eng);
 /* Field 0xC of the 0x38-byte model record N at D_80052A54 (D_800536CC is record 57). */
 #define TANK_MODEL(n) (&D_80052A54[(n) * 0x38])

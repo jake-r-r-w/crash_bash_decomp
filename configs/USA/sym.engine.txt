@@ -93,3 +93,6 @@ pHeroHealth = 0x8009AE88;
 map = 0x800A00F0;
 camera_frame_list_size = 0x800AD1E8;
 camera_frame_right = 0x800AD310;
+SetTweakAi = 0x80086918; // type:func
+HeroGhost = 0x80089BE8; // type:func
+line_intersect_zy = 0x80096530; // type:func

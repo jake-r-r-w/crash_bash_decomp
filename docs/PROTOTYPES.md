@@ -84,7 +84,7 @@ the repo has already named (unless `--replace`). The renames are kept in
 | PlayStation Demo Disc 1.3 (`SCUS-94618`, mastered 2000-08-30) | the Jampack build | the same as Jampack: the same `CRASHBSH.EXE` and `.DAT`, byte for byte | nothing new; dates the Jampack build to 2000-08-30 or earlier |
 | PAL retail (`SCES-02834`, mastered 2000-10-23) | release | none: the engine's spare space is zeros and `0x01` filler, no leftover memory | nothing |
 | Japanese retail, Crash Bandicoot Carnival (`SCPS-10140`, mastered 2000-11-16) | release | none: as PAL; the extra `B320I.EXE`/`B321I.EXE` only play the two `BANJ/*.IKI` videos | nothing |
-| Euro Demo 65 (`SCED-02639`, PAL; also sold as Official PlayStation Magazine UK Demo 65) | near the demos | engine entry `+0x332CB`: **1182 symbol table labels**, 2325 type records | 163 function names mapped across `main.exe`, the engine and 6 slot overlays; 184 global names; the link layout and overlay names. Applied: 82 `main.exe`, 18 engine and 10 overlay functions, 18 globals |
+| Euro Demo 65 (`SCED-02639`, PAL; also sold as Official PlayStation Magazine UK Demo 65) | near the demos | engine entry `+0x332CB`: **1182 symbol table labels**, 2325 type records | 163 function names mapped across `main.exe`, the engine and 6 slot overlays; 184 global names; the link layout and overlay names. Applied: 82 `main.exe`, 21 engine and 11 overlay functions, 18 globals |
 
 The prototype exes have no source names, but by masked code signature they
 hold the retail `main.exe` functions in retail order (Oct 9: 466 of 566,
@@ -282,11 +282,12 @@ The 4 names the repo gave itself are replaced by the originals
 `AddExt`).
 
 **Still to do.**
-- Engine names done: 37 with Jampack's (`renames_engine_all.txt`); left are
-  `SetTweakAi` (0.84), `HeroGhost` (0.86) and `line_intersect_zy` (0.78), in
-  link order but with no gap to confirm them, and four stubs no place
-  confirms (`DefaultTouched`, `DefHero2ObjectCollision`, `PrintNasPos`,
-  `InitParticleEffect`). Slot overlay names next.
+- Function names done: 37 engine with Jampack's (`renames_engine_all.txt`), 10
+  overlay (`renames_slot.txt`), and `SetTweakAi`, `HeroGhost`,
+  `line_intersect_zy`, `TankBossCortexTurretFire` (0.78..0.88, in link order,
+  approved: `renames_unconfirmed.txt`). Left: four stubs no place confirms
+  (`DefaultTouched`, `DefHero2ObjectCollision`, `PrintNasPos`,
+  `InitParticleEffect`).
 - The parameter types from the C++ names, one prototype at a time.
 - The rest of the globals (`globals.txt`, 41 mapped). `main.exe`'s 13 that
   land on a retail `D_` symbol's start are renamed (`renames_main_globals.txt`:

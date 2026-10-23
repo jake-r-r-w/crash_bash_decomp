@@ -113,9 +113,7 @@ and current tools).
 ## Open leads
 
 - **Finish the demo discs' symbols** (PROTOTYPES.md; the names are applied:
-  129 functions, 49 globals, unit `panel`). Left: 4 functions in order but
-  unconfirmed by a gap (`SetTweakAi`, `HeroGhost`, `line_intersect_zy`,
-  `TankBossCortexTurretFire`); 8 globals that start inside a retail symbol
+  133 functions, 49 globals, unit `panel`). Left: 8 globals that start inside a retail symbol
   (split it first: `core_process`, `GemRules`, `default_shell_info`, ...);
   the parameter types from the C++ names and the globals' types; PANEL.CPP's
   locals; the new enums (`cheatflags`, `levnumbers`, `worldnumbers`,
@@ -184,7 +182,7 @@ and current tools).
     PlaySfx merge right (187), but case 0's `ret = 0` copy still folds away.
     `goto`s for the `ret = 1` copies remove refs and move `ret` to s4, so
     the source has those duplicates.
-  - Case 0's `s3 = 0; .L8007F708: j; lui`: in matched code (`func_80086918`,
+  - Case 0's `s3 = 0; .L8007F708: j; lui`: in matched code (`SetTweakAi`,
     `AR_PI_TestOutOfBounds`) that layout comes from a cross-jump label put
     before one matched insn that reorg then moves into the `j`'s slot. So
     before reorg one more shared insn sat after case 0's `s3 = 0`, probably
@@ -528,6 +526,10 @@ Newest first, a few lines each. Details are in the commits.
   PlaySfx as a `goto` into case 8's (not the source; leads list why). No
   `break`/`goto` mix gives the target's three tail survivors. Found the
   unit is probably `PAUSE.CPP`; `cc1plus` compiles the C identically.
+
+- **2026-10-23 (4 more names, approved):** `SetTweakAi`, `HeroGhost`,
+  `line_intersect_zy` (engine) and `TankBossCortexTurretFire` (ovl5f):
+  0.78..0.88 and in link order, no gap to confirm them; the user approved.
 
 - **2026-10-23 (unit `8007ac20` is `panel`):** `PANEL.CPP` by Jampack's
   records: `src/overlays/engine/panel.c`, `bash/panel.h`, the yaml paths;

@@ -5912,7 +5912,7 @@ void PlotTankBossCrashTurret(NAS *nas) {
     }
 }
 
-void func_800C3778(EXTengine *arg0) {
+void TankBossCortexTurretFire(EXTengine *arg0) {
     NAS *shell;
     PeriscopeShellExt *ext;
     EXTengine *se;
@@ -5993,7 +5993,7 @@ void PlotTankBossCortexTurret(NAS *nas) {
         a = (a << 20) >> 20;
         if (a >= 0) {
             if (a < 20) {
-                func_800C3778(eng);
+                TankBossCortexTurretFire(eng);
                 nas->UserInfo.status = 13;
                 nas->UserInfo.user2 = 0;
                 break;
@@ -6001,7 +6001,7 @@ void PlotTankBossCortexTurret(NAS *nas) {
             eng->unk1E += 16;
         } else {
             if (a >= -19) {
-                func_800C3778(eng);
+                TankBossCortexTurretFire(eng);
                 nas->UserInfo.status = 13;
                 break;
             }
@@ -6074,7 +6074,7 @@ void PlotTankBossCortexTurret(NAS *nas) {
     fire:
         if (func_800C2940(eng) >= 0) {
             nas->UserInfo.user1++;
-            func_800C3778(eng);
+            TankBossCortexTurretFire(eng);
             nas->UserInfo.user2 = 0;
             nas->UserInfo.status = 13;
         }
@@ -6987,7 +6987,7 @@ void func_800C5BCC(NAS *nas, s32 id) {
         func_800C5620(p);
         break;
     case 0x6B:
-        func_80089BE8(p);
+        HeroGhost(p);
         break;
     }
     if (eng->unk10.x > D_800CB100) {
@@ -7351,7 +7351,7 @@ void InitMoe(NAS *nas) {
 }
 
 void func_800C68A8(void) {
-    func_80089BE8();
+    HeroGhost();
 }
 
 void func_800C68C8(s32 arg0) {
@@ -8060,7 +8060,7 @@ void SetTankHeroMinelay(u32 arg0) {
 }
 
 void TankHeroDead(u32 player) {
-    func_80089BE8(player);
+    HeroGhost(player);
 }
 
 void SetTankHeroDie(u32 player) {

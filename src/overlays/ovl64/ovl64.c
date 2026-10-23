@@ -2314,7 +2314,7 @@ void func_800B98B8(s32 arg0) {
             h2->hero_sub->unk6C = 0;
         }
     } else {
-        func_80089BE8(arg0);
+        HeroGhost(arg0);
     }
 }
 

@@ -105,3 +105,4 @@ CheckMineToBoss = 0x800C18F0; // type:func
 BumpSpeedsForSwamp = 0x800C7C08; // type:func
 TA_Triggers = 0x800C8324; // type:func
 PlotTotemBit = 0x800C0F24; // type:func
+TankBossCortexTurretFire = 0x800C3778; // type:func

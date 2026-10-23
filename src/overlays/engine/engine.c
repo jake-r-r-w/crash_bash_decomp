@@ -173,7 +173,7 @@ void func_80079260(void) {
     ASTTable = EngineASTTable;
     ASTCount = func_8007AC00();
     func_80083708();
-    func_80086918();
+    SetTweakAi();
     func_8007A6F8();
     {
         s32 w1 = 0x206;
@@ -753,7 +753,7 @@ void func_8007A808(void) {
     ASTTable = EngineASTTable;
     ASTCount = func_8007AC00();
     func_80083708();
-    func_80086918();
+    SetTweakAi();
     func_8007A6F8();
     want = 0x20C;
     for (i = 0; i < ASTCount; i++) {

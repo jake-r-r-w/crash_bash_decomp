@@ -767,10 +767,10 @@ first. Rows that need inline asm are not allowed (only C).
 | switch tree tests ==2 first, then slti <3 to default, then ==3/==9 (ours roots at the middle case 3) | add an explicit `case 1:` label on the default body: 4 nodes split after the first, so 2 becomes root and the left subtree folds into default | `func_80085D2C` |
 | a global's %hi is rebuilt (lui v1) after an if/else join where the target reuses it from an s-reg (sw lo(s0)) and the arms' tails are cross-jumped | write the store inside both arms (if (c) { f(a); G = 1; } else { f(b); G = 1; }): CSE follows each arm from the earlier use, and jump cross-jumps the identical tails | `func_800976F8` |
 | loop pointer over Heroes is biased (addiu s0,v0,24: s0 = Heroes+0x18) with an extra addiu, target s0 = Heroes exactly | keep a base pointer (h = Heroes) and index it with the loop counter (h[i].field), not hero++ or &Heroes[i] | `func_8008DEC8` |
-| loop biv i kept (extra move rN,zero; addiu/slti i<4 instead of addiu vX,base,size*N; slt ptr) with 'giv not worth while' for i*2/i*3 of a non-power-of-2 struct stride | index the array directly (t[i].f) at every use instead of caching e=&t[i]: the i*stride intermediates live longer and get reduced, so i is eliminated | `func_80086918` |
-| global-alloc gives a long-lived pointer the wrong reg, rivals (short temps) have higher refs/life priority | wrap one statement that uses only that pointer (e.g. `a = p[1];`) in nested do{}while(0): flow.c adds loop_depth to its ref count; nest deeper for more | `func_80096530` |
+| loop biv i kept (extra move rN,zero; addiu/slti i<4 instead of addiu vX,base,size*N; slt ptr) with 'giv not worth while' for i*2/i*3 of a non-power-of-2 struct stride | index the array directly (t[i].f) at every use instead of caching e=&t[i]: the i*stride intermediates live longer and get reduced, so i is eliminated | `SetTweakAi` |
+| global-alloc gives a long-lived pointer the wrong reg, rivals (short temps) have higher refs/life priority | wrap one statement that uses only that pointer (e.g. `a = p[1];`) in nested do{}while(0): flow.c adds loop_depth to its ref count; nest deeper for more | `line_intersect_zy` |
 | a global's %hi kept in an s-reg from the prologue into a merged switch tail, and the default arm re-does lui/addiu of a pointer already in s0 | write the shared tail inside every case arm (jump cross-jumps them) and have the default arm use a second pointer local `g2 = (T *)GLOBAL;` (reassigning the first pointer instead moves its prologue la) | `func_800826F8` |
-| loop over records strength-reduced (giv pointer) where target recomputes base+i*N+arg0*M each iteration | index the array directly in every access (D[i][arg0].f) instead of a record pointer local | `func_80089BE8` |
+| loop over records strength-reduced (giv pointer) where target recomputes base+i*N+arg0*M each iteration | index the array directly in every access (D[i][arg0].f) instead of a record pointer local | `HeroGhost` |
 | sll 16 of an s16 table index scheduled after the table's lui/addiu instead of before (sll16;sra15 index) | use an s32 index and cast each step explicitly in its own statement: idx = (s16)(x / N); idx = (s16)(idx % M); then T[idx] | `func_80088794` |
 | a global's %hi kept in an s-reg across a call (lui sN once, lw lo(sN) twice) where target re-does lui/lw each time | the two reads are in separate extended basic blocks in the source: write the arm-specific statement in if/else and the shared statement after the join | `func_80090A10` |
 | three lb into a3/t0/t1 then three sb (byte copy using odd regs), byte temps give lbu/a0-a2 | the bytes are a struct assignment: put a 3-byte struct {u8 r,g,b;} at that offset and copy it (dst->rgb = src->rgb); move_by_pieces emits lb with fresh pseudos | `func_80093BE8` |
@@ -2020,7 +2020,7 @@ The rules found so far, each one checked against a trace:
     call and its arguments) stays duplicated.
   - A layout `x; L: j T` with `x` in other jumps' delay slots (`j L; x`)
     comes from a cross-jump that put `L` before one shared insn, which
-    reorg then moved into the `j`'s slot (`func_80086918`,
+    reorg then moved into the `j`'s slot (`SetTweakAi`,
     `AR_PI_TestOutOfBounds`).
 - **Delay slots (`reorg.c`).**
   - `fill_simple_delay_slots` fills from before the branch first, then

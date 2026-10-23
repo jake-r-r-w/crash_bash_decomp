@@ -43,13 +43,13 @@ static inline s32 EngCam_HitY(s32 *arg0, s32 *arg1, s32 *arg2) {
     s32 sp18[4];
     s32 sp28[4];
     s32 d = 0x2D0000 / ((EngCam *)D_80051640)->dist;
-    extern s32 func_80096530(s32 *, s32 *, s32 *, s32 *, s32 *);
+    extern s32 line_intersect_zy(s32 *, s32 *, s32 *, s32 *, s32 *);
 
     sp18[1] = arg0[1] + d;
     sp18[2] = arg0[2] - 0x3000;
     sp28[1] = arg1[1] - d;
     sp28[2] = arg1[2] - 0x3000;
-    return func_80096530(arg0, sp18, arg1, sp28, arg2) != 0;
+    return line_intersect_zy(arg0, sp18, arg1, sp28, arg2) != 0;
 }
 
 /* func_800974EC's body, inlined by func_800967E0. */

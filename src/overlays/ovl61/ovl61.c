@@ -1996,7 +1996,7 @@ void ArkHeroDead(u32 arg0) {
             h->hero_sub->unk6C = NULL;
         }
     } else {
-        func_80089BE8(arg0);
+        HeroGhost(arg0);
     }
 }
 

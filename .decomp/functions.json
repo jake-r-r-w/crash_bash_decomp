@@ -19663,7 +19663,7 @@
   "src": "src/overlays/engine/8007ee2c.c"
  },
  "engine:80086918": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80086918.s",
+  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/SetTweakAi.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80086C94"
@@ -19671,7 +19671,7 @@
   "fp": "2292e29d9c3b2f27",
   "fpn": "46a3ad7dc51ab9b3",
   "leaf": false,
-  "name": "func_80086918",
+  "name": "SetTweakAi",
   "orig": "func_80086918",
   "rom": 56456,
   "seg": "overlays/engine/8007ee2c",
@@ -20134,7 +20134,7 @@
   "src": "src/overlays/engine/8007ee2c.c"
  },
  "engine:80089BE8": {
-  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/func_80089BE8.s",
+  "asm": "asm/nonmatchings/overlays/engine/8007ee2c/HeroGhost.s",
   "bin": "disc/engine.bin",
   "calls": [
    "80015590",
@@ -20143,7 +20143,7 @@
   "fp": "f51b94019f36f33f",
   "fpn": "4aceb9a4a11fadbf",
   "leaf": false,
-  "name": "func_80089BE8",
+  "name": "HeroGhost",
   "orig": "func_80089BE8",
   "rom": 69464,
   "seg": "overlays/engine/8007ee2c",
@@ -23226,13 +23226,13 @@
   "src": "src/overlays/engine/8009608c.c"
  },
  "engine:80096530": {
-  "asm": "asm/nonmatchings/overlays/engine/8009608c/func_80096530.s",
+  "asm": "asm/nonmatchings/overlays/engine/8009608c/line_intersect_zy.s",
   "bin": "disc/engine.bin",
   "calls": [],
   "fp": "2de216e6e6cee193",
   "fpn": "94702979753e802e",
   "leaf": true,
-  "name": "func_80096530",
+  "name": "line_intersect_zy",
   "orig": "func_80096530",
   "rom": 120992,
   "seg": "overlays/engine/8009608c",
@@ -28084,7 +28084,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C3778": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C3778.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TankBossCortexTurretFire.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80022660",
@@ -28094,7 +28094,7 @@
   "fp": "596f4551d88926ac",
   "fpn": "a762863ae38b509a",
   "leaf": false,
-  "name": "func_800C3778",
+  "name": "TankBossCortexTurretFire",
   "orig": "func_800C3778",
   "rom": 66756,
   "seg": "overlays/ovl5f/ovl5f",

@@ -3265,7 +3265,7 @@ void SetHeroAction(HeroInfo *hero, s32 action) {
     HeroActionTable[action].fn();
 }
 
-void func_80086918(void) {
+void SetTweakAi(void) {
     D_8009D87C_t *t;
     u8 *g;
     s32 ret;
@@ -4476,7 +4476,7 @@ void func_800898EC(s32 arg0) {
     func_80085584(arg0, 1, 0xB);
 }
 
-void func_80089BE8(arg0)
+void HeroGhost(arg0)
 s32 arg0;
 {
     s32 y;
