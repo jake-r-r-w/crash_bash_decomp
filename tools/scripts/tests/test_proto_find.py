@@ -20,6 +20,10 @@ def func(*body):
     return [ADDIU_SP, *body, JR_RA, NOP]
 
 
+def pack(ws):
+    return struct.pack(f"<{len(ws)}I", *ws)
+
+
 class TestSplit(unittest.TestCase):
     def test_functions_skip_padding(self):
         ws = func(LW) + [0, 0] + func(SW, SW)
@@ -39,26 +43,69 @@ class TestRank(unittest.TestCase):
         self.assertEqual(best[1][1], 0x80010000 + 14 * 4)
         self.assertLess(best[1][0], 1.0)
 
+    def test_delay_slot_nop_left_out_on_both_sides(self):
+        target = func(LW, BEQ, JAL, SW)[:-1]          # a size that stops before the nop
+        best = proto_find.rank(target, func(SW, SW) + func(LW, BEQ, JAL, SW), 0x80010000, top=1)
+        self.assertEqual(best[0][0], 1.0)
+
+
+SCAN = """# Some_Demo
+
+- Exe: `files/SLUS_000.01`, load `0x80010000`, `0x1000` bytes
+- DAT: `files/CRASHBSH/CRASHBSH.DAT`, 16384 bytes; index at exe `0x80010010`, 4 entries
+- Engine: entry `0x1` (sector `0x2`, `0x800` bytes), load `0x80071764` (115 jal targets on function starts); cut to `engine_1.bin`
+- Slot overlays: 2 entries load at `0x800B0000` (`0x2`, `0x3`)
+"""
+
 
 class TestDiscs(unittest.TestCase):
+    def make(self, root):
+        d = os.path.join(root, "Some_Demo")
+        os.makedirs(os.path.join(d, "files", "CRASHBSH"))
+        with open(os.path.join(d, "scan.md"), "w") as f:
+            f.write(SCAN)
+        target = func(LW, BEQ, JAL, SW)
+        with open(os.path.join(d, "engine_1.bin"), "wb") as f:
+            f.write(pack(target))
+        # entries 2 and 3 are the slots: 3 holds the target after one other function
+        slot2, slot3 = pack(func(SW, SW, SW, SW)), pack(func(SW, SW) + target)
+        index = [(0, 0x10), (1, 0x10), (2, len(slot2)), (4, len(slot3))]
+        exe = bytearray(0x800) + bytearray(0x10) + b"".join(struct.pack("<II", *e) for e in index)
+        with open(os.path.join(d, "files", "SLUS_000.01"), "wb") as f:
+            f.write(exe)
+        dat = bytearray(8 * 2048)
+        dat[2 * 2048:2 * 2048 + len(slot2)] = slot2
+        dat[4 * 2048:4 * 2048 + len(slot3)] = slot3
+        with open(os.path.join(d, "files", "CRASHBSH", "CRASHBSH.DAT"), "wb") as f:
+            f.write(dat)
+        return d, target
+
     def test_scan_md(self):
         with tempfile.TemporaryDirectory() as root:
-            d = os.path.join(root, "Some_Demo")
-            os.makedirs(d)
-            with open(os.path.join(d, "scan.md"), "w") as f:
-                f.write("# Some_Demo\n\n- Exe: `files/SLUS_000.01`, load `0x80010000`, `0x1000` bytes\n"
-                        "- Engine: entry `0x1E5` (sector `0x4E28`, `0x4F158` bytes), load `0x80071764` "
-                        "(115 jal targets on function starts); cut to `engine_1E5.bin`\n")
-            (dd, bins), = proto_find.discs(root)
+            d, target = self.make(root)
+            (dd, info), = proto_find.discs(root)
             self.assertEqual(dd, d)
-            self.assertEqual(bins["main"], (os.path.join(d, "files/SLUS_000.01"), 0x80010000, 0x800))
-            self.assertEqual(bins["engine"], (os.path.join(d, "engine_1E5.bin"), 0x80071764, 0))
-            ws = func(LW, BEQ, JAL, SW)
-            with open(os.path.join(d, "engine_1E5.bin"), "wb") as f:
-                f.write(struct.pack(f"<{len(ws)}I", *ws))
-            out = proto_find.report(ws, "engine", root)
-            self.assertIn("1.000 at 0x80071764, 28 B (file 0x0)", out)
-            self.assertIn("no main binary", proto_find.report(ws, "main", root))
+            self.assertEqual(info["main"], (os.path.join(d, "files/SLUS_000.01"), 0x80010000))
+            self.assertEqual(info["engine"], (os.path.join(d, "engine_1.bin"), 0x80071764))
+            self.assertEqual(info["slot"][3:], (0x80010010, 4, 0x800B0000, [2, 3]))
+
+    def test_engine(self):
+        with tempfile.TemporaryDirectory() as root:
+            _, target = self.make(root)
+            out = proto_find.report(target, "engine", root)
+            self.assertIn("1.000 at 0x80071764, 28 B (engine_1.bin +0x0)", out)
+
+    def test_slot_entries_read_through_the_index(self):
+        with tempfile.TemporaryDirectory() as root:
+            _, target = self.make(root)
+            out = proto_find.report(target, "slot", root)
+            self.assertIn("1.000 at 0x800B0014, 28 B (entry 0x3 +0x14)", out)
+
+    def test_missing_code(self):
+        with tempfile.TemporaryDirectory() as root:
+            d, target = self.make(root)
+            os.remove(os.path.join(d, "engine_1.bin"))
+            self.assertIn("no engine code", proto_find.report(target, "engine", root))
 
 
 if __name__ == "__main__":

@@ -2180,12 +2180,10 @@ def cmd_protos(a):
     proj, funcs = need_proj(), need_funcs()
     key, e = find_func(funcs, a.func)
     seg = e["seg"].split("/")
-    kind = "main" if seg[0] == "main" else seg[1] if seg[0] == "overlays" else None
-    if kind not in ("main", "engine"):
-        die(f"{e['seg']}: only exe and engine functions (the discs' slot overlays are not cut out)")
+    kind = "main" if seg[0] == "main" else "engine" if seg[1] == "engine" else "slot"
     tw = target_words(e, proj)
     print(f"{cur_name(key, e, sym_names())} ({e['seg']}, {e['size']} B), by opcode similarity:")
-    print(proto_find.report(tw[:trim_nops(tw)], kind, top=a.top))
+    print(proto_find.report(tw, kind, top=a.top))
 
 
 def cmd_reconcile(a):

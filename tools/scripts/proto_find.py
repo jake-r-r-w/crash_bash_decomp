@@ -1,12 +1,13 @@
 """Find a retail function's copies in the prototype and demo discs (decomp.py protos).
 
-Every disc proto_scan.py has scanned (protos/<disc>/scan.md) gives its exe and the engine it
-cut out (engine_<id>.bin) with their load addresses. Each binary is split into functions (a
+Every disc proto_scan.py has scanned (protos/<disc>/scan.md) gives its exe, the engine it cut
+out (engine_<id>.bin) and its slot overlays (the minigames: DAT entries, read here through
+the exe's DAT index), each with its load address. Each image is split into functions (a
 `jr ra` and its delay slot end one, zero padding is skipped) and ranked against the retail
 function by a difflib ratio over opcode tokens (no registers or immediates): a histogram
-prefilter keeps the closest by opcode counts, then the ratio orders them. Slot overlays (the
-minigames) are inside each disc's DAT and are not cut, so only exe and engine functions are
-looked up. PROTOTYPES.md has the discs and their builds."""
+prefilter keeps the closest by opcode counts, then the ratio orders them. A slot function is
+looked for in every slot entry of the disc, since the entries' order differs between builds.
+PROTOTYPES.md has the discs and their builds."""
 import collections
 import difflib
 import glob
@@ -14,8 +15,11 @@ import os
 import re
 import struct
 
+SECTOR = 2048
 EXE = re.compile(r"^- Exe: `([^`]+)`, load `0x([0-9A-Fa-f]+)`", re.M)
 ENGINE = re.compile(r"^- Engine: .*load `0x([0-9A-Fa-f]+)`.*cut to `([^`]+)`", re.M)
+DAT = re.compile(r"^- DAT: `([^`]+)`, \d+ bytes; index at exe `0x([0-9A-Fa-f]+)`, (\d+) entries", re.M)
+SLOTS = re.compile(r"^- Slot overlays: \d+ entries load at `0x([0-9A-Fa-f]+)` \(([^)]*)\)", re.M)
 
 
 def token(w):
@@ -49,16 +53,26 @@ def functions(ws):
     return out
 
 
+def unpadded(ws):
+    """WS without its trailing zero words (a nop delay slot, alignment)."""
+    n = len(ws)
+    while n and ws[n - 1] == 0:
+        n -= 1
+    return ws[:n]
+
+
 def rank(target, ws, base, top=3, keep=12):
-    """[(ratio, address, bytes)] of the TOP functions in WS (loaded at BASE) closest to TARGET."""
-    tt = [token(w) for w in target]
+    """[(ratio, address, bytes)] of the TOP functions in WS (loaded at BASE) closest to TARGET.
+    Both sides are compared without trailing zero words, so a copy scores 1.000 whether or not
+    the retail size includes its delay slot."""
+    tt = [token(w) for w in unpadded(target)]
     th = collections.Counter(tt)
     cands = []
     for s, e in functions(ws):
         n = e - s
         if n < len(tt) // 3 or n > len(tt) * 3:
             continue
-        toks = [token(w) for w in ws[s:e]]
+        toks = [token(w) for w in unpadded(ws[s:e])]
         h = collections.Counter(toks)
         pre = sum((th & h).values()) / max(len(tt), n)
         cands.append((pre, s, e, toks))
@@ -72,36 +86,68 @@ def rank(target, ws, base, top=3, keep=12):
 
 
 def discs(root="protos"):
-    """[(disc dir, {"main": (path, load, header), "engine": (path, load, 0)})] for every scanned disc."""
+    """[(disc dir, info)] for every scanned disc: info has "main" (path, load), "engine"
+    (path, load) and "slot" (dat, exe, exe load, index address, entries, base, [entry ids])."""
     out = []
     for scan in sorted(glob.glob(os.path.join(root, "*", "scan.md"))):
         d = os.path.dirname(scan)
         text = open(scan, encoding="utf-8").read()
-        bins = {}
-        m = EXE.search(text)
-        if m:
-            bins["main"] = (os.path.join(d, m.group(1)), int(m.group(2), 16), 0x800)
+        info = {}
+        exe = EXE.search(text)
+        if exe:
+            info["main"] = (os.path.join(d, exe.group(1)), int(exe.group(2), 16))
         m = ENGINE.search(text)
         if m:
-            bins["engine"] = (os.path.join(d, m.group(2)), int(m.group(1), 16), 0)
-        out.append((d, bins))
+            info["engine"] = (os.path.join(d, m.group(2)), int(m.group(1), 16))
+        dat, slots = DAT.search(text), SLOTS.search(text)
+        if exe and dat and slots:
+            ids = [int(x, 16) for x in re.findall(r"0x([0-9A-Fa-f]+)", slots.group(2))]
+            info["slot"] = (os.path.join(d, dat.group(1)), info["main"][0], info["main"][1],
+                            int(dat.group(2), 16), int(dat.group(3)), int(slots.group(1), 16), ids)
+        out.append((d, info))
+    return out
+
+
+def images(info, kind):
+    """[(label, data, load address, where offset 0 is in its file)] for one disc's KIND."""
+    if kind not in info:
+        return []
+    if kind == "main":
+        path, load = info["main"]
+        return [(os.path.basename(path), open(path, "rb").read()[0x800:], load, 0x800)] \
+            if os.path.exists(path) else []
+    if kind == "engine":
+        path, load = info["engine"]
+        return [(os.path.basename(path), open(path, "rb").read(), load, 0)] if os.path.exists(path) else []
+    dat, exe, load, index, n, base, ids = info["slot"]
+    if not (os.path.exists(dat) and os.path.exists(exe)):
+        return []
+    with open(exe, "rb") as f:
+        f.seek(0x800 + index - load)
+        table = f.read(8 * n)
+    out = []
+    with open(dat, "rb") as f:
+        for i in ids:
+            sec, size = struct.unpack_from("<II", table, 8 * i)
+            f.seek(sec * SECTOR)
+            out.append((f"entry 0x{i:X}", f.read(size), base, 0))
     return out
 
 
 def report(target, kind, root="protos", top=1):
-    """One line per disc (TOP candidates each) for a retail function of KIND (main or engine)."""
+    """One line per disc (TOP candidates each) for a retail function of KIND (main, engine or
+    slot)."""
     lines = []
-    for d, bins in discs(root):
-        if kind not in bins or not os.path.exists(bins[kind][0]):
-            lines.append(f"{d}: no {kind} binary")
-            continue
-        path, load, header = bins[kind]
-        data = open(path, "rb").read()[header:]
-        best = rank(target, words(data), load, top)
+    for d, info in discs(root):
+        imgs = images(info, kind)
+        best = []
+        for label, data, load, ofs in imgs:
+            best += [(r, addr, size, label, addr - load + ofs) for r, addr, size in rank(target, words(data), load, top)]
         if not best:
-            lines.append(f"{d}: nothing of a similar size")
+            lines.append(f"{d}: no {kind} code" if not imgs else f"{d}: nothing of a similar size")
             continue
-        for k, (r, addr, size) in enumerate(best):
-            head = f"{d} ({os.path.basename(path)}):" if k == 0 else " " * (len(d) + len(os.path.basename(path)) + 4)
-            lines.append(f"{head} {r:.3f} at 0x{addr:08X}, {size} B (file 0x{addr - load + header:X})")
+        best.sort(key=lambda b: -b[0])
+        for k, (r, addr, size, label, ofs) in enumerate(best[:top]):
+            head = f"{d}:" if k == 0 else " " * (len(d) + 1)
+            lines.append(f"{head} {r:.3f} at 0x{addr:08X}, {size} B ({label} +0x{ofs:X})")
     return "\n".join(lines)
