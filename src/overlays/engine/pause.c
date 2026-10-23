@@ -111,7 +111,7 @@ s32 func_8007F314(void) {
         return 0;
     }
     if (D_8004DDD0[PSV->mode * 3] == 0x101 || PSV->mode == 0x2B) {
-    /* goto into this copy: jump2 would fold it into the later one */
+        /* goto into this copy: jump2 would fold it into the later one */
     ret1:
         return 1;
     }
@@ -179,91 +179,93 @@ found:
                 break;
             }
             if (func_8007EFC0(D_8009AEF0, max) != 0) {
-            PSV->flags &= 0xFFC070D3;
-            if (PSV->unk32 & 4) {
-                switch (D_8009AEEC) {
-                case 0:
-                    PSV->flags &= 0x04000010;
-                    D_8009AEF0 = 0;
-                    D_8009AEEC = 0;
-                    func_8002AC18();
-                    break;
-                case 1:
-                    func_80083334(PSV->mode, kind, 0);
-                    PSV->flags |= 0x80;
-                    break;
-                case 2:
-                    PSV->flags |= 0x100;
-                    D_8009AEEC = 0;
-                    D_8009AEE8 = 0;
-                    break;
-                case 3:
-                    if (PSV->mode == 0x20) {
-                        PSV->flags |= 4;
-                        D_8009AEEC = 1;
-                    } else {
-                        PSV->flags |= 0x8000;
-                        D_8009AEEC = 1;
+                PSV->flags &= 0xFFC070D3;
+                if (PSV->unk32 & 4) {
+                    switch (D_8009AEEC) {
+                    case 0:
+                        PSV->flags &= 0x04000010;
+                        D_8009AEF0 = 0;
+                        D_8009AEEC = 0;
+                        func_8002AC18();
+                        break;
+                    case 1:
+                        func_80083334(PSV->mode, kind, 0);
+                        PSV->flags |= 0x80;
+                        break;
+                    case 2:
+                        PSV->flags |= 0x100;
+                        D_8009AEEC = 0;
+                        D_8009AEE8 = 0;
+                        break;
+                    case 3:
+                        if (PSV->mode == 0x20) {
+                            PSV->flags |= 4;
+                            D_8009AEEC = 1;
+                        } else {
+                            PSV->flags |= 0x8000;
+                            D_8009AEEC = 1;
+                        }
+                        break;
                     }
-                    break;
+                } else {
+                    switch (D_8009AEEC) {
+                    case 0:
+                        D_8009AEF0 = 0;
+                        D_8009AEEC = 0;
+                        PSV->flags &= 0x04000010;
+                        func_8002AC18();
+                        break;
+                    case 1:
+                        func_80083334(PSV->mode, kind, 0);
+                        PSV->flags |= 0x80;
+                        break;
+                    case 2:
+                        D_8009AEEC = 0;
+                        D_8009AEE8 = 0;
+                        PSV->flags |= 0x100;
+                        break;
+                    case 3:
+                        D_8009AEEC = 1;
+                        PSV->flags |= 0x8000;
+                        break;
+                    case 4:
+                        D_8009AEEC = 1;
+                        PSV->flags |= 4;
+                        break;
+                    }
                 }
-            } else {
-                switch (D_8009AEEC) {
-                case 0:
-                    D_8009AEF0 = 0;
-                    D_8009AEEC = 0;
-                    PSV->flags &= 0x04000010;
-                    func_8002AC18();
-                    break;
-                case 1:
-                    func_80083334(PSV->mode, kind, 0);
-                    PSV->flags |= 0x80;
-                    break;
-                case 2:
-                    D_8009AEEC = 0;
-                    D_8009AEE8 = 0;
-                    PSV->flags |= 0x100;
-                    break;
-                case 3:
-                    D_8009AEEC = 1;
-                    PSV->flags |= 0x8000;
-                    break;
-                case 4:
-                    D_8009AEEC = 1;
-                    PSV->flags |= 4;
-                    break;
-                }
-            }
-            /* case 8 keeps the PlaySfx copy in the target */
-            goto sfx;
+                /* its own exit, so the PlaySfx tail follows the call and
+                   cross-jumps into case 8's */
+                PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+                ret = 0;
+                break;
             }
             ret = 0;
             break;
         case 8:
             if (func_8007EFC0(D_8009AEF0, max - 1) != 0) {
-            switch (D_8009AEEC) {
-            case 0:
-                D_8009AEF0 = 0;
-                D_8009AEEC = 0;
-                PSV->flags &= 0x04000010;
-                func_8002AC18();
-                break;
-            case 1:
-                D_8009AEE8 = 0;
-                D_8009AEEC = 0;
-                PSV->flags |= 0x100;
-                break;
-            case 2:
-                D_8009AEEC = 1;
-                PSV->flags |= 4;
-                break;
-            case 3:
-                D_8009AEEC = 0;
-                PSV->flags |= 0x10000;
-                break;
-            }
-            sfx:
-            PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
+                switch (D_8009AEEC) {
+                case 0:
+                    D_8009AEF0 = 0;
+                    D_8009AEEC = 0;
+                    PSV->flags &= 0x04000010;
+                    func_8002AC18();
+                    break;
+                case 1:
+                    D_8009AEE8 = 0;
+                    D_8009AEEC = 0;
+                    PSV->flags |= 0x100;
+                    break;
+                case 2:
+                    D_8009AEEC = 1;
+                    PSV->flags |= 4;
+                    break;
+                case 3:
+                    D_8009AEEC = 0;
+                    PSV->flags |= 0x10000;
+                    break;
+                }
+                PlaySfx(0x192, NULL, NULL, 0x1000, 0x1E00, 0);
             }
             ret = 0;
             break;
@@ -327,61 +329,63 @@ found:
         case 0x240:
             if (PSV->mode != 0x25) {
                 p = &HPADS[D_8009AEF0];
-                if ((p->held & 9) == 9) {
+                /* no ret = 0 exit right after a branch: jump2 would give
+                   case 0's 0x7000 exit to it (MATCHING.md, Cross-jumping) */
+                if ((p->held & 9) != 9) {
+                    if (p->pressed & 0x4000) {
+                        r = func_800832BC();
+                        r ^= 1;
+                        if (r) {
+                            PlaySfx(0x191, NULL, NULL, 0x1000, 0x1E00, 0);
+                            func_80095A04(0);
+                            ret = 1;
+                            fl = PSV->flags;
+                            if (fl & 0x200) {
+                                PSV->flags = fl & ~0x40;
+                                D_8009AEEC = 0;
+                            } else {
+                                PSV->flags = fl & ~0x40 & 0x04000010;
+                                D_8009AEF0 = 0;
+                                D_8009AEEC = 0;
+                                func_8002AC18();
+                                ret = 1;
+                                D_8009AEEC = 0;
+                            }
+                            break;
+                        }
+                        PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
+                    }
+                    if (HPADS[D_8009AEF0].pressed & 0x1000) {
+                        func_80083244();
+                    }
                     ret = 0;
-                    break;
+                } else {
+                    ret = 0;
                 }
+            }
+            break;
+        case 0x80:
+            p = &HPADS[D_8009AEF0];
+            if ((p->held & 9) != 9) {
                 if (p->pressed & 0x4000) {
                     r = func_800832BC();
                     r ^= 1;
                     if (r) {
                         PlaySfx(0x191, NULL, NULL, 0x1000, 0x1E00, 0);
                         func_80095A04(0);
-                        ret = 1;
-                        fl = PSV->flags;
-                        if (fl & 0x200) {
-                            PSV->flags = fl & ~0x40;
-                            D_8009AEEC = 0;
-                        } else {
-                            PSV->flags = fl & ~0x40 & 0x04000010;
-                            D_8009AEF0 = 0;
-                            D_8009AEEC = 0;
-                            func_8002AC18();
-                            ret = 1;
-                            D_8009AEEC = 0;
-                        }
-                        break;
+                        D_8009AF00 = 1;
+                        D_8009AEEC = 0;
+                        PSV->flags &= ~0x80;
+                    } else {
+                        PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
                     }
-                    PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
                 }
-                ret = 0;
                 if (HPADS[D_8009AEF0].pressed & 0x1000) {
                     func_80083244();
                 }
-            }
-            break;
-        case 0x80:
-            p = &HPADS[D_8009AEF0];
-            if ((p->held & 9) == 9) {
                 ret = 0;
-                break;
-            }
-            if (p->pressed & 0x4000) {
-                r = func_800832BC();
-                r ^= 1;
-                if (r) {
-                    PlaySfx(0x191, NULL, NULL, 0x1000, 0x1E00, 0);
-                    func_80095A04(0);
-                    D_8009AF00 = 1;
-                    D_8009AEEC = 0;
-                    PSV->flags &= ~0x80;
-                } else {
-                    PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
-                }
-            }
-            ret = 0;
-            if (HPADS[D_8009AEF0].pressed & 0x1000) {
-                func_80083244();
+            } else {
+                ret = 0;
             }
             break;
         case 0x02000000:
@@ -443,7 +447,6 @@ found:
                     func_8002C11C();
                     PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
                 }
-                ret = 0;
                 break;
             case 2:
                 for (i = 0; i < PSV->numPlayers; i++) {
@@ -458,7 +461,6 @@ found:
                     D_8009AEE8 = 0;
                     PlaySfx(0x195, NULL, NULL, 0x1000, 0x1E00, 0);
                 }
-                ret = 0;
                 break;
             default:
                 if (func_8007EFC0(D_8009AEF0, 2) != 0) {
@@ -478,9 +480,9 @@ found:
                     D_8009AEEC = 0;
                     PSV->flags &= ~0x100;
                 }
-                ret = 0;
                 break;
             }
+            ret = 0;
             break;
         case 0x20000:
         case 0x20008:
