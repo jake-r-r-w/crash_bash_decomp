@@ -188,7 +188,9 @@ How the boundaries were found:
     (443) from the NAS calls (354-430). Only the last row is exact, and only
     if music and the memory card are different files; the others were
     settled by what the gap functions do and by the data blocks (Split so
-    far). Still open:
+    far). The zones below stay open, closed 2026-10-23: no leak names the
+    exe's files and the code evidence is used up, so the nine files stand
+    as they are:
     - xa/texture: 456 is the pad rumble code (`PadSetAct`), 457 clears a
       0x2C-byte struct nothing in C calls (neither the pad nor the texture
       structs have that layout), and 458, a free-list pool both the texture

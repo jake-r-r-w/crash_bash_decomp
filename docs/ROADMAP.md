@@ -92,8 +92,8 @@ phases can play what they finish.
   Status: `main/main` is nine files, cut where the evidence settles it
   (the cut zones of `decomp.py units`, the data blocks, what the functions
   on either side do; `tools/scripts/split_unit.py` does a split end to end).
-  A few zones are still open, and no leak names the exe's files
-  (ARCHITECTURE.md, Files inside `main/main`).
+  The zones left open are closed: no leak names the exe's files and the
+  code evidence is used up (ARCHITECTURE.md, Files inside `main/main`).
 - [x] Match every game function in the executable.
 - [ ] Name and type every function and global in the exe (a descriptive name
   where the original is unknown, per [CONVENTIONS.md](CONVENTIONS.md)).

@@ -98,15 +98,13 @@ Hand work, between runs:
    cross-jump (a duplicated call, which also sets its arg registers twice
    and so takes away their birthing priority); `func_800BC274` used both.
 2. Name each function as it's matched when the evidence allows.
-3. The rest of the `main.c` split: nine files since 2026-10-23
-   (`split_unit.py`, one commit each). The open zones (ARCHITECTURE.md,
-   Files inside `main/main`, Still open) need new evidence: mal/file
-   (after 46 or none), function 0 alone or not, prims/map (234-251),
-   map/path/fade/process (258-267) and xa/texture (456/457). `decomp.py
-   units [--data] [--clusters]` collects the evidence; it needs the `.s`
-   of matched functions too, which `split_unit.py` leaves behind for the
-   units it writes. A split moves functions, so workers' patches and
-   checkpoints for them stop applying.
+3. The `main.c` split is finished: nine files (2026-10-23). The zones
+   left open (ARCHITECTURE.md, Files inside `main/main`) are closed: no
+   leak names the exe's files and the code evidence is used up, so don't
+   reopen them without a new source (a disc with debug records for the
+   exe). `split_unit.py` and `decomp.py units [--data]` stay for the
+   overlays; a split moves functions, so workers' patches and checkpoints
+   for them stop applying.
 4. Later Phase 2 items: data to C (after the split), naming and typing
    passes.
 

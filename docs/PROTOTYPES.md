@@ -186,10 +186,11 @@ functions are already matched; the names are for readability.
 | `InitCountdown__Fv` | `func_8007EB68` | 0.95 |
 | `Init_Panel__Fv` | `func_8007EC48` | 0.98 |
 
-Not placed (the code changed after the demo): `InitIcons`, `InitSplatIcons`
-and `InitBorderIcons` are probably `func_8007BE84`, `func_8007BFA8` and
-`func_8007C170` by position (similarity 0.51); `InitBossIcon`, `FetchWinner`,
-`Cups_Init` and `Draw_Panel` have no good match. Retail-only functions in the
+Not placed, and closed (2026-10-23): the code changed after the demo, so
+nothing better than position will place them. `InitIcons`, `InitSplatIcons`
+and `InitBorderIcons` sit where `func_8007BE84`, `func_8007BFA8` and
+`func_8007C170` do (similarity 0.51); `InitBossIcon`, `FetchWinner`,
+`Cups_Init` and `Draw_Panel` have no match. Retail-only functions in the
 unit: `func_8007AF3C`, `C830`, `D208`, `D2F4`, `D5EC`, `D6D0`, `D850`,
 `E7A4`, `E7C8`, `E7F4`, `E874`, `E93C`, `E9FC`, `EAC0`, `ED0C`. Euro Demo 65
 names `E7C8`: `CalcElapsedTime`.
