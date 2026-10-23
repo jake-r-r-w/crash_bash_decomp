@@ -144,6 +144,19 @@ and current tools).
     `ret = 0` block. Then case 0's `PlaySfx(0x192)` tail could merge into
     case 8's, and that block's `j` would get its delay slot from the target
     (the target keeps `s3 = 0` outside it).
+  - 2026-10-23 pass (regions 176/264 blocks still the best): the chain
+    order comes from `redirect_jump`, which puts each threaded jump at the
+    head of the join's chain (MATCHING.md, Cross-jumping). So case 0's
+    PlaySfx tail can merge into case 8's only if case 8's jump already
+    targets the join when jump2 starts. The target also keeps both
+    `return 1` blocks apart at 0xb0, where ours folds the first into the
+    second. Early exits in cases 0 and 8, `return ret` for 0x101/0x2B and
+    other shapes raised `try`'s structure count (to 1298) but lowered
+    regions (163-164 blocks); the block note lists them. Next: a cc1 built
+    from FSF 2.8.1 with traces in `jump.c`/`reorg.c` (needs the full
+    tarball: the reference tree lacks host configs), or C with a `goto`
+    giving the surviving `j` a label. `scratch/f3/` has the variants and
+    `dumpv.sh` (install a variant, dump sched2/jump2/dbr, list the tails).
   - Also verified here: a constant set in the same basic block as its use
     stays in a register (reload_cse makes `and v0,a1` / `sllv ...,s5`), so
     move `max = 4` / `n = 1` past the label in front of them.
@@ -448,6 +461,16 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-23 (hand: `func_8007F314`, still parked):** worked jump2's
+  cross-jump order out against dumps: `redirect_jump` puts each threaded
+  `break` at the head of the join's chain, so with the empty loop after
+  the switch a tail merges into the latest surviving copy, and without it
+  into the last tail (MATCHING.md, Cross-jumping). The target needs case
+  0's PlaySfx tail to merge into case 8's, an existing label at the
+  survivor's `j`, and both `return 1` blocks kept apart; no C shape tried
+  gives that, and `try`'s structure count rose while regions fell, so the
+  park keeps its C (block note).
 
 - **2026-10-23 (hand: `func_800BFEE0` and `func_800B7190` from their ovl65
   twins, 35308bcd, 402f835a):** `func_800BFEE0`'s park (4 lines off) had an

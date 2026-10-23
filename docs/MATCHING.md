@@ -195,6 +195,10 @@ first diff:
   written the same way), `in` the share of the other found inside NAME (a
   helper or macro it inlines). `--all` includes unmatched ones, siblings to
   do together. `func_8001EAA4`'s sibling `func_8001EDFC` comes first (0.62).
+  Rerun it on a parked function: a twin matched later shows as 1.00, and
+  the gate's copy of its C fails when the prototypes differ (`copy_failed`
+  in `.decomp/state.json`), so port it by hand with the local types
+  (`func_800BFEE0`, `func_800B7190`).
 - **Matched C:** grep `src/` for the same globals, callees or shape (the same
   loop, the same struct offsets). A sibling's C often shows the idiom.
   Example: `Random` and `func_800155FC` share the seed step.
@@ -1985,16 +1989,26 @@ The rules found so far, each one checked against a trace:
 - **Cross-jumping (`find_cross_jump`, `do_cross_jump` in `jump.c`, jump2).**
   - The pass walks forward. A jump hands its tail to the first matching
     copy it finds among the jumps to the same label, most recently threaded
-    first.
+    first: `redirect_jump` moves a threaded jump to the head of its new
+    label's chain, and the search starts at the head. Jumps already aimed at
+    the label when jump2 starts sit in code order, the last one at the head.
   - That needs the matched insns to follow a label, or a branch around the
-    jump. A tail that follows a call never hands itself over.
+    jump when the other copy is also preceded by a jump (the codes must
+    agree before the branch-around discount applies). A tail that follows a
+    call never hands itself over.
   - Jumps to a label made during jump2 itself are not searched (`INSN_UID < max_uid`).
   - Before reload, threading stops at a loop's start note (`follow_jumps`).
     An empty loop after a switch therefore makes jump2 thread the `break`s
-    one at a time, which keeps the first copy (`func_8007F314`, parked).
+    one at a time, so each tail meets the copies threaded before it, and the
+    first copy is kept. Without that loop every `break` already targets the
+    join and all merge into the last tail. Either way an earlier copy can
+    hand itself to a later one only if the later jump is already in the
+    chain when the earlier one is reached (`func_8007F314`, parked).
 - **Delay slots (`reorg.c`).**
   - `fill_simple_delay_slots` fills from before the branch first, then
-    fills an unconditional jump from its target.
+    fills an unconditional jump from its target. Its backward scan stops at
+    a label, so a jump with an existing label right before it (from jump2)
+    keeps the insn before that label and takes its slot from the target.
   - `steal_delay_list_from_fallthrough` moves a filled jump's slot into the
     branch just before it.
   - `redundant_insn` lets a branch skip a target insn that its delay slot
