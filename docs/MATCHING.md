@@ -221,6 +221,8 @@ first. Rows that need inline asm are not allowed (only C).
 
 | Symptom in the diff | Likely source change | Example |
 |---|---|---|
+| A u16 parameter gets an `andi 0xffff` the target lacks, before a `- 1` and a small mask | Do the arithmetic in u16: `arg0--; t = arg0 & 0xFFF;` (combine drops the zero-extension; `(arg0 - 1) & 0xFFF` keeps it) | `map_entity_address` |
+| An index the target sign-extends from 16 bits (`sll 16; sra 14`) right after storing it to an s16 field, where an int parameter indexes unextended | Index by the field just stored (`Alist[anim->ALindex]`): cse reuses the truncated register instead of reloading | `GotoLinkAnim` |
 | Count-down loop ending `bne v1, a1` with `a1 = -1`, and a `beqz` guard before it | `for (i = n - 1; i != -1; i--)`; `while (n--)` and `while (n-- != 0)` don't match. Fixed count: `for (i = 62; i != -1; i--)` | `func_800154C0`, `func_800154EC`; `func_80012E54`, `func_8001325C` |
 | Loop exit test at the top, `j` back at the bottom | Leave the loop by `return` or `goto` past it ([below](#loops-gcc-rotates-but-the-target-doesnt)) | `func_80015780` |
 | `lhu` + `sll 16` + `sra 16` for a field | Nothing to fix: the field is `s16` (combine reuses the shifted value, e.g. for the `srl 31` of a `/ 2`) | `func_8001C7FC` |

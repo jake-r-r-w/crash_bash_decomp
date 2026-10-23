@@ -119,10 +119,10 @@ and current tools).
 ## Open leads
 
 - **Finish the demo discs' symbols** (PROTOTYPES.md; applied: 135 function
-  and 51 global names, unit `panel`, the Jampack enums, 36 prototypes, the
+  and 51 global names, unit `panel`, the Jampack enums, 43 prototypes, the
   leaked types and class names, 16 global types, 13 PANEL.CPP locals).
-  Left: 7 prototypes whose bodies index the parameter as bytes (typing
-  each body is a small job), the classes with no stand-in (`geo`,
+  Left: `cam_init` and the 11 the tool can't write, the classes with no
+  stand-in (`geo`,
   `geo_entity`, `joypad_info`, `tga_header`, `file`, ...), merging the
   other views of `obj_texture` (AnimEntry, TexDst2A84C) and of the camera,
   `PrintNasPos` (never referenced), the link groups against the engine
@@ -568,6 +568,13 @@ Newest first, a few lines each. Details are in the commits.
   PlaySfx as a `goto` into case 8's (not the source; leads list why). No
   `break`/`goto` mix gives the target's three tail survivors. Found the
   unit is probably `PAUSE.CPP`; `cc1plus` compiles the C identically.
+
+- **2026-10-23 (the last seven leaked prototypes):** typed the bodies of
+  `line_intersect_zy`, `map_loaded_geo`, `render_entity_thread`,
+  `update_camera_thread` (`script_control_info` laid out) and found
+  natural code for the widths of `Set_Clock`, `GotoLinkAnim`,
+  `map_entity_address` (MATCHING.md, two new Diff patterns). `main.h` now
+  includes `core.h`.
 
 - **2026-10-23 (leaked types and prototypes):** the shell's `SWORD_XY`
   family, `process_info`/`process_control_info`/`fade_info` (for ModeMgr,

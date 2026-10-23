@@ -301,23 +301,26 @@ The 4 names the repo gave itself are replaced by the originals
   `DefHero2ObjectCollision` are placed by the matched code that stores them
   as handlers (`renames_engine_stubs.txt`), `InitParticleEffect` lands on the
   repo's own name by order; `PrintNasPos` is never referenced: unplaceable.
-- Parameter types: 36 functions have the types their C++ names spell.
-  `proto_types.py` gave 27 (`InsertNasTag(NAS *, NAS *)`,
-  `kill_sprim_sub(subengine *)`, `AddExt(NAS *)`, `mal_unlink(mal *,
-  _mal_area *)`, ...). Before 2026-10-23 it rewrote call statements as if
-  they were prototypes, so most functions with a caller were dropped; they
-  were retried once that was fixed. The process and fade functions
+- Parameter types: 43 functions have the types their C++ names spell, every
+  one `proto_types.py` can write. It applied 27 itself (`InsertNasTag(NAS *,
+  NAS *)`, `kill_sprim_sub(subengine *)`, `AddExt(NAS *)`, `mal_unlink(mal *,
+  _mal_area *)`, ...); before 2026-10-23 it rewrote call statements as if
+  they were prototypes, so most functions with a caller were dropped, and
+  they were retried once that was fixed. The rest were typed by hand
+  because their bodies indexed the parameter as bytes or words, or
+  steered an int to the target: the process and fade functions
   (`set_fade(fade_info *)`, `process_interrupt(process_control_info *,
-  process_info *)`, ...), `texture_release_loading_mem(obj_textureset *)`
-  and the four `obj_dbase` ones were typed by hand, because their bodies
-  indexed the parameter as bytes. Left: 7 whose bodies need the same
-  (`Set_Clock(u16, u16)`, `line_intersect_zy(VECTOR *...)`,
-  `map_loaded_geo(geo *, map_enviroment *)`, `render_entity_thread`,
-  `update_camera_thread`, `GotoLinkAnim`, `map_entity_address`), `cam_init`
-  (the camera globals are byte arrays seen through several structs), 11 the
-  tool can't write (a function pointer, a differing count), and the classes
-  with no stand-in yet (`geo`, `geo_entity`, `geo_vertex`, `geo_tristrip`,
-  `joypad_info`, `tga_header`, `file`, `UPOLY_GT3`, `lPOLY_GT4`, `prim_`).
+  process_info *)`, ...), `texture_release_loading_mem(obj_textureset *)`,
+  the four `obj_dbase` ones, `line_intersect_zy(VECTOR *...)`,
+  `map_loaded_geo(geo, map_enviroment *)`, `render_entity_thread` and
+  `update_camera_thread` (`script_control_info` now has a layout), and the
+  widths `Set_Clock(u16, u16)`, `GotoLinkAnim(EXTanimator *, int)`,
+  `map_entity_address(u16, geo)`, each matching with natural code for its
+  type. Left: `cam_init` (the camera globals are byte arrays seen through
+  several structs), 11 the tool can't write (a function pointer, a
+  differing count, no definition), and the classes with no stand-in yet
+  (`geo`, `geo_entity`, `geo_vertex`, `geo_tristrip`, `joypad_info`,
+  `tga_header`, `file`, `UPOLY_GT3`, `lPOLY_GT4`, `prim_`).
 - Types from the leaks (2026-10-23): the shell's small vector types
   (`SWORD_XY`, `SWORD_XYZ`, `xy_w`, ... in `nas.h`; `SWORD_XYZ` for
   `GlyphPos`), PANEL.CPP's globals (`Score` is `ScoreInfo`, `Clock`
