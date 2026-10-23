@@ -54,6 +54,7 @@ them. It writes everything next to the disc:
 | Oct 9 2000 prototype (Hidden Palace; PAL review build `SCES_028.34`) | close to retail | engine entry `+0x40002`: 3447 type records | the engine's own types (`NAS`, `EXTengine`, `subengine`, `HeroInfo`, ...), every AST enum: names for 201 AST Init/Plot functions; the `include/bash/` game headers |
 | Jampack Winter 2000 demo (`SCUS_946.24`) | older than Oct 9 | engine entry `+0x2BE15`: 4611 type records, **30 function records**, 44 globals, 1021 line records | unit `8007ac20` is `PANEL.CPP`; 23 function names mapped (not applied yet) |
 | PlayStation Demo Disc 1.3 (`SCUS-94618`, mastered 2000-08-30) | the Jampack build | the same as Jampack: the same `CRASHBSH.EXE` and `.DAT`, byte for byte | nothing new; dates the Jampack build to 2000-08-30 or earlier |
+| PAL retail (`SCES-02834`, mastered 2000-10-23) | release | none: the engine's spare space is zeros and `0x01` filler, no leftover memory | nothing |
 | Euro Demo 65 (`SCED-02639`, PAL) | near the demos | engine entry `+0x332CB`: **1182 symbol table labels**, 2325 type records | 163 function names mapped across `main.exe`, the engine and 6 slot overlays; 184 global names; the link layout and overlay names (not applied yet) |
 
 The prototype exes have no source names, but by masked code signature they
@@ -247,5 +248,4 @@ originals: `SpawnNASById` is `CreateNAS`, `SpawnNASFromRecord` `TriggerNas`,
 | Disc | Why it might help |
 |---|---|
 | Official PlayStation Magazine UK Demo 65 | separate PAL mastering, unless it is the same disc as Euro Demo 65 |
-| PAL retail (`SCES-02834`) | separate mastering; a diff shows PAL-only code |
 | Japanese retail (Crash Bandicoot Carnival) | later, separate mastering; localization changes |
