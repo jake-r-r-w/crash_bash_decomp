@@ -4408,7 +4408,149 @@ end:
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", PogoAI_MoveTowardsTarget);
+void PogoAI_MoveTowardsTarget(u32 hero) {
+    s32 dir;
+    EXTbotai *ai;
+    Ovl60Move *m;
+    Ovl60Move *mb;
+    Ovl60Offset *tbl;
+    s32 tx, tz;
+    s32 x;
+    s32 z;
+    s32 i;
+    s32 ax, az, bz;
+    s32 xm;
+    s32 xp;
+    s32 gx, gz;
+    s32 dx, dz;
+    u32 best;
+    s32 flags;
+    u32 n;
+    s32 k;
+    s32 r;
+
+    ai = Heroes[hero].hero_ai;
+    if (ai == NULL) {
+        return;
+    }
+    dir = -1;
+    do {
+        ai->AIpad = 0;
+        tx = ai->TargetXYZ.x;
+        tz = ai->TargetXYZ.z;
+        x = (Heroes[hero].hero_eng->unk10.x + 0x800) >> 9;
+        z = (Heroes[hero].hero_eng->unk10.z + 0x800) >> 9;
+    } while (0);
+    if (x == tx && z == tz) {
+        if (ai->AImode == 3 || ai->AImode == 7) {
+            ai->AImode = 1;
+            ai->AItimer2 = Random(3) + 3;
+            return;
+        }
+        if (ai->AImode == 6) {
+            ai->AImode = 1;
+            ai->AItimer2 = Random(3) + 3;
+            return;
+        }
+        if (ai->AImode == 5) {
+            mb = D_800C5ADC;
+            m = &mb[hero];
+            n = ++m->unkC;
+            if (n < (u32)m->unk10) {
+                k = (n + m->unk8) & 7;
+                if (m->unk0 != 0) {
+                    tbl = D_800C457C;
+                } else {
+                    tbl = D_800C45BC;
+                }
+                ai->TargetXYZ.x = x + tbl[k].x;
+                r = z + tbl[k].z;
+                do {
+                } while (0);
+                ai->TargetXYZ.z = r;
+                r = PogoAI_IsSquareOKForPlayer(hero, ai->TargetXYZ.x, ai->TargetXYZ.z, 0, 0, 0) != 1;
+                if (r) {
+                    ai->AImode = 1;
+                    ai->AItimer2 = Random(3) + 3;
+                    return;
+                }
+            } else {
+                ai->AImode = 1;
+                ai->AItimer2 = Random(3) + 3;
+                return;
+            }
+        }
+    }
+    flags = 2;
+    i = 0;
+    ax = (x << 9) - 0x800;
+    az = ((z + 1) << 9) - 0x800;
+    do {
+        best = -1;
+        gx = (tx << 9) - 0x800;
+        gz = (tz << 9) - 0x800;
+        bz = (z << 9) - 0x800;
+        if (PogoAI_IsSquareOKForPlayer(hero, x, z, 0, 1, flags)) {
+            dx = abs(ax - gx);
+            dz = abs(az - gz);
+            dx = dx * dx + dz * dz;
+            if ((u32)dx < best) {
+                best = dx;
+                dir = 2;
+            }
+        }
+        if (PogoAI_IsSquareOKForPlayer(hero, x, z, 0, -1, flags)) {
+            dx = (z - 1) << 9;
+            dx -= 0x800;
+            dz = abs(ax - gx);
+            dx = abs(dx - gz);
+            dx = dz * dz + dx * dx;
+            if ((u32)dx < best) {
+                best = dx;
+                dir = 0;
+            }
+        }
+        if (PogoAI_IsSquareOKForPlayer(hero, x, z, 1, 0, flags)) {
+            xp = ((x + 1) << 9) - 0x800;
+            dx = abs(xp - gx);
+            dz = abs(bz - gz);
+            dx = dx * dx + dz * dz;
+            if ((u32)dx < best) {
+                best = dx;
+                dir = 3;
+            }
+        }
+        if (PogoAI_IsSquareOKForPlayer(hero, x, z, -1, 0, flags)) {
+            xm = ((x - 1) << 9) - 0x800;
+            dx = abs(xm - gx);
+            dz = abs(bz - gz);
+            dx = dx * dx + dz * dz;
+            if ((u32)dx < best) {
+                best = dx;
+                dir = 1;
+            }
+        }
+        flags = 0;
+        i++;
+    } while (dir == -1 && i < 2);
+    switch (dir) {
+    case 2:
+        ai->AIpad |= D_80051244[0];
+        break;
+    case 0:
+        ai->AIpad |= D_80051244[4];
+        break;
+    case 3:
+        ai->AIpad |= D_80051244[2];
+        break;
+    case 1:
+        ai->AIpad |= D_80051244[6];
+        break;
+    }
+    if (D_800C5ADC[hero].unk4 != 0 && dir != Heroes[hero].hero_move->facing_angle >> 10) {
+        ai->AItimer2 = Random(2) + 2;
+    }
+}
 
 bool PogoAI_IsSquareOKForPlayer(u32 arg0, s32 x, s32 z, s32 dx, s32 dz, u32 flags) {
     Ovl60Cell *p;

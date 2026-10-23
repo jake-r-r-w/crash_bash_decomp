@@ -301,6 +301,7 @@ typedef struct {
 extern Ovl60Move D_800C5ADC[];
 extern Ovl60Offset D_800C457C[];
 extern Ovl60Offset D_800C45BC[];
+extern s32 D_80051244[]; /* pad flags by direction octant */
 s32 PogoAI_CountMyTiles(u32 arg0);
 s32 func_800BE6C4(s32 arg0, Ovl60Goal *arg1);
 
