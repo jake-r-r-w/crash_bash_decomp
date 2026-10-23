@@ -62,7 +62,8 @@ How the boundaries were found:
     `0x8006789C` indexed by `D_8006EA24` (the font mode): `+2` u8, `+4`/`+6`
     s16 x/y, `+8` the text pointer. `TextPos` has a fourth s16 at `+6`
     (set to 1 there).
-- **Files inside `main/main`** (`0x80010000..0x8002D488`, 566 functions),
+- **Files inside `main/main`** (`0x80010000..0x8002D488`, 566 functions; split
+  from 2026-10-23, see Split so far below),
   evidence as of 2026-10-15. None of it places a boundary yet:
   - No padding between functions (every symbol ends where the next starts),
     so `.text` alignment marks no file end.
@@ -179,6 +180,12 @@ How the boundaries were found:
     one-file region 1-16 with `mal_*`, and no zone separates `xa_setvol`
     (443) from the NAS calls (354-430). Only the last row is exact, and only
     if music and the memory card are different files.
+  - **Split so far** (2026-10-23, `tools/scripts/split_unit.py`; each build
+    byte-identical, which also proves each new file's rodata start):
+
+    | Unit | First function | Evidence | Rodata from |
+    |---|---|---|---|
+    | `card` | `func_8002C4B0` (549, ASCII to Shift-JIS for save titles: Euro's `card_ascii2sjis`) | the one exact cut: music ends by 548, the memory card starts by 554, and no other gap may hold a boundary; 549..565 is one file (no zone after 548) | `0x8004CD10` (549's jump table) |
   - The Aug 23 prototype's debug pages name one shell source,
     `C:\crash4\Core\Shell\PSX\PSX_PAD.CPP`, and about 50 headers under
     `CORE\NASCORE`, `CORE\SHELL\INCLUDE` (`SHELL.H`, `ALLDBASE.H`),

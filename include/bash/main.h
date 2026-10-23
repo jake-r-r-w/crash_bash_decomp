@@ -810,7 +810,6 @@ s32 func_80012FFC(void);
 s32 func_8001231C(void);
 void func_80010AE8(Heap *arg0);
 void func_8002BAE8(void);
-void func_8002C894(void);
 MemBlock *mal_first_free(u32 words, MemBlock *blk);
 s32 func_80013034(s32 arg0, s32 arg1, s32 arg2, void (*done)(u8 *, u8 *), u8 *arg4, s32 arg5, s32 arg6);
 void func_80029560(u8 *arg0);
@@ -981,12 +980,6 @@ void func_8002C29C(void);
 void music_restart(void);
 void func_8002C3F0(s32 arg0, s32 *arg1);
 void func_8002C428(void);
-s32 func_8002C4B0(u8 arg0);
-void func_8002D134(s32 arg0);
-void func_8002D15C(void);
-void func_8002D254(void);
-void func_8002D274(void);
-void func_8002D33C(u8 *arg0);
 
 extern GteScratch D_800569CC;
 extern SVECTOR D_80056AC8[];
@@ -1072,44 +1065,9 @@ extern char *D_800655BC;
 extern u8 D_80065648[]; /* the header's icon frames (D_800655C8 + 0x80) */
 extern u8 D_8004CD8C[];
 s32 func_80010000(u8 *arg0);
-s32 func_8002C4B0(u8 arg0);
 
 /* Writes up to 32 Shift-JIS characters of src (ASCII) to dst, padding with
  * full-width spaces (func_8002C5BC). */
-static inline void McSetTitle(u8 *src, s16 *dst) {
-    s16 fill;
-    s32 i;
-    s32 n;
-    s32 done;
-    u8 c;
-    s32 r;
-    s32 r2;
-
-    i = 0;
-    done = 0;
-    n = 0;
-    r2 = func_8002C4B0(0x20);
-    fill = ((r2 & 0xFF) << 8) | ((u32)(func_8002C4B0(0x20) & 0xFFFF) >> 8);
-    do {
-        if (done == 0) {
-            c = src[i];
-            i++;
-            if (c >= 0x20U) {
-                r = func_8002C4B0(c);
-                dst[n] = ((r & 0xFF) << 8) | ((u32)(func_8002C4B0(c) & 0xFFFF) >> 8);
-            } else {
-                done = 1;
-            }
-            if (done != 0) {
-                goto fillit;
-            }
-        } else {
-fillit:
-            dst[n] = fill;
-        }
-        n++;
-    } while (n < 0x20);
-}
 typedef struct {
     u8 b[8];
     u8 pad[0x18C];
@@ -1132,147 +1090,14 @@ extern s32 D_8006782C;
 extern s32 D_80067830;
 
 /* The directory entry named D_8004CDAC, or NULL (func_8002D1D4). */
-static inline SizeEntry *McFindSave(void) {
-    SizeEntry *p;
-    s32 i;
-
-    i = D_800675D0;
-    p = D_800675D4;
-    i--;
-    if (i != -1) {
-        do {
-            if (strcmp(D_8004CDAC, (char *)p) == 0) {
-                return p;
-            }
-            i--;
-            p++;
-        } while (i != -1);
-    }
-    return NULL;
-}
 
 /* Clears the save's slots and flags and re-sums it (func_8002D294). */
-static inline void McResetSave(void) {
-    u8 *p;
-    s32 i;
-    s32 *q;
-    s32 *end;
-    s32 sum;
-    int new_var;
-
-    i = 0;
-    for (;;) {
-        if (i < 4) {
-            D_800657C8[i].b[0] = 0;
-            D_800657C8[i].b[1] = 0;
-            D_800657C8[i].b[2] = 0;
-            D_800657C8[i].b[3] = 0;
-            D_800657C8[i].b[4] = 0;
-            D_800657C8[i].b[5] = 0;
-            D_800657C8[i].b[6] = 0;
-            D_800657C8[i].b[7] = 0;
-            i++;
-        } else {
-            break;
-        }
-    }
-    new_var = 0x850;
-    *(s32 *)(D_800655C8 + new_var) = 1;
-    i = 7;
-    p = D_800655C8 + i;
-    do {
-        p[0x854] = 0;
-        i--;
-        p--;
-    } while (i >= 0);
-    end = (s32 *)(D_800655C8 + new_var);
-    q = (s32 *)(D_800655C8 + 0x200);
-    i = 0;
-    while (q < end) {
-        i += *q++;
-    }
-    D_80065E24 = i;
-}
 
 /* McResetSave with the checksum in its own variable (allocates it apart from i). */
-static inline void McResetSaveSum(void) {
-    u8 *p;
-    s32 i;
-    s32 *q;
-    s32 *end;
-    s32 sum;
-    int new_var;
-
-    i = 0;
-    for (;;) {
-        if (i < 4) {
-            D_800657C8[i].b[0] = 0;
-            D_800657C8[i].b[1] = 0;
-            D_800657C8[i].b[2] = 0;
-            D_800657C8[i].b[3] = 0;
-            D_800657C8[i].b[4] = 0;
-            D_800657C8[i].b[5] = 0;
-            D_800657C8[i].b[6] = 0;
-            D_800657C8[i].b[7] = 0;
-            i++;
-        } else {
-            break;
-        }
-    }
-    new_var = 0x850;
-    *(s32 *)(D_800655C8 + new_var) = 1;
-    i = 7;
-    p = D_800655C8 + i;
-    do {
-        p[0x854] = 0;
-        i--;
-        p--;
-    } while (i >= 0);
-    end = (s32 *)(D_800655C8 + new_var);
-    q = (s32 *)(D_800655C8 + 0x200);
-    sum = 0;
-    while (q < end) {
-        sum += *q++;
-    }
-    D_80065E24 = sum;
-}
 
 /* Zeroes the 0x2000-byte save buffer. */
-static inline void McClearSave(void) {
-    s32 *q;
-    s32 i;
-
-    q = (s32 *)D_800655C8;
-    i = 0x7FF;
-    do {
-        *q = 0;
-        i--;
-        q++;
-    } while (i != -1);
-}
 
 /* Free bytes on the card (func_8002D178). */
-static inline s32 McFreeBytes(void) {
-    SizeEntry *p;
-    s32 i;
-    s32 sum;
-
-    i = D_800675D0;
-    if (i >= 0xF) {
-        return 0;
-    }
-    p = D_800675D4;
-    i--;
-    sum = 0;
-    if (i != -1) {
-        do {
-            sum += p->size;
-            p++;
-            i--;
-        } while (i != -1);
-    }
-    return 0x1E000 - sum;
-}
 extern Heap D_8004E0F0;
 extern s32 D_800637B0;
 s32 func_80027790(u8 *a, s32 b, u8 *c, s32 d);
@@ -1934,7 +1759,6 @@ void *func_8001CFE8(MorphModel *model, void *arg1, s32 arg2);
 
 s32 func_80028BC8(u8 * *arg0);
 
-void card_save(void);
 
 void func_8002AABC(void);
 
@@ -1964,7 +1788,6 @@ u8 *func_80016AD4(s32 *arg0, u8 *rec);
 
 void func_8002C488(s32 arg0, s32 type);
 
-void func_8002D108(void);
 
 u8 *func_800160C4(u8 *arg0, s32 i);
 
@@ -2085,7 +1908,6 @@ void func_8002120C(u8 *arg0);
 
 void draw_init(void);
 
-s32 func_8002D094(void);
 
 u8 *get_script_header(u8 *arg0, s32 arg1);
 
@@ -2105,7 +1927,6 @@ void func_800138A4(void);
 
 s32 asload_chunk_relocatable(s32 arg0, s32 arg1, u32 **arg2, s32 arg3);
 
-s32 func_8002D360(u8 *arg0);
 
 u8 *func_8001316C(u8 *arg0);
 
@@ -2144,7 +1965,6 @@ void xa_setvol(s16 vol);
 
 void func_80021940(s32 arg0, u8 *arg1, s32 arg2);
 
-s32 func_8002D178(void);
 
 void func_80010354(void);
 
@@ -2313,7 +2133,6 @@ void func_8002BCB0(s32 *arg0);
 
 void func_8002C1C0(s32 arg0, s32 arg1);
 
-SizeEntry *func_8002D1D4(void);
 
 s32 func_8002E584(u8 *arg0);
 
@@ -2508,9 +2327,7 @@ void func_8002BBEC(void);
 
 void func_8002C2C4(SeqSlot *slot);
 
-void func_8002D294(void);
 
-void func_8002D394(u8 *arg0, s16 *arg1);
 
 extern u8 D_80063A84[];
 
@@ -2832,7 +2649,6 @@ void func_80029790(u8 *arg0);
 
 void func_8002A84C(TexSrc2A84C *s, TexDst2A84C *d, s32 n);
 
-void func_8002C5BC(void);
 
 /* func_80013F44: camera eased towards a target view */
 typedef struct { s32 x, y, z; } CamXYZ;
@@ -2971,6 +2787,7 @@ void func_8002854C(FreeNode *n);
 
 void func_80028774(VramArea *areas, FreeNode *pool, s32 npool, s32 nbuf);
 
-void func_8002C97C(void);
+
+#include "bash/card.h"
 
 #endif /* BASH_MAIN_H */

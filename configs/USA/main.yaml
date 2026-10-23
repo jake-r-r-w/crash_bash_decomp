@@ -62,6 +62,7 @@ segments:
     # bss_size: Please fill out this value when you figure out the bss size
     subsegments:
       - [0x800, c, main/main]
+      - [0x1CCB0, c, main/card]
       - [0x1DC88, c, main/8002d488]          # gcc 2.7.2 + ASPSX (lui $at stores)
       - [0x1E8F0, c, main/8002e0f0]
       - [0x1EFA0, pad]                       # 8 zero bytes after the unit (the asm had them as nops)
@@ -348,6 +349,7 @@ segments:
       - [0x3CD4C, lib, libapi, a18, .text]
       - [0x3CD5C, lib, libapi, a19, .text]
       - [0x3CD6C, .rodata, main/main]          # game rodata (follows .text)
+      - [0x3D510, .rodata, main/card]
       - [0x3D60C, .rodata, main/8002d488]
       - [0x3D65C, .rodata, main/8002e0f0]
       - [0x3D6F4, pad]                       # 8 zero bytes after the unit's rodata
