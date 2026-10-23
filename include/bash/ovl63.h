@@ -874,6 +874,8 @@ typedef struct Ovl63Fux {
     /* 0x000 */ u8 pad0[0x13C];
     /* 0x13C */ s32 unk13C;
     /* 0x140 */ s32 unk140;
+    /* 0x144 */ u8 pad144[0x164 - 0x144];
+    /* 0x164 */ s32 unk164; /* bounce factor, 8.8 (0x100 at setup) */
 } Ovl63Fux;
 
 void func_800BE7B4(s32 player, Ovl63Barrel *b);
