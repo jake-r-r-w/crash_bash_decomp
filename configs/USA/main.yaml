@@ -40,7 +40,7 @@ options:
   undefined_syms_auto_path: linkers/undefined_syms_auto.txt
 
 
-  subalign: 2
+  subalign: 4
 
   string_encoding: ASCII
   data_string_encoding: ASCII
