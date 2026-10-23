@@ -39,6 +39,58 @@ typedef struct SLONG_XYZ {
 } SLONG_XYZ;
 BASH_SIZE_CHECK(SLONG_XYZ, 0xC);
 
+/* The shell's other small vector types, from the Jampack Winter 2000 demo's
+ * debug types (docs/PROTOTYPES.md). */
+typedef struct SLONG_XY {
+    s32 x;
+    s32 y;
+} SLONG_XY;
+
+typedef struct SWORD_XY {
+    s16 x;
+    s16 y;
+} SWORD_XY;
+BASH_SIZE_CHECK(SWORD_XY, 0x4);
+
+/* An SWORD_XY seen as one word (passed in a register). */
+typedef union xy_w {
+    SWORD_XY w;
+    u32 SLONG_XY;
+} xy_w;
+
+typedef struct UBYTE_XY {
+    u8 x;
+    u8 y;
+} UBYTE_XY;
+
+typedef union xy_ub {
+    UBYTE_XY b;
+    u16 SLONG_XY;
+} xy_ub;
+
+typedef struct SWORD_XYZ {
+    s16 x;
+    s16 y;
+    s16 z;
+} SWORD_XYZ;
+BASH_SIZE_CHECK(SWORD_XYZ, 0x6);
+
+typedef struct SWORD_XYZ_MINMAX {
+    SWORD_XYZ min;
+    SWORD_XYZ max;
+} SWORD_XYZ_MINMAX;
+
+typedef struct SLONG_XYZ_MINMAX {
+    SLONG_XYZ min;
+    SLONG_XYZ max;
+} SLONG_XYZ_MINMAX;
+
+typedef struct UBYTE_RGB {
+    u8 r;
+    u8 g;
+    u8 b;
+} UBYTE_RGB;
+
 /* Link of an object's extension chain. Every extension starts with
  * `s32 EXTid; EXTnode Extend;`. The chain starts at NAS.Extend.Child; Parent
  * is the object or extension this one was appended to (AllocExtension). */

@@ -102,7 +102,7 @@ typedef struct PanelPrim {
     u8 pad9C[0xC];
 } PanelPrim; /* 0xA8 */
 extern PanelPrim D_8009986C[4][7];
-extern S16Pair HealthIconPos[4];
+extern SWORD_XY HealthIconPos[4];
 extern u16 *pHeroHealth[4];
 
 void func_8007C170(void);

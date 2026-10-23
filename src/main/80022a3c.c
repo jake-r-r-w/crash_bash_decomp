@@ -1034,15 +1034,15 @@ void func_800243A0(s16 arg0, s32 arg1, u8 *s, u32 arg3, u32 arg4, s32 arg5) {
     }
 }
 
-void SysPrintAt3d(GlyphPos *arg0, char *s, u32 arg2, u32 arg3) {
-    GlyphPos pos;
-    GlyphPos tmp;
+void SysPrintAt3d(SWORD_XYZ *arg0, char *s, u32 arg2, u32 arg3) {
+    SWORD_XYZ pos;
+    SWORD_XYZ tmp;
     s32 c;
     s32 n;
     u8 *p;
 
     pos = *arg0;
-    if ((arg0->v[0] & 0xC000) == 0x8000) {
+    if ((arg0->x & 0xC000) == 0x8000) {
         p = s;
         n = 0;
         if (*p != 0 && *p != 10) {
@@ -1064,7 +1064,7 @@ void SysPrintAt3d(GlyphPos *arg0, char *s, u32 arg2, u32 arg3) {
                 p++;
             } while (*p != 0 && *p != 10);
         }
-        pos.v[0] = -((n * 16) >> 1);
+        pos.x = -((n * 16) >> 1);
     }
     c = *s++;
     if (c != 0) {
@@ -1074,7 +1074,7 @@ void SysPrintAt3d(GlyphPos *arg0, char *s, u32 arg2, u32 arg3) {
             if (g != -1) {
                 func_80029F9C(*(u8 **)(sysfont_dbase + 0x18) + (g & 0xFFF) * 0x38, &pos, 0, arg2, arg3);
             }
-            pos.v[0] += (s32)((u8)D_8005AEB4[c + (D_8005B2B4 << 8)] << 24) >> 20;
+            pos.x += (s32)((u8)D_8005AEB4[c + (D_8005B2B4 << 8)] << 24) >> 20;
             c = *s++;
         } while (c != 0);
     }
@@ -3726,7 +3726,7 @@ s32 texture_draw(SpriteFrame *f, s32 xy, s32 otz, u32 color) {
     return f->advance * 640 / D_8005B698->w;
 }
 
-s32 func_80029F9C(SpriteFrame *f, GlyphPos *pos, s32 otz, u32 c0, u32 c1) {
+s32 func_80029F9C(SpriteFrame *f, SWORD_XYZ *pos, s32 otz, u32 c0, u32 c1) {
     POLY_GT4 *p;
     GfxState *gs;
     volatile SVECTOR v;
@@ -3753,8 +3753,8 @@ s32 func_80029F9C(SpriteFrame *f, GlyphPos *pos, s32 otz, u32 c0, u32 c1) {
     p->tpage = (f->tpage & 0xFF9F) | ((c0 >> 19) & 0x60);
     p->clut = f->clut;
     setSemiTrans(p, (s32)c0 < 0);
-    v.vx = pos->v[0] - 0x80;
-    v.vy = pos->v[1] - 0x80;
+    v.vx = pos->x - 0x80;
+    v.vy = pos->y - 0x80;
     v.vz = 0;
     gte_ldv0((SVECTOR *)&v);
     gte_rtps();

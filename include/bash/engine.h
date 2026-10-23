@@ -9,6 +9,7 @@
 #include "common.h"
 #include "bash/main.h"
 #include "bash/nas.h"
+#include "bash/shell.h"   /* ClockInfo, ScoreInfo */
 
 extern s32 D_80051658;
 extern s32 D_800AD2F8[];
@@ -56,10 +57,9 @@ extern u8 D_800558EC[];
 extern subengine D_800A13F4[][32]; /* 32 subengines per EnginePool slot */
 
 typedef struct { u16 a, b; } U16Pair;
-typedef struct { u16 a, b, c, d; } U16Quad;
-extern U16Quad Score[4];
-extern U16Pair ScoreIcon3Pos[4];
-extern U16Pair ScoreIcon2Pos[4];
+extern ScoreInfo Score[4];
+extern SWORD_XY ScoreIcon3Pos[4];
+extern SWORD_XY ScoreIcon2Pos[4];
 
 extern s32 D_800ADBC0;
 extern s32 PanelCtrl;
@@ -78,8 +78,7 @@ extern subengine D_8009A4E4;
 extern u32 Clock_Time;
 extern u16 Clock_flags;
 extern U16Pair Clock_offsets[];
-typedef struct { u16 a, b; s32 c; } GpuTextCmd;
-extern GpuTextCmd Clock[4];
+extern ClockInfo Clock[4];
 extern s32 Clock_XYZ[3];
 extern u16 Clock_last_ping;
 extern s16 D_80099194;
@@ -430,7 +429,7 @@ typedef struct WobbleObj {
 } WobbleObj;
 extern WobbleObj *D_800A0290;
 
-extern U16Pair ScoreIcon1Pos[4];
+extern SWORD_XY ScoreIcon1Pos[4];
 extern s16 D_8005A650;
 extern s32 map[];
 

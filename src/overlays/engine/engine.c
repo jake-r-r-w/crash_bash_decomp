@@ -459,12 +459,12 @@ void func_800798A4(void) {
         c1 = 0xFF;
         pos.f.y = Clock_XYZ[1];
         if (!(Clock_flags & 2) && (HUDGAME->flags & 1)) {
-            Clock[0].c |= 0x8000;
+            Clock[0].Ctrl |= 0x8000;
         }
         for (i = 0; i < 4; i++) {
-            if (Clock[i].c & 0x8000) {
-                pos.f.x = Clock_XYZ[0] + Clock[i].b;
-                func_8002992C((SpriteFrame *)(*(u8 **)(tim + 0x18) + (Clock[i].a & 0xFFF) * 0x38),
+            if (Clock[i].Ctrl & 0x8000) {
+                pos.f.x = Clock_XYZ[0] + Clock[i].Xoffs;
+                func_8002992C((SpriteFrame *)(*(u8 **)(tim + 0x18) + (Clock[i].frame & 0xFFF) * 0x38),
                               pos.w, 0, c0, c0, c1, c1);
             }
         }
@@ -489,13 +489,13 @@ void func_800798A4(void) {
             func_8001C298(HUDPLAYERS[i]);
         }
         if (PanelCtrl & 0x400) {
-            if (Score[i].d != 0) {
+            if (Score[i].Ctrl != 0) {
                 tim = D_80053074;
                 c0 = 0xD0FF;
                 c1 = 0xFF;
-                pos.f.x = HUDPLAYERS[i]->unk10.x + Score[i].b;
-                pos.f.y = HUDPLAYERS[i]->unk10.y + Score[i].c;
-                n = Score[i].a;
+                pos.f.x = HUDPLAYERS[i]->unk10.x + Score[i].Xoffs;
+                pos.f.y = HUDPLAYERS[i]->unk10.y + Score[i].Yoffs;
+                n = Score[i].score;
                 func_8002992C((SpriteFrame *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
                               pos.w, 0, c0, c0, c1, c1);
                 n /= 10;
@@ -509,13 +509,13 @@ void func_800798A4(void) {
             }
         }
         if (PanelCtrl & 0x200) {
-            if (Score[i].d != 0) {
+            if (Score[i].Ctrl != 0) {
                 tim = D_80053074;
                 c0 = 0xD0FF;
                 c1 = 0xFF;
-                pos.f.x = HUDPLAYERS[i]->unk10.x + Score[i].b;
-                pos.f.y = HUDPLAYERS[i]->unk10.y + Score[i].c;
-                n = Score[i].a;
+                pos.f.x = HUDPLAYERS[i]->unk10.x + Score[i].Xoffs;
+                pos.f.y = HUDPLAYERS[i]->unk10.y + Score[i].Yoffs;
+                n = Score[i].score;
                 func_8002992C((SpriteFrame *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
                               pos.w, 0, c0, c0, c1, c1);
                 n /= 10;
@@ -524,13 +524,13 @@ void func_800798A4(void) {
                               pos.w, 0, c0, c0, c1, c1);
             }
         }
-        if ((PanelCtrl & 0x100) && Score[i].d != 0) {
+        if ((PanelCtrl & 0x100) && Score[i].Ctrl != 0) {
             tim = D_80053074;
             c0 = 0xD0FF;
             c1 = 0xFF;
-            n = Score[i].a;
-            pos.f.x = HUDPLAYERS[i]->unk10.x + Score[i].b;
-            pos.f.y = HUDPLAYERS[i]->unk10.y + Score[i].c;
+            n = Score[i].score;
+            pos.f.x = HUDPLAYERS[i]->unk10.x + Score[i].Xoffs;
+            pos.f.y = HUDPLAYERS[i]->unk10.y + Score[i].Yoffs;
             func_8002992C((SpriteFrame *)(*(u8 **)(tim + 0x18) + ((n % 10 + 0x3017) & 0xFFF) * 0x38),
                           pos.w, 0, c0, c0, c1, c1);
         }

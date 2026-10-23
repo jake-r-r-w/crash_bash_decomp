@@ -245,8 +245,8 @@ void UpdateBigScore(void) {
             BigScore2.unk10.y -= 8;
         }
         for (i = 0; i < 4; i++) {
-            if ((s16)Score[i].c > -0x100) {
-                Score[i].c -= 8;
+            if ((s16)Score[i].Yoffs > -0x100) {
+                Score[i].Yoffs -= 8;
             }
         }
     } else {
@@ -406,18 +406,18 @@ void Set_Clock(u32 a, u32 b) {
     Clock_Time = (v & 0xFFFF) << 8;
     t = w | 0x400;
     Clock_flags = t;
-    Clock[0].c = 0x10008000;
-    Clock[0].a = 0x3013;
-    Clock[0].b = Clock_offsets[0].a;
+    Clock[0].Ctrl = 0x10008000;
+    Clock[0].frame = 0x3013;
+    Clock[0].Xoffs = Clock_offsets[0].a;
     for (i = 1; i < 4; i++) {
         d = v & 0xF;
         if (d >= 0xA) {
             d = 0;
         }
         v = (v & 0xFFFF) >> 4;
-        Clock[i].a = d + 0x3009;
-        Clock[i].c = 0x10008000;
-        Clock[i].b = Clock_offsets[i].a;
+        Clock[i].frame = d + 0x3009;
+        Clock[i].Ctrl = 0x10008000;
+        Clock[i].Xoffs = Clock_offsets[i].a;
     }
 }
 
@@ -433,7 +433,7 @@ void Draw_Clock(void) {
     s32 i;
     s32 d;
     s32 fl;
-    GpuTextCmd *p;
+    ClockInfo *p;
     HeroInfo *h;
 
     if (!(PanelCtrl & 1)) {
@@ -559,13 +559,13 @@ void Draw_Clock(void) {
             goto join;
         }
         p = Clock;
-        t = p->c & ~0x8000;
-        p->c = t;
+        t = p->Ctrl & ~0x8000;
+        p->Ctrl = t;
     } while (0);
     if (!(fl & 2) && (u32)(Clock_Time & 0x70) < 0x1D) {
         do {
             t |= 0x8000;
-            Clock->c = t;
+            Clock->Ctrl = t;
             break;
         } while (1);
     }
@@ -579,7 +579,7 @@ join:
         if (d >= 10) {
             d = 0;
         }
-        Clock[i].a = d + 0x3009;
+        Clock[i].frame = d + 0x3009;
         time >>= 4;
     }
 }
@@ -726,15 +726,15 @@ void InitHealthIcons(void) {
             p = D_8009986C[i];
             p->u6C.ptr = tim;
             p->unk0 = 0x10008000;
-            p->unk4 = HealthIconPos[i].a + 0x10;
-            yb = HealthIconPos[i].b;
+            p->unk4 = HealthIconPos[i].x + 0x10;
+            yb = HealthIconPos[i].y;
             p->unk74 = 0x2018;
             off = i * sizeof(D_8009986C[0]);
             b = (PanelPrim *)(off + (u8 *)&D_8009986C[0][1]);
             p->unkC = 0;
             p->unk8 = yb + 0x10;
-            x0 = HealthIconPos[i].a + 0x1C;
-            x1 = HealthIconPos[i].a + 0x5C;
+            x0 = HealthIconPos[i].x + 0x1C;
+            x1 = HealthIconPos[i].x + 0x5C;
             b->unk54 = tex;
             b->u6C.s.unk6E = y0;
             b->unk70 = 0;
@@ -754,8 +754,8 @@ void InitHealthIcons(void) {
             b->unk74 = x1;
             b->unk7C = x0;
             b->unk84 = x1;
-            x0 = HealthIconPos[i].a + 0x1C;
-            x1 = HealthIconPos[i].a + 0x5C;
+            x0 = HealthIconPos[i].x + 0x1C;
+            x1 = HealthIconPos[i].x + 0x5C;
             q = &D_8009986C[i][2];
             q->unk54 = tex;
             q->u6C.s.unk6E = y0;
@@ -822,15 +822,15 @@ void ClearHealthIcons(void) {
             p = D_8009986C[i];
             p->u6C.ptr = tim;
             p->unk0 = 0x10008000;
-            p->unk4 = HealthIconPos[i].a;
-            yb = HealthIconPos[i].b;
+            p->unk4 = HealthIconPos[i].x;
+            yb = HealthIconPos[i].y;
             p->unk74 = 0x2018;
             off = i * sizeof(D_8009986C[0]);
             b = (PanelPrim *)(off + (u8 *)&D_8009986C[0][1]);
             p->unkC = 0;
             p->unk8 = yb + 0x10;
-            x0 = HealthIconPos[i].a + 8;
-            x1 = HealthIconPos[i].a + 0x48;
+            x0 = HealthIconPos[i].x + 8;
+            x1 = HealthIconPos[i].x + 0x48;
             b->unk54 = tex;
             b->u6C.s.unk6E = y0;
             b->unk70 = 0;
@@ -850,8 +850,8 @@ void ClearHealthIcons(void) {
             b->unk74 = x1;
             b->unk7C = x0;
             b->unk84 = x1;
-            x0 = HealthIconPos[i].a + 8;
-            x1 = HealthIconPos[i].a + 0x48;
+            x0 = HealthIconPos[i].x + 8;
+            x1 = HealthIconPos[i].x + 0x48;
             q = &D_8009986C[i][2];
             q->unk54 = tex;
             q->u6C.s.unk6E = y0;
@@ -887,7 +887,7 @@ void InitBossHealthIcons(void) {
     s16 x1;
     s32 y0;
     s32 y1;
-    S16Pair *s;
+    SWORD_XY *s;
     s32 c0;
     s32 c1;
     s32 code;
@@ -928,10 +928,10 @@ void InitBossHealthIcons(void) {
     q->unk54 = tex;
     q->u6C.s.unk6E = y0;
     q->unk70 = 0;
-    sub->unk4 = s->a;
-    sub->unk8 = s->b + 0x10;
-    x0 = (u16)s->a + 8;
-    x1 = (u16)s->a + 0x48;
+    sub->unk4 = s->x;
+    sub->unk8 = s->y + 0x10;
+    x0 = (u16)s->x + 8;
+    x1 = (u16)s->x + 0x48;
     b->u6C.s.unk6C = x0;
     b->unk74 = x1;
     b->unk7C = x0;
@@ -979,14 +979,14 @@ void func_8007C830(s32 arg0, s32 arg1) {
     y1 = 0x43;
     code = 0x12000000;
     n = 8;
-    p->unk4 = HealthIconPos[2].a;
-    yb = HealthIconPos[2].b;
+    p->unk4 = HealthIconPos[2].x;
+    yb = HealthIconPos[2].y;
     p->unkC = 0;
     p->unk74 = 0x2018;
     p->unk8 = yb + 0x10;
     b = p + 1;
-    x0 = (u16)HealthIconPos[2].a + 8;
-    x1 = (u16)HealthIconPos[2].a + 0x48;
+    x0 = (u16)HealthIconPos[2].x + 8;
+    x1 = (u16)HealthIconPos[2].x + 0x48;
     b->unk54 = D_8001C7FC;
     b->u6C.s.unk6C = x0;
     b->u6C.s.unk6E = y0;
@@ -1032,13 +1032,13 @@ void func_8007C830(s32 arg0, s32 arg1) {
     p = p + 7;
     p->u6C.ptr = tim;
     p->unk0 = 0x10008000;
-    p->unk4 = HealthIconPos[3].a;
-    yb = HealthIconPos[3].b;
+    p->unk4 = HealthIconPos[3].x;
+    yb = HealthIconPos[3].y;
     p->unkC = 0;
     p->unk74 = 0x2018;
     p->unk8 = yb + 0x10;
-    x0 = (u16)HealthIconPos[3].a + 8;
-    x1 = (u16)HealthIconPos[3].a + 0x48;
+    x0 = (u16)HealthIconPos[3].x + 8;
+    x1 = (u16)HealthIconPos[3].x + 0x48;
     {
     PanelPrim *q;
     q = b + 7;
@@ -1183,15 +1183,15 @@ void InitPowerIcons(void) {
             p = D_8009986C[i];
             p->u6C.ptr = tim;
             p->unk0 = 0x10008000;
-            p->unk4 = HealthIconPos[i].a - 0xE;
-            yb = HealthIconPos[i].b;
+            p->unk4 = HealthIconPos[i].x - 0xE;
+            yb = HealthIconPos[i].y;
             p->unk74 = 0x3021;
             off = i * sizeof(D_8009986C[0]);
             b = (PanelPrim *)(off + (u8 *)&D_8009986C[0][1]);
             p->unkC = 0;
             p->unk8 = yb - 0x10;
-            x0 = HealthIconPos[3].a + 0x10;
-            x1 = HealthIconPos[3].a + 0x50;
+            x0 = HealthIconPos[3].x + 0x10;
+            x1 = HealthIconPos[3].x + 0x50;
             b->unk54 = tex;
             b->u6C.s.unk6E = y0;
             b->unk70 = 0;
@@ -1211,8 +1211,8 @@ void InitPowerIcons(void) {
             b->unk74 = x1;
             b->unk7C = x0;
             b->unk84 = x1;
-            x0 = HealthIconPos[3].a + 0x10;
-            x1 = HealthIconPos[3].a + 0x50;
+            x0 = HealthIconPos[3].x + 0x10;
+            x1 = HealthIconPos[3].x + 0x50;
             q = &D_8009986C[i][2];
             q->unk54 = tex;
             q->u6C.s.unk6E = y0;
@@ -1311,12 +1311,12 @@ void InitScore3Icons(void) {
 
     for (i = 0; i < 4; i++) {
         if (Heroes[i].hero_name != 9) {
-            Score[i].a = 0;
-            Score[i].b = ScoreIcon3Pos[i].a;
-            Score[i].c = ScoreIcon3Pos[i].b;
-            Score[i].d = 1;
+            Score[i].score = 0;
+            Score[i].Xoffs = ScoreIcon3Pos[i].x;
+            Score[i].Yoffs = ScoreIcon3Pos[i].y;
+            Score[i].Ctrl = 1;
         } else {
-            Score[i].d = 0;
+            Score[i].Ctrl = 0;
         }
     }
     PanelCtrl |= 0x400;
@@ -1327,12 +1327,12 @@ void InitScore2Icons(void) {
 
     for (i = 0; i < 4; i++) {
         if (Heroes[i].hero_name != 9) {
-            Score[i].a = 0;
-            Score[i].b = ScoreIcon2Pos[i].a;
-            Score[i].c = ScoreIcon2Pos[i].b;
-            Score[i].d = 1;
+            Score[i].score = 0;
+            Score[i].Xoffs = ScoreIcon2Pos[i].x;
+            Score[i].Yoffs = ScoreIcon2Pos[i].y;
+            Score[i].Ctrl = 1;
         } else {
-            Score[i].d = 0;
+            Score[i].Ctrl = 0;
         }
     }
     PanelCtrl |= 0x200;
@@ -1343,12 +1343,12 @@ void InitScore1Icons(void) {
 
     for (i = 0; i < 4; i++) {
         if (Heroes[i].hero_name != 9) {
-            Score[i].a = 0;
-            Score[i].b = ScoreIcon1Pos[i].a;
-            Score[i].c = ScoreIcon1Pos[i].b;
-            Score[i].d = 1;
+            Score[i].score = 0;
+            Score[i].Xoffs = ScoreIcon1Pos[i].x;
+            Score[i].Yoffs = ScoreIcon1Pos[i].y;
+            Score[i].Ctrl = 1;
         } else {
-            Score[i].d = 0;
+            Score[i].Ctrl = 0;
         }
     }
     PanelCtrl |= 0x200;
@@ -1360,18 +1360,18 @@ void InitSharedScoreIcons(void) {
 
     if (*(s32 *)(g + 0x6C) != 0) {
         i = *(s16 *)(g + 0x48);
-        Score[i].d = 1;
-        Score[i].b += 0x46;
+        Score[i].Ctrl = 1;
+        Score[i].Xoffs += 0x46;
         i = Heroes[i].hero_teammate;
         if (i != -1) {
-            Score[i].d = 0;
+            Score[i].Ctrl = 0;
         }
         i = *(s16 *)(g + 0x4A);
-        Score[i].d = 1;
-        Score[i].b += 0x46;
+        Score[i].Ctrl = 1;
+        Score[i].Xoffs += 0x46;
         i = Heroes[i].hero_teammate;
         if (i != -1) {
-            Score[i].d = 0;
+            Score[i].Ctrl = 0;
         }
     }
 }
@@ -1478,8 +1478,8 @@ void func_8007D2F4(void) {
 }
 
 void UpdateScoreIcons(void) {
-    U16Quad *q = Score;
-    U16Quad *end = q;
+    ScoreInfo *q = Score;
+    ScoreInfo *end = q;
     HeroInfo *base = Heroes;
     HeroInfo *h;
     int i = 0;
@@ -1503,9 +1503,9 @@ void UpdateScoreIcons(void) {
             }
         }
         if ((PanelCtrl & 0x2000) && h->hero_teammate != -1) {
-            q->a = h->hero_score_displayed + base[h->hero_teammate].hero_score_displayed;
+            q->score = h->hero_score_displayed + base[h->hero_teammate].hero_score_displayed;
         } else {
-            q->a = h->hero_score_displayed;
+            q->score = h->hero_score_displayed;
         }
         q++;
         i++;

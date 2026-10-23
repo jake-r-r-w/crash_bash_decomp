@@ -1009,9 +1009,6 @@ extern s8 D_8005AEB4[];
 extern u8 D_8005B0B4[];
 extern u8 *sysfont_dbase;
 extern s16 SysFontLookUp[];
-typedef struct GlyphPos {
-    s16 v[3];
-} GlyphPos;
 extern s32 D_8006EA00;
 extern u32 D_8006EA04;
 extern s32 D_8005A7A0[];

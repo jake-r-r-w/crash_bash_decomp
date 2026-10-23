@@ -1654,10 +1654,10 @@ void func_8001A82C(TextNAS *t, s32 arg1, s32 arg2) {
         gte_SetTransVector(s.trans);
     }
     gte_SetRotMatrix(s.rot);
-    ((GlyphPos *)&s)->v[0] = t->x;
-    ((GlyphPos *)&s)->v[1] = t->y;
-    ((GlyphPos *)&s)->v[2] = t->z;
-    SysPrintAt3d((GlyphPos *)&s, t->str, t->c0, t->c1);
+    ((SWORD_XYZ *)&s)->x = t->x;
+    ((SWORD_XYZ *)&s)->y = t->y;
+    ((SWORD_XYZ *)&s)->z = t->z;
+    SysPrintAt3d((SWORD_XYZ *)&s, t->str, t->c0, t->c1);
 }
 
 static inline u8 *func_8001AA48_setup(ModelObj *obj, void *arg1, s32 flags, RelTable *colors, u8 *t) {

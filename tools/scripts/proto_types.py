@@ -199,7 +199,8 @@ def plan(names):
 
 C_BASE = {"int": "s32", "unsigned int": "u32", "short": "s16", "unsigned short": "u16", "char": "char",
           "unsigned char": "u8", "long": "s32", "unsigned long": "u32", "struct EXTengtype": "EXTengine",
-          "struct subengine": "subengine", "SLONG_XYZ": "SLONG_XYZ", "SVECTOR": "SVECTOR", "VECTOR": "VECTOR"}
+          "struct subengine": "subengine", "SLONG_XYZ": "SLONG_XYZ", "SVECTOR": "SVECTOR", "VECTOR": "VECTOR",
+          "SWORD_XY": "SWORD_XY", "SWORD_XYZ": "SWORD_XYZ", "ClockInfo": "ClockInfo", "ScoreInfo": "ScoreInfo"}
 
 
 def plan_globals(scans):

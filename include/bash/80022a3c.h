@@ -71,7 +71,7 @@ s32 texture_draw(SpriteFrame *f, s32 xy, s32 otz, u32 color);
 s32 func_8002992C(SpriteFrame *f, s32 xy, s32 otz, u32 c0, u32 c1, u32 c2, u32 c3);
 /* Draws f at the 3D point pos as a POLY_GT4 in the OT at cdb, c0 on
  * the top vertices and c1 on the bottom ones; returns f's advance. */
-s32 func_80029F9C(SpriteFrame *f, GlyphPos *pos, s32 otz, u32 c0, u32 c1);
+s32 func_80029F9C(SpriteFrame *f, SWORD_XYZ *pos, s32 otz, u32 c0, u32 c1);
 void *AllocExtension(void *owner, s32 size, s32 id, void *tmpl);
 void FreeExtension(void *ext);
 s32 AddPlatformContour(EXTengine *eng, s32 y);
@@ -146,7 +146,7 @@ void func_80024FA4(ScriptCursor *c);
 ScriptCursor *func_80026048(NAS *nas, s32 arg1, s32 arg2, ScriptInit *init);
 NAS *func_80022C3C(s32 x, s32 y, s32 z, u16 id, s32 slot);
 s16 func_80024008(s16 x, u8 *s);
-void SysPrintAt3d(GlyphPos *arg0, char *s, u32 arg2, u32 arg3);
+void SysPrintAt3d(SWORD_XYZ *arg0, char *s, u32 arg2, u32 arg3);
 void func_80024AD8(void);
 s32 func_8002578C(NAS *nas);
 void func_80027408(void);
