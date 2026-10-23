@@ -792,7 +792,7 @@ void DoAmbience(void) {
     }
 }
 
-void InitAmbience(u8 *arg0) {
+void InitAmbience(Ambient_data *arg0) {
     D_80098718 = arg0;
     D_8009871C = 0;
     PlaySfx((*(u16*)((u8*)(arg0) + 4)), 0, 0, 0x1000, 0x1E00, 0);

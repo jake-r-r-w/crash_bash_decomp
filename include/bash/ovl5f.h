@@ -7,6 +7,7 @@
 
 #include "common.h"
 #include "bash/nas.h"
+#include "bash/shell.h"   /* Ambient_data */
 
 typedef struct Ovl5fModeView {
     /* 0x00 */ u8 pad0[0x32];
@@ -906,7 +907,7 @@ extern s32 D_800CAFF0;
 extern s32 D_800CAFF8;
 extern s32 D_800CB108[9][7];
 extern s16 D_8009D88E;
-extern u8 D_800C8ED4[];
+extern Ambient_data D_800C8ED4;
 extern u8 D_800CA1C4[];
 extern u8 D_800CA204[];
 extern u8 D_800CA244[];

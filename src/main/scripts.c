@@ -529,7 +529,7 @@ void func_8001FCDC(u8 *arg0, u8 *arg1) {
         t = *(u16 *)(res + 0x18);
         *(u16 *)(d + 0x52) = 1;
         *(u16 *)(d + 0x68) = t;
-        sub_play_script(*(u8 **)arg1, *(s32 *)(res + 0x14), d, 0);
+        sub_play_script(*(struct obj_dbase **)arg1, *(s32 *)(res + 0x14), (subengine *)d, 0);
         *(s32 *)(arg0 + 8) |= 0x8000;
     }
 }
@@ -837,7 +837,7 @@ s16 func_80020C4C(s32 arg0) {
     return D_80068BD4[((arg0 >> 1) - 0x400) & 0xFFF].unk2;
 }
 
-void sub_play_script(u8 *arg0, s32 arg1, u8 *arg2, s32 arg3) {
+void sub_play_script(struct obj_dbase *db, s32 arg1, subengine *sub, s32 arg3) {
     u8 *p;
     u8 *e;
     s32 *s;
@@ -846,8 +846,8 @@ void sub_play_script(u8 *arg0, s32 arg1, u8 *arg2, s32 arg3) {
     void (*fn)(u8 *, u8 *, s32);
     u8 *base;
 
-    p = arg2 + 0x6C;
-    base = *(u8 **)(arg0 + 0xC);
+    p = (u8 *)sub + 0x6C;
+    base = db->data;
     if (base == NULL) {
         e = NULL;
     } else {
@@ -855,7 +855,7 @@ void sub_play_script(u8 *arg0, s32 arg1, u8 *arg2, s32 arg3) {
         e = (u8 *)s + *s;
     }
     *(s32 *)(p + 0x14) = arg3;
-    *(u8 **)p = arg0;
+    *(struct obj_dbase **)p = db;
     *(s32 *)(p + 4) = arg1;
     *(s32 *)(p + 8) = 0;
     *(s32 *)(p + 0xC) = 0;
@@ -875,8 +875,8 @@ void sub_play_script(u8 *arg0, s32 arg1, u8 *arg2, s32 arg3) {
         } while (++i < *(s32 *)e);
     }
     func_80020064(p);
-    *(void **)(arg2 + 0x54) = func_80020E9C;
-    *(void **)(arg2 + 0x58) = func_80020DF8;
+    *(void **)((u8 *)sub + 0x54) = func_80020E9C;
+    *(void **)((u8 *)sub + 0x58) = func_80020DF8;
 }
 
 void func_80020DF8(u8 *arg0) {
@@ -1474,11 +1474,11 @@ u8 *func_80021E44(OffsetTable *tbl, s32 i) {
     return (u8 *)&tbl->offs[i] + tbl->offs[i];
 }
 
-u8 *get_script_header(u8 *arg0, s32 arg1) {
+u8 *get_script_header(struct obj_dbase *db, s32 arg1) {
     u8 *p;
     s32 *e;
 
-    p = *(u8 **)(arg0 + 0xC);
+    p = db->data;
     if (p != NULL) {
         e = (s32 *)(p + (*(s32 *)(p + 0x4C) + 0x4C) + arg1 * 4);
         return (u8 *)e + *e;

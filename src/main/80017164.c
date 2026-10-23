@@ -2986,7 +2986,7 @@ void map_loaded_textureset(u8 *arg0, u8 **arg1) {
     temp_s0 = temp_s1 + 0x10;
     func_8002A5A4(temp_s0, (*(s32*)((u8*)(temp_s0) + 16)));
     func_80029560(temp_s0);
-    texture_release_loading_mem(temp_s0);
+    texture_release_loading_mem((obj_textureset *)temp_s0);
     (*(s32*)((u8*)(temp_s1) + 8)) = func_80013034((*(s32*)((u8*)(temp_s1) + 0)), 0, (*(s32*)((u8*)(temp_s1) + 36)), map_loaded_geo, arg1, 0, 0);
 }
 
@@ -3122,7 +3122,7 @@ KeyEntry *func_8001E41C(KeyBlock *arg0, s32 arg1) {
     return p - 1;
 }
 
-s32 *path_get(s32 arg0) {
+s32 *path_get(u32 arg0) {
     s32 *p;
     s32 n;
     s32 i;

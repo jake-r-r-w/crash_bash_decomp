@@ -1086,7 +1086,7 @@ void func_800952F8(subengine *sub, s32 *recs) {
                 s->x = rec->x;
                 s->y = rec->y;
                 s->z = rec->z;
-                sub_play_script(D_80052A54 + rec->unk1C * 0x38, rec->unk1E, (u8 *)s, rec->unk20);
+                sub_play_script((struct obj_dbase *)(D_80052A54 + rec->unk1C * 0x38), rec->unk1E, (subengine *)s, rec->unk20);
             }
             break;
         case 2:

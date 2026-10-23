@@ -31,7 +31,14 @@ CLASSES = {"NAStype": "NAS", "EXTengtype": "EXTengine", "subengine": "subengine"
            "VECTOR": "VECTOR", "SVECTOR": "SVECTOR", "MATRIX": "MATRIX", "map_enviroment": "map_enviroment",
            "script_thread_handler": "script_thread_handler", "script_control_info": "script_control_info",
            "script_thread": "script_thread", "geom_info": "geom_info", "Ambient_data": "Ambient_data",
-           "NASTrigger": "NASTrigger", "EXTanimator": "EXTanimator", "draw_window": "draw_window"}
+           "NASTrigger": "NASTrigger", "EXTanimator": "EXTanimator", "draw_window": "draw_window",
+           "SWORD_XYZ": "SWORD_XYZ", "_mal_area": "_mal_area", "mal": "mal", "obj_texture": "obj_texture",
+           "obj_textureset": "obj_textureset", "texture_scroll": "texture_scroll",
+           "sfx_machine_bank_info": "sfx_machine_bank_info", "music_midi": "music_midi",
+           "fade_info": "fade_info", "process_info": "process_info",
+           "process_control_info": "process_control_info",
+           # core.h has the typedef (from the Oct 9 records); main.exe's headers see only the tag
+           "_obj_dbase": "struct obj_dbase"}
 # headers recovered from the original source: their prototypes win (CONVENTIONS.md, Headers)
 ORIGINAL = ("tank.h", "pogo.h", "psx_pogo.h", "arkenoid.h", "polar.h")
 
@@ -151,6 +158,12 @@ def joined(t, n):
     return f"{t}{'' if t.endswith('*') else ' '}{n}"
 
 
+def decl_rx(name):
+    """A prototype of name: a line of its own at file scope, the return type first. A call
+    in a function body is indented, so a call statement is never taken for one."""
+    return re.compile(rf"^([A-Za-z_][^\n;(){{}}=]*?\b){name}\s*\(([^)]*)\)\s*;", re.M)
+
+
 def plan(names):
     """(changes [(name, [(path, old, new)])], left [(name, why)])."""
     srcs = {p: open(p).read() for p in glob.glob("src/**/*.c", recursive=True)}
@@ -186,13 +199,10 @@ def plan(names):
         if [norm(x) for x in new] == [norm(x) for x in params]:
             continue
         edits = [(path, m.group(0), f"{m.group(1)}{name}({', '.join(new)}){m.group(3)}")]
-        decl = re.compile(rf"\b{name}\s*\(([^)]*)\)\s*;")
-        for p, t in hdrs.items():
+        decl = decl_rx(name)
+        for p, t in list(hdrs.items()) + list(srcs.items()):
             for d in decl.finditer(t):
-                edits.append((p, d.group(0), f"{name}({', '.join(new)});"))
-        for p, t in srcs.items():
-            for d in decl.finditer(t):
-                edits.append((p, d.group(0), f"{name}({', '.join(new)});"))
+                edits.append((p, d.group(0), f"{d.group(1)}{name}({', '.join(new)});"))
         changes.append((name, edits, params, new))
     return changes, left
 

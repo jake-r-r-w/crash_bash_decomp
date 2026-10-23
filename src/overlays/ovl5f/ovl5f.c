@@ -961,7 +961,7 @@ void func_800B58B0(void) {
         }
         break;
     case 7:
-        InitAmbience(D_800C8ED4);
+        InitAmbience(&D_800C8ED4);
         CreateNAS(0x800, 0, 0x800, 0x131A, 0x11);
         src1 = src2 = D_800CA244;
         D_800CAFF4 = 8;

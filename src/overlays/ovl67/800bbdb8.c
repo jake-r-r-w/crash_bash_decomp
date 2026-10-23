@@ -2075,7 +2075,7 @@ void func_800C2904(s32 *arg0, s32 flag, s32 *out) {
 }
 
 void InitNitroMissile(MissileHolder *arg0) {
-    MissileExt *ext = AddExt(arg0, 0x1C, 0x10000000);
+    MissileExt *ext = AddExt((NAS *)arg0, 0x1C, 0x10000000);
     s32 r;
 
     if (ext != NULL) {

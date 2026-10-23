@@ -92,7 +92,7 @@ void func_800187D4(ListNode18938 *arg0, s32 arg1);
 void func_80018938(ListNode18938 *arg0, s32 arg1);
 void func_8001C1E0(u8 *arg0, u16 *src, u8 *tab, u16 *dst);
 void *func_8001CF50(ModelEntry *e, s32 arg1);
-s32 *path_get(s32 arg0);
+s32 *path_get(u32 arg0);
 void func_8001CAD4(u16 *arg0, s32 arg1, u32 arg2);
 void func_8001D894(void *sub, void *arg1, s32 flags, s32 arg3);
 MATRIX *func_8001ACC0(GfxXform *obj);

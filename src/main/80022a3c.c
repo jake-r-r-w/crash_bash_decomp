@@ -2041,7 +2041,7 @@ void func_80026858(void *owner, s32 size, s32 id, Words3 *tmpl) {
     }
 }
 
-void *AddExt(void *owner, s32 size, s32 id) {
+void *AddExt(NAS *owner, s32 size, s32 id) {
     return AllocExtension(owner, size, id, NULL);
 }
 
@@ -2636,7 +2636,7 @@ void func_800279A4(void) {
     D_800637B8 = CdPosToInt(&file.pos);
 }
 
-void xa_setvol(s16 vol) {
+void xa_setvol(s32 vol) {
     SpuCommonAttr attr;
 
     attr.mask = SPU_COMMON_MVOLL | SPU_COMMON_MVOLR | SPU_COMMON_CDVOLL | SPU_COMMON_CDVOLR | SPU_COMMON_CDMIX;
@@ -3801,20 +3801,20 @@ s32 calc_rgbcode(s32 r, s32 g, s32 b) {
     return (r << 16) | (g << 8) | b;
 }
 
-void texture_release_loading_mem(u8 *arg0) {
-    u8 *temp_a0;
-    u8 *temp_v0;
+void texture_release_loading_mem(obj_textureset *set) {
+    u8 *base;
+    u8 *anims;
 
-    if ((*(s32*)((u8*)(arg0) + 24)) != 0) {
-        temp_a0 = (*(s32*)((u8*)(arg0) + 16));
-        temp_v0 = func_800112A4(temp_a0, (*(s32*)((u8*)(temp_a0) + 24)), &D_8004E0F0);
-        (*(s32*)((u8*)(arg0) + 16)) = temp_v0;
-        func_80011544(temp_v0, arg0 + 0x18);
-        (*(s32*)((u8*)(arg0) + 16)) = NULL;
+    if (set->anims != NULL) {
+        base = set->base;
+        anims = func_800112A4(base, *(s32 *)(base + 0x18), &D_8004E0F0);
+        set->base = anims;
+        func_80011544(anims, (u8 **)&set->anims);
+        set->base = NULL;
         return;
     }
-    func_80011578((*(s32*)((u8*)(arg0) + 16)), &D_8004E0F0, 2);
-    (*(s32*)((u8*)(arg0) + 16)) = NULL;
+    func_80011578(set->base, &D_8004E0F0, 2);
+    set->base = NULL;
 }
 
 void func_8002A3D0(u8 *arg0) {

@@ -18,12 +18,24 @@ class Demangle(unittest.TestCase):
         self.assertEqual(proto_types.demangle("line_intersect_zy__FP6VECTORN40"), ["VECTOR *"] * 5)
 
     def test_unknown_class_is_none(self):
-        # G4xy_w: a class passed by value, then int and unsigned long
-        self.assertEqual(proto_types.demangle("texture_draw__FP11obj_textureG4xy_wiUl"), [None, None, "s32", "u32"])
+        # G4xy_w: a class passed by value (not mapped), then int and unsigned long
+        self.assertEqual(proto_types.demangle("texture_draw__FP11obj_textureG4xy_wiUl"),
+                         ["obj_texture *", None, "s32", "u32"])
+        self.assertEqual(proto_types.demangle("tga_convert__FP10tga_headerll"), [None, "s32", "s32"])
 
     def test_function_pointer_unsupported(self):
         with self.assertRaises(proto_types.Unsupported):
             proto_types.demangle("asload_permanent_callback__FP4filePFPvPv_vPv")
+
+
+class Decl(unittest.TestCase):
+    def test_prototypes_not_calls(self):
+        text = ("void set_fade(u8 *arg0, s32 arg1, s32 arg2);\n"
+                "struct obj_dbase *f(void);\n"
+                "void g(void) {\n    set_fade(D_8009F644, 0x200, 0);\n    x = set_fade(p, 1, 2);\n}\n")
+        found = [m.group(0) for m in proto_types.decl_rx("set_fade").finditer(text)]
+        self.assertEqual(found, ["void set_fade(u8 *arg0, s32 arg1, s32 arg2);"])
+        self.assertEqual([m.group(1) for m in proto_types.decl_rx("f").finditer(text)], ["struct obj_dbase *"])
 
 
 class Better(unittest.TestCase):

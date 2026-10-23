@@ -164,7 +164,7 @@ void func_800B3DD8(void) {
         World_floor_level = -0x10;
         func_800B710C(8, 8, 0xA, 0xC, 0xA, 3, 3, 0, 0);
         func_800BAFB4();
-        InitAmbience(D_800C39C0);
+        InitAmbience(&D_800C39C0);
         break;
     case 1:
         World_floor_level = -0x10;
@@ -198,7 +198,7 @@ void func_800B3DD8(void) {
         D_800C478A = Random(0x1E) + 0x1E;
         func_800B710C(6, 6, 6, 6, 0xE, 2, 0, 0, 0);
         func_800BAFB4();
-        InitAmbience(D_800C39D8);
+        InitAmbience(&D_800C39D8);
         break;
     case 0x20:
         Heroes[2].hero_shadow->flags = 0;

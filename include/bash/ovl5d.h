@@ -424,8 +424,8 @@ static inline u8 *Ovl5dSpawnEdge(s32 x, s32 z, s32 dx, s32 dz) {
 }
 extern u8 D_800C395C[];
 extern u16 D_800C3984[];
-extern u8 D_800C39C0[];
-extern u8 D_800C39D8[];
+extern Ambient_data D_800C39C0;
+extern Ambient_data D_800C39D8;
 extern u16 *D_8009D6F4;
 void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
 void Set_Clock(u32 a, u32 b);

@@ -136,7 +136,7 @@ static inline void func_800107C8_merge(mal *a, _mal_area *arg1, s32 m1) {
     s32 n;
     u32 size;
 
-    mal_unlink((u8 *)a, (u8 *)arg1);
+    mal_unlink(a, arg1);
     size = a->size;
     b = (mal *)((u8 *)a + (size * 4 + 0x18));
     new_var = a;
@@ -196,7 +196,7 @@ void mal_update(_mal_area *heap) {
         t = VSync(1);
         D_8004E0EC += p->size;
         a = heap->lowest;
-        mal_unlink((u8 *)a, (u8 *)heap);
+        mal_unlink(a, heap);
         size = a->size;
         b = (mal *)((u8 *)a + (size * 4 + 0x18));
         n = b->size;
@@ -394,7 +394,7 @@ void func_8001097C(_mal_area *heap) {
         if (prev == NULL) {
             continue;
         }
-        mal_unlink((u8 *)blk, (u8 *)heap);
+        mal_unlink(blk, heap);
         dst = (u32 *)((u8 *)blk + (blk->size * 4 + 0x14));
         n = prev->size;
         src = (u32 *)((u8 *)prev + (n * 4 + 0x14));
@@ -439,7 +439,7 @@ static inline void func_80010AE8_merge(mal *arg0, _mal_area *arg1) {
     s32 n;
     s32 size;
 
-    mal_unlink((u8 *)arg0, (u8 *)arg1);
+    mal_unlink(arg0, arg1);
     size = arg0->size;
     next = (mal *)((u8 *)arg0 + (size * 4 + 0x18));
     new_var = arg0;
@@ -1207,19 +1207,19 @@ loop:
     goto loop;
 }
 
-void mal_unlink(u8 *arg0, u8 *arg1) {
-    u8 *temp_v1;
-    u8 *temp_v1_2;
+void mal_unlink(mal *blk, _mal_area *area) {
+    mal *prev;
+    mal *next;
 
-    temp_v1 = (*(s32*)((u8*)(arg0) + 16));
-    if (temp_v1 != NULL) {
-        (*(s32*)((u8*)(temp_v1) + 20)) = (u8 *) (*(s32*)((u8*)(arg0) + 20));
+    prev = blk->prevFree;
+    if (prev != NULL) {
+        prev->nextFree = blk->nextFree;
     } else {
-        (*(s32*)((u8*)(arg1) + 8)) = (u8 *) (*(s32*)((u8*)(arg0) + 20));
+        area->free = blk->nextFree;
     }
-    temp_v1_2 = (*(s32*)((u8*)(arg0) + 20));
-    if (temp_v1_2 != NULL) {
-        (*(s32*)((u8*)(temp_v1_2) + 16)) = (u8 *) (*(s32*)((u8*)(arg0) + 16));
+    next = blk->nextFree;
+    if (next != NULL) {
+        next->prevFree = blk->prevFree;
     }
 }
 
@@ -1399,7 +1399,7 @@ void func_80011FC8(mal *arg0, _mal_area *arg1) {
     s32 n;
     s32 size;
 
-    mal_unlink((u8 *)arg0, (u8 *)arg1);
+    mal_unlink(arg0, arg1);
     size = arg0->size;
     next = (mal *)((u8 *)arg0 + (size * 4 + 0x18));
     new_var = arg0;
@@ -1444,7 +1444,7 @@ void func_800120E8(mal *arg0, _mal_area *arg1) {
     prev = arg0->prev;
     next = (mal *)((u8 *)arg0 + (size * 4 + 0x18));
     if (prev != NULL) {
-        mal_unlink((u8 *)arg0, (u8 *)arg1);
+        mal_unlink(arg0, arg1);
         d = (s32 *)((u8 *)arg0 + (arg0->size * 4 + 0x14));
         n = prev->size;
         s = (s32 *)((u8 *)prev + (n * 4 + 0x14));
@@ -3351,7 +3351,7 @@ s32 map_entity_address(s32 arg0, u8 *arg1) {
     return r;
 }
 
-u8 *entity_address(s32 arg0, u8 *arg1) {
+u8 *entity_address(u32 arg0, u8 *arg1) {
     s32 k;
 
     k = arg0 & 0x7000;

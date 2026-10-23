@@ -743,7 +743,7 @@ void func_80011544(u8 *arg0, u8 * *arg1);
 s16 func_8001156C(u8 *arg0);
 u8 *func_80011654(s32 arg0, _mal_area *arg1);
 u8 *func_80011748(s32 arg0, u8 *arg1);
-void mal_unlink(u8 *arg0, u8 *arg1);
+void mal_unlink(mal *blk, _mal_area *area);
 void func_80011D00(s32 arg0);
 void func_80011D28(u8 *arg0);
 u8 *func_80011DB4(_mal_area *arg0);
@@ -1546,7 +1546,7 @@ s32 map_entity_address(s32 arg0, u8 *arg1);
 
 
 
-u8 *entity_address(s32 arg0, u8 *arg1);
+u8 *entity_address(u32 arg0, u8 *arg1);
 
 
 
@@ -1962,6 +1962,21 @@ typedef struct obj_textureset {
     /* 0x1C */ s32 nAnim;
     /* 0x20 */ u8 *anim;
 } obj_textureset;
+
+/* A dbase: one of the 0x38-byte records at D_80052A54 (load_initial_dbases'
+ * pool), a loaded file and its textures (func_8001612C loads it, the callbacks
+ * below fill it). The name is the C++ symbols'
+ * (dbase_mesh_anim_name_loaded__FP10_obj_dbasePc; the Oct 9 records' tag is
+ * obj_dbase, whose typedef is in bash/core.h); the fields are from the code. */
+struct obj_dbase {
+    /* 0x00 */ s32 file;              /* loaded into data once the textures are in */
+    /* 0x04 */ s32 textureFile;       /* loaded first, into textures (func_8001612C) */
+    /* 0x08 */ s32 load;              /* the load in flight, or 0 */
+    /* 0x0C */ u8 *data;
+    /* 0x10 */ obj_textureset textures;
+    /* 0x34 */ s32 *keep;             /* name hashes of the blocks to keep (func_80015F60) */
+};
+typedef char obj_dbase_size_check[(sizeof(struct obj_dbase) == 0x38) ? 1 : -1];
 
 void func_800107C8(mal *arg0, _mal_area *arg1);
 

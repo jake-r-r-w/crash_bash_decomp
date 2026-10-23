@@ -39,7 +39,7 @@ void func_8007A6B0(s32 arg0);
 void func_8007A6D0(s32 arg0);
 void func_8007A6F8(void);
 void func_8007A7C0(void);
-void InitAmbience(u8 *arg0);
+void InitAmbience(Ambient_data *arg0);
 void func_8007AAF0(void);
 void func_8007AB20(void);
 void func_8007AB6C(void);
