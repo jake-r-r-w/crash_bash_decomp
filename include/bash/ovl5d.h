@@ -70,6 +70,10 @@ extern SLONG_XYZ D_800C3A04[]; /* func_800B62EC: grid points, 7..15 scanned */
 
 void func_800B6F0C(void);
 
+/* func_800B4AB0: the bot AI tick. */
+void func_800B5E28(s32 arg0);
+extern u16 D_800C39F0[];
+
 extern u16 D_800C3B88;
 extern ScriptInit D_800C3AFC;
 extern ScriptInit D_800C3668;
@@ -326,7 +330,7 @@ void PlotBashPenguin(NAS *nas);
 /* func_800B3A38: the overlay's init hook. */
 extern EXTengine D_800C46EC;
 extern void (*D_8009D70C)(s32);
-void func_800B4AB0();
+void func_800B4AB0(s32 arg0);
 void func_800BEF00();
 NAS *func_800C1848();
 s32 func_800C1A30(s32 arg0);

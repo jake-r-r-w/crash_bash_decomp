@@ -406,7 +406,628 @@ void func_800B4848(s32 arg0, s32 arg1, s32 arg2, Ovl5dAiState *ai, s32 prev) {
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl5d/ovl5d", D_800B3424);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B4AB0);
+void func_800B4AB0(s32 arg0) {
+    s32 unused[6];
+    EXTbotai *ai;
+    u32 *dirs;
+    u32 *tbl;
+    NAS *nas;
+    EXTengine *neng;
+    EXTengine *e;
+    EXTobject *fux;
+    EXTobject *nfux;
+    EXTobject *obj;
+    PadStick *pad;
+    s32 mate;
+    s32 dist;
+    s32 target;
+    s32 ang;
+    s32 rnd;
+    s32 ok;
+    s32 dx;
+    s32 dz;
+    s32 r;
+    s32 d;
+    s32 tmp;
+    s32 i;
+
+    if (D_8005A624 & 0x04000000) {
+        return;
+    }
+    ai = Heroes[arg0].hero_ai;
+    if (ai->AIinitial_delay != 0) {
+        ai->AIinitial_delay--;
+    }
+    if (ai->AIsleep != 0) {
+        ai->AIsleep--;
+    }
+    if (ai->AItimer1 != 0) {
+        ai->AItimer1--;
+    }
+    if (ai->AItimer2 != 0) {
+        ai->AItimer2--;
+    }
+    ai->AIpad = 0;
+    mate = Heroes[arg0].hero_teammate;
+    if (Heroes[arg0].hero_mode == (u16)D_8009E0D8 || Heroes[arg0].hero_mode == (u16)D_8009E0E2) {
+        ai->TargetPlayer = -1;
+        ai->AIsleep = 5;
+        ai->pTargetNas = NULL;
+        ai->AImode = 6;
+    }
+    neng = NULL;
+    dist = 0;
+    nas = ai->pTargetNas;
+    target = ai->TargetPlayer;
+    ang = Heroes[arg0].hero_move->facing_angle;
+    rnd = Random(0x100);
+    ok = 0;
+    if (nas != NULL) {
+        if (nas->NASid != 0 && (neng = nas->Engine) != NULL && (fux = (EXTobject *)nas->FUX) != NULL &&
+            (fux->status == 1 || fux->status == 4 || fux->status == 5)) {
+            ok = 1;
+        }
+        if (ok) {
+            e = Heroes[arg0].hero_eng;
+            dx = neng->unk10.x - e->unk10.x;
+            dz = neng->unk10.z - e->unk10.z;
+            dist = dx * dx + dz * dz;
+            ang = get_angle(dx, dz);
+        } else {
+            nas = NULL;
+            ai->pTargetNas = NULL;
+            ai->AImode = 1;
+        }
+    }
+    ok = 0;
+    if (target != -1) {
+        if (target >= 4) {
+            if (target == 6) {
+                if (D_800C46B4->status != 1) {
+                    ai->TargetPlayer = -1;
+                    target = -1;
+                    ai->AImode = 1;
+                } else {
+                    dx = D_800C46B0->unk10.x - Heroes[arg0].hero_eng->unk10.x;
+                    dz = D_800C46B0->unk10.z - Heroes[arg0].hero_eng->unk10.z;
+                    dist = dx * dx + dz * dz;
+                    ang = get_angle(dx, dz);
+                }
+            } else {
+                dx = D_800C3A04[target].x - Heroes[arg0].hero_eng->unk10.x;
+                dz = D_800C3A04[target].z - Heroes[arg0].hero_eng->unk10.z;
+                dist = dx * dx + dz * dz;
+                ang = get_angle(dx, dz);
+            }
+        } else {
+            if (!(Heroes[target].hero_status & 0xFA00)) {
+                ok = 1;
+            }
+            if (ok) {
+                dx = Heroes[target].hero_eng->unk10.x - Heroes[arg0].hero_eng->unk10.x;
+                dz = Heroes[target].hero_eng->unk10.z - Heroes[arg0].hero_eng->unk10.z;
+                dist = dx * dx + dz * dz;
+                ang = get_angle(dx, dz);
+            } else {
+                ai->TargetPlayer = -1;
+                target = -1;
+                ai->AImode = 1;
+            }
+        }
+    }
+    func_800B5E28(arg0);
+    switch (ai->AImode) {
+    case 21:
+        tmp = func_800B46B8(arg0);
+        if (tmp != 0) {
+            u32 *t;
+
+            ang = tmp;
+            ai->AImode = 4;
+            t = (u32 *)D_80051244;
+            ai->AIang = ang;
+            ai->AIpad |= t[(ang >> 9) & 7];
+            break;
+        }
+        if (ai->AIsleep != 0) {
+            break;
+        }
+        if (Heroes[arg0].hero_mode != 2) {
+            ai->TargetPlayer = -1;
+            ai->AImode = 1;
+            ai->AIpad = 0;
+            Heroes[arg0].hero_move->forward_speed = 0;
+            break;
+        }
+        for (i = 0; i < 4; i++) {
+            if (i != arg0 && Heroes[i].hero_ai->TargetPlayer == arg0) {
+                dx = Heroes[i].hero_eng->unk10.x - Heroes[arg0].hero_eng->unk10.x;
+                dz = Heroes[i].hero_eng->unk10.z - Heroes[arg0].hero_eng->unk10.z;
+                if (dx * dx + dz * dz < 0x240000) {
+                    ai->TargetPlayer = -1;
+                    ai->AImode = 1;
+                }
+            }
+        }
+        goto steer;
+    case 6:
+        if (ai->AIsleep != 0) {
+            break;
+        }
+        if (Heroes[arg0].hero_mode != 0) {
+            break;
+        }
+        ai->AIsleep = 5;
+        ai->AImode = 7;
+        break;
+    case 7:
+        if (func_800BB100(arg0) != 0) {
+            ai->AIpad |= 0x100;
+            break;
+        }
+        if (Heroes[arg0].hero_mode != 0) {
+            break;
+        }
+        ai->AItimer2 = 0xB4;
+        ai->AIsleep = 0x14;
+        ai->TargetPlayer = -1;
+        ai->pTargetNas = NULL;
+        ai->AImode = 5;
+        break;
+    case 3:
+        if (Heroes[arg0].hero_move->jump_max != 0) {
+            goto steer;
+        }
+        if (nas != NULL) {
+            ai->AImode = 2;
+            break;
+        }
+        if (target == -1) {
+            ai->AImode = 1;
+            break;
+        }
+        if (target >= 5) {
+            ai->AImode = 4;
+            break;
+        }
+        tmp = func_800B46B8(arg0);
+        if (tmp != 0) {
+            ang = tmp;
+        }
+        if (func_800B6138(arg0) != 0) {
+            u32 *t;
+
+            t = (u32 *)D_80051244;
+            ai->AIang = ang;
+            ai->AIpad |= t[(ang >> 9) & 7];
+            goto done;
+        }
+        func_800B4848(arg0, mate, ang, (Ovl5dAiState *)ai, target);
+        r = func_800864CC(arg0, 0x40);
+        if (r == target) {
+            ai->TargetPlayer = -1;
+            ai->AImode = 1;
+            ai->AIpad |= 0x8000;
+        } else if (r != -1 && (D_8005A680[0] == 0 || r != mate) &&
+                   (Heroes[r].hero_object != NULL || !(rnd & 0x10))) {
+            ai->AIpad |= 0x8000;
+        }
+        fux = func_800C2B60(arg0, 3);
+        if (fux == NULL) {
+            u32 *t;
+
+            t = (u32 *)D_80051244;
+            ai->AIang = ang;
+            ai->AIpad |= t[(ang >> 9) & 7];
+            goto done;
+        }
+        ((PadStick *)D_80051338)[arg0].held &= ~0x2000;
+        switch (fux->whatami) {
+        case 3:
+        case 4:
+        case 5:
+        case 7:
+        case 14:
+            if ((rnd & 1) == 0) {
+                ai->AIpad |= 0x8000;
+            } else {
+                ai->AIpad |= 0x8000;
+            }
+            break;
+        case 17:
+        case 18:
+        case 19:
+            break;
+        default:
+            ai->AIpad |= 0x4000;
+            break;
+        }
+        goto steer;
+    case 2:
+        if (Heroes[arg0].hero_move->jump_max != 0) {
+            goto steer;
+        }
+        if (target != -1) {
+            ai->AImode = 3;
+            break;
+        }
+        if (nas == NULL) {
+            ai->AImode = 1;
+            break;
+        }
+        if (Heroes[arg0].hero_object != NULL) {
+            ai->AImode = 10;
+            break;
+        }
+        tmp = func_800B46B8(arg0);
+        if (tmp != 0) {
+            ang = tmp;
+        }
+        if (Heroes[arg0].hero_eng->platform == nas->Engine) {
+            ai->AImode = 1;
+            break;
+        }
+        if (func_800B6138(arg0) != 0) {
+            u32 *t;
+
+            t = (u32 *)D_80051244;
+            ai->AIang = ang;
+            ai->AIpad |= t[(ang >> 9) & 7];
+            goto done;
+        }
+        if (OVLG->mode == 3) {
+            func_800B4848(arg0, mate, ang, (Ovl5dAiState *)ai, target);
+        }
+        r = func_800864CC(arg0, 0x40);
+        if (r != target && (Heroes[r].hero_immunity | Heroes[r].hero_frozen) == 0 &&
+            (OVLG->p2_active == 0 || r != mate) && Random(3) == 0) {
+            ai->AIpad |= 0x8000;
+        }
+        fux = func_800C2B60(arg0, 3);
+        if (fux == NULL) {
+            u32 *t;
+
+            t = (u32 *)D_80051244;
+            ai->AIang = ang;
+            ai->AIpad |= t[(ang >> 9) & 7];
+            goto done;
+        }
+        ((PadStick *)D_80051338)[arg0].held &= ~0x2000;
+        if (((NAS **)fux)[-1] == nas) {
+            switch (fux->whatami) {
+            case 2:
+                ai->AIpad |= 0x8000;
+                goto steer;
+            case 3:
+            case 4:
+            case 5:
+            case 17:
+            case 18:
+            case 19:
+                ai->AImode = 1;
+                ai->AIpad |= 0x2000;
+                goto steer;
+            case 7:
+            case 14:
+                ai->AImode = 1;
+                ai->AIpad |= 0x8000;
+                goto steer;
+            }
+        } else if ((nfux = (EXTobject *)nas->FUX) != NULL) {
+            if (nfux->whatami == fux->whatami) {
+                switch (nfux->whatami) {
+                case 2:
+                    ai->AIpad |= 0x8000;
+                    goto steer;
+                case 3:
+                case 4:
+                case 5:
+                case 17:
+                case 18:
+                case 19:
+                    ai->AImode = 1;
+                    ai->AIpad |= 0x2000;
+                    goto steer;
+                case 7:
+                case 14:
+                    ai->AImode = 1;
+                    ai->AIpad |= 0x8000;
+                    goto steer;
+                }
+            } else {
+                switch (fux->whatami) {
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                case 7:
+                case 14:
+                    ai->AImode = 1;
+                    ai->AIpad |= 0x8000;
+                    goto steer;
+                case 17:
+                case 18:
+                case 19:
+                    goto steer;
+                }
+            }
+        } else {
+            switch (fux->whatami) {
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 7:
+            case 14:
+                ai->AImode = 1;
+                ai->AIpad |= 0x8000;
+                goto steer;
+            case 17:
+            case 18:
+            case 19:
+                goto steer;
+            }
+        }
+        ai->AIpad |= 0x4000;
+        goto steer;
+    case 4:
+        if (target == -1) {
+            ai->AImode = 1;
+            break;
+        }
+        tmp = func_800B46B8(arg0);
+        if (tmp != 0) {
+            ang = tmp;
+        }
+        if (func_800B6138(arg0) != 0) {
+            u32 *t;
+
+            t = (u32 *)D_80051244;
+            ai->AIang = ang;
+            ai->AIpad |= t[(ang >> 9) & 7];
+            goto done;
+        }
+        func_800B4848(arg0, mate, ang, (Ovl5dAiState *)ai, -1);
+        if (dist < 0x4000) {
+            r = func_800B6DA4(arg0);
+            if (r != -1) {
+                ai->AImode = 0x15;
+                ai->AIsleep = 4;
+                ai->TargetPlayer = r;
+                ai->AItimer2 = 0x12C;
+                ai->AIpad |= 0x1000;
+                break;
+            }
+            ai->AImode = 1;
+            ai->TargetPlayer = r;
+            ai->pTargetNas = NULL;
+        }
+        r = func_800864CC(arg0, 0x40);
+        if (r != -1 && (D_8005A680[0] == 0 || r != mate)) {
+            ai->TargetPlayer = -1;
+            ai->AImode = 1;
+            ai->AIpad |= 0x8000;
+        }
+        fux = func_800C2B60(arg0, 3);
+        if (fux == NULL) {
+            u32 *t;
+
+            t = (u32 *)D_80051244;
+            ai->AIang = ang;
+            ai->AIpad |= t[(ang >> 9) & 7];
+            goto done;
+        }
+        switch (fux->whatami) {
+        case 3:
+        case 4:
+        case 5:
+        case 7:
+        case 14:
+            ai->AIpad |= 0x8000;
+            break;
+        case 17:
+        case 18:
+        case 19:
+            break;
+        default:
+            ai->AIpad |= 0x4000;
+            break;
+        }
+        goto steer;
+    case 5:
+        if (ai->AIsleep != 0) {
+            tmp = func_800B46B8(arg0);
+            if (tmp != 0) {
+                ang = tmp;
+            }
+            if (func_800B6138(arg0) != 0) {
+                break;
+            }
+            func_800B4848(arg0, mate, ang, (Ovl5dAiState *)ai, -1);
+            r = func_800864CC(arg0, 0x40);
+            if (r != -1 && (D_8005A680[0] == 0 || r != mate)) {
+                ai->TargetPlayer = -1;
+                ai->AImode = 1;
+                ai->AIpad |= 0x8000;
+            }
+            fux = func_800C2B60(arg0, 3);
+            if (fux != NULL) {
+                switch (fux->whatami) {
+                case 3:
+                case 4:
+                case 5:
+                case 7:
+                case 14:
+                    ai->AIpad |= 0x8000;
+                    break;
+                case 17:
+                case 18:
+                case 19:
+                    break;
+                default:
+                    ai->AIpad |= 0x4000;
+                    break;
+                }
+            }
+            tbl = (u32 *)D_80051244;
+            ang = Heroes[arg0].hero_move->forward_angle + 0x800;
+            ang &= 0xFFF;
+            ai->AIang = ang;
+            ai->AIpad |= tbl[(ang >> 9) & 7];
+        } else {
+            ai->TargetPlayer = -1;
+            ai->pTargetNas = NULL;
+            ai->AImode = 1;
+        }
+        break;
+    case 12:
+        if (target == -1 || nas != NULL) {
+            ai->AImode = 10;
+            break;
+        }
+        if (Heroes[arg0].hero_object == NULL) {
+            ai->AImode = 1;
+            ai->TargetPlayer = -1;
+            ai->pTargetNas = NULL;
+            break;
+        }
+        tmp = func_800B46B8(arg0);
+        if (tmp != 0) {
+            ang = tmp;
+        }
+        if (func_800B6138(arg0) != 0) {
+            u32 *t;
+
+            t = (u32 *)D_80051244;
+            ai->AIang = ang;
+            ai->AIpad |= t[(ang >> 9) & 7];
+            goto done;
+        }
+        r = func_800864CC(arg0, 0x40);
+        if (r != -1 && (D_8005A680[0] == 0 || r != mate)) {
+            ai->AImode = 13;
+            ai->AIsleep = 5;
+        }
+        if (func_800C2B60(arg0, 3) != NULL) {
+            ai->AImode = 13;
+            ai->AIsleep = 5;
+        }
+        if (ai->AIsleep != 0) {
+            goto steer;
+        }
+        d = csqrt(dist) >> 6;
+        if (ai->AItimer1 != 0) {
+            ang += 0x800;
+            ang &= 0xFFF;
+        } else {
+            tmp = D_800C39F0[arg0] + ((0x10 - D_8009D87C[arg0].unk0) << 5);
+            if (tmp < d) {
+                if (d < tmp + 0x100) {
+                    ai->AImode = 13;
+                    ai->AIsleep = 5;
+                }
+            } else {
+                if (Heroes[arg0].hero_eng->unk10.x < -0x780 || Heroes[arg0].hero_eng->unk10.x > 0x780 ||
+                    Heroes[arg0].hero_eng->unk10.z > 0x780 || Heroes[arg0].hero_eng->unk10.z < -0x780) {
+                    if (func_80015480(get_angle(Heroes[arg0].hero_eng->unk10.x, Heroes[arg0].hero_eng->unk10.z),
+                                      Heroes[arg0].hero_move->forward_angle) > 0x400) {
+                        ai->AImode = 13;
+                        ai->AIsleep = 5;
+                    }
+                } else {
+                    ang += 0x800;
+                    ang &= 0xFFF;
+                    ai->AItimer1 = 10;
+                }
+            }
+        }
+        obj = Heroes[arg0].hero_object;
+        if (obj->whatami == 7 && obj->countdown < (s16)Random(4)) {
+            ai->AImode = 13;
+            ai->AIsleep = 5;
+        }
+        goto steer;
+    case 13:
+        if (Heroes[arg0].hero_weapon_count != 0) {
+            if (Heroes[arg0].hero_object == NULL) {
+                if (ai->AIsleep != 0) {
+                    goto steer;
+                }
+                if (Heroes[arg0].hero_pu == 0x19 || Heroes[arg0].hero_pu == 0x1B) {
+                    if (func_80015480(Heroes[arg0].hero_move->facing_angle + 0x800, ang) < 0x155) {
+                        ai->AIpad |= 0x8000;
+                    }
+                } else {
+                    ai->AIpad |= 0x8000;
+                }
+                goto steer;
+            }
+        } else if (Heroes[arg0].hero_object == NULL) {
+            ai->AImode = 1;
+            ai->TargetPlayer = -1;
+            ai->pTargetNas = NULL;
+            break;
+        }
+        if (ai->AIsleep == 0) {
+            if ((Heroes[arg0].hero_mode == (u16)D_8009E0DC || Heroes[arg0].hero_mode == (u16)D_8009E0DE) &&
+                func_80015480(Heroes[arg0].hero_move->facing_angle + 0x800, ang) < 0x155) {
+                ai->AIpad |= 0x2000;
+            }
+        }
+    steer:
+        dirs = (u32 *)D_80051244;
+        ai->AIang = ang;
+        ai->AIpad |= dirs[(ang >> 9) & 7];
+        break;
+    case 10:
+        if (Heroes[arg0].hero_object == NULL) {
+            ai->AImode = 1;
+        }
+        r = func_800B6DA4(arg0);
+        if (r != -1) {
+            ai->TargetPlayer = r;
+            ai->pTargetNas = NULL;
+            ai->AImode = 12;
+        }
+        break;
+    default:
+        ai->AIpad = 0;
+        if (Heroes[arg0].hero_object != NULL) {
+            ai->AImode = 10;
+        }
+        if (Heroes[arg0].hero_mode != 0) {
+            break;
+        }
+        if (ai->AIinitial_delay == 0 && ai->AItimer2 == 0 &&
+            func_800B6FE0(arg0) > (D_8009D87C[arg0].unk0 << 5) + 0x400) {
+            r = func_800B6DA4(arg0);
+            if (r != -1) {
+                ai->AImode = 0x15;
+                ai->AIsleep = 4;
+                ai->TargetPlayer = r;
+                ai->AItimer2 = 0x12C;
+                ai->AIpad |= 0x1000;
+                break;
+            }
+        }
+        if (D_8005A648 == 3) {
+            func_800B4848(arg0, mate, ang, (Ovl5dAiState *)ai, -1);
+        }
+        if (ai->AIsleep == 0 && func_800B62EC(arg0) != 0) {
+            if (ai->pTargetNas != NULL) {
+                ai->AImode = 2;
+            } else {
+                ai->AImode = 3;
+            }
+            ai->AIaborted_mode = 0;
+        }
+        break;
+    }
+done:
+    pad = &((PadStick *)D_80051338)[arg0];
+    set_joypad((u8 *)pad, ai->AIpad);
+    pad->angle = ai->AIang;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/ovl5d", func_800B5E28);
 
