@@ -37,7 +37,7 @@ extern u16 D_8009D866;
 extern s16 D_8009D870;
 extern u16 D_8009D872;
 
-void func_80086704(void);
+void DefaultTouched(void);
 
 s32 func_8008670C(void);
 
@@ -45,7 +45,7 @@ s32 func_80086714(void);
 
 s32 func_8008671C(void);
 
-s32 func_80086724(void);
+s32 DefHero2ObjectCollision(void);
 
 void func_800867EC(void);
 

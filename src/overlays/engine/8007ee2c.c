@@ -1767,11 +1767,11 @@ void func_80083550(void) {
     D_8009D6E8.unk38 = func_8008680C;
     D_8009D6E8.unk3C = func_8008AB48;
     D_8009D6E8.unk40 = func_8008AB48;
-    D_8009D6E8.unk4C = func_80086724;
+    D_8009D6E8.unk4C = DefHero2ObjectCollision;
     D_8009D6E8.unk50 = func_8008671C;
     D_8009D6E8.unk54 = func_80086714;
     D_8009D6E8.unk64 = func_80084788;
-    D_8009D6E8.unk60 = func_80086704;
+    D_8009D6E8.unk60 = DefaultTouched;
     D_8009D6E8.unk8 = 0;
     D_8009D6E8.unk18 = 0;
     D_8009D6E8.unk1C = 0;
@@ -3188,7 +3188,7 @@ s32 func_800866DC(s32 *arg0) {
     return 0;
 }
 
-void func_80086704(void) {
+void DefaultTouched(void) {
 }
 
 s32 func_8008670C(void) {
@@ -3203,7 +3203,7 @@ s32 func_8008671C(void) {
     return 0;
 }
 
-s32 func_80086724(void) {
+s32 DefHero2ObjectCollision(void) {
     return 0;
 }
 
