@@ -5,7 +5,10 @@
  * maps and triggers, animation tables, memory, geometry and particles.
  * Names and layouts come from the Oct 9 2000 prototype's debug types; see
  * docs/ARCHITECTURE.md (Prototype debug types). Fields whose type the fragment
- * does not define are word (or byte) arrays of the recorded size. */
+ * does not define are word (or byte) arrays of the recorded size, except the
+ * shell's first types: the Oct 9 records number them as Jampack Winter 2000's
+ * do, which define them (._1 SLONG_XY, ._2 SWORD_XY, ._10 UBYTE_RGB, sizes
+ * agreeing), so those fields have their types. */
 
 #include "bash/nas.h"
 
@@ -251,7 +254,7 @@ struct map_map {
     /* 0x18 */ u32 xcell_list;
     /* 0x1C */ s32 num_placements;
     /* 0x20 */ u32 placements;
-    /* 0x24 */ u8 clear_colour[3]; /* struct ._10 (0x3 bytes), not in the fragment */
+    /* 0x24 */ UBYTE_RGB clear_colour;
     /* 0x27 */ u8 clear;
     /* 0x28 */ u32 spare4;
     /* 0x2C */ u32 spare5;
@@ -417,18 +420,18 @@ BASH_SIZE_CHECK(scrolling_credits, 0xC);
 struct geom_info {
     /* 0x00 */ void *rot;
     /* 0x04 */ void *trans;
-    /* 0x08 */ s32 origin[1]; /* struct ._2 (0x4 bytes), not in the fragment */
+    /* 0x08 */ SWORD_XY origin;
 };
 BASH_SIZE_CHECK(geom_info, 0xC);
 
 struct draw_window {
     /* 0x00 */ s32 clip[2]; /* struct ._37 (0x8 bytes), not in the fragment */
     /* 0x08 */ s32 screen[2]; /* struct ._37 (0x8 bytes), not in the fragment */
-    /* 0x10 */ s32 origin[2]; /* struct ._1 (0x8 bytes), not in the fragment */
+    /* 0x10 */ SLONG_XY origin;
     /* 0x18 */ s32 zstart;
     /* 0x1C */ s32 zsize;
     /* 0x20 */ s32 zadjust;
-    /* 0x24 */ u8 clear_colour[3]; /* struct ._10 (0x3 bytes), not in the fragment */
+    /* 0x24 */ UBYTE_RGB clear_colour;
     /* 0x27 */ u8 clear;
 };
 BASH_SIZE_CHECK(draw_window, 0x28);
@@ -447,8 +450,8 @@ struct obj_globals {
     /* 0x10 */ draw_window *window;
     /* 0x14 */ s32 global_fade;
     /* 0x18 */ s32 screen_clip[2]; /* struct ._37 (0x8 bytes), not in the fragment */
-    /* 0x20 */ s32 render_origin[2]; /* struct ._1 (0x8 bytes), not in the fragment */
-    /* 0x28 */ s32 draw_origin[2]; /* struct ._1 (0x8 bytes), not in the fragment */
+    /* 0x20 */ SLONG_XY render_origin;
+    /* 0x28 */ SLONG_XY draw_origin;
     /* 0x30 */ s32 ot_adjust;
     /* 0x34 */ s32 sv[2]; /* struct ._23 (0x8 bytes), not in the fragment */
     /* 0x3C */ s16 num_palettes;

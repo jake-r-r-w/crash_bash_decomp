@@ -106,7 +106,7 @@ enum {
 };
 
 struct PedestalInfo {
-    /* 0x00 */ s32 pos[2]; /* struct ._1 (0x8 bytes), not in the fragment */
+    /* 0x00 */ SLONG_XY pos;
     /* 0x08 */ u8 pedestal_type;
     /* 0x09 */ u8 anim_type;
 };
