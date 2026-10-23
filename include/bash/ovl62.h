@@ -1661,9 +1661,9 @@ extern s32 D_800D5FC0;
 extern s32 D_800D544C;
 extern u16 D_800AD12C;
 void func_8007E9FC(u16 arg0, s16 arg1);
-void func_8007EB1C(s32 arg0, s32 arg1, s32 arg2);
-void func_8007B7FC(u32 a, u32 b);
-void func_8007C6EC(void);
+void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
+void Set_Clock(u32 a, u32 b);
+void InitBossHealthIcons(void);
 
 void func_800B889C(s32 player);
 

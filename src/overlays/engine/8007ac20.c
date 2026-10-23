@@ -5,7 +5,7 @@
 #include "bash/hero.h"
 #include "bash/shell.h"
 
-void func_8007AC20(void) {
+void Setup_panel(void) {
     EngineSlotView *v;
     s32 i;
 
@@ -40,47 +40,47 @@ void func_8007AC20(void) {
         case 16:
         case 17:
             func_8007BFA8();
-            func_8007D0BC();
-            func_8007EB68();
+            InitScore1Icons();
+            InitCountdown();
             func_8007E874();
             break;
         case 10:
         case 11:
         case 12:
             func_8007BFA8();
-            func_8007CFAC();
-            func_8007EB68();
+            InitScore3Icons();
+            InitCountdown();
             break;
         case 13:
             func_8007BFA8();
-            func_8007CFAC();
-            func_8007EB68();
+            InitScore3Icons();
+            InitCountdown();
             break;
         case 29:
             func_8007BFA8();
-            func_8007CFAC();
-            func_8007EB68();
+            InitScore3Icons();
+            InitCountdown();
             break;
         case 5:
         case 6:
         case 7:
         case 8:
             func_8007BFA8();
-            func_8007C338();
-            func_8007EB68();
+            InitHealthIcons();
+            InitCountdown();
             func_8007E874();
             func_8007D208();
             break;
         case 9:
             func_8007BFA8();
-            func_8007C338();
-            func_8007EB68();
+            InitHealthIcons();
+            InitCountdown();
             func_8007D208();
             break;
         case 30:
             func_8007BFA8();
-            func_8007CFAC();
-            func_8007EB68();
+            InitScore3Icons();
+            InitCountdown();
             func_8007E874();
             break;
         case 0:
@@ -88,61 +88,61 @@ void func_8007AC20(void) {
         case 2:
         case 3:
             func_8007BFA8();
-            func_8007C338();
-            func_8007EB68();
+            InitHealthIcons();
+            InitCountdown();
             func_8007E874();
             break;
         case 4:
             func_8007BFA8();
-            func_8007C338();
-            func_8007EB68();
+            InitHealthIcons();
+            InitCountdown();
             break;
         case 32:
             func_8007C170();
-            func_8007C338();
-            func_8007EB68();
+            InitHealthIcons();
+            InitCountdown();
             break;
         case 23:
         case 24:
         case 25:
         case 26:
             func_8007BFA8();
-            func_8007EB68();
-            func_8007D034();
-            func_8007CC80();
+            InitCountdown();
+            InitScore2Icons();
+            InitPowerIcons();
             break;
         case 28:
             func_8007BFA8();
-            func_8007CFAC();
-            func_8007EB68();
+            InitScore3Icons();
+            InitCountdown();
             break;
         case 27:
             func_8007BFA8();
-            func_8007CFAC();
-            func_8007EB68();
+            InitScore3Icons();
+            InitCountdown();
             break;
         case 22:
             func_8007BFA8();
-            func_8007CC80();
-            func_8007EB68();
+            InitPowerIcons();
+            InitCountdown();
             break;
         case 18:
         case 19:
         case 20:
         case 21:
             func_8007BFA8();
-            func_8007CC80();
-            func_8007EB68();
+            InitPowerIcons();
+            InitCountdown();
             func_8007E874();
             break;
         case 31:
             func_8007BFA8();
-            func_8007C338();
-            func_8007EB68();
+            InitHealthIcons();
+            InitCountdown();
             break;
         default:
             func_8007BFA8();
-            func_8007EB68();
+            InitCountdown();
             break;
         }
     }
@@ -156,16 +156,16 @@ void func_8007AF3C(void) {
     u16 *t;
 
     if (D_80099174 & 8) {
-        func_8007CA70();
+        UpdateHealthIcons();
     }
     if (D_80099174 & 0x10) {
-        func_8007CE50();
+        UpdatePowerIcons();
     }
     if (D_80099174 & 0x700) {
-        func_8007D4D0();
+        UpdateScoreIcons();
     }
     if (D_80099174 & 0x1000) {
-        func_8007B330();
+        UpdateBigScore();
     }
     if (D_80099174 & 0x8000) {
         func_8007D5EC();
@@ -173,7 +173,7 @@ void func_8007AF3C(void) {
     if (D_80099174 & 0x100000) {
         func_8007D2F4();
     }
-    func_8007D9DC();
+    Cups_Update();
     if (D_8005A618 & 0x400) {
         FntPrint("   HEALTH %2d   HEALTH %2d              HEALTH %2d    HEALTH %2d\n",
                  Heroes[0].hero_health, Heroes[1].hero_health, Heroes[2].hero_health,
@@ -185,7 +185,7 @@ void func_8007AF3C(void) {
     }
 }
 
-void func_8007B120(void) {
+void InitBigScore(void) {
     D_8009A97C = EngineTemplate;
     D_8009A97C.flags = 0x10008000;
     D_8009A97C.unk10.x = 0x82;
@@ -214,7 +214,7 @@ void func_8007B120(void) {
     D_80099174 |= 0x1000;
 }
 
-void func_8007B330(void) {
+void UpdateBigScore(void) {
     s32 lim;
     s32 i;
     EXTengine *e;
@@ -390,7 +390,7 @@ void func_8007B330(void) {
     D_8009AA18.unk5E = 1;
 }
 
-void func_8007B7FC(u32 a, u32 b) {
+void Set_Clock(u32 a, u32 b) {
     u32 v = a;
     u32 w = b;
     s32 i;
@@ -421,7 +421,7 @@ void func_8007B7FC(u32 a, u32 b) {
     }
 }
 
-void func_8007B8D4(void) {
+void Draw_Clock(void) {
     EngineClockView *v;
     u32 s;
     u32 t;
@@ -449,7 +449,7 @@ void func_8007B8D4(void) {
         }
     }
     if (D_8009917C & 0x200) {
-        if (func_8007E894() != 0) {
+        if (StillTottingUpScore() != 0) {
             s32 k = 100;
 
             for (d = 3; d >= 0; d--) {
@@ -466,7 +466,7 @@ void func_8007B8D4(void) {
     }
     if ((D_8009917C & 0x100) && s == 0) {
         PlaySfx(0x19C, NULL, NULL, 0x1000, 0x1E00, 0);
-        if (func_8007E894() != 0) {
+        if (StillTottingUpScore() != 0) {
             D_80099178 = 0;
             D_8009917C = 0x8200;
         } else {
@@ -687,7 +687,7 @@ void func_8007C170(void) {
     D_80099174 |= 2;
 }
 
-void func_8007C338(void) {
+void InitHealthIcons(void) {
     s32 i;
     s16 x0;
     s16 x1;
@@ -783,7 +783,7 @@ void func_8007C338(void) {
     D_80099174 |= 8;
 }
 
-void func_8007C514(void) {
+void ClearHealthIcons(void) {
     s32 i;
     s16 x0;
     s16 x1;
@@ -879,7 +879,7 @@ void func_8007C514(void) {
     D_80099174 |= 8;
 }
 
-void func_8007C6EC(void) {
+void InitBossHealthIcons(void) {
     PanelPrim *p;
     PanelPrim *b;
     PanelPrim *q;
@@ -1088,7 +1088,7 @@ void func_8007C830(s32 arg0, s32 arg1) {
     D_80099174 |= 8;
 }
 
-void func_8007CA70(void) {
+void UpdateHealthIcons(void) {
     s32 i;
     s32 v;
     s32 sum;
@@ -1145,7 +1145,7 @@ void func_8007CA70(void) {
     }
 }
 
-void func_8007CC80(void) {
+void InitPowerIcons(void) {
     s32 i;
     s16 x0;
     s16 x1;
@@ -1240,7 +1240,7 @@ void func_8007CC80(void) {
     D_80099174 |= 0x10;
 }
 
-void func_8007CE50(void) {
+void UpdatePowerIcons(void) {
     s32 i;
     s32 off;
     HeroInfo *h;
@@ -1306,7 +1306,7 @@ loop:
     }
 }
 
-void func_8007CFAC(void) {
+void InitScore3Icons(void) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
@@ -1322,7 +1322,7 @@ void func_8007CFAC(void) {
     D_80099174 |= 0x400;
 }
 
-void func_8007D034(void) {
+void InitScore2Icons(void) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
@@ -1338,7 +1338,7 @@ void func_8007D034(void) {
     D_80099174 |= 0x200;
 }
 
-void func_8007D0BC(void) {
+void InitScore1Icons(void) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
@@ -1354,7 +1354,7 @@ void func_8007D0BC(void) {
     D_80099174 |= 0x200;
 }
 
-void func_8007D144(void) {
+void InitSharedScoreIcons(void) {
     s32 t;
     u8 *g = D_8005A614;
 
@@ -1477,7 +1477,7 @@ void func_8007D2F4(void) {
     }
 }
 
-void func_8007D4D0(void) {
+void UpdateScoreIcons(void) {
     U16Quad *q = D_8009AD74;
     U16Quad *end = q;
     HeroInfo *base = Heroes;
@@ -1618,7 +1618,7 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8007ac20", D_800ADD3C);
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/engine/8007ac20", D_800ADD40);
 
-void func_8007D9DC(void) {
+void Cups_Update(void) {
     s32 key;
     u16 *p;
     s32 mode;
@@ -2052,7 +2052,7 @@ void func_8007E7A4(void) {
     func_80010000(D_8005A614);
 }
 
-s32 func_8007E7C8(void) {
+s32 CalcElapsedTime(void) {
     s32 var_v0;
 
     var_v0 = D_8005A620 - D_8009BD04;
@@ -2091,7 +2091,7 @@ void func_8007E874(void) {
     D_80099174 |= 0x8000;
 }
 
-s32 func_8007E894(void) {
+s32 StillTottingUpScore(void) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
@@ -2102,7 +2102,7 @@ s32 func_8007E894(void) {
     return 0;
 }
 
-void func_8007E8D0(EngineBox *p, s16 x, s16 y, s32 a, s32 b) {
+void MakeSubBar(EngineBox *p, s16 x, s16 y, s32 a, s32 b) {
     p->unk54 = D_8001C7FC;
     p->unk6E = y;
     p->unk76 = y;
@@ -2166,11 +2166,11 @@ void func_8007EAC0(void) {
     D_80099174 |= 0x20000;
 }
 
-void func_8007EB04(void) {
+void Clock_Off(void) {
     D_80099174 &= ~1;
 }
 
-void func_8007EB1C(s32 arg0, s32 arg1, s32 arg2) {
+void Init_Clock(s32 arg0, s32 arg1, s32 arg2) {
     D_80099178 = 0;
     D_8009917C = 0;
     D_800996D4[0] = arg0 - 8;
@@ -2180,7 +2180,7 @@ void func_8007EB1C(s32 arg0, s32 arg1, s32 arg2) {
     D_80099174 |= 1;
 }
 
-void func_8007EB68(void) {
+void InitCountdown(void) {
     subengine *p;
     subengine *d;
 
@@ -2210,7 +2210,7 @@ void func_8007EB68(void) {
     }
 }
 
-void func_8007EC48(void) {
+void Init_Panel(void) {
     s32 i;
 
     D_80099174 = 0;

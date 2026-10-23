@@ -515,6 +515,13 @@ Newest first, a few lines each. Details are in the commits.
   `break`/`goto` mix gives the target's three tail survivors. Found the
   unit is probably `PAUSE.CPP`; `cc1plus` compiles the C identically.
 
+- **2026-10-23 (37 engine names, PANEL.CPP and Euro):** Jampack's 23
+  `PANEL.CPP` functions and Euro Demo 65's engine labels (`InitialiseNasSystem`,
+  `GravitateNas`, `level_load_map`, ...; `InitHealth`/`PlotHealth` take their
+  originals `Init_HealthPU`/`Plot_HealthPU`); the discs agree where both name
+  one. `proto_scan.py` no longer matches `jr ra` stubs by code (every stub is
+  alike) but by distance from the last match; `proto_apply.py --module slot`.
+
 - **2026-10-23 (13 `main.exe` globals named):** the Euro Demo 65 globals
   that land on a `D_` placeholder's start: `screen_aspect`, `FirstNas`,
   `World_floor_level`, `num_sfx_banks`, `cdb`, `next_sub`, ... (`decomp.py

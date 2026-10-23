@@ -206,9 +206,9 @@ void PogoInit_RelicChallenge(void) {
         default:
             goto skip;
         }
-        func_8007B7FC(snd, 0x81D0);
+        Set_Clock(snd, 0x81D0);
     skip:
-        func_8007D144();
+        InitSharedScoreIcons();
         if (D_8005A680[0] != 0) {
             D_80099174 |= 0x2000;
         }
@@ -552,7 +552,7 @@ void PogoWinner_CrystalOther(s32 arg0, u16 arg1) {
             s32 sa;
             s32 sb;
 
-            func_8007B120();
+            InitBigScore();
             D_800AD12C = 1;
             ia = *(s16 *)(g + 0x48);
             ib = *(s16 *)(g + 0x4A);
@@ -729,7 +729,7 @@ void PogoWinner_Gem(s32 arg0, u16 arg1) {
             s32 sa;
             s32 sb;
 
-            func_8007B120();
+            InitBigScore();
             D_800AD12C = 1;
             ia = *(s16 *)(g + 0x48);
             ib = *(s16 *)(g + 0x4A);
@@ -840,7 +840,7 @@ void PogoWinner_Normal(s32 arg0, u16 arg1) {
         }
         return;
     }
-    func_8007B120();
+    InitBigScore();
     hb = Heroes;
     ta = &hb[g->team[0]];
     b = &hb[g->team[1]];
@@ -3273,7 +3273,7 @@ void Plot_PogoPowerup(NAS *nas) {
         if (nas->UserInfo.user2 != 0) {
             nas->UserInfo.user2--;
         }
-        if (func_8007A26C(nas) == 0) {
+        if (GravitateNas(nas) == 0) {
             break;
         }
         if (nas->UserInfo.status == 0) {
@@ -6342,13 +6342,13 @@ void PogoQuality_Update(void) {
 
 void PogoInit_TrophyChallenge(void) {
     if (!(D_8005A646 & 0xE0)) {
-        func_8007B7FC(0x130, 0x81D0);
+        Set_Clock(0x130, 0x81D0);
     }
 }
 
 void PogoInit_GemChallenge(void) {
     if (D_8005A646 & 0x20) {
-        func_8007B7FC(0x130, 0x81D0);
+        Set_Clock(0x130, 0x81D0);
     }
 }
 
@@ -6363,7 +6363,7 @@ void PogoInit_CrystalChallenge(void) {
                 CreateNAS(0, 0, 0, 0x1407, 0x11);
             }
         }
-        func_8007B7FC(0x130, 0x81D0);
+        Set_Clock(0x130, 0x81D0);
     }
 }
 
@@ -6409,11 +6409,11 @@ void PogoInit_Camera(void) {
 }
 
 void func_800C318C(s32 arg0) {
-    func_8007B7FC(arg0 & 0xFFFF, 0x81D0);
+    Set_Clock(arg0 & 0xFFFF, 0x81D0);
 }
 
 void InitialisePOGO(void) {
-    func_8007EB1C(0x140, 0x28, 0);
+    Init_Clock(0x140, 0x28, 0);
     D_800C5BB0 = 0;
     D_800C5BAC = 0;
     D_800C52FC = 0;

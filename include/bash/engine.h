@@ -38,7 +38,7 @@ void func_8007A6B0(s32 arg0);
 void func_8007A6D0(s32 arg0);
 void func_8007A6F8(void);
 void func_8007A7C0(void);
-void func_8007A9D0(u8 *arg0);
+void InitAmbience(u8 *arg0);
 void func_8007AAF0(void);
 void func_8007AB20(void);
 void func_8007AB6C(void);
@@ -450,7 +450,7 @@ extern s16 D_8006BBD6[];
 
 NAS *func_8007A464(s32 arg0, s32 *arg1, s32 arg2);
 
-void func_8007A91C(void);
+void DoAmbience(void);
 
 /* The engine's other files (ARCHITECTURE.md, Files inside the engine). */
 #include "bash/8007ac20.h"
@@ -510,13 +510,13 @@ typedef struct {
     u8 e[1];
 } EngineReqObj;
 
-void func_80078CA4(void);
+void InitialiseNasSystem(void);
 
 void func_8007906C(void);
 
 void func_800793E8(void);
 
-s32 func_8007A26C(NAS *nas);
+s32 GravitateNas(NAS *nas);
 
 /* D_8005A614 as seen by func_80079554. */
 typedef struct EngMenuGame {

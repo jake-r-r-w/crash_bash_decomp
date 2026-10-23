@@ -269,8 +269,8 @@ typedef struct Ovl63GameView2 {
         PlaySfx(d, NULL, NULL, 0x1000, 0x1E00, 0);          \
     }
 
-void func_8007EB1C(s32 arg0, s32 arg1, s32 arg2);
-void func_8007B7FC(u32 a, u32 b);
+void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
+void Set_Clock(u32 a, u32 b);
 extern s32 D_800C6BA4;
 extern s32 D_800C6BA8;
 

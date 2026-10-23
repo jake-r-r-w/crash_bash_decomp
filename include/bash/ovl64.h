@@ -60,7 +60,7 @@ typedef struct Ovl64Game {
     /* 0xA7 */ u8 rank[4];
 } Ovl64Game;
 
-void func_8007B120(void);
+void InitBigScore(void);
 
 #define OVL64_GAME ((Ovl64Game *)D_8005A614)
 
@@ -194,7 +194,7 @@ typedef struct Ovl64Glow {
     /* 0x1E */ s16 unk1E;
 } Ovl64Glow;
 extern s32 (*D_8009D750)(EXTengine *);
-s32 func_8007A26C(NAS *nas);
+s32 GravitateNas(NAS *nas);
 void func_8008E27C(s32 *arg0, void *arg1, s32 arg2);
 
 void func_800BB52C(s32 arg0);

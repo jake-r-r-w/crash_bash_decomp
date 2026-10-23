@@ -98,42 +98,42 @@ void func_800B3DD8(void) {
     s16 a;
     EXTheromove *m;
 
-    func_8007EB1C(0x140, 0x28, 0);
+    Init_Clock(0x140, 0x28, 0);
     g = D_8005A614;
     if (*(u16 *)(g + 0x32) & 0x40) {
         if (*(s32 *)(g + 0x6C) != 0) {
             switch (*(s16 *)(g + 0x34)) {
             case 0:
-                func_8007B7FC(0x30, 0x81D0);
+                Set_Clock(0x30, 0x81D0);
                 break;
             case 1:
-                func_8007B7FC(0x30, 0x81D0);
+                Set_Clock(0x30, 0x81D0);
                 break;
             case 2:
-                func_8007B7FC(0x30, 0x81D0);
+                Set_Clock(0x30, 0x81D0);
                 break;
             case 3:
-                func_8007B7FC(0x25, 0x81D0);
+                Set_Clock(0x25, 0x81D0);
                 break;
             }
         } else {
             switch (*(s16 *)(g + 0x34)) {
             case 0:
-                func_8007B7FC(0x45, 0x81D0);
+                Set_Clock(0x45, 0x81D0);
                 break;
             case 1:
-                func_8007B7FC(0x40, 0x81D0);
+                Set_Clock(0x40, 0x81D0);
                 break;
             case 2:
-                func_8007B7FC(0x40, 0x81D0);
+                Set_Clock(0x40, 0x81D0);
                 break;
             case 3:
-                func_8007B7FC(0x30, 0x81D0);
+                Set_Clock(0x30, 0x81D0);
                 break;
             }
         }
     } else {
-        func_8007B7FC(0x130, 0x81D0);
+        Set_Clock(0x130, 0x81D0);
     }
     D_800C3B32 = 0;
     D_800C3B34 = 0;
@@ -164,7 +164,7 @@ void func_800B3DD8(void) {
         World_floor_level = -0x10;
         func_800B710C(8, 8, 0xA, 0xC, 0xA, 3, 3, 0, 0);
         func_800BAFB4();
-        func_8007A9D0(D_800C39C0);
+        InitAmbience(D_800C39C0);
         break;
     case 1:
         World_floor_level = -0x10;
@@ -198,7 +198,7 @@ void func_800B3DD8(void) {
         D_800C478A = Random(0x1E) + 0x1E;
         func_800B710C(6, 6, 6, 6, 0xE, 2, 0, 0, 0);
         func_800BAFB4();
-        func_8007A9D0(D_800C39D8);
+        InitAmbience(D_800C39D8);
         break;
     case 0x20:
         Heroes[2].hero_shadow->flags = 0;
@@ -243,7 +243,7 @@ void func_800B432C(void) {
     switch (D_8005A648) {
     case 0:
     case 3:
-        func_8007A91C();
+        DoAmbience();
         func_800B7358();
         break;
     case 1:
@@ -1783,7 +1783,7 @@ void PlotTumbler(NAS *nas) {
         PlaySfx(0x409, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         return;
     case 2:
-        if (func_8007A26C(nas) != 0) {
+        if (GravitateNas(nas) != 0) {
             eng->unk10.y += 0x20;
             func_800BF404(eng, 0, -1, 0);
             eng->unk10.y -= 0x20;

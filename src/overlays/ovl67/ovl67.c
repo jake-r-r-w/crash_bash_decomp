@@ -1635,7 +1635,7 @@ void func_800B6F4C(void) {
     s32 ang;
     s32 t;
 
-    func_8007C6EC();
+    InitBossHealthIcons();
     D_8009D8FC = D_8005A680[0] != 0 ? D_800C3EF0 : D_800C3EB0;
     for (i = 0; i < 4; i++) {
         if (OVT->unk32 & 0x100) {

@@ -174,7 +174,7 @@ extern s16 D_800C3B40;
 s32 func_800B6DA4(s32 arg0);
 void func_800B7358(void);
 void func_800BB7E8(void);
-void func_8007A91C(void);
+void DoAmbience(void);
 void func_80086D88(void);
 void func_80086F78(void);
 void func_800B8578(void);
@@ -427,8 +427,8 @@ extern u16 D_800C3984[];
 extern u8 D_800C39C0[];
 extern u8 D_800C39D8[];
 extern u16 *D_8009D6F4;
-void func_8007EB1C(s32 arg0, s32 arg1, s32 arg2);
-void func_8007B7FC(u32 a, u32 b);
+void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
+void Set_Clock(u32 a, u32 b);
 void func_80095258(u8 *arg0);
 
 #endif /* BASH_OVL5D_H */

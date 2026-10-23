@@ -4,7 +4,7 @@
 #include "bash/hero.h"
 #include "bash/shell.h"
 
-void func_80078CA4(void) {
+void InitialiseNasSystem(void) {
     EngineRec32 *rec;
     EngineBootView *v;
     u8 *p;
@@ -20,7 +20,7 @@ void func_80078CA4(void) {
         v->unk0(rec);
     }
     SetNasDefaults();
-    func_8007EC48();
+    Init_Panel();
     D_8005AA1C = (NAS *)func_80011654(D_8005AA14 * 0x70, &D_8004E0F0);
     D_8005AA20 = (u8 *)D_8005AA1C + (D_8005AA14 * 0x70 - 0x70);
     D_8005AA40 = (EngObj **)func_80011654(D_8005AA14 * 4, &D_8004E0F0);
@@ -83,11 +83,11 @@ void func_80078DD4(void) {
                         }
                         dx = w;
                     }
-                    func_8009749C((s32)&eng->unk10, l, r, dx >> 1, t >> 1, nas->Camera.height);
+                    camera_add_frame_list((s32)&eng->unk10, l, r, dx >> 1, t >> 1, nas->Camera.height);
                 } else {
                     dx = nas->Camera.height;
                     dx -= (u32)dx >> 2;
-                    func_8009749C((s32)&eng->unk10, w >> 1, w >> 1, 0, 0, dx);
+                    camera_add_frame_list((s32)&eng->unk10, w >> 1, w >> 1, 0, 0, dx);
                 }
             }
             nas = nas->Camera.Child;
@@ -96,16 +96,16 @@ void func_80078DD4(void) {
     {
         EngineGameView *g1 = (EngineGameView *)D_8005A614;
         if ((g1->unk4 & 0x200) && !(g1->unk30 & 0x801)) {
-            func_8009749C((s32)D_8005B3A8, 0x80, 0x80, 0, 0, 0x80);
-            func_8009749C((s32)(D_8005B3A8 + 0x18), 0x80, 0x80, 0, 0, 0x80);
+            camera_add_frame_list((s32)D_8005B3A8, 0x80, 0x80, 0, 0, 0x80);
+            camera_add_frame_list((s32)(D_8005B3A8 + 0x18), 0x80, 0x80, 0, 0, 0x80);
         }
     }
     {
         EngineGameView *g2 = (EngineGameView *)D_8005A614;
         if (g2->flags & 0x800) {
             if (!(g2->unk30 & 0x800)) {
-                func_8009749C((s32)D_8005B3D8, 0x80, 0x80, 0, 0, 0x80);
-                func_8009749C((s32)(D_8005B3D8 + 0x18), 0x80, 0x80, 0, 0, 0x80);
+                camera_add_frame_list((s32)D_8005B3D8, 0x80, 0x80, 0, 0, 0x80);
+                camera_add_frame_list((s32)(D_8005B3D8 + 0x18), 0x80, 0x80, 0, 0, 0x80);
             }
         }
     }
@@ -379,7 +379,7 @@ void func_8007976C(void) {
         } while (i < *(s32 *)D_8005AA40);
     }
     D_8005AA58 = 0;
-    func_8007B8D4();
+    Draw_Clock();
     func_8007AF3C();
     if (D_80099174 & 0x4000) {
         func_8007D6D0();
@@ -579,7 +579,7 @@ EngineReqObj *arg1;
     return 1;
 }
 
-s32 func_8007A26C(NAS *nas) {
+s32 GravitateNas(NAS *nas) {
     EXTengine *eng;
     EXTmotion *m;
     s16 dec;
@@ -781,7 +781,7 @@ void func_8007A8C4(void) {
     }
 }
 
-void func_8007A91C(void) {
+void DoAmbience(void) {
     if (D_8009871C != 0) {
         D_8009871C = D_8009871C - 1;
     } else {
@@ -792,7 +792,7 @@ void func_8007A91C(void) {
     }
 }
 
-void func_8007A9D0(u8 *arg0) {
+void InitAmbience(u8 *arg0) {
     D_80098718 = arg0;
     D_8009871C = 0;
     PlaySfx((*(u16*)((u8*)(arg0) + 4)), 0, 0, 0x1000, 0x1E00, 0);
@@ -814,7 +814,7 @@ void func_8007AA18(void) {
         } while (i < *(s32 *)D_8005AA40);
     }
     D_8005AA58 = 0;
-    func_8007B8D4();
+    Draw_Clock();
     func_8007AF3C();
     if (D_80099174 & 0x4000) {
         func_8007D6D0();

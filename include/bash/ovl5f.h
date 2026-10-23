@@ -914,9 +914,9 @@ extern u8 D_800CA284[];
 extern u8 D_800CA2C4[];
 extern u8 D_800CA30C[];
 extern u8 D_8005365C[];
-void func_8007EB04(void);
-void func_8007EB1C(s32 arg0, s32 arg1, s32 arg2);
-void func_8007B7FC(u32 a, u32 b);
+void Clock_Off(void);
+void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
+void Set_Clock(u32 a, u32 b);
 
 /* func_800C60AC (PlotJoe/PlotMoe): the boss NAS's FUX extension. */
 typedef struct JoeMoeFux {

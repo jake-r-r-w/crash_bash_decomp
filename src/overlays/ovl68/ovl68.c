@@ -2461,7 +2461,7 @@ void func_800B94FC(s32 arg0, u16 arg1) {
             s32 sa;
             s32 sb;
 
-            func_8007B120();
+            InitBigScore();
             hb = Heroes;
             a = &hb[*(s16 *)(g + 0x48)];
             b = &hb[*(s16 *)(g + 0x4A)];
@@ -2573,7 +2573,7 @@ void func_800B9A50(s32 arg0, u16 arg1) {
             s32 sa;
             s32 sb;
 
-            func_8007B120();
+            InitBigScore();
             hb = Heroes;
             a = &hb[*(s16 *)(g + 0x48)];
             b = &hb[*(s16 *)(g + 0x4A)];
@@ -2772,7 +2772,7 @@ void func_800BA220(s32 arg0, u16 arg1) {
         }
         return;
     }
-    func_8007B120();
+    InitBigScore();
     hb = Heroes;
     ta = &hb[g->team[0]];
     b = &hb[g->team[1]];

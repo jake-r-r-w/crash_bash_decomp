@@ -1849,18 +1849,18 @@ void func_800B8890(void) {
     s32 *scene;
 
     D_800C6BB0 = 0x3C;
-    func_8007EB1C(0x140, 0x28, 0);
+    Init_Clock(0x140, 0x28, 0);
     if (G63->unk34 == 0x18) {
-        func_8007B7FC((G63->unk32 & 0x40) ? 0x115 : 0x130, 0x81C0);
+        Set_Clock((G63->unk32 & 0x40) ? 0x115 : 0x130, 0x81C0);
     }
     if (G63->unk34 == 0x17) {
-        func_8007B7FC((G63->unk32 & 0x40) ? 0x100 : 0x130, 0x81C0);
+        Set_Clock((G63->unk32 & 0x40) ? 0x100 : 0x130, 0x81C0);
     }
     if (G63->unk34 == 0x19) {
-        func_8007B7FC((G63->unk32 & 0x40) ? 0x100 : 0x130, 0x81C0);
+        Set_Clock((G63->unk32 & 0x40) ? 0x100 : 0x130, 0x81C0);
     }
     if (G63->unk34 == 0x1A) {
-        func_8007B7FC((G63->unk32 & 0x40) ? 0x100 : 0x130, 0x81C0);
+        Set_Clock((G63->unk32 & 0x40) ? 0x100 : 0x130, 0x81C0);
     }
     D_800C66EC = NULL;
     World_floor_level = -0x10;

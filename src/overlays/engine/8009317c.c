@@ -213,7 +213,7 @@ loop:
     }
 }
 
-void func_800939FC(void)
+void load_initial_dbases(void)
 {
   s32 i;
   View939FC *g;
@@ -327,7 +327,7 @@ void func_80093BE8(void) {
         func_8001D640(D_8005AA54);
         func_8001E984(0x20, 0x20);
         process_init(D_800A015C);
-        func_80078CA4();
+        InitialiseNasSystem();
         func_8007A8C4();
         if (g->mode != 0x28 || D_800590CC == 0) {
             func_800229FC(g->mode);
@@ -343,7 +343,7 @@ void func_80093BE8(void) {
         if (D_8005A648 != 0x28 || D_800590CC == 0) {
             func_80022140(D_8005A648, D_8004DDD0[D_8005A648 * 3]);
         }
-        func_800939FC();
+        load_initial_dbases();
         a = D_800A00F0;
         if (D_8005A650 >= 0) {
             p = (s32 *)(D_80052A54 + D_8005A650 * 0x38);
@@ -375,7 +375,7 @@ void func_80093BE8(void) {
             p = NULL;
         }
         func_8001DEF4(a, p);
-        func_800939FC();
+        load_initial_dbases();
         D_800A0158 = 4;
         break;
     case 4:
@@ -398,7 +398,7 @@ void func_80093BE8(void) {
     }
 }
 
-void func_8009400C(void) {
+void realign_panel_dbase(void) {
     struct E { s32 a, b; u8 pad[0x30]; };
     struct G { struct E e[0x1C]; s32 x, y; } *g;
     struct E *e;
@@ -494,7 +494,7 @@ void func_80094274(void) {
     }
 }
 
-void func_80094364(void) {
+void level_load_map(void) {
     s32 *a = D_800A00F0;
     s32 *p;
 

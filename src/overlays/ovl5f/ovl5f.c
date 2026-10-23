@@ -858,50 +858,50 @@ void func_800B58B0(void) {
     D_800CB0E0 = 0;
     D_800CB0EC = 0;
     World_floor_level = 0;
-    func_8007EB1C(0x140, 0x1E, 0);
+    Init_Clock(0x140, 0x1E, 0);
     g = (Ovl5fSetupView *)D_8005A614;
     if (g->flags & 0x40) {
         if (g->w6C != 0) {
             switch (g->mode) {
             case 6:
-                func_8007B7FC(0x30, 0x81C0);
+                Set_Clock(0x30, 0x81C0);
                 break;
             case 8:
-                func_8007B7FC(0x30, 0x81C0);
+                Set_Clock(0x30, 0x81C0);
                 break;
             case 7:
-                func_8007B7FC(0x25, 0x81C0);
+                Set_Clock(0x25, 0x81C0);
                 break;
             case 5:
-                func_8007B7FC(0x25, 0x81C0);
+                Set_Clock(0x25, 0x81C0);
                 break;
             case 9:
-                func_8007EB04();
+                Clock_Off();
                 break;
             }
         } else {
             switch (g->mode) {
             case 6:
-                func_8007B7FC(0x40, 0x81C0);
+                Set_Clock(0x40, 0x81C0);
                 break;
             case 8:
-                func_8007B7FC(0x40, 0x81C0);
+                Set_Clock(0x40, 0x81C0);
                 break;
             case 7:
-                func_8007B7FC(0x30, 0x81C0);
+                Set_Clock(0x30, 0x81C0);
                 break;
             case 5:
-                func_8007B7FC(0x40, 0x81C0);
+                Set_Clock(0x40, 0x81C0);
                 break;
             case 9:
-                func_8007EB04();
+                Clock_Off();
                 break;
             }
         }
     } else if (g->mode == 9) {
-        func_8007EB04();
+        Clock_Off();
     } else {
-        func_8007B7FC(0x130, 0x81C0);
+        Set_Clock(0x130, 0x81C0);
     }
     if (D_8005A648 == 5) {
         func_8001682C((s32 *)D_80053774);
@@ -961,7 +961,7 @@ void func_800B58B0(void) {
         }
         break;
     case 7:
-        func_8007A9D0(D_800C8ED4);
+        InitAmbience(D_800C8ED4);
         CreateNAS(0x800, 0, 0x800, 0x131A, 0x11);
         src1 = src2 = D_800CA244;
         D_800CAFF4 = 8;

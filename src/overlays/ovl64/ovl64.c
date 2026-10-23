@@ -51,11 +51,11 @@ void func_800B359C() {
     s16 a;
 
     if (D_8005A646 & 0x40) {
-        func_8007EB1C(0x140, 0x28, 0);
-        func_8007B7FC(0x125, 0x81D0);
+        Init_Clock(0x140, 0x28, 0);
+        Set_Clock(0x125, 0x81D0);
     } else {
-        func_8007EB1C(0x140, 0x28, 0);
-        func_8007B7FC(0x130, 0x81D0);
+        Init_Clock(0x140, 0x28, 0);
+        Set_Clock(0x130, 0x81D0);
     }
     World_floor_level = -0x10;
     D_800BBD52 = 0x1F4;
@@ -90,7 +90,7 @@ void func_800B359C() {
             Heroes[1].hero_score = 0;
             Heroes[2].hero_score = 0x1E;
             Heroes[3].hero_score = 0;
-            func_8007D144();
+            InitSharedScoreIcons();
         } else {
             Heroes[0].hero_score = 0x1E;
             Heroes[1].hero_score = 0x19;
@@ -440,7 +440,7 @@ void func_800B4144(s32 arg0, u16 arg1) {
             if (found == 1) {
                 goto decide;
             }
-            func_8007B120();
+            InitBigScore();
         }
         OVL64_DRAW(g, arg1, i);
         return;
@@ -448,7 +448,7 @@ void func_800B4144(s32 arg0, u16 arg1) {
 decide:
     game = (Ovl64Game *)D_8005A614;
     if (game->teams != 0) {
-        func_8007B120();
+        InitBigScore();
         if (D_800BBE08 == D_800BBE0C) {
             game->winner[0] = 0;
             game->state |= arg1;
@@ -1060,7 +1060,7 @@ void PlotHazardType(NAS *nas) {
             KillNAS(nas);
             break;
         }
-        if (func_8007A26C(nas) != 0) {
+        if (GravitateNas(nas) != 0) {
             done = 1;
         }
         if (done) {
@@ -1300,7 +1300,7 @@ void PlotBalloon(NAS *nas) {
                 fux->sub = 0;
                 break;
             case 0x63:
-                if (func_8007A26C(nas) != 0) {
+                if (GravitateNas(nas) != 0) {
                     goto kill;
                 }
                 s = eng->unk2C.x;

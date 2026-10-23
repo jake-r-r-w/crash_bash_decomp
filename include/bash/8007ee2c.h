@@ -53,7 +53,7 @@ void func_8008680C(void);
 
 void func_80086814(void);
 
-void func_8008AA90(void);
+void HeroQuiet(void);
 
 s32 func_8008AB48(void);
 
@@ -407,7 +407,7 @@ extern u16 D_8009DC2C[];
 
 void func_800874EC(s32 arg0);
 
-void InitHealth(NAS *nas);
+void Init_HealthPU(NAS *nas);
 
 /* ballistic arc state used by func_8008C5C4 */
 typedef struct {
@@ -440,7 +440,7 @@ void func_800860D4(s32 arg0);
 
 void func_80088C28(s32 arg0);
 
-void PlotHealth(NAS *nas);
+void Plot_HealthPU(NAS *nas);
 
 /* func_800898EC: a 14-byte record per hero, 3 rows of 4 heroes. */
 typedef struct {

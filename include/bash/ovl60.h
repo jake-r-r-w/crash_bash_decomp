@@ -570,8 +570,8 @@ extern Ovl60ModeEntry D_800C3834;
 extern Ovl60ModeEntry D_800C3848;
 extern Ovl60ModeEntry D_800C3860;
 extern Ovl60ModeEntry D_800C3878;
-void func_8007B7FC(u32 a, u32 b);
-void func_8007D144(void);
+void Set_Clock(u32 a, u32 b);
+void InitSharedScoreIcons(void);
 extern s32 D_80099174;
 
 

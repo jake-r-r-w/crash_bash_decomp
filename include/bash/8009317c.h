@@ -10,8 +10,8 @@
 
 extern u16 D_8009F994[];
 
-/* 0x38-byte records at D_80052A54 (func_800939FC). */
-/* D_8005A614 as seen by func_800939FC. */
+/* 0x38-byte records at D_80052A54 (load_initial_dbases). */
+/* D_8005A614 as seen by load_initial_dbases. */
 typedef struct View939FC {
     /* 0x00 */ u8 pad0[8];
     /* 0x08 */ s32 unk8;
@@ -217,9 +217,9 @@ void func_80094DD0(void);
 
 void func_80093270(void);
 
-void func_8009400C(void);
+void realign_panel_dbase(void);
 
-void func_80094364(void);
+void level_load_map(void);
 
 void func_80094EB8(void);
 
@@ -292,7 +292,7 @@ extern u8 D_8009FA00[];
 extern u8 D_8004E998[];
 extern s32 D_8009F720[];
 void func_80093854(void);
-void func_800939FC(void);
+void load_initial_dbases(void);
 void func_80092AF4(s32 arg0, s32 arg1);
 
 void func_80093BE8(void);

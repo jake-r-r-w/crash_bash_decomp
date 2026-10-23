@@ -3054,7 +3054,7 @@ void InitialisePOLAR(void) {
     void (*fn)(void);
 
     D_800D5454 = NULL;
-    func_8007EB1C(0x140, 0x28, 0);
+    Init_Clock(0x140, 0x28, 0);
     func_800B38A0();
     D_800D5450 = 0;
     D_800D4D08 = 0;
@@ -3073,55 +3073,55 @@ void InitialisePOLAR(void) {
     cam->at.z = 0;
     if (((Ovl62PolarView *)D_8005A614)->mode != 0x16) {
         if (((Ovl62PolarView *)D_8005A614)->flags & 0x40) {
-            func_8007B7FC(0x45, 0x81C0);
+            Set_Clock(0x45, 0x81C0);
         } else {
-            func_8007B7FC(0x130, 0x81C0);
+            Set_Clock(0x130, 0x81C0);
         }
         if (((Ovl62PolarView *)D_8005A614)->mode == 0x13) {
             if (((Ovl62PolarView *)D_8005A614)->flags & 0x40) {
-                func_8007B7FC(0x100, 0x81C0);
+                Set_Clock(0x100, 0x81C0);
             } else {
-                func_8007B7FC(0x130, 0x81C0);
+                Set_Clock(0x130, 0x81C0);
             }
             if (((Ovl62PolarView *)D_8005A614)->flags & 0x40) {
                 if (((Ovl62PolarView *)D_8005A614)->unk6C != 0) {
-                    func_8007B7FC(0x45, 0x81C0);
+                    Set_Clock(0x45, 0x81C0);
                 }
             }
         }
         if (((Ovl62PolarView *)D_8005A614)->mode == 0x12) {
             if (((Ovl62PolarView *)D_8005A614)->flags & 0x40) {
-                func_8007B7FC(0x30, 0x81C0);
+                Set_Clock(0x30, 0x81C0);
             } else {
-                func_8007B7FC(0x130, 0x81C0);
+                Set_Clock(0x130, 0x81C0);
             }
             if (((Ovl62PolarView *)D_8005A614)->unk6C != 0) {
                 if (((Ovl62PolarView *)D_8005A614)->flags & 0x40) {
-                    func_8007B7FC(0x25, 0x81C0);
+                    Set_Clock(0x25, 0x81C0);
                 }
             }
         }
         if (((Ovl62PolarView *)D_8005A614)->mode == 0x14) {
             if (((Ovl62PolarView *)D_8005A614)->flags & 0x40) {
-                func_8007B7FC(0x25, 0x81C0);
+                Set_Clock(0x25, 0x81C0);
             } else {
-                func_8007B7FC(0x130, 0x81C0);
+                Set_Clock(0x130, 0x81C0);
             }
             if (((Ovl62PolarView *)D_8005A614)->unk6C != 0) {
                 if (((Ovl62PolarView *)D_8005A614)->flags & 0x40) {
-                    func_8007B7FC(0x20, 0x81C0);
+                    Set_Clock(0x20, 0x81C0);
                 }
             }
         }
         if (((Ovl62PolarView *)D_8005A614)->mode == 0x15) {
             if (((Ovl62PolarView *)D_8005A614)->flags & 0x40) {
-                func_8007B7FC(0x30, 0x81C0);
+                Set_Clock(0x30, 0x81C0);
             } else {
-                func_8007B7FC(0x130, 0x81C0);
+                Set_Clock(0x130, 0x81C0);
             }
             if (((Ovl62PolarView *)D_8005A614)->unk6C != 0
                 && (((Ovl62PolarView *)D_8005A614)->flags & 0x40)) {
-                func_8007B7FC(0x25, 0x81C0);
+                Set_Clock(0x25, 0x81C0);
             }
         }
     }
@@ -3284,7 +3284,7 @@ loop:
     if (w->mode == 0x16) {
         func_8001682C((s32 *)D_80054A0C);
         func_8007E9FC(0x82, 0x3031);
-        func_8007C6EC();
+        InitBossHealthIcons();
         CreateNAS(0, 0, 0, 0x1625, 0x11);
     }
     if (w->mode == 0x12) {

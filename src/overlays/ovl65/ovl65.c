@@ -1804,8 +1804,8 @@ void func_800B7664(void) {
     s16 acc;
     u8 *g;
 
-    func_8007EB1C(0x140, 0x28, 0);
-    func_8007D144();
+    Init_Clock(0x140, 0x28, 0);
+    InitSharedScoreIcons();
     g = D_8005A614;
     if (*(s32 *)(g + 0x6C) != 0) {
         D_80099174 |= 0x2000;
@@ -1824,7 +1824,7 @@ void func_800B7664(void) {
     if (!sc) {
         a = 0x130;
     }
-    func_8007B7FC(a, 0x81C0);
+    Set_Clock(a, 0x81C0);
     World_floor_level = -0x10;
     func_800B714C();
     D_800BDBA4 = 0;

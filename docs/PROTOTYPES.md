@@ -150,7 +150,8 @@ such a shift itself. The addresses below are the records'.
   `0x80076318` (right after `Init_Panel`) to `0x8007A07C`: the whole file's
   code, but no function records for it. `PANEL.CPP` has no line records.
 
-**PANEL.CPP in retail.** `Setup_panel` is `func_8007AC20`, the first function
+**PANEL.CPP in retail.** All 23 below are renamed (with Euro Demo 65's
+engine names: `renames_engine_all.txt`). `Setup_panel` is `func_8007AC20`, the first function
 of the engine unit `8007ac20`, so that unit is `PANEL.CPP`. All 23 retail
 functions are already matched; the names are for readability.
 
@@ -197,8 +198,8 @@ similarity 0.40). Its largest function (`0x1238` bytes) is closest to
 unit `8007ee2c`, maybe from `func_8007ED0C`. Not proven.
 
 **Still to do.**
-- Apply the 23 names, the signatures and the locals to `8007ac20.c` and its
-  header, and rename the unit `panel`.
+- Apply the signatures and the locals to the 23 renamed functions, and
+  rename the unit `panel`.
 - Rename the globals: 34 of the 44 are mapped, every one referenced at its
   start and on a retail `D_` symbol's start (`PanelCtrl` is `D_80099174`,
   `CupTimer` `D_8009AE3C`, `HealthIconPos` `D_80099250`, ...; `globals.txt`).
@@ -279,7 +280,11 @@ The 4 names the repo gave itself are replaced by the originals
 `AddExt`).
 
 **Still to do.**
-- The engine and slot overlay names, once no other agent is working there.
+- Engine names done: 37 with Jampack's (`renames_engine_all.txt`); left are
+  `SetTweakAi` (0.84), `HeroGhost` (0.86) and `line_intersect_zy` (0.78), in
+  link order but with no gap to confirm them, and four stubs no place
+  confirms (`DefaultTouched`, `DefHero2ObjectCollision`, `PrintNasPos`,
+  `InitParticleEffect`). Slot overlay names next.
 - The parameter types from the C++ names, one prototype at a time.
 - The rest of the globals (`globals.txt`, 41 mapped). `main.exe`'s 13 that
   land on a retail `D_` symbol's start are renamed (`renames_main_globals.txt`:

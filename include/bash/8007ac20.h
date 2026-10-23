@@ -29,36 +29,36 @@ void func_8007D5EC(void);
 
 void func_8007E7A4(void);
 
-s32 func_8007E7C8(void);
+s32 CalcElapsedTime(void);
 
 void func_8007E874(void);
 
 void func_8007E9FC(u16 arg0, s16 arg1);
 
-void func_8007EB04(void);
+void Clock_Off(void);
 
 void func_8007E7F4(void);
 
-s32 func_8007E894(void);
+s32 StillTottingUpScore(void);
 
-void func_8007D034(void);
+void InitScore2Icons(void);
 
-void func_8007D0BC(void);
+void InitScore1Icons(void);
 
 void func_8007EAC0(void);
 
-void func_8007E8D0(EngineBox *p, s16 x, s16 y, s32 a, s32 b);
+void MakeSubBar(EngineBox *p, s16 x, s16 y, s32 a, s32 b);
 
-void func_8007EB1C(s32 arg0, s32 arg1, s32 arg2);
+void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
 
-void func_8007CFAC(void);
+void InitScore3Icons(void);
 
-void func_8007B7FC(u32 a, u32 b);
+void Set_Clock(u32 a, u32 b);
 
-void func_8007D144(void);
+void InitSharedScoreIcons(void);
 
 extern EXTengine D_80099290[];
-void func_8007EC48(void);
+void Init_Panel(void);
 
 void func_8007ED0C(void);
 
@@ -81,7 +81,7 @@ extern subengine D_8009AD94;
 extern subengine D_8009AC04;
 extern subengine D_8009ACAC;
 
-void func_8007EB68(void);
+void InitCountdown(void);
 typedef struct PanelPrim {
     s32 unk0;
     s32 unk4;
@@ -107,24 +107,24 @@ extern s32 D_8009AE88[4];
 
 void func_8007C170(void);
 
-void func_8007CC80(void);
+void InitPowerIcons(void);
 
 void func_8007AF3C(void);
-void func_8007B330(void);
-void func_8007CA70(void);
-void func_8007CE50(void);
+void UpdateBigScore(void);
+void UpdateHealthIcons(void);
+void UpdatePowerIcons(void);
 extern u8 D_80099914[];
 extern u8 D_800999BC[];
 void func_8007D2F4(void);
-void func_8007D4D0(void);
-void func_8007D9DC(void);
+void UpdateScoreIcons(void);
+void Cups_Update(void);
 extern s32 D_8005A618;
 extern u16 D_8009D524[4];
 s32 FntPrint();
 
-void func_8007C338(void);
+void InitHealthIcons(void);
 
-void func_8007C514(void);
+void ClearHealthIcons(void);
 
 extern PanelPrim D_80099A64[4][7];
 typedef struct { void *a; void *b; s32 *c; } EngPtr3;
@@ -135,7 +135,7 @@ extern u8 D_8005365C[];
 
 void func_8007BE84(void);
 
-void func_8007C6EC(void);
+void InitBossHealthIcons(void);
 
 void func_8007D208(void);
 
@@ -157,11 +157,11 @@ extern s16 D_8009AE82;
 extern s16 D_8009AE84;
 extern s16 D_8005A65C[2];
 
-void func_8007B120(void);
+void InitBigScore(void);
 
 void func_8007C830(s32 arg0, s32 arg1);
 
-/* D_8005A614 as seen by func_8007AC20. */
+/* D_8005A614 as seen by Setup_panel. */
 typedef struct EngineSlotView {
     /* 0x00 */ u8 unk0[0x48];
     /* 0x48 */ s16 unk48;
@@ -171,9 +171,9 @@ typedef struct EngineSlotView {
     /* 0x6C */ s32 unk6C;
 } EngineSlotView;
 
-void func_8007AC20(void);
+void Setup_panel(void);
 
-/* D_8005A614 as seen by func_8007B8D4. */
+/* D_8005A614 as seen by Draw_Clock. */
 typedef struct EngineClockView {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s32 unk4;
@@ -184,9 +184,9 @@ typedef struct EngineClockView {
 } EngineClockView;
 
 extern void (*D_8009D74C)(s32, s32);
-void func_8007B8D4(void);
+void Draw_Clock(void);
 
-/* D_8005A614 as seen by func_8007D9DC. */
+/* D_8005A614 as seen by Cups_Update. */
 typedef struct EngModeD9DC {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s32 unk4;

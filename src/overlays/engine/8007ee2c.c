@@ -2069,7 +2069,7 @@ void func_80083708(void) {
         m += 7;
         k += 3;
     }
-    func_8007AC20();
+    Setup_panel();
     func_80085650();
     func_80086FA0();
 }
@@ -4864,7 +4864,7 @@ void func_8008AA40(s32 arg0) {
     Heroes[arg0].hero_idle_count = Random(0x96) + 0x5A;
 }
 
-void func_8008AA90(void) {
+void HeroQuiet(void) {
     func_8008502C();
 }
 
@@ -6220,7 +6220,7 @@ void func_8008D6C8(NAS *nas) {
     }
 }
 
-void InitHealth(NAS *nas) {
+void Init_HealthPU(NAS *nas) {
     EXTengine *eng;
     EXTobject *obj;
     EXTmotion *mot;
@@ -6286,7 +6286,7 @@ void InitHealth(NAS *nas) {
     }
 }
 
-void PlotHealth(NAS *nas) {
+void Plot_HealthPU(NAS *nas) {
     EXTengine *eng;
     EXTobject *obj;
     EXTmotion *mot;
@@ -6310,7 +6310,7 @@ void PlotHealth(NAS *nas) {
             goto plot;
         }
         mot = FindExtension(nas, 0x800);
-        if (mot != NULL && func_8007A26C(nas) != 0) {
+        if (mot != NULL && GravitateNas(nas) != 0) {
             if (obj->status == 4) {
                 PlaySfx(D_8009E214[Random(8)], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
             }

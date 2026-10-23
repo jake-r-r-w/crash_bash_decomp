@@ -631,7 +631,7 @@ void func_800B4BC8(s32 arg0, u16 arg1) {
             s32 sa;
             s32 sb;
 
-            func_8007B120();
+            InitBigScore();
             hb = Heroes;
             a = &hb[*(s16 *)(g + 0x48)];
             b = &hb[*(s16 *)(g + 0x4A)];
@@ -743,7 +743,7 @@ void func_800B5050(s32 arg0, u16 arg1) {
             s32 sa;
             s32 sb;
 
-            func_8007B120();
+            InitBigScore();
             hb = Heroes;
             a = &hb[*(s16 *)(g + 0x48)];
             b = &hb[*(s16 *)(g + 0x4A)];
@@ -942,7 +942,7 @@ void func_800B5820(s32 arg0, u16 arg1) {
         }
         return;
     }
-    func_8007B120();
+    InitBigScore();
     hb = Heroes;
     ta = &hb[g->team[0]];
     b = &hb[g->team[1]];
@@ -1329,7 +1329,7 @@ void func_800B67F4(void) {
 }
 
 void func_800B6868(s32 arg0) {
-    func_8007B7FC(arg0 & 0xFFFF, 0x81D0);
+    Set_Clock(arg0 & 0xFFFF, 0x81D0);
 }
 
 void func_800B688C(void) {
@@ -1366,7 +1366,7 @@ void func_800B68EC(void) {
             Heroes[i].hero_score = v;
         }
         func_800B6868(0x130);
-        func_8007D144();
+        InitSharedScoreIcons();
         if (D_8005A680[0] != 0) {
             D_80099174 |= 0x2000;
         }
@@ -1395,8 +1395,8 @@ void func_800B69D0(void) {
 
 void func_800B6A1C(void) {
     World_floor_level = -0x10;
-    func_8007EB1C(0x140, 0x28, 0);
-    func_8007B7FC(0x130, 0x81D0);
+    Init_Clock(0x140, 0x28, 0);
+    Set_Clock(0x130, 0x81D0);
     func_800B69D0();
     D_800B9EEC = 0x10;
     func_800B6774();

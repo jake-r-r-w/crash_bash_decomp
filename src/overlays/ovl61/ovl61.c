@@ -306,7 +306,7 @@ void AR_InitLevel(void) {
     }
     m2 = (Ovl61ModeView *)D_8005A614;
     if ((m2->unk32 & 0x40) && m2->unk6C != 0) {
-        func_8007D144();
+        InitSharedScoreIcons();
     }
     switch (D_8005A648) {
     case 0x10:

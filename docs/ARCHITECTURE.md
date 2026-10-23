@@ -210,8 +210,8 @@ code finds 15 code files; nothing else on the disc holds code.
 
   | Unit | First function | Proven range for the start | Rodata from |
   |---|---|---|---|
-  | `engine` | `func_80078CA4` (0) | - | `0x800ADBD8` |
-  | `8007ac20` | `func_8007AC20` (33) | 7..33: function 6's string stays before | `0x800ADC2C` |
+  | `engine` | `InitialiseNasSystem` (0) | - | `0x800ADBD8` |
+  | `8007ac20` | `Setup_panel` (33) | 7..33: function 6's string stays before | `0x800ADC2C` |
   | `8007ee2c` | `func_8007EE2C` (74) | 60..77; fewest call ties at 74 | `0x800ADDB0`: the mode names `D_8009AF00` (used by 77, 78) points to |
   | `8008e27c` | `func_8008E27C` (208) | 176..208: function 175's strings can't straddle; no call ties from 192 | `0x800AE464` |
   | `8009317c` | `func_8009317C` (282) | 248..289: the memory-card text tables are used up to 247; no call ties 273..282 | `0x800AEBC8` |

@@ -586,7 +586,7 @@ void func_800BE9D0(NAS *arg0) {
     switch (obj->status) {
     case 4:
     case 5:
-        if (func_8007A26C(arg0) != 0) {
+        if (GravitateNas(arg0) != 0) {
             if (obj->status == 4) {
                 PlaySfx(0x420, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
             }

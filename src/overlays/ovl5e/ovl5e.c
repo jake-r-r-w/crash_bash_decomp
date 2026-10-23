@@ -70,9 +70,9 @@ void func_800B36D4(void) {
             Heroes[i].hero_shadow->flags = 0;
         }
     }
-    func_8007EB04();
+    Clock_Off();
     func_8007E9FC(0x2C, 0x300A);
-    func_8007C6EC();
+    InitBossHealthIcons();
     func_800B42C0();
     func_800B6D14();
     CreateNAS(D_8005B2B8[2].pos.x, D_8005B2B8[2].pos.y, D_8005B2B8[2].pos.z,
@@ -976,7 +976,7 @@ void PlotPapuMinion(NAS *nas)
     break;
   case 3:
     move->speed = 0;
-    if (func_8007A26C(nas) != 0) {
+    if (GravitateNas(nas) != 0) {
       fux->unk1C |= 0x102;
       eng->flags &= ~0x21;
       fux->state = 4;

@@ -479,7 +479,7 @@ extern u16 D_800C3EF0[];
 extern s16 D_800C4182;
 extern s32 D_800C43E0;
 extern s16 D_8009D6E2;
-void func_8007C6EC(void);
+void InitBossHealthIcons(void);
 void func_80086868(void);
 
 /* D_8009D6E8 (EngineHooks in bash/engine.h, which this unit does not include). */
