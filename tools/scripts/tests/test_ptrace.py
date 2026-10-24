@@ -92,6 +92,12 @@ class TestFollow(unittest.TestCase):
         self.assertIn("loop moves it to 30; combine: r90 = r80<<4", out)
         self.assertEqual(out.count("r90 = r81<<4"), 1)
 
+    def test_insns_with_a_mode_are_insns(self):
+        """reload and sched2 print some insns as insn:QI / insn:TI: still the same insn."""
+        greg = GREG.replace("(insn 13 30 0", "(insn:QI 13 30 0")
+        passes, _ = ptrace.load(DUMPS[:3] + [("greg", greg)], "f")
+        self.assertEqual(ptrace.follow(passes, 13)[-1][3], "renamed")
+
     def test_dispositions(self):
         self.assertEqual(ptrace.dispositions(GREG), {80: 2, 90: 3, 91: 4})
 
@@ -123,6 +129,11 @@ class TestDecls(unittest.TestCase):
         self.assertEqual([d.name for d in ds], ["a", "b", "i", "j", "arr", "taken", "h", "copy", "r", "inner"])
         self.assertEqual([d.name for d in ds if d.memory], ["arr", "taken"])
         self.assertEqual([d.name for d in ds if d.maybe], ["copy"])
+
+    def test_pointer_member_address_is_not_the_pointers(self):
+        ds = ptrace.decls("void f(void) {\n    EXTengine *eng;\n    s32 *pos;\n    s32 *q;\n    s32 s;\n"
+                          "    pos = (s32 *)&eng->unk10;\n    q = &pos[2];\n    g(&s);\n}\n")
+        self.assertEqual([d.name for d in ds if d.memory], ["s"])
 
     def test_map_by_count(self):
         ds = ptrace.decls(FUNC)

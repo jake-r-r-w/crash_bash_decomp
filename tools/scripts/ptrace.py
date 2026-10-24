@@ -27,7 +27,8 @@ PASSES = [("rtl", "r"), ("jump", "j"), ("cse", "s"), ("addressof", "D"), ("loop"
 ALLOCATED = {"greg", "sched2", "jump2", "dbr"}      # pseudos are hard registers from greg on
 DUMP_FLAGS = " ".join("-d" + letter for _, letter in PASSES)
 
-ENTRY = re.compile(r"^\((insn|call_insn|jump_insn|note|code_label|barrier)(?:/[\w/]+)? (\d+) ", re.M)
+# an rtx code, its flags (/s, /v, ...) and a mode reload or sched2 may give an insn (insn:QI, insn:TI)
+ENTRY = re.compile(r"^\((insn|call_insn|jump_insn|note|code_label|barrier)(?:/\w+)*(?::\w+)? (\d+) ", re.M)
 Entry = namedtuple("Entry", "kind text regs dead pat")      # kind "note": text is the note kind
 
 
@@ -363,7 +364,9 @@ def stmt_end(body, i):
 
 
 def addr_taken(body, nm):
-    return re.search(rf"(?<![&\w])&\s*{re.escape(nm)}\b(?!\s*\()", body) is not None
+    """Is NM's own address taken (`&x`, `&s.f`)? `&p->f` and `&p[i]` take the address of what a
+    pointer points at, not of the pointer, so they don't count."""
+    return re.search(rf"(?<![&\w])&\s*{re.escape(nm)}\b(?!\s*(?:\(|->|\[))", body) is not None
 
 
 def used(body, nm, start, end):
