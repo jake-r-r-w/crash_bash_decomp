@@ -16,9 +16,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `main.exe` function matches and `main.c` is split (2026-10-23); Phase 2's
   naming and data are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2522/2537 game functions matched (94.78% of game code bytes, 2026-10-24):
+- 2523/2537 game functions matched (95.04% of game code bytes, 2026-10-24):
   **main.exe, the engine, ovl61, ovl65, ovl66, ovl67, ovl69 and ovl6a are
-  complete**; 15 left (ovl5d 1, ovl5e 1, ovl5f 2, ovl60 2, ovl62 3, ovl63 4,
+  complete**; 14 left (ovl5d 1, ovl5e 1, ovl5f 2, ovl60 1, ovl62 3, ovl63 4,
   ovl64 1, ovl68 1), every one tried by the swarm at least once. All 564
   PsyQ functions (Sony objects). Four parked by hand, `func_800BE914`,
   `PlotTransmuterBeam` (one instruction off), `func_800B4048` and
@@ -57,7 +57,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**The overlays' last 15 functions**, all tried by the swarm. Hand-match
+**The overlays' last 14 functions**, all tried by the swarm. Hand-match
 them from their checkpoints, closest first (Open leads), with their
 earlier compiles (`decomp.py protos`) as evidence. Pointing the swarm at
 functions it had never tried (`--only` the untried list, smallest first,
@@ -98,7 +98,9 @@ Hand work, between runs:
    look for a pass after sched1 that deletes what you add: reload_cse_regs
    (a store-back of a just-loaded value, a repeated store) or jump2's
    cross-jump (a duplicated call, which also sets its arg registers twice
-   and so takes away their birthing priority); `func_800BC274` used both.
+   and so takes away their birthing priority); `func_800BC274` used both,
+   and `Plot_PogoRipperRoo` a repeated store (a global's `%hi` and value
+   in odd registers at the block top, the store at the end).
    For a merged tail kept in the wrong place, `decomp.py jtrace NAME`
    shows which copy each exit went to and why; `decomp.py protos NAME`
    finds the function's earlier compiles on the prototype discs, and two
@@ -135,10 +137,11 @@ and current tools).
   neighbour square's `((z + 1) << 9) - 0x800`) and a sched1 barrier
   (MATCHING.md, Diff patterns). Read the checkpoint's log for what was
   tried, not for rules: its "the gate refuses do { } while (0)" predates
-  2026-10-22. The closest checkpoints left (stage, differing insns):
-  `Plot_PogoRipperRoo` instructions 16/656, `func_800B7508` registers
-  17/867, `func_800B6708` registers 27/411. `CheckMineToBoss` has
-  none. Where block 0 (or any block) is an order or allocation tie, run
+  2026-10-22. `Plot_PogoRipperRoo` (instructions 16/656) matched the same
+  way, its last three instructions from a store the original makes twice.
+  The closest checkpoints left (stage, differing insns): `func_800B7508`
+  registers 17/867, `func_800B6708` registers 27/411. `CheckMineToBoss`
+  has none. Where block 0 (or any block) is an order or allocation tie, run
   `decomp.py orders NAME --lines A-B` on the checkpoint's C before reading
   the dumps by hand: it matched `func_800B8294` from the natural form after
   nine swarm sessions had stopped at 21-31 differing (MATCHING.md, Using the
@@ -601,6 +604,15 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-24 (hand: `Plot_PogoRipperRoo` matched):** from the swarm's
+  checkpoint (instructions 16/656, all in case 0). `sched` showed our
+  sched1 order was already the target's, so only local-alloc differed: the
+  `%hi(D_800C5BD8)` and -1 pseudos needed long lives. A second
+  `D_800C5BD8 = -1;` gives them that (cse shares them), and reload_cse_regs
+  deletes it again. Also made the draft natural: no cast store, and `cx`/`cz`
+  declared at the top of case 10's loop in place of an unused local (it
+  keeps a block note that stops the loop's rotation). Two Diff patterns rows.
 
 - **2026-10-24 (hand: `Plot_PogoPadlock` again, still 2/350):** about 90
   more case 3 shapes through batch `try` (a 60-variant grid among them), the
