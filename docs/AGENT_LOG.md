@@ -16,10 +16,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `main.exe` function matches and `main.c` is split (2026-10-23); Phase 2's
   naming and data are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2528/2537 game functions matched (96.42% of game code bytes, 2026-10-24):
+- 2529/2537 game functions matched (96.58% of game code bytes, 2026-10-24):
   **main.exe, the engine, ovl5e, ovl61, ovl64, ovl65, ovl66, ovl67, ovl69
-  and ovl6a are complete**; 9 left (ovl5d 1, ovl5f 2, ovl60 1, ovl62 2,
-  ovl63 2, ovl68 1), every one tried by the swarm at least once. All 564
+  and ovl6a are complete**; 8 left (ovl5d 1, ovl5f 2, ovl60 1, ovl62 2,
+  ovl63 1, ovl68 1), every one tried by the swarm at least once. All 564
   PsyQ functions (Sony objects). Five parked by hand, `func_800BE914`,
   `PlotTransmuterBeam` (one instruction off), `func_800B4048`,
   `Plot_PogoPadlock` (two registers off) and `CheckMineToBoss` (Open leads)
@@ -57,7 +57,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**The overlays' last 9 functions**, all tried by the swarm. Hand-match
+**The overlays' last 8 functions**, all tried by the swarm. Hand-match
 them from their checkpoints, closest first (Open leads), with their
 earlier compiles (`decomp.py protos`) as evidence. Pointing the swarm at
 functions it had never tried (`--only` the untried list, smallest first,
@@ -147,9 +147,14 @@ and current tools).
   loops (MATCHING.md, Diff patterns). Try the natural form of such drafts
   first. The checkpoints left (stage, differing insns; read
   `../crash_bash_decomp-swarm/checkpoints/*/best.json` from the host, the
-  container doesn't mount it): ovl63 `800B980C` structure 305/402, ovl5f
-  `800B77E8` 1410/1463 and ovl5d `800BC038` 1793/2152 (`CheckMineToBoss` is
-  parked, below). Where a far checkpoint has a matched sibling, start from
+  container doesn't mount it): ovl5f `800B77E8` 1410/1463 and ovl5d
+  `800BC038` 1793/2152 (`CheckMineToBoss` is parked, below). ovl63
+  `800B980C` (structure 305/402) matched by undoing the swarm's hand-made
+  shapes one by one: its `player = arg0` copy (the parameter itself has a
+  REG_EQUIV that halves its global.c priority), the pointers made before a
+  loop, and separate locals where the original reused two generic ones
+  (MATCHING.md, Diff patterns, four rows). Check those three in any draft
+  whose registers are rotated. Where a far checkpoint has a matched sibling, start from
   the sibling instead: ovl63 `800B7D94` (structure 216/346) written as
   `func_800B76A4` without its blend was right but for one register swap,
   and matched with the sibling `func_800B7190`'s statement order. ovl63 `800B76A4`
@@ -633,6 +638,17 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-24 (hand: ovl63 `func_800B980C` matched):** from the swarm's
+  checkpoint (structure 305/402), with `func_800B8FD8`'s entry idiom. The
+  allocation list showed `player` (16 refs) taking `s5` ahead of
+  move/fux/eng. Indexing inside the piston loop fixed the structure; the
+  parameter used directly (REG_EQUIV, doubled life) fixed the rotation;
+  `do { } while (0)` around the last `Heroes[player]` kept `step` spilled;
+  a move-by-delta update fixed a local-alloc pair; and merging the locals
+  the target keeps in s0/s1 into two generic ones matched. One permuter
+  run, whose find (a reused local for `pos.x`) pointed at the merging.
+  Four Diff patterns rows.
 
 - **2026-10-24 (hand: ovl63 `func_800B7D94` matched):** the swarm's
   checkpoint (structure 216/346) was raw pointer math, so I wrote it fresh
