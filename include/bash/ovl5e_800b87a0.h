@@ -78,4 +78,49 @@ void func_800BC800(s32 arg0);
 
 void func_800BC84C(s32 arg0);
 
+extern u16 D_800BE898[];
+
+/* A hero's sliding/throw stats, by hero_name (D_8009E488 tables). */
+typedef struct Ovl5eStats {
+    /* 0x00 */ u16 a;
+    /* 0x02 */ u16 b;
+    /* 0x04 */ u16 c;
+    /* 0x06 */ u16 d;
+    /* 0x08 */ u16 e;
+    /* 0x0A */ u16 f;
+    /* 0x0C */ u16 g;
+    /* 0x0E */ u16 h;
+    /* 0x10 */ u8 i;
+} Ovl5eStats;
+
+/* D_8009E488.unk0 / .unk4: Ovl5eStats *[] by hero_name. */
+#define OVL5E_STATS(t, n) (((Ovl5eStats **)D_8009E488.t)[n])
+
+/* Extension 0x800 of the carried objects (func_800B87A0). */
+typedef struct Ovl5eSlide {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ u8 unkC;
+    /* 0x0D */ u8 dir;
+    /* 0x0E */ s16 unkE;
+    /* 0x10 */ s16 unk10;
+    /* 0x12 */ s16 unk12;
+    /* 0x14 */ s16 unk14;
+    /* 0x16 */ s16 unk16;
+    /* 0x18 */ u16 unk18;
+    /* 0x1A */ u16 unk1A;
+    /* 0x1C */ u16 unk1C;
+    /* 0x1E */ u16 unk1E;
+    /* 0x20 */ u8 pad20[0xA];
+    /* 0x2A */ s16 unk2A;
+} Ovl5eSlide;
+
+/* D_800BD70C entries: pad4[0] engine, pad4[4] motion, pad4[6] held object. */
+#define OVL5E_SLOT_ENG(i) ((EXTengine *)D_800BD70C[i].pad4[0])
+#define OVL5E_SLOT_DYN(i) ((B5E44Dyn *)D_800BD70C[i].pad4[4])
+#define OVL5E_SLOT_OBJ(i) (D_800BD70C[i].pad4[6])
+
+extern s32 D_8009E2B4[];
+
+void func_800B87A0(NAS *nas);
+
 #endif /* BASH_OVL5E_800B87A0_H */

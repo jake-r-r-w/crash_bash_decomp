@@ -6,7 +6,505 @@
 #include "bash/bash.h"
 #include "bash/xtras.h"
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5e/800b87a0", func_800B87A0);
+/* Drop obj from the hero or slot that holds it (func_800B87A0). */
+static inline void Ovl5eReleaseObj(EXTobject *obj, u16 p) {
+    HeroInfo *h;
+    HeroInfo *b;
+    s32 i = (s16)p;
+
+    if (i < 0x14) {
+        if (i != -1 && i < 5) {
+            b = Heroes;
+            h = &b[i];
+            if (h->hero_object == obj) {
+                h->hero_object = NULL;
+                if (h->hero_eng->sfx != NULL) {
+                    StopSfx(h->hero_eng->sfx);
+                }
+            }
+        }
+    } else {
+        i -= 0x14;
+        if ((s16)p < 6) {
+            if (OVL5E_SLOT_OBJ(i) == (s32)obj) {
+                OVL5E_SLOT_OBJ(i) = 0;
+            }
+        }
+    }
+}
+
+void func_800B87A0(NAS *nas) {
+    VECTOR a;
+    VECTOR b;
+    EXTengine *eng;
+    EXTobject *obj;
+    Ovl5eSlide *slide;
+    EXTengine *other;
+    EXTengine *tgt;
+    NAS *hit;
+    s32 kind;
+    s32 dx;
+    s32 dy;
+    s32 dz;
+    s32 ang;
+    s32 s;
+    s32 c;
+    s16 p;
+
+    eng = nas->Engine;
+    if (eng == NULL) {
+        return;
+    }
+    obj = nas->FUX;
+    if (obj == NULL) {
+        return;
+    }
+    kind = obj->whatami;
+    slide = FindExtension(nas, 0x800);
+    if (slide == NULL) {
+        return;
+    }
+    switch (obj->status) {
+    case 0:
+        obj->status = 1;
+        obj->can_do &= 0xFFD4;
+        if (kind >= 4 && (kind < 6 || kind == 7)) {
+            obj->can_do |= 3;
+        }
+        eng->unk5E = 1;
+        eng->unk1E = 0;
+        eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
+        eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
+        obj->player = -1;
+        FetchDefaultColBox(eng, 0x50);
+        break;
+    case 2:
+        p = obj->player;
+        if (p != -1 && p < 5) {
+            other = Heroes[p].hero_eng;
+            if (other != NULL) {
+                if (func_80015780(other, other->sub, 0x10, &a) != NULL) {
+                    if (func_80015780(other, other->sub, 0x20, &b) != NULL) {
+                        dx = a.vx - b.vx;
+                        dy = b.vy - a.vy;
+                        dz = a.vz - b.vz;
+                        eng->unk1E = get_angle(dx, dz) - 0x200;
+                        ang = 0x271 - get_angle(csqrt(dx * dx + dz * dz) >> 6, dy);
+                        eng->unk1C = ang;
+                        eng->unk10.y = b.vy - (D_80068BD4[(ang - 0x400) & 0xFFF].unk2 * 128 >> 12);
+                        dx = a.vx - dx / 2;
+                        dz = a.vz - dz / 2;
+                        eng->unk20 = 0;
+                        eng->unk10.x = dx;
+                        eng->unk10.z = dz;
+                    }
+                } else if (func_80015780(other, other->sub, 1, &b) != NULL) {
+                    eng->unk10 = *(SLONG_XYZ *)&b;
+                    eng->unk1E = other->unk1E;
+                } else {
+                    obj->status = 4;
+                }
+            }
+            if (obj->will_do & 4) {
+                obj->can_do &= 0xFFDB;
+                obj->will_do &= 0xFFFB;
+                eng->unk1E = Heroes[obj->player].hero_move->facing_angle;
+                eng->unk1C = 0;
+                eng->unk20 = 0;
+                slide->unkE = OVL5E_STATS(unk4, Heroes[obj->player].hero_name)->a;
+                slide->unk14 = OVL5E_STATS(unk4, Heroes[obj->player].hero_name)->b;
+                slide->unk10 = OVL5E_STATS(unk4, Heroes[obj->player].hero_name)->c;
+                slide->unk12 = OVL5E_STATS(unk4, Heroes[obj->player].hero_name)->d;
+                slide->unk18 = OVL5E_STATS(unk4, Heroes[obj->player].hero_name)->e;
+                slide->unk1E = OVL5E_STATS(unk4, Heroes[obj->player].hero_name)->f;
+                slide->unk1A = OVL5E_STATS(unk4, Heroes[obj->player].hero_name)->g;
+                slide->unk1C = OVL5E_STATS(unk4, Heroes[obj->player].hero_name)->h;
+                slide->unkC = OVL5E_STATS(unk4, Heroes[obj->player].hero_name)->i;
+                obj->status = 8;
+            }
+        } else {
+            obj->status = 4;
+        }
+        eng->unk5E = 1;
+        break;
+    case 0x13:
+        if ((u32)((u16)obj->player - 0x14) < 6) {
+            if (OVL5E_SLOT_OBJ(obj->player - 0x14) != (s32)obj && !(obj->will_do & 4)) {
+                obj->status = 4;
+                break;
+            }
+            other = OVL5E_SLOT_ENG(obj->player - 0x14);
+            if (other != NULL) {
+                if (func_80015780(other, other->sub, 0x10, &a) != NULL) {
+                    if (func_80015780(other, other->sub, 0x20, &b) != NULL) {
+                        dx = a.vx - b.vx;
+                        dy = b.vy - a.vy;
+                        dz = a.vz - b.vz;
+                        eng->unk1E = get_angle(dx, dz) - 0x200;
+                        ang = 0x271 - get_angle(csqrt(dx * dx + dz * dz) >> 6, dy);
+                        eng->unk1C = ang;
+                        eng->unk10.y = b.vy - (D_80068BD4[(ang - 0x400) & 0xFFF].unk2 * 128 >> 12);
+                        dx = a.vx - dx / 2;
+                        dz = a.vz - dz / 2;
+                        eng->unk20 = 0;
+                        eng->unk10.x = dx;
+                        eng->unk10.z = dz;
+                    }
+                } else if (func_80015780(other, other->sub, 1, &b) != NULL) {
+                    eng->unk10 = *(SLONG_XYZ *)&b;
+                    eng->unk1E = other->unk1E;
+                } else {
+                    obj->status = 4;
+                }
+            } else {
+                obj->status = 4;
+            }
+            if (obj->will_do & 4) {
+                obj->can_do &= 0xFFDB;
+                obj->will_do &= 0xFFFB;
+                eng->unk1E = other->unk1E;
+                eng->unk1C = 0;
+                eng->unk20 = 0;
+                slide->unkE = OVL5E_STATS(unk4, 1)->a;
+                slide->unk14 = OVL5E_STATS(unk4, 1)->b;
+                slide->unk10 = OVL5E_STATS(unk4, 1)->c;
+                slide->unk12 = OVL5E_STATS(unk4, 1)->d;
+                slide->unk18 = OVL5E_STATS(unk4, 1)->e;
+                slide->unk1E = OVL5E_STATS(unk4, 1)->f;
+                slide->unk1A = OVL5E_STATS(unk4, 1)->g;
+                slide->unk1C = OVL5E_STATS(unk4, 1)->h;
+                slide->unkC = OVL5E_STATS(unk4, 1)->i;
+                obj->status = 8;
+            }
+        } else {
+            obj->status = 4;
+        }
+        eng->unk5E = 1;
+        break;
+    case 7:
+        s = eng->unk2C.x;
+        s += 0x100;
+        if (s >= 0x1000) {
+            s = 0x1000;
+            obj->status = 0;
+            eng->flags &= ~0x21;
+        }
+        eng->unk2C.x = s;
+        eng->unk2C.y = s;
+        eng->unk2C.z = s;
+        eng->sub->unk76 = s;
+        eng->unk5E = 1;
+        break;
+    case 4:
+        slide->unk18 = 0x50;
+        slide->unk1E = 0x50;
+        slide->unk1C = 6;
+        slide->unkC = 0xFF;
+        slide->unk1A = 0;
+        eng->unk1C = 0;
+        eng->unk20 = 0;
+        obj->status = 8;
+        break;
+    case 5:
+        eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
+        eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
+        slide->unk1E = 0x50;
+        slide->unk1C = 6;
+        slide->unkC = 0xFF;
+        slide->unk18 = 0;
+        slide->unk1A = 0;
+        eng->unk1C = 0;
+        eng->unk20 = 0;
+        obj->status = 8;
+        break;
+    case 8:
+        if (eng->unk10.y > World_floor_level) {
+            eng->flags |= 0x02000000;
+            eng->sub->unk68 = 0x190;
+            eng->sub->flags |= 0x02000000;
+            eng->sub->unk68 = 0x190;
+        }
+        if (GravitateNas(nas) != 0) {
+            eng->unk10.y += 0x20;
+            func_800B9E74(eng, obj->player, 0);
+            eng->unk10.y -= 0x20;
+            switch (kind) {
+            case 4:
+                func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
+                func_800270B0(nas);
+                return;
+            case 5:
+            case 7:
+                func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
+                func_800270B0(nas);
+                return;
+            default:
+                obj->status = 0;
+                break;
+            }
+        }
+        hit = func_800B9E74(eng, obj->player, 1);
+        if (hit != NULL) {
+            if (hit == D_800BD88C.nas) {
+                D_800BD88C.unk28 = 1;
+            }
+            switch (kind) {
+            case 4:
+                func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
+                func_800270B0(nas);
+                return;
+            case 5:
+            case 7:
+                func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
+                func_800270B0(nas);
+                return;
+            default:
+                slide->unk12 = 0;
+                slide->unk10 = 0;
+                slide->unk14 = 0;
+                slide->unkE = 0;
+                break;
+            }
+        }
+        break;
+    case 9:
+        switch (kind) {
+        case 5:
+            obj->countdown = 0x5A;
+            obj->whatami = 7;
+            PlaySfx(0x3F0, NULL, (SLONG_XYZ *)&eng->unk10, 0x1000, 0x1E00, 0);
+            c = obj->player;
+            obj->status = 0xB;
+            obj->timer = 2;
+            if ((u32)c >= 5) {
+                c = 0;
+            }
+            slide->unkE = OVL5E_STATS(unk0, Heroes[c].hero_name)->a;
+            slide->unk14 = OVL5E_STATS(unk0, Heroes[c].hero_name)->b;
+            slide->unk10 = OVL5E_STATS(unk0, Heroes[c].hero_name)->c;
+            slide->unk12 = OVL5E_STATS(unk0, Heroes[c].hero_name)->d;
+            func_800B8080((T_B8080 *)eng);
+            func_800B7F14((T_B7F14_A *)eng, (T_B7F14_B *)slide);
+            break;
+        case 4:
+        case 7:
+            PlaySfx(0x3F9, &eng->sfx, (SLONG_XYZ *)&eng->unk10, 0x1000, 0x1E00, 0);
+            c = obj->player;
+            obj->status = 0xB;
+            obj->timer = 2;
+            if ((u32)c >= 5) {
+                c = 0;
+            }
+            slide->unkE = OVL5E_STATS(unk0, Heroes[c].hero_name)->a;
+            slide->unk14 = OVL5E_STATS(unk0, Heroes[c].hero_name)->b;
+            slide->unk10 = OVL5E_STATS(unk0, Heroes[c].hero_name)->c;
+            slide->unk12 = OVL5E_STATS(unk0, Heroes[c].hero_name)->d;
+            func_800B8080((T_B8080 *)eng);
+            func_800B7F14((T_B7F14_A *)eng, (T_B7F14_B *)slide);
+            break;
+        default:
+            obj->status = 0;
+            break;
+        }
+        break;
+    case 0xB:
+        slide->unkE += slide->unk10 - slide->unk12;
+        if (slide->unkE < 0) {
+            slide->unkE = 0;
+        }
+        if (slide->unkE > slide->unk14) {
+            slide->unkE = slide->unk14;
+        }
+        eng->unk10.x -= (slide->unkE * D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2) >> 12;
+        eng->unk10.z -= (slide->unkE * D_80068BD4[eng->unk1E & 0xFFF].unk2) >> 12;
+        switch (slide->dir & 0xF0) {
+        case 0x10:
+        case 0x30:
+        case 0x90:
+            if (slide->unk2A >= eng->unk10.z) {
+                slide->unkE = 0;
+            }
+            break;
+        case 0x80:
+            if (eng->unk10.x >= slide->unk16) {
+                slide->unkE = 0;
+            }
+            break;
+        case 0x20:
+            if (slide->unk16 >= eng->unk10.x) {
+                slide->unkE = 0;
+            }
+            break;
+        default:
+            if (eng->unk10.z >= slide->unk2A) {
+                slide->unkE = 0;
+            }
+            break;
+        }
+        if (slide->unkE == 0) {
+            eng->unk5E = 1;
+            eng->unk1E = 0;
+            eng->unk10.x = (eng->unk10.x & ~0xFF) + 0x80;
+            eng->unk10.z = (eng->unk10.z & ~0xFF) + 0x80;
+            obj->status = 0;
+        }
+        if (obj->timer != 0) {
+            obj->timer--;
+        }
+        if (func_800B9E74(eng, obj->player, 1) != NULL) {
+            slide->unk12 = 0;
+            slide->unk10 = 0;
+            slide->unk14 = 0;
+            slide->unkE = 0;
+            if (obj->timer == 0) {
+                switch (kind) {
+                case 4:
+                    Ovl5eReleaseObj(obj, obj->player);
+                    func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
+                    func_800270B0(nas);
+                    return;
+                case 5:
+                case 7:
+                    Ovl5eReleaseObj(obj, obj->player);
+                    func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
+                    func_800270B0(nas);
+                    return;
+                }
+            }
+        }
+        if (FollowContour(eng) != 0) {
+            slide->unkE = 0x40;
+            slide->unk14 = 0x40;
+            slide->unk1E = 0x50;
+            slide->unk1A = 6;
+            slide->unk10 = 0;
+            slide->unk12 = 0;
+            slide->unk18 = 0;
+            slide->unk1C = 0;
+            slide->unkC = 0;
+            eng->unk1C = 0;
+            eng->unk20 = 0;
+            obj->status = 8;
+        }
+        break;
+    case 0xA:
+        if (obj->countdown != 0) {
+            obj->countdown--;
+            break;
+        }
+        Ovl5eReleaseObj(obj, obj->player);
+        func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 1);
+        func_800270B0(nas);
+        return;
+    case 0x63:
+        if (GravitateNas(nas) == 0) {
+            s = eng->unk2C.x;
+            s -= 0x100;
+            if (s > 0x100) {
+                eng->unk2C.x = s;
+                eng->unk2C.y = s;
+                eng->unk2C.z = s;
+                eng->sub->unk76 = s;
+                eng->unk5E = 1;
+                break;
+            }
+        }
+        func_800270B0(nas);
+        return;
+    default:
+        if (obj->will_do & 0x100) {
+            obj->status = 0xA;
+            obj->countdown = 0xA;
+            obj->will_do &= 0xFEFC;
+            obj->can_do &= 0xFEFC;
+        }
+        if (obj->will_do & 1) {
+            p = obj->player;
+            if (p != -1 && p < 5) {
+                obj->status = 2;
+                if (kind == 5) {
+                    obj->countdown = 0x5A;
+                    obj->whatami = 7;
+                    PlaySfx(0x3F0, NULL, (SLONG_XYZ *)&eng->unk10, 0x1000, 0x1E00, 0);
+                }
+                Heroes[obj->player].hero_object = obj;
+                eng->unk1E = Heroes[obj->player].hero_move->facing_angle;
+                obj->will_do &= 0xFFFC;
+                obj->can_do = (obj->can_do & 0xFFFC) | 4;
+            } else if ((u32)((u16)obj->player - 0x14) >= 6) {
+                obj->will_do &= 0xFFFE;
+            } else {
+                obj->status = 0x13;
+                if (kind == 5) {
+                    obj->countdown = 0x5A;
+                    obj->whatami = 7;
+                    PlaySfx(0x3F0, NULL, (SLONG_XYZ *)&eng->unk10, 0x1000, 0x1E00, 0);
+                }
+                OVL5E_SLOT_OBJ(obj->player - 0x14) = (s32)obj;
+                eng->unk1E = OVL5E_SLOT_DYN(obj->player - 0x14)->unk16;
+                obj->will_do &= 0xFFFC;
+                obj->can_do = (obj->can_do & 0xFFFC) | 4;
+            }
+        }
+        if (obj->will_do & 2) {
+            if (kind == 5 && obj->player == -1) {
+                obj->countdown = 0x5A;
+                obj->whatami = 7;
+                PlaySfx(0x3F0, NULL, (SLONG_XYZ *)&eng->unk10, 0x1000, 0x1E00, 0);
+                obj->will_do &= 0xFFFC;
+            } else if (obj->player != -1) {
+                p = obj->player;
+                if (p >= 5) {
+                    if ((u32)(p - 0x14) >= 7) {
+                        dx = eng->unk10.x;
+                        dz = -eng->unk10.z;
+                    } else {
+                        tgt = OVL5E_SLOT_ENG(p - 0x14);
+                        dx = eng->unk10.x - tgt->unk10.x;
+                        dz = tgt->unk10.z - eng->unk10.z;
+                    }
+                } else {
+                    tgt = Heroes[p].hero_eng;
+                    dx = eng->unk10.x - tgt->unk10.x;
+                    dz = tgt->unk10.z - eng->unk10.z;
+                    PlaySfx(D_8009E2B4[p], NULL, (SLONG_XYZ *)&eng->unk10, 0x1000, 0x1E00, 0);
+                }
+                eng->unk1E = (get_angle(-dx, dz) + 0x100) & 0xE00;
+                obj->status = 9;
+                obj->will_do &= 0xFFFC;
+                obj->can_do &= 0xFFFC;
+            } else {
+                obj->will_do &= 0xFFFC;
+            }
+        }
+        if (eng->platform != NULL && kind == 5) {
+            obj->countdown = 0x5A;
+            obj->whatami = 7;
+            PlaySfx(0x3F0, NULL, (SLONG_XYZ *)&eng->unk10, 0x1000, 0x1E00, 0);
+        }
+        break;
+    }
+    if ((obj->status == 1 || obj->status == 0xB) && FollowContour(eng) != 0) {
+        if (obj->status == 1) {
+            obj->status = 4;
+        } else {
+            obj->status = 5;
+        }
+    }
+    if (kind == 7) {
+        if (obj->countdown != 0) {
+            obj->countdown--;
+            eng->sub->unk74 = D_800BE898[(s16)(obj->countdown / 30)];
+            if ((s16)(obj->countdown % 30) == 0) {
+                PlaySfx(0x3F0, NULL, (SLONG_XYZ *)&eng->unk10, 0x1000, 0x1E00, 0);
+            }
+        } else {
+            Ovl5eReleaseObj(obj, obj->player);
+            func_8008E27C(&eng->unk10.x, (HitInfo *)obj, 0);
+            func_800270B0(nas);
+        }
+    }
+}
 
 NAS *func_800B9E74(EXTengine *eng, s32 self, s32 checkHeroes) {
     FlagRecord *rec;
