@@ -2215,6 +2215,17 @@ def cmd_protos(a):
     seg = e["seg"].split("/")
     kind = "main" if seg[0] == "main" else "engine" if seg[1] == "engine" else "slot"
     tw = target_words(e, proj)
+    if a.diff:
+        found = proto_find.copy_in(tw, kind, a.diff)
+        if found is None:
+            die(f"no scanned disc under protos/ has '{a.diff}' in its name")
+        d, ws, addr = found
+        if not ws:
+            die(f"{d}: no {kind} function close to {cur_name(key, e, sym_names())}")
+        print(f"{cur_name(key, e, sym_names())} against {d} at 0x{addr:08X} "
+              f"(- retail, + copy; immediates ignored):")
+        print("\n".join(proto_find.diff_lines(tw, ws)))
+        return
     print(f"{cur_name(key, e, sym_names())} ({e['seg']}, {e['size']} B), by opcode similarity:")
     print(proto_find.report(tw, kind, top=a.top))
 
@@ -5218,6 +5229,9 @@ def main():
                        "scanned prototype or demo disc (protos/*/scan.md)")
     p.add_argument("func")
     p.add_argument("--top", type=int, default=1, help="candidates per disc (default 1)")
+    p.add_argument("--diff", metavar="DISC", help="align the copy on the disc whose protos/ "
+                   "directory contains DISC (e.g. Sep_14) with retail by opcode and register, "
+                   "immediates ignored, and print the hunks that differ")
     p.set_defaults(fn=cmd_protos)
     sub.add_parser("reconcile", help="headers: keep HEAD's declaration where the working tree "
                    "declares a name again (swarm gate clashes)").set_defaults(fn=cmd_reconcile)

@@ -209,7 +209,10 @@ first diff:
 - **Earlier builds:** the prototype and demo discs ([PROTOTYPES.md](PROTOTYPES.md))
   hold earlier compiles of most functions. `decomp.py protos NAME` finds
   the function in each disc's exe, engine or minigame overlays by opcode
-  similarity. Diffing
+  similarity, and `decomp.py protos NAME --diff Sep_14` aligns that disc's
+  copy with retail by opcode and register (relocated `%hi`/`%lo`, branch
+  offsets and shift counts set aside, or every one shows up) and prints only
+  the hunks that differ. Diffing
   two successive builds shows which source change made a pattern: in
   `func_8007F314` the Oct 9 build added case 0's 0x7000 test and, with it,
   retail's tail merge, which narrowed the search to that test's shape.

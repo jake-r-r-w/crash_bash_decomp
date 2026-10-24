@@ -52,7 +52,8 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   list: priority, birthing, class, potential hazard or luid), `jtrace NAME`
   (jump2's cross-jumping step by step: which copy of a repeated tail is
   kept, and why the others gave theirs up), `protos NAME` (the function's
-  earlier compiles on the prototype and demo discs), `splitvars NAME VAR` (search splits of a variable), `permute NAME
+  earlier compiles on the prototype and demo discs; `--diff DISC` aligns
+  one copy with retail and prints the hunks that differ), `splitvars NAME VAR` (search splits of a variable), `permute NAME
   --differing` (permute only the differing blocks' C), `permstats` (every
   permuter run: speed, improvements, matches), `units [SEG]` (evidence
   for file boundaries: switch-table parity proves a file start in any

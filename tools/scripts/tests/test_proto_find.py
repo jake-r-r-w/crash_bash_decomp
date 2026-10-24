@@ -107,6 +107,41 @@ class TestDiscs(unittest.TestCase):
             os.remove(os.path.join(d, "engine_1.bin"))
             self.assertIn("no engine code", proto_find.report(target, "engine", root))
 
+    def test_copy_in_one_disc(self):
+        with tempfile.TemporaryDirectory() as root:
+            _, target = self.make(root)
+            d, ws, addr = proto_find.copy_in(target, "slot", "Demo", root)
+            self.assertEqual((ws, addr), (target, 0x800B0014))
+            self.assertIsNone(proto_find.copy_in(target, "slot", "Nowhere", root))
+
+
+LUI = 0x3C028006                # lui v0,0x8006
+ADDIU = 0x24451234              # addiu a1,v0,0x1234
+LH = 0x84A30034                 # lh v1,52(a1)
+
+
+class TestDiff(unittest.TestCase):
+    """protos --diff: copies are aligned by opcode and register, immediates set aside."""
+
+    def test_decode(self):
+        self.assertEqual(proto_find.fmt_word(LH), "lh v1,0x34(a1)")
+        self.assertEqual(proto_find.fmt_word(ADDIU), "addiu a1,v0,0x1234")
+        self.assertEqual(proto_find.fmt_word(0x00031400), "sll v0,v1,0x10")
+        self.assertEqual(proto_find.fmt_word(NOP), "nop")
+
+    def test_immediates_ignored_registers_not(self):
+        self.assertEqual(proto_find.key(LW), proto_find.key(0x8C820014))   # lw v0,20(a0)
+        self.assertNotEqual(proto_find.key(LW), proto_find.key(0x8C830010))  # lw v1,16(a0)
+
+    def test_hunks(self):
+        a = [LUI, ADDIU, LH, JR_RA, NOP]
+        b = [LUI, 0x24455678, LH, JR_RA, NOP]        # only the addiu's immediate differs
+        self.assertEqual(proto_find.diff_lines(a, b)[-1].split(";")[0], "0 hunk(s)")
+        c = [LUI, LH, JR_RA, NOP]                     # the copy drops the addiu
+        out = proto_find.diff_lines(a, c)
+        self.assertIn("--- delete retail 0x0004-0x0008 (1)  copy 0x0004-0x0004 (0)", out)
+        self.assertIn("  -       4  addiu a1,v0,0x1234", out)
+
 
 if __name__ == "__main__":
     unittest.main()
