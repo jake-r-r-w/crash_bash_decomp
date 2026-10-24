@@ -5362,7 +5362,153 @@ void PlotTotemBit(NAS *nas, s32 id) {
     MissileCollideWithPickup(eng);
 }
 
+#ifdef NON_MATCHING
+/* CheckMineToBoss's puff: Ovl5fSpawnBit1605 with model record D_800536CC. */
+static inline void Ovl5fSpawnBit1605B(SLONG_XYZ *pos, s32 kind) {
+    u8 *p;
+    NAS *nas;
+    Ovl5fExt1605 *ext;
+
+    p = D_800536CC;
+    nas = SpawnNASById(pos->x, pos->y, pos->z, 0x1605, 0x11);
+    if (nas != NULL) {
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL) {
+            ext->unkC = kind;
+            ext->unk18 = 0x100;
+            if (p != NULL) {
+                ext->unk20 = 5;
+                nas->Engine->sub->unk6C = p;
+            } else {
+                ext->unk20 = 1;
+            }
+            ext->unk28 = 0;
+            nas->InitDelete(nas);
+        }
+    }
+}
+
+static inline s32 Ovl5fWithin(EXTengine *e, s32 x, s32 y, s32 z, s32 rx, s32 ry, s32 rz) {
+    s32 d;
+
+    d = e->unk10.x - x;
+    if (d < rx + 1 && d >= -rx) {
+        goto ok;
+    }
+zero:
+    return 0;
+ok:
+    d = e->unk10.y - y;
+    if (!(d < ry + 1 && d >= -ry)) {
+        goto zero;
+    }
+    d = e->unk10.z - z;
+    if (!(d < rz + 1)) {
+        goto zero;
+    }
+    return d >= -rz;
+}
+
+void CheckMineToBoss(s32 x, s32 y, s32 z) {
+    s32 i;
+    s32 j;
+
+    switch (D_800CB210) {
+    case 0x2F:
+        for (i = 0;;) {
+            NAS *nas;
+            EXTengine *eng;
+
+            if (i >= 3) {
+                break;
+            }
+            nas = D_800CB224[i];
+            if (nas == NULL || nas->UserInfo.flags == 2) {
+                i++;
+                continue;
+            }
+            eng = nas->Engine;
+            if (Ovl5fWithin(eng, x, y, z, 0x250, 0x200, 0x500)) {
+                if (++nas->UserInfo.flags == 1) {
+                    nas->UserInfo.user2 = 0x3C;
+                    nas->UserInfo.status = 0;
+                    eng->sub->unk74 = 0x2006;
+                    Ovl5fSpawnBit1605B(&eng->unk10, 0);
+                } else {
+                    nas->UserInfo.user2 = 0x3C;
+                    nas->UserInfo.status = 0;
+                    eng->sub->unk74 = 0x2008;
+                    Ovl5fSpawnBit1605B(&eng->unk10, 0);
+                }
+            }
+            i++;
+        }
+        break;
+    case 0x33:
+        for (j = 0;;) {
+            NAS *nas;
+            EXTengine *eng;
+
+            if (j >= 4) {
+                break;
+            }
+            nas = D_800CB230[j];
+            if (nas == NULL || nas->UserInfo.flags == 2) {
+                j++;
+                continue;
+            }
+            eng = nas->Engine;
+            if (Ovl5fWithin(eng, x, y, z, 0x250, 0x200, 0x500)) {
+                if (++nas->UserInfo.flags == 1) {
+                    nas->UserInfo.user2 = 0x3C;
+                    nas->UserInfo.status = 0;
+                    eng->sub->unk74 = 0x2007;
+                    Ovl5fSpawnBit1605B(&eng->unk10, 1);
+                } else {
+                    nas->UserInfo.user2 = 0x3C;
+                    nas->UserInfo.status = 0;
+                    eng->sub->unk74 = 0x2005;
+                    Ovl5fSpawnBit1605B(&eng->unk10, 1);
+                }
+            }
+            j++;
+        }
+        break;
+    case 0x37:
+        for (i = 0;;) {
+            NAS *nas;
+            EXTengine *eng;
+
+            if (i >= 2) {
+                break;
+            }
+            nas = D_800CB240[i];
+            if (nas == NULL || nas->UserInfo.flags == 2) {
+                i++;
+                continue;
+            }
+            eng = nas->Engine;
+            if (Ovl5fWithin(eng, x, y, z, 0x250, 0x200, 0x500)) {
+                if (++nas->UserInfo.flags == 1) {
+                    nas->UserInfo.user2 = 0x3C;
+                    nas->UserInfo.status = 0;
+                    eng->sub->unk74 = 0x2025;
+                    Ovl5fSpawnBit1605B(&eng->unk10, 2);
+                } else {
+                    nas->UserInfo.user2 = 0x3C;
+                    nas->UserInfo.status = 0;
+                    eng->sub->unk74 = 0x2026;
+                    Ovl5fSpawnBit1605B(&eng->unk10, 2);
+                }
+            }
+            i++;
+        }
+        break;
+    }
+}
+#else
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", CheckMineToBoss);
+#endif
 
 void func_800C1F44(void) {
     D_800CB224[0] = CreateNAS(0x369, 0x7D0, 0x10E0, 0x1315, 0x11);
