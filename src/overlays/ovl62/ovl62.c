@@ -1343,7 +1343,135 @@ loop:
     fux->target = best;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", func_800B6708);
+void func_800B6708(s32 player) {
+    SLONG_XYZ pos;
+    s32 dist;
+    s32 best;
+    Ovl62Fux *fux;
+    s32 *ext;
+    s32 i;
+    s32 skip;
+    s32 tilted;
+    s32 r;
+
+    fux = (Ovl62Fux *)Heroes[player].hero->FUX;
+    skip = 0;
+    if (fux == NULL) {
+        return;
+    }
+    dist = 0x7FFFFFFF;
+    best = 0;
+    fux->unk3C = 1;
+    if (fux->unk34 & 2) {
+        if ((Heroes[fux->target].hero_status & 0x2000) || Heroes[fux->target].hero_mode == 0x50) {
+            for (i = 0; ; i++) {
+                s32 d;
+
+                if (i >= 4) {
+                    break;
+                }
+                if (i != player && !(Heroes[i].hero_status & 0x2000) && !skip
+                    && Heroes[fux->target].hero_mode != 0x50
+                    && Heroes[fux->target].hero_immunity == 0
+                    && TestForTeamMate(player, i) == 0) {
+                    pos = Heroes[i].hero_eng->unk10;
+                    d = func_8008CEB0((u8 *)&pos, (u8 *)&Heroes[player].hero_eng->unk10);
+                    if (d < dist) {
+                        dist = d;
+                        best = i;
+                    }
+                }
+            }
+            fux->target = best;
+        }
+    }
+    ext = FindExtension(Heroes[player].hero, 0x20000000);
+    if (ext != NULL) {
+        if (ext[9] == 0) {
+            skip = 0;
+        }
+        if (ext[9] == 1 && Heroes[fux->target].hero_mode == 0x4E) {
+            skip = 1;
+        }
+    }
+    if (D_8005A648 == 0x15 && DoesPlayerHaveBomb(player) != 0) {
+        IsPlayerInRange(player, fux->target);
+    }
+    tilted = 0;
+    if (abs(D_80058AF4.vx) > 0x40 || abs(D_80058AF4.vx) > 0x40) {
+        tilted = 1;
+    }
+    if (tilted && (D_800D5FEC[player] & 4)) {
+        fux->state = 0xB;
+        func_800CB134(player);
+        fux->func = func_800B90C0;
+        return;
+    }
+    if ((Heroes[fux->target].hero_status & 0x2000) || skip || Heroes[fux->target].hero_mode == 0x50) {
+        if (fux->unk34 & 2) {
+            for (i = 0; ; i++) {
+                s32 d;
+
+                if (i >= 4) {
+                    break;
+                }
+                if (i != player && !(Heroes[i].hero_status & 0x2000) && !skip
+                    && Heroes[i].hero_mode != 0x50) {
+                    pos = Heroes[i].hero_eng->unk10;
+                    d = func_8008CEB0((u8 *)&pos, (u8 *)&Heroes[player].hero_eng->unk10);
+                    if (d < dist) {
+                        dist = d;
+                        best = i;
+                    }
+                }
+            }
+            fux->target = best;
+        } else {
+            r = func_800B3740(player);
+            if (r == -1) {
+                for (i = 0; ; i++) {
+                    s32 d;
+
+                    if (i >= 4) {
+                        break;
+                    }
+                    if (i != player && !(Heroes[i].hero_status & 0x2000) && !skip
+                        && Heroes[fux->target].hero_mode != 0x50
+                        && Heroes[fux->target].hero_immunity == 0
+                        && TestForTeamMate(player, i) == 0) {
+                        pos = Heroes[i].hero_eng->unk10;
+                        d = func_8008CEB0((u8 *)&pos, (u8 *)&Heroes[player].hero_eng->unk10);
+                        if (d < dist) {
+                            dist = d;
+                            best = i;
+                        }
+                    }
+                }
+                fux->state = 1;
+                fux->target = best;
+                fux->func = func_800B6708;
+                fux->unk34 |= 2;
+            } else {
+                fux->target = r;
+            }
+        }
+    }
+    if (fux->unk24-- <= 0) {
+        fux->state = 5;
+        fux->func = func_800CB6B4;
+        fux->unk34 &= ~2;
+    }
+    if (skip || TestForTeamMate(player, fux->target) != 0) {
+        fux->state = 5;
+        fux->func = func_800CB6B4;
+        fux->unk34 &= ~2;
+        return;
+    }
+    func_800B60B8(player);
+    fux->vel = Heroes[fux->target].hero_eng->unk10;
+    fux->pos = Heroes[player].hero_eng->unk10;
+    func_800B5EBC(player);
+}
 
 void func_800B6D74(s32 player) {
     HeroInfo *base;

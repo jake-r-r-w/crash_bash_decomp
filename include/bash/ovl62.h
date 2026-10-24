@@ -576,7 +576,7 @@ loop:
 }
 
 void func_800B649C(s32 player);
-void func_800B6708(void);
+void func_800B6708(s32 player);
 
 /* D_8009D87C (declared in bash/pause.h, which this unit does not include). */
 typedef struct Ovl62Odds {
