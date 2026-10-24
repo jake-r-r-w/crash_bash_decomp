@@ -1347,4 +1347,40 @@ void PlotTrackGlob(NAS *nas);
 
 void PlotDac(NAS *nas);
 
+extern char D_800B3310[];
+
+/* func_800B76A4: wall segments of a scene collision object (as ovl65's func_800B9020). */
+typedef struct Ovl63Vec {
+    s32 vx, vy, vz;
+} Ovl63Vec;
+
+/* The scene's table of objects: a count, then each object's offset from its own entry. */
+typedef struct Ovl63SegTable {
+    s32 count;
+    s32 offs[1];
+} Ovl63SegTable;
+
+/* A local copy of a segment's two ends (16-byte stride). */
+typedef struct Ovl63SegEnds {
+    Ovl63Vec p0;
+    s32 pad0;
+    Ovl63Vec p1;
+    s32 pad1;
+} Ovl63SegEnds;
+
+typedef struct Ovl63Rot {
+    u8 pad0[0x12];
+    s16 ang; /* 0x12 */
+} Ovl63Rot;
+
+/* The blend between two collision objects func_800B76A4 takes. */
+typedef struct Ovl63SegBlend {
+    s32 t;          /* 0x0 */
+    s32 unk4;
+    s32 idx;        /* 0x8 */
+    Ovl63Rot *rot;  /* 0xC */
+} Ovl63SegBlend;
+
+s32 func_800B76A4(VECTOR *pos, Ovl63Vec *out, s32 radius, s32 idx, s32 flags, Ovl63SegBlend *bl);
+
 #endif /* BASH_OVL63_H */

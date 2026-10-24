@@ -1675,7 +1675,168 @@ s32 func_800B7190(SLONG_XYZ *pos, Ovl63Vec4 *out, s32 radius, s32 idx, s32 flags
     return found;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B76A4);
+s32 func_800B76A4(VECTOR *pos, Ovl63Vec *out, s32 radius, s32 idx, s32 flags, Ovl63SegBlend *bl) {
+    Ovl63Vec p;
+    Ovl63Vec hit;
+    Ovl63Vec d;
+    Ovl63Vec e;
+    SVECTOR rv;
+    MATRIX m;
+    VECTOR lp;
+    Ovl63SegEnds a;
+    Ovl63SegEnds b;
+    Ovl63SegObj *w;
+    Ovl63SegObj *w2;
+    Ovl63SegObj *obj;
+    u8 *data;
+    Ovl63SegTable *tbl;
+    Ovl63SegTable *tbl2;
+    s32 rad;
+    s32 best;
+    s32 found;
+    s32 n;
+    s32 i;
+    s32 one;
+    s32 t;
+    s32 dist;
+    s32 ang;
+    s32 r2;
+    s32 len;
+    s32 dx;
+    s32 dz;
+    s32 s;
+    s32 v;
+    s32 side;
+    s32 bad;
+
+    best = 0x7FFFFFFF;
+    found = 0;
+    rad = radius;
+    one = 0x1000;
+    bad = idx > (((Ovl63SegScene *)D_80058AD0)->unk0 ?
+                 *(s32 *)(*(s32 *)(((Ovl63SegScene *)D_80058AD0)->data + 0x14) +
+                          (s32)((Ovl63SegScene *)D_80058AD0)->data + 0x14) :
+                 0);
+    if (bad) {
+        return 0;
+    }
+    data = ((Ovl63SegScene *)D_80058AD0)->data;
+    tbl = (Ovl63SegTable *)(data + (*(s32 *)(data + 0x14) + 0x14));
+    w = (Ovl63SegObj *)((u8 *)&tbl->offs[idx] +
+                        (tbl2 = (Ovl63SegTable *)(*(s32 *)(data + 0x14) + (s32)data + 0x14))->offs[idx]);
+    if (w != NULL) {
+        dist = 0;
+        t = 0;
+        w2 = (Ovl63SegObj *)((u8 *)&tbl->offs[bl->idx] + tbl2->offs[bl->idx]);
+        obj = w;
+        i = 0;
+        n = w->count;
+        r2 = rad * rad;
+        rv.vx = 0;
+        rv.vy = -bl->rot->ang;
+        rv.vz = 0;
+        RotMatrix(&rv, &m);
+        ApplyMatrixLV(&m, pos, &lp);
+        for (;; i++, w = (Ovl63SegObj *)((u8 *)w + sizeof(Ovl63Seg)),
+                w2 = (Ovl63SegObj *)((u8 *)w2 + sizeof(Ovl63Seg))) {
+            s32 gt;
+
+            if (i >= n) {
+                break;
+            }
+            a.p0.vx = w->segs[0].p0.x;
+            a.p0.vz = w->segs[0].p0.z;
+            a.p1.vx = w->segs[0].p1.x;
+            a.p1.vz = w->segs[0].p1.z;
+            b.p0.vx = w2->segs[0].p0.x;
+            b.p0.vz = w2->segs[0].p0.z;
+            b.p1.vx = w2->segs[0].p1.x;
+            b.p1.vz = w2->segs[0].p1.z;
+            dx = b.p0.vx - a.p0.vx;
+            a.p0.vx += (dx * (bl->t << 8)) / 30 >> 8;
+            dz = b.p0.vz - a.p0.vz;
+            a.p0.vz += (dz * (bl->t << 8)) / 30 >> 8;
+            dx = b.p1.vx - a.p1.vx;
+            a.p1.vx += (dx * (bl->t << 8)) / 30 >> 8;
+            dz = b.p1.vz - a.p1.vz;
+            a.p1.vz += (dz * (bl->t << 8)) / 30 >> 8;
+            ang = obj->segs[i].ang;
+            if (flags & 1) {
+                ang += 0x800;
+            }
+            d.vx = lp.vx - a.p0.vx;
+            d.vz = lp.vz - a.p0.vz;
+            side = ((d.vx * D_80068BD4[-ang & 0xFFF].unk2) >> 12) -
+                ((d.vz * D_80068BD4[(-ang - 0x400) & 0xFFF].unk2) >> 12);
+            if (side < 0 || side > rad) {
+                continue;
+            }
+            d.vy = 0;
+            e.vx = a.p1.vx - a.p0.vx;
+            e.vy = 0;
+            e.vz = a.p1.vz - a.p0.vz;
+            len = (e.vx * e.vx + e.vz * e.vz) >> 12;
+            if (len != 0) {
+                t = (e.vx * d.vx + e.vz * d.vz) / len;
+            }
+            if (t < 0) {
+                p = a.p0;
+                dx = p.vx - lp.vx;
+                dz = p.vz - lp.vz;
+                dist = dx * dx + dz * dz;
+                if (dist > r2) {
+                    continue;
+                }
+            }
+            gt = one < t;
+            if (gt) {
+                p = a.p1;
+                dx = p.vx - lp.vx;
+                dz = p.vz - lp.vz;
+                dist = dx * dx + dz * dz;
+                if (dist > r2) {
+                    continue;
+                }
+            }
+            if (t >= 0 && !gt) {
+                p.vx = ((t * e.vx) >> 12) + a.p0.vx;
+                p.vy = ((t * e.vy) >> 12) + a.p0.vy;
+                p.vz = ((t * e.vz) >> 12) + a.p0.vz;
+                dx = p.vx - lp.vx;
+                dz = p.vz - lp.vz;
+                dist = dx * dx + dz * dz;
+                if (dist > r2) {
+                    continue;
+                }
+            }
+            if (dist < 0) {
+                dist = 0x7FFFFFFF;
+                printf(D_800B3310);
+            }
+            if (dist > best) {
+                continue;
+            }
+            best = dist;
+            hit.vx = p.vx;
+            hit.vy = p.vy;
+            hit.vz = p.vz;
+            if (best > r2) {
+                continue;
+            }
+            s = csqrt(best);
+            out->vy = ang + bl->rot->ang;
+            ang = (-ang + 0x400) & 0xFFF;
+            v = (rad << 6) - s + 2;
+            out->vx = (v * D_80068BD4[(((ang + bl->rot->ang) & 0xFFF) - 0x400) & 0xFFF].unk2) >> 18;
+            out->vz = (v * D_80068BD4[(ang + bl->rot->ang) & 0xFFF].unk2) >> 18;
+            pos->vx += out->vx;
+            pos->vz += out->vz;
+            found = 1;
+            hit.vy = obj->segs[i].ang;
+        }
+    }
+    return found;
+}
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B7D94);
 
