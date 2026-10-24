@@ -242,6 +242,18 @@ and current tools).
   C++ (PROTOTYPES.md); `cc1plus` gives the same code for this C, so only a
   C++ construct (an inline taking a reference, a small fixed-point class)
   is still untried. Test files go through `try func_800BE914 --file`.
+  Retried 2026-10-25 with the parameter and reused-local idioms: reusing
+  variables along the target's register chains (`pa` for the A x speed
+  then `total`, `pb` for the B x speed then xb, zb and nb, one `x` for
+  xa/za, `az` for e*(za - zb)) is the best natural shape, 157/170 exact,
+  but still lacks the copies. `t = pa; pa = mb + ma; xa = t >> 8;` keeps
+  the first copy (`use_crosses_set_p`). No such set can explain the second
+  (its shift writes the register it copied from) or the fourth (`t1` is
+  never set again, and a dead set is gone before combine). The pattern
+  occurs nowhere else in the game (`decomp.py idiom 'move A, B; sra C, A,
+  N' --all`), PAL/JP retail differ only by dropping the division checks,
+  and reload adds no copies (`ashrsi3` has no tied operands). The permuter
+  run is still unused: the natural shape is a structure-stage base.
 - **Earlier compiles of the 15 left** (PROTOTYPES.md, Earlier compiles of a
   function, has the table). Each of the five biggest has a build within a
   few instructions of retail's: Oct 9's `func_800BC038` (+1 insn) and
@@ -638,6 +650,14 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-25 (hand: `func_800BE914` retried, still parked):** with the
+  parameter and reused-local idioms from `func_800B980C`. Reusing
+  variables along the target's register chains gave the best natural
+  shape (157/170 exact), still four copies short. combine.c's rules,
+  checked case by case, keep only the first copy (its source is set again
+  before the shift). The prototype and PAL/JP compiles and an idiom search
+  of the whole game added nothing. Park note and Open leads updated.
 
 - **2026-10-24 (hand: ovl63 `func_800B980C` matched):** from the swarm's
   checkpoint (structure 305/402), with `func_800B8FD8`'s entry idiom. The
