@@ -45,7 +45,8 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   test copy of the whole function with its unit's settings in about 2 s, and
   `--file A.c B.c ...` compiles several in parallel and ranks them by the
   regions score; `orders NAME --lines A-B` searches random dependency-keeping
-  orders of those statements the same way (for sched1 luid ties).
+  orders of those statements the same way (for sched1 luid ties;
+  `--free-memory` lets stores to different places swap).
   For a big function, `decomp.py regions NAME` aligns the code and scores it
   block by block with C lines (MATCHING.md, Big functions); the swarm's big
   mode works and ranks checkpoints by it. Also: `similar NAME` (matched

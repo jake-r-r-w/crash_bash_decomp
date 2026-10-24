@@ -61,10 +61,71 @@ class TestOrders(unittest.TestCase):
             pos = {j: k for k, j in enumerate(o)}
             self.assertTrue(all(pos[i] < pos[j] for j in dep for i in dep[j]))
 
+    def test_free_memory_lets_stores_to_distinct_places_swap(self):
+        loc = LOCAL | {"e", "nas", "x"}
+        stmts = orders.statements("""D_800C5BD8 = -1;
+            e->unk10.x = -0x100;
+            e->unk10.z = 0x900;
+            D_800C5BE0 = 0;
+            nas->UserInfo.user1 = 0xA0;
+            x = e->unk10.x;
+            GotoLinkAnim(anim, 0);""")
+        dep = orders.edges(stmts, loc, free=True)
+        self.assertEqual([dep[j] for j in range(5)], [set()] * 5)
+        self.assertEqual(dep[5], {1})               # the load stays after the store to its place
+        self.assertEqual(dep[6], {0, 1, 2, 3, 4, 5})    # a call keeps its place
+        self.assertEqual(orders.edges(stmts, loc)[2], {0, 1})   # by default all memory meets
+
+    def test_a_comment_stays_with_its_statement(self):
+        stmts = orders.statements("x = 1; /* a; {b} */\n    D_1 = 0;\n    /* c */ y = 2;")
+        self.assertEqual(stmts, ["x = 1; /* a; {b} */", "D_1 = 0;", "/* c */ y = 2;"])
+        self.assertEqual(orders.places(stmts[2], {"y"}), (set(), set()))
+        self.assertEqual(orders.effects(stmts[2], {"y"})[0], {"y"})
+
     def test_blocks_and_control_flow_are_refused(self):
         for text in ("if (x) { y = 1; }", "while (i < 4) i++;", "x = 1; loop: y = 2;"):
             with self.assertRaises(ValueError):
                 orders.statements(text)
+
+
+class TestPlaces(unittest.TestCase):
+    L = LOCAL | {"e", "nas", "cx", "g", "pos", "x"}
+    UNK10_X = ("e", (("f", "unk10"), ("f", "x")))
+
+    def test_stores_place_their_lvalue(self):
+        self.assertEqual(orders.places("e->unk10.x = -0x100;", self.L), ({self.UNK10_X}, set()))
+        self.assertEqual(orders.places("D_800C5BE0 = 0;", self.L), ({("D_800C5BE0", ())}, set()))
+        self.assertEqual(orders.places("lx = rx;", self.L), (set(), set()))
+        self.assertEqual(orders.places("*p = 1;", self.L)[0], {orders.STAR})
+        self.assertEqual(orders.places("((s32 *)p)[2] = 1;", self.L)[0], {orders.STAR})
+
+    def test_reads(self):
+        self.assertEqual(orders.places("c = D_80068BD4[ang].unk2;", self.L)[1],
+                         {("D_80068BD4", (("i", "ang"), ("f", "unk2")))})
+        self.assertEqual(orders.places("x = *p;", self.L)[1], {orders.STAR})
+        self.assertEqual(orders.places("pos = &e->unk10;", self.L), (set(), set()))
+        self.assertEqual(orders.places("x = *(s32 *)(g + 0x30);", self.L)[1], {orders.STAR})
+        self.assertEqual(orders.places("x = (u32)D_800C5BF0 + (D_1);", self.L)[1],
+                         {("D_800C5BF0", ()), ("D_1", ())})
+
+    def test_index_expressions_are_read(self):
+        self.assertEqual(orders.places("D_800C53DC[cx][D_800C5BB8].unkA = 5;", self.L)[1],
+                         {("D_800C5BB8", ())})
+
+    def test_steps_and_compound_stores_read_their_place(self):
+        p = ("nas", (("f", "UserInfo"), ("f", "user1")))
+        self.assertEqual(orders.places("nas->UserInfo.user1--;", self.L), ({p}, {p}))
+        self.assertEqual(orders.places("D_800C5BF0 += 2;", self.L),
+                         ({("D_800C5BF0", ())}, {("D_800C5BF0", ())}))
+        self.assertEqual(orders.places("x = i++;", self.L)[0], {orders.STAR})
+
+    def test_overlap(self):
+        a = ("a", (("i", "i"), ("f", "x")))
+        self.assertTrue(orders.overlap(a, ("a", (("i", "j"), ("f", "x")))))    # i may be j
+        self.assertFalse(orders.overlap(a, ("a", (("i", "i"), ("f", "y")))))
+        self.assertFalse(orders.overlap(("p", (("f", "x"),)), ("q", (("f", "x"),))))
+        self.assertTrue(orders.overlap(("e", (("f", "unk10"),)), self.UNK10_X))  # a prefix
+        self.assertTrue(orders.overlap(orders.STAR, ("D_1", ())))
 
 
 if __name__ == "__main__":

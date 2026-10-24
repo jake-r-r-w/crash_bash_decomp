@@ -98,6 +98,15 @@ class TestFollow(unittest.TestCase):
         passes, _ = ptrace.load(DUMPS[:3] + [("greg", greg)], "f")
         self.assertEqual(ptrace.follow(passes, 13)[-1][3], "renamed")
 
+    def test_a_deletion_first_seen_in_sched2_is_reload_cse_regs(self):
+        sched2 = GREG[:GREG.index("(insn 13 ")] + GREG[GREG.index(";; Register dispositions"):]
+        passes, _ = ptrace.load(DUMPS + [("sched2", sched2)], "f")
+        out = ptrace.report_insn(passes, "f", 13)
+        self.assertIn("sched2    deleted by reload_cse_regs", out)
+        self.assertIn("reload_cse_regs deletes it", out)
+        noop = ptrace.Entry("insn", "$v0 = $v0", set(), [], None)
+        self.assertEqual(ptrace.actor("sched2", noop), "sched2")    # sched2 drops no-op moves
+
     def test_dispositions(self):
         self.assertEqual(ptrace.dispositions(GREG), {80: 2, 90: 3, 91: 4})
 

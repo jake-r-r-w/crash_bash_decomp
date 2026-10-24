@@ -2406,7 +2406,7 @@ def cmd_orders(a):
     if len(stmts) < 2:
         die("the range holds fewer than two statements")
     indent = re.match(r"\s*", lines[lo - 1]).group(0)
-    found = orders.orders(stmts, local, a.count, a.seed)
+    found = orders.orders(stmts, local, a.count, a.seed, a.free_memory)
     d = f"build/orders/s{a.seed}"                   # one directory per seed: refine from another's best
     if os.path.abspath(path).startswith(os.path.abspath(d) + os.sep):
         die(f"{path} is in {d}, which this run clears: copy it out, or use another --seed")
@@ -2417,9 +2417,10 @@ def cmd_orders(a):
         p = f"{d}/o{k:03d}.c"
         write(p, "\n".join(lines[:lo - 1] + [indent + stmts[j] for j in order] + lines[hi:]))
         paths.append(p)
-    fixed = sum(len(v) for v in orders.edges(stmts, local).values())
-    print(f"ORDERS {name}: {len(stmts)} statements on lines {lo}-{hi} ({fixed} must-keep pairs), "
-          f"{len(found)} orders; o000 is the source's")
+    fixed = sum(len(v) for v in orders.edges(stmts, local, a.free_memory).values())
+    memory = "memory by place" if a.free_memory else "any two memory accesses meet; --free-memory"
+    print(f"ORDERS {name}: {len(stmts)} statements on lines {lo}-{hi} ({fixed} must-keep pairs, "
+          f"{memory}), {len(found)} orders; o000 is the source's")
     ok, _, best = try_files(key, e, proj, name, paths, a.jobs, a.top, defs)
     if best:
         k = paths.index(best)
@@ -5532,6 +5533,9 @@ def main():
     p.add_argument("--top", type=int, default=12, help="ranked rows to print")
     p.add_argument("--jobs", type=int, help="parallel compiles")
     p.add_argument("--file", help="reorder lines of this test copy instead of the source")
+    p.add_argument("--free-memory", action="store_true", help="compare memory accesses by place "
+                   "(a global, or fields and indexes from a name): stores to different globals, "
+                   "fields or pointers may swap, as if they never alias")
     p.set_defaults(fn=cmd_orders)
     p = sub.add_parser("protos", help="a function's earlier compiles: its closest match in each "
                        "scanned prototype or demo disc (protos/*/scan.md)")

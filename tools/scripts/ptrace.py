@@ -144,6 +144,16 @@ def follow(passes, uid):
     return rows
 
 
+def actor(p, e):
+    """The pass that deleted or rewrote insn E (its last pattern) first seen so in pass P's dump.
+    sched2's dump also shows reload_cse_regs (reload1.c), which runs after greg's dump: sched2
+    itself only drops no-op moves (`x = x`), so anything else it lost is reload_cse_regs's."""
+    if p != "sched2":
+        return p
+    dest, eq, src = e.text.partition(" = ")
+    return "sched2" if eq and dest == src else "reload_cse_regs"
+
+
 def dead_names(e):
     return ", ".join(f"r{r}" if r >= 80 else f"${HARD[r]}" if r < 32 else f"r{r}" for r in e.dead)
 
@@ -155,19 +165,22 @@ def report_insn(passes, name, uid):
     out = [f"TRACE {name} insn {uid}, pass by pass (= unchanged; dies: REG_DEAD/REG_UNUSED notes):"]
     said = []
     for p, u, e, ev in rows:
+        who = actor(p, e)
+        by = f" by {who}" if who != p else ""
         if ev == "deleted":
             into = ", ".join(f"{x} ({passes_entry(passes, p, x)})" for x in u)
-            out.append(f"  {p:<9} deleted" + (f"; it went into {into}" if into else ""))
-            said.append(f"{p} deletes it")
+            out.append(f"  {p:<9} deleted{by}" + (f"; it went into {into}" if into else ""))
+            said.append(f"{who} deletes it")
             continue
         dies = f"   dies: {dead_names(e)}" if e.dead else ""
         if ev == "same":
             out.append(f"  {p:<9} {u:>5}  ={dies}")
         else:
-            tag = {"moved": f"  (moved: new uid {u})", "renamed": "  (allocated)"}.get(ev, "")
+            tag = {"moved": f"  (moved: new uid {u})", "renamed": "  (allocated)",
+                   "changed": f"  ({who})" if by else ""}.get(ev, "")
             out.append(f"  {p:<9} {u:>5}  {e.text}{dies}{tag}")
         if ev == "changed":
-            said.append(f"{p} rewrites it")
+            said.append(f"{who} rewrites it")
         elif ev == "moved":
             said.append(f"{p} moves it to uid {u}")
     out.append(f"changes: {', then '.join(said) if said else 'none (kept to the end)'}")
@@ -185,11 +198,11 @@ def fate(passes, uid):
     said = []
     for p, u, e, ev in rows[1:]:
         if ev == "changed":
-            said.append(f"{p}: {e.text}")
+            said.append(f"{actor(p, e)}: {e.text}")
         elif ev == "moved":
             said.append(f"{p} moves it to {u}")
         elif ev == "deleted":
-            said.append(f"{p} deletes it" + (f"; it went into {', '.join(map(str, u))}" if u else ""))
+            said.append(f"{actor(p, e)} deletes it" + (f"; it went into {', '.join(map(str, u))}" if u else ""))
     return rows, "; ".join(said) or "kept"
 
 

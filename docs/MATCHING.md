@@ -1760,7 +1760,9 @@ the call), the C has to create one: the rules below say what does.
 `decomp.py trace NAME --insn UID` does this lookup for one insn. It dumps every pass and prints
 the insn in each, with `=` where a pass left it alone. It names the passes that moved it (loop.c
 hoists under a new uid, which it follows), rewrote it or deleted it, and the insns a deleted
-insn went into (combine's merges, cse's replacements). `--var V` (or `--reg N`) lists every insn
+insn went into (combine's merges, cse's replacements). The sched2 dump also shows what
+reload_cse_regs did after greg's dump (sched2 itself drops only no-op moves), and the trace says
+so. `--var V` (or `--reg N`) lists every insn
 that mentions a variable's pseudo, each with what became of it. The pseudo comes from
 declaration order and is checked against the `-g` home. `--file F.c` traces a test copy, as
 `try --file` compiles it. On `func_800B4048`'s copy `t = v` it shows in one call what took a
@@ -1813,7 +1815,10 @@ When the diff is an order or allocation tie that the order of independent statem
 (sched1's luid ties follow the source, and the lives they give decide local-alloc's registers),
 `decomp.py orders NAME --lines A-B [--count 150]` searches it. It splits those lines (inside one
 block) into statements and keeps every pair that must stay in order: a variable written and read
-or written, memory written and read (stores through `->`, `[`, `*`, globals), any call. It then
+or written, memory written and read (stores through `->`, `[`, `*`, globals), any call. Since any
+two memory accesses count as meeting, a run of stores keeps its source order; `--free-memory`
+compares them by place instead (a global, or the fields and indexes from a name), so stores to
+different globals, fields or pointers may swap. It then
 compiles that many random orders as copies of the unit, ranks them as `try --file` does and
 prints the best order. Run it again from the best (`--file` with a copy, another `--seed`) to
 refine. Explain the winner by its rule before committing it. `func_800B8294` matched this way:

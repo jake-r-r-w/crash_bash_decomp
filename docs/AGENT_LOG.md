@@ -613,6 +613,9 @@ Newest first, a few lines each. Details are in the commits.
   deletes it again. Also made the draft natural: no cast store, and `cx`/`cz`
   declared at the top of case 10's loop in place of an unused local (it
   keeps a block note that stops the loop's rotation). Two Diff patterns rows.
+  Tools: `orders --free-memory` (its default kept every run of stores in
+  source order), and `trace` names reload_cse_regs for what goes missing in
+  sched2's dump.
 
 - **2026-10-24 (hand: `Plot_PogoPadlock` again, still 2/350):** about 90
   more case 3 shapes through batch `try` (a 60-variant grid among them), the
