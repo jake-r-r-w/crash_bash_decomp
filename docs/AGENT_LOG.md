@@ -20,9 +20,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
   **main.exe, the engine, ovl61, ovl64, ovl65, ovl66, ovl67, ovl69 and ovl6a
   are complete**; 12 left (ovl5d 1, ovl5e 1, ovl5f 2, ovl60 1, ovl62 2,
   ovl63 4, ovl68 1), every one tried by the swarm at least once. All 564
-  PsyQ functions (Sony objects). Four parked by hand, `func_800BE914`,
-  `PlotTransmuterBeam` (one instruction off), `func_800B4048` and
-  `Plot_PogoPadlock` (two registers off) (Open leads)
+  PsyQ functions (Sony objects). Five parked by hand, `func_800BE914`,
+  `PlotTransmuterBeam` (one instruction off), `func_800B4048`,
+  `Plot_PogoPadlock` (two registers off) and `CheckMineToBoss` (Open leads)
   (`decomp.py status`; the swarm parked 5, which the dashboard counts from
   `docs/swarm.js`). Matches are C only, natural C
   first (CONVENTIONS.md, Matching rules; the "hack" class was dropped on
@@ -147,13 +147,24 @@ and current tools).
   loops (MATCHING.md, Diff patterns). Try the natural form of such drafts
   first. The checkpoints left (stage, differing insns; read
   `../crash_bash_decomp-swarm/checkpoints/*/best.json` from the host, the
-  container doesn't mount it): `CheckMineToBoss` registers 12/405, ovl5e
-  `800B87A0` structure 30/1461, ovl63 `800B76A4` registers 87/444; the
-  rest are structure 216/346 or further off. Where block 0 (or any block) is an order or allocation tie, run
+  container doesn't mount it): ovl5e `800B87A0` structure 30/1461, ovl63
+  `800B76A4` registers 87/444; the rest are structure 216/346 or further
+  off (`CheckMineToBoss` is parked, below). Where block 0 (or any block) is an order or allocation tie, run
   `decomp.py orders NAME --lines A-B` on the checkpoint's C before reading
   the dumps by hand: it matched `func_800B8294` from the natural form after
   nine swarm sessions had stopped at 21-31 differing (MATCHING.md, Using the
   compiler directly).
+- **`CheckMineToBoss`'s loop counter** (parked 2026-10-24 at registers
+  27/405 in the swarm's clean shape; its 12/405 permuter version passed an
+  uninitialised `i`). The target's registers fit one counter `i` for all
+  three loops that global.c places after the inline's `p`/`kind` pseudos
+  (0.316-0.444) and before loop.c's hoisted 1s (0.06-0.14). Two increments
+  per loop, which keep `D_800CB224[i]` unreduced as in the target, give it
+  0.534. One increment gives 0.296, but then loop.c strength-reduces the
+  index (MATCHING.md, Diff patterns). Find a natural shape that does both:
+  something that makes the reduction "not worth while" with one increment
+  (a bigger loop at loop.c time, a smaller giv benefit), or a longer life
+  for the counter. `sched` lists the priorities.
 - **`PlotTransmuterBeam`'s last instruction** (parked 2026-10-24 at
   structure 2310/2311, 316/317 blocks; the `decomp.py block` note lists what
   was tried). At 0xc14 the target reads `TBV->mode` once through a base in
@@ -612,6 +623,13 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-24 (hand: `CheckMineToBoss` parked):** from the swarm's
+  checkpoint. Its best (12/405) was a permuter hack, so back to its clean
+  27/405. `sched`'s allocation list and loop.c's `-dL` dump showed the
+  conflict between the counter's global.c priority and strength reduction
+  (Open leads); a grid of loop forms and counter names through batch `try`
+  found nothing better. A Diff patterns row for the biv-increment rule.
 
 - **2026-10-24 (hand: `func_800B6708` matched):** from the swarm's
   checkpoint (registers 27/411, its prototype fixed to `s32 player` by

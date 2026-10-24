@@ -1,6 +1,12 @@
 {
  "blocked": [
   {
+   "name": "CheckMineToBoss",
+   "note": "registers 27/405 (the swarm's clean shape: for (i = 0;;) { decls; if (i >= N) break; ... i++; continue; ... i++; } loops, counters i/j/i, inline Ovl5fWithin/Ovl5fSpawnBit1605B; its 12/405 permuter hack passes an uninitialised i and is not used). Deciding pass: global.c allocno order. The target (counter s3 in all three loops, hoisted 1 in s2, p s1, loop 3's kind s1 and p s2) fits ONE counter for all loops placed after the inline's p/kind pseudos (0.316-0.444) and before the hoisted constants (0.06-0.14). Two increments per loop give it 39 loop-weighted refs / 365 = 0.534 (needs a live length over 617); one increment (for (i = 0; ; i++) + continue) gives 27 refs = 0.296, but then loop.c strength-reduces D_800CB224[i] (benefit minus add_cost x biv_count beats the 122-insn loop), which the target doesn't. Tried: loop forms (two-increment for/while, single-increment for/if-wrapped) x counters (iji, iii, ijk), plain for loops (rotated). Next: what keeps the index unreduced with one increment (loop.c strength_reduce: lifetime x threshold x benefit < insn_count), or what lengthens the counter's life",
+   "seg": "overlays/ovl5f/ovl5f",
+   "size": 1620
+  },
+  {
    "name": "Plot_PogoPadlock",
    "note": "STAGE registers 2/350 (64/65 blocks): only case 3's %hi(D_800C530C) is in v0 where the target has v1 (lui v1; lw t1 reload; addiu v1,v1,%lo). Case 6 matches with a fresh one = 1 set before CreateNAS. Before reload the HIGH always gets a fresh pseudo (mips.md movsi), so the target's shared register is local-alloc tying the HIGH to a block-local base (combine_regs). A block-local single-set base is birthing in sched1 (birthing_insn_p), so the in-place ++level, the one non-birthing insn, ends up first in block 20. reload then inserts level's reload lw before the block head without moving basic_block_head (h2's sched2 dump: block 20 is 309..316, reload insn 875 sits outside it), sched2 can't schedule it, and a load-delay nop appears. A global base (ext, also used in case 6) keeps the HIGH first and the reload inside the block, but nothing local holds v0 during the HIGH's life, so find_free_reg gives it v0. Tried (all 2/350 or a nop): direct D_800C530C[++level] (s32 table: Init_PogoPadlock still matches), cast, pointer-arithmetic and level+1 forms, a case-local or earlier-set pointer, the pointer before the switch, a temp for the loaded value, status = 4 duplicated into the inner block (jump2 cross-jumps it back), a 60-variant grid of these; permuter 5 min. The Demo Disc and Oct 9 copies have the same lui v1 pattern. Next: an extra insn that heads block 20 in sched1 and is gone by the final code (e.g. an equivalence init that update_equiv_regs moves, which does update basic_block_head), or a v0 local live across the HIGH with the global base.",
    "seg": "overlays/ovl60/ovl60",
@@ -25,9 +31,9 @@
    "size": 1020
   }
  ],
- "commit": "27555deb",
+ "commit": "21164f8c",
  "game": "SCUS_945.70",
- "generated": "2026-10-24T12:42:14Z",
+ "generated": "2026-10-24T13:03:39Z",
  "history": [
   {"commit": "9d2e150", "data_b": 0, "data_tb": 182932, "game_all_f": 1140, "game_b": 152, "game_f": 19, "game_named_f": 0, "game_tb": 247148, "lib_b": 0, "lib_f": 0, "lib_tb": 0, "ts": "2026-10-10T08:35:31Z", "units": {"engine": [80, 10], "main exe": [136, 17], "ovl5d": [16, 2], "ovl5e": [16, 2], "ovl5f": [72, 9], "ovl60": [16, 2], "ovl61": [24, 3], "ovl62": [160, 20], "ovl63": [16, 2], "ovl64": [24, 3], "ovl65": [24, 3], "ovl66": [32, 4], "ovl67": [40, 5], "ovl68": [48, 6], "ovl69": [40, 5], "ovl6a": [32, 4]}},
   {"commit": "d76b415", "data_b": 0, "data_tb": 182932, "game_all_f": 574, "game_b": 136, "game_f": 17, "game_named_f": 0, "game_tb": 124840, "lib_b": 8, "lib_f": 1, "lib_tb": 118356, "ts": "2026-10-10T08:51:01Z", "units": {"main exe": [136, 17], "psyq": [121280, 535]}},
@@ -2187,7 +2193,7 @@
   {"commit": "04a5a394", "data_b": 10488, "data_tb": 606943, "game_all_f": 2537, "game_b": 966164, "game_c_f": 2522, "game_f": 2522, "game_named_f": 731, "game_tb": 1019400, "game_typed_f": 2304, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-24T11:17:34Z", "units": {"engine": [129264, 357], "main exe": [125204, 575], "ovl5d": [54324, 103], "ovl5e": [31772, 72], "ovl5f": [78776, 177], "ovl60": [61784, 178], "ovl61": [55000, 97], "ovl62": [113152, 213], "ovl63": [71160, 135], "ovl64": [30060, 57], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
   {"commit": "fd7fdd69", "data_b": 10560, "data_tb": 606943, "game_all_f": 2537, "game_b": 968788, "game_c_f": 2523, "game_f": 2523, "game_named_f": 731, "game_tb": 1019400, "game_typed_f": 2305, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-24T11:58:15Z", "units": {"engine": [129264, 357], "main exe": [125204, 575], "ovl5d": [54324, 103], "ovl5e": [31772, 72], "ovl5f": [78776, 177], "ovl60": [64408, 179], "ovl61": [55000, 97], "ovl62": [113152, 213], "ovl63": [71160, 135], "ovl64": [30060, 57], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
   {"commit": "a4921cec", "data_b": 10640, "data_tb": 606943, "game_all_f": 2537, "game_b": 972256, "game_c_f": 2524, "game_f": 2524, "game_named_f": 731, "game_tb": 1019400, "game_typed_f": 2305, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-24T12:31:36Z", "units": {"engine": [129264, 357], "main exe": [125204, 575], "ovl5d": [54324, 103], "ovl5e": [31772, 72], "ovl5f": [78776, 177], "ovl60": [64408, 179], "ovl61": [55000, 97], "ovl62": [113152, 213], "ovl63": [71160, 135], "ovl64": [33528, 58], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
-  {"commit": "27555deb", "data_b": 10640, "data_tb": 606943, "game_all_f": 2537, "game_b": 973900, "game_c_f": 2525, "game_f": 2525, "game_named_f": 731, "game_tb": 1019400, "game_typed_f": 2306, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-24T12:42:14Z", "units": {"engine": [129264, 357], "main exe": [125204, 575], "ovl5d": [54324, 103], "ovl5e": [31772, 72], "ovl5f": [78776, 177], "ovl60": [64408, 179], "ovl61": [55000, 97], "ovl62": [114796, 214], "ovl63": [71160, 135], "ovl64": [33528, 58], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}}
+  {"commit": "21164f8c", "data_b": 10640, "data_tb": 606943, "game_all_f": 2537, "game_b": 973900, "game_c_f": 2525, "game_f": 2525, "game_named_f": 731, "game_tb": 1019400, "game_typed_f": 2306, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-24T13:03:39Z", "units": {"engine": [129264, 357], "main exe": [125204, 575], "ovl5d": [54324, 103], "ovl5e": [31772, 72], "ovl5f": [78776, 177], "ovl60": [64408, 179], "ovl61": [55000, 97], "ovl62": [114796, 214], "ovl63": [71160, 135], "ovl64": [33528, 58], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}}
  ],
  "recent": [
   {
@@ -2312,7 +2318,7 @@
   }
  ],
  "summary": {
-  "blocked": 4,
+  "blocked": 5,
   "copies_b": 0,
   "data": {
    "done_b": 10640,
@@ -2323,7 +2329,7 @@
    "all_f": 2537,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 4,
+   "blocked": 5,
    "c_f": 2525,
    "done_b": 973900,
    "done_f": 2525,
@@ -2438,7 +2444,7 @@
     "all_f": 179,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 0,
+    "blocked": 1,
     "c_f": 177,
     "done_b": 78776,
     "done_f": 177,
