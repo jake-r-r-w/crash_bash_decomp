@@ -10,7 +10,7 @@ At the end of a session, update **Current state**, **Next** and **Open
 leads**, add any new gotcha, and add one short entry at the top of the
 **Session log**.
 
-## Current state (2026-10-23)
+## Current state (2026-10-24)
 
 - [ROADMAP.md](ROADMAP.md): Phase 1 (types and names) is done, and every
   `main.exe` function matches and `main.c` is split (2026-10-23); Phase 2's
@@ -20,7 +20,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
   **main.exe, the engine, ovl61, ovl65, ovl66, ovl67, ovl69 and ovl6a are
   complete**; 17 left (ovl5d 2, ovl5e 1, ovl5f 2, ovl60 2, ovl62 3, ovl63 4,
   ovl64 2, ovl68 1), every one tried by the swarm at least once. All 564
-  PsyQ functions (Sony objects). One parked by hand, `func_800BE914`
+  PsyQ functions (Sony objects). Two parked by hand, `func_800BE914` and
+  `PlotTransmuterBeam` (one instruction off; Open leads)
   (`decomp.py status`; the swarm parked 5, which the dashboard counts from
   `docs/swarm.js`). Matches are C only, natural C
   first (CONVENTIONS.md, Matching rules; the "hack" class was dropped on
@@ -138,6 +139,22 @@ and current tools).
   11/350, `Plot_PogoRipperRoo` instructions 16/656, `func_800B7508`
   registers 17/867, `func_800B5E28` instructions 21/195, `func_800B6708`
   registers 27/411. `CheckMineToBoss` has none.
+- **`PlotTransmuterBeam`'s last instruction** (parked 2026-10-24 at
+  structure 2310/2311, 316/317 blocks; the `decomp.py block` note lists what
+  was tried). At 0xc14 the target reads `TBV->mode` once through a base in
+  a1 (`lui v0; addiu a1,v0,%lo(D_8005A614); lh v1,0x34(a1)`), where any
+  single read folds into `lui; lh %lo(sym+0x34)`. The target's base was
+  live past the read until global alloc: passing it to `InitDelete` as a
+  second argument gives these three instructions exactly, but that's no
+  source (`InitScriptFX` takes one parameter) and it pushes `bx` out of a0
+  in all three spawns. Look for a later use of the base that disappears
+  after allocation (a no-op copy, a store reload_cse deletes). Case 1 of the
+  hit loop's switch still steers: `one = 1` before the 0xB4 store gives the
+  constant 1 enough lifetime for loop.c (MATCHING.md, Diff patterns, the
+  t3..t6 row); natural C must give it lifetime 3, not 2, between its set and
+  the `hero_last_action` store without changing the 38/18/28 store order.
+  Try shapes with `try PlotTransmuterBeam --file`, or the small harness in
+  `scratch/ptb/t/` (gone after a clean).
 - **`func_800BE914`'s copies** (parked 2026-10-23 at registers 7/170; the
   `decomp.py block` note has the detail). The target copies each clamped
   speed into v0 right before its `>> 8` (`move v0,aN; sra a2,v0,8`, four
@@ -162,7 +179,11 @@ and current tools).
   `func_800B77E8` (-10), the older builds' `PlotUkaPolarMask` (-20). Next:
   disassemble that copy (`decomp.py protos NAME` gives the address and the
   entry offset), diff it against retail, and see whether the change sits
-  where the C still differs. `func_800B5E28` and `func_800B8294` are the
+  where the C still differs (done for `PlotTransmuterBeam`: the copies
+  differ only away from its last diff, but a build that adds code to a loop
+  shows how loop.c scored that loop; PROTOTYPES.md). Align copies by
+  opcode and register with immediates dropped, or every relocated
+  `%lo` shows up as a change. `func_800B5E28` and `func_800B8294` are the
   same code but two `andi` masks (`0xF0` in ovl5d, `0xE0` in ovl64), so one
   match ports to the other.
 - **Finish the demo discs' symbols** (PROTOTYPES.md; applied: 135 function
@@ -550,6 +571,16 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-24 (hand: `PlotTransmuterBeam` parked):** from the swarm's
+  checkpoint (2237/2311 exact) to 2309/2311, one instruction short (the
+  single-read base at 0xc14, Open leads). Natural fixes: duplicated case
+  tails that jump2 cross-jumps, block-local `Heroes`/trig bases,
+  `h = &Heroes[j]` in the team-mate loop, `return`, one `pitch = 0x400`.
+  The protos copies (Sep 14, JP) differ only elsewhere; JP bounds loop.c's
+  score for the hoisted constant. Six Diff patterns rows; row 1600's
+  block-local view pointer advice corrected. ARCHITECTURE.md maps the
+  extension to the leak's `EXTtransmuter`.
 
 - **2026-10-23 (hand: `func_800BE914` parked):** from the swarm's
   checkpoint (registers 7/170). The four `move v0,X` copies before the

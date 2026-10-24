@@ -918,6 +918,21 @@ keep code-derived names (`unkXX` where only offset and width are known).
   `InitTransmuterBeam` 0x1E0 (`EXTtransmuter`). The stores land on the leak's
   fields: `fadeuprate` at `+0xC`, `angle` at `+0x2C`, and `EXTbombmaker.timer`
   is set to 180.
+- **The transmuter beam's extension.** The repo's `TransBeamExt` (`ovl62.h`)
+  is the leak's `EXTtransmuter` (`polar.h`): `beamtype` 0xC (picked from
+  `D_800D5458[Random(4)]`), `effect_player` 0x10 (the hit hero, -1 for none),
+  `NasStatus` 0x14 (1 idle, 2 firing), `hero_action[4]` 0x18,
+  `hero_last_action[4]` 0x28, `hero_action_timer[4]` 0x38,
+  `hero_immune_timer[4]` 0x48, `onoff_timer` 0x58, `beamindex` 0x5C,
+  `ontime`/`offtime` 0x60/0x64, `ittimer` 0x68 (300 frames), `itplayer` 0x6C
+  (`u32`; 5 = none), `hero_in_beam_timer` 0x70, `it_eng` 0x74,
+  `light_eng[4]` 0x78, `aimpoint` 0x88, `rad`/`yang`/`addang` 0x98-0xA0,
+  `glow`/`shadow`/`beam` 0xA4-0xAC and `chasetimer` 0x1DC. In
+  `PlotTransmuterBeam`, a hit sets a hero's action from the beam type:
+  0 shrinks the hero, 1 grows it, 2 sets action 0x4C; 5 marks the hero as
+  `itplayer`, and when `ittimer` runs out a `WeightDeath` (0x1602) drops on
+  it; 6 marks it too, and when the timer runs out every other hero that
+  isn't its team-mate gets action 0x4B.
 - **NAS (`struct NAStype`, 0x70 bytes).**
   - `TriggerNas(trigger)` takes one from the free list (linked through
     `Tag.Child`), copies a 0x70-byte template over it, and appends it to the

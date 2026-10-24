@@ -446,6 +446,16 @@ Under 0.8 the closest function may be a different one. What the table shows:
   `hero` after the `TargetXYZ.z` store just as retail does, so that order
   comes from the source, not from one build's luck (MATCHING.md, Diff
   patterns).
+- `PlotTransmuterBeam` is parked one instruction off (2026-10-24). By
+  opcode and register (immediates aside), Sep 14's copy differs from
+  retail in two places only: case 6 passes `&eng->sfx` and NULL to the two
+  `PlaySfx` calls (retail adds the position), and the team-mate loop lacks
+  the `TestForTeamMate` test. Aug 23 also lacks the `bit2` flag clear at
+  the start and the closing `D_800D4D08` block. JP adds `hero_mode == 0x57`
+  tests to the hit loop: there the constant 1 stays in a local register
+  and 0x57 takes fp, which bounds how loop.c scores the 1 (MATCHING.md,
+  Diff patterns). None of them changes the spawn read at 0xc14 that still
+  differs.
 - `func_800B5E28` and `func_800B8294` are exact opcode twins (ovl5d and
   ovl64), unchanged in every build, and `CheckMineToBoss` is the same in
   every build but Jampack's: their history adds nothing.
