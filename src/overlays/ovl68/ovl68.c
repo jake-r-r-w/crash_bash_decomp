@@ -326,7 +326,115 @@ void func_800B3EFC(void) {
     D_8009D900 = D_800BC0C0;
 }
 
+#ifdef NON_MATCHING
+/* The parked C (instructions 10/255, all in the tail block): `t = v` before the
+   *60 survives cse2 and combine only because v is set again before the loop
+   (the steering `v = (s32)D_8005A614`), and that set puts q's lui inside t's
+   second life, so t takes a2 instead of v0 (decomp.py block note). */
+void func_800B4048(void) {
+    s32 i;
+    s32 a;
+    s16 score;
+    s32 x;
+    s32 v;
+    s32 t;
+    s16 y;
+    u8 *g;
+    u8 *p;
+    u8 *q;
+    HeroInfo *h;
+    Ovl68Cam *cam;
+    Ovl68Screen *scr;
+
+    D_800BC444 = 0;
+    World_floor_level = 0;
+    Init_Clock(0x140, 0x1E, 0);
+    if (((CoalChainGame *)D_8005A614)->flags & 0x40) {
+        a = 0x40;
+        if (((CoalChainGame *)D_8005A614)->unk6C == 0) {
+            a = 0x100;
+        }
+    } else {
+        a = 0x130;
+    }
+    Set_Clock(a, 0x81C0);
+    func_8001682C((s32 *)D_80053F8C);
+    func_8001682C((s32 *)(D_80053F8C - 0xF88));
+    func_8001682C((s32 *)*D_80058AD0);
+    scr = (Ovl68Screen *)D_8009F6F4;
+    scr->unk10 = 0x140;
+    scr->unk14 = 0x15E;
+    cam = (Ovl68Cam *)D_80051640;
+    cam->unk0 = 0;
+    cam->unk8 = 0xE98;
+    cam->unk54 = 0x1A8;
+    cam->unk18 = 0x200;
+    cam->unk10 = -0x110;
+    cam->unk4 = 0;
+    cam->unk56 = 0;
+    cam->unk58 = 0;
+    cam->unkC = 0;
+    cam->unk14 = -0x770;
+    for (i = 7; i >= 0; i--) {
+        D_800BC424[i] = NULL;
+    }
+    D_800BC448 = 0x938;
+    D_800BC44C = 0x684;
+    D_800BC450 = 0;
+    for (i = 0x63F; i >= 0; i--) {
+        D_800BC4E8[i] = 0;
+    }
+    for (i = 0; i < 1; i++) {
+        D_800BC420[i] = NULL;
+    }
+    CreateNAS(0, 0, 0, 0x1D06, 0x11);
+    i = Random(0x1000);
+    D_800BC454 = CreateNAS(i, 0, 0x700, 0x1D07, 0x11);
+    D_800BC458 = CreateNAS((i + 0x800) & 0xFFF, 0, 0x700, 0x1D07, 0x11);
+    CreateNAS(0, 0, 0, 0x1D03, 0x11);
+    g = D_8005A614;
+    if (((CoalChainGame *)g)->flags & 0x80) {
+        CreateNAS(0, 0, 0, 0x1D08, 0x11);
+    }
+    if (((CoalChainGame *)g)->flags & 0x40) {
+        for (i = 0; i < 4; i++) {
+            p = D_8005A614;
+            h = &Heroes[i];
+            score = 0x78;
+            if (p[i + 0x5C] == 0) {
+                score = 0x82;
+                if (((CoalChainGame *)p)->unk6C != 0) {
+                    score = 0x8C;
+                }
+            }
+            h->hero_score_displayed = score;
+            h->hero_score = score;
+        }
+        InitSharedScoreIcons();
+        if (D_8005A680 != 0) {
+            PanelCtrl |= 0x2000;
+        }
+    }
+    t = D_8009D88E * 2 + 0x44;
+    v = t & 0xFFFE;
+    x = v * 35 / 100;
+    t = v;
+    v = (s32)D_8005A614;
+    D_8009D6F4 = D_800BC4AC;
+    for (i = 0, q = (u8 *)v; i < 4; i++) {
+        h = &Heroes[i];
+        if (q[i + 0x5C] == 0) {
+            ((Ovl68Pct *)D_800BC4AC)[h->hero_name].unk0 = 0x23;
+            ((Ovl68Pct *)D_800BC4AC)[h->hero_name].unk2 = 0x3C;
+        } else {
+            ((Ovl68Pct *)D_800BC4AC)[h->hero_name].unk0 = x;
+            ((Ovl68Pct *)D_800BC4AC)[h->hero_name].unk2 = t * 60 / 100;
+        }
+    }
+}
+#else
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B4048);
+#endif
 
 void func_800B4444(void) {
     s32 i;

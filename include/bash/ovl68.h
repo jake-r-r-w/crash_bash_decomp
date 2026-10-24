@@ -577,4 +577,40 @@ extern u16 Clock_flags;
 
 void PlotEgg(NAS *nas);
 
+/* func_800B4048: the camera (D_80051640) and screen (D_8009F6F4) it sets up. */
+typedef struct Ovl68Cam {
+    /* 0x00 */ s32 unk0;
+    /* 0x04 */ s32 unk4;
+    /* 0x08 */ s32 unk8;
+    /* 0x0C */ s32 unkC;
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 unk14;
+    /* 0x18 */ s32 unk18;
+    /* 0x1C */ u8 pad1C[0x54 - 0x1C];
+    /* 0x54 */ s16 unk54;
+    /* 0x56 */ s16 unk56;
+    /* 0x58 */ s16 unk58;
+} Ovl68Cam;
+typedef struct Ovl68Screen {
+    /* 0x00 */ u8 pad0[0x10];
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ s32 unk14;
+} Ovl68Screen;
+/* Per-character pair at D_800BC4AC, indexed by hero_name. */
+typedef struct Ovl68Pct {
+    /* 0x00 */ u16 unk0;
+    /* 0x02 */ u16 unk2;
+    /* 0x04 */ u16 unk4;
+} Ovl68Pct;
+extern u16 D_800BC4AC[];
+extern NAS *D_800BC454;
+extern NAS *D_800BC458;
+extern s16 D_8009D88E;
+extern s32 PanelCtrl;
+extern u8 D_8009F6F4[];
+extern u8 D_80051640[];
+void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
+void Set_Clock(u16 time, u16 flags);
+void InitSharedScoreIcons(void);
+
 #endif /* BASH_OVL68_H */

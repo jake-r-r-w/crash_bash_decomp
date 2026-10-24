@@ -9989,7 +9989,11 @@
   "status": "matched"
  },
  "ovl68:800B4048": {
-  "auto_failed": "types"
+  "auto_failed": "types",
+  "blocked_at": "2026-10-24T09:15:53Z",
+  "note": "STAGE instructions 10/255, all in tail block 20: t in a2 and v in v0 (target v0, v1), q's lui right after the copy. The copy t = v before the *60 is real (the Oct 9 copy has it with *42/*72). cse2 keeps it only if t is canonical in make_regs_eqv (referenced outside the block) or v is set again before the hoisted chain; combine's 3-insn combine (copy, shift, minus) folds it unless v is set in between (can_combine_p, use_crosses_set_p). The checkpoint's steering v = (s32)D_8005A614; q = (u8 *)v does both, but that HIGH (insn 525) comes before the hoisted chain in RTL order, so sched1 puts it inside t's second life (rank_for_schedule luid tie at birthing priority), local-alloc gives it v0 and global gives t a2. Tried: plain copies and u16 casts (cse folds), dead v = 0 or an early dead t = 0 (survives cse2, combine folds), v reused for t*60 or y (cse folds first), the pointer set inside the loop or after the store. Next: a natural set of v between the copy and the chain whose insns land after the hoisted chain (a later movable or a strength-reduction init).",
+  "started": "2026-10-24T08:26:51Z",
+  "status": "blocked"
  },
  "ovl68:800B4444": {
   "auto_diff": 31,
