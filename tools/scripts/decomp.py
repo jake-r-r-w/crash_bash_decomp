@@ -1785,11 +1785,12 @@ REG_NAMES = ["zero", "at", "v0", "v1", "a0", "a1", "a2", "a3", "t0", "t1", "t2",
              "s0", "s1", "s2", "s3", "s4", "s5", "s6", "s7", "t8", "t9", "k0", "k1", "gp", "sp", "fp", "ra"]
 
 
-def var_homes(src, name, cfg, defs=()):
+def var_homes(src, name, cfg, defs=(), c_path=None):
     """{variable: home} for NAME's parameters and locals, from cc1 -g's ECOFF .def lines: a
-    register name, or "sp+N" for a stack slot. Block-scoped locals are included."""
+    register name, or "sp+N" for a stack slot. Block-scoped locals are included. With C_PATH,
+    that file is compiled with src's unit settings."""
     cfg = unit_cfg(cfg, src)
-    cmd = (f"{X}cpp {' '.join([*make_flags('CPPFLAGS'), *defs])} {src} | {GCC_ROOT}/{cfg['CC_VER']}/cc1 -quiet "
+    cmd = (f"{X}cpp {' '.join([*make_flags('CPPFLAGS'), *defs])} {c_path or src} | {GCC_ROOT}/{cfg['CC_VER']}/cc1 -quiet "
            f"{cfg['OPT_FLAGS']} {cfg.get('EXTRA_CC1FLAGS', '')} -G{cfg.get('GVAL', '0')} -g")
     out = run(cmd).stdout
     m = re.search(rf"^{re.escape(name)}:\s*$(.*?)^\s*\.end\s+{re.escape(name)}\b", out, re.M | re.S)
@@ -2205,6 +2206,63 @@ def cmd_jtrace(a):
     if not runs:
         die(f"no jump2 run for {name} (is it compiled from {src}?)")
     print(jtrace.report(runs, names, a.cross))
+
+
+def cmd_trace(a):
+    """Follow one insn, or every insn that mentions a variable's pseudo, through cc1's pass dumps,
+    and name the pass that rewrote, moved or deleted each (tools/scripts/ptrace.py)."""
+    import ptrace
+    if sum(x is not None for x in (a.insn, a.var, a.reg)) != 1:
+        die("give one of --insn UID, --var NAME or --reg N")
+    proj, funcs = need_proj(), need_funcs()
+    key, e = find_func(funcs, a.func)
+    name = cur_name(key, e, sym_names())
+    src = e.get("src") or locate_def(name)
+    path, defs = (a.file, []) if a.file else (src, c_defines(src, name, e))
+    cfg = unit_cfg(mk_config(), src)
+    d = "build/trace"
+    os.makedirs(d, exist_ok=True)
+    i = f"{d}/{name}.i"
+    for old in glob.glob(f"{i}.*"):                 # a pass that no longer runs leaves no dump
+        os.remove(old)
+    r = run(f"{X}cpp {' '.join([*make_flags('CPPFLAGS'), *defs])} {path} > {i}")
+    if r.returncode:
+        die(f"cpp failed: {r.stderr.strip()[-300:]}")
+    r = run(f"cd {d} && {GCC_ROOT}/{cfg['CC_VER']}/cc1 -quiet {cfg['OPT_FLAGS']} "
+            f"{cfg.get('EXTRA_CC1FLAGS', '')} -G{cfg.get('GVAL', '0')} {ptrace.DUMP_FLAGS} "
+            f"-o {name}.s {name}.i")
+    if r.returncode:
+        die(f"cc1 failed: {r.stderr.strip()[-300:]}")
+    dumps = [(p, read(f"{i}.{p}")) for p, _ in ptrace.PASSES if os.path.exists(f"{i}.{p}")]
+    passes, user = ptrace.load(dumps, name)
+    if not passes:
+        die(f"no dump has {name} (is it compiled from {path}?)")
+    if a.insn is not None:
+        print(ptrace.report_insn(passes, name, a.insn))
+        return
+    greg = f"{i}.greg"
+    disp = ptrace.dispositions(ptrace.section(read(greg), name)) if os.path.exists(greg) else {}
+    reg, label = a.reg, None
+    if a.var:
+        ftext = extract_function(read(path), name, top=True)
+        if not ftext:
+            die(f"no definition of {name} in {path}")
+        ds = ptrace.decls(ftext)
+        regs = [x.name for x in ds if not x.memory]
+        m = ptrace.map_vars(ds, user)
+        if m is None or a.var not in m:
+            die(f"can't map {a.var} to a pseudo by declaration order: {len(regs)} register "
+                f"declarations ({', '.join(regs)}) against {len(user)} reg/v pseudos "
+                f"({', '.join(map(str, user))}); give --reg N")
+        reg = m[a.var]
+        home = var_homes(src, name, mk_config(), defs, c_path=path).get(a.var)
+        got = REG_NAMES[disp[reg]] if disp.get(reg, 99) < 32 else None
+        check = ("" if home is None or got is None else "" if home == got
+                 else f"; DISAGREES with greg's {got}: check with --reg")
+        label = (f"{a.var} = r{reg} (register declaration {list(m).index(a.var) + 1} of {len(m)}; "
+                 f"-g home {home or '?'}{check})")
+    got = REG_NAMES[disp[reg]] if disp.get(reg, 99) < 32 else "no hard register"
+    print(ptrace.report_reg(passes, name, reg, (label or f"r{reg}") + f", greg: {got}"))
 
 
 def cmd_protos(a):
@@ -5225,6 +5283,14 @@ def main():
     p.add_argument("func")
     p.add_argument("--cross", action="store_true", help="only the cross-jumps, not every comparison")
     p.set_defaults(fn=cmd_jtrace)
+    p = sub.add_parser("trace", help="follow one insn, or every insn of a variable's pseudo, through "
+                       "cc1's pass dumps: the pass that rewrote, moved or deleted it")
+    p.add_argument("func")
+    p.add_argument("--insn", type=int, help="this insn uid (as sched, jtrace and the dumps print it)")
+    p.add_argument("--var", help="every insn that mentions this C variable's pseudo (by declaration order)")
+    p.add_argument("--reg", type=int, help="every insn that mentions this pseudo")
+    p.add_argument("--file", help="trace a test copy of the function, as try --file compiles it")
+    p.set_defaults(fn=cmd_trace)
     p = sub.add_parser("protos", help="a function's earlier compiles: its closest match in each "
                        "scanned prototype or demo disc (protos/*/scan.md)")
     p.add_argument("func")

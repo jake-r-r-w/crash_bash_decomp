@@ -1741,6 +1741,16 @@ dumps exist for the target, so reason backwards from its asm to the RTL it needs
 and dies in v0, not the variable in s3. If `.rtl` has no such temp (`var = v0` straight from
 the call), the C has to create one: the rules below say what does.
 
+`decomp.py trace NAME --insn UID` does this lookup for one insn. It dumps every pass and prints
+the insn in each, with `=` where a pass left it alone. It names the passes that moved it (loop.c
+hoists under a new uid, which it follows), rewrote it or deleted it, and the insns a deleted
+insn went into (combine's merges, cse's replacements). `--var V` (or `--reg N`) lists every insn
+that mentions a variable's pseudo, each with what became of it. The pseudo comes from
+declaration order and is checked against the `-g` home. `--file F.c` traces a test copy, as
+`try --file` compiles it. On `func_800B4048`'s copy `t = v` it shows in one call what took a
+session by hand: flow deletes the dead early `t = 0`, then combine deletes the copy into the
+`*60` chain's shift and minus.
+
 Besides RTL, the dumps print:
 - `.cse`: `;; Processing block from A to B, N sets.` for each pass over an extended block (A is
   its first insn's uid, B the insn it stops at). One block shows up once per branch path it

@@ -51,14 +51,17 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   block's memory-insn count, and the rule that took each insn off the ready
   list: priority, birthing, class, potential hazard or luid), `jtrace NAME`
   (jump2's cross-jumping step by step: which copy of a repeated tail is
-  kept, and why the others gave theirs up), `protos NAME` (the function's
+  kept, and why the others gave theirs up), `trace NAME --insn UID|--var V`
+  (one insn, or every insn of a variable's pseudo, through every pass dump:
+  which pass moved, rewrote or deleted it, and where a deleted insn went),
+  `protos NAME` (the function's
   earlier compiles on the prototype and demo discs; `--diff DISC` aligns
   one copy with retail and prints the hunks that differ), `splitvars NAME VAR` (search splits of a variable), `permute NAME
   --differing` (permute only the differing blocks' C), `permstats` (every
   permuter run: speed, improvements, matches), `units [SEG]` (evidence
   for file boundaries: switch-table parity proves a file start in any
   segment; `--data` adds data blocks, inversions and call ties for `main.c`).
-  `sched`, `jtrace`, `regions` and `vars` read a parked function's C under
+  `sched`, `jtrace`, `trace`, `regions` and `vars` read a parked function's C under
   `#ifdef NON_MATCHING` (built apart, with `-DNON_MATCHING`).
 - At the end of every session, update `docs/AGENT_LOG.md`: Current state,
   Next and Open leads, any new gotcha, and one short entry at the top of its
