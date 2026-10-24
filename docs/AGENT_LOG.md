@@ -16,10 +16,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `main.exe` function matches and `main.c` is split (2026-10-23); Phase 2's
   naming and data are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2523/2537 game functions matched (95.04% of game code bytes, 2026-10-24):
-  **main.exe, the engine, ovl61, ovl65, ovl66, ovl67, ovl69 and ovl6a are
-  complete**; 14 left (ovl5d 1, ovl5e 1, ovl5f 2, ovl60 1, ovl62 3, ovl63 4,
-  ovl64 1, ovl68 1), every one tried by the swarm at least once. All 564
+- 2524/2537 game functions matched (95.38% of game code bytes, 2026-10-24):
+  **main.exe, the engine, ovl61, ovl64, ovl65, ovl66, ovl67, ovl69 and ovl6a
+  are complete**; 13 left (ovl5d 1, ovl5e 1, ovl5f 2, ovl60 1, ovl62 3,
+  ovl63 4, ovl68 1), every one tried by the swarm at least once. All 564
   PsyQ functions (Sony objects). Four parked by hand, `func_800BE914`,
   `PlotTransmuterBeam` (one instruction off), `func_800B4048` and
   `Plot_PogoPadlock` (two registers off) (Open leads)
@@ -57,7 +57,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**The overlays' last 14 functions**, all tried by the swarm. Hand-match
+**The overlays' last 13 functions**, all tried by the swarm. Hand-match
 them from their checkpoints, closest first (Open leads), with their
 earlier compiles (`decomp.py protos`) as evidence. Pointing the swarm at
 functions it had never tried (`--only` the untried list, smallest first,
@@ -138,10 +138,13 @@ and current tools).
   (MATCHING.md, Diff patterns). Read the checkpoint's log for what was
   tried, not for rules: its "the gate refuses do { } while (0)" predates
   2026-10-22. `Plot_PogoRipperRoo` (instructions 16/656) matched the same
-  way, its last three instructions from a store the original makes twice.
-  The closest checkpoints left (stage, differing insns): `func_800B7508`
-  registers 17/867, `func_800B6708` registers 27/411. `CheckMineToBoss`
-  has none. Where block 0 (or any block) is an order or allocation tie, run
+  way, its last three instructions from a store the original makes twice,
+  and `func_800B7508` (registers 17/867) by turning the swarm's C back into
+  natural C: its `goto` loop with hand-made pointer copies imitated what
+  loop.c does to a plain `for` loop, and `inv = 0x21; inv -= lvl;` stood in
+  for `inv = 0x21 - lvl;` written earlier. Try the natural form of such
+  drafts first. The closest checkpoint left (stage, differing insns):
+  `func_800B6708` registers 27/411. `CheckMineToBoss` has none. Where block 0 (or any block) is an order or allocation tie, run
   `decomp.py orders NAME --lines A-B` on the checkpoint's C before reading
   the dumps by hand: it matched `func_800B8294` from the natural form after
   nine swarm sessions had stopped at 21-31 differing (MATCHING.md, Using the
@@ -604,6 +607,17 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-24 (hand: `func_800B7508` matched, ovl64 complete):** from the
+  swarm's checkpoint (registers 17/867, header merged by hand: `flags10` in
+  `Ovl64Game`). Batch `try` on natural forms: `inv = 0x21 - lvl;` before
+  `ai` fixed the entry (12/867), and a plain `for` loop over `Heroes[n]`
+  matched case 21. `sched`'s allocation list showed why: loop-depth refs
+  reorder global.c, and loop.c makes the pointer copies the swarm wrote by
+  hand. Then removed the other swarm shapes that weren't needed (base-pointer
+  copies, `skb`/`sk`, an unused local, `skip3` gotos); a separate commit
+  gives the stub `func_800B8E4C` the parameter its callers pass. Two Diff
+  patterns rows.
 
 - **2026-10-24 (hand: `Plot_PogoRipperRoo` matched):** from the swarm's
   checkpoint (instructions 16/656, all in case 0). `sched` showed our
