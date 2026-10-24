@@ -16,10 +16,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `main.exe` function matches and `main.c` is split (2026-10-23); Phase 2's
   naming and data are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2520/2537 game functions matched (94.62% of game code bytes, 2026-10-23):
+- 2522/2537 game functions matched (94.78% of game code bytes, 2026-10-24):
   **main.exe, the engine, ovl61, ovl65, ovl66, ovl67, ovl69 and ovl6a are
-  complete**; 17 left (ovl5d 2, ovl5e 1, ovl5f 2, ovl60 2, ovl62 3, ovl63 4,
-  ovl64 2, ovl68 1), every one tried by the swarm at least once. All 564
+  complete**; 15 left (ovl5d 1, ovl5e 1, ovl5f 2, ovl60 2, ovl62 3, ovl63 4,
+  ovl64 1, ovl68 1), every one tried by the swarm at least once. All 564
   PsyQ functions (Sony objects). Three parked by hand, `func_800BE914`,
   `PlotTransmuterBeam` (one instruction off) and `func_800B4048` (Open leads)
   (`decomp.py status`; the swarm parked 5, which the dashboard counts from
@@ -56,7 +56,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**The overlays' last 17 functions**, all tried by the swarm. Hand-match
+**The overlays' last 15 functions**, all tried by the swarm. Hand-match
 them from their checkpoints, closest first (Open leads), with their
 earlier compiles (`decomp.py protos`) as evidence. Pointing the swarm at
 functions it had never tried (`--only` the untried list, smallest first,
@@ -136,8 +136,12 @@ and current tools).
   tried, not for rules: its "the gate refuses do { } while (0)" predates
   2026-10-22. The closest checkpoints left (stage, differing insns):
   `Plot_PogoPadlock` registers 11/350, `Plot_PogoRipperRoo` instructions 16/656, `func_800B7508`
-  registers 17/867, `func_800B5E28` instructions 21/195, `func_800B6708`
-  registers 27/411. `CheckMineToBoss` has none.
+  registers 17/867, `func_800B6708` registers 27/411. `CheckMineToBoss` has
+  none. Where block 0 (or any block) is an order or allocation tie, run
+  `decomp.py orders NAME --lines A-B` on the checkpoint's C before reading
+  the dumps by hand: it matched `func_800B8294` from the natural form after
+  nine swarm sessions had stopped at 21-31 differing (MATCHING.md, Using the
+  compiler directly).
 - **`PlotTransmuterBeam`'s last instruction** (parked 2026-10-24 at
   structure 2310/2311, 316/317 blocks; the `decomp.py block` note lists what
   was tried). At 0xc14 the target reads `TBV->mode` once through a base in
@@ -185,7 +189,7 @@ and current tools).
   C++ (PROTOTYPES.md); `cc1plus` gives the same code for this C, so only a
   C++ construct (an inline taking a reference, a small fixed-point class)
   is still untried. Test files go through `try func_800BE914 --file`.
-- **Earlier compiles of the 17 left** (PROTOTYPES.md, Earlier compiles of a
+- **Earlier compiles of the 15 left** (PROTOTYPES.md, Earlier compiles of a
   function, has the table). Each of the five biggest has a build within a
   few instructions of retail's: Oct 9's `func_800BC038` (+1 insn) and
   `func_800B87A0` (-1), Sep 14's `PlotTransmuterBeam` (-12), Oct 9's
@@ -195,9 +199,7 @@ and current tools).
   where the C still differs (done for `PlotTransmuterBeam`: the copies
   differ only away from its last diff, but a build that adds code to a loop
   shows how loop.c scored that loop; PROTOTYPES.md). `decomp.py protos
-  NAME --diff DISC` prints the aligned hunks. `func_800B5E28` and `func_800B8294` are the
-  same code but two `andi` masks (`0xF0` in ovl5d, `0xE0` in ovl64), so one
-  match ports to the other.
+  NAME --diff DISC` prints the aligned hunks.
 - **Finish the demo discs' symbols** (PROTOTYPES.md; applied: 135 function
   and 51 global names, unit `panel`, the Jampack enums, 43 prototypes, the
   leaked types and class names, 16 global types, 13 PANEL.CPP locals).
@@ -583,6 +585,17 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-24 (tools, then `func_800B8294` and `func_800B5E28` matched):**
+  four tools: `trace` (an insn or a variable's pseudo through every pass
+  dump), `idiom` (an asm pattern in matched functions, with their C lines),
+  batch `try --file A.c B.c` (parallel, ranked by regions) and `orders`
+  (random dependency-keeping statement orders, ranked). With them the
+  ovl64/ovl5d twins matched in natural C: one `dx` and one `dz` for each
+  side's three values, both offsets before the start points (found by
+  `orders`-style search, 280 orders), `Heroes[arg0].hero_eng` read
+  directly. Three Diff patterns rows (global.c preferences, the
+  index-first `&Heroes[i]`, a load kept in its own temp).
 
 - **2026-10-24 (hand: `func_800B4048` parked):** from the swarm's
   checkpoint (instructions 10/255), applied with names and the camera,
