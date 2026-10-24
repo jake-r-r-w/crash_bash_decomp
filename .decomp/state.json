@@ -7258,7 +7258,11 @@
   "status": "matched"
  },
  "ovl62:800BD67C": {
-  "auto_failed": "types"
+  "auto_failed": "types",
+  "blocked_at": "2026-10-24T08:18:11Z",
+  "note": "STAGE structure 2310/2311 (regions 316/317 blocks, 2309/2311 insns). Only 0xc14 differs: target keeps &D_8005A614 in a1 for one lh (lui v0; addiu a1,v0; lh 0x34(a1)), ours folds it (combine 3-insn i1+i2+i3 via (lo_sum (high X) X) -> X). The target's base must be live past the read (global-alloc gives a1 because v0/v1/a0 are busy through the second test; combine cannot fold a non-dead i2): a diagnostic passing the base to InitDelete as a 2nd arg reproduces the 3 insns exactly but pushes bx out of a0 in every spawn. Ruled out: block/function-scope view pointer (1 or 2 uses), volatile, bitfield, union, short*, switch, ?: (store-flag), v before the bx test, v != 0 test, do-while(0), static inline accessors, unprototyped/varargs InitDelete. Case 1 of the hit loop's switch has steering: one = 1 before the 0xB4 store, so the hoisted constant-1 group passes loop.c move_movables (threshold 23 after Heroes' 2 moves, needs savings*life >= 15 vs 345 insns; the JP build, which adds hero_mode==0x57 tests and keeps 1 local, bounds it at <= 18). Natural fixes over the swarm checkpoint are in the C (duplicated tails cross-jumped, Heroes/trig bases, return, pitch). Next: find what keeps the base live into the second test with no visible use; then a natural form for case 1.",
+  "started": "2026-10-23T21:17:20Z",
+  "status": "blocked"
  },
  "ovl62:800BFA98": {
   "matched_at": "2026-10-21T08:15:07Z",

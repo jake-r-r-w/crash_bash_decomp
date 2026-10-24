@@ -4039,7 +4039,878 @@ void InitTransmuterBeam(NAS *m) {
     }
 }
 
+#ifdef NON_MATCHING
+/* The parked C (structure 2310/2311): only 0xc14 differs, where the target keeps
+   &D_8005A614 in a1 for a single lh (decomp.py block note). */
+void PlotTransmuterBeam(NAS *m) {
+    TransBeamExt *ext;
+    HeroInfo *h;
+    HeroInfo *h3;
+    HeroInfo *h5;
+    HeroInfo *hb1;
+    HeroInfo *hb2;
+    HeroInfo *hb3;
+    HeroInfo *hb4;
+    s32 k;
+    s32 k2;
+    s32 k3;
+    s32 t2;
+    s32 t3;
+    s32 t4;
+    s32 t5;
+    EXTengine *e;
+    EXTengine *he;
+    EXTengine *hs;
+    EXTengine *hq;
+    EXTengine *e1;
+    EXTengine *e2;
+    EXTengine *e3;
+    EXTengine *me;
+    EXTengine *ce;
+    EXTheromove *mv;
+    NAS *n;
+    ExtSpawn5910 *bx;
+    Ovl62PolarAi *ai;
+    Ovl62PolarAi *a1x;
+    WeightDeathExt *wx;
+    s32 i;
+    s32 j;
+    s32 best;
+    s32 closest;
+    s32 t;
+    s32 dx;
+    s32 dy;
+    s32 dz;
+    s32 d;
+    s32 yaw;
+    s32 pitch;
+    u16 mode;
+    s32 one;
+
+    ext = FindExtension(m, 0x40000000);
+    if (ext == NULL) {
+        return;
+    }
+    best = 0x7FFFFFFF;
+    closest = 0;
+    if (D_800D4DEC != 0) {
+        D_800D544C = 1;
+        if (ext->unkAC != NULL) {
+            KillNAS(ext->unkAC);
+            ext->unkAC = NULL;
+        }
+        ext->bit2->Engine->flags &= ~0x8000;
+    }
+    if (TB_MODE13()) {
+        if (TBV->unk6C != 0 && ext->unk1DC == 0) {
+            t = D_800D547C;
+            D_800D547C = t ^ 1;
+            if (Heroes[t ^ 1].hero_status & 0x2000) {
+                D_800D547C = t;
+            }
+        }
+        if (ext->unk1DC < 0) {
+            mode = Heroes[D_800D547C].hero_mode;
+            if (mode != 0x4B && mode != 0x5A) {
+                D_800D6008 = 1;
+            }
+        } else {
+            ext->unk1DC--;
+        }
+    }
+    if (TB_MODE13() && TBV->unk10 == 0 && D_800D4DEC == 0 && ext->unk14 == 1) {
+        if (++m->UserInfo.user1 == 0x3C) {
+            e1 = m->Engine;
+            n = CreateNAS(e1->unk10.x, 0x80, e1->unk10.z, 0x1605, 0x11);
+            if (n != NULL) {
+                n->Engine->flags |= 0x200000;
+                bx = (ExtSpawn5910 *)n->FUX;
+                if (bx != NULL) {
+                    bx->unk18 = 0x200;
+                    bx->unkC = 0;
+                    bx->unk20 = 5;
+                    n->Engine->sub->unk6C = D_800546C4;
+                    n->Engine->flags |= 0x200000;
+                    bx->unk28 = 6;
+                }
+                n->InitDelete(n);
+                m->UserInfo.user2 = (s32)n;
+                m->UserInfo.user1 = 0;
+                PlaySfx(0x46D, NULL, NULL, 0x1000, 0x1E00, 0);
+            } else {
+                m->UserInfo.user2 = 0;
+                m->UserInfo.user1 = 0;
+            }
+        }
+        if (m->UserInfo.user1 < 0x20 && m->UserInfo.user2 != 0) {
+            if (TB_MODE13()) {
+                if (ext->bit1 != NULL) {
+                    ext->bit1->Engine->sub->flags |= 0x8000;
+                }
+                if (ext->bit2 != NULL) {
+                    ext->bit2->Engine->sub->flags |= 0x8000;
+                }
+            }
+            for (i = 0;; i++) {
+                s32 lx;
+                s32 lz;
+
+                if (i >= 2) {
+                    break;
+                }
+                mode = Heroes[i].hero_mode;
+                if (mode == 0x4D) {
+                    goto next1;
+                }
+                if (mode == 0x4E) {
+                    goto next1;
+                }
+                if (mode == 0x4B) {
+                    goto next1;
+                }
+                if (mode == 0x4F) {
+                    goto next1;
+                }
+                if (mode == 0x58) {
+                    goto next1;
+                }
+                if (Heroes[i].hero_status & 0x2000) {
+                    goto next1;
+                }
+                if (TBV->unk5C[i] != 0) {
+                    goto next1;
+                }
+                if (i == 1 && TBV->unk6C == 0) {
+                    goto next1;
+                }
+                lx = m->Engine->unk10.x - Heroes[i].hero_eng->unk10.x;
+                lz = m->Engine->unk10.z - Heroes[i].hero_eng->unk10.z;
+                if (lx * lx + lz * lz > 0x18FFF) {
+                    goto next1;
+                }
+                t = Random(0x1000);
+                if (Heroes[i].hero_mode == 0x5A) {
+                    goto next1;
+                }
+                Heroes[i].hero_move->x_vel = D_80068BD4[(t - 0x400) & 0xFFF].unk2 * 128 >> 12;
+                Heroes[i].hero_move->z_vel = D_80068BD4[t & 0xFFF].unk2 * 128 >> 12;
+                SetHeroAction((HeroInfo *)i, 0x5A);
+                D_800D5478 = 1;
+            next1:;
+            }
+            ((NAS *)m->UserInfo.user2)->Engine->unk10.x = m->Engine->unk10.x;
+            ((NAS *)m->UserInfo.user2)->Engine->unk10.z = m->Engine->unk10.z;
+        }
+    }
+    for (i = 0;; i++) {
+        s32 lx;
+        s32 lz;
+        s32 ld;
+
+        if (i >= 4) {
+            break;
+        }
+        if (!(Heroes[i].hero_status & 0x2000)) {
+            lx = m->Engine->unk10.x - Heroes[i].hero_eng->unk10.x;
+            lz = m->Engine->unk10.z - Heroes[i].hero_eng->unk10.z;
+            ld = lx * lx + lz * lz;
+            if (ld < best) {
+                closest = i;
+                best = ld;
+            }
+            if (ext->unk48[i] > 0) {
+                ext->unk48[i]--;
+            }
+        }
+    }
+    if (ext->unk14 == 1) {
+        if (D_800D6008 != 0) {
+            h3 = Heroes;
+            h3 = &h3[D_800D547C];
+            if (h3->hero_mode == 0x4B) {
+                D_800D5478 = 1;
+            }
+            if (D_800D600C == 0x13B || D_800D5478 != 0) {
+                s32 a;
+                s32 sa;
+                s32 ox;
+                s32 oz;
+                EXTengine *me;
+                TrigEntry *tr;
+
+                tr = D_80068BD4;
+                a = D_800D5474 >> 1;
+                me = m->Engine;
+                ox = me->unk10.x - (ext->pos.x + (((ext->unk98 << 8) >> 8) * tr[(tr[(a - 0x400) & 0xFFF].unk2 - 0x400) & 0xFFF].unk2 >> 12));
+                sa = tr[a & 0xFFF].unk2;
+                oz = me->unk10.z - (ext->pos.z + (ext->unk98 * tr[sa & 0xFFF].unk2 >> 12));
+                me->unk10.x -= ox >> 4;
+                m->Engine->unk10.z -= oz >> 4;
+                if (ox * ox + oz * oz < 0x1000) {
+                    D_800D6008 = 0;
+                    D_800D600C = 0;
+                    D_800D5478 = 0;
+                    ext->unk1DC = (Random(4) + 0x12) * 0x1E;
+                }
+            } else {
+                EXTengine *me;
+                EXTengine *te;
+                s32 ddx;
+                s32 ddz;
+
+                me = m->Engine;
+                te = h3->hero_eng;
+                D_800D600C++;
+                ddx = me->unk10.x - te->unk10.x;
+                ddz = me->unk10.z - te->unk10.z;
+                me->unk10.x -= ddx >> 5;
+                m->Engine->unk10.z -= ddz >> 5;
+            }
+        } else {
+            TrigEntry *tr;
+
+            tr = D_80068BD4;
+            t2 = D_800D5474 >> 1;
+            m->Engine->unk10.x = ext->pos.x + (((ext->unk98 << 8) >> 8) * tr[(tr[(t2 - 0x400) & 0xFFF].unk2 - 0x400) & 0xFFF].unk2 >> 12);
+            D_800D5478 = 0;
+            t5 = tr[t2 & 0xFFF].unk2;
+            m->Engine->unk10.z = ext->pos.z + (ext->unk98 * tr[t5 & 0xFFF].unk2 >> 12);
+        }
+        if (D_800D4DEC == 0) {
+            m->Engine->unk10.y = ext->pos.y + (D_80068BD4[((ext->unk9C << 4) - 0x400) & 0xFFF].unk2 * 64 >> 12);
+        } else {
+            m->Engine->unk10.y -= 0x10;
+        }
+        ext->unk9C += ext->unkA0;
+        if (D_800D6008 == 0) {
+            D_800D5474 += ext->unkA0;
+        }
+        if (ext->bit1 != NULL) {
+            ext->bit1->Engine->unk10 = m->Engine->unk10;
+            ext->bit1->Engine->sub->unk68 = 0x200;
+            if (D_8005A648 == 0x12) {
+                ext->bit1->Engine->unk10.y -= 0x40;
+            } else {
+                ext->bit1->Engine->unk10.y -= 0x60;
+            }
+        }
+    }
+    m->Engine->unk5E = 1;
+    if (ext->bit2 != NULL) {
+        ext->bit2->Engine->unk10 = m->Engine->unk10;
+        ext->bit2->Engine->sub->unk68 = 0x100;
+        ext->bit2->Engine->unk10.y = 0x5E;
+    }
+    me = m->Engine;
+    ce = Heroes[closest].hero_eng;
+    dx = me->unk10.x - ce->unk10.x;
+    dz = me->unk10.z - ce->unk10.z;
+    dy = (me->unk10.y - ce->unk10.y) + 0x1C2;
+    d = csqrt(dx * dx + dz * dz) >> 6;
+    yaw = get_angle(dx, dz) & 0xFFF;
+    pitch = get_angle(-dy, d);
+    if (ext->unk14 == 1 && D_800D6008 == 0 && D_800D544C == 0) {
+        ext->unk58++;
+        if (!TB_MODE13() || m->UserInfo.user1 >= 0x1F) {
+            if (abs(ext->unk58 - ext->unk64) == 0xF) {
+                PlaySfx(0x463, NULL, NULL, 0x1000, 0x1E00, 0);
+            }
+            if (ext->unk58 >= ext->unk64) {
+                ext->unk5C = Random(4);
+                ext->unk58 = 0;
+                ext->unkC = D_800D5458[ext->unk5C];
+                if (D_8009D908 != 0) {
+                    if (ext->unkC == 0) {
+                        ext->unkC = 6;
+                    }
+                    if (ext->unkC == 1) {
+                        ext->unkC = 5;
+                    }
+                }
+                e2 = m->Engine;
+                n = CreateNAS(e2->unk10.x, 0x5E, e2->unk10.z, 0x1605, 0x11);
+                if (n != NULL) {
+                    ext->unkAC = n;
+                    n->Engine->flags |= 0x200000;
+                    bx = FindExtension(n, 0x10000000);
+                    if (bx != NULL) {
+                        if (TBV->mode == 0x12) {
+                            bx->unkC = 1;
+                        } else {
+                            bx->unkC = 0;
+                        }
+                        if (D_8005A648 == 0x15) {
+                            bx->unkC = 0;
+                        }
+                        bx->unk18 = 0x100;
+                        bx->unk20 = 1;
+                        bx->unk28 = 0;
+                        n->InitDelete(n);
+                    }
+                }
+                ext->unk14 = 2;
+                PlaySfx(0x44C, &m->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
+            }
+        }
+    }
+    if (ext->unk14 == 2) {
+        if (D_800D4DEC != 0) {
+            ext->unk14 = 1;
+            if (m->Engine->sfx != NULL) {
+                StopSfx(m->Engine->sfx);
+            }
+        }
+        if (++ext->unk58 >= ext->unk60) {
+            ext->unk14 = 1;
+            PlaySfx(0x44D, NULL, NULL, 0x1000, 0x1E00, 0);
+            if (m->Engine->sfx != NULL) {
+                StopSfx(m->Engine->sfx);
+            }
+            ext->unk58 = 0;
+        }
+        pitch = 0x400;
+    }
+    m->Engine->unk1C -= ((m->Engine->unk1C - pitch) << 20) >> 22;
+    m->Engine->unk1E -= ((m->Engine->unk1E - yaw) << 20) >> 22;
+    m->Engine->unk20 = 0;
+    if (TB_MODE13()) {
+        if (ext->bit1 != NULL) {
+            ext->bit1->Engine->sub->unk74 = 0x2008;
+        }
+        if (ext->bit2 != NULL) {
+            ext->bit2->Engine->sub->unk74 = 0x2008;
+        }
+    }
+    if (ext->unk14 & 2) {
+        if (TB_MODE13()) {
+            if (ext->bit1 != NULL) {
+                ext->bit1->Engine->sub->unk74 = 0x200C;
+            }
+            if (ext->bit2 != NULL) {
+                ext->bit2->Engine->sub->unk74 = 0x200C;
+            }
+        }
+        for (i = 0;; i++) {
+            s32 lx;
+            s32 lz;
+            s32 ld;
+
+            if (i >= 4) {
+                break;
+            }
+            lx = Heroes[i].hero_eng->unk10.x - m->Engine->unk10.x;
+            lz = Heroes[i].hero_eng->unk10.z - m->Engine->unk10.z;
+            ld = lx * lx + lz * lz;
+            if (Heroes[i].hero_status & 0x2000 || ext->unk10 != -1 || ld > 0x18FFF) {
+                continue;
+            }
+            ext->unk10 = i;
+            ext->unk14 = 1;
+            ext->unk58 = 0;
+            if (m->Engine->sfx != NULL) {
+                StopSfx(m->Engine->sfx);
+            }
+            if (ext->unkAC != NULL) {
+                KillNAS(ext->unkAC);
+                ext->unkAC = NULL;
+            }
+            e3 = m->Engine;
+            n = CreateNAS(e3->unk10.x, 0x5E, e3->unk10.z, 0x1605, 0x11);
+            if (n != NULL) {
+                n->Engine->flags |= 0x200000;
+                bx = (ExtSpawn5910 *)n->FUX;
+                if (bx != NULL) {
+                    bx->unkC = 3;
+                    if (TBV->mode == 0x15) {
+                        bx->unkC = 2;
+                    }
+                    if (TBV->mode == 0x13) {
+                        bx->unkC = 3;
+                    }
+                    if (TBV->mode == 0x12 && (TBV->flags & 0x80)) {
+                        bx->unkC = 7;
+                    }
+                    bx->unk18 = 0x80;
+                    bx->unk20 = 1;
+                    bx->unk28 = 0;
+                }
+                n->InitDelete(n);
+            }
+            switch (ext->unkC) {
+            case 0:
+                func_800BD058(i, ext->unk28[i], 0);
+                ext->unk60 = 0x78;
+                ext->unk64 = Random(0x3C) + 0xD2;
+                ext->unk38[i] = 0xB4;
+                ext->unk18[i] = 0;
+                ext->unk28[i] = 0;
+                Heroes[i].hero_move->mass = 0x50;
+                D_800D6924[i] = 0x40;
+                ext->unk70 = 0;
+                PlaySfx(0x44E, NULL, NULL, 0x1000, 0x1E00, 0);
+                SetHeroAction((HeroInfo *)i, 0x4F);
+                break;
+            case 1:
+                func_800BD058(i, ext->unk28[i], 1);
+                ext->unk60 = 0x78;
+                ext->unk64 = Random(0x3C) + 0xD2;
+                one = 1; /* steering: loop.c's movable threshold (park note) */
+                ext->unk38[i] = 0xB4;
+                ext->unk18[i] = one;
+                ext->unk28[i] = one;
+                Heroes[i].hero_move->mass = 0x258;
+                D_800D6924[i] = 0x20;
+                ext->unk70 = 0;
+                PlaySfx(0x44F, NULL, NULL, 0x1000, 0x1E00, 0);
+                SetHeroAction((HeroInfo *)i, 0x4F);
+                break;
+            case 2:
+                func_800BD058(i, ext->unk28[i], 2);
+                ext->unk60 = 0x78;
+                ext->unk64 = Random(0x3C) + 0xD2;
+                ext->unk38[i] = 0xB4;
+                ext->unk18[i] = 2;
+                ext->unk28[i] = 2;
+                ext->unk70 = 0xF;
+                PlaySfx(0x450, NULL, NULL, 0x1000, 0x1E00, 0);
+                SetHeroAction((HeroInfo *)i, 0x4F);
+                break;
+            case 5:
+                func_800BD058(i, ext->unk28[i], 5);
+                ext->unk60 = 0x78;
+                ext->unk64 = 0x168;
+                ext->unk38[i] = 0;
+                ext->unk18[i] = 5;
+                ext->unk70 = 0xF;
+                ext->unk28[i] = 5;
+                PlaySfx(0x451, NULL, NULL, 0x1000, 0x1E00, 0);
+                PlaySfx(0x452, &ext->eng->sfx, NULL, 0x1000, 0x1E00, 0);
+                SetHeroAction((HeroInfo *)i, 0x4F);
+                a1x = FindExtension(Heroes[ext->unk10].hero, 0x20000000);
+                if (a1x != NULL) {
+                    a1x->unk28 = 0;
+                }
+                break;
+            case 6:
+                ext->unk60 = 0x78;
+                ext->unk64 = 0x168;
+                ext->unk38[i] = 0;
+                ext->unk18[i] = 6;
+                ext->unk70 = 0xF;
+                ext->unk28[i] = 6;
+                PlaySfx(0x464, NULL, NULL, 0x1000, 0x1E00, 0);
+                e = m->Engine;
+                PlaySfx(0x465, &e->sfx, &e->unk10, 0x1000, 0x1E00, 0);
+                e = ext->eng;
+                PlaySfx(0x452, &e->sfx, &e->unk10, 0x1000, 0x1E00, 0);
+                SetHeroAction((HeroInfo *)i, 0x4F);
+                a1x = FindExtension(Heroes[ext->unk10].hero, 0x20000000);
+                if (a1x != NULL) {
+                    a1x->unk28 = 0;
+                }
+                break;
+            }
+        }
+    }
+    if (ext->unk10 != -1) {
+        hb1 = Heroes;
+        h5 = &hb1[ext->unk10];
+        he = h5->hero_eng;
+        hs = h5->hero_shadow;
+        if (D_800D4D08 != 0) {
+            if (m->Engine->sfx != NULL) {
+                StopSfx(m->Engine->sfx);
+            }
+            if (ext->eng->sfx != NULL) {
+                StopSfx(ext->eng->sfx);
+            }
+            if (Heroes[ext->unk10].hero_status & 0x2000) {
+                return;
+            }
+        }
+        if (ext->unk38[ext->unk10] > 0) {
+            ext->unk38[ext->unk10]--;
+        }
+        hs->unk5C = 1;
+        if (ext->unk70 > 0) {
+            ext->unk70--;
+        }
+        switch (ext->unk18[ext->unk10]) {
+        case 0:
+            if (ext->unk70 <= 0) {
+                if (he->unk2C.x > 0xA00) {
+                    he->unk2C.x -= 0x100;
+                    he->unk2C.y -= 0x100;
+                    he->unk2C.z -= 0x100;
+                    hs->unk2C.x -= 0x100;
+                    hs->unk2C.y -= 0x100;
+                    hs->unk2C.z -= 0x100;
+                } else {
+                    ai = FindExtension(Heroes[ext->unk10].hero, 0x20000000);
+                    if (ai != NULL) {
+                        if (ai->unk24 == 0) {
+                            SetHeroAction((HeroInfo *)ext->unk10, 0x49);
+                        }
+                        if (ai->unk24 == 1) {
+                            SetHeroAction((HeroInfo *)ext->unk10, 0x54);
+                        }
+                    }
+                    ext->unk18[ext->unk10] = -1;
+                }
+            }
+            break;
+        case 1:
+            if (ext->unk70 <= 0) {
+                if (he->unk2C.x < 0x1771) {
+                    he->unk2C.x += 0x100;
+                    he->unk2C.y += 0x100;
+                    he->unk2C.z += 0x100;
+                    hs->unk2C.x += 0x100;
+                    hs->unk2C.y += 0x100;
+                    hs->unk2C.z += 0x100;
+                } else {
+                    ext->unk18[ext->unk10] = -1;
+                    ai = FindExtension(Heroes[ext->unk10].hero, 0x20000000);
+                    if (ai != NULL) {
+                        if (ai->unk24 == 0) {
+                            SetHeroAction((HeroInfo *)ext->unk10, 0x49);
+                        }
+                        if (ai->unk24 == 1) {
+                            SetHeroAction((HeroInfo *)ext->unk10, 0x54);
+                        }
+                    }
+                }
+            }
+            break;
+        case 2:
+            if (ext->unk70 <= 0 && Heroes[ext->unk10].hero_mode != 0x4C) {
+                SetHeroAction((HeroInfo *)ext->unk10, 0x4C);
+                mv = Heroes[ext->unk10].hero_move;
+                if (mv != NULL) {
+                    mv->x_max = 0;
+                    mv->z_max = 0;
+                    mv->x_vel = 0;
+                    mv->z_vel = 0;
+                }
+                ext->unk18[ext->unk10] = -1;
+            }
+            break;
+        case 5:
+            if (ext->unk70 <= 0) {
+                ext->unk6C = ext->unk10;
+                if (ext->eng != NULL) {
+                    ext->eng->unk10 = Heroes[ext->unk6C].hero_eng->unk10;
+                    ext->eng->sub->flags |= 0x8000;
+                }
+                ext->unk68 = 0x12C;
+                ext->unk18[ext->unk10] = -1;
+                ai = FindExtension(Heroes[ext->unk10].hero, 0x20000000);
+                if (ai != NULL) {
+                    if (ai->unk24 == 0) {
+                        SetHeroAction((HeroInfo *)ext->unk10, 0x49);
+                    }
+                    if (ai->unk24 == 1) {
+                        SetHeroAction((HeroInfo *)ext->unk10, 0x54);
+                    }
+                }
+            }
+            break;
+        case 6:
+            k2 = 0;
+            if (ext->unk70 <= 0) {
+                ext->unk6C = ext->unk10;
+                do {
+                    if (k2 == ext->unk6C && !(Heroes[k2].hero_status & 0x2000) && ext->engs[k2] != NULL) {
+                        ext->engs[k2]->unk10 = Heroes[k2].hero_eng->unk10;
+                        ext->engs[k2]->sub->flags |= 0x8000;
+                    }
+                    k2++;
+                } while (k2 < 4);
+                ext->unk68 = 0x12C;
+                ext->unk18[ext->unk10] = -1;
+                ai = FindExtension(Heroes[ext->unk10].hero, 0x20000000);
+                if (ai != NULL) {
+                    if (ai->unk24 == 0) {
+                        SetHeroAction((HeroInfo *)ext->unk10, 0x49);
+                    }
+                    if (ai->unk24 == 1) {
+                        SetHeroAction((HeroInfo *)ext->unk10, 0x54);
+                    }
+                }
+            }
+            break;
+        }
+        if (ext->unk38[ext->unk10] == 0) {
+            switch (ext->unk28[ext->unk10]) {
+            case 0:
+                if (he->unk2C.x < 0x1000) {
+                    he->unk2C.x += 0x100;
+                    he->unk2C.y += 0x100;
+                    he->unk2C.z += 0x100;
+                    hs->unk2C.x += 0x100;
+                    hs->unk2C.y += 0x100;
+                    hs->unk2C.z += 0x100;
+                } else {
+                    ext->unk28[ext->unk10] = -1;
+                    D_800D6924[ext->unk10] = D_8009D6F4[Heroes[ext->unk10].hero_name * 3];
+                    ext->unk58 = 0;
+                    ResetMass(ext->unk10);
+                    ext->unk10 = -1;
+                    he->unk2C.x = 0x1000;
+                }
+                break;
+            case 1:
+                if (he->unk2C.x > 0x1000) {
+                    he->unk2C.x -= 0x100;
+                    he->unk2C.y -= 0x100;
+                    he->unk2C.z -= 0x100;
+                    hs->unk2C.x -= 0x100;
+                    hs->unk2C.y -= 0x100;
+                    hs->unk2C.z -= 0x100;
+                } else {
+                    ext->unk28[ext->unk10] = -1;
+                    ResetMass(ext->unk10);
+                    D_800D6924[ext->unk10] = D_8009D6F4[Heroes[ext->unk10].hero_name * 3];
+                    ext->unk58 = 0;
+                    ext->unk10 = -1;
+                    he->unk2C.x = 0x1000;
+                }
+                break;
+            case 2:
+                a1x = FindExtension(Heroes[ext->unk10].hero, 0x20000000);
+                if (a1x != NULL) {
+                    if (a1x->unk24 == 0) {
+                        if (Heroes[ext->unk10].hero_mode != 0x49) {
+                            SetHeroAction((HeroInfo *)ext->unk10, 0x49);
+                            ext->unk64 = 0xD2;
+                        } else {
+                            ext->unk28[ext->unk10] = -1;
+                            ext->unk58 = 0;
+                        }
+                    } else {
+                        if (Heroes[ext->unk10].hero_mode != 0x54) {
+                            SetHeroAction((HeroInfo *)ext->unk10, 0x54);
+                            ext->unk64 = 0xD2;
+                        } else {
+                            ext->unk28[ext->unk10] = -1;
+                            ext->unk58 = 0;
+                        }
+                    }
+                    ext->unk10 = -1;
+                }
+                break;
+            case 5:
+                if (ext->unk6C != 5) {
+                    if (ext->unk68 > 0) {
+                        t3 = --ext->unk68;
+                        if (ext->eng->sfx != NULL) {
+                            func_800228A4(ext->eng->sfx, (0x12C - t3) * 0xF00 / 300 + 0x1E00);
+                        }
+                        if (ext->eng != NULL) {
+                            ext->eng->unk10 = Heroes[ext->unk6C].hero_eng->unk10;
+                            if (D_800D4D08 == 0) {
+                                ext->eng->sub->flags |= 0x8000;
+                            } else {
+                                ext->eng->sub->flags &= ~0x8000;
+                            }
+                            ext->eng->unk1E += 0x80;
+                            ext->eng->unk5E = 1;
+                            switch (Heroes[ext->unk6C].hero_name) {
+                            case 1:
+                                ext->eng->unk10.y -= 0x258;
+                                break;
+                            case 2:
+                                ext->eng->unk10.y -= 0x300;
+                                break;
+                            case 3:
+                                ext->eng->unk10.y -= 0x300;
+                                break;
+                            case 4:
+                                ext->eng->unk10.y -= 0x300;
+                                break;
+                            case 5:
+                                ext->eng->unk10.y -= 0x300;
+                                break;
+                            case 6:
+                                ext->eng->unk10.y -= 0x300;
+                                break;
+                            case 7:
+                                ext->eng->unk10.y -= 0x364;
+                                break;
+                            case 8:
+                                ext->eng->unk10.y -= 0x364;
+                                break;
+                            default:
+                                ext->eng->unk10.y -= 0x300;
+                                break;
+                            }
+                        }
+                    }
+                    if (ext->unk68 == 0) {
+                        hb2 = Heroes;
+                        h = &hb2[ext->unk6C];
+                        if (h->hero_mode != 0x4D) {
+                            h->hero_status |= 0x2000;
+                            hq = Heroes[ext->unk6C].hero_eng;
+                            if (hq != NULL) {
+                                NAS *dn;
+
+                                dn = CreateNAS(hq->unk10.x, hq->unk10.y - 0x898, hq->unk10.z, 0x1602, 0x11);
+                                if (dn != NULL) {
+                                    wx = FindExtension(dn, 0x10000000);
+                                    if (wx != NULL) {
+                                        wx->unkC = hq->unk10.y;
+                                        wx->unk1C = ext->unk6C;
+                                    }
+                                }
+                            }
+                            SetHeroAction((HeroInfo *)ext->unk6C, 0x4D);
+                            ext->eng->sub->flags &= ~0x8000;
+                            ext->unk64 = 0xD2;
+                            if (ext->eng->sfx != NULL) {
+                                StopSfx(ext->eng->sfx);
+                            }
+                            ext->unk28[ext->unk10] = -1;
+                            ext->unk58 = 0;
+                            ext->unk10 = -1;
+                            ext->unk6C = 5;
+                        }
+                    }
+                    if (D_800D4DEC != 0 || (hb3 = Heroes, h = &hb3[ext->unk6C], h->hero_mode == 0x50) || (h->hero_status & 0x2000)) {
+                        if (ext->eng->sfx != NULL) {
+                            StopSfx(ext->eng->sfx);
+                        }
+                        ext->eng->sub->flags &= ~0x8000;
+                        ext->unk64 = 0xD2;
+                        if (ext->unk10 != -1) {
+                            ext->unk28[ext->unk10] = -1;
+                        }
+                        ext->unk58 = 0;
+                        ext->unk10 = -1;
+                        ext->unk6C = 5;
+                    }
+                }
+                break;
+            case 6:
+                if (ext->unk6C != 5) {
+                    if (ext->unk68 > 0) {
+                        t4 = --ext->unk68;
+                        if (ext->eng->sfx != NULL) {
+                            func_800228A4(ext->eng->sfx, (0x12C - t4) * 0xF00 / 300 + 0x1E00);
+                        }
+                        if (ext->eng != NULL) {
+                            k = 0;
+                            do {
+                                if (k != ext->unk6C || (Heroes[k].hero_status & 0x2000)) {
+                                    ext->engs[k]->sub->flags &= ~0x8000;
+                                } else if (ext->engs[k] != NULL) {
+                                    ext->engs[k]->unk10 = Heroes[k].hero_eng->unk10;
+                                    if (D_800D4D08 == 0) {
+                                        ext->engs[k]->sub->flags |= 0x8000;
+                                    } else {
+                                        ext->engs[k]->sub->flags &= ~0x8000;
+                                    }
+                                    ext->engs[k]->unk1E += 0x80;
+                                    ext->engs[k]->unk5E = 1;
+                                    switch (Heroes[k].hero_name) {
+                                    case 1:
+                                        ext->engs[k]->unk10.y -= 0x258;
+                                        break;
+                                    case 2:
+                                        ext->engs[k]->unk10.y -= 0x300;
+                                        break;
+                                    case 3:
+                                        ext->engs[k]->unk10.y -= 0x300;
+                                        break;
+                                    case 4:
+                                        ext->engs[k]->unk10.y -= 0x300;
+                                        break;
+                                    case 5:
+                                        ext->engs[k]->unk10.y -= 0x300;
+                                        break;
+                                    case 6:
+                                        ext->engs[k]->unk10.y -= 0x300;
+                                        break;
+                                    case 7:
+                                        ext->engs[k]->unk10.y -= 0x300;
+                                        break;
+                                    case 8:
+                                        ext->engs[k]->unk10.y -= 0x300;
+                                        break;
+                                    default:
+                                        ext->engs[k]->unk10.y -= 0x300;
+                                        break;
+                                    }
+                                }
+                                k++;
+                            } while (k < 4);
+                        }
+                    }
+                    if (ext->unk68 == 0) {
+                        for (j = 0; j < 4; j++) {
+                            h = &Heroes[j];
+                            if (j != ext->unk6C && !(h->hero_status & 0x2000) && h->hero_mode != 0x50) {
+                                if (TBV->unk6C == 0 || TestForTeamMate(ext->unk6C, j) == 0) {
+                                    if (h->hero_mode != 0x4B) {
+                                        SetHeroAction((HeroInfo *)j, 0x4B);
+                                        ext->engs[ext->unk6C]->sub->flags &= ~0x8000;
+                                    }
+                                }
+                            }
+                        }
+                        ext->unk64 = 0x14A;
+                        ext->unk28[ext->unk10] = -1;
+                        if (m->Engine->sfx != NULL) {
+                            StopSfx(m->Engine->sfx);
+                        }
+                        PlaySfx(0x466, NULL, NULL, 0x1000, 0x1E00, 0);
+                        if (ext->eng->sfx != NULL) {
+                            StopSfx(ext->eng->sfx);
+                        }
+                        ext->unk58 = 0;
+                        ext->unk10 = -1;
+                        ext->unk6C = 5;
+                    }
+                    hb4 = Heroes;
+                    h = &hb4[ext->unk6C];
+                    mode = h->hero_mode;
+                    if (mode == 0x56 || mode == 0x50 || (h->hero_status & 0x2000) || D_800D4DEC != 0) {
+                        k3 = 0;
+                        do {
+                            if (k3 == ext->unk6C) {
+                                ext->engs[k3]->sub->flags &= ~0x8000;
+                            }
+                            k3++;
+                        } while (k3 < 4);
+                        ext->unk64 = 0xD2;
+                        ext->unk28[ext->unk10] = -1;
+                        ext->unk58 = 0;
+                        ext->unk10 = -1;
+                        ext->unk6C = 5;
+                        if (m->Engine->sfx != NULL) {
+                            StopSfx(m->Engine->sfx);
+                        }
+                        if (ext->eng->sfx != NULL) {
+                            StopSfx(ext->eng->sfx);
+                        }
+                    }
+                }
+                break;
+            }
+        }
+    }
+    if (D_800D4D08 != 0) {
+        s32 n2;
+
+        for (n2 = 0; n2 < 4; n2++) {
+            ext->engs[n2]->flags &= ~0x8000;
+        }
+        ext->eng->flags &= ~0x8000;
+    }
+}
+#else
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotTransmuterBeam);
+#endif
 
 void PlotWeightDeath(NAS *m) {
     WeightDeathExt *ext;

@@ -856,7 +856,7 @@ typedef struct TransBeamExt {
     /* 0x064 */ s32 unk64;
     /* 0x068 */ s32 unk68;
     /* 0x06C */ s32 unk6C;
-    /* 0x070 */ u8 pad70[4];
+    /* 0x070 */ s32 unk70;
     /* 0x074 */ EXTengine *eng;
     /* 0x078 */ EXTengine *engs[4];
     /* 0x088 */ SLONG_XYZ pos;
@@ -866,10 +866,29 @@ typedef struct TransBeamExt {
     /* 0x0A0 */ s32 unkA0;
     /* 0x0A4 */ NAS *bit1;
     /* 0x0A8 */ NAS *bit2;
-    /* 0x0AC */ s32 unkAC;
+    /* 0x0AC */ NAS *unkAC;
     /* 0x0B0 */ u8 padB0[0x1DC - 0xB0];
     /* 0x1DC */ s32 unk1DC;
 } TransBeamExt;
+
+/* D_8005A614 as PlotTransmuterBeam reads it. */
+typedef struct TransBeamView {
+    /* 0x00 */ u8 pad0[0x10];
+    /* 0x10 */ s32 unk10;
+    /* 0x14 */ u8 pad14[0x32 - 0x14];
+    /* 0x32 */ u16 flags;
+    /* 0x34 */ s16 mode;
+    /* 0x36 */ u8 pad36[0x5C - 0x36];
+    /* 0x5C */ u8 unk5C[4];
+    /* 0x60 */ u8 pad60[0x6C - 0x60];
+    /* 0x6C */ s32 unk6C;
+} TransBeamView;
+
+#define TBV ((TransBeamView *)D_8005A614)
+#define TB_MODE13() ((TBV->flags & 0x80) && TBV->mode == 0x13)
+
+/* The beam kinds PlotTransmuterBeam picks from (Random(4)). */
+extern u32 D_800D5458[4];
 
 extern s32 D_800D5474;
 extern s32 D_800D5478;
