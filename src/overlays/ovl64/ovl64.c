@@ -1692,7 +1692,350 @@ s32 func_800B727C(x, y, z, size, skip, mask)
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl64/ovl64", D_800B337C);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B7508);
+void func_800B7508(s32 arg0) {
+    s32 unused[4];
+    Ovl64Fux *nf;
+    NAS *nas;
+    s32 kind;
+    s32 lvl;
+    s32 dist2;
+    s32 turn;
+    s32 mate;
+    u16 r;
+    EXTbotai *ai;
+    EXTengine *e;
+    Ovl64Fux *f;
+    PadState *pad;
+    s32 inv;
+    s32 found;
+    s32 x;
+    s32 z;
+    s32 ang;
+    s32 ang2;
+    s32 target;
+    s32 a;
+    s32 d;
+    s32 p;
+    s32 k;
+
+    if (OVL64_GAME->flags10 & 0x04000000) {
+        return;
+    }
+    lvl = D_8009D87C[arg0][0];
+    inv = 0x21 - lvl;
+    ai = Heroes[arg0].hero_ai;
+    if (ai->AIinitial_delay != 0) {
+        ai->AIinitial_delay--;
+    }
+    if (ai->AIsleep != 0) {
+        ai->AIsleep--;
+    }
+    if (ai->AItimer1 != 0) {
+        ai->AItimer1--;
+    }
+    if (ai->AItimer2 != 0) {
+        ai->AItimer2--;
+    }
+    ai->AIpad = 0;
+    mate = -1;
+    if (OVL64_GAME->teams != 0) {
+        mate = arg0 ^ 1;
+    }
+    if (Heroes[arg0].hero_mode == (u16)D_8009E0D8 || Heroes[arg0].hero_mode == (u16)D_8009E0E2) {
+        ai->TargetPlayer = -1;
+        ai->AIsleep = 5;
+        ai->pTargetNas = NULL;
+        ai->AImode = 6;
+    }
+    dist2 = 0;
+    nas = ai->pTargetNas;
+    ang = Heroes[arg0].hero_move->facing_angle;
+    r = Random(0x100);
+    found = 0;
+    kind = -1;
+    turn = 0;
+    x = 0;
+    z = 0;
+    if (nas != NULL && nas->NASid != 0 && (e = nas->Engine) != NULL &&
+        (nf = (Ovl64Fux *)nas->FUX) != NULL) {
+        kind = nf->kind;
+        if (nf->sub == 1) {
+            found = 1;
+            x = e->unk10.x;
+            z = e->unk10.z;
+            x += inv * 16 - Random(inv << 5);
+            z += inv * 16 - Random(inv << 5);
+        }
+    }
+    if (found) {
+        ai->TargetPlayer = -1;
+    }
+    target = ai->TargetPlayer;
+    if (target != -1) {
+        if (target >= 4) {
+            ai->TargetPlayer = -1;
+            target = -1;
+            ai->AIsleep = inv;
+            ai->AImode = 1;
+        } else {
+            if (!(Heroes[target].hero_status & 0xFA00) && (Heroes[target].hero_immunity | Heroes[target].hero_hit) == 0) {
+                found = 1;
+                x = Heroes[target].hero_eng->unk10.x;
+                z = Heroes[target].hero_eng->unk10.z;
+                x += inv * 16 - Random(inv << 5);
+                z += inv * 16 - Random(inv << 5);
+            }
+        }
+    }
+    if (found) {
+        a = get_angle(x, z);
+        turn = func_800154A0(a, get_angle(Heroes[arg0].hero_eng->unk10.x, Heroes[arg0].hero_eng->unk10.z)) * D_800BC01C;
+        if (Heroes[arg0].hero_pu != 0x13 && turn >= 0x29 && Heroes[arg0].hero_move->jump_max == 0) {
+            s32 b;
+
+            d = (csqrt(x * x + z * z) + 0x20) >> 6;
+            b = (get_angle(x, z) - inv * D_800BC01C) & 0xFFF;
+            x = (d * D_80068BD4[(b - 0x400) & 0xFFF].unk2) >> 12;
+            z = (d * D_80068BD4[b].unk2) >> 12;
+        }
+        get_angle(x, z);
+        x -= Heroes[arg0].hero_eng->unk10.x;
+        z -= Heroes[arg0].hero_eng->unk10.z;
+        dist2 = x * x + z * z;
+        ang = get_angle(x, z);
+    } else {
+        nas = NULL;
+        ai->pTargetNas = NULL;
+        ai->AIsleep = inv;
+        ai->AImode = 1;
+    }
+    x = Heroes[arg0].hero_eng->unk10.x;
+    z = Heroes[arg0].hero_eng->unk10.z;
+    ang2 = ang;
+    if (dist2 != 0) {
+        get_angle(x, z);
+        if (turn > 0) {
+            ang2 = ang - (inv << 13) / 360;
+            ang2 &= 0xFFF;
+        } else {
+            ang2 = ang;
+        }
+    }
+    if (Heroes[arg0].hero_pu == 0x13) {
+        ang2 = ang;
+    }
+    func_800B8294(arg0);
+    switch (ai->AImode) {
+    case 21:
+        if (ai->AIsleep != 0) {
+            break;
+        }
+        {
+            s32 n;
+
+            if (Heroes[arg0].hero_mode != 2) {
+                ai->TargetPlayer = -1;
+                ai->AIsleep = inv;
+                ai->AImode = 1;
+                break;
+            }
+            for (n = 0; n < 4; n++) {
+                if (n != arg0 && Heroes[n].hero_ai->TargetPlayer == arg0) {
+                    x = Heroes[n].hero_eng->unk10.x - Heroes[arg0].hero_eng->unk10.x;
+                    z = Heroes[n].hero_eng->unk10.z - Heroes[arg0].hero_eng->unk10.z;
+                    if (x * x + z * z < 0x240000) {
+                        ai->TargetPlayer = -1;
+                        ai->AIsleep = inv;
+                        ai->AImode = 1;
+                    }
+                }
+            }
+        }
+        ai->AIang = ang;
+        ai->AIpad |= D_80051244[(ang >> 9) & 7];
+        break;
+    case 6:
+        if (ai->AIsleep == 0 && Heroes[arg0].hero_mode == 0) {
+            ai->AIsleep = 5;
+            ai->AImode = 1;
+        }
+        break;
+    case 3:
+        if (Heroes[arg0].hero_move->jump_max != 0) {
+            ai->AIang = ang;
+            ai->AIpad |= D_80051244[(ang >> 9) & 7];
+            break;
+        }
+        if (nas != NULL) {
+            ai->AImode = 2;
+            break;
+        }
+        if (target == -1) {
+            ai->AIsleep = inv;
+            ai->AImode = 1;
+            break;
+        }
+        if (((s32 (*)(s32))func_800B8E4C)(arg0) == 0) {
+            p = func_800864CC(arg0, 0x40);
+            if (p == target) {
+                ai->AImode = 1;
+                ai->TargetPlayer = -1;
+                ai->AIsleep = inv;
+                if ((Heroes[p].hero_immunity | Heroes[p].hero_frozen) == 0) {
+                    ai->AIpad |= 0x8000;
+                }
+            } else if (p != -1 && (Heroes[p].hero_immunity | Heroes[p].hero_frozen) == 0) {
+                if (D_8005A680 == 0 || p != mate) {
+                    if (D_8005A680 != 0 && Heroes[p].hero_object != NULL) {
+                        ai->AIpad |= 0x8000;
+                    } else if (!(r & 0x10)) {
+                        ai->AIpad |= 0x8000;
+                    }
+                }
+            }
+            f = func_800BB230(arg0, 0xA, 0x400);
+            if (f != NULL) {
+                switch (f->kind) {
+                case 8:
+                case 9:
+                case 10:
+                case 11:
+                    if (f->state != arg0) {
+                        break;
+                    }
+                    goto sleep3;
+                case 2:
+                    ai->AIpad |= 0x8000;
+                    break;
+                case 12:
+                default:
+                sleep3:
+                    ai->AImode = 0xD;
+                    ai->AIsleep = 8;
+                    ai->AIpad |= 0x4000;
+                    ai->pTargetNas = ((NAS **)f)[-1];
+                    ai->TargetPlayer = -1;
+                    break;
+                }
+            }
+        }
+        ai->AIang = ang;
+        ai->AIpad |= D_80051244[(ang >> 9) & 7];
+        break;
+    case 2:
+        if (Heroes[arg0].hero_move->jump_max != 0) {
+            ai->AIang = ang;
+            ai->AIpad |= D_80051244[(ang >> 9) & 7];
+            break;
+        }
+        if (target != -1) {
+            ai->AImode = 3;
+            break;
+        }
+        if (nas == NULL) {
+            ai->AIsleep = inv;
+            ai->AImode = 1;
+            break;
+        }
+        if (Heroes[arg0].hero_eng->platform == nas->Engine) {
+            ai->AIsleep = inv;
+            ai->AImode = 1;
+            break;
+        }
+        if (((s32 (*)(s32))func_800B8E4C)(arg0) == 0) {
+            p = func_800864CC(arg0, 0x40);
+            if (p != target && (Heroes[p].hero_immunity | Heroes[p].hero_frozen) == 0) {
+                if (D_8005A680 == 0 || p != mate) {
+                    if (Random(3) == 0) {
+                        ai->AImode = 1;
+                        ai->AIsleep = inv;
+                        ai->AIpad |= 0x8000;
+                    }
+                }
+            }
+            f = func_800BB230(arg0, 0xA, 0x400);
+            if (f != NULL) {
+                switch (k = f->kind) {
+                case 8:
+                case 9:
+                case 10:
+                case 11:
+                    if (f->state != arg0) {
+                        break;
+                    }
+                    if (k == kind) {
+                        goto sleep2;
+                    }
+                case 12:
+                    ai->AImode = 0xD;
+                    ai->AIpad |= 0x4000;
+                    ai->pTargetNas = ((NAS **)f)[-1];
+                    ai->TargetPlayer = -1;
+                    break;
+                case 2:
+                    ai->AIpad |= 0x8000;
+                    break;
+                default:
+                sleep2:
+                    ai->AImode = 0xD;
+                    ai->AIsleep = 8;
+                    ai->AIpad |= 0x4000;
+                    ai->pTargetNas = ((NAS **)f)[-1];
+                    ai->TargetPlayer = -1;
+                    break;
+                }
+            }
+        }
+        ai->AIang = ang2;
+        ai->AIpad |= D_80051244[(ang2 >> 9) & 7];
+        break;
+    case 13:
+        if (ai->AIsleep == 0 && (u32)(Heroes[arg0].hero_mode - 0x34) >= 2) {
+            ai->AImode = 1;
+            ai->AIsleep = inv;
+            ai->TargetPlayer = -1;
+            ai->pTargetNas = NULL;
+        } else {
+            ai->AIpad |= 0x4000;
+            ai->AIang = ang;
+            ai->AIpad |= D_80051244[(ang >> 9) & 7];
+        }
+        break;
+    default:
+        if (Heroes[arg0].hero_mode != 0) {
+            break;
+        }
+        if (Heroes[arg0].hero_pu == 0 && ai->AIinitial_delay == 0 && ai->AItimer2 == 0 &&
+            func_800B8C74(arg0) > (lvl << 5) + 0x400 && (p = func_800B8B5C(arg0)) != -1) {
+            ai->AImode = 0x15;
+            ai->TargetPlayer = p;
+            ai->AIsleep = 4;
+            ai->AItimer2 = (lvl + 8) * 30;
+            ai->AIpad |= 0x1000;
+        } else if (func_800B85A4(arg0) != 0) {
+            if (ai->pTargetNas == NULL) {
+                ai->AImode = 3;
+            } else {
+                ai->AImode = 2;
+            }
+            ai->AIaborted_mode = 0;
+        } else {
+            ai->TargetPlayer = func_800B8B5C(arg0);
+            if ((u32)Random(inv) >= 9) {
+                ai->AImode = 0x15;
+                ai->AIsleep = 4;
+                ai->AItimer2 = 300;
+                ai->AIpad |= 0x1000;
+            } else {
+                ai->AImode = 3;
+            }
+        }
+        break;
+    }
+    pad = &D_80051338[arg0];
+    set_joypad((u8 *)pad, ai->AIpad);
+    *(s32 *)((u8 *)pad + 0x38) = ai->AIang;
+}
 
 void func_800B8294(s32 arg0) {
     EXTengine *eng;

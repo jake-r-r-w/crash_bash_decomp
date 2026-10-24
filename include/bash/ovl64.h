@@ -46,7 +46,9 @@ extern Ovl64Cell D_800BBE10[4][16];
 
 /* D_8005A614 as seen by the ranking code (func_800B3EDC). */
 typedef struct Ovl64Game {
-    /* 0x00 */ u8 pad0[0x30];
+    /* 0x00 */ u8 pad0[0x10];
+    /* 0x10 */ u32 flags10;
+    /* 0x14 */ u8 pad14[0x30 - 0x14];
     /* 0x30 */ u16 state;
     /* 0x32 */ u16 flags;
     /* 0x34 */ u8 pad34[0x48 - 0x34];
@@ -429,5 +431,10 @@ extern s32 *D_800BB8E8[];
 void PlotBalloon(NAS *nas);
 
 void func_800B8294(s32 arg0);
+
+/* func_800B7508 */
+extern u32 D_80051244[]; /* pad flags by angle octant */
+s32 csqrt(s32 x);
+s32 func_800864CC(s32 id, u32 flag);
 
 #endif /* BASH_OVL64_H */
