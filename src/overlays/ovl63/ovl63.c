@@ -2473,7 +2473,192 @@ s32 func_800B96B0(s32 arg0, s32 arg1) {
     return 0;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B980C);
+void func_800B980C(s32 player) {
+    SLONG_XYZ pos;
+    Ovl63Vec4 out;
+    s32 ang0;
+    s32 ang;
+    s32 zacc;
+    s32 step;
+    Ovl63RaceFux *fux;
+    EXTheromove *move;
+    EXTengine *eng;
+    EXTengine *e;
+    HeroInfo *h;
+    HeroInfo *h2;
+    HeroInfo *hb;
+    HeroInfo *hb2;
+    s32 pz;
+    s32 vx;
+    s32 vz;
+    s32 a; /* x target speed, then the bounce angle, then the sfx pick */
+    s32 b; /* z target speed, then the hit angle, then the pass counter */
+    s32 xacc;
+    s32 i;
+    s32 d;
+    s32 dist;
+    s32 dx;
+    s32 dz;
+    s32 ga;
+    s32 lim;
+    s32 hit;
+
+    hb = Heroes;
+    h = hb + player;
+    fux = (Ovl63RaceFux *)h->hero->FUX;
+    if (fux != NULL) {
+        pos = h->hero_eng->unk10;
+        vx = fux->unk13C;
+        vz = fux->unk140;
+        eng = h->hero_eng;
+        move = h->hero_move;
+        a = move->x_max << 8;
+        b = move->z_max << 8;
+        xacc = move->x_acc;
+        zacc = move->z_acc;
+        step = fux->unk150;
+        pos.y = D_800C6930;
+        func_800B6DBC(&pos, &ang0);
+        if (move->velocity_calc != 3) {
+            return;
+        }
+        if (vx != a) {
+            d = step;
+            if (a != 0) {
+                d = xacc;
+            }
+            if (vx < a) {
+                vx += d;
+                if (vx > a) {
+                    vx = a;
+                }
+            } else {
+                vx -= d;
+                if (vx < a) {
+                    vx = a;
+                }
+            }
+        }
+        if (vz != b) {
+            d = step;
+            if (b != 0) {
+                d = zacc;
+            }
+            if (vz < b) {
+                vz += d;
+                if (vz > b) {
+                    vz = b;
+                }
+            } else {
+                vz -= d;
+                if (vz < b) {
+                    vz = b;
+                }
+            }
+        }
+        eng->OldXYZ = eng->unk10;
+        if (G63->unk34 == 0x19) {
+            i = 0;
+            while (1) {
+                if (i >= 6) {
+                    break;
+                }
+                if (XZBoxToSphere(D_800CA544[i], &Heroes[player].hero_eng->unk10, 0, &pos) == 4 &&
+                    D_800CA55C[i].state == 1) {
+                    ga = get_angle(eng->OldXYZ.x - pos.x, eng->OldXYZ.z - pos.z) & 0xFFF;
+                    vx = -(D_80068BD4[(ga - 0x400) & 0xFFF].unk2 * 6);
+                    vz = -(D_80068BD4[ga].unk2 * 6);
+                }
+                i++;
+            }
+        }
+        if (vx < -0xC800) {
+            vx = -0xC800;
+        }
+        if (vx > 0xC800) {
+            vx = 0xC800;
+        }
+        if (vz < -0xC800) {
+            vz = -0xC800;
+        }
+        if (vz > 0xC800) {
+            vz = 0xC800;
+        }
+        fux->unk13C = vx;
+        fux->unk140 = vz;
+        dx = vx >> 8;
+        pos.x += dx;
+        dz = vz >> 8;
+        pos.z += dz;
+        if (func_800B6DBC(&pos, &ang) != 0) {
+            move->x_max = 0;
+            move->z_max = 0;
+            if (ang != -1) {
+                b = ((get_angle(dx, dz) & 0xFFF) - ang) & 0xFFF;
+                if (b > 0x800) {
+                    a = ang - 0x338;
+                } else {
+                    a = ang + 0x338;
+                }
+                dist = csqrt(vx * vx + vz * vz) >> 6;
+                dist = dist * 200 >> 8;
+                fux->unk13C = dist * D_80068BD4[(a - 0x400) & 0xFFF].unk2 >> 12;
+                fux->unk140 = dist * D_80068BD4[a & 0xFFF].unk2 >> 12;
+                Heroes[player].hero_move->forward_angle = a + 0x800;
+                a = Random(4);
+                if (fux->unk13C != 0 || fux->unk140 != 0) {
+                    lim = 0x600;
+                    if (b > lim) {
+                        if (b < 0xA00) {
+                            if (a == 0) {
+                                PlaySfx(0x64C, NULL, NULL, 0x1000, 0x1E00, 0);
+                            }
+                            if (a == 1) {
+                                PlaySfx(0x64D, NULL, NULL, 0x1000, 0x1E00, 0);
+                            }
+                            if (a == 2) {
+                                PlaySfx(0x64E, NULL, NULL, 0x1000, 0x1E00, 0);
+                            }
+                            if (a == 3) {
+                                PlaySfx(0x64F, NULL, NULL, 0x1000, 0x1E00, 0);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        do {
+            hb2 = Heroes;
+            h2 = hb2 + player;
+        } while (0);
+        e = h2->hero_eng;
+        pz = pos.z;
+        h2->hero_eng->unk10.x += pos.x - e->unk10.x;
+        h2->hero_eng->unk10.z += pz - e->unk10.z;
+        if (!(h2->hero_status & 0x200)) {
+            b = 0;
+            while (1) {
+                if (b >= 2) {
+                    break;
+                }
+                if (b == 1) {
+                    if (G63->unk34 != 0x18 && G63->unk34 != 0x1A) {
+                        hit = func_800B7190(&pos, &out, 200, 1, 0);
+                    } else {
+                        hit = Heroes[player].hero_eng->unk10.x * Heroes[player].hero_eng->unk10.x +
+                                  Heroes[player].hero_eng->unk10.z * Heroes[player].hero_eng->unk10.z >
+                            (G63->unk34 == 0x1A ? 0xA90000 : 0x900000);
+                    }
+                    if (hit && Heroes[player].hero_mode != 0x61) {
+                        SetHeroAction((HeroInfo *)player, 0x61);
+                    }
+                }
+                b++;
+            }
+        }
+        func_800C0218(player);
+    }
+}
 
 void func_800B9E50(Quat *q) {
     s32 n;

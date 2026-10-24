@@ -1233,7 +1233,7 @@ extern u8 D_800C6618[], D_800C662C[], D_800C6640[], D_800C664C[], D_800C6664[], 
 s32 func_800B6DBC(SLONG_XYZ *arg0, s32 *arg1);
 
 void func_800B8FD8();
-void func_800B980C();
+void func_800B980C(s32 player);
 void func_800BAFC8(s32 player);
 
 void func_800BBA04(s32 player);
