@@ -20,8 +20,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
   **main.exe, the engine, ovl61, ovl65, ovl66, ovl67, ovl69 and ovl6a are
   complete**; 17 left (ovl5d 2, ovl5e 1, ovl5f 2, ovl60 2, ovl62 3, ovl63 4,
   ovl64 2, ovl68 1), every one tried by the swarm at least once. All 564
-  PsyQ functions (Sony objects). Two parked by hand, `func_800BE914` and
-  `PlotTransmuterBeam` (one instruction off; Open leads)
+  PsyQ functions (Sony objects). Three parked by hand, `func_800BE914`,
+  `PlotTransmuterBeam` (one instruction off) and `func_800B4048` (Open leads)
   (`decomp.py status`; the swarm parked 5, which the dashboard counts from
   `docs/swarm.js`). Matches are C only, natural C
   first (CONVENTIONS.md, Matching rules; the "hack" class was dropped on
@@ -135,8 +135,7 @@ and current tools).
   (MATCHING.md, Diff patterns). Read the checkpoint's log for what was
   tried, not for rules: its "the gate refuses do { } while (0)" predates
   2026-10-22. The closest checkpoints left (stage, differing insns):
-  `func_800B4048` instructions 10/255, `Plot_PogoPadlock` registers
-  11/350, `Plot_PogoRipperRoo` instructions 16/656, `func_800B7508`
+  `Plot_PogoPadlock` registers 11/350, `Plot_PogoRipperRoo` instructions 16/656, `func_800B7508`
   registers 17/867, `func_800B5E28` instructions 21/195, `func_800B6708`
   registers 27/411. `CheckMineToBoss` has none.
 - **`PlotTransmuterBeam`'s last instruction** (parked 2026-10-24 at
@@ -155,6 +154,20 @@ and current tools).
   the `hero_last_action` store without changing the 38/18/28 store order.
   Try shapes with `try PlotTransmuterBeam --file`, or the small harness in
   `scratch/ptb/t/` (gone after a clean).
+- **`func_800B4048`'s copy** (parked 2026-10-24 at instructions 10/255, 25
+  of 26 blocks; the `decomp.py block` note lists what was tried). The tail
+  copies `t = v` (`addu v0,v1,zero`) before the `*60` chain that loop.c
+  hoists. The Oct 9 build has the same copy (with `*42` and `*72`), so the
+  copy is in the source. cse2 and combine keep it only if `v` is set again
+  between the copy and the chain (MATCHING.md, Diff patterns). The parked C
+  does that with `v = (s32)D_8005A614; q = (u8 *)v;`, but that `lui` comes
+  before the hoisted chain in the RTL. So sched1 places it inside `t`'s
+  second life, local-alloc gives it v0, and `t` drops to a2 (`v` to v0).
+  Look for a natural set of `v` between the copy and the chain whose insns
+  land after the hoisted chain (a movable found later in the loop body, or a
+  strength-reduction init), or for something that makes q's `lui` lose the
+  luid tie. Try shapes with `try func_800B4048 --file`; the variant scripts
+  are in `scratch/b48/`.
 - **`func_800BE914`'s copies** (parked 2026-10-23 at registers 7/170; the
   `decomp.py block` note has the detail). The target copies each clamped
   speed into v0 right before its `>> 8` (`move v0,aN; sra a2,v0,8`, four
@@ -570,6 +583,15 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-24 (hand: `func_800B4048` parked):** from the swarm's
+  checkpoint (instructions 10/255), applied with names and the camera,
+  screen and percent-table structs. The tail's `t = v` copy is in the source
+  (the Oct 9 build has it), and it survives cse2 and combine only when `v` is
+  set again before the hoisted `*60` chain. The checkpoint's re-set does
+  that, but its `lui` lands inside `t`'s life (Open leads). A dead early
+  store keeps the copy through cse2 but not through combine. The two Diff
+  patterns rows for this function are merged into one, with the rules.
 
 - **2026-10-24 (hand: `PlotTransmuterBeam` parked):** from the swarm's
   checkpoint (2237/2311 exact) to 2309/2311, one instruction short (the
