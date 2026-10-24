@@ -20,8 +20,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
   **main.exe, the engine, ovl61, ovl65, ovl66, ovl67, ovl69 and ovl6a are
   complete**; 15 left (ovl5d 1, ovl5e 1, ovl5f 2, ovl60 2, ovl62 3, ovl63 4,
   ovl64 1, ovl68 1), every one tried by the swarm at least once. All 564
-  PsyQ functions (Sony objects). Three parked by hand, `func_800BE914`,
-  `PlotTransmuterBeam` (one instruction off) and `func_800B4048` (Open leads)
+  PsyQ functions (Sony objects). Four parked by hand, `func_800BE914`,
+  `PlotTransmuterBeam` (one instruction off), `func_800B4048` and
+  `Plot_PogoPadlock` (two registers off) (Open leads)
   (`decomp.py status`; the swarm parked 5, which the dashboard counts from
   `docs/swarm.js`). Matches are C only, natural C
   first (CONVENTIONS.md, Matching rules; the "hack" class was dropped on
@@ -135,8 +136,8 @@ and current tools).
   (MATCHING.md, Diff patterns). Read the checkpoint's log for what was
   tried, not for rules: its "the gate refuses do { } while (0)" predates
   2026-10-22. The closest checkpoints left (stage, differing insns):
-  `Plot_PogoPadlock` registers 11/350, `Plot_PogoRipperRoo` instructions 16/656, `func_800B7508`
-  registers 17/867, `func_800B6708` registers 27/411. `CheckMineToBoss` has
+  `Plot_PogoRipperRoo` instructions 16/656, `func_800B7508` registers
+  17/867, `func_800B6708` registers 27/411. `CheckMineToBoss` has
   none. Where block 0 (or any block) is an order or allocation tie, run
   `decomp.py orders NAME --lines A-B` on the checkpoint's C before reading
   the dumps by hand: it matched `func_800B8294` from the natural form after
@@ -158,6 +159,17 @@ and current tools).
   the `hero_last_action` store without changing the 38/18/28 store order.
   Try shapes with `try PlotTransmuterBeam --file`, or the small harness in
   `scratch/ptb/t/` (gone after a clean).
+- **`Plot_PogoPadlock`'s case 3** (parked 2026-10-24 at registers 2/350, 64
+  of 65 blocks; the `decomp.py block` note lists what was tried). Only
+  `lui v1,%hi(D_800C530C); ...; addiu v1,v1,%lo(...)` differs: ours puts the
+  `lui` in v0. The target's order (the base before `++level`, so sched2 can
+  fill the reload's load delay) needs a non-birthing base, which the global
+  `ext` gives. But then nothing local holds v0 during the `HIGH`'s life, and
+  local-alloc gives it v0. A block-local base is tied to the `HIGH` but is
+  birthing, so sched1 moves it after `++level` and a `nop` appears. Look
+  for a form where combine folds the `HIGH`/`LO_SUM` into one `la`
+  (`simplify_rtx`'s `(lo_sum (high X) X)` rule), or a v0 local live across
+  the `HIGH`. Case 6 matched on the way (MATCHING.md, Diff patterns).
 - **`func_800B4048`'s copy** (parked 2026-10-24 at instructions 10/255, 25
   of 26 blocks; the `decomp.py block` note lists what was tried). The tail
   copies `t = v` (`addu v0,v1,zero`) before the `*60` chain that loop.c
@@ -585,6 +597,14 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-24 (hand: `Plot_PogoPadlock` parked):** with the new tools,
+  from the swarm's checkpoint (registers 11/350) to 2/350. Batch `try`
+  over every local as the holder of case 6's constant, then a fresh
+  variable set in the right block, fixed case 6. `trace` and `sched`
+  pinned case 3 to local-alloc and sched1's birthing rule; the permuter
+  (5 min, case 3 only) found nothing. Two `trace` fixes (`&p->f`,
+  `insn:QI`).
 
 - **2026-10-24 (tools, then `func_800B8294` and `func_800B5E28` matched):**
   four tools: `trace` (an insn or a variable's pseudo through every pass
