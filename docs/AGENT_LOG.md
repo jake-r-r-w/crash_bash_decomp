@@ -160,16 +160,20 @@ and current tools).
   Try shapes with `try PlotTransmuterBeam --file`, or the small harness in
   `scratch/ptb/t/` (gone after a clean).
 - **`Plot_PogoPadlock`'s case 3** (parked 2026-10-24 at registers 2/350, 64
-  of 65 blocks; the `decomp.py block` note lists what was tried). Only
-  `lui v1,%hi(D_800C530C); ...; addiu v1,v1,%lo(...)` differs: ours puts the
-  `lui` in v0. The target's order (the base before `++level`, so sched2 can
-  fill the reload's load delay) needs a non-birthing base, which the global
-  `ext` gives. But then nothing local holds v0 during the `HIGH`'s life, and
-  local-alloc gives it v0. A block-local base is tied to the `HIGH` but is
-  birthing, so sched1 moves it after `++level` and a `nop` appears. Look
-  for a form where combine folds the `HIGH`/`LO_SUM` into one `la`
-  (`simplify_rtx`'s `(lo_sum (high X) X)` rule), or a v0 local live across
-  the `HIGH`. Case 6 matched on the way (MATCHING.md, Diff patterns).
+  of 65 blocks; tried again the same day; the `decomp.py block` note lists
+  everything). Only `lui v1,%hi(D_800C530C); ...; addiu v1,v1,%lo(...)`
+  differs: ours puts the `lui` in v0. Before reload the `HIGH` always gets a
+  fresh pseudo (mips.md `movsi`), so the target's shared register means
+  local-alloc tied it to a block-local base. But a block-local single-set
+  base is birthing, so sched1 puts the in-place `++level` first in block 20.
+  Reload then inserts `level`'s `lw` outside the block (MATCHING.md, Diff
+  patterns: the stuck reload) and a `nop` appears. The global `ext` avoids
+  that but leaves the `HIGH` in v0. Combine can't fold the pair (no
+  `HAVE_lo_sum`). The Demo Disc and Oct 9 copies have the same `lui v1`.
+  Left to try: an extra insn that heads block 20 in sched1 and is gone by
+  the final code (an equivalence init that `update_equiv_regs` moves updates
+  `basic_block_head`), or a v0 local live across the `HIGH`. Case 6 matched
+  on the way (MATCHING.md, Diff patterns).
 - **`func_800B4048`'s copy** (parked 2026-10-24 at instructions 10/255, 25
   of 26 blocks; the `decomp.py block` note lists what was tried). The tail
   copies `t = v` (`addu v0,v1,zero`) before the `*60` chain that loop.c
@@ -597,6 +601,14 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-24 (hand: `Plot_PogoPadlock` again, still 2/350):** about 90
+  more case 3 shapes through batch `try` (a 60-variant grid among them), the
+  prototypes' copies (`protos --diff`: same `lui v1`), and `idiom` (matched
+  code with the same reload-between-`lui`-and-`addiu` shape:
+  `PogoAI_StartEncircling`, whose index isn't modified). Found the deciding
+  rule: reload's stuck input reload at a block head. Park note and lead
+  rewritten; a Diff patterns row for the stuck reload.
 
 - **2026-10-24 (hand: `Plot_PogoPadlock` parked):** with the new tools,
   from the swarm's checkpoint (registers 11/350) to 2/350. Batch `try`
