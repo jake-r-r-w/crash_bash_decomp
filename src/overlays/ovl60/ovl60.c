@@ -5457,7 +5457,219 @@ void Init_PogoPadlock(NAS *nas) {
     }
 }
 
+#ifdef NON_MATCHING
+/* The parked C (registers 2/350): only case 3's %hi(D_800C530C) is in v0 where the
+   target has v1 (decomp.py block note). */
+void Plot_PogoPadlock(NAS *nas) {
+    s32 x;
+    s32 z;
+    s32 *px;
+    s32 *pz;
+    EXTengine *eng;
+    EXTengine *eng2;
+    s32 i;
+    s32 rx;
+    s32 rz;
+    s32 found;
+    s32 cx;
+    s32 cz;
+    s32 tries;
+    s32 dir;
+    s32 ok;
+    s32 nx;
+    s32 nz;
+    s32 *pos;
+    s32 *ext;
+    u8 *p;
+    NAS *spawned;
+    s32 tx;
+    s32 tz;
+    s32 cell;
+    s32 ex;
+    s32 dx;
+    s32 dz;
+    u16 init;
+    s32 one;
+    u32 flags;
+    s32 count;
+    s32 level;
+
+    eng = nas->Engine;
+    if (eng == NULL) {
+        return;
+    }
+    flags = nas->UserInfo.flags;
+    eng->unk5E = 1;
+    count = flags & 0xFF;
+    eng->unk1E += 0x38;
+    level = flags >> 8;
+    eng2 = eng->Engine;
+    switch (nas->UserInfo.status) {
+    case 0:
+        if (--nas->UserInfo.user1 > 0) {
+            break;
+        }
+        px = &x;
+        pz = &z;
+        i = 0;
+        do {
+            rx = Random(8);
+            rz = Random(8);
+            found = SquareIsFreeForMushroom(rx, rz) ^ 1;
+            i++;
+        } while (found && i < 10);
+        if (i >= 10) {
+            found = 0;
+        } else {
+            *px = rx;
+            *pz = rz;
+            found = 1;
+        }
+        if (!found) {
+            break;
+        }
+        nas->UserInfo.status = 1;
+        nas->UserInfo.user1 = 0xA;
+        init = D_800C530C[0];
+        count = init & 0xFF;
+        nas->UserInfo.flags = init;
+        level = init >> 8;
+        eng->unk2C.y = 0;
+        eng->unk5E = 1;
+        eng->unk10.x = (x << 9) - 0x700;
+        eng->unk10.z = (z << 9) - 0x700;
+        eng->flags |= 0x8000;
+        if (eng2 == NULL) {
+            break;
+        }
+        eng2->flags |= 0x8000;
+        goto follow;
+    case 1:
+        eng->unk2C.y += 0x100;
+        if (eng->unk2C.y > 0x1000) {
+            eng->unk2C.y = 0x1000;
+            nas->UserInfo.status = 3;
+            nas->UserInfo.user1 = D_800C5334[level];
+        }
+        eng->unk5E = 1;
+        break;
+    case 3:
+        if (--nas->UserInfo.user1 > 0) {
+            break;
+        }
+        if (level < 7) {
+            if (--count <= 0) {
+                ext = (s32 *)D_800C530C;
+                count = ext[++level];
+            }
+        }
+        nas->UserInfo.status = 4;
+        break;
+    case 4:
+        tries = 0;
+        cz = (eng->unk10.z + 0x800) >> 9;
+        cx = (eng->unk10.x + 0x800) >> 9;
+        do {
+            do {
+                ok = 1;
+                dir = Random(4);
+                if (dir == 1) {
+                    ok = (cx < 1) ^ 1;
+                }
+                if (dir == 0 && cz <= 0) {
+                    ok = 0;
+                }
+                if (dir == 3 && !(cx < 7)) {
+                    ok = 0;
+                }
+                if (dir == 2 && cz >= 7) {
+                    ok = 0;
+                }
+            } while (ok == 0);
+            nx = cx;
+            nz = cz;
+            switch (dir) {
+            case 1:
+                nx--;
+                break;
+            case 3:
+                nx++;
+                break;
+            case 2:
+                nz++;
+                break;
+            case 0:
+                nz--;
+                break;
+            }
+            tries++;
+            if (tries >= 5) {
+                goto fail;
+            }
+        } while ((PadlockAI_IsTileOKForPadlock((s32)nas, nx, nz) ^ 1) != 0);
+        nas->UserInfo.user2 = ((nz & 7) << 3) | (nx & 7);
+        nas->UserInfo.status = 5;
+        nas->UserInfo.user1 = 0x12;
+        break;
+    fail:
+        nas->UserInfo.status = 3;
+        nas->UserInfo.user1 = 5;
+        break;
+    case 5:
+        cell = nas->UserInfo.user2;
+        ex = eng->unk10.x;
+        tx = ((cell & 7) << 9) - 0x700;
+        tz = ((cell << 6) & 0xE00) - 0x700;
+        dx = (tx - ex) / 6;
+        dz = (tz - eng->unk10.z) / 6;
+        eng->unk10.x = ex + dx;
+        eng->unk10.z += dz;
+        if (--nas->UserInfo.user1 <= 0) {
+            eng->unk10.x = tx;
+            eng->unk10.z = tz;
+            nas->UserInfo.status = 3;
+            nas->UserInfo.user1 = D_800C5334[level];
+        }
+        if (eng2 == NULL) {
+            break;
+        }
+    follow:
+        eng2->unk10.x = eng->unk10.x;
+        eng2->unk10.z = eng->unk10.z;
+        break;
+    case 6:
+        eng->flags &= ~0x8000;
+        if (eng2 != NULL) {
+            eng2->flags &= ~0x8000;
+        }
+        nas->UserInfo.user1 = 0x78;
+        nas->UserInfo.status = 0;
+        pos = (s32 *)&eng->unk10;
+        p = D_80053B9C;
+        one = 1;
+        spawned = SpawnNASById(pos[0], pos[1], pos[2], 0x1605, 0x11);
+        if (spawned != NULL) {
+            ext = FindExtension(spawned, 0x10000000);
+            if (ext != NULL) {
+                ext[3] = one;
+                ext[6] = 0x100;
+                if (p != NULL) {
+                    ext[8] = 5;
+                    ((s32 *)spawned->Engine->sub)[0x6C / 4] = (s32)p;
+                } else {
+                    ext[8] = one;
+                }
+                ext[10] = 0;
+                spawned->InitDelete(spawned);
+            }
+        }
+        break;
+    }
+    nas->UserInfo.flags = ((level & 0xFF) << 8) | (count & 0xFF);
+}
+#else
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoPadlock);
+#endif
 
 bool PogoPadlock_IsHere(s32 arg0, s32 arg1) {
     EXTengine *e;

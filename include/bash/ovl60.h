@@ -658,4 +658,6 @@ extern u16 D_800C4524[][4];
 /* &(o)->model->frames[i], as (i * 7) << 3 bytes (sizeof(Ovl60Frame) is 0x38) */
 #define CELL_FRAME(o, i) ((Ovl60Frame *)((u32)(o)->model->frames + (((i) * 7) << 3)))
 
+extern s32 D_800C5334[];
+
 #endif /* BASH_OVL60_H */

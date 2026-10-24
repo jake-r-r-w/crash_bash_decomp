@@ -6289,7 +6289,11 @@
   "status": "matched"
  },
  "ovl60:800C0584": {
-  "auto_failed": "compile"
+  "auto_failed": "compile",
+  "blocked_at": "2026-10-24T10:54:39Z",
+  "note": "STAGE registers 2/350 (64/65 blocks): only case 3's %hi(D_800C530C) is in v0 where the target has v1 (lui v1; addiu v1,v1,%lo). From the swarm checkpoint (11/350); case 6 now matches with a fresh one = 1 set before CreateNAS (set inside the if, sched2 moves its li past FindExtension and reorg fills the wrong delay slot). Deciding pass: local-alloc (find_free_reg). With the base in the global ext, sched1 keeps the base before ++level (both non-birthing, luid), which sched2 needs to fill the reload's load delay, but nothing local is in v0 during the HIGH's short life, so it takes v0. A block-local base gets tied to the HIGH (v1) but is birthing, so sched1 moves it after ++level and a nop appears. Tried: direct D_800C530C[++level] (s32 table; Init_PogoPadlock still matches), cast and pointer-arithmetic forms, level+1 temps, a case-local or earlier-set table pointer, the pointer set before the switch (REG_EQUIV remat), every other local for case 6's constant; permuter 5 min on case 3 (43k iterations, no gain). Next: a shape where the table address is one (set reg (symbol_ref)) after combine (an la, both halves in one register) while ++level stays after it, or a v0 local live across the HIGH.",
+  "started": "2026-10-24T10:24:38Z",
+  "status": "blocked"
  },
  "ovl60:800C0AFC": {
   "auto_diff": 12,
