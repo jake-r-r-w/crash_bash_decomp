@@ -725,9 +725,10 @@ def try_rank(r):
     return (0, -s["exact"], -s["ok"], -s["paired"], s["ndiff"])
 
 
-def try_files(key, e, proj, name, paths, jobs=None):
-    """`try --file A.c B.c ...`: compile every file as check_file does, in parallel, rank them by
-    try_rank and print the table, then the best one's diff. Returns (ok, ndiffs) of the best."""
+def try_files(key, e, proj, name, paths, jobs=None, top=None, defs=()):
+    """`try --file A.c B.c ...`: compile every file as check_file does (with cpp flags DEFS), in
+    parallel, rank them by try_rank and print the table (its first TOP rows), then the best one's
+    diff. Returns (ok, ndiffs, path) of the best."""
     import regions
     src = e.get("src") or locate_def(name)
     if not src:
@@ -743,7 +744,7 @@ def try_files(key, e, proj, name, paths, jobs=None):
         obj = f"build/tryfile/{k}_{os.path.basename(path)}.o"
         if os.path.exists(obj):
             os.remove(obj)
-        r = run("set -o pipefail; " + unit_pipeline(src, obj, cfg, c_path=path))
+        r = run("set -o pipefail; " + unit_pipeline(src, obj, cfg, defs=defs, c_path=path))
         if r.returncode:
             return {"path": path, "error": compile_error(path, r.stderr + r.stdout).splitlines()[-1]}
         cw, _, relocs = obj_func(obj, name)
@@ -761,18 +762,20 @@ def try_files(key, e, proj, name, paths, jobs=None):
           "then paired)")
     w = max(len(r["path"]) for r in out)
     print(f"  {'file':<{w}}  {'stage':<12} {'differ':>9} {'exact':>9} {'blocks':>7} {'paired':>9}")
-    for r in out:
+    for r in out[:top]:
         s = r.get("score")
         if s is None:
             print(f"  {r['path']:<{w}}  BUILD FAILED: {r['error'][:90]}")
             continue
         print(f"  {r['path']:<{w}}  {s['stage']:<12} {s['ndiff']:>4}/{s['total']:<4} "
               f"{s['exact']:>4}/{s['len']:<4} {s['ok']:>3}/{s['blocks']:<3} {s['paired']:>4}/{s['len']:<4}")
+    if top is not None and len(out) > top:
+        print(f"  ... {len(out) - top} more")
     best = out[0]
     if "obj" not in best:
-        return False, None
+        return False, None, None
     print(f"\nbest: {best['path']}")
-    return compare_obj(key, e, proj, name, best["obj"], link=False)
+    return (*compare_obj(key, e, proj, name, best["obj"], link=False), best["path"])
 
 
 def compare_obj(key, e, proj, name, obj, quiet=False, link=True):
@@ -1554,7 +1557,7 @@ def cmd_try(a):
         if len(a.file) == 1:
             ok, _ = check_file(key, e, proj, name, a.file[0])
         else:
-            ok, _ = try_files(key, e, proj, name, a.file, a.jobs)
+            ok = try_files(key, e, proj, name, a.file, a.jobs)[0]
         sys.exit(0 if ok else 1)
     st = jload(P_STATE, {})
     all_ok = True
@@ -2372,6 +2375,57 @@ def cmd_idiom(a):
         if not ls:
             print("    (no C lines: " + ("not matched)" if stat[k] != "matched" else
                                          "the -g build failed)" if not lm else "none for these instructions)"))
+
+
+def cmd_orders(a):
+    """Random dependency-respecting orders of the statements on NAME's lines A-B, each compiled
+    as a copy of the unit and ranked like try --file (tools/scripts/orders.py)."""
+    import orders
+    import ptrace
+    proj, funcs = need_proj(), need_funcs()
+    key, e = find_func(funcs, a.func)
+    name = cur_name(key, e, sym_names())
+    src = e.get("src") or locate_def(name)
+    path, defs = (a.file, []) if a.file else (src, c_defines(src, name, e))
+    lines = read(path).split("\n")
+    try:
+        lo, hi = (int(x) for x in a.lines.split("-"))
+    except ValueError:
+        die("--lines takes A-B (source line numbers)")
+    if not 1 <= lo <= hi <= len(lines):
+        die(f"--lines {a.lines} is outside {path} (1-{len(lines)})")
+    # the function's parameters and locals tell its variables from globals
+    ftext = extract_function(read(path), name, top=True)
+    if not ftext:
+        die(f"no definition of {name} in {path}")
+    local = {d.name for d in ptrace.decls(ftext)}
+    try:
+        stmts = orders.statements("\n".join(lines[lo - 1:hi]))
+    except ValueError as ex:
+        die(str(ex))
+    if len(stmts) < 2:
+        die("the range holds fewer than two statements")
+    indent = re.match(r"\s*", lines[lo - 1]).group(0)
+    found = orders.orders(stmts, local, a.count, a.seed)
+    d = f"build/orders/s{a.seed}"                   # one directory per seed: refine from another's best
+    if os.path.abspath(path).startswith(os.path.abspath(d) + os.sep):
+        die(f"{path} is in {d}, which this run clears: copy it out, or use another --seed")
+    shutil.rmtree(d, ignore_errors=True)
+    os.makedirs(d)
+    paths = []
+    for k, order in enumerate(found):
+        p = f"{d}/o{k:03d}.c"
+        write(p, "\n".join(lines[:lo - 1] + [indent + stmts[j] for j in order] + lines[hi:]))
+        paths.append(p)
+    fixed = sum(len(v) for v in orders.edges(stmts, local).values())
+    print(f"ORDERS {name}: {len(stmts)} statements on lines {lo}-{hi} ({fixed} must-keep pairs), "
+          f"{len(found)} orders; o000 is the source's")
+    ok, _, best = try_files(key, e, proj, name, paths, a.jobs, a.top, defs)
+    if best:
+        k = paths.index(best)
+        print(f"\nbest order ({best}; lines {lo}-{hi}):")
+        print("\n".join(indent + stmts[j] for j in found[k]))
+    sys.exit(0 if ok else 1)
 
 
 def cmd_trace(a):
@@ -5469,6 +5523,16 @@ def main():
     p.add_argument("--context", type=int, default=1, help="instructions shown around each hit")
     p.add_argument("--all", action="store_true", help="search unmatched functions too (no C for them)")
     p.set_defaults(fn=cmd_idiom)
+    p = sub.add_parser("orders", help="random orders of the statements on NAME's lines A-B that keep "
+                       "their dependencies, compiled in parallel and ranked like try --file")
+    p.add_argument("func")
+    p.add_argument("--lines", required=True, help="A-B: source lines inside one block of the function")
+    p.add_argument("--count", type=int, default=150, help="orders to try (the source's is the first)")
+    p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--top", type=int, default=12, help="ranked rows to print")
+    p.add_argument("--jobs", type=int, help="parallel compiles")
+    p.add_argument("--file", help="reorder lines of this test copy instead of the source")
+    p.set_defaults(fn=cmd_orders)
     p = sub.add_parser("protos", help="a function's earlier compiles: its closest match in each "
                        "scanned prototype or demo disc (protos/*/scan.md)")
     p.add_argument("func")

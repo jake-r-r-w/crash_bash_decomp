@@ -1802,6 +1802,17 @@ the regions score (a match, then exact instructions, matching blocks, paired ins
 fewer differing ones) and shows the best one's diff. Six of `func_800B4048`'s variants took
 2.3 s together.
 
+When the diff is an order or allocation tie that the order of independent statements decides
+(sched1's luid ties follow the source, and the lives they give decide local-alloc's registers),
+`decomp.py orders NAME --lines A-B [--count 150]` searches it. It splits those lines (inside one
+block) into statements and keeps every pair that must stay in order: a variable written and read
+or written, memory written and read (stores through `->`, `[`, `*`, globals), any call. It then
+compiles that many random orders as copies of the unit, ranks them as `try --file` does and
+prints the best order. Run it again from the best (`--file` with a copy, another `--seed`) to
+refine. Explain the winner by its rule before committing it. `func_800B8294` matched this way:
+two runs over block 0 (280 orders, about 30 s) found the order that puts the first offset's `*15`
+chain in a0.
+
 Then port the winning shape and check it in the function. Allocation priorities depend on the
 whole function (each variable's refs and live range), so a shape that fixes the snippet can
 move other variables. In `PlotBall`, an `s16` fixed the snippet but shifted every s-register,
