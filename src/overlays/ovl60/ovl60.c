@@ -5089,7 +5089,275 @@ void Init_PogoRipperRoo(NAS *nas) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl60/ovl60", Plot_PogoRipperRoo);
+void Plot_PogoRipperRoo(NAS *nas) {
+    EXTengine *e;
+    EXTanimator *anim;
+    EXTengine *e2;
+    subengine *sub;
+    u8 *g;
+    s32 x;
+    s32 z;
+    s32 tx;
+    s32 tz;
+    s32 ez;
+    s32 scale;
+    s32 v;
+    s32 i;
+    s32 j;
+    s32 k;
+    s32 near;
+    s32 sfx;
+
+    e = nas->Engine;
+    if (e == NULL) {
+        return;
+    }
+    anim = FindExtension(nas, 0x400);
+    if (anim == NULL) {
+        return;
+    }
+    func_800250B0(nas);
+    if (e->flags & 0x8000) {
+        e2 = e->Engine;
+        if (e2 != NULL) {
+            sub = e2->sub;
+            e2->unk10.x = e->unk10.x;
+            ez = e->unk10.z;
+            e2->unk10.y = World_floor_level;
+            e2->unk10.z = ez;
+            if (sub != NULL) {
+                scale = 0x1600 - abs(e->unk10.y - World_floor_level) * 4;
+                sub->unk20.z = scale;
+                sub->unk20.y = scale;
+                sub->unk20.x = scale;
+                sub->unk52 = 1;
+            }
+        }
+        x = (e->unk10.x + 0x800) >> 9;
+        z = (e->unk10.z + 0x800) >> 9;
+        if ((u32)x < 8 && z >= 0 && z < 8) {
+            D_800C53DC[x][z].unkE = 5;
+        }
+    }
+    switch (nas->UserInfo.status) {
+    case 0:
+        D_800C5BD8 = -1;
+        e->unk10.x = -0x100;
+        e->unk10.z = 0x900;
+        D_800C5BD8 = -1; /* set twice in the original: its registers need this store */
+        D_800C5BE0 = 0;
+        D_800C5BE4 = 0;
+        D_800C5BE8 = 0;
+        nas->UserInfo.user1 = 0xA0;
+        nas->UserInfo.status = 1;
+        GotoLinkAnim(anim, 0);
+        break;
+    case 1:
+        if (--nas->UserInfo.user1 < 2) {
+            D_800C5BEC = (D_8004E0D8 & 1) ? 1 : 3;
+            nas->UserInfo.user1 = Random(0x3C) + 0x64;
+            nas->UserInfo.status = 2;
+            PlaySfx(0x542, NULL, &e->unk10, 0x1000, 0x1E00, 0);
+            GotoLinkAnim(anim, 1);
+            D_800C5304 = 0;
+        }
+        break;
+    case 2:
+        if (nas->UserInfo.user1 > 0 && !(D_8005A644 & 0x801)) {
+            nas->UserInfo.user1--;
+        }
+        Roo_UpdatePosition(e);
+        if (!Roo_Bounce(nas)) {
+            break;
+        }
+        g = D_8005A614;
+        if ((*(s32 *)(g + 0x30) & 0x800801) == 0x800000) {
+            for (i = 0; i < 4; i++) {
+                near = 0;
+                if (D_8005A614[i + 0x5C] == 0) {
+                    if (abs(e->unk10.x - Heroes[i].hero_eng->unk10.x) < 0x580) {
+                        near = abs(e->unk10.z - Heroes[i].hero_eng->unk10.z) < 0x580;
+                    }
+                    if (near && !(Heroes[i].hero_status & 0x800)) {
+                        nas->UserInfo.user1 = 0;
+                    }
+                }
+            }
+        }
+        if (nas->UserInfo.user1 > 0) {
+            D_800C5BD8 = (e->unk10.x + 0x800) >> 9;
+            D_800C5BDC = (e->unk10.z + 0x800) >> 9;
+            switch (D_800C5BEC) {
+            case 0:
+                D_800C5BDC -= 2;
+                break;
+            case 2:
+                D_800C5BDC += 2;
+                break;
+            case 3:
+                D_800C5BD8 += 2;
+                break;
+            case 1:
+                D_800C5BD8 -= 2;
+                break;
+            }
+            Roo_ChangeDirOnEdge();
+        } else {
+            D_800C5BD8 = (e->unk10.x + 0x800) >> 9;
+            D_800C5BDC = (e->unk10.z + 0x800) >> 9;
+            if (D_800C5BD8 == 8) {
+                D_800C5BEC = 1;
+            } else if (D_800C5BD8 == -1) {
+                D_800C5BEC = 3;
+            } else if (D_800C5BDC == 8) {
+                D_800C5BEC = 0;
+            } else if (D_800C5BDC == -1) {
+                D_800C5BEC = 2;
+            }
+            if (D_8005A646 & 0x80) {
+                v = D_800C46C8[D_800C5308];
+            } else {
+                v = D_800C468C[D_800C5308];
+            }
+            if (v == 12) {
+                D_800C5308 = 0;
+                if (D_8005A646 & 0x80) {
+                    v = D_800C46C8[0];
+                } else {
+                    v = D_800C468C[0];
+                }
+            } else {
+                D_800C5308++;
+            }
+            switch (v - 6) {
+            case 1:
+                nas->UserInfo.status = 3;
+                Roo_FindNewSquare(e);
+                D_800C5BF4 = Random(3) + 1;
+                break;
+            case 0:
+                nas->UserInfo.status = 3;
+                Roo_FindNewSquare(e);
+                D_800C5BF4 = 0x32;
+                break;
+            case 2:
+                nas->UserInfo.status = 4;
+                nas->UserInfo.user2 = 0x19;
+                Roo_FindNewSquare(e);
+                D_800C5BF4 = Random(3) + 1;
+                break;
+            case 3:
+            case 4:
+                nas->UserInfo.status = v;
+                Roo_FindNewSquare(e);
+                D_800C5BF4 = 0x32;
+                break;
+            }
+            D_800C5BF0 = 0;
+            sfx = 0x543;
+            if (D_8004E0D8 & 1) {
+                sfx = 0x542;
+            }
+            PlaySfx(sfx, NULL, &e->unk10, 0x1000, 0x1E00, 0);
+        }
+        Roo_UpdateVelocities(e);
+        break;
+    case 3:
+    case 4:
+    case 9:
+    case 10:
+        Roo_UpdatePosition(e);
+        if (!Roo_Bounce(nas)) {
+            break;
+        }
+        tx = (e->unk10.x + 0x800) >> 9;
+        tz = (e->unk10.z + 0x800) >> 9;
+        if ((u32)tx < 8 && tz >= 0 && tz < 8 && D_800C5BF0 < 100) {
+            if (nas->UserInfo.status == 3) {
+                if (D_800C5BF0 == D_800C5BF4) {
+                    D_800C53DC[tx][tz].unkA = 5;
+                    D_800C53DC[tx][tz].unk12 = 7;
+                } else {
+                    D_800C53DC[tx][tz].unkA = 5;
+                    D_800C53DC[tx][tz].unk12 = 5;
+                    D_800C53DC[tx][tz].unk14 = 0x78;
+                }
+                Tile_Update(tx, tz);
+                if (D_800C5BF0 == 0) {
+                    D_800C53DC[tx][tz].unk18[0] = 1;
+                } else {
+                    D_800C53DC[tx][tz].unk18[0] = 0;
+                }
+            } else if (nas->UserInfo.status == 4) {
+                if (D_800C5BF0 == D_800C5BF4) {
+                    nas->UserInfo.status = 5;
+                    nas->UserInfo.user1 = 0x8C;
+                    GotoLinkAnim(anim, 2);
+                }
+            } else if (nas->UserInfo.status == 9) {
+                Roo_ShootAtHumans(nas);
+            } else if (nas->UserInfo.status == 10) {
+                i = 0;
+                for (;;) {
+                    s32 cx;
+                    s32 cz;
+
+                    if (i >= 4) {
+                        break;
+                    }
+                    near = 0;
+                    if (D_8005A614[i + 0x5C] == 0) {
+                        if (abs(e->unk10.x - Heroes[i].hero_eng->unk10.x) < 0x480) {
+                            near = abs(e->unk10.z - Heroes[i].hero_eng->unk10.z) < 0x480;
+                        }
+                        if (near && !(Heroes[i].hero_status & 0x800)) {
+                            cx = (e->unk10.x + 0x800) >> 9;
+                            cz = (e->unk10.z + 0x800) >> 9;
+                            D_800C53DC[cx][cz].unkA = 5;
+                            D_800C53DC[cx][cz].unk12 = 6;
+                            D_800C53DC[cx][cz].unk14 = D_800C3998[D_800C5BB8][0];
+                            Tile_Update((e->unk10.x + 0x800) >> 9, (e->unk10.z + 0x800) >> 9);
+                        }
+                    }
+                    i++;
+                }
+            }
+            D_800C5BF0++;
+        }
+        if (Roo_FindNewSquare(e)) {
+            nas->UserInfo.status = 2;
+            for (k = 0; k < 8; k++) {
+                for (j = 0; j < 8; j++) {
+                    if (D_800C53DC[k][j].unk10 == 5) {
+                        D_800C53DC[k][j].unk10 = 0;
+                    }
+                }
+            }
+            nas->UserInfo.user1 = Random(0x50) + 0x64;
+            GotoLinkAnim(anim, 1);
+            D_800C5304 = 0;
+        }
+        Roo_UpdateVelocities(e);
+        break;
+    case 5:
+        if (nas->UserInfo.user1 > 0) {
+            nas->UserInfo.user1--;
+        }
+        e->unk5E = 1;
+        e->unk1E += 0x16;
+        if (e->sub->unk74 == 0x4012) {
+            PlaySfx(0x522, NULL, &e->unk10, 0x1000, 0x1E00, 0);
+            Roo_FireRocket(e);
+        }
+        if (nas->UserInfo.user1 <= 0 || (D_8005A644 & 0x801)) {
+            nas->UserInfo.status = 4;
+            D_800C5BF0 = 100;
+            GotoLinkAnim(anim, 1);
+            D_800C5304 = 0;
+        }
+        break;
+    }
+}
 
 void Roo_UpdatePosition(EXTengine *eng) {
     u32 x;

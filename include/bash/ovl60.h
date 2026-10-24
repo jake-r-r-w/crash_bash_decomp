@@ -660,4 +660,10 @@ extern u16 D_800C4524[][4];
 
 extern s32 D_800C5334[];
 
+/* Plot_PogoRipperRoo: the move-pattern tables (normal, alt), the tile counter and its target */
+extern s32 D_800C468C[];
+extern s32 D_800C46C8[];
+extern s32 D_800C5BF0;
+extern s32 D_800C5BF4;
+
 #endif /* BASH_OVL60_H */
