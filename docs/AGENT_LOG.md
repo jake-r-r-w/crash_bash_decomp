@@ -181,9 +181,8 @@ and current tools).
   entry offset), diff it against retail, and see whether the change sits
   where the C still differs (done for `PlotTransmuterBeam`: the copies
   differ only away from its last diff, but a build that adds code to a loop
-  shows how loop.c scored that loop; PROTOTYPES.md). Align copies by
-  opcode and register with immediates dropped, or every relocated
-  `%lo` shows up as a change. `func_800B5E28` and `func_800B8294` are the
+  shows how loop.c scored that loop; PROTOTYPES.md). `decomp.py protos
+  NAME --diff DISC` prints the aligned hunks. `func_800B5E28` and `func_800B8294` are the
   same code but two `andi` masks (`0xF0` in ovl5d, `0xE0` in ovl64), so one
   match ports to the other.
 - **Finish the demo discs' symbols** (PROTOTYPES.md; applied: 135 function
@@ -580,7 +579,8 @@ Newest first, a few lines each. Details are in the commits.
   The protos copies (Sep 14, JP) differ only elsewhere; JP bounds loop.c's
   score for the hoisted constant. Six Diff patterns rows; row 1600's
   block-local view pointer advice corrected. ARCHITECTURE.md maps the
-  extension to the leak's `EXTtransmuter`.
+  extension to the leak's `EXTtransmuter`. New: `decomp.py protos NAME
+  --diff DISC` aligns a build's copy with retail.
 
 - **2026-10-23 (hand: `func_800BE914` parked):** from the swarm's
   checkpoint (registers 7/170). The four `move v0,X` copies before the
