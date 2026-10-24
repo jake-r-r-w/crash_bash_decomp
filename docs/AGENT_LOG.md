@@ -16,9 +16,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `main.exe` function matches and `main.c` is split (2026-10-23); Phase 2's
   naming and data are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2526/2537 game functions matched (95.71% of game code bytes, 2026-10-24):
-  **main.exe, the engine, ovl61, ovl64, ovl65, ovl66, ovl67, ovl69 and ovl6a
-  are complete**; 11 left (ovl5d 1, ovl5e 1, ovl5f 2, ovl60 1, ovl62 2,
+- 2527/2537 game functions matched (96.28% of game code bytes, 2026-10-24):
+  **main.exe, the engine, ovl5e, ovl61, ovl64, ovl65, ovl66, ovl67, ovl69
+  and ovl6a are complete**; 10 left (ovl5d 1, ovl5f 2, ovl60 1, ovl62 2,
   ovl63 3, ovl68 1), every one tried by the swarm at least once. All 564
   PsyQ functions (Sony objects). Five parked by hand, `func_800BE914`,
   `PlotTransmuterBeam` (one instruction off), `func_800B4048`,
@@ -57,7 +57,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**The overlays' last 11 functions**, all tried by the swarm. Hand-match
+**The overlays' last 10 functions**, all tried by the swarm. Hand-match
 them from their checkpoints, closest first (Open leads), with their
 earlier compiles (`decomp.py protos`) as evidence. Pointing the swarm at
 functions it had never tried (`--only` the untried list, smallest first,
@@ -147,11 +147,15 @@ and current tools).
   loops (MATCHING.md, Diff patterns). Try the natural form of such drafts
   first. The checkpoints left (stage, differing insns; read
   `../crash_bash_decomp-swarm/checkpoints/*/best.json` from the host, the
-  container doesn't mount it): ovl5e `800B87A0` structure 30/1461, then
-  ovl63 `800B7D94` structure 216/346 and further off (`CheckMineToBoss`
-  is parked, below). ovl63 `800B76A4` (registers 87/444) matched by writing
-  it in its matched siblings' idioms (`func_800B7190`, ovl65's
-  `func_800B9020`): compare a near miss with its siblings line by line. Where block 0 (or any block) is an order or allocation tie, run
+  container doesn't mount it): ovl63 `800B7D94` structure 216/346 and
+  further off (`CheckMineToBoss` is parked, below). ovl63 `800B76A4`
+  (registers 87/444) matched by writing it in its matched siblings' idioms
+  (`func_800B7190`, ovl65's `func_800B9020`): compare a near miss with its
+  siblings line by line. ovl5e `800B87A0` (structure 30/1461) matched once
+  every swarm `goto` was written out as the repeated tails jump2 cross-jumps,
+  last arm kept (MATCHING.md, Diff patterns). Its `volatile` read and
+  `(s16 *)` cast had stopped mattering by then, so test a draft's odd reads
+  again at the end. Where block 0 (or any block) is an order or allocation tie, run
   `decomp.py orders NAME --lines A-B` on the checkpoint's C before reading
   the dumps by hand: it matched `func_800B8294` from the natural form after
   nine swarm sessions had stopped at 21-31 differing (MATCHING.md, Using the
@@ -625,6 +629,16 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-24 (hand: ovl5e `func_800B87A0` matched, ovl5e complete):**
+  from the swarm's checkpoint (structure 30/1461, 5844 bytes, header merged
+  by hand). Natural forms through batch `try`: a two-store status tail and
+  per-case slide tests (18), then case 9's inner switch, whose body layout
+  and `beq` delay slot only fitted with `default:` between the cases (0).
+  Then the swarm's shapes came out one at a time while it still matched:
+  the `volatile` and `(s16 *)` reads, the stats temps, and every `goto`
+  (`drop`, `clear`, `plat`, `scale`, `tail`) written out as repeated tails.
+  That put the inner switch back in plain order. Two Diff patterns rows.
 
 - **2026-10-24 (hand: ovl63 `func_800B76A4` matched):** from the swarm's
   checkpoint (registers 87/444, header merged by hand onto
