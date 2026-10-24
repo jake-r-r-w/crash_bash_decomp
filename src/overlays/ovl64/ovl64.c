@@ -1875,7 +1875,7 @@ void func_800B7508(s32 arg0) {
             ai->AImode = 1;
             break;
         }
-        if (((s32 (*)(s32))func_800B8E4C)(arg0) == 0) {
+        if (func_800B8E4C(arg0) == 0) {
             p = func_800864CC(arg0, 0x40);
             if (p == target) {
                 ai->AImode = 1;
@@ -1942,7 +1942,7 @@ void func_800B7508(s32 arg0) {
             ai->AImode = 1;
             break;
         }
-        if (((s32 (*)(s32))func_800B8E4C)(arg0) == 0) {
+        if (func_800B8E4C(arg0) == 0) {
             p = func_800864CC(arg0, 0x40);
             if (p != target && (Heroes[p].hero_immunity | Heroes[p].hero_frozen) == 0) {
                 if (D_8005A680 == 0 || p != mate) {
@@ -2391,7 +2391,7 @@ s32 func_800B8D98(s32 arg0) {
     return 0;
 }
 
-s32 func_800B8E4C(void) {
+s32 func_800B8E4C(s32 player) {
     return 0;
 }
 

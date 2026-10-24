@@ -137,7 +137,7 @@ void func_800B3428();
 
 void func_800B359C();
 
-s32 func_800B8E4C(void);
+s32 func_800B8E4C(s32 player);
 
 s32 func_800B8E54(void);
 
