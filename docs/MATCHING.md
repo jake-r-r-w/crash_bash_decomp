@@ -202,6 +202,15 @@ first diff:
 - **Matched C:** grep `src/` for the same globals, callees or shape (the same
   loop, the same struct offsets). A sibling's C often shows the idiom.
   Example: `Random` and `func_800155FC` share the seed step.
+- **The same instructions elsewhere:** `decomp.py idiom 'move A, B; sll B, A, N'`
+  finds an instruction pattern in the matched functions' asm, smallest first,
+  and prints the C lines behind each hit from a `-g` build. Placeholders bind
+  one operand each (two register placeholders are two registers), `*` is any
+  operand, `...` a gap, `N(A)` a memory operand; `move` and `li` stand for
+  splat's `addu`/`addiu` forms (the syntax is in `tools/scripts/idiom.py`).
+  For `func_800B4048`'s copy before a shift, it finds `j = i & 3;` in
+  `func_800B3740` and its siblings: the copy's destination lives on after the
+  shift. `--all` searches unmatched functions too.
 - **Names and types:** check `include/bash/*.h` and the leaked minigame
   headers (`bash/tank.h`, `pogo.h`, `arkenoid.h`, `polar.h`; see
   [ARCHITECTURE.md](ARCHITECTURE.md), Leaked source) for the function's

@@ -2208,6 +2208,106 @@ def cmd_jtrace(a):
     print(jtrace.report(runs, names, a.cross))
 
 
+def unit_lines(src, cfg):
+    """{function: {instruction index: source line}} for every function in the unit src, from one
+    -g build (cpp keeps its line markers, as in c_lines). Empty when the build fails."""
+    os.makedirs("build/idiom", exist_ok=True)
+    o = f"build/idiom/{src.replace('/', '_')}.o"
+    cmd = re.sub(r"^(\S*cpp\b[^|]*?)\s-P\b", r"\1", unit_pipeline(src, o, cfg, "-g"), count=1)
+    if run("set -o pipefail; " + cmd).returncode:
+        return {}
+    return objdump_lines(run([X + "objdump", "-dl", o]).stdout, os.path.basename(src))
+
+
+def objdump_lines(text, want):
+    """{function: {instruction index: line in the file named WANT}} from `objdump -dl` TEXT."""
+    out, cur, line, base, pending = {}, None, None, None, None
+    for l in text.splitlines():
+        # a function's header is followed by `name():`; -g's LM<n> line labels look the same but aren't
+        m = re.match(r"^[0-9a-f]+ <([\w.$]+)>:$", l)
+        if m:
+            pending = m.group(1)
+            continue
+        if pending and l == f"{pending}():":
+            cur, base, line = out.setdefault(pending, {}), None, None
+            pending = None
+            continue
+        pending = None
+        m = re.match(r"^(\S+):(\d+)(?: \(discriminator \d+\))?$", l)
+        if m:
+            line = int(m.group(2)) if os.path.basename(m.group(1)) == want else None
+            continue
+        m = OBJ_LINE.match(l)
+        if m and cur is not None:
+            off = int(m.group(1), 16)
+            base = off if base is None else base
+            cur[(off - base) // 4] = line
+    return out
+
+
+def asm_texts(funcs):
+    """{key: instruction texts} of every function that has an asm file. Reading ~2500 of them
+    through Docker's bind mount takes ~10 s, so they are kept in build/idiom/asm.json until
+    functions.json changes (`index` rewrites it after every split)."""
+    st = os.stat(P_FUNCS)
+    stamp, path = f"{st.st_mtime_ns}:{st.st_size}", "build/idiom/asm.json"
+    cache = jload(path, {}) if os.path.exists(path) else {}
+    if cache.get("stamp") == stamp:
+        return cache["texts"]
+    texts = {k: parse_asm(e["asm"])[3] for k, e in funcs.items() if e.get("asm") and os.path.exists(e["asm"])}
+    os.makedirs("build/idiom", exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump({"stamp": stamp, "texts": texts}, f, separators=(",", ":"))
+    return texts
+
+
+def cmd_idiom(a):
+    """Matched functions whose asm has an instruction pattern, smallest first, with the C lines
+    behind each hit (tools/scripts/idiom.py has the pattern syntax)."""
+    import idiom
+    proj, funcs = need_proj(), need_funcs()
+    try:
+        pat = idiom.pattern(a.pattern)
+    except ValueError as ex:
+        die(str(ex))
+    stat, syms = statuses(funcs)[0], sym_names()
+    want = ("matched", "todo", "blocked", "in_progress") if a.all else ("matched",)
+    every = asm_texts(funcs)
+    hits, searched = [], 0
+    for k, e in sorted(funcs.items(), key=lambda kv: (kv[1]["size"], kv[0])):
+        if stat[k] not in want or (a.seg and not e["seg"].startswith(a.seg)) or k not in every:
+            continue
+        searched += 1
+        texts = every[k]
+        for s, end, b in idiom.find(pat, [idiom.insn(t) for t in texts], a.gap):
+            hits.append((k, e, texts, s, end, b))
+    nfunc = len({h[0] for h in hits})
+    print(f"IDIOM {a.pattern!r}: {len(hits)} hit(s) in {nfunc} of {searched} "
+          f"{'functions' if a.all else 'matched functions'}" + (f" (showing {a.top})" if nfunc > a.top else ""))
+    keep = list(dict.fromkeys(h[0] for h in hits))[:a.top]
+    shown = [h for h in hits if h[0] in keep]
+    units = sorted({h[1]["src"] for h in shown if stat[h[0]] == "matched" and h[1].get("src")})
+    cfg = mk_config()
+    make_flags("CPPFLAGS"), make_flags("ASFLAGS")          # cached before the threads use them
+    with ThreadPoolExecutor(max(1, min(8, len(units)))) as pool:
+        lines = dict(zip(units, pool.map(lambda s: unit_lines(s, cfg), units)))
+    for k, e, texts, s, end, b in shown:
+        name = cur_name(k, e, syms)
+        lm = lines.get(e.get("src"), {}).get(name, {})
+        print(f"\n{name}  {e['seg']}  +{s * 4:#x}  ({e['size']} B)"
+              + ("  " + " ".join(f"{x}={v}" for x, v in sorted(b.items())) if b else ""))
+        for i in range(max(0, s - a.context), min(len(texts), end + a.context)):
+            ln = lm.get(i)
+            print(f"  {'>' if s <= i < end else ' '} {i * 4:4x}  {texts[i]:<44}{f'  L{ln}' if ln else ''}")
+        ls = sorted({lm[i] for i in range(s, end) if lm.get(i)})
+        src_lines = read(e["src"]).split("\n") if ls else []
+        for ln in ls:
+            print(f"    {e['src']}:{ln}  {src_lines[ln - 1].strip()[:110]}")
+        if not ls:
+            print("    (no C lines: " + ("not matched)" if stat[k] != "matched" else
+                                         "the -g build failed)" if not lm else "none for these instructions)"))
+
+
 def cmd_trace(a):
     """Follow one insn, or every insn that mentions a variable's pseudo, through cc1's pass dumps,
     and name the pass that rewrote, moved or deleted each (tools/scripts/ptrace.py)."""
@@ -5291,6 +5391,15 @@ def main():
     p.add_argument("--reg", type=int, help="every insn that mentions this pseudo")
     p.add_argument("--file", help="trace a test copy of the function, as try --file compiles it")
     p.set_defaults(fn=cmd_trace)
+    p = sub.add_parser("idiom", help="matched functions whose asm has an instruction pattern, with the "
+                       "C lines behind each hit, e.g. 'move A, B; sll B, A, N' (syntax: idiom.py)")
+    p.add_argument("pattern")
+    p.add_argument("--seg", help="segment prefix")
+    p.add_argument("--top", type=int, default=12, help="functions to show, smallest first")
+    p.add_argument("--gap", type=int, default=8, help="most instructions a `...` skips")
+    p.add_argument("--context", type=int, default=1, help="instructions shown around each hit")
+    p.add_argument("--all", action="store_true", help="search unmatched functions too (no C for them)")
+    p.set_defaults(fn=cmd_idiom)
     p = sub.add_parser("protos", help="a function's earlier compiles: its closest match in each "
                        "scanned prototype or demo disc (protos/*/scan.md)")
     p.add_argument("func")

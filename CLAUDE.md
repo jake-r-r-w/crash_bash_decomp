@@ -46,7 +46,9 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   For a big function, `decomp.py regions NAME` aligns the code and scores it
   block by block with C lines (MATCHING.md, Big functions); the swarm's big
   mode works and ranks checkpoints by it. Also: `similar NAME` (matched
-  functions with the same code), `vars NAME` (the variable behind a register
+  functions with the same code), `idiom 'PATTERN'` (matched functions with an
+  instruction pattern, e.g. `'move A, B; sll B, A, N'`, and the C lines behind
+  each hit), `vars NAME` (the variable behind a register
   swap), `sched NAME` (why cc1 allocated and scheduled it so: priorities, each
   block's memory-insn count, and the rule that took each insn off the ready
   list: priority, birthing, class, potential hazard or luid), `jtrace NAME`
