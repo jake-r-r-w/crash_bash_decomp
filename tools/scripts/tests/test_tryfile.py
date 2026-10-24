@@ -31,5 +31,25 @@ class UnitPipeline(unittest.TestCase):
         self.assertIn("-fno-rerun-cse-after-loop", cmd)
 
 
+class Rank(unittest.TestCase):
+    """try --file with several files ranks them best first."""
+
+    @staticmethod
+    def res(path, ndiff, exact, ok, paired):
+        return {"path": path, "score": {"ndiff": ndiff, "exact": exact, "ok": ok, "paired": paired}}
+
+    def test_match_first_then_regions_score_then_fewer_diffs(self):
+        out = sorted([
+            {"path": "broken", "error": "x.c:3: parse error"},
+            self.res("fewer_exact", 4, 240, 25, 255),
+            self.res("more_exact", 9, 245, 24, 250),
+            self.res("more_blocks", 8, 245, 25, 250),
+            self.res("fewer_diffs", 7, 245, 25, 250),
+            self.res("match", 0, 255, 26, 255),
+        ], key=decomp.try_rank)
+        self.assertEqual([r["path"] for r in out],
+                         ["match", "fewer_diffs", "more_blocks", "more_exact", "fewer_exact", "broken"])
+
+
 if __name__ == "__main__":
     unittest.main()

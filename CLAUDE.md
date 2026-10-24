@@ -42,7 +42,9 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   The real cc1 is in the container: dump any pass (`-dr`/`-ds`/`-dc` too) and
   try C shapes in small test files before rebuilding the function
   (MATCHING.md, Using the compiler directly); `try NAME --file F.c` diffs a
-  test copy of the whole function with its unit's settings in about 2 s.
+  test copy of the whole function with its unit's settings in about 2 s, and
+  `--file A.c B.c ...` compiles several in parallel and ranks them by the
+  regions score.
   For a big function, `decomp.py regions NAME` aligns the code and scores it
   block by block with C lines (MATCHING.md, Big functions); the swarm's big
   mode works and ranks checkpoints by it. Also: `similar NAME` (matched

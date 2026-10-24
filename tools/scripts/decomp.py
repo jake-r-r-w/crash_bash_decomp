@@ -713,6 +713,68 @@ def check_file(key, e, proj, name, path):
     return compare_obj(key, e, proj, name, obj, link=False)
 
 
+def try_rank(r):
+    """Sort key of one batch result (best first): a match, then the regions score (exact
+    instructions, matching blocks, paired instructions), then fewer differing instructions; a
+    file that didn't build goes last."""
+    s = r.get("score")
+    if s is None:
+        return (1, 0, 0, 0, 0)
+    if s["ndiff"] == 0:
+        return (0, -1 << 30, 0, 0, 0)
+    return (0, -s["exact"], -s["ok"], -s["paired"], s["ndiff"])
+
+
+def try_files(key, e, proj, name, paths, jobs=None):
+    """`try --file A.c B.c ...`: compile every file as check_file does, in parallel, rank them by
+    try_rank and print the table, then the best one's diff. Returns (ok, ndiffs) of the best."""
+    import regions
+    src = e.get("src") or locate_def(name)
+    if not src:
+        die(f"can't find the source file defining {name}")
+    cfg = mk_config()
+    make_flags("CPPFLAGS"), make_flags("ASFLAGS")          # cached before the threads use them
+    tw, vram = target_words(e, proj), key_vram(key)
+    ttext, labels = parse_asm(e["asm"])[3], asm_labels(e["asm"], vram)
+    os.makedirs("build/tryfile", exist_ok=True)
+
+    def one(job):
+        k, path = job
+        obj = f"build/tryfile/{k}_{os.path.basename(path)}.o"
+        if os.path.exists(obj):
+            os.remove(obj)
+        r = run("set -o pipefail; " + unit_pipeline(src, obj, cfg, c_path=path))
+        if r.returncode:
+            return {"path": path, "error": compile_error(path, r.stderr + r.stdout).splitlines()[-1]}
+        cw, _, relocs = obj_func(obj, name)
+        if not cw:
+            return {"path": path, "error": f"{name} not found in it"}
+        diffs, ops, nt, nc = compare(tw, cw, relocs, vram)
+        res = regions.score(tw[:nt], cw[:nc], ttext[:nt], relocs, vram, labels)
+        return {"path": path, "obj": obj, "score": {
+            "stage": diff_stage(tw, cw, diffs, ops, nt, nc), "ndiff": len(diffs), "total": max(nt, nc),
+            "exact": res["exact"], "ok": res["ok"], "blocks": res["total"], "paired": res["paired"],
+            "len": res["len"]}}
+    with ThreadPoolExecutor(jobs or max(1, min(8, (os.cpu_count() or 2) - 1))) as pool:
+        out = sorted(pool.map(one, enumerate(paths)), key=try_rank)
+    print(f"TRY {name}: {len(paths)} files, best first (exact instructions, then matching blocks, "
+          "then paired)")
+    w = max(len(r["path"]) for r in out)
+    print(f"  {'file':<{w}}  {'stage':<12} {'differ':>9} {'exact':>9} {'blocks':>7} {'paired':>9}")
+    for r in out:
+        s = r.get("score")
+        if s is None:
+            print(f"  {r['path']:<{w}}  BUILD FAILED: {r['error'][:90]}")
+            continue
+        print(f"  {r['path']:<{w}}  {s['stage']:<12} {s['ndiff']:>4}/{s['total']:<4} "
+              f"{s['exact']:>4}/{s['len']:<4} {s['ok']:>3}/{s['blocks']:<3} {s['paired']:>4}/{s['len']:<4}")
+    best = out[0]
+    if "obj" not in best:
+        return False, None
+    print(f"\nbest: {best['path']}")
+    return compare_obj(key, e, proj, name, best["obj"], link=False)
+
+
 def compare_obj(key, e, proj, name, obj, quiet=False, link=True):
     """Compare NAME in the object OBJ with the target and print the diff (or MATCH, with the
     whole binary's link check when LINK). Returns (ok, ndiffs)."""
@@ -1484,11 +1546,15 @@ def cmd_asm(a):
 def cmd_try(a):
     proj, funcs = need_proj(), need_funcs()
     syms = sym_names()
-    if a.file:                          # a test file: no attempt is recorded
+    if a.file:                          # test files: no attempt is recorded
         if len(a.funcs) != 1:
             die("try --file compares one function")
         key, e = find_func(funcs, a.funcs[0])
-        ok, _ = check_file(key, e, proj, cur_name(key, e, syms), a.file)
+        name = cur_name(key, e, syms)
+        if len(a.file) == 1:
+            ok, _ = check_file(key, e, proj, name, a.file[0])
+        else:
+            ok, _ = try_files(key, e, proj, name, a.file, a.jobs)
         sys.exit(0 if ok else 1)
     st = jload(P_STATE, {})
     all_ok = True
@@ -5246,9 +5312,12 @@ def main():
     p.set_defaults(fn=cmd_asm)
     p = sub.add_parser("try", help="build and diff one or more functions")
     p.add_argument("funcs", nargs="+")
-    p.add_argument("--file", help="compile this C file (a test copy of the function, with its own "
-                   "#includes) with the function's unit settings and diff it, without editing or "
-                   "rebuilding the unit; no attempt is recorded")
+    p.add_argument("--file", nargs="+", metavar="FILE",
+                   help="compile this C file (a test copy of the function, with its own #includes) "
+                   "with the function's unit settings and diff it, without editing or rebuilding the "
+                   "unit; no attempt is recorded. With several files: compile them in parallel, rank "
+                   "them by the regions score and show the best one's diff")
+    p.add_argument("--jobs", type=int, help="--file with several files: parallel compiles")
     p.set_defaults(fn=cmd_try)
     p = sub.add_parser("regions", help="score a function block by block (aligned diff, C lines)")
     p.add_argument("func")
