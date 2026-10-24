@@ -1694,7 +1694,80 @@ INCLUDE_RODATA("asm/nonmatchings/overlays/ovl64/ovl64", D_800B337C);
 
 INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B7508);
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl64/ovl64", func_800B8294);
+void func_800B8294(s32 arg0) {
+    EXTengine *eng;
+    EXTheromove *mv;
+    s32 rx;
+    s32 rz;
+    s32 lx;
+    s32 lz;
+    s32 dx;
+    s32 dz;
+    s32 ang;
+    s32 c;
+    s32 s;
+    s32 gx;
+    s32 gz;
+    s32 id;
+    s32 i;
+    u8 v;
+
+    eng = Heroes[arg0].hero_eng;
+    rx = eng->unk10.x;
+    rz = eng->unk10.z;
+    mv = Heroes[arg0].hero_move;
+    dx = D_80068BD4[mv->forward_angle & 0xFFF].unk2 * 15 >> 9;
+    ang = mv->forward_angle;
+    c = D_80068BD4[(ang + 0x400) & 0xFFF].unk2;
+    s = D_80068BD4[(ang + 0x800) & 0xFFF].unk2;
+    dz = c * 15 >> 9;
+    lx = rx + dx;
+    rx = rx - dx;
+    lz = rz + dz;
+    rz = rz - dz;
+    dx = c * 11 >> 7;
+    dz = s * 11 >> 7;
+    lx += dx;
+    lz += dz;
+    rx += dx;
+    rz += dz;
+    dx = c * 256 >> 12;
+    dz = s * 256 >> 12;
+    id = (arg0 << 5) | 0x80;
+    i = 0;
+    while ((u32)(lx + 0x7FF) < 0xFFF && lz < 0x800 && lz >= -0x7FF && i < 8) {
+        gx = (lx >> 8) + 10;
+        gz = 9 - (lz >> 8);
+        v = D_8009D90C[gz * 20 + gx].unk0;
+        if ((v & 0xE0) == id) {
+            v &= 0x1F;
+        }
+        lx += dx;
+        lz += dz;
+        Heroes[arg0].hero_ai->AIforward_left[i] = v;
+        i++;
+    }
+    for (; i < 8; i++) {
+        Heroes[arg0].hero_ai->AIforward_left[i] = 0xFE;
+    }
+    i = 0;
+    while ((u32)(rx + 0x7FF) < 0xFFF && rz < 0x800 && rz >= -0x7FF && i < 8) {
+        gx = (rx >> 8) + 10;
+        gz = 9 - (rz >> 8);
+        v = D_8009D90C[gz * 20 + gx].unk0;
+        if ((v & 0xE0) == id) {
+            v &= 0x1F;
+        }
+        rx += dx;
+        rz += dz;
+        Heroes[arg0].hero_ai->AIforward_right[i] = v;
+        i++;
+    }
+    for (; i < 8; i++) {
+        Heroes[arg0].hero_ai->AIforward_right[i] = 0xFE;
+    }
+}
+
 
 s32 func_800B85A4(s32 player) {
     NAS *bestNas;

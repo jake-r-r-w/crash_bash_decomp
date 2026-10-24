@@ -428,4 +428,6 @@ extern s32 *D_800BB8E8[];
 
 void PlotBalloon(NAS *nas);
 
+void func_800B8294(s32 arg0);
+
 #endif /* BASH_OVL64_H */
