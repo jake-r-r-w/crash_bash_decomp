@@ -1838,7 +1838,149 @@ s32 func_800B76A4(VECTOR *pos, Ovl63Vec *out, s32 radius, s32 idx, s32 flags, Ov
     return found;
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800B7D94);
+s32 func_800B7D94(VECTOR *pos, Ovl63Vec *out, s32 radius, s32 idx, s32 flags, SVECTOR *rot) {
+    SLONG_XYZ p;
+    SLONG_XYZ hit;
+    Ovl63Vec d;
+    Ovl63Vec e;
+    SVECTOR rv;
+    MATRIX m;
+    VECTOR lp;
+    Ovl63SegObj *w;
+    Ovl63SegObj *obj;
+    u8 *data;
+    Ovl63SegTable *tbl;
+    s32 rad;
+    s32 best;
+    s32 found;
+    s32 n;
+    s32 i;
+    s32 one;
+    s32 t;
+    s32 dist;
+    s32 ang;
+    s32 r2;
+    s32 len;
+    s32 dx;
+    s32 dz;
+    s32 s;
+    s32 v;
+    s32 side;
+    s32 bad;
+
+    best = 0x7FFFFFFF;
+    found = 0;
+    rad = radius;
+    one = 0x1000;
+    bad = idx > (((Ovl63SegScene *)D_80058AD0)->unk0 ?
+                 *(s32 *)(*(s32 *)(((Ovl63SegScene *)D_80058AD0)->data + 0x14) +
+                          (s32)((Ovl63SegScene *)D_80058AD0)->data + 0x14) :
+                 0);
+    if (bad) {
+        return 0;
+    }
+    data = ((Ovl63SegScene *)D_80058AD0)->data;
+    tbl = (Ovl63SegTable *)(data + (*(s32 *)(data + 0x14) + 0x14));
+    w = (Ovl63SegObj *)((u8 *)&tbl->offs[idx] +
+                        ((Ovl63SegTable *)(*(s32 *)(data + 0x14) + (s32)data + 0x14))->offs[idx]);
+    if (w != NULL) {
+        i = 0;
+        dist = 0;
+        t = 0;
+        obj = w;
+        n = w->count;
+        r2 = rad * rad;
+        rv.vx = -rot->vx;
+        rv.vy = -rot->vy;
+        rv.vz = -rot->vz;
+        RotMatrix(&rv, &m);
+        ApplyMatrixLV(&m, pos, &lp);
+        for (;; i++, w = (Ovl63SegObj *)((u8 *)w + sizeof(Ovl63Seg))) {
+            s32 gt;
+
+            if (i >= n) {
+                break;
+            }
+            ang = obj->segs[i].ang;
+            if (flags & 1) {
+                ang += 0x800;
+            }
+            d.vx = lp.vx - w->segs[0].p0.x;
+            d.vz = lp.vz - w->segs[0].p0.z;
+            side = ((d.vx * D_80068BD4[-ang & 0xFFF].unk2) >> 12) -
+                ((d.vz * D_80068BD4[(-ang - 0x400) & 0xFFF].unk2) >> 12);
+            if (side < 0 || side > rad) {
+                continue;
+            }
+            d.vy = 0;
+            e.vx = w->segs[0].p1.x - w->segs[0].p0.x;
+            e.vy = 0;
+            e.vz = w->segs[0].p1.z - w->segs[0].p0.z;
+            len = (w->segs[0].len * w->segs[0].len) >> 12;
+            if (len != 0) {
+                t = (e.vx * d.vx + e.vz * d.vz) / len;
+            }
+            if (t < 0) {
+                p = w->segs[0].p0;
+                dx = p.x - lp.vx;
+                dz = p.z - lp.vz;
+                dist = dx * dx + dz * dz;
+                if (dist > r2) {
+                    continue;
+                }
+            }
+            gt = one < t;
+            if (gt) {
+                p = w->segs[0].p1;
+                dx = p.x - lp.vx;
+                dz = p.z - lp.vz;
+                dist = dx * dx + dz * dz;
+                if (dist > r2) {
+                    continue;
+                }
+            }
+            if (t >= 0 && !gt) {
+                p.x = ((t * e.vx) >> 12) + w->segs[0].p0.x;
+                p.y = ((t * e.vy) >> 12) + w->segs[0].p0.y;
+                p.z = ((t * e.vz) >> 12) + w->segs[0].p0.z;
+                dx = p.x - lp.vx;
+                dz = p.z - lp.vz;
+                dist = dx * dx + dz * dz;
+                if (dist > r2) {
+                    continue;
+                }
+            }
+            if (dist < 0) {
+                dist = 0x7FFFFFFF;
+                printf(D_800B3310);
+            }
+            if (dist > best) {
+                continue;
+            }
+            best = dist;
+            hit.x = p.x;
+            hit.y = p.y;
+            hit.z = p.z;
+            if (best > r2) {
+                continue;
+            }
+            s = csqrt(best);
+            out->vy = ang;
+            pos->vx += out->vx;
+            pos->vz += out->vz;
+            ang = (-ang + 0x400) & 0xFFF;
+            v = (rad << 6) - s + 2;
+            out->vx = (v * D_80068BD4[(((ang + rot->vy) & 0xFFF) - 0x400) & 0xFFF].unk2) >> 18;
+            out->vz = (v * D_80068BD4[(ang + rot->vy) & 0xFFF].unk2) >> 18;
+            found = 1;
+            hit.y = obj->segs[i].ang;
+            if (flags & 2) {
+                return 1;
+            }
+        }
+    }
+    return found;
+}
 
 INCLUDE_RODATA("asm/nonmatchings/overlays/ovl63/ovl63", D_800B3310);
 

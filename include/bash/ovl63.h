@@ -76,8 +76,6 @@ s32 func_800B406C(s32 arg0);
 s32 func_800B41DC(s32 arg0);
 s32 func_800B442C(s32 arg0);
 
-void func_800B7D94(void);
-
 void func_800B4A4C();
 void func_800B8890();
 void func_800B8D68();
@@ -1382,5 +1380,7 @@ typedef struct Ovl63SegBlend {
 } Ovl63SegBlend;
 
 s32 func_800B76A4(VECTOR *pos, Ovl63Vec *out, s32 radius, s32 idx, s32 flags, Ovl63SegBlend *bl);
+
+s32 func_800B7D94(VECTOR *pos, Ovl63Vec *out, s32 radius, s32 idx, s32 flags, SVECTOR *rot);
 
 #endif /* BASH_OVL63_H */
