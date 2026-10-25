@@ -406,7 +406,7 @@ void func_800BC038(NAS *arg0) {
                 return;
             case 1:
                 BC038Release(fux);
-                ((void (*)(EXTengine *, T_BC038Fux *))func_800BFAC0)(eng, fux);
+                func_800BFAC0(eng, fux);
                 func_800270B0(arg0);
                 return;
             case 2:
@@ -437,7 +437,7 @@ void func_800BC038(NAS *arg0) {
                 return;
             case 1:
                 BC038Release(fux);
-                ((void (*)(EXTengine *, T_BC038Fux *))func_800BFAC0)(eng, fux);
+                func_800BFAC0(eng, fux);
                 func_800270B0(arg0);
                 return;
             default:
@@ -556,7 +556,7 @@ void func_800BC038(NAS *arg0) {
                 func_800270B0(arg0);
                 return;
             case 1:
-                ((void (*)(EXTengine *, T_BC038Fux *))func_800BFAC0)(eng, fux);
+                func_800BFAC0(eng, fux);
                 func_800270B0(arg0);
                 return;
             case 2:
@@ -597,7 +597,7 @@ void func_800BC038(NAS *arg0) {
                 func_800270B0(arg0);
                 return;
             case 1:
-                ((void (*)(EXTengine *, T_BC038Fux *))func_800BFAC0)(eng, fux);
+                func_800BFAC0(eng, fux);
                 func_800270B0(arg0);
                 return;
             case 2:
@@ -1830,7 +1830,7 @@ s32 func_800BF928(EXTengine *eng, HitFlags *flags, u32 mask) {
     return -1;
 }
 
-void func_800BFAC0(EXTengine *eng) {
+void func_800BFAC0(EXTengine *eng, T_BC038Fux *fux) {
     PlaySfx(((HitSfxTable *)D_8009E424)->crate[Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
     func_8007A524(2, (s32 *)((u8 *)eng + 0x10), (s32)D_80052F94);
     if ((D_8009D750(eng) ^ 1) != 0) {

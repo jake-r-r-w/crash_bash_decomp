@@ -69,8 +69,6 @@ typedef struct {
 void func_800BEDE8(s32 arg0, s32 arg1);
 extern s32 (*D_8009D750)(EXTengine *);
 
-void func_800BFAC0(EXTengine *eng);
-
 void func_800BFC30(EXTengine *eng);
 
 extern u16 D_8009E080[][4];
@@ -199,6 +197,10 @@ static inline void BC038Release(T_BC038Fux *fux) {
 
 #define BC038_STATB(base, tbl, w) (((T_BC038Stats **)D_8009E488.tbl)[(base)[w].hero_name])
 #define BC038_STAT(tbl, w) BC038_STATB(Heroes, tbl, w)
+
+/* The crate breaks (func_800BC038 passes eng and fux). fux goes unused: a1 is
+ * never read, in every disc's copy. */
+void func_800BFAC0(EXTengine *eng, T_BC038Fux *fux);
 
 extern u16 D_800C46B8[];
 extern s32 D_8009E2B4[];
