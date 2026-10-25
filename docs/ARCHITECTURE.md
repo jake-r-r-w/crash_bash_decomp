@@ -380,7 +380,10 @@ code finds 15 code files; nothing else on the disc holds code.
   `Crate`, `CrateType`) and `func_800BE9D0` (Plot of five pickups); the
   engine's `InitScriptFX`/`PlotScriptFX` also serve `AST_SpecialFX`. The
   Plot of `PACrate`/`PACrateType` (`0x800B87A0`) is not a function start in
-  `ovl5d`.
+  `ovl5d`. The crate breaks through `func_800BFAC0(eng, fux)` (four paths
+  in `func_800BC038`): a random crate sfx, a type-2 effect at its position
+  (`func_8007A524`), then an `AST_CratePickup` (`0x206`) there unless the
+  hook `D_8009D750` returns 1.
 
 ### Leaked source
 

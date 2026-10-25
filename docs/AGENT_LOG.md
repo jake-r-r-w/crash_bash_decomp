@@ -16,10 +16,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `main.exe` function matches and `main.c` is split (2026-10-23); Phase 2's
   naming and data are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2531/2537 game functions matched (97.29% of game code bytes, 2026-10-25):
-  **main.exe, the engine, ovl5e, ovl60, ovl61, ovl64, ovl65, ovl66, ovl67,
-  ovl69 and ovl6a are complete**; 6 left (ovl5d 1, ovl5f 1, ovl62 2,
-  ovl63 1, ovl68 1), every one tried by the swarm at least once. All 564
+- 2532/2537 game functions matched (98.13% of game code bytes, 2026-10-25):
+  **main.exe, the engine, ovl5d, ovl5e, ovl60, ovl61, ovl64, ovl65, ovl66,
+  ovl67, ovl69 and ovl6a are complete**; 5 left (ovl5f 1, ovl62 2, ovl63 1,
+  ovl68 1), every one tried by the swarm at least once. All 564
   PsyQ functions (Sony objects). Four parked by hand, `func_800BE914`,
   `PlotTransmuterBeam` (one instruction off), `func_800B4048` and
   `CheckMineToBoss` (Open leads)
@@ -57,9 +57,14 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**The overlays' last 6 functions**, all tried by the swarm. Hand-match
-them from their checkpoints, closest first (Open leads), with their
-earlier compiles (`decomp.py protos`) as evidence. Pointing the swarm at
+**The overlays' last 5 functions**, all tried by the swarm. Four are
+parked by hand (Open leads). The fifth, ovl62 `PlotUkaPolarMask` (6472 B),
+has only the swarm's checkpoint (`checkpoints/ovl62_800C1584`: structure
+800/1618, but 1575/1618 exact and 201/205 blocks by `regions`; its log
+names the four blocks left). Hand-match it from there the way
+`func_800BC038` went (Open leads), with its earlier compiles (`decomp.py
+protos`: Oct 9 and PAL are the same compile, the older builds 20
+instructions shorter) as evidence. Pointing the swarm at
 functions it had never tried (`--only` the untried list, smallest first,
 no `--retry-failed`) matched 37 of 42 under 2 KB for $151 (~$4 a match),
 against $7.50 for the retry runs, which kept re-trying the same hard ones
@@ -145,10 +150,17 @@ and current tools).
   for `inv = 0x21 - lvl;` written earlier. `func_800B6708` (registers
   27/411) went the same way: its three `goto` loops were unrotated real
   loops (MATCHING.md, Diff patterns). Try the natural form of such drafts
-  first. The checkpoint left (stage, differing insns; read
+  first. The checkpoint left (read
   `../crash_bash_decomp-swarm/checkpoints/*/best.json` from the host, the
-  container doesn't mount it, so copy `best.diff` into `scratch/` first):
-  ovl5d `800BC038` 1793/2152 (`CheckMineToBoss` is parked, below). ovl5f
+  container doesn't mount it, so copy `best.diff` into `scratch/` first;
+  the directories are named by overlay and address, not by function):
+  ovl62 `PlotUkaPolarMask` (`ovl62_800C1584`, structure 800/1618, 1575
+  exact); the other unmatched ones belong to parks worked past them. ovl5d
+  `800BC038` (structure 1793/2152, 8600 bytes) matched in one session from
+  its checkpoint, first with its matched sibling ovl5e `func_800B87A0`'s
+  idioms, then block by block with `regions` (MATCHING.md, Diff patterns,
+  four rows); its last difference was a jump-table entry, which only the
+  `LINK` check shows. ovl5f
   `800B77E8` (structure 1410/1463, 5852 bytes) matched in one session from
   its checkpoint, one block group at a time with `regions`: each fix was a
   natural shape the swarm had folded, a field read in its own test, `if`/`else`
@@ -264,11 +276,12 @@ and current tools).
   N' --all`), PAL/JP retail differ only by dropping the division checks,
   and reload adds no copies (`ashrsi3` has no tied operands). The permuter
   run is still unused: the natural shape is a structure-stage base.
-- **Earlier compiles of the 15 left** (PROTOTYPES.md, Earlier compiles of a
-  function, has the table). Each of the five biggest has a build within a
-  few instructions of retail's: Oct 9's `func_800BC038` (+1 insn) and
-  `func_800B87A0` (-1), Sep 14's `PlotTransmuterBeam` (-12), Oct 9's
-  `func_800B77E8` (-10), the older builds' `PlotUkaPolarMask` (-20). Next:
+- **Earlier compiles of the last functions** (PROTOTYPES.md, Earlier
+  compiles of a function, has the table). Each of the five biggest has a
+  build within a few instructions of retail's: Oct 9's `func_800BC038` (+1
+  insn) and `func_800B87A0` (-1), Sep 14's `PlotTransmuterBeam` (-12), Oct
+  9's `func_800B77E8` (-10), the older builds' `PlotUkaPolarMask` (-20).
+  All but `PlotTransmuterBeam` and `PlotUkaPolarMask` are matched. Next:
   disassemble that copy (`decomp.py protos NAME` gives the address and the
   entry offset), diff it against retail, and see whether the change sits
   where the C still differs (done for `PlotTransmuterBeam`: the copies
@@ -660,6 +673,16 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-25 (hand: ovl5d `func_800BC038` matched, 8600 bytes, ovl5d
+  complete):** from the swarm's checkpoint (structure 1793/2152), first in
+  the matched sibling `func_800B87A0`'s idioms (`* 128 >> 12`, flags
+  cleared before hit, `v = x; v += k;` updates, if/else state stores), then
+  `regions` block by block: a `y` temp against fold's reassociation, the
+  speed test's store in each arm (no flag), one `ang` for both angles (no
+  local-alloc tie to the constant), and case 9's `case 6:` written out for
+  its jump-table entry. Then `func_800BFAC0` took `fux` as an unused second
+  parameter, so its four calls lost their casts. Four Diff patterns rows.
 
 - **2026-10-25 (hand: ovl5f `func_800B77E8` matched, 5852 bytes):** from the
   swarm's checkpoint (structure 1410/1463, 1401 exact). `regions` block by
