@@ -200,8 +200,8 @@ and current tools).
   (parked at registers 2/350) matched on 2026-10-25 once three of its
   hand-made shapes turned out to be inlined functions (MATCHING.md, Diff
   patterns, its case 3 and case 6 rows). Case 0's pointer copies were
-  `FindFreeSquare` (its do-while form matches the out-of-line copy too, and
-  `FindFreeSquareForMushroom` begins with the same code), case 6's `one = 1`
+  `FindFreeSquare` inlined (`Ovl60_FindFreeSquare`, whose do-while C
+  `FindFreeSquare` and `FindFreeSquareForMushroom` now share), case 6's `one = 1`
   was `Ovl60_SpawnPuff`'s constant argument, and case 3's stuck reload
   needed the note an inline call leaves in its block. An inline brings what
   written-out C can't: `expand_inline_function` copies each argument into a
@@ -661,6 +661,9 @@ Newest first, a few lines each. Details are in the commits.
   then became the file's inlines too (`Ovl60_FindFreeSquare`,
   `Ovl60_SpawnPuff`), and case 4/5's swarm shapes took natural forms. Two
   Diff patterns rows rewritten; an Open lead on inlines for the other parks.
+  Then `FindFreeSquareForMushroom` calls the inline and `FindFreeSquare`
+  has the same C written out (calling the inline there swaps its if/else
+  arms).
 
 - **2026-10-25 (hand: `func_800BE914` retried, still parked):** with the
   parameter and reused-local idioms from `func_800B980C`. Reusing

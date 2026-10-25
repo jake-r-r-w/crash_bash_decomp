@@ -235,8 +235,8 @@ static inline s32 Ovl60_PadlockMoves(s32 level) {
     return D_800C530C[level];
 }
 bool SquareIsFreeForMushroom(s32 arg0, s32 arg1);
-/* FindFreeSquare, inlined into Plot_PogoPadlock (FindFreeSquareForMushroom
- * begins with the same code): up to 10 random tries for a free square. */
+/* FindFreeSquare (the same C), inlined into FindFreeSquareForMushroom and
+ * Plot_PogoPadlock: up to 10 random tries for a free square. */
 static inline bool Ovl60_FindFreeSquare(s32 *px, s32 *pz) {
     s32 x;
     s32 z;

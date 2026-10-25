@@ -3668,29 +3668,9 @@ s32 LevelSpecific_ClaimedTile(s32 x, s32 z) {
 }
 
 bool FindFreeSquareForMushroom(s32 *arg0, s32 *arg1) {
-    s32 x;
-    s32 y;
-    s32 i;
-    s32 found;
     s32 ok;
 
-    i = 0;
-loop:
-    x = Random(8);
-    y = Random(8);
-    found = SquareIsFreeForMushroom(x, y) ^ 1;
-    i++;
-    if (found && i < 10) {
-        goto loop;
-    }
-    if (i >= 10) {
-        found = 0;
-    } else {
-        *arg0 = x;
-        *arg1 = y;
-        found = 1;
-    }
-    if (!found) {
+    if (!Ovl60_FindFreeSquare(arg0, arg1)) {
         return 0;
     }
     ok = 1;
@@ -6198,26 +6178,24 @@ bool SquareContainsMushroom(s32 arg0, s32 arg1) {
     return 0;
 }
 
-bool FindFreeSquare(s32 *arg0, s32 *arg1) {
+bool FindFreeSquare(s32 *px, s32 *pz) {
     s32 x;
-    s32 y;
+    s32 z;
     s32 i;
-    s32 ok;
+    s32 taken;
 
     i = 0;
-loop:
-    x = Random(8);
-    y = Random(8);
-    ok = SquareIsFreeForMushroom(x, y) != 1;
-    i++;
-    if (ok && i < 10) {
-        goto loop;
-    }
+    do {
+        x = Random(8);
+        z = Random(8);
+        taken = SquareIsFreeForMushroom(x, z) != 1;
+        i++;
+    } while (taken && i < 10);
     if (i >= 10) {
         return 0;
     }
-    *arg0 = x;
-    *arg1 = y;
+    *px = x;
+    *pz = z;
     return 1;
 }
 
