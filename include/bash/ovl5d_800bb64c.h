@@ -124,4 +124,84 @@ void func_800BBD48(NAS *arg0);
 
 void func_800BE9D0(NAS *arg0);
 
+/* func_800BC038: the crate object (NAS FUX). */
+typedef struct {
+    /* 0x00 */ u8 pad0[0x14];
+    /* 0x14 */ u16 type;
+    /* 0x16 */ s16 who;
+    /* 0x18 */ u8 pad18[2];
+    /* 0x1A */ u16 state;
+    /* 0x1C */ u16 flags;
+    /* 0x1E */ u16 hit;
+    /* 0x20 */ s16 timer;
+    /* 0x22 */ s16 count;
+    /* 0x24 */ s16 kind;
+} T_BC038Fux;
+
+/* func_800BC038: its extension 0x800 (func_800BB64C's T_BB64C_B). */
+typedef struct {
+    /* 0x00 */ u8 pad0[0xC];
+    /* 0x0C */ u8 unkC;
+    /* 0x0D */ u8 dir;
+    /* 0x0E */ s16 speed;
+    /* 0x10 */ s16 accel;
+    /* 0x12 */ s16 decel;
+    /* 0x14 */ s16 max;
+    /* 0x16 */ s16 tx;
+    /* 0x18 */ u16 unk18;
+    /* 0x1A */ u16 unk1A;
+    /* 0x1C */ u16 unk1C;
+    /* 0x1E */ u16 unk1E;
+    /* 0x20 */ u8 pad20[0xA];
+    /* 0x2A */ s16 tz;
+} T_BC038Ext;
+
+/* func_800BC038: entries of D_8009E488.unk0/unk4, by hero_name. */
+typedef struct {
+    /* 0x00 */ s16 speed;
+    /* 0x02 */ s16 max;
+    /* 0x04 */ s16 accel;
+    /* 0x06 */ s16 decel;
+    /* 0x08 */ s16 unk8;
+    /* 0x0A */ s16 unkA;
+    /* 0x0C */ s16 unkC;
+    /* 0x0E */ s16 unkE;
+    /* 0x10 */ s16 unk10;
+} T_BC038Stats;
+
+/* func_800BC038: frees the carrying hero's hold on the crate (cf. ovl5e's Ovl5eReleaseObj). */
+static inline void BC038Release(T_BC038Fux *fux) {
+    s32 w = fux->who;
+    HeroInfo *b;
+    HeroInfo *h;
+
+    if (w != -1 && w < 5) {
+        b = Heroes;
+        h = &b[w];
+        if (h->hero_object == (EXTobject *)fux) {
+            h->hero_object = NULL;
+            if (h->hero_eng->sfx != NULL) {
+                StopSfx(h->hero_eng->sfx);
+            }
+        }
+    }
+}
+
+#define BC038_SNAP(eng)                                     \
+    (eng)->unk10.x = ((eng)->unk10.x & ~0xFF) + 0x80;       \
+    (eng)->unk10.z = ((eng)->unk10.z & ~0xFF) + 0x80
+
+#define BC038_STOP(ext)                                     \
+    (ext)->decel = 0;                                       \
+    (ext)->accel = 0;                                       \
+    (ext)->max = 0;                                         \
+    (ext)->speed = 0
+
+#define BC038_STATB(base, tbl, w) (((T_BC038Stats **)D_8009E488.tbl)[(base)[w].hero_name])
+#define BC038_STAT(tbl, w) BC038_STATB(Heroes, tbl, w)
+
+extern u16 D_800C46B8[];
+extern s32 D_8009E2B4[];
+void func_800BC038(NAS *arg0);
+
 #endif /* BASH_OVL5D_800BB64C_H */

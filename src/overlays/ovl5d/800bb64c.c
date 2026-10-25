@@ -305,7 +305,817 @@ void func_800BBD48(NAS *arg0) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5d/800bb64c", func_800BC038);
+void func_800BC038(NAS *arg0) {
+    VECTOR a;
+    VECTOR b;
+    EXTengine *eng;
+    T_BC038Fux *fux;
+    T_BC038Ext *ext;
+    EXTengine *he;
+    EXTengine *ho;
+    EXTengine *hd;
+    HeroInfo *hb;
+    NAS *n;
+    s32 type;
+    s32 dx, dy, dz;
+    s32 y;
+    s32 v;
+    s32 who;
+    s32 ang;
+    s32 done;
+    u16 t;
+
+    eng = arg0->Engine;
+    if (eng == NULL) {
+        return;
+    }
+    fux = (T_BC038Fux *)arg0->FUX;
+    if (fux == NULL) {
+        return;
+    }
+    type = fux->type;
+    ext = FindExtension(arg0, 0x800);
+    if (ext == NULL) {
+        return;
+    }
+    switch (fux->state) {
+    case 0:
+        fux->state = 1;
+        fux->flags &= 0xFFD4;
+        switch (type) {
+        case 6:
+            fux->flags |= 0xA;
+            break;
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 7:
+            fux->flags |= 3;
+            break;
+        }
+        eng->unk5E = 1;
+        eng->unk1E = 0;
+        BC038_SNAP(eng);
+        fux->who = -1;
+        FetchDefaultColBox(eng, 0x50);
+        break;
+    case 2:
+    case 0x13:
+        if (fux->who != -1 && fux->who < 5) {
+            he = Heroes[fux->who].hero_eng;
+            if (he != NULL) {
+                if (func_80015780(he, he->sub, 0x10, &a) != NULL) {
+                    if (func_80015780(he, he->sub, 0x20, &b) != NULL) {
+                        dx = a.vx - b.vx;
+                        dy = b.vy - a.vy;
+                        dz = a.vz - b.vz;
+                        eng->unk1E = get_angle(dx, dz) - 0x200;
+                        ang = 0x271 - get_angle(csqrt(dx * dx + dz * dz) >> 6, dy);
+                        eng->unk1C = ang;
+                        eng->unk10.y = b.vy - (D_80068BD4[(ang - 0x400) & 0xFFF].unk2 * 128 >> 12);
+                        dx = a.vx - dx / 2;
+                        dz = a.vz - dz / 2;
+                        eng->unk20 = 0;
+                        eng->unk10.x = dx;
+                        eng->unk10.z = dz;
+                    }
+                } else if (func_80015780(he, he->sub, 1, &b) != NULL) {
+                    eng->unk10 = *(SLONG_XYZ *)&b;
+                    eng->unk1E = he->unk1E;
+                } else {
+                    fux->state = 4;
+                }
+            }
+        if (fux->hit & 2) {
+            fux->who = -1;
+            switch (type) {
+            case 3:
+            case 4:
+                BC038Release(fux);
+                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                func_800270B0(arg0);
+                return;
+            case 5:
+            case 6:
+            case 7:
+                BC038Release(fux);
+                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                func_800270B0(arg0);
+                return;
+            case 1:
+                BC038Release(fux);
+                ((void (*)(EXTengine *, T_BC038Fux *))func_800BFAC0)(eng, fux);
+                func_800270B0(arg0);
+                return;
+            case 2:
+                BC038Release(fux);
+                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                fux->state = 0xE;
+                return;
+            default:
+                BC038_STOP(ext);
+                break;
+            }
+        }
+        if ((fux->flags & 0x20) && func_800BF708(eng, fux->who) != NULL) {
+            switch (type) {
+            case 2:
+                BC038Release(fux);
+                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                fux->state = 0xE;
+                return;
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+                BC038Release(fux);
+                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                func_800270B0(arg0);
+                return;
+            case 1:
+                BC038Release(fux);
+                ((void (*)(EXTengine *, T_BC038Fux *))func_800BFAC0)(eng, fux);
+                func_800270B0(arg0);
+                return;
+            default:
+                ext->decel = 0;
+                ext->accel = 0;
+                ext->max = 0;
+                ext->speed = 0;
+                break;
+            }
+        }
+        if (fux->hit & 4) {
+            hb = Heroes;
+            fux->flags &= 0xFFDB;
+            fux->hit &= 0xFFFB;
+            eng->unk1E = hb[fux->who].hero_move->facing_angle;
+            eng->unk1C = 0;
+            eng->unk20 = 0;
+            ext->speed = BC038_STATB(hb, unk4, fux->who)->speed;
+            ext->max = BC038_STATB(hb, unk4, fux->who)->max;
+            ext->accel = BC038_STATB(hb, unk4, fux->who)->accel;
+            ext->decel = BC038_STATB(hb, unk4, fux->who)->decel;
+            ext->unk18 = BC038_STATB(hb, unk4, fux->who)->unk8;
+            ext->unk1E = BC038_STATB(hb, unk4, fux->who)->unkA;
+            ext->unk1A = BC038_STATB(hb, unk4, fux->who)->unkC;
+            ext->unk1C = BC038_STATB(hb, unk4, fux->who)->unkE;
+            ext->unkC = BC038_STATB(hb, unk4, fux->who)->unk10;
+            fux->state = 8;
+        }
+        } else {
+            fux->state = 4;
+        }
+        eng->unk5E = 1;
+        break;
+    case 6:
+        eng->unk1E = 0;
+        v = eng->unk2C.y;
+        v += 0x200;
+        BC038_SNAP(eng);
+        if (v >= 0x1000) {
+            v = 0x1000;
+            fux->state = 0;
+        }
+        eng->unk2C.y = v;
+        eng->unk5E = 1;
+        eng->flags |= 0x8000;
+        break;
+    case 0x10:
+        eng->unk1E = 0;
+        v = eng->unk2C.y;
+        v -= 0x200;
+        BC038_SNAP(eng);
+        if (v < 0x41) {
+            func_800270B0(arg0);
+            return;
+        }
+        eng->unk2C.y = v;
+        eng->unk5E = 1;
+        break;
+    case 7:
+        v = eng->unk2C.x;
+        v += 0x100;
+        if (v >= 0x1000) {
+            v = 0x1000;
+            fux->state = 0;
+            eng->flags &= ~0x21;
+        }
+        eng->unk2C.x = v;
+        eng->unk2C.y = v;
+        eng->unk2C.z = v;
+        eng->sub->unk76 = v;
+        eng->unk5E = 1;
+        eng->flags |= 0x8000;
+        break;
+    case 4:
+        ext->unk18 = 0x50;
+        ext->unk1E = 0x50;
+        ext->unk1C = 6;
+        ext->unkC = 0xFF;
+        ext->unk1A = 0;
+        eng->unk1C = 0;
+        eng->unk20 = 0;
+        fux->state = 8;
+        break;
+    case 5:
+        BC038_SNAP(eng);
+        ext->unk1E = 0x50;
+        ext->unk1C = 6;
+        ext->unkC = 0xFF;
+        ext->unk18 = 0;
+        ext->unk1A = 0;
+        eng->unk1C = 0;
+        eng->unk20 = 0;
+        fux->state = 8;
+        break;
+    case 8:
+        if (eng->unk10.y > World_floor_level) {
+            eng->flags |= 0x02000000;
+            eng->sub->unk68 = 0x190;
+            eng->sub->flags |= 0x02000000;
+            eng->sub->unk68 = 0x190;
+        }
+        if (GravitateNas(arg0) != 0) {
+            eng->unk10.y += 0x20;
+            func_800BF404(eng, (s32)fux, fux->who, 0);
+            eng->unk10.y -= 0x20;
+            switch (type) {
+            case 3:
+            case 4:
+                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                func_800270B0(arg0);
+                return;
+            case 5:
+            case 6:
+            case 7:
+                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                func_800270B0(arg0);
+                return;
+            case 1:
+                ((void (*)(EXTengine *, T_BC038Fux *))func_800BFAC0)(eng, fux);
+                func_800270B0(arg0);
+                return;
+            case 2:
+                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                if (D_8009D750(eng) != 0) {
+                    func_800270B0(arg0);
+                    return;
+                }
+                fux->state = 0xE;
+                return;
+            case 18:
+            case 19:
+            case 20:
+            case 21:
+                PlaySfx(0x420, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            default:
+                fux->state = 0;
+                break;
+            }
+        }
+        if (fux->hit & 2) {
+            fux->who = 6;
+            func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+            func_800270B0(arg0);
+            return;
+        }
+        if (func_800BF404(eng, 0, fux->who, 1) != 0) {
+            switch (type) {
+            case 3:
+            case 4:
+                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                func_800270B0(arg0);
+                return;
+            case 5:
+            case 6:
+            case 7:
+                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                func_800270B0(arg0);
+                return;
+            case 1:
+                ((void (*)(EXTengine *, T_BC038Fux *))func_800BFAC0)(eng, fux);
+                func_800270B0(arg0);
+                return;
+            case 2:
+                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                fux->state = 0xE;
+                return;
+            default:
+                BC038_STOP(ext);
+                break;
+            }
+        }
+        break;
+    case 9:
+        switch (type) {
+        case 1:
+            BC038Release(fux);
+            func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+            func_800270B0(arg0);
+            return;
+        case 2:
+            BC038Release(fux);
+            if (OVLG->flags & 0x80) {
+                who = fux->who;
+                if (who == 0 || (OVLG->p2_active != 0 && who == 1)) {
+                    Heroes[who].hero_health = 2;
+                    fux->type = 6;
+                    func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 0);
+                    return;
+                }
+            }
+            func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+            fux->state = 0xC;
+            return;
+        case 6:
+            BC038Release(fux);
+            func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 0);
+            func_800270B0(arg0);
+            return;
+        case 5:
+            fux->count = 0x5A;
+            fux->type = 7;
+            PlaySfx(0x3F0, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            v = fux->who;
+            fux->state = 0xB;
+            fux->timer = 2;
+            if ((u32)v >= 5) {
+                v = 0;
+            }
+            ext->speed = BC038_STAT(unk0, v)->speed;
+            ext->max = BC038_STAT(unk0, v)->max;
+            ext->accel = BC038_STAT(unk0, v)->accel;
+            ext->decel = BC038_STAT(unk0, v)->decel;
+            func_800BB7B8((T_BB7B8 *)eng);
+            func_800BB64C((T_BB64C_A *)eng, (T_BB64C_B *)ext);
+            break;
+        case 3:
+        case 4:
+        case 7:
+            PlaySfx(0x3F9, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
+            v = fux->who;
+            fux->state = 0xB;
+            fux->timer = 2;
+            if ((u32)v >= 5) {
+                v = 0;
+            }
+            ext->speed = BC038_STAT(unk0, v)->speed;
+            ext->max = BC038_STAT(unk0, v)->max;
+            ext->accel = BC038_STAT(unk0, v)->accel;
+            ext->decel = BC038_STAT(unk0, v)->decel;
+            func_800BB7B8((T_BB7B8 *)eng);
+            func_800BB64C((T_BB64C_A *)eng, (T_BB64C_B *)ext);
+            break;
+        default:
+            fux->state = 0;
+            break;
+        }
+        break;
+    case 3:
+        fux->state = 0;
+        break;
+    case 0xB:
+        ext->speed += ext->accel - ext->decel;
+        if (ext->speed < 0) {
+            ext->speed = 0;
+        }
+        if (ext->speed > ext->max) {
+            ext->speed = ext->max;
+        }
+        eng->unk10.x -= (ext->speed * D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2) >> 12;
+        eng->unk10.z -= (ext->speed * D_80068BD4[(u16)eng->unk1E & 0xFFF].unk2) >> 12;
+        switch (ext->dir & 0xF0) {
+        case 0x10:
+        case 0x30:
+        case 0x90:
+            if (ext->tz >= eng->unk10.z) {
+                ext->speed = 0;
+            }
+            break;
+        case 0x80:
+            if (eng->unk10.x >= ext->tx) {
+                ext->speed = 0;
+            }
+            break;
+        case 0x20:
+            if (ext->tx >= eng->unk10.x) {
+                ext->speed = 0;
+            }
+            break;
+        default:
+            if (eng->unk10.z >= ext->tz) {
+                ext->speed = 0;
+            }
+            break;
+        }
+        if (ext->speed == 0) {
+            eng->unk5E = 1;
+            eng->unk1E = 0;
+            BC038_SNAP(eng);
+            fux->state = 0;
+        }
+        if (fux->timer != 0) {
+            fux->timer--;
+        }
+        if (func_800BF404(eng, 0, fux->who, 1) != 0) {
+            BC038_STOP(ext);
+            if (fux->timer == 0) {
+                switch (type) {
+                case 3:
+                case 4:
+                    BC038Release(fux);
+                    func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                    func_800270B0(arg0);
+                    return;
+                case 5:
+                case 7:
+                    BC038Release(fux);
+                    func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                    func_800270B0(arg0);
+                    return;
+                }
+            } else if (type < 5) {
+                if (type >= 3) {
+                    BC038Release(fux);
+                    func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                    func_800270B0(arg0);
+                    return;
+                }
+            }
+        }
+        if (D_8009D750(eng) != 0) {
+            switch (type) {
+            case 3:
+            case 4:
+                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+                func_800270B0(arg0);
+                return;
+            case 6:
+                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 0);
+                func_800270B0(arg0);
+                return;
+            case 5:
+            case 7:
+            default:
+                eng->unk5E = 1;
+                eng->unk1E = 0;
+                BC038_SNAP(eng);
+                fux->state = 0;
+                BC038_STOP(ext);
+                break;
+            }
+        }
+        break;
+    case 0xA:
+        if (fux->count != 0) {
+            fux->count--;
+            break;
+        }
+        BC038Release(fux);
+        func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 1);
+        func_800270B0(arg0);
+        return;
+    case 0xC:
+        fux->count = 0x78;
+        fux->flags &= 0xFFF4;
+        BC038_SNAP(eng);
+        eng->sub->unk6C = D_80052F5C;
+        ext->unk18 = 0x60;
+        ext->unk1E = 0xF0;
+        ext->unk1A = 0;
+        ext->unk1C = 4;
+        ext->unkC = 0xFF;
+        eng->unk1C = 0;
+        eng->unk20 = 0;
+        switch (fux->kind) {
+        case 0x19:
+            eng->sub->unk74 = 0x200B;
+            fux->state = 0xD;
+            break;
+        case 0x1B:
+            eng->sub->unk74 = 0x200F;
+            fux->state = 0xD;
+            break;
+        case 0x1C:
+            eng->sub->unk74 = 0x200C;
+            fux->state = 0xD;
+            break;
+        case 0x11:
+            eng->sub->unk74 = Random(0xE) + 0x2018;
+            eng->unk5D = 4;
+            fux->state = 0xD;
+            func_80026A54(arg0);
+            func_800268BC(arg0);
+            break;
+        default:
+            func_800270B0(arg0);
+            return;
+        }
+        break;
+    case 0xD:
+        if (D_8009D750(eng) != 0) {
+            func_800270B0(arg0);
+            return;
+        }
+        done = 0;
+        if (fux->who != -1 && ext->unkC == 0) {
+            fux->flags |= 8;
+            if (func_80015780(Heroes[fux->who].hero_eng, Heroes[fux->who].hero_sub, 0x80, &a) != NULL) {
+                dx = eng->unk10.x - a.vx;
+                dy = eng->unk10.y - a.vy;
+                dz = eng->unk10.z - a.vz;
+            } else {
+                hd = Heroes[fux->who].hero_eng;
+                dx = eng->unk10.x - hd->unk10.x;
+                y = eng->unk10.y + 0x180;
+                dy = y - hd->unk10.y;
+                dz = eng->unk10.z - hd->unk10.z;
+            }
+            dx >>= 2;
+            dy >>= 2;
+            dz >>= 2;
+            eng->unk10.x -= dx;
+            eng->unk10.y -= dy;
+            eng->unk10.z -= dz;
+            dx >>= 1;
+            dz >>= 1;
+            if (dx == 0 && dz == 0) {
+                done = 1;
+            }
+            func_800BF928(eng, (HitFlags *)fux, 8);
+            if (fux->hit & 8) {
+                done = 1;
+            }
+        }
+        if (GravitateNas(arg0) != 0) {
+            done = 1;
+        }
+        if (done) {
+            switch (fux->kind) {
+            case 0x19:
+            case 0x1B:
+            case 0x1C:
+                if (fux->who != -1 && fux->who < 5) {
+                    func_800B94C4(fux->who, fux->kind);
+                    D_800C478A = (Random(6) + 2) * 30;
+                }
+                func_800270B0(arg0);
+                n = (NAS *)D_800C478C;
+                while (n != NULL) {
+                    fux = (T_BC038Fux *)n->FUX;
+                    if (fux != NULL) {
+                        switch (fux->state) {
+                        case 0:
+                        case 1:
+                            fux->state = 0x10;
+                            break;
+                        }
+                        n = n->Group.Child;
+                    } else {
+                        func_800270B0(n);
+                        n = (NAS *)D_800C478C;
+                    }
+                }
+                return;
+            case 0x11:
+                if (fux->who != -1 && fux->who < 5) {
+                    Heroes[fux->who].hero_health++;
+                    if (Heroes[fux->who].hero_health >= 0x15) {
+                        Heroes[fux->who].hero_health = 0x14;
+                    }
+                    PlaySfx(0x1C2, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                }
+                func_800270B0(arg0);
+                return;
+            }
+        }
+        eng->unk5E = 1;
+        eng->unk1E += 0x71;
+        break;
+    case 0xE:
+        fux->count = 0x96;
+        fux->flags &= 0xFFF4;
+        BC038_SNAP(eng);
+        eng->sub->unk6C = D_80052F5C;
+        ext->unk18 = 0x80;
+        ext->unk1E = 0x50;
+        ext->unk1C = 4;
+        ext->unk1A = 0;
+        ext->unkC = 0xFF;
+        eng->unk1C = 0;
+        eng->unk20 = 0;
+        switch (fux->kind) {
+        case 0x19:
+            eng->sub->unk74 = 0x200B;
+            fux->state = 0xF;
+            break;
+        case 0x1B:
+            eng->sub->unk74 = 0x200F;
+            fux->state = 0xF;
+            break;
+        case 0x1C:
+            eng->sub->unk74 = 0x200C;
+            fux->state = 0xF;
+            break;
+        case 0x11:
+            arg0->UserInfo.user2 = Random(0x1C);
+            eng->sub->unk74 = (arg0->UserInfo.user2 >> 1) % 14 + 0x2018;
+            eng->unk5E = 1;
+            eng->unk1E = 0;
+            fux->state = 0xF;
+            break;
+        default:
+            func_800270B0(arg0);
+            return;
+        }
+        break;
+    case 0xF:
+        if (D_8009D750(eng) != 0) {
+            func_800270B0(arg0);
+            return;
+        }
+        GravitateNas(arg0);
+        if (fux->count == 0) {
+            func_800270B0(arg0);
+            return;
+        }
+        fux->count--;
+        if (fux->kind == 0x11) {
+            eng->unk1E = 0;
+            arg0->UserInfo.user1++;
+            eng->sub->unk74 = (arg0->UserInfo.user2 >> 1) % 14 + 0x2018;
+        } else {
+            eng->unk1E += 0x71;
+        }
+        if (ext->unkC == 0) {
+            fux->flags |= 8;
+        }
+        func_800BF928(eng, (HitFlags *)fux, 8);
+        if ((fux->hit & 8) && fux->who != -1 && fux->who < 5) {
+            switch (fux->kind) {
+            case 0x19:
+            case 0x1B:
+            case 0x1C:
+                func_800B94C4(fux->who, fux->kind);
+                D_800C478A = (Random(6) + 2) * 30;
+                func_800270B0(arg0);
+                n = (NAS *)D_800C478C;
+                while (n != NULL) {
+                    fux = (T_BC038Fux *)n->FUX;
+                    if (fux != NULL) {
+                        switch (fux->state) {
+                        case 0:
+                        case 1:
+                            fux->state = 0x10;
+                            break;
+                        }
+                        n = n->Group.Child;
+                    } else {
+                        func_800270B0(n);
+                        n = (NAS *)D_800C478C;
+                    }
+                }
+                return;
+            case 0x11:
+                Heroes[fux->who].hero_health++;
+                if (Heroes[fux->who].hero_health >= 0x15) {
+                    Heroes[fux->who].hero_health = 0x14;
+                }
+                PlaySfx(0x1C2, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                func_800270B0(arg0);
+                return;
+            }
+        }
+        eng->unk5E = 1;
+        break;
+    case 0x63:
+        if (GravitateNas(arg0) != 0) {
+            func_800270B0(arg0);
+            return;
+        }
+        v = eng->unk2C.x;
+        v -= 0x100;
+        if (v < 0x101) {
+            func_800270B0(arg0);
+            return;
+        }
+        eng->unk2C.x = v;
+        eng->unk2C.y = v;
+        eng->unk2C.z = v;
+        eng->sub->unk76 = v;
+        eng->unk5E = 1;
+        break;
+    default:
+        if (fux->hit & 0x100) {
+            fux->state = 0xA;
+            fux->count = 0xA;
+            fux->hit &= 0xFEFC;
+            fux->flags &= 0xFEFC;
+        }
+        if ((fux->hit & 1) && !(fux->hit & 2)) {
+            if (fux->who != -1 && fux->who < 5) {
+                fux->state = 2;
+                fux->flags |= 4;
+                Heroes[fux->who].hero_object = (EXTobject *)fux;
+                eng->unk1E = Heroes[fux->who].hero_move->facing_angle;
+                fux->hit &= 0xFFFC;
+                fux->flags = (fux->flags & 0xFFFE) | 6;
+                if (type == 5) {
+                    fux->count = 0x5A;
+                    if ((OVLG->flags & 0x80) && OVLG->mode == 1) {
+                        if (fux->who == 0 || (OVLG->p2_active != 0 && fux->who == OVLG->mode)) {
+                            fux->count = 0x1E;
+                            fux->flags &= 0xFFFB;
+                        }
+                    }
+                    fux->type = 7;
+                    PlaySfx(0x3F0, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                }
+            }
+        }
+        if (fux->hit & 2) {
+            switch (type) {
+            case 6:
+                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 0);
+                func_800270B0(arg0);
+                return;
+            case 5:
+                if (fux->who == -1) {
+                    fux->count = 0x5A;
+                    fux->type = 7;
+                    PlaySfx(0x3F0, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                    goto clr;
+                }
+                break;
+            default:
+                if (fux->who == -1) {
+                    goto clr;
+                }
+                break;
+            }
+            if (fux->who >= 5) {
+                dx = eng->unk10.x;
+                dz = -eng->unk10.z;
+            } else {
+                ho = Heroes[fux->who].hero_eng;
+                dx = eng->unk10.x - ho->unk10.x;
+                dz = ho->unk10.z - eng->unk10.z;
+                PlaySfx(D_8009E2B4[fux->who], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            }
+            ang = get_angle(-dx, dz);
+            eng->unk1E = (ang + 0x100) & 0xE00;
+            fux->state = 9;
+            fux->hit &= 0xFFFC;
+            fux->flags &= 0xFFFC;
+            goto hit8;
+        clr:
+            fux->hit &= 0xFFFC;
+        }
+    hit8:
+        if ((fux->hit & 8) && type == 6) {
+            func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 0);
+            func_800270B0(arg0);
+            return;
+        }
+        if (eng->platform != NULL) {
+            if (type == 5) {
+                fux->count = 0x5A;
+                fux->type = 7;
+                PlaySfx(0x3F0, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            } else if (type == 6) {
+                func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 0);
+                func_800270B0(arg0);
+                return;
+            }
+        }
+        break;
+    }
+    t = fux->state;
+    if ((t == 1 || t == 0xB) && FollowContour(eng) != 0) {
+        if (fux->state == 1) {
+            fux->state = 4;
+        } else {
+            fux->state = 5;
+        }
+    }
+    if (type == 7) {
+        if (fux->count != 0) {
+            fux->count--;
+            eng->sub->unk74 = D_800C46B8[fux->count / 30];
+            if (fux->count % 30 == 0) {
+                PlaySfx(0x3F0, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            }
+        } else {
+            BC038Release(fux);
+            func_8008E27C(&eng->unk10.x, (HitInfo *)fux, 0);
+            func_800270B0(arg0);
+        }
+    }
+}
 
 void InitCratePickup(NAS *arg0) {
     EXTengine *eng;
