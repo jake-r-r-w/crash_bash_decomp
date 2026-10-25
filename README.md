@@ -155,7 +155,7 @@ the image with the repository at `/work`, building the image on first use.
 | Component | Source |
 |---|---|
 | Binutils | Ubuntu `binutils-mipsel-linux-gnu` |
-| GCC `cc1` 2.5.7-2.8.1 | [decompals/old-gcc](https://github.com/decompals/old-gcc) |
+| GCC `cc1` 2.5.7-2.8.1 | [decompals/old-gcc](https://github.com/decompals/old-gcc) (2.8.1-psx also rebuilds from source: `tools/cc1/`) |
 | ASPSX emulation | [mkst/maspsx](https://github.com/mkst/maspsx) |
 | Splitter | [splat](https://github.com/ethteck/splat) |
 | Decompiler, permuter | [m2c](https://github.com/matt-kempster/m2c), [decomp-permuter](https://github.com/simonlindholm/decomp-permuter) |

@@ -1762,6 +1762,13 @@ container also has `/opt/gcc/2.8.1-psx/cc1plus`. On C-style code it emits the sa
 (tested on `func_8007F314`), so a C shape stays the thing to change. A C++ idiom can explain
 odd C, though: `xori v0,v0,1` after a call is `!f()` on a `bool`, which C writes as `r ^= 1`.
 
+`tools/cc1/` rebuilds that cc1 from source, byte for byte ([tools/cc1/README.md](../tools/cc1/README.md)).
+A variant is the same compiler with one thing changed: a pass that prints its decisions, a
+decision forced the other way, other host flags (`tools/cc1/build.sh NAME --patch F --cflags
+"..."`). `tools/cc1/with.sh NAME COMMAND` runs `try --file`, `sched` or the dump loop below with
+it, and `tools/cc1/check.sh NAME` builds the whole game with it. Use one to prove which decision
+a stuck function needs before searching for the C that gives it; the build never uses a variant.
+
 **1. Dump every pass of the function.** `decomp.py sched NAME` writes the file's preprocessed
 source, with the C as it is now, to `build/sched/NAME.i`. Run cc1 on it with the dump flags,
 then cut the function's section out of each dump (each holds the whole file). The loop runs in

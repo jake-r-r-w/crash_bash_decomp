@@ -41,7 +41,10 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   `-dS`/`-dR`/`-dl`/`-dJ` dumps (MATCHING.md, Reading the compiler's rules).
   The real cc1 is in the container: dump any pass (`-dr`/`-ds`/`-dc` too) and
   try C shapes in small test files before rebuilding the function
-  (MATCHING.md, Using the compiler directly); `try NAME --file F.c` diffs a
+  (MATCHING.md, Using the compiler directly). `tools/cc1/` rebuilds it from
+  source byte for byte, for analysis variants only (`build.sh NAME --patch F
+  --cflags ...`, `with.sh NAME CMD`, `check.sh NAME`; tools/cc1/README.md);
+  matches always use `/opt/gcc`. `try NAME --file F.c` diffs a
   test copy of the whole function with its unit's settings in about 2 s, and
   `--file A.c B.c ...` compiles several in parallel and ranks them by the
   regions score; `orders NAME --lines A-B` searches random dependency-keeping

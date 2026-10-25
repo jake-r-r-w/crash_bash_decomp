@@ -41,7 +41,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
   inside `main/main`, Split so far); the main segment links with
   `SUBALIGN(4)`.
 - Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
-  2.7.2-cdk matched a strict subset).
+  2.7.2-cdk matched a strict subset). That cc1 is decompals/old-gcc's build of
+  FSF 2.8.1 for the PlayStation, not Sony's binary; `tools/cc1/` rebuilds it
+  from source byte for byte (2026-10-25), for analysis variants only.
 - PsyQ 4.7: all library code is Sony's objects (281, plus `2MBYTE.OBJ`), and
   their `.data` comes from the objects except `bios_1.o`'s (one value differs;
   `configs/USA/psyq/data_keep.txt`). Roadmap: the PsyQ gaps box is ticked.
@@ -61,7 +63,14 @@ leads**, add any new gotcha, and add one short entry at the top of the
 (Open leads): `PlotTransmuterBeam`'s long-lived base, `func_800BE914`'s
 copies (its permuter run is unused) and `func_800B4048`'s copy (every
 register right now, three insns misplaced). Each needs
-a new idea rather than another round of the usual tries. Inline shapes
+a new idea rather than another round of the usual tries. The plan since
+2026-10-25: prove the decision a park needs with an analysis variant of cc1
+(`tools/cc1/`, a from-source rebuild that is byte-identical to `/opt`'s),
+then search for the C that gives it. First, a variant at 53-bit x87
+precision (`build.sh pc64 --cflags -mpc64`) through `check.sh` and the
+three parks, in case a register priority rounds differently on the original
+host; then variants that force one decision each (local-alloc's tie for
+`func_800B4048`, a sched1 order). Inline shapes
 have been tried on all three, with no match; only `PlotTransmuterBeam`'s
 case 1 steering became natural. `CheckMineToBoss` matched on 2026-10-25
 once loop.c's own numbers (`-dL`, "not worth while, X vs N") showed what
@@ -391,6 +400,10 @@ Other:
 ## Gotchas
 
 **Tooling**
+- **cc1 variants live in `build/cc1/`, so `make clean` deletes them**
+  (rebuild with `tools/cc1/build.sh`; its downloads stay in `ext/cc1/`). In
+  Git Bash, `[ -x FILE ]` is false for a Linux ELF such as cc1 (MSYS counts
+  only `.exe` files and `#!` scripts): test it with `-f`.
 - **Variant scripts for `try --file`: edit the one function, not the file.**
   A plain replace over the whole `.c` also hits other functions' `HeroInfo
   *h;` or `goto next;`, and the variant then fails to build. Cut the
@@ -715,6 +728,15 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-25 (`tools/cc1/`: cc1 rebuilt from source):** old-gcc's recipe
+  (FSF 2.8.1 plus its `psx`, `mips` and `obstack` patches, built on Ubuntu
+  20.04 with gcc 9.4, `-m32 -static`, no `-O`) gives cc1, cpp, gcc, cc1plus
+  and g++ byte-identical to `/opt/gcc/2.8.1-psx/`, and the whole game built
+  with the rebuilt cc1 passes `make check`. `build.sh` makes variants (our
+  patches, host flags), `with.sh` runs any command with one, `check.sh`
+  builds the game with one. The shipped cc1 is a 32-bit x87 program at
+  extended precision. The base for the new strategy (Next).
 
 - **2026-10-25 (hand: `func_800B4048`'s local-alloc lead, still parked, now
   6/255 with every register right):** three rules decide the tail. sched1

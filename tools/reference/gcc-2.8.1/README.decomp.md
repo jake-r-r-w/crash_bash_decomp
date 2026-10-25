@@ -11,8 +11,9 @@ targets.
 
 ## Why
 
-Every unit but the two gcc 2.7.2 ones in `main.exe` is built with `gcc 2.8.1-psx` (Sony's build
-of this release). This is its FSF base, so it is the source to read when a 2.8.1 match depends
+Every unit but the two gcc 2.7.2 ones in `main.exe` is built with `gcc 2.8.1-psx`
+(decompals/old-gcc's build of this release for the PlayStation, `../../cc1/README.md`). This is
+its FSF base, so it is the source to read when a 2.8.1 match depends
 on what a pass does. `../gcc-2.7.2.3/README.decomp.md` has the table of which file holds which
 pass; the files have the same names here.
 
