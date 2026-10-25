@@ -55,6 +55,26 @@ tools/cc1/with.sh NAME python3 tools/scripts/cc1_compare.py FUNC [FILE...]
   the builds that change, with their distance from retail before and after. A variant that only
   reports (a logging patch) must change nothing, in `check.sh` and here.
 
+## Patches
+
+`patches/` holds our analysis patches. Each one is off unless its environment variables are set,
+and with them unset the variant must build exactly like `/opt` (check with `check.sh` and
+`cc1_compare.py`). `tools/dk` passes `DK_DOCKER_ARGS="-e VAR=value"` into the container, which
+is how `check.sh` gets them.
+
+- **`local-tie.patch`** (local-alloc.c). `CC1_LOCAL_TIE=reverse` breaks `qty_compare_1`'s and
+  `qty_sugg_compare_1`'s priority ties by the higher qty number instead of the lower.
+  `CC1_LOCAL_LOG=1` prints each block's qtys to stderr in allocation order: priority, refs,
+  life in half-insns, suggestions, the register each got and the pseudos in it.
+  `CC1_LOCAL_FUNC=NAME` and `CC1_LOCAL_BLOCK=N` limit both to one function and block. To see a
+  function's log, run its unit's preprocessed source through the variant:
+
+  ```sh
+  tools/dk python3 tools/scripts/decomp.py sched NAME >/dev/null      # writes build/sched/NAME.i
+  tools/cc1/with.sh localtie sh -c 'CC1_LOCAL_LOG=1 CC1_LOCAL_FUNC=NAME \
+    $GCC_ROOT/2.8.1-psx/cc1 -quiet -O2 -G0 -fno-builtin -o /dev/null build/sched/NAME.i'
+  ```
+
 ## Checked
 
 2026-10-25: `build.sh` rebuilds cc1, cpp, gcc, cc1plus and g++ byte-identical to the
@@ -70,3 +90,13 @@ truncation of `10000 * P / L` (refs and life length, small integers) can only mo
 value is an exact integer with a ratio that isn't a binary fraction, and the order only changes
 if another quantity falls within 1 below it. The remaining parks are a source question, not a
 compiler one.
+
+2026-10-25, local-alloc's tie (`localtie`, `--patch patches/local-tie.patch`): unset, it builds
+the whole game to `make check`'s checksums, and `func_800B4048`'s parked C and 22 test shapes
+to the same words as `/opt`. Its log shows the tie the park note works out by hand: in
+`func_800B4048`'s tail (block 20) the x chain's qty and the `*60` chain's both score 7500, and
+the x chain, born first, takes v1. With `CC1_LOCAL_TIE=reverse` for that block only, the 12
+shapes with the 60% at the loop top and `q` set after it byte-match retail: that tie is the only
+decision between them and the target. Reversed for every function, all 16 binaries fail
+`make check`, so the original compiler broke ties the FSF way, and the original source gives the
+`*60` qty the higher priority with the same final code.

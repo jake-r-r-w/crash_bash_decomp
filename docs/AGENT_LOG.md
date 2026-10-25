@@ -69,9 +69,11 @@ a new idea rather than another round of the usual tries. The plan since
 then search for the C that gives it. The host is ruled out: a variant at
 53-bit x87 precision changes no build of the game, the parks or 179 saved
 park variants (tools/cc1/README.md, Checked), so the parks are a source
-question. Next: variants that force one decision each (local-alloc's tie
-for `func_800B4048`, a sched1 order), checked with `cc1_compare.py` and
-`check.sh`. Inline shapes
+question. `func_800B4048` is now down to one proven decision (local-alloc's
+tie, Open leads): search for C that wins it, with the variant's log as the
+check. The same method next for the other two: a variant that forces the
+decision each park's note names, `cc1_compare.py` and `check.sh` to keep
+it honest. Inline shapes
 have been tried on all three, with no match; only `PlotTransmuterBeam`'s
 case 1 steering became natural. `CheckMineToBoss` matched on 2026-10-25
 once loop.c's own numbers (`-dL`, "not worth while, X vs N") showed what
@@ -266,10 +268,21 @@ and current tools).
   movable after a loop-top `y = t * 60 / 100;` it comes after the chain, but
   then the x chain's qty (11 refs) and the `*60` chain's (9 refs) tie at
   7500 over their lives (44 and 36 half-insns), and the x chain, born first,
-  takes v1 (22/255). The target's order leaves no other v0-free insn that
-  could have filled that stall in sched1, so the source differs somewhere
-  still unknown: an eighth insn before the chain that reload deletes, or
-  other ref counts. A 105-shape sweep found nothing better. Shapes can also
+  takes v1 (22/255). **Proved 2026-10-25 with tools/cc1's `localtie`
+  variant:** that tie is the only decision left. The shape with `v` re-set
+  to the hero base (`t = v; v = (s32)Heroes;`, then in the loop `h =
+  &((HeroInfo *)v)[i]; y = t * 60 / 100; q = D_8005A614;` before the test
+  and `unk2 = y`) byte-matches retail with only the tail block's tie
+  reversed (`CC1_LOCAL_TIE=reverse CC1_LOCAL_BLOCK=20`); 12 such shapes do.
+  Reversing every tie breaks all 16 binaries, so the original compiler
+  broke ties the FSF way, and the original source compiles to that code
+  with the `*60` qty strictly above the x chain's. The search is now one
+  check: `CC1_LOCAL_LOG=1` prints both priorities (tools/cc1/README.md,
+  Patches). Candidates: an extra use on the `*60` chain that flow counts
+  and combine then folds (refs are counted before combine, Diff patterns
+  row for `func_800B980C`), an eighth insn before the chain that reload
+  deletes as a no-op move, or a natural re-set of `v` in place of the hero
+  base. A 105-shape sweep found nothing better with `/opt`. Shapes can also
   be tested against the Oct 9 copy (`protos func_800B4048 --diff Oct_9
   --file F.c`): with the first loop's `v` as the sum and the copy, the
   masked value in the clock local `a`, 16-bit `x`/`y` and the 72% before the
@@ -729,6 +742,15 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-25 (pathway 2: `func_800B4048`'s missing decision proved):**
+  `tools/cc1/patches/local-tie.patch` adds a local-alloc knob (reverse the
+  qty tie-break, log each block's qtys, limit to a function and block);
+  unset, the variant builds the game and 23 test builds exactly like `/opt`.
+  Its log confirms the 7500 tie in the tail, and with that one tie reversed
+  the 12 loop-top-60% shapes byte-match retail. Every tie reversed breaks
+  all 16 binaries, so the compiler isn't the difference: the source must
+  win that tie. Park note, Open lead, tools/cc1/README.md.
 
 - **2026-10-25 (pathway 1: host precision ruled out):** `tools/cc1/build.sh
   pc64 --cflags -mpc64` gives a cc1 whose startup sets x87 precision to 53

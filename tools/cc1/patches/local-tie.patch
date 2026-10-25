@@ -1,0 +1,116 @@
+tools/cc1 analysis knob for local-alloc.c: CC1_LOCAL_TIE=reverse, CC1_LOCAL_LOG=1,
+CC1_LOCAL_FUNC=NAME, CC1_LOCAL_BLOCK=N (comment in the patch). Unset, nothing changes.
+
+--- a/local-alloc.c
++++ b/local-alloc.c
+@@ -73,6 +73,11 @@
+ /* Next quantity number available for allocation.  */
+ 
+ static int next_qty;
++
++/* The tools/cc1 knob's state for the current block (local_tie_setup).  */
++
++static int local_tie_reverse;
++static int local_tie_log_on;
+ 
+ /* In all the following vectors indexed by quantity number.  */
+ 
+@@ -257,6 +262,8 @@
+ static int qty_sugg_compare_1	PROTO((const GENERIC_PTR, const GENERIC_PTR));
+ static int qty_compare    	PROTO((int, int));
+ static int qty_compare_1	PROTO((const GENERIC_PTR, const GENERIC_PTR));
++static void local_tie_setup	PROTO((int));
++static void local_tie_log	PROTO((int, int *));
+ static int combine_regs		PROTO((rtx, rtx, int, int, rtx, int));
+ static int reg_meets_class_p	PROTO((int, enum reg_class));
+ static int reg_classes_overlap_p PROTO((enum reg_class, enum reg_class,
+@@ -1288,6 +1295,8 @@
+      in SCRATCH_LIST.  */
+   int scratches_allocated = scratch_index;
+ 
++  local_tie_setup (b);
++
+   /* Count the instructions in the basic block.  */
+ 
+   insn = basic_block_end[b];
+@@ -1687,6 +1696,9 @@
+ 	}
+     }
+ 
++  if (local_tie_log_on)
++    local_tie_log (b, qty_order);
++
+   /* Now propagate the register assignments
+      to the pseudo regs belonging to the qtys.  */
+ 
+@@ -1748,9 +1760,60 @@
+ 
+   /* If qtys are equally good, sort by qty number,
+      so that the results of qsort leave nothing to chance.  */
+-  return q1 - q2;
++  return local_tie_reverse ? q2 - q1 : q1 - q2;
+ }
+ 
++/* tools/cc1 analysis knob, not in the shipped cc1: with CC1_LOCAL_TIE=reverse,
++   qty_compare_1 and qty_sugg_compare_1 break priority ties by the higher qty
++   number instead of the lower; CC1_LOCAL_LOG=1 prints each block's qtys in
++   allocation order to stderr.  CC1_LOCAL_FUNC=NAME and CC1_LOCAL_BLOCK=N
++   limit both to one function and one basic block.  Unset, nothing changes.
++   Blocks with 3 qtys or fewer sort without these comparators.  */
++
++static void
++local_tie_setup (b)
++     int b;
++{
++  extern char *getenv ();
++  extern int atoi ();
++  char *tie = getenv ("CC1_LOCAL_TIE");
++  char *log = getenv ("CC1_LOCAL_LOG");
++  char *func = getenv ("CC1_LOCAL_FUNC");
++  char *blk = getenv ("CC1_LOCAL_BLOCK");
++  int here = ((! func || (current_function_name
++			   && ! strcmp (func, current_function_name)))
++	      && (! blk || atoi (blk) == b));
++
++  local_tie_reverse = here && tie && ! strcmp (tie, "reverse");
++  local_tie_log_on = here && log && *log && strcmp (log, "0");
++}
++
++static void
++local_tie_log (b, order)
++     int b;
++     int *order;
++{
++  int i, r;
++
++  fprintf (stderr, ";; local-alloc %s block %d: %d qtys in allocation order%s\n",
++	   current_function_name ? current_function_name : "?", b, next_qty,
++	   local_tie_reverse ? " (ties reversed)" : "");
++  for (i = 0; i < next_qty; i++)
++    {
++      int q = order[i];
++
++      fprintf (stderr, ";;   qty %d pri %d refs %d life %d-%d sugg %d/%d -> %s regs",
++	       q, QTY_CMP_PRI (q), qty_n_refs[q], qty_birth[q], qty_death[q],
++	       qty_phys_num_copy_sugg[q], qty_phys_num_sugg[q],
++	       qty_phys_reg[q] >= 0 ? reg_names[qty_phys_reg[q]] : "none");
++      for (r = qty_first_reg[q]; r >= 0; r = reg_next_in_qty[r])
++	fprintf (stderr, " %d", r);
++      if (qty_scratch_rtx[q])
++	fprintf (stderr, " scratch");
++      fprintf (stderr, "\n");
++    }
++}
++
+ /* Compare two quantities' priority for getting real registers.  This version
+    is called for quantities that have suggested hard registers.  First priority
+    goes to quantities that have copy preferences, then to those that have
+@@ -1792,7 +1855,7 @@
+ 
+   /* If qtys are equally good, sort by qty number,
+      so that the results of qsort leave nothing to chance.  */
+-  return q1 - q2;
++  return local_tie_reverse ? q2 - q1 : q1 - q2;
+ }
+ 
+ #undef QTY_CMP_SUGG
