@@ -385,6 +385,33 @@ code finds 15 code files; nothing else on the disc holds code.
   (`func_8007A524`), then an `AST_CratePickup` (`0x206`) there unless the
   hook `D_8009D750` returns 1.
 
+### The engine's slot image
+
+The engine file ends with the slot the minigame overlays load into: 147,092
+bytes from file offset `0x3A624` (`0x800B32B4`, up to the header's slot end
+`0x800D7144`), the splat subsegment `overlays/engine/engine_slot` (a `bin`).
+It isn't data any source defined. The build tool wrote the slot's memory as it
+was on the build machine:
+- the first word is `0x5C`, a stub overlay id;
+- then mostly leftover memory: zeros mixed with copies of real game files
+  (samples at offsets `0x1DC`, `0x1000`, `0x8000`, `0x10000` and `0x18000`
+  are found byte for byte in `CRASHBSH.DAT`, around DAT `0x433..0x434xxxx`;
+  they look like model data);
+- from file offset `0x54000`, 42 KB of preprocessed headers (Leaked source,
+  below).
+
+127,712 of its bytes are non-zero. Loading a minigame overwrites the slot, so
+the game never reads the leftovers; only the id word might be read before the
+first overlay loads.
+
+So the slot image stays a file read from the user's disc, like the assets, and
+is never committed (it holds the leak and copies of the game's files). The
+dashboard and `decomp.py progress` count it apart from the data to turn into C
+(`SLOT_IMAGES` in `decomp.py`; the Data in C tile notes it). The matching build
+keeps it byte for byte; the shiftable `NON_MATCHING` build replaces it with the
+id word and zeros (ROADMAP.md, Phase 3), and Tank's shift test shows whether
+the game cares.
+
 ### Leaked source
 
 A scan of every disc file for long printable runs with C keywords finds one

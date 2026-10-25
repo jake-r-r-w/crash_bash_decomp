@@ -166,7 +166,8 @@ const MODES={
   left:"Largest functions still unnamed",none:"Every function here is named."},
  data:{label:"Data in C",done:"c",M:mapData(D.dmap||EMPTY,(m,i)=>m.t[i],"c"),what:"Data block",verb:"in C",
   st:{c:["In C","var(--s4)"],a:["Still asm","var(--todo)"]},
-  cap:"Every data, rodata and bss block as a cell sized by its bytes, cut at splat's labels.",
+  cap:"Every data, rodata and bss block as a cell sized by its bytes, cut at splat's labels. The engine's slot image "+
+   "(the overlays' load area as the build machine left it, read from the disc) is left out.",
   left:"Largest data blocks still asm",none:"All of the data here is C."}};
 let mode=store.get("decomp-mapmode");if(!MODES[mode])mode="code";
 const TITLE=Object.fromEntries((S.units||[]).map(u=>[u.unit,u.title||""]));
@@ -187,7 +188,8 @@ const uname=u=>u+(TITLE[u]&&TITLE[u]!=u?` (${TITLE[u]})`:"");
  const G=S.game,named=G.named_f,all=G.all_f,DA=S.data||{done_b:0,total_b:0,pct:0};
  $("tiles").innerHTML=tile("Game code matched",f2(G.pct),`${n(G.done_b)} / ${n(G.total_b)} bytes<br>${n(G.done_f)} / ${n(G.total_f)} functions · ${f2(pct(G.done_f,G.total_f))}`,G.pct,"var(--s1)",wk)+
   tile("Game functions named",f2(pct(named,all)),`${n(named)} / ${n(all)} with a real name`,pct(named,all),"var(--s3)")+
-  tile("Data in C",f2(DA.pct),`${n(DA.done_b)} / ${n(DA.total_b)} bytes of data and rodata`,DA.pct,"var(--s4)");
+  tile("Data in C",f2(DA.pct),`${n(DA.done_b)} / ${n(DA.total_b)} bytes of data and rodata`+
+   (DA.slot_b?`<br>plus the engine's slot image, ${kb(DA.slot_b)} read from the disc, not counted`:""),DA.pct,"var(--s4)");
 })();
 
 // ---------------------------------------------------------------- time scale and measure

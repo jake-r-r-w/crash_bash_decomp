@@ -482,6 +482,14 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-26 (the engine's slot image counted apart):** `engine_slot`
+  (147,092 B: the stub id `0x5C`, zeros, leftover copies of `CRASHBSH.DAT`
+  files, the leaked headers) is the build machine's memory, not data: out of
+  the data total and the data map (`SLOT_IMAGES` in `decomp.py`; data in C
+  is now 11,972 / 459,851 B, 2.60%), noted on the tile, written up in
+  ARCHITECTURE.md (The engine's slot image). Phase 3 has a new item: the
+  `NON_MATCHING` build puts the id word and zeros there.
+
 - **2026-10-26 (dashboard: named and data maps):** the code map is now a
   Map with three views, Game code, Functions named and Data in C, each with
   its largest unfinished items. The data view's blocks come from

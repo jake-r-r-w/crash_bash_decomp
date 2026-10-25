@@ -175,6 +175,9 @@ retail does. The recipe is written up for Phase 4.
   (today a file may shrink but not grow), and the padded overlay must stay
   inside the slot (`0x800B32B4` up to `0x800D7144`, the slot image's end;
   Tank ends at `0x800CB294`).
+- [ ] The engine's slot image in the `NON_MATCHING` build: the id word (`0x5C`)
+  and zeros in place of the 147 KB the matching build reads from the disc
+  (ARCHITECTURE.md, The engine's slot image). The shift test runs with it.
 - [ ] Tank's shift test: the padded build boots and Tank plays through to a
   win, the same way as on the retail disc. Write the route down in
   docs/PLAYING.md, so the test can be repeated and later automated.
@@ -271,7 +274,9 @@ game, not the first time anything has been tested.
    repo is needed except the user's disc.*
 2. **Nothing hidden.** No `INCLUDE_ASM`, `INCLUDE_RODATA`, `.incbin` of code or
    data, parked function or `func_`/`D_` name anywhere; the only binary inputs
-   are the assets the extractor reads from the disc. *Proves: everything is
+   are the assets the extractor reads from the disc, and the engine's slot
+   image, which the matching build reads from the disc too (it is the build
+   machine's memory, not source: ARCHITECTURE.md). *Proves: everything is
    source.*
 3. **Shifted build plays.** The fully shifted `NON_MATCHING` build boots in an
    emulator and plays: the front end, a save and a load, the hub, and every

@@ -5128,11 +5128,19 @@ def subsegments(yaml_path):
     return out
 
 
-def data_items(funcs, stat, proj):
+# subsegments that are memory images, not data any source defined: the engine file carries the
+# slot overlays' load area as it was in the build machine's memory (a stub id, zeros, leftover
+# copies of CRASHBSH.DAT files and the leaked headers; ARCHITECTURE.md, The engine's slot image).
+# It stays a file read from the user's disc and is counted apart from the data to turn into C.
+SLOT_IMAGES = {"overlays/engine/engine_slot"}
+
+
+def data_items(funcs, stat, proj, images=False):
     """Every data block outside the code subsegments as [unit, file, symbol, bytes, in C]: rodata
     migrated into a matched function and data subsegments owned by a C file (.data etc.) with
     nothing left in asm count as C. Asm-owned subsegments are cut at their splat labels, so the
-    dashboard's data map shows each table. The blocks tile the subsegments exactly."""
+    dashboard's data map shows each table. The blocks tile the subsegments exactly. The memory
+    images in SLOT_IMAGES are left out, or with images=True are all that is returned."""
     syms = sym_names()  # once: inside the comprehension it re-read every symbol file per function
     matched = {cur_name(k, e, syms) for k, e in funcs.items() if stat.get(k) == "matched"}
     out = []
@@ -5143,7 +5151,7 @@ def data_items(funcs, stat, proj):
         if not os.path.exists(y):
             continue
         for start, end, typ, name in subsegments(y):
-            if typ not in DATA_TYPES or end is None:
+            if typ not in DATA_TYPES or end is None or (name in SLOT_IMAGES) != images:
                 continue
             if typ == ".rodata":
                 rs = [s for s in rodata_syms(name, inputs, cache) if start <= s[0] < end]
@@ -5184,11 +5192,13 @@ def asm_data_labels(name, typ, start, end):
 
 
 def data_summary(funcs, stat, proj, items=None):
-    """Data bytes (everything outside code subsegments) and how much of it is produced by C."""
+    """Data bytes (everything outside code subsegments but the slot images) and how much of it
+    is produced by C; slot_b is the slot images' bytes, counted apart."""
     items = data_items(funcs, stat, proj) if items is None else items
     total = sum(it[3] for it in items)
     done = sum(it[3] for it in items if it[4])
-    return {"done_b": done, "total_b": total, "pct": 100.0 * done / total if total else 0.0}
+    slot = sum(it[3] for it in data_items(funcs, stat, proj, images=True))
+    return {"done_b": done, "total_b": total, "pct": 100.0 * done / total if total else 0.0, "slot_b": slot}
 
 
 P_ROADMAP = "docs/ROADMAP.md"
