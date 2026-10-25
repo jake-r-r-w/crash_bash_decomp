@@ -208,24 +208,28 @@ and current tools).
   pseudo of its own before the body (`copy_to_mode_reg`, unless the
   parameter is `const`), opens a binding contour whose note lands inside the
   block, and gives the body one return label. Try one wherever a park needs
-  an extra note, copy or early-set pseudo: `func_800B4048`'s `t = v` copy,
-  `func_800BE914`'s copies, and `PlotTransmuterBeam`'s long-lived base and
-  `one = 1`. The game was C++, so small helpers and accessors were likely
-  inline.
-- **`func_800B4048`'s copy** (parked 2026-10-24 at instructions 10/255, 25
-  of 26 blocks; the `decomp.py block` note lists what was tried). The tail
-  copies `t = v` (`addu v0,v1,zero`) before the `*60` chain that loop.c
-  hoists. The Oct 9 build has the same copy (with `*42` and `*72`), so the
-  copy is in the source. cse2 and combine keep it only if `v` is set again
-  between the copy and the chain (MATCHING.md, Diff patterns). The parked C
-  does that with `v = (s32)D_8005A614; q = (u8 *)v;`, but that `lui` comes
-  before the hoisted chain in the RTL. So sched1 places it inside `t`'s
-  second life, local-alloc gives it v0, and `t` drops to a2 (`v` to v0).
-  Look for a natural set of `v` between the copy and the chain whose insns
-  land after the hoisted chain (a movable found later in the loop body, or a
-  strength-reduction init), or for something that makes q's `lui` lose the
-  luid tie. Try shapes with `try func_800B4048 --file`; the variant scripts
-  are in `scratch/b48/`.
+  an extra note or early-set pseudo: `func_800BE914`'s copies, and
+  `PlotTransmuterBeam`'s long-lived base and `one = 1`. (An argument copy is
+  no help for a copy that has to survive cse: cse deletes it like a plain
+  one, as `func_800B4048`'s retry showed.) The game was C++, so small helpers
+  and accessors were likely inline.
+- **`func_800B4048`'s copy** (parked 2026-10-24 at instructions 10/255,
+  7/255 since 2026-10-25; the `decomp.py block` note lists what was tried).
+  The tail copies `t = v` (`addu v0,v1,zero`) before the `*60` chain that
+  loop.c hoists. The Oct 9 build has the same copy (with `*42` and `*72`),
+  so the copy is in the source. cse2 and combine keep it only if `v` is set
+  again between the copy and the chain (MATCHING.md, Diff patterns). The
+  parked C does that with `v = (s32)D_8005A614; q = (u8 *)v;`, which combine
+  then folds into `q`, and `v` also holds the first loop's score (one
+  reused local), which gives `v` the target's v1. Left: that `lui` comes
+  before the hoisted chain in the RTL, so sched1 places it inside `t`'s
+  life (a luid tie at birthing priority), local-alloc gives it v0, and `t`
+  drops to a2. loop.c inserts the hoisted chain right before the loop, so
+  no pre-loop statement can have a later luid: only a strength-reduction
+  init or a movable found later in the loop body can. Inline shapes (a
+  scale getter, a per-hero setter, the loop as an inline) don't keep the
+  copy. Try shapes with `try func_800B4048 --file`; the variant scripts are
+  in `scratch/b48/` and `scratch/b48b/`.
 - **`func_800BE914`'s copies** (parked 2026-10-23 at registers 7/170; the
   `decomp.py block` note has the detail). The target copies each clamped
   speed into v0 right before its `>> 8` (`move v0,aN; sra a2,v0,8`, four
@@ -651,6 +655,14 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-25 (hand: `func_800B4048` retried with inlines, still parked):**
+  no inline shape keeps the `t = v` copy: cse deletes an argument copy like
+  a plain one, and a per-hero setter hoists the human branch's constants.
+  Holding the first loop's score in `v` (a reused local) gave `v` the
+  target's v1, so the park is 7/255 (from 10/255). What's left is sched1's
+  luid tie that puts q's `lui` inside `t`'s life, and no pre-loop C can
+  break it. Park note, Open lead and the copy's Diff patterns row updated.
 
 - **2026-10-25 (hand: ovl60 `Plot_PogoPadlock` matched, ovl60 complete):**
   case 3's stuck reload went once its block had a note: schedule_block

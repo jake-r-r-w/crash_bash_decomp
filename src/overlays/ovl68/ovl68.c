@@ -327,14 +327,15 @@ void func_800B3EFC(void) {
 }
 
 #ifdef NON_MATCHING
-/* The parked C (instructions 10/255, all in the tail block): `t = v` before the
+/* The parked C (instructions 7/255, all in the tail block): `t = v` before the
    *60 survives cse2 and combine only because v is set again before the loop
-   (the steering `v = (s32)D_8005A614`), and that set puts q's lui inside t's
-   second life, so t takes a2 instead of v0 (decomp.py block note). */
+   (the steering `v = (s32)D_8005A614`, which combine then folds into q). v also
+   holds the first loop's score, which gives it the target's v1; q's lui still
+   lands inside t's life in sched1, so t takes a2 instead of v0 (decomp.py block
+   note). */
 void func_800B4048(void) {
     s32 i;
     s32 a;
-    s16 score;
     s32 x;
     s32 v;
     s32 t;
@@ -400,15 +401,15 @@ void func_800B4048(void) {
         for (i = 0; i < 4; i++) {
             p = D_8005A614;
             h = &Heroes[i];
-            score = 0x78;
+            v = 0x78;
             if (p[i + 0x5C] == 0) {
-                score = 0x82;
+                v = 0x82;
                 if (((CoalChainGame *)p)->unk6C != 0) {
-                    score = 0x8C;
+                    v = 0x8C;
                 }
             }
-            h->hero_score_displayed = score;
-            h->hero_score = score;
+            h->hero_score_displayed = v;
+            h->hero_score = v;
         }
         InitSharedScoreIcons();
         if (D_8005A680 != 0) {
