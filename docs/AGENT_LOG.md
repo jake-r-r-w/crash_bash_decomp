@@ -70,11 +70,11 @@ flow counts and combine drops won it (MATCHING.md, Diff patterns, the
 hidden later use of a base was all it lacked (a `(use (reg))` anywhere in
 a window byte-matched), and the use was a test whose body is dead, which
 jump2 deletes (the unfolded-base row). The host is ruled out: a variant at
-53-bit x87 precision changes no build. Next, the same for `func_800BE914`:
-a variant that forces the decision its park note names (keep each copy, or
-force its register), its log to check candidates, `cc1_compare.py` and
-`check.sh` to keep it honest. Inline shapes have been tried on it, with no
-match. `CheckMineToBoss` matched on 2026-10-25
+53-bit x87 precision changes no build. For `func_800BE914` the
+`copysplit` variant proved the same on 2026-10-25: the natural shape plus a
+register copy kept before each `>> 8` byte-matches, and plain C gives the
+first copy (Open leads). What's left there is a C construct that keeps the
+other three copies through cse and combine. `CheckMineToBoss` matched on 2026-10-25
 once loop.c's own numbers (`-dL`, "not worth while, X vs N") showed what
 its loops needed: read a park's `-dL` and `sched` numbers before trying
 shapes, and look for the natural form that moves them. Every swarm checkpoint
@@ -239,45 +239,34 @@ and current tools).
   the loop, except that combine still folds the copy. Low priority: only
   with a new idea for a natural extra counted use on the `*60` chain (the
   `func_800B980C` row) or a natural re-set of `v`.
-- **`func_800BE914`'s copies** (parked 2026-10-23 at registers 7/170; the
-  `decomp.py block` note has the detail). The target copies each clamped
-  speed into v0 right before its `>> 8` (`move v0,aN; sra a2,v0,8`, four
-  times). No plain C shape tried keeps such a copy: combine folds an SImode
-  register copy into its user unless the copy's source is set between them
-  or its result is used again, and post-reload CSE forgets every value at
-  the label before them. The parked C gets them from 8-aligned struct
-  temps (a DImode SUBREG destination, which combine refuses), which can't
-  work after the first division, where `q` holds v1. Natural C that gets
-  everything else right: the parameters `pa`/`pb` reused for the x speeds,
-  plain nested-if clamps, plain shifts (every t-register then matches, `e`
-  in t6). The Aug 23 build has no clamps and loads each field straight
-  into v0 before the shift, so the copies came in with the clamps: look
-  for a clamp shape that leaves its result in a new pseudo. The game was
-  C++ (PROTOTYPES.md); `cc1plus` gives the same code for this C, so only a
-  C++ construct (an inline taking a reference, a small fixed-point class)
-  is still untried. Test files go through `try func_800BE914 --file`.
-  Retried 2026-10-25 with the parameter and reused-local idioms: reusing
-  variables along the target's register chains (`pa` for the A x speed
-  then `total`, `pb` for the B x speed then xb, zb and nb, one `x` for
-  xa/za, `az` for e*(za - zb)) is the best natural shape, 157/170 exact,
-  but still lacks the copies. `t = pa; pa = mb + ma; xa = t >> 8;` keeps
-  the first copy (`use_crosses_set_p`). No such set can explain the second
-  (its shift writes the register it copied from) or the fourth (`t1` is
-  never set again, and a dead set is gone before combine). The pattern
-  occurs nowhere else in the game (`decomp.py idiom 'move A, B; sra C, A,
-  N' --all`), PAL/JP retail differ only by dropping the division checks,
-  and reload adds no copies (`ashrsi3` has no tied operands). The permuter
-  run is still unused: the natural shape is a structure-stage base.
-  Retried 2026-10-25 with inlines: the clamp as an inline returning the
-  speed (one `return`, or early returns whose return label puts the copy in
-  another block), a per-axis inline taking the four clamped speeds, a `>> 8`
-  inline. None keeps a copy: cse and combine fold an argument or return copy
-  like a plain one. And since the target clamps all four speeds before any
-  shift, a copy made at the clamp can't be the one at the shift. No original
-  header has a 64-bit or 8-aligned type that would hold a speed pair in a
-  register pair, as the swarm's struct does. Left: a construct that writes
-  part of a register (a SUBREG destination) or a shift operand cse can't see
-  through.
+- **`func_800BE914`'s copies** (parked 2026-10-23; since 2026-10-25 the
+  parked C is the natural shape at structure 72/170, length 167, 164
+  exact; the `decomp.py block` note has the detail). The target copies each
+  clamped speed into v0 right before its `>> 8` (`move v0,X; sra Y,v0,8`,
+  four times). **Proved with tools/cc1's `copysplit` variant:** the parked C
+  with a copy kept before the 2nd, 3rd and 4th shift byte-matches retail,
+  so those three copies are the only decision left. The first one is plain
+  C: `t = pa; pa = mb + ma; x = t >> 8;` (`pa` then holds the total, as a0
+  does in the target; cse sees `pa` change and combine's `use_crosses_set_p`
+  refuses). The others survive neither pass in plain C: the variant's
+  `CC1_COPY_LOG` shows every probe (a temp, `x = pa; x >>= 8`, a union,
+  casts, a comma, inline arguments and returns, `do { } while (0)`, a label,
+  a switch, loops) losing the copy in cse1 or cse2, which keeps a copy only
+  when its destination outlives the source past the cse block
+  (`make_regs_eqv`), and combine keeps one only when the source is set
+  again, the result is used later or the two sit in different blocks. In
+  the target copy 2's shift writes its own source (a1), copy 4's source
+  (t1) is never set again, and v0 dies at each shift. Partial writes of an
+  8-aligned pair survive both passes (the swarm's DImode structs, at
+  registers 7/170 in git history), but a pair needs v0 and v1, and q holds
+  v1 after the first division: with q as the pair's high word all four
+  copies appear and every other register moves (61 off). Taking a speed's
+  address for an inline clamp spills it to the stack. The Aug 23 build has
+  no clamps and loads each field straight into v0 before the shift; PAL/JP
+  retail differ only by the division checks. Left: a construct that keeps an
+  SImode copy through cse and combine with no other trace, maybe a C++ one
+  (the game was C++; `cc1plus` is in the container). Check candidates with
+  `CC1_COPY_LOG=ashiftrt:8` (tools/cc1/README.md, Patches).
 - **Finish the demo discs' symbols** (PROTOTYPES.md; applied: 135 function
   and 51 global names, unit `panel`, the Jampack enums, 43 prototypes, the
   leaked types and class names, 16 global types, 13 PANEL.CPP locals).
@@ -477,6 +466,10 @@ Other:
 - **`tools/dk python3 - <<'EOF' </dev/null` runs nothing:** the `</dev/null`
   replaces the heredoc as stdin, and Python exits quietly on an empty
   script. Write the script to a file in `scratch/` and run that.
+- **Write files that hold backslash escapes with the Write tool**, not a
+  heredoc through the Bash tool: twice on 2026-10-25 a doubled backslash
+  came out single, which broke a generated patch's `\n` strings and joined a
+  macro's continuation lines.
 - **After a resplit or rename, run `decomp.py index`.** Since 2026-10-19 it
   checks every entry against the symbol files and `src/`: a renamed
   function gets its symbol's name (before, 51 entries kept their old
@@ -681,6 +674,18 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-25 (`func_800BE914`: the copies proved the only decision, still
+  parked):** new `tools/cc1/patches/copy-split.patch` gives chosen insns'
+  source a copy of its own ahead of flow and keeps combine off it
+  (`CC1_SPLIT_INSNS=UID,...` or `ashiftrt:8`), and logs whether each shift
+  reads a copy after cse2 and after combine (`CC1_COPY_LOG`). The natural
+  shape plus four kept copies byte-matches, and `t = pa; pa = mb + ma;`
+  gives the first copy in plain C, so the parked C is that shape now
+  (structure 72/170, three copies short). No probe keeps the other three.
+  The cc1 build now finishes serially when the parallel make loses its
+  `insn-codes.h` race (same cc1). Park note, Open lead, a Diff patterns row,
+  tools/cc1/README.md.
 
 - **2026-10-25 (`PlotTransmuterBeam` matched, from the `keeplive`
   variant):** new `tools/cc1/patches/keep-live.patch` puts `(use (reg N))`

@@ -1,0 +1,298 @@
+tools/cc1 analysis knob for toplev.c and combine.c: CC1_SPLIT_FUNC=NAME with
+CC1_SPLIT_INSNS=UID,... and CC1_SPLIT_LOG=1 (comment in the patch). Unset, nothing changes.
+
+--- a/toplev.c
++++ b/toplev.c
+@@ -2134,6 +2134,219 @@
+   return f;
+ }
+ 
++/* tools/cc1 analysis knob, not in the shipped cc1.  In the function named by
++   CC1_SPLIT_FUNC, CC1_SPLIT_INSNS=UID[,UID...] gives the first pseudo operand
++   of each listed insn's source a copy of its own, ahead of flow analysis: it
++   puts (set (reg NEW) (reg X)) before insn UID and makes the insn read NEW.
++   combine never combines those copies (copy_split_kept in combine.c), so they
++   reach the allocators as a copy in the C would if cse and combine had kept
++   it.  UIDs as in the -dj or -df dump; a token CODE:N (ashiftrt:8) instead
++   picks every insn whose source is that rtx code with a pseudo first operand
++   and (const_int N) second.  CC1_SPLIT_LOG=1 prints each copy and,
++   after global alloc, the hard registers of X and NEW.  Unset, nothing
++   changes.  */
++
++int copy_split_uid[64];
++int copy_split_n;
++static int copy_split_old[64];
++static int copy_split_new[64];
++static int copy_split_log;
++
++static rtx *
++copy_split_operand (src)
++     rtx src;
++{
++  char *fmt = GET_RTX_FORMAT (GET_CODE (src));
++  int i;
++
++  for (i = 0; i < GET_RTX_LENGTH (GET_CODE (src)); i++)
++    if (fmt[i] == 'e' && GET_CODE (XEXP (src, i)) == REG
++	&& REGNO (XEXP (src, i)) >= FIRST_PSEUDO_REGISTER)
++      return &XEXP (src, i);
++  return 0;
++}
++
++static void
++copy_split_one (insn)
++     rtx insn;
++{
++  rtx set, copy, old, new, *loc;
++
++  set = GET_RTX_CLASS (GET_CODE (insn)) == 'i' ? single_set (insn) : 0;
++  loc = set ? copy_split_operand (SET_SRC (set)) : 0;
++  if (loc && copy_split_n < 64)
++    {
++      old = *loc;
++      new = gen_reg_rtx (GET_MODE (old));
++      copy = emit_insn_before (gen_rtx (SET, VOIDmode, new, old), insn);
++      *loc = new;
++      INSN_CODE (insn) = -1;
++      copy_split_uid[copy_split_n] = INSN_UID (copy);
++      copy_split_old[copy_split_n] = REGNO (old);
++      copy_split_new[copy_split_n++] = REGNO (new);
++      if (copy_split_log)
++	fprintf (stderr, ";; copy-split %s: insn %d (set (reg %d) (reg %d)) before insn %d\n",
++		 current_function_name, INSN_UID (copy), REGNO (new), REGNO (old),
++		 INSN_UID (insn));
++    }
++  else
++    fprintf (stderr, ";; copy-split %s: insn %d has no pseudo operand to split\n",
++	     current_function_name, INSN_UID (insn));
++}
++
++static void
++copy_split_insert (insns)
++     rtx insns;
++{
++  extern char *getenv ();
++  extern long strtol ();
++  char *func = getenv ("CC1_SPLIT_FUNC");
++  char *s = getenv ("CC1_SPLIT_INSNS");
++  char *log = getenv ("CC1_SPLIT_LOG");
++  char *end;
++  rtx insn;
++  int uid;
++
++  copy_split_n = 0;
++  if (! func || ! s || ! current_function_name
++      || strcmp (func, current_function_name))
++    return;
++  copy_split_log = log && *log && strcmp (log, "0");
++  while (*s)
++    {
++      if (*s >= 'a' && *s <= 'z')
++	{
++	  char name[32];
++	  int k = 0, n;
++
++	  while (*s && *s != ':' && *s != ',' && k < 31)
++	    name[k++] = *s++;
++	  name[k] = 0;
++	  n = *s == ':' ? strtol (s + 1, &end, 10) : 0;
++	  if (*s != ':')
++	    end = s;
++	  for (insn = insns; insn; insn = NEXT_INSN (insn))
++	    {
++	      rtx set = GET_RTX_CLASS (GET_CODE (insn)) == 'i' ? single_set (insn) : 0;
++	      rtx src = set ? SET_SRC (set) : 0;
++
++	      if (src && ! strcmp (GET_RTX_NAME (GET_CODE (src)), name)
++		  && GET_RTX_LENGTH (GET_CODE (src)) == 2
++		  && GET_CODE (XEXP (src, 0)) == REG
++		  && REGNO (XEXP (src, 0)) >= FIRST_PSEUDO_REGISTER
++		  && GET_CODE (XEXP (src, 1)) == CONST_INT
++		  && INTVAL (XEXP (src, 1)) == n)
++		copy_split_one (insn);
++	    }
++	}
++      else
++	{
++	  uid = strtol (s, &end, 10);
++	  for (insn = insns; insn; insn = NEXT_INSN (insn))
++	    if (INSN_UID (insn) == uid)
++	      break;
++	  if (insn)
++	    copy_split_one (insn);
++	  else
++	    fprintf (stderr, ";; copy-split %s: no insn %d\n", current_function_name, uid);
++	}
++      if (*end != ',')
++	break;
++      s = end + 1;
++    }
++}
++
++/* CC1_COPY_LOG=CODE:N (in CC1_SPLIT_FUNC): for each insn whose source is rtx
++   code CODE with a pseudo first operand and (const_int N) second, print where
++   that operand comes from in its basic block: a register copy (and from which
++   register), another insn, or another block.  WHEN says which pass's output
++   it describes.  */
++
++static void
++copy_split_report (insns, when)
++     rtx insns;
++     char *when;
++{
++  extern char *getenv ();
++  extern long strtol ();
++  char *func = getenv ("CC1_SPLIT_FUNC");
++  char *spec = getenv ("CC1_COPY_LOG");
++  char name[32], *s, *end;
++  int k = 0, n, copies = 0, shifts = 0;
++  rtx insn, p, set, src, op, pset;
++
++  if (! func || ! spec || ! current_function_name
++      || strcmp (func, current_function_name))
++    return;
++  for (s = spec; *s && *s != ':' && k < 31; s++)
++    name[k++] = *s;
++  name[k] = 0;
++  n = *s == ':' ? strtol (s + 1, &end, 10) : 0;
++  for (insn = insns; insn; insn = NEXT_INSN (insn))
++    {
++      set = GET_RTX_CLASS (GET_CODE (insn)) == 'i' ? single_set (insn) : 0;
++      src = set ? SET_SRC (set) : 0;
++      if (! src || strcmp (GET_RTX_NAME (GET_CODE (src)), name)
++	  || GET_RTX_LENGTH (GET_CODE (src)) != 2
++	  || GET_CODE (XEXP (src, 0)) != REG
++	  || REGNO (XEXP (src, 0)) < FIRST_PSEUDO_REGISTER
++	  || GET_CODE (XEXP (src, 1)) != CONST_INT
++	  || INTVAL (XEXP (src, 1)) != n)
++	continue;
++      shifts++;
++      op = XEXP (src, 0);
++      for (p = PREV_INSN (insn); p; p = PREV_INSN (p))
++	{
++	  if (GET_CODE (p) == CODE_LABEL || GET_CODE (p) == JUMP_INSN
++	      || GET_CODE (p) == BARRIER)
++	    {
++	      p = 0;
++	      break;
++	    }
++	  if (GET_RTX_CLASS (GET_CODE (p)) == 'i' && reg_set_p (op, p))
++	    break;
++	}
++      pset = p ? single_set (p) : 0;
++      if (pset && SET_DEST (pset) == op && GET_CODE (SET_SRC (pset)) == REG)
++	{
++	  copies++;
++	  fprintf (stderr, ";; copy-log %s %s: insn %d reads reg %d, a copy of reg %d (insn %d)\n",
++		   current_function_name, when, INSN_UID (insn), REGNO (op),
++		   REGNO (SET_SRC (pset)), INSN_UID (p));
++	}
++      else if (p)
++	fprintf (stderr, ";; copy-log %s %s: insn %d reads reg %d, set by insn %d (%s)\n",
++		 current_function_name, when, INSN_UID (insn), REGNO (op), INSN_UID (p),
++		 pset ? GET_RTX_NAME (GET_CODE (SET_SRC (pset))) : "no single set");
++      else
++	fprintf (stderr, ";; copy-log %s %s: insn %d reads reg %d, from another block\n",
++		 current_function_name, when, INSN_UID (insn), REGNO (op));
++    }
++  fprintf (stderr, ";; copy-log %s %s: %d of %d read a copy\n",
++	   current_function_name, when, copies, shifts);
++}
++
++static void
++copy_split_log_global ()
++{
++  extern short *reg_renumber;
++  extern char *reg_names[];
++  int i, o, n;
++
++  if (copy_split_log)
++    for (i = 0; i < copy_split_n; i++)
++      {
++	o = copy_split_old[i];
++	n = copy_split_new[i];
++	fprintf (stderr, ";; copy-split %s: insn %d copies reg %d (%s) into reg %d (%s)\n",
++		 current_function_name, copy_split_uid[i],
++		 o, reg_renumber[o] >= 0 ? reg_names[reg_renumber[o]] : "mem",
++		 n, reg_renumber[n] >= 0 ? reg_names[reg_renumber[n]] : "mem");
++      }
++  copy_split_n = 0;
++  copy_split_log = 0;
++}
++
+ /* Compile an entire file of output from cpp, named NAME.
+    Write a file of assembly output and various debugging dumps.  */
+ 
+@@ -3346,6 +3559,8 @@
+   if (optimize > 0)			/* Stupid allocation probably won't work */
+     obey_regdecls = 0;		/* if optimizations being done.  */
+ 
++  copy_split_insert (insns);
++  copy_split_report (insns, "before flow");
+   regclass_init ();
+ 
+   /* Print function header into flow dump now
+@@ -3408,6 +3623,8 @@
+ 	       if (! quiet_flag)
+ 		 fflush (combine_dump_file);
+ 	     });
++
++  copy_split_report (insns, "after combine");
+ 
+   /* Print function header into sched dump now
+      because doing the sched analysis makes some of the dump.  */
+@@ -3495,6 +3712,8 @@
+     goto exit_rest_of_compilation;
+ 
+   reload_completed = 1;
++
++  copy_split_log_global ();
+ 
+   /* Do a very simple CSE pass over just the hard registers.  */
+   if (optimize > 0)
+--- a/combine.c
++++ b/combine.c
+@@ -401,6 +401,7 @@
+ static int can_combine_p	PROTO((rtx, rtx, rtx, rtx, rtx *, rtx *));
+ static int combinable_i3pat	PROTO((rtx, rtx *, rtx, rtx, int, rtx *));
+ static rtx try_combine		PROTO((rtx, rtx, rtx));
++static int copy_split_kept	PROTO((rtx));
+ static void undo_all		PROTO((void));
+ static rtx *find_split_point	PROTO((rtx *, rtx));
+ static rtx subst		PROTO((rtx, rtx, rtx, int, int));
+@@ -1242,6 +1243,23 @@
+   return 1;
+ }
+ 
++/* The copies tools/cc1's copy-split knob made in toplev.c (copy_split_insert).  */
++
++extern int copy_split_uid[];
++extern int copy_split_n;
++
++static int
++copy_split_kept (insn)
++     rtx insn;
++{
++  int i;
++
++  for (i = 0; i < copy_split_n; i++)
++    if (INSN_UID (insn) == copy_split_uid[i])
++      return 1;
++  return 0;
++}
++
+ /* Try to combine the insns I1 and I2 into I3.
+    Here I1 and I2 appear earlier than I3.
+    I1 can be zero; then we combine just I2 into I3.
+@@ -1306,6 +1324,11 @@
+       || find_reg_note (i3, REG_LIBCALL, NULL_RTX))
+     return 0;
+ 
++  /* tools/cc1 copy-split knob (toplev.c): its copies are never combined.  */
++  if (copy_split_kept (i3) || copy_split_kept (i2)
++      || (i1 && copy_split_kept (i1)))
++    return 0;
++
+   combine_attempts++;
+ 
+   undobuf.undos = undobuf.previous_undos = 0;

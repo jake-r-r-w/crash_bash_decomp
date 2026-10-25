@@ -34,7 +34,11 @@ RUN ./configure \
 RUN touch insn-config.h
 
 ARG HOST_CFLAGS=""
-RUN make --jobs $(nproc) cpp cc1 xgcc cc1plus g++ CFLAGS="-std=gnu89 -m32 -static $HOST_CFLAGS"
+# gcc 2.8.1's Makefile misses some dependencies on its generated headers, so a parallel make
+# now and then compiles a file before insn-codes.h exists; finishing serially gives the same
+# objects.
+RUN make --jobs $(nproc) cpp cc1 xgcc cc1plus g++ CFLAGS="-std=gnu89 -m32 -static $HOST_CFLAGS" \
+    || make cpp cc1 xgcc cc1plus g++ CFLAGS="-std=gnu89 -m32 -static $HOST_CFLAGS"
 
 # old-gcc's checks: little-endian loads, section attributes, 32-bit HOST_WIDE_INT, the PSX
 # target's default switches

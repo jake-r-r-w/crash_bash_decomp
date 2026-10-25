@@ -41,6 +41,9 @@ tools/cc1/with.sh NAME python3 tools/scripts/cc1_compare.py FUNC [FILE...]
   old-gcc's patches and tests (8 KB) into the ignored `ext/cc1/`, checking every file's sha256,
   then builds in an `ubuntu:focal` container. The first build pulls that image and its
   `build-essential` and `gcc-multilib` packages and takes about 3 minutes; Docker caches them.
+  gcc 2.8.1's Makefile misses some dependencies on its generated headers, so the parallel
+  make now and then compiles a file before `insn-codes.h` exists; the Dockerfile then finishes
+  with a serial make, which gives the same cc1.
 - `--patch FILE` (repeatable) applies our own patch with `patch -p1` in `gcc-2.8.1/`, after
   old-gcc's patches and before `configure`, in the order given. Keep such patches in
   `tools/cc1/patches/`. `--cflags` adds host compiler flags.
@@ -90,6 +93,22 @@ is how `check.sh` gets them.
     tools/cc1/with.sh keeplive python3 tools/scripts/decomp.py try NAME --file F.c
   ```
 
+- **`copy-split.patch`** (toplev.c, combine.c). Only in the function named by
+  `CC1_SPLIT_FUNC`: `CC1_SPLIT_INSNS=UID[,UID...]` gives the first pseudo operand of each listed
+  insn's source a copy of its own ahead of flow (`(set (reg NEW) (reg X))` before the insn,
+  which then reads NEW), and combine never combines those copies. They reach the allocators as
+  a copy in the C would if cse and combine had kept it. A token `CODE:N` (`ashiftrt:8`) picks
+  every insn whose source is that rtx code with a pseudo and `(const_int N)`.
+  `CC1_SPLIT_LOG=1` prints each copy and the hard registers of X and NEW.
+  `CC1_COPY_LOG=CODE:N` reports, after cse2 and again after combine, whether each such insn
+  reads a register copy made in its block: the check for C that should keep one.
+  It builds with `keep-live.patch` too. To log a function's shifts:
+
+  ```sh
+  tools/cc1/with.sh copysplit sh -c 'CC1_SPLIT_FUNC=NAME CC1_COPY_LOG=ashiftrt:8 \
+    $GCC_ROOT/2.8.1-psx/cc1 -quiet -O2 -G0 -fno-builtin -o /dev/null build/sched/NAME.i'
+  ```
+
 ## Checked
 
 2026-10-25: `build.sh` rebuilds cc1, cpp, gcc, cc1plus and g++ byte-identical to the
@@ -132,3 +151,13 @@ and local-alloc ties it to the `lui`'s register. After the `if (bx)` block (1956
 registers off. So a later use that leaves no instruction was all the park lacked. The C that
 gives one is a test in an arm whose body flow finds dead, and whose load jump2 deletes
 (MATCHING.md, Diff patterns, the unfolded-base row). `PlotTransmuterBeam` is matched with it.
+
+2026-10-25, register copies (`copysplit`, `--patch patches/copy-split.patch`): unset, it builds
+the whole game to `make check`'s checksums and `func_800BE914`'s parked C to the same words as
+`/opt`. The target copies each clamped speed into v0 right before its `>> 8`. The natural
+shape, with a copy kept before each of the four shifts (`CC1_SPLIT_INSNS=ashiftrt:8`), goes
+from 4 instructions short to a byte match, once its first sum goes through `r` as the second
+does and `pb = r - d` comes before the last stores. `t = pa; pa = mb + ma; x = t >> 8;` gives
+the first copy in plain C, and that shape with the other three kept byte-matches too: those
+three copies are the only decision left. `CC1_COPY_LOG` showed every plain-C probe for them
+losing the copy in cse1 or cse2 (`decomp.py block` note).

@@ -3898,18 +3898,11 @@ void func_800BE7B4(s32 player, Ovl63Barrel *b) {
 }
 
 #ifdef NON_MATCHING
-/* The parked C (registers 7/170): the 8-aligned structs make the target's register copies
-   before each >> 8 (decomp.py block note). */
-typedef struct {
-    s32 a;
-    s32 b;
-} __attribute__((aligned(8))) Ovl63SpeedPair;
-
-typedef struct {
-    s32 a;
-} __attribute__((aligned(8))) Ovl63Speed8;
-
-#define OVL63_CLAMP_SPEED2(v, lim)                                          \
+/* The parked C (structure, 3 of 170 short): all but the register copies the target makes
+   before the 2nd, 3rd and 4th >> 8 (move v0,X; sra Y,v0,8). The first copy comes from t = pa
+   with pa reused for the total before the shift. With tools/cc1's copy-split variant keeping
+   the other three, this C byte-matches (decomp.py block note). */
+#define OVL63_CLAMP_SPEED(v, lim)                                           \
     if ((v) < 0) {                                                          \
         if ((v) < ((lim) = -(D_800C66E8 << 8))) {                           \
             (v) = (lim);                                                    \
@@ -3919,67 +3912,52 @@ typedef struct {
     }
 
 void func_800BE914(s32 pa, s32 pb) {
-    Ovl63SpeedPair sx;
-    Ovl63SpeedPair sy;
     Ovl63Fux *fa;
     Ovl63Fux *fb;
     s32 ma;
     s32 mb;
     s32 e;
-    s32 xa;
-    s32 xb;
+    s32 az;
+    s32 bz;
+    s32 x;
     s32 d;
     s32 q;
     s32 r;
-    s32 total;
     s32 lim;
-    s32 c;
+    s32 t;
 
     ma = Heroes[pa].hero_move->mass;
     mb = Heroes[pb].hero_move->mass;
     if (ma > 0 && mb > 0) {
-        do {
-            fa = (Ovl63Fux *)Heroes[pa].hero->FUX;
-        } while (0);
+        fa = (Ovl63Fux *)Heroes[pa].hero->FUX;
         if (fa != NULL) {
-            do {
-                fb = (Ovl63Fux *)Heroes[pb].hero->FUX;
-            } while (0);
+            fb = (Ovl63Fux *)Heroes[pb].hero->FUX;
             e = fa->unk164;
             if (fb != NULL) {
                 pa = fa->unk13C;
-                sx.a = fa->unk140;
+                az = fa->unk140;
                 pb = fb->unk13C;
-                sx.b = fb->unk140;
-                OVL63_CLAMP_SPEED2(pa, lim);
-                OVL63_CLAMP_SPEED2(sx.a, lim);
-                OVL63_CLAMP_SPEED2(pb, lim);
-                OVL63_CLAMP_SPEED2(sx.b, lim);
-                {
-                    Ovl63Speed8 s = {pa};
-                    xa = s.a >> 8;
-                }
-                do {
-                    {
-                        Ovl63Speed8 s = {pb};
-                        xb = s.a >> 8;
-                    }
-                    c = xa - xb;
-                    d = -(e * c);
-                    c = (ma * xa + mb * xb) << 8;
-                    q = (d * mb + c) / (total = mb + ma);
-                } while (0);
-                sy.a = sx.a;
-                xa = sy.a >> 8;
-                sy.b = sx.b;
-                xb = sy.b >> 8;
+                bz = fb->unk140;
+                OVL63_CLAMP_SPEED(pa, lim);
+                OVL63_CLAMP_SPEED(az, lim);
+                OVL63_CLAMP_SPEED(pb, lim);
+                OVL63_CLAMP_SPEED(bz, lim);
+                t = pa;
+                pa = mb + ma;
+                x = t >> 8;
+                pb = pb >> 8;
+                d = -(e * (x - pb));
+                r = (ma * x + mb * pb) << 8;
+                q = (d * mb + r) / pa;
+                x = az >> 8;
+                pb = bz >> 8;
+                az = e * (x - pb);
+                r = (ma * x + mb * pb) << 8;
                 pb = q - d;
-                d = -(e * (xa - xb));
-                r = (d * mb + ((ma * xa + mb * xb) << 8)) / total;
-                do {
-                    fa->unk13C = q;
-                    fb->unk13C = pb;
-                } while (0);
+                d = -az;
+                r = (d * mb + r) / pa;
+                fa->unk13C = q;
+                fb->unk13C = pb;
                 pb = r - d;
                 fa->unk140 = r;
                 fb->unk140 = pb;
