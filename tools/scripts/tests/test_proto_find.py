@@ -142,6 +142,17 @@ class TestDiff(unittest.TestCase):
         self.assertIn("--- delete retail 0x0004-0x0008 (1)  copy 0x0004-0x0004 (0)", out)
         self.assertIn("  -       4  addiu a1,v0,0x1234", out)
 
+    def test_named_left_side(self):
+        """--file puts a test build where retail was; the hunks name that side."""
+        out = proto_find.diff_lines([LUI, ADDIU, LH], [LUI, LH], a_name="yours")
+        self.assertIn("--- delete yours 0x0004-0x0008 (1)  copy 0x0004-0x0004 (0)", out)
+
+    def test_word_lines_keep_immediates(self):
+        """--words prints the copy itself, which the hunks only show around differences."""
+        self.assertEqual(proto_find.word_lines([LUI, ADDIU]),
+                         ["      0  3c028006  lui v0,0x8006",
+                          "      4  24451234  addiu a1,v0,0x1234"])
+
 
 if __name__ == "__main__":
     unittest.main()

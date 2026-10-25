@@ -219,6 +219,11 @@ def fmt_word(w):
     return f"{m} {','.join(ops + [hex(imm)])}" if ops else f"{m} {imm:#x}"
 
 
+def word_lines(ws):
+    """Every word of a copy: byte offset, the word in hex and its disassembly, immediates kept."""
+    return [f"  {k * 4:5x}  {w:08x}  {fmt_word(w)}" for k, w in enumerate(ws)]
+
+
 def align(a, b):
     """difflib opcodes [(tag, i1, i2, j1, j2)] aligning word lists A and B by key()."""
     sm = difflib.SequenceMatcher(None, [key(w) for w in a], [key(w) for w in b], autojunk=False)

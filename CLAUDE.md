@@ -62,7 +62,8 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   which pass moved, rewrote or deleted it, and where a deleted insn went),
   `protos NAME` (the function's
   earlier compiles on the prototype and demo discs; `--diff DISC` aligns
-  one copy with retail and prints the hunks that differ), `splitvars NAME VAR` (search splits of a variable), `permute NAME
+  one copy with retail and prints the hunks that differ, `--file F.c` with
+  a test copy's build instead, `--words` prints the copy), `splitvars NAME VAR` (search splits of a variable), `permute NAME
   --differing` (permute only the differing blocks' C), `permstats` (every
   permuter run: speed, improvements, matches), `units [SEG]` (evidence
   for file boundaries: switch-table parity proves a file start in any

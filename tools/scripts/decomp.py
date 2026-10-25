@@ -713,6 +713,25 @@ def check_file(key, e, proj, name, path):
     return compare_obj(key, e, proj, name, obj, link=False)
 
 
+def file_words(e, name, path):
+    """NAME's words built from the test file PATH with its unit's settings, as `try --file`
+    builds it (relocations left unapplied)."""
+    src = e.get("src") or locate_def(name)
+    if not src:
+        die(f"can't find the source file defining {name}")
+    obj = f"build/tryfile/protos_{os.path.basename(path)}.o"
+    os.makedirs(os.path.dirname(obj), exist_ok=True)
+    if os.path.exists(obj):
+        os.remove(obj)
+    r = run("set -o pipefail; " + unit_pipeline(src, obj, mk_config(), c_path=path))
+    if r.returncode:
+        die("BUILD FAILED\n" + compile_error(path, r.stderr + r.stdout))
+    cw = obj_func(obj, name)[0]
+    if not cw:
+        die(f"{name} not found in {path}")
+    return cw
+
+
 def try_rank(r):
     """Sort key of one batch result (best first): a match, then the regions score (exact
     instructions, matching blocks, paired instructions), then fewer differing instructions; a
@@ -2499,12 +2518,20 @@ def cmd_protos(a):
         if found is None:
             die(f"no scanned disc under protos/ has '{a.diff}' in its name")
         d, ws, addr = found
+        name = cur_name(key, e, sym_names())
         if not ws:
-            die(f"{d}: no {kind} function close to {cur_name(key, e, sym_names())}")
-        print(f"{cur_name(key, e, sym_names())} against {d} at 0x{addr:08X} "
-              f"(- retail, + copy; immediates ignored):")
-        print("\n".join(proto_find.diff_lines(tw, ws)))
+            die(f"{d}: no {kind} function close to {name}")
+        left, side = tw, "retail"
+        if a.file:                      # a test copy's build in retail's place
+            left, side = file_words(e, name, a.file), "yours"
+        print(f"{name} against {d} at 0x{addr:08X} (- {side}, + copy; immediates ignored):")
+        print("\n".join(proto_find.diff_lines(left, ws, a_name=side)))
+        if a.words:
+            print(f"the copy in full ({len(ws)} words):")
+            print("\n".join(proto_find.word_lines(ws)))
         return
+    if a.file or a.words:
+        die("--file and --words go with --diff DISC")
     print(f"{cur_name(key, e, sym_names())} ({e['seg']}, {e['size']} B), by opcode similarity:")
     print(proto_find.report(tw, kind, top=a.top))
 
@@ -5544,6 +5571,11 @@ def main():
     p.add_argument("--diff", metavar="DISC", help="align the copy on the disc whose protos/ "
                    "directory contains DISC (e.g. Sep_14) with retail by opcode and register, "
                    "immediates ignored, and print the hunks that differ")
+    p.add_argument("--file", metavar="F.c", help="with --diff: align the build of this test copy "
+                   "of the function (built as try --file builds it) with the disc's copy instead "
+                   "of retail")
+    p.add_argument("--words", action="store_true", help="with --diff: also print the disc's copy "
+                   "in full, immediates kept")
     p.set_defaults(fn=cmd_protos)
     sub.add_parser("reconcile", help="headers: keep HEAD's declaration where the working tree "
                    "declares a name again (swarm gate clashes)").set_defaults(fn=cmd_reconcile)

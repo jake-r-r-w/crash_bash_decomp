@@ -222,7 +222,11 @@ first diff:
   similarity, and `decomp.py protos NAME --diff Sep_14` aligns that disc's
   copy with retail by opcode and register (relocated `%hi`/`%lo`, branch
   offsets and shift counts set aside, or every one shows up) and prints only
-  the hunks that differ. Diffing
+  the hunks that differ. `--words` adds the copy in full, immediates kept,
+  and `--file F.c` aligns the build of a test copy (built as `try --file`
+  builds it) with the disc's copy instead of retail: a shape can be tested
+  against an earlier build whose source differed (`func_800B4048`'s Oct 9
+  copy, with other percentages). Diffing
   two successive builds shows which source change made a pattern: in
   `func_8007F314` the Oct 9 build added case 0's 0x7000 test and, with it,
   retail's tail merge, which narrowed the search to that test's shape.
