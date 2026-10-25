@@ -16,13 +16,13 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `main.exe` function matches and `main.c` is split (2026-10-23); Phase 2's
   naming and data are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2533/2537 game functions matched (98.77% of game code bytes, 2026-10-25):
-  **main.exe, the engine, ovl5d, ovl5e, ovl60, ovl61, ovl64, ovl65, ovl66,
-  ovl67, ovl69 and ovl6a are complete**; 4 left (ovl5f 1, ovl62 1, ovl63 1,
+- 2534/2537 game functions matched (98.93% of game code bytes, 2026-10-25):
+  **main.exe, the engine, ovl5d, ovl5e, ovl5f, ovl60, ovl61, ovl64, ovl65,
+  ovl66, ovl67, ovl69 and ovl6a are complete**; 3 left (ovl62 1, ovl63 1,
   ovl68 1), every one tried by the swarm at least once. All 564
-  PsyQ functions (Sony objects). The 4 left are all parked by hand,
-  `func_800BE914`, `PlotTransmuterBeam` (one instruction off),
-  `func_800B4048` and `CheckMineToBoss` (Open leads)
+  PsyQ functions (Sony objects). The 3 left are all parked by hand,
+  `func_800BE914`, `PlotTransmuterBeam` (one instruction off) and
+  `func_800B4048` (Open leads)
   (`decomp.py status`; the swarm parked 5, which the dashboard counts from
   `docs/swarm.js`). Matches are C only, natural C
   first (CONVENTIONS.md, Matching rules; the "hack" class was dropped on
@@ -57,13 +57,15 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**The overlays' last 4 functions**, all parked by hand, each with a lead
+**The overlays' last 3 functions**, all parked by hand, each with a lead
 (Open leads): `PlotTransmuterBeam`'s long-lived base, `func_800BE914`'s
-copies (its permuter run is unused), `CheckMineToBoss`'s loop counter and
-`func_800B4048`'s copy. Each needs a new idea rather than another round of
-the usual tries. Inline shapes have been tried on `func_800B4048`,
-`PlotTransmuterBeam` and `func_800BE914`, with no match; only
-`PlotTransmuterBeam`'s case 1 steering became natural. Every swarm checkpoint
+copies (its permuter run is unused) and `func_800B4048`'s copy. Each needs
+a new idea rather than another round of the usual tries. Inline shapes
+have been tried on all three, with no match; only `PlotTransmuterBeam`'s
+case 1 steering became natural. `CheckMineToBoss` matched on 2026-10-25
+once loop.c's own numbers (`-dL`, "not worth while, X vs N") showed what
+its loops needed: read a park's `-dL` and `sched` numbers before trying
+shapes, and look for the natural form that moves them. Every swarm checkpoint
 is now matched or behind one of these parks. Between tries, Phase 2's
 naming and data (Next, Hand work). Pointing the swarm at
 functions it had never tried (`--only` the untried list, smallest first,
@@ -194,17 +196,6 @@ and current tools).
   the dumps by hand: it matched `func_800B8294` from the natural form after
   nine swarm sessions had stopped at 21-31 differing (MATCHING.md, Using the
   compiler directly).
-- **`CheckMineToBoss`'s loop counter** (parked 2026-10-24 at registers
-  27/405 in the swarm's clean shape; its 12/405 permuter version passed an
-  uninitialised `i`). The target's registers fit one counter `i` for all
-  three loops that global.c places after the inline's `p`/`kind` pseudos
-  (0.316-0.444) and before loop.c's hoisted 1s (0.06-0.14). Two increments
-  per loop, which keep `D_800CB224[i]` unreduced as in the target, give it
-  0.534. One increment gives 0.296, but then loop.c strength-reduces the
-  index (MATCHING.md, Diff patterns). Find a natural shape that does both:
-  something that makes the reduction "not worth while" with one increment
-  (a bigger loop at loop.c time, a smaller giv benefit), or a longer life
-  for the counter. `sched` lists the priorities.
 - **`PlotTransmuterBeam`'s last instruction** (parked 2026-10-24 at
   structure 2310/2311, 316/317 blocks; the `decomp.py block` note lists what
   was tried). At 0xc14 the target reads `TBV->mode` once through a base in
@@ -712,6 +703,16 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-25 (hand: ovl5f `CheckMineToBoss` matched, ovl5f complete):**
+  the parked shape's loop-counter lead, worked from loop.c's `-dL` numbers.
+  One counter `i` for all three loops with one increment each gives the
+  target's register order, but leaves the index giv worth reducing (2 x 31 x
+  2 = 124 against 120-122 loop insns). The range test written as an inline
+  with one early `return 0` per bound (no gotos) takes the loops to 128-130
+  insns at loop.c time; jump2 merges the return sites after reload. Bounds
+  as `d >= r + 1`, not `d > r` (an inline's parameter is a pseudo at expand
+  time). Two Diff patterns rows (one rewritten).
 
 - **2026-10-25 (hand: `func_800BE914` retried with inlines, still parked
   at registers 7/170):** the clamp as an inline (one return, early
