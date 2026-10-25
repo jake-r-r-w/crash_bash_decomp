@@ -7277,11 +7277,11 @@
   "status": "matched"
  },
  "ovl62:800BD67C": {
-  "auto_failed": "types",
   "blocked_at": "2026-10-25T11:37:20Z",
-  "note": "STAGE structure 2310/2311 (regions 316/317 blocks, 2309/2311 insns). Only 0xc14 differs: the target keeps &D_8005A614 in a1 for one lh (lui v0; addiu a1,v0; lh 0x34(a1)); ours folds it (combine i1+i2+i3: the base dies at the read). For the target the base must be live past the read at combine time and through the second test at global alloc (a1 because v0/v1/a0 are busy), yet no instruction uses it after the read. Ruled out 2026-10-25: (1) the base as InitDelete's 2nd argument. It reproduces 0xc14, but MIPS has no PUSH_ROUNDING, so PUSH_ARGS_REVERSED is undefined and the a0 move is emitted before the a1 move. sched1 then breaks their T-2 tie by luid for a1, the a0 move drifts to the block top and bx loses a0; any call that passes the base does this. (2) Inline shapes: a view accessor with a pointer parameter (one test, or both: both through the parameter match the first read but leave the second on the base, lh 52(a1)), a mode predicate (v->mode == m: xori form), a kind setter taking the view. (3) Every build (Aug 23 to JP retail) compiles this spawn identically. 42 matched functions keep this base unfolded (idiom), each with a second access through the same pointer in cse's reach. Case 1's one = 1 steering is gone: the hit switch's cases 0-2 call an inline TBSetHeroEffect(ext, i, k), whose argument copy gives kind 1 its own pseudo. Next: find a later use of the base that survives global alloc and leaves no instruction, other than a call argument.",
+  "matched_at": "2026-10-25T21:28:26Z",
   "started": "2026-10-23T21:17:20Z",
-  "status": "blocked"
+  "status": "matched",
+  "tries": 1
  },
  "ovl62:800BFA98": {
   "matched_at": "2026-10-21T08:15:07Z",

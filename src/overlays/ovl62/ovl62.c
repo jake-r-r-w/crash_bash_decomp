@@ -4167,18 +4167,20 @@ void InitTransmuterBeam(NAS *m) {
     }
 }
 
-#ifdef NON_MATCHING
 /* The hit switch's cases 0-2 in PlotTransmuterBeam: hero i's timer, then its
    effect kind in both slots. As an inline call, case 1's kind 1 gets its own
-   argument pseudo (copy_to_mode_reg), which loop.c needs (park note). */
+   argument pseudo (copy_to_mode_reg), which loop.c needs (MATCHING.md, Diff
+   patterns). */
 static inline void TBSetHeroEffect(TransBeamExt *e, s32 i, s32 k) {
     e->unk38[i] = 0xB4;
     e->unk18[i] = k;
     e->unk28[i] = k;
 }
 
-/* The parked C (structure 2310/2311): only 0xc14 differs, where the target keeps
-   &D_8005A614 in a1 for a single lh (decomp.py block note). */
+/* The spawn's `if (TB_MODE13()) c++;` is dead (c is never read): flow empties
+   it and jump2 deletes the test, but until then its read keeps the mode test's
+   view base live, which is why retail holds that base in a1 for a single lh
+   (MATCHING.md, Diff patterns). */
 void PlotTransmuterBeam(NAS *m) {
     TransBeamExt *ext;
     HeroInfo *h;
@@ -4222,6 +4224,7 @@ void PlotTransmuterBeam(NAS *m) {
     s32 yaw;
     s32 pitch;
     u16 mode;
+    s16 c;
 
     ext = FindExtension(m, 0x40000000);
     if (ext == NULL) {
@@ -4474,6 +4477,9 @@ void PlotTransmuterBeam(NAS *m) {
                             bx->unkC = 1;
                         } else {
                             bx->unkC = 0;
+                            if (TB_MODE13()) {
+                                c++;
+                            }
                         }
                         if (D_8005A648 == 0x15) {
                             bx->unkC = 0;
@@ -5037,9 +5043,6 @@ void PlotTransmuterBeam(NAS *m) {
         ext->eng->flags &= ~0x8000;
     }
 }
-#else
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl62/ovl62", PlotTransmuterBeam);
-#endif
 
 void PlotWeightDeath(NAS *m) {
     WeightDeathExt *ext;
