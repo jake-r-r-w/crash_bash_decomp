@@ -1419,7 +1419,7 @@ void ArkHeroIdle(u32 arg0) {
                 h->hero_idle_count = h->hero_idle_count - 1;
             } else {
                 h->hero_idle_count = Random(0x258) + 0x12C;
-                SetHeroSeq((HeroInfo *)arg0, 0x1B);
+                SetHeroSeq(arg0, 0x1B);
             }
         }
         if (func_800B649C(arg0) != 0) {
@@ -1446,7 +1446,7 @@ void SetArkHeroTaunt(u32 arg0) {
     SLONG_XYZ *pos;
     HeroInfo *base;
 
-    SetHeroSeq((HeroInfo *)arg0, 0x1C);
+    SetHeroSeq(arg0, 0x1C);
     if (Random(3) == 0 || D_8005A614[arg0 + 0x5C] == 0) {
         switch (Heroes[arg0].hero_name) {
         case 1:
@@ -1764,7 +1764,7 @@ void SetArkHeroKick(u32 arg0) {
     base = Heroes;
     h = &base[arg0];
     h->hero_move->velocity_enable = 1;
-    SetHeroSeq((HeroInfo *)arg0, 0x1D);
+    SetHeroSeq(arg0, 0x1D);
     h->hero_attack_delay += 0x1E;
     if (h->hero_attack_delay > 0x5A) {
         h->hero_attack_delay = 0x5A;
@@ -5711,7 +5711,7 @@ void SetArkHeroGrab(u32 arg0) {
     base = Heroes;
     h = &base[arg0];
     h->hero_move->velocity_enable = 1;
-    SetHeroSeq((HeroInfo *)arg0, 0x1D);
+    SetHeroSeq(arg0, 0x1D);
     h->hero_weapon_timer = 0x96;
     h->hero_attack_counter = 0;
     PlaySfx(D_800C18E8[arg0], &h->hero_eng->sfx, NULL, 0x1000, 0x1E00, 0);
@@ -5725,7 +5725,7 @@ void SetArkHeroRedKick(u32 arg0) {
     base = Heroes;
     h = &base[arg0];
     h->hero_move->velocity_enable = 1;
-    SetHeroSeq((HeroInfo *)arg0, 0x1D);
+    SetHeroSeq(arg0, 0x1D);
     D_800C1F0C = Random(0x3C) + 0x3C;
     h->hero_attack_counter = 0;
     PlaySfx(D_800C18E0[arg0], NULL, NULL, 0x1000, 0x1E00, 0);
@@ -5762,7 +5762,7 @@ void SetArkHeroIdle(u32 arg0) {
         StopSfx(h->hero_eng->sfx);
     }
     func_800B62F4(arg0);
-    SetHeroSeq((HeroInfo *)arg0, 0x19);
+    SetHeroSeq(arg0, 0x19);
     h->hero_idle_count = Random(0x96) + 0xB4;
 }
 

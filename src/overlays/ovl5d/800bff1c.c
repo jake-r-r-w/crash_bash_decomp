@@ -40,7 +40,7 @@ void func_800BFF1C(s32 arg0) {
             Heroes[arg0].hero_immunity = 0;
             Heroes[arg0].hero_status |= 0x2000;
             Heroes[arg0].hero_hit += 0x28;
-            SetHeroSeq((HeroInfo *)arg0, 0x13);
+            SetHeroSeq(arg0, 0x13);
         }
         break;
     case 9:
@@ -304,7 +304,7 @@ void func_800C09F4(s32 arg0) {
     h->hero_move->x_max = 0;
     h->hero_frozen = 0x3C;
     h->hero_status |= 0x2800;
-    SetHeroSeq((HeroInfo *)arg0, 1);
+    SetHeroSeq(arg0, 1);
     p = h->hero_powerup;
     p->unk10 = h->hero_eng->unk10;
     p->sub->unk74 = 0x2002;
@@ -458,7 +458,7 @@ void func_800C0F14(s32 arg0) {
     h2->hero_pu = 0;
     h2->hero_pu_timer = 0;
     func_80085718(arg0, 0);
-    SetHeroSeq((HeroInfo *)arg0, 0xC);
+    SetHeroSeq(arg0, 0xC);
     func_80089FA4(arg0);
 }
 
@@ -533,7 +533,7 @@ void func_800C1278(s32 arg0) {
     h2->hero_sub->unk08 = 0;
     h2->hero_pu = 0;
     h2->hero_pu_timer = 0;
-    SetHeroSeq((HeroInfo *)arg0, 1);
+    SetHeroSeq(arg0, 1);
     func_80026980(h2->hero);
 }
 
@@ -1142,7 +1142,7 @@ void func_800C2E58(s32 arg0) {
     HeroInfo *h = base + arg0;
 
     h->hero_move->velocity_enable = 0;
-    SetHeroSeq((HeroInfo *)arg0, 0x12);
+    SetHeroSeq(arg0, 0x12);
     if (h->hero_object != NULL) {
         h->hero_object->can_do |= 0x20;
     }
@@ -1151,12 +1151,12 @@ void func_800C2E58(s32 arg0) {
 
 void func_800C2EC8(s32 arg0) {
     Heroes[arg0].hero_move->velocity_enable = 1;
-    SetHeroSeq((HeroInfo *)arg0, 0x11);
+    SetHeroSeq(arg0, 0x11);
 }
 
 void func_800C2F14(s32 arg0) {
     Heroes[arg0].hero_move->velocity_enable = 1;
-    SetHeroSeq((HeroInfo *)arg0, 0x10);
+    SetHeroSeq(arg0, 0x10);
 }
 
 void func_800C2F60(s32 arg0) {
@@ -1164,7 +1164,7 @@ void func_800C2F60(s32 arg0) {
     HeroInfo *h = base + arg0;
 
     h->hero_move->velocity_enable = 0;
-    SetHeroSeq((HeroInfo *)arg0, 0xF);
+    SetHeroSeq(arg0, 0xF);
     h->hero_weapon_timer = 0;
 }
 

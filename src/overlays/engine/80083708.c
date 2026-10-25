@@ -837,7 +837,7 @@ s32 player;
                 SetHeroAction(player, ((s16 *)anim->Atable)[++anim->Aindex]);
                 return ret;
             case 0x8005:
-                return SetHeroSeq((HeroInfo *)player, ((s16 *)anim->Atable)[++anim->Aindex]);
+                return SetHeroSeq(player, ((s16 *)anim->Atable)[++anim->Aindex]);
             case 0x8001:
                 h->hero_anim->Atable = (u8 *)h->hero_anim->Atable + (h->hero_anim->Aindex * 2 + 2);
                 anim->Aindex = 0;
@@ -900,9 +900,9 @@ s32 player;
     return ret;
 }
 
-s32 SetHeroSeq(HeroInfo *hero, s32 seq) {
+s32 SetHeroSeq(s32 player, s32 seq) {
     HeroInfo *base = Heroes;
-    HeroInfo *h = base + (s32)hero;
+    HeroInfo *h = base + player;
     u16 name = h->hero_name;
 
     if ((u32)(name - 1) < 8) {
@@ -914,7 +914,7 @@ s32 SetHeroSeq(HeroInfo *hero, s32 seq) {
         h->hero_anim->Aindex = 0;
         h->hero_anim->Masterspeed = *(u16 *)h->hero_anim->Atable;
         h->hero_anim->Seq_count = 0;
-        return func_8008502C(hero, seq);
+        return func_8008502C(player, seq);
     }
     return 0;
 }
@@ -1018,7 +1018,7 @@ s32 func_80085890(s32 arg0) {
         }
         if (D_8009D86C != 0) {
             if (dbase_mesh_anim_name_loaded((obj_dbase *)D_8009D86C, (u8 *)D_8009D868) != 0) {
-                SetHeroSeq((HeroInfo *)arg0, D_8009D866);
+                SetHeroSeq(arg0, D_8009D866);
                 i = 3;
                 do {
                     i -= 1;
@@ -1028,7 +1028,7 @@ s32 func_80085890(s32 arg0) {
     }
     if (D_8009D870 == arg0 && Heroes[arg0].hero_aseq != D_8009D872 && D_8009D878 != 0) {
         if (dbase_mesh_anim_name_loaded((obj_dbase *)D_8009D878, (u8 *)D_8009D874) != 0) {
-            SetHeroSeq((HeroInfo *)arg0, D_8009D872);
+            SetHeroSeq(arg0, D_8009D872);
             i = 3;
             do {
                 i -= 1;
@@ -1846,7 +1846,7 @@ void func_80087428(s32 arg0) {
     h->hero_move->jump_max = 0;
     h->hero_move->velocity_enable = 1;
     D_8009D718();
-    SetHeroSeq((HeroInfo *)arg0, 1);
+    SetHeroSeq(arg0, 1);
     h->hero->Camera.look_ahead = 0x400;
     if (h->hero_ctrl & 4) {
         e = h->hero_eng;
@@ -1885,7 +1885,7 @@ void func_800874EC(s32 arg0) {
                 e = h->hero_eng;
                 if (e->unk10.y < World_floor_level) {
                     if (h->hero_aseq == 0xE) {
-                        SetHeroSeq((HeroInfo *)arg0, 1);
+                        SetHeroSeq(arg0, 1);
                     }
                 } else if (m->x_vel != 0 || m->z_vel != 0) {
                     if (h->hero_aseq != 1) {
@@ -1893,12 +1893,12 @@ void func_800874EC(s32 arg0) {
                     }
                     PlaySfx(D_8009DC2C[Random(6)], &h->hero_eng->sfx, NULL,
                             0x1000, 0x1E00, 0);
-                    SetHeroSeq((HeroInfo *)arg0, 0xE);
+                    SetHeroSeq(arg0, 0xE);
                 } else if (h->hero_aseq == 0xE) {
                     if (e->sfx != NULL) {
                         StopSfx(e->sfx);
                     }
-                    SetHeroSeq((HeroInfo *)arg0, 1);
+                    SetHeroSeq(arg0, 1);
                 }
             }
             base2 = Heroes;
@@ -2030,7 +2030,7 @@ void func_80087FC0(s32 arg0) {
         p->platform = NULL;
     }
     e->platform = NULL;
-    SetHeroSeq((HeroInfo *)arg0, 6);
+    SetHeroSeq(arg0, 6);
     idx = 0;
     if (D_8005A614[arg0 + 0x5C] == 0) {
         idx = h->hero_name;
@@ -2072,7 +2072,7 @@ void func_800880E0(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    SetHeroSeq((HeroInfo *)arg0, 7);
+    SetHeroSeq(arg0, 7);
 }
 
 void func_800881E0(s32 arg0) {
@@ -2124,7 +2124,7 @@ void func_800882DC(s32 arg0) {
     h->hero_move->jump_dir = 0;
     h->hero_status |= 0x800;
     if (h->hero_last_mode != 0xD) {
-        SetHeroSeq((HeroInfo *)arg0, 7);
+        SetHeroSeq(arg0, 7);
     }
     PlaySfx(0x410, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
 }
@@ -2141,7 +2141,7 @@ void func_80088450(s32 arg0) {
     h->hero_move->velocity_enable = 1;
     h->hero_move->jump_max = 0;
     h->hero_sub->unk08 = 0;
-    SetHeroSeq((HeroInfo *)arg0, 8);
+    SetHeroSeq(arg0, 8);
     if (D_8005AA9C != NULL) {
         e = h->hero_eng;
         o = D_8005AA9C->Engine;
@@ -2220,7 +2220,7 @@ void func_80088708(s32 arg0) {
     NAS *nas;
 
     hero->hero_move->velocity_enable = 1;
-    SetHeroSeq((HeroInfo *)arg0, 0xA);
+    SetHeroSeq(arg0, 0xA);
     hero->hero_attack_delay += 0xF;
     if (hero->hero_attack_delay > 0x28) {
         hero->hero_attack_delay = 0x28;
@@ -2307,7 +2307,7 @@ void func_80088BAC(s32 arg0) {
     HeroInfo *hero = &base[arg0];
 
     hero->hero_move->velocity_enable = 0;
-    SetHeroSeq((HeroInfo *)arg0, 0xA);
+    SetHeroSeq(arg0, 0xA);
     hero->hero_attack_delay += 0xF;
     if (hero->hero_attack_delay > 0x28) {
         hero->hero_attack_delay = 0x28;
@@ -2382,7 +2382,7 @@ void func_80088F78(s32 arg0) {
     HeroInfo *hero = &base[arg0];
 
     hero->hero_move->velocity_enable = 0;
-    SetHeroSeq((HeroInfo *)arg0, 0xA);
+    SetHeroSeq(arg0, 0xA);
     hero->hero_attack_delay += 0xF;
     if (hero->hero_attack_delay > 0x28) {
         hero->hero_attack_delay = 0x28;
@@ -2515,7 +2515,7 @@ void func_800894E0(s32 arg0) {
     HeroInfo *hero = &base[arg0];
 
     hero->hero_move->velocity_enable = 0;
-    SetHeroSeq((HeroInfo *)arg0, 0xA);
+    SetHeroSeq(arg0, 0xA);
     hero->hero_attack_delay += 0xF;
     if (hero->hero_attack_delay > 0x28) {
         hero->hero_attack_delay = 0x28;
@@ -3052,7 +3052,7 @@ void func_8008A924(s32 arg0) {
         rw = Heroes[arg0].hero_move->run_walk;
     } while (0);
     Heroes[arg0].hero_move->run_walk = rw;
-    SetHeroSeq((HeroInfo *)arg0, 5);
+    SetHeroSeq(arg0, 5);
     D_8009D73C(arg0);
 }
 
@@ -3061,7 +3061,7 @@ void func_8008A99C(s32 arg0) {
     HeroInfo *h = &base[arg0];
     h->hero_move->jump_max = 0;
     h->hero_move->velocity_enable = 0;
-    SetHeroSeq((HeroInfo *)arg0, 2);
+    SetHeroSeq(arg0, 2);
 }
 
 void func_8008A9F0(s32 arg0) {
@@ -3082,7 +3082,7 @@ void func_8008AAB0(s32 arg0) {
 
     h->hero_move->jump_max = 0;
     h->hero_move->velocity_enable = 0;
-    SetHeroSeq((HeroInfo *)arg0, 0);
+    SetHeroSeq(arg0, 0);
 }
 
 s32 func_8008AB04(s32 arg0) {

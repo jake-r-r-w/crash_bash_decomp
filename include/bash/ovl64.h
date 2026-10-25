@@ -304,7 +304,7 @@ extern s32 D_8005A618;
 extern void (*D_8009D740)(s32);
 s32 func_8008502C();
 s32 func_800871E4(s32 arg0);
-s32 SetHeroSeq(HeroInfo *hero, s32 seq);
+s32 SetHeroSeq(s32 player, s32 seq);
 
 void func_800B382C(void);
 

@@ -2693,7 +2693,7 @@ void func_800B9E68(s32 id) {
         mv->z_acc = 9;
         mv->z_dec = 9;
         mv->x_dec = 9;
-        SetHeroSeq((HeroInfo *)id, 0x4D);
+        SetHeroSeq(id, 0x4D);
         ext->unkC = 7;
         ext->unk14 = 0;
         func_80028018(id, 0xA);
@@ -2775,7 +2775,7 @@ void func_800BA574(s32 id) {
     v = (D_80068BD4[(m->forward_angle + 0x800) & 0xFFF].unk2 * 0x59) >> 0xB;
     m->z_vel = v;
     m->z_max = v;
-    SetHeroSeq((HeroInfo *)id, 0x50);
+    SetHeroSeq(id, 0x50);
 }
 
 void func_800BA724(s32 id) {
@@ -3508,24 +3508,24 @@ void func_800BC8D0(s32 arg0) {
     }
 }
 
-void func_800BC948(HeroInfo *hero) {
-    SetHeroSeq(hero, 0x4F);
-    if ((s32)hero == 0) {
+void func_800BC948(s32 player) {
+    SetHeroSeq(player, 0x4F);
+    if (player == 0) {
         PlaySfx(0x6B3, NULL, NULL, 0x1000, 0x1E00, 0);
     }
-    if ((s32)hero == 1) {
+    if (player == 1) {
         PlaySfx(0x6B4, NULL, NULL, 0x1000, 0x1E00, 0);
     }
-    if ((s32)hero == 2) {
+    if (player == 2) {
         PlaySfx(0x6B5, NULL, NULL, 0x1000, 0x1E00, 0);
     }
-    if ((s32)hero == 3) {
+    if (player == 3) {
         PlaySfx(0x6B6, NULL, NULL, 0x1000, 0x1E00, 0);
     }
 }
 
-void func_800BCA18(HeroInfo *hero) {
-    SetHeroSeq(hero, 0x4E);
+void func_800BCA18(s32 player) {
+    SetHeroSeq(player, 0x4E);
 }
 
 void func_800BCA38(s32 arg0) {
@@ -3542,7 +3542,7 @@ void func_800BCAC0(s32 arg0) {
     EXTheromove *mv;
 
     mv = Heroes[arg0].hero_move;
-    SetHeroSeq((HeroInfo *)arg0, 0x4D);
+    SetHeroSeq(arg0, 0x4D);
     if (Heroes[arg0].hero_eng->sfx != NULL) {
         StopSfx(Heroes[arg0].hero_eng->sfx);
     }
@@ -3685,7 +3685,7 @@ void func_800BCF44(s32 arg0) {
 
 void func_800BCF88(s32 arg0) {
     func_80089FA4(arg0);
-    SetHeroSeq((HeroInfo *)arg0, 0x4D);
+    SetHeroSeq(arg0, 0x4D);
     Heroes[arg0].hero_eng->unk20 = 0;
     Heroes[arg0].hero_eng->unk5E = 1;
     if (Heroes[arg0].hero_eng->sfx != NULL) {

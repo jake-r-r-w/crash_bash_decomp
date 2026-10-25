@@ -2553,7 +2553,7 @@ void func_800B92BC(s32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    SetHeroSeq((HeroInfo *)arg0, 0x2B);
+    SetHeroSeq(arg0, 0x2B);
 }
 
 void func_800B937C(s32 arg0) {
@@ -2578,7 +2578,7 @@ void func_800B937C(s32 arg0) {
         if (h->hero_health <= 0 && !(D_8005A618 & 2)) {
             h->hero_immunity = 0;
             h->hero_hit += 0x28;
-            SetHeroSeq((HeroInfo *)arg0, 0x2D);
+            SetHeroSeq(arg0, 0x2D);
         }
         Heroes[arg0].hero_health = 0x14;
     }
@@ -2639,7 +2639,7 @@ void func_800B9608(s32 arg0) {
         p->platform = NULL;
     }
     e->platform = NULL;
-    SetHeroSeq((HeroInfo *)arg0, 0x2C);
+    SetHeroSeq(arg0, 0x2C);
     idx = 0;
     if (D_8005A614[arg0 + 0x5C] == 0) {
         idx = h->hero_name;
@@ -2776,7 +2776,7 @@ void func_800B9A04(s32 arg0) {
         h2->hero_pu_timer = 0;
     }
     func_80085718(arg0, 0);
-    SetHeroSeq((HeroInfo *)arg0, 0xC);
+    SetHeroSeq(arg0, 0xC);
     func_80089FA4(arg0);
     D_800AD12C = 1;
 }

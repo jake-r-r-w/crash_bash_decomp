@@ -1418,14 +1418,14 @@ void AnimateTank(u32 player) {
     if (D_8005A614[player + 0x5C] != 0) {
         if (++D_800CAD50[player].IdleAnimCt >= 0x50 && D_800CB0F0 == 0) {
             D_800CAD50[player].IdleAnimCt = Random(0x1E);
-            SetHeroSeq((HeroInfo *)player, 0x5A);
+            SetHeroSeq(player, 0x5A);
             D_800CAD50[player].IdleAnimCt = 0;
             PlaySfx(D_800C94A8[Heroes[player].hero_name - 1], NULL, &Heroes[player].hero_eng->unk10, 0x1000, 0x1E00,
                     0);
             return;
         }
     }
-    SetHeroSeq((HeroInfo *)player, 0x59);
+    SetHeroSeq(player, 0x59);
 }
 
 void ResetToBasicWeapon(s32 player) {
@@ -1724,14 +1724,14 @@ void func_800B77E8(s32 player) {
                 case 2:
                 case 3:
                 case 4:
-                    SetHeroSeq((HeroInfo *)player, 0x5D);
+                    SetHeroSeq(player, 0x5D);
                     break;
                 case 5:
                 case 6:
-                    SetHeroSeq((HeroInfo *)player, 0x5E);
+                    SetHeroSeq(player, 0x5E);
                     break;
                 case 7:
-                    SetHeroSeq((HeroInfo *)player, 0x5F);
+                    SetHeroSeq(player, 0x5F);
                     break;
                 }
                 if (ta->MainWeaponType == 3) {
@@ -1954,7 +1954,7 @@ void func_800B77E8(s32 player) {
                     PlaySfx(0x50A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                     PlaySfx(D_800C9418[player], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                     ta->SubWeaponRounds--;
-                    SetHeroSeq((HeroInfo *)player, 0x5B);
+                    SetHeroSeq(player, 0x5B);
                 } else {
                     Ovl5fTriggerNear(eng->unk10.x, eng->unk10.z, 0x100);
                     CreateNAS(eng->unk10.x, eng->unk10.y + 0x14, eng->unk10.z, 0x1303, 0x11);
@@ -1962,7 +1962,7 @@ void func_800B77E8(s32 player) {
                     PlaySfx(0x4E9, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                     PlaySfx(D_800C9418[player], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                     ta->SubWeaponRounds--;
-                    SetHeroSeq((HeroInfo *)player, 0x5B);
+                    SetHeroSeq(player, 0x5B);
                 }
             } else if (D_8005A614[player + 0x5C] == 0) {
                 PlaySfx(0x4F1, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
@@ -1999,7 +1999,7 @@ subdone:
                 case 0x6E:
                 case 0x6F:
                     ta->TauntDelay = 0x5A;
-                    SetHeroSeq((HeroInfo *)player, 0x5A);
+                    SetHeroSeq(player, 0x5A);
                     PlaySfx(D_800C94A8[h->hero_name - 1], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                     break;
                 }
@@ -2030,7 +2030,7 @@ void SetTankHeroIdle(u32 player) {
         Heroes[player].hero_move->jump_max = 0;
         Heroes[player].hero_move->velocity_enable = 1;
         Heroes[player].hero_idle_count = Random(0x96) + 0x5A;
-        SetHeroSeq((HeroInfo *)player, 0x59);
+        SetHeroSeq(player, 0x59);
         eng = Heroes[player].hero_eng;
         if (D_800CAD50[player].HullSFX != 0) {
             D_800CAD50[player].HullSFX = 0;
@@ -2064,7 +2064,7 @@ void SetTankHeroTurn(u32 player) {
         done = 0;
     }
     if (done == 0) {
-        SetHeroSeq((HeroInfo *)player, 0x59);
+        SetHeroSeq(player, 0x59);
         PlaySfx(D_800C94E8[player], NULL, &Heroes[player].hero_eng->unk10, 0x1000, 0x1E00, 0);
     }
 }
@@ -2737,7 +2737,7 @@ void SetTankHeroRecoil(u32 player) {
     }
     if (done == 0) {
         D_800CAD50[player].SpeedY = -0x64;
-        SetHeroSeq((HeroInfo *)player, 0x57);
+        SetHeroSeq(player, 0x57);
         Heroes[player].hero_immunity = 0x3C;
         PlaySfx(D_800C9428[Heroes[player].hero_name - 1][Random(4)], NULL, &Heroes[player].hero_eng->unk10, 0x1000,
                 0x1E00, 0);
@@ -2764,7 +2764,7 @@ void TankHeroRecoil(u32 arg0) {
             SetHeroAction(arg0, 0x6A);
         } else {
             SetHeroAction(arg0, h->hero_last_mode);
-            SetHeroSeq((HeroInfo *)arg0, 0x59);
+            SetHeroSeq(arg0, 0x59);
         }
     }
 }
@@ -2782,7 +2782,7 @@ void SetTankHeroVictory(u32 arg0) {
         }
     }
     Heroes[arg0].hero_ctrl |= 2;
-    SetHeroSeq((HeroInfo *)arg0, 0x5A);
+    SetHeroSeq(arg0, 0x5A);
     func_80089FA4(arg0);
     func_80085718(arg0, 0);
     Heroes[arg0].hero_eng->unk10.y = 0;
@@ -8563,7 +8563,7 @@ void TankHeroDead(u32 player) {
 }
 
 void SetTankHeroDie(u32 player) {
-    SetHeroSeq((HeroInfo *)player, 0x58);
+    SetHeroSeq(player, 0x58);
 }
 
 s32 func_800C7D44(s32 flags, Ovl5fHolder *a, Ovl5fPos *b) {
@@ -8595,7 +8595,7 @@ void SetTankHeroMove(u32 arg0) {
         ok = 0;
     }
     if (ok == 0) {
-        SetHeroSeq((HeroInfo *)arg0, 0x59);
+        SetHeroSeq(arg0, 0x59);
     }
 }
 

@@ -289,13 +289,6 @@ and current tools).
   N' --all`), PAL/JP retail differ only by dropping the division checks,
   and reload adds no copies (`ashrsi3` has no tied operands). The permuter
   run is still unused: the natural shape is a structure-stage base.
-- **`SetHeroSeq` takes a hero index, not a pointer.** Its body does
-  `base + (s32)hero`, but it is declared `HeroInfo *hero`, so 134 calls cast
-  an index: `SetHeroSeq((HeroInfo *)arg0, 0x59)`. `SetHeroAction` had the
-  same slip and is `s32 player` since 2026-10-25 (its casts dropped in one
-  commit, `make check` OK); do the same here. `PlotSpiralSat`'s one cast
-  call of `SetHeroAction` stays: its file has no prototype in scope, and
-  the cast makes that call void so jump2 can't merge it with the others.
 - **Earlier compiles of the last functions** (PROTOTYPES.md, Earlier
   compiles of a function, has the table). Each of the five biggest has a
   build within a few instructions of retail's: Oct 9's `func_800BC038` (+1
@@ -678,6 +671,13 @@ Other:
   are ordinary C with Sony's GTE macros. m2c can't draft them.
 - `bool` is 32 bits. `NAS+0x58` is a per-object pointer (`EXTobject` for
   Arkenoid balls, other types elsewhere): leave it `void *`.
+- **A `HeroInfo *` parameter used as `base + (s32)p` is a hero index.**
+  `SetHeroAction` and `SetHeroSeq` take `s32 player` since 2026-10-25 (335
+  and 135 casts dropped, `make check` OK each time), and so do the handlers that only
+  pass it on (`func_800C7E68`, `func_800C7EB0`, `func_800BC948`,
+  `func_800BCA18`). Type new ones `s32` from the start. `PlotSpiralSat`'s one
+  cast call of `SetHeroAction` stays: its file has no prototype in scope, and
+  the cast makes that call void so jump2 can't merge it with the others.
 - The leak's prototype order follows code order inside a file, so the
   neighbours of a named function are good naming candidates.
 - AST entry: `{id, Init, Plot}`, `0x80026D00` is the empty stub; pointers
@@ -701,6 +701,11 @@ offset. Most-called functions:
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-25 (`SetHeroSeq` retyped):** it takes `s32 player` like
+  `SetHeroAction`; its 135 casts are gone, and ovl65's `func_800BC948` and
+  `func_800BCA18` take the index too (`make check` OK, the four parks score
+  as before). The hero-index rule is a Gotcha now (Matching and types).
+
 - **2026-10-25 (hand: `PlotTransmuterBeam` retried with inlines, still
   parked at 2310/2311; `SetHeroAction` retyped):** case 1's `one = 1`
   steering became an inline, `TBSetHeroEffect(ext, i, k)` for the hit
@@ -708,8 +713,8 @@ Newest first, a few lines each. Details are in the commits.
   no inline shape keeps the base live, and calls.c's argument order (a0
   first, no `PUSH_ROUNDING`) rules out the second-`InitDelete`-argument
   reading. Park note, Open lead and two Diff patterns rows updated. Before
-  that, `SetHeroAction` took `s32 player` and its 349 casts went (`make
-  check` OK); `SetHeroSeq` has the same slip (Open leads).
+  that, `SetHeroAction` took `s32 player` and its 335 casts went (`make
+  check` OK; the commit message's 349 counts changed lines).
 
 - **2026-10-25 (hand: ovl62 `PlotUkaPolarMask` matched, 6472 bytes):** from
   the swarm's checkpoint (structure 800/1618, 1575 exact, four blocks left).

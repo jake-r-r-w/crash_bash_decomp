@@ -1946,5 +1946,5 @@ void func_800BFD2C(s32 arg0) {
         StopSfx(h3->hero_eng->sfx);
     }
     PlaySfx(D_8009E080[h3->hero_name][Random(4)], NULL, NULL, 0x1000, 0x1E00, 0);
-    SetHeroSeq((HeroInfo *)arg0, 9);
+    SetHeroSeq(arg0, 9);
 }

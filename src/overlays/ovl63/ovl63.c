@@ -2781,9 +2781,9 @@ void func_800BA278(s32 player) {
                             PlaySfx(0x67C, NULL, NULL, 0x1000, 0x1E00, 0);
                         }
                     }
-                    SetHeroSeq((HeroInfo *)player, 0x49);
+                    SetHeroSeq(player, 0x49);
                     if (D_8005A648 == 0x19) {
-                        SetHeroSeq((HeroInfo *)player, 0x53);
+                        SetHeroSeq(player, 0x53);
                         hn = Heroes;
                         h = &hn[player];
                         if (h->hero_name == 1) {
@@ -2930,7 +2930,7 @@ void func_800BA278(s32 player) {
     func_800C5400(player);
     if (G63B->unk34 != 0x19) {
         if (func_8008502C(player) != 0) {
-            SetHeroSeq((HeroInfo *)player, 0x48);
+            SetHeroSeq(player, 0x48);
         }
     } else {
         func_8008502C(player);
@@ -2979,9 +2979,9 @@ void func_800BAD54(s32 player) {
             PlaySfx(0x653, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         h->hero_eng->unk5E = 1;
-        SetHeroSeq((HeroInfo *)player, 0x4B);
+        SetHeroSeq(player, 0x4B);
         if (G63->unk34 == 0x19) {
-            SetHeroSeq((HeroInfo *)player, 0x54);
+            SetHeroSeq(player, 0x54);
         }
         h->hero_shadow->sub->flags &= ~0x8000;
         h->hero_eng->sub->unk68 = 0x200;
@@ -3110,9 +3110,9 @@ void func_800BAFC8(s32 player) {
         }
         if (func_8008502C(player) != 0) {
             f->unk144 = 1;
-            SetHeroSeq((HeroInfo *)player, 0x48);
+            SetHeroSeq(player, 0x48);
             if (G63->unk34 == 0x19) {
-                SetHeroSeq((HeroInfo *)player, 0x52);
+                SetHeroSeq(player, 0x52);
             }
             h->hero_eng->unk10.x -= D_80068BD4[(f->unk54 - 0x400) & 0xFFF].unk2 * 512 >> 12;
             h->hero_eng->unk10.z -= D_80068BD4[f->unk54 & 0xFFF].unk2 * 512 >> 12;
@@ -3178,7 +3178,7 @@ void func_800BB878(s32 player) {
     if (++f->unk40 > 20) {
         SetHeroAction(player, 0x5B);
         if (D_8005A648 == 0x19) {
-            SetHeroSeq((HeroInfo *)player, 0x52);
+            SetHeroSeq(player, 0x52);
         }
         return;
     }
@@ -3201,7 +3201,7 @@ void func_800BBA04(s32 player) {
 
     func_800C5400(player);
     if (G63->unk34 != 0x19) {
-        SetHeroSeq((HeroInfo *)player, 0x4A);
+        SetHeroSeq(player, 0x4A);
     }
     func_80028018(player, 0xA);
     ((void (*)(s32, s32, s32))func_80027F7C)(player, 0xA, 0xFF);
@@ -3598,7 +3598,7 @@ void func_800BCDAC(s32 player) {
 
     D_800C695C = 1;
     func_80089FA4(player);
-    SetHeroSeq((HeroInfo *)player, 0x48);
+    SetHeroSeq(player, 0x48);
     base = Heroes;
     hero = base + player;
     hero->hero_eng->unk20 = 0;
@@ -6510,9 +6510,9 @@ void func_800C57B4(s32 player) {
     EXTheromove *move;
     Ovl63HeroFux *fux;
 
-    SetHeroSeq((HeroInfo *)player, 0x48);
+    SetHeroSeq(player, 0x48);
     if (D_8005A648 == 0x19) {
-        SetHeroSeq((HeroInfo *)player, 0x52);
+        SetHeroSeq(player, 0x52);
     }
     move = Heroes[player].hero_move;
     if (move != NULL) {

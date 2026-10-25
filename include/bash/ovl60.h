@@ -642,7 +642,7 @@ static inline s32 Ovl60_StatusAction(s32 arg0, s32 bit, s32 action, s32 seq)
             HeroPogoTazingCancel(arg0);
         }
         SetHeroAction(arg0, action);
-        SetHeroSeq((HeroInfo *)arg0, seq);
+        SetHeroSeq(arg0, seq);
         return 1;
     }
     return 0;

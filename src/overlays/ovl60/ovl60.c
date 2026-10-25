@@ -1197,9 +1197,9 @@ void SetHeroPogoIdle(u32 arg0) {
     Heroes[arg0].hero_move->jump_ctrl &= 0xEF;
     Player_SnapToTile(arg0);
     if (D_800C535C[arg0].unk4 == 5) {
-        SetHeroSeq((HeroInfo *)arg0, 0x2F);
+        SetHeroSeq(arg0, 0x2F);
     } else {
-        SetHeroSeq((HeroInfo *)arg0, 0x2E);
+        SetHeroSeq(arg0, 0x2E);
     }
 }
 
@@ -1231,7 +1231,7 @@ void HeroPogoIdle(u32 arg0) {
         PlayBoingNoise(arg0);
         Set_Tile_Under_Player(arg0, 1);
         if (D_800C535C[arg0].unk4 != 5 && Heroes[arg0].hero_aseq == 0x2F) {
-            SetHeroSeq((HeroInfo *)arg0, 0x2E);
+            SetHeroSeq(arg0, 0x2E);
         }
         break;
     case 0x11:
@@ -1509,7 +1509,7 @@ void SetHeroPogoDazed(u32 arg0) {
     h->hero_move->velocity_enable = 0;
     h->hero_frozen = 10;
     D_800C535C[arg0].unk8[1] = 0;
-    SetHeroSeq((HeroInfo *)arg0, 0x31);
+    SetHeroSeq(arg0, 0x31);
 }
 
 void HeroPogoDazed(u32 arg0) {
@@ -6736,7 +6736,7 @@ bool TestHeroPogoTied(u32 arg0) {
             HeroPogoTazingCancel(arg0);
         }
         SetHeroAction(arg0, 0x3E);
-        SetHeroSeq((HeroInfo *)arg0, 0x2E);
+        SetHeroSeq(arg0, 0x2E);
         return 1;
     }
     return 0;
@@ -6748,7 +6748,7 @@ bool TestHeroPogoLoser(u32 arg0) {
             HeroPogoTazingCancel(arg0);
         }
         SetHeroAction(arg0, 0x3D);
-        SetHeroSeq((HeroInfo *)arg0, 0x2E);
+        SetHeroSeq(arg0, 0x2E);
         return 1;
     }
     return 0;
@@ -6774,7 +6774,7 @@ bool TestHeroPogoWinner(u32 arg0) {
             HeroPogoTazingCancel(arg0);
         }
         SetHeroAction(arg0, 0x3C);
-        SetHeroSeq((HeroInfo *)arg0, 0x32);
+        SetHeroSeq(arg0, 0x32);
         return 1;
     }
     return 0;
@@ -6796,7 +6796,7 @@ void SetHeroPogoTazing(u32 arg0) {
     EXTheromove *move;
 
     Player_RemoveReserve(arg0);
-    SetHeroSeq((HeroInfo *)arg0, 0x30);
+    SetHeroSeq(arg0, 0x30);
     base = Heroes;
     h = (HeroInfo *)(arg0 * sizeof(HeroInfo) + (u32)base);
     move = h->hero_move;

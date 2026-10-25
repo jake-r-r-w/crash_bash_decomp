@@ -13,7 +13,7 @@
 
 void func_800C1190(s32 arg0);
 
-s32 SetHeroSeq(HeroInfo *hero, s32 seq);
+s32 SetHeroSeq(s32 player, s32 seq);
 
 extern u16 *D_8009D6EC;
 void func_800C2DAC(s32 arg0);

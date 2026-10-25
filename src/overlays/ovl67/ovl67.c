@@ -1022,7 +1022,7 @@ void func_800B5774(s32 arg0) {
     base = Heroes;
     h = &base[arg0];
     h->hero_move->velocity_enable = 1;
-    SetHeroSeq((HeroInfo *)arg0, 0x25);
+    SetHeroSeq(arg0, 0x25);
     h->hero_attack_delay += 0x1E;
     if (h->hero_attack_delay > 0x5A) {
         h->hero_attack_delay = 0x5A;
@@ -3738,12 +3738,12 @@ void func_800BB6BC(s32 arg0) {
 void func_800BB72C(s32 arg0) {
     Heroes[arg0].hero_move->velocity_enable = 1;
     func_800B4954();
-    SetHeroSeq((HeroInfo *)arg0, 0x22);
+    SetHeroSeq(arg0, 0x22);
 }
 
 void func_800BB788(s32 arg0) {
     Heroes[arg0].hero_move->velocity_enable = 1;
-    SetHeroSeq((HeroInfo *)arg0, 0x24);
+    SetHeroSeq(arg0, 0x24);
 }
 
 void func_800BB7D4(s32 arg0) {
@@ -3755,7 +3755,7 @@ void func_800BB7D4(s32 arg0) {
         StopSfx(h->hero_eng->sfx);
     }
     func_800B4954(arg0);
-    SetHeroSeq((HeroInfo *)arg0, 0x21);
+    SetHeroSeq(arg0, 0x21);
     h->hero_idle_count = Random(0x96) + 0xB4;
 }
 
@@ -3768,7 +3768,7 @@ void func_800BB86C(s32 arg0) {
         StopSfx(h->hero_eng->sfx);
     }
     func_800B4954(arg0);
-    SetHeroSeq((HeroInfo *)arg0, 0x21);
+    SetHeroSeq(arg0, 0x21);
 }
 
 s32 func_800BB8EC(s32 arg0) {

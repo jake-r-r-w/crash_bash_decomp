@@ -135,9 +135,9 @@ extern s32 D_800BDC1C[];
 
 void PlotDinoSmoke(NAS *m);
 
-void func_800BC948(HeroInfo *hero);
+void func_800BC948(s32 player);
 
-void func_800BCA18(HeroInfo *hero);
+void func_800BCA18(s32 player);
 
 s32 func_800BCDF0(u8 *arg0);
 

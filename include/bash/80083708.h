@@ -29,7 +29,7 @@ void InitFloatyScore(u8 *arg0);
 void PlotBigPoof(NAS *nas);
 void func_8008DDC0(NAS *nas);
 s32 func_8008DE8C(void);
-s32 SetHeroSeq(HeroInfo *hero, s32 seq);
+s32 SetHeroSeq(s32 player, s32 seq);
 void SetHeroAction(s32 player, s32 action);
 void func_80086FA0(void);
 u8 *func_8008D24C(u8 *arg0, s32 *arg1);

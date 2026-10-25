@@ -2182,7 +2182,7 @@ void func_800C2E60(s32 arg0) {
     HeroInfo *h = &base[arg0];
     EXTheromove *m = h->hero_move;
 
-    SetHeroSeq((HeroInfo *)arg0, 0x22);
+    SetHeroSeq(arg0, 0x22);
     func_800B4954(arg0);
     m->x_acc = 0x10;
     m->z_acc = 0x10;
