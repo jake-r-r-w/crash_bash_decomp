@@ -43,7 +43,9 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   try C shapes in small test files before rebuilding the function
   (MATCHING.md, Using the compiler directly). `tools/cc1/` rebuilds it from
   source byte for byte, for analysis variants only (`build.sh NAME --patch F
-  --cflags ...`, `with.sh NAME CMD`, `check.sh NAME`; tools/cc1/README.md);
+  --cflags ...`, `with.sh NAME CMD`, `check.sh NAME`, and `cc1_compare.py
+  FUNC [FILE...]` under `with.sh` for which builds a variant changes;
+  tools/cc1/README.md);
   matches always use `/opt/gcc`. `try NAME --file F.c` diffs a
   test copy of the whole function with its unit's settings in about 2 s, and
   `--file A.c B.c ...` compiles several in parallel and ranks them by the

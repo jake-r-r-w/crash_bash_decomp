@@ -33,6 +33,8 @@ tools/cc1/build.sh pc64 --cflags -mpc64            # a variant with other host f
 tools/cc1/build.sh logqty --patch tools/cc1/patches/F.patch   # a variant with our source patch
 tools/cc1/with.sh NAME COMMAND...     # COMMAND in the container, with that cc1 in place of /opt's
 tools/cc1/check.sh NAME               # the whole game built with it, then make check
+tools/cc1/with.sh NAME python3 tools/scripts/cc1_compare.py FUNC [FILE...]
+                                      # which builds of FUNC it changes (default: FUNC's own C)
 ```
 
 - `build.sh` runs on the host and needs Docker. It downloads the FSF tarball (8.4 MB) and
@@ -49,9 +51,22 @@ tools/cc1/check.sh NAME               # the whole game built with it, then make 
   dumps all run with it. The two gcc 2.7.2 units keep their compiler.
 - `check.sh` copies the build inputs into the container and builds there, so `build/` keeps the
   real compiler's objects.
+- `cc1_compare.py` builds each test copy twice, with `/opt/gcc` and with the variant, and lists
+  the builds that change, with their distance from retail before and after. A variant that only
+  reports (a logging patch) must change nothing, in `check.sh` and here.
 
 ## Checked
 
 2026-10-25: `build.sh` rebuilds cc1, cpp, gcc, cc1plus and g++ byte-identical to the
 toolchain's `/opt/gcc/2.8.1-psx/`, and `check.sh release` builds the whole game with the
 rebuilt cc1 and passes `make check`.
+
+2026-10-25, host precision (`pc64`, `--cflags -mpc64`): its startup code sets the x87
+precision control to 53 bits (`set_precision`, in `.init_array`). The whole game built with it
+passes `make check`, and the three parked functions' C and all 179 saved variants of them
+(`func_800B4048` 159, `PlotTransmuterBeam` 15, `func_800BE914` 5) build to the same words as
+with `/opt`. So the host's precision decides nothing here, which fits the arithmetic: `int`
+truncation of `10000 * P / L` (refs and life length, small integers) can only move when that
+value is an exact integer with a ratio that isn't a binary fraction, and the order only changes
+if another quantity falls within 1 below it. The remaining parks are a source question, not a
+compiler one.

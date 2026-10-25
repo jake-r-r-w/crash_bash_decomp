@@ -66,11 +66,12 @@ register right now, three insns misplaced). Each needs
 a new idea rather than another round of the usual tries. The plan since
 2026-10-25: prove the decision a park needs with an analysis variant of cc1
 (`tools/cc1/`, a from-source rebuild that is byte-identical to `/opt`'s),
-then search for the C that gives it. First, a variant at 53-bit x87
-precision (`build.sh pc64 --cflags -mpc64`) through `check.sh` and the
-three parks, in case a register priority rounds differently on the original
-host; then variants that force one decision each (local-alloc's tie for
-`func_800B4048`, a sched1 order). Inline shapes
+then search for the C that gives it. The host is ruled out: a variant at
+53-bit x87 precision changes no build of the game, the parks or 179 saved
+park variants (tools/cc1/README.md, Checked), so the parks are a source
+question. Next: variants that force one decision each (local-alloc's tie
+for `func_800B4048`, a sched1 order), checked with `cc1_compare.py` and
+`check.sh`. Inline shapes
 have been tried on all three, with no match; only `PlotTransmuterBeam`'s
 case 1 steering became natural. `CheckMineToBoss` matched on 2026-10-25
 once loop.c's own numbers (`-dL`, "not worth while, X vs N") showed what
@@ -728,6 +729,14 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-25 (pathway 1: host precision ruled out):** `tools/cc1/build.sh
+  pc64 --cflags -mpc64` gives a cc1 whose startup sets x87 precision to 53
+  bits (as an MSVC-built Windows cc1 would run). The game built with it
+  passes `make check`, and the three parks' C and their 179 saved variants
+  build to the same words as with `/opt`. New `cc1_compare.py` (with a test)
+  lists which builds of a function a variant changes; it flags every build
+  when gcc 2.7.2's cc1 stands in as the variant.
 
 - **2026-10-25 (`tools/cc1/`: cc1 rebuilt from source):** old-gcc's recipe
   (FSF 2.8.1 plus its `psx`, `mips` and `obstack` patches, built on Ubuntu
