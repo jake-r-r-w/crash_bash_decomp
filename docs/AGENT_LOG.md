@@ -251,8 +251,17 @@ and current tools).
   no pre-loop statement can have a later luid: only a strength-reduction
   init or a movable found later in the loop body can. Inline shapes (a
   scale getter, a per-hero setter, the loop as an inline) don't keep the
-  copy. Try shapes with `try func_800B4048 --file`; the variant scripts are
-  in `scratch/b48/` and `scratch/b48b/`.
+  copy. Retried 2026-10-25 from loop.c's `-dL` numbers. The 60% computed
+  at the loop top with `D_8005A614` read inside the loop (`y = t * 60 /
+  100;` first, then `p = D_8005A614;` as the score loop does) gives the
+  target's movable order (the chain, then `q`'s base, then `D_800BC4AC`),
+  and the copy survives. But global.c then puts `v` in a2: it loses its v1
+  preference and conflicts with a local pseudo that local-alloc puts in v1,
+  so `t` and `v` share a2 and the copy is deleted as a no-op (length 254).
+  Next: what moves local-alloc's choices in that form (`-dl` dump, the x
+  chain's temps), or a natural set of `v` that keeps both its v1 and the
+  copy. Try shapes with `try func_800B4048 --file` on a copy with the parked
+  C swapped in.
 - **`func_800BE914`'s copies** (parked 2026-10-23 at registers 7/170; the
   `decomp.py block` note has the detail). The target copies each clamped
   speed into v0 right before its `>> 8` (`move v0,aN; sra a2,v0,8`, four
@@ -703,6 +712,14 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-25 (hand: `func_800B4048` retried from loop.c's numbers, still
+  parked at 7/255):** the `-dL` dump showed the order loop.c hoists in
+  (the Heroes base, `D_800BC4AC`, the `*60` chain). The target's order
+  needs `q`'s base as a movable after the chain. Computing the 60% at the
+  loop top and reading `D_8005A614` in the loop gives that order and keeps
+  the copy, but changes local-alloc's choices so that `v` loses v1 and the
+  copy becomes a no-op. Park note, Open lead and a Diff patterns row.
 
 - **2026-10-25 (hand: ovl5f `CheckMineToBoss` matched, ovl5f complete):**
   the parked shape's loop-counter lead, worked from loop.c's `-dL` numbers.
