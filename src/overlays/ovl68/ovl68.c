@@ -326,19 +326,18 @@ void func_800B3EFC(void) {
     D_8009D900 = D_800BC0C0;
 }
 
-#ifdef NON_MATCHING
-/* The parked C (instructions 6/255, every register right, all in the tail
-   block): `t = v` before the *60 survives cse2 and combine only because v is
-   set again before the loop (the steering `v = (s32)D_8005A614`, which combine
-   folds into q). v also holds the first loop's score, which gives it the
-   target's v1. q's lui/addiu land in the x mult's stall before the copy
-   instead of after the *60 chain (decomp.py block note). */
+/* Steering in the tail: `t = v` survives cse2 and combine only because v is
+   set again before the loop, and the always-zero `(t * 60) & 3` is a use that
+   flow counts before combine drops it. That lifts the *60 chain's local-alloc
+   priority above the x chain's (they tie otherwise), so it takes v1 as in
+   retail. */
 void func_800B4048(void) {
     s32 i;
     s32 a;
     s32 x;
     s32 v;
     s32 t;
+    s32 y;
     u8 *g;
     u8 *p;
     u8 *q;
@@ -419,23 +418,21 @@ void func_800B4048(void) {
     v = t & 0xFFFE;
     x = v * 35 / 100;
     t = v;
-    v = (s32)D_8005A614;
+    v = (s32)Heroes;
     D_8009D6F4 = D_800BC4AC;
-    q = (u8 *)v;
     for (i = 0; i < 4; i++) {
-        h = &Heroes[i];
+        h = &((HeroInfo *)v)[i];
+        y = t * 60 / 100 + ((t * 60) & 3);
+        q = D_8005A614;
         if (q[i + 0x5C] == 0) {
             ((Ovl68Pct *)D_800BC4AC)[h->hero_name].unk0 = 0x23;
             ((Ovl68Pct *)D_800BC4AC)[h->hero_name].unk2 = 0x3C;
         } else {
             ((Ovl68Pct *)D_800BC4AC)[h->hero_name].unk0 = x;
-            ((Ovl68Pct *)D_800BC4AC)[h->hero_name].unk2 = t * 60 / 100;
+            ((Ovl68Pct *)D_800BC4AC)[h->hero_name].unk2 = y;
         }
     }
 }
-#else
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl68/ovl68", func_800B4048);
-#endif
 
 void func_800B4444(void) {
     s32 i;

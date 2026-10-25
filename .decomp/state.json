@@ -10020,11 +10020,10 @@
   "status": "matched"
  },
  "ovl68:800B4048": {
-  "auto_failed": "types",
   "blocked_at": "2026-10-25T20:39:32Z",
-  "note": "STAGE instructions 6/255 (25/26 blocks, regions 252/255), every register right, all in tail block 20: q's lui/addiu sit in the x mult's stall before the copy (target: after the *60 chain, before its mult), and one mfhi a3 is a slot early. PROVED 2026-10-25 with tools/cc1's local-tie variant: the shape with v re-set to the hero base after the copy (t = v; v = (s32)Heroes; D_8009D6F4 = D_800BC4AC;), and in the loop h = &((HeroInfo *)v)[i]; y = t * 60 / 100; q = D_8005A614; before the test, with unk2 = y, byte-matches retail when only the tail block's local-alloc tie is reversed (CC1_LOCAL_TIE=reverse CC1_LOCAL_BLOCK=20; 12 such shapes match). There the x chain's qty (11 refs over 44 half-insns) and the *60 chain's (9 over 36) both score 7500 and the x chain, born first, takes v1. Reversing every tie in the game breaks all 16 binaries, so the original compiler broke ties the FSF way: the original source compiles to that shape's code with the *60 qty strictly above the x chain's. Check candidates with CC1_LOCAL_LOG=1 (tools/cc1/README.md, Patches). Why the parks differ: the copy t = v survives cse2 only if v is set again before the hoisted chain (make_regs_eqv) and combine's copy+shift+minus combine only if use_crosses_set_p sees that set; this park's v = (s32)D_8005A614; q = (u8 *)v; does both, but its q lui/addiu then land in the stall before the copy (a low-luid priority-1 leaf), where sched2 can't move them past the copy (v0); with q set in the for-init its lui ties the hoisted chain at birthing priority and lands in t's life (the old 7/255, t in a2). Not causes: the host's x87 precision (a 53-bit cc1 changes no build) and the compiler's tie-break. Tried: a 105-shape sweep, do { } while (0) (block boundary), i = v = 0 (loses the copy), inlines, u16 totals, y before the loop (loop.c then hoists the 35/60 constants). Next: C with the matching shape's code where the *60 qty wins: an extra use on the *60 chain that flow counts and combine folds (refs are counted before combine), an eighth insn before the chain that reload deletes as a no-op, or a natural re-set of v instead of the hero base that does the same.",
+  "matched_at": "2026-10-25T20:59:30Z",
   "started": "2026-10-24T08:26:51Z",
-  "status": "blocked"
+  "status": "matched"
  },
  "ovl68:800B4444": {
   "auto_diff": 31,

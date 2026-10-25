@@ -11,17 +11,11 @@
    "note": "registers 7/170 (the swarm checkpoint's C, kept). The target copies each clamped speed into v0 before its >> 8 (move v0,X; sra Y,v0,8, four times); the pattern occurs nowhere else in the game (decomp.py idiom), and PAL/JP retail differ only by the two division checks (9 insns each), copies included. Combine (can_combine_p) keeps an SImode copy only when its source is set again before the use (use_crosses_set_p), its result is used again, or the two are in different blocks: t = pa; pa = mb + ma; xa = t >> 8; keeps the first copy (pa then holds total, as a0 does in the target). That can't explain the others: the second copy's shift writes the register it copied from (a1), and the fourth's source (t1) is never set again, so a set between would be dead and flow deletes it before combine. Reload adds none (ashrsi3 has no tied operands). Best natural shape (2026-10-25, 157/170 exact, length 166): plain clamps and shifts with variables reused along the target's register chains: pa for the A x speed then total, pb for the B x speed then xb, zb and nb (pb = pb >> 8, pb = q - d), one x for xa and za, az for e*(za - zb). Inline retry (2026-10-25): the clamp as an inline returning the speed (one return: length 172; early returns, whose return label separates the copy from its use: 187), a per-axis inline taking the four clamped speeds after the clamps (167), a >> 8 inline (168, with a parameter copy at entry). None leaves the copies: an argument or return copy is folded by cse or combine like a plain one, and the target clamps all four speeds before any shift, so a copy made by the clamp can't be the one at the shift. No original header has a 64-bit or 8-aligned type for the register-pair struct the swarm's C uses. Next: a construct that writes part of a register (a DImode SUBREG, as the swarm's aligned struct does), or a shift operand cse can't see through; the permuter run is still unused.",
    "seg": "overlays/ovl63/ovl63",
    "size": 684
-  },
-  {
-   "name": "func_800B4048",
-   "note": "STAGE instructions 6/255 (25/26 blocks, regions 252/255), every register right, all in tail block 20: q's lui/addiu sit in the x mult's stall before the copy (target: after the *60 chain, before its mult), and one mfhi a3 is a slot early. PROVED 2026-10-25 with tools/cc1's local-tie variant: the shape with v re-set to the hero base after the copy (t = v; v = (s32)Heroes; D_8009D6F4 = D_800BC4AC;), and in the loop h = &((HeroInfo *)v)[i]; y = t * 60 / 100; q = D_8005A614; before the test, with unk2 = y, byte-matches retail when only the tail block's local-alloc tie is reversed (CC1_LOCAL_TIE=reverse CC1_LOCAL_BLOCK=20; 12 such shapes match). There the x chain's qty (11 refs over 44 half-insns) and the *60 chain's (9 over 36) both score 7500 and the x chain, born first, takes v1. Reversing every tie in the game breaks all 16 binaries, so the original compiler broke ties the FSF way: the original source compiles to that shape's code with the *60 qty strictly above the x chain's. Check candidates with CC1_LOCAL_LOG=1 (tools/cc1/README.md, Patches). Why the parks differ: the copy t = v survives cse2 only if v is set again before the hoisted chain (make_regs_eqv) and combine's copy+shift+minus combine only if use_crosses_set_p sees that set; this park's v = (s32)D_8005A614; q = (u8 *)v; does both, but its q lui/addiu then land in the stall before the copy (a low-luid priority-1 leaf), where sched2 can't move them past the copy (v0); with q set in the for-init its lui ties the hoisted chain at birthing priority and lands in t's life (the old 7/255, t in a2). Not causes: the host's x87 precision (a 53-bit cc1 changes no build) and the compiler's tie-break. Tried: a 105-shape sweep, do { } while (0) (block boundary), i = v = 0 (loses the copy), inlines, u16 totals, y before the loop (loop.c then hoists the 35/60 constants). Next: C with the matching shape's code where the *60 qty wins: an extra use on the *60 chain that flow counts and combine folds (refs are counted before combine), an eighth insn before the chain that reload deletes as a no-op, or a natural re-set of v instead of the hero base that does the same.",
-   "seg": "overlays/ovl68/ovl68",
-   "size": 1020
   }
  ],
- "commit": "e6254643",
+ "commit": "bfcf1701",
  "game": "SCUS_945.70",
- "generated": "2026-10-25T20:39:33Z",
+ "generated": "2026-10-25T20:59:32Z",
  "history": [
   {"commit": "9d2e150", "data_b": 0, "data_tb": 182932, "game_all_f": 1140, "game_b": 152, "game_f": 19, "game_named_f": 0, "game_tb": 247148, "lib_b": 0, "lib_f": 0, "lib_tb": 0, "ts": "2026-10-10T08:35:31Z", "units": {"engine": [80, 10], "main exe": [136, 17], "ovl5d": [16, 2], "ovl5e": [16, 2], "ovl5f": [72, 9], "ovl60": [16, 2], "ovl61": [24, 3], "ovl62": [160, 20], "ovl63": [16, 2], "ovl64": [24, 3], "ovl65": [24, 3], "ovl66": [32, 4], "ovl67": [40, 5], "ovl68": [48, 6], "ovl69": [40, 5], "ovl6a": [32, 4]}},
   {"commit": "d76b415", "data_b": 0, "data_tb": 182932, "game_all_f": 574, "game_b": 136, "game_f": 17, "game_named_f": 0, "game_tb": 124840, "lib_b": 8, "lib_f": 1, "lib_tb": 118356, "ts": "2026-10-10T08:51:01Z", "units": {"main exe": [136, 17], "psyq": [121280, 535]}},
@@ -2190,9 +2184,18 @@
   {"commit": "84edbfeb", "data_b": 11148, "data_tb": 606943, "game_all_f": 2537, "game_b": 991760, "game_c_f": 2531, "game_f": 2531, "game_named_f": 731, "game_tb": 1019400, "game_typed_f": 2310, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-25T09:45:45Z", "units": {"engine": [129264, 357], "main exe": [125204, 575], "ovl5d": [54324, 103], "ovl5e": [37616, 73], "ovl5f": [84628, 178], "ovl60": [65808, 180], "ovl61": [55000, 97], "ovl62": [114796, 214], "ovl63": [75924, 138], "ovl64": [33528, 58], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
   {"commit": "59ce71b6", "data_b": 11756, "data_tb": 606943, "game_all_f": 2537, "game_b": 1000360, "game_c_f": 2532, "game_f": 2532, "game_named_f": 731, "game_tb": 1019400, "game_typed_f": 2311, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-25T10:21:57Z", "units": {"engine": [129264, 357], "main exe": [125204, 575], "ovl5d": [62924, 104], "ovl5e": [37616, 73], "ovl5f": [84628, 178], "ovl60": [65808, 180], "ovl61": [55000, 97], "ovl62": [114796, 214], "ovl63": [75924, 138], "ovl64": [33528, 58], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
   {"commit": "cdf50fcb", "data_b": 11812, "data_tb": 606943, "game_all_f": 2537, "game_b": 1006832, "game_c_f": 2533, "game_f": 2533, "game_named_f": 731, "game_tb": 1019400, "game_typed_f": 2312, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-25T12:10:25Z", "units": {"engine": [129264, 357], "main exe": [125204, 575], "ovl5d": [62924, 104], "ovl5e": [37616, 73], "ovl5f": [84628, 178], "ovl60": [65808, 180], "ovl61": [55000, 97], "ovl62": [121268, 215], "ovl63": [75924, 138], "ovl64": [33528, 58], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
-  {"commit": "e6254643", "data_b": 11812, "data_tb": 606943, "game_all_f": 2537, "game_b": 1008452, "game_c_f": 2534, "game_f": 2534, "game_named_f": 731, "game_tb": 1019400, "game_typed_f": 2313, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-25T20:39:33Z", "units": {"engine": [129264, 357], "main exe": [125204, 575], "ovl5d": [62924, 104], "ovl5e": [37616, 73], "ovl5f": [86248, 179], "ovl60": [65808, 180], "ovl61": [55000, 97], "ovl62": [121268, 215], "ovl63": [75924, 138], "ovl64": [33528, 58], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}}
+  {"commit": "e6254643", "data_b": 11812, "data_tb": 606943, "game_all_f": 2537, "game_b": 1008452, "game_c_f": 2534, "game_f": 2534, "game_named_f": 731, "game_tb": 1019400, "game_typed_f": 2313, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-25T20:39:33Z", "units": {"engine": [129264, 357], "main exe": [125204, 575], "ovl5d": [62924, 104], "ovl5e": [37616, 73], "ovl5f": [86248, 179], "ovl60": [65808, 180], "ovl61": [55000, 97], "ovl62": [121268, 215], "ovl63": [75924, 138], "ovl64": [33528, 58], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
+  {"commit": "bfcf1701", "data_b": 11812, "data_tb": 606943, "game_all_f": 2537, "game_b": 1009472, "game_c_f": 2535, "game_f": 2535, "game_named_f": 731, "game_tb": 1019400, "game_typed_f": 2314, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-25T20:59:32Z", "units": {"engine": [129264, 357], "main exe": [125204, 575], "ovl5d": [62924, 104], "ovl5e": [37616, 73], "ovl5f": [86248, 179], "ovl60": [65808, 180], "ovl61": [55000, 97], "ovl62": [121268, 215], "ovl63": [75924, 138], "ovl64": [33528, 58], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [34052, 93], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}}
  ],
  "recent": [
+  {
+   "at": "2026-10-25T20:59:30Z",
+   "auto": true,
+   "name": "func_800B4048",
+   "seg": "overlays/ovl68/ovl68",
+   "size": 1020,
+   "tries": 0
+  },
   {
    "at": "2026-10-25T14:31:53Z",
    "auto": true,
@@ -2304,18 +2307,10 @@
    "seg": "overlays/ovl64/ovl64",
    "size": 784,
    "tries": 0
-  },
-  {
-   "at": "2026-10-23T20:09:12Z",
-   "auto": true,
-   "name": "PogoAI_MoveTowardsTarget",
-   "seg": "overlays/ovl60/ovl60",
-   "size": 1320,
-   "tries": 0
   }
  ],
  "summary": {
-  "blocked": 3,
+  "blocked": 2,
   "copies_b": 0,
   "data": {
    "done_b": 11812,
@@ -2326,16 +2321,16 @@
    "all_f": 2537,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 3,
-   "c_f": 2534,
-   "done_b": 1008452,
-   "done_f": 2534,
+   "blocked": 2,
+   "c_f": 2535,
+   "done_b": 1009472,
+   "done_f": 2535,
    "named_f": 731,
-   "pct": 98.92603492250343,
+   "pct": 99.02609378065529,
    "sony_b": 0,
    "total_b": 1019400,
    "total_f": 2537,
-   "typed_f": 2313
+   "typed_f": 2314
   },
   "lib": {
    "all_f": 566,
@@ -2630,21 +2625,21 @@
     "all_f": 93,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 1,
-    "c_f": 92,
-    "done_b": 33032,
-    "done_f": 92,
+    "blocked": 0,
+    "c_f": 93,
+    "done_b": 34052,
+    "done_f": 93,
     "file": "ovl68.bin",
     "files": 1,
     "lib": false,
     "named_f": 18,
-    "pct": 97.00458122870903,
+    "pct": 100.0,
     "phase": 5,
     "sony_b": 0,
     "title": "Chase",
     "total_b": 34052,
     "total_f": 93,
-    "typed_f": 90,
+    "typed_f": 91,
     "unit": "ovl68"
    },
    {
