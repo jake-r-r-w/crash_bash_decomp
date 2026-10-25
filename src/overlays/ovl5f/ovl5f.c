@@ -1655,7 +1655,360 @@ void func_800B71F8(s32 player) {
     }
 }
 
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl5f/ovl5f", func_800B77E8);
+void func_800B77E8(s32 player) {
+    EXTengine *eng;
+    TA_player *ta;
+    subengine *sub;
+    subengine *sub2;
+    HeroInfo *h;
+    HeroInfo *hb;
+    NAS *n;
+    NAS *mine;
+    NAS *obj;
+    EXTobject_TA *fux;
+    EXTengine *e;
+    s32 d;
+    s32 i;
+    s32 a;
+    s32 dir;
+    u32 pad;
+
+    if (Heroes[player].hero_status & 0xFA00) {
+        return;
+    }
+    if (D_800CB0F0 != 0) {
+        return;
+    }
+    eng = Heroes[player].hero_eng;
+    ta = &D_800CAD50[player];
+    sub = eng->sub->next;
+    sub2 = sub->next;
+    if (ta->TurretReqdDir != -1) {
+        d = ta->TurretReqdDir - eng->unk1E;
+        d = (d << 20) >> 22;
+        eng->unk5E = 1;
+        eng->unk1E += d;
+        sub2->unk52 = 1;
+        sub2->unk12 -= d;
+        if ((u32)(d + 3) < 7) {
+            ta->TurretReqdDir = -1;
+        }
+    } else if (D_8005A648 != 5) {
+        pad = ((PadButtons *)D_80051338)[player].unk50;
+        if (pad & 0xA00) {
+            eng->unk5E = 1;
+            eng->unk1E = (eng->unk1E + 0x40) & 0xFFF;
+            sub2->unk52 = 1;
+            sub2->unk12 = (sub2->unk12 - 0x40) & 0xFFF;
+            ta->TurretSFXDuration = 2;
+        } else if (pad & 0x500) {
+            eng->unk5E = 1;
+            eng->unk1E = (eng->unk1E - 0x40) & 0xFFF;
+            sub2->unk52 = 1;
+            sub2->unk12 = (sub2->unk12 + 0x40) & 0xFFF;
+            ta->TurretSFXDuration = 2;
+        }
+    }
+    if (ta->MainWeaponFireDelay == 0) {
+        if (ta->TurretFiring < 0) {
+            for (i = 0; i < 3; i++) {
+                if (ta->MainWeaponNas[i] == NULL) {
+                    break;
+                }
+            }
+            if (i < 3 && (((PadButtons *)D_80051338)[player].unk54 & 0x8000)) {
+                switch (Random(4)) {
+                default:
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                    SetHeroSeq((HeroInfo *)player, 0x5D);
+                    break;
+                case 5:
+                case 6:
+                    SetHeroSeq((HeroInfo *)player, 0x5E);
+                    break;
+                case 7:
+                    SetHeroSeq((HeroInfo *)player, 0x5F);
+                    break;
+                }
+                if (ta->MainWeaponType == 3) {
+                    ta->MainWeaponFireDelay = 0x3C;
+                } else {
+                    ta->MainWeaponFireDelay = 0xA;
+                }
+                switch (ta->MainWeaponType) {
+                default:
+                case 11:
+                    n = CreateNAS(eng->unk10.x, eng->unk10.y - 0x113, eng->unk10.z, 0x130C, 0x11);
+                    if (n == NULL) {
+                        break;
+                    }
+                    ta->MainWeaponNas[i] = n;
+                    ta->TurretFiring = 0xB;
+                    if (D_8005A648 == 5) {
+                        sub->unk74 = 0x427F;
+                        ta->TurretAnimPtr = D_800C9AC0;
+                    } else {
+                        sub->unk74 = 0x427F;
+                        ta->TurretAnimPtr = D_800C98B0;
+                    }
+                    if (Heroes[player].hero_name == 3) {
+                        PlaySfx(0x4CC, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
+                    } else {
+                        PlaySfx(0x4CD, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
+                    }
+                    n->Engine->unk10.x += (-(D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
+                    n->Engine->unk10.z += (-(D_80068BD4[eng->unk1E & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
+                    n->Engine->unk1E = eng->unk1E;
+                    fux = (EXTobject_TA *)n->FUX;
+                    fux->Owner = player;
+                    fux->SpeedX = -(D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 0x4A) >> 12;
+                    fux->SpeedZ = -(D_80068BD4[eng->unk1E & 0xFFF].unk2 * 0x4A) >> 12;
+                    if (D_8005A648 == 5) {
+                        BumpSpeedsForSwamp(fux);
+                    }
+                    fux->Status = 1;
+                    obj = Ovl5fSpawnBit1605Nas(&n->Engine->unk10, 7);
+                    if (obj != NULL) {
+                        Ovl5fPuffSetAngle(obj, eng->unk1E);
+                    }
+                    break;
+                case 0:
+                    sub->unk74 = 0x3FFF;
+                    ta->TurretFiring = 0;
+                    ta->TurretAnimPtr = D_800C9980;
+                    break;
+                case 3:
+                    sub->unk74 = 0x3FFF;
+                    ta->TurretFiring = 3;
+                    ta->TurretAnimPtr = D_800C9980;
+                    break;
+                case 8:
+                    n = CreateNAS(eng->unk10.x, eng->unk10.y - 0xFA, eng->unk10.z, 0x130D, 0x11);
+                    if (n == NULL) {
+                        break;
+                    }
+                    ta->MainWeaponNas[i] = n;
+                    ta->TurretFiring = 8;
+                    if (D_8005A648 == 5) {
+                        sub->unk74 = 0x417F;
+                        ta->TurretAnimPtr = D_800C9B60;
+                    } else {
+                        sub->unk74 = 0x41FF;
+                        ta->TurretAnimPtr = D_800C9918;
+                    }
+                    if (Heroes[player].hero_name == 2) {
+                        PlaySfx(0x4CB, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
+                    } else {
+                        PlaySfx(0x4D0, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
+                    }
+                    fux = (EXTobject_TA *)n->FUX;
+                    n->Engine->unk10.x += (-(D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
+                    n->Engine->unk10.z += (-(D_80068BD4[eng->unk1E & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
+                    n->Engine->unk1E = eng->unk1E;
+                    fux->SpeedX = -(D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 0x36) >> 12;
+                    fux->SpeedZ = -(D_80068BD4[eng->unk1E & 0xFFF].unk2 * 0x36) >> 12;
+                    if (D_8005A648 == 5) {
+                        BumpSpeedsForSwamp(fux);
+                    }
+                    fux->Status = 1;
+                    fux->Owner = player;
+                    ta->FireBreatherSFXDuration = 4;
+                    obj = Ovl5fSpawnBit1605Nas(&n->Engine->unk10, 8);
+                    if (obj != NULL) {
+                        Ovl5fPuffSetAngle(obj, eng->unk1E);
+                    }
+                    break;
+                case 9:
+                    n = CreateNAS(eng->unk10.x, eng->unk10.y - 0x104, eng->unk10.z, 0x130F, 0x11);
+                    if (n == NULL) {
+                        break;
+                    }
+                    ta->MainWeaponNas[i] = n;
+                    ta->TurretFiring = 9;
+                    if (D_8005A648 == 5) {
+                        sub->unk74 = 0x437F;
+                        ta->TurretAnimPtr = D_800C9A70;
+                    } else {
+                        ta->TurretAnimPtr = D_800C987C;
+                        sub->unk74 = 0x417F;
+                    }
+                    if (Heroes[player].hero_name == 1) {
+                        PlaySfx(0x4CA, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
+                    } else {
+                        PlaySfx(0x4CB, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
+                    }
+                    fux = (EXTobject_TA *)n->FUX;
+                    n->Engine->unk10.x += (-(D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
+                    n->Engine->unk10.z += (-(D_80068BD4[eng->unk1E & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
+                    n->Engine->unk1E = eng->unk1E;
+                    fux->SpeedX = -(D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 0x2C) >> 12;
+                    fux->SpeedZ = -(D_80068BD4[eng->unk1E & 0xFFF].unk2 * 0x2C) >> 12;
+                    if (D_8005A648 == 5) {
+                        BumpSpeedsForSwamp(fux);
+                    }
+                    fux->Status = 1;
+                    fux->Owner = player;
+                    obj = Ovl5fSpawnBit1605Nas(&n->Engine->unk10, 0xF);
+                    if (obj != NULL) {
+                        Ovl5fPuffSetAngle(obj, eng->unk1E);
+                    }
+                    break;
+                case 10:
+                    n = CreateNAS(eng->unk10.x, eng->unk10.y - 0x14A, eng->unk10.z, 0x130E, 0x11);
+                    if (n == NULL) {
+                        break;
+                    }
+                    ta->MainWeaponNas[i] = n;
+                    ta->TurretFiring = 0xA;
+                    if (D_8005A648 == 5) {
+                        sub->unk74 = 0x407F;
+                        ta->TurretAnimPtr = D_800C9B10;
+                    } else {
+                        sub->unk74 = 0x40FF;
+                        ta->TurretAnimPtr = D_800C98E4;
+                    }
+                    if (Heroes[player].hero_name == 5) {
+                        PlaySfx(0x4CE, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
+                    } else {
+                        PlaySfx(0x4CF, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
+                    }
+                    fux = (EXTobject_TA *)n->FUX;
+                    n->Engine->unk10.x += (-(D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12) + ta->SpeedX;
+                    n->Engine->unk10.z += (-(D_80068BD4[eng->unk1E & 0xFFF].unk2 * 400) >> 12) + ta->SpeedZ;
+                    n->Engine->unk1E = eng->unk1E;
+                    fux->SpeedX = -(D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 0x2C) >> 12;
+                    fux->SpeedZ = -(D_80068BD4[eng->unk1E & 0xFFF].unk2 * 0x2C) >> 12;
+                    if (D_8005A648 == 5) {
+                        BumpSpeedsForSwamp(fux);
+                    }
+                    fux->Status = 1;
+                    fux->Owner = player;
+                    obj = Ovl5fSpawnBit1605Nas(&n->Engine->unk10, 6);
+                    if (obj != NULL) {
+                        Ovl5fPuffSetAngle(obj, eng->unk1E);
+                    }
+                    break;
+                case 2:
+                    dir = eng->unk1E;
+                    for (i = 0; i < 2; i++) {
+                        n = CreateNAS(eng->unk10.x, eng->unk10.y - 0xE6, eng->unk10.z, 0x1302, 0x11);
+                        if (n != NULL) {
+                            PlaySfx(0x522, &n->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
+                            e = n->Engine;
+                            a = dir - D_800C93AC[i];
+                            e->unk10.x -= (D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 0x19) >> 8;
+                            e->unk10.z -= (D_80068BD4[a & 0xFFF].unk2 * 0x19) >> 8;
+                            e->unk1E = eng->unk1E;
+                            fux = (EXTobject_TA *)n->FUX;
+                            fux->SpeedX = -(D_80068BD4[(dir - 0x400) & 0xFFF].unk2 * 200) >> 12;
+                            fux->SpeedZ = -(D_80068BD4[dir & 0xFFF].unk2 * 200) >> 12;
+                            fux->Status = 1;
+                            fux->Owner = player;
+                        }
+                    }
+                    sub->unk74 = 0x200C;
+                    ta->TurretFiring = 2;
+                    ta->TurretAnimPtr = D_800C99B4;
+                    ta->MainWeaponRounds--;
+                    break;
+                }
+            } else if (D_8005A614[player + 0x5C] == 0 &&
+                       (((PadButtons *)D_80051338)[player].unk54 & 0x8000)) {
+                PlaySfx(0x4F1, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            }
+        }
+    } else {
+        ta->MainWeaponFireDelay--;
+        if (D_8009D908 != 0 && ta->MainWeaponFireDelay != 0) {
+            ta->MainWeaponFireDelay--;
+        }
+    }
+    if (ta->SubWeaponFireDelay != 0) {
+        ta->SubWeaponFireDelay--;
+    }
+    if ((((PadButtons *)D_80051338)[player].unk54 & 0x2000) &&
+        ((Ovl5fModeView *)D_8005A614)->mode < 10 && ((Ovl5fModeView *)D_8005A614)->mode >= 5) {
+        if (ta->SubWeaponRounds != 0) {
+            if (ta->SubWeaponFireDelay == 0) {
+                if (((Ovl5fModeView *)D_8005A614)->mode == 5) {
+                    for (i = 0; i < 8; i++) {
+                        if (D_800CB0C0[i] != NULL && D_800CB0C0[i]->UserInfo.user1 == player) {
+                            goto subdone;
+                        }
+                    }
+                    for (i = 0; i < 8; i++) {
+                        if (D_800CB0C0[i] == NULL) {
+                            break;
+                        }
+                    }
+                    mine = CreateNAS(eng->unk10.x, eng->unk10.y + 0x14, eng->unk10.z, 0x131D, 0x11);
+                    if (mine != NULL) {
+                        D_800CB0C0[i] = mine;
+                        mine->UserInfo.user1 = player;
+                    }
+                    ta->SubWeaponFireDelay = 0x1E;
+                    PlaySfx(0x50A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(D_800C9418[player], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                    ta->SubWeaponRounds--;
+                    SetHeroSeq((HeroInfo *)player, 0x5B);
+                } else {
+                    Ovl5fTriggerNear(eng->unk10.x, eng->unk10.z, 0x100);
+                    CreateNAS(eng->unk10.x, eng->unk10.y + 0x14, eng->unk10.z, 0x1303, 0x11);
+                    ta->SubWeaponFireDelay = 0x78;
+                    PlaySfx(0x4E9, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                    PlaySfx(D_800C9418[player], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                    ta->SubWeaponRounds--;
+                    SetHeroSeq((HeroInfo *)player, 0x5B);
+                }
+            } else if (D_8005A614[player + 0x5C] == 0) {
+                PlaySfx(0x4F1, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+            }
+        } else if (D_8005A614[player + 0x5C] == 0) {
+            PlaySfx(0x4F2, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+        }
+    }
+subdone:
+    if (((Ovl5fModeView *)D_8005A614)->mode == 5) {
+        if (ta->ForceFieldDelay != 0) {
+            ta->ForceFieldDelay--;
+        } else if (((PadButtons *)D_80051338)[player].unk54 & 0x4000) {
+            obj = CreateNAS(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1321, 0x11);
+            PlaySfx(D_800C93F8[player], NULL, NULL, 0x1000, 0x1E00, 0);
+            if (obj != NULL) {
+                obj->UserInfo.user1 = player;
+            }
+            Heroes[player].hero_immunity = 0xA;
+            if (D_8005A614[player + 0x5C] == 0) {
+                ta->ForceFieldDelay = 0x3C;
+            } else {
+                ta->ForceFieldDelay = (0x20 - D_8009D87C[player].unk0) * 0x3C / 32 + 0xF;
+            }
+        }
+    }
+    if (ta->TauntDelay <= 0) {
+        if (((PadButtons *)D_80051338)[player].unk50 & 0x1000) {
+            hb = Heroes;
+            h = &hb[player];
+            if (!(h->hero_status & 0xFA00)) {
+                switch (h->hero_mode) {
+                case 0x6C:
+                case 0x6E:
+                case 0x6F:
+                    ta->TauntDelay = 0x5A;
+                    SetHeroSeq((HeroInfo *)player, 0x5A);
+                    PlaySfx(D_800C94A8[h->hero_name - 1], NULL, &eng->unk10, 0x1000, 0x1E00, 0);
+                    break;
+                }
+            }
+        }
+    } else {
+        ta->TauntDelay--;
+    }
+}
 
 void SetTankHeroIdle(u32 player) {
     s32 done;

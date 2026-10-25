@@ -443,6 +443,41 @@ extern s32 D_800CB0E4;    /* func_800B5FC4: sfx id to play once */
 extern EXTengine *D_800CB0E8;
 extern s32 D_800CB0EC;    /* func_800B5FC4: countdown to sfx 0x501 */
 void func_800B71F8(s32 player);
+/* func_800B77E8: turret anim scripts by weapon (swamp / other levels). */
+extern s32 D_800C987C[];
+extern s32 D_800C98B0[];
+extern s32 D_800C98E4[];
+extern s32 D_800C9918[];
+extern s32 D_800C9980[];
+extern s32 D_800C99B4[];
+extern s32 D_800C9A70[];
+extern s32 D_800C9AC0[];
+extern s32 D_800C9B10[];
+extern s32 D_800C9B60[];
+extern s32 D_800C93F8[]; /* force field sfx, by player */
+extern s32 D_800C9418[]; /* sub weapon sfx, by player */
+/* func_800C8450, inlined into func_800B77E8: sets status 1 on the D_800CB0C0
+ * mines within dist of (x, z). */
+static inline void Ovl5fTriggerNear(s32 x, s32 z, s32 dist) {
+    EXTengine *eng;
+    s32 d;
+    s32 i;
+    NAS *nas;
+
+    for (i = 0; i < 8; i++) {
+        nas = D_800CB0C0[i];
+        if (nas != NULL) {
+            eng = nas->Engine;
+            d = x - eng->unk10.x;
+            if (d >= -dist && d <= dist) {
+                d = z - eng->unk10.z;
+                if (d >= -dist && d <= dist) {
+                    nas->UserInfo.status = 1;
+                }
+            }
+        }
+    }
+}
 
 typedef struct OvlClampPos {
     /* 0x00 */ u8 pad0[0x10];
@@ -956,6 +991,8 @@ extern s32 D_800C9244[];
 extern s32 D_800C927C[];
 extern s32 D_800C92B4[];
 extern s32 D_800C9318[];
+
+void func_800B77E8(s32 player);
 
 void func_800C60AC(NAS *nas, s32 id);
 
