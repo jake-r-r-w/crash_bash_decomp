@@ -1,12 +1,6 @@
 {
  "blocked": [
   {
-   "name": "CheckMineToBoss",
-   "note": "registers 27/405 (the swarm's clean shape: for (i = 0;;) { decls; if (i >= N) break; ... i++; continue; ... i++; } loops, counters i/j/i, inline Ovl5fWithin/Ovl5fSpawnBit1605B; its 12/405 permuter hack passes an uninitialised i and is not used). Deciding pass: global.c allocno order. The target (counter s3 in all three loops, hoisted 1 in s2, p s1, loop 3's kind s1 and p s2) fits ONE counter for all loops placed after the inline's p/kind pseudos (0.316-0.444) and before the hoisted constants (0.06-0.14). Two increments per loop give it 39 loop-weighted refs / 365 = 0.534 (needs a live length over 617); one increment (for (i = 0; ; i++) + continue) gives 27 refs = 0.296, but then loop.c strength-reduces D_800CB224[i] (benefit minus add_cost x biv_count beats the 122-insn loop), which the target doesn't. Tried: loop forms (two-increment for/while, single-increment for/if-wrapped) x counters (iji, iii, ijk), plain for loops (rotated). Next: what keeps the index unreduced with one increment (loop.c strength_reduce: lifetime x threshold x benefit < insn_count), or what lengthens the counter's life",
-   "seg": "overlays/ovl5f/ovl5f",
-   "size": 1620
-  },
-  {
    "name": "PlotTransmuterBeam",
    "note": "STAGE structure 2310/2311 (regions 316/317 blocks, 2309/2311 insns). Only 0xc14 differs: the target keeps &D_8005A614 in a1 for one lh (lui v0; addiu a1,v0; lh 0x34(a1)); ours folds it (combine i1+i2+i3: the base dies at the read). For the target the base must be live past the read at combine time and through the second test at global alloc (a1 because v0/v1/a0 are busy), yet no instruction uses it after the read. Ruled out 2026-10-25: (1) the base as InitDelete's 2nd argument. It reproduces 0xc14, but MIPS has no PUSH_ROUNDING, so PUSH_ARGS_REVERSED is undefined and the a0 move is emitted before the a1 move. sched1 then breaks their T-2 tie by luid for a1, the a0 move drifts to the block top and bx loses a0; any call that passes the base does this. (2) Inline shapes: a view accessor with a pointer parameter (one test, or both: both through the parameter match the first read but leave the second on the base, lh 52(a1)), a mode predicate (v->mode == m: xori form), a kind setter taking the view. (3) Every build (Aug 23 to JP retail) compiles this spawn identically. 42 matched functions keep this base unfolded (idiom), each with a second access through the same pointer in cse's reach. Case 1's one = 1 steering is gone: the hit switch's cases 0-2 call an inline TBSetHeroEffect(ext, i, k), whose argument copy gives kind 1 its own pseudo. Next: find a later use of the base that survives global alloc and leaves no instruction, other than a call argument.",
    "seg": "overlays/ovl62/ovl62",
@@ -25,9 +19,9 @@
    "size": 1020
   }
  ],
- "commit": "cdf50fcb",
+ "commit": "f8e5e312",
  "game": "SCUS_945.70",
- "generated": "2026-10-25T12:10:25Z",
+ "generated": "2026-10-25T14:31:56Z",
  "history": [
   {"commit": "9d2e150", "data_b": 0, "data_tb": 182932, "game_all_f": 1140, "game_b": 152, "game_f": 19, "game_named_f": 0, "game_tb": 247148, "lib_b": 0, "lib_f": 0, "lib_tb": 0, "ts": "2026-10-10T08:35:31Z", "units": {"engine": [80, 10], "main exe": [136, 17], "ovl5d": [16, 2], "ovl5e": [16, 2], "ovl5f": [72, 9], "ovl60": [16, 2], "ovl61": [24, 3], "ovl62": [160, 20], "ovl63": [16, 2], "ovl64": [24, 3], "ovl65": [24, 3], "ovl66": [32, 4], "ovl67": [40, 5], "ovl68": [48, 6], "ovl69": [40, 5], "ovl6a": [32, 4]}},
   {"commit": "d76b415", "data_b": 0, "data_tb": 182932, "game_all_f": 574, "game_b": 136, "game_f": 17, "game_named_f": 0, "game_tb": 124840, "lib_b": 8, "lib_f": 1, "lib_tb": 118356, "ts": "2026-10-10T08:51:01Z", "units": {"main exe": [136, 17], "psyq": [121280, 535]}},
@@ -2195,9 +2189,18 @@
   {"commit": "c60e7ca2", "data_b": 11068, "data_tb": 606943, "game_all_f": 2537, "game_b": 985908, "game_c_f": 2530, "game_f": 2530, "game_named_f": 731, "game_tb": 1019400, "game_typed_f": 2309, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-25T09:19:53Z", "units": {"engine": [129264, 357], "main exe": [125204, 575], "ovl5d": [54324, 103], "ovl5e": [37616, 73], "ovl5f": [78776, 177], "ovl60": [65808, 180], "ovl61": [55000, 97], "ovl62": [114796, 214], "ovl63": [75924, 138], "ovl64": [33528, 58], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
   {"commit": "84edbfeb", "data_b": 11148, "data_tb": 606943, "game_all_f": 2537, "game_b": 991760, "game_c_f": 2531, "game_f": 2531, "game_named_f": 731, "game_tb": 1019400, "game_typed_f": 2310, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-25T09:45:45Z", "units": {"engine": [129264, 357], "main exe": [125204, 575], "ovl5d": [54324, 103], "ovl5e": [37616, 73], "ovl5f": [84628, 178], "ovl60": [65808, 180], "ovl61": [55000, 97], "ovl62": [114796, 214], "ovl63": [75924, 138], "ovl64": [33528, 58], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
   {"commit": "59ce71b6", "data_b": 11756, "data_tb": 606943, "game_all_f": 2537, "game_b": 1000360, "game_c_f": 2532, "game_f": 2532, "game_named_f": 731, "game_tb": 1019400, "game_typed_f": 2311, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-25T10:21:57Z", "units": {"engine": [129264, 357], "main exe": [125204, 575], "ovl5d": [62924, 104], "ovl5e": [37616, 73], "ovl5f": [84628, 178], "ovl60": [65808, 180], "ovl61": [55000, 97], "ovl62": [114796, 214], "ovl63": [75924, 138], "ovl64": [33528, 58], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
-  {"commit": "cdf50fcb", "data_b": 11812, "data_tb": 606943, "game_all_f": 2537, "game_b": 1006832, "game_c_f": 2533, "game_f": 2533, "game_named_f": 731, "game_tb": 1019400, "game_typed_f": 2312, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-25T12:10:25Z", "units": {"engine": [129264, 357], "main exe": [125204, 575], "ovl5d": [62924, 104], "ovl5e": [37616, 73], "ovl5f": [84628, 178], "ovl60": [65808, 180], "ovl61": [55000, 97], "ovl62": [121268, 215], "ovl63": [75924, 138], "ovl64": [33528, 58], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}}
+  {"commit": "cdf50fcb", "data_b": 11812, "data_tb": 606943, "game_all_f": 2537, "game_b": 1006832, "game_c_f": 2533, "game_f": 2533, "game_named_f": 731, "game_tb": 1019400, "game_typed_f": 2312, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-25T12:10:25Z", "units": {"engine": [129264, 357], "main exe": [125204, 575], "ovl5d": [62924, 104], "ovl5e": [37616, 73], "ovl5f": [84628, 178], "ovl60": [65808, 180], "ovl61": [55000, 97], "ovl62": [121268, 215], "ovl63": [75924, 138], "ovl64": [33528, 58], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}},
+  {"commit": "f8e5e312", "data_b": 11812, "data_tb": 606943, "game_all_f": 2537, "game_b": 1008452, "game_c_f": 2534, "game_f": 2534, "game_named_f": 731, "game_tb": 1019400, "game_typed_f": 2313, "lib_b": 122112, "lib_f": 564, "lib_tb": 122112, "ts": "2026-10-25T14:31:55Z", "units": {"engine": [129264, 357], "main exe": [125204, 575], "ovl5d": [62924, 104], "ovl5e": [37616, 73], "ovl5f": [86248, 179], "ovl60": [65808, 180], "ovl61": [55000, 97], "ovl62": [121268, 215], "ovl63": [75924, 138], "ovl64": [33528, 58], "ovl65": [41220, 80], "ovl66": [24312, 80], "ovl67": [66256, 135], "ovl68": [33032, 92], "ovl69": [19788, 77], "ovl6a": [31060, 94], "psyq": [122112, 564]}}
  ],
  "recent": [
+  {
+   "at": "2026-10-25T14:31:53Z",
+   "auto": true,
+   "name": "CheckMineToBoss",
+   "seg": "overlays/ovl5f/ovl5f",
+   "size": 1620,
+   "tries": 0
+  },
   {
    "at": "2026-10-25T11:01:55Z",
    "auto": true,
@@ -2309,18 +2312,10 @@
    "seg": "overlays/ovl60/ovl60",
    "size": 1320,
    "tries": 0
-  },
-  {
-   "at": "2026-10-23T19:18:23Z",
-   "auto": true,
-   "name": "func_800B4AB0",
-   "seg": "overlays/ovl5d/ovl5d",
-   "size": 4984,
-   "tries": 0
   }
  ],
  "summary": {
-  "blocked": 4,
+  "blocked": 3,
   "copies_b": 0,
   "data": {
    "done_b": 11812,
@@ -2331,16 +2326,16 @@
    "all_f": 2537,
    "asm_b": 0,
    "asm_f": 0,
-   "blocked": 4,
-   "c_f": 2533,
-   "done_b": 1006832,
-   "done_f": 2533,
+   "blocked": 3,
+   "c_f": 2534,
+   "done_b": 1008452,
+   "done_f": 2534,
    "named_f": 731,
-   "pct": 98.76711791249755,
+   "pct": 98.92603492250343,
    "sony_b": 0,
    "total_b": 1019400,
    "total_f": 2537,
-   "typed_f": 2312
+   "typed_f": 2313
   },
   "lib": {
    "all_f": 566,
@@ -2446,21 +2441,21 @@
     "all_f": 179,
     "asm_b": 0,
     "asm_f": 0,
-    "blocked": 1,
-    "c_f": 178,
-    "done_b": 84628,
-    "done_f": 178,
+    "blocked": 0,
+    "c_f": 179,
+    "done_b": 86248,
+    "done_f": 179,
     "file": "ovl5f.bin",
     "files": 1,
     "lib": false,
     "named_f": 106,
-    "pct": 98.12169557554958,
+    "pct": 100.0,
     "phase": 4,
     "sony_b": 0,
     "title": "Tank",
     "total_b": 86248,
     "total_f": 179,
-    "typed_f": 175,
+    "typed_f": 176,
     "unit": "ovl5f"
    },
    {

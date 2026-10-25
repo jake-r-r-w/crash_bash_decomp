@@ -5393,11 +5393,10 @@
   "status": "matched"
  },
  "ovl5f:800C18F0": {
-  "auto_failed": "compile",
   "blocked_at": "2026-10-24T13:03:37Z",
-  "note": "registers 27/405 (the swarm's clean shape: for (i = 0;;) { decls; if (i >= N) break; ... i++; continue; ... i++; } loops, counters i/j/i, inline Ovl5fWithin/Ovl5fSpawnBit1605B; its 12/405 permuter hack passes an uninitialised i and is not used). Deciding pass: global.c allocno order. The target (counter s3 in all three loops, hoisted 1 in s2, p s1, loop 3's kind s1 and p s2) fits ONE counter for all loops placed after the inline's p/kind pseudos (0.316-0.444) and before the hoisted constants (0.06-0.14). Two increments per loop give it 39 loop-weighted refs / 365 = 0.534 (needs a live length over 617); one increment (for (i = 0; ; i++) + continue) gives 27 refs = 0.296, but then loop.c strength-reduces D_800CB224[i] (benefit minus add_cost x biv_count beats the 122-insn loop), which the target doesn't. Tried: loop forms (two-increment for/while, single-increment for/if-wrapped) x counters (iji, iii, ijk), plain for loops (rotated). Next: what keeps the index unreduced with one increment (loop.c strength_reduce: lifetime x threshold x benefit < insn_count), or what lengthens the counter's life",
+  "matched_at": "2026-10-25T14:31:53Z",
   "started": "2026-10-24T12:44:54Z",
-  "status": "blocked"
+  "status": "matched"
  },
  "ovl5f:800C1F44": {
   "matched_at": "2026-10-19T12:27:52Z",

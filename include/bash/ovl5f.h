@@ -749,6 +749,59 @@ static inline NAS *Ovl5fSpawnBit1605Nas(SLONG_XYZ *pos, s32 kind) {
     }
     return NULL;
 }
+/* CheckMineToBoss's puff: Ovl5fSpawnBit1605 with model record D_800536CC. */
+static inline void Ovl5fSpawnBit1605B(SLONG_XYZ *pos, s32 kind) {
+    u8 *p;
+    NAS *nas;
+    Ovl5fExt1605 *ext;
+
+    p = D_800536CC;
+    nas = CreateNAS(pos->x, pos->y, pos->z, 0x1605, 0x11);
+    if (nas != NULL) {
+        ext = FindExtension(nas, 0x10000000);
+        if (ext != NULL) {
+            ext->unkC = kind;
+            ext->unk18 = 0x100;
+            if (p != NULL) {
+                ext->unk20 = 5;
+                nas->Engine->sub->unk6C = p;
+            } else {
+                ext->unk20 = 1;
+            }
+            ext->unk28 = 0;
+            nas->InitDelete(nas);
+        }
+    }
+}
+
+/* CheckMineToBoss: is e within rx/ry/rz of (x, y, z)? One early return per
+   bound: with one || test per axis, the callers' loops are a few insns smaller
+   at loop.c time and their table index gets strength-reduced. */
+static inline s32 Ovl5fWithin(EXTengine *e, s32 x, s32 y, s32 z, s32 rx, s32 ry, s32 rz) {
+    s32 dx;
+    s32 dy;
+    s32 dz;
+
+    dx = e->unk10.x - x;
+    if (dx >= rx + 1) {
+        return 0;
+    }
+    if (dx < -rx) {
+        return 0;
+    }
+    dy = e->unk10.y - y;
+    if (dy >= ry + 1) {
+        return 0;
+    }
+    if (dy < -ry) {
+        return 0;
+    }
+    dz = e->unk10.z - z;
+    if (dz >= rz + 1) {
+        return 0;
+    }
+    return dz >= -rz;
+}
 /* PlotPeriscope: a 0x1605 puff with the scene's first model. */
 static inline NAS *Ovl5fPeriscopePuff(SLONG_XYZ *pos, s32 kind) {
     u8 *p;
