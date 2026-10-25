@@ -61,7 +61,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
 (Open leads): `PlotTransmuterBeam`'s long-lived base, `func_800BE914`'s
 copies (its permuter run is unused), `CheckMineToBoss`'s loop counter and
 `func_800B4048`'s copy. Each needs a new idea rather than another round of
-the usual tries; the inline lead covers two of them. Every swarm checkpoint
+the usual tries. Inline shapes have been tried on `func_800B4048`,
+`PlotTransmuterBeam` and `func_800BE914`, with no match; only
+`PlotTransmuterBeam`'s case 1 steering became natural. Every swarm checkpoint
 is now matched or behind one of these parks. Between tries, Phase 2's
 naming and data (Next, Hand work). Pointing the swarm at
 functions it had never tried (`--only` the untried list, smallest first,
@@ -237,12 +239,12 @@ and current tools).
   parameter is `const`), opens a binding contour whose note lands inside the
   block, and gives the body one return label. `PlotTransmuterBeam`'s `one =
   1` was such an argument too (2026-10-25, `TBSetHeroEffect`). Try one
-  wherever a park needs an extra note or early-set pseudo: `func_800BE914`'s
-  copies. (An argument copy is no help for a copy that has to survive cse:
-  cse deletes it like a plain one, as `func_800B4048`'s retry showed; nor
-  for a pointer that must outlive its one use, as `PlotTransmuterBeam`'s
-  base showed.) The game was C++, so small helpers and accessors were likely
-  inline.
+  wherever a park needs an extra note or an early-set pseudo. An argument or
+  return copy is no help for a copy that has to survive cse or combine: they
+  fold it like a plain one, as the retries of `func_800B4048` and
+  `func_800BE914` showed. Nor does it help a pointer that must outlive its
+  one use (`PlotTransmuterBeam`'s base). The game was C++, so small helpers
+  and accessors were likely inline.
 - **`func_800B4048`'s copy** (parked 2026-10-24 at instructions 10/255,
   7/255 since 2026-10-25; the `decomp.py block` note lists what was tried).
   The tail copies `t = v` (`addu v0,v1,zero`) before the `*60` chain that
@@ -289,6 +291,16 @@ and current tools).
   N' --all`), PAL/JP retail differ only by dropping the division checks,
   and reload adds no copies (`ashrsi3` has no tied operands). The permuter
   run is still unused: the natural shape is a structure-stage base.
+  Retried 2026-10-25 with inlines: the clamp as an inline returning the
+  speed (one `return`, or early returns whose return label puts the copy in
+  another block), a per-axis inline taking the four clamped speeds, a `>> 8`
+  inline. None keeps a copy: cse and combine fold an argument or return copy
+  like a plain one. And since the target clamps all four speeds before any
+  shift, a copy made at the clamp can't be the one at the shift. No original
+  header has a 64-bit or 8-aligned type that would hold a speed pair in a
+  register pair, as the swarm's struct does. Left: a construct that writes
+  part of a register (a SUBREG destination) or a shift operand cse can't see
+  through.
 - **Earlier compiles of the last functions** (PROTOTYPES.md, Earlier
   compiles of a function, has the table). Each of the five biggest has a
   build within a few instructions of retail's: Oct 9's `func_800BC038` (+1
@@ -700,6 +712,14 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-25 (hand: `func_800BE914` retried with inlines, still parked
+  at registers 7/170):** the clamp as an inline (one return, early
+  returns), a per-axis inline taking the clamped speeds, and a `>> 8`
+  inline all lose the four copies: cse and combine fold an inline's argument
+  and return copies like plain ones, and the target clamps all four speeds
+  before the first shift. PAL's revision differs only by the two division
+  checks. Park note and Open lead updated.
 
 - **2026-10-25 (`SetHeroSeq` retyped):** it takes `s32 player` like
   `SetHeroAction`; its 135 casts are gone, and ovl65's `func_800BC948` and
