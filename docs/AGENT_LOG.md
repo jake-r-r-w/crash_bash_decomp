@@ -16,13 +16,13 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `main.exe` function matches and `main.c` is split (2026-10-23); Phase 2's
   naming and data are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2532/2537 game functions matched (98.13% of game code bytes, 2026-10-25):
+- 2533/2537 game functions matched (98.77% of game code bytes, 2026-10-25):
   **main.exe, the engine, ovl5d, ovl5e, ovl60, ovl61, ovl64, ovl65, ovl66,
-  ovl67, ovl69 and ovl6a are complete**; 5 left (ovl5f 1, ovl62 2, ovl63 1,
+  ovl67, ovl69 and ovl6a are complete**; 4 left (ovl5f 1, ovl62 1, ovl63 1,
   ovl68 1), every one tried by the swarm at least once. All 564
-  PsyQ functions (Sony objects). Four parked by hand, `func_800BE914`,
-  `PlotTransmuterBeam` (one instruction off), `func_800B4048` and
-  `CheckMineToBoss` (Open leads)
+  PsyQ functions (Sony objects). The 4 left are all parked by hand,
+  `func_800BE914`, `PlotTransmuterBeam` (one instruction off),
+  `func_800B4048` and `CheckMineToBoss` (Open leads)
   (`decomp.py status`; the swarm parked 5, which the dashboard counts from
   `docs/swarm.js`). Matches are C only, natural C
   first (CONVENTIONS.md, Matching rules; the "hack" class was dropped on
@@ -57,14 +57,13 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**The overlays' last 5 functions**, all tried by the swarm. Four are
-parked by hand (Open leads). The fifth, ovl62 `PlotUkaPolarMask` (6472 B),
-has only the swarm's checkpoint (`checkpoints/ovl62_800C1584`: structure
-800/1618, but 1575/1618 exact and 201/205 blocks by `regions`; its log
-names the four blocks left). Hand-match it from there the way
-`func_800BC038` went (Open leads), with its earlier compiles (`decomp.py
-protos`: Oct 9 and PAL are the same compile, the older builds 20
-instructions shorter) as evidence. Pointing the swarm at
+**The overlays' last 4 functions**, all parked by hand, each with a lead
+(Open leads): `PlotTransmuterBeam`'s long-lived base, `func_800BE914`'s
+copies (its permuter run is unused), `CheckMineToBoss`'s loop counter and
+`func_800B4048`'s copy. Each needs a new idea rather than another round of
+the usual tries; the inline lead covers two of them. Every swarm checkpoint
+is now matched or behind one of these parks. Between tries, Phase 2's
+naming and data (Next, Hand work). Pointing the swarm at
 functions it had never tried (`--only` the untried list, smallest first,
 no `--retry-failed`) matched 37 of 42 under 2 KB for $151 (~$4 a match),
 against $7.50 for the retry runs, which kept re-trying the same hard ones
@@ -150,12 +149,19 @@ and current tools).
   for `inv = 0x21 - lvl;` written earlier. `func_800B6708` (registers
   27/411) went the same way: its three `goto` loops were unrotated real
   loops (MATCHING.md, Diff patterns). Try the natural form of such drafts
-  first. The checkpoint left (read
+  first. No checkpoint is left to finish: the unmatched ones belong to
+  parks worked past them (read
   `../crash_bash_decomp-swarm/checkpoints/*/best.json` from the host, the
   container doesn't mount it, so copy `best.diff` into `scratch/` first;
-  the directories are named by overlay and address, not by function):
-  ovl62 `PlotUkaPolarMask` (`ovl62_800C1584`, structure 800/1618, 1575
-  exact); the other unmatched ones belong to parks worked past them. ovl5d
+  the directories are named by overlay and address, not by function).
+  ovl62 `PlotUkaPolarMask` (structure 800/1618, 6472 bytes) matched in one
+  session from its checkpoint: the four blocks left were a tail kept twice
+  (each case's own `StopSfx`, no `goto stop`), a clamp written as two plain
+  ifs, one `ga` for both angles, and the order of two statements around a
+  table load; then natural forms for the rest of the swarm's shapes, each
+  batch-tested with `try --file A B ...` (MATCHING.md, Diff patterns, five
+  rows). Its checkpoint called `SpawnNASById`, now `CreateNAS` (the link
+  fails on such stale names; `configs/USA/sym.*.txt` has the new one). ovl5d
   `800BC038` (structure 1793/2152, 8600 bytes) matched in one session from
   its checkpoint, first with its matched sibling ovl5e `func_800B87A0`'s
   idioms, then block by block with `regions` (MATCHING.md, Diff patterns,
@@ -276,12 +282,17 @@ and current tools).
   N' --all`), PAL/JP retail differ only by dropping the division checks,
   and reload adds no copies (`ashrsi3` has no tied operands). The permuter
   run is still unused: the natural shape is a structure-stage base.
+- **`SetHeroAction` takes a hero index, not a pointer.** Its body does
+  `base + (s32)hero` and ARCHITECTURE.md lists it as `SetHeroAction(player,
+  action)`, but it is declared `HeroInfo *hero` (no leak declares it), so
+  321 calls cast an index: `SetHeroAction((HeroInfo *)i, 0x4F)`. Declare it
+  `s32 player` and drop the casts in one commit, checked with `make check`.
 - **Earlier compiles of the last functions** (PROTOTYPES.md, Earlier
   compiles of a function, has the table). Each of the five biggest has a
   build within a few instructions of retail's: Oct 9's `func_800BC038` (+1
   insn) and `func_800B87A0` (-1), Sep 14's `PlotTransmuterBeam` (-12), Oct
   9's `func_800B77E8` (-10), the older builds' `PlotUkaPolarMask` (-20).
-  All but `PlotTransmuterBeam` and `PlotUkaPolarMask` are matched. Next:
+  All but `PlotTransmuterBeam` are matched. Next:
   disassemble that copy (`decomp.py protos NAME` gives the address and the
   entry offset), diff it against retail, and see whether the change sits
   where the C still differs (done for `PlotTransmuterBeam`: the copies
@@ -363,6 +374,13 @@ Other:
 ## Gotchas
 
 **Tooling**
+- **Variant scripts for `try --file`: edit the one function, not the file.**
+  A plain replace over the whole `.c` also hits other functions' `HeroInfo
+  *h;` or `goto next;`, and the variant then fails to build. Cut the
+  function's text out first (from `void NAME(` to the next `\n}\n`), edit
+  that, and put it back. And `tools/dk
+  python3 - <<EOF ... </dev/null` never runs the script: the later
+  `</dev/null` replaces the heredoc. Write the script to a file.
 - **`BUILD FAILED` with `tee: build/...c.i: Permission denied`** after
   back-to-back `try` runs is a Windows file lock on the build output, not
   the C: run it again.
@@ -673,6 +691,17 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-25 (hand: ovl62 `PlotUkaPolarMask` matched, 6472 bytes):** from
+  the swarm's checkpoint (structure 800/1618, 1575 exact, four blocks left).
+  Case 3's tails written out (the target's `stop` label is one jump2 made,
+  and jumps to such a label are never merged with each other), the speed
+  clamp as two plain ifs (`thread_jumps` and reorg do the rest), one `ga`
+  for both angles, and `D_800D5490++; ext->unk1B8 = 0;` after the `unk1D8`
+  line (a table load and a field store keep their source order). Then
+  natural C for the swarm's shapes, batch-tested: the hero loop's test after
+  its declarations, no `goto`s, `i & 3` for the copies, named `UkaBitExt`
+  fields. Five Diff patterns rows; the 4 left are all parked.
 
 - **2026-10-25 (hand: ovl5d `func_800BC038` matched, 8600 bytes, ovl5d
   complete):** from the swarm's checkpoint (structure 1793/2152), first in
