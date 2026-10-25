@@ -6297,11 +6297,11 @@
   "status": "matched"
  },
  "ovl60:800C0584": {
-  "auto_failed": "compile",
   "blocked_at": "2026-10-24T11:17:32Z",
-  "note": "STAGE registers 2/350 (64/65 blocks): only case 3's %hi(D_800C530C) is in v0 where the target has v1 (lui v1; lw t1 reload; addiu v1,v1,%lo). Case 6 matches with a fresh one = 1 set before CreateNAS. Before reload the HIGH always gets a fresh pseudo (mips.md movsi), so the target's shared register is local-alloc tying the HIGH to a block-local base (combine_regs). A block-local single-set base is birthing in sched1 (birthing_insn_p), so the in-place ++level, the one non-birthing insn, ends up first in block 20. reload then inserts level's reload lw before the block head without moving basic_block_head (h2's sched2 dump: block 20 is 309..316, reload insn 875 sits outside it), sched2 can't schedule it, and a load-delay nop appears. A global base (ext, also used in case 6) keeps the HIGH first and the reload inside the block, but nothing local holds v0 during the HIGH's life, so find_free_reg gives it v0. Tried (all 2/350 or a nop): direct D_800C530C[++level] (s32 table: Init_PogoPadlock still matches), cast, pointer-arithmetic and level+1 forms, a case-local or earlier-set pointer, the pointer before the switch, a temp for the loaded value, status = 4 duplicated into the inner block (jump2 cross-jumps it back), a 60-variant grid of these; permuter 5 min. The Demo Disc and Oct 9 copies have the same lui v1 pattern. Next: an extra insn that heads block 20 in sched1 and is gone by the final code (e.g. an equivalence init that update_equiv_regs moves, which does update basic_block_head), or a v0 local live across the HIGH with the global base.",
+  "matched_at": "2026-10-25T08:19:34Z",
   "started": "2026-10-24T10:24:38Z",
-  "status": "blocked"
+  "status": "matched",
+  "tries": 1
  },
  "ovl60:800C0AFC": {
   "auto_diff": 12,
