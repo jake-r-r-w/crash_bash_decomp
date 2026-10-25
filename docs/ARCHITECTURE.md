@@ -1074,9 +1074,11 @@ retail does. Every unit is built with `-fno-builtin` (`EXTRA_CC1FLAGS`): the
 game calls `abs`, which gcc 2.8.1 would otherwise inline. FSF GCC 2.7.2.3's
 source is in `tools/reference/gcc-2.7.2.3/`.
 
-Functions not yet decompiled stay in the C files as `INCLUDE_ASM(...)`, which
-pulls `asm/nonmatchings/<seg>/<func>.s` into the compiled object, so the build
-matches at every step. splat (`make split`) regenerates `asm/` and `linkers/`
+Every game function is C (2026-10-26). While one wasn't, it stayed in its C
+file as `INCLUDE_ASM(...)`, which pulls `asm/nonmatchings/<seg>/<func>.s`
+into the compiled object, so the build matched at every step. Rodata not yet
+in C is still pulled in the same way (`INCLUDE_RODATA`), and the data and bss
+come from splat's `asm/data/` until they are C (ROADMAP.md). splat (`make split`) regenerates `asm/` and `linkers/`
 from the retail executable; it never overwrites existing `src/` files.
 
 Overlays (registered with `decomp.py add-overlay`) get their own

@@ -73,7 +73,8 @@ mode overlays sharing one slot (`0x800B32B4`). Each overlay is its own build
 target. Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 From your disc image to a rebuilt disc. All of its code comes from this repository's build:
-our C, plus the asm of the functions not decompiled yet. Its game data comes from `assets/`
+our C (every game function is C), plus the rodata and data not yet in C, which splat cuts
+from the disc. Its game data comes from `assets/`
 ([docs/ASSETS.md](docs/ASSETS.md)), and `make disc-check` proves the result is the retail disc
 byte for byte ([docs/PLAYING.md](docs/PLAYING.md)).
 
@@ -81,7 +82,7 @@ byte for byte ([docs/PLAYING.md](docs/PLAYING.md)).
 flowchart TD
     src["src/ : our C"]
     disc[("Your disc image")]
-    disc -- "make split" --> asm["asm/ : code not decompiled yet"]
+    disc -- "make split" --> asm["asm/ : data not in C yet"]
     disc -- "decomp.py extract" --> assets["assets/ : game data you edit"]
     disc -- "decomp.py extract" --> files["disc/files : other disc files"]
     src --> make["make"]
@@ -107,8 +108,8 @@ flowchart TD
 Purple is code, green is game data. `main.exe` becomes the disc's boot file (`SCUS_945.70`);
 the engine and the 14 minigame overlays go into `CRASHBSH.DAT` with the game data from
 `assets/`; the other files (`SYSTEM.CNF`, the licence data, the `BASHY.` filler, the bundled
-Spyro 3 demo) come from the disc as they are. As functions are matched they move from `asm/` to
-`src/`; the disc stays identical throughout.
+Spyro 3 demo) come from the disc as they are. As data is turned into C it moves from `asm/` to
+`src/`, as the functions did; the disc stays identical throughout.
 
 ## Layout
 
@@ -186,7 +187,7 @@ tools/dk make check                                   # build and compare with r
 tools/dk make disc-check                              # a disc image, the same as retail
 ```
 
-Matching one function:
+Matching one function (every game function is matched; this is the route for reworking one):
 
 ```sh
 tools/dk python3 tools/scripts/decomp.py next            # pick a function: asm + draft

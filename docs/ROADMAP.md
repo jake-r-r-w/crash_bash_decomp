@@ -16,16 +16,19 @@ badges. Tick a box in the commit that finishes that item, and run
 Preparation goes in the phase that first needs it. When later work turns up
 something new to do, add it to the phase it blocks, not to an earlier one.
 
-## Current focus: the last matches, then a shiftable build
+## Current focus: names, types and data
 
-Any build of ours can be played: `tools/dk make disc` packs `build/main.exe`
-and the overlays into `build/CrashBash.bin`/`.cue`, which boots in an
-emulator, and `make disc-check` confirms the matching build packs to the
-retail image byte for byte. The work now is matching the overlays' last
-functions (the swarm; the dashboard shows what is left), and alongside it
-naming, typing and splitting with what the prototype and demo discs leaked
-([PROTOTYPES.md](PROTOTYPES.md)). After that comes the shiftable
-`NON_MATCHING` build (Phase 4), the first build that isn't byte-identical.
+Every game function in the exe, the engine and the slot overlays matches
+(2026-10-26), so the matching items are done. Any build of ours can be
+played: `tools/dk make disc` packs `build/main.exe` and the overlays into
+`build/CrashBash.bin`/`.cue`, which boots in an emulator, and `make
+disc-check` confirms the matching build packs to the retail image byte for
+byte. The work now is what makes the source source-only: naming and typing
+(with what the prototype and demo discs leaked,
+[PROTOTYPES.md](PROTOTYPES.md)), turning the rodata and data into C, and the
+remaining file splits, starting with `main.exe` (Phase 2). After that comes
+the shiftable `NON_MATCHING` build (Phase 4), the first build that isn't
+byte-identical.
 
 Matches are C only (no inline asm; the SDK's `gte_*` macros excepted), and
 natural C comes first: C that only steers the compiler is used when nothing

@@ -18,7 +18,10 @@
 
 ## Matching a function
 
-Functions are matched by hand (by a person or an AI agent), **one function per
+Every game function matches (2026-10-26), so this is now the route for
+reworking one (a natural form for a steering match) and the record of how
+the matching was done; the work now is naming, typing and data
+([docs/ROADMAP.md](docs/ROADMAP.md)). Functions were matched by hand (by a person or an AI agent), **one function per
 commit**, through the validation gate described in
 [docs/MATCHING.md](docs/MATCHING.md). All commands run through `tools/dk`:
 
@@ -48,6 +51,8 @@ and nothing is pushed unless that passes. Big functions go to its big-mode
 workers, which resume from the best C so far each session.
 
 Functions that won't match go to `decomp.py block NAME --note "..."`.
+Rewriting an already matched function (a rename, a retype, a natural form) is
+an ordinary commit once `tools/dk make check` prints `OK`.
 
 ## Other changes
 

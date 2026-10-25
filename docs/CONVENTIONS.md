@@ -102,7 +102,8 @@ A file is finished when every function in it reaches level 4.
   ([MATCHING.md](MATCHING.md)).
 - A function that will not match after a bounded effort is parked
   (`decomp.py block NAME --note ...`) with its best C kept under
-  `#ifndef NON_MATCHING` so the build still matches.
+  `#ifdef NON_MATCHING`, with the `INCLUDE_ASM` line under `#else`, so the
+  build still matches.
 
 ## Code style
 

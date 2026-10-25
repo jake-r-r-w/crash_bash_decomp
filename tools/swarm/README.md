@@ -4,6 +4,9 @@
 clone, and one integrator that commits every match through the validation gate
 (`decomp.py done --commit`). It runs on the host with Node (no dependencies).
 
+Every game function matched on 2026-10-26, so the queue is empty: the swarm is kept for
+another game's decomp or for a batch of rework, and this page records how it was run.
+
 ```
 workers (N clones)                         integrator (one clone, serial)
  reset to the integration tip               git apply --3way the patch
@@ -26,8 +29,21 @@ node tools/swarm/swarm.mjs stats      # outcomes and $ per match by size (--run 
 node tools/swarm/swarm.mjs stop       # graceful; --now kills (then `run --clear-stop` to start again)
 ```
 
-The run above is the low-cost recipe (sonnet first, about $0.20 a match on ovl5f). The other
-recipes, all-opus and big-heavy, are in docs/AGENT_LOG.md, Next.
+The run above is the low-cost recipe (sonnet first, about $0.20 a match on ovl5f; ovl5d $0.50,
+its 250-599 B functions cost more; ovl65 and ovl68 $0.25-0.33). Use it for fresh overlays. The
+other two:
+
+- **Opus** (the `config.json` defaults, 5 normal + 1 big; ovl62, ovl60 and ovl63 matched 77-117
+  an hour for $34-47): add `--big-workers 2` while big functions are queued. The normal workers
+  finish the small functions first, then idle.
+- **Big-heavy**, for an overlay's leftovers, mostly >= 600 B: `--workers 1 --big-workers 4
+  --big-bytes 400`. Retry parks with it after tool upgrades (`decomp.py unblock`,
+  `--retry-failed`): on 2026-10-16 it matched 12 of main.exe's 15 parks.
+
+Functions it had never tried are the cheapest to queue (`--only` the untried list, smallest
+first, no `--retry-failed`): 37 of 42 under 2 KB for $151, about $4 a match, against $7.50 for
+retry runs, which keep re-trying the same hard ones (the queue puts checkpointed functions
+first).
 
 Needs Docker and `claude` on `PATH` (logged in once with `claude auth login`). Workers run with
 `--permission-mode dontAsk`. Options (defaults in `config.json`, override with `--kebab-case value`):

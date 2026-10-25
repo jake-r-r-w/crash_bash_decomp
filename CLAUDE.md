@@ -4,6 +4,10 @@ Read [docs/AGENT_LOG.md](docs/AGENT_LOG.md) first (latest state and next
 steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
 [docs/CONVENTIONS.md](docs/CONVENTIONS.md).
 
+- Every game function matches (2026-10-26). The work now is naming, typing,
+  data to C and file splits (docs/ROADMAP.md); each such change is an
+  ordinary commit once `tools/dk make check` prints `OK`. The matching tools
+  below stay for reworking a function.
 - Everything runs through `tools/dk` (Docker); the host has no Python.
 - This repo follows the `psx-matching-decomp` skill with different paths:
   `tools/scripts/decomp.py` (not `tools/decomp.py`), `configs/USA/` (not

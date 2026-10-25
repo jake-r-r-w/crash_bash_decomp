@@ -12,306 +12,128 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Current state (2026-10-26)
 
-- [ROADMAP.md](ROADMAP.md): Phase 1 (types and names) is done, and every
-  `main.exe` function matches and `main.c` is split (2026-10-23); Phase 2's
-  naming and data are left. The work now is matching the overlays (Phases 3-5) with the
-  swarm.
-- **All 2537 game functions match** (100% of game code bytes, 2026-10-26):
-  main.exe, the engine and every slot overlay. The last, ovl63's
-  `func_800BE914`, matched with steering (Session log). All 564 PsyQ
-  functions (Sony objects)
-  (`decomp.py status`; the swarm parked 5, which the dashboard counts from
-  `docs/swarm.js`). Matches are C only, natural C
-  first (CONVENTIONS.md, Matching rules; the "hack" class was dropped on
-  2026-10-22: steering C counts as matched, inline asm is refused;
-  `func_800193A8`'s register pins predate that). Every slot overlay's id word is
-  its own rodata unit (2026-10-19), so first-file switches link as `switch`.
-  `make check` OK. Live figures: `decomp.py progress` / `docs/index.html`.
-- Dashboard (2026-10-18): `docs/index.html` is `tools/scripts/dashboard.html` plus
-  the data; a live Swarm card from the git-ignored `docs/swarm.js` the swarm
-  writes (tools/swarm/README.md, Live status). `progress` takes ~2.5 s warm.
-- The engine overlay is seven files (`panel` and `pause` named from
-  Jampack's records) and `ovl5d` three, `ovl5e`, `ovl66`, `ovl67`, `ovl6a`
+- **Every game function matches**: all 2537 in `main.exe`, the engine and
+  the 14 slot overlays (100% of game code bytes, 2026-10-26), and all 564
+  PsyQ functions are Sony's own objects (281, plus `2MBYTE.OBJ`; their
+  `.data` too, except `bios_1.o`'s: `configs/USA/psyq/data_keep.txt`).
+  `make check` and `make disc-check` OK. Live figures: `decomp.py progress`
+  / `docs/index.html`.
+- [ROADMAP.md](ROADMAP.md): Phase 1 (types and names) is done, and so is
+  every matching item. What is left is everything else that makes the
+  source "source-only": names and types (`progress`: 731 of 2537
+  functions named, 2316 typed), the rodata (92 `INCLUDE_RODATA`) and data
+  (splat's `asm/data/`; 1.97% is C) as C, the overlays' remaining file
+  splits, and the
+  shiftable `NON_MATCHING` build.
+- Matches are C only, natural C first (CONVENTIONS.md, Matching rules):
+  steering C counts as matched, inline asm is refused by the gate. One
+  exception predates the rule: `func_800193A8` (`src/main/80017164.c`)
+  still pins three registers (`register s32 xy asm("$20")`, ...). The
+  last three matches (`func_800B4048`, `PlotTransmuterBeam`,
+  `func_800BE914`) are steering; their natural forms are Open leads.
+- Files: `main/main` is nine files since 2026-10-23 (`main`, `dbase`,
+  `80017164`, `scripts`, `sfx`, `80022a3c`, `sound`, `music`, `card`;
+  ARCHITECTURE.md, Files inside `main/main`); the main segment links with
+  `SUBALIGN(4)`. The engine is seven files (`panel` and `pause` named from
+  Jampack's records), `ovl5d` three, and `ovl5e`, `ovl66`, `ovl67`, `ovl6a`
   two each (ARCHITECTURE.md, Files inside the engine / the slot overlays).
-  `main/main` is nine since 2026-10-23: `main` (0..135), `dbase`,
-  `80017164`, `scripts`, `sfx`, `80022a3c`, `sound`, `music`, `card` (Files
-  inside `main/main`, Split so far); the main segment links with
-  `SUBALIGN(4)`.
-- Compiler: gcc 2.8.1-psx `-O2 -G0`, maspsx `--aspsx-version=2.86` (settled;
-  2.7.2-cdk matched a strict subset). That cc1 is decompals/old-gcc's build of
-  FSF 2.8.1 for the PlayStation, not Sony's binary; `tools/cc1/` rebuilds it
-  from source byte for byte (2026-10-25), for analysis variants only.
-- PsyQ 4.7: all library code is Sony's objects (281, plus `2MBYTE.OBJ`), and
-  their `.data` comes from the objects except `bios_1.o`'s (one value differs;
-  `configs/USA/psyq/data_keep.txt`). Roadmap: the PsyQ gaps box is ticked.
-  The game is built with `-fno-builtin` (it calls `abs`).
+  Every slot overlay's id word is its own rodata unit.
+- Compiler: gcc 2.8.1-psx `-O2 -G0 -fno-builtin`, maspsx
+  `--aspsx-version=2.86`; two exe units are gcc 2.7.2 + ASPSX
+  (`aspsx_fill.py`). That cc1 is decompals/old-gcc's build of FSF 2.8.1 for
+  the PlayStation; `tools/cc1/` rebuilds it from source byte for byte, for
+  analysis variants only (`localtie`, `keeplive`, `copysplit`).
 - Every type and AST id in the Oct 9 prototype's debug fragment is in
-  `include/bash/` and every overlay is identified (ARCHITECTURE.md, Prototype
-  debug types). The disc images are in the git-ignored `protos/`.
-- Game data (2026-10-16): every `CRASHBSH.DAT` entry but the 15 code overlays
-  extracts to editable files in `assets/CRASHBSH/` (textures PNG, models OBJ
-  + glTF with animations, sounds WAV/VAB, music SEQ/MIDI, text, screens) and
-  packs back byte for byte; `make disc-check` from a fresh extraction is
-  identical (docs/ASSETS.md). ROADMAP's asset extraction box is ticked.
+  `include/bash/`, every overlay is identified, and the demo discs' names
+  and prototypes are applied (PROTOTYPES.md; the discs are in the
+  git-ignored `protos/`).
+- Game data (2026-10-16): every `CRASHBSH.DAT` entry but the 15 code
+  overlays extracts to editable files in `assets/CRASHBSH/` and packs back
+  byte for byte (docs/ASSETS.md).
+- Dashboard: `docs/index.html` is `tools/scripts/dashboard.html` plus the
+  data (`progress` takes ~2.5 s warm). The swarm (tools/swarm/README.md)
+  has nothing left to queue.
 
 ## Next
 
-**Every game function matches** (2026-10-26). Phase 2's naming, types and
-data are the work now (Hand work below), and the steering matches can be
-revisited for their natural forms (Open leads). The last parks fell to one
-method: prove the decision a park needs with an analysis variant of cc1
-(`tools/cc1/`, a from-source rebuild that is byte-identical to `/opt`'s),
-then search for the C that gives it, with the variant as the check.
-`func_800B4048`'s `localtie` variant proved local-alloc's tie was the one
-decision left, and an always-zero term that flow counts and combine drops
-won it (MATCHING.md, Diff patterns, the `QTY_CMP_PRI` row).
-`PlotTransmuterBeam`'s `keeplive` variant proved a hidden later use of a
-base was all it lacked, and the use was a test whose body is dead, which
-jump2 deletes (the unfolded-base row). `func_800BE914`'s `copysplit`
-variant proved four register copies were all it lacked, and the C that
-keeps them uses a dead mention for cse and always-zero terms for combine
-(the register-copy row). The host is ruled out: a variant at 53-bit x87
-precision changes no build. `CheckMineToBoss` matched on 2026-10-25
-once loop.c's own numbers (`-dL`, "not worth while, X vs N") showed what
-its loops needed: read a park's `-dL` and `sched` numbers before trying
-shapes, and look for the natural form that moves them. Every swarm checkpoint
-is now matched or behind one of these parks. Between tries, Phase 2's
-naming and data (Next, Hand work). Pointing the swarm at
-functions it had never tried (`--only` the untried list, smallest first,
-no `--retry-failed`) matched 37 of 42 under 2 KB for $151 (~$4 a match),
-against $7.50 for the retry runs, which kept re-trying the same hard ones
-(the queue puts checkpointed functions first). After each
-run, the "After a run" checklist in tools/swarm/README.md.
+Matching is finished, so the roadmap's other items are the work (ROADMAP.md,
+Current focus). In rough order:
 
-Recipes (`--seg overlays/NAME --branch main --max-minutes 60`):
-- **Low cost** (2026-10-19, ovl5f: 78 matched for $15.96, ~$0.20 a match;
-  ovl5d: 64 for $31.79, ~$0.50, its 250-599 B functions cost more; ovl65:
-  50 in 38 min for $16.70, ~$0.33; ovl68: 46 in 26 min for $11.71, ~$0.25):
-  `--model sonnet --escalate-model opus --big-workers 1 --big-budget-usd 8
-  --max-run-usd 30`. Use it for fresh overlays.
-- **Opus** (the `config.json` defaults, 5 normal + 1 big; ovl62/ovl60/ovl63
-  matched 77-117 an hour for $34-47): add `--big-workers 2` while big
-  functions are queued. The normal workers finish the small functions first,
-  then idle.
-- **Big-heavy** for an overlay's leftovers, mostly >= 600 B: `--workers 1
-  --big-workers 4 --big-bytes 400`. Retry parks with it after tool upgrades
-  (`decomp.py unblock`, `--retry-failed`): on 2026-10-16 it matched 12 of
-  main.exe's 15 parks.
+1. **Names and types** (Phase 2, then 3-5 per overlay). Name each
+   function from what it does, with code evidence, through `decomp.py
+   rename` (it checks the build); leaked names go through `proto_apply.py`
+   and `proto_types.py` (PROTOTYPES.md, Left lists what they couldn't
+   write). Retype a function's parameters and its structs' `unkXX` fields
+   as callers show them; a retype must keep `make check` OK (Gotchas,
+   Matching and types: a typed global can move loads). Helpers:
+   `tools/scripts/field_survey.py` (loads and stores per struct offset, for
+   layouts), `decomp.py similar` (twins and siblings), and the scripts in
+   `scratch/naming/` (not committed): `callsites.py OVL` (what each call
+   passes and whether its result is used), `callgraph.py spawns`,
+   `nas_fields.py ARGREG FUNC...` (field offsets through a pointer
+   argument). Most-called functions: `grep -rhoE "jal +func_800[0-9A-F]{5}"
+   asm/nonmatchings | sort | uniq -c | sort -rn`. Worth promoting
+   `callsites.py` to a `decomp.py` subcommand once the naming starts.
+2. **Rodata and data to C**, unit by unit, after a unit's split is final
+   (a file's local data moves with it). Start with `main.exe`; each
+   `INCLUDE_RODATA` and `asm/data/*.s` block becomes C initialisers that
+   rebuild byte for byte. Jump tables and strings first, since they are
+   tied to one function.
+3. **`func_800193A8` without its register pins**: rematch it in plain C
+   (or steering C) so the only-C rule has no exception.
+4. **The shiftable `NON_MATCHING` build** (Phase 4's first item), once a
+   slot overlay's data is C.
 
-Gate failures are usually header clashes or the toolchain, not the worker's
-C: the swarm now reconciles headers itself (`decomp.py reconcile`), and the
-rest are fixed by hand from the worker's patch (Gotchas). A park whose
-`jtbl_` names functions is a bad split (Gotchas).
-
-Hand work, between runs:
-1. The swarm's near misses (Open leads), by hand. First run `decomp.py similar` on
-   any function before working it: a 1.00 twin matched elsewhere ports by
-   hand (Gotchas, Tooling). For a register-priority miss, try the repeated assignment after an empty
-   `do {} while (0)` (MATCHING.md, CSE's block ends): it adds refs without a
-   sched barrier, which matched `PogoAI_RadialSearch` and `PlotScriptFX`.
-   For a wrong cse canonical register, a dead assignment after the last use
-   reorders `make_regs_eqv`'s last uses (MATCHING.md, CSE's canonical
-   register). For a sched1 tie the target breaks with code it doesn't have,
-   look for a pass after sched1 that deletes what you add: reload_cse_regs
-   (a store-back of a just-loaded value, a repeated store) or jump2's
-   cross-jump (a duplicated call, which also sets its arg registers twice
-   and so takes away their birthing priority); `func_800BC274` used both,
-   and `Plot_PogoRipperRoo` a repeated store (a global's `%hi` and value
-   in odd registers at the block top, the store at the end).
-   For a merged tail kept in the wrong place, `decomp.py jtrace NAME`
-   shows which copy each exit went to and why; `decomp.py protos NAME`
-   finds the function's earlier compiles on the prototype discs, and two
-   successive builds show which source change made a pattern
-   (`func_8007F314`, PROTOTYPES.md).
-2. Name each function as it's matched when the evidence allows.
-3. The `main.c` split is finished: nine files (2026-10-23). The zones
-   left open (ARCHITECTURE.md, Files inside `main/main`) are closed: no
-   leak names the exe's files and the code evidence is used up, so don't
-   reopen them without a new source (a disc with debug records for the
-   exe). `split_unit.py` and `decomp.py units [--data]` stay for the
-   overlays; a split moves functions, so workers' patches and checkpoints
-   for them stop applying.
-4. Later Phase 2 items: data to C (after the split), naming and typing
-   passes.
-
-Swarm history in short (details: `swarm.mjs stats`, the ledger, the commits):
-engine 2026-10-15..17 (big-heavy from 2026-10-16), main.exe parks
-2026-10-16, ovl61/ovl67/ovl69/ovl6a 2026-10-18, ovl62/ovl60/ovl63/ovl5f
-2026-10-19 (opus normal workers since then, $0.19-0.45 a match under
-400 B against sonnet's ~$0.48 before; low cost ~$0.20 with the reconcile
-and current tools).
+The matching method stays in MATCHING.md for reworks. Its last addition
+(2026-10-25..26): when a function won't match, prove the one compiler
+decision it needs with an analysis variant of cc1 (`tools/cc1/`), then
+search for C that makes it, with the variant's log as the check.
 
 ## Open leads
 
-- **The swarm's checkpoints are worth finishing by hand.** `func_800B4AB0`
-  (27/1246) and `PogoAI_MoveTowardsTarget` (4/330) each matched in one
-  session: apply `<repo>-swarm/checkpoints/<key>/best.diff` (`git apply
-  --include=src/...`; merge its header part by hand, since the headers have
-  moved on), score it, then work the rows with `sched` and the global.c
-  priorities. `func_800B4AB0`'s leftovers were register choices that a
-  variable's other uses decide; `PogoAI_MoveTowardsTarget`'s were an
-  expression whose shape the swarm had rewritten (`(z - 3) << 9` for the
-  neighbour square's `((z + 1) << 9) - 0x800`) and a sched1 barrier
-  (MATCHING.md, Diff patterns). Read the checkpoint's log for what was
-  tried, not for rules: its "the gate refuses do { } while (0)" predates
-  2026-10-22. `Plot_PogoRipperRoo` (instructions 16/656) matched the same
-  way, its last three instructions from a store the original makes twice,
-  and `func_800B7508` (registers 17/867) by turning the swarm's C back into
-  natural C: its `goto` loop with hand-made pointer copies imitated what
-  loop.c does to a plain `for` loop, and `inv = 0x21; inv -= lvl;` stood in
-  for `inv = 0x21 - lvl;` written earlier. `func_800B6708` (registers
-  27/411) went the same way: its three `goto` loops were unrotated real
-  loops (MATCHING.md, Diff patterns). Try the natural form of such drafts
-  first. No checkpoint is left to finish: the unmatched ones belong to
-  parks worked past them (read
-  `../crash_bash_decomp-swarm/checkpoints/*/best.json` from the host, the
-  container doesn't mount it, so copy `best.diff` into `scratch/` first;
-  the directories are named by overlay and address, not by function).
-  ovl62 `PlotUkaPolarMask` (structure 800/1618, 6472 bytes) matched in one
-  session from its checkpoint: the four blocks left were a tail kept twice
-  (each case's own `StopSfx`, no `goto stop`), a clamp written as two plain
-  ifs, one `ga` for both angles, and the order of two statements around a
-  table load; then natural forms for the rest of the swarm's shapes, each
-  batch-tested with `try --file A B ...` (MATCHING.md, Diff patterns, five
-  rows). Its checkpoint called `SpawnNASById`, now `CreateNAS` (the link
-  fails on such stale names; `configs/USA/sym.*.txt` has the new one). ovl5d
-  `800BC038` (structure 1793/2152, 8600 bytes) matched in one session from
-  its checkpoint, first with its matched sibling ovl5e `func_800B87A0`'s
-  idioms, then block by block with `regions` (MATCHING.md, Diff patterns,
-  four rows); its last difference was a jump-table entry, which only the
-  `LINK` check shows. ovl5f
-  `800B77E8` (structure 1410/1463, 5852 bytes) matched in one session from
-  its checkpoint, one block group at a time with `regions`: each fix was a
-  natural shape the swarm had folded, a field read in its own test, `if`/`else`
-  arms with their own store or call where it had a `?:` or one conditional set,
-  and the order of two statements (MATCHING.md, Diff patterns, four rows). ovl63
-  `800B980C` (structure 305/402) matched by undoing the swarm's hand-made
-  shapes one by one: its `player = arg0` copy (the parameter itself has a
-  REG_EQUIV that halves its global.c priority), the pointers made before a
-  loop, and separate locals where the original reused two generic ones
-  (MATCHING.md, Diff patterns, four rows). Check those three in any draft
-  whose registers are rotated. Where a far checkpoint has a matched sibling, start from
-  the sibling instead: ovl63 `800B7D94` (structure 216/346) written as
-  `func_800B76A4` without its blend was right but for one register swap,
-  and matched with the sibling `func_800B7190`'s statement order. ovl63 `800B76A4`
-  (registers 87/444) matched by writing it in its matched siblings' idioms
-  (`func_800B7190`, ovl65's `func_800B9020`): compare a near miss with its
-  siblings line by line. ovl5e `800B87A0` (structure 30/1461) matched once
-  every swarm `goto` was written out as the repeated tails jump2 cross-jumps,
-  last arm kept (MATCHING.md, Diff patterns). Its `volatile` read and
-  `(s16 *)` cast had stopped mattering by then, so test a draft's odd reads
-  again at the end. Where block 0 (or any block) is an order or allocation tie, run
-  `decomp.py orders NAME --lines A-B` on the checkpoint's C before reading
-  the dumps by hand: it matched `func_800B8294` from the natural form after
-  nine swarm sessions had stopped at 21-31 differing (MATCHING.md, Using the
-  compiler directly).
-- **Inlines explain steering that parks still use.** `Plot_PogoPadlock`
-  (parked at registers 2/350) matched on 2026-10-25 once three of its
-  hand-made shapes turned out to be inlined functions (MATCHING.md, Diff
-  patterns, its case 3 and case 6 rows). Case 0's pointer copies were
-  `FindFreeSquare` inlined (`Ovl60_FindFreeSquare`, whose do-while C
-  `FindFreeSquare` and `FindFreeSquareForMushroom` now share), case 6's `one = 1`
-  was `Ovl60_SpawnPuff`'s constant argument, and case 3's stuck reload
-  needed the note an inline call leaves in its block. An inline brings what
-  written-out C can't: `expand_inline_function` copies each argument into a
-  pseudo of its own before the body (`copy_to_mode_reg`, unless the
-  parameter is `const`), opens a binding contour whose note lands inside the
-  block, and gives the body one return label. `PlotTransmuterBeam`'s `one =
-  1` was such an argument too (2026-10-25, `TBSetHeroEffect`). Try one
-  wherever a park needs an extra note or an early-set pseudo. An argument or
-  return copy is no help for a copy that has to survive cse or combine: they
-  fold it like a plain one, as the retries of `func_800B4048` and
-  `func_800BE914` showed. Nor does it help a pointer that must outlive its
-  one use (`PlotTransmuterBeam`'s base, which a dead test kept: MATCHING.md,
-  the unfolded-base row). The game was C++, so small helpers
-  and accessors were likely inline.
-- **`func_800B4048`'s natural tail** (matched 2026-10-25 with two steering
-  pieces, MATCHING.md Diff patterns): `t = v; v = (s32)Heroes;` keeps the
-  copy `t = v` through cse2 and combine, and the always-zero `(t * 60) & 3`
-  added to the 60% wins local-alloc's tie for the `*60` chain. The original
-  source gets both some other way. The Oct 9 build has the same copy (with
-  `*42` and `*72`), and `protos func_800B4048 --diff Oct_9 --file F.c`
-  matches its tail with the first loop's `v` as the sum and the copy, the
-  masked value in the clock local `a`, 16-bit `x`/`y` and the 72% before
-  the loop, except that combine still folds the copy. Low priority: only
-  with a new idea for a natural extra counted use on the `*60` chain (the
-  `func_800B980C` row) or a natural re-set of `v`.
-- **`func_800BE914`'s natural form** (matched 2026-10-26 with steering,
-  MATCHING.md Diff patterns, the register-copy row). Copy 1 is plain C (`pa`
-  set again before its shift); copies 2-4 need a dead `c += t;` after the
-  `if` blocks (cse) and three always-zero `((t << 8) & 0xFF)` terms
-  (combine). The original kept those copies some other way: the second
-  division's remainder shows the block between the divisions was whole
-  (the `divmodsi4` row), so it wasn't a branch. Low priority.
-- **Finish the demo discs' symbols** (PROTOTYPES.md; applied: 135 function
-  and 51 global names, unit `panel`, the Jampack enums, 43 prototypes, the
-  leaked types and class names, 16 global types, 13 PANEL.CPP locals).
-  Left: `cam_init` and the 11 the tool can't write, the classes with no
-  stand-in (`geo`,
+- **The steering matches' natural forms** (low priority; each is matched):
+  - `func_800B4048`'s tail (MATCHING.md Diff patterns, the `QTY_CMP_PRI`
+    row): `t = v; v = (s32)Heroes;` keeps the copy through cse2 and
+    combine, and the always-zero `(t * 60) & 3` wins local-alloc's tie for
+    the `*60` chain. The Oct 9 build has the same copy (with `*42` and
+    `*72`); `protos func_800B4048 --diff Oct_9 --file F.c` matches its tail
+    with the first loop's `v` as the sum, the masked value in the clock
+    local `a`, 16-bit `x`/`y` and the 72% before the loop, except that
+    combine still folds the copy.
+  - `func_800BE914` (the register-copy row): copy 1 is plain C (`pa` set
+    again before its shift); copies 2-4 need a dead `c += t;` after the
+    `if` blocks (cse) and three always-zero `((t << 8) & 0xFF)` terms
+    (combine). The second division's remainder shows the block between the
+    divisions was whole (the `divmodsi4` row), so it wasn't a branch.
+  - `PlotTransmuterBeam` (the unfolded-base row): a dead `if (TB_MODE13())
+    c++;` keeps the mode test's base live until jump2.
+- **Finish the demo discs' symbols** (PROTOTYPES.md, Left): `cam_init`
+  and the 11 the tool can't write, the classes with no stand-in (`geo`,
   `geo_entity`, `joypad_info`, `tga_header`, `file`, ...), merging the
   other views of `obj_texture` (AnimEntry, TexDst2A84C) and of the camera,
-  `PrintNasPos` (never referenced). The link groups place no file inside
-  the engine. Full reports: `protos/<disc>/scan.md`.
-- **Tune the permuter from its record.** Runs are logged since 2026-10-20
-  (`decomp.py permstats`, `swarm.mjs stats`). Two ideas to try once there
-  are a few dozen runs, compared on that record:
-  - Registers-stage pass weights in `settings.toml` (`weight_overrides`):
-    favour temp_for_expr, split_assignment, randomize_internal_type,
-    reorder_decls and duplicate_assignment, the edits behind the
-    permuter finds in Diff patterns.
-  - A deterministic search over the Diff patterns' common fixes (copy a
-    parameter to a local, s16 -> s32, split a statement, a constant in a
-    local, a goto loop), generalising `splitvars`.
-- **Tooling ideas not done** (from the 2026-10-16 plan):
-  - Pilots, no code: model tiers (`--model haiku --escalate-model sonnet
-    --big-workers 0` on ~40 functions under 128 B, check the first matches'
-    types by hand; an A/B of `--big-model sonnet`), and `--chain 3`
-    (alternate with single jobs, compare `normal-chained` in `stats`).
-  - A by-hand typing pass with `tools/scripts/field_survey.py` on the
-    overlays with no struct coverage (ovl64, ovl65, ovl67: enums only).
-  - Usage-limit result: not recognised (runs are supervised); if a limit is
-    ever hit, keep that `worker.out` and match its result line then.
-  - Optional: `try --regions`; a `%lo` relocation-target check in `try`
-    (must find 0 over all matched functions before it blocks anything);
-    idle permuter slots rotating over registers-stage checkpoints (~60 s
-    turns); a long-lived container per slot (`tools/dk` overhead measured
-    1.2 s, under the 1.5 s that would justify it).
-
-- **Checkpoint ranking (decided 2026-10-14): stays paired, then blocks,
-  then exact.** A sum of the three fractions would have kept a closer
-  `func_8002E3D0` version (11/12 blocks, registers right, paired 106/109
-  vs 109/110; its C is in that session's result note), but the user
-  ruled it out: it would make progress too slow. Port such a version by
-  hand instead.
-
-Other:
-- The gcc 2.7.2 units (`main/8002d488`, `main/8002e0f0`) are fully
-  matched. Their toolchain differences, all in the Makefile and
-  `aspsx_fill.py`: ASPSX's slot filling and load expansion; `8002d488` is
-  compiled with `-fno-rerun-cse-after-loop` (global arrays keep `la` +
-  offsets); and `refill_from_jump` redoes one slot fill where Sony's reorg
-  differs from FSF 2.7.2's (it fills a `j` from its target before the
-  branches; FSF 2.7.2.3's source is in `tools/reference/gcc-2.7.2.3/`). 2.7.2-cdk and 2.8.1-psx share Sony's reorg order but
-  not its codegen, so a gcc 2.7.2 game elsewhere may need the same rule.
-- `main/8002e0f0` with `-fno-rerun-cse-after-loop`: `func_8002E25C` stops
-  matching (structure 44/95), the other four still match. Whether both
-  units had the flag (and E25C's C leans on cse2) is open.
-- Heap: `D_8004E0F0` is a `_mal_area` (the `Heap` of before) now. Its +0x10 is the deferred-free list
-  (`func_80011578` pushes, `func_80011DB4` counts down); `mal.unk2` is
-  the countdown. `func_800115D8`'s prototype still takes `void **`, not
+  `ProcessPauseUD` (very likely `func_8007F1A8`). The link groups place no
+  file inside the engine. Full reports: `protos/<disc>/scan.md`.
+- **Typing pass for the overlays with no struct coverage** (ovl64, ovl65,
+  ovl67: enums only), with `field_survey.py`.
+- The gcc 2.7.2 units (`main/8002d488`, `main/8002e0f0`): their toolchain
+  differences are all in the Makefile and `aspsx_fill.py` (ASPSX's slot
+  filling and load expansion; `8002d488` built with
+  `-fno-rerun-cse-after-loop`; `refill_from_jump` redoes one slot fill
+  where Sony's reorg differs from FSF 2.7.2's). With that flag on
+  `8002e0f0`, `func_8002E25C` stops matching (structure 44/95), so whether
+  both units had it is open.
+- Heap: `D_8004E0F0` is a `_mal_area`. Its +0x10 is the deferred-free list
+  (`func_80011578` pushes, `func_80011DB4` counts down); `mal.unk2` is the
+  countdown. `func_800115D8`'s prototype still takes `void **`, not
   `_mal_area *`; retype it when its callers allow.
-- Prototype debug types (ARCHITECTURE.md, Prototype debug types): every type
-  in the Oct 9 fragment is in a header now, and every single-id AST
-  Init/Plot is named. Use them while matching: type `NAS` fields, `FUX`
-  extensions and globals with them instead of offsets, as the four Tank
-  Inits (`InitMineBall`, ...) now are. 34 fields of 15 types
-  whose bodies were on lost pages are word or byte arrays; retype them if code
-  shows their fields.
+- Prototype debug types (ARCHITECTURE.md, Prototype debug types): 34
+  fields of 15 types whose bodies were on lost pages are word or byte
+  arrays; retype them where code shows their fields.
 - Sound voices: the C walkers use `SfxVoicePool.active`; the symbol
   `SfxActiveVoices` stays only for the data asm (`asm/data/3E4BC.data.s`).
-  Drop it from `sym.main.txt` once data goes to C. `func_80022504` is "stop all" (`StopSfx` inlined in a loop),
-  `func_800228C4` unlinks without stopping, `func_80022924` allocates,
-  `func_80022984` inits the pool.
+  Drop it from `sym.main.txt` once that data is C. `func_80022504` is "stop
+  all" (`StopSfx` inlined in a loop), `func_800228C4` unlinks without
+  stopping, `func_80022924` allocates, `func_80022984` inits the pool.
 - Ambiguous naming leads are listed in ARCHITECTURE.md ("Functions reached
   from the AST pairs").
 
@@ -561,8 +383,6 @@ Other:
   linked (a missed field rename showed up only as a 20-byte-short exe). After
   header changes, grep the build log for `stdin:N:` lines that are not
   warnings.
-- `tryf.sh` replaces only the function, so a comment line above it in the
-  draft file is added again on every run. Keep comments out of drafts.
 - `tools/dk` right after `git checkout` sometimes hits a Windows
   `PermissionError`; retry. Writing a source file (`main.c`) from a script
   in a loop can hit it too, now and then: retry the write, and check the
@@ -581,14 +401,12 @@ Other:
 
 **decomp.py**
 - `done` refuses when another function in the file is also un-`INCLUDE_ASM`ed.
-  For a batch: keep the full file in `disc/scratch/`, `git checkout` the
-  source, apply one function (`disc/scratch/apply_one.py FULL SRC SEGDIR
-  FUNC`), `done`, repeat. `done` also applies the same C to byte-identical
-  copies in the file and commits them together: skip those (apply_one asserts).
+  For a batch, keep the full file aside, `git checkout` the source, apply
+  and `done` one function at a time. `done` also applies the same C to
+  byte-identical copies in the file and commits them together: skip those.
 - `done`'s scope check compares names: commit renames before matching.
-- `make diff` shows at most 40 rows. For the whole diff, or to swap a draft
-  in and diff in one step: `tools/dk python3 disc/scratch/fulldiff.py FUNC`,
-  `sh disc/scratch/tryf.sh FUNC FILE.c [LINES]` (main.c only).
+- `make diff` shows at most 40 rows. For the whole function, `decomp.py try
+  NAME --file F.c` (a draft swapped in) or `decomp.py regions NAME`.
 - Giving a core function its prototype can break old `auto` matches that
   call it with no arguments (m2c dropped a pass-through `a0`). Pass what
   the argument register holds at the call; the code doesn't change
@@ -640,16 +458,19 @@ Other:
 every unit from the committed sources, prints functions % and bytes % side by
 side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
-**Scripts** (`disc/scratch/`, not committed): `callsites.py OVL` (what each
-call passes, whether the result is used), `callgraph.py spawns`,
-`nas_fields.py ARGREG FUNC...` (field offsets through a pointer argument).
-`tools/scripts/field_survey.py` (committed) counts loads/stores per struct
-offset. Most-called functions:
-`grep -rhoE "jal +func_800[0-9A-F]{5}" asm/nonmatchings | sort | uniq -c | sort -rn`.
-
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-26 (cleanup and docs after the last match):** `scratch/` and
+  `disc/scratch/` emptied (434 entries, 1.9 GB, to the Recycle Bin; their
+  notes were already in the docs); the three naming helpers kept in
+  `scratch/naming/`. AGENT_LOG's Current state, Next and Open leads
+  rewritten for the post-matching work; the swarm recipes moved to
+  tools/swarm/README.md, the inline and swarm-draft lessons to MATCHING.md
+  (Inline functions behind odd shapes); stale `(parked)` tags dropped;
+  README, CONTRIBUTING, ARCHITECTURE, PROTOTYPES (`ProcessPauseUD`) and
+  ROADMAP's current focus updated.
 
 - **2026-10-26 (`func_800BE914` matched: every game function matches):**
   re-reading cse.c and combine.c for a copy that survives both inside one

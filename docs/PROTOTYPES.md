@@ -370,6 +370,11 @@ The 4 names the repo gave itself are replaced by the originals
   `geo_vertex`, `geo_tristrip`, `joypad_info`, `tga_header`, `file`,
   `UPOLY_GT3`, `lPOLY_GT4`, `prim_`.
 - `PrintNasPos` is never referenced, so it can't be placed.
+- `ProcessPauseUD(int, int)` is very likely `func_8007F1A8`: a 0.49 code
+  match, it sits right before the pause menu in both builds, calls only
+  `PlaySfx` (the cursor's up/down handler), and `func_8007F314` calls it.
+  `Do_SelectorMenu()` and `PreUpdateStats(u16)` are `PAUSE.CPP`-area labels
+  that match nothing in retail.
 - The 0x38-byte texture entry still has three views (`obj_texture`,
   `AnimEntry`, `TexDst2A84C`) whose fields disagree in type.
 
@@ -446,7 +451,8 @@ Under 0.8 the closest function may be a different one. What the table shows:
   `hero` after the `TargetXYZ.z` store just as retail does, so that order
   comes from the source, not from one build's luck (MATCHING.md, Diff
   patterns).
-- `PlotTransmuterBeam` is parked one instruction off (2026-10-24). By
+- `PlotTransmuterBeam` is matched (2026-10-25; it was parked one
+  instruction off on 2026-10-24). By
   opcode and register (immediates aside), Sep 14's copy differs from
   retail in two places only: case 6 passes `&eng->sfx` and NULL to the two
   `PlaySfx` calls (retail adds the position), and the team-mate loop lacks
@@ -454,8 +460,9 @@ Under 0.8 the closest function may be a different one. What the table shows:
   the start and the closing `D_800D4D08` block. JP adds `hero_mode == 0x57`
   tests to the hit loop: there the constant 1 stays in a local register
   and 0x57 takes fp, which bounds how loop.c scores the 1 (MATCHING.md,
-  Diff patterns). None of them changes the spawn read at 0xc14 that still
-  differs.
+  Diff patterns). None of them changes the spawn read at 0xc14, which
+  only a dead test's hidden use of the base fixed (MATCHING.md, the
+  unfolded-base row).
 - `func_800B5E28` and `func_800B8294` are exact opcode twins (ovl5d and
   ovl64), unchanged in every build, and `CheckMineToBoss` is the same in
   every build but Jampack's: their history adds nothing.
