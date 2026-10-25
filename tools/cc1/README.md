@@ -17,7 +17,7 @@ uses one, and a match is only a match with `/opt/gcc`.
   - `mips.patch` adds `ASM_OUTPUT_SECTION_NAME` (section attributes);
   - `obstack-2.8.1.h.patch` replaces a cast used as an lvalue, which modern hosts reject.
 - **It is not Sony's binary.** It is the FSF release configured for the PlayStation. Sony's own
-  build isn't available; 2534 of the 2537 game functions match with this one.
+  build isn't available; every matched function builds byte for byte with this one.
 - **The host build:** Ubuntu 20.04's gcc 9.4.0-1ubuntu1~20.04.2 with libc6-dev-i386
   2.31-0ubuntu9.18, `-std=gnu89 -m32 -static` and no `-O`. So cc1 is a 32-bit x86 program and
   its floating point runs on the x87 FPU at Linux's default extended precision. That matters in
@@ -75,6 +75,21 @@ is how `check.sh` gets them.
     $GCC_ROOT/2.8.1-psx/cc1 -quiet -O2 -G0 -fno-builtin -o /dev/null build/sched/NAME.i'
   ```
 
+- **`keep-live.patch`** (toplev.c). Only in the function named by `CC1_KEEP_FUNC`:
+  `CC1_KEEP_USE=REG@UID[,REG@UID...]` puts `(use (reg REG))` before insn UID ahead of flow
+  analysis. The pseudo then stays live up to there for flow, combine and both allocators, and
+  no instruction is output for the USE. Take REG and UID from the `-df` dump of the same file.
+  `CC1_KEEP_LOG=SYMBOL` prints to stderr, after combine, each pseudo set to `(lo_sum X SYMBOL)`
+  (refs, sets, block or -2 for global, calls crossed, live length, the insns that mention it)
+  and each insn that still folds SYMBOL into its address; after global alloc it prints the hard
+  register each of those pseudos got. To test whether a hidden use is all a function lacks,
+  diff the build with one:
+
+  ```sh
+  DK_DOCKER_ARGS="-e CC1_KEEP_FUNC=NAME -e CC1_KEEP_USE=807@1915" \
+    tools/cc1/with.sh keeplive python3 tools/scripts/decomp.py try NAME --file F.c
+  ```
+
 ## Checked
 
 2026-10-25: `build.sh` rebuilds cc1, cpp, gcc, cc1plus and g++ byte-identical to the
@@ -106,3 +121,14 @@ plus an always-zero `(t * 60) & 3` added to the 60% (outside the divide) gives t
 refs instead of 9 (8333 against 7500), and the shipped cc1 byte-matches: `func_800B4048` is
 matched. Flow counts the use before combine drops it. Inside the divide the count is lost:
 combine folds the pseudo that carries it into a new one (the log still shows 9 refs).
+
+2026-10-25, a hidden use (`keeplive`, `--patch patches/keep-live.patch`): unset, it builds the
+whole game to `make check`'s checksums and `PlotTransmuterBeam`'s parked C to the same words as
+`/opt`. Its log shows the park's one diff: the spawn's base (pseudo 807, set by insn 1890) folds
+into the mode read. With `CC1_KEEP_USE=807@1915` (the join after the mode test) the parked C
+byte-matches retail, and so it does with the use at any insn from the test's two arms to the
+`InitDelete` call (1901-1949). Inside the test's own block (1896, 1897) the base stays local
+and local-alloc ties it to the `lui`'s register. After the `if (bx)` block (1956, 1973) it is 3
+registers off. So a later use that leaves no instruction was all the park lacked. The C that
+gives one is a test in an arm whose body flow finds dead, and whose load jump2 deletes
+(MATCHING.md, Diff patterns, the unfolded-base row). `PlotTransmuterBeam` is matched with it.

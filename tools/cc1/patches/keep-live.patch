@@ -1,0 +1,208 @@
+tools/cc1 analysis knob for toplev.c: CC1_KEEP_FUNC=NAME with CC1_KEEP_USE=REG@UID,...
+and CC1_KEEP_LOG=SYMBOL (comment in the patch). Unset, nothing changes.
+
+--- a/toplev.c
++++ b/toplev.c
+@@ -80,6 +80,7 @@
+ #include "bytecode.h"
+ #include "bc-emit.h"
+ #include "except.h"
++#include "regs.h"
+ 
+ #ifdef XCOFF_DEBUGGING_INFO
+ #include "xcoffout.h"
+@@ -2945,6 +2946,167 @@
+ #endif
+ }
+ 
++/* tools/cc1 analysis knob, not in the shipped cc1.  In the function named by
++   CC1_KEEP_FUNC only:
++   - CC1_KEEP_USE=REG@UID[,REG@UID...] puts (use (reg REG)) before insn UID
++     ahead of flow analysis, so the pseudo stays live up to there for flow,
++     combine and the allocators, and no instruction is output for it (UIDs
++     and pseudo numbers as in the -df dump);
++   - CC1_KEEP_LOG=SYMBOL prints to stderr, after combine, each pseudo set to
++     (lo_sum X SYMBOL) with its refs, sets, block (-2: global), calls
++     crossed, live length and the insns that mention it, and each insn
++     whose address still folds SYMBOL (lo_sum X SYMBOL+N); then, after
++     global alloc and reload, the hard register each of those pseudos got.
++   Unset, nothing changes.  */
++
++static int keep_live_regs[256];
++static int keep_live_nregs;
++
++static int
++keep_live_here ()
++{
++  extern char *getenv ();
++  char *func = getenv ("CC1_KEEP_FUNC");
++
++  return (func && current_function_name
++	  && ! strcmp (func, current_function_name));
++}
++
++static int
++keep_live_sym_p (x, sym)
++     rtx x;
++     char *sym;
++{
++  if (GET_CODE (x) == CONST && GET_CODE (XEXP (x, 0)) == PLUS)
++    x = XEXP (XEXP (x, 0), 0);
++  return GET_CODE (x) == SYMBOL_REF && ! strcmp (XSTR (x, 0), sym);
++}
++
++static int
++keep_live_folded_p (x, sym)
++     rtx x;
++     char *sym;
++{
++  char *fmt;
++  int i, j;
++
++  if (x == 0)
++    return 0;
++  if (GET_CODE (x) == MEM && GET_CODE (XEXP (x, 0)) == LO_SUM
++      && keep_live_sym_p (XEXP (XEXP (x, 0), 1), sym))
++    return 1;
++  fmt = GET_RTX_FORMAT (GET_CODE (x));
++  for (i = GET_RTX_LENGTH (GET_CODE (x)) - 1; i >= 0; i--)
++    {
++      if (fmt[i] == 'e' && keep_live_folded_p (XEXP (x, i), sym))
++	return 1;
++      if (fmt[i] == 'E')
++	for (j = XVECLEN (x, i) - 1; j >= 0; j--)
++	  if (keep_live_folded_p (XVECEXP (x, i, j), sym))
++	    return 1;
++    }
++  return 0;
++}
++
++static void
++keep_live_insert (insns)
++     rtx insns;
++{
++  extern char *getenv ();
++  extern long strtol ();
++  char *s = getenv ("CC1_KEEP_USE");
++  char *end;
++  rtx insn;
++  int regno, uid;
++
++  if (! s || ! keep_live_here ())
++    return;
++  while (*s)
++    {
++      regno = strtol (s, &end, 10);
++      if (*end != '@')
++	break;
++      uid = strtol (end + 1, &end, 10);
++      for (insn = insns; insn; insn = NEXT_INSN (insn))
++	if (INSN_UID (insn) == uid)
++	  break;
++      if (insn && regno >= FIRST_PSEUDO_REGISTER && regno < max_reg_num ())
++	{
++	  rtx use = emit_insn_before (gen_rtx (USE, VOIDmode,
++					       regno_reg_rtx[regno]), insn);
++	  fprintf (stderr, ";; keep-live %s: insn %d (use (reg %d)) before insn %d\n",
++		   current_function_name, INSN_UID (use), regno, uid);
++	}
++      else
++	fprintf (stderr, ";; keep-live %s: no insn %d or pseudo %d\n",
++		 current_function_name, uid, regno);
++      if (*end != ',')
++	break;
++      s = end + 1;
++    }
++}
++
++static void
++keep_live_log_combine (insns)
++     rtx insns;
++{
++  extern char *getenv ();
++  char *sym = getenv ("CC1_KEEP_LOG");
++  rtx insn, use, set;
++  int r;
++
++  keep_live_nregs = 0;
++  if (! sym || ! keep_live_here ())
++    return;
++  fprintf (stderr, ";; keep-live %s after combine: %s\n",
++	   current_function_name, sym);
++  for (insn = insns; insn; insn = NEXT_INSN (insn))
++    {
++      if (GET_RTX_CLASS (GET_CODE (insn)) != 'i')
++	continue;
++      set = single_set (insn);
++      if (set && GET_CODE (SET_DEST (set)) == REG
++	  && REGNO (SET_DEST (set)) >= FIRST_PSEUDO_REGISTER
++	  && GET_CODE (SET_SRC (set)) == LO_SUM
++	  && keep_live_sym_p (XEXP (SET_SRC (set), 1), sym))
++	{
++	  r = REGNO (SET_DEST (set));
++	  fprintf (stderr, ";;   base %d set by insn %d: refs %d sets %d block %d calls %d live %d; in insns",
++		   r, INSN_UID (insn), REG_N_REFS (r), REG_N_SETS (r),
++		   reg_n_info[r].basic_block, REG_N_CALLS_CROSSED (r),
++		   REG_LIVE_LENGTH (r));
++	  for (use = NEXT_INSN (insn); use; use = NEXT_INSN (use))
++	    if (GET_RTX_CLASS (GET_CODE (use)) == 'i'
++		&& reg_mentioned_p (SET_DEST (set), PATTERN (use)))
++	      fprintf (stderr, " %d", INSN_UID (use));
++	  fprintf (stderr, "\n");
++	  if (keep_live_nregs < 256)
++	    keep_live_regs[keep_live_nregs++] = r;
++	}
++      else if (keep_live_folded_p (PATTERN (insn), sym))
++	fprintf (stderr, ";;   folded in insn %d\n", INSN_UID (insn));
++    }
++}
++
++static void
++keep_live_log_global ()
++{
++  int i, r;
++
++  if (! keep_live_nregs)
++    return;
++  fprintf (stderr, ";; keep-live %s after global alloc:",
++	   current_function_name);
++  for (i = 0; i < keep_live_nregs; i++)
++    {
++      r = keep_live_regs[i];
++      fprintf (stderr, " %d=%s", r,
++	       reg_renumber[r] >= 0 ? reg_names[reg_renumber[r]] : "mem");
++    }
++  fprintf (stderr, "\n");
++  keep_live_nregs = 0;
++}
++
+ /* This is called from finish_function (within yyparse)
+    after each top-level definition is parsed.
+    It is supposed to compile that function or variable
+@@ -3372,6 +3534,7 @@
+       /* Do control and data flow analysis,
+ 	 and write some of the results to dump file.  */
+ 
++      keep_live_insert (insns);
+       TIMEVAR (flow_time, flow_analysis (insns, max_reg_num (),
+ 					 flow_dump_file));
+       if (warn_uninitialized)
+@@ -3395,6 +3558,9 @@
+ 
+   if (optimize > 0)
+     TIMEVAR (combine_time, combine_instructions (insns, max_reg_num ()));
++
++  if (optimize > 0)
++    keep_live_log_combine (insns);
+ 
+   /* Dump rtl code after insn combination.  */
+ 
+@@ -3490,6 +3656,8 @@
+ 	       if (! quiet_flag)
+ 		 fflush (global_reg_dump_file);
+ 	     });
++
++  keep_live_log_global ();
+ 
+   if (failure)
+     goto exit_rest_of_compilation;

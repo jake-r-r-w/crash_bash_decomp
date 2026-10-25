@@ -16,13 +16,11 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `main.exe` function matches and `main.c` is split (2026-10-23); Phase 2's
   naming and data are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2535/2537 game functions matched (99.03% of game code bytes, 2026-10-25):
-  **main.exe, the engine, ovl5d, ovl5e, ovl5f, ovl60, ovl61, ovl64, ovl65,
-  ovl66, ovl67, ovl68, ovl69 and ovl6a are complete**; 2 left (ovl62 1,
-  ovl63 1), both tried by the swarm at least once. All 564
-  PsyQ functions (Sony objects). The 2 left are both parked by hand,
-  `func_800BE914` and `PlotTransmuterBeam` (one instruction off) (Open
-  leads)
+- 2536/2537 game functions matched (99.93% of game code bytes, 2026-10-25):
+  **main.exe, the engine, ovl5d, ovl5e, ovl5f, ovl60, ovl61, ovl62, ovl64,
+  ovl65, ovl66, ovl67, ovl68, ovl69 and ovl6a are complete**; 1 left,
+  ovl63's `func_800BE914`, parked by hand (Open leads) after the swarm's
+  tries. All 564 PsyQ functions (Sony objects)
   (`decomp.py status`; the swarm parked 5, which the dashboard counts from
   `docs/swarm.js`). Matches are C only, natural C
   first (CONVENTIONS.md, Matching rules; the "hack" class was dropped on
@@ -59,24 +57,24 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**The overlays' last 2 functions**, both parked by hand, each with a lead
-(Open leads): `PlotTransmuterBeam`'s long-lived base and `func_800BE914`'s
-copies (its permuter run is unused). Each needs
-a new idea rather than another round of the usual tries. The plan since
-2026-10-25: prove the decision a park needs with an analysis variant of cc1
-(`tools/cc1/`, a from-source rebuild that is byte-identical to `/opt`'s),
-then search for the C that gives it. The host is ruled out: a variant at
-53-bit x87 precision changes no build of the game, the parks or 179 saved
-park variants (tools/cc1/README.md, Checked), so the parks are a source
-question. The method matched `func_800B4048` (2026-10-25): the `localtie`
-variant proved local-alloc's tie in its tail was the one decision left, and
-with the variant's log as the check, an always-zero term that flow counts
-and combine drops won the tie (MATCHING.md, Diff patterns, the
-`QTY_CMP_PRI` row). The same method next for the other two: a variant that
-forces the decision each park's note names, its log to check candidates,
-`cc1_compare.py` and `check.sh` to keep it honest. Inline shapes
-have been tried on both, with no match; only `PlotTransmuterBeam`'s
-case 1 steering became natural. `CheckMineToBoss` matched on 2026-10-25
+**The overlays' last function**, `func_800BE914`, parked by hand with a
+lead (Open leads): its copies (its permuter run is unused). It needs a new
+idea rather than another round of the usual tries. The method that matched
+the other two parks on 2026-10-25: prove the decision a park needs with an
+analysis variant of cc1 (`tools/cc1/`, a from-source rebuild that is
+byte-identical to `/opt`'s), then search for the C that gives it, with the
+variant as the check. `func_800B4048`'s `localtie` variant proved
+local-alloc's tie was the one decision left, and an always-zero term that
+flow counts and combine drops won it (MATCHING.md, Diff patterns, the
+`QTY_CMP_PRI` row). `PlotTransmuterBeam`'s `keeplive` variant proved a
+hidden later use of a base was all it lacked (a `(use (reg))` anywhere in
+a window byte-matched), and the use was a test whose body is dead, which
+jump2 deletes (the unfolded-base row). The host is ruled out: a variant at
+53-bit x87 precision changes no build. Next, the same for `func_800BE914`:
+a variant that forces the decision its park note names (keep each copy, or
+force its register), its log to check candidates, `cc1_compare.py` and
+`check.sh` to keep it honest. Inline shapes have been tried on it, with no
+match. `CheckMineToBoss` matched on 2026-10-25
 once loop.c's own numbers (`-dL`, "not worth while, X vs N") showed what
 its loops needed: read a park's `-dL` and `sched` numbers before trying
 shapes, and look for the natural form that moves them. Every swarm checkpoint
@@ -210,27 +208,6 @@ and current tools).
   the dumps by hand: it matched `func_800B8294` from the natural form after
   nine swarm sessions had stopped at 21-31 differing (MATCHING.md, Using the
   compiler directly).
-- **`PlotTransmuterBeam`'s last instruction** (parked 2026-10-24 at
-  structure 2310/2311, 316/317 blocks; the `decomp.py block` note lists what
-  was tried). At 0xc14 the target reads `TBV->mode` once through a base in
-  a1 (`lui v0; addiu a1,v0,%lo(D_8005A614); lh v1,0x34(a1)`), where any
-  single read folds into `lui; lh %lo(sym+0x34)`. The target's base was
-  live past the read until global alloc, through the second test, yet no
-  instruction uses it again. Passing it to `InitDelete` as a second argument
-  gives these three instructions, but no call argument can be the hidden
-  use: calls.c loads register arguments a0 first (MIPS has no
-  `PUSH_ROUNDING`), sched1 keeps the later a1 move at the call, and the a0
-  move drifts to the block top, taking a0 from `bx` (MATCHING.md, Diff
-  patterns, the unfolded-base row). Retried 2026-10-25 with inlines: a view
-  accessor or predicate with the view as a parameter doesn't keep it (with
-  both tests through the parameter, the first read matches but the second
-  reads through the base too), and every build compiles this spawn
-  identically. Next: a later use that survives global alloc and leaves no
-  instruction, other than a call argument (a copy into a pseudo that shares
-  a1, a store-back reload_cse deletes). Case 1's `one = 1` steering is gone:
-  the hit switch's cases 0-2 call an inline `TBSetHeroEffect(ext, i, k)`
-  (its argument copy gives kind 1 its own pseudo). Try shapes with `try
-  PlotTransmuterBeam --file` on a copy with the parked C enabled.
 - **Inlines explain steering that parks still use.** `Plot_PogoPadlock`
   (parked at registers 2/350) matched on 2026-10-25 once three of its
   hand-made shapes turned out to be inlined functions (MATCHING.md, Diff
@@ -248,7 +225,8 @@ and current tools).
   return copy is no help for a copy that has to survive cse or combine: they
   fold it like a plain one, as the retries of `func_800B4048` and
   `func_800BE914` showed. Nor does it help a pointer that must outlive its
-  one use (`PlotTransmuterBeam`'s base). The game was C++, so small helpers
+  one use (`PlotTransmuterBeam`'s base, which a dead test kept: MATCHING.md,
+  the unfolded-base row). The game was C++, so small helpers
   and accessors were likely inline.
 - **`func_800B4048`'s natural tail** (matched 2026-10-25 with two steering
   pieces, MATCHING.md Diff patterns): `t = v; v = (s32)Heroes;` keeps the
@@ -300,18 +278,6 @@ and current tools).
   register pair, as the swarm's struct does. Left: a construct that writes
   part of a register (a SUBREG destination) or a shift operand cse can't see
   through.
-- **Earlier compiles of the last functions** (PROTOTYPES.md, Earlier
-  compiles of a function, has the table). Each of the five biggest has a
-  build within a few instructions of retail's: Oct 9's `func_800BC038` (+1
-  insn) and `func_800B87A0` (-1), Sep 14's `PlotTransmuterBeam` (-12), Oct
-  9's `func_800B77E8` (-10), the older builds' `PlotUkaPolarMask` (-20).
-  All but `PlotTransmuterBeam` are matched. Next:
-  disassemble that copy (`decomp.py protos NAME` gives the address and the
-  entry offset), diff it against retail, and see whether the change sits
-  where the C still differs (done for `PlotTransmuterBeam`: the copies
-  differ only away from its last diff, but a build that adds code to a loop
-  shows how loop.c scored that loop; PROTOTYPES.md). `decomp.py protos
-  NAME --diff DISC` prints the aligned hunks.
 - **Finish the demo discs' symbols** (PROTOTYPES.md; applied: 135 function
   and 51 global names, unit `panel`, the Jampack enums, 43 prototypes, the
   leaked types and class names, 16 global types, 13 PANEL.CPP locals).
@@ -715,6 +681,17 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-25 (`PlotTransmuterBeam` matched, from the `keeplive`
+  variant):** new `tools/cc1/patches/keep-live.patch` puts `(use (reg N))`
+  before a chosen insn ahead of flow and logs a symbol's address pseudos
+  (refs, block, fold, register). With the spawn's base kept live past the
+  mode test, the parked C byte-matches from any insn in the test's two arms
+  to the `InitDelete` call. Unset, the variant builds the game identically.
+  The C: a dead test in the else arm, `if (TB_MODE13()) c++;` (`c` never
+  read), whose load jump2 deletes; any read through the view in either arm,
+  after the store, matches. ovl62 is complete; 1 park left. Diff patterns
+  row, tools/cc1/README.md.
 
 - **2026-10-25 (`func_800B4048` matched, from the local-alloc log):** with
   `CC1_LOCAL_LOG` as the check, the proved loop-top shape plus an
