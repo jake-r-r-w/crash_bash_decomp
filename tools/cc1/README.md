@@ -93,7 +93,7 @@ is how `check.sh` gets them.
     tools/cc1/with.sh keeplive python3 tools/scripts/decomp.py try NAME --file F.c
   ```
 
-- **`copy-split.patch`** (toplev.c, combine.c). Only in the function named by
+- **`copy-split.patch`** (toplev.c, combine.c, global.c). Only in the function named by
   `CC1_SPLIT_FUNC`: `CC1_SPLIT_INSNS=UID[,UID...]` gives the first pseudo operand of each listed
   insn's source a copy of its own ahead of flow (`(set (reg NEW) (reg X))` before the insn,
   which then reads NEW), and combine never combines those copies. They reach the allocators as
@@ -102,7 +102,10 @@ is how `check.sh` gets them.
   `CC1_SPLIT_LOG=1` prints each copy and the hard registers of X and NEW.
   `CC1_COPY_LOG=CODE:N` reports, after cse2 and again after combine, whether each such insn
   reads a register copy made in its block: the check for C that should keep one.
-  It builds with `keep-live.patch` too. To log a function's shifts:
+  `CC1_GLOBAL_LOG=1` prints global alloc's order with each pseudo's refs, live length,
+  priority and the register it got; `CC1_GLOBAL_FIRST=REG[,REG...]` moves those pseudos to the
+  front of that order, to test what an allocation needs. It builds with `keep-live.patch` too.
+  To log a function's shifts:
 
   ```sh
   tools/cc1/with.sh copysplit sh -c 'CC1_SPLIT_FUNC=NAME CC1_COPY_LOG=ashiftrt:8 \
@@ -161,3 +164,11 @@ does and `pb = r - d` comes before the last stores. `t = pa; pa = mb + ma; x = t
 the first copy in plain C, and that shape with the other three kept byte-matches too: those
 three copies are the only decision left. `CC1_COPY_LOG` showed every plain-C probe for them
 losing the copy in cse1 or cse2 (`decomp.py block` note).
+
+2026-10-25, the dead-branch steering for `func_800BE914`'s copies (`copysplit`, with the
+global-alloc knobs): a dead `if/else` between a copy and its shift keeps that copy, and with it
+for copies 1 and 2 and copies 3 and 4 forced the build byte-matches. For copies 3 and 4 it can't
+work. Their branches split the block between the two divisions, so the first quotient `q`
+becomes a global. local-alloc then puts the second division's unused remainder (a `divmodsi4`
+output that needs a register) in v1, and `q`, live across that division, loses v1 even when it
+is allocated first (`CC1_GLOBAL_FIRST`). Retail has `q` in v1 there, so its block wasn't split.

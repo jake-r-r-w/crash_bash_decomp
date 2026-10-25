@@ -296,3 +296,119 @@ CC1_SPLIT_INSNS=UID,... and CC1_SPLIT_LOG=1 (comment in the patch). Unset, nothi
    combine_attempts++;
  
    undobuf.undos = undobuf.previous_undos = 0;
+--- a/global.c
++++ b/global.c
+@@ -252,6 +252,10 @@
+ static HARD_REG_SET eliminable_regset;
+ 
+ static int allocno_compare	PROTO((const GENERIC_PTR, const GENERIC_PTR));
++static int copy_split_global_here	PROTO((void));
++static int copy_split_priority	PROTO((int));
++static void copy_split_global_order	PROTO((int *));
++static void copy_split_global_log	PROTO((int *));
+ static void global_conflicts	PROTO((void));
+ static void expand_preferences	PROTO((void));
+ static void prune_preferences	PROTO((void));
+@@ -548,6 +552,7 @@
+ 	}
+ 
+       qsort (allocno_order, max_allocno, sizeof (int), allocno_compare);
++      copy_split_global_order (allocno_order);
+       
+       prune_preferences ();
+ 
+@@ -572,6 +577,8 @@
+ 	    if (reg_alternate_class (allocno_reg[allocno_order[i]]) != NO_REGS)
+ 	      find_reg (allocno_order[i], HARD_CONST (0), 1, 0, 0);
+ 	  }
++
++      copy_split_global_log (allocno_order);
+     }
+ 
+   /* Do the reloads now while the allocno data still exist, so that we can
+@@ -585,6 +592,85 @@
+ 
+   free (conflicts);
+   return retval;
++}
++
++/* tools/cc1 copy-split knob, global alloc's part (in CC1_SPLIT_FUNC only):
++   CC1_GLOBAL_FIRST=REG[,REG...] moves those pseudos to the front of the
++   allocation order, in that order; CC1_GLOBAL_LOG=1 prints the order with
++   each pseudo's refs, live length and priority, and the hard register each
++   got.  Unset, nothing changes.  */
++
++static int
++copy_split_global_here ()
++{
++  extern char *getenv ();
++  char *func = getenv ("CC1_SPLIT_FUNC");
++
++  return (func && current_function_name
++	  && ! strcmp (func, current_function_name));
++}
++
++static int
++copy_split_priority (a)
++     int a;
++{
++  return (((double) (floor_log2 (allocno_n_refs[a]) * allocno_n_refs[a])
++	   / allocno_live_length[a])
++	  * 10000 * allocno_size[a]);
++}
++
++static void
++copy_split_global_order (order)
++     int *order;
++{
++  extern char *getenv ();
++  extern long strtol ();
++  char *s = getenv ("CC1_GLOBAL_FIRST");
++  char *end;
++  int pos = 0, i, j, r, a;
++
++  if (! s || ! copy_split_global_here ())
++    return;
++  while (*s)
++    {
++      r = strtol (s, &end, 10);
++      if (end == s)
++	break;
++      for (i = pos; i < max_allocno; i++)
++	if (allocno_reg[order[i]] == r)
++	  {
++	    a = order[i];
++	    for (j = i; j > pos; j--)
++	      order[j] = order[j - 1];
++	    order[pos++] = a;
++	    break;
++	  }
++      if (*end != ',')
++	break;
++      s = end + 1;
++    }
++}
++
++static void
++copy_split_global_log (order)
++     int *order;
++{
++  extern char *getenv ();
++  char *log = getenv ("CC1_GLOBAL_LOG");
++  int i, a, r;
++
++  if (! log || ! *log || ! strcmp (log, "0") || ! copy_split_global_here ())
++    return;
++  fprintf (stderr, ";; global-log %s:", current_function_name);
++  for (i = 0; i < max_allocno; i++)
++    {
++      a = order[i];
++      r = allocno_reg[a];
++      fprintf (stderr, " %d(%d/%d=%d)->%s", r, allocno_n_refs[a],
++	       allocno_live_length[a], copy_split_priority (a),
++	       reg_renumber[r] >= 0 ? reg_names[reg_renumber[r]] : "-");
++    }
++  fprintf (stderr, "\n");
+ }
+ 
+ /* Sort predicate for ordering the allocnos.

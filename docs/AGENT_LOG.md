@@ -270,11 +270,16 @@ and current tools).
   works for one copy: a dead `if (t) c++; else c--;` (unused `s16 c`)
   between the copy and its shift. Two jumps reach its join, so cse can't
   follow it; combine can't fold across it; jump2 deletes the empty branches.
-  With it for copy 2 and copies 3-4 forced, only the total's `addu` is out
-  of place. On all four copies it moves `az`/`bz` (48-61/170), so tune it a
-  copy at a time with the others forced. No matched function keeps such a
-  copy of a variable; its `move v0,sN; subu` hits are post-reload CSE
-  turning a constant into a copy of a register that holds it.
+  Tuned a copy at a time: dead branches for copies 1 and 2 byte-match with
+  3-4 forced, but copies 3-4 can't be done that way. Their branches split
+  the block between the two divisions, so `q` turns global, and local-alloc
+  then gives the second division's unused remainder (`divmodsi4`'s second
+  output) v1, which `q` needs across that division. Retail's `q` in v1
+  means that block was whole, so copies 3-4 came from something that keeps
+  a copy inside one block. The best all-steering C reaches registers 16/170
+  (park note). No matched function keeps such a copy of a variable; its
+  `move v0,sN; subu` hits are post-reload CSE turning a constant into a copy
+  of a register that holds it.
 - **Finish the demo discs' symbols** (PROTOTYPES.md; applied: 135 function
   and 51 global names, unit `panel`, the Jampack enums, 43 prototypes, the
   leaked types and class names, 16 global types, 13 PANEL.CPP locals).
@@ -682,6 +687,14 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-25 (`func_800BE914`: dead-branch steering tuned, still
+  parked):** copies 1 and 2 byte-match with dead branches (3-4 forced);
+  copies 3-4 can't, because their branches make `q` global and the second
+  division's unused remainder then takes v1 from it. Best all-C steering:
+  registers 16/170. New copysplit knobs `CC1_GLOBAL_LOG` (global alloc's
+  order, priorities, registers) and `CC1_GLOBAL_FIRST` (force a pseudo
+  first). A Diff patterns row, park note, Open lead, tools/cc1/README.md.
 
 - **2026-10-25 (`func_800BE914`: steering probes, still parked):** a dead
   `if/else` between a copy and its shift keeps that copy and leaves no code
