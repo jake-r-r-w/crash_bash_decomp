@@ -30,7 +30,7 @@ void PlotBigPoof(NAS *nas);
 void func_8008DDC0(NAS *nas);
 s32 func_8008DE8C(void);
 s32 SetHeroSeq(HeroInfo *hero, s32 seq);
-void SetHeroAction(HeroInfo *hero, s32 action);
+void SetHeroAction(s32 player, s32 action);
 void func_80086FA0(void);
 u8 *func_8008D24C(u8 *arg0, s32 *arg1);
 s32 func_80086FCC(s32 arg0);
@@ -136,7 +136,7 @@ static inline s32 HeroCheckStatus2000(s32 arg0) {
     s32 ret;
 
     if (Heroes[arg0].hero_status & 0x2000) {
-        SetHeroAction((HeroInfo *)arg0, (u16)D_8009E0E2);
+        SetHeroAction(arg0, (u16)D_8009E0E2);
         ret = 1;
     } else {
         ret = 0;
@@ -157,7 +157,7 @@ static inline s32 HeroCheckStatus600(s32 arg0) {
     if (temp_v1 & 0x400) {
         act = D_8009E0E6;
     call:
-        SetHeroAction((HeroInfo *)arg0, act);
+        SetHeroAction(arg0, act);
         ret = 1;
     } else {
         ret = 0;
@@ -176,9 +176,9 @@ static inline s32 HeroCheckMoving(s32 arg0) {
         if (h->hero_move->forward_speed != 0) {
             mode = h->hero_mode;
             if (mode == 0xF || mode == 0x17) {
-                SetHeroAction((HeroInfo *)arg0, (u16)D_8009E0DE);
+                SetHeroAction(arg0, (u16)D_8009E0DE);
             } else {
-                SetHeroAction((HeroInfo *)arg0, 3);
+                SetHeroAction(arg0, 3);
             }
             return 1;
         }
@@ -197,7 +197,7 @@ static inline s32 HeroCheckPad1000(s32 arg0) {
         return 0;
     }
     if (((PadButtons *)D_80051338)[arg0].unk50 & 0x1000) {
-        SetHeroAction((HeroInfo *)arg0, 2);
+        SetHeroAction(arg0, 2);
         ret = 1;
     } else {
         ret = 0;
@@ -216,9 +216,9 @@ static inline s32 HeroCheckStopped(s32 arg0) {
     if (h->hero_move->forward_speed == 0) {
         mode = h->hero_mode;
         if (mode == 0x10 || mode == 0x18) {
-            SetHeroAction((HeroInfo *)arg0, (u16)D_8009E0DC);
+            SetHeroAction(arg0, (u16)D_8009E0DC);
         } else {
-            SetHeroAction((HeroInfo *)arg0, 0);
+            SetHeroAction(arg0, 0);
         }
         return 1;
     }

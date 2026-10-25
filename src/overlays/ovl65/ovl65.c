@@ -1893,7 +1893,7 @@ void func_800B7664(void) {
                 h->hero_score = sc;
             }
             h->hero_score_displayed = h->hero_score;
-            SetHeroAction((HeroInfo *)i, 0x63);
+            SetHeroAction(i, 0x63);
         }
         i++;
     }
@@ -2674,7 +2674,7 @@ void func_800B9C10(s32 id) {
         func_800BA810(id);
         func_8008502C(id);
         if ((Heroes[id].hero_status & 0x200) && Heroes[id].hero_mode != 0x68) {
-            SetHeroAction((HeroInfo *)id, 0x68);
+            SetHeroAction(id, 0x68);
         }
     }
 }
@@ -2738,11 +2738,11 @@ void func_800BA468(s32 id) {
         ((PadButtons *)D_80051338)[id].unk50 = 0;
         ((PadButtons *)D_80051338)[id].unk54 = 0;
         if (ext->unkC-- < 0) {
-            SetHeroAction((HeroInfo *)id, 0x63);
+            SetHeroAction(id, 0x63);
         }
         func_8008502C(id);
         if ((Heroes[id].hero_status & 0x200) && Heroes[id].hero_mode != 0x68) {
-            SetHeroAction((HeroInfo *)id, 0x68);
+            SetHeroAction(id, 0x68);
         }
     }
 }
@@ -2791,7 +2791,7 @@ void func_800BA724(s32 id) {
     func_800BC774(id);
     func_8008502C(id);
     if ((Heroes[id].hero_status & 0x200) && Heroes[id].hero_mode != 0x68) {
-        SetHeroAction((HeroInfo *)id, 0x68);
+        SetHeroAction(id, 0x68);
     }
 }
 
@@ -2805,7 +2805,7 @@ s32 func_800BA810(s32 arg0) {
             b = FindExtension(a->unk18, 0x10000000);
             if (b != NULL && b->unk10 == arg0) {
                 if (((Ovl65Pad *)D_80051338)[arg0].unk50 & 0x8000) {
-                    SetHeroAction((HeroInfo *)arg0, 0x65);
+                    SetHeroAction(arg0, 0x65);
                     b->unkC = 2;
                     a->unk14 = 0;
                     return 1;
@@ -2816,7 +2816,7 @@ s32 func_800BA810(s32 arg0) {
         if (a->unk10 <= 0) {
             if (((Ovl65Pad *)D_80051338)[arg0].unk50 & 0x8000) {
                 a->unk10 = 0x1E;
-                SetHeroAction((HeroInfo *)arg0, 0x66);
+                SetHeroAction(arg0, 0x66);
                 return 1;
             }
         }
@@ -2897,9 +2897,9 @@ s32 func_800BA960(s32 hero) {
                                     x1->unkC = 5;
                                 }
                             }
-                            SetHeroAction((HeroInfo *)hero, 0x67);
+                            SetHeroAction(hero, 0x67);
                             do {
-                                SetHeroAction((HeroInfo *)i, 0x63);
+                                SetHeroAction(i, 0x63);
                             } while (0);
                         }
                         if (o->hero_mode != 0x67 && me->hero_mode == 0x66) {
@@ -2909,8 +2909,8 @@ s32 func_800BA960(s32 hero) {
                                     x->unkC = 5;
                                 }
                             }
-                            SetHeroAction((HeroInfo *)i, 0x67);
-                            SetHeroAction((HeroInfo *)hero, 0x63);
+                            SetHeroAction(i, 0x67);
+                            SetHeroAction(hero, 0x63);
                         }
                         d = dist + 2;
                         eng->unk10.x -= (d * D_80068BD4[(ang - 0x400) & 0xFFF].unk2) >> 12;
@@ -3477,7 +3477,7 @@ s32 func_800BC774(s32 arg0) {
     if ((csqrt(Heroes[arg0].hero_move->x_vel * Heroes[arg0].hero_move->x_vel +
                Heroes[arg0].hero_move->z_vel * Heroes[arg0].hero_move->z_vel) >> 6) < 0x20) {
         if (Heroes[arg0].hero_mode != 0x63) {
-            SetHeroAction((HeroInfo *)arg0, 0x63);
+            SetHeroAction(arg0, 0x63);
         }
         return 1;
     }
@@ -3488,7 +3488,7 @@ s32 func_800BC820(s32 arg0) {
     if (((PadButtons *)D_80051338)[arg0].unk50 & 0xF0) {
         return 0;
     }
-    SetHeroAction((HeroInfo *)arg0, 0x63);
+    SetHeroAction(arg0, 0x63);
     return 1;
 }
 
@@ -3496,7 +3496,7 @@ s32 func_800BC878(s32 arg0) {
     if (!(((PadButtons *)D_80051338)[arg0].unk50 & 0xF0)) {
         return 0;
     }
-    SetHeroAction((HeroInfo *)arg0, 0x64);
+    SetHeroAction(arg0, 0x64);
     return 1;
 }
 
@@ -3504,7 +3504,7 @@ void func_800BC8D0(s32 arg0) {
     func_800BA960(arg0);
     func_8008502C(arg0);
     if ((Heroes[arg0].hero_status & 0x200) && Heroes[arg0].hero_mode != 0x68) {
-        SetHeroAction((HeroInfo *)arg0, 0x68);
+        SetHeroAction(arg0, 0x68);
     }
 }
 
@@ -3534,7 +3534,7 @@ void func_800BCA38(s32 arg0) {
     func_800BA810(arg0);
     func_8008502C(arg0);
     if ((Heroes[arg0].hero_status & 0x200) && Heroes[arg0].hero_mode != 0x68) {
-        SetHeroAction((HeroInfo *)arg0, 0x68);
+        SetHeroAction(arg0, 0x68);
     }
 }
 
@@ -3554,7 +3554,7 @@ void func_800BCAC0(s32 arg0) {
 }
 
 void func_800BCB4C(s32 arg0) {
-    SetHeroAction((HeroInfo *)arg0, 0x63);
+    SetHeroAction(arg0, 0x63);
     Heroes[arg0].hero_eng->unk1E = 0;
     Heroes[arg0].hero_eng->unk5E = 1;
     Heroes[arg0].hero->Camera.height = 0x600;
@@ -3697,7 +3697,7 @@ void func_800BCF88(s32 arg0) {
 s32 func_800BD01C(s32 id) {
     if (Heroes[id].hero_status & 0x200) {
         if (Heroes[id].hero_mode != 0x68) {
-            SetHeroAction((HeroInfo *)id, 0x68);
+            SetHeroAction(id, 0x68);
         }
         return 1;
     }

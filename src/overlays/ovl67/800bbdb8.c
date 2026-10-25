@@ -367,7 +367,7 @@ void func_800BC9B4(s32 *arg0, s32 arg1) {
                 AstSfx();
                 if ((BGV->unk4 & 0x80000001) != 0x80000001 && Heroes[1].hero_mode != 0x31) {
                     Heroes[1].hero_health -= MineDamage(BGV) >> 2;
-                    SetHeroAction((HeroInfo *)1, 0x31);
+                    SetHeroAction(1, 0x31);
                 }
             } else if ((g->unk4 & 0x80000001) != 0x80000001) {
                 b->unk10 = 1;
@@ -375,7 +375,7 @@ void func_800BC9B4(s32 *arg0, s32 arg1) {
                 AstSfx();
                 if (Heroes[1].hero_mode != 0x31) {
                     Heroes[1].hero_health -= MineDamage(BGV);
-                    SetHeroAction((HeroInfo *)1, 0x31);
+                    SetHeroAction(1, 0x31);
                 }
             }
         }
@@ -491,7 +491,7 @@ void func_800BD6E8(s32 *arg0, s32 arg1) {
             if ((g2->unk4 & 0x80000001) != 0x80000001 && h2[1].hero_mode != 0x31) {
                 dmg = MineDamage(g2);
                 Heroes[1].hero_health -= dmg;
-                SetHeroAction((HeroInfo *)1, 0x31);
+                SetHeroAction(1, 0x31);
             }
             }
         }
@@ -1195,7 +1195,7 @@ void PlotNitroMine(NAS *nas) {
         MineBurst(nas);
         if ((((BossGameView *)D_8005A614)->unk4 & 0x80000001) != 0x80000001 && Heroes[0].hero_mode != 0x31) {
             Heroes[0].hero_health -= MineDamage((BossGameView *)D_8005A614) >> 2;
-            SetHeroAction((HeroInfo *)0, 0x31);
+            SetHeroAction(0, 0x31);
         }
         MineSfxV();
         goto kill;
@@ -1209,7 +1209,7 @@ void PlotNitroMine(NAS *nas) {
             if ((((BossGameView *)D_8005A614)->unk4 & 0x80000001) != 0x80000001
                 && !(Heroes[1].hero_status & 0x2000) && Heroes[1].hero_mode != 0x31) {
                 Heroes[1].hero_health -= MineDamage((BossGameView *)D_8005A614) >> 2;
-                SetHeroAction((HeroInfo *)1, 0x31);
+                SetHeroAction(1, 0x31);
             }
             MineSfxH();
             goto kill;
@@ -1333,7 +1333,7 @@ void PlotNitroMissile(NAS *nas) {
             }
             if (Heroes[ext->unk14].hero_mode != 0x31) {
                 Heroes[ext->unk14].hero_health -= MineDamage(g) >> 2;
-                SetHeroAction((HeroInfo *)ext->unk14, 0x31);
+                SetHeroAction(ext->unk14, 0x31);
             }
         }
         goto kill;
@@ -1715,7 +1715,7 @@ void PlotSpiralSat(NAS *nas) {
                 }
                 if ((((BossGameView *)D_8005A614)->unk4 & 0x80000001) != 0x80000001 && Heroes[0].hero_mode != 0x30) {
                     extern int SetHeroAction();
-                    ((void (*)(HeroInfo *, s32))SetHeroAction)((HeroInfo *)0, 0x30);
+                    ((void (*)(s32, s32))SetHeroAction)(0, 0x30);
                 }
                 goto kill;
             }
@@ -1739,7 +1739,7 @@ void PlotSpiralSat(NAS *nas) {
                     }
                     if ((((BossGameView *)D_8005A614)->unk4 & 0x80000001) != 0x80000001
                         && !(Heroes[1].hero_status & 0x2000) && Heroes[1].hero_mode != 0x30) {
-                        SetHeroAction((HeroInfo *)1, 0x30);
+                        SetHeroAction(1, 0x30);
                     }
                     goto kill;
                 }
@@ -2145,7 +2145,7 @@ s32 func_800C2D10(s32 arg0) {
 
     if (hero->hero_status & 0x200) {
         if (hero->hero_mode != 0x32) {
-            SetHeroAction((HeroInfo *)arg0, 0x32);
+            SetHeroAction(arg0, 0x32);
         }
         return 1;
     }
@@ -2163,7 +2163,7 @@ void func_800C2D80(s32 arg0) {
         h->hero_health = 0;
         act = 0x30;
     }
-    SetHeroAction((HeroInfo *)arg0, act);
+    SetHeroAction(arg0, act);
 }
 
 void func_800C2DD8(s32 arg0) {

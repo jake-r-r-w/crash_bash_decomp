@@ -327,10 +327,10 @@ extern s32 D_8005A680[];
 static inline s32 Ovl62EndAction(s32 player) {
     if (Heroes[player].hero_mode == 0x4C) {
         if (!(Heroes[player].hero_status & 0x200)) {
-            SetHeroAction((HeroInfo *)player, 0x4E);
+            SetHeroAction(player, 0x4E);
         }
     } else if (!(Heroes[player].hero_status & 0x200) && Heroes[player].hero_mode != 0x4E) {
-        SetHeroAction((HeroInfo *)player, 0x4E);
+        SetHeroAction(player, 0x4E);
     }
     return 0;
 }
@@ -1166,7 +1166,7 @@ static inline s32 PolarMissileHitHero(SLONG_XYZ *pos) {
         if (!(h->hero_mode & 0x2000)
             && func_8008CEB0((u8 *)pos, (u8 *)&h->hero_eng->unk10) < 0x7BC4) {
             if (h->hero_mode != 0x4B) {
-                SetHeroAction((HeroInfo *)i, 0x4B);
+                SetHeroAction(i, 0x4B);
             }
             PlaySfx(0x43D, NULL, NULL, 0x1000, 0x1E00, 0);
             return i;

@@ -1226,7 +1226,7 @@ s32 func_800B6108(Ovl63Barrel *b) {
                     PlaySfx(0x664, NULL, NULL, 0x1000, 0x1E00, 0);
                 }
                 if (Heroes[i].hero_mode != 0x5D) {
-                    SetHeroAction((HeroInfo *)i, 0x5D);
+                    SetHeroAction(i, 0x5D);
                 }
             }
             hit = 1;
@@ -2650,7 +2650,7 @@ void func_800B980C(s32 player) {
                             (G63->unk34 == 0x1A ? 0xA90000 : 0x900000);
                     }
                     if (hit && Heroes[player].hero_mode != 0x61) {
-                        SetHeroAction((HeroInfo *)player, 0x61);
+                        SetHeroAction(player, 0x61);
                     }
                 }
                 b++;
@@ -3057,7 +3057,7 @@ void func_800BAFC8(s32 player) {
             f->unk140 = 0;
         }
         if (func_800C467C((Ovl63BounceObj *)h->hero_eng, &f->bounce) != 0 && ++f->unk88 >= 2) {
-            SetHeroAction((HeroInfo *)player, 0x5B);
+            SetHeroAction(player, 0x5B);
             if (G63B->unk34 == 0x18 && G63B->unk5C[player] == 0 && (G63B->unk32 & 0x80)) {
                 PlaySfx(0x66A, NULL, NULL, 0x1000, 0x1E00, 0);
             }
@@ -3176,7 +3176,7 @@ void func_800BB878(s32 player) {
     }
     h->hero_eng->unk10.y = 0;
     if (++f->unk40 > 20) {
-        SetHeroAction((HeroInfo *)player, 0x5B);
+        SetHeroAction(player, 0x5B);
         if (D_8005A648 == 0x19) {
             SetHeroSeq((HeroInfo *)player, 0x52);
         }
@@ -3305,7 +3305,7 @@ void func_800BC0A4(s32 arg0) {
         Heroes[arg0].hero_eng->unk1C += 0x80;
     }
     if (fux->unkC-- < 0) {
-        SetHeroAction((HeroInfo *)arg0, 0x5B);
+        SetHeroAction(arg0, 0x5B);
     }
 }
 
@@ -3366,7 +3366,7 @@ void func_800BC4B0(s32 player) {
     }
     if (fux->phase == 1 && Ovl63JumpAbove(player)) {
         Heroes[player].hero_eng->unk10.y -= abs(D_800C6930 - Heroes[player].hero_eng->unk10.y);
-        SetHeroAction((HeroInfo *)player, 0x5B);
+        SetHeroAction(player, 0x5B);
     }
 }
 
@@ -3396,7 +3396,7 @@ void func_800BC6C8(s32 arg0) {
         move->x_vel = 0;
         move->z_vel = 0;
         if (fux->unk24 < -0xF) {
-            SetHeroAction((HeroInfo *)arg0, 0x5B);
+            SetHeroAction(arg0, 0x5B);
             hero->hero_frozen = 0;
         }
     } else {
@@ -3430,7 +3430,7 @@ void func_800BC7C4(s32 arg0) {
     eng = hero->hero_eng;
     t = ext->unk14[0]--;
     if (t < 0) {
-        SetHeroAction((HeroInfo *)arg0, 0x5B);
+        SetHeroAction(arg0, 0x5B);
         return;
     }
     pos = &eng->unk10;
@@ -3569,7 +3569,7 @@ s32 func_800BCC20(s32 arg0) {
         pad = &base[arg0];
         if (pad->unk54 & 0x4000) {
 act:
-            SetHeroAction((HeroInfo *)arg0, 0x5E);
+            SetHeroAction(arg0, 0x5E);
             return 1;
         }
         pad->unk50 &= ~0x4000;
@@ -3587,7 +3587,7 @@ s32 func_800BCD1C(s32 arg0) {
         return 0;
     }
     if (hero->hero_mode != 0x60) {
-        SetHeroAction((HeroInfo *)arg0, 0x60);
+        SetHeroAction(arg0, 0x60);
     }
     return 1;
 }
@@ -4122,7 +4122,7 @@ s32 func_800BEBC0(s32 player)
         if (((mode != 0x61) && (mode != 0x5D)) && (Heroes[player].hero_mode != 0x5D))
         {
           PlaySfx(0x654, 0, 0, 0x1000, 0x1E00, 0);
-          SetHeroAction((HeroInfo *) player, 0x5D);
+          SetHeroAction(player, 0x5D);
         }
       }
 
@@ -4167,7 +4167,7 @@ s32 func_800BF0F8(u8 *arg0, u32 arg1) {
             }
             if (d < 0x24000) {
                 if (Heroes[i].hero_mode != 0x5D) {
-                    SetHeroAction((HeroInfo *)i, 0x5D);
+                    SetHeroAction(i, 0x5D);
                 }
                 if (G63B->unk34 == 0x17 && (G63B->unk32 & 0x80) && G63B->unk5C[i] == 0 && !(G63B->unk30 & 0x801)) {
                     f = 1;
@@ -4985,7 +4985,7 @@ void PlotTNTCrate(NAS *nas) {
             if (i < 4) {
                 if (func_8008CEB0((u8 *)&nas->Engine->unk10, (u8 *)&h->hero_eng->unk10) < 0x40000 &&
                     h->hero_mode != 0x5D) {
-                    SetHeroAction((HeroInfo *)i, 0x5D);
+                    SetHeroAction(i, 0x5D);
                 }
                 h++;
                 i++;
@@ -5276,7 +5276,7 @@ loop2:
                 }
             }
             if (h->hero_mode != 0x5D) {
-                SetHeroAction((HeroInfo *)i, 0x5D);
+                SetHeroAction(i, 0x5D);
             }
             fux->unkC = 0x78;
             PlaySfx(0x466, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -5494,7 +5494,7 @@ void PlotRaceVolcano(NAS *nas) {
                     }
                     if (Ovl63DistSq(&ext->eng[n]->unk10, &Heroes[j].hero_eng->unk10) < 0x27100) {
                         if (Heroes[j].hero_mode != 0x5D) {
-                            SetHeroAction((HeroInfo *)j, 0x5D);
+                            SetHeroAction(j, 0x5D);
                         }
                         Ovl63SpawnPuff(&ext->eng[n]->unk10, 1, NULL);
                         ext->eng[n]->sub->flags &= ~0x8000;
@@ -5614,7 +5614,7 @@ s32 func_800C310C(SLONG_XYZ *pos) {
         if (dx * dx + dz * dz + dy * dy < 0x90000) {
             if (Heroes[i].hero_mode != 0x61) {
                 if (Heroes[i].hero_mode != 0x5D) {
-                    SetHeroAction((HeroInfo *)i, 0x5D);
+                    SetHeroAction(i, 0x5D);
                 }
                 if (MODE63->flags & 0x80) {
                     if (MODE63->unk5C[i] != 0) {
@@ -5799,7 +5799,7 @@ void PlotTrackGlob(NAS *nas) {
                 dz = nas->Engine->unk10.z - h->hero_eng->unk10.z;
                 if (dx * dx + dz * dz < 0x10000) {
                     if (h->hero_mode != 0x5D) {
-                        SetHeroAction((HeroInfo *)i, 0x5D);
+                        SetHeroAction(i, 0x5D);
                     }
                     KillNAS(nas);
                     return;
@@ -5831,7 +5831,7 @@ void PlotTrackGlob(NAS *nas) {
                 if ((nas->Engine->unk10.x - h->hero_eng->unk10.x) * (nas->Engine->unk10.x - h->hero_eng->unk10.x) +
                         (nas->Engine->unk10.z - h->hero_eng->unk10.z) * (nas->Engine->unk10.z - h->hero_eng->unk10.z) < 0x10000) {
                     if (h->hero_mode != 0x5D) {
-                        SetHeroAction((HeroInfo *)i, 0x5D);
+                        SetHeroAction(i, 0x5D);
                     }
                     KillNAS(nas);
                     return;
@@ -5980,7 +5980,7 @@ void PlotDac(NAS *nas) {
         if (dd + dy * dy < 0x40000) {
             PlaySfx(0x6A1, NULL, NULL, 0x1000, 0x1E00, 0);
             if (base[ext->player].hero_mode != 0x5D) {
-                SetHeroAction((HeroInfo *)ext->player, 0x5D);
+                SetHeroAction(ext->player, 0x5D);
             }
             ext->height = -0x600;
             ext->state = 0;
@@ -6269,7 +6269,7 @@ loop:
     if (i < 4) {
         if (func_8008CEB0(arg0, (u8 *)hero->hero_eng + 0x10) < 0x6184) {
             if (hero->hero_mode != 0x5D) {
-                SetHeroAction((HeroInfo *)i, 0x5D);
+                SetHeroAction(i, 0x5D);
             }
             return i;
         }
@@ -6406,7 +6406,7 @@ s32 func_800C5400(s32 arg0) {
 
     if (hero->hero_status & 0x200) {
         if (hero->hero_mode != 0x62) {
-            SetHeroAction((HeroInfo *)arg0, 0x62);
+            SetHeroAction(arg0, 0x62);
         }
         return 1;
     }
@@ -6442,7 +6442,7 @@ s32 func_800C554C(s32 arg0) {
     if (((Ovl63Pad *)D_80051338)[arg0].unk50 & 0xF0) {
         return 0;
     }
-    SetHeroAction((HeroInfo *)arg0, 0x5B);
+    SetHeroAction(arg0, 0x5B);
     return 1;
 }
 
@@ -6450,7 +6450,7 @@ s32 func_800C55A4(s32 arg0) {
     if (!(((Ovl63Pad *)D_80051338)[arg0].unk54 & 0x8000)) {
         return 0;
     }
-    SetHeroAction((HeroInfo *)arg0, 0x5C);
+    SetHeroAction(arg0, 0x5C);
     return 1;
 }
 
@@ -6544,7 +6544,7 @@ void func_800C5854(s32 *arg0, s32 *arg1)
 }
 
 void func_800C5918(s32 arg0) {
-    SetHeroAction((HeroInfo *)arg0, 0x5B);
+    SetHeroAction(arg0, 0x5B);
     Heroes[arg0].hero_eng->unk1E = 0;
     Heroes[arg0].hero_eng->unk5E = 1;
 }

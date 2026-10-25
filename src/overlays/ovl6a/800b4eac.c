@@ -28,7 +28,7 @@ void func_800B4EAC(void) {
     if (G6A->unk34 == 0x22) {
         func_800B6E20();
     }
-    SetHeroAction(NULL, 0);
+    SetHeroAction(0, 0);
     size = D_800BCBDC[hero->hero_name];
     eng->unk2C.z = size;
     eng->unk2C.y = size;
@@ -391,7 +391,7 @@ void func_800B5710(s32 arg0) {
             n = func_800B694C();
             if (n >= 0 && ((s32(*)(s32))func_8007A6D0)(n & 0xFFFF) == 1) {
                 func_800B7FAC(n);
-                SetHeroAction(NULL, 1);
+                SetHeroAction(0, 1);
                 if (Heroes[0].hero_shadow != NULL) {
                     Heroes[0].hero_shadow->flags &= ~0x8000;
                 }
@@ -428,7 +428,7 @@ void func_800B5710(s32 arg0) {
             }
             func_800B7E14(&Heroes[0].hero_eng->unk10.x, 9);
             func_800B7FAC(D_800BCCF4[D_8005A677].unk14->unk4);
-            SetHeroAction(NULL, 1);
+            SetHeroAction(0, 1);
             if (Heroes[0].hero_shadow != NULL) {
                 Heroes[0].hero_shadow->flags &= ~0x8000;
             }
@@ -441,7 +441,7 @@ void func_800B5710(s32 arg0) {
             break;
         case 4:
             func_800B7E14(&Heroes[0].hero_eng->unk10.x, 9);
-            SetHeroAction(NULL, 1);
+            SetHeroAction(0, 1);
             if (Heroes[0].hero_shadow != NULL) {
                 Heroes[0].hero_shadow->flags &= ~0x8000;
             }

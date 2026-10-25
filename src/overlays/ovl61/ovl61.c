@@ -838,7 +838,7 @@ void AR_InitHero(u32 arg0) {
     if (e->unk10.z < -0x880) {
         e->unk10.z = -0x880;
     }
-    SetHeroAction((HeroInfo *)arg0, 0x1C);
+    SetHeroAction(arg0, 0x1C);
     b = Heroes;
     g = b + arg0;
     a = D_8004E0D8;
@@ -1256,7 +1256,7 @@ chk:
             if (Heroes[arg0].hero_attack_timer == 0) {
                 act = 0x1F;
 call:
-                SetHeroAction((HeroInfo *)arg0, act);
+                SetHeroAction(arg0, act);
                 return 1;
             }
             p->unk4C &= ~0x8000;
@@ -1376,7 +1376,7 @@ static inline s32 HeroCheckPad54(s32 arg0) {
         return 0;
     }
     if (((PadButtons *)D_80051338)[arg0].unk54 & 0x1000) {
-        SetHeroAction((HeroInfo *)arg0, 0x1E);
+        SetHeroAction(arg0, 0x1E);
         ret = 1;
     } else {
         ret = 0;
@@ -1390,13 +1390,13 @@ static inline s32 HeroCheckStatus2600(s32 arg0) {
 
     st = Heroes[arg0].hero_status;
     if (st & 0x200) {
-        SetHeroAction((HeroInfo *)arg0, 0x22);
+        SetHeroAction(arg0, 0x22);
         ret = 1;
     } else if (st & 0x2000) {
-        SetHeroAction((HeroInfo *)arg0, 0x24);
+        SetHeroAction(arg0, 0x24);
         ret = 1;
     } else if (st & 0x400) {
-        SetHeroAction((HeroInfo *)arg0, 0x23);
+        SetHeroAction(arg0, 0x23);
         ret = 1;
     } else {
         ret = 0;
@@ -1432,7 +1432,7 @@ void ArkHeroIdle(u32 arg0) {
             if (h2->hero_move->forward_speed != 0) {
                 mode = h2->hero_mode;
                 if (mode != 0x1F && mode != 0x21) {
-                    SetHeroAction((HeroInfo *)arg0, 0x1D);
+                    SetHeroAction(arg0, 0x1D);
                 }
             }
         }
@@ -1487,13 +1487,13 @@ void ArkHeroTaunt(u32 arg0) {
 
     st = Heroes[arg0].hero_status;
     if (st & 0x200) {
-        SetHeroAction((HeroInfo *)arg0, 0x22);
+        SetHeroAction(arg0, 0x22);
         ret = 1;
     } else if (st & 0x2000) {
-        SetHeroAction((HeroInfo *)arg0, 0x24);
+        SetHeroAction(arg0, 0x24);
         ret = 1;
     } else if (st & 0x400) {
-        SetHeroAction((HeroInfo *)arg0, 0x23);
+        SetHeroAction(arg0, 0x23);
         ret = 1;
     } else {
         ret = 0;
@@ -1505,7 +1505,7 @@ void ArkHeroTaunt(u32 arg0) {
         if (h->hero_move->forward_speed != 0) {
             mode = h->hero_mode;
             if (mode != 0x1F && mode != 0x21) {
-                SetHeroAction((HeroInfo *)arg0, 0x1D);
+                SetHeroAction(arg0, 0x1D);
             }
         }
         func_8008502C(arg0);
@@ -1521,13 +1521,13 @@ void ArkHeroMove(u32 arg0) {
 
     st = Heroes[arg0].hero_status;
     if (st & 0x200) {
-        SetHeroAction((HeroInfo *)arg0, 0x22);
+        SetHeroAction(arg0, 0x22);
         ret = 1;
     } else if (st & 0x2000) {
-        SetHeroAction((HeroInfo *)arg0, 0x24);
+        SetHeroAction(arg0, 0x24);
         ret = 1;
     } else if (st & 0x400) {
-        SetHeroAction((HeroInfo *)arg0, 0x23);
+        SetHeroAction(arg0, 0x23);
         ret = 1;
     } else {
         ret = 0;
@@ -1539,7 +1539,7 @@ void ArkHeroMove(u32 arg0) {
         if (h->hero_move->forward_speed == 0) {
             mode = h->hero_mode;
             if (mode != 0x1F && mode != 0x21) {
-                SetHeroAction((HeroInfo *)arg0, 0x1C);
+                SetHeroAction(arg0, 0x1C);
             }
         }
         if (func_800B649C(arg0) != 0) {
@@ -1810,7 +1810,7 @@ void ArkHeroKick(u32 arg0) {
     base2 = Heroes;
     base2[arg0].hero_attack_counter++;
     if (base2[arg0].hero_attack_counter >= 4) {
-        SetHeroAction((HeroInfo *)arg0, 0x1C);
+        SetHeroAction(arg0, 0x1C);
         if (s != 0) {
             s->flags &= 0xFFFF7FFF;
         }
@@ -1857,7 +1857,7 @@ void ArkHeroRedKick(u32 arg0) {
     cnt = h->hero_attack_counter + 1;
     h->hero_attack_counter = cnt;
     if (cnt >= 4) {
-        SetHeroAction((HeroInfo *)arg0, 0x1C);
+        SetHeroAction(arg0, 0x1C);
         if (s != NULL) {
             s->flags &= 0xFFFF7FFF;
         }
@@ -1915,7 +1915,7 @@ void ArkHeroGrab(u32 arg0) {
     } else {
         FreeGrabbedObject(arg0, 0);
 act:
-        SetHeroAction((HeroInfo *)arg0, 0x1C);
+        SetHeroAction(arg0, 0x1C);
         if (s != NULL) {
             s->flags &= 0xFFFF7FFF;
         }
@@ -1979,10 +1979,10 @@ void ArkHeroDead(u32 arg0) {
 
     st = Heroes[arg0].hero_status;
     if (st & 0x200) {
-        SetHeroAction((HeroInfo *)arg0, 0x22);
+        SetHeroAction(arg0, 0x22);
         ret = 1;
     } else if (st & 0x400) {
-        SetHeroAction((HeroInfo *)arg0, 0x23);
+        SetHeroAction(arg0, 0x23);
         ret = 1;
     } else {
         ret = 0;
@@ -5062,7 +5062,7 @@ s32 func_800BE4D4(s32 arg0, EXTengine *unused) {
                     D_800C1F14 |= 8;
                 }
                 ((void (*)(s32, s32, s32))func_80027F7C)(arg0, 0xC, 0xFF);
-                SetHeroAction((HeroInfo *)arg0, 0x25);
+                SetHeroAction(arg0, 0x25);
                 return 0;
             }
         } else {
@@ -5739,7 +5739,7 @@ void ArkHeroDie(u32 arg0) {
     if (h->hero_hit != 0) {
         h->hero_hit--;
     } else {
-        SetHeroAction((HeroInfo *)arg0, 0x25);
+        SetHeroAction(arg0, 0x25);
     }
     func_8008502C(arg0);
 }
@@ -5777,7 +5777,7 @@ s32 func_800C05B8(s32 arg0) {
             return 0;
         }
     }
-    SetHeroAction((HeroInfo *)arg0, act);
+    SetHeroAction(arg0, act);
     return 1;
 }
 
@@ -5795,7 +5795,7 @@ s32 func_800C0624(s32 arg0) {
     } else {
         return 0;
     }
-    SetHeroAction((HeroInfo *)arg0, act);
+    SetHeroAction(arg0, act);
     return 1;
 }
 

@@ -139,7 +139,7 @@ void func_800C02D4(s32 arg0) {
         }
         if (m != 0) {
         action:
-            SetHeroAction((HeroInfo *)arg0, (u16)D_8009E0E0);
+            SetHeroAction(arg0, (u16)D_8009E0E0);
             return;
         }
     }
@@ -152,7 +152,7 @@ none:
     if (s != NULL) {
         s->flags &= ~0x8000;
     }
-    SetHeroAction((HeroInfo *)arg0, 0);
+    SetHeroAction(arg0, 0);
     return;
 rest:
     if (func_8008ACF0(arg0) == 0) {
@@ -205,12 +205,12 @@ void func_800C05A8(s32 arg0) {
     }
     if ((o->can_do & 4) && (((PadButtons *)D_80051338)[arg0].unk50 & 0x2000)) {
     action:
-        SetHeroAction((HeroInfo *)arg0, (u16)D_8009E0E0);
+        SetHeroAction(arg0, (u16)D_8009E0E0);
         return;
     }
     goto rest;
 none:
-    SetHeroAction((HeroInfo *)arg0, 0);
+    SetHeroAction(arg0, 0);
     return;
 rest:
     if (func_8008AC74(arg0) == 0) {
@@ -360,7 +360,7 @@ void func_800C0BAC(s32 arg0) {
                 Heroes[arg0].hero_eng->unk10.y = World_floor_level;
             }
         } else {
-            SetHeroAction((HeroInfo *)arg0, (u16)D_8009E0E2);
+            SetHeroAction(arg0, (u16)D_8009E0E2);
             if (h->hero_powerup->sfx != NULL) {
                 StopSfx(h->hero_powerup->sfx);
             }

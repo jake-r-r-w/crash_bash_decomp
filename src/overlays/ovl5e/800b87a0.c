@@ -857,12 +857,12 @@ void func_800BA958(s32 arg0) {
             goto rest;
         }
         if ((o->can_do & 4) && (((PadButtons *)D_80051338)[arg0].unk50 & 0x2000)) {
-            SetHeroAction((HeroInfo *)arg0, (u16)D_8009E0E0);
+            SetHeroAction(arg0, (u16)D_8009E0E0);
             return;
         }
         goto rest;
         }
-        SetHeroAction((HeroInfo *)arg0, 0);
+        SetHeroAction(arg0, 0);
         return;
     rest:
         {
@@ -914,12 +914,12 @@ void func_800BABA0(s32 arg0) {
             goto rest;
         }
         if ((o->can_do & 4) && (((PadButtons *)D_80051338)[arg0].unk50 & 0x2000)) {
-            SetHeroAction((HeroInfo *)arg0, (u16)D_8009E0E0);
+            SetHeroAction(arg0, (u16)D_8009E0E0);
             return;
         }
         goto rest;
         }
-        SetHeroAction((HeroInfo *)arg0, 0);
+        SetHeroAction(arg0, 0);
         return;
     rest:
         {

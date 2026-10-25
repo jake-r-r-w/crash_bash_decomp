@@ -368,7 +368,7 @@ void func_800B3E74(s32 i) {
     hb2 = Heroes;
     h2 = hb2 + i;
     func_80026B70((u8 **)&D_800C4080, (u8 *)h2->hero);
-    SetHeroAction((HeroInfo *)i, 0x2F);
+    SetHeroAction(i, 0x2F);
     h2->hero_eng->unk10.y = -0x480;
     h2->hero_weapon_count = one;
     if (i == 0) {
@@ -469,7 +469,7 @@ void func_800B4138(s32 i) {
     } else {
         Heroes[i].hero_eng->unk10.z = -0x2200;
     }
-    SetHeroAction((HeroInfo *)i, 0x26);
+    SetHeroAction(i, 0x26);
     Heroes[i].hero_weapon_count = 1;
 }
 
@@ -753,7 +753,7 @@ void func_800B4CE0(s32 arg0) {
             *D_800C43D8 &= 0xFFFF7FFF;
         }
         h->hero_eng->unk10.z = -0xA00;
-        SetHeroAction((HeroInfo *)arg0, 0x27);
+        SetHeroAction(arg0, 0x27);
         h->hero_sub->unk74 = 0x2003;
     }
 }
@@ -771,10 +771,10 @@ void func_800B4E30(s32 arg0) {
     }
     st = Heroes[arg0].hero_status;
     if (st & 0x200) {
-        SetHeroAction((HeroInfo *)arg0, 0x2C);
+        SetHeroAction(arg0, 0x2C);
         ret = 1;
     } else if (st & 0x2000) {
-        SetHeroAction((HeroInfo *)arg0, 0x2D);
+        SetHeroAction(arg0, 0x2D);
         ret = 1;
     } else {
         ret = 0;
@@ -786,14 +786,14 @@ void func_800B4E30(s32 arg0) {
             if (Heroes[arg0].hero_attack_timer != 0) {
                 pad->unk4C &= ~0x8000;
             } else {
-                SetHeroAction((HeroInfo *)arg0, 0x2B);
+                SetHeroAction(arg0, 0x2B);
             }
         }
         hb = Heroes;
         h = hb + arg0;
         if (h->hero_move->forward_speed != 0 &&
             ((mode = h->hero_mode, (s32)mode < 0x2C) == 0 || (s32)mode < 0x2A)) {
-            SetHeroAction((HeroInfo *)arg0, 0x28);
+            SetHeroAction(arg0, 0x28);
         }
     }
 }
@@ -807,7 +807,7 @@ void func_800B4FA4(s32 arg0) {
         StopSfx(h->hero_eng->sfx);
     }
     func_800B4954(arg0);
-    SetHeroAction((HeroInfo *)arg0, 0x27);
+    SetHeroAction(arg0, 0x27);
     h->hero_idle_count = Random(0x96) + 0xB4;
     s = h->hero_sub;
     s = s->next;
@@ -826,10 +826,10 @@ void func_800B5064(s32 arg0) {
 
     st = Heroes[arg0].hero_status;
     if (st & 0x200) {
-        SetHeroAction((HeroInfo *)arg0, 0x2C);
+        SetHeroAction(arg0, 0x2C);
         r = 1;
     } else if (st & 0x2000) {
-        SetHeroAction((HeroInfo *)arg0, 0x2D);
+        SetHeroAction(arg0, 0x2D);
         r = 1;
     } else {
         r = 0;
@@ -841,7 +841,7 @@ void func_800B5064(s32 arg0) {
             if (Heroes[arg0].hero_attack_timer != 0) {
                 pad->unk4C &= ~0x8000;
             } else {
-                SetHeroAction((HeroInfo *)arg0, 0x2B);
+                SetHeroAction(arg0, 0x2B);
             }
         }
         func_8008502C(arg0);
@@ -858,10 +858,10 @@ void func_800B5168(s32 arg0) {
 
     st = Heroes[arg0].hero_status;
     if (st & 0x200) {
-        SetHeroAction((HeroInfo *)arg0, 0x2C);
+        SetHeroAction(arg0, 0x2C);
         ret = 1;
     } else if (st & 0x2000) {
-        SetHeroAction((HeroInfo *)arg0, 0x2D);
+        SetHeroAction(arg0, 0x2D);
         ret = 1;
     } else {
         ret = 0;
@@ -873,14 +873,14 @@ void func_800B5168(s32 arg0) {
             if (Heroes[arg0].hero_attack_timer != 0) {
                 pad->unk4C &= ~0x8000;
             } else {
-                SetHeroAction((HeroInfo *)arg0, 0x2B);
+                SetHeroAction(arg0, 0x2B);
             }
         }
         hb = Heroes;
         h = hb + arg0;
         if (h->hero_move->forward_speed != 0 &&
             ((mode = h->hero_mode, (s32)mode < 0x2C) == 0 || (s32)mode < 0x2A)) {
-            SetHeroAction((HeroInfo *)arg0, 0x28);
+            SetHeroAction(arg0, 0x28);
         }
         func_8008502C(arg0);
     }
@@ -896,10 +896,10 @@ void func_800B52CC(s32 arg0) {
 
     st = Heroes[arg0].hero_status;
     if (st & 0x200) {
-        SetHeroAction((HeroInfo *)arg0, 0x2C);
+        SetHeroAction(arg0, 0x2C);
         ret = 1;
     } else if (st & 0x2000) {
-        SetHeroAction((HeroInfo *)arg0, 0x2D);
+        SetHeroAction(arg0, 0x2D);
         ret = 1;
     } else {
         ret = 0;
@@ -911,14 +911,14 @@ void func_800B52CC(s32 arg0) {
             if (Heroes[arg0].hero_attack_timer != 0) {
                 pad->unk4C &= ~0x8000;
             } else {
-                SetHeroAction((HeroInfo *)arg0, 0x2B);
+                SetHeroAction(arg0, 0x2B);
             }
         }
         hb = Heroes;
         h = hb + arg0;
         if (h->hero_move->forward_speed == 0 &&
             ((mode = h->hero_mode, (s32)mode < 0x2C) == 0 || (s32)mode < 0x2A)) {
-            SetHeroAction((HeroInfo *)arg0, 0x27);
+            SetHeroAction(arg0, 0x27);
         }
         if (func_800B4AD8(arg0) != 0) {
             func_8008502C(arg0);
@@ -1068,7 +1068,7 @@ void func_800B5838(s32 arg0) {
     base2 = Heroes;
     base2[arg0].hero_attack_counter++;
     if (base2[arg0].hero_attack_counter >= 4) {
-        SetHeroAction((HeroInfo *)arg0, 0x27);
+        SetHeroAction(arg0, 0x27);
         if (s != 0) {
             s->flags &= 0xFFFF7FFF;
         }
@@ -1132,7 +1132,7 @@ void func_800B5B14(s32 arg0) {
 
     st = Heroes[arg0].hero_status;
     if (st & 0x200) {
-        SetHeroAction((HeroInfo *)arg0, 0x2C);
+        SetHeroAction(arg0, 0x2C);
         ret = 1;
     } else {
         ret = 0;
@@ -3096,7 +3096,7 @@ s32 func_800B9CB8(s32 arg0, EXTengine *unused) {
                 hero->hero_score = 0;
                 hero->hero_health = 0;
                 ((void (*)(s32, s32, s32))func_80027F7C)(arg0, 0xC, 0xFF);
-                SetHeroAction((HeroInfo *)arg0, 0x2E);
+                SetHeroAction(arg0, 0x2E);
             }
             KillNAS(nas);
             return 0;
@@ -3730,7 +3730,7 @@ void func_800BB6BC(s32 arg0) {
     if (h->hero_hit != 0) {
         h->hero_hit--;
     } else {
-        SetHeroAction((HeroInfo *)arg0, 0x2E);
+        SetHeroAction(arg0, 0x2E);
     }
     func_8008502C(arg0);
 }
@@ -3773,7 +3773,7 @@ void func_800BB86C(s32 arg0) {
 
 s32 func_800BB8EC(s32 arg0) {
     if (Heroes[arg0].hero_status & 0x200) {
-        SetHeroAction((HeroInfo *)arg0, 0x2C);
+        SetHeroAction(arg0, 0x2C);
         return 1;
     }
     return 0;
@@ -3790,7 +3790,7 @@ s32 func_800BB944(s32 arg0) {
             return 0;
         }
     }
-    SetHeroAction((HeroInfo *)arg0, act);
+    SetHeroAction(arg0, act);
     return 1;
 }
 
@@ -3800,7 +3800,7 @@ s32 func_800BB9B0(s32 arg0) {
 
     if (pad->dirPressed & 0x8000) {
         if (Heroes[arg0].hero_attack_timer == 0) {
-            SetHeroAction((HeroInfo *)arg0, 0x2B);
+            SetHeroAction(arg0, 0x2B);
             return 1;
         }
         pad->dirHeld &= 0xFFFF7FFF;

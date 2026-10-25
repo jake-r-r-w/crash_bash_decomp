@@ -218,7 +218,7 @@ typedef struct Ovl63BounceObj {
 void func_800C5204(EXTheromove *a, EXTheromove *b);
 
 extern HeroInfo Heroes[4];
-void SetHeroAction(HeroInfo *hero, s32 action);
+void SetHeroAction(s32 player, s32 action);
 s32 func_8008C4C8(s32 *arg0, s32 arg1);
 s32 func_8008CEB0(u8 *arg0, u8 *arg1);
 
@@ -574,7 +574,7 @@ loop:
         } while (0);
         if (dist < 0x6184) {
             if (hero->hero_mode != 0x5D) {
-                SetHeroAction((HeroInfo *)i, 0x5D);
+                SetHeroAction(i, 0x5D);
             }
             return i;
         }

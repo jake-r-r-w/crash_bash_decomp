@@ -145,7 +145,7 @@ void func_800B8550(s32 arg0);
 /* Inline copy of func_800B8E08. */
 static inline s32 Ovl66StopInline(s32 arg0) {
     if (Heroes[arg0].hero_move->forward_speed == 0) {
-        SetHeroAction((HeroInfo *)arg0, 0x40);
+        SetHeroAction(arg0, 0x40);
         return 1;
     }
     return 0;

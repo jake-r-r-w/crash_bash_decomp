@@ -282,11 +282,13 @@ and current tools).
   N' --all`), PAL/JP retail differ only by dropping the division checks,
   and reload adds no copies (`ashrsi3` has no tied operands). The permuter
   run is still unused: the natural shape is a structure-stage base.
-- **`SetHeroAction` takes a hero index, not a pointer.** Its body does
-  `base + (s32)hero` and ARCHITECTURE.md lists it as `SetHeroAction(player,
-  action)`, but it is declared `HeroInfo *hero` (no leak declares it), so
-  321 calls cast an index: `SetHeroAction((HeroInfo *)i, 0x4F)`. Declare it
-  `s32 player` and drop the casts in one commit, checked with `make check`.
+- **`SetHeroSeq` takes a hero index, not a pointer.** Its body does
+  `base + (s32)hero`, but it is declared `HeroInfo *hero`, so 134 calls cast
+  an index: `SetHeroSeq((HeroInfo *)arg0, 0x59)`. `SetHeroAction` had the
+  same slip and is `s32 player` since 2026-10-25 (its casts dropped in one
+  commit, `make check` OK); do the same here. `PlotSpiralSat`'s one cast
+  call of `SetHeroAction` stays: its file has no prototype in scope, and
+  the cast makes that call void so jump2 can't merge it with the others.
 - **Earlier compiles of the last functions** (PROTOTYPES.md, Earlier
   compiles of a function, has the table). Each of the five biggest has a
   build within a few instructions of retail's: Oct 9's `func_800BC038` (+1

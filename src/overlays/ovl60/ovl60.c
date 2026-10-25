@@ -1043,7 +1043,7 @@ bool TestHeroPogo(u32 arg0) {
                 return 0;
             }
             if (PogoAI_IsSquareOKForPlayer(arg0, x, z, 0, 0, 0) != 0) {
-                SetHeroAction((HeroInfo *)arg0, 0x3A);
+                SetHeroAction(arg0, 0x3A);
                 h->hero_move->forward_speed = 0;
                 return 1;
             }
@@ -1130,7 +1130,7 @@ void HeroPogo(u32 arg0) {
         if (TestHeroPogoTied(arg0) != 0) {
             return;
         }
-        SetHeroAction((HeroInfo *)arg0, 0x39);
+        SetHeroAction(arg0, 0x39);
     }
     switch (Heroes[arg0].hero_name) {
     case 1:
@@ -1303,7 +1303,7 @@ void HeroPogoTazing(u32 arg0) {
     if (--D_800C535C[arg0].unk6 <= 0) {
         Heroes[arg0].hero_frozen = 0;
         HeroPogoTazingCancel(arg0);
-        SetHeroAction((HeroInfo *)arg0, 0x39);
+        SetHeroAction(arg0, 0x39);
     }
     func_800871E4(arg0);
 }
@@ -1472,7 +1472,7 @@ bool TestHeroPogoDazed(u32 arg0) {
             break;
         }
     }
-    SetHeroAction((HeroInfo *)arg0, 0x3B);
+    SetHeroAction(arg0, 0x3B);
     if ((u32)x < 8 && z >= 0 && z < 8) {
         Ovl60Cell *cb = D_800C53DC[0];
         c = (Ovl60Cell *)(z * sizeof(Ovl60Cell) + x * sizeof(D_800C53DC[0]) + (u32)cb);
@@ -1547,7 +1547,7 @@ void HeroPogoDazed(u32 arg0) {
     }
     if ((u32)s->unk8[1] > 0x32) {
         h->hero_status &= ~0x800;
-        SetHeroAction((HeroInfo *)arg0, 0x39);
+        SetHeroAction(arg0, 0x39);
     }
     if (s->flags & 1) {
         eng = h->hero_eng;
@@ -3007,7 +3007,7 @@ spawn:
         } while (0);
     } while (0);
     if (D_800C535C[arg0].unk4 == 5 && Heroes[arg0].hero_aseq == 0x2F) {
-        SetHeroAction((HeroInfo *)arg0, 0x39);
+        SetHeroAction(arg0, 0x39);
     }
     if (D_800C535C[arg0].unk4 == 6) {
         PogoFour_UnfreezeMyTiles(arg0);
@@ -3087,7 +3087,7 @@ next_sub:
             if (hit) {
                 Player_SetDazed(i);
                 if (slot->unk4 == 5 && h->hero_aseq == 0x2F) {
-                    SetHeroAction((HeroInfo *)i, 0x39);
+                    SetHeroAction(i, 0x39);
                 }
                 if (slot->unk4 == 6) {
                     PogoFour_UnfreezeMyTiles(i);
@@ -3750,7 +3750,7 @@ void Fire_Rocket(s32 arg0, s32 arg1) {
         eng = Heroes[arg0].hero_eng;
         PlaySfx(0x522, &eng->sfx, &eng->unk10, 0x1000, 0x1E00, 0);
         if (D_800C535C[arg0].unk4 == 5 && Heroes[arg0].hero_aseq == 0x2F) {
-            SetHeroAction((HeroInfo *)arg0, 0x39);
+            SetHeroAction(arg0, 0x39);
         }
         if (D_800C535C[arg0].unk4 == 6) {
             PogoFour_UnfreezeMyTiles(arg0);
@@ -3788,7 +3788,7 @@ void Fire_RocketFourWays(s32 arg0, s32 arg1) {
     }
     PlaySfx(0x43C, NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
     if (D_800C535C[arg0].unk4 == 5 && h->hero_aseq == 0x2F) {
-        SetHeroAction((HeroInfo *)arg0, 0x39);
+        SetHeroAction(arg0, 0x39);
     }
     base = D_800C535C;
     slot = &base[arg0];
@@ -3943,7 +3943,7 @@ void Plot_PogoProjectile(NAS *arg0) {
                             do {
                                 do {
                                     if (((Ovl60Slot *)(off + (u32)base))->unk4 == 5 && h->hero_aseq == 0x2F) {
-                                        SetHeroAction((HeroInfo *)i, 0x39);
+                                        SetHeroAction(i, 0x39);
                                     }
                                 } while (0);
                             } while (0);
@@ -6368,7 +6368,7 @@ s32 arg0;
     Ovl60Slot *slot;
 
     if (D_800C535C[arg0].unk4 == 5 && Heroes[arg0].hero_aseq == 0x2F) {
-        SetHeroAction((HeroInfo *)arg0, 0x39);
+        SetHeroAction(arg0, 0x39);
     }
     base = D_800C535C;
     slot = &base[arg0];
@@ -6735,7 +6735,7 @@ bool TestHeroPogoTied(u32 arg0) {
         if (D_800C535C[arg0].nas != NULL) {
             HeroPogoTazingCancel(arg0);
         }
-        SetHeroAction((HeroInfo *)arg0, 0x3E);
+        SetHeroAction(arg0, 0x3E);
         SetHeroSeq((HeroInfo *)arg0, 0x2E);
         return 1;
     }
@@ -6747,7 +6747,7 @@ bool TestHeroPogoLoser(u32 arg0) {
         if (D_800C535C[arg0].nas != NULL) {
             HeroPogoTazingCancel(arg0);
         }
-        SetHeroAction((HeroInfo *)arg0, 0x3D);
+        SetHeroAction(arg0, 0x3D);
         SetHeroSeq((HeroInfo *)arg0, 0x2E);
         return 1;
     }
@@ -6773,7 +6773,7 @@ bool TestHeroPogoWinner(u32 arg0) {
         if (D_800C535C[arg0].nas != NULL) {
             HeroPogoTazingCancel(arg0);
         }
-        SetHeroAction((HeroInfo *)arg0, 0x3C);
+        SetHeroAction(arg0, 0x3C);
         SetHeroSeq((HeroInfo *)arg0, 0x32);
         return 1;
     }
@@ -6833,7 +6833,7 @@ bool TestHeroPogoShoot(u32 arg0) {
             break;
         case 3:
             if (Fire_Tazer(arg0, 0) != 0) {
-                SetHeroAction((HeroInfo *)arg0, 0x3F);
+                SetHeroAction(arg0, 0x3F);
                 return 1;
             }
             break;
@@ -6990,7 +6990,7 @@ void POGO_InitHero(u32 arg0) {
     p->unk4 = 0;
     p->nas = NULL;
     D_800C53CC[arg0] = 5;
-    SetHeroAction((HeroInfo *)arg0, 0x39);
+    SetHeroAction(arg0, 0x39);
     PogoAI_InitHero(arg0);
 }
 

@@ -376,9 +376,9 @@ s32 func_800C6B9C(s32 id, s32 x, s32 z, s32 angle);
 
 s32 func_800C7D44(s32 flags, Ovl5fHolder *a, Ovl5fPos *b);
 
-void func_800C7E68(HeroInfo *hero, Ovl5fActObj *obj, s32 arg2);
+void func_800C7E68(s32 player, Ovl5fActObj *obj, s32 arg2);
 
-void func_800C7EB0(HeroInfo *hero, Ovl5fActState *state, s32 arg2);
+void func_800C7EB0(s32 player, Ovl5fActState *state, s32 arg2);
 
 
 void SetHullSFX(s32 player, EXTengine *pEngine, s32 ReqdSFX);

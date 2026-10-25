@@ -925,7 +925,7 @@ void func_800B58B0(void) {
     CAM5F->h58 = 0;
     CAM5F->w10 = 0x90;
     for (i = 0; i < 4; i++) {
-        SetHeroAction((HeroInfo *)i, 0x6C);
+        SetHeroAction(i, 0x6C);
     }
     for (i = 2; i >= 0; i--) {
         D_800CAD44[i] = NULL;
@@ -1173,7 +1173,7 @@ void func_800B6354(s32 player, s32 damage) {
     if (D_8005A648 == 9 && (u32)(player - 2) < 2) {
         SetMoeJoeMode(player, 0x69);
     } else {
-        SetHeroAction((HeroInfo *)player, 0x69);
+        SetHeroAction(player, 0x69);
     }
     if (D_8005A614[player + 0x5C] != 0 || (((Ovl5fGameView *)D_8005A614)->w4 & 0x80000001) != 0x80000001) {
         ta->Energy -= damage;
@@ -1223,7 +1223,7 @@ void TA_InitHero(u32 player) {
     eng = h->hero_eng;
     eng->unk10.x = (eng->unk10.x + 0x80) & ~0xFF;
     eng->unk10.z = (eng->unk10.z + 0x80) & ~0xFF;
-    SetHeroAction((HeroInfo *)player, 0x6C);
+    SetHeroAction(player, 0x6C);
     func_80018F3C(eng, 2);
     sub = eng->sub;
     eng->unk5D = 1;
@@ -2018,7 +2018,7 @@ void SetTankHeroIdle(u32 player) {
         D_800CB0F0 = -1;
     }
     if ((Heroes[player].hero_status & 0x200) && Heroes[player].hero_mode != 0x70) {
-        SetHeroAction((HeroInfo *)player, 0x70);
+        SetHeroAction(player, 0x70);
         D_800CB0F0 = player + 1;
         done = 1;
     } else {
@@ -2057,7 +2057,7 @@ void SetTankHeroTurn(u32 player) {
         D_800CB0F0 = -1;
     }
     if ((Heroes[player].hero_status & 0x200) && Heroes[player].hero_mode != 0x70) {
-        SetHeroAction((HeroInfo *)player, 0x70);
+        SetHeroAction(player, 0x70);
         D_800CB0F0 = player + 1;
         done = 1;
     } else {
@@ -2076,7 +2076,7 @@ void TankHeroTurn(u32 player) {
         D_800CB0F0 = -1;
     }
     if ((Heroes[player].hero_status & 0x200) && Heroes[player].hero_mode != 0x70) {
-        SetHeroAction((HeroInfo *)player, 0x70);
+        SetHeroAction(player, 0x70);
         D_800CB0F0 = player + 1;
         done = 1;
     } else {
@@ -2101,7 +2101,7 @@ void TankHeroTurn(u32 player) {
         sub->unk12 += ta->ModeSpeed;
         sub->unk52 = 1;
         if (--ta->ModeCounter == 0) {
-            SetHeroAction((HeroInfo *)player, 0x6E);
+            SetHeroAction(player, 0x6E);
             switch (ta->MoveDir) {
             case 2:
                 if (((PadButtons *)D_80051338)[player].unk50 & 0x10) {
@@ -2481,7 +2481,7 @@ void TankHeroMove(u32 player) {
         D_800CB0F0 = -1;
     }
     if ((Heroes[player].hero_status & 0x200) && Heroes[player].hero_mode != 0x70) {
-        SetHeroAction((HeroInfo *)player, 0x70);
+        SetHeroAction(player, 0x70);
         D_800CB0F0 = player + 1;
         done = 1;
     } else {
@@ -2534,13 +2534,13 @@ void TankHeroMove(u32 player) {
             if ((pad & 0x20) && x != 0xF00 && Ovl5fMapCell(x + 0x100, z) == 0) {
                 switch (ta->MoveDir) {
                 case 0:
-                    SetHeroAction((HeroInfo *)player, 0x6F);
+                    SetHeroAction(player, 0x6F);
                     ta->ModeSpeed = -0x80;
                     ta->ModeCounter = 8;
                     ta->MoveDir = 3;
                     return;
                 case 2:
-                    SetHeroAction((HeroInfo *)player, 0x6F);
+                    SetHeroAction(player, 0x6F);
                     ta->ModeSpeed = 0x80;
                     ta->ModeCounter = 8;
                     ta->MoveDir = 3;
@@ -2559,13 +2559,13 @@ void TankHeroMove(u32 player) {
                     ta->MoveDir = 1;
                     return;
                 case 0:
-                    SetHeroAction((HeroInfo *)player, 0x6F);
+                    SetHeroAction(player, 0x6F);
                     ta->ModeSpeed = 0x80;
                     ta->ModeCounter = 8;
                     ta->MoveDir = 1;
                     return;
                 case 2:
-                    SetHeroAction((HeroInfo *)player, 0x6F);
+                    SetHeroAction(player, 0x6F);
                     ta->ModeSpeed = -0x80;
                     ta->ModeCounter = 8;
                     ta->MoveDir = 1;
@@ -2577,7 +2577,7 @@ void TankHeroMove(u32 player) {
                 case 2:
                     break;
                 case 1:
-                    SetHeroAction((HeroInfo *)player, 0x6F);
+                    SetHeroAction(player, 0x6F);
                     ta->ModeSpeed = 0x80;
                     ta->ModeCounter = 8;
                     ta->MoveDir = 2;
@@ -2586,7 +2586,7 @@ void TankHeroMove(u32 player) {
                     ta->MoveDir = 2;
                     return;
                 case 3:
-                    SetHeroAction((HeroInfo *)player, 0x6F);
+                    SetHeroAction(player, 0x6F);
                     ta->ModeSpeed = -0x80;
                     ta->ModeCounter = 8;
                     ta->MoveDir = 2;
@@ -2597,13 +2597,13 @@ void TankHeroMove(u32 player) {
                 (off = ta->Speed + 0x100, Ovl5fMapCell(x, z - off) == 0)) {
                 switch (ta->MoveDir) {
                 case 1:
-                    SetHeroAction((HeroInfo *)player, 0x6F);
+                    SetHeroAction(player, 0x6F);
                     ta->ModeSpeed = -0x80;
                     ta->ModeCounter = 8;
                     ta->MoveDir = 0;
                     return;
                 case 3:
-                    SetHeroAction((HeroInfo *)player, 0x6F);
+                    SetHeroAction(player, 0x6F);
                     ta->ModeSpeed = 0x80;
                     ta->ModeCounter = 8;
                     ta->MoveDir = 0;
@@ -2729,7 +2729,7 @@ void SetTankHeroRecoil(u32 player) {
         D_800CB0F0 = -1;
     }
     if ((Heroes[player].hero_status & 0x200) && Heroes[player].hero_mode != 0x70) {
-        SetHeroAction((HeroInfo *)player, 0x70);
+        SetHeroAction(player, 0x70);
         D_800CB0F0 = player + 1;
         done = 1;
     } else {
@@ -2761,9 +2761,9 @@ void TankHeroRecoil(u32 arg0) {
     eng->sub->next->next->unk08 = -eng->unk10.y / 2;
     if (func_8008502C(arg0) != 0) {
         if (h->hero_status & 0x2000) {
-            SetHeroAction((HeroInfo *)arg0, 0x6A);
+            SetHeroAction(arg0, 0x6A);
         } else {
-            SetHeroAction((HeroInfo *)arg0, h->hero_last_mode);
+            SetHeroAction(arg0, h->hero_last_mode);
             SetHeroSeq((HeroInfo *)arg0, 0x59);
         }
     }
@@ -2827,7 +2827,7 @@ void TankHeroDie(u32 arg0) {
         D_800CB0F0 = -1;
     }
     if ((Heroes[arg0].hero_status & 0x200) && Heroes[arg0].hero_mode != 0x70) {
-        SetHeroAction((HeroInfo *)arg0, 0x70);
+        SetHeroAction(arg0, 0x70);
         D_800CB0F0 = arg0 + 1;
         ok = 1;
     } else {
@@ -2854,7 +2854,7 @@ void TankHeroDie(u32 arg0) {
             }
         }
         PlaySfx(0x4F0, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
-        SetHeroAction((HeroInfo *)arg0, 0x6B);
+        SetHeroAction(arg0, 0x6B);
     }
 }
 
@@ -8553,7 +8553,7 @@ void SetTankHeroMinelay(u32 arg0) {
         D_800CB0F0 = -1;
     }
     if ((Heroes[arg0].hero_status & 0x200) && Heroes[arg0].hero_mode != 0x70) {
-        SetHeroAction((HeroInfo *)arg0, 0x70);
+        SetHeroAction(arg0, 0x70);
         D_800CB0F0 = arg0 + 1;
     }
 }
@@ -8588,7 +8588,7 @@ void SetTankHeroMove(u32 arg0) {
         D_800CB0F0 = -1;
     }
     if ((Heroes[arg0].hero_status & 0x200) && Heroes[arg0].hero_mode != 0x70) {
-        SetHeroAction((HeroInfo *)arg0, 0x70);
+        SetHeroAction(arg0, 0x70);
         D_800CB0F0 = arg0 + 1;
         ok = 1;
     } else {
@@ -8599,22 +8599,22 @@ void SetTankHeroMove(u32 arg0) {
     }
 }
 
-void func_800C7E68(HeroInfo *hero, Ovl5fActObj *obj, s32 arg2) {
-    SetHeroAction(hero, 0x6F);
+void func_800C7E68(s32 player, Ovl5fActObj *obj, s32 arg2) {
+    SetHeroAction(player, 0x6F);
     obj->unk54 = -0x80;
     obj->unk50 = 8;
     obj->unk8 = arg2;
 }
 
-void func_800C7EB0(HeroInfo *hero, Ovl5fActState *state, s32 arg2) {
-    SetHeroAction(hero, 0x6F);
+void func_800C7EB0(s32 player, Ovl5fActState *state, s32 arg2) {
+    SetHeroAction(player, 0x6F);
     state->unk54 = 0x80;
     state->unk50 = 8;
     state->unk8 = arg2;
 }
 
 void TankHeroIdle(u32 player) {
-    SetHeroAction((HeroInfo *)player, 0x6E);
+    SetHeroAction(player, 0x6E);
 }
 
 void func_800C7F18(NAS *nas, s32 player) {
@@ -8669,7 +8669,7 @@ s32 func_800C8120(s32 arg0) {
         D_800CB0F0 = -1;
     }
     if ((Heroes[arg0].hero_status & 0x200) && Heroes[arg0].hero_mode != 0x70) {
-        SetHeroAction((HeroInfo *)arg0, 0x70);
+        SetHeroAction(arg0, 0x70);
         D_800CB0F0 = arg0 + 1;
         return 1;
     }

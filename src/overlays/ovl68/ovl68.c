@@ -531,7 +531,7 @@ void func_800B46BC(s32 arg0) {
     if (g[0x50] == 9) {
         return;
     }
-    SetHeroAction((HeroInfo *)arg0, 0x71);
+    SetHeroAction(arg0, 0x71);
     eng = h->hero_eng;
     eng->unk5D = 1;
     eng->unk1E = 0x400;
@@ -800,7 +800,7 @@ s32 func_800B51C8(s32 arg0) {
             }
             if (World_floor_level < h->hero_eng->unk10.y + h->hero_sub->unk08) {
                 if (D_8005B5B8 == 0x7FFFFFFF) {
-                    SetHeroAction((HeroInfo *)arg0, 0x79);
+                    SetHeroAction(arg0, 0x79);
                     return 1;
                 }
                 h->hero_eng->unk10.y = World_floor_level;
@@ -1051,10 +1051,10 @@ static inline s32 Chk5CD0_A(s32 arg0) {
 
     st = Heroes[arg0].hero_status;
     if (st & 0x200) {
-        SetHeroAction((HeroInfo *)arg0, 0x75);
+        SetHeroAction(arg0, 0x75);
         ret = 1;
     } else if (st & 0x400) {
-        SetHeroAction((HeroInfo *)arg0, 0x74);
+        SetHeroAction(arg0, 0x74);
         ret = 1;
     } else {
         ret = 0;
@@ -1066,7 +1066,7 @@ static inline s32 Chk5CD0_B(s32 arg0) {
     s32 ret;
 
     if (D_80051338[arg0].unk54 & 0x4000) {
-        SetHeroAction((HeroInfo *)arg0, 0x78);
+        SetHeroAction(arg0, 0x78);
         ret = 1;
     } else {
         ret = 0;
@@ -1078,7 +1078,7 @@ static inline s32 Chk5CD0_C(s32 arg0) {
     s32 ret;
 
     if (Heroes[arg0].hero_move->forward_speed != 0) {
-        SetHeroAction((HeroInfo *)arg0, 0x72);
+        SetHeroAction(arg0, 0x72);
         ret = 1;
     } else {
         ret = 0;
@@ -1108,7 +1108,7 @@ void func_800B5CD0(s32 arg0) {
 
 static inline s32 Chk5E84_C(s32 arg0) {
     if (Heroes[arg0].hero_move->forward_speed == 0) {
-        SetHeroAction((HeroInfo *)arg0, 0x71);
+        SetHeroAction(arg0, 0x71);
         return 1;
     }
     return 0;
@@ -1223,12 +1223,12 @@ void func_800B6350(s32 arg0) {
     EXTengine *e;
 
     if (func_80025BBC(h->hero_eng) != 0) {
-        SetHeroAction((HeroInfo *)arg0, 0x7B);
+        SetHeroAction(arg0, 0x7B);
     } else if (!(h->hero_ctrl & 8)) {
         e = h->hero_eng;
         if (World_floor_level < e->unk10.y + h->hero_sub->unk08) {
             if (D_8005B5B8 == 0x7FFFFFFF) {
-                SetHeroAction((HeroInfo *)arg0, 0x79);
+                SetHeroAction(arg0, 0x79);
             } else {
                 e->unk10.y = World_floor_level;
                 h->hero_sub->unk08 = 0;
@@ -1312,10 +1312,10 @@ static inline s32 Chk66A4_A(s32 arg0) {
 
     st = Heroes[arg0].hero_status;
     if (st & 0x200) {
-        SetHeroAction((HeroInfo *)arg0, 0x75);
+        SetHeroAction(arg0, 0x75);
         ret = 1;
     } else if (st & 0x400) {
-        SetHeroAction((HeroInfo *)arg0, 0x74);
+        SetHeroAction(arg0, 0x74);
         ret = 1;
     } else {
         ret = 0;
@@ -1327,7 +1327,7 @@ static inline s32 Chk66A4_B(s32 arg0) {
     s32 ret;
 
     if (D_80051338[arg0].unk54 & 0x4000) {
-        SetHeroAction((HeroInfo *)arg0, 0x78);
+        SetHeroAction(arg0, 0x78);
         ret = 1;
     } else {
         ret = 0;
@@ -1339,7 +1339,7 @@ static inline s32 Chk66A4_C(s32 arg0) {
     s32 ret;
 
     if (Heroes[arg0].hero_move->forward_speed != 0) {
-        SetHeroAction((HeroInfo *)arg0, 0x72);
+        SetHeroAction(arg0, 0x72);
         ret = 1;
     } else {
         ret = 0;
@@ -1387,9 +1387,9 @@ void func_800B68B8(s32 arg0) {
         h->hero_hit += 0x28;
         SetHeroSeq((HeroInfo *)arg0, 0x61);
         if (D_800BC2D0[arg0][0] == 0) {
-            SetHeroAction((HeroInfo *)arg0, 0x76);
+            SetHeroAction(arg0, 0x76);
         } else {
-            SetHeroAction((HeroInfo *)arg0, 0x71);
+            SetHeroAction(arg0, 0x71);
         }
     }
     func_800B51C8(arg0);
@@ -1450,10 +1450,10 @@ void func_800B6B84(s32 arg0) {
 
     st = Heroes[arg0].hero_status;
     if (st & 0x200) {
-        SetHeroAction((HeroInfo *)arg0, 0x75);
+        SetHeroAction(arg0, 0x75);
         ret = 1;
     } else if (st & 0x400) {
-        SetHeroAction((HeroInfo *)arg0, 0x74);
+        SetHeroAction(arg0, 0x74);
         ret = 1;
     } else {
         ret = 0;
@@ -2243,7 +2243,7 @@ void PlotEgg(NAS *nas) {
 
                     h = &hb[i];
                     if (h->hero_immunity == 0 && !(h->hero_status & 0xFA00)) {
-                        SetHeroAction((HeroInfo *)i, (u16)D_8009E0D8);
+                        SetHeroAction(i, (u16)D_8009E0D8);
                         func_80027F7C(i, 0xA, 0xF0);
                     }
                 }
@@ -2268,7 +2268,7 @@ void PlotEgg(NAS *nas) {
                         d = z - Heroes[i].hero_eng->unk10.z;
                         if (d >= -0x280 && d <= lim && D_800BC444 == 0 && Heroes[i].hero_immunity == 0 &&
                             !(Heroes[i].hero_status & 0xFA00)) {
-                            SetHeroAction((HeroInfo *)i, (u16)D_8009E0D8);
+                            SetHeroAction(i, (u16)D_8009E0D8);
                             func_80027F7C(i, 0xA, 0xF0);
                         }
                     }
@@ -3149,11 +3149,11 @@ void func_800BAC98(s32 arg0) {
     base = Heroes;
     hero = base + arg0;
     hero->hero_frozen = 5;
-    SetHeroAction((HeroInfo *)arg0, 0x77);
+    SetHeroAction(arg0, 0x77);
     if (hero->hero_hit != 0) {
         hero->hero_hit--;
     } else {
-        SetHeroAction((HeroInfo *)arg0, 0x77);
+        SetHeroAction(arg0, 0x77);
     }
     func_8008502C(arg0);
 }
@@ -3168,7 +3168,7 @@ void func_800BAD1C(s32 arg0) {
     hero->hero_frozen = 2;
     y = hero->hero_eng->unk10.y + hero->hero_sub->unk08;
     if (World_floor_level + 0x180 < y) {
-        SetHeroAction((HeroInfo *)arg0, 0x77);
+        SetHeroAction(arg0, 0x77);
     }
     func_800B52C8(arg0);
     func_8008502C(arg0);
@@ -3215,7 +3215,7 @@ s32 func_800BAE94(s32 arg0) {
             return 0;
         }
     }
-    SetHeroAction((HeroInfo *)arg0, act);
+    SetHeroAction(arg0, act);
     return 1;
 }
 
@@ -3223,13 +3223,13 @@ s32 func_800BAF00(s32 arg0) {
     if (!(D_80051338[arg0].unk54 & 0x4000)) {
         return 0;
     }
-    SetHeroAction((HeroInfo *)arg0, 0x78);
+    SetHeroAction(arg0, 0x78);
     return 1;
 }
 
 s32 func_800BAF58(s32 arg0) {
     if (Heroes[arg0].hero_move->forward_speed == 0) {
-        SetHeroAction((HeroInfo *)arg0, 0x71);
+        SetHeroAction(arg0, 0x71);
         return 1;
     }
     return 0;
@@ -3239,7 +3239,7 @@ s32 func_800BAFB4(s32 arg0)
 {
   if (Heroes[arg0].hero_move->forward_speed != 0)
   {
-    SetHeroAction((HeroInfo *)arg0, 0x72);
+    SetHeroAction(arg0, 0x72);
     return 1;
   }
   return 0;
@@ -3267,7 +3267,7 @@ loop:
                 d = z - h->hero_eng->unk10.z;
                 if (d >= neg && d <= range && D_800BC444 == 0 &&
                     h->hero_immunity == 0 && !(h->hero_status & 0xFA00)) {
-                    SetHeroAction((HeroInfo *)i, (u16)D_8009E0D8);
+                    SetHeroAction(i, (u16)D_8009E0D8);
                     func_80027F7C(i, 0xA, 0xF0);
                 }
             }
@@ -3290,7 +3290,7 @@ void func_800BB134(s32 arg0)
     h += arg0;
     if ((h->hero_immunity == 0) && (!(h->hero_status & 0xFA00)))
     {
-      SetHeroAction((HeroInfo *) arg0, (u16) D_8009E0D8);
+      SetHeroAction(arg0, (u16) D_8009E0D8);
       func_80027F7C(arg0, 0xA, 0xF0);
     }
   }

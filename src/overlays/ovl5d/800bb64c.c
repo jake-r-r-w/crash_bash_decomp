@@ -1577,7 +1577,7 @@ void func_800BEF00(s32 arg0) {
                     StopSfx(D_800C4780);
                 }
                 h4->hero_pu = 0;
-                SetHeroAction((HeroInfo *)arg0, 0x12);
+                SetHeroAction(arg0, 0x12);
                 pu->unk1E = 0;
                 sub->unk08 = 0;
             }

@@ -1244,7 +1244,7 @@ void PlotBalloon(NAS *nas) {
                                     Heroes[owner].hero_score++;
                                 }
                             } else {
-                                SetHeroAction((HeroInfo *)owner, (u16)D_8009E0D8);
+                                SetHeroAction(owner, (u16)D_8009E0D8);
                                 if (OVL64_GAME->flags & 0x80) {
                                     owner = fux->owner;
                                     if (owner == 0 || (OVL64_GAME->teams != 0 && owner == 1)) {
@@ -1263,7 +1263,7 @@ void PlotBalloon(NAS *nas) {
                                 Heroes[owner].hero_score++;
                             }
                         } else {
-                            SetHeroAction((HeroInfo *)owner, (u16)D_8009E0D8);
+                            SetHeroAction(owner, (u16)D_8009E0D8);
                             if (OVL64_GAME->flags & 0x80) {
                                 owner = fux->owner;
                                 if (owner == 0 || (OVL64_GAME->teams != 0 && owner == 1)) {
@@ -2657,12 +2657,12 @@ void func_800B971C(s32 arg0) {
     EXTengine *eng;
 
     if (func_80025BBC(h->hero_eng) != 0) {
-        SetHeroAction((HeroInfo *)arg0, 7);
+        SetHeroAction(arg0, 7);
     } else {
         eng = h->hero_eng;
         if (World_floor_level < eng->unk10.y + h->hero_sub->unk08) {
             if (D_8005B5B8 == 0x7FFFFFFF) {
-                SetHeroAction((HeroInfo *)arg0, 6);
+                SetHeroAction(arg0, 6);
             } else {
                 eng->unk10.y = World_floor_level;
                 h->hero_sub->unk08 = 0;
@@ -2713,10 +2713,10 @@ void func_800B98B8(s32 arg0) {
     }
     st = h->hero_status;
     if (st & 0x200) {
-        SetHeroAction((HeroInfo *)arg0, 0x36);
+        SetHeroAction(arg0, 0x36);
         ret = 1;
     } else if (st & 0x400) {
-        SetHeroAction((HeroInfo *)arg0, 0x37);
+        SetHeroAction(arg0, 0x37);
         ret = 1;
     } else {
         ret = 0;
@@ -3451,7 +3451,7 @@ s32 func_800BB5F0(s32 arg0) {
     if (!(D_80051338[arg0].unk54 & 0x4000)) {
         return 0;
     }
-    SetHeroAction((HeroInfo *)arg0, 0x34);
+    SetHeroAction(arg0, 0x34);
     return 1;
 }
 
@@ -3466,7 +3466,7 @@ s32 func_800BB648(s32 arg0) {
             return 0;
         }
     }
-    SetHeroAction((HeroInfo *)arg0, act);
+    SetHeroAction(arg0, act);
     return 1;
 }
 
@@ -3481,6 +3481,6 @@ s32 func_800BB6B4(s32 arg0) {
             return 0;
         }
     }
-    SetHeroAction((HeroInfo *)arg0, act);
+    SetHeroAction(arg0, act);
     return 1;
 }
