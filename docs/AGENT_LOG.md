@@ -18,13 +18,13 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `.data` too, except `bios_1.o`'s: `configs/USA/psyq/data_keep.txt`).
   `make check` and `make disc-check` OK. Live figures: `decomp.py progress`
   / `docs/index.html`.
-- [ROADMAP.md](ROADMAP.md): Phase 1 (types and names) is done, and so is
-  every matching item. What is left is everything else that makes the
-  source "source-only": names and types (`progress`: 731 of 2537
-  functions named, 2316 typed), the rodata (92 `INCLUDE_RODATA`) and data
-  (splat's `asm/data/`; 1.97% is C) as C, the overlays' remaining file
-  splits, and the
-  shiftable `NON_MATCHING` build.
+- [ROADMAP.md](ROADMAP.md) (restructured 2026-10-26): Phase 1 (types and
+  names) is done, Phase 2 (matching) all but `func_800193A8`'s pins. Phase 3
+  is the **Tank pilot**: `ovl5f` all the way to source-only (data and
+  rodata as C, named, typed) and shift-tested, building the tools and the
+  recipe; Phase 4 repeats it per slot overlay, Phase 5 does the engine and
+  `main.exe`. Figures (`progress`): 731 of 2537 functions named, 2316
+  typed, 92 `INCLUDE_RODATA`, 1.97% of the data is C.
 - Matches are C only, natural C first (CONVENTIONS.md, Matching rules):
   steering C counts as matched, inline asm is refused by the gate. One
   exception predates the rule: `func_800193A8` (`src/main/80017164.c`)
@@ -56,33 +56,40 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-Matching is finished, so the roadmap's other items are the work (ROADMAP.md,
-Current focus). In rough order:
+The Tank pilot (ROADMAP.md, Phase 3), in this order:
 
-1. **Names and types** (Phase 2, then 3-5 per overlay). Name each
-   function from what it does, with code evidence, through `decomp.py
-   rename` (it checks the build); leaked names go through `proto_apply.py`
-   and `proto_types.py` (PROTOTYPES.md, Left lists what they couldn't
-   write). Retype a function's parameters and its structs' `unkXX` fields
-   as callers show them; a retype must keep `make check` OK (Gotchas,
-   Matching and types: a typed global can move loads). Helpers:
-   `tools/scripts/field_survey.py` (loads and stores per struct offset, for
-   layouts), `decomp.py similar` (twins and siblings), and the scripts in
-   `scratch/naming/` (not committed): `callsites.py OVL` (what each call
-   passes and whether its result is used), `callgraph.py spawns`,
-   `nas_fields.py ARGREG FUNC...` (field offsets through a pointer
-   argument). Most-called functions: `grep -rhoE "jal +func_800[0-9A-F]{5}"
-   asm/nonmatchings | sort | uniq -c | sort -rn`. Worth promoting
-   `callsites.py` to a `decomp.py` subcommand once the naming starts.
-2. **Rodata and data to C**, unit by unit, after a unit's split is final
-   (a file's local data moves with it). Start with `main.exe`; each
-   `INCLUDE_RODATA` and `asm/data/*.s` block becomes C initialisers that
-   rebuild byte for byte. Jump tables and strings first, since they are
-   tied to one function.
-3. **`func_800193A8` without its register pins**: rematch it in plain C
-   (or steering C) so the only-C rule has no exception.
-4. **The shiftable `NON_MATCHING` build** (Phase 4's first item), once a
-   slot overlay's data is C.
+1. **Data to C tooling and Tank's rodata/data.** `ovl5f`'s sections run
+   rodata, text, data: the id word (`ovl5f_id`), one `INCLUDE_RODATA`
+   (`D_800B32B8`, the animation name strings `"DIE"`, `"FIRE1"`, ...), and
+   `asm/data/overlays/ovl5f/ovl5f_data.data.s` (0x15958..0x17FE0, about
+   10 KB, 66 of its 1959 words already symbols). Build a generic converter
+   from a splat data block to C initialisers (pointers as symbols, tables
+   typed with their structs from `tank.h` and the Oct 9 types) and check
+   each step with `make check`. Data order inside a section follows
+   definition order in the file, so keep the blocks in address order.
+2. **Names and types** for Tank's 73 remaining `func_` functions and its
+   globals: `tank.h` (leaked prototypes, in code order inside a file, so a
+   named function's neighbours are candidates), the Oct 9 debug types,
+   `decomp.py similar`, `tools/scripts/field_survey.py` (loads and stores
+   per struct offset), and the scripts in `scratch/naming/` (not
+   committed): `callsites.py OVL` (what each call passes, whether its result
+   is used), `callgraph.py spawns`, `nas_fields.py ARGREG FUNC...`. Rename
+   through `decomp.py rename` (it checks the build; Gotchas: a name an
+   original header declares must take its types). Promote `callsites.py`
+   to a `decomp.py` subcommand when it is first needed.
+3. **The engine's AST table as C** (`EngineASTTable`, `0x80098720`, `{id,
+   Init, Plot}` x 0xAE in `asm/data/overlays/engine/engine_data.data.s`): its
+   slot entries are raw `.word 0x800B...` numbers. As C with symbols, the
+   engine has to link against every overlay's symbol names (14 overlays
+   share the slot's addresses, so splat can't name them by address).
+4. **The shiftable build**: pad, relink the engine, rebuild
+   `CRASHBSH.DAT` and its index for a grown entry (`pack_disc.py` and
+   `dat.py` today only allow shrinking), stay inside the slot (up to
+   `0x800D7144`; Tank ends at `0x800CB294`).
+5. **The shift test**: boot it (RetroArch, CLAUDE.md) and play Tank to a
+   win; write the route in docs/PLAYING.md.
+
+Alongside: `func_800193A8` without its register pins (Phase 2's last box).
 
 The matching method stays in MATCHING.md for reworks. Its last addition
 (2026-10-25..26): when a function won't match, prove the one compiler
@@ -462,6 +469,12 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-26 (roadmap restructured around a Tank pilot):** Phase 2 is
+  now Matching (every matching item, plus `func_800193A8`'s pins), Phase 3
+  the Tank pilot (data to C tooling, Tank's rodata, data, names and types,
+  the engine's AST table as C, the shiftable build, its shift test, the
+  recipe), Phase 4 every slot overlay on its terms, Phase 5 the engine and
+  `main.exe`. The dashboard's per-unit phases follow (`.decomp/project.json`).
 - **2026-10-26 (cleanup and docs after the last match):** `scratch/` and
   `disc/scratch/` emptied (434 entries, 1.9 GB, to the Recycle Bin; their
   notes were already in the docs); the three naming helpers kept in

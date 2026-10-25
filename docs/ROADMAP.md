@@ -1,38 +1,43 @@
 # Roadmap
 
 The goal is a **source-only Crash Bash**: the executable and every overlay
-rebuilt byte for byte from C, data included, with no `INCLUDE_ASM` left, and
-everything named, typed and split into its original files. The game's assets
-(textures, sounds, models, levels) are not part of the source: a tool extracts
-them from the user's own disc into editable formats, and their formats are
-documented. Assets stay on the user's machine and never go in git; only the
-tools and format documentation do. [The final test](#the-final-test) says
-when it's done: a rebuilt disc, and a shifted build that plays the same as
-retail. Phases are ordered but overlap;
-matching continues throughout. Progress lives on the dashboard and
-badges. Tick a box in the commit that finishes that item, and run
-`tools/dk make progress` in it so the dashboard and roadmap badge update.
+rebuilt byte for byte from C, data included, with no `INCLUDE_ASM` or
+`INCLUDE_RODATA` left, and everything named, typed and split into its
+original files. The game's assets (textures, sounds, models, levels) are not
+part of the source: a tool extracts them from the user's own disc into
+editable formats, and their formats are documented. Assets stay on the
+user's machine and never go in git; only the tools and format documentation
+do. [The final test](#the-final-test) says when it's done: a rebuilt disc,
+and a shifted build that plays the same as retail. Progress lives on the
+dashboard and badges. Tick a box in the commit that finishes that item, and
+run `tools/dk make progress` in it so the dashboard and roadmap badge
+update.
 
 Preparation goes in the phase that first needs it. When later work turns up
 something new to do, add it to the phase it blocks, not to an earlier one.
 
-## Current focus: names, types and data
+## Current focus: the Tank pilot
 
-Every game function in the exe, the engine and the slot overlays matches
-(2026-10-26), so the matching items are done. Any build of ours can be
-played: `tools/dk make disc` packs `build/main.exe` and the overlays into
-`build/CrashBash.bin`/`.cue`, which boots in an emulator, and `make
-disc-check` confirms the matching build packs to the retail image byte for
-byte. The work now is what makes the source source-only: naming and typing
-(with what the prototype and demo discs leaked,
-[PROTOTYPES.md](PROTOTYPES.md)), turning the rodata and data into C, and the
-remaining file splits, starting with `main.exe` (Phase 2). After that comes
-the shiftable `NON_MATCHING` build (Phase 4), the first build that isn't
-byte-identical.
+Every game function matches (2026-10-26), so what is left is what makes the
+source source-only: data as C, names and types, and the proof that the code
+works as code, a shifted build that still plays. Phase 3 does all of it for
+one overlay, Tank (`ovl5f`), end to end, and builds the tooling on the way.
+Tank suits a pilot: it is a slot overlay, so it can move without moving the
+engine or the exe; its header leaked, so much of it is already named; and
+it is small (its rodata is a few strings, its data about 10 KB). Each tool
+and recipe the pilot needs is written up, so that Phase 4 repeats it overlay
+by overlay and Phase 5 does the same for the engine and `main.exe`.
+
+Any build of ours can be played: `tools/dk make disc` packs `build/main.exe`
+and the overlays into `build/CrashBash.bin`/`.cue`, which boots in an
+emulator, and `make disc-check` confirms the matching build packs to the
+retail image byte for byte (docs/PLAYING.md).
 
 Matches are C only (no inline asm; the SDK's `gte_*` macros excepted), and
 natural C comes first: C that only steers the compiler is used when nothing
-natural matches (docs/CONVENTIONS.md, Matching rules).
+natural matches (docs/CONVENTIONS.md, Matching rules). A rework of a matched
+function (a rename, a retype, a natural form) is an ordinary commit once
+`make check` is OK.
 
 ## Phase 1 - Foundations: types and names
 
@@ -65,136 +70,133 @@ or types.
   `NASTrigger` and the other minigame-only types (`EXTbotai`, `EXTheromove`,
   `TA_player`) are only used in the overlays, so they're recovered with them.
 
-## Phase 2 - `main.exe` to source-only
+## Phase 2 - Matching
 
-**Done when** the exe's game code has no `INCLUDE_ASM` or `INCLUDE_RODATA`
-left, it's split into translation units at the boundaries the binary shows,
-its data is C, every function and global is named and typed, and
-`build/main.exe` still matches. The library is Sony's objects, code and data,
-plus `2MBYTE.OBJ`. `CRASHBSH.DAT` extracts, and so do the formats whose
-loaders are in the exe, each documented. The disc packer works, so later
-phases can play what they finish.
+Every game function becomes C that compiles to the retail bytes, with the
+tools that needs: the disc packer, the asset extractor and the library.
+
+**Done when** every game function in `main.exe`, the engine and the slot
+overlays matches in C only (no inline asm but the SDK's `gte_*` macros), the
+library is Sony's objects, `CRASHBSH.DAT` extracts, and the disc packer
+rebuilds the retail image.
 
 - [x] A disc packer: put the built exe and overlays, with the user's other
   files, back into a disc image with the retail layout (every file at its
   original sector). Packing the matching build must give the retail image
   byte for byte. It's the only way to run any build of ours in an emulator.
   `tools/dk make disc` (`tools/scripts/pack_disc.py`) and `make disc-check`
-  (`configs/USA/disc.sha`). A file may shrink but not grow; an overlay that
-  outgrows its `CRASHBSH.DAT` slot needs the DAT and its index rebuilt.
+  (`configs/USA/disc.sha`).
 - [x] Match GTE code: include Sony's GTE macros (`inline_c.h`, `gtemac.h`) in
   the game sources and match one GTE function through `done`. 27 of the exe's
   game functions use the GTE, and m2c can't draft them.
 - [x] Split `main.c` into translation units at the boundaries the binary shows
   (rodata and data order, alignment padding, file-local data), with the
-  evidence for each in `docs/ARCHITECTURE.md`. The exe has no file names, so
-  the units are named by what they contain. Do this before the data, so each
-  file's local data moves with it, and early in the matching: code in
-  the wrong unit can't match its rodata, and a split moves functions out
-  from under swarm patches, so do it between swarm runs.
-  Done 2026-10-23: `main/main` is nine files, cut where the evidence settles it
-  (the cut zones of `decomp.py units`, the data blocks, what the functions
-  on either side do; `tools/scripts/split_unit.py` does a split end to end).
-  The zones left open are closed: no leak names the exe's files and the
-  code evidence is used up (ARCHITECTURE.md, Files inside `main/main`).
-- [x] Match every game function in the executable.
-- [ ] Name and type every function and global in the exe (a descriptive name
-  where the original is unknown, per [CONVENTIONS.md](CONVENTIONS.md)).
-  Status: the names, parameter types and struct names the demo discs
-  leaked are applied ([PROTOTYPES.md](PROTOTYPES.md)); the rest is named
-  from behaviour as it is understood.
-  For browsing cross-references across the whole binary, try Ghidra with a
-  PSX loader by hand first; an agent bridge such as REA
-  (github.com/morluto/rea) adds little over that and doesn't help matching.
-- [ ] Turn its rodata, data and bss into C.
+  evidence for each in `docs/ARCHITECTURE.md`. Done 2026-10-23: `main/main`
+  is nine files, cut where the evidence settles it (`decomp.py units`, the
+  data blocks, what the functions on either side do; `split_unit.py` does a
+  split end to end). No leak names the exe's files and the code evidence is
+  used up (ARCHITECTURE.md, Files inside `main/main`).
 - [x] Close the PsyQ gaps: every library function is linked from Sony's 4.7
   objects (281, plus the hand-written `2MBYTE.OBJ`), with their data. The one
   exception is `bios_1.o`'s `.data`, kept from the exe because the game's
   libcd differs from 4.7 in one initial value
   (`configs/USA/psyq/data_keep.txt`, ARCHITECTURE.md, PsyQ).
-- [x] Asset extraction tool: read the `CRASHBSH.DAT` index (992 entries at
-  `0x8004E110`) from the user's disc and extract its files to `assets/`, plus
-  the formats whose loaders are in the exe, to editable files. The first half
-  is done: `tools/scripts/dat.py` splits the DAT into `assets/CRASHBSH/` and
-  `make disc` builds the DAT from there (2026-10-16). Formats decoded (docs/ASSETS.md): texture
-  sets, 400 of them, to PNGs and back byte for byte (`tools/scripts/tex.py`); all 400 model
-  files to OBJ and back, with textures, and to glTF with their animations (`mdl.py`, `gltf.py`);
-  the 5 title screens to PNG (`tga.py`), the 12 modes' text to text files (`txt.py`), and the
-  160 sound packs' samples to WAV, banks as VAB, music as SEQ and MIDI (`sfx.py`). Every DAT
-  entry but the code overlays is a decoded folder (2026-10-16); ASSETS.md lists what is still
-  bytes. Document each
-  format. Formats parsed by the engine or a minigame belong to that phase.
-
-## Phase 3 - The engine overlay
-
-Its types are the vocabulary the minigames are written in.
-
-**Done when** `src/overlays/engine/` has no `INCLUDE_ASM` or `INCLUDE_RODATA`,
-it's split into its translation units, its data is C, everything is named and
-typed, `build/engine.bin` still matches, and the formats the engine loads
-extract and are documented.
-
-- [x] Match every function in `engine`.
-  Done 2026-10-23: the pause menu (`func_8007F314`) was the last, matched
-  from its earlier compiles on the prototype discs (PROTOTYPES.md, Earlier
-  compiles of a function).
-- [ ] Split it into its original translation units.
-  Status: split at every start the binary proves (switch-table parity;
-  ARCHITECTURE.md, Files inside the engine), and Jampack's records name two
-  of the files (`panel` is `PANEL.CPP`, `pause` `PAUSE.CPP`); more files may
-  hide inside those units. The slot overlays with proven starts are split
-  the same way.
-- [ ] Turn its data and jump-table rodata into C.
-- [ ] Extract and document the asset formats the engine loads (models,
-  animation, level data, ...).
-
-## Phase 4 - The leaked minigames
-
-Their functions start out named and typed. Finish one overlay completely
-before starting the next. A minigame's box is ticked when its overlay is
-source-only, the globals its header declares are named, its asset files
-(its `file_group_*` groups) extract, and it passes its shift test: padded so
-everything in it moves, it boots, plays through to a win the same way retail does. The slot overlays are the first units
-that can be shifted: the only pointers into one from outside are the engine's
-AST table entries (`Init`/`Plot`), which are C after Phase 3, so the engine
-is relinked against the moved overlay without moving itself. `main.exe` and
-the engine can't move until every overlay linking to them is source
-(Phase 6).
-
-**Done when** Tank, Pogo, Arkenoid and Polar (`ovl5f`, `ovl60`, `ovl61`,
-`ovl62`) are source-only and still match. Every declaration in their
-`include/bash/` headers is either defined by matched code or noted in
-`docs/ARCHITECTURE.md` as not in this build. Each of their asset files
-extracts, and each passes its shift test.
-
-- [ ] A shiftable `NON_MATCHING` build: an option that pads a source-only slot
-  overlay's code and data, relinks the engine's AST table against it, packs a
-  disc and runs the shift test.
-- [ ] Finish the slot overlays' section splits (data vs rodata), so functions
-  using strings and jump tables can match.
+- [x] Asset extraction tool: `tools/scripts/dat.py` splits `CRASHBSH.DAT`
+  into `assets/CRASHBSH/` and `make disc` builds the DAT from there
+  (2026-10-16). Every entry but the code overlays is a decoded folder:
+  texture sets to PNG (`tex.py`), models to OBJ and glTF with their
+  animations (`mdl.py`, `gltf.py`), title screens (`tga.py`), text
+  (`txt.py`), sounds to WAV, VAB, SEQ and MIDI (`sfx.py`), each documented in
+  docs/ASSETS.md, which lists what is still bytes.
 - [x] Recover the minigame-only types (`EXTbotai`, `EXTheromove`, `TA_player`,
-  `EXTobject_TA`, `NASTrigger`, ...): done from the Oct 9 prototype's debug
-  types (ARCHITECTURE.md, Prototype debug types).
+  `EXTobject_TA`, `NASTrigger`, ...) from the Oct 9 prototype's debug types
+  (ARCHITECTURE.md, Prototype debug types), and identify which minigame or
+  mode each slot overlay is (its AST enums; `ovl69`'s strings make it the
+  front end).
+- [x] Name Tank's AST pairs: the Oct 9 prototype's `TANK_AST_types` gives
+  every id, and all 68 names match the leak's `Init`/`Plot` prototypes.
+- [x] Match every game function in the executable (2026-10-23).
+- [x] Match every function in `engine` (2026-10-23; the pause menu,
+  `func_8007F314`, last, from its earlier compiles on the prototype discs:
+  PROTOTYPES.md, Earlier compiles of a function).
+- [x] Match every function in the slot overlays (2026-10-26; the last three
+  with cc1 analysis variants, `tools/cc1/`).
+- [ ] Only C everywhere: `func_800193A8` (`src/main/80017164.c`) still pins
+  three registers (`register s32 xy asm("$20")`, ...), from before the rule.
+  Rematch it without them.
+
+## Phase 3 - The Tank pilot
+
+Take one slot overlay, Tank (`ovl5f`), all the way to source-only and
+shift-tested, and build the tools for it so the other overlays only repeat
+the recipe. A slot overlay is the first unit that can move: the only
+pointers into one from outside are the engine's AST table entries
+(`Init`/`Plot`), so once those are symbols the engine relinks against the
+moved overlay without moving itself. `main.exe` and the engine can't move
+until every overlay linking to them is source (Phase 6).
+
+**Done when** `ovl5f` has no `INCLUDE_RODATA` and no data asm, every
+function and global in it is named and typed, every declaration in
+`include/bash/tank.h` is defined by matched code or noted in
+`docs/ARCHITECTURE.md` as not in this build, `build/ovl5f.bin` still
+matches, its asset files extract, and it passes its shift test: padded so
+everything in it moves, it boots and plays through to a win the same way
+retail does. The recipe is written up for Phase 4.
+
+- [ ] Data to C tooling: turn a splat rodata or data block into C
+  initialisers (strings, tables, structs from the headers, pointers as
+  symbols, never as numbers) that rebuild byte for byte, in the unit's
+  section order (`ovl5f`'s is rodata, text, data). Generic, so every
+  overlay can use it.
+- [ ] Tank's rodata as C: the id word (`ovl5f_id`) and the `INCLUDE_RODATA`
+  of `D_800B32B8` (the animation name strings).
+- [ ] Tank's data and bss as C (`asm/data/overlays/ovl5f/`): every pointer
+  a symbol, every table typed with its struct.
+- [ ] Name and type every Tank function and global (a descriptive name
+  where the original is unknown, per [CONVENTIONS.md](CONVENTIONS.md)),
+  from the leaked `tank.h`, the Oct 9 debug types and code evidence. Settle
+  each `tank.h` declaration: defined by matched code, or noted as not in
+  this build.
+- [ ] Tank's asset files extract: list the `CRASHBSH.DAT` entries its
+  `file_group_TANK*` groups load and check each decodes (docs/ASSETS.md); a
+  format still kept as bytes gets decoded here.
+- [ ] The engine's AST table (`EngineASTTable`, `0x80098720`) as C with
+  symbols: its slot entries are numbers today (`.word 0x800B...`), so a
+  moved overlay would still be called at its old addresses. The engine
+  links against each overlay's symbols for it (an id's high byte says which
+  overlay).
+- [ ] A shiftable `NON_MATCHING` build: an option (say `make shift OVL=ovl5f
+  PAD=N`) that pads a source-only slot overlay's code and data so every
+  address in it moves, relinks the engine's AST table against it and packs a
+  disc. The packer rebuilds `CRASHBSH.DAT` and its index when an entry grows
+  (today a file may shrink but not grow), and the padded overlay must stay
+  inside the slot (`0x800B32B4` up to `0x800D7144`, the slot image's end;
+  Tank ends at `0x800CB294`).
+- [ ] Tank's shift test: the padded build boots and Tank plays through to a
+  win, the same way as on the retail disc. Write the route down in
+  docs/PLAYING.md, so the test can be repeated and later automated.
+- [ ] Write the recipe up (data to C, naming, the AST table, the shift
+  test) with what the pilot learned, so each Phase 4 overlay follows it.
+
+## Phase 4 - Every slot overlay the same way
+
+One at a time, with Phase 3's recipe: the other leaked minigames first,
+since their headers name most of them, then the rest, starting with code
+shared or near-identical between minigames.
+
+**Done when** every slot overlay is source-only, named and typed, still
+matches, its asset files extract and it passes its shift test, on Phase 3's
+terms. A box below is ticked on the same terms. Where a leaked header covers
+an overlay (Pogo, Arkenoid, Polar), every declaration in it is either
+defined by matched code or noted in `docs/ARCHITECTURE.md` as not in this
+build.
+
+- [ ] Finish the slot overlays' file splits where the binary proves a start
+  (ARCHITECTURE.md, Files inside the slot overlays), each before that
+  overlay's data goes to C, since a file's local data moves with it.
 - [ ] Pogo (`ovl60`)
 - [ ] Arkenoid (`ovl61`)
 - [ ] Polar (`ovl62`)
-- [x] Name Tank's AST pairs. Its enum is cut off in the leak; the Oct 9
-  prototype's `TANK_AST_types` gives every id, and all 68 names match the
-  leak's `Init`/`Plot` prototypes.
-- [ ] Tank (`ovl5f`)
-
-## Phase 5 - The remaining overlays
-
-One at a time, starting with code shared or near-identical between minigames.
-
-**Done when** every slot overlay is identified in `docs/ARCHITECTURE.md`, is
-source-only, still matches, its asset files extract, and it passes its shift
-test (Phase 4). A box below is ticked on the same terms.
-
-- [x] Identify which minigame or mode each remaining overlay is: the Oct 9
-  prototype's AST enums name each one's game (ARCHITECTURE.md, Prototype
-  debug types). `ovl69` has no AST entries; its strings and the Titles enums
-  make it the front end.
 - [ ] Bash (`ovl5d`, with the crates and pickups of `XTRAS_AST_types`)
 - [ ] Papu (`ovl5e`)
 - [ ] Race (`ovl63`)
@@ -206,11 +208,41 @@ test (Phase 4). A box below is ticked on the same terms.
 - [ ] Hub (`ovl6a`)
 - [ ] Titles, the front end (`ovl69`)
 
+## Phase 5 - The engine and `main.exe` to source-only
+
+The same recipe for the two units that stay in place: the engine overlay
+(its types are the vocabulary the minigames are written in) and the
+executable.
+
+**Done when** `src/overlays/engine/` and `src/main/` have no
+`INCLUDE_RODATA` or data asm, both are split into their translation units,
+every function and global in them is named and typed, `build/engine.bin`
+and `build/main.exe` still match, and the formats the engine and the exe
+load extract and are documented.
+
+- [ ] Split the engine into its original translation units. Status: split
+  at every start the binary proves (switch-table parity; ARCHITECTURE.md,
+  Files inside the engine), and Jampack's records name two of the files
+  (`panel` is `PANEL.CPP`, `pause` `PAUSE.CPP`); more files may hide inside
+  those units.
+- [ ] The engine's data and rodata as C (its AST table is done in Phase 3).
+- [ ] Name and type every engine function and global.
+- [ ] Extract and document the asset formats the engine loads (models,
+  animation, level data, ...) that Phase 2's extractor still keeps as bytes.
+- [ ] `main.exe`'s rodata, data and bss as C, each file's local data with
+  its unit.
+- [ ] Name and type every function and global in the exe. Status: the
+  names, parameter types and struct names the demo discs leaked are applied
+  ([PROTOTYPES.md](PROTOTYPES.md)); the rest is named from behaviour. For
+  browsing cross-references across the whole binary, try Ghidra with a PSX
+  loader by hand.
+
 ## Phase 6 - Finish
 
 **Done when** every test in [The final test](#the-final-test) passes.
 
-- [ ] No `INCLUDE_ASM` or `INCLUDE_RODATA` anywhere, and no parked functions.
+- [ ] No `INCLUDE_ASM` or `INCLUDE_RODATA` anywhere (no function has been
+  asm or parked since 2026-10-26; the rodata is left).
 - [ ] Every remaining disc file (music, movies, anything not covered above)
   extracts, and the formats are documented.
 - [ ] Shift everything at once: pad `main.exe` and the engine too, and relink
@@ -225,8 +257,8 @@ test (Phase 4). A box below is ticked on the same terms.
 ## The final test
 
 The decomp is done when all of these pass. Each proves something a byte match
-alone does not. The tools come earlier: the disc packer in Phase 2, the shifted build in Phase 4, and every slot overlay passes a shift
-test of its own when it's finished. So these tests are the last check on the whole
+alone does not. The tools come earlier: the disc packer in Phase 2, the shifted build in Phase 3 (the Tank
+pilot), and every slot overlay passes a shift test of its own when it's finished. So these tests are the last check on the whole
 game, not the first time anything has been tested.
 
 1. **Clean rebuild.** A fresh clone, the user's disc and `tools/dk make check`
