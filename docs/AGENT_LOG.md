@@ -10,17 +10,16 @@ At the end of a session, update **Current state**, **Next** and **Open
 leads**, add any new gotcha, and add one short entry at the top of the
 **Session log**.
 
-## Current state (2026-10-25)
+## Current state (2026-10-26)
 
 - [ROADMAP.md](ROADMAP.md): Phase 1 (types and names) is done, and every
   `main.exe` function matches and `main.c` is split (2026-10-23); Phase 2's
   naming and data are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2536/2537 game functions matched (99.93% of game code bytes, 2026-10-25):
-  **main.exe, the engine, ovl5d, ovl5e, ovl5f, ovl60, ovl61, ovl62, ovl64,
-  ovl65, ovl66, ovl67, ovl68, ovl69 and ovl6a are complete**; 1 left,
-  ovl63's `func_800BE914`, parked by hand (Open leads) after the swarm's
-  tries. All 564 PsyQ functions (Sony objects)
+- **All 2537 game functions match** (100% of game code bytes, 2026-10-26):
+  main.exe, the engine and every slot overlay. The last, ovl63's
+  `func_800BE914`, matched with steering (Session log). All 564 PsyQ
+  functions (Sony objects)
   (`decomp.py status`; the swarm parked 5, which the dashboard counts from
   `docs/swarm.js`). Matches are C only, natural C
   first (CONVENTIONS.md, Matching rules; the "hack" class was dropped on
@@ -57,24 +56,22 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**The overlays' last function**, `func_800BE914`, parked by hand with a
-lead (Open leads): its copies (its permuter run is unused). It needs a new
-idea rather than another round of the usual tries. The method that matched
-the other two parks on 2026-10-25: prove the decision a park needs with an
-analysis variant of cc1 (`tools/cc1/`, a from-source rebuild that is
-byte-identical to `/opt`'s), then search for the C that gives it, with the
-variant as the check. `func_800B4048`'s `localtie` variant proved
-local-alloc's tie was the one decision left, and an always-zero term that
-flow counts and combine drops won it (MATCHING.md, Diff patterns, the
-`QTY_CMP_PRI` row). `PlotTransmuterBeam`'s `keeplive` variant proved a
-hidden later use of a base was all it lacked (a `(use (reg))` anywhere in
-a window byte-matched), and the use was a test whose body is dead, which
-jump2 deletes (the unfolded-base row). The host is ruled out: a variant at
-53-bit x87 precision changes no build. For `func_800BE914` the
-`copysplit` variant proved the same on 2026-10-25: the natural shape plus a
-register copy kept before each `>> 8` byte-matches, and plain C gives the
-first copy (Open leads). What's left there is a C construct that keeps the
-other three copies through cse and combine. `CheckMineToBoss` matched on 2026-10-25
+**Every game function matches** (2026-10-26). Phase 2's naming, types and
+data are the work now (Hand work below), and the steering matches can be
+revisited for their natural forms (Open leads). The last parks fell to one
+method: prove the decision a park needs with an analysis variant of cc1
+(`tools/cc1/`, a from-source rebuild that is byte-identical to `/opt`'s),
+then search for the C that gives it, with the variant as the check.
+`func_800B4048`'s `localtie` variant proved local-alloc's tie was the one
+decision left, and an always-zero term that flow counts and combine drops
+won it (MATCHING.md, Diff patterns, the `QTY_CMP_PRI` row).
+`PlotTransmuterBeam`'s `keeplive` variant proved a hidden later use of a
+base was all it lacked, and the use was a test whose body is dead, which
+jump2 deletes (the unfolded-base row). `func_800BE914`'s `copysplit`
+variant proved four register copies were all it lacked, and the C that
+keeps them uses a dead mention for cse and always-zero terms for combine
+(the register-copy row). The host is ruled out: a variant at 53-bit x87
+precision changes no build. `CheckMineToBoss` matched on 2026-10-25
 once loop.c's own numbers (`-dL`, "not worth while, X vs N") showed what
 its loops needed: read a park's `-dL` and `sched` numbers before trying
 shapes, and look for the natural form that moves them. Every swarm checkpoint
@@ -239,47 +236,13 @@ and current tools).
   the loop, except that combine still folds the copy. Low priority: only
   with a new idea for a natural extra counted use on the `*60` chain (the
   `func_800B980C` row) or a natural re-set of `v`.
-- **`func_800BE914`'s copies** (parked 2026-10-23; since 2026-10-25 the
-  parked C is the natural shape at structure 72/170, length 167, 164
-  exact; the `decomp.py block` note has the detail). The target copies each
-  clamped speed into v0 right before its `>> 8` (`move v0,X; sra Y,v0,8`,
-  four times). **Proved with tools/cc1's `copysplit` variant:** the parked C
-  with a copy kept before the 2nd, 3rd and 4th shift byte-matches retail,
-  so those three copies are the only decision left. The first one is plain
-  C: `t = pa; pa = mb + ma; x = t >> 8;` (`pa` then holds the total, as a0
-  does in the target; cse sees `pa` change and combine's `use_crosses_set_p`
-  refuses). The others survive neither pass in plain C: the variant's
-  `CC1_COPY_LOG` shows every probe (a temp, `x = pa; x >>= 8`, a union,
-  casts, a comma, inline arguments and returns, `do { } while (0)`, a label,
-  a switch, loops) losing the copy in cse1 or cse2, which keeps a copy only
-  when its destination outlives the source past the cse block
-  (`make_regs_eqv`), and combine keeps one only when the source is set
-  again, the result is used later or the two sit in different blocks. In
-  the target copy 2's shift writes its own source (a1), copy 4's source
-  (t1) is never set again, and v0 dies at each shift. Partial writes of an
-  8-aligned pair survive both passes (the swarm's DImode structs, at
-  registers 7/170 in git history), but a pair needs v0 and v1, and q holds
-  v1 after the first division: with q as the pair's high word all four
-  copies appear and every other register moves (61 off). Taking a speed's
-  address for an inline clamp spills it to the stack. The Aug 23 build has
-  no clamps and loads each field straight into v0 before the shift; PAL/JP
-  retail differ only by the division checks. Left: a construct that keeps an
-  SImode copy through cse and combine with no other trace, maybe a C++ one
-  (the game was C++; `cc1plus` is in the container). Check candidates with
-  `CC1_COPY_LOG=ashiftrt:8` (tools/cc1/README.md, Patches). Steering that
-  works for one copy: a dead `if (t) c++; else c--;` (unused `s16 c`)
-  between the copy and its shift. Two jumps reach its join, so cse can't
-  follow it; combine can't fold across it; jump2 deletes the empty branches.
-  Tuned a copy at a time: dead branches for copies 1 and 2 byte-match with
-  3-4 forced, but copies 3-4 can't be done that way. Their branches split
-  the block between the two divisions, so `q` turns global, and local-alloc
-  then gives the second division's unused remainder (`divmodsi4`'s second
-  output) v1, which `q` needs across that division. Retail's `q` in v1
-  means that block was whole, so copies 3-4 came from something that keeps
-  a copy inside one block. The best all-steering C reaches registers 16/170
-  (park note). No matched function keeps such a copy of a variable; its
-  `move v0,sN; subu` hits are post-reload CSE turning a constant into a copy
-  of a register that holds it.
+- **`func_800BE914`'s natural form** (matched 2026-10-26 with steering,
+  MATCHING.md Diff patterns, the register-copy row). Copy 1 is plain C (`pa`
+  set again before its shift); copies 2-4 need a dead `c += t;` after the
+  `if` blocks (cse) and three always-zero `((t << 8) & 0xFF)` terms
+  (combine). The original kept those copies some other way: the second
+  division's remainder shows the block between the divisions was whole
+  (the `divmodsi4` row), so it wasn't a branch. Low priority.
 - **Finish the demo discs' symbols** (PROTOTYPES.md; applied: 135 function
   and 51 global names, unit `panel`, the Jampack enums, 43 prototypes, the
   leaked types and class names, 16 global types, 13 PANEL.CPP locals).
@@ -687,6 +650,16 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-26 (`func_800BE914` matched: every game function matches):**
+  re-reading cse.c and combine.c for a copy that survives both inside one
+  block: cse keeps it if the copy's variable is canonical (a dead `c += t;`
+  after the `if` blocks puts its last mention past every source's), and
+  combine keeps it if the variable is still live when combine reaches the
+  shift (an always-zero `((t << 8) & 0xFF)` in a later live expression,
+  which combine folds afterwards). With copy 1 from `pa` set again, the
+  shipped cc1 byte-matches. Steering, noted in the commit; each piece is
+  needed. Diff patterns row.
 
 - **2026-10-25 (`func_800BE914`: dead-branch steering tuned, still
   parked):** copies 1 and 2 byte-match with dead branches (3-4 forced);

@@ -3897,11 +3897,11 @@ void func_800BE7B4(s32 player, Ovl63Barrel *b) {
     }
 }
 
-#ifdef NON_MATCHING
-/* The parked C (structure, 3 of 170 short): all but the register copies the target makes
-   before the 2nd, 3rd and 4th >> 8 (move v0,X; sra Y,v0,8). The first copy comes from t = pa
-   with pa reused for the total before the shift. With tools/cc1's copy-split variant keeping
-   the other three, this C byte-matches (decomp.py block note). */
+/* Steering for the register copy the target makes before each >> 8 (move v0,X; sra Y,v0,8).
+   The first survives because pa is set again before its shift. The others read t, which the
+   dead c += t at the end makes cse's canonical register (mentioned after every source's last
+   use), and which each always-zero ((t << 8) & 0xFF) keeps live past its shift until combine
+   folds the term away, too late to fold the copy. */
 #define OVL63_CLAMP_SPEED(v, lim)                                           \
     if ((v) < 0) {                                                          \
         if ((v) < ((lim) = -(D_800C66E8 << 8))) {                           \
@@ -3925,6 +3925,8 @@ void func_800BE914(s32 pa, s32 pb) {
     s32 r;
     s32 lim;
     s32 t;
+    s32 k;
+    s16 c;
 
     ma = Heroes[pa].hero_move->mass;
     mb = Heroes[pb].hero_move->mass;
@@ -3945,13 +3947,17 @@ void func_800BE914(s32 pa, s32 pb) {
                 t = pa;
                 pa = mb + ma;
                 x = t >> 8;
-                pb = pb >> 8;
-                d = -(e * (x - pb));
+                t = pb;
+                pb = t >> 8;
+                d = -(e * (x - pb + ((t << 8) & 0xFF)));
                 r = (ma * x + mb * pb) << 8;
                 q = (d * mb + r) / pa;
-                x = az >> 8;
-                pb = bz >> 8;
-                az = e * (x - pb);
+                t = az;
+                x = t >> 8;
+                k = (t << 8) & 0xFF;
+                t = bz;
+                pb = t >> 8;
+                az = e * (x - pb + k + ((t << 8) & 0xFF));
                 r = (ma * x + mb * pb) << 8;
                 pb = q - d;
                 d = -az;
@@ -3964,10 +3970,8 @@ void func_800BE914(s32 pa, s32 pb) {
             }
         }
     }
+    c += t;
 }
-#else
-INCLUDE_ASM("asm/nonmatchings/overlays/ovl63/ovl63", func_800BE914);
-#endif
 
 s32 func_800BEBC0(s32 player)
 {
