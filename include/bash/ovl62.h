@@ -801,20 +801,29 @@ void func_800C0FE8(s32 i, UkaMaskSet *m);
 
 /* InitUkaPolarMask's extension (id 0x40000000, 0x1E0 bytes). */
 typedef struct UkaPolarExt {
-    /* 0x000 */ u8 pad0[0x10];
+    /* 0x000 */ u8 pad0[0xC];
+    /* 0x00C */ s32 unkC;
     /* 0x010 */ s32 unk10;
     /* 0x014 */ s32 unk14;
-    /* 0x018 */ u8 pad18[0x64 - 0x18];
+    /* 0x018 */ s32 unk18[4];
+    /* 0x028 */ s32 unk28[4];
+    /* 0x038 */ s32 unk38[4];
+    /* 0x048 */ s32 unk48[4];
+    /* 0x058 */ s32 unk58;
+    /* 0x05C */ s32 unk5C;
+    /* 0x060 */ s32 unk60;
     /* 0x064 */ s32 unk64;
     /* 0x068 */ s32 unk68;
     /* 0x06C */ s32 unk6C;
-    /* 0x070 */ u8 pad70[4];
+    /* 0x070 */ s32 unk70;
     /* 0x074 */ EXTengine *eng;
     /* 0x078 */ u8 pad78[0x88 - 0x78];
     /* 0x088 */ SLONG_XYZ pos;
-    /* 0x094 */ u8 pad94[0xA8 - 0x94];
+    /* 0x094 */ u8 pad94[0x9C - 0x94];
+    /* 0x09C */ s32 unk9C;
+    /* 0x0A0 */ u8 padA0[0xA8 - 0xA0];
     /* 0x0A8 */ NAS *bit;
-    /* 0x0AC */ s32 unkAC;
+    /* 0x0AC */ NAS *unkAC;
     /* 0x0B0 */ NAS *mask;
     /* 0x0B4 */ s32 unkB4;
     /* 0x0B8 */ UkaMaskSeg seg[16];
@@ -836,8 +845,10 @@ typedef struct UkaBitExt {
     /* 0x0C */ s32 unkC;
     /* 0x10 */ u8 pad10[8];
     /* 0x18 */ s32 unk18;
-    /* 0x1C */ u8 pad1C[4];
+    /* 0x1C */ s32 unk1C;
     /* 0x20 */ s32 unk20;
+    /* 0x24 */ u8 pad24[4];
+    /* 0x28 */ s32 unk28;
 } UkaBitExt;
 
 /* InitTransmuterBeam's extension (id 0x40000000, 0x1E0 bytes). */
@@ -893,6 +904,8 @@ extern u32 D_800D5458[4];
 extern s32 D_800D5474;
 extern s32 D_800D5478;
 extern s32 D_800D547C;
+extern s32 D_800D5480[4];
+extern s32 D_800D5490;
 extern s32 D_800D6008;
 extern s32 D_800D600C;
 
