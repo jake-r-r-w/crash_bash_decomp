@@ -89,7 +89,9 @@ The Tank pilot (ROADMAP.md, Phase 3), in this order:
 5. **The shift test**: boot it (RetroArch, CLAUDE.md) and play Tank to a
    win; write the route in docs/PLAYING.md.
 
-Alongside: `func_800193A8` without its register pins (Phase 2's last box).
+`func_800193A8` (`draw_verts`, Phase 2's last box) can't match without its
+register pins (Open leads); whether to keep them as a recorded exception is
+the user's call. The Tank pilot starts next session.
 
 The matching method stays in MATCHING.md for reworks. Its last addition
 (2026-10-25..26): when a function won't match, prove the one compiler
@@ -98,6 +100,18 @@ search for C that makes it, with the variant's log as the check.
 
 ## Open leads
 
+- **`draw_verts` (`func_800193A8`) needs its register pins** (proved
+  2026-10-26). The target is a leaf that saves only s2-s4 (frame 24: two
+  locals at 0/4, then s2, s3, s4) and keeps `xy`, `z`, `flags` in
+  `$20`/`$19`/`$18`, while `$15` and `$25` are never used. mips.h has no
+  `REG_ALLOC_ORDER`, so global.c's `find_reg` takes the lowest free
+  register; a pseudo reaches `$20` with `$16`/`$17` free only through a
+  hard-register preference, which needs `$20` in the RTL, and in C only
+  `register ... asm("$20")` puts it there. Anything that took `$16`/`$17`
+  away (a pseudo, a clobber) would make them live and saved, which the
+  target doesn't. Without the pins it builds with t-registers and no frame
+  (structure 171/173). The original was almost certainly written with
+  these register variables (Sony-style GTE code).
 - **The steering matches' natural forms** (low priority; each is matched):
   - `func_800B4048`'s tail (MATCHING.md Diff patterns, the `QTY_CMP_PRI`
     row): `t = v; v = (s32)Heroes;` keeps the copy through cse2 and
@@ -468,6 +482,12 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-26 (`draw_verts` pins: no pin-free form):** the register pins
+  can't go: the target's `$18`-`$20` with `$16`/`$17` unused and t-registers
+  free is reachable only by a hard-register preference, i.e. the pins
+  (global.c `find_reg`, no `REG_ALLOC_ORDER` on MIPS). Pin-free build:
+  structure 171/173. Open lead; the Tank pilot moves to next session.
 
 - **2026-10-26 (roadmap restructured around a Tank pilot):** Phase 2 is
   now Matching (every matching item, plus `func_800193A8`'s pins), Phase 3
