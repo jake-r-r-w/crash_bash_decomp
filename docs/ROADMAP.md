@@ -76,7 +76,8 @@ Every game function becomes C that compiles to the retail bytes, with the
 tools that needs: the disc packer, the asset extractor and the library.
 
 **Done when** every game function in `main.exe`, the engine and the slot
-overlays matches in C only (no inline asm but the SDK's `gte_*` macros), the
+overlays matches in C only (no inline asm but the SDK's `gte_*` macros and
+`draw_verts`'s original register pins), the
 library is Sony's objects, `CRASHBSH.DAT` extracts, and the disc packer
 rebuilds the retail image.
 
@@ -121,9 +122,11 @@ rebuilds the retail image.
   PROTOTYPES.md, Earlier compiles of a function).
 - [x] Match every function in the slot overlays (2026-10-26; the last three
   with cc1 analysis variants, `tools/cc1/`).
-- [ ] Only C everywhere: `func_800193A8` (`src/main/80017164.c`) still pins
-  three registers (`register s32 xy asm("$20")`, ...), from before the rule.
-  Rematch it without them.
+- [x] Only C everywhere, with one recorded exception: `draw_verts`
+  (`func_800193A8`, `src/main/80017164.c`) keeps its three register pins
+  (`register s32 xy asm("$20")`, ...). They are the original's register
+  variables: no pin-free C can give the target's `$18`-`$20` with `$16`/`$17`
+  unused (2026-10-26; CONVENTIONS.md, Matching rules).
 
 ## Phase 3 - The Tank pilot
 

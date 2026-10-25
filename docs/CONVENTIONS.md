@@ -88,10 +88,13 @@ A file is finished when every function in it reaches level 4.
   `asm()` bodies.
 - Only C. No inline asm of any kind: no `asm()` statements, register pins
   (`register int x asm("$20")`) or empty `asm("")` barriers, in the body or in a
-  macro or static inline it uses; `decomp.py done` refuses them. The one
-  exception is the SDK's `gte_*` macros (GTE coprocessor instructions C can't
-  express). `func_800193A8` (main.exe) still pins registers from before this
-  rule: plain allocation never makes that choice.
+  macro or static inline it uses; `decomp.py done` refuses them. Two
+  exceptions: the SDK's `gte_*` macros (GTE coprocessor instructions C can't
+  express), and `draw_verts`'s (`func_800193A8`, main.exe) three register
+  variables, which are the original's (decided 2026-10-26). gcc reaches its
+  `$18`-`$20` with `$16`/`$17` unused only through those pins (AGENT_LOG.md,
+  Open leads), and they emit no instructions of their own. No other
+  function gets one.
 - Natural C first: what a 1999 programmer would have written, with the
   diff fixed by types, statement order and real code shapes found from the
   evidence and the compiler's rules (MATCHING.md). C that only steers the

@@ -15,7 +15,8 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
 - Never commit game data or `ext/`; never commit a match except via
   `decomp.py done NAME --commit`.
 - Only C: no inline asm of any kind (the gate refuses it, in macros and inlines
-  too; the SDK's `gte_*` macros are the exception). Natural C first; C that only
+  too; the SDK's `gte_*` macros are the exception, and `draw_verts`'s original
+  register pins the one recorded exception, CONVENTIONS.md). Natural C first; C that only
   steers the compiler (a `do { } while (0)`, an extra temporary) is fine when
   nothing natural matches.
 - Matching is by hand, one function per commit, through the validation gate

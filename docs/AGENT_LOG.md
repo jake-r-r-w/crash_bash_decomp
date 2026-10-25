@@ -19,7 +19,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `make check` and `make disc-check` OK. Live figures: `decomp.py progress`
   / `docs/index.html`.
 - [ROADMAP.md](ROADMAP.md) (restructured 2026-10-26): Phase 1 (types and
-  names) is done, Phase 2 (matching) all but `func_800193A8`'s pins. Phase 3
+  names) and Phase 2 (matching) are done. Phase 3
   is the **Tank pilot**: `ovl5f` all the way to source-only (data and
   rodata as C, named, typed) and shift-tested, building the tools and the
   recipe; Phase 4 repeats it per slot overlay, Phase 5 does the engine and
@@ -27,8 +27,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
   typed, 92 `INCLUDE_RODATA`, 1.97% of the data is C.
 - Matches are C only, natural C first (CONVENTIONS.md, Matching rules):
   steering C counts as matched, inline asm is refused by the gate. One
-  exception predates the rule: `func_800193A8` (`src/main/80017164.c`)
-  still pins three registers (`register s32 xy asm("$20")`, ...). The
+  recorded exception (2026-10-26): `draw_verts` (`func_800193A8`,
+  `src/main/80017164.c`) keeps its three original register pins
+  (`register s32 xy asm("$20")`, ...; CONVENTIONS.md). The
   last three matches (`func_800B4048`, `PlotTransmuterBeam`,
   `func_800BE914`) are steering; their natural forms are Open leads.
 - Files: `main/main` is nine files since 2026-10-23 (`main`, `dbase`,
@@ -89,9 +90,7 @@ The Tank pilot (ROADMAP.md, Phase 3), in this order:
 5. **The shift test**: boot it (RetroArch, CLAUDE.md) and play Tank to a
    win; write the route in docs/PLAYING.md.
 
-`func_800193A8` (`draw_verts`, Phase 2's last box) can't match without its
-register pins (Open leads); whether to keep them as a recorded exception is
-the user's call. The Tank pilot starts next session.
+The Tank pilot starts next session.
 
 The matching method stays in MATCHING.md for reworks. Its last addition
 (2026-10-25..26): when a function won't match, prove the one compiler
@@ -101,7 +100,7 @@ search for C that makes it, with the variant's log as the check.
 ## Open leads
 
 - **`draw_verts` (`func_800193A8`) needs its register pins** (proved
-  2026-10-26). The target is a leaf that saves only s2-s4 (frame 24: two
+  2026-10-26; kept as a recorded exception to only-C, CONVENTIONS.md). The target is a leaf that saves only s2-s4 (frame 24: two
   locals at 0/4, then s2, s3, s4) and keeps `xy`, `z`, `flags` in
   `$20`/`$19`/`$18`, while `$15` and `$25` are never used. mips.h has no
   `REG_ALLOC_ORDER`, so global.c's `find_reg` takes the lowest free
@@ -487,7 +486,8 @@ Newest first, a few lines each. Details are in the commits.
   can't go: the target's `$18`-`$20` with `$16`/`$17` unused and t-registers
   free is reachable only by a hard-register preference, i.e. the pins
   (global.c `find_reg`, no `REG_ALLOC_ORDER` on MIPS). Pin-free build:
-  structure 171/173. Open lead; the Tank pilot moves to next session.
+  structure 171/173. Kept as a recorded exception to only-C (CONVENTIONS.md);
+  ROADMAP Phase 2 is ticked. The Tank pilot moves to next session.
 
 - **2026-10-26 (roadmap restructured around a Tank pilot):** Phase 2 is
   now Matching (every matching item, plus `func_800193A8`'s pins), Phase 3
