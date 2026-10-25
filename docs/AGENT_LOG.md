@@ -266,7 +266,15 @@ and current tools).
   retail differ only by the division checks. Left: a construct that keeps an
   SImode copy through cse and combine with no other trace, maybe a C++ one
   (the game was C++; `cc1plus` is in the container). Check candidates with
-  `CC1_COPY_LOG=ashiftrt:8` (tools/cc1/README.md, Patches).
+  `CC1_COPY_LOG=ashiftrt:8` (tools/cc1/README.md, Patches). Steering that
+  works for one copy: a dead `if (t) c++; else c--;` (unused `s16 c`)
+  between the copy and its shift. Two jumps reach its join, so cse can't
+  follow it; combine can't fold across it; jump2 deletes the empty branches.
+  With it for copy 2 and copies 3-4 forced, only the total's `addu` is out
+  of place. On all four copies it moves `az`/`bz` (48-61/170), so tune it a
+  copy at a time with the others forced. No matched function keeps such a
+  copy of a variable; its `move v0,sN; subu` hits are post-reload CSE
+  turning a constant into a copy of a register that holds it.
 - **Finish the demo discs' symbols** (PROTOTYPES.md; applied: 135 function
   and 51 global names, unit `panel`, the Jampack enums, 43 prototypes, the
   leaked types and class names, 16 global types, 13 PANEL.CPP locals).
@@ -674,6 +682,13 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-25 (`func_800BE914`: steering probes, still parked):** a dead
+  `if/else` between a copy and its shift keeps that copy and leaves no code
+  (one copy: one insn out of place; all four: 48/170). Initialized 8-aligned
+  temps still move every register. The matched game keeps no copy of this
+  kind (its `move; subu` copies are post-reload CSE of constants). Park
+  note, Open lead.
 
 - **2026-10-25 (`func_800BE914`: the copies proved the only decision, still
   parked):** new `tools/cc1/patches/copy-split.patch` gives chosen insns'
