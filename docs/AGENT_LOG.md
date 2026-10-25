@@ -16,9 +16,9 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `main.exe` function matches and `main.c` is split (2026-10-23); Phase 2's
   naming and data are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2530/2537 game functions matched (96.71% of game code bytes, 2026-10-25):
+- 2531/2537 game functions matched (97.29% of game code bytes, 2026-10-25):
   **main.exe, the engine, ovl5e, ovl60, ovl61, ovl64, ovl65, ovl66, ovl67,
-  ovl69 and ovl6a are complete**; 7 left (ovl5d 1, ovl5f 2, ovl62 2,
+  ovl69 and ovl6a are complete**; 6 left (ovl5d 1, ovl5f 1, ovl62 2,
   ovl63 1, ovl68 1), every one tried by the swarm at least once. All 564
   PsyQ functions (Sony objects). Four parked by hand, `func_800BE914`,
   `PlotTransmuterBeam` (one instruction off), `func_800B4048` and
@@ -57,7 +57,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**The overlays' last 7 functions**, all tried by the swarm. Hand-match
+**The overlays' last 6 functions**, all tried by the swarm. Hand-match
 them from their checkpoints, closest first (Open leads), with their
 earlier compiles (`decomp.py protos`) as evidence. Pointing the swarm at
 functions it had never tried (`--only` the untried list, smallest first,
@@ -145,10 +145,15 @@ and current tools).
   for `inv = 0x21 - lvl;` written earlier. `func_800B6708` (registers
   27/411) went the same way: its three `goto` loops were unrotated real
   loops (MATCHING.md, Diff patterns). Try the natural form of such drafts
-  first. The checkpoints left (stage, differing insns; read
+  first. The checkpoint left (stage, differing insns; read
   `../crash_bash_decomp-swarm/checkpoints/*/best.json` from the host, the
-  container doesn't mount it): ovl5f `800B77E8` 1410/1463 and ovl5d
-  `800BC038` 1793/2152 (`CheckMineToBoss` is parked, below). ovl63
+  container doesn't mount it, so copy `best.diff` into `scratch/` first):
+  ovl5d `800BC038` 1793/2152 (`CheckMineToBoss` is parked, below). ovl5f
+  `800B77E8` (structure 1410/1463, 5852 bytes) matched in one session from
+  its checkpoint, one block group at a time with `regions`: each fix was a
+  natural shape the swarm had folded, a field read in its own test, `if`/`else`
+  arms with their own store or call where it had a `?:` or one conditional set,
+  and the order of two statements (MATCHING.md, Diff patterns, four rows). ovl63
   `800B980C` (structure 305/402) matched by undoing the swarm's hand-made
   shapes one by one: its `player = arg0` copy (the parameter itself has a
   REG_EQUIV that halves its global.c priority), the pointers made before a
@@ -655,6 +660,15 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-25 (hand: ovl5f `func_800B77E8` matched, 5852 bytes):** from the
+  swarm's checkpoint (structure 1410/1463, 1401 exact). `regions` block by
+  block: the turret test reading its field directly (sched1 birthing), the
+  fire delay and the four weapons' sfx as `if`/`else` arms (jump2 merges the
+  tails; the sfx arms also end cse's path, so the later 1 and 5 constants get
+  fresh registers), and case 2's `SpeedZ` before `Status` (reload_cse turns
+  the shift into `sllv` by the stored 1). Dropped three swarm shapes on the way.
+  Four Diff patterns rows.
 
 - **2026-10-25 (hand: `func_800B4048` retried with inlines, still parked):**
   no inline shape keeps the `t = v` copy: cse deletes an argument copy like
