@@ -208,17 +208,22 @@ and current tools).
   was tried). At 0xc14 the target reads `TBV->mode` once through a base in
   a1 (`lui v0; addiu a1,v0,%lo(D_8005A614); lh v1,0x34(a1)`), where any
   single read folds into `lui; lh %lo(sym+0x34)`. The target's base was
-  live past the read until global alloc: passing it to `InitDelete` as a
-  second argument gives these three instructions exactly, but that's no
-  source (`InitScriptFX` takes one parameter) and it pushes `bx` out of a0
-  in all three spawns. Look for a later use of the base that disappears
-  after allocation (a no-op copy, a store reload_cse deletes). Case 1 of the
-  hit loop's switch still steers: `one = 1` before the 0xB4 store gives the
-  constant 1 enough lifetime for loop.c (MATCHING.md, Diff patterns, the
-  t3..t6 row); natural C must give it lifetime 3, not 2, between its set and
-  the `hero_last_action` store without changing the 38/18/28 store order.
-  Try shapes with `try PlotTransmuterBeam --file`, or the small harness in
-  `scratch/ptb/t/` (gone after a clean).
+  live past the read until global alloc, through the second test, yet no
+  instruction uses it again. Passing it to `InitDelete` as a second argument
+  gives these three instructions, but no call argument can be the hidden
+  use: calls.c loads register arguments a0 first (MIPS has no
+  `PUSH_ROUNDING`), sched1 keeps the later a1 move at the call, and the a0
+  move drifts to the block top, taking a0 from `bx` (MATCHING.md, Diff
+  patterns, the unfolded-base row). Retried 2026-10-25 with inlines: a view
+  accessor or predicate with the view as a parameter doesn't keep it (with
+  both tests through the parameter, the first read matches but the second
+  reads through the base too), and every build compiles this spawn
+  identically. Next: a later use that survives global alloc and leaves no
+  instruction, other than a call argument (a copy into a pseudo that shares
+  a1, a store-back reload_cse deletes). Case 1's `one = 1` steering is gone:
+  the hit switch's cases 0-2 call an inline `TBSetHeroEffect(ext, i, k)`
+  (its argument copy gives kind 1 its own pseudo). Try shapes with `try
+  PlotTransmuterBeam --file` on a copy with the parked C enabled.
 - **Inlines explain steering that parks still use.** `Plot_PogoPadlock`
   (parked at registers 2/350) matched on 2026-10-25 once three of its
   hand-made shapes turned out to be inlined functions (MATCHING.md, Diff
@@ -230,12 +235,14 @@ and current tools).
   written-out C can't: `expand_inline_function` copies each argument into a
   pseudo of its own before the body (`copy_to_mode_reg`, unless the
   parameter is `const`), opens a binding contour whose note lands inside the
-  block, and gives the body one return label. Try one wherever a park needs
-  an extra note or early-set pseudo: `func_800BE914`'s copies, and
-  `PlotTransmuterBeam`'s long-lived base and `one = 1`. (An argument copy is
-  no help for a copy that has to survive cse: cse deletes it like a plain
-  one, as `func_800B4048`'s retry showed.) The game was C++, so small helpers
-  and accessors were likely inline.
+  block, and gives the body one return label. `PlotTransmuterBeam`'s `one =
+  1` was such an argument too (2026-10-25, `TBSetHeroEffect`). Try one
+  wherever a park needs an extra note or early-set pseudo: `func_800BE914`'s
+  copies. (An argument copy is no help for a copy that has to survive cse:
+  cse deletes it like a plain one, as `func_800B4048`'s retry showed; nor
+  for a pointer that must outlive its one use, as `PlotTransmuterBeam`'s
+  base showed.) The game was C++, so small helpers and accessors were likely
+  inline.
 - **`func_800B4048`'s copy** (parked 2026-10-24 at instructions 10/255,
   7/255 since 2026-10-25; the `decomp.py block` note lists what was tried).
   The tail copies `t = v` (`addu v0,v1,zero`) before the `*60` chain that
@@ -693,6 +700,16 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-25 (hand: `PlotTransmuterBeam` retried with inlines, still
+  parked at 2310/2311; `SetHeroAction` retyped):** case 1's `one = 1`
+  steering became an inline, `TBSetHeroEffect(ext, i, k)` for the hit
+  switch's cases 0-2, at the same score. The last instruction stays open:
+  no inline shape keeps the base live, and calls.c's argument order (a0
+  first, no `PUSH_ROUNDING`) rules out the second-`InitDelete`-argument
+  reading. Park note, Open lead and two Diff patterns rows updated. Before
+  that, `SetHeroAction` took `s32 player` and its 349 casts went (`make
+  check` OK); `SetHeroSeq` has the same slip (Open leads).
 
 - **2026-10-25 (hand: ovl62 `PlotUkaPolarMask` matched, 6472 bytes):** from
   the swarm's checkpoint (structure 800/1618, 1575 exact, four blocks left).

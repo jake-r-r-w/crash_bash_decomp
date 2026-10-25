@@ -4168,6 +4168,15 @@ void InitTransmuterBeam(NAS *m) {
 }
 
 #ifdef NON_MATCHING
+/* The hit switch's cases 0-2 in PlotTransmuterBeam: hero i's timer, then its
+   effect kind in both slots. As an inline call, case 1's kind 1 gets its own
+   argument pseudo (copy_to_mode_reg), which loop.c needs (park note). */
+static inline void TBSetHeroEffect(TransBeamExt *e, s32 i, s32 k) {
+    e->unk38[i] = 0xB4;
+    e->unk18[i] = k;
+    e->unk28[i] = k;
+}
+
 /* The parked C (structure 2310/2311): only 0xc14 differs, where the target keeps
    &D_8005A614 in a1 for a single lh (decomp.py block note). */
 void PlotTransmuterBeam(NAS *m) {
@@ -4213,7 +4222,6 @@ void PlotTransmuterBeam(NAS *m) {
     s32 yaw;
     s32 pitch;
     u16 mode;
-    s32 one;
 
     ext = FindExtension(m, 0x40000000);
     if (ext == NULL) {
@@ -4569,9 +4577,7 @@ void PlotTransmuterBeam(NAS *m) {
                 func_800BD058(i, ext->unk28[i], 0);
                 ext->unk60 = 0x78;
                 ext->unk64 = Random(0x3C) + 0xD2;
-                ext->unk38[i] = 0xB4;
-                ext->unk18[i] = 0;
-                ext->unk28[i] = 0;
+                TBSetHeroEffect(ext, i, 0);
                 Heroes[i].hero_move->mass = 0x50;
                 D_800D6924[i] = 0x40;
                 ext->unk70 = 0;
@@ -4582,10 +4588,7 @@ void PlotTransmuterBeam(NAS *m) {
                 func_800BD058(i, ext->unk28[i], 1);
                 ext->unk60 = 0x78;
                 ext->unk64 = Random(0x3C) + 0xD2;
-                one = 1; /* steering: loop.c's movable threshold (park note) */
-                ext->unk38[i] = 0xB4;
-                ext->unk18[i] = one;
-                ext->unk28[i] = one;
+                TBSetHeroEffect(ext, i, 1);
                 Heroes[i].hero_move->mass = 0x258;
                 D_800D6924[i] = 0x20;
                 ext->unk70 = 0;
@@ -4596,9 +4599,7 @@ void PlotTransmuterBeam(NAS *m) {
                 func_800BD058(i, ext->unk28[i], 2);
                 ext->unk60 = 0x78;
                 ext->unk64 = Random(0x3C) + 0xD2;
-                ext->unk38[i] = 0xB4;
-                ext->unk18[i] = 2;
-                ext->unk28[i] = 2;
+                TBSetHeroEffect(ext, i, 2);
                 ext->unk70 = 0xF;
                 PlaySfx(0x450, NULL, NULL, 0x1000, 0x1E00, 0);
                 SetHeroAction(i, 0x4F);
