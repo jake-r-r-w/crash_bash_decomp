@@ -5128,31 +5128,66 @@ def subsegments(yaml_path):
     return out
 
 
-def data_summary(funcs, stat, proj):
-    """Data bytes (everything outside code subsegments) and how much of it is produced by C:
-    rodata migrated into matched functions, plus data subsegments owned by a C file (.data etc.)
-    with nothing left in asm."""
+def data_items(funcs, stat, proj):
+    """Every data block outside the code subsegments as [unit, file, symbol, bytes, in C]: rodata
+    migrated into a matched function and data subsegments owned by a C file (.data etc.) with
+    nothing left in asm count as C. Asm-owned subsegments are cut at their splat labels, so the
+    dashboard's data map shows each table. The blocks tile the subsegments exactly."""
     syms = sym_names()  # once: inside the comprehension it re-read every symbol file per function
     matched = {cur_name(k, e, syms) for k, e in funcs.items() if stat.get(k) == "matched"}
-    total = done = 0
+    out = []
     inputs, cache = split_inputs(), jload(RODATA_CACHE, {})
-    yamls = [yaml_of(proj['name'])] + [yaml_of(o['name']) for o in proj.get("overlays", [])]
-    for y in yamls:
+    units = [(proj['name'], "main exe")] + [(o['name'], o['name']) for o in proj.get("overlays", [])]
+    for yname, unit in units:
+        y = yaml_of(yname)
         if not os.path.exists(y):
             continue
         for start, end, typ, name in subsegments(y):
             if typ not in DATA_TYPES or end is None:
                 continue
-            total += end - start
             if typ == ".rodata":
-                syms = [s for s in rodata_syms(name, inputs, cache) if start <= s[0] < end]
-                for i, (rom, sym, owners) in enumerate(syms):
-                    nxt = syms[i + 1][0] if i + 1 < len(syms) else end
-                    if len(owners) == 1 and owners[0] in matched and not os.path.exists(
-                            f"asm/nonmatchings/{name}/{sym}.s"):
-                        done += nxt - rom
-            elif typ.startswith(".") and not glob.glob(f"asm/nonmatchings/{name}/D_*.s"):
-                done += end - start
+                rs = [s for s in rodata_syms(name, inputs, cache) if start <= s[0] < end]
+                if not rs or rs[0][0] > start:
+                    out.append([unit, name, name, (rs[0][0] if rs else end) - start, False])
+                for i, (rom, sym, owners) in enumerate(rs):
+                    nxt = rs[i + 1][0] if i + 1 < len(rs) else end
+                    out.append([unit, name, sym, nxt - rom, len(owners) == 1 and owners[0] in matched
+                                and not os.path.exists(f"asm/nonmatchings/{name}/{sym}.s")])
+            elif typ.startswith("."):
+                out.append([unit, name, name, end - start, not glob.glob(f"asm/nonmatchings/{name}/D_*.s")])
+            else:
+                out += [[unit, name, sym, size, False] for sym, size in asm_data_labels(name, typ, start, end)]
+    return out
+
+
+def asm_data_labels(name, typ, start, end):
+    """[(label, bytes)] tiling an asm data subsegment, from splat's dlabel lines and the ROM offset
+    comment on the line after each; the whole subsegment when its file has no labels."""
+    p = f"asm/data/{name}.{typ}.s"
+    labels = []
+    if os.path.exists(p):
+        pend = None
+        for line in read(p).splitlines():
+            m = re.match(r"\s*dlabel\s+(\S+)", line)
+            if m:
+                pend = m.group(1)
+                continue
+            m = pend and re.match(r"\s*/\*\s*([0-9A-Fa-f]+)\s", line)
+            if m:
+                rom = int(m.group(1), 16)
+                if start <= rom < end and (not labels or rom > labels[-1][1]):
+                    labels.append((pend, rom))
+                pend = None
+    if not labels or labels[0][1] > start:
+        labels.insert(0, (os.path.basename(name), start))
+    return [(sym, (labels[i + 1][1] if i + 1 < len(labels) else end) - rom) for i, (sym, rom) in enumerate(labels)]
+
+
+def data_summary(funcs, stat, proj, items=None):
+    """Data bytes (everything outside code subsegments) and how much of it is produced by C."""
+    items = data_items(funcs, stat, proj) if items is None else items
+    total = sum(it[3] for it in items)
+    done = sum(it[3] for it in items if it[4])
     return {"done_b": done, "total_b": total, "pct": 100.0 * done / total if total else 0.0}
 
 
@@ -5267,12 +5302,12 @@ MAP_STATUS = {"matched": "m", "blocked": "p"}   # anything else still to match: 
 
 def page_map(funcs, stat, proj, syms):
     """Every game function for the page's code map, in unit, file and address order: [seg, unit,
-    count] per file, then per function its name, size and status letter (m matched, p parked,
-    t to do). The same functions as the game totals."""
+    count] per file, then per function its name, size, status letter (m matched, p parked,
+    t to do) and whether it has a real name (nm: 1 or 0). The same functions as the game totals."""
     rows = sorted((unit_of(e, proj), e["seg"], e.get("rom", 0), cur_name(k, e, syms), e["size"],
                    MAP_STATUS.get(stat[k], "t"))
                   for k, e in funcs.items() if not is_lib(e, proj) and stat[k] not in ("asm", "sony", "unsplit"))
-    out = {"segs": [], "n": [], "s": [], "t": ""}
+    out = {"segs": [], "n": [], "s": [], "t": "", "nm": ""}
     for un, seg, _, name, size, st in rows:
         if not out["segs"] or out["segs"][-1][0] != seg:
             out["segs"].append([seg, un, 0])
@@ -5280,6 +5315,23 @@ def page_map(funcs, stat, proj, syms):
         out["n"].append(name)
         out["s"].append(size)
     out["t"] = "".join(r[5] for r in rows)
+    out["nm"] = "".join("0" if PLACEHOLDER_NAME.match(r[3]) else "1" for r in rows)
+    return out
+
+
+def page_data_map(items):
+    """data_items() packed like page_map: [file, unit, count] per file, then per block its name,
+    bytes and status letter (c in C, a still asm)."""
+    out = {"segs": [], "n": [], "s": [], "t": ""}
+    for un, seg, sym, size, done in items:
+        if size <= 0:
+            continue
+        if not out["segs"] or out["segs"][-1][0] != seg:
+            out["segs"].append([seg, un, 0])
+        out["segs"][-1][2] += 1
+        out["n"].append(sym)
+        out["s"].append(size)
+        out["t"] += "c" if done else "a"
     return out
 
 
@@ -5323,8 +5375,9 @@ def cmd_progress(a):
         f.write(text + "\n")
     os.replace("docs/progress.json.tmp", "docs/progress.json")
     # the page gets the history packed and the code map; progress.json keeps the plain points
-    page = {k: v for k, v in data.items() if k != "history"}
-    page.update(hist=page_history(hist), map=page_map(funcs, stat, proj, syms))
+    page = {k: v for k, v in data.items() if k not in ("history", "recent", "blocked")}
+    page.update(hist=page_history(hist), map=page_map(funcs, stat, proj, syms),
+                dmap=page_data_map(data_items(funcs, stat, proj)))
     write("docs/index.html", read(DASHBOARD).replace("/*DATA*/null", json.dumps(page, separators=(",", ":"))
                                                      .replace("</", "<\\/")))
     g, l = s["game"], s["lib"]

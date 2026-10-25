@@ -482,6 +482,17 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-26 (dashboard: named and data maps):** the code map is now a
+  Map with three views, Game code, Functions named and Data in C, each with
+  its largest unfinished items. The data view's blocks come from
+  `decomp.py`'s new `data_items` (rodata symbols, C-owned subsegments, asm
+  subsegments cut at splat's `dlabel`s), which `data_summary` now sums, so
+  the tile and the map agree (11972 / 606943 bytes). The swarm card moved to
+  the bottom; the Units table, Recent matches, Parked and the Parked tile
+  are gone (`progress.json` still records recent and parked). Note: the
+  engine's `engine_slot` (147 KB, the slot overlays' load area) counts as
+  data, a quarter of the data total.
+
 - **2026-10-26 (`draw_verts` pins: no pin-free form):** the register pins
   can't go: the target's `$18`-`$20` with `$16`/`$17` unused and t-registers
   free is reachable only by a hard-register preference, i.e. the pins

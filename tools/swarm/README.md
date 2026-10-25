@@ -72,7 +72,7 @@ Needs Docker and `claude` on `PATH` (logged in once with `claude auth login`). W
 ## Live status on the dashboard
 
 While a run is on, the orchestrator writes `docs/swarm.js` in your checkout (git-ignored) and
-`docs/index.html` shows it as a Swarm card: the state, time and spend against the limits, what
+`docs/index.html` shows it as a Swarm card at the bottom of the page: the state, time and spend against the limits, what
 each slot and permuter is on, the gate's queue, this run's outcomes, the log's last lines and the
 recent runs (from `swarm.log` and `ledger.jsonl`, read once per run). It's written from what the
 run holds in memory (no Docker, no git) when something changes, and every 15 s as a heartbeat; a

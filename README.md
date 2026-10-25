@@ -34,11 +34,12 @@ your own copy of the game.
 Progress counts bytes of code produced by matching C, game code and PsyQ
 reported apart. The dashboard is [`docs/index.html`](docs/index.html)
 (self-contained; works from disk or GitHub Pages on `/docs`): progress over
-time and per day, a code map of every game function by size and status, each
-unit's progress and trend, recent matches and parked functions. `decomp.py
+time and per day, and a map that shows, by size, every game function matched
+or not, every function named or not, or every data block in C or still asm,
+each with the largest ones left. `decomp.py
 progress` regenerates it from `tools/scripts/dashboard.html` (`make progress`,
 and every match through `done`), with its source scans cached in `build/cache/`.
-While a swarm runs, the page also shows the run's live status from
+While a swarm runs, the page also shows the run's live status (at the bottom) from
 `docs/swarm.js`, a local git-ignored file ([tools/swarm](tools/swarm/README.md)).
 A function counts only when the exe and all overlays still rebuild
 byte-identical.

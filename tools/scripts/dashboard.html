@@ -39,17 +39,9 @@ svg text{fill:var(--muted);font-size:11px}
 .legend i.sw{width:10px;height:10px;border-radius:2px}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{text-align:left;color:var(--ink2);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--axis);white-space:nowrap}
-th[data-k]{cursor:pointer}
 td{padding:6px 8px;border-bottom:1px solid var(--grid);font-variant-numeric:tabular-nums;vertical-align:top}
 td.num,th.num{text-align:right}
-tr.grp td{color:var(--ink2);font-weight:600;font-size:12px;padding-top:14px;border-bottom:1px solid var(--axis)}
 tr.idle td{color:var(--muted)}
-.stack{display:inline-flex;gap:2px;width:140px;height:8px;vertical-align:middle;margin-right:6px}
-.stack>span{display:block;height:100%}
-.stack>span:first-child{border-radius:4px 0 0 4px}.stack>span:last-child{border-radius:0 4px 4px 0}
-.stack>span:only-child{border-radius:4px}
-.spark{vertical-align:middle;margin-right:6px}
-.gain{display:inline-block;min-width:64px;text-align:right}
 .tag{font-size:11px;color:var(--ink2);border:1px solid var(--axis);border-radius:4px;padding:0 4px;margin-left:6px;white-space:nowrap}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .two>.card{margin-top:0}
@@ -71,8 +63,10 @@ font-size:12px;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.15);display:non
 details summary{cursor:pointer;color:var(--ink2);font-size:12px;font-weight:600;margin:16px 0 8px}
 code{font-size:12px}
 #map svg{display:block;touch-action:manipulation}
-#map rect.m{fill:var(--s1)}#map rect.p{fill:var(--warn)}#map rect.t{fill:var(--todo)}
-#map .cl{font-size:11px;pointer-events:none}#map .cl.m{fill:#fff}#map .cl.p{fill:#0b0b0b}#map .cl.t{fill:var(--ink2)}
+#map rect.m{fill:var(--s1)}#map rect.p{fill:var(--warn)}#map rect.n{fill:var(--s3)}#map rect.c{fill:var(--s4)}
+#map rect.t,#map rect.u,#map rect.a{fill:var(--todo)}
+#map .cl{font-size:11px;pointer-events:none}#map .cl.m,#map .cl.n,#map .cl.c{fill:#fff}#map .cl.p{fill:#0b0b0b}
+#map .cl.t,#map .cl.u,#map .cl.a{fill:var(--ink2)}
 #map .ul{fill:var(--ink2);font-weight:600;cursor:pointer}
 #map .ul.z{cursor:default}
 .pill{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;border:1px solid var(--grid);border-radius:999px;padding:2px 10px}
@@ -87,9 +81,7 @@ code{font-size:12px}
 .gate{margin-top:8px}
 .log{font:12px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--ink2);overflow-wrap:anywhere}
 .log .lt{color:var(--muted);margin-right:8px}
-.park summary{margin:8px 0}
-.park .note{font-size:13px;color:var(--ink2);margin:0 0 10px;white-space:pre-wrap}
-@media (max-width:760px){.two{grid-template-columns:1fr}.opt{display:none}.stack{width:70px}.spark{display:none}}
+@media (max-width:760px){.two{grid-template-columns:1fr}.opt{display:none}}
 </style>
 </head>
 <body>
@@ -97,18 +89,16 @@ code{font-size:12px}
 <div class="head"><div><h1 id="title">Decomp progress</h1><div class="sub" id="sub"></div></div>
 <div class="scale" id="theme" role="group" aria-label="Theme"></div></div>
 <div class="tiles" id="tiles"></div>
-<section class="card section" id="swarm" hidden aria-label="Swarm status"></section>
 <div class="ctlrow"><span class="label">Show</span><div class="scale" id="measure" role="group" aria-label="Measure"></div>
 <span class="label">by</span><div class="scale" id="scale" role="group" aria-label="Time scale"></div></div>
 <section class="card"><h2>Progress over time</h2><div class="legend" id="legend"></div><div id="chart"></div>
 <div class="sub2" id="pace-title">Matched per day</div><div id="pace"></div>
 <details id="tbl"><summary>Show as a table</summary><div class="wrap"><table id="htable"></table></div></details></section>
-<section class="card section"><div class="head"><h2>Code map</h2><div class="legend" id="mlegend" style="margin:0"></div></div>
+<section class="card section"><div class="head"><h2>Map</h2><div class="scale" id="mmode" role="group" aria-label="What the map shows"></div></div>
+<div class="legend" id="mlegend"></div>
 <div class="small" id="mcap"></div><div class="chips" id="mchips" role="group" aria-label="Unit shown in the map"></div>
 <div id="map"></div><div class="sub2" id="left-title">Largest functions left</div><div class="wrap"><table id="left"></table></div></section>
-<section class="card section"><h2>Units</h2><div class="small" id="ucap"></div><div class="wrap"><table id="units"></table></div></section>
-<div class="two section"><section class="card"><h2>Recent matches</h2><div class="wrap"><table id="recent"></table></div></section>
-<section class="card"><h2>Parked</h2><div id="parked"></div></section></div>
+<section class="card section" id="swarm" hidden aria-label="Swarm status"></section>
 </main>
 <div class="tip" id="tip" role="tooltip"></div>
 <script>
@@ -146,30 +136,39 @@ function showTip(html,ev){tip.innerHTML=html;tip.style.display="block";
 const hideTip=()=>{tip.style.display="none"};
 
 // ---------------------------------------------------------------- data
-// history: columns (t: seconds since the point before) and each unit's [point, bytes, functions]
-// where it changes, made dense here
-const P=[],UH={};
+// history: columns (t: seconds since the point before), made dense here
+const P=[];
 (function(){
  const h=D.hist||{t:[]};let t=0;
  for(let i=0;i<h.t.length;i++){t+=h.t[i];P.push({t:t*1e3,game_b:h.game_b[i],game_f:h.game_f[i],named_f:h.named_f[i],data_b:h.data_b[i]})}
- for(const [u,ch] of Object.entries(h.units||{})){
-  const b=new Float64Array(P.length),f=new Float64Array(P.length);let k=0,cb=0,cf=0;
-  for(let i=0;i<P.length;i++){while(k<ch.length&&ch[k][0]<=i){cb=ch[k][1];cf=ch[k][2];k++}b[i]=cb;f[i]=cf}
-  UH[u]={b,f}}
 })();
 const at=(i,k)=>i<0?0:P[i][k];
-// code map: every game function with its file, unit, size and status (m matched, p parked, t to do)
-const M={fn:[],units:{}};
-(function(){
- const m=D.map||{segs:[],n:[],s:[],t:""};let i=0;
+// the maps: every game function (or data block) with its file, unit, size and a status letter;
+// done is the letter that counts as finished (u.m: its bytes per unit)
+function mapData(m,stOf,done){
+ const out={fn:[],units:{}};let i=0;
  for(const [seg,unit,count] of m.segs)for(let k=0;k<count;k++,i++){
-  const f={i,name:m.n[i],size:m.s[i],st:m.t[i],seg,unit};M.fn.push(f);
-  const u=M.units[unit]||(M.units[unit]={unit,fns:[],b:0,m:0,p:0,segs:[]});
-  u.fns.push(f);u.b+=f.size;if(f.st=="m")u.m+=f.size;else if(f.st=="p")u.p+=f.size;
+  const f={i,name:m.n[i],size:m.s[i],st:stOf(m,i),seg,unit};out.fn.push(f);
+  const u=out.units[unit]||(out.units[unit]={unit,fns:[],b:0,m:0,segs:[]});
+  u.fns.push(f);u.b+=f.size;if(f.st==done)u.m+=f.size;
   if(u.segs[u.segs.length-1]!=seg)u.segs.push(seg)}
-})();
-const SEGU=new Map((D.map&&D.map.segs||[]).map(([s,u])=>[s,u]));
-const unitOfSeg=s=>SEGU.get(s)||(String(s).split("/")[1]||s);
+ return out}
+const EMPTY={segs:[],n:[],s:[],t:"",nm:""};
+// code: m matched, p parked, t to do; named: n real name, u placeholder; data: c in C, a still asm
+const MODES={
+ code:{label:"Game code",done:"m",M:mapData(D.map||EMPTY,(m,i)=>m.t[i],"m"),what:"Function",verb:"matched",
+  st:{m:["Matched","var(--s1)"],p:["Parked","var(--warn)"],t:["Not matched yet","var(--todo)"]},
+  cap:"Every game function as a cell sized by its bytes; PsyQ (Sony's objects) is left out.",
+  left:"Largest functions left",none:"Nothing left to match here."},
+ named:{label:"Functions named",done:"n",M:mapData(D.map||EMPTY,(m,i)=>(m.nm||"")[i]=="1"?"n":"u","n"),what:"Function",verb:"named",
+  st:{n:["Named","var(--s3)"],u:["Placeholder name (func_…)","var(--todo)"]},
+  cap:"Every game function as a cell sized by its bytes, coloured by whether it has a real name.",
+  left:"Largest functions still unnamed",none:"Every function here is named."},
+ data:{label:"Data in C",done:"c",M:mapData(D.dmap||EMPTY,(m,i)=>m.t[i],"c"),what:"Data block",verb:"in C",
+  st:{c:["In C","var(--s4)"],a:["Still asm","var(--todo)"]},
+  cap:"Every data, rodata and bss block as a cell sized by its bytes, cut at splat's labels.",
+  left:"Largest data blocks still asm",none:"All of the data here is C."}};
+let mode=store.get("decomp-mapmode");if(!MODES[mode])mode="code";
 const TITLE=Object.fromEntries((S.units||[]).map(u=>[u.unit,u.title||""]));
 const uname=u=>u+(TITLE[u]&&TITLE[u]!=u?` (${TITLE[u]})`:"");
 
@@ -188,8 +187,7 @@ const uname=u=>u+(TITLE[u]&&TITLE[u]!=u?` (${TITLE[u]})`:"");
  const G=S.game,named=G.named_f,all=G.all_f,DA=S.data||{done_b:0,total_b:0,pct:0};
  $("tiles").innerHTML=tile("Game code matched",f2(G.pct),`${n(G.done_b)} / ${n(G.total_b)} bytes<br>${n(G.done_f)} / ${n(G.total_f)} functions · ${f2(pct(G.done_f,G.total_f))}`,G.pct,"var(--s1)",wk)+
   tile("Game functions named",f2(pct(named,all)),`${n(named)} / ${n(all)} with a real name`,pct(named,all),"var(--s3)")+
-  tile("Data in C",f2(DA.pct),`${n(DA.done_b)} / ${n(DA.total_b)} bytes of data and rodata`,DA.pct,"var(--s4)")+
-  tile("Parked",`${S.blocked}`,"functions waiting for another attempt",null).replace('<div class="card">','<div class="card" id="parkTile">');
+  tile("Data in C",f2(DA.pct),`${n(DA.done_b)} / ${n(DA.total_b)} bytes of data and rodata`,DA.pct,"var(--s4)");
 })();
 
 // ---------------------------------------------------------------- time scale and measure
@@ -301,44 +299,6 @@ function drawHTable(){
 }
 $("tbl").addEventListener("toggle",drawHTable);
 
-// ---------------------------------------------------------------- units
-let ukey=store.get("decomp-ukey")||"unit",udir=+store.get("decomp-udir")||1;
-const seg=(w,c)=>w>0?`<span style="flex:${w.toFixed(3)} 0 0;background:${c}"></span>`:"";
-function spark(v,title){
- const W=88,H=22,lo=Math.min(...v),hi=Math.max(...v),flat=hi-lo<.05,N=v.length;
- const x=k=>N<2?W/2:2+(W-6)*k/(N-1),y=val=>flat?H/2:H-3-(H-6)*(val-lo)/(hi-lo);
- const d=v.map((val,k)=>(k?"L":"M")+x(k).toFixed(1)+","+y(val).toFixed(1)).join("");
- const c=flat?"var(--axis)":"var(--s1)";
- return `<svg class="spark" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)}"><title>${esc(title)}</title>`+
-  `<path d="${d}" fill="none" stroke="${c}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>`+
-  `<circle cx="${x(N-1).toFixed(1)}" cy="${y(v[N-1]).toFixed(1)}" r="2.5" fill="${c}"/></svg>`;
-}
-function drawUnits(B){
- const Bk=B.out,N=Bk.length,last=N?Bk[N-1].i:-1,fm=fnMode(),win=N?lab(Bk[0].t,unit):"";
- $("ucap").textContent=`Bytes matched (parked in amber) and the trend in ${fm?"functions":"bytes"} matched since ${win}. PsyQ is Sony's own objects, linked in place.`;
- const rows=(S.units||[]).map(u=>{
-  const U=UH[u.unit],mu=M.units[u.unit],tot=fm?u.total_f:u.total_b,arr=U?(fm?U.f:U.b):null;
-  const series=arr&&N?Bk.map(b=>b.i<0?0:pct(arr[b.i],tot)):null;
-  const gain=arr?(last<0?0:arr[last])-(B.before<0?0:arr[B.before]):0;
-  return Object.assign({},u,{parked_b:mu?mu.p:0,series,gain})});
- const cols=[["unit","Unit"],["pct","Bytes matched",1],["done_f","Functions",1],["named_f","Named",1,1],["blocked","Parked",1,1],["gain","Change",1]];
- const cmp=(a,b)=>((a[ukey]>b[ukey]?1:a[ukey]<b[ukey]?-1:0)||(a.unit>b.unit?1:-1))*udir;
- const row=u=>{const c=u.total_b>0,m=pct(u.done_b,u.total_b),p=pct(u.parked_b,u.total_b);
-  const sp=u.series?spark(u.series,`${u.unit}: ${f2(u.series[0])} to ${f2(u.series[u.series.length-1])} of its ${fm?"functions":"bytes"} since ${win}`):"";
-  return `<tr><td>${esc(u.unit)}${u.title&&u.title!=u.unit?`<div class="small">${esc(u.title)}</div>`:""}</td>
-<td class="num">${c?`<span class="stack" aria-hidden="true">${seg(m,u.lib?"var(--s2)":"var(--s1)")}${seg(p,"var(--warn)")}${seg(100-m-p,"var(--track)")}</span>${f2(m)}`:"—"}</td>
-<td class="num">${c?`${n(u.done_f)} / ${n(u.total_f)} <span class="small">${f1(pct(u.done_f,u.total_f))}</span>`:"—"}</td>
-<td class="num opt">${n(u.named_f)} / ${n(u.all_f)}</td><td class="num opt">${u.blocked||""}</td>
-<td class="num">${sp}<span class="gain">${u.gain>0?"+"+(fm?n(u.gain):kb(u.gain)):"—"}</span></td></tr>`};
- const game=rows.filter(u=>!u.lib).sort(cmp),lib=rows.filter(u=>u.lib).sort(cmp);
- const head=t=>`<tr class="grp"><td colspan="6">${t}</td></tr>`;
- $("units").innerHTML="<tr>"+cols.map(c=>`<th class="${c[2]?"num":""} ${c[3]?"opt":""}" data-k="${c[0]}" aria-sort="${ukey==c[0]?(udir>0?"ascending":"descending"):"none"}">${c[1]}${ukey==c[0]?(udir>0?" ▲":" ▼"):""}</th>`).join("")+"</tr>"+
-  (rows.length?(lib.length?head("Game code"):"")+game.map(row).join("")+(lib.length?head("PsyQ library: Sony's objects, linked in place")+lib.map(row).join(""):"")
-   :'<tr><td class="empty" colspan="6">Nothing indexed yet.</td></tr>');
- $("units").querySelectorAll("th[data-k]").forEach(th=>th.onclick=()=>{const k=th.dataset.k;udir=ukey==k?-udir:(k=="unit"?1:-1);ukey=k;
-  store.set("decomp-ukey",ukey);store.set("decomp-udir",udir);drawUnits(curB)});
-}
-
 // ---------------------------------------------------------------- controls
 function drawTime(){
  curB=buckets(unit);
@@ -346,7 +306,7 @@ function drawTime(){
  $("scale").querySelectorAll("button").forEach(b=>b.onclick=()=>{unit=b.dataset.u;store.set("decomp-scale",unit);drawTime()});
  $("measure").innerHTML=Object.entries(MEASURES).map(([k,v])=>`<button data-m="${k}" aria-pressed="${k==measure}">${v}</button>`).join("");
  $("measure").querySelectorAll("button").forEach(b=>b.onclick=()=>{measure=b.dataset.m;store.set("decomp-measure",measure);drawTime()});
- hideTip();drawMain(curB);drawPace(curB);drawUnits(curB);drawHTable();
+ hideTip();drawMain(curB);drawPace(curB);drawHTable();
 }
 
 // ---------------------------------------------------------------- code map
@@ -366,7 +326,6 @@ function squarify(vals,x,y,w,h){
   i=j}
  return out}
 const CW=6.3;   // average width of an 11px character, for "does this label fit"
-const STATUS={m:"Matched",p:"Parked",t:"Not matched yet"};
 let mapSel=store.get("decomp-map");
 function mapGroup(fns,x,y,w,h,labels,attr){
  // a 3px surface gap around each group, and a header band when its label fits
@@ -381,76 +340,50 @@ function mapGroup(fns,x,y,w,h,labels,attr){
   if(cw>=56&&ch>=16&&f.name.length*CW+8<=cw)out+=`<text class="cl ${f.st}" x="${(cx+4).toFixed(1)}" y="${(cy+12).toFixed(1)}">${esc(f.name)}</text>`}
  return out}
 function drawMap(){
- const box=$("map"),units=Object.values(M.units);
- if(!units.length){box.innerHTML='<div class="empty">No functions indexed yet.</div>';return}
+ const Mo=MODES[mode],M=Mo.M,box=$("map"),units=Object.values(M.units);
+ $("mmode").innerHTML=Object.entries(MODES).map(([k,v])=>`<button data-m="${k}" aria-pressed="${k==mode}">${v.label}</button>`).join("");
+ $("mmode").querySelectorAll("button").forEach(b=>b.onclick=()=>{mode=b.dataset.m;store.set("decomp-mapmode",mode);hideTip();drawMap()});
+ $("mlegend").innerHTML=Object.values(Mo.st).map(([l,c])=>`<span><i class="sw" style="background:${c}"></i>${l}</span>`).join("");
+ if(!units.length){box.innerHTML='<div class="empty">Nothing indexed yet.</div>';$("mchips").innerHTML="";$("left").innerHTML="";return}
  if(mapSel&&!M.units[mapSel])mapSel=null;
  const order=units.slice().sort((a,b)=>a.unit=="main exe"?-1:b.unit=="main exe"?1:a.unit<b.unit?-1:1);
  $("mchips").innerHTML=[`<button data-u="" aria-pressed="${!mapSel}">All units</button>`].concat(order.map(u=>
   `<button data-u="${esc(u.unit)}" aria-pressed="${u.unit==mapSel}">${esc(uname(u.unit))}</button>`)).join("");
  $("mchips").querySelectorAll("button").forEach(b=>b.onclick=()=>{mapSel=b.dataset.u||null;store.set("decomp-map",mapSel||"");drawMap()});
- $("mlegend").innerHTML=[["m","var(--s1)"],["p","var(--warn)"],["t","var(--todo)"]].map(([k,c])=>`<span><i class="sw" style="background:${c}"></i>${STATUS[k]}</span>`).join("");
+ const done=fs=>fs.filter(f=>f.st==Mo.done);
  const W=Math.max(300,box.clientWidth||900),Ht=Math.round(Math.min(520,Math.max(300,W*.52)));
  let g="";
  if(!mapSel){
   const us=units.slice().sort((a,b)=>b.b-a.b),rs=squarify(us.map(u=>u.b),0,0,W,Ht);
   us.forEach((u,k)=>{const [x,y,w,h]=rs[k],p=f1(pct(u.m,u.b));
    g+=mapGroup(u.fns,x,y,w,h,[`${uname(u.unit)} · ${p}`,`${u.unit} · ${p}`,u.unit],` data-u="${esc(u.unit)}"`)});
-  $("mcap").textContent=`Every game function as a cell sized by its bytes; PsyQ (Sony's objects) is left out. Click a unit to zoom in.`;
+  $("mcap").textContent=`${Mo.cap} Click a unit to zoom in.`;
  }else{
   const u=M.units[mapSel],files=u.segs.map(s=>({s,fns:u.fns.filter(f=>f.seg==s)})).map(f=>Object.assign(f,{b:f.fns.reduce((a,x)=>a+x.size,0)}))
    .sort((a,b)=>b.b-a.b),rs=squarify(files.map(f=>f.b),0,0,W,Ht);
   files.forEach((f,k)=>{const [x,y,w,h]=rs[k],tail=f.s.split("/").pop();
-   g+=mapGroup(f.fns,x,y,w,h,files.length>1?[`${f.s} · ${f1(pct(f.fns.filter(z=>z.st=="m").reduce((a,z)=>a+z.size,0),f.b))}`,tail]:null,"")});
-  $("mcap").textContent=`${uname(u.unit)}: ${n(u.fns.length)} functions in ${u.segs.length} file${u.segs.length==1?"":"s"}, ${f2(pct(u.m,u.b))} of ${n(u.b)} bytes matched.`;
+   g+=mapGroup(f.fns,x,y,w,h,files.length>1?[`${f.s} · ${f1(pct(done(f.fns).reduce((a,z)=>a+z.size,0),f.b))}`,tail]:null,"")});
+  $("mcap").textContent=`${uname(u.unit)}: ${n(u.fns.length)} ${Mo.what.toLowerCase()}s in ${u.segs.length} file${u.segs.length==1?"":"s"}, ${f2(pct(u.m,u.b))} of ${n(u.b)} bytes ${Mo.verb}.`;
  }
  g+=`<rect class="mh" fill="none" stroke="var(--hover)" stroke-width="1.5" pointer-events="none" visibility="hidden"/>`;
- box.innerHTML=`<svg width="100%" viewBox="0 0 ${W} ${Ht}" role="img" aria-label="Code map: game functions sized by bytes, coloured by status">${g}</svg>`;
+ box.innerHTML=`<svg width="100%" viewBox="0 0 ${W} ${Ht}" role="img" aria-label="${esc(Mo.label)} map: cells sized by bytes, coloured by status">${g}</svg>`;
  const svg=box.querySelector("svg"),mh=svg.querySelector(".mh");
  svg.addEventListener("pointermove",ev=>{
   const t=ev.target;
   if(t.dataset.i!=null){const f=M.fn[+t.dataset.i];
    for(const a of ["x","y","width","height"])mh.setAttribute(a,t.getAttribute(a));mh.setAttribute("visibility","visible");
-   showTip(`<b>${esc(f.name)}</b><br><b>${n(f.size)}</b> bytes · ${STATUS[f.st]}<br><span class="small">${esc(uname(f.unit))} · ${esc(f.seg)}</span>`,ev)}
+   showTip(`<b>${esc(f.name)}</b><br><b>${n(f.size)}</b> bytes · ${Mo.st[f.st][0]}<br><span class="small">${esc(uname(f.unit))} · ${esc(f.seg)}</span>`,ev)}
   else if(t.dataset.u){const u=M.units[t.dataset.u];mh.setAttribute("visibility","hidden");
-   showTip(`<b>${esc(uname(u.unit))}</b><br><b>${f2(pct(u.m,u.b))}</b> of ${n(u.b)} bytes · ${n(u.fns.filter(f=>f.st=="m").length)} / ${n(u.fns.length)} functions<br><span class="small">Click to zoom in</span>`,ev)}});
+   showTip(`<b>${esc(uname(u.unit))}</b><br><b>${f2(pct(u.m,u.b))}</b> of ${n(u.b)} bytes ${Mo.verb} · ${n(done(u.fns).length)} / ${n(u.fns.length)} ${Mo.what.toLowerCase()}s<br><span class="small">Click to zoom in</span>`,ev)}});
  svg.addEventListener("pointerleave",()=>{hideTip();mh.setAttribute("visibility","hidden")});
  svg.addEventListener("click",ev=>{if(mapSel)return;const t=ev.target,u=t.dataset.u||(t.dataset.i!=null?M.fn[+t.dataset.i].unit:null);
   if(u){mapSel=u;store.set("decomp-map",u);hideTip();drawMap()}});
- // the largest functions still to match where the map is looking: the map's text twin
- const left=(mapSel?M.units[mapSel].fns:M.fn).filter(f=>f.st!="m").sort((a,b)=>b.size-a.size).slice(0,10);
- $("left-title").textContent=`Largest functions left${mapSel?" in "+mapSel:""}`;
- $("left").innerHTML=left.length?`<tr><th>Function</th><th>Unit</th><th class="opt">File</th><th class="num">Bytes</th></tr>`+left.map(f=>
+ // the largest items not finished where the map is looking: the map's text twin
+ const left=(mapSel?M.units[mapSel].fns:M.fn).filter(f=>f.st!=Mo.done).sort((a,b)=>b.size-a.size).slice(0,10);
+ $("left-title").textContent=`${Mo.left}${mapSel?" in "+mapSel:""}`;
+ $("left").innerHTML=left.length?`<tr><th>${Mo.what}</th><th>Unit</th><th class="opt">File</th><th class="num">Bytes</th></tr>`+left.map(f=>
   `<tr><td><code>${esc(f.name)}</code>${f.st=="p"?'<span class="tag">parked</span>':""}</td><td>${esc(f.unit)}</td><td class="opt small">${esc(f.seg)}</td><td class="num">${n(f.size)}</td></tr>`).join("")
-  :'<tr><td class="empty">Nothing left to match here.</td></tr>';
-}
-
-// ---------------------------------------------------------------- recent matches, parked
-(function(){
- const R=D.recent||[];
- $("recent").innerHTML=R.length?`<tr><th>Function</th><th>Unit</th><th class="num">Bytes</th><th class="num">When</th></tr>`+R.map(r=>
-  `<tr><td><code>${esc(r.name)}</code></td><td>${esc(unitOfSeg(r.seg))}</td><td class="num">${n(r.size)}</td><td class="num" title="${esc(r.at)}">${esc(when(r.at))}</td></tr>`).join("")
-  :'<tr><td class="empty">No matches recorded yet.</td></tr>';
-})();
-
-// parked: by hand (decomp.py block, in the page's data) and by the swarm (docs/swarm.js parks, minus
-// any the code map shows matched since); the tile counts both
-function renderParked(){
- const Bl=D.blocked||[],hand=new Set(Bl.map(b=>b.name));
- // slot overlays share addresses, so a name can be in two units: the key's prefix picks one
- const byKey=p=>{const u=(p.key||"").includes(":")?p.key.split(":")[0]:null;
-  return M.fn.find(f=>f.name==p.name&&(!u||f.unit==u))};
- const Sp=((SW.last&&SW.last.parks)||[]).map(p=>Object.assign({},p,{f:byKey(p)}))
-  .filter(p=>p.f&&p.f.st!="m"&&!hand.has(p.name));
- // the code map shows them parked too (amber), not just the hand parks the page's data marks
- let marked=0;
- for(const p of Sp)if(p.f.st=="t"){p.f.st="p";M.units[p.f.unit].p+=p.f.size;marked++}
- if(marked)drawMap();
- const pt=document.getElementById("parkTile");
- if(pt)pt.innerHTML=`<div class="label">Parked</div><div class="big">${Bl.length+Sp.length}</div><div class="small">${Bl.length} by hand, ${Sp.length} by the swarm${SW.last?"":" (swarm.js not loaded)"}</div>`;
- const row=(name,seg,size,tag,note)=>`<details class="park"><summary><code>${esc(name)}</code> <span class="tag">${tag}</span> <span class="small">${esc(unitOfSeg(seg))} · ${n(size)} bytes</span></summary><div class="note">${esc(note||"No note.")}</div></details>`;
- const all=[...Bl.map(b=>row(b.name,b.seg,b.size,"by hand",b.note)),
-  ...Sp.map(p=>row(p.name,p.f.seg,p.f.size,"swarm",(p.best?"Best: "+p.best+". ":"")+(p.note||"")))];
- $("parked").innerHTML=all.length?all.join(""):'<div class="empty">Nothing parked.</div>';
+  :`<tr><td class="empty">${Mo.none}</td></tr>`;
 }
 
 drawTime();drawMap();
@@ -462,8 +395,7 @@ addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{const w=docum
 // Pages has none and the card stays hidden. A file:// page can't fetch JSON, so it comes as a
 // script that calls swarmStatus(): every 5 s while a run is on, every minute otherwise.
 const SW={last:null,timer:null,misses:0};
-renderParked();
-const MIDX=new Map(M.fn.map(f=>[f.seg+"|"+f.name,f.st]));
+const MIDX=new Map(MODES.code.M.fn.map(f=>[f.seg+"|"+f.name,f.st]));
 const OUT={matched:["Matched","var(--good)"],failed:["Failed","var(--bad)"],infra:["Environment error","var(--bad)"],error:["Error","var(--bad)"],
  conflict:["Conflict","var(--serious)"],"gate-refused":["Refused by the gate","var(--serious)"],parked:["Parked","var(--axis)"],
  progress:["Closer (checkpoint)","var(--axis)"],permuted:["Permuter improved it","var(--axis)"],stopped:["Cut short by the stop","var(--axis)"]};
@@ -514,7 +446,7 @@ function renderSwarm(st){
   (runs?`<div class="sub2">Recent runs</div><div class="wrap"><table><tr><th>Started</th><th>Target</th><th class="num">Took</th><th class="num">Matched</th><th class="num opt">Parked</th><th class="num">Spend</th><th class="num opt">$/match</th></tr>${runs}</table></div>`:"");
  const rb=$("reload");if(rb)rb.onclick=()=>location.reload();
 }
-window.swarmStatus=st=>{SW.last=st;try{renderSwarm(st)}catch(e){console.error("swarm card:",e)}try{renderParked()}catch(e){console.error("parked:",e)}};
+window.swarmStatus=st=>{SW.last=st;try{renderSwarm(st)}catch(e){console.error("swarm card:",e)}};
 function pollSwarm(){
  const s=document.createElement("script");
  s.src="swarm.js?"+Date.now();
