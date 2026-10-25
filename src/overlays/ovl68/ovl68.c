@@ -327,19 +327,18 @@ void func_800B3EFC(void) {
 }
 
 #ifdef NON_MATCHING
-/* The parked C (instructions 7/255, all in the tail block): `t = v` before the
-   *60 survives cse2 and combine only because v is set again before the loop
-   (the steering `v = (s32)D_8005A614`, which combine then folds into q). v also
-   holds the first loop's score, which gives it the target's v1; q's lui still
-   lands inside t's life in sched1, so t takes a2 instead of v0 (decomp.py block
-   note). */
+/* The parked C (instructions 6/255, every register right, all in the tail
+   block): `t = v` before the *60 survives cse2 and combine only because v is
+   set again before the loop (the steering `v = (s32)D_8005A614`, which combine
+   folds into q). v also holds the first loop's score, which gives it the
+   target's v1. q's lui/addiu land in the x mult's stall before the copy
+   instead of after the *60 chain (decomp.py block note). */
 void func_800B4048(void) {
     s32 i;
     s32 a;
     s32 x;
     s32 v;
     s32 t;
-    s16 y;
     u8 *g;
     u8 *p;
     u8 *q;
@@ -422,7 +421,8 @@ void func_800B4048(void) {
     t = v;
     v = (s32)D_8005A614;
     D_8009D6F4 = D_800BC4AC;
-    for (i = 0, q = (u8 *)v; i < 4; i++) {
+    q = (u8 *)v;
+    for (i = 0; i < 4; i++) {
         h = &Heroes[i];
         if (q[i + 0x5C] == 0) {
             ((Ovl68Pct *)D_800BC4AC)[h->hero_name].unk0 = 0x23;

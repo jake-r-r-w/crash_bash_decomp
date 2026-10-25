@@ -59,7 +59,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 **The overlays' last 3 functions**, all parked by hand, each with a lead
 (Open leads): `PlotTransmuterBeam`'s long-lived base, `func_800BE914`'s
-copies (its permuter run is unused) and `func_800B4048`'s copy. Each needs
+copies (its permuter run is unused) and `func_800B4048`'s copy (every
+register right now, three insns misplaced). Each needs
 a new idea rather than another round of the usual tries. Inline shapes
 have been tried on all three, with no match; only `PlotTransmuterBeam`'s
 case 1 steering became natural. `CheckMineToBoss` matched on 2026-10-25
@@ -237,31 +238,33 @@ and current tools).
   one use (`PlotTransmuterBeam`'s base). The game was C++, so small helpers
   and accessors were likely inline.
 - **`func_800B4048`'s copy** (parked 2026-10-24 at instructions 10/255,
-  7/255 since 2026-10-25; the `decomp.py block` note lists what was tried).
-  The tail copies `t = v` (`addu v0,v1,zero`) before the `*60` chain that
-  loop.c hoists. The Oct 9 build has the same copy (with `*42` and `*72`),
-  so the copy is in the source. cse2 and combine keep it only if `v` is set
-  again between the copy and the chain (MATCHING.md, Diff patterns). The
-  parked C does that with `v = (s32)D_8005A614; q = (u8 *)v;`, which combine
-  then folds into `q`, and `v` also holds the first loop's score (one
-  reused local), which gives `v` the target's v1. Left: that `lui` comes
-  before the hoisted chain in the RTL, so sched1 places it inside `t`'s
-  life (a luid tie at birthing priority), local-alloc gives it v0, and `t`
-  drops to a2. loop.c inserts the hoisted chain right before the loop, so
-  no pre-loop statement can have a later luid: only a strength-reduction
-  init or a movable found later in the loop body can. Inline shapes (a
-  scale getter, a per-hero setter, the loop as an inline) don't keep the
-  copy. Retried 2026-10-25 from loop.c's `-dL` numbers. The 60% computed
-  at the loop top with `D_8005A614` read inside the loop (`y = t * 60 /
-  100;` first, then `p = D_8005A614;` as the score loop does) gives the
-  target's movable order (the chain, then `q`'s base, then `D_800BC4AC`),
-  and the copy survives. But global.c then puts `v` in a2: it loses its v1
-  preference and conflicts with a local pseudo that local-alloc puts in v1,
-  so `t` and `v` share a2 and the copy is deleted as a no-op (length 254).
-  Next: what moves local-alloc's choices in that form (`-dl` dump, the x
-  chain's temps), or a natural set of `v` that keeps both its v1 and the
-  copy. Try shapes with `try func_800B4048 --file` on a copy with the parked
-  C swapped in.
+  6/255 with every register right since 2026-10-25; the `decomp.py block`
+  note lists what was tried). The tail copies `t = v` (`addu v0,v1,zero`)
+  before the `*60` chain that loop.c hoists. The Oct 9 build has the same
+  copy (with `*42` and `*72`), so the copy is in the source. cse2 and
+  combine keep it only if `v` is set again between the copy and the chain
+  (MATCHING.md, Diff patterns). The parked C does that with `v =
+  (s32)D_8005A614;` and `q = (u8 *)v;` (combine folds the set into `q`),
+  and `v` also holds the first loop's score (one reused local), which gives
+  `v` the target's v1. Left: `q`'s `lui`/`addiu` sit in the x multiply's
+  stall before the copy, where the target has them after the chain; sched2
+  can't move them past the copy (both use v0). Worked out 2026-10-25 from
+  `sched` and local-alloc's `QTY_CMP_PRI`: with `q` set before `i = 0`, its
+  `lo_sum` is the lowest-luid priority-1 leaf, so sched1 fills that stall
+  with it. Set in the for-init, its `lui` ties the hoisted chain at birthing
+  priority and lands inside `t`'s life (the old 7/255, `t` in a2). As a loop
+  movable after a loop-top `y = t * 60 / 100;` it comes after the chain, but
+  then the x chain's qty (11 refs) and the `*60` chain's (9 refs) tie at
+  7500 over their lives (44 and 36 half-insns), and the x chain, born first,
+  takes v1 (22/255). The target's order leaves no other v0-free insn that
+  could have filled that stall in sched1, so the source differs somewhere
+  still unknown: an eighth insn before the chain that reload deletes, or
+  other ref counts. A 105-shape sweep found nothing better. Shapes can also
+  be tested against the Oct 9 copy (`protos func_800B4048 --diff Oct_9
+  --file F.c`): with the first loop's `v` as the sum and the copy, the
+  masked value in the clock local `a`, 16-bit `x`/`y` and the 72% before the
+  loop, the build matches Oct 9's tail except that combine still folds the
+  copy, so Oct 9 hides the same mechanism.
 - **`func_800BE914`'s copies** (parked 2026-10-23 at registers 7/170; the
   `decomp.py block` note has the detail). The target copies each clamped
   speed into v0 right before its `>> 8` (`move v0,aN; sra a2,v0,8`, four
@@ -712,6 +715,16 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-25 (hand: `func_800B4048`'s local-alloc lead, still parked, now
+  6/255 with every register right):** three rules decide the tail. sched1
+  places `q`'s `lui` by luid ties, local-alloc ties the x and `*60` chains'
+  qtys at 7500 unless an eighth insn sits before the `*60` chain, and sched2
+  can't move a v0 `lui` past the copy. Setting `q` before `i = 0` puts its
+  pair in the multiply stall, which fixes every register; no shape found puts
+  it after the chain without losing the tie. Oct 9's divides drop their sign
+  fixups because its x and y are 16-bit locals. `protos --file`/`--words`
+  (own commit), park note, Open lead, two Diff patterns rows.
 
 - **2026-10-25 (hand: `func_800B4048` retried from loop.c's numbers, still
   parked at 7/255):** the `-dL` dump showed the order loop.c hoists in
