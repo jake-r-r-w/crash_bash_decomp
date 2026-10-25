@@ -59,16 +59,8 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 The Tank pilot (ROADMAP.md, Phase 3), in this order:
 
-1. **Data to C tooling and Tank's rodata/data.** `ovl5f`'s sections run
-   rodata, text, data: the id word (`ovl5f_id`), one `INCLUDE_RODATA`
-   (`D_800B32B8`, the animation name strings `"DIE"`, `"FIRE1"`, ...), and
-   `asm/data/overlays/ovl5f/ovl5f_data.data.s` (0x15958..0x17FE0, about
-   10 KB, 66 of its 1959 words already symbols). Build a generic converter
-   from a splat data block to C initialisers (pointers as symbols, tables
-   typed with their structs from `tank.h` and the Oct 9 types) and check
-   each step with `make check`. Data order inside a section follows
-   definition order in the file, so keep the blocks in address order.
-2. **Names and types** for Tank's 73 remaining `func_` functions and its
+1. **Names and types** (first: the data's types come from the code that
+   reads it) for Tank's 73 remaining `func_` functions and its
    globals: `tank.h` (leaked prototypes, in code order inside a file, so a
    named function's neighbours are candidates), the Oct 9 debug types,
    `decomp.py similar`, `tools/scripts/field_survey.py` (loads and stores
@@ -78,6 +70,16 @@ The Tank pilot (ROADMAP.md, Phase 3), in this order:
    through `decomp.py rename` (it checks the build; Gotchas: a name an
    original header declares must take its types). Promote `callsites.py`
    to a `decomp.py` subcommand when it is first needed.
+2. **Data to C tooling and Tank's rodata/data**, with the types step 1
+   found. `ovl5f`'s sections run
+   rodata, text, data: the id word (`ovl5f_id`), one `INCLUDE_RODATA`
+   (`D_800B32B8`, the animation name strings `"DIE"`, `"FIRE1"`, ...), and
+   `asm/data/overlays/ovl5f/ovl5f_data.data.s` (0x15958..0x17FE0, about
+   10 KB, 66 of its 1959 words already symbols). Build a generic converter
+   from a splat data block to C initialisers (pointers as symbols, tables
+   typed with their structs from `tank.h` and the Oct 9 types) and check
+   each step with `make check`. Data order inside a section follows
+   definition order in the file, so keep the blocks in address order.
 3. **The engine's AST table as C** (`EngineASTTable`, `0x80098720`, `{id,
    Init, Plot}` x 0xAE in `asm/data/overlays/engine/engine_data.data.s`): its
    slot entries are raw `.word 0x800B...` numbers. As C with symbols, the
@@ -481,6 +483,10 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-26 (Tank pilot reordered):** names and types come first, then the
+  data-to-C tooling and Tank's data typed with what the naming found: a
+  table's struct comes from the code that reads it.
 
 - **2026-10-26 (the engine's slot image counted apart):** `engine_slot`
   (147,092 B: the stub id `0x5C`, zeros, leftover copies of `CRASHBSH.DAT`

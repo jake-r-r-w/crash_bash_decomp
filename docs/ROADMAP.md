@@ -146,7 +146,15 @@ matches, its asset files extract, and it passes its shift test: padded so
 everything in it moves, it boots and plays through to a win the same way
 retail does. The recipe is written up for Phase 4.
 
-- [ ] Data to C tooling: turn a splat rodata or data block into C
+- [ ] Name and type every Tank function and global (a descriptive name
+  where the original is unknown, per [CONVENTIONS.md](CONVENTIONS.md)),
+  from the leaked `tank.h`, the Oct 9 debug types and code evidence. Settle
+  each `tank.h` declaration: defined by matched code, or noted as not in
+  this build. First, because the data's types come from the code that reads
+  it: naming a function shows what each table it reads is, and names those
+  globals too.
+- [ ] Data to C tooling, once the names and types say what the tables are:
+  turn a splat rodata or data block into C
   initialisers (strings, tables, structs from the headers, pointers as
   symbols, never as numbers) that rebuild byte for byte, in the unit's
   section order (`ovl5f`'s is rodata, text, data). Generic, so every
@@ -154,12 +162,7 @@ retail does. The recipe is written up for Phase 4.
 - [ ] Tank's rodata as C: the id word (`ovl5f_id`) and the `INCLUDE_RODATA`
   of `D_800B32B8` (the animation name strings).
 - [ ] Tank's data and bss as C (`asm/data/overlays/ovl5f/`): every pointer
-  a symbol, every table typed with its struct.
-- [ ] Name and type every Tank function and global (a descriptive name
-  where the original is unknown, per [CONVENTIONS.md](CONVENTIONS.md)),
-  from the leaked `tank.h`, the Oct 9 debug types and code evidence. Settle
-  each `tank.h` declaration: defined by matched code, or noted as not in
-  this build.
+  a symbol, every table typed with the struct the naming found.
 - [ ] Tank's asset files extract: list the `CRASHBSH.DAT` entries its
   `file_group_TANK*` groups load and check each decodes (docs/ASSETS.md); a
   format still kept as bytes gets decoded here.
