@@ -10,19 +10,19 @@ At the end of a session, update **Current state**, **Next** and **Open
 leads**, add any new gotcha, and add one short entry at the top of the
 **Session log**.
 
-## Current state (2026-10-24)
+## Current state (2026-10-25)
 
 - [ROADMAP.md](ROADMAP.md): Phase 1 (types and names) is done, and every
   `main.exe` function matches and `main.c` is split (2026-10-23); Phase 2's
   naming and data are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2529/2537 game functions matched (96.58% of game code bytes, 2026-10-24):
-  **main.exe, the engine, ovl5e, ovl61, ovl64, ovl65, ovl66, ovl67, ovl69
-  and ovl6a are complete**; 8 left (ovl5d 1, ovl5f 2, ovl60 1, ovl62 2,
+- 2530/2537 game functions matched (96.71% of game code bytes, 2026-10-25):
+  **main.exe, the engine, ovl5e, ovl60, ovl61, ovl64, ovl65, ovl66, ovl67,
+  ovl69 and ovl6a are complete**; 7 left (ovl5d 1, ovl5f 2, ovl62 2,
   ovl63 1, ovl68 1), every one tried by the swarm at least once. All 564
-  PsyQ functions (Sony objects). Five parked by hand, `func_800BE914`,
-  `PlotTransmuterBeam` (one instruction off), `func_800B4048`,
-  `Plot_PogoPadlock` (two registers off) and `CheckMineToBoss` (Open leads)
+  PsyQ functions (Sony objects). Four parked by hand, `func_800BE914`,
+  `PlotTransmuterBeam` (one instruction off), `func_800B4048` and
+  `CheckMineToBoss` (Open leads)
   (`decomp.py status`; the swarm parked 5, which the dashboard counts from
   `docs/swarm.js`). Matches are C only, natural C
   first (CONVENTIONS.md, Matching rules; the "hack" class was dropped on
@@ -57,7 +57,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**The overlays' last 8 functions**, all tried by the swarm. Hand-match
+**The overlays' last 7 functions**, all tried by the swarm. Hand-match
 them from their checkpoints, closest first (Open leads), with their
 earlier compiles (`decomp.py protos`) as evidence. Pointing the swarm at
 functions it had never tried (`--only` the untried list, smallest first,
@@ -196,21 +196,22 @@ and current tools).
   the `hero_last_action` store without changing the 38/18/28 store order.
   Try shapes with `try PlotTransmuterBeam --file`, or the small harness in
   `scratch/ptb/t/` (gone after a clean).
-- **`Plot_PogoPadlock`'s case 3** (parked 2026-10-24 at registers 2/350, 64
-  of 65 blocks; tried again the same day; the `decomp.py block` note lists
-  everything). Only `lui v1,%hi(D_800C530C); ...; addiu v1,v1,%lo(...)`
-  differs: ours puts the `lui` in v0. Before reload the `HIGH` always gets a
-  fresh pseudo (mips.md `movsi`), so the target's shared register means
-  local-alloc tied it to a block-local base. But a block-local single-set
-  base is birthing, so sched1 puts the in-place `++level` first in block 20.
-  Reload then inserts `level`'s `lw` outside the block (MATCHING.md, Diff
-  patterns: the stuck reload) and a `nop` appears. The global `ext` avoids
-  that but leaves the `HIGH` in v0. Combine can't fold the pair (no
-  `HAVE_lo_sum`). The Demo Disc and Oct 9 copies have the same `lui v1`.
-  Left to try: an extra insn that heads block 20 in sched1 and is gone by
-  the final code (an equivalence init that `update_equiv_regs` moves updates
-  `basic_block_head`), or a v0 local live across the `HIGH`. Case 6 matched
-  on the way (MATCHING.md, Diff patterns).
+- **Inlines explain steering that parks still use.** `Plot_PogoPadlock`
+  (parked at registers 2/350) matched on 2026-10-25 once three of its
+  hand-made shapes turned out to be inlined functions (MATCHING.md, Diff
+  patterns, its case 3 and case 6 rows). Case 0's pointer copies were
+  `FindFreeSquare` (its do-while form matches the out-of-line copy too, and
+  `FindFreeSquareForMushroom` begins with the same code), case 6's `one = 1`
+  was `Ovl60_SpawnPuff`'s constant argument, and case 3's stuck reload
+  needed the note an inline call leaves in its block. An inline brings what
+  written-out C can't: `expand_inline_function` copies each argument into a
+  pseudo of its own before the body (`copy_to_mode_reg`, unless the
+  parameter is `const`), opens a binding contour whose note lands inside the
+  block, and gives the body one return label. Try one wherever a park needs
+  an extra note, copy or early-set pseudo: `func_800B4048`'s `t = v` copy,
+  `func_800BE914`'s copies, and `PlotTransmuterBeam`'s long-lived base and
+  `one = 1`. The game was C++, so small helpers and accessors were likely
+  inline.
 - **`func_800B4048`'s copy** (parked 2026-10-24 at instructions 10/255, 25
   of 26 blocks; the `decomp.py block` note lists what was tried). The tail
   copies `t = v` (`addu v0,v1,zero`) before the `*60` chain that loop.c
@@ -650,6 +651,16 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-25 (hand: ovl60 `Plot_PogoPadlock` matched, ovl60 complete):**
+  case 3's stuck reload went once its block had a note: schedule_block
+  moves inner notes to the block front and makes the first one
+  `basic_block_head`, so reload's `lw` stays in the block. Probes (a scope,
+  a dead store) matched; the natural source is an inline call,
+  `count = Ovl60_PadlockMoves(++level)` on the s32 table. Case 0 and case 6
+  then became the file's inlines too (`Ovl60_FindFreeSquare`,
+  `Ovl60_SpawnPuff`), and case 4/5's swarm shapes took natural forms. Two
+  Diff patterns rows rewritten; an Open lead on inlines for the other parks.
 
 - **2026-10-25 (hand: `func_800BE914` retried, still parked):** with the
   parameter and reused-local idioms from `func_800B980C`. Reusing
