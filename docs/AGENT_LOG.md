@@ -16,13 +16,13 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `main.exe` function matches and `main.c` is split (2026-10-23); Phase 2's
   naming and data are left. The work now is matching the overlays (Phases 3-5) with the
   swarm.
-- 2534/2537 game functions matched (98.93% of game code bytes, 2026-10-25):
+- 2535/2537 game functions matched (99.03% of game code bytes, 2026-10-25):
   **main.exe, the engine, ovl5d, ovl5e, ovl5f, ovl60, ovl61, ovl64, ovl65,
-  ovl66, ovl67, ovl69 and ovl6a are complete**; 3 left (ovl62 1, ovl63 1,
-  ovl68 1), every one tried by the swarm at least once. All 564
-  PsyQ functions (Sony objects). The 3 left are all parked by hand,
-  `func_800BE914`, `PlotTransmuterBeam` (one instruction off) and
-  `func_800B4048` (Open leads)
+  ovl66, ovl67, ovl68, ovl69 and ovl6a are complete**; 2 left (ovl62 1,
+  ovl63 1), both tried by the swarm at least once. All 564
+  PsyQ functions (Sony objects). The 2 left are both parked by hand,
+  `func_800BE914` and `PlotTransmuterBeam` (one instruction off) (Open
+  leads)
   (`decomp.py status`; the swarm parked 5, which the dashboard counts from
   `docs/swarm.js`). Matches are C only, natural C
   first (CONVENTIONS.md, Matching rules; the "hack" class was dropped on
@@ -59,22 +59,23 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-**The overlays' last 3 functions**, all parked by hand, each with a lead
-(Open leads): `PlotTransmuterBeam`'s long-lived base, `func_800BE914`'s
-copies (its permuter run is unused) and `func_800B4048`'s copy (every
-register right now, three insns misplaced). Each needs
+**The overlays' last 2 functions**, both parked by hand, each with a lead
+(Open leads): `PlotTransmuterBeam`'s long-lived base and `func_800BE914`'s
+copies (its permuter run is unused). Each needs
 a new idea rather than another round of the usual tries. The plan since
 2026-10-25: prove the decision a park needs with an analysis variant of cc1
 (`tools/cc1/`, a from-source rebuild that is byte-identical to `/opt`'s),
 then search for the C that gives it. The host is ruled out: a variant at
 53-bit x87 precision changes no build of the game, the parks or 179 saved
 park variants (tools/cc1/README.md, Checked), so the parks are a source
-question. `func_800B4048` is now down to one proven decision (local-alloc's
-tie, Open leads): search for C that wins it, with the variant's log as the
-check. The same method next for the other two: a variant that forces the
-decision each park's note names, `cc1_compare.py` and `check.sh` to keep
-it honest. Inline shapes
-have been tried on all three, with no match; only `PlotTransmuterBeam`'s
+question. The method matched `func_800B4048` (2026-10-25): the `localtie`
+variant proved local-alloc's tie in its tail was the one decision left, and
+with the variant's log as the check, an always-zero term that flow counts
+and combine drops won the tie (MATCHING.md, Diff patterns, the
+`QTY_CMP_PRI` row). The same method next for the other two: a variant that
+forces the decision each park's note names, its log to check candidates,
+`cc1_compare.py` and `check.sh` to keep it honest. Inline shapes
+have been tried on both, with no match; only `PlotTransmuterBeam`'s
 case 1 steering became natural. `CheckMineToBoss` matched on 2026-10-25
 once loop.c's own numbers (`-dL`, "not worth while, X vs N") showed what
 its loops needed: read a park's `-dL` and `sched` numbers before trying
@@ -249,45 +250,17 @@ and current tools).
   `func_800BE914` showed. Nor does it help a pointer that must outlive its
   one use (`PlotTransmuterBeam`'s base). The game was C++, so small helpers
   and accessors were likely inline.
-- **`func_800B4048`'s copy** (parked 2026-10-24 at instructions 10/255,
-  6/255 with every register right since 2026-10-25; the `decomp.py block`
-  note lists what was tried). The tail copies `t = v` (`addu v0,v1,zero`)
-  before the `*60` chain that loop.c hoists. The Oct 9 build has the same
-  copy (with `*42` and `*72`), so the copy is in the source. cse2 and
-  combine keep it only if `v` is set again between the copy and the chain
-  (MATCHING.md, Diff patterns). The parked C does that with `v =
-  (s32)D_8005A614;` and `q = (u8 *)v;` (combine folds the set into `q`),
-  and `v` also holds the first loop's score (one reused local), which gives
-  `v` the target's v1. Left: `q`'s `lui`/`addiu` sit in the x multiply's
-  stall before the copy, where the target has them after the chain; sched2
-  can't move them past the copy (both use v0). Worked out 2026-10-25 from
-  `sched` and local-alloc's `QTY_CMP_PRI`: with `q` set before `i = 0`, its
-  `lo_sum` is the lowest-luid priority-1 leaf, so sched1 fills that stall
-  with it. Set in the for-init, its `lui` ties the hoisted chain at birthing
-  priority and lands inside `t`'s life (the old 7/255, `t` in a2). As a loop
-  movable after a loop-top `y = t * 60 / 100;` it comes after the chain, but
-  then the x chain's qty (11 refs) and the `*60` chain's (9 refs) tie at
-  7500 over their lives (44 and 36 half-insns), and the x chain, born first,
-  takes v1 (22/255). **Proved 2026-10-25 with tools/cc1's `localtie`
-  variant:** that tie is the only decision left. The shape with `v` re-set
-  to the hero base (`t = v; v = (s32)Heroes;`, then in the loop `h =
-  &((HeroInfo *)v)[i]; y = t * 60 / 100; q = D_8005A614;` before the test
-  and `unk2 = y`) byte-matches retail with only the tail block's tie
-  reversed (`CC1_LOCAL_TIE=reverse CC1_LOCAL_BLOCK=20`); 12 such shapes do.
-  Reversing every tie breaks all 16 binaries, so the original compiler
-  broke ties the FSF way, and the original source compiles to that code
-  with the `*60` qty strictly above the x chain's. The search is now one
-  check: `CC1_LOCAL_LOG=1` prints both priorities (tools/cc1/README.md,
-  Patches). Candidates: an extra use on the `*60` chain that flow counts
-  and combine then folds (refs are counted before combine, Diff patterns
-  row for `func_800B980C`), an eighth insn before the chain that reload
-  deletes as a no-op move, or a natural re-set of `v` in place of the hero
-  base. A 105-shape sweep found nothing better with `/opt`. Shapes can also
-  be tested against the Oct 9 copy (`protos func_800B4048 --diff Oct_9
-  --file F.c`): with the first loop's `v` as the sum and the copy, the
-  masked value in the clock local `a`, 16-bit `x`/`y` and the 72% before the
-  loop, the build matches Oct 9's tail except that combine still folds the
-  copy, so Oct 9 hides the same mechanism.
+- **`func_800B4048`'s natural tail** (matched 2026-10-25 with two steering
+  pieces, MATCHING.md Diff patterns): `t = v; v = (s32)Heroes;` keeps the
+  copy `t = v` through cse2 and combine, and the always-zero `(t * 60) & 3`
+  added to the 60% wins local-alloc's tie for the `*60` chain. The original
+  source gets both some other way. The Oct 9 build has the same copy (with
+  `*42` and `*72`), and `protos func_800B4048 --diff Oct_9 --file F.c`
+  matches its tail with the first loop's `v` as the sum and the copy, the
+  masked value in the clock local `a`, 16-bit `x`/`y` and the 72% before
+  the loop, except that combine still folds the copy. Low priority: only
+  with a new idea for a natural extra counted use on the `*60` chain (the
+  `func_800B980C` row) or a natural re-set of `v`.
 - **`func_800BE914`'s copies** (parked 2026-10-23 at registers 7/170; the
   `decomp.py block` note has the detail). The target copies each clamped
   speed into v0 right before its `>> 8` (`move v0,aN; sra a2,v0,8`, four
@@ -742,6 +715,15 @@ offset. Most-called functions:
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-25 (`func_800B4048` matched, from the local-alloc log):** with
+  `CC1_LOCAL_LOG` as the check, the proved loop-top shape plus an
+  always-zero `(t * 60) & 3` added to the 60% gives the `*60` qty a tenth
+  counted ref (flow counts it, combine then drops it), 8333 against the x
+  chain's 7500, and the shipped cc1 byte-matches. Inside the divide the
+  count is lost (combine's three-insn fold replaces the pseudo). Steering C,
+  noted in the commit. ovl68 is complete; 2 parks left. A Diff patterns row,
+  tools/cc1/README.md.
 
 - **2026-10-25 (pathway 2: `func_800B4048`'s missing decision proved):**
   `tools/cc1/patches/local-tie.patch` adds a local-alloc knob (reverse the

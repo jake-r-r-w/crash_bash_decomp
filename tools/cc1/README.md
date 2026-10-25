@@ -100,3 +100,9 @@ shapes with the 60% at the loop top and `q` set after it byte-match retail: that
 decision between them and the target. Reversed for every function, all 16 binaries fail
 `make check`, so the original compiler broke ties the FSF way, and the original source gives the
 `*60` qty the higher priority with the same final code.
+
+2026-10-25, the C that wins that tie: with `CC1_LOCAL_LOG=1` as the check, one of those shapes
+plus an always-zero `(t * 60) & 3` added to the 60% (outside the divide) gives the `*60` qty 10
+refs instead of 9 (8333 against 7500), and the shipped cc1 byte-matches: `func_800B4048` is
+matched. Flow counts the use before combine drops it. Inside the divide the count is lost:
+combine folds the pseudo that carries it into a new one (the log still shows 9 refs).
