@@ -49,3 +49,23 @@ winget install --id Libretro.RetroArch -e
 Keys: arrows (d-pad), Z (cross), X (circle), A (square), S (triangle), Enter (start), right
 Shift (select), Q/W (L1/R1), F1 (menu), Esc twice (quit). A pad works without setup. Any other
 emulator works too; DuckStation needs a real BIOS dump.
+
+## The shifted build (`make shift`)
+
+`tools/dk make shift OVL=ovl5f PAD=0x40` builds a disc in which one slot overlay's every
+address has moved: `build/shift/CrashBash.bin`/`.cue` (tools/scripts/shift.py). It reuses the
+matching build's objects and:
+
+- links the overlay with PAD bytes before its C rodata, its text and its data (its id word
+  stays first), so its code and data move by PAD, 2*PAD and 3*PAD;
+- links the engine with the moved overlay's addresses for its AST table (`slot_syms.py`) and
+  with its slot image as the id word and zeros instead of the retail leftovers;
+- as a stopgap until the engine's data is C (ROADMAP Phase 5), rewrites the engine's asm-data
+  words that point at a place only that overlay has (for Tank: `TA_SetUp`'s entry in the
+  per-game table, the 16-entry hero mode table, `MoeJoeDead`, one level table), by name; each
+  is printed;
+- packs a disc with `pack_disc.py --grow`: the overlay, now bigger than its DAT slot, goes to
+  the end of `CRASHBSH.DAT` and the exe's DAT index entry points there.
+
+It plays like any build (`retroarch ... build/shift/CrashBash.cue`). The shift test is to play the
+overlay's game on it through to a win, the same way as on the retail disc.

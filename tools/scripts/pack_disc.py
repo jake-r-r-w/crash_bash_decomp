@@ -12,9 +12,18 @@ is written over it at the offset decomp.py add-overlay recorded; mkpsxiso rebuil
 file at its retail sector. The result is build/CrashBash.bin/.cue. Packing the matching build gives the retail image byte for byte
 (configs/USA/disc.sha, checked by make disc-check).
 
-A file may shrink (it is zero-padded to its retail size, so nothing after it moves) but not grow:
-an overlay is a slot in CRASHBSH.DAT, and a bigger one needs the DAT and its index rebuilt.
+A file may shrink (it is zero-padded to its retail size, so nothing after it moves). With --grow,
+an overlay bigger than its slot moves to the end of CRASHBSH.DAT (sector-aligned; nothing else
+moves) and the exe's DAT index entry for it (the {sector, size} table at 0x8004E110, dat.py) is
+rewritten; the game finds the DAT through the CD's file system, so the DAT may grow. Without
+--grow a bigger overlay is an error.
+
+    pack_disc.py [--out DIR] [--use OVL=PATH ...] [--grow]
+
+--out packs into DIR (CrashBash.bin/.cue and DIR/disc/) instead of build/; --use takes an
+overlay's binary from PATH instead of build/<ovl>.bin (the shifted build, tools/scripts/shift.py).
 """
+import argparse
 import hashlib
 import json
 import os
@@ -106,7 +115,35 @@ def copy_tree(changed):
     shutil.copyfile(f"{SRC}/layout.xml", LAYOUT)
 
 
+def grow(dat_path, exe_path, proj, ovl, data):
+    """Put an overlay too big for its slot at the end of the DAT and point the exe's index at it."""
+    meta = json.load(open(os.path.join(dat.ASSETS, dat.INDEX)))
+    idx = next(i for i, e in enumerate(meta["entries"]) if e.get("overlay") == ovl)
+    size = os.path.getsize(dat_path)
+    sector = (size + dat.SECTOR - 1) // dat.SECTOR
+    with open(dat_path, "r+b") as f:
+        f.seek(sector * dat.SECTOR)
+        f.write(data + bytes(-len(data) % dat.SECTOR))
+    t_addr = int(proj["header"]["t_addr"], 16)
+    with open(exe_path, "r+b") as f:
+        f.seek(0x800 + dat.TABLE - t_addr + idx * 8)
+        f.write(sector.to_bytes(4, "little") + len(data).to_bytes(4, "little"))
+    print(f"pack_disc: {ovl} is {len(data)} bytes, over its slot: moved to DAT sector {sector} "
+          f"(entry {idx:03X} rewritten in the exe's index)")
+
+
 def main():
+    global OUT, FILES, LAYOUT, IMAGE, CUE
+    ap = argparse.ArgumentParser(description="Pack the built exe and overlays into a disc image.")
+    ap.add_argument("--out", help="pack into this directory instead of build/")
+    ap.add_argument("--use", action="append", default=[], metavar="OVL=PATH",
+                    help="take an overlay's binary from PATH")
+    ap.add_argument("--grow", action="store_true", help="move an overlay bigger than its slot to the DAT's end")
+    a = ap.parse_args()
+    if a.out:
+        OUT, IMAGE, CUE = f"{a.out}/disc", f"{a.out}/CrashBash.bin", f"{a.out}/CrashBash.cue"
+        FILES, LAYOUT = f"{OUT}/files", f"{OUT}/layout.xml"
+    use = dict(u.split("=", 1) for u in a.use)
     proj = json.load(open(P_PROJ))
     src = retail_bin(proj)
     if not os.path.exists(src):
@@ -127,7 +164,11 @@ def main():
         os.remove(p)                 # a hard link into the cache: replace it, don't write through it
         dat.build(p)
     for o in proj.get("overlays", []):
-        put(dats[o["name"]], read(f"build/{o['name']}.bin"), o["offset"], o["size"])
+        data = read(use.get(o["name"], f"build/{o['name']}.bin"))
+        if len(data) > o["size"] and a.grow:
+            grow(dats[o["name"]], exe, proj, o["name"], data)
+            continue
+        put(dats[o["name"]], data, o["offset"], o["size"])
 
     run(["mkpsxiso", "-y", "-q", "-o", IMAGE, "-c", CUE, LAYOUT])
     sha = hashlib.sha1(read(IMAGE)).hexdigest()

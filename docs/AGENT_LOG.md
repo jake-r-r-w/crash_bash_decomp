@@ -136,7 +136,15 @@ The Tank pilot (ROADMAP.md, Phase 3), in this order:
    `InitWeatherNas(u8 *)` where the leak's `polar.h` says `NAS *`, so the
    file doesn't include the engine headers). Move each to its owner header
    as the overlays are typed.
-5. **The shiftable build**: pad, relink the engine, rebuild
+5. **The shiftable build: done** (2026-10-26; PLAYING.md, The shifted
+   build). `make shift` relinks Tank padded 0x40 x3 (rodata, text, data),
+   the engine against it (68 AST words moved) with the zeroed slot image,
+   rewrites the engine's 19 asm-data words that point at Tank only (the
+   per-game table's `TA_SetUp`, the hero mode table at `0x8009DFE8`,
+   `MoeJoeDead`, `D_800C8EEC`; `TankHeroMove` there is also a data label of
+   ovl66, so a shared address next to fixed words counts too), and packs
+   `build/shift/CrashBash.bin` with Tank moved to DAT sector 35752. The
+   rest of this item was written before: pad, relink the engine, rebuild
    `CRASHBSH.DAT` and its index for a grown entry (`pack_disc.py` and
    `dat.py` today only allow shrinking), stay inside the slot (up to
    `0x800D7144`; Tank ends at `0x800CB294`).
@@ -538,6 +546,15 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-26 (the shiftable build):** `make shift OVL=ovl5f PAD=0x40`
+  (`tools/scripts/shift.py`, tested): Tank relinked padded, the engine
+  relinked against it with the slot image as id + zeros, a stopgap rewrite
+  of 19 engine data words that point at Tank, and `pack_disc.py --grow`
+  (tested) moving the grown Tank to the DAT's end and rewriting the exe's
+  index entry. The shifted engine differs from the matching one in exactly
+  those 87 words and the slot image. `make check`/`disc-check` unchanged.
+  The shift test (play Tank to a win) is next.
 
 - **2026-10-26 (the engine's AST table is C):** `src/overlays/engine/asttable.c`
   (generated from the retail table): 174 `{id, Init, Plot}` entries by name,

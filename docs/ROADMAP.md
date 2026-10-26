@@ -184,14 +184,18 @@ retail does. The recipe is written up for Phase 4.
   `src/overlays/engine/asttable.c`, all 174 entries by name with the AST
   enums' ids; the engine's link takes the slot functions' addresses from
   the overlays' own links (`tools/scripts/slot_syms.py`, a Makefile step).
-- [ ] A shiftable `NON_MATCHING` build: an option (say `make shift OVL=ovl5f
+- [x] A shiftable `NON_MATCHING` build: an option (say `make shift OVL=ovl5f
   PAD=N`) that pads a source-only slot overlay's code and data so every
   address in it moves, relinks the engine's AST table against it and packs a
   disc. The packer rebuilds `CRASHBSH.DAT` and its index when an entry grows
   (today a file may shrink but not grow), and the padded overlay must stay
   inside the slot (`0x800B32B4` up to `0x800D7144`, the slot image's end;
-  Tank ends at `0x800CB294`).
-- [ ] The engine's slot image in the `NON_MATCHING` build: the id word (`0x5C`)
+  Tank ends at `0x800CB294`). Done 2026-10-26: `make shift OVL=ovl5f
+  PAD=0x40` (`tools/scripts/shift.py`, docs/PLAYING.md). It relinks from the
+  matching objects with padding in the linker script, so the C needs no
+  `NON_MATCHING` code. Until the engine's data is C (Phase 5), it rewrites
+  the engine data words that point at Tank (19 of them) by name.
+- [x] The engine's slot image in the `NON_MATCHING` build: the id word (`0x5C`)
   and zeros in place of the 147 KB the matching build reads from the disc
   (ARCHITECTURE.md, The engine's slot image). The shift test runs with it.
 - [ ] Tank's shift test: the padded build boots and Tank plays through to a
@@ -248,6 +252,9 @@ load extract and are documented.
   (`panel` is `PANEL.CPP`, `pause` `PAUSE.CPP`); more files may hide inside
   those units.
 - [ ] The engine's data and rodata as C (its AST table is done in Phase 3).
+  With it, `shift.py`'s stopgap goes: the engine's per-game table, the hero
+  mode tables and the level tables point into the slot overlays, and as C
+  they take their addresses from the overlays' links like the AST table.
 - [ ] Name and type every engine function and global.
 - [ ] Extract and document the asset formats the engine loads (models,
   animation, level data, ...) that Phase 2's extractor still keeps as bytes.

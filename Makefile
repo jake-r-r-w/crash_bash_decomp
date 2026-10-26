@@ -61,7 +61,7 @@ S_FILES   := $(shell find asm -path asm/nonmatchings -prune -o -name '*.s' -prin
 BIN_FILES := $(shell find asm/bin -name '*.bin' 2>/dev/null)
 O_FILES   := $(C_FILES:%=build/%.o) $(S_FILES:%=build/%.o) $(BIN_FILES:%=build/%.o)
 
-.PHONY: all build split check verify disc disc-check test-tools diff permute progress objdiff-config clean
+.PHONY: all build split check verify disc disc-check shift test-tools diff permute progress objdiff-config clean
 
 # Two passes: splat must have produced asm/ before the object list above is computed.
 # The splat pass is serial (-j1) even under make -j: concurrent splat runs share asm/ and gave
@@ -180,6 +180,13 @@ verify:
 # at their retail sectors. Boots in an emulator; the matching build packs to the retail image.
 disc: build
 	@$(PYTHON) tools/scripts/pack_disc.py
+
+# The shiftable NON_MATCHING build: OVL padded by PAD bytes before its rodata, text and data,
+# the engine relinked against it, packed into build/shift/CrashBash.bin (tools/scripts/shift.py)
+OVL ?= ovl5f
+PAD ?= 0x40
+shift: build
+	@$(PYTHON) tools/scripts/shift.py $(OVL) --pad $(PAD)
 
 disc-check: disc
 	@sha1sum -c $(CFG)/disc.sha
