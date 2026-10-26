@@ -13,11 +13,11 @@ s32 func_8009317C(void) {
 
     g = (EngineGameView *)GameInfo;
     rp =&tab[*(s32 *)(GameInfo + 0x2C)];
-    p = (u8 *)(*rp)[D_8004DDD0[g->mode * 3] - 0x101];
+    p = (u8 *)(*rp)[ModeTypes[g->mode * 3] - 0x101];
     if (p != NULL) {
         func_800134FC(p, D_80098598);
     }
-    p = (u8 *)D_8009F8E4[D_8004DDD0[g->mode * 3] - 0x101];
+    p = (u8 *)D_8009F8E4[ModeTypes[g->mode * 3] - 0x101];
     if ((s32)p != D_8009F968) {
         func_800134FC(p, D_80098594);
         D_8009F968 = (s32)p;
@@ -153,8 +153,8 @@ void func_800936C4(void) {
     draw_init();
     D_800A0158 = 0;
     if (((D5A614View *)GameInfo)->mode == 0x28 && D_800590CC != 0) {
-        D_8009F658.flags = 0x1D;
-        D_8009F658.next_process = &RunGame;
+        ProcessControl.flags = 0x1D;
+        ProcessControl.next_process = &RunGame;
     }
 }
 
@@ -341,7 +341,7 @@ void func_80093BE8(void) {
         break;
     case 6:
         if (GameMode != 0x28 || D_800590CC == 0) {
-            func_80022140(GameMode, D_8004DDD0[GameMode * 3]);
+            func_80022140(GameMode, ModeTypes[GameMode * 3]);
         }
         load_initial_dbases();
         a = map;
@@ -364,7 +364,7 @@ void func_80093BE8(void) {
         D_800A0158 = 6;
         break;
     case 5:
-        func_80022140(GameMode, D_8004DDD0[GameMode * 3]);
+        func_80022140(GameMode, ModeTypes[GameMode * 3]);
         D_800A0158 = 3;
         break;
     case 3:
@@ -562,12 +562,12 @@ void func_800945C0(EngineStartArgs *arg0) {
     D_800A0D20[0] = 0;
     D_800A0D24[0] = 0;
     func_8002232C();
-    D_800644C0[0].id = -1;
-    D_800644C0[0].handle = 0;
-    D_800644C0[0].head = NULL;
-    D_800644C0[1].id = -1;
-    D_800644C0[1].handle = 0;
-    D_800644C0[1].head = NULL;
+    SfxBanks[0].id = -1;
+    SfxBanks[0].handle = 0;
+    SfxBanks[0].head = NULL;
+    SfxBanks[1].id = -1;
+    SfxBanks[1].handle = 0;
+    SfxBanks[1].head = NULL;
     D_800A0D28 = 0;
     D_800654B0 = 0;
     D_800654B4 = 0;
@@ -610,7 +610,7 @@ void func_80094860(void) {
         if (((EngineVabCue *)D_800A0D1C)->vab == 0) {
             ok = 1;
         } else {
-            ok = ~D_800644C0[D_800A0D20[0]].id != 0;
+            ok = ~SfxBanks[D_800A0D20[0]].id != 0;
         }
         if (ok) {
             if (((EngineVabCue *)D_800A0D1C)->vab == 0) {
@@ -621,14 +621,14 @@ void func_80094860(void) {
             n = (D_800A0D20[0] + 1) & 1;
             D_800A0D20[0] = n;
             D_800654B0 = ((EngineVabCue *)D_800A0D1C)->unk8;
-            if (D_800644C0[n].id != -1) {
-                func_8002BCB0((s32 *)&D_800644C0[n]);
+            if (SfxBanks[n].id != -1) {
+                func_8002BCB0((s32 *)&SfxBanks[n]);
             }
             D_800A0D1C += sizeof(EngineVabCue);
         }
     }
     if (((EngineVabCue *)D_800A0D1C)->vab != 0) {
-        base = D_800644C0;
+        base = SfxBanks;
         slot = &base[D_800A0D20[0]];
         if (slot->head == NULL && slot->handle == 0 && func_80012FFC() == 0) {
             machine_load_sfx(((EngineVabCue *)D_800A0D1C)->vab, &base[D_800A0D20[0]]);
@@ -704,7 +704,7 @@ void func_80094B38(void) {
                         if (D_800A0D1C == 0 || ((EngineVabCue *)D_800A0D1C)->vab == 0) {
                             ok = 1;
                         } else {
-                            ok = ~D_800644C0[D_800A0D20[0]].id != 0;
+                            ok = ~SfxBanks[D_800A0D20[0]].id != 0;
                         }
                         if (!ok) {
                             goto end;
@@ -740,7 +740,7 @@ void func_80094D88(s32 arg0, process_info *arg1) {
     D_800A0C08 = arg1;
     D_800A0C0C = arg0;
     set_fade(&ScreenFade, 0x200, 0);
-    D_8009F658.next_process = &D_800A0BF4;
+    ProcessControl.next_process = &D_800A0BF4;
 }
 
 void func_80094DD0(void) {
@@ -754,11 +754,11 @@ void func_80094DD0(void) {
     func_80022030();
     func_8002BA44();
     func_8002B96C();
-    if (D_800644C0[0].id != -1) {
-        func_8002BCB0((s32 *)&D_800644C0[0]);
+    if (SfxBanks[0].id != -1) {
+        func_8002BCB0((s32 *)&SfxBanks[0]);
     }
-    if (D_800644C0[1].id != -1) {
-        func_8002BCB0((s32 *)&D_800644C0[1]);
+    if (SfxBanks[1].id != -1) {
+        func_8002BCB0((s32 *)&SfxBanks[1]);
     }
     func_8002232C();
     func_8002726C();
@@ -820,11 +820,11 @@ void func_80095020(void) {
     func_80022030();
     func_8002BA44();
     func_8002B96C();
-    if (D_800644C0[0].id != -1) {
-        func_8002BCB0((s32 *)&D_800644C0[0]);
+    if (SfxBanks[0].id != -1) {
+        func_8002BCB0((s32 *)&SfxBanks[0]);
     }
-    if (D_800644C0[1].id != -1) {
-        func_8002BCB0((s32 *)&D_800644C0[1]);
+    if (SfxBanks[1].id != -1) {
+        func_8002BCB0((s32 *)&SfxBanks[1]);
     }
     func_8002232C();
     func_8002726C();
@@ -839,7 +839,7 @@ s32 func_800950FC(void) {
     if (*(s32 *)D_800A0D1C == 0) {
         return 1;
     }
-    return ~D_800644C0[D_800A0D20[0]].id != 0;
+    return ~SfxBanks[D_800A0D20[0]].id != 0;
 }
 
 void func_80095160(EngineStartArgs *arg0) {
@@ -847,12 +847,12 @@ void func_80095160(EngineStartArgs *arg0) {
     D_800A0D20[0] = 0;
     D_800A0D24[0] = 0;
     func_8002232C();
-    D_800644C0[0].id = -1;
-    D_800644C0[0].handle = 0;
-    D_800644C0[0].head = NULL;
-    D_800644C0[1].id = -1;
-    D_800644C0[1].handle = 0;
-    D_800644C0[1].head = NULL;
+    SfxBanks[0].id = -1;
+    SfxBanks[0].handle = 0;
+    SfxBanks[0].head = NULL;
+    SfxBanks[1].id = -1;
+    SfxBanks[1].handle = 0;
+    SfxBanks[1].head = NULL;
     D_800A0D28 = 0;
     D_800654B0 = 0;
     D_800654B4 = 0;

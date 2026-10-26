@@ -195,7 +195,7 @@ s32 HubCreditsScroll(void) {
         }
         D_80098710--;
         {
-            s32 *opt = (s32 *)D_8005A604;
+            s32 *opt = (s32 *)GameOptions;
             if (opt[1] > 0) {
                 opt[1] -= opt[1] >> 2;
             }

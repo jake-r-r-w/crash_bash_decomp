@@ -851,7 +851,7 @@ extern D_80058B00_Entry D_80058B00[];
 extern s32 World_floor_level;
 extern s32 D_800655A8;
 extern s32 D_800655B8;
-extern s32 D_800655C0;
+extern s32 CardStatus;
 extern u8 D_800655C8[];
 /* The memory card save file header at D_800655C8 (PsyQ _CARD layout). */
 typedef struct {
@@ -872,7 +872,7 @@ typedef struct {
     u8 b[8];
     u8 pad[0x18C];
 } D_800657C8_Slot;
-extern D_800657C8_Slot D_800657C8[];
+extern D_800657C8_Slot CardSlots[];
 extern s32 D_80065E24;
 extern s32 D_800655C4;
 extern s32 D_800675CC;
@@ -903,20 +903,20 @@ extern s32 D_800637B0;
 extern u8 *D_8006E9FC;
 extern u8 D_80055684[];
 extern void *D_8005AA34;
-extern void *D_8005AA24;
+extern void *HeadOfObjects;
 extern music_midi D_8006557C;
 extern LoaderState D_80050628;
 extern char D_8004C83C[];
 extern void func_80012840(u8 *, u8 *);
 extern void func_80012678(u8 *, u8 *);
 extern MusicEntry D_80058B88[];
-extern sfx_machine_bank_info D_800644C0[6];
+extern sfx_machine_bank_info SfxBanks[6];
 extern NodePool D_80056844;
 extern NAS *HeadOfSolids;
 extern NAS *D_8005AA9C;
-extern void *HeadOfMissiles;            /* tail of the D_8005AA24 list */
+extern void *HeadOfMissiles;            /* tail of the HeadOfObjects list */
 extern void *D_8005AA30;            /* tail of the HeadOfSolids list */
-extern s32 D_8005A5DC;
+extern s32 VelocityCalc;
 extern s32 D_8005B5BC[16][2];       /* entries 1..15 cleared by func_80026D9C */
 extern s32 D_800515F8;
 extern s32 D_800515FC;            /* first pad with flag 1 set, or -1 */
@@ -967,7 +967,7 @@ extern s32 D_8004E104;            /* func_80011410: free bytes */
 extern s32 D_8004E108;            /* func_80011410: free blocks */
 extern s32 D_8004E110[];         /* func_80012D80: 8-byte entries */
 extern s32 D_8004E10C;            /* func_80011410: largest free block, bytes */
-extern s32 D_800654BC;            /* slots of D_800644C0 in use */
+extern s32 D_800654BC;            /* slots of SfxBanks in use */
 extern char D_800654CC[];
 extern s32 D_8005A608;
 extern u8 GameInfo[];
@@ -983,8 +983,8 @@ typedef struct D5A614View {
     /* 0x36 */ u8 unk36[0x50 - 0x36];
     /* 0x50 */ u8 unk50[4];
 } D5A614View;
-extern u16 D_8004DDD0[];          /* func_80022140: 6-byte entries indexed by GameInfo+0x34 */
-/* D_8004DDD0 as 6-byte entries indexed by level (func_800235BC). */
+extern u16 ModeTypes[];          /* func_80022140: 6-byte entries indexed by GameInfo+0x34 */
+/* ModeTypes as 6-byte entries indexed by level (func_800235BC). */
 typedef struct LevelInfo {
     /* 0x00 */ u16 world;
     /* 0x02 */ u16 unk2;
@@ -1009,7 +1009,7 @@ extern s32 D_8005A5E4;
 extern char D_8004C8D0[];         /* "FATAL METRICS ERROR ..." */
 extern u8 D_8004E9C0[];           /* func_80022140: passed (-0x10/-8/+0) to func_8002BD0C */
 extern s32 D_80058F0C[][8];       /* func_80022140 */
-extern s8 D_8005A604[];
+extern s8 GameOptions[];
 extern s32 card_command_delay;
 extern s32 D_8005A620;
 extern u8 D_800556F4[];

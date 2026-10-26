@@ -157,7 +157,7 @@ typedef struct {
     /* 0x1E */ u16 hit;
 } SpinHitMask;
 
-/* NAS.FUX of an object in the D_8005AA24 list (SpinHeroObjectNear). */
+/* NAS.FUX of an object in the HeadOfObjects list (SpinHeroObjectNear). */
 typedef struct SpinFux {
     /* 0x00 */ u8 pad0[0x14];
     /* 0x14 */ u16 kind;
@@ -262,7 +262,7 @@ extern u16 SpinBigDrop;
 void SpinHero_ExtraEffects(s32 arg0);
 
 void SpinHeroDead(s32 arg0);
-extern void *D_8005AA24;
+extern void *HeadOfObjects;
 s32 get_angle(s32 x, s32 z);
 s32 func_80015480(s32 arg0, s32 arg1);
 

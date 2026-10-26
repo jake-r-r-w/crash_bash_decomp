@@ -1095,7 +1095,7 @@ NAS *PapuMinionFindCrate(s32 arg0) {
 
     best = NULL;
     bestScore = 0x7FFFFF;
-    n = D_8005AA24;
+    n = HeadOfObjects;
     h = D_8009D88E;
     px = PapuMinionSlots[arg0].unk34[0];
     pz = px;
@@ -1663,7 +1663,7 @@ void PapuExploRange(B5E44Owner *arg0, s32 arg1, s32 arg2)
 
 void *PapuMinionObjectAhead(s32 arg0, s32 arg1) {
     s32 ang;
-    u8 *n = D_8005AA24;
+    u8 *n = HeadOfObjects;
     s32 lim = 0x10000;
     Slot40 *b = PapuMinionSlots;
     Slot40 *s = &b[arg0];
@@ -2347,7 +2347,7 @@ void PapuStopCrates(void) {
     u8 *temp_v1;
     u8 *var_a0;
 
-    var_a0 = D_8005AA24;
+    var_a0 = HeadOfObjects;
     if (var_a0 != NULL) {
         do {
             temp_v1 = (*(s32*)((u8*)(var_a0) + 88));
@@ -2663,7 +2663,7 @@ void PapuCountObjects(void) {
     for (j = 12; j >= 0; j--) {
         D_8009E25C[j] = 0;
     }
-    n = D_8005AA24;
+    n = HeadOfObjects;
     for (;;) {
         if (n == NULL) return;
         e = n->Engine;

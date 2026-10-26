@@ -1304,8 +1304,8 @@ s32 ChaseHeroKickCollision(s32 arg0) {
                     } else {
                         push = other[i].hero_move->forward_speed == 0;
                     }
-                    if (D_8005A5DC < 4) {
-                        if (D_8005A5DC >= 2) {
+                    if (VelocityCalc < 4) {
+                        if (VelocityCalc >= 2) {
                             push = 1;
                         }
                     }
@@ -1399,8 +1399,8 @@ s32 ChaseHeroKickCollision(s32 arg0) {
             }
             rad = 0x78;
             push = Heroes[arg0].hero_move->forward_speed != 0;
-            if (D_8005A5DC < 4) {
-                if (D_8005A5DC >= 2) {
+            if (VelocityCalc < 4) {
+                if (VelocityCalc >= 2) {
                     push = 1;
                 }
             }
@@ -1498,8 +1498,8 @@ void ChaseHeroIdle(s32 arg0) {
                     SetHeroSeq(arg0, 0x61);
                 }
                 func_8008502C(arg0);
-                if (D_8005A5DC < 4) {
-                    if (D_8005A5DC >= 2) {
+                if (VelocityCalc < 4) {
+                    if (VelocityCalc >= 2) {
                         ChaseHeroKickCollision(arg0);
                     }
                 }

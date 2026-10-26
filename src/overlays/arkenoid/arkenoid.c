@@ -846,7 +846,7 @@ void AR_UpdateLevel(void) {
             p--;
         } while (i >= 0);
     }
-    for (n = D_8005AA24; n != NULL; n = n->Object.Child) {
+    for (n = HeadOfObjects; n != NULL; n = n->Object.Child) {
         f = (ArkenoidFuxType *)n->FUX;
         if (f != NULL && (u16)(f->type - 0x11) < 0xC) {
             D_8009E25C.n++;
@@ -2973,7 +2973,7 @@ void Ark_HeroBot(u32 arg0) {
         if (k <= 0) {
             k = 1;
         }
-        for (node = D_8005AA24; node != NULL; node = node->child) {
+        for (node = HeadOfObjects; node != NULL; node = node->child) {
             obj = node->eng;
             if (obj != NULL && (ext = (ArkenoidAiExt *)node->fux) != NULL &&
                 ((ArkenoidAiFux *)ext)->unk24 == 0x12) {

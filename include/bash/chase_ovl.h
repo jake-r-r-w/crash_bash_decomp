@@ -12,7 +12,7 @@ typedef struct { s16 unk0; s16 unk2; } ChaseTrig;
 extern ChaseTrig TrigTable[];
 
 extern NAS *D_8005AA9C;
-extern s32 D_8005A5DC;
+extern s32 VelocityCalc;
 
 typedef struct CoalFlameInner {
     s32 pad0[3];

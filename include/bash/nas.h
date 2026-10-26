@@ -225,7 +225,7 @@ struct NAStype {
     /* 0x0C */ NASnode Tag;             /* active list, or (Child) the free list */
     /* 0x14 */ NASnode Family;          /* ReAdoptChild appends, RemoveFamily unlinks */
     /* 0x1C */ GRPnode Group;
-    /* 0x28 */ OBJnode Object;          /* list headed by D_8005AA24 (func_80026A54 unlinks) */
+    /* 0x28 */ OBJnode Object;          /* list headed by HeadOfObjects (func_80026A54 unlinks) */
     /* 0x30 */ OBJnode Solid;           /* list headed by HeadOfSolids (func_8002694C pushes) */
     /* 0x38 */ CAMnode Camera;          /* list headed by D_8005AA34 (func_80026980 unlinks) */
     /* 0x48 */ void (*InitDelete)(NAS *); /* AST Init: called once when spawned */

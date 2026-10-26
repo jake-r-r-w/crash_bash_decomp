@@ -97,7 +97,7 @@ extern u16 CupMode;
 extern s32 CupTimer;
 extern u16 Trophy_Cups;
 extern s32 D_8009F708;
-extern process_control_info D_8009F658;
+extern process_control_info ProcessControl;
 extern u8 D_8009FA14[];
 extern process_control_info D_800A015C;
 extern u8 D_8001C448[];
@@ -220,7 +220,7 @@ extern EngineTable12 D_8009E7A0[];
 extern u8 GameInfo[];
 extern s32 LevelUnlockedIn(s32, u8 *);
 extern u8 D_800657D0[];
-extern u16 D_8004DDD0[];
+extern u16 ModeTypes[];
 void process_init(process_control_info *pc);
 void func_80079260(void);
 s32 func_8007A5E8(u8 *arg0);
@@ -287,7 +287,7 @@ typedef struct PadButtons {
     /* 0x54 */ s32 unk54;
 } PadButtons;
 
-extern s32 D_8009AEEC;
+extern s32 PauseChoice;
 extern s32 D_8009AEF0;
 void func_8007A614(s32 arg0);
 
@@ -459,7 +459,7 @@ void DoAmbience(void);
 #include "bash/camera.h"
 
 /* Needs prototypes from the unit headers above. */
-/* func_80092CAC's tail: resets state, then starts the mode by its D_8004DDD0 world. */
+/* func_80092CAC's tail: resets state, then starts the mode by its ModeTypes world. */
 static inline void EngineBeginMode(s32 arg) {
     EngineGameView *g = (EngineGameView *)GameInfo;
     s32 mode;
@@ -474,7 +474,7 @@ static inline void EngineBeginMode(s32 arg) {
     process_init(&D_8009F8A4);
     func_80098570();
     mode = g->mode;
-    world = D_8004DDD0[mode * 3];
+    world = ModeTypes[mode * 3];
     if (world != 0x101) {
         if (world == 0x102) {
             if (mode == 0x25) {

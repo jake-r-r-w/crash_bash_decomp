@@ -113,19 +113,19 @@ void func_8002C894(void) {
     MemCardStart();
     i = 0;
     D_800655B8 = 0;
-    D_800655C0 = 0;
+    CardStatus = 0;
     D_800675CC = 0;
     D_800655C4 = 0;
     for (;;) {
         if (i < 4) {
-            D_800657C8[i].b[0] = 0;
-            D_800657C8[i].b[1] = 0;
-            D_800657C8[i].b[2] = 0;
-            D_800657C8[i].b[3] = 0;
-            D_800657C8[i].b[4] = 0;
-            D_800657C8[i].b[5] = 0;
-            D_800657C8[i].b[6] = 0;
-            D_800657C8[i].b[7] = 0;
+            CardSlots[i].b[0] = 0;
+            CardSlots[i].b[1] = 0;
+            CardSlots[i].b[2] = 0;
+            CardSlots[i].b[3] = 0;
+            CardSlots[i].b[4] = 0;
+            CardSlots[i].b[5] = 0;
+            CardSlots[i].b[6] = 0;
+            CardSlots[i].b[7] = 0;
             i++;
         } else {
             break;
@@ -182,21 +182,21 @@ void func_8002C97C(void) {
 l0:
     MemCardExist(D_800655B8);
     i = 1;
-    D_800655C0 = 0;
+    CardStatus = 0;
     D_800675CC = i;
     return;
 l1:
     switch (D_80067830) {
     case 1:
         D_800675CC = 0;
-        D_800655C0 = 0;
+        CardStatus = 0;
         return;
     case 0:
     case 2:
     case 3:
     case 4:
         MemCardAccept(D_800655B8);
-        D_800655C0 = 0x42;
+        CardStatus = 0x42;
         D_800675CC = 2;
         break;
     }
@@ -210,10 +210,10 @@ l2:
     goto lend;
 l2_1:
     D_800675CC = 0;
-    D_800655C0 = 0;
+    CardStatus = 0;
     return;
 l2_4:
-    D_800655C0 = 6;
+    CardStatus = 6;
     D_800675CC = 3;
     goto lend;
 l2_03:
@@ -227,11 +227,11 @@ l2_03:
         goto lend;
     }
     McResetSave();
-    D_800655C0 = 0;
+    CardStatus = 0;
     if (McFreeBytes() >= 0x2000) {
-        D_800655C0 |= 0x20;
+        CardStatus |= 0x20;
     }
-    D_800655C0 |= 2;
+    CardStatus |= 2;
     D_800675CC = 3;
     return;
 l3:
@@ -245,18 +245,18 @@ l3:
     case 2:
         McResetSaveSum();
         if (MemCardFormat(D_800655B8) == 0) {
-            D_800655C0 = 0x22;
+            CardStatus = 0x22;
             D_800675CC = 3;
             D_800655C4 = 0;
             return;
         }
-        D_800655C0 |= 0x100;
+        CardStatus |= 0x100;
         D_800675CC = 6;
         return;
     case 1:
-        if (!(D_800655C0 & 0x10) && MemCardCreateFile(D_800655B8, D_8004CDAC, 1) != 0) {
+        if (!(CardStatus & 0x10) && MemCardCreateFile(D_800655B8, D_8004CDAC, 1) != 0) {
             D_800675CC = 6;
-            D_800655C0 |= 0x100;
+            CardStatus |= 0x100;
         }
         if (D_800675CC != 6) {
             func_8002C5BC();
@@ -274,18 +274,18 @@ l4:
     }
     goto lend;
 l4_13:
-    D_800655C0 = 0;
+    CardStatus = 0;
     D_800675CC = 0;
     return;
 l5:
     if (D_800655C4 == 1) {
         if (D_80067830 == 0) {
-            D_800655C0 = 0x12;
+            CardStatus = 0x12;
             D_800675CC = 3;
             D_800655C4 = 0;
             return;
         }
-        D_800655C0 |= 0x100;
+        CardStatus |= 0x100;
         D_800675CC = 6;
         return;
     }
@@ -301,19 +301,19 @@ l7:
         }
         if (*(s32 *)(p + 0x85C) == sum) {
             D_800675CC = 3;
-            D_800655C0 = 0x12;
+            CardStatus = 0x12;
             return;
         }
     }
 l2_2:
-    D_800655C0 = 0xA;
+    CardStatus = 0xA;
 l4_024:
     D_800675CC = 3;
 lend:;
 }
 
 s32 func_8002D094(void) {
-    if (D_800655C4 == 1 && (D_800655C0 & 0x80)) {
+    if (D_800655C4 == 1 && (CardStatus & 0x80)) {
         return 1;
     }
     return 0;
@@ -323,12 +323,12 @@ void card_save(void) {
     s32 flags;
     s32 on;
 
-    flags = D_800655C0;
+    flags = CardStatus;
     if ((flags & 2) && (flags & 0x30)) {
         on = TRUE;
         card_command_delay = on;
         D_800655C4 = on;
-        D_800655C0 = flags | 0x80;
+        CardStatus = flags | 0x80;
     }
 }
 
@@ -337,19 +337,19 @@ void func_8002D108(void) {
 
     card_command_delay = 1;
     D_800655C4 = mode;
-    D_800655C0 |= 0x80;
+    CardStatus |= 0x80;
 }
 
 void func_8002D134(s32 arg0) {
     card_command_delay = 1;
     D_800655C4 = arg0;
-    D_800655C0 |= 0x80;
+    CardStatus |= 0x80;
 }
 
 void func_8002D15C(void) {
     D_800655C4 = 0;
     D_800675CC = 0;
-    D_800655C0 = 0;
+    CardStatus = 0;
 }
 
 s32 func_8002D178(void) {
@@ -413,14 +413,14 @@ void func_8002D294(void) {
     i = 0;
     for (;;) {
         if (i < 4) {
-            D_800657C8[i].b[0] = 0;
-            D_800657C8[i].b[1] = 0;
-            D_800657C8[i].b[2] = 0;
-            D_800657C8[i].b[3] = 0;
-            D_800657C8[i].b[4] = 0;
-            D_800657C8[i].b[5] = 0;
-            D_800657C8[i].b[6] = 0;
-            D_800657C8[i].b[7] = 0;
+            CardSlots[i].b[0] = 0;
+            CardSlots[i].b[1] = 0;
+            CardSlots[i].b[2] = 0;
+            CardSlots[i].b[3] = 0;
+            CardSlots[i].b[4] = 0;
+            CardSlots[i].b[5] = 0;
+            CardSlots[i].b[6] = 0;
+            CardSlots[i].b[7] = 0;
             i++;
         } else {
             break;

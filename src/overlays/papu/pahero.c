@@ -1222,7 +1222,7 @@ NAS *PapuHeroGrabObject(idx, arg1)
     u16 ang;
     s32 hx, hz, dx, dz;
 
-    n = D_8005AA24;
+    n = HeadOfObjects;
     ang = Heroes[idx2].hero_move->facing_angle;
     he = Heroes[idx2].hero_eng;
     hx = he->unk10.x - (TrigTable[(ang - 0x400) & 0xFFF].unk2 * 1024 >> 14);
@@ -1337,8 +1337,8 @@ s32 PapuHeroKickCollision(s32 arg0) {
                     } else {
                         push = other[i].hero_move->forward_speed == 0;
                     }
-                    if (D_8005A5DC < 4) {
-                        if (D_8005A5DC >= 2) {
+                    if (VelocityCalc < 4) {
+                        if (VelocityCalc >= 2) {
                             push = 1;
                         }
                     }
@@ -1432,8 +1432,8 @@ s32 PapuHeroKickCollision(s32 arg0) {
             }
             rad = 0x78;
             push = Heroes[arg0].hero_move->forward_speed != 0;
-            if (D_8005A5DC < 4) {
-                if (D_8005A5DC >= 2) {
+            if (VelocityCalc < 4) {
+                if (VelocityCalc >= 2) {
                     push = 1;
                 }
             }
@@ -1580,7 +1580,7 @@ void *PapuHeroObjectAhead(s32 idx, s32 mask) {
     EXT *fux;
     s32 hx, hz, dx, dz, lim, m;
 
-    n = D_8005AA24;
+    n = HeadOfObjects;
     m = mask;
     lim = 0x10000;
     he = Heroes[idx].hero_eng;

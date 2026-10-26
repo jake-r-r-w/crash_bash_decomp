@@ -111,8 +111,8 @@ void BonkHeroIdle(s32 arg0) {
 
     if (func_8008ABF8() == 0 && func_80086FCC(arg0) == 0 && BonkHeroTestRun(arg0) == 0) {
         func_8008502C(arg0);
-        if (D_8005A5DC < 4) {
-            if (D_8005A5DC >= 2) {
+        if (VelocityCalc < 4) {
+            if (VelocityCalc >= 2) {
                 D_8009D73C(arg0);
             }
         }
@@ -362,8 +362,8 @@ s32 BonkHeroKickCollision(s32 arg0) {
                     } else {
                         push = other[i].hero_move->forward_speed == 0;
                     }
-                    if (D_8005A5DC < 4) {
-                        if (D_8005A5DC >= 2) {
+                    if (VelocityCalc < 4) {
+                        if (VelocityCalc >= 2) {
                             push = 1;
                         }
                     }
@@ -457,8 +457,8 @@ s32 BonkHeroKickCollision(s32 arg0) {
             }
             rad = 0x78;
             push = Heroes[arg0].hero_move->forward_speed != 0;
-            if (D_8005A5DC < 4) {
-                if (D_8005A5DC >= 2) {
+            if (VelocityCalc < 4) {
+                if (VelocityCalc >= 2) {
                     push = 1;
                 }
             }

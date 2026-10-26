@@ -1004,7 +1004,7 @@ static inline void HeroAnimSlotSet(volatile s16 *id, u16 *seq, volatile s32 *a, 
 void func_80085718(s32 arg0, u16 arg1) {
     if (D_8009D86C == 0) {
         HeroAnimSlotSet(&D_8009D864, &D_8009D866, &D_8009D868, &D_8009D86C, (volatile s32 *)((u8 *)&D_8009D878 - 12), arg0, arg1);
-    } else if (D_8004DDD0[GameMode * 3] != 0x104) {
+    } else if (ModeTypes[GameMode * 3] != 0x104) {
         HeroAnimSlotSet(&D_8009D870, &D_8009D872, &D_8009D874, &D_8009D878, (volatile s32 *)((u8 *)&D_8009D868 + 16), arg0, arg1);
     }
 }
@@ -1912,8 +1912,8 @@ void func_800874EC(s32 arg0) {
             }
         idle_done:
             func_8008502C(arg0);
-            if (D_8005A5DC < 4) {
-                if (D_8005A5DC >= 2) {
+            if (VelocityCalc < 4) {
+                if (VelocityCalc >= 2) {
                     D_8009D73C(arg0);
                 } else if (D_8009D740 != NULL) {
                     D_8009D740(arg0);
@@ -1941,8 +1941,8 @@ void func_8008795C(s32 arg0) {
         }
         if (ret2 == 0 && HeroCheckMoving(arg0) == 0) {
             func_8008502C(arg0);
-            if (D_8005A5DC < 4) {
-                if (D_8005A5DC >= 2) {
+            if (VelocityCalc < 4) {
+                if (VelocityCalc >= 2) {
                     D_8009D73C(arg0);
                 }
             }
@@ -4680,7 +4680,7 @@ void func_8008DEC8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     }
     if (abs(eng->unk10.y - World_floor_level) < 0x80) {
         arg1 = arg1 * arg1;
-        for (nas = D_8005AA24; nas != NULL; nas = nas->Object.Child) {
+        for (nas = HeadOfObjects; nas != NULL; nas = nas->Object.Child) {
             fux = (FuxFlags *)nas->FUX;
             if (fux != NULL && (fux->unk1C & 0x100)) {
                 e = nas->Engine;

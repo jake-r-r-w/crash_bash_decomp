@@ -223,7 +223,7 @@ static inline s32 EngineTable_Unlocked(s32 arg0) {
 
 /* func_8008FF10's body, inlined by func_8008F554. */
 static inline s32 EngineCurWorldName(void) {
-    u16 *wt = D_8004DDD0;
+    u16 *wt = ModeTypes;
     EngineTable12 *tab = D_8009E7A0;
     u8 *g = GameInfo;
     EngineEntry16Head *e = tab[g[0x28]].unk4;
@@ -407,7 +407,7 @@ extern void *D_8009EFDC[];
         u8 *a_;                                       \
         i_ = (n) & 3;                                 \
         off_ = i_ * 0x194;                            \
-        p_ = (u8 *)D_800657C8;                        \
+        p_ = (u8 *)CardSlots;                        \
         b_ = *(s32 *)(off_ + p_) == 0;                \
         q_ = p_ + 8;                                  \
         a_ = q_ + off_;                               \

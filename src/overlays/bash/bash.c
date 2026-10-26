@@ -522,9 +522,9 @@ void InitialiseBASH(void) {
         D_8009D6F4 = BashSnowRunSpeeds;
         BashPowerupTimer = (Random(0xA) + 0xA) * 0x1E;
         BashSetCrateMix(8, 8, 0xA, 0xC, 0xA, 3, 3, 0, 0);
-        D_8005A5DC = 3;
+        VelocityCalc = 3;
         for (i = 0; i < 4; i++) {
-            Heroes[i].hero_move->velocity_calc = D_8005A5DC;
+            Heroes[i].hero_move->velocity_calc = VelocityCalc;
         }
         BashSnowInitHeroMove();
         CreateNAS(0, World_floor_level, 0, 0x1101, 0x11);
@@ -1553,7 +1553,7 @@ s32 BashAI_ChooseTarget(s32 player) {
     s32 k;
     s32 wt;
 
-    n = D_8005AA24;
+    n = HeadOfObjects;
     bestNas = NULL;
     bestHero = -1;
     bestCell = -1;

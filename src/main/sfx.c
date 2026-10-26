@@ -27,7 +27,7 @@ void func_80022140(s32 arg0, s32 arg1) {
         q = D_8004E9C0;
         t8 = (u32)(q - 8);
     } while (0);
-    d = D_8004DDD0;
+    d = ModeTypes;
     f = ((D5A614View *)GameInfo)->mode;
     c = d[f * 3] - 0x101;
     f = (s32)(q - 0x10);

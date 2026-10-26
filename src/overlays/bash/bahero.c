@@ -673,7 +673,7 @@ NAS *BashHeroGrabObject(idx, cone)
     s32 lim = 0x10000;
 
     heroes = Heroes;
-    n = D_8005AA24;
+    n = HeadOfObjects;
     h = &heroes[idx];
     ang = h->hero_move->facing_angle;
     he = h->hero_eng;
@@ -827,8 +827,8 @@ s32 BashHeroKickCollision(s32 arg0) {
                 } else {
                     push = Heroes[i].hero_move->forward_speed == 0;
                 }
-                if (D_8005A5DC < 4) {
-                    if (D_8005A5DC >= 2) {
+                if (VelocityCalc < 4) {
+                    if (VelocityCalc >= 2) {
                         push = 1;
                     }
                 }
@@ -864,8 +864,8 @@ s32 BashHeroKickCollision(s32 arg0) {
                                 if (Heroes[i].hero_pu != 0) {
                                     (*(void (**)(s32, s32))&HeroHooks.unk60)(i, arg0);
                                 }
-                                if (D_8005A5DC < 4) {
-                                    if (D_8005A5DC >= 2) {
+                                if (VelocityCalc < 4) {
+                                    if (VelocityCalc >= 2) {
                                         BOUNCE(self->hero_move, Heroes[i].hero_move);
                                     }
                                 }
@@ -893,8 +893,8 @@ s32 BashHeroKickCollision(s32 arg0) {
                                 e->unk10.x += (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
                                 e->unk10.z += (d * TrigTable[ang].unk2) >> 12;
                             }
-                            if (D_8005A5DC < 4) {
-                                if (D_8005A5DC >= 2) {
+                            if (VelocityCalc < 4) {
+                                if (VelocityCalc >= 2) {
                                     BOUNCE(self->hero_move, Heroes[i].hero_move);
                                 }
                             }
@@ -921,8 +921,8 @@ s32 BashHeroKickCollision(s32 arg0) {
                                 e->unk10.x += (d * TrigTable[(ang - 0x400) & 0xFFF].unk2) >> 12;
                                 e->unk10.z += (d * TrigTable[ang].unk2) >> 12;
                             }
-                            if (D_8005A5DC < 4) {
-                                if (D_8005A5DC >= 2) {
+                            if (VelocityCalc < 4) {
+                                if (VelocityCalc >= 2) {
                                     BOUNCE(self->hero_move, Heroes[i].hero_move);
                                 }
                             }
@@ -937,8 +937,8 @@ s32 BashHeroKickCollision(s32 arg0) {
             }
             rad = 0x78;
             push = Heroes[arg0].hero_move->forward_speed != 0;
-            if (D_8005A5DC < 4) {
-                if (D_8005A5DC >= 2) {
+            if (VelocityCalc < 4) {
+                if (VelocityCalc >= 2) {
                     push = 1;
                 }
             }
@@ -1085,7 +1085,7 @@ void *BashHeroObjectAhead(s32 idx, s32 mask) {
     EXT *fux;
     s32 hx, hz, dx, dz, lim, m;
 
-    n = D_8005AA24;
+    n = HeadOfObjects;
     m = mask;
     lim = 0x10000;
     he = Heroes[idx].hero_eng;

@@ -516,7 +516,7 @@ extern u16 ArkGrabFrames[];
 
 NAS *ArkHero2ObjectCollision(u32 arg0);
 
-/* Ark_HeroBot: the object lists (D_8005AA38 by next, D_8005AA24 by child). */
+/* Ark_HeroBot: the object lists (D_8005AA38 by next, HeadOfObjects by child). */
 typedef struct ArkenoidAiFux {
     u8 pad0[0x1A];
     u16 unk1A;

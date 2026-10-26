@@ -229,7 +229,7 @@ void func_8002B52C(s16 *arg0, s32 arg1, s32 arg2) {
 }
 
 s32 func_8002B5B0(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    s32 *p = (s32 *)D_8005A604;
+    s32 *p = (s32 *)GameOptions;
     s8 *sfx = SfxTable[arg1];
     s16 v;
 
@@ -362,7 +362,7 @@ s32 func_8002BB80(void) {
     return 0;
 }
 
-/* Empties the D_800644C0 slots and clears SfxTable. */
+/* Empties the SfxBanks slots and clears SfxTable. */
 void func_8002BBB4(void) {
     s8 *p;
     s32 i;
@@ -388,7 +388,7 @@ void func_8002BBEC(void) {
             break;
         }
         n--;
-        slot = &D_800644C0[n];
+        slot = &SfxBanks[n];
         D_800654BC = n;
         SpuIsTransferCompleted(1);
         func_8002ACA0(slot->id, 1);
@@ -416,7 +416,7 @@ void func_8002BCB0(s32 *arg0) {
 
 void func_8002BD0C(s32 arg0) {
     if (D_800654BC < 6) {
-        machine_load_sfx(arg0, &D_800644C0[D_800654BC]);
+        machine_load_sfx(arg0, &SfxBanks[D_800654BC]);
         D_800654BC++;
     }
 }

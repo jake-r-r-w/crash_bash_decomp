@@ -565,7 +565,7 @@ void TitlesCheckIdle(void) {
             u16 v = *(u16 *)(t + ((f * 2) & 0xC));
             *(s32 *)(g + 0x68) = 1;
             *(s32 *)(g + 0x14) = 0x384;
-            D_8009F658.next_process = &D_800A00DC;
+            ProcessControl.next_process = &D_800A00DC;
             *(u16 *)(g + 0x34) = v;
         }
         D_8009F654 += 1;
@@ -965,7 +965,7 @@ void OptionsUpdate(void) {
         switch (OptionsCursor) {
         case 0:
             if (D_80051380 & 0xA0) {
-                s32 *opt = (s32 *)D_8005A604;
+                s32 *opt = (s32 *)GameOptions;
 
                 opt[2] ^= 1;
                 PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -980,14 +980,14 @@ void OptionsUpdate(void) {
             sub[5].unk7C = 2;
             break;
         case 1:
-            v = *(s32 *)D_8005A604;
+            v = *(s32 *)GameOptions;
             if (v > 0 && (D_80051380 & 0x80)) {
                 v -= 5;
             }
             if (v < 100 && (D_80051380 & 0x20)) {
                 v += 5;
             }
-            *(s32 *)D_8005A604 = v;
+            *(s32 *)GameOptions = v;
             sub[6].unk7C = 2;
             sub[7].unk7C = 2;
             break;
@@ -1014,7 +1014,7 @@ void OptionsUpdate(void) {
         }
         for (i = 0; i < n; i++) {
             if (((PadButtons *)Pads)[i].pressed & 0x8000) {
-                ((TitlesOpt *)D_8005A604)->unkC[i] ^= 1;
+                ((TitlesOpt *)GameOptions)->unkC[i] ^= 1;
                 func_80028018(i, 0xA);
                 PlaySfx(0x190, NULL, NULL, 0x1000, 0x1E00, 0);
             }
@@ -1040,8 +1040,8 @@ void OptionsRender(void) {
     RenderState.modelDp = ScreenFade.amount;
     switch (OptionsPage) {
     case 1:
-        func_8008D488(sub[7].unk6C, *(s32 *)D_8005A604);
-        if (((s32 *)D_8005A604)[2] != 0) {
+        func_8008D488(sub[7].unk6C, *(s32 *)GameOptions);
+        if (((s32 *)GameOptions)[2] != 0) {
             sub[5].flags &= ~0x8000;
             sub[4].flags |= 0x8000;
         } else {
@@ -1058,7 +1058,7 @@ void OptionsRender(void) {
         for (i = 0; i < n; i++) {
             if (Pads[i].unk0 & 8) {
                 sub[i * 3 + 5].unk7C = 0;
-                if (D_8005A604[i + 0xC] != 0) {
+                if (GameOptions[i + 0xC] != 0) {
                     sub[i * 3 + 4].flags |= 0x8000;
                     sub[i * 3 + 5].flags &= ~0x8000;
                     sub[i * 3 + 6].flags &= ~0x8000;
@@ -1865,10 +1865,10 @@ void LevelSelectInput(void) {
     GetEngineSlot(0)->sub->unk08 = 0x1C;
     GetEngineSlot(0)->sub[9].flags |= 0x8000;
     if ((c = ((BattleLevel *)((u8 *)BattleArenas[(s8)GameInfo[0x36]].unk0 + ((s8)GameInfo[0x37] << 4)))->type == 2)) {
-        if (D_800655C0 & 2) {
-            if (D_800655C0 & 0x40) {
+        if (CardStatus & 2) {
+            if (CardStatus & 0x40) {
                 GetEngineSlot(0)->sub[9].unk6C = (void *)LangCheckingCard[*(s32 *)(GameInfo + 0x2C)];
-            } else if (D_800655C0 & 0x10) {
+            } else if (CardStatus & 0x10) {
                 if (UnlockCardLevels(0) != 0) {
                     *(s32 *)&GetEngineSlot(0)->sub[9].unk6C = LangPressToUnlockLevels[*(s32 *)(GameInfo + 0x2C)];
                     if (D_80051380 & 0x2000) {
@@ -1922,7 +1922,7 @@ void LevelSelectUpdate(void) {
     }
     e0 = GetEngineSlot(0);
     boff = ((BattleLevel *)((u8 *)BattleArenas[(s8)GameInfo[0x36]].unk0 + ((s8)GameInfo[0x37] << 4)))->idx;
-    w = D_8004DDD0[boff * 3] - 0x101;
+    w = ModeTypes[boff * 3] - 0x101;
     off = ((s32 **)D_8004DDBC)[*(s32 *)(GameInfo + 0x2C)][w];
     e0->sub[6].unk6C = (void *)off;
     t = &GetEngineSlot(0)->sub[1];
@@ -2063,7 +2063,7 @@ void TitlesEmptyStub(void) {
 
 s32 LevelListName(s32 arg0, s32 arg1) {
     s32 idx = *(s32 *)(BattleArenas[arg0].unk0 + (arg1 << 4) + 4);
-    s32 w = D_8004DDD0[idx * 3] - 0x101;
+    s32 w = ModeTypes[idx * 3] - 0x101;
     s32 **tbl = (s32 **)D_8004DDBC;
     return tbl[D_8005A640][w];
 }

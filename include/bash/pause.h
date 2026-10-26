@@ -294,14 +294,14 @@ typedef struct EngineMsgView {
     /* 0x34 */ s16 mode;
 } EngineMsgView;
 #define MSGV ((EngineMsgView *)GameInfo)
-/* D_8005A604 as seen by func_80080FBC. */
+/* GameOptions as seen by func_80080FBC. */
 typedef struct EngineOptView {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s32 unk4;
     /* 0x08 */ s32 unk8;
     /* 0x0C */ s8 unkC[4];
 } EngineOptView;
-#define OPTV ((EngineOptView *)D_8005A604)
+#define OPTV ((EngineOptView *)GameOptions)
 typedef struct EngineLevelInfo {
     /* 0x00 */ u8 unk0[0xBC];
     /* 0xBC */ u8 *unkBC;

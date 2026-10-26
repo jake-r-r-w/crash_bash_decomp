@@ -222,7 +222,7 @@ void func_800793E8(void) {
     u8 *g;
     u8 *p;
 
-    switch (D_8004DDD0[D_8009E5DC * 3]) {
+    switch (ModeTypes[D_8009E5DC * 3]) {
     case 0x104:
         w = 0;
         break;
@@ -287,7 +287,7 @@ void func_80079554(void) {
     if (g->unk74 != 0 || g->unk68 != 0) {
         return;
     }
-    levels = D_8004DDD0;
+    levels = ModeTypes;
     if (levels[g->mode * 3] == 0x101) {
         return;
     }
@@ -397,7 +397,7 @@ void func_800798A4(void) {
     u32 c1;
     u8 *tim;
 
-    if (D_8004DDD0[HUDGAME->mode * 3] == 0x102) {
+    if (ModeTypes[HUDGAME->mode * 3] == 0x102) {
         show = 1;
         if (!(HUDGAME->flags & 1)) {
             show = 0;

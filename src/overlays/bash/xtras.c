@@ -95,7 +95,7 @@ void BashCountObjects(void) {
     for (j = 12; j >= 0; j--) {
         D_8009E25C[j] = 0;
     }
-    n = D_8005AA24;
+    n = HeadOfObjects;
     for (;;) {
         if (n == NULL) return;
         e = n->Engine;

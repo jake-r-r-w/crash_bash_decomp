@@ -486,7 +486,7 @@ void SpinTurnArena(void) {
         h->hero_move->forward_angle += SpinAngle;
         h->hero_move->forward_angle &= 0xFFF;
     }
-    for (n = D_8005AA24; n != NULL; n = n->Object.Child) {
+    for (n = HeadOfObjects; n != NULL; n = n->Object.Child) {
         f = (SpinFux *)n->FUX;
         if (f == NULL) continue;
         e = n->Engine;
@@ -828,7 +828,7 @@ void SpinCountObjects(void) {
     for (j = 12; j >= 0; j--) {
         D_8009E25C[j] = 0;
     }
-    for (n = D_8005AA24; n != NULL; n = n->Object.Child) {
+    for (n = HeadOfObjects; n != NULL; n = n->Object.Child) {
         e = n->Engine;
         if (e == NULL) continue;
         f = (SpinFux *)n->FUX;
@@ -1600,7 +1600,7 @@ void SpinScoreBalloon(SpinFux *arg0) {
     s32 k;
     u16 *p;
 
-    n = D_8005AA24;
+    n = HeadOfObjects;
     idx = arg0->owner;
     if (idx != -1) {
         a = AiPlayerSkill[idx][0];
@@ -2368,7 +2368,7 @@ s32 SpinAI_ChooseTarget(s32 player) {
     s32 i;
     s32 k;
 
-    n = D_8005AA24;
+    n = HeadOfObjects;
     bestNas = NULL;
     bestHero = -1;
     bestHeroScore = 0;
@@ -3229,7 +3229,7 @@ NAS *SpinHeroGrabObject(s32 idx, s32 mask) {
     um = (u16)mask;
     lim = 0x10000;
     hb = Heroes;
-    n = D_8005AA24;
+    n = HeadOfObjects;
     h = &hb[idx];
     he = h->hero_eng;
     ang = Heroes[idx].hero_move->facing_angle;
@@ -3343,8 +3343,8 @@ s32 SpinHeroKickCollision(s32 arg0) {
                     } else {
                         push = other[i].hero_move->forward_speed == 0;
                     }
-                    if (D_8005A5DC < 4) {
-                        if (D_8005A5DC >= 2) {
+                    if (VelocityCalc < 4) {
+                        if (VelocityCalc >= 2) {
                             push = 1;
                         }
                     }
@@ -3438,8 +3438,8 @@ s32 SpinHeroKickCollision(s32 arg0) {
             }
             rad = 0x78;
             push = Heroes[arg0].hero_move->forward_speed != 0;
-            if (D_8005A5DC < 4) {
-                if (D_8005A5DC >= 2) {
+            if (VelocityCalc < 4) {
+                if (VelocityCalc >= 2) {
                     push = 1;
                 }
             }
@@ -3581,7 +3581,7 @@ s32 SpinHeroCarryCollision(s32 idx) {
 
 SpinFux *SpinHeroObjectNear(s32 hero, u16 mask, s32 r) {
     SpinFux *best = NULL;
-    NAS *n = D_8005AA24;
+    NAS *n = HeadOfObjects;
     EXTengine *eng = Heroes[hero].hero_eng;
     s32 cx = eng->unk10.x;
     s32 cz = eng->unk10.z;

@@ -488,7 +488,7 @@ void func_800235BC(ArenaDef *arg0) {
     LevelSpecs[10] = 0;
     e = func_800235BC_find(arg0, GameMode);
     if (e == NULL) {
-        e = func_800235BC_find(arg0, D_8004DDD0[GameMode * 3]);
+        e = func_800235BC_find(arg0, ModeTypes[GameMode * 3]);
     }
     if (e != NULL) {
         FirstNas = e->unk4 + 4;
@@ -499,13 +499,13 @@ void func_800235BC(ArenaDef *arg0) {
         ((D5A614View *)GameInfo)->unk0 = e->unk14;
         D_8005A5E0 = e->unkC;
         if (((D5A614View *)GameInfo)->flags & 0x80) {
-            ((D5A614View *)GameInfo)->unk8 = ((LevelInfo *)D_8004DDD0)[((D5A614View *)GameInfo)->mode].unk4;
+            ((D5A614View *)GameInfo)->unk8 = ((LevelInfo *)ModeTypes)[((D5A614View *)GameInfo)->mode].unk4;
         } else {
-            ((D5A614View *)GameInfo)->unk8 = ((LevelInfo *)D_8004DDD0)[((D5A614View *)GameInfo)->mode].unk2;
+            ((D5A614View *)GameInfo)->unk8 = ((LevelInfo *)ModeTypes)[((D5A614View *)GameInfo)->mode].unk2;
         }
     }
     if (e == NULL || D_8005A5E0 == NULL) {
-        printf(D_8004C8D0, GameMode, ((LevelInfo *)D_8004DDD0)[GameMode].world);
+        printf(D_8004C8D0, GameMode, ((LevelInfo *)ModeTypes)[GameMode].world);
     }
 }
 
@@ -2108,14 +2108,14 @@ s32 func_80026A28(void) {
     s32 n;
 
     n = 0;
-    for (nas = D_8005AA24; nas != NULL; nas = nas->Object.Child) {
+    for (nas = HeadOfObjects; nas != NULL; nas = nas->Object.Child) {
         n++;
     }
     return n;
 }
 
 void func_80026A54(NAS *nas) {
-    NAS **head = (NAS **)&D_8005AA24;
+    NAS **head = (NAS **)&HeadOfObjects;
 
     if (nas->Object.Parent != NULL || nas->Object.Child != NULL) {
         if (nas->Object.Parent != NULL) {
@@ -2135,11 +2135,11 @@ void func_80026A54(NAS *nas) {
 }
 
 void func_80026AD8(u8 *arg0) {
-    if (D_8005AA24 != NULL) {
-        (*(s32*)((u8*)(arg0) + 44)) = (u8 *) D_8005AA24;
-        (*(s32*)((u8*)(D_8005AA24) + 40)) = arg0;
+    if (HeadOfObjects != NULL) {
+        (*(s32*)((u8*)(arg0) + 44)) = (u8 *) HeadOfObjects;
+        (*(s32*)((u8*)(HeadOfObjects) + 40)) = arg0;
     }
-    D_8005AA24 = arg0;
+    HeadOfObjects = arg0;
 }
 
 void func_80026AFC(NAS *nas) {
@@ -2292,12 +2292,12 @@ void func_80026D9C(void) {
     D_8005AA34 = NULL;
     HeadOfSolids = NULL;
     D_8005AA30 = NULL;
-    D_8005AA24 = NULL;
+    HeadOfObjects = NULL;
     HeadOfMissiles = NULL;
     NASActiveHead = NULL;
     NASActiveTail = NULL;
     World_floor_level = 0;
-    D_8005A5DC = 1;
+    VelocityCalc = 1;
     func_80026D08();
     for (i = 1; i < 16; i++) {
         D_8005B5BC[i][0] = 0;
@@ -2769,7 +2769,7 @@ loop:
 void func_80027F7C(s32 pad, s32 arg1, s8 arg2) {
     u8 *p;
 
-    if (GameInfo[pad + 0x5C] == 0 && !(*(s32 *)(GameInfo + 4) & 0x80) && D_8005A604[pad + 0xC] != 0 &&
+    if (GameInfo[pad + 0x5C] == 0 && !(*(s32 *)(GameInfo + 4) & 0x80) && GameOptions[pad + 0xC] != 0 &&
         (Pads[pad].unk0 & 8)) {
         p = (u8 *)&Pads[pad] + 0x1C;
         p[5] = arg2;
@@ -2781,7 +2781,7 @@ void func_80027F7C(s32 pad, s32 arg1, s8 arg2) {
 void func_80028018(s32 pad, s32 arg1) {
     u8 *p;
 
-    if (GameInfo[pad + 0x5C] == 0 && !(*(s32 *)(GameInfo + 4) & 0x80) && pad < 4 && D_8005A604[pad + 0xC] != 0 &&
+    if (GameInfo[pad + 0x5C] == 0 && !(*(s32 *)(GameInfo + 4) & 0x80) && pad < 4 && GameOptions[pad + 0xC] != 0 &&
         (Pads[pad].unk0 & 8)) {
         p = (u8 *)&Pads[pad] + 0x1C;
         p[4] = 1;

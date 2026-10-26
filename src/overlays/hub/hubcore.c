@@ -2609,7 +2609,7 @@ void HubSaveMenuQuit(void) {
 void HubSaveMenuUpdate(void) {
     HubSaveMenuInput();
     if (D_80051380 & 9) {
-        D_8009F658.next_process = &D_8009F46C;
+        ProcessControl.next_process = &D_8009F46C;
     }
 }
 

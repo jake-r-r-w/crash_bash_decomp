@@ -34,7 +34,7 @@ void Setup_panel(void) {
         D_800991D8[3] = 3;
     }
     func_8007EAC0();
-    if (D_8004DDD0[GameMode * 3] != 0x101 && D_8004DDD0[GameMode * 3] != 0x102) {
+    if (ModeTypes[GameMode * 3] != 0x101 && ModeTypes[GameMode * 3] != 0x102) {
         switch (GameMode) {
         case 14:
         case 15:
@@ -1864,7 +1864,7 @@ found:
     case 5:
         if (MODEV->unk5C[CupWinner] != 0) {
             D_800ADBCC = 1;
-            D_8009AEEC = 0;
+            PauseChoice = 0;
             CupTimer = 900;
             MODEV->unk10 |= 0x21;
             PlaySfx(0x19E, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -1898,7 +1898,7 @@ found:
         break;
     case 4:
         D_800ADBCC = 1;
-        D_8009AEEC = 0;
+        PauseChoice = 0;
         CupTimer = 900;
         MODEV->unk10 |= 0x201;
         PlaySfx(0x19E, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -1920,7 +1920,7 @@ found:
             BigScore2.unk10.y -= 8;
         }
         if (CupTimer == 0) {
-            if (D_8009AEEC == 0) {
+            if (PauseChoice == 0) {
                 MODEV->unk42 = -1;
                 MODEV->unkCC[0] = 0;
                 MODEV->unkCC[1] = 0;
@@ -1951,7 +1951,7 @@ found:
             BigScore2.unk10.y -= 8;
         }
         if (CupTimer == 0) {
-            switch (D_8009AEEC) {
+            switch (PauseChoice) {
             case 0:
                 MODEV->unk42 = -1;
                 MODEV->unkCC[0] = 0;
@@ -1992,14 +1992,14 @@ found:
         case 4:
         case 5:
         case 6:
-            D_8009AEEC = 0;
+            PauseChoice = 0;
             CupTimer = 900;
             MODEV->unk10 |= 0x401;
             PlaySfx(0x19E, NULL, NULL, 0x1000, 0x1E00, 0);
             CupMode = 0xF;
             break;
         case 7:
-            D_8009AEEC = 0;
+            PauseChoice = 0;
             CupTimer = 900;
             MODEV->unk10 |= 0x401;
             PlaySfx(0x19E, NULL, NULL, 0x1000, 0x1E00, 0);
@@ -2013,7 +2013,7 @@ found:
         break;
     case 15:
         if (CupTimer == 0) {
-            if (D_8009AEEC == 0) {
+            if (PauseChoice == 0) {
                 MODEV->unk42 = -1;
                 MODEV->unkCC[0] = 0;
                 MODEV->unkCC[1] = 0;

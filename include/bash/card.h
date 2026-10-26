@@ -90,14 +90,14 @@ static inline void McResetSave(void) {
     i = 0;
     for (;;) {
         if (i < 4) {
-            D_800657C8[i].b[0] = 0;
-            D_800657C8[i].b[1] = 0;
-            D_800657C8[i].b[2] = 0;
-            D_800657C8[i].b[3] = 0;
-            D_800657C8[i].b[4] = 0;
-            D_800657C8[i].b[5] = 0;
-            D_800657C8[i].b[6] = 0;
-            D_800657C8[i].b[7] = 0;
+            CardSlots[i].b[0] = 0;
+            CardSlots[i].b[1] = 0;
+            CardSlots[i].b[2] = 0;
+            CardSlots[i].b[3] = 0;
+            CardSlots[i].b[4] = 0;
+            CardSlots[i].b[5] = 0;
+            CardSlots[i].b[6] = 0;
+            CardSlots[i].b[7] = 0;
             i++;
         } else {
             break;
@@ -131,14 +131,14 @@ static inline void McResetSaveSum(void) {
     i = 0;
     for (;;) {
         if (i < 4) {
-            D_800657C8[i].b[0] = 0;
-            D_800657C8[i].b[1] = 0;
-            D_800657C8[i].b[2] = 0;
-            D_800657C8[i].b[3] = 0;
-            D_800657C8[i].b[4] = 0;
-            D_800657C8[i].b[5] = 0;
-            D_800657C8[i].b[6] = 0;
-            D_800657C8[i].b[7] = 0;
+            CardSlots[i].b[0] = 0;
+            CardSlots[i].b[1] = 0;
+            CardSlots[i].b[2] = 0;
+            CardSlots[i].b[3] = 0;
+            CardSlots[i].b[4] = 0;
+            CardSlots[i].b[5] = 0;
+            CardSlots[i].b[6] = 0;
+            CardSlots[i].b[7] = 0;
             i++;
         } else {
             break;

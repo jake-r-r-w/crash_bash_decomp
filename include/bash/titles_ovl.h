@@ -60,7 +60,7 @@ extern s32 BattleOptionsState;
 extern PlaceRec OptionsPlace[];
 extern s32 OptionsCursor;
 extern s32 OptionsPage;
-/* D_8005A604 as OptionsUpdate edits it (options menu). */
+/* GameOptions as OptionsUpdate edits it (options menu). */
 typedef struct TitlesOpt {
     /* 0x00 */ s32 unk0;
     /* 0x04 */ s32 unk4;

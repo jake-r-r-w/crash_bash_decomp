@@ -109,3 +109,5 @@ AiSkillTable = 0x8009D8FC;
 AiTeamSkillTable = 0x8009D900;
 AiHumanRoundTweakTable = 0x8009D904;
 HeroesAllOut = 0x8009D908;
+PauseChoice = 0x8009AEEC;
+ProcessControl = 0x8009F658;

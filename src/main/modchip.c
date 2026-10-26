@@ -2,22 +2,22 @@
 #include "bash/modchip.h"
 
 extern u8 D_BFC7FF52;
-extern s32 D_80067894;
+extern s32 ModchipState;
 extern s32 D_8006EA24;
 
 void func_8002D488(void) {
     switch (D_BFC7FF52) {
     case 0x41:
-        D_80067894 = 1;
+        ModchipState = 1;
         D_8006EA24 = 1;
         return;
     case 0x45:
-        D_80067894 = 0;
+        ModchipState = 0;
         D_8006EA24 = 2;
         return;
     case 0x4A:
     default:
-        D_80067894 = 1;
+        ModchipState = 1;
         D_8006EA24 = 0;
         return;
     }
@@ -29,10 +29,10 @@ s32 func_8002D4F4(s32 arg0) {
     ret = 0;
 loop:
     {
-        switch (D_80067894) {
+        switch (ModchipState) {
         case 1:
             func_8002E000(1);
-            D_80067894 = 2;
+            ModchipState = 2;
             ret = 1;
             break;
         case 2:
@@ -44,14 +44,14 @@ loop:
                 break;
             case -2:
                 func_8002E000(0);
-                D_80067894 = 0x11;
+                ModchipState = 0x11;
                 ret = 2;
                 break;
             case 1:
                 ret = 2;
                 D_8006EA1C = D_8006788C[2];
                 func_8002E000(6);
-                D_80067894 = 3;
+                ModchipState = 3;
                 break;
             case -1:
                 func_8002E000(1);
@@ -63,17 +63,17 @@ loop:
             ret = func_8002DE2C(6);
             switch (ret) {
             case -1:
-                D_80067894 = 1;
+                ModchipState = 1;
                 break;
             case -2:
                 func_8002E000(0);
-                D_80067894 = 0x11;
+                ModchipState = 0x11;
                 ret = -1;
                 break;
             case 1:
                 D_80067884[0] = (D_8006EA1C >= 2) * 2;
                 func_8002E000(2);
-                D_80067894 = 4;
+                ModchipState = 4;
             case 0:
             default:
                 ret =3;
@@ -84,11 +84,11 @@ loop:
             ret = func_8002DE2C(2);
             switch (ret) {
             case -1:
-                D_80067894 = 1;
+                ModchipState = 1;
                 break;
             case -2:
                 func_8002E000(0);
-                D_80067894 = 0x11;
+                ModchipState = 0x11;
                 ret = -1;
                 break;
             case 1: {
@@ -107,7 +107,7 @@ loop:
                 mm = ((BcdTime *)&D_8006EA20)->min;
                 ((BcdTime *)&D_8006EA20)->sec = cd_to_bcd(ss, mm);
                 func_8002E000(0xC);
-                D_80067894 = 5;
+                ModchipState = 5;
             }
             case 0:
             default:
@@ -120,7 +120,7 @@ loop:
             switch (ret) {
             case -1: {
                 if (!(D_8006788C[0] & 1)) {
-                    D_80067894 = 1;
+                    ModchipState = 1;
                 } else if (D_8006788C[1] & 0x40) {
                     u8 m = D_8006EA20;
                     u8 s = ((volatile BcdTime *)&D_8006EA20)->sec;
@@ -128,19 +128,19 @@ loop:
                     D_80067884[1] = s;
                     D_80067884[2] = 0;
                     func_8002E000(3);
-                    D_80067894 = 7;
+                    ModchipState = 7;
                     ret = 5;
                 }
                 break;
             }
             case -2:
                 func_8002E000(0);
-                D_80067894 = 0x11;
+                ModchipState = 0x11;
                 ret = -1;
                 break;
             case 1:
                 func_8002E000(0xD);
-                D_80067894 = 6;
+                ModchipState = 6;
             case 0:
             default:
                 ret =5;
@@ -155,7 +155,7 @@ loop:
                 break;
             case -2:
                 func_8002E000(0);
-                D_80067894 = 0x11;
+                ModchipState = 0x11;
                 ret = -1;
                 break;
             case 1: {
@@ -166,7 +166,7 @@ loop:
                 D_80067884[2] = 0;
             }
                 func_8002E000(3);
-                D_80067894 = 7;
+                ModchipState = 7;
             case 0:
             default:
                 ret =6;
@@ -177,17 +177,17 @@ loop:
             ret = func_8002DE2C(3);
             switch (ret) {
             case -1:
-                D_80067894 = 1;
+                ModchipState = 1;
                 break;
             case -2:
                 func_8002E000(0);
-                D_80067894 = 0x11;
+                ModchipState = 0x11;
                 ret = -1;
                 break;
             case 1:
                 D_80067884[0] = ret;
                 func_8002E000(5);
-                D_80067894 = 8;
+                ModchipState = 8;
             case 0:
             default:
                 ret =7;
@@ -198,16 +198,16 @@ loop:
             ret = func_8002DE2C(5);
             switch (ret) {
             case -1:
-                D_80067894 = 1;
+                ModchipState = 1;
                 break;
             case -2:
                 func_8002E000(0);
-                D_80067894 = 0x11;
+                ModchipState = 0x11;
                 ret = -1;
                 break;
             case 1:
                 D_8006EA18 = VSync(-1);
-                D_80067894 = 9;
+                ModchipState = 9;
             case 0:
             default:
                 ret =8;
@@ -217,7 +217,7 @@ loop:
         case 9:
             if (VSync(-1) > D_8006EA18 + 3) {
                 func_8002E000(4);
-                D_80067894 = 0xA;
+                ModchipState = 0xA;
             }
             ret = 9;
             break;
@@ -225,16 +225,16 @@ loop:
             ret = func_8002DE2C(4);
             switch (ret) {
             case -1:
-                D_80067894 = 1;
+                ModchipState = 1;
                 break;
             case -2:
                 func_8002E000(0);
-                D_80067894 = 0x11;
+                ModchipState = 0x11;
                 ret = -1;
                 break;
             case 1:
                 func_8002E000(7);
-                D_80067894 = 0xB;
+                ModchipState = 0xB;
             case 0:
             default:
                 ret =0xA;
@@ -245,16 +245,16 @@ loop:
             ret = func_8002DE2C(7);
             switch (ret) {
             case -1:
-                D_80067894 = 1;
+                ModchipState = 1;
                 break;
             case -2:
                 func_8002E000(0);
-                D_80067894 = 0x11;
+                ModchipState = 0x11;
                 ret = -1;
                 break;
             case 1:
                 func_8002E000(8);
-                D_80067894 = 0xC;
+                ModchipState = 0xC;
             case 0:
             default:
                 ret =0xB;
@@ -265,17 +265,17 @@ loop:
             ret = func_8002DE2C(8);
             switch (ret) {
             case -1:
-                D_80067894 = 1;
+                ModchipState = 1;
                 break;
             case -2:
                 func_8002E000(0);
-                D_80067894 = 0x11;
+                ModchipState = 0x11;
                 ret = -1;
                 break;
             case 1:
                 D_80067884[0] = 4;
                 func_8002E000(9);
-                D_80067894 = 0xD;
+                ModchipState = 0xD;
             case 0:
             default:
                 ret =0xC;
@@ -286,16 +286,16 @@ loop:
             ret = func_8002DE2C(9);
             switch (ret) {
             case -1:
-                D_80067894 = 1;
+                ModchipState = 1;
                 break;
             case -2:
                 func_8002E000(0);
-                D_80067894 = 0x11;
+                ModchipState = 0x11;
                 ret = -1;
                 break;
             case 1:
                 D_8006EA18 = VSync(-1);
-                D_80067894 = 0xE;
+                ModchipState = 0xE;
             case 0:
             default:
                 ret =0xD;
@@ -306,7 +306,7 @@ loop:
             if (VSync(-1) > D_8006EA18 + 200) {
                 D_80067884[0] = 5;
                 func_8002E000(0xA);
-                D_80067894 = 0xF;
+                ModchipState = 0xF;
             }
             ret = 0xE;
             break;
@@ -314,20 +314,20 @@ loop:
             ret = func_8002DE2C(0xA);
             switch (ret) {
             case -1:
-                D_80067894 = 1;
+                ModchipState = 1;
                 break;
             case -2:
                 func_8002E000(0);
-                D_80067894 = 0x11;
+                ModchipState = 0x11;
                 ret = -1;
                 break;
             case 1:
                 if (D_8006788C[1] != 0) {
                     func_8002E000(0);
-                    D_80067894 = 0x10;
+                    ModchipState = 0x10;
                 } else {
                     D_8006EA18 = VSync(-1);
-                    D_80067894 = 0x13;
+                    ModchipState = 0x13;
                 }
             case 0:
             default:
@@ -339,11 +339,11 @@ loop:
             ret = func_8002DE2C(0);
             switch (ret) {
             case -1:
-                D_80067894 = 1;
+                ModchipState = 1;
                 break;
             case -2:
                 func_8002E000(0);
-                D_80067894 = 0x11;
+                ModchipState = 0x11;
                 ret = -1;
                 break;
             case 1:
@@ -358,14 +358,14 @@ loop:
             ret = func_8002DE2C(0);
             switch (ret) {
             case -1:
-                D_80067894 = 1;
+                ModchipState = 1;
                 break;
             case 0:
             default:
                 ret = 0x10;
                 break;
             case 1:
-                D_80067894 = ret;
+                ModchipState = ret;
                 ret = 0x10;
                 break;
             case -2:
@@ -379,14 +379,14 @@ loop:
             switch (ret) {
             case -2:
                 func_8002E000(0);
-                D_80067894 = 0x11;
+                ModchipState = 0x11;
                 ret = -1;
                 break;
             case -1:
-                D_80067894 = 1;
+                ModchipState = 1;
                 break;
             case 1:
-                D_80067894 = 0;
+                ModchipState = 0;
             case 0:
             default:
                 ret =0x12;
@@ -396,7 +396,7 @@ loop:
         case 19:
             if (VSync(-1) > D_8006EA18 + 10) {
                 func_8002E000(0xB);
-                D_80067894 = 0x12;
+                ModchipState = 0x12;
             }
             ret = 0x13;
             break;
