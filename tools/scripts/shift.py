@@ -273,6 +273,15 @@ def fixup(ovl, old_elf, new_elf, others):
     return done
 
 
+def raw_data_refs(provides, defined, data_start):
+    """The engine's undefined names that link as a plain address (splat's PROVIDE lines) at one
+    of the overlay's data objects: they stay at the retail address when the overlay moves
+    (InitWeatherNas's D_800C45DC was N2O's star field, and Retry crashed). provides is
+    {name: address}, defined {name: address} of the overlay; returns [(name, its name there)]."""
+    at = {a: n for n, a in defined.items() if a >= data_start}
+    return sorted((n, at[a]) for n, a in provides.items() if a in at)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("ovl")
@@ -303,6 +312,14 @@ def main():
     sym = f"{OUT}/engine_slot_syms.ld"
     elfs = [new_elf if o == a.ovl else f"build/{o}.ovl.elf" for o in slots]
     names = slot_syms.undefined(sorted(glob.glob("build/src/overlays/engine/*.c.o")))
+    # the names the engine's objects use that splat's PROVIDE lines link as a plain address
+    provides = {m.group(1): int(m.group(2), 16) for m in re.finditer(
+        r"PROVIDE\((\w+) = (0x[0-9A-Fa-f]+)\)", open("build/engine_undefined_syms.ld").read())
+        if m.group(1) in names}
+    old_defs = slot_syms.defined(f"build/{a.ovl}.ovl.elf")
+    for n, there in raw_data_refs(provides, old_defs, old_defs.get(f"{a.ovl}_DATA_START", SLOT_HI)):
+        print(f"shift: warning: the engine names {n}, which is {there} here, by its retail address: "
+              f"it won't move (give the engine's C the overlay's name)")
     syms = slot_syms.resolve(names, elfs)
     with open(sym, "w", encoding="utf-8", newline="\n") as f:
         for n, v in syms:
