@@ -20,6 +20,17 @@ LD = """    .tank 0x800B32B4 : AT(tank_ROM_START) SUBALIGN(2)
 """
 
 
+class Neighbours(unittest.TestCase):
+    def test_a_shared_address_beside_the_overlays_words_is_taken_in_a_chain(self):
+        # Bash's per-mode file groups: 0x1C, 0x20 are only Bash's; 0x24 and 0x28 are addresses
+        # another overlay also has, and 0x28 is beside 0x24 only
+        done = [(0x1C, "jungle"), (0x20, "space")]
+        maybe = [(0x24, "snow"), (0x28, "drains"), (0x40, "elsewhere")]
+        left = shift.take_neighbours(done, maybe)
+        self.assertEqual(left, [(0x40, "elsewhere")])
+        self.assertEqual([m[1] for m in done], ["jungle", "space", "snow", "drains"])
+
+
 class PadScript(unittest.TestCase):
     def test_pads_before_each_c_section_and_not_the_id(self):
         t = shift.pad_script(LD, "tank", 0x40)

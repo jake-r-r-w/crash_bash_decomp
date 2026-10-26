@@ -154,6 +154,24 @@ def check_pointers(ovl):
     return n
 
 
+def take_neighbours(done, maybe):
+    """Move the words of maybe (an address another overlay also has) that sit beside a word of
+    done into done, and return the rest. An address is the overlay's when the words beside it
+    are (TankHeroMove in Tank's hero mode table, which is also a data label of bonk), and a word
+    taken that way vouches for the next one too (Bash's file groups in the engine's per-mode
+    table: Space's is the overlay's, so Snow's beside it is, and so Drains' beside that).
+    Entries are (offset, ...)."""
+    fixed = {m[0] for m in done}
+    left = list(maybe)
+    while True:
+        took = [m for m in left if m[0] - 4 in fixed or m[0] + 4 in fixed]
+        if not took:
+            return left
+        done += took
+        fixed |= {m[0] for m in took}
+        left = [m for m in left if m not in took]
+
+
 def fixup(ovl, old_elf, new_elf, others):
     """Rewrite the engine's asm-data words that point at a place only ovl has (stopgap)."""
     old = slot_syms.defined(old_elf)
@@ -176,12 +194,7 @@ def fixup(ovl, old_elf, new_elf, others):
                 done.append((off, delta, n, v))
             elif v in shared:
                 maybe.append((off, delta, shared[v], v))
-    # an address another overlay also has is the overlay's when the words beside it are
-    # (TankHeroMove in Tank's hero mode table, which is also a data label of bonk)
-    fixed = {off for off, *_ in done}
-    left = []
-    for m in maybe:
-        (done if m[0] - 4 in fixed or m[0] + 4 in fixed else left).append(m)
+    left = take_neighbours(done, maybe)
     for off, delta, n, v in done:
         data[off:off + 4] = new[n].to_bytes(4, "little")
     open(path, "wb").write(data)
