@@ -28472,7 +28472,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C68C8": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/SwitchMoeJoeToMove.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/MoeJoeIdle.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "800C4B60"
@@ -28480,7 +28480,7 @@
   "fp": "34475834226a0f5d",
   "fpn": "e22c6110e63a2ef1",
   "leaf": false,
-  "name": "SwitchMoeJoeToMove",
+  "name": "MoeJoeIdle",
   "orig": "func_800C68C8",
   "rom": 79380,
   "seg": "overlays/ovl5f/ovl5f",
@@ -28513,7 +28513,7 @@
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800C69BC",
+  "name": "MoeJoeMinelay",
   "orig": "func_800C69BC",
   "rom": 79624,
   "seg": "overlays/ovl5f/ovl5f",
@@ -28607,7 +28607,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C6C30": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C6C30.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TankBossPickHero.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80015590"
@@ -28615,7 +28615,7 @@
   "fp": "a7f4ee39f8aa8086",
   "fpn": "cb00a5d88bf01c94",
   "leaf": false,
-  "name": "func_800C6C30",
+  "name": "TankBossPickHero",
   "orig": "func_800C6C30",
   "rom": 80252,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29292,7 +29292,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C7E68": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C7E68.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TankHeroTurnClockwise.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "800868B4"
@@ -29300,7 +29300,7 @@
   "fp": "508c7a819f249f49",
   "fpn": "57bdfa301baccf6f",
   "leaf": false,
-  "name": "func_800C7E68",
+  "name": "TankHeroTurnClockwise",
   "orig": "func_800C7E68",
   "rom": 84916,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29308,7 +29308,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C7EB0": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C7EB0.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TankHeroTurnAnticlockwise.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "800868B4"
@@ -29316,7 +29316,7 @@
   "fp": "87e71d241fbf53f3",
   "fpn": "57bdfa301baccf6f",
   "leaf": false,
-  "name": "func_800C7EB0",
+  "name": "TankHeroTurnAnticlockwise",
   "orig": "func_800C7EB0",
   "rom": 84988,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29407,7 +29407,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C8120": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C8120.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/CheckTankHeroWon.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "800868B4"
@@ -29415,7 +29415,7 @@
   "fp": "84620c2131107fae",
   "fpn": "68922bd5facfefdb",
   "leaf": false,
-  "name": "func_800C8120",
+  "name": "CheckTankHeroWon",
   "orig": "func_800C8120",
   "rom": 85612,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29473,7 +29473,7 @@
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800C831C",
+  "name": "TankEmptyStub",
   "orig": "func_800C831C",
   "rom": 86120,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29545,7 +29545,7 @@
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800C83D0",
+  "name": "TA_RestartLevel",
   "orig": "func_800C83D0",
   "rom": 86300,
   "seg": "overlays/ovl5f/ovl5f",

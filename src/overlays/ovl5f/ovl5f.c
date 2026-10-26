@@ -8302,7 +8302,7 @@ void MoeJoeDead(void) {
     HeroGhost();
 }
 
-void SwitchMoeJoeToMove(s32 arg0) {
+void MoeJoeIdle(s32 arg0) {
     u16 prev = Heroes[arg0].hero_mode;
     Heroes[arg0].hero_mode = 0x6E;
     Heroes[arg0].hero_last_mode = prev;
@@ -8333,7 +8333,8 @@ void SetMoeJoeMode(s32 hero, s32 mode) {
     }
 }
 
-void func_800C69BC(void) {
+/* Moe and Joe's minelay updater (hero mode 0x6D), empty like TankHeroMinelay. */
+void MoeJoeMinelay(void) {
 }
 
 void StartMoeJoeAnim(s32 arg0, s32 *arg1) {
@@ -8433,7 +8434,9 @@ s32 TankBossTurretCheckSight(s32 id, s32 x, s32 z, s32 angle) {
     return 0;
 }
 
-s32 func_800C6C30(void) {
+/* The boss level's human target: the surviving one of heroes 0 and 1, else either at random;
+ * hero 0 in a one-player game. */
+s32 TankBossPickHero(void) {
     if (D_8005A680[0] != 0) {
         if (Heroes[0].hero_health == 0) {
             return 1;
@@ -9048,14 +9051,17 @@ void SetTankHeroMove(u32 arg0) {
     }
 }
 
-void func_800C7E68(s32 player, TA_player *ta, s32 dir) {
+/* Start a 90-degree turn to MoveDir dir: hero mode 0x6F (turn), ModeSpeed -0x80 a frame for
+ * 8 frames (up to right is -0x80, so clockwise). TankHeroGridMove does the same inline. */
+void TankHeroTurnClockwise(s32 player, TA_player *ta, s32 dir) {
     SetHeroAction(player, 0x6F);
     ta->ModeSpeed = -0x80;
     ta->ModeCounter = 8;
     ta->MoveDir = dir;
 }
 
-void func_800C7EB0(s32 player, TA_player *ta, s32 dir) {
+/* The same turn the other way (+0x80 a frame). */
+void TankHeroTurnAnticlockwise(s32 player, TA_player *ta, s32 dir) {
     SetHeroAction(player, 0x6F);
     ta->ModeSpeed = 0x80;
     ta->ModeCounter = 8;
@@ -9113,7 +9119,9 @@ void SetHullSFX(s32 player, EXTengine *pEngine, s32 ReqdSFX) {
     }
 }
 
-s32 func_800C8120(s32 arg0) {
+/* The check every SetTankHero* starts with: a quit (pad 0x801) ends the level, and a hero
+ * whose status has 0x200 (won) gets the victory action (0x70) and TankLevelOver. */
+s32 CheckTankHeroWon(s32 arg0) {
     if (D_8005A644 & 0x801) {
         TankLevelOver = -1;
     }
@@ -9174,7 +9182,9 @@ bool TA_KeepInBounds(EXTengine *p) {
     return r;
 }
 
-void func_800C831C(void) {
+/* An empty function nothing references; its place in the file's inline tail is between
+ * TA_Triggers and TA_KeepInBounds, and no leaked name fits it. */
+void TankEmptyStub(void) {
 }
 
 void TA_Triggers(NASTrigger *arg0, s32 arg1) {
@@ -9200,7 +9210,9 @@ void TA_StopHeroSfx(void) {
     }
 }
 
-void func_800C83D0(void) {
+/* Empty, defined right after TA_SetUp, where Arkenoid's leaked header puts AR_RestartLevel
+ * (its empty func_800C0B8C sits in the same place). */
+void TA_RestartLevel(void) {
 }
 
 void TA_SetUp(void) {

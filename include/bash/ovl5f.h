@@ -42,9 +42,9 @@ void InitTotemBit(NAS *nas, s32 id);
 void PlotTotemBit(NAS *nas, s32 id);
 
 void MoeJoeDead(void);
-void func_800C69BC(void);
-void func_800C831C(void);
-void func_800C83D0(void);
+void MoeJoeMinelay(void);
+void TankEmptyStub(void);
+void TA_RestartLevel(void);
 extern s32 D_800CB25C;
 extern s32 D_800C93AC[];
 extern s32 D_800C9A54[];
@@ -207,9 +207,9 @@ s32 TankBossTurretCheckSight(s32 id, s32 x, s32 z, s32 angle);
 
 s32 TankBlockPadNear(s32 flags, NAS *nas, EXTengine *eng);
 
-void func_800C7E68(s32 player, TA_player *ta, s32 dir);
+void TankHeroTurnClockwise(s32 player, TA_player *ta, s32 dir);
 
-void func_800C7EB0(s32 player, TA_player *ta, s32 dir);
+void TankHeroTurnAnticlockwise(s32 player, TA_player *ta, s32 dir);
 
 
 void SetHullSFX(s32 player, EXTengine *pEngine, s32 ReqdSFX);
@@ -336,12 +336,12 @@ void SetMoeJoeIdle(s32 arg0);
 
 void SetMoeJoeMove(s32 arg0);
 
-void SwitchMoeJoeToMove(s32 arg0);
+void MoeJoeIdle(s32 arg0);
 
 
 s32 StepMoeJoeAnim(s32 arg0);
 
-s32 func_800C6C30(void);
+s32 TankBossPickHero(void);
 
 s32 TankWithinBox(EXTengine *eng, s32 x, s32 y, s32 z);
 
@@ -352,7 +352,7 @@ void KillTankMainWeaponNas(NAS *nas, s32 player);
 
 void SetTurretSFX(s32 player, EXTengine *unused, s32 ReqdSFX);
 
-s32 func_800C8120(s32 arg0);
+s32 CheckTankHeroWon(s32 arg0);
 
 
 

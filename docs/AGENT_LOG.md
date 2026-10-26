@@ -60,7 +60,7 @@ leads**, add any new gotcha, and add one short entry at the top of the
 The Tank pilot (ROADMAP.md, Phase 3), in this order:
 
 1. **Names and types** (first: the data's types come from the code that
-   reads it). Names: 64 of Tank's 71 `func_` functions named on 2026-10-26
+   reads it). Names: all 71 of Tank's `func_` functions named on 2026-10-26
    (level callbacks, bot AI, hero damage and movement, weapons, boss
    turrets, totems, Moe and Joe, the map grid and object lists); left are
    three empty stubs (`func_800C69BC`, `func_800C831C`, `func_800C83D0`)
@@ -547,6 +547,14 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-26 (Tank's last seven names):** every Tank function is named.
+  The engine's hero mode table gives Tank's modes 0x69..0x70 (recoil, die,
+  dead, idle, minelay, move, turn, victory), so `TankHeroTurnClockwise` /
+  `Anticlockwise` (mode 0x6F, -/+0x80 a frame) and `CheckTankHeroWon`
+  (victory 0x70); `TA_RestartLevel` by Arkenoid's leaked header order;
+  `MoeJoeMinelay`, `MoeJoeIdle` (was `SwitchMoeJoeToMove`), `TankBossPickHero`;
+  `TankEmptyStub` has no evidence (comment says so).
 
 - **2026-10-26 (Tank's shift test passed):** Desert Fox played through to a
   win on the PAD=0x40 shifted disc, everything as on retail. ROADMAP's
