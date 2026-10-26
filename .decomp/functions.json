@@ -32917,7 +32917,7 @@
   "src": "src/overlays/ovl60/ovl60.c"
  },
  "ovl61:800B3528": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800B3528.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/ArkHeroEngineUpdate.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "800142D4",
@@ -32928,7 +32928,7 @@
   "fp": "87579fd66e0d8650",
   "fpn": "5dee84fb4b093a8e",
   "leaf": false,
-  "name": "func_800B3528",
+  "name": "ArkHeroEngineUpdate",
   "orig": "func_800B3528",
   "rom": 628,
   "seg": "overlays/ovl61/ovl61",
@@ -33025,7 +33025,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800B4880": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800B4880.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/AR_BA_BounceOnBounds.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "8001463C",
@@ -33035,7 +33035,7 @@
   "fp": "44e3bcee6307b47b",
   "fpn": "dc71c8d3988fd74d",
   "leaf": false,
-  "name": "func_800B4880",
+  "name": "AR_BA_BounceOnBounds",
   "orig": "func_800B4880",
   "rom": 5580,
   "seg": "overlays/ovl61/ovl61",
@@ -33043,7 +33043,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800B4AE8": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800B4AE8.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/AR_PI_BounceOnBounds.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "8001463C",
@@ -33053,7 +33053,7 @@
   "fp": "c7f1b036d2dc327e",
   "fpn": "64a6689348edf1fa",
   "leaf": false,
-  "name": "func_800B4AE8",
+  "name": "AR_PI_BounceOnBounds",
   "orig": "func_800B4AE8",
   "rom": 6196,
   "seg": "overlays/ovl61/ovl61",
@@ -33186,7 +33186,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800B60FC": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800B60FC.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/ArkHeroModeCheck.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "800868B4"
@@ -33194,7 +33194,7 @@
   "fp": "a205bc3f44e0c80c",
   "fpn": "3123e7df703f7ed7",
   "leaf": false,
-  "name": "func_800B60FC",
+  "name": "ArkHeroModeCheck",
   "orig": "func_800B60FC",
   "rom": 11848,
   "seg": "overlays/ovl61/ovl61",
@@ -33202,7 +33202,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800B62F4": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800B62F4.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/ArkHeroSetSpeed.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "80032F3C"
@@ -33210,7 +33210,7 @@
   "fp": "bfe055832f70cec9",
   "fpn": "a412666f75b05e06",
   "leaf": false,
-  "name": "func_800B62F4",
+  "name": "ArkHeroSetSpeed",
   "orig": "func_800B62F4",
   "rom": 12352,
   "seg": "overlays/ovl61/ovl61",
@@ -33218,13 +33218,13 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800B649C": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800B649C.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/ArkHeroUpdateSpeed.s",
   "bin": "disc/ovl61.bin",
   "calls": [],
   "fp": "9ab8c5b1f64e5c49",
   "fpn": "7143ebdbd07f0f63",
   "leaf": true,
-  "name": "func_800B649C",
+  "name": "ArkHeroUpdateSpeed",
   "orig": "func_800B649C",
   "rom": 12776,
   "seg": "overlays/ovl61/ovl61",
@@ -33495,7 +33495,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800B7C60": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800B7C60.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/ArkBotAimA.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "80015590"
@@ -33503,7 +33503,7 @@
   "fp": "47cc0cf76175c5a1",
   "fpn": "2dc11de87add1c04",
   "leaf": false,
-  "name": "func_800B7C60",
+  "name": "ArkBotAimA",
   "orig": "func_800B7C60",
   "rom": 18860,
   "seg": "overlays/ovl61/ovl61",
@@ -33511,7 +33511,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800B808C": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800B808C.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/ArkBotAimB.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "80015590"
@@ -33519,7 +33519,7 @@
   "fp": "47cc0cf76175c5a1",
   "fpn": "2dc11de87add1c04",
   "leaf": false,
-  "name": "func_800B808C",
+  "name": "ArkBotAimB",
   "orig": "func_800B808C",
   "rom": 19928,
   "seg": "overlays/ovl61/ovl61",
@@ -33543,7 +33543,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800B85DC": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800B85DC.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/ArkBotCanHit.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "8001463C",
@@ -33554,7 +33554,7 @@
   "fp": "e574973e780743c4",
   "fpn": "87aedf3c609fe53a",
   "leaf": false,
-  "name": "func_800B85DC",
+  "name": "ArkBotCanHit",
   "orig": "func_800B85DC",
   "rom": 21288,
   "seg": "overlays/ovl61/ovl61",
@@ -33562,7 +33562,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800B8964": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800B8964.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/ArkBallComingAtHero.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "8001463C",
@@ -33571,7 +33571,7 @@
   "fp": "399abc065739670a",
   "fpn": "0ca7c35e87d49965",
   "leaf": false,
-  "name": "func_800B8964",
+  "name": "ArkBallComingAtHero",
   "orig": "func_800B8964",
   "rom": 22192,
   "seg": "overlays/ovl61/ovl61",
@@ -33635,7 +33635,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800B99E0": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800B99E0.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/ArkSpawnBall.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "80022660",
@@ -33645,7 +33645,7 @@
   "fp": "1bdfc6b7372cfc85",
   "fpn": "4c843213af26eee1",
   "leaf": false,
-  "name": "func_800B99E0",
+  "name": "ArkSpawnBall",
   "orig": "func_800B99E0",
   "rom": 26412,
   "seg": "overlays/ovl61/ovl61",
@@ -33944,13 +33944,13 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800BDD30": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800BDD30.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/ArkHeroPowerupTimers.s",
   "bin": "disc/ovl61.bin",
   "calls": [],
   "fp": "a9cee5d492845b16",
   "fpn": "7bd7f99ec5a85748",
   "leaf": true,
-  "name": "func_800BDD30",
+  "name": "ArkHeroPowerupTimers",
   "orig": "func_800BDD30",
   "rom": 43644,
   "seg": "overlays/ovl61/ovl61",
@@ -34010,7 +34010,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800BE4D4": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800BE4D4.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/ArkHero2ObjectCollision.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "800142D4",
@@ -34033,7 +34033,7 @@
   "fp": "76e1584082caf1e0",
   "fpn": "5dbad0e697a06dc6",
   "leaf": false,
-  "name": "func_800BE4D4",
+  "name": "ArkHero2ObjectCollision",
   "orig": "func_800BE4D4",
   "rom": 45600,
   "seg": "overlays/ovl61/ovl61",
@@ -34319,7 +34319,7 @@
   "fp": "ab7ace293d8ce159",
   "fpn": "f304a05cd709aeee",
   "leaf": false,
-  "name": "func_800C01B8",
+  "name": "ArkFreeBallSlot",
   "orig": "func_800C01B8",
   "rom": 52996,
   "seg": "overlays/ovl61/ovl61",
@@ -34327,13 +34327,13 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800C0250": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800C0250.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/ArkWallIndex.s",
   "bin": "disc/ovl61.bin",
   "calls": [],
   "fp": "f0b6483bdc67731b",
   "fpn": "1ac691615e203350",
   "leaf": true,
-  "name": "func_800C0250",
+  "name": "ArkWallIndex",
   "orig": "func_800C0250",
   "rom": 53148,
   "seg": "overlays/ovl61/ovl61",
@@ -34447,7 +34447,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800C05B8": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800C05B8.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/TestForMove.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "800868B4"
@@ -34455,7 +34455,7 @@
   "fp": "471ee77dd63faba8",
   "fpn": "42afe1b1ac400ab7",
   "leaf": false,
-  "name": "func_800C05B8",
+  "name": "TestForMove",
   "orig": "func_800C05B8",
   "rom": 54020,
   "seg": "overlays/ovl61/ovl61",
@@ -34463,7 +34463,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800C0624": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800C0624.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/TestArkenoidStop.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "800868B4"
@@ -34471,7 +34471,7 @@
   "fp": "8d69e4beb67f6834",
   "fpn": "8e8beda711193229",
   "leaf": false,
-  "name": "func_800C0624",
+  "name": "TestArkenoidStop",
   "orig": "func_800C0624",
   "rom": 54128,
   "seg": "overlays/ovl61/ovl61",
@@ -34509,7 +34509,7 @@
   "src": "src/overlays/ovl61/ovl61.c"
  },
  "ovl61:800C0804": {
-  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/func_800C0804.s",
+  "asm": "asm/nonmatchings/overlays/ovl61/ovl61/ArkAddPolar.s",
   "bin": "disc/ovl61.bin",
   "calls": [
    "8001463C"
@@ -34517,7 +34517,7 @@
   "fp": "2b9e1bff932ff4f8",
   "fpn": "b0fcd7582c19b37c",
   "leaf": false,
-  "name": "func_800C0804",
+  "name": "ArkAddPolar",
   "orig": "func_800C0804",
   "rom": 54608,
   "seg": "overlays/ovl61/ovl61",
@@ -34601,7 +34601,7 @@
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800C0B8C",
+  "name": "AR_RestartLevel",
   "orig": "func_800C0B8C",
   "rom": 55512,
   "seg": "overlays/ovl61/ovl61",

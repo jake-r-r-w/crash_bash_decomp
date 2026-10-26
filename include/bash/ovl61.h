@@ -143,27 +143,24 @@ extern u16 D_800C2718;
 extern s16 D_800C1440[];
 
 
-s32 func_800B4880(EXTengine *arg0, s32 arg1);
 
 extern u16 D_800C1EFE;
 
 
-void func_800BDD30(s32 arg0);
-
-
-
-s32 func_800C05B8(s32 arg0);
-
-
-
-
-u8 *func_800C01B8(void);
+void ArkHeroPowerupTimers(s32 arg0);
 
 
 
 
 
-void func_800C0B8C(void);
+
+
+u8 *ArkFreeBallSlot(void);
+
+
+
+
+
 
 void Ark_HeroBot(u32 arg0);
 extern u8 D_800C0E70[];
@@ -200,12 +197,11 @@ void AR_InitLevel(void);
 
 
 
-s32 func_800C0250(s32 arg0, s32 arg1);
+s32 ArkWallIndex(s32 arg0, s32 arg1);
 
 
 
 
-s32 func_800C0624(s32 arg0);
 
 
 
@@ -355,20 +351,7 @@ typedef struct Ovl61FuxF {
     u16 flags;
 } Ovl61FuxF;
 
-void func_800B3528(s32 arg0);
-
-
-
-s32 func_800B4AE8(EXTengine *arg0, s32 arg1);
-
-
-
-
-
-
-
-
-s32 func_800B60FC(s32 arg0);
+void ArkHeroEngineUpdate(s32 arg0);
 
 
 
@@ -380,12 +363,24 @@ s32 func_800B60FC(s32 arg0);
 
 
 
+s32 ArkHeroModeCheck(s32 arg0);
 
 
-s32 func_800B8964(s32 arg0);
 
 
-void func_800B99E0(void);
+
+
+
+
+
+
+
+
+
+s32 ArkBallComingAtHero(s32 arg0);
+
+
+void ArkSpawnBall(void);
 
 
 /* D_8005A614 as seen by ArkCrateMaster. */
@@ -404,9 +399,9 @@ extern u16 D_800C19FC[];
 extern u16 D_800C1A20[];
 
 
-s32 func_800C0804(s32 arg0, s16 arg1, s32 arg2, s16 arg3);
+s32 ArkAddPolar(s32 arg0, s16 arg1, s32 arg2, s16 arg3);
 
-/* func_800B7C60: a player's edge segment (x0,z0)-(x1,z1) and aim spread. */
+/* ArkBotAimA: a player's edge segment (x0,z0)-(x1,z1) and aim spread. */
 typedef struct Ovl61Pos {
     s32 x;
     s32 y;
@@ -426,9 +421,9 @@ extern Ovl61Edge D_800C1900[4];
 extern u16 D_800C1980[];
 extern s16 D_800C1F00;
 
-s32 func_800B7C60(s32 arg0, Ovl61Pos *from, Ovl61Pos *to, s32 angle);
+s32 ArkBotAimA(s32 arg0, Ovl61Pos *from, Ovl61Pos *to, s32 angle);
 
-s32 func_800B808C(s32 arg0, Ovl61Pos *from, Ovl61Pos *to, s32 angle);
+s32 ArkBotAimB(s32 arg0, Ovl61Pos *from, Ovl61Pos *to, s32 angle);
 extern Ovl61Edge D_800C1940[4];
 /* A scene object as InitARKfloor sorts it (list at GfxScene.objs). */
 typedef struct Ovl61ScnObj {
@@ -463,7 +458,7 @@ extern u16 D_800C1420[];
 extern u16 D_800C1430[];
 extern u16 D_800C1464[][3];
 
-s32 func_800B85DC(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5);
+s32 ArkBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5);
 
 void InitARKfloor(void);
 
@@ -501,7 +496,7 @@ extern u16 D_800C1378[];
 extern u16 D_800C1388[];
 extern u16 D_800C13A4[];
 
-/* Extension 0x800 of a ball (func_800BE4D4). */
+/* Extension 0x800 of a ball (ArkHero2ObjectCollision). */
 typedef struct Ovl61Puck {
     u8 pad0[0xE];
     s16 speed;
@@ -512,7 +507,7 @@ typedef struct Ovl61Puck {
     u16 unk32;
 } Ovl61Puck;
 
-/* The spot a grabbed ball is held at (func_800BE4D4). */
+/* The spot a grabbed ball is held at (ArkHero2ObjectCollision). */
 typedef struct Ovl61Spot {
     s16 x;
     s16 pad2;
@@ -521,7 +516,7 @@ typedef struct Ovl61Spot {
 
 extern u16 D_800C1380[];
 
-s32 func_800BE4D4(s32 arg0, EXTengine *unused);
+NAS *ArkHero2ObjectCollision(u32 arg0);
 
 /* Ark_HeroBot: the object lists (D_8005AA38 by next, D_8005AA24 by child). */
 typedef struct Ovl61AiFux {

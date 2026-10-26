@@ -3,7 +3,7 @@
 #include "bash/ovl61.h"
 #include "bash/arkenoid.h"
 
-void func_800B3528(s32 arg0) {
+void ArkHeroEngineUpdate(s32 arg0) {
     VECTOR sp10;
     VECTOR *v;
     HeroInfo *h;
@@ -82,7 +82,7 @@ void AR_PreInitLevel(void) {
         D_8009D6E8.unk68 = AR_KeepInBounds;
         D_8009D6E8.unk20 = AR_PreMoveHero;
         D_8009D6E8.unk24 = AR_MoveHero;
-        D_800C1C8C = func_800B4880;
+        D_800C1C8C = AR_BA_BounceOnBounds;
         D_800C1C90 = AR_BA_TestOutOfBounds;
         D_800C1C94 = AR_BA_TestLaunchBounds;
         D_8005AA94 = (void *)GetArkContour;
@@ -102,7 +102,7 @@ void AR_PreInitLevel(void) {
         D_8009D6E8.unk68 = AR_KeepInBounds;
         D_8009D6E8.unk20 = AR_PreMoveHero;
         D_8009D6E8.unk24 = AR_MoveHero;
-        D_800C1C8C = func_800B4880;
+        D_800C1C8C = AR_BA_BounceOnBounds;
         D_800C1C90 = AR_NG_TestOutOfBounds;
         D_800C1C94 = AR_BA_TestLaunchBounds;
         D_8005AA94 = (void *)GetArkContour;
@@ -122,7 +122,7 @@ void AR_PreInitLevel(void) {
         D_8009D6E8.unk68 = AR_PI_KeepInBounds;
         D_8009D6E8.unk20 = AR_PI_PreMoveHero;
         D_8009D6E8.unk24 = AR_PI_MoveHero;
-        D_800C1C8C = func_800B4AE8;
+        D_800C1C8C = AR_PI_BounceOnBounds;
         D_800C1C90 = AR_PI_TestOutOfBounds;
         D_800C1C94 = AR_PI_TestLaunchBounds;
         D_8005AA94 = (void *)GetArkPIContour;
@@ -143,7 +143,7 @@ void AR_PreInitLevel(void) {
         D_8009D6E8.unk68 = AR_KeepInBounds;
         D_8009D6E8.unk20 = AR_PreMoveHero;
         D_8009D6E8.unk24 = AR_MoveHero;
-        D_800C1C8C = func_800B4880;
+        D_800C1C8C = AR_BA_BounceOnBounds;
         D_800C1C90 = AR_BA_TestOutOfBounds;
         D_800C1C94 = AR_BA_TestLaunchBounds;
         D_8005AA94 = (void *)GetArkContour;
@@ -302,7 +302,7 @@ void AR_InitLevel(void) {
         Heroes[1].hero_score_displayed = Heroes[1].hero_score;
         Heroes[2].hero_score_displayed = Heroes[2].hero_score;
         Heroes[3].hero_score_displayed = Heroes[3].hero_score;
-        func_800B3528(i);
+        ArkHeroEngineUpdate(i);
     }
     m2 = (Ovl61ModeView *)D_8005A614;
     if ((m2->unk32 & 0x40) && m2->unk6C != 0) {
@@ -465,7 +465,7 @@ bool AR_PI_KeepInBounds(EXTengine *arg0) {
     return 0;
 }
 
-s32 func_800B4880(EXTengine *arg0, s32 arg1) {
+s32 AR_BA_BounceOnBounds(EXTengine *arg0, s32 arg1) {
     Ovl61Circle *c;
     Ovl61Circle *base;
     SLONG_XYZ v;
@@ -540,7 +540,7 @@ fail:
     return -1;
 }
 
-s32 func_800B4AE8(EXTengine *arg0, s32 arg1) {
+s32 AR_PI_BounceOnBounds(EXTengine *arg0, s32 arg1) {
     SLONG_XYZ v;
     s32 i;
     s32 dx;
@@ -1118,7 +1118,7 @@ void AR_MoveHero(u32 arg0) {
     {
         EXTengine *e2 = h->hero_eng;
         e2->unk20 = (u16)e2->unk20 + (sp >> 2);
-        func_800BE4D4(arg0, e2);
+        ArkHero2ObjectCollision(arg0);
     }
     h->hero_eng->unk5E = 1;
     if (!(h->hero_status & 0xF800)) {
@@ -1192,7 +1192,7 @@ void AR_PI_MoveHero(u32 arg0) {
     {
         EXTengine *e2 = h->hero_eng;
         e2->unk20 = (u16)e2->unk20 + (sp >> 2);
-        func_800BE4D4(arg0, e2);
+        ArkHero2ObjectCollision(arg0);
     }
     h->hero_eng->unk5E = 1;
     if (!(h->hero_status & 0xF800)) {
@@ -1208,7 +1208,7 @@ void AR_PI_MoveHero(u32 arg0) {
     }
 }
 
-s32 func_800B60FC(s32 arg0) {
+s32 ArkHeroModeCheck(s32 arg0) {
     PadButtons *p;
     s32 act;
     s32 t;
@@ -1267,7 +1267,7 @@ call:
     }
 }
 
-void func_800B62F4(arg0)
+void ArkHeroSetSpeed(arg0)
 s32 arg0;
 {
     u16 *p;
@@ -1294,7 +1294,7 @@ s32 arg0;
     }
 }
 
-s32 func_800B649C(arg0)
+s32 ArkHeroUpdateSpeed(arg0)
 s32 arg0;
 {
   s32 v;
@@ -1422,11 +1422,11 @@ void ArkHeroIdle(u32 arg0) {
                 SetHeroSeq(arg0, 0x1B);
             }
         }
-        if (func_800B649C(arg0) != 0) {
+        if (ArkHeroUpdateSpeed(arg0) != 0) {
             func_8008502C(arg0);
         }
         if (HeroCheckStatus2600(arg0) == 0) {
-            func_800B60FC(arg0);
+            ArkHeroModeCheck(arg0);
             base2 = Heroes;
             h2 = base2 + arg0;
             if (h2->hero_move->forward_speed != 0) {
@@ -1499,7 +1499,7 @@ void ArkHeroTaunt(u32 arg0) {
         ret = 0;
     }
     if (ret == 0) {
-        func_800B60FC(arg0);
+        ArkHeroModeCheck(arg0);
         base = Heroes;
         h = &base[arg0];
         if (h->hero_move->forward_speed != 0) {
@@ -1533,7 +1533,7 @@ void ArkHeroMove(u32 arg0) {
         ret = 0;
     }
     if (ret == 0) {
-        func_800B60FC(arg0);
+        ArkHeroModeCheck(arg0);
         base = Heroes;
         h = &base[arg0];
         if (h->hero_move->forward_speed == 0) {
@@ -1542,7 +1542,7 @@ void ArkHeroMove(u32 arg0) {
                 SetHeroAction(arg0, 0x1C);
             }
         }
-        if (func_800B649C(arg0) != 0) {
+        if (ArkHeroUpdateSpeed(arg0) != 0) {
             func_8008502C(arg0);
         }
     }
@@ -1760,7 +1760,7 @@ void SetArkHeroKick(u32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
 
-    func_800B62F4();
+    ArkHeroSetSpeed();
     base = Heroes;
     h = &base[arg0];
     h->hero_move->velocity_enable = 1;
@@ -1815,7 +1815,7 @@ void ArkHeroKick(u32 arg0) {
             s->flags &= 0xFFFF7FFF;
         }
     }
-    if (func_800B649C(arg0) != 0) {
+    if (ArkHeroUpdateSpeed(arg0) != 0) {
         func_8008502C(arg0);
     }
 }
@@ -1862,7 +1862,7 @@ void ArkHeroRedKick(u32 arg0) {
             s->flags &= 0xFFFF7FFF;
         }
     }
-    if (func_800B649C(arg0) != 0) {
+    if (ArkHeroUpdateSpeed(arg0) != 0) {
         func_8008502C(arg0);
     }
 }
@@ -1920,7 +1920,7 @@ act:
             s->flags &= 0xFFFF7FFF;
         }
     }
-    if (func_800B649C(arg0) != 0) {
+    if (ArkHeroUpdateSpeed(arg0) != 0) {
         func_8008502C(arg0);
     }
 }
@@ -2000,7 +2000,7 @@ void ArkHeroDead(u32 arg0) {
     }
 }
 
-s32 func_800B7C60(s32 arg0, Ovl61Pos *from, Ovl61Pos *to, s32 angle) {
+s32 ArkBotAimA(s32 arg0, Ovl61Pos *from, Ovl61Pos *to, s32 angle) {
     s32 i;
     s32 n;
     u16 ang;
@@ -2098,7 +2098,7 @@ s32 func_800B7C60(s32 arg0, Ovl61Pos *from, Ovl61Pos *to, s32 angle) {
     return 1;
 }
 
-s32 func_800B808C(s32 arg0, Ovl61Pos *from, Ovl61Pos *to, s32 angle) {
+s32 ArkBotAimB(s32 arg0, Ovl61Pos *from, Ovl61Pos *to, s32 angle) {
     s32 i;
     s32 n;
     u16 ang;
@@ -2225,7 +2225,7 @@ s32 PickArkPlayer(u32 arg0) {
     return -1;
 }
 
-s32 func_800B85DC(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
+s32 ArkBotCanHit(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
     Ovl61Pos buf;
     Ovl61Node *n;
     Ovl61Node *t;
@@ -2292,7 +2292,7 @@ s32 func_800B85DC(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
                             }
                         }
                     } else if (FindExtension((NAS *)n, 0x800) != NULL) {
-                        r = func_800B808C(arg1, (Ovl61Pos *)&t->x, &buf, (u16)a);
+                        r = ArkBotAimB(arg1, (Ovl61Pos *)&t->x, &buf, (u16)a);
                         best = n;
                         if (r != 0) {
                             goto found;
@@ -2322,7 +2322,7 @@ s32 func_800B85DC(s32 arg0, s32 arg1, s32 arg2, u16 arg3, u16 arg4, s32 arg5) {
         if (FindExtension((NAS *)best, 0x800) == NULL) {
             goto ret0;
         }
-        if ((func_800B808C(arg1, (Ovl61Pos *)&t->x, &buf, (u16)a) ^ 1) == 0) {
+        if ((ArkBotAimB(arg1, (Ovl61Pos *)&t->x, &buf, (u16)a) ^ 1) == 0) {
             goto ret0;
         }
     }
@@ -2335,7 +2335,7 @@ ret0:
     return 0;
 }
 
-s32 func_800B8964(s32 arg0) {
+s32 ArkBallComingAtHero(s32 arg0) {
     Ovl61Node *n;
     Ovl61Node *t;
     Ovl61Node *e;
@@ -2439,7 +2439,7 @@ void Ark_HeroBot(u32 arg0) {
         e = n->eng;
         if (e != NULL && (ext = (Ovl61AiExt *)n->fux) != NULL && ext->unk1A == 1) {
             x = FindExtension((NAS *)n, 0x800);
-            if (x != NULL && func_800B7C60(arg0, (Ovl61Pos *)&e->unk10, &pos, x->unk16) != 0) {
+            if (x != NULL && ArkBotAimA(arg0, (Ovl61Pos *)&e->unk10, &pos, x->unk16) != 0) {
                 dx = (e->unk10.x + k) - (pos.x + k);
                 row = e->unk10.z - pos.z;
                 dx = dx * dx;
@@ -2514,7 +2514,7 @@ void Ark_HeroBot(u32 arg0) {
                         ai->TargetXYZ.z - Heroes[arg0].hero_eng->unk10.z);
     }
     if (ai->AItimer2 != 0) {
-        if (func_800B8964(arg0) != 0) {
+        if (ArkBallComingAtHero(arg0) != 0) {
             ai->AIpad |= 0x4000;
         } else {
             ai->AItimer2 = 0;
@@ -2531,12 +2531,12 @@ void Ark_HeroBot(u32 arg0) {
                             if (x != NULL) {
                                 at = (Ovl61Pos *)&obj->unk10;
                                 range = x->unk16;
-                                if (func_800B7C60(target, at, &pos, range) != 0) {
+                                if (ArkBotAimA(target, at, &pos, range) != 0) {
                                     ai->AItimer2 = 0;
                                     ai->TargetPlayer = -1;
                                     ai->AIpad &= ~0x4000;
                                 } else if ((target = D_8004E0D8 & 3) != arg0 && target != mate &&
-                                           func_800B7C60(target, at, &pos, range) != 0) {
+                                           ArkBotAimA(target, at, &pos, range) != 0) {
                                     ai->AItimer2 = 0;
                                     ai->TargetPlayer = -1;
                                     ai->AIpad &= ~0x4000;
@@ -2576,17 +2576,17 @@ void Ark_HeroBot(u32 arg0) {
                     if (D_8009D908 == 0) {
                         flag = 1;
                     }
-                    if (((s32 (*)(s32, s32, s32, s32, s32, s32))func_800B85DC)(arg0, target, k, -0x200, 0x200, 0) != 0) {
+                    if (((s32 (*)(s32, s32, s32, s32, s32, s32))ArkBotCanHit)(arg0, target, k, -0x200, 0x200, 0) != 0) {
                         ai->TargetPlayer = -1;
                         ai->AIpad |= 0x8000;
                     } else {
                         if (ai->AItimer1 != 0) {
                             ai->AItimer1--;
                         }
-                        if (func_800B8964(arg0) != 0) {
+                        if (ArkBallComingAtHero(arg0) != 0) {
                             ai->AItimer2 = 0x5A;
                             ai->AIpad |= 0x4000;
-                        } else if (((s32 (*)(s32, s32, s32, s32, s32, s32))func_800B85DC)(arg0, target, k, -0x200, 0x200, flag) != 0) {
+                        } else if (((s32 (*)(s32, s32, s32, s32, s32, s32))ArkBotCanHit)(arg0, target, k, -0x200, 0x200, flag) != 0) {
                             ai->TargetPlayer = -1;
                             ai->AIpad |= 0x8000;
                         }
@@ -2595,7 +2595,7 @@ void Ark_HeroBot(u32 arg0) {
                     if (ai->AItimer1 != 0) {
                         ai->AItimer1--;
                     }
-                    if (func_800B8964(arg0) != 0) {
+                    if (ArkBallComingAtHero(arg0) != 0) {
                         ai->AItimer2 = 0x5A;
                         ai->AIpad |= 0x4000;
                     }
@@ -2618,7 +2618,7 @@ void Ark_HeroBot(u32 arg0) {
                 if (D_8009D908 == 0) {
                     flag = 1;
                 }
-                if (((s32 (*)(s32, s32, s32, s32, s32, s32))func_800B85DC)(arg0, target, k, -0x200, 0x200, flag) != 0) {
+                if (((s32 (*)(s32, s32, s32, s32, s32, s32))ArkBotCanHit)(arg0, target, k, -0x200, 0x200, flag) != 0) {
                     if ((D_8005A646 & 0x80) && (u16)D_800C1F0C == 0) {
                         ai->AIpad |= 0x2000;
                     } else {
@@ -2784,7 +2784,7 @@ NAS *CreateBall(NAS *arg0) {
     return nas;
 }
 
-void func_800B99E0(void) {
+void ArkSpawnBall(void) {
     NAS *nas;
     EXTengine *eng;
     EXTobject *fux;
@@ -3737,7 +3737,7 @@ void Plot_N_Gin(NAS *arg0) {
                     for (i = 0; i < 4; i++) {
                         if ((i == 0 || (((Ovl61GinView *)D_8005A614)->unk6C != 0 && i == 1)) && !(Heroes[i].hero_status & 0xFA00)) {
                             if (func_80015480(eng->unk1E, Heroes[i].hero_move->facing_angle & 0xFFF) < 0xE3) {
-                                func_800B99E0();
+                                ArkSpawnBall();
                                 gin->unk20 = Random(0xB) + 6;
                             } else {
                                 gin->unk20 = Random(5);
@@ -3749,7 +3749,7 @@ void Plot_N_Gin(NAS *arg0) {
                 if (gin->unk20 != 0) {
                     gin->unk20--;
                 } else {
-                    func_800B99E0();
+                    ArkSpawnBall();
                     gin->unk20 = 0xF;
                 }
             }
@@ -4655,7 +4655,7 @@ kill:
     KillNAS(arg0);
 }
 
-void func_800BDD30(s32 arg0) {
+void ArkHeroPowerupTimers(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
 
@@ -4838,7 +4838,7 @@ void LineToCircleTest(SLONG_XYZ *pos, s32 arg1, SLONG_XYZ *target, s32 r) {
     }
 }
 
-s32 func_800BE4D4(s32 arg0, EXTengine *unused) {
+NAS *ArkHero2ObjectCollision(u32 arg0) {
     SLONG_XYZ tgt;
     SLONG_XYZ nearp;
     SLONG_XYZ farp;
@@ -5654,7 +5654,7 @@ void Init_N_Gin(NAS *nas) {
     }
 }
 
-u8 *func_800C01B8(void) {
+u8 *ArkFreeBallSlot(void) {
     s32 var_v0;
     u8 *temp_v0;
     u8 *temp_v0_2;
@@ -5681,7 +5681,7 @@ u8 *func_800C01B8(void) {
     return temp_v0;
 }
 
-s32 func_800C0250(s32 arg0, s32 arg1) {
+s32 ArkWallIndex(s32 arg0, s32 arg1) {
     s32 row;
 
     row = arg0 == D_800C2728;
@@ -5707,7 +5707,7 @@ void SetArkHeroGrab(u32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
 
-    func_800B62F4();
+    ArkHeroSetSpeed();
     base = Heroes;
     h = &base[arg0];
     h->hero_move->velocity_enable = 1;
@@ -5721,7 +5721,7 @@ void SetArkHeroRedKick(u32 arg0) {
     HeroInfo *base;
     HeroInfo *h;
 
-    func_800B62F4();
+    ArkHeroSetSpeed();
     base = Heroes;
     h = &base[arg0];
     h->hero_move->velocity_enable = 1;
@@ -5750,7 +5750,7 @@ void ArkHeroLose(u32 arg0) {
 }
 
 void SetArkHeroMove(u32 arg0) {
-    func_800B62F4();
+    ArkHeroSetSpeed();
     SetHeroSeq(arg0, 0x1A);
 }
 
@@ -5761,12 +5761,12 @@ void SetArkHeroIdle(u32 arg0) {
     if (h->hero_eng->sfx != NULL) {
         StopSfx(h->hero_eng->sfx);
     }
-    func_800B62F4(arg0);
+    ArkHeroSetSpeed(arg0);
     SetHeroSeq(arg0, 0x19);
     h->hero_idle_count = Random(0x96) + 0xB4;
 }
 
-s32 func_800C05B8(s32 arg0) {
+bool TestForMove(u32 arg0) {
     s32 act;
     u16 st = Heroes[arg0].hero_status;
 
@@ -5781,7 +5781,7 @@ s32 func_800C05B8(s32 arg0) {
     return 1;
 }
 
-s32 func_800C0624(s32 arg0) {
+bool TestArkenoidStop(u32 arg0) {
     HeroInfo *base = Heroes;
     u16 st = base[arg0].hero_status;
     s32 act;
@@ -5830,7 +5830,7 @@ void AR_InitShadow(u32 arg0) {
     s->sub->unk68 = -0x10;
 }
 
-s32 func_800C0804(s32 arg0, s16 arg1, s32 arg2, s16 arg3) {
+s32 ArkAddPolar(s32 arg0, s16 arg1, s32 arg2, s16 arg3) {
     s32 a = arg1 * D_80068BD4[((arg0 & 0xFFFF) - 0x400) & 0xFFF].unk2;
     s32 b = arg1 * D_80068BD4[arg0 & 0xFFF].unk2;
     s32 c = arg3 * D_80068BD4[((arg2 & 0xFFFF) - 0x400) & 0xFFF].unk2;
@@ -5970,7 +5970,7 @@ void AR_Triggers(NASTrigger *arg0, s32 arg1) {
 void AR_EarliestTriggers(void) {
 }
 
-void func_800C0B8C(void) {
+void AR_RestartLevel(void) {
 }
 
 void AR_SetUp(void) {

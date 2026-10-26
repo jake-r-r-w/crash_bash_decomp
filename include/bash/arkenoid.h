@@ -40,9 +40,9 @@ void Ark_HeroBot(u32);
 NAS *DangerBalls(u32);
 bool AR_KeepInBounds(EXTengine *);
 bool AR_PI_KeepInBounds(EXTengine *);
-s16 AR_BA_BounceOnBounds(EXTengine *, s32);
+s32 AR_BA_BounceOnBounds(EXTengine *, s32); /* the leak has s16; this build returns the word (no truncation in its code) */
 s16 AR_SE_BounceOnBounds(EXTengine *, s32);
-s16 AR_PI_BounceOnBounds(EXTengine *, s32);
+s32 AR_PI_BounceOnBounds(EXTengine *, s32); /* as AR_BA_BounceOnBounds */
 bool AR_BA_TestOutOfBounds(EXTengine *, EXTobject *, bool);
 bool AR_SE_TestOutOfBounds(EXTengine *, EXTobject *, bool);
 bool AR_NG_TestOutOfBounds(EXTengine *, EXTobject *, bool);
