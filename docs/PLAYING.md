@@ -87,6 +87,12 @@ DexDrive save "200% of the game completed" (`crash-bash.655.gme`): strip its 390
 `sort_savefiles_enable = "false"`, so your own saves are untouched). Then: Battle Mode, Tank
 Wars, Vs Battle, the game options screen, X to start (Desert Fox). Play it through to a win.
 
+### The shift test route (Bonk, 2026-10-26)
+
+`make shift OVL=bonk PAD=0x40`, with the same save: a Bonk match to the end, with the mallet's
+swings and backswings, hits on heroes, crates and stools, the shockwave, and the winner's and
+loser's animations. Passed 2026-10-26.
+
 ### The shift test route (Dino, 2026-10-26)
 
 `make shift OVL=dino PAD=0x40`, with the same save: a Dino match to the end, with the gems

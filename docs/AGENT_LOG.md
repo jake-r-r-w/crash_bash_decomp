@@ -455,8 +455,8 @@ Newest first, a few lines each. Details are in the commits.
 - **2026-10-26 (Bonk, with the recipe):** all 72 unnamed functions named,
   data, rodata and id word as C (`bohero.c`'s data from `0x800B9F0C`), all
   118 data objects named (56 `*_seq_bonk_*` split out; the lookup table,
-  PreMap and shell settings split apart). Shift test waiting on the
-  playtest.
+  PreMap and shell settings split apart). Shift test passed (user
+  playtest).
 
 - **2026-10-26 (Dino, with the recipe):** all 73 unnamed functions named
   (many from Polar/Race twins), data, rodata and id word as C (one file),

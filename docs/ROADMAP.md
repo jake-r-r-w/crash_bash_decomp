@@ -311,7 +311,11 @@ build.
   named, the DAT entries it loads all decode, its shift test passed (`make
   shift OVL=dino PAD=0x40`, PLAYING.md) with shift.py's sequence-column rule.
   Left for Phase 5: its stand-ins (`DinoExt`, `DinoChase`, `DinoObj`, `DinoGame`).
-- [ ] Bonk
+- [x] Bonk. Done 2026-10-26: every function named, rodata, data and id word as
+  C (`bohero.c`'s data in its own file), all 118 data objects named, the DAT
+  entries it loads all decode, its shift test passed (`make shift OVL=bonk
+  PAD=0x40`, PLAYING.md). Left for Phase 5: its stand-ins (`BonkEntry`,
+  `BonkEnt`, `BonkSlot`, `BonkPad`).
 - [ ] N2O and NOX (`n2o`)
 - [ ] Chase
 - [ ] Hub
