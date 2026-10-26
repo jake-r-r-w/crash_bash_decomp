@@ -452,6 +452,12 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-26 (Race, with the recipe):** all 99 unnamed functions named
+  (about twenty are uncalled in retail), data, rodata and id word as C (one
+  file), all 212 data objects named (72 `*_seq_race*` sequences split out;
+  four AI table sets by level). Its shifted build rewrote only its own
+  words (the id word left). Shift test waiting on the playtest.
+
 - **2026-10-26 (Papu, with the recipe):** all 65 unnamed functions named
   (most from their Bash twins via `decomp.py similar`), data, rodata, id
   word and tail as C (`pahero.c`'s data from `0x800BE898`), all 166 data
