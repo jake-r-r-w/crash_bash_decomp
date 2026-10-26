@@ -27393,7 +27393,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800BAFFC": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800BAFFC.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/MoveTankShot.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80015590",
@@ -27406,7 +27406,7 @@
   "fp": "d10c3f0be3626910",
   "fpn": "0abf3a50abe30722",
   "leaf": false,
-  "name": "func_800BAFFC",
+  "name": "MoveTankShot",
   "orig": "func_800BAFFC",
   "rom": 32072,
   "seg": "overlays/ovl5f/ovl5f",
@@ -28521,13 +28521,13 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C69C4": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C69C4.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/StartMoeJoeAnim.s",
   "bin": "disc/ovl5f.bin",
   "calls": [],
   "fp": "1bccc951aae0bc41",
   "fpn": "2e0bdd4cfd5a392b",
   "leaf": true,
-  "name": "func_800C69C4",
+  "name": "StartMoeJoeAnim",
   "orig": "func_800C69C4",
   "rom": 79632,
   "seg": "overlays/ovl5f/ovl5f",
@@ -28535,13 +28535,13 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C6A30": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C6A30.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/StepMoeJoeAnim.s",
   "bin": "disc/ovl5f.bin",
   "calls": [],
   "fp": "269c22546225b43b",
   "fpn": "695f46802ac7a205",
   "leaf": true,
-  "name": "func_800C6A30",
+  "name": "StepMoeJoeAnim",
   "orig": "func_800C6A30",
   "rom": 79740,
   "seg": "overlays/ovl5f/ovl5f",
@@ -28591,7 +28591,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C6B9C": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C6B9C.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TankBossTurretCheckSight.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "8001463C"
@@ -28599,7 +28599,7 @@
   "fp": "d4c85b124234b215",
   "fpn": "8f7767137002dbaa",
   "leaf": false,
-  "name": "func_800C6B9C",
+  "name": "TankBossTurretCheckSight",
   "orig": "func_800C6B9C",
   "rom": 80104,
   "seg": "overlays/ovl5f/ovl5f",
@@ -28623,13 +28623,13 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C6C90": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C6C90.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TankWithinBox.s",
   "bin": "disc/ovl5f.bin",
   "calls": [],
   "fp": "bea47b0fc0362c9a",
   "fpn": "c48ff26c58644229",
   "leaf": true,
-  "name": "func_800C6C90",
+  "name": "TankWithinBox",
   "orig": "func_800C6C90",
   "rom": 80348,
   "seg": "overlays/ovl5f/ovl5f",
@@ -28904,7 +28904,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C7298": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C7298.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/KillPickupTA.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80022FD4"
@@ -28912,7 +28912,7 @@
   "fp": "1ed88965eec86489",
   "fpn": "c9e51a083c68b229",
   "leaf": false,
-  "name": "func_800C7298",
+  "name": "KillPickupTA",
   "orig": "func_800C7298",
   "rom": 81892,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29261,13 +29261,13 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C7D44": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C7D44.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TankBlockPadNear.s",
   "bin": "disc/ovl5f.bin",
   "calls": [],
   "fp": "cdecba882d1e4688",
   "fpn": "4c50ded1dcbe20e6",
   "leaf": true,
-  "name": "func_800C7D44",
+  "name": "TankBlockPadNear",
   "orig": "func_800C7D44",
   "rom": 84624,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29340,7 +29340,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C7F18": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C7F18.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/KillTankMainWeaponNas.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80022FD4"
@@ -29348,7 +29348,7 @@
   "fp": "edab6b1b0c236229",
   "fpn": "ee946b4d1b513486",
   "leaf": false,
-  "name": "func_800C7F18",
+  "name": "KillTankMainWeaponNas",
   "orig": "func_800C7F18",
   "rom": 85092,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29437,7 +29437,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C81C8": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C81C8.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/DamageTankHeroesNear.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "800B6354"
@@ -29445,7 +29445,7 @@
   "fp": "9b666089f6833472",
   "fpn": "632a5adf526d54cb",
   "leaf": false,
-  "name": "func_800C81C8",
+  "name": "DamageTankHeroesNear",
   "orig": "func_800C81C8",
   "rom": 85780,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29567,13 +29567,13 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C8450": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C8450.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TriggerTankMinesNear.s",
   "bin": "disc/ovl5f.bin",
   "calls": [],
   "fp": "38801bf406e5038b",
   "fpn": "b1dc3e25dac8ca39",
   "leaf": true,
-  "name": "func_800C8450",
+  "name": "TriggerTankMinesNear",
   "orig": "func_800C8450",
   "rom": 86428,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29587,7 +29587,7 @@
   "fp": "d20612b0e952df9e",
   "fpn": "c60081240a81274c",
   "leaf": true,
-  "name": "func_800C84D8",
+  "name": "FindTankObjectNear",
   "orig": "func_800C84D8",
   "rom": 86564,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29601,7 +29601,7 @@
   "fp": "4fa3b2b5cc9b0f28",
   "fpn": "6544db1dab658e77",
   "leaf": true,
-  "name": "func_800C8560",
+  "name": "RemoveTankObject",
   "orig": "func_800C8560",
   "rom": 86700,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29615,7 +29615,7 @@
   "fp": "b7f92d9c1c58af66",
   "fpn": "18f955b09cc1037f",
   "leaf": true,
-  "name": "func_800C8598",
+  "name": "AddTankObject",
   "orig": "func_800C8598",
   "rom": 86756,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29629,7 +29629,7 @@
   "fp": "18f0ea8c576d7508",
   "fpn": "bbf86a9b41a81d9d",
   "leaf": true,
-  "name": "func_800C85D0",
+  "name": "ClearTankObjects",
   "orig": "func_800C85D0",
   "rom": 86812,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29637,13 +29637,13 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C85F8": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C85F8.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/SetPuffAngle.s",
   "bin": "disc/ovl5f.bin",
   "calls": [],
   "fp": "b88387854d95e2c0",
   "fpn": "70c57a37a830260a",
   "leaf": true,
-  "name": "func_800C85F8",
+  "name": "SetPuffAngle",
   "orig": "func_800C85F8",
   "rom": 86852,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29651,13 +29651,13 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C8650": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C8650.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TankFindHeroNear.s",
   "bin": "disc/ovl5f.bin",
   "calls": [],
   "fp": "38dfe3cc9576754a",
   "fpn": "e5104555b22e9cce",
   "leaf": true,
-  "name": "func_800C8650",
+  "name": "TankFindHeroNear",
   "orig": "func_800C8650",
   "rom": 86940,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29665,13 +29665,13 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C872C": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C872C.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/RocketFindHero.s",
   "bin": "disc/ovl5f.bin",
   "calls": [],
   "fp": "32337b58ededd303",
   "fpn": "014a6926a84fe3f6",
   "leaf": true,
-  "name": "func_800C872C",
+  "name": "RocketFindHero",
   "orig": "func_800C872C",
   "rom": 87160,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29679,7 +29679,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C8800": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C8800.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/KillTankMapCell.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "80022FD4"
@@ -29687,7 +29687,7 @@
   "fp": "69fe5d8356a77819",
   "fpn": "64b7eca270d71387",
   "leaf": false,
-  "name": "func_800C8800",
+  "name": "KillTankMapCell",
   "orig": "func_800C8800",
   "rom": 87372,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29701,7 +29701,7 @@
   "fp": "35e6c99e716bf323",
   "fpn": "35e6c99e716bf323",
   "leaf": true,
-  "name": "func_800C8870",
+  "name": "GetTankMapCell",
   "orig": "func_800C8870",
   "rom": 87484,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29709,13 +29709,13 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C88A8": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C88A8.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/SetTankMapCellNas.s",
   "bin": "disc/ovl5f.bin",
   "calls": [],
   "fp": "9328b5776272c171",
   "fpn": "ac8d761fc0a7a019",
   "leaf": true,
-  "name": "func_800C88A8",
+  "name": "SetTankMapCellNas",
   "orig": "func_800C88A8",
   "rom": 87540,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29757,7 +29757,7 @@
   "fp": "6d67c97166cf513b",
   "fpn": "6d67c97166cf513b",
   "leaf": true,
-  "name": "func_800C8984",
+  "name": "ClearTankMapCell",
   "orig": "func_800C8984",
   "rom": 87760,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29771,7 +29771,7 @@
   "fp": "75b63f72d0f8b066",
   "fpn": "10fb219780364cb9",
   "leaf": true,
-  "name": "func_800C89D8",
+  "name": "SetTankMapCell",
   "orig": "func_800C89D8",
   "rom": 87844,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29793,13 +29793,13 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C8A80": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C8A80.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/FindTankPickupNear.s",
   "bin": "disc/ovl5f.bin",
   "calls": [],
   "fp": "2485c41d4b0d9db8",
   "fpn": "6a61ef77ad556788",
   "leaf": true,
-  "name": "func_800C8A80",
+  "name": "FindTankPickupNear",
   "orig": "func_800C8A80",
   "rom": 88012,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29807,7 +29807,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C8AF8": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C8AF8.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TankBotAimTurret.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "8001463C"
@@ -29815,7 +29815,7 @@
   "fp": "5afc64cea9606010",
   "fpn": "04edd738f18d665a",
   "leaf": false,
-  "name": "func_800C8AF8",
+  "name": "TankBotAimTurret",
   "orig": "func_800C8AF8",
   "rom": 88132,
   "seg": "overlays/ovl5f/ovl5f",
@@ -29823,7 +29823,7 @@
   "src": "src/overlays/ovl5f/ovl5f.c"
  },
  "ovl5f:800C8BA0": {
-  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/func_800C8BA0.s",
+  "asm": "asm/nonmatchings/overlays/ovl5f/ovl5f/TankBotChooseTarget.s",
   "bin": "disc/ovl5f.bin",
   "calls": [
    "800B3B24",
@@ -29832,7 +29832,7 @@
   "fp": "effd02159843b65e",
   "fpn": "e40cb6b574ddaa20",
   "leaf": false,
-  "name": "func_800C8BA0",
+  "name": "TankBotChooseTarget",
   "orig": "func_800C8BA0",
   "rom": 88300,
   "seg": "overlays/ovl5f/ovl5f",

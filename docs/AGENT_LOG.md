@@ -60,8 +60,16 @@ leads**, add any new gotcha, and add one short entry at the top of the
 The Tank pilot (ROADMAP.md, Phase 3), in this order:
 
 1. **Names and types** (first: the data's types come from the code that
-   reads it) for Tank's 73 remaining `func_` functions and its
-   globals: `tank.h` (leaked prototypes, in code order inside a file, so a
+   reads it). Names: 64 of Tank's 71 `func_` functions named on 2026-10-26
+   (level callbacks, bot AI, hero damage and movement, weapons, boss
+   turrets, totems, Moe and Joe, the map grid and object lists); left are
+   three empty stubs (`func_800C69BC`, `func_800C831C`, `func_800C83D0`)
+   and four unclear ones (`func_800C6C30`, `func_800C7E68`/`func_800C7EB0`,
+   hero action `0x6F`; `func_800C8120`, action `0x70` and `D_800CB0F0`).
+   Next: types. `ovl5f.h` has 26 `Ovl5f*` stand-in structs; check each
+   against the Oct 9 types first, as `Ovl5fAITarget` turned out to be
+   `TA_Bot`, then the `unkXX` fields and the `D_` globals. Tools for
+   both: `tank.h` (leaked prototypes, in code order inside a file, so a
    named function's neighbours are candidates), the Oct 9 debug types,
    `decomp.py similar`, `tools/scripts/field_survey.py` (loads and stores
    per struct offset), and the scripts in `scratch/naming/` (not
@@ -69,13 +77,23 @@ The Tank pilot (ROADMAP.md, Phase 3), in this order:
    is used), `callgraph.py spawns`, `nas_fields.py ARGREG FUNC...`. Rename
    through `decomp.py rename` (it checks the build; Gotchas: a name an
    original header declares must take its types). Promote `callsites.py`
-   to a `decomp.py` subcommand when it is first needed.
+   to a `decomp.py` subcommand when it is first needed. Many uncalled
+   Tank functions are the out-of-line copies of the `Ovl5f*` static
+   inlines in `ovl5f.h` (`TriggerTankMinesNear` is `Ovl5fTriggerNear`,
+   `GetTankMapCell` is `Ovl5fMapCell`, ...): give each pair one name once
+   it's clear how the original declared them (a C++ inline defined after
+   its callers can't be inlined by gcc 2.8, so the source had both).
 2. **Split Tank into its files** where the evidence settles it: extend
    `decomp.py units --data` (data blocks in code order, call ties; today it
    reads only `main.yaml`'s c segments) to the slot overlays, and read it
    with the new names. Tank has no jump tables (`units overlays/ovl5f`: 0),
    so the parity check can't help, and the leak (preprocessed, Tank's
-   header start cut off) and the demo discs name no Tank file. Cut with
+   header start cut off) and the demo discs name no Tank file. One hint:
+   the leak lists prototypes in code order within a file, and its order
+   (`TA_Triggers`, `TA_EarliestTriggers`, `TA_InitHero`, `TA_MoveHero`,
+   `TA_PreMoveHero`, `TA_CreateShadow`, `AnimateTank`, ...) puts functions
+   together that sit far apart in `ovl5f` (`TA_PreMoveHero` and
+   `TA_Triggers` near the end), so the header joins several files. Cut with
    `split_unit.py` only where a start is settled.
 3. **Data to C tooling and Tank's rodata/data**, with the types step 1
    found. `ovl5f`'s sections run
@@ -490,6 +508,15 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-26 (Tank pilot started: 64 functions named):** Tank's level
+  callbacks (the `D_8005AA70` slots, named after Arkenoid's `AR_SetUp`),
+  bot AI, hero damage and movement, weapons, boss turrets, totems, Moe and
+  Joe, and the inline helpers' out-of-line copies; globals `TankMines`,
+  `TankBotAI` (typed `TA_Bot[4]`: the Oct 9 type replaces the
+  `Ovl5fAITarget` stand-in), the leak's `PU_TA_list` and `TA_players`
+  (adjacent in memory, as the leak declares them), the boss turret lists.
+  `make check` OK after each batch. Named functions 731 -> 797.
 
 - **2026-10-26 (Tank pilot reordered):** names and types come first, then the
   data-to-C tooling and Tank's data typed with what the naming found: a

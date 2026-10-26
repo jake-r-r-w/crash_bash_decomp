@@ -2873,7 +2873,7 @@ void SetTankHeroDead(u32 arg0) {
     s->flags &= 0xFFFF7FFF;
 }
 
-s32 func_800BAFFC(NAS *nas, s32 arg1, s32 arg2, s32 arg3) {
+s32 MoveTankShot(NAS *nas, s32 arg1, s32 arg2, s32 arg3) {
     EXTengine *eng;
     Ovl5fShotFux *fux;
     s32 owner;
@@ -3042,7 +3042,7 @@ void PlotLaserBitTA(NAS *nas) {
     sub->unk10 = 0;
     sub->unk52 = 1;
     sub->unk12 = rot;
-    hit = func_800BAFFC(nas, 0x14, 0, 0xA);
+    hit = MoveTankShot(nas, 0x14, 0, 0xA);
     if (D_800CB0FC != 0) {
         switch ((u32)Random(3)) {
         case 0:
@@ -3091,7 +3091,7 @@ void PlotFlamerBitTA(NAS *nas) {
     if (!(D_8004E0D8 & 7)) {
         Ovl5fSpawnBit1605(&eng->unk10, 2);
     }
-    if (func_800BAFFC(nas, 0x14, 0x1306, 0xC) != 0) {
+    if (MoveTankShot(nas, 0x14, 0x1306, 0xC) != 0) {
         if (eng->sfx != NULL) {
             StopSfx(eng->sfx);
         }
@@ -3190,7 +3190,7 @@ void PlotFlubberTA(NAS *nas) {
             Ovl5fSpawnBit1605(&eng->unk10, 9);
         }
     }
-    if (func_800BAFFC(nas, 0x1E, 0x1306, 0xB) != 0) {
+    if (MoveTankShot(nas, 0x1E, 0x1306, 0xB) != 0) {
         do {
             if (eng->sfx != NULL) {
                 StopSfx(eng->sfx);
@@ -3254,7 +3254,7 @@ void PlotSwirlyTA(NAS *nas) {
     sub->unk12 += 0x8C;
     sub->unk14 += 0xD2;
     fux = (LaserBitFux *)nas->FUX;
-    if (func_800BAFFC(nas, 0x14, 0x1306, 0xD) != 0) {
+    if (MoveTankShot(nas, 0x14, 0x1306, 0xD) != 0) {
         if (eng->sfx != NULL) {
             StopSfx(eng->sfx);
         }
@@ -3327,7 +3327,7 @@ void PlotShell(NAS *nas) {
             }
         }
     }
-    if (func_800BAFFC(nas, 0x3C, 0x1306, 4) != 0) {
+    if (MoveTankShot(nas, 0x3C, 0x1306, 4) != 0) {
         switch ((u32)Random(4)) {
         case 0:
         case 1:
@@ -7830,7 +7830,7 @@ void SetMoeJoeMode(s32 hero, s32 mode) {
 void func_800C69BC(void) {
 }
 
-void func_800C69C4(s32 arg0, s32 *arg1) {
+void StartMoeJoeAnim(s32 arg0, s32 *arg1) {
     s32 val;
 
     if (arg0 == 3) {
@@ -7847,7 +7847,7 @@ void func_800C69C4(s32 arg0, s32 *arg1) {
     }
 }
 
-s32 func_800C6A30(s32 arg0) {
+s32 StepMoeJoeAnim(s32 arg0) {
     s32 val;
 
     if (arg0 == 3) {
@@ -7912,7 +7912,7 @@ void InitTankBossCrashTurret(NAS *nas) {
     sub->flags |= 0x02000000;
 }
 
-s32 func_800C6B9C(s32 id, s32 x, s32 z, s32 angle) {
+s32 TankBossTurretCheckSight(s32 id, s32 x, s32 z, s32 angle) {
     s32 d;
 
     if (D_800CB0F0 == 0) {
@@ -7940,7 +7940,7 @@ s32 func_800C6C30(void) {
     return 0;
 }
 
-s32 func_800C6C90(OvlClampPos *p, s32 x, s32 y, s32 z) {
+s32 TankWithinBox(OvlClampPos *p, s32 x, s32 y, s32 z) {
     s32 d;
 
     d = p->x - x;
@@ -8156,7 +8156,7 @@ void PlotBigApple(NAS *nas) {
 void InitBigApple(NAS *nas) {
 }
 
-void func_800C7298(NAS *nas) {
+void KillPickupTA(NAS *nas) {
     s32 i;
 
     for (i = 0; i < 3; i++) {
@@ -8509,7 +8509,7 @@ void SetTankHeroDie(u32 player) {
     SetHeroSeq(player, 0x58);
 }
 
-s32 func_800C7D44(s32 flags, Ovl5fHolder *a, Ovl5fPos *b) {
+s32 TankBlockPadNear(s32 flags, Ovl5fHolder *a, Ovl5fPos *b) {
     s32 dx = a->pos->x - b->x;
     s32 dz = a->pos->z - b->z;
 
@@ -8560,7 +8560,7 @@ void TankHeroIdle(u32 player) {
     SetHeroAction(player, 0x6E);
 }
 
-void func_800C7F18(NAS *nas, s32 player) {
+void KillTankMainWeaponNas(NAS *nas, s32 player) {
     s32 i;
 
     for (i = 0; i < 3; i++) {
@@ -8622,7 +8622,7 @@ s32 func_800C8120(s32 arg0) {
 void TA_PreMoveHero(u32 player) {
 }
 
-void func_800C81C8(s32 x, s32 z, s32 range, s32 arg3) {
+void DamageTankHeroesNear(s32 x, s32 z, s32 range, s32 arg3) {
     HeroInfo *h;
     s32 d;
     s32 i;
@@ -8711,7 +8711,7 @@ void TA_SetUp(void) {
     D_800CB25C = 1;
 }
 
-void func_800C8450(s32 x, s32 z, s32 dist) {
+void TriggerTankMinesNear(s32 x, s32 z, s32 dist) {
     EXTengine *eng;
     s32 d;
     s32 i;
@@ -8732,7 +8732,7 @@ void func_800C8450(s32 x, s32 z, s32 dist) {
     }
 }
 
-NAS *func_800C84D8(s32 x, s32 z, s32 dist) {
+NAS *FindTankObjectNear(s32 x, s32 z, s32 dist) {
     EXTengine *eng;
     s32 d;
     s32 i;
@@ -8755,7 +8755,7 @@ NAS *func_800C84D8(s32 x, s32 z, s32 dist) {
 }
 
 
-void func_800C8560(NAS *nas) {
+void RemoveTankObject(NAS *nas) {
     s32 i;
 
     for (i = 0; i < 8; i++) {
@@ -8766,7 +8766,7 @@ void func_800C8560(NAS *nas) {
     }
 }
 
-void func_800C8598(NAS *nas) {
+void AddTankObject(NAS *nas) {
     s32 i;
 
     for (i = 0; i < 8; i++) {
@@ -8777,7 +8777,7 @@ void func_800C8598(NAS *nas) {
     }
 }
 
-void func_800C85D0(void) {
+void ClearTankObjects(void) {
     s32 i;
 
     for (i = 7; i >= 0; i--) {
@@ -8785,7 +8785,7 @@ void func_800C85D0(void) {
     }
 }
 
-void func_800C85F8(Ovl5fHolder *h, s16 v) {
+void SetPuffAngle(Ovl5fHolder *h, s16 v) {
     Ovl5fLink *l;
 
     ((Ovl5fObj *)h->pos)->unk1E = v;
@@ -8799,7 +8799,7 @@ void func_800C85F8(Ovl5fHolder *h, s16 v) {
     }
 }
 
-s32 func_800C8650(s32 x, s32 z, s32 r, s32 skip) {
+s32 TankFindHeroNear(s32 x, s32 z, s32 r, s32 skip) {
     s32 i;
     s32 dx;
     s32 dz;
@@ -8835,7 +8835,7 @@ s32 func_800C8650(s32 x, s32 z, s32 r, s32 skip) {
     return -1;
 }
 
-s32 func_800C872C(s32 arg0, s32 arg1, s32 arg2) {
+s32 RocketFindHero(s32 arg0, s32 arg1, s32 arg2) {
     s32 i;
     s32 d;
     u16 name;
@@ -8867,7 +8867,7 @@ s32 func_800C872C(s32 arg0, s32 arg1, s32 arg2) {
     return -1;
 }
 
-void func_800C8800(s32 arg0, s32 arg1) {
+void KillTankMapCell(s32 arg0, s32 arg1) {
     s32 idx;
     NAS *nas;
 
@@ -8879,11 +8879,11 @@ void func_800C8800(s32 arg0, s32 arg1) {
     KillNAS(nas);
 }
 
-s32 func_800C8870(s32 arg0, s32 arg1) {
+s32 GetTankMapCell(s32 arg0, s32 arg1) {
     return D_800CA34C[((arg1 >> 9) * D_800CAFF4) + (arg0 >> 9)];
 }
 
-void func_800C88A8(NAS *nas) {
+void SetTankMapCellNas(NAS *nas) {
     s32 temp_a0;
     s32 temp_a1;
     s32 idx;
@@ -8906,7 +8906,7 @@ u32 GetSandbagValueMiss(s32 arg0, s32 arg1) {
     return *(((arg1 >> 9) * D_800CAFF4) + (arg0 >> 9) + D_800CACB4);
 }
 
-void func_800C8984(s32 arg0, s32 arg1) {
+void ClearTankMapCell(s32 arg0, s32 arg1) {
     s32 temp_a0;
     s32 temp_a1;
 
@@ -8916,7 +8916,7 @@ void func_800C8984(s32 arg0, s32 arg1) {
     D_800CACFC[(temp_a1 * D_800CAFF4) + temp_a0] = 0;
 }
 
-void func_800C89D8(s32 arg0, s32 arg1) {
+void SetTankMapCell(s32 arg0, s32 arg1) {
     s32 temp_a0;
     s32 temp_a1;
     u8 temp_a2;
@@ -8941,7 +8941,7 @@ void TankBotReset(s32 player) {
     bot->FirePercentChance = 0;
 }
 
-NAS *func_800C8A80(s32 x, s32 z, s32 range) {
+NAS *FindTankPickupNear(s32 x, s32 z, s32 range) {
     s32 i;
     s32 d;
     NAS *nas;
@@ -8963,7 +8963,7 @@ NAS *func_800C8A80(s32 x, s32 z, s32 range) {
     return NULL;
 }
 
-void func_800C8AF8(s32 player, EXTengine *eng, s32 *arg2) {
+void TankBotAimTurret(s32 player, EXTengine *eng, s32 *arg2) {
     s32 hero;
     EXTengine *target;
 
@@ -8977,7 +8977,7 @@ void func_800C8AF8(s32 player, EXTengine *eng, s32 *arg2) {
     }
 }
 
-void func_800C8BA0(void) {
+void TankBotChooseTarget(void) {
     switch ((s16)(D_8005A648 - 5)) {
     case 1:
     case 3:

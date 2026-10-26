@@ -75,10 +75,10 @@ void TA_PreInitLevel(void);
 void TA_InitLevel(void);
 void TA_UpdateLevel(void);
 void FinishTankLevel(void);
-void func_800C8984(s32 arg0, s32 arg1);
-void func_800C89D8(s32 arg0, s32 arg1);
+void ClearTankMapCell(s32 arg0, s32 arg1);
+void SetTankMapCell(s32 arg0, s32 arg1);
 void TankBotReset(s32 arg0);
-NAS *func_800C8A80(s32 x, s32 z, s32 range);
+NAS *FindTankPickupNear(s32 x, s32 z, s32 range);
 
 /* Object func_800C7E68/func_800C7EB0 set up alongside a hero action. */
 typedef struct Ovl5fActObj {
@@ -223,7 +223,7 @@ typedef struct LaserBitFux {
     /* 0x30 */ s32 unk30;
 } LaserBitFux;
 
-/* func_800BAFFC's view of a shot's NAS.FUX. */
+/* MoveTankShot's view of a shot's NAS.FUX. */
 typedef struct Ovl5fShotFux {
     /* 0x00 */ u8 pad0[0x10];
     /* 0x10 */ s32 vx;
@@ -235,7 +235,7 @@ typedef struct Ovl5fShotFux {
     /* 0x30 */ s32 unk30;
 } Ovl5fShotFux;
 
-s32 func_800BAFFC(NAS *nas, s32 arg1, s32 arg2, s32 arg3);
+s32 MoveTankShot(NAS *nas, s32 arg1, s32 arg2, s32 arg3);
 
 /* PlotShell's NAS.FUX. */
 typedef struct ShellFux {
@@ -334,7 +334,7 @@ extern Ovl5fU16Pad D_800CA650[];    /* PlotHelicopterTA's rotor frames, by UserI
 extern s32 *D_800CA8C4[];
 extern s32 D_800CB204;      /* next wave */
 extern s32 D_800CB260;
-extern NAS *D_800CB264[8];    /* objects func_800C8598 adds and func_800C8560 removes; func_800C84D8 tests their distance */
+extern NAS *D_800CB264[8];    /* objects AddTankObject adds and RemoveTankObject removes; FindTankObjectNear tests their distance */
 extern NAS *TankMines[8];
 
 /* InitJoe/InitMoe's 0x38-byte extension (id 0x10000000), their NAS.FUX. */
@@ -368,13 +368,13 @@ extern s8 D_8005A6C8;
 
 void MoeJoeDie(s32 arg0);
 
-void func_800C69C4(s32 arg0, s32 *arg1);
+void StartMoeJoeAnim(s32 arg0, s32 *arg1);
 
-s32 func_800C6B9C(s32 id, s32 x, s32 z, s32 angle);
+s32 TankBossTurretCheckSight(s32 id, s32 x, s32 z, s32 angle);
 
 
 
-s32 func_800C7D44(s32 flags, Ovl5fHolder *a, Ovl5fPos *b);
+s32 TankBlockPadNear(s32 flags, Ovl5fHolder *a, Ovl5fPos *b);
 
 void func_800C7E68(s32 player, Ovl5fActObj *obj, s32 arg2);
 
@@ -383,23 +383,23 @@ void func_800C7EB0(s32 player, Ovl5fActState *state, s32 arg2);
 
 void SetHullSFX(s32 player, EXTengine *pEngine, s32 ReqdSFX);
 
-void func_800C81C8(s32 x, s32 z, s32 range, s32 arg3);
+void DamageTankHeroesNear(s32 x, s32 z, s32 range, s32 arg3);
 
-void func_800C8450(s32 x, s32 z, s32 dist);
+void TriggerTankMinesNear(s32 x, s32 z, s32 dist);
 
-NAS *func_800C84D8(s32 x, s32 z, s32 dist);
+NAS *FindTankObjectNear(s32 x, s32 z, s32 dist);
 
-void func_800C8560(NAS *nas);
+void RemoveTankObject(NAS *nas);
 
-void func_800C8598(NAS *nas);
+void AddTankObject(NAS *nas);
 
-void func_800C85D0(void);
+void ClearTankObjects(void);
 
-s32 func_800C8870(s32 arg0, s32 arg1);
+s32 GetTankMapCell(s32 arg0, s32 arg1);
 
-void func_800C88A8(NAS *nas);
+void SetTankMapCellNas(NAS *nas);
 
-void func_800C8BA0(void);
+void TankBotChooseTarget(void);
 
 extern u8 D_800C9F5C[];
 extern u8 D_800C9F70[];
@@ -456,7 +456,7 @@ extern s32 D_800C9B10[];
 extern s32 D_800C9B60[];
 extern s32 D_800C93F8[]; /* force field sfx, by player */
 extern s32 D_800C9418[]; /* sub weapon sfx, by player */
-/* func_800C8450, inlined into UpdateTankHeroWeapons: sets status 1 on the TankMines
+/* TriggerTankMinesNear, inlined into UpdateTankHeroWeapons: sets status 1 on the TankMines
  * mines within dist of (x, z). */
 static inline void Ovl5fTriggerNear(s32 x, s32 z, s32 dist) {
     EXTengine *eng;
@@ -514,15 +514,15 @@ void SetMoeJoeMove(s32 arg0);
 void SwitchMoeJoeToMove(s32 arg0);
 
 
-s32 func_800C6A30(s32 arg0);
+s32 StepMoeJoeAnim(s32 arg0);
 
 s32 func_800C6C30(void);
 
-s32 func_800C6C90(OvlClampPos *p, s32 x, s32 y, s32 z);
+s32 TankWithinBox(OvlClampPos *p, s32 x, s32 y, s32 z);
 
-void func_800C7298(NAS *nas);
+void KillPickupTA(NAS *nas);
 
-void func_800C7F18(NAS *nas, s32 player);
+void KillTankMainWeaponNas(NAS *nas, s32 player);
 
 
 void SetTurretSFX(s32 player, EXTengine *unused, s32 ReqdSFX);
@@ -535,15 +535,15 @@ void TA_StopHeroSfx(void);
 
 void TA_SetUp(void);
 
-void func_800C85F8(Ovl5fHolder *h, s16 v);
+void SetPuffAngle(Ovl5fHolder *h, s16 v);
 
-s32 func_800C8650(s32 x, s32 z, s32 r, s32 skip);
+s32 TankFindHeroNear(s32 x, s32 z, s32 r, s32 skip);
 
-s32 func_800C872C(s32 arg0, s32 arg1, s32 arg2);
+s32 RocketFindHero(s32 arg0, s32 arg1, s32 arg2);
 
-void func_800C8800(s32 arg0, s32 arg1);
+void KillTankMapCell(s32 arg0, s32 arg1);
 
-void func_800C8AF8(s32 player, EXTengine *eng, s32 *arg2);
+void TankBotAimTurret(s32 player, EXTengine *eng, s32 *arg2);
 
 s32 TankBotPickTarget();
 
@@ -562,7 +562,7 @@ static inline s32 Ovl5fASTIndex(s32 id) {
     }
     return 0;
 }
-/* PlotRocketTA: func_800C84D8 inlined. */
+/* PlotRocketTA: FindTankObjectNear inlined. */
 static inline NAS *Ovl5fRocketNear(s32 x, s32 z, s32 dist) {
     EXTengine *eng;
     s32 d;
@@ -585,7 +585,7 @@ static inline NAS *Ovl5fRocketNear(s32 x, s32 z, s32 dist) {
     return NULL;
 }
 extern HeroInfo Heroes[4];
-/* PlotRocketTA: func_800C872C inlined. */
+/* PlotRocketTA: RocketFindHero inlined. */
 static inline s32 Ovl5fRocketFindHero(s32 arg0, s32 arg1, s32 arg2) {
     s32 i;
     s32 d;
@@ -617,7 +617,7 @@ static inline s32 Ovl5fRocketFindHero(s32 arg0, s32 arg1, s32 arg2) {
     }
     return -1;
 }
-/* PlotRocketTA: func_800C8800 inlined. */
+/* PlotRocketTA: KillTankMapCell inlined. */
 static inline void Ovl5fRocketKillCell(s32 arg0, s32 arg1) {
     s32 idx;
     NAS *nas;
