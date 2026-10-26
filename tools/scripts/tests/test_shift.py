@@ -44,6 +44,20 @@ class PadScript(unittest.TestCase):
             shift.pad_script(LD.replace("ovl5f.c.o(.data)", "ovl5f_data.data.s.o(.data)"), "ovl5f", 0x40)
 
 
+class Pointers(unittest.TestCase):
+    def test_an_unrelocated_slot_address_is_reported(self):
+        data = (0x10).to_bytes(4, "little") + (0x800B9E50).to_bytes(4, "little") + (0x800C0000).to_bytes(4, "little")
+        # +0 a relocated offset, +4 a pointer written as a number, +8 a relocated pointer's addend
+        self.assertEqual(shift.unmoved(data, {0, 8}), [4])
+
+    def test_objdump_output_is_read(self):
+        dump = ("\nContents of section .data:\n 0000 10000000 509e0b80 00000000 00000000  ....\n")
+        self.assertEqual(bytes(shift.section_words(dump))[4:8], (0x800B9E50).to_bytes(4, "little"))
+        rel = ("RELOCATION RECORDS FOR [.data]:\nOFFSET   TYPE              VALUE\n"
+               "00000000 R_MIPS_32         .rodata\n00000008 R_MIPS_32         TankAnims\n")
+        self.assertEqual(shift.reloc_offsets(rel), {".data": {0, 8}})
+
+
 class Relayout(unittest.TestCase):
     S = dat.SECTOR
 

@@ -106,6 +106,54 @@ def data_ranges(name):
     return out
 
 
+SLOT_LO, SLOT_HI = 0x800B32B4, 0x800D7148
+
+
+def section_words(dump):
+    """The bytes of one section from `objdump -s -j SECT` output."""
+    data = bytearray()
+    for l in dump.splitlines():
+        m = re.match(r" ([0-9a-f]{4,8}) ((?:[0-9a-f]{2,8} ){1,4})", l)
+        if m:
+            data += bytes.fromhex(m.group(2).replace(" ", ""))
+    return data
+
+
+def reloc_offsets(dump):
+    """{section: {offset}} from `objdump -r` output."""
+    out, cur = {}, None
+    for l in dump.splitlines():
+        m = re.match(r"RELOCATION RECORDS FOR \[(\S+)\]", l)
+        if m:
+            cur = m.group(1)
+            continue
+        m = re.match(r"([0-9a-f]{8}) \S+\s+\S+", l)
+        if m and cur:
+            out.setdefault(cur, set()).add(int(m.group(1), 16))
+    return out
+
+
+def unmoved(data, relocs):
+    """Offsets of the words that hold a slot address as a plain number: a pointer that would not
+    move (one written as bytes or halves, as the front end's CharCards were)."""
+    return [o for o in range(0, len(data) - 3, 4)
+            if SLOT_LO <= int.from_bytes(data[o:o + 4], "little") < SLOT_HI and o not in relocs]
+
+
+def check_pointers(ovl):
+    """Warn about the overlay's C data words that hold its addresses but have no relocation."""
+    n = 0
+    for obj in sorted(glob.glob(f"build/src/overlays/{ovl}/*.c.o")):
+        rel = reloc_offsets(run(["mipsel-linux-gnu-objdump", "-r", obj]))
+        for sect in (".data", ".rodata"):
+            data = section_words(run(["mipsel-linux-gnu-objdump", "-s", "-j", sect, obj]))
+            for o in unmoved(data, rel.get(sect, set())):
+                v = int.from_bytes(data[o:o + 4], "little")
+                print(f"shift: warning: {obj} {sect}+0x{o:X} holds 0x{v:08X} with no relocation: it won't move")
+                n += 1
+    return n
+
+
 def fixup(ovl, old_elf, new_elf, others):
     """Rewrite the engine's asm-data words that point at a place only ovl has (stopgap)."""
     old = slot_syms.defined(old_elf)
@@ -155,6 +203,7 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     ovls = sorted(os.path.splitext(os.path.basename(p))[0] for p in os.listdir(f"{CFG}/overlays"))
     slots = [o for o in ovls if o != "engine"]
+    check_pointers(a.ovl)
     new_elf = link(a.ovl, padded_script(a.ovl, pad))
     old_elf = f"build/{a.ovl}.ovl.elf"
     sym = f"{OUT}/engine_slot_syms.ld"
