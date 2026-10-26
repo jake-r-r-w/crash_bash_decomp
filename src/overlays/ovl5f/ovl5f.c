@@ -560,15 +560,18 @@ u8 TankLevelsGridMapMiss[72] = {0};
 u8 TankLevelsGridMapTank[72] = {0};
 NAS *PU_TA_list[3] = {0};
 TA_player TA_players[4] = {0};
-s32 D_800CAFE0 = 0;
-s32 D_800CAFE4 = 0;
-s32 D_800CAFE8 = 0;
-s32 D_800CAFEC = 0;
-s32 D_800CAFF0 = 0;
+/* TankUnused0..4, TankUnusedTable and TankUnusedGrid: TA_InitLevel clears all but the table and
+ * nothing reads any of them, in retail or in Tank's copy on any prototype or demo disc back to
+ * Aug 23. TankUnusedGrid is a 9 x 7 tile grid, the size of the metal arena's map. */
+s32 TankUnused0 = 0;
+s32 TankUnused1 = 0;
+s32 TankUnused2 = 0;
+s32 TankUnused3 = 0;
+s32 TankUnused4 = 0;
 s32 TankMapWidth = 0;
 s32 TankMapHeight = 0;
 TA_Bot TankBotAI[4] = {0};
-s32 D_800CB0AC[5] = {0};
+s32 TankUnusedTable[5] = {0};
 NAS *TankMines[8] = {0};
 s32 TankCountdown = 0;
 s32 TankPendingSfx = 0;
@@ -580,7 +583,7 @@ s32 TankDropDelay = 0;
 s32 TankShotBounce = 0;
 s32 TankArenaMaxX = 0;
 s32 TankArenaMaxZ = 0;
-s32 D_800CB108[9][7] = {0};
+s32 TankUnusedGrid[9][7] = {0};
 s32 PillarWave = 0;
 NAS *TankBossNas = 0;
 EXTengine *TankBossEng = 0;
@@ -1441,11 +1444,11 @@ void TA_InitLevel(void) {
     s32 j;
     s32 k;
 
-    D_800CAFF0 = 0;
-    D_800CAFEC = 0;
-    D_800CAFE8 = 0;
-    D_800CAFE4 = 0;
-    D_800CAFE0 = 0;
+    TankUnused4 = 0;
+    TankUnused3 = 0;
+    TankUnused2 = 0;
+    TankUnused1 = 0;
+    TankUnused0 = 0;
     for (j = 7; j >= 0; j--) {
         TankObjects[j] = NULL;
     }
@@ -1617,7 +1620,7 @@ void TA_InitLevel(void) {
     }
     for (k = 0; k < 7; k++) {
         for (j = 0; j < 9; j++) {
-            D_800CB108[j][k] = 0;
+            TankUnusedGrid[j][k] = 0;
         }
     }
     TankPendingSfx = 0;

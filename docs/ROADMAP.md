@@ -152,8 +152,8 @@ retail does. The recipe is written up for Phase 4.
   each `tank.h` declaration: defined by matched code, or noted as not in
   this build. First, because the data's types come from the code that reads
   it: naming a function shows what each table it reads is, and names those
-  globals too. Done 2026-10-26: every function, and every global something
-  reads (the seven bss words nothing reads keep `D_` names). The leak's
+  globals too. Done 2026-10-26: every function and global (the seven bss
+  words nothing reads on any disc are `TankUnused*`). The leak's
   data is defined: `TANK_PREMAP` (with its `WWInf`/`TrigLookUp` pieces),
   `tank_shell_info`, the five `file_group_TANK*` and the 72
   `*_seq_tank*` hero sequences; `shell_setup` and `file_group_load_info`
