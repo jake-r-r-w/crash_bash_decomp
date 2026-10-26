@@ -282,25 +282,25 @@ void func_80083708(void) {
     func_80086FA0();
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/heroes", D_800ADF60);
+const char D_800ADF60[] = "nobody";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/heroes", D_800ADF68);
+const char D_800ADF68[] = "Crash";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/heroes", D_800ADF70);
+const char D_800ADF70[] = "Coco";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/heroes", D_800ADF78);
+const char D_800ADF78[] = "Cortex";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/heroes", D_800ADF80);
+const char D_800ADF80[] = "Brio";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/heroes", D_800ADF88);
+const char D_800ADF88[] = "Tiny";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/heroes", D_800ADF90);
+const char D_800ADF90[] = "Kong";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/heroes", D_800ADF98);
+const char D_800ADF98[] = "Dingodile";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/heroes", D_800ADFA4);
+const char D_800ADFA4[] = "Kanga";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/heroes", D_800ADFAC);
+const char D_800ADFAC[] = "WIN";
 
 void func_80083E8C(void) {
     HeroInfo *h;

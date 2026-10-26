@@ -1612,9 +1612,9 @@ s16 func_8007D850(void) {
     return r;
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/panel", D_800ADD3C);
+const char D_800ADD3C[] = "123";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/panel", D_800ADD40);
+const char D_800ADD40[] = "456";
 
 void Cups_Update(void) {
     s32 key;

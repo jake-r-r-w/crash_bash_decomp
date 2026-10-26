@@ -71,21 +71,22 @@ s32 func_8007F1A8(s32 pad, s32 max) {
     return ((PadButtons *)Pads)[pad].pressed & 0x4008;
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/pause", D_800ADDB0);
+const char D_800ADDB0[] = "Battle Mode";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/pause", D_800ADDBC);
+const char D_800ADDBC[] = "Tournament Mode";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/pause", D_800ADDCC);
+const char D_800ADDCC[] = "Adventure - Trophy";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/pause", D_800ADDE0);
+const char D_800ADDE0[] = "Adventure - Gold Relic";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/pause", D_800ADDF8);
+const char D_800ADDF8[] = "Adventure - Plat Relic";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/pause", D_800ADE10);
+const char D_800ADE10[] = "Adventure - Gem";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/pause", D_800ADE20);
+const char D_800ADE20[] = "Adventure - Challenge";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/pause", D_800ADE38);
+const char D_800ADE38[] = "Adventure - Boss";
+const char D_800ADE4C[] = "";
 
 static inline PadButtons *ActivePad(void) {
     PadButtons *base = HPADS;

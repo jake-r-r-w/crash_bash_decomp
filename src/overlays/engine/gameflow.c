@@ -943,83 +943,84 @@ void func_80090A10(void) {
     }
 }
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE47C);
+const char D_800AE47C[] = "TOURNAMENT SELECT";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE490);
+const char D_800AE490[] = "LOCKED";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE498);
+const char D_800AE498[] = "PRESS \374 BUTTON TO SELECT";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE4B4);
+const char D_800AE4B4[] = "INSERT A MEMORY CARD\nWITH CRASH BASH DATA\nTO CHECK FOR \nUNLOCKED LEVELS";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE4FC);
+const char D_800AE4FC[] = "<";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE500);
+const char D_800AE500[] = ">";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE504);
+const char D_800AE504[] = "PRESS \375BUTTON TO\nUNLOCK LOCKED LEVELS\nUSING MEMORY CARD IN\nMEMORY CARD SLOT 1";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE554);
+const char D_800AE554[] = "CHECKING MEMORY CARD\nIN MEMORY CARD SLOT 1\nFOR UNLOCKED\nLEVELS";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE594);
+const char D_800AE594[] = "THERE ARE NO MORE\nUNLOCKED LEVELS\nON THIS MEMORY CARD\n";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE5CC);
+const char D_800AE5CC[] = "\01508CONFIRM OVERWRITE\n\nPRESS \377 TO SAVE\01525PRESS \376 TO EXIT\01517WITHOUT SAVING";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE618);
+const char D_800AE618[] = "PRESS \374 BUTTON TO OVERWRITE";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE634);
+const char D_800AE634[] = "PRESS \374 BUTTON TO LOAD";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE64C);
+const char D_800AE64C[] = "PRESS \374 BUTTON TO SAVE";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE664);
+const char D_800AE664[] = "PRESS \376 BUTTON TO EXIT WITHOUT SAVING";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE68C);
+const char D_800AE68C[] = "SELECT A GAME SAVE";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE6A0);
+const char D_800AE6A0[] = "SELECT GAME TO LOAD";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE6B4);
+const char D_800AE6B4[] = "\nCHECKING MEMORY CARD\nIN MEMORY CARD SLOT 1\nPLEASE WAIT";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE6EC);
+const char D_800AE6EC[] = "WARNING\01530MEMORY CARD IS UNFORMATTED\nINSERT FORMATTED MEMORY CARD\nINTO MEMORY CARD SLOT 1\n\01535PRESS \376 BUTTON TO EXIT";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE760);
+const char D_800AE760[] = "WARNING\01525THERE IS NO CRASH BASH\nDATA ON THIS MEMORY CARD\nPLEASE INSERT ANOTHER\nMEMORY CARD\n\nPRESS \376 BUTTON TO EXIT";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE7D4);
+const char D_800AE7D4[] = "LOAD GAME";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE7E0);
+const char D_800AE7E0[] = "WARNING\01530THERE IS NO MEMORY CARD\nIN MEMORY CARD SLOT 1\nPLEASE INSERT A MEMORY CARD\n\01535PRESS \376 BUTTON TO EXIT";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE850);
+const char D_800AE850[] = "WARNING\01525MEMORY CARD IS UNFORMATTED\nDO YOU WANT TO FORMAT ?\01525PRESS \377 BUTTON TO FORMAT\nPRESS \376 BUTTON TO EXIT\nWITHOUT FORMATTING";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE8D4);
+const char D_800AE8D4[] = "SAVE GAME";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE8E0);
+const char D_800AE8E0[] = "WARNING\01520THE MEMORY CARD IN MEMORY\01516CARD SLOT 1 HAS\01516INSUFFICIENT SPACE\01520PLEASE INSERT A MEMORY CARD\01516CONTAINING AT LEAST\015161 FREE BLOCK\01520PRESS \376 BUTTON TO EXIT";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AE988);
+const char D_800AE988[] = "WARNING\01530THERE IS NO MEMORY CARD\nIN MEMORY CARD SLOT 1\nPLEASE INSERT A MEMORY CARD\01530PRESS \376 BUTTON TO\nEXIT WITHOUT SAVING";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEA04);
+const char D_800AEA04[] = "\01508SAVING\n\nPLEASE DO NOT REMOVE\nTHE MEMORY CARD";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEA34);
+const char D_800AEA34[] = "\01508SAVE COMPLETED\n\nPRESS \374 BUTTON\nTO CONTINUE";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEA64);
+const char D_800AEA64[] = "\nSAVE FAILED\n\nPRESS \376 BUTTON TO EXIT";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEA8C);
+const char D_800AEA8C[] = "\01508FORMATTING\n\nPLEASE DO NOT REMOVE\nTHE MEMORY CARD\n";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEAC4);
+const char D_800AEAC4[] = "PRESS \376 BUTTON TO EXIT WITHOUT LOADING";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEAEC);
+const char D_800AEAEC[] = "EMPTY";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEAF4);
+const char D_800AEAF4[] = "01";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEAF8);
+const char D_800AEAF8[] = "02";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEAFC);
+const char D_800AEAFC[] = "03";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEB00);
+const char D_800AEB00[] = "04";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEB04);
+const char D_800AEB04[] = "05";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEB08);
+const char D_800AEB08[] = "WWWWWWWW";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEB14);
+const char D_800AEB14[] = "200%";
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/engine/gameflow", D_800AEB1C);
+const char D_800AEB1C[] = "WARNING\nTHE MEMORY CARD IN\nMEMORY CARD SLOT 1\nIS CORRUPT. PLEASE INSERT\nANOTHER MEMORY CARD\nPRESS \376 BUTTON TO EXIT\nWITHOUT SAVING";
+const char D_800AEBA0[] = "";
 
 void func_80090E20(void) {
     s32 f;
