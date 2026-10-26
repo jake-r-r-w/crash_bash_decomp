@@ -456,7 +456,7 @@ Newest first, a few lines each. Details are in the commits.
   (about twenty are uncalled in retail), data, rodata and id word as C (one
   file), all 212 data objects named (72 `*_seq_race*` sequences split out;
   four AI table sets by level). Its shifted build rewrote only its own
-  words (the id word left). Shift test waiting on the playtest.
+  words (the id word left). Shift test passed (user playtest).
 
 - **2026-10-26 (Papu, with the recipe):** all 65 unnamed functions named
   (most from their Bash twins via `decomp.py similar`), data, rodata, id

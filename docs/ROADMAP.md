@@ -295,7 +295,12 @@ build.
   link fix for an overlay's own halfword labels (OVERLAY_RECIPE.md, The shift
   test). Left for Phase 5: its stand-ins (`PapuTile`, `PapuKey`, `Slot40`, the
   leak's `PapuFloor_info`/`PapuMinion_info`/`PapuSquare`).
-- [ ] Race
+- [x] Race. Done 2026-10-26: every function named from its code (about
+  twenty uncalled in retail), rodata, data and id word as C (one file), all
+  212 data objects named, the DAT entries it loads all decode, its shift test
+  passed (`make shift OVL=race PAD=0x40`, PLAYING.md). Left for Phase 5: its
+  stand-ins (`RaceFux*`, `RaceBarrelView` as the leak's `RaceBarrel`, the
+  `EXTrace*` extensions).
 - [ ] Spin
 - [ ] Dino
 - [ ] Bonk
