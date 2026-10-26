@@ -316,7 +316,13 @@ build.
   entries it loads all decode, its shift test passed (`make shift OVL=bonk
   PAD=0x40`, PLAYING.md). Left for Phase 5: its stand-ins (`BonkEntry`,
   `BonkEnt`, `BonkSlot`, `BonkPad`).
-- [ ] N2O and NOX (`n2o`)
+- [x] N2O and NOX (`n2o`). Done 2026-10-26: every function named (many from
+  Arkenoid's twins), rodata, data and id word as C (n2o.c's, then nox.c's
+  from its script records), all 205 data objects named, the DAT entries it
+  loads all decode, its shift test passed (`make shift OVL=n2o PAD=0x40`,
+  PLAYING.md) once the engine named N2O's star field. Left for Phase 5:
+  its stand-ins (`N2OSlot`, `N2ORec`, `N2ORound`, `BossGameView`, the
+  asteroid and laser views).
 - [x] Chase. Done 2026-10-26: every function named (many from their twins),
   rodata, data and id word as C (one file), all 143 data objects named, the
   DAT entries it loads all decode, its shift test passed (`make shift

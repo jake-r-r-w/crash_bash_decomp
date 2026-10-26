@@ -87,6 +87,14 @@ DexDrive save "200% of the game completed" (`crash-bash.655.gme`): strip its 390
 `sort_savefiles_enable = "false"`, so your own saves are untouched). Then: Battle Mode, Tank
 Wars, Vs Battle, the game options screen, X to start (Desert Fox). Play it through to a win.
 
+### The shift test route (N2O, 2026-10-26)
+
+`make shift OVL=n2o PAD=0x40`, with the same save: the Nitros Oxide boss in Adventure, and
+dying and picking Retry. Retry crashed until the engine's `InitWeatherNas` named N2O's star
+field (`NoxSparkFxDef`) instead of its retail address; shift.py now warns about such
+references. Passed 2026-10-26 (the first phase and Retry; the playtest didn't reach the
+second phase, `N2OBallPhase`'s other half).
+
 ### The shift test route (Chase, 2026-10-26)
 
 `make shift OVL=chase PAD=0x40`, with the same save: a Chase match to the end, with the

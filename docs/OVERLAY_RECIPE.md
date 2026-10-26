@@ -153,7 +153,10 @@ still links as absolute.
 
 Tank's three crashes were all unmoved pointers: a pointer into the middle of
 an object, a fixed address in engine C (the HUD's `TA_players`), and the
-per-character sequence tables.
+per-character sequence tables. N2O's Retry crash (2026-10-26) was the same kind as the HUD's:
+the engine's `InitWeatherNas` used N2O's star field by its `D_` address (a `PROVIDE`, mode
+0x1F only). `make shift` now prints a warning for each such engine name; give the engine's C
+the overlay's name and its link takes the address from the overlay's ELF.
 
 ## Gotchas from the pilot
 

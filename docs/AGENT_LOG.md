@@ -58,8 +58,10 @@ leads**, add any new gotcha, and add one short entry at the top of the
 ## Next
 
 Phase 4 (ROADMAP.md): each slot overlay to source-only with
-[OVERLAY_RECIPE.md](OVERLAY_RECIPE.md), Pogo first, then
-Arkenoid and Polar (their headers leaked), then the rest. Phase 3, the Tank
+[OVERLAY_RECIPE.md](OVERLAY_RECIPE.md). Thirteen of the 14 are done; the hub
+(`hub`, two files: `hub.c`, `hubcore.c`, six INCLUDE_RODATA blocks) is
+last. Its file groups (mode table 0x21..0x27, `0x800BC050`) need
+`file_group_*` names for shift.py's mode-table rule. Phase 3, the Tank
 pilot, finished 2026-10-26; its steps are in the Session log and the
 recipe.
 
@@ -451,6 +453,18 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-26 (N2O, with the recipe):** all 107 unnamed functions named,
+  data, rodata and id word as C (nox.c's data from `0x800C4454`), all 205
+  data objects named (80 `*_seq_n2o*` split out; `N2ORound` whole again,
+  splat had cut its field +4 out). data2c reads the overlay's own headers
+  first; shift.py keeps the per-mode table to `file_group_*` names (Chase's
+  group shares an address with `N2OHeroTestIdle`) and warns when the
+  engine names the overlay's data by a retail address. Gotcha: the engine's
+  C can use a slot overlay's data by a `D_` PROVIDE (`InitWeatherNas`'s
+  `D_800C45DC`, mode 0x1F only); it doesn't move, and Retry crashed on the
+  shifted disc until it was named. Shift test passed (user playtest; the
+  first phase and Retry). The id files' comments had a wrong range: fixed.
 
 - **2026-10-26 (Chase, with the recipe):** all 75 unnamed functions named
   (many from their twins), data, rodata and id word as C (one file), all
