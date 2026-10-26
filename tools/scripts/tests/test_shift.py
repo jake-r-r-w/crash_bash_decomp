@@ -43,6 +43,16 @@ class Columns(unittest.TestCase):
         self.assertIn((0x2000 + 4 * 86, 0, "COC_seq_dinowin"), done)
 
 
+class ModeGroups(unittest.TestCase):
+    def test_a_file_group_in_the_mode_table_is_taken(self):
+        done = []
+        maybe = [(shift.MODE_TABLE + 4 * 0x1E, 0, "file_group_CHASE"), (shift.MODE_TABLE + 4, 0, "ChaseGrid"),
+                 (0x80099000, 0, "file_group_CHASE")]
+        left = shift.take_mode_groups(done, maybe)
+        self.assertEqual([m[2] for m in done], ["file_group_CHASE"])
+        self.assertEqual(len(left), 2)
+
+
 class PadScript(unittest.TestCase):
     def test_pads_before_each_c_section_and_not_the_id(self):
         t = shift.pad_script(LD, "tank", 0x40)

@@ -209,6 +209,21 @@ def take_columns(done, maybe, tables):
     return [m for m in maybe if m not in took]
 
 
+MODE_TABLE = 0x800A001C   # the engine's per-mode table: one file_group_load_info pointer per game mode
+MODES = 0x30
+
+
+def take_mode_groups(done, maybe):
+    """Move the words of maybe in the engine's per-mode table that name one of the overlay's
+    file_group_* objects, and return the rest: the table holds nothing else, so another
+    overlay's object at the same address can't be what the word means (Chase's mode 0x1E,
+    whose neighbours in the table are Bonk's and the hub's). Entries are (offset, delta, name, ...)."""
+    took = [m for m in maybe
+            if MODE_TABLE <= m[0] + m[1] < MODE_TABLE + 4 * MODES and m[2].startswith("file_group_")]
+    done += took
+    return [m for m in maybe if m not in took]
+
+
 def fixup(ovl, old_elf, new_elf, others):
     """Rewrite the engine's asm-data words that point at a place only ovl has (stopgap)."""
     old = slot_syms.defined(old_elf)
@@ -233,6 +248,7 @@ def fixup(ovl, old_elf, new_elf, others):
                 maybe.append((off, delta, shared[v], v))
     left = take_neighbours(done, maybe)
     left = take_columns(done, left, hero_seq_tables(data))
+    left = take_mode_groups(done, left)
     for off, delta, n, v in done:
         data[off:off + 4] = new[n].to_bytes(4, "little")
     open(path, "wb").write(data)
