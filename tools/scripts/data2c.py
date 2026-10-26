@@ -36,6 +36,7 @@ SDK_TYPES = ["ext/psyq47/include/libgte.h"]
 # a function pointer field, `RET (*name)(ARGS)`: a 4-byte pointer written as the function's name
 FUNC_PTR = re.compile(r"^[\w\s\*]+\(\s*\*\s*(\w+)\s*\)\s*\([^()]*\)$", re.S)
 FN = "@fn"
+FN_DECLS = {}   # name -> the declaration text of a function pointer (array)
 
 
 def strip_comments(t):
@@ -249,11 +250,22 @@ def declarations(texts):
     """name -> (type, ptr, dims) from `extern TYPE NAME[...];` lines."""
     out = {}
     for t in texts:
-        for m in re.finditer(r"^\s*extern\s+((?:const\s+|volatile\s+|struct\s+|unsigned\s+|signed\s+)*\w+)\s+(\**)\s*(\w+)\s*((?:\[[^\]]*\]\s*)*)\s*;",
+        # one or more declarators: `extern u8 D_X[], D_Y[];` declares both
+        for m in re.finditer(r"^\s*extern\s+((?:const\s+|volatile\s+|struct\s+|unsigned\s+|signed\s+)*\w+)\s+([^;()]+);",
                              strip_comments(t), re.M):
-            dims = [evaldim(x) for x in re.findall(r"\[([^\]]*)\]", m.group(4))]
             base = m.group(1).split()[-1]
-            out.setdefault(m.group(3), (base, len(m.group(2)), dims))
+            for d in m.group(2).split(","):
+                dm = re.match(r"\s*(\**)\s*(\w+)\s*((?:\[[^\]]*\]\s*)*)\s*$", d)
+                if not dm:
+                    break
+                dims = [evaldim(x) for x in re.findall(r"\[([^\]]*)\]", dm.group(3))]
+                out.setdefault(dm.group(2), (base, len(dm.group(1)), dims))
+        # a function pointer or an array of them: `extern s32 (*D_X[5])(s32 player);`
+        for m in re.finditer(r"^\s*extern\s+[\w\s\*]+\(\s*\*\s*(\w+)\s*((?:\[[^\]]*\]\s*)*)\)\s*\([^;]*\)\s*;",
+                             strip_comments(t), re.M):
+            dims = [evaldim(x) for x in re.findall(r"\[([^\]]*)\]", m.group(2))]
+            out.setdefault(m.group(1), (FN, 1, dims))
+            FN_DECLS.setdefault(m.group(1), re.sub(r"^\s*extern\s+", "", m.group(0)).rstrip(";").strip())
     return out
 
 
@@ -276,6 +288,9 @@ class Converter:
         self.srcs = "\n".join(open(p, encoding="utf-8").read() for p in glob.glob("src/**/*.c", recursive=True)
                               if not other_slot(p, ovl))
         self.hdrs = "\n".join(texts)
+        # the headers without their declarations and comments: what inline code and macros name
+        self.hdr_code = "\n".join(l for l in strip_comments(self.hdrs).splitlines()
+                                  if not re.match(r"\s*extern\b", l))
         self.symbolic = set()
         for p in glob.glob(f"asm/data/overlays/{ovl}/*.data.s"):
             self.symbolic |= asm_symbolic(p)
@@ -294,7 +309,10 @@ class Converter:
     def named(self, name, headers=False):
         """Whether C code names it (headers=True: or a header)."""
         pat = re.compile(r"\b" + re.escape(name) + r"\b")
-        return pat.search(self.srcs) is not None or (headers and pat.search(self.hdrs) is not None)
+        if pat.search(self.srcs) is not None or (headers and pat.search(self.hdrs) is not None):
+            return True
+        # code in a header (an inline function, a macro) names it too; a declaration doesn't
+        return pat.search(self.hdr_code) is not None
 
     def targets(self, lo, hi):
         """Addresses in [lo, hi) that some 4-byte data word of the overlay points at."""
@@ -513,6 +531,9 @@ class Converter:
             self.base_rom = self.rom(va)
         ctype = ("const " if False else "") + tname + " " + "*" * ptr
         decl_txt = f"{ctype}{name}{''.join(f'[{d}]' for d in dims)}"
+        if tname == FN:
+            # a function pointer's definition is its declaration's text (sized from the slot)
+            decl_txt = re.sub(r"\[\s*\]", f"[{dims[0]}]" if dims else "", FN_DECLS[name])
         # an address in the overlay where the type has no 4-byte field is written as plain bytes or
         # halves, so a shifted build would keep the old address (CharCards' anim, in a u8[0x20])
         words = set()

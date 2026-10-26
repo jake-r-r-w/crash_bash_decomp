@@ -91,6 +91,16 @@ class FunctionPointers(unittest.TestCase):
         self.assertEqual([f[1] for f in t.fields("process_info")], [data2c.FN, data2c.FN, "u32"])
 
 
+class Declarations(unittest.TestCase):
+    def test_several_declarators_on_one_line(self):
+        d = data2c.declarations(["extern u8 D_800D3510[], D_800D3524[];\nextern hero_seq D_800D3948[], *D_X;\n"
+                                 "extern s32 D_A;\n"])
+        self.assertEqual(d["D_800D3524"], ("u8", 0, [None]))
+        self.assertEqual(d["D_800D3948"], ("hero_seq", 0, [None]))
+        self.assertEqual(d["D_X"], ("hero_seq", 1, []))
+        self.assertEqual(d["D_A"], ("s32", 0, []))
+
+
 class WordFields(unittest.TestCase):
     def test_only_4_byte_fields_can_hold_a_pointer(self):
         c = data2c.Converter.__new__(data2c.Converter)
