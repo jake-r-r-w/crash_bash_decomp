@@ -20,12 +20,6 @@ typedef struct Ovl5fModeView {
 extern s32 D_800CB210;
 extern NAS *TankBossCrashTurrets[3];
 
-typedef struct TotemFux {
-    /* 0x00 */ u8 pad0[0x28];
-    /* 0x28 */ s32 timer;
-    /* 0x2C */ u8 pad2C[4];
-    /* 0x30 */ u32 state;
-} TotemFux;
 extern NAS *TankBossCortexTurrets[4];
 extern NAS *TankBossRocketTurrets[2];
 extern u32 D_800CA48C[];
@@ -81,23 +75,7 @@ void SetTankMapCell(s32 arg0, s32 arg1);
 void TankBotReset(s32 arg0);
 NAS *FindTankPickupNear(s32 x, s32 z, s32 range);
 
-/* InitFlamerBitTA's 0x38-byte extension (id 0x10000000). */
-typedef struct FlamerBitExt {
-    /* 0x00 */ EXT ext;
-    /* 0x0C */ u8 pad0C[0x1C];
-    /* 0x28 */ s32 timer;
-    /* 0x2C */ u8 pad2C[0xC];
-} FlamerBitExt;
 
-/* InitTotemPole's 0x38-byte extension (id 0x10000000). */
-typedef struct TotemPoleExt {
-    /* 0x00 */ EXT ext;
-    /* 0x0C */ u8 pad0C[0x1C];
-    /* 0x28 */ s32 timer;
-    /* 0x2C */ u8 pad2C[0x4];
-    /* 0x30 */ s32 unk30;
-    /* 0x34 */ u8 pad34[0x4];
-} TotemPoleExt;
 extern NAS *D_800CB218;
 extern NAS *D_800CB21C;
 extern NAS *D_800CB220;
@@ -106,21 +84,6 @@ extern u8 D_8005365C[];
 extern u8 D_800537AC[];
 extern s32 D_800C9B94[][2];
 
-/* Extension 0x10000000 of the totem NAS InitTotemBit sets up. */
-typedef struct TotemExt {
-    /* 0x00 */ u8 pad0[0xC];
-    /* 0x0C */ s32 unkC;  /* turn per frame */
-    /* 0x10 */ s32 unk10; /* velocity x */
-    /* 0x14 */ s32 unk14; /* velocity y */
-    /* 0x18 */ s32 unk18; /* velocity z */
-    /* 0x1C */ s32 unk1C;
-    /* 0x20 */ s32 unk20;
-    /* 0x24 */ s32 unk24;
-    /* 0x28 */ s32 timer;
-    /* 0x2C */ s32 unk2C;
-    /* 0x30 */ s32 unk30;
-    /* 0x34 */ s32 *anim; /* animation script: frames, 0 ends, -1 is an event */
-} TotemExt;
 extern s32 D_800C9C14[];
 extern s32 D_800C9C94[];
 extern s32 D_800C9CE4[];
@@ -161,62 +124,13 @@ extern s32 D_800CB0FC;
 
 
 
-/* PlotLaserBitTA's NAS.FUX. */
-typedef struct LaserBitFux {
-    /* 0x00 */ u8 unk0[0x2C];
-    /* 0x2C */ s32 player;
-    /* 0x30 */ s32 unk30;
-} LaserBitFux;
 
 
 s32 MoveTankShot(NAS *nas, s32 arg1, s32 arg2, s32 arg3);
 
-/* PlotShell's NAS.FUX. */
-typedef struct ShellFux {
-    /* 0x00 */ u8 unk0[0x14];
-    /* 0x14 */ s32 vy;
-    /* 0x18 */ u8 unk18[0x30 - 0x18];
-    /* 0x30 */ s32 unk30;
-} ShellFux;
 
-/* PlotFlubberTA's NAS.FUX. */
-typedef struct FlubberFux {
-    /* 0x00 */ u8 unk0[0x14];
-    /* 0x14 */ s32 vy;
-    /* 0x18 */ u8 unk18[0x2C - 0x18];
-    /* 0x2C */ s32 player;
-    /* 0x30 */ s32 unk30;
-} FlubberFux;
 
-/* PlotLobber_TA's NAS.FUX. */
-typedef struct LobberFux {
-    /* 0x00 */ u8 unk0[0x10];
-    /* 0x10 */ s32 vx;
-    /* 0x14 */ s32 vy;
-    /* 0x18 */ s32 vz;
-    /* 0x1C */ u8 unk1C[0x2C - 0x1C];
-    /* 0x2C */ s32 player;
-    /* 0x30 */ s32 unk30;
-} LobberFux;
 
-/* InitPickupTA's extension 0x10000000 (0x38 bytes), its NAS.FUX. */
-typedef struct PickupTAExt {
-    /* 0x00 */ u8 unk0[0x14];
-    /* 0x14 */ s32 unk14;
-    /* 0x18 */ u8 unk18[0x38 - 0x18];
-} PickupTAExt;
-/* The 0x38-byte extension (id 0x10000000) of the shell PlotPeriscopeGun fires. */
-typedef struct PeriscopeShellExt {
-    /* 0x00 */ u8 pad0[0x10];
-    /* 0x10 */ s32 vx;
-    /* 0x14 */ s32 vy;
-    /* 0x18 */ s32 vz;
-    /* 0x1C */ u8 pad1C[0x28 - 0x1C];
-    /* 0x28 */ s32 unk28;
-    /* 0x2C */ s32 unk2C;
-    /* 0x30 */ s32 unk30;
-    /* 0x34 */ u8 pad34[4];
-} PeriscopeShellExt;
 
 typedef struct {
     s32 x;
@@ -256,13 +170,6 @@ extern s32 D_800C94E8[];
 extern s32 D_800C9428[][4];
 /* TankBotPlanSteerMove's fallback roam points: {x, z}. */
 extern s32 D_800CA17C[][2];
-/* PlotHelicopterTA's NAS.FUX. */
-typedef struct HeliFux {
-    /* 0x00 */ u8 unk0[0x10];
-    /* 0x10 */ s32 vx;
-    /* 0x14 */ u8 unk14[0x30 - 0x14];
-    /* 0x30 */ s32 unk30;
-} HeliFux;
 extern Ovl5fU16Pad D_800CA650[];    /* PlotHelicopterTA's rotor frames, by UserInfo.user2 */
 /* PlotPillarControl's waves: delay, then {x, z, angle} until x < 0. */
 extern s32 *D_800CA8C4[];
@@ -271,14 +178,6 @@ extern s32 D_800CB260;
 extern NAS *D_800CB264[8];    /* objects AddTankObject adds and RemoveTankObject removes; FindTankObjectNear tests their distance */
 extern NAS *TankMines[8];
 
-/* InitJoe/InitMoe's 0x38-byte extension (id 0x10000000), their NAS.FUX. */
-typedef struct JoeExt {
-    /* 0x00 */ u8 pad0[0x28];
-    /* 0x28 */ s32 unk28;
-    /* 0x2C */ u8 pad2C[4];
-    /* 0x30 */ s32 unk30;
-    /* 0x34 */ u8 pad34[4];
-} JoeExt;
 extern u8 D_80053704[];
 extern NAS *D_800CB208;       /* InitTankBoss's NAS */
 extern EXTengine *D_800CB20C; /* and its engine */
@@ -774,13 +673,6 @@ void SetMoeJoeRecoil(s32 arg0);
 
 void MoeJoeRecoil(s32 arg0);
 
-/* Extension 0x10000000 of the TA helicopter (InitHelicopterTA). */
-typedef struct HelicopterTAExt {
-    /* 0x00 */ u8 pad[0x10];
-    /* 0x10 */ s32 unk10;
-    /* 0x14 */ u8 pad14[0x30 - 0x14];
-    /* 0x30 */ s32 unk30;
-} HelicopterTAExt;
 extern s32 D_800CB0F4;
 extern s32 D_800CA600[4];
 extern s32 D_800CA610[4];
@@ -927,16 +819,6 @@ void Clock_Off(void);
 void Init_Clock(s32 arg0, s32 arg1, s32 arg2);
 void Set_Clock(u16 time, u16 flags);
 
-/* PlotMoeJoe (PlotJoe/PlotMoe): the boss NAS's FUX extension. */
-typedef struct JoeMoeFux {
-    /* 0x00 */ u8 unk0[0x14];
-    /* 0x14 */ s32 unk14;
-    /* 0x18 */ u8 unk18[0x28 - 0x18];
-    /* 0x28 */ s32 unk28;
-    /* 0x2C */ s32 unk2C;
-    /* 0x30 */ s32 unk30;
-    /* 0x34 */ s32 *unk34; /* animation script: zero-terminated anim ids */
-} JoeMoeFux;
 
 /* A 0x38-byte model record of D_80052A54 (see TANK_MODEL). */
 typedef struct ModelRec {

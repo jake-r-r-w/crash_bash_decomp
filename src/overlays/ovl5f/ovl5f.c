@@ -1509,7 +1509,7 @@ void AnimateTankTurret(s32 player) {
     subengine *sub2;
     NAS *n;
     NAS *puff;
-    PeriscopeShellExt *fux;
+    EXTobject_TA *fux;
     s32 a;
     s32 dx;
     s32 dz;
@@ -1614,11 +1614,11 @@ void AnimateTankTurret(s32 player) {
                     se->unk10.x += dx >> 12;
                     dz = -(D_80068BD4[(u16)e->unk1E & 0xFFF].unk2 * 250);
                     se->unk10.z += dz >> 12;
-                    fux->vx = dx >> 13;
-                    fux->vy = -0x5B;
-                    fux->vz = dz >> 13;
-                    fux->unk2C = player;
-                    fux->unk30 = 1;
+                    fux->SpeedX = dx >> 13;
+                    fux->SpeedY = -0x5B;
+                    fux->SpeedZ = dz >> 13;
+                    fux->Owner = player;
+                    fux->Status = 1;
                     ta2->MainWeaponRounds--;
                     se2 = n->Engine;
                     PlaySfx(0x4F3, &se2->sfx, &se2->unk10, 0x1000, 0x1E00, 0);
@@ -3025,7 +3025,7 @@ spawn:
 
 void PlotLaserBitTA(NAS *nas) {
     EXTengine *eng;
-    LaserBitFux *fux;
+    EXTobject_TA *fux;
     subengine *sub;
     s32 hit;
     s32 sfx;
@@ -3033,7 +3033,7 @@ void PlotLaserBitTA(NAS *nas) {
     s16 rot;
 
     eng = nas->Engine;
-    fux = (LaserBitFux *)nas->FUX;
+    fux = (EXTobject_TA *)nas->FUX;
     sub = eng->sub;
     sub = sub->next;
     sub->unk51 = 0;
@@ -3066,25 +3066,25 @@ void PlotLaserBitTA(NAS *nas) {
         }
         PlaySfx(0x4E7, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         for (i = 0; i < 3; i++) {
-            if (TA_players[fux->player].MainWeaponNas[i] == nas) {
-                TA_players[fux->player].MainWeaponNas[i] = NULL;
+            if (TA_players[fux->Owner].MainWeaponNas[i] == nas) {
+                TA_players[fux->Owner].MainWeaponNas[i] = NULL;
                 break;
             }
         }
         KillNAS(nas);
         return;
     }
-    if (fux->unk30 == 1) {
-        fux->unk30 = 0;
+    if (fux->Status == 1) {
+        fux->Status = 0;
     }
 }
 
 void PlotFlamerBitTA(NAS *nas) {
     EXTengine *eng;
-    LaserBitFux *fux;
+    EXTobject_TA *fux;
     s32 i;
 
-    fux = (LaserBitFux *)nas->FUX;
+    fux = (EXTobject_TA *)nas->FUX;
     eng = nas->Engine;
     eng->unk5E = 1;
     eng->unk20 += 0x96;
@@ -3097,8 +3097,8 @@ void PlotFlamerBitTA(NAS *nas) {
         }
         PlaySfx(0x4E4, NULL, NULL, 0x1000, 0x1E00, 0);
         for (i = 0; i < 3; i++) {
-            if (TA_players[fux->player].MainWeaponNas[i] == nas) {
-                TA_players[fux->player].MainWeaponNas[i] = NULL;
+            if (TA_players[fux->Owner].MainWeaponNas[i] == nas) {
+                TA_players[fux->Owner].MainWeaponNas[i] = NULL;
                 break;
             }
         }
@@ -3118,27 +3118,27 @@ void PlotFlamerBitTA(NAS *nas) {
             break;
         }
     }
-    if (fux->unk30 == 1) {
-        fux->unk30 = 0;
+    if (fux->Status == 1) {
+        fux->Status = 0;
     }
 }
 
 void PlotFlubberTA(NAS *nas) {
     EXTengine *eng;
-    FlubberFux *fux;
+    EXTobject_TA *fux;
     EXTengine *e;
     s32 sfx;
     s32 i;
 
     eng = nas->Engine;
-    fux = (FlubberFux *)nas->FUX;
+    fux = (EXTobject_TA *)nas->FUX;
     eng->unk5E = 1;
     eng->unk1C += 0x55;
-    fux->vy += 0xC;
-    eng->unk10.y += fux->vy;
+    fux->SpeedY += 0xC;
+    eng->unk10.y += fux->SpeedY;
     if (eng->unk10.y >= -0x64) {
         eng->unk10.y = -0x64;
-        fux->vy = -0x3C;
+        fux->SpeedY = -0x3C;
         eng->unk10.y -= 0x3C;
         if (((Ovl5fModeView *)D_8005A614)->mode == 5 ||
             (((Ovl5fModeView *)D_8005A614)->mode == 6 && (((Ovl5fModeView *)D_8005A614)->flags & 0x80) &&
@@ -3198,8 +3198,8 @@ void PlotFlubberTA(NAS *nas) {
             PlaySfx(0x4E5, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         } while (0);
         for (i = 0; i < 3; i++) {
-            if (TA_players[fux->player].MainWeaponNas[i] == nas) {
-                TA_players[fux->player].MainWeaponNas[i] = NULL;
+            if (TA_players[fux->Owner].MainWeaponNas[i] == nas) {
+                TA_players[fux->Owner].MainWeaponNas[i] = NULL;
                 break;
             }
         }
@@ -3223,8 +3223,8 @@ void PlotFlubberTA(NAS *nas) {
         PlaySfx(sfx, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
     skip3:;
     }
-    if (fux->unk30 == 1) {
-        fux->unk30 = 0;
+    if (fux->Status == 1) {
+        fux->Status = 0;
     }
     do {
         e = eng->Engine;
@@ -3238,7 +3238,7 @@ void PlotFlubberTA(NAS *nas) {
 
 void PlotSwirlyTA(NAS *nas) {
     EXTengine *eng;
-    LaserBitFux *fux;
+    EXTobject_TA *fux;
     subengine *sub;
     s32 sfx;
     s32 i;
@@ -3253,15 +3253,15 @@ void PlotSwirlyTA(NAS *nas) {
     sub->unk10 += 0x46;
     sub->unk12 += 0x8C;
     sub->unk14 += 0xD2;
-    fux = (LaserBitFux *)nas->FUX;
+    fux = (EXTobject_TA *)nas->FUX;
     if (MoveTankShot(nas, 0x14, 0x1306, 0xD) != 0) {
         if (eng->sfx != NULL) {
             StopSfx(eng->sfx);
         }
         PlaySfx(0x4E6, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         for (i = 0; i < 3; i++) {
-            if (TA_players[fux->player].MainWeaponNas[i] == nas) {
-                TA_players[fux->player].MainWeaponNas[i] = NULL;
+            if (TA_players[fux->Owner].MainWeaponNas[i] == nas) {
+                TA_players[fux->Owner].MainWeaponNas[i] = NULL;
                 break;
             }
         }
@@ -3285,13 +3285,13 @@ void PlotSwirlyTA(NAS *nas) {
         PlaySfx(sfx, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
     skip:;
     }
-    if (fux->unk30 == 1) {
-        fux->unk30 = 0;
+    if (fux->Status == 1) {
+        fux->Status = 0;
     }
 }
 
 void PlotShell(NAS *nas) {
-    ShellFux *fux;
+    EXTobject_TA *fux;
     EXTengine *eng;
     EXTengine *e2;
     SLONG_XYZ *pos;
@@ -3300,13 +3300,13 @@ void PlotShell(NAS *nas) {
     EXTscriptdata *ext;
     s32 sfx;
 
-    fux = (ShellFux *)nas->FUX;
+    fux = (EXTobject_TA *)nas->FUX;
     eng = nas->Engine;
-    fux->vy += 0xC;
-    eng->unk10.y += fux->vy;
+    fux->SpeedY += 0xC;
+    eng->unk10.y += fux->SpeedY;
     if (eng->unk10.y > 0) {
         eng->unk10.y = 0;
-        fux->vy = -0x54;
+        fux->SpeedY = -0x54;
         eng->unk10.y -= 0x54;
         pos = &eng->unk10;
         p = D_8005365C;
@@ -3345,8 +3345,8 @@ void PlotShell(NAS *nas) {
         KillNAS(nas);
         return;
     }
-    if (fux->unk30 == 1) {
-        fux->unk30 = 0;
+    if (fux->Status == 1) {
+        fux->Status = 0;
     }
     e2 = eng->Engine;
     if (e2 != NULL) {
@@ -3359,7 +3359,7 @@ void PlotShell(NAS *nas) {
 void PlotLobber_TA(NAS *nas)
 {
   EXTengine *eng;
-  LobberFux *fux;
+  EXTobject_TA *fux;
   EXTengine *e;
   EXTengine *e2;
   s32 x;
@@ -3377,17 +3377,17 @@ void PlotLobber_TA(NAS *nas)
   u16 name;
 
   eng = nas->Engine;
-  fux = (LobberFux *) nas->FUX;
-  eng->unk10.x += fux->vx;
-  eng->unk10.z += fux->vz;
-  fux->vy += 0xC;
-  eng->unk10.y += fux->vy;
+  fux = (EXTobject_TA *) nas->FUX;
+  eng->unk10.x += fux->SpeedX;
+  eng->unk10.z += fux->SpeedZ;
+  fux->SpeedY += 0xC;
+  eng->unk10.y += fux->SpeedY;
   fx = eng->unk10.x;
   fz = eng->unk10.z;
   flim = 0x180;
   for (j = 0; j < 4; j++)
   {
-    if (j == fux->player)
+    if (j == fux->Owner)
     {
       continue;
     }
@@ -3462,10 +3462,10 @@ void PlotLobber_TA(NAS *nas)
   }
 
 
-  if (((fux->vy > 0) && (eng->unk10.y >= (-0x103))) || ((D_8005A648 == 9) && (eng->unk10.z > 0x1000)))
+  if (((fux->SpeedY > 0) && (eng->unk10.y >= (-0x103))) || ((D_8005A648 == 9) && (eng->unk10.z > 0x1000)))
   {
     eng->unk10.y = -0x104;
-    if ((D_8005A648 == 9) && (fux->player != (-1)))
+    if ((D_8005A648 == 9) && (fux->Owner != (-1)))
     {
       CheckMineToBoss(eng->unk10.x, eng->unk10.y, eng->unk10.z);
     }
@@ -3559,9 +3559,9 @@ void PlotLobber_TA(NAS *nas)
     return;
   }
 
-  if (fux->unk30 == 1)
+  if (fux->Status == 1)
   {
-    fux->unk30 = 0;
+    fux->Status = 0;
   }
 
   e2 = eng->Engine;
@@ -3584,7 +3584,7 @@ void PlotLobber_TA(NAS *nas)
 void PlotRocketTA(NAS *nas)
 {
     EXTengine *eng;
-    LobberFux *fux;
+    EXTobject_TA *fux;
     NAS *n;
     NAS *puff;
     EXTscriptdata *ext;
@@ -3597,9 +3597,9 @@ void PlotRocketTA(NAS *nas)
     s32 ok;
 
     eng = nas->Engine;
-    fux = (LobberFux *) nas->FUX;
-    x = eng->unk10.x + fux->vx;
-    z = eng->unk10.z + fux->vz;
+    fux = (EXTobject_TA *) nas->FUX;
+    x = eng->unk10.x + fux->SpeedX;
+    z = eng->unk10.z + fux->SpeedZ;
     if (x < 0 || x >= D_800CB100 + 0x100) {
         goto boom;
     }
@@ -3650,10 +3650,10 @@ void PlotRocketTA(NAS *nas)
     eng->unk10.z = z;
     MissileCollideWithPickup(eng);
     hit = Ovl5fRocketFindHero(x, z, 0x10E);
-    if (hit < 0 || hit == fux->player) {
+    if (hit < 0 || hit == fux->Owner) {
         goto puff;
     }
-    if (((Ovl5fModeView *) D_8005A614)->mode != 9 || fux->player == -1) {
+    if (((Ovl5fModeView *) D_8005A614)->mode != 9 || fux->Owner == -1) {
         dmg = 0x3C;
     } else {
         dmg = (((D_8005A614[0xB4] * 190) / 32 + 10) * 60) / 100;
@@ -4276,7 +4276,7 @@ void PlotPickupGenerator_TA(NAS *nas)
 }
 
 void InitHelicopterTA(NAS *nas) {
-    HelicopterTAExt *ext;
+    EXTobject_TA *ext;
     EXTengine *eng;
     EXTengine *e;
     subengine *sub;
@@ -4285,17 +4285,17 @@ void InitHelicopterTA(NAS *nas) {
     ext = AddExt(nas, 0x38, 0x10000000);
     if (ext != NULL) {
         nas->FUX = (EXT *)ext;
-        ext->unk30 = 3;
+        ext->Status = 3;
         eng = nas->Engine;
         if (++D_800CB0F4 & 1) {
             eng->unk1E = 0x400;
             eng->unk10.x = 0x1800;
-            ext->unk10 = -0x40;
+            ext->SpeedX = -0x40;
             eng->unk10.y = -0x400;
         } else {
             eng->unk1E = 0xC00;
             eng->unk10.x = -0x800;
-            ext->unk10 = 0x40;
+            ext->SpeedX = 0x40;
             eng->unk10.y = -0x400;
         }
         switch ((s16)(D_8005A648 - 5)) {
@@ -4345,7 +4345,7 @@ void InitHelicopterTA(NAS *nas) {
 void PlotHelicopterTA(NAS *nas) {
     NAS **slot;
     Ovl5fModeView *g;
-    HeliFux *fux;
+    EXTobject_TA *fux;
     EXTengine *eng;
     EXTengine *e2;
     subengine *sub;
@@ -4357,13 +4357,13 @@ void PlotHelicopterTA(NAS *nas) {
     u16 st;
     NAS **s;
 
-    fux = (HeliFux *)nas->FUX;
+    fux = (EXTobject_TA *)nas->FUX;
     eng = nas->Engine;
     sub = eng->sub;
     if (D_800CB0F0 != 0) {
         eng->unk10.y -= 0x32;
     }
-    eng->unk10.x += fux->vx;
+    eng->unk10.x += fux->SpeedX;
     if (--nas->UserInfo.user2 < 0) {
         nas->UserInfo.user2 = 7;
     }
@@ -4379,7 +4379,7 @@ void PlotHelicopterTA(NAS *nas) {
         KillNAS(nas);
         return;
     }
-    if (fux->unk30 != 3 || D_800CB0F0 != 0 || (x & 0x1FF) != 0x100) {
+    if (fux->Status != 3 || D_800CB0F0 != 0 || (x & 0x1FF) != 0x100) {
         return;
     }
     for (i = 0, s = PU_TA_list; i < 3; i++, s++) {
@@ -4419,7 +4419,7 @@ loop:
             if (p == NULL) {
                 return;
             }
-            fux->unk30 = 0;
+            fux->Status = 0;
             if (g->mode) {
                 *slot = p;
             } else if (*slot) {
@@ -4485,7 +4485,7 @@ loop:
 void InitPickupTA(NAS *nas) {
     EXTengine *eng;
     EXTengine *e;
-    PickupTAExt *ext;
+    EXTobject_TA *ext;
     subengine *sub;
     u8 *p;
     s32 y;
@@ -4510,7 +4510,7 @@ void InitPickupTA(NAS *nas) {
     nas->UserInfo.user1 = 5;
     ext = AddExt(nas, 0x38, 0x10000000);
     if (ext != NULL) {
-        ext->unk14 = 0;
+        ext->SpeedY = 0;
         nas->FUX = ext;
         p = D_8005365C;
         eng = nas->Engine;
@@ -4543,7 +4543,7 @@ void InitPickupTA(NAS *nas) {
 
 void PlotPickupTA(NAS *nas) {
     EXTengine *eng;
-    FlubberFux *fux;
+    EXTobject_TA *fux;
     NAS *n;
     EXTengine *e;
     EXTengine *fe;
@@ -4565,7 +4565,7 @@ void PlotPickupTA(NAS *nas) {
     u16 st;
 
     eng = nas->Engine;
-    fux = (FlubberFux *)nas->FUX;
+    fux = (EXTobject_TA *)nas->FUX;
     dx = 0;
     if (Ovl5fMapCell(d = eng->unk10.x, eng->unk10.z) != 0) {
         goto puff;
@@ -4583,11 +4583,11 @@ void PlotPickupTA(NAS *nas) {
             eng->unk5E = 1;
             eng->unk1E += 0x28;
         }
-        fux->vy += 8;
-        eng->unk10.y += fux->vy;
+        fux->SpeedY += 8;
+        eng->unk10.y += fux->SpeedY;
         if (eng->unk10.y >= 0) {
             eng->unk10.y = -1;
-            fux->vy = -0x28;
+            fux->SpeedY = -0x28;
             eng->unk10.y -= 0x28;
         }
         break;
@@ -4644,7 +4644,7 @@ void PlotPickupTA(NAS *nas) {
             }
         }
         eng->unk10.y = 0;
-        fux->vy = -0x28;
+        fux->SpeedY = -0x28;
         nas->UserInfo.user1 = 0;
         eng->unk20 = 0;
         switch (nas->UserInfo.status) {
@@ -4904,7 +4904,7 @@ void PlotRock_TA(NAS *nas) {
 }
 
 void PlotPeriscope(NAS *nas) {
-    TotemFux *fux;
+    EXTobject_TA *fux;
     EXTengine *eng;
     EXTengine *e;
     NAS *n;
@@ -4917,23 +4917,23 @@ void PlotPeriscope(NAS *nas) {
         KillNAS(nas);
         return;
     }
-    fux = (TotemFux *)nas->FUX;
+    fux = (EXTobject_TA *)nas->FUX;
     eng = nas->Engine;
-    switch (fux->state) {
+    switch (fux->Status) {
     case 1:
-        if (--fux->timer == 30) {
+        if (--fux->Counter == 30) {
             D_800CB214 = Ovl5fPeriscopePuff(&nas->Engine->unk10, 1);
             PlaySfx(0x4FB, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         }
-        if (fux->timer <= 0) {
-            fux->state = 4;
-            fux->timer = 4;
+        if (fux->Counter <= 0) {
+            fux->Status = 4;
+            fux->Counter = 4;
         }
         break;
     case 4:
         Ovl5fPeriscopePuff(&nas->Engine->unk10, 0);
-        fux->timer--;
-        switch (fux->timer) {
+        fux->Counter--;
+        switch (fux->Counter) {
         case 3:
             eng->sub->next->flags = 0x8000;
             eng->sub->next->unk74 = 0x2001;
@@ -4952,8 +4952,8 @@ void PlotPeriscope(NAS *nas) {
                 }
             }
             eng->sub->next->unk74 = 0x2004;
-            fux->state = 0;
-            fux->timer = 210;
+            fux->Status = 0;
+            fux->Counter = 210;
             break;
         }
         break;
@@ -4967,17 +4967,17 @@ void PlotPeriscope(NAS *nas) {
         sub = sub->next;
         sub->unk51 = 0;
         sub->unk52 = 1;
-        if (--fux->timer <= 0) {
-            fux->state = 5;
-            fux->timer = 4;
+        if (--fux->Counter <= 0) {
+            fux->Status = 5;
+            fux->Counter = 4;
             break;
         }
         for (i = 0; i < 4; i++) {
             if (Heroes[i].hero_name != 9 && !(Heroes[i].hero_status & 0xFA00) && D_8005A614[i + 0x5C] == 0) {
                 e = Heroes[i].hero_eng;
                 if ((u32)(((eng->unk1E - get_angle(eng->unk10.x - e->unk10.x, eng->unk10.z - e->unk10.z)) & 0xFFF) - 0x15) >= 0xFD7U) {
-                    fux->state = 10;
-                    fux->timer = 0;
+                    fux->Status = 10;
+                    fux->Counter = 0;
                     PlaySfx(0x4FC, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
                 }
             }
@@ -4987,24 +4987,24 @@ void PlotPeriscope(NAS *nas) {
         if (!(D_8004E0D8 & 0x1F)) {
             Ovl5fPeriscopePuff(&nas->Engine->unk10, 0);
         }
-        frame = D_800CA6EC[fux->timer];
-        if (++fux->timer == 9) {
+        frame = D_800CA6EC[fux->Counter];
+        if (++fux->Counter == 9) {
             n = CreateNAS(eng->unk10.x, eng->unk10.y, eng->unk10.z, 0x1319, 0x11);
             if (n != NULL) {
                 n->Engine->unk1E = eng->unk1E;
             }
         }
         if (frame == 0) {
-            fux->state = 11;
-            fux->timer = 4;
+            fux->Status = 11;
+            fux->Counter = 4;
             break;
         }
         eng->sub->next->unk74 = frame;
         break;
     case 11:
         Ovl5fPeriscopePuff(&nas->Engine->unk10, 0);
-        fux->timer--;
-        switch (fux->timer) {
+        fux->Counter--;
+        switch (fux->Counter) {
         case 3:
             eng->sub->next->flags = 0x8000;
             eng->sub->next->unk74 = 0x2003;
@@ -5022,22 +5022,22 @@ void PlotPeriscope(NAS *nas) {
             eng->sub->next->unk74 = 0x2001;
             break;
         case 0:
-            fux->state = 12;
-            fux->timer = 1;
+            fux->Status = 12;
+            fux->Counter = 1;
             eng->sub->next->flags = 0;
             break;
         }
         break;
     case 12:
-        if (--fux->timer <= 0) {
-            fux->state = 1;
-            fux->timer = 120;
+        if (--fux->Counter <= 0) {
+            fux->Status = 1;
+            fux->Counter = 120;
         }
         break;
     case 5:
         Ovl5fPeriscopePuff(&nas->Engine->unk10, 0);
-        fux->timer--;
-        switch (fux->timer) {
+        fux->Counter--;
+        switch (fux->Counter) {
         case 3:
             eng->sub->next->flags = 0x8000;
             eng->sub->next->unk74 = 0x2003;
@@ -5049,8 +5049,8 @@ void PlotPeriscope(NAS *nas) {
             eng->sub->next->unk74 = 0x2001;
             break;
         case 0:
-            fux->state = 1;
-            fux->timer = 150;
+            fux->Status = 1;
+            fux->Counter = 150;
             eng->sub->next->flags = 0;
             break;
         }
@@ -5062,7 +5062,7 @@ void PlotPeriscopeGun(NAS *nas) {
     EXTengine *e;
     EXTengine *se;
     NAS *shell;
-    PeriscopeShellExt *ext;
+    EXTobject_TA *ext;
     s32 dx;
     s32 dz;
 
@@ -5090,11 +5090,11 @@ void PlotPeriscopeGun(NAS *nas) {
         se->unk10.x += dx >> 12;
         dz = -(D_80068BD4[(u16)e->unk1E & 0xFFF].unk2 * 620);
         se->unk10.z += dz >> 12;
-        ext->vy = -150;
-        ext->unk2C = -1;
-        ext->vx = dx >> 16;
-        ext->vz = dz >> 16;
-        ext->unk30 = 1;
+        ext->SpeedY = -150;
+        ext->Owner = -1;
+        ext->SpeedX = dx >> 16;
+        ext->SpeedZ = dz >> 16;
+        ext->Status = 1;
         break;
     case 0x4087:
         KillNAS(nas);
@@ -5331,40 +5331,40 @@ static inline s32 TotemFindHero(s32 x, s32 z, s32 r) {
 }
 
 void PlotTotemPole(NAS *nas) {
-    TotemFux *fux;
+    EXTobject_TA *fux;
     EXTengine *eng;
     EXTengine *e;
     s32 i;
 
-    fux = (TotemFux *)nas->FUX;
+    fux = (EXTobject_TA *)nas->FUX;
     eng = nas->Engine;
-    switch (fux->state) {
+    switch (fux->Status) {
     case 1:
-        if (--fux->timer > 0) {
+        if (--fux->Counter > 0) {
             return;
         }
         if (((Ovl5fGameView *)D_8005A614)->flags & 0x80) {
-            fux->state = 0x24;
+            fux->Status = 0x24;
             PlaySfx(0x502, &eng->sfx, NULL, 0x1000, 0x1E00, 0);
             nas->UserInfo.user2 = 0x1E;
             return;
         }
         if (TotemFindHero(0x590, 0x400, 0x200) < 0) {
-            fux->timer = 0x12C;
-            fux->state = 0x11;
+            fux->Counter = 0x12C;
+            fux->Status = 0x11;
             return;
         }
-        fux->timer++;
+        fux->Counter++;
         return;
     case 0x11:
-        if (--fux->timer > 0) {
+        if (--fux->Counter > 0) {
             return;
         }
         if (TotemFindHero(0xA40, 0x440, 0x200) >= 0) {
-            fux->timer++;
+            fux->Counter++;
             return;
         }
-        fux->state = 0;
+        fux->Status = 0;
         return;
     case 0:
     case 2:
@@ -5391,8 +5391,8 @@ void PlotTotemPole(NAS *nas) {
             if ((u32)(((eng->unk1E - get_angle(eng->unk10.x - e->unk10.x, eng->unk10.z - e->unk10.z)) & 0xFFF) - 0x15) < 0xFD7) {
                 continue;
             }
-            fux->state = 0xD;
-            fux->timer = 0;
+            fux->Status = 0xD;
+            fux->Counter = 0;
             if (eng->sfx != NULL) {
                 StopSfx(eng->sfx);
             }
@@ -5403,7 +5403,7 @@ void PlotTotemPole(NAS *nas) {
 }
 
 void InitTotemBit(NAS *nas, s32 id) {
-    TotemExt *ext;
+    EXTobject_TA *ext;
     EXTengine *eng;
     subengine *sub;
     s32 i;
@@ -5415,7 +5415,7 @@ void InitTotemBit(NAS *nas, s32 id) {
         goto kill;
     }
     nas->FUX = (EXT *)ext;
-    ext->unk30 = 1;
+    ext->Status = 1;
     eng = nas->Engine;
     sub = eng->sub;
     eng->unk5D = 0;
@@ -5423,13 +5423,13 @@ void InitTotemBit(NAS *nas, s32 id) {
     sub->unk6C = D_800537AC;
     if (id == 0x131B) {
         sub->unk74 = 0x4180;
-        ext->unk1C = 0;
+        ext->TargetIndex = 0;
     } else {
         sub->unk74 = 0x4180;
-        ext->unk1C = 0xD;
+        ext->TargetIndex = 0xD;
     }
-    ext->unk20 = D_800C9B94[ext->unk1C][0];
-    ext->unk24 = *(s32 *)((u8 *)D_800C9B94 + ((ext->unk1C * 8) | 4));
+    ext->TargetX = D_800C9B94[ext->TargetIndex][0];
+    ext->TargetZ = *(s32 *)((u8 *)D_800C9B94 + ((ext->TargetIndex * 8) | 4));
     if (nas->Failure != 0) {
         KillNAS(nas);
         return;
@@ -5501,11 +5501,11 @@ void PlotTotemBit(NAS *nas, s32 id) {
     EXTengine *eng;
     s32 v;
     NAS *pole;
-    TotemPoleExt *pf;
-    TotemExt *ext;
+    EXTobject_TA *pf;
+    EXTobject_TA *ext;
     NAS *n;
     EXTengine *ne;
-    TotemExt *nx;
+    EXTobject_TA *nx;
     s32 x;
     s32 z;
     s32 k;
@@ -5513,18 +5513,18 @@ void PlotTotemBit(NAS *nas, s32 id) {
     s32 a;
 
     eng = nas->Engine;
-    ext = (TotemExt *)nas->FUX;
+    ext = (EXTobject_TA *)nas->FUX;
     x = eng->unk10.x;
     z = eng->unk10.z;
-    switch ((u32)ext->unk30) {
+    switch ((u32)ext->Status) {
     case 1:
         pole = D_800CB218;
-        pf = (TotemPoleExt *)pole->FUX;
-        switch (pf->unk30) {
+        pf = (EXTobject_TA *)pole->FUX;
+        switch (pf->Status) {
         case 0xD:
             if (id == 0x131B) {
-                ext->unk30 = 0xD;
-                ext->anim = D_800C9C14;
+                ext->Status = 0xD;
+                ext->pAnimList = D_800C9C14;
             }
             break;
         case 0x24:
@@ -5535,154 +5535,154 @@ void PlotTotemBit(NAS *nas, s32 id) {
             break;
         case 0x11:
             if (id == 0x131B) {
-                ext->unk30 = 5;
-                ext->unk14 = -0x5A;
-                ext->unk10 = -0x1E;
-                ext->unk18 = -0x2D;
+                ext->Status = 5;
+                ext->SpeedY = -0x5A;
+                ext->SpeedX = -0x1E;
+                ext->SpeedZ = -0x2D;
                 PlaySfx(0x504, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
             }
             break;
         case 0:
             if (id == 0x131C) {
-                ext->unk30 = 5;
-                ext->unk14 = -0x5A;
-                ext->unk10 = 0x1E;
-                ext->unk18 = -0x2D;
+                ext->Status = 5;
+                ext->SpeedY = -0x5A;
+                ext->SpeedX = 0x1E;
+                ext->SpeedZ = -0x2D;
                 PlaySfx(0x504, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
             }
             break;
         }
         break;
     case 13:
-        v = *ext->anim++;
+        v = *ext->pAnimList++;
         if (v != 0) {
             if (v == -1) {
             n = CreateNAS(eng->unk10.x, eng->unk10.y - 100, eng->unk10.z, 0x130E, 0x11);
             if (n != NULL) {
                 ne = n->Engine;
-                nx = (TotemExt *)n->FUX;
+                nx = (EXTobject_TA *)n->FUX;
                 ne->sub->unk6C = D_800537AC;
                 ne->sub->unk74 = 0x2006;
-                nx->unk2C = v;
+                nx->Owner = v;
                 ne->unk10.x += -(D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 300) >> 12;
                 ne->unk10.z += -(D_80068BD4[eng->unk1E & 0xFFF].unk2 * 300) >> 12;
                 ne->unk1E = eng->unk1E;
-                nx->unk10 = -(D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 60) >> 12;
-                nx->unk18 = -(D_80068BD4[eng->unk1E & 0xFFF].unk2 * 60) >> 12;
+                nx->SpeedX = -(D_80068BD4[(eng->unk1E - 0x400) & 0xFFF].unk2 * 60) >> 12;
+                nx->SpeedZ = -(D_80068BD4[eng->unk1E & 0xFFF].unk2 * 60) >> 12;
             }
             } else {
                 eng->sub->unk74 = v;
             }
         } else {
             pole = D_800CB218;
-            ext->unk30 = 1;
+            ext->Status = 1;
             eng->sub->unk74 = 0x2005;
-            pf = (TotemPoleExt *)pole->FUX;
-            pf->unk30 = 0x24;
+            pf = (EXTobject_TA *)pole->FUX;
+            pf->Status = 0x24;
             PlaySfx(0x502, &pole->Engine->sfx, NULL, 0x1000, 0x1E00, 0);
             pole->UserInfo.user2 = 0x1E;
         }
         break;
     case 5:
-        ext->unk14 += 12;
-        eng->unk10.y += ext->unk14;
-        x = eng->unk10.x + ext->unk10;
-        z = eng->unk10.z + ext->unk18;
+        ext->SpeedY += 12;
+        eng->unk10.y += ext->SpeedY;
+        x = eng->unk10.x + ext->SpeedX;
+        z = eng->unk10.z + ext->SpeedZ;
         if (eng->unk10.y < 0) {
             break;
         }
         eng->unk10.y = 0;
-        if (ext->unk14 >= 0x25) {
+        if (ext->SpeedY >= 0x25) {
             TotemBitExplode(eng);
         } else {
             PlaySfx(0x506, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         }
-        if (ext->unk14 < 13) {
-            ext->unk30 = 0;
-            ext->timer = 0x5A;
+        if (ext->SpeedY < 13) {
+            ext->Status = 0;
+            ext->Counter = 0x5A;
         } else {
-            ext->unk14 = -(ext->unk14 * 2) / 3;
-            ext->unk10 = (ext->unk10 * 2) / 3;
-            ext->unk18 = (ext->unk18 * 2) / 3;
+            ext->SpeedY = -(ext->SpeedY * 2) / 3;
+            ext->SpeedX = (ext->SpeedX * 2) / 3;
+            ext->SpeedZ = (ext->SpeedZ * 2) / 3;
         }
         break;
     case 0:
-        if (--ext->timer > 0) {
+        if (--ext->Counter > 0) {
             break;
         }
-        ext->unk30 = 0x25;
-        ext->anim = D_800C9CE4;
+        ext->Status = 0x25;
+        ext->pAnimList = D_800C9CE4;
         nas->UserInfo.status = 0;
-        ext->unk1C = (ext->unk1C + 1) & 0xF;
-        ext->unk20 = D_800C9B94[ext->unk1C][0];
-        ext->unk24 = *(s32 *)((u8 *)D_800C9B94 + ((ext->unk1C * 8) | 4));
-        ext->unk10 = (ext->unk20 - eng->unk10.x) / 31;
-        ext->unk18 = (ext->unk24 - eng->unk10.z) / 31;
-        a = get_angle(ext->unk10, ext->unk18) + 0x800;
+        ext->TargetIndex = (ext->TargetIndex + 1) & 0xF;
+        ext->TargetX = D_800C9B94[ext->TargetIndex][0];
+        ext->TargetZ = *(s32 *)((u8 *)D_800C9B94 + ((ext->TargetIndex * 8) | 4));
+        ext->SpeedX = (ext->TargetX - eng->unk10.x) / 31;
+        ext->SpeedZ = (ext->TargetZ - eng->unk10.z) / 31;
+        a = get_angle(ext->SpeedX, ext->SpeedZ) + 0x800;
         a -= eng->unk1E;
         a = (a << 20) >> 20;
         a /= 12;
-        ext->unkC = a;
+        ext->Speed = a;
         PlaySfx(0x507, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         break;
     case 0x25:
-        v = *ext->anim++;
+        v = *ext->pAnimList++;
         if (v != 0) {
             eng->sub->unk74 = v;
             k = nas->UserInfo.status++;
             k -= 16;
             if (k > 0) {
-                eng->unk1E += ext->unkC;
+                eng->unk1E += ext->Speed;
                 eng->unk5E = 1;
-                x = eng->unk10.x + ext->unk10 * k / 12;
-                z = eng->unk10.z + ext->unk18 * k / 12;
+                x = eng->unk10.x + ext->SpeedX * k / 12;
+                z = eng->unk10.z + ext->SpeedZ * k / 12;
             }
         } else {
-            ext->anim = D_800C9C94;
-            ext->unk30 = 0x29;
+            ext->pAnimList = D_800C9C94;
+            ext->Status = 0x29;
         }
         break;
     case 0x29:
-        v = *ext->anim++;
+        v = *ext->pAnimList++;
         if (v == 0) {
-            ext->unk30 = 0x26;
-            ext->anim = D_800C9DD0;
+            ext->Status = 0x26;
+            ext->pAnimList = D_800C9DD0;
             nas->UserInfo.status = 0;
             a = -eng->unk1E;
             a = (a << 20) >> 20;
             a /= 12;
-            ext->unkC = a;
+            ext->Speed = a;
             break;
         }
         eng->sub->unk74 = v;
-        x = eng->unk10.x + ext->unk10;
-        z = eng->unk10.z + ext->unk18;
+        x = eng->unk10.x + ext->SpeedX;
+        z = eng->unk10.z + ext->SpeedZ;
         break;
     case 0x26:
-        v = *ext->anim++;
+        v = *ext->pAnimList++;
         if (v != 0) {
             eng->sub->unk74 = v;
             t = nas->UserInfo.status++;
             if (t < 12) {
                 t = 12 - t;
-                x = eng->unk10.x + ext->unk10 * t / 12;
-                z = eng->unk10.z + ext->unk18 * t / 12;
-                eng->unk1E += ext->unkC;
+                x = eng->unk10.x + ext->SpeedX * t / 12;
+                z = eng->unk10.z + ext->SpeedZ * t / 12;
+                eng->unk1E += ext->Speed;
                 eng->unk5E = 1;
             }
         } else if (D_800CB0F0 != 0) {
-            ext->unk30 = 0;
+            ext->Status = 0;
             eng->sub->unk74 = 0x2004;
-            ext->timer = 0xB9A;
+            ext->Counter = 0xB9A;
         } else {
-            ext->anim = D_800C9D58;
-            ext->unk30 = 0x27;
+            ext->pAnimList = D_800C9D58;
+            ext->Status = 0x27;
             PlaySfx(0x504, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         }
         break;
     case 0x27:
     next:
-        v = *ext->anim++;
+        v = *ext->pAnimList++;
         if (v != 0) {
             eng->sub->unk74 = v;
             if (v == -1) {
@@ -5690,9 +5690,9 @@ void PlotTotemBit(NAS *nas, s32 id) {
                 goto next;
             }
         } else {
-            ext->unk30 = 0;
+            ext->Status = 0;
             eng->sub->unk74 = 0x2004;
-            ext->timer = 0x96;
+            ext->Counter = 0x96;
         }
         break;
     }
@@ -5821,7 +5821,7 @@ void SpawnTankBossTurrets(void) {
 void InitTankBoss(NAS *nas) {
     EXTengine *eng;
     subengine *sub;
-    JoeExt *ext;
+    EXTobject_TA *ext;
     u8 *base;
     u8 *model;
 
@@ -5843,7 +5843,7 @@ void InitTankBoss(NAS *nas) {
     sub->flags |= 0x02000000;
     eng->unk5D = 0;
     eng->unk10.y = 0x7D0;
-    ext->unk30 = D_800CB25C;
+    ext->Status = D_800CB25C;
     D_800CB210 = D_800CB25C;
     switch (D_800CB25C) {
     case 1:
@@ -5857,7 +5857,7 @@ void InitTankBoss(NAS *nas) {
         if (!TANK_MODEL_ON(base, 57)) {
             func_8001612C(TANK_MODEL(57), 0);
         }
-        ext->unk28 = 0x5A;
+        ext->Counter = 0x5A;
         D_800CB25C = 0x2C;
         SpawnTankBossTurrets();
         break;
@@ -5872,7 +5872,7 @@ void InitTankBoss(NAS *nas) {
         if (!TANK_MODEL_ON(base, 57)) {
             func_8001612C(TANK_MODEL(57), 0);
         }
-        ext->unk28 = 0x3C;
+        ext->Counter = 0x3C;
         SpawnTankBossTurrets();
         break;
     case 0x3A:
@@ -5886,7 +5886,7 @@ void InitTankBoss(NAS *nas) {
         if (!TANK_MODEL_ON(base, 59)) {
             func_8001612C(TANK_MODEL(59), 0);
         }
-        ext->unk28 = 0x3C;
+        ext->Counter = 0x3C;
         break;
     }
     if (nas->Failure) {
@@ -5895,24 +5895,24 @@ void InitTankBoss(NAS *nas) {
 }
 
 void PlotTankBoss(NAS *nas) {
-    JoeExt *fux;
+    EXTobject_TA *fux;
     EXTengine *eng;
 
     if (D_800CB0F0 != 0) {
         return;
     }
-    fux = (JoeExt *)nas->FUX;
+    fux = (EXTobject_TA *)nas->FUX;
     eng = nas->Engine;
-    switch (fux->unk30) {
+    switch (fux->Status) {
     case 1:
-        if (--fux->unk28 <= 0) {
-            fux->unk30 = 0x2C;
-            fux->unk28 = 0x96;
+        if (--fux->Counter <= 0) {
+            fux->Status = 0x2C;
+            fux->Counter = 0x96;
         }
         break;
     case 0x2C:
-        if (--fux->unk28 <= 0) {
-            fux->unk30 = 0x2D;
+        if (--fux->Counter <= 0) {
+            fux->Status = 0x2D;
             PlaySfx(0x258, &eng->sfx, NULL, 0x1000, 0x1E00, 0);
         }
         break;
@@ -5923,15 +5923,15 @@ void PlotTankBoss(NAS *nas) {
             }
             PlaySfx(0x259, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
             eng->unk10.y = 0;
-            fux->unk30 = 0x2E;
-            fux->unk28 = 0x1E;
+            fux->Status = 0x2E;
+            fux->Counter = 0x1E;
             PlaySfx(0x25B, &eng->sfx, NULL, 0x1000, 0x1E00, 0);
             PlaySfx(0x25D, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         break;
     case 0x2E:
-        if (--fux->unk28 <= 0) {
-            fux->unk30 = 0x2F;
+        if (--fux->Counter <= 0) {
+            fux->Status = 0x2F;
             if (eng->sfx != NULL) {
                 StopSfx(eng->sfx);
             }
@@ -5941,15 +5941,15 @@ void PlotTankBoss(NAS *nas) {
         if (TankBossCrashTurrets[0]->UserInfo.flags == 2 &&
             TankBossCrashTurrets[1]->UserInfo.flags == TankBossCrashTurrets[0]->UserInfo.flags &&
             TankBossCrashTurrets[2]->UserInfo.flags == TankBossCrashTurrets[1]->UserInfo.flags) {
-            fux->unk30 = 0x30;
-            fux->unk28 = 0x2D;
+            fux->Status = 0x30;
+            fux->Counter = 0x2D;
             PlaySfx(0x25A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         }
         break;
     case 0x30:
-        eng->unk10.y += D_800CA954[fux->unk28 & 0xF];
-        if (--fux->unk28 <= 0) {
-            fux->unk30 = 0x31;
+        eng->unk10.y += D_800CA954[fux->Counter & 0xF];
+        if (--fux->Counter <= 0) {
+            fux->Status = 0x31;
         }
         break;
     case 0x31:
@@ -5958,15 +5958,15 @@ void PlotTankBoss(NAS *nas) {
             KillNAS(TankBossCrashTurrets[1]);
             KillNAS(TankBossCrashTurrets[2]);
             eng->unk10.y = 0x2B6;
-            fux->unk30 = 0x32;
-            fux->unk28 = 0x33;
+            fux->Status = 0x32;
+            fux->Counter = 0x33;
             PlaySfx(0x25C, &eng->sfx, NULL, 0x1000, 0x1E00, 0);
             PlaySfx(0x25D, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         break;
     case 0x32:
-        if (--fux->unk28 <= 0) {
-            fux->unk30 = 0x33;
+        if (--fux->Counter <= 0) {
+            fux->Status = 0x33;
             if (eng->sfx != NULL) {
                 StopSfx(eng->sfx);
             }
@@ -5978,15 +5978,15 @@ void PlotTankBoss(NAS *nas) {
             TankBossCortexTurrets[1]->UserInfo.flags == TankBossCortexTurrets[0]->UserInfo.flags &&
             TankBossCortexTurrets[2]->UserInfo.flags == TankBossCortexTurrets[1]->UserInfo.flags &&
             TankBossCortexTurrets[3]->UserInfo.flags == TankBossCortexTurrets[2]->UserInfo.flags) {
-            fux->unk30 = 0x34;
-            fux->unk28 = 0x2D;
+            fux->Status = 0x34;
+            fux->Counter = 0x2D;
             PlaySfx(0x25A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         }
         break;
     case 0x34:
-        eng->unk10.y += D_800CA954[fux->unk28 & 0xF];
-        if (--fux->unk28 <= 0) {
-            fux->unk30 = 0x35;
+        eng->unk10.y += D_800CA954[fux->Counter & 0xF];
+        if (--fux->Counter <= 0) {
+            fux->Status = 0x35;
         }
         break;
     case 0x35:
@@ -5996,15 +5996,15 @@ void PlotTankBoss(NAS *nas) {
             KillNAS(TankBossCortexTurrets[2]);
             KillNAS(TankBossCortexTurrets[3]);
             eng->unk10.y = 0x4BF;
-            fux->unk30 = 0x36;
-            fux->unk28 = 0x3C;
+            fux->Status = 0x36;
+            fux->Counter = 0x3C;
             PlaySfx(0x25C, &eng->sfx, NULL, 0x1000, 0x1E00, 0);
             PlaySfx(0x25D, NULL, NULL, 0x1000, 0x1E00, 0);
         }
         break;
     case 0x36:
-        if (--fux->unk28 <= 0) {
-            fux->unk30 = 0x37;
+        if (--fux->Counter <= 0) {
+            fux->Status = 0x37;
             if (eng->sfx != NULL) {
                 StopSfx(eng->sfx);
             }
@@ -6014,16 +6014,16 @@ void PlotTankBoss(NAS *nas) {
     case 0x37:
         if (TankBossRocketTurrets[0]->UserInfo.flags == 2 &&
             TankBossRocketTurrets[1]->UserInfo.flags == TankBossRocketTurrets[0]->UserInfo.flags) {
-            fux->unk30 = 0x38;
-            fux->unk28 = 0x5A;
+            fux->Status = 0x38;
+            fux->Counter = 0x5A;
             PlaySfx(0x25A, NULL, &eng->unk10, 0x1000, 0x1E00, 0);
         }
         break;
     case 0x38:
-        eng->unk10.y += D_800CA954[fux->unk28 & 0xF];
-        if (--fux->unk28 <= 0) {
-            fux->unk30 = 0x39;
-            fux->unk28 = 0x5A;
+        eng->unk10.y += D_800CA954[fux->Counter & 0xF];
+        if (--fux->Counter <= 0) {
+            fux->Status = 0x39;
+            fux->Counter = 0x5A;
         }
         break;
     case 0x39:
@@ -6032,17 +6032,17 @@ void PlotTankBoss(NAS *nas) {
             KillNAS(TankBossRocketTurrets[1]);
             D_800CB25C = 0x3A;
             D_8005A6C8 = 0;
-            fux->unk28 = 0x5A;
-            fux->unk30 = 0x3A;
+            fux->Counter = 0x5A;
+            fux->Status = 0x3A;
             PlaySfx(0x25D, NULL, NULL, 0x1000, 0x1E00, 0);
             func_80016F54(D_800536CC);
             func_8001612C(D_800536CC + 0x70, 0);
         }
         break;
     case 0x3A:
-        if (--fux->unk28 == 0) {
+        if (--fux->Counter == 0) {
             eng->flags &= ~0x8000;
-            fux->unk30 = 0;
+            fux->Status = 0;
             ResetToBasicWeapon(0);
             if (D_8005A680[0] != 0) {
                 ResetToBasicWeapon(1);
@@ -6055,7 +6055,7 @@ void PlotTankBoss(NAS *nas) {
         }
         break;
     }
-    D_800CB210 = fux->unk30;
+    D_800CB210 = fux->Status;
 }
 
 s32 TankBossTurretFindTarget(EXTengine *eng) {
@@ -6142,7 +6142,7 @@ s32 TankBossTurretFindTarget(EXTengine *eng) {
 
 void TankBossCrashTurretFire(EXTengine *arg0) {
     NAS *shell;
-    PeriscopeShellExt *ext;
+    EXTobject_TA *ext;
     EXTengine *se;
     NAS *n;
     subengine *sub;
@@ -6153,19 +6153,19 @@ void TankBossCrashTurretFire(EXTengine *arg0) {
     if (shell == NULL) {
         return;
     }
-    ext = (PeriscopeShellExt *)shell->FUX;
+    ext = (EXTobject_TA *)shell->FUX;
     se = shell->Engine;
-    ext->unk28 *= 2;
+    ext->Counter *= 2;
     PlaySfx(0x4CE, &se->sfx, NULL, 0x1000, 0x1E00, 0);
     se->unk10.x += -(D_80068BD4[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12;
     se->unk10.z += -(D_80068BD4[(u16)arg0->unk1E & 0xFFF].unk2 * 400) >> 12;
     se->unk1E = arg0->unk1E;
-    ext->vx = -(D_80068BD4[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 58) >> 12;
-    ext->vy = -0x10;
+    ext->SpeedX = -(D_80068BD4[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 58) >> 12;
+    ext->SpeedY = -0x10;
     dz = D_80068BD4[(u16)arg0->unk1E & 0xFFF].unk2;
-    ext->unk30 = 1;
-    ext->unk2C = -1;
-    ext->vz = -(dz * 58) >> 12;
+    ext->Status = 1;
+    ext->Owner = -1;
+    ext->SpeedZ = -(dz * 58) >> 12;
 loop:
     if (se->unk10.z > D_800CB104 + 0x100) {
         se->unk10.z -= 0x10;
@@ -6356,7 +6356,7 @@ void PlotTankBossCrashTurret(NAS *nas) {
 
 void TankBossCortexTurretFire(EXTengine *arg0) {
     NAS *shell;
-    PeriscopeShellExt *ext;
+    EXTobject_TA *ext;
     EXTengine *se;
     NAS *n;
     subengine *sub;
@@ -6367,18 +6367,18 @@ void TankBossCortexTurretFire(EXTengine *arg0) {
     if (shell == NULL) {
         return;
     }
-    ext = (PeriscopeShellExt *)shell->FUX;
-    ext->unk28 = ext->unk28 * 5 / 3;
+    ext = (EXTobject_TA *)shell->FUX;
+    ext->Counter = ext->Counter * 5 / 3;
     se = shell->Engine;
     PlaySfx(0x4CC, &se->sfx, NULL, 0x1000, 0x1E00, 0);
     se->unk10.x += -(D_80068BD4[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 400) >> 12;
     se->unk10.z += -(D_80068BD4[(u16)arg0->unk1E & 0xFFF].unk2 * 400) >> 12;
     se->unk1E = arg0->unk1E;
-    ext->vx = -(D_80068BD4[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 74) >> 12;
+    ext->SpeedX = -(D_80068BD4[(arg0->unk1E - 0x400) & 0xFFF].unk2 * 74) >> 12;
     dz = D_80068BD4[(u16)arg0->unk1E & 0xFFF].unk2;
-    ext->unk30 = 1;
-    ext->unk2C = -1;
-    ext->vz = -(dz * 74) >> 12;
+    ext->Status = 1;
+    ext->Owner = -1;
+    ext->SpeedZ = -(dz * 74) >> 12;
 loop:
     if (se->unk10.z > D_800CB104 + 0x100) {
         se->unk10.z -= 0x10;
@@ -6530,7 +6530,7 @@ void TankBossRocketTurretFire(NAS *nas, EXTengine *eng) {
     s32 a;
     NAS *n;
     NAS *puff;
-    PeriscopeShellExt *fux;
+    EXTobject_TA *fux;
     EXTengine *e;
 
     dir = eng->unk1E;
@@ -6543,16 +6543,16 @@ void TankBossRocketTurretFire(NAS *nas, EXTengine *eng) {
         }
         n = CreateNAS(eng->unk10.x, eng->unk10.y - 0xFA, eng->unk10.z, 0x1302, 0x11);
         if (n != NULL) {
-            PlaySfx(0x522, &n->Engine->sfx, (fux = (PeriscopeShellExt *)n->FUX, (SLONG_XYZ *)NULL), 0x1000, 0x1E00, 0);
+            PlaySfx(0x522, &n->Engine->sfx, (fux = (EXTobject_TA *)n->FUX, (SLONG_XYZ *)NULL), 0x1000, 0x1E00, 0);
             e = n->Engine;
             a = dir - Ovl5fShellAngleOffsets()[i];
             e->unk10.x -= (D_80068BD4[(a - 0x400) & 0xFFF].unk2 * 245) >> 11;
             e->unk10.z -= (D_80068BD4[a & 0xFFF].unk2 * 245) >> 11;
             e->unk1E = eng->unk1E;
-            fux->vx = -(D_80068BD4[(dir - 0x400) & 0xFFF].unk2 * 200) >> 12;
-            fux->vz = -(D_80068BD4[dir & 0xFFF].unk2 * 200) >> 12;
-            fux->unk30 = 1;
-            fux->unk2C = -1;
+            fux->SpeedX = -(D_80068BD4[(dir - 0x400) & 0xFFF].unk2 * 200) >> 12;
+            fux->SpeedZ = -(D_80068BD4[dir & 0xFFF].unk2 * 200) >> 12;
+            fux->Status = 1;
+            fux->Owner = -1;
         }
         puff = Ovl5fSpawnBit1605Nas(&n->Engine->unk10, 7);
         if (puff != NULL) {
@@ -6665,7 +6665,7 @@ void InitMoeJoe(NAS *nas, s32 id) {
     subengine *sub;
     subengine *s;
     subengine *s2;
-    JoeExt *ext;
+    EXTobject_TA *ext;
 
     if (nas->Failure != 0) {
         KillNAS(nas);
@@ -6684,7 +6684,7 @@ void InitMoeJoe(NAS *nas, s32 id) {
     sub->flags |= 0x02000000;
     ext = AddExt(nas, 0x38, 0x10000000);
     nas->FUX = (EXT *)ext;
-    ext->unk28 = 3;
+    ext->Counter = 3;
     func_80018F3C(eng, 2);
     sub = eng->sub;
     s = sub->next;
@@ -6702,17 +6702,17 @@ void InitMoeJoe(NAS *nas, s32 id) {
     s2->flags = (s2->flags & 0xFFFF7FFF) | 0x02000000;
     switch (D_800CB25C) {
     case 1:
-        ext->unk30 = D_800CB25C;
+        ext->Status = D_800CB25C;
         break;
     case 0x2C:
         eng->unk10.y = 0x1001;
         eng->unk10.z = 0x1001;
         sub->unk68 = 0x100;
         sub->flags |= 0x02000000;
-        ext->unk30 = 5;
+        ext->Status = 5;
         break;
     case 0x3A:
-        ext->unk30 = D_800CB25C;
+        ext->Status = D_800CB25C;
         eng->unk10.y = 0x480;
         eng->unk10.z = 0x1001;
         sub->unk68 = 0x100;
@@ -6744,7 +6744,7 @@ void AnimateMoeJoeTurret(s32 player) {
     subengine *sub2;
     NAS *n;
     NAS *puff;
-    PeriscopeShellExt *fux;
+    EXTobject_TA *fux;
     s32 a;
     s32 dx;
     s32 dz;
@@ -6807,11 +6807,11 @@ void AnimateMoeJoeTurret(s32 player) {
                     se->unk10.x += dx >> 12;
                     dz = -(D_80068BD4[(u16)e->unk1E & 0xFFF].unk2 * 250);
                     se->unk10.z += dz >> 12;
-                    fux->vx = dx >> 13;
-                    fux->vy = -0x5B;
-                    fux->vz = dz >> 13;
-                    fux->unk2C = player;
-                    fux->unk30 = 1;
+                    fux->SpeedX = dx >> 13;
+                    fux->SpeedY = -0x5B;
+                    fux->SpeedZ = dz >> 13;
+                    fux->Owner = player;
+                    fux->Status = 1;
                     TA_players[player].MainWeaponRounds--;
                 }
             }
@@ -7478,7 +7478,7 @@ void PlotMoeJoeHero(NAS *nas, s32 id) {
 }
 
 void PlotMoeJoe(NAS *nas, s32 id) {
-    JoeMoeFux *fux;
+    EXTobject_TA *fux;
     EXTengine *eng;
     subengine *sub;
     subengine *s;
@@ -7488,10 +7488,10 @@ void PlotMoeJoe(NAS *nas, s32 id) {
     s32 next;
     s32 z;
 
-    fux = (JoeMoeFux *)nas->FUX;
+    fux = (EXTobject_TA *)nas->FUX;
     eng = nas->Engine;
     sub = eng->sub;
-    if (fux->unk30 == 0x3B) {
+    if (fux->Status == 0x3B) {
         PlotMoeJoeHero(nas, id);
         return;
     }
@@ -7514,13 +7514,13 @@ void PlotMoeJoe(NAS *nas, s32 id) {
         s = sub->next;
         s->flags |= 0x8000;
         s->next->flags |= 0x8000;
-        fux = (JoeMoeFux *)nas->FUX;
-        switch (fux->unk30) {
+        fux = (EXTobject_TA *)nas->FUX;
+        switch (fux->Status) {
         case 4:
             eng->unk10.y -= 0x14;
             if (eng->unk10.y < 0) {
-                fux->unk30 = 0x29;
-                fux->unk28 = 1;
+                fux->Status = 0x29;
+                fux->Counter = 1;
             }
             break;
         case 0x29:
@@ -7540,14 +7540,14 @@ void PlotMoeJoe(NAS *nas, s32 id) {
             }
             if (eng->unk10.z <= 0xF00) {
                 MoeJoeBecomeHero(nas, id);
-                fux->unk30 = 0x3B;
+                fux->Status = 0x3B;
             }
             break;
         }
         return;
     }
     if (D_800CB210 == 0x3A) {
-        fux->unk30 = 4;
+        fux->Status = 4;
         sub->unk6C = D_8005373C;
         eng->unk10.y = 0x480;
         if (id == 0x131E) {
@@ -7585,19 +7585,19 @@ void PlotMoeJoe(NAS *nas, s32 id) {
         next = anim;
         break;
     }
-    switch (fux->unk30) {
+    switch (fux->Status) {
     case 1:
         if (next != 0) {
             anim = 0x4180;
             if (id != 0x131F) {
                 anim = 0x4080;
-                if (fux->unk28 & 1) {
+                if (fux->Counter & 1) {
                     anim = 0x4100;
                 }
             }
-            if (--fux->unk28 <= 0) {
-                fux->unk30 = 0x24;
-                fux->unk28 = 0xD;
+            if (--fux->Counter <= 0) {
+                fux->Status = 0x24;
+                fux->Counter = 0xD;
                 D_800CB0E4 = 0x25E;
                 anim = 0x4000;
                 if (id == 0x131F) {
@@ -7613,8 +7613,8 @@ void PlotMoeJoe(NAS *nas, s32 id) {
             eng->unk1E -= 0x96;
         }
         eng->unk5E = 1;
-        if (--fux->unk28 <= 0) {
-            fux->unk30 = 9;
+        if (--fux->Counter <= 0) {
+            fux->Status = 9;
             if (id == 0x131F) {
                 sub->unk74 = 0x4200;
             } else {
@@ -7630,32 +7630,32 @@ void PlotMoeJoe(NAS *nas, s32 id) {
             eng->unk10.x += 0xD;
         }
         if (eng->unk10.z > 0x1100) {
-            fux->unk30 = 5;
-            fux->unk14 = -0x46;
+            fux->Status = 5;
+            fux->SpeedY = -0x46;
             sub->unk68 = 0x100;
             sub->flags |= 0x02000000;
         }
         break;
     case 5:
-        fux->unk14 += 0xC;
-        eng->unk10.y += fux->unk14;
+        fux->SpeedY += 0xC;
+        eng->unk10.y += fux->SpeedY;
         if (eng->unk10.y > 0x1000) {
             eng->unk1E = 0;
             eng->unk5E = 1;
             eng->unk10.z = D_800CB20C->unk10.z + 0x100;
-            fux->unk30 = 0;
-            fux->unk28 = Random(0x5A) + 0x1E;
+            fux->Status = 0;
+            fux->Counter = Random(0x5A) + 0x1E;
             eng->unk2C.x = 0x14CC;
             eng->unk2C.y = 0x14CC;
             eng->unk2C.z = 0x14CC;
             eng->unk5C = 1;
             if (id == 0x131E) {
                 anim = 0x2028;
-                fux->unk34 = D_800C8F54;
+                fux->pAnimList = D_800C8F54;
                 eng->unk10.x = 0xA00;
             } else {
                 anim = 0x2027;
-                fux->unk34 = D_800C9140;
+                fux->pAnimList = D_800C9140;
                 eng->unk10.x = 0x810;
             }
             m = (ModelRec *)D_800536CC;
@@ -7669,79 +7669,79 @@ void PlotMoeJoe(NAS *nas, s32 id) {
         break;
     case 0:
         eng->unk10.y = D_800CB20C->unk10.y - 0x528;
-        if (--fux->unk28 <= 0) {
-            fux->unk30 = 0x27;
+        if (--fux->Counter <= 0) {
+            fux->Status = 0x27;
             switch (Random(8)) {
             default:
             case 0:
                 if (id == 0x131E) {
-                    fux->unk34 = D_800C8F54;
+                    fux->pAnimList = D_800C8F54;
                     anim = 0x2028;
                 } else {
-                    fux->unk34 = D_800C9140;
+                    fux->pAnimList = D_800C9140;
                     anim = 0x2027;
                 }
                 break;
             case 1:
                 if (id == 0x131E) {
-                    fux->unk34 = D_800C8F68;
+                    fux->pAnimList = D_800C8F68;
                     anim = 0x2028;
                 } else {
-                    fux->unk34 = D_800C9164;
+                    fux->pAnimList = D_800C9164;
                     anim = 0x2027;
                 }
                 break;
             case 2:
                 if (id == 0x131E) {
-                    fux->unk34 = D_800C8FA8;
+                    fux->pAnimList = D_800C8FA8;
                     anim = 0x2028;
                 } else {
-                    fux->unk34 = D_800C91A4;
+                    fux->pAnimList = D_800C91A4;
                     anim = 0x2027;
                 }
                 break;
             case 3:
                 if (id == 0x131E) {
-                    fux->unk34 = D_800C8FE8;
+                    fux->pAnimList = D_800C8FE8;
                     anim = 0x2028;
                 } else {
-                    fux->unk34 = D_800C91E4;
+                    fux->pAnimList = D_800C91E4;
                     anim = 0x2027;
                 }
                 break;
             case 4:
                 if (id == 0x131E) {
-                    fux->unk34 = D_800C9048;
+                    fux->pAnimList = D_800C9048;
                     anim = 0x2028;
                 } else {
-                    fux->unk34 = D_800C9244;
+                    fux->pAnimList = D_800C9244;
                     anim = 0x2027;
                 }
                 break;
             case 5:
                 if (id == 0x131E) {
-                    fux->unk34 = D_800C9080;
+                    fux->pAnimList = D_800C9080;
                     anim = 0x2028;
                 } else {
-                    fux->unk34 = D_800C927C;
+                    fux->pAnimList = D_800C927C;
                     anim = 0x2027;
                 }
                 break;
             case 6:
                 if (id == 0x131E) {
-                    fux->unk34 = D_800C90B8;
+                    fux->pAnimList = D_800C90B8;
                     anim = 0x2028;
                 } else {
-                    fux->unk34 = D_800C92B4;
+                    fux->pAnimList = D_800C92B4;
                     anim = 0x2027;
                 }
                 break;
             case 7:
                 if (id == 0x131E) {
-                    fux->unk34 = D_800C911C;
+                    fux->pAnimList = D_800C911C;
                     anim = 0x2028;
                 } else {
-                    fux->unk34 = D_800C9318;
+                    fux->pAnimList = D_800C9318;
                     anim = 0x2027;
                 }
                 break;
@@ -7752,18 +7752,18 @@ void PlotMoeJoe(NAS *nas, s32 id) {
         break;
     case 0x27:
         eng->unk10.y = D_800CB20C->unk10.y - 0x528;
-        p = fux->unk34;
+        p = fux->pAnimList;
         anim = *p;
         if (D_8004E0D8 & 1) {
-            fux->unk34 = p + 1;
+            fux->pAnimList = p + 1;
         }
         if (anim == 0) {
             anim = 0x2027;
             if (id == 0x131E) {
                 anim = 0x2028;
             }
-            fux->unk30 = 0;
-            fux->unk28 = Random(0x1E) + 0xF;
+            fux->Status = 0;
+            fux->Counter = Random(0x1E) + 0xF;
         }
         break;
     case 0x3A:
@@ -7981,19 +7981,19 @@ void InitTotemTop(NAS *nas) {
 }
 
 void InitTotemPole(NAS *nas) {
-    TotemPoleExt *ext;
+    EXTobject_TA *ext;
     EXTengine *e;
 
     D_800CB218 = nas;
     ext = AddExt(nas, 0x38, 0x10000000);
     if (ext != NULL) {
-        nas->FUX = &ext->ext;
+        nas->FUX = (EXT *)ext;
         if (!(((u16 *)&D_8005A644)[1] & 0x80)) {
-            ext->timer = 0x384;
+            ext->Counter = 0x384;
         } else {
-            ext->timer = 0x96;
+            ext->Counter = 0x96;
         }
-        ext->unk30 = 1;
+        ext->Status = 1;
         e = nas->Engine;
         e->flags = 0;
         D_800CB21C = CreateNAS(e->unk10.x, e->unk10.y - 0x294, e->unk10.z, 0x131B, 0x11);
@@ -8100,12 +8100,12 @@ void InitPeriscope(NAS *nas) {
     subengine *s;
     s32 one;
     void *p;
-    PeriscopeShellExt *ext = AddExt(nas, 0x38, 0x10000000);
+    EXTobject_TA *ext = AddExt(nas, 0x38, 0x10000000);
     if (ext != NULL) {
         nas->FUX = (EXT *)ext;
-        ext->unk28 = 0x12C;
+        ext->Counter = 0x12C;
         one = 1;
-        ext->unk30 = one;
+        ext->Status = one;
         eng = nas->Engine;
         eng->unk5D = 0;
         p = *(void **)D_80058AD0;
@@ -8295,7 +8295,7 @@ void InitMine(NAS *nas) {
 }
 
 void InitRocketTA(NAS *nas) {
-    FlamerBitExt *ext;
+    EXTobject_TA *ext;
     subengine *sub;
 
     ext = AddExt(nas, 0x38, 0x10000000);
@@ -8303,7 +8303,7 @@ void InitRocketTA(NAS *nas) {
         KillNAS(nas);
         return;
     }
-    nas->FUX = &ext->ext;
+    nas->FUX = (EXT *)ext;
     sub = nas->Engine->sub;
     sub->unk6C = D_80053694;
     sub->unk74 = 0x2007;
@@ -8431,7 +8431,7 @@ void InitFlubberTA(NAS *nas) {
 }
 
 void InitFlamerBitTA(NAS *nas) {
-    FlamerBitExt *ext;
+    EXTobject_TA *ext;
     EXTengine *eng;
     subengine *sub;
 
@@ -8440,8 +8440,8 @@ void InitFlamerBitTA(NAS *nas) {
         KillNAS(nas);
         return;
     }
-    nas->FUX = &ext->ext;
-    ext->timer = 0x3F;
+    nas->FUX = (EXT *)ext;
+    ext->Counter = 0x3F;
     eng = nas->Engine;
     eng->unk5D = 1;
     sub = eng->sub;
@@ -8454,7 +8454,7 @@ void InitFlamerBitTA(NAS *nas) {
 }
 
 void InitLaserBitTA(NAS *nas) {
-    FlamerBitExt *ext;
+    EXTobject_TA *ext;
     EXTengine *eng;
     subengine *sub;
 
@@ -8463,8 +8463,8 @@ void InitLaserBitTA(NAS *nas) {
         KillNAS(nas);
         return;
     }
-    nas->FUX = &ext->ext;
-    ext->timer = 0x5A;
+    nas->FUX = (EXT *)ext;
+    ext->Counter = 0x5A;
     eng = nas->Engine;
     sub = eng->sub;
     eng->unk5D = 0;
