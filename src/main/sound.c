@@ -321,7 +321,7 @@ void func_8002B9A4(void) {
         p[1] = -1;
         p += 2;
     }
-    D_800654BC = 0;
+    SfxBankCount = 0;
     VabLoading = NULL;
     SfxBankLoading = NULL;
     D_800654B8 = 0;
@@ -367,7 +367,7 @@ void func_8002BBB4(void) {
     s8 *p;
     s32 i;
 
-    D_800654BC = 0;
+    SfxBankCount = 0;
     p = SfxTable[0];
     for (i = 0; i < 2001; i++) {
         p[0] = -1;
@@ -383,13 +383,13 @@ void func_8002BBEC(void) {
     s32 i;
 
     for (;;) {
-        s32 n = new_var = D_800654BC;
+        s32 n = new_var = SfxBankCount;
         if (n == 0) {
             break;
         }
         n--;
         slot = &SfxBanks[n];
-        D_800654BC = n;
+        SfxBankCount = n;
         SpuIsTransferCompleted(1);
         func_8002ACA0(slot->id, 1);
         SsVabClose(slot->id);
@@ -415,9 +415,9 @@ void func_8002BCB0(s32 *arg0) {
 }
 
 void func_8002BD0C(s32 arg0) {
-    if (D_800654BC < 6) {
-        machine_load_sfx(arg0, &SfxBanks[D_800654BC]);
-        D_800654BC++;
+    if (SfxBankCount < 6) {
+        machine_load_sfx(arg0, &SfxBanks[SfxBankCount]);
+        SfxBankCount++;
     }
 }
 

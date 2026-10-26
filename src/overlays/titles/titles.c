@@ -523,7 +523,7 @@ void TitlesInitLevel(void) {
     GetEngineSlot(1)->sub[6].flags &= ~0x8000;
     GetEngineSlot(1)->sub[7].flags &= ~0x8000;
     GetEngineSlot(1)->sub[3].flags &= ~0x8000;
-    D_80051604 = 0;
+    joypad_idle_count = 0;
     switch (*(s16 *)(g + 0x34)) {
     case 0x28:
         core_process = 0;
@@ -552,8 +552,8 @@ void TitlesInitLevel(void) {
 
 void TitlesCheckIdle(void) {
     s32 f;
-    if (D_80051604 >= 0x385) {
-        D_80051604 = 0;
+    if (joypad_idle_count >= 0x385) {
+        joypad_idle_count = 0;
         set_fade(&ScreenFade, 0x200, 0);
         f = D_8009F654;
         if (f & 1) {
@@ -1353,7 +1353,7 @@ void TitlesSetUp(void) {
     LevelSpecs[5] = 0;
     LevelSpecs[7] = 0;
     LevelSpecs[8] = 0;
-    D_8009F8B4 = TitlesEmptyHook;
+    RenderHook = TitlesEmptyHook;
 }
 
 void InitCharSelector(s32 arg0) {

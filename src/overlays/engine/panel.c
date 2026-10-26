@@ -640,7 +640,7 @@ void func_8007BFA8(void) {
         ((EXTengine **)&Icon)[i]->unk10.x = D_800991E0[D_800991D8[i]][0];
         ((EXTengine **)&Icon)[i]->unk10.y = D_800991E0[D_800991D8[i]][1];
         ((EXTengine **)&Icon)[i]->unk10.z = 0;
-        sub->unk74 = D_80099218[Heroes[i].hero_name];
+        sub->unk74 = IconImage[Heroes[i].hero_name];
         sub = &IconParts[i][1];
         sub->unk6C = InterfaceModel;
         sub->flags = 0;
@@ -673,7 +673,7 @@ void func_8007C170(void) {
         ((EXTengine **)&Icon)[i]->unk10.x = D_800991F0[D_800991D8[i]][0];
         ((EXTengine **)&Icon)[i]->unk10.y = D_800991F0[D_800991D8[i]][1];
         ((EXTengine **)&Icon)[i]->unk10.z = 0;
-        sub->unk74 = D_80099218[Heroes[i].hero_name];
+        sub->unk74 = IconImage[Heroes[i].hero_name];
         sub = &IconParts[i][1];
         sub->unk6C = InterfaceModel;
         sub->flags = 0;

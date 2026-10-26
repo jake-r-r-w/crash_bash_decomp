@@ -151,7 +151,7 @@ void func_8002C894(void) {
 
 INCLUDE_RODATA("asm/nonmatchings/main/card", D_8004CD8C);
 
-INCLUDE_RODATA("asm/nonmatchings/main/card", D_8004CDAC);
+INCLUDE_RODATA("asm/nonmatchings/main/card", CardFileName);
 
 void func_8002C97C(void) {
     static const char all[] = "*";
@@ -222,7 +222,7 @@ l2_03:
     }
     if (McFindSave() != NULL) {
         McClearSave();
-        MemCardReadFile(CardChannel, D_8004CDAC, (u32 *)CardBuffer, 0, 0x2000);
+        MemCardReadFile(CardChannel, CardFileName, (u32 *)CardBuffer, 0, 0x2000);
         CardCommand = 7;
         goto lend;
     }
@@ -254,13 +254,13 @@ l3:
         CardCommand = 6;
         return;
     case 1:
-        if (!(CardStatus & 0x10) && MemCardCreateFile(CardChannel, D_8004CDAC, 1) != 0) {
+        if (!(CardStatus & 0x10) && MemCardCreateFile(CardChannel, CardFileName, 1) != 0) {
             CardCommand = 6;
             CardStatus |= 0x100;
         }
         if (CardCommand != 6) {
             func_8002C5BC();
-            MemCardWriteFile(CardChannel, D_8004CDAC, (u32 *)CardBuffer, 0, 0x2000);
+            MemCardWriteFile(CardChannel, CardFileName, (u32 *)CardBuffer, 0, 0x2000);
             CardCommand = 5;
             return;
         }
@@ -383,7 +383,7 @@ SizeEntry *func_8002D1D4(void) {
     i--;
     if (i != -1) {
         do {
-            if (strcmp(D_8004CDAC, (char *)p) == 0) {
+            if (strcmp(CardFileName, (char *)p) == 0) {
                 return p;
             }
             i--;

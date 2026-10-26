@@ -579,7 +579,7 @@ void NoxStartPhase1(void)
   HeroHooks.unk18 = N2OInitShadow;
   HeroHooks.unk1C = N2OUpdateShadow;
  ;
-  D_8009F8B4 = func_80093038;
+  RenderHook = func_80093038;
   N2OInitBoss();
 }
 
@@ -2421,7 +2421,7 @@ void NoxInit(void) {
     NoxSpeedScale = 0x100;
     NoxBossDead = 0;
     NoxStarted = 0;
-    D_8009F8B4 = (void (*)(void))NoxInitCamera;
+    RenderHook = (void (*)(void))NoxInitCamera;
     arg = *(u8 **)MapScene;
     NoxLasers = NULL;
     func_80095258(arg);

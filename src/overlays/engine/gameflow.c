@@ -791,10 +791,10 @@ void func_80090310(u8 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
         e->sub[1].unk08 = 0x1E;
         return;
     }
-    e->sub[3].unk74 = D_80099218[arg0[0x4C]];
-    e->sub[4].unk74 = D_80099218[arg0[0x4D]];
-    e->sub[5].unk74 = D_80099218[arg0[0x4E]];
-    e->sub[6].unk74 = D_80099218[arg0[0x4F]];
+    e->sub[3].unk74 = IconImage[arg0[0x4C]];
+    e->sub[4].unk74 = IconImage[arg0[0x4D]];
+    e->sub[5].unk74 = IconImage[arg0[0x4E]];
+    e->sub[6].unk74 = IconImage[arg0[0x4F]];
     e->sub[1].unk6C = arg0 + 0x18;
     e->sub[1].unk04 = 0xC;
     e->sub[1].unk08 = 2;
@@ -1684,7 +1684,7 @@ void func_800928E8(void) {
     u8 *g;
 
     func_800274FC((s32 *)cfg);
-    ((void (*)(u8 *))func_800276A4)(D_800637A8 == 0 ? D_8005B72C : D_8005B744);
+    ((void (*)(u8 *))func_800276A4)(D_800637A8 == 0 ? vmode_512_ntsc : D_8005B744);
     g = GameInfo;
     *(s32 *)(g + 4) = 0x80000000;
     func_80028774(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
@@ -1822,7 +1822,7 @@ void func_80092E40(void) {
 }
 
 void func_80092E94(void) {
-    D_8009F8B4();
+    RenderHook();
     FadeAmount = ScreenFade.amount;
     func_80082590();
     func_8001E898(&MenuProcessControl);

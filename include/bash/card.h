@@ -70,7 +70,7 @@ static inline SizeEntry *McFindSave(void) {
     i--;
     if (i != -1) {
         do {
-            if (strcmp(D_8004CDAC, (char *)p) == 0) {
+            if (strcmp(CardFileName, (char *)p) == 0) {
                 return p;
             }
             i--;

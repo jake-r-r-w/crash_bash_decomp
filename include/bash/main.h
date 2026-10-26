@@ -889,11 +889,11 @@ typedef struct {
     u8 unk1C[0xC];
 } SizeEntry;
 extern SizeEntry D_800675D4[];
-extern char D_8004CDAC[];
+extern char CardFileName[];
 extern s32 D_8006782C;
 extern s32 D_80067830;
 
-/* The directory entry named D_8004CDAC, or NULL (func_8002D1D4). */
+/* The directory entry named CardFileName, or NULL (func_8002D1D4). */
 
 /* Clears the save's slots and flags and re-sums it (func_8002D294). */
 
@@ -921,11 +921,11 @@ extern NAS *D_8005AA9C;
 extern void *HeadOfMissiles;            /* tail of the HeadOfObjects list */
 extern void *D_8005AA30;            /* tail of the HeadOfSolids list */
 extern s32 VelocityCalc;
-extern s32 D_8005B5BC[16][2];       /* entries 1..15 cleared by func_80026D9C */
+extern s32 ACMD[16][2];       /* entries 1..15 cleared by func_80026D9C */
 extern s32 PadCount;
-extern s32 FirstPad;            /* first pad with flag 1 set, or -1 */
+extern s32 first_joypad;            /* first pad with flag 1 set, or -1 */
 extern s32 PadRunEnd;            /* pads 0..n-1 all have flag 1 */
-extern s32 D_80051604;            /* frames with no button down */
+extern s32 joypad_idle_count;            /* frames with no button down */
 extern u8 D_80063A90[2][0x34];    /* PadInitMtap buffers */
 extern u8 D_80063AC4[0x34];       /* D_80063A90[1] */
 extern PadState Pads[8];
@@ -971,7 +971,7 @@ extern s32 D_8004E104;            /* func_80011410: free bytes */
 extern s32 D_8004E108;            /* func_80011410: free blocks */
 extern s32 DatIndex[];         /* func_80012D80: 8-byte entries */
 extern s32 D_8004E10C;            /* func_80011410: largest free block, bytes */
-extern s32 D_800654BC;            /* slots of SfxBanks in use */
+extern s32 SfxBankCount;            /* slots of SfxBanks in use */
 extern char D_800654CC[];
 extern s32 D_8005A608;
 extern u8 GameInfo[];
@@ -1060,7 +1060,7 @@ void func_80034C4C(s32, s32);
 extern u8 D_8006EA08;
 extern CdlLOC D_8006EA10;
 void func_80034AEC(void);
-extern NASTrigger *D_8005AA48;
+extern NASTrigger *HeadOfTriggers;
 extern s32 D_8005AA4C;
 extern void (*D_8005AA84)(void);
 extern void *D_80058B78;
@@ -1355,7 +1355,7 @@ typedef struct EmitPart {
 extern NAS *NASFreeList;
 extern u16 FirstNas;            /* first pool slot func_80026D08 frees */
 extern u16 D_8005AA12;            /* pool slot count */
-extern u16 D_8005AA14;            /* pool slots in use (func_80026FCC kills them all) */
+extern u16 NasPoolUsed;            /* pool slots in use (func_80026FCC kills them all) */
 extern NAS *NasPool;           /* NAS pool */
 extern NAS NASTemplate;            /* copied over each spawned NAS */
 extern EXTengine EngineTemplate;   /* copied over each new engine */

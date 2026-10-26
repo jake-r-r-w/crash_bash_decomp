@@ -357,6 +357,14 @@ The 4 names the repo gave itself are replaced by the originals
   they place no file inside the engine (ARCHITECTURE.md, Files inside the
   engine).
 
+**Placed by distance (2026-10-26).** A global the matched code never references can still be
+placed: one file's globals keep their order and gaps between the demo and retail, so its
+distance from a placed neighbour in the same module gives its retail address. Taken where the
+result fits retail's uses of that label: `first_joypad` and `joypad_idle_count` (from
+`screen_aspect`), `ACMD` (the 16 animation command handlers, from `sysfont_dbase`),
+`vmode_512_ntsc` (from `cdb`), `IconImage` (the per-hero table, from `HealthIconPos`). The
+rest of the candidates land on labels nothing references yet.
+
 **Left.**
 - `cam_init(camera_info_tag *)`: the camera globals are byte arrays seen
   through several structs (CamView, EngCam, ...); merge them first.

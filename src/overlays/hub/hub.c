@@ -285,7 +285,7 @@ void HUBSetUp(void) {
     }
     LevelSpecs[7] = 0;
     LevelSpecs[8] = 0;
-    D_8009F8B4 = HubRender;
+    RenderHook = HubRender;
 }
 
 /* data, in address order */

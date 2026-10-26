@@ -545,7 +545,7 @@ void InitialiseBASH(void) {
         BashSetCrateMix(8, 8, 0xA, 0xC, 0xA, 3, 3, 0, 0);
         BashDropFirstCrates();
         func_80095258(*(u8 **)MapScene);
-        D_8009F8B4 = BashDrawView;
+        RenderHook = BashDrawView;
         World_floor_level = 0;
         break;
     }

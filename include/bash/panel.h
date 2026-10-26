@@ -72,7 +72,7 @@ extern subengine IconParts[4][7];
 extern u16 D_800991D8[4];
 extern s16 D_800991E0[][2];
 extern s16 D_800991F0[][2];
-extern u16 D_80099218[];
+extern u16 IconImage[];
 typedef struct { s16 x, y; } EngXY;
 extern EngXY D_80099240[4];
 

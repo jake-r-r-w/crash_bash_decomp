@@ -101,7 +101,7 @@ void func_80093588(void) {
     } else {
         func_80016CA0(LoadingModel);
     }
-    D_8009F8B4 = func_80093038;
+    RenderHook = func_80093038;
     cam_init(MainCamera);
     cam_init(MainGfxCamera);
     cam_init((u8 *)&D_8009F7EC);
@@ -143,7 +143,7 @@ void func_800936C4(void) {
         cfg = &D_8009F96C;
     }
     func_800274FC((s32 *)cfg);
-    ((void (*)(u8 *))func_800276A4)(D_800637A8 == 0 ? D_8005B72C : D_8005B744);
+    ((void (*)(u8 *))func_800276A4)(D_800637A8 == 0 ? vmode_512_ntsc : D_8005B744);
     GameInfo[0x60] = 0;
     GameInfo[0x61] = 0;
     func_80028774(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
@@ -589,7 +589,7 @@ void func_80094754(void) {
     func_80012E54();
     cfg = &D_800A0314;
     func_800274FC((s32 *)cfg);
-    ((void (*)(u8 *))func_800276A4)(D_800637A8 == 0 ? D_8005B72C : D_8005B744);
+    ((void (*)(u8 *))func_800276A4)(D_800637A8 == 0 ? vmode_512_ntsc : D_8005B744);
     func_80028774(cfg->areas, cfg->pool, cfg->npool, cfg->nbuf);
     func_80017164(cfg->pools);
     func_800170D4();
@@ -1056,7 +1056,7 @@ void func_800952F8(subengine *sub, s32 *recs) {
                 s->z = rec->z;
                 s->unk6C = (s32)InterfaceModel;
                 {
-                    u16 *tbl = D_80099218;
+                    u16 *tbl = IconImage;
                     s32 name = Heroes[rec->unk1E].hero_name;
                     s->unk74 = tbl[name];
                 }

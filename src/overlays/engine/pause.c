@@ -409,7 +409,7 @@ found:
             }
             break;
         case 0x02000000:
-            if (D_80051604 <= 0) {
+            if (joypad_idle_count <= 0) {
                 PSV->unk14 = 0;
             }
             ret = 1;

@@ -2443,12 +2443,12 @@ void func_800138A4(void) {
     pad = Pads;
     any = 0;
     PadRunEnd = 0;
-    FirstPad = -1;
+    first_joypad = -1;
     for (i = 0; i < 8; pad++, i++) {
         func_800136BC(pad);
         if (pad->unk0 & 1) {
-            if (FirstPad < 0) {
-                FirstPad = i;
+            if (first_joypad < 0) {
+                first_joypad = i;
             }
             if (PadRunEnd == i) {
                 PadRunEnd = i + 1;
@@ -2459,9 +2459,9 @@ void func_800138A4(void) {
         }
     }
     if (any != 0) {
-        D_80051604 = 0;
+        joypad_idle_count = 0;
     } else {
-        D_80051604++;
+        joypad_idle_count++;
     }
 }
 
@@ -2573,8 +2573,8 @@ void func_80013CA4(void) {
         *(s32 *)&pad->unk2A[0x30 - 0x2A] = 0;
         pad++;
     } while (--i != -1);
-    FirstPad = -1;
-    D_80051604 = 0;
+    first_joypad = -1;
+    joypad_idle_count = 0;
 }
 
 void func_80013CFC(s32 pad, u8 *out) {

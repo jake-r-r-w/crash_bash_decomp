@@ -471,7 +471,10 @@ Newest first, a few lines each. Details are in the commits.
   `tools/scripts/model_slots.py`); then 15 more (`GameCheats`, `GameLanguage`,
   `HeroKeepInBoundsHook`, `WarpRooms`, `MapPoints`, ...), the pads' fields (`PadState.held` / `pressed`: `D_80051380` was `Pads[0].pressed`), the
   victory sequence (`WinSeqTimer` ..) and the clear pause words; 3584 uses of 914 names
-  left (after a fifth batch: `DatIndex`, `NasPool`, `NextGameMode`, the viewports, `CupTable`,
+  left (after a sixth batch: the Euro demo's unplaced globals placed by their distance from a
+  placed neighbour, PROTOTYPES.md: `first_joypad`, `joypad_idle_count`, `ACMD`, `IconImage`,
+  `vmode_512_ntsc`; and `NasPoolUsed`, `SfxBankCount`, `RenderHook`, `HeadOfTriggers` ..;
+  before it a fifth batch: `DatIndex`, `NasPool`, `NextGameMode`, the viewports, `CupTable`,
   the CD and card words, and the labels inside `Heroes` as fields). The hero action ids, the victory sequence and the pause words are separate
   globals, not structs: nothing takes their run's address or indexes across it.
   Gotcha: a label inside an array of structs may not become a field everywhere: in Tank,

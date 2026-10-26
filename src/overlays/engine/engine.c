@@ -21,11 +21,11 @@ void InitialiseNasSystem(void) {
     }
     SetNasDefaults();
     Init_Panel();
-    NasPool = (NAS *)func_80011654(D_8005AA14 * 0x70, &MainHeap);
-    D_8005AA20 = (u8 *)NasPool + (D_8005AA14 * 0x70 - 0x70);
-    D_8005AA40 = (EngObj **)func_80011654(D_8005AA14 * 4, &MainHeap);
+    NasPool = (NAS *)func_80011654(NasPoolUsed * 0x70, &MainHeap);
+    D_8005AA20 = (u8 *)NasPool + (NasPoolUsed * 0x70 - 0x70);
+    D_8005AA40 = (EngObj **)func_80011654(NasPoolUsed * 4, &MainHeap);
     *D_8005AA40 = NULL;
-    p = func_80011654(D_8005AA14 * 4, &MainHeap);
+    p = func_80011654(NasPoolUsed * 4, &MainHeap);
     D_8005AA44 = p;
     *(s32 *)p = 0;
     func_80026308();
@@ -851,7 +851,7 @@ void func_8007AB8C(void) {
 
 void func_8007ABC4(void) {
     GlobalNAStatus = 0;
-    D_8005AA48 = 0;
+    HeadOfTriggers = 0;
     func_80024AD8();
     func_80026ECC();
     func_80026D9C();

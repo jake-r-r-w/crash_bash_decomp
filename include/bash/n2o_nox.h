@@ -137,7 +137,7 @@ extern u8 *NoxLasers;
 extern NAS *NoxCameraNas;
 extern NAS *NoxCameraNasB;
 extern s32 NoxSpeedScale;
-extern void (*D_8009F8B4)(void);
+extern void (*RenderHook)(void);
 
 typedef struct MineModel {
     /* 0x00 */ u8 pad00[0x6C];

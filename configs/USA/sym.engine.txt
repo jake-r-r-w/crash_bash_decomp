@@ -151,3 +151,5 @@ MainViewport = 0x8009F67C;
 MainGfxCamera = 0x8009F734;
 HitSfx = 0x8009E424;
 CupTable = 0x8009E7A0;
+IconImage = 0x80099218;
+RenderHook = 0x8009F8B4;

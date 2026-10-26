@@ -419,7 +419,7 @@ s32 func_8002DE2C(s32 arg0) {
     s32 off;
 
     limit = D_8006783C[arg0 * 4 + 3];
-    *D_80067874 = 1;
+    *CdRegIndex = 1;
     t = *D_80067880 & 7;
     if (t != (*D_80067880 & 7)) {
         return 0;
@@ -428,7 +428,7 @@ s32 func_8002DE2C(s32 arg0) {
     if ((u8)n != 0) {
         i = 0;
         D_80067898 += (u8)n;
-        *D_80067874 = 1;
+        *CdRegIndex = 1;
         *D_80067880 = 7;
         do {
             *(s32 *)0 = i;
@@ -443,7 +443,7 @@ s32 func_8002DE2C(s32 arg0) {
 
             CdResult[0] = *src;
             CdResult[1] = *src;
-            *D_80067874 = 1;
+            *CdRegIndex = 1;
             *D_8006787C = 0x1F;
             if (!(CdResult[0] & 0x10)) {
                 return -1;
@@ -458,7 +458,7 @@ s32 func_8002DE2C(s32 arg0) {
                 t++;
             } while (t < D_8006783C[off + 2]);
         }
-        *D_80067874 = 1;
+        *CdRegIndex = 1;
         *D_8006787C = 0x1F;
         if (arg0 == 10 || (t = CdResult[0], t &= 0x10, !t)) {
             return 1;
@@ -473,15 +473,15 @@ void func_8002E000(s32 arg0) {
     s32 off;
 
     i = 0;
-    *D_80067874 = 1;
+    *CdRegIndex = 1;
     *D_80067880 = 7;
     do {
         *(s32 *)0 = i;
         i++;
     } while (i < 4);
-    *D_80067874 = 1;
+    *CdRegIndex = 1;
     *D_8006787C = 0x18;
-    *D_80067874 = 0;
+    *CdRegIndex = 0;
     off = arg0 * 4;
     i = 0;
     if (D_8006783C[off + 1] != 0) {
@@ -490,6 +490,6 @@ void func_8002E000(s32 arg0) {
             i++;
         } while (i < D_8006783C[off + 1]);
     }
-    *D_80067874 = 0;
+    *CdRegIndex = 0;
     *D_80067878 = D_8006783C[arg0 * 4];
 }

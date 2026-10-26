@@ -492,7 +492,7 @@ void func_800235BC(ArenaDef *arg0) {
     }
     if (e != NULL) {
         FirstNas = e->unk4 + 4;
-        D_8005AA12 = D_8005AA14 = e->unk2 + 4;
+        D_8005AA12 = NasPoolUsed = e->unk2 + 4;
         D_8005AA50 = e->unk6 << 10;
         D_8005AA54 = e->unk8;
         D_8005A5E4 = e->unk10;
@@ -1127,16 +1127,16 @@ void func_80024AD8(void) {
     if ((D_8005AA4C = (*(s32 *)MapScene != 0) ? **(s32 **)((u8 *)MapScene + 0x30) : 0) == 0) {
         return;
     }
-    if (D_8005AA48 == NULL) {
-        D_8005AA48 = (NASTrigger *)func_80011654(D_8005AA4C * sizeof(NASTrigger), &MainHeap);
+    if (HeadOfTriggers == NULL) {
+        HeadOfTriggers = (NASTrigger *)func_80011654(D_8005AA4C * sizeof(NASTrigger), &MainHeap);
     }
-    t = D_8005AA48;
+    t = HeadOfTriggers;
     if (t != NULL) {
     for (i = 0; i < 32; i++) {
         MapPoints[i].pos.x = MapPoints[i].pos.y = MapPoints[i].pos.z = 0;
         MapPoints[i].rot.x = MapPoints[i].rot.y = MapPoints[i].rot.z = 0;
     }
-    trig = D_8005AA48;
+    trig = HeadOfTriggers;
     for (i = 0; i < D_8005AA4C; i++, trig++) {
         src = (MapTrigRec *)(*(u8 **)((u8 *)MapScene + 0x30) + 4) + i;
         info = (MapTrigInfo *)((u8 *)src + ((src->info & ~3) + 0xC));
@@ -1166,7 +1166,7 @@ void func_80024AD8(void) {
         }
     }
     if (D_8005AA88 != NULL) {
-        D_8005AA88(D_8005AA48, D_8005AA4C);
+        D_8005AA88(HeadOfTriggers, D_8005AA4C);
     }
     } else {
         D_8005AA4C = 0;
@@ -1407,7 +1407,7 @@ s16 func_800251A8(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) {
                     goto lnext;
                 ldef:
                     i = frame >> 8;
-                    fn = (void (*)(NAS *, EXTanimator *, s16))D_8005B5BC[i & 0xF][0];
+                    fn = (void (*)(NAS *, EXTanimator *, s16))ACMD[i & 0xF][0];
                     if (fn != NULL) {
                         fn(nas, anim, frame);
                     }
@@ -1443,7 +1443,7 @@ s16 func_80025534(NAS *nas, EXTengine *eng, subengine *sub, EXTanimator *anim) {
     if (--anim->Aspeed < 0) {
         t = tbl;
         vol = 0x1E00;
-        hooks = D_8005B5BC;
+        hooks = ACMD;
         do {
             anim->Aindex++;
             cmd = ((AnimStep *)anim->Atable)[anim->Aindex].cmd;
@@ -1824,7 +1824,7 @@ void func_8002617C(void) {
     s32 i;
     NASTrigger *trig;
 
-    trig = D_8005AA48;
+    trig = HeadOfTriggers;
     if (D_8005AA84 != NULL) {
         D_8005AA84();
     }
@@ -2300,8 +2300,8 @@ void func_80026D9C(void) {
     VelocityCalc = 1;
     func_80026D08();
     for (i = 1; i < 16; i++) {
-        D_8005B5BC[i][0] = 0;
-        D_8005B5BC[i][1] = 0;
+        ACMD[i][0] = 0;
+        ACMD[i][1] = 0;
     }
 }
 
@@ -2311,7 +2311,7 @@ void func_80026E2C(void) {
 
     i = FirstNas;
     for (;;) {
-        if (i < D_8005AA14) {
+        if (i < NasPoolUsed) {
             NasPool[i] = NASTemplate;
             i++;
         } else {
@@ -2326,7 +2326,7 @@ void func_80026ECC(void) {
 
     i = 0;
     for (;;) {
-        if (i >= D_8005AA14) {
+        if (i >= NasPoolUsed) {
             return;
         }
         NasPool[i] = NASTemplate;
@@ -2337,7 +2337,7 @@ void func_80026ECC(void) {
 void func_80026F48(void) {
     s32 i;
 
-    for (i = FirstNas; i < D_8005AA14; i++) {
+    for (i = FirstNas; i < NasPoolUsed; i++) {
         KillNAS(&NasPool[i]);
     }
 }
@@ -2345,7 +2345,7 @@ void func_80026F48(void) {
 void func_80026FCC(void) {
     s32 i;
 
-    for (i = 0; i < D_8005AA14; i++) {
+    for (i = 0; i < NasPoolUsed; i++) {
         KillNAS(&NasPool[i]);
     }
 }

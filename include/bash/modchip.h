@@ -13,7 +13,7 @@ void func_8002E000(s32 arg0);
 
 /* CD command table, 4 bytes per command: command byte, parameter count, pad */
 extern u8 D_8006783C[];
-extern volatile u8 *D_80067874; /* CD index/status register */
+extern volatile u8 *CdRegIndex; /* CD index/status register */
 extern volatile u8 *D_80067878; /* CD command register */
 extern volatile u8 *D_8006787C; /* CD parameter FIFO */
 extern volatile u8 *D_80067880; /* CD interrupt flag register */
