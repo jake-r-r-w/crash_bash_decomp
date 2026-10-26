@@ -86,6 +86,8 @@ steps), then [CONTRIBUTING.md](CONTRIBUTING.md) and
   the Makefile), so the overlays link before the engine.
   `sched`, `jtrace`, `trace`, `regions` and `vars` read a parked function's C under
   `#ifdef NON_MATCHING` (built apart, with `-DNON_MATCHING`).
+- Taking an overlay to source-only (Phase 4): follow
+  [docs/OVERLAY_RECIPE.md](docs/OVERLAY_RECIPE.md), written from the Tank pilot.
 - At the end of every session, update `docs/AGENT_LOG.md`: Current state,
   Next and Open leads, any new gotcha, and one short entry at the top of its
   Session log. Matching idioms go in the Diff patterns table in

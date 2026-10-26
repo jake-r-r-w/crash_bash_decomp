@@ -679,7 +679,9 @@ signature alone is not enough.
   tables per arena that `TA_PreInitLevel` sets (`Tank<Arena>AiSkill`, its
   `Alt` when `D_8005A680[0]` is set, `AiTeamSkill`, and `AiBotTweak` /
   `AiHumanTweak` / `AiHumanRoundTweak` by the player byte `+0x5C`, set for
-  a computer player).
+  a computer player). The leak's `TANKSpecifics` (a `LevSpec`) is not in
+  this build: `TA_SetUp` writes the hooks into the exe's `LevSpec` at
+  `0x8005AA70` one field at a time.
 - **Pogo hero states** (ovl60, actions 0x39-0x3F): 0x39 Idle (`pogo_idle` /
   `pogo_quick_idle`), 0x3A Pogo (the bounce; back to Idle), 0x3B Dazed
   (`pogo_dazed`, `hero_frozen` 10), 0x3C Winner (the engine's winner calls),

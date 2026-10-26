@@ -16,17 +16,15 @@ update.
 Preparation goes in the phase that first needs it. When later work turns up
 something new to do, add it to the phase it blocks, not to an earlier one.
 
-## Current focus: the Tank pilot
+## Current focus: every slot overlay the same way
 
 Every game function matches (2026-10-26), so what is left is what makes the
 source source-only: data as C, names and types, and the proof that the code
-works as code, a shifted build that still plays. Phase 3 does all of it for
-one overlay, Tank (`ovl5f`), end to end, and builds the tooling on the way.
-Tank suits a pilot: it is a slot overlay, so it can move without moving the
-engine or the exe; its header leaked, so much of it is already named; and
-it is small (its rodata is a few strings, its data about 10 KB). Each tool
-and recipe the pilot needs is written up, so that Phase 4 repeats it overlay
-by overlay and Phase 5 does the same for the engine and `main.exe`.
+works as code, a shifted build that still plays. Phase 3 did all of it for
+one overlay, Tank (`ovl5f`), end to end, and built the tooling on the way
+(finished 2026-10-26). Phase 4 now repeats it overlay by overlay with the
+recipe in [OVERLAY_RECIPE.md](OVERLAY_RECIPE.md), the other leaked
+minigames first, and Phase 5 does the same for the engine and `main.exe`.
 
 Any build of ours can be played: `tools/dk make disc` packs `build/main.exe`
 and the overlays into `build/CrashBash.bin`/`.cue`, which boots in an
@@ -180,9 +178,9 @@ retail does. The recipe is written up for Phase 4.
   Tank.
 - [x] Tank's data and bss as C (`asm/data/overlays/ovl5f/`): every pointer
   a symbol, every table typed with the struct the naming found. Done
-  2026-10-26: all 9.9 KB are C in `ovl5f.c`; most tables are still typed by
-  their placeholder declarations (`s32[]`, `u8[]`), retyped as they're
-  understood.
+  2026-10-26: all 9.9 KB are C in `ovl5f.c`, the structured tables retyped
+  with the naming (`PreMap`, `WWInf`, `hero_seq`, `file_group_load_info`,
+  `shell_setup`, `u16` AI tables); lists of ids and frames stay `s32[]`.
 - [x] Tank's asset files extract: list the `CRASHBSH.DAT` entries its
   `file_group_TANK*` groups load and check each decodes (docs/ASSETS.md); a
   format still kept as bytes gets decoded here. Done 2026-10-26: every DAT
@@ -219,12 +217,31 @@ retail does. The recipe is written up for Phase 4.
   test route). It relies on `shift.py`'s stopgap for the engine's asm data
   (the per-character hero sequence tables, the hero mode table, the
   per-world record), until Phase 5 makes that data C.
-- [ ] Write the recipe up (data to C, naming, the AST table, the shift
+- [x] Settle `tank.h`: every declaration is defined by a built unit but
+  `TANKSpecifics`, which is not in this build (`TA_SetUp` fills the exe's
+  `LevSpec` at `0x8005AA70` field by field instead; ARCHITECTURE.md, Tank's
+  arenas and data). Done 2026-10-26; a stale alias of ours (`D_800CAD50`, at
+  `TA_players`) is gone.
+- [x] Words nothing reads, checked on the other discs: Tank's seven
+  never-read bss words were mapped into each prototype and demo disc's Tank
+  through `TA_InitLevel`, and no build reads them, so they are
+  `TankUnused*` (2026-10-26).
+- [x] The dashboard measures what the pilot works on: its map has four
+  tabs (Game code, Functions named, Data in C, Data named), a C file's data
+  is cut at its objects, a switch's jump table shows as its function's
+  (`PlotTotemBit switch table`), and the engine's slot image is counted
+  apart from the data. Done 2026-10-26; Tank shows all done in every tab.
+- [x] What the shift test needed: a completed save card in place of the
+  cheat word, and a way to trace a crash when the emulator goes down
+  (RetroArch's network commands, the BIOS's saved registers; PLAYING.md).
+  Done 2026-10-26.
+- [x] Write the recipe up (data to C, naming, the AST table, the shift
   test) with what the pilot learned, so each Phase 4 overlay follows it.
+  Done 2026-10-26: [OVERLAY_RECIPE.md](OVERLAY_RECIPE.md).
 
 ## Phase 4 - Every slot overlay the same way
 
-One at a time, with Phase 3's recipe: the other leaked minigames first,
+One at a time, with Phase 3's recipe ([OVERLAY_RECIPE.md](OVERLAY_RECIPE.md)): the other leaked minigames first,
 since their headers name most of them, then the rest, starting with code
 shared or near-identical between minigames.
 

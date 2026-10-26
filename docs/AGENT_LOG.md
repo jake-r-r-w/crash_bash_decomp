@@ -19,13 +19,12 @@ leads**, add any new gotcha, and add one short entry at the top of the
   `make check` and `make disc-check` OK. Live figures: `decomp.py progress`
   / `docs/index.html`.
 - [ROADMAP.md](ROADMAP.md) (restructured 2026-10-26): Phase 1 (types and
-  names) and Phase 2 (matching) are done. Phase 3
-  is the **Tank pilot**: `ovl5f` all the way to source-only (data and
-  rodata as C, named, typed) and shift-tested, building the tools and the
-  recipe; Phase 4 repeats it per slot overlay, Phase 5 does the engine and
-  `main.exe`. Figures (`progress`, 2026-10-26): 804 of 2537 functions
-  named (all of Tank's), 2317 typed, 5.25% of the data is C; Tank's pilot
-  is at 10 of 11 (the recipe write-up is left).
+  names), Phase 2 (matching) and Phase 3 (the **Tank pilot**: `ovl5f`
+  source-only, named, typed and shift-tested) are done. Phase 4 repeats
+  the pilot per slot overlay with [OVERLAY_RECIPE.md](OVERLAY_RECIPE.md);
+  Phase 5 does the engine and `main.exe`. Figures (`progress`,
+  2026-10-26): 804 of 2537 functions named (all of Tank's), 2317 typed,
+  5.25% of the data is C, Tank's data all named.
 - Matches are C only, natural C first (CONVENTIONS.md, Matching rules):
   steering C counts as matched, inline asm is refused by the gate. One
   recorded exception (2026-10-26): `draw_verts` (`func_800193A8`,
@@ -58,108 +57,11 @@ leads**, add any new gotcha, and add one short entry at the top of the
 
 ## Next
 
-The Tank pilot (ROADMAP.md, Phase 3), in this order:
-
-1. **Names and types** (first: the data's types come from the code that
-   reads it). **Done 2026-10-26**: every function, and every
-   global something reads (Session log). What follows was written before. Names: all 71 of Tank's `func_` functions named on 2026-10-26
-   (level callbacks, bot AI, hero damage and movement, weapons, boss
-   turrets, totems, Moe and Joe, the map grid and object lists); left are
-   three empty stubs (`func_800C69BC`, `func_800C831C`, `func_800C83D0`)
-   and four unclear ones (`func_800C6C30`, `func_800C7E68`/`func_800C7EB0`,
-   hero action `0x6F`; `func_800C8120`, action `0x70` and `D_800CB0F0`).
-   Types (2026-10-26): 24 of `ovl5f.h`'s 33 stand-in structs are gone.
-   Every object extension is `EXTobject_TA` (all are `AddExt(nas, 0x38,
-   ...)`), the bot state `TA_Bot`, the puffs' `EXTscriptdata`, and the
-   rest were views of `NAS`, `EXTengine`, `subengine` and `TA_player`.
-   Left: `Ovl5fModeView`/`GameView`/`SetupView`, Tank's views of the
-   game-state struct `D_8005A614` (declared `u8[]` everywhere; type it
-   project-wide, Phase 5), `Ovl5fCam` and `Ovl5fScreen` (engine globals' views: merge with the other camera views,
-   PROTOTYPES.md Left), and the Tank-only table shapes `Ovl5fPoint`,
-   `Ovl5fU16Pad`, `MineOffset`, `ModelRec`. Globals: the busy state ones
-   are named (`TankLevelOver`, `TankMapWidth`, the leak's
-   `TankLevelsGridMapTank`/`Miss`, ...); about 135 `D_800C9xxx`/`D_800CAxxx`
-   data tables (anim scripts, level tables) are left for the data step,
-   where each is read anyway. Tools for both: `tank.h` (leaked prototypes, in code order inside a file, so a
-   named function's neighbours are candidates), the Oct 9 debug types,
-   `decomp.py similar`, `tools/scripts/field_survey.py` (loads and stores
-   per struct offset), and the scripts in `scratch/naming/` (not
-   committed): `callsites.py OVL` (what each call passes, whether its result
-   is used), `callgraph.py spawns`, `nas_fields.py ARGREG FUNC...`. Rename
-   through `decomp.py rename` (it checks the build; Gotchas: a name an
-   original header declares must take its types). Promote `callsites.py`
-   to a `decomp.py` subcommand when it is first needed. Many uncalled
-   Tank functions are the out-of-line copies of the `Ovl5f*` static
-   inlines in `ovl5f.h` (`TriggerTankMinesNear` is `Ovl5fTriggerNear`,
-   `GetTankMapCell` is `Ovl5fMapCell`, ...). Explained (2026-10-26): the
-   source had one inline function each, which `cc1plus` both inlined and
-   emitted at the end of the file (MATCHING.md, Inline functions behind
-   odd shapes). Give each pair one name; the C keeps both, since `cc1`
-   can't emit an inline after its file's other functions.
-2. **Split Tank into its files: done, it is one file** (2026-10-26;
-   ARCHITECTURE.md, Files inside the slot overlays). `units --data` reads
-   the slot overlays now (`--why` lists the pairs behind each inversion;
-   the zero tail, the `.bss`, is its own chunk), and `cc1plus` closes a file
-   with its out-of-line inline functions in reverse definition order, which
-   Tank shows once (87..180). What follows was written before that. Tank has no jump tables (`units overlays/ovl5f`: 0),
-   so the parity check can't help, and the leak (preprocessed, Tank's
-   header start cut off) and the demo discs name no Tank file. One hint:
-   the leak lists prototypes in code order within a file, and its order
-   (`TA_Triggers`, `TA_EarliestTriggers`, `TA_InitHero`, `TA_MoveHero`,
-   `TA_PreMoveHero`, `TA_CreateShadow`, `AnimateTank`, ...) puts functions
-   together that sit far apart in `ovl5f` (`TA_PreMoveHero` and
-   `TA_Triggers` near the end), so the header joins several files. Cut with
-   `split_unit.py` only where a start is settled.
-3. **Data to C: done for Tank's data and strings** (2026-10-26;
-   CONVENTIONS.md, Data as C, has the recipe). `tools/scripts/data2c.py`
-   wrote all 174 objects; `ovl5f.c` now owns the data subsegment, and 40
-   `PROVIDE` lines name the exe data it points at. Left: the id word
-   `ovl5f_id` (its own rodata unit with no code: a C file with only
-   `const` data and no text subsegment may need a splat trick), and
-   retyping the tables (most are still `s32[]`/`u8[]`; the hero sequence
-   records `D_800C8C64`, 32 bytes each, are the leak's `*_seq_tank*` kind).
-   What follows was written before that. `ovl5f`'s sections run
-   rodata, text, data: the id word (`ovl5f_id`), one `INCLUDE_RODATA`
-   (`D_800B32B8`, the animation name strings `"DIE"`, `"FIRE1"`, ...), and
-   `asm/data/overlays/ovl5f/ovl5f_data.data.s` (0x15958..0x17FE0, about
-   10 KB, 66 of its 1959 words already symbols). Build a generic converter
-   from a splat data block to C initialisers (pointers as symbols, tables
-   typed with their structs from `tank.h` and the Oct 9 types) and check
-   each step with `make check`. Data order inside a section follows
-   definition order in the file, so keep the blocks in address order.
-4. **The engine's AST table as C: done** (2026-10-26). `asttable.c` is a
-   data-only unit between two pieces of the engine's asm data (`engine_data`,
-   `engine_data_2`; splat accepts a `.data` subsegment with no `c` one). The
-   Makefile links every slot overlay first, `slot_syms.py` reads the names
-   the table leaves undefined from their ELFs and writes
-   `build/engine_slot_syms.ld` for the engine's link (302 symbols). Left
-   for typing: 145 local prototypes in `asttable.c` (functions whose owner
-   headers don't declare them, or declare them otherwise: `80083708.h` has
-   `InitWeatherNas(u8 *)` where the leak's `polar.h` says `NAS *`, so the
-   file doesn't include the engine headers). Move each to its owner header
-   as the overlays are typed.
-5. **The shiftable build: done** (2026-10-26; PLAYING.md, The shifted
-   build). `make shift` relinks Tank padded 0x40 x3 (rodata, text, data),
-   the engine against it (68 AST words moved) with the zeroed slot image,
-   rewrites the engine's 19 asm-data words that point at Tank only (the
-   per-game table's `TA_SetUp`, the hero mode table at `0x8009DFE8`,
-   `MoeJoeDead`, `D_800C8EEC`; `TankHeroMove` there is also a data label of
-   ovl66, so a shared address next to fixed words counts too), and packs
-   `build/shift/CrashBash.bin`, Tank in its own DAT place (relaid if needed). The
-   rest of this item was written before: pad, relink the engine, rebuild
-   `CRASHBSH.DAT` and its index for a grown entry (`pack_disc.py` and
-   `dat.py` today only allow shrinking), stay inside the slot (up to
-   `0x800D7144`; Tank ends at `0x800CB294`).
-6. **The shift test: passed 2026-10-26** (Desert Fox to a win). Before:
-   boot it (RetroArch, CLAUDE.md) and play Tank to a
-   win; write the route in docs/PLAYING.md.
-
-The Tank pilot starts next session.
-
-The matching method stays in MATCHING.md for reworks. Its last addition
-(2026-10-25..26): when a function won't match, prove the one compiler
-decision it needs with an analysis variant of cc1 (`tools/cc1/`), then
-search for C that makes it, with the variant's log as the check.
+Phase 4 (ROADMAP.md): each slot overlay to source-only with
+[OVERLAY_RECIPE.md](OVERLAY_RECIPE.md), Pogo (`ovl60`) first, then
+Arkenoid and Polar (their headers leaked), then the rest. Phase 3, the Tank
+pilot, finished 2026-10-26; its steps are in the Session log and the
+recipe.
 
 ## Open leads
 
@@ -549,6 +451,13 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 ## Session log
 
 Newest first, a few lines each. Details are in the commits.
+
+- **2026-10-26 (Phase 3 closed):** the Tank pilot is done. The roadmap
+  records the extra work it took (settling `tank.h`: `TANKSpecifics` is
+  not in this build; never-read words checked on every disc; the
+  dashboard's four map tabs; the save card and crash tracing for the
+  shift test), and the recipe for Phase 4 is
+  [OVERLAY_RECIPE.md](OVERLAY_RECIPE.md).
 
 - **2026-10-26 (dashboard: Data named):** the map has a fourth mode,
   data blocks by real name vs `D_`. `page_data_map` now cuts a block a C
