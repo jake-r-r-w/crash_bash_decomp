@@ -61,9 +61,13 @@ matching build's objects and:
 - links the engine with the moved overlay's addresses for its AST table (`slot_syms.py`) and
   with its slot image as the id word and zeros instead of the retail leftovers;
 - as a stopgap until the engine's data is C (ROADMAP Phase 5), rewrites the engine's asm-data
-  words that point at a place only that overlay has (for Tank: `TA_SetUp`'s entry in the
-  per-game table, the 16-entry hero mode table, `MoeJoeDead`, one level table), by name; each
-  is printed;
+  words that point into that overlay, by name (each is printed): every word at a place only
+  it has (for Tank: `TA_SetUp` in the per-world record, the 16-entry hero mode table), a
+  word inside one of its data objects beside those, and any word into its `.data`. The last
+  covers the engine's eight per-character hero sequence tables, whose entries +0x124..+0x144
+  are Tank's nine sequences per character (inside `D_800C94E8`; missing them crashed the
+  game as Desert Fox started). A value in that range can be another game's, so other games
+  may break on a disc shifted this way;
 - packs a disc with `pack_disc.py --grow`: the overlay, now bigger than its retail size, stays
   in its place in `CRASHBSH.DAT`, which is laid out again around it when it outgrows the
   sectors before the next entry, and the exe's DAT index and file group sizes follow. (It
@@ -73,3 +77,19 @@ matching build's objects and:
 
 It plays like any build (`retroarch ... build/shift/CrashBash.cue`). The shift test is to play the
 overlay's game on it through to a win, the same way as on the retail disc.
+
+### The shift test route (Tank, 2026-10-26)
+
+Tank needs to be unlocked: use a completed save. The one used is GameFAQs' North American
+DexDrive save "200% of the game completed" (`crash-bash.655.gme`): strip its 3904-byte header
+(the rest is a raw 128 KB card holding `BASCUS-94570`) and give RetroArch that as
+`CrashBash.srm` in a save folder of its own (`--appendconfig` with `savefile_directory` and
+`sort_savefiles_enable = "false"`, so your own saves are untouched). Then: Battle Mode, Tank
+Wars, Vs Battle, the game options screen, X to start (Desert Fox). Play it through to a win.
+
+The game also has a cheat word at `0x8005A618` (`0x2000` unlocks every list entry, `0x10000`
+adds the pause menu's hidden fifth item; nothing in retail sets them). RetroArch's network
+commands (`network_cmd_enable`, `READ_CORE_MEMORY`/`WRITE_CORE_MEMORY`; PCSX-ReARMed maps RAM
+at 0) read and write it, and dump RAM; the BIOS's current thread control block (`0x8000E29C`)
+holds the registers saved at the last interrupt or exception (EPC at +0x88, cause +0x98),
+which is how a crash can be traced when the emulator itself goes down.

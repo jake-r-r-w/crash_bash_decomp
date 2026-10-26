@@ -547,6 +547,18 @@ side (the dashboard's headline is bytes), and checks `docs/progress.json`.
 
 Newest first, a few lines each. Details are in the commits.
 
+- **2026-10-26 (Tank plays on the shifted disc):** traced by bisecting
+  (`make shift PAD=0` played, so the pipeline was fine), a RAM dump of the
+  working game (RetroArch network commands) for every static engine word
+  pointing into Tank, and a register log (the BIOS TCB's saved EPC) up to
+  the crash: Tank loaded, then the emulator went down. The engine's eight
+  per-character hero sequence tables (`0x8009BE70`, `0x8009C134`, ... one
+  per character, 80 entries) hold each game's sequences; entries
+  +0x124..+0x144 are Tank's nine per character, inside `D_800C94E8` (the
+  leak's `CRA_seq_tank*`...). `shift.py` now moves every engine word that
+  points into the overlay's `.data`. Desert Fox starts and plays; the
+  win-through and the roadmap tick are next. Route and tools: PLAYING.md.
+
 - **2026-10-26 (shift disc: the DAT relaid, not appended):** the shifted
   disc still crashed opening Tank, with a downloaded 200% save (GameFAQs,
   NA DexDrive, converted to `scratch/card/CrashBash.srm`) and no cheat. The

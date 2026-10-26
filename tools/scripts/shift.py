@@ -154,6 +154,20 @@ def fixup(ovl, old_elf, new_elf, others):
             if lo <= v <= hi and v not in by_addr and v not in shared and not (text[0] <= v < text[1]):
                 a, n = max(x for x in ordered if x[0] <= v)
                 inner.append((off, delta, n, v, new[n] + (v - a)))
+    # and any word into its .data: the engine's eight per-character hero sequence tables hold
+    # each game's sequences, Tank's nine at +0x124..+0x144 of each, pointing inside D_800C94E8.
+    # A value in that range could be another overlay's instead, so that game breaks on a disc
+    # shifted this way; for this overlay's test it is right, and the engine's data as C ends it.
+    dlo = old_all.get(f"{ovl}_DATA_START")
+    fixed |= {off for off, *_ in inner}
+    for rlo, rhi, delta in data_ranges("engine"):
+        for off in range(rlo, rhi - 3, 4):
+            if off in fixed:
+                continue
+            v = int.from_bytes(data[off:off + 4], "little")
+            if dlo is not None and dlo <= v <= hi and v not in by_addr and v not in shared:
+                a, n = max(x for x in ordered if x[0] <= v)
+                inner.append((off, delta, n, v, new[n] + (v - a)))
     for off, delta, n, v in done:
         data[off:off + 4] = new[n].to_bytes(4, "little")
     for off, delta, n, v, w in inner:
