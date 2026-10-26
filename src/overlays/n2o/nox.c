@@ -4,7 +4,57 @@
 #include "bash/n2o_nox.h"
 #include "bash/n2o.h"
 
-INCLUDE_RODATA("asm/nonmatchings/overlays/n2o/nox", D_800B336C);
+/* rodata: the strings (const arrays keep their retail order; the empty one is the word
+ * before NoxBoxToSphere's jump table, which nothing names) */
+const char D_800B336C[] = "No Coll box on subengine in XZBoxToSphere\n";
+const char D_800B3398[] = "";
+
+/* data, in address order */
+s32 D_800C4454[3] = { (s32)0x80110000, 0x20200001, 0x8000 };
+s32 D_800C4460[3] = { (s32)&D_800C4454, 0, 0 };
+ScriptInit D_800C446C = { 0, (void *)&D_800C4460, 0x401 };
+s32 D_800C4478 = 0x100;
+s32 D_800C447C = 0x96;
+s32 D_800C4480 = 0;
+s32 D_800C4484 = 0;
+s32 D_800C4488 = 0;
+s32 D_800C448C = 1;
+NAS *D_800C4490 = 0;
+NAS *D_800C4494 = 0;
+s32 D_800C4498 = 0;
+u8 *D_800C449C = 0;
+s32 D_800C44A0[17] = {
+    0x2022, 0x2023, 0x2024, 0x2025, 0x2026, 0x2027, 0x2028, 0x2029, 0x202A, 0x202B, 0x202C,
+    0x202D, 0x202E, 0x202F, 0x2030, 0x2031, 0x8003,
+};
+s32 D_800C44E4[3] = { (s32)&D_800C44A0, 0, 0 };
+ScriptInit D_800C44F0 = { 0, (void *)&D_800C44E4, 0x402 };
+s32 D_800C44FC = 0;
+s32 D_800C4500 = 0;
+s32 D_800C4504 = 0;
+s32 D_800C4508 = 0;
+s32 D_800C450C = 0x3C;
+s32 D_800C4510[8] = { 0x1000, 0, 0x1000, 0, 0x1000, 0, 0, 0 };
+s32 D_800C4530 = 0;
+s32 D_800C4534[32] = {
+    0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10,
+    0x10, 8, 8, 8, 8, 8, 8, 8, 8, 2, 2, 2, 2, 2, 2, 2, 2,
+};
+s32 D_800C45B4 = 0;
+s32 D_800C45B8 = 0x100;
+MATRIX D_800C45BC = { { { 0x1000, 0, 0 }, { 0, 0x1000, 0 }, { 0, 0, 0x1000 } }, { 0, 0, 0 } };
+NoxSparkFx D_800C45DC = { 0x80, 0xA00, 0xC00, NoxInitSparks, NoxDrawSparks };
+s32 D_800C45F0 = 0;
+s32 D_800C45F4[4] = {0};
+s32 D_800C4604[4] = {0};
+AstSlot D_800C4614[256] = {0};
+AstMineSlot D_800C6E14[128] = {0};
+SetupCam D_800C7614 = {0};
+s32 D_800C76AC[8] = {0};
+SLONG_XYZ D_800C76CC = {0};
+SLONG_XYZ D_800C76D8 = {0};
+SVECTOR D_800C76E4 = {0};
+
 
 s32 NoxBoxToSphere(SLONG_XYZ *a, SLONG_XYZ *b, s32 c, SLONG_XYZ *e) {
     VECTOR d;

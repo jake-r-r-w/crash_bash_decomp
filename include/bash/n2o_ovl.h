@@ -27,7 +27,6 @@ extern u16 *D_8009D6EC;
 
 extern u8 D_80053EAC[];
 extern EXTengine *D_8009D530;
-extern EXTengine *D_800C439C;
 extern u16 D_800AD12C;
 extern u16 D_800C39A0[];
 extern s16 D_800C4150[][3];
@@ -146,7 +145,7 @@ void SetN2OHeroTaunt(s32 arg0);
 /* Round state cleared by InitialiseN2O. */
 typedef struct N2ORound {
     /* 0x00 */ s32 unk0;
-    /* 0x04 */ s32 unk4;
+    /* 0x04 */ EXTengine *unk4;
     /* 0x08 */ s32 unk8;
     /* 0x0C */ s32 unkC;
     /* 0x10 */ s32 unk10;
@@ -504,7 +503,7 @@ extern s16 D_8009E0E2;
 extern s32 D_800C4498;
 extern s32 D_800C45F0;
 extern u8 D_800C403C[];
-extern u8 D_800C3774[];
+extern s32 D_800C3774[]; /* {name, id} pairs: the victory sequences (the engine's hook 0x14) */
 extern u8 D_800C3E30[];
 extern u8 D_800C3E70[];
 s32 N2O_BA_BounceOnBounds(N2OObj *arg0, s32 arg1);

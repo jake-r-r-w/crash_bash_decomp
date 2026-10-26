@@ -52,11 +52,13 @@ segments:
     subsegments:
       # the id word is its own unit: every slot overlay's first-file jump tables are 8-aligned
       # but the id sits at 0x800B32B4 (4 mod 8), so it can't share their object (ARCHITECTURE.md)
-      - [0x0, rodata, overlays/n2o/n2o_id]
+      - [0x0, .rodata, overlays/n2o/n2o_id]   # src/overlays/n2o/n2o_id.c
       - [0x4, .rodata, overlays/n2o/n2o]
       - [0xB8, .rodata, overlays/n2o/nox]
       - [0x1F0, c, overlays/n2o/n2o]
       # later files: starts proven by switch-table parity (ARCHITECTURE.md, Files inside the slot overlays)
       - [0x8B04, c, overlays/n2o/nox]   # proven after 35, by 75; its rodata starts with D_800B336C (used by 75, 78, 129)
-      - [0x104C0, data, overlays/n2o/n2o_data]
+      - [0x104C0, .data, overlays/n2o/n2o]          # n2o.c's data (tools/scripts/data2c.py)
+      # nox.c's data, cut where its own objects start (the code that uses them)
+      - [0x111A0, .data, overlays/n2o/nox]
   - [0x14438]

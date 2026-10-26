@@ -327,7 +327,7 @@ typedef struct AngObj {
     /* 0x74 */ u16 state;
 } AngObj;
 
-extern char D_800B336C[];
+extern const char D_800B336C[];
 
 void NoxTurnAsteroid(AngObj *o);
 
@@ -638,12 +638,22 @@ typedef struct SparkObj {
 extern s32 D_800C45B4;
 extern s32 D_800C45B8;
 
+/* The star field's Init/Plot pair after three words; nothing names it in the code. */
+typedef struct NoxSparkFx {
+    s32 unk0;
+    s32 unk4;
+    s32 id;
+    void (*Init)(SparkObj *);
+    void (*Plot)(SparkObj *);
+} NoxSparkFx;
+
 void NoxInitSparks(SparkObj *arg0);
 
 extern MATRIX D_800C45BC;  /* spark view matrix */
 extern SVECTOR D_800C76E4; /* spark view rotation */
 
 void NoxDrawSparks(SparkObj *arg0);
+extern NoxSparkFx D_800C45DC;
 
 /* Asteroid roll extension (id 0x10000000): a ballistic arc (func_8008C5C4's
  * Arc, declared in bash/pause.h) at 0x0C. */
