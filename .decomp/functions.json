@@ -21207,7 +21207,7 @@
   "src": "src/overlays/bash/bahero.c"
  },
  "bonk:800B33A4": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B33A4.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/InitialiseBONKFirst.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "800B67F4"
@@ -21215,7 +21215,7 @@
   "fp": "93d98cb7205d8a4b",
   "fpn": "540546d6b2e20efe",
   "leaf": false,
-  "name": "func_800B33A4",
+  "name": "InitialiseBONKFirst",
   "orig": "func_800B33A4",
   "rom": 240,
   "seg": "overlays/bonk/bonk",
@@ -21223,13 +21223,13 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B347C": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B347C.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkInitEntries.s",
   "bin": "disc/bonk.bin",
   "calls": [],
   "fp": "3c4e30b7331321e1",
   "fpn": "91928748c1663669",
   "leaf": true,
-  "name": "func_800B347C",
+  "name": "BonkInitEntries",
   "orig": "func_800B347C",
   "rom": 456,
   "seg": "overlays/bonk/bonk",
@@ -21237,7 +21237,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B34F8": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B34F8.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkCrateMaster.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "80022FD4",
@@ -21246,7 +21246,7 @@
   "fp": "d9138ccd7c601102",
   "fpn": "872def5b6f77875a",
   "leaf": false,
-  "name": "func_800B34F8",
+  "name": "BonkCrateMaster",
   "orig": "func_800B34F8",
   "rom": 580,
   "seg": "overlays/bonk/bonk",
@@ -21276,7 +21276,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B3D28": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B3D28.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkAI_PickEntry.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "80015590",
@@ -21286,7 +21286,7 @@
   "fp": "6e1dcd47beffee71",
   "fpn": "6d5a8a7b160266ab",
   "leaf": false,
-  "name": "func_800B3D28",
+  "name": "BonkAI_PickEntry",
   "orig": "func_800B3D28",
   "rom": 2676,
   "seg": "overlays/bonk/bonk",
@@ -21335,7 +21335,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B4454": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B4454.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkAI_FindClosest.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "8001463C",
@@ -21346,7 +21346,7 @@
   "fp": "34bf68c4b86ee6f9",
   "fpn": "027bcc3019929318",
   "leaf": false,
-  "name": "func_800B4454",
+  "name": "BonkAI_FindClosest",
   "orig": "func_800B4454",
   "rom": 4512,
   "seg": "overlays/bonk/bonk",
@@ -21354,7 +21354,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B47C8": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B47C8.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkHitTarget.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "80022660",
@@ -21363,7 +21363,7 @@
   "fp": "7e043904648cfc27",
   "fpn": "7f9f443c670b6b3a",
   "leaf": false,
-  "name": "func_800B47C8",
+  "name": "BonkHitTarget",
   "orig": "func_800B47C8",
   "rom": 5396,
   "seg": "overlays/bonk/bonk",
@@ -21371,7 +21371,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B4910": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B4910.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkMalletHit.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "8001463C",
@@ -21387,7 +21387,7 @@
   "fp": "95173b9c3cdd3173",
   "fpn": "058cefd69ece3790",
   "leaf": false,
-  "name": "func_800B4910",
+  "name": "BonkMalletHit",
   "orig": "func_800B4910",
   "rom": 5724,
   "seg": "overlays/bonk/bonk",
@@ -21395,7 +21395,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B4BC8": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B4BC8.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkChooseWinnerScore.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "80026980",
@@ -21404,7 +21404,7 @@
   "fp": "7c4ed11ff353bfd0",
   "fpn": "0f09935cf22115ad",
   "leaf": false,
-  "name": "func_800B4BC8",
+  "name": "BonkChooseWinnerScore",
   "orig": "func_800B4BC8",
   "rom": 6420,
   "seg": "overlays/bonk/bonk",
@@ -21412,7 +21412,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B5050": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B5050.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkChooseWinnerScoreB.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "80026980",
@@ -21421,7 +21421,7 @@
   "fp": "7c4ed11ff353bfd0",
   "fpn": "0f09935cf22115ad",
   "leaf": false,
-  "name": "func_800B5050",
+  "name": "BonkChooseWinnerScoreB",
   "orig": "func_800B5050",
   "rom": 7580,
   "seg": "overlays/bonk/bonk",
@@ -21429,13 +21429,13 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B54D8": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B54D8.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkChooseWinnerTimed.s",
   "bin": "disc/bonk.bin",
   "calls": [],
   "fp": "1a5d9ac2cb442db8",
   "fpn": "102745ff8af44a1b",
   "leaf": true,
-  "name": "func_800B54D8",
+  "name": "BonkChooseWinnerTimed",
   "orig": "func_800B54D8",
   "rom": 8740,
   "seg": "overlays/bonk/bonk",
@@ -21443,7 +21443,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B5820": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B5820.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkChooseWinnerRank.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "8007B120"
@@ -21451,7 +21451,7 @@
   "fp": "f32db13da16075fb",
   "fpn": "dc0ce13ad9363ade",
   "leaf": false,
-  "name": "func_800B5820",
+  "name": "BonkChooseWinnerRank",
   "orig": "func_800B5820",
   "rom": 9580,
   "seg": "overlays/bonk/bonk",
@@ -21459,7 +21459,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B5BA0": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B5BA0.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/Bonk_HeroBot.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "80013C94",
@@ -21471,7 +21471,7 @@
   "fp": "72db5c6d3aceafa7",
   "fpn": "9136619df5574613",
   "leaf": false,
-  "name": "func_800B5BA0",
+  "name": "Bonk_HeroBot",
   "orig": "func_800B5BA0",
   "rom": 10476,
   "seg": "overlays/bonk/bonk",
@@ -21479,7 +21479,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B60FC": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B60FC.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkAI_NearestEnemy.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "80032490"
@@ -21487,7 +21487,7 @@
   "fp": "104acde58c5aa877",
   "fpn": "c75fc42554e904f2",
   "leaf": false,
-  "name": "func_800B60FC",
+  "name": "BonkAI_NearestEnemy",
   "orig": "func_800B60FC",
   "rom": 11848,
   "seg": "overlays/bonk/bonk",
@@ -21495,7 +21495,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B61B0": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B61B0.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkAI_Closest.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "800B4454"
@@ -21503,7 +21503,7 @@
   "fp": "40df4e7a972204a7",
   "fpn": "782f7c6abf26a0e6",
   "leaf": false,
-  "name": "func_800B61B0",
+  "name": "BonkAI_Closest",
   "orig": "func_800B61B0",
   "rom": 12028,
   "seg": "overlays/bonk/bonk",
@@ -21511,13 +21511,13 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B61F8": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B61F8.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkAI_Reset.s",
   "bin": "disc/bonk.bin",
   "calls": [],
   "fp": "59d4a637cf2ce544",
   "fpn": "409a61e19d863614",
   "leaf": true,
-  "name": "func_800B61F8",
+  "name": "BonkAI_Reset",
   "orig": "func_800B61F8",
   "rom": 12100,
   "seg": "overlays/bonk/bonk",
@@ -21525,7 +21525,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B6238": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B6238.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkChooseWinner.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "800B4BC8",
@@ -21536,7 +21536,7 @@
   "fp": "62572b581824bac6",
   "fpn": "9b85b1e3843993b6",
   "leaf": false,
-  "name": "func_800B6238",
+  "name": "BonkChooseWinner",
   "orig": "func_800B6238",
   "rom": 12164,
   "seg": "overlays/bonk/bonk",
@@ -21544,13 +21544,13 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B62C8": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B62C8.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkDist2XZ.s",
   "bin": "disc/bonk.bin",
   "calls": [],
   "fp": "eb01f9f596101d2c",
   "fpn": "eb01f9f596101d2c",
   "leaf": true,
-  "name": "func_800B62C8",
+  "name": "BonkDist2XZ",
   "orig": "func_800B62C8",
   "rom": 12308,
   "seg": "overlays/bonk/bonk",
@@ -21623,7 +21623,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B64B4": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B64B4.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkHitObject.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "80015590",
@@ -21633,7 +21633,7 @@
   "fp": "7f1cf25e24fb2ef4",
   "fpn": "2a145d1ffbd7dc97",
   "leaf": false,
-  "name": "func_800B64B4",
+  "name": "BonkHitObject",
   "orig": "func_800B64B4",
   "rom": 12800,
   "seg": "overlays/bonk/bonk",
@@ -21641,13 +21641,13 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B6560": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B6560.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkUpdateStub.s",
   "bin": "disc/bonk.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800B6560",
+  "name": "BonkUpdateStub",
   "orig": "func_800B6560",
   "rom": 12972,
   "seg": "overlays/bonk/bonk",
@@ -21655,7 +21655,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B6568": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B6568.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkSpawnStool.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "80022A3C"
@@ -21663,7 +21663,7 @@
   "fp": "dc72e958dd751762",
   "fpn": "c0bce2697e9e56a1",
   "leaf": false,
-  "name": "func_800B6568",
+  "name": "BonkSpawnStool",
   "orig": "func_800B6568",
   "rom": 12980,
   "seg": "overlays/bonk/bonk",
@@ -21690,7 +21690,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B66C8": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B66C8.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkSpawnCrate.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "80015590",
@@ -21699,7 +21699,7 @@
   "fp": "95b57b5bbbb0f1be",
   "fpn": "1ac92f00c2023573",
   "leaf": false,
-  "name": "func_800B66C8",
+  "name": "BonkSpawnCrate",
   "orig": "func_800B66C8",
   "rom": 13332,
   "seg": "overlays/bonk/bonk",
@@ -21707,13 +21707,13 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B6774": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B6774.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkUpdateSkill.s",
   "bin": "disc/bonk.bin",
   "calls": [],
   "fp": "a8a3d557fb1485d6",
   "fpn": "3243899da97bd96c",
   "leaf": true,
-  "name": "func_800B6774",
+  "name": "BonkUpdateSkill",
   "orig": "func_800B6774",
   "rom": 13504,
   "seg": "overlays/bonk/bonk",
@@ -21721,7 +21721,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B67C4": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B67C4.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/UpdateBONK.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "800B34F8",
@@ -21731,7 +21731,7 @@
   "fp": "a68224ae87f77445",
   "fpn": "0e1eaf1301dfa995",
   "leaf": false,
-  "name": "func_800B67C4",
+  "name": "UpdateBONK",
   "orig": "func_800B67C4",
   "rom": 13584,
   "seg": "overlays/bonk/bonk",
@@ -21739,13 +21739,13 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B67F4": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B67F4.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkInitTweakAi.s",
   "bin": "disc/bonk.bin",
   "calls": [],
   "fp": "86244bcd63938ad7",
   "fpn": "86244bcd63938ad7",
   "leaf": true,
-  "name": "func_800B67F4",
+  "name": "BonkInitTweakAi",
   "orig": "func_800B67F4",
   "rom": 13632,
   "seg": "overlays/bonk/bonk",
@@ -21753,7 +21753,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B6868": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B6868.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkSetClock.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "8007B7FC"
@@ -21761,7 +21761,7 @@
   "fp": "13c3fc3f839aac0c",
   "fpn": "83b511327975a0ee",
   "leaf": false,
-  "name": "func_800B6868",
+  "name": "BonkSetClock",
   "orig": "func_800B6868",
   "rom": 13748,
   "seg": "overlays/bonk/bonk",
@@ -21769,7 +21769,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B688C": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B688C.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkSetClockA.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "800B6868"
@@ -21777,7 +21777,7 @@
   "fp": "1cf6778900640d60",
   "fpn": "0bcbfce9bc5658ae",
   "leaf": false,
-  "name": "func_800B688C",
+  "name": "BonkSetClockA",
   "orig": "func_800B688C",
   "rom": 13784,
   "seg": "overlays/bonk/bonk",
@@ -21785,7 +21785,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B68BC": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B68BC.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkSetClockB.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "800B6868"
@@ -21793,7 +21793,7 @@
   "fp": "eb6745228a7a92b2",
   "fpn": "c43474f668b550f2",
   "leaf": false,
-  "name": "func_800B68BC",
+  "name": "BonkSetClockB",
   "orig": "func_800B68BC",
   "rom": 13832,
   "seg": "overlays/bonk/bonk",
@@ -21801,7 +21801,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B68EC": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B68EC.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkInitScores.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "8007D144",
@@ -21810,7 +21810,7 @@
   "fp": "5c66e3f26c35b5e8",
   "fpn": "582f1aa96604fcf2",
   "leaf": false,
-  "name": "func_800B68EC",
+  "name": "BonkInitScores",
   "orig": "func_800B68EC",
   "rom": 13880,
   "seg": "overlays/bonk/bonk",
@@ -21818,7 +21818,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B69A0": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B69A0.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkSetClockC.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "800B6868"
@@ -21826,7 +21826,7 @@
   "fp": "c21bbc82f57a5e1b",
   "fpn": "c43474f668b550f2",
   "leaf": false,
-  "name": "func_800B69A0",
+  "name": "BonkSetClockC",
   "orig": "func_800B69A0",
   "rom": 14060,
   "seg": "overlays/bonk/bonk",
@@ -21834,13 +21834,13 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B69D0": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B69D0.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkInitCamera.s",
   "bin": "disc/bonk.bin",
   "calls": [],
   "fp": "aee5c765ca897249",
   "fpn": "2c687136ab595e1b",
   "leaf": true,
-  "name": "func_800B69D0",
+  "name": "BonkInitCamera",
   "orig": "func_800B69D0",
   "rom": 14108,
   "seg": "overlays/bonk/bonk",
@@ -21848,7 +21848,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B6A1C": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B6A1C.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/InitialiseBONK.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "8007B7FC",
@@ -21866,7 +21866,7 @@
   "fp": "27ab6711370cc267",
   "fpn": "ed2c1629e183849d",
   "leaf": false,
-  "name": "func_800B6A1C",
+  "name": "InitialiseBONK",
   "orig": "func_800B6A1C",
   "rom": 14184,
   "seg": "overlays/bonk/bonk",
@@ -21874,13 +21874,13 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B6AAC": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B6AAC.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BONKSetUp.s",
   "bin": "disc/bonk.bin",
   "calls": [],
   "fp": "80110bd047df49bf",
   "fpn": "d1ba4fada9c6e999",
   "leaf": true,
-  "name": "func_800B6AAC",
+  "name": "BONKSetUp",
   "orig": "func_800B6AAC",
   "rom": 14328,
   "seg": "overlays/bonk/bonk",
@@ -21888,13 +21888,13 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B6AF4": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B6AF4.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkRestartLevel.s",
   "bin": "disc/bonk.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800B6AF4",
+  "name": "BonkRestartLevel",
   "orig": "func_800B6AF4",
   "rom": 14400,
   "seg": "overlays/bonk/bonk",
@@ -21902,13 +21902,13 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B6AFC": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B6AFC.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/FirstTriggersBONK.s",
   "bin": "disc/bonk.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800B6AFC",
+  "name": "FirstTriggersBONK",
   "orig": "func_800B6AFC",
   "rom": 14408,
   "seg": "overlays/bonk/bonk",
@@ -21916,7 +21916,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B6B04": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B6B04.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkKnockBack.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "8008D5D4"
@@ -21924,7 +21924,7 @@
   "fp": "e1a504f917ef6b87",
   "fpn": "dd4329cce2c5ed3a",
   "leaf": false,
-  "name": "func_800B6B04",
+  "name": "BonkKnockBack",
   "orig": "func_800B6B04",
   "rom": 14416,
   "seg": "overlays/bonk/bonk",
@@ -21932,7 +21932,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B6CD8": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B6CD8.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkHeroHitFlash.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "80022660",
@@ -21941,7 +21941,7 @@
   "fp": "57bcfc02af009ce4",
   "fpn": "82f06d095fd34b10",
   "leaf": false,
-  "name": "func_800B6CD8",
+  "name": "BonkHeroHitFlash",
   "orig": "func_800B6CD8",
   "rom": 14884,
   "seg": "overlays/bonk/bonk",
@@ -21949,7 +21949,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B6E1C": {
-  "asm": "asm/nonmatchings/overlays/bonk/bonk/func_800B6E1C.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bonk/BonkHero_ExtraEffects.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "800B8EF8"
@@ -21957,7 +21957,7 @@
   "fp": "3bb5ff34bf75e387",
   "fpn": "a4befc996441459f",
   "leaf": false,
-  "name": "func_800B6E1C",
+  "name": "BonkHero_ExtraEffects",
   "orig": "func_800B6E1C",
   "rom": 15208,
   "seg": "overlays/bonk/bonk",
@@ -21965,7 +21965,7 @@
   "src": "src/overlays/bonk/bonk.c"
  },
  "bonk:800B6EFC": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B6EFC.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BonkSpawnShockwave.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "80015780",
@@ -21977,7 +21977,7 @@
   "fp": "3ace99bd0fd49fd5",
   "fpn": "a08d21b9ee939986",
   "leaf": false,
-  "name": "func_800B6EFC",
+  "name": "BonkSpawnShockwave",
   "orig": "func_800B6EFC",
   "rom": 15432,
   "seg": "overlays/bonk/bohero",
@@ -21985,7 +21985,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B70C4": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B70C4.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BonkHeroFacing.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "800154A0"
@@ -21993,7 +21993,7 @@
   "fp": "a8da96fd2b0e13fd",
   "fpn": "1d2d3e34bafe0b7b",
   "leaf": false,
-  "name": "func_800B70C4",
+  "name": "BonkHeroFacing",
   "orig": "func_800B70C4",
   "rom": 15888,
   "seg": "overlays/bonk/bohero",
@@ -22001,13 +22001,13 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B717C": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B717C.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BonkPreMoveHero.s",
   "bin": "disc/bonk.bin",
   "calls": [],
   "fp": "1b138037de6f5de6",
   "fpn": "6f45181476056bb2",
   "leaf": true,
-  "name": "func_800B717C",
+  "name": "BonkPreMoveHero",
   "orig": "func_800B717C",
   "rom": 16072,
   "seg": "overlays/bonk/bohero",
@@ -22015,7 +22015,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B72FC": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B72FC.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/SetBonkHeroIdle.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "800854C0"
@@ -22023,7 +22023,7 @@
   "fp": "8550677a40645b47",
   "fpn": "d89341e846dee748",
   "leaf": false,
-  "name": "func_800B72FC",
+  "name": "SetBonkHeroIdle",
   "orig": "func_800B72FC",
   "rom": 16456,
   "seg": "overlays/bonk/bohero",
@@ -22031,7 +22031,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B738C": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B738C.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BonkHeroIdle.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "8008502C",
@@ -22043,7 +22043,7 @@
   "fp": "4a45ad45e39cb7e8",
   "fpn": "f911eeadd0603848",
   "leaf": false,
-  "name": "func_800B738C",
+  "name": "BonkHeroIdle",
   "orig": "func_800B738C",
   "rom": 16600,
   "seg": "overlays/bonk/bohero",
@@ -22051,7 +22051,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B747C": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B747C.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BonkHeroRun.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "80022660",
@@ -22064,7 +22064,7 @@
   "fp": "d08285a7d4b0b1a9",
   "fpn": "6bb65fc0b3adc167",
   "leaf": false,
-  "name": "func_800B747C",
+  "name": "BonkHeroRun",
   "orig": "func_800B747C",
   "rom": 16840,
   "seg": "overlays/bonk/bohero",
@@ -22072,7 +22072,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B76CC": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B76CC.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BonkHeroBackswing.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "8001463C",
@@ -22086,7 +22086,7 @@
   "fp": "fbbbef87b0ac4567",
   "fpn": "6cda0df75c85d59c",
   "leaf": false,
-  "name": "func_800B76CC",
+  "name": "BonkHeroBackswing",
   "orig": "func_800B76CC",
   "rom": 17432,
   "seg": "overlays/bonk/bohero",
@@ -22094,7 +22094,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B77FC": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B77FC.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BonkHeroExtBackswing.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "8008502C",
@@ -22106,7 +22106,7 @@
   "fp": "06e66663c422ff2a",
   "fpn": "0c3d45023a4b1703",
   "leaf": false,
-  "name": "func_800B77FC",
+  "name": "BonkHeroExtBackswing",
   "orig": "func_800B77FC",
   "rom": 17736,
   "seg": "overlays/bonk/bohero",
@@ -22114,7 +22114,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B7908": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B7908.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BonkHeroSwing.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "80022660",
@@ -22130,7 +22130,7 @@
   "fp": "6be302b4e3c68677",
   "fpn": "a6fbc86c9b6dd450",
   "leaf": false,
-  "name": "func_800B7908",
+  "name": "BonkHeroSwing",
   "orig": "func_800B7908",
   "rom": 18004,
   "seg": "overlays/bonk/bohero",
@@ -22138,7 +22138,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B7B48": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B7B48.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BonkHeroKickCollision.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "800142D4",
@@ -22153,7 +22153,7 @@
   "fp": "0e25b23960117ee7",
   "fpn": "de2ff0e0df6dbf94",
   "leaf": false,
-  "name": "func_800B7B48",
+  "name": "BonkHeroKickCollision",
   "orig": "func_800B7B48",
   "rom": 18580,
   "seg": "overlays/bonk/bohero",
@@ -22161,7 +22161,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B8550": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B8550.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BonkHeroLoser.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "80022A3C",
@@ -22171,7 +22171,7 @@
   "fp": "04ef3bf5634507e2",
   "fpn": "e9cf6908c3cb03f7",
   "leaf": false,
-  "name": "func_800B8550",
+  "name": "BonkHeroLoser",
   "orig": "func_800B8550",
   "rom": 21148,
   "seg": "overlays/bonk/bohero",
@@ -22179,7 +22179,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B8714": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B8714.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BonkHeroTestIdle.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "800868B4"
@@ -22187,7 +22187,7 @@
   "fp": "b0a3da6f3ed3f59d",
   "fpn": "63f0dc913bad6ef6",
   "leaf": false,
-  "name": "func_800B8714",
+  "name": "BonkHeroTestIdle",
   "orig": "func_800B8714",
   "rom": 21600,
   "seg": "overlays/bonk/bohero",
@@ -22195,7 +22195,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B876C": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B876C.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/SetBonkHeroLoser.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "80026980",
@@ -22204,7 +22204,7 @@
   "fp": "e604268e538e3e6d",
   "fpn": "dbaa55702702d81b",
   "leaf": false,
-  "name": "func_800B876C",
+  "name": "SetBonkHeroLoser",
   "orig": "func_800B876C",
   "rom": 21688,
   "seg": "overlays/bonk/bohero",
@@ -22212,7 +22212,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B8814": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B8814.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BonkHeroTestLose.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "800868B4"
@@ -22220,7 +22220,7 @@
   "fp": "e15c3eb710c29cb4",
   "fpn": "63f0dc913bad6ef6",
   "leaf": false,
-  "name": "func_800B8814",
+  "name": "BonkHeroTestLose",
   "orig": "func_800B8814",
   "rom": 21856,
   "seg": "overlays/bonk/bohero",
@@ -22228,7 +22228,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B886C": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B886C.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BonkHeroWinner.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "8008502C",
@@ -22237,7 +22237,7 @@
   "fp": "20ee95d5d02bf813",
   "fpn": "6b96a11a3201c386",
   "leaf": false,
-  "name": "func_800B886C",
+  "name": "BonkHeroWinner",
   "orig": "func_800B886C",
   "rom": 21944,
   "seg": "overlays/bonk/bohero",
@@ -22245,7 +22245,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B8918": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B8918.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/SetBonkHeroWinner.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "800854C0",
@@ -22254,7 +22254,7 @@
   "fp": "342a57086feab4c2",
   "fpn": "dbed6bb3dd383506",
   "leaf": false,
-  "name": "func_800B8918",
+  "name": "SetBonkHeroWinner",
   "orig": "func_800B8918",
   "rom": 22116,
   "seg": "overlays/bonk/bohero",
@@ -22262,7 +22262,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B89D8": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B89D8.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BonkHeroTestWin.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "800868B4"
@@ -22270,7 +22270,7 @@
   "fp": "b9fcedddf86e1ad9",
   "fpn": "63f0dc913bad6ef6",
   "leaf": false,
-  "name": "func_800B89D8",
+  "name": "BonkHeroTestWin",
   "orig": "func_800B89D8",
   "rom": 22308,
   "seg": "overlays/bonk/bohero",
@@ -22278,7 +22278,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B8A30": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B8A30.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BonkHeroSwingRecoil.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "8008502C",
@@ -22290,7 +22290,7 @@
   "fp": "f1a9a7601326a91a",
   "fpn": "ed12af8f0e5d613d",
   "leaf": false,
-  "name": "func_800B8A30",
+  "name": "BonkHeroSwingRecoil",
   "orig": "func_800B8A30",
   "rom": 22396,
   "seg": "overlays/bonk/bohero",
@@ -22298,13 +22298,13 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B8AC8": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B8AC8.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/SetBonkHeroSwingRecoil.s",
   "bin": "disc/bonk.bin",
   "calls": [],
   "fp": "8593233f16efda43",
   "fpn": "4b70df9d1d05774b",
   "leaf": true,
-  "name": "func_800B8AC8",
+  "name": "SetBonkHeroSwingRecoil",
   "orig": "func_800B8AC8",
   "rom": 22548,
   "seg": "overlays/bonk/bohero",
@@ -22312,7 +22312,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B8AF4": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B8AF4.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/SetBonkHeroSwing.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "800854C0"
@@ -22320,7 +22320,7 @@
   "fp": "1d90b69592e345a1",
   "fpn": "7eaf621846f9c01f",
   "leaf": false,
-  "name": "func_800B8AF4",
+  "name": "SetBonkHeroSwing",
   "orig": "func_800B8AF4",
   "rom": 22592,
   "seg": "overlays/bonk/bohero",
@@ -22328,7 +22328,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B8B3C": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B8B3C.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/SetBonkHeroExtBackswing.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "800854C0"
@@ -22336,7 +22336,7 @@
   "fp": "07e12d64610ff49a",
   "fpn": "689299831b7d07d8",
   "leaf": false,
-  "name": "func_800B8B3C",
+  "name": "SetBonkHeroExtBackswing",
   "orig": "func_800B8B3C",
   "rom": 22664,
   "seg": "overlays/bonk/bohero",
@@ -22344,7 +22344,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B8BA0": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B8BA0.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/SetBonkHeroBackswing.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "80022660",
@@ -22353,7 +22353,7 @@
   "fp": "141ba15e6b9c68ed",
   "fpn": "77a85400d66de8f2",
   "leaf": false,
-  "name": "func_800B8BA0",
+  "name": "SetBonkHeroBackswing",
   "orig": "func_800B8BA0",
   "rom": 22764,
   "seg": "overlays/bonk/bohero",
@@ -22361,7 +22361,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B8C3C": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B8C3C.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BonkHeroHit.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "8008502C",
@@ -22370,7 +22370,7 @@
   "fp": "bd0aa2fa5e51d898",
   "fpn": "9bcab2070321d4e5",
   "leaf": false,
-  "name": "func_800B8C3C",
+  "name": "BonkHeroHit",
   "orig": "func_800B8C3C",
   "rom": 22920,
   "seg": "overlays/bonk/bohero",
@@ -22378,7 +22378,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B8CB4": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B8CB4.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/SetBonkHeroHit.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "800225C4",
@@ -22387,7 +22387,7 @@
   "fp": "745d8df91b2e9c4e",
   "fpn": "d51a7beef11f0249",
   "leaf": false,
-  "name": "func_800B8CB4",
+  "name": "SetBonkHeroHit",
   "orig": "func_800B8CB4",
   "rom": 23040,
   "seg": "overlays/bonk/bohero",
@@ -22395,7 +22395,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B8D3C": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B8D3C.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/SetBonkHeroRun.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "800854C0"
@@ -22403,7 +22403,7 @@
   "fp": "8d9273b21d4a6907",
   "fpn": "efcc9da72fd17a0f",
   "leaf": false,
-  "name": "func_800B8D3C",
+  "name": "SetBonkHeroRun",
   "orig": "func_800B8D3C",
   "rom": 23176,
   "seg": "overlays/bonk/bohero",
@@ -22411,7 +22411,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B8D88": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B8D88.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BonkHeroTestRun.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "800868B4"
@@ -22419,7 +22419,7 @@
   "fp": "212a38984c49d402",
   "fpn": "861b328393ff7c85",
   "leaf": false,
-  "name": "func_800B8D88",
+  "name": "BonkHeroTestRun",
   "orig": "func_800B8D88",
   "rom": 23252,
   "seg": "overlays/bonk/bohero",
@@ -22427,7 +22427,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B8E08": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B8E08.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BonkHeroToIdle.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "800868B4"
@@ -22435,7 +22435,7 @@
   "fp": "baebb43c63cac33c",
   "fpn": "58593734ea716c81",
   "leaf": false,
-  "name": "func_800B8E08",
+  "name": "BonkHeroToIdle",
   "orig": "func_800B8E08",
   "rom": 23380,
   "seg": "overlays/bonk/bohero",
@@ -22443,7 +22443,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B8E64": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B8E64.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BonkHeroTestSwing.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "800868B4"
@@ -22451,7 +22451,7 @@
   "fp": "bbdd40bf33e22390",
   "fpn": "9ade5c1cbbb4b56b",
   "leaf": false,
-  "name": "func_800B8E64",
+  "name": "BonkHeroTestSwing",
   "orig": "func_800B8E64",
   "rom": 23472,
   "seg": "overlays/bonk/bohero",
@@ -22459,13 +22459,13 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B8EF0": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B8EF0.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BonkHeroPostMove.s",
   "bin": "disc/bonk.bin",
   "calls": [],
   "fp": "bc6e15da5a72ab85",
   "fpn": "bc6e15da5a72ab85",
   "leaf": true,
-  "name": "func_800B8EF0",
+  "name": "BonkHeroPostMove",
   "orig": "func_800B8EF0",
   "rom": 23612,
   "seg": "overlays/bonk/bohero",
@@ -22473,13 +22473,13 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B8EF8": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B8EF8.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BonkHidePowerup.s",
   "bin": "disc/bonk.bin",
   "calls": [],
   "fp": "e31945e132e21b8f",
   "fpn": "3cec1a58a60d2d31",
   "leaf": true,
-  "name": "func_800B8EF8",
+  "name": "BonkHidePowerup",
   "orig": "func_800B8EF8",
   "rom": 23620,
   "seg": "overlays/bonk/bohero",
@@ -22487,7 +22487,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B8F64": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B8F64.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BonkKeepInBoundsB.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "8001463C"
@@ -22495,7 +22495,7 @@
   "fp": "8aee0d05ad5f6bd8",
   "fpn": "9a7df00c622d3ff4",
   "leaf": false,
-  "name": "func_800B8F64",
+  "name": "BonkKeepInBoundsB",
   "orig": "func_800B8F64",
   "rom": 23728,
   "seg": "overlays/bonk/bohero",
@@ -22503,7 +22503,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B9054": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B9054.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BONK_KeepInBounds.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "8001463C"
@@ -22511,7 +22511,7 @@
   "fp": "4e809f5c25ee7d5d",
   "fpn": "9a7df00c622d3ff4",
   "leaf": false,
-  "name": "func_800B9054",
+  "name": "BONK_KeepInBounds",
   "orig": "func_800B9054",
   "rom": 23968,
   "seg": "overlays/bonk/bohero",
@@ -22519,7 +22519,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B9144": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B9144.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BonkHeroSnapShadow.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "800B9054"
@@ -22527,7 +22527,7 @@
   "fp": "e4e087f45758f39b",
   "fpn": "c27e8543e40b0300",
   "leaf": false,
-  "name": "func_800B9144",
+  "name": "BonkHeroSnapShadow",
   "orig": "func_800B9144",
   "rom": 24208,
   "seg": "overlays/bonk/bohero",
@@ -22535,7 +22535,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B91BC": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B91BC.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BonkHeroBounce.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "80026540",
@@ -22546,7 +22546,7 @@
   "fp": "d9904cd5a4cee554",
   "fpn": "d099e561c949a936",
   "leaf": false,
-  "name": "func_800B91BC",
+  "name": "BonkHeroBounce",
   "orig": "func_800B91BC",
   "rom": 24328,
   "seg": "overlays/bonk/bohero",
@@ -22554,7 +22554,7 @@
   "src": "src/overlays/bonk/bohero.c"
  },
  "bonk:800B9264": {
-  "asm": "asm/nonmatchings/overlays/bonk/bohero/func_800B9264.s",
+  "asm": "asm/nonmatchings/overlays/bonk/bohero/BonkBounceAll.s",
   "bin": "disc/bonk.bin",
   "calls": [
    "800B91BC"
@@ -22562,7 +22562,7 @@
   "fp": "b73ca57fca927058",
   "fpn": "99b1e11d79a65282",
   "leaf": false,
-  "name": "func_800B9264",
+  "name": "BonkBounceAll",
   "orig": "func_800B9264",
   "rom": 24496,
   "seg": "overlays/bonk/bohero",

@@ -8,26 +8,26 @@
 #include "bash/hero.h"
 #include "bash/shell.h"
 
-void func_800B33A4() {
+void InitialiseBONKFirst() {
     D_8009D6E8.unk4 = D_800B9DF8;
-    D_8009D6E8.unk2C = func_800B70C4;
-    D_8009D6E8.unk68 = func_800B9054;
-    D_8009D6E8.unk20 = func_800B717C;
-    D_8009D6E8.unk28 = func_800B8EF0;
-    D_8009D6E8.unk54 = func_800B7B48;
-    D_8009D6E8.unk3C = func_800B8E64;
+    D_8009D6E8.unk2C = BonkHeroFacing;
+    D_8009D6E8.unk68 = BONK_KeepInBounds;
+    D_8009D6E8.unk20 = BonkPreMoveHero;
+    D_8009D6E8.unk28 = BonkHeroPostMove;
+    D_8009D6E8.unk54 = BonkHeroKickCollision;
+    D_8009D6E8.unk3C = BonkHeroTestSwing;
     D_8009D6E8.unk48 = D_8008AB48;
     D_8009D6E8.unk44 = D_8008AB04;
-    D_8009D6E8.unk5C = func_800B6E1C;
-    D_8009D6E8.unk64 = func_800B6238;
-    D_8009D6E8.unk38 = func_800B5BA0;
+    D_8009D6E8.unk5C = BonkHero_ExtraEffects;
+    D_8009D6E8.unk64 = BonkChooseWinner;
+    D_8009D6E8.unk38 = Bonk_HeroBot;
     D_8009E0D8 = 0x42;
     D_8009E0E4 = 0x47;
     D_8009E0E6 = 0x48;
-    func_800B67F4();
+    BonkInitTweakAi();
 }
 
-void func_800B347C(void) {
+void BonkInitEntries(void) {
     s32 i;
 
     D_800B9EF0 = 0;
@@ -43,7 +43,7 @@ void func_800B347C(void) {
     D_800B9EF8 = D_800B9634 * 30;
 }
 
-void func_800B34F8(void) {
+void BonkCrateMaster(void) {
     s32 i;
     s32 *new_var;
 
@@ -71,7 +71,7 @@ void func_800B34F8(void) {
         }
     }
     if (D_800B9EF0 < (new_var = &D_800B95A8)[D_800B9EF4] && D_800B9EFC == 0) {
-        func_800B66C8();
+        BonkSpawnCrate();
         D_800B9EFC = 0x14;
     }
 }
@@ -92,12 +92,12 @@ void PlotBonkStool(NAS *nas) {
     }
     switch (nas->UserInfo.status) {
     case 0:
-        if (func_800B3D28(&x, &z) != 0) {
+        if (BonkAI_PickEntry(&x, &z) != 0) {
             D_800B9E50[nas->UserInfo.user2].unk8 = 1000;
             e->unk10.x = x;
             e->unk10.z = z;
             e->unk10.y = World_floor_level - 0x2000;
-            func_800B8F64(e);
+            BonkKeepInBoundsB(e);
             nas->UserInfo.status = 2;
             if (nas->UserInfo.user1 == 0) {
                 D_800B9E50[nas->UserInfo.user2].unk8 = D_800B9300[D_800B9EEC];
@@ -179,7 +179,7 @@ void PlotBonkStool(NAS *nas) {
     case 5:
         Bonk_SpawnPuff((s32 *)&e->unk10, 0, D_80053C7C);
         v = &e->unk10;
-        func_800B4910((VECTOR *)v, 0x380, -1, 0);
+        BonkMalletHit((VECTOR *)v, 0x380, -1, 0);
         e->flags &= 0xFFFF7FFF;
         nas->UserInfo.status = 6;
         PlaySfx(D_800B9E20[Random(4)], NULL, v, 0x1000, 0x1E00, 0);
@@ -204,7 +204,7 @@ void PlotBonkStool(NAS *nas) {
     }
 }
 
-s32 func_800B3D28(s32 *arg0, s32 *arg1) {
+s32 BonkAI_PickEntry(s32 *arg0, s32 *arg1) {
     s32 tries;
     s32 ok;
     s32 x;
@@ -225,7 +225,7 @@ s32 func_800B3D28(s32 *arg0, s32 *arg1) {
         z = Random(0x1000) - 0x800;
         for (i = 0, h = heroes; i < 4; i++, h++) {
             eng = h->hero_eng;
-            if ((csqrt(func_800B62C8(eng->unk10.x, eng->unk10.z, x, z)) >> 6) < 0x400) {
+            if ((csqrt(BonkDist2XZ(eng->unk10.x, eng->unk10.z, x, z)) >> 6) < 0x400) {
                 ok = 0;
             }
         }
@@ -234,7 +234,7 @@ s32 func_800B3D28(s32 *arg0, s32 *arg1) {
                 for (i = 0, e = D_800B9E50; i < 10; i++, e++) {
                     if (e->unk4 != 0) {
                         eng = ((NAS *)e->unk4)->Engine;
-                        if ((csqrt(func_800B62C8(eng->unk10.x, eng->unk10.z, x, z)) >> 6) < 0x400) {
+                        if ((csqrt(BonkDist2XZ(eng->unk10.x, eng->unk10.z, x, z)) >> 6) < 0x400) {
                             ok = 0;
                         }
                     }
@@ -244,7 +244,7 @@ s32 func_800B3D28(s32 *arg0, s32 *arg1) {
                 for (i = 0, f = D_800B9EC8; i < 3; i++, f++) {
                     if (f->b != 0) {
                         eng = ((NAS *)f->b)->Engine;
-                        if ((csqrt(func_800B62C8(eng->unk10.x, eng->unk10.z, x, z)) >> 6) < 0x300) {
+                        if ((csqrt(BonkDist2XZ(eng->unk10.x, eng->unk10.z, x, z)) >> 6) < 0x300) {
                             ok = 0;
                         }
                     }
@@ -335,11 +335,11 @@ void PlotBonkCrate(NAS *nas) {
             break;
         }
     spawn:
-        if (func_800B3D28(&x, &z) != 0) {
+        if (BonkAI_PickEntry(&x, &z) != 0) {
             e->unk10.x = x;
             e->unk10.z = z;
             e->unk10.y = World_floor_level;
-            func_800B8F64(e);
+            BonkKeepInBoundsB(e);
             nas->UserInfo.status = 10;
             e->unk2C.z = 0;
             e->unk2C.x = 0;
@@ -368,7 +368,7 @@ void PlotBonkCrate(NAS *nas) {
     case 5:
         Bonk_SpawnPuff((s32 *)&e->unk10, 0, D_80053C7C);
         v = &e->unk10;
-        func_800B4910((VECTOR *)v, 0x380, -1, 0);
+        BonkMalletHit((VECTOR *)v, 0x380, -1, 0);
         e->flags &= 0xFFFF7FFF;
         nas->UserInfo.status = 6;
         PlaySfx(D_800B9E20[Random(4)], NULL, v, 0x1000, 0x1E00, 0);
@@ -386,7 +386,7 @@ void PlotBonkCrate(NAS *nas) {
     }
 }
 
-s32 func_800B4454(s32 arg0, s32 *arg1, s32 arg2) {
+s32 BonkAI_FindClosest(s32 arg0, s32 *arg1, s32 arg2) {
     BonkEntry *found;
     s32 x;
     s32 z;
@@ -424,7 +424,7 @@ s32 func_800B4454(s32 arg0, s32 *arg1, s32 arg2) {
             }
             ex = ((BonkPad *)e->unk4)->eng->unk10.x;
             ez = ((BonkPad *)e->unk4)->eng->unk10.z;
-            d = csqrt(func_800B62C8(x, z, ex, ez));
+            d = csqrt(BonkDist2XZ(x, z, ex, ez));
             d >>= 6;
             if (d < best) {
                 if (!(arg2 & 4) || func_80015480(get_angle(x - ex, z - ez), Heroes[arg0].hero_move->forward_angle) < 0x320) {
@@ -453,7 +453,7 @@ s32 func_800B4454(s32 arg0, s32 *arg1, s32 arg2) {
             }
             ex = ((BonkPad *)f->b)->eng->unk10.x;
             ez = ((BonkPad *)f->b)->eng->unk10.z;
-            d = csqrt(func_800B62C8(x, z, ex, ez));
+            d = csqrt(BonkDist2XZ(x, z, ex, ez));
             d >>= 6;
             if (d < best) {
                 if (!(arg2 & 4) || func_80015480(get_angle(x - ex, z - ez), Heroes[arg0].hero_move->forward_angle) < 0x320) {
@@ -469,7 +469,7 @@ s32 func_800B4454(s32 arg0, s32 *arg1, s32 arg2) {
     return 0;
 }
 
-void func_800B47C8(s32 arg0, s32 arg1, BonkTgt2 *t) {
+void BonkHitTarget(s32 arg0, s32 arg1, BonkTgt2 *t) {
     BonkPad *p;
     EXTengine *e;
     s32 big;
@@ -484,13 +484,13 @@ void func_800B47C8(s32 arg0, s32 arg1, BonkTgt2 *t) {
         if (arg0 >= 0) {
             switch (p->mode) {
             case 0xE:
-                func_800B6B04(arg0, e, big ? 0x14 : 5);
+                BonkKnockBack(arg0, e, big ? 0x14 : 5);
                 break;
             case 0xD:
-                func_800B6B04(arg0, e, big ? 0xF : 3);
+                BonkKnockBack(arg0, e, big ? 0xF : 3);
                 break;
             default:
-                func_800B6B04(arg0, e, big ? 0xA : 2);
+                BonkKnockBack(arg0, e, big ? 0xA : 2);
                 break;
             }
             PlaySfx(D_800B9E30[arg0], NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
@@ -502,7 +502,7 @@ void func_800B47C8(s32 arg0, s32 arg1, BonkTgt2 *t) {
     }
 }
 
-void func_800B4910(VECTOR *pos, s32 a, s32 b, s32 c) {
+void BonkMalletHit(VECTOR *pos, s32 a, s32 b, s32 c) {
     s32 x;
     s32 z;
     s32 ex;
@@ -528,7 +528,7 @@ void func_800B4910(VECTOR *pos, s32 a, s32 b, s32 c) {
         }
         ex = h->hero_eng->unk10.x;
         ez = h->hero_eng->unk10.z;
-        if ((csqrt(func_800B62C8(x, z, ex, ez)) >> 6) > a) {
+        if ((csqrt(BonkDist2XZ(x, z, ex, ez)) >> 6) > a) {
             goto next;
         }
         if ((h->hero_immunity | h->hero_hit) != 0) {
@@ -550,7 +550,7 @@ void func_800B4910(VECTOR *pos, s32 a, s32 b, s32 c) {
         func_80084E04(i, NULL, -1, 0x8001, 0x446);
         h->hero_health = 0x14;
         func_80028018(i, 0xF);
-        func_800B8EF8(i);
+        BonkHidePowerup(i);
         PlaySfx(D_8009E080[h->hero_name][Random(4)], NULL, &h->hero_eng->unk10, 0x1000, 0x1E00, 0);
     next:
         i++;
@@ -561,9 +561,9 @@ void func_800B4910(VECTOR *pos, s32 a, s32 b, s32 c) {
             e = &D_800B9E50[i];
             if (e->unk4 != 0) {
                 eng = ((NAS *)e->unk4)->Engine;
-                if ((csqrt(func_800B62C8(x, z, eng->unk10.x, eng->unk10.z)) >> 6) <= a
+                if ((csqrt(BonkDist2XZ(x, z, eng->unk10.x, eng->unk10.z)) >> 6) <= a
                     && ((BonkPad *)e->unk4)->mode >= 0xB) {
-                    func_800B47C8(b, 1, (BonkTgt2 *)e);
+                    BonkHitTarget(b, 1, (BonkTgt2 *)e);
                 }
             }
             i++;
@@ -571,7 +571,7 @@ void func_800B4910(VECTOR *pos, s32 a, s32 b, s32 c) {
     }
 }
 
-void func_800B4BC8(s32 arg0, u16 arg1) {
+void BonkChooseWinnerScore(s32 arg0, u16 arg1) {
     s32 taken;
     s32 j;
     s32 i;
@@ -683,7 +683,7 @@ void func_800B4BC8(s32 arg0, u16 arg1) {
     }
 }
 
-void func_800B5050(s32 arg0, u16 arg1) {
+void BonkChooseWinnerScoreB(s32 arg0, u16 arg1) {
     s32 taken;
     s32 j;
     s32 i;
@@ -795,7 +795,7 @@ void func_800B5050(s32 arg0, u16 arg1) {
     }
 }
 
-void func_800B54D8(s32 arg0, u16 arg1) {
+void BonkChooseWinnerTimed(s32 arg0, u16 arg1) {
     s32 found;
     s32 fail;
     u8 *g;
@@ -885,7 +885,7 @@ void func_800B54D8(s32 arg0, u16 arg1) {
     }
 }
 
-void func_800B5820(s32 arg0, u16 arg1) {
+void BonkChooseWinnerRank(s32 arg0, u16 arg1) {
     BonkRankView *g;
     BonkRankView *p;
     HeroInfo *hb;
@@ -976,7 +976,7 @@ void func_800B5820(s32 arg0, u16 arg1) {
     }
 }
 
-void func_800B5BA0(s32 arg0)
+void Bonk_HeroBot(s32 arg0)
 {
     u8 *g = D_8005A614;
     HeroInfo *h;
@@ -1003,14 +1003,14 @@ void func_800B5BA0(s32 arg0)
         ai->AItimer1--;
     }
     ai->AIpad = 0;
-    if (func_800B61B0(arg0, (int *)&hit) != 0) {
+    if (BonkAI_Closest(arg0, (int *)&hit) != 0) {
         if (hit->nas != ai->pTargetNas && ai->AItimer1 == 0) {
             ai->pTargetNas = hit->nas;
             ai->TargetXYZ = hit->nas->Engine->unk10;
             ai->AItimer1 = 10;
             if (hit->kind == 0x100) {
                 if (D_800B9F4C[arg0].f8 == 1 || (*(u16 *)(g + 0x32) & 0x80) ||
-                    func_800B60FC(arg0) != 0) {
+                    BonkAI_NearestEnemy(arg0) != 0) {
                     ai->AImode = 2;
                 } else {
                     mode = 3;
@@ -1021,7 +1021,7 @@ void func_800B5BA0(s32 arg0)
                 }
             } else {
                 if (D_800B9F4C[arg0].f8 == 1 || (*(u16 *)(g + 0x32) & 0x80) ||
-                    func_800B60FC(arg0) != 0) {
+                    BonkAI_NearestEnemy(arg0) != 0) {
                     ai->AImode = 4;
                 } else {
                     mode = 5;
@@ -1092,7 +1092,7 @@ void func_800B5BA0(s32 arg0)
     set_joypad((u8 *)&D_80051338[arg0], ai->AIpad);
 }
 
-s32 func_800B60FC(s32 arg0)
+s32 BonkAI_NearestEnemy(s32 arg0)
 {
   s32 new_var2;
   EXTengine *b;
@@ -1119,18 +1119,18 @@ s32 func_800B60FC(s32 arg0)
   return r;
 }
 
-int func_800B61B0(int a0, int *out)
+int BonkAI_Closest(int a0, int *out)
 {
     int v;
 
-    if (func_800B4454(a0, &v, 0x301) != 0) {
+    if (BonkAI_FindClosest(a0, &v, 0x301) != 0) {
         *out = v;
         return 1;
     }
     return 0;
 }
 
-void func_800B61F8(s32 arg0) {
+void BonkAI_Reset(s32 arg0) {
     EXTbotai *ai = Heroes[arg0].hero_ai;
 
     if (ai != NULL) {
@@ -1139,25 +1139,25 @@ void func_800B61F8(s32 arg0) {
     }
 }
 
-void func_800B6238(s32 arg0, s32 arg1) {
+void BonkChooseWinner(s32 arg0, s32 arg1) {
     u8 *g = D_8005A614;
 
     if (!(*(u16 *)(g + 0x30) & 0x801)) {
         u16 f = *(u16 *)(g + 0x32);
 
         if (f & 0x80) {
-            func_800B4BC8(arg0, (u16)arg1);
+            BonkChooseWinnerScore(arg0, (u16)arg1);
         } else if (f & 0x20) {
-            func_800B5050(arg0, (u16)arg1);
+            BonkChooseWinnerScoreB(arg0, (u16)arg1);
         } else if (f & 0x40) {
-            func_800B54D8(arg0, (u16)arg1);
+            BonkChooseWinnerTimed(arg0, (u16)arg1);
         } else {
-            func_800B5820(arg0, (u16)arg1);
+            BonkChooseWinnerRank(arg0, (u16)arg1);
         }
     }
 }
 
-s32 func_800B62C8(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 BonkDist2XZ(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 temp_a0;
     s32 temp_a1;
 
@@ -1230,20 +1230,20 @@ void InitBonkShockwave(NAS *nas) {
     }
 }
 
-void func_800B64B4(s32 arg0, s32 arg1, BonkObj *obj) {
+void BonkHitObject(s32 arg0, s32 arg1, BonkObj *obj) {
     BonkPad *p = obj->pad;
 
     if (p != NULL) {
-        func_800B6CD8(arg0, Random(2));
+        BonkHeroHitFlash(arg0, Random(2));
         p->mode = 4;
         PlaySfx(D_800B9E40[Random(4)], NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
     }
 }
 
-void func_800B6560(void) {
+void BonkUpdateStub(void) {
 }
 
-void func_800B6568(void) {
+void BonkSpawnStool(void) {
     s32 i;
 
     D_800B9F08 = 0;
@@ -1292,7 +1292,7 @@ void InitBonkStool(NAS *nas) {
     }
 }
 
-void func_800B66C8(void) {
+void BonkSpawnCrate(void) {
     NAS *n;
 
     if (D_800B9EF0 < 10) {
@@ -1306,7 +1306,7 @@ void func_800B66C8(void) {
     }
 }
 
-void func_800B6774(void) {
+void BonkUpdateSkill(void) {
     s32 i;
 
     for (i = 0; i < 4; i++) {
@@ -1316,35 +1316,35 @@ void func_800B6774(void) {
     }
 }
 
-void func_800B67C4(void) {
-    func_800B34F8();
-    func_800B6560();
-    func_800B6774();
+void UpdateBONK(void) {
+    BonkCrateMaster();
+    BonkUpdateStub();
+    BonkUpdateSkill();
 }
 
-void func_800B67F4(void) {
+void BonkInitTweakAi(void) {
     D_8009D904 = D_8005A680[0] != 0 ? D_800B92E8 : D_800B92D0;
     D_8009D8FC = D_8005A680[0] != 0 ? D_800B92B0 : D_800B929C;
     D_8009D900 = D_800B92C4;
 }
 
-void func_800B6868(s32 arg0) {
+void BonkSetClock(s32 arg0) {
     Set_Clock(arg0 & 0xFFFF, 0x81D0);
 }
 
-void func_800B688C(void) {
+void BonkSetClockA(void) {
     if (!(D_8005A646 & 0xE0)) {
-        func_800B6868(0x130);
+        BonkSetClock(0x130);
     }
 }
 
-void func_800B68BC(void) {
+void BonkSetClockB(void) {
     if (D_8005A646 & 0x20) {
-        func_800B6868(0x130);
+        BonkSetClock(0x130);
     }
 }
 
-void func_800B68EC(void) {
+void BonkInitScores(void) {
     s32 i;
     s16 v;
     u8 *g = D_8005A614;
@@ -1365,7 +1365,7 @@ void func_800B68EC(void) {
             Heroes[i].hero_score_displayed = v;
             Heroes[i].hero_score = v;
         }
-        func_800B6868(0x130);
+        BonkSetClock(0x130);
         InitSharedScoreIcons();
         if (D_8005A680[0] != 0) {
             PanelCtrl |= 0x2000;
@@ -1373,13 +1373,13 @@ void func_800B68EC(void) {
     }
 }
 
-void func_800B69A0(void) {
+void BonkSetClockC(void) {
     if (D_8005A646 & 0x80) {
-        func_800B6868(0x130);
+        BonkSetClock(0x130);
     }
 }
 
-void func_800B69D0(void) {
+void BonkInitCamera(void) {
     BonkCam *cam = (BonkCam *)D_80051640;
     cam->unk0 = 0;
     cam->unk8 = 0xE98;
@@ -1393,39 +1393,39 @@ void func_800B69D0(void) {
     cam->unk14 = -0x660;
 }
 
-void func_800B6A1C(void) {
+void InitialiseBONK(void) {
     World_floor_level = -0x10;
     Init_Clock(0x140, 0x28, 0);
     Set_Clock(0x130, 0x81D0);
-    func_800B69D0();
+    BonkInitCamera();
     D_800B9EEC = 0x10;
-    func_800B6774();
-    func_800B69A0();
-    func_800B68EC();
-    func_800B68BC();
-    func_800B688C();
-    func_800B9264();
-    func_800B347C();
-    func_800B6568();
+    BonkUpdateSkill();
+    BonkSetClockC();
+    BonkInitScores();
+    BonkSetClockB();
+    BonkSetClockA();
+    BonkBounceAll();
+    BonkInitEntries();
+    BonkSpawnStool();
 }
 
-void func_800B6AAC(void) {
-    D_8005AA70[0] = (s32)func_800B33A4;
-    D_8005AA70[1] = (s32)func_800B6A1C;
-    D_8005AA70[2] = (s32)func_800B6A1C;
-    D_8005AA70[3] = (s32)func_800B67C4;
-    D_8005AA70[5] = (s32)func_800B6AFC;
+void BONKSetUp(void) {
+    D_8005AA70[0] = (s32)InitialiseBONKFirst;
+    D_8005AA70[1] = (s32)InitialiseBONK;
+    D_8005AA70[2] = (s32)InitialiseBONK;
+    D_8005AA70[3] = (s32)UpdateBONK;
+    D_8005AA70[5] = (s32)FirstTriggersBONK;
     D_8005AA70[7] = 0;
     D_8005AA70[8] = 0;
 }
 
-void func_800B6AF4(void) {
+void BonkRestartLevel(void) {
 }
 
-void func_800B6AFC(void) {
+void FirstTriggersBONK(void) {
 }
 
-void func_800B6B04(s32 arg0, EXTengine *p, s32 arg2) {
+void BonkKnockBack(s32 arg0, EXTengine *p, s32 arg2) {
     HeroInfo *h;
     HeroInfo *t;
     HeroInfo *base, *b2, *b3, *h2;
@@ -1474,14 +1474,14 @@ void func_800B6B04(s32 arg0, EXTengine *p, s32 arg2) {
     h2->hero_score = v;
 }
 
-void func_800B6CD8(s32 arg0, s32 arg1) {
+void BonkHeroHitFlash(s32 arg0, s32 arg1) {
     EXTengine *e;
     subengine *s;
     HeroInfo *h;
     HeroInfo *base;
 
     s = NULL;
-    func_800B8EF8(arg0);
+    BonkHidePowerup(arg0);
     base = Heroes;
     h = &base[arg0];
     e = h->hero_powerup;
@@ -1514,7 +1514,7 @@ void func_800B6CD8(s32 arg0, s32 arg1) {
     D_800B9F4C[arg0].f8 = arg1;
 }
 
-void func_800B6E1C(s32 player) {
+void BonkHero_ExtraEffects(s32 player) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + player;
     EXTengine *p = h->hero_powerup;
@@ -1528,7 +1528,7 @@ void func_800B6E1C(s32 player) {
     }
     if (D_800B9F4C[player].f8 == 0) {
         if (--D_800B9F4C[player].fC <= 0) {
-            func_800B8EF8(player);
+            BonkHidePowerup(player);
         }
     }
 }

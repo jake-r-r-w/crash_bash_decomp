@@ -4,7 +4,7 @@
 #include "bash/bonk_bohero.h"
 #include "bash/bonk.h"
 
-void func_800B6EFC(s32 arg0) {
+void BonkSpawnShockwave(s32 arg0) {
     VECTOR sp18;
     HeroInfo *h;
     HeroInfo *base;
@@ -27,7 +27,7 @@ void func_800B6EFC(s32 arg0) {
         if (nas != NULL) {
             func_80028018(arg0, 5);
             nas->UserInfo.user2 = 0x8000;
-            func_800B4910(&sp18, 0x600, arg0, 0x100);
+            BonkMalletHit(&sp18, 0x600, arg0, 0x100);
             pu = h->hero_powerup;
             sub = NULL;
             if (pu != NULL) {
@@ -39,12 +39,12 @@ void func_800B6EFC(s32 arg0) {
             slot->f8 = 3;
         }
     } else {
-        func_800B4910(&sp18, 0x380, arg0, 0);
+        BonkMalletHit(&sp18, 0x380, arg0, 0);
     }
     PlaySfx(D_800B9F0C[arg0], NULL, &Heroes[arg0].hero_eng->unk10, 0x1000, 0x1E00, 0);
 }
 
-void func_800B70C4(s32 arg0) {
+void BonkHeroFacing(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + arg0;
 
@@ -57,7 +57,7 @@ void func_800B70C4(s32 arg0) {
     }
 }
 
-void func_800B717C(s32 arg0) {
+void BonkPreMoveHero(s32 arg0) {
     EXTheromove *m;
 
     m = Heroes[arg0].hero_move;
@@ -82,7 +82,7 @@ void func_800B717C(s32 arg0) {
     }
 }
 
-void func_800B72FC(s32 idx) {
+void SetBonkHeroIdle(s32 idx) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + idx;
 
@@ -98,11 +98,11 @@ void func_800B72FC(s32 idx) {
     }
 }
 
-void func_800B738C(s32 arg0) {
+void BonkHeroIdle(s32 arg0) {
     HeroInfo *h;
     HeroInfo *base;
 
-    if (func_8008ABF8() == 0 && func_80086FCC(arg0) == 0 && func_800B8D88(arg0) == 0) {
+    if (func_8008ABF8() == 0 && func_80086FCC(arg0) == 0 && BonkHeroTestRun(arg0) == 0) {
         func_8008502C(arg0);
         if (D_8005A5DC < 4) {
             if (D_8005A5DC >= 2) {
@@ -122,7 +122,7 @@ void func_800B738C(s32 arg0) {
     }
 }
 
-void func_800B747C(s32 arg0) {
+void BonkHeroRun(s32 arg0) {
     HeroInfo *h;
     HeroInfo *base;
     s32 id;
@@ -178,16 +178,16 @@ done:
     }
 }
 
-void func_800B76CC(s32 arg0) {
+void BonkHeroBackswing(s32 arg0) {
     BonkTarget *t;
     HeroInfo *base;
     HeroInfo *h;
 
-    if (func_800B8714(arg0) == 0 && func_800B8814(arg0) == 0 && func_800B89D8(arg0) == 0) {
+    if (BonkHeroTestIdle(arg0) == 0 && BonkHeroTestLose(arg0) == 0 && BonkHeroTestWin(arg0) == 0) {
         base = Heroes;
         h = base + arg0;
         h->hero_frozen = 10;
-        if (func_800B4454(arg0, &t, 0x306) != 0) {
+        if (BonkAI_FindClosest(arg0, &t, 0x306) != 0) {
             BonkPos *p;
             D_800B9F4C[arg0].f0 = (s32)t;
             p = t->unk4->unk54;
@@ -204,11 +204,11 @@ void func_800B76CC(s32 arg0) {
     }
 }
 
-void func_800B77FC(s32 arg0) {
+void BonkHeroExtBackswing(s32 arg0) {
     BonkSlot *s;
     BonkSlot *sb;
 
-    if (func_800B8714(arg0) == 0 && func_800B8814(arg0) == 0 && func_800B89D8(arg0) == 0) {
+    if (BonkHeroTestIdle(arg0) == 0 && BonkHeroTestLose(arg0) == 0 && BonkHeroTestWin(arg0) == 0) {
         HeroInfo *base = Heroes;
         (base + arg0)->hero_frozen = 10;
         sb = D_800B9F4C;
@@ -228,13 +228,13 @@ void func_800B77FC(s32 arg0) {
     }
 }
 
-void func_800B7908(s32 arg0) {
+void BonkHeroSwing(s32 arg0) {
     HeroInfo *h;
     HeroInfo *base;
     s32 act;
     BonkTgt2 *t;
 
-    if (func_800B8714(arg0) == 0 && func_800B8814(arg0) == 0 && func_800B89D8(arg0) == 0) {
+    if (BonkHeroTestIdle(arg0) == 0 && BonkHeroTestLose(arg0) == 0 && BonkHeroTestWin(arg0) == 0) {
         base = Heroes;
         h = base + arg0;
         h->hero_frozen = 10;
@@ -245,19 +245,19 @@ void func_800B7908(s32 arg0) {
         if (act == 8) {
             if (h->hero_last_mode == 0x44 || D_800B9F4C[arg0].f8 == 1 ||
                 (D_8005A614[arg0 + 0x5C] != 0 && (((D5A614View *)D_8005A614)->flags & 0x80))) {
-                func_800B6EFC(arg0);
+                BonkSpawnShockwave(arg0);
             }
             t = (BonkTgt2 *)D_800B9F4C[arg0].f0;
             if (t != NULL) {
                 switch (t->kind) {
                 case 0x100:
                     if (t->obj != NULL && (u16)t->obj->mode >= 0xB) {
-                        func_800B47C8(arg0, 1, t);
+                        BonkHitTarget(arg0, 1, t);
                     }
                     break;
                 case 0x200:
                     if (t->obj != NULL && (u16)t->obj->mode >= 0xB) {
-                        func_800B64B4(arg0, 1, (BonkObj *)t);
+                        BonkHitObject(arg0, 1, (BonkObj *)t);
                     }
                     break;
                 }
@@ -268,7 +268,7 @@ void func_800B7908(s32 arg0) {
     }
 }
 
-s32 func_800B7B48(s32 arg0) {
+s32 BonkHeroKickCollision(s32 arg0) {
     TrigEntry *tbl;
     VECTOR pos;
     NAS *own;
@@ -500,7 +500,7 @@ s32 func_800B7B48(s32 arg0) {
     return hit;
 }
 
-void func_800B8550(s32 arg0) {
+void BonkHeroLoser(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + arg0;
 
@@ -520,7 +520,7 @@ void func_800B8550(s32 arg0) {
     func_8008502C(arg0);
 }
 
-s32 func_800B8714(s32 arg0) {
+s32 BonkHeroTestIdle(s32 arg0) {
     if (Heroes[arg0].hero_status & 0x100) {
         SetHeroAction(arg0, 0x40);
         return 1;
@@ -528,7 +528,7 @@ s32 func_800B8714(s32 arg0) {
     return 0;
 }
 
-void func_800B876C(s32 arg0) {
+void SetBonkHeroLoser(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + arg0;
     EXTengine *p = h->hero_powerup;
@@ -547,7 +547,7 @@ void func_800B876C(s32 arg0) {
     func_80026980(h->hero);
 }
 
-s32 func_800B8814(s32 arg0) {
+s32 BonkHeroTestLose(s32 arg0) {
     if (Heroes[arg0].hero_status & 0x400) {
         SetHeroAction(arg0, 0x48);
         return 1;
@@ -555,7 +555,7 @@ s32 func_800B8814(s32 arg0) {
     return 0;
 }
 
-void func_800B886C(s32 idx) {
+void BonkHeroWinner(s32 idx) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + idx;
     D5A614View *g;
@@ -576,7 +576,7 @@ void func_800B886C(s32 idx) {
     }
 }
 
-void func_800B8918(s32 arg0) {
+void SetBonkHeroWinner(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = base + arg0;
     EXTengine *p = h->hero_powerup;
@@ -596,7 +596,7 @@ void func_800B8918(s32 arg0) {
     D_800AD12C = 1;
 }
 
-s32 func_800B89D8(s32 arg0) {
+s32 BonkHeroTestWin(s32 arg0) {
     if (Heroes[arg0].hero_status & 0x200) {
         SetHeroAction(arg0, 0x47);
         return 1;
@@ -604,10 +604,10 @@ s32 func_800B89D8(s32 arg0) {
     return 0;
 }
 
-void func_800B8A30(s32 arg0) {
+void BonkHeroSwingRecoil(s32 arg0) {
     HeroInfo *hero;
 
-    if (func_800B8714(arg0) == 0 && func_800B8814(arg0) == 0 && func_800B89D8(arg0) == 0) {
+    if (BonkHeroTestIdle(arg0) == 0 && BonkHeroTestLose(arg0) == 0 && BonkHeroTestWin(arg0) == 0) {
         HeroInfo *base = Heroes;
         hero = base + arg0;
         hero->hero_frozen = 10;
@@ -618,22 +618,22 @@ void func_800B8A30(s32 arg0) {
     }
 }
 
-void func_800B8AC8(s32 arg0) {
+void SetBonkHeroSwingRecoil(s32 arg0) {
     Heroes[arg0].hero_frozen = 0xA;
 }
 
-void func_800B8AF4(s32 arg0) {
+void SetBonkHeroSwing(s32 arg0) {
     Heroes[arg0].hero_frozen = 10;
     SetHeroSeq(arg0, 0x37);
 }
 
-void func_800B8B3C(s32 arg0) {
+void SetBonkHeroExtBackswing(s32 arg0) {
     SetHeroSeq(arg0, 0x36);
     Heroes[arg0].hero_frozen = 10;
     D_800B9F4C[arg0].f4 = 0;
 }
 
-void func_800B8BA0(s32 arg0) {
+void SetBonkHeroBackswing(s32 arg0) {
     HeroInfo *hero;
     HeroInfo *base = Heroes;
 
@@ -644,7 +644,7 @@ void func_800B8BA0(s32 arg0) {
     SetHeroSeq(arg0, 0x35);
 }
 
-void func_800B8C3C(s32 arg0) {
+void BonkHeroHit(s32 arg0) {
     if (Heroes[arg0].hero_move->reactive_speed != 0) {
         D_8009D73C();
     }
@@ -652,7 +652,7 @@ void func_800B8C3C(s32 arg0) {
     func_800871E4(arg0);
 }
 
-void func_800B8CB4(s32 arg0) {
+void SetBonkHeroHit(s32 arg0) {
     HeroInfo *base = Heroes;
     HeroInfo *h = &base[arg0];
 
@@ -664,12 +664,12 @@ void func_800B8CB4(s32 arg0) {
     h->hero_hit = 0x1E;
 }
 
-void func_800B8D3C(s32 arg0) {
+void SetBonkHeroRun(s32 arg0) {
     Heroes[arg0].hero_move->velocity_enable = 1;
     SetHeroSeq(arg0, 0x34);
 }
 
-s32 func_800B8D88(s32 arg0) {
+s32 BonkHeroTestRun(s32 arg0) {
     if (D_8009D728(arg0) == 0) {
         if (Heroes[arg0].hero_move->forward_speed == 0) {
             return 0;
@@ -679,7 +679,7 @@ s32 func_800B8D88(s32 arg0) {
     return 1;
 }
 
-s32 func_800B8E08(s32 arg0) {
+s32 BonkHeroToIdle(s32 arg0) {
     if (Heroes[arg0].hero_move->forward_speed == 0) {
         SetHeroAction(arg0, 0x40);
         return 1;
@@ -687,7 +687,7 @@ s32 func_800B8E08(s32 arg0) {
     return 0;
 }
 
-s32 func_800B8E64(s32 arg0) {
+s32 BonkHeroTestSwing(s32 arg0) {
     if ((((BonkPadButtons *)D_80051338)[arg0].unk50 & 0x8000) && Heroes[arg0].hero_mode != 0x43) {
         SetHeroAction(arg0, 0x43);
         return 1;
@@ -695,10 +695,10 @@ s32 func_800B8E64(s32 arg0) {
     return 0;
 }
 
-void func_800B8EF0(void) {
+void BonkHeroPostMove(void) {
 }
 
-void func_800B8EF8(s32 arg0) {
+void BonkHidePowerup(s32 arg0) {
     EXTengine *p = Heroes[arg0].hero_powerup;
     subengine *s = NULL;
 
@@ -711,7 +711,7 @@ void func_800B8EF8(s32 arg0) {
     D_800B9F4C[arg0].f8 = 3;
 }
 
-s32 func_800B8F64(EXTengine *eng) {
+s32 BonkKeepInBoundsB(EXTengine *eng) {
     s32 x = eng->unk10.x;
     s32 z = eng->unk10.z;
     s32 limit;
@@ -732,7 +732,7 @@ s32 func_800B8F64(EXTengine *eng) {
     return ret;
 }
 
-s32 func_800B9054(EXTengine *eng) {
+s32 BONK_KeepInBounds(EXTengine *eng) {
     s32 x = eng->unk10.x;
     s32 z = eng->unk10.z;
     s32 limit;
@@ -753,21 +753,21 @@ s32 func_800B9054(EXTengine *eng) {
     return ret;
 }
 
-void func_800B9144(s32 player) {
+void BonkHeroSnapShadow(s32 player) {
     HeroInfo *base = Heroes;
     HeroInfo *h;
     EXTengine *shadow;
 
     h = base + player;
 
-    ((void (*)(EXTengine *))func_800B9054)(h->hero_eng);
+    ((void (*)(EXTengine *))BONK_KeepInBounds)(h->hero_eng);
     shadow = h->hero_shadow;
     if (shadow != NULL) {
         shadow->unk10 = h->hero_eng->unk10;
     }
 }
 
-void func_800B91BC(s32 arg0) {
+void BonkHeroBounce(s32 arg0) {
     EXTmotion *m;
 
     SetHeroAction(arg0, 0x40);
@@ -781,16 +781,16 @@ void func_800B91BC(s32 arg0) {
         m->Ydir = 0xFF;
         m->Yvel = 0;
     }
-    func_800B9144(arg0);
-    func_800B61F8(arg0);
+    BonkHeroSnapShadow(arg0);
+    BonkAI_Reset(arg0);
 }
 
-void func_800B9264(void) {
+void BonkBounceAll(void) {
     s32 var_s0;
 
     var_s0 = 0;
     do {
-        func_800B91BC(var_s0);
+        BonkHeroBounce(var_s0);
         var_s0 += 1;
     } while (var_s0 < 4);
 }
