@@ -273,8 +273,10 @@ build.
 - [ ] N2O and NOX (`ovl67`)
 - [ ] Chase (`ovl68`)
 - [ ] Hub (`ovl6a`)
-- [ ] Titles, the front end (`ovl69`): named, typed, rodata and data as C
-  and its shift build made (2026-10-26); left: the shift test.
+- [x] Titles, the front end (`ovl69`). Done 2026-10-26: named, typed,
+  rodata, data and id word as C, one file, and its shift test passed
+  (`make shift OVL=ovl69 PAD=0x40`, the route in PLAYING.md). Left for
+  Phase 5: its views of the game-state struct (`Ovl69*View`).
 
 ## Phase 5 - The engine and `main.exe` to source-only
 

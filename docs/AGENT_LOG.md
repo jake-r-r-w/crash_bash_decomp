@@ -462,7 +462,10 @@ Newest first, a few lines each. Details are in the commits.
   `.decomp/history.json` passed the 2 MB hook (now one row per point);
   `shift.py`'s inner-pointer passes rewrote other games' words (gone; Tank
   rewrites the same 99 without them). The shift build rewrites 6 engine
-  words; the shift test (play the menus to a battle and back) is next.
+  words. Its shift test found one more: the character cards' animation
+  pointers sat in a byte-array stand-in field (`data2c.py` now warns for
+  any overlay address outside a 4-byte field); fixed, the test passed
+  and the roadmap box is ticked.
 
 - **2026-10-26 (slot overlay file splits: nothing more proven):** new
   `tools/scripts/leak_order.py` (tested) fits the cc1plus climb/fall

@@ -87,6 +87,15 @@ DexDrive save "200% of the game completed" (`crash-bash.655.gme`): strip its 390
 `sort_savefiles_enable = "false"`, so your own saves are untouched). Then: Battle Mode, Tank
 Wars, Vs Battle, the game options screen, X to start (Desert Fox). Play it through to a win.
 
+### The shift test route (Titles, the front end, 2026-10-26)
+
+`make shift OVL=ovl69 PAD=0x40`, with the same save. The front end is every menu, so walk
+them all: the main menu, the number of players, new/load game, character select (each
+character's model and animation shows when picked), the battle level select (arenas and
+levels, the locked ones), team battle, the battle options, a battle and back to the level
+select, the options screen, and a tournament. Passed 2026-10-26, after one fix (the
+character cards' animation pointers had been written as bytes and didn't move).
+
 The game also has a cheat word at `0x8005A618` (`0x2000` unlocks every list entry, `0x10000`
 adds the pause menu's hidden fifth item; nothing in retail sets them). RetroArch's network
 commands (`network_cmd_enable`, `READ_CORE_MEMORY`/`WRITE_CORE_MEMORY`; PCSX-ReARMed maps RAM
