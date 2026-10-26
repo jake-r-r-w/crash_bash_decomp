@@ -580,8 +580,8 @@ s32 PolarSceneWord2 = 0x100;
 s32 PolarSceneWord3 = 0x10;
 NAS *BombMaster = 0;
 s32 PolarVictorySeqs[10] = {
-    (s32)&D_800B3358, 0x46, (s32)&D_800B3358, 0x47,
-    (s32)&D_800B3358, 0xD, (s32)&D_800B3358, 0xD, 1, 2,
+    (s32)&PolarAnimWin, 0x46, (s32)&PolarAnimWin, 0x47,
+    (s32)&PolarAnimWin, 0xD, (s32)&PolarAnimWin, 0xD, 1, 2,
 };
 s32 PolarAttackOdds[33] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 8, 0xC, 0x10, 0x14, 0x18, 0x1C, 0x20, 0x24, 0x28, 0x2C, 0x30,
@@ -1868,8 +1868,8 @@ void PolarSpawnObjects(void) {
 
 /* the victory sequence name (PolarVictorySeqs) and an empty string; their place in .rodata
  * is between functions' jump tables, so they are defined here */
-const char D_800B3358[] = "WIN";
-const char D_800B335C[] = "";
+const char PolarAnimWin[] = "WIN";
+const char PolarEmptyString[] = "";
 
 void InitialisePOLARFirst(void) {
     PolarHooks *h;
@@ -6315,7 +6315,7 @@ s32 PolarIceHit(SLONG_XYZ *pos, s32 player) {
 }
 
 /* a debug printf format nothing prints with in retail, in place in .rodata as above */
-const char D_800B3498[] = "found col subs %d\n";
+const char PolarMsgFoundColSubs[] = "found col subs %d\n";
 
 void UkaMaskInitRisers(void) {
     s32 i;
@@ -9816,7 +9816,7 @@ void PolarInitDebug(void) {
             obj = obj->next;
         }
     }
-    printf(D_800B3498, i - 1);
+    printf(PolarMsgFoundColSubs, i - 1);
 }
 
 void PlotIceBerg(NAS *arg0) {

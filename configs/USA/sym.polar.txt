@@ -470,3 +470,6 @@ PolarAnimTaunt = 0x800B32DC;
 PolarAnimSkate = 0x800B32E4;
 PolarAnimHit = 0x800B32EC;
 PolarAnimBarge = 0x800B32F0;
+PolarAnimWin = 0x800B3358;
+PolarEmptyString = 0x800B335C;
+PolarMsgFoundColSubs = 0x800B3498;

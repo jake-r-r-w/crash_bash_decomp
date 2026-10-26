@@ -37,7 +37,7 @@ extern ScriptInit RaceGreenSmokePoofScriptInit;
 extern u8 D_800546C4[];
 extern s32 RaceBarrelRollTimer;
 extern u8 D_80052F94[];
-extern const char D_800B3400[];
+extern const char RaceMsgPlayerAngle[];
 
 void RaceAI_SteerAhead(s32 player);
 u32 RaceAI_FollowTrack(s32 player);
@@ -1295,7 +1295,7 @@ static inline s32 RaceFacing(s32 p) {
     ang -= 0x52C;
     ang = 0x1000 - ang;
     ang &= 0xFFF;
-    printf(D_800B3400, p, ang);
+    printf(RaceMsgPlayerAngle, p, ang);
     return ang;
 }
 
@@ -1342,7 +1342,7 @@ void PlotTrackGlob(NAS *nas);
 
 void PlotDac(NAS *nas);
 
-extern const char D_800B3310[];
+extern const char RaceMsgError[];
 
 /* RaceTrackCollideB: wall segments of a scene collision object (as dino's func_800B9020). */
 typedef struct RaceVec {

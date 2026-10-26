@@ -9,7 +9,7 @@
 #include "bash/nas.h"
 
 /* defined later in polar.c than the data that points at it */
-extern const char D_800B3358[];
+extern const char PolarAnimWin[];
 
 extern void (*D_8009D714)(void);
 extern u8 D_800546C4[];
@@ -93,7 +93,7 @@ typedef struct SceneObj {
 
 /* Visible scene objects PolarInitDebug collects. */
 extern SceneObj *PolarIceObjects[80];
-extern const char D_800B3498[];
+extern const char PolarMsgFoundColSubs[];
 
 /* Scene objects PolarInitScene picks out by index. */
 extern s32 D_8009E1F4;

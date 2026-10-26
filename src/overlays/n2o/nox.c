@@ -234,17 +234,17 @@ void NoxInitAsteroids(void) {
     u16 id;
     /* Arrays rather than literals: the retail rodata carries 3 stray bytes
      * after the last string's NUL, and the arrays keep the strings' order. */
-    static const char D_800B3404[] = "init asteroids\n";
-    static const char D_800B3414[] = "ark sub count %d\n";
-    static const char D_800B3428[] = "mine count %d\n";
-    static const char D_800B3438[] = "spin/fire count %d\n";
-    static const char D_800B344C[] = "big mine count %d\n";
-    static const char D_800B3460[0x44] ="mine array error"
+    static const char NoxMsgInitAsteroids[] = "init asteroids\n";
+    static const char NoxMsgArkSubCount[] = "ark sub count %d\n";
+    static const char NoxMsgMineCount[] = "mine count %d\n";
+    static const char NoxMsgSpinFireCount[] = "spin/fire count %d\n";
+    static const char NoxMsgBigMineCount[] = "big mine count %d\n";
+    static const char NoxMsgMineArrayError[0x44] ="mine array error"
         "!!!!!!!!!!" "!!!!!!!!!!" "!!!!!!!!!!" "!!!!!!!!!!" "!!!!!!!\n"
         "\0\x0B\x80\x82";
 
     o = (AstSceneObj *)((GfxScene *)D_80058AD0)->objs;
-    printf(D_800B3404);
+    printf(NoxMsgInitAsteroids);
     nAst = 0;
     nMine = 0;
     nBig = 0;
@@ -317,12 +317,12 @@ loop:
         o = o->next;
         goto loop;
     }
-    printf(D_800B3414, 0);
-    printf(D_800B3428, nAst);
-    printf(D_800B3438, nMine);
-    printf(D_800B344C, nBig);
+    printf(NoxMsgArkSubCount, 0);
+    printf(NoxMsgMineCount, nAst);
+    printf(NoxMsgSpinFireCount, nMine);
+    printf(NoxMsgBigMineCount, nBig);
     if (nAst > 0x100) {
-        printf(D_800B3460);
+        printf(NoxMsgMineArrayError);
     }
 }
 

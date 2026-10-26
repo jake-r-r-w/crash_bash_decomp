@@ -339,3 +339,7 @@ RaceSpinDelay = 0x800CA608;
 RaceUnused2 = 0x800CA60C;
 RacePickupSlots = 0x800CA64C;
 RaceJumpHooks = 0x800CA6CC;
+RaceMsgError = 0x800B3310;
+RaceMsgPlayerAngle = 0x800B3400;
+RaceMsgFucked = 0x800B3414;
+RaceEmptyString = 0x800B341C;

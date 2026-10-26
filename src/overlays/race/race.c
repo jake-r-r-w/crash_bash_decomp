@@ -2298,7 +2298,7 @@ s32 RaceTrackCollideB(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
             }
             if (dist < 0) {
                 dist = 0x7FFFFFFF;
-                printf(D_800B3310);
+                printf(RaceMsgError);
             }
             if (dist > best) {
                 continue;
@@ -2439,7 +2439,7 @@ s32 RaceTrackCollideC(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
             }
             if (dist < 0) {
                 dist = 0x7FFFFFFF;
-                printf(D_800B3310);
+                printf(RaceMsgError);
             }
             if (dist > best) {
                 continue;
@@ -2471,7 +2471,7 @@ s32 RaceTrackCollideC(VECTOR *pos, RaceVec *out, s32 radius, s32 idx, s32 flags,
 
 /* a debug printf format; its place in .rodata is between functions' jump tables, so it is
  * defined here */
-const char D_800B3310[] = "error\n";
+const char RaceMsgError[] = "error\n";
 
 s32 XZBoxToSphere(s32 arg0, SLONG_XYZ *arg1, s32 arg2, SLONG_XYZ *arg3) {
     VECTOR d;
@@ -4838,9 +4838,9 @@ void InitRacePickUp(NAS *m) {
 }
 
 /* debug printf formats and an empty string, in place in .rodata as above */
-const char D_800B3400[] = "player %d ang %d\n";
-const char D_800B3414[] = "fucked\n";
-const char D_800B341C[] = "";
+const char RaceMsgPlayerAngle[] = "player %d ang %d\n";
+const char RaceMsgFucked[] = "fucked\n";
+const char RaceEmptyString[] = "";
 
 void PlotRacePickUp(NAS *m) {
     RacePickUpExt *ext;
@@ -6862,7 +6862,7 @@ s32 RaceTrackAngle(s32 arg0) {
     angle = get_angle(eng->unk10.x, eng->unk10.z) & 0xFFF;
     angle = 0x152C - angle;
     angle &= 0xFFF;
-    printf(D_800B3400, arg0, angle);
+    printf(RaceMsgPlayerAngle, arg0, angle);
     return angle;
 }
 

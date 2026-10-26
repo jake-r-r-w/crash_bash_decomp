@@ -341,3 +341,6 @@ PROVIDE(D_8004ECD0 = 0x8004ECD0);
 PROVIDE(D_8004ECD8 = 0x8004ECD8);
 PROVIDE(D_800500A0 = 0x800500A0);
 PROVIDE(D_800558EC = 0x800558EC);
+/* A word Papu's hero code keeps a sound handle in, past the end of every slot overlay: no
+ * overlay defines it, so it stays at this address whichever overlay is loaded (as retail). */
+PROVIDE(PapuStraySfx = 0x800C4780);

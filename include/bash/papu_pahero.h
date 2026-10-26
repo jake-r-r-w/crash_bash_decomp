@@ -39,7 +39,8 @@ void func_8008A810(void);
 extern u16 D_8009E080[][4];
 void PACrateFindFreeSpot(EXTengine *eng);
 
-extern _sfx_handler *D_800C4780;
+/* past the end of the overlay, at a fixed address (configs/USA/undefined_syms_manual.txt) */
+extern _sfx_handler *PapuStraySfx;
 void func_800898EC(s32 arg0);
 void PAHeroDead(s32 arg0);
 extern u16 *D_8009D6EC;

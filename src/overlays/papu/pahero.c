@@ -1021,8 +1021,8 @@ void SetPAHeroDead(s32 arg0) {
     HeroInfo *base2;
 
     if (Heroes[arg0].hero_pu == 0x14) {
-        if (D_800C4780 != NULL) {
-            StopSfx(D_800C4780);
+        if (PapuStraySfx != NULL) {
+            StopSfx(PapuStraySfx);
         }
     }
     base2 = Heroes;
@@ -1051,8 +1051,8 @@ void SetPAHeroWinner(s32 arg0) {
     HeroInfo *h2;
     s32 dy;
 
-    if (Heroes[arg0].hero_pu == 0x14 && D_800C4780 != NULL) {
-        StopSfx(D_800C4780);
+    if (Heroes[arg0].hero_pu == 0x14 && PapuStraySfx != NULL) {
+        StopSfx(PapuStraySfx);
     }
     base = Heroes;
     h = base + arg0;
